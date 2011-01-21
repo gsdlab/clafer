@@ -1,0 +1,71 @@
+abstract Module
+    `Element *
+
+abstract Element
+    isEssential ?
+
+abstract Clafer : Element
+    isAbstract ?
+    name : string
+    super -> Clafer *
+    parent -> Clafer ?
+    child : Element *
+    reference -> Expression ?
+    groupCardinality : Interval
+    cardinality : Interval
+
+abstract Interval
+    min : integer {[min >= 0]}
+    max : integer {[max >= min || max == -1]}
+
+abstract String : Clafer
+    value : string
+
+abstract Integer : Clafer
+    value : integer
+
+abstract Constraint : Element
+    `LogicalExp +
+
+abstract LogicalExp
+
+abstract PropositionalExp : LogicalExp
+    lexp : LogicalExp 1..3
+    xor op {Not, Iff, Implies, Or, Xor, And, ImpliesElse}
+    [ImpliesElse => #lexp = 3 else Not => #lexp = 1 else #lexp = 2]
+
+abstract CompareExp : LogicalExp
+    exp : Expression 2
+    xor op 
+        xor setOp   {Eq, NEq, In, StrictIn}
+        xor arithOp {Lt, Gt, LtE, GtE}
+
+abstract QuantifiedSet : LogicalExp, SetComprehension
+    xor quantifier {No, Lone, One, Some, All}
+
+abstract Expression
+
+abstract SetComprehension : Expression
+    `Expression
+    `LogicalExp *
+    variable : string *
+    isDisjoint ?
+        [#variable > 1]
+
+abstract SetComprVarRef : Expression
+    ref -> SetComprehension.variable
+
+abstract FunctionExp : Expression
+    exp : Expression 1..2
+    xor Function
+        xor StringFun {Concatenation, Capitalize}
+        xor SetFun    {Union | Difference | Intersection | Join}
+        xor IntSetFun {SetCardinality | Sum | Min | Max}
+        xor ArithFun  {Negation | Plus | Minus | Multiply}
+    [Capitalize || IntSetFun || Negation => #exp = 1 else #exp = 2]
+
+abstract StringFun
+    xor fun {Concatenation, Capitalize}
+
+abstract ClaferRef : Expression
+    ref -> Clafer
