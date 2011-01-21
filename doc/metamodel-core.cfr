@@ -4,7 +4,7 @@ abstract Module
 abstract Clafer
     isAbstract ?
     name : string
-    super -> Clafer ?
+    super -> Clafer *
     parent -> Clafer ?
     child : Clafer *
     reference -> Clafer ?
