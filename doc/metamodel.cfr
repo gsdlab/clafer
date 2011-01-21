@@ -1,0 +1,16 @@
+abstract Module
+    `Clafer *
+
+abstract Clafer
+    isAbstract ?
+    name : string
+    super -> Clafer ?
+    parent -> Clafer ?
+    child : Clafer *
+    reference -> Clafer ?
+    groupCardinality : Interval
+    cardinality : Interval
+
+abstract Interval
+    min : integer {[min >= 0]}
+    max : integer {[max >= min || max == -1]}
