@@ -87,4 +87,4 @@ SetExp -> ((SetComprehension - QuantifiedSet) + SetComprVarRef + ClaferRef +
 
 IntExp -> ClaferRef :> ClaferRef.ref.Integer
 
-StringExp -> ClaferRef :> ClaferRef.ref.Integer
+StringExp -> ClaferRef :> ClaferRef.ref.String
