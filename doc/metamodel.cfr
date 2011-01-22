@@ -68,9 +68,9 @@ abstract FunctionExp : Expression
     exp : Expression 1..2
     xor function
         xor StringFun {Concatenation, Capitalize}
-        xor SetFun    {Union | Difference | Intersection | Join | Domain | Codomain}
-        xor IntSetFun {SetCardinality | Sum | Min | Max}
-        xor ArithFun  {Negation | Plus | Minus | Multiply}
+        xor SetFun    {Union, Difference, Intersection, Join, Domain, Codomain}
+        xor IntSetFun {SetCardinality, Sum, Min, Max}
+        xor ArithFun  {Negation, Plus, Minus, Multiply}
     [Capitalize || IntSetFun || Negation => #exp = 1 else #exp = 2]
     -- type rule
     [StringFun => exp in StringExp else
