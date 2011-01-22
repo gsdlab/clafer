@@ -6,13 +6,17 @@ abstract Element
 
 abstract Clafer : Element
     isAbstract ?
+        [~parent]
     name : string
     super -> Clafer *
     parent -> Clafer ?
+        [~isAbstract]
     child : Element *
     reference -> Expression ?
     groupCardinality : Interval
     cardinality : Interval
+    -- type rule
+    [reference in (SetExp - SetComprVarRef)]
 
 abstract Interval
     min : integer {[min >= 0]}
@@ -37,8 +41,11 @@ abstract PropositionalExp : LogicalExp
 abstract CompareExp : LogicalExp
     exp : Expression 2
     xor op 
-        xor setOp   {Eq, NEq, In, StrictIn}
-        xor arithOp {Lt, Gt, LtE, GtE}
+        xor SetOp   {Eq, NEq, In, StrictIn}
+        xor ArithOp {Lt, Gt, LtE, GtE}
+    -- type rule
+    [SetOp => exp in SetExp
+         else exp in IntExp || exp in StringExp)]
 
 abstract QuantifiedSet : LogicalExp, SetComprehension
     xor quantifier {No, Lone, One, Some, All}
@@ -46,26 +53,38 @@ abstract QuantifiedSet : LogicalExp, SetComprehension
 abstract Expression
 
 abstract SetComprehension : Expression
-    `Expression
+    exp : Expression
     `LogicalExp *
     variable : string *
     isDisjoint ?
         [#variable > 1]
+    -- type rule
+    [exp in SetExp]
 
 abstract SetComprVarRef : Expression
     ref -> SetComprehension.variable
 
 abstract FunctionExp : Expression
     exp : Expression 1..2
-    xor Function
+    xor function
         xor StringFun {Concatenation, Capitalize}
-        xor SetFun    {Union | Difference | Intersection | Join}
+        xor SetFun    {Union | Difference | Intersection | Join | Domain | Codomain}
         xor IntSetFun {SetCardinality | Sum | Min | Max}
         xor ArithFun  {Negation | Plus | Minus | Multiply}
     [Capitalize || IntSetFun || Negation => #exp = 1 else #exp = 2]
-
-abstract StringFun
-    xor fun {Concatenation, Capitalize}
+    -- type rule
+    [StringFun => exp in StringExp else
+     SetFun    => exp in SetExp else
+     IntSetFun => exp in SetExp else
+     exp in IntExp]
 
 abstract ClaferRef : Expression
     ref -> Clafer
+
+-- types
+SetExp -> ((SetComprehension - QuantifiedSet) + SetComprVarRef + ClaferRef +
+           (FunctionExp :> FunctionExp.function.SetFun))
+
+IntExp -> ClaferRef :> ClaferRef.ref.Integer
+
+StringExp -> ClaferRef :> ClaferRef.ref.Integer
