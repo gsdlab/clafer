@@ -3,11 +3,10 @@ abstract Module
 
 abstract Clafer
     isAbstract ?
+    isReference ?
     name : string
-    super -> Clafer *
     parent -> Clafer ?
-    child : Clafer *
-    reference -> Clafer ?
+    base -> Clafer *
     groupCardinality : Interval
     cardinality : Interval
 
