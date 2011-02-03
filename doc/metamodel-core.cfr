@@ -4,7 +4,6 @@ abstract Module
 abstract Clafer
     isAbstract ?
     isReference ?
-    name : string
     parent -> Clafer ?
     base -> Clafer *
     groupCardinality : Interval
