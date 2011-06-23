@@ -1,27 +1,8 @@
-{-
- This file is part of the Clafer to Alloy Translator (clafer2alloy).
-
- Copyright (C) 2010 Kacper Bak <http://gsd.uwaterloo.ca/kbak>
-
- clafer2alloy is free software: you can redistribute it and/or modify
- it under the terms of the GNU Lesser General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
-
- clafer2alloy is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU Lesser General Public License for more details.
-
- You should have received a copy of the GNU Lesser General Public License
- along with clafer2alloy. (See files COPYING and COPYING.LESSER.)  If not,
- see <http://www.gnu.org/licenses/>.
--}
-module LayoutResolver where
+module Front.LayoutResolver where
 
 -- ugly (and probably buggy) resolver
 
-import Lexclafer2alloy
+import Front.Lexclafer
 import Data.Maybe
 
 -- ident level of new line, current level or parenthesis

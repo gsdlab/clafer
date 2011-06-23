@@ -8,29 +8,26 @@ comment "{-" "-}" ;
 Module.         Module ::= [Declaration] ;
 
 EnumDecl.       Declaration ::= "enum" Ident "=" [EnumId] ;
-AbsClaferDecl.  Declaration ::= "abstract" GCard Ident Super Attr Elements ;
 ClaferDecl.     Declaration ::= Clafer ;
 ConstDecl.      Declaration ::= Constraint ;
 
-Clafer.         Clafer ::= GCard Ident Super Attr Essential Card Elements ;
-Constraint.     Constraint ::= Essential "[" [LExp] "]" ;
+Clafer.         Clafer ::= Abstract GCard Ident Super Card Elements ;
+Constraint.     Constraint ::= "[" [LExp] "]" ;
+
+AbstractEmpty. Abstract ::= ;
+Abstract.      Abstract ::= "abstract" ;
 
 ElementsEmpty.  Elements ::= ;
 Elements.       Elements ::= "{" [Element] "}" ;
 
 Subclafer.      Element ::= Clafer ;
-ClaferUse.      Element ::= "`" Name Essential Card Elements ;
+ClaferUse.      Element ::= "`" Name Card Elements ;
 Subconstraint.  Element ::= Constraint ;
-
-EssentialEmpty. Essential ::= ;
-Essential.      Essential ::= "!" ;
 
 SuperEmpty.     Super ::=  ;
 SuperColon.     Super ::= ":" Name ;
-Super.          Super ::= "extends" Name ;
-
-AttrEmpty.      Attr ::=  ;
-Attr.           Attr ::= "->" [ModId] Nav ;
+SuperExtends.   Super ::= "extends" Name ;
+SuperArrow.     Super ::= "->" [ModId] SExp ;
 
 GCardEmpty.     GCard ::= ;
 GCardXor.       GCard ::= "xor" ;
@@ -50,10 +47,6 @@ NCard.          NCard  ::= Integer ".." ExInteger ;
 
 ExIntegerAst.   ExInteger ::= "*" ;
 ExIntegerNum.   ExInteger ::= Integer ;
-
-NavJoin.         Nav  ::= Nav  "." Nav1 ;
-NavArrow.        Nav1 ::= Nav1 "@" Nav2 ;
-NavIdent.        Nav2 ::= Ident ;
 
 Name.           Name ::= [ModId] Ident ;
 
@@ -106,8 +99,7 @@ SExpIntersection. SExp1 ::= SExp1 "&"  SExp2 ;
 SExpDomain.       SExp2 ::= SExp2 "<:" SExp3 ;
 SExpRange.        SExp3 ::= SExp3 ":>" SExp4 ;
 SExpJoin.         SExp4 ::= SExp4 "."  SExp5 ;
-SExpArrow.        SExp5 ::= SExp5 "@"  SExp6 ;
-SExpIdent.        SExp6 ::= Ident ;
+SExpIdent.        SExp5 ::= Ident ;
 
 Decl.           Decl ::= ExQuant Disj [LocId] ":" SExp ;
 
@@ -136,7 +128,6 @@ separator nonempty Decl        "," ;
 separator nonempty LocId       "," ;
 terminator         ModId       "/" ;
 
-coercions SExp 6 ;
-coercions Nav  2 ;
+coercions SExp 5 ;
 coercions LExp 6 ;
 coercions AExp 4 ;

@@ -1,30 +1,29 @@
-module Intclafer where
+module Intermediate.Intclafer where
 
-import Absclafer
+import Front.Absclafer
 
-data IModule =
-   IModule [IDeclaration]
-  deriving (Eq,Ord,Show)
+type IModule = [IDeclaration]
 
 data IDeclaration =
    IClaferDecl IClafer
- | IConstDecl [ILExp]
+ | IConstDecl ILExp
   deriving (Eq,Ord,Show)
 
 data IClafer =
    IClafer {
       isAbstract :: Bool,
-      gcard :: Interval,
+      gcard :: Maybe Interval,
       ident :: String,
+      uid :: String,
       super:: ISuper,
-      card :: Interval,
+      card :: Maybe Interval,
       elements :: [IElement]
     }
   deriving (Eq,Ord,Show)
 
 data IElement =
-   Subclafer Clafer
- | Subconstraint [ILExp]
+   ISubclafer IClafer
+ | ISubconstraint ILExp
   deriving (Eq,Ord,Show)
 
 data ISuper =
@@ -34,18 +33,16 @@ data ISuper =
     }
   deriving (Eq,Ord,Show)
 
-data Interval =
-   Interval Integer ExInteger
-  deriving (Eq,Ord,Show)
+type Interval = (Integer, ExInteger)
 
 data ILExp =
    IEIff ILExp ILExp
- | IEImpliesElse ILExp ILExp ILExp
+ | IEImpliesElse ILExp ILExp (Maybe ILExp)
  | IEOr ILExp ILExp
  | IEXor ILExp ILExp
  | IEAnd ILExp ILExp
  | IENeg ILExp
- | ITerm Term
+ | IETerm ITerm
   deriving (Eq,Ord,Show)
 
 data ITerm =
