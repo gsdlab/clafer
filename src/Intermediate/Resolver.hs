@@ -1,6 +1,8 @@
 module Intermediate.Resolver where
 
+import List
 import Monad
+import Data.Maybe
 import Control.Monad.State
 
 import Common
@@ -40,7 +42,7 @@ nameElement x = case x of
 -- -----------------------------------------------------------------------------
 resolveSuperModule :: IModule -> IModule
 resolveSuperModule declarations =
-  map (resolveSuperDeclaration declarations)  declarations
+  map (resolveSuperDeclaration declarations) declarations
 
 
 resolveSuperDeclaration :: IModule -> IDeclaration -> IDeclaration
@@ -73,7 +75,8 @@ resolveSuperElement declarations x = case x of
 
 resolveSuper :: IModule -> String -> Maybe String
 resolveSuper declarations id = findUnique id $ filter isAbstract $
-  bfsClafers declarations
+  bfsClafers (toClafers declarations)
+
 
 findUnique :: String -> [IClafer] -> Maybe String
 findUnique x xs =
@@ -83,3 +86,44 @@ findUnique x xs =
     _      -> error $ "element is not unique : " ++ show x
 
 -- -----------------------------------------------------------------------------
+data SEnv = SEnv {
+  clafers :: [IClafer],
+  context :: Maybe IClafer,
+  bindings :: [String]
+  } deriving Show
+
+
+toNodeDeep env = (clafer, map (\c -> env {context = Just c}) allClafers)
+  where
+  clafer     = fromJust $ context env
+  allClafers = mapMaybe elemToClafer $ concat $
+               mapHierarchy elements (clafers env) clafer
+
+
+resolvePathModule :: IModule -> IModule
+resolvePathModule declarations =
+  map (resolvePathDeclaration declarations) declarations
+
+
+resolvePathDeclaration = undefined
+
+resolvePath :: SEnv -> String -> Maybe String
+resolvePath env id = undefined
+
+
+-- checks if ident is one of special identifiers
+resolveSpecial :: SEnv -> String -> Maybe String
+resolveSpecial _ id
+  | id `elem` [this, strType, intType, parent, children] = Just id
+  | otherwise                                            = Nothing 
+
+
+-- checks if ident is bound locally
+resolveBind :: SEnv -> String -> Maybe String
+resolveBind env id = find (== id) (bindings env)
+
+
+-- searches for a name in subclafers (BFS)
+resolveSubclafers :: SEnv -> String -> Maybe String
+resolveSubclafers env id =
+  (context env) >> (findUnique id $ tail $ bfs toNodeDeep [env])

@@ -45,9 +45,9 @@ mapHierarchy f = (map f.).findHierarchy
 
 
 -- returns inheritance hierarchy of a clafer
-findHierarchy :: IModule -> IClafer -> [IClafer]
-findHierarchy declarations clafer = clafer : unfoldr 
-  (\c -> find (isEqClaferId $ getSuper c) (bfsClafers declarations) -- searches for super
+findHierarchy :: [IClafer] -> IClafer -> [IClafer]
+findHierarchy clafers clafer = clafer : unfoldr 
+  (\c -> find (isEqClaferId $ getSuper c) (bfsClafers clafers) -- searches for super
      >>= Just . (apply id)) clafer
 
 -- -----------------------------------------------------------------------------
@@ -59,14 +59,28 @@ apply f x = (x, f x)
 bfs toNode seed = map rootLabel $ concat $ takeWhile (not.null) $
   iterate (concatMap subForest) $ unfoldForest toNode seed
 
-toNode clafer = (clafer, mapMaybe elemToClafer $ elements clafer)
-  where
-  elemToClafer x = case x of
-    ISubclafer clafer  -> Just clafer
-    _  -> Nothing
+toNodeShallow = apply ((mapMaybe elemToClafer). elements)
 
-bfsClafers declarations = bfs toNode $ mapMaybe declToClafer declarations
+elemToClafer x = case x of
+  ISubclafer clafer  -> Just clafer
+  _  -> Nothing
+
+
+bfsClafers clafers = bfs toNodeShallow clafers
+
+toClafers = mapMaybe declToClafer
   where
   declToClafer x = case x of
     IClaferDecl clafer  -> Just clafer
     otherwise  -> Nothing
+
+
+this = "this"
+
+strType = "string"
+
+intType = "int"
+
+parent = "parent"
+
+children = "children"
