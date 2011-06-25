@@ -41,16 +41,12 @@ nameElement x = case x of
 
 -- -----------------------------------------------------------------------------
 resolveNamesModule :: IModule -> IModule
-resolveNamesModule declarations =declarations'''
-  where
-
-{- multiProcess
-                     (map (\f ->
-                               \ps us -> f (ps ++ us) (head us))
-                     [resolveNamesDeclaration, resolveSuperDeclaration])
+resolveNamesModule declarations = multiProcess
+  (map (\f ->
+        \ps us -> f (ps ++ us) (head us))
+   [resolveNamesDeclaration, resolveOSuperDeclaration, resolveSuperDeclaration])
                      declarations
--}
-
+  where
   declarations''' = map (resolveNamesDeclaration declarations'') declarations''
   declarations'' = map (resolveOSuperDeclaration declarations') declarations'
   declarations' = map (resolveSuperDeclaration declarations) declarations
