@@ -102,7 +102,7 @@ sugarElement x = case x of
 
 desugarSuper :: Super -> ISuper
 desugarSuper x = case x of
-  SuperEmpty  -> ISuper False []
+  SuperEmpty  -> ISuper False [SExpIdent $ Ident baseClafer]
   SuperColon name  -> ISuper False [nameToSExp name]
   SuperExtends name  -> ISuper False [nameToSExp name]
   SuperArrow modids sexp  -> ISuper True [sexp]
