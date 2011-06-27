@@ -44,5 +44,6 @@ nameElement x = case x of
 resolveNamesModule :: IModule -> IModule
 resolveNamesModule declarations = multiProcess
   (map (\f -> \ps us -> f (ps ++ us) (head us))
-   [resolveDeclaration, resolveODeclaration, resolveNDeclaration])
+   [resolveDeclaration, analyzeDeclaration,
+    resolveODeclaration, resolveNDeclaration])
   declarations

@@ -1,5 +1,6 @@
 module Intermediate.InheritanceResolver where
 
+import Monad
 import Data.Maybe
 
 import Common
@@ -67,4 +68,48 @@ resolveOSuper env x = case x of
 resolveOElement :: SEnv -> IElement -> IElement
 resolveOElement env x = case x of
   ISubclafer clafer  -> ISubclafer $ resolveOClafer env clafer
+  ISubconstraint constraint  -> x
+
+-- -----------------------------------------------------------------------------
+-- inherited and default cardinalities
+analyzeDeclaration :: IModule -> IDeclaration -> IDeclaration
+analyzeDeclaration declarations x = case x of
+  IClaferDecl clafer  -> IClaferDecl $ analyzeClafer env clafer
+  IConstDecl constraint  -> x
+  where
+  env = SEnv (toClafers declarations) Nothing []
+
+
+analyzeClafer :: SEnv -> IClafer -> IClafer
+analyzeClafer env clafer =
+  clafer' {elements = map (analyzeElement env {context = Just clafer'}) $
+           elements clafer'}
+  where
+  clafer' = clafer {gcard = analyzeGCard env clafer,
+                    card  = analyzeCard  env clafer}
+
+
+-- only for non-overlapping
+analyzeGCard :: SEnv -> IClafer -> Maybe IGCard
+analyzeGCard env clafer = gcard' `mplus` (Just $ IGCard False (0, ExIntegerAst))
+  where
+  gcard'
+    | isOverlapping $ super clafer = gcard clafer
+    | otherwise                    = listToMaybe $ mapMaybe gcard $
+                                     findHierarchy (clafers env) clafer
+
+
+analyzeCard :: SEnv -> IClafer -> Maybe Interval
+analyzeCard env clafer = card clafer `mplus` Just card'
+  where
+  card'
+    | isAbstract clafer                          = (0, ExIntegerAst)
+    | (isJust $ context env) && isKeyword pGcard = (0, ExIntegerNum 1)
+    | otherwise                                  = (1, ExIntegerNum 1)
+  pGcard = fromJust $ gcard $ fromJust $ context env
+
+
+analyzeElement :: SEnv -> IElement -> IElement
+analyzeElement env x = case x of
+  ISubclafer clafer  -> ISubclafer $ analyzeClafer env clafer
   ISubconstraint constraint  -> x

@@ -12,7 +12,7 @@ data IDeclaration =
 data IClafer =
    IClafer {
       isAbstract :: Bool,
-      gcard :: Maybe Interval,
+      gcard :: Maybe IGCard,
       ident :: String,
       uid :: String,
       super:: ISuper,
@@ -30,6 +30,13 @@ data ISuper =
    ISuper {
       isOverlapping :: Bool,
       supers :: [SExp]
+    }
+  deriving (Eq,Ord,Show)
+
+data IGCard =
+  IGCard {
+      isKeyword :: Bool,
+      interval :: Interval
     }
   deriving (Eq,Ord,Show)
 

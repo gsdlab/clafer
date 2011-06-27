@@ -117,20 +117,20 @@ sugarSuper x = case x of
   ISuper True [sexp] -> SuperArrow [] sexp
 
 
-desugarGCard :: GCard -> Maybe Interval
+desugarGCard :: GCard -> Maybe IGCard
 desugarGCard x = case x of
   GCardEmpty  -> Nothing
-  GCardXor -> Just (1, ExIntegerNum 1)
-  GCardOr  -> Just (1, ExIntegerAst)
-  GCardMux -> Just (0, ExIntegerNum 1)
-  GCardOpt -> Just (0, ExIntegerAst)
-  GCardInterval (GNCard i ex)  -> Just (i, ex)
+  GCardXor -> Just $ IGCard True (1, ExIntegerNum 1)
+  GCardOr  -> Just $ IGCard True (1, ExIntegerAst)
+  GCardMux -> Just $ IGCard True (0, ExIntegerNum 1)
+  GCardOpt -> Just $ IGCard True (0, ExIntegerAst)
+  GCardInterval (GNCard i ex)  -> Just $ IGCard False (i, ex)
 
 
-sugarGCard :: Maybe Interval -> GCard
+sugarGCard :: Maybe IGCard -> GCard
 sugarGCard x = case x of
   Nothing -> GCardEmpty
-  Just (i, ex) -> GCardInterval $ GNCard i ex
+  Just (IGCard _ (i, ex)) -> GCardInterval $ GNCard i ex
 
 
 desugarCard :: Card -> Maybe Interval
