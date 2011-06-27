@@ -9,10 +9,6 @@ import System ( getArgs, getProgName )
 
 import System.Timeout
 
---import Skelclafer
---import Xmlclafer
---import Ecoreclafer
-
 import Front.Lexclafer
 import Front.Parclafer
 import Front.Printclafer
@@ -22,6 +18,7 @@ import Front.ErrM
 import Intermediate.Desugarer
 import Intermediate.Resolver
 import Intermediate.StringAnalyzer
+import Generator.Alloy
 
 type ParseFun = [Token] -> Err Module
 
