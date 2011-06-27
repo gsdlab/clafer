@@ -12,7 +12,7 @@ import System.Timeout
 --import TypeEngine
 --import Renamer
 --import SemanticAnalyzer
---import StringAnalyzer
+
 --import Skelclafer
 --import Xmlclafer
 --import Ecoreclafer
@@ -25,6 +25,7 @@ import Front.LayoutResolver
 import Front.ErrM
 import Intermediate.Desugarer
 import Intermediate.Resolver
+import Intermediate.StringAnalyzer
 
 type ParseFun = [Token] -> Err Module
 
@@ -62,7 +63,7 @@ run fileName v p s = let ts = resolveLayout $ myLLexer s in case p ts of
 --                          writeFile "data/output.als" code
 --                          writeFile (f' ++ ".als") code
              where
-             tree'  = resolveModule $ desugarModule tree
+             tree'  = astrModule $ resolveModule $ desugarModule tree
 --             st     = typeModule tree'
 --             tree'' = astrModule $ {-renameModule st $-} analyzeModule tree' st
 --             code   = transModule tree''
