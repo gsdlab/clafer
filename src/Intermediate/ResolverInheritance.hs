@@ -1,4 +1,4 @@
-module Intermediate.InheritanceResolver where
+module Intermediate.ResolverInheritance where
 
 import Monad
 import Data.Maybe
@@ -6,7 +6,7 @@ import Data.Maybe
 import Common
 import Front.Absclafer
 import Intermediate.Intclafer
-import Intermediate.NameResolver
+import Intermediate.ResolverName
 
 -- -----------------------------------------------------------------------------
 -- Non-overlapping inheritance

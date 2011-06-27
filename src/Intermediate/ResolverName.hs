@@ -1,4 +1,4 @@
-module Intermediate.NameResolver where
+module Intermediate.ResolverName where
 
 import List
 import Monad

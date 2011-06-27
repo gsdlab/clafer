@@ -8,8 +8,8 @@ import Control.Monad.State
 import Common
 import Front.Absclafer
 import Intermediate.Intclafer
-import Intermediate.NameResolver
-import Intermediate.InheritanceResolver
+import Intermediate.ResolverName
+import Intermediate.ResolverInheritance
 
 
 resolveModule :: IModule -> IModule
