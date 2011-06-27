@@ -9,10 +9,6 @@ import System ( getArgs, getProgName )
 
 import System.Timeout
 
---import TypeEngine
---import Renamer
---import SemanticAnalyzer
-
 --import Skelclafer
 --import Xmlclafer
 --import Ecoreclafer
