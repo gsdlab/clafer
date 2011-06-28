@@ -17,8 +17,8 @@ header = unlines
     [ "pred show {}"
     , "run  show for 1"
     , ""
-    , concat [ "one sig string {", valField, " : Int}"]
-    , concat [ "one sig integer {", valField, " : Int}"] 
+    , concat [ "one sig string {", valField, " : Int}{val = 1}"]
+    , concat [ "one sig integer {", valField, " : Int}{val = 2}"] 
 {-    , concat ["fun ", children, "(p : ",  baseClafer, ") : set ", baseClafer,
               "{p.~", parent, " - p}"] -}
     , ""]
@@ -29,7 +29,7 @@ valField = "val"
 
 genDeclaration :: IDeclaration -> Result
 genDeclaration x = case x of
-  IClaferDecl clafer  -> genClafer clafer
+  IClaferDecl clafer  -> genClafer Nothing clafer
   IConstDecl lexp  -> mkFact $ genLExp lexp
 
 
@@ -37,13 +37,117 @@ mkFact xs = concat ["fact ", mkSet xs, "\n"]
 
 mkSet xs = concat ["{ ", xs, " }"]
 
+showSet delim xs = showSet' delim $ filter (not.null) xs
+  where
+  showSet' _ []     = "{}"
+  showSet' delim xs = mkSet $ intercalate delim xs
 
-genClafer :: IClafer -> Result
-genClafer x = undefined
+
+-- TODO: introduce synthetic root
+
+-- optimization: of only boolean parents, then set card is known
+genClafer :: Maybe IClafer -> IClafer -> Result
+genClafer parent clafer = unlines
+  [ claferDecl clafer
+  , showSet "\n, " $ genRelations   parent clafer
+--  , showSet "\n  " $ genConstraints parent clafer
+  , children ]
+  where
+  children = (mapMaybe elemToClafer $ elements clafer) >>=
+             genClafer (Just clafer)
+
+
+claferDecl clafer = concat [genAbstract $ isAbstract clafer, "sig ",
+  uid clafer, genExtends $ super clafer]
+  where
+  genAbstract isAbstract = if isAbstract then "abstract " else ""
+  genExtends (ISuper False [SExpIdent (Ident "clafer")]) = ""
+  genExtends (ISuper False [SExpIdent (Ident id)]) = " extends " ++ id
+  genExtends _ = ""
+
+-- -----------------------------------------------------------------------------
+-- overlapping inheritance is a new clafer with val (unlike only relation)
+-- relations: overlapping inheritance (val rel), children
+-- adds parent relation
+genRelations parent clafer = genParentRel parent : ref :
+  (map mkRel $ mapMaybe elemToClafer $ elements clafer)
+  where
+  ref = if isOverlapping $ super clafer then
+          genRel "ref" clafer $
+          intercalate " + " $ map (genSExp.getTarget) $ supers $ super clafer
+        else ""
+  mkRel c = genRel (genRelName $ uid c) c (uid c)
+
+
+genRelName name = "r_" ++ name
+
+
+genRel name clafer rType = genAlloyRel name (genCardCrude $ card clafer) rType
+
+
+genAlloyRel name card rType = concat [name, " : ", card, " ", rType]
+
+
+getTarget :: SExp -> SExp
+getTarget x = case x of
+  SExpJoin sexp0 sexp  -> sexp
+  _ -> x
+
+
+genParentRel parent = maybe "" (genAlloyRel "parent" "one" . uid) parent
+
+
+-- -----------------------------------------------------------------------------
+-- constraints
+
+genConstraints parent clafer = undefined
+
+-- optimization: if only boolean features than the parent is unique
+genParentConst = undefined
+
+
+
+-- -----------------------------------------------------------------------------
+genGCard element gcard = genInterval element  $ interval $ fromJust gcard
+
+
+genCard element card = genInterval element $ fromJust card
+
+
+genCardCrude card = genIntervalCrude $ fromJust card
+
+
+genIntervalCrude x = case x of
+  (1, ExIntegerNum 1) -> "one"
+  (0, ExIntegerNum 1) -> "lone"
+  (1, ExIntegerAst)   -> "some"
+  _                   -> "set"
+
+
+genInterval :: String -> Interval -> Result
+genInterval element x = case x of
+  (1, ExIntegerNum 1) -> "one"
+  (0, ExIntegerNum 1) -> "lone"
+  (1, ExIntegerAst)   -> "some"
+  (0, ExIntegerAst)   -> "set"
+  (n, exinteger)  ->
+    s1 ++ (if null s1 || null s2 then "" else " and") ++ s2
+    where
+    s1 = if n == 0 then "" else concat [show n, " <= #",  element]
+    s2 = genExInteger element exinteger
+
+
+genExInteger :: String -> ExInteger -> Result
+genExInteger element x = case x of
+  ExIntegerAst  -> ""
+  ExIntegerNum n  -> concat [" #", element, " <= ", show n]
 
 
 -- -----------------------------------------------------------------------------
 -- Generate code for logical expressions
+
+-- TODO: join with relations
+
 genLExp :: ILExp -> Result
 genLExp x = case x of
   IEIff lexp0 lexp  -> genL lexp0 " <=> " lexp
@@ -83,20 +187,25 @@ genCmpExp x = case x of
   genCmp = genBinOp genExp
 
 
-
 genSExp :: SExp -> Result
-genSExp x = case x of
+genSExp x = genSExp' x True
+
+
+genSExp' :: SExp -> Bool -> Result
+genSExp' x isFirst = case x of
   SExpUnion sexp0 sexp -> genS sexp0 "+" sexp
   SExpIntersection sexp0 sexp  -> genS sexp0 "&" sexp
   SExpDomain sexp0 sexp  -> genS sexp0 "<:" sexp
   SExpRange sexp0 sexp  -> genS sexp0 ":>" sexp
-  SExpJoin sexp0 sexp  -> genS sexp0 "." sexp
-  SExpIdent ident -> transIdent ident
+  SExpJoin sexp0 sexp  -> intercalate "."
+    [brArg (flip genSExp' isFirst) sexp0, brArg (flip genSExp' False) sexp]
+  SExpIdent ident -> (if isFirst then "" else "r_") ++ transIdent ident
   where
-  genS = genBinOp genSExp
+  genS = genBinOp (flip genSExp' isFirst)
 
 
-genBinOp f x op y = ((\x' y' -> intercalate op [x',y']) `on` (brArg f)) x y
+
+genBinOp f x op y = ((lurry (intercalate op)) `on` (brArg f)) x y
 
 
 brArg f arg = "(" ++ f arg ++ ")"

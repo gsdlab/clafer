@@ -45,21 +45,20 @@ run fileName v p s = let ts = resolveLayout $ myLLexer s in case p ts of
 --               EcoreOut -> clafer2ecore tree''
                AlloyFile f -> do
                           putStrLn "\nParse Successful!"
-                          showTree v $ sugarModule tree'
+                          -- showTree v $ sugarModule tree'
 --                          putStrLn "\n[Symbol Table]"               
 --                          putStrLn $ show st
                           let f' = take (length f - 4) f
                           writeFile (f' ++ ".des") $ printTree $ sugarModule tree'
---                          writeFile (f' ++ ".ana") $ printTree tree''
+                          writeFile (f' ++ ".ana") $ printTree $ sugarModule tree''
 --                          showTree v tree''
                           putStrLn "\n[Interpreting]"
 --                          writeFile "data/output.als" code
---                          writeFile (f' ++ ".als") code
+                          writeFile (f' ++ ".als") code
              where
-             tree'  = astrModule $ resolveModule $ desugarModule tree
---             st     = typeModule tree'
---             tree'' = astrModule $ {-renameModule st $-} analyzeModule tree' st
---             code   = transModule tree''
+             tree'  = desugarModule tree
+             tree'' = astrModule $ resolveModule tree'
+             code   = genModule tree''
 
 
 showTree :: (Show a, Print a) => Int -> a -> IO ()

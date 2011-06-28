@@ -74,6 +74,7 @@ astrExp x = case x of
     st <- get
     return $ ENumExp $ EInt $ toInteger $ (Map.!) st string
   EStrExp conc -> astrExp $ EStrExp $ concatStrExp conc
+  _ -> return x
 
 
 concatStrExp :: StrExp -> StrExp

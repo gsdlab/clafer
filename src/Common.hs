@@ -94,8 +94,9 @@ getSubclafers = mapMaybe elemToClafer
 
 bfsClafers clafers = bfs toNodeShallow clafers
 
-
 pairToList = uncurry ((.return).(:))
+
+lurry f x y = f [x,y]
 
 -- -----------------------------------------------------------------------------
 -- Constants
