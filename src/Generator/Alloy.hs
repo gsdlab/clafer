@@ -43,15 +43,14 @@ showSet delim xs = showSet' delim $ filter (not.null) xs
   showSet' delim xs = mkSet $ intercalate delim xs
 
 
--- TODO: introduce synthetic root
-
 -- optimization: of only boolean parents, then set card is known
 genClafer :: Maybe IClafer -> IClafer -> Result
-genClafer parent clafer = unlines
-  [ claferDecl clafer
-  , showSet "\n, " $ genRelations   parent clafer
---  , showSet "\n  " $ genConstraints parent clafer
-  , children ]
+genClafer parent clafer
+  | isRef clafer = ""
+  | otherwise    = unlines [ claferDecl clafer
+                           , showSet "\n, " $ genRelations   parent clafer
+                           --  , showSet "\n  " $ genConstraints parent clafer
+                           , children ]
   where
   children = (mapMaybe elemToClafer $ elements clafer) >>=
              genClafer (Just clafer)
@@ -73,10 +72,10 @@ genRelations parent clafer = genParentRel parent : ref :
   (map mkRel $ mapMaybe elemToClafer $ elements clafer)
   where
   ref = if isOverlapping $ super clafer then
-          genRel "ref" clafer $
-          intercalate " + " $ map (genSExp.getTarget) $ supers $ super clafer
+          genRel "ref" clafer $ refType clafer
         else ""
-  mkRel c = genRel (genRelName $ uid c) c (uid c)
+  refType c = intercalate " + " $ map (genSExp.getTarget) $ supers $ super c
+  mkRel c = genRel (genRelName $ uid c) c $ (if isRef c then refType else uid) c
 
 
 genRelName name = "r_" ++ name
@@ -85,6 +84,12 @@ genRelName name = "r_" ++ name
 genRel name clafer rType = genAlloyRel name (genCardCrude $ card clafer) rType'
   where
   rType' = if rType `elem` [intType, integerType, strType] then "Int" else rType
+
+-- optimization: direct ref to Int attribute (no new clafer)
+-- reference clafers as relations
+
+
+isRef clafer = (null $ elements clafer) && (isOverlapping $ super clafer)
 
 
 genAlloyRel name card rType = concat [name, " : ", card, " ", rType]
