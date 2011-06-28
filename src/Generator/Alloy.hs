@@ -82,7 +82,9 @@ genRelations parent clafer = genParentRel parent : ref :
 genRelName name = "r_" ++ name
 
 
-genRel name clafer rType = genAlloyRel name (genCardCrude $ card clafer) rType
+genRel name clafer rType = genAlloyRel name (genCardCrude $ card clafer) rType'
+  where
+  rType' = if rType `elem` [intType, integerType, strType] then "Int" else rType
 
 
 genAlloyRel name card rType = concat [name, " : ", card, " ", rType]
