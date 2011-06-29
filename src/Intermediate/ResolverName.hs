@@ -123,21 +123,20 @@ resolveNav env x isFirst = case x of
     where
     (context', sexp0') = resolveNav env sexp0 True
     (context'', sexp') = resolveNav env {context = context'} sexp False
-  SExpIdent id -> (fst $ findName env $ getStart out, out)              
+  SExpIdent id -> out        
     where
     out
-      | isFirst   = mkPath env $ fst $ resolveName env $ transIdent id
-      | otherwise = SExpIdent $ Ident $ fst $ resolveImmName env $ transIdent id
+      | isFirst   = mkPath env $ resolveName env $ transIdent id
+      | otherwise = (Just $ head $ snd ctx, SExpIdent $ Ident $ fst ctx)
+    ctx = resolveImmName env $ transIdent id
 
 
-mkPath :: SEnv -> String -> SExp
-mkPath env id
-  | isNothing clafer || null spath || null path' = SExpIdent $ Ident id
-  | otherwise = toNav $ reverse $ map uid spath
+mkPath :: SEnv -> (String, [IClafer]) -> (Maybe IClafer, SExp)
+mkPath env (id, path)
+  | (isNothing $ context env) || null path = (context env, SExpIdent $ Ident id)
+handle this/parent
+  | otherwise = (Just $ head path, toNav $ tail $ reverse $ map uid path)
   where
-  clafer = context env
-  (spath, path') = break (isEqClaferId $ uid $ fromJust clafer) $
-                   snd $ findName env id
   toNav = foldl (\sexp id -> SExpJoin sexp $ SExpIdent $ Ident id)
           (SExpIdent $ Ident this)
 
@@ -153,11 +152,9 @@ findName env id
       (Just $ head $ tail ppath, ppath)
   | id `elem` [this, children, strType, intType, integerType] =
       (context env, ppath)
---  | (not.null) spath                             = (Just $ head spath, spath)
   | (not.null) path                              = (Just $ head path, path)
   | otherwise                                    = resolveNone env id
   where
-  spath = findClafer id [] env
   path  = resolvePath id [] env $ clafers env
   ppath = resolvePath (uid $ fromJust $ context env) [] env $ clafers env
 
@@ -217,8 +214,8 @@ resolveSubclafers env id =
 -- searches for a name in immediate subclafers (BFS)
 resolveImmSubclafers :: SEnv -> String -> Maybe (String, [IClafer])
 resolveImmSubclafers env id =
-  (context env) >> (findUnique id $ map (\x -> (x, [fromJust $ context env])) $
-                    allSubclafers env)
+  (context env) >> (findUnique id $ map (\x -> (x, [x,fromJust $ context env]))
+                    $ allSubclafers env)
 
 
 -- searches for a feature starting from local root (BFS) and then continues with
