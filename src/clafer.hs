@@ -45,7 +45,6 @@ run fileName v p s = let ts = resolveLayout $ myLLexer s in case p ts of
 --               EcoreOut -> clafer2ecore tree''
                AlloyFile f -> do
                           putStrLn "\nParse Successful!"
-                          -- showTree v $ sugarModule tree'
 --                          putStrLn "\n[Symbol Table]"               
 --                          putStrLn $ show st
                           let f' = take (length f - 4) f

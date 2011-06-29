@@ -10,18 +10,16 @@ import Front.Absclafer
 import Intermediate.Intclafer
 
 genModule :: IModule -> Result
-genModule declarations = header ++ ([genDeclaration] >>= (declarations >>=))
+genModule declarations = header ++ (declarations >>= genDeclaration)
 
 -- TODO: header depends on the use of ints/strings
 header = unlines
     [ "pred show {}"
     , "run  show for 1"
     , ""
-    , concat [ "one sig string {", valField, " : Int}{val = 1}"]
-    , concat [ "one sig integer {", valField, " : Int}{val = 2}"] 
 {-    , concat ["fun ", children, "(p : ",  baseClafer, ") : set ", baseClafer,
               "{p.~", parent, " - p}"] -}
-    , ""]
+    ]
 
 
 valField = "val"
@@ -37,7 +35,7 @@ mkFact xs = concat ["fact ", mkSet xs, "\n"]
 
 mkSet xs = concat ["{ ", xs, " }"]
 
-showSet delim xs = showSet' delim $ filter (not.null) xs
+showSet delim xs = showSet' delim $ filterNull xs
   where
   showSet' _ []     = "{}"
   showSet' delim xs = mkSet $ intercalate delim xs
@@ -47,14 +45,15 @@ showSet delim xs = showSet' delim $ filter (not.null) xs
 genClafer :: Maybe IClafer -> IClafer -> Result
 genClafer parent clafer
   | isRef clafer = ""
-  | otherwise    = unlines [ claferDecl clafer
-                           , showSet "\n, " $ genRelations   parent clafer
-                           --  , showSet "\n  " $ genConstraints parent clafer
-                           , children ]
+  | otherwise    = (unlines $ filterNull
+                   [claferDecl clafer
+                   , showSet "\n, " $ genRelations parent clafer
+                   , showSet "\n  " $ genConstraints parent clafer
+                   ]) ++ children
   where
-  children = (mapMaybe elemToClafer $ elements clafer) >>=
-             genClafer (Just clafer)
-
+  children = concat $ filterNull $ map (genClafer $ Just clafer) $
+             getSubclafers $ elements clafer
+             
 
 claferDecl clafer = concat [genAbstract $ isAbstract clafer, "sig ",
   uid clafer, genExtends $ super clafer]
@@ -69,12 +68,11 @@ claferDecl clafer = concat [genAbstract $ isAbstract clafer, "sig ",
 -- relations: overlapping inheritance (val rel), children
 -- adds parent relation
 genRelations parent clafer = genParentRel parent : ref :
-  (map mkRel $ mapMaybe elemToClafer $ elements clafer)
+  (map mkRel $ getSubclafers $ elements clafer)
   where
   ref = if isOverlapping $ super clafer then
           genRel "ref" clafer $ refType clafer
         else ""
-  refType c = intercalate " + " $ map (genSExp.getTarget) $ supers $ super c
   mkRel c = genRel (genRelName $ uid c) c $ (if isRef c then refType else uid) c
 
 
@@ -95,25 +93,45 @@ isRef clafer = (null $ elements clafer) && (isOverlapping $ super clafer)
 genAlloyRel name card rType = concat [name, " : ", card, " ", rType]
 
 
+genParentRel pClafer = maybe "" (genAlloyRel parent "one" . uid) pClafer
+
+refType c = intercalate " + " $ map (genType.getTarget) $ supers $ super c
+
+
 getTarget :: SExp -> SExp
 getTarget x = case x of
   SExpJoin sexp0 sexp  -> sexp
   _ -> x
 
 
-genParentRel parent = maybe "" (genAlloyRel "parent" "one" . uid) parent
-
+-- TODO: implement type recognition for relations in alloy, and relations in alloy constraints
+genType :: SExp -> Result
+genType x = case x of
+  SExpUnion sexp0 sexp -> genS sexp0 "+" sexp
+  SExpIntersection sexp0 sexp  -> genS sexp0 "&" sexp
+  SExpDomain sexp0 sexp  -> genS sexp0 "<:" sexp
+  SExpRange sexp0 sexp  -> genS sexp0 ":>" sexp
+  SExpJoin sexp0 sexp  -> genS sexp0 "." sexp
+  SExpIdent ident -> transIdent ident
+  where
+  genS = genBinOp genType
 
 -- -----------------------------------------------------------------------------
 -- constraints
+-- user constraints + parent + TODO: group constraints + reference
+genConstraints parent clafer = genParentConst parent clafer : constraints
+  where
+  constraints = mapMaybe genConst $ elements clafer
+  genConst x = case x of
+    ISubconstraint lexp  -> Just $ genLExp lexp
+    _ -> Nothing
 
-genConstraints parent clafer = undefined
-
--- optimization: if only boolean features than the parent is unique
-genParentConst = undefined
-
+-- optimization: if only boolean features then the parent is unique
+genParentConst pClafer clafer = maybe ""
+  (const $ concat [parent, " = ", genRelName $ uid clafer, ".this"]) pClafer
 
 
+-- TODO: when refering to top level declarations don't use names of relations
 -- -----------------------------------------------------------------------------
 genGCard element gcard = genInterval element  $ interval $ fromJust gcard
 
@@ -197,7 +215,7 @@ genCmpExp x = case x of
 genSExp :: SExp -> Result
 genSExp x = genSExp' x True
 
-
+-- TODO: implement type recognition for relations in alloy, and relations in alloy constraints
 genSExp' :: SExp -> Bool -> Result
 genSExp' x isFirst = case x of
   SExpUnion sexp0 sexp -> genS sexp0 "+" sexp
@@ -206,7 +224,9 @@ genSExp' x isFirst = case x of
   SExpRange sexp0 sexp  -> genS sexp0 ":>" sexp
   SExpJoin sexp0 sexp  -> intercalate "."
     [brArg (flip genSExp' isFirst) sexp0, brArg (flip genSExp' False) sexp]
-  SExpIdent ident -> (if isFirst then "" else "r_") ++ transIdent ident
+  SExpIdent ident -> (if isFirst then id else genRelName "") ++ transIdent ident
+    where
+    id = if transIdent ident `elem` [this, parent, strType, intType, integerType, children] then "" else genRelName ""
   where
   genS = genBinOp (flip genSExp' isFirst)
 

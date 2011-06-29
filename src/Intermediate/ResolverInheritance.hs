@@ -27,7 +27,7 @@ resolveNSuper declarations x = case x of
   ISuper False [SExpIdent (Ident "clafer")] -> x
   ISuper False [SExpIdent id] -> ISuper False [SExpIdent $ Ident id']
     where
-    id' = fromMaybe (error "No superclafer found") $
+    id' = fromMaybe (error $ "No superclafer found: " ++ transIdent id) $
           resolveN declarations $ transIdent id
   _ -> x
 
@@ -40,7 +40,8 @@ resolveNElement declarations x = case x of
 
 resolveN :: IModule -> String -> Maybe String
 resolveN declarations id =
-  findUnique id $ filter isAbstract $ bfsClafers $ toClafers declarations
+  (findUnique id $ map (\x -> (x, [])) $ filter isAbstract $ bfsClafers $
+   toClafers declarations) >>= (Just . fst)
 
 -- -----------------------------------------------------------------------------
 -- Overlapping inheritance
@@ -49,7 +50,7 @@ resolveODeclaration declarations x = case x of
   IClaferDecl clafer  -> IClaferDecl $ resolveOClafer env clafer
   IConstDecl constraint  -> x
   where
-  env = SEnv (toClafers declarations) Nothing []
+  env = SEnv (toClafers declarations) Nothing [] []
 
 
 resolveOClafer :: SEnv -> IClafer -> IClafer
@@ -77,7 +78,7 @@ analyzeDeclaration declarations x = case x of
   IClaferDecl clafer  -> IClaferDecl $ analyzeClafer env clafer
   IConstDecl constraint  -> x
   where
-  env = SEnv (toClafers declarations) Nothing []
+  env = SEnv (toClafers declarations) Nothing [] []
 
 
 analyzeClafer :: SEnv -> IClafer -> IClafer

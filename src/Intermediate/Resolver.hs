@@ -33,7 +33,7 @@ nameClafer clafer = do
   n <- gets num
   elements' <- mapM nameElement $ elements clafer
   return $ clafer
-    {uid = concat ["cl", show n, "_",  ident clafer], elements = elements'}
+    {uid = concat ["c", show n, "_",  ident clafer], elements = elements'}
 
 
 nameElement x = case x of

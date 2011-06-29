@@ -36,7 +36,6 @@ elemToClafer x = case x of
   ISubclafer clafer  -> Just clafer
   _  -> Nothing
 
-
 toClafers = mapMaybe declToClafer
   where
   declToClafer x = case x of
@@ -97,6 +96,8 @@ bfsClafers clafers = bfs toNodeShallow clafers
 pairToList = uncurry ((.return).(:))
 
 lurry f x y = f [x,y]
+
+filterNull = filter (not.null)
 
 -- -----------------------------------------------------------------------------
 -- Constants

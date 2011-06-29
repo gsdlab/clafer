@@ -7,15 +7,11 @@ import Common
 
 desugarModule :: Module -> IModule
 desugarModule x = case x of
-  Module declarations  -> map desugarDeclaration $ mkRoot $
-                          declarations >>= desugarEnums
+  Module declarations  -> map desugarDeclaration $ declarations >>= desugarEnums
 
 
 sugarModule :: IModule -> Module
 sugarModule x = Module $ map sugarDeclaration x
-
-
-mkRoot = id -- :: [Declaration] -> 
 
 
 -- desugars enumeration to abstract and global singleton features
