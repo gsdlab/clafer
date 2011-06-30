@@ -54,26 +54,26 @@ astrTerm x = case x of
 
 
 astrCmpExp x = case x of
-  ELt exp0 exp  -> ae ELt [exp0, exp]
-  EGt exp0 exp  -> ae EGt [exp0, exp]
-  EREq exp0 exp -> ae EREq [exp0, exp]
-  EEq exp0 exp  -> ae EEq [exp0, exp]
-  ELte exp0 exp  -> ae ELte [exp0, exp]
-  EGte exp0 exp  -> ae EGte [exp0, exp]
-  ENeq exp0 exp  -> ae ENeq [exp0, exp]
-  ERNeq exp0 exp -> ae ERNeq [exp0, exp]
-  EIn exp0 exp   -> ae EIn  [exp0, exp]
-  ENin exp0 exp  -> ae ENin [exp0, exp]
+  IELt exp0 exp  -> ae IELt [exp0, exp]
+  IEGt exp0 exp  -> ae IEGt [exp0, exp]
+  IEREq exp0 exp -> ae IEREq [exp0, exp]
+  IEEq exp0 exp  -> ae IEEq [exp0, exp]
+  IELte exp0 exp  -> ae IELte [exp0, exp]
+  IEGte exp0 exp  -> ae IEGte [exp0, exp]
+  IENeq exp0 exp  -> ae IENeq [exp0, exp]
+  IERNeq exp0 exp -> ae IERNeq [exp0, exp]
+  IEIn exp0 exp   -> ae IEIn  [exp0, exp]
+  IENin exp0 exp  -> ae IENin [exp0, exp]
   where
   ae cons ls = applyExps (apply2 cons) astrExp ls
 
 
 astrExp x = case x of
-  EStrExp (EStr string) -> do
+  IEStrExp (EStr string) -> do
     modify (\e -> Map.insertWith const string (Map.size e) e)
     st <- get
-    return $ ENumExp $ EInt $ toInteger $ (Map.!) st string
-  EStrExp conc -> astrExp $ EStrExp $ concatStrExp conc
+    return $ IENumExp $ IEInt $ toInteger $ (Map.!) st string
+  IEStrExp conc -> astrExp $ IEStrExp $ concatStrExp conc
   _ -> return x
 
 

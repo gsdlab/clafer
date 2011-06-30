@@ -22,9 +22,9 @@ transName x = case x of
   Name modids id  -> (Nothing, transIdent id)
 
 
-getSuper clafer = transIdent id
+getSuper clafer = id
   where
-  [SExpIdent id] = supers $ super $ clafer
+  [ISExpIdent id _] = supers $ super $ clafer
 
 
 isEqClaferId = flip $ (==).uid

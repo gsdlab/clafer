@@ -59,8 +59,8 @@ claferDecl clafer = concat [genAbstract $ isAbstract clafer, "sig ",
   uid clafer, genExtends $ super clafer]
   where
   genAbstract isAbstract = if isAbstract then "abstract " else ""
-  genExtends (ISuper False [SExpIdent (Ident "clafer")]) = ""
-  genExtends (ISuper False [SExpIdent (Ident id)]) = " extends " ++ id
+  genExtends (ISuper False [ISExpIdent "clafer" _]) = ""
+  genExtends (ISuper False [ISExpIdent id _]) = " extends " ++ id
   genExtends _ = ""
 
 -- -----------------------------------------------------------------------------
@@ -98,21 +98,21 @@ genParentRel pClafer = maybe "" (genAlloyRel parent "one" . uid) pClafer
 refType c = intercalate " + " $ map (genType.getTarget) $ supers $ super c
 
 
-getTarget :: SExp -> SExp
+getTarget :: ISExp -> ISExp
 getTarget x = case x of
-  SExpJoin sexp0 sexp  -> sexp
+  ISExpJoin sexp0 sexp  -> sexp
   _ -> x
 
 
 -- TODO: implement type recognition for relations in alloy, and relations in alloy constraints
-genType :: SExp -> Result
+genType :: ISExp -> Result
 genType x = case x of
-  SExpUnion sexp0 sexp -> genS sexp0 "+" sexp
-  SExpIntersection sexp0 sexp  -> genS sexp0 "&" sexp
-  SExpDomain sexp0 sexp  -> genS sexp0 "<:" sexp
-  SExpRange sexp0 sexp  -> genS sexp0 ":>" sexp
-  SExpJoin sexp0 sexp  -> genS sexp0 "." sexp
-  SExpIdent ident -> transIdent ident
+  ISExpUnion sexp0 sexp -> genS sexp0 "+" sexp
+  ISExpIntersection sexp0 sexp  -> genS sexp0 "&" sexp
+  ISExpDomain sexp0 sexp  -> genS sexp0 "<:" sexp
+  ISExpRange sexp0 sexp  -> genS sexp0 ":>" sexp
+  ISExpJoin sexp0 sexp  -> genS sexp0 "." sexp
+  ISExpIdent ident _ -> ident
   where
   genS = genBinOp genType
 
@@ -196,37 +196,37 @@ genTerm x = case x of
     [intercalate "| " $ map genDecl decls, " | ",  genLExp lexp]
 
 
-genCmpExp :: CmpExp -> Result
+genCmpExp :: ICmpExp -> Result
 genCmpExp x = case x of
-  ELt exp0 exp  -> genCmp exp0 " < " exp
-  EGt exp0 exp  -> genCmp exp0 " > " exp
-  EEq exp0 exp  -> genCmp exp0 " = " exp
-  EREq exp0 exp  -> genCmp exp0 " = " exp
-  ELte exp0 exp  -> genCmp exp0 " =< " exp
-  EGte exp0 exp  -> genCmp exp0 " >= " exp
-  ENeq exp0 exp  -> genCmp exp0 " != " exp
-  ERNeq exp0 exp  -> genCmp exp0 " != " exp
-  EIn exp0 exp  -> genCmp exp0 " in " exp
-  ENin exp0 exp  -> genCmp exp0 " not in " exp
+  IELt exp0 exp  -> genCmp exp0 " < " exp
+  IEGt exp0 exp  -> genCmp exp0 " > " exp
+  IEEq exp0 exp  -> genCmp exp0 " = " exp
+  IEREq exp0 exp  -> genCmp exp0 " = " exp
+  IELte exp0 exp  -> genCmp exp0 " =< " exp
+  IEGte exp0 exp  -> genCmp exp0 " >= " exp
+  IENeq exp0 exp  -> genCmp exp0 " != " exp
+  IERNeq exp0 exp  -> genCmp exp0 " != " exp
+  IEIn exp0 exp  -> genCmp exp0 " in " exp
+  IENin exp0 exp  -> genCmp exp0 " not in " exp
   where
   genCmp = genBinOp genExp
 
 
-genSExp :: SExp -> Result
+genSExp :: ISExp -> Result
 genSExp x = genSExp' x True
 
 -- TODO: implement type recognition for relations in alloy, and relations in alloy constraints
-genSExp' :: SExp -> Bool -> Result
+genSExp' :: ISExp -> Bool -> Result
 genSExp' x isFirst = case x of
-  SExpUnion sexp0 sexp -> genS sexp0 "+" sexp
-  SExpIntersection sexp0 sexp  -> genS sexp0 "&" sexp
-  SExpDomain sexp0 sexp  -> genS sexp0 "<:" sexp
-  SExpRange sexp0 sexp  -> genS sexp0 ":>" sexp
-  SExpJoin sexp0 sexp  -> intercalate "."
+  ISExpUnion sexp0 sexp -> genS sexp0 "+" sexp
+  ISExpIntersection sexp0 sexp  -> genS sexp0 "&" sexp
+  ISExpDomain sexp0 sexp  -> genS sexp0 "<:" sexp
+  ISExpRange sexp0 sexp  -> genS sexp0 ":>" sexp
+  ISExpJoin sexp0 sexp  -> intercalate "."
     [brArg (flip genSExp' isFirst) sexp0, brArg (flip genSExp' False) sexp]
-  SExpIdent ident -> (if isFirst then id else genRelName "") ++ transIdent ident
+  ISExpIdent ident _ -> (if isFirst then id else genRelName "") ++ ident
     where
-    id = if transIdent ident `elem` [this, parent, strType, intType, integerType, children] then "" else genRelName ""
+    id = if ident `elem` [this, parent, strType, intType, integerType, children] then "" else genRelName ""
   where
   genS = genBinOp (flip genSExp' isFirst)
 
@@ -238,11 +238,11 @@ genBinOp f x op y = ((lurry (intercalate op)) `on` (brArg f)) x y
 brArg f arg = "(" ++ f arg ++ ")"
 
 
-genExp :: Exp -> Result
+genExp :: IExp -> Result
 genExp x = case x of
-  ESetExp sexp  -> genSExp sexp
-  ENumExp aexp -> genAExp aexp
-  EStrExp strexp -> error "analyzed"
+  IESetExp sexp  -> genSExp sexp
+  IENumExp aexp -> genAExp aexp
+  IEStrExp strexp -> error "analyzed"
 
 
 genQuant :: Quant -> Result
@@ -259,31 +259,26 @@ genExQuant x = case x of
   ExQuant quant -> genQuant quant
 
 
-genDecl :: Decl -> Result
+genDecl :: IDecl -> Result
 genDecl x = case x of
-  Decl exquant disj locids sexp -> concat [genExQuant exquant, " ",
+  IDecl exquant disj locids sexp -> concat [genExQuant exquant, " ",
     genDisj disj, " ",
-    intercalate ", " $ map genLocId locids, " : ", genSExp sexp]
+    intercalate ", " locids, " : ", genSExp sexp]
 
 
-genDisj :: Disj -> Result
+genDisj :: Bool -> Result
 genDisj x = case x of
-  DisjEmpty -> ""
-  Disj -> "disj"
+  False -> ""
+  True  -> "disj"
 
 
-genLocId :: LocId -> Result
-genLocId x = case x of
-   LocIdIdent ident -> transIdent ident
-
-
-genAExp :: AExp -> Result
+genAExp :: IAExp -> Result
 genAExp x = case x of
-  EAdd aexp0 aexp -> genArith aexp0 "+" aexp
-  ESub aexp0 aexp -> genArith aexp0 "-" aexp
-  EMul aexp0 aexp -> genArith aexp0 "*" aexp
-  EUmn aexp -> "-" ++ brArg genAExp aexp
-  ECSetExp sexp -> "#" ++ brArg genSExp sexp
-  EInt n    -> show n
+  IEAdd aexp0 aexp -> genArith aexp0 "+" aexp
+  IESub aexp0 aexp -> genArith aexp0 "-" aexp
+  IEMul aexp0 aexp -> genArith aexp0 "*" aexp
+  IEUmn aexp -> "-" ++ brArg genAExp aexp
+  IECSetExp sexp -> "#" ++ brArg genSExp sexp
+  IEInt n    -> show n
   where
   genArith = genBinOp genAExp

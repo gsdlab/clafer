@@ -4,6 +4,7 @@ import Front.Absclafer
 import Intermediate.Intclafer
 import Monad
 import Common
+import Data.Function
 
 desugarModule :: Module -> IModule
 desugarModule x = case x of
@@ -102,19 +103,19 @@ sugarElement x = case x of
 
 desugarSuper :: Super -> ISuper
 desugarSuper x = case x of
-  SuperEmpty  -> ISuper False [SExpIdent $ Ident baseClafer]
+  SuperEmpty  -> ISuper False [ISExpIdent baseClafer True]
   SuperColon name  -> ISuper False [nameToSExp name]
   SuperExtends name  -> ISuper False [nameToSExp name]
-  SuperArrow modids sexp  -> ISuper True [sexp]
+  SuperArrow modids sexp  -> ISuper True [desugarSExp sexp]
   where
-  nameToSExp (Name _ id) = SExpIdent id
+  nameToSExp (Name _ id) = ISExpIdent (transIdent id) True
 
 
 sugarSuper :: ISuper -> Super
 sugarSuper x = case x of
   ISuper _ [] -> SuperEmpty
-  ISuper False [SExpIdent id] -> SuperColon $ Name [] id
-  ISuper True [sexp] -> SuperArrow [] sexp
+  ISuper False [ISExpIdent id _] -> SuperColon $ Name [] $ Ident id
+  ISuper True [sexp] -> SuperArrow [] $ sugarSExp sexp
 
 
 desugarGCard :: GCard -> Maybe IGCard
@@ -177,14 +178,133 @@ sugarLExp x = case x of
 
 desugarTerm :: Term -> ITerm
 desugarTerm x = case x of
-  TermCmpExp cmpexp  -> ITermCmpExp cmpexp
-  TermSet sexp  -> ITermQuantSet QuantSome sexp
-  TermQuantSet quant sexp  -> ITermQuantSet quant sexp
-  TermQuantDeclExp decls lexp  -> ITermQuantDeclExp decls (desugarLExp lexp)
+  TermCmpExp cmpexp  -> ITermCmpExp $ desugarCmpExp cmpexp
+  TermSet sexp  -> ITermQuantSet QuantSome $ desugarSExp sexp
+  TermQuantSet quant sexp  -> ITermQuantSet quant $ desugarSExp sexp
+  TermQuantDeclExp decls lexp  ->
+      ITermQuantDeclExp (map desugarDecl decls) (desugarLExp lexp)
 
 
 sugarTerm :: ITerm -> Term
 sugarTerm x = case x of
-  ITermCmpExp cmpexp -> TermCmpExp cmpexp
-  ITermQuantSet quant sexp -> TermQuantSet quant sexp
-  ITermQuantDeclExp decls lexp -> TermQuantDeclExp decls (sugarLExp lexp)
+  ITermCmpExp cmpexp -> TermCmpExp $ sugarCmpExp cmpexp
+  ITermQuantSet quant sexp -> TermQuantSet quant $ sugarSExp sexp
+  ITermQuantDeclExp decls lexp ->
+      TermQuantDeclExp (map sugarDecl decls) (sugarLExp lexp)
+
+
+desugarCmpExp :: CmpExp -> ICmpExp
+desugarCmpExp x = case x of
+  ELt exp0 exp -> on IELt desugarExp exp0 exp
+  EGt exp0 exp -> on IEGt desugarExp exp0 exp
+  EREq exp0 exp -> on IEREq desugarExp exp0 exp
+  EEq exp0 exp -> on IEEq desugarExp exp0 exp
+  ELte exp0 exp -> on IELte desugarExp exp0 exp
+  EGte exp0 exp -> on IEGte desugarExp exp0 exp
+  ENeq exp0 exp -> on IENeq desugarExp exp0 exp
+  ERNeq exp0 exp -> on IERNeq desugarExp exp0 exp
+  EIn exp0 exp -> on IEIn desugarExp exp0 exp
+  ENin exp0 exp -> on IENin desugarExp exp0 exp
+
+
+sugarCmpExp :: ICmpExp -> CmpExp
+sugarCmpExp x = case x of
+  IELt exp0 exp -> on ELt sugarExp exp0 exp
+  IEGt exp0 exp -> on EGt sugarExp exp0 exp
+  IEREq exp0 exp -> on EREq sugarExp exp0 exp
+  IEEq exp0 exp -> on EEq sugarExp exp0 exp
+  IELte exp0 exp -> on ELte sugarExp exp0 exp
+  IEGte exp0 exp -> on EGte sugarExp exp0 exp
+  IENeq exp0 exp -> on ENeq sugarExp exp0 exp
+  IERNeq exp0 exp -> on ERNeq sugarExp exp0 exp
+  IEIn exp0 exp -> on EIn sugarExp exp0 exp
+  IENin exp0 exp -> on ENin sugarExp exp0 exp
+
+
+desugarExp :: Exp -> IExp
+desugarExp x = case x of
+  ESetExp sexp -> IESetExp $ desugarSExp sexp
+  ENumExp aexp -> IENumExp $ desugarAExp aexp
+  EStrExp strexp -> IEStrExp strexp
+
+
+sugarExp :: IExp -> Exp
+sugarExp x = case x of
+  IESetExp sexp -> ESetExp $ sugarSExp sexp
+  IENumExp aexp -> ENumExp $ sugarAExp aexp
+  IEStrExp strexp -> EStrExp strexp
+
+
+desugarSExp :: SExp -> ISExp
+desugarSExp x = case x of
+  SExpUnion sexp0 sexp  -> on ISExpUnion desugarSExp sexp0 sexp
+  SExpIntersection sexp0 sexp  -> on ISExpIntersection desugarSExp sexp0 sexp
+  SExpDomain sexp0 sexp  -> on ISExpDomain desugarSExp sexp0 sexp
+  SExpRange sexp0 sexp  -> on ISExpRange desugarSExp sexp0 sexp
+  SExpJoin sexp0 sexp  -> on ISExpJoin desugarSExp sexp0 sexp
+  SExpIdent id  -> ISExpIdent (transIdent id) False
+
+
+sugarSExp :: ISExp -> SExp
+sugarSExp x = case x of
+  ISExpUnion sexp0 sexp  -> on SExpUnion sugarSExp sexp0 sexp
+  ISExpIntersection sexp0 sexp  -> on SExpIntersection sugarSExp sexp0 sexp
+  ISExpDomain sexp0 sexp  -> on SExpDomain sugarSExp sexp0 sexp
+  ISExpRange sexp0 sexp  -> on SExpRange sugarSExp sexp0 sexp
+  ISExpJoin sexp0 sexp  -> on SExpJoin sugarSExp sexp0 sexp
+  ISExpIdent id _ -> SExpIdent $ Ident id
+
+
+
+desugarDecl :: Decl -> IDecl
+desugarDecl x = case x of
+  Decl exquant disj locids sexp  -> IDecl exquant (desugarDisj disj)
+                                    (map desugarLocId locids) $
+                                    desugarSExp sexp
+
+
+sugarDecl :: IDecl -> Decl
+sugarDecl x = case x of
+  IDecl exquant disj locids sexp  -> Decl exquant (sugarDisj disj)
+                                     (map sugarLocId locids) $ sugarSExp sexp
+
+
+desugarDisj :: Disj -> Bool
+desugarDisj x = case x of
+  DisjEmpty -> False
+  Disj -> True
+
+
+sugarDisj :: Bool -> Disj
+sugarDisj x = case x of
+  False -> DisjEmpty
+  True -> Disj
+
+
+desugarLocId :: LocId -> String
+desugarLocId x = case x of
+  LocIdIdent id  -> transIdent id
+
+
+sugarLocId :: String -> LocId
+sugarLocId x = LocIdIdent $ Ident x
+
+
+desugarAExp :: AExp -> IAExp
+desugarAExp x = case x of
+  EAdd aexp0 aexp  -> on IEAdd desugarAExp aexp0 aexp
+  ESub aexp0 aexp  -> on IESub desugarAExp aexp0 aexp
+  EMul aexp0 aexp  -> on IEMul desugarAExp aexp0 aexp
+  EUmn aexp  -> IEUmn $ desugarAExp aexp
+  ECSetExp sexp  -> IECSetExp $ desugarSExp sexp
+  EInt n  -> IEInt n
+
+
+sugarAExp :: IAExp -> AExp
+sugarAExp x = case x of
+  IEAdd aexp0 aexp  -> on EAdd sugarAExp aexp0 aexp
+  IESub aexp0 aexp  -> on ESub sugarAExp aexp0 aexp
+  IEMul aexp0 aexp  -> on EMul sugarAExp aexp0 aexp
+  IEUmn aexp  -> EUmn $ sugarAExp aexp
+  IECSetExp sexp  -> ECSetExp $ sugarSExp sexp
+  IEInt n  -> EInt n

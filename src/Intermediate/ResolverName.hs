@@ -4,6 +4,7 @@ import List
 import Monad
 import Data.Maybe
 import Control.Monad.State
+import Data.Function
 
 import Common
 import Front.Absclafer
@@ -69,69 +70,60 @@ resolveTerm env x = case x of
 
 processDecl decl = do
   env <- get
-  modify (\e -> e { bindings = getIdents decl ++ bindings e })
-  return $ resolveDecl env decl
+  modify (\e -> e { bindings = decls decl ++ bindings e })
+  return $ decl {body = resolveSExp env $ body decl}
 
 
-getIdents (Decl _ _ locids _) = map
-  (\(LocIdIdent ident) -> transIdent ident) locids
-
-
-resolveDecl :: SEnv -> Decl -> Decl
-resolveDecl env x = case x of
-  Decl exquant disj locids sexp -> Decl exquant disj locids $
-                                   resolveSExp env sexp
-
-resolveCmpExp :: SEnv -> CmpExp -> CmpExp
+resolveCmpExp :: SEnv -> ICmpExp -> ICmpExp
 resolveCmpExp env x = case x of
-  ELt exp0 exp  -> ELt (res exp0) (res exp)
-  EGt exp0 exp  -> EGt (res exp0) (res exp)
-  EREq exp0 exp -> EREq (res exp0) (res exp)
-  EEq exp0 exp  -> EEq (res exp0) (res exp)
-  ELte exp0 exp  -> ELte (res exp0) (res exp)
-  EGte exp0 exp  -> EGte (res exp0) (res exp)
-  ENeq exp0 exp  -> ENeq (res exp0) (res exp)
-  ERNeq exp0 exp -> ERNeq (res exp0) (res exp)
-  EIn exp0 exp   -> EIn (res exp0) (res exp)
-  ENin exp0 exp  -> ENin (res exp0) (res exp)
+  IELt exp0 exp  -> on IELt res exp0 exp
+  IEGt exp0 exp  -> on IEGt res exp0 exp
+  IEREq exp0 exp -> on IEREq res exp0 exp
+  IEEq exp0 exp  -> on IEEq res exp0 exp
+  IELte exp0 exp  -> on IELte res exp0 exp
+  IEGte exp0 exp  -> on IEGte res exp0 exp
+  IENeq exp0 exp  -> on IENeq res exp0 exp
+  IERNeq exp0 exp -> on IERNeq res exp0 exp
+  IEIn exp0 exp   -> on IEIn res exp0 exp
+  IENin exp0 exp  -> on IENin res exp0 exp
   where
-  res = resolveExp env
+  res =  resolveExp env
 
 
-resolveExp :: SEnv -> Exp -> Exp
+resolveExp :: SEnv -> IExp -> IExp
 resolveExp env x = case x of
-  ESetExp  sexp -> ESetExp $ resolveSExp env sexp
-  ENumExp aexp -> ENumExp $ resolveAExp env aexp
-  EStrExp strexp -> x
+  IESetExp  sexp -> IESetExp $ resolveSExp env sexp
+  IENumExp aexp -> IENumExp $ resolveAExp env aexp
+  IEStrExp strexp -> x
 
 
-resolveSExp :: SEnv -> SExp -> SExp
+resolveSExp :: SEnv -> ISExp -> ISExp
 resolveSExp env x = case x of
-  SExpUnion sexp0 sexp -> SExpUnion (res sexp0) (res sexp)
-  SExpIntersection sexp0 sexp  -> SExpIntersection (res sexp0) (res sexp)
-  SExpDomain sexp0 sexp  -> SExpDomain (res sexp0) (res sexp)
-  SExpRange sexp0 sexp  -> SExpRange (res sexp0) (res sexp)
-  SExpJoin sexp0 sexp  -> snd $ resolveNav env x True
-  SExpIdent id -> snd $ resolveNav env x True
+  ISExpUnion sexp0 sexp -> on ISExpUnion res sexp0 sexp
+  ISExpIntersection sexp0 sexp  -> on ISExpIntersection res sexp0 sexp
+  ISExpDomain sexp0 sexp  -> on ISExpDomain res sexp0 sexp
+  ISExpRange sexp0 sexp  -> on ISExpRange res sexp0 sexp
+  ISExpJoin _ _  -> snd $ resolveNav env x True
+  ISExpIdent _ _ -> snd $ resolveNav env x True
   where
   res = resolveSExp env
 
 
-resolveNav :: SEnv -> SExp -> Bool -> (Maybe IClafer, SExp)
+resolveNav :: SEnv -> ISExp -> Bool -> (Maybe IClafer, ISExp)
 resolveNav env x isFirst = case x of
-  SExpJoin sexp0 sexp  -> (context'', SExpJoin sexp0' sexp')
+  ISExpJoin sexp0 sexp  -> (context'', ISExpJoin sexp0' sexp')
     where
     (context', sexp0') = resolveNav env sexp0 True
     (context'', sexp') = resolveNav env {context = context'} sexp False
-  SExpIdent id -> out        
+  ISExpIdent id _ -> out        
     where
     out
-      | isFirst   = mkPath env $ resolveName env $ transIdent id
-      | otherwise = (Just $ head $ snd ctx, SExpIdent $ Ident $ fst ctx)
-    ctx = resolveImmName env $ transIdent id
+      | isFirst   = mkPath env $ resolveName env id
+      | otherwise = (Just $ head $ snd ctx, ISExpIdent (fst ctx) False)
+    ctx = resolveImmName env id
 
 
-mkPath :: SEnv -> (String, [IClafer]) -> (Maybe IClafer, SExp)
+mkPath :: SEnv -> (String, [IClafer]) -> (Maybe IClafer, ISExp)
 mkPath env (id, path)
   | null path = (context env, id')
   | id `elem` [this, parent, children] = (Just $ head path, id')
@@ -140,33 +132,32 @@ mkPath env (id, path)
       (Just $ head path, toNav $ tail $ reverse $ map uid path)
   | otherwise = (Just $ head path, toNav' $ reverse $ map uid path)
   where
-  id'   = SExpIdent $ Ident id
-  toNav = foldl (\sexp id -> SExpJoin sexp $ SExpIdent $ Ident id)
-          (SExpIdent $ Ident this)
-  toNav' p = mkNav $ map (SExpIdent . Ident) p
+  id'   = ISExpIdent id False
+  toNav = foldl (\sexp id -> ISExpJoin sexp id') (ISExpIdent this False)
+  toNav' p = mkNav $ map (flip ISExpIdent True) p
 
 
 isSubclafer clafer path = (isJust clafer) &&
                           ((uid $ last path) == (uid $ fromJust clafer))
 
 mkNav (x:[]) = x
-mkNav xs = foldl1 SExpJoin xs
+mkNav xs = foldl1 ISExpJoin xs
 
-getStart :: SExp -> String
-getStart (SExpJoin sexp _) = getStart sexp
-getStart (SExpIdent id)    = transIdent id
+getStart :: ISExp -> String
+getStart (ISExpJoin sexp _) = getStart sexp
+getStart (ISExpIdent id _)  = id
 
 
 -- -----------------------------------------------------------------------------
 -- analyzes arithmetic expression
-resolveAExp :: SEnv -> AExp -> AExp
+resolveAExp :: SEnv -> IAExp -> IAExp
 resolveAExp env x = case x of
-  EAdd aexp0 aexp -> EAdd (res aexp0) (res aexp)
-  ESub aexp0 aexp -> ESub (res aexp0) (res aexp)
-  EMul aexp0 aexp -> EMul (res aexp0) (res aexp)
-  EUmn aexp       -> EUmn (res aexp)
-  ECSetExp sexp   -> ECSetExp $ resolveSExp env sexp
-  EInt n -> x
+  IEAdd aexp0 aexp -> on IEAdd res aexp0 aexp
+  IESub aexp0 aexp -> on IESub res aexp0 aexp
+  IEMul aexp0 aexp -> on IEMul res aexp0 aexp
+  IEUmn aexp       -> IEUmn $ res aexp
+  IECSetExp sexp   -> IECSetExp $ resolveSExp env sexp
+  IEInt n -> x
   where
   res = resolveAExp env
 
