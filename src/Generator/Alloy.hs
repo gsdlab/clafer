@@ -47,26 +47,36 @@ genClafer :: Maybe IClafer -> IClafer -> Result
 genClafer parent clafer
   | isRef clafer = ""
   | otherwise    = (unlines $ filterNull
-                   [claferDecl clafer
+                   [cardFact ++ claferDecl clafer
                    , showSet "\n, " $ genRelations parent clafer
                    , showSet "\n  " $ genConstraints parent clafer
                    ]) ++ children
   where
   children = concat $ filterNull $ map (genClafer $ Just clafer) $
              getSubclafers $ elements clafer
-             
+  cardFact
+    | isNothing parent && (null $ genOptCard clafer) =
+        case genCard (uid clafer) $ card clafer of
+          "set" -> ""
+          c -> mkFact c
+    | otherwise = ""
 
-claferDecl clafer = concat [cardDecl, genAbstract $ isAbstract clafer, "sig ",
+claferDecl clafer = concat [genOptCard clafer,
+  genAbstract $ isAbstract clafer, "sig ",
   uid clafer, genExtends $ super clafer]
   where
-  glCard' = genIntervalCrude $ glCard clafer
-  cardDecl
-    | glCard' `elem` ["lone", "one", "some"] = glCard' ++ " "
-    | otherwise                              = ""
   genAbstract isAbstract = if isAbstract then "abstract " else ""
   genExtends (ISuper False [ISExpIdent "clafer" _]) = ""
   genExtends (ISuper False [ISExpIdent id _]) = " extends " ++ id
   genExtends _ = ""
+
+
+genOptCard clafer
+  | glCard' `elem` ["lone", "one", "some"] = glCard' ++ " "
+  | otherwise                              = ""
+  where
+  glCard' = genIntervalCrude $ glCard clafer
+    
 
 -- -----------------------------------------------------------------------------
 -- overlapping inheritance is a new clafer with val (unlike only relation)
