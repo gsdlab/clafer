@@ -17,8 +17,8 @@ astrDeclaration x = case x of
 
 
 astrClafer x = case x of
-  IClafer isAbstract gcard ident uid super card elements  ->
-    IClafer isAbstract gcard ident uid super card `liftM`
+  IClafer isAbstract gcard ident uid super card gCard elements  ->
+    IClafer isAbstract gcard ident uid super card gCard `liftM`
             mapM astrElement elements
 
 

@@ -18,6 +18,7 @@ import Front.ErrM
 import Intermediate.Desugarer
 import Intermediate.Resolver
 import Intermediate.StringAnalyzer
+import Optimizer.Optimizer
 import Generator.Alloy
 
 type ParseFun = [Token] -> Err Module
@@ -56,8 +57,8 @@ run fileName v p s = let ts = resolveLayout $ myLLexer s in case p ts of
                           writeFile (f' ++ ".als") code
              where
              tree'  = desugarModule tree
-             tree'' = astrModule $ resolveModule tree'
-             code   = genModule tree''
+             tree'' = optimizeModule $ astrModule $ resolveModule tree'
+             code   = genModule $ tree''
 
 
 showTree :: (Show a, Print a) => Int -> a -> IO ()

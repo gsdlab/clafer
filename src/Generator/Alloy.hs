@@ -13,7 +13,7 @@ import Intermediate.ResolverType
 genModule :: IModule -> Result
 genModule declarations = header ++ (declarations >>= genDeclaration)
 
--- TODO: header depends on the use of ints/strings
+
 header = unlines
     [ "pred show {}"
     , "run  show for 1"
@@ -41,7 +41,7 @@ showSet delim xs = showSet' delim $ filterNull xs
   showSet' _ []     = "{}"
   showSet' delim xs = mkSet $ intercalate delim xs
 
--- TODO: top level cardinalities
+-- optimization: top level cardinalities
 -- optimization: of only boolean parents, then set card is known
 genClafer :: Maybe IClafer -> IClafer -> Result
 genClafer parent clafer
@@ -56,9 +56,13 @@ genClafer parent clafer
              getSubclafers $ elements clafer
              
 
-claferDecl clafer = concat [genAbstract $ isAbstract clafer, "sig ",
+claferDecl clafer = concat [cardDecl, genAbstract $ isAbstract clafer, "sig ",
   uid clafer, genExtends $ super clafer]
   where
+  glCard' = genIntervalCrude $ glCard clafer
+  cardDecl
+    | glCard' `elem` ["lone", "one", "some"] = glCard' ++ " "
+    | otherwise                              = ""
   genAbstract isAbstract = if isAbstract then "abstract " else ""
   genExtends (ISuper False [ISExpIdent "clafer" _]) = ""
   genExtends (ISuper False [ISExpIdent id _]) = " extends " ++ id

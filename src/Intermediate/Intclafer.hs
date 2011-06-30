@@ -20,6 +20,7 @@ data IClafer =
       uid :: String,
       super:: ISuper,
       card :: Maybe Interval,
+      glCard :: Interval,
       elements :: [IElement]
     }
   deriving (Eq,Ord,Show)
