@@ -45,26 +45,25 @@ resolveTTerm x = case x of
 
 resolveTCmpExp :: ICmpExp -> EType
 resolveTCmpExp x = case x of
-  IELt exp0 exp  -> TAExp
-  IEGt exp0 exp  -> TAExp
+  IELt exp0 exp  -> on resolveT resolveTExp exp0 exp
+  IEGt exp0 exp  -> on resolveT resolveTExp exp0 exp
   IEEq exp0 exp  -> on resolveT resolveTExp exp0 exp
   IEREq exp0 exp  -> on resolveT resolveTExp exp0 exp
-  IELte exp0 exp  -> TAExp
-  IEGte exp0 exp  -> TAExp
+  IELte exp0 exp  -> on resolveT resolveTExp exp0 exp
+  IEGte exp0 exp  -> on resolveT resolveTExp exp0 exp
   IENeq exp0 exp  -> on resolveT resolveTExp exp0 exp
   IERNeq exp0 exp  -> on resolveT resolveTExp exp0 exp
   IEIn exp0 exp  -> on resolveT resolveTExp exp0 exp
   IENin exp0 exp  -> on resolveT resolveTExp exp0 exp
 
 
-resolveT TAExp TSExp = TAExp
-resolveT TSExp TAExp = TAExp
 resolveT TAExp TAExp = TAExp
-resolveT _ _  = TSExp
+resolveT TSExp TSExp = TSExp
+resolveT _ _ = TSAExp
 
 
 resolveTExp :: IExp -> EType
 resolveTExp x = case x of
   IESetExp sexp  -> TSExp
   IENumExp aexp -> TAExp
-  IEStrExp strexp -> error "analyzed"
+  IEStrExp strexp -> TSExp

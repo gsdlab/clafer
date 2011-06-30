@@ -2,7 +2,7 @@ module Intermediate.Intclafer where
 
 import Front.Absclafer
 
-data EType = TAExp | TSExp
+data EType = TAExp | TSExp | TSAExp
   deriving (Eq,Ord,Show)
 
 type IModule = [IDeclaration]

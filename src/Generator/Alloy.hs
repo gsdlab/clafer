@@ -8,6 +8,7 @@ import Data.Function
 import Common
 import Front.Absclafer
 import Intermediate.Intclafer
+import Intermediate.ResolverType
 
 genModule :: IModule -> Result
 genModule declarations = header ++ (declarations >>= genDeclaration)
@@ -246,17 +247,21 @@ genCmpExp x t = case x of
   IEIn exp0 exp  -> genCmp exp0 " in " exp
   IENin exp0 exp  -> genCmp exp0 " not in " exp
   where
-  genCmp x op y = on (genNumExp t op) (flip genExp t) x y -- genBinOp (flip genExp t)
+  genCmp x op y = on (genNumExp (t, resolveTExp x, resolveTExp y) op)
+                  (flip genExp t) x y
 
 
-genNumExp :: EType -> Result -> Result -> Result -> Result
-genNumExp TAExp op x y =
+genNumExp :: (EType, EType, EType) -> Result -> Result -> Result -> Result
+genNumExp (TSExp, _, _) op x y =
   "all cl0 : " ++ x ++ ", cl1 : " ++ y ++ " | cl0" ++ op ++ "cl1"
+genNumExp (TSAExp, t0, t) op x y
+  | t0 == TSExp = "all cl0 : " ++ x ++ " | cl0" ++ op ++ y
+  | otherwise   = "all cl0 : " ++ y ++ " | " ++ x ++ op ++ "cl0"
 genNumExp _ op x y = x ++ op ++ y
 
 
 genSExp :: ISExp -> EType -> Result
-genSExp (ISExpIdent "this" _) TAExp = "this.ref"
+genSExp (ISExpIdent "this" _) TSAExp = "this.@ref"
 genSExp x t = genSExp' x True
 
 
@@ -284,7 +289,7 @@ genExp :: IExp -> EType -> Result
 genExp x t = case x of
   IESetExp sexp  -> genSExp sexp t
   IENumExp aexp -> genAExp aexp
-  IEStrExp strexp -> error "analyzed"
+  IEStrExp strexp -> error $ "analyzed: " ++ show strexp
 
 
 genQuant :: Quant -> Result
