@@ -246,12 +246,18 @@ genCmpExp x t = case x of
   IEIn exp0 exp  -> genCmp exp0 " in " exp
   IENin exp0 exp  -> genCmp exp0 " not in " exp
   where
-  genCmp = genBinOp (flip genExp t)
+  genCmp x op y = on (genNumExp t op) (flip genExp t) x y -- genBinOp (flip genExp t)
+
+
+genNumExp :: EType -> Result -> Result -> Result -> Result
+genNumExp TAExp op x y =
+  "all cl0 : " ++ x ++ ", cl1 : " ++ y ++ " | cl0" ++ op ++ "cl1"
+genNumExp _ op x y = x ++ op ++ y
 
 
 genSExp :: ISExp -> EType -> Result
 genSExp (ISExpIdent "this" _) TAExp = "this.ref"
-genSExp x _ = genSExp' x True
+genSExp x t = genSExp' x True
 
 
 genSExp' :: ISExp -> Bool -> Result
@@ -266,7 +272,6 @@ genSExp' x isFirst = case x of
     (if isFirst && isTop then "" else '@' : genRelName "") ++ ident
   where
   genS = genBinOp (flip genSExp' isFirst)
-
 
 
 genBinOp f x op y = ((lurry (intercalate op)) `on` (brArg f)) x y
