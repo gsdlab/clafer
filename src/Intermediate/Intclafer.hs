@@ -2,6 +2,9 @@ module Intermediate.Intclafer where
 
 import Front.Absclafer
 
+data EType = TAExp | TSExp
+  deriving (Eq,Ord,Show)
+
 type IModule = [IDeclaration]
 
 data IDeclaration =
@@ -53,7 +56,7 @@ data ILExp =
   deriving (Eq,Ord,Show)
 
 data ITerm =
-   ITermCmpExp ICmpExp
+   ITermCmpExp ICmpExp (Maybe EType)
  | ITermQuantSet Quant ISExp
  | ITermQuantDeclExp [IDecl] ILExp
   deriving (Eq,Ord,Show)

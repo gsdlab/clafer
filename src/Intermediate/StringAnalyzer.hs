@@ -48,7 +48,7 @@ applyExps f mf ls = f `liftM` mapM mf ls
 apply2 cons (x1:x2:[]) = cons x1 x2
 
 astrTerm x = case x of
-  ITermCmpExp cmpexp -> ITermCmpExp `liftM` astrCmpExp cmpexp
+  ITermCmpExp cmpexp t -> (flip ITermCmpExp t) `liftM` astrCmpExp cmpexp 
   ITermQuantDeclExp decls lexp -> ITermQuantDeclExp decls `liftM` astrLExp lexp 
   _ -> return x
 

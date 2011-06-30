@@ -60,7 +60,7 @@ resolveLExp env x = case x of
 
 resolveTerm :: SEnv -> ITerm -> ITerm
 resolveTerm env x = case x of
-  ITermCmpExp cmpexp -> ITermCmpExp $ resolveCmpExp env cmpexp
+  ITermCmpExp cmpexp t -> ITermCmpExp (resolveCmpExp env cmpexp) t
   ITermQuantSet quant sexp -> ITermQuantSet quant $ resolveSExp env sexp
   ITermQuantDeclExp decls lexp -> ITermQuantDeclExp
     decls' (resolveLExp env' lexp)

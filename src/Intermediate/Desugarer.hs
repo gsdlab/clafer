@@ -178,7 +178,7 @@ sugarLExp x = case x of
 
 desugarTerm :: Term -> ITerm
 desugarTerm x = case x of
-  TermCmpExp cmpexp  -> ITermCmpExp $ desugarCmpExp cmpexp
+  TermCmpExp cmpexp  -> ITermCmpExp (desugarCmpExp cmpexp) Nothing
   TermSet sexp  -> ITermQuantSet QuantSome $ desugarSExp sexp
   TermQuantSet quant sexp  -> ITermQuantSet quant $ desugarSExp sexp
   TermQuantDeclExp decls lexp  ->
@@ -187,7 +187,7 @@ desugarTerm x = case x of
 
 sugarTerm :: ITerm -> Term
 sugarTerm x = case x of
-  ITermCmpExp cmpexp -> TermCmpExp $ sugarCmpExp cmpexp
+  ITermCmpExp cmpexp _ -> TermCmpExp $ sugarCmpExp cmpexp
   ITermQuantSet quant sexp -> TermQuantSet quant $ sugarSExp sexp
   ITermQuantDeclExp decls lexp ->
       TermQuantDeclExp (map sugarDecl decls) (sugarLExp lexp)

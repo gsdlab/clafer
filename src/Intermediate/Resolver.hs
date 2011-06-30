@@ -10,6 +10,7 @@ import Front.Absclafer
 import Intermediate.Intclafer
 import Intermediate.ResolverName
 import Intermediate.ResolverInheritance
+import Intermediate.ResolverType
 
 
 resolveModule :: IModule -> IModule
@@ -44,6 +45,6 @@ nameElement x = case x of
 resolveNamesModule :: IModule -> IModule
 resolveNamesModule declarations = multiProcess
   (map (\f -> \ps us -> f (ps ++ us) (head us))
-   [resolveDeclaration, analyzeDeclaration,
+   [resolveTDeclaration, resolveDeclaration, analyzeDeclaration,
     resolveODeclaration, resolveNDeclaration])
   declarations

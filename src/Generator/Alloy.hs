@@ -40,7 +40,7 @@ showSet delim xs = showSet' delim $ filterNull xs
   showSet' _ []     = "{}"
   showSet' delim xs = mkSet $ intercalate delim xs
 
-
+-- TODO: top level cardinalities
 -- optimization: of only boolean parents, then set card is known
 genClafer :: Maybe IClafer -> IClafer -> Result
 genClafer parent clafer
@@ -105,7 +105,6 @@ getTarget x = case x of
   _ -> x
 
 
--- TODO: implement type recognition for relations in alloy, and relations in alloy constraints
 genType :: ISExp -> Result
 genType x = case x of
   ISExpUnion sexp0 sexp -> genS sexp0 "+" sexp
@@ -119,7 +118,7 @@ genType x = case x of
 
 -- -----------------------------------------------------------------------------
 -- constraints
--- user constraints + parent + group constraints + TODO: reference
+-- user constraints + parent + group constraints + reference
 -- a = NUMBER do all x : a | x = NUMBER (otherwise alloy sums a set)
 genConstraints parent clafer = genParentConst parent clafer :
   genGroupConst clafer : genPathConst "ref" clafer : refs ++ constraints 
@@ -157,7 +156,8 @@ mkCard element card
 
 genPathConst name clafer
   | isRefPath clafer = name ++ " = " ++ (intercalate " + " $
-                       map ((brArg id).genSExp) $ supers $ super clafer)
+                       map ((brArg id).(flip genSExp TSExp)) $
+                       supers $ super clafer)
   | otherwise        = ""
 
 
@@ -210,8 +210,6 @@ genExInteger element x = case x of
 -- -----------------------------------------------------------------------------
 -- Generate code for logical expressions
 
--- TODO: join with relations
-
 genLExp :: ILExp -> Result
 genLExp x = case x of
   IEIff lexp0 lexp  -> genL lexp0 " <=> " lexp
@@ -229,14 +227,14 @@ genLExp x = case x of
 
 genTerm :: ITerm -> Result
 genTerm x = case x of
-  ITermCmpExp cmpexp  -> genCmpExp cmpexp
-  ITermQuantSet quant sexp -> genQuant quant ++ " "  ++ genSExp sexp
+  ITermCmpExp cmpexp t -> genCmpExp cmpexp $ fromJust t
+  ITermQuantSet quant sexp -> genQuant quant ++ " "  ++ genSExp sexp TSExp
   ITermQuantDeclExp decls lexp -> concat
     [intercalate "| " $ map genDecl decls, " | ",  genLExp lexp]
 
 
-genCmpExp :: ICmpExp -> Result
-genCmpExp x = case x of
+genCmpExp :: ICmpExp -> EType -> Result
+genCmpExp x t = case x of
   IELt exp0 exp  -> genCmp exp0 " < " exp
   IEGt exp0 exp  -> genCmp exp0 " > " exp
   IEEq exp0 exp  -> genCmp exp0 " = " exp
@@ -248,11 +246,12 @@ genCmpExp x = case x of
   IEIn exp0 exp  -> genCmp exp0 " in " exp
   IENin exp0 exp  -> genCmp exp0 " not in " exp
   where
-  genCmp = genBinOp genExp
+  genCmp = genBinOp (flip genExp t)
 
 
-genSExp :: ISExp -> Result
-genSExp x = genSExp' x True
+genSExp :: ISExp -> EType -> Result
+genSExp (ISExpIdent "this" _) TAExp = "this.ref"
+genSExp x _ = genSExp' x True
 
 
 genSExp' :: ISExp -> Bool -> Result
@@ -276,9 +275,9 @@ genBinOp f x op y = ((lurry (intercalate op)) `on` (brArg f)) x y
 brArg f arg = "(" ++ f arg ++ ")"
 
 
-genExp :: IExp -> Result
-genExp x = case x of
-  IESetExp sexp  -> genSExp sexp
+genExp :: IExp -> EType -> Result
+genExp x t = case x of
+  IESetExp sexp  -> genSExp sexp t
   IENumExp aexp -> genAExp aexp
   IEStrExp strexp -> error "analyzed"
 
@@ -301,7 +300,7 @@ genDecl :: IDecl -> Result
 genDecl x = case x of
   IDecl exquant disj locids sexp -> concat [genExQuant exquant, " ",
     genDisj disj, " ",
-    intercalate ", " locids, " : ", genSExp sexp]
+    intercalate ", " locids, " : ", genSExp sexp TSExp]
 
 
 genDisj :: Bool -> Result
@@ -316,7 +315,7 @@ genAExp x = case x of
   IESub aexp0 aexp -> genArith aexp0 "-" aexp
   IEMul aexp0 aexp -> genArith aexp0 "*" aexp
   IEUmn aexp -> "-" ++ brArg genAExp aexp
-  IECSetExp sexp -> "#" ++ brArg genSExp sexp
+  IECSetExp sexp -> "#" ++ brArg (flip genSExp TSExp) sexp
   IEInt n    -> show n
   where
   genArith = genBinOp genAExp
