@@ -95,6 +95,7 @@ genAlloyRel name card rType = concat [name, " : ", card, " ", rType]
 
 genParentRel pClafer = maybe "" (genAlloyRel parent "one" . uid) pClafer
 
+
 refType c = intercalate " + " $ map (genType.getTarget) $ supers $ super c
 
 
@@ -118,15 +119,17 @@ genType x = case x of
 
 -- -----------------------------------------------------------------------------
 -- constraints
--- user constraints + parent + TODO: group constraints + reference
+-- user constraints + parent + group constraints + TODO: reference
 -- a = NUMBER do all x : a | x = NUMBER (otherwise alloy sums a set)
 genConstraints parent clafer = genParentConst parent clafer :
-  genGroupConst clafer : constraints
+  genGroupConst clafer : genPathConst "ref" clafer : refs ++ constraints 
   where
   constraints = mapMaybe genConst $ elements clafer
   genConst x = case x of
     ISubconstraint lexp  -> Just $ genLExp lexp
     _ -> Nothing
+  refs = map (\c -> genPathConst (genRelName $ uid c) c) $
+         filter isRefPath $ filter isRef $ getSubclafers $ elements clafer
 
 
 -- optimization: if only boolean features then the parent is unique
@@ -137,12 +140,11 @@ genParentConst pClafer clafer = maybe ""
 genGroupConst :: IClafer -> Result
 genGroupConst clafer
   | null children || card == "" = ""
-  | otherwise                   = letChildren ++ card
+  | otherwise = "let children = " ++ (brArg id $ children) ++ " | " ++ card
   where
   children = intercalate " + " $ map (genRelName.uid) $
              getSubclafers $ elements clafer
   card     = mkCard "children" $ interval $ fromJust $ gcard $ clafer
-  letChildren = "let children = " ++ (brArg id $ children) ++ " | "
 
 
 mkCard element card
@@ -152,6 +154,22 @@ mkCard element card
   where
   card'  = genInterval element card
 
+
+genPathConst name clafer
+  | isRefPath clafer = name ++ " = " ++ (intercalate " + " $
+                       map ((brArg id).genSExp) $ supers $ super clafer)
+  | otherwise        = ""
+
+
+isRefPath clafer = (isOverlapping $ super clafer) &&
+                   ((length s > 1) || (not $ isSimplePath s))
+  where
+  s = supers $ super clafer
+
+
+isSimplePath :: [ISExp] -> Bool
+isSimplePath [(ISExpIdent _ _)] = True
+isSimplePath _ = False
 
 -- -----------------------------------------------------------------------------
 genGCard element gcard = genInterval element  $ interval $ fromJust gcard
