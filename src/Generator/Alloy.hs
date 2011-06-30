@@ -119,19 +119,40 @@ genType x = case x of
 -- -----------------------------------------------------------------------------
 -- constraints
 -- user constraints + parent + TODO: group constraints + reference
-genConstraints parent clafer = genParentConst parent clafer : constraints
+-- a = NUMBER do all x : a | x = NUMBER (otherwise alloy sums a set)
+genConstraints parent clafer = genParentConst parent clafer :
+  genGroupConst clafer : constraints
   where
   constraints = mapMaybe genConst $ elements clafer
   genConst x = case x of
     ISubconstraint lexp  -> Just $ genLExp lexp
     _ -> Nothing
 
+
 -- optimization: if only boolean features then the parent is unique
 genParentConst pClafer clafer = maybe ""
   (const $ concat [parent, " = ", genRelName $ uid clafer, ".this"]) pClafer
 
 
--- TODO: when refering to top level declarations don't use names of relations
+genGroupConst :: IClafer -> Result
+genGroupConst clafer
+  | null children || card == "" = ""
+  | otherwise                   = letChildren ++ card
+  where
+  children = intercalate " + " $ map (genRelName.uid) $
+             getSubclafers $ elements clafer
+  card     = mkCard "children" $ interval $ fromJust $ gcard $ clafer
+  letChildren = "let children = " ++ (brArg id $ children) ++ " | "
+
+
+mkCard element card
+  | card' == "set" || card' == ""        = ""
+  | card' `elem` ["one", "lone", "some"] = card' ++ " " ++ element
+  | otherwise                            = card'
+  where
+  card'  = genInterval element card
+
+
 -- -----------------------------------------------------------------------------
 genGCard element gcard = genInterval element  $ interval $ fromJust gcard
 
@@ -215,7 +236,7 @@ genCmpExp x = case x of
 genSExp :: ISExp -> Result
 genSExp x = genSExp' x True
 
--- TODO: implement type recognition for relations in alloy, and relations in alloy constraints
+
 genSExp' :: ISExp -> Bool -> Result
 genSExp' x isFirst = case x of
   ISExpUnion sexp0 sexp -> genS sexp0 "+" sexp
