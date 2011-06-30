@@ -27,8 +27,8 @@ resolveDeclaration declarations x = case x of
 
 resolveClafer :: SEnv -> IClafer -> IClafer
 resolveClafer env clafer =
-  clafer {elements = map (resolveElement env {context = Just clafer}) $
-                     elements clafer}
+  clafer {elements = map (resolveElement env
+  {context = Just clafer, resPath = clafer : resPath env}) $ elements clafer}
 
 
 resolveSuper :: SEnv -> ISuper -> ISuper
@@ -133,30 +133,29 @@ resolveNav env x isFirst = case x of
 
 mkPath :: SEnv -> (String, [IClafer]) -> (Maybe IClafer, SExp)
 mkPath env (id, path)
-  | (isNothing $ context env) || null path = (context env, SExpIdent $ Ident id)
-handle this/parent
-  | otherwise = (Just $ head path, toNav $ tail $ reverse $ map uid path)
+  | null path = (context env, id')
+  | id `elem` [this, parent, children] = (Just $ head path, id')
+  | id `elem` [strType, intType, integerType] = (Nothing, id')
+  | isSubclafer (context env) path =
+      (Just $ head path, toNav $ tail $ reverse $ map uid path)
+  | otherwise = (Just $ head path, toNav' $ reverse $ map uid path)
   where
+  id'   = SExpIdent $ Ident id
   toNav = foldl (\sexp id -> SExpJoin sexp $ SExpIdent $ Ident id)
           (SExpIdent $ Ident this)
+  toNav' p = mkNav $ map (SExpIdent . Ident) p
 
+
+isSubclafer clafer path = (isJust clafer) &&
+                          ((uid $ last path) == (uid $ fromJust clafer))
+
+mkNav (x:[]) = x
+mkNav xs = foldl1 SExpJoin xs
 
 getStart :: SExp -> String
 getStart (SExpJoin sexp _) = getStart sexp
 getStart (SExpIdent id)    = transIdent id
 
-
-findName :: SEnv -> String -> (Maybe IClafer, [IClafer])
-findName env id 
-  | id == parent && context env /= Nothing && length ppath > 1 =
-      (Just $ head $ tail ppath, ppath)
-  | id `elem` [this, children, strType, intType, integerType] =
-      (context env, ppath)
-  | (not.null) path                              = (Just $ head path, path)
-  | otherwise                                    = resolveNone env id
-  where
-  path  = resolvePath id [] env $ clafers env
-  ppath = resolvePath (uid $ fromJust $ context env) [] env $ clafers env
 
 -- -----------------------------------------------------------------------------
 -- analyzes arithmetic expression
@@ -188,15 +187,17 @@ resolve env id fs = fromJust $ foldr1 mplus $ map (\x -> x env id) fs
 
 -- reports error if clafer not found
 resolveNone env id = error $ id ++ " not found within " ++
-  (show $ context env >>= (Just . ident))
+  (show $ context env >>= (Just . ident)) ++ show env
 
--- TODO: return this or parent
+
 -- checks if ident is one of special identifiers
 resolveSpecial :: SEnv -> String -> Maybe (String, [IClafer])
-resolveSpecial _ id
-  | id `elem` [this, strType, intType, integerType, parent, children] =
-      Just (id, [])
-  | otherwise                                                         = Nothing 
+resolveSpecial env id
+  | id `elem` [this, children] =
+      Just (id, (fromJust $ context env) : resPath env)
+  | id == parent = Just (id, resPath env)
+  | id `elem` [strType, intType, integerType] = Just (id, [])
+  | otherwise                                 = Nothing 
 
 
 -- checks if ident is bound locally
@@ -228,7 +229,7 @@ resolveTopLevel env id = case context env of
         clafers env
   where
   resolveUnique xs = findUnique id $ bfs toNodeDeep $
-                     map (\c -> env {context = Just c}) xs
+                     map (\c -> env {context = Just c, resPath = [c]}) xs
 
 
 toNodeDeep env = ((fromJust $ context env, resPath env),

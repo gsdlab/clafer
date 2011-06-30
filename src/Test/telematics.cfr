@@ -28,7 +28,7 @@ abstract display extends comp
 abstract plaECU extends ECU
     `display 1..2
         [server = parent
-        ] -- ~options.cache]
+         ~options.cache]
 
 ECU1 extends plaECU
 
