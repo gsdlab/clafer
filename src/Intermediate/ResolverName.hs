@@ -126,19 +126,24 @@ resolveNav env x isFirst = case x of
 mkPath :: SEnv -> (String, [IClafer]) -> (Maybe IClafer, ISExp)
 mkPath env (id, path)
   | null path = (context env, id')
-  | id `elem` [this, parent, children] = (Just $ head path, id')
-  | id `elem` [strType, intType, integerType] = (Nothing, id')
+  | id `elem` [this, parent, children] = (Just $ head path, ISExpIdent id True)
+  | id `elem` [strType, intType, integerType] = (Nothing, ISExpIdent id True)
   | isSubclafer (context env) path =
       (Just $ head path, toNav $ tail $ reverse $ map uid path)
   | otherwise = (Just $ head path, toNav' $ reverse $ map uid path)
   where
   id'   = ISExpIdent id False
-  toNav = foldl (\sexp id -> ISExpJoin sexp id') (ISExpIdent this False)
-  toNav' p = mkNav $ map (flip ISExpIdent True) p
+  toNav = foldl (\sexp id -> ISExpJoin sexp $ ISExpIdent id False)
+          (ISExpIdent this True)
+  toNav' p = mkNav $ map (\c -> ISExpIdent c $ isTopLevel c $ clafers env) p
 
 
 isSubclafer clafer path = (isJust clafer) &&
                           ((uid $ last path) == (uid $ fromJust clafer))
+
+
+isTopLevel id clafers = id `elem` (map uid clafers)
+
 
 mkNav (x:[]) = x
 mkNav xs = foldl1 ISExpJoin xs

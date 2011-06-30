@@ -224,9 +224,8 @@ genSExp' x isFirst = case x of
   ISExpRange sexp0 sexp  -> genS sexp0 ":>" sexp
   ISExpJoin sexp0 sexp  -> intercalate "."
     [brArg (flip genSExp' isFirst) sexp0, brArg (flip genSExp' False) sexp]
-  ISExpIdent ident _ -> (if isFirst then id else genRelName "") ++ ident
-    where
-    id = if ident `elem` [this, parent, strType, intType, integerType, children] then "" else genRelName ""
+  ISExpIdent ident isTop ->
+    (if isFirst && isTop then "" else '@' : genRelName "") ++ ident
   where
   genS = genBinOp (flip genSExp' isFirst)
 
