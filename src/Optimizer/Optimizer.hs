@@ -1,12 +1,15 @@
 module Optimizer.Optimizer where
 
 import Data.Maybe
+import Data.List
 
+import Common
 import Front.Absclafer
 import Intermediate.Intclafer
 
 optimizeModule :: IModule -> IModule
-optimizeModule = map optimizeDeclaration
+optimizeModule declarations =
+  remUnusedAbs $ map optimizeDeclaration declarations
 
 
 optimizeDeclaration :: IDeclaration -> IDeclaration
@@ -34,3 +37,29 @@ optimizeElement :: Interval -> IElement -> IElement
 optimizeElement interval x = case x of
   ISubclafer clafer  -> ISubclafer $ optimizeClafer interval clafer
   ISubconstraint constraint  -> x
+
+
+remUnusedAbs :: IModule -> IModule
+remUnusedAbs declarations = declarations \\ unusedAbs
+  where
+  unusedAbs = map IClaferDecl $ findUnusedAbs clafers $ map uid $
+              filter (not.isAbstract) clafers
+  clafers   = toClafers declarations
+
+
+findUnusedAbs :: [IClafer] -> [String] -> [IClafer]
+findUnusedAbs maybeUsed [] = maybeUsed
+findUnusedAbs [] _   = []
+findUnusedAbs maybeUsed used = findUnusedAbs maybeUsed' $ getUniqExtended used'
+  where
+  (used', maybeUsed') = partition (\c -> uid c `elem` used) maybeUsed
+
+
+getUniqExtended used = nub $ used >>= getExtended
+
+
+getExtended :: IClafer -> [String]
+getExtended clafer =
+  sName ++ ((getSubclafers $ elements clafer) >>= getExtended)
+  where
+  sName = if not $ isOverlapping $ super clafer then [getSuper clafer] else []

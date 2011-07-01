@@ -148,7 +148,17 @@ genConstraints parent clafer = genParentConst parent clafer :
 
 -- optimization: if only boolean features then the parent is unique
 genParentConst pClafer clafer = maybe ""
-  (const $ concat [parent, " = ", genRelName $ uid clafer, ".this"]) pClafer
+                                (const $ concat $ genOptParentConst clafer)
+                                pClafer
+
+
+genOptParentConst clafer
+  | glCard' == "one"  = [""]
+  | glCard' == "lone" = ["one ", rel]
+  | otherwise         = [parent, " = ", rel, ".this"]
+  where
+  rel = genRelName $ uid clafer
+  glCard' = genIntervalCrude $ glCard clafer
 
 
 genGroupConst :: IClafer -> Result
