@@ -40,7 +40,7 @@ resolveTTerm :: ITerm -> ITerm
 resolveTTerm x = case x of
   ITermCmpExp cmpexp _ -> ITermCmpExp cmpexp $ Just $ resolveTCmpExp cmpexp
   ITermQuantSet quant sexp -> x
-  ITermQuantDeclExp decls lexp -> x
+  ITermQuantDeclExp decls lexp -> ITermQuantDeclExp decls $ resolveTLExp lexp
 
 
 resolveTCmpExp :: ICmpExp -> EType

@@ -99,6 +99,10 @@ lurry f x y = f [x,y]
 
 filterNull = filter (not.null)
 
+fst3 (a, _, _) = a
+snd3 (_, b, _) = b
+trd3 (_, _, c) = c
+
 -- -----------------------------------------------------------------------------
 -- Constants
 

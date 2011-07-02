@@ -3,7 +3,7 @@ module Main where
 import Prelude hiding (writeFile, readFile, print, putStrLn)
 
 import System.IO
-
+import Control.Exception.Base
 import IO  ( stdin, hGetContents )
 import System ( getArgs, getProgName )
 
@@ -46,19 +46,23 @@ run fileName v p s = let ts = resolveLayout $ myLLexer s in case p ts of
 --               EcoreOut -> clafer2ecore tree''
                AlloyFile f -> do
                           putStrLn "\nParse Successful!"
---                          putStrLn "\n[Symbol Table]"               
---                          putStrLn $ show st
-                          let f' = take (length f - 4) f
-                          writeFile (f' ++ ".des") $ printTree $ sugarModule tree'
-                          writeFile (f' ++ ".ana") $ printTree $ sugarModule tree''
---                          showTree v tree''
-                          putStrLn "\n[Interpreting]"
---                          writeFile "data/output.als" code
+                          putStrLn "[Desugaring]"
+                          dTree <- evaluate $! desugarModule tree
+                          let f'    = take (length f - 4) f
+                          writeFile (f' ++ ".des") $ printTree $
+                            sugarModule dTree
+                          putStrLn "[Resolving]"
+                          rTree <- evaluate $! resolveModule dTree
+                          putStrLn "[Analyzing String]"
+                          aTree <- evaluate $! astrModule rTree
+                          putStrLn "[Optimizing]"
+                          oTree <- evaluate $ optimizeModule aTree
+                          writeFile (f' ++ ".ana") $ printTree $
+                            sugarModule oTree
+                          putStrLn "[Generating Code]"
+                          code <- evaluate $! genModule oTree
+                          putStrLn "[Saving File]"
                           writeFile (f' ++ ".als") code
-             where
-             tree'  = desugarModule tree
-             tree'' = optimizeModule $ astrModule $ resolveModule tree'
-             code   = genModule $ tree''
 
 
 showTree :: (Show a, Print a) => Int -> a -> IO ()

@@ -265,14 +265,15 @@ genCmpExp clafer x t = case x of
   IEGte exp0 exp  -> genCmp exp0 " >= " exp
   IENeq exp0 exp  -> genCmp exp0 " != " exp
   IERNeq exp0 exp  -> genCmp exp0 " != " exp
-  IEIn exp0 exp  -> genCmp exp0 " in " exp
-  IENin exp0 exp  -> genCmp exp0 " not in " exp
+  IEIn exp0 exp  -> genBinOp (flip (genExp clafer) t) exp0 " in " exp
+  IENin exp0 exp  -> genBinOp (flip (genExp clafer) t) exp0 " not in " exp
   where
   genCmp x op y = on (genNumExp (t, resolveTExp x, resolveTExp y) op)
                   (flip (genExp clafer) t) x y
 
 
 genNumExp :: (EType, EType, EType) -> Result -> Result -> Result -> Result
+genNumExp (TSExp, _, _) " = " x y = x ++ " = " ++ y
 genNumExp (TSExp, _, _) op x y =
   "all cl0 : " ++ x ++ ", cl1 : " ++ y ++ " | cl0" ++ op ++ "cl1"
 genNumExp (TSAExp, t0, t) op x y
