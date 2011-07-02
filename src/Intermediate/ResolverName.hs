@@ -229,7 +229,8 @@ resolveTopLevel :: SEnv -> String -> Maybe (String, [IClafer])
 resolveTopLevel env id = case context env of
   Nothing -> resolveUnique $ clafers env
   _  -> foldr1 mplus $ map resolveUnique $ pairToList $ partition
-        (isEqClaferId (uid $ last $ resPath t)) $ clafers env
+        (isEqClaferId (uid $ last $ (fromJust $ context $ env) : resPath env)) $
+        clafers env
   where
   resolveUnique xs = findUnique id $ bfs toNodeDeep $
                      map (\c -> env {context = Just c, resPath = [c]}) xs

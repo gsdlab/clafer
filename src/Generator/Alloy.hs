@@ -17,10 +17,7 @@ genModule declarations = header ++ (declarations >>= genDeclaration)
 header = unlines
     [ "pred show {}"
     , "run  show for 1"
-    , ""
-{-    , concat ["fun ", children, "(p : ",  baseClafer, ") : set ", baseClafer,
-              "{p.~", parent, " - p}"] -}
-    ]
+    , ""]
 
 
 valField = "val"
