@@ -50,7 +50,7 @@ telematicsSystem
 
     [dual <=> ECU2
      extraDisplay <=> #ECU1.display = 2
-     extraDisplay <=> (ECU2 <=> #ECU2.display = 2)
+     extraDisplay <=> (ECU2 => #ECU2.display = 2)
      large <=> ~plaECU.display.options.size.small
      small <=> ~plaECU.display.options.size.large]
 

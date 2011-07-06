@@ -15,7 +15,6 @@ data IDeclaration =
 data IClafer =
    IClafer {
       isAbstract :: Bool,
-      implementedBy :: [IClafer],
       gcard :: Maybe IGCard,
       ident :: String,
       uid :: String,

@@ -44,14 +44,14 @@ sugarDeclaration x = case x of
 desugarClafer :: Clafer -> IClafer
 desugarClafer x = case x of
   Clafer abstract gcard id super card elements  ->
-    IClafer (desugarAbstract abstract) [] (desugarGCard gcard) (transIdent id)
+    IClafer (desugarAbstract abstract) (desugarGCard gcard) (transIdent id)
             "" (desugarSuper super) (desugarCard card) (0, ExIntegerAst)
             (desugarElements elements)
 
 
 sugarClafer :: IClafer -> Clafer
 sugarClafer x = case x of
-  IClafer abstract _ gcard id uid super card _ elements  ->
+  IClafer abstract gcard id uid super card _ elements  ->
     Clafer (sugarAbstract abstract) (sugarGCard gcard) (Ident id)
       (sugarSuper super) (sugarCard card) (sugarElements elements)
 
