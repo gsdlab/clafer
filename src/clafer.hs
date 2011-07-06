@@ -1,3 +1,4 @@
+{-# LANGUAGE DeriveDataTypeable #-}
 module Main where
 
 import Prelude hiding (writeFile, readFile, print, putStrLn)
@@ -6,9 +7,10 @@ import System.IO
 import Control.Exception.Base
 import IO  ( stdin, hGetContents )
 import System ( getArgs, getProgName )
-
+import System.Console.CmdArgs
 import System.Timeout
 
+import Common
 import Front.Lexclafer
 import Front.Parclafer
 import Front.Printclafer
@@ -27,24 +29,24 @@ data Mode = AlloyOut | AlloyFile String | XmlOut | EcoreOut
 
 myLLexer = myLexer
 
-type Verbosity = Int
+type VerbosityL = Int
 
-putStrV :: Verbosity -> String -> IO ()
+putStrV :: VerbosityL -> String -> IO ()
 putStrV v s = if v > 1 then putStrLn s else return ()
 
-runFile :: Verbosity -> ParseFun -> FilePath -> IO ()
+{-
+runFile :: VerbosityL -> ParseFun -> FilePath -> IO ()
 runFile v p f = putStrLn f >> readFile f >>= run (AlloyFile f) v p
-
-run :: Mode -> Verbosity -> ParseFun -> FilePath -> IO ()
-run fileName v p s = let ts = resolveLayout $ myLLexer s in case p ts of
-           Bad s    -> do putStrLn "\nParse              Failed...\n"
-                          putStrV v "Tokens:"
-                          putStrLn s
-           Ok  tree -> case fileName of
---               AlloyOut -> putStrLn code
---               XmlOut   -> clafer2xml tree''
---               EcoreOut -> clafer2ecore tree''
-               AlloyFile f -> do
+-}
+run :: VerbosityL -> ParseFun -> ClaferArgs -> IO ()
+run v p args = do
+           input <- readFile $ file args
+           let ts = resolveLayout $ myLLexer input  in case p ts of
+             Bad s    -> do putStrLn "\nParse              Failed...\n"
+                            putStrV v "Tokens:"
+                            putStrLn s
+             Ok  tree -> do
+                          let f = file args
                           putStrLn "\nParse Successful!"
                           putStrLn "[Desugaring]"
                           dTree <- evaluate $! desugarModule tree
@@ -52,15 +54,15 @@ run fileName v p s = let ts = resolveLayout $ myLLexer s in case p ts of
                           writeFile (f' ++ ".des") $ printTree $
                             sugarModule dTree
                           putStrLn "[Resolving]"
-                          rTree <- evaluate $! resolveModule dTree
+                          (rTree, genv) <- evaluate $! resolveModule args dTree
                           putStrLn "[Analyzing String]"
                           aTree <- evaluate $! astrModule rTree
                           putStrLn "[Optimizing]"
-                          oTree <- evaluate $ optimizeModule aTree
+                          oTree <- evaluate $ optimizeModule args (aTree, genv)
                           writeFile (f' ++ ".ana") $ printTree $
                             sugarModule oTree
                           putStrLn "[Generating Code]"
-                          code <- evaluate $! genModule oTree
+                          code <- evaluate $! genModule (oTree, genv)
                           putStrLn "[Saving File]"
                           writeFile (f' ++ ".als") code
 
@@ -71,15 +73,21 @@ showTree v tree
       putStrV v $ "\n[Abstract Syntax]\n\n" ++ show tree
       putStrV v $ "\n[Linearized tree]\n\n" ++ printTree tree
 
+clafer = ClaferArgs {
+  unroll_inheritance = def &= help "Unroll inheritance",
+  file = def &= args} &= summary "Clafer v0.0.2"
+
 main :: IO ()
 main = do
-  args <- getArgs
+  args <- cmdArgs clafer
+--  args <- getArgs
   let timeInSec = 10 * 10^6
-  timeout timeInSec (case args of
-      [] -> hGetContents stdin >>= run AlloyOut 2 pModule
+  timeout timeInSec (
+    run 2 pModule args)
+--case args of
+--      [] -> hGetContents stdin >>= 
 --      ("-x":[]) -> hGetContents stdin >>= run XmlOut 2 pModule
 --      ("-e":[]) -> hGetContents stdin >>= run EcoreOut 2 pModule
-      fs -> mapM_ (runFile 2 pModule) fs)
+--      fs -> mapM_ (runFile 2 pModule) fs
+--  )
   return ()
-
-

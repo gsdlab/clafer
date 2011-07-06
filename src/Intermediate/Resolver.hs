@@ -4,6 +4,8 @@ import List
 import Monad
 import Data.Maybe
 import Control.Monad.State
+import Data.Map (Map)
+import qualified Data.Map as Map
 
 import Common
 import Front.Absclafer
@@ -12,16 +14,17 @@ import Intermediate.ResolverName
 import Intermediate.ResolverInheritance
 import Intermediate.ResolverType
 
-
-resolveModule :: IModule -> IModule
-resolveModule declarations = resolveNamesModule $ nameModule declarations
+resolveModule :: ClaferArgs -> IModule -> (IModule, GEnv)
+resolveModule args declarations = resolveNamesModule $ rem $ resolveNModule $ nDecls
+  where
+  (nDecls, genv) = nameModule declarations
+  rem = (if unroll_inheritance args then resolveEModule else flip $ curry id)
+        genv
 
 
 -- -----------------------------------------------------------------------------
-data NEnv = NEnv {num :: Int}
-
-nameModule :: IModule -> IModule
-nameModule declarations = evalState (mapM nameDeclaration declarations) (NEnv 0)
+nameModule :: IModule -> (IModule, GEnv)
+nameModule declarations = runState (mapM nameDeclaration declarations) $ GEnv 0 Map.empty
 
 
 nameDeclaration x = case x of
@@ -30,11 +33,9 @@ nameDeclaration x = case x of
 
 
 nameClafer clafer = do
-  modify (\e -> e {num = 1 + num e})
-  n <- gets num
+  clafer' <- renameClafer' clafer
   elements' <- mapM nameElement $ elements clafer
-  return $ clafer
-    {uid = concat ["c", show n, "_",  ident clafer], elements = elements'}
+  return $ clafer' {elements = elements'}
 
 
 nameElement x = case x of
@@ -42,9 +43,9 @@ nameElement x = case x of
   ISubconstraint ilexp -> return x
 
 -- -----------------------------------------------------------------------------
-resolveNamesModule :: IModule -> IModule
-resolveNamesModule declarations = multiProcess
-  (map (\f -> \ps us -> f (ps ++ us) (head us))
+resolveNamesModule :: (IModule, GEnv) -> (IModule, GEnv)
+resolveNamesModule (declarations, genv) = (multiProcess
+  (map (\f -> \ps us -> f (ps ++ us, genv) (head us))
    [resolveTDeclaration, resolveDeclaration, analyzeDeclaration,
-    resolveODeclaration, resolveNDeclaration])
-  declarations
+    resolveODeclaration])
+  declarations, genv)

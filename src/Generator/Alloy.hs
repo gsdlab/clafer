@@ -10,8 +10,8 @@ import Front.Absclafer
 import Intermediate.Intclafer
 import Intermediate.ResolverType
 
-genModule :: IModule -> Result
-genModule declarations = header ++ (declarations >>= genDeclaration)
+genModule :: (IModule, GEnv) -> Result
+genModule (declarations, _) = header ++ (declarations >>= genDeclaration)
 
 
 header = unlines
@@ -113,16 +113,7 @@ getTarget x = case x of
   _ -> x
 
 
-genType :: ISExp -> Result
-genType x = case x of
-  ISExpUnion sexp0 sexp -> genS sexp0 "+" sexp
-  ISExpIntersection sexp0 sexp  -> genS sexp0 "&" sexp
-  ISExpDomain sexp0 sexp  -> genS sexp0 "<:" sexp
-  ISExpRange sexp0 sexp  -> genS sexp0 ":>" sexp
-  ISExpJoin sexp0 sexp  -> genS sexp0 "." sexp
-  ISExpIdent ident _ -> ident
-  where
-  genS = genBinOp genType
+genType x = genSExp Nothing x TSExp
 
 -- -----------------------------------------------------------------------------
 -- constraints
@@ -187,6 +178,7 @@ isRefPath clafer = (isOverlapping $ super clafer) &&
 
 isSimplePath :: [ISExp] -> Bool
 isSimplePath [(ISExpIdent _ _)] = True
+isSimplePath [(ISExpUnion _ _)] = True
 isSimplePath _ = False
 
 -- -----------------------------------------------------------------------------

@@ -2,9 +2,10 @@ module Intermediate.ResolverType where
 
 import Data.Function
 
+import Common
 import Intermediate.Intclafer
 
-resolveTDeclaration :: IModule -> IDeclaration -> IDeclaration
+resolveTDeclaration :: (IModule, GEnv) -> IDeclaration -> IDeclaration
 resolveTDeclaration _ x = case x of
   IClaferDecl clafer  -> IClaferDecl $ resolveTClafer clafer
   IConstDecl constraint  -> IConstDecl $ resolveTLExp constraint

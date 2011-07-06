@@ -1,8 +1,12 @@
+{-# LANGUAGE DeriveDataTypeable #-}
 module Common where
 
 import Data.Tree
 import Data.Maybe
 import List
+import Data.Map (Map)
+import qualified Data.Map as Map
+import System.Console.CmdArgs
 
 import Front.Absclafer
 import Intermediate.Intclafer
@@ -80,6 +84,10 @@ findHierarchy clafers clafer = clafer : unfoldr
 
 apply f x = (x, f x)
 
+upFst f (x, y) = (f x, y)
+
+upSnd f (x, y) = (x, f y)
+
 -- lists all nodes of a tree (BFS). Take a function to extract subforest
 bfs toNode seed = map rootLabel $ concat $ takeWhile (not.null) $
   iterate (concatMap subForest) $ unfoldForest toNode seed
@@ -93,15 +101,20 @@ getSubclafers = mapMaybe elemToClafer
 
 bfsClafers clafers = bfs toNodeShallow clafers
 
-pairToList = uncurry ((.return).(:))
 
 lurry f x y = f [x,y]
 
+
 filterNull = filter (not.null)
+
 
 fst3 (a, _, _) = a
 snd3 (_, b, _) = b
 trd3 (_, _, c) = c
+
+toTriple a (b,c) = (a, b, c)
+
+toMTriple a (b,c) = Just (a, b, c)
 
 -- -----------------------------------------------------------------------------
 -- Constants
@@ -119,3 +132,15 @@ intType = "int"
 integerType = "integer"
 
 baseClafer = "clafer"
+
+data GEnv = GEnv {
+  num :: Int,
+  stable :: Map.Map String [[String]]
+    }
+  deriving (Eq, Show)
+
+data ClaferArgs = ClaferArgs {
+      unroll_inheritance :: Bool,
+      file :: FilePath
+    } deriving (Show, Data, Typeable)
+

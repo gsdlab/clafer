@@ -1,7 +1,11 @@
 module Intermediate.ResolverInheritance where
 
 import Monad
+import Control.Monad.State
 import Data.Maybe
+import Data.List
+import Data.Map (Map)
+import qualified Data.Map as Map
 
 import Common
 import Front.Absclafer
@@ -10,6 +14,11 @@ import Intermediate.ResolverName
 
 -- -----------------------------------------------------------------------------
 -- Non-overlapping inheritance
+resolveNModule :: IModule -> IModule
+resolveNModule declarations =
+  map (resolveNDeclaration declarations) declarations
+
+
 resolveNDeclaration :: IModule -> IDeclaration -> IDeclaration
 resolveNDeclaration declarations x = case x of
   IClaferDecl clafer  -> IClaferDecl $ resolveNClafer declarations clafer
@@ -27,7 +36,7 @@ resolveNSuper declarations x = case x of
   ISuper False [ISExpIdent "clafer" _] -> x
   ISuper False [ISExpIdent id isTop] -> ISuper False [ISExpIdent id' isTop]
     where
-    id' = fromMaybe (error $ "No superclafer found: " ++ id) $
+    id' = fst $ fromMaybe (error $ "No superclafer found: " ++ id) $
           resolveN declarations id
   _ -> x
 
@@ -38,19 +47,19 @@ resolveNElement declarations x = case x of
   ISubconstraint constraint  -> x
 
 
-resolveN :: IModule -> String -> Maybe String
+resolveN :: IModule -> String -> Maybe (String, [IClafer])
 resolveN declarations id =
-  (findUnique id $ map (\x -> (x, [])) $ filter isAbstract $ bfsClafers $
-   toClafers declarations) >>= (Just . fst)
+  findUnique id $ map (\x -> (x, [x])) $ filter isAbstract $ bfsClafers $
+  toClafers declarations
 
 -- -----------------------------------------------------------------------------
 -- Overlapping inheritance
-resolveODeclaration :: IModule -> IDeclaration -> IDeclaration
-resolveODeclaration declarations x = case x of
+resolveODeclaration :: (IModule, GEnv) -> IDeclaration -> IDeclaration
+resolveODeclaration (declarations, genv) x = case x of
   IClaferDecl clafer  -> IClaferDecl $ resolveOClafer env clafer
   IConstDecl constraint  -> x
   where
-  env = SEnv (toClafers declarations) Nothing [] []
+  env = SEnv (toClafers declarations) Nothing [] [] genv
 
 
 resolveOClafer :: SEnv -> IClafer -> IClafer
@@ -73,12 +82,12 @@ resolveOElement env x = case x of
 
 -- -----------------------------------------------------------------------------
 -- inherited and default cardinalities
-analyzeDeclaration :: IModule -> IDeclaration -> IDeclaration
-analyzeDeclaration declarations x = case x of
+analyzeDeclaration :: (IModule, GEnv) -> IDeclaration -> IDeclaration
+analyzeDeclaration (declarations, genv) x = case x of
   IClaferDecl clafer  -> IClaferDecl $ analyzeClafer env clafer
   IConstDecl constraint  -> x
   where
-  env = SEnv (toClafers declarations) Nothing [] []
+  env = SEnv (toClafers declarations) Nothing [] [] genv
 
 
 analyzeClafer :: SEnv -> IClafer -> IClafer
@@ -114,3 +123,69 @@ analyzeElement :: SEnv -> IElement -> IElement
 analyzeElement env x = case x of
   ISubclafer clafer  -> ISubclafer $ analyzeClafer env clafer
   ISubconstraint constraint  -> x
+
+-- -----------------------------------------------------------------------------
+-- Expand inheritance
+resolveEModule :: GEnv -> IModule -> (IModule, GEnv)
+resolveEModule genv declarations =
+  runState (mapM (resolveEDeclaration declarations) declarations) genv
+-- todo: CHECK IF INHERITANCE CAN BE UNROLLED
+
+
+resolveEDeclaration declarations x = case x of
+  IClaferDecl clafer -> if isAbstract clafer then return x else
+    IClaferDecl `liftM` resolveEClafer [] False declarations clafer
+  IConstDecl constraint  -> return x
+
+
+resolveEClafer predecessors absAncestor declarations clafer = do
+  let allSuper = findHierarchy (toClafers declarations) clafer
+  clafer' <- renameClafer absAncestor clafer
+  let predecessors' = uid clafer' : predecessors
+  (sElements, super', superList) <-
+      resolveEInheritance predecessors' absAncestor declarations allSuper
+  let sClafer = Map.fromList $ zip (map uid superList) $ repeat [predecessors']
+  modify (\e -> e {stable = Map.delete "clafer" $
+                            Map.unionWith ((nub.).(++)) sClafer $
+                            stable e})
+  elements' <- mapM (resolveEElement predecessors' absAncestor declarations) $
+               elements clafer
+  return $ clafer' {super = super', elements = elements' ++ sElements}
+
+
+renameClafer False clafer = return clafer
+renameClafer True  clafer = renameClafer' clafer
+
+
+renameClafer' clafer = do
+  modify (\e -> e {num = 1 + num e})
+  n <- gets num
+  return $ clafer {uid = concat ["c", show n, "_",  ident clafer]}
+
+
+resolveEInheritance predecessors absAncestor declarations allSuper
+  | isOverlapping $ super clafer =
+    return ([], super clafer, [clafer])
+  | otherwise = do
+    let superList = (if absAncestor then id else tail) allSuper
+    elements' <- mapM (resolveEElement predecessors True declarations) $
+                 (tail allSuper) >>= elements
+    return (elements', ISuper False [ISExpIdent "clafer" False], superList)
+  where
+  clafer = head allSuper
+
+
+resolveEElement predecessors absAncestor declarations x = case x of
+  ISubclafer clafer  -> ISubclafer `liftM`
+    resolveEClafer predecessors absAncestor declarations clafer
+  ISubconstraint constraint  -> return x
+
+{-
+c_10 : one ECU -> r_c36_server : one (c34_ECU1 + c46_ECU2)
+if a path starts with abstract then all subsequent relations must be split into +
+if a path start with this.(abstract rel) then the rel and all subsequent abstract rels must be split into + 
+
+ok, this is fairly easy and can be done in resolver just by splitting the first element
+
+once the paths are resolved each identifier can be easily checked to be/belong to abstract clafer
+-}
