@@ -122,10 +122,12 @@ genType x = genSExp Nothing x TSExp
 genConstraints parent clafer = genParentConst parent clafer :
   genGroupConst clafer : genPathConst "ref" clafer : refs ++ constraints 
   where
-  constraints = mapMaybe genConst $ elements clafer
+  constraints = map genConst $ elements clafer
   genConst x = case x of
-    ISubconstraint lexp  -> Just $ genLExp (Just clafer) lexp
-    _ -> Nothing
+    ISubconstraint lexp  -> genLExp (Just clafer) lexp
+    ISubclafer clafer -> if genCardCrude (card clafer) == "set"
+                         then genCard (genRelName $ uid clafer) $ card clafer
+                         else ""
   refs = map (\c -> genPathConst (genRelName $ uid c) c) $
          filter isRefPath $ filter isRef $ getSubclafers $ elements clafer
 
