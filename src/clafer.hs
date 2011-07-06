@@ -34,10 +34,7 @@ type VerbosityL = Int
 putStrV :: VerbosityL -> String -> IO ()
 putStrV v s = if v > 1 then putStrLn s else return ()
 
-{-
-runFile :: VerbosityL -> ParseFun -> FilePath -> IO ()
-runFile v p f = putStrLn f >> readFile f >>= run (AlloyFile f) v p
--}
+
 run :: VerbosityL -> ParseFun -> ClaferArgs -> IO ()
 run v p args = do
            input <- readFile $ file args
@@ -80,14 +77,6 @@ clafer = ClaferArgs {
 main :: IO ()
 main = do
   args <- cmdArgs clafer
---  args <- getArgs
   let timeInSec = 10 * 10^6
-  timeout timeInSec (
-    run 2 pModule args)
---case args of
---      [] -> hGetContents stdin >>= 
---      ("-x":[]) -> hGetContents stdin >>= run XmlOut 2 pModule
---      ("-e":[]) -> hGetContents stdin >>= run EcoreOut 2 pModule
---      fs -> mapM_ (runFile 2 pModule) fs
---  )
+  timeout timeInSec (run 2 pModule args)
   return ()

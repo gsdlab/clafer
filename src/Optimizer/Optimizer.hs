@@ -185,12 +185,6 @@ expNav' context x = case x of
 mkUnion (x:[]) = x
 mkUnion xs = foldl1 ISExpUnion xs
 
-{-
-alg:
-1. split so you get a list fo ISExps
-[conc.absx.y.z, conc1.absx.y.z] -> if abs then get a list of implements and choose one that has conc as a predecessor; if no conc then union else identity
-[this.concToAbs.y.z] -> if abs then just make unions else identity
--}
 
 split' x f = case x of
   ISExpJoin sexp0 sexp  -> split' sexp0 (\s -> f $ ISExpJoin s sexp)

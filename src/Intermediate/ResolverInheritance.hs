@@ -179,13 +179,3 @@ resolveEElement predecessors absAncestor declarations x = case x of
   ISubclafer clafer  -> ISubclafer `liftM`
     resolveEClafer predecessors absAncestor declarations clafer
   ISubconstraint constraint  -> return x
-
-{-
-c_10 : one ECU -> r_c36_server : one (c34_ECU1 + c46_ECU2)
-if a path starts with abstract then all subsequent relations must be split into +
-if a path start with this.(abstract rel) then the rel and all subsequent abstract rels must be split into + 
-
-ok, this is fairly easy and can be done in resolver just by splitting the first element
-
-once the paths are resolved each identifier can be easily checked to be/belong to abstract clafer
--}
