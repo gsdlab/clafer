@@ -173,13 +173,16 @@ expNav' context x = case x of
     return (ISExpJoin sexp0' sexp', context'')
   ISExpIdent id t -> do
     st <- gets stable
-    if Map.member id st then do
-      let impls  = (Map.!) st id
-      let (impls', context') = maybe (impls, "") (\x -> ([[head x]], head x)) $
-           find (\x -> context == (head.tail) x) impls
-      return (mkUnion $ map (\x -> ISExpIdent x t) $ map head impls', context')
-    else do
-      return (x, id)
+    if Map.member id st
+      then do
+        let impls  = (Map.!) st id
+        let (impls', context') = maybe (impls, "")
+             (\x -> ([[head x]], head x)) $
+             find (\x -> context == (head.tail) x) impls
+        return (mkUnion $ map (\x -> ISExpIdent x t) $ map head impls',
+                context')
+      else do
+        return (x, id)
 
 
 mkUnion (x:[]) = x
