@@ -15,16 +15,14 @@ import Intermediate.ResolverInheritance
 import Intermediate.ResolverType
 
 resolveModule :: ClaferArgs -> IModule -> (IModule, GEnv)
-resolveModule args declarations = resolveNamesModule $ rem $ resolveNModule $ nDecls
+resolveModule args declarations = resolveNamesModule $ rem $ resolveNModule $ nameModule declarations
   where
-  (nDecls, genv) = nameModule declarations
-  rem = (if unroll_inheritance args then resolveEModule else flip $ curry id)
-        genv
+  rem = (if unroll_inheritance args then resolveEModule else id)
 
 
 -- -----------------------------------------------------------------------------
 nameModule :: IModule -> (IModule, GEnv)
-nameModule declarations = runState (mapM nameDeclaration declarations) $ GEnv 0 Map.empty
+nameModule declarations = runState (mapM nameDeclaration declarations) $ GEnv 0 Map.empty []
 
 
 nameDeclaration x = case x of

@@ -258,7 +258,8 @@ toNodeDeep env
   
 
 allSubclafers env = getSubclafers $ concat $
-                    mapHierarchy elements (clafers env) (fromJust $ context env)
+                    mapHierarchy elements (sClafers $ genv env)
+                    (fromJust $ context env)
 
 
 findUnique :: String -> [(IClafer, [IClafer])] -> Maybe (String, [IClafer])

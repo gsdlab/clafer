@@ -59,16 +59,6 @@ process f xs = unfoldr run ([], xs)
     (f ps us))
 
 -- -----------------------------------------------------------------------------
--- Finds the first element with certain property and returns
--- it. If no element is found, returns some default value.
--- Elements are sorted according to their hierarchy
-findInHierarchy def pred declarations clafer =
-  findInList def pred $ findHierarchy declarations clafer
-
-
-findInList def pred xs = maybe def id $ find pred xs
-
-
 -- finds hierarchy and transforms each element
 mapHierarchy f = (map f.).findHierarchy
 
@@ -76,7 +66,7 @@ mapHierarchy f = (map f.).findHierarchy
 -- returns inheritance hierarchy of a clafer
 findHierarchy :: [IClafer] -> IClafer -> [IClafer]
 findHierarchy clafers clafer = clafer : unfoldr 
-  (\c -> find (isEqClaferId $ getSuper c) (bfsClafers clafers) -- searches for super
+  (\c -> find (isEqClaferId $ getSuper c) clafers -- searches for super
      >>= Just . (apply id)) clafer
 
 -- -----------------------------------------------------------------------------
@@ -135,7 +125,8 @@ baseClafer = "clafer"
 
 data GEnv = GEnv {
   num :: Int,
-  stable :: Map.Map String [[String]]
+  stable :: Map.Map String [[String]],
+  sClafers ::[IClafer]
     }
   deriving (Eq, Show)
 

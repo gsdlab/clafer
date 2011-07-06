@@ -14,9 +14,11 @@ import Intermediate.ResolverName
 
 -- -----------------------------------------------------------------------------
 -- Non-overlapping inheritance
-resolveNModule :: IModule -> IModule
-resolveNModule declarations =
-  map (resolveNDeclaration declarations) declarations
+resolveNModule :: (IModule, GEnv) -> (IModule, GEnv)
+resolveNModule (declarations, genv) =
+  (declarations', genv {sClafers = bfs toNodeShallow $ toClafers declarations'})
+  where
+  declarations' = map (resolveNDeclaration declarations) declarations
 
 
 resolveNDeclaration :: IModule -> IDeclaration -> IDeclaration
@@ -134,8 +136,8 @@ analyzeElement env x = case x of
 
 -- -----------------------------------------------------------------------------
 -- Expand inheritance
-resolveEModule :: GEnv -> IModule -> (IModule, GEnv)
-resolveEModule genv declarations =
+resolveEModule :: (IModule, GEnv) -> (IModule, GEnv)
+resolveEModule (declarations, genv) =
   runState (mapM (resolveEDeclaration declarations) declarations) genv
 -- todo: CHECK IF INHERITANCE CAN BE UNROLLED
 
@@ -147,7 +149,8 @@ resolveEDeclaration declarations x = case x of
 
 
 resolveEClafer predecessors absAncestor declarations clafer = do
-  let allSuper = findHierarchy (toClafers declarations) clafer
+  sClafers' <- gets sClafers
+  let allSuper = findHierarchy sClafers' clafer
   clafer' <- renameClafer absAncestor clafer
   let predecessors' = uid clafer' : predecessors
   (sElements, super', superList) <-
