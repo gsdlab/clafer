@@ -22,6 +22,11 @@ data SEnv = SEnv {
 data HowResolved = Special | TypeSpecial | Binding | Subclafers | Ancestor | AbsClafer | TopClafer
   deriving (Eq, Show)
 
+
+resolveModuleNames :: (IModule, GEnv) -> IModule
+resolveModuleNames (declarations, genv) =
+  map (resolveDeclaration (declarations, genv)) declarations
+
 resolveDeclaration :: (IModule, GEnv) -> IDeclaration -> IDeclaration
 resolveDeclaration (declarations, genv) x = case x of
   IClaferDecl clafer  -> IClaferDecl $ resolveClafer env clafer

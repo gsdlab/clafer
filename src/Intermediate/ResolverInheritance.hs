@@ -54,6 +54,12 @@ resolveN declarations id =
 
 -- -----------------------------------------------------------------------------
 -- Overlapping inheritance
+
+resolveOModule :: (IModule, GEnv) -> IModule
+resolveOModule (declarations, genv) =
+  map (resolveODeclaration (declarations, genv)) declarations
+
+
 resolveODeclaration :: (IModule, GEnv) -> IDeclaration -> IDeclaration
 resolveODeclaration (declarations, genv) x = case x of
   IClaferDecl clafer  -> IClaferDecl $ resolveOClafer env clafer
@@ -82,6 +88,12 @@ resolveOElement env x = case x of
 
 -- -----------------------------------------------------------------------------
 -- inherited and default cardinalities
+
+analyzeModule :: (IModule, GEnv) -> IModule
+analyzeModule (declarations, genv) =
+  map (analyzeDeclaration (declarations, genv)) declarations
+
+
 analyzeDeclaration :: (IModule, GEnv) -> IDeclaration -> IDeclaration
 analyzeDeclaration (declarations, genv) x = case x of
   IClaferDecl clafer  -> IClaferDecl $ analyzeClafer env clafer

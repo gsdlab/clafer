@@ -44,8 +44,7 @@ nameElement x = case x of
 
 -- -----------------------------------------------------------------------------
 resolveNamesModule :: (IModule, GEnv) -> (IModule, GEnv)
-resolveNamesModule (declarations, genv) = (multiProcess
-  (map (\f -> \ps us -> f (ps ++ us, genv) (head us))
-   [resolveTDeclaration, resolveDeclaration, analyzeDeclaration,
-    resolveODeclaration])
-  declarations, genv)
+resolveNamesModule (declarations, genv) = (res, genv)
+  where
+  res = foldr ($) declarations $ map (\f -> flip (curry f) genv)
+    [resolveTModule, resolveModuleNames, analyzeModule, resolveOModule]

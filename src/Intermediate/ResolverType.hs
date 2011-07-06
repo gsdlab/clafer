@@ -5,6 +5,11 @@ import Data.Function
 import Common
 import Intermediate.Intclafer
 
+resolveTModule :: (IModule, GEnv) -> IModule
+resolveTModule (declarations, genv) =
+  map (resolveTDeclaration (declarations, genv)) declarations
+
+
 resolveTDeclaration :: (IModule, GEnv) -> IDeclaration -> IDeclaration
 resolveTDeclaration _ x = case x of
   IClaferDecl clafer  -> IClaferDecl $ resolveTClafer clafer
