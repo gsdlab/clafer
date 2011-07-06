@@ -62,10 +62,8 @@ resolveOModule (declarations, genv) =
 
 resolveODeclaration :: (IModule, GEnv) -> IDeclaration -> IDeclaration
 resolveODeclaration (declarations, genv) x = case x of
-  IClaferDecl clafer  -> IClaferDecl $ resolveOClafer env clafer
+  IClaferDecl clafer  -> IClaferDecl $ resolveOClafer (defSEnv genv declarations) clafer
   IConstDecl constraint  -> x
-  where
-  env = SEnv (toClafers declarations) Nothing [] [] genv
 
 
 resolveOClafer :: SEnv -> IClafer -> IClafer
@@ -96,10 +94,8 @@ analyzeModule (declarations, genv) =
 
 analyzeDeclaration :: (IModule, GEnv) -> IDeclaration -> IDeclaration
 analyzeDeclaration (declarations, genv) x = case x of
-  IClaferDecl clafer  -> IClaferDecl $ analyzeClafer env clafer
+  IClaferDecl clafer  -> IClaferDecl $ analyzeClafer (defSEnv genv declarations) clafer
   IConstDecl constraint  -> x
-  where
-  env = SEnv (toClafers declarations) Nothing [] [] genv
 
 
 analyzeClafer :: SEnv -> IClafer -> IClafer

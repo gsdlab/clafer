@@ -15,7 +15,9 @@ data SEnv = SEnv {
   context :: Maybe IClafer,
   bindings :: [([String], [IClafer])],
   resPath :: [IClafer],
-  genv :: GEnv
+  genv :: GEnv,
+  aClafers :: [(IClafer, [IClafer])],
+  cClafers :: [(IClafer, [IClafer])]
   } deriving Show
 
 
@@ -23,16 +25,23 @@ data HowResolved = Special | TypeSpecial | Binding | Subclafers | Ancestor | Abs
   deriving (Eq, Show)
 
 
+defSEnv genv declarations = env {aClafers = rCl aClafers',
+                                 cClafers = rCl cClafers'}
+  where
+  env = SEnv (toClafers declarations) Nothing [] [] genv [] []
+  rCl cs = bfs toNodeDeep $ map (\c -> env{context = Just c, resPath = [c]}) cs
+  (aClafers', cClafers') = partition isAbstract $ clafers env
+
+
 resolveModuleNames :: (IModule, GEnv) -> IModule
 resolveModuleNames (declarations, genv) =
-  map (resolveDeclaration (declarations, genv)) declarations
+  map (resolveDeclaration (defSEnv genv declarations) declarations) declarations
 
-resolveDeclaration :: (IModule, GEnv) -> IDeclaration -> IDeclaration
-resolveDeclaration (declarations, genv) x = case x of
+
+resolveDeclaration :: SEnv -> IModule -> IDeclaration -> IDeclaration
+resolveDeclaration env declarations x = case x of
   IClaferDecl clafer  -> IClaferDecl $ resolveClafer env clafer
   IConstDecl constraint  -> IConstDecl $ resolveLExp env constraint
-  where
-  env = SEnv (toClafers declarations) Nothing [] [] genv
 
 
 resolveClafer :: SEnv -> IClafer -> IClafer
@@ -171,7 +180,7 @@ resolveAExp env x = case x of
 
 resolveName :: SEnv -> String -> (HowResolved, String, [IClafer])
 resolveName env id = resolve env id
-  [resolveSpecial, resolveBind, resolveSubclafers, resolveTopLevel, resolveNone]
+  [resolveSpecial, resolveBind, resolveSubclafers, resolveAncestor, resolveTopLevel, resolveNone]
 
 
 resolveImmName :: SEnv -> String -> (HowResolved, String, [IClafer])
@@ -218,17 +227,20 @@ resolveImmSubclafers env id =
                     $ allSubclafers env) >>= toMTriple Subclafers
 
 
+resolveAncestor :: SEnv -> String -> Maybe (HowResolved, String, [IClafer])
+resolveAncestor env id = context env >> (find (isAncestor env) $ clafers env)
+                         >>= resolveUnique >>= toMTriple Ancestor
+  where
+  resolveUnique c = findUnique id $ bfs toNodeDeep 
+                    [env{context = Just c, resPath = [c]}]
+
+
 -- searches for a feature starting from local root (BFS) and then continues with
 -- other declarations
 resolveTopLevel :: SEnv -> String -> Maybe (HowResolved, String, [IClafer])
 resolveTopLevel env id = foldr1 mplus $ map
-  (\(cs, hr) -> resolveUnique cs >>= toMTriple hr)
-  [(ancestor, Ancestor), (aClafers, AbsClafer), (cClafers, TopClafer)]
-  where
-  (ancestor, topLevel) = partition (isAncestor env) $ clafers env
-  (aClafers, cClafers) = partition isAbstract topLevel
-  resolveUnique cs = findUnique id $ bfs toNodeDeep $
-                     map (\c -> env {context = Just c, resPath = [c]}) cs
+  (\(cs, hr) -> findUnique id cs >>= toMTriple hr)
+  [(aClafers env, AbsClafer), (cClafers env, TopClafer)]
 
 
 isAncestor env cs = (not $ isNothing $ context env) &&
