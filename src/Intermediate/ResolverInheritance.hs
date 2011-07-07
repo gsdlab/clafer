@@ -3,6 +3,8 @@ module Intermediate.ResolverInheritance where
 import Monad
 import Control.Monad.State
 import Data.Maybe
+import Data.Graph
+import Data.Tree
 import Data.List
 import Data.Map (Map)
 import qualified Data.Map as Map
@@ -138,29 +140,59 @@ analyzeElement env x = case x of
 -- Expand inheritance
 resolveEModule :: (IModule, GEnv) -> (IModule, GEnv)
 resolveEModule (declarations, genv) =
-  runState (mapM (resolveEDeclaration declarations) declarations) genv
--- todo: CHECK IF INHERITANCE CAN BE UNROLLED
+  runState (mapM (resolveEDeclaration declarations
+                  (unrollableModule declarations)) declarations) genv
+
+-- -----------------------------------------------------------------------------
+unrollableModule :: IModule -> [String]
+unrollableModule declarations = getDirUnrollables $
+  mapMaybe unrollabeDeclaration declarations
+
+unrollabeDeclaration x = case x of
+  IClaferDecl clafer -> if isAbstract clafer
+                        then Just (uid clafer, unrollableClafer clafer)
+                        else Nothing
+  IConstDecl constraint  -> Nothing
 
 
-resolveEDeclaration declarations x = case x of
+unrollableClafer clafer
+  | isOverlapping $ super clafer = []
+  | getSuper clafer == "clafer"  = deps
+  | otherwise                    = getSuper clafer : deps
+  where
+  deps = (mapMaybe elemToClafer $ elements clafer) >>= unrollableClafer
+
+
+getDirUnrollables :: [(String, [String])] -> [String]
+getDirUnrollables dependencies = (filter isUnrollable $ map (map v2n) $
+                                  map flatten (scc graph)) >>= map fst3
+  where
+  (graph, v2n, k2v) = graphFromEdges $map (\(c, ss) -> (c, c, ss)) dependencies
+  isUnrollable (x:[]) = fst3 x `elem` trd3 x
+  isUnrollable _ = True
+
+-- -----------------------------------------------------------------------------
+
+resolveEDeclaration declarations unrollables x = case x of
   IClaferDecl clafer -> if isAbstract clafer then return x else
-    IClaferDecl `liftM` resolveEClafer [] False declarations clafer
+    IClaferDecl `liftM` resolveEClafer [] unrollables False declarations clafer
   IConstDecl constraint  -> return x
 
 
-resolveEClafer predecessors absAncestor declarations clafer = do
+resolveEClafer predecessors unrollables absAncestor declarations clafer = do
   sClafers' <- gets sClafers
-  let allSuper = findHierarchy sClafers' clafer
   clafer' <- renameClafer absAncestor clafer
   let predecessors' = uid clafer' : predecessors
   (sElements, super', superList) <-
-      resolveEInheritance predecessors' absAncestor declarations allSuper
+      resolveEInheritance predecessors' unrollables absAncestor declarations
+        (findHierarchy sClafers' clafer)
   let sClafer = Map.fromList $ zip (map uid superList) $ repeat [predecessors']
   modify (\e -> e {stable = Map.delete "clafer" $
                             Map.unionWith ((nub.).(++)) sClafer $
                             stable e})
-  elements' <- mapM (resolveEElement predecessors' absAncestor declarations) $
-               elements clafer
+  elements' <-
+      mapM (resolveEElement predecessors' unrollables absAncestor declarations)
+            $ elements clafer
   return $ clafer' {super = super', elements = elements' ++ sElements}
 
 
@@ -174,19 +206,22 @@ renameClafer' clafer = do
   return $ clafer {uid = concat ["c", show n, "_",  ident clafer]}
 
 
-resolveEInheritance predecessors absAncestor declarations allSuper
-  | isOverlapping $ super clafer =
-    return ([], super clafer, [clafer])
+resolveEInheritance predecessors unrollables absAncestor declarations allSuper
+  | isOverlapping $ super clafer = return ([], super clafer, [clafer])
   | otherwise = do
     let superList = (if absAncestor then id else tail) allSuper
-    elements' <- mapM (resolveEElement predecessors True declarations) $
-                 (tail allSuper) >>= elements
-    return (elements', ISuper False [ISExpIdent "clafer" False], superList)
+    let unrollSuper = filter (\s -> uid s `notElem` unrollables) $ tail allSuper
+    elements' <-
+        mapM (resolveEElement predecessors unrollables True declarations) $
+             unrollSuper >>= elements
+    let super' = if (getSuper clafer `elem` unrollables)
+                 then super clafer else ISuper False [ISExpIdent "clafer" False]
+    return (elements', super', superList)
   where
   clafer = head allSuper
 
 
-resolveEElement predecessors absAncestor declarations x = case x of
+resolveEElement predecessors unrollables absAncestor declarations x = case x of
   ISubclafer clafer  -> ISubclafer `liftM`
-    resolveEClafer predecessors absAncestor declarations clafer
+    resolveEClafer predecessors unrollables absAncestor declarations clafer
   ISubconstraint constraint  -> return x

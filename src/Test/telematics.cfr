@@ -56,6 +56,6 @@ telematicsSystem
 
 -- concrete product
 [dual
--- extraDisplay
+ extraDisplay
  telematicsSystem.size.large]
 [ comp.version == 1]
