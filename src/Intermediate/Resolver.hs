@@ -34,39 +34,46 @@ import Intermediate.ResolverInheritance
 import Intermediate.ResolverType
 
 resolveModule :: ClaferArgs -> IModule -> (IModule, GEnv)
-resolveModule args declarations = resolveNamesModule $ rem $ resolveNModule $ dups $ nameModule declarations
+resolveModule args declarations = resolveNamesModule args $ rem $ resolveNModule $ dups $ nameModule args declarations
   where
   rem  = if unroll_inheritance args then resolveEModule else id
   dups = if check_duplicates args then findDupModule else id
 
 
 -- -----------------------------------------------------------------------------
-nameModule :: IModule -> (IModule, GEnv)
-nameModule declarations = runState (mapM nameDeclaration declarations) $ GEnv 0 Map.empty []
+nameModule :: ClaferArgs -> IModule -> (IModule, GEnv)
+nameModule args declarations =
+  runState (mapM (nameDeclaration f) declarations) $ GEnv 0 Map.empty []
+  where
+  f = if unique_identifiers args then copyUid else renameClafer'
 
 
-nameDeclaration x = case x of
-  IClaferDecl clafer  -> IClaferDecl `liftM` (nameClafer clafer)
+nameDeclaration f x = case x of
+  IClaferDecl clafer  -> IClaferDecl `liftM` (nameClafer f clafer)
   IConstDecl constraint  -> return x
 
 
-nameClafer clafer = do
-  clafer' <- renameClafer' clafer
-  elements' <- mapM nameElement $ elements clafer
+nameClafer f clafer = do
+  clafer' <- f clafer
+  elements' <- mapM (nameElement f) $ elements clafer
   return $ clafer' {elements = elements'}
 
 
-nameElement x = case x of
-  ISubclafer clafer -> ISubclafer `liftM` (nameClafer clafer)
+nameElement f x = case x of
+  ISubclafer clafer -> ISubclafer `liftM` (nameClafer f clafer)
   ISubconstraint ilexp -> return x
 
--- -----------------------------------------------------------------------------
-resolveNamesModule :: (IModule, GEnv) -> (IModule, GEnv)
-resolveNamesModule (declarations, genv) = (res, genv)
-  where
-  res = foldr ($) declarations $ map (\f -> flip (curry f) genv)
-    [resolveTModule, resolveModuleNames, analyzeModule, resolveOModule]
 
+copyUid clafer = return clafer{uid = ident clafer}
+
+-- -----------------------------------------------------------------------------
+resolveNamesModule :: ClaferArgs -> (IModule, GEnv) -> (IModule, GEnv)
+resolveNamesModule args (declarations, genv) = (res, genv)
+  where
+  res = foldr ($) declarations $ map (\f -> flip (curry f) genv) funs
+  funs
+    | unique_identifiers args = [resolveTModule, analyzeModule]
+    | otherwise               = [resolveTModule, resolveModuleNames, analyzeModule, resolveOModule]
 
 findDupModule :: (IModule, GEnv) -> (IModule, GEnv)
 findDupModule (declarations, genv)

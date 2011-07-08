@@ -26,6 +26,7 @@ import List
 import Data.Map (Map)
 import qualified Data.Map as Map
 import System.Console.CmdArgs
+import Control.Monad.State
 
 import Front.Absclafer
 import Intermediate.Intclafer
@@ -157,6 +158,7 @@ data ClaferArgs = ClaferArgs {
       file :: FilePath,
       timeout_analysis :: Int,
       no_layout :: Bool,
-      check_duplicates :: Bool
+      check_duplicates :: Bool,
+      unique_identifiers :: Bool
     } deriving (Show, Data, Typeable)
 

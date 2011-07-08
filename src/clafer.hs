@@ -95,7 +95,8 @@ clafer = ClaferArgs {
   file = def &= args,
   timeout_analysis = def &= help "Timeout for analysis",
   no_layout = def &= help "Don't resolve off-side rule layout",
-  check_duplicates = def &= help "Check duplicated clafer names"
+  check_duplicates = def &= help "Check duplicated clafer names",
+  unique_identifiers = def &= help "Assume that all identifiers are unique. Turns off the name resolver."
  } &= summary "Clafer v0.0.2"
 
 main :: IO ()
