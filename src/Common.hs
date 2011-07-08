@@ -159,7 +159,6 @@ data ClaferArgs = ClaferArgs {
       timeout_analysis :: Int,
       no_layout :: Bool,
       check_duplicates :: Bool,
-      force_resolver :: Bool,
-      synthetic_root :: Bool
+      force_resolver :: Bool
     } deriving (Show, Data, Typeable)
 

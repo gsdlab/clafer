@@ -181,10 +181,7 @@ mkPath env (howResolved, id, path) = case howResolved of
   id'   = ISExpIdent id False
   toNav = foldl (\sexp id -> ISExpJoin sexp $ ISExpIdent id False)
           (ISExpIdent this True)
-  toNav' p = mkNav $ map (\c -> ISExpIdent c $ isTopLevel c $ clafers env) p
-
-
-isTopLevel id clafers = id `elem` (map uid clafers)
+  toNav' p = mkNav $ map (\c -> ISExpIdent c False) p
 
 
 mkNav (x:[]) = x

@@ -32,7 +32,7 @@ import Intermediate.Intclafer
 
 optimizeModule :: ClaferArgs -> (IModule, GEnv) -> IModule
 optimizeModule args (declarations, genv) =
-  em $ remUnusedAbs $ map optimizeDeclaration declarations
+  em $ remUnusedAbs $ map optimizeDeclaration $ markTopModule declarations
   where
   em = if unroll_inheritance args then flip (curry expModule) genv else id
 
@@ -273,3 +273,99 @@ findDupElement x = case x of
 findDuplicates :: [IClafer] -> [String]
 findDuplicates clafers =
   map head $ filter (\xs -> 1 < length xs) $ group $ sort $ map ident clafers
+
+-- -----------------------------------------------------------------------------
+-- marks top clafers
+
+markTopModule :: IModule -> IModule
+markTopModule declarations =
+  map (markTopDeclaration (
+      [this, parent, children, strType, intType, integerType] ++
+      (map uid $ toClafers declarations))) declarations
+
+
+markTopDeclaration :: [String] -> IDeclaration -> IDeclaration
+markTopDeclaration clafers x = case x of
+  IClaferDecl clafer  -> IClaferDecl $ markTopClafer clafers clafer
+  IConstDecl constraint  -> IConstDecl $ markTopLExp clafers constraint
+
+
+markTopClafer :: [String] -> IClafer -> IClafer
+markTopClafer clafers clafer =
+  clafer {super = markTopSuper clafers $ super clafer, 
+          elements = map (markTopElement clafers) $ elements clafer}
+
+
+markTopSuper :: [String] -> ISuper -> ISuper
+markTopSuper clafers x = x{supers = map (markTopSExp clafers) $ supers x}
+
+
+markTopElement :: [String] -> IElement -> IElement
+markTopElement clafers x = case x of
+  ISubclafer clafer  -> ISubclafer $ markTopClafer clafers clafer
+  ISubconstraint constraint  -> ISubconstraint $ markTopLExp clafers constraint
+
+
+markTopLExp :: [String] -> ILExp -> ILExp
+markTopLExp clafers x = case x of
+  IEIff lexp0 lexp  -> on IEIff (markTopLExp clafers) lexp0 lexp
+  IEImpliesElse lexp0 lexp Nothing  -> on (\l0 l -> IEImpliesElse l0 l Nothing)
+                                       (markTopLExp clafers) lexp0 lexp
+  IEImpliesElse lexp0 lexp1 (Just lexp)  ->
+      on (\l0 l1 -> IEImpliesElse l0 l1 $ Just $ markTopLExp clafers lexp)
+      (markTopLExp clafers) lexp0 lexp1
+  IEOr lexp0 lexp  -> on IEOr (markTopLExp clafers) lexp0 lexp
+  IEXor lexp0 lexp  -> on IEXor (markTopLExp clafers) lexp0 lexp
+  IEAnd lexp0 lexp  -> on IEAnd (markTopLExp clafers) lexp0 lexp
+  IENeg lexp  -> IENeg $ markTopLExp clafers lexp
+  IETerm term  -> IETerm $ markTopTerm clafers term
+
+
+markTopTerm :: [String] -> ITerm -> ITerm
+markTopTerm clafers x = case x of
+  ITermCmpExp cmpexp t -> ITermCmpExp (markTopCmpExp clafers cmpexp) t
+  ITermQuantSet quant sexp -> ITermQuantSet quant $ markTopSExp clafers sexp
+  ITermQuantDeclExp decl lexp -> ITermQuantDeclExp decl $ markTopLExp ((decl >>= decls) ++ clafers) lexp
+
+
+markTopCmpExp :: [String] -> ICmpExp -> ICmpExp
+markTopCmpExp clafers x = case x of
+  IELt exp0 exp  -> on IELt (markTopExp clafers) exp0 exp
+  IEGt exp0 exp  -> on IEGt (markTopExp clafers) exp0 exp
+  IEEq exp0 exp  -> on IEEq (markTopExp clafers) exp0 exp
+  IEREq exp0 exp  -> on IEREq (markTopExp clafers) exp0 exp
+  IELte exp0 exp  -> on IELte (markTopExp clafers) exp0 exp
+  IEGte exp0 exp  -> on IEGte (markTopExp clafers) exp0 exp
+  IENeq exp0 exp  -> on IENeq (markTopExp clafers) exp0 exp
+  IERNeq exp0 exp  -> on IERNeq (markTopExp clafers) exp0 exp
+  IEIn exp0 exp  -> on IEIn (markTopExp clafers) exp0 exp
+  IENin exp0 exp  -> on IENin (markTopExp clafers) exp0 exp
+
+
+markTopExp :: [String] -> IExp -> IExp
+markTopExp clafers x = case x of
+  IESetExp sexp  -> IESetExp $ markTopSExp clafers sexp
+  IENumExp aexp -> IENumExp $ markTopAExp clafers aexp
+  IEStrExp strexp -> x
+
+
+markTopSExp :: [String] -> ISExp -> ISExp
+markTopSExp clafers x = case x of
+  ISExpUnion sexp0 sexp -> on ISExpUnion res sexp0 sexp
+  ISExpIntersection sexp0 sexp  -> on ISExpIntersection res sexp0 sexp
+  ISExpDomain sexp0 sexp  -> on ISExpDomain res sexp0 sexp
+  ISExpRange sexp0 sexp  -> on ISExpRange res sexp0 sexp
+  ISExpJoin sexp0 sexp -> ISExpJoin (res sexp0) sexp
+  ISExpIdent sident _ -> ISExpIdent sident $ sident `elem` clafers
+  where
+  res = markTopSExp clafers
+
+
+markTopAExp :: [String] -> IAExp -> IAExp
+markTopAExp clafers x = case x of
+  IEAdd aexp0 aexp -> on IEAdd (markTopAExp clafers) aexp0 aexp
+  IESub aexp0 aexp -> on IESub (markTopAExp clafers) aexp0 aexp
+  IEMul aexp0 aexp -> on IEMul (markTopAExp clafers) aexp0 aexp
+  IEUmn aexp -> IEUmn $ markTopAExp clafers aexp
+  IECSetExp sexp -> IECSetExp $ markTopSExp clafers sexp
+  IEInt n    -> x

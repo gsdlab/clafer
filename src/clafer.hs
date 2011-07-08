@@ -67,7 +67,7 @@ run v p args = do
                           let f = file args
                           putStrLn "\nParse Successful!"
                           putStrLn "[Desugaring]"
-                          dTree <- evaluate $! desugarModule args tree
+                          dTree <- evaluate $! desugarModule tree
                           let f'    = take (length f - 4) f
                           writeFile (f' ++ ".des") $ printTree $
                             sugarModule dTree
@@ -114,8 +114,7 @@ clafer = ClaferArgs {
   timeout_analysis = def &= help "Timeout for analysis",
   no_layout = def &= help "Don't resolve off-side rule layout" &= name "l",
   check_duplicates = def &= help "Check duplicated clafer names",
-  force_resolver = def &= help "Force name resolution" &= name "f",
-  synthetic_root = def &= help "Introduce synthetic root" &= name "r"
+  force_resolver = def &= help "Force name resolution" &= name "f"
  } &= summary "Clafer v0.0.2"
 
 main :: IO ()
