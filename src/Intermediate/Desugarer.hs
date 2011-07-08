@@ -25,9 +25,24 @@ import Monad
 import Common
 import Data.Function
 
-desugarModule :: Module -> IModule
-desugarModule x = case x of
-  Module declarations  -> map desugarDeclaration $ declarations >>= desugarEnums
+desugarModule :: ClaferArgs -> Module -> IModule
+desugarModule args x = case x of
+  Module declarations  -> output
+    where
+    decls = map desugarDeclaration $ declarations >>= desugarEnums
+    output
+      | synthetic_root args = [IClaferDecl root]
+      | otherwise           = decls
+    root = IClafer False Nothing "root" "root"
+           (ISuper False [ISExpIdent "clafer" True])
+           (Just (1, ExIntegerNum 1))
+           (1, ExIntegerNum 1)
+           (map declToElem decls)
+
+
+declToElem x = case x of
+  IClaferDecl clafer -> ISubclafer clafer
+  IConstDecl constraint  -> ISubconstraint constraint
 
 
 sugarModule :: IModule -> Module

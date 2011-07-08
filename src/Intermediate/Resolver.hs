@@ -42,18 +42,12 @@ resolveModule args declarations = resolveNamesModule args $ rem $ resolveNModule
 
 -- -----------------------------------------------------------------------------
 nameModule :: ClaferArgs -> IModule -> (IModule, GEnv)
-nameModule args declarations
-  | unique_identifiers args = ([IClaferDecl root], genv)
-  | otherwise = (decls, genv)
+nameModule args declarations =
+  runState (mapM (nameDeclaration f) declarations) $ GEnv 0 Map.empty []
   where
   f = if unique_identifiers args then copyUid else renameClafer'
-  (decls, genv) =
-      runState (mapM (nameDeclaration f) declarations) $ GEnv 0 Map.empty []
-  root = IClafer False Nothing "root" "root"
-         (ISuper False [ISExpIdent "clafer" True])
-         (Just (1, ExIntegerNum 1))
-         (1, ExIntegerNum 1)
-         (map declToElem decls)
+
+
 
 nameDeclaration f x = case x of
   IClaferDecl clafer  -> IClaferDecl `liftM` (nameClafer f clafer)
@@ -72,11 +66,6 @@ nameElement f x = case x of
 
 
 copyUid clafer = return clafer{uid = ident clafer}
-
-
-declToElem x = case x of
-  IClaferDecl clafer -> ISubclafer clafer
-  IConstDecl constraint  -> ISubconstraint constraint
 
 -- -----------------------------------------------------------------------------
 resolveNamesModule :: ClaferArgs -> (IModule, GEnv) -> (IModule, GEnv)
