@@ -144,8 +144,11 @@ genConstraints parent clafer = genParentConst parent clafer :
   constraints = map genConst $ elements clafer
   genConst x = case x of
     ISubconstraint lexp  -> genLExp (Just clafer) lexp
-    ISubclafer clafer -> mkCard (genRelName $ uid clafer) $
-                         fromJust $ card clafer
+    ISubclafer clafer -> if genCardCrude crd `elem` ["one", "lone", "some"]
+                         then "" else mkCard (genRelName $ uid clafer) $
+                           fromJust crd
+      where
+      crd = card clafer
   refs = map (\c -> genPathConst (genRelName $ uid c) c) $
          filter isRefPath $ filter isRef $ getSubclafers $ elements clafer
 
