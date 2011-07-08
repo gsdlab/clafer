@@ -213,3 +213,63 @@ split' x f = case x of
   ISExpIdent id t -> do
     st <- gets stable
     mapM f $ map (flip ISExpIdent t) $ maybe [id] (map head) $ Map.lookup id st
+
+-- -----------------------------------------------------------------------------
+-- checking if all clafers have unique names and don't extend other clafers
+
+allUnique :: IModule -> Bool
+allUnique declarations = and un && (null $
+  filter (\xs -> 1 < length xs) $ group $ sort idents)
+  where
+  (un, idents) = unzip $ map allUniqueDeclaration declarations
+
+
+allUniqueDeclaration x = case x of
+  IClaferDecl clafer  -> allUniqueClafer clafer
+  IConstDecl constraint  -> (True, [])
+
+
+allUniqueClafer clafer =
+  ("clafer" == getSuper clafer && and un, ident clafer : concat idents)
+  where
+  (un, idents) = unzip $ map allUniqueElement $ elements clafer
+
+allUniqueElement :: IElement -> (Bool, [String])
+allUniqueElement x = case x of
+  ISubclafer clafer -> allUniqueClafer clafer
+  ISubconstraint ilexp -> (True, [])
+
+-- -----------------------------------------------------------------------------
+findDupModule :: ClaferArgs -> IModule -> IModule
+findDupModule args declarations
+  | check_duplicates args = findDupModule' declarations
+  | otherwise             = declarations
+
+
+findDupModule' :: IModule -> IModule
+findDupModule' declarations
+  | null dups = map findDupDeclaration declarations
+  | otherwise = error $ show dups
+  where
+  dups = findDuplicates $ toClafers declarations
+
+
+findDupDeclaration x = case x of
+  IClaferDecl clafer  -> IClaferDecl $ findDupClafer clafer
+  IConstDecl constraint  -> x
+
+
+findDupClafer clafer = if null dups
+  then clafer{elements = map findDupElement $ elements clafer}
+  else error $ (show $ ident clafer) ++ show dups
+  where
+  dups = findDuplicates $ getSubclafers $ elements clafer
+
+findDupElement x = case x of
+  ISubclafer clafer -> ISubclafer $ findDupClafer clafer
+  ISubconstraint ilexp -> x
+
+
+findDuplicates :: [IClafer] -> [String]
+findDuplicates clafers =
+  map head $ filter (\xs -> 1 < length xs) $ group $ sort $ map ident clafers

@@ -34,10 +34,9 @@ import Intermediate.ResolverInheritance
 import Intermediate.ResolverType
 
 resolveModule :: ClaferArgs -> IModule -> (IModule, GEnv)
-resolveModule args declarations = resolveNamesModule args $ rem $ resolveNModule $ dups $ nameModule args declarations
+resolveModule args declarations = resolveNamesModule args $ rem $ resolveNModule $ nameModule args declarations
   where
   rem  = if unroll_inheritance args then resolveEModule else id
-  dups = if check_duplicates args then findDupModule else id
 
 
 -- -----------------------------------------------------------------------------
@@ -45,7 +44,7 @@ nameModule :: ClaferArgs -> IModule -> (IModule, GEnv)
 nameModule args declarations =
   runState (mapM (nameDeclaration f) declarations) $ GEnv 0 Map.empty []
   where
-  f = if unique_identifiers args then copyUid else renameClafer'
+  f = if force_resolver args then renameClafer' else copyUid
 
 
 
@@ -73,33 +72,5 @@ resolveNamesModule args (declarations, genv) = (res, genv)
   where
   res = foldr ($) declarations $ map (\f -> flip (curry f) genv) funs
   funs
-    | unique_identifiers args = [resolveTModule, analyzeModule]
-    | otherwise               = [resolveTModule, resolveModuleNames, analyzeModule, resolveOModule]
-
-findDupModule :: (IModule, GEnv) -> (IModule, GEnv)
-findDupModule (declarations, genv)
-  | null dups = (map findDupDeclaration declarations, genv)
-  | otherwise = error $ show dups
-  where
-  dups = findDuplicates $ toClafers declarations
-
-
-findDupDeclaration x = case x of
-  IClaferDecl clafer  -> IClaferDecl $ findDupClafer clafer
-  IConstDecl constraint  -> x
-
-
-findDupClafer clafer = if null dups
-  then clafer{elements = map findDupElement $ elements clafer}
-  else error $ (show $ uid clafer) ++ show dups
-  where
-  dups = findDuplicates $ getSubclafers $ elements clafer
-
-findDupElement x = case x of
-  ISubclafer clafer -> ISubclafer $ findDupClafer clafer
-  ISubconstraint ilexp -> x
-
-
-findDuplicates :: [IClafer] -> [String]
-findDuplicates clafers =
-  map head $ filter (\xs -> 1 < length xs) $ group $ sort $ map ident clafers
+    | force_resolver args = [resolveTModule, resolveModuleNames, analyzeModule, resolveOModule]
+    | otherwise = [resolveTModule, analyzeModule]

@@ -71,18 +71,23 @@ run v p args = do
                           let f'    = take (length f - 4) f
                           writeFile (f' ++ ".des") $ printTree $
                             sugarModule dTree
+                          let dTree' = findDupModule args dTree
+                          let au = allUnique dTree'
+                          let args' = args{force_resolver = not au ||
+                                           force_resolver args}
                           putStrLn "[Resolving]"
-                          (rTree, genv) <- evaluate $! resolveModule args dTree
+                          (rTree, genv) <- evaluate $!
+                                           resolveModule args' dTree'
                           putStrLn "[Analyzing String]"
                           aTree <- evaluate $! astrModule rTree
                           putStrLn "[Optimizing]"
-                          oTree <- evaluate $ optimizeModule args (aTree, genv)
+                          oTree <- evaluate $ optimizeModule args' (aTree, genv)
                           writeFile (f' ++ ".ana") $ printTree $
                             sugarModule oTree
                           putStrLn "[Generating Code]"
                           code <- evaluate $! genModule (oTree, genv)
                           putStrLn "[Saving File]"
-                          printStats $ statsModule oTree
+                          printStats au $ statsModule oTree
                           writeFile (f' ++ ".als") code
 
 
@@ -93,10 +98,11 @@ showTree v tree
       putStrV v $ "\n[Linearized tree]\n\n" ++ printTree tree
 
 
-printStats (Stats na nr nc nconst sgl) = do
+printStats au (Stats na nr nc nconst sgl) = do
   putStrLn $ "All clafers: " ++ (show (na + nr + nc)) ++ " | Abstract: " ++ (show na) ++ " | Concrete: " ++ (show nc) ++ " | References: " ++ (show nr)
   putStrLn $ "Constraints: " ++ show nconst
   putStrLn $ "Global scope: " ++ showInterval sgl
+  putStrLn $ "All names unique: " ++ show au
 
 
 showInterval (n, ExIntegerAst) = show n ++ "..*"
@@ -108,7 +114,7 @@ clafer = ClaferArgs {
   timeout_analysis = def &= help "Timeout for analysis",
   no_layout = def &= help "Don't resolve off-side rule layout" &= name "l",
   check_duplicates = def &= help "Check duplicated clafer names",
-  unique_identifiers = def &= help "Assume that all identifiers are unique. Turns off the name resolver." &= name "u",
+  force_resolver = def &= help "Force name resolution" &= name "f",
   synthetic_root = def &= help "Introduce synthetic root" &= name "r"
  } &= summary "Clafer v0.0.2"
 
