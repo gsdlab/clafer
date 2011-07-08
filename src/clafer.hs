@@ -91,12 +91,12 @@ showTree v tree
       putStrV v $ "\n[Linearized tree]\n\n" ++ printTree tree
 
 clafer = ClaferArgs {
-  unroll_inheritance = def &= help "Unroll inheritance",
+  unroll_inheritance = def &= help "Unroll inheritance" &= name "i",
   file = def &= args,
   timeout_analysis = def &= help "Timeout for analysis",
-  no_layout = def &= help "Don't resolve off-side rule layout",
+  no_layout = def &= help "Don't resolve off-side rule layout" &= name "l",
   check_duplicates = def &= help "Check duplicated clafer names",
-  unique_identifiers = def &= help "Assume that all identifiers are unique. Turns off the name resolver."
+  unique_identifiers = def &= help "Assume that all identifiers are unique. Turns off the name resolver." &= name "u"
  } &= summary "Clafer v0.0.2"
 
 main :: IO ()
