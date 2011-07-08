@@ -41,6 +41,7 @@ import Intermediate.Desugarer
 import Intermediate.Resolver
 import Intermediate.StringAnalyzer
 import Optimizer.Optimizer
+import Generator.Stats
 import Generator.Alloy
 
 type ParseFun = [Token] -> Err Module
@@ -81,6 +82,7 @@ run v p args = do
                           putStrLn "[Generating Code]"
                           code <- evaluate $! genModule (oTree, genv)
                           putStrLn "[Saving File]"
+                          printStats $ statsModule oTree
                           writeFile (f' ++ ".als") code
 
 
@@ -89,6 +91,16 @@ showTree v tree
  = do
       putStrV v $ "\n[Abstract Syntax]\n\n" ++ show tree
       putStrV v $ "\n[Linearized tree]\n\n" ++ printTree tree
+
+
+printStats (Stats na nr nc nconst sgl) = do
+  putStrLn $ "All clafers: " ++ (show (na + nr + nc)) ++ " | Abstract: " ++ (show na) ++ " | Concrete: " ++ (show nc) ++ " | References: " ++ (show nr)
+  putStrLn $ "Constraints: " ++ show nconst
+  putStrLn $ "Global scope: " ++ showInterval sgl
+
+
+showInterval (n, ExIntegerAst) = show n ++ "..*"
+showInterval (n, ExIntegerNum m) = show n ++ ".." ++ show m
 
 clafer = ClaferArgs {
   unroll_inheritance = def &= help "Unroll inheritance" &= name "i",
