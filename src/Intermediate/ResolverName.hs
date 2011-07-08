@@ -32,6 +32,8 @@ import Intermediate.Intclafer
 data SEnv = SEnv {
   clafers :: [IClafer],
   context :: Maybe IClafer,
+  subClafers :: [(IClafer, [IClafer])],
+  ancClafers :: [(IClafer, [IClafer])],
   bindings :: [([String], [IClafer])],
   resPath :: [IClafer],
   genv :: GEnv,
@@ -47,7 +49,7 @@ data HowResolved = Special | TypeSpecial | Binding | Subclafers | Ancestor | Abs
 defSEnv genv declarations = env {aClafers = rCl aClafers',
                                  cClafers = rCl cClafers'}
   where
-  env = SEnv (toClafers declarations) Nothing [] [] genv [] []
+  env = SEnv (toClafers declarations) Nothing [] [] [] [] genv [] []
   rCl cs = bfs toNodeDeep $ map (\c -> env{context = Just c, resPath = [c]}) cs
   (aClafers', cClafers') = partition isAbstract $ clafers env
 
@@ -65,8 +67,15 @@ resolveDeclaration env declarations x = case x of
 
 resolveClafer :: SEnv -> IClafer -> IClafer
 resolveClafer env clafer =
-  clafer {elements = map (resolveElement env
-  {context = Just clafer, resPath = clafer : resPath env}) $ elements clafer}
+  clafer {elements = map (resolveElement env'{subClafers = subClafers',
+                                              ancClafers = ancClafers'}) $
+          elements clafer}
+  where
+  env' = env {context = Just clafer, resPath = clafer : resPath env}
+  subClafers' = tail $ bfs toNodeDeep [env'{resPath = [clafer]}]
+  ancestor = last $ resPath env'
+  ancClafers' = bfs toNodeDeep
+                [env{context = Just ancestor, resPath = [ancestor]}]
 
 
 resolveSuper :: SEnv -> ISuper -> ISuper
@@ -233,10 +242,8 @@ resolveBind env id = find (\bs -> id `elem` fst bs) (bindings env) >>=
 
 -- searches for a name in all subclafers (BFS)
 resolveSubclafers :: SEnv -> String -> Maybe (HowResolved, String, [IClafer])
-resolveSubclafers env id = 
-  (context env) >> (findUnique id $ tail $ bfs toNodeDeep
-                    [env {resPath = [fromJust $ context env]}]) >>=
-                    (toMTriple Subclafers)
+resolveSubclafers env id = -- if null (subClafers env) then error $ uid $  else
+  (context env) >> (findUnique id $ subClafers env) >>= (toMTriple Subclafers)
 
 
 -- searches for a name in immediate subclafers (BFS)
@@ -247,11 +254,8 @@ resolveImmSubclafers env id =
 
 
 resolveAncestor :: SEnv -> String -> Maybe (HowResolved, String, [IClafer])
-resolveAncestor env id = context env >> (find (isAncestor env) $ clafers env)
-                         >>= resolveUnique >>= toMTriple Ancestor
-  where
-  resolveUnique c = findUnique id $ bfs toNodeDeep 
-                    [env{context = Just c, resPath = [c]}]
+resolveAncestor env id = context env >> (findUnique id $ ancClafers env) >>=
+                         toMTriple Ancestor
 
 
 -- searches for a feature starting from local root (BFS) and then continues with
@@ -260,10 +264,6 @@ resolveTopLevel :: SEnv -> String -> Maybe (HowResolved, String, [IClafer])
 resolveTopLevel env id = foldr1 mplus $ map
   (\(cs, hr) -> findUnique id cs >>= toMTriple hr)
   [(aClafers env, AbsClafer), (cClafers env, TopClafer)]
-
-
-isAncestor env cs = (not $ isNothing $ context env) &&
-  isEqClaferId (uid $ last $ (fromJust $ context $ env) : resPath env) cs
 
 
 toNodeDeep env

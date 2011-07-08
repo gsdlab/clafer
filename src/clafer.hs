@@ -28,6 +28,7 @@ import IO  ( stdin, hGetContents )
 import System ( getArgs, getProgName )
 import System.Console.CmdArgs
 import System.Timeout
+import Control.Monad.State
 
 import Common
 import Front.Lexclafer
@@ -57,7 +58,7 @@ putStrV v s = if v > 1 then putStrLn s else return ()
 run :: VerbosityL -> ParseFun -> ClaferArgs -> IO ()
 run v p args = do
            input <- readFile $ file args
-           let ts = myLLexer (resLayout input)  in case p ts of
+           let ts = myLLexer $ (if no_layout args then id else resLayout) input  in case p ts of
              Bad s    -> do putStrLn "\nParse              Failed...\n"
                             putStrV v "Tokens:"
                             putStrLn s
@@ -91,11 +92,16 @@ showTree v tree
 
 clafer = ClaferArgs {
   unroll_inheritance = def &= help "Unroll inheritance",
-  file = def &= args} &= summary "Clafer v0.0.2"
+  file = def &= args,
+  timeout_analysis = def &= help "Timeout for analysis",
+  no_layout = def &= help "Don't resolve off-side rule layout",
+  check_duplicates = def &= help "Check duplicated clafer names"
+ } &= summary "Clafer v0.0.2"
 
 main :: IO ()
 main = do
   args <- cmdArgs clafer
-  let timeInSec = 10 * 10^6
-  timeout timeInSec (run 2 pModule args)
+  let timeInSec = (timeout_analysis args) * 10^6
+  if timeInSec > 0 then timeout timeInSec $ run 2 pModule args
+  else Just `liftM` run 2 pModule args
   return ()

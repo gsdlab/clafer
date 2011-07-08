@@ -84,9 +84,12 @@ mapHierarchy f = (map f.).findHierarchy
 
 -- returns inheritance hierarchy of a clafer
 findHierarchy :: [IClafer] -> IClafer -> [IClafer]
-findHierarchy clafers clafer = clafer : unfoldr 
-  (\c -> find (isEqClaferId $ getSuper c) clafers -- searches for super
-     >>= Just . (apply id)) clafer
+findHierarchy clafers clafer
+  | getSuper clafer == "clafer" = [clafer]
+  | otherwise                   = clafer : superClafers
+  where
+  superClafers = unfoldr (\c -> find (isEqClaferId $ getSuper c) clafers >>=
+                          Just . (apply id)) clafer
 
 -- -----------------------------------------------------------------------------
 -- generic functions
@@ -151,6 +154,9 @@ data GEnv = GEnv {
 
 data ClaferArgs = ClaferArgs {
       unroll_inheritance :: Bool,
-      file :: FilePath
+      file :: FilePath,
+      timeout_analysis :: Int,
+      no_layout :: Bool,
+      check_duplicates :: Bool
     } deriving (Show, Data, Typeable)
 
