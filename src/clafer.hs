@@ -57,7 +57,7 @@ putStrV v s = if v > 1 then putStrLn s else return ()
 run :: VerbosityL -> ParseFun -> ClaferArgs -> IO ()
 run v p args = do
            input <- readFile $ file args
-           let ts = resolveLayout $ myLLexer input  in case p ts of
+           let ts = myLLexer (resLayout input)  in case p ts of
              Bad s    -> do putStrLn "\nParse              Failed...\n"
                             putStrV v "Tokens:"
                             putStrLn s
