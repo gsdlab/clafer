@@ -47,8 +47,9 @@ statsDeclaration x = case x of
 
 statsClafer clafer = do
   if isAbstract clafer then modify (\e -> e {naClafers = naClafers e + 1})
-  else if isOverlapping $ super clafer then modify (\e -> e {nrClafers = nrClafers e + 1})
-  else modify (\e -> e {ncClafers = ncClafers e + 1})
+  else
+    if isOverlapping $ super clafer then modify (\e -> e {nrClafers = nrClafers e + 1})
+    else modify (\e -> e {ncClafers = ncClafers e + 1})
   sglCard' <- gets sglCard
   modify (\e -> e {sglCard = optimizeCard sglCard' $ glCard clafer})
   mapM_ statsElement $ elements clafer
