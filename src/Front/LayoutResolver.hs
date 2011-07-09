@@ -21,6 +21,7 @@ module Front.LayoutResolver where
 
 -- very simple layout resolver
 import Control.Monad.State
+import Control.Monad
 
 import Front.Lexclafer
 import Data.Maybe
