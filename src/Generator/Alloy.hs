@@ -291,7 +291,6 @@ genNumExp (TSAExp, t0, t) op x y
   | t0 == TSExp = "all cl0 : " ++ x ++ " | cl0" ++ op ++ y
   | otherwise   = "all cl0 : " ++ y ++ " | " ++ x ++ op ++ "cl0"
   where
---  genVal e = e ++ (if "c" `isPrefixOf` e && '.' `notElem` e then ".@ref" else "")
 genNumExp _ op x y = x ++ op ++ y
 
 
