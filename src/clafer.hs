@@ -59,7 +59,11 @@ putStrV v s = if v > 1 then putStrLn s else return ()
 run :: VerbosityL -> ParseFun -> ClaferArgs -> IO ()
 run v p args = do
            input <- readFile $ file args
-           let ts = myLLexer $ (if no_layout args then id else resLayout) input  in case p ts of
+           let ts = (if not (new_layout args || no_layout args)
+                     then resolveLayout else id) $ myLLexer $
+                    (if (not $ no_layout args) && new_layout args
+                     then resLayout else id)
+                    input  in case p ts of
              Bad s    -> do putStrLn "\nParse              Failed...\n"
                             putStrV v "Tokens:"
                             putStrLn s
@@ -113,6 +117,7 @@ clafer = ClaferArgs {
   file = def &= args,
   timeout_analysis = def &= help "Timeout for analysis",
   no_layout = def &= help "Don't resolve off-side rule layout" &= name "l",
+  new_layout = def &= help "Use new fast layout resolver (experimental)" &= name "nl",
   check_duplicates = def &= help "Check duplicated clafer names",
   force_resolver = def &= help "Force name resolution" &= name "f"
  } &= summary "Clafer v0.0.2"

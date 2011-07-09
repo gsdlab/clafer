@@ -158,6 +158,7 @@ data ClaferArgs = ClaferArgs {
       file :: FilePath,
       timeout_analysis :: Int,
       no_layout :: Bool,
+      new_layout :: Bool,
       check_duplicates :: Bool,
       force_resolver :: Bool
     } deriving (Show, Data, Typeable)
