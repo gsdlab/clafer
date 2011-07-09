@@ -121,6 +121,7 @@ main :: IO ()
 main = do
   args <- cmdArgs clafer
   let timeInSec = (timeout_analysis args) * 10^6
-  if timeInSec > 0 then timeout timeInSec $ run 2 pModule args
-  else Just `liftM` run 2 pModule args
+  if timeInSec > 0
+    then timeout timeInSec $ run 2 pModule args
+    else Just `liftM` run 2 pModule args
   return ()
