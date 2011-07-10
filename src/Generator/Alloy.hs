@@ -61,7 +61,7 @@ showSet delim xs = showSet' delim $ filterNull xs
 -- optimization: if only boolean parents, then set card is known
 genClafer :: Maybe IClafer -> IClafer -> Result
 genClafer parent clafer
-  | isRef clafer = ""
+  | isJust parent && isRef clafer = ""
   | otherwise    = (unlines $ filterNull
                    [cardFact ++ claferDecl clafer
                    , showSet "\n, " $ genRelations clafer
