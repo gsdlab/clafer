@@ -219,7 +219,7 @@ split' x f = case x of
 
 allUnique :: IModule -> Bool
 allUnique declarations = and un && (null $
-  filter (\xs -> 1 < length xs) $ group $ sort idents)
+  filter (\xs -> 1 < length xs) $ group $ sort $ concat idents)
   where
   (un, idents) = unzip $ map allUniqueDeclaration declarations
 
