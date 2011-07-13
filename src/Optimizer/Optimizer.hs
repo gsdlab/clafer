@@ -32,8 +32,9 @@ import Intermediate.Intclafer
 
 optimizeModule :: ClaferArgs -> (IModule, GEnv) -> IModule
 optimizeModule args (declarations, genv) =
-  em $ remUnusedAbs $ map optimizeDeclaration $ markTopModule declarations
+  em $ rm $ map optimizeDeclaration $ markTopModule declarations
   where
+  rm = if remove_unused args then remUnusedAbs else id
   em = if unroll_inheritance args then flip (curry expModule) genv else id
 
 optimizeDeclaration :: IDeclaration -> IDeclaration
