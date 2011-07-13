@@ -311,7 +311,7 @@ genSExp' clafer x isFirst = case x of
      brArg (flip (genSExp' clafer) False) sexp]
   ISExpIdent "parent" _  ->
     brArg id $ (genRelName $ uid $ fromJust clafer) ++ ".this"
-  ISExpIdent ident isTop ->
+  ISExpIdent ident isTop -> 
     (if isFirst && isTop then "" else '@' : genRelName "") ++ ident
   where
   genS = genBinOp (flip (genSExp' clafer) isFirst)

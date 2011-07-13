@@ -146,8 +146,14 @@ mkExp cons f exp0 exp = do
 expTerm x = case x of
   ITermCmpExp cmpexp t -> (\c -> ITermCmpExp c t) `liftM` expCmpExp cmpexp
   ITermQuantSet quant sexp -> ITermQuantSet quant `liftM` expSExp sexp
-  ITermQuantDeclExp decls lexp -> ITermQuantDeclExp decls `liftM` expLExp lexp
+  ITermQuantDeclExp decls lexp -> do
+    decls' <- mapM expDecl decls
+    lexp' <- expLExp lexp
+    return $ ITermQuantDeclExp decls' lexp'
 
+
+expDecl x = case x of
+  IDecl exquant disj locids sexp -> IDecl exquant disj locids `liftM` expSExp sexp
 
 expCmpExp x = case x of
   IELt exp0 exp  -> eExp IELt exp0 exp
@@ -326,7 +332,7 @@ markTopTerm :: [String] -> ITerm -> ITerm
 markTopTerm clafers x = case x of
   ITermCmpExp cmpexp t -> ITermCmpExp (markTopCmpExp clafers cmpexp) t
   ITermQuantSet quant sexp -> ITermQuantSet quant $ markTopSExp clafers sexp
-  ITermQuantDeclExp decl lexp -> ITermQuantDeclExp decl $ markTopLExp ((decl >>= decls) ++ clafers) lexp
+  ITermQuantDeclExp decl lexp -> ITermQuantDeclExp (map (markTopDecl clafers) decl) $ markTopLExp ((decl >>= decls) ++ clafers) lexp
 
 
 markTopCmpExp :: [String] -> ICmpExp -> ICmpExp
@@ -341,6 +347,11 @@ markTopCmpExp clafers x = case x of
   IERNeq exp0 exp  -> on IERNeq (markTopExp clafers) exp0 exp
   IEIn exp0 exp  -> on IEIn (markTopExp clafers) exp0 exp
   IENin exp0 exp  -> on IENin (markTopExp clafers) exp0 exp
+
+
+markTopDecl :: [String] -> IDecl -> IDecl
+markTopDecl clafers x = case x of
+  IDecl exquant disj locids sexp -> IDecl exquant disj locids $ markTopSExp clafers sexp
 
 
 markTopExp :: [String] -> IExp -> IExp
