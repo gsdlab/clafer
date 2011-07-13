@@ -120,7 +120,7 @@ clafer = ClaferArgs {
   new_layout = def &= help "Use new fast layout resolver (experimental)" &= name "nl",
   check_duplicates = def &= help "Check duplicated clafer names",
   force_resolver = def &= help "Force name resolution" &= name "f",
-  remove_unused = def &= help "Remove unused abstract clafers" &= name "r"
+  keep_unused = def &= help "Keep unused abstract clafers" &= name "k"
  } &= summary "Clafer v0.0.2"
 
 main :: IO ()

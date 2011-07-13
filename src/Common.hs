@@ -161,6 +161,6 @@ data ClaferArgs = ClaferArgs {
       new_layout :: Bool,
       check_duplicates :: Bool,
       force_resolver :: Bool,
-      remove_unused :: Bool
+      keep_unused :: Bool
     } deriving (Show, Data, Typeable)
 

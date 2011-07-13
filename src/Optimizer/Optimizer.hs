@@ -34,7 +34,7 @@ optimizeModule :: ClaferArgs -> (IModule, GEnv) -> IModule
 optimizeModule args (declarations, genv) =
   em $ rm $ map optimizeDeclaration $ markTopModule declarations
   where
-  rm = if remove_unused args then remUnusedAbs else id
+  rm = if keep_unused args then id else remUnusedAbs
   em = if unroll_inheritance args then flip (curry expModule) genv else id
 
 optimizeDeclaration :: IDeclaration -> IDeclaration
