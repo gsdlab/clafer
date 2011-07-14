@@ -34,9 +34,10 @@ import Intermediate.ResolverInheritance
 import Intermediate.ResolverType
 
 resolveModule :: ClaferArgs -> IModule -> (IModule, GEnv)
-resolveModule args declarations = resolveNamesModule args $ rem $ resolveNModule $ nameModule args declarations
+resolveModule args declarations = resolveNamesModule args $ rom $ rem $ resolveNModule $ nameModule args declarations
   where
-  rem  = if unroll_inheritance args then resolveEModule else id
+  rem = if unroll_inheritance args then resolveEModule else id
+  rom = if force_resolver args then resolveOModule else id
 
 
 -- -----------------------------------------------------------------------------
@@ -72,5 +73,5 @@ resolveNamesModule args (declarations, genv) = (res, genv)
   where
   res = foldr ($) declarations $ map (\f -> flip (curry f) genv) funs
   funs
-    | force_resolver args = [resolveTModule, resolveModuleNames, analyzeModule, resolveOModule]
+    | force_resolver args = [resolveTModule, resolveModuleNames, analyzeModule]
     | otherwise = [resolveTModule, analyzeModule]

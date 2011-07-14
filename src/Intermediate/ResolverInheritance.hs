@@ -78,9 +78,11 @@ resolveN declarations id =
 -- -----------------------------------------------------------------------------
 -- Overlapping inheritance
 
-resolveOModule :: (IModule, GEnv) -> IModule
+resolveOModule :: (IModule, GEnv) -> (IModule, GEnv)
 resolveOModule (declarations, genv) =
-  map (resolveODeclaration (declarations, genv)) declarations
+  (declarations', genv {sClafers = bfs toNodeShallow $ toClafers declarations'})
+  where
+  declarations' = map (resolveODeclaration (declarations, genv)) declarations
 
 
 resolveODeclaration :: (IModule, GEnv) -> IDeclaration -> IDeclaration

@@ -24,6 +24,8 @@ import Monad
 import Data.Maybe
 import Control.Monad.State
 import Data.Function
+import Data.Map (Map)
+import qualified Data.Map as Map
 
 import Common
 import Front.Absclafer
@@ -76,12 +78,6 @@ resolveClafer env clafer =
   ancestor = last $ resPath env'
   ancClafers' = bfs toNodeDeep
                 [env{context = Just ancestor, resPath = [ancestor]}]
-
-
-resolveSuper :: SEnv -> ISuper -> ISuper
-resolveSuper env x = case x of
-  ISuper True sexp -> ISuper True $ map (resolveSExp env) sexp
-  _ -> x
 
 
 resolveElement :: SEnv -> IElement -> IElement
@@ -160,7 +156,7 @@ resolveNav env x isFirst = case x of
   ISExpJoin sexp0 sexp  -> (ISExpJoin sexp0' sexp', path')
     where
     (sexp0', path) = resolveNav env sexp0 True
-    (sexp', path') =
+    (sexp', path') = 
         resolveNav env {context = listToMaybe path, resPath = path} sexp False
   ISExpIdent id _ -> out 
     where

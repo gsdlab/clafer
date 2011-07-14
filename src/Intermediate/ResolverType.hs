@@ -91,4 +91,4 @@ resolveTExp :: IExp -> EType
 resolveTExp x = case x of
   IESetExp sexp  -> TSExp
   IENumExp aexp -> TAExp
-  IEStrExp strexp -> TSExp
+  IEStrExp strexp -> TAExp
