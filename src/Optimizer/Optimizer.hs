@@ -94,7 +94,7 @@ getExtended clafer =
 -- inheritance  expansions
 
 expModule :: (IModule, GEnv) -> IModule
-expModule (declarations, genv) =
+expModule (declarations, genv) = 
   evalState (mapM expDeclaration declarations) genv
 
 
@@ -172,6 +172,7 @@ expCmpExp x = case x of
 
 expExp x = case x of
   IESetExp sexp  -> IESetExp `liftM` expSExp sexp
+  IENumExp aexp -> IENumExp `liftM` expAExp aexp
   _ -> return x
 
 
@@ -220,6 +221,18 @@ split' x f = case x of
   ISExpIdent id t -> do
     st <- gets stable
     mapM f $ map (flip ISExpIdent t) $ maybe [id] (map head) $ Map.lookup id st
+
+
+expAExp x = case x of
+  IEAdd aexp0 aexp -> eAExp IEAdd aexp0 aexp
+  IESub aexp0 aexp -> eAExp IESub aexp0 aexp
+  IEMul aexp0 aexp -> eAExp IEMul aexp0 aexp
+  IEUmn aexp -> IEUmn `liftM` expAExp aexp
+  IECSetExp sexp -> IECSetExp `liftM` expSExp sexp
+  IEInt n    -> return x
+  where
+  eAExp cons aexp0 aexp = mkExp cons expAExp aexp0 aexp
+
 
 -- -----------------------------------------------------------------------------
 -- checking if all clafers have unique names and don't extend other clafers
