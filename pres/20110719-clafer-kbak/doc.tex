@@ -1,0 +1,169 @@
+\documentclass[table,15pt,t]{beamer}
+
+\usepackage{fontspec}
+\usepackage{xunicode} %Unicode extras!
+\usepackage{xltxtra}  %Fixes
+\usepackage{relsize}  %relative font sizing commands
+\usepackage{booktabs}
+\usepackage{eulervm} %mathfonts
+\usepackage{tikz}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{ifthen,calc}
+
+\usetheme{Sleek}
+
+\usetikzlibrary{arrows,shapes,shadows}
+\usetikzlibrary{positioning}
+
+\tikzstyle{ds} = [draw, thick, color=oxygenblue, inner sep=0pt, drop shadow]
+
+\setsansfont[Mapping=tex-text]{Trade Gothic LT Std}
+
+\setlength{\fboxsep}{2mm}
+\newcommand{\sem}[1]{\ensuremath{[\![#1]\!]}}
+
+\title{Optimized Translation of Clafer Models to Alloy}
+\author{Kacper Bak}
+\institute{\small Generative Software Development Lab\\University of Waterloo}
+\date{CS744 Course Project. July 19, 2011}
+
+\newcommand{\vmiddle}[1]{
+  \vspace{\stretch{1}}
+  #1
+  \vspace{\stretch{1}}
+}
+
+\newcommand{\interframe}[1]{
+\begin{frame}{}
+\vmiddle{\hmiddle{\Huge #1}}
+\end{frame}
+}
+
+\newcommand{\mlist}[1]{
+\vmiddle{
+  \begin{list}{}{}
+    #1
+  \end{list}
+  }
+}
+
+\newcommand{\hmiddle}[1]{
+  \begin{center}#1\end{center}
+}
+
+\newcommand{\twocolumns}[4]{
+    \begin{columns}
+      \begin{column}{#1\textwidth}
+        \begin{overlayarea}{#1\textwidth}{\textheight}
+          #2
+        \end{overlayarea}
+      \end{column}
+      \begin{column}{#3\textwidth}
+        \begin{overlayarea}{#3\textwidth}{\textheight}
+          #4
+        \end{overlayarea}
+      \end{column}
+    \end{columns}
+}
+
+\newcounter{i}
+\newcommand{\ganimate}[3]{
+    \setcounter{i}{0}
+    \whiledo{\value{i}<#2}{
+      \stepcounter{i}
+      \only<\the\value{i}>{\includegraphics[#3]{figs/#1\the\value{i}}}
+    }
+}
+
+\newcommand{\showCode}[3]{
+  \only<#1>{\lstinputlisting[firstline=#2,lastline=#3]{code/telematics.cfr}}
+}
+
+\makeatletter
+\newcommand{\showCodesStart}[3]{
+\setcounter{i}{#1}
+\@for\arg:=#3\do{
+  \showCode{\value{i}}{#2}{\arg}
+\stepcounter{i}
+}}
+\makeatother
+
+\newcommand{\showCodes}[2]{
+\showCodesStart{1}{#1}{#2}
+}
+
+% To make the legend for icons in class diagrams
+\newcommand{\icon}[1]{\textcircled{\texttt{\textbf{\textit{#1}}}}}
+
+\lstdefinelanguage{Clafer}
+{morekeywords={abstract, else, in, no, opt, xor, all, enum, lone, not, or, disj, extends, mux, one, some},
+sensitive=true,
+morecomment=[l][\footnotesize\itshape]{--},
+morecomment=[s][\small\itshape]{{-}{-}},
+%basicstyle=\footnotesize,
+tabsize=4,
+columns=fullflexible,
+literate={->}{{$\to$ }}1 {^}{{$\mspace{-3mu}\widehat{\quad}\mspace{-3mu}$}}1
+ {<}{$<$ }2 {>}{$>$ }2 {>=}{$\geq$ }2 {<=}{$\leq$ }2
+ {<:}{{$<\mspace{-3mu}:$}}2 {:>}{{$:\mspace{-3mu}>$}}2
+ {<=>}{{$\Leftrightarrow$ }}2
+ {=>}{{$\Rightarrow$ }}2 {+}{$+$ }2 {++}{{$+\mspace{-8mu}+$ }}2
+ {\~}{{$\mspace{-3mu}\widetilde{\quad}\mspace{-3mu}$}}1
+ {!=}{$\neq$ }2 {*}{${}^{\ast}$}1
+ {\#}{$\#$}1
+ {\~}{$\neg$}1
+ {+}{$+$ }1
+}
+
+\lstset{basicstyle=\small,language=Clafer,numbers=none}
+
+\begin{document}
+
+\begin{frame}[plain]
+  \vmiddle{\titlepage}
+\end{frame}
+
+\begin{frame}{Clafer}
+  \mlist{
+    \item Modeling language for Software Product Lines
+    \item Analyses\pause
+    \item Concept modeling
+  }
+\end{frame}
+
+\begin{frame}{Reasoning: Clafer to Alloy}
+ \mlist{
+    \item Clafer to Alloy\pause
+    \item Structural modeling\pause
+    \item Model checking\pause
+    \item Alloy: instantiation, testing ideas
+ }
+\end{frame}
+
+\begin{frame}{clafer2alloy Translator}
+ \mlist{
+    \item Parser, desugarer, semantic analyzer, code generator
+    \item Haskell\pause
+    \item Available online
+    \item Released source code
+    \item Documentation
+ }
+\end{frame}
+
+\interframe{Conclusion}
+
+\begin{frame}{Conclusion}
+ \mlist{
+    \item Modeling and analyzing SPLs\pause
+    \item Concept modeling\pause
+    \item Common infrastructure\pause
+    \item Non-trivial analyses
+ }
+\end{frame}
+
+\interframe{Thanks for listening!}
+
+\interframe{Questions?\\[1cm]\normalsize{\textsf{gsd.uwaterloo.ca/clafer}}}
+
+\end{document}
