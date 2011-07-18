@@ -9,6 +9,8 @@
 \usepackage{tikz}
 \usepackage{listings}
 \usepackage{graphicx}
+\usepackage{tabularx}
+\usepackage{alltt}
 \usepackage{ifthen,calc}
 
 \usetheme{Sleek}
@@ -124,32 +126,158 @@ literate={->}{{$\to$ }}1 {^}{{$\mspace{-3mu}\widehat{\quad}\mspace{-3mu}$}}1
   \vmiddle{\titlepage}
 \end{frame}
 
-\begin{frame}{Clafer}
+\begin{frame}{Course Project}
   \mlist{
-    \item Modeling language for Software Product Lines
-    \item Analyses\pause
-    \item Concept modeling
+  \item CS 744: Advanced Compiler Design
+  \item Data flow analysis, redundancy elimination, optimizations
+  \item Individual project
+  \item Duration: 2 months
   }
 \end{frame}
 
-\begin{frame}{Reasoning: Clafer to Alloy}
+\begin{frame}{Clafer Update}
+  \mlist{
+    \item Analysis of variability models
+    \item Translation to Alloy (uses SAT solvers)
+    \item \textsf{clafer2alloy} translator: a year ago
+    \item Some work on formal semantics
+    \item Examples of variability models
+  }
+\end{frame}
+
+\begin{frame}{The Toolchain}
+  \begin{tabularx}{\textwidth}{ccccccccc}
+    \includegraphics[scale=0.06]{figs/model}
+    & $\rightarrow$
+    & \includegraphics[scale=1]{figs/gears}
+    & $\rightarrow$
+    & \includegraphics[scale=0.3]{figs/document}
+    & $\rightarrow$
+    & \includegraphics[scale=0.7]{figs/alloy}
+    & $\rightarrow$
+    & $P \land Q$
+    \\
+    Clafer & & Clafer & & Alloy & & Alloy & & Formula\\
+    Model & & Translator & & Model & & Analyzer & &
+  \end{tabularx}
+\end{frame}
+
+\interframe{Demo}
+
+\begin{frame}{Problems}
+  \begin{tabularx}{\textwidth}{ccccccccc}
+    \includegraphics[scale=0.06]{figs/model}
+    & $\rightarrow$
+    & \includegraphics[scale=1]{figs/gears}
+    & $\rightarrow$
+    & \includegraphics[scale=0.3]{figs/document}
+    & $\rightarrow$
+    & \includegraphics[scale=0.7]{figs/alloy}
+    & $\rightarrow$
+    & $P \land Q$
+    \\
+    Clafer & & Clafer & & Alloy & & Alloy & & Formula\\
+    Model & & Translator & & Model & & Analyzer & &
+  \end{tabularx}
+  \mlist{
+  \item \visible<1->{Translation rules heavily influence reasoning time in Alloy}% bottlenecks
+  \item \visible<2->{Large Alloy files (complex models)}
+  \item \visible<3->{Ineffective Alloy representation (complex formulas)}
+  \item \visible<4->{Slow \textsf{clafer2alloy} translator}
+ }
+  \begin{tikzpicture}[overlay]
+    \draw<2->[red,ultra thick,rounded corners] (5.0,4.0) rectangle (7.0,7.0);
+    \draw<3->[red,ultra thick,rounded corners] (10.0,4.0) rectangle (11.75,7.0);
+    \draw<4->[red,ultra thick,rounded corners] (2.3,4.0) rectangle (4.3,7.0);
+  \end{tikzpicture}
+\end{frame}
+
+\begin{frame}{Solution}
  \mlist{
-    \item Clafer to Alloy\pause
-    \item Structural modeling\pause
-    \item Model checking\pause
-    \item Alloy: instantiation, testing ideas
+    \item Refactored and modular code architecture
+    \item User has control over the translation process
+    \item Intermediate language representation
+    \item Optimization of translation rules 
  }
 \end{frame}
 
-\begin{frame}{clafer2alloy Translator}
+\interframe{The Translator}
+
+\begin{frame}{(Old) clafer2alloy Translator}
  \mlist{
     \item Parser, desugarer, semantic analyzer, code generator
-    \item Haskell\pause
+    \item Monolithic
+    \item Haskell
     \item Available online
     \item Released source code
-    \item Documentation
  }
 \end{frame}
+
+\begin{frame}{(New) clafer Translator}
+ \mlist{
+    \item Front-end, intermediate representation, optimizer, generators
+    \item User can turn on/off modules (has extra knowledge)
+    \item Easy to add new code generators
+ }
+\end{frame}
+
+\interframe{Optimizations}
+
+\begin{frame}[fragile]
+  \frametitle{No Unused Abstract Clafers}
+  \begin{columns}
+    \begin{column}{0.5\textwidth}
+      \begin{alltt}
+        \begin{small}
+\textbf{abstract} \textsf{display}
+  \textsf{server} ?
+
+\textsf{OnBoardComputer}
+        \end{small}
+      \end{alltt}
+    \end{column}
+\pause
+    \begin{column}{0.5\textwidth}
+      \begin{alltt}
+        \begin{small}
+\textsf{OnBoardComputer}
+        \end{small}
+      \end{alltt}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{No Redundant Hierarchical Constraints} %parent
+\textsf{ElectronicControlUnit} 2
+  \textsf{display} 1..2
+
+\end{frame}
+
+\begin{frame}{Improved Name Resolution}
+% elements have unique names -> fewer constraints
+\end{frame}
+
+\begin{frame}{Global Cardinality Constraints}
+
+\end{frame}
+
+\begin{frame}{Integers as Attributes} %not refs
+
+\end{frame}
+
+\begin{frame}{References are Relations} %no extra constraints
+
+\end{frame}
+
+\begin{frame}{Unrolled Inheritance}
+
+\end{frame}
+
+\begin{frame}{Model Statistics}
+
+\end{frame}
+
+\interframe{Evaluation}
 
 \interframe{Conclusion}
 
