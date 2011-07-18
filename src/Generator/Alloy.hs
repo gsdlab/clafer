@@ -285,8 +285,6 @@ genCmpExp clafer x t = case x of
 
 genNumExp :: (EType, EType, EType) -> Result -> Result -> Result -> Result
 genNumExp (TSExp, _, _) op x y = x ++ " = " ++ y
---genNumExp (TSExp, _, _) op x y =
---  "all cl0 : " ++ x ++ ", cl1 : " ++ y ++ " | cl0" ++ op ++ "cl1"
 genNumExp (TSAExp, t0, t) op x y
   | t0 == TSExp = "all cl0 : " ++ x ++ " | cl0" ++ op ++ y
   | otherwise   = "all cl0 : " ++ y ++ " | " ++ x ++ op ++ "cl0"
