@@ -248,16 +248,42 @@ literate={->}{{$\to$ }}1 {^}{{$\mspace{-3mu}\widehat{\quad}\mspace{-3mu}$}}1
 \end{frame}
 
 \begin{frame}{No Redundant Hierarchical Constraints} %parent
-\textsf{ElectronicControlUnit} 2
-  \textsf{display} 1..2
-
+  \begin{columns}
+    \begin{column}{0.5\textwidth}
+      \includegraphics[scale=0.5]{figs/parent-old}
+    \end{column}
+\pause
+    \begin{column}{0.5\textwidth}
+      \includegraphics[scale=0.5]{figs/parent-new}
+    \end{column}
+  \end{columns}
 \end{frame}
 
 \begin{frame}{Improved Name Resolution}
 % elements have unique names -> fewer constraints
 \end{frame}
 
-\begin{frame}{Global Cardinality Constraints}
+\begin{frame}[Fragile]
+  \frametitle{Global Cardinality Constraints}
+  \begin{columns}
+    \begin{column}{0.5\textwidth}
+      \begin{alltt}
+        \begin{small}
+\textsf{OnBoardComputer} ?
+  \textsf{Display}
+        \end{small}
+      \end{alltt}
+    \end{column}
+\pause
+    \begin{column}{0.5\textwidth}
+      \begin{alltt}
+        \begin{small}
+\textsf{OnBoardComputer} 0..1
+  \textsf{Display} 0..1
+        \end{small}
+      \end{alltt}
+    \end{column}
+  \end{columns}
 
 \end{frame}
 
