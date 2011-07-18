@@ -122,7 +122,7 @@ include $(SRC:.tex=.d)
 
 # $(DEP) $(EPSPICS) $(BIBFILE)
 $(TRG)	: %.dvi : %.tex
-	cd figs; make;
+#	cd figs; make;
 	  @$(run-latex)
 
 $(PSF)	: %.ps : %.dvi
