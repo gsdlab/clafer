@@ -295,11 +295,55 @@ literate={->}{{$\to$ }}1 {^}{{$\mspace{-3mu}\widehat{\quad}\mspace{-3mu}$}}1
 
 \end{frame}
 
-\begin{frame}{Unrolled Inheritance}
+\begin{frame}[fragile]
+  \frametitle{Unrolled Inheritance}
+  \begin{columns}
+    \begin{column}{0.5\textwidth}
+      \begin{alltt}
+        \begin{small}
+\textbf{abstract} \textsf{comp}
+  \textsf{version} : \textsf{integer}
 
+\textsf{display} \textbf{extends} \textsf{comp}
+        \end{small}
+      \end{alltt}
+    \end{column}
+\pause
+    \begin{column}{0.5\textwidth}
+      \begin{alltt}
+        \begin{small}
+\textsf{display}
+  \textsf{version} : \textsf{integer}
+        \end{small}
+      \end{alltt}
+    \end{column}
+  \end{columns}
 \end{frame}
 
-\begin{frame}{Model Statistics}
+\begin{frame}[fragile]
+  \frametitle{Model Statistics}
+  \begin{columns}
+    \begin{column}{0.5\textwidth}
+      \begin{alltt}
+        \begin{small}
+\textsf{ecu} 1..2
+  \textsf{display} $\rightarrow$ \textsf{integer}
+  \textsf{[display > 2]}
+        \end{small}
+      \end{alltt}
+    \end{column}
+\pause
+    \begin{column}{0.5\textwidth}
+      \begin{alltt}
+        \begin{small}
+All clafers: 2 | Abstract: 0 | Concrete: 1 | References: 1
+Constraints: 1
+Global scope: 1..2
+All names unique: False
+        \end{small}
+      \end{alltt}
+    \end{column}
+  \end{columns}
 
 \end{frame}
 
