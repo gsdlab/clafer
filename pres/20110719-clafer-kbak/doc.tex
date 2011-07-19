@@ -252,7 +252,6 @@ literate={->}{{$\to$ }}1 {^}{{$\mspace{-3mu}\widehat{\quad}\mspace{-3mu}$}}1
     \begin{column}{0.5\textwidth}
       \includegraphics[scale=0.5]{figs/parent-old}
     \end{column}
-\pause
     \begin{column}{0.5\textwidth}
       \includegraphics[scale=0.5]{figs/parent-new}
     \end{column}
@@ -260,17 +259,26 @@ literate={->}{{$\to$ }}1 {^}{{$\mspace{-3mu}\widehat{\quad}\mspace{-3mu}$}}1
 \end{frame}
 
 \begin{frame}{Improved Name Resolution}
-% elements have unique names -> fewer constraints
+% unique names -> fewer constraints
+  \begin{columns}
+    \begin{column}{0.6\textwidth}
+      \includegraphics[scale=0.7]{figs/resolve-old}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \includegraphics[scale=0.5]{figs/resolve-new}
+    \end{column}
+  \end{columns}
+
 \end{frame}
 
-\begin{frame}[Fragile]
+\begin{frame}[fragile]
   \frametitle{Global Cardinality Constraints}
   \begin{columns}
     \begin{column}{0.5\textwidth}
       \begin{alltt}
         \begin{small}
-\textsf{OnBoardComputer} ?
-  \textsf{Display}
+\textsf{OnBoardComputer} 0..1
+  \textsf{Display} 1
         \end{small}
       \end{alltt}
     \end{column}
@@ -288,10 +296,35 @@ literate={->}{{$\to$ }}1 {^}{{$\mspace{-3mu}\widehat{\quad}\mspace{-3mu}$}}1
 \end{frame}
 
 \begin{frame}{Integers as Attributes} %not refs
-
+  \begin{columns}
+    \begin{column}{0.5\textwidth}
+      \includegraphics[scale=0.5]{figs/integer-old}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \includegraphics[scale=0.5]{figs/integer-new}
+    \end{column}
+  \end{columns}
 \end{frame}
 
-\begin{frame}{References are Relations} %no extra constraints
+\begin{frame}[fragile]
+  \frametitle{References are Relations}
+  \begin{alltt}
+    \begin{small}
+\textsf{ecu}
+      
+\textsf{display}
+  \textsf{server} -> \textsf{ecu}
+\pause
+
+\textbf{sig} \textsf{display} \textbf{extends} \textsf{clafer}
+\{ \textsf{server} : \textbf{one} \textsf{clafer} \}
+\{ \textsf{server} \textbf{in} \textsf{ecu} \}
+
+\pause
+\textbf{one sig} \textsf{display}
+\{ \textsf{server} : \textbf{one} \textsf{ecu} \}
+    \end{small}
+  \end{alltt}
 
 \end{frame}
 
@@ -322,41 +355,60 @@ literate={->}{{$\to$ }}1 {^}{{$\mspace{-3mu}\widehat{\quad}\mspace{-3mu}$}}1
 
 \begin{frame}[fragile]
   \frametitle{Model Statistics}
-  \begin{columns}
-    \begin{column}{0.5\textwidth}
       \begin{alltt}
         \begin{small}
 \textsf{ecu} 1..2
-  \textsf{display} $\rightarrow$ \textsf{integer}
+  \textsf{display} -> \textsf{integer} 2..3
   \textsf{[display > 2]}
         \end{small}
       \end{alltt}
-    \end{column}
 \pause
-    \begin{column}{0.5\textwidth}
       \begin{alltt}
         \begin{small}
 All clafers: 2 | Abstract: 0 | Concrete: 1 | References: 1
 Constraints: 1
-Global scope: 1..2
+Global scope: 1..3
 All names unique: False
         \end{small}
       \end{alltt}
-    \end{column}
-  \end{columns}
+\end{frame}
 
+\begin{frame}{Parameters}
+ \mlist{
+    \item Unrolling inheritance
+    \item Timeout for model translation
+    \item Layout resolver options
+    \item Checking duplicated names
+    \item Name resolver behavior
+    \item Keeping unused clafers
+ }
 \end{frame}
 
 \interframe{Evaluation}
+
+\begin{frame}{Input Models}
+ \mlist{
+    \item Feature Models (instantiation)
+    \item Meta-Models (instantiation)
+    \item FBMTs (liveness, instantiation)
+    \item The Linux Kernel
+ }
+\end{frame}
+
+\begin{frame}{Results}
+ \mlist{
+    \item Speed: 2-5 times faster
+    \item Possible to handle huge models
+ }
+\end{frame}
 
 \interframe{Conclusion}
 
 \begin{frame}{Conclusion}
  \mlist{
-    \item Modeling and analyzing SPLs\pause
-    \item Concept modeling\pause
-    \item Common infrastructure\pause
-    \item Non-trivial analyses
+    \item Clafer models can be expressive and analyzable
+    \item Possible further optimizations
+    \item User knowledge is very useful
  }
 \end{frame}
 
