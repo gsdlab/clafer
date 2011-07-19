@@ -15,8 +15,8 @@
 
 \usetheme{Sleek}
 
-\usetikzlibrary{arrows,shapes,shadows}
-\usetikzlibrary{positioning}
+\usetikzlibrary{arrows,shapes,shapes.arrows,positioning}
+\usetikzlibrary{chains}
 
 \tikzstyle{ds} = [draw, thick, color=oxygenblue, inner sep=0pt, drop shadow]
 
@@ -195,17 +195,26 @@ literate={->}{{$\to$ }}1 {^}{{$\mspace{-3mu}\widehat{\quad}\mspace{-3mu}$}}1
 \begin{frame}{Solution}
  \mlist{
     \item Refactored and modular code architecture
-    \item User has control over the translation process
     \item Intermediate language representation
     \item Optimization of translation rules 
+    \item User has control over the translation process
  }
 \end{frame}
 
 \interframe{The Translator}
 
 \begin{frame}{(Old) clafer2alloy Translator}
+
+\tikzset{>=stealth',every on chain/.append style={join}, every join/.style={->}}
+\begin{tikzpicture}[start chain] {
+    \node[on chain,rectangle,draw] {Parser};
+    \node[on chain,rectangle,draw] {Desugarer};
+    \node[on chain,rectangle,draw] {\parbox[b]{1.5cm}{\centering Semantic\\ Analyzer}};
+    \node[on chain,rectangle,draw] {\parbox[b]{1.6cm}{\centering Code\\ Generator}};
+ }
+\end{tikzpicture}
+
  \mlist{
-    \item Parser, desugarer, semantic analyzer, code generator
     \item Monolithic
     \item Haskell
     \item Available online
@@ -214,8 +223,16 @@ literate={->}{{$\to$ }}1 {^}{{$\mspace{-3mu}\widehat{\quad}\mspace{-3mu}$}}1
 \end{frame}
 
 \begin{frame}{(New) clafer Translator}
+\tikzset{>=stealth',every on chain/.append style={join}, every join/.style={->}}
+\begin{tikzpicture}[start chain] {
+    \node[on chain,rectangle,draw] {Front-end};
+    \node[on chain,rectangle,draw] {\parbox[b]{2.5cm}{\centering Intermediate\\ Representation}};
+    \node[on chain,rectangle,draw] {Optimizer};
+    \node[on chain,rectangle,draw] {\parbox[b]{1.7cm}{\centering Code\\ Generators}};
+ }
+\end{tikzpicture}
+
  \mlist{
-    \item Front-end, intermediate representation, optimizer, generators
     \item User can turn on/off modules (has extra knowledge)
     \item Easy to add new code generators
  }
@@ -388,9 +405,10 @@ All names unique: False
 
 \begin{frame}{Input Models}
  \mlist{
+    \item Baseline: SLE'10 paper\pause
     \item Feature Models (instantiation)
     \item Meta-Models (instantiation)
-    \item FBMTs (liveness, instantiation)
+    \item FBMTs (liveness, instantiation)\pause
     \item The Linux Kernel
  }
 \end{frame}
@@ -407,6 +425,7 @@ All names unique: False
 \begin{frame}{Conclusion}
  \mlist{
     \item Clafer models can be expressive and analyzable
+    \item Alloy Analyzer is slow for big models
     \item Possible further optimizations
     \item User knowledge is very useful
  }
