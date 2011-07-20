@@ -53,8 +53,16 @@ statsClafer clafer = do
         then modify (\e -> e {nrClafers = nrClafers e + 1})
         else modify (\e -> e {ncClafers = ncClafers e + 1})
   sglCard' <- gets sglCard
-  modify (\e -> e {sglCard = optimizeCard sglCard' $ glCard clafer})
+  modify (\e -> e {sglCard = statsCard sglCard' $ glCard clafer})
   mapM_ statsElement $ elements clafer
+
+
+statsCard :: Interval -> Interval -> Interval
+statsCard (m, n) (m', n') = (max m m', maxEx n n')
+  where
+  maxEx ExIntegerAst _ = ExIntegerAst
+  maxEx _ ExIntegerAst = ExIntegerAst
+  maxEx (ExIntegerNum m) (ExIntegerNum n) = ExIntegerNum $ max m n
 
 
 statsElement x = case x of
