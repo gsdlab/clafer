@@ -135,7 +135,6 @@ resolveCmpExp env x = case x of
 
 resolveExp :: SEnv -> IExp -> IExp
 resolveExp env x = case x of
-  IESetExp  sexp -> IESetExp $ resolveSExp env sexp
   IENumExp aexp -> IENumExp $ resolveAExp env aexp
   IEStrExp strexp -> x
 
@@ -191,8 +190,8 @@ resolveAExp env x = case x of
   IEAdd aexp0 aexp -> on IEAdd res aexp0 aexp
   IESub aexp0 aexp -> on IESub res aexp0 aexp
   IEMul aexp0 aexp -> on IEMul res aexp0 aexp
-  IEUmn aexp       -> IEUmn $ res aexp
   IECSetExp sexp   -> IECSetExp $ resolveSExp env sexp
+  IEASetExp sexp   -> IEASetExp $ resolveSExp env sexp
   IEInt n -> x
   where
   res = resolveAExp env

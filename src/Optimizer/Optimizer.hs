@@ -171,7 +171,6 @@ expCmpExp x = case x of
 
 
 expExp x = case x of
-  IESetExp sexp  -> IESetExp `liftM` expSExp sexp
   IENumExp aexp -> IENumExp `liftM` expAExp aexp
   _ -> return x
 
@@ -227,8 +226,8 @@ expAExp x = case x of
   IEAdd aexp0 aexp -> eAExp IEAdd aexp0 aexp
   IESub aexp0 aexp -> eAExp IESub aexp0 aexp
   IEMul aexp0 aexp -> eAExp IEMul aexp0 aexp
-  IEUmn aexp -> IEUmn `liftM` expAExp aexp
   IECSetExp sexp -> IECSetExp `liftM` expSExp sexp
+  IEASetExp sexp -> IEASetExp `liftM` expSExp sexp
   IEInt n    -> return x
   where
   eAExp cons aexp0 aexp = mkExp cons expAExp aexp0 aexp
@@ -369,7 +368,6 @@ markTopDecl clafers x = case x of
 
 markTopExp :: [String] -> IExp -> IExp
 markTopExp clafers x = case x of
-  IESetExp sexp  -> IESetExp $ markTopSExp clafers sexp
   IENumExp aexp -> IENumExp $ markTopAExp clafers aexp
   IEStrExp strexp -> x
 
@@ -391,6 +389,6 @@ markTopAExp clafers x = case x of
   IEAdd aexp0 aexp -> on IEAdd (markTopAExp clafers) aexp0 aexp
   IESub aexp0 aexp -> on IESub (markTopAExp clafers) aexp0 aexp
   IEMul aexp0 aexp -> on IEMul (markTopAExp clafers) aexp0 aexp
-  IEUmn aexp -> IEUmn $ markTopAExp clafers aexp
   IECSetExp sexp -> IECSetExp $ markTopSExp clafers sexp
+  IEASetExp sexp -> IEASetExp $ markTopSExp clafers sexp
   IEInt n    -> x

@@ -248,14 +248,12 @@ sugarCmpExp x = case x of
 
 desugarExp :: Exp -> IExp
 desugarExp x = case x of
-  ESetExp sexp -> IESetExp $ desugarSExp sexp
   ENumExp aexp -> IENumExp $ desugarAExp aexp
   EStrExp strexp -> IEStrExp strexp
 
 
 sugarExp :: IExp -> Exp
 sugarExp x = case x of
-  IESetExp sexp -> ESetExp $ sugarSExp sexp
   IENumExp aexp -> ENumExp $ sugarAExp aexp
   IEStrExp strexp -> EStrExp strexp
 
@@ -320,8 +318,8 @@ desugarAExp x = case x of
   EAdd aexp0 aexp  -> on IEAdd desugarAExp aexp0 aexp
   ESub aexp0 aexp  -> on IESub desugarAExp aexp0 aexp
   EMul aexp0 aexp  -> on IEMul desugarAExp aexp0 aexp
-  EUmn aexp  -> IEUmn $ desugarAExp aexp
   ECSetExp sexp  -> IECSetExp $ desugarSExp sexp
+  EASetExp sexp  -> IEASetExp $ desugarSExp sexp
   EInt n  -> IEInt n
 
 
@@ -330,6 +328,6 @@ sugarAExp x = case x of
   IEAdd aexp0 aexp  -> on EAdd sugarAExp aexp0 aexp
   IESub aexp0 aexp  -> on ESub sugarAExp aexp0 aexp
   IEMul aexp0 aexp  -> on EMul sugarAExp aexp0 aexp
-  IEUmn aexp  -> EUmn $ sugarAExp aexp
   IECSetExp sexp  -> ECSetExp $ sugarSExp sexp
+  IEASetExp sexp  -> EASetExp $ sugarSExp sexp
   IEInt n  -> EInt n

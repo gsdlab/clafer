@@ -89,6 +89,14 @@ resolveT _ _ = TSAExp
 
 resolveTExp :: IExp -> EType
 resolveTExp x = case x of
-  IESetExp sexp  -> TSExp
-  IENumExp aexp -> TAExp
+  IENumExp aexp -> resolveTAExp aexp
   IEStrExp strexp -> TAExp
+
+resolveTAExp :: IAExp -> EType
+resolveTAExp x = case x of
+  IEAdd aexp0 aexp -> on resolveT resolveTAExp aexp0 aexp
+  IESub aexp0 aexp -> on resolveT resolveTAExp aexp0 aexp
+  IEMul aexp0 aexp -> on resolveT resolveTAExp aexp0 aexp
+  IECSetExp sexp -> TAExp
+  IEASetExp sexp -> TSExp
+  IEInt n    -> TAExp

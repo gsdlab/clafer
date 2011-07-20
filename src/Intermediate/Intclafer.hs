@@ -95,8 +95,7 @@ data ICmpExp =
   deriving (Eq,Ord,Show)
 
 data IExp =
-   IESetExp ISExp
- | IENumExp IAExp
+   IENumExp IAExp
  | IEStrExp StrExp
   deriving (Eq,Ord,Show)
 
@@ -125,7 +124,7 @@ data IAExp =
    IEAdd IAExp IAExp
  | IESub IAExp IAExp
  | IEMul IAExp IAExp
- | IEUmn IAExp
  | IECSetExp ISExp
+ | IEASetExp ISExp
  | IEInt Integer
   deriving (Eq,Ord,Show)

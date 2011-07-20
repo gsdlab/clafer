@@ -285,16 +285,15 @@ genCmpExp clafer x t = case x of
 
 genNumExp :: (EType, EType, EType) -> Result -> Result -> Result -> Result
 genNumExp (TSExp, _, _) op x y = x ++ " = " ++ y
-genNumExp (TSAExp, t0, t) op x y
-  | t0 == TSExp = "all cl0 : " ++ x ++ " | cl0" ++ op ++ y
-  | otherwise   = "all cl0 : " ++ y ++ " | " ++ x ++ op ++ "cl0"
-  where
+genNumExp (TSAExp, TSExp, _) op x y = "all cl0 : " ++ x ++ " | cl0" ++ op ++ y
+genNumExp (TSAExp, _, TSExp) op x y = "all cl0 : " ++ y ++ " | " ++ x ++ op ++ "cl0"
+-- BUG: it doesn't work if set/arithemetic expressions are more complex
 genNumExp _ op x y = x ++ op ++ y
 
 
 genSExp :: Maybe IClafer -> ISExp -> EType -> Result
 genSExp _ (ISExpIdent "this" _) TSAExp = "this.@ref"
-genSExp _ (ISExpIdent id True) TSAExp = id ++ ".@ref"
+genSExp clafer x@(ISExpIdent id True) TSAExp = id ++ ".@ref"
 genSExp clafer x t = genSExp' clafer x True
 
 
@@ -323,8 +322,7 @@ brArg f arg = "(" ++ f arg ++ ")"
 
 genExp :: Maybe IClafer -> IExp -> EType -> Result
 genExp clafer x t = case x of
-  IESetExp sexp  -> genSExp clafer sexp t
-  IENumExp aexp -> genAExp clafer aexp
+  IENumExp aexp -> genAExp clafer aexp t
   IEStrExp strexp -> error $ "analyzed: " ++ show strexp
 
 
@@ -355,13 +353,13 @@ genDisj x = case x of
   True  -> "disj"
 
 
-genAExp :: Maybe IClafer -> IAExp -> Result
-genAExp clafer x = case x of
+genAExp :: Maybe IClafer -> IAExp -> EType -> Result
+genAExp clafer x t = case x of
   IEAdd aexp0 aexp -> genArith aexp0 "+" aexp
   IESub aexp0 aexp -> genArith aexp0 "-" aexp
   IEMul aexp0 aexp -> genArith aexp0 "*" aexp
-  IEUmn aexp -> "-" ++ brArg (genAExp clafer) aexp
   IECSetExp sexp -> "#" ++ brArg (flip (genSExp clafer) TSExp) sexp
+  IEASetExp sexp -> genSExp clafer sexp t
   IEInt n    -> show n
   where
-  genArith = genBinOp (genAExp clafer)
+  genArith = genBinOp (flip (genAExp clafer) t)

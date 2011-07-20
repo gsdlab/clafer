@@ -82,7 +82,6 @@ ERNeq.          CmpExp ::= Exp "/=" Exp ;
 EIn.            CmpExp ::= Exp "in" Exp ;
 ENin.           CmpExp ::= Exp "not" "in" Exp ;
 
-ESetExp.        Exp ::= SExp ;
 ENumExp.        Exp ::= AExp ;
 EStrExp.        Exp ::= StrExp ;
 
@@ -94,7 +93,7 @@ QuantSome.      Quant ::= "some" ;
 ExQuantAll.     ExQuant ::= "all" ;
 ExQuant.        ExQuant ::= Quant ;
 
-SExpUnion.        SExp  ::= SExp  "+"  SExp1 ;
+SExpUnion.        SExp  ::= SExp  "++" SExp1 ;
 SExpIntersection. SExp1 ::= SExp1 "&"  SExp2 ;
 SExpDomain.       SExp2 ::= SExp2 "<:" SExp3 ;
 SExpRange.        SExp3 ::= SExp3 ":>" SExp4 ;
@@ -107,11 +106,11 @@ DisjEmpty.      Disj ::= ;
 Disj.           Disj ::= "disj" ;
 
 EAdd.           AExp  ::= AExp  "+" AExp1 ;
-ESub.           AExp1 ::= AExp1 "-" AExp2 ;
-EMul.           AExp2 ::= AExp2 "*" AExp3 ;
-EUmn.           AExp3 ::= "-" AExp4 ;
-ECSetExp.       AExp4 ::= "#" SExp ;
-EInt.           AExp4 ::= Integer ;
+ESub.           AExp  ::= AExp  "-" AExp1 ;
+EMul.           AExp1 ::= AExp1 "*" AExp2 ;
+ECSetExp.       AExp2 ::= "#" SExp ;
+EASetExp.       AExp2 ::= SExp ;
+EInt.           AExp2 ::= Integer ;
 
 EConc.          StrExp  ::= StrExp  "++" StrExp ;
 EStr.           StrExp  ::= String ;
@@ -130,4 +129,4 @@ terminator         ModId       "/" ;
 
 coercions SExp 5 ;
 coercions LExp 6 ;
-coercions AExp 4 ;
+coercions AExp 2 ;

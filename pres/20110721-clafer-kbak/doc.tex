@@ -28,7 +28,7 @@
 \title{Optimized Translation of Clafer Models to Alloy}
 \author{Kacper Bak}
 \institute{\small Generative Software Development Lab\\University of Waterloo}
-\date{CS744 Course Project. July 19, 2011}
+\date{CS744 Course Project. July 21, 2011}
 
 \newcommand{\vmiddle}[1]{
   \vspace{\stretch{1}}
@@ -126,22 +126,43 @@ literate={->}{{$\to$ }}1 {^}{{$\mspace{-3mu}\widehat{\quad}\mspace{-3mu}$}}1
   \vmiddle{\titlepage}
 \end{frame}
 
-\begin{frame}{Course Project}
-  \mlist{
-  \item CS 744: Advanced Compiler Design
-  \item Data flow analysis, redundancy elimination, optimizations
-  \item Individual project
-  \item Duration: 2 months
-  }
+\begin{frame}{Software Intensive}
+  \hmiddle{\includegraphics[scale=0.4]{figs/cars}}
 \end{frame}
 
-\begin{frame}{Clafer Update}
+\begin{frame}{Products Come in}
+  \hmiddle{\includegraphics[scale=0.5]{figs/planes}}
+\end{frame}
+
+\begin{frame}{Many Variants}
+  \hmiddle{\includegraphics[width=\textwidth]{figs/is}}
+\end{frame}
+
+\begin{frame}{Software Product Line}
+\newcolumntype{V}{>{\centering\arraybackslash} m{.3\linewidth} }
+\begin{tabularx}{\textwidth}{V>{\centering\arraybackslash} m{.18\linewidth}V}
+  \begin{tikzpicture}
+    \draw (0,0) ellipse (1.2cm and 1.5cm) node {
+      \parbox[b]{1cm}{\centering \textbf{Problem\\ Space}}};
+  \end{tikzpicture}
+  &
+  \begin{tikzpicture}
+    \node [single arrow, draw] at (0,0) {\textbf{Mapping}};
+  \end{tikzpicture}
+  &
+  \begin{tikzpicture}
+    \draw (0,0) ellipse (1.2cm and 1.5cm) node {
+      \parbox[b]{1cm}{\centering \textbf{Solution\\ Space}}};
+  \end{tikzpicture}\\
+  Features & & Assets
+\end{tabularx}
+\end{frame}
+
+\begin{frame}{Clafer}
   \mlist{
-    \item Analysis of variability models
-    \item Translation to Alloy (uses SAT solvers)
-    \item \textsf{clafer2alloy} translator: a year ago
-    \item Some work on formal semantics
-    \item Examples of variability models
+    \item Software Product Lines
+    \item Modeling language
+    \item Analyses
   }
 \end{frame}
 
@@ -162,7 +183,7 @@ literate={->}{{$\to$ }}1 {^}{{$\mspace{-3mu}\widehat{\quad}\mspace{-3mu}$}}1
   \end{tabularx}
 \end{frame}
 
-\interframe{Demo}
+\interframe{Problems}
 
 \begin{frame}{Problems}
   \begin{tabularx}{\textwidth}{ccccccccc}
@@ -180,7 +201,7 @@ literate={->}{{$\to$ }}1 {^}{{$\mspace{-3mu}\widehat{\quad}\mspace{-3mu}$}}1
     Model & & Translator & & Model & & Analyzer & &
   \end{tabularx}
   \mlist{
-  \item \visible<1->{Translation rules heavily influence reasoning time in Alloy}% bottlenecks
+  \item \visible<1->{\textbf{Translation rules heavily influence reasoning time in Alloy}}% bottlenecks
   \item \visible<2->{Large Alloy files (complex models)}
   \item \visible<3->{Ineffective Alloy representation (complex formulas)}
   \item \visible<4->{Slow \textsf{clafer2alloy} translator}
@@ -192,33 +213,14 @@ literate={->}{{$\to$ }}1 {^}{{$\mspace{-3mu}\widehat{\quad}\mspace{-3mu}$}}1
   \end{tikzpicture}
 \end{frame}
 
+\interframe{Solution}
+
 \begin{frame}{Solution}
  \mlist{
     \item Refactored and modular code architecture
     \item Intermediate language representation
     \item Optimization of translation rules 
     \item User has control over the translation process
- }
-\end{frame}
-
-\interframe{The Translator}
-
-\begin{frame}{(Old) clafer2alloy Translator}
-
-\tikzset{>=stealth',every on chain/.append style={join}, every join/.style={->}}
-\begin{tikzpicture}[start chain] {
-    \node[on chain,rectangle,draw] {Parser};
-    \node[on chain,rectangle,draw] {Desugarer};
-    \node[on chain,rectangle,draw] {\parbox[b]{1.5cm}{\centering Semantic\\ Analyzer}};
-    \node[on chain,rectangle,draw] {\parbox[b]{1.6cm}{\centering Code\\ Generator}};
- }
-\end{tikzpicture}
-
- \mlist{
-    \item Monolithic
-    \item Haskell
-    \item Available online
-    \item Released source code
  }
 \end{frame}
 

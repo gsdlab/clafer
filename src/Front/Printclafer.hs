@@ -1,22 +1,3 @@
-{-
- This file is part of the Clafer Translator (clafer).
-
- Copyright (C) 2010 Kacper Bak <http://gsd.uwaterloo.ca/kbak>
-
- clafer is free software: you can redistribute it and/or modify
- it under the terms of the GNU Lesser General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
-
- clafer is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU Lesser General Public License for more details.
-
- You should have received a copy of the GNU Lesser General Public License
- along with clafer. (See files COPYING and COPYING.LESSER.)  If not,
- see <http://www.gnu.org/licenses/>.
--}
 {-# OPTIONS -fno-warn-incomplete-patterns #-}
 module Front.Printclafer where
 
@@ -265,7 +246,6 @@ instance Print CmpExp where
 
 instance Print Exp where
   prt i e = case e of
-   ESetExp sexp -> prPrec i 0 (concatD [prt 0 sexp])
    ENumExp aexp -> prPrec i 0 (concatD [prt 0 aexp])
    EStrExp strexp -> prPrec i 0 (concatD [prt 0 strexp])
 
@@ -286,7 +266,7 @@ instance Print ExQuant where
 
 instance Print SExp where
   prt i e = case e of
-   SExpUnion sexp0 sexp -> prPrec i 0 (concatD [prt 0 sexp0 , doc (showString "+") , prt 1 sexp])
+   SExpUnion sexp0 sexp -> prPrec i 0 (concatD [prt 0 sexp0 , doc (showString "++") , prt 1 sexp])
    SExpIntersection sexp0 sexp -> prPrec i 1 (concatD [prt 1 sexp0 , doc (showString "&") , prt 2 sexp])
    SExpDomain sexp0 sexp -> prPrec i 2 (concatD [prt 2 sexp0 , doc (showString "<:") , prt 3 sexp])
    SExpRange sexp0 sexp -> prPrec i 3 (concatD [prt 3 sexp0 , doc (showString ":>") , prt 4 sexp])
@@ -311,11 +291,11 @@ instance Print Disj where
 instance Print AExp where
   prt i e = case e of
    EAdd aexp0 aexp -> prPrec i 0 (concatD [prt 0 aexp0 , doc (showString "+") , prt 1 aexp])
-   ESub aexp0 aexp -> prPrec i 1 (concatD [prt 1 aexp0 , doc (showString "-") , prt 2 aexp])
-   EMul aexp0 aexp -> prPrec i 2 (concatD [prt 2 aexp0 , doc (showString "*") , prt 3 aexp])
-   EUmn aexp -> prPrec i 3 (concatD [doc (showString "-") , prt 4 aexp])
-   ECSetExp sexp -> prPrec i 4 (concatD [doc (showString "#") , prt 0 sexp])
-   EInt n -> prPrec i 4 (concatD [prt 0 n])
+   ESub aexp0 aexp -> prPrec i 0 (concatD [prt 0 aexp0 , doc (showString "-") , prt 1 aexp])
+   EMul aexp0 aexp -> prPrec i 1 (concatD [prt 1 aexp0 , doc (showString "*") , prt 2 aexp])
+   ECSetExp sexp -> prPrec i 2 (concatD [doc (showString "#") , prt 0 sexp])
+   EASetExp sexp -> prPrec i 2 (concatD [prt 0 sexp])
+   EInt n -> prPrec i 2 (concatD [prt 0 n])
 
 
 instance Print StrExp where
