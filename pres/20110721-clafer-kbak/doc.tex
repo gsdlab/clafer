@@ -158,6 +158,8 @@ literate={->}{{$\to$ }}1 {^}{{$\mspace{-3mu}\widehat{\quad}\mspace{-3mu}$}}1
 \end{tabularx}
 \end{frame}
 
+\interframe{Clafer}
+
 \begin{frame}{Clafer}
   \mlist{
     \item Software Product Lines
@@ -254,6 +256,8 @@ literate={->}{{$\to$ }}1 {^}{{$\mspace{-3mu}\widehat{\quad}\mspace{-3mu}$}}1
  \mlist{
     \item Improved name resolution
     \item Dead code removal
+    \item Better handling of primitive types (integers)
+    \item Better type resolution for references
  }
 \end{frame}
 
@@ -289,39 +293,6 @@ literate={->}{{$\to$ }}1 {^}{{$\mspace{-3mu}\widehat{\quad}\mspace{-3mu}$}}1
       \end{alltt}
     \end{column}
   \end{columns}
-
-\end{frame}
-
-\begin{frame}{Integers as Attributes} %not refs
-  \begin{columns}
-    \begin{column}{0.5\textwidth}
-      \includegraphics[scale=0.5]{figs/integer-old}
-    \end{column}
-    \begin{column}{0.5\textwidth}
-      \includegraphics[scale=0.5]{figs/integer-new}
-    \end{column}
-  \end{columns}
-\end{frame}
-
-\begin{frame}[fragile]
-  \frametitle{References are Relations}
-  \begin{alltt}
-    \begin{small}
-\textsf{ecu}
-      
-\textsf{display}
-  \textsf{server} -> \textsf{ecu}
-\pause
-
-\textbf{sig} \textsf{display} \textbf{extends} \textsf{clafer}
-\{ \textsf{server} : \textbf{one} \textsf{clafer} \}
-\{ \textsf{server} \textbf{in} \textsf{ecu} \}
-
-\pause
-\textbf{one sig} \textsf{display}
-\{ \textsf{server} : \textbf{one} \textsf{ecu} \}
-    \end{small}
-  \end{alltt}
 
 \end{frame}
 
@@ -372,12 +343,12 @@ All names unique: False
 
 \begin{frame}{Parameters}
  \mlist{
+    \item Dead code removal
     \item Inheritance flattening
     \item Timeout for model translation
     \item Layout resolver options
     \item Checking duplicated names
     \item Name resolver behavior
-    \item Keeping unused clafers
  }
 \end{frame}
 
