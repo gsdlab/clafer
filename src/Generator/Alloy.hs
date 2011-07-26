@@ -132,7 +132,9 @@ getTarget x = case x of
   _ -> x
 
 
+genType x@(ISExpIdent _ _) = genSExp Nothing x{isTop = True} TSExp
 genType x = genSExp Nothing x TSExp
+
 
 -- -----------------------------------------------------------------------------
 -- constraints
