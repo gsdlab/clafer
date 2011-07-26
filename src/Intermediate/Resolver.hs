@@ -36,7 +36,7 @@ import Intermediate.ResolverType
 resolveModule :: ClaferArgs -> IModule -> (IModule, GEnv)
 resolveModule args declarations = resolveNamesModule args $ rom $ rem $ resolveNModule $ nameModule args declarations
   where
-  rem = if unroll_inheritance args then resolveEModule else id
+  rem = if flatten_inheritance args then resolveEModule else id
   rom = if force_resolver args then resolveOModule else id
 
 

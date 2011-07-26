@@ -35,7 +35,7 @@ optimizeModule args (declarations, genv) =
   em $ rm $ map optimizeDeclaration $ markTopModule declarations
   where
   rm = if keep_unused args then id else remUnusedAbs
-  em = if unroll_inheritance args then flip (curry expModule) genv else id
+  em = if flatten_inheritance args then flip (curry expModule) genv else id
 
 optimizeDeclaration :: IDeclaration -> IDeclaration
 optimizeDeclaration x = case x of

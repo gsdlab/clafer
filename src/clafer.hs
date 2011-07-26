@@ -92,7 +92,7 @@ run v p args = do
                           code <- evaluate $! genModule (oTree, genv)
                           putStrLn "[Saving File]"
                           let stats = showStats au $ statsModule oTree
-                          putStrLn stats
+                          when (not $ no_stats args) $ putStrLn stats
                           writeFile (f' ++ ".als") $ addStats code stats
 
 
@@ -117,14 +117,15 @@ showInterval (n, ExIntegerAst) = show n ++ "..*"
 showInterval (n, ExIntegerNum m) = show n ++ ".." ++ show m
 
 clafer = ClaferArgs {
-  unroll_inheritance = def &= help "Unroll inheritance" &= name "i",
+  flatten_inheritance = def &= help "Flatten inheritance" &= name "i",
   file = def &= args,
   timeout_analysis = def &= help "Timeout for analysis",
   no_layout = def &= help "Don't resolve off-side rule layout" &= name "l",
   new_layout = def &= help "Use new fast layout resolver (experimental)" &= name "nl",
   check_duplicates = def &= help "Check duplicated clafer names",
   force_resolver = def &= help "Force name resolution" &= name "f",
-  keep_unused = def &= help "Keep unused abstract clafers" &= name "k"
+  keep_unused = def &= help "Keep unused abstract clafers" &= name "k",
+  no_stats = def &= help "Don't print statistics" &= name "s"
  } &= summary "Clafer v0.0.2"
 
 main :: IO ()
