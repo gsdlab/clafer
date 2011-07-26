@@ -74,7 +74,7 @@ run v p args = do
                           dTree <- evaluate $! desugarModule tree
                           let f'    = take (length f - 4) f
                           -- writeFile (f' ++ ".des") $ printTree $
-                            sugarModule dTree
+                          --  sugarModule dTree
                           let dTree' = findDupModule args dTree
                           let au = allUnique dTree'
                           let args' = args{force_resolver = not au ||
@@ -87,7 +87,7 @@ run v p args = do
                           putStrLn "[Optimizing]"
                           oTree <- evaluate $ optimizeModule args' (aTree, genv)
                           -- writeFile (f' ++ ".ana") $ printTree $
-                            sugarModule oTree
+                          --  sugarModule oTree
                           putStrLn "[Generating Code]"
                           code <- evaluate $! genModule (oTree, genv)
                           putStrLn "[Saving File]"

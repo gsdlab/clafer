@@ -201,7 +201,7 @@ handleIndent c = case c of
     c' <- readC n
     emitIndent n
     emitDedent n
-    when (c' `elem` ['[', ']','{', '}']) $ void $ handleIndent c'
+    when (c' `elem` ['[', ']','{', '}']) $ voidf $ handleIndent c'
     return c'
   '[' -> do
     modify (\e -> e {brCtr = brCtr e + 1})
@@ -257,3 +257,7 @@ getc = do
   c <- gets (head.input)
   modify (\e -> e {input = tail $ input e})
   return c
+
+voidf f = do
+  x <- f
+  return ()
