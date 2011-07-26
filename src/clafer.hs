@@ -73,7 +73,7 @@ run v p args = do
                           putStrLn "[Desugaring]"
                           dTree <- evaluate $! desugarModule tree
                           let f'    = take (length f - 4) f
-                          writeFile (f' ++ ".des") $ printTree $
+                          -- writeFile (f' ++ ".des") $ printTree $
                             sugarModule dTree
                           let dTree' = findDupModule args dTree
                           let au = allUnique dTree'
@@ -86,7 +86,7 @@ run v p args = do
                           aTree <- evaluate $! astrModule rTree
                           putStrLn "[Optimizing]"
                           oTree <- evaluate $ optimizeModule args' (aTree, genv)
-                          writeFile (f' ++ ".ana") $ printTree $
+                          -- writeFile (f' ++ ".ana") $ printTree $
                             sugarModule oTree
                           putStrLn "[Generating Code]"
                           code <- evaluate $! genModule (oTree, genv)
