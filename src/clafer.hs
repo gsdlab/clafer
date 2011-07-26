@@ -91,8 +91,9 @@ run v p args = do
                           putStrLn "[Generating Code]"
                           code <- evaluate $! genModule (oTree, genv)
                           putStrLn "[Saving File]"
-                          printStats au $ statsModule oTree
-                          writeFile (f' ++ ".als") code
+                          let stats = showStats au $ statsModule oTree
+                          putStrLn stats
+                          writeFile (f' ++ ".als") $ addStats code stats
 
 
 showTree :: (Show a, Print a) => Int -> a -> IO ()
@@ -102,11 +103,14 @@ showTree v tree
       putStrV v $ "\n[Linearized tree]\n\n" ++ printTree tree
 
 
-printStats au (Stats na nr nc nconst sgl) = do
-  putStrLn $ "All clafers: " ++ (show (na + nr + nc)) ++ " | Abstract: " ++ (show na) ++ " | Concrete: " ++ (show nc) ++ " | References: " ++ (show nr)
-  putStrLn $ "Constraints: " ++ show nconst
-  putStrLn $ "Global scope: " ++ showInterval sgl
-  putStrLn $ "All names unique: " ++ show au
+addStats code stats = "/*\n" ++ stats ++ "*/\n" ++ code
+
+
+showStats au (Stats na nr nc nconst sgl) =
+  unlines [ "All clafers: " ++ (show (na + nr + nc)) ++ " | Abstract: " ++ (show na) ++ " | Concrete: " ++ (show nc) ++ " | References: " ++ (show nr)
+          , "Constraints: " ++ show nconst
+          , "Global scope: " ++ showInterval sgl
+          , "All names unique: " ++ show au]
 
 
 showInterval (n, ExIntegerAst) = show n ++ "..*"
