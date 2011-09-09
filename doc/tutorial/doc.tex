@@ -1,0 +1,125 @@
+\documentclass{llncs}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{mathpartir}
+\usepackage{stmaryrd,url,xcolor,calc,multicol,xspace}
+\usepackage{alltt}
+\usepackage{lineno}
+\usepackage[scaled=0.89]{helvet}
+\usepackage{array,graphics,tplot,epic,eepic,featurediag,xspace}
+\usepackage{listings}
+
+\renewcommand{\ttdefault}{txtt} 
+
+\urlstyle{sf}
+
+\newcommand{\figref}[1]{Fig.\,\ref{fig:#1}}
+\newcommand{\Figref}[1]{Figure\,\ref{fig:#1}}
+
+\lstdefinelanguage{Clafer}
+{morekeywords={abstract, else, in, no, opt, xor, all, enum, lone, not, or, disj, extends, mux, one, some, fact, sig, pred, run, for},
+sensitive=true,
+morecomment=[l][\footnotesize\itshape]{--},
+%morecomment=[s][\small\itshape]{{-}{-}},
+basicstyle={\sffamily},
+tabsize=4,
+columns=fullflexible,
+literate={->}{{$\to$ }}1 {^}{{$\mspace{-3mu}\widehat{\quad}\mspace{-3mu}$}}1
+% {<}{$<$ }2 {>}{$>$ }2 {>=}{$\geq$ }2 {<=}{$\leq$ }2
+ {<:}{{$<\mspace{-3mu}:$}}2 {:>}{{$:\mspace{-3mu}>$}}2
+ {<=>}{{$\Leftrightarrow$ }}2
+ {=>}{{$\implies$ }}2 {+}{$+$ }2 {++}{{$+\mspace{-8mu}+$ }}2
+ {\~}{{$\mspace{-3mu}\widetilde{\quad}\mspace{-3mu}$}}1
+ {!=}{$\neq$ }2 {*}{${}^{\ast}$}1
+ {\#}{$\#$}1
+ {\~}{$\neg$}1
+ {+}{$+$ }1
+}
+
+\lstset{basicstyle=\small,language=Clafer,numbers=none}
+
+\begin{document}
+\title{Attributed Feature Models in Clafer}
+
+\author{Kacper B\k{a}k\inst{1}}
+
+\institute{Generative Software Development Lab, University of Waterloo, Canada,
+\email{kbak@gsd.uwaterloo.ca}}
+
+\maketitle
+
+\begin{abstract}
+tutorial; explains how to read and specify feature models in Clafer.
+\end{abstract}
+
+\section{What Is Clafer?}
+Clafer~\cite{bak:clafer:2010} is a textual language for concept modeling and specification of software product lines. In this document we are concerned with the latter. In particular we show how to encode feature models with attributes. Those models are expressive enough to represent real-world variability models, such as the Linux kernel and eCos.
+
+Clafer aims at providing a common infrastructure for analyses of feature and meta-models. The need for analyses was recognized, for example, in the operating systems domain by the Linux Kernel and eCos developers~\cite{berger:varmodel:2010}. They both provide variability models of system kernels that are supported by configuration tools. The tools guide the configuration process, so that end-users are less likely to build incorrect kernels. Many non-trivial analyses of variability models are reducible to the NP-hard problem of finding model instances by combinatorial solvers. At present, Clafer translates input models to Alloy~\cite{jackson:alloy:2006}. Alloy uses SAT solvers to do model checking, or to find model instances. 
+
+\section{Feature Models in Clafer}
+
+Feature models~\cite{kang:foda:1990} are tree-like structures that specify commonalities and variabilities within a software family. \Figref{autofm}a shows a feature model of variabilities found in an automobile product line.
+
+\begin{figure}[t]
+  \begin{center}
+    \begin{tabular}{cc}
+      \begin{minipage}[t]{8cm}
+        \begin{center}
+          \scalebox{1.0}{
+            \begin{fbundle}{\featbox{Automobile}}
+              \fchunk[m]{
+                \begin{fbundle}[x][1]{\featbox{Engine}}
+                  \fchunk{\featbox{Gasoline}}
+                  \fchunk{\featbox{Electric}}
+                \end{fbundle}
+              }
+              \fchunk[o]{
+                \begin{fbundle}[o][1]{\featbox{Radio}}
+                  \fchunk{\featbox{CD Player}}
+                  \fchunk{\featbox{Tape}}
+                \end{fbundle}
+              }
+            \end{fbundle}
+          }
+        \end{center}
+      \end{minipage}
+      &
+      \begin{minipage}{3cm}
+        \lstinputlisting[firstline=1,lastline=7]{src/automobile.cfr}
+      \end{minipage}\\
+      \textsf{Electric} $\implies$ \textsf{Radio}
+      &
+      \lstinputlisting[firstline=9,lastline=9]{src/automobile.cfr}\\[0.2cm]
+      a) FODA notation & b) Clafer notation
+    \end{tabular}
+  \end{center}
+  \caption{Feature model of automobile product line\label{fig:autofm}}
+\end{figure}
+
+Each box represents a \emph{feature}, that is a user-relevant product characteristic, such as \textsf{Engine} or \textsf{Radio}. Mandatory features are marked with filled circles; optional features with hollow circles. In our example, every car must have an \textsf{Engine}, but not every car must have a \textsf{Radio}. Feature models also have \emph{alternative groups} (marked with empty arcs) and \emph{or-groups} (marked with filled arcs). An \emph{alternative group} allows to select only one subfeature, e.g. a car must have either \textsf{Gasoline} or \textsf{Electric} engine. An \emph{or-group} requires at least one subfeature to be selected, e.g. a valid car configuration has either \textsf{CD Player}, or \textsf{Tape} player, or both of them. Finally, some constraints cannot be encoded in the tree structure. In that case we use cross-tree constraints specified as propositional formulas to restrict the feature model. For instance, the constraint below the tree says that cars with \textsf{Electric} engine must have some \textsf{Radio} player on board.
+
+\Figref{autofm}b shows a Clafer model that corresponds to the automobile feature model from \figref{autofm}a. The hierarchy of model elements is established by code indentation. Feature group (\emph{alternative} and \emph{or}) specification precedes the name (e.g. \textsf{xor} before \textsf{Engine}). In contrast with FODA feature models, each feature in Clafer may have specified group cardinality that restricts the number of subfeatures that can be selected. For instance, for \textsf{Engine} exactly one of its subfeatures can be selected; for \textsf{Radio} at least one. Optionality of elements is marked by the question mark following the name (e.g. \textsf{Radio}).
+
+Cross tree constraints are specified in square brackets in \figref{autofm}b. FODA feature models make use only of propositional constraints. Those constraints involve feature names and a standard set of logical operators, i.e. equivalence (\textsf{<=>}), exclusive-or (\textsf{xor}), implication (\textsf{=>}), conjunction (\textsf{\&\&}), disjunction (\textsf{||}), negation (\textsf{$\sim$}).
+
+\section{Feature Models with Attributes}
+
+Several extensions to feature models have been proposed; among them feature \emph{attributes}~\cite{benavides:fama:2005}. An attribute allows feature to store a value of primitive type (such as integer, string, enumeration). Let us extend the automobile example with two attributed features: \textsf{MaxSpeed} and \textsf{Model} (see \figref{aautofm}). The former specifies car's maximum speed in km/h, the latter car model name.
+
+\begin{figure}[t]
+  \begin{center}
+    \lstinputlisting{src/attrautomobile.cfr}
+  \end{center}
+  \caption{Attributed feature model of automobile product line\label{fig:aautofm}}
+\end{figure}
+
+In Clafer, feature attributes follow feature name. The name is followed by colon, and then by type of the attribute. Therefore, \textsf{MaxSpeed} is an integer number, and \textsf{Model} a textual string. Furthermore, both features are constrained (in the last two lines), so that values of attributes are well-defined. We set car's maximum speed to 240, and model name to ``Supercar''. Please not that both equations are specified within the same square brackets. Such a specification is interpreted simply as conjunction of logical expressions. We could have defined the two equations in separate sets of brackets.
+
+Integer and string attributes can participate in relational expressions that compare values: equality (\textsf{=}), inequality (\textsf{/=}), less than (\textsf{<}), less than or equal (\textsf{<=}), greater than (\textsf{>}), greater than or equal (\textsf{>=}). Integers also participate in arithmetic expressions: addition (\textsf{+}), substraction (\textsf{-}), and multiplication (\textsf{$\ast$}).
+
+\nocite{*}
+\bibliographystyle{splncs03}
+\bibliography{doc}
+
+\end{document}

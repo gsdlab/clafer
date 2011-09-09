@@ -1,0 +1,1024 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% eval.sty: add an infix-calculator supporting mathematical functions
+% 2003/08/01/ tsakurai@rimath.saitama-u.ac.jp
+%
+% \eval#1#2 : <macro>#1=(<expr>#2)    % stored as a value
+% \evalc#1#2: <macro>#1=(<expr>#2)pt  % stored as a length
+% \evald#1#2: <dimen>#1=(<expr>#2)pt  % stored in the dimen-register
+%
+% \funcdef\Name(arg[,arg]){expr}:     % install user-defined function
+%
+% \?{expr}:			      % typeout the result to console
+% \solve[var=a:b; expr]:	      % find the root in (a,b) of expr=0
+% \for[var=val;cond;var+=incr]{proc}: % for statement
+%
+% Comment:
+%  Using the same evaluation scheme as in calc.sty, we extend
+%  the infix arithmetic to support the operator ^(power) and basic
+%  mathematical functions.
+%
+% --- CTAN/macros/latex/required/tools/calc.dtx ---
+%| File `calc.dtx': 
+%| Copyright(C) 1992--1995;  Kresten Krab Thorup and Frank Jensen.valx
+%| Copyright(C) 1997; Kresten Krab Thorup, Frank Jensen and the LaTeX3 Project.
+%| [1997/11/11 v4.0e Infix arithmetic (KKT,FJ)]
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\NeedsTeXFormat{LaTeX2e}
+%\ProvidesPackage{eval}[2003/07/07]
+
+{\catcode`\p=12\catcode`\t=12\gdef\RMPT@#1pt{#1}\gdef\TRUNC@#1.#2pt{#1}}
+\def\v@l{\expandafter\RMPT@\the}\let\val=\strip@pt
+\def\newdarray#1#2{%  #1 = array[1..#2] of dimen
+  \count@=0\loop\ifnum\count@<#2\advance\count@1
+    \expandafter\newdimen\csname\string#1\number\count@\endcsname
+  \repeat
+  \def#1##1{\csname\string#1\number##1\endcsname}}
+
+%<*constants>
+\newtoks\list@constants
+\list@constants{\let\e\E@\let\pi\PI@\let\deg\DEG@}
+%>>slow!\list@constants{\edef\e{\v@l\E@}\edef\pi{\v@l\PI@}\edef\deg{\v@l\DEG@}}
+\newdimen\E@\E@=2.71828\p@% 178145sp
+\newdimen\PI@\PI@=3.14159\p@% 205887sp
+\newdimen\DEG@\DEG@=1144sp
+%</constants>
+
+%<*functions>
+\newtoks\list@builtins
+\list@builtins{%
+  \fn@i\abs\ABS\fn@i\sgn\SGN\fn@i\exp\EXP\fn@i\log\LOG\fn@i\sqrt\SQRT
+  \fn@i\sin\SIN\fn@i\cos\COS\fn@i\tan\TAN\fn@i\atan\ATAN\fn@i\asin\ASIN
+  \fn@ii\atanii\ATANII\fn@ii\max\MAX\fn@ii\min\MIN}
+%</functions>
+
+%<*eval-main>
+\newtoks\@expr
+\newdimen\@AA
+\newdimen\@BB
+\newdimen\@stacktop
+\newdarray\@arg{18}
+\newcount\pp@arg
+\def\push@arg#1{\global\advance\pp@arg1\global\@arg{\pp@arg}=#1\relax}
+\def\pop@arg{\@arg{\pp@arg}\global\advance\pp@arg-1\relax}
+\def\popto#1{\@stacktop=\pop@arg\edef#1{\val\@stacktop}}
+\def\pushback#1#2{\global#1\expandafter{\the#1#2}}
+
+\def\@scan#1{\global\@expr{}{%
+  \def\fn@i##1##2{\let##1F}\let\fn@ii\fn@i\the\list@builtins
+  \body@scan#1\relax\relax\relax}}
+\def\body@scan#1#2{%
+  \ifx#1\relax\else
+    \ifx#1(\pushback\@expr{\Op\lpar@|}\else
+    \ifx#1)\pushback\@expr{|\Op\rpar@}\else
+    \ifx#1,\pushback\@expr{|\Op\comma@|}\else
+    \ifx#1+\pushback\@expr{|\Op\plus@|}\else
+    \ifx#1-\pushback\@expr{|\Op\minus@|}\else
+    \ifx#1*\pushback\@expr{|\Op\mul@|}\else
+    \ifx#1/\pushback\@expr{|\Op\div@|}\else
+    \ifx#1^\pushback\@expr{|\Op\pow@|}\else
+    \ifx#1v\pushback\@expr{\Op\var@#1}\else
+    \ifx#1F\pushback\@expr{\Op\@nameuse{\string#1@}|}\else
+    \ifx#1=\ifx#2=\pushback\@expr{|\Op\eq@|}\fi\else
+    \ifx#1!\ifx#2=\pushback\@expr{|\Op\ne@|}\else
+           \pushback\@expr{|\Op\fac@}\fi\else
+    \ifx#1>\ifx#2=\pushback\@expr{|\Op\ge@|}\else
+           \pushback\@expr{|\Op\gt@|}\fi\else
+    \ifx#1<\ifx#2=\pushback\@expr{|\Op\le@|}\else
+           \pushback\@expr{|\Op\lt@|}\fi\else
+    \ifx#1&\ifx#2&\pushback\@expr{|\Op\and@|}\fi\else
+    \ifx#1|\ifx#2|\pushback\@expr{|\Op\or@|}\fi\else
+    \ifx#1?\pushback\@expr{|\Op\ifelse@}\else
+    \ifx#1;\pushback\@expr{|\Op\semicolon@|}\else
+    \ifx#1$\pushback\@expr{\Op\assign@}\else
+           \pushback\@expr{#1}\relax
+    \fi\fi\fi\fi\fi\fi\fi\fi\fi\fi\fi\fi\fi\fi\fi\fi\fi\fi\fi
+    \expandafter\body@scan
+  \fi{#2}}
+
+\def\eval#1#2{\@scan{(#2)}\@evald\@stacktop\@expr\edef#1{\val\@stacktop}}
+\def\evalc#1#2{\@scan{(#2)}\@evald\@stacktop\@expr\edef#1{\the\@stacktop}}
+\def\evald#1#2{\@scan{(#2)}\@evald{#1}\@expr}
+\def\?#1{\evald\dimen@{#1}\@expr{#1}\typeout{[\the\@expr]^^J= \val\dimen@}}
+
+\def\@evald#1#2{{% evaluate <toks>#2
+  \the\list@constants
+  \expandafter\exec@for\the#2|\relax|%
+  \global\@AA=\@stacktop}\ifx*#1\else#1=\@AA\fi}
+\def\exec@for#1|{%
+  \ifx\relax#1\empty\else
+    \ifx\Op#1\relax\else
+    \ifx\relax#1\relax\@stacktop\z@\else
+      \@defaultunits\@stacktop#1\p@\@nnil
+    \fi\fi
+    \expandafter\exec@for
+  \fi}
+
+\def\lpar@{\push@Op\put@A\push@Op\put@A\push@Op\put@A\push@Op\put@A}%
+\def\rpar@{\pop@Op\pop@Op\pop@Op\pop@Op}%
+\def\semicolon@{\rpar@\csname @@assign\endcsname\lpar@}%
+\def\comma@{\rpar@\push@arg\@stacktop\lpar@}%
+\def\eq@{\rpar@\push@Op\isEQ@\push@Op\put@A\push@Op\put@A\push@Op\put@A}%
+\def\ne@{\rpar@\push@Op\isNE@\push@Op\put@A\push@Op\put@A\push@Op\put@A}%
+\def\gt@{\rpar@\push@Op\isGT@\push@Op\put@A\push@Op\put@A\push@Op\put@A}%
+\def\ge@{\rpar@\push@Op\isGE@\push@Op\put@A\push@Op\put@A\push@Op\put@A}%
+\def\lt@{\rpar@\push@Op\isLT@\push@Op\put@A\push@Op\put@A\push@Op\put@A}%
+\def\le@{\rpar@\push@Op\isLE@\push@Op\put@A\push@Op\put@A\push@Op\put@A}%
+\def\and@{\rpar@\push@Op\AND@\push@Op\put@A\push@Op\put@A\push@Op\put@A}%
+\def\or@{\rpar@\push@Op\OR@\push@Op\put@A\push@Op\put@A\push@Op\put@A}%
+\def\plus@{\pop@Op\pop@Op\pop@Op\push@Op\add@A\push@Op\put@A\push@Op\put@A}%
+\def\minus@{\pop@Op\pop@Op\pop@Op\push@Op\sub@A\push@Op\put@A\push@Op\put@A}%
+\def\mul@{\pop@Op\pop@Op\push@Op\mul@A\push@Op\put@A}%
+\def\div@{\pop@Op\pop@Op\push@Op\div@A\push@Op\put@A}%
+\def\pow@{\pop@Op\push@Op\pow@A}%
+\def\fn@i#1#2{\@namedef{\string#1@}{\pop@Op\def\@FF{#2}\push@Op\put@FA}}%
+\def\fn@ii#1#2{\@namedef{\string#1@}{\pop@Op\def\@FF{#2}\push@Op\put@FBA}}%
+\the\list@builtins
+\def\fac@{%
+  \count@=\@stacktop\divide\count@\p@\ifnum\count@=0\@stacktop=\p@\fi
+  \loop\ifnum\count@>2\advance\count@-1\multiply\@stacktop\count@\repeat}%
+\def\ifelse@#1:#2\relax{%
+  \ifdim\@stacktop>\z@\evald\@stacktop{#1}\else\evald\@stacktop{#2}\fi}
+\def\assign@#1#2\relax{%
+  \evald\@stacktop{#2}%
+  \xdef\@@assign{%
+    \global\noexpand\@namedef{g\string#1}{\v@l\@stacktop}%
+    \def\noexpand#1{\v@l\@stacktop}%
+  }\relax}
+\def\var@#1{\@stacktop=#1}
+
+\def\push@Op#1{\begingroup\aftergroup#1}%
+\def\pop@Op{\global\@AA\@stacktop\endgroup}%
+\def\put@A{\@stacktop\@AA}%
+\def\add@A{\advance\@stacktop\@AA}%
+\def\sub@A{\advance\@stacktop-\@AA}%
+\def\mul@A{\@stacktop=\v@l\@stacktop\@AA}%
+\def\div@A{\ratio\@rr\@stacktop\@AA\@stacktop=\@rr\p@}%
+\def\pow@A{%
+  \edef\xx{\v@l\@stacktop}\let\inv\relax
+  \ifdim\@AA<\z@
+    \global\@AA=-\@AA\def\inv{\ratio\@rr\p@\@stacktop\@stacktop=\@rr\p@}%
+  \fi
+  \count@=\@AA\divide\count@\p@\global\advance\@AA-\count@\p@
+  \ifnum\count@=0\@stacktop\p@\fi
+  \loop\ifnum\count@>1\advance\count@-1\relax
+    \ifdim\@stacktop<.1\maxdimen\@stacktop=\xx\@stacktop\fi
+  \repeat
+  \ifdim\@AA>\z@
+    \edef\aa{\v@l\@AA}\global\@AA=\xx\p@\LOG\@AA\global\@AA=\aa\@AA\EXP\@AA
+    \@stacktop=\v@l\@AA\@stacktop
+  \fi\inv}%
+\def\put@FA{\@FF\@AA\@stacktop=\@AA}%
+\def\put@FBA{\@BB=\pop@arg\@FF\@BB\@AA\@stacktop=\@AA}%
+\def\isEQ@{\@stacktop=\ifdim\@stacktop=\@AA\p@\else\z@\fi}%
+\def\isNE@{\@stacktop=\ifdim\@stacktop=\@AA\z@\else\p@\fi}%
+\def\isGE@{\@stacktop=\ifdim\@stacktop<\@AA\z@\else\p@\fi}%
+\def\isGT@{\@stacktop=\ifdim\@stacktop>\@AA\p@\else\z@\fi}%
+\def\isLE@{\@stacktop=\ifdim\@stacktop>\@AA\z@\else\p@\fi}%
+\def\isLT@{\@stacktop=\ifdim\@stacktop<\@AA\p@\else\z@\fi}%
+\def\AND@{\@stacktop=\v@l\@stacktop\@AA}%
+\def\OR@{\ifdim\@AA=\z@\else\@stacktop=\p@\fi}%
+
+\def\ratio#1#2#3{{% <macro>#1<-(<dimen>#2/<dimen>#3)
+  \ifdim#3=\z@\typeout{! Divided by 0: \v@l#2/\v@l#3}\@stopped\fi
+  \dimendef\AA254\relax\dimendef\BB255\relax
+  \gdef\@rtmp{}\AA=#2\relax\BB=#3\relax
+  \ifdim\BB<\z@\BB=-\BB\AA=-\AA\relax\fi
+  \ifdim\AA<\z@\AA=-\AA\gdef\@rtmp{-}\fi
+  \ifnum\BB>107374183\divide\AA10\divide\BB10\fi
+  \dimen@=\AA\divide\dimen@\BB
+  \xdef\@rtmp{\@rtmp\number\dimen@.}%
+  \count@=6\loop\ifnum\count@>0\advance\count@-1\relax
+    \multiply\dimen@\BB\advance\AA-\dimen@\AA=10\AA
+    \dimen@=\AA\divide\dimen@\BB
+    \xdef\@rtmp{\@rtmp\number\dimen@}%
+  \repeat}\edef#1{\@rtmp}}
+%</eval-main>
+
+%<*builtins>
+\def\ABS#1{{\ifdim#1<\z@\global#1=-#1\fi}}
+\def\SGN#1{{\ifdim#1>\z@\global#1=\p@\fi\ifdim#1<\z@\global#1=-\p@\fi}}
+\def\MAX#1#2{{\ifdim#1>#2\global#2=#1\fi}}
+\def\MIN#1#2{{\ifdim#1<#2\global#2=#1\fi}}
+
+\def\SQRT#1{{% <dimen>#1=\sqrt(<dimen>#1/\p@)*\p@
+  \ifdim#1<\z@\typeout{! Error in \string\sqrt(\v@l#1)}\@stopped\fi
+  \ifdim#1=\z@\dimen@ii=\z@\else
+    \dimen@=#1\relax\dimen@ii=#1\relax
+    \count@=11\loop\ifnum\count@>0\relax\advance\count@-1\relax
+      \ratio\xx{\dimen@}{\dimen@ii}\advance\dimen@ii+\xx\p@
+      \advance\dimen@ii+1sp\divide\dimen@ii2\relax
+    \repeat
+  \fi\global#1=\dimen@ii}}
+
+\def\COS#1{{% <dimen>#1=\cos(<dimen>#1/\p@)*\p@
+  \dimendef\X0\X=#1\relax\count@=1\relax
+  \ifdim\X<\z@\X=-\X\fi
+  \loop\ifdim\X>.5\PI@\advance\X-\PI@\multiply\count@-1\repeat
+  \dimendef\C1\dimendef\S9\dimendef\D8\relax
+    \divide\X2\S=\X\dimen@ii=\v@l\X\X
+    \D=\v@l\dimen@ii\X\divide\D6 \advance\S-\D
+    \D=\v@l\dimen@ii\D\divide\D20\advance\S+\D
+    \D=\v@l\dimen@ii\D\divide\D42\advance\S-\D
+    \C=\v@l\S\S\C=-2\C\advance\C+\p@
+  \global#1=\count@\C}}
+
+\def\SIN#1{{% <dimen>#1=\sin(<dimen>#1/\p@)*\p@
+  \dimendef\X0\X=#1\relax\count@=1\relax
+  \ifdim\X<\z@\X=-\X\multiply\count@-1\fi\relax
+  \loop\ifdim\X>.5\PI@\advance\X-\PI@\multiply\count@-1\repeat
+  \dimendef\S1\dimendef\D9\relax
+    \divide\X3\S=\X\dimen@ii=\v@l\X\X
+    \D=\v@l\dimen@ii\X\divide\D6 \advance\S-\D
+    \D=\v@l\dimen@ii\D\divide\D20\advance\S+\D
+    \dimen@ii=\v@l\S\S\D=4\S\D=\v@l\dimen@ii\D
+    \S=3\S\advance\S-\D
+  \global#1=\count@\S}}
+
+\def\TAN#1{{% <dimen>#1=\tan(<dimen>#1/\p@)*\p@
+  \dimendef\X0\X=#1\COS#1\dimen@i=#1\relax
+  \ifdim#1=\z@\typeout{! Error in \string\tan(\v@l\X)}\@stopped\fi
+  \global#1=\X\SIN#1\dimen@ii=#1\ratio\tt{\dimen@ii}{\dimen@i}%
+  \global#1=\tt\p@}}
+
+\def\ATAN#1{{% <dimen>#1=\atan(<dimen>#1/\p@)*\p@
+  \dimendef\B0\B=#1\def\ct{0}\dimendef\H255\relax
+  \ifdim\B>\p@\ratio\xx{\p@}{\B}\B=\xx\p@\def\ct{1}\fi
+  \ifdim\B<-\p@\ratio\xx{\p@}{\B}\B=\xx\p@\def\ct{-1}\fi
+  \H=\B\dimendef\T2
+  \count@=4\loop\ifnum\count@>0\advance\count@-1\relax
+    \global#1=\H\TAN#1\T#1\relax\dimen@i=\v@l\T\T\advance\dimen@i+\p@
+    \global#1=\B\global\advance#1-\T\ratio\xx{#1}{\dimen@i}\advance\H+\xx\p@
+  \repeat\ifnum\ct=0\else\global#1=.5\PI@\H=-\H\advance\H+\ct#1\fi
+  \global#1=\H}}
+
+\def\ATANII#1#2{{% <dimen>#2=\atanii(<dimen>#1/<dimen>#2)*\p@
+  \dimendef\XX255\dimendef\YY254\YY=#1\XX=#2\dimendef\H0\relax
+  \ifdim\XX=\z@
+     \ifdim\YY>\z@\H= .5\PI@\else
+     \ifdim\YY<\z@\H=-.5\PI@\else
+     \ifdim\YY=\z@\H=\z@\typeout{! Warning: \string\atanii(0,0)=0}%
+     \fi\fi\fi
+  \else
+     \ratio\xx{\YY}{\XX}\global#2=\xx\p@\ATAN#2\H=#2\relax
+  \fi
+  \ifdim\XX<\z@\advance\H+\PI@\fi\ifdim\H>\PI@\advance\H-2\PI@\fi
+  \global#2=\H}}
+
+\def\ASIN#1{{% <dimen>#1=\asin(<dimen>#1/\p@)*\p@
+  \ifdim#1> \p@\typeout{! Error in \string\asin(\v@l#1)}\@stopped\fi
+  \ifdim#1<-\p@\typeout{! Error in \string\asin(\v@l#1)}\@stopped\fi
+  \dimendef\S254\S=#1\global#1=\p@\global\advance#1-\v@l\S\S\SQRT#1\relax
+  \ATANII{\S}{#1}}}
+
+\def\EXP#1{{% <dimen>#1=\exp(<dimen>#1/\p@)*\p@
+  \dimendef\X0\X=#1\dimendef\E9\dimendef\M8\M=\p@
+  \ifdim\X>9\p@\E=8103.08393\p@\else
+  \ifdim\X<-11\p@\E=\z@\else\dimendef\D7\relax
+    \loop\ifdim\X> .5\p@\advance\X-\p@\M=2.7182818\M\repeat
+    \loop\ifdim\X<-.5\p@\advance\X+\p@\M= .3678794\M\repeat
+    \E=\p@\advance\E\X
+    \D=\v@l\X\X\divide\D2\advance\E\D
+    \D=\v@l\X\D\divide\D3\advance\E\D
+    \D=\v@l\X\D\divide\D4\advance\E\D
+    \D=\v@l\X\D\divide\D5\advance\E\D
+    \D=\v@l\X\D\divide\D6\advance\E\D
+  \fi\fi
+  \global#1=\v@l\E\M}}
+
+\def\LOG#1{{% <dimen>#1=\log(<dimen>#1/\p@)*\p@
+  \ifdim#1<1sp\typeout{! Error in \string\log(\v@l#1)}\@stopped\fi
+  \dimendef\X0\X=#1\relax
+  \ifdim\X<\p@\ratio\xx{\p@}{\X}\X=\xx\p@\count@=-1\else\count@=1\fi
+  \dimendef\L1\L=\z@\dimendef\D9\dimendef\DD8\relax
+  \loop\ifdim\X>1.3\p@\X=.60653\X\advance\L.5\p@\repeat
+    \advance\X-\p@\advance\L+\X
+    \D=\v@l\X\X\DD=\D\divide\DD2\advance\L-\DD
+    \D=\v@l\X\D\DD=\D\divide\DD3\advance\L+\DD
+    \D=\v@l\X\D\DD=\D\divide\DD4\advance\L-\DD
+    \D=\v@l\X\D\DD=\D\divide\DD5\advance\L+\DD
+    \D=\v@l\X\D\DD=\D\divide\DD6\advance\L-\DD
+    \D=\v@l\X\D\DD=\D\divide\DD7\advance\L+\DD
+    \D=\v@l\X\D\DD=\D\divide\DD8\advance\L-\DD
+  \global#1=\count@\L}}
+%</builtins>
+
+%<*funcdef>
+\def\funcdef#1(#2)#3{%
+  \def\get@argc##1,##2,##3,##4\relax{##3\relax}%
+  \ifcase\get@argc#2,2,1,0\relax\or
+    \funcdef@i#1(#2){#3}\or
+    \funcdef@ii#1(#2){#3}\fi}
+\def\funcdef@i#1(#2)#3{%
+  \@namedef{F@\string#1}##1{{%
+    \edef#2{\v@l##1}\evald\@stacktop{#3}%
+    \global##1=\@stacktop}}%
+  \installBuiltin{#1}{\@nameuse{F@\string#1}}[1]}
+\def\funcdef@ii#1(#2,#3)#4{%
+  \@namedef{F@\string#1}##1##2{{%
+    \edef#2{\v@l##1}\edef#3{\v@l##2}\evald\@stacktop{#4}%
+    \global##1=\@stacktop}}%
+  \installBuiltin{#1}{\@nameuse{F@\string#1}}[2]}
+\def\installBuiltin#1#2[#3]{%
+  \if1#3\relax
+    \list@builtins\expandafter{\the\list@builtins\fn@i#1{#2}}\fn@i#1{#2}\else
+  \if2#3\relax
+    \list@builtins\expandafter{\the\list@builtins\fn@ii#1{#2}}\fn@ii#1{#2}%
+  \fi\fi}
+%</funcdef>
+
+%<*solve>
+\def\solve#1[#2=#3:#4;#5]{{%
+  \ifx*#1\relax\def\@echo{\typeout{a=\v@l\aa, b=\v@l\bb; y=\v@l\dimen@}}\fi
+  \dimendef#2=254\dimendef\aa253\dimendef\bb252\relax
+  \@scan{(#5)}\toks@=\@expr\evald\aa{#3}\evald\bb{#4}%
+  #2=\aa\@evald\dimen@{\toks@}%
+  \ifdim\dimen@<\z@\def\sign@aa{-}\else\def\sign@aa{}\fi
+  \loop\evald\dimen@ii{\abs(\bb-\aa)}\ifdim\dimen@ii>1sp
+    \evald#2{(\aa+\bb)/2}\@evald\dimen@{\toks@}%
+    \csname @echo\endcsname
+    \ifdim\dimen@=\z@
+      \aa=#2\bb=#2\relax
+    \else\ifdim\sign@aa\dimen@<\z@
+      \bb=#2\relax
+    \else
+      \aa=#2\relax
+    \fi\fi
+  \repeat
+  \global\@AA=#2}\edef#2{\val\@AA}%
+  \ifx\relax#1\relax\else\typeout{\string#2=#2}\fi}
+%</solve>
+
+%<*forloop>
+\newtoks\condition@for
+\def\for[#1=#2;#3;#4#5=#6]#7{{%
+  \dimendef#1=244\relax
+  \evald#1{#2}\evalc\step@for{#6}%
+  \@scan{(#3)}\condition@for=\@expr
+  \loop \csname echo@eval\endcsname
+    \@evald\@stacktop\condition@for
+  \ifdim\@stacktop>\z@
+    {\edef#1{\val#1}#7}%
+    \advance#1#5\step@for
+  \repeat}}
+\def\echooff{\def\echo@eval{}}
+\def\echoon{\def\echo@eval{\message{.}}}
+%</forloop>
+%%EOF
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% tplot.sty: a simple plotter using tpic-specials
+% 2003/08/01/ tsakurai@rimath.saitama-u.ac.jp
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{tplot}[2003/08/01]
+%\RequirePackage{eval}
+%\@ifundefined{eval}{\input eval.sty}{}
+%\tracingrestores=1
+
+\newcount\@argc
+\def\evalv[#1]#2{%
+  \global\pp@arg=0\relax
+  \evald*{#2,}\relax
+  \@argc=\pp@arg\relax
+  \global\pp@arg=0\relax
+  \ifx\relax#1\relax\else\count@=1\setval@for#1,\relax,\fi}
+\def\setval@for#1,{\ifx#1\relax\else
+  \edef#1{\val\@arg{\count@}}\advance\count@1\expandafter\setval@for\fi}
+
+\def\evaldv[#1]#2{%
+  \global\pp@arg=0\evald*{#2,}\@argc=\pp@arg\global\pp@arg=0\relax
+  \ifx\relax#1\relax\else\count@=1\setlength@for#1,\relax,\fi}
+\def\setlength@for#1,{\ifx#1\relax\else
+  #1=\@arg{\count@}\advance\count@1\expandafter\setlength@for\fi}
+
+%<*transform>
+\def\setmatrix[#1,#2,#3,#4,#5,#6]{%
+  \evalv[\@cma,\@cmb,\@cmc,\@cmd,\@cme,\@cmf]{#1,#2,#3,#4,#5,#6}%
+  \edef\@curmatrix{%
+    [\@cma\space\@cmb\space\@cmc\space\@cmd\space\@cme\space\@cmf]}}
+
+\def\initmatrix{\setmatrix[1,0,0,1,0,0]}
+\initmatrix
+\edef\@identitymatrix{\@curmatrix}
+
+\newtoks\expr@concat
+\@scan{(%
+  \@cma\@arg{1}+\@cmc\@arg{2},\@cmb\@arg{1}+\@cmd\@arg{2},
+  \@cma\@arg{3}+\@cmc\@arg{4},\@cmb\@arg{3}+\@cmd\@arg{4},
+  \@cma\@arg{5}+\@cmc\@arg{6}+\@cme,\@cmb\@arg{5}+\@cmd\@arg{6}+\@cmf,)}
+\expr@concat=\@expr
+\def\concat[#1,#2,#3,#4,#5,#6]{%
+  \global\pp@arg=0\relax
+  \evald*{#1,#2,#3,#4,#5,#6,}\@evald*{\expr@concat}%
+  \setmatrix[\@arg{7},\@arg{8},\@arg{9},\@arg{{10}},\@arg{{11}},\@arg{{12}}]}
+
+\def\translate[#1,#2]{\concat[1,0,0,1,#1,#2]}
+\def\scale[#1]{%
+  \evalv[\@tempa,\@tempb]{#1,#1}%
+  \concat[\@tempa,0,0,\@tempb,0,0]}
+\def\rotate[#1]{%
+  \eval\@theta{#1}%
+  \evalv[\@tempa,\@tempb]{\cos(\@theta),\sin(\@theta)}%
+  \concat[\@tempa,\@tempb,-\@tempb,\@tempa,0,0]}
+\def\rotateat[#1,#2;#3]{%
+  \translate[#1,#2]\rotate[#3]\translate[-#1,-#2]}
+
+\newtoks\expr@tr
+\@scan{(\@cma\curX+\@cmc\curY+\@cme,\@cmb\curX+\@cmd\curY+\@cmf)}
+\expr@tr=\@expr
+\def\transform[#1,#2]{%
+  \ifx\@curmatrix\@identitymatrix\else
+    \ifx#1\curX\@evald#2\expr@tr\else
+      \evald#2{\@cma#1+\@cmc#2+\@cme,\@cmb#1+\@cmd#2+\@cmf}%
+    \fi
+    #1=\pop@arg
+  \fi}
+\def\dtransform[#1,#2]{%
+  \ifx\@curmatrix\@identitymatrix\else
+    \evald#2{\@cma#1+\@cmc#2,\@cmb#1+\@cmd#2}%
+    #1=\pop@arg
+  \fi}
+\def\itransform[#1,#2]{%
+  \ifx\@curmatrix\@identitymatrix\else
+    \eval\@DD{\@cma*\@cmd-\@cmb*\@cmc}%
+    \evald#2{( \@cmd*(#1-\@cme)-\@cmc*(#2-\@cmf))/\@DD,
+             (-\@cmb*(#1-\@cme)+\@cma*(#2-\@cmf))/\@DD}%
+    #1=\pop@arg
+  \fi}
+\def\idtransform[#1,#2]{%
+  \ifx\@curmatrix\@identitymatrix\else
+    \eval\@DD{\@cma*\@cmd-\@cmb*\@cmc}%
+    \evald#2{(\@cmd#1-\@cmc#2)/\@DD,(-\@cmb#1+\@cma#2)/\@DD}%
+    #1=\pop@arg
+  \fi}
+%</transform>
+
+%<*pathop>
+\def\newtarray#1#2{%  #1 = array[1..#2] of toks
+  \count@=0\loop\ifnum\count@<#2\advance\count@1
+    \expandafter\newtoks\csname\string#1\number\count@\endcsname
+  \repeat\def#1##1{\csname\string#1\number##1\endcsname}}
+\newtarray\subpath@{10}
+\newcount\pp@path\pp@path=1
+\def\curPath{\subpath@{\pp@path}}
+\newdimen\curX
+\newdimen\curY
+
+\def\gsave{\@killglue\begingroup\ignorespaces}
+\def\grestore{\@killglue\endgroup\ignorespaces}
+
+\def\setlinewidth#1{%
+  \@killglue\@defaultunits\@wholewidth=#1\unitlength\@nnil
+  \@halfwidth=.5\@wholewidth\ignorespaces}
+\def\setlinejoin#1{\@killglue\edef\@linejoin{#1}\ignorespaces}
+\def\setlinecap#1{\@killglue\edef\@linecap{#1}\ignorespaces}
+\def\setdashlength#1{%
+  \@killglue\@defaultunits\dimen@=#1\unitlength\@nnil
+  \edef\@dashlength{\val\dimen@}\ignorespaces}
+\def\setdotsep#1{%
+  \@killglue\@defaultunits\dimen@=#1\unitlength\@nnil
+  \edef\@dotsep{\val\dimen@}\ignorespaces}
+\setlinejoin{1}
+\setlinecap{1}
+\setdashlength{3.0bp}
+\setdotsep{2.5bp}
+
+\def\setlinestyle#1{\def\@linestyle{#1}}
+\def\solid@{solid}\def\spline@{spline}
+\def\dashed@{dashed}\def\dotted@{dotted}
+\setlinestyle{solid}
+\newtoks\@afterstroke
+
+\def\newpath{%
+  \loop\subpath@{\pp@path}{}\ifnum\pp@path>1\advance\pp@path-1\repeat}
+
+\def\addpoint[#1,#2]{%
+  \evald\curY{#1,#2}\curX=\pop@arg
+  \transform[\curX,\curY]%
+  {\let\\=\relax\xdef\@curpath{\the\curPath\\(\val\curX,\val\curY)}}%
+  \curPath=\expandafter{\@curpath}}
+
+\def\moveto[#1,#2]{{%
+    \count@=0\def\\(##1,##2){\advance\count@1}\the\curPath
+    \xdef\@NN{\the\count@}%
+  }\ifnum\@NN<2\curPath{}\else\advance\pp@path1\fi\addpoint[#1,#2]}
+
+\let\lineto\addpoint
+
+\def\curveto#1[#2,#3;#4,#5;#6,#7]{%
+  \itransform[\curX,\curY]%
+  \bezier@#1[\curX,\curY][#2,#3][#4,#5][#6,#7]}
+
+\def\rmoveto[#1,#2]{%
+  \evald\dimen@ii{#1,#2}\dimen@i=\pop@arg
+  \itransform[\curX,\curY]%
+  \moveto[\curX+\dimen@i,\curY+\dimen@ii]}
+\def\rlineto[#1,#2]{%
+  \evald\dimen@ii{#1,#2}\dimen@i=\pop@arg
+  \itransform[\curX,\curY]%
+  \lineto[\curX+\dimen@i,\curY+\dimen@ii]}
+\def\rcurveto#1[#2,#3;#4,#5;#6,#7]{%
+  \itransform[\curX,\curY]%
+  \edef\@XXO{\val\curX}\edef\@YYO{\val\curY}%
+  \evalv[\@DXI,\@DYI,\@DXII,\@DYII,\@DXIII,\@DYIII]{#2,#3,#4,#5,#6,#7}%
+  \bezier@#1[\@XXO,\@YYO][\@XXO+\DXI,\@YYO+\@DYI]%
+    [\@XXO+\@DXII,\@YYO+\@DYII][\@XXO+\@DXIII,\@YYO+\@DYIII]}
+
+\def\polygon#1[#2,#3]{\gsave\newpath
+  \get@options#1\relax\relax\moveto[#2,#3]\lineto@polygon}
+\long\def\lineto@polygon[#1,#2]#3{%
+  \ifx#3[\lineto[#1,#2]\expandafter\lineto@polygon\else
+    \lineto[#1,#2]\ifnum\@paintmode>0{\fillpath}\fi
+    \ifnum\@paintmode<2\closepath\stroke\fi
+    \grestore
+  \fi#3}
+
+\def\linestrip#1[#2,#3][#4,#5]{%
+  \gsave\newpath\get@acap#1\relax\relax
+  \ifnum\acap@begin=0\moveto[#2,#3]\else
+    \arrowhead@{\acap@begin}[#4,#5;#2,#3]%
+    \itransform[\curX,\curY]%
+    \moveto[\curX,\curY]%
+  \fi\lineto@linestrip[#4,#5]}
+\def\lineto@linestrip[#1,#2]#3{%
+  \ifx#3[\lineto[#1,#2]\expandafter\lineto@linestrip\else
+    \arrowto@\acap@end[#1,#2]\stroke
+    \grestore
+  \fi#3}
+\let\linex=\linestrip
+
+\def\arrowto@#1[#2,#3]#4{%
+  \evalv[\@tempx,\@tempy]{#2,#3}%
+  \itransform[\curX,\curY]\arrowhead@#1[\curX,\curY;\@tempx,\@tempy]%
+  \itransform[\curX,\curY]\lineto[\curX,\curY]%
+  \ifx#4\stroke\relax\else\moveto[\@tempx,\@tempy]\fi#4}
+
+\def\arrowfrom@#1[#2,#3]{%
+  \evalv[\@tempx,\@tempy]{#2,#3}%
+  \itransform[\curX,\curY]\arrowhead@#1[\@tempx,\@tempy;\curX,\curY]%
+  \itransform[\curX,\curY]\moveto[\curX,\curY]%
+  \lineto[#2,#3]}
+
+\def\arrowto{\arrowto@2}
+\def\arrowfrom{\arrowfrom@2}
+
+\def\rarrowto[#1,#2]#3{%
+  \evalv[\@DX,\@DY]{#1,#2}%
+  \@tempdima=\curX\@tempdimb=\curY
+  \itransform[\@tempdima,\@tempdimb]%
+  \arrowto[\@tempdimb+\@DX,\@tempdimb+\@DY]#3}
+
+\def\rarrowfrom[#1,#2]{%
+  \evalv[\@DX,\@DY]{#1,#2}%
+  \@tempdima=\curX\@tempdimb=\curY
+  \itransform[\@tempdima,\@tempdimb]%
+  \arrowfrom[\@tempdima+\@DX,\@tempdimb+\@DY]}
+
+\def\firstpt@of\\#1\\#2\relax{#1}%
+\def\closepath{{\let\\=\relax
+   \xdef\@curpath{\the\curPath\\\expandafter\firstpt@of\the\curPath\\\relax}%
+  }\curPath=\expandafter{\@curpath}}
+
+\newtoks\color@fill
+\newtoks\color@stroke
+\def\setgray@gray#1=#2\relax{\eval#1{#2}}
+\def\setgray@rgb#1=#2,#3,#4\relax{\eval#1{.299*#2+.587*#3+.114*#4}}
+\def\setgray@cmyk#1=#2,#3,#4,#5\relax{%
+  \eval#1{(1-#5)*(.299*(1-#2)+.587*(1-#3)+.114*(1-#4))}}
+\def\setgray@nemed#1=#2\relax{\relax}
+\def\setfillgray#1{\eval\gray@fill{#1}}
+\def\setstrokegray#1{\eval\gray@stroke{#1}}
+\def\setfillcolor[#1]#2{\color@fill{\color[#1]{#2}}%
+  \csname setgray@#1\endcsname\gray@fill=#2\relax}
+\def\setstrokecolor[#1]#2{\color@stroke{\color[#1]{#2}}%
+  \csname setgray@#1\endcsname\gray@stroke=#2\relax}
+\def\setcolor[#1]#2{%
+  \color@fill{\color[#1]{#2}}\color@stroke{\color[#1]{#2}}\relax
+  \expandafter\ifx\csname color\endcsname\relax\else
+    \@killglue\the\color@stroke\ignorespaces
+  \fi}
+\setfillcolor[rgb]{.70,.65,.85}
+\setstrokecolor[rgb]{.0,.0,.0}
+
+\def\fillpath{\@killglue\@fill\newpath\ignorespaces}
+
+\def\stroke{%
+  \@ifstar{\@killglue{\@fill}\@stroke\newpath\ignorespaces}%
+          {\@killglue\@stroke\newpath\ignorespaces}}
+%</pathop>
+
+%<*arrow head>
+\newcount\acap@begin
+\newcount\acap@end
+\newcount\@paintmode
+\def\init@options{\acap@begin=0\relax\acap@end=0\relax\@paintmode=0\relax}
+\def\init@acap{\acap@begin=0\relax\acap@end=0\relax\@paintmode=0\relax}
+
+\def\get@options#1#2\relax{%
+  \@paintmode=0\relax
+  \ifx*#1\relax
+    \@paintmode=2\relax
+    \get@acap#2\relax
+  \else
+    \get@acap#1#2\relax
+  \fi}
+
+\def\get@acap#1\relax{%
+  \acap@begin=0\relax\acap@end=0\relax
+  \let\acap@set=\acap@begin
+  \@tfor\@temp:=#1\do{%
+    \if|\@temp\advance\acap@set1\relax\else
+    \if<\@temp\advance\acap@set2\relax\else
+    \if>\@temp\advance\acap@set2\relax\else
+    \if-\@temp\ifx\acap@set\acap@end\setlinestyle{dashed}\else
+              \let\acap@set\acap@end\advance\@paintmode-1\fi\else
+    \fi\fi\fi\fi}}
+
+\def\setarrowhead#1{\eval\@headwidth{#1}%
+  \@stacktop=\pop@arg\edef\@headlength{\val\@stacktop}}
+\def\settbarsize#1{\eval\@tbarsize{#1}}
+\setarrowhead{8,6}%	unit = \@wholewidth
+\settbarsize{10}%	unit = \@wholewidth
+
+\def\arrowhead@#1[#2,#3;#4,#5]{%
+  \gsave\newpath
+    \let\color@fill\color@stroke
+    \let\gray@fill\gray@stroke
+    \translate[#4,#5]%
+    \rotate[\atanii(#3-(#5),#2-(#4))]%
+    \scale[\@wholewidth/\unitlength]%
+    \moveto[0,0]\@tempcnta=#1\relax
+    \ifodd\@tempcnta\relax
+      \drawTbarHead
+    \fi\divide\@tempcnta2\relax
+    \ifodd\@tempcnta\relax
+      \drawArrowHead
+    \fi\divide\@tempcnta2\relax
+    \xdef\@curX{\the\curX}\xdef\@curY{\the\curY}%
+  \grestore
+  \curX=\@curX\curY=\@curY}
+
+\def\drawTbarHead{%
+  \moveto[-.5,-.5*\@tbarsize]\lineto[-.5, .5*\@tbarsize]%
+  \lineto[ .5, .5*\@tbarsize]\lineto[ .5,-.5*\@tbarsize]%
+  \fillpath
+  \translate[.5,0]\moveto[0,0]%
+  \relax}
+
+\def\drawArrowHeadO{%
+  \moveto[0,0]%
+  \lineto[\@headlength, .5*\@headwidth]%
+  \lineto[\@headlength,-.5*\@headwidth]%
+  \fillpath
+  \moveto[2*\@headlength/\@headwidth,0]%
+  \relax}
+\def\drawArrowHeadI{%
+  \eval\@hangle{\asin(\@headwidth/\@headlength)}%
+  \moveto[0,0]%
+  \lineto[\@headlength,.5*\@headwidth]%
+  \lineto[\@headlength+\sin(.5*\@hangle),.5*\@headwidth-\cos(.5*\@hangle)]%
+  \lineto[2*\@headlength/\@headwidth,0]%
+  \lineto[\@headlength+\sin(.5*\@hangle),-(.5*\@headwidth-\cos(.5*\@hangle))]%
+  \lineto[\@headlength,-.5*\@headwidth]%
+  \fillpath
+  \moveto[2*\@headlength/\@headwidth,0]%
+  \relax}
+\let\drawArrowHead\drawArrowHeadI
+%</arrow head>
+
+%<*parametric curve>
+\newtoks\@pathtype\@pathtype{curve}
+\newcount\nn@path\nn@path=0
+\newcount\nsamples\nsamples=60
+\def\setsamples#1{\nsamples=#1\relax}
+\newcount\@savepath\@savepath=0
+\def\saveon{\@savepath=1}
+\def\saveoff{\@savepath=0}
+\def\echo@plot{\typeout{\number\nn@path: \the\@pathtype}\message{}}
+\def\echooff{\def\echo@eval{}\@ifstar{\def\echo@plot{}}{}}
+\def\echoon{\def\echo@eval{\message{.}}}
+
+\def\get@pexpr#1{{%
+  \def\fn@i##1##2{\edef##1{\expandafter\@gobble\string##1}}%
+  \let\fn@ii\fn@i\the\list@builtins\def\pi{pi}\def\e{e}\def\deg{deg}%
+  \xdef\@pexpr{}\@tfor\@tempa:=#1\do{\xdef\@pexpr{\@pexpr\@tempa}}}}
+
+\def\pcurve#1[#2=#3:#4;#5,#6]{%
+  \@killglue
+  \global\advance\nn@path1\csname echo@plot\endcsname\@pathtype{curve}%
+  \edef\@saved{\the\nsamples}\ifx\relax#1\relax\else\nsamples=#1\fi
+  \eval\@begin{#3}\eval\@end{#4}%
+  {\edef#2{\expandafter\@gobble\string#2}\get@pexpr{#5,#6}}%
+  \@ifundefined{@path\the\nsamples\@curmatrix[\@begin: \@end; \@pexpr]}{{%
+    \dimendef#2254\evald#2{#3}\evalc\@dt{(#4-#2)/\nsamples}%
+    \@scan{(#5,#6)}\toks@=\@expr
+    \count@=0\gdef\@curpath{}%
+    \loop\ifnum\count@>\nsamples\else
+      \csname echo@eval\endcsname
+      \@evald\curY{\toks@}\curX=\pop@arg
+      \transform[\curX,\curY]%
+      {\let\\=\relax\xdef\@curpath{\@curpath\\(\val\curX,\val\curY)}}%
+    \advance\count@1\advance#2\@dt\repeat
+    \edef\@curXY{\curX=\the\curX\curY=\the\curY}%
+    \global\toks1=\expandafter{\@curpath}%
+    \global\toks3=\expandafter{\@curXY}%
+  }}{%
+    \@nameuse{@path\the\nsamples\@curmatrix[\@begin: \@end; \@pexpr]}%
+    \global\@namedef{@path\the\nsamples\@curmatrix[\@begin: \@end; \@pexpr]}{}%
+  }%
+  \ifnum\@savepath>0\relax
+    \immediate\write\@auxout{^^J%
+      \global\string\@namedef%
+      {@path\the\nsamples\@curmatrix[\@begin: \@end; \@pexpr]}%
+      {\relax^^J\global\toks1{\the\toks1}\relax^^J\global\toks3{\the\toks3}}}%
+  \fi
+  \xdef\@curpath{\the\curPath\the\toks1}%
+  \curPath\expandafter{\@curpath}%
+  \the\toks3\nsamples=\@saved\ignorespaces}
+
+\def\plot#1[#2=#3:#4;#5]{{\@pathtype{plot}%
+  \afterassignment\get@options\count@0#1\relax\relax
+  \ifnum\count@>\z@\nsamples=\count@\fi
+  \dimendef#2254\evald#2{#3}%
+  \global\pp@arg=0\relax\evald\curY{#5}%
+  \ifnum\pp@arg>0\curX=\pop@arg
+    \newpath\pcurve[#2=#3:#4;#5]%
+    \ifnum\@paintmode>0{\fillpath}\fi
+    \stroke
+  \else
+    \newpath\pcurve[#2=#3:#4;#2,#5]%
+    \ifnum\@paintmode>0{\lineto[#4,0]\lineto[#3,0]\fillpath}\fi
+    \stroke
+  \fi}}
+
+\def\pcurvex#1[#2=#3:#4;#5,#6]{{\newpath%
+  \afterassignment\get@options\count@0#1\relax\relax
+  \ifnum\count@>\z@\nsamples=\count@\fi
+  \dimendef#2=254\relax
+  \evalv[\t@begin,\t@end,\dt]{#3,#4,(\@arg2-\@arg1)/\nsamples}%
+  \ifnum\@paintmode>0\relax
+    \pcurve[#2=\t@begin:\t@end;#5,#6]{\fillpath}%
+    \count@=\acap@begin\advance\count@\acap@begin
+    \ifnum\count@=0\ifnum\@paintmode<2\stroke\@paintmode=2\fi\fi\newpath
+  \fi
+  \ifnum\@paintmode<2
+    #2=\t@begin\p@\moveto[#5,#6]%
+    \advance#2\dt\p@\arrowfrom@\acap@begin[#5,#6]%
+    \advance\nsamples-2\relax
+    \pcurve[#2=\t@begin+\dt:\t@end-\dt;#5,#6]%
+    #2=\t@end\p@\arrowto@\acap@end[#5,#6]%
+    \stroke
+  \fi
+  \init@options}}
+
+\def\arc[#1,#2;#3;#4,#5]{\@pathtype{arc[#4 --> #5]}%
+  \edef\@saved{\the\nsamples}%
+  \eval\@rr{#3}\eval\t@begin{#4}\eval\t@end{#5}%
+  \evald\nsamples{1sp*(12+\abs(\t@end-\t@begin)*\@rr*\unitlength/5\p@)}%
+  \eval\@OY{#1,#2}\dimen@=\pop@arg\edef\@OX{\val\dimen@}%
+  \pcurve[\t=\t@begin:\t@end;\@OX+\@rr*\cos(\t),\@OY+\@rr*\sin(\t)]%
+  \nsamples=\@saved}
+
+\def\arct[#1,#2;#3,#4;#5]{\@pathtype{arcto}%
+  \eval\@rr{#5}%
+  \itransform[\curX,\curY]%
+  \edef\@XO{\val\curX}\edef\@YO{\val\curY}%
+  \eval\@YI{#1,#2}\@stacktop=\pop@arg\edef\@XI{\val\@stacktop}%
+  \eval\@YII{#3,#4}\@stacktop=\pop@arg\edef\@XII{\val\@stacktop}%
+  \eval\@ALPHA{\atanii(\@YO-\@YI,\@XO-\@XI)}%
+  \eval\@BETA{\atanii(\@YII-\@YI,\@XII-\@XI)-\@ALPHA}%
+  \ifdim\@BETA\p@> \PI@\eval\@BETA{\@BETA-\PI@}\fi
+  \ifdim\@BETA\p@<-\PI@\eval\@BETA{\@BETA+\PI@}\fi
+  \ifnum\@showpoints>0{\putx[\@XI,\@YI]{\circle*{1mm}}}\fi
+  \translate[\@XI,\@YI]\rotate[\@ALPHA]%
+  \eval\@ll{\@rr/\abs(\tan(\@BETA/2))}%
+  \lineto[\@ll,0]%
+  \ifdim\@BETA\p@>\z@
+    \arc[\@ll,\@rr;\@rr;-.5\pi,-1.5\pi+\@BETA]%
+  \else
+    \arc[\@ll,\@rr;\@rr; .5\pi,1.5\pi-\@BETA]%
+  \fi
+  \rotate[-\@ALPHA]\translate[-\@XI,-\@YI]}
+
+\def\arcx#1[#2,#3;#4;#5,#6]{{\@pathtype{arc[#5 --> #6]}%
+  \edef\@saved{\the\nsamples}%
+  \get@options#1\relax\relax
+  \eval\@OY{#2,#3}\dimen@=\pop@arg\edef\@OX{\val\dimen@}%
+  \eval\@rr{#4}\eval\t@begin{#5}\eval\t@end{#6}%
+  \evald\nsamples{1sp*(12+\abs(\t@end-\t@begin)*\@rr*\unitlength/5\p@)}%
+  \eval\@lw{\@wholewidth/\unitlength}%
+  \eval\dt@arc{\@headlength*\@lw/\@rr*.8}%
+  \eval\dt@arrow
+    {(\@headlength/\@headwidth+\@headwidth/\@headlength/4)*\@lw/\@rr*2}%
+  \ifdim\t@begin\p@>\t@end\p@
+    \edef\dt@arrow{-\dt@arrow}\edef\dt@arc{-\dt@arc}%
+  \fi
+  \translate[\@OX,\@OY]%
+  \ifnum\@paintmode>0\relax
+    \evalc\@@{\abs(\t@end-\t@begin)}\ifdim\@@<2\PI@\moveto[0,0]\fi
+    \pcurve[\t=\t@begin:\t@end;\@rr*\cos(\t),\@rr*\sin(\t)]{\fillpath}%
+    \count@=\acap@begin\advance\count@\acap@begin
+    \ifnum\count@=0\ifnum\@paintmode<2\stroke\@paintmode=2\fi\fi\newpath
+  \fi
+  \ifodd\acap@begin\relax
+    \arrowhead@{1}[\@rr*\cos(\t@begin)-\dt@arrow*\sin(\t@begin),
+                   \@rr*\sin(\t@begin)+\dt@arrow*\cos(\t@begin);
+                   \@rr*\cos(\t@begin),\@rr*\sin(\t@begin)]%
+    \advance\acap@begin-1\relax
+  \fi
+  \ifnum\acap@begin>0\relax
+    \arrowhead@{\acap@begin}%
+      [\@rr*\cos(\t@begin+\dt@arc),\@rr*\sin(\t@begin+\dt@arc);
+       \@rr*\cos(\t@begin),\@rr*\sin(\t@begin)]%
+    \eval\t@begin{\t@begin+\dt@arrow}%
+  \fi
+  \ifodd\acap@end
+    \arrowhead@{1}[\@rr*\cos(\t@end)+\dt@arrow*\sin(\t@end),
+                   \@rr*\sin(\t@end)-\dt@arrow*\cos(\t@end);
+                   \@rr*\cos(\t@end),\@rr*\sin(\t@end)]%
+    \advance\acap@end-1\relax
+  \fi
+  \ifnum\acap@end>0\relax
+    \arrowhead@{\acap@end}%
+      [\@rr*\cos(\t@end-\dt@arc),\@rr*\sin(\t@end-\dt@arc);
+       \@rr*\cos(\t@end),\@rr*\sin(\t@end)]%
+    \eval\t@end{\t@end-\dt@arrow}%
+  \fi
+  \ifnum\@paintmode<2\relax
+    \eval\@DD{\abs(\@cma^2+\@cmb^2-\@cmc^2-\@cmd^2)
+               +\abs(\@cma*\@cmc+\@cmb*\@cmd)}%
+    \ifdim\@DD\p@<-.01\p@
+      \@killglue\@arc(\@rr,\t@begin,\t@end)\ignorespaces
+    \else
+      \pcurve[\t=\t@begin:\t@end;\@rr*\cos(\t),\@rr*\sin(\t)]\stroke
+    \fi
+  \fi
+  \translate[-\@OX,-\@OY]%
+  \init@options\nsamples=\@saved}}
+
+\newcount\@showpoints\@showpoints=0
+\def\showpoints#1{\@killglue\@showpoints=#1\ignorespaces}
+
+\def\bezierx#1[#2,#3][#4,#5][#6,#7][#8,#9]{%
+  \newpath\bezier@#1[#2,#3][#4,#5][#6,#7][#8,#9]\stroke}
+
+\def\bezier@#1[#2,#3][#4,#5][#6,#7][#8,#9]{\@pathtype{bezier}%
+  \evalv[\@XO,\@YO,\@XA,\@YA,\@XB,\@YB,\@XC,\@YC]{#2,#3,#4,#5,#6,#7,#8,#9}%
+  \edef\DX@{\@XO}\edef\DY@{\@YO}%
+  \eval\CX@{3*(\@XA-\DX@)}\eval\CY@{3*(\@YA-\DY@)}%
+  \eval\BX@{3*(\@XB-\@XA)-\CX@}\eval\BY@{3*(\@YB-\@YA)-\CY@}%
+  \eval\AX@{\@XC-\DX@-\CX@-\BX@}\eval\AY@{\@YC-\DY@-\CY@-\BY@}%
+  \ifnum\@showpoints>0
+    \gsave
+    \expandafter\ifx\csname color\endcsname\relax
+    \else\@killglue\the\color@stroke\ignorespaces\fi
+    \setlinestyle{dashed}\setlinewidth{.1mm}%
+    \moveto[\@XO,\@YO]\lineto[\@XA,\@YA]%
+    \lineto[\@XB,\@YB]\lineto[\@XC,\@YC]\stroke
+    \putx[\@XA,\@YA]{\circle*{1mm}}%
+    \putx[\@XB,\@YB]{\circle*{1mm}}%
+    \grestore
+  \fi
+  \edef\@saved{\the\nsamples}%
+  \afterassignment\get@options\count@0#1\relax\relax
+  \ifnum\count@>\z@\nsamples=\count@\fi
+  \def\t@begin{0}\def\t@end{1}%
+  \ifnum\acap@begin>0\relax
+    \arrowhead@{\acap@begin}[\@XA,\@YA;\@XO,\@YO]%
+    \itransform[\curX,\curY]%
+    \eval\t@begin{%
+    \sqrt((\curX-\@XO)^2+(\curY-\@YO)^2)/\sqrt((\@XA-\@XO)^2+(\@YA-\@YO)^2)/3}%
+  \fi
+  \ifnum\acap@end>0\relax
+    \arrowhead@{\acap@end}[\@XB,\@YB;\@XC,\@YC]%
+    \itransform[\curX,\curY]%
+    \eval\t@end{1-%
+    \sqrt((\curX-\@XC)^2+(\curY-\@YC)^2)/\sqrt((\@XB-\@XC)^2+(\@YB-\@YC)^2)/3}%
+  \fi
+  \pcurve[\t=\t@begin:\t@end;
+    \AX@*\t^3+\BX@*\t^2+\CX@*\t+\DX@,\AY@*\t^3+\BY@*\t^2+\CY@*\t+\DY@]%
+  \init@options
+  \nsamples=\@saved}
+%</parametric curve>
+
+%<*putx>
+\newskip\labelsep@putx\labelsep@putx=4pt
+\def\setlabelsep#1{\labelsep@putx=#1\relax}
+
+\def\getglue@put#1{%
+  \def\glue@top{\vss}\def\glue@bottom{\vss}%
+  \def\glue@left{\hss}\def\glue@right{\hss}%
+  \let\smash@put\relax
+  \@tfor\temp@:=#1\do{%
+    \if t\temp@\def\glue@top{\kern\labelsep@putx}\else
+    \if b\temp@\def\glue@bottom{\kern\labelsep@putx}\else
+    \if B\temp@\let\smash@put\smash\else
+    \if r\temp@\def\glue@right{\kern\labelsep@putx}\else
+    \if l\temp@\def\glue@left{\kern\labelsep@putx}\else
+    \fi\fi\fi\fi\fi}}
+
+\def\putx#1[#2,#3]#4{{%
+  \getglue@put{#1}\moveto[#2,#3]%
+  \put(\val\curX,\val\curY){\vbox to\z@{\glue@top
+    \smash@put{\hbox to\z@{\glue@left\hbox{#4}\glue@right}}\glue@bottom}}}}
+
+\def\rput#1[#2,#3;#4]#5{{%
+  \setkeys{Grot}{units=6.28318}\eval\@angle{#4}%
+  \getglue@put{#1}\moveto[#2,#3]%
+  \put(\val\curX,\val\curY){\rotatebox{\@angle}{\vbox to\z@{\glue@top
+    \smash@put{\hbox to\z@{\glue@left\hbox{#5}\glue@right}}\glue@bottom}}}}}
+%</putx>
+
+%<*code for tpic>
+\def\dimtomin#1#2{\dimen@=#2\relax
+  \advance\dimen@\ifdim\dimen@<\z@-\fi2368sp\divide\dimen@4736\relax
+  \edef#1{\number\dimen@\space}}
+
+\def\pa@tpic(#1,#2){{%
+  \dimtomin\@xx{#1\unitlength}\dimtomin\@yy{-#2\unitlength}\relax
+  \special{pa \@xx \@yy}}}
+
+\def\@arc(#1,#2,#3){{%
+  \eval\ll{\sqrt(\@cma^2+\@cmb^2)}%
+  \dimtomin\@lwidth{\ll\@wholewidth}%
+  \dimtomin\xx{\val\@cme\unitlength}%
+  \dimtomin\yy{-\val\@cmf\unitlength}%
+  \dimtomin\rr{#1\unitlength}%
+  \eval\ori{\sgn(\@cma*\@cmd-\@cmb*\@cmc)}%
+  \eval\aa{-\atanii(\@cmb,\@cma)+\min(-\ori*(#2),-\ori*(#3))}%
+  \eval\bb{-\atanii(\@cmb,\@cma)+\max(-\ori*(#2),-\ori*(#3))}%
+  \special{pn \@lwidth}%
+  \expandafter\ifx\csname color\endcsname\relax\else\the\color@stroke\fi
+  \special{ar \xx \yy \rr \rr \aa\space\bb}}}
+
+\def\@stroke{{%
+  \eval\dashlength@tpic{\@dashlength/1in}%
+  \eval\dotsep@tpic{\@dotsep/1in}%
+  \ifx\@linestyle\solid@\def\sp@stroke{\special{fp}}\else
+  \ifx\@linestyle\dashed@\def\sp@stroke{\special{da \dashlength@tpic}}\else
+  \ifx\@linestyle\dotted@\def\sp@stroke{\special{dt \dotsep@tpic}}\else
+  \ifx\@linestyle\spline@\def\sp@stroke{\special{sp}}\else
+  \fi\fi\fi\fi
+  \special{ps: \@linejoin\space setlinejoin}%
+  \special{ps: \@linecap\space setlinecap}%
+  \expandafter\ifx\csname color\endcsname\relax\else\the\color@stroke\fi
+  \let\\=\pa@tpic
+  \eval\DD{\abs(\@cma^2+\@cmb^2-\@cmc^2-\@cmd^2)
+           +\abs(\@cma*\@cmc+\@cmb*\@cmd)}%
+  \ifdim\DD\p@<.001\p@
+    \count@=0\loop\advance\count@+1
+      \eval\ll{\sqrt(\@cma^2+\@cmb^2)}%
+      \dimtomin\@lwidth{\ll\@wholewidth}\special{pn \@lwidth}%
+      \the\subpath@{\count@}\sp@stroke
+    \ifnum\count@<\pp@path\repeat
+  \else
+    \eval\aa{.5*\atanii(2*(\@cma*\@cmc+\@cmb*\@cmd),
+                        \@cma^2+\@cmb^2-\@cmc^2-\@cmd^2)}%
+    \eval\dx{(\@cma*\cos(\aa+\pi/2)+\@cmc*\sin(\aa+\pi/2))}%
+    \eval\dy{(\@cmb*\cos(\aa+\pi/2)+\@cmd*\sin(\aa+\pi/2))}%
+    \eval\ro{\sqrt(\dx^2+\dy^2)}%
+    \eval\dx{(\@cma*\cos(\aa)+\@cmc*\sin(\aa))}%
+    \eval\dy{(\@cmb*\cos(\aa)+\@cmd*\sin(\aa))}%
+    \eval\dr{\min(\sqrt(\dx^2+\dy^2-\ro),1.8*\ro)}%
+    \eval\ri{.9*\ro}%
+    \evald\dimen@i {.5\@wholewidth*\dx*\dr/\sqrt(\dx^2+\dy^2)}%
+    \evald\dimen@ii{.5\@wholewidth*\dy*\dr/\sqrt(\dx^2+\dy^2)}%
+    \count@=0\loop\advance\count@+1
+      \dimtomin\@lwidth{\ro\@wholewidth}\special{pn \@lwidth}%
+      \the\subpath@{\count@}\sp@stroke
+      \dimtomin\@lwidth{\ri\@wholewidth}\special{pn \@lwidth}%
+      \raise \dimen@ii\rlap{\kern \dimen@i\the\subpath@{\count@}\sp@stroke}%
+      \raise-\dimen@ii\rlap{\kern-\dimen@i\the\subpath@{\count@}\sp@stroke}%
+    \ifnum\count@<\pp@path\repeat
+  \fi}}
+
+\def\@fill{{%
+  \let\\=\pa@tpic
+  \count@=0\loop\advance\count@+1\relax
+    \closepath\the\subpath@{\pp@path}%
+  \ifnum\count@<\pp@path\repeat
+  \expandafter\ifx\csname color\endcsname\relax
+    \evald\dimen@{1-(\gray@fill)}\special{sh \val\dimen@}%
+  \else\special{sh 1}\the\color@fill\fi
+  \special{ip}}}
+
+\ifnum1>0%>>ве from eepic.sty
+\def\path{\@killglue
+  \dimen0=\@wholewidth\divide\dimen0by4736\relax
+  \special{pn \number\dimen0}\addpt@}
+\def\addpt@(#1,#2)#3{%
+  \eval\@xx{\@cma*(#1)+\@cmc*(#2)+\@cme}%
+  \eval\@yy{\@cmb*(#1)+\@cmd*(#2)+\@cmf}%
+  \dimen1=\@xx\unitlength\dimen2=-\@yy\unitlength
+  \divide\dimen1by4736\divide\dimen2by4736\relax
+  \special{pa \number\dimen1 \space\number\dimen2}%
+  \ifx#3(\expandafter\addpt@\else\expandafter\fp@tpic\fi#3}
+\def\fp@tpic{\ifdim\@wholewidth>0pt\special{fp}\else\special{ip}\fi}
+\def\circle{%
+  \@ifstar{\special{pn 0}\special{sh 1}\the\color@stroke\@circle*}{\@circle-}}
+\def\@circle#1#2{{%
+  \@killglue\@defaultunits\dimen@=#2\unitlength\@nnil\dimtomin\rr{.5\dimen@}%
+  \rlap{\special{\ifx#1*ia\else ar\fi\space 0 0 \rr \rr 0 6.2832}}}}
+\fi%<<ве
+%</code for tpic>
+%%EOF

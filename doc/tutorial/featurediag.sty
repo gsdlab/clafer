@@ -1,0 +1,299 @@
+% featurediag.sty
+% Derived from ecltree.sty (C) hideki isozaki (Nov. 12, 1990)
+% by Krzysztof Czarnecki, Sept. 19, 2005
+%
+%
+% This macro needs array.sty, tplot.sty, epic.sty, and epic.sty
+% Note: tplot.sty needs to precede epic.sty and eepic.sty
+% Confirm your epic.sty does not contain \makeatother at EOF.
+
+\makeatletter
+\typeout{Feature diagram macro by czarnecki, Version 1 - Released Sept. 19, 2005}
+
+% Ignore End Of Line
+
+\endlinechar=-1\relax
+
+
+% Dimensions and Boxes : See below
+
+\newdimen\@BundleWidth
+\newdimen\@BundleDepth
+\newdimen\@BundleHeight
+\newbox\@NodeBox
+\newbox\@LabelBox
+\newcount\HalfTopLabelWd
+\newdimen\FeatCardLabelWd
+
+\newdimen\GapDepth
+\GapDepth=10\p@
+\newdimen\GapWidth
+\GapWidth=4\p@
+\newdimen\EdgeLabelSep
+\EdgeLabelSep=5\p@
+\newcount\ArcDiam
+\ArcDiam=14
+\eval{\ArcRad}{0.5*\ArcDiam}
+\newcount\CircDiam
+\CircDiam=5
+\eval{\HalfSquareSide}{0.5*\CircDiam}
+\newcount\GroupCardX
+\GroupCardX=3
+\newcount\GroupCardY
+\GroupCardY=3
+\eval{\DimondLength}{\ArcRad}
+\eval{\DimondHalfWidth}{0.25*\ArcRad}
+%
+%          ---------------                          -
+%          | \@TopLabel  |                          |
+%          ---------------         -                |
+%     (\@SupportX,\@SupportY)      |                |
+%              /   \               |                |
+%             /     \              |                |
+%            /       \             | \GapDepth      | \@BundleHeight
+%           /         \            |                |
+%          /           \           |                |
+%(\@HandleX,0)          \          |                |
+% --------------   --------------  -                -
+% | \@NodeBox  |   | \@NodeBox  |  | \@BundleDepth  
+% |            |   --------------  |                
+% --------------                   -                
+%              |---|
+%            \GapWidth
+%
+% |-----------------------------|
+%           \@PicWidth
+
+%
+% The main environment to make a feature (sub)tree: fbundle
+% \begin{fbundle}[#1][#2][#3][#4]{#5} \fchunk_1 \fchunk_2 ... \fchunk_n \end{fbundle}
+% #1   ... group flag (optional argument)
+%            x for xor group
+%            o for or group
+%            group cardinality, e.g., 1-4
+% #2   ... start index for the group's arc, e.g., 1 (optional argument, provided no #1 given)
+% #3   ... subtree root name, e.g., \featbox{foo}
+
+\def\fbundle{\@ifnextchar[{\@fbundle}{\@fbundle[][]}}
+    
+\def\@fbundle[#1][#2]#3{\leavevmode\hbox\bgroup
+	\endlinechar=-1
+	\def\@GroupCard{#1}
+	\def\@GroupStartIndex{#2}
+	\def\@TopLabel{#3}
+	\def\@HandleList{}
+	\def\@EdgeLabels{}
+	\edef\@EdgeLabelsY{\expandafter\@RemoveDim\the\EdgeLabelSep}
+	\unitlength=\p@
+	\@BundleWidth=\z@
+	\@BundleHeight=\z@
+	\@BundleDepth=\z@
+	\ignorespaces}
+
+\def\endfbundle{
+	\advance\@BundleWidth by -\GapWidth
+	\hskip-\GapWidth
+	\setbox\@NodeBox=\hbox{\vbox{\null\@TopLabel}}
+	\setbox\@LabelBox=\hbox{\@TopLabel} %need to compute width
+	\eval\HalfTopLabelWd{0.5\wd\@LabelBox}
+	\advance\@BundleHeight by \GapDepth
+	\advance\@BundleHeight by \ht\@NodeBox
+	\advance\@BundleHeight by \dp\@NodeBox
+	\vrule\@height\@BundleHeight\@width\z@\@depth\@BundleDepth
+	\edef\@SupportY{\expandafter\@RemoveDim\the\GapDepth}
+	\edef\@SupportX{\expandafter\@RemoveDim\the\@BundleWidth}
+	\setbox\@NodeBox=\hbox to \z@{\hss\@TopLabel\hss}
+	\hskip-\@BundleWidth
+	\edef\@EdgeLabels{\@EdgeLabels{}}
+	\edef\@PicWidth{\expandafter\@RemoveDim\the\@BundleWidth}
+	\@BundleWidth=0.5\@BundleWidth
+	\edef\@SupportX{\expandafter\@RemoveDim\the\@BundleWidth}
+	\@DrawBundle}
+
+
+\def\@DrawBundle{
+	\begin{picture}(\@PicWidth,0)(0,0)
+	\edef\@HandleList{\expandafter\@cdr\@HandleList\@nil}
+	\ifx \@GroupCard \empty
+		\eval{\GrpStartIndx}{1}
+	\else
+		\eval{\GrpStartIndx}{\@GroupStartIndex}
+	\fi
+	\eval{\GroupStartCount}{1}
+	\@for\@HandleX:=\@HandleList\do{
+		
+		%compute first and last HandleX
+		\ifnum \GroupStartCount=\GrpStartIndx
+			\edef\@FHandleX{\@HandleX}
+		\fi
+		\eval{\GroupStartCount}{\GroupStartCount+1}
+		\edef\@LHandleX{\@HandleX}
+		
+		%draw edge
+		\@DrawLine(\@SupportX,\@SupportY)(\@HandleX,0)
+		
+		%draw composition diamonds
+		\if \@GroupCard c
+			\eval{\XBase}{\@HandleX-\@SupportX}
+			\eval{\EdgeLen}{10*\sqrt((\XBase/10)^2+(\@SupportY/10)^2)}
+			\eval{\DimondPointX}{\DimondLength*\XBase/\EdgeLen}
+			\eval{\DimondPointY}{\DimondLength*\@SupportY/\EdgeLen}
+			\eval{\DimondMidX}{0.5*\DimondPointX}
+			\eval{\DimondMidY}{0.5*\DimondPointY}
+			\eval{\DimondWidthDeltaX}{\@SupportY/\EdgeLen*\DimondHalfWidth}
+			\eval{\DimondWidthDeltaY}{\XBase/\EdgeLen*\DimondHalfWidth}
+			\eval{\DimondRX}{\DimondMidX-\DimondWidthDeltaX}
+			\eval{\DimondRY}{\DimondMidY+\DimondWidthDeltaY}
+			\eval{\DimondLX}{\DimondMidX+\DimondWidthDeltaX}
+			\eval{\DimondLY}{\DimondMidY-\DimondWidthDeltaY}
+			\put(\@SupportX,\@SupportY){
+				\blacken\path
+					(0,0)
+					(\DimondRX,-\DimondRY)
+					(\DimondPointX,-\DimondPointY)
+					(\DimondLX,-\DimondLY)
+					(0,0)}
+		\fi		
+		
+		%draw edge decoration
+		\edef\@EdgeLabel{\expandafter\@car\@EdgeLabels\@nil}
+		\if \@EdgeLabel m
+			\put(\@HandleX,0){\circle*{\CircDiam}}
+		\else
+		\if \@EdgeLabel o
+			\put(\@HandleX,0){\whiten\circle{\CircDiam}}
+		\else
+		\if \@EdgeLabel M
+			\put(\@HandleX,0){\blacken\path
+				(-\HalfSquareSide,\HalfSquareSide)
+				(\HalfSquareSide,\HalfSquareSide)
+				(\HalfSquareSide,-\HalfSquareSide)
+				(-\HalfSquareSide,-\HalfSquareSide)
+				(-\HalfSquareSide,\HalfSquareSide)}
+		\else
+		\if \@EdgeLabel O
+			\put(\@HandleX,0){\whiten\path
+				(-\HalfSquareSide,\HalfSquareSide)
+				(\HalfSquareSide,\HalfSquareSide)
+				(\HalfSquareSide,-\HalfSquareSide)
+				(-\HalfSquareSide,-\HalfSquareSide)
+				(-\HalfSquareSide,\HalfSquareSide)}
+
+		\else
+			\put(\@HandleX,\@EdgeLabelsY){
+				\makebox(0,0){\scriptsize \@EdgeLabel}}		
+		\fi
+		\fi
+		\fi
+		\fi		
+		\edef\@EdgeLabels{\expandafter\@cdr\@EdgeLabels\@nil}}
+	
+	% draw arcs for groups
+	\ifx \@GroupCard \empty
+	\else
+		\eval{\LXBase}{\@FHandleX-\@SupportX}
+		\eval{\LEdgeLen}{10*\sqrt((\LXBase/10)^2+(\@SupportY/10)^2)}
+		\eval{\BETA}{\asin(\@SupportY/\LEdgeLen)}
+		\eval{\BETA}{(\LXBase<0)?{\pi-\BETA}:{\BETA}}
+		
+		\eval{\RXBase}{\@LHandleX-\@SupportX}
+		\eval{\REdgeLen}{10*\sqrt((\RXBase/10)^2+(\@SupportY/10)^2)}
+		\eval{\ALPHA}{\asin(\@SupportY/\REdgeLen)}
+		\eval{\ALPHA}{(\RXBase<0)?{\pi-\ALPHA}:{\ALPHA}}
+
+
+		\if \@GroupCard x
+			\put(\@SupportX,\@SupportY){\arc{\ArcDiam}{\ALPHA}{\BETA}}
+		\fi
+		\if \@GroupCard o
+			\eval{\TriXL}{\ArcRad*\LXBase/\LEdgeLen}
+			\eval{\TriYL}{\ArcRad*\@SupportY/\LEdgeLen}
+					
+			\eval{\TriXR}{\ArcRad*\RXBase/\REdgeLen}
+			\eval{\TriYR}{\ArcRad*\@SupportY/\REdgeLen}
+					
+			\put(\@SupportX,\@SupportY){\blacken\path(0,0)(\TriXL,-\TriYL)(\TriXR,-\TriYR)(0,0)}
+			\put(\@SupportX,\@SupportY){\blacken\arc{\ArcDiam}{\ALPHA}{\BETA}}
+		\fi
+		\if \@GroupCard x \else	\if \@GroupCard o \else \if \@GroupCard c \else % if not x and not o and not c)
+			\put(\@SupportX,\@SupportY){\arc{\ArcDiam}{\ALPHA}{\BETA}}
+			\def\@FeatCardLabel{\scriptsize \@GroupCard}
+			\settowidth\FeatCardLabelWd{\@FeatCardLabel}
+			\eval\FeatCardLabelHWd{0.5\FeatCardLabelWd}
+			\eval{\@SupportXCard}{\@SupportX-\HalfTopLabelWd-\FeatCardLabelHWd-\GroupCardX}
+			\eval{\@SupportYCard}{\@SupportY-\GroupCardY}
+			\put(\@SupportXCard,\@SupportYCard)
+				{\makebox(0,0)[b]{\@FeatCardLabel}}
+		\fi\fi\fi
+	\fi
+	
+	\put(\@SupportX,\@SupportY){\raise\dp\@NodeBox\box\@NodeBox}
+	\end{picture}\egroup}
+
+
+%
+%  \fchunk[#1]{#2} means a feature leaf or a feature subtree.
+%   #1  ... feature cardinality spec (this is an optional argument); use
+%           m for mandatory solitary feature
+%           o for optional solitary feature
+%           M for mandatory grouped feature
+%           O for optional grouped feature
+%           m..n otherwise; use one or more \quad before or after m..n to adjust its postion
+%   #2  ... subtree root name, e.g., \featbox{foo} 
+%
+
+\def\fchunk{\@ifnextchar[{\@fchunk}{\@fchunk[]}}
+
+\def\@fchunk[#1]#2{\edef\@EdgeLabels{\@EdgeLabels{#1}}
+	\setbox\@NodeBox=\vtop{\null\hbox{#2}}
+	\advance\@BundleWidth by 0.5\wd\@NodeBox
+	\ifnum\@BundleDepth<\dp\@NodeBox
+		\@BundleDepth=\dp\@NodeBox\fi
+	\edef\@HandleList{\@HandleList,
+		\expandafter\@RemoveDim\the\@BundleWidth}
+	\advance\@BundleWidth by 0.5\wd\@NodeBox
+	\advance\@BundleWidth by \GapWidth
+	\box\@NodeBox\hskip\GapWidth
+	\ignorespaces}
+
+%
+%
+%
+
+%
+% \featbox{#1} makes a feature box; you can use \\ inside.
+% Use \quad if you need to add white space and control the width.
+%
+\def\featbox#1{
+	\fbox{\setlength\tabcolsep{0pt}\begin{tabular}[t]{c}#1\end{tabular}}}
+
+
+\def\gcard#1#2{$\langle{#1}\textrm{--}\,{#2}\rangle$}
+
+\def\fcard#1#2{$\lbrack#1..#2\rbrack$}
+
+
+%  To change line attribute
+%  ex.
+%  \drawwith{\path}        ... efficient solid line defined by eepic.sty
+%  \drawwith{\dashline{2}} 
+
+\def\drawwith#1{\def\@DrawLine{#1}}
+
+% Default
+\drawwith{\drawline}
+
+%  Ordinary catcode for p and t is 11
+%  Application of \the to dimen generates text such as 1.0pt.
+%  This pt's catcode is 12.
+
+{\catcode`\p=12 \catcode`\t=12
+\gdef\@RemoveDim#1pt{#1}}
+
+% Restore original End Of Line
+
+\endlinechar=13\relax
+
+\endinput
+
+

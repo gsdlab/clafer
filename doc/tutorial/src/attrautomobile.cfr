@@ -1,0 +1,13 @@
+Automobile
+    xor Engine
+        Gasoline
+        Electric
+    or Radio ?
+        CDPlayer
+        Tape
+    MaxSpeed : integer
+    Model : string
+
+[Electric => Radio]
+[MaxSpeed = 240
+ Model = "Supercar"]
