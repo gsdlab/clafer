@@ -1,0 +1,12 @@
+abstract Vehicle
+    serialNo : int
+
+Automobile : Vehicle
+    xor Engine
+        Gasoline
+        Electric
+    or Radio ?
+        CDPlayer
+        Tape
+
+[Electric => Radio]

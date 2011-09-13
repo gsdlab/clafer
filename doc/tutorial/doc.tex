@@ -53,7 +53,7 @@ tutorial; explains how to read and specify feature models in Clafer.
 \end{abstract}
 
 \section{What Is Clafer?}
-Clafer~\cite{bak:clafer:2010} is a textual language for concept modeling and specification of software product lines. In this document we are concerned with the latter. In particular we show how to encode feature models with attributes. Those models are expressive enough to represent real-world variability models, such as the Linux kernel and eCos.
+Clafer~\cite{bak:clafer:2010} is a textual language for concept modeling and specification of software product lines. In this document we are concerned with the latter application. In particular we show how to encode feature models with attributes. Those models are expressive enough to represent real-world variability models, such as the Linux kernel and eCos.
 
 Clafer aims at providing a common infrastructure for analyses of feature and meta-models. The need for analyses was recognized, for example, in the operating systems domain by the Linux Kernel and eCos developers~\cite{berger:varmodel:2010}. They both provide variability models of system kernels that are supported by configuration tools. The tools guide the configuration process, so that end-users are less likely to build incorrect kernels. Many non-trivial analyses of variability models are reducible to the NP-hard problem of finding model instances by combinatorial solvers. At present, Clafer translates input models to Alloy~\cite{jackson:alloy:2006}. Alloy uses SAT solvers to do model checking, or to find model instances. 
 
@@ -63,7 +63,7 @@ Feature models~\cite{kang:foda:1990} are tree-like structures that specify commo
 
 \begin{figure}[t]
   \begin{center}
-    \begin{tabular}{cc}
+    \begin{tabular}{ccc}
       \begin{minipage}[t]{8cm}
         \begin{center}
           \scalebox{1.0}{
@@ -101,22 +101,79 @@ Each box represents a \emph{feature}, that is a user-relevant product characteri
 
 \Figref{autofm}b shows a Clafer model that corresponds to the automobile feature model from \figref{autofm}a. The hierarchy of model elements is established by code indentation. Feature group (\emph{alternative} and \emph{or}) specification precedes the name (e.g. \textsf{xor} before \textsf{Engine}). In contrast with FODA feature models, each feature in Clafer may have specified group cardinality that restricts the number of subfeatures that can be selected. For instance, for \textsf{Engine} exactly one of its subfeatures can be selected; for \textsf{Radio} at least one. Optionality of elements is marked by the question mark following the name (e.g. \textsf{Radio}).
 
-Cross tree constraints are specified in square brackets in \figref{autofm}b. FODA feature models make use only of propositional constraints. Those constraints involve feature names and a standard set of logical operators, i.e. equivalence (\textsf{<=>}), exclusive-or (\textsf{xor}), implication (\textsf{=>}), conjunction (\textsf{\&\&}), disjunction (\textsf{||}), negation (\textsf{$\sim$}).
+FODA feature models make use of propositional constraints. Cross tree constraints are specified in square brackets in \figref{autofm}b. Those constraints involve feature names and a standard set of logical operators, i.e. equivalence ($\iff$), exclusive-or (\textsf{xor}), implication ($\implies$), conjunction (\textsf{\&\&}), disjunction (\textsf{||}), and negation (\textsf{$\sim$}). Clafer also allows \textit{if-then-else} expressions (\textit{condition} \textsf{=>} \textit{trueExp} \textsf{else} \textit{falseExp}) as logical expressions.
 
 \section{Feature Models with Attributes}
 
 Several extensions to feature models have been proposed; among them feature \emph{attributes}~\cite{benavides:fama:2005}. An attribute allows feature to store a value of primitive type (such as integer, string, enumeration). Let us extend the automobile example with two attributed features: \textsf{MaxSpeed} and \textsf{Model} (see \figref{aautofm}). The former specifies car's maximum speed in km/h, the latter car model name.
 
-\begin{figure}[t]
-  \begin{center}
-    \lstinputlisting{src/attrautomobile.cfr}
-  \end{center}
+\begin{figure}
+  \lstinputlisting{src/attrautomobile.cfr}
   \caption{Attributed feature model of automobile product line\label{fig:aautofm}}
 \end{figure}
 
-In Clafer, feature attributes follow feature name. The name is followed by colon, and then by type of the attribute. Therefore, \textsf{MaxSpeed} is an integer number, and \textsf{Model} a textual string. Furthermore, both features are constrained (in the last two lines), so that values of attributes are well-defined. We set car's maximum speed to 240, and model name to ``Supercar''. Please not that both equations are specified within the same square brackets. Such a specification is interpreted simply as conjunction of logical expressions. We could have defined the two equations in separate sets of brackets.
+In Clafer, feature attribute follows feature name, i.e., it is followed by colon, and then by type of the attribute. \textsf{MaxSpeed} is an integer number;  \textsf{Model} a textual string. Furthermore, both features are constrained, so that values of attributes are well-defined. We set car's maximum speed to 240 in the last line.
 
-Integer and string attributes can participate in relational expressions that compare values: equality (\textsf{=}), inequality (\textsf{/=}), less than (\textsf{<}), less than or equal (\textsf{<=}), greater than (\textsf{>}), greater than or equal (\textsf{>=}). Integers also participate in arithmetic expressions: addition (\textsf{+}), substraction (\textsf{-}), and multiplication (\textsf{$\ast$}).
+Clafer constraints are either global or specified within context of a feature. The context is determined by code indentation (similarly to feature hierarchy). Putting constraint in the context allows for easier referencing feature names. We specified car's model name as a constraint in the context of the \textsf{Model} feature. The constraint refers to \textsf{this} that resolves to \textsf{Model} and sets its value to ``Supercar''.
+
+Integer and string attributes may participate in relational expressions that compare values: equality (\textsf{=}), inequality (\textsf{/=}), less than (\textsf{<}), less than or equal (\textsf{<=}), greater than (\textsf{>}), greater than or equal (\textsf{>=}). Integers also participate in arithmetic expressions: addition (\textsf{+}), substraction (\textsf{-}), and multiplication (\textsf{$\ast$}). We use the concatenation operator (\textsf{++}) to concatenate strings.
+
+\section{Other Clafer Constructions}
+
+\subsection{Abstract Clafers}
+
+So far the Clafer models included only concrete features. It means that the presence of features is reflected in configuration semantics. Clafer models may also incorporate \textit{abstract} features. Abstract features declare a new type, but do not exist on their own in configuration semantics. Their subfeatures cannot be selected or deselected unless the abstract feature is extended by a concrete one. Abstract features are a way of reusing parts of models. An abstract element has subfeatures that become subfeatures of an element that extends the abstract feature. 
+
+\begin{figure}[t]
+  \begin{center}
+    \begin{tabular}{ccc}
+      \begin{minipage}[t]{3.5cm}
+        \vspace{0pt}
+        \lstinputlisting{src/absautomobile.cfr}
+      \end{minipage}
+      &
+      \begin{minipage}[t]{3.5cm}
+        \vspace{0pt}
+        \lstinputlisting{src/hautomobile.cfr}
+      \end{minipage}\\[0.2cm]
+      a) Abstract feature & b) Set constraint
+    \end{tabular}
+  \end{center}
+  \caption{Abstract features and set constraints in Clafer\label{fig:absautofm}}
+\end{figure}
+
+
+\Figref{absautofm}a presents a model similar to the one from \figref{autofm}. In introduces, however, the abstract \textsf{Vehicle} element. Each vehicle has a serial number specified as integer attribute. Automobile is a vehicle, that is, \textsf{serialNo} is one of its subfeatures. It is important to note that \textsf{Automobile} extends \textsf{Vehicle}. The mechanism is very similar to inheritance in object-oriented programming. Concrete features that extend an abstract feature share the same type.
+
+\subsection{Constraints over Sets}
+
+A single abstract feature may be extended by multiple concrete features (similarly to classes in OOP). When we want to specify constraints over abstract features, we no longer think about features of cardinality 0 or 1. We need to allow arbitrary cardinalities, because there can be any number of concrete features that extend given abstract feature. Thus, the constraints must be able to deal with sets, not only propositional variables.
+
+Clafer constraints cover several set operations. Here we explain only the set-cardinality operator (\textsf{\#}). \Figref{absautofm}b shows a modified example from \figref{absautofm}a. We added \textsf{numOfAutomobiles} that stores the number of all \textsf{Vehicle}s in the model. Constraint in the last line specifies that \textsf{numOfAutomobiles} is equal to the number of \textsf{Vehicle}s. The total number of vehicles takes into account concrete features that extend the abstract \textsf{Vehicle} feature. In our example \textsf{numOfAutomobiles} is equal to 1.
+
+\subsection{Quotation}
+
+Quotation is a syntactic sugar for reusing abstract features. To extend an abstract feature we write \textit{fName} \textsf{:} \textit{aName}, where \textit{fName} is a new feature name, and \textit{aName} is a name of extended abstract feature. For example, in \figref{absautofm}a \textsf{Automobile} extends abstract \textsf{Vehicle}. At times we want the new feature (\textit{fName}) to have the same name as the abstract feature (\textit{aName}). For instance, in \figref{qautofm}a there is an abstract \textsf{Engine}. \textit{Automobile} has the \textsf{Engine} feature that extends the abstract \textsf{Engine}.
+
+\begin{figure}[t]
+  \begin{center}
+    \begin{tabular}{ccc}
+      \begin{minipage}[t]{3.5cm}
+        \vspace{0pt}
+        \lstinputlisting[firstline=13]{src/qautomobile.cfr}
+      \end{minipage}
+      &
+      \begin{minipage}[t]{3.5cm}
+        \vspace{0pt}
+        \lstinputlisting[firstline=1,lastline=11]{src/qautomobile.cfr}
+      \end{minipage}\\[0.2cm]
+      a) \textsf{Engine} extends \textsf{Engine} & b) Model with quotation
+    \end{tabular}
+  \end{center}
+  \caption{Quotation in Clafer\label{fig:qautofm}}
+\end{figure}
+
+Clafer provides convenient syntax for such a construction: quotation. \Figref{qautofm}b shows the same model as in \figref{qautofm}a, but we use quotation instead of explicit inheritance. Syntactically it is a name of abstract feature (\textsf{Engine}) preceded by the backquote (\textsf{`}) symbol.
 
 \nocite{*}
 \bibliographystyle{splncs03}

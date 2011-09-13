@@ -1,0 +1,8 @@
+Automobile
+    xor Engine
+        Gasoline
+        Electric
+            [this => Radio]
+    or Radio ?
+        CDPlayer
+        Tape

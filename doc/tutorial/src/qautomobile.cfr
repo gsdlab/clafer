@@ -1,0 +1,23 @@
+abstract xor Engine
+    Gasoline
+    Electric
+
+Automobile
+    `Engine
+    or Radio ?
+        CDPlayer
+        Tape
+
+[Electric => Radio]
+
+abstract xor Engine
+    Gasoline
+    Electric
+
+Automobile
+    Engine : Engine
+    or Radio ?
+        CDPlayer
+        Tape
+
+[Electric => Radio]
