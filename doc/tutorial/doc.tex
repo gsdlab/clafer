@@ -49,7 +49,7 @@ literate={->}{{$\to$ }}1 {^}{{$\mspace{-3mu}\widehat{\quad}\mspace{-3mu}$}}1
 \maketitle
 
 \begin{abstract}
-tutorial; explains how to read and specify feature models in Clafer.
+This tutorial explains how to read and encode attributed feature models in Clafer. It also presents Clafer constructions that go beyond feature modeling, but are useful for encoding variability models. The tutorial limited the scope to those constructions that were used in Clafer encodings of real-world variability models, such as the Linux kernel and eCos.
 \end{abstract}
 
 \section{What Is Clafer?}
@@ -97,15 +97,15 @@ Feature models~\cite{kang:foda:1990} are tree-like structures that specify commo
   \caption{Feature model of automobile product line\label{fig:autofm}}
 \end{figure}
 
-Each box represents a \emph{feature}, that is a user-relevant product characteristic, such as \textsf{Engine} or \textsf{Radio}. Mandatory features are marked with filled circles; optional features with hollow circles. In our example, every car must have an \textsf{Engine}, but not every car must have a \textsf{Radio}. Feature models also have \emph{alternative groups} (marked with empty arcs) and \emph{or-groups} (marked with filled arcs). An \emph{alternative group} allows to select only one subfeature, e.g. a car must have either \textsf{Gasoline} or \textsf{Electric} engine. An \emph{or-group} requires at least one subfeature to be selected, e.g. a valid car configuration has either \textsf{CD Player}, or \textsf{Tape} player, or both of them. Finally, some constraints cannot be encoded in the tree structure. In that case we use cross-tree constraints specified as propositional formulas to restrict the feature model. For instance, the constraint below the tree says that cars with \textsf{Electric} engine must have some \textsf{Radio} player on board.
+Each box represents a \emph{feature}, that is a user-relevant product characteristic, such as \textsf{Engine} or \textsf{Radio}. Mandatory features are marked with filled circles; optional features with hollow circles. In our example, every car must have an \textsf{Engine}, but not every car must have a \textsf{Radio}. Feature models also have \emph{alternative groups} (marked with empty arcs) and \emph{or-groups} (marked with filled arcs). An \emph{alternative group} allows to select only one subfeature, e.g., a car must have either \textsf{Gasoline} or \textsf{Electric} engine. An \emph{or-group} requires at least one subfeature to be selected, e.g., a valid car configuration has either \textsf{CD Player}, or \textsf{Tape} player, or both of them. Finally, some constraints cannot be encoded in the tree structure. In that case we use cross-tree constraints specified as propositional formulas to restrict the feature model. For instance, the constraint below the tree says that cars with \textsf{Electric} engine must have some \textsf{Radio} player on board.
 
 \Figref{autofm}b shows a Clafer model that corresponds to the automobile feature model from \figref{autofm}a. The hierarchy of model elements is established by code indentation. Feature group (\emph{alternative} and \emph{or}) specification precedes the name (e.g. \textsf{xor} before \textsf{Engine}). In contrast with FODA feature models, each feature in Clafer may have specified group cardinality that restricts the number of subfeatures that can be selected. For instance, for \textsf{Engine} exactly one of its subfeatures can be selected; for \textsf{Radio} at least one. Optionality of elements is marked by the question mark following the name (e.g. \textsf{Radio}).
 
-FODA feature models make use of propositional constraints. Cross tree constraints are specified in square brackets in \figref{autofm}b. Those constraints involve feature names and a standard set of logical operators, i.e. equivalence ($\iff$), exclusive-or (\textsf{xor}), implication ($\implies$), conjunction (\textsf{\&\&}), disjunction (\textsf{||}), and negation (\textsf{$\sim$}). Clafer also allows \textit{if-then-else} expressions (\textit{condition} \textsf{=>} \textit{trueExp} \textsf{else} \textit{falseExp}) as logical expressions.
+FODA feature models make use of propositional constraints. Cross tree constraints are specified in square brackets in \figref{autofm}b. Those constraints involve feature names and a standard set of logical operators, i.e., equivalence ($\iff$), exclusive-or (\textsf{xor}), implication ($\implies$), conjunction (\textsf{\&\&}), disjunction (\textsf{||}), and negation (\textsf{$\sim$}). Clafer also allows \textit{if-then-else} expressions (\textit{condition} \textsf{=>} \textit{trueExp} \textsf{else} \textit{falseExp}) as logical expressions.
 
 \section{Feature Models with Attributes}
 
-Several extensions to feature models have been proposed; among them feature \emph{attributes}~\cite{benavides:fama:2005}. An attribute allows feature to store a value of primitive type (such as integer, string, enumeration). Let us extend the automobile example with two attributed features: \textsf{MaxSpeed} and \textsf{Model} (see \figref{aautofm}). The former specifies car's maximum speed in km/h, the latter car model name.
+Several extensions to feature models have been proposed; among them feature \emph{attributes}. An attribute allows feature to store a value of primitive type (such as integer, string, enumeration). Let us extend the automobile example with two attributed features: \textsf{MaxSpeed} and \textsf{Model} (see \figref{aautofm}). The former specifies car's maximum speed in km/h, the latter car model name.
 
 \begin{figure}
   \lstinputlisting{src/attrautomobile.cfr}
@@ -167,7 +167,7 @@ Quotation is a syntactic sugar for reusing abstract features. To extend an abstr
         \vspace{0pt}
         \lstinputlisting[firstline=1,lastline=11]{src/qautomobile.cfr}
       \end{minipage}\\[0.2cm]
-      a) \textsf{Engine} extends \textsf{Engine} & b) Model with quotation
+      a) Explicit inheritance & b) Implicit inheritance: quotation
     \end{tabular}
   \end{center}
   \caption{Quotation in Clafer\label{fig:qautofm}}
