@@ -73,6 +73,7 @@ data ExInteger =
    ExIntegerAst
  | ExIntegerNum Integer
   deriving (Eq,Ord,Show)
+  {-! derive : XmlContent !-}    -- this line is for DrIFT
 
 data Name =
    Name [ModId] Ident
@@ -144,11 +145,13 @@ data Quant =
  | QuantOne
  | QuantSome
   deriving (Eq,Ord,Show)
+  {-! derive : XmlContent !-}    -- this line is for DrIFT
 
 data ExQuant =
    ExQuantAll
  | ExQuant Quant
   deriving (Eq,Ord,Show)
+  {-! derive : XmlContent !-}    -- this line is for DrIFT
 
 data SExp =
    SExpUnion SExp SExp
@@ -181,6 +184,7 @@ data StrExp =
    EConc StrExp StrExp
  | EStr String
   deriving (Eq,Ord,Show)
+  {-! derive : XmlContent !-}    -- this line is for DrIFT
 
 data EnumId =
    EnumIdIdent Ident

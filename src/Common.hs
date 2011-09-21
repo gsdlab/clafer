@@ -153,7 +153,11 @@ data GEnv = GEnv {
     }
   deriving (Eq, Show)
 
+data ClaferMode = Alloy | Xml
+  deriving (Show, Data, Typeable)
+
 data ClaferArgs = ClaferArgs {
+      mode :: ClaferMode,
       flatten_inheritance :: Bool,
       file :: FilePath,
       timeout_analysis :: Int,

@@ -43,10 +43,9 @@ import Intermediate.StringAnalyzer
 import Optimizer.Optimizer
 import Generator.Stats
 import Generator.Alloy
+import Generator.Xml
 
 type ParseFun = [Token] -> Err Module
-
-data Mode = AlloyOut | AlloyFile String | XmlOut | EcoreOut
 
 myLLexer = myLexer
 
@@ -89,11 +88,13 @@ run v p args = do
                           -- writeFile (f' ++ ".ana") $ printTree $
                           --  sugarModule oTree
                           putStrLn "[Generating Code]"
-                          code <- evaluate $! genModule (oTree, genv)
-                          putStrLn "[Saving File]"
                           let stats = showStats au $ statsModule oTree
                           when (not $ no_stats args) $ putStrLn stats
-                          writeFile (f' ++ ".als") $ addStats code stats
+                          putStrLn "[Saving File]"
+                          let (ext, code) = case (mode args) of
+                                Alloy -> ("als", addStats (genModule (oTree, genv)) stats)
+                                Xml ->   ("xml", genXmlModule oTree)
+                          writeFile (f' ++ "." ++ ext) code
 
 
 showTree :: (Show a, Print a) => Int -> a -> IO ()
@@ -117,6 +118,7 @@ showInterval (n, ExIntegerAst) = show n ++ "..*"
 showInterval (n, ExIntegerNum m) = show n ++ ".." ++ show m
 
 clafer = ClaferArgs {
+  mode = Alloy &= help "Generated output type" &= name "m",
   flatten_inheritance = def &= help "Flatten inheritance" &= name "i",
   file = def &= args,
   timeout_analysis = def &= help "Timeout for analysis",

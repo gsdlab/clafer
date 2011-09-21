@@ -23,6 +23,7 @@ import Front.Absclafer
 
 data EType = TAExp | TSExp | TSAExp
   deriving (Eq,Ord,Show)
+  {-! derive : XmlContent !-}    -- this line is for DrIFT
 
 type IModule = [IDeclaration]
 
@@ -30,6 +31,7 @@ data IDeclaration =
    IClaferDecl IClafer
  | IConstDecl ILExp
   deriving (Eq,Ord,Show)
+  {-! derive : XmlContent !-}    -- this line is for DrIFT
 
 data IClafer =
    IClafer {
@@ -43,11 +45,13 @@ data IClafer =
       elements :: [IElement]
     }
   deriving (Eq,Ord,Show)
+  {-! derive : XmlContent !-}    -- this line is for DrIFT
 
 data IElement =
    ISubclafer IClafer
  | ISubconstraint ILExp
   deriving (Eq,Ord,Show)
+  {-! derive : XmlContent !-}    -- this line is for DrIFT
 
 data ISuper =
    ISuper {
@@ -55,6 +59,7 @@ data ISuper =
       supers :: [ISExp]
     }
   deriving (Eq,Ord,Show)
+  {-! derive : XmlContent !-}    -- this line is for DrIFT
 
 data IGCard =
   IGCard {
@@ -62,6 +67,7 @@ data IGCard =
       interval :: Interval
     }
   deriving (Eq,Ord,Show)
+  {-! derive : XmlContent !-}    -- this line is for DrIFT
 
 type Interval = (Integer, ExInteger)
 
@@ -74,12 +80,14 @@ data ILExp =
  | IENeg ILExp
  | IETerm ITerm
   deriving (Eq,Ord,Show)
+  {-! derive : XmlContent !-}    -- this line is for DrIFT
 
 data ITerm =
    ITermCmpExp ICmpExp (Maybe EType)
  | ITermQuantSet Quant ISExp
  | ITermQuantDeclExp [IDecl] ILExp
   deriving (Eq,Ord,Show)
+  {-! derive : XmlContent !-}    -- this line is for DrIFT
 
 data ICmpExp =
    IELt IExp IExp
@@ -93,11 +101,13 @@ data ICmpExp =
  | IEIn IExp IExp
  | IENin IExp IExp
   deriving (Eq,Ord,Show)
+  {-! derive : XmlContent !-}    -- this line is for DrIFT
 
 data IExp =
    IENumExp IAExp
  | IEStrExp StrExp
   deriving (Eq,Ord,Show)
+  {-! derive : XmlContent !-}    -- this line is for DrIFT
 
 data ISExp =
    ISExpUnion ISExp ISExp
@@ -110,6 +120,7 @@ data ISExp =
       isTop :: Bool
     }
   deriving (Eq,Ord,Show)
+  {-! derive : XmlContent !-}    -- this line is for DrIFT
 
 data IDecl =
    IDecl {
@@ -119,6 +130,7 @@ data IDecl =
       body :: ISExp
     }
   deriving (Eq,Ord,Show)
+  {-! derive : XmlContent !-}    -- this line is for DrIFT
 
 data IAExp =
    IEAdd IAExp IAExp
@@ -128,3 +140,4 @@ data IAExp =
  | IEASetExp ISExp
  | IEInt Integer
   deriving (Eq,Ord,Show)
+  {-! derive : XmlContent !-}    -- this line is for DrIFT

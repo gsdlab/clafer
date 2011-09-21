@@ -1,4 +1,7 @@
 all:
+	cat Generator/XmlHeader.hs > Generator/XmlHelp.hs
+	DrIFT -r Front/Absclafer.hs >> Generator/XmlHelp.hs
+	DrIFT -r Intermediate/Intclafer.hs >> Generator/XmlHelp.hs
 	ghc --make -O clafer
 
 prof:
