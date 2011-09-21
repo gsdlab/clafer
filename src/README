@@ -1,5 +1,5 @@
 Dependencies:
-  ghc and cmdargs
+  ghc and cmdargs DrIFT HaXml
 
 To install GHC on Ubuntu execute:
   apt-get install ghc6 ghc6-prof ghc6-doc
@@ -11,5 +11,11 @@ If you have no cabal then installt it (Ubuntu):
   sudo apt-get install cabal-install
   cabal update
 
-Once the compiler and cmargs are in place just compiler the translator:
-  ghc --make clafer
+Install DrIFT from http://repetae.net/computer/haskell/DrIFT/ or your system package manage
+
+To install HaXml execute:
+  cabal install HaXml-1.20
+Please note that there are some problems with recent version of HaXml and DrIFT. This is why we use an older one.
+
+Once the libraries are in place, compile the translator:
+  make
