@@ -95,8 +95,8 @@ run v p args = do
                                 Alloy -> ("als", addStats (genModule (oTree, genv)) stats)
                                 Xml ->   ("xml", genXmlModule oTree)
                           if console_output args
-                          then putStrLn code
-                          else writeFile (f' ++ "." ++ ext) code
+                             then putStrLn code
+                             else writeFile (f' ++ "." ++ ext) code
 
 conPutStrLn args s = when (not $ console_output args) $ putStrLn s
 
