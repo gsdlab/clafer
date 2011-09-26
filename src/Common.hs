@@ -158,6 +158,7 @@ data ClaferMode = Alloy | Xml
 
 data ClaferArgs = ClaferArgs {
       mode :: ClaferMode,
+      console_output :: Bool,
       flatten_inheritance :: Bool,
       file :: FilePath,
       timeout_analysis :: Int,

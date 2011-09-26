@@ -68,8 +68,8 @@ run v p args = do
                             putStrLn s
              Ok  tree -> do
                           let f = file args
-                          putStrLn "\nParse Successful!"
-                          putStrLn "[Desugaring]"
+                          conPutStrLn args "\nParse Successful!"
+                          conPutStrLn args "[Desugaring]"
                           dTree <- evaluate $! desugarModule tree
                           let f'    = take (length f - 4) f
                           -- writeFile (f' ++ ".des") $ printTree $
@@ -78,24 +78,27 @@ run v p args = do
                           let au = allUnique dTree'
                           let args' = args{force_resolver = not au ||
                                            force_resolver args}
-                          putStrLn "[Resolving]"
+                          conPutStrLn args "[Resolving]"
                           (rTree, genv) <- evaluate $!
                                            resolveModule args' dTree'
-                          putStrLn "[Analyzing String]"
+                          conPutStrLn args "[Analyzing String]"
                           aTree <- evaluate $! astrModule rTree
-                          putStrLn "[Optimizing]"
+                          conPutStrLn args "[Optimizing]"
                           oTree <- evaluate $ optimizeModule args' (aTree, genv)
                           -- writeFile (f' ++ ".ana") $ printTree $
                           --  sugarModule oTree
-                          putStrLn "[Generating Code]"
+                          conPutStrLn args "[Generating Code]"
                           let stats = showStats au $ statsModule oTree
                           when (not $ no_stats args) $ putStrLn stats
-                          putStrLn "[Saving File]"
+                          conPutStrLn args "[Saving File]"
                           let (ext, code) = case (mode args) of
                                 Alloy -> ("als", addStats (genModule (oTree, genv)) stats)
                                 Xml ->   ("xml", genXmlModule oTree)
-                          writeFile (f' ++ "." ++ ext) code
+                          if console_output args
+                          then putStrLn code
+                          else writeFile (f' ++ "." ++ ext) code
 
+conPutStrLn args s = when (not $ console_output args) $ putStrLn s
 
 showTree :: (Show a, Print a) => Int -> a -> IO ()
 showTree v tree
@@ -119,6 +122,7 @@ showInterval (n, ExIntegerNum m) = show n ++ ".." ++ show m
 
 clafer = ClaferArgs {
   mode = Alloy &= help "Generated output type" &= name "m",
+  console_output = False &= help "Output code on console" &= name "o",
   flatten_inheritance = def &= help "Flatten inheritance" &= name "i",
   file = def &= args,
   timeout_analysis = def &= help "Timeout for analysis",
