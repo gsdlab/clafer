@@ -1,8 +1,11 @@
 Dependencies:
-  ghc and cmdargs DrIFT HaXml
+  ghc; cmdargs; DrIFT; HaXml;
 
-To install GHC on Ubuntu execute:
-  apt-get install ghc6 ghc6-prof ghc6-doc
+To install GHC refer to:
+  http://www.haskell.org/ghc/distribution_packages
+
+Install monad transformer library (Ubuntu):
+  suod apt-get install libghc-mtl-dev
 
 To install cmdargs execute:
   cabal install cmdargs
