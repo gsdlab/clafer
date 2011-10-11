@@ -104,14 +104,14 @@ sugarAbstract x = case x of
 desugarElements :: Elements -> [IElement]
 desugarElements x = case x of
   ElementsEmpty  -> []
-  Elements elements  -> map desugarElement elements
+  ElementsList elements  -> map desugarElement elements
 
 
 sugarElements :: [IElement] -> Elements
-sugarElements x = Elements $ map sugarElement x
+sugarElements x = ElementsList $ map sugarElement x
 
 
-desugarElement :: Element -> IElement
+desugarElement :: ElementCl -> IElement
 desugarElement x = case x of
   Subclafer clafer  -> ISubclafer $ desugarClafer clafer
   ClaferUse name card elements  -> ISubclafer $ desugarClafer $ Clafer
@@ -120,7 +120,7 @@ desugarElement x = case x of
   Subconstraint constraint  -> ISubconstraint $ desugarConstraint constraint
 
 
-sugarElement :: IElement -> Element
+sugarElement :: IElement -> ElementCl
 sugarElement x = case x of
   ISubclafer clafer  -> Subclafer $ sugarClafer clafer
   ISubconstraint constraint  -> Subconstraint $ sugarConstraint constraint

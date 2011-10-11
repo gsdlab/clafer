@@ -70,10 +70,10 @@ happyIn12 x = Happy_GHC_Exts.unsafeCoerce# x
 happyOut12 :: (HappyAbsSyn ) -> (Elements)
 happyOut12 x = Happy_GHC_Exts.unsafeCoerce# x
 {-# INLINE happyOut12 #-}
-happyIn13 :: (Element) -> (HappyAbsSyn )
+happyIn13 :: (ElementCl) -> (HappyAbsSyn )
 happyIn13 x = Happy_GHC_Exts.unsafeCoerce# x
 {-# INLINE happyIn13 #-}
-happyOut13 :: (HappyAbsSyn ) -> (Element)
+happyOut13 :: (HappyAbsSyn ) -> (ElementCl)
 happyOut13 x = Happy_GHC_Exts.unsafeCoerce# x
 {-# INLINE happyOut13 #-}
 happyIn14 :: (Super) -> (HappyAbsSyn )
@@ -328,10 +328,10 @@ happyIn55 x = Happy_GHC_Exts.unsafeCoerce# x
 happyOut55 :: (HappyAbsSyn ) -> ([EnumId])
 happyOut55 x = Happy_GHC_Exts.unsafeCoerce# x
 {-# INLINE happyOut55 #-}
-happyIn56 :: ([Element]) -> (HappyAbsSyn )
+happyIn56 :: ([ElementCl]) -> (HappyAbsSyn )
 happyIn56 x = Happy_GHC_Exts.unsafeCoerce# x
 {-# INLINE happyIn56 #-}
-happyOut56 :: (HappyAbsSyn ) -> ([Element])
+happyOut56 :: (HappyAbsSyn ) -> ([ElementCl])
 happyOut56 x = Happy_GHC_Exts.unsafeCoerce# x
 {-# INLINE happyOut56 #-}
 happyIn57 :: ([LExp]) -> (HappyAbsSyn )
@@ -612,7 +612,7 @@ happyReduction_13 happy_x_3
 	happy_x_1
 	 =  case happyOut56 happy_x_2 of { happy_var_2 -> 
 	happyIn12
-		 (Elements (reverse happy_var_2)
+		 (ElementsList (reverse happy_var_2)
 	)}
 
 happyReduce_14 = happySpecReduce_1  9# happyReduction_14
@@ -1139,7 +1139,7 @@ happyReduce_79 = happySpecReduce_1  34# happyReduction_79
 happyReduction_79 happy_x_1
 	 =  case happyOut37 happy_x_1 of { happy_var_1 -> 
 	happyIn38
-		 (ExQuant happy_var_1
+		 (ExQuantQuant happy_var_1
 	)}
 
 happyReduce_80 = happySpecReduce_3  35# happyReduction_80

@@ -339,7 +339,7 @@ genQuant x = case x of
 genExQuant :: ExQuant -> Result
 genExQuant x = case x of
   ExQuantAll -> "all"
-  ExQuant quant -> genQuant quant
+  ExQuantQuant quant -> genQuant quant
 
 
 genDecl :: Maybe IClafer -> IDecl -> Result

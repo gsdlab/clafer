@@ -116,10 +116,10 @@ instance Print Abstract where
 instance Print Elements where
   prt i e = case e of
    ElementsEmpty  -> prPrec i 0 (concatD [])
-   Elements elements -> prPrec i 0 (concatD [doc (showString "{") , prt 0 elements , doc (showString "}")])
+   ElementsList elementcls -> prPrec i 0 (concatD [doc (showString "{") , prt 0 elementcls , doc (showString "}")])
 
 
-instance Print Element where
+instance Print ElementCl where
   prt i e = case e of
    Subclafer clafer -> prPrec i 0 (concatD [prt 0 clafer])
    ClaferUse name card elements -> prPrec i 0 (concatD [doc (showString "`") , prt 0 name , prt 0 card , prt 0 elements])
@@ -261,7 +261,7 @@ instance Print Quant where
 instance Print ExQuant where
   prt i e = case e of
    ExQuantAll  -> prPrec i 0 (concatD [doc (showString "all")])
-   ExQuant quant -> prPrec i 0 (concatD [prt 0 quant])
+   ExQuantQuant quant -> prPrec i 0 (concatD [prt 0 quant])
 
 
 instance Print SExp where

@@ -18,11 +18,11 @@ AbstractEmpty. Abstract ::= ;
 Abstract.      Abstract ::= "abstract" ;
 
 ElementsEmpty.  Elements ::= ;
-Elements.       Elements ::= "{" [Element] "}" ;
+ElementsList.   Elements ::= "{" [ElementCl] "}" ;
 
-Subclafer.      Element ::= Clafer ;
-ClaferUse.      Element ::= "`" Name Card Elements ;
-Subconstraint.  Element ::= Constraint ;
+Subclafer.      ElementCl ::= Clafer ;
+ClaferUse.      ElementCl ::= "`" Name Card Elements ;
+Subconstraint.  ElementCl ::= Constraint ;
 
 SuperEmpty.     Super ::=  ;
 SuperColon.     Super ::= ":" Name ;
@@ -91,7 +91,7 @@ QuantOne.       Quant ::= "one" ;
 QuantSome.      Quant ::= "some" ;
 
 ExQuantAll.     ExQuant ::= "all" ;
-ExQuant.        ExQuant ::= Quant ;
+ExQuantQuant.   ExQuant ::= Quant ;
 
 SExpUnion.        SExp  ::= SExp  "++" SExp1 ;
 SExpIntersection. SExp1 ::= SExp1 "&"  SExp2 ;
@@ -121,7 +121,7 @@ rules           LocId  ::= Ident ;
 
 separator          Declaration ""  ;
 separator nonempty EnumId      "|" ;
-separator          Element     ""  ;
+separator          ElementCl   ""  ;
 separator          LExp        ""  ;
 separator nonempty Decl        "," ;
 separator nonempty LocId       "," ;
