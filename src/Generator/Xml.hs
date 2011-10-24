@@ -41,7 +41,8 @@ genXmlInteger n = tag "IntLiteral" $ show n
 
 genXmlModule :: IModule -> Result
 genXmlModule decls = concat
-  [ "<Module xmlns=\"http://gsd.uwaterloo.ca/clafer\""
+  [ "<?xml version=\"1.0\"?>"
+  , "<Module xmlns=\"http://gsd.uwaterloo.ca/clafer\""
   , " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""
   , " xmlns:cl=\"http://gsd.uwaterloo.ca/clafer\">"
   ,  concatMap genXmlDeclaration decls
