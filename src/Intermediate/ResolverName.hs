@@ -222,8 +222,8 @@ resolveSpecial env id
   | id `elem` [this, children] =
       Just (Special, id, (fromJust $ context env) : resPath env)
   | id == parent = Just (Special, id, resPath env)
-  | id `elem` [strType, intType, integerType] = Just (TypeSpecial, id, [])
-  | otherwise                                 = Nothing 
+  | isPrimitive id = Just (TypeSpecial, id, [])
+  | otherwise      = Nothing 
 
 
 -- checks if ident is bound locally

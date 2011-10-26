@@ -61,7 +61,7 @@ showSet delim xs = showSet' delim $ filterNull xs
 -- optimization: if only boolean parents, then set card is known
 genClafer :: Maybe IClafer -> IClafer -> Result
 genClafer parent clafer
-  | isJust parent && isRef clafer = ""
+  | isJust parent && isRef clafer || isPrimitiveClafer clafer = ""
   | otherwise    = (unlines $ filterNull
                    [cardFact ++ claferDecl clafer
                    , showSet "\n, " $ genRelations clafer
@@ -83,7 +83,7 @@ claferDecl clafer = concat [genOptCard clafer,
   where
   genAbstract isAbstract = if isAbstract then "abstract " else ""
   genExtends (ISuper False [ISExpIdent "clafer" _]) = ""
-  genExtends (ISuper False [ISExpIdent id _]) = " extends " ++ id
+  genExtends (ISuper False [ISExpIdent id _])       = " extends " ++ id
   genExtends _ = ""
 
 
@@ -94,6 +94,10 @@ genOptCard clafer
   glCard' = genIntervalCrude $ glCard clafer
     
 
+isPrimitiveClafer clafer = case super clafer of
+  ISuper _ [ISExpIdent id _] -> isPrimitive id && (null $ elements clafer)
+  _ -> False
+
 -- -----------------------------------------------------------------------------
 -- overlapping inheritance is a new clafer with val (unlike only relation)
 -- relations: overlapping inheritance (val rel), children
@@ -103,7 +107,8 @@ genRelations clafer = ref : (map mkRel $ getSubclafers $ elements clafer)
   ref = if isOverlapping $ super clafer then
           genRel "ref" clafer $ refType clafer
         else ""
-  mkRel c = genRel (genRelName $ uid c) c $ (if isRef c then refType else uid) c
+  mkRel c = genRel (genRelName $ uid c) c $
+            (if isRef c || isPrimitiveClafer c then refType else uid) c
 
 
 genRelName name = "r_" ++ name
@@ -111,7 +116,7 @@ genRelName name = "r_" ++ name
 
 genRel name clafer rType = genAlloyRel name (genCardCrude $ card clafer) rType'
   where
-  rType' = if rType `elem` [intType, integerType, strType] then "Int" else rType
+  rType' = if isPrimitive rType then "Int" else rType
 
 -- optimization: direct ref to Int attribute (no new clafer)
 -- reference clafers as relations

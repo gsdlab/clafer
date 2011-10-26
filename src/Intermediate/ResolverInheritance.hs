@@ -56,8 +56,8 @@ resolveNClafer declarations clafer =
 
 resolveNSuper :: IModule -> ISuper -> ISuper
 resolveNSuper declarations x = case x of
-  ISuper False [ISExpIdent "clafer" _] -> x
-  ISuper False [ISExpIdent id isTop] -> ISuper False [ISExpIdent id' isTop]
+  ISuper False [ISExpIdent id isTop] -> if isPrimitive id || id == "clafer"
+    then x else ISuper False [ISExpIdent id' isTop]
     where
     id' = fst $ fromMaybe (error $ "No superclafer found: " ++ id) $
           resolveN declarations id

@@ -146,6 +146,8 @@ integerType = "integer"
 
 baseClafer = "clafer"
 
+isPrimitive = flip elem [strType, intType, integerType]
+
 data GEnv = GEnv {
   num :: Int,
   stable :: Map.Map String [[String]],
