@@ -44,7 +44,9 @@ genXmlModule decls = concat
   [ "<?xml version=\"1.0\"?>"
   , "<Module xmlns=\"http://gsd.uwaterloo.ca/clafer\""
   , " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""
-  , " xmlns:cl=\"http://gsd.uwaterloo.ca/clafer\">"
+  , " xmlns:cl=\"http://gsd.uwaterloo.ca/clafer\"
+  , " xsi:schemaLocation=\"http://gsd.uwaterloo.ca/clafer \
+                           http://gsd.uwaterloo.ca/Clafer.xsd\">"
   ,  concatMap genXmlDeclaration decls
   , "</Module>"]
 
