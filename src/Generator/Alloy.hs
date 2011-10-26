@@ -29,8 +29,8 @@ import Front.Absclafer
 import Intermediate.Intclafer
 import Intermediate.ResolverType
 
-genModule :: (IModule, GEnv) -> Result
-genModule (declarations, _) = header ++ (declarations >>= genDeclaration)
+genModule :: ClaferMode -> (IModule, GEnv) -> Result
+genModule mode (declarations, _) = header ++ (declarations >>= (genDeclaration mode))
 
 
 header = unlines
@@ -42,10 +42,10 @@ header = unlines
 valField = "val"
 
 
-genDeclaration :: IDeclaration -> Result
-genDeclaration x = case x of
-  IClaferDecl clafer  -> genClafer Nothing clafer
-  IConstDecl lexp  -> mkFact $ genLExp Nothing lexp
+genDeclaration :: ClaferMode -> IDeclaration -> Result
+genDeclaration mode x = case x of
+  IClaferDecl clafer  -> genClafer mode Nothing clafer
+  IConstDecl lexp  -> mkFact $ genLExp mode Nothing lexp
 
 
 mkFact xs = concat ["fact ", mkSet xs, "\n"]
@@ -59,16 +59,16 @@ showSet delim xs = showSet' delim $ filterNull xs
 
 -- optimization: top level cardinalities
 -- optimization: if only boolean parents, then set card is known
-genClafer :: Maybe IClafer -> IClafer -> Result
-genClafer parent clafer
+genClafer :: ClaferMode -> Maybe IClafer -> IClafer -> Result
+genClafer mode parent clafer
   | isJust parent && isRef clafer || isPrimitiveClafer clafer = ""
   | otherwise    = (unlines $ filterNull
                    [cardFact ++ claferDecl clafer
                    , showSet "\n, " $ genRelations clafer
-                   , showSet "\n  " $ genConstraints parent clafer
+                   , showSet "\n  " $ genConstraints mode parent clafer
                    ]) ++ children
   where
-  children = concat $ filterNull $ map (genClafer $ Just clafer) $
+  children = concat $ filterNull $ map (genClafer mode $ Just clafer) $
              getSubclafers $ elements clafer
   cardFact
     | isNothing parent && (null $ genOptCard clafer) =
@@ -145,12 +145,12 @@ genType x = genSExp Nothing x TSExp
 -- constraints
 -- user constraints + parent + group constraints + reference
 -- a = NUMBER do all x : a | x = NUMBER (otherwise alloy sums a set)
-genConstraints parent clafer = genParentConst parent clafer :
+genConstraints mode parent clafer = genParentConst parent clafer :
   genGroupConst clafer : genPathConst "ref" clafer : refs ++ constraints 
   where
   constraints = map genConst $ elements clafer
   genConst x = case x of
-    ISubconstraint lexp  -> genLExp (Just clafer) lexp
+    ISubconstraint lexp  -> genLExp mode (Just clafer) lexp
     ISubclafer clafer -> if genCardCrude crd `elem` ["one", "lone", "some"]
                          then "" else mkCard (genRelName $ uid clafer) $
                            fromJust crd
@@ -249,32 +249,32 @@ genExInteger element x = case x of
 -- -----------------------------------------------------------------------------
 -- Generate code for logical expressions
 
-genLExp :: Maybe IClafer -> ILExp -> Result
-genLExp clafer x = case x of
+genLExp :: ClaferMode -> Maybe IClafer -> ILExp -> Result
+genLExp mode clafer x = case x of
   IEIff lexp0 lexp  -> genL lexp0 " <=> " lexp
   IEImpliesElse lexp0 lexp Nothing  -> genL lexp0 " => " lexp
   IEImpliesElse lexp0 lexp1 (Just lexp)  -> concat 
-    [genLExp clafer (IEImpliesElse lexp0 lexp1 Nothing),
-     " else (", genLExp clafer lexp, ")"]
+    [genLExp mode clafer (IEImpliesElse lexp0 lexp1 Nothing),
+     " else (", genLExp mode clafer lexp, ")"]
   IEOr lexp0 lexp  -> genL lexp0 " or " lexp
-  IEXor lexp0 lexp  -> genLExp clafer $ IENeg $ IEIff lexp0 lexp
+  IEXor lexp0 lexp  -> genLExp mode clafer $ IENeg $ IEIff lexp0 lexp
   IEAnd lexp0 lexp  -> genL lexp0 " && " lexp
-  IENeg lexp  -> "not ("  ++ genLExp clafer lexp ++ ")"
-  IETerm term  -> genTerm clafer term
+  IENeg lexp  -> "not ("  ++ genLExp mode clafer lexp ++ ")"
+  IETerm term  -> genTerm mode clafer term
   where
-  genL = genBinOp (genLExp clafer)
+  genL = genBinOp (genLExp mode clafer)
 
 
-genTerm :: Maybe IClafer -> ITerm -> Result
-genTerm clafer x = case x of
-  ITermCmpExp cmpexp t -> genCmpExp clafer cmpexp $ fromJust t
+genTerm :: ClaferMode -> Maybe IClafer -> ITerm -> Result
+genTerm mode clafer x = case x of
+  ITermCmpExp cmpexp t -> genCmpExp mode clafer cmpexp $ fromJust t
   ITermQuantSet quant sexp -> genQuant quant ++ " "  ++ (genSExp clafer) sexp TSExp
   ITermQuantDeclExp decls lexp -> concat
-    [intercalate "| " $ map (genDecl clafer) decls, " | ",  genLExp clafer lexp]
+    [intercalate "| " $ map (genDecl clafer) decls, " | ",  genLExp mode clafer lexp]
 
 
-genCmpExp :: Maybe IClafer -> ICmpExp -> EType -> Result
-genCmpExp clafer x t = case x of
+genCmpExp :: ClaferMode -> Maybe IClafer -> ICmpExp -> EType -> Result
+genCmpExp mode clafer x t = case x of
   IELt exp0 exp  -> genCmp exp0 " < " exp
   IEGt exp0 exp  -> genCmp exp0 " > " exp
   IEEq exp0 exp  -> genCmp exp0 " = " exp
@@ -283,11 +283,11 @@ genCmpExp clafer x t = case x of
   IEGte exp0 exp  -> genCmp exp0 " >= " exp
   IENeq exp0 exp  -> genCmp exp0 " != " exp
   IERNeq exp0 exp  -> genCmp exp0 " != " exp
-  IEIn exp0 exp  -> genBinOp (flip (genExp clafer) t) exp0 " in " exp
-  IENin exp0 exp  -> genBinOp (flip (genExp clafer) t) exp0 " not in " exp
+  IEIn exp0 exp  -> genBinOp (flip (genExp mode clafer) t) exp0 " in " exp
+  IENin exp0 exp  -> genBinOp (flip (genExp mode clafer) t) exp0 " not in " exp
   where
   genCmp x op y = on (genNumExp (t, resolveTExp x, resolveTExp y) op)
-                  (flip (genExp clafer) t) x y
+                  (flip (genExp mode clafer) t) x y
 
 
 genNumExp :: (EType, EType, EType) -> Result -> Result -> Result -> Result
@@ -327,9 +327,9 @@ genBinOp f x op y = ((lurry (intercalate op)) `on` (brArg f)) x y
 brArg f arg = "(" ++ f arg ++ ")"
 
 
-genExp :: Maybe IClafer -> IExp -> EType -> Result
-genExp clafer x t = case x of
-  IENumExp aexp -> genAExp clafer aexp t
+genExp :: ClaferMode -> Maybe IClafer -> IExp -> EType -> Result
+genExp mode clafer x t = case x of
+  IENumExp aexp -> genAExp mode clafer aexp t
   IEStrExp strexp -> error $ "analyzed: " ++ show strexp
 
 
@@ -360,13 +360,22 @@ genDisj x = case x of
   True  -> "disj"
 
 
-genAExp :: Maybe IClafer -> IAExp -> EType -> Result
-genAExp clafer x t = case x of
-  IEAdd aexp0 aexp -> genArith aexp0 "+" aexp
-  IESub aexp0 aexp -> genArith aexp0 "-" aexp
+genAExp :: ClaferMode -> Maybe IClafer -> IAExp -> EType -> Result
+genAExp mode clafer x t = case x of
+  IEAdd aexp0 aexp -> genArith aexp0 op aexp ++ br
+    where
+    (op, br) = case mode of 
+           Alloy -> ("+", "")
+           Alloy42 -> (".plus[", "]")
+  IESub aexp0 aexp -> genArith aexp0 op aexp ++ br
+    where
+    (op, br) = case mode of 
+           Alloy -> ("-", "")
+           Alloy42 -> (".minus[", "]")
   IEMul aexp0 aexp -> genArith aexp0 "*" aexp
   IECSetExp sexp -> "#" ++ brArg (flip (genSExp clafer) TSExp) sexp
   IEASetExp sexp -> genSExp clafer sexp t
   IEInt n    -> show n
   where
-  genArith = genBinOp (flip (genAExp clafer) t)
+  genArith = genBinOp (flip (genAExp mode clafer) t)
+  

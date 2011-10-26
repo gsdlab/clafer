@@ -155,7 +155,7 @@ data GEnv = GEnv {
     }
   deriving (Eq, Show)
 
-data ClaferMode = Alloy | Xml
+data ClaferMode = Alloy42 | Alloy | Xml
   deriving (Show, Data, Typeable)
 
 data ClaferArgs = ClaferArgs {

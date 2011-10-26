@@ -92,7 +92,8 @@ run v p args = do
                           when (not $ no_stats args) $ putStrLn stats
                           conPutStrLn args "[Saving File]"
                           let (ext, code) = case (mode args) of
-                                Alloy -> ("als", addStats (genModule (oTree, genv)) stats)
+                                Alloy -> ("als", addStats (genModule (mode args) (oTree, genv)) stats)
+                                Alloy42 -> ("als", addStats (genModule (mode args) (oTree, genv)) stats)
                                 Xml ->   ("xml", genXmlModule oTree)
                           if console_output args
                              then putStrLn code
