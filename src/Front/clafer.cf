@@ -1,9 +1,7 @@
---layout toplevel;
-
 entrypoints Module ;
 
-comment "--" ;
-comment "{-" "-}" ;
+comment "//" ;
+comment "/*" "*/" ;
 
 Module.         Module ::= [Declaration] ;
 
@@ -12,7 +10,7 @@ ClaferDecl.     Declaration ::= Clafer ;
 ConstDecl.      Declaration ::= Constraint ;
 
 Clafer.         Clafer ::= Abstract GCard Ident Super Card Elements ;
-Constraint.     Constraint ::= "[" [LExp] "]" ;
+Constraint.     Constraint ::= "[" [Exp] "]" ;
 
 AbstractEmpty. Abstract ::= ;
 Abstract.      Abstract ::= "abstract" ;
@@ -27,7 +25,7 @@ Subconstraint.  ElementCl ::= Constraint ;
 SuperEmpty.     Super ::=  ;
 SuperColon.     Super ::= ":" Name ;
 SuperExtends.   Super ::= "extends" Name ;
-SuperArrow.     Super ::= "->" [ModId] SExp ;
+SuperArrow.     Super ::= "->" [ModId] Exp ;
 
 GCardEmpty.     GCard ::= ;
 GCardXor.       GCard ::= "xor" ;
@@ -50,40 +48,42 @@ ExIntegerNum.   ExInteger ::= Integer ;
 
 Name.           Name ::= [ModId] Ident ;
 
-EIff.           LExp  ::= LExp  Iff     LExp1 ;
-EImplies.       LExp1 ::= LExp1 Implies LExp2 ;
-EImpliesElse.   LExp1 ::= LExp1 Implies LExp2 "else" LExp2 ;
-EOr.            LExp2 ::= LExp2 Or      LExp3 ;
-EXor.           LExp3 ::= LExp3 Xor     LExp4 ;
-EAnd.           LExp4 ::= LExp4 And     LExp5 ;
-ENeg.           LExp5 ::= Neg LExp6 ;
-ETerm.          LExp6 ::= Term ;
+DeclExp.        Exp   ::= ExQuant [Decl] "|" Exp1 ;
+EIff.           Exp1  ::= Exp1 "<=>" Exp2 ;
+EImplies.       Exp2  ::= Exp2 "=>"  Exp3 ;
+EImpliesElse.   Exp2  ::= Exp2 "=>"  Exp3 "else" Exp3 ;
+EOr.            Exp3  ::= Exp3 "||"  Exp4 ;
+EXor.           Exp4  ::= Exp4 "xor" Exp5 ;
+EAnd.           Exp5  ::= Exp5 "&&"  Exp6 ;
+ENeg.           Exp6  ::= "~" Exp7 ;
+QuantExp.       Exp7  ::= Quant Exp7 ;
+ELt.            Exp7  ::= Exp7 "<"  Exp8 ;
+EGt.            Exp7  ::= Exp7 ">"  Exp8 ;
+EREq.           Exp7  ::= Exp7 "="  Exp8 ;
+ELte.           Exp7  ::= Exp7 "<=" Exp8 ;
+EGte.           Exp7  ::= Exp7 ">=" Exp8 ;
+ENeq.           Exp7  ::= Exp7 "!=" Exp8 ;
+EIn.            Exp7  ::= Exp7 "in" Exp8 ;
+ENin.           Exp7  ::= Exp7 "not" "in" Exp8 ;
+EAdd.           Exp8  ::= Exp8  "+" Exp9 ;
+ESub.           Exp8  ::= Exp8  "-" Exp9 ;
+EMul.           Exp9  ::= Exp9 "*" Exp10 ;
+EDiv.           Exp9  ::= Exp9 "/" Exp10 ;
+ECSetExp.       Exp10 ::= "#" Exp11 ;
+EInt.           Exp10 ::= Integer ;
+EStr.           Exp10 ::= String ;
+Union.          Exp11 ::= Exp11 "++" Exp12 ;
+Difference.     Exp11 ::= Exp11 "--" Exp12 ;
+Intersection.   Exp12 ::= Exp12 "&"  Exp13 ;
+Domain.         Exp13 ::= Exp13 "<:" Exp14 ;
+Range.          Exp14 ::= Exp14 ":>" Exp15 ;
+Join.           Exp15 ::= Exp15 "."  Exp16 ;
+ClaferId.       Exp16 ::= Ident ;
 
-TermCmpExp.        Term ::= CmpExp ;
-TermSet.           Term ::= SExp ;
-TermQuantSet.      Term ::= Quant SExp ;
-TermQuantDeclExp.  Term ::= [Decl] "|" LExp ; -- LExp causes s/r conflicts
+Decl.           Decl ::= Disj [LocId] ":" Exp ;
 
-Iff.            Iff     ::= "<=>" ;
-Implies.        Implies ::= "=>" ;
-And.            And     ::= "&&" ;
-Xor.            Xor     ::= "xor" ;
-Or.             Or      ::= "||" ;
-Neg.            Neg     ::= "~" ;
-
-ELt.            CmpExp ::= Exp "<"  Exp ;
-EGt.            CmpExp ::= Exp ">"  Exp ;
-EREq.           CmpExp ::= Exp "="  Exp ;
-EEq.            CmpExp ::= Exp "==" Exp ;
-ELte.           CmpExp ::= Exp "<=" Exp ;
-EGte.           CmpExp ::= Exp ">=" Exp ;
-ENeq.           CmpExp ::= Exp "!=" Exp ;
-ERNeq.          CmpExp ::= Exp "/=" Exp ;
-EIn.            CmpExp ::= Exp "in" Exp ;
-ENin.           CmpExp ::= Exp "not" "in" Exp ;
-
-ENumExp.        Exp ::= AExp ;
-EStrExp.        Exp ::= StrExp ;
+DisjEmpty.      Disj ::= ;
+Disj.           Disj ::= "disj" ;
 
 QuantNo.        Quant ::= "no" ;
 QuantLone.      Quant ::= "lone" ;
@@ -93,28 +93,6 @@ QuantSome.      Quant ::= "some" ;
 ExQuantAll.     ExQuant ::= "all" ;
 ExQuantQuant.   ExQuant ::= Quant ;
 
-SExpUnion.        SExp  ::= SExp  "++" SExp1 ;
-SExpIntersection. SExp1 ::= SExp1 "&"  SExp2 ;
-SExpDomain.       SExp2 ::= SExp2 "<:" SExp3 ;
-SExpRange.        SExp3 ::= SExp3 ":>" SExp4 ;
-SExpJoin.         SExp4 ::= SExp4 "."  SExp5 ;
-SExpIdent.        SExp5 ::= Ident ;
-
-Decl.           Decl ::= ExQuant Disj [LocId] ":" SExp ;
-
-DisjEmpty.      Disj ::= ;
-Disj.           Disj ::= "disj" ;
-
-EAdd.           AExp  ::= AExp  "+" AExp1 ;
-ESub.           AExp  ::= AExp  "-" AExp1 ;
-EMul.           AExp1 ::= AExp1 "*" AExp2 ;
-ECSetExp.       AExp2 ::= "#" SExp ;
-EASetExp.       AExp2 ::= SExp ;
-EInt.           AExp2 ::= Integer ;
-
-EConc.          StrExp  ::= StrExp  "++" StrExp ;
-EStr.           StrExp  ::= String ;
-
 rules           EnumId ::= Ident ;
 rules           ModId  ::= Ident ;
 rules           LocId  ::= Ident ;
@@ -122,11 +100,9 @@ rules           LocId  ::= Ident ;
 separator          Declaration ""  ;
 separator nonempty EnumId      "|" ;
 separator          ElementCl   ""  ;
-separator          LExp        ""  ;
+separator          Exp         ""  ;
 separator nonempty Decl        "," ;
 separator nonempty LocId       "," ;
-terminator         ModId       "/" ;
+terminator         ModId       ":" ;
 
-coercions SExp 5 ;
-coercions LExp 6 ;
-coercions AExp 2 ;
+coercions Exp 16 ;
