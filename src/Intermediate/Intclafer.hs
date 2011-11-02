@@ -78,80 +78,58 @@ data IGCard =
 -- (Min, max) integer interval
 type Interval = (Integer, ExInteger)
 
--- Logical expressions
-data ILExp =
-   IEIff ILExp ILExp                       -- equivalence
- | IEImpliesElse ILExp ILExp (Maybe ILExp) -- implication/if then else
- | IEOr ILExp ILExp                        -- disjunction
- | IEXor ILExp ILExp                       -- exclusive or
- | IEAnd ILExp ILExp                       -- conjunction
- | IENeg ILExp                             -- negation
- | IETerm ITerm                            -- term
+data PExp = PExp {
+      eType :: Maybe EType,
+      exp :: IExp
+    }
   deriving (Eq,Ord,Show)
-  {-! derive : XmlContent !-}    -- this line is for DrIFT
 
--- definition of a term
-data ITerm =
-   ITermCmpExp ICmpExp (Maybe EType) -- relational expression (comparison)
- | ITermQuantSet Quant ISExp         -- quantified set
- | ITermQuantDeclExp [IDecl] ILExp   -- logical expression with local declarations
-  deriving (Eq,Ord,Show)
-  {-! derive : XmlContent !-}    -- this line is for DrIFT
-
--- Relational expression
-data ICmpExp =
-   IELt IExp IExp   -- less than
- | IEGt IExp IExp   -- greater than
- | IEREq IExp IExp  -- referential equality
- | IEEq IExp IExp   -- equality
- | IELte IExp IExp  -- less than or equal
- | IEGte IExp IExp  -- greater then or equal
- | IENeq IExp IExp  -- inequality
- | IERNeq IExp IExp -- referential inequality
- | IEIn IExp IExp   -- belonging to a set/being a subset
- | IENin IExp IExp  -- not belonging to a set/not being a subset
-  deriving (Eq,Ord,Show)
-  {-! derive : XmlContent !-}    -- this line is for DrIFT
-
--- Generic expression
 data IExp =
-   IENumExp IAExp  -- numeric expression
- | IEStrExp StrExp -- string expression
+   IDeclPExp ExQuant [Decl] PExp        -- quantified expression with local declarations
+ | IEIff PExp PExp                      -- equivalence
+ | IEImpliesElse PExp PExp (Maybe PExp) -- implication/if then else
+ | IEOr PExp PExp                       -- disjunction
+ | IEXor PExp PExp                      -- exclusive or
+ | IEAnd PExp PExp                      -- conjunction
+ | IENeg PExp                           -- negation
+ | IQuantPExp Quant PExp                -- quantified expression
+ | IELt PExp PExp                       -- less than
+ | IEGt PExp PExp                       -- greater than
+ | IEEq PExp PExp                       -- equality
+ | IELte PExp PExp                      -- less than or equal
+ | IEGte PExp PExp                      -- greater than or equal
+ | IENeq PExp PExp                      -- inequality
+ | IEIn PExp PExp                       -- belonging to a set/being a subset
+ | IENin PExp PExp                      -- not belonging to a set/not being a subset
+ | IEAdd PExp PExp                      -- addition
+ | IESub PExp PExp                      -- substraction
+ | IEMul PExp PExp                      -- multiplication
+ | IEDiv PExp PExp                      -- division
+ | IECSetPExp PExp                      -- counting number of set elements
+ | IEInt Integer                        -- integer number
+ | IEStr String                         -- string
+ | IUnion PExp PExp                     -- set union/string concatenation
+ | IDifference PExp PExp                -- set difference
+ | IIntersection PExp PExp              -- set intersection
+ | IDomain PExp PExp                    -- domain restriction
+ | IRange PExp PExp                     -- range restriction
+ | IJoin PExp PExp                      -- relational join
+ | IClaferId Name                       -- clafer name
   deriving (Eq,Ord,Show)
-  {-! derive : XmlContent !-}    -- this line is for DrIFT
 
--- Set expression
-data ISExp =
-   ISExpUnion ISExp ISExp        -- set union
- | ISExpIntersection ISExp ISExp -- set intersection
- | ISExpDomain ISExp ISExp       -- domain restriction
- | ISExpRange ISExp ISExp        -- range restriction
- | ISExpJoin ISExp ISExp         -- relational join
- | ISExpIdent {                  -- identifier
+data IName = IName {
+      modName :: String,
       sident :: String,          -- name
       isTop :: Bool              -- indicates whether the identifier refers to a top-level definition
     }
   deriving (Eq,Ord,Show)
-  {-! derive : XmlContent !-}    -- this line is for DrIFT
 
 -- Local declaration
 data IDecl =
    IDecl {
-      exquant :: ExQuant, -- extended quantifier
       isDisj :: Bool,     -- is disjunct
       decls :: [String],  -- a list of local names
-      body :: ISExp       -- set to which local names refer to
+      body :: PExp       -- set to which local names refer to
     }
-  deriving (Eq,Ord,Show)
-  {-! derive : XmlContent !-}    -- this line is for DrIFT
-
--- Arithmetic expression
-data IAExp =
-   IEAdd IAExp IAExp -- addition
- | IESub IAExp IAExp -- substraction
- | IEMul IAExp IAExp -- multiplication
- | IECSetExp ISExp   -- counting number of set elements
- | IEASetExp ISExp   -- using clafer as a number
- | IEInt Integer     -- integer
   deriving (Eq,Ord,Show)
   {-! derive : XmlContent !-}    -- this line is for DrIFT

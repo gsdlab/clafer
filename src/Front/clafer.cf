@@ -12,8 +12,8 @@ ConstDecl.      Declaration ::= Constraint ;
 Clafer.         Clafer ::= Abstract GCard Ident Super Card Elements ;
 Constraint.     Constraint ::= "[" [Exp] "]" ;
 
-AbstractEmpty. Abstract ::= ;
-Abstract.      Abstract ::= "abstract" ;
+AbstractEmpty.  Abstract ::= ;
+Abstract.       Abstract ::= "abstract" ;
 
 ElementsEmpty.  Elements ::= ;
 ElementsList.   Elements ::= "{" [ElementCl] "}" ;
@@ -25,7 +25,7 @@ Subconstraint.  ElementCl ::= Constraint ;
 SuperEmpty.     Super ::=  ;
 SuperColon.     Super ::= ":" Name ;
 SuperExtends.   Super ::= "extends" Name ;
-SuperArrow.     Super ::= "->" [ModId] Exp ;
+SuperArrow.     Super ::= "->" Exp ;
 
 GCardEmpty.     GCard ::= ;
 GCardXor.       GCard ::= "xor" ;
@@ -46,7 +46,8 @@ NCard.          NCard  ::= Integer ".." ExInteger ;
 ExIntegerAst.   ExInteger ::= "*" ;
 ExIntegerNum.   ExInteger ::= Integer ;
 
-Name.           Name ::= [ModId] Ident ;
+LocClafer.      Name ::= Ident ;
+ModClafer.      Name ::= [ModId] Ident ;
 
 DeclExp.        Exp   ::= ExQuant [Decl] "|" Exp1 ;
 EIff.           Exp1  ::= Exp1 "<=>" Exp2 ;
@@ -59,7 +60,7 @@ ENeg.           Exp6  ::= "~" Exp7 ;
 QuantExp.       Exp7  ::= Quant Exp7 ;
 ELt.            Exp7  ::= Exp7 "<"  Exp8 ;
 EGt.            Exp7  ::= Exp7 ">"  Exp8 ;
-EREq.           Exp7  ::= Exp7 "="  Exp8 ;
+EEq.            Exp7  ::= Exp7 "="  Exp8 ;
 ELte.           Exp7  ::= Exp7 "<=" Exp8 ;
 EGte.           Exp7  ::= Exp7 ">=" Exp8 ;
 ENeq.           Exp7  ::= Exp7 "!=" Exp8 ;
@@ -78,7 +79,7 @@ Intersection.   Exp12 ::= Exp12 "&"  Exp13 ;
 Domain.         Exp13 ::= Exp13 "<:" Exp14 ;
 Range.          Exp14 ::= Exp14 ":>" Exp15 ;
 Join.           Exp15 ::= Exp15 "."  Exp16 ;
-ClaferId.       Exp16 ::= Ident ;
+ClaferId.       Exp16 ::= Name ;
 
 Decl.           Decl ::= Disj [LocId] ":" Exp ;
 
@@ -97,12 +98,12 @@ rules           EnumId ::= Ident ;
 rules           ModId  ::= Ident ;
 rules           LocId  ::= Ident ;
 
-separator          Declaration ""  ;
-separator nonempty EnumId      "|" ;
-separator          ElementCl   ""  ;
-separator          Exp         ""  ;
-separator nonempty Decl        "," ;
-separator nonempty LocId       "," ;
-terminator         ModId       ":" ;
+separator           Declaration ""  ;
+separator  nonempty EnumId      "|" ;
+separator           ElementCl   ""  ;
+separator           Exp         ""  ;
+separator  nonempty Decl        "," ;
+separator  nonempty LocId       "," ;
+terminator nonempty ModId       "\\" ;
 
 coercions Exp 16 ;
