@@ -20,19 +20,22 @@
 module Intermediate.ResolverType where
 
 import Data.Function
+import Data.Maybe
 
 import Common
 import Intermediate.Intclafer
 
 resolveTModule :: (IModule, GEnv) -> IModule
-resolveTModule (declarations, genv) =
-  map (resolveTDeclaration (declarations, genv)) declarations
+resolveTModule (imodule, genv) =
+  imodule{mDecls = map (resolveTDeclaration (decls, genv)) decls}
+  where
+  decls = mDecls imodule
 
 
-resolveTDeclaration :: (IModule, GEnv) -> IDeclaration -> IDeclaration
+resolveTDeclaration :: ([IDeclaration], GEnv) -> IDeclaration -> IDeclaration
 resolveTDeclaration _ x = case x of
   IClaferDecl clafer  -> IClaferDecl $ resolveTClafer clafer
-  IConstDecl constraint  -> IConstDecl $ resolveTLExp constraint
+  IConstDecl constraint  -> IConstDecl $ resolveTPExp constraint
 
 
 resolveTClafer :: IClafer -> IClafer
@@ -43,60 +46,86 @@ resolveTClafer clafer =
 resolveTElement :: IElement -> IElement
 resolveTElement x = case x of
   ISubclafer clafer  -> ISubclafer $ resolveTClafer clafer
-  ISubconstraint constraint  -> ISubconstraint $ resolveTLExp constraint
+  ISubconstraint constraint  -> ISubconstraint $ resolveTPExp constraint
 
 
-resolveTLExp :: ILExp -> ILExp
-resolveTLExp x = case x of
-  IEIff lexp0 lexp  -> on IEIff resolveTLExp lexp0 lexp
-  IEImpliesElse lexp0 lexp Nothing  -> on (\l0 l -> IEImpliesElse l0 l Nothing)
-                                       resolveTLExp lexp0 lexp
-  IEImpliesElse lexp0 lexp1 (Just lexp)  ->
-      on (\l0 l1 -> IEImpliesElse l0 l1 $ Just $ resolveTLExp lexp)
-      resolveTLExp lexp0 lexp1
-  IEOr lexp0 lexp  -> on IEOr resolveTLExp lexp0 lexp
-  IEXor lexp0 lexp  -> on IEXor resolveTLExp lexp0 lexp
-  IEAnd lexp0 lexp  -> on IEAnd resolveTLExp lexp0 lexp
-  IENeg lexp  -> IENeg $ resolveTLExp lexp
-  IETerm term  -> IETerm $ resolveTTerm term
+resolveTPExp :: PExp -> PExp
+resolveTPExp x = resolveTIExp $ (Intermediate.Intclafer.exp) x
+
+resolveTIExp :: IExp -> PExp
+resolveTIExp x = case x of
+  IDeclPExp quant decls pexp -> PExp (Just IBoolean) $
+    IDeclPExp quant (map resolveTDecl decls) (resolveTPExp pexp)
+  y@(IFunExp op _) -> result
+    where
+    result
+      | op == INeg  = appType y (map Just [IBoolean]) (Just IBoolean)
+      | op == ICSet =
+          appType y (map Just [ISet]) (Just $ INumeric (Just IInteger))
+      | op `elem` [IIff .. IAnd] =
+          appType y (map Just [IBoolean, IBoolean]) (Just IBoolean)
+      | op `elem` [ILt .. INeq] =
+          infer $ appType y [Nothing, Nothing] (Just IBoolean)
+      | op `elem` [IIn .. INin] =
+          appType y (map Just [ISet, ISet]) (Just IBoolean)
+      | op `elem` [IAdd .. IDiv] =
+          appType y (map Just [INumeric Nothing, INumeric Nothing])
+                    (Just $ INumeric Nothing)
+      | op `elem` [IUnion .. IJoin] =
+          appType y (map Just [ISet, ISet]) (Just ISet)
+      | op == IIfThenElse =
+          infer $ appType y [Just IBoolean, Nothing, Nothing] Nothing
+  IInt n -> PExp (Just $ INumeric $ Just IInteger) x
+  IDouble n -> PExp (Just $ INumeric $ Just IReal) x
+  IStr str -> PExp (Just $ IString $ Just ILiteral) x
+  IClaferId name -> PExp (Just ISet) x
+
+infer :: PExp -> PExp
+infer x = x{iType = iType $ typeExp (iType x) $ typeExp (iType exp0) exp1}
+  where
+  (exp1:exp0:_) = reverse $ exps $ (Intermediate.Intclafer.exp) x
+  
+
+appType :: IExp -> [Maybe IType] -> Maybe IType -> PExp
+appType (IFunExp op exps) eTypes rType =
+  PExp rType (IFunExp op (check eTypes (map resolveTPExp exps)))
 
 
-resolveTTerm :: ITerm -> ITerm
-resolveTTerm x = case x of
-  ITermCmpExp cmpexp _ -> ITermCmpExp cmpexp $ Just $ resolveTCmpExp cmpexp
-  ITermQuantSet quant sexp -> x
-  ITermQuantDeclExp decls lexp -> ITermQuantDeclExp decls $ resolveTLExp lexp
+check :: [Maybe IType] -> [PExp] -> [PExp]
+check eTypes exps = map (uncurry typeExp) $ zip eTypes exps
 
 
-resolveTCmpExp :: ICmpExp -> EType
-resolveTCmpExp x = case x of
-  IELt exp0 exp  -> on resolveT resolveTExp exp0 exp
-  IEGt exp0 exp  -> on resolveT resolveTExp exp0 exp
-  IEEq exp0 exp  -> on resolveT resolveTExp exp0 exp
-  IEREq exp0 exp  -> on resolveT resolveTExp exp0 exp
-  IELte exp0 exp  -> on resolveT resolveTExp exp0 exp
-  IEGte exp0 exp  -> on resolveT resolveTExp exp0 exp
-  IENeq exp0 exp  -> on resolveT resolveTExp exp0 exp
-  IERNeq exp0 exp  -> on resolveT resolveTExp exp0 exp
-  IEIn exp0 exp  -> on resolveT resolveTExp exp0 exp
-  IENin exp0 exp  -> on resolveT resolveTExp exp0 exp
+typeExp :: Maybe IType -> PExp -> PExp
+typeExp eType x@(PExp iType exp)
+  | eType == iType  = x
+  | isNothing eType = x
+  | otherwise       = PExp (Just $ resolveT (fromJust eType) (fromJust iType)) exp
 
+-- integer cast to real
+resolveT (INumeric (Just IInteger)) x@(INumeric (Just IReal)) = x
+resolveT x@(INumeric (Just IReal)) (INumeric (Just IInteger)) = x
 
-resolveT TAExp TAExp = TAExp
-resolveT TSExp TSExp = TSExp
-resolveT _ _ = TSAExp
+-- set and numeric set
+resolveT (INumeric (Just IInteger)) ISet = INumeric (Just ISetInteger)
+resolveT ISet (INumeric (Just IInteger)) = INumeric (Just ISetInteger)
+resolveT (INumeric (Just IReal)) ISet = INumeric (Just ISetReal)
+resolveT ISet (INumeric (Just IReal)) = INumeric (Just ISetReal)
+resolveT x@(INumeric _) ISet = x
+resolveT ISet x@(INumeric _) = x
 
+-- numeric and numeric set
+resolveT (INumeric (Just IInteger)) x@(INumeric (Just ISetInteger)) = x
+resolveT x@(INumeric (Just ISetInteger)) (INumeric (Just IInteger)) = x
 
-resolveTExp :: IExp -> EType
-resolveTExp x = case x of
-  IENumExp aexp -> resolveTAExp aexp
-  IEStrExp strexp -> TAExp
+-- all other numeric cases
+resolveT (INumeric _) (INumeric _) = (INumeric (Just ISetReal))
 
-resolveTAExp :: IAExp -> EType
-resolveTAExp x = case x of
-  IEAdd aexp0 aexp -> on resolveT resolveTAExp aexp0 aexp
-  IESub aexp0 aexp -> on resolveT resolveTAExp aexp0 aexp
-  IEMul aexp0 aexp -> on resolveT resolveTAExp aexp0 aexp
-  IECSetExp sexp -> TAExp
-  IEASetExp sexp -> TSExp
-  IEInt n    -> TAExp
+-- strings
+resolveT (IString _) (IString _) = IString (Just ISetString)
+resolveT (IString _) ISet = IString (Just ISetString)
+resolveT ISet (IString _) = IString (Just ISetString)
+
+resolveT x y = error $ "Type error: " ++ (show x) ++ " " ++ (show y)
+
+resolveTDecl :: IDecl -> IDecl
+resolveTDecl x = x{body = resolveTPExp $ body x}

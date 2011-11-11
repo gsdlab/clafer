@@ -56,8 +56,9 @@ resolveNClafer declarations clafer =
 
 resolveNSuper :: IModule -> ISuper -> ISuper
 resolveNSuper declarations x = case x of
-  ISuper False [ISExpIdent id isTop] -> if isPrimitive id || id == "clafer"
-    then x else ISuper False [ISExpIdent id' isTop]
+  ISuper False [PExp (IClaferId (IName _ id isTop))] ->
+    if isPrimitive id || id == "clafer"
+      then x else ISuper False [idToPExp "" id' isTop]
     where
     id' = fst $ fromMaybe (error $ "No superclafer found: " ++ id) $
           resolveN declarations id
@@ -100,7 +101,7 @@ resolveOClafer env clafer =
 
 resolveOSuper :: SEnv -> ISuper -> ISuper
 resolveOSuper env x = case x of
-  ISuper True sexps -> ISuper True $ map (resolveSExp env) sexps
+  ISuper True exps -> ISuper True $ map (resolveExp env) exps
   _ -> x
 
 
@@ -236,7 +237,8 @@ resolveEInheritance predecessors unrollables absAncestor declarations allSuper
         mapM (resolveEElement predecessors unrollables True declarations) $
              unrollSuper >>= elements
     let super' = if (getSuper clafer `elem` unrollables)
-                 then super clafer else ISuper False [ISExpIdent "clafer" False]
+                 then super clafer
+                 else ISuper False [idToPExp "" "clafer" False]
     return (elements', super', superList)
   where
   clafer = head allSuper

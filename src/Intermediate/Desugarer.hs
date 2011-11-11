@@ -27,7 +27,8 @@ import Data.Function
 
 desugarModule :: Module -> IModule
 desugarModule x = case x of
-  Module declarations  -> map desugarDeclaration $ declarations >>= desugarEnums
+  Module declarations  -> IModule "" $
+      map desugarDeclaration $ declarations >>= desugarEnums
 
 
 declToElem x = case x of
@@ -36,7 +37,7 @@ declToElem x = case x of
 
 
 sugarModule :: IModule -> Module
-sugarModule x = Module $ map sugarDeclaration x
+sugarModule x = Module $ map sugarDeclaration $ mDecls x
 
 
 -- desugars enumeration to abstract and global singleton features
@@ -47,7 +48,7 @@ desugarEnums x = case x of
     absEnum = ClaferDecl $ Clafer
               Abstract GCardEmpty id SuperEmpty CardEmpty ElementsEmpty
     mkEnum (EnumIdIdent eId) = ClaferDecl $ Clafer AbstractEmpty GCardEmpty
-                                  eId (SuperExtends $ Name [] id) CardEmpty
+                                  eId (SuperExtends $ LocClafer id) CardEmpty
                                   ElementsEmpty
   _ -> [x]
 
@@ -80,13 +81,13 @@ sugarClafer x = case x of
       (sugarSuper super) (sugarCard card) (sugarElements elements)
 
 
-desugarConstraint :: Constraint -> ILExp
-desugarConstraint (Constraint lexps) = (if length lexps > 1 then foldl1 IEAnd
-  else head) $ map desugarLExp lexps
+desugarConstraint :: Constraint -> PExp
+desugarConstraint (Constraint exps) =
+  desugarExp $ (if length exps > 1 then foldl1 EAnd else head) exps
 
 
-sugarConstraint :: ILExp -> Constraint
-sugarConstraint ilexp = Constraint $ map sugarLExp [ilexp]
+sugarConstraint :: PExp -> Constraint
+sugarConstraint pexp = Constraint $ map sugarExp [pexp]
 
 
 desugarAbstract :: Abstract -> Bool
@@ -115,7 +116,7 @@ desugarElement :: ElementCl -> IElement
 desugarElement x = case x of
   Subclafer clafer  -> ISubclafer $ desugarClafer clafer
   ClaferUse name card elements  -> ISubclafer $ desugarClafer $ Clafer
-    AbstractEmpty GCardEmpty (Ident $ snd $ transName name) (SuperExtends name) card
+    AbstractEmpty GCardEmpty (Ident $ sident $ desugarName name) (SuperExtends name) card
                   elements
   Subconstraint constraint  -> ISubconstraint $ desugarConstraint constraint
 
@@ -128,19 +129,36 @@ sugarElement x = case x of
 
 desugarSuper :: Super -> ISuper
 desugarSuper x = case x of
-  SuperEmpty  -> ISuper False [ISExpIdent baseClafer True]
-  SuperColon name  -> ISuper False [nameToSExp name]
-  SuperExtends name  -> ISuper False [nameToSExp name]
-  SuperArrow modids sexp  -> ISuper True [desugarSExp sexp]
-  where
-  nameToSExp (Name _ id) = ISExpIdent (transIdent id) True
+  SuperEmpty  -> ISuper False [toPExp $ toIName baseClafer]
+  SuperColon name  -> ISuper False [nameToPExp name]
+  SuperExtends name  -> desugarSuper $ SuperColon name
+  SuperArrow exp  -> ISuper True [desugarExp exp]
+
+nameToPExp = toPExp.desugarName
+
+toPExp name = PExp (Just ISet) $ IClaferId $ name
+
+toIName name = IName "" name True
+
+desugarName (LocClafer id)      = desugarName (ModClafer [] id)
+desugarName (ModClafer mods id) =
+  IName (concatMap ((++ modSep).desugarModId) mods) (transIdent id) True
+
+desugarModId (ModIdIdent id) = transIdent id
+
+sugarModId modid = ModIdIdent $ Ident modid
+
+sugarName :: IName -> Name
+sugarName (IName "" id _) = LocClafer $ Ident id
+sugarName (IName modName id _) = ModClafer [sugarModId modName] (Ident id)
 
 
 sugarSuper :: ISuper -> Super
 sugarSuper x = case x of
   ISuper _ [] -> SuperEmpty
-  ISuper False [ISExpIdent id _] -> SuperColon $ Name [] $ Ident id
-  ISuper True [sexp] -> SuperArrow [] $ sugarSExp sexp
+  ISuper False [PExp _ (IClaferId (IName modid id _))] ->
+    SuperColon $ ModClafer [sugarModId modid] $ Ident id
+  ISuper True [pexp] -> SuperArrow $ sugarExp pexp
 
 
 desugarGCard :: GCard -> Maybe IGCard
@@ -174,122 +192,103 @@ sugarCard x = case x of
   Just (i, ex) -> CardInterval $ NCard i ex
 
 
-desugarLExp :: LExp -> ILExp
-desugarLExp x = case x of
-  EIff lexp0 iff lexp  -> IEIff (desugarLExp lexp0) (desugarLExp lexp)
-  EImplies lexp0 implies lexp  -> IEImpliesElse (desugarLExp lexp0)
-                                  (desugarLExp lexp) Nothing
-  EImpliesElse lexp0 implies lexp1 lexp  -> IEImpliesElse (desugarLExp lexp0)
-                                            (desugarLExp lexp1)
-                                            (Just $ desugarLExp lexp)
-  EOr lexp0 or lexp  -> IEOr (desugarLExp lexp0) (desugarLExp lexp)
-  EXor lexp0 xor lexp  -> IEXor (desugarLExp lexp0) (desugarLExp lexp)
-  EAnd lexp0 and lexp  -> IEAnd (desugarLExp lexp0) (desugarLExp lexp)
-  ENeg neg lexp  -> IENeg (desugarLExp lexp)
-  ETerm term  -> IETerm $ desugarTerm term
+desugarExp :: Exp -> PExp
+desugarExp x = PExp Nothing $ desugarExp' x
 
+desugarExp' :: Exp -> IExp
+desugarExp' x = case x of
+  DeclExp exquant decls exp  ->
+    IDeclPExp (desugarExQuant exquant) (map desugarDecl decls) (desugarExp exp)
+  EIff exp0 exp  -> desugarOp IIff [exp0, exp]
+  EImplies exp0 exp  -> desugarOp IImpl [exp0, exp]
+  EImpliesElse exp0 exp1 exp  -> desugarOp IIfThenElse [exp0, exp1, exp]
+  EOr exp0 exp  -> desugarOp IOr   [exp0, exp]
+  EXor exp0 exp  -> desugarOp IXor [exp0, exp]
+  EAnd exp0 exp  -> desugarOp IAnd [exp0, exp]
+  ENeg exp  -> desugarOp INeg [exp]
+  QuantExp quant exp  -> IDeclPExp (desugarQuant quant) [] (desugarExp exp)
+  ELt  exp0 exp  -> desugarOp ILt  [exp0, exp]
+  EGt  exp0 exp  -> desugarOp IGt  [exp0, exp]
+  EEq  exp0 exp  -> desugarOp IEq  [exp0, exp]
+  ELte exp0 exp  -> desugarOp ILte [exp0, exp]
+  EGte exp0 exp  -> desugarOp IGte [exp0, exp]
+  ENeq exp0 exp  -> desugarOp INeq [exp0, exp]
+  EIn  exp0 exp  -> desugarOp IIn  [exp0, exp]
+  ENin exp0 exp  -> desugarOp INin [exp0, exp]
+  EAdd exp0 exp  -> desugarOp IAdd [exp0, exp]
+  ESub exp0 exp  -> desugarOp ISub [exp0, exp]
+  EMul exp0 exp  -> desugarOp IMul [exp0, exp]
+  EDiv exp0 exp  -> desugarOp IDiv [exp0, exp]
+  ECSetExp exp   -> desugarOp ICSet [exp]
+  EInt n  -> IInt n
+  EDouble n -> IDouble n
+  EStr str  -> IStr str
+  Union exp0 exp        -> desugarOp IUnion        [exp0, exp]
+  Difference exp0 exp   -> desugarOp IDifference   [exp0, exp]
+  Intersection exp0 exp -> desugarOp IIntersection [exp0, exp]
+  Domain exp0 exp       -> desugarOp IDomain       [exp0, exp]
+  Range exp0 exp        -> desugarOp IRange        [exp0, exp]
+  Join exp0 exp         -> desugarOp IJoin         [exp0, exp]
+  ClaferId name  -> IClaferId $ desugarName name
+  where
+  desugarOp op exps = IFunExp op $ map desugarExp exps
 
-sugarLExp :: ILExp -> LExp
-sugarLExp x = case x of
-  IEIff lexp0 lexp -> EIff (sugarLExp lexp0) Iff (sugarLExp lexp)
-  IEImpliesElse lexp0 lexp Nothing -> EImplies (sugarLExp lexp0) Implies (sugarLExp lexp)
-  IEImpliesElse lexp0 lexp1 (Just lexp) -> EImpliesElse (sugarLExp lexp0) Implies (sugarLExp lexp1) (sugarLExp lexp)
-  IEOr lexp0 lexp -> EOr (sugarLExp lexp0) Or (sugarLExp lexp)
-  IEXor lexp0 lexp -> EXor (sugarLExp lexp0) Xor (sugarLExp lexp)
-  IEAnd lexp0 lexp -> EAnd (sugarLExp lexp0) And (sugarLExp lexp)
-  IENeg lexp -> ENeg Neg (sugarLExp lexp)
-  IETerm term -> ETerm (sugarTerm term)
+sugarExp :: PExp -> Exp
+sugarExp x = sugarExp' $ Intermediate.Intclafer.exp x
 
-
-desugarTerm :: Term -> ITerm
-desugarTerm x = case x of
-  TermCmpExp cmpexp  -> ITermCmpExp (desugarCmpExp cmpexp) Nothing
-  TermSet sexp  -> ITermQuantSet QuantSome $ desugarSExp sexp
-  TermQuantSet quant sexp  -> ITermQuantSet quant $ desugarSExp sexp
-  TermQuantDeclExp decls lexp  ->
-      ITermQuantDeclExp (map desugarDecl decls) (desugarLExp lexp)
-
-
-sugarTerm :: ITerm -> Term
-sugarTerm x = case x of
-  ITermCmpExp cmpexp _ -> TermCmpExp $ sugarCmpExp cmpexp
-  ITermQuantSet quant sexp -> TermQuantSet quant $ sugarSExp sexp
-  ITermQuantDeclExp decls lexp ->
-      TermQuantDeclExp (map sugarDecl decls) (sugarLExp lexp)
-
-
-desugarCmpExp :: CmpExp -> ICmpExp
-desugarCmpExp x = case x of
-  ELt exp0 exp -> on IELt desugarExp exp0 exp
-  EGt exp0 exp -> on IEGt desugarExp exp0 exp
-  EREq exp0 exp -> on IEREq desugarExp exp0 exp
-  EEq exp0 exp -> on IEEq desugarExp exp0 exp
-  ELte exp0 exp -> on IELte desugarExp exp0 exp
-  EGte exp0 exp -> on IEGte desugarExp exp0 exp
-  ENeq exp0 exp -> on IENeq desugarExp exp0 exp
-  ERNeq exp0 exp -> on IERNeq desugarExp exp0 exp
-  EIn exp0 exp -> on IEIn desugarExp exp0 exp
-  ENin exp0 exp -> on IENin desugarExp exp0 exp
-
-
-sugarCmpExp :: ICmpExp -> CmpExp
-sugarCmpExp x = case x of
-  IELt exp0 exp -> on ELt sugarExp exp0 exp
-  IEGt exp0 exp -> on EGt sugarExp exp0 exp
-  IEREq exp0 exp -> on EREq sugarExp exp0 exp
-  IEEq exp0 exp -> on EEq sugarExp exp0 exp
-  IELte exp0 exp -> on ELte sugarExp exp0 exp
-  IEGte exp0 exp -> on EGte sugarExp exp0 exp
-  IENeq exp0 exp -> on ENeq sugarExp exp0 exp
-  IERNeq exp0 exp -> on ERNeq sugarExp exp0 exp
-  IEIn exp0 exp -> on EIn sugarExp exp0 exp
-  IENin exp0 exp -> on ENin sugarExp exp0 exp
-
-
-desugarExp :: Exp -> IExp
-desugarExp x = case x of
-  ENumExp aexp -> IENumExp $ desugarAExp aexp
-  EStrExp strexp -> IEStrExp strexp
-
-
-sugarExp :: IExp -> Exp
-sugarExp x = case x of
-  IENumExp aexp -> ENumExp $ sugarAExp aexp
-  IEStrExp strexp -> EStrExp strexp
-
-
-desugarSExp :: SExp -> ISExp
-desugarSExp x = case x of
-  SExpUnion sexp0 sexp  -> on ISExpUnion desugarSExp sexp0 sexp
-  SExpIntersection sexp0 sexp  -> on ISExpIntersection desugarSExp sexp0 sexp
-  SExpDomain sexp0 sexp  -> on ISExpDomain desugarSExp sexp0 sexp
-  SExpRange sexp0 sexp  -> on ISExpRange desugarSExp sexp0 sexp
-  SExpJoin sexp0 sexp  -> on ISExpJoin desugarSExp sexp0 sexp
-  SExpIdent id  -> ISExpIdent (transIdent id) False
-
-
-sugarSExp :: ISExp -> SExp
-sugarSExp x = case x of
-  ISExpUnion sexp0 sexp  -> on SExpUnion sugarSExp sexp0 sexp
-  ISExpIntersection sexp0 sexp  -> on SExpIntersection sugarSExp sexp0 sexp
-  ISExpDomain sexp0 sexp  -> on SExpDomain sugarSExp sexp0 sexp
-  ISExpRange sexp0 sexp  -> on SExpRange sugarSExp sexp0 sexp
-  ISExpJoin sexp0 sexp  -> on SExpJoin sugarSExp sexp0 sexp
-  ISExpIdent id _ -> SExpIdent $ Ident id
-
-
+sugarExp' :: IExp -> Exp
+sugarExp' x = case x of
+  IDeclPExp quant [] pexp -> QuantExp (sugarQuant quant) (sugarExp pexp)
+  IDeclPExp quant decls pexp ->
+    DeclExp (sugarExQuant quant) (map sugarDecl decls) (sugarExp pexp)
+  IFunExp op exps ->
+    if op `elem` [INeg .. ICSet] then (sugarUnOp op) (exps'!!0)
+    else if op `elem` [IIff .. IJoin] then (sugarOp op) (exps'!!0) (exps'!!1)
+    else (sugarTerOp op) (exps'!!0) (exps'!!1) (exps'!!2)
+    where
+    exps' = map sugarExp exps
+  IInt n -> EInt n
+  IDouble n -> EDouble n
+  IStr str -> EStr str  
+  IClaferId name -> ClaferId $ sugarName name
+  where
+  sugarUnOp INeg         = ENeg
+  sugarUnOp ICSet        = ECSetExp
+  sugarOp IIff           = EIff
+  sugarOp IImpl          = EImplies
+  sugarOp IOr            = EOr
+  sugarOp IXor           = EXor
+  sugarOp IAnd           = EAnd 
+  sugarOp ILt            = ELt
+  sugarOp IGt            = EGt
+  sugarOp IEq            = EEq  
+  sugarOp ILte           = ELte
+  sugarOp IGte           = EGte
+  sugarOp INeq           = ENeq
+  sugarOp IIn            = EIn
+  sugarOp INin           = ENin
+  sugarOp IAdd           = EAdd
+  sugarOp ISub           = ESub
+  sugarOp IMul           = EMul
+  sugarOp IDiv           = EDiv
+  sugarOp IUnion         = Union
+  sugarOp IDifference    = Difference
+  sugarOp IIntersection  = Intersection
+  sugarOp IDomain        = Domain
+  sugarOp IRange         = Range
+  sugarOp IJoin          = Join
+  sugarTerOp IIfThenElse = EImpliesElse
 
 desugarDecl :: Decl -> IDecl
 desugarDecl x = case x of
-  Decl exquant disj locids sexp  -> IDecl exquant (desugarDisj disj)
-                                    (map desugarLocId locids) $
-                                    desugarSExp sexp
+  Decl disj locids exp  ->
+    IDecl (desugarDisj disj) (map desugarLocId locids) (desugarExp exp)
 
 
 sugarDecl :: IDecl -> Decl
 sugarDecl x = case x of
-  IDecl exquant disj locids sexp  -> Decl exquant (sugarDisj disj)
-                                     (map sugarLocId locids) $ sugarSExp sexp
+  IDecl disj locids exp  ->
+    Decl (sugarDisj disj) (map sugarLocId locids) (sugarExp exp)
 
 
 desugarDisj :: Disj -> Bool
@@ -313,21 +312,23 @@ sugarLocId :: String -> LocId
 sugarLocId x = LocIdIdent $ Ident x
 
 
-desugarAExp :: AExp -> IAExp
-desugarAExp x = case x of
-  EAdd aexp0 aexp  -> on IEAdd desugarAExp aexp0 aexp
-  ESub aexp0 aexp  -> on IESub desugarAExp aexp0 aexp
-  EMul aexp0 aexp  -> on IEMul desugarAExp aexp0 aexp
-  ECSetExp sexp  -> IECSetExp $ desugarSExp sexp
-  EASetExp sexp  -> IEASetExp $ desugarSExp sexp
-  EInt n  -> IEInt n
+desugarQuant x = case x of
+  QuantNo -> INo
+  QuantLone -> ILone
+  QuantOne -> IOne
+  QuantSome -> ISome
 
 
-sugarAExp :: IAExp -> AExp
-sugarAExp x = case x of
-  IEAdd aexp0 aexp  -> on EAdd sugarAExp aexp0 aexp
-  IESub aexp0 aexp  -> on ESub sugarAExp aexp0 aexp
-  IEMul aexp0 aexp  -> on EMul sugarAExp aexp0 aexp
-  IECSetExp sexp  -> ECSetExp $ sugarSExp sexp
-  IEASetExp sexp  -> EASetExp $ sugarSExp sexp
-  IEInt n  -> EInt n
+sugarQuant x = case x of
+  INo -> QuantNo
+  ILone -> QuantLone
+  IOne -> QuantOne
+  ISome -> QuantSome
+
+desugarExQuant x = case x of
+  ExQuantAll -> IAll
+  ExQuantQuant quant -> desugarQuant quant
+
+sugarExQuant x = case x of
+  IAll -> ExQuantAll
+  _ -> ExQuantQuant $ sugarQuant x

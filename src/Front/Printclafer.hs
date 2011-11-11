@@ -203,6 +203,7 @@ instance Print Exp where
    EDiv exp0 exp -> prPrec i 9 (concatD [prt 9 exp0 , doc (showString "/") , prt 10 exp])
    ECSetExp exp -> prPrec i 10 (concatD [doc (showString "#") , prt 11 exp])
    EInt n -> prPrec i 10 (concatD [prt 0 n])
+   EDouble d -> prPrec i 10 (concatD [prt 0 d])
    EStr str -> prPrec i 10 (concatD [prt 0 str])
    Union exp0 exp -> prPrec i 11 (concatD [prt 11 exp0 , doc (showString "++") , prt 12 exp])
    Difference exp0 exp -> prPrec i 11 (concatD [prt 11 exp0 , doc (showString "--") , prt 12 exp])

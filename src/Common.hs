@@ -41,18 +41,20 @@ transIdent x = case x of
   Ident str  -> str
 
 
-transName :: Name -> (Maybe Result, Result)
-transName x = case x of
-  Name modids id  -> (Nothing, transIdent id)
-
-
 getSuper clafer = id
   where
-  [ISExpIdent id _] = supers $ super $ clafer
+  [PExp _ (IClaferId (IName _ id _))] = supers $ super $ clafer
 
 
 isEqClaferId = flip $ (==).uid
 
+idToPExp modids id isTop = PExp (Just ISet) (mkClaferId modids id isTop)
+
+mkClaferId modids id isTop = IClaferId (IName modids id isTop)
+
+mkLClaferId = mkClaferId ""
+
+mkPLClaferId id isTop = PExp Nothing $ mkClaferId "" id isTop
 
 -- -----------------------------------------------------------------------------
 -- conversions
@@ -66,17 +68,6 @@ toClafers = mapMaybe declToClafer
     IClaferDecl clafer  -> Just clafer
     otherwise  -> Nothing
 
-
--- -----------------------------------------------------------------------------
--- processes lists with a list of functions
-multiProcess = (flip (foldr ($))).(map process)
-
-
--- processes each element of the list with passing state
-process f xs = unfoldr run ([], xs)
-  where
-  run (ps, us) = listToMaybe us >> (Just $ apply (\x -> (x : ps, tail us)) 
-    (f ps us))
 
 -- -----------------------------------------------------------------------------
 -- finds hierarchy and transforms each element
@@ -96,10 +87,6 @@ findHierarchy clafers clafer
 -- generic functions
 
 apply f x = (x, f x)
-
-upFst f (x, y) = (f x, y)
-
-upSnd f (x, y) = (x, f y)
 
 -- lists all nodes of a tree (BFS). Take a function to extract subforest
 bfs toNode seed = map rootLabel $ concat $ takeWhile (not.null) $
@@ -145,6 +132,8 @@ intType = "int"
 integerType = "integer"
 
 baseClafer = "clafer"
+
+modSep = "\\"
 
 isPrimitive = flip elem [strType, intType, integerType]
 

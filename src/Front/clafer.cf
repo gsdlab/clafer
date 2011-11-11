@@ -72,6 +72,7 @@ EMul.           Exp9  ::= Exp9 "*" Exp10 ;
 EDiv.           Exp9  ::= Exp9 "/" Exp10 ;
 ECSetExp.       Exp10 ::= "#" Exp11 ;
 EInt.           Exp10 ::= Integer ;
+EDouble.        Exp10 ::= Double ;
 EStr.           Exp10 ::= String ;
 Union.          Exp11 ::= Exp11 "++" Exp12 ;
 Difference.     Exp11 ::= Exp11 "--" Exp12 ;

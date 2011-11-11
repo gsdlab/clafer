@@ -21,17 +21,30 @@ module Intermediate.Intclafer where
 
 import Front.Absclafer
 
-data EType = TAExp | TSExp | TSAExp
+data IType = IBoolean
+           | IString  (Maybe IStringSub)
+           | INumeric (Maybe INumericSub)
+           | ISet
   deriving (Eq,Ord,Show)
   {-! derive : XmlContent !-}    -- this line is for DrIFT
 
+data IStringSub = ILiteral | ISetString
+  deriving (Eq,Ord,Show)
+
+data INumericSub = IInteger | IReal | ISetInteger | ISetReal
+  deriving (Eq,Ord,Show)
+
 -- Module is a list of top-level declarations
-type IModule = [IDeclaration]
+data IModule = IModule {
+      mName :: String,
+      mDecls :: [IDeclaration]
+    }
+  deriving (Eq,Ord,Show)
 
 -- Declaration is either a Clafer of a global constraint
 data IDeclaration =
    IClaferDecl IClafer
- | IConstDecl ILExp
+ | IConstDecl PExp
   deriving (Eq,Ord,Show)
   {-! derive : XmlContent !-}    -- this line is for DrIFT
 
@@ -53,7 +66,7 @@ data IClafer =
 -- Clafer's subelement is either a clafer of a constraint
 data IElement =
    ISubclafer IClafer
- | ISubconstraint ILExp
+ | ISubconstraint PExp
   deriving (Eq,Ord,Show)
   {-! derive : XmlContent !-}    -- this line is for DrIFT
 
@@ -61,7 +74,7 @@ data IElement =
 data ISuper =
    ISuper {
       isOverlapping :: Bool,
-      supers :: [ISExp]
+      supers :: [PExp]
     }
   deriving (Eq,Ord,Show)
   {-! derive : XmlContent !-}    -- this line is for DrIFT
@@ -79,46 +92,54 @@ data IGCard =
 type Interval = (Integer, ExInteger)
 
 data PExp = PExp {
-      eType :: Maybe EType,
+      iType :: Maybe IType,
       exp :: IExp
     }
   deriving (Eq,Ord,Show)
 
-data IExp =
-   IDeclPExp ExQuant [Decl] PExp        -- quantified expression with local declarations
- | IEIff PExp PExp                      -- equivalence
- | IEImpliesElse PExp PExp (Maybe PExp) -- implication/if then else
- | IEOr PExp PExp                       -- disjunction
- | IEXor PExp PExp                      -- exclusive or
- | IEAnd PExp PExp                      -- conjunction
- | IENeg PExp                           -- negation
- | IQuantPExp Quant PExp                -- quantified expression
- | IELt PExp PExp                       -- less than
- | IEGt PExp PExp                       -- greater than
- | IEEq PExp PExp                       -- equality
- | IELte PExp PExp                      -- less than or equal
- | IEGte PExp PExp                      -- greater than or equal
- | IENeq PExp PExp                      -- inequality
- | IEIn PExp PExp                       -- belonging to a set/being a subset
- | IENin PExp PExp                      -- not belonging to a set/not being a subset
- | IEAdd PExp PExp                      -- addition
- | IESub PExp PExp                      -- substraction
- | IEMul PExp PExp                      -- multiplication
- | IEDiv PExp PExp                      -- division
- | IECSetPExp PExp                      -- counting number of set elements
- | IEInt Integer                        -- integer number
- | IEStr String                         -- string
- | IUnion PExp PExp                     -- set union/string concatenation
- | IDifference PExp PExp                -- set difference
- | IIntersection PExp PExp              -- set intersection
- | IDomain PExp PExp                    -- domain restriction
- | IRange PExp PExp                     -- range restriction
- | IJoin PExp PExp                      -- relational join
- | IClaferId Name                       -- clafer name
+data Op =
+-- unary operators
+          INeg          -- negation
+        | ICSet         -- set counting operator
+-- binary operators
+        | IIff          -- equivalence
+        | IImpl         -- implication
+        | IOr           -- disjunction
+        | IXor          -- exclusive or
+        | IAnd          -- conjunction
+        | ILt           -- less than
+        | IGt           -- greater than
+        | IEq           -- equality
+        | ILte          -- less than or equal
+        | IGte          -- greater than or equal
+        | INeq          -- inequality
+        | IIn           -- belonging to a set/being a subset
+        | INin          -- not belonging to a set/not being a subset
+        | IAdd          -- addition
+        | ISub          -- substraction
+        | IMul          -- multiplication
+        | IDiv          -- division
+        | IUnion        -- set union/string concatenation
+        | IDifference   -- set difference
+        | IIntersection -- set intersection
+        | IDomain       -- domain restriction
+        | IRange        -- range restriction
+        | IJoin         -- relational join
+-- ternary operators
+        | IIfThenElse   -- if then else
+  deriving (Eq,Ord,Show,Enum)
+
+data IExp = 
+   IDeclPExp IQuant [IDecl] PExp       -- quantified expression with declarations
+ | IFunExp {op :: Op, exps :: [PExp]}
+ | IInt Integer                         -- integer number
+ | IDouble Double                       -- real number
+ | IStr String                          -- string
+ | IClaferId IName                      -- clafer name
   deriving (Eq,Ord,Show)
 
 data IName = IName {
-      modName :: String,
+      modName :: String,         -- module name
       sident :: String,          -- name
       isTop :: Bool              -- indicates whether the identifier refers to a top-level definition
     }
@@ -129,7 +150,15 @@ data IDecl =
    IDecl {
       isDisj :: Bool,     -- is disjunct
       decls :: [String],  -- a list of local names
-      body :: PExp       -- set to which local names refer to
+      body :: PExp        -- set to which local names refer to
     }
   deriving (Eq,Ord,Show)
   {-! derive : XmlContent !-}    -- this line is for DrIFT
+
+data IQuant =
+   INo
+ | ILone
+ | IOne
+ | ISome
+ | IAll
+  deriving (Eq,Ord,Show)
