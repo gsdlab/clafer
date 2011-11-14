@@ -40,20 +40,22 @@ tagType name typename exp = opening ++ rest
 genXmlInteger n = tag "IntLiteral" $ show n
 
 genXmlModule :: IModule -> Result
-genXmlModule decls = concat
+genXmlModule imodule = concat
   [ "<?xml version=\"1.0\"?>"
   , "<Module xmlns=\"http://gsd.uwaterloo.ca/clafer\""
   , " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""
   , " xmlns:cl=\"http://gsd.uwaterloo.ca/clafer\""
   , " xsi:schemaLocation=\"http://gsd.uwaterloo.ca/clafer"
   , "                      http://gsd.uwaterloo.ca/Clafer.xsd\">"
-  ,  concatMap genXmlDeclaration decls
+  , tag "Name" $ mName imodule
+  ,  concatMap genXmlDeclaration $ mDecls imodule
   , "</Module>"]
+
 
 genXmlDeclaration :: IDeclaration -> Result
 genXmlDeclaration x = case x of
   IClaferDecl clafer  -> tagType "Declaration" "IClaferDecl" $ genXmlClafer clafer
-  IConstDecl lexp  -> tagType "Declaration" "IConstraintDecl" $ genXmlLExp lexp
+  IConstDecl pexp  -> tagType "Declaration" "IConstraintDecl" $ genXmlPExp pexp
 
 genXmlClafer :: IClafer -> Result
 genXmlClafer x = case x of
@@ -86,11 +88,11 @@ genXmlId ident = tag "Id" ident
 genXmlUid uid = tag "UniqueId" uid
 
 genXmlSuper x = case x of
-  ISuper isOverlapping sexps -> tag "Super" $ concat
+  ISuper isOverlapping pexps -> tag "Super" $ concat
     [ tag "IsOverlapping" $ show isOverlapping
-    , concatMap genXmlSuperSet sexps]
+    , concatMap genXmlSuperSet pexps]
 
-genXmlSuperSet sexp = tagType "SuperSet" (genXmlSExpType sexp) $ genXmlSExp sexp
+genXmlSuperSet pexp = tag "SuperSet" $ genXmlPExp pexp
 
 genXmlCard interval = tag "Card" $ genXmlInterval interval
 
@@ -98,156 +100,47 @@ genXmlGlCard interval = tag "GlobalCard" $ genXmlInterval interval
 
 genXmlElement x = case x of
   ISubclafer clafer  -> tagType "Element" "ISubclafer" $ genXmlClafer clafer
-  ISubconstraint lexp  -> tagType "Element" "ISubconstraint" $
-                          tagType "Exp" (genXmlLExpType lexp) $ genXmlLExp lexp
+  ISubconstraint pexp  -> tagType "Element" "ISubconstraint" $
+                          tag "Exp" $ genXmlPExp pexp
 
 genXmlAnyOp ft f xs = concatMap
   (\(tname, texp) -> tagType tname (ft texp) $ f texp) xs
 
-genXmlBinOp ft f exp0 exp1 = genXmlAnyOp ft f [("Exp1", exp0), ("Exp2", exp1)]
+genXmlPExp (PExp iType iexp) = concat
+  [ tag "IType" $ show iType
+  , tagType "IExp" (genXmlIExpType iexp) $ genXmlIExp iexp]
 
-genXmlLExpType x = case x of
-  IEIff lexp0 lexp  -> "IEIff"
-  IEImpliesElse lexp0 lexp _  -> "IEImpliesElse"
-  IEOr lexp0 lexp  -> "IEOr"
-  IEXor lexp0 lexp  -> "IEXor"
-  IEAnd lexp0 lexp  -> "IEAnd"
-  IENeg lexp  -> "IENeg"
-  IETerm term  -> "IETerm"
+genXmlIExpType x = takeWhile (/= ' ') $ show x
 
-genXmlLExp x = case x of
-  IEIff lexp0 lexp  -> genE lexp0 lexp
-  IEImpliesElse lexp0 lexp1 lexp2  -> genXmlAnyOp genXmlLExpType genXmlLExp $
-    [("Condition", lexp0), ("Pass", lexp1)] ++ lexp2'
-    where
-    lexp2' = maybe [] (\l -> [("Fail", l)]) lexp2
-  IEOr lexp0 lexp  -> genE lexp0 lexp
-  IEXor lexp0 lexp  -> genE lexp0 lexp
-  IEAnd lexp0 lexp  -> genE lexp0 lexp
-  IENeg lexp  -> tagType "Exp" (genXmlLExpType lexp) $ genXmlLExp lexp
-  IETerm term  -> tagType "Exp" (genXmlTermType term) $ genXmlTerm term
-  where
-  genE = genXmlBinOp genXmlLExpType genXmlLExp
-
-genXmlTermType x = case x of
-  ITermCmpExp cmpexp t -> "ITermCmpExp"
-  ITermQuantSet quant sexp -> "ITermQuantSet"
-  ITermQuantDeclExp decls lexp -> "ITermQuantDeclExp"
-
-genXmlTerm x = case x of
-  ITermCmpExp cmpexp t -> concat
-    [ tagType "Exp" (genXmlCmpExpType cmpexp) $ genXmlCmpExp cmpexp
-    , optTag t $ genXmlEType]
-  ITermQuantSet quant sexp -> concat
+genXmlIExp x = case x of
+  IDeclPExp quant decls pexp -> concat
     [ tagType "Quant" (genXmlQuantType quant) ""
-    , tagType "Exp" (genXmlSExpType sexp) $ genXmlSExp sexp]
-  ITermQuantDeclExp decls lexp -> concat
-    [ concatMap genXmlDecl decls
-    , tagType "Exp" (genXmlLExpType lexp) $ genXmlLExp lexp]
+    , concatMap genXmlDecl decls
+    , tag "Exp" $ genXmlPExp pexp]
+  IFunExp op exps -> concat
+    [ tag "Op" $ show op
+    , concatMap (\(tname, texp) -> tag tname $ genXmlPExp texp) $
+      zip (map (\x -> "Exp" ++ show x) [1..]) exps]
+  IInt n -> genXmlInteger n
+  IDouble n -> tag "DoubleLiteral" $ show n
+  IStr str -> tag "StrLiteral" str  
+  IClaferId name -> tag "IClaferId" $ genXmlName name
 
-genXmlEType x = tagType "ExpType" (genXmlETypeType x) ""
 
-genXmlETypeType x = case x of
-  TAExp -> "TAExp"
-  TSExp -> "TSExp"
-  TSAExp -> "TSAExp"
-
-genXmlCmpExpType :: ICmpExp -> Result
-genXmlCmpExpType x = case x of
-  IELt exp0 exp  -> "IELt"
-  IEGt exp0 exp  -> "IEGt"
-  IEEq exp0 exp  -> "IEEq"
-  IEREq exp0 exp  -> "IEREq"
-  IELte exp0 exp  -> "IELte"
-  IEGte exp0 exp  -> "IEGte"
-  IENeq exp0 exp  -> "IENeq"
-  IERNeq exp0 exp  -> "IERNeq"
-  IEIn exp0 exp  -> "IEIn"
-  IENin exp0 exp  -> "IENin"
-
-genXmlCmpExp :: ICmpExp -> Result
-genXmlCmpExp x = case x of
-  IELt exp0 exp  -> genE exp0 exp
-  IEGt exp0 exp  -> genE exp0 exp
-  IEEq exp0 exp  -> genE exp0 exp
-  IEREq exp0 exp  -> genE exp0 exp
-  IELte exp0 exp  -> genE exp0 exp
-  IEGte exp0 exp  -> genE exp0 exp
-  IENeq exp0 exp  -> genE exp0 exp
-  IERNeq exp0 exp  -> genE exp0 exp
-  IEIn exp0 exp  -> genE exp0 exp
-  IENin exp0 exp  -> genE exp0 exp
-  where
-  genE = genXmlBinOp genXmlExpType genXmlExp
-
-genXmlExpType x = case x of
-  IENumExp aexp -> "IENumExp"
-  IEStrExp strexp -> "IEStrExp"
-
-genXmlExp x = case x of
-  IENumExp aexp -> tagType "Exp" (genXmlAExpType aexp) $ genXmlAExp aexp
-  IEStrExp strexp -> tagType "Exp" (genXmlStrExpType strexp) $ genXmlStrExp strexp
-
-genXmlSExpType x = case x of
-  ISExpUnion sexp0 sexp -> "ISExpUnion"
-  ISExpIntersection sexp0 sexp  -> "ISExpIntersection"
-  ISExpDomain sexp0 sexp  -> "ISExpDomain"
-  ISExpRange sexp0 sexp  -> "ISExpRange"
-  ISExpJoin sexp0 sexp  -> "ISExpJoin"
-  ISExpIdent ident isTop -> "ISExpIdent"
-
-genXmlSExp x = case x of
-  ISExpUnion sexp0 sexp -> genE sexp0 sexp
-  ISExpIntersection sexp0 sexp  -> genE sexp0 sexp
-  ISExpDomain sexp0 sexp  -> genE sexp0 sexp
-  ISExpRange sexp0 sexp  -> genE sexp0 sexp
-  ISExpJoin sexp0 sexp  -> genE sexp0 sexp
-  ISExpIdent ident isTop -> concat [genXmlId ident, tag "IsTop" $ show isTop]
-  where
-  genE = genXmlBinOp genXmlSExpType genXmlSExp
-
-genXmlDecl (IDecl exquant disj locids sexp) = tag "Declaration" $ concat
-  [ tagType "ExQuant" (genXmlExQuantType exquant) $ genXmlExQuant exquant
-  , tag "IsDisjoint" $ show disj
+genXmlDecl (IDecl disj locids pexp) = tag "Declaration" $ concat
+  [ tag "IsDisjoint" $ show disj
   , concatMap (tag "Declarations") locids
-  , genXmlSExp sexp]
+  , genXmlPExp pexp]
 
-genXmlAExpType x = case x of
-  IEAdd aexp0 aexp -> "IEAdd"
-  IESub aexp0 aexp -> "IESub"
-  IEMul aexp0 aexp -> "IEMul"
-  IECSetExp sexp -> "IECSetExp"
-  IEASetExp sexp -> "IEASetExp"
-  IEInt n    -> "IEInt"
-
-genXmlAExp x = case x of
-  IEAdd aexp0 aexp -> genE aexp0 aexp
-  IESub aexp0 aexp -> genE aexp0 aexp
-  IEMul aexp0 aexp -> genE aexp0 aexp
-  IECSetExp sexp -> tagType "Exp" (genXmlSExpType sexp) $ genXmlSExp sexp
-  IEASetExp sexp -> tagType "Exp" (genXmlSExpType sexp) $ genXmlSExp sexp
-  IEInt n    -> genXmlInteger n
-  where
-  genE = genXmlBinOp genXmlAExpType genXmlAExp
 
 genXmlQuantType x = case x of
-  QuantNo   -> "QuantNo"
-  QuantLone -> "QuantLone"
-  QuantOne  -> "QuantOne"
-  QuantSome -> "QuantSome"
+  INo   -> "INo"
+  ILone -> "ILone"
+  IOne  -> "IOne"
+  ISome -> "ISome"
+  IAll  -> "IAll"
 
-genXmlStrExpType x = case x of
-  EConc strexp0 strexp -> "EConc"
-  EStr string -> "EStr"
-
-genXmlStrExp x = case x of
-  EConc strexp0 strexp -> genXmlBinOp genXmlStrExpType genXmlStrExp strexp0 strexp
-  EStr strexp -> tag "StrLiteral" strexp
-
-genXmlExQuantType x = case x of
-  ExQuantAll -> "ExQuantAll"
-  ExQuantQuant quant -> "ExQuantQuant"
-
-genXmlExQuant x = case x of
-  ExQuantAll -> ""
-  ExQuantQuant quant -> tagType "Quant" (genXmlQuantType quant) ""
+genXmlName (IName modName sident isTop)  = concat
+  [ tag "ModName" modName
+  , tag "Sident" $ tag "StrLiteral" sident
+  , tag "IsTop" $ show isTop]
