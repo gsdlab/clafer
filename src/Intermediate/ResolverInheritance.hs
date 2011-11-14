@@ -36,27 +36,28 @@ import Intermediate.ResolverName
 -- -----------------------------------------------------------------------------
 -- Non-overlapping inheritance
 resolveNModule :: (IModule, GEnv) -> (IModule, GEnv)
-resolveNModule (declarations, genv) =
-  (declarations', genv {sClafers = bfs toNodeShallow $ toClafers declarations'})
+resolveNModule (imodule, genv) =
+  (imodule{mDecls = decls'}, genv {sClafers = bfs toNodeShallow $ toClafers decls'})
   where
-  declarations' = map (resolveNDeclaration declarations) declarations
+  decls = mDecls imodule
+  decls' = map (resolveNDeclaration decls) decls
 
 
-resolveNDeclaration :: IModule -> IDeclaration -> IDeclaration
+resolveNDeclaration :: [IDeclaration] -> IDeclaration -> IDeclaration
 resolveNDeclaration declarations x = case x of
   IClaferDecl clafer  -> IClaferDecl $ resolveNClafer declarations clafer
   IConstDecl constraint  -> x
 
 
-resolveNClafer :: IModule -> IClafer -> IClafer
+resolveNClafer :: [IDeclaration] -> IClafer -> IClafer
 resolveNClafer declarations clafer =
   clafer {super = resolveNSuper declarations $ super clafer,
           elements = map (resolveNElement declarations) $ elements clafer}
 
 
-resolveNSuper :: IModule -> ISuper -> ISuper
+resolveNSuper :: [IDeclaration] -> ISuper -> ISuper
 resolveNSuper declarations x = case x of
-  ISuper False [PExp (IClaferId (IName _ id isTop))] ->
+  ISuper False [PExp _ (IClaferId (IName _ id isTop))] ->
     if isPrimitive id || id == "clafer"
       then x else ISuper False [idToPExp "" id' isTop]
     where
@@ -65,13 +66,13 @@ resolveNSuper declarations x = case x of
   _ -> x
 
 
-resolveNElement :: IModule -> IElement -> IElement
+resolveNElement :: [IDeclaration] -> IElement -> IElement
 resolveNElement declarations x = case x of
   ISubclafer clafer  -> ISubclafer $ resolveNClafer declarations clafer
   ISubconstraint constraint  -> x
 
 
-resolveN :: IModule -> String -> Maybe (String, [IClafer])
+resolveN :: [IDeclaration] -> String -> Maybe (String, [IClafer])
 resolveN declarations id =
   findUnique id $ map (\x -> (x, [x])) $ filter isAbstract $ bfsClafers $
   toClafers declarations
@@ -80,13 +81,14 @@ resolveN declarations id =
 -- Overlapping inheritance
 
 resolveOModule :: (IModule, GEnv) -> (IModule, GEnv)
-resolveOModule (declarations, genv) =
-  (declarations', genv {sClafers = bfs toNodeShallow $ toClafers declarations'})
+resolveOModule (imodule, genv) =
+  (imodule {mDecls = decls'}, genv {sClafers = bfs toNodeShallow $ toClafers decls'})
   where
-  declarations' = map (resolveODeclaration (declarations, genv)) declarations
+  decls = mDecls imodule
+  decls' = map (resolveODeclaration (decls, genv)) decls
 
 
-resolveODeclaration :: (IModule, GEnv) -> IDeclaration -> IDeclaration
+resolveODeclaration :: ([IDeclaration], GEnv) -> IDeclaration -> IDeclaration
 resolveODeclaration (declarations, genv) x = case x of
   IClaferDecl clafer  -> IClaferDecl $ resolveOClafer (defSEnv genv declarations) clafer
   IConstDecl constraint  -> x
@@ -101,7 +103,7 @@ resolveOClafer env clafer =
 
 resolveOSuper :: SEnv -> ISuper -> ISuper
 resolveOSuper env x = case x of
-  ISuper True exps -> ISuper True $ map (resolveExp env) exps
+  ISuper True exps -> ISuper True $ map (resolvePExp env) exps
   _ -> x
 
 
@@ -114,11 +116,13 @@ resolveOElement env x = case x of
 -- inherited and default cardinalities
 
 analyzeModule :: (IModule, GEnv) -> IModule
-analyzeModule (declarations, genv) =
-  map (analyzeDeclaration (declarations, genv)) declarations
+analyzeModule (imodule, genv) =
+  imodule{mDecls = map (analyzeDeclaration (decls, genv)) decls}
+  where
+  decls = mDecls imodule
 
 
-analyzeDeclaration :: (IModule, GEnv) -> IDeclaration -> IDeclaration
+analyzeDeclaration :: ([IDeclaration], GEnv) -> IDeclaration -> IDeclaration
 analyzeDeclaration (declarations, genv) x = case x of
   IClaferDecl clafer  -> IClaferDecl $ analyzeClafer (defSEnv genv declarations) clafer
   IConstDecl constraint  -> x
@@ -161,14 +165,16 @@ analyzeElement env x = case x of
 -- -----------------------------------------------------------------------------
 -- Expand inheritance
 resolveEModule :: (IModule, GEnv) -> (IModule, GEnv)
-resolveEModule (declarations, genv) =
-  runState (mapM (resolveEDeclaration declarations
-                  (unrollableModule declarations)) declarations) genv
+resolveEModule (imodule, genv) = (imodule{mDecls = decls'}, genv')
+  where
+  decls = mDecls imodule
+  (decls', genv') = runState (mapM (resolveEDeclaration decls
+                                    (unrollableModule imodule)) decls) genv
 
 -- -----------------------------------------------------------------------------
 unrollableModule :: IModule -> [String]
-unrollableModule declarations = getDirUnrollables $
-  mapMaybe unrollabeDeclaration declarations
+unrollableModule imodule = getDirUnrollables $
+  mapMaybe unrollabeDeclaration $ mDecls imodule
 
 unrollabeDeclaration x = case x of
   IClaferDecl clafer -> if isAbstract clafer

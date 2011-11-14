@@ -42,11 +42,11 @@ resolveModule args declarations = resolveNamesModule args $ rom $ rem $ resolveN
 
 -- -----------------------------------------------------------------------------
 nameModule :: ClaferArgs -> IModule -> (IModule, GEnv)
-nameModule args declarations =
-  runState (mapM (nameDeclaration f) declarations) $ GEnv 0 Map.empty []
+nameModule args imodule = (imodule{mDecls = decls'}, genv')
   where
+  decls = mDecls imodule
   f = if force_resolver args then renameClafer' else copyUid
-
+  (decls', genv') = runState (mapM (nameDeclaration f) decls) $ GEnv 0 Map.empty []
 
 
 nameDeclaration f x = case x of
