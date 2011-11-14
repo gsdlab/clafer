@@ -89,10 +89,10 @@ resolveElement env x = case x of
 
 
 resolvePExp :: SEnv -> PExp -> PExp
-resolvePExp env (PExp t exp) = PExp t $ resolveExp env exp
+resolvePExp env (PExp t exp) = PExp t $ resolveIExp env exp
 
-resolveExp :: SEnv -> IExp -> IExp
-resolveExp env x = case x of
+resolveIExp :: SEnv -> IExp -> IExp
+resolveIExp env x = case x of
   IDeclPExp quant decls pexp -> IDeclPExp quant decls' $ resolvePExp env' pexp
     where
     (decls', env') = runState (mapM processDecl decls) env
