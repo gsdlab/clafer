@@ -36,8 +36,8 @@ data Stats = Stats {
 
 
 statsModule :: IModule -> Stats
-statsModule declarations =
-  execState (mapM statsDeclaration declarations) $ Stats 0 0 0 0 (1, ExIntegerNum 1)
+statsModule imodule =
+  execState (mapM statsDeclaration $ mDecls imodule) $ Stats 0 0 0 0 (1, ExIntegerNum 1)
 
 
 statsDeclaration x = case x of

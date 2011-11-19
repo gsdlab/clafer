@@ -101,7 +101,7 @@ resolveIExp env x = case x of
   IInt n -> x
   IDouble n -> x
   IStr str -> x
-  IClaferId name -> resNav
+  IClaferId _ _ _ -> resNav
   where
   res = resolvePExp env
   resNav = fst $ resolveNav env x True
@@ -121,11 +121,11 @@ resolveNav env x isFirst = case x of
     (exp0', path) = resolveNav env (Intermediate.Intclafer.exp pexp0) True
     (exp', path') = resolveNav env {context = listToMaybe path, resPath = path}
                     (Intermediate.Intclafer.exp pexp) False
-  IClaferId (IName modName id _) -> out 
+  IClaferId modName id _ -> out 
     where
     out
       | isFirst   = mkPath env $ resolveName env id
-      | otherwise = (mkClaferId modName (snd3 ctx) False, trd3 ctx)
+      | otherwise = (IClaferId modName (snd3 ctx) False, trd3 ctx)
     ctx = resolveImmName env id
 
 

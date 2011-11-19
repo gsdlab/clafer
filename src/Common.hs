@@ -43,18 +43,16 @@ transIdent x = case x of
 
 getSuper clafer = id
   where
-  [PExp _ (IClaferId (IName _ id _))] = supers $ super $ clafer
+  [PExp _ (IClaferId _ id _)] = supers $ super $ clafer
 
 
 isEqClaferId = flip $ (==).uid
 
-idToPExp modids id isTop = PExp (Just ISet) (mkClaferId modids id isTop)
+idToPExp modids id isTop = PExp (Just ISet) (IClaferId modids id isTop)
 
-mkClaferId modids id isTop = IClaferId (IName modids id isTop)
+mkLClaferId = IClaferId ""
 
-mkLClaferId = mkClaferId ""
-
-mkPLClaferId id isTop = PExp Nothing $ mkClaferId "" id isTop
+mkPLClaferId id isTop = PExp Nothing $ mkLClaferId id isTop
 
 -- -----------------------------------------------------------------------------
 -- conversions
@@ -145,7 +143,7 @@ data GEnv = GEnv {
   deriving (Eq, Show)
 
 data ClaferMode = Alloy42 | Alloy | Xml
-  deriving (Show, Data, Typeable)
+  deriving (Eq, Show, Data, Typeable)
 
 data ClaferArgs = ClaferArgs {
       mode :: ClaferMode,

@@ -1,16 +1,16 @@
--- generic PLA
+// generic PLA
 
 abstract options
     xor size
         small
         large
     cache ?
-        size -> integer
+        size : integer
             fixed ?
     [small && cache => fixed]
 
 abstract comp
-    version -> integer
+    version : integer
 
 abstract ECU extends comp
 
@@ -20,10 +20,10 @@ abstract display extends comp
     [this.version >= server.version]
 
 
--- specific PLA (template)
+// specific PLA (template)
 
--- display constraints
---[all d : plaECU.display | d.server = this ~d.options.cache]
+// display constraints
+//[all d : plaECU.display | d.server = this ~d.options.cache]
 
 abstract plaECU extends ECU
     `display 1..2
@@ -35,7 +35,7 @@ ECU1 extends plaECU
 ECU2 extends plaECU ?
     master -> ECU1
 
--- feature model for the specific PL
+// feature model for the specific PL
 
 telematicsSystem
     xor channel
@@ -54,8 +54,8 @@ telematicsSystem
      large <=> ~plaECU.display.options.size.small
      small <=> ~plaECU.display.options.size.large]
 
--- concrete product
+// concrete product
 [dual
  extraDisplay
  telematicsSystem.size.large]
-[ comp.version == 1]
+[ comp.version = 1]

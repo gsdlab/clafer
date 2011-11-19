@@ -28,10 +28,10 @@ data IType = IBoolean
   deriving (Eq,Ord,Show)
   {-! derive : XmlContent !-}    -- this line is for DrIFT
 
-data IStringSub = ILiteral | ISetString
+data INumericSub = IInteger | IReal | ISetInteger | ISetReal
   deriving (Eq,Ord,Show)
 
-data INumericSub = IInteger | IReal | ISetInteger | ISetReal
+data IStringSub = ILiteral | ISetString
   deriving (Eq,Ord,Show)
 
 -- Module is a list of top-level declarations
@@ -115,11 +115,11 @@ data Op =
         | INeq          -- inequality
         | IIn           -- belonging to a set/being a subset
         | INin          -- not belonging to a set/not being a subset
-        | IAdd          -- addition
+        | IPlus         -- addition/string concatenation
         | ISub          -- substraction
         | IMul          -- multiplication
         | IDiv          -- division
-        | IUnion        -- set union/string concatenation
+        | IUnion        -- set union
         | IDifference   -- set difference
         | IIntersection -- set intersection
         | IDomain       -- domain restriction
@@ -130,18 +130,15 @@ data Op =
   deriving (Eq,Ord,Show,Enum)
 
 data IExp = 
-   IDeclPExp IQuant [IDecl] PExp       -- quantified expression with declarations
+   IDeclPExp IQuant [IDecl] PExp      -- quantified expression with declarations
  | IFunExp {op :: Op, exps :: [PExp]}
- | IInt Integer                         -- integer number
- | IDouble Double                       -- real number
- | IStr String                          -- string
- | IClaferId IName                      -- clafer name
-  deriving (Eq,Ord,Show)
-
-data IName = IName {
+ | IInt Integer                       -- integer number
+ | IDouble Double                     -- real number
+ | IStr String                        -- string
+ | IClaferId {                        -- clafer name
       modName :: String,         -- module name
       sident :: String,          -- name
-      isTop :: Bool              -- indicates whether the identifier refers to a top-level definition
+      isTop :: Bool              -- identifier refers to a top-level definition
     }
   deriving (Eq,Ord,Show)
 

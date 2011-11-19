@@ -124,7 +124,10 @@ genXmlIExp x = case x of
   IInt n -> genXmlInteger n
   IDouble n -> tag "DoubleLiteral" $ show n
   IStr str -> tag "StrLiteral" str  
-  IClaferId name -> tag "IClaferId" $ genXmlName name
+  IClaferId modName sident isTop -> concat
+    [ tag "ModName" modName
+    , tag "Sident" $ tag "StrLiteral" sident
+    , tag "IsTop" $ show isTop]
 
 
 genXmlDecl (IDecl disj locids pexp) = tag "Declaration" $ concat
@@ -139,8 +142,3 @@ genXmlQuantType x = case x of
   IOne  -> "IOne"
   ISome -> "ISome"
   IAll  -> "IAll"
-
-genXmlName (IName modName sident isTop)  = concat
-  [ tag "ModName" modName
-  , tag "Sident" $ tag "StrLiteral" sident
-  , tag "IsTop" $ show isTop]

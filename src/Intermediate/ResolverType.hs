@@ -26,7 +26,7 @@ import Common
 import Intermediate.Intclafer
 
 resolveTModule :: (IModule, GEnv) -> IModule
-resolveTModule (imodule, genv) =
+resolveTModule (imodule, genv) = 
   imodule{mDecls = map (resolveTDeclaration (decls, genv)) decls}
   where
   decls = mDecls imodule
@@ -35,22 +35,28 @@ resolveTModule (imodule, genv) =
 resolveTDeclaration :: ([IDeclaration], GEnv) -> IDeclaration -> IDeclaration
 resolveTDeclaration _ x = case x of
   IClaferDecl clafer  -> IClaferDecl $ resolveTClafer clafer
-  IConstDecl constraint  -> IConstDecl $ resolveTPExp constraint
+  IConstDecl constraint  -> IConstDecl $ propagate $ resolveTPExp constraint
 
 
 resolveTClafer :: IClafer -> IClafer
 resolveTClafer clafer =
-  clafer {elements = map resolveTElement $ elements clafer}
+  clafer {super = resolveTSuper $ super clafer,
+          elements = map resolveTElement $ elements clafer}
+
+
+resolveTSuper :: ISuper -> ISuper
+resolveTSuper (ISuper isOverlapping pexps) = ISuper isOverlapping $ map resolveTPExp pexps
 
 
 resolveTElement :: IElement -> IElement
 resolveTElement x = case x of
   ISubclafer clafer  -> ISubclafer $ resolveTClafer clafer
-  ISubconstraint constraint  -> ISubconstraint $ resolveTPExp constraint
+  ISubconstraint constraint  -> ISubconstraint $ propagate $ resolveTPExp constraint
 
 
 resolveTPExp :: PExp -> PExp
 resolveTPExp x = resolveTIExp $ (Intermediate.Intclafer.exp) x
+
 
 resolveTIExp :: IExp -> PExp
 resolveTIExp x = case x of
@@ -65,20 +71,26 @@ resolveTIExp x = case x of
       | op `elem` [IIff .. IAnd] =
           appType y (map Just [IBoolean, IBoolean]) (Just IBoolean)
       | op `elem` [ILt .. INeq] =
-          infer $ appType y [Nothing, Nothing] (Just IBoolean)
+          appType y [Nothing, Nothing] (Just IBoolean)
       | op `elem` [IIn .. INin] =
           appType y (map Just [ISet, ISet]) (Just IBoolean)
-      | op `elem` [IAdd .. IDiv] =
+      | op == IPlus = case fromJust $ iType p of
+          IString  _ -> p
+          INumeric _ -> p
+          _ -> error "IPlus type error"
+      | op `elem` [ISub .. IDiv] =
           appType y (map Just [INumeric Nothing, INumeric Nothing])
                     (Just $ INumeric Nothing)
       | op `elem` [IUnion .. IJoin] =
           appType y (map Just [ISet, ISet]) (Just ISet)
       | op == IIfThenElse =
           infer $ appType y [Just IBoolean, Nothing, Nothing] Nothing
+      where
+      p = appType y [Nothing, Nothing] Nothing
   IInt n -> PExp (Just $ INumeric $ Just IInteger) x
   IDouble n -> PExp (Just $ INumeric $ Just IReal) x
   IStr str -> PExp (Just $ IString $ Just ILiteral) x
-  IClaferId name -> PExp (Just ISet) x
+  IClaferId _ _ _ -> PExp (Just ISet) x
 
 infer :: PExp -> PExp
 infer x = x{iType = iType $ typeExp (iType x) $ typeExp (iType exp0) exp1}
@@ -125,7 +137,38 @@ resolveT (IString _) (IString _) = IString (Just ISetString)
 resolveT (IString _) ISet = IString (Just ISetString)
 resolveT ISet (IString _) = IString (Just ISetString)
 
+resolveT ISet IBoolean = IBoolean
+resolveT IBoolean ISet = IBoolean
+
 resolveT x y = error $ "Type error: " ++ (show x) ++ " " ++ (show y)
 
 resolveTDecl :: IDecl -> IDecl
 resolveTDecl x = x{body = resolveTPExp $ body x}
+
+propagate :: PExp -> PExp
+propagate x = propagateTIExp IBoolean  x
+
+
+propagateTIExp :: IType -> PExp -> PExp
+propagateTIExp piType x@(PExp iType y) = case y of
+  IDeclPExp quant decls pexp -> PExp iType $ IDeclPExp quant decls $ propagate pexp
+  IFunExp op pexps -> result
+    where
+    result
+      | op `elem` [ILt .. INeq] ++ [IPlus .. IDiv] =
+          PExp iType y{exps = map (propagateTIExp (fromJust iType)) pexps}
+      | op == IJoin = 
+          PExp iType y{exps = head pexps :
+                       (map (propagateTIExp (fromJust iType)) $ tail pexps)}
+              
+      | otherwise = x
+  IClaferId _ _ _ -> PExp (Just $ propagateT piType) y
+  _ -> x
+
+
+propagateT :: IType -> IType
+propagateT IBoolean = ISet
+propagateT (IString _) = IString (Just ILiteral)
+propagateT (INumeric (Just ISetInteger)) = INumeric (Just IInteger)
+propagateT (INumeric (Just ISetReal)) = INumeric (Just IReal)
+propagateT x = x

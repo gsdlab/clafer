@@ -131,7 +131,7 @@ expIExp x = case x of
     return $ IDeclPExp quant decls' pexp'
   IFunExp IJoin _ -> expNav x
   IFunExp op exps -> IFunExp op `liftM` mapM expPExp exps
-  IClaferId name -> expNav x
+  IClaferId _ _ _ -> expNav x
   _ -> return x
 
 expDecl x = case x of
@@ -148,7 +148,7 @@ expNav' context x = case x of
     (exp0', context') <- expNav' context exp0
     (exp', context'') <- expNav' context' exp
     return (IFunExp IJoin [PExp iType0 exp0', PExp iType exp'], context'')
-  IClaferId (IName modName id isTop) -> do
+  IClaferId modName id isTop -> do
     st <- gets stable
     if Map.member id st
       then do
@@ -156,7 +156,7 @@ expNav' context x = case x of
         let (impls', context') = maybe (impls, "")
              (\x -> ([[head x]], head x)) $
              find (\x -> context == (head.tail) x) impls
-        return (mkUnion $ map (\x -> IClaferId (IName modName x isTop)) $
+        return (mkUnion $ map (\x -> IClaferId modName x isTop) $
                 map head impls', context')
       else do
         return (x, id)
@@ -169,9 +169,9 @@ mkUnion xs = foldl1 (\x y -> IFunExp IUnion $ map (PExp (Just ISet)) [x,y]) xs
 split' x f = case x of
   IFunExp IJoin ((PExp iType exp0):pexp:_) ->
     split' exp0 (\s -> f $ IFunExp IJoin [PExp iType s, pexp])
-  IClaferId (IName modName id isTop) -> do
+  IClaferId modName id isTop -> do
     st <- gets stable
-    mapM f $ map (\x -> IClaferId (IName modName x isTop)) $ maybe [id] (map head) $ Map.lookup id st
+    mapM f $ map (\x -> IClaferId modName x isTop) $ maybe [id] (map head) $ Map.lookup id st
 
 -- -----------------------------------------------------------------------------
 -- checking if all clafers have unique names and don't extend other clafers
@@ -275,8 +275,8 @@ markTopIExp clafers x = case x of
   IDeclPExp quant decl pexp -> IDeclPExp quant (map (markTopDecl clafers) decl)
                                 (markTopPExp ((decl >>= decls) ++ clafers) pexp)
   IFunExp op exps -> IFunExp op $ map (markTopPExp clafers) exps
-  IClaferId (IName modName sident _) ->
-    IClaferId (IName modName sident $ sident `elem` clafers)
+  IClaferId modName sident _ ->
+    IClaferId modName sident $ sident `elem` clafers
   _ -> x
 
 

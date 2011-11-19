@@ -57,7 +57,7 @@ resolveNClafer declarations clafer =
 
 resolveNSuper :: [IDeclaration] -> ISuper -> ISuper
 resolveNSuper declarations x = case x of
-  ISuper False [PExp _ (IClaferId (IName _ id isTop))] ->
+  ISuper False [PExp _ (IClaferId _ id isTop)] ->
     if isPrimitive id || id == "clafer"
       then x else ISuper False [idToPExp "" id' isTop]
     where
