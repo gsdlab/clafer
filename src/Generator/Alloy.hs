@@ -61,7 +61,7 @@ showSet delim xs = showSet' delim $ filterNull xs
 -- optimization: top level cardinalities
 -- optimization: if only boolean parents, then set card is known
 genClafer :: ClaferMode -> Maybe IClafer -> IClafer -> Result
-genClafer mode parent clafer
+genClafer mode parent oClafer
   | isJust parent && isRef clafer || isPrimitiveClafer clafer = ""
   | otherwise    = (unlines $ filterNull
                    [cardFact ++ claferDecl clafer
@@ -69,6 +69,7 @@ genClafer mode parent clafer
                    , showSet "\n  " $ genConstraints mode parent clafer
                    ]) ++ children
   where
+  clafer = transPrimitive oClafer
   children = concat $ filterNull $ map (genClafer mode $ Just clafer) $
              getSubclafers $ elements clafer
   cardFact
@@ -77,6 +78,12 @@ genClafer mode parent clafer
           "set" -> ""
           c -> mkFact c
     | otherwise = ""
+
+transPrimitive clafer = clafer{super = toOverlapping $ super clafer}
+  where
+  toOverlapping x@(ISuper _ [PExp _ (IClaferId _ id _)])
+    | isPrimitive id = x{isOverlapping = True}
+    | otherwise      = x
 
 claferDecl clafer = concat [genOptCard clafer,
   genAbstract $ isAbstract clafer, "sig ",
@@ -268,7 +275,11 @@ genPExp mode clafer x@(PExp iType exp) = case exp of
     where
     sident' = (if isTop then "" else '@' : genRelName "") ++ sident
     vsident = sident' ++ ".@ref"
-  IFunExp op exps -> genIFunExp mode clafer $ transformExp exp
+  IFunExp _ _ -> case exp' of
+    IFunExp op exps -> genIFunExp mode clafer exp'
+    _ -> genPExp mode clafer $ PExp iType exp'
+    where
+    exp' = transformExp exp
   IInt n -> show n
   IDouble n -> error "no real numbers allowed"
   IStr str -> error "no strings allowed"
@@ -278,10 +289,10 @@ transformExp (IFunExp IXor exps) =
   IFunExp INeg [PExp (Just IBoolean) (IFunExp IIff exps)]
 transformExp x@(IFunExp op (e1:e2:_))
   | op `elem` [ILt .. INeq] = case (fromJust $ iType e1, fromJust $ iType e2) of
-      (INumeric (Just ISetInteger), INumeric (Just IInteger)) ->
-           mkNumExp locId op e1 locCl e2
-      (INumeric (Just IInteger), INumeric (Just ISetInteger)) ->
-           mkNumExp locId op e1 e2 locCl
+      (ISet, INumeric (Just IInteger)) -> if e1 == locCl then x else
+                                             mkNumExp locId op e1 locCl e2
+      (INumeric (Just IInteger), ISet) -> if e2 == locCl then x else
+                                             mkNumExp locId op e1 e2 locCl
       _ -> x
   | otherwise = x
   where

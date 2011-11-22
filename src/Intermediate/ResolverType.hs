@@ -145,6 +145,8 @@ resolveT x y = error $ "Type error: " ++ (show x) ++ " " ++ (show y)
 resolveTDecl :: IDecl -> IDecl
 resolveTDecl x = x{body = resolveTPExp $ body x}
 
+t = IFunExp IEq [PExp Nothing (IFunExp IJoin [PExp Nothing (IClaferId "" "c1_comp" True), PExp Nothing (IClaferId "" "c2_version" False)]), PExp Nothing (IInt 1)]
+
 propagate :: PExp -> PExp
 propagate x = propagateTIExp IBoolean  x
 

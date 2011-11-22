@@ -281,8 +281,14 @@ sugarExp' x = case x of
   sugarTerOp IIfThenElse = EImpliesElse
 
 desugarPath :: PExp -> PExp
-desugarPath (PExp iType x) = PExp iType $
-  if isPath x then IDeclPExp ISome [] (PExp Nothing x) else x
+desugarPath (PExp iType x) = PExp iType result
+  where
+  result
+    | isPath x    = IDeclPExp ISome [] (PExp Nothing x)
+    | isNegSome x = IDeclPExp INo   [] $ bpexp $ Intermediate.Intclafer.exp $ head $ exps x
+    | otherwise   =  x
+  isNegSome (IFunExp INeg [PExp _ (IDeclPExp ISome [] _)]) = True
+  isNegSome _ = False
 
 isPath :: IExp -> Bool
 isPath (IClaferId _ _ _)  = True

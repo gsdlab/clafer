@@ -130,7 +130,7 @@ data Op =
   deriving (Eq,Ord,Show,Enum)
 
 data IExp = 
-   IDeclPExp IQuant [IDecl] PExp      -- quantified expression with declarations
+   IDeclPExp {quant :: IQuant, oDecls :: [IDecl], bpexp :: PExp} -- quantified expression with declarations
  | IFunExp {op :: Op, exps :: [PExp]}
  | IInt Integer                       -- integer number
  | IDouble Double                     -- real number
