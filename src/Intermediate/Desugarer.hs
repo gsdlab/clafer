@@ -216,6 +216,7 @@ desugarExp' x = case x of
   EMul exp0 exp  -> desugarOp iMul [exp0, exp]
   EDiv exp0 exp  -> desugarOp iDiv [exp0, exp]
   ECSetExp exp   -> desugarOp iCSet [exp]
+  EMinExp exp    -> desugarOp iMin [exp]
   EInt n  -> IInt n
   EDouble n -> IDouble n
   EStr str  -> IStr str
@@ -254,8 +255,9 @@ sugarExp' x = case x of
   IClaferId modName id _ -> ClaferId $ ModClafer [sugarModId modName] (Ident id)
   where
   sugarUnOp op
-    | op == iNot = ENeg
-    | op == iCSet = ECSetExp
+    | op == iNot           = ENeg
+    | op == iCSet          = ECSetExp
+    | op == iMin           = EMinExp
   sugarOp op
     | op == iIff           = EIff
     | op == iImpl          = EImplies

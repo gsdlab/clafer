@@ -1,7 +1,15 @@
+define apPatch
+	$(shell patch $(1) -N -r - Front/$(2).hs Front/$(2).patch 1>/dev/null)
+endef
+
 all:
 #	cat Generator/XmlHeader.hs > Generator/XmlHelp.hs
 #	DrIFT -r Front/Absclafer.hs >> Generator/XmlHelp.hs
 #	DrIFT -r Intermediate/Intclafer.hs >> Generator/XmlHelp.hs
+
+	$(foreach file, Absclafer ErrM Lexclafer Printclafer Parclafer, \
+		$(if $(call apPatch,--dry-run,$(file)), \
+			$(call apPatch,,$(file))))
 	ghc --make -O clafer
 
 prof:

@@ -102,6 +102,7 @@ data Exp =
  | EMul Exp Exp
  | EDiv Exp Exp
  | ECSetExp Exp
+ | EMinExp Exp
  | EInt Integer
  | EDouble Double
  | EStr String

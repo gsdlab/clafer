@@ -1,0 +1,4 @@
+1c1
+< module Absclafer where
+---
+> module Front.Absclafer where

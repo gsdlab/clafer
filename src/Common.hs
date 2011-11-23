@@ -117,8 +117,8 @@ toMTriple a (b,c) = Just (a, b, c)
 -- unary operators
 iNot          = "!"
 iCSet         = "#"
-
-unOps = [iNot, iCSet]
+iMin          = "-"
+unOps = [iNot, iCSet, iMin]
 
 -- binary operators
 iIff          = "<=>"

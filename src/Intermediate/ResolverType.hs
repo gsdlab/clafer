@@ -68,6 +68,8 @@ resolveTIExp x = case x of
       | op == iNot  = appType y (map Just [IBoolean]) (Just IBoolean)
       | op == iCSet =
           appType y (map Just [ISet]) (Just $ INumeric (Just IInteger))
+      | op == iMin  = 
+          appType y [Nothing] (Just $ INumeric Nothing)
       | op `elem` logBinOps =
           appType y (map Just [IBoolean, IBoolean]) (Just IBoolean)
       | op `elem` relGenBinOps =
@@ -155,7 +157,7 @@ propagateTIExp piType x@(PExp iType y) = case y of
   IFunExp op pexps -> result
     where
     result
-      | op `elem` relGenBinOps ++ arithBinOps =
+      | op `elem` relGenBinOps ++ arithBinOps ++ [iMin] =
           PExp iType y{exps = map (propagateTIExp (fromJust iType)) pexps}
       | op == iJoin = 
           PExp iType y{exps = head pexps :

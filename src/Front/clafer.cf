@@ -71,16 +71,17 @@ ESub.           Exp8  ::= Exp8  "-" Exp9 ;
 EMul.           Exp9  ::= Exp9 "*" Exp10 ;
 EDiv.           Exp9  ::= Exp9 "/" Exp10 ;
 ECSetExp.       Exp10 ::= "#" Exp11 ;
-EInt.           Exp10 ::= Integer ;
-EDouble.        Exp10 ::= Double ;
-EStr.           Exp10 ::= String ;
-Union.          Exp11 ::= Exp11 "++" Exp12 ;
-Difference.     Exp11 ::= Exp11 "--" Exp12 ;
-Intersection.   Exp12 ::= Exp12 "&"  Exp13 ;
-Domain.         Exp13 ::= Exp13 "<:" Exp14 ;
-Range.          Exp14 ::= Exp14 ":>" Exp15 ;
-Join.           Exp15 ::= Exp15 "."  Exp16 ;
-ClaferId.       Exp16 ::= Name ;
+EMinExp.        Exp10 ::= "-" Exp11 ;
+EInt.           Exp11 ::= Integer ;
+EDouble.        Exp11 ::= Double ;
+EStr.           Exp11 ::= String ;
+Union.          Exp12 ::= Exp12 "++" Exp13 ;
+Difference.     Exp12 ::= Exp12 "--" Exp13 ;
+Intersection.   Exp13 ::= Exp13 "&"  Exp14 ;
+Domain.         Exp14 ::= Exp14 "<:" Exp15 ;
+Range.          Exp15 ::= Exp15 ":>" Exp16 ;
+Join.           Exp16 ::= Exp16 "."  Exp17 ;
+ClaferId.       Exp17 ::= Name ;
 
 Decl.           Decl ::= Disj [LocId] ":" Exp ;
 
@@ -107,4 +108,4 @@ separator  nonempty Decl        "," ;
 separator  nonempty LocId       "," ;
 terminator nonempty ModId       "\\" ;
 
-coercions Exp 16 ;
+coercions Exp 17 ;
