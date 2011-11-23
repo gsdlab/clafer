@@ -195,41 +195,41 @@ desugarExp' :: Exp -> IExp
 desugarExp' x = case x of
   DeclExp exquant decls exp  ->
     IDeclPExp (desugarExQuant exquant) (map desugarDecl decls) (desugarExp exp)
-  EIff exp0 exp  -> desugarOp IIff [exp0, exp]
-  EImplies exp0 exp  -> desugarOp IImpl [exp0, exp]
-  EImpliesElse exp0 exp1 exp  -> desugarOp IIfThenElse [exp0, exp1, exp]
-  EOr exp0 exp  -> desugarOp IOr   [exp0, exp]
-  EXor exp0 exp  -> desugarOp IXor [exp0, exp]
-  EAnd exp0 exp  -> desugarOp IAnd [exp0, exp]
-  ENeg exp  -> desugarOp INeg [exp]
+  EIff exp0 exp  -> desugarOp iIff [exp0, exp]
+  EImplies exp0 exp  -> desugarOp iImpl [exp0, exp]
+  EImpliesElse exp0 exp1 exp  -> desugarOp iIfThenElse [exp0, exp1, exp]
+  EOr exp0 exp  -> desugarOp iOr   [exp0, exp]
+  EXor exp0 exp  -> desugarOp iXor [exp0, exp]
+  EAnd exp0 exp  -> desugarOp iAnd [exp0, exp]
+  ENeg exp  -> desugarOp iNot [exp]
   QuantExp quant exp  -> IDeclPExp (desugarQuant quant) [] (desugarExp exp)
-  ELt  exp0 exp  -> desugarOp ILt  [exp0, exp]
-  EGt  exp0 exp  -> desugarOp IGt  [exp0, exp]
-  EEq  exp0 exp  -> desugarOp IEq  [exp0, exp]
-  ELte exp0 exp  -> desugarOp ILte [exp0, exp]
-  EGte exp0 exp  -> desugarOp IGte [exp0, exp]
-  ENeq exp0 exp  -> desugarOp INeq [exp0, exp]
-  EIn  exp0 exp  -> desugarOp IIn  [exp0, exp]
-  ENin exp0 exp  -> desugarOp INin [exp0, exp]
-  EAdd exp0 exp  -> desugarOp IPlus [exp0, exp]
-  ESub exp0 exp  -> desugarOp ISub [exp0, exp]
-  EMul exp0 exp  -> desugarOp IMul [exp0, exp]
-  EDiv exp0 exp  -> desugarOp IDiv [exp0, exp]
-  ECSetExp exp   -> desugarOp ICSet [exp]
+  ELt  exp0 exp  -> desugarOp iLt  [exp0, exp]
+  EGt  exp0 exp  -> desugarOp iGt  [exp0, exp]
+  EEq  exp0 exp  -> desugarOp iEq  [exp0, exp]
+  ELte exp0 exp  -> desugarOp iLte [exp0, exp]
+  EGte exp0 exp  -> desugarOp iGte [exp0, exp]
+  ENeq exp0 exp  -> desugarOp iNeq [exp0, exp]
+  EIn  exp0 exp  -> desugarOp iIn  [exp0, exp]
+  ENin exp0 exp  -> desugarOp iNin [exp0, exp]
+  EAdd exp0 exp  -> desugarOp iPlus [exp0, exp]
+  ESub exp0 exp  -> desugarOp iSub [exp0, exp]
+  EMul exp0 exp  -> desugarOp iMul [exp0, exp]
+  EDiv exp0 exp  -> desugarOp iDiv [exp0, exp]
+  ECSetExp exp   -> desugarOp iCSet [exp]
   EInt n  -> IInt n
   EDouble n -> IDouble n
   EStr str  -> IStr str
-  Union exp0 exp        -> desugarOp IUnion        [exp0, exp]
-  Difference exp0 exp   -> desugarOp IDifference   [exp0, exp]
-  Intersection exp0 exp -> desugarOp IIntersection [exp0, exp]
-  Domain exp0 exp       -> desugarOp IDomain       [exp0, exp]
-  Range exp0 exp        -> desugarOp IRange        [exp0, exp]
-  Join exp0 exp         -> desugarOp IJoin         [exp0, exp]
+  Union exp0 exp        -> desugarOp iUnion        [exp0, exp]
+  Difference exp0 exp   -> desugarOp iDifference   [exp0, exp]
+  Intersection exp0 exp -> desugarOp iIntersection [exp0, exp]
+  Domain exp0 exp       -> desugarOp iDomain       [exp0, exp]
+  Range exp0 exp        -> desugarOp iRange        [exp0, exp]
+  Join exp0 exp         -> desugarOp iJoin         [exp0, exp]
   ClaferId name  -> desugarName name
   where
   desugarOp op exps = IFunExp op $ map (trans.desugarExp) exps
     where
-    trans = if op `elem` ([INeg, IIfThenElse] ++ [IIff .. IAnd])
+    trans = if op `elem` ([iNot, iIfThenElse] ++ logBinOps)
             then desugarPath else id
 
 
@@ -242,8 +242,8 @@ sugarExp' x = case x of
   IDeclPExp quant decls pexp ->
     DeclExp (sugarExQuant quant) (map sugarDecl decls) (sugarExp pexp)
   IFunExp op exps ->
-    if op `elem` [INeg .. ICSet] then (sugarUnOp op) (exps'!!0)
-    else if op `elem` [IIff .. IJoin] then (sugarOp op) (exps'!!0) (exps'!!1)
+    if op `elem` unOps then (sugarUnOp op) (exps'!!0)
+    else if op `elem` binOps then (sugarOp op) (exps'!!0) (exps'!!1)
     else (sugarTerOp op) (exps'!!0) (exps'!!1) (exps'!!2)
     where
     exps' = map sugarExp exps
@@ -253,32 +253,35 @@ sugarExp' x = case x of
   IClaferId "" id _ -> ClaferId $ LocClafer $ Ident id
   IClaferId modName id _ -> ClaferId $ ModClafer [sugarModId modName] (Ident id)
   where
-  sugarUnOp INeg         = ENeg
-  sugarUnOp ICSet        = ECSetExp
-  sugarOp IIff           = EIff
-  sugarOp IImpl          = EImplies
-  sugarOp IOr            = EOr
-  sugarOp IXor           = EXor
-  sugarOp IAnd           = EAnd 
-  sugarOp ILt            = ELt
-  sugarOp IGt            = EGt
-  sugarOp IEq            = EEq  
-  sugarOp ILte           = ELte
-  sugarOp IGte           = EGte
-  sugarOp INeq           = ENeq
-  sugarOp IIn            = EIn
-  sugarOp INin           = ENin
-  sugarOp IPlus          = EAdd
-  sugarOp ISub           = ESub
-  sugarOp IMul           = EMul
-  sugarOp IDiv           = EDiv
-  sugarOp IUnion         = Union
-  sugarOp IDifference    = Difference
-  sugarOp IIntersection  = Intersection
-  sugarOp IDomain        = Domain
-  sugarOp IRange         = Range
-  sugarOp IJoin          = Join
-  sugarTerOp IIfThenElse = EImpliesElse
+  sugarUnOp op
+    | op == iNot = ENeg
+    | op == iCSet = ECSetExp
+  sugarOp op
+    | op == iIff           = EIff
+    | op == iImpl          = EImplies
+    | op == iOr            = EOr
+    | op == iXor           = EXor
+    | op == iAnd           = EAnd 
+    | op == iLt            = ELt
+    | op == iGt            = EGt
+    | op == iEq            = EEq  
+    | op == iLte           = ELte
+    | op == iGte           = EGte
+    | op == iNeq           = ENeq
+    | op == iIn            = EIn
+    | op == iNin           = ENin
+    | op == iPlus          = EAdd
+    | op == iSub           = ESub
+    | op == iMul           = EMul
+    | op == iDiv           = EDiv
+    | op == iUnion         = Union
+    | op == iDifference    = Difference
+    | op == iIntersection  = Intersection
+    | op == iDomain        = Domain
+    | op == iRange         = Range
+    | op == iJoin          = Join
+  sugarTerOp op
+    | op == iIfThenElse    = EImpliesElse
 
 desugarPath :: PExp -> PExp
 desugarPath (PExp iType x) = PExp iType result
@@ -287,12 +290,12 @@ desugarPath (PExp iType x) = PExp iType result
     | isPath x    = IDeclPExp ISome [] (PExp Nothing x)
     | isNegSome x = IDeclPExp INo   [] $ bpexp $ Intermediate.Intclafer.exp $ head $ exps x
     | otherwise   =  x
-  isNegSome (IFunExp INeg [PExp _ (IDeclPExp ISome [] _)]) = True
+  isNegSome (IFunExp op [PExp _ (IDeclPExp ISome [] _)]) = op == iNot
   isNegSome _ = False
 
 isPath :: IExp -> Bool
 isPath (IClaferId _ _ _)  = True
-isPath (IFunExp IJoin _) = True
+isPath (IFunExp op _) = op == iJoin
 isPath _ = False
 
 desugarDecl :: Decl -> IDecl

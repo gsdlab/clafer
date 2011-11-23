@@ -23,6 +23,7 @@ import Data.Map (Map)
 import qualified Data.Map as Map
 import Control.Monad.State
 
+import Common
 import Front.Absclafer
 import Intermediate.Intclafer
 
@@ -57,7 +58,8 @@ astrPExp x = case x of
   _ -> return x
 
 astrIExp x = case x of
-  IFunExp IUnion exps -> astrIExp $ concatStrExp x
+  IFunExp op exps -> if op == iUnion
+                     then astrIExp $ concatStrExp x else return x
   IStr str -> do
     modify (\e -> Map.insertWith const str (Map.size e) e)
     st <- get
@@ -67,7 +69,7 @@ astrIExp x = case x of
 
 concatStrExp :: IExp -> IExp
 concatStrExp x = case x of
-  IFunExp IUnion exps -> IStr $ s0 ++ s1
+  IFunExp _ exps -> IStr $ s0 ++ s1 
     where
     ((IStr s0):(IStr s1):_) = map concatStrExp $ map (Intermediate.Intclafer.exp) exps
   IStr string -> x

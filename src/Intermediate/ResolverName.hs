@@ -96,8 +96,7 @@ resolveIExp env x = case x of
   IDeclPExp quant decls pexp -> IDeclPExp quant decls' $ resolvePExp env' pexp
     where
     (decls', env') = runState (mapM processDecl decls) env
-  IFunExp IJoin _ -> resNav
-  IFunExp op exps -> IFunExp op $ map res exps
+  IFunExp op exps -> if op == iJoin then resNav else IFunExp op $ map res exps
   IInt n -> x
   IDouble n -> x
   IStr str -> x
@@ -115,8 +114,8 @@ processDecl decl = do
 
 resolveNav :: SEnv -> IExp -> Bool -> (IExp, [IClafer])
 resolveNav env x isFirst = case x of
-  IFunExp IJoin (pexp0:pexp:_)  ->
-    (IFunExp IJoin [PExp Nothing exp0', PExp Nothing exp'], path')
+  IFunExp _ (pexp0:pexp:_)  ->
+    (IFunExp iJoin [PExp Nothing exp0', PExp Nothing exp'], path')
     where
     (exp0', path) = resolveNav env (Intermediate.Intclafer.exp pexp0) True
     (exp', path') = resolveNav env {context = listToMaybe path, resPath = path}
@@ -139,12 +138,12 @@ mkPath env (howResolved, id, path) = case howResolved of
   where
   id'   = mkLClaferId id False
   toNav = foldl
-          (\exp id -> IFunExp IJoin [PExp Nothing exp, mkPLClaferId id False])
+          (\exp id -> IFunExp iJoin [PExp Nothing exp, mkPLClaferId id False])
           (mkLClaferId this True)
   toNav' p = (mkNav $ map (\c -> mkLClaferId c False) p) :: IExp
 
 mkNav (x:[]) = x
-mkNav xs = foldl1 (\x y -> IFunExp IJoin $ map (PExp Nothing) [x, y]) xs
+mkNav xs = foldl1 (\x y -> IFunExp iJoin $ map (PExp Nothing) [x, y]) xs
 
 -- -----------------------------------------------------------------------------
 

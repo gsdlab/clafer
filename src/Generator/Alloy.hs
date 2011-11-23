@@ -141,7 +141,7 @@ refType mode c = intercalate " + " $ map ((genType mode).getTarget) $ supers $ s
 
 getTarget :: PExp -> PExp
 getTarget x = case x of
-  PExp _ (IFunExp IJoin (pexp0:pexp:_))  -> pexp
+  PExp _ (IFunExp op (pexp0:pexp:_))  -> if op == iJoin then pexp else x
   _ -> x
 
 
@@ -216,7 +216,7 @@ isRefPath clafer = (isOverlapping $ super clafer) &&
 
 isSimplePath :: [PExp] -> Bool
 isSimplePath [PExp _ (IClaferId _ _ _)] = True
-isSimplePath [PExp _ (IFunExp IUnion _)] = True
+isSimplePath [PExp _ (IFunExp op _)] = op == iUnion
 isSimplePath _ = False
 
 -- -----------------------------------------------------------------------------
@@ -285,10 +285,9 @@ genPExp mode clafer x@(PExp iType exp) = case exp of
   IStr str -> error "no strings allowed"
 
 
-transformExp (IFunExp IXor exps) =
-  IFunExp INeg [PExp (Just IBoolean) (IFunExp IIff exps)]
-transformExp x@(IFunExp op (e1:e2:_))
-  | op `elem` [ILt .. INeq] = case (fromJust $ iType e1, fromJust $ iType e2) of
+transformExp x@(IFunExp op exps@(e1:e2:_))
+  | op == iXor = IFunExp iNot [PExp (Just IBoolean) (IFunExp iIff exps)]
+  | op `elem` relGenBinOps = case (fromJust $ iType e1, fromJust $ iType e2) of
       (ISet, INumeric (Just IInteger)) -> if e1 == locCl then x else
                                              mkNumExp locId op e1 locCl e2
       (INumeric (Just IInteger), ISet) -> if e2 == locCl then x else
@@ -308,7 +307,7 @@ mkNumExp locId op e1 e2 e3 = IDeclPExp IAll [IDecl False [locId] e1] $
 genIFunExp mode clafer (IFunExp op exps) = concat $ intl exps' (genOp mode op)
   where
   intl
-    | mode == Alloy42 && op `elem` [IPlus, ISub] = interleave
+    | mode == Alloy42 && op `elem` [iPlus, iSub] = interleave
     | otherwise = \xs ys -> reverse $ interleave (reverse xs) (reverse ys)
   exps' = map (brArg (genPExp mode clafer)) exps
 
@@ -322,35 +321,20 @@ interleave (x:xs) ys = x : interleave ys xs
 brArg f arg = "(" ++ f arg ++ ")"
 
 
-genOp Alloy42 IPlus = [".plus[", "]"]
-genOp Alloy42 ISub  = [".minus[", "]"]
-genOp _ op = case op of
-  INeg -> ["!"]
-  ICSet -> ["#"]
-  IIff -> [" <=> "]
-  IImpl -> [" => "]
-  IOr -> [" or "]
-  IAnd -> [" and "]
-  ILt -> [" < "]
-  IGt -> [" > "]
-  IEq -> [" = "]
-  ILte -> [" <= "]
-  IGte -> [" >= "]
-  INeq -> [" != "]
-  IIn  -> [" in "]
-  INin -> [" not in "]
-  IPlus -> [" + "]
-  ISub  -> [" - "]
-  IMul -> error "no multiplication allowed"
-  IDiv -> error "no division allowed"
-  IUnion -> [" + "]
-  IDifference -> [" - "]
-  IIntersection -> [" & "]
-  IDomain -> [" <: "]
-  IRange -> [" :> "]
-  IJoin -> [" . "]
-  IIfThenElse -> [" => ", " else "]
-
+genOp Alloy42 op
+  | op == iPlus = [".plus[", "]"]
+  | op == iSub  = [".minus[", "]"]
+genOp _ op
+  | op `elem` unOps = [op]
+  | op `elem` [iMul, iDiv] = error $ "no " ++ op ++ " allowed"
+  | op `elem` logBinOps ++ relBinOps ++ arithBinOps = [" " ++ op ++ " "]
+  | op == iUnion = [" + "]
+  | op == iDifference = [" - "]
+  | op == iIntersection = [" & "]
+  | op == iDomain = [" <: "]
+  | op == iRange = [" :> "]
+  | op == iJoin = [" . "]
+  | op == iIfThenElse = [" => ", " else "]
 
 genQuant :: IQuant -> Result
 genQuant x = case x of

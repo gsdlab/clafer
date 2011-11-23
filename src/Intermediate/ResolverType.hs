@@ -65,25 +65,25 @@ resolveTIExp x = case x of
   y@(IFunExp op _) -> result
     where
     result
-      | op == INeg  = appType y (map Just [IBoolean]) (Just IBoolean)
-      | op == ICSet =
+      | op == iNot  = appType y (map Just [IBoolean]) (Just IBoolean)
+      | op == iCSet =
           appType y (map Just [ISet]) (Just $ INumeric (Just IInteger))
-      | op `elem` [IIff .. IAnd] =
+      | op `elem` logBinOps =
           appType y (map Just [IBoolean, IBoolean]) (Just IBoolean)
-      | op `elem` [ILt .. INeq] =
+      | op `elem` relGenBinOps =
           appType y [Nothing, Nothing] (Just IBoolean)
-      | op `elem` [IIn .. INin] =
+      | op `elem` relSetBinOps =
           appType y (map Just [ISet, ISet]) (Just IBoolean)
-      | op == IPlus = case fromJust $ iType p of
+      | op == iPlus = case fromJust $ iType p of
           IString  _ -> p
           INumeric _ -> p
           _ -> error "IPlus type error"
-      | op `elem` [ISub .. IDiv] =
+      | op `elem` [iSub, iMul, iDiv] =
           appType y (map Just [INumeric Nothing, INumeric Nothing])
                     (Just $ INumeric Nothing)
-      | op `elem` [IUnion .. IJoin] =
+      | op `elem` setBinOps =
           appType y (map Just [ISet, ISet]) (Just ISet)
-      | op == IIfThenElse =
+      | op == iIfThenElse =
           infer $ appType y [Just IBoolean, Nothing, Nothing] Nothing
       where
       p = appType y [Nothing, Nothing] Nothing
@@ -145,8 +145,6 @@ resolveT x y = error $ "Type error: " ++ (show x) ++ " " ++ (show y)
 resolveTDecl :: IDecl -> IDecl
 resolveTDecl x = x{body = resolveTPExp $ body x}
 
-t = IFunExp IEq [PExp Nothing (IFunExp IJoin [PExp Nothing (IClaferId "" "c1_comp" True), PExp Nothing (IClaferId "" "c2_version" False)]), PExp Nothing (IInt 1)]
-
 propagate :: PExp -> PExp
 propagate x = propagateTIExp IBoolean  x
 
@@ -157,9 +155,9 @@ propagateTIExp piType x@(PExp iType y) = case y of
   IFunExp op pexps -> result
     where
     result
-      | op `elem` [ILt .. INeq] ++ [IPlus .. IDiv] =
+      | op `elem` relGenBinOps ++ arithBinOps =
           PExp iType y{exps = map (propagateTIExp (fromJust iType)) pexps}
-      | op == IJoin = 
+      | op == iJoin = 
           PExp iType y{exps = head pexps :
                        (map (propagateTIExp (fromJust iType)) $ tail pexps)}
               

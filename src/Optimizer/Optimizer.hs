@@ -129,8 +129,8 @@ expIExp x = case x of
     decls' <- mapM expDecl decls
     pexp' <- expPExp pexp
     return $ IDeclPExp quant decls' pexp'
-  IFunExp IJoin _ -> expNav x
-  IFunExp op exps -> IFunExp op `liftM` mapM expPExp exps
+  IFunExp op exps -> if op == iJoin
+                     then expNav x else IFunExp op `liftM` mapM expPExp exps
   IClaferId _ _ _ -> expNav x
   _ -> return x
 
@@ -144,10 +144,10 @@ expNav x = do
 
 
 expNav' context x = case x of
-  IFunExp IJoin ((PExp iType0 exp0):(PExp iType exp):_)  -> do    
+  IFunExp _ ((PExp iType0 exp0):(PExp iType exp):_)  -> do    
     (exp0', context') <- expNav' context exp0
     (exp', context'') <- expNav' context' exp
-    return (IFunExp IJoin [PExp iType0 exp0', PExp iType exp'], context'')
+    return (IFunExp iJoin [PExp iType0 exp0', PExp iType exp'], context'')
   IClaferId modName id isTop -> do
     st <- gets stable
     if Map.member id st
@@ -163,12 +163,12 @@ expNav' context x = case x of
 
 
 mkUnion (x:[]) = x
-mkUnion xs = foldl1 (\x y -> IFunExp IUnion $ map (PExp (Just ISet)) [x,y]) xs
+mkUnion xs = foldl1 (\x y -> IFunExp iUnion $ map (PExp (Just ISet)) [x,y]) xs
 
 
 split' x f = case x of
-  IFunExp IJoin ((PExp iType exp0):pexp:_) ->
-    split' exp0 (\s -> f $ IFunExp IJoin [PExp iType s, pexp])
+  IFunExp _ ((PExp iType exp0):pexp:_) ->
+    split' exp0 (\s -> f $ IFunExp iJoin [PExp iType s, pexp])
   IClaferId modName id isTop -> do
     st <- gets stable
     mapM f $ map (\x -> IClaferId modName x isTop) $ maybe [id] (map head) $ Map.lookup id st

@@ -56,7 +56,7 @@ EImpliesElse.   Exp2  ::= Exp2 "=>"  Exp3 "else" Exp3 ;
 EOr.            Exp3  ::= Exp3 "||"  Exp4 ;
 EXor.           Exp4  ::= Exp4 "xor" Exp5 ;
 EAnd.           Exp5  ::= Exp5 "&&"  Exp6 ;
-ENeg.           Exp6  ::= "~" Exp7 ;
+ENeg.           Exp6  ::= "!" Exp7 ;
 QuantExp.       Exp7  ::= Quant Exp7 ;
 ELt.            Exp7  ::= Exp7 "<"  Exp8 ;
 EGt.            Exp7  ::= Exp7 ">"  Exp8 ;

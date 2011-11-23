@@ -97,41 +97,10 @@ data PExp = PExp {
     }
   deriving (Eq,Ord,Show)
 
-data Op =
--- unary operators
-          INeg          -- negation
-        | ICSet         -- set counting operator
--- binary operators
-        | IIff          -- equivalence
-        | IImpl         -- implication
-        | IOr           -- disjunction
-        | IXor          -- exclusive or
-        | IAnd          -- conjunction
-        | ILt           -- less than
-        | IGt           -- greater than
-        | IEq           -- equality
-        | ILte          -- less than or equal
-        | IGte          -- greater than or equal
-        | INeq          -- inequality
-        | IIn           -- belonging to a set/being a subset
-        | INin          -- not belonging to a set/not being a subset
-        | IPlus         -- addition/string concatenation
-        | ISub          -- substraction
-        | IMul          -- multiplication
-        | IDiv          -- division
-        | IUnion        -- set union
-        | IDifference   -- set difference
-        | IIntersection -- set intersection
-        | IDomain       -- domain restriction
-        | IRange        -- range restriction
-        | IJoin         -- relational join
--- ternary operators
-        | IIfThenElse   -- if then else
-  deriving (Eq,Ord,Show,Enum)
-
 data IExp = 
-   IDeclPExp {quant :: IQuant, oDecls :: [IDecl], bpexp :: PExp} -- quantified expression with declarations
- | IFunExp {op :: Op, exps :: [PExp]}
+   -- quantified expression with declarations
+   IDeclPExp {quant :: IQuant, oDecls :: [IDecl], bpexp :: PExp}
+ | IFunExp {op :: String, exps :: [PExp]}
  | IInt Integer                       -- integer number
  | IDouble Double                     -- real number
  | IStr String                        -- string
@@ -141,6 +110,39 @@ data IExp =
       isTop :: Bool              -- identifier refers to a top-level definition
     }
   deriving (Eq,Ord,Show)
+
+{-
+For IFunExp standard set of operators includes:
+1. Unary operators:
+        !          -- negation
+        #          -- set counting operator
+2. Binary operators:
+        <=>        -- equivalence
+        =>         -- implication
+        ||         -- disjunction
+        xor        -- exclusive or
+        &&         -- conjunction
+        <          -- less than
+        >          -- greater than
+        =          -- equality
+        <=         -- less than or equal
+        >=         -- greater than or equal
+        !=         -- inequality
+        in         -- belonging to a set/being a subset
+        nin        -- not belonging to a set/not being a subset
+        +          -- addition/string concatenation
+        -          -- substraction
+        *          -- multiplication
+        /          -- division
+        ++         -- set union
+        --         -- set difference
+        &          -- set intersection
+        <:         -- domain restriction
+        :>         -- range restriction
+        .          -- relational join
+3. Ternary operators
+        ifthenelse -- if then else
+-}
 
 -- Local declaration
 data IDecl =

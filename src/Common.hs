@@ -114,6 +114,57 @@ toTriple a (b,c) = (a, b, c)
 
 toMTriple a (b,c) = Just (a, b, c)
 
+-- unary operators
+iNot          = "!"
+iCSet         = "#"
+
+unOps = [iNot, iCSet]
+
+-- binary operators
+iIff          = "<=>"
+iImpl         = "=>"
+iOr           = "||"
+iXor          = "xor"
+iAnd          = "&&"
+
+logBinOps = [iIff, iImpl, iOr, iXor, iAnd]
+
+iLt           = "<"
+iGt           = ">"
+iEq           = "="
+iLte          = "<="
+iGte          = ">="
+iNeq          = "!="
+iIn           = "in"
+iNin          = "not in"
+
+relGenBinOps = [iLt, iGt, iEq, iLte, iGte, iNeq]
+
+relSetBinOps = [iIn, iNin]
+
+relBinOps = relGenBinOps ++ relSetBinOps
+
+iPlus         = "+"
+iSub          = "-"
+iMul          = "*"
+iDiv          = "/"
+
+arithBinOps = [iPlus, iSub, iMul, iDiv]
+
+iUnion        = "++"
+iDifference   = "--"
+iIntersection = "&&"
+iDomain       = "<:"
+iRange        = ":>"
+iJoin         = "."
+
+setBinOps = [iUnion, iDifference, iIntersection, iDomain, iRange, iJoin]
+
+binOps = logBinOps ++ relBinOps ++ arithBinOps ++ setBinOps
+
+-- ternary operators
+iIfThenElse   = "=>else"
+
 -- -----------------------------------------------------------------------------
 -- Constants
 
