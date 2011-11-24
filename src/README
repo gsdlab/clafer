@@ -1,5 +1,5 @@
 Dependencies:
-  ghc; cmdargs; DrIFT; HaXml;
+  ghc; cmdargs;
 
 To install GHC refer to:
   http://www.haskell.org/ghc/distribution_packages
@@ -13,12 +13,6 @@ To install cmdargs execute:
 If you have no cabal then installt it (Ubuntu):
   sudo apt-get install cabal-install
   cabal update
-
-Install DrIFT from http://repetae.net/computer/haskell/DrIFT/ or your system package manage
-
-To install HaXml execute:
-  cabal install HaXml-1.20
-Please note that there are some problems with recent version of HaXml and DrIFT. This is why we use an older one.
 
 Once the libraries are in place, compile the translator:
   make
