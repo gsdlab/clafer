@@ -34,15 +34,15 @@ import Intermediate.ResolverInheritance
 import Intermediate.ResolverType
 
 resolveModule :: ClaferArgs -> IModule -> (IModule, GEnv)
-resolveModule args declarations = resolveNamesModule args $ rom $ rem $ resolveNModule $ nameModule args declarations
+resolveModule args declarations = resolveNamesModule args $ rom $ rem $ resolveNModule $ nameModule declarations
   where
   rem = if flatten_inheritance args then resolveEModule else id
   rom = if force_resolver args then resolveOModule else id
 
 
 -- -----------------------------------------------------------------------------
-nameModule :: ClaferArgs -> IModule -> (IModule, GEnv)
-nameModule args imodule = (imodule{mDecls = decls'}, genv')
+nameModule :: IModule -> (IModule, GEnv)
+nameModule imodule = (imodule{mDecls = decls'}, genv')
   where
   (decls', genv') = runState (mapM nameElement $ mDecls imodule) $ GEnv 0 Map.empty []
 

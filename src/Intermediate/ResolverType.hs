@@ -25,6 +25,7 @@ import Data.Maybe
 import Common
 import Intermediate.Intclafer
 
+
 resolveTModule :: (IModule, GEnv) -> IModule
 resolveTModule (imodule, _) = 
   imodule{mDecls = map resolveTElement $ mDecls imodule}
@@ -47,7 +48,7 @@ resolveTElement x = case x of
 
 
 resolveTPExp :: PExp -> PExp
-resolveTPExp y@(PExp _ pid x) = case x of
+resolveTPExp (PExp _ pid x) = case x of
   IDeclPExp quant decls pexp -> PExp (Just IBoolean) pid $
     IDeclPExp quant (map resolveTDecl decls) (resolveTPExp pexp)
   y@(IFunExp op _) -> result
@@ -76,11 +77,12 @@ resolveTPExp y@(PExp _ pid x) = case x of
       | op == iIfThenElse =
           infer $ appType pid y [Just IBoolean, Nothing, Nothing] Nothing
       where
-      p = appType pid y [Nothing, Nothing] Nothing
+      p = infer $ appType pid y [Nothing, Nothing] Nothing
   IInt n -> PExp (Just $ INumeric $ Just IInteger) pid x
   IDouble n -> PExp (Just $ INumeric $ Just IReal) pid x
   IStr str -> PExp (Just $ IString $ Just ILiteral) pid x
   IClaferId _ _ _ -> PExp (Just ISet) pid x
+
 
 infer :: PExp -> PExp
 infer x = x{iType = iType $ typeExp (iType x) $ typeExp (iType exp0) exp1}
