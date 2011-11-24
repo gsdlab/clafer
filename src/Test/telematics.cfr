@@ -23,12 +23,12 @@ abstract display extends comp
 // specific PLA (template)
 
 // display constraints
-//[all d : plaECU.display | d.server = this ~d.options.cache]
+//[all d : plaECU.display | d.server = this !d.options.cache]
 
 abstract plaECU extends ECU
     `display 1..2
         [server = parent
-         ~options.cache]
+         !options.cache]
 
 ECU1 extends plaECU
 
@@ -51,8 +51,8 @@ telematicsSystem
     [dual <=> ECU2
      extraDisplay <=> #ECU1.display = 2
      extraDisplay <=> (ECU2 => #ECU2.display = 2)
-     large <=> ~plaECU.display.options.size.small
-     small <=> ~plaECU.display.options.size.large]
+     large <=> !plaECU.display.options.size.small
+     small <=> !plaECU.display.options.size.large]
 
 // concrete product
 [dual

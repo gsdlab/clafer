@@ -48,14 +48,9 @@ genXmlModule imodule = concat
   , " xsi:schemaLocation=\"http://gsd.uwaterloo.ca/clafer"
   , "                      http://gsd.uwaterloo.ca/Clafer.xsd\">"
   , tag "Name" $ mName imodule
-  ,  concatMap genXmlDeclaration $ mDecls imodule
+  , concatMap genXmlElement $ mDecls imodule
   , "</Module>"]
 
-
-genXmlDeclaration :: IDeclaration -> Result
-genXmlDeclaration x = case x of
-  IClaferDecl clafer  -> tagType "Declaration" "IClaferDecl" $ genXmlClafer clafer
-  IConstDecl pexp  -> tagType "Declaration" "IConstraintDecl" $ genXmlPExp pexp
 
 genXmlClafer :: IClafer -> Result
 genXmlClafer x = case x of
@@ -99,15 +94,16 @@ genXmlCard interval = tag "Card" $ genXmlInterval interval
 genXmlGlCard interval = tag "GlobalCard" $ genXmlInterval interval
 
 genXmlElement x = case x of
-  ISubclafer clafer  -> tagType "Element" "ISubclafer" $ genXmlClafer clafer
-  ISubconstraint pexp  -> tagType "Element" "ISubconstraint" $
-                          tag "Exp" $ genXmlPExp pexp
+  IEClafer clafer  -> tagType "Element" "IEClafer" $ genXmlClafer clafer
+  IEConstraint pexp  -> tagType "Element" "IEConstraint" $
+                        tag "Exp" $ genXmlPExp pexp
 
 genXmlAnyOp ft f xs = concatMap
   (\(tname, texp) -> tagType tname (ft texp) $ f texp) xs
 
-genXmlPExp (PExp iType iexp) = concat
+genXmlPExp (PExp iType pid iexp) = concat
   [ tag "IType" $ show iType
+  , tag "PId" pid
   , tagType "IExp" (genXmlIExpType iexp) $ genXmlIExp iexp]
 
 genXmlIExpType x = takeWhile (/= ' ') $ show x

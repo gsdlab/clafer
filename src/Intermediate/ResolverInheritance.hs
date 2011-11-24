@@ -40,39 +40,33 @@ resolveNModule (imodule, genv) =
   (imodule{mDecls = decls'}, genv {sClafers = bfs toNodeShallow $ toClafers decls'})
   where
   decls = mDecls imodule
-  decls' = map (resolveNDeclaration decls) decls
+  decls' = map (resolveNElement decls) decls
 
 
-resolveNDeclaration :: [IDeclaration] -> IDeclaration -> IDeclaration
-resolveNDeclaration declarations x = case x of
-  IClaferDecl clafer  -> IClaferDecl $ resolveNClafer declarations clafer
-  IConstDecl constraint  -> x
-
-
-resolveNClafer :: [IDeclaration] -> IClafer -> IClafer
+resolveNClafer :: [IElement] -> IClafer -> IClafer
 resolveNClafer declarations clafer =
   clafer {super = resolveNSuper declarations $ super clafer,
           elements = map (resolveNElement declarations) $ elements clafer}
 
 
-resolveNSuper :: [IDeclaration] -> ISuper -> ISuper
+resolveNSuper :: [IElement] -> ISuper -> ISuper
 resolveNSuper declarations x = case x of
-  ISuper False [PExp _ (IClaferId _ id isTop)] ->
+  ISuper False [PExp _ pid (IClaferId _ id isTop)] ->
     if isPrimitive id || id == "clafer"
-      then x else ISuper False [idToPExp "" id' isTop]
+      then x else ISuper False [idToPExp pid "" id' isTop]
     where
     id' = fst $ fromMaybe (error $ "No superclafer found: " ++ id) $
           resolveN declarations id
   _ -> x
 
 
-resolveNElement :: [IDeclaration] -> IElement -> IElement
+resolveNElement :: [IElement] -> IElement -> IElement
 resolveNElement declarations x = case x of
-  ISubclafer clafer  -> ISubclafer $ resolveNClafer declarations clafer
-  ISubconstraint constraint  -> x
+  IEClafer clafer  -> IEClafer $ resolveNClafer declarations clafer
+  IEConstraint constraint  -> x
 
 
-resolveN :: [IDeclaration] -> String -> Maybe (String, [IClafer])
+resolveN :: [IElement] -> String -> Maybe (String, [IClafer])
 resolveN declarations id =
   findUnique id $ map (\x -> (x, [x])) $ filter isAbstract $ bfsClafers $
   toClafers declarations
@@ -85,13 +79,7 @@ resolveOModule (imodule, genv) =
   (imodule {mDecls = decls'}, genv {sClafers = bfs toNodeShallow $ toClafers decls'})
   where
   decls = mDecls imodule
-  decls' = map (resolveODeclaration (decls, genv)) decls
-
-
-resolveODeclaration :: ([IDeclaration], GEnv) -> IDeclaration -> IDeclaration
-resolveODeclaration (declarations, genv) x = case x of
-  IClaferDecl clafer  -> IClaferDecl $ resolveOClafer (defSEnv genv declarations) clafer
-  IConstDecl constraint  -> x
+  decls' = map (resolveOElement (defSEnv genv decls)) decls
 
 
 resolveOClafer :: SEnv -> IClafer -> IClafer
@@ -109,23 +97,17 @@ resolveOSuper env x = case x of
 
 resolveOElement :: SEnv -> IElement -> IElement
 resolveOElement env x = case x of
-  ISubclafer clafer  -> ISubclafer $ resolveOClafer env clafer
-  ISubconstraint constraint  -> x
+  IEClafer clafer  -> IEClafer $ resolveOClafer env clafer
+  IEConstraint constraint  -> x
 
 -- -----------------------------------------------------------------------------
 -- inherited and default cardinalities
 
 analyzeModule :: (IModule, GEnv) -> IModule
 analyzeModule (imodule, genv) =
-  imodule{mDecls = map (analyzeDeclaration (decls, genv)) decls}
+  imodule{mDecls = map (analyzeElement (defSEnv genv decls)) decls}
   where
   decls = mDecls imodule
-
-
-analyzeDeclaration :: ([IDeclaration], GEnv) -> IDeclaration -> IDeclaration
-analyzeDeclaration (declarations, genv) x = case x of
-  IClaferDecl clafer  -> IClaferDecl $ analyzeClafer (defSEnv genv declarations) clafer
-  IConstDecl constraint  -> x
 
 
 analyzeClafer :: SEnv -> IClafer -> IClafer
@@ -159,8 +141,8 @@ analyzeCard env clafer = card clafer `mplus` Just card'
 
 analyzeElement :: SEnv -> IElement -> IElement
 analyzeElement env x = case x of
-  ISubclafer clafer  -> ISubclafer $ analyzeClafer env clafer
-  ISubconstraint constraint  -> x
+  IEClafer clafer  -> IEClafer $ analyzeClafer env clafer
+  IEConstraint constraint  -> x
 
 -- -----------------------------------------------------------------------------
 -- Expand inheritance
@@ -168,8 +150,9 @@ resolveEModule :: (IModule, GEnv) -> (IModule, GEnv)
 resolveEModule (imodule, genv) = (imodule{mDecls = decls'}, genv')
   where
   decls = mDecls imodule
-  (decls', genv') = runState (mapM (resolveEDeclaration decls
-                                    (unrollableModule imodule)) decls) genv
+  (decls', genv') = runState (mapM (resolveEElement []
+                                    (unrollableModule imodule)
+                                    False decls) decls) genv
 
 -- -----------------------------------------------------------------------------
 unrollableModule :: IModule -> [String]
@@ -177,10 +160,10 @@ unrollableModule imodule = getDirUnrollables $
   mapMaybe unrollabeDeclaration $ mDecls imodule
 
 unrollabeDeclaration x = case x of
-  IClaferDecl clafer -> if isAbstract clafer
+  IEClafer clafer -> if isAbstract clafer
                         then Just (uid clafer, unrollableClafer clafer)
                         else Nothing
-  IConstDecl constraint  -> Nothing
+  IEConstraint constraint  -> Nothing
 
 
 unrollableClafer clafer
@@ -188,7 +171,7 @@ unrollableClafer clafer
   | getSuper clafer == "clafer"  = deps
   | otherwise                    = getSuper clafer : deps
   where
-  deps = (mapMaybe elemToClafer $ elements clafer) >>= unrollableClafer
+  deps = (toClafers $ elements clafer) >>= unrollableClafer
 
 
 getDirUnrollables :: [(String, [String])] -> [String]
@@ -200,13 +183,6 @@ getDirUnrollables dependencies = (filter isUnrollable $ map (map v2n) $
   isUnrollable _ = True
 
 -- -----------------------------------------------------------------------------
-
-resolveEDeclaration declarations unrollables x = case x of
-  IClaferDecl clafer -> if isAbstract clafer then return x else
-    IClaferDecl `liftM` resolveEClafer [] unrollables False declarations clafer
-  IConstDecl constraint  -> return x
-
-
 resolveEClafer predecessors unrollables absAncestor declarations clafer = do
   sClafers' <- gets sClafers
   clafer' <- renameClafer absAncestor clafer
@@ -229,9 +205,14 @@ renameClafer True  clafer = renameClafer' clafer
 
 
 renameClafer' clafer = do
+  uid' <- genId $ ident clafer
+  return $ clafer {uid = uid'}
+
+
+genId id = do
   modify (\e -> e {num = 1 + num e})
   n <- gets num
-  return $ clafer {uid = concat ["c", show n, "_",  ident clafer]}
+  return $ concat ["c", show n, "_",  id]
 
 
 resolveEInheritance predecessors unrollables absAncestor declarations allSuper
@@ -244,13 +225,13 @@ resolveEInheritance predecessors unrollables absAncestor declarations allSuper
              unrollSuper >>= elements
     let super' = if (getSuper clafer `elem` unrollables)
                  then super clafer
-                 else ISuper False [idToPExp "" "clafer" False]
+                 else ISuper False [idToPExp "" "" "clafer" False]
     return (elements', super', superList)
   where
   clafer = head allSuper
 
 
 resolveEElement predecessors unrollables absAncestor declarations x = case x of
-  ISubclafer clafer  -> ISubclafer `liftM`
+  IEClafer clafer  -> if isAbstract clafer then return x else IEClafer `liftM`
     resolveEClafer predecessors unrollables absAncestor declarations clafer
-  ISubconstraint constraint  -> return x
+  IEConstraint constraint  -> return x

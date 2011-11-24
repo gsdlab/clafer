@@ -43,10 +43,10 @@ header = unlines
 valField = "val"
 
 
-genDeclaration :: ClaferMode -> IDeclaration -> Result
+genDeclaration :: ClaferMode -> IElement -> Result
 genDeclaration mode x = case x of
-  IClaferDecl clafer  -> genClafer mode Nothing clafer
-  IConstDecl pexp  -> mkFact $ genPExp mode Nothing pexp
+  IEClafer clafer  -> genClafer mode Nothing clafer
+  IEConstraint pexp  -> mkFact $ genPExp mode Nothing pexp
 
 
 mkFact xs = concat ["fact ", mkSet xs, "\n"]
@@ -66,7 +66,7 @@ genClafer mode parent oClafer
   | otherwise    = (unlines $ filterNull
                    [cardFact ++ claferDecl clafer
                    , showSet "\n, " $ genRelations mode clafer
-                   , showSet "\n  " $ genConstraints mode parent clafer
+                   , optShowSet $ filterNull $ genConstraints mode parent clafer
                    ]) ++ children
   where
   clafer = transPrimitive oClafer
@@ -79,9 +79,13 @@ genClafer mode parent oClafer
           c -> mkFact c
     | otherwise = ""
 
+
+optShowSet [] = ""
+optShowSet xs = showSet "\n  " xs
+
 transPrimitive clafer = clafer{super = toOverlapping $ super clafer}
   where
-  toOverlapping x@(ISuper _ [PExp _ (IClaferId _ id _)])
+  toOverlapping x@(ISuper _ [PExp _ _ (IClaferId _ id _)])
     | isPrimitive id = x{isOverlapping = True}
     | otherwise      = x
 
@@ -90,8 +94,8 @@ claferDecl clafer = concat [genOptCard clafer,
   uid clafer, genExtends $ super clafer]
   where
   genAbstract isAbstract = if isAbstract then "abstract " else ""
-  genExtends (ISuper False [PExp _ (IClaferId _ "clafer" _)]) = ""
-  genExtends (ISuper False [PExp _ (IClaferId _ id _)]) = " extends " ++ id
+  genExtends (ISuper False [PExp _ _ (IClaferId _ "clafer" _)]) = ""
+  genExtends (ISuper False [PExp _ _ (IClaferId _ id _)]) = " extends " ++ id
   genExtends _ = ""
 
 
@@ -103,7 +107,7 @@ genOptCard clafer
     
 
 isPrimitiveClafer clafer = case super clafer of
-  ISuper _ [PExp _ (IClaferId _ id _)] -> isPrimitive id && (null $ elements clafer)
+  ISuper _ [PExp _ _ (IClaferId _ id _)] -> isPrimitive id && (null $ elements clafer)
   _ -> False
 
 -- -----------------------------------------------------------------------------
@@ -141,11 +145,11 @@ refType mode c = intercalate " + " $ map ((genType mode).getTarget) $ supers $ s
 
 getTarget :: PExp -> PExp
 getTarget x = case x of
-  PExp _ (IFunExp op (pexp0:pexp:_))  -> if op == iJoin then pexp else x
+  PExp _ _ (IFunExp op (pexp0:pexp:_))  -> if op == iJoin then pexp else x
   _ -> x
 
 
-genType mode x@(PExp _ y@(IClaferId _ _ _)) = genPExp mode Nothing
+genType mode x@(PExp _ _ y@(IClaferId _ _ _)) = genPExp mode Nothing
   x{Intermediate.Intclafer.exp = y{isTop = True}}
 genType mode x = genPExp mode Nothing x
 
@@ -159,8 +163,8 @@ genConstraints mode parent clafer = genParentConst parent clafer :
   where
   constraints = map genConst $ elements clafer
   genConst x = case x of
-    ISubconstraint pexp  -> genPExp mode (Just clafer) pexp
-    ISubclafer clafer -> if genCardCrude crd `elem` ["one", "lone", "some"]
+    IEConstraint pexp  -> genPExp mode (Just clafer) pexp
+    IEClafer clafer -> if genCardCrude crd `elem` ["one", "lone", "some"]
                          then "" else mkCard (genRelName $ uid clafer) $
                            fromJust crd
       where
@@ -215,8 +219,8 @@ isRefPath clafer = (isOverlapping $ super clafer) &&
 
 
 isSimplePath :: [PExp] -> Bool
-isSimplePath [PExp _ (IClaferId _ _ _)] = True
-isSimplePath [PExp _ (IFunExp op _)] = op == iUnion
+isSimplePath [PExp _ _ (IClaferId _ _ _)] = True
+isSimplePath [PExp _ _ (IFunExp op _)] = op == iUnion
 isSimplePath _ = False
 
 -- -----------------------------------------------------------------------------
@@ -259,7 +263,7 @@ genExInteger element x = case x of
 -- Generate code for logical expressions
 
 genPExp :: ClaferMode -> Maybe IClafer -> PExp -> Result
-genPExp mode clafer x@(PExp iType exp) = case exp of
+genPExp mode clafer x@(PExp iType pid exp) = case exp of
   IDeclPExp quant decls pexp -> concat
     [genQuant quant, " ", concatMap (genDecl mode clafer) decls,
      optBar decls, genPExp mode clafer pexp]
@@ -277,7 +281,7 @@ genPExp mode clafer x@(PExp iType exp) = case exp of
     vsident = sident' ++ ".@ref"
   IFunExp _ _ -> case exp' of
     IFunExp op exps -> genIFunExp mode clafer exp'
-    _ -> genPExp mode clafer $ PExp iType exp'
+    _ -> genPExp mode clafer $ PExp iType pid exp'
     where
     exp' = transformExp exp
   IInt n -> show n
@@ -286,7 +290,7 @@ genPExp mode clafer x@(PExp iType exp) = case exp of
 
 
 transformExp x@(IFunExp op exps@(e1:e2:_))
-  | op == iXor = IFunExp iNot [PExp (Just IBoolean) (IFunExp iIff exps)]
+  | op == iXor = IFunExp iNot [PExp (Just IBoolean) "" (IFunExp iIff exps)]
   | op `elem` relGenBinOps = case (fromJust $ iType e1, fromJust $ iType e2) of
       (ISet, INumeric (Just IInteger)) -> if e1 == locCl then x else
                                              mkNumExp locId op e1 locCl e2
@@ -296,12 +300,12 @@ transformExp x@(IFunExp op exps@(e1:e2:_))
   | otherwise = x
   where
   locId = "cl0"
-  locCl = PExp (Just ISet) (IClaferId "" locId True)
+  locCl = PExp (Just ISet) "" (IClaferId "" locId True)
 transformExp x = x
 
 
 mkNumExp locId op e1 e2 e3 = IDeclPExp IAll [IDecl False [locId] e1] $
-                             PExp (Just IBoolean) (IFunExp op [e2, e3])
+                             PExp (Just IBoolean) "" (IFunExp op [e2, e3])
 
 
 genIFunExp mode clafer (IFunExp op exps) = concat $ intl exps' (genOp mode op)
@@ -309,7 +313,15 @@ genIFunExp mode clafer (IFunExp op exps) = concat $ intl exps' (genOp mode op)
   intl
     | mode == Alloy42 && op `elem` [iPlus, iSub] = interleave
     | otherwise = \xs ys -> reverse $ interleave (reverse xs) (reverse ys)
-  exps' = map (brArg (genPExp mode clafer)) exps
+  exps' = map (optBrArg mode clafer) exps
+
+
+optBrArg mode clafer x = brFun (genPExp mode clafer) x
+  where
+  brFun = case x of
+    PExp _ _ (IClaferId _ _ _) -> ($)
+    PExp _ _ (IInt _) -> ($)
+    _  -> brArg
 
 
 interleave [] [] = []
@@ -333,7 +345,7 @@ genOp _ op
   | op == iIntersection = [" & "]
   | op == iDomain = [" <: "]
   | op == iRange = [" :> "]
-  | op == iJoin = [" . "]
+  | op == iJoin = ["."]
   | op == iIfThenElse = [" => ", " else "]
 
 genQuant :: IQuant -> Result

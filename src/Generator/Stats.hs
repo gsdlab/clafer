@@ -37,12 +37,7 @@ data Stats = Stats {
 
 statsModule :: IModule -> Stats
 statsModule imodule =
-  execState (mapM statsDeclaration $ mDecls imodule) $ Stats 0 0 0 0 (1, ExIntegerNum 1)
-
-
-statsDeclaration x = case x of
-  IClaferDecl clafer  -> statsClafer clafer
-  IConstDecl constraint  -> modify (\e -> e {nConstraints = nConstraints e + 1})
+  execState (mapM statsElement $ mDecls imodule) $ Stats 0 0 0 0 (1, ExIntegerNum 1)
 
 
 statsClafer clafer = do
@@ -66,5 +61,5 @@ statsCard (m, n) (m', n') = (max m m', maxEx n n')
 
 
 statsElement x = case x of
-  ISubclafer clafer -> statsClafer clafer
-  ISubconstraint ilexp -> modify (\e -> e {nConstraints = nConstraints e + 1})
+  IEClafer clafer -> statsClafer clafer
+  IEConstraint ilexp -> modify (\e -> e {nConstraints = nConstraints e + 1})

@@ -31,11 +31,6 @@ desugarModule x = case x of
       map desugarDeclaration $ declarations >>= desugarEnums
 
 
-declToElem x = case x of
-  IClaferDecl clafer -> ISubclafer clafer
-  IConstDecl constraint  -> ISubconstraint constraint
-
-
 sugarModule :: IModule -> Module
 sugarModule x = Module $ map sugarDeclaration $ mDecls x
 
@@ -53,17 +48,17 @@ desugarEnums x = case x of
   _ -> [x]
 
 
-desugarDeclaration :: Declaration -> IDeclaration
+desugarDeclaration :: Declaration -> IElement
 desugarDeclaration x = case x of
   EnumDecl id enumids  -> error "desugared"
-  ClaferDecl clafer  -> IClaferDecl $ desugarClafer clafer
-  ConstDecl constraint  -> IConstDecl $ desugarConstraint constraint
+  ClaferDecl clafer  -> IEClafer $ desugarClafer clafer
+  ConstDecl constraint  -> IEConstraint $ desugarConstraint constraint
 
 
-sugarDeclaration :: IDeclaration -> Declaration
+sugarDeclaration :: IElement -> Declaration
 sugarDeclaration x = case x of
-  IClaferDecl clafer  -> ClaferDecl $ sugarClafer clafer
-  IConstDecl constraint  -> ConstDecl $ sugarConstraint constraint
+  IEClafer clafer  -> ClaferDecl $ sugarClafer clafer
+  IEConstraint constraint  -> ConstDecl $ sugarConstraint constraint
 
 
 desugarClafer :: Clafer -> IClafer
@@ -114,17 +109,17 @@ sugarElements x = ElementsList $ map sugarElement x
 
 desugarElement :: ElementCl -> IElement
 desugarElement x = case x of
-  Subclafer clafer  -> ISubclafer $ desugarClafer clafer
-  ClaferUse name card elements  -> ISubclafer $ desugarClafer $ Clafer
+  Subclafer clafer  -> IEClafer $ desugarClafer clafer
+  ClaferUse name card elements  -> IEClafer $ desugarClafer $ Clafer
     AbstractEmpty GCardEmpty (Ident $ sident $ desugarName name) (SuperExtends name) card
                   elements
-  Subconstraint constraint  -> ISubconstraint $ desugarConstraint constraint
+  Subconstraint constraint  -> IEConstraint $ desugarConstraint constraint
 
 
 sugarElement :: IElement -> ElementCl
 sugarElement x = case x of
-  ISubclafer clafer  -> Subclafer $ sugarClafer clafer
-  ISubconstraint constraint  -> Subconstraint $ sugarConstraint constraint
+  IEClafer clafer  -> Subclafer $ sugarClafer clafer
+  IEConstraint constraint  -> Subconstraint $ sugarConstraint constraint
 
 
 desugarSuper :: Super -> ISuper
@@ -136,7 +131,7 @@ desugarSuper x = case x of
 
 nameToPExp = toPExp.desugarName
 
-toPExp = PExp (Just ISet)
+toPExp = PExp (Just ISet) ""
 
 toClaferId name = mkLClaferId name True
 
@@ -152,7 +147,7 @@ sugarModId modid = ModIdIdent $ Ident modid
 sugarSuper :: ISuper -> Super
 sugarSuper x = case x of
   ISuper _ [] -> SuperEmpty
-  ISuper False [PExp _ (IClaferId modid id _)] ->
+  ISuper False [PExp _ _ (IClaferId modid id _)] ->
     SuperColon $ ModClafer [sugarModId modid] $ Ident id
   ISuper True [pexp] -> SuperArrow $ sugarExp pexp
 
@@ -189,7 +184,7 @@ sugarCard x = case x of
 
 
 desugarExp :: Exp -> PExp
-desugarExp x = PExp Nothing $ desugarExp' x
+desugarExp x = PExp Nothing "" $ desugarExp' x
 
 desugarExp' :: Exp -> IExp
 desugarExp' x = case x of
@@ -286,13 +281,13 @@ sugarExp' x = case x of
     | op == iIfThenElse    = EImpliesElse
 
 desugarPath :: PExp -> PExp
-desugarPath (PExp iType x) = PExp iType result
+desugarPath (PExp iType pid x) = PExp iType pid result
   where
   result
-    | isPath x    = IDeclPExp ISome [] (PExp Nothing x)
+    | isPath x    = IDeclPExp ISome [] (PExp Nothing "" x)
     | isNegSome x = IDeclPExp INo   [] $ bpexp $ Intermediate.Intclafer.exp $ head $ exps x
     | otherwise   =  x
-  isNegSome (IFunExp op [PExp _ (IDeclPExp ISome [] _)]) = op == iNot
+  isNegSome (IFunExp op [PExp _ _ (IDeclPExp ISome [] _)]) = op == iNot
   isNegSome _ = False
 
 isPath :: IExp -> Bool

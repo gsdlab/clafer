@@ -32,15 +32,16 @@ import Intermediate.Intclafer
 
 optimizeModule :: ClaferArgs -> (IModule, GEnv) -> IModule
 optimizeModule args (imodule, genv) =
-  imodule{mDecls = em $ rm $ map optimizeDeclaration $ markTopModule $ mDecls imodule}
+  imodule{mDecls = em $ rm $ map (optimizeElement (1, ExIntegerNum 1)) $
+                   markTopModule $ mDecls imodule}
   where
   rm = if keep_unused args then id else remUnusedAbs
   em = if flatten_inheritance args then flip (curry expModule) genv else id
 
-optimizeDeclaration :: IDeclaration -> IDeclaration
-optimizeDeclaration x = case x of
-  IClaferDecl clafer -> IClaferDecl $ optimizeClafer (1, ExIntegerNum 1) clafer
-  IConstDecl constraint  -> x
+optimizeElement :: Interval -> IElement -> IElement
+optimizeElement interval x = case x of
+  IEClafer clafer  -> IEClafer $ optimizeClafer interval clafer
+  IEConstraint constraint  -> x
 
 
 optimizeClafer :: Interval -> IClafer -> IClafer
@@ -61,18 +62,12 @@ multExInt ExIntegerAst _ = ExIntegerAst
 multExInt _ ExIntegerAst = ExIntegerAst
 multExInt (ExIntegerNum m) (ExIntegerNum n) = ExIntegerNum $ m * n
 
-
-optimizeElement :: Interval -> IElement -> IElement
-optimizeElement interval x = case x of
-  ISubclafer clafer  -> ISubclafer $ optimizeClafer interval clafer
-  ISubconstraint constraint  -> x
-
 -- -----------------------------------------------------------------------------
 
-remUnusedAbs :: [IDeclaration] -> [IDeclaration]
+remUnusedAbs :: [IElement] -> [IElement]
 remUnusedAbs decls = decls \\ unusedAbs
   where
-  unusedAbs = map IClaferDecl $ findUnusedAbs clafers $ map uid $
+  unusedAbs = map IEClafer $ findUnusedAbs clafers $ map uid $
               filter (not.isAbstract) clafers
   clafers   = toClafers decls
 
@@ -97,13 +92,8 @@ getExtended clafer =
 -- -----------------------------------------------------------------------------
 -- inheritance  expansions
 
-expModule :: ([IDeclaration], GEnv) -> [IDeclaration]
-expModule (decls, genv) = evalState (mapM expDeclaration decls) genv
-
-
-expDeclaration x = case x of
-  IClaferDecl clafer  -> IClaferDecl `liftM` expClafer clafer
-  IConstDecl constraint  -> IConstDecl `liftM` expPExp constraint
+expModule :: ([IElement], GEnv) -> [IElement]
+expModule (decls, genv) = evalState (mapM expElement decls) genv
 
 
 expClafer clafer = do
@@ -118,11 +108,11 @@ expSuper x = case x of
 
 
 expElement x = case x of
-  ISubclafer clafer  -> ISubclafer `liftM` expClafer clafer
-  ISubconstraint constraint  -> ISubconstraint `liftM` expPExp constraint
+  IEClafer clafer  -> IEClafer `liftM` expClafer clafer
+  IEConstraint constraint  -> IEConstraint `liftM` expPExp constraint
 
 
-expPExp (PExp t exp) = PExp t `liftM` expIExp exp
+expPExp (PExp t pid exp) = PExp t pid `liftM` expIExp exp
 
 expIExp x = case x of
   IDeclPExp quant decls pexp -> do
@@ -140,14 +130,14 @@ expDecl x = case x of
 expNav x = do
   xs <- split' x return
   xs' <- mapM (expNav' "") xs
-  return $ mkUnion $ map fst xs'
+  return $ mkIFunExp iUnion $ map fst xs'
 
 
 expNav' context x = case x of
-  IFunExp _ ((PExp iType0 exp0):(PExp iType exp):_)  -> do    
+  IFunExp _ ((PExp iType0 pid0 exp0):(PExp iType pid exp):_)  -> do    
     (exp0', context') <- expNav' context exp0
     (exp', context'') <- expNav' context' exp
-    return (IFunExp iJoin [PExp iType0 exp0', PExp iType exp'], context'')
+    return (IFunExp iJoin [PExp iType0 pid0 exp0', PExp iType pid exp'], context'')
   IClaferId modName id isTop -> do
     st <- gets stable
     if Map.member id st
@@ -156,19 +146,15 @@ expNav' context x = case x of
         let (impls', context') = maybe (impls, "")
              (\x -> ([[head x]], head x)) $
              find (\x -> context == (head.tail) x) impls
-        return (mkUnion $ map (\x -> IClaferId modName x isTop) $
+        return (mkIFunExp iUnion $ map (\x -> IClaferId modName x isTop) $
                 map head impls', context')
       else do
         return (x, id)
 
 
-mkUnion (x:[]) = x
-mkUnion xs = foldl1 (\x y -> IFunExp iUnion $ map (PExp (Just ISet)) [x,y]) xs
-
-
 split' x f = case x of
-  IFunExp _ ((PExp iType exp0):pexp:_) ->
-    split' exp0 (\s -> f $ IFunExp iJoin [PExp iType s, pexp])
+  IFunExp _ ((PExp iType pid0 exp0):pexp:_) ->
+    split' exp0 (\s -> f $ IFunExp iJoin [PExp iType pid0 s, pexp])
   IClaferId modName id isTop -> do
     st <- gets stable
     mapM f $ map (\x -> IClaferId modName x isTop) $ maybe [id] (map head) $ Map.lookup id st
@@ -180,13 +166,7 @@ allUnique :: IModule -> Bool
 allUnique imodule = and un && (null $
   filter (\xs -> 1 < length xs) $ group $ sort $ concat idents)
   where
-  (un, idents) = unzip $ map allUniqueDeclaration $ mDecls imodule
-
-
-allUniqueDeclaration x = case x of
-  IClaferDecl clafer  -> allUniqueClafer clafer
-  IConstDecl constraint  -> (True, [])
-
+  (un, idents) = unzip $ map allUniqueElement $ mDecls imodule
 
 allUniqueClafer clafer =
   ("clafer" == getSuper clafer && and un, ident clafer : concat idents)
@@ -195,8 +175,8 @@ allUniqueClafer clafer =
 
 allUniqueElement :: IElement -> (Bool, [String])
 allUniqueElement x = case x of
-  ISubclafer clafer -> allUniqueClafer clafer
-  ISubconstraint ilexp -> (True, [])
+  IEClafer clafer -> allUniqueClafer clafer
+  IEConstraint ilexp -> (True, [])
 
 -- -----------------------------------------------------------------------------
 findDupModule :: ClaferArgs -> IModule -> IModule
@@ -208,17 +188,12 @@ findDupModule args imodule = imodule{mDecls = decls'}
     | otherwise             = decls
 
 
-findDupModule' :: [IDeclaration] -> [IDeclaration]
+findDupModule' :: [IElement] -> [IElement]
 findDupModule' declarations
-  | null dups = map findDupDeclaration declarations
+  | null dups = map findDupElement declarations
   | otherwise = error $ show dups
   where
   dups = findDuplicates $ toClafers declarations
-
-
-findDupDeclaration x = case x of
-  IClaferDecl clafer  -> IClaferDecl $ findDupClafer clafer
-  IConstDecl constraint  -> x
 
 
 findDupClafer clafer = if null dups
@@ -228,8 +203,8 @@ findDupClafer clafer = if null dups
   dups = findDuplicates $ getSubclafers $ elements clafer
 
 findDupElement x = case x of
-  ISubclafer clafer -> ISubclafer $ findDupClafer clafer
-  ISubconstraint ilexp -> x
+  IEClafer clafer -> IEClafer $ findDupClafer clafer
+  IEConstraint ilexp -> x
 
 
 findDuplicates :: [IClafer] -> [String]
@@ -239,16 +214,10 @@ findDuplicates clafers =
 -- -----------------------------------------------------------------------------
 -- marks top clafers
 
-markTopModule :: [IDeclaration] -> [IDeclaration]
-markTopModule decls = map (markTopDeclaration (
+markTopModule :: [IElement] -> [IElement]
+markTopModule decls = map (markTopElement (
       [this, parent, children, strType, intType, integerType] ++
       (map uid $ toClafers decls))) decls
-
-
-markTopDeclaration :: [String] -> IDeclaration -> IDeclaration
-markTopDeclaration clafers x = case x of
-  IClaferDecl clafer  -> IClaferDecl $ markTopClafer clafers clafer
-  IConstDecl constraint  -> IConstDecl $ markTopPExp clafers constraint
 
 
 markTopClafer :: [String] -> IClafer -> IClafer
@@ -263,11 +232,11 @@ markTopSuper clafers x = x{supers = map (markTopPExp clafers) $ supers x}
 
 markTopElement :: [String] -> IElement -> IElement
 markTopElement clafers x = case x of
-  ISubclafer clafer  -> ISubclafer $ markTopClafer clafers clafer
-  ISubconstraint constraint  -> ISubconstraint $ markTopPExp clafers constraint
+  IEClafer clafer  -> IEClafer $ markTopClafer clafers clafer
+  IEConstraint constraint  -> IEConstraint $ markTopPExp clafers constraint
 
 
-markTopPExp clafers (PExp t iexp) = PExp t $ markTopIExp clafers iexp
+markTopPExp clafers (PExp t pid iexp) = PExp t pid $ markTopIExp clafers iexp
 
 
 markTopIExp :: [String] -> IExp -> IExp

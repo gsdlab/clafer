@@ -58,15 +58,9 @@ defSEnv genv declarations = env {aClafers = rCl aClafers',
 
 resolveModuleNames :: (IModule, GEnv) -> IModule
 resolveModuleNames (imodule, genv) =
-  imodule{mDecls = map (resolveDeclaration (defSEnv genv decls) decls) decls}
+  imodule{mDecls = map (resolveElement (defSEnv genv decls)) decls}
   where
   decls = mDecls imodule
-
-
-resolveDeclaration :: SEnv -> [IDeclaration] -> IDeclaration -> IDeclaration
-resolveDeclaration env declarations x = case x of
-  IClaferDecl clafer  -> IClaferDecl $ resolveClafer env clafer
-  IConstDecl constraint  -> IConstDecl $ resolvePExp env constraint
 
 
 resolveClafer :: SEnv -> IClafer -> IClafer
@@ -84,12 +78,12 @@ resolveClafer env clafer =
 
 resolveElement :: SEnv -> IElement -> IElement
 resolveElement env x = case x of
-  ISubclafer clafer  -> ISubclafer $ resolveClafer env clafer
-  ISubconstraint constraint  -> ISubconstraint $ resolvePExp env constraint
+  IEClafer clafer  -> IEClafer $ resolveClafer env clafer
+  IEConstraint constraint  -> IEConstraint $ resolvePExp env constraint
 
 
 resolvePExp :: SEnv -> PExp -> PExp
-resolvePExp env (PExp t exp) = PExp t $ resolveIExp env exp
+resolvePExp env (PExp t pid exp) = PExp t pid $ resolveIExp env exp
 
 resolveIExp :: SEnv -> IExp -> IExp
 resolveIExp env x = case x of
@@ -110,12 +104,12 @@ processDecl decl = do
   env <- get
   let (body', path) = resolveNav env (Intermediate.Intclafer.exp $ body decl) True
   modify (\e -> e { bindings = (decls decl, path) : bindings e })
-  return $ decl {body = PExp Nothing body'}
+  return $ decl {body = PExp Nothing "" body'}
 
 resolveNav :: SEnv -> IExp -> Bool -> (IExp, [IClafer])
 resolveNav env x isFirst = case x of
   IFunExp _ (pexp0:pexp:_)  ->
-    (IFunExp iJoin [PExp Nothing exp0', PExp Nothing exp'], path')
+    (IFunExp iJoin [PExp Nothing (pid pexp0) exp0', PExp Nothing (pid pexp) exp'], path')
     where
     (exp0', path) = resolveNav env (Intermediate.Intclafer.exp pexp0) True
     (exp', path') = resolveNav env {context = listToMaybe path, resPath = path}
@@ -138,12 +132,12 @@ mkPath env (howResolved, id, path) = case howResolved of
   where
   id'   = mkLClaferId id False
   toNav = foldl
-          (\exp id -> IFunExp iJoin [PExp Nothing exp, mkPLClaferId id False])
+          (\exp id -> IFunExp iJoin [PExp Nothing "" exp, mkPLClaferId id False])
           (mkLClaferId this True)
-  toNav' p = (mkNav $ map (\c -> mkLClaferId c False) p) :: IExp
+  toNav' p = (mkIFunExp iJoin $ map (\c -> mkLClaferId c False) p) :: IExp
 
 mkNav (x:[]) = x
-mkNav xs = foldl1 (\x y -> IFunExp iJoin $ map (PExp Nothing) [x, y]) xs
+mkNav xs = foldl1 (\x y -> IFunExp iJoin $ map (PExp Nothing "") [x, y]) xs
 
 -- -----------------------------------------------------------------------------
 

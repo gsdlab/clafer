@@ -29,13 +29,9 @@ import Intermediate.Intclafer
 
 astrModule :: IModule -> IModule
 astrModule imodule =
-  imodule{mDecls = evalState (mapM astrDeclaration decls) $ Map.empty}
+  imodule{mDecls = evalState (mapM astrElement decls) $ Map.empty}
   where
   decls = mDecls imodule
-
-astrDeclaration x = case x of
-  IClaferDecl clafer -> IClaferDecl `liftM` astrClafer clafer
-  IConstDecl lexp -> IConstDecl `liftM` astrPExp lexp
 
 
 astrClafer x = case x of
@@ -46,14 +42,14 @@ astrClafer x = case x of
 
 -- astrs single subclafer
 astrElement x = case x of
-  ISubclafer clafer -> ISubclafer `liftM` astrClafer clafer
-  ISubconstraint pexp -> ISubconstraint `liftM` astrPExp pexp
+  IEClafer clafer -> IEClafer `liftM` astrClafer clafer
+  IEConstraint pexp -> IEConstraint `liftM` astrPExp pexp
 
 
 astrPExp x = case x of 
-  PExp (Just (IString _)) exp ->
-    PExp (Just $ INumeric $ Just IInteger) `liftM` astrIExp exp
-  PExp t (IFunExp op exps) -> PExp t `liftM`
+  PExp (Just (IString _)) pid exp ->
+    PExp (Just $ INumeric $ Just IInteger) pid `liftM` astrIExp exp
+  PExp t pid (IFunExp op exps) -> PExp t pid `liftM`
                               (IFunExp op `liftM` mapM astrPExp exps)
   _ -> return x
 

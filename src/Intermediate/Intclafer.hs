@@ -26,7 +26,6 @@ data IType = IBoolean
            | INumeric (Maybe INumericSub)
            | ISet
   deriving (Eq,Ord,Show)
-  {-! derive : XmlContent !-}    -- this line is for DrIFT
 
 data INumericSub = IInteger | IReal | ISetInteger | ISetReal
   deriving (Eq,Ord,Show)
@@ -37,16 +36,9 @@ data IStringSub = ILiteral | ISetString
 -- Module is a list of top-level declarations
 data IModule = IModule {
       mName :: String,
-      mDecls :: [IDeclaration]
+      mDecls :: [IElement]
     }
   deriving (Eq,Ord,Show)
-
--- Declaration is either a Clafer of a global constraint
-data IDeclaration =
-   IClaferDecl IClafer
- | IConstDecl PExp
-  deriving (Eq,Ord,Show)
-  {-! derive : XmlContent !-}    -- this line is for DrIFT
 
 -- Clafer has a list of fields that specify its properties. Some fields, marked as (o) are for generating optimized code
 data IClafer =
@@ -61,14 +53,12 @@ data IClafer =
       elements :: [IElement]  -- subclafers or constraints specified in the context of given clafer
     }
   deriving (Eq,Ord,Show)
-  {-! derive : XmlContent !-}    -- this line is for DrIFT
 
 -- Clafer's subelement is either a clafer of a constraint
 data IElement =
-   ISubclafer IClafer
- | ISubconstraint PExp
+   IEClafer IClafer
+ | IEConstraint PExp
   deriving (Eq,Ord,Show)
-  {-! derive : XmlContent !-}    -- this line is for DrIFT
 
 -- A list of superclafers. The isOverlapping determines whether the clafer is overlapping or disjoint with other clafers extending given list of superclafers.
 data ISuper =
@@ -77,7 +67,6 @@ data ISuper =
       supers :: [PExp]
     }
   deriving (Eq,Ord,Show)
-  {-! derive : XmlContent !-}    -- this line is for DrIFT
 
 -- Group cardinality is specified as an interval. It may also be given by a keyword.
 data IGCard =
@@ -86,13 +75,13 @@ data IGCard =
       interval :: Interval
     }
   deriving (Eq,Ord,Show)
-  {-! derive : XmlContent !-}    -- this line is for DrIFT
 
 -- (Min, max) integer interval
 type Interval = (Integer, ExInteger)
 
 data PExp = PExp {
       iType :: Maybe IType,
+      pid :: String,
       exp :: IExp
     }
   deriving (Eq,Ord,Show)
@@ -153,7 +142,6 @@ data IDecl =
       body :: PExp        -- set to which local names refer to
     }
   deriving (Eq,Ord,Show)
-  {-! derive : XmlContent !-}    -- this line is for DrIFT
 
 data IQuant =
    INo

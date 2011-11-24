@@ -43,29 +43,24 @@ transIdent x = case x of
 
 getSuper clafer = id
   where
-  [PExp _ (IClaferId _ id _)] = supers $ super $ clafer
+  [PExp _ _ (IClaferId _ id _)] = supers $ super $ clafer
 
 
 isEqClaferId = flip $ (==).uid
 
-idToPExp modids id isTop = PExp (Just ISet) (IClaferId modids id isTop)
+idToPExp pid modids id isTop = PExp (Just ISet) pid (IClaferId modids id isTop)
 
 mkLClaferId = IClaferId ""
 
-mkPLClaferId id isTop = PExp Nothing $ mkLClaferId id isTop
+mkPLClaferId id isTop = PExp Nothing "" $ mkLClaferId id isTop
 
 -- -----------------------------------------------------------------------------
 -- conversions
 elemToClafer x = case x of
-  ISubclafer clafer  -> Just clafer
+  IEClafer clafer  -> Just clafer
   _  -> Nothing
 
-toClafers = mapMaybe declToClafer
-  where
-  declToClafer x = case x of
-    IClaferDecl clafer  -> Just clafer
-    otherwise  -> Nothing
-
+toClafers = mapMaybe elemToClafer
 
 -- -----------------------------------------------------------------------------
 -- finds hierarchy and transforms each element
@@ -164,6 +159,9 @@ binOps = logBinOps ++ relBinOps ++ arithBinOps ++ setBinOps
 
 -- ternary operators
 iIfThenElse   = "=>else"
+
+mkIFunExp op (x:[]) = x
+mkIFunExp op xs = foldl1 (\x y -> IFunExp op $ map (PExp (Just ISet) "") [x,y]) xs
 
 -- -----------------------------------------------------------------------------
 -- Constants

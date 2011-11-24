@@ -44,28 +44,33 @@ resolveModule args declarations = resolveNamesModule args $ rom $ rem $ resolveN
 nameModule :: ClaferArgs -> IModule -> (IModule, GEnv)
 nameModule args imodule = (imodule{mDecls = decls'}, genv')
   where
-  decls = mDecls imodule
-  f = if force_resolver args then renameClafer' else copyUid
-  (decls', genv') = runState (mapM (nameDeclaration f) decls) $ GEnv 0 Map.empty []
+  (decls', genv') = runState (mapM nameElement $ mDecls imodule) $ GEnv 0 Map.empty []
+
+nameElement x = case x of
+  IEClafer clafer -> IEClafer `liftM` (nameClafer clafer)
+  IEConstraint pexp -> IEConstraint `liftM` (namePExp pexp)
 
 
-nameDeclaration f x = case x of
-  IClaferDecl clafer  -> IClaferDecl `liftM` (nameClafer f clafer)
-  IConstDecl constraint  -> return x
-
-
-nameClafer f clafer = do
-  clafer' <- f clafer
-  elements' <- mapM (nameElement f) $ elements clafer
+nameClafer clafer = do
+  clafer' <- renameClafer' clafer
+  elements' <- mapM nameElement $ elements clafer
   return $ clafer' {elements = elements'}
 
 
-nameElement f x = case x of
-  ISubclafer clafer -> ISubclafer `liftM` (nameClafer f clafer)
-  ISubconstraint ilexp -> return x
+namePExp pexp@(PExp _ _ exp) = do
+  pid' <- genId "exp"
+  exp' <- nameIExp exp
+  return $ pexp {pid = pid', Intermediate.Intclafer.exp = exp'}
 
+nameIExp x = case x of
+  IDeclPExp quant decls pexp -> do
+    decls' <- mapM nameIDecl decls
+    pexp'  <- namePExp pexp
+    return $ IDeclPExp quant decls' pexp'
+  IFunExp op pexps -> IFunExp op `liftM` (mapM namePExp pexps)
+  _ -> return x
 
-copyUid clafer = return clafer{uid = ident clafer}
+nameIDecl (IDecl isDisj dels body) = IDecl isDisj dels `liftM` (namePExp body)
 
 -- -----------------------------------------------------------------------------
 resolveNamesModule :: ClaferArgs -> (IModule, GEnv) -> (IModule, GEnv)
