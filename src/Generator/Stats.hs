@@ -62,4 +62,4 @@ statsCard (m, n) (m', n') = (max m m', maxEx n n')
 
 statsElement x = case x of
   IEClafer clafer -> statsClafer clafer
-  IEConstraint ilexp -> modify (\e -> e {nConstraints = nConstraints e + 1})
+  IEConstraint _ _ -> modify (\e -> e {nConstraints = nConstraints e + 1})

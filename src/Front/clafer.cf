@@ -23,9 +23,9 @@ ClaferUse.      ElementCl ::= "`" Name Card Elements ;
 Subconstraint.  ElementCl ::= Constraint ;
 
 SuperEmpty.     Super ::=  ;
-SuperColon.     Super ::= ":" Name ;
-SuperExtends.   Super ::= "extends" Name ;
-SuperArrow.     Super ::= "->" Exp ;
+SuperSome.      Super ::= SuperHow Exp ;
+
+rules           SuperHow ::= ":" | "->" ;
 
 GCardEmpty.     GCard ::= ;
 GCardXor.       GCard ::= "xor" ;

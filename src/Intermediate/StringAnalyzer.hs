@@ -43,7 +43,7 @@ astrClafer x = case x of
 -- astrs single subclafer
 astrElement x = case x of
   IEClafer clafer -> IEClafer `liftM` astrClafer clafer
-  IEConstraint pexp -> IEConstraint `liftM` astrPExp pexp
+  IEConstraint isHard pexp -> IEConstraint isHard `liftM` astrPExp pexp
 
 
 astrPExp x = case x of 

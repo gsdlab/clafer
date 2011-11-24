@@ -57,7 +57,10 @@ data IClafer =
 -- Clafer's subelement is either a clafer of a constraint
 data IElement =
    IEClafer IClafer
- | IEConstraint PExp
+ | IEConstraint {
+      isHard :: Bool,
+      cpexp :: PExp
+    }
   deriving (Eq,Ord,Show)
 
 -- A list of superclafers. The isOverlapping determines whether the clafer is overlapping or disjoint with other clafers extending given list of superclafers.

@@ -48,7 +48,7 @@ nameModule args imodule = (imodule{mDecls = decls'}, genv')
 
 nameElement x = case x of
   IEClafer clafer -> IEClafer `liftM` (nameClafer clafer)
-  IEConstraint pexp -> IEConstraint `liftM` (namePExp pexp)
+  IEConstraint isHard pexp -> IEConstraint isHard `liftM` (namePExp pexp)
 
 
 nameClafer clafer = do

@@ -41,7 +41,7 @@ optimizeModule args (imodule, genv) =
 optimizeElement :: Interval -> IElement -> IElement
 optimizeElement interval x = case x of
   IEClafer clafer  -> IEClafer $ optimizeClafer interval clafer
-  IEConstraint constraint  -> x
+  IEConstraint _ constraint  -> x
 
 
 optimizeClafer :: Interval -> IClafer -> IClafer
@@ -109,7 +109,7 @@ expSuper x = case x of
 
 expElement x = case x of
   IEClafer clafer  -> IEClafer `liftM` expClafer clafer
-  IEConstraint constraint  -> IEConstraint `liftM` expPExp constraint
+  IEConstraint isHard constraint  -> IEConstraint isHard `liftM` expPExp constraint
 
 
 expPExp (PExp t pid exp) = PExp t pid `liftM` expIExp exp
@@ -176,7 +176,7 @@ allUniqueClafer clafer =
 allUniqueElement :: IElement -> (Bool, [String])
 allUniqueElement x = case x of
   IEClafer clafer -> allUniqueClafer clafer
-  IEConstraint ilexp -> (True, [])
+  IEConstraint _ _ -> (True, [])
 
 -- -----------------------------------------------------------------------------
 findDupModule :: ClaferArgs -> IModule -> IModule
@@ -204,7 +204,7 @@ findDupClafer clafer = if null dups
 
 findDupElement x = case x of
   IEClafer clafer -> IEClafer $ findDupClafer clafer
-  IEConstraint ilexp -> x
+  IEConstraint _ _ -> x
 
 
 findDuplicates :: [IClafer] -> [String]
@@ -233,7 +233,7 @@ markTopSuper clafers x = x{supers = map (markTopPExp clafers) $ supers x}
 markTopElement :: [String] -> IElement -> IElement
 markTopElement clafers x = case x of
   IEClafer clafer  -> IEClafer $ markTopClafer clafers clafer
-  IEConstraint constraint  -> IEConstraint $ markTopPExp clafers constraint
+  IEConstraint isHard pexp  -> IEConstraint isHard $ markTopPExp clafers pexp
 
 
 markTopPExp clafers (PExp t pid iexp) = PExp t pid $ markTopIExp clafers iexp

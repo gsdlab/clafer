@@ -132,9 +132,13 @@ instance Print ElementCl where
 instance Print Super where
   prt i e = case e of
    SuperEmpty  -> prPrec i 0 (concatD [])
-   SuperColon name -> prPrec i 0 (concatD [doc (showString ":") , prt 0 name])
-   SuperExtends name -> prPrec i 0 (concatD [doc (showString "extends") , prt 0 name])
-   SuperArrow exp -> prPrec i 0 (concatD [doc (showString "->") , prt 0 exp])
+   SuperSome superhow exp -> prPrec i 0 (concatD [prt 0 superhow , prt 0 exp])
+
+
+instance Print SuperHow where
+  prt i e = case e of
+   SuperHow_1  -> prPrec i 0 (concatD [doc (showString ":")])
+   SuperHow_2  -> prPrec i 0 (concatD [doc (showString "->")])
 
 
 instance Print GCard where

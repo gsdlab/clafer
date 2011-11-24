@@ -43,7 +43,7 @@ resolveTSuper (ISuper isOverlapping pexps) = ISuper isOverlapping $ map resolveT
 resolveTElement :: IElement -> IElement
 resolveTElement x = case x of
   IEClafer clafer  -> IEClafer $ resolveTClafer clafer
-  IEConstraint constraint  -> IEConstraint $ propagate $ resolveTPExp constraint
+  IEConstraint isHard pexp  -> IEConstraint isHard $ propagate $ resolveTPExp pexp
 
 
 resolveTPExp :: PExp -> PExp

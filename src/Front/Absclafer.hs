@@ -39,9 +39,12 @@ data ElementCl =
 
 data Super =
    SuperEmpty
- | SuperColon Name
- | SuperExtends Name
- | SuperArrow Exp
+ | SuperSome SuperHow Exp
+  deriving (Eq,Ord,Show)
+
+data SuperHow =
+   SuperHow_1
+ | SuperHow_2
   deriving (Eq,Ord,Show)
 
 data GCard =

@@ -46,7 +46,7 @@ valField = "val"
 genDeclaration :: ClaferMode -> IElement -> Result
 genDeclaration mode x = case x of
   IEClafer clafer  -> genClafer mode Nothing clafer
-  IEConstraint pexp  -> mkFact $ genPExp mode Nothing pexp
+  IEConstraint _ pexp  -> mkFact $ genPExp mode Nothing pexp
 
 
 mkFact xs = concat ["fact ", mkSet xs, "\n"]
@@ -163,7 +163,7 @@ genConstraints mode parent clafer = genParentConst parent clafer :
   where
   constraints = map genConst $ elements clafer
   genConst x = case x of
-    IEConstraint pexp  -> genPExp mode (Just clafer) pexp
+    IEConstraint _ pexp  -> genPExp mode (Just clafer) pexp
     IEClafer clafer -> if genCardCrude crd `elem` ["one", "lone", "some"]
                          then "" else mkCard (genRelName $ uid clafer) $
                            fromJust crd
@@ -291,7 +291,8 @@ genPExp mode clafer x@(PExp iType pid exp) = case exp of
 
 transformExp x@(IFunExp op exps@(e1:e2:_))
   | op == iXor = IFunExp iNot [PExp (Just IBoolean) "" (IFunExp iIff exps)]
-  | op `elem` relGenBinOps = case (fromJust $ iType e1, fromJust $ iType e2) of
+  | op `elem` relGenBinOps && not (isSpecialExp e1 || isSpecialExp e2) =
+    case (fromJust $ iType e1, fromJust $ iType e2) of
       (ISet, INumeric (Just IInteger)) -> if e1 == locCl then x else
                                              mkNumExp locId op e1 locCl e2
       (INumeric (Just IInteger), ISet) -> if e2 == locCl then x else
@@ -303,6 +304,9 @@ transformExp x@(IFunExp op exps@(e1:e2:_))
   locCl = PExp (Just ISet) "" (IClaferId "" locId True)
 transformExp x = x
 
+
+isSpecialExp (PExp _ _ (IClaferId _ id _)) = id `elem` [this, parent]
+isSpecialExp _ = False
 
 mkNumExp locId op e1 e2 e3 = IDeclPExp IAll [IDecl False [locId] e1] $
                              PExp (Just IBoolean) "" (IFunExp op [e2, e3])

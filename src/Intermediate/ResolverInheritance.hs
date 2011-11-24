@@ -63,7 +63,7 @@ resolveNSuper declarations x = case x of
 resolveNElement :: [IElement] -> IElement -> IElement
 resolveNElement declarations x = case x of
   IEClafer clafer  -> IEClafer $ resolveNClafer declarations clafer
-  IEConstraint constraint  -> x
+  IEConstraint _ _  -> x
 
 
 resolveN :: [IElement] -> String -> Maybe (String, [IClafer])
@@ -98,7 +98,7 @@ resolveOSuper env x = case x of
 resolveOElement :: SEnv -> IElement -> IElement
 resolveOElement env x = case x of
   IEClafer clafer  -> IEClafer $ resolveOClafer env clafer
-  IEConstraint constraint  -> x
+  IEConstraint _ _ -> x
 
 -- -----------------------------------------------------------------------------
 -- inherited and default cardinalities
@@ -142,7 +142,7 @@ analyzeCard env clafer = card clafer `mplus` Just card'
 analyzeElement :: SEnv -> IElement -> IElement
 analyzeElement env x = case x of
   IEClafer clafer  -> IEClafer $ analyzeClafer env clafer
-  IEConstraint constraint  -> x
+  IEConstraint _ _ -> x
 
 -- -----------------------------------------------------------------------------
 -- Expand inheritance
@@ -163,7 +163,7 @@ unrollabeDeclaration x = case x of
   IEClafer clafer -> if isAbstract clafer
                         then Just (uid clafer, unrollableClafer clafer)
                         else Nothing
-  IEConstraint constraint  -> Nothing
+  IEConstraint _ _ -> Nothing
 
 
 unrollableClafer clafer
@@ -234,4 +234,4 @@ resolveEInheritance predecessors unrollables absAncestor declarations allSuper
 resolveEElement predecessors unrollables absAncestor declarations x = case x of
   IEClafer clafer  -> if isAbstract clafer then return x else IEClafer `liftM`
     resolveEClafer predecessors unrollables absAncestor declarations clafer
-  IEConstraint constraint  -> return x
+  IEConstraint _ _  -> return x

@@ -28,7 +28,7 @@ import Data.Function
 desugarModule :: Module -> IModule
 desugarModule x = case x of
   Module declarations  -> IModule "" $
-      map desugarDeclaration $ declarations >>= desugarEnums
+      declarations >>= desugarEnums >>= desugarDeclaration
 
 
 sugarModule :: IModule -> Module
@@ -43,27 +43,29 @@ desugarEnums x = case x of
     absEnum = ClaferDecl $ Clafer
               Abstract GCardEmpty id SuperEmpty CardEmpty ElementsEmpty
     mkEnum (EnumIdIdent eId) = ClaferDecl $ Clafer AbstractEmpty GCardEmpty
-                                  eId (SuperExtends $ LocClafer id) CardEmpty
+                                  eId (SuperSome SuperHow_1 $ ClaferId $ LocClafer id) CardEmpty
                                   ElementsEmpty
   _ -> [x]
 
 
-desugarDeclaration :: Declaration -> IElement
+desugarDeclaration :: Declaration -> [IElement]
 desugarDeclaration x = case x of
   EnumDecl id enumids  -> error "desugared"
-  ClaferDecl clafer  -> IEClafer $ desugarClafer clafer
-  ConstDecl constraint  -> IEConstraint $ desugarConstraint constraint
+  ClaferDecl clafer  -> IEClafer clafer' : sConstr
+    where
+    (clafer', sConstr) = desugarClafer clafer
+  ConstDecl constraint  -> [IEConstraint True $ desugarConstraint constraint]
 
 
 sugarDeclaration :: IElement -> Declaration
 sugarDeclaration x = case x of
   IEClafer clafer  -> ClaferDecl $ sugarClafer clafer
-  IEConstraint constraint  -> ConstDecl $ sugarConstraint constraint
+  IEConstraint _ constraint  -> ConstDecl $ sugarConstraint constraint
 
 
-desugarClafer :: Clafer -> IClafer
+desugarClafer :: Clafer -> (IClafer, [IElement])
 desugarClafer x = case x of
-  Clafer abstract gcard id super card elements  ->
+  Clafer abstract gcard id super card elements  -> desugarDefault $
     IClafer (desugarAbstract abstract) (desugarGCard gcard) (transIdent id)
             "" (desugarSuper super) (desugarCard card) (0, ExIntegerAst)
             (desugarElements elements)
@@ -74,6 +76,24 @@ sugarClafer x = case x of
   IClafer abstract gcard id uid super card _ elements  ->
     Clafer (sugarAbstract abstract) (sugarGCard gcard) (Ident id)
       (sugarSuper super) (sugarCard card) (sugarElements elements)
+
+
+desugarDefault clafer = (clafer{super = super'}, sConstr)
+  where
+  (super', sConstr) = splitSuper (ident clafer) $ super clafer
+
+
+splitSuper :: String -> ISuper -> (ISuper, [IElement])
+splitSuper id (ISuper isOverlapping [pexp]) =
+  (ISuper isOverlapping [super'], sConstr)
+  where
+  (super', sConstr) = splitPExp id pexp
+
+splitPExp id x@(PExp iType pid (IFunExp op (e1:e2:_)))
+  | op == iEq = (e1, [IEConstraint False $ PExp iType pid $ 
+                     IFunExp op ([mkPLClaferId id False, e2])])
+  | otherwise = (x, [])
+splitPExp _ x = (x, [])
 
 
 desugarConstraint :: Constraint -> PExp
@@ -100,40 +120,41 @@ sugarAbstract x = case x of
 desugarElements :: Elements -> [IElement]
 desugarElements x = case x of
   ElementsEmpty  -> []
-  ElementsList elements  -> map desugarElement elements
+  ElementsList elements  -> elements >>= desugarElement
 
 
 sugarElements :: [IElement] -> Elements
 sugarElements x = ElementsList $ map sugarElement x
 
 
-desugarElement :: ElementCl -> IElement
+desugarElement :: ElementCl -> [IElement]
 desugarElement x = case x of
-  Subclafer clafer  -> IEClafer $ desugarClafer clafer
-  ClaferUse name card elements  -> IEClafer $ desugarClafer $ Clafer
-    AbstractEmpty GCardEmpty (Ident $ sident $ desugarName name) (SuperExtends name) card
-                  elements
-  Subconstraint constraint  -> IEConstraint $ desugarConstraint constraint
+  Subclafer clafer  -> IEClafer clafer' : sConstr
+    where
+    (clafer', sConstr) = desugarClafer clafer
+  ClaferUse name card elements  -> IEClafer clafer' : sConstr
+    where
+    (clafer', sConstr) = desugarClafer $ Clafer
+      AbstractEmpty GCardEmpty (Ident $ sident $ desugarName name)
+      (SuperSome SuperHow_1 (ClaferId name)) card elements
+  Subconstraint constraint  -> [IEConstraint True $ desugarConstraint constraint]
 
 
 sugarElement :: IElement -> ElementCl
 sugarElement x = case x of
   IEClafer clafer  -> Subclafer $ sugarClafer clafer
-  IEConstraint constraint  -> Subconstraint $ sugarConstraint constraint
+  IEConstraint _ constraint -> Subconstraint $ sugarConstraint constraint
 
 
 desugarSuper :: Super -> ISuper
 desugarSuper x = case x of
-  SuperEmpty  -> ISuper False [toPExp $ toClaferId baseClafer]
-  SuperColon name  -> ISuper False [nameToPExp name]
-  SuperExtends name  -> desugarSuper $ SuperColon name
-  SuperArrow exp  -> ISuper True [desugarExp exp]
+  SuperEmpty  -> ISuper False [PExp (Just ISet) "" $ mkLClaferId baseClafer True]
+  SuperSome superhow exp -> ISuper (desugarSuperHow superhow) [desugarExp exp]
 
-nameToPExp = toPExp.desugarName
-
-toPExp = PExp (Just ISet) ""
-
-toClaferId name = mkLClaferId name True
+desugarSuperHow :: SuperHow -> Bool
+desugarSuperHow x = case x of
+  SuperHow_1  -> False
+  SuperHow_2  -> True
 
 desugarName (LocClafer id)      = desugarName (ModClafer [] id)
 desugarName (ModClafer mods id) =
@@ -147,9 +168,12 @@ sugarModId modid = ModIdIdent $ Ident modid
 sugarSuper :: ISuper -> Super
 sugarSuper x = case x of
   ISuper _ [] -> SuperEmpty
-  ISuper False [PExp _ _ (IClaferId modid id _)] ->
-    SuperColon $ ModClafer [sugarModId modid] $ Ident id
-  ISuper True [pexp] -> SuperArrow $ sugarExp pexp
+  ISuper isOverlapping [pexp] -> SuperSome (sugarSuperHow isOverlapping) (sugarExp pexp)
+
+
+sugarSuperHow x = case x of
+  False -> SuperHow_1
+  True  -> SuperHow_2
 
 
 desugarGCard :: GCard -> Maybe IGCard

@@ -10,11 +10,11 @@ abstract options
     [small && cache => fixed]
 
 abstract comp
-    version : integer
+    version : integer = 1
 
-abstract ECU extends comp
+abstract ECU : comp
 
-abstract display extends comp
+abstract display : comp
     server -> ECU
     `options
     [this.version >= server.version]
@@ -25,14 +25,14 @@ abstract display extends comp
 // display constraints
 //[all d : plaECU.display | d.server = this !d.options.cache]
 
-abstract plaECU extends ECU
+abstract plaECU : ECU
     `display 1..2
         [server = parent
          !options.cache]
 
-ECU1 extends plaECU
+ECU1 : plaECU
 
-ECU2 extends plaECU ?
+ECU2 : plaECU ?
     master -> ECU1
 
 // feature model for the specific PL
@@ -58,4 +58,3 @@ telematicsSystem
 [dual
  extraDisplay
  telematicsSystem.size.large]
-[ comp.version = 1]
