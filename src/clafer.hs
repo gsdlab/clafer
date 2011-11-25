@@ -34,7 +34,7 @@ import Common
 import Front.Lexclafer
 import Front.Parclafer
 import Front.Printclafer
-import Front.Absclafer
+import Front.Absclafer hiding (Clafer)
 import Front.LayoutResolver
 import Front.ErrM
 import Intermediate.Desugarer
@@ -85,7 +85,7 @@ run v p args = do
                           aTree <- evaluate $! astrModule rTree
                           conPutStrLn args "[Optimizing]"
                           oTree <- evaluate $ optimizeModule args' (aTree, genv)
-                          -- writeFile (f' ++ ".ana") $ printTree $
+                              -- writeFile (f' ++ ".ana") $ printTree $
                           --  sugarModule oTree
                           conPutStrLn args "[Generating Code]"
                           let stats = showStats au $ statsModule oTree
@@ -95,6 +95,7 @@ run v p args = do
                                 Alloy -> ("als", addStats (genModule (mode args) (oTree, genv)) stats)
                                 Alloy42 -> ("als", addStats (genModule (mode args) (oTree, genv)) stats)
                                 Xml ->   ("xml", genXmlModule oTree)
+                                Clafer -> ("des.cfr", printTree $ sugarModule oTree)
                           if console_output args
                              then putStrLn code
                              else writeFile (f' ++ "." ++ ext) code
@@ -122,7 +123,7 @@ showInterval (n, ExIntegerAst) = show n ++ "..*"
 showInterval (n, ExIntegerNum m) = show n ++ ".." ++ show m
 
 clafer = ClaferArgs {
-  mode = Alloy &= help "Generated output type" &= name "m",
+  mode = Alloy &= help "Generated output type. Available modes: alloy (default); alloy42 (new Alloy version); xml (intermediate representation of Clafer model); clafer (analyzed and desugared clafer model)" &= name "m",
   console_output = False &= help "Output code on console" &= name "o",
   flatten_inheritance = def &= help "Flatten inheritance" &= name "i",
   file = def &= args,

@@ -22,7 +22,7 @@ module Intermediate.Desugarer where
 import Front.Absclafer
 import Intermediate.Intclafer
 import Monad
-import Common
+import Common hiding (Clafer)
 import Data.Function
 
 desugarModule :: Module -> IModule
