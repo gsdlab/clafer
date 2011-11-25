@@ -133,7 +133,7 @@ clafer = ClaferArgs {
   force_resolver = def &= help "Force name resolution" &= name "f",
   keep_unused = def &= help "Keep unused abstract clafers" &= name "k",
   no_stats = def &= help "Don't print statistics" &= name "s"
- } &= summary "Clafer v0.0.2"
+ } &= summary "Clafer v0.0.3"
 
 main :: IO ()
 main = do
