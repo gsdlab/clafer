@@ -196,6 +196,7 @@ desugarCard x = case x of
   CardLone  ->  Just (0, ExIntegerNum 1)
   CardSome  ->  Just (1, ExIntegerAst)
   CardAny  ->   Just (0, ExIntegerAst)
+  CardNum n  -> Just (n, ExIntegerNum n)
   CardInterval (NCard i ex)  -> Just (i, ex)
 
 
