@@ -9,7 +9,7 @@ EnumDecl.       Declaration ::= "enum" Ident "=" [EnumId] ;
 ClaferDecl.     Declaration ::= Clafer ;
 ConstDecl.      Declaration ::= Constraint ;
 
-Clafer.         Clafer ::= Abstract GCard Ident Super Card Elements ;
+Clafer.         Clafer ::= Abstract GCard Ident Super Card Init Elements ;
 Constraint.     Constraint ::= "[" [Exp] "]" ;
 
 AbstractEmpty.  Abstract ::= ;
@@ -23,7 +23,7 @@ ClaferUse.      ElementCl ::= "`" Name Card Elements ;
 Subconstraint.  ElementCl ::= Constraint ;
 
 SuperEmpty.     Super ::=  ;
-SuperSome.      Super ::= SuperHow SetExp Init ;
+SuperSome.      Super ::= SuperHow SetExp ;
 
 rules           SuperHow ::= ":" | "->" ;
 

@@ -99,7 +99,7 @@ instance Print Declaration where
 
 instance Print Clafer where
   prt i e = case e of
-   Clafer abstract gcard id super card elements -> prPrec i 0 (concatD [prt 0 abstract , prt 0 gcard , prt 0 id , prt 0 super , prt 0 card , prt 0 elements])
+   Clafer abstract gcard id super card init elements -> prPrec i 0 (concatD [prt 0 abstract , prt 0 gcard , prt 0 id , prt 0 super , prt 0 card , prt 0 init , prt 0 elements])
 
 
 instance Print Constraint where
@@ -132,7 +132,7 @@ instance Print ElementCl where
 instance Print Super where
   prt i e = case e of
    SuperEmpty  -> prPrec i 0 (concatD [])
-   SuperSome superhow setexp init -> prPrec i 0 (concatD [prt 0 superhow , prt 0 setexp , prt 0 init])
+   SuperSome superhow setexp -> prPrec i 0 (concatD [prt 0 superhow , prt 0 setexp])
 
 
 instance Print SuperHow where

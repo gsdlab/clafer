@@ -14,7 +14,7 @@ data Declaration =
   deriving (Eq,Ord,Show)
 
 data Clafer =
-   Clafer Abstract GCard Ident Super Card Elements
+   Clafer Abstract GCard Ident Super Card Init Elements
   deriving (Eq,Ord,Show)
 
 data Constraint =
@@ -39,7 +39,7 @@ data ElementCl =
 
 data Super =
    SuperEmpty
- | SuperSome SuperHow SetExp Init
+ | SuperSome SuperHow SetExp
   deriving (Eq,Ord,Show)
 
 data SuperHow =
