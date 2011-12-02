@@ -39,12 +39,22 @@ data ElementCl =
 
 data Super =
    SuperEmpty
- | SuperSome SuperHow Exp
+ | SuperSome SuperHow SetExp Init
   deriving (Eq,Ord,Show)
 
 data SuperHow =
    SuperHow_1
  | SuperHow_2
+  deriving (Eq,Ord,Show)
+
+data Init =
+   InitEmpty
+ | InitSome InitHow Exp
+  deriving (Eq,Ord,Show)
+
+data InitHow =
+   InitHow_1
+ | InitHow_2
   deriving (Eq,Ord,Show)
 
 data GCard =
@@ -61,6 +71,7 @@ data Card =
  | CardLone
  | CardSome
  | CardAny
+ | CardNum Integer
  | CardInterval NCard
   deriving (Eq,Ord,Show)
 
@@ -109,12 +120,16 @@ data Exp =
  | EInt Integer
  | EDouble Double
  | EStr String
- | Union Exp Exp
- | Difference Exp Exp
- | Intersection Exp Exp
- | Domain Exp Exp
- | Range Exp Exp
- | Join Exp Exp
+ | ESetExp SetExp
+  deriving (Eq,Ord,Show)
+
+data SetExp =
+   Union SetExp SetExp
+ | Difference SetExp SetExp
+ | Intersection SetExp SetExp
+ | Domain SetExp SetExp
+ | Range SetExp SetExp
+ | Join SetExp SetExp
  | ClaferId Name
   deriving (Eq,Ord,Show)
 

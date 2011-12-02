@@ -23,9 +23,14 @@ ClaferUse.      ElementCl ::= "`" Name Card Elements ;
 Subconstraint.  ElementCl ::= Constraint ;
 
 SuperEmpty.     Super ::=  ;
-SuperSome.      Super ::= SuperHow Exp ;
+SuperSome.      Super ::= SuperHow SetExp Init ;
 
 rules           SuperHow ::= ":" | "->" ;
+
+InitEmpty.      Init ::= ;
+InitSome.       Init ::= InitHow Exp ;
+
+rules           InitHow ::= "=" | ":=" ;
 
 GCardEmpty.     GCard ::= ;
 GCardXor.       GCard ::= "xor" ;
@@ -38,6 +43,7 @@ CardEmpty.      Card ::= ;
 CardLone.       Card ::= "?" ;
 CardSome.       Card ::= "+" ;
 CardAny.        Card ::= "*" ;
+CardNum.        Card ::= Integer ;
 CardInterval.   Card ::= NCard ;
 
 GNCard.         GNCard ::= Integer "-"  ExInteger ;
@@ -75,13 +81,15 @@ EMinExp.        Exp10 ::= "-" Exp11 ;
 EInt.           Exp11 ::= Integer ;
 EDouble.        Exp11 ::= Double ;
 EStr.           Exp11 ::= String ;
-Union.          Exp12 ::= Exp12 "++" Exp13 ;
-Difference.     Exp12 ::= Exp12 "--" Exp13 ;
-Intersection.   Exp13 ::= Exp13 "&"  Exp14 ;
-Domain.         Exp14 ::= Exp14 "<:" Exp15 ;
-Range.          Exp15 ::= Exp15 ":>" Exp16 ;
-Join.           Exp16 ::= Exp16 "."  Exp17 ;
-ClaferId.       Exp17 ::= Name ;
+ESetExp.        Exp11 ::= SetExp ;
+
+Union.          SetExp  ::= SetExp  "++" SetExp1 ;
+Difference.     SetExp1 ::= SetExp1 "--" SetExp2 ;
+Intersection.   SetExp2 ::= SetExp2 "&"  SetExp3 ;
+Domain.         SetExp3 ::= SetExp3 "<:" SetExp4 ;
+Range.          SetExp4 ::= SetExp4 ":>" SetExp5 ;
+Join.           SetExp5 ::= SetExp5 "."  SetExp6 ;
+ClaferId.       SetExp6 ::= Name ;
 
 Decl.           Decl ::= Disj [LocId] ":" Exp ;
 
@@ -108,4 +116,5 @@ separator  nonempty Decl        "," ;
 separator  nonempty LocId       "," ;
 terminator nonempty ModId       "\\" ;
 
-coercions Exp 17 ;
+coercions Exp 11 ;
+coercions SetExp 6 ;

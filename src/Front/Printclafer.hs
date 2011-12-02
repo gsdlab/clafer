@@ -132,13 +132,25 @@ instance Print ElementCl where
 instance Print Super where
   prt i e = case e of
    SuperEmpty  -> prPrec i 0 (concatD [])
-   SuperSome superhow exp -> prPrec i 0 (concatD [prt 0 superhow , prt 0 exp])
+   SuperSome superhow setexp init -> prPrec i 0 (concatD [prt 0 superhow , prt 0 setexp , prt 0 init])
 
 
 instance Print SuperHow where
   prt i e = case e of
    SuperHow_1  -> prPrec i 0 (concatD [doc (showString ":")])
    SuperHow_2  -> prPrec i 0 (concatD [doc (showString "->")])
+
+
+instance Print Init where
+  prt i e = case e of
+   InitEmpty  -> prPrec i 0 (concatD [])
+   InitSome inithow exp -> prPrec i 0 (concatD [prt 0 inithow , prt 0 exp])
+
+
+instance Print InitHow where
+  prt i e = case e of
+   InitHow_1  -> prPrec i 0 (concatD [doc (showString "=")])
+   InitHow_2  -> prPrec i 0 (concatD [doc (showString ":=")])
 
 
 instance Print GCard where
@@ -157,6 +169,7 @@ instance Print Card where
    CardLone  -> prPrec i 0 (concatD [doc (showString "?")])
    CardSome  -> prPrec i 0 (concatD [doc (showString "+")])
    CardAny  -> prPrec i 0 (concatD [doc (showString "*")])
+   CardNum n -> prPrec i 0 (concatD [prt 0 n])
    CardInterval ncard -> prPrec i 0 (concatD [prt 0 ncard])
 
 
@@ -210,17 +223,22 @@ instance Print Exp where
    EInt n -> prPrec i 11 (concatD [prt 0 n])
    EDouble d -> prPrec i 11 (concatD [prt 0 d])
    EStr str -> prPrec i 11 (concatD [prt 0 str])
-   Union exp0 exp -> prPrec i 12 (concatD [prt 12 exp0 , doc (showString "++") , prt 13 exp])
-   Difference exp0 exp -> prPrec i 12 (concatD [prt 12 exp0 , doc (showString "--") , prt 13 exp])
-   Intersection exp0 exp -> prPrec i 13 (concatD [prt 13 exp0 , doc (showString "&") , prt 14 exp])
-   Domain exp0 exp -> prPrec i 14 (concatD [prt 14 exp0 , doc (showString "<:") , prt 15 exp])
-   Range exp0 exp -> prPrec i 15 (concatD [prt 15 exp0 , doc (showString ":>") , prt 16 exp])
-   Join exp0 exp -> prPrec i 16 (concatD [prt 16 exp0 , doc (showString ".") , prt 17 exp])
-   ClaferId name -> prPrec i 17 (concatD [prt 0 name])
+   ESetExp setexp -> prPrec i 11 (concatD [prt 0 setexp])
 
   prtList es = case es of
    [] -> (concatD [])
    x:xs -> (concatD [prt 0 x , prt 0 xs])
+
+instance Print SetExp where
+  prt i e = case e of
+   Union setexp0 setexp -> prPrec i 0 (concatD [prt 0 setexp0 , doc (showString "++") , prt 1 setexp])
+   Difference setexp0 setexp -> prPrec i 1 (concatD [prt 1 setexp0 , doc (showString "--") , prt 2 setexp])
+   Intersection setexp0 setexp -> prPrec i 2 (concatD [prt 2 setexp0 , doc (showString "&") , prt 3 setexp])
+   Domain setexp0 setexp -> prPrec i 3 (concatD [prt 3 setexp0 , doc (showString "<:") , prt 4 setexp])
+   Range setexp0 setexp -> prPrec i 4 (concatD [prt 4 setexp0 , doc (showString ":>") , prt 5 setexp])
+   Join setexp0 setexp -> prPrec i 5 (concatD [prt 5 setexp0 , doc (showString ".") , prt 6 setexp])
+   ClaferId name -> prPrec i 6 (concatD [prt 0 name])
+
 
 instance Print Decl where
   prt i e = case e of

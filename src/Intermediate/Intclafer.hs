@@ -106,9 +106,9 @@ data IExp =
 {-
 For IFunExp standard set of operators includes:
 1. Unary operators:
-        !          -- not
+        !          -- not (logical)
         #          -- set counting operator
-        -          -- negation
+        -          -- negation (arithmetic)
 2. Binary operators:
         <=>        -- equivalence
         =>         -- implication
