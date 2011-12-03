@@ -102,7 +102,7 @@ genXmlAnyOp ft f xs = concatMap
   (\(tname, texp) -> tagType tname (ft texp) $ f texp) xs
 
 genXmlPExp (PExp iType pid iexp) = concat
-  [ tag "IType" $ show iType
+  [ tag "IType" $ optTag iType genXmlIType
   , tag "PId" pid
   , tagType "IExp" (genXmlIExpType iexp) $ genXmlIExp iexp]
 
@@ -138,3 +138,9 @@ genXmlQuantType x = case x of
   IOne  -> "IOne"
   ISome -> "ISome"
   IAll  -> "IAll"
+
+genXmlIType x = case x of
+  IBoolean -> "IBoolean"
+  IString  str -> tag "IString" $ optTag str show
+  INumeric n   -> tag "INumeric" $ optTag n show
+  ISet -> "ISet"
