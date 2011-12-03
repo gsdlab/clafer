@@ -95,8 +95,9 @@ genXmlGlCard interval = tag "GlobalCard" $ genXmlInterval interval
 
 genXmlElement x = case x of
   IEClafer clafer  -> tagType "Element" "IEClafer" $ genXmlClafer clafer
-  IEConstraint _ pexp  -> tagType "Element" "IEConstraint" $
-                        tag "Exp" $ genXmlPExp pexp
+  IEConstraint isHard pexp  -> tagType "Element" "IEConstraint" $ concat
+                         [ tag "IsHard" $ show isHard
+                         , tag "Exp" $ genXmlPExp pexp]
 
 genXmlAnyOp ft f xs = concatMap
   (\(tname, texp) -> tagType tname (ft texp) $ f texp) xs
