@@ -148,7 +148,7 @@ arithBinOps = [iPlus, iSub, iMul, iDiv]
 
 iUnion        = "++"
 iDifference   = "--"
-iIntersection = "&&"
+iIntersection = "&"
 iDomain       = "<:"
 iRange        = ":>"
 iJoin         = "."
