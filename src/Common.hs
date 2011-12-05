@@ -22,6 +22,7 @@ module Common where
 
 import Data.Tree
 import Data.Maybe
+import Data.Char
 import List
 import Data.Map (Map)
 import qualified Data.Map as Map
@@ -162,6 +163,9 @@ iIfThenElse   = "=>else"
 
 mkIFunExp op (x:[]) = x
 mkIFunExp op xs = foldl1 (\x y -> IFunExp op $ map (PExp (Just ISet) "") [x,y]) xs
+
+toLowerS "" = ""
+toLowerS (s:ss) = toLower s : ss
 
 -- -----------------------------------------------------------------------------
 -- Constants

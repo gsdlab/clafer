@@ -39,6 +39,8 @@ tagType name typename exp = opening ++ rest
 
 genXmlInteger n = tag "IntLiteral" $ show n
 
+genXmlBoolean label b = tag label $ toLowerS $ show b
+
 genXmlModule :: IModule -> Result
 genXmlModule imodule = concat
   [ "<?xml version=\"1.0\"?>"
@@ -46,7 +48,7 @@ genXmlModule imodule = concat
   , " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""
   , " xmlns:cl=\"http://gsd.uwaterloo.ca/clafer\""
   , " xsi:schemaLocation=\"http://gsd.uwaterloo.ca/clafer"
-  , "                      http://gsd.uwaterloo.ca/Clafer.xsd\">"
+  , " http://gsd.uwaterloo.ca/Clafer.xsd\">"
   , tag "Name" $ mName imodule
   , concatMap genXmlElement $ mDecls imodule
   , "</Module>"]
@@ -55,19 +57,19 @@ genXmlModule imodule = concat
 genXmlClafer :: IClafer -> Result
 genXmlClafer x = case x of
   IClafer abstract gcard id uid super card glcard elements  ->
-    tag "Clafer" $ concat [ genXmlAbstract abstract
-                          , optTag gcard genXmlGCard
-                          , genXmlId id
-                          , genXmlUid uid
-                          , genXmlSuper super
-                          , optTag card genXmlCard
-                          , genXmlGlCard glcard
-                          , concatMap genXmlElement elements]
+    concat [ genXmlAbstract abstract
+           , optTag gcard genXmlGCard
+           , genXmlId id
+           , genXmlUid uid
+           , genXmlSuper super
+           , optTag card genXmlCard
+           , genXmlGlCard glcard
+           , concatMap genXmlElement elements]
 
-genXmlAbstract isAbstract = tag "IsAbstract" $ show isAbstract
+genXmlAbstract isAbstract = genXmlBoolean "IsAbstract" isAbstract
 
 genXmlGCard (IGCard isKeyword interval) = tag "GroupCard" $ concat
-  [ tag "IsKeyword" $ show isKeyword
+  [ genXmlBoolean "IsKeyword" isKeyword
   , genXmlInterval interval]
 
 genXmlInterval (nMin, nMax) = tag "Interval" $ concat
@@ -84,7 +86,7 @@ genXmlUid uid = tag "UniqueId" uid
 
 genXmlSuper x = case x of
   ISuper isOverlapping pexps -> tag "Super" $ concat
-    [ tag "IsOverlapping" $ show isOverlapping
+    [ genXmlBoolean "IsOverlapping" isOverlapping
     , concatMap genXmlSuperSet pexps]
 
 genXmlSuperSet pexp = tag "SuperSet" $ genXmlPExp pexp
@@ -94,9 +96,9 @@ genXmlCard interval = tag "Card" $ genXmlInterval interval
 genXmlGlCard interval = tag "GlobalCard" $ genXmlInterval interval
 
 genXmlElement x = case x of
-  IEClafer clafer  -> tagType "Element" "IEClafer" $ genXmlClafer clafer
+  IEClafer clafer  -> tagType "IElement" "IClafer" $ genXmlClafer clafer
   IEConstraint isHard pexp  -> tagType "Element" "IEConstraint" $ concat
-                         [ tag "IsHard" $ show isHard
+                         [ genXmlBoolean "IsHard" isHard
                          , tag "Exp" $ genXmlPExp pexp]
 
 genXmlAnyOp ft f xs = concatMap
@@ -124,7 +126,7 @@ genXmlIExp x = case x of
   IClaferId modName sident isTop -> concat
     [ tag "ModName" modName
     , tag "Sident" $ tag "StrLiteral" sident
-    , tag "IsTop" $ show isTop]
+    , genXmlBoolean "IsTop" isTop]
 
 
 genXmlDecl (IDecl disj locids pexp) = tag "Declaration" $ concat
