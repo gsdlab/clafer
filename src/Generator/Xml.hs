@@ -41,6 +41,8 @@ genXmlInteger n = tag "IntLiteral" $ show n
 
 genXmlBoolean label b = tag label $ toLowerS $ show b
 
+genXmlString str = tag "StrLiteral" str
+
 genXmlModule :: IModule -> Result
 genXmlModule imodule = concat
   [ "<?xml version=\"1.0\"?>"
@@ -72,7 +74,7 @@ genXmlGCard (IGCard isKeyword interval) = tag "GroupCard" $ concat
   [ genXmlBoolean "IsKeyword" isKeyword
   , genXmlInterval interval]
 
-genXmlInterval (nMin, nMax) = tag "Interval" $ concat
+genXmlInterval (nMin, nMax) = concat
   [ tag "Min" $ genXmlInteger nMin
   , genXmlExInteger nMax]
 
@@ -124,14 +126,21 @@ genXmlIExp x = case x of
     , concatMap genXmlDecl decls
     , tag "BodyParentExp" $ genXmlPExp pexp]
   IFunExp op exps -> concat
-    [ tag "Operation" $ show op
+    [ tag "Operation" $ concatMap escape op
     , concatMap genXmlPExp exps]
+    where
+    escape '\"' = "&quot;"
+    escape '\'' = "&apos;"
+    escape '<'  = "&lt;"
+    escape '>'  = "&gt;"
+    escape '&'  = "&amp;"
+    escape x    = [x]
   IInt n -> genXmlInteger n
   IDouble n -> tag "DoubleLiteral" $ show n
-  IStr str -> tag "StrLiteral" str  
+  IStr str -> genXmlString str  
   IClaferId modName sident isTop -> concat
     [ tag "ModName" modName
-    , tag "Sident" $ tag "StrLiteral" sident
+    , tag "Sident" $ genXmlString sident
     , genXmlBoolean "IsTop" isTop]
 
 
