@@ -85,7 +85,7 @@ genXmlId ident = tag "Id" ident
 genXmlUid uid = tag "UniqueId" uid
 
 genXmlSuper x = case x of
-  ISuper isOverlapping pexps -> tag "Super" $ concat
+  ISuper isOverlapping pexps -> tag "Supers" $ concat
     [ genXmlBoolean "IsOverlapping" isOverlapping
     , concatMap genXmlSuperSet pexps]
 
