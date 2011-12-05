@@ -48,7 +48,7 @@ genXmlModule imodule = concat
   , " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""
   , " xmlns:cl=\"http://gsd.uwaterloo.ca/clafer\""
   , " xsi:schemaLocation=\"http://gsd.uwaterloo.ca/clafer"
-  , " http://gsd.uwaterloo.ca/Clafer.xsd\">"
+  , " http://gsd.uwaterloo.ca/ClaferIR.xsd\">"
   , tag "Name" $ mName imodule
   , concatMap genXmlElement $ mDecls imodule
   , "</Module>"]
@@ -72,7 +72,7 @@ genXmlGCard (IGCard isKeyword interval) = tag "GroupCard" $ concat
   [ genXmlBoolean "IsKeyword" isKeyword
   , genXmlInterval interval]
 
-genXmlInterval (nMin, nMax) = tag "Interval" $ concat
+genXmlInterval (nMin, nMax) = tag "IInterval" $ concat
   [ tag "Min" $ genXmlInteger nMin
   , genXmlExInteger nMax]
 
@@ -96,30 +96,36 @@ genXmlCard interval = tag "Card" $ genXmlInterval interval
 genXmlGlCard interval = tag "GlobalCard" $ genXmlInterval interval
 
 genXmlElement x = case x of
-  IEClafer clafer  -> tagType "IElement" "IClafer" $ genXmlClafer clafer
-  IEConstraint isHard pexp  -> tagType "Element" "IEConstraint" $ concat
+  IEClafer clafer  -> tagType "Declaration" "IClafer" $ genXmlClafer clafer
+  IEConstraint isHard pexp  -> tagType "Declaration" "IConstraint" $ concat
                          [ genXmlBoolean "IsHard" isHard
-                         , tag "Exp" $ genXmlPExp pexp]
-
+                         , genXmlPExp pexp]
+                                                          
 genXmlAnyOp ft f xs = concatMap
   (\(tname, texp) -> tagType tname (ft texp) $ f texp) xs
 
-genXmlPExp (PExp iType pid iexp) = concat
-  [ tag "IType" $ optTag iType genXmlIType
-  , tag "PId" pid
-  , tagType "IExp" (genXmlIExpType iexp) $ genXmlIExp iexp]
+genXmlPExp (PExp iType pid iexp) = tag "ParentExp" $ concat
+  [ optTag iType  genXmlIType
+  , tag "ParentId" pid
+  , tagType "Exp" (genXmlIExpType iexp) $ genXmlIExp iexp]
 
-genXmlIExpType x = takeWhile (/= ' ') $ show x
+genXmlIExpType x = case x of
+  IDeclPExp _ _ _ -> "IDeclarationParentExp"
+  IFunExp _ _ -> "IFunctionExp"
+  IInt n -> "IIntExp"
+  IDouble n -> "IDoubleExp"
+  IStr str -> "IStringExp"
+  IClaferId _ _ _ -> "IClaferId"
+
 
 genXmlIExp x = case x of
   IDeclPExp quant decls pexp -> concat
-    [ tagType "Quant" (genXmlQuantType quant) ""
+    [ tagType "Quantifier" (genXmlQuantType quant) ""
     , concatMap genXmlDecl decls
-    , tag "Exp" $ genXmlPExp pexp]
+    , tag "BodyParentExp" $ genXmlPExp pexp]
   IFunExp op exps -> concat
-    [ tag "Op" $ show op
-    , concatMap (\(tname, texp) -> tag tname $ genXmlPExp texp) $
-      zip (map (\x -> "Exp" ++ show x) [1..]) exps]
+    [ tag "Operation" $ show op
+    , concatMap genXmlPExp exps]
   IInt n -> genXmlInteger n
   IDouble n -> tag "DoubleLiteral" $ show n
   IStr str -> tag "StrLiteral" str  
@@ -142,8 +148,13 @@ genXmlQuantType x = case x of
   ISome -> "ISome"
   IAll  -> "IAll"
 
-genXmlIType x = case x of
+genXmlITypeType x = case x of
   IBoolean -> "IBoolean"
-  IString  str -> tag "IString" $ optTag str show
-  INumeric n   -> tag "INumeric" $ optTag n show
+  IString  str -> "IString"
+  INumeric n   -> "INumeric"
   ISet -> "ISet"
+
+genXmlIType x = tagType "Type" (genXmlITypeType x) $ case x of
+  IString  str -> optTag str (\x -> tagType "StringSubtype" (show x) "")
+  INumeric n   -> optTag n (\x -> tagType "NumericSubtype" (show x) "")
+  _ -> ""
