@@ -72,7 +72,7 @@ genXmlGCard (IGCard isKeyword interval) = tag "GroupCard" $ concat
   [ genXmlBoolean "IsKeyword" isKeyword
   , genXmlInterval interval]
 
-genXmlInterval (nMin, nMax) = tag "IInterval" $ concat
+genXmlInterval (nMin, nMax) = tag "Interval" $ concat
   [ tag "Min" $ genXmlInteger nMin
   , genXmlExInteger nMax]
 
@@ -105,7 +105,7 @@ genXmlAnyOp ft f xs = concatMap
   (\(tname, texp) -> tagType tname (ft texp) $ f texp) xs
 
 genXmlPExp (PExp iType pid iexp) = tag "ParentExp" $ concat
-  [ optTag iType  genXmlIType
+  [ optTag iType genXmlIType
   , tag "ParentId" pid
   , tagType "Exp" (genXmlIExpType iexp) $ genXmlIExp iexp]
 
