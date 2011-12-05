@@ -124,7 +124,7 @@ genXmlIExp x = case x of
   IDeclPExp quant decls pexp -> concat
     [ tagType "Quantifier" (genXmlQuantType quant) ""
     , concatMap genXmlDecl decls
-    , tag "BodyParentExp" $ genXmlPExp pexp]
+    , genXmlPExp pexp]
   IFunExp op exps -> concat
     [ tag "Operation" $ concatMap escape op
     , concatMap genXmlPExp exps]
