@@ -164,9 +164,10 @@ split' x f = case x of
 
 allUnique :: IModule -> Bool
 allUnique imodule = and un && (null $
-  filter (\xs -> 1 < length xs) $ group $ sort $ concat idents)
+  filter (\xs -> 1 < length xs) $ group $ sort $ concat idents) && identsOk
   where
   (un, idents) = unzip $ map allUniqueElement $ mDecls imodule
+  identsOk     = and $ map (checkConstraintElement (concat idents)) $ mDecls imodule
 
 allUniqueClafer clafer =
   ("clafer" == getSuper clafer && and un, ident clafer : concat idents)
@@ -177,6 +178,23 @@ allUniqueElement :: IElement -> (Bool, [String])
 allUniqueElement x = case x of
   IEClafer clafer -> allUniqueClafer clafer
   IEConstraint _ _ -> (True, [])
+
+
+checkConstraintElement idents x = case x of
+  IEClafer clafer -> and $ map (checkConstraintElement idents) $ elements clafer
+  IEConstraint _ pexp -> checkConstraintPExp idents pexp 
+
+checkConstraintPExp idents (PExp _ _ exp) = checkConstraintIExp idents exp
+
+checkConstraintIExp idents x = case x of
+   IDeclPExp _ oDecls pexp ->
+     checkConstraintPExp ((oDecls >>= (checkConstraintIDecl idents)) ++ idents) pexp
+   IClaferId _ ident _ -> if ident `elem` idents then True
+                          else error $ ident ++ " not found"
+
+checkConstraintIDecl idents (IDecl _ decls pexp)
+  | checkConstraintPExp idents pexp = decls
+  | otherwise                       = []
 
 -- -----------------------------------------------------------------------------
 findDupModule :: ClaferArgs -> IModule -> IModule
