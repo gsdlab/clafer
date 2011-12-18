@@ -47,6 +47,9 @@ resolveTElement x = case x of
   IEConstraint isHard pexp  -> IEConstraint isHard $ propagate $ resolveTPExp pexp
 
 
+t = PExp Nothing "c2_exp" $ IFunExp "=" [PExp Nothing "c3_exp" (IClaferId "" "this" True), PExp Nothing "c4_exp" $ IInt 2]
+
+
 resolveTPExp :: PExp -> PExp
 resolveTPExp (PExp _ pid x) = case x of
   IDeclPExp quant decls pexp -> PExp (Just IBoolean) pid $
@@ -139,7 +142,6 @@ resolveTDecl x = x{body = resolveTPExp $ body x}
 
 propagate :: PExp -> PExp
 propagate x = propagateTIExp IBoolean  x
-
 
 propagateTIExp :: IType -> PExp -> PExp
 propagateTIExp piType x@(PExp iType pid y) = case y of

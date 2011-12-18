@@ -62,7 +62,8 @@ showSet delim xs = showSet' delim $ filterNull xs
 -- optimization: if only boolean parents, then set card is known
 genClafer :: ClaferMode -> Maybe IClafer -> IClafer -> Result
 genClafer mode parent oClafer
-  | isJust parent && isRef clafer || isPrimitiveClafer clafer = ""
+  | isJust parent && isRef clafer ||
+    (isPrimitiveClafer clafer && isJust parent)= ""
   | otherwise    = (unlines $ filterNull
                    [cardFact ++ claferDecl clafer
                    , showSet "\n, " $ genRelations mode clafer
@@ -117,7 +118,8 @@ isPrimitiveClafer clafer = case super clafer of
 genRelations mode clafer = ref : (map mkRel $ getSubclafers $ elements clafer)
   where
   ref = if isOverlapping $ super clafer then
-          genRel "ref" clafer $ refType mode clafer
+          genRel "ref" clafer {card = Just (1, ExIntegerNum 1)} $
+                 refType mode clafer
         else ""
   mkRel c = genRel (genRelName $ uid c) c $
             (if isRef c || isPrimitiveClafer c then (refType mode) else uid) c
