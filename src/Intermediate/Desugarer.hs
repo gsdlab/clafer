@@ -71,7 +71,7 @@ desugarClafer x = case x of
 sugarClafer :: IClafer -> Clafer
 sugarClafer x = case x of
   IClafer abstract gcard id uid super card _ elements  ->
-    Clafer (sugarAbstract abstract) (sugarGCard gcard) (Ident id)
+    Clafer (sugarAbstract abstract) (sugarGCard gcard) (Ident uid)
       (sugarSuper super) (sugarCard card) InitEmpty (sugarElements elements)
 
 
