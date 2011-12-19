@@ -47,9 +47,6 @@ resolveTElement x = case x of
   IEConstraint isHard pexp  -> IEConstraint isHard $ propagate $ resolveTPExp pexp
 
 
-t = PExp Nothing "c2_exp" $ IFunExp "=" [PExp Nothing "c3_exp" (IClaferId "" "this" True), PExp Nothing "c4_exp" $ IInt 2]
-
-
 resolveTPExp :: PExp -> PExp
 resolveTPExp (PExp _ pid x) = case x of
   IDeclPExp quant decls pexp -> PExp (Just IBoolean) pid $
@@ -146,16 +143,19 @@ propagate x = propagateTIExp IBoolean  x
 propagateTIExp :: IType -> PExp -> PExp
 propagateTIExp piType x@(PExp iType pid y) = case y of
   IDeclPExp quant decls pexp -> PExp iType pid $ IDeclPExp quant decls $ propagate pexp
-  IFunExp op pexps -> result
+  IFunExp op pexps@((PExp iType1 _ _):(PExp iType2 _ _):[]) -> result
     where
     result
-      | op `elem` relGenBinOps ++ arithBinOps ++ [iMin] =
+      | op `elem` relGenBinOps =
+          PExp iType pid y{exps = map (propagateTIExp iType') pexps}
+      | op `elem` arithBinOps ++ [iMin] =
           PExp iType pid y{exps = map (propagateTIExp (fromJust iType)) pexps}
       | op == iJoin = 
           PExp iType pid y{exps = head pexps :
                        (map (propagateTIExp (fromJust iType)) $ tail pexps)}
               
       | otherwise = x
+    iType' = resolveT (fromJust iType1) (fromJust iType2)
   IClaferId _ _ _ -> PExp (Just $ propagateT piType) pid y
   _ -> x
 
