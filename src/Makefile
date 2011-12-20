@@ -6,10 +6,11 @@ all:
 #	cat Generator/XmlHeader.hs > Generator/XmlHelp.hs
 #	DrIFT -r Front/Absclafer.hs >> Generator/XmlHelp.hs
 #	DrIFT -r Intermediate/Intclafer.hs >> Generator/XmlHelp.hs
-
 	$(foreach file, Absclafer ErrM Lexclafer Printclafer Parclafer, \
 		$(if $(call apPatch,--dry-run,$(file)), \
 			$(call apPatch,,$(file))))
+	ghc --make dateVer
+	./dateVer > Version.hs
 	ghc --make -O clafer
 
 prof:

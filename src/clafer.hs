@@ -31,6 +31,7 @@ import System.Timeout
 import Control.Monad.State
 
 import Common
+import Version
 import Front.Lexclafer
 import Front.Parclafer
 import Front.Printclafer
@@ -134,7 +135,7 @@ clafer = ClaferArgs {
   force_resolver = def &= help "Force name resolution" &= name "f",
   keep_unused = def &= help "Keep unused abstract clafers" &= name "k",
   no_stats = def &= help "Don't print statistics" &= name "s"
- } &= summary "Clafer v0.0.3"
+ } &= summary ("Clafer v0.3." ++ version)
 
 main :: IO ()
 main = do
