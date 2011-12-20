@@ -252,6 +252,7 @@ desugarSetExp x = PExp Nothing "" $ desugarSetExp' x
 desugarSetExp' :: SetExp -> IExp
 desugarSetExp' x = case x of
   Union exp0 exp        -> dop iUnion        [exp0, exp]
+  UnionCom exp0 exp     -> dop iUnion        [exp0, exp]
   Difference exp0 exp   -> dop iDifference   [exp0, exp]
   Intersection exp0 exp -> dop iIntersection [exp0, exp]
   Domain exp0 exp       -> dop iDomain       [exp0, exp]

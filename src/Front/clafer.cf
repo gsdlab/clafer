@@ -84,6 +84,7 @@ EStr.           Exp11 ::= String ;
 ESetExp.        Exp11 ::= SetExp ;
 
 Union.          SetExp  ::= SetExp  "++" SetExp1 ;
+UnionCom.       SetExp  ::= SetExp  ","  SetExp1 ;
 Difference.     SetExp1 ::= SetExp1 "--" SetExp2 ;
 Intersection.   SetExp2 ::= SetExp2 "&"  SetExp3 ;
 Domain.         SetExp3 ::= SetExp3 "<:" SetExp4 ;

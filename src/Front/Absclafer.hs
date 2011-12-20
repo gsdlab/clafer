@@ -125,6 +125,7 @@ data Exp =
 
 data SetExp =
    Union SetExp SetExp
+ | UnionCom SetExp SetExp
  | Difference SetExp SetExp
  | Intersection SetExp SetExp
  | Domain SetExp SetExp

@@ -232,6 +232,7 @@ instance Print Exp where
 instance Print SetExp where
   prt i e = case e of
    Union setexp0 setexp -> prPrec i 0 (concatD [prt 0 setexp0 , doc (showString "++") , prt 1 setexp])
+   UnionCom setexp0 setexp -> prPrec i 0 (concatD [prt 0 setexp0 , doc (showString ",") , prt 1 setexp])
    Difference setexp0 setexp -> prPrec i 1 (concatD [prt 1 setexp0 , doc (showString "--") , prt 2 setexp])
    Intersection setexp0 setexp -> prPrec i 2 (concatD [prt 2 setexp0 , doc (showString "&") , prt 3 setexp])
    Domain setexp0 setexp -> prPrec i 3 (concatD [prt 3 setexp0 , doc (showString "<:") , prt 4 setexp])

@@ -183,7 +183,10 @@ genParentConst pClafer clafer = maybe ""
 genOptParentConst clafer
   | glCard' == "one"  = [""]
   | glCard' == "lone" = ["one ", rel]
-  | otherwise         = ["one ", rel, ".this"]
+  | otherwise         = [ "one @", rel, ".this"]
+  -- eliminating problems with cyclic containment;
+  -- should be added to cases when cyclic containment occurs
+  --                    , " && no iden & @", rel, " && no ~@", rel, " & @", rel]
   where
   rel = genRelName $ uid clafer
   glCard' = genIntervalCrude $ glCard clafer
@@ -299,7 +302,11 @@ transformExp x@(IFunExp op exps@(e1:e2:_))
                                              mkNumExp locId op e1 (locCl' locRef) e2
       (INumeric (Just IInteger), ISet) -> if e2 == (locCl' locRef) then x else
                                              mkNumExp locId op e1 e2 (locCl' locRef)
-      (ISet, ISet) -> if e1 == locCl' locRef then x else mkNumExps
+      (INumeric (Just ISetInteger), INumeric (Just ISetInteger)) ->
+        if e1 == locCl' locRef then x else mkNumExps
+        [("cl0", e1), ("cl1", e2)] op (locCl' "cl0.@ref") (locCl' "cl1.@ref")
+      (INumeric (Just ISetReal), INumeric (Just ISetReal)) ->
+        if e1 == locCl' locRef then x else mkNumExps
         [("cl0", e1), ("cl1", e2)] op (locCl' "cl0.@ref") (locCl' "cl1.@ref")
       _ -> x
   | otherwise = x
