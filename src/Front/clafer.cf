@@ -37,7 +37,7 @@ GCardXor.       GCard ::= "xor" ;
 GCardOr.        GCard ::= "or" ;
 GCardMux.       GCard ::= "mux" ;
 GCardOpt.       GCard ::= "opt" ;
-GCardInterval.  GCard ::= "<" GNCard ">" ;
+GCardInterval.  GCard ::= NCard ;
 
 CardEmpty.      Card ::= ;
 CardLone.       Card ::= "?" ;
@@ -46,7 +46,6 @@ CardAny.        Card ::= "*" ;
 CardNum.        Card ::= Integer ;
 CardInterval.   Card ::= NCard ;
 
-GNCard.         GNCard ::= Integer "-"  ExInteger ;
 NCard.          NCard  ::= Integer ".." ExInteger ;
 
 ExIntegerAst.   ExInteger ::= "*" ;

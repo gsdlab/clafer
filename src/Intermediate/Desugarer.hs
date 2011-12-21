@@ -178,13 +178,13 @@ desugarGCard x = case x of
   GCardOr  -> Just $ IGCard True (1, ExIntegerAst)
   GCardMux -> Just $ IGCard True (0, ExIntegerNum 1)
   GCardOpt -> Just $ IGCard True (0, ExIntegerAst)
-  GCardInterval (GNCard i ex)  -> Just $ IGCard False (i, ex)
+  GCardInterval (NCard i ex)  -> Just $ IGCard False (i, ex)
 
 
 sugarGCard :: Maybe IGCard -> GCard
 sugarGCard x = case x of
   Nothing -> GCardEmpty
-  Just (IGCard _ (i, ex)) -> GCardInterval $ GNCard i ex
+  Just (IGCard _ (i, ex)) -> GCardInterval $ NCard i ex
 
 
 desugarCard :: Card -> Maybe Interval

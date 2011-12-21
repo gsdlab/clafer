@@ -63,7 +63,7 @@ data GCard =
  | GCardOr
  | GCardMux
  | GCardOpt
- | GCardInterval GNCard
+ | GCardInterval NCard
   deriving (Eq,Ord,Show)
 
 data Card =
@@ -73,10 +73,6 @@ data Card =
  | CardAny
  | CardNum Integer
  | CardInterval NCard
-  deriving (Eq,Ord,Show)
-
-data GNCard =
-   GNCard Integer ExInteger
   deriving (Eq,Ord,Show)
 
 data NCard =

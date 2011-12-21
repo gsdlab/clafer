@@ -160,7 +160,7 @@ instance Print GCard where
    GCardOr  -> prPrec i 0 (concatD [doc (showString "or")])
    GCardMux  -> prPrec i 0 (concatD [doc (showString "mux")])
    GCardOpt  -> prPrec i 0 (concatD [doc (showString "opt")])
-   GCardInterval gncard -> prPrec i 0 (concatD [doc (showString "<") , prt 0 gncard , doc (showString ">")])
+   GCardInterval ncard -> prPrec i 0 (concatD [prt 0 ncard])
 
 
 instance Print Card where
@@ -171,11 +171,6 @@ instance Print Card where
    CardAny  -> prPrec i 0 (concatD [doc (showString "*")])
    CardNum n -> prPrec i 0 (concatD [prt 0 n])
    CardInterval ncard -> prPrec i 0 (concatD [prt 0 ncard])
-
-
-instance Print GNCard where
-  prt i e = case e of
-   GNCard n exinteger -> prPrec i 0 (concatD [prt 0 n , doc (showString "-") , prt 0 exinteger])
 
 
 instance Print NCard where
