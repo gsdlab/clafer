@@ -72,7 +72,7 @@ genXmlAbstract isAbstract = genXmlBoolean "IsAbstract" isAbstract
 
 genXmlGCard (IGCard isKeyword interval) = tag "GroupCard" $ concat
   [ genXmlBoolean "IsKeyword" isKeyword
-  , genXmlInterval interval]
+  , tag "Interval" $ genXmlInterval interval]
 
 genXmlInterval (nMin, nMax) = concat
   [ tag "Min" $ genXmlInteger nMin
@@ -89,9 +89,8 @@ genXmlUid uid = tag "UniqueId" uid
 genXmlSuper x = case x of
   ISuper isOverlapping pexps -> tag "Supers" $ concat
     [ genXmlBoolean "IsOverlapping" isOverlapping
-    , concatMap genXmlSuperSet pexps]
+    , concatMap (genXmlPExp "Super") pexps]
 
-genXmlSuperSet pexp = tag "SuperSet" $ genXmlPExp pexp
 
 genXmlCard interval = tag "Card" $ genXmlInterval interval
 
@@ -101,12 +100,12 @@ genXmlElement x = case x of
   IEClafer clafer  -> tagType "Declaration" "IClafer" $ genXmlClafer clafer
   IEConstraint isHard pexp  -> tagType "Declaration" "IConstraint" $ concat
                          [ genXmlBoolean "IsHard" isHard
-                         , genXmlPExp pexp]
+                         , genXmlPExp "ParentExp" pexp]
                                                           
 genXmlAnyOp ft f xs = concatMap
   (\(tname, texp) -> tagType tname (ft texp) $ f texp) xs
 
-genXmlPExp (PExp iType pid iexp) = tag "ParentExp" $ concat
+genXmlPExp tagName (PExp iType pid iexp) = tag tagName $ concat
   [ optTag iType genXmlIType
   , tag "ParentId" pid
   , tagType "Exp" (genXmlIExpType iexp) $ genXmlIExp iexp]
@@ -124,10 +123,10 @@ genXmlIExp x = case x of
   IDeclPExp quant decls pexp -> concat
     [ tagType "Quantifier" (genXmlQuantType quant) ""
     , concatMap genXmlDecl decls
-    , genXmlPExp pexp]
+    , genXmlPExp "BodyParentExp" pexp]
   IFunExp op exps -> concat
     [ tag "Operation" $ concatMap escape op
-    , concatMap genXmlPExp exps]
+    , concatMap (genXmlPExp "Argument") exps]
     where
     escape '\"' = "&quot;"
     escape '\'' = "&apos;"
@@ -139,15 +138,15 @@ genXmlIExp x = case x of
   IDouble n -> tag "DoubleLiteral" $ show n
   IStr str -> genXmlString str  
   IClaferId modName sident isTop -> concat
-    [ tag "ModName" modName
-    , tag "Sident" $ genXmlString sident
+    [ tag "ModuleName" modName
+    , tag "Id" sident
     , genXmlBoolean "IsTop" isTop]
 
 
 genXmlDecl (IDecl disj locids pexp) = tag "Declaration" $ concat
-  [ tag "IsDisjoint" $ show disj
-  , concatMap (tag "Declarations") locids
-  , genXmlPExp pexp]
+  [ genXmlBoolean "IsDisjunct" disj
+  , concatMap (tag "LocalDeclaration") locids
+  , genXmlPExp "Body" pexp]
 
 
 genXmlQuantType x = case x of
