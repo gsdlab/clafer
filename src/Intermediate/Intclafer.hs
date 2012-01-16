@@ -20,6 +20,16 @@
 module Intermediate.Intclafer where
 
 import Front.Absclafer
+{-
+data IType = TBoolean
+           | TString
+           | TNumeric (Maybe INumericSub)
+           | TClafer
+  deriving (Eq,Ord,Show)
+
+data INumericSub = IInteger | IReal
+  deriving (Eq,Ord,Show)
+-}
 
 data IType = IBoolean
            | IString  (Maybe IStringSub)

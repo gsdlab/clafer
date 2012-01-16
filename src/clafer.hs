@@ -45,6 +45,7 @@ import Optimizer.Optimizer
 import Generator.Stats
 import Generator.Alloy
 import Generator.Xml
+import Generator.Schema
 
 type ParseFun = [Token] -> Err Module
 
@@ -54,6 +55,11 @@ type VerbosityL = Int
 
 putStrV :: VerbosityL -> String -> IO ()
 putStrV v s = if v > 1 then putStrLn s else return ()
+
+
+start v p args = if schema args
+  then putStrLn Generator.Schema.xsd
+  else run v p args
 
 
 run :: VerbosityL -> ParseFun -> ClaferArgs -> IO ()
@@ -134,7 +140,8 @@ clafer = ClaferArgs {
   check_duplicates = def &= help "Check duplicated clafer names",
   force_resolver = def &= help "Force name resolution" &= name "f",
   keep_unused = def &= help "Keep unused abstract clafers" &= name "k",
-  no_stats = def &= help "Don't print statistics" &= name "s"
+  no_stats = def &= help "Don't print statistics" &= name "s",
+  schema = def &= help "Show Clafer XSD schema"
  } &= summary ("Clafer v0.1." ++ version)
 
 main :: IO ()
@@ -142,6 +149,6 @@ main = do
   args <- cmdArgs clafer
   let timeInSec = (timeout_analysis args) * 10^6
   if timeInSec > 0
-    then timeout timeInSec $ run 2 pModule args
-    else Just `liftM` run 2 pModule args
+    then timeout timeInSec $ start 2 pModule args
+    else Just `liftM` start 2 pModule args
   return ()

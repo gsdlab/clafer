@@ -1,0 +1,416 @@
+<!-- ........................................................................ *
+  *   Clafer Project                                                          *
+  *                                                                           *
+  *   File description: XML schema of Clafer intermediate representation (IR) *
+  *   Depends on: Haskell IR data types defined for clafer                    *
+  *   Author: Leonardo Passos (lpassos@gsd.uwaterloo.ca)                      *
+  *   Date: October 19th, 2011                                                *
+  *   Last update: November 28th, 2011                                        *
+  *                                                                           *
+  *   Generate scala classes with:                                            *
+  *   scalaxb -p gsd.clafer.ir ClaferIR.xsd                                   *
+  *           - -protocol-file ClaferIR_XmlProtocol.scala                     *
+  * ......................................................................... *
+  */
+-->
+<xs:schema targetNamespace="http://gsd.uwaterloo.ca/clafer"
+           elementFormDefault="qualified"
+           xmlns="http://gsd.uwaterloo.ca/clafer"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:cl="http://gsd.uwaterloo.ca/clafer">
+
+  <!-- . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+  <!--
+    data IType = IBoolean
+               | IString  (Maybe IStringSub)
+               | INumeric (Maybe INumericSub)
+               | ISet
+  -->
+  <xs:complexType name="IType" abstract="true"/>
+  <xs:element name="Type" type="cl:IType"/>
+
+  <xs:complexType name="IBoolean">
+      <xs:complexContent>
+          <xs:extension base="cl:IType"/>
+      </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="IString">
+      <xs:complexContent>
+          <xs:extension base="cl:IType">
+              <xs:sequence>
+                  <xs:element name="StringSubtype" minOccurs="0" maxOccurs="1" type="cl:IStringSubtype"/>
+              </xs:sequence>
+          </xs:extension>
+      </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="INumeric">
+      <xs:complexContent>
+          <xs:extension base="IType">
+              <xs:sequence>
+                  <xs:element name="NumericSubtype" minOccurs="0" maxOccurs="1" type="cl:INumericSubtype"/>
+              </xs:sequence>
+          </xs:extension>
+      </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="ISet">
+      <xs:complexContent>
+          <xs:extension base="cl:IType"/>
+      </xs:complexContent>
+  </xs:complexType>
+
+  <!-- . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+  <!-- data IStringSub = ILiteral | ISetString -->
+
+  <xs:complexType name="IStringSubtype" abstract="true"/>
+
+  <xs:complexType name="ILiteral">
+      <xs:complexContent>
+          <xs:extension base="cl:IStringSubtype"/>
+      </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="ISetString">
+      <xs:complexContent>
+          <xs:extension base="cl:IStringSubtype"/>
+      </xs:complexContent>
+  </xs:complexType>
+
+  <!-- . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+  <!-- data INumericSub = IInteger | IReal | ISetInteger | ISetReal -->
+
+  <xs:complexType name="INumericSubtype" abstract="true"/>
+
+  <xs:complexType name="IInteger">
+      <xs:complexContent>
+          <xs:extension base="cl:INumericSubtype"/>
+      </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="IReal">
+      <xs:complexContent>
+          <xs:extension base="cl:INumericSubtype"/>
+      </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="ISetInteger">
+      <xs:complexContent>
+          <xs:extension base="cl:INumericSubtype"/>
+      </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="ISetReal">
+      <xs:complexContent>
+          <xs:extension base="cl:INumericSubtype"/>
+      </xs:complexContent>
+  </xs:complexType>
+
+  <!-- . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+  <!-- data IModule = IModule {
+      mName :: String,
+      mDecls :: [IElement]
+    }
+  -->
+
+  <xs:complexType name="IModule">
+      <xs:sequence>
+          <xs:element name="Name" type="xs:string"/>
+          <xs:element ref="Declaration" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+  </xs:complexType>
+
+  <xs:element name="Module" type="cl:IModule"/>
+
+  <!-- . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+  <!-- data IClafer =
+       IClafer {
+          isAbstract :: Bool,     - determines whether it's abstract
+          gcard :: Maybe IGCard,  - group cardinality
+          ident :: String,        - name
+          uid :: String,          - (o) unique identifier
+          super:: ISuper,         - superclafers
+          card :: Maybe Interval, - cardinality
+          glCard :: Interval,     - (o) global cardinality
+          elements :: [IElement]  - subclafers or constraints specified in the context of given clafer
+        }
+  -->
+  <xs:complexType name="IClafer">
+      <xs:complexContent>
+          <xs:extension base="IElement">
+            <xs:sequence>
+                <xs:element name="IsAbstract" type="xs:boolean"/>
+                <xs:element name="GroupCard"  type="cl:IGroupCard" minOccurs="0" maxOccurs="1"/>
+                <xs:element name="Id"         type="xs:string"/>
+                <xs:element name="UniqueId"   type="xs:string"/>
+                <xs:element name="Supers"     type="cl:ISuper"/>
+                <xs:element name="Card"       type="cl:IInterval" minOccurs="0" maxOccurs="1"/>
+                <xs:element name="GlobalCard" type="cl:IInterval"/>
+                <xs:element ref="Declaration" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:extension>
+      </xs:complexContent>
+  </xs:complexType>
+
+  <!-- . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+  <!-- data IElement =
+       IEClafer IClafer
+     | IEConstraint {
+          isHard :: Bool,
+          cpexp :: PExp
+        }
+   -->
+
+  <xs:complexType name="IElement" abstract="true"/>
+  <xs:element name="Declaration" type="IElement"/>
+
+  <!-- No need to create IEClafer type. IClafer is already a subtype
+       of IElement
+    -->
+
+  <xs:complexType name="IConstraint">
+    <xs:complexContent>
+      <xs:extension base="cl:IElement">
+          <xs:sequence>
+              <xs:element name="IsHard"    type="xs:boolean"/>
+              <xs:element name="ParentExp" type="cl:IParentExp"/>
+          </xs:sequence>
+      </xs:extension>
+
+    </xs:complexContent>
+  </xs:complexType>
+
+  <!-- . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+  <!-- data ISuper =
+       ISuper {
+          isOverlapping :: Bool,
+          supers :: [PExp]
+        }
+  -->
+  <xs:complexType name="ISuper">
+    <xs:sequence>
+        <xs:element name="IsOverlapping" type="xs:boolean"/>
+        <xs:element name="Super"         type="cl:IParentExp" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+  <!-- data IGCard =
+      IGCard {
+          isKeyword :: Bool,
+          interval :: Interval
+        }
+  -->
+
+  <xs:complexType name="IGroupCard">
+    <xs:sequence>
+        <xs:element name="IsKeyword" type="xs:boolean"/>
+        <xs:element name="Interval"  type="cl:IInterval"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+  <!-- type Interval = (Integer, ExInteger) -->
+
+  <xs:complexType name="IInterval">
+      <xs:sequence>
+          <xs:element name="Min">
+            <xs:complexType>
+                <xs:sequence>
+                    <xs:element ref="IntLiteral"/>
+                </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="Max" type="cl:ExInteger"/>
+      </xs:sequence>
+  </xs:complexType>
+
+  <!-- . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+  <!-- data PExp = PExp {
+      iType :: Maybe IType,
+      pid :: String,
+      exp :: IExp
+    }
+  -->
+
+  <xs:complexType name="IParentExp">
+      <xs:sequence>
+          <xs:element name="Type"     type="cl:IType" minOccurs="0" maxOccurs="1"/>
+          <xs:element name="ParentId" type="xs:string" minOccurs="0" maxOccurs="1"/>
+          <xs:element name="Exp"      type="cl:IExp"/>
+      </xs:sequence>
+  </xs:complexType>
+
+  <!-- ......................................................................-->
+  <!-- data ExInteger =
+       ExIntegerAst
+     | ExIntegerNum Integer
+  -->
+
+  <xs:complexType name="ExInteger" abstract="true"/>
+
+  <xs:complexType name="ExIntegerAst">
+    <xs:complexContent>
+      <xs:extension base="cl:ExInteger"/>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="ExIntegerNum">
+    <xs:complexContent>
+        <xs:extension base="cl:ExInteger">
+            <xs:sequence>
+                <xs:element ref="IntLiteral"/>
+            </xs:sequence>
+        </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <!-- ......................................................................-->
+  <!--
+    data IExp =
+       - quantified expression  declarations
+       IDeclPExp {quant :: IQuant, oDecls :: [IDecl], bpexp :: PExp}
+     | IFunExp {op :: String, exps :: [PExp]}
+     | IInt Integer                  - integer number
+     | IDouble Double                - real number
+     | IStr String                   - string
+     | IClaferId {                   - clafer name
+          modName :: String,         - module name
+          sident :: String,          - name
+          isTop :: Bool              - identifier refers to a top-level definition
+        }
+   -->
+  <xs:complexType name="IExp" abstract="true"/>
+
+  <xs:complexType name="IDeclarationParentExp">
+      <xs:complexContent>
+          <xs:extension base="cl:IExp">
+              <xs:sequence>
+                  <xs:element name="Quantifier"    type="cl:IQuantifier"/>
+                  <xs:element name="Declaration"   type="cl:IDeclaration" minOccurs="0" maxOccurs="unbounded"/>
+                  <xs:element name="BodyParentExp" type="cl:IParentExp"/>
+              </xs:sequence>
+          </xs:extension>
+      </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="IFunctionExp">
+      <xs:complexContent>
+          <xs:extension base="IExp">
+              <xs:sequence>
+                  <xs:element name="Operation" type="xs:string"/>
+                  <xs:element name="Argument" minOccurs="0" maxOccurs="unbounded" type="IParentExp"/>
+              </xs:sequence>
+          </xs:extension>
+      </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="IIntExp">
+      <xs:complexContent>
+          <xs:extension base="IExp">
+              <xs:sequence>
+                 <xs:element ref="IntLiteral"/>
+              </xs:sequence>
+          </xs:extension>
+      </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="IDoubleExp">
+      <xs:complexContent>
+          <xs:extension base="IExp">
+              <xs:sequence>
+                 <xs:element ref="DoubleLiteral"/>
+              </xs:sequence>
+          </xs:extension>
+      </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="IStringExp">
+      <xs:complexContent>
+          <xs:extension base="IExp">
+              <xs:sequence>
+                 <xs:element ref="StringLiteral"/>
+              </xs:sequence>
+          </xs:extension>
+      </xs:complexContent>
+  </xs:complexType>
+
+
+  <xs:complexType name="IClaferId">
+      <xs:complexContent>
+          <xs:extension base="IExp">
+              <xs:sequence>
+                  <xs:element name="ModuleName" type="xs:string" minOccurs="0" maxOccurs="1"/>
+                  <xs:element name="Id"         type="xs:string" />
+                  <xs:element name="IsTop"      type="xs:boolean"/>
+              </xs:sequence>
+          </xs:extension>
+      </xs:complexContent>
+  </xs:complexType>
+
+  <!-- ......................................................................-->
+  <!-- data IDecl =
+       IDecl {
+          isDisj :: Bool,     - is disjunct
+          decls :: [String],  - a list of local names
+          body :: PExp        - set to which local names refer to
+        }
+    -->
+
+   <xs:complexType name="IDeclaration">
+       <xs:sequence>
+           <xs:element name="IsDisjunct"       type="xs:boolean"/>
+           <xs:element name="LocalDeclaration" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+           <xs:element name="Body"             type="cl:IParentExp"/>
+       </xs:sequence>
+   </xs:complexType>
+
+  <!-- ......................................................................-->
+  <!-- data IQuant =
+        INo
+        | ILone
+        | IOne
+        | ISome
+        | IAll
+   -->
+
+   <xs:complexType name="IQuantifier" abstract="true"/>
+
+   <xs:complexType name="INo">
+       <xs:complexContent>
+           <xs:extension base="cl:IQuantifier"/>
+       </xs:complexContent>
+   </xs:complexType>
+
+   <xs:complexType name="ILone">
+       <xs:complexContent>
+           <xs:extension base="cl:IQuantifier"/>
+       </xs:complexContent>
+   </xs:complexType>
+
+   <xs:complexType name="IOne">
+       <xs:complexContent>
+           <xs:extension base="cl:IQuantifier"/>
+       </xs:complexContent>
+   </xs:complexType>
+
+   <xs:complexType name="ISome">
+       <xs:complexContent>
+           <xs:extension base="cl:IQuantifier"/>
+       </xs:complexContent>
+   </xs:complexType>
+
+   <xs:complexType name="IAll">
+       <xs:complexContent>
+           <xs:extension base="cl:IQuantifier"/>
+       </xs:complexContent>
+   </xs:complexType>
+
+ <!-- ......................................................................-->
+
+ <xs:element name="IntLiteral"    type="xs:integer"/>
+ <xs:element name="DoubleLiteral" type="xs:double"/>
+ <xs:element name="StringLiteral" type="xs:string"/>
+
+</xs:schema>

@@ -209,6 +209,7 @@ data ClaferArgs = ClaferArgs {
       check_duplicates :: Bool,
       force_resolver :: Bool,
       keep_unused :: Bool,
-      no_stats :: Bool
+      no_stats :: Bool,
+      schema :: Bool
     } deriving (Show, Data, Typeable)
 

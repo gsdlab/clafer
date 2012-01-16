@@ -296,37 +296,8 @@ genPExp mode clafer x@(PExp iType pid exp) = case exp of
 
 transformExp x@(IFunExp op exps@(e1:e2:_))
   | op == iXor = IFunExp iNot [PExp (Just IBoolean) "" (IFunExp iIff exps)]
-  | op `elem` relGenBinOps && not (isSpecialExp e1 || isSpecialExp e2) =
-    case (fromJust $ iType e1, fromJust $ iType e2) of
-      (ISet, INumeric (Just IInteger)) -> if e1 == (locCl' locRef) then x else
-                                             mkNumExp locId op e1 (locCl' locRef) e2
-      (INumeric (Just IInteger), ISet) -> if e2 == (locCl' locRef) then x else
-                                             mkNumExp locId op e1 e2 (locCl' locRef)
-      (INumeric (Just ISetInteger), INumeric (Just ISetInteger)) ->
-        if e1 == locCl' locRef then x else mkNumExps
-        [("cl0", e1), ("cl1", e2)] op (locCl' "cl0.@ref") (locCl' "cl1.@ref")
-      (INumeric (Just ISetReal), INumeric (Just ISetReal)) ->
-        if e1 == locCl' locRef then x else mkNumExps
-        [("cl0", e1), ("cl1", e2)] op (locCl' "cl0.@ref") (locCl' "cl1.@ref")
-      _ -> x
-  | otherwise = x
-  where
-  locId = "cl0"
-  locRef = locId ++ ".@ref"
-  locCl = locCl' locId
-  locCl' locId = PExp (Just ISet) "" (IClaferId "" locId True)
-transformExp x = x
+  | otherwise  = x
 
-
-isSpecialExp (PExp _ _ (IClaferId _ id _)) = id `elem` [this, parent]
-isSpecialExp _ = False
-
-mkNumExp locId op e1 e2 e3 = mkNumExps [(locId, e1)] op e2 e3
-
-mkNumExps locExps op e2 e3 = IDeclPExp IAll decls $
-                  PExp (Just IBoolean) "" (IFunExp op [e2, e3])
-  where
-  decls = map (\(locId, e) -> IDecl False [locId] e) locExps
 
 genIFunExp mode clafer (IFunExp op exps) = concat $ intl exps' (genOp mode op)
   where

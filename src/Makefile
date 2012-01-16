@@ -11,6 +11,7 @@ all:
 			$(call apPatch,,$(file))))
 	ghc --make dateVer
 	./dateVer > Version.hs
+	./Generator/quote.sh Generator/ClaferIR.xsd > ./Generator/Schema.hs
 	ghc --make -O clafer
 
 prof:

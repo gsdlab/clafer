@@ -68,7 +68,8 @@ resolveTPExp (PExp _ pid x) = case x of
       | op == iPlus = case fromJust $ iType p of
           IString  _ -> p
           INumeric _ -> p
-          _ -> error "IPlus type error"
+          ISet -> p{iType = Just $ INumeric $ Just ISetInteger}
+          _ -> error $ "IPlus type error: " ++ (show $ fromJust $ iType p)
       | op `elem` [iSub, iMul, iDiv] =
           appType pid y (map Just [INumeric Nothing, INumeric Nothing])
                     (Just $ INumeric Nothing)

@@ -24,7 +24,7 @@ module Generator.Xml where
 import Common
 import Front.Absclafer
 import Intermediate.Intclafer
--- import Generator.XmlHelp
+import Generator.Schema
 
 tag name exp = concat ["<", name, ">", exp, "</", name, ">"]
 
