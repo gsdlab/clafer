@@ -22,6 +22,7 @@ module Front.LayoutResolver where
 -- very simple layout resolver
 import Control.Monad.State
 import Control.Monad
+import Common
 
 import Front.Lexclafer
 import Data.Maybe
@@ -257,7 +258,3 @@ getc = do
   c <- gets (head.input)
   modify (\e -> e {input = tail $ input e})
   return c
-
-voidf f = do
-  x <- f
-  return ()

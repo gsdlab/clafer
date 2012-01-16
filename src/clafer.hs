@@ -23,6 +23,7 @@ module Main where
 import Prelude hiding (writeFile, readFile, print, putStrLn)
 
 import System.IO
+import System.Cmd
 import Control.Exception.Base
 import IO  ( stdin, hGetContents )
 import System ( getArgs, getProgName )
@@ -103,9 +104,13 @@ run v p args = do
                                 Alloy42 -> ("als", addStats (genModule (mode args) (oTree, genv)) stats)
                                 Xml ->   ("xml", genXmlModule oTree)
                                 Clafer -> ("des.cfr", printTree $ sugarModule oTree)
+                          let fo = f' ++ "." ++ ext
                           if console_output args
                              then putStrLn code
-                             else writeFile (f' ++ "." ++ ext) code
+                             else writeFile fo code
+                          when ((not $ no_validate args) && mode args == Xml) $ do
+                            writeFile "ClaferIR.xsd" Generator.Schema.xsd
+                            voidf $ system $ "java XsdCheck ClaferIR.xsd " ++ fo
 
 conPutStrLn args s = when (not $ console_output args) $ putStrLn s
 
@@ -141,7 +146,8 @@ clafer = ClaferArgs {
   force_resolver = def &= help "Force name resolution" &= name "f",
   keep_unused = def &= help "Keep unused abstract clafers" &= name "k",
   no_stats = def &= help "Don't print statistics" &= name "s",
-  schema = def &= help "Show Clafer XSD schema"
+  schema = def &= help "Show Clafer XSD schema",
+  no_validate = def &= help "Do not validate XML file against Clafer XSD schema"
  } &= summary ("Clafer v0.1." ++ version)
 
 main :: IO ()

@@ -210,6 +210,10 @@ data ClaferArgs = ClaferArgs {
       force_resolver :: Bool,
       keep_unused :: Bool,
       no_stats :: Bool,
-      schema :: Bool
+      schema :: Bool,
+      no_validate :: Bool
     } deriving (Show, Data, Typeable)
 
+voidf f = do
+  x <- f
+  return ()

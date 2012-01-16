@@ -12,6 +12,7 @@ all:
 	ghc --make dateVer
 	./dateVer > Version.hs
 	./Generator/quote.sh Generator/ClaferIR.xsd > ./Generator/Schema.hs
+	javac XsdCheck.java
 	ghc --make -O clafer
 
 prof:
