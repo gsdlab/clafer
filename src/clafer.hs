@@ -108,7 +108,7 @@ run v p args = do
                           if console_output args
                              then putStrLn code
                              else writeFile fo code
-                          when ((not $ no_validate args) && mode args == Xml) $ do
+                          when ((validate args) && mode args == Xml) $ do
                             writeFile "ClaferIR.xsd" Generator.Schema.xsd
                             voidf $ system $ "java XsdCheck ClaferIR.xsd " ++ fo
 
@@ -147,7 +147,7 @@ clafer = ClaferArgs {
   keep_unused = def &= help "Keep unused abstract clafers" &= name "k",
   no_stats = def &= help "Don't print statistics" &= name "s",
   schema = def &= help "Show Clafer XSD schema",
-  no_validate = def &= help "Do not validate XML file against Clafer XSD schema"
+  validate = def &= help "Validate XML file against Clafer XSD schema"
  } &= summary ("Clafer v0.1." ++ version)
 
 main :: IO ()

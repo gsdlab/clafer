@@ -211,7 +211,7 @@ data ClaferArgs = ClaferArgs {
       keep_unused :: Bool,
       no_stats :: Bool,
       schema :: Bool,
-      no_validate :: Bool
+      validate :: Bool
     } deriving (Show, Data, Typeable)
 
 voidf f = do
