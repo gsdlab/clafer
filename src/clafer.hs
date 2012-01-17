@@ -30,6 +30,7 @@ import System ( getArgs, getProgName )
 import System.Console.CmdArgs
 import System.Timeout
 import Control.Monad.State
+import System.Environment.Executable
 
 import Common
 import Version
@@ -110,7 +111,8 @@ run v p args = do
                              else writeFile fo code
                           when ((validate args) && mode args == Xml) $ do
                             writeFile "ClaferIR.xsd" Generator.Schema.xsd
-                            voidf $ system $ "java XsdCheck ClaferIR.xsd " ++ fo
+                            (path, _) <- splitExecutablePath
+                            voidf $ system $ "java -classpath " ++ path ++ " XsdCheck ClaferIR.xsd " ++ fo
 
 conPutStrLn args s = when (not $ console_output args) $ putStrLn s
 
