@@ -1,5 +1,7 @@
 Dependencies:
-  ghc; cmdargs;
+  ghc; cmdargs; executable-path; java >= 5
+
+Java is required for validating XML output against XSD schema.
 
 To install GHC refer to:
   http://www.haskell.org/ghc/distribution_packages
@@ -9,6 +11,7 @@ Install monad transformer library (Ubuntu):
 
 To install cmdargs execute:
   cabal install cmdargs
+  cabal install executable-path
 
 If you have no cabal then installt it (Ubuntu):
   sudo apt-get install cabal-install
