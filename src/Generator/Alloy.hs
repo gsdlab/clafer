@@ -31,11 +31,12 @@ import Intermediate.ResolverType
 
 genModule :: ClaferMode -> (IModule, GEnv) -> Result
 genModule mode (imodule, _) =
-  header ++ ((mDecls imodule) >>= (genDeclaration mode))
+  header mode ++ ((mDecls imodule) >>= (genDeclaration mode))
 
 
-header = unlines
-    [ "pred show {}"
+header mode = unlines
+    [ if mode == Alloy42 then "" else "open util/integer"
+    , "pred show {}"
     , "run  show for 1"
     , ""]
 
@@ -304,7 +305,7 @@ transformExp x = x
 genIFunExp mode clafer (IFunExp op exps) = concat $ intl exps' (genOp mode op)
   where
   intl
-    | mode == Alloy42 && op `elem` [iPlus, iSub] = interleave
+    | op `elem` arithBinOps = interleave
     | otherwise = \xs ys -> reverse $ interleave (reverse xs) (reverse ys)
   exps' = map (optBrArg mode clafer) exps
 
@@ -329,9 +330,13 @@ brArg f arg = "(" ++ f arg ++ ")"
 genOp Alloy42 op
   | op == iPlus = [".plus[", "]"]
   | op == iSub  = [".minus[", "]"]
+  | otherwise   = genOp Alloy op
 genOp _ op
   | op `elem` unOps = [op]
-  | op `elem` [iMul, iDiv] = error $ "no " ++ op ++ " allowed"
+  | op == iPlus = [".add[", "]"]
+  | op == iSub  = [".sub[", "]"]
+  | op == iMul = [".mul[", "]"]
+  | op == iDiv = [".div[", "]"]
   | op `elem` logBinOps ++ relBinOps ++ arithBinOps = [" " ++ op ++ " "]
   | op == iUnion = [" + "]
   | op == iDifference = [" - "]
