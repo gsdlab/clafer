@@ -47,8 +47,8 @@ astrElement x = case x of
 
 
 astrPExp x = case x of 
-  PExp (Just (IString _)) pid exp ->
-    PExp (Just $ INumeric $ Just IInteger) pid `liftM` astrIExp exp
+  PExp (Just TString ) pid exp ->
+    PExp (Just TInteger) pid `liftM` astrIExp exp
   PExp t pid (IFunExp op exps) -> PExp t pid `liftM`
                               (IFunExp op `liftM` mapM astrPExp exps)
   _ -> return x

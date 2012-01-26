@@ -20,27 +20,12 @@
 module Intermediate.Intclafer where
 
 import Front.Absclafer
-{-
+
 data IType = TBoolean
            | TString
-           | TNumeric (Maybe INumericSub)
+           | TInteger
+           | TReal
            | TClafer
-  deriving (Eq,Ord,Show)
-
-data INumericSub = IInteger | IReal
-  deriving (Eq,Ord,Show)
--}
-
-data IType = IBoolean
-           | IString  (Maybe IStringSub)
-           | INumeric (Maybe INumericSub)
-           | ISet
-  deriving (Eq,Ord,Show)
-
-data INumericSub = IInteger | IReal | ISetInteger | ISetReal
-  deriving (Eq,Ord,Show)
-
-data IStringSub = ILiteral | ISetString
   deriving (Eq,Ord,Show)
 
 -- Module is a list of top-level declarations

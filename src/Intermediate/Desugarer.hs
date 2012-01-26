@@ -77,7 +77,7 @@ sugarClafer x = case x of
 
 desugarSuper :: Super -> ISuper
 desugarSuper x = case x of
-  SuperEmpty  -> ISuper False [PExp (Just ISet) "" $ mkLClaferId baseClafer True]
+  SuperEmpty  -> ISuper False [PExp (Just TClafer) "" $ mkLClaferId baseClafer True]
   SuperSome superhow setexp -> ISuper (desugarSuperHow superhow) [desugarSetExp setexp]
 
 

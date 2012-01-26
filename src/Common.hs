@@ -49,7 +49,7 @@ getSuper clafer = id
 
 isEqClaferId = flip $ (==).uid
 
-idToPExp pid modids id isTop = PExp (Just ISet) pid (IClaferId modids id isTop)
+idToPExp pid modids id isTop = PExp (Just TClafer) pid (IClaferId modids id isTop)
 
 mkLClaferId = IClaferId ""
 
@@ -162,7 +162,7 @@ binOps = logBinOps ++ relBinOps ++ arithBinOps ++ setBinOps
 iIfThenElse   = "=>else"
 
 mkIFunExp op (x:[]) = x
-mkIFunExp op xs = foldl1 (\x y -> IFunExp op $ map (PExp (Just ISet) "") [x,y]) xs
+mkIFunExp op xs = foldl1 (\x y -> IFunExp op $ map (PExp (Just TClafer) "") [x,y]) xs
 
 toLowerS "" = ""
 toLowerS (s:ss) = toLower s : ss

@@ -157,12 +157,14 @@ genXmlQuantType x = case x of
   IAll  -> "IAll"
 
 genXmlITypeType x = case x of
-  IBoolean -> "IBoolean"
-  IString  str -> "IString"
-  INumeric n   -> "INumeric"
-  ISet -> "ISet"
+  TBoolean -> "IBoolean"
+  TString -> "IString"
+  TInteger -> "IInteger"
+  TReal -> "IReal"
+  TClafer -> "ISet"
 
 genXmlIType x = tagType "Type" (genXmlITypeType x) $ case x of
-  IString  str -> optTag str (\x -> tagType "StringSubtype" (show x) "")
-  INumeric n   -> optTag n (\x -> tagType "NumericSubtype" (show x) "")
+  TString  -> "String"
+  TInteger -> "Integer"
+  TReal -> "Real"
   _ -> ""
