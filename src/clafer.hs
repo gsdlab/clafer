@@ -80,7 +80,8 @@ run v p args = do
                           conPutStrLn args "\nParse Successful!"
                           conPutStrLn args "[Desugaring]"
                           dTree <- evaluate $! desugarModule tree
-                          let f'    = take (length f - 4) f
+                          let f' = reverse $ tail $ dropWhile (/= '.') $
+                                   reverse f
                           -- writeFile (f' ++ ".des") $ printTree $
                           --  sugarModule dTree
                           let dTree' = findDupModule args dTree
