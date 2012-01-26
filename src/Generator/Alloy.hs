@@ -277,7 +277,7 @@ genPExp mode clafer x@(PExp iType pid exp) = case exp of
     optBar _  = " | "
   IClaferId _ "parent" _  ->
     brArg id $ (genRelName $ uid $ fromJust clafer) ++ ".this"
-  IClaferId _ sident isTop -> if isNothing iType then error sident else case fromJust $ iType of
+  IClaferId _ sident isTop -> if isNothing iType then sident' else case fromJust $ iType of
     TInteger -> vsident
     TReal -> vsident
     TString -> vsident
@@ -298,6 +298,7 @@ genPExp mode clafer x@(PExp iType pid exp) = case exp of
 transformExp x@(IFunExp op exps@(e1:e2:_))
   | op == iXor = IFunExp iNot [PExp (Just TBoolean) "" (IFunExp iIff exps)]
   | otherwise  = x
+transformExp x = x
 
 
 genIFunExp mode clafer (IFunExp op exps) = concat $ intl exps' (genOp mode op)
