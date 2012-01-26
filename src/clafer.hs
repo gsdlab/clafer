@@ -151,7 +151,7 @@ clafer = ClaferArgs {
   no_stats = def &= help "Don't print statistics" &= name "s",
   schema = def &= help "Show Clafer XSD schema",
   validate = def &= help "Validate XML file against Clafer XSD schema"
- } &= summary ("Clafer v0.1." ++ version)
+ } &= summary ("Clafer v0.2." ++ version)
 
 main :: IO ()
 main = do
