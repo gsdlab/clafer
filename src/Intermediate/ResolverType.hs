@@ -32,18 +32,18 @@ import Intermediate.Intclafer
 
 
 type SymbolTable = Map String IType
-type TypeState = State ([IClafer], SymbolTable)
+type TypeState = State ([IClafer], [IClafer], SymbolTable)
 
         
 resolveTModule :: (IModule, GEnv) -> IModule
 resolveTModule (imodule, genv) = 
-    imodule{mDecls = evalState (resolveTElements $ mDecls imodule) (sClafers genv, Map.empty)}
+    imodule{mDecls = evalState (resolveTElements $ mDecls imodule) (sClafers genv, [], Map.empty)}
 
 -- Returns the type of the clafer with given uid
 itypeOfClafer :: String -> TypeState IType
 itypeOfClafer id =
     do
-        (_, symbolTable) <- get
+        (_, _, symbolTable) <- get
         -- Search symbol table
         -- Calculate and store in symbol table if not yet cached
         case (Map.lookup id symbolTable) of
@@ -55,20 +55,25 @@ updateSymbolTable :: String -> TypeState IType
 updateSymbolTable id =
     do
         itype <- itypeOfClaferCalculate id
-        (clafers, symbolTable) <- get
-        put $ (clafers, Map.insert id itype symbolTable)
-        return itype
+        (clafers, path, symbolTable) <- get
+        case id of
+            "this" -> itypeOfClafer $ uid $ head path
+            "parent" -> itypeOfClafer $ uid $ head $ tail path
+            _ -> do
+                     put $ (clafers, path, Map.insert id itype symbolTable)
+                     return itype
+        
 
 -- Perform the calculation required to find the type of the clafer with given uid
 itypeOfClaferCalculate :: String -> TypeState IType
-itypeOfClaferCalculate id = do (clafers, symbolTable) <- get
+itypeOfClaferCalculate id = do (clafers, _, symbolTable) <- get
                                let clafer = findClaferFromUid id clafers
                                let hierarchy = findHierarchy clafers clafer
                                return $ topTypeOfHierarchy hierarchy
 
 -- Find the clafer with the given uid
 findClaferFromUid :: String -> [IClafer] -> IClafer
-findClaferFromUid id clafers = fromJust $ find (((==) id).uid) clafers
+findClaferFromUid id clafers = fromJust $ trace id $ find (((==) id).uid) clafers
 
 -- Find the last IClafer (ie. highest in the hierarchy) and get super type
 topTypeOfHierarchy :: [IClafer] -> IType
@@ -80,7 +85,9 @@ typeOfISuper :: ISuper -> IType
 typeOfISuper (ISuper _ ((PExp _ _ (IClaferId _ sident _)):_)) = case sident of
                                                                     "clafer" -> TClafer
                                                                     "int" -> TInteger
+                                                                    "integer" -> TInteger
                                                                     "string" -> TString
+                                                                    x -> error $ sident ++ " not a native super type"
 
 resolveTElements :: [IElement] -> TypeState [IElement]
 resolveTElements es = unfoldStates $ map resolveTElement es
@@ -92,7 +99,16 @@ resolveTElement (IEConstraint isHard pexp) = IEConstraint isHard `liftM` resolve
 resolveTClafer :: IClafer -> TypeState IClafer
 resolveTClafer clafer = 
     do
+        -- Push this clafer onto the path
+        (a, path1, b) <- get
+        put (a, clafer:path1, b)
+        
         e <- resolveTElements $ elements clafer
+        
+        -- Pop this clafer from the path
+        (c, _:path, d) <- get
+        put (c, path, d)
+        
         return clafer{elements = e, super = typeTheSuper $ super clafer}
 
 -- Sets the type in all the supers to IClafer
