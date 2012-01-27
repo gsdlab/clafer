@@ -67,6 +67,7 @@ start v p args = if schema args
 run :: VerbosityL -> ParseFun -> ClaferArgs -> IO ()
 run v p args = do
            input <- readFile $ file args
+           conPutStrLn args (file args)
            let ts = (if not (new_layout args || no_layout args)
                      then resolveLayout else id) $ myLLexer $
                     (if (not $ no_layout args) && new_layout args
