@@ -43,12 +43,16 @@ resolveTModule (imodule, genv) =
 itypeOfClafer :: String -> TypeState IType
 itypeOfClafer id =
     do
-        (_, _, symbolTable) <- get
-        -- Search symbol table
-        -- Calculate and store in symbol table if not yet cached
-        case (Map.lookup id symbolTable) of
-                Just x -> return x
-                Nothing -> updateSymbolTable id
+        (_, path, symbolTable) <- get
+        case id of
+            "this" -> itypeOfClafer $ uid $ head path
+            "parent" -> itypeOfClafer $ uid $ head $ tail path
+            _ ->
+                -- Search symbol table
+                -- Calculate and store in symbol table if not yet cached
+                case (Map.lookup id symbolTable) of
+                        Just x -> return x
+                        Nothing -> updateSymbolTable id
 
 -- Calculate the type and store in symbol table
 updateSymbolTable :: String -> TypeState IType
@@ -56,12 +60,8 @@ updateSymbolTable id =
     do
         itype <- itypeOfClaferCalculate id
         (clafers, path, symbolTable) <- get
-        case id of
-            "this" -> itypeOfClafer $ uid $ head path
-            "parent" -> itypeOfClafer $ uid $ head $ tail path
-            _ -> do
-                     put $ (clafers, path, Map.insert id itype symbolTable)
-                     return itype
+        put $ (clafers, path, Map.insert id itype symbolTable)
+        return itype
         
 
 -- Perform the calculation required to find the type of the clafer with given uid
