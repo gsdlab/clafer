@@ -332,17 +332,17 @@ desugarPath :: PExp -> PExp
 desugarPath (PExp iType pid x) = PExp iType pid result
   where
   result
-    | isPath x    = IDeclPExp ISome [] (PExp Nothing "" x)
+    | isSet x     = IDeclPExp ISome [] (PExp Nothing "" x)
     | isNegSome x = IDeclPExp INo   [] $ bpexp $ Intermediate.Intclafer.exp $ head $ exps x
     | otherwise   =  x
   isNegSome (IFunExp op [PExp _ _ (IDeclPExp ISome [] _)]) = op == iNot
   isNegSome _ = False
 
 
-isPath :: IExp -> Bool
-isPath (IClaferId _ _ _)  = True
-isPath (IFunExp op _) = op == iJoin
-isPath _ = False
+isSet :: IExp -> Bool
+isSet (IClaferId _ _ _)  = True
+isSet (IFunExp op _) = op `elem` setBinOps
+isSet _ = False
 
 
 desugarDecl :: Decl -> IDecl

@@ -67,6 +67,7 @@ start v p args = if schema args
 run :: VerbosityL -> ParseFun -> ClaferArgs -> IO ()
 run v p args = do
            input <- readFile $ file args
+           conPutStrLn args (file args)
            let ts = (if not (new_layout args || no_layout args)
                      then resolveLayout else id) $ myLLexer $
                     (if (not $ no_layout args) && new_layout args
@@ -80,7 +81,8 @@ run v p args = do
                           conPutStrLn args "\nParse Successful!"
                           conPutStrLn args "[Desugaring]"
                           dTree <- evaluate $! desugarModule tree
-                          let f'    = take (length f - 4) f
+                          let f' = reverse $ tail $ dropWhile (/= '.') $
+                                   reverse f
                           -- writeFile (f' ++ ".des") $ printTree $
                           --  sugarModule dTree
                           let dTree' = findDupModule args dTree
@@ -150,7 +152,7 @@ clafer = ClaferArgs {
   no_stats = def &= help "Don't print statistics" &= name "s",
   schema = def &= help "Show Clafer XSD schema",
   validate = def &= help "Validate XML file against Clafer XSD schema"
- } &= summary ("Clafer v0.1." ++ version)
+ } &= summary ("Clafer v0.2." ++ version)
 
 main :: IO ()
 main = do

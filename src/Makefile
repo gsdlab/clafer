@@ -18,6 +18,9 @@ all:
 prof:
 	ghc -prof -auto-all -rtsopts -O --make clafer
 
+test:
+	find ./Test/suite -type f \( -iname "*.cfr" ! -iname "*.des.cfr" \) | xargs -L1 ./clafer -s
+
 clean:
 	find . -type f -name '*.o' -print0 | xargs -0 rm -f
 	find . -type f -name '*.hi' -print0 | xargs -0 rm -f

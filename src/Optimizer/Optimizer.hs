@@ -191,6 +191,7 @@ checkConstraintIExp idents x = case x of
      checkConstraintPExp ((oDecls >>= (checkConstraintIDecl idents)) ++ idents) pexp
    IClaferId _ ident _ -> if ident `elem` idents then True
                           else error $ ident ++ " not found"
+   _ -> True
 
 checkConstraintIDecl idents (IDecl _ decls pexp)
   | checkConstraintPExp idents pexp = decls

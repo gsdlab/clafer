@@ -1,0 +1,11 @@
+abstract Person
+	age : integer
+	xor maritalStatus
+		neverMarried
+		married
+			[ age >= 18 ]      // here, the modeler clearly means Person.age, not spouse.age
+			spouse -> Person
+				[ spouse = parent.parent.parent ]     // here, the modeler means spouse.maritalStatus.married.spouse 
+		divorced
+	children -> Person *
+        parents -> Person 2
