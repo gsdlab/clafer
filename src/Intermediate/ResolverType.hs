@@ -73,7 +73,7 @@ itypeOfClaferCalculate id = do (clafers, _, symbolTable) <- get
 
 -- Find the clafer with the given uid
 findClaferFromUid :: String -> [IClafer] -> IClafer
-findClaferFromUid id clafers = fromJust $ trace id $ find (((==) id).uid) clafers
+findClaferFromUid id clafers = fromJust $ find (((==) id).uid) clafers
 
 -- Find the last IClafer (ie. highest in the hierarchy) and get super type
 topTypeOfHierarchy :: [IClafer] -> IType
