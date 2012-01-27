@@ -24,6 +24,7 @@ import Monad
 import Data.Maybe
 import Control.Monad.State
 import Data.Function
+import Data.List
 import Data.Map (Map)
 import qualified Data.Map as Map
 
@@ -221,4 +222,6 @@ findUnique x xs =
   case filter (((==) x).ident.fst) xs of
     []     -> Nothing
     [elem] -> Just $ (uid $ fst elem, snd elem)
-    _      -> error $ "element is not unique : " ++ show x ++ ". Available paths: " ++ ((filter (((==) x).ident.fst) xs) >>= (show.(map uid).snd))
+    _      -> error $ "element is not unique : " ++ show x ++ ". Available paths:\n" ++ ((filter (((==) x).ident.fst) xs) >>= (showPath.(map uid).snd))
+
+showPath xs = (intercalate "." $ reverse xs) ++ "\n"
