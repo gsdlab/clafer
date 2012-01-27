@@ -2,10 +2,6 @@ define apPatch
 	$(shell patch $(1) -N -r - Front/$(2).hs Front/$(2).patch 1>/dev/null)
 endef
 
-TESTFILES=$(shell find ./Test/suite -type f \( -iname "*.cfr" ! -iname "*.des.cfr" \))
-
-TESTOUT=$(TESTFILES:.cfr=.als)
-
 all:
 #	cat Generator/XmlHeader.hs > Generator/XmlHelp.hs
 #	DrIFT -r Front/Absclafer.hs >> Generator/XmlHelp.hs
@@ -24,10 +20,6 @@ prof:
 
 test:
 	find ./Test/suite -type f \( -iname "*.cfr" ! -iname "*.des.cfr" \) | xargs -L1 ./clafer -s
-
-#	echo $^
-#	./clafer -s 
-#	$(foreach file, $(TESTFILES), ./clafer -s $(file)	)
 
 clean:
 	find . -type f -name '*.o' -print0 | xargs -0 rm -f
