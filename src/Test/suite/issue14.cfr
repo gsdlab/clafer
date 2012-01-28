@@ -1,0 +1,6 @@
+abstract A
+	a : integer
+
+
+A1 : A
+	[ a = 10 ]
