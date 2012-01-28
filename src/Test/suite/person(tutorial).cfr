@@ -1,0 +1,55 @@
+// This is the example used in the tutorial to introduce Clafer
+
+enum NorthAmericanCountry = Canada | USA
+
+abstract Person
+    Name : string
+    Surname : string
+    DateOfBirth : string
+    or Gender
+        Male
+        Female
+    xor MaritalStatus
+        NeverMarried
+        Married
+        Divorced
+      Address
+        Street : string
+              UnitNo : string ?
+        City : string
+        Country -> NorthAmericanCountry
+        PostalCode : string
+
+JohnDoe : Person
+    [ Name = "John"
+      Surname = "Doe"
+      DateOfBirth = "01/02/1985"
+      Male
+      Married
+      Street = "123 Main St."
+      City = "Great Town"
+      Country = Canada
+      PostalCode = "A1B 2C3" ]
+
+abstract Student  : Person
+    StudentId : string
+
+abstract WaitingLine 
+    participants -> Person * 
+
+MaryJane : Student
+   [ StudentId = "MJ13421354" ]
+
+BusLine : WaitingLine
+    [ JohnDoe in participants
+      MaryJane in participants ]
+
+JohnAndMaryLine : WaitingLine
+    [ participants  = JohnDoe, MaryJane ]
+
+abstract TwoPersonLine : WaitingLine
+    [ # participants  = 2 ]
+
+abstract OneToTenPersonLine : WaitingLine
+    [ # participants  >= 1 
+      # participants  <= 10 ]
