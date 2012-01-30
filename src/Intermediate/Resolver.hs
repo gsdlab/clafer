@@ -34,26 +34,26 @@ import Intermediate.ResolverInheritance
 import Intermediate.ResolverType
 
 resolveModule :: ClaferArgs -> IModule -> (IModule, GEnv)
-resolveModule args declarations = resolveNamesModule args $ rom $ rem $ resolveNModule $ nameModule declarations
+resolveModule args declarations = resolveNamesModule args $ rom $ rem $ resolveNModule $ nameModule (force_resolver args) declarations
   where
   rem = if flatten_inheritance args then resolveEModule else id
   rom = if force_resolver args then resolveOModule else id
 
 
 -- -----------------------------------------------------------------------------
-nameModule :: IModule -> (IModule, GEnv)
-nameModule imodule = (imodule{mDecls = decls'}, genv')
+nameModule :: Bool -> IModule -> (IModule, GEnv)
+nameModule forceResolver imodule = (imodule{mDecls = decls'}, genv')
   where
-  (decls', genv') = runState (mapM nameElement $ mDecls imodule) $ GEnv 0 Map.empty []
+  (decls', genv') = runState (mapM (nameElement forceResolver) $ mDecls imodule) $ GEnv 0 Map.empty []
 
-nameElement x = case x of
-  IEClafer clafer -> IEClafer `liftM` (nameClafer clafer)
+nameElement forceResolver x = case x of
+  IEClafer clafer -> IEClafer `liftM` (nameClafer forceResolver clafer)
   IEConstraint isHard pexp -> IEConstraint isHard `liftM` (namePExp pexp)
 
 
-nameClafer clafer = do
-  clafer' <- renameClafer' clafer
-  elements' <- mapM nameElement $ elements clafer
+nameClafer forceResolver clafer = do
+  clafer' <- if forceResolver then (renameClafer forceResolver) clafer else return clafer{uid = ident clafer}
+  elements' <- mapM (nameElement forceResolver) $ elements clafer
   return $ clafer' {elements = elements'}
 
 

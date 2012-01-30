@@ -36,7 +36,7 @@ type TypeState = State ([IClafer], [IClafer], SymbolTable)
 
         
 resolveTModule :: (IModule, GEnv) -> IModule
-resolveTModule (imodule, genv) = 
+resolveTModule (imodule, genv) =
     imodule{mDecls = evalState (resolveTElements $ mDecls imodule) (sClafers genv, [], Map.empty)}
 
 -- Returns the type of the clafer with given uid
