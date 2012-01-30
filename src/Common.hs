@@ -186,7 +186,9 @@ baseClafer = "clafer"
 
 modSep = "\\"
 
-isPrimitive = flip elem [strType, intType, integerType]
+primitiveTypes = [strType, intType, integerType]
+
+isPrimitive = flip elem primitiveTypes
 
 data GEnv = GEnv {
   num :: Int,

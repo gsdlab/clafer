@@ -170,7 +170,8 @@ allUnique imodule = and un && (null $
   identsOk     = and $ map (checkConstraintElement (concat idents)) $ mDecls imodule
 
 allUniqueClafer clafer =
-  ("clafer" == getSuper clafer && and un, ident clafer : concat idents)
+  (getSuper clafer `elem` "clafer" : primitiveTypes  && and un,
+   ident clafer : concat idents)
   where
   (un, idents) = unzip $ map allUniqueElement $ elements clafer
 
