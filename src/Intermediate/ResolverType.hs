@@ -231,7 +231,7 @@ resolveTExp (IFunExp op [exp1, exp2, exp3])
                 else if isNumeric $ typeOf a2 then -- Numeric expression
                     typeCheckFunction TBoolean op [TExpect TBoolean, TExpectNumeric, TExpectNumeric] [a1, a2, a3]
                 else -- Set expression
-                    typeCheckFunction TBoolean op (exact [TBoolean, TString, TString]) [a1, a2, a3]
+                    typeCheckFunction TBoolean op (exact [TBoolean, TClafer, TClafer]) [a1, a2, a3]
 
 --resolveTDecl :: IDecl -> TypeState IDecl
 --resolveTDecl x = liftM x{body = resolveTPExp $ body x}
