@@ -163,8 +163,4 @@ genXmlITypeType x = case x of
   TReal -> "IReal"
   TClafer -> "ISet"
 
-genXmlIType x = tagType "Type" (genXmlITypeType x) $ case x of
-  TString  -> "String"
-  TInteger -> "Integer"
-  TReal -> "Real"
-  _ -> ""
+genXmlIType x = tagType "Type" (genXmlITypeType x) ""

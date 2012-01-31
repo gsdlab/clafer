@@ -21,10 +21,11 @@
 
   <!-- . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
   <!--
-    data IType = IBoolean
-               | IString  (Maybe IStringSub)
-               | INumeric (Maybe INumericSub)
-               | ISet
+    data IType = TBoolean
+                 | TString
+                 | TInteger
+                 | TReal
+                 | TClafer
   -->
   <xs:complexType name="IType" abstract="true"/>
   <xs:element name="Type" type="cl:IType"/>
@@ -37,73 +38,25 @@
 
   <xs:complexType name="IString">
       <xs:complexContent>
-          <xs:extension base="cl:IType">
-              <xs:sequence>
-                  <xs:element name="StringSubtype" minOccurs="0" maxOccurs="1" type="cl:IStringSubtype"/>
-              </xs:sequence>
-          </xs:extension>
+          <xs:extension base="cl:IType"/>
       </xs:complexContent>
   </xs:complexType>
 
-  <xs:complexType name="INumeric">
+  <xs:complexType name="IInteger">
       <xs:complexContent>
-          <xs:extension base="IType">
-              <xs:sequence>
-                  <xs:element name="NumericSubtype" minOccurs="0" maxOccurs="1" type="cl:INumericSubtype"/>
-              </xs:sequence>
-          </xs:extension>
+          <xs:extension base="cl:IType"/>
+      </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:complexType name="IReal">
+      <xs:complexContent>
+          <xs:extension base="cl:IType"/>
       </xs:complexContent>
   </xs:complexType>
 
   <xs:complexType name="ISet">
       <xs:complexContent>
           <xs:extension base="cl:IType"/>
-      </xs:complexContent>
-  </xs:complexType>
-
-  <!-- . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
-  <!-- data IStringSub = ILiteral | ISetString -->
-
-  <xs:complexType name="IStringSubtype" abstract="true"/>
-
-  <xs:complexType name="ILiteral">
-      <xs:complexContent>
-          <xs:extension base="cl:IStringSubtype"/>
-      </xs:complexContent>
-  </xs:complexType>
-
-  <xs:complexType name="ISetString">
-      <xs:complexContent>
-          <xs:extension base="cl:IStringSubtype"/>
-      </xs:complexContent>
-  </xs:complexType>
-
-  <!-- . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
-  <!-- data INumericSub = IInteger | IReal | ISetInteger | ISetReal -->
-
-  <xs:complexType name="INumericSubtype" abstract="true"/>
-
-  <xs:complexType name="IInteger">
-      <xs:complexContent>
-          <xs:extension base="cl:INumericSubtype"/>
-      </xs:complexContent>
-  </xs:complexType>
-
-  <xs:complexType name="IReal">
-      <xs:complexContent>
-          <xs:extension base="cl:INumericSubtype"/>
-      </xs:complexContent>
-  </xs:complexType>
-
-  <xs:complexType name="ISetInteger">
-      <xs:complexContent>
-          <xs:extension base="cl:INumericSubtype"/>
-      </xs:complexContent>
-  </xs:complexType>
-
-  <xs:complexType name="ISetReal">
-      <xs:complexContent>
-          <xs:extension base="cl:INumericSubtype"/>
       </xs:complexContent>
   </xs:complexType>
 
