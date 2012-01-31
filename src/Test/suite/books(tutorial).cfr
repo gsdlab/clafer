@@ -24,7 +24,7 @@ abstract Person			// a template for a person
     name : string
     dob : string ?			// of course the person always has dob but for our application it is possible not to give it 
 
-abstract Author extends Person	// author is a special person who has at least one book
+abstract Author : Person	// author is a special person who has at least one book
     books -> Book +			// book has to point at at least one concrete book
 
 GenerativeProgramming : Book	// a concrete example of a book
