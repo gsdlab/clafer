@@ -104,18 +104,15 @@ run v p args = do
                           when (not $ no_stats args) $ putStrLn stats
                           conPutStrLn args "[Saving File]"
                           let (ext, code) = case (mode args) of
-                                Alloy -> ("als", addStats (genModule (mode args) (oTree, genv)) stats)
-                                Alloy42 -> ("als", addStats (genModule (mode args) (oTree, genv)) stats)
+                                Alloy -> ("als", addStats (genModule args (oTree, genv)) stats)
+                                Alloy42 -> ("als", addStats (genModule args (oTree, genv)) stats)
                                 Xml ->   ("xml", genXmlModule oTree)
                                 Clafer -> ("des.cfr", printTree $ sugarModule oTree)
                           let fo = f' ++ "." ++ ext
                           if console_output args
                              then putStrLn code
                              else writeFile fo code
-                          when ((validate args) && mode args == Xml) $ do
-                            writeFile "ClaferIR.xsd" Generator.Schema.xsd
-                            (path, _) <- splitExecutablePath
-                            voidf $ system $ "java -classpath " ++ path ++ " XsdCheck ClaferIR.xsd " ++ fo
+                          when (validate args) $ runValidate args fo
 
 conPutStrLn args s = when (not $ console_output args) $ putStrLn s
 
@@ -130,14 +127,32 @@ addStats code stats = "/*\n" ++ stats ++ "*/\n" ++ code
 
 
 showStats au (Stats na nr nc nconst sgl) =
-  unlines [ "All clafers: " ++ (show (na + nr + nc)) ++ " | Abstract: " ++ (show na) ++ " | Concrete: " ++ (show nc) ++ " | References: " ++ (show nr)
-          , "Constraints: " ++ show nconst
+  unlines [ "All clafers: " ++ (show (na + nr + nc)) ++ " | Abstract: " ++ (show na) ++ " | Concrete: " ++ (show nc) ++ " | References: " ++ (show nr)          , "Constraints: " ++ show nconst
           , "Global scope: " ++ showInterval sgl
           , "All names unique: " ++ show au]
 
 
 showInterval (n, ExIntegerAst) = show n ++ "..*"
 showInterval (n, ExIntegerNum m) = show n ++ ".." ++ show m
+
+toolDir = do
+  (path, _) <- splitExecutablePath
+  return $ path ++ "Test/tools/"
+
+runValidate args fo = do
+  path <- toolDir
+  case (mode args) of
+    Xml -> do
+      writeFile "ClaferIR.xsd" Generator.Schema.xsd
+      voidf $ system $ "java -classpath " ++ path ++ " XsdCheck ClaferIR.xsd " ++ fo
+    Alloy -> do
+      voidf $ system $ validateAlloy path "4" ++ fo
+    Alloy42 -> do
+      voidf $ system $ validateAlloy path "4.2-rc" ++ fo
+    Clafer -> do
+      voidf $ system $ "./clafer -s " ++ fo
+
+validateAlloy path version = "java -cp " ++ path ++ "alloy" ++ version ++ ".jar edu.mit.csail.sdg.alloy4whole.ExampleUsingTheCompiler "
 
 clafer = ClaferArgs {
   mode = Alloy &= help "Generated output type. Available modes: alloy (default); alloy42 (new Alloy version); xml (intermediate representation of Clafer model); clafer (analyzed and desugared clafer model)" &= name "m",
@@ -152,7 +167,7 @@ clafer = ClaferArgs {
   keep_unused = def &= help "Keep unused abstract clafers" &= name "k",
   no_stats = def &= help "Don't print statistics" &= name "s",
   schema = def &= help "Show Clafer XSD schema",
-  validate = def &= help "Validate XML file against Clafer XSD schema"
+  validate = def &= help "Validate output. Uses XsdCheck for XML, Alloy Analyzer for Alloy models, and Clafer translator for desugared Clafer models. The command expects to find binaries in Test/tools: XsdCheck.class, Alloy4.jar, Alloy4.2-rc.jar. "
  } &= summary ("Clafer v0.2." ++ version)
 
 main :: IO ()
