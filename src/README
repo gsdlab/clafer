@@ -19,3 +19,5 @@ If you have no cabal then installt it (Ubuntu):
 
 Once the libraries are in place, compile the translator:
   make
+
+The translator can validate output (XML, Alloy, Clafer). Make sure that XsdCheck and alloy binaries are places in Test/tools.
