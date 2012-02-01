@@ -18,6 +18,9 @@ prof:
 	ghc -prof -auto-all -rtsopts -O --make clafer
 
 test:
+	find Test/suite/ -type f -name '*.als' -print0
+	find Test/suite/ -type f -name '*.cfr.des' -print0
+	find Test/suite/ -type f -name '*.xml' -print0
 	find ./Test/suite -type f \( -iname "*.cfr" ! -iname "*.des.cfr" \) | xargs -L1 ./clafer -s -v
 	find ./Test/suite -type f \( -iname "*.cfr" ! -iname "*.des.cfr" \) | xargs -L1 ./clafer -s -v -m=xml
 	find ./Test/suite -type f \( -iname "*.cfr" ! -iname "*.des.cfr" \) | xargs -L1 ./clafer -s -v -m=clafer

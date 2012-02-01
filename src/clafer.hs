@@ -77,42 +77,49 @@ run v p args = do
                             putStrV v "Tokens:"
                             putStrLn s
              Ok  tree -> do
-                          let f = file args
+                          let f = stripFileName $ file args
                           conPutStrLn args "\nParse Successful!"
-                          conPutStrLn args "[Desugaring]"
-                          dTree <- evaluate $! desugarModule tree
-                          let tmpName = dropWhile (/= '.') $ reverse f
-                          let f' = if null tmpName then f
-                                   else reverse $ tail tmpName
-                          -- writeFile (f' ++ ".des") $ printTree $
-                          --  sugarModule dTree
-                          let dTree' = findDupModule args dTree
-                          let au = allUnique dTree'
-                          let args' = args{force_resolver = not au ||
-                                           force_resolver args}
-                          conPutStrLn args "[Resolving]"
-                          (rTree, genv) <- evaluate $!
-                                           resolveModule args' dTree'
-                          conPutStrLn args "[Analyzing String]"
-                          aTree <- evaluate $! astrModule rTree
-                          conPutStrLn args "[Optimizing]"
-                          oTree <- evaluate $ optimizeModule args' (aTree, genv)
-                              -- writeFile (f' ++ ".ana") $ printTree $
-                          --  sugarModule oTree
-                          conPutStrLn args "[Generating Code]"
-                          let stats = showStats au $ statsModule oTree
-                          when (not $ no_stats args) $ putStrLn stats
-                          conPutStrLn args "[Saving File]"
-                          let (ext, code) = case (mode args) of
-                                Alloy -> ("als", addStats (genModule args (oTree, genv)) stats)
-                                Alloy42 -> ("als", addStats (genModule args (oTree, genv)) stats)
-                                Xml ->   ("xml", genXmlModule oTree)
-                                Clafer -> ("des.cfr", printTree $ sugarModule oTree)
-                          let fo = f' ++ "." ++ ext
-                          if console_output args
-                             then putStrLn code
-                             else writeFile fo code
-                          when (validate args) $ runValidate args fo
+                          dTree <- desugar args tree
+                          oTree <- analyze args dTree
+                          f' <- generate f args oTree
+                          when (validate args) $ runValidate args f'
+
+stripFileName f = case dropWhile (/= '.') $ reverse f of
+  [] -> f
+  xs -> reverse $ tail xs
+
+desugar args tree = do
+  conPutStrLn args "[Desugaring]"
+  return $ desugarModule tree
+  -- writeFile (f ++ ".des") $ printTree $
+  --  sugarModule dTree
+
+analyze args tree = do
+  let dTree' = findDupModule args tree
+  let au = allUnique dTree'
+  let args' = args{force_resolver = not au || force_resolver args}
+  conPutStrLn args "[Resolving]"
+  let (rTree, genv) = resolveModule args' dTree'
+  conPutStrLn args "[Analyzing String]"
+  let aTree = astrModule rTree
+  conPutStrLn args "[Optimizing]"
+  return $ (optimizeModule args' (aTree, genv), genv, au)
+  -- writeFile (f ++ ".ana") $ printTree $
+  --  sugarModule oTree
+
+generate f args (oTree, genv, au) = do
+  conPutStrLn args "[Generating Code]"
+  let stats = showStats au $ statsModule oTree
+  when (not $ no_stats args) $ putStrLn stats
+  conPutStrLn args "[Saving File]"
+  let (ext, code) = case (mode args) of
+                      Alloy -> ("als", addStats (genModule args (oTree, genv)) stats)
+                      Alloy42 -> ("als", addStats (genModule args (oTree, genv)) stats)
+                      Xml ->   ("xml", genXmlModule oTree)
+                      Clafer -> ("des.cfr", printTree $ sugarModule oTree)
+  let f' = f ++ "." ++ ext
+  if console_output args then putStrLn code else writeFile f' code
+  return f'
 
 conPutStrLn args s = when (not $ console_output args) $ putStrLn s
 
