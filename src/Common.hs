@@ -192,8 +192,8 @@ isPrimitive = flip elem primitiveTypes
 
 data GEnv = GEnv {
   num :: Int,
-  stable :: Map.Map String [[String]],
-  sClafers ::[IClafer]
+  stable :: Map.Map String [[String]], -- super clafer names of a given clafer
+  sClafers ::[IClafer] -- all clafers (no going through references)
     }
   deriving (Eq, Show)
 

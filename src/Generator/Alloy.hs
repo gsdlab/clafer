@@ -305,7 +305,7 @@ transformExp x = x
 genIFunExp mode clafer (IFunExp op exps) = concat $ intl exps' (genOp mode op)
   where
   intl
-    | op `elem` arithBinOps = interleave
+    | op `elem` arithBinOps && length exps == 2 = interleave
     | otherwise = \xs ys -> reverse $ interleave (reverse xs) (reverse ys)
   exps' = map (optBrArg mode clafer) exps
 

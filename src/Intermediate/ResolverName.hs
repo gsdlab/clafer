@@ -33,15 +33,15 @@ import Front.Absclafer
 import Intermediate.Intclafer
 
 data SEnv = SEnv {
-  clafers :: [IClafer],
-  context :: Maybe IClafer,
-  subClafers :: [(IClafer, [IClafer])],
-  ancClafers :: [(IClafer, [IClafer])],
-  bindings :: [([String], [IClafer])],
-  resPath :: [IClafer],
-  genv :: GEnv,
-  aClafers :: [(IClafer, [IClafer])],
-  cClafers :: [(IClafer, [IClafer])]
+  clafers :: [IClafer],                 -- (constant) top level clafers
+  context :: Maybe IClafer,             -- context of a constraint
+  subClafers :: [(IClafer, [IClafer])], -- descendans (BFS)
+  ancClafers :: [(IClafer, [IClafer])], -- ancesors (BFS)
+  bindings :: [([String], [IClafer])],  -- local names
+  resPath :: [IClafer],                 -- path to the current clafer
+  genv :: GEnv,                         -- (constant)
+  aClafers :: [(IClafer, [IClafer])],   -- (constant) abstract clafers (BFS)
+  cClafers :: [(IClafer, [IClafer])]    -- (constant) all concrete clafers (BFS)
   } deriving Show
 
 
@@ -144,12 +144,12 @@ mkNav xs = foldl1 (\x y -> IFunExp iJoin $ map (PExp Nothing "") [x, y]) xs
 
 resolveName :: SEnv -> String -> (HowResolved, String, [IClafer])
 resolveName env id = resolve env id
-  [resolveSpecial, resolveBind, resolveSubclafers, resolveAncestor, resolveTopLevel, resolveNone]
+  [resolveSpecial, resolveBind, resolveDescendants, resolveAncestor, resolveTopLevel, resolveNone]
 
 
 resolveImmName :: SEnv -> String -> (HowResolved, String, [IClafer])
 resolveImmName env id = resolve env id
-  [resolveImmSubclafers, resolveNone]
+  [resolveChildren, resolveNone]
 
 
 resolve env id fs = fromJust $ foldr1 mplus $ map (\x -> x env id) fs
@@ -177,14 +177,14 @@ resolveBind env id = find (\bs -> id `elem` fst bs) (bindings env) >>=
 
 
 -- searches for a name in all subclafers (BFS)
-resolveSubclafers :: SEnv -> String -> Maybe (HowResolved, String, [IClafer])
-resolveSubclafers env id = -- if null (subClafers env) then error $ uid $  else
+resolveDescendants :: SEnv -> String -> Maybe (HowResolved, String, [IClafer])
+resolveDescendants env id =
   (context env) >> (findUnique id $ subClafers env) >>= (toMTriple Subclafers)
 
 
 -- searches for a name in immediate subclafers (BFS)
-resolveImmSubclafers :: SEnv -> String -> Maybe (HowResolved, String, [IClafer])
-resolveImmSubclafers env id =
+resolveChildren :: SEnv -> String -> Maybe (HowResolved, String, [IClafer])
+resolveChildren env id =
   (context env) >> (findUnique id $ map (\x -> (x, [x,fromJust $ context env]))
                     $ allSubclafers env) >>= toMTriple Subclafers
 
@@ -222,6 +222,9 @@ findUnique x xs =
   case filter (((==) x).ident.fst) xs of
     []     -> Nothing
     [elem] -> Just $ (uid $ fst elem, snd elem)
-    _      -> error $ "element is not unique : " ++ show x ++ ". Available paths:\n" ++ ((filter (((==) x).ident.fst) xs) >>= (showPath.(map uid).snd))
+    _      -> error $ "element is not unique : " ++ show x ++
+              ". Available paths:\n" ++ showAvailPaths x xs
 
 showPath xs = (intercalate "." $ reverse xs) ++ "\n"
+
+showAvailPaths x xs = filter (((==) x).ident.fst) xs >>= showPath.(map uid).snd
