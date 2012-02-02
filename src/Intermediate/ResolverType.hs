@@ -17,7 +17,7 @@
  along with clafer. (See files COPYING and COPYING.LESSER.)  If not,
  see <http://www.gnu.org/licenses/>.
 -}
-module Intermediate.ResolverType where
+module Intermediate.ResolverType (resolveTModule) where
 
 import Control.Monad.State
 import Data.Function
@@ -52,6 +52,26 @@ data STEnv = STEnv {
 type SymbolTable = Map String (IType, Maybe String)
 type TypedIExp = (IExp, IType)
 
+
+
+-- Get the TCEnv of the parent
+parentTCEnv :: TCEnv -> TCEnv
+parentTCEnv t@(TCEnv table this itype (Just parent)) = uidTCEnv t parent
+parentTCEnv (TCEnv table this itype Nothing)         = error "Root does not have a parent"
+    
+-- Get the TCEnv of the clafer matching the uid
+uidTCEnv :: TCEnv -> String -> TCEnv
+uidTCEnv (TCEnv table _ _ _) uid =
+    case Map.lookup uid table of
+    Just (newType, newParent) -> TCEnv table uid newType newParent
+    Nothing -> error $ "Unknown uid " ++ uid
+
+
+
+-- The only exported function. Type checks and resolves the types.
+-- Done in 2 steps
+--   1. Traverse every clafer and build a symbol table
+--   2. Traverse every constraint and resolve the types and type check
 resolveTModule :: (IModule, GEnv) -> IModule
 resolveTModule (imodule, genv) =
     imodule {mDecls = resolveTElements tcEnv $ mDecls imodule}
@@ -59,6 +79,14 @@ resolveTModule (imodule, genv) =
     symbolTable = symbolTableIElements (STEnv (sClafers genv) Nothing) (mDecls imodule)
     tcEnv = TCEnv symbolTable "root" TClafer Nothing
 
+
+
+{-
+ -
+ -  Symbol table building functions
+ -
+ -}
+-- Build a symbol table from the elements
 symbolTableIElements :: STEnv -> [IElement] -> SymbolTable
 symbolTableIElements env elements = foldr (union.symbolTableIElement env) empty elements
 
@@ -96,49 +124,14 @@ typeOfISuper (ISuper _ ((PExp _ _ (IClaferId _ sident _)):_)) = case sident of
                                                                     "string" -> TString
                                                                     x -> error $ sident ++ " not a native super type"
 
-parentTCEnv :: TCEnv -> TCEnv
-parentTCEnv t@(TCEnv table this itype (Just parent)) = uidTCEnv t parent
-parentTCEnv (TCEnv table this itype Nothing)         = error "Root does not have a parent"
-    
-uidTCEnv :: TCEnv -> String -> TCEnv
-uidTCEnv (TCEnv table _ _ _) uid =
-    case Map.lookup uid table of
-    Just (newType, newParent) -> TCEnv table uid newType newParent
-    Nothing -> error $ "Unknown uid " ++ uid
 
--- Returns the type of the clafer with given uid
-{-itypeOfClafer :: String ->  IType
-itypeOfClafer id =
-    do
-        (_, path, symbolTable) <- get
-        case id of
-            "this" -> itypeOfClafer $ uid $ head path
-            "parent" -> itypeOfClafer $ uid $ head $ tail path
-            _ ->
-                -- Search symbol table
-                -- Calculate and store in symbol table if not yet cached
-                case (Map.lookup id symbolTable) of
-                        Just x -> return x
-                        Nothing -> updateSymbolTable id
 
--- Calculate the type and store in symbol table
-updateSymbolTable :: String ->  IType
-updateSymbolTable id =
-    do
-        itype <- itypeOfClaferCalculate id
-        (clafers, path, symbolTable) <- get
-        put $ (clafers, path, insert id itype symbolTable)
-        return itype
-        
-
--- Perform the calculation required to find the type of the clafer with given uid
-itypeOfClaferCalculate :: String ->  IType
-itypeOfClaferCalculate id = do (clafers, _, symbolTable) <- get
-                               let clafer = findClaferFromUid id clafers
-                               let hierarchy = findHierarchy clafers clafer
-                               return $ topTypeOfHierarchy hierarchy
--}
-
+{-
+ -
+ -  Type checking and type resolving functions
+ -
+ -}
+-- Type check the elements
 resolveTElements :: TCEnv -> [IElement] -> [IElement]
 resolveTElements env es = map (resolveTElement env) es
 
@@ -149,8 +142,9 @@ resolveTElement env (IEConstraint isHard pexp) = IEConstraint isHard resolvedPEx
 resolveTClafer :: TCEnv -> IClafer -> IClafer
 resolveTClafer env clafer = 
     clafer{
-        elements = resolveTElements env $ elements clafer,
+        elements = resolveTElements cenv $ elements clafer,
         super = typeTheSuper $ super clafer}
+    where cenv = uidTCEnv env (uid clafer)
 
 -- Sets the type in all the supers to IClafer
 typeTheSuper :: ISuper -> ISuper
@@ -167,6 +161,8 @@ resolveTPExp :: TCEnv -> PExp -> (TCEnv, PExp)
 resolveTPExp env (PExp _ pid x) =
     let (newEnv, (exp, typed)) = resolveTExp env x in
     (newEnv, PExp (Just typed) pid exp)
+
+
 
 {-
     There are two ways to retrieve the type of an IExp:
@@ -187,8 +183,18 @@ resolveTExpPreferValue env e@(IClaferId _ sident _) =
     "parent" -> (parentEnv, (e, tcType parentEnv)) where parentEnv = parentTCEnv env
     uid      -> (uidEnv, (e, tcType uidEnv)) where uidEnv = uidTCEnv env uid
 -- Join function
--- Join function is a special case
--- The expression a.b can produce a value if b can produce a value
+{- 
+ - Join function is a special case.
+ - The expression a.b can produce a value if b can produce a value.
+ - Join function is the only function that passes along the TCEnv of its children
+ - This is needed to support parent and this relation.
+ -
+ - for example: ((parent.parent).this)
+ - In the first join, the left child (parent) will create a TCEnv for the parent of the current TCEnv.
+ - The right child (parent) will create a TCEnv for the parent of that parent (hence grandparent of the orignal TCEnv).
+ - The grandparent TCEnv will be given to the outer join to pass to its right child (this).
+ - this refers to the current TCEnv so the example expression is evaluated to the grandparent of the current TCEnv.
+ -}
 resolveTExpPreferValue env (IFunExp "." [exp1, exp2]) =
     let (env1, a1) = resolveTPExp env exp1
         (env2, a2) = resolveTPExpPreferValue env1 exp2
@@ -196,6 +202,7 @@ resolveTExpPreferValue env (IFunExp "." [exp1, exp2]) =
     (env2, typeCheckFunction (typeOf a2) "." (exact [TClafer, typeOf a2]) [a1, a2])
 -- Otherwise, the IExp has no value expression so return its standard expression
 resolveTExpPreferValue env x = resolveTExp env x
+
 
 
 resolveTExp:: TCEnv -> IExp -> (TCEnv, TypedIExp)
@@ -241,8 +248,12 @@ resolveTExp env (IFunExp op [exp1, exp2]) = (env, result)
                 typeCheckFunction TBoolean op (exact [TClafer, TClafer]) [a1PreferValue, a2PreferValue]
         | op `elem` relSetBinOps = 
             typeCheckFunction TBoolean op (exact [TClafer, TClafer])  [a1, a2]
-        | op `elem` setBinOps =
+        | op `elem` [iUnion, iDifference, iIntersection] =
             typeCheckFunction TClafer op (exact [TClafer, TClafer])  [a1, a2]
+        | op `elem` [iUnion, iDifference, iIntersection] =
+            typeCheckFunction TClafer op (exact [TClafer, TClafer])  [a1, a2]
+        | op `elem` [iDomain, iRange] =
+            typeCheckFunction TClafer op [TExpect TClafer, TExpectAny]  [a1, a2PreferValue]
         | op `elem` [iSub, iMul, iDiv] =
             typeCheckFunction (coerceIfNeeded (typeOf a1PreferValue) (typeOf a2PreferValue)) op allNumeric [a1PreferValue, a2PreferValue]
         | op == iPlus =
@@ -298,8 +309,8 @@ typeCheckFunction returnType op expected inferredChildren =
     let inferred = map typeOf inferredChildren in
         if all (uncurry checkExpect) (zip expected inferred) then 
             (IFunExp op inferredChildren, returnType)
-        else error ("function " ++ op ++ " expected arguments of type " ++ (show $ take (length inferred) expected)
-            ++ ", received " ++ (show inferred))
+        else error ("function " ++ op ++ " expected arguments of type " ++ show (take (length inferred) expected)
+            ++ ", received " ++ show inferred)
 
 -- Convenience function, returns true iff the type is a numerical type.
 isNumeric :: IType -> Bool
@@ -313,8 +324,11 @@ checkExpect (TExpect expect) itype = expect == itype
 checkExpect TExpectNumeric TInteger = True
 checkExpect TExpectNumeric TReal = True
 checkExpect TExpectNumeric _ = False
+-- Check allows anything
+checkExpect TExpectAny _ = True
 
-data TExpect = TExpect IType | TExpectNumeric
+data TExpect = TExpect IType | TExpectNumeric | TExpectAny
 instance Show TExpect where
     show (TExpect itype) = show itype
     show TExpectNumeric = (show TInteger) ++ "/" ++ (show TReal)
+    show TExpectAny = "*"
