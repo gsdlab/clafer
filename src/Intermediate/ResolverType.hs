@@ -22,25 +22,92 @@ module Intermediate.ResolverType where
 import Control.Monad.State
 import Data.Function
 import Data.Maybe
-import Data.Map (Map)
+import Data.Map hiding (map, lookup)
 import qualified Data.Map as Map
 import Debug.Trace
-import List
+import List (find)
 
 import Common
 import Intermediate.Intclafer
 
+-- Internal structure for type checking.
+-- A tuple for storing the symbol table, a clafer's uid, its type, and its parent uid.
+-- Every clafer has a parent except the root.
+data TCEnv = TCEnv {
+    tcTable :: SymbolTable,
+    tcThis :: String,
+    tcType :: IType,
+    tcParent :: Maybe String
+} deriving Show
 
-type SymbolTable = Map String IType
-type TypeState = State ([IClafer], [IClafer], SymbolTable)
+-- Internal structure for building the symbol table.
+data STEnv = STEnv {
+    stClafers :: [IClafer],
+    -- The uid of the parent. Every clafer has a parent except the root.
+    stParent :: Maybe String
+} deriving Show
 
-        
+-- The symbol table maps a clafer's uid to its type and parent's uid.
+-- Every clafer has a parent except the root.
+type SymbolTable = Map String (IType, Maybe String)
+type TypedIExp = (IExp, IType)
+
 resolveTModule :: (IModule, GEnv) -> IModule
 resolveTModule (imodule, genv) =
-    imodule{mDecls = evalState (resolveTElements $ mDecls imodule) (sClafers genv, [], Map.empty)}
+    imodule {mDecls = resolveTElements tcEnv $ mDecls imodule}
+    where
+    symbolTable = symbolTableIElements (STEnv (sClafers genv) Nothing) (mDecls imodule)
+    tcEnv = TCEnv symbolTable "root" TClafer Nothing
+
+symbolTableIElements :: STEnv -> [IElement] -> SymbolTable
+symbolTableIElements env elements = foldr (union.symbolTableIElement env) empty elements
+
+symbolTableIElement :: STEnv -> IElement -> SymbolTable
+symbolTableIElement env (IEClafer x) = symbolTableIClafer env x
+-- Constraints do not add symbols to the symbol table
+symbolTableIElement env (IEConstraint _ _) = empty
+
+symbolTableIClafer :: STEnv -> IClafer -> SymbolTable
+symbolTableIClafer env c =
+    let cuid = uid c :: String
+        children = symbolTableIElements env{stParent = Just cuid} $ elements c :: SymbolTable
+    in
+    insert cuid (itypeOfClafer env cuid, stParent env) children
+
+itypeOfClafer :: STEnv -> String -> IType
+itypeOfClafer env id = 
+    let clafer = findClaferFromUid env id :: IClafer
+        hierarchy = findHierarchy (stClafers env) clafer :: [IClafer]
+    in
+    -- Find the last IClafer (ie. highest in the hierarchy) and get super type
+    typeOfISuper $ super $ last hierarchy
+
+-- Find the clafer with the given uid
+findClaferFromUid :: STEnv -> String -> IClafer
+findClaferFromUid (STEnv clafers _) id = fromJust $ find (((==) id).uid) clafers
+                                
+-- Get the super's type (primitive => only one super so we only need to look at the first one)
+-- The PExp must be a ClaferID
+typeOfISuper :: ISuper -> IType
+typeOfISuper (ISuper _ ((PExp _ _ (IClaferId _ sident _)):_)) = case sident of
+                                                                    "clafer" -> TClafer
+                                                                    "int" -> TInteger
+                                                                    "integer" -> TInteger
+                                                                    "string" -> TString
+                                                                    x -> error $ sident ++ " not a native super type"
+
+parentTCEnv :: TCEnv -> TCEnv
+parentTCEnv t@(TCEnv table this itype (Just parent)) = uidTCEnv t parent
+parentTCEnv (TCEnv table this itype Nothing)         = error "Root does not have a parent"
+    
+uidTCEnv :: TCEnv -> String -> TCEnv
+uidTCEnv (TCEnv table _ _ _) uid =
+    case Map.lookup uid table of
+    Just (newType, newParent) -> TCEnv table uid newType newParent
+    Nothing -> error $ "Unknown uid " ++ uid
 
 -- Returns the type of the clafer with given uid
-itypeOfClafer :: String -> TypeState IType
+{-itypeOfClafer :: String ->  IType
 itypeOfClafer id =
     do
         (_, path, symbolTable) <- get
@@ -55,61 +122,35 @@ itypeOfClafer id =
                         Nothing -> updateSymbolTable id
 
 -- Calculate the type and store in symbol table
-updateSymbolTable :: String -> TypeState IType
+updateSymbolTable :: String ->  IType
 updateSymbolTable id =
     do
         itype <- itypeOfClaferCalculate id
         (clafers, path, symbolTable) <- get
-        put $ (clafers, path, Map.insert id itype symbolTable)
+        put $ (clafers, path, insert id itype symbolTable)
         return itype
         
 
 -- Perform the calculation required to find the type of the clafer with given uid
-itypeOfClaferCalculate :: String -> TypeState IType
+itypeOfClaferCalculate :: String ->  IType
 itypeOfClaferCalculate id = do (clafers, _, symbolTable) <- get
                                let clafer = findClaferFromUid id clafers
                                let hierarchy = findHierarchy clafers clafer
                                return $ topTypeOfHierarchy hierarchy
+-}
 
--- Find the clafer with the given uid
-findClaferFromUid :: String -> [IClafer] -> IClafer
-findClaferFromUid id clafers = fromJust $ find (((==) id).uid) clafers
+resolveTElements :: TCEnv -> [IElement] -> [IElement]
+resolveTElements env es = map (resolveTElement env) es
 
--- Find the last IClafer (ie. highest in the hierarchy) and get super type
-topTypeOfHierarchy :: [IClafer] -> IType
-topTypeOfHierarchy clafers = typeOfISuper.super.last $ clafers
-                                
--- Get the super's type (primitive => only one super so we only need to look at the first one)
--- The PExp must be a ClaferID
-typeOfISuper :: ISuper -> IType
-typeOfISuper (ISuper _ ((PExp _ _ (IClaferId _ sident _)):_)) = case sident of
-                                                                    "clafer" -> TClafer
-                                                                    "int" -> TInteger
-                                                                    "integer" -> TInteger
-                                                                    "string" -> TString
-                                                                    x -> error $ sident ++ " not a native super type"
+resolveTElement :: TCEnv -> IElement -> IElement
+resolveTElement env (IEClafer clafer) = IEClafer $ resolveTClafer env clafer
+resolveTElement env (IEConstraint isHard pexp) = IEConstraint isHard resolvedPExp where (_, resolvedPExp) = resolveTPExp env pexp    
 
-resolveTElements :: [IElement] -> TypeState [IElement]
-resolveTElements es = unfoldStates $ map resolveTElement es
-
-resolveTElement :: IElement -> TypeState IElement
-resolveTElement (IEClafer clafer) = IEClafer `liftM` resolveTClafer clafer
-resolveTElement (IEConstraint isHard pexp) = IEConstraint isHard `liftM` resolveTPExp pexp    
-
-resolveTClafer :: IClafer -> TypeState IClafer
-resolveTClafer clafer = 
-    do
-        -- Push this clafer onto the path
-        (a, path1, b) <- get
-        put (a, clafer:path1, b)
-        
-        e <- resolveTElements $ elements clafer
-        
-        -- Pop this clafer from the path
-        (c, _:path, d) <- get
-        put (c, path, d)
-        
-        return clafer{elements = e, super = typeTheSuper $ super clafer}
+resolveTClafer :: TCEnv -> IClafer -> IClafer
+resolveTClafer env clafer = 
+    clafer{
+        elements = resolveTElements env $ elements clafer,
+        super = typeTheSuper $ super clafer}
 
 -- Sets the type in all the supers to IClafer
 typeTheSuper :: ISuper -> ISuper
@@ -117,17 +158,15 @@ typeTheSuper (ISuper isOverlapping supers) = ISuper isOverlapping $ map typeTheP
 typeThePExp :: PExp -> PExp
 typeThePExp x = x{iType=Just TClafer}
 
-resolveTPExpPreferValue :: PExp -> TypeState PExp
-resolveTPExpPreferValue (PExp _ pid x) =
-    do
-        (exp, typed) <- resolveTExpPreferValue x
-        return $ PExp (Just typed) pid exp
+resolveTPExpPreferValue :: TCEnv -> PExp -> (TCEnv, PExp)
+resolveTPExpPreferValue env (PExp _ pid x) =
+    let (newEnv, (exp, typed)) = resolveTExpPreferValue env x in
+    (newEnv, PExp (Just typed) pid exp)
     
-resolveTPExp :: PExp -> TypeState PExp
-resolveTPExp (PExp _ pid x) =
-    do
-        (exp, typed) <- resolveTExp x
-        return $ PExp (Just typed) pid exp
+resolveTPExp :: TCEnv -> PExp -> (TCEnv, PExp)
+resolveTPExp env (PExp _ pid x) =
+    let (newEnv, (exp, typed)) = resolveTExp env x in
+    (newEnv, PExp (Just typed) pid exp)
 
 {-
     There are two ways to retrieve the type of an IExp:
@@ -139,101 +178,99 @@ resolveTPExp (PExp _ pid x) =
     
     Returns a tuple of the type checked expression and the type.
 -}
-resolveTExpPreferValue:: IExp -> TypeState (IExp, IType)
+resolveTExpPreferValue:: TCEnv -> IExp -> (TCEnv, TypedIExp)
 -- Clafer reference
 -- Return the value type of the reference from the symbol table (possibly IClafer)
-resolveTExpPreferValue e@(IClaferId _ sident _) = 
-    ((,) e) `liftM` (itypeOfClafer sident)
+resolveTExpPreferValue env e@(IClaferId _ sident _) =
+    case sident of
+    "this"   -> (env, (e, tcType env))
+    "parent" -> (parentEnv, (e, tcType parentEnv)) where parentEnv = parentTCEnv env
+    uid      -> (uidEnv, (e, tcType uidEnv)) where uidEnv = uidTCEnv env uid
 -- Join function
 -- Join function is a special case
 -- The expression a.b can produce a value if b can produce a value
-resolveTExpPreferValue (IFunExp "." [exp1, exp2]) =
-    do
-        a1 <- resolveTPExp exp1        
-        a2 <- resolveTPExpPreferValue exp2
-        return $ typeCheckFunction (typeOf a2) "." (exact [TClafer, typeOf a2]) [a1, a2]
+resolveTExpPreferValue env (IFunExp "." [exp1, exp2]) =
+    let (env1, a1) = resolveTPExp env exp1
+        (env2, a2) = resolveTPExpPreferValue env1 exp2
+    in
+    (env2, typeCheckFunction (typeOf a2) "." (exact [TClafer, typeOf a2]) [a1, a2])
 -- Otherwise, the IExp has no value expression so return its standard expression
-resolveTExpPreferValue x = resolveTExp x
+resolveTExpPreferValue env x = resolveTExp env x
 
 
-
-resolveTExp:: IExp -> TypeState (IExp, IType)
-resolveTExp e@(IInt _) = return (e, TInteger)
-resolveTExp e@(IDouble _) = return (e, TReal)
-resolveTExp e@(IStr _) = return (e, TString)
-resolveTExp e@(IDeclPExp _ _ _) = return (e, TBoolean)
-resolveTExp e@(IClaferId _ _ _) = return (e, TClafer)
+resolveTExp:: TCEnv -> IExp -> (TCEnv, TypedIExp)
+resolveTExp env e@(IClaferId _ sident _) =
+    case sident of
+    "this"   -> (env             , (e, TClafer))
+    "parent" -> (parentTCEnv env , (e, TClafer))
+    uid      -> (uidTCEnv env uid, (e, TClafer))
+resolveTExp env (IFunExp "." [exp1, exp2]) =
+    let (env1, a1) = resolveTPExp env exp1
+        (env2, a2) = resolveTPExp env1 exp2
+    in
+    (env2, typeCheckFunction (typeOf a2) "." (exact [TClafer, typeOf a2]) [a1, a2])
+resolveTExp env e@(IInt _) =          (env, (e,TInteger))
+resolveTExp env e@(IDouble _) =       (env, (e, TReal))
+resolveTExp env e@(IStr _) =          (env, (e, TString))
+resolveTExp env e@(IDeclPExp _ _ _) = (env, (e, TBoolean))
 
 -- Unary functions
-resolveTExp (IFunExp op [exp]) =
-    do
-        a1 <- (resolveTPExp exp)
-        return $
-            if op == iNot then
-                typeCheckFunction TBoolean op (exact [TBoolean]) [a1]
-            else if op == iCSet then
-                typeCheckFunction TInteger op (exact [TClafer]) [a1]
-            else if op == iMin then
-                typeCheckFunction (typeOf a1) op allNumeric [a1]
-            else error $ "Unknown unary function '" ++ op ++ "'"
+resolveTExp env (IFunExp op [exp]) = (env, result)
+    where
+    result
+        | op == iNot  = typeCheckFunction TBoolean    op (exact [TBoolean]) [a1]
+        | op == iCSet = typeCheckFunction TInteger    op (exact [TClafer])  [a1]
+        | op == iMin  = typeCheckFunction (typeOf a1) op allNumeric         [a1]
+        | otherwise   = error $ "Unknown unary function '" ++ op ++ "'"
+    (_, a1) = resolveTPExp env exp
 
 -- Binary functions
-resolveTExp (IFunExp op [exp1, exp2])
+resolveTExp env (IFunExp op [exp1, exp2]) = (env, result)
+    where
+    result
         | op `elem` logBinOps = 
-            typeCheckFunction TBoolean op (exact [TBoolean, TBoolean]) `liftT` [a1, a2]
+            typeCheckFunction TBoolean op (exact [TBoolean, TBoolean])  [a1, a2]
         | op `elem` [iLt, iGt, iLte, iGte] =
-            typeCheckFunction TBoolean op allNumeric `liftT` [a1PreferValue, a2PreferValue]
+            typeCheckFunction TBoolean op allNumeric  [a1PreferValue, a2PreferValue]
         | op `elem` [iEq, iNeq] =
-            do
-                a <- a1PreferValue
-                b <- a2PreferValue
-                return $
-                    if typeOf a == TString then -- String equality
-                        typeCheckFunction TBoolean op (exact [TString, TString]) [a, b]
-                    else if isNumeric $ typeOf a then -- Numeric equality
-                        typeCheckFunction TBoolean op allNumeric [a, b]
-                    else -- Set equality
-                        typeCheckFunction TBoolean op (exact [TClafer, TClafer]) [a, b]
+            if typeOf a1PreferValue == TString then -- String equality
+                typeCheckFunction TBoolean op (exact [TString, TString]) [a1PreferValue, a2PreferValue]
+            else if isNumeric $ typeOf a1PreferValue then -- Numeric equality
+                typeCheckFunction TBoolean op allNumeric [a1PreferValue, a2PreferValue]
+            else -- Set equality
+                typeCheckFunction TBoolean op (exact [TClafer, TClafer]) [a1PreferValue, a2PreferValue]
         | op `elem` relSetBinOps = 
-            typeCheckFunction TBoolean op (exact [TClafer, TClafer]) `liftT` [a1, a2]
+            typeCheckFunction TBoolean op (exact [TClafer, TClafer])  [a1, a2]
         | op `elem` setBinOps =
-            typeCheckFunction TClafer op (exact [TClafer, TClafer]) `liftT` [a1, a2]
+            typeCheckFunction TClafer op (exact [TClafer, TClafer])  [a1, a2]
         | op `elem` [iSub, iMul, iDiv] =
-            do
-                a <- a1PreferValue
-                b <- a2PreferValue
-                return $ typeCheckFunction (coerceIfNeeded (typeOf a) (typeOf b)) op allNumeric [a, b]
+            typeCheckFunction (coerceIfNeeded (typeOf a1PreferValue) (typeOf a2PreferValue)) op allNumeric [a1PreferValue, a2PreferValue]
         | op == iPlus =
-            do
-                a <- a1PreferValue
-                b <- a2PreferValue
-                return $
-                    if typeOf a == TString then -- String addition
-                        typeCheckFunction TString op (exact [TString, TString]) [a, b]
-                    else -- Numeric addition or fail
-                        typeCheckFunction (coerceIfNeeded (typeOf a) (typeOf b)) op allNumeric [a, b]
-        where
-            a1 = resolveTPExp exp1
-            a2 = resolveTPExp exp2
-            a1PreferValue = resolveTPExpPreferValue exp1
-            a2PreferValue = resolveTPExpPreferValue exp2
+            if typeOf a1PreferValue == TString then -- String addition
+                typeCheckFunction TString op (exact [TString, TString]) [a1PreferValue, a2PreferValue]
+            else -- Numeric addition or fail
+                typeCheckFunction (coerceIfNeeded (typeOf a1PreferValue) (typeOf a2PreferValue)) op allNumeric [a1PreferValue, a2PreferValue]
+    (_, a1) = resolveTPExp env exp1
+    (_, a2) = resolveTPExp env exp2
+    (_, a1PreferValue) = resolveTPExpPreferValue env exp1
+    (_, a2PreferValue) = resolveTPExpPreferValue env exp2
 
 --Ternary functions
-resolveTExp (IFunExp op [exp1, exp2, exp3])
-    | op == iIfThenElse =
-        do
-            a1 <- resolveTPExpPreferValue exp1
-            a2 <- resolveTPExpPreferValue exp2
-            a3 <- resolveTPExpPreferValue exp3
-            return $
-                if typeOf a2 == TString then -- String expression
-                    typeCheckFunction TBoolean op (exact [TBoolean, TString, TString]) [a1, a2, a3]
-                else if isNumeric $ typeOf a2 then -- Numeric expression
-                    typeCheckFunction TBoolean op [TExpect TBoolean, TExpectNumeric, TExpectNumeric] [a1, a2, a3]
-                else -- Set expression
-                    typeCheckFunction TBoolean op (exact [TBoolean, TClafer, TClafer]) [a1, a2, a3]
+resolveTExp env (IFunExp "=>else" [exp1, exp2, exp3]) = (env, result)
+    where
+    result
+        | typeOf a2 == TString = -- String expression
+            typeCheckFunction TBoolean "=>else" (exact [TBoolean, TString, TString]) [a1, a2, a3]
+        | isNumeric $ typeOf a2 = -- Numeric expression
+            typeCheckFunction TBoolean "=>else" [TExpect TBoolean, TExpectNumeric, TExpectNumeric] [a1, a2, a3]
+        | otherwise = -- Clafer expression
+            typeCheckFunction TBoolean "=>else" (exact [TBoolean, TClafer, TClafer]) [a1, a2, a3]
+    (_, a1) = resolveTPExpPreferValue env exp1
+    (_, a2) = resolveTPExpPreferValue env exp2
+    (_, a3) = resolveTPExpPreferValue env exp3
 
---resolveTDecl :: IDecl -> TypeState IDecl
+
+--resolveTDecl :: IDecl ->  IDecl
 --resolveTDecl x = liftM x{body = resolveTPExp $ body x}
 
 typeOf::PExp->IType
@@ -243,14 +280,6 @@ coerceIfNeeded::IType->IType->IType
 coerceIfNeeded TInteger TReal = TReal -- Coerce to real
 coerceIfNeeded TReal TInteger = TReal -- Coerce to real
 coerceIfNeeded x _ = x                -- No coercing
-
--- Convenience function
-liftT :: ([PExp] -> a) -> [TypeState PExp] -> TypeState a
-liftT f x = f `liftM` (unfoldStates x)
-        
--- Turn a list of monads to a monad of list
-unfoldStates :: [TypeState a] -> TypeState [a]
-unfoldStates = foldr (liftM2 (:)) (return [])
 
 -- Expects that each argument is numeric
 allNumeric :: [TExpect]
