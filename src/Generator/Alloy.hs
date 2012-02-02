@@ -29,15 +29,15 @@ import Front.Absclafer
 import Intermediate.Intclafer
 import Intermediate.ResolverType
 
-genModule :: ClaferMode -> (IModule, GEnv) -> Result
-genModule mode (imodule, _) =
-  header mode ++ ((mDecls imodule) >>= (genDeclaration mode))
+genModule :: ClaferArgs -> (IModule, GEnv) -> Result
+genModule args (imodule, _) =
+  header args ++ ((mDecls imodule) >>= (genDeclaration (mode args)))
 
 
-header mode = unlines
-    [ if mode == Alloy42 then "" else "open util/integer"
+header args = unlines
+    [ if (mode args) == Alloy42 then "" else "open util/integer"
     , "pred show {}"
-    , "run  show for 1"
+    , if (validate args) then "" else "run  show for 1"
     , ""]
 
 

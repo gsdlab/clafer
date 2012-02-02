@@ -1,13 +1,15 @@
-Dependencies:
-  ghc; cmdargs; executable-path; java >= 5
+----------
+Translator
+----------
 
-Java is required for validating XML output against XSD schema.
+Dependencies:
+  ghc; cmdargs; executable-path; Java >= 5 (only for compiling XsdCheck.java)
 
 To install GHC refer to:
   http://www.haskell.org/ghc/distribution_packages
 
 Install monad transformer library (Ubuntu):
-  suod apt-get install libghc-mtl-dev
+  sudo apt-get install libghc-mtl-dev
 
 To install cmdargs execute:
   cabal install cmdargs
@@ -19,3 +21,22 @@ If you have no cabal then installt it (Ubuntu):
 
 Once the libraries are in place, compile the translator:
   make
+
+Usage:  
+   clafer <filename>.cfr
+   
+   by default, the translator produces Alloy 4 output. Use
+   -m=xml 		to produce XML output
+   -m=clafer 	to produce desugared Clafer output
+   -m=alloy42 	to produce Alloy 4.2 output
+
+---------
+Validator
+---------
+The translator can validate its XML, Alloy 4 and 4.2, and Clafer output.
+
+Dependencies:
+   Java >= 5; XsdCheck.class and Alloy binaries (alloy4.jar and/or alloy4.2-rc.jar) are placed in <clafer installation folder>/Test/tools.
+
+Usage:
+   -v 		to invoke the validator for the given kind of output

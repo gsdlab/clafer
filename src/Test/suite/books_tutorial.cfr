@@ -34,7 +34,7 @@ GenerativeProgramming : Book	// a concrete example of a book
     paper				// because the book is paper it automatically also has a format
     nonfiction			// because the book is nonfiction it automatically also has a kind
     authors = Czarnecki, Eisenecker 	// Czarnecki and Eisenecker are the authors
-    ISBN = "0201309775" ] 		// there’s no GS1 prefix, which is ok because the year is < 2007 
+    ISBN = "0201309775" ] 		// there's no GS1 prefix, which is ok because the year is < 2007 
 
 Czarnecki : Author
     [ name = "Krzysztof Czarnecki"
