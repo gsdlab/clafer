@@ -63,9 +63,9 @@ showSet delim xs = showSet' delim $ filterNull xs
 -- optimization: if only boolean parents, then set card is known
 genClafer :: ClaferMode -> Maybe IClafer -> IClafer -> Result
 genClafer mode parent oClafer
-  | isJust parent && isRef clafer && (not $ isPrimitiveClafer clafer) {- ||
-    (isPrimitiveClafer clafer && isJust parent) -} = ""
-  | otherwise    = (unlines $ filterNull
+--  | isJust parent && isRef clafer && (not $ isPrimitiveClafer clafer) {- ||
+--    (isPrimitiveClafer clafer && isJust parent) -} = ""
+{-  | otherwise -}   = (unlines $ filterNull
                    [cardFact ++ claferDecl clafer
                    , showSet "\n, " $ genRelations mode clafer
                    , optShowSet $ filterNull $ genConstraints mode parent clafer
@@ -98,6 +98,7 @@ claferDecl clafer = concat [genOptCard clafer,
   genAbstract isAbstract = if isAbstract then "abstract " else ""
   genExtends (ISuper False [PExp _ _ (IClaferId _ "clafer" _)]) = ""
   genExtends (ISuper False [PExp _ _ (IClaferId _ id _)]) = " extends " ++ id
+  genExtends (ISuper True  [PExp _ _ (IClaferId _ id _)]) = if isPrimitive id then "" else " in " ++ id
   genExtends _ = ""
 
 
@@ -118,12 +119,11 @@ isPrimitiveClafer clafer = case super clafer of
 -- adds parent relation
 genRelations mode clafer = ref : (map mkRel $ getSubclafers $ elements clafer)
   where
-  ref = if isOverlapping $ super clafer then
-          genRel "ref" clafer {card = Just (1, ExIntegerNum 1)} $
-                 refType mode clafer
-        else ""
+  ref = if isPrimitive $ refType mode clafer then
+            genRel "ref" clafer {card = Just (1, ExIntegerNum 1)} $
+            refType mode clafer else ""
   mkRel c = genRel (genRelName $ uid c) c $
-            (if isRef c {- || isPrimitiveClafer c-} then (refType mode) else uid) c
+            (if isRef c then (refType mode) else uid) c
 
 
 genRelName name = "r_" ++ name
@@ -210,7 +210,7 @@ mkCard element card
   where
   card'  = genInterval element card
 
-
+-- generates expression for references that point to expressions (not single clafers)
 genPathConst mode name clafer
   | isRefPath clafer = name ++ " = " ++ (intercalate " + " $
                        map ((brArg id).(genPExp mode $ Just clafer)) $

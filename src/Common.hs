@@ -69,13 +69,18 @@ mapHierarchy f = (map f.).findHierarchy
 
 
 -- returns inheritance hierarchy of a clafer
+-- (includes non- and overlapping inheritance)
 findHierarchy :: [IClafer] -> IClafer -> [IClafer]
-findHierarchy clafers clafer
-  | getSuper clafer == "clafer" = [clafer]
-  | otherwise                   = clafer : superClafers
+findHierarchy = findHierarchy' getSuper
+
+
+findHierarchy' sFun clafers clafer
+  | sFun clafer == "clafer" = [clafer]
+  | otherwise               = clafer : superClafers
   where
-  superClafers = unfoldr (\c -> find (isEqClaferId $ getSuper c) clafers >>=
+  superClafers = unfoldr (\c -> find (isEqClaferId $ sFun c) clafers >>=
                           Just . (apply id)) clafer
+
 
 -- -----------------------------------------------------------------------------
 -- generic functions

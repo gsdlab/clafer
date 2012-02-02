@@ -186,7 +186,7 @@ resolveDescendants env id =
 resolveChildren :: SEnv -> String -> Maybe (HowResolved, String, [IClafer])
 resolveChildren env id =
   (context env) >> (findUnique id $ map (\x -> (x, [x,fromJust $ context env]))
-                    $ allSubclafers env) >>= toMTriple Subclafers
+                    $ allChildren env) >>= toMTriple Subclafers
 
 
 resolveAncestor :: SEnv -> String -> Maybe (HowResolved, String, [IClafer])
@@ -206,15 +206,15 @@ toNodeDeep env
   | length (clafer `elemIndices` resPath env) > 1 = (result, [])
   | otherwise = (result, map (\c -> env {context = Just c,
                                          resPath = c : resPath env}) $
-                 allSubclafers env)
+                 allChildren env)
   where
   result = (clafer, resPath env)
   clafer = fromJust $ context env
   
 
-allSubclafers env = getSubclafers $ concat $
-                    mapHierarchy elements (sClafers $ genv env)
-                    (fromJust $ context env)
+allChildren env = getSubclafers $ concat $
+                  mapHierarchy elements (sClafers $ genv env)
+                  (fromJust $ context env)
 
 
 findUnique :: String -> [(IClafer, [IClafer])] -> Maybe (String, [IClafer])
