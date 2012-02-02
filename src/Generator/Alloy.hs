@@ -98,6 +98,7 @@ claferDecl clafer = concat [genOptCard clafer,
   genAbstract isAbstract = if isAbstract then "abstract " else ""
   genExtends (ISuper False [PExp _ _ (IClaferId _ "clafer" _)]) = ""
   genExtends (ISuper False [PExp _ _ (IClaferId _ id _)]) = " extends " ++ id
+  -- todo: handle multiple inheritance
   genExtends (ISuper True  [PExp _ _ (IClaferId _ id _)]) = if isPrimitive id then "" else " in " ++ id
   genExtends _ = ""
 
@@ -162,7 +163,7 @@ genType mode x = genPExp mode Nothing x
 -- user constraints + parent + group constraints + reference
 -- a = NUMBER do all x : a | x = NUMBER (otherwise alloy sums a set)
 genConstraints mode parent clafer = genParentConst parent clafer :
-  genGroupConst clafer : genPathConst mode "ref" clafer : refs ++ constraints 
+  genGroupConst clafer : constraints 
   where
   constraints = map genConst $ elements clafer
   genConst x = case x of
@@ -172,8 +173,6 @@ genConstraints mode parent clafer = genParentConst parent clafer :
                            fromJust crd
       where
       crd = card clafer
-  refs = map (\c -> genPathConst mode (genRelName $ uid c) c) $
-         filter isRefPath $ filter isRef $ getSubclafers $ elements clafer
 
 -- optimization: if only boolean features then the parent is unique
 genParentConst pClafer clafer = maybe ""
@@ -209,25 +208,6 @@ mkCard element card
   | otherwise                            = card'
   where
   card'  = genInterval element card
-
--- generates expression for references that point to expressions (not single clafers)
-genPathConst mode name clafer
-  | isRefPath clafer = name ++ " = " ++ (intercalate " + " $
-                       map ((brArg id).(genPExp mode $ Just clafer)) $
-                       supers $ super clafer)
-  | otherwise        = ""
-
-
-isRefPath clafer = (isOverlapping $ super clafer) &&
-                   ((length s > 1) || (not $ isSimplePath s))
-  where
-  s = supers $ super clafer
-
-
-isSimplePath :: [PExp] -> Bool
-isSimplePath [PExp _ _ (IClaferId _ _ _)] = True
-isSimplePath [PExp _ _ (IFunExp op _)] = op == iUnion
-isSimplePath _ = False
 
 -- -----------------------------------------------------------------------------
 genGCard element gcard = genInterval element  $ interval $ fromJust gcard
