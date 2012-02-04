@@ -1,0 +1,131 @@
+\documentclass[table,15pt,t]{beamer}
+
+\usepackage{fontspec}
+\usepackage{xunicode} %Unicode extras!
+\usepackage{xltxtra}  %Fixes
+\usepackage{relsize}  %relative font sizing commands
+\usepackage{booktabs}
+\usepackage{eulervm} %mathfonts
+\usepackage{tikz}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{tabularx}
+\usepackage{alltt}
+\usepackage{ifthen,calc}
+
+\usetheme{Sleek}
+
+\usetikzlibrary{arrows,shapes,shapes.arrows,positioning}
+\usetikzlibrary{chains}
+
+\tikzstyle{ds} = [draw, thick, color=oxygenblue, inner sep=0pt, drop shadow]
+
+\setsansfont[Mapping=tex-text]{Trade Gothic LT Std}
+
+\setlength{\fboxsep}{2mm}
+\newcommand{\sem}[1]{\ensuremath{[\![#1]\!]}}
+
+\title{Clafer type system and attributes}
+\author{Jimmy Liang and Kacper Bak}
+\institute{\small Generative Software Development Lab\\University of Waterloo}
+\date{GSD Lab Workshop. February 7, 2012}
+
+\newcommand{\vmiddle}[1]{
+  \vspace{\stretch{1}}
+  #1
+  \vspace{\stretch{1}}
+}
+
+\newcommand{\interframe}[1]{
+\begin{frame}{}
+\vmiddle{\hmiddle{\Huge #1}}
+\end{frame}
+}
+
+\newcommand{\mlist}[1]{
+\vmiddle{
+  \begin{list}{}{}
+    #1
+  \end{list}
+  }
+}
+
+\newcommand{\hmiddle}[1]{
+  \begin{center}#1\end{center}
+}
+
+% To make the legend for icons in class diagrams
+\newcommand{\icon}[1]{\textcircled{\texttt{\textbf{\textit{#1}}}}}
+
+\lstdefinelanguage{Clafer}
+{morekeywords={abstract, else, in, no, opt, xor, all, enum, lone, not, or, disj, extends, mux, one, some},
+sensitive=true,
+morecomment=[l][\footnotesize\itshape]{--},
+morecomment=[s][\small\itshape]{{-}{-}},
+%basicstyle=\footnotesize,
+tabsize=4,
+columns=fullflexible,
+literate={->}{{$\to$ }}1 {^}{{$\mspace{-3mu}\widehat{\quad}\mspace{-3mu}$}}1
+ {<}{$<$ }2 {>}{$>$ }2 {>=}{$\geq$ }2 {<=}{$\leq$ }2
+ {<:}{{$<\mspace{-3mu}:$}}2 {:>}{{$:\mspace{-3mu}>$}}2
+ {<=>}{{$\Leftrightarrow$ }}2
+ {=>}{{$\Rightarrow$ }}2 {+}{$+$ }2 {++}{{$+\mspace{-8mu}+$ }}2
+ {\~}{{$\mspace{-3mu}\widetilde{\quad}\mspace{-3mu}$}}1
+ {!=}{$\neq$ }2 {*}{${}^{\ast}$}1
+ {\#}{$\#$}1
+ {\~}{$\neg$}1
+ {+}{$+$ }1
+}
+
+\lstset{basicstyle=\small,language=Clafer,numbers=none}
+
+\begin{document}
+
+\begin{frame}[plain]
+  \vmiddle{\titlepage}
+\end{frame}
+
+% 5 min for intro and recent progress - Kacper
+\begin{frame}{Recent Progress}
+  \mlist{
+  \item Many people (Bo - Android)
+  \item Defaults (Leo)
+  \item Clafer wiki (Kacper)
+  \item Type system (Jimmy)
+  \item Translator (Jimmy and Kacper)
+  \item Intermediate representation - XML (Jimmy)
+  \item Test suite (Michal and Kacper)
+  \item Visualization (Seyi)
+  \item Usability Evaluation (Dina)
+  \item Multiobjective optimization (Bo, Derek)
+  \item Lightweight methodology (Krzysztof and Michal)
+  \item Applications (Financial domain - Marko, Security - M)
+  }
+\end{frame}
+
+% 15min for type system - Jimmy; examples, typing rules, a few words about implementation
+% motivate the need for type system
+% show examples (clafer code and typing rules)
+% more formal stuff
+% implementation
+\interframe{Type System}
+
+% 15 minutes
+\interframe{Attributes}
+
+\interframe{Conclusion}
+
+\begin{frame}{Conclusion}
+ \mlist{
+    \item blahbla
+    \item blahbla
+    \item blahbla
+    \item blahbla
+ }
+\end{frame}
+
+\interframe{Thanks for listening!}
+
+\interframe{Questions?\\[1cm]\normalsize{\textsf{clafer.org}}}
+
+\end{document}
