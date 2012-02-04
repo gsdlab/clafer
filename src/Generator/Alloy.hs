@@ -90,6 +90,7 @@ transPrimitive clafer = clafer{super = toOverlapping $ super clafer}
   toOverlapping x@(ISuper _ [PExp _ _ (IClaferId _ id _)])
     | isPrimitive id = x{isOverlapping = True}
     | otherwise      = x
+  toOverlapping x = x
 
 claferDecl clafer = concat [genOptCard clafer,
   genAbstract $ isAbstract clafer, "sig ",
