@@ -26,7 +26,7 @@
 \setlength{\fboxsep}{2mm}
 \newcommand{\sem}[1]{\ensuremath{[\![#1]\!]}}
 
-\title{Clafer type system and attributes}
+\title{Clafer Type System and Attributes}
 \author{Jimmy Liang and Kacper Bak}
 \institute{\small Generative Software Development Lab\\University of Waterloo}
 \date{GSD Lab Workshop. February 7, 2012}
@@ -86,22 +86,43 @@ literate={->}{{$\to$ }}1 {^}{{$\mspace{-3mu}\widehat{\quad}\mspace{-3mu}$}}1
   \vmiddle{\titlepage}
 \end{frame}
 
+\interframe{Recent Progress}
+
 % 5 min for intro and recent progress - Kacper
 \begin{frame}{Recent Progress}
   \mlist{
-  \item Many people (Bo - Android)
+  \item Many people involved
+  \item Language
+  \item Applications and ecosystem
+  \item Documentation and promotion
+  }
+\end{frame}
+
+\begin{frame}{Recent Progress: Language}
+  \mlist{
   \item Defaults (Leo)
-  \item Clafer wiki (Kacper)
-  \item Website (Michal, Kacper)
   \item Type system (Jimmy)
-  \item Translator (Jimmy and Kacper)
   \item Intermediate representation - XML (Jimmy)
-  \item Test suite (Michal and Kacper)
+  \item Translator (Jimmy, Kacper)
+  \item Test suite (Michal, Kacper)
   \item Visualization (Seyi)
-  \item Usability Evaluation (Dina)
+  }
+\end{frame}
+
+\begin{frame}{Recent Progress: Applications}
+  \mlist{
+  \item Lightweight methodology (Krzysztof, Michal)
   \item Multiobjective optimization (Bo, Derek)
-  \item Lightweight methodology (Krzysztof and Michal)
-  \item Applications (Financial domain - Marko, Security - M)
+  \item Usability Evaluation (Dina)
+  \item Future: financial domain (Marko), security (with Mahesh)
+  }
+\end{frame}
+
+\begin{frame}{Recent Progress: Documentation}
+  \mlist{
+  \item Tutorial (Michal)
+  \item Clafer wiki: github.com/gsdlab/clafer/wiki/ (Michal, Kacper)
+  \item Website: clafer.org (Michal, Kacper)
   }
 \end{frame}
 
@@ -128,30 +149,25 @@ Clafer reports that ``+'' cannot be applied on $x$ and $y$.
 \end{frame}
 
 \begin{frame}[fragile,c]{Semantics}
-The type of an expression affects the semantics.
+The type of an expression affects the semantics (output Alloy code). Also, needed for code optimization.
 \vfill \begin{lstlisting}
-abstract CentenarianClub
-    memberAge : integer *
+computer
+    dualCpu ?
+        speed : integer
+    totalSpeed : integer
 \end{lstlisting}
-What does the expression $memberAge$?
+What does the expression $speed$ mean?
 \end{frame}
 
 \begin{frame}[fragile,c]{Semantics case 1}
 \begin{lstlisting}
-abstract CentenarianClub
-    memberAge : integer *
-        [memberAge >= 100]
+computer
+    dualCpu ?
+        speed : integer
+    extraSpeed : integer
+    [extraSpeed = (speed => speed else 0)]
 \end{lstlisting}
-The expression $memberAge$ refers to its integer value since we are doing an integer inequality.
-\end{frame}
-
-\begin{frame}[fragile,c]{Semantics case 2}
-\begin{lstlisting}
-abstract CentenarianClub
-    memberAge : integer *
-    [#memberAge = 20]
-\end{lstlisting}
-The expression $memberAge$ refers to the \emph{Clafer}, not the integer.
+The expression $speed$ refers 1) presence of clafer, 2) to its integer value.
 \end{frame}
 
 \begin{frame}[fragile,c]{Semantics OO-analogy}
@@ -308,7 +324,7 @@ abstract Y
 
 \begin{frame}[fragile,c]{Clafer type rule 6}
 
-Prove that the following model is type correct.
+ Prove that the following model is type correct.
 
 \begin{lstlisting}
 abstract Y
@@ -344,7 +360,7 @@ abstract Y
 
 \begin{frame}[fragile,c]{Clafer type rule 9}
 
-Prove that the following model is type correct.
+ Prove that the following model is type correct.
 
 \begin{lstlisting}
 abstract Y

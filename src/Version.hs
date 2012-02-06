@@ -19,4 +19,4 @@ see <http://www.gnu.org/licenses/>.
 -}
 
 module Version where
-version = "4-2-2012"
+version = "6-2-2012"
