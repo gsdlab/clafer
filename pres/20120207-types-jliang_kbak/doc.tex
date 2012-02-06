@@ -105,7 +105,8 @@ literate={->}{{$\to$ }}1 {^}{{$\mspace{-3mu}\widehat{\quad}\mspace{-3mu}$}}1
   \item Intermediate representation - XML (Jimmy)
   \item Translator (Jimmy, Kacper)
   \item Test suite (Michal, Kacper)
-  \item Visualization (Seyi)
+  \item Visualization: CVL and Class-like (Seyi)
+  \item Natural language syntax proposal (Michal)
   }
 \end{frame}
 
@@ -113,7 +114,7 @@ literate={->}{{$\to$ }}1 {^}{{$\mspace{-3mu}\widehat{\quad}\mspace{-3mu}$}}1
   \mlist{
   \item Lightweight methodology (Krzysztof, Michal)
   \item Multiobjective optimization (Bo, Derek)
-  \item Usability Evaluation (Dina)
+  \item Usability empirical evaluation (Dina)
   \item Future: financial domain (Marko), security (with Mahesh)
   }
 \end{frame}
@@ -423,14 +424,116 @@ abstract Y
 % 15 minutes
 \interframe{Attributes}
 
+\begin{frame}[fragile,c]{Primitive Types}
+\begin{lstlisting}
+Version : int *
+[Version + 2 > 0]
+\end{lstlisting}\pause
+\begin{list}{}{}
+    \item What is the value of Version?\pause
+    \item Is the constraint satisfied? When?\pause
+    \item Is the meaning of ``+'' purely arithmetic?\pause
+    \item Does ``+'' handle sets?
+\end{list}
+\end{frame}
+
+\interframe{Semantic Variants}
+
+\begin{frame}[fragile,c]{Sum}
+\begin{lstlisting}
+Version : int *
+[Version + 2 > 0]
+\end{lstlisting}
+\begin{list}{}{}
+    \item Semantics: [sum(Version) + 2 > 0]\pause
+    \item Version 0: returns 0. OK
+    \item Version 1: OK
+    \item Version +: Set sum. Confusing
+\end{list}\pause
+\begin{lstlisting}
+abstract comp
+  version : int
+[comp.version = 1]
+\end{lstlisting}\pause
+Used by Alloy and CDL
+\end{frame}
+
+\begin{frame}[fragile,c]{Universal Quantification}
+\begin{lstlisting}
+Version : int *
+[Version + 2 > 0]
+\end{lstlisting}
+\begin{list}{}{}
+    \item Semantics: [all a : Version | a + 2 > 0]\pause
+    \item Version 0: ignores constraint
+    \item Version 1: OK
+    \item Version +: OK
+\end{list}
+\end{frame}
+
+\begin{frame}[fragile,c]{Enforced Presence}
+\begin{lstlisting}
+Version : int *
+[Version + 2 > 0]
+\end{lstlisting}
+\begin{list}{}{}
+    \item Semantics: [some Version \&\& Version + 2 > 0]\pause
+    \item Version 0: constraint unsatisfied (as in OCL)
+    \item Version 1: OK
+    \item Version +: unclear. Sum or universal quantification.
+\end{list}
+\end{frame}
+
+\begin{frame}[fragile,c]{Explicit Guards}
+\begin{lstlisting}
+Version : int *
+[Version + 2 > 0]
+\end{lstlisting}
+\begin{list}{}{}
+    \item Semantics: [(Version ? Version : 0) + 2 > 0]\pause
+    \item Version 0: OK
+    \item Version 1: OK
+    \item Version +: unclear. Sum or universal quantification.
+\end{list}
+\end{frame}
+
+\begin{frame}[fragile,c]{Vector Operations}
+\begin{lstlisting}
+Version : int *
+[Version + 2 > 0]
+\end{lstlisting}
+\begin{list}{}{}
+    \item Semantics: [Version(0) + 2 > 0, Version(1) + 2 > 0, ...]\pause
+    \item Version 0: unclear
+    \item Version 1: OK
+    \item Version +: OK, but complex.
+\end{list}
+\end{frame}
+
+\interframe{No good semantics!}
+
+\begin{frame}[fragile,c]{Proposed Solution}
+\begin{lstlisting}
+Version : int *
+[Version + 2 > 0]
+\end{lstlisting}
+\begin{list}{}{}
+    \item Use the sum semantics. Covers 0 and 1 cardinality.
+    \item For higher cardinalities, enforce using quantifiers.
+    \item Complex but makes intuitive sense.
+    \item Discussion: github.com/gsdlab/clafer/wiki/Experimental:-Attributes
+\end{list}
+\end{frame}
+
 \interframe{Conclusion}
 
 \begin{frame}{Conclusion}
  \mlist{
-    \item blahbla
-    \item blahbla
-    \item blahbla
-    \item blahbla
+    \item Clafer entered new evolution phase
+    \item Type system clarifies semantics
+    \item Experiments with design choices
+    \item Evaluation needed
+    \item Upcoming applications
  }
 \end{frame}
 
