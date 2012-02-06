@@ -12,6 +12,7 @@
 \usepackage{tabularx}
 \usepackage{alltt}
 \usepackage{ifthen,calc}
+\usepackage{mathpartir}
 
 \usetheme{Sleek}
 
@@ -77,7 +78,7 @@ literate={->}{{$\to$ }}1 {^}{{$\mspace{-3mu}\widehat{\quad}\mspace{-3mu}$}}1
  {+}{$+$ }1
 }
 
-\lstset{basicstyle=\small,language=Clafer,numbers=none}
+\lstset{frame=single,basicstyle=\small,language=Clafer,numbers=none}
 
 \begin{document}
 
@@ -109,6 +110,298 @@ literate={->}{{$\to$ }}1 {^}{{$\mspace{-3mu}\widehat{\quad}\mspace{-3mu}$}}1
 % more formal stuff
 % implementation
 \interframe{Type System}
+
+\begin{frame}{Motivation}
+\vmiddle{Why does Clafer need a type system?}
+\end{frame}
+
+\begin{frame}[fragile,c]{Type check}
+Free and automatic sanity check.
+\vfill \begin{lstlisting}
+abstract Y
+    x : string
+    y : int
+    [x + y = 3]
+\end{lstlisting}
+Clafer reports that ``+'' cannot be applied on $x$ and $y$.
+\end{frame}
+
+\begin{frame}[fragile,c]{Semantics}
+The type of an expression affects the semantics.
+\vfill \begin{lstlisting}
+abstract CentenarianClub
+    memberAge : integer *
+\end{lstlisting}
+What does the expression $memberAge$?
+\end{frame}
+
+\begin{frame}[fragile,c]{Semantics case 1}
+\begin{lstlisting}
+abstract CentenarianClub
+    memberAge : integer *
+        [memberAge >= 100]
+\end{lstlisting}
+The expression $memberAge$ refers to its integer value since we are doing an integer inequality.
+\end{frame}
+
+\begin{frame}[fragile,c]{Semantics case 2}
+\begin{lstlisting}
+abstract CentenarianClub
+    memberAge : integer *
+    [#memberAge = 20]
+\end{lstlisting}
+The expression $memberAge$ refers to the \emph{Clafer}, not the integer.
+\end{frame}
+
+\begin{frame}[fragile,c]{Semantics OO-analogy}
+\lstset{language=Java}
+\begin{lstlisting}
+class MemberAge {
+    int value;
+}
+class CentenarianClub {
+    MemberAge[] memberAge;
+}
+\end{lstlisting}
+The expression $memberAge$ can refer to
+\begin{itemize}
+\item the $MemberAge$ object(s)
+\item or its $value$ field
+\end{itemize}
+
+The inferred type of the expression implicitly determines which of the two case applies.
+\end{frame}
+
+\begin{frame}[fragile,c]{Type system}
+A Clafer model consists of two parts.
+\begin{itemize}
+\item Clafer definitions
+\item Constraints
+\end{itemize}
+
+\vfill The type system performs two tasks in parallel.
+\begin{itemize}
+\item Type check the expressions in the constraints.
+\item Infer the types of expressions in the constraints.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile,c]{Notation \& Definition 1}
+\begin{definition}
+``$::$'' is shorthand for ``is type''.
+\end{definition}
+example: ``$x::integer$'' is read as ``$x$ is type $integer$''.
+
+\begin{definition}
+``$\vdash$'' is shorthand for ``entails''.
+\end{definition}
+
+example: ``$\Gamma\vdash x::integer$'' is read as ``$\Gamma$ entails $x::integer$''.
+
+Sometimes it is clearer to read it as ``$x::integer$ given $\Gamma$''.
+\end{frame}
+
+
+\begin{frame}[fragile,c]{Notation \& Definition 2}
+\begin{definition}
+The letter ``$x$'' is a Clafer reference.
+\end{definition}
+
+In the expression below, ``$speed$'' is a Clafer reference.
+\begin{lstlisting}
+[speed > 80]
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile,c]{Notation \& Definition 3}
+
+\begin{definition}
+The letters ``$E,F,G$'' are expressions.
+\end{definition}
+
+2 leaf expressions: ``$speed$'' and ``$80$''.
+
+1 super expression: ``$speed > 80$''.
+\begin{lstlisting}
+[speed > 80]
+\end{lstlisting}
+
+\vfill Less frequent notations will be explained as they come.
+\end{frame}
+
+\begin{frame}[fragile,c]{Notation \& Definition 4}
+
+\begin{definition}
+A type environment ($\Gamma$) is a mapping from Clafer definition to the type of its value.
+\end{definition}
+
+\vfill \begin{lstlisting}
+abstract Y : string
+    a : integer
+    b
+
+X : Y
+\end{lstlisting}
+
+\begin{equation*}
+\Gamma = \{ Y::string,\quad a::integer,\quad b::clafer,\quad X::string \}
+\end{equation*}
+\end{frame}
+
+\begin{frame}[fragile,c]{Type rule}
+\begin{equation*}
+\inferrule* [Left=name of rule] {statement A \\ statement B} {statement C}
+\end{equation*}
+
+\vfill If $A$ and $B$ holds then $C$ follows.
+
+\vfill The type system is specified through a series of type rules.
+\end{frame}
+
+\begin{frame}[fragile,c]{Clafer type rule 1}
+\begin{equation*}
+\inferrule* [Left=intconst] {\quad}{\Gamma\vdash\mathbb{INTEGER}::integer}
+\end{equation*}
+\end{frame}
+
+\begin{frame}[fragile,c]{Clafer type rule 2}
+\begin{equation*}
+\inferrule* [Left=eq] {\Gamma\vdash E::\tau \\ \Gamma\vdash F::\tau}{\Gamma\vdash E = F::boolean}
+\end{equation*}
+\end{frame}
+
+\begin{frame}[fragile,c]{Clafer type rule 3}
+Can we prove that the following model passes type checking?
+What is the type of each expression?
+
+\begin{lstlisting}
+abstract Y
+    [0 = 1]
+\end{lstlisting}
+
+\begin{equation*}
+\Gamma = \{Y::clafer\}
+\end{equation*}
+\end{frame}
+
+\begin{frame}[fragile,c]{Clafer type rule 4}
+\begin{equation*}
+\Gamma = \{Y::clafer\}
+\end{equation*}
+
+\begin{proof}
+\begin{equation*}
+\inferrule* [Left=eq] {
+  \inferrule* [Left=intconst]{\quad}{\Gamma\vdash\ 0::integer} \\ \hspace{40pt} 
+  \inferrule* [Left=intconst]{\quad}{\Gamma\vdash\ 1::integer}}
+{\Gamma\vdash 0 = 1::boolean}
+\end{equation*}
+\end{proof}
+\end{frame}
+
+\begin{frame}[fragile,c]{Clafer type rule 5}
+\begin{equation*}
+\inferrule* [Left=value] {(x::\tau)\in\Gamma}{\Gamma\vdash x::\tau}
+\end{equation*}
+\end{frame}
+
+\begin{frame}[fragile,c]{Clafer type rule 6}
+
+Prove that the following model is type correct.
+
+\begin{lstlisting}
+abstract Y
+    a : integer
+    [a = 1]
+\end{lstlisting}
+
+\begin{equation*}
+\Gamma = \{Y::clafer,\quad a::integer\}
+\end{equation*}
+\end{frame}
+
+\begin{frame}[fragile,c]{Clafer type rule 7}
+\begin{equation*}
+\Gamma = \{Y::clafer,\quad a::integer\}
+\end{equation*}
+
+\begin{proof}
+\begin{equation*}
+\inferrule* [Left=eq] {
+  \inferrule* [Left=value]{(a::integer)\in\Gamma}{\Gamma\vdash\ a::integer} \\ \hspace{40pt} 
+  \inferrule* [Left=intconst]{\quad}{\Gamma\vdash\ 1::integer}}
+{\Gamma\vdash a = 1::boolean}
+\end{equation*}
+\end{proof}
+\end{frame}
+
+\begin{frame}[fragile,c]{Clafer type rule 8}
+\begin{equation*}
+\inferrule* [Left=clafer] {\quad}{\Gamma\vdash x::clafer}
+\end{equation*}
+\end{frame}
+
+\begin{frame}[fragile,c]{Clafer type rule 9}
+
+Prove that the following model is type correct.
+
+\begin{lstlisting}
+abstract Y
+    a : integer
+    b
+    [a = b]
+\end{lstlisting}
+
+\begin{equation*}
+\Gamma = \{Y::clafer,\quad a::integer,\quad b::clafer\}
+\end{equation*}
+\end{frame}
+
+\begin{frame}[fragile,c]{Clafer type rule 10}
+\begin{equation*}
+\Gamma = \{Y::clafer,\quad a::integer,\quad b::clafer\}
+\end{equation*}
+
+\begin{proof}
+\begin{equation*}
+\inferrule* [Left=eq] {
+  \inferrule* [Left=clafer]{\quad}{\Gamma\vdash\ a::clafer} \\ \hspace{40pt} 
+  \inferrule* [Left=clafer]{\quad}{\Gamma\vdash\ b::clafer}}
+{\Gamma\vdash a = b::boolean}
+\end{equation*}
+\end{proof}
+\end{frame}
+
+\begin{frame}[fragile,c]{Clafer type rule precedence}
+\begin{lstlisting}
+abstract Y
+    a : integer
+    b : integer
+    [a = b]
+\end{lstlisting}
+
+\vfill Integer equality or clafer equality?
+\end{frame}
+
+\begin{frame}[fragile,c]{Clafer type rule casting 1}
+\begin{lstlisting}
+abstract Y
+    a : real
+    b : integer
+    [a = b]
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile,c]{Clafer type rule casting 2}
+\begin{equation*}
+\inferrule* [Left=eqcast1] {\Gamma\vdash E::real \\ \Gamma\vdash F::integer}{\Gamma\vdash E = F::boolean}
+\end{equation*}
+
+\begin{equation*}
+\inferrule* [Left=eqcast2] {\Gamma\vdash E::integer \\ \Gamma\vdash F::real}{\Gamma\vdash E = F::boolean}
+\end{equation*}
+\end{frame}
+
 
 % 15 minutes
 \interframe{Attributes}
