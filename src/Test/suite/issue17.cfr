@@ -1,0 +1,4 @@
+abstract A
+    b *
+        c ?
+    [ some b1 : b | b1.c ]
