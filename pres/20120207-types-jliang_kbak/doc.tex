@@ -160,7 +160,7 @@ The type of an expression affects the semantics (output Alloy code). Also, neede
 computer
     dualCpu ?
         speed : integer
-    totalSpeed : integer
+    extraSpeed : integer
 \end{lstlisting}
 What does the expression $speed$ mean?
 \end{frame}
@@ -174,25 +174,6 @@ computer
     [extraSpeed = (speed => speed else 0)]
 \end{lstlisting}
 The expression $speed$ refers 1) presence of clafer, 2) to its integer value.
-\end{frame}
-
-\begin{frame}[fragile,c]{Semantics OO-analogy}
-\lstset{language=Java}
-\begin{lstlisting}
-class MemberAge {
-    int value;
-}
-class CentenarianClub {
-    MemberAge[] memberAge;
-}
-\end{lstlisting}
-The expression $memberAge$ can refer to
-\begin{itemize}
-\item the $MemberAge$ object(s)
-\item or its $value$ field
-\end{itemize}
-
-The inferred type of the expression implicitly determines which of the two case applies.
 \end{frame}
 
 \begin{frame}[fragile,c]{Type system}
@@ -230,29 +211,21 @@ Sometimes it is clearer to read it as ``$x::integer$ given $\Gamma$''.
 The letter ``$x$'' is a Clafer reference.
 \end{definition}
 
-In the expression below, ``$speed$'' is a Clafer reference.
-\begin{lstlisting}
-[speed > 80]
-\end{lstlisting}
-\end{frame}
-
-\begin{frame}[fragile,c]{Notation \& Definition 3}
-
 \begin{definition}
 The letters ``$E,F,G$'' are expressions.
 \end{definition}
 
-2 leaf expressions: ``$speed$'' and ``$80$''.
-
-1 super expression: ``$speed > 80$''.
+In the expression below, ``$speed$'' is a Clafer reference.
 \begin{lstlisting}
 [speed > 80]
 \end{lstlisting}
 
-\vfill Less frequent notations will be explained as they come.
+2 leaf expressions: ``$speed$'' and ``$80$''.
+
+1 super expression: ``$speed > 80$''.
 \end{frame}
 
-\begin{frame}[fragile,c]{Notation \& Definition 4}
+\begin{frame}[fragile,c]{Notation \& Definition 3}
 
 \begin{definition}
 A type environment ($\Gamma$) is a mapping from Clafer definition to the type of its value.
@@ -281,33 +254,34 @@ X : Y
 \vfill The type system is specified through a series of type rules.
 \end{frame}
 
-\begin{frame}[fragile,c]{Clafer type rule 1}
+\begin{frame}[fragile,c]{Intconst rule}
 \begin{equation*}
 \inferrule* [Left=intconst] {\quad}{\Gamma\vdash\mathbb{INTEGER}::integer}
 \end{equation*}
 \end{frame}
 
-\begin{frame}[fragile,c]{Clafer type rule 2}
+\begin{frame}[fragile,c]{Eq rule}
 \begin{equation*}
 \inferrule* [Left=eq] {\Gamma\vdash E::\tau \\ \Gamma\vdash F::\tau}{\Gamma\vdash E = F::boolean}
 \end{equation*}
 \end{frame}
 
-\begin{frame}[fragile,c]{Clafer type rule 3}
+\begin{frame}[fragile,c]{Problem 1}
 Can we prove that the following model passes type checking?
 What is the type of each expression?
 
+\vfill \begin{lstlisting}
+abstract Y
+    [0 = 1]
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile,c]{Proof 1}
 \begin{lstlisting}
 abstract Y
     [0 = 1]
 \end{lstlisting}
 
-\begin{equation*}
-\Gamma = \{Y::clafer\}
-\end{equation*}
-\end{frame}
-
-\begin{frame}[fragile,c]{Clafer type rule 4}
 \begin{equation*}
 \Gamma = \{Y::clafer\}
 \end{equation*}
@@ -322,28 +296,29 @@ abstract Y
 \end{proof}
 \end{frame}
 
-\begin{frame}[fragile,c]{Clafer type rule 5}
+\begin{frame}[fragile,c]{Value rule}
 \begin{equation*}
 \inferrule* [Left=value] {(x::\tau)\in\Gamma}{\Gamma\vdash x::\tau}
 \end{equation*}
 \end{frame}
 
-\begin{frame}[fragile,c]{Clafer type rule 6}
+\begin{frame}[fragile,c]{Problem 2}
 
- Prove that the following model is type correct.
+Prove that the following model is type correct.
 
+\vfill \begin{lstlisting}
+abstract Y
+    a : integer
+    [a = 1]
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile,c]{Proof 2}
 \begin{lstlisting}
 abstract Y
     a : integer
     [a = 1]
 \end{lstlisting}
-
-\begin{equation*}
-\Gamma = \{Y::clafer,\quad a::integer\}
-\end{equation*}
-\end{frame}
-
-\begin{frame}[fragile,c]{Clafer type rule 7}
 \begin{equation*}
 \Gamma = \{Y::clafer,\quad a::integer\}
 \end{equation*}
@@ -358,16 +333,25 @@ abstract Y
 \end{proof}
 \end{frame}
 
-\begin{frame}[fragile,c]{Clafer type rule 8}
+\begin{frame}[fragile,c]{Clafer rule}
 \begin{equation*}
 \inferrule* [Left=clafer] {\quad}{\Gamma\vdash x::clafer}
 \end{equation*}
 \end{frame}
 
-\begin{frame}[fragile,c]{Clafer type rule 9}
+\begin{frame}[fragile,c]{Problem 3}
 
  Prove that the following model is type correct.
 
+\vfill \begin{lstlisting}
+abstract Y
+    a : integer
+    b
+    [a = b]
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile,c]{Proof 3}
 \begin{lstlisting}
 abstract Y
     a : integer
@@ -378,12 +362,7 @@ abstract Y
 \begin{equation*}
 \Gamma = \{Y::clafer,\quad a::integer,\quad b::clafer\}
 \end{equation*}
-\end{frame}
 
-\begin{frame}[fragile,c]{Clafer type rule 10}
-\begin{equation*}
-\Gamma = \{Y::clafer,\quad a::integer,\quad b::clafer\}
-\end{equation*}
 
 \begin{proof}
 \begin{equation*}
@@ -395,18 +374,7 @@ abstract Y
 \end{proof}
 \end{frame}
 
-\begin{frame}[fragile,c]{Clafer type rule precedence}
-\begin{lstlisting}
-abstract Y
-    a : integer
-    b : integer
-    [a = b]
-\end{lstlisting}
-
-\vfill Integer equality or clafer equality?
-\end{frame}
-
-\begin{frame}[fragile,c]{Clafer type rule casting 1}
+\begin{frame}[fragile,c]{Implicit coercion}
 \begin{lstlisting}
 abstract Y
     a : real
