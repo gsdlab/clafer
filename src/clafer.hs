@@ -43,6 +43,7 @@ import Front.ErrM
 import Intermediate.Desugarer
 import Intermediate.Resolver
 import Intermediate.StringAnalyzer
+import Intermediate.Transformer
 import Optimizer.Optimizer
 import Generator.Stats
 import Generator.Alloy
@@ -90,7 +91,8 @@ stripFileName f = case dropWhile (/= '.') $ reverse f of
 
 desugar args tree = do
   conPutStrLn args "[Desugaring]"
-  return $ desugarModule tree
+  let dTree = desugarModule tree
+  return dTree
   -- writeFile (f ++ ".des") $ printTree $
   --  sugarModule dTree
 
@@ -102,8 +104,10 @@ analyze args tree = do
   let (rTree, genv) = resolveModule args' dTree'
   conPutStrLn args "[Analyzing String]"
   let aTree = astrModule rTree
+  conPutStrLn args "[Transforming]"
+  let tTree = transModule rTree
   conPutStrLn args "[Optimizing]"
-  return $ (optimizeModule args' (aTree, genv), genv, au)
+  return $ (optimizeModule args' (tTree, genv), genv, au)
   -- writeFile (f ++ ".ana") $ printTree $
   --  sugarModule oTree
 

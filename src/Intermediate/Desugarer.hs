@@ -398,3 +398,4 @@ desugarExQuant x = case x of
 sugarExQuant x = case x of
   IAll -> ExQuantAll
   _ -> ExQuantQuant $ sugarQuant x
+  
