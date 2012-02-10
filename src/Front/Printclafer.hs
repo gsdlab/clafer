@@ -185,8 +185,7 @@ instance Print ExInteger where
 
 instance Print Name where
   prt i e = case e of
-   LocClafer id -> prPrec i 0 (concatD [prt 0 id])
-   ModClafer modids id -> prPrec i 0 (concatD [prt 0 modids , prt 0 id])
+   Path modids -> prPrec i 0 (concatD [prt 0 modids])
 
 
 instance Print Exp where
@@ -194,7 +193,6 @@ instance Print Exp where
    DeclExp exquant decls exp -> prPrec i 0 (concatD [prt 0 exquant , prt 0 decls , doc (showString "|") , prt 1 exp])
    EIff exp0 exp -> prPrec i 1 (concatD [prt 1 exp0 , doc (showString "<=>") , prt 2 exp])
    EImplies exp0 exp -> prPrec i 2 (concatD [prt 2 exp0 , doc (showString "=>") , prt 3 exp])
-   EImpliesElse exp0 exp1 exp -> prPrec i 2 (concatD [prt 2 exp0 , doc (showString "=>") , prt 3 exp1 , doc (showString "else") , prt 3 exp])
    EOr exp0 exp -> prPrec i 3 (concatD [prt 3 exp0 , doc (showString "||") , prt 4 exp])
    EXor exp0 exp -> prPrec i 4 (concatD [prt 4 exp0 , doc (showString "xor") , prt 5 exp])
    EAnd exp0 exp -> prPrec i 5 (concatD [prt 5 exp0 , doc (showString "&&") , prt 6 exp])
@@ -214,10 +212,11 @@ instance Print Exp where
    EDiv exp0 exp -> prPrec i 10 (concatD [prt 10 exp0 , doc (showString "/") , prt 11 exp])
    ECSetExp exp -> prPrec i 11 (concatD [doc (showString "#") , prt 12 exp])
    EMinExp exp -> prPrec i 11 (concatD [doc (showString "-") , prt 12 exp])
-   EInt n -> prPrec i 12 (concatD [prt 0 n])
-   EDouble d -> prPrec i 12 (concatD [prt 0 d])
-   EStr str -> prPrec i 12 (concatD [prt 0 str])
-   ESetExp setexp -> prPrec i 12 (concatD [prt 0 setexp])
+   EImpliesElse exp0 exp1 exp -> prPrec i 12 (concatD [doc (showString "if") , prt 12 exp0 , doc (showString "then") , prt 12 exp1 , doc (showString "else") , prt 13 exp])
+   EInt n -> prPrec i 13 (concatD [prt 0 n])
+   EDouble d -> prPrec i 13 (concatD [prt 0 d])
+   EStr str -> prPrec i 13 (concatD [prt 0 str])
+   ESetExp setexp -> prPrec i 13 (concatD [prt 0 setexp])
 
   prtList es = case es of
    [] -> (concatD [])
@@ -276,7 +275,7 @@ instance Print ModId where
    ModIdIdent id -> prPrec i 0 (concatD [prt 0 id])
 
   prtList es = case es of
-   [x] -> (concatD [prt 0 x , doc (showString "\\")])
+   [x] -> (concatD [prt 0 x])
    x:xs -> (concatD [prt 0 x , doc (showString "\\") , prt 0 xs])
 
 instance Print LocId where

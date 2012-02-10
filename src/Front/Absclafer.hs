@@ -84,15 +84,13 @@ data ExInteger =
   deriving (Eq,Ord,Show)
 
 data Name =
-   LocClafer Ident
- | ModClafer [ModId] Ident
+   Path [ModId]
   deriving (Eq,Ord,Show)
 
 data Exp =
    DeclExp ExQuant [Decl] Exp
  | EIff Exp Exp
  | EImplies Exp Exp
- | EImpliesElse Exp Exp Exp
  | EOr Exp Exp
  | EXor Exp Exp
  | EAnd Exp Exp
@@ -112,6 +110,7 @@ data Exp =
  | EDiv Exp Exp
  | ECSetExp Exp
  | EMinExp Exp
+ | EImpliesElse Exp Exp Exp
  | EInt Integer
  | EDouble Double
  | EStr String

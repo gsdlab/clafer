@@ -86,7 +86,7 @@ eitherResIdent tv s = treeFind resWords
                               | s > a  = treeFind right
                               | s == a = t
 
-resWords = b "mux" (b "else" (b "all" (b "abstract" N N) (b "disj" N N)) (b "in" (b "enum" N N) (b "lone" N N))) (b "opt" (b "not" (b "no" N N) (b "one" N N)) (b "some" (b "or" N N) (b "xor" N N)))
+resWords = b "mux" (b "enum" (b "disj" (b "all" (b "abstract" N N) N) (b "else" N N)) (b "in" (b "if" N N) (b "lone" N N))) (b "or" (b "one" (b "not" (b "no" N N) N) (b "opt" N N)) (b "then" (b "some" N N) (b "xor" N N)))
    where b s = B s (TS s)
 
 unescapeInitTail :: String -> String

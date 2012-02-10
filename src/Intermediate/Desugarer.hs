@@ -45,7 +45,7 @@ desugarEnums x = case x of
     absEnum = ElementDecl $ Subclafer $ Clafer
               Abstract GCardEmpty id SuperEmpty CardEmpty InitEmpty ElementsEmpty
     mkEnum (EnumIdIdent eId) = ElementDecl $ Subclafer $ Clafer AbstractEmpty GCardEmpty
-                                  eId (SuperSome SuperHow_1 (ClaferId $ LocClafer id)) CardEmpty InitEmpty ElementsEmpty
+                                  eId (SuperSome SuperHow_1 (ClaferId $ Path [ModIdIdent id])) CardEmpty InitEmpty ElementsEmpty
   _ -> [x]
 
 
@@ -100,9 +100,8 @@ desugarInitHow x = case x of
   InitHow_2  -> False
 
 
-desugarName (LocClafer id)      = desugarName (ModClafer [] id)
-desugarName (ModClafer mods id) =
-  IClaferId (concatMap ((++ modSep).desugarModId) mods) (transIdent id) True
+desugarName (Path path) =
+  IClaferId (concatMap ((++ modSep).desugarModId) (init path)) (desugarModId $ last path) True
 
 desugarModId (ModIdIdent id) = transIdent id
 
@@ -326,8 +325,8 @@ sugarSetExp' x = case x of
       | op == iDomain        = Domain
       | op == iRange         = Range
       | op == iJoin          = Join
-  IClaferId "" id _ -> ClaferId $ LocClafer $ Ident id
-  IClaferId modName id _ -> ClaferId $ ModClafer [sugarModId modName] (Ident id)
+  IClaferId "" id _ -> ClaferId $ Path [ModIdIdent $ Ident id]
+  IClaferId modName id _ -> ClaferId $ Path $ (sugarModId modName) : [sugarModId id]
 
 desugarPath :: PExp -> PExp
 desugarPath (PExp iType pid x) = PExp iType pid result

@@ -50,13 +50,11 @@ NCard.          NCard  ::= Integer ".." ExInteger ;
 ExIntegerAst.   ExInteger ::= "*" ;
 ExIntegerNum.   ExInteger ::= Integer ;
 
-LocClafer.      Name ::= Ident ;
-ModClafer.      Name ::= [ModId] Ident ;
+Path.           Name ::= [ModId] ;
 
 DeclExp.        Exp   ::= ExQuant [Decl] "|" Exp1 ;
 EIff.           Exp1  ::= Exp1 "<=>" Exp2 ;
 EImplies.       Exp2  ::= Exp2 "=>"  Exp3 ;
-EImpliesElse.   Exp2  ::= Exp2 "=>"  Exp3 "else" Exp3 ;
 EOr.            Exp3  ::= Exp3 "||"  Exp4 ;
 EXor.           Exp4  ::= Exp4 "xor" Exp5 ;
 EAnd.           Exp5  ::= Exp5 "&&"  Exp6 ;
@@ -76,10 +74,11 @@ EMul.           Exp10 ::= Exp10 "*" Exp11 ;
 EDiv.           Exp10 ::= Exp10 "/" Exp11 ;
 ECSetExp.       Exp11 ::= "#" Exp12 ;
 EMinExp.        Exp11 ::= "-" Exp12 ;
-EInt.           Exp12 ::= Integer ;
-EDouble.        Exp12 ::= Double ;
-EStr.           Exp12 ::= String ;
-ESetExp.        Exp12 ::= SetExp ;
+EImpliesElse.   Exp12 ::= "if" Exp12 "then" Exp12 "else" Exp13 ;
+EInt.           Exp13 ::= Integer ;
+EDouble.        Exp13 ::= Double ;
+EStr.           Exp13 ::= String ;
+ESetExp.        Exp13 ::= SetExp ;
 
 Union.          SetExp  ::= SetExp  "++" SetExp1 ;
 UnionCom.       SetExp  ::= SetExp  ","  SetExp1 ;
@@ -113,7 +112,7 @@ separator           Element     ""  ;
 separator           Exp         ""  ;
 separator  nonempty Decl        "," ;
 separator  nonempty LocId       "," ;
-terminator nonempty ModId       "\\" ;
+separator  nonempty ModId       "\\" ;
 
-coercions Exp 12 ;
+coercions Exp 13 ;
 coercions SetExp 6 ;
