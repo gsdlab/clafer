@@ -6,8 +6,7 @@ comment "/*" "*/" ;
 Module.         Module ::= [Declaration] ;
 
 EnumDecl.       Declaration ::= "enum" Ident "=" [EnumId] ;
-ClaferDecl.     Declaration ::= Clafer ;
-ConstDecl.      Declaration ::= Constraint ;
+ElementDecl.    Declaration ::= Element ;
 
 Clafer.         Clafer ::= Abstract GCard Ident Super Card Init Elements ;
 Constraint.     Constraint ::= "[" [Exp] "]" ;
@@ -16,11 +15,11 @@ AbstractEmpty.  Abstract ::= ;
 Abstract.       Abstract ::= "abstract" ;
 
 ElementsEmpty.  Elements ::= ;
-ElementsList.   Elements ::= "{" [ElementCl] "}" ;
+ElementsList.   Elements ::= "{" [Element] "}" ;
 
-Subclafer.      ElementCl ::= Clafer ;
-ClaferUse.      ElementCl ::= "`" Name Card Elements ;
-Subconstraint.  ElementCl ::= Constraint ;
+Subclafer.      Element ::= Clafer ;
+ClaferUse.      Element ::= "`" Name Card Elements ;
+Subconstraint.  Element ::= Constraint ;
 
 SuperEmpty.     Super ::=  ;
 SuperSome.      Super ::= SuperHow SetExp ;
@@ -62,7 +61,6 @@ EOr.            Exp3  ::= Exp3 "||"  Exp4 ;
 EXor.           Exp4  ::= Exp4 "xor" Exp5 ;
 EAnd.           Exp5  ::= Exp5 "&&"  Exp6 ;
 ENeg.           Exp6  ::= "!" Exp7 ;
-QuantExp.       Exp7  ::= Quant Exp7 ;
 ELt.            Exp7  ::= Exp7 "<"  Exp8 ;
 EGt.            Exp7  ::= Exp7 ">"  Exp8 ;
 EEq.            Exp7  ::= Exp7 "="  Exp8 ;
@@ -71,16 +69,17 @@ EGte.           Exp7  ::= Exp7 ">=" Exp8 ;
 ENeq.           Exp7  ::= Exp7 "!=" Exp8 ;
 EIn.            Exp7  ::= Exp7 "in" Exp8 ;
 ENin.           Exp7  ::= Exp7 "not" "in" Exp8 ;
-EAdd.           Exp8  ::= Exp8  "+" Exp9 ;
-ESub.           Exp8  ::= Exp8  "-" Exp9 ;
-EMul.           Exp9  ::= Exp9 "*" Exp10 ;
-EDiv.           Exp9  ::= Exp9 "/" Exp10 ;
-ECSetExp.       Exp10 ::= "#" Exp11 ;
-EMinExp.        Exp10 ::= "-" Exp11 ;
-EInt.           Exp11 ::= Integer ;
-EDouble.        Exp11 ::= Double ;
-EStr.           Exp11 ::= String ;
-ESetExp.        Exp11 ::= SetExp ;
+QuantExp.       Exp8  ::= Quant Exp9 ;
+EAdd.           Exp9  ::= Exp9  "+" Exp10 ;
+ESub.           Exp9  ::= Exp9  "-" Exp10 ;
+EMul.           Exp10 ::= Exp10 "*" Exp11 ;
+EDiv.           Exp10 ::= Exp10 "/" Exp11 ;
+ECSetExp.       Exp11 ::= "#" Exp12 ;
+EMinExp.        Exp11 ::= "-" Exp12 ;
+EInt.           Exp12 ::= Integer ;
+EDouble.        Exp12 ::= Double ;
+EStr.           Exp12 ::= String ;
+ESetExp.        Exp12 ::= SetExp ;
 
 Union.          SetExp  ::= SetExp  "++" SetExp1 ;
 UnionCom.       SetExp  ::= SetExp  ","  SetExp1 ;
@@ -110,11 +109,11 @@ rules           LocId  ::= Ident ;
 
 separator           Declaration ""  ;
 separator  nonempty EnumId      "|" ;
-separator           ElementCl   ""  ;
+separator           Element     ""  ;
 separator           Exp         ""  ;
 separator  nonempty Decl        "," ;
 separator  nonempty LocId       "," ;
 terminator nonempty ModId       "\\" ;
 
-coercions Exp 11 ;
+coercions Exp 12 ;
 coercions SetExp 6 ;

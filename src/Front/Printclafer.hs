@@ -1,24 +1,3 @@
-{-
- Copyright (C) 2012 Kacper Bak <http://gsd.uwaterloo.ca>
-
- Permission is hereby granted, free of charge, to any person obtaining a copy of
- this software and associated documentation files (the "Software"), to deal in
- the Software without restriction, including without limitation the rights to
- use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
- of the Software, and to permit persons to whom the Software is furnished to do
- so, subject to the following conditions:
-
- The above copyright notice and this permission notice shall be included in all
- copies or substantial portions of the Software.
-
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- SOFTWARE.
--}
 {-# OPTIONS -fno-warn-incomplete-patterns #-}
 module Front.Printclafer where
 
@@ -111,8 +90,7 @@ instance Print Module where
 instance Print Declaration where
   prt i e = case e of
    EnumDecl id enumids -> prPrec i 0 (concatD [doc (showString "enum") , prt 0 id , doc (showString "=") , prt 0 enumids])
-   ClaferDecl clafer -> prPrec i 0 (concatD [prt 0 clafer])
-   ConstDecl constraint -> prPrec i 0 (concatD [prt 0 constraint])
+   ElementDecl element -> prPrec i 0 (concatD [prt 0 element])
 
   prtList es = case es of
    [] -> (concatD [])
@@ -137,10 +115,10 @@ instance Print Abstract where
 instance Print Elements where
   prt i e = case e of
    ElementsEmpty  -> prPrec i 0 (concatD [])
-   ElementsList elementcls -> prPrec i 0 (concatD [doc (showString "{") , prt 0 elementcls , doc (showString "}")])
+   ElementsList elements -> prPrec i 0 (concatD [doc (showString "{") , prt 0 elements , doc (showString "}")])
 
 
-instance Print ElementCl where
+instance Print Element where
   prt i e = case e of
    Subclafer clafer -> prPrec i 0 (concatD [prt 0 clafer])
    ClaferUse name card elements -> prPrec i 0 (concatD [doc (showString "`") , prt 0 name , prt 0 card , prt 0 elements])
@@ -221,7 +199,6 @@ instance Print Exp where
    EXor exp0 exp -> prPrec i 4 (concatD [prt 4 exp0 , doc (showString "xor") , prt 5 exp])
    EAnd exp0 exp -> prPrec i 5 (concatD [prt 5 exp0 , doc (showString "&&") , prt 6 exp])
    ENeg exp -> prPrec i 6 (concatD [doc (showString "!") , prt 7 exp])
-   QuantExp quant exp -> prPrec i 7 (concatD [prt 0 quant , prt 7 exp])
    ELt exp0 exp -> prPrec i 7 (concatD [prt 7 exp0 , doc (showString "<") , prt 8 exp])
    EGt exp0 exp -> prPrec i 7 (concatD [prt 7 exp0 , doc (showString ">") , prt 8 exp])
    EEq exp0 exp -> prPrec i 7 (concatD [prt 7 exp0 , doc (showString "=") , prt 8 exp])
@@ -230,16 +207,17 @@ instance Print Exp where
    ENeq exp0 exp -> prPrec i 7 (concatD [prt 7 exp0 , doc (showString "!=") , prt 8 exp])
    EIn exp0 exp -> prPrec i 7 (concatD [prt 7 exp0 , doc (showString "in") , prt 8 exp])
    ENin exp0 exp -> prPrec i 7 (concatD [prt 7 exp0 , doc (showString "not") , doc (showString "in") , prt 8 exp])
-   EAdd exp0 exp -> prPrec i 8 (concatD [prt 8 exp0 , doc (showString "+") , prt 9 exp])
-   ESub exp0 exp -> prPrec i 8 (concatD [prt 8 exp0 , doc (showString "-") , prt 9 exp])
-   EMul exp0 exp -> prPrec i 9 (concatD [prt 9 exp0 , doc (showString "*") , prt 10 exp])
-   EDiv exp0 exp -> prPrec i 9 (concatD [prt 9 exp0 , doc (showString "/") , prt 10 exp])
-   ECSetExp exp -> prPrec i 10 (concatD [doc (showString "#") , prt 11 exp])
-   EMinExp exp -> prPrec i 10 (concatD [doc (showString "-") , prt 11 exp])
-   EInt n -> prPrec i 11 (concatD [prt 0 n])
-   EDouble d -> prPrec i 11 (concatD [prt 0 d])
-   EStr str -> prPrec i 11 (concatD [prt 0 str])
-   ESetExp setexp -> prPrec i 11 (concatD [prt 0 setexp])
+   QuantExp quant exp -> prPrec i 8 (concatD [prt 0 quant , prt 9 exp])
+   EAdd exp0 exp -> prPrec i 9 (concatD [prt 9 exp0 , doc (showString "+") , prt 10 exp])
+   ESub exp0 exp -> prPrec i 9 (concatD [prt 9 exp0 , doc (showString "-") , prt 10 exp])
+   EMul exp0 exp -> prPrec i 10 (concatD [prt 10 exp0 , doc (showString "*") , prt 11 exp])
+   EDiv exp0 exp -> prPrec i 10 (concatD [prt 10 exp0 , doc (showString "/") , prt 11 exp])
+   ECSetExp exp -> prPrec i 11 (concatD [doc (showString "#") , prt 12 exp])
+   EMinExp exp -> prPrec i 11 (concatD [doc (showString "-") , prt 12 exp])
+   EInt n -> prPrec i 12 (concatD [prt 0 n])
+   EDouble d -> prPrec i 12 (concatD [prt 0 d])
+   EStr str -> prPrec i 12 (concatD [prt 0 str])
+   ESetExp setexp -> prPrec i 12 (concatD [prt 0 setexp])
 
   prtList es = case es of
    [] -> (concatD [])

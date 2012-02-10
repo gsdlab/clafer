@@ -42,9 +42,9 @@ desugarEnums :: Declaration -> [Declaration]
 desugarEnums x = case x of
   EnumDecl id enumids  -> absEnum : map mkEnum enumids
     where
-    absEnum = ClaferDecl $ Clafer
+    absEnum = ElementDecl $ Subclafer $ Clafer
               Abstract GCardEmpty id SuperEmpty CardEmpty InitEmpty ElementsEmpty
-    mkEnum (EnumIdIdent eId) = ClaferDecl $ Clafer AbstractEmpty GCardEmpty
+    mkEnum (EnumIdIdent eId) = ElementDecl $ Subclafer $ Clafer AbstractEmpty GCardEmpty
                                   eId (SuperSome SuperHow_1 (ClaferId $ LocClafer id)) CardEmpty InitEmpty ElementsEmpty
   _ -> [x]
 
@@ -52,14 +52,13 @@ desugarEnums x = case x of
 desugarDeclaration :: Declaration -> IElement
 desugarDeclaration x = case x of
   EnumDecl id enumids  -> error "desugared"
-  ClaferDecl clafer  -> IEClafer $ desugarClafer clafer
-  ConstDecl constraint  -> IEConstraint True $ desugarConstraint constraint
+  ElementDecl element  -> desugarElement element
 
 
 sugarDeclaration :: IElement -> Declaration
 sugarDeclaration x = case x of
-  IEClafer clafer  -> ClaferDecl $ sugarClafer clafer
-  IEConstraint _ constraint  -> ConstDecl $ sugarConstraint constraint
+  IEClafer clafer  -> ElementDecl $ Subclafer $ sugarClafer clafer
+  IEConstraint _ constraint  -> ElementDecl $ Subconstraint $ sugarConstraint constraint
 
 
 desugarClafer :: Clafer -> IClafer
@@ -158,7 +157,7 @@ sugarElements :: [IElement] -> Elements
 sugarElements x = ElementsList $ map sugarElement x
 
 
-desugarElement :: ElementCl -> IElement
+desugarElement :: Element -> IElement
 desugarElement x = case x of
   Subclafer clafer  -> IEClafer $ desugarClafer clafer
   ClaferUse name card elements  -> IEClafer $ desugarClafer $ Clafer
@@ -167,7 +166,7 @@ desugarElement x = case x of
   Subconstraint constraint  -> IEConstraint True $ desugarConstraint constraint
 
 
-sugarElement :: IElement -> ElementCl
+sugarElement :: IElement -> Element
 sugarElement x = case x of
   IEClafer clafer  -> Subclafer $ sugarClafer clafer
   IEConstraint _ constraint -> Subconstraint $ sugarConstraint constraint
