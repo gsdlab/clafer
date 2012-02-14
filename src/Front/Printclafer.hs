@@ -190,7 +190,10 @@ instance Print Name where
 
 instance Print Exp where
   prt i e = case e of
-   DeclExp exquant decls exp -> prPrec i 0 (concatD [prt 0 exquant , prt 0 decls , doc (showString "|") , prt 1 exp])
+   DeclAllDisj decl exp -> prPrec i 0 (concatD [doc (showString "all") , doc (showString "disj") , prt 0 decl , doc (showString "|") , prt 1 exp])
+   DeclAll decl exp -> prPrec i 0 (concatD [doc (showString "all") , prt 0 decl , doc (showString "|") , prt 1 exp])
+   DeclQuantDisj quant decl exp -> prPrec i 0 (concatD [prt 0 quant , doc (showString "disj") , prt 0 decl , doc (showString "|") , prt 1 exp])
+   DeclQuant quant decl exp -> prPrec i 0 (concatD [prt 0 quant , prt 0 decl , doc (showString "|") , prt 1 exp])
    EIff exp0 exp -> prPrec i 1 (concatD [prt 1 exp0 , doc (showString "<=>") , prt 2 exp])
    EImplies exp0 exp -> prPrec i 2 (concatD [prt 2 exp0 , doc (showString "=>") , prt 3 exp])
    EOr exp0 exp -> prPrec i 3 (concatD [prt 3 exp0 , doc (showString "||") , prt 4 exp])
@@ -205,7 +208,7 @@ instance Print Exp where
    ENeq exp0 exp -> prPrec i 7 (concatD [prt 7 exp0 , doc (showString "!=") , prt 8 exp])
    EIn exp0 exp -> prPrec i 7 (concatD [prt 7 exp0 , doc (showString "in") , prt 8 exp])
    ENin exp0 exp -> prPrec i 7 (concatD [prt 7 exp0 , doc (showString "not") , doc (showString "in") , prt 8 exp])
-   QuantExp quant exp -> prPrec i 8 (concatD [prt 0 quant , prt 9 exp])
+   QuantExp quant exp -> prPrec i 8 (concatD [prt 0 quant , prt 12 exp])
    EAdd exp0 exp -> prPrec i 9 (concatD [prt 9 exp0 , doc (showString "+") , prt 10 exp])
    ESub exp0 exp -> prPrec i 9 (concatD [prt 9 exp0 , doc (showString "-") , prt 10 exp])
    EMul exp0 exp -> prPrec i 10 (concatD [prt 10 exp0 , doc (showString "*") , prt 11 exp])
@@ -236,16 +239,7 @@ instance Print SetExp where
 
 instance Print Decl where
   prt i e = case e of
-   Decl disj locids exp -> prPrec i 0 (concatD [prt 0 disj , prt 0 locids , doc (showString ":") , prt 0 exp])
-
-  prtList es = case es of
-   [x] -> (concatD [prt 0 x])
-   x:xs -> (concatD [prt 0 x , doc (showString ",") , prt 0 xs])
-
-instance Print Disj where
-  prt i e = case e of
-   DisjEmpty  -> prPrec i 0 (concatD [])
-   Disj  -> prPrec i 0 (concatD [doc (showString "disj")])
+   Decl locids setexp -> prPrec i 0 (concatD [prt 0 locids , doc (showString ":") , prt 0 setexp])
 
 
 instance Print Quant where
@@ -254,12 +248,6 @@ instance Print Quant where
    QuantLone  -> prPrec i 0 (concatD [doc (showString "lone")])
    QuantOne  -> prPrec i 0 (concatD [doc (showString "one")])
    QuantSome  -> prPrec i 0 (concatD [doc (showString "some")])
-
-
-instance Print ExQuant where
-  prt i e = case e of
-   ExQuantAll  -> prPrec i 0 (concatD [doc (showString "all")])
-   ExQuantQuant quant -> prPrec i 0 (concatD [prt 0 quant])
 
 
 instance Print EnumId where
@@ -284,6 +272,6 @@ instance Print LocId where
 
   prtList es = case es of
    [x] -> (concatD [prt 0 x])
-   x:xs -> (concatD [prt 0 x , doc (showString ",") , prt 0 xs])
+   x:xs -> (concatD [prt 0 x , doc (showString ";") , prt 0 xs])
 
 

@@ -88,7 +88,10 @@ data Name =
   deriving (Eq,Ord,Show)
 
 data Exp =
-   DeclExp ExQuant [Decl] Exp
+   DeclAllDisj Decl Exp
+ | DeclAll Decl Exp
+ | DeclQuantDisj Quant Decl Exp
+ | DeclQuant Quant Decl Exp
  | EIff Exp Exp
  | EImplies Exp Exp
  | EOr Exp Exp
@@ -129,12 +132,7 @@ data SetExp =
   deriving (Eq,Ord,Show)
 
 data Decl =
-   Decl Disj [LocId] Exp
-  deriving (Eq,Ord,Show)
-
-data Disj =
-   DisjEmpty
- | Disj
+   Decl [LocId] SetExp
   deriving (Eq,Ord,Show)
 
 data Quant =
@@ -142,11 +140,6 @@ data Quant =
  | QuantLone
  | QuantOne
  | QuantSome
-  deriving (Eq,Ord,Show)
-
-data ExQuant =
-   ExQuantAll
- | ExQuantQuant Quant
   deriving (Eq,Ord,Show)
 
 data EnumId =

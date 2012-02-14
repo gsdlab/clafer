@@ -145,7 +145,7 @@ addNewLines' :: Int -> [Token] -> [ExToken]
 addNewLines' 0 (t:[])     = [ExToken t]
 addNewLines' n (t:[])
   | n == 0 && isBracketClose t = [ExToken t]
-  | otherwise                  = error $ "parenthesis" ++ show n ++ show t
+  | otherwise                  = error $ "']' bracket missing" ++ show n ++ show t
 addNewLines' n (t0:t1:ts)
   | isNewLine t0 t1 && isBracketOpen t1 =
     ExToken t0 : NewLine (column t1, n) : addNewLines' (n + 1) (t1:ts)

@@ -14,6 +14,7 @@ Constraint.     Constraint ::= "[" [Exp] "]" ;
 AbstractEmpty.  Abstract ::= ;
 Abstract.       Abstract ::= "abstract" ;
 
+-- ElementsEmpty causes parsing problems
 ElementsEmpty.  Elements ::= ;
 ElementsList.   Elements ::= "{" [Element] "}" ;
 
@@ -52,7 +53,10 @@ ExIntegerNum.   ExInteger ::= Integer ;
 
 Path.           Name ::= [ModId] ;
 
-DeclExp.        Exp   ::= ExQuant [Decl] "|" Exp1 ;
+DeclAllDisj.    Exp   ::= "all" "disj" Decl "|" Exp1 ;
+DeclAll.        Exp   ::= "all"        Decl "|" Exp1 ;
+DeclQuantDisj.  Exp   ::= Quant "disj" Decl "|" Exp1 ;
+DeclQuant.      Exp   ::= Quant        Decl "|" Exp1 ;
 EIff.           Exp1  ::= Exp1 "<=>" Exp2 ;
 EImplies.       Exp2  ::= Exp2 "=>"  Exp3 ;
 EOr.            Exp3  ::= Exp3 "||"  Exp4 ;
@@ -67,7 +71,7 @@ EGte.           Exp7  ::= Exp7 ">=" Exp8 ;
 ENeq.           Exp7  ::= Exp7 "!=" Exp8 ;
 EIn.            Exp7  ::= Exp7 "in" Exp8 ;
 ENin.           Exp7  ::= Exp7 "not" "in" Exp8 ;
-QuantExp.       Exp8  ::= Quant Exp9 ;
+QuantExp.       Exp8  ::= Quant Exp12 ;
 EAdd.           Exp9  ::= Exp9  "+" Exp10 ;
 ESub.           Exp9  ::= Exp9  "-" Exp10 ;
 EMul.           Exp10 ::= Exp10 "*" Exp11 ;
@@ -89,18 +93,12 @@ Range.          SetExp4 ::= SetExp4 ":>" SetExp5 ;
 Join.           SetExp5 ::= SetExp5 "."  SetExp6 ;
 ClaferId.       SetExp6 ::= Name ;
 
-Decl.           Decl ::= Disj [LocId] ":" Exp ;
-
-DisjEmpty.      Disj ::= ;
-Disj.           Disj ::= "disj" ;
+Decl.           Decl ::= [LocId] ":" SetExp ;
 
 QuantNo.        Quant ::= "no" ;
 QuantLone.      Quant ::= "lone" ;
 QuantOne.       Quant ::= "one" ;
 QuantSome.      Quant ::= "some" ;
-
-ExQuantAll.     ExQuant ::= "all" ;
-ExQuantQuant.   ExQuant ::= Quant ;
 
 rules           EnumId ::= Ident ;
 rules           ModId  ::= Ident ;
@@ -110,8 +108,7 @@ separator           Declaration ""  ;
 separator  nonempty EnumId      "|" ;
 separator           Element     ""  ;
 separator           Exp         ""  ;
-separator  nonempty Decl        "," ;
-separator  nonempty LocId       "," ;
+separator  nonempty LocId       ";" ;
 separator  nonempty ModId       "\\" ;
 
 coercions Exp 13 ;

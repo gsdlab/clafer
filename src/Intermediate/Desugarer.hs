@@ -43,9 +43,9 @@ desugarEnums x = case x of
   EnumDecl id enumids  -> absEnum : map mkEnum enumids
     where
     absEnum = ElementDecl $ Subclafer $ Clafer
-              Abstract GCardEmpty id SuperEmpty CardEmpty InitEmpty ElementsEmpty
+              Abstract GCardEmpty id SuperEmpty CardEmpty InitEmpty (ElementsList [])
     mkEnum (EnumIdIdent eId) = ElementDecl $ Subclafer $ Clafer AbstractEmpty GCardEmpty
-                                  eId (SuperSome SuperHow_1 (ClaferId $ Path [ModIdIdent id])) CardEmpty InitEmpty ElementsEmpty
+                                  eId (SuperSome SuperHow_1 (ClaferId $ Path [ModIdIdent id])) CardEmpty InitEmpty (ElementsList [])
   _ -> [x]
 
 
@@ -148,7 +148,7 @@ sugarAbstract x = case x of
 
 desugarElements :: Elements -> [IElement]
 desugarElements x = case x of
-  ElementsEmpty  -> []
+  ElementsEmpty -> []
   ElementsList elements  -> map desugarElement elements
 
 
@@ -208,8 +208,10 @@ desugarExp x = PExp Nothing "" $ desugarExp' x
 
 desugarExp' :: Exp -> IExp
 desugarExp' x = case x of
-  DeclExp exquant decls exp  ->
-    IDeclPExp (desugarExQuant exquant) (map desugarDecl decls) (desugarExp exp)
+  DeclAllDisj decl exp -> IDeclPExp IAll [desugarDecl True decl] (desugarExp exp)
+  DeclAll decl exp -> IDeclPExp IAll [desugarDecl False decl] (desugarExp exp)
+  DeclQuantDisj quant decl exp -> IDeclPExp (desugarQuant quant) [desugarDecl True decl] (desugarExp exp)
+  DeclQuant quant decl exp -> IDeclPExp (desugarQuant quant) [desugarDecl False decl] (desugarExp exp)
   EIff exp0 exp  -> dop iIff [exp0, exp]
   EImplies exp0 exp  -> dop iImpl [exp0, exp]
   EImpliesElse exp0 exp1 exp  -> dop iIfThenElse [exp0, exp1, exp]
@@ -266,11 +268,18 @@ desugarSetExp' x = case x of
 sugarExp :: PExp -> Exp
 sugarExp x = sugarExp' $ Intermediate.Intclafer.exp x
 
+
 sugarExp' :: IExp -> Exp
 sugarExp' x = case x of
   IDeclPExp quant [] pexp -> QuantExp (sugarQuant quant) (sugarExp pexp)
-  IDeclPExp quant decls pexp ->
-    DeclExp (sugarExQuant quant) (map sugarDecl decls) (sugarExp pexp)
+  IDeclPExp IAll (decl@(IDecl True _ _):[]) pexp ->
+    DeclAllDisj   (sugarDecl decl) (sugarExp pexp)
+  IDeclPExp IAll  (decl@(IDecl False _ _):[]) pexp ->
+    DeclAll       (sugarDecl decl) (sugarExp pexp)
+  IDeclPExp quant (decl@(IDecl True _ _):[]) pexp ->
+    DeclQuantDisj (sugarQuant quant) (sugarDecl decl) (sugarExp pexp)
+  IDeclPExp quant (decl@(IDecl False _ _):[]) pexp ->
+    DeclQuant     (sugarQuant quant) (sugarDecl decl) (sugarExp pexp)
   IFunExp op exps ->
     if op `elem` unOps then (sugarUnOp op) (exps'!!0)
     else if op `elem` setBinOps then (ESetExp $ sugarSetExp' x)
@@ -345,28 +354,16 @@ isSet (IFunExp op _) = op `elem` setBinOps
 isSet _ = False
 
 
-desugarDecl :: Decl -> IDecl
-desugarDecl x = case x of
-  Decl disj locids exp  ->
-    IDecl (desugarDisj disj) (map desugarLocId locids) (desugarExp exp)
+desugarDecl :: Bool -> Decl -> IDecl
+desugarDecl isDisj x = case x of
+  Decl locids exp  ->
+    IDecl isDisj (map desugarLocId locids) (desugarSetExp exp)
 
 
 sugarDecl :: IDecl -> Decl
 sugarDecl x = case x of
   IDecl disj locids exp  ->
-    Decl (sugarDisj disj) (map sugarLocId locids) (sugarExp exp)
-
-
-desugarDisj :: Disj -> Bool
-desugarDisj x = case x of
-  DisjEmpty -> False
-  Disj -> True
-
-
-sugarDisj :: Bool -> Disj
-sugarDisj x = case x of
-  False -> DisjEmpty
-  True -> Disj
+    Decl (map sugarLocId locids) (sugarSetExp exp)
 
 
 desugarLocId :: LocId -> String
@@ -390,12 +387,4 @@ sugarQuant x = case x of
   ILone -> QuantLone
   IOne -> QuantOne
   ISome -> QuantSome
-
-desugarExQuant x = case x of
-  ExQuantAll -> IAll
-  ExQuantQuant quant -> desugarQuant quant
-
-sugarExQuant x = case x of
-  IAll -> ExQuantAll
-  _ -> ExQuantQuant $ sugarQuant x
   
