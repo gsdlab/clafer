@@ -1,0 +1,5 @@
+clafer abstract A
+  s : string ?
+
+A1 : A
+  [ s = "text value" ]

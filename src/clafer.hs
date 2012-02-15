@@ -107,7 +107,7 @@ analyze args tree = do
   conPutStrLn args "[Analyzing String]"
   let aTree = astrModule rTree
   conPutStrLn args "[Transforming]"
-  let tTree = transModule rTree
+  let tTree = transModule aTree
   conPutStrLn args "[Optimizing]"
   return $ (optimizeModule args' (tTree, genv), genv, au)
   -- writeFile (f ++ ".ana") $ printTree $
