@@ -1,11 +1,14 @@
 // This is the example used in the tutorial to introduce Clafer
 
+abstract date : string
+  // cannot currently specify that the format of the value should be, for example, "dd/mm/yyyy"
+
 enum NorthAmericanCountry = Canada | USA
 
 abstract Person
     Name : string
     Surname : string
-    DateOfBirth : string
+    DateOfBirth : date
     or Gender
         Male
         Female
