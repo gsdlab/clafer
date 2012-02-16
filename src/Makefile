@@ -6,9 +6,11 @@ all:
 	$(foreach file, Absclafer ErrM Lexclafer Printclafer Parclafer, \
 		$(if $(call apPatch,--dry-run,$(file)), \
 			$(call apPatch,,$(file))))
+	./Generator/quote.sh ClaferIR.xsd > ./Generator/Schema.hs
+
+newVersion:
 	ghc -outputdir dist/build --make dateVer -o dateVer
 	./dateVer > Version.hs
-	./Generator/quote.sh ClaferIR.xsd > ./Generator/Schema.hs
 
 clean:
 	$(MAKE) clean -C Front/

@@ -23,6 +23,9 @@ prof:
 test:
 	$(MAKE) -C $(TEST_DIR) test
 
+newVersion:
+	$(MAKE) -C $(SRC_DIR) newVersion
+
 clean:
 	$(MAKE) -C $(SRC_DIR) clean
 	$(MAKE) -C $(TOOL_DIR) clean
