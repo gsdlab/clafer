@@ -3,23 +3,23 @@ Translator
 ----------
 
 Dependencies:
-  ghc; cabal (for installation and fetching dependencies); Java >= 5 (only for compiling XsdCheck.java)
+  ghc; cabal (for installation and fetching dependencies)
 
 To install GHC refer to:
   http://www.haskell.org/ghc/distribution_packages
 
-If you have no cabal then installt it (Ubuntu):
+To install cabal execute (Ubuntu):
   sudo apt-get install cabal-install
-  cabal update
 
-Once the libraries are in place, compile the translator:
+Update cabal and compile the translator:
+  cabal update
   caball install
 
 Usage:  
    clafer <filename>.cfr
    
    by default, the translator produces Alloy 4 output. Use
-   -m=xml 		to produce XML output
+   -m=xml 	to produce XML output
    -m=clafer 	to produce desugared Clafer output
    -m=alloy42 	to produce Alloy 4.2 output
 
