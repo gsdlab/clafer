@@ -1,4 +1,4 @@
-// OPTIONS --keep-unused
+//# OPTIONS --keep-unused
 abstract A
     b *
         c ?

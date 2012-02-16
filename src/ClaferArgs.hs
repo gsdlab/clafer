@@ -72,7 +72,7 @@ mainArgs = do
   let firstLine = case lines model of
                [] -> ""
                (s:_) -> s
-  let options = fromMaybe "" $ stripPrefix "// OPTIONS " firstLine
+  let options = fromMaybe "" $ stripPrefix "//# OPTIONS " firstLine
   return $ setDefArgs $
            either (\_ -> args) (\x -> mergeArgs args (cmdArgsValue x)) $
            process (cmdArgsMode clafer) $ splitArgs options
