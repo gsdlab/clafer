@@ -10,7 +10,11 @@ Maintainer:          kbak@gsd.uwaterloo.ca
 Stability:           Experimental
 Category:            Model
 Build-type:          Simple
-Cabal-version:       >=1.4
+Cabal-version:       >=1.6
+
+source-repository head
+    type:         git
+    location:     https://github.com/gsdlab/clafer
 
 Executable clafer
     Extensions:          DeriveDataTypeable
