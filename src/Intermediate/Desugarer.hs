@@ -208,10 +208,10 @@ desugarExp x = PExp Nothing "" $ desugarExp' x
 
 desugarExp' :: Exp -> IExp
 desugarExp' x = case x of
-  DeclAllDisj decl exp -> IDeclPExp IAll [desugarDecl True decl] (desugarExp exp)
-  DeclAll decl exp -> IDeclPExp IAll [desugarDecl False decl] (desugarExp exp)
-  DeclQuantDisj quant decl exp -> IDeclPExp (desugarQuant quant) [desugarDecl True decl] (desugarExp exp)
-  DeclQuant quant decl exp -> IDeclPExp (desugarQuant quant) [desugarDecl False decl] (desugarExp exp)
+  DeclAllDisj decl exp -> IDeclPExp IAll [desugarDecl True decl] (dpe exp)
+  DeclAll decl exp -> IDeclPExp IAll [desugarDecl False decl] (dpe exp)
+  DeclQuantDisj quant decl exp -> IDeclPExp (desugarQuant quant) [desugarDecl True decl] (dpe exp)
+  DeclQuant quant decl exp -> IDeclPExp (desugarQuant quant) [desugarDecl False decl] (dpe exp)
   EIff exp0 exp  -> dop iIff [exp0, exp]
   EImplies exp0 exp  -> dop iImpl [exp0, exp]
   EImpliesElse exp0 exp1 exp  -> dop iIfThenElse [exp0, exp1, exp]
@@ -240,12 +240,14 @@ desugarExp' x = case x of
   ESetExp sexp -> desugarSetExp' sexp
   where
   dop = desugarOp desugarExp
+  dpe = desugarPath.desugarExp
 
 
 desugarOp f op exps = IFunExp op $ map (trans.f) exps
   where
   trans = if op `elem` ([iNot, iIfThenElse] ++ logBinOps)
           then desugarPath else id
+
 
 desugarSetExp :: SetExp -> PExp
 desugarSetExp x = PExp Nothing "" $ desugarSetExp' x
