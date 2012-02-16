@@ -150,11 +150,6 @@ showStats au (Stats na nr nc nconst sgl) =
 showInterval (n, ExIntegerAst) = show n ++ "..*"
 showInterval (n, ExIntegerNum m) = show n ++ ".." ++ show m
 
-{-
-toolDir = do
-  (path, _) <- splitExecutablePath
-  return $ path ++ "Test/tools/"
--}
 runValidate args fo = do
   let path = fromJust $ tooldir args
   case (fromJust $ mode args) of

@@ -3,7 +3,12 @@ TEST_DIR = test
 SUITE_DIR = $(TEST_DIR)/suite
 TOOL_DIR = tools
 
-all:
+all: build
+
+install: all
+	cabal install --bindir=.
+
+build:
 	$(MAKE) -C $(SRC_DIR)
 	$(MAKE) -C $(TOOL_DIR)
 	ghc -isrc -outputdir dist/build --make -O src/clafer -o clafer
