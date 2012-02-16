@@ -8,14 +8,16 @@ Overview
 Dependencies
 ------------
 * GHC (Glasgow Haskell Compiler). For installation instructions refer to the [GHC website](http://www.haskell.org/ghc/distribution_packages)
-* cabal-install (for installation and fetching Haskell libraries). The package can be installed as follows (Ubuntu):
+* [cabal-install](http://www.haskell.org/haskellwiki/Cabal-Install) (for installation and fetching required Haskell libraries). The package can be installed as follows (Ubuntu):
 ```
 sudo apt-get install cabal-install
 ```
 
+alternatively, you may install [The Haskell Platform](http://hackage.haskell.org/platform/). It includes both GHC and cabal-install.
+
 Extra Dependencies
 ------------------
-* [Alloy] (http://alloy.mit.edu/alloy/) (backend reasoner)
+* [Alloy] (http://alloy.mit.edu/) (backend reasoner)
 
 Build
 -----
@@ -31,9 +33,13 @@ clafer <filename>.cfr
 ```
    
 By default, the translator produces Alloy 4 output. Use
+
 `-m=xml` 	to produce XML output
+
 `-m=clafer` 	to produce desugared Clafer output
+
 `-m=alloy42` 	to produce Alloy 4.2 output
+
 `-m=alloy` 	to produce Alloy 4 output (default)
 
 Validator
