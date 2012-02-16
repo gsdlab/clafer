@@ -13,7 +13,7 @@ To install cabal execute (Ubuntu):
 
 Update cabal, build and install the translator:
   cabal update
-  caball install
+  cabal install
 
 Usage:  
    clafer <filename>.cfr
