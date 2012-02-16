@@ -29,6 +29,7 @@ import Data.Map (Map)
 import qualified Data.Map as Map
 
 import Common
+import ClaferArgs
 import Front.Absclafer
 import Intermediate.Intclafer
 import Intermediate.ResolverName
@@ -36,10 +37,10 @@ import Intermediate.ResolverInheritance
 import Intermediate.ResolverType
 
 resolveModule :: ClaferArgs -> IModule -> (IModule, GEnv)
-resolveModule args declarations = resolveNamesModule args $ rom $ rem $ resolveNModule $ nameModule (force_resolver args) declarations
+resolveModule args declarations = resolveNamesModule args $ rom $ rem $ resolveNModule $ nameModule (fromJust $ force_resolver args) declarations
   where
-  rem = if flatten_inheritance args then resolveEModule else id
-  rom = if force_resolver args then resolveOModule else id
+  rem = if fromJust $ flatten_inheritance args then resolveEModule else id
+  rom = if fromJust $ force_resolver args then resolveOModule else id
 
 
 -- -----------------------------------------------------------------------------
@@ -80,5 +81,5 @@ resolveNamesModule args (declarations, genv) = (res, genv)
   where
   res = foldr ($) declarations $ map (\f -> flip (curry f) genv) funs
   funs
-    | force_resolver args = [resolveTModule, resolveModuleNames, analyzeModule]
+    | fromJust $ force_resolver args = [resolveTModule, resolveModuleNames, analyzeModule]
     | otherwise = [resolveTModule, analyzeModule]

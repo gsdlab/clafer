@@ -29,13 +29,13 @@ import System.Cmd
 import Control.Exception.Base
 import IO  ( stdin, hGetContents )
 import System ( getArgs, getProgName )
-import System.Console.CmdArgs
 import System.Timeout
 import Control.Monad.State
 import System.Environment.Executable
+import Data.Maybe
 
 import Common
-import Version
+import ClaferArgs
 import Front.Lexclafer
 import Front.Parclafer
 import Front.Printclafer
@@ -62,7 +62,7 @@ putStrV :: VerbosityL -> String -> IO ()
 putStrV v s = if v > 1 then putStrLn s else return ()
 
 
-start v p args = if schema args
+start v p args = if fromJust $ schema args
   then putStrLn Generator.Schema.xsd
   else run v p args
 
@@ -71,9 +71,11 @@ run :: VerbosityL -> ParseFun -> ClaferArgs -> IO ()
 run v p args = do
            input <- readFile $ file args
            conPutStrLn args (file args)
-           let ts = (if not (new_layout args || no_layout args)
+           let ts = (if not ((fromJust $ new_layout args) ||
+                             (fromJust $ no_layout args))
                      then resolveLayout else id) $ myLLexer $
-                    (if (not $ no_layout args) && new_layout args
+                    (if (not $ fromJust $ no_layout args) &&
+                        (fromJust $ new_layout args)
                      then resLayout else id)
                     input  in case p ts of
              Bad s    -> do putStrLn "\nParse              Failed...\n"
@@ -85,7 +87,7 @@ run v p args = do
                           dTree <- desugar args tree
                           oTree <- analyze args dTree
                           f' <- generate f args oTree
-                          when (validate args) $ runValidate args f'
+                          when (fromJust $ validate args) $ runValidate args f'
 
 stripFileName f = case dropWhile (/= '.') $ reverse f of
   [] -> f
@@ -101,7 +103,7 @@ desugar args tree = do
 analyze args tree = do
   let dTree' = findDupModule args tree
   let au = allUnique dTree'
-  let args' = args{force_resolver = not au || force_resolver args}
+  let args' = args{force_resolver = Just $ not au || (fromJust $ force_resolver args)}
   conPutStrLn args "[Resolving]"
   let (rTree, genv) = resolveModule args' dTree'
   conPutStrLn args "[Analyzing String]"
@@ -116,18 +118,18 @@ analyze args tree = do
 generate f args (oTree, genv, au) = do
   conPutStrLn args "[Generating Code]"
   let stats = showStats au $ statsModule oTree
-  when (not $ no_stats args) $ putStrLn stats
+  when (not $ fromJust $ no_stats args) $ putStrLn stats
   conPutStrLn args "[Saving File]"
-  let (ext, code) = case (mode args) of
+  let (ext, code) = case (fromJust $ mode args) of
                       Alloy -> ("als", addStats (genModule args (oTree, genv)) stats)
                       Alloy42 -> ("als", addStats (genModule args (oTree, genv)) stats)
                       Xml ->   ("xml", genXmlModule oTree)
                       Clafer -> ("des.cfr", printTree $ sugarModule oTree)
   let f' = f ++ "." ++ ext
-  if console_output args then putStrLn code else writeFile f' code
+  if fromJust $ console_output args then putStrLn code else writeFile f' code
   return f'
 
-conPutStrLn args s = when (not $ console_output args) $ putStrLn s
+conPutStrLn args s = when (not $ fromJust $ console_output args) $ putStrLn s
 
 showTree :: (Show a, Print a) => Int -> a -> IO ()
 showTree v tree
@@ -154,39 +156,20 @@ toolDir = do
 
 runValidate args fo = do
   path <- toolDir
-  case (mode args) of
+  case (fromJust $ mode args) of
     Xml -> do
       writeFile "ClaferIR.xsd" Generator.Schema.xsd
       voidf $ system $ "java -classpath " ++ path ++ " XsdCheck ClaferIR.xsd " ++ fo
-    Alloy -> do
-      voidf $ system $ validateAlloy path "4" ++ fo
-    Alloy42 -> do
-      voidf $ system $ validateAlloy path "4.2-rc" ++ fo
-    Clafer -> do
-      voidf $ system $ "./clafer -s " ++ fo
+    Alloy ->   voidf $ system $ validateAlloy path "4" ++ fo
+    Alloy42 -> voidf $ system $ validateAlloy path "4.2-rc" ++ fo
+    Clafer ->  voidf $ system $ "./clafer -s " ++ fo
 
 validateAlloy path version = "java -cp " ++ path ++ "alloy" ++ version ++ ".jar edu.mit.csail.sdg.alloy4whole.ExampleUsingTheCompiler "
 
-clafer = ClaferArgs {
-  mode = Alloy &= help "Generated output type. Available modes: alloy (default); alloy42 (new Alloy version); xml (intermediate representation of Clafer model); clafer (analyzed and desugared clafer model)" &= name "m",
-  console_output = False &= help "Output code on console" &= name "o",
-  flatten_inheritance = def &= help "Flatten inheritance" &= name "i",
-  file = def &= args,
-  timeout_analysis = def &= help "Timeout for analysis",
-  no_layout = def &= help "Don't resolve off-side rule layout" &= name "l",
-  new_layout = def &= help "Use new fast layout resolver (experimental)" &= name "nl",
-  check_duplicates = def &= help "Check duplicated clafer names",
-  force_resolver = def &= help "Force name resolution" &= name "f",
-  keep_unused = def &= help "Keep unused abstract clafers" &= name "k",
-  no_stats = def &= help "Don't print statistics" &= name "s",
-  schema = def &= help "Show Clafer XSD schema",
-  validate = def &= help "Validate output. Uses XsdCheck for XML, Alloy Analyzer for Alloy models, and Clafer translator for desugared Clafer models. The command expects to find binaries in Test/tools: XsdCheck.class, Alloy4.jar, Alloy4.2-rc.jar. "
- } &= summary ("Clafer v0.2." ++ version)
-
 main :: IO ()
 main = do
-  args <- cmdArgs clafer
-  let timeInSec = (timeout_analysis args) * 10^6
+  args <- mainArgs
+  let timeInSec = (fromJust $ timeout_analysis args) * 10^6
   if timeInSec > 0
     then timeout timeInSec $ start 2 pModule args
     else Just `liftM` start 2 pModule args

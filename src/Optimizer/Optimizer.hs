@@ -29,6 +29,7 @@ import Data.Map (Map)
 import qualified Data.Map as Map
 
 import Common
+import ClaferArgs
 import Front.Absclafer
 import Intermediate.Intclafer
 
@@ -37,8 +38,8 @@ optimizeModule args (imodule, genv) =
   imodule{mDecls = em $ rm $ map (optimizeElement (1, ExIntegerNum 1)) $
                    markTopModule $ mDecls imodule}
   where
-  rm = if keep_unused args then id else remUnusedAbs
-  em = if flatten_inheritance args then flip (curry expModule) genv else id
+  rm = if fromJust $ keep_unused args then id else remUnusedAbs
+  em = if fromJust $ flatten_inheritance args then flip (curry expModule) genv else id
 
 optimizeElement :: Interval -> IElement -> IElement
 optimizeElement interval x = case x of
@@ -206,8 +207,8 @@ findDupModule args imodule = imodule{mDecls = decls'}
   where
   decls = mDecls imodule
   decls'
-    | check_duplicates args = findDupModule' decls
-    | otherwise             = decls
+    | fromJust $ check_duplicates args = findDupModule' decls
+    | otherwise                        = decls
 
 
 findDupModule' :: [IElement] -> [IElement]

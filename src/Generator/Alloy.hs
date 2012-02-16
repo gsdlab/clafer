@@ -27,19 +27,20 @@ import Data.Maybe
 import Data.Function
 
 import Common
+import ClaferArgs
 import Front.Absclafer
 import Intermediate.Intclafer
 import Intermediate.ResolverType
 
 genModule :: ClaferArgs -> (IModule, GEnv) -> Result
 genModule args (imodule, _) =
-  header args ++ ((mDecls imodule) >>= (genDeclaration (mode args)))
+  header args ++ ((mDecls imodule) >>= (genDeclaration (fromJust $ mode args)))
 
 
 header args = unlines
-    [ if (mode args) == Alloy42 then "" else "open util/integer"
+    [ if (fromJust $ mode args) == Alloy42 then "" else "open util/integer"
     , "pred show {}"
-    , if (validate args) then "" else "run  show for 1"
+    , if (fromJust $ validate args) then "" else "run  show for 1"
     , ""]
 
 

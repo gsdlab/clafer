@@ -204,25 +204,6 @@ data GEnv = GEnv {
     }
   deriving (Eq, Show)
 
-data ClaferMode = Alloy42 | Alloy | Xml | Clafer
-  deriving (Eq, Show, Data, Typeable)
-
-data ClaferArgs = ClaferArgs {
-      mode :: ClaferMode,
-      console_output :: Bool,
-      flatten_inheritance :: Bool,
-      file :: FilePath,
-      timeout_analysis :: Int,
-      no_layout :: Bool,
-      new_layout :: Bool,
-      check_duplicates :: Bool,
-      force_resolver :: Bool,
-      keep_unused :: Bool,
-      no_stats :: Bool,
-      schema :: Bool,
-      validate :: Bool
-    } deriving (Show, Data, Typeable)
-
 voidf f = do
   x <- f
   return ()
