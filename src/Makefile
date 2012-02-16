@@ -2,31 +2,19 @@ define apPatch
 	$(shell patch $(1) -N -r - Front/$(2).hs Front/$(2).patch 1>/dev/null)
 endef
 
-TOOL_DIR = Test/tools
-
 all:
 	$(foreach file, Absclafer ErrM Lexclafer Printclafer Parclafer, \
 		$(if $(call apPatch,--dry-run,$(file)), \
 			$(call apPatch,,$(file))))
-	ghc --make dateVer
+	ghc -outputdir dist/build --make dateVer -o dateVer
 	./dateVer > Version.hs
-	./Generator/quote.sh Generator/ClaferIR.xsd > ./Generator/Schema.hs
-	$(MAKE) -C $(TOOL_DIR)
-	ghc --make -O clafer
-
-prof:
-	ghc -prof -auto-all -rtsopts -O --make clafer
-
-test:
-	find Test/suite/ -type f -name '*.als' -print0
-	find Test/suite/ -type f -name '*.cfr.des' -print0
-	find Test/suite/ -type f -name '*.xml' -print0
-	find ./Test/suite -type f \( -iname "*.cfr" ! -iname "*.des.cfr" \) | xargs -L1 ./clafer -s -v
-	find ./Test/suite -type f \( -iname "*.cfr" ! -iname "*.des.cfr" \) | xargs -L1 ./clafer -s -v -m=xml
-	find ./Test/suite -type f \( -iname "*.cfr" ! -iname "*.des.cfr" \) | xargs -L1 ./clafer -s -v -m=clafer
+	./Generator/quote.sh ClaferIR.xsd > ./Generator/Schema.hs
 
 clean:
+	$(MAKE) clean -C Front/
+	rm -rf dist
+	rm -r dateVer
 	find . -type f -name '*.o' -print0 | xargs -0 rm -f
 	find . -type f -name '*.hi' -print0 | xargs -0 rm -f
+	find . -type f -name '*.bak' -print0 | xargs -0 rm -f
 	find . -type f -name '*~' -print0 | xargs -0 rm -f
-	$(MAKE) -C $(TOOL_DIR) clean

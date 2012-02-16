@@ -38,7 +38,6 @@ data ClaferArgs = ClaferArgs {
       mode :: Maybe ClaferMode,
       console_output :: Maybe Bool,
       flatten_inheritance :: Maybe Bool,
-      file :: FilePath,
       timeout_analysis :: Maybe Int,
       no_layout :: Maybe Bool,
       new_layout :: Maybe Bool,
@@ -47,14 +46,15 @@ data ClaferArgs = ClaferArgs {
       keep_unused :: Maybe Bool,
       no_stats :: Maybe Bool,
       schema :: Maybe Bool,
-      validate :: Maybe Bool
+      validate :: Maybe Bool,
+      tooldir :: Maybe FilePath,
+      file :: FilePath
     } deriving (Show, Data, Typeable)
 
 clafer = ClaferArgs {
   mode                = def &= help "Generated output type. Available modes: alloy (default); alloy42 (new Alloy version); xml (intermediate representation of Clafer model); clafer (analyzed and desugared clafer model)" &= name "m",
   console_output      = def &= help "Output code on console" &= name "o",
   flatten_inheritance = def &= help "Flatten inheritance" &= name "i",
-  file                = def &= args,
   timeout_analysis    = def &= help "Timeout for analysis",
   no_layout           = def &= help "Don't resolve off-side rule layout" &= name "l",
   new_layout          = def &= help "Use new fast layout resolver (experimental)" &= name "nl",
@@ -63,7 +63,9 @@ clafer = ClaferArgs {
   keep_unused         = def &= help "Keep unused abstract clafers" &= name "k",
   no_stats            = def &= help "Don't print statistics" &= name "s",
   schema              = def &= help "Show Clafer XSD schema",
-  validate            = def &= help "Validate output. Uses XsdCheck for XML, Alloy Analyzer for Alloy models, and Clafer translator for desugared Clafer models. The command expects to find binaries in Test/tools: XsdCheck.class, Alloy4.jar, Alloy4.2-rc.jar. "
+  validate            = def &= help "Validate output. Uses XsdCheck for XML, Alloy Analyzer for Alloy models, and Clafer translator for desugared Clafer models. Use --tooldir to specify where the binaries (XsdCheck.class, Alloy4.jar, Alloy4.2-rc.jar) are located.",
+  tooldir             = def &= typDir &= help "Tools directory",
+  file                = def &= args   &= typ "FILE"
  } &= summary ("Clafer v0.2." ++ version) &= program "clafer"
 
 mainArgs = do
@@ -83,7 +85,6 @@ mergeArgs args args'  = args' {
   mode                = mode args                `mplus` mode args',
   console_output      = console_output args      `mplus` console_output args',
   flatten_inheritance = flatten_inheritance args `mplus` flatten_inheritance args',
-  file                = file args,
   timeout_analysis    = timeout_analysis args    `mplus` timeout_analysis args',
   no_layout           = no_layout args           `mplus` no_layout args',
   new_layout          = new_layout args          `mplus` new_layout args',
@@ -92,7 +93,9 @@ mergeArgs args args'  = args' {
   keep_unused         = keep_unused args         `mplus` keep_unused args',
   no_stats            = no_stats args            `mplus` no_stats args',
   schema              = schema args              `mplus` schema args',
-  validate            = validate args            `mplus` validate args'}
+  validate            = validate args            `mplus` validate args',
+  tooldir             = tooldir args             `mplus` tooldir args',
+  file                = file args}
 
 -- default values for arguments (the lowest priority)
 setDefArgs args = args {
@@ -107,4 +110,5 @@ setDefArgs args = args {
   keep_unused         = keep_unused args         `mplus` Just def,
   no_stats            = no_stats args            `mplus` Just def,
   schema              = schema args              `mplus` Just def,
-  validate            = validate args            `mplus` Just def}
+  validate            = validate args            `mplus` Just def,
+  tooldir             = tooldir args             `mplus` Just "tools/"}
