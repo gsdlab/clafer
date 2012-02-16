@@ -11,7 +11,7 @@ To install GHC refer to:
 To install cabal execute (Ubuntu):
   sudo apt-get install cabal-install
 
-Update cabal and compile the translator:
+Update cabal, build and install the translator:
   cabal update
   caball install
 
