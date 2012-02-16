@@ -151,7 +151,7 @@ showInterval (n, ExIntegerAst) = show n ++ "..*"
 showInterval (n, ExIntegerNum m) = show n ++ ".." ++ show m
 
 runValidate args fo = do
-  let path = fromJust $ tooldir args
+  let path = (fromJust $ tooldir args) ++ "/"
   case (fromJust $ mode args) of
     Xml -> do
       writeFile "ClaferIR.xsd" Generator.Schema.xsd
