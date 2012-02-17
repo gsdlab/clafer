@@ -1,3 +1,0 @@
-Place the hooks into .git/hooks (or link that directory to this one)
-
-The pre-commit hook updates program's version whenever the code is committed.
