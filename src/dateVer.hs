@@ -21,6 +21,7 @@
 -}
 import Data.Time.Clock
 import Data.Time.Calendar
+import Data.Time.LocalTime
 import Data.List
 
 header = unlines
@@ -49,6 +50,8 @@ header = unlines
  , "module Version where"]
 
 main = do
-  (y, m, d) <- getCurrentTime >>= return . toGregorian . utctDay
+  timeZone <- getCurrentTimeZone
+  curTime  <- getCurrentTime
+  let (y, m, d) = toGregorian $ localDay $ utcToLocalTime timeZone curTime
   putStr  $ concat [header, "version = \"v0.2.",
                    intercalate "-" [show d, show m, show y], "\""]
