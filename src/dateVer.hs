@@ -50,5 +50,5 @@ header = unlines
 
 main = do
   (y, m, d) <- getCurrentTime >>= return . toGregorian . utctDay
-  putStr  $ concat [header, "version = \"",
+  putStr  $ concat [header, "version = \"v0.2.",
                    intercalate "-" [show d, show m, show y], "\""]

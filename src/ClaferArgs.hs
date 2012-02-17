@@ -66,7 +66,7 @@ clafer = ClaferArgs {
   validate            = def &= help "Validate output. Uses XsdCheck for XML, Alloy Analyzer for Alloy models, and Clafer translator for desugared Clafer models. Use --tooldir to specify where the binaries (XsdCheck.class, Alloy4.jar, Alloy4.2-rc.jar) are located.",
   tooldir             = def &= typDir &= help "Tools directory",
   file                = def &= args   &= typ "FILE"
- } &= summary ("Clafer v0.2." ++ version) &= program "clafer"
+ } &= summary ("Clafer " ++ version) &= program "clafer"
 
 mainArgs = do
   args <- cmdArgs clafer

@@ -21,4 +21,4 @@ SOFTWARE.
 -}
 
 module Version where
-version = "17-2-2012"
+version = "v0.2.17-2-2012"
