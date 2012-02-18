@@ -44,10 +44,10 @@ transIdent x = case x of
   Ident str  -> str
 
 
-getSuper clafer = id
-  where
-  [PExp _ _ (IClaferId _ id _)] = supers $ super $ clafer
+getSuper = getSuperId.supers.super
 
+
+getSuperId ((PExp _ _ (IClaferId _ id _)):[]) = id
 
 isEqClaferId = flip $ (==).uid
 

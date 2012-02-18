@@ -1,0 +1,8 @@
+abstract Person
+    Age : integer
+
+Team
+    Contractor : Person
+        since -> integer
+
+Alice : Person

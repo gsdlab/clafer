@@ -93,7 +93,10 @@ resolveOClafer env clafer =
 
 resolveOSuper :: SEnv -> ISuper -> ISuper
 resolveOSuper env x = case x of
-  ISuper True exps -> ISuper True $ map (resolvePExp env) exps
+  ISuper True exps -> ISuper isOverlap  exps'
+    where
+    exps'     = map (resolvePExp env) exps
+    isOverlap = not (length exps' == 1 && isPrimitive (getSuperId exps'))
   _ -> x
 
 
