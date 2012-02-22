@@ -127,8 +127,7 @@ genRelations mode clafer = ref : (map mkRel $ getSubclafers $ elements clafer)
   ref = if isPrimitive $ refType mode clafer then
             genRel "ref" clafer {card = Just (1, ExIntegerNum 1)} $
             refType mode clafer else ""
-  mkRel c = genRel (genRelName $ uid c) c $
-            (if isRef c then (refType mode) else uid) c
+  mkRel c = genRel (genRelName $ uid c) c $ uid c
 
 
 genRelName name = "r_" ++ name
@@ -137,13 +136,6 @@ genRelName name = "r_" ++ name
 genRel name clafer rType = genAlloyRel name (genCardCrude $ card clafer) rType'
   where
   rType' = if isPrimitive rType then "Int" else rType
-
--- optimization: direct ref to Int attribute (no new clafer)
--- reference clafers as relations
-
-
-isRef clafer = (null $ elements clafer) && (isOverlapping $ super clafer)
-
 
 genAlloyRel name card rType = concat [name, " : ", card, " ", rType]
 

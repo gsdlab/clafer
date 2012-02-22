@@ -4,5 +4,7 @@ abstract Person
 Team
     Contractor : Person
         since -> integer
+    Member -> Person 2..*
 
 Alice : Person
+Bob : Person
