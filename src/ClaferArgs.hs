@@ -77,7 +77,7 @@ mainArgs = do
   let options = fromMaybe "" $ stripPrefix "//# OPTIONS " firstLine
   return $ setDefArgs $
            either (\_ -> args) (\x -> mergeArgs args (cmdArgsValue x)) $
-           process (cmdArgsMode clafer) $ splitArgs options
+           process (cmdArgsMode clafer) $ SplitJoin.splitArgs options
 
 -- merges console arguments with pragmas in clafer models.
 -- Console arguments have higher priority.
