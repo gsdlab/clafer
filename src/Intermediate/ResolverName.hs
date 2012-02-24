@@ -221,12 +221,19 @@ allChildren env = getSubclafers $ concat $
 
 findUnique :: String -> [(IClafer, [IClafer])] -> Maybe (String, [IClafer])
 findUnique x xs =
-  case filter (((==) x).ident.fst) xs of
+  case filterPaths x xs of
     []     -> Nothing
     [elem] -> Just $ (uid $ fst elem, snd elem)
-    _      -> error $ "element is not unique : " ++ show x ++
-              ". Available paths:\n" ++ showAvailPaths x xs
+    xs'    -> error $ "clafer " ++ show x ++ " " ++ errMsg
+      where
+      xs''   = map ((map uid).snd) xs'
+      errMsg = (if isNamespaceConflict $ concat xs''
+               then "cannot be defined because the name should be unique in the same namespace."
+               else "is not unique. ") ++ 
+               "Available paths:\n" ++ (xs'' >>= showPath)
 
 showPath xs = (intercalate "." $ reverse xs) ++ "\n"
 
-showAvailPaths x xs = filter (((==) x).ident.fst) xs >>= showPath.(map uid).snd
+isNamespaceConflict (xs:ys:_) = last xs == last ys
+
+filterPaths x xs = filter (((==) x).ident.fst) xs
