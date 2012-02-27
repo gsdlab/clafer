@@ -26,6 +26,7 @@ import Prelude hiding (writeFile, readFile, print, putStrLn)
 
 import System.IO
 import System.Cmd
+import System.Exit
 import Control.Exception.Base
 import IO  ( stdin, hGetContents )
 import System ( getArgs, getProgName )
@@ -81,6 +82,7 @@ run v p args = do
              Bad s    -> do putStrLn "\nParse              Failed...\n"
                             putStrV v "Tokens:"
                             putStrLn s
+                            exitFailure
              Ok  tree -> do
                           let f = stripFileName $ file args
                           conPutStrLn args "\nParse Successful!"
