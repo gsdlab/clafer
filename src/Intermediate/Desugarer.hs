@@ -78,7 +78,7 @@ sugarClafer x = case x of
 
 desugarSuper :: Super -> ISuper
 desugarSuper x = case x of
-  SuperEmpty  -> ISuper False [PExp (Just TClafer) "" $ mkLClaferId baseClafer True]
+  SuperEmpty  -> ISuper False [PExp (Just TClafer) "" noPos $ mkLClaferId baseClafer True]
   SuperSome superhow setexp -> ISuper (desugarSuperHow superhow) [desugarSetExp setexp]
 
 
@@ -91,7 +91,7 @@ desugarSuperHow x = case x of
 desugarInit :: Init -> [IElement]
 desugarInit x = case x of
   InitEmpty  -> []
-  InitSome inithow exp  -> [IEConstraint (desugarInitHow inithow) (PExp Nothing "" (IFunExp "=" [mkPLClaferId "this" False, desugarExp exp]))]
+  InitSome inithow exp  -> [IEConstraint (desugarInitHow inithow) (pExpDefPidPos (IFunExp "=" [mkPLClaferId "this" False, desugarExp exp]))]
 
 
 desugarInitHow :: InitHow -> Bool
@@ -204,7 +204,7 @@ sugarCard x = case x of
 
 
 desugarExp :: Exp -> PExp
-desugarExp x = PExp Nothing "" $ desugarExp' x
+desugarExp x = pExpDefPidPos $ desugarExp' x
 
 desugarExp' :: Exp -> IExp
 desugarExp' x = case x of
@@ -250,7 +250,7 @@ desugarOp f op exps = IFunExp op $ map (trans.f) exps
 
 
 desugarSetExp :: SetExp -> PExp
-desugarSetExp x = PExp Nothing "" $ desugarSetExp' x
+desugarSetExp x = pExpDefPidPos $ desugarSetExp' x
 
 
 desugarSetExp' :: SetExp -> IExp
@@ -340,13 +340,13 @@ sugarSetExp' x = case x of
   IClaferId modName id _ -> ClaferId $ Path $ (sugarModId modName) : [sugarModId id]
 
 desugarPath :: PExp -> PExp
-desugarPath (PExp iType pid x) = PExp iType pid result
+desugarPath (PExp iType pid pos x) = PExp iType pid pos result
   where
   result
-    | isSet x     = IDeclPExp ISome [] (PExp Nothing "" x)
+    | isSet x     = IDeclPExp ISome [] (pExpDefPidPos x)
     | isNegSome x = IDeclPExp INo   [] $ bpexp $ Intermediate.Intclafer.exp $ head $ exps x
     | otherwise   =  x
-  isNegSome (IFunExp op [PExp _ _ (IDeclPExp ISome [] _)]) = op == iNot
+  isNegSome (IFunExp op [PExp _ _ _ (IDeclPExp ISome [] _)]) = op == iNot
   isNegSome _ = False
 
 

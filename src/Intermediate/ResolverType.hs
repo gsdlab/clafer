@@ -119,7 +119,7 @@ findClaferFromUid (STEnv clafers _) id = fromJust $ find (((==) id).uid) clafers
 -- Get the super's type (primitive => only one super so we only need to look at the first one)
 -- The PExp must be a ClaferID
 typeOfISuper :: ISuper -> IType
-typeOfISuper (ISuper _ ((PExp _ _ (IClaferId _ sident _)):_)) = case sident of
+typeOfISuper (ISuper _ ((PExp _ _ _ (IClaferId _ sident _)):_)) = case sident of
                                                                     "clafer" -> TClafer
                                                                     "int" -> TInteger
                                                                     "integer" -> TInteger
@@ -155,14 +155,14 @@ typeThePExp :: PExp -> PExp
 typeThePExp x = x{iType=Just TClafer}
 
 resolveTPExpPreferValue :: TCEnv -> PExp -> (TCEnv, PExp)
-resolveTPExpPreferValue env (PExp _ pid x) =
+resolveTPExpPreferValue env (PExp _ pid pos x) =
     let (newEnv, (exp, typed)) = resolveTExpPreferValue env x in
-    (newEnv, PExp (Just typed) pid exp)
+    (newEnv, PExp (Just typed) pid pos exp)
     
 resolveTPExp :: TCEnv -> PExp -> (TCEnv, PExp)
-resolveTPExp env (PExp _ pid x) =
+resolveTPExp env (PExp _ pid pos x) =
     let (newEnv, (exp, typed)) = resolveTExp env x in
-    (newEnv, PExp (Just typed) pid exp)
+    (newEnv, PExp (Just typed) pid pos exp)
 
 
 

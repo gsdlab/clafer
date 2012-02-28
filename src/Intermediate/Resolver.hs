@@ -60,7 +60,7 @@ nameClafer forceResolver clafer = do
   return $ clafer' {elements = elements'}
 
 
-namePExp pexp@(PExp _ _ exp) = do
+namePExp pexp@(PExp _ _ _ exp) = do
   pid' <- genId "exp"
   exp' <- nameIExp exp
   return $ pexp {pid = pid', Intermediate.Intclafer.exp = exp'}

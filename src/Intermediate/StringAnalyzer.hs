@@ -49,9 +49,9 @@ astrElement x = case x of
 
 
 astrPExp x = case x of 
-  PExp (Just TString ) pid exp ->
-    PExp (Just TInteger) pid `liftM` astrIExp exp
-  PExp t pid (IFunExp op exps) -> PExp t pid `liftM`
+  PExp (Just TString) pid pos exp ->
+    PExp (Just TInteger) pid pos `liftM` astrIExp exp
+  PExp t pid pos (IFunExp op exps) -> PExp t pid pos `liftM`
                               (IFunExp op `liftM` mapM astrPExp exps)
   _ -> return x
 

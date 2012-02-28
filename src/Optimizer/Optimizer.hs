@@ -115,7 +115,7 @@ expElement x = case x of
   IEConstraint isHard constraint  -> IEConstraint isHard `liftM` expPExp constraint
 
 
-expPExp (PExp t pid exp) = PExp t pid `liftM` expIExp exp
+expPExp (PExp t pid pos exp) = PExp t pid pos `liftM` expIExp exp
 
 expIExp x = case x of
   IDeclPExp quant decls pexp -> do
@@ -137,10 +137,11 @@ expNav x = do
 
 
 expNav' context x = case x of
-  IFunExp _ ((PExp iType0 pid0 exp0):(PExp iType pid exp):_)  -> do    
-    (exp0', context') <- expNav' context exp0
-    (exp', context'') <- expNav' context' exp
-    return (IFunExp iJoin [PExp iType0 pid0 exp0', PExp iType pid exp'], context'')
+  IFunExp _ (p0:p:_)  -> do    
+    (exp0', context') <- expNav' context  $ Intermediate.Intclafer.exp p0
+    (exp', context'') <- expNav' context' $ Intermediate.Intclafer.exp p
+    return (IFunExp iJoin [ p0 {Intermediate.Intclafer.exp = exp0'}
+                          , p  {Intermediate.Intclafer.exp = exp'}], context'')
   IClaferId modName id isTop -> do
     st <- gets stable
     if Map.member id st
@@ -156,8 +157,9 @@ expNav' context x = case x of
 
 
 split' x f = case x of
-  IFunExp _ ((PExp iType pid0 exp0):pexp:_) ->
-    split' exp0 (\s -> f $ IFunExp iJoin [PExp iType pid0 s, pexp])
+  IFunExp _ (p:pexp:_) ->
+    split' (Intermediate.Intclafer.exp p) (\s -> f $ IFunExp iJoin
+      [p {Intermediate.Intclafer.exp = s}, pexp])
   IClaferId modName id isTop -> do
     st <- gets stable
     mapM f $ map (\x -> IClaferId modName x isTop) $ maybe [id] (map head) $ Map.lookup id st
@@ -188,7 +190,8 @@ checkConstraintElement idents x = case x of
   IEClafer clafer -> and $ map (checkConstraintElement idents) $ elements clafer
   IEConstraint _ pexp -> checkConstraintPExp idents pexp 
 
-checkConstraintPExp idents (PExp _ _ exp) = checkConstraintIExp idents exp
+checkConstraintPExp idents pexp = checkConstraintIExp idents $
+                                  Intermediate.Intclafer.exp pexp
 
 checkConstraintIExp idents x = case x of
    IDeclPExp _ oDecls pexp ->
@@ -259,7 +262,9 @@ markTopElement clafers x = case x of
   IEConstraint isHard pexp  -> IEConstraint isHard $ markTopPExp clafers pexp
 
 
-markTopPExp clafers (PExp t pid iexp) = PExp t pid $ markTopIExp clafers iexp
+markTopPExp clafers pexp =
+  pexp {Intermediate.Intclafer.exp = markTopIExp clafers $
+        Intermediate.Intclafer.exp pexp}
 
 
 markTopIExp :: [String] -> IExp -> IExp

@@ -47,15 +47,21 @@ transIdent x = case x of
 getSuper = getSuperId.supers.super
 
 
-getSuperId ((PExp _ _ (IClaferId _ id _)):[]) = id
+getSuperId = sident . Intermediate.Intclafer.exp . head
 
 isEqClaferId = flip $ (==).uid
 
-idToPExp pid modids id isTop = PExp (Just TClafer) pid (IClaferId modids id isTop)
+idToPExp pid pos modids id isTop = PExp (Just TClafer) pid pos (IClaferId modids id isTop)
 
 mkLClaferId = IClaferId ""
 
-mkPLClaferId id isTop = PExp Nothing "" $ mkLClaferId id isTop
+mkPLClaferId id isTop = pExpDefPidPos $ mkLClaferId id isTop
+
+pExpDefPidPos = pExpDefPid noPos
+
+pExpDefPid = pExpDef ""
+
+pExpDef = PExp Nothing
 
 -- -----------------------------------------------------------------------------
 -- conversions
@@ -169,7 +175,7 @@ binOps = logBinOps ++ relBinOps ++ arithBinOps ++ setBinOps
 iIfThenElse   = "=>else"
 
 mkIFunExp op (x:[]) = x
-mkIFunExp op xs = foldl1 (\x y -> IFunExp op $ map (PExp (Just TClafer) "") [x,y]) xs
+mkIFunExp op xs = foldl1 (\x y -> IFunExp op $ map (PExp (Just TClafer) "" noPos) [x,y]) xs
 
 toLowerS "" = ""
 toLowerS (s:ss) = toLower s : ss
@@ -207,3 +213,5 @@ data GEnv = GEnv {
 voidf f = do
   x <- f
   return ()
+
+noPos = ((0, 0), (0, 0))

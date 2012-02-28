@@ -82,6 +82,7 @@ type Interval = (Integer, ExInteger)
 data PExp = PExp {
       iType :: Maybe IType,
       pid :: String,
+      inPos :: Position,         -- position in the input Clafer file
       exp :: IExp
     }
   deriving (Eq,Ord,Show)
@@ -90,10 +91,10 @@ data IExp =
    -- quantified expression with declarations
    IDeclPExp {quant :: IQuant, oDecls :: [IDecl], bpexp :: PExp}
  | IFunExp {op :: String, exps :: [PExp]}
- | IInt Integer                       -- integer number
- | IDouble Double                     -- real number
- | IStr String                        -- string
- | IClaferId {                        -- clafer name
+ | IInt Integer                  -- integer number
+ | IDouble Double                -- real number
+ | IStr String                   -- string
+ | IClaferId {                   -- clafer name
       modName :: String,         -- module name
       sident :: String,          -- name
       isTop :: Bool              -- identifier refers to a top-level definition
@@ -150,3 +151,8 @@ data IQuant =
  | ISome
  | IAll
   deriving (Eq,Ord,Show)
+
+type LineNo = Int
+type ColNo  = Int
+
+type Position = ((LineNo, ColNo), (LineNo, ColNo))

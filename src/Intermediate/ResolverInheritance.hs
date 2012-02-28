@@ -53,9 +53,9 @@ resolveNClafer declarations clafer =
 
 resolveNSuper :: [IElement] -> ISuper -> ISuper
 resolveNSuper declarations x = case x of
-  ISuper False [PExp _ pid (IClaferId _ id isTop)] ->
+  ISuper False [PExp _ pid pos (IClaferId _ id isTop)] ->
     if isPrimitive id || id == "clafer"
-      then x else ISuper False [idToPExp pid "" id' isTop]
+      then x else ISuper False [idToPExp pid pos "" id' isTop]
     where
     id' = fst $ fromMaybe (error $ "No superclafer found: " ++ id) $
           resolveN declarations id
@@ -230,7 +230,7 @@ resolveEInheritance predecessors unrollables absAncestor declarations allSuper
              unrollSuper >>= elements
     let super' = if (getSuper clafer `elem` unrollables)
                  then super clafer
-                 else ISuper False [idToPExp "" "" "clafer" False]
+                 else ISuper False [idToPExp "" noPos "" "clafer" False]
     return (elements', super', superList)
   where
   clafer = head allSuper

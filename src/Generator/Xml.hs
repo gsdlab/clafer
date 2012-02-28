@@ -45,6 +45,10 @@ genXmlBoolean label b = tag label $ toLowerS $ show b
 
 genXmlString str = tag "StrLiteral" str
 
+genXmlIntPair (x, y) = concat
+  [ genXmlInteger x
+  , genXmlInteger y]
+
 genXmlModule :: IModule -> Result
 genXmlModule imodule = concat
   [ "<?xml version=\"1.0\"?>"
@@ -107,10 +111,15 @@ genXmlElement x = case x of
 genXmlAnyOp ft f xs = concatMap
   (\(tname, texp) -> tagType tname (ft texp) $ f texp) xs
 
-genXmlPExp tagName (PExp iType pid iexp) = tag tagName $ concat
+genXmlPExp tagName (PExp iType pid pos iexp) = tag tagName $ concat
   [ optTag iType genXmlIType
   , tag "ParentId" pid
+  , tag "Position" $ genXmlPosition pos
   , tagType "Exp" (genXmlIExpType iexp) $ genXmlIExp iexp]
+
+genXmlPosition (start, end) = concat
+  [ tag "Start" $ genXmlIntPair start
+  , tag "End"   $ genXmlIntPair end]
 
 genXmlIExpType x = case x of
   IDeclPExp _ _ _ -> "IDeclarationParentExp"

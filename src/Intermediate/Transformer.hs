@@ -37,7 +37,7 @@ transClafer :: IClafer -> IClafer
 transClafer clafer = clafer{elements = map transElement $ elements clafer}
 
 transPExp :: Bool -> PExp -> PExp
-transPExp some (PExp t pid x) = trans $ PExp t pid $ transIExp (fromJust t) x
+transPExp some (PExp t pid pos x) = trans $ PExp t pid pos $ transIExp (fromJust t) x
   where
   trans = if some then desugarPath else id
 

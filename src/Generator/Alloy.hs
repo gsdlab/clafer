@@ -90,7 +90,7 @@ optShowSet xs = showSet "\n  " xs
 
 transPrimitive clafer = clafer{super = toOverlapping $ super clafer}
   where
-  toOverlapping x@(ISuper _ [PExp _ _ (IClaferId _ id _)])
+  toOverlapping x@(ISuper _ [PExp _ _ _ (IClaferId _ id _)])
     | isPrimitive id = x{isOverlapping = True}
     | otherwise      = x
   toOverlapping x = x
@@ -100,10 +100,10 @@ claferDecl clafer = concat [genOptCard clafer,
   uid clafer, genExtends $ super clafer]
   where
   genAbstract isAbstract = if isAbstract then "abstract " else ""
-  genExtends (ISuper False [PExp _ _ (IClaferId _ "clafer" _)]) = ""
-  genExtends (ISuper False [PExp _ _ (IClaferId _ id _)]) = " extends " ++ id
+  genExtends (ISuper False [PExp _ _ _ (IClaferId _ "clafer" _)]) = ""
+  genExtends (ISuper False [PExp _ _ _ (IClaferId _ id _)]) = " extends " ++ id
   -- todo: handle multiple inheritance
-  genExtends (ISuper True  [PExp _ _ (IClaferId _ id _)]) = if isPrimitive id then "" else " in " ++ id
+  genExtends (ISuper True  [PExp _ _ _ (IClaferId _ id _)]) = if isPrimitive id then "" else " in " ++ id
   genExtends _ = ""
 
 
@@ -115,7 +115,7 @@ genOptCard clafer
     
 
 isPrimitiveClafer clafer = case super clafer of
-  ISuper _ [PExp _ _ (IClaferId _ id _)] -> isPrimitive id && (null $ elements clafer)
+  ISuper _ [PExp _ _ _ (IClaferId _ id _)] -> isPrimitive id && (null $ elements clafer)
   _ -> False
 
 -- -----------------------------------------------------------------------------
@@ -145,11 +145,11 @@ refType mode c = intercalate " + " $ map ((genType mode).getTarget) $ supers $ s
 
 getTarget :: PExp -> PExp
 getTarget x = case x of
-  PExp _ _ (IFunExp op (pexp0:pexp:_))  -> if op == iJoin then pexp else x
+  PExp _ _ _ (IFunExp op (pexp0:pexp:_))  -> if op == iJoin then pexp else x
   _ -> x
 
 
-genType mode x@(PExp _ _ y@(IClaferId _ _ _)) = genPExp mode Nothing
+genType mode x@(PExp _ _ _ y@(IClaferId _ _ _)) = genPExp mode Nothing
   x{Intermediate.Intclafer.exp = y{isTop = True}}
 genType mode x = genPExp mode Nothing x
 
@@ -245,7 +245,7 @@ genExInteger element x = case x of
 -- Generate code for logical expressions
 
 genPExp :: ClaferMode -> Maybe IClafer -> PExp -> Result
-genPExp mode clafer x@(PExp iType pid exp) = case exp of
+genPExp mode clafer x@(PExp iType pid pos exp) = case exp of
   IDeclPExp quant decls pexp -> concat
     [genQuant quant, " ", intercalate ", " $ map (genDecl mode clafer) decls,
      optBar decls, genPExp mode clafer pexp]
@@ -264,7 +264,7 @@ genPExp mode clafer x@(PExp iType pid exp) = case exp of
     vsident = sident' ++ ".@ref"
   IFunExp _ _ -> case exp' of
     IFunExp op exps -> genIFunExp mode clafer exp'
-    _ -> genPExp mode clafer $ PExp iType pid exp'
+    _ -> genPExp mode clafer $ PExp iType pid pos exp'
     where
     exp' = transformExp exp
   IInt n -> show n
@@ -273,7 +273,7 @@ genPExp mode clafer x@(PExp iType pid exp) = case exp of
 
 
 transformExp x@(IFunExp op exps@(e1:e2:_))
-  | op == iXor = IFunExp iNot [PExp (Just TBoolean) "" (IFunExp iIff exps)]
+  | op == iXor = IFunExp iNot [PExp (Just TBoolean) "" noPos (IFunExp iIff exps)]
   | otherwise  = x
 transformExp x = x
 
@@ -289,8 +289,8 @@ genIFunExp mode clafer (IFunExp op exps) = concat $ intl exps' (genOp mode op)
 optBrArg mode clafer x = brFun (genPExp mode clafer) x
   where
   brFun = case x of
-    PExp _ _ (IClaferId _ _ _) -> ($)
-    PExp _ _ (IInt _) -> ($)
+    PExp _ _ _ (IClaferId _ _ _) -> ($)
+    PExp _ _ _ (IInt _) -> ($)
     _  -> brArg
 
 
@@ -341,3 +341,11 @@ genDisj :: Bool -> Result
 genDisj x = case x of
   False -> ""
   True  -> "disj"
+
+lineno (l, c) str = (l + newLines, (if newLines > 0 then firstCol else c) + newCol)
+  where
+  newLines = length $ filter (== '\n') str
+  newCol   = length $ takeWhile (/= '\n') $ reverse str
+
+firstCol  = 1 :: Int
+firstLine = 1 :: Int
