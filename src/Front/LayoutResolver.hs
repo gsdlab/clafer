@@ -99,7 +99,65 @@ incrGlobal _ _ p = error $ "cannot add token at " ++ show p
 
 -- | Create a symbol token.
 sToken :: Position -> String -> Token
-sToken p s = PT p (TS s) -- reserved word or symbol
+sToken p s = PT p (TS s i)
+  where
+    i = case s of
+      "!" -> 1
+      "!=" -> 2
+      "#" -> 3
+      "&" -> 4
+      "&&" -> 5
+      "(" -> 6
+      ")" -> 7
+      "*" -> 8
+      "+" -> 9
+      "++" -> 10
+      "," -> 11
+      "-" -> 12
+      "--" -> 13
+      "->" -> 14
+      "." -> 15
+      ".." -> 16
+      "/" -> 17
+      ":" -> 18
+      ":=" -> 19
+      ":>" -> 20
+      ";" -> 21
+      "<" -> 22
+      "<:" -> 23
+      "<=" -> 24
+      "<=>" -> 25
+      "=" -> 26
+      "=>" -> 27
+      ">" -> 28
+      ">=" -> 29
+      "?" -> 30
+      "[" -> 31
+      "\\" -> 32
+      "]" -> 33
+      "`" -> 34
+      "abstract" -> 35
+      "all" -> 36
+      "disj" -> 37
+      "else" -> 38
+      "enum" -> 39
+      "if" -> 40
+      "in" -> 41
+      "lone" -> 42
+      "mux" -> 43
+      "no" -> 44
+      "not" -> 45
+      "one" -> 46
+      "opt" -> 47
+      "or" -> 48
+      "some" -> 49
+      "then" -> 50
+      "xor" -> 51
+      "{" -> 52
+      "|" -> 53
+      "||" -> 54
+      "}" -> 55
+      _ -> error $ "not a reserved word: " ++ show s
 
 -- | Get the position of a token.
 position :: Token -> Position
@@ -118,7 +176,7 @@ column t = case position t of Pn _ _ c -> c
 -- | Check if a token is one of the given symbols.
 isTokenIn :: [String] -> Token -> Bool
 isTokenIn ts t = case t of
-  PT _ (TS r) | elem r ts -> True
+  PT _ (TS r _) | elem r ts -> True
   _ -> False
 
 -- | Check if a token is the layout open token.

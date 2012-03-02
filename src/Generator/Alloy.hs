@@ -32,61 +32,90 @@ import Front.Absclafer
 import Intermediate.Intclafer
 import Intermediate.ResolverType
 
+data Concat = CString String | Concat {
+  srcPos :: Position,
+  nodes  :: [Concat]
+  } deriving (Show)
+
+mkConc pos str = Concat pos [CString str]
+
+iscPrimitive x = isPrimitive $ flatten x
+
+flatten :: Concat -> String
+flatten (CString x)      = x
+flatten (Concat _ nodes) = nodes >>= flatten
+
+(+++) x@(CString _) y@(CString _)      = Concat noPos [x, y]
+(+++) x@(CString _) (Concat srcPos xs) = Concat srcPos (x:xs)
+(+++) (Concat srcPos xs) x@(CString _) = Concat srcPos (xs ++ [x])
+(+++) x@(Concat ((p, _), _) xs) y@(Concat ((p', _), _) ys)
+  | p <= p'                            = concatPos x y
+  | otherwise                          = concatPos y x
+  where
+  concatPos x y = Concat (srcPos x) [x, y]
+
+
+cconcat = foldl (+++) (CString "")
+
+cintercalate xs xss = cconcat (intersperse xs xss)
+
+filterNull = filter (not.isNull)
+
+isNull (CString "")  = True
+isNull (Concat _ []) = True
+isNull _ = False
+
+cunlines xs = cconcat $ map (+++ (CString "\n")) xs
+
 genModule :: ClaferArgs -> (IModule, GEnv) -> Result
-genModule args (imodule, _) =
-  header args ++ ((mDecls imodule) >>= (genDeclaration (fromJust $ mode args)))
+genModule args (imodule, _) = flatten $
+  header args +++ (cconcat $ map (genDeclaration (fromJust $ mode args)) (mDecls imodule))
 
 
-header args = unlines
+header args = CString $ unlines
     [ if (fromJust $ mode args) == Alloy42 then "" else "open util/integer"
     , "pred show {}"
     , if (fromJust $ validate args) then "" else "run  show for 1"
     , ""]
 
 
-valField = "val"
-
-
-genDeclaration :: ClaferMode -> IElement -> Result
+genDeclaration :: ClaferMode -> IElement -> Concat
 genDeclaration mode x = case x of
   IEClafer clafer  -> genClafer mode Nothing clafer
   IEConstraint _ pexp  -> mkFact $ genPExp mode Nothing pexp
 
 
-mkFact xs = concat ["fact ", mkSet xs, "\n"]
+mkFact xs = cconcat [CString "fact ", mkSet xs, CString "\n"]
 
-mkSet xs = concat ["{ ", xs, " }"]
+mkSet xs = cconcat [CString "{ ", xs, CString " }"]
 
 showSet delim xs = showSet' delim $ filterNull xs
   where
-  showSet' _ []     = "{}"
-  showSet' delim xs = mkSet $ intercalate delim xs
+  showSet' _ []     = CString "{}"
+  showSet' delim xs = mkSet $ cintercalate delim xs
+
+optShowSet [] = CString ""
+optShowSet xs = showSet (CString "\n  ") xs
 
 -- optimization: top level cardinalities
 -- optimization: if only boolean parents, then set card is known
-genClafer :: ClaferMode -> Maybe IClafer -> IClafer -> Result
-genClafer mode parent oClafer
---  | isJust parent && isRef clafer && (not $ isPrimitiveClafer clafer) {- ||
---    (isPrimitiveClafer clafer && isJust parent) -} = ""
-{-  | otherwise -}   = (unlines $ filterNull
-                   [cardFact ++ claferDecl clafer
-                   , showSet "\n, " $ genRelations mode clafer
-                   , optShowSet $ filterNull $ genConstraints mode parent clafer
-                   ]) ++ children
+genClafer :: ClaferMode -> Maybe IClafer -> IClafer -> Concat
+genClafer mode parent oClafer = (cunlines $ filterNull
+  [ cardFact +++ claferDecl clafer
+  , showSet (CString "\n, ") $ genRelations mode clafer
+  , optShowSet $ filterNull $ genConstraints mode parent clafer
+  ]) +++ children
   where
   clafer = transPrimitive oClafer
-  children = concat $ filterNull $ map (genClafer mode $ Just clafer) $
+  children = cconcat $ filterNull $ map (genClafer mode $ Just clafer) $
              getSubclafers $ elements clafer
   cardFact
-    | isNothing parent && (null $ genOptCard clafer) =
+    | isNothing parent && (null $ flatten $ genOptCard clafer) =
         case genCard (uid clafer) $ card clafer of
-          "set" -> ""
-          c -> mkFact c
-    | otherwise = ""
+          "set" -> CString ""
+          c -> mkFact $ CString c
+    | otherwise = CString ""
 
-
-optShowSet [] = ""
-optShowSet xs = showSet "\n  " xs
 
 transPrimitive clafer = clafer{super = toOverlapping $ super clafer}
   where
@@ -95,9 +124,9 @@ transPrimitive clafer = clafer{super = toOverlapping $ super clafer}
     | otherwise      = x
   toOverlapping x = x
 
-claferDecl clafer = concat [genOptCard clafer,
-  genAbstract $ isAbstract clafer, "sig ",
-  uid clafer, genExtends $ super clafer]
+claferDecl clafer = cconcat [genOptCard clafer,
+  CString $ genAbstract $ isAbstract clafer, CString "sig ",
+  CString $ uid clafer, CString $ genExtends $ super clafer]
   where
   genAbstract isAbstract = if isAbstract then "abstract " else ""
   genExtends (ISuper False [PExp _ _ _ (IClaferId _ "clafer" _)]) = ""
@@ -108,8 +137,8 @@ claferDecl clafer = concat [genOptCard clafer,
 
 
 genOptCard clafer
-  | glCard' `elem` ["lone", "one", "some"] = glCard' ++ " "
-  | otherwise                              = ""
+  | glCard' `elem` ["lone", "one", "some"] = (CString glCard') +++ (CString " ")
+  | otherwise                              = CString ""
   where
   glCard' = genIntervalCrude $ glCard clafer
     
@@ -122,11 +151,11 @@ isPrimitiveClafer clafer = case super clafer of
 -- overlapping inheritance is a new clafer with val (unlike only relation)
 -- relations: overlapping inheritance (val rel), children
 -- adds parent relation
-genRelations mode clafer = ref : (map mkRel $ getSubclafers $ elements clafer)
+genRelations mode clafer = ref : (map (CString . mkRel) $ getSubclafers $ elements clafer)
   where
-  ref = if isPrimitive $ refType mode clafer then
+  ref = CString $ if isPrimitive $ flatten $ refType mode clafer then
             genRel "ref" clafer {card = Just (1, ExIntegerNum 1)} $
-            refType mode clafer else ""
+            flatten $ refType mode clafer else ""
   mkRel c = genRel (genRelName $ uid c) c $ uid c
 
 
@@ -140,7 +169,7 @@ genRel name clafer rType = genAlloyRel name (genCardCrude $ card clafer) rType'
 genAlloyRel name card rType = concat [name, " : ", card, " ", rType]
 
 
-refType mode c = intercalate " + " $ map ((genType mode).getTarget) $ supers $ super c
+refType mode c = cintercalate (CString " + ") $ map ((genType mode).getTarget) $ supers $ super c
 
 
 getTarget :: PExp -> PExp
@@ -158,15 +187,15 @@ genType mode x = genPExp mode Nothing x
 -- constraints
 -- user constraints + parent + group constraints + reference
 -- a = NUMBER do all x : a | x = NUMBER (otherwise alloy sums a set)
-genConstraints mode parent clafer = genParentConst parent clafer :
-  genGroupConst clafer : constraints 
+genConstraints mode parent clafer = (CString $ genParentConst parent clafer) :
+  (genGroupConst clafer) : constraints 
   where
   constraints = map genConst $ elements clafer
   genConst x = case x of
     IEConstraint _ pexp  -> genPExp mode (Just clafer) pexp
-    IEClafer clafer -> if genCardCrude crd `elem` ["one", "lone", "some"]
-                         then "" else mkCard (genRelName $ uid clafer) $
-                           fromJust crd
+    IEClafer clafer -> CString $
+        if genCardCrude crd `elem` ["one", "lone", "some"]
+        then "" else mkCard (genRelName $ uid clafer) $ fromJust crd
       where
       crd = card clafer
 
@@ -188,10 +217,9 @@ genOptParentConst clafer
   glCard' = genIntervalCrude $ glCard clafer
 
 
-genGroupConst :: IClafer -> Result
 genGroupConst clafer
-  | null children || card == "" = ""
-  | otherwise = "let children = " ++ (brArg id $ children) ++ " | " ++ card
+  | null children || card == "" = CString ""
+  | otherwise = cconcat [CString "let children = ", brArg id $ CString children, CString" | ", CString card]
   where
   children = intercalate " + " $ map (genRelName.uid) $
              getSubclafers $ elements clafer
@@ -222,7 +250,6 @@ genIntervalCrude x = case x of
   _                   -> "set"
 
 
-genInterval :: String -> Interval -> Result
 genInterval element x = case x of
   (1, ExIntegerNum 1) -> "one"
   (0, ExIntegerNum 1) -> "lone"
@@ -244,17 +271,18 @@ genExInteger element x = case x of
 -- -----------------------------------------------------------------------------
 -- Generate code for logical expressions
 
-genPExp :: ClaferMode -> Maybe IClafer -> PExp -> Result
+genPExp :: ClaferMode -> Maybe IClafer -> PExp -> Concat
 genPExp mode clafer x@(PExp iType pid pos exp) = case exp of
-  IDeclPExp quant decls pexp -> concat
-    [genQuant quant, " ", intercalate ", " $ map (genDecl mode clafer) decls,
-     optBar decls, genPExp mode clafer pexp]
+  IDeclPExp quant decls pexp -> Concat pos $
+    [ CString $ genQuant quant, CString " "
+    , cintercalate (CString ", ") $ map ((genDecl mode clafer)) decls
+    , CString $ optBar decls, genPExp mode clafer pexp]
     where
     optBar [] = ""
     optBar _  = " | "
-  IClaferId _ "parent" _  ->
-    brArg id $ (genRelName $ uid $ fromJust clafer) ++ ".this"
-  IClaferId _ sident isTop -> if isNothing iType then sident' else case fromJust $ iType of
+  IClaferId _ "parent" _  -> Concat pos $
+    [brArg id $ (CString $ genRelName $ uid $ fromJust clafer) +++ CString ".this"]
+  IClaferId _ sident isTop -> CString $ if isNothing iType then sident' else case fromJust $ iType of
     TInteger -> vsident
     TReal -> vsident
     TString -> vsident
@@ -263,11 +291,11 @@ genPExp mode clafer x@(PExp iType pid pos exp) = case exp of
     sident' = (if isTop then "" else '@' : genRelName "") ++ sident
     vsident = sident' ++ ".@ref"
   IFunExp _ _ -> case exp' of
-    IFunExp op exps -> genIFunExp mode clafer exp'
+    IFunExp op exps -> Concat pos $ [genIFunExp mode clafer exp']
     _ -> genPExp mode clafer $ PExp iType pid pos exp'
     where
     exp' = transformExp exp
-  IInt n -> show n
+  IInt n -> CString $ show n
   IDouble n -> error "no real numbers allowed"
   IStr str -> error "no strings allowed"
 
@@ -278,7 +306,7 @@ transformExp x@(IFunExp op exps@(e1:e2:_))
 transformExp x = x
 
 
-genIFunExp mode clafer (IFunExp op exps) = concat $ intl exps' (genOp mode op)
+genIFunExp mode clafer (IFunExp op exps) = cconcat $ intl exps' (map CString $ genOp mode op)
   where
   intl
     | op `elem` arithBinOps && length exps == 2 = interleave
@@ -300,7 +328,7 @@ interleave [] (x:[]) = [x]
 interleave (x:xs) ys = x : interleave ys xs
 
 
-brArg f arg = "(" ++ f arg ++ ")"
+brArg f arg = cconcat [CString "(", f arg, CString ")"]
 
 
 genOp Alloy42 op
@@ -322,7 +350,7 @@ genOp _ op
   | op == iJoin = ["."]
   | op == iIfThenElse = [" => ", " else "]
 
-genQuant :: IQuant -> Result
+genQuant :: IQuant -> String
 genQuant x = case x of
   INo   -> "no"
   ILone -> "lone"
@@ -331,13 +359,13 @@ genQuant x = case x of
   IAll -> "all"
 
 
-genDecl :: ClaferMode -> Maybe IClafer -> IDecl -> Result
+genDecl :: ClaferMode -> Maybe IClafer -> IDecl -> Concat
 genDecl mode clafer x = case x of
-  IDecl disj locids pexp -> concat [genDisj disj, " ",
-    intercalate ", " locids, " : ", genPExp mode clafer pexp]
+  IDecl disj locids pexp -> cconcat [CString $ genDisj disj, CString " ",
+    CString $ intercalate ", " locids, CString " : ", genPExp mode clafer pexp]
 
 
-genDisj :: Bool -> Result
+genDisj :: Bool -> String
 genDisj x = case x of
   False -> ""
   True  -> "disj"
