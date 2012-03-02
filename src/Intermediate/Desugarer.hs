@@ -58,7 +58,8 @@ desugarDeclaration x = case x of
 sugarDeclaration :: IElement -> Declaration
 sugarDeclaration x = case x of
   IEClafer clafer  -> ElementDecl $ Subclafer $ sugarClafer clafer
-  IEConstraint _ constraint  -> ElementDecl $ Subconstraint $ sugarConstraint constraint
+  IEConstraint True constraint  -> ElementDecl $ Subconstraint $ sugarConstraint constraint
+  IEConstraint False softconstraint  -> ElementDecl $ Subsoftconstraint $ sugarSoftConstraint softconstraint
 
 
 desugarClafer :: Clafer -> IClafer
