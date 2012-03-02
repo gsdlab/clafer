@@ -1,0 +1,80 @@
+abstract Prof
+	 prefer -> TA * 
+	 reject -> TA * 
+	 
+abstract Course
+	 lecturer -> Prof
+	 assistants -> TA *
+	 allocation : integer
+	 [all t1 : this.assistants |  this in (t1.first ++ t1.second ++ t1.third) ]// fact respectTAWishes
+	 [all t2 : this.assistants | t2 not in this.lecturer.reject ] // fact respectProfWishes
+
+abstract TA
+	 first -> Course ?
+	 second -> Course ?
+	 third -> Course ?
+	 [all disj c1;c2 : Course |this in c1.assistants => this not in c2.assistants ] // fact SingleCoursePerTA
+
+
+// Start Specifying partial instances.
+// Lower Bounds of partial instances
+
+X: Prof
+Y : Prof
+
+A : TA 
+B : TA
+C : TA
+D : TA
+E : TA
+F : TA
+G : TA
+
+ECE155 : Course
+ECE351 : Course
+
+[ECE155.lecturer = X ]
+[ECE351.lecturer = Y]
+
+		 
+[ECE155.allocation = 3]
+[ECE351.allocation = 2]
+
+
+[X.prefer = A ++ B ]
+[Y.prefer = A ++ B ++ C]
+
+[X.reject = F ++ G ]
+[Y.reject = D ++ G ]
+
+
+[A.first = ECE155]
+[A.second = ECE351]
+
+[B.first = ECE351]
+[B.second = ECE155]
+
+[C.first = ECE155]
+[C.second = ECE351]
+
+[D.first = ECE351]
+[D.second = ECE155]
+
+[E.first = ECE155]
+[E.second = ECE351]
+
+[all t3 : TA | no  t3.third  ]
+
+// Upper Bounds of partial instances
+[Prof = X ++ Y]
+[TA = A ++ B ++ C ++ D ++ E ++ F ++ G]
+[Course = ECE155 ++ ECE351 ]
+
+	
+// End Specifying partial instances
+
+
+[# ECE155.assistants > 0  || # ECE351.assistants > 0 ]
+
+
+<>
