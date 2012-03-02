@@ -74,7 +74,7 @@ ECE351 : Course
 // End Specifying partial instances
 
 
-[# ECE155.assistants > 0  || # ECE351.assistants > 0 ]
+[# ECE155.assistants > 1  || # ECE351.assistants > 1 ]
 
 
 <>
