@@ -25,6 +25,7 @@ import Data.Char
 import Data.List
 import Data.Maybe
 import Data.Function
+import Control.Monad.State
 
 import Common
 import ClaferArgs
@@ -32,8 +33,9 @@ import Front.Absclafer
 import Intermediate.Intclafer
 import Intermediate.ResolverType
 
+-- representation of strings in chunks (for line/column numbering)
 data Concat = CString String | Concat {
-  srcPos :: Position,
+  srcPos :: String,
   nodes  :: [Concat]
   } deriving (Show)
 
@@ -45,10 +47,10 @@ flatten :: Concat -> String
 flatten (CString x)      = x
 flatten (Concat _ nodes) = nodes >>= flatten
 
-(+++) x@(CString _) y@(CString _)      = Concat noPos [x, y]
+(+++) x@(CString _) y@(CString _)      = Concat "" [x, y]
 (+++) x@(CString _) (Concat srcPos xs) = Concat srcPos (x:xs)
 (+++) (Concat srcPos xs) x@(CString _) = Concat srcPos (xs ++ [x])
-(+++) x@(Concat ((p, _), _) xs) y@(Concat ((p', _), _) ys)
+(+++) x@(Concat p xs) y@(Concat p' ys)
   | p <= p'                            = concatPos x y
   | otherwise                          = concatPos y x
   where
@@ -67,9 +69,12 @@ isNull _ = False
 
 cunlines xs = cconcat $ map (+++ (CString "\n")) xs
 
-genModule :: ClaferArgs -> (IModule, GEnv) -> Result
-genModule args (imodule, _) = flatten $
-  header args +++ (cconcat $ map (genDeclaration (fromJust $ mode args)) (mDecls imodule))
+-- Alloy code generation
+genModule :: ClaferArgs -> (IModule, GEnv) -> (Result, [(String, Position)])
+genModule args (imodule, _) = (flatten output, mapLineCol output)
+  where
+  output = header args +++ (cconcat $ map (genDeclaration
+           (fromJust $ mode args)) (mDecls imodule))
 
 
 header args = CString $ unlines
@@ -273,14 +278,14 @@ genExInteger element x = case x of
 
 genPExp :: ClaferMode -> Maybe IClafer -> PExp -> Concat
 genPExp mode clafer x@(PExp iType pid pos exp) = case exp of
-  IDeclPExp quant decls pexp -> Concat pos $
+  IDeclPExp quant decls pexp -> Concat pid $
     [ CString $ genQuant quant, CString " "
     , cintercalate (CString ", ") $ map ((genDecl mode clafer)) decls
     , CString $ optBar decls, genPExp mode clafer pexp]
     where
     optBar [] = ""
     optBar _  = " | "
-  IClaferId _ "parent" _  -> Concat pos $
+  IClaferId _ "parent" _  -> Concat pid $
     [brArg id $ (CString $ genRelName $ uid $ fromJust clafer) +++ CString ".this"]
   IClaferId _ sident isTop -> CString $ if isNothing iType then sident' else case fromJust $ iType of
     TInteger -> vsident
@@ -291,7 +296,7 @@ genPExp mode clafer x@(PExp iType pid pos exp) = case exp of
     sident' = (if isTop then "" else '@' : genRelName "") ++ sident
     vsident = sident' ++ ".@ref"
   IFunExp _ _ -> case exp' of
-    IFunExp op exps -> Concat pos $ [genIFunExp mode clafer exp']
+    IFunExp op exps -> Concat pid $ [genIFunExp mode clafer exp']
     _ -> genPExp mode clafer $ PExp iType pid pos exp'
     where
     exp' = transformExp exp
@@ -370,10 +375,28 @@ genDisj x = case x of
   False -> ""
   True  -> "disj"
 
+-- mapping line/columns between Clafer and Alloy code
+
+data AlloyEnv = AlloyEnv {
+  lineCol :: (LineNo, ColNo),
+  mapping :: [(String, Position)]
+  } deriving (Eq,Show)
+
+mapLineCol code = mapping $ execState (mapLineCol' code) (AlloyEnv (firstLine, firstCol) [])
+
+addCode str = modify (\s -> s {lineCol = lineno (lineCol s) str})
+
+mapLineCol' (CString str) = addCode str
+mapLineCol' (Concat srcPos nodes) = do
+  posStart <- gets lineCol
+  mapM mapLineCol' nodes
+  posEnd   <- gets lineCol
+  modify (\s -> s {mapping = (srcPos, (posStart, posEnd)) : (mapping s)})
+
 lineno (l, c) str = (l + newLines, (if newLines > 0 then firstCol else c) + newCol)
   where
   newLines = length $ filter (== '\n') str
   newCol   = length $ takeWhile (/= '\n') $ reverse str
 
-firstCol  = 1 :: Int
-firstLine = 1 :: Int
+firstCol  = 1 :: ColNo
+firstLine = 1 :: LineNo

@@ -48,6 +48,7 @@ data ClaferArgs = ClaferArgs {
       schema :: Maybe Bool,
       validate :: Maybe Bool,
       tooldir :: Maybe FilePath,
+      alloy_mapping :: Maybe Bool,
       file :: FilePath
     } deriving (Show, Data, Typeable)
 
@@ -65,6 +66,7 @@ clafer = ClaferArgs {
   schema              = def &= help "Show Clafer XSD schema",
   validate            = def &= help "Validate output. Uses XsdCheck for XML, Alloy Analyzer for Alloy models, and Clafer translator for desugared Clafer models. Use --tooldir to specify where the binaries (XsdCheck.class, Alloy4.jar, Alloy4.2-rc.jar) are located.",
   tooldir             = def &= typDir &= help "Tools directory",
+  alloy_mapping       = def &= help "Generate mapping to Alloy source code",
   file                = def &= args   &= typ "FILE"
  } &= summary ("Clafer " ++ version) &= program "clafer"
 
@@ -95,6 +97,7 @@ mergeArgs args args'  = args' {
   schema              = schema args              `mplus` schema args',
   validate            = validate args            `mplus` validate args',
   tooldir             = tooldir args             `mplus` tooldir args',
+  alloy_mapping       = alloy_mapping args       `mplus` alloy_mapping args',
   file                = file args}
 
 -- default values for arguments (the lowest priority)
@@ -111,4 +114,5 @@ setDefArgs args = args {
   no_stats            = no_stats args            `mplus` Just def,
   schema              = schema args              `mplus` Just def,
   validate            = validate args            `mplus` Just def,
-  tooldir             = tooldir args             `mplus` Just "tools/"}
+  tooldir             = tooldir args             `mplus` Just "tools/",
+  alloy_mapping       = alloy_mapping args       `mplus` Just def}

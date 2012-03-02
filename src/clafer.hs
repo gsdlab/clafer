@@ -122,13 +122,16 @@ generate f args (oTree, genv, au) = do
   let stats = showStats au $ statsModule oTree
   when (not $ fromJust $ no_stats args) $ putStrLn stats
   conPutStrLn args "[Saving File]"
+  let alloyCode = genModule args (oTree, genv)
   let (ext, code) = case (fromJust $ mode args) of
-                      Alloy -> ("als", addStats (genModule args (oTree, genv)) stats)
-                      Alloy42 -> ("als", addStats (genModule args (oTree, genv)) stats)
-                      Xml ->   ("xml", genXmlModule oTree)
-                      Clafer -> ("des.cfr", printTree $ sugarModule oTree)
+                      Alloy   -> ("als", addStats (fst alloyCode) stats)
+                      Alloy42 -> ("als", addStats (fst alloyCode) stats)
+                      Xml     -> ("xml", genXmlModule oTree)
+                      Clafer  -> ("des.cfr", printTree $ sugarModule oTree)
   let f' = f ++ "." ++ ext
   if fromJust $ console_output args then putStrLn code else writeFile f' code
+  let mf = f ++ "." ++ "map"
+  when (fromJust $ alloy_mapping args) $ writeFile mf $ show $ snd alloyCode
   return f'
 
 conPutStrLn args s = when (not $ fromJust $ console_output args) $ putStrLn s
