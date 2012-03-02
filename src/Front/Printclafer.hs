@@ -107,6 +107,11 @@ instance Print Constraint where
    Constraint exps -> prPrec i 0 (concatD [doc (showString "[") , prt 0 exps , doc (showString "]")])
 
 
+instance Print SoftConstraint where
+  prt i e = case e of
+   SoftConstraint exps -> prPrec i 0 (concatD [doc (showString "(") , prt 0 exps , doc (showString ")")])
+
+
 instance Print Abstract where
   prt i e = case e of
    AbstractEmpty  -> prPrec i 0 (concatD [])
@@ -124,6 +129,7 @@ instance Print Element where
    Subclafer clafer -> prPrec i 0 (concatD [prt 0 clafer])
    ClaferUse name card elements -> prPrec i 0 (concatD [doc (showString "`") , prt 0 name , prt 0 card , prt 0 elements])
    Subconstraint constraint -> prPrec i 0 (concatD [prt 0 constraint])
+   Subsoftconstraint softconstraint -> prPrec i 0 (concatD [prt 0 softconstraint])
 
   prtList es = case es of
    [] -> (concatD [])

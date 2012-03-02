@@ -77,4 +77,4 @@ ECE351 : Course
 [# ECE155.assistants > 1  || # ECE351.assistants > 1 ]
 
 
-<>
+(# ECE155.assistants > 2 )

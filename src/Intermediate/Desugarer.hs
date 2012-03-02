@@ -129,10 +129,16 @@ desugarConstraint :: Constraint -> PExp
 desugarConstraint (Constraint exps) =
   desugarPath $ desugarExp $ (if length exps > 1 then foldl1 EAnd else head) exps
 
+desugarSoftConstraint :: SoftConstraint -> PExp
+desugarSoftConstraint (SoftConstraint exps) =
+    desugarPath $ desugarExp $ (if length exps > 1 then foldl1 EAnd else head) exps
+
 
 sugarConstraint :: PExp -> Constraint
 sugarConstraint pexp = Constraint $ map sugarExp [pexp]
 
+sugarSoftConstraint :: PExp -> SoftConstraint
+sugarSoftConstraint pexp = SoftConstraint $ map sugarExp [pexp]
 
 desugarAbstract :: Abstract -> Bool
 desugarAbstract x = case x of
@@ -163,12 +169,14 @@ desugarElement x = case x of
       AbstractEmpty GCardEmpty (Ident $ sident $ desugarName name)
       (SuperSome SuperHow_1 (ClaferId name)) card InitEmpty elements
   Subconstraint constraint  -> IEConstraint True $ desugarConstraint constraint
+  Subsoftconstraint softconstraint -> IEConstraint False $ desugarSoftConstraint softconstraint
 
 
 sugarElement :: IElement -> Element
 sugarElement x = case x of
   IEClafer clafer  -> Subclafer $ sugarClafer clafer
-  IEConstraint _ constraint -> Subconstraint $ sugarConstraint constraint
+  IEConstraint True constraint -> Subconstraint $ sugarConstraint constraint
+  IEConstraint False softconstraint -> Subsoftconstraint $ sugarSoftConstraint softconstraint
 
 
 desugarGCard :: GCard -> Maybe IGCard
@@ -389,4 +397,3 @@ sugarQuant x = case x of
   ILone -> QuantLone
   IOne -> QuantOne
   ISome -> QuantSome
-  

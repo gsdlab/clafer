@@ -21,6 +21,10 @@ data Constraint =
    Constraint [Exp]
   deriving (Eq,Ord,Show)
 
+data SoftConstraint =
+   SoftConstraint [Exp]
+  deriving (Eq,Ord,Show)
+
 data Abstract =
    AbstractEmpty
  | Abstract
@@ -35,6 +39,7 @@ data Element =
    Subclafer Clafer
  | ClaferUse Name Card Elements
  | Subconstraint Constraint
+ | Subsoftconstraint SoftConstraint
   deriving (Eq,Ord,Show)
 
 data Super =
