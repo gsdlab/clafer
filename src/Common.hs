@@ -112,9 +112,6 @@ bfsClafers clafers = bfs toNodeShallow clafers
 lurry f x y = f [x,y]
 
 
-filterNull = filter (not.null)
-
-
 fst3 (a, _, _) = a
 snd3 (_, b, _) = b
 trd3 (_, _, c) = c
@@ -207,8 +204,7 @@ data GEnv = GEnv {
   num :: Int,
   stable :: Map.Map String [[String]], -- super clafer names of a given clafer
   sClafers ::[IClafer] -- all clafers (no going through references)
-    }
-  deriving (Eq, Show)
+  } deriving (Eq, Show)
 
 voidf f = do
   x <- f
