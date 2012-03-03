@@ -56,3 +56,9 @@ Dependencies
 Usage (Command-line)
 --------------------
 `-v` 		to invoke the validator for the given kind of output
+
+Need help?
+----------
+* Check out a [Clafer tutorial](http://gsd.uwaterloo.ca/node/310)
+* Take a look at incomplete [Clafer wiki](https://github.com/gsdlab/clafer/wiki)
+* Post questions, report bugs, suggest improvements [GSD Lab Bug Tracker](http://gsd.uwaterloo.ca:8888/questions/). Tag your entries with `clafer` (so that we know what they are related to) and with `kacper-bak` or `jimmy-liang` (so that Kacper or Jimmy gets a notification).
