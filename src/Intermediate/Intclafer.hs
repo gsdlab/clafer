@@ -58,6 +58,10 @@ data IElement =
       isHard :: Bool,
       cpexp :: PExp
     }
+ | IEGoal {
+   isMaximize :: Bool,
+   cpexp :: PExp
+   }
   deriving (Eq,Ord,Show)
 
 -- A list of superclafers. The isOverlapping determines whether the clafer is overlapping or disjoint with other clafers extending given list of superclafers.

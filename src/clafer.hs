@@ -72,12 +72,20 @@ run :: VerbosityL -> ParseFun -> ClaferArgs -> IO ()
 run v p args = do
            input <- readFile $ file args
            conPutStrLn args (file args)
-           let ts = (if not ((fromJust $ new_layout args) ||
-                             (fromJust $ no_layout args))
-                     then resolveLayout else id) $ myLLexer $
+           let ts = (if not 
+                        ((fromJust $ new_layout args) ||
+                         (fromJust $ no_layout args))
+                     then 
+                       resolveLayout 
+                     else 
+                       id) 
+                    $ myLLexer $
                     (if (not $ fromJust $ no_layout args) &&
                         (fromJust $ new_layout args)
-                     then resLayout else id)
+                     then 
+                       resLayout 
+                     else 
+                       id)
                     input  in case p ts of
              Bad s    -> do putStrLn "\nParse              Failed...\n"
                             putStrV v "Tokens:"

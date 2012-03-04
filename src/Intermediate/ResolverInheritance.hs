@@ -66,7 +66,7 @@ resolveNElement :: [IElement] -> IElement -> IElement
 resolveNElement declarations x = case x of
   IEClafer clafer  -> IEClafer $ resolveNClafer declarations clafer
   IEConstraint _ _  -> x
-
+  IEGoal _ _ -> x
 
 resolveN :: [IElement] -> String -> Maybe (String, [IClafer])
 resolveN declarations id =
@@ -104,7 +104,8 @@ resolveOElement :: SEnv -> IElement -> IElement
 resolveOElement env x = case x of
   IEClafer clafer  -> IEClafer $ resolveOClafer env clafer
   IEConstraint _ _ -> x
-
+  IEGoal _ _ -> x
+  
 -- -----------------------------------------------------------------------------
 -- inherited and default cardinalities
 
@@ -148,6 +149,7 @@ analyzeElement :: SEnv -> IElement -> IElement
 analyzeElement env x = case x of
   IEClafer clafer  -> IEClafer $ analyzeClafer env clafer
   IEConstraint _ _ -> x
+  IEGoal _ _ -> x
 
 -- -----------------------------------------------------------------------------
 -- Expand inheritance
@@ -169,6 +171,7 @@ unrollabeDeclaration x = case x of
                         then Just (uid clafer, unrollableClafer clafer)
                         else Nothing
   IEConstraint _ _ -> Nothing
+  IEGoal _ _ -> Nothing
 
 
 unrollableClafer clafer
@@ -240,3 +243,4 @@ resolveEElement predecessors unrollables absAncestor declarations x = case x of
   IEClafer clafer  -> if isAbstract clafer then return x else IEClafer `liftM`
     resolveEClafer predecessors unrollables absAncestor declarations clafer
   IEConstraint _ _  -> return x
+  IEGoal _ _ -> return x

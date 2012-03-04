@@ -52,6 +52,7 @@ nameModule forceResolver imodule = (imodule{mDecls = decls'}, genv')
 nameElement forceResolver x = case x of
   IEClafer clafer -> IEClafer `liftM` (nameClafer forceResolver clafer)
   IEConstraint isHard pexp -> IEConstraint isHard `liftM` (namePExp pexp)
+  IEGoal isMaximize pexp -> IEGoal isMaximize `liftM` (namePExp pexp)
 
 
 nameClafer forceResolver clafer = do

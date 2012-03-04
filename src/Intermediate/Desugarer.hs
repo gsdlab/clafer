@@ -60,6 +60,7 @@ sugarDeclaration x = case x of
   IEClafer clafer  -> ElementDecl $ Subclafer $ sugarClafer clafer
   IEConstraint True constraint  -> ElementDecl $ Subconstraint $ sugarConstraint constraint
   IEConstraint False softconstraint  -> ElementDecl $ Subsoftconstraint $ sugarSoftConstraint softconstraint
+  IEGoal _ goal -> ElementDecl $ Subgoal $sugarGoal goal
 
 
 desugarClafer :: Clafer -> IClafer
@@ -132,14 +133,20 @@ desugarConstraint (Constraint exps) =
 
 desugarSoftConstraint :: SoftConstraint -> PExp
 desugarSoftConstraint (SoftConstraint exps) =
-    desugarPath $ desugarExp $ (if length exps > 1 then foldl1 EAnd else head) exps
+  desugarPath $ desugarExp $ (if length exps > 1 then foldl1 EAnd else head) exps
 
+desugarGoal :: Goal -> PExp
+desugarGoal (Goal exps) =
+  desugarPath $ desugarExp $ (if length exps > 1 then foldl1 EAnd else head) exps
 
 sugarConstraint :: PExp -> Constraint
 sugarConstraint pexp = Constraint $ map sugarExp [pexp]
 
 sugarSoftConstraint :: PExp -> SoftConstraint
 sugarSoftConstraint pexp = SoftConstraint $ map sugarExp [pexp]
+
+sugarGoal :: PExp -> Goal
+sugarGoal pexp = Goal $ map sugarExp [pexp]
 
 desugarAbstract :: Abstract -> Bool
 desugarAbstract x = case x of
@@ -171,14 +178,14 @@ desugarElement x = case x of
       (SuperSome SuperHow_1 (ClaferId name)) card InitEmpty elements
   Subconstraint constraint  -> IEConstraint True $ desugarConstraint constraint
   Subsoftconstraint softconstraint -> IEConstraint False $ desugarSoftConstraint softconstraint
-
+  Subgoal goal -> IEGoal True $ desugarGoal goal
 
 sugarElement :: IElement -> Element
 sugarElement x = case x of
   IEClafer clafer  -> Subclafer $ sugarClafer clafer
   IEConstraint True constraint -> Subconstraint $ sugarConstraint constraint
   IEConstraint False softconstraint -> Subsoftconstraint $ sugarSoftConstraint softconstraint
-
+  IEGoal _ goal -> Subgoal $ sugarGoal goal
 
 desugarGCard :: GCard -> Maybe IGCard
 desugarGCard x = case x of

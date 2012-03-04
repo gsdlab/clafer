@@ -46,7 +46,7 @@ astrClafer x = case x of
 astrElement x = case x of
   IEClafer clafer -> IEClafer `liftM` astrClafer clafer
   IEConstraint isHard pexp -> IEConstraint isHard `liftM` astrPExp pexp
-
+  IEGoal isMaximize pexp -> IEGoal isMaximize `liftM` astrPExp pexp
 
 astrPExp x = case x of 
   PExp (Just TString) pid pos exp ->

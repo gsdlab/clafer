@@ -83,6 +83,7 @@ resolveElement :: SEnv -> IElement -> IElement
 resolveElement env x = case x of
   IEClafer clafer  -> IEClafer $ resolveClafer env clafer
   IEConstraint isHard pexp  -> IEConstraint isHard $ resolvePExp env pexp
+  IEGoal isMaximize pexp  -> IEGoal isMaximize $ resolvePExp env pexp  
 
 
 resolvePExp :: SEnv -> PExp -> PExp

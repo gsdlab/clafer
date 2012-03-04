@@ -1,4 +1,6 @@
-/* Simplifications:
+/* 
+Example to test a correct als file is generated.
+Simplifications:
     - for now we ignore lab instructors
     - for now we assume that a prof teaches only one course
     - profs only have three ranking levels in this model

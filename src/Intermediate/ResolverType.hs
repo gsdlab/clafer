@@ -96,6 +96,8 @@ symbolTableIElement :: STEnv -> IElement -> SymbolTable
 symbolTableIElement env (IEClafer x) = symbolTableIClafer env x
 -- Constraints do not add symbols to the symbol table
 symbolTableIElement env (IEConstraint _ _) = empty
+-- Goald do not add symbols to the symbol table
+symbolTableIElement env (IEGoal _ _) = empty
 
 symbolTableIClafer :: STEnv -> IClafer -> SymbolTable
 symbolTableIClafer env c =
@@ -140,7 +142,8 @@ resolveTElements env es = map (resolveTElement env) es
 resolveTElement :: TCEnv -> IElement -> IElement
 resolveTElement env (IEClafer clafer) = IEClafer $ resolveTClafer env clafer
 resolveTElement env (IEConstraint isHard pexp) = IEConstraint isHard resolvedPExp where (_, resolvedPExp) = resolveTPExp env pexp    
-
+resolveTElement env (IEGoal isMaximize pexp) = IEGoal isMaximize resolvedPExp where (_, resolvedPExp) = resolveTPExp env pexp    
+                                                                                        
 resolveTClafer :: TCEnv -> IClafer -> IClafer
 resolveTClafer env clafer = 
     clafer{
