@@ -45,7 +45,7 @@ optimizeElement :: Interval -> IElement -> IElement
 optimizeElement interval x = case x of
   IEClafer clafer  -> IEClafer $ optimizeClafer interval clafer
   IEConstraint _ constraint  -> x
-
+  IEGoal _ goal -> x
 
 optimizeClafer :: Interval -> IClafer -> IClafer
 optimizeClafer interval clafer = clafer {glCard = glCard',
@@ -113,7 +113,7 @@ expSuper x = case x of
 expElement x = case x of
   IEClafer clafer  -> IEClafer `liftM` expClafer clafer
   IEConstraint isHard constraint  -> IEConstraint isHard `liftM` expPExp constraint
-
+  IEGoal isMaximize goal -> IEGoal isMaximize `liftM` expPExp goal
 
 expPExp (PExp t pid pos exp) = PExp t pid pos `liftM` expIExp exp
 
@@ -184,7 +184,7 @@ allUniqueElement :: IElement -> (Bool, [String])
 allUniqueElement x = case x of
   IEClafer clafer -> allUniqueClafer clafer
   IEConstraint _ _ -> (True, [])
-
+  IEGoal _ _ -> (True, [])
 
 checkConstraintElement idents x = case x of
   IEClafer clafer -> and $ map (checkConstraintElement idents) $ elements clafer
@@ -231,6 +231,7 @@ findDupClafer clafer = if null dups
 findDupElement x = case x of
   IEClafer clafer -> IEClafer $ findDupClafer clafer
   IEConstraint _ _ -> x
+  IEGoal _ _ -> x
 
 
 findDuplicates :: [IClafer] -> [String]
@@ -260,7 +261,7 @@ markTopElement :: [String] -> IElement -> IElement
 markTopElement clafers x = case x of
   IEClafer clafer  -> IEClafer $ markTopClafer clafers clafer
   IEConstraint isHard pexp  -> IEConstraint isHard $ markTopPExp clafers pexp
-
+  IEGoal isMaximize pexp -> IEGoal isMaximize $ markTopPExp clafers pexp
 
 markTopPExp clafers pexp =
   pexp {Intermediate.Intclafer.exp = markTopIExp clafers $

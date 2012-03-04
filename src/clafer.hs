@@ -154,8 +154,9 @@ showTree v tree
 addStats code stats = "/*\n" ++ stats ++ "*/\n" ++ code
 
 
-showStats au (Stats na nr nc nconst sgl) =
+showStats au (Stats na nr nc nconst ngoals sgl) =
   unlines [ "All clafers: " ++ (show (na + nr + nc)) ++ " | Abstract: " ++ (show na) ++ " | Concrete: " ++ (show nc) ++ " | References: " ++ (show nr)          , "Constraints: " ++ show nconst
+          , "Goals: " ++ show ngoals  
           , "Global scope: " ++ showInterval sgl
           , "All names unique: " ++ show au]
 

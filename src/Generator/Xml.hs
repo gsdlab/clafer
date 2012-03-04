@@ -107,6 +107,10 @@ genXmlElement x = case x of
   IEConstraint isHard pexp  -> tagType "Declaration" "IConstraint" $ concat
                          [ genXmlBoolean "IsHard" isHard
                          , genXmlPExp "ParentExp" pexp]
+  IEGoal isMaximize pexp -> tagType "Declaration" "IGoal" $ concat 
+                         [ genXmlBoolean "IsMaximize" isMaximize
+                         , genXmlPExp "ParentExp" pexp]
+                         
                                                           
 genXmlAnyOp ft f xs = concatMap
   (\(tname, texp) -> tagType tname (ft texp) $ f texp) xs

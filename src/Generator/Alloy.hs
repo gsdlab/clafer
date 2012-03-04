@@ -88,10 +88,13 @@ genDeclaration :: ClaferMode -> IElement -> Concat
 genDeclaration mode x = case x of
   IEClafer clafer  -> genClafer mode Nothing clafer
   IEConstraint _ pexp  -> mkFact $ genPExp mode Nothing pexp
+  IEGoal _ pexp -> mkMetric $ genPExp mode Nothing pexp
 
 
 mkFact xs = cconcat [CString "fact ", mkSet xs, CString "\n"]
 
+mkMetric xs = cconcat [CString "metric ", mkSet xs, CString  "\n"]
+                                                    
 mkSet xs = cconcat [CString "{ ", xs, CString " }"]
 
 showSet delim xs = showSet' delim $ filterNull xs

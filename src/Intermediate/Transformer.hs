@@ -32,7 +32,7 @@ transElement :: IElement -> IElement
 transElement x = case x of
   IEClafer clafer  -> IEClafer $ transClafer clafer
   IEConstraint isHard pexp  -> IEConstraint isHard $ transPExp False pexp
-  IEGoal isMaximize pexp  -> IEConstraint isMaximize $ transPExp False pexp  
+  IEGoal isMaximize pexp  -> IEGoal isMaximize $ transPExp False pexp  
 
 transClafer :: IClafer -> IClafer
 transClafer clafer = clafer{elements = map transElement $ elements clafer}

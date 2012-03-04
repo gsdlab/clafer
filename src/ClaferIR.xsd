@@ -113,6 +113,10 @@
           isHard :: Bool,
           cpexp :: PExp
         }
+     | IEGoal {
+       isMaximize :: Bool,
+       cpexp :: PExp
+       }
    -->
 
   <xs:complexType name="IElement" abstract="true"/>
@@ -127,6 +131,18 @@
       <xs:extension base="cl:IElement">
           <xs:sequence>
               <xs:element name="IsHard"    type="xs:boolean"/>
+              <xs:element name="ParentExp" type="cl:IParentExp"/>
+          </xs:sequence>
+      </xs:extension>
+
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="IGoal">
+    <xs:complexContent>
+      <xs:extension base="cl:IElement">
+          <xs:sequence>
+              <xs:element name="IsMaximize"    type="xs:boolean"/>
               <xs:element name="ParentExp" type="cl:IParentExp"/>
           </xs:sequence>
       </xs:extension>

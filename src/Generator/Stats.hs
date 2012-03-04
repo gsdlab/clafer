@@ -33,13 +33,14 @@ data Stats = Stats {
       nrClafers :: Int,
       ncClafers :: Int,
       nConstraints :: Int,
+      nGoals :: Int,
       sglCard :: Interval
     } deriving Show
 
 
 statsModule :: IModule -> Stats
 statsModule imodule =
-  execState (mapM statsElement $ mDecls imodule) $ Stats 0 0 0 0 (1, ExIntegerNum 1)
+  execState (mapM statsElement $ mDecls imodule) $ Stats 0 0 0 0 0 (1, ExIntegerNum 1)
 
 
 statsClafer clafer = do
@@ -65,3 +66,4 @@ statsCard (m, n) (m', n') = (max m m', maxEx n n')
 statsElement x = case x of
   IEClafer clafer -> statsClafer clafer
   IEConstraint _ _ -> modify (\e -> e {nConstraints = nConstraints e + 1})
+  IEGoal _ _ -> modify (\e -> e {nGoals = nGoals e + 1})
