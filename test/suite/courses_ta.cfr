@@ -78,4 +78,4 @@ ECE351 : Course
 
 
 (# ECE155.assistants > 2 )
-~ # ECE155.assistants  ^
+<< # ECE155.assistants  >>

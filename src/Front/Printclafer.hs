@@ -114,7 +114,7 @@ instance Print SoftConstraint where
 
 instance Print Goal where
   prt i e = case e of
-   Goal exps -> prPrec i 0 (concatD [doc (showString "~") , prt 0 exps , doc (showString "^")])
+   Goal exps -> prPrec i 0 (concatD [doc (showString "<<") , prt 0 exps , doc (showString ">>")])
 
 
 instance Print Abstract where
