@@ -90,16 +90,15 @@ genDeclaration mode x = case x of
   IEConstraint _ pexp  -> mkFact $ genPExp mode Nothing pexp
   IEGoal _ pexp@(PExp iType pid pos innerexp) -> case innerexp of 
         IFunExp op  exps ->  if  op == iGMax || op == iGMin then  
-                        mkMetric $ genPExp mode Nothing pexp
+                        mkMetric op $ genPExp mode Nothing (head exps) 
                 else 
                         error "unary operator  distinct from (min/max) at the topmost level of a goal element"
         other ->  error "no unary operator (min/max) at the topmost level of a goal element."
-       
-
 
 mkFact  xs = cconcat [CString "fact ", mkSet xs, CString "\n"]
 
-mkMetric xs = cconcat [CString "metrics ", mkSet xs, CString  "\n"]
+mkMetric goalopname xs = cconcat [CString "metrics ", CString "{ ", if goalopname == iGMax then CString "max" else  CString "min", CString " [", xs, CString " ]",  CString " }" , CString "\n"]
+
                                                     
 mkSet xs = cconcat [CString "{ ", xs, CString " }"]
 
