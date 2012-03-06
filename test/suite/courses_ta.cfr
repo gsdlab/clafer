@@ -1,13 +1,14 @@
 abstract Prof
 	 prefer -> TA * 
 	 reject -> TA * 
-	 
+	 [no ( this.prefer & this.reject)]
 abstract Course
 	 lecturer -> Prof
 	 assistants -> TA *
+	    [parent in (this.first, this.second, this.third) ]
 	 allocation : integer
-	 [all t1 : this.assistants |  this in (t1.first ++ t1.second ++ t1.third) ]// fact respectTAWishes
-	 [all t2 : this.assistants | t2 not in this.lecturer.reject ] // fact respectProfWishes
+	 [all ta : this.assistants |  this in (ta.first, ta.second, ta.third) ]// fact respectTAWishes
+	 [no (this.assistants & this.lecturer.reject)] // fact respectProfWishes
 
 abstract TA
 	 first -> Course ?
@@ -63,15 +64,7 @@ ECE351 : Course
 [E.first = ECE155]
 [E.second = ECE351]
 
-[all t3 : TA | no  t3.third  ]
-
-// Upper Bounds of partial instances
-[Prof = X ++ Y]
-[TA = A ++ B ++ C ++ D ++ E ++ F ++ G]
-[Course = ECE155 ++ ECE351 ]
-
-	
-// End Specifying partial instances
+[no TA.third]
 
 
 [# ECE155.assistants > 1  || # ECE351.assistants > 1 ]
