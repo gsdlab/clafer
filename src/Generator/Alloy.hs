@@ -88,10 +88,16 @@ genDeclaration :: ClaferMode -> IElement -> Concat
 genDeclaration mode x = case x of
   IEClafer clafer  -> genClafer mode Nothing clafer
   IEConstraint _ pexp  -> mkFact $ genPExp mode Nothing pexp
-  IEGoal _ pexp -> mkMetric $ genPExp mode Nothing pexp
+  IEGoal _ pexp@(PExp iType pid pos innerexp) -> case innerexp of 
+        IFunExp op  exps ->  if  op == iGMax || op == iGMin then  
+                        mkMetric $ genPExp mode Nothing pexp
+                else 
+                        error "unary operator  distinct from (min/max) at the topmost level of a goal element"
+        other ->  error "no unary operator (min/max) at the topmost level of a goal element."
+       
 
 
-mkFact xs = cconcat [CString "fact ", mkSet xs, CString "\n"]
+mkFact  xs = cconcat [CString "fact ", mkSet xs, CString "\n"]
 
 mkMetric xs = cconcat [CString "metrics ", mkSet xs, CString  "\n"]
                                                     

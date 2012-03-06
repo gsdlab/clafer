@@ -73,4 +73,4 @@ ECE351 : Course
 // prof unhappiness: unallocated spaces
 // TA Happiness: got first job.
 // TA unhappiness: didn't get a job.
-<< min  # (TA -- Course.assistants)   >>
+<<    (TA -- Course.assistants)   >>
