@@ -62,6 +62,8 @@ DeclAllDisj.    Exp   ::= "all" "disj" Decl "|" Exp1 ;
 DeclAll.        Exp   ::= "all"        Decl "|" Exp1 ;
 DeclQuantDisj.  Exp   ::= Quant "disj" Decl "|" Exp1 ;
 DeclQuant.      Exp   ::= Quant        Decl "|" Exp1 ;
+EGMax.           Exp1  ::= "max" Exp2 ;
+EGMin.           Exp1  ::= "min" Exp2 ;
 EIff.           Exp1  ::= Exp1 "<=>" Exp2 ;
 EImplies.       Exp2  ::= Exp2 "=>"  Exp3 ;
 EOr.            Exp3  ::= Exp3 "||"  Exp4 ;

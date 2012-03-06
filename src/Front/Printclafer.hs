@@ -207,6 +207,8 @@ instance Print Exp where
    DeclAll decl exp -> prPrec i 0 (concatD [doc (showString "all") , prt 0 decl , doc (showString "|") , prt 1 exp])
    DeclQuantDisj quant decl exp -> prPrec i 0 (concatD [prt 0 quant , doc (showString "disj") , prt 0 decl , doc (showString "|") , prt 1 exp])
    DeclQuant quant decl exp -> prPrec i 0 (concatD [prt 0 quant , prt 0 decl , doc (showString "|") , prt 1 exp])
+   EGMax exp -> prPrec i 1 (concatD [doc (showString "max") , prt 2 exp])
+   EGMin exp -> prPrec i 1 (concatD [doc (showString "min") , prt 2 exp])
    EIff exp0 exp -> prPrec i 1 (concatD [prt 1 exp0 , doc (showString "<=>") , prt 2 exp])
    EImplies exp0 exp -> prPrec i 2 (concatD [prt 2 exp0 , doc (showString "=>") , prt 3 exp])
    EOr exp0 exp -> prPrec i 3 (concatD [prt 3 exp0 , doc (showString "||") , prt 4 exp])

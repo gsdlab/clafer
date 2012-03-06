@@ -233,6 +233,8 @@ resolveTExp env (IFunExp op [exp]) = (env, result)
         | op == iNot  = typeCheckFunction TBoolean    op (exact [TBoolean]) [a1]
         | op == iCSet = typeCheckFunction TInteger    op (exact [TClafer])  [a1]
         | op == iMin  = typeCheckFunction (typeOf a1) op allNumeric         [a1]
+        | op == iGMax = typeCheckFunction (typeOf a1) op allNumeric         [a1]
+        | op == iGMin = typeCheckFunction (typeOf a1) op allNumeric         [a1]        
         | otherwise   = error $ "Unknown unary function '" ++ op ++ "'"
     (_, a1) = resolveTPExp env exp
 

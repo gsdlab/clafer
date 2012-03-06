@@ -111,6 +111,8 @@ For IFunExp standard set of operators includes:
         !          -- not (logical)
         #          -- set counting operator
         -          -- negation (arithmetic)
+        max        -- maximum (created for goals)
+        min        -- minimum (created for goals)
 2. Binary operators:
         <=>        -- equivalence
         =>         -- implication

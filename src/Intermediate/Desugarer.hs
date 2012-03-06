@@ -227,7 +227,7 @@ desugarExp' x = case x of
   DeclAllDisj decl exp -> IDeclPExp IAll [desugarDecl True decl] (dpe exp)
   DeclAll decl exp -> IDeclPExp IAll [desugarDecl False decl] (dpe exp)
   DeclQuantDisj quant decl exp -> IDeclPExp (desugarQuant quant) [desugarDecl True decl] (dpe exp)
-  DeclQuant quant decl exp -> IDeclPExp (desugarQuant quant) [desugarDecl False decl] (dpe exp)
+  DeclQuant quant decl exp -> IDeclPExp (desugarQuant quant) [desugarDecl False decl] (dpe exp)  
   EIff exp0 exp  -> dop iIff [exp0, exp]
   EImplies exp0 exp  -> dop iImpl [exp0, exp]
   EImpliesElse exp0 exp1 exp  -> dop iIfThenElse [exp0, exp1, exp]
@@ -249,7 +249,9 @@ desugarExp' x = case x of
   EMul exp0 exp  -> dop iMul [exp0, exp]
   EDiv exp0 exp  -> dop iDiv [exp0, exp]
   ECSetExp exp   -> dop iCSet [exp]
-  EMinExp exp    -> dop iMin [exp]
+  EMinExp exp    -> dop iMin [exp]  
+  EGMax exp -> dop iGMax [exp]
+  EGMin exp -> dop iGMin [exp]  
   EInt n  -> IInt n
   EDouble n -> IDouble n
   EStr str  -> IStr str
@@ -314,6 +316,8 @@ sugarExp' x = case x of
     | op == iNot           = ENeg
     | op == iCSet          = ECSetExp
     | op == iMin           = EMinExp
+    | op == iGMax          = EGMax
+    | op == iGMin          = EGMin    
   sugarOp op
     | op == iIff           = EIff
     | op == iImpl          = EImplies

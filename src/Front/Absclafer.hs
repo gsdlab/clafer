@@ -103,6 +103,8 @@ data Exp =
  | DeclAll Decl Exp
  | DeclQuantDisj Quant Decl Exp
  | DeclQuant Quant Decl Exp
+ | EGMax Exp
+ | EGMin Exp
  | EIff Exp Exp
  | EImplies Exp Exp
  | EOr Exp Exp

@@ -124,7 +124,9 @@ toMTriple a (b,c) = Just (a, b, c)
 iNot          = "!"
 iCSet         = "#"
 iMin          = "-"
-unOps = [iNot, iCSet, iMin]
+iGMax         = "max"
+iGMin         = "min"
+unOps = [iNot, iCSet, iMin, iGMax, iGMin]
 
 -- binary operators
 iIff          = "<=>"

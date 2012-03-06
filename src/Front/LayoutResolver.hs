@@ -146,19 +146,21 @@ sToken p s = PT p (TS s i)
       "if" -> 42
       "in" -> 43
       "lone" -> 44
-      "mux" -> 45
-      "no" -> 46
-      "not" -> 47
-      "one" -> 48
-      "opt" -> 49
-      "or" -> 50
-      "some" -> 51
-      "then" -> 52
-      "xor" -> 53
-      "{" -> 54
-      "|" -> 55
-      "||" -> 56
-      "}" -> 57
+      "max" -> 45
+      "min" -> 46
+      "mux" -> 47
+      "no" -> 48
+      "not" -> 49
+      "one" -> 50
+      "opt" -> 51
+      "or" -> 52
+      "some" -> 53
+      "then" -> 54
+      "xor" -> 55
+      "{" -> 56
+      "|" -> 57
+      "||" -> 58
+      "}" -> 59
       _ -> error $ "not a reserved word: " ++ show s
 
 -- | Get the position of a token.

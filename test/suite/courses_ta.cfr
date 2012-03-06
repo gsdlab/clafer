@@ -69,6 +69,8 @@ ECE351 : Course
 
 [# ECE155.assistants > 1  || # ECE351.assistants > 1 ]
 
-
-(# ECE155.assistants > 2 )
-<< # ECE155.assistants  >>
+// prof happiness: got preferred TAs.
+// prof unhappiness: unallocated spaces
+// TA Happiness: got first job.
+// TA unhappiness: didn't get a job.
+<< min  # (TA -- Course.assistants)   >>

@@ -93,7 +93,7 @@ genDeclaration mode x = case x of
 
 mkFact xs = cconcat [CString "fact ", mkSet xs, CString "\n"]
 
-mkMetric xs = cconcat [CString "metric ", mkSet xs, CString  "\n"]
+mkMetric xs = cconcat [CString "metrics ", mkSet xs, CString  "\n"]
                                                     
 mkSet xs = cconcat [CString "{ ", xs, CString " }"]
 
