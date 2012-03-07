@@ -1,0 +1,37 @@
+abstract Course
+	 assistants -> TA *
+	 allocation : integer	 
+
+
+abstract TA
+	 first -> Course ?
+	 second -> Course ?
+	 third -> Course ?
+
+
+A : TA 
+B : TA
+
+
+ECE155 : Course
+ECE351 : Course
+
+[ECE155.allocation = 1]
+[ECE351.allocation = 1]
+
+
+[A.first = ECE155]
+[A.second = ECE351]
+
+[B.first = ECE351]
+[B.second = ECE155]
+
+
+globaldummy
+	tas_with_first_choice_not_correctly_impl : int 
+
+	
+[globaldummy]
+[globaldummy.tas_with_first_choice_not_correctly_impl = #(TA.first <: Course.assistants.first)] 
+// you can't express # TAS with first choice, would need first <: assisstants  but this gives name resoultion problem.
+[# Course.assistants > 0]

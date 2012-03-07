@@ -17,11 +17,11 @@ abstract TA
 	 [all disj c1;c2 : Course |this in c1.assistants => this not in c2.assistants ] // fact SingleCoursePerTA
 
 
-// Start Specifying partial instances.
-// Lower Bounds of partial instances
+// Start Specifying instances of clafers.
 
-X: Prof
+X : Prof
 Y : Prof
+
 
 A : TA 
 B : TA
@@ -66,11 +66,15 @@ ECE351 : Course
 
 [no TA.third]
 
+[ # assistants <: first  < 10]
 
-[# ECE155.assistants > 1  || # ECE351.assistants > 1 ]
+
 
 // prof happiness: got preferred TAs.
+
 // prof unhappiness: unallocated spaces
+
 // TA Happiness: got first job.
+// << max # (assistants <: first) >>
 // TA unhappiness: didn't get a job.
-<< max #   (TA -- Course.assistants)   >>
+<< min #   (TA -- Course.assistants) >>
