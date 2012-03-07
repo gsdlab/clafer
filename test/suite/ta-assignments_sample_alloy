@@ -59,4 +59,3 @@ metrics m {
 pred p[] {}
 
 run p for Winter2012 optimize m
-
