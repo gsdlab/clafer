@@ -1,0 +1,23 @@
+abstract Course
+	 assistants -> TA *
+
+abstract TA
+	 first -> Course ?
+
+A : TA 
+B : TA
+
+ECE155 : Course
+ECE351 : Course
+
+
+[A.first = ECE155]
+[B.first = ECE351]
+
+
+
+tas_with_first_choice : int 
+//[tas_with_first_choice = #(first <: assistants )] 
+// you can't express # TAS with first choice, would need first <: assisstants  but this gives name resoultion problem.
+
+[# Course.assistants > 0]
