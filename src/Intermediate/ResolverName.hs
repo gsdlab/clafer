@@ -80,10 +80,10 @@ resolveClafer env clafer =
   where
   env' = env {context = Just clafer, resPath = clafer : resPath env}
   subClafers' = tail $ bfs toNodeDeep [env'{resPath = [clafer]}]
-  ancestor = last $ resPath env'
-  ancClafers' = bfs toNodeDeep
-                [env{context = Just ancestor, resPath = [ancestor]}]
+  ancClafers' = (init $ tails $ resPath env) >>= (mkAncestorList env)
 
+mkAncestorList env rp =
+  bfs toNodeDeep [env{context = Just $ head rp, resPath = rp}]
 
 resolveElement :: SEnv -> IElement -> IElement
 resolveElement env x = case x of
@@ -139,6 +139,7 @@ mkPath env (howResolved, id, path) = case howResolved of
   Special -> (mkLClaferId id True, path)
   TypeSpecial -> (mkLClaferId id True, path)
   Subclafers -> (toNav $ tail $ reverse $ map uid path, path)
+--  Ancestor -> (toNav' $ reverse $ map uid path, path) <-------- parent
   _ -> (toNav' $ reverse $ map uid path, path)
   where
   toNav = foldl
@@ -212,20 +213,23 @@ toNodeDeep env
   | length (clafer `elemIndices` resPath env) > 1 = (result, [])
   | otherwise = (result, map (\c -> env {context = Just c,
                                          resPath = c : resPath env}) $
-                 allChildren env)
+                 allInhChildren env)
   where
   result = (clafer, resPath env)
   clafer = fromJust $ context env
   
 
-allChildren env = getSubclafers $ concat $
-                  mapHierarchy elements (sClafers $ genv env)
-                  (fromJust $ context env)
+allChildren env = selectChildren getSuper env
 
+allInhChildren env = selectChildren getSuperArr env
+
+selectChildren f env = getSubclafers $ concat $
+                       mapHierarchy elements f (sClafers $ genv env)
+                       (fromJust $ context env)
 
 findUnique :: String -> [(IClafer, [IClafer])] -> Maybe (String, [IClafer])
 findUnique x xs =
-  case filterPaths x xs of
+  case filterPaths x $ nub xs of
     []     -> Nothing
     [elem] -> Just $ (uid $ fst elem, snd elem)
     xs'    -> error $ "clafer " ++ show x ++ " " ++ errMsg

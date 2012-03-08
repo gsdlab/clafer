@@ -132,7 +132,7 @@ analyzeGCard env clafer = gcard' `mplus` (Just $ IGCard False (0, ExIntegerAst))
   gcard'
     | isOverlapping $ super clafer = gcard clafer
     | otherwise                    = listToMaybe $ mapMaybe gcard $
-                                     findHierarchy (clafers env) clafer
+                                     findHierarchy getSuper (clafers env) clafer
 
 
 analyzeCard :: SEnv -> IClafer -> Maybe Interval
@@ -197,7 +197,7 @@ resolveEClafer predecessors unrollables absAncestor declarations clafer = do
   let predecessors' = uid clafer' : predecessors
   (sElements, super', superList) <-
       resolveEInheritance predecessors' unrollables absAncestor declarations
-        (findHierarchy sClafers' clafer)
+        (findHierarchy getSuper sClafers' clafer)
   let sClafer = Map.fromList $ zip (map uid superList) $ repeat [predecessors']
   modify (\e -> e {stable = Map.delete "clafer" $
                             Map.unionWith ((nub.).(++)) sClafer $
