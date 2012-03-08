@@ -207,6 +207,25 @@
       <xs:sequence>
           <xs:element name="Type"     type="cl:IType" minOccurs="0" maxOccurs="1"/>
           <xs:element name="ParentId" type="xs:string" minOccurs="0" maxOccurs="1"/>
+          <xs:element name="Position">
+              <xs:complexType>
+                  <xs:sequence>
+                      <xs:element name="Start">
+                          <xs:complexType>
+                              <xs:sequence>
+                                  <xs:element ref="IntLiteral" minOccurs="2" maxOccurs="2"/>
+                              </xs:sequence>
+                          </xs:complexType>
+                      </xs:element>
+                      <xs:element name="End">
+                          <xs:complexType>
+                              <xs:sequence>
+                              </xs:sequence>
+                          </xs:complexType>
+                      </xs:element>
+                  </xs:sequence>
+              </xs:complexType>
+          </xs:element>
           <xs:element name="Exp"      type="cl:IExp"/>
       </xs:sequence>
   </xs:complexType>
