@@ -37,27 +37,27 @@ import Intermediate.ResolverInheritance
 import Intermediate.ResolverType
 
 resolveModule :: ClaferArgs -> IModule -> (IModule, GEnv)
-resolveModule args declarations = resolveNamesModule args $ rom $ rem $ resolveNModule $ nameModule (fromJust $ force_resolver args) declarations
+resolveModule args declarations = resolveNamesModule args $ rom $ rem $ resolveNModule $ nameModule (fromJust $ skip_resolver args) declarations
   where
   rem = if fromJust $ flatten_inheritance args then resolveEModule else id
-  rom = if fromJust $ force_resolver args then resolveOModule else id
+  rom = if fromJust $ skip_resolver args then id else resolveOModule
 
 
 -- -----------------------------------------------------------------------------
 nameModule :: Bool -> IModule -> (IModule, GEnv)
-nameModule forceResolver imodule = (imodule{mDecls = decls'}, genv')
+nameModule skipResolver imodule = (imodule{mDecls = decls'}, genv')
   where
-  (decls', genv') = runState (mapM (nameElement forceResolver) $ mDecls imodule) $ GEnv 0 Map.empty []
+  (decls', genv') = runState (mapM (nameElement skipResolver) $ mDecls imodule) $ GEnv 0 Map.empty []
 
-nameElement forceResolver x = case x of
-  IEClafer clafer -> IEClafer `liftM` (nameClafer forceResolver clafer)
+nameElement skipResolver x = case x of
+  IEClafer clafer -> IEClafer `liftM` (nameClafer skipResolver clafer)
   IEConstraint isHard pexp -> IEConstraint isHard `liftM` (namePExp pexp)
   IEGoal isMaximize pexp -> IEGoal isMaximize `liftM` (namePExp pexp)
 
 
-nameClafer forceResolver clafer = do
-  clafer' <- if forceResolver then (renameClafer forceResolver) clafer else return clafer{uid = ident clafer}
-  elements' <- mapM (nameElement forceResolver) $ elements clafer
+nameClafer skipResolver clafer = do
+  clafer' <- if skipResolver then return clafer{uid = ident clafer} else (renameClafer (not skipResolver)) clafer
+  elements' <- mapM (nameElement skipResolver) $ elements clafer
   return $ clafer' {elements = elements'}
 
 
@@ -82,5 +82,5 @@ resolveNamesModule args (declarations, genv) = (res, genv)
   where
   res = foldr ($) declarations $ map (\f -> flip (curry f) genv) funs
   funs
-    | fromJust $ force_resolver args = [resolveTModule, resolveModuleNames, analyzeModule]
-    | otherwise = [resolveTModule, analyzeModule]
+    | fromJust $ skip_resolver args = [resolveTModule, analyzeModule]
+    | otherwise = [resolveTModule, resolveModuleNames, analyzeModule]

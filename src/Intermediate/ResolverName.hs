@@ -46,8 +46,14 @@ data SEnv = SEnv {
   cClafers :: [(IClafer, [IClafer])]    -- (constant) all concrete clafers (BFS)
   } deriving Show
 
-
-data HowResolved = Special | TypeSpecial | Binding | Subclafers | Ancestor | AbsClafer | TopClafer
+data HowResolved =
+    Special     -- "this", "parent", "children"
+  | TypeSpecial -- primitive type: integer, string
+  | Binding     -- local variable (in constraints)
+  | Subclafers  -- clafer's descendant
+  | Ancestor    -- clafer's ancestor
+  | AbsClafer   -- abstract clafer
+  | TopClafer   -- non-abstract top-level clafer
   deriving (Eq, Show)
 
 
@@ -135,14 +141,10 @@ mkPath env (howResolved, id, path) = case howResolved of
   Subclafers -> (toNav $ tail $ reverse $ map uid path, path)
   _ -> (toNav' $ reverse $ map uid path, path)
   where
-  id'   = mkLClaferId id False
   toNav = foldl
           (\exp id -> IFunExp iJoin [pExpDefPidPos exp, mkPLClaferId id False])
           (mkLClaferId this True)
   toNav' p = (mkIFunExp iJoin $ map (\c -> mkLClaferId c False) p) :: IExp
-
-mkNav (x:[]) = x
-mkNav xs = foldl1 (\x y -> IFunExp iJoin $ map pExpDefPidPos [x, y]) xs
 
 -- -----------------------------------------------------------------------------
 

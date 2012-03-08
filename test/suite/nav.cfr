@@ -1,0 +1,6 @@
+//# OPTIONS --force-resolver
+claferA
+  claferB
+    claferC
+      claferD
+  [claferD]

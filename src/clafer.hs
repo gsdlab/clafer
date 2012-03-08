@@ -113,7 +113,7 @@ desugar args tree = do
 analyze args tree = do
   let dTree' = findDupModule args tree
   let au = allUnique dTree'
-  let args' = args{force_resolver = Just $ not au || (fromJust $ force_resolver args)}
+  let args' = args{skip_resolver = Just $ au && (fromJust $ skip_resolver args)}
   conPutStrLn args "[Resolving]"
   let (rTree, genv) = resolveModule args' dTree'
   conPutStrLn args "[Analyzing String]"
