@@ -231,13 +231,13 @@ findUnique x xs =
     xs'    -> error $ "clafer " ++ show x ++ " " ++ errMsg
       where
       xs''   = map ((map uid).snd) xs'
-      errMsg = (if isNamespaceConflict $ concat xs''
-               then "cannot be defined because the name should be unique in the same namespace."
+      errMsg = (if isNamespaceConflict xs''
+               then "cannot be defined because the name should be unique in the same namespace.\n"
                else "is not unique. ") ++ 
                "Available paths:\n" ++ (xs'' >>= showPath)
 
 showPath xs = (intercalate "." $ reverse xs) ++ "\n"
 
-isNamespaceConflict (xs:ys:_) = last xs == last ys
+isNamespaceConflict (xs:ys:_) = tail xs == tail ys
 
 filterPaths x xs = filter (((==) x).ident.fst) xs
