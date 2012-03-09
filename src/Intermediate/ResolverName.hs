@@ -156,14 +156,14 @@ resolveName env id = resolve env id
 
 resolveImmName :: SEnv -> String -> (HowResolved, String, [IClafer])
 resolveImmName env id = resolve env id
-  [resolveChildren, resolveNone]
+  [resolveSpecial, resolveChildren, resolveNone]
 
 
 resolve env id fs = fromJust $ foldr1 mplus $ map (\x -> x env id) fs
 
 
 -- reports error if clafer not found
-resolveNone env id = error $ id ++ " not found"
+resolveNone env id = error $ "resolver: " ++ id ++ " not found"
    -- within " ++ (show $ context env >>= (Just . ident)) ++ show env
 
 
@@ -172,7 +172,7 @@ resolveSpecial :: SEnv -> String -> Maybe (HowResolved, String, [IClafer])
 resolveSpecial env id
   | id `elem` [this, children] =
       Just (Special, id, (fromJust $ context env) : resPath env)
-  | id == parent = Just (Special, id, resPath env)
+  | id == parent   = Just (Special, id, resPath env)
   | isPrimitive id = Just (TypeSpecial, id, [])
   | otherwise      = Nothing 
 
@@ -219,9 +219,9 @@ toNodeDeep env
   clafer = fromJust $ context env
   
 
-allChildren env = selectChildren getSuper env
+allChildren = selectChildren getSuper
 
-allInhChildren env = selectChildren getSuperArr env
+allInhChildren = selectChildren getSuperArr
 
 selectChildren f env = getSubclafers $ concat $
                        mapHierarchy elements f (sClafers $ genv env)

@@ -1,0 +1,4 @@
+Person
+  maritalStatus
+    married
+      [ parent.parent ]
