@@ -37,7 +37,7 @@ import Intermediate.ResolverType
 data Concat = CString String | Concat {
   srcPos :: String,
   nodes  :: [Concat]
-  } deriving (Show)
+  } deriving (Eq, Show)
 
 mkConc pos str = Concat pos [CString str]
 
@@ -47,17 +47,17 @@ flatten :: Concat -> String
 flatten (CString x)      = x
 flatten (Concat _ nodes) = nodes >>= flatten
 
-(+++) x@(CString _) y@(CString _)      = Concat "" [x, y]
+(+++) (CString x) (CString y)          = CString $ x ++ y
 (+++) x@(CString _) (Concat srcPos xs) = Concat srcPos (x:xs)
 (+++) (Concat srcPos xs) x@(CString _) = Concat srcPos (xs ++ [x])
-(+++) x@(Concat p xs) y@(Concat p' ys)
-  | p <= p'                            = concatPos x y
-  | otherwise                          = concatPos y x
+(+++) x@(Concat p xs) y@(Concat p' ys) 
+  | p <= p'                            = concatPos (srcPos x)
+  | otherwise                          = concatPos (srcPos y)
   where
-  concatPos x y = Concat (srcPos x) [x, y]
+  concatPos sp = Concat sp [x, y]
 
 
-cconcat = foldl (+++) (CString "")
+cconcat = foldr (+++) (CString "")
 
 cintercalate xs xss = cconcat (intersperse xs xss)
 

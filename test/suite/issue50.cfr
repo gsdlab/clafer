@@ -1,0 +1,10 @@
+//# OPTIONS --keep-unused
+abstract A
+    b ?
+
+C
+    b  ?
+    a -> A
+        [ b ]
+        d
+            b ?
