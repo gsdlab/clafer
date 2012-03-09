@@ -1,0 +1,13 @@
+abstract A
+    b ?
+
+A1 : A
+    [ ! b ]
+
+C
+    b  ?
+    [ C.b ]
+    a -> A
+        [ b ]
+        d
+            b ?
