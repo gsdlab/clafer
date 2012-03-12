@@ -125,7 +125,7 @@ resolveNav env x isFirst = case x of
     (exp0', path) = resolveNav env (Intermediate.Intclafer.exp pexp0) True
     (exp', path') = resolveNav env {context = listToMaybe path, resPath = path}
                     (Intermediate.Intclafer.exp pexp) False
-  IClaferId modName id _ -> out 
+  IClaferId modName id _ -> out
     where
     out
       | isFirst   = mkPath env $ resolveName env id
@@ -136,16 +136,17 @@ resolveNav env x isFirst = case x of
 mkPath :: SEnv -> (HowResolved, String, [IClafer]) -> (IExp, [IClafer])
 mkPath env (howResolved, id, path) = case howResolved of
   Binding -> (mkLClaferId id True, path)
-  Special -> (mkLClaferId id True, path)
+  Special -> (specIExp, path)
   TypeSpecial -> (mkLClaferId id True, path)
   Subclafers -> (toNav $ tail $ reverse $ map uid path, path)
---  Ancestor -> (toNav' $ reverse $ map uid path, path) <-------- parent
+--  Ancestor -> (toNav' $ reverse $ map uid path, path) <-------- parent | always preceed the first parent by this
   _ -> (toNav' $ reverse $ map uid path, path)
   where
   toNav = foldl
           (\exp id -> IFunExp iJoin [pExpDefPidPos exp, mkPLClaferId id False])
           (mkLClaferId this True)
   toNav' p = (mkIFunExp iJoin $ map (\c -> mkLClaferId c False) p) :: IExp
+  specIExp = if id /= this then toNav [id] else mkLClaferId id True
 
 -- -----------------------------------------------------------------------------
 
@@ -171,8 +172,8 @@ resolveNone env id = error $ "resolver: " ++ id ++ " not found"
 resolveSpecial :: SEnv -> String -> Maybe (HowResolved, String, [IClafer])
 resolveSpecial env id
   | id `elem` [this, children] =
-      Just (Special, id, (fromJust $ context env) : resPath env)
-  | id == parent   = Just (Special, id, resPath env)
+      Just (Special, id, resPath env)
+  | id == parent   = Just (Special, id, tail $ resPath env)
   | isPrimitive id = Just (TypeSpecial, id, [])
   | otherwise      = Nothing 
 

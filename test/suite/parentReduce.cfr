@@ -1,0 +1,6 @@
+claferA
+  claferB
+    [parent]
+    claferC
+      [parent.claferC.parent]
+      [parent.claferC]

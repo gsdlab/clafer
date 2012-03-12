@@ -112,7 +112,7 @@ optShowSet xs = showSet (CString "\n  ") xs
 
 -- optimization: top level cardinalities
 -- optimization: if only boolean parents, then set card is known
-genClafer :: ClaferMode -> [IClafer] -> IClafer -> Concat
+genClafer :: ClaferMode -> [String] -> IClafer -> Concat
 genClafer mode resPath oClafer = (cunlines $ filterNull
   [ cardFact +++ claferDecl clafer
   , showSet (CString "\n, ") $ genRelations mode clafer
@@ -120,7 +120,8 @@ genClafer mode resPath oClafer = (cunlines $ filterNull
   ]) +++ children
   where
   clafer = transPrimitive oClafer
-  children = cconcat $ filterNull $ map (genClafer mode (clafer : resPath)) $
+  children = cconcat $ filterNull $ map
+             (genClafer mode ((uid clafer) : resPath)) $
              getSubclafers $ elements clafer
   cardFact
     | null resPath && (null $ flatten $ genOptCard clafer) =
@@ -205,7 +206,7 @@ genConstraints mode resPath clafer = (CString $ genParentConst resPath clafer) :
   where
   constraints = map genConst $ elements clafer
   genConst x = case x of
-    IEConstraint _ pexp  -> genPExp mode (clafer : resPath) pexp
+    IEConstraint _ pexp  -> genPExp mode ((uid clafer) : resPath) pexp
     IEClafer clafer -> CString $
         if genCardCrude crd `elem` ["one", "lone", "some"]
         then "" else mkCard (genRelName $ uid clafer) $ fromJust crd
@@ -283,18 +284,22 @@ genExInteger element x = case x of
 -- -----------------------------------------------------------------------------
 -- Generate code for logical expressions
 
-genPExp :: ClaferMode -> [IClafer] -> PExp -> Concat
-genPExp mode resPath x@(PExp iType pid pos exp) = case exp of
+genPExp :: ClaferMode -> [String] -> PExp -> Concat
+genPExp mode resPath x = genPExp' mode resPath $ adjustPExp resPath x
+
+genPExp' mode resPath x@(PExp iType pid pos exp) = case exp of
   IDeclPExp quant decls pexp -> Concat pid $
     [ CString $ genQuant quant, CString " "
     , cintercalate (CString ", ") $ map ((genDecl mode resPath)) decls
-    , CString $ optBar decls, genPExp mode resPath pexp]
+    , CString $ optBar decls, genPExp' mode resPath pexp]
     where
     optBar [] = ""
     optBar _  = " | "
-  IClaferId _ "parent" _  -> Concat pid $
-    [brArg id $ (CString $ genRelName $ uid $ head resPath) +++ CString ".this"]
-  IClaferId _ sident isTop -> CString $ if isNothing iType then sident' else case fromJust $ iType of
+{-  IClaferId _ "parent" _  -> Concat pid $
+    [brArg id $ (CString $ genRelName $ head resPath) +++ CString ".this"] -}
+  IClaferId _ sident isTop -> CString $
+      if head sident == '~' then sident else
+      if isNothing iType then sident' else case fromJust $ iType of
     TInteger -> vsident
     TReal -> vsident
     TString -> vsident
@@ -304,7 +309,7 @@ genPExp mode resPath x@(PExp iType pid pos exp) = case exp of
     vsident = sident' ++ ".@ref"
   IFunExp _ _ -> case exp' of
     IFunExp op exps -> Concat pid $ [genIFunExp mode resPath exp']
-    _ -> genPExp mode resPath $ PExp iType pid pos exp'
+    _ -> genPExp' mode resPath $ PExp iType pid pos exp'
     where
     exp' = transformExp exp
   IInt n -> CString $ show n
@@ -317,7 +322,6 @@ transformExp x@(IFunExp op exps@(e1:e2:_))
   | otherwise  = x
 transformExp x = x
 
-
 genIFunExp mode resPath (IFunExp op exps) = cconcat $ intl exps' (map CString $ genOp mode op)
   where
   intl
@@ -326,7 +330,7 @@ genIFunExp mode resPath (IFunExp op exps) = cconcat $ intl exps' (map CString $ 
   exps' = map (optBrArg mode resPath) exps
 
 
-optBrArg mode resPath x = brFun (genPExp mode resPath) x
+optBrArg mode resPath x = brFun (genPExp' mode resPath) x
   where
   brFun = case x of
     PExp _ _ _ (IClaferId _ _ _) -> ($)
@@ -362,6 +366,33 @@ genOp _ op
   | op == iJoin = ["."]
   | op == iIfThenElse = [" => ", " else "]
 
+-- adjust parent
+adjustPExp :: [String] -> PExp -> PExp
+adjustPExp resPath (PExp t pid pos x) = PExp t pid pos $ adjustIExp resPath x
+
+adjustIExp resPath x = case x of
+  IDeclPExp quant decls pexp -> IDeclPExp quant decls $ adjustPExp resPath pexp
+  IFunExp op exps -> adjNav $ IFunExp op $ map adjExps exps
+    where
+    (adjNav, adjExps) = if op == iJoin then (aNav, id)
+                        else (id, adjustPExp resPath)
+  IClaferId _ _ _ -> aNav x
+  _  -> x
+  where
+  aNav = fst.(adjustNav resPath)
+
+adjustNav resPath x@(IFunExp op (pexp0:pexp:_))
+  | op == iJoin = (IFunExp iJoin
+                   [pexp0{Intermediate.Intclafer.exp = iexp0},
+                    pexp{Intermediate.Intclafer.exp = iexp}], path')
+  | otherwise   = (x, resPath)
+  where
+  (iexp0, path) = adjustNav resPath (Intermediate.Intclafer.exp pexp0)
+  (iexp, path') = adjustNav path    (Intermediate.Intclafer.exp pexp)
+adjustNav resPath x@(IClaferId _ id _)
+  | id == parent = (x{sident = "~@" ++ (genRelName $ head resPath)}, tail resPath)
+  | otherwise    = (x, resPath)
+
 genQuant :: IQuant -> String
 genQuant x = case x of
   INo   -> "no"
@@ -371,7 +402,7 @@ genQuant x = case x of
   IAll -> "all"
 
 
-genDecl :: ClaferMode -> [IClafer] -> IDecl -> Concat
+genDecl :: ClaferMode -> [String] -> IDecl -> Concat
 genDecl mode resPath x = case x of
   IDecl disj locids pexp -> cconcat [CString $ genDisj disj, CString " ",
     CString $ intercalate ", " locids, CString " : ", genPExp mode resPath pexp]
