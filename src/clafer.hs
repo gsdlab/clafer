@@ -113,7 +113,7 @@ desugar args tree = do
 analyze args tree = do
   let dTree' = findDupModule args tree
   let au = allUnique dTree'
-  let args' = args{force_resolver = Just $ not au || (fromJust $ force_resolver args)}
+  let args' = args{skip_resolver = Just $ au && (fromJust $ skip_resolver args)}
   conPutStrLn args "[Resolving]"
   let (rTree, genv) = resolveModule args' dTree'
   conPutStrLn args "[Analyzing String]"
@@ -131,9 +131,10 @@ generate f args (oTree, genv, au) = do
   when (not $ fromJust $ no_stats args) $ putStrLn stats
   conPutStrLn args "[Saving File]"
   let alloyCode = genModule args (oTree, genv)
+  let addCommentStats = if fromJust $ no_stats args then const else addStats
   let (ext, code) = case (fromJust $ mode args) of
-                      Alloy   -> ("als", addStats (fst alloyCode) stats)
-                      Alloy42 -> ("als", addStats (fst alloyCode) stats)
+                      Alloy   -> ("als", addCommentStats (fst alloyCode) stats)
+                      Alloy42 -> ("als", addCommentStats (fst alloyCode) stats)
                       Xml     -> ("xml", genXmlModule oTree)
                       Clafer  -> ("des.cfr", printTree $ sugarModule oTree)
   let f' = f ++ "." ++ ext

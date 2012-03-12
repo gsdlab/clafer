@@ -125,8 +125,8 @@ genClafer mode parent oClafer = (cunlines $ filterNull
   cardFact
     | isNothing parent && (null $ flatten $ genOptCard clafer) =
         case genCard (uid clafer) $ card clafer of
-          "set" -> CString ""
-          c -> mkFact $ CString c
+          CString "set" -> CString ""
+          c -> mkFact c
     | otherwise = CString ""
 
 
@@ -200,7 +200,7 @@ genType mode x = genPExp mode Nothing x
 -- constraints
 -- user constraints + parent + group constraints + reference
 -- a = NUMBER do all x : a | x = NUMBER (otherwise alloy sums a set)
-genConstraints mode parent clafer = (CString $ genParentConst parent clafer) :
+genConstraints mode parent clafer = (genParentConst parent clafer) :
   (genGroupConst clafer) : constraints 
   where
   constraints = map genConst $ elements clafer
@@ -213,15 +213,16 @@ genConstraints mode parent clafer = (CString $ genParentConst parent clafer) :
       crd = card clafer
 
 -- optimization: if only boolean features then the parent is unique
-genParentConst pClafer clafer = maybe ""
-                                (const $ concat $ genOptParentConst clafer)
+genParentConst pClafer clafer = maybe (CString "")
+                                (const $ genOptParentConst clafer)
                                 pClafer
 
 
+genOptParentConst :: IClafer -> Concat
 genOptParentConst clafer
-  | glCard' == "one"  = [""]
-  | glCard' == "lone" = ["one ", rel]
-  | otherwise         = [ "one @", rel, ".this"]
+  | glCard' == "one"  = CString ""
+  | glCard' == "lone" = Concat "Parent-relationship" [CString $ "one " ++ rel]
+  | otherwise         = Concat "Parent-relationship" [CString $ "one @" ++ rel ++ ".this"]
   -- eliminating problems with cyclic containment;
   -- should be added to cases when cyclic containment occurs
   --                    , " && no iden & @", rel, " && no ~@", rel, " & @", rel]
@@ -244,12 +245,13 @@ mkCard element card
   | card' `elem` ["one", "lone", "some"] = card' ++ " " ++ element
   | otherwise                            = card'
   where
-  card'  = genInterval element card
+  card'  = flatten $ genInterval element card
 
 -- -----------------------------------------------------------------------------
 genGCard element gcard = genInterval element  $ interval $ fromJust gcard
 
 
+genCard :: String -> Maybe Interval -> Concat
 genCard element card = genInterval element $ fromJust card
 
 
@@ -263,22 +265,41 @@ genIntervalCrude x = case x of
   _                   -> "set"
 
 
+genInterval :: String -> Interval -> Concat
 genInterval element x = case x of
-  (1, ExIntegerNum 1) -> "one"
-  (0, ExIntegerNum 1) -> "lone"
-  (1, ExIntegerAst)   -> "some"
-  (0, ExIntegerAst)   -> "set"
+  (1, ExIntegerNum 1) -> cardConcat element [CString "one"]
+  (0, ExIntegerNum 1) -> cardConcat element [CString "lone"]
+  (1, ExIntegerAst)   -> cardConcat element [CString "some"]
+  (0, ExIntegerAst)   -> CString "set" -- "set"
   (n, exinteger)  ->
-    s1 ++ (if null s1 || null s2 then "" else " and") ++ s2
+    case (s1, s2) of
+      (Just c1, Just c2) -> Concat "" [c1, CString " and ", c2]
+      (Just c1, Nothing) -> c1
+      (Nothing, Just c2) -> c2
+      (Nothing, Nothing) -> undefined
     where
-    s1 = if n == 0 then "" else concat [show n, " <= #",  element]
-    s2 = genExInteger element exinteger
+    s1 = if n == 0 then Nothing else Just $ cardLowerConcat element [CString $ concat [show n, " <= #",  element]]
+    s2 =
+        do
+            result <- genExInteger element exinteger
+            return $ cardUpperConcat element [CString result]
 
 
-genExInteger :: String -> ExInteger -> Result
+cardConcat :: String -> [Concat] -> Concat
+cardConcat element = Concat ("Cardinality exact " ++ element)
+
+
+cardLowerConcat :: String -> [Concat] -> Concat
+cardLowerConcat element = Concat ("Cardinality lower " ++ element)
+
+cardUpperConcat :: String -> [Concat] -> Concat
+cardUpperConcat element = Concat ("Cardinality upper " ++ element)
+
+
+genExInteger :: String -> ExInteger -> Maybe Result
 genExInteger element x = case x of
-  ExIntegerAst  -> ""
-  ExIntegerNum n  -> concat [" #", element, " <= ", show n]
+  ExIntegerAst   -> Nothing
+  ExIntegerNum n -> Just $ concat ["#", element, " <= ", show n]
 
 
 -- -----------------------------------------------------------------------------

@@ -46,8 +46,14 @@ data SEnv = SEnv {
   cClafers :: [(IClafer, [IClafer])]    -- (constant) all concrete clafers (BFS)
   } deriving Show
 
-
-data HowResolved = Special | TypeSpecial | Binding | Subclafers | Ancestor | AbsClafer | TopClafer
+data HowResolved =
+    Special     -- "this", "parent", "children"
+  | TypeSpecial -- primitive type: integer, string
+  | Binding     -- local variable (in constraints)
+  | Subclafers  -- clafer's descendant
+  | Ancestor    -- clafer's ancestor
+  | AbsClafer   -- abstract clafer
+  | TopClafer   -- non-abstract top-level clafer
   deriving (Eq, Show)
 
 
@@ -74,10 +80,10 @@ resolveClafer env clafer =
   where
   env' = env {context = Just clafer, resPath = clafer : resPath env}
   subClafers' = tail $ bfs toNodeDeep [env'{resPath = [clafer]}]
-  ancestor = last $ resPath env'
-  ancClafers' = bfs toNodeDeep
-                [env{context = Just ancestor, resPath = [ancestor]}]
+  ancClafers' = (init $ tails $ resPath env) >>= (mkAncestorList env)
 
+mkAncestorList env rp =
+  bfs toNodeDeep [env{context = Just $ head rp, resPath = rp}]
 
 resolveElement :: SEnv -> IElement -> IElement
 resolveElement env x = case x of
@@ -133,16 +139,13 @@ mkPath env (howResolved, id, path) = case howResolved of
   Special -> (mkLClaferId id True, path)
   TypeSpecial -> (mkLClaferId id True, path)
   Subclafers -> (toNav $ tail $ reverse $ map uid path, path)
+--  Ancestor -> (toNav' $ reverse $ map uid path, path) <-------- parent
   _ -> (toNav' $ reverse $ map uid path, path)
   where
-  id'   = mkLClaferId id False
   toNav = foldl
           (\exp id -> IFunExp iJoin [pExpDefPidPos exp, mkPLClaferId id False])
           (mkLClaferId this True)
   toNav' p = (mkIFunExp iJoin $ map (\c -> mkLClaferId c False) p) :: IExp
-
-mkNav (x:[]) = x
-mkNav xs = foldl1 (\x y -> IFunExp iJoin $ map pExpDefPidPos [x, y]) xs
 
 -- -----------------------------------------------------------------------------
 
@@ -210,32 +213,35 @@ toNodeDeep env
   | length (clafer `elemIndices` resPath env) > 1 = (result, [])
   | otherwise = (result, map (\c -> env {context = Just c,
                                          resPath = c : resPath env}) $
-                 allChildren env)
+                 allInhChildren env)
   where
   result = (clafer, resPath env)
   clafer = fromJust $ context env
   
 
-allChildren env = getSubclafers $ concat $
-                  mapHierarchy elements (sClafers $ genv env)
-                  (fromJust $ context env)
+allChildren env = selectChildren getSuper env
 
+allInhChildren env = selectChildren getSuperArr env
+
+selectChildren f env = getSubclafers $ concat $
+                       mapHierarchy elements f (sClafers $ genv env)
+                       (fromJust $ context env)
 
 findUnique :: String -> [(IClafer, [IClafer])] -> Maybe (String, [IClafer])
 findUnique x xs =
-  case filterPaths x xs of
+  case filterPaths x $ nub xs of
     []     -> Nothing
     [elem] -> Just $ (uid $ fst elem, snd elem)
     xs'    -> error $ "clafer " ++ show x ++ " " ++ errMsg
       where
       xs''   = map ((map uid).snd) xs'
-      errMsg = (if isNamespaceConflict $ concat xs''
-               then "cannot be defined because the name should be unique in the same namespace."
+      errMsg = (if isNamespaceConflict xs''
+               then "cannot be defined because the name should be unique in the same namespace.\n"
                else "is not unique. ") ++ 
                "Available paths:\n" ++ (xs'' >>= showPath)
 
 showPath xs = (intercalate "." $ reverse xs) ++ "\n"
 
-isNamespaceConflict (xs:ys:_) = last xs == last ys
+isNamespaceConflict (xs:ys:_) = tail xs == tail ys
 
 filterPaths x xs = filter (((==) x).ident.fst) xs

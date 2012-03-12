@@ -109,7 +109,7 @@ symbolTableIClafer env c =
 itypeOfClafer :: STEnv -> String -> IType
 itypeOfClafer env id = 
     let clafer = findClaferFromUid env id :: IClafer
-        hierarchy = findHierarchy (stClafers env) clafer :: [IClafer]
+        hierarchy = findHierarchy getSuper (stClafers env) clafer :: [IClafer]
     in
     -- Find the last IClafer (ie. highest in the hierarchy) and get super type
     typeOfISuper $ super $ last hierarchy

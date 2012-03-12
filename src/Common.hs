@@ -34,6 +34,7 @@ import Control.Monad.State
 import Front.Absclafer
 import Intermediate.Intclafer
 
+import Debug.Trace
 -- -----------------------------------------------------------------------------
 -- basic functions shared by desugarer, analyzer and code generator
 type Result = String
@@ -45,6 +46,10 @@ transIdent x = case x of
 
 
 getSuper = getSuperId.supers.super
+
+getSuperArr clafer
+  | isOverlapping $ super clafer = "clafer"
+  | otherwise                    = (getSuperId.supers.super) clafer
 
 
 getSuperId = sident . Intermediate.Intclafer.exp . head
@@ -73,18 +78,14 @@ toClafers = mapMaybe elemToClafer
 
 -- -----------------------------------------------------------------------------
 -- finds hierarchy and transforms each element
-mapHierarchy f = (map f.).findHierarchy
+mapHierarchy f sf = (map f.).(findHierarchy sf)
 
 
 -- returns inheritance hierarchy of a clafer
--- (includes non- and overlapping inheritance)
-findHierarchy :: [IClafer] -> IClafer -> [IClafer]
-findHierarchy = findHierarchy' getSuper
 
-
-findHierarchy' sFun clafers clafer
-  | sFun clafer == "clafer" = [clafer]
-  | otherwise               = clafer : superClafers
+findHierarchy sFun clafers clafer
+  | sFun clafer == "clafer"      = [clafer]
+  | otherwise                    = clafer : superClafers
   where
   superClafers = unfoldr (\c -> find (isEqClaferId $ sFun c) clafers >>=
                           Just . (apply id)) clafer
