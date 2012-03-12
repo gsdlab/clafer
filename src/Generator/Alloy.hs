@@ -126,8 +126,8 @@ genClafer mode resPath oClafer = (cunlines $ filterNull
   cardFact
     | null resPath && (null $ flatten $ genOptCard clafer) =
         case genCard (uid clafer) $ card clafer of
-          "set" -> CString ""
-          c -> mkFact $ CString c
+          CString "set" -> CString ""
+          c -> mkFact c
     | otherwise = CString ""
 
 
@@ -217,11 +217,11 @@ genConstraints mode resPath clafer = (CString $ genParentConst resPath clafer) :
 genParentConst [] _     = ""
 genParentConst _ clafer = concat $ genOptParentConst clafer
 
-
+genOptParentConst :: IClafer -> [String]
 genOptParentConst clafer
   | glCard' == "one"  = [""]
-  | glCard' == "lone" = ["one ", rel]
-  | otherwise         = [ "one @", rel, ".this"]
+  | glCard' == "lone" = ["Parent-relationship ", "one " ++ rel]
+  | otherwise         = ["Parent-relationship" , "one @" ++ rel ++ ".this"]
   -- eliminating problems with cyclic containment;
   -- should be added to cases when cyclic containment occurs
   --                    , " && no iden & @", rel, " && no ~@", rel, " & @", rel]
@@ -244,12 +244,13 @@ mkCard element card
   | card' `elem` ["one", "lone", "some"] = card' ++ " " ++ element
   | otherwise                            = card'
   where
-  card'  = genInterval element card
+  card'  = flatten $ genInterval element card
 
 -- -----------------------------------------------------------------------------
 genGCard element gcard = genInterval element  $ interval $ fromJust gcard
 
 
+genCard :: String -> Maybe Interval -> Concat
 genCard element card = genInterval element $ fromJust card
 
 
@@ -263,22 +264,41 @@ genIntervalCrude x = case x of
   _                   -> "set"
 
 
+genInterval :: String -> Interval -> Concat
 genInterval element x = case x of
-  (1, ExIntegerNum 1) -> "one"
-  (0, ExIntegerNum 1) -> "lone"
-  (1, ExIntegerAst)   -> "some"
-  (0, ExIntegerAst)   -> "set"
+  (1, ExIntegerNum 1) -> cardConcat element [CString "one"]
+  (0, ExIntegerNum 1) -> cardConcat element [CString "lone"]
+  (1, ExIntegerAst)   -> cardConcat element [CString "some"]
+  (0, ExIntegerAst)   -> CString "set" -- "set"
   (n, exinteger)  ->
-    s1 ++ (if null s1 || null s2 then "" else " and") ++ s2
+    case (s1, s2) of
+      (Just c1, Just c2) -> Concat "" [c1, CString " and ", c2]
+      (Just c1, Nothing) -> c1
+      (Nothing, Just c2) -> c2
+      (Nothing, Nothing) -> undefined
     where
-    s1 = if n == 0 then "" else concat [show n, " <= #",  element]
-    s2 = genExInteger element exinteger
+    s1 = if n == 0 then Nothing else Just $ cardLowerConcat element [CString $ concat [show n, " <= #",  element]]
+    s2 =
+        do
+            result <- genExInteger element exinteger
+            return $ cardUpperConcat element [CString result]
 
 
-genExInteger :: String -> ExInteger -> Result
+cardConcat :: String -> [Concat] -> Concat
+cardConcat element = Concat ("Cardinality exact " ++ element)
+
+
+cardLowerConcat :: String -> [Concat] -> Concat
+cardLowerConcat element = Concat ("Cardinality lower " ++ element)
+
+cardUpperConcat :: String -> [Concat] -> Concat
+cardUpperConcat element = Concat ("Cardinality upper " ++ element)
+
+
+genExInteger :: String -> ExInteger -> Maybe Result
 genExInteger element x = case x of
-  ExIntegerAst  -> ""
-  ExIntegerNum n  -> concat [" #", element, " <= ", show n]
+  ExIntegerAst   -> Nothing
+  ExIntegerNum n -> Just $ concat ["#", element, " <= ", show n]
 
 
 -- -----------------------------------------------------------------------------
