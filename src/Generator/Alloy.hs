@@ -201,7 +201,7 @@ genType mode x = genPExp mode [] x
 -- constraints
 -- user constraints + parent + group constraints + reference
 -- a = NUMBER do all x : a | x = NUMBER (otherwise alloy sums a set)
-genConstraints mode resPath clafer = (CString $ genParentConst resPath clafer) :
+genConstraints mode resPath clafer = (genParentConst resPath clafer) :
   (genGroupConst clafer) : constraints 
   where
   constraints = map genConst $ elements clafer
@@ -214,14 +214,14 @@ genConstraints mode resPath clafer = (CString $ genParentConst resPath clafer) :
       crd = card clafer
 
 -- optimization: if only boolean features then the parent is unique
-genParentConst [] _     = ""
-genParentConst _ clafer = concat $ genOptParentConst clafer
+genParentConst [] _     = CString ""
+genParentConst _ clafer =  genOptParentConst clafer
 
-genOptParentConst :: IClafer -> [String]
+genOptParentConst :: IClafer -> Concat
 genOptParentConst clafer
-  | glCard' == "one"  = [""]
-  | glCard' == "lone" = ["Parent-relationship ", "one " ++ rel]
-  | otherwise         = ["Parent-relationship ", "one @" ++ rel ++ ".this"]
+  | glCard' == "one"  = CString ""
+  | glCard' == "lone" = Concat "Parent-relationship" [CString $ "one " ++ rel]
+  | otherwise         = Concat "Parent-relationship" [CString $ "one @" ++ rel ++ ".this"]
   -- eliminating problems with cyclic containment;
   -- should be added to cases when cyclic containment occurs
   --                    , " && no iden & @", rel, " && no ~@", rel, " & @", rel]
