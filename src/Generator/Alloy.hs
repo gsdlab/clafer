@@ -221,7 +221,7 @@ genOptParentConst :: IClafer -> [String]
 genOptParentConst clafer
   | glCard' == "one"  = [""]
   | glCard' == "lone" = ["Parent-relationship ", "one " ++ rel]
-  | otherwise         = ["Parent-relationship" , "one @" ++ rel ++ ".this"]
+  | otherwise         = ["Parent-relationship ", "one @" ++ rel ++ ".this"]
   -- eliminating problems with cyclic containment;
   -- should be added to cases when cyclic containment occurs
   --                    , " && no iden & @", rel, " && no ~@", rel, " & @", rel]
