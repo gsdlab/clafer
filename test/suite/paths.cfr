@@ -1,4 +1,4 @@
-abstract Person
+Person
 	age : integer
 	xor maritalStatus
 		neverMarried

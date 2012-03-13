@@ -360,7 +360,7 @@ sugarSetExp' x = case x of
   IClaferId modName id _ -> ClaferId $ Path $ (sugarModId modName) : [sugarModId id]
 
 desugarPath :: PExp -> PExp
-desugarPath (PExp iType pid pos x) = PExp iType pid pos result
+desugarPath (PExp iType pid pos x) = reducePExp $ PExp iType pid pos result
   where
   result
     | isSet x     = IDeclPExp ISome [] (pExpDefPidPos x)
@@ -374,6 +374,29 @@ isSet :: IExp -> Bool
 isSet (IClaferId _ _ _)  = True
 isSet (IFunExp op _) = op `elem` setBinOps
 isSet _ = False
+
+
+-- reduce parent
+reducePExp (PExp t pid pos x) = PExp t pid pos $ reduceIExp x
+
+reduceIExp x = case x of
+  IDeclPExp quant decls pexp -> IDeclPExp quant decls $ reducePExp pexp
+  IFunExp op exps -> redNav $ IFunExp op $ map redExps exps
+    where
+    (redNav, redExps) = if op == iJoin then (reduceNav, id) else (id, reducePExp) 
+  _  -> x
+
+reduceNav x@(IFunExp op exps@((PExp _ _ _ iexp@(IFunExp _ (pexp0:pexp:_))):pPexp:_)) = 
+  if op == iJoin && isParent pPexp && isClaferName pexp
+  then reduceNav $ Intermediate.Intclafer.exp pexp0
+  else x{exps = (head exps){Intermediate.Intclafer.exp = reduceIExp iexp} :
+                tail exps}
+reduceNav x = x
+
+isParent (PExp _ _ _ (IClaferId _ id _)) = id == parent
+
+isClaferName (PExp _ _ _ (IClaferId _ id _)) =
+  id `notElem` ([this, parent, children] ++ primitiveTypes)
 
 
 desugarDecl :: Bool -> Decl -> IDecl

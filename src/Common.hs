@@ -189,6 +189,8 @@ parent = "parent"
 
 children = "children"
 
+specialNames = [this, parent, children]
+
 strType = "string"
 
 intType = "int"
