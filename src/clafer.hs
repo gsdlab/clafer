@@ -27,6 +27,7 @@ import Prelude hiding (writeFile, readFile, print, putStrLn)
 import System.IO
 import System.Cmd
 import System.Exit
+import System.FilePath
 import Control.Exception.Base
 import IO  ( stdin, hGetContents )
 import System ( getArgs, getProgName )
@@ -92,16 +93,12 @@ run v p args = do
                             putStrLn s
                             exitFailure
              Ok  tree -> do
-                          let f = stripFileName $ file args
+                          let f = dropExtension $ file args
                           conPutStrLn args "\nParse Successful!"
                           dTree <- desugar args tree
                           oTree <- analyze args dTree
                           f' <- generate f args oTree
                           when (fromJust $ validate args) $ runValidate args f'
-
-stripFileName f = case dropWhile (/= '.') $ reverse f of
-  [] -> f
-  xs -> reverse $ tail xs
 
 desugar args tree = do
   conPutStrLn args "[Desugaring]"
