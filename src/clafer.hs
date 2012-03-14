@@ -99,9 +99,11 @@ run v p args = do
                           f' <- generate f args oTree
                           when (fromJust $ validate args) $ runValidate args f'
 
-stripFileName f = case dropWhile (/= '.') $ reverse f of
+stripFileName f = case dropWhile (/= '.') f' of
   [] -> f
-  xs -> reverse $ tail xs
+  xs -> reverse ((tail xs) ++ path)
+  where
+  (f', path) = break (== '/') $ reverse f
 
 desugar args tree = do
   conPutStrLn args "[Desugaring]"
