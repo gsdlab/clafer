@@ -6,9 +6,9 @@ CLAFER_SELF = ../clafer -s -v --tooldir=../
 UNAME := $(shell uname | tr "A-Z" "a-z")
 
 ifeq ($(UNAME), darwin)
-	XARGS_DIFF_COMMAND := xargs  -t -I % -L1 diff  % %.reg
+	XARGS_DIFF_COMMAND := xargs  -t -I % -L1 diff -w -B  % %.reg
 else
-	XARGS_DIFF_COMMAND := xargs  -t -i diff {}.reg {}
+	XARGS_DIFF_COMMAND := xargs  -t -i diff -w -B {}.reg {}
 endif
 
 
@@ -30,7 +30,7 @@ test:
 	find $(SUITE_DIR) -type f \( -iname "*.cfr" ! -iname "*.des.cfr" \) | xargs -L1 $(CLAFER_SELF) -m=clafer
 
 
-	find $(SUITE_DIR)  -type f \( -iname "*.als" ! -iname "*.des.cfr" \) | $(XARGS_DIFF_COMMAND)
+	find $(SUITE_DIR)  -type f \( -iname "*.als" ! -iname "*.des.als" \) | $(XARGS_DIFF_COMMAND)
 
 clean:
 	$(MAKE) -C $(SUITE_DIR) clean
