@@ -1,0 +1,86 @@
+open util/integer
+pred show {}
+
+
+abstract sig c1_Prof
+{ r_c2_prefer : set c2_prefer
+, r_c3_reject : set c3_reject }
+{ no (this.@r_c2_prefer) & (this.@r_c3_reject) }
+sig c2_prefer in c56_TA
+{}
+{ one @r_c2_prefer.this }
+sig c3_reject in c56_TA
+{}
+{ one @r_c3_reject.this }
+abstract sig c12_Course
+{ r_c13_lecturer : one c13_lecturer
+, r_c14_assistants : set c14_assistants
+, r_c28_allocation : one c28_allocation }
+{ all  ta : this.@r_c14_assistants | this in (((ta.@r_c57_first) + (ta.@r_c58_second)) + (ta.@r_c59_third))
+  no (this.@r_c14_assistants) & ((this.@r_c13_lecturer).@r_c3_reject) }
+sig c13_lecturer in c1_Prof
+{}
+{ one @r_c13_lecturer.this }
+sig c14_assistants in c56_TA
+{}
+{ one @r_c14_assistants.this
+  (this.~@r_c14_assistants) in (((this.@r_c57_first) + (this.@r_c58_second)) + (this.@r_c59_third)) }
+sig c28_allocation
+{ ref : one Int }
+{ one @r_c28_allocation.this }
+abstract sig c56_TA
+{ r_c57_first : lone c57_first
+, r_c58_second : lone c58_second
+, r_c59_third : lone c59_third }
+{ all disj c1, c2 : c12_Course | (this in (c1.@r_c14_assistants)) => (this not in (c2.@r_c14_assistants)) }
+sig c57_first in c12_Course
+{}
+{ one @r_c57_first.this }
+sig c58_second in c12_Course
+{}
+{ one @r_c58_second.this }
+sig c59_third in c12_Course
+{}
+{ one @r_c59_third.this }
+one sig c73_X extends c1_Prof
+{}
+one sig c74_Y extends c1_Prof
+{}
+one sig c75_A extends c56_TA
+{}
+one sig c76_B extends c56_TA
+{}
+one sig c77_C extends c56_TA
+{}
+one sig c78_D extends c56_TA
+{}
+one sig c79_E extends c56_TA
+{}
+one sig c80_F extends c56_TA
+{}
+one sig c81_G extends c56_TA
+{}
+one sig c82_ECE155 extends c12_Course
+{}
+one sig c83_ECE351 extends c12_Course
+{}
+fact { (c82_ECE155.@r_c13_lecturer) = c73_X }
+fact { (c83_ECE351.@r_c13_lecturer) = c74_Y }
+fact { (c82_ECE155.@r_c28_allocation.@ref) = 3 }
+fact { (c83_ECE351.@r_c28_allocation.@ref) = 2 }
+fact { (c73_X.@r_c2_prefer) = (c75_A + c76_B) }
+fact { (c74_Y.@r_c2_prefer) = ((c75_A + c76_B) + c77_C) }
+fact { (c73_X.@r_c3_reject) = (c80_F + c81_G) }
+fact { (c74_Y.@r_c3_reject) = (c78_D + c81_G) }
+fact { (c75_A.@r_c57_first) = c82_ECE155 }
+fact { (c75_A.@r_c58_second) = c83_ECE351 }
+fact { (c76_B.@r_c57_first) = c83_ECE351 }
+fact { (c76_B.@r_c58_second) = c82_ECE155 }
+fact { (c77_C.@r_c57_first) = c82_ECE155 }
+fact { (c77_C.@r_c58_second) = c83_ECE351 }
+fact { (c78_D.@r_c57_first) = c83_ECE351 }
+fact { (c78_D.@r_c58_second) = c82_ECE155 }
+fact { (c79_E.@r_c57_first) = c82_ECE155 }
+fact { (c79_E.@r_c58_second) = c83_ECE351 }
+fact { no c56_TA.@r_c59_third }
+metrics { min [#(c56_TA - (c12_Course.@r_c14_assistants)) ] }

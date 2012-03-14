@@ -2,6 +2,7 @@ abstract Prof
 	 prefer -> TA * 
 	 reject -> TA * 
 	 [no ( this.prefer & this.reject)]
+
 abstract Course
 	 lecturer -> Prof
 	 assistants -> TA *
@@ -66,7 +67,7 @@ ECE351 : Course
 
 [no TA.third]
 
-[ # assistants <: first  < 10]
+//[ # assistants <: first  < 10]
 
 
 

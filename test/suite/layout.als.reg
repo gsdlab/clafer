@@ -1,0 +1,8 @@
+open util/integer
+pred show {}
+
+
+one sig c1_A
+{}
+one sig c2_B
+{}

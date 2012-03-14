@@ -1,0 +1,14 @@
+open util/integer
+pred show {}
+
+
+one sig c1_clafer
+{}
+abstract sig c2_A
+{ r_c3_s : lone c3_s }
+sig c3_s
+{ ref : one Int }
+{ one @r_c3_s.this }
+one sig c4_A1 extends c2_A
+{}
+{ (this.@r_c3_s.@ref) = 0 }

@@ -16,8 +16,9 @@ ECE351 : Course
 
 
 
-tas_with_first_choice : int 
-//[tas_with_first_choice = #(first <: assistants )] 
+tas_with_first_choice : int
+
+[tas_with_first_choice = relation first & relation assistants] 
 // you can't express # TAS with first choice, would need first <: assisstants  but this gives name resoultion problem.
 
 [# Course.assistants > 0]
