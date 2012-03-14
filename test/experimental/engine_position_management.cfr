@@ -1,0 +1,34 @@
+// Based on the paper Feature Interaction and Dependencies: Modeling Features for Reengineering a Legacy Product line.
+
+abstract OperatingDataEnginePositionManagement
+	SenseCamshaftAngle
+		CamshaftCrankshaftAdaptation ?
+			SensorDiagnostics
+		ComputationAccuracySettings
+		ExportComputedValues
+		CamshaftSensorDiagnostics ?
+		ToothCounter
+	SenseCrankshaftAngle
+	Syncrhonization
+		LimpHomeCamshaftFailure ?
+			DoubleIgnition ?
+			MissfireDetection ?
+			StartARandomTrip ?
+			BroadcastLimpHomeStatus
+		ProcessingErrorMessage
+		LimpHomeCrankshaftFailure ?
+		MonitoringForNewSynchronization
+		or startup ?
+			Fast
+			Reliable
+			FastWithHistory
+	SenseEngineSpeed
+		SpeedFilter
+		CrankshaftSensorDiagnostics ?
+		ConvertToDifferentQuanitzation
+		DetectVeryLowEngineSpeed
+	xor BackrotationDetection ?
+		WithCamshaftSensor
+		WithCrankshaftSensor
+
+validEPMConfiguration : OperatingDataEnginePositionManagement

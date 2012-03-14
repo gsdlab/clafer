@@ -1,0 +1,15 @@
+// Based on the paper Feature Interaction and Dependencies: Modeling Features for Reengineering a Legacy Product line.
+
+LambdaFeedbackControl
+	xor FirstSensorFeedbackControl 
+	    TwoStateFeedbackControlFirstSensor
+	    ContinuousFeedbackControlFirstSensor
+		CatalystOutcomeFeedbackControl ?
+    	xor MiddleSensorFeedbackControl ?
+		ContinousFeedbackControlMiddleSensor
+		NaturalFrequencyFeebackControl
+	MainSensorFeedbackControl
+		ContinousFeedbackControlMainSensor
+
+
+ValidConfigurationLambdaFeedbackControl : LambdaFeedbackControl
