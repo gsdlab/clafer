@@ -27,9 +27,9 @@ newVersion:
 	$(MAKE) -C $(SRC_DIR) newVersion
 
 clean:
+	$(MAKE) -C $(TEST_DIR) clean
 	$(MAKE) -C $(SRC_DIR) clean
 	$(MAKE) -C $(TOOL_DIR) clean
-	$(MAKE) -C $(TEST_DIR) clean
 	rm -rf dist
 	rm -f clafer
 	find . -type f -name '*.o' -print0 | xargs -0 rm -f

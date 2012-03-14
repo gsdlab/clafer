@@ -23,6 +23,7 @@ test:
 
 	find $(SUITE_DIR)  -type f \( -iname "*.als" ! -iname "*.des.cfr" \) | xargs  -t -I % -L1 diff  % %.reg
 clean:
+	$(MAKE) -C $(SUITE_DIR) clean
 	find . -type f -name '*~' -print0 | xargs -0 rm -f
 	find . -type f -name '*.als' -print0 | xargs -0 rm -f
 	find . -type f -name '*.cfr.des' -print0 | xargs -0 rm -f
