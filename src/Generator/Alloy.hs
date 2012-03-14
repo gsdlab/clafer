@@ -33,6 +33,43 @@ import Front.Absclafer
 import Intermediate.Intclafer
 import Intermediate.ResolverType
 
+{-
+ - What should Concat srcPos be? Consider the following Alloy snippet
+ - 
+ -   sig c2_D extends c1_B
+ -   { r_c3_C : set c3_C }
+ -
+ -   sig c3_C
+ -   {}
+ -   { one @r_c3_C.this }
+ -
+ -   fact { 6 <= #c13_G and #c13_G <= 7 }
+ -   sig c13_G in c1_B
+ - 
+ -
+ -
+ - "Sig"
+ -   extends c1_B
+ -   { r_c3_C : set c3_C }
+ -
+ - "Extends"
+ -   extends c1_B
+ -
+ - "In"
+ -   in c1_B
+ - 
+ - "Parent"
+ -   one @r_c3_C.this
+ -
+ - "Cardinality lower c13_G"
+ -   6 <= #c13_G
+ -
+ - "Cardinality upper c13_G"
+ -   #c13_G <= 7
+ -
+ - TODO: examples of the other possible srcPos
+ -}
+
 -- representation of strings in chunks (for line/column numbering)
 data Concat = CString String | Concat {
   srcPos :: String,
@@ -47,16 +84,18 @@ flatten :: Concat -> String
 flatten (CString x)      = x
 flatten (Concat _ nodes) = nodes >>= flatten
 
-(+++) (CString x) (CString y)          = CString $ x ++ y
-(+++) x@(CString _) (Concat srcPos xs) = Concat srcPos (x:xs)
-(+++) (Concat srcPos xs) x@(CString _) = Concat srcPos (xs ++ [x])
-(+++) x@(Concat p xs) y@(Concat p' ys) 
-  | p <= p'                            = concatPos (srcPos x)
-  | otherwise                          = concatPos (srcPos y)
-  where
-  concatPos sp = Concat sp [x, y]
-
-
+(+++) (CString x)     (CString y)      = CString $ x ++ y
+(+++) (CString "")    y@Concat{}       = y
+(+++) x               (Concat "" ys)   = Concat "" $ x : ys
+(+++) x@CString{}     y@Concat{}       = Concat "" $ [x, y]
+(+++) x@Concat{}      (CString "")     = x
+(+++) (Concat "" xs)  y                = Concat "" $ xs ++ [y]
+(+++) x@Concat{}      y@CString{}      = Concat "" $ [x, y]
+(+++) x@(Concat p xs) y@(Concat p' ys)
+  | p == p'                            = Concat p $ xs ++ ys
+  | otherwise                          = Concat "" [x, y]
+  
+  
 cconcat = foldr (+++) (CString "")
 
 cintercalate xs xss = cconcat (intersperse xs xss)
@@ -108,16 +147,16 @@ showSet delim xs = showSet' delim $ filterNull xs
   showSet' delim xs = mkSet $ cintercalate delim xs
 
 optShowSet [] = CString ""
-optShowSet xs = showSet (CString "\n  ") xs
+optShowSet xs = CString "\n" +++ showSet (CString "\n  ") xs
 
 -- optimization: top level cardinalities
 -- optimization: if only boolean parents, then set card is known
 genClafer :: ClaferMode -> [String] -> IClafer -> Concat
 genClafer mode resPath oClafer = (cunlines $ filterNull
   [ cardFact +++ claferDecl clafer
-  , showSet (CString "\n, ") $ genRelations mode clafer
-  , optShowSet $ filterNull $ genConstraints mode resPath clafer
-  ]) +++ children
+        ((showSet (CString "\n, ") $ genRelations mode clafer) +++
+        (optShowSet $ filterNull $ genConstraints mode resPath clafer))
+  ]) +++ CString "\n" +++ children
   where
   clafer = transPrimitive oClafer
   children = cconcat $ filterNull $ map
@@ -138,16 +177,16 @@ transPrimitive clafer = clafer{super = toOverlapping $ super clafer}
     | otherwise      = x
   toOverlapping x = x
 
-claferDecl clafer = cconcat [genOptCard clafer,
+claferDecl clafer rest = cconcat [genOptCard clafer,
   CString $ genAbstract $ isAbstract clafer, CString "sig ",
-  CString $ uid clafer, CString $ genExtends $ super clafer]
+  Concat "Sig" [CString $ uid clafer, genExtends $ super clafer, CString "\n", rest]]
   where
   genAbstract isAbstract = if isAbstract then "abstract " else ""
-  genExtends (ISuper False [PExp _ _ _ (IClaferId _ "clafer" _)]) = ""
-  genExtends (ISuper False [PExp _ _ _ (IClaferId _ id _)]) = " extends " ++ id
+  genExtends (ISuper False [PExp _ _ _ (IClaferId _ "clafer" _)]) = CString ""
+  genExtends (ISuper False [PExp _ _ _ (IClaferId _ id _)]) = CString " " +++ Concat "Extends" [CString $ "extends " ++ id]
   -- todo: handle multiple inheritance
-  genExtends (ISuper True  [PExp _ _ _ (IClaferId _ id _)]) = if isPrimitive id then "" else " in " ++ id
-  genExtends _ = ""
+  genExtends (ISuper True  [PExp _ _ _ (IClaferId _ id _)]) = if isPrimitive id then CString "" else CString " " +++ Concat "In" [CString $ "in " ++ id]
+  genExtends _ = CString ""
 
 
 genOptCard clafer
@@ -272,7 +311,7 @@ genInterval element x = case x of
   (0, ExIntegerAst)   -> CString "set" -- "set"
   (n, exinteger)  ->
     case (s1, s2) of
-      (Just c1, Just c2) -> Concat "" [c1, CString " and ", c2]
+      (Just c1, Just c2) -> cconcat [c1, CString " and ", c2]
       (Just c1, Nothing) -> c1
       (Nothing, Just c2) -> c2
       (Nothing, Nothing) -> undefined
@@ -290,6 +329,7 @@ cardConcat element = Concat ("Cardinality exact " ++ element)
 
 cardLowerConcat :: String -> [Concat] -> Concat
 cardLowerConcat element = Concat ("Cardinality lower " ++ element)
+
 
 cardUpperConcat :: String -> [Concat] -> Concat
 cardUpperConcat element = Concat ("Cardinality upper " ++ element)
