@@ -34,6 +34,7 @@ import System.Timeout
 import Control.Monad.State
 import System.Environment.Executable
 import Data.Maybe
+import System.FilePath.Posix
 
 import Common
 import ClaferArgs
@@ -92,18 +93,12 @@ run v p args = do
                             putStrLn s
                             exitFailure
              Ok  tree -> do
-                          let f = stripFileName $ file args
+                          let f = dropExtension $ file args
                           conPutStrLn args "\nParse Successful!"
                           dTree <- desugar args tree
                           oTree <- analyze args dTree
                           f' <- generate f args oTree
                           when (fromJust $ validate args) $ runValidate args f'
-
-stripFileName f = case dropWhile (/= '.') f' of
-  [] -> f
-  xs -> reverse ((tail xs) ++ path)
-  where
-  (f', path) = break (== '/') $ reverse f
 
 desugar args tree = do
   conPutStrLn args "[Desugaring]"
