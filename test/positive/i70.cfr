@@ -1,9 +1,9 @@
-abstract Clafer1
+Clafer1
     xor type
         Type1
         Type2
 
-abstract Clafer2
+Clafer2
     clafer1 -> Clafer1
     xor type
         Type1

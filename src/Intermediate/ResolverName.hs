@@ -173,8 +173,8 @@ resolve env id fs = fromJust $ foldr1 mplus $ map (\x -> x env id) fs
 
 
 -- reports error if clafer not found
-resolveNone env id = error $ "resolver: " ++ id ++ " not found"
-   -- within " ++ (show $ context env >>= (Just . ident)) ++ show env
+resolveNone env id = error $ "resolver: " ++ id ++ " not found" ++
+  " within " ++ (showPath $ map uid $ resPath env)
 
 
 -- checks if ident is one of special identifiers
