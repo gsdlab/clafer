@@ -1,0 +1,97 @@
+The Attributes:
+1. Price
+
+2. Ranking in the Market (APPs) 
+
+3. Footprint
+     ROM  (e.g., Installation, User Data)
+     RAM (e.g., Dalvik Cache) 
+
+4. Boot-up time
+
+5. Security
+
+6. Stability
+
+7. Utilization of computing resource(s)  
+      //CPU (not in this example)
+      Energy Consumption
+
+The Configuration Constraints:
+
+//HARDWARE
+1. The cost of the screen is less than 45 CAD.
+[ 0 < Screen.price < 45]
+
+2. The maretial of the screen is colorScreen and the resolution ratio must not less than 480*560.
+[Screen.material.colorScreen && Screen.resolution in R_480*560, R_480*800]
+
+3. No keyboard.
+[!Keyboard]
+[no Keyboard]
+
+4. The capability of the battery is 1730 mah.
+[Baterry.Capability = C_1730mah ]
+
+5. The freq. of the CUP is at least 1 GHz.
+[frequency in 1.1, 1.5]
+
+6. The core of the phone is two.
+[Cores.two]
+
+7. Turn off the overclovking.
+[!iverclocking]
+
+8. The capability of the RAM is 768MB
+[RAM.Capability = 768]
+
+9. THe capability of the ROM is larger than 1.1 GB
+[ ROM.Capability = 1100 ]
+
+10. Choose GPS
+[ GPS ]
+
+11. The back camera is 500M or 800M, but the front camera is 30M.
+[Back-Camera.Pixel in P_500M, P_800M && Front-Camera.Pixel = P_30M]
+
+12. The total cost of the HW is between 125CAD and 175CAD.
+[125 < Screen.price + ... + < 175 ]
+
+//The objective functions:
+13. Minize the cost of all the hardware
+[ Min(price, sum(Screen, Keyboard, Battery, CPU...Front-Camera))]
+
+15. Maximize the times of performance.improved.
+[ Max(Num(performance.improved))]
+
+16. Minimize the times of energyConsumption.increased
+[ Min(Num(energyConsumption.increased))]
+
+
+//The ROM
+//The Feature
+//The Applications
+1. Only choose the systems apps that need less than 200MB ROM for the installation and 100MB ROM for the user data.
+[ SystemApplication.installationROM < 200 && Application.ROM.userDataROM <100 ]
+
+
+2. The ROM that one APP needs cannot exceed 20MB.
+[ Application.installationROM < 20 ]
+
+2. The RAM that one system app needs cannot exceed 20MB.
+[ SystemApplication.vmRAM < 20 ]
+
+3. If the app can run in the background, the vmRAM this app needs is cannot exceed 30MB.
+[ Application.backgroundRunning  => Application.vmRAM 30 ]
+
+4. Only install the highly stable apps. (for the vendor)
+[ Application.Stability = high] 
+
+5. Do not install any user apps whose the energy consumption index is more than 20.
+[ UserApplication.energyConsumptionIndex  <20 ]
+
+6.If the user app has high rank (4-5) in the android market, choose the one, even if it is not stable and may consume more energy (more than 40).
+[UserApplication.Stability.low || UserApplication.Stability.medium || UserApplication.eneryConsumptionIndex > 40 => UserApplication.Usability.U_4-5]
+
+//(UserApplication.Usability.U_4-5) 0.95
+//(UserApplication.Stability.high && (UserApplication.eneryConsumptionIndex <= 40) 0.9

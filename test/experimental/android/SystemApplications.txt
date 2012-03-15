@@ -1,0 +1,42 @@
+abstract ContactAPP : SystemApplication 
+
+example htcContact : ContactAPP
+	[ !removable
+	backgroundRunning 
+	initializeInBootUp
+	bootupTime = XXX
+	price = xxx
+	installationROM = XXX
+	userDataROM = XXX
+	vmRAM = XXX
+	eneryConsumption = xxx
+	Security.high
+	Stability.high ]
+
+example MotoContact: ContactAPP
+	[removable
+	backgroundRunning 
+	initializeInBootUp
+	bootupTime = XXX
+	price = xxx
+	installationROM = XXX
+	userDataROM = XXX
+	vmRAM = XXX
+	eneryConsumption = xxx
+	Security.high
+	Stability.high 
+	U_4-5 ]
+
+example 9MContact: ContactAPP
+	[ removable
+	backgroundRunning 
+	initializeInBootUp
+	bootupTime = XXX
+	price = xxx
+	installationROM = XXX
+	userDataROM = XXX
+	vmRAM = XXX
+	eneryConsumption = xxx
+	Security.high
+	Stability.high 
+	U_4-5 ]

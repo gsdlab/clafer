@@ -1,0 +1,183 @@
+world AndroidCustomization
+
+abstract AndroidPhone
+	hardware : Hardware
+	software : ROM
+	//I want to describe that some features have positive / negative influences on these two properties
+	or energyConsumption
+		increased
+		reduced
+	or performance
+		improved
+		reduced
+
+abstract Hardware
+	Screen
+		price : integer in 30..90
+		xor material
+			basicScreen
+			colorScreen
+			LCD
+		xor resolution
+			R_320*480
+			R_480*560
+			R_480*800	
+		xor screenType
+			Screen1
+				[ colorScreen && R_480*560 ]
+				(price = 40)
+			Screen2
+				[ LCD && R_480*800 ]
+				(price = 50)
+	//this model does not show the price of the following hardware
+	Keyboard ?
+	KeyboardLight?
+		[ Hardware.Keyboard ]
+	Battery
+		xor Capability
+			C_1450mah
+			C_1730mah
+	CPU	
+		xor Cores
+			one
+				
+			two
+				[ AndroidPhone.energyConsumption.increased
+				  AndroidPhone.performance.improved ]
+		xor Frequency	
+			F_800MHz
+				[ AndroidPhone.energyConsumption.reduced
+				  AndroidPhone.performance.reduced 
+				]
+			F_1.1GHz (1)
+			F_1.5GHz
+				[ AndroidPhone.energyConsumption.increased 
+				  AndroidPhone.performance.improved
+				]
+		overclocking?
+			[ AndroidPhone.energyConsumption.increased 
+			  AndroidPhone.performance.improved
+			]
+	RAM
+		Capability : integer in 1000..2000
+		
+	HW-ROM
+		Capability : integer in 1000..2000
+	or Position	// Michal: actually should be"mux" because you may have none as well
+		GPS
+		A-GPS
+	Back-Camera
+		xor Pixel
+			P_800M
+			P_500M
+	Front-Camera ?
+		[ ROM.version >= 2.3 ]
+	
+
+abstract ROM
+	//***Does Clafer have in-built type "version"?
+	version : String (= "2.3")
+	kernel -> Kernel
+	systemapp -> SystemApplication +
+	userapp -> UserApplication +
+	feature -> Features +
+	
+//We can use the clafer model from http://gsd.uwaterloo.ca/clafer/models
+//Here is just a very simple example for the kernel
+//There are some diferences between the linux kernel and the android kernel.
+abstract Kernel
+	kernelVersion : String (="2.6.35")
+	xor I/OScheduler
+		NOOP
+			[ AndroidPhone.performance.improved]
+		DefaultScheduler
+	xor MemoryManagement
+		SLQB
+			[ AndroidPhone.performance.improved]
+		DefaultMM
+	Drivers
+		xor wifi
+			Version1
+			Version2
+			...
+		xor bluetooth
+			Version1
+			Version2
+			...
+		xor ...
+	LZMACompression ?
+		[ AndroidPhone.performance.improved ]
+	//lots of options......	
+		
+
+abstract Application
+	removable ?
+	backgroundRunning ?
+	initializeInBootUp?
+		bootupTime : integer
+		[ bootupTime > 0 ]
+	price : integer in 0..50
+	installationROM : interger > 1
+		xor isReduced
+			notReduced
+			Reduced
+			(notReduced)
+		[ APP2SD => Reduced]
+	userDataROM : interger >1
+		xor isReduced?
+			notReduced (1)
+			Reduced
+		[ DATA2SD => Reduced ]
+	vmRAM : interger >1
+		xor isReduced?
+			notReduced (1)
+			Reduced
+		[ Dalivik2SD => Reduced]
+	eneryConsumption : integer
+	xor Security
+		high
+		medium
+		low
+		(medium) 
+	xor Stability
+		high
+		medium
+		low
+		(medium)
+		
+abstract SystemApplication : Application
+	[ !(Application.removable) ]
+			
+abstract UserApplication : Application
+	[ Application.removable ]
+	xor Usability
+		U_4-5
+		U_3-4
+		U_3-2
+		U_1-2
+		U_0-1
+
+abstract Feature
+	price : integer in 0..50
+	initializeInBootUp?
+		bootupTime : integer
+		[ bootupTime > 0 ]
+	backgroundRunning ?
+	installationROM : interger >1
+	userDataROM : interger >1
+	vmRAM : interger >1
+	eneryConsumption : integer
+	xor Security
+		high
+		medium
+		low
+		(medium) 
+	xor Stability
+		high
+		medium
+		low
+		(medium)
+
+
+
+
