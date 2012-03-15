@@ -27,7 +27,6 @@ import Prelude hiding (writeFile, readFile, print, putStrLn)
 import System.IO
 import System.Cmd
 import System.Exit
-import System.FilePath
 import Control.Exception.Base
 import IO  ( stdin, hGetContents )
 import System ( getArgs, getProgName )
