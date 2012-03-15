@@ -15,6 +15,13 @@ else
 endif
 
 
+ifeq ($(UNAME), darwin)
+	XARGS_CP_REGS :=  xargs  -t -I % -L1 cp  $(SUITE_DIR)/% $(REG_DIR)/%.reg 
+else
+       	XARGS_CP_REGS := xargs  -t -i cp $(REG_DIR)/{}.reg $(SUITE_DIR)/{}
+endif
+
+
 test:
 	$(MAKE) clean
 	@if test ! -f $(TOOL_DIR)/"alloy4.jar"; then \
@@ -34,6 +41,12 @@ test:
 
 
 	$(FIND_COMMAND) | $(XARGS_DIFF_COMMAND)
+
+reg:
+
+	rm $(REG_DIR)/*.reg
+
+	$(FIND_COMMAND) | $(XARGS_CP_REGS)	
 
 clean:
 	$(MAKE) -C $(SUITE_DIR) clean

@@ -23,6 +23,9 @@ prof:
 test:
 	$(MAKE) -C $(TEST_DIR) test
 
+reg:
+	$(MAKE) -C $(TEST_DIR) reg
+
 newVersion:
 	$(MAKE) -C $(SRC_DIR) newVersion
 
