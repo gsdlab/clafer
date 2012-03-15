@@ -7,7 +7,7 @@ CLAFER_SELF = ../clafer -s -v --tooldir=../
 UNAME := $(shell uname | tr "A-Z" "a-z")
 
 ifeq ($(UNAME), darwin)
-	XARGS_DIFF_COMMAND := xargs  -t -I % -L1 diff -w -B  % %.reg
+	XARGS_DIFF_COMMAND := xargs  -t -I % -L1 diff -w -B  $(SUITE_DIR)/% $(REG_DIR)/%.reg
 else
 	XARGS_DIFF_COMMAND := xargs  -t -i diff -w -B $(REG_DIR)/{}.reg $(SUITE_DIR)/{}
 endif
