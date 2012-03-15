@@ -1,14 +1,15 @@
 TOOL_DIR = ../tools
 SUITE_DIR = positive
+REG_DIR = regression
 CLAFER = ../clafer -s -v --tooldir=$(TOOL_DIR)
 CLAFER_SELF = ../clafer -s -v --tooldir=../
 
 UNAME := $(shell uname | tr "A-Z" "a-z")
 
 ifeq ($(UNAME), darwin)
-	XARGS_DIFF_COMMAND := xargs  -t -I % -L1 diff -w -B  % %.reg
+	XARGS_DIFF_COMMAND := xargs  -t -I % -L1 diff -w -B  $(SUITE_DIR)/% $(REG_DIR)/%.reg
 else
-	XARGS_DIFF_COMMAND := xargs  -t -i diff -w -B {}.reg {}
+	XARGS_DIFF_COMMAND := xargs  -t -i diff -w -B $(REG_DIR)/{}.reg $(SUITE_DIR)/{}
 endif
 
 
@@ -30,7 +31,7 @@ test:
 	find $(SUITE_DIR) -type f \( -iname "*.cfr" ! -iname "*.des.cfr" \) | xargs -L1 $(CLAFER_SELF) -m=clafer
 
 
-	find $(SUITE_DIR)  -type f \( -iname "*.als" ! -iname "*.des.als" \) | $(XARGS_DIFF_COMMAND)
+	find $(SUITE_DIR)  -type f \( -iname "*.als" ! -iname "*.des.als" \) -printf "%f\n" | $(XARGS_DIFF_COMMAND)
 
 clean:
 	$(MAKE) -C $(SUITE_DIR) clean

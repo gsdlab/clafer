@@ -52,6 +52,9 @@ import Intermediate.ResolverType
  -   extends c1_B
  -   { r_c3_C : set c3_C }
  -
+ - "SubSig"
+ -   r_c3_C : set c3_C
+ -
  - "Extends"
  -   extends c1_B
  -
@@ -204,12 +207,12 @@ isPrimitiveClafer clafer = case super clafer of
 -- overlapping inheritance is a new clafer with val (unlike only relation)
 -- relations: overlapping inheritance (val rel), children
 -- adds parent relation
-genRelations mode clafer = ref : (map (CString . mkRel) $ getSubclafers $ elements clafer)
+genRelations mode clafer = maybeToList ref ++ (map mkRel $ getSubclafers $ elements clafer)
   where
-  ref = CString $ if isPrimitive $ flatten $ refType mode clafer then
-            genRel "ref" clafer {card = Just (1, ExIntegerNum 1)} $
-            flatten $ refType mode clafer else ""
-  mkRel c = genRel (genRelName $ uid c) c $ uid c
+  ref = if isPrimitive $ flatten $ refType mode clafer then
+            Just $ Concat "SubSig" [CString $ genRel "ref" clafer {card = Just (1, ExIntegerNum 1)} $
+            flatten $ refType mode clafer] else Nothing
+  mkRel c = Concat "SubSig" [CString $ genRel (genRelName $ uid c) c $ uid c]
 
 
 genRelName name = "r_" ++ name
