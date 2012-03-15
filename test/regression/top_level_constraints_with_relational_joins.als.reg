@@ -14,26 +14,24 @@ abstract sig c3_TA
 
 sig c4_first in c1_Course
 {}
-{ one @r_c4_first.this }
+{ one @r_c4_first.this
+  (this.~@r_c4_first) in (this.@r_c2_assistants) }
 
-one sig c5_CompilerGradStudent extends c3_TA
-{ r_c6_AIGradStudent : one c6_AIGradStudent
-, r_c7_CompilerCourse : one c7_CompilerCourse
-, r_c8_MachineLearningCourse : one c8_MachineLearningCourse
-, r_c19_tas_with_first_choice : one c19_tas_with_first_choice }
-{ (c5_CompilerGradStudent.@r_c4_first) = (this.@r_c7_CompilerCourse)
-  ((this.@r_c6_AIGradStudent).@r_c4_first) = (this.@r_c8_MachineLearningCourse)
-  (#(c1_Course.@r_c2_assistants)) > 0 }
-
-one sig c6_AIGradStudent extends c3_TA
+one sig c10_CompilerGradStudent extends c3_TA
 {}
 
-one sig c7_CompilerCourse extends c1_Course
+one sig c11_AIGradStudent extends c3_TA
 {}
 
-one sig c8_MachineLearningCourse extends c1_Course
+one sig c12_CompilerCourse extends c1_Course
 {}
 
-one sig c19_tas_with_first_choice
+one sig c13_MachineLearningCourse extends c1_Course
+{}
+
+fact { (c10_CompilerGradStudent.@r_c4_first) = c12_CompilerCourse }
+fact { (c11_AIGradStudent.@r_c4_first) = c13_MachineLearningCourse }
+one sig c24_numerOfAssistants
 { ref : one Int }
+{ this.@ref = (#(c1_Course.@r_c2_assistants)) }
 

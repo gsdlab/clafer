@@ -18,7 +18,7 @@ endif
 ifeq ($(UNAME), darwin)
 	XARGS_CP_REGS :=  xargs  -t -I % -L1 cp  $(SUITE_DIR)/% $(REG_DIR)/%.reg 
 else
-       	XARGS_CP_REGS := xargs  -t -i cp $(REG_DIR)/{}.reg $(SUITE_DIR)/{}
+       XARGS_CP_REGS := xargs  -t -i cp $(SUITE_DIR)/{} $(REG_DIR)/{}.reg
 endif
 
 
@@ -47,6 +47,7 @@ reg:
 	rm $(REG_DIR)/*.reg
 
 	$(FIND_COMMAND) | $(XARGS_CP_REGS)	
+	git add $(REG_DIR)/*.reg
 
 clean:
 	$(MAKE) -C $(SUITE_DIR) clean
