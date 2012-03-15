@@ -1,0 +1,27 @@
+// features: 23, constraints: 2
+weatherstation
+    or measurements
+        pressure
+        temperature
+        windspeed
+    xor datasource
+        internet
+        demo
+        externalservices
+    outputformat
+        xor id2
+            text
+            webserver
+            file
+        xor format
+            xml
+            html
+            plaintext
+        xor language
+            english
+            german
+    or alarm ?
+        freezepoint
+        stormalert
+[(~freezepoint || temperature)]
+[(~text || ~xml)]

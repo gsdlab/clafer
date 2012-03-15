@@ -1,0 +1,15 @@
+// features: 12, constraints: 1
+r
+    r1
+        or r15
+            r156
+            r157
+        r18 ?
+    r2
+        r29
+        r210 ?
+    r3 ?
+    or r4 ?
+        r41112
+        r41114
+[(~r3 || r4)]

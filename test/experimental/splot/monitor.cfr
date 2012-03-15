@@ -1,0 +1,19 @@
+// features: 17, constraints: 1
+monitorenginesystem
+    engineperformance
+        temperatures
+            colant ?
+            oil
+            engine
+            transmission
+        rpm
+        exhaustleveltemp
+    fuelconsumption
+        xor measures
+            lkm
+            gallonmile
+        or methods
+            distance
+            typeofdriving
+            drive
+[(~drive || rpm)]

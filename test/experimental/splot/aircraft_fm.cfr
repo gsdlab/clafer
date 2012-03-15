@@ -1,0 +1,14 @@
+// features: 13, constraints: 0
+Aircraft
+    or Wing
+        High
+        Shoulder
+        Low
+    xor Engine ?
+        Jet
+        Piston
+    or Materials
+        Metal
+        Wood
+        Cloth
+        Plastic

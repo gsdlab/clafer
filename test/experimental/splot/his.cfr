@@ -1,0 +1,72 @@
+// features: 67, constraints: 4
+his
+    services
+        security
+        intrusion
+            detection
+                motion
+                    xor monitoringdetecting
+                        discretevalue
+                        continuousvalue
+            action
+                dooroperation
+                alarm
+                message ?
+                    data ?
+                    voice
+        fire
+            detection
+                smoke
+                    xor monitoringdetecting
+                        discretevalue
+                        continuousvalue
+            action
+                water
+                gas ?
+        flood ?
+            detection
+                moisture
+                    xor monitoringdetecting
+                        discretevalue
+                        continuousvalue
+            action
+                watermain
+                pumping ?
+    administration
+        xor hmi
+            standard
+            advanced
+    communication ?
+        telephone
+        internet ?
+            xor connection
+                tcp
+                udp
+    detectiondevices
+        motionsensor
+        skokesensor
+        moisturesensor ?
+    actiondevices
+        sprinkler
+        sumppump ?
+    monitorcontrol
+        direct
+        scheduled
+            periodic
+            onetime
+        respondingstrategy
+            sequential ?
+            priority
+        eventbased
+    qualityattributes
+        usability
+        scalability
+        reliability
+            xor redundancycontrol
+                active
+                standby
+        safety
+[(~water || sprinkler)]
+[(~pumping || sumppump)]
+[(~flood || moisturesensor)]
+[(~message || communication)]

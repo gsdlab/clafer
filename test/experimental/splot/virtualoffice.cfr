@@ -1,0 +1,15 @@
+// features: 14, constraints: 0
+vof
+    undefinedonpaper ?
+    followme
+        undefinedonpaper ?
+        userlocalize
+            xor userposmethod
+                accesspoint
+                rfid
+        logon
+            undefinedonpaper ?
+    virtualprinter ?
+        printerregister
+        fileupload
+        fileconverter ?

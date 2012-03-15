@@ -1,0 +1,17 @@
+// features: 14, constraints: 2
+james
+    xor usermngt
+        db
+        ldap
+    wsinterface ?
+    or gui
+        pc
+        pda
+    core
+    or modules
+        calendar
+        forum
+        congressmngt
+        repository
+[(~pda || ~repository)]
+[(~congressmngt || repository)]

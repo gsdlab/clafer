@@ -1,0 +1,100 @@
+// features: 61, constraints: 34
+ArcadeGame
+    UseCases
+        checkpreviousbestscore ?
+        savescore ?
+        SaveGame
+        ExitGame
+        InstallGame
+        UninstallGame
+        ListGame
+        PlayGame
+            or id8
+                playbrickles
+                playpong
+                playbowling
+            Initialization
+                AnimationLoop
+    ClassDiagram
+        gamesprite
+            spritepair ?
+            Rectangle
+                Size
+                Point
+            or id15
+                MovableSprite
+                    Velocity
+                    or id18
+                        or Paddle
+                            toppaddlepong
+                            bottompaddlepong
+                        puckcoreassets
+                        ballbowling
+                        pinbowling
+                StationarySprite
+                    or Wall ?
+                        leftwallpong
+                        rightwallpong
+                        leftbrickles
+                        rightbrickles
+                    or id24
+                        brickbrickles
+                        brickpilebrickles
+                        ceilingbrickles
+                        floorbrickles
+                        lanebowling
+                        gutterbowling
+                        edgebowling
+                        alleybowling
+                        rackpinsbowling
+                        scoreboardpong
+                        floorpong
+                        ceilingpong
+                        dividinglinepong
+        pucksupplybrickles ?
+        or Board
+            boardpong
+            boardbrickles
+            boardbowling
+        or Menu
+            menupong
+            menubrickles
+            menubowling
+        or GameMenu
+            ponggamemenu
+            bricklesgamemenu
+            bowlinggamemenu
+[(~brickbrickles || menubrickles)]
+[(~ceilingbrickles || menubrickles)]
+[(~rightbrickles || menubrickles)]
+[(~brickpilebrickles || menubrickles)]
+[(~floorbrickles || menubrickles)]
+[(~pucksupplybrickles || menubrickles)]
+[(~leftbrickles || menubrickles)]
+[(~boardbrickles || menubrickles)]
+[(~bricklesgamemenu || menubrickles)]
+[(~gutterbowling || menubowling)]
+[(~lanebowling || menubowling)]
+[(~pinbowling || menubowling)]
+[(~bowlinggamemenu || menubowling)]
+[(~rackpinsbowling || menubowling)]
+[(~alleybowling || menubowling)]
+[(~edgebowling || menubowling)]
+[(playbowling || ~menubowling)]
+[(~playbowling || menubowling)]
+[(playpong || ~menupong)]
+[(~playpong || menupong)]
+[(~bottompaddlepong || menupong)]
+[(~toppaddlepong || menupong)]
+[(~ponggamemenu || menupong)]
+[(~boardpong || menupong)]
+[(~ballbowling || menubowling)]
+[(~boardbowling || menubowling)]
+[(~playbrickles || menubrickles)]
+[(playbrickles || ~menubrickles)]
+[(~rightwallpong || menupong)]
+[(~leftwallpong || menupong)]
+[(~floorpong || menupong)]
+[(~scoreboardpong || menupong)]
+[(~dividinglinepong || menupong)]
+[(~ceilingpong || menupong)]

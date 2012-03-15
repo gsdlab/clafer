@@ -1,0 +1,53 @@
+// features: 44, constraints: 8
+docgen
+    analysis
+        or languageanalysis
+            xor cobol
+                ibmcobol
+                microfocuscobol
+            jcl
+            sql
+            delphi
+            progress
+        versionmngt ?
+        subsystems ?
+    presentation
+        or localization
+            english
+            dutch
+        xor interaction
+            static
+            dynamic
+        or mainpages
+            or programpage
+                annotationsection
+                activationsection
+                entitiessection
+                parameterssection
+            copybookpage
+            xor statisticspage
+                withhistory
+                withouthistory
+            indexes
+            searchpage
+            subsystempage
+            sourcepage
+            sourcedifference
+        or visualizations ?
+            performgraph
+            conditionalperformgraph
+            jclgraph
+            subsystemgraph
+            overviewgraph
+    xor database
+        db2
+        oracle
+        mysql
+[(~subsystempage || subsystems)]
+[(~subsystemgraph || subsystems)]
+[(~sourcedifference || versionmngt)]
+[(~performgraph || cobol)]
+[(~conditionalperformgraph || cobol)]
+[(~jclgraph || jcl)]
+[(~static || ~annotationsection)]
+[(~static || ~searchpage)]

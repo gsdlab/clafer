@@ -1,0 +1,19 @@
+// features: 18, constraints: 0
+editorconfig
+    backup
+        autosave ?
+            minutes
+        backuponchange ?
+        xor backupextension
+            filebak
+            filebakext
+            fileextbak
+    documentclass ?
+        associatedfileext
+            ext ?
+        commands
+            removeblanklines ?
+            spellcheck ?
+            dosunixconversion ?
+        syntaxhighlighting ?
+            syntaxdefinitionfile

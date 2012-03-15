@@ -1,0 +1,17 @@
+// features: 14, constraints: 2
+jplug
+    xor interface
+        sdi
+        mdi
+    guibuilder ?
+        java
+        qt ?
+    modelcodesynch ?
+    or compiler ?
+        javac
+        mvc
+    diagrambuilder ?
+        uml
+        petrinet ?
+[(~guibuilder || ~sdi)]
+[(~modelcodesynch || diagrambuilder)]

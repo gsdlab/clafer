@@ -1,0 +1,47 @@
+// features: 44, constraints: 0
+thread
+    xor threadinstance
+        multiple
+            coroutine ?
+                dispatching ?
+                    dispachmethod
+                        globallife
+                    scheduling ?
+                        bundleschedule ?
+                            bundlepreemption ?
+                            bundlestrategy
+                                bundlestrategyreplugging ?
+                                xor id1
+                                    bundlefcfs
+                                    bundlelcfs
+                        xor idlecontrol ?
+                            idleguard
+                            idlepanic
+                            idleuser
+                        queryschedule ?
+                        threadschedule
+                            threadpreemption ?
+                                nonpreemptablethreads ?
+                                schedulerlockable ?
+                            threadstrategy
+                                xor id3
+                                    priority
+                                        schedulesamepriority ?
+                                        xor prioritybehaviour
+                                            prioritycooperative
+                                            prioritypreemptive
+                                        xor prioritycount
+                                            priority16
+                                            priority32
+                                            priority8
+                                    threadfcfs
+                                    threadlcfs
+                                threadstrategyreplugging ?
+                xor location
+                    integrated
+                    separated
+                size
+                    floatset ?
+                    volatileset ?
+                    minimalset
+        single

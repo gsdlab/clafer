@@ -1,0 +1,50 @@
+// features: 43, constraints: 6
+webportal
+    addservices ?
+        sitestats ?
+            basic
+            advanced ?
+        sitesearch ?
+            images ?
+            text ?
+                html
+                dynamic ?
+        adserver ?
+            reports
+            popups ?
+            banners
+                banimg
+                banflash ?
+            keyword ?
+    webserver
+        xor logging ?
+            db
+            file
+        or protocol ?
+            nttp
+            ftp
+            https
+        cont
+            static
+            or active ?
+                asp
+                php
+                jsp
+                cgi
+    xor persistence ?
+        xml
+        database
+    or ri ?
+        datastorage
+        datatransfer
+        userauth
+    xor performance ?
+        ms
+        sec
+        min
+[(~keyword || text)]
+[(~dynamic || active)]
+[(~db || database)]
+[(~datatransfer || https)]
+[(~file || ftp)]
+[(~https || ~ms)]

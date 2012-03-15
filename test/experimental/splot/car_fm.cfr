@@ -1,0 +1,12 @@
+// features: 9, constraints: 2
+Car
+    AutomatedDrivingController ?
+        xor CollisionAvoidanceBraking
+            StandardAvoidance
+            enhancedavoidance
+        parallelparking ?
+    Sensors
+        lateralrangefinder ?
+        forwardrangefinder ?
+[(~enhancedavoidance || forwardrangefinder)]
+[(~parallelparking || lateralrangefinder)]

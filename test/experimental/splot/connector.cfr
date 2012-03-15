@@ -1,0 +1,21 @@
+// features: 20, constraints: 0
+Connector
+    xor Paradigm
+        xor ClientServer
+            Synchronous
+                Timeout ?
+            xor Asynchronous
+                xor Polling
+                    Blocking
+                    Nonblocking
+                Callback
+        MessageBased
+            Sender
+            xor Receiver
+                or Pull
+                    Queued
+                    NonQueued
+                Push
+    xor Technology
+        CAN
+        Local

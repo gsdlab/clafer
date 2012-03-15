@@ -1,0 +1,15 @@
+// features: 12, constraints: 2
+tecom
+    ipvoice ?
+        xor software
+            swpack1
+            swpack2
+    rack
+        xor sizes
+            large
+            medium
+            small
+    messaging ?
+        upgradeswpack ?
+[(~swpack1 || ~upgradeswpack)]
+[(~ipvoice || ~messaging || upgradeswpack)]
