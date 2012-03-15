@@ -1,0 +1,7 @@
+person
+  haha
+    lala
+      age : int
+  ble
+    married ?
+      [age >= 18]

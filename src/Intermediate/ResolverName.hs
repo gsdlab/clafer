@@ -139,7 +139,8 @@ mkPath env (howResolved, id, path) = case howResolved of
   Special -> (specIExp, path)
   TypeSpecial -> (mkLClaferId id True, path)
   Subclafers -> (toNav $ tail $ reverse $ map uid path, path)
---  Ancestor -> (toNav' $ reverse $ map uid path, path) <-------- parent | always preceed the first parent by this
+  Ancestor -> (toNav' $ adjustAncestor (reverse $ map uid $ resPath env)
+                                       (reverse $ map uid path), path)
   _ -> (toNav' $ reverse $ map uid path, path)
   where
   toNav = foldl
@@ -147,6 +148,14 @@ mkPath env (howResolved, id, path) = case howResolved of
           (mkLClaferId this True)
   toNav' p = (mkIFunExp iJoin $ map (\c -> mkLClaferId c False) p) :: IExp
   specIExp = if id /= this then toNav [id] else mkLClaferId id True
+
+
+adjustAncestor :: [String] -> [String] -> [String]
+adjustAncestor cPath rPath = this : parents ++ (fromJust $ stripPrefix prefix rPath)
+  where
+  parents = replicate (length $ fromJust $ stripPrefix prefix cPath) parent
+  prefix  = fst $ unzip $ takeWhile (uncurry (==)) $ zip cPath rPath
+
 
 -- -----------------------------------------------------------------------------
 
