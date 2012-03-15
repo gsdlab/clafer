@@ -1,22 +1,23 @@
-	abstract Course
-		 assistants -> TA *
+abstract Course
+	 assistants -> TA *
+
+abstract TA
+	 first -> Course ?
+		[parent in this.assistants ]
 	
-	abstract TA
-		 first -> Course ?
+CompilerGradStudent : TA
+
+AIGradStudent : TA 
 	
-	CompilerGradStudent : TA
-	AIGradStudent : TA 
+CompilerCourse : Course
+
+MachineLearningCourse : Course
 	
-	CompilerCourse : Course
-	MachineLearningCourse : Course
+[CompilerGradStudent.first = CompilerCourse]
+
+[AIGradStudent.first = MachineLearningCourse]
 	
-	[CompilerGradStudent.first = CompilerCourse]
-	[AIGradStudent.first = MachineLearningCourse]
+//tas_with_first_choice : int  = #( ::first & ~ ::assistants)] 
+// cannot access relations and no support for inverse relations for now
 	
-	
-	tas_with_first_choice : int 
-	
-	//[tas_with_first_choice = #( ::first & ~ ::assistants)] 
-	// missing reverse for now.
-	
-	[# Course.assistants > 0]
+numerOfAssistants : integer = # Course.assistants
