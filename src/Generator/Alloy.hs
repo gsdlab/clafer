@@ -193,7 +193,7 @@ claferDecl clafer rest = cconcat [genOptCard clafer,
 
 
 genOptCard clafer
-  | glCard' `elem` ["lone", "one", "some"] = (CString glCard') +++ (CString " ")
+  | glCard' `elem` ["lone", "one", "some"] = cardConcat (uid clafer) [CString glCard'] +++ (CString " ")
   | otherwise                              = CString ""
   where
   glCard' = genIntervalCrude $ glCard clafer
