@@ -1,0 +1,18 @@
+// features: 17, constraints: 0
+Stack
+    xor Size ?
+        Fixed
+            Value
+        Dynamic
+    xor ElementType
+        Integer
+        Float
+        String
+    xor Optimization ?
+        Speed
+        MemoryUsage
+    Counter ?
+    or AdditionalFeatures ?
+        ThreadSafety
+        BoundsCheck
+        TypeCheck

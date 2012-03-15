@@ -1,0 +1,23 @@
+// features: 21, constraints: 0
+FAMEDBMS
+    xor OS
+        NutOS
+        Win
+    xor BufferManager
+        Persistent
+            xor MemoryAllocation
+                Static
+                Dynamic
+            xor PageReplication
+                LRU
+                LFU
+        InMemory
+    DebugLogging ?
+    Storage
+        API
+            Get ?
+            Put ?
+            Delete ?
+        xor id4
+            BTree
+            Unindexed

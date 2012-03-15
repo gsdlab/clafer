@@ -1,0 +1,90 @@
+// features: 88, constraints: 0
+ModelTransformation
+    Transformationrules
+        LHSRHS
+            xor Variables ?
+                Untyped
+                Syntacticallytyped
+                Semanticallytyped
+            or id8
+                Patterns
+                    xor Form
+                        Strings
+                        Terms
+                        Graphs
+                    or Syntax
+                        Abstract
+                        or Concrete
+                            Textual
+                            Graphical
+                    xor Typing
+                        typuntyped
+                        typsyntacticallytyped
+                        typsemanticallytyped
+                or Logic
+                    Nonexecutable
+                    or Executable
+                        Imperative
+                        Declarative
+        LHSRHSSyntacticSeparation ?
+        Bidirectionality ?
+        Parameterization ?
+        Intermediatestructures ?
+    or Ruleapplicationscoping ?
+        scopingsource
+        targetsource
+    or SourceTargetrelationship
+        Newtarget
+        Existingtarget
+            Inplace ?
+            xor Update
+                Destructive
+                Extensiononly
+    or Ruleapplicationstrategy
+        Deterministic
+        or Nondeterministic
+            Concurrent
+            Onepoint
+        Interactive
+    Rulescheduling
+        or Form
+            Implicit
+            xor Explicit
+                Internal
+                External
+        or Ruleselection
+            Explicitcondition
+            Nondeterminism
+            Conflictresolution
+            Interactive
+        xor RuleIteration ?
+            Recursion
+            Looping
+            FixpointIteration
+        Phasing ?
+    Ruleorganization
+        Modulatirymechanisms ?
+        or Reusemechanisms ?
+            Inheritance
+            Logicalcomposition
+        xor OrganizationalStructure
+            Sourceoriented
+            Targetoriented
+            Independent
+    Tracing
+        Dedicatedsupport ?
+            xor Storagelocation
+                or Model
+                    modelsource
+                    modeltarget
+                Separate
+            xor Control
+                Manual
+                xor Automatic
+                    Allrules
+                    Selectedrules
+    or Directionality
+        Unidirectional
+        xor Bidirectional
+            Bidirectionalrules
+            Complementarypairs

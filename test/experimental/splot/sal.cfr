@@ -1,0 +1,12 @@
+// features: 10, constraints: 1
+r
+    r1
+        r14
+        r15 ?
+    xor r2
+        r267
+        r268
+    or r3 ?
+        r3910
+        r3911
+[(r15 || ~r3911)]

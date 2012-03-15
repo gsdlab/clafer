@@ -1,0 +1,19 @@
+// features: 13, constraints: 5
+or CFDPLibrary
+    send
+        SendAcknowledgedMode ?
+        sendfsoperations ?
+    receive
+        ReceiveAcknowledgedMode ?
+        receivefsoperations ?
+    pus
+        pusrename ?
+        puscopy ?
+    Reboot
+        RebootEntity ?
+        rebootpus ?
+[(~puscopy || send)]
+[(~puscopy || receive)]
+[(~pusrename || sendfsoperations)]
+[(~pusrename || receivefsoperations)]
+[(~rebootpus || pus)]

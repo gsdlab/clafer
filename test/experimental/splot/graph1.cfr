@@ -1,0 +1,39 @@
+// features: 30, constraints: 8
+graph
+    services
+        graphmanipulation
+            delete
+            select
+                xor selectionmode
+                    incrementselection
+                    nonincrementselection
+            add
+                entityadd
+                connectoradd
+            move
+                xor movingmode
+                    outlinemoving
+                    contentmoving
+                xor movingconstraint ?
+                    horizontalconstraint
+                    verticalconstraint
+            compose ?
+            layeradjust ?
+                uplayer
+                downlayer
+        doundoredo ?
+            selectdoundoredo
+            adddoundoredo
+            deletedoundoredo
+            movedoundoredo
+            composedoundoredo ?
+            layeradjustdoundoredo ?
+        zoominout ?
+[(~doundoredo || graphmanipulation)]
+[(~zoominout || graphmanipulation)]
+[(~compose || ~doundoredo || composedoundoredo)]
+[(~composedoundoredo || compose)]
+[(~composedoundoredo || doundoredo)]
+[(~layeradjust || ~doundoredo || layeradjustdoundoredo)]
+[(~layeradjustdoundoredo || doundoredo)]
+[(~layeradjustdoundoredo || layeradjust)]

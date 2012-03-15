@@ -1,0 +1,309 @@
+// features: 287, constraints: 21
+eShop
+    storefront
+        or homepage ?
+            Staticcontent
+            Dynamiccontent
+                or Contenttype
+                    Welcomemessage
+                    specialoffers
+                or Variationsource
+                    Timedependent
+                    Personalized
+        registration ?
+            or registrationenforcement
+                Registertobrowse
+                registertobuy
+                None
+            Registrationinformation
+                Logincredentials
+                shippingaddress ?
+                    Multipleshippingaddresses ?
+                Billingaddress ?
+                    Multiplebillingaddresses ?
+                Creditcardinformation ?
+                    Cardholdername
+                    Cardnumber
+                    Expirydate
+                    Securityinformation ?
+                or Demographics ?
+                    Age
+                    Income
+                    Education
+                    CustomDemographicfield
+                PersonalInformation ?
+                or preferences ?
+                    Sitelayout
+                    Listsize
+                    Language
+                Reminders ?
+                quickcheckoutprofile ?
+                Customfields ?
+            userbehaviourtrackinginfo ?
+        catalog
+            productinformation
+                or producttype
+                    eletronicgoods
+                    physicalgoods
+                    services
+                basicinformation
+                detailedinformation ?
+                warrantyinformation ?
+                customerreviews ?
+                or associatedassets ?
+                    Documents
+                    or Mediafiles
+                        or Image
+                            Thumbnail
+                            n2Dimage
+                            n3Dimage
+                            n360degreesimage
+                            Differentperspectives
+                            Gallery
+                        Video
+                        Sound
+                productvariants ?
+                    Complexproductconfiguration ?
+                size ?
+                weight ?
+                availability ?
+                customfields ?
+            categories ?
+                categoriescatalog
+                    Categories ?
+                        Multilevel ?
+                        Multipleclassification ?
+            Multiplecatalogs ?
+            or Searching ?
+                Basicsearch
+                Advancedsearch
+            Browsing ?
+                Productpage
+                categorypage ?
+                Indexpage ?
+                    or Sortingfilters ?
+                        Price
+                        Quality
+                        PriceQualityratio
+                        Manufacturername
+                        Customfilter
+            Customviews ?
+                Seasonalproductviews ?
+                Personalizedviews ?
+        wishlist ?
+            wishlistsavedaftersession ?
+            emailwishlist ?
+            Multiplewishlists ?
+            or permissions ?
+                Publicaccess
+                Restrictedaccess
+                Privateaccess
+        buypaths
+            Shoppingcart
+                Inventorymanagementpolicy
+                Cartcontentpage
+                Cartsummarypage ?
+                Cartsaveaftersession ?
+            Checkout
+                or Checkouttype
+                    registeredcheckout
+                        quickcheckout ?
+                            Enableprofileupdateoncheckout ?
+                    Guestcheckout
+                shippingoptions ?
+                    Qualityofserviceselection ?
+                    Carrierselection ?
+                    Giftoptions ?
+                    Multipleshipments ?
+                    Shippingcostcalculation
+                or Taxationoptions
+                    Customtaxation
+                        or Type
+                            Fixedratetaxation
+                            Rulebasedtaxation
+                                Taxcodes
+                                Address
+                                    shipping2
+                                    Billing ?
+                                or Resolution ?
+                                    Country
+                                    Region
+                                    City
+                        or Ammountspecification
+                            Surcharge
+                            Percentage
+                    or Taxgateways
+                        CertiTAX
+                        CyberSource
+                        Customtaxgateway
+                Paymentoptions
+                    or Paymenttypes
+                        COD
+                        Creditcard
+                        Debitcard
+                        Eletroniccheque
+                        Faxmailorder
+                        Purchaseorder
+                        Giftcertificate
+                        Phoneorder
+                        Custompaymenttype
+                    Frauddetection ?
+                    or Paymentgateways ?
+                        AuthorizeNet
+                        CyberSource
+                        LinkPoint
+                        Paradata
+                        SkipJack
+                        VerisignPayflowPro
+                        Custompaymentgateway
+            or Orderconfirmation
+                Eletronicpage
+                Email
+                Phone
+                Mail
+        or customerservice ?
+            Questionandfeedbackforms
+                Questionandfeedbacktracking ?
+            Productreturns
+            Orderstatusreview
+                or Filteringcriteria
+                    Ordernumber
+                    Orderdate
+                    Orderstatus
+                Requestorderhardcopy ?
+            or Shipmentstatustracking
+                Internaltracking
+                Partnertracking
+        userbehaviourtracking ?
+            or Behaviourtracked
+                locallyvisitedpages
+                externalreferringpages
+                behaviourtrackedpreviouspurchases
+    businessmanagement
+        Ordermanagement
+            or Fulfillment
+                physicalgoodsfulfillment
+                    warehousemanagement
+                    or shipping
+                        Customshippingmethod
+                            Pricing
+                                Flatrate
+                                or Ratefactors ?
+                                    Quantitypurchased
+                                    Ordertotal
+                                    Weight
+                                    Productclassification
+                        or Shippinggateways
+                            FedEX
+                            UPS
+                            USPS
+                            CanadaPost
+                            Customshippinggateway
+                eletronicgoodsfulfillment
+                    Filerepository
+                    Licensemanagement
+                servicesfulfillment
+                    Appointmentscheduling ?
+                    Resourceplanning ?
+        Targeting ?
+            or Targetingcriteria
+                customerpreferences
+                Personalinformation
+                Demographics
+                targetingcriteriapreviouspurchases
+                Shoppingcartcontent
+                wishlistcontent
+                previouslyvisitedpages
+                Dateandtime
+                Customtargetcriteria
+            or Targetingmechanisms
+                Advertisements
+                    or Advertisementtypes
+                        Bannerads
+                        Popupads
+                    or Advertisementsources
+                        Houseadvertisements
+                        Paidadvertisements
+                            Advertisementmanagementinterface
+                    Advertisementresponsetracking ?
+                    Contextsensitiveads ?
+                discounts
+                    Discountconditions
+                        Productandquantityscope
+                        Timescope
+                        Purchasevaluescope ?
+                    or Award
+                        Percentagediscount
+                        Fixeddiscount
+                        Freeitem
+                    Eligibilityrequirements
+                        Customersegments ?
+                        Shippingaddress ?
+                    or Graduationby
+                        Purchasevalue
+                        Quantity
+                    Coupons ?
+                    Handlingmultiplediscounts
+                or Sellstrategies
+                    Productkitting
+                    Upselling
+                        Substituteproducts
+                    Crossselling
+                        Pastcustomersalsobought
+            or Displayandnotification
+                Assignmenttopagetypesfordisplay
+                Productflagging
+                Emails
+                    personalizedemails ?
+                    Responsetracking ?
+            Campaigns ?
+        Affiliates ?
+            Affiliateregistration
+            Commissiontracking
+        inventorytracking ?
+            Allowbackorders ?
+        procurement ?
+            Stockreplenishment
+                Manual
+                automatic ?
+                    Nonrepudiationservice
+        reportingandanalysis ?
+            Reporttypes
+            Reportformats
+            Levelofdetail
+        or Externalsystemsintegration ?
+            fulfillmentsystem
+            Inventorymanagementsystem
+            procurementsystem
+            Externaldistributorsystem
+        Administration
+            Contentmanagement
+                Productdatabasemanagement
+                Presentationoptions
+                Generallayoutmanagement
+                Contentapproval ?
+            Storeadministration
+                Sitesearch
+                Searchengineregistration
+                Domainnamesetup
+[(~wishlist || wishlistsavedaftersession)]
+[(registration || wishlistsavedaftersession)]
+[(~eletronicgoods || size)]
+[(~physicalgoods || size)]
+[(~eletronicgoods || eletronicgoodsfulfillment)]
+[(~userbehaviourtrackinginfo || userbehaviourtracking)]
+[(~quickcheckout || quickcheckoutprofile)]
+[(~customerpreferences || preferences)]
+[(~services || servicesfulfillment)]
+[(~physicalgoods || physicalgoodsfulfillment)]
+[(~wishlistcontent || wishlist)]
+[(~registeredcheckout || registertobuy)]
+[(~registeredcheckout || registrationenforcement)]
+[(~shippingoptions || shipping)]
+[(~previouslyvisitedpages || locallyvisitedpages || externalreferringpages)]
+[(~specialoffers || discounts)]
+[(~availability || inventorytracking)]
+[(~physicalgoods || weight)]
+[(~categorypage || categories)]
+[(~permissions || registration)]
+[(~emailwishlist || registration)]

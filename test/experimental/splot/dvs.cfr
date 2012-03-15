@@ -1,0 +1,30 @@
+// features: 26, constraints: 3
+dvs
+    control
+        remote
+        telephone ?
+            sms ?
+        net ?
+            web ?
+            wap ?
+            email
+        edit ?
+            addmusic ?
+        play
+            slides ?
+            audio ?
+            video
+    networkhw ?
+        modem ?
+        ethernet ?
+    serverpc
+        network ?
+        irdaport ?
+    play
+        ondemand ?
+    clientpc ?
+        network ?
+    handheld ?
+[(~net || networkhw)]
+[(~handheld || irdaport)]
+[(~addmusic || audio)]

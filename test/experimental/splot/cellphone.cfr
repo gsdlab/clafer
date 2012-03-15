@@ -1,0 +1,14 @@
+// features: 11, constraints: 2
+cellphone
+    or wireless ?
+        infrared
+        bluetooth
+    xor accucell
+        liion
+        nimh
+        nica
+    xor display
+        color
+        monochrome
+[(~bluetooth || liion)]
+[(~color || ~nica)]

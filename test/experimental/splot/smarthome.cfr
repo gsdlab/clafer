@@ -1,0 +1,36 @@
+// features: 35, constraints: 0
+SmartHome
+    EnvironmentControl
+        MeasurementUnits
+            Celsius ?
+            Fahrenheit ?
+        TemperatureManagement
+            HeatingManagement
+            SmartHeatingManagement ?
+        WindowsManagement
+            ManualWindows
+            AutomaticWindows ?
+    LightManagement
+        SmartLightManagement ?
+        PredefinedValues ?
+        SimpleControl
+    GUI
+        TouchScreen ?
+        Mobile ?
+        Internet ?
+    PresenceSimulator
+        LightSimulation ?
+        BlindSimulation ?
+        MusicSimulation ?
+    FireControl
+        FirstAidGroup
+            FireDepartment ?
+            OtherGroup ?
+        FireAlarm
+            Siren ?
+            Bell ?
+            Light ?
+    DoorLock
+        KeypadReader ?
+        CardReader ?
+        FingerprintReader ?

@@ -1,0 +1,17 @@
+// features: 14, constraints: 2
+searchenginePL
+    pagetranslation ?
+    doctype
+        html
+        xor image ?
+            jpg
+            gif
+            svg
+        video ?
+    or searchbylanguage ?
+        portuguese
+        english
+        spanish
+    pagepreview ?
+[(~searchbylanguage || pagetranslation)]
+[(~pagepreview || ~svg)]

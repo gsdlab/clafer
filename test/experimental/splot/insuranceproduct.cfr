@@ -1,0 +1,31 @@
+// features: 25, constraints: 4
+insuranceproduct
+    xor insuredobject
+        corporation
+        realty
+        movableproperty
+        person
+    or coverage
+        illness
+        life
+        unemployment
+        damage
+        loss
+    payment
+        xor id2
+            service
+            ammount
+        ownrisk ?
+    conditions
+        acceptance
+        exception
+    xor premium
+        direct
+        periodical
+    or payee
+        person
+        payeecorporation
+[(~corporation || ~illness)]
+[(~payee.person || ~damage)]
+[(~loss || movableproperty)]
+[(~corporation || payeecorporation)]

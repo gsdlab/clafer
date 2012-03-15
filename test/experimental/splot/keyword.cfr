@@ -1,0 +1,30 @@
+// features: 25, constraints: 3
+kwic
+    or inputoutput
+        file
+        console
+    circularshift
+        xor shiftdata
+            implicit
+            explicit
+        compression ?
+            shiftprocessing
+            xor id2
+                eachline
+                alllines
+            noisewords ?
+    alphasort
+        xor order
+            descendant
+            ascendant
+        xor casesensitivity
+            sensitive
+            insensitive
+    xor archstyle
+        shareddata
+        adt
+        implicitinvocation
+        pipeandfilter
+[(~compression || explicit)]
+[(~pipeandfilter || alllines)]
+[(~pipeandfilter || explicit)]

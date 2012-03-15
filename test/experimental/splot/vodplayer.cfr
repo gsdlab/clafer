@@ -1,0 +1,13 @@
+// features: 11, constraints: 0
+r
+    r1
+    r2 ?
+    xor r3
+        r34
+        r36
+            r367 ?
+    r8
+    r9 ?
+    r10
+        r1011 ?
+        r1012 ?

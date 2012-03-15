@@ -1,0 +1,14 @@
+// features: 13, constraints: 0
+MoviesApp
+    xor GUI
+        Thin
+        Rich
+    xor DB
+        Local
+        Remote
+            CachePolicy
+    xor Network
+        Wifi
+        Bluetooth
+    GPS ?
+        BuiltIn ?
