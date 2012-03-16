@@ -1,0 +1,10 @@
+abstract Book
+	author -> Author +
+		[ Book in this.book ]
+
+abstract Author
+	book -> Book +
+		[ Author in this.author ]
+
+B : Book 5
+A : Author 6
