@@ -1,0 +1,6 @@
+abstract Kernel
+	 memory ?
+
+Phone
+	name : string
+	[Kernel.memory] 
