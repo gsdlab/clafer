@@ -25,6 +25,6 @@ dvs
     clientpc ?
         network ?
     handheld ?
-[(~net || networkhw)]
-[(~handheld || irdaport)]
-[(~addmusic || audio)]
+[(!net || networkhw)]
+[(!handheld || irdaport)]
+[(!addmusic || audio)]

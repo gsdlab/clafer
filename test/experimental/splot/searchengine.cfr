@@ -13,5 +13,5 @@ searchenginePL
         english
         spanish
     pagepreview ?
-[(~searchbylanguage || pagetranslation)]
-[(~pagepreview || ~svg)]
+[(!searchbylanguage || pagetranslation)]
+[(!pagepreview || !svg)]

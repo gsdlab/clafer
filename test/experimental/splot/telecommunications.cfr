@@ -11,5 +11,5 @@ tecom
             small
     messaging ?
         upgradeswpack ?
-[(~swpack1 || ~upgradeswpack)]
-[(~ipvoice || ~messaging || upgradeswpack)]
+[(!swpack1 || !upgradeswpack)]
+[(!ipvoice || !messaging || upgradeswpack)]

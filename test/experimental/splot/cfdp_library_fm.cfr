@@ -12,8 +12,8 @@ or CFDPLibrary
     Reboot
         RebootEntity ?
         rebootpus ?
-[(~puscopy || send)]
-[(~puscopy || receive)]
-[(~pusrename || sendfsoperations)]
-[(~pusrename || receivefsoperations)]
-[(~rebootpus || pus)]
+[(!puscopy || send)]
+[(!puscopy || receive)]
+[(!pusrename || sendfsoperations)]
+[(!pusrename || receivefsoperations)]
+[(!rebootpus || pus)]

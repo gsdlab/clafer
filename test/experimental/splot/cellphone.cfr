@@ -10,5 +10,5 @@ cellphone
     xor display
         color
         monochrome
-[(~bluetooth || liion)]
-[(~color || ~nica)]
+[(!bluetooth || liion)]
+[(!color || !nica)]

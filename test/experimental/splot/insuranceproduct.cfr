@@ -25,7 +25,7 @@ insuranceproduct
     or payee
         person
         payeecorporation
-[(~corporation || ~illness)]
-[(~payee.person || ~damage)]
-[(~loss || movableproperty)]
-[(~corporation || payeecorporation)]
+[(!corporation || !illness)]
+[(!payee.person || !damage)]
+[(!loss || movableproperty)]
+[(!corporation || payeecorporation)]

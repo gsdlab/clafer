@@ -8,5 +8,5 @@ Car
     Sensors
         lateralrangefinder ?
         forwardrangefinder ?
-[(~enhancedavoidance || forwardrangefinder)]
-[(~parallelparking || lateralrangefinder)]
+[(!enhancedavoidance || forwardrangefinder)]
+[(!parallelparking || lateralrangefinder)]

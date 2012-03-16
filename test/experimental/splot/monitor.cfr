@@ -16,4 +16,4 @@ monitorenginesystem
             distance
             typeofdriving
             drive
-[(~drive || rpm)]
+[(!drive || rpm)]

@@ -43,11 +43,11 @@ docgen
         db2
         oracle
         mysql
-[(~subsystempage || subsystems)]
-[(~subsystemgraph || subsystems)]
-[(~sourcedifference || versionmngt)]
-[(~performgraph || cobol)]
-[(~conditionalperformgraph || cobol)]
-[(~jclgraph || jcl)]
-[(~static || ~annotationsection)]
-[(~static || ~searchpage)]
+[(!subsystempage || subsystems)]
+[(!subsystemgraph || subsystems)]
+[(!sourcedifference || versionmngt)]
+[(!performgraph || cobol)]
+[(!conditionalperformgraph || cobol)]
+[(!jclgraph || jcl)]
+[(!static || !annotationsection)]
+[(!static || !searchpage)]

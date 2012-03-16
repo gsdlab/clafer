@@ -29,11 +29,11 @@ graph
             composedoundoredo ?
             layeradjustdoundoredo ?
         zoominout ?
-[(~doundoredo || graphmanipulation)]
-[(~zoominout || graphmanipulation)]
-[(~compose || ~doundoredo || composedoundoredo)]
-[(~composedoundoredo || compose)]
-[(~composedoundoredo || doundoredo)]
-[(~layeradjust || ~doundoredo || layeradjustdoundoredo)]
-[(~layeradjustdoundoredo || doundoredo)]
-[(~layeradjustdoundoredo || layeradjust)]
+[(!doundoredo || graphmanipulation)]
+[(!zoominout || graphmanipulation)]
+[(!compose || !doundoredo || composedoundoredo)]
+[(!composedoundoredo || compose)]
+[(!composedoundoredo || doundoredo)]
+[(!layeradjust || !doundoredo || layeradjustdoundoredo)]
+[(!layeradjustdoundoredo || doundoredo)]
+[(!layeradjustdoundoredo || layeradjust)]

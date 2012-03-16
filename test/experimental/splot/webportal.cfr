@@ -42,9 +42,9 @@ webportal
         ms
         sec
         min
-[(~keyword || text)]
-[(~dynamic || active)]
-[(~db || database)]
-[(~datatransfer || https)]
-[(~file || ftp)]
-[(~https || ~ms)]
+[(!keyword || text)]
+[(!dynamic || active)]
+[(!db || database)]
+[(!datatransfer || https)]
+[(!file || ftp)]
+[(!https || !ms)]

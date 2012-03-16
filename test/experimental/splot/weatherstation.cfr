@@ -23,5 +23,6 @@ weatherstation
     or alarm ?
         freezepoint
         stormalert
-[(~freezepoint || temperature)]
-[(~text || ~xml)]
+
+[(!freezepoint || temperature)]
+[(!text || !xml)]

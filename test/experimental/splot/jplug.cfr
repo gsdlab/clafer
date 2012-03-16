@@ -13,5 +13,5 @@ jplug
     diagrambuilder ?
         uml
         petrinet ?
-[(~guibuilder || ~sdi)]
-[(~modelcodesynch || diagrambuilder)]
+[(!guibuilder || !sdi)]
+[(!modelcodesynch || diagrambuilder)]

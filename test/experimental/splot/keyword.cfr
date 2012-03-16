@@ -25,6 +25,6 @@ kwic
         adt
         implicitinvocation
         pipeandfilter
-[(~compression || explicit)]
-[(~pipeandfilter || alllines)]
-[(~pipeandfilter || explicit)]
+[(!compression || explicit)]
+[(!pipeandfilter || alllines)]
+[(!pipeandfilter || explicit)]

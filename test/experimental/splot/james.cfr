@@ -13,5 +13,5 @@ james
         forum
         congressmngt
         repository
-[(~pda || ~repository)]
-[(~congressmngt || repository)]
+[(!pda || !repository)]
+[(!congressmngt || repository)]
