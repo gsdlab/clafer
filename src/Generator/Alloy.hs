@@ -20,7 +20,6 @@
  SOFTWARE.
 -}
 module Generator.Alloy where
-import Debug.Trace
 import Data.Char
 import Data.List
 import Data.Maybe
@@ -278,7 +277,7 @@ genGroupConst clafer
   where
   children = intercalate " + " $ map (genRelName.uid) $
              getSubclafers $ elements clafer
-  card     = mkCard "group" "children" $ interval $ fromJust $ gcard $ clafer
+  card     = mkCard ("group " ++ uid clafer) "children" $ interval $ fromJust $ gcard $ clafer
 
 
 mkCard constraintName element card
@@ -387,48 +386,12 @@ transformExp x@(IFunExp op exps@(e1:e2:_))
   | otherwise  = x
 transformExp x = x
 
-genIFunExp pid mode resPath (IFunExp op exps) = alloyifyAndConcat pid $ intl exps' (map CString $ genOp mode op)
+genIFunExp pid mode resPath (IFunExp op exps) = Concat pid $ intl exps' (map CString $ genOp mode op)
   where
   intl
     | op `elem` arithBinOps && length exps == 2 = interleave
     | otherwise = \xs ys -> reverse $ interleave (reverse xs) (reverse ys)
   exps' = map (optBrArg mode resPath) exps
-  {-
-   - Alloy only counts inner parenthesis as part of the constraint, but not outer parenthesis.
-   - ex. the constraint looks like this in the file
-   -    (constraint a) <=> (constraint b)
-   - But the actual constraint in the API is
-   -    constraint a) <=> (constraint b
-   -
-   - So the starting and ending parenthesis (if they exists) cannot be part inside the Concat
-   -}
-  -- Special case for only one element
-  alloyifyAndConcat pid c@[Concat srcPos cats] =
-    case (head cats, last cats) of
-      -- In this case, the "(" and ")" go outside the Concat with the pid because those characters
-      -- are not part of the constraint in Alloy.
-      (CString "(", CString ")") -> Concat "" [CString "(", Concat pid $ [Concat srcPos $ tail (init cats)], CString ")"]
-      _                          -> Concat pid c
-  -- General case for many elements
-  -- I wish this piece of code didn't look this ugly :(
-  alloyifyAndConcat pid c =
-    Concat "" $ lParen ++ [Concat pid (newHead : middle ++ [newLast])] ++ rParen
-    where
-    middle = tail (init c)
-    (lParen, newHead) =
-        case head c of
-            oldHead@(Concat srcPos cats) -> 
-                case head cats of
-                    CString "(" -> ([CString "("], Concat srcPos $ tail cats)
-                    x           -> ([], oldHead)
-            oldHead -> ([], oldHead)
-    (rParen, newLast) =
-        case last c of
-            oldLast@(Concat srcPos cats) ->
-                case last cats of
-                    CString ")" -> ([CString ")"], Concat srcPos $ init cats)
-                    x           -> ([], oldLast)
-            oldLast -> ([], oldLast)
 
 
 optBrArg mode resPath x = brFun (genPExp' mode resPath) x
@@ -526,11 +489,36 @@ mapLineCol code = mapping $ execState (mapLineCol' code) (AlloyEnv (firstLine, f
 addCode str = modify (\s -> s {lineCol = lineno (lineCol s) str})
 
 mapLineCol' (CString str) = addCode str
-mapLineCol' (Concat srcPos nodes) = do
+mapLineCol' c@(Concat srcPos nodes) = do
   posStart <- gets lineCol
   mapM mapLineCol' nodes
   posEnd   <- gets lineCol
-  modify (\s -> s {mapping = (srcPos, (posStart, posEnd)) : (mapping s)})
+  {-
+   - Alloy only counts inner parenthesis as part of the constraint, but not outer parenthesis.
+   - ex1. the constraint looks like this in the file
+   -    (constraint a) <=> (constraint b)
+   - But the actual constraint in the API is
+   -    constraint a) <=> (constraint b
+   -
+   - ex2. the constraint looks like this in the file
+   -    (((#((this.@r_c2_Finger).@r_c3_Pinky)).add[(#((this.@r_c2_Finger).@r_c4_Index))]).add[(#((this.@r_c2_Finger).@r_c5_Middle))]) = 0
+   - But the actual constraint in the API is
+   -    #((this.@r_c2_Finger).@r_c3_Pinky)).add[(#((this.@r_c2_Finger).@r_c4_Index))]).add[(#((this.@r_c2_Finger).@r_c5_Middle))]) = 0
+   - 
+   - Seems unintuitive since the brackets are now unbalanced but that's how they work in Alloy. The next
+   - few lines of code is counting the beginning and ending parenthesis's and subtracting them from the
+   - positions in the map file.
+   - This next little snippet is rather inefficient since we are retraversing the Concat's to flatten.
+   - But it's the simplest and correct solution I can think of right now.
+   -}
+  let flat = flatten c
+      raiseStart = countLeading '(' flat
+      deductEnd = -(countTrailing ')' flat)
+  modify (\s -> s {mapping = (srcPos, (posStart `addColumn` raiseStart, posEnd `addColumn` deductEnd)) : (mapping s)})
+
+addColumn (x, y) c = (x, y + c)
+countLeading c xs = length $ takeWhile (== c) xs
+countTrailing c xs = countLeading c (reverse xs)
 
 lineno (l, c) str = (l + newLines, (if newLines > 0 then firstCol else c) + newCol)
   where
