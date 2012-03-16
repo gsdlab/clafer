@@ -20,7 +20,7 @@
  SOFTWARE.
 -}
 module Generator.Alloy where
-
+import Debug.Trace
 import Data.Char
 import Data.List
 import Data.Maybe
@@ -193,7 +193,7 @@ claferDecl clafer rest = cconcat [genOptCard clafer,
 
 
 genOptCard clafer
-  | glCard' `elem` ["lone", "one", "some"] = (CString glCard') +++ (CString " ")
+  | glCard' `elem` ["lone", "one", "some"] = cardConcat (uid clafer) [CString glCard'] +++ (CString " ")
   | otherwise                              = CString ""
   where
   glCard' = genIntervalCrude $ glCard clafer
@@ -371,7 +371,7 @@ genPExp' mode resPath x@(PExp iType pid pos exp) = case exp of
     sident' = (if isTop then "" else '@' : genRelName "") ++ sident
     vsident = sident' ++ ".@ref"
   IFunExp _ _ -> case exp' of
-    IFunExp op exps -> Concat pid $ [genIFunExp mode resPath exp']
+    IFunExp op exps -> genIFunExp pid mode resPath exp'
     _ -> genPExp' mode resPath $ PExp iType pid pos exp'
     where
     exp' = transformExp exp
@@ -385,12 +385,48 @@ transformExp x@(IFunExp op exps@(e1:e2:_))
   | otherwise  = x
 transformExp x = x
 
-genIFunExp mode resPath (IFunExp op exps) = cconcat $ intl exps' (map CString $ genOp mode op)
+genIFunExp pid mode resPath (IFunExp op exps) = alloyifyAndConcat pid $ intl exps' (map CString $ genOp mode op)
   where
   intl
     | op `elem` arithBinOps && length exps == 2 = interleave
     | otherwise = \xs ys -> reverse $ interleave (reverse xs) (reverse ys)
   exps' = map (optBrArg mode resPath) exps
+  {-
+   - Alloy only counts inner parenthesis as part of the constraint, but not outer parenthesis.
+   - ex. the constraint looks like this in the file
+   -    (constraint a) <=> (constraint b)
+   - But the actual constraint in the API is
+   -    constraint a) <=> (constraint b
+   -
+   - So the starting and ending parenthesis (if they exists) cannot be part inside the Concat
+   -}
+  -- Special case for only one element
+  alloyifyAndConcat pid c@[Concat srcPos cats] =
+    case (head cats, last cats) of
+      -- In this case, the "(" and ")" go outside the Concat with the pid because those characters
+      -- are not part of the constraint in Alloy.
+      (CString "(", CString ")") -> Concat "" [CString "(", Concat pid $ [Concat srcPos $ tail (init cats)], CString ")"]
+      _                          -> Concat pid c
+  -- General case for many elements
+  -- I wish this piece of code didn't look this ugly :(
+  alloyifyAndConcat pid c =
+    Concat "" $ lParen ++ [Concat pid (newHead : middle ++ [newLast])] ++ rParen
+    where
+    middle = tail (init c)
+    (lParen, newHead) =
+        case head c of
+            oldHead@(Concat srcPos cats) -> 
+                case head cats of
+                    CString "(" -> ([CString "("], Concat srcPos $ tail cats)
+                    x           -> ([], oldHead)
+            oldHead -> ([], oldHead)
+    (rParen, newLast) =
+        case last c of
+            oldLast@(Concat srcPos cats) ->
+                case last cats of
+                    CString ")" -> ([CString ")"], Concat srcPos $ init cats)
+                    x           -> ([], oldLast)
+            oldLast -> ([], oldLast)
 
 
 optBrArg mode resPath x = brFun (genPExp' mode resPath) x
@@ -399,7 +435,7 @@ optBrArg mode resPath x = brFun (genPExp' mode resPath) x
     PExp _ _ _ (IClaferId _ _ _) -> ($)
     PExp _ _ _ (IInt _) -> ($)
     _  -> brArg
-
+    
 
 interleave [] [] = []
 interleave (x:[]) [] = [x]

@@ -1,11 +1,14 @@
-Person
+abstract Person
 	age : integer
 	xor maritalStatus
 		neverMarried
 		married
-			[ age >= 18 ]      // here, the modeler clearly means Person.age, not spouse.age
+			[ age >= 3 ]      // here, the modeler clearly means Person.age, not spouse.age
 			spouse -> Person
-				[ spouse = parent.parent.parent ]     // here, the modeler means spouse.maritalStatus.married.spouse 
+				[ spouse != parent.parent.parent ]     // here, the modeler means spouse.maritalStatus.married.spouse 
 		divorced
 	children -> Person *
-        parents -> Person 2
+        parents -> Person 0..2
+
+Alice : Person
+Bob : Person
