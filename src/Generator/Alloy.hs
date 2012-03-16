@@ -249,9 +249,9 @@ genConstraints mode resPath clafer = (genParentConst resPath clafer) :
   constraints = map genConst $ elements clafer
   genConst x = case x of
     IEConstraint _ pexp  -> genPExp mode ((uid clafer) : resPath) pexp
-    IEClafer clafer -> CString $
+    IEClafer clafer ->
         if genCardCrude crd `elem` ["one", "lone", "some"]
-        then "" else mkCard (genRelName $ uid clafer) $ fromJust crd
+        then CString "" else mkCard ({- do not use the genRelName as the constraint name -} uid clafer) (genRelName $ uid clafer) $ fromJust crd
       where
       crd = card clafer
 
@@ -273,27 +273,29 @@ genOptParentConst clafer
 
 
 genGroupConst clafer
-  | null children || card == "" = CString ""
-  | otherwise = cconcat [CString "let children = ", brArg id $ CString children, CString" | ", CString card]
+  | null children || flatten card == "" = CString ""
+  | otherwise = cconcat [CString "let children = ", brArg id $ CString children, CString" | ", card]
   where
   children = intercalate " + " $ map (genRelName.uid) $
              getSubclafers $ elements clafer
-  card     = mkCard "children" $ interval $ fromJust $ gcard $ clafer
+  card     = mkCard "group" "children" $ interval $ fromJust $ gcard $ clafer
 
 
-mkCard element card
-  | card' == "set" || card' == ""        = ""
-  | card' `elem` ["one", "lone", "some"] = card' ++ " " ++ element
-  | otherwise                            = card'
+mkCard constraintName element card
+  | card' == "set" || card' == ""        = CString ""
+  | card' `elem` ["one", "lone", "some"] = CString $ card' ++ " " ++ element
+  | otherwise                            = interval'
   where
-  card'  = flatten $ genInterval element card
+  interval' = genInterval constraintName element card
+  card'  = flatten $ interval'
 
 -- -----------------------------------------------------------------------------
-genGCard element gcard = genInterval element  $ interval $ fromJust gcard
+-- Not used?
+-- genGCard element gcard = genInterval element  $ interval $ fromJust gcard
 
 
 genCard :: String -> Maybe Interval -> Concat
-genCard element card = genInterval element $ fromJust card
+genCard element card = genInterval element element $ fromJust card
 
 
 genCardCrude card = genIntervalCrude $ fromJust card
@@ -306,11 +308,11 @@ genIntervalCrude x = case x of
   _                   -> "set"
 
 
-genInterval :: String -> Interval -> Concat
-genInterval element x = case x of
-  (1, ExIntegerNum 1) -> cardConcat element [CString "one"]
-  (0, ExIntegerNum 1) -> cardConcat element [CString "lone"]
-  (1, ExIntegerAst)   -> cardConcat element [CString "some"]
+genInterval :: String -> String -> Interval -> Concat
+genInterval constraintName element x = case x of
+  (1, ExIntegerNum 1) -> cardConcat constraintName [CString "one"]
+  (0, ExIntegerNum 1) -> cardConcat constraintName [CString "lone"]
+  (1, ExIntegerAst)   -> cardConcat constraintName [CString "some"]
   (0, ExIntegerAst)   -> CString "set" -- "set"
   (n, exinteger)  ->
     case (s1, s2) of
@@ -319,23 +321,23 @@ genInterval element x = case x of
       (Nothing, Just c2) -> c2
       (Nothing, Nothing) -> undefined
     where
-    s1 = if n == 0 then Nothing else Just $ cardLowerConcat element [CString $ concat [show n, " <= #",  element]]
+    s1 = if n == 0 then Nothing else Just $ cardLowerConcat constraintName [CString $ concat [show n, " <= #",  element]]
     s2 =
         do
             result <- genExInteger element exinteger
-            return $ cardUpperConcat element [CString result]
+            return $ cardUpperConcat constraintName [CString result]
 
 
 cardConcat :: String -> [Concat] -> Concat
-cardConcat element = Concat ("Cardinality exact " ++ element)
+cardConcat constraintName = Concat ("Cardinality exact " ++ constraintName)
 
 
 cardLowerConcat :: String -> [Concat] -> Concat
-cardLowerConcat element = Concat ("Cardinality lower " ++ element)
+cardLowerConcat constraintName = Concat ("Cardinality lower " ++ constraintName)
 
 
 cardUpperConcat :: String -> [Concat] -> Concat
-cardUpperConcat element = Concat ("Cardinality upper " ++ element)
+cardUpperConcat constraintName = Concat ("Cardinality upper " ++ constraintName)
 
 
 genExInteger :: String -> ExInteger -> Maybe Result
