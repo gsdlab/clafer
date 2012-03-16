@@ -73,7 +73,8 @@ abstract Hardware
 			P_800M
 			P_500M
 	Front_Camera ?
-		  [ ROM.versionasnumber >= 2.3 ]
+		  [ ROM.versionasnumber >= 2  ] 
+		  // can only use full number for now 2.3 ]
 	
 
 abstract ROM
@@ -193,7 +194,7 @@ abstract Feature
 
 
 // List of Features 
- FullTegra2Rendering : Feature
+FullTegra2Rendering : Feature
         [ price = 0
         !initializeInBootUp
         backgroundRunning
@@ -204,7 +205,7 @@ abstract Feature
         Security.high
         Stability.high ]
 
- UnsecureBootImg : Feature
+UnsecureBootImg : Feature
         [ price = 0
         !initializeInBootUp
         !backgroundRunning       
@@ -214,7 +215,7 @@ abstract Feature
         Security.low
         Stability.low ] 
 
- Zipaligned : Feature
+Zipaligned : Feature
         [ price = 0
         !initializeInBootUp
         !backgroundRunning
@@ -225,7 +226,7 @@ abstract Feature
         Stability.high
         Application.installationROM.isReduced.Reduced ]
 
- SuperuserPermission : Feature
+SuperuserPermission : Feature
         [ price = 0
         initializeInBootUp
         backgroundRunning
@@ -237,7 +238,7 @@ abstract Feature
         Stability.high
         BusyBox ]
 
- APP2SD : Feature
+APP2SD : Feature
         [ price = 0
         initializeInBootUp
         backgroundRunning       
@@ -253,7 +254,7 @@ abstract Feature
         AndroidPhone.energyConsumption.increased ]      
 
 
- Dalivik2SD : Feature
+Dalivik2SD : Feature
         [ price = 0
         initializeInBootUp
         backgroundRunning
@@ -269,7 +270,7 @@ abstract Feature
 	//        Application.energyConsumption.increased
  ]
 
- DATA2SD : Feature
+DATA2SD : Feature
         [ price = 0
         initializeInBootUp
         backgroundRunning
@@ -286,7 +287,7 @@ abstract Feature
 
 	]
          
- GPSStatus : Feature
+GPSStatus : Feature
         [ price = 0
         !initializeInBootUp
         !backgroundRunning
@@ -300,7 +301,7 @@ abstract Feature
 
 abstract BatterySaving : Feature
 
- BatteryAutoCalibration : BatterySaving
+BatteryAutoCalibration : BatterySaving
         [ this.price = 0
         initializeInBootUp
         //bootuptime = XXX
@@ -313,7 +314,7 @@ abstract BatterySaving : Feature
     	//    Application.energyConsumption.increased 
     ]
         
- ReduceWifiScaninterval: BatterySaving
+ReduceWifiScaninterval: BatterySaving
         [ price = 0
         initializeInBootUp
        // bootuptime = XXX
@@ -324,7 +325,7 @@ abstract BatterySaving : Feature
         Security.high
         Stability.high ]
 
- CPUGovernor : Feature
+CPUGovernor : Feature
         [ price = 0
         initializeInBootUp
        // bootuptime = XXX
@@ -337,7 +338,7 @@ abstract BatterySaving : Feature
        //  Application.energyConsumption.increased 
        ]
         
- VolumeBoost : Feature
+VolumeBoost : Feature
         [ price = 0
         initializeInBootUp
        // bootuptime = XXX
@@ -352,7 +353,7 @@ abstract BatterySaving : Feature
 abstract UserInterfaceEnhancement : Feature
 
 
- LockedScreenWithMusicPlayer : UserInterfaceEnhancement
+LockedScreenWithMusicPlayer : UserInterfaceEnhancement
         [ price = 0
         initializeInBootUp
       //  bootuptime = XXX
@@ -364,7 +365,7 @@ abstract UserInterfaceEnhancement : Feature
         Stability.high 
         AndroidPhone.energyConsumption.increased]
 
- LockedScreenWithMusicPlayer : UserInterfaceEnhancement
+LockedScreenWithMusicPlayer : UserInterfaceEnhancement
         [ price = 0
         initializeInBootUp
       //  bootuptime = XXX
@@ -380,11 +381,12 @@ abstract UserInterfaceEnhancement : Feature
 // Applications.
 
 
- BusyBox : UserApplication
+BusyBox : UserApplication
                 
 abstract Map : UserApplication
+GoogleMap : Map
 
- OruxMap : Map 
+OruxMap : Map 
         [ backgroundRunning 
         initializeInBootUp
         // bootupTime = XXX
@@ -397,7 +399,7 @@ abstract Map : UserApplication
         Stability.high 
         U_4_5 ]
 
- LaShouOfflineMap: Map
+LaShouOfflineMap: Map
         [ backgroundRunning 
         initializeInBootUp
         // bootupTime = XXX
@@ -410,7 +412,7 @@ abstract Map : UserApplication
         Stability.high 
         U_3_4 ]
 
- BaiduMap: Map
+BaiduMap: Map
         [ backgroundRunning 
         initializeInBootUp
         // bootupTime = XXX
@@ -426,6 +428,7 @@ abstract Map : UserApplication
 
 abstract FitnessRunner : UserApplication
         [ this => GoogleMap]
+
 
 A : FitnessRunner 
         [ backgroundRunning 
@@ -452,3 +455,6 @@ B : FitnessRunner
         Security.high
         Stability.high 
         U_4_5 ]
+
+
+TestPhone : AndroidPhone
