@@ -1,0 +1,454 @@
+// Based on Android Example built by Bo.
+// world AndroidCustomization
+
+abstract AndroidPhone
+	hardware : Hardware
+	software : ROM
+	//I want to describe that some features have positive / negative influences on these two properties
+	or energyConsumption
+		increased
+		reduced
+	or performance
+		improved
+		reduced
+
+abstract Hardware
+	Screen
+		price : integer 
+		  [ price >= 10 && price <= 30 ]
+		xor material
+			basicScreen
+			colorScreen
+			LCD
+		xor resolution
+			R_320_by_480
+			R_480_by_560
+			R_480_by_800	
+		xor screenType
+			Screen1
+				[ colorScreen && R_480_by_560 ]
+				(price = 40)
+			Screen2
+				[ LCD && R_480_by_800 ]
+				(price = 50)
+	//this model does not show the price of the following hardware
+	Keyboard ?
+	KeyboardLight?
+		[ Hardware.Keyboard ]
+	Battery
+		xor Capability
+			C_1450mah
+			C_1730mah
+	CPU	
+		xor Cores
+			one_nonkeyword
+			two_nonkeyword
+				[ AndroidPhone.energyConsumption.increased
+				  AndroidPhone.performance.improved ]
+		xor Frequency	
+			F_800MHz
+				[ AndroidPhone.energyConsumption.reduced
+				  AndroidPhone.performance.reduced 
+				]
+			F_1_point_1GHz
+			F_1_point_5GHz
+				[ AndroidPhone.energyConsumption.increased 
+				  AndroidPhone.performance.improved
+				]
+		overclocking?
+			[ AndroidPhone.energyConsumption.increased 
+			  AndroidPhone.performance.improved
+			]
+	RAM
+		Capability : integer 
+			   [RAM.Capability >=  1000 && RAM.Capability <= 2000]		
+	HW_ROM
+		Capability : integer
+			   [HW_ROM.Capability >=  1000 && HW_ROM.Capability <= 2000]
+	or Position	// Michal: actually should be"mux" because you may have none as well
+		GPS
+		A_GPS
+	Back_Camera
+		xor Pixel
+			P_800M
+			P_500M
+	Front_Camera ?
+		  [ ROM.versionasnumber >= 2.3 ]
+	
+
+abstract ROM
+	//***Does Clafer have in-built type "version"?
+	version : string  // Clafer has no defaults for now : (= "2.3")
+	versionasnumber: integer // no ability to do lexicographical string comparison  
+		[versionasnumber >= 0]
+	kernel -> Kernel
+	systemapp -> SystemApplication +
+	userapp -> UserApplication +
+	feature -> Feature +
+	
+//We can use the clafer model from http://gsd.uwaterloo.ca/clafer/models
+//Here is just a very simple example for the kernel
+//There are some diferences between the linux kernel and the android kernel.
+abstract Kernel
+	kernelVersion : string // Clafer has no defaults for now:  (="2.6.35")
+	xor IOScheduler
+		NOOP
+			[ AndroidPhone.performance.improved]
+		DefaultScheduler
+	xor MemoryManagement
+		SLQB
+			[ AndroidPhone.performance.improved]
+		DefaultMM
+	Drivers
+		xor wifi
+			Version1
+			Version2
+			//..			
+		xor bluetooth
+			Version1
+			Version2
+			//..
+		//		xor ...
+	LZMACompression ?
+		[ AndroidPhone.performance.improved ]
+	//lots of options......	
+		
+
+abstract Application
+	removable ?
+	backgroundRunning ?
+	initializeInBootUp?
+		bootupTime : integer
+		[ bootupTime >= 0 ]
+	price : integer 
+	      [price >= 0 && price <= 50]
+	installationROM : integer
+		[installationROM  >= 1]
+		xor isReduced
+			notReduced
+			Reduced
+			// (notReduced)
+		      	[ APP2SD => Reduced]
+	userDataROM : integer 
+		[userDataROM > 1]
+		xor isReduced?
+			notReduced // (1)
+			Reduced
+		[ DATA2SD => Reduced ]
+	vmRAM : integer 
+	        [vmRAM > 1]
+		xor isReduced?
+			notReduced // (1)
+			Reduced
+		[ Dalivik2SD => Reduced]
+	energyConsumption : integer
+	xor Security
+		high
+		medium
+		low
+		// (medium) 
+	xor Stability
+		high
+		medium
+		low
+		// (medium)
+		
+abstract SystemApplication : Application
+	[ !(Application.removable) ]
+			
+abstract UserApplication : Application
+	[ Application.removable ]
+	xor Usability
+		U_4_5
+		U_3_4
+		U_3_2
+		U_1_2
+		U_0_1
+
+abstract Feature
+	price : integer 
+	      [price >= 0 && price <= 50]
+	initializeInBootUp?
+		bootupTime : integer
+		[ bootupTime > 0 ]
+	backgroundRunning ?
+	installationROM : integer 
+		[installationROM >1]
+	userDataROM : integer 
+		 [userDataROM >1]
+	vmRAM : integer 
+	      	[vmRAM >1]
+	energyConsumption : integer
+		[energyConsumption > 0]
+	xor Security
+		high
+		medium
+		low
+		// (medium) 
+	xor Stability
+		high
+		medium
+		low
+		// (medium)
+
+
+// List of Features 
+ FullTegra2Rendering : Feature
+        [ price = 0
+        !initializeInBootUp
+        backgroundRunning
+  //      installationROM = XXX
+ //       userDataROM =XXX 
+ //       vmRAM = XXX
+        energyConsumption = 35
+        Security.high
+        Stability.high ]
+
+ UnsecureBootImg : Feature
+        [ price = 0
+        !initializeInBootUp
+        !backgroundRunning       
+    //    installationROM = XXX
+        userDataROM = 0
+        vmRAM = 0
+        Security.low
+        Stability.low ] 
+
+ Zipaligned : Feature
+        [ price = 0
+        !initializeInBootUp
+        !backgroundRunning
+     //   installationROM = XXX
+        userDataROM = 0
+        vmRAM = 0
+        Security.high
+        Stability.high
+        Application.installationROM.isReduced.Reduced ]
+
+ SuperuserPermission : Feature
+        [ price = 0
+        initializeInBootUp
+        backgroundRunning
+       // bootuptime = XXX
+       // installationROM = XXX
+        userDataROM = 0
+        vmRAM = 0
+        Security.high
+        Stability.high
+        BusyBox ]
+
+ APP2SD : Feature
+        [ price = 0
+        initializeInBootUp
+        backgroundRunning       
+       // bootuptime = XXX
+       // installationROM = XXX
+        userDataROM = 0
+        vmRAM = 0
+        Security.high
+        Stability.high
+        Application.installationROM.isReduced.Reduced 
+        Application.Stability.medium
+        AndroidPhone.performance.reduced
+        AndroidPhone.energyConsumption.increased ]      
+
+
+ Dalivik2SD : Feature
+        [ price = 0
+        initializeInBootUp
+        backgroundRunning
+       // bootuptime = XXX
+       // installationROM = XXX
+        userDataROM = 0
+        vmRAM = 0
+        Security.high
+        Stability.high
+        Application.userDataROM.isReduced.Reduced 
+        Application.Stability.medium
+        AndroidPhone.performance.reduced
+	//        Application.energyConsumption.increased
+ ]
+
+ DATA2SD : Feature
+        [ price = 0
+        initializeInBootUp
+        backgroundRunning
+      //  bootuptime = XXX
+      //  installationROM = XXX
+        userDataROM = 0
+        vmRAM = 0
+        Security.high
+        Stability.high
+        Application.vmRAM.isReduced.Reduced 
+        Application.Stability.medium
+        AndroidPhone.performance.reduced
+       // Application.energyConsumption.increased
+
+	]
+         
+ GPSStatus : Feature
+        [ price = 0
+        !initializeInBootUp
+        !backgroundRunning
+       // installationROM = XXX
+       // userDataROM = XXX
+       // vmRAM = XXX
+        Security.high
+        Stability.high
+        Hardware.Position.GPS  // if we don't add the position, then clafer doesn't recognize gps from hardware.
+	]
+
+abstract BatterySaving : Feature
+
+ BatteryAutoCalibration : BatterySaving
+        [ this.price = 0
+        initializeInBootUp
+        //bootuptime = XXX
+        backgroundRunning
+       // installationROM = XXX
+       // userDataROM = XXX
+       // vmRAM = XXX
+        Security.high
+        Stability.high
+    	//    Application.energyConsumption.increased 
+    ]
+        
+ ReduceWifiScaninterval: BatterySaving
+        [ price = 0
+        initializeInBootUp
+       // bootuptime = XXX
+        backgroundRunning
+       // installationROM = XXX
+       // userDataROM = XXX
+       // vmRAM = XXX
+        Security.high
+        Stability.high ]
+
+ CPUGovernor : Feature
+        [ price = 0
+        initializeInBootUp
+       // bootuptime = XXX
+        backgroundRunning
+       // installationROM = XXX
+       // userDataROM = XXX
+       // vmRAM = XXX
+        Security.high
+        Stability.high 
+       //  Application.energyConsumption.increased 
+       ]
+        
+ VolumeBoost : Feature
+        [ price = 0
+        initializeInBootUp
+       // bootuptime = XXX
+        backgroundRunning
+       // installationROM = XXX
+       // userDataROM = XXX
+       // vmRAM = XXX
+        Security.high
+        Stability.high 
+        AndroidPhone.energyConsumption.increased]
+
+abstract UserInterfaceEnhancement : Feature
+
+
+ LockedScreenWithMusicPlayer : UserInterfaceEnhancement
+        [ price = 0
+        initializeInBootUp
+      //  bootuptime = XXX
+        backgroundRunning
+      //  installationROM = XXX
+      //  userDataROM = XXX
+      //  vmRAM = XXX
+        Security.high
+        Stability.high 
+        AndroidPhone.energyConsumption.increased]
+
+ LockedScreenWithMusicPlayer : UserInterfaceEnhancement
+        [ price = 0
+        initializeInBootUp
+      //  bootuptime = XXX
+        backgroundRunning
+     //   installationROM = XXX
+     //   userDataROM = XXX
+     //   vmRAM = XXX
+        Security.high
+        Stability.high 
+        AndroidPhone.energyConsumption.increased ]
+
+
+// Applications.
+
+
+ BusyBox : UserApplication
+                
+abstract Map : UserApplication
+
+ OruxMap : Map 
+        [ backgroundRunning 
+        initializeInBootUp
+        // bootupTime = XXX
+        // price = xxx
+        // installationROM = XXX
+        // userDataROM = XXX
+        // vmRAM = XXX
+        // eneryConsumption = xxx
+        Security.high
+        Stability.high 
+        U_4_5 ]
+
+ LaShouOfflineMap: Map
+        [ backgroundRunning 
+        initializeInBootUp
+        // bootupTime = XXX
+        // price = xxx
+        // installationROM = XXX
+        // userDataROM = XXX
+        // vmRAM = XXX
+        // eneryConsumption = xxx
+        Security.high
+        Stability.high 
+        U_3_4 ]
+
+ BaiduMap: Map
+        [ backgroundRunning 
+        initializeInBootUp
+        // bootupTime = XXX
+        // price = xxx
+        // installationROM = XXX
+        // userDataROM = XXX
+        // vmRAM = XXX
+        // eneryConsumption = xxx
+        Security.high
+        Stability.high 
+        U_4_5 ]
+
+
+abstract FitnessRunner : UserApplication
+        [ this => GoogleMap]
+
+A : FitnessRunner 
+        [ backgroundRunning 
+        initializeInBootUp
+        // bootupTime = XXX
+        // price = xxx
+        // installationROM = XXX
+        // userDataROM = XXX
+        // vmRAM = XXX
+        // eneryConsumption = xxx
+        Security.high
+        Stability.high 
+        U_4_5 ]
+
+B : FitnessRunner 
+        [ backgroundRunning 
+        initializeInBootUp
+       // bootupTime = XXX
+       //  price = xxx
+       // installationROM = XXX
+       //  userDataROM = XXX
+       // vmRAM = XXX
+       // eneryConsumption = xxx
+        Security.high
+        Stability.high 
+        U_4_5 ]

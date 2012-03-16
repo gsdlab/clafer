@@ -1,0 +1,71 @@
+example BusyBox : UserApplication
+		
+Abstract Map : UserApplication
+
+example OruxMap : Map 
+	[ backgroundRunning 
+	initializeInBootUp
+	bootupTime = XXX
+	price = xxx
+	installationROM = XXX
+	userDataROM = XXX
+	vmRAM = XXX
+	eneryConsumption = xxx
+	Security.high
+	Stability.high 
+	U_4-5 ]
+
+example LaShouOfflineMap: Map
+	[ backgroundRunning 
+	initializeInBootUp
+	bootupTime = XXX
+	price = xxx
+	installationROM = XXX
+	userDataROM = XXX
+	vmRAM = XXX
+	eneryConsumption = xxx
+	Security.high
+	Stability.high 
+	U_3-4 ]
+
+example BaiduMap: Map
+	[ backgroundRunning 
+	initializeInBootUp
+	bootupTime = XXX
+	price = xxx
+	installationROM = XXX
+	userDataROM = XXX
+	vmRAM = XXX
+	eneryConsumption = xxx
+	Security.high
+	Stability.high 
+	U_4-5 ]
+
+abstract FitnessRunner : UserApplication
+	[ this => GoogleMap]
+
+example A : FitnessRunner 
+	[ backgroundRunning 
+	initializeInBootUp
+	bootupTime = XXX
+	price = xxx
+	installationROM = XXX
+	userDataROM = XXX
+	vmRAM = XXX
+	eneryConsumption = xxx
+	Security.high
+	Stability.high 
+	U_4-5 ]
+
+example B : FitnessRunner 
+	[ backgroundRunning 
+	initializeInBootUp
+	bootupTime = XXX
+	price = xxx
+	installationROM = XXX
+	userDataROM = XXX
+	vmRAM = XXX
+	eneryConsumption = xxx
+	Security.high
+	Stability.high 
+	U_4-5 ]

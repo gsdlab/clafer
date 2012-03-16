@@ -1,0 +1,42 @@
+abstract CalendarAPP : Application
+	
+example htcContact : CalendarAPP 
+	[ !removable
+	backgroundRunning 
+	initializeInBootUp
+	bootupTime = XXX
+	price = xxx
+	installationROM = XXX
+	userDataROM = XXX
+	vmRAM = XXX
+	eneryConsumption = xxx
+	Security.high
+	Stability.high ]
+
+example GoogleCalendar : CalendarAPP
+	[removable
+	backgroundRunning 
+	initializeInBootUp
+	bootupTime = XXX
+	price = xxx
+	installationROM = XXX
+	userDataROM = XXX
+	vmRAM = XXX
+	eneryConsumption = xxx
+	Security.high
+	Stability.high 
+	U_4-5 ]
+	
+example MotoCalendar : CalendarAPP 
+	[removable
+	backgroundRunning 
+	initializeInBootUp
+	bootupTime = XXX
+	price = xxx
+	installationROM = XXX
+	userDataROM = XXX
+	vmRAM = XXX
+	eneryConsumption = xxx
+	Security.high
+	Stability.high 
+	U_4-5 ]

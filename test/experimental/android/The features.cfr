@@ -1,0 +1,178 @@
+
+example FullTegra2Rendering : Feature
+	[ price = 0
+	!initializeInBootUp
+	backgroundRunning
+	installationROM = XXX
+	userDataROM =XXX 
+	vmRAM = XXX
+	eneryConsumption = 35
+	Security.high
+	Stability.high ]
+
+example UnsecureBootImg : Feature
+	[ price = 0
+	!initializeInBootUp
+	!backgroundRunning	 
+	installationROM = XXX
+	userDataROM = 0
+	vmRAM = 0
+	Security.low
+	Stability.low ]	
+
+example Zipaligned : Feature
+	[ price = 0
+	!initializeInBootUp
+	!backgroundRunning
+	installationROM = XXX
+	userDataROM = 0
+	vmRAM = 0
+	Security.high
+	Stability.high
+	Application.installationROM.isReduced.Reduced ]
+
+example SuperuserPermission : Feature
+	[ price = 0
+	initializeInBootUp
+	backgroundRunning
+	bootuptime = XXX
+	installationROM = XXX
+	userDataROM = 0
+	vmRAM = 0
+	Security.high
+	Stability.high
+	BusyBox ]
+
+example APP2SD : Feature
+	[ price = 0
+	initializeInBootUp
+	backgroundRunning	
+	bootuptime = XXX
+	installationROM = XXX
+	userDataROM = 0
+	vmRAM = 0
+	Security.high
+	Stability.high
+	Application.installationROM.isReduced.Reduced 
+	Application.Stability.medium
+	AndroidPhone.performance.reduced
+	AndroidPhone.energyConsumption.increased ]	
+
+
+example Dalivik2SD : Feature
+	[ price = 0
+	initializeInBootUp
+	backgroundRunning
+	bootuptime = XXX
+	installationROM = XXX
+	userDataROM = 0
+	vmRAM = 0
+	Security.high
+	Stability.high
+	Application.userDataROM.isReduced.Reduced 
+	Application.Stability.medium
+	Application.performance.reduced
+	Application.energyConsumption.increased ]
+
+
+example DATA2SD : Feature
+	[ price = 0
+	initializeInBootUp
+	backgroundRunning
+	bootuptime = XXX
+	installationROM = XXX
+	userDataROM = 0
+	vmRAM = 0
+	Security.high
+	Stability.high
+	Application.vmRAM.isReduced.Reduced 
+	Application.Stability.medium
+	Application.performance.reduced
+	Application.energyConsumption.increased]
+	 
+example GPSStatus : Fearture
+	[ price = 0
+	!initializeInBootUp
+	!backgroundRunning
+	installationROM = XXX
+	userDataROM = XXX
+	vmRAM = XXX
+	Security.high
+	Stability.high
+	Hardware.GPS ]
+
+abstract BatterySaving : Feature
+
+example BatteryAutoCalibration : BatterySaving
+	[ price = 0
+	initializeInBootUp
+	bootuptime = XXX
+	backgroundRunning
+	installationROM = XXX
+	userDataROM = XXX
+	vmRAM = XXX
+	Security.high
+	Stability.high
+	Application.energyConsumption.increased ]
+	
+example ReduceWifiScaninterval: BatterySaving
+	[ price = 0
+	initializeInBootUp
+	bootuptime = XXX
+	backgroundRunning
+	installationROM = XXX
+	userDataROM = XXX
+	vmRAM = XXX
+	Security.high
+	Stability.high ]
+
+example CPUGovernor : Feature
+	[ price = 0
+	initializeInBootUp
+	bootuptime = XXX
+	backgroundRunning
+	installationROM = XXX
+	userDataROM = XXX
+	vmRAM = XXX
+	Security.high
+	Stability.high 
+	Application.energyConsumption.increased ]
+	
+example VolumeBoost : Feature
+	[ price = 0
+	initializeInBootUp
+	bootuptime = XXX
+	backgroundRunning
+	installationROM = XXX
+	userDataROM = XXX
+	vmRAM = XXX
+	Security.high
+	Stability.high 
+	AndroidPhone.energyConsumption.increased]
+
+abstract UserInterfaceEnhancement : Feature
+
+
+example LockedScreenWithMusicPlayer : UserInterfaceEnhancement
+	[ price = 0
+	initializeInBootUp
+	bootuptime = XXX
+	backgroundRunning
+	installationROM = XXX
+	userDataROM = XXX
+	vmRAM = XXX
+	Security.high
+	Stability.high 
+	AndroidPhone.energyConsumption.increased]
+
+example LockedScreenWithMusicPlayer : UserInterfaceEnhancement
+	[ price = 0
+	initializeInBootUp
+	bootuptime = XXX
+	backgroundRunning
+	installationROM = XXX
+	userDataROM = XXX
+	vmRAM = XXX
+	Security.high
+	Stability.high 
+	AndroidPhone.energyConsumption.increased ]

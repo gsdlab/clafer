@@ -1,0 +1,66 @@
+// generic PLA
+
+abstract options
+    xor size
+        small
+        large
+    cache ?
+        size : integer
+            fixed ?
+    [small && cache => fixed]
+
+abstract comp
+    version : integer = 1 + 2
+
+abstract ECU : comp
+
+abstract display : comp
+    server -> ECU
+    `options
+    price : integer 
+    [this.version >= server.version]
+
+
+// specific PLA (template)
+
+// display constraints
+//[all d : plaECU.display | d.server = this !d.options.cache]
+
+abstract plaECU : ECU
+    `display 1..2
+        [server = parent
+         !options.cache
+	 price = 5]
+
+ECU1 : plaECU
+
+ECU2 : plaECU ?
+    master -> ECU1
+
+// feature model for the specific PL
+
+telematicsSystem
+    xor channel
+        single
+        dual
+
+    extraDisplay ?
+   
+    xor size
+        small
+        large
+
+    [dual <=> ECU2
+     extraDisplay <=> #ECU1.display = 2
+     extraDisplay <=> (ECU2 => #ECU2.display = 2)
+     large <=> !plaECU.display.options.size.small
+     small <=> !plaECU.display.options.size.large]
+
+// concrete product
+[dual
+ extraDisplay
+ telematicsSystem.size.large]
+
+
+<< min sum(display.price) >>
+<< max # plaECU >>
