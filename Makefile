@@ -41,5 +41,8 @@ clean:
 
 deploy: 
 	mkdir -p $(to)
-	cp -R tools $(to)
+     mkdir -p $(to)/tools
+	cp tools/alloy4.jar $(to)/tools
+	cp tools/alloy4.2-rc.jar $(to)/tools
+	cp tools/XsdCheck.class $(to)/tools
 	cp clafer.* $(to)
