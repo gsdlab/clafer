@@ -2,39 +2,41 @@ open util/integer
 pred show {}
 
 
-one sig c1_Person
+abstract sig c1_Person
 { r_c2_age : one c2_age
 , r_c3_maritalStatus : one c3_maritalStatus
 , r_c18_children : set c18_children
 , r_c19_parents : set c19_parents }
-{ 2 <= #r_c19_parents and #r_c19_parents <= 2 }
+{ #r_c19_parents <= 2 }
 
-one sig c2_age
+sig c2_age
 { ref : one Int }
+{ one @r_c2_age.this }
 
-one sig c3_maritalStatus
+sig c3_maritalStatus
 { r_c4_neverMarried : lone c4_neverMarried
 , r_c5_married : lone c5_married
 , r_c17_divorced : lone c17_divorced }
-{ let children = (r_c4_neverMarried + r_c5_married + r_c17_divorced) | one children }
+{ one @r_c3_maritalStatus.this
+  let children = (r_c4_neverMarried + r_c5_married + r_c17_divorced) | one children }
 
-lone sig c4_neverMarried
+sig c4_neverMarried
 {}
-{ one r_c4_neverMarried }
+{ one @r_c4_neverMarried.this }
 
-lone sig c5_married
+sig c5_married
 { r_c9_spouse : one c9_spouse }
-{ one r_c5_married
-  (((this.~@r_c5_married).~@r_c3_maritalStatus).@r_c2_age.@ref) >= 18 }
+{ one @r_c5_married.this
+  (((this.~@r_c5_married).~@r_c3_maritalStatus).@r_c2_age.@ref) >= 3 }
 
-lone sig c9_spouse in c1_Person
+sig c9_spouse in c1_Person
 {}
-{ one r_c9_spouse
-  this = (((this.~@r_c9_spouse).~@r_c5_married).~@r_c3_maritalStatus) }
+{ one @r_c9_spouse.this
+  this != (((this.~@r_c9_spouse).~@r_c5_married).~@r_c3_maritalStatus) }
 
-lone sig c17_divorced
+sig c17_divorced
 {}
-{ one r_c17_divorced }
+{ one @r_c17_divorced.this }
 
 sig c18_children in c1_Person
 {}
@@ -43,4 +45,10 @@ sig c18_children in c1_Person
 sig c19_parents in c1_Person
 {}
 { one @r_c19_parents.this }
+
+one sig c20_Alice extends c1_Person
+{}
+
+one sig c21_Bob extends c1_Person
+{}
 

@@ -59,7 +59,7 @@ astrIExp x = case x of
   IFunExp op exps -> if op == iUnion
                      then astrIExp $ concatStrExp x else return x
   IStr str -> do
-    modify (\e -> Map.insertWith const str (Map.size e) e)
+    modify (\e -> Map.insertWith (flip const) str (Map.size e) e)
     st <- get
     return $  (IInt $ toInteger $ (Map.!) st str)
   _ -> return x

@@ -1,0 +1,14 @@
+abstract Entity
+    type : string
+
+E1 : Entity
+    [ type = "E1T" ]
+
+E2 : Entity
+    [ type = "E1T" ]
+
+E3 : Entity
+    [ type = "E1T" ]
+
+E1TEntities -> Entity *
+    [ type = "E1T" ]

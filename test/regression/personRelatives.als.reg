@@ -1,0 +1,66 @@
+open util/integer
+pred show {}
+
+
+abstract sig c1_Person
+{ r_c2_age : one c2_age
+, r_c6_maritalStatus : one c6_maritalStatus
+, r_c28_childs : set c28_childs
+, r_c41_parents : set c41_parents }
+{ #r_c41_parents <= 2 }
+
+sig c2_age
+{ ref : one Int }
+{ one @r_c2_age.this
+  this.@ref >= 0 }
+
+sig c6_maritalStatus
+{ r_c7_neverMarried : lone c7_neverMarried
+, r_c8_married : lone c8_married
+, r_c27_divorced : lone c27_divorced }
+{ one @r_c6_maritalStatus.this
+  let children = (r_c7_neverMarried + r_c8_married + r_c27_divorced) | one children }
+
+sig c7_neverMarried
+{}
+{ one @r_c7_neverMarried.this }
+
+sig c8_married
+{ r_c12_spouse : one c12_spouse }
+{ one @r_c8_married.this
+  (((this.~@r_c8_married).~@r_c6_maritalStatus).@r_c2_age.@ref) >= 5 }
+
+sig c12_spouse in c1_Person
+{}
+{ one @r_c12_spouse.this
+  (((this.@r_c6_maritalStatus).@r_c8_married).@r_c12_spouse) = (((this.~@r_c12_spouse).~@r_c8_married).~@r_c6_maritalStatus)
+  (this.@r_c2_age.@ref) >= 5 }
+
+sig c27_divorced
+{}
+{ one @r_c27_divorced.this }
+
+sig c28_childs in c1_Person
+{}
+{ one @r_c28_childs.this
+  (this.@r_c2_age.@ref) <= ((this.~@r_c28_childs).@r_c2_age.@ref)
+  (this.~@r_c28_childs) in (this.@r_c41_parents) }
+
+sig c41_parents in c1_Person
+{}
+{ one @r_c41_parents.this
+  (this.~@r_c41_parents) in (this.@r_c28_childs) }
+
+one sig c47_Alice extends c1_Person
+{}
+{ (this.@r_c2_age.@ref) = 6
+  (((this.@r_c6_maritalStatus).@r_c8_married).@r_c12_spouse) = c54_Bob }
+
+one sig c54_Bob extends c1_Person
+{}
+
+one sig c55_Carol extends c1_Person
+{}
+{ (this.@r_c2_age.@ref) = 1
+  (this.@r_c41_parents) = (c47_Alice + c54_Bob) }
+

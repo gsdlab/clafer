@@ -1,0 +1,28 @@
+open util/integer
+pred show {}
+
+
+abstract sig c1_Book
+{ r_c2_author : some c2_author }
+
+sig c2_author in c8_Author
+{}
+{ one @r_c2_author.this
+  (this.~@r_c2_author) in (this.@r_c9_book) }
+
+abstract sig c8_Author
+{ r_c9_book : some c9_book }
+
+sig c9_book in c1_Book
+{}
+{ one @r_c9_book.this
+  (this.~@r_c9_book) in (this.@r_c2_author) }
+
+fact { 5 <= #c15_B and #c15_B <= 5 }
+sig c15_B extends c1_Book
+{}
+
+fact { 6 <= #c16_A and #c16_A <= 6 }
+sig c16_A extends c8_Author
+{}
+
