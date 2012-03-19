@@ -1,0 +1,19 @@
+open util/integer
+pred show {}
+
+
+one sig c1_Course
+{ r_c2_teachers : set c2_teachers }
+
+sig c2_teachers in c3_Teacher
+{}
+{ one @r_c2_teachers.this }
+
+one sig c3_Teacher
+{ r_c4_courses : set c4_courses }
+{ all  c : this.@r_c4_courses | some  t : c.@r_c2_teachers | c in (t.@r_c4_courses) }
+
+sig c4_courses in c1_Course
+{}
+{ one @r_c4_courses.this }
+

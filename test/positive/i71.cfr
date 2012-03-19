@@ -1,0 +1,6 @@
+Course
+  teachers -> Teacher *
+
+Teacher
+  courses -> Course *
+  [ all c : courses | some t : c.teachers | c in t.courses ]
