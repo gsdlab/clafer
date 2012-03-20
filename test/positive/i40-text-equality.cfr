@@ -5,7 +5,9 @@ text2 : string = "some text"
 equal1 ?
 	[ text = text1 ]
 
-equal2
+equal2 ?
 	[ text1 = text2 ]
 
+// assertion
 [ equal1 ]
+[ equal2 ]

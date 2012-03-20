@@ -45,4 +45,6 @@ deploy:
 	cp tools/alloy4.jar $(to)/tools
 	cp tools/alloy4.2-rc.jar $(to)/tools
 	cp tools/XsdCheck.class $(to)/tools
-	cp clafer.* $(to)
+	cp clafer $(to)
+	cp clafer.exe $(to)
+	cp README.md $(to)/clafer-README.md
