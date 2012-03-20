@@ -2,18 +2,26 @@ open util/integer
 pred show {}
 
 
-one sig c1_Course
-{ r_c2_teachers : set c2_teachers }
+abstract sig c1_Course
+{ r_c2_taughtBy : set c2_taughtBy }
 
-sig c2_teachers in c3_Teacher
+sig c2_taughtBy in c3_Teacher
 {}
-{ one @r_c2_teachers.this }
+{ one @r_c2_taughtBy.this }
 
-one sig c3_Teacher
-{ r_c4_courses : set c4_courses }
-{ all  c : this.@r_c4_courses | some  t : c.@r_c2_teachers | c in (t.@r_c4_courses) }
+abstract sig c3_Teacher
+{ r_c4_teaches : set c4_teaches }
 
-sig c4_courses in c1_Course
+sig c4_teaches in c1_Course
 {}
-{ one @r_c4_courses.this }
+{ one @r_c4_teaches.this }
+
+fact { all  c : c1_Course | some  t : c.@r_c2_taughtBy | c in (t.@r_c4_teaches) }
+fact { 5 <= #c16_course and #c16_course <= 5 }
+sig c16_course extends c1_Course
+{}
+
+fact { 3 <= #c17_teacher and #c17_teacher <= 3 }
+sig c17_teacher extends c3_Teacher
+{}
 

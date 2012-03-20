@@ -18,8 +18,9 @@ lone sig c13_equal1
 {}
 { c1_text.@ref = c5_text1.@ref }
 
-one sig c17_equal2
+lone sig c17_equal2
 {}
 { c5_text1.@ref = c9_text2.@ref }
 
 fact { some c13_equal1 }
+fact { some c17_equal2 }
