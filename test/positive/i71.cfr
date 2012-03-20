@@ -1,6 +1,13 @@
-Course
-  teachers -> Teacher *
+// needs scope 20 to instantiate
 
-Teacher
-  courses -> Course *
-  [ all c : courses | some t : c.teachers | c in t.courses ]
+abstract Course
+	taughtBy -> Teacher *
+
+abstract Teacher
+	teaches -> Course *
+  
+[ all c : Course | some t : c.taughtBy | c in t.teaches ]
+
+course : Course 5
+
+teacher : Teacher 3
