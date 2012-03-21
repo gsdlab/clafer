@@ -5,7 +5,11 @@ TOOL_DIR = tools
 
 all: build
 
-install: all
+install: all cabalInstall
+
+# this one is used in README.md for building because it is cross platform and it uses original source
+# files from the repository without rebuilding the parser etc.
+cabalInstall:
 	cabal install --bindir=.
 
 build:
