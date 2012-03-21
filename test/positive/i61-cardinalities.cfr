@@ -1,3 +1,7 @@
+// http://gsd.uwaterloo.ca:8888/question/254/children-of-all-groups-other-than-default-should
+
+// other than "any" group - children optional
+
 2..3 A
    b
    c 1
@@ -7,6 +11,12 @@ xor E
    f
    g
    
+// default "any" group - children mandatory
 D
   Z
   K ?
+
+
+0..* L
+  M
+  N
