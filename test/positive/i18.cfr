@@ -3,3 +3,6 @@ abstract A
 
 A1 : A
   [ s = "text value" ]
+
+
+// http://gsd.uwaterloo.ca:8888/question/8/issue19-incorrect-expression-in-a-quantified
