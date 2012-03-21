@@ -2,21 +2,27 @@ SRC_DIR  = src
 TEST_DIR = test
 TOOL_DIR = tools
 
-
 all: build
 
-install: all cabalInstall
-
-# this one is used in README.md for building because it is cross platform and it uses original source
-# files from the repository without rebuilding the parser etc.
-cabalInstall:
-	cabal install --bindir=.
+install:  
+	mkdir -p $(to)
+	mkdir -p $(to)/tools
+	cp tools/alloy4.jar $(to)/tools
+	cp tools/alloy4.2-rc.jar $(to)/tools
+	cp tools/XsdCheck.class $(to)/tools
+	cp clafer $(to)
+	cp clafer.exe $(to)
+	cp README.md $(to)/clafer-README.md
 
 build:
-	$(MAKE) -C $(SRC_DIR)
 	$(MAKE) -C $(TOOL_DIR)
-	ghc -isrc -outputdir dist/build --make -O src/clafer -o clafer
+	cabal build
 
+# build Schema.hs from ClaferIG.xsd, call after .xsd changed
+Schema.hs:
+	$(MAKE) -C $(SRC_DIR)
+
+# enable profiler
 prof:
 	$(MAKE) -C $(SRC_DIR)
 	$(MAKE) -C $(TOOL_DIR)
@@ -42,13 +48,3 @@ clean:
 	find . -type f -name '*.o' -print0 | xargs -0 rm -f
 	find . -type f -name '*.hi' -print0 | xargs -0 rm -f
 	find . -type f -name '*~' -print0 | xargs -0 rm -f
-
-deploy: 
-	mkdir -p $(to)
-	mkdir -p $(to)/tools
-	cp tools/alloy4.jar $(to)/tools
-	cp tools/alloy4.2-rc.jar $(to)/tools
-	cp tools/XsdCheck.class $(to)/tools
-	cp clafer $(to)
-	cp clafer.exe $(to)
-	cp README.md $(to)/clafer-README.md
