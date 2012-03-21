@@ -1,3 +1,5 @@
+// http://gsd.uwaterloo.ca:8888/question/308/available-constructs-for-logical-expressions
+
 // needs scope 20 to instantiate
 
 abstract Course
