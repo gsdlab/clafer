@@ -1,3 +1,5 @@
+// http://gsd.uwaterloo.ca:8888/question/256/adding-support-for-inverse-in-clafer
+
 abstract Course
 	 assistants -> TA *
 
