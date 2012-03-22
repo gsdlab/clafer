@@ -15,6 +15,7 @@ install:
 
 build:
 	$(MAKE) -C $(TOOL_DIR)
+	cabal configure
 	cabal build
 
 # build Schema.hs from ClaferIG.xsd, call after .xsd changed
