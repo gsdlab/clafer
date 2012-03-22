@@ -53,20 +53,20 @@ data ClaferArgs = ClaferArgs {
     } deriving (Show, Data, Typeable)
 
 clafer = ClaferArgs {
-  mode                = def &= help "Generated output type. Available modes: alloy (default); alloy42 (new Alloy version); xml (intermediate representation of Clafer model); clafer (analyzed and desugared clafer model)" &= name "m",
+  mode                = def &= help "Generated output type. Available modes are: 'alloy' (default, Alloy 4.1); 'alloy42' (Alloy 4.2-rc); 'xml' (intermediate representation of Clafer model); 'clafer'  (analyzed and desugared clafer model)" &= name "m",
   console_output      = def &= help "Output code on console" &= name "o",
   flatten_inheritance = def &= help "Flatten inheritance" &= name "i",
   timeout_analysis    = def &= help "Timeout for analysis",
   no_layout           = def &= help "Don't resolve off-side rule layout" &= name "l",
   new_layout          = def &= help "Use new fast layout resolver (experimental)" &= name "nl",
-  check_duplicates    = def &= help "Check duplicated clafer names",
+  check_duplicates    = def &= help "Check duplicated clafer names"  &= name "c",
   skip_resolver       = def &= help "Skip name resolution" &= name "f",
-  keep_unused         = def &= help "Keep unused abstract clafers" &= name "k",
+  keep_unused         = def &= help "Keep uninstantated abstract clafers" &= name "k",
   no_stats            = def &= help "Don't print statistics" &= name "s",
-  schema              = def &= help "Show Clafer XSD schema",
-  validate            = def &= help "Validate output. Uses XsdCheck for XML, Alloy Analyzer for Alloy models, and Clafer translator for desugared Clafer models. Use --tooldir to specify where the binaries (XsdCheck.class, Alloy4.jar, Alloy4.2-rc.jar) are located.",
-  tooldir             = def &= typDir &= help "Tools directory",
-  alloy_mapping       = def &= help "Generate mapping to Alloy source code",
+  schema              = def &= help "Show Clafer IR (intermediate representation) XML schema",
+  validate            = def &= help "Validate output. Uses 'tools/XsdCheck.class' for XML,  'tools/alloy4.jar' and 'tools/alloy4.2-rc.jar' for Alloy models, and Clafer translator for desugared Clafer models. Use --tooldir to override the default location of these tools." &= name "v",
+  tooldir             = def &= typDir &= help "Specify the tools directory. Default: 'tools/'",
+  alloy_mapping       = def &= help "Generate mapping to Alloy source code" &= name "a",
   file                = def &= args   &= typ "FILE"
  } &= summary ("Clafer " ++ version) &= program "clafer"
 
