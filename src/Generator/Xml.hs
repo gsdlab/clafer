@@ -43,7 +43,7 @@ genXmlInteger n = tag "IntLiteral" $ show n
 
 genXmlBoolean label b = tag label $ toLowerS $ show b
 
-genXmlString str = tag "StrLiteral" str
+genXmlString str = tag "StringLiteral" str
 
 genXmlIntPair (x, y) = concat
   [ genXmlInteger x

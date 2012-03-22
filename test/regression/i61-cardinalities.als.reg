@@ -43,3 +43,13 @@ lone sig c10_K
 {}
 { one r_c10_K }
 
+one sig c11_L
+{ r_c12_M : one c12_M
+, r_c13_N : one c13_N }
+
+one sig c12_M
+{}
+
+one sig c13_N
+{}
+

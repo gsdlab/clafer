@@ -4,3 +4,6 @@ abstract A
     [ some b1 : b | b1.c ]
 
 a1 : A
+
+
+// http://gsd.uwaterloo.ca:8888/question/8/issue19-incorrect-expression-in-a-quantified
