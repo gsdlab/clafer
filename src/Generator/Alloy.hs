@@ -31,6 +31,7 @@ import ClaferArgs
 import Front.Absclafer
 import Intermediate.Intclafer
 import Intermediate.ResolverType
+import Intermediate.ScopeAnalyzer
 
 {-
  - What should Concat srcPos be? Consider the following Alloy snippet
@@ -114,15 +115,20 @@ cunlines xs = cconcat $ map (+++ (CString "\n")) xs
 genModule :: ClaferArgs -> (IModule, GEnv) -> (Result, [(String, Position)])
 genModule args (imodule, _) = (flatten output, mapLineCol output)
   where
-  output = header args +++ (cconcat $ map (genDeclaration
+  output = header args imodule +++ (cconcat $ map (genDeclaration
            (fromJust $ mode args)) (mDecls imodule))
 
 
-header args = CString $ unlines
+header args imodule = CString $ unlines
     [ if (fromJust $ mode args) == Alloy42 then "" else "open util/integer"
     , "pred show {}"
-    , if (fromJust $ validate args) then "" else "run  show for 1"
+    , if (fromJust $ validate args) then "" else "run  show for 1" ++ genScopes (scopeAnalysis imodule)
     , ""]
+    where
+    genScopes scopes = " but " ++ intercalate ", " (map genScope scopes)
+    
+genScope :: (String, Integer) -> String
+genScope (uid, scope) = show scope ++ " " ++ uid
 
 
 genDeclaration :: ClaferMode -> IElement -> Concat
