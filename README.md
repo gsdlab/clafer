@@ -26,8 +26,7 @@ Building
 
 1. install the dependencies
 2. in some `<source directory>`, execute `git clone git://github.com/gsdlab/clafer.git`
-3. copy `alloy4.jar` and `alloy4.2-rc.jar` into `<source directory>/clafer/tools`
-4. in `<source directory>/clafer`, execute
+3. in `<source directory>/clafer`, execute
   * `cabal update`
   * `make`
 
