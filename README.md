@@ -48,11 +48,11 @@ Usage
 The following `<OPTIONS>` are supported:
 
 ```
-  -m --mode=CLAFERMODE       Generated output type. Available modes: 
-                             alloy   (default, Alloy 4.1); 
-                             alloy42 (Alloy 4.2-rc);
-                             xml     (intermediate representation of Clafer model);
-                             clafer  (analyzed and desugared clafer model)
+  -m --mode=<MODE>           Generated output type. Available <MODE>s are: 
+                             "alloy"   (default, Alloy 4.1); 
+                             "alloy42" (Alloy 4.2-rc);
+                             "xml"     (intermediate representation of Clafer model);
+                             "clafer"  (analyzed and desugared clafer model)
   -o --console-output        Output code on console
   -i --flatten-inheritance   Flatten inheritance
      --timeout-analysis=INT  Timeout for analysis
@@ -60,18 +60,23 @@ The following `<OPTIONS>` are supported:
   -n --nl --new-layout       Use new fast layout resolver (experimental)
   -c --check-duplicates      Check duplicated clafer names
   -f --skip-resolver         Skip name resolution
-  -k --keep-unused           Keep uninstantated abstract clafers
+  -k --keep-unused           Keep uninstantated abstract clafers. 
   -s --no-stats              Don't print statistics
-     --schema                Show Clafer XSD schema
-  -v --validate              Validate output. Uses XsdCheck for XML, Alloy
-                             Analyzer for Alloy models, and Clafer translator
-                             for desugared Clafer models. Use --tooldir to
-                             specify where the binaries (XsdCheck.class,
-                             Alloy4.jar, Alloy4.2-rc.jar) are located.
-     --tooldir=DIR           Tools directory (<target directory>/tools by default)
+     --schema                Show Clafer IR (intermediate representation) XML schema
+  -v --validate              Validate output. Uses "tools/XsdCheck.class" for XML, 
+                             "tools/alloy4.jar" and "tools/alloy4.2-rc.jar" for Alloy 
+                             models, and Clafer translator for desugared Clafer models. 
+                             Use --tooldir to override the default location of these tools.
+     --tooldir=DIR           Specify the tools directory. Default: "<target directory>/tools".
   -a --alloy-mapping         Generate mapping to Alloy source code
-  -? --help                  Display help message
+  -? --help                  Display this help message
   -V --version               Print version information
+```
+
+Additionally, `<OPTIONS>` can also be specified directly in the model file by inserting the following as the first line of the file:
+
+```
+//# <OPTIONS>
 ```
 
 Need help?
