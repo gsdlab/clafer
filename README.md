@@ -8,44 +8,34 @@ Clafer Translator
 
 Clafer translator provides a reference language implementation. It translates models in Clafer to other formats (e.g. Alloy, XML) to allow for reasoning with existing tools.
 
-
 Currently, the translator is used by Clafer Instance Generator ([ClaferIG](https://github.com/gsdlab/claferIG)).
 
 Dependencies
 ------------
-* GHC (Glasgow Haskell Compiler). For installation instructions refer to the [GHC website](http://www.haskell.org/ghc/distribution_packages)
-* [cabal-install](http://www.haskell.org/haskellwiki/Cabal-Install) (for installation and fetching required Haskell libraries). The package can be installed as follows (Ubuntu):
-```
-sudo apt-get install cabal-install
-```
+* [The Haskell Platform](http://hackage.haskell.org/platform/).
+* [Java Platform (JDK)](http://www.oracle.com/technetwork/java/javase/downloads/index.html) >= 5, 32bit
+* [Alloy4.1 and/or Alloy4.2-rc](http://alloy.mit.edu/alloy/download.html)
+* [Git](http://git-scm.com/)
 
-alternatively, you may install [The Haskell Platform](http://hackage.haskell.org/platform/). It includes both GHC and cabal-install.
+On Windows only
 
-### Extra Dependencies
+* [Cygwin](http://www.cygwin.com/) with packages `make`, `wget`
 
-* [Alloy4.1 or 4.2](http://alloy.mit.edu/) (backend reasoner)
+Building
+------------------
 
-
-### Prerequisites
-
-1. install [Git](http://git-scm.com/)
-2. install the Haskell Platform (it contains GHC and Cabal)
-3. create a `<target directory>` of your choice
-4. make sure the `<target directory>` is on your command PATH
-5. in another directory, `<source directory>`, execute `git clone git://github.com/gsdlab/clafer.git`
-
-### Building
-
-1. in the newly created `<source directory>/clafer` directory, execute
+1. install the dependencies
+2. in some `<source directory>`, execute `git clone git://github.com/gsdlab/clafer.git`
+3. copy `alloy4.jar` and `alloy4.2-rc.jar` into `<source directory>/clafer/tools`
+4. in `<source directory>/clafer`, execute
   * `cabal update`
-  * `cabal install`
+  * `make`
 
-#### Note: 
-> On Windows, install Cygwin with the `make` package.
+Installation
+------------
 
-### Installation
-
-1. execute `make deploy to=<target directory>`
+1. execute `make install to=<target directory>`
+2. add the `<target directory>` is on your command PATH
 
 #### Note: 
 > On Windows, use `/` with the `make` command instead of `\`.
@@ -53,32 +43,36 @@ alternatively, you may install [The Haskell Platform](http://hackage.haskell.org
 Usage
 -----
 
-### Command-line Usage
+`clafer <model file name>.cfr <OPTIONS>`
 
-`clafer <model file name>.cfr`
+The following `<OPTIONS>` are supported:
 
-- by default, the translator produces Alloy 4 output. Use
-
-  * `-m=xml` 	to produce XML output
-  * `-m=clafer` 	to produce desugared Clafer output
-  * `-m=alloy42` 	to produce Alloy 4.2 output
-  * `-m=alloy` 	to produce Alloy 4.1 output (default)
-
-Validator
-=========
-
-The clafer translator can validate its XML, Alloy 4 and 4.2, and Clafer output.
-
-Dependencies
-------------
-* Java >= 5
-* XsdCheck.class (for validating XML output against Clafer XSD schema)
-* Alloy binaries (alloy4.jar and/or alloy4.2-rc.jar) are placed in `<target directory>/tools`.
-
-Usage
------
-
-* `-v` 		to invoke the validator for the given kind of output
+```
+  -m --mode=CLAFERMODE       Generated output type. Available modes: 
+                             alloy   (default, Alloy 4.1); 
+                             alloy42 (Alloy 4.2-rc);
+                             xml     (intermediate representation of Clafer model);
+                             clafer  (analyzed and desugared clafer model)
+  -o --console-output        Output code on console
+  -i --flatten-inheritance   Flatten inheritance
+     --timeout-analysis=INT  Timeout for analysis
+  -l --no-layout             Don't resolve off-side rule layout
+  -n --nl --new-layout       Use new fast layout resolver (experimental)
+  -c --check-duplicates      Check duplicated clafer names
+  -f --skip-resolver         Skip name resolution
+  -k --keep-unused           Keep uninstantated abstract clafers
+  -s --no-stats              Don't print statistics
+     --schema                Show Clafer XSD schema
+  -v --validate              Validate output. Uses XsdCheck for XML, Alloy
+                             Analyzer for Alloy models, and Clafer translator
+                             for desugared Clafer models. Use --tooldir to
+                             specify where the binaries (XsdCheck.class,
+                             Alloy4.jar, Alloy4.2-rc.jar) are located.
+     --tooldir=DIR           Tools directory (<target directory>/tools by default)
+  -a --alloy-mapping         Generate mapping to Alloy source code
+  -? --help                  Display help message
+  -V --version               Print version information
+```
 
 Need help?
 ==========
