@@ -1,0 +1,15 @@
+// http://gsd.uwaterloo.ca:8888/question/308/available-constructs-for-logical-expressions
+
+// needs scope 20 to instantiate
+
+abstract Course
+	taughtBy -> Teacher *
+
+abstract Teacher
+	teaches -> Course *
+  
+[ all c : Course | some t : c.taughtBy | c in t.teaches ]
+
+course : Course 5
+
+teacher : Teacher 3

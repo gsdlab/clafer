@@ -9,9 +9,9 @@ abstract sig c1_Book
 , r_c6_format : one c6_format
 , r_c10_kind : one c10_kind
 , r_c17_authors : some c17_authors
-, r_c28_ISBN : lone c28_ISBN }
+, r_c24_ISBN : lone c24_ISBN }
 { 2 <= #r_c5_page
-  ((this.@r_c4_year.@ref) >= 1970) => (some this.@r_c28_ISBN) }
+  ((this.@r_c4_year.@ref) >= 5) => (some this.@r_c24_ISBN) }
 
 sig c2_title
 { ref : one Int
@@ -82,48 +82,48 @@ sig c16_other
 { ref : one Int }
 { one @r_c16_other.this }
 
-sig c17_authors in c41_Author
+sig c17_authors in c35_Author
 {}
 { one @r_c17_authors.this }
 
-sig c28_ISBN
+sig c24_ISBN
 { ref : one Int
-, r_c29_GS1 : lone c29_GS1 }
-{ one @r_c28_ISBN.this
-  (((this.~@r_c28_ISBN).@r_c4_year.@ref) >= 2007) => (some this.@r_c29_GS1) }
+, r_c25_GS1 : lone c25_GS1 }
+{ one @r_c24_ISBN.this
+  (((this.~@r_c24_ISBN).@r_c4_year.@ref) >= 6) => (some this.@r_c25_GS1) }
 
-sig c29_GS1
+sig c25_GS1
 { ref : one Int }
-{ one @r_c29_GS1.this }
+{ one @r_c25_GS1.this }
 
-abstract sig c38_Person
-{ r_c39_name : one c39_name
-, r_c40_dob : lone c40_dob }
+abstract sig c32_Person
+{ r_c33_name : one c33_name
+, r_c34_dob : lone c34_dob }
 
-sig c39_name
+sig c33_name
 { ref : one Int }
-{ one @r_c39_name.this }
+{ one @r_c33_name.this }
 
-sig c40_dob
+sig c34_dob
 { ref : one Int }
-{ one @r_c40_dob.this }
+{ one @r_c34_dob.this }
 
-abstract sig c41_Author extends c38_Person
-{ r_c42_books : some c42_books }
+abstract sig c35_Author extends c32_Person
+{ r_c36_books : some c36_books }
 
-sig c42_books in c1_Book
+sig c36_books in c1_Book
 {}
-{ one @r_c42_books.this }
+{ one @r_c36_books.this }
 
-one sig c43_GenerativeProgramming extends c1_Book
+one sig c37_GenerativeProgramming extends c1_Book
 {}
-{ (((((((this.@r_c2_title.@ref) = 0) && ((this.@r_c4_year.@ref) = 2000)) && ((#(this.@r_c5_page)) = 589)) && (some (this.@r_c6_format).@r_c7_paper)) && (some (this.@r_c10_kind).@r_c15_nonfiction)) && ((this.@r_c17_authors) = (c82_Czarnecki + c90_Eisenecker))) && ((this.@r_c28_ISBN.@ref) = 1) }
+{ (((((((((this.@r_c2_title.@ref) = 0) && (no (this.@r_c2_title).@r_c3_subtitle)) && ((this.@r_c4_year.@ref) = 5)) && ((#(this.@r_c5_page)) = 4)) && (some (this.@r_c6_format).@r_c7_paper)) && (some (this.@r_c10_kind).@r_c15_nonfiction)) && ((this.@r_c17_authors) = (c72_Czarnecki + c80_Eisenecker))) && ((this.@r_c24_ISBN.@ref) = 0)) && (no (this.@r_c24_ISBN).@r_c25_GS1) }
 
-one sig c82_Czarnecki extends c41_Author
+one sig c72_Czarnecki extends c35_Author
 {}
-{ ((this.@r_c39_name.@ref) = 2) && (c43_GenerativeProgramming in (this.@r_c42_books)) }
+{ ((this.@r_c33_name.@ref) = 0) && (c37_GenerativeProgramming in (this.@r_c36_books)) }
 
-one sig c90_Eisenecker extends c41_Author
+one sig c80_Eisenecker extends c35_Author
 {}
-{ ((this.@r_c39_name.@ref) = 3) && (c43_GenerativeProgramming in (this.@r_c42_books)) }
+{ ((this.@r_c33_name.@ref) = 0) && (c37_GenerativeProgramming in (this.@r_c36_books)) }
 

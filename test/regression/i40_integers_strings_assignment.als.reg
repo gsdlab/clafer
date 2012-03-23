@@ -25,3 +25,4 @@ sig c15_E1TEntities in c1_Entity
 {}
 { (c1_Entity.@r_c2_type.@ref) = 0 }
 
+fact { (#c15_E1TEntities) = 3 }

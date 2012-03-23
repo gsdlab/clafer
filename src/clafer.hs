@@ -113,21 +113,20 @@ analyze args tree = do
   let args' = args{skip_resolver = Just $ au && (fromJust $ skip_resolver args)}
   conPutStrLn args "[Resolving]"
   let (rTree, genv) = resolveModule args' dTree'
-  conPutStrLn args "[Analyzing String]"
-  let aTree = astrModule rTree
   conPutStrLn args "[Transforming]"
-  let tTree = transModule aTree
+  let tTree = transModule rTree
   conPutStrLn args "[Optimizing]"
   return $ (optimizeModule args' (tTree, genv), genv, au)
   -- writeFile (f ++ ".ana") $ printTree $
   --  sugarModule oTree
+
 
 generate f args (oTree, genv, au) = do
   conPutStrLn args "[Generating Code]"
   let stats = showStats au $ statsModule oTree
   when (not $ fromJust $ no_stats args) $ putStrLn stats
   conPutStrLn args "[Saving File]"
-  let alloyCode = genModule args (oTree, genv)
+  let alloyCode = genModule args (astrModule oTree, genv)
   let addCommentStats = if fromJust $ no_stats args then const else addStats
   let (ext, code) = case (fromJust $ mode args) of
                       Alloy   -> ("als", addCommentStats (fst alloyCode) stats)

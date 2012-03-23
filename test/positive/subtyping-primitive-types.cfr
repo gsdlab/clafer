@@ -1,0 +1,22 @@
+abstract percent : integer
+	[ this >= 0 && this <= 5 ]
+
+
+twoPercent : percent = 2
+
+threePercent : percent = twoPercent + 1
+
+abstract date : string
+	// need to provide format here
+
+today : date = "Mar 20, 2012"
+
+abstract time : integer = minute + hour
+	minute : integer
+		[ this >= 0 && this <= 5 ]
+	hour : integer
+		[ this >= 0 && this <= 5 ]
+
+now : time 
+	[ minute = 3 ]
+	[ hour = 1 ]
