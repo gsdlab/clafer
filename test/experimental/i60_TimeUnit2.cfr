@@ -1,0 +1,21 @@
+// http://gsd.uwaterloo.ca:8888/question/252/add-support-for-hierarchy-specification-and
+
+abstract TimeUnit
+
+abstract Year : TimeUnit
+    month -> Month 0..2
+
+abstract Month : TimeUnit
+    [ this in Year.month ]
+    day -> Day 0..2
+
+abstract Day : TimeUnit
+    [ this in Month.day ]
+
+year2012 : Year
+    january2012 : Month
+        january2012day1 : Day
+
+year2013 : Year
+january2013 : Month
+january2013day1 : Day

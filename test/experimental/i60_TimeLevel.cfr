@@ -1,0 +1,20 @@
+// http://gsd.uwaterloo.ca:8888/question/252/add-support-for-hierarchy-specification-and
+
+abstract TimeLevel
+    aggregatesTo -> TimeLevel ?      // this is a transitive relation
+    [ aggregatesTo => parent in aggregatesTo ] // require to be nested the under aggregate
+
+abstract YearLevel : TimeLevel
+    [ no aggregatesTo ]
+
+abstract MonthLevel : TimeLevel
+    [ aggregatesTo in YearLevel ]
+
+abstract WeekLevel : TimeLevel
+    [ aggregatesTo in MonthLevel ]
+
+Year2012 : YearLevel
+    Jan2012 : MonthLevel
+//        [ aggregatesTo = Year2012 ]  // this is now inferred
+        Week1 : WeekLevel
+//            [ aggregatesTo = Jan2012 ]  // this is now inferred
