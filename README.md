@@ -15,6 +15,7 @@ Dependencies
 * [The Haskell Platform](http://hackage.haskell.org/platform/).
 * [Java Platform (JDK)](http://www.oracle.com/technetwork/java/javase/downloads/index.html) >= 5, 32bit
 * [Alloy4.1 and/or Alloy4.2-rc](http://alloy.mit.edu/alloy/download.html)
+  * downloaded automatically  
 * [Git](http://git-scm.com/)
 
 On Windows only
@@ -26,8 +27,7 @@ Building
 
 1. install the dependencies
 2. in some `<source directory>`, execute `git clone git://github.com/gsdlab/clafer.git`
-3. copy `alloy4.jar` and `alloy4.2-rc.jar` into `<source directory>/clafer/tools`
-4. in `<source directory>/clafer`, execute
+3. in `<source directory>/clafer`, execute
   * `cabal update`
   * `make`
 
