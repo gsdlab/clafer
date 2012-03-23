@@ -1,0 +1,45 @@
+abstract env
+	build
+		make ?
+			compile ?
+		     	cpp ?
+				java ?
+		    link ?
+	    	install ?
+		    copy ?     
+		target
+		    compose
+				xor delegation ?
+			    	multiInstance
+			    	singleInstance
+		     xor debugonoff 
+				debug
+				release
+	         xor os
+				linux 
+				win32
+					xor Afx
+						AfxDll
+					    AfxStatic
+			 xor system
+			 	console
+			 	windows
+					wxWidgets ?
+		     type
+				 xor lib
+				     static
+				     dynamic
+	xor compiler
+		gcc
+		msc
+		javac
+	xor hardware
+		embedded
+		i386
+	xor os
+		linux
+		windows
+			[hardware.i386]
+
+testEnv : env
+	[this.os.windows]
