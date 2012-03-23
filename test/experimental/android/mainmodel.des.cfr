@@ -1,0 +1,183 @@
+abstract 0 .. * c201_Application : clafer 0 .. * {
+  0 .. * c202_removable : clafer 0 .. 1 {
+    }
+  0 .. * c203_backgroundRunning : clafer 0 .. 1 {
+    }
+  0 .. * c204_initializeInBootUp : clafer 0 .. 1 {
+    0 .. * c205_bootupTime : integer 1 .. 1 {
+      }
+    [this . c205_bootupTime >= 0]
+  }
+  0 .. * c209_price : integer 1 .. 1 {
+    [this >= 0 && this <= 50]
+  }
+  0 .. * c217_installationROM : integer 1 .. 1 {
+    [this >= 1]1 .. 1 c221_isReduced : clafer 1 .. 1 {
+      0 .. * c222_notReduced : clafer 0 .. 1 {
+        }
+      0 .. * c223_Reduced : clafer 0 .. 1 {
+        }
+      [some c437_APP2SD => some this . c223_Reduced]
+    }
+    }
+  0 .. * c229_userDataROM : integer 1 .. 1 {
+    [this > 1]1 .. 1 c233_isReduced : clafer 0 .. 1 {
+      0 .. * c234_notReduced : clafer 0 .. 1 {
+        }
+      0 .. * c235_Reduced : clafer 0 .. 1 {
+        }
+      }
+    [some c546_DATA2SD => some this . c233_isReduced . c235_Reduced]
+  }
+  0 .. * c241_vmRAM : integer 1 .. 1 {
+    [this > 1]1 .. 1 c245_isReduced : clafer 0 .. 1 {
+      0 .. * c246_notReduced : clafer 0 .. 1 {
+        }
+      0 .. * c247_Reduced : clafer 0 .. 1 {
+        }
+      }
+    [some c495_Dalivik2SD => some this . c245_isReduced . c247_Reduced]
+  }
+  0 .. * c253_energyConsumption : integer 1 .. 1 {
+    }
+  1 .. 1 c254_Security : clafer 1 .. 1 {
+    0 .. * c255_high : clafer 0 .. 1 {
+      }
+    0 .. * c256_medium : clafer 0 .. 1 {
+      }
+    0 .. * c257_low : clafer 0 .. 1 {
+      }
+    }
+  1 .. 1 c258_Stability : clafer 1 .. 1 {
+    0 .. * c259_high : clafer 0 .. 1 {
+      }
+    0 .. * c260_medium : clafer 0 .. 1 {
+      }
+    0 .. * c261_low : clafer 0 .. 1 {
+      }
+    }
+  }
+abstract 0 .. * c267_UserApplication : c201_Application 0 .. * {
+  [some c201_Application . c202_removable]1 .. 1 c272_Usability : clafer 1 .. 1 {
+    0 .. * c273_U_4_5 : clafer 0 .. 1 {
+      }
+    0 .. * c274_U_3_4 : clafer 0 .. 1 {
+      }
+    0 .. * c275_U_3_2 : clafer 0 .. 1 {
+      }
+    0 .. * c276_U_1_2 : clafer 0 .. 1 {
+      }
+    0 .. * c277_U_0_1 : clafer 0 .. 1 {
+      }
+    }
+  }
+abstract 0 .. * c278_Feature : clafer 0 .. * {
+  0 .. * c279_price : integer 1 .. 1 {
+    [this >= 0 && this <= 50]
+  }
+  0 .. * c287_initializeInBootUp : clafer 0 .. 1 {
+    0 .. * c288_bootupTime : integer 1 .. 1 {
+      }
+    [this . c288_bootupTime > 0]
+  }
+  0 .. * c292_backgroundRunning : clafer 0 .. 1 {
+    }
+  0 .. * c293_installationROM : integer 1 .. 1 {
+    [this > 1]
+  }
+  0 .. * c297_userDataROM : integer 1 .. 1 {
+    [this > 1]
+  }
+  0 .. * c301_vmRAM : integer 1 .. 1 {
+    [this > 1]
+  }
+  0 .. * c305_energyConsumption : integer 1 .. 1 {
+    [this > 0]
+  }
+  1 .. 1 c309_Security : clafer 1 .. 1 {
+    0 .. * c310_high : clafer 0 .. 1 {
+      }
+    0 .. * c311_medium : clafer 0 .. 1 {
+      }
+    0 .. * c312_low : clafer 0 .. 1 {
+      }
+    }
+  1 .. 1 c313_Stability : clafer 1 .. 1 {
+    0 .. * c314_high : clafer 0 .. 1 {
+      }
+    0 .. * c315_medium : clafer 0 .. 1 {
+      }
+    0 .. * c316_low : clafer 0 .. 1 {
+      }
+    }
+  }
+0 .. * c317_FullTegra2Rendering : c278_Feature 1 .. 1 {
+  [this . c279_price = 0 && no this . c287_initializeInBootUp && some this . c292_backgroundRunning && this . c305_energyConsumption = 35 && some this . c309_Security . c310_high && some this . c313_Stability . c314_high]
+}
+0 .. * c341_UnsecureBootImg : c278_Feature 1 .. 1 {
+  [this . c279_price = 0 && no this . c287_initializeInBootUp && no this . c292_backgroundRunning && this . c297_userDataROM = 0 && this . c301_vmRAM = 0 && some this . c309_Security . c312_low && some this . c313_Stability . c316_low]
+}
+0 .. * c369_Zipaligned : c278_Feature 1 .. 1 {
+  [this . c279_price = 0 && no this . c287_initializeInBootUp && no this . c292_backgroundRunning && this . c297_userDataROM = 0 && this . c301_vmRAM = 0 && some this . c309_Security . c310_high && some this . c313_Stability . c314_high && some c201_Application . c217_installationROM . c221_isReduced . c223_Reduced]
+}
+0 .. * c406_SuperuserPermission : c278_Feature 1 .. 1 {
+  [this . c279_price = 0 && some this . c287_initializeInBootUp && some this . c292_backgroundRunning && this . c297_userDataROM = 0 && this . c301_vmRAM = 0 && some this . c309_Security . c310_high && some this . c313_Stability . c314_high && some c769_BusyBox]
+}
+0 .. * c437_APP2SD : c278_Feature 1 .. 1 {
+  [this . c279_price = 0 && some this . c287_initializeInBootUp && some this . c292_backgroundRunning && this . c297_userDataROM = 0 && this . c301_vmRAM = 0 && some this . c309_Security . c310_high && some this . c313_Stability . c314_high && some c201_Application . c217_installationROM . c221_isReduced . c223_Reduced && some c201_Application . c258_Stability . c260_medium && some c1_AndroidPhone . c7_performance . c9_reduced && some c1_AndroidPhone . c4_energyConsumption . c5_increased]
+}
+0 .. * c495_Dalivik2SD : c278_Feature 1 .. 1 {
+  [this . c279_price = 0 && some this . c287_initializeInBootUp && some this . c292_backgroundRunning && this . c297_userDataROM = 0 && this . c301_vmRAM = 0 && some this . c309_Security . c310_high && some this . c313_Stability . c314_high && some c201_Application . c229_userDataROM . c233_isReduced . c235_Reduced && some c201_Application . c258_Stability . c260_medium && some c1_AndroidPhone . c7_performance . c9_reduced]
+}
+0 .. * c546_DATA2SD : c278_Feature 1 .. 1 {
+  [this . c279_price = 0 && some this . c287_initializeInBootUp && some this . c292_backgroundRunning && this . c297_userDataROM = 0 && this . c301_vmRAM = 0 && some this . c309_Security . c310_high && some this . c313_Stability . c314_high && some c201_Application . c241_vmRAM . c245_isReduced . c247_Reduced && some c201_Application . c258_Stability . c260_medium && some c1_AndroidPhone . c7_performance . c9_reduced]
+}
+0 .. * c597_GPSStatus : c278_Feature 1 .. 1 {
+  [this . c279_price = 0 && no this . c287_initializeInBootUp && no this . c292_backgroundRunning && some this . c309_Security . c310_high && some this . c313_Stability . c314_high && some c10_Hardware . c144_Position . c145_GPS]
+}
+abstract 0 .. * c624_BatterySaving : c278_Feature 0 .. * {
+  }
+0 .. * c625_BatteryAutoCalibration : c624_BatterySaving 1 .. 1 {
+  [this . c279_price = 0 && some this . c287_initializeInBootUp && some this . c292_backgroundRunning && some this . c309_Security . c310_high && some this . c313_Stability . c314_high]
+}
+0 .. * c647_ReduceWifiScaninterval : c624_BatterySaving 1 .. 1 {
+  [this . c279_price = 0 && some this . c287_initializeInBootUp && some this . c292_backgroundRunning && some this . c309_Security . c310_high && some this . c313_Stability . c314_high]
+}
+0 .. * c667_CPUGovernor : c278_Feature 1 .. 1 {
+  [this . c279_price = 0 && some this . c287_initializeInBootUp && some this . c292_backgroundRunning && some this . c309_Security . c310_high && some this . c313_Stability . c314_high]
+}
+0 .. * c687_VolumeBoost : c278_Feature 1 .. 1 {
+  [this . c279_price = 0 && some this . c287_initializeInBootUp && some this . c292_backgroundRunning && some this . c309_Security . c310_high && some this . c313_Stability . c314_high && some c1_AndroidPhone . c4_energyConsumption . c5_increased]
+}
+abstract 0 .. * c714_UserInterfaceEnhancement : c278_Feature 0 .. * {
+  }
+0 .. * c715_LockedScreenWithMusicPlayer : c714_UserInterfaceEnhancement 1 .. 1 {
+  [this . c279_price = 0 && some this . c287_initializeInBootUp && some this . c292_backgroundRunning && some this . c309_Security . c310_high && some this . c313_Stability . c314_high && some c1_AndroidPhone . c4_energyConsumption . c5_increased]
+}
+0 .. * c742_LockedScreenWithMusicPlayer : c714_UserInterfaceEnhancement 1 .. 1 {
+  [this . c279_price = 0 && some this . c287_initializeInBootUp && some this . c292_backgroundRunning && some this . c309_Security . c310_high && some this . c313_Stability . c314_high && some c1_AndroidPhone . c4_energyConsumption . c5_increased]
+}
+0 .. * c769_BusyBox : c267_UserApplication 1 .. 1 {
+  }
+abstract 0 .. * c770_Map : c267_UserApplication 0 .. * {
+  }
+0 .. * c771_GoogleMap : c770_Map 1 .. 1 {
+  }
+0 .. * c772_OruxMap : c770_Map 1 .. 1 {
+  [some this . c203_backgroundRunning && some this . c204_initializeInBootUp && some this . c254_Security . c255_high && some this . c258_Stability . c259_high && some this . c272_Usability . c273_U_4_5]
+}
+0 .. * c791_LaShouOfflineMap : c770_Map 1 .. 1 {
+  [some this . c203_backgroundRunning && some this . c204_initializeInBootUp && some this . c254_Security . c255_high && some this . c258_Stability . c259_high && some this . c272_Usability . c274_U_3_4]
+}
+0 .. * c810_BaiduMap : c770_Map 1 .. 1 {
+  [some this . c203_backgroundRunning && some this . c204_initializeInBootUp && some this . c254_Security . c255_high && some this . c258_Stability . c259_high && some this . c272_Usability . c273_U_4_5]
+}
+abstract 0 .. * c829_FitnessRunner : c267_UserApplication 0 .. * {
+  [some this => some c771_GoogleMap]
+}
+0 .. * c835_A : c829_FitnessRunner 1 .. 1 {
+  [some this . c203_backgroundRunning && some this . c204_initializeInBootUp && some this . c254_Security . c255_high && some this . c258_Stability . c259_high && some this . c272_Usability . c273_U_4_5]
+}
+0 .. * c854_B : c829_FitnessRunner 1 .. 1 {
+  [some this . c203_backgroundRunning && some this . c204_initializeInBootUp && some this . c254_Security . c255_high && some this . c258_Stability . c259_high && some this . c272_Usability . c273_U_4_5]
+}

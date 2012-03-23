@@ -1,0 +1,79 @@
+// Based on Android Example built by Bo.
+// world AndroidCustomization
+
+abstract AndroidPhone
+	hardware : Hardware
+//	software : ROM
+	//I want to describe that some features have positive / negative influences on these two properties
+	or energyConsumption
+		increased
+		reduced
+	or performance
+		improved
+		reduced
+
+abstract Hardware
+	Screen
+		price : integer 
+		  [ price >= 10 && price <= 30 ]
+		xor material
+			basicScreen
+			colorScreen
+			LCD
+		xor resolution
+			R_320_by_480
+			R_480_by_560
+			R_480_by_800	
+		xor screenType
+			Screen1
+				[ colorScreen && R_480_by_560 ]
+				(price = 40)
+			Screen2
+				[ LCD && R_480_by_800 ]
+				(price = 50)
+	//this model does not show the price of the following hardware
+	Keyboard ?
+	KeyboardLight?
+		[ Hardware.Keyboard ]
+	Battery
+		xor Capability
+			C_1450mah
+			C_1730mah
+	CPU	
+		xor Cores
+			one_nonkeyword
+			two_nonkeyword
+				[ AndroidPhone.energyConsumption.increased
+				  AndroidPhone.performance.improved ]
+		xor Frequency	
+			F_800MHz
+				[ AndroidPhone.energyConsumption.reduced
+				  AndroidPhone.performance.reduced 
+				]
+			F_1_point_1GHz
+			F_1_point_5GHz
+				[ AndroidPhone.energyConsumption.increased 
+				  AndroidPhone.performance.improved
+				]
+		overclocking?
+			[ AndroidPhone.energyConsumption.increased 
+			  AndroidPhone.performance.improved
+			]
+	RAM
+		Capability : integer 
+			   [RAM.Capability >=  1000 && RAM.Capability <= 2000]		
+	HW_ROM
+		Capability : integer
+			   [HW_ROM.Capability >=  1000 && HW_ROM.Capability <= 2000]
+	or Position	// Michal: actually should be"mux" because you may have none as well
+		GPS
+		A_GPS
+	Back_Camera
+		xor Pixel
+			P_800M
+			P_500M
+	
+APP2SD : Feature
+        [ 
+	AndroidPhone.performance.reduced
+]
