@@ -30,7 +30,7 @@ scopeAnalysis IModule{mDecls = decls} =
         where
         clafer = findClafer uid
     
-    referenceAnalysis = foldl (analyzeReferences clafers 1) Map.empty decls
+    referenceAnalysis = foldl (analyzeReferences clafers) Map.empty decls
     (subclaferMap, parentMap) = analyzeHierarchy clafers
     connectedComponents = analyzeDependencies clafers
     clafers = concatMap findClafers decls
@@ -62,14 +62,14 @@ scopeAnalysis IModule{mDecls = decls} =
         rootScope = 1
         
     
-analyzeReferences clafers parentMultiplier analysis (IEClafer clafer) =
-    foldl (analyzeReferences clafers lowerBound) analysis' (elements clafer)
+analyzeReferences clafers analysis (IEClafer clafer) =
+    foldl (analyzeReferences clafers) analysis' (elements clafer)
     where
-    lowerBound = parentMultiplier * fst (fromJust $ card clafer)
+    lowerBound = fst (fromJust $ card clafer)
     analysis'
         | isReference clafer = Map.insert (uid clafer) 0 $ Map.insert (uid $ fromJust $ directSuper clafers clafer) lowerBound analysis
         | otherwise          = analysis
-analyzeReferences _ _ analysis _ = analysis
+analyzeReferences _ analysis _ = analysis
 
 
 analyzeDependencies clafers = connComponents
