@@ -4,12 +4,10 @@ abstract Person
 	xor maritalStatus
 		neverMarried
 		married
-			[ age >= 5 ]
 			spouse -> Person
 				[ this.maritalStatus.married.spouse = Person ]     
-				[ this.age >= 5 ] 
 		divorced
-
+		[ married || divorced => age >= 5 ]
 	childs -> Person *
 		[ this.age <= Person.age  ]    
 		[ Person in this.parents ]     
