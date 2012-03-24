@@ -29,6 +29,7 @@ data IType = TBoolean
            | TStrInteger -- for marking strings translated to integers
            | TReal
            | TClafer
+           | TRef IType  -- a reference to the type
   deriving (Eq,Ord,Show)
 
 -- Module is a list of top-level declarations
