@@ -28,7 +28,7 @@ test:
 		echo "[ERROR] Missing $(TOOL_DIR)/alloy4.jar."; false; \
 	fi
 
-	find $(SUITE_DIR) -type f \( -iname "*.cfr" ! -iname "*.des.cfr" \) |  xargs -L1 $(CLAFER)
+	find $(SUITE_DIR) -type f \( -iname "*.cfr" ! -iname "*.des.cfr" \) |  xargs -L1 $(CLAFER) ; true ; \
 
 	@if test ! -f $(TOOL_DIR)/"XsdCheck.class"; then \
 		echo "[ERROR] Missing $(TOOL_DIR)/XsdCheck.class."; false; \
@@ -36,11 +36,11 @@ test:
 
 	echo "Testing 'Positive' Suite for expected output to match" 
 
-	find $(SUITE_DIR) -type f \( -iname "*.cfr" ! -iname "*.des.cfr" \) | xargs -L1 $(CLAFER) -m=xml
-	find $(SUITE_DIR) -type f \( -iname "*.cfr" ! -iname "*.des.cfr" \) | xargs -L1 $(CLAFER_SELF) -m=clafer
+	find $(SUITE_DIR) -type f \( -iname "*.cfr" ! -iname "*.des.cfr" \) | xargs -L1 $(CLAFER) -m=xml ; true ; \
+	find $(SUITE_DIR) -type f \( -iname "*.cfr" ! -iname "*.des.cfr" \) | xargs -L1 $(CLAFER_SELF) -m=clafer ; true \
 
 
-	$(FIND_COMMAND) | $(XARGS_DIFF_COMMAND)
+	$(FIND_COMMAND) | $(XARGS_DIFF_COMMAND) ; true 
 
 reg:
 
