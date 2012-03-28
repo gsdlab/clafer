@@ -193,7 +193,6 @@ claferDecl clafer rest = cconcat [genOptCard clafer,
   genExtends (ISuper False [PExp _ _ _ (IClaferId _ "clafer" _)]) = CString ""
   genExtends (ISuper False [PExp _ _ _ (IClaferId _ id _)]) = CString " " +++ Concat "Extends" [CString $ "extends " ++ id]
   -- todo: handle multiple inheritance
-  genExtends (ISuper True  [PExp _ _ _ (IClaferId _ id _)]) = if isPrimitive id then CString "" else CString " " +++ Concat "In" [CString $ "in " ++ id]
   genExtends _ = CString ""
 
 
@@ -204,19 +203,16 @@ genOptCard clafer
   glCard' = genIntervalCrude $ glCard clafer
     
 
-isPrimitiveClafer clafer = case super clafer of
-  ISuper _ [PExp _ _ _ (IClaferId _ id _)] -> isPrimitive id && (null $ elements clafer)
-  _ -> False
-
 -- -----------------------------------------------------------------------------
 -- overlapping inheritance is a new clafer with val (unlike only relation)
 -- relations: overlapping inheritance (val rel), children
 -- adds parent relation
 genRelations mode clafer = maybeToList ref ++ (map mkRel $ getSubclafers $ elements clafer)
   where
-  ref = if isPrimitive $ flatten $ refType mode clafer then
-            Just $ Concat "SubSig" [CString $ genRel "ref" clafer {card = Just (1, ExIntegerNum 1)} $
-            flatten $ refType mode clafer] else Nothing
+  ref = if isOverlapping $ super clafer then
+        Just $ Concat "SubSig" [CString $ genRel "ref"
+                                clafer {card = Just (1, ExIntegerNum 1)} $
+                                flatten $ refType mode clafer] else Nothing
   mkRel c = Concat "SubSig" [CString $ genRel (genRelName $ uid c) c $ uid c]
 
 
@@ -249,7 +245,7 @@ genType mode x = genPExp mode [] x
 -- user constraints + parent + group constraints + reference
 -- a = NUMBER do all x : a | x = NUMBER (otherwise alloy sums a set)
 genConstraints mode resPath clafer = (genParentConst resPath clafer) :
-  (genGroupConst clafer) : constraints 
+  (genGroupConst clafer) : genPathConst mode "ref" resPath clafer : constraints 
   where
   constraints = map genConst $ elements clafer
   genConst x = case x of
@@ -293,6 +289,24 @@ mkCard constraintName element card
   where
   interval' = genInterval constraintName element card
   card'  = flatten $ interval'
+
+-- generates expression for references that point to expressions (not single clafers)
+genPathConst mode name resPath clafer
+  | isRefPath clafer = cconcat [CString name, CString " = ",
+                                cintercalate (CString " + ") $
+                                map ((brArg id).(genPExp mode resPath)) $
+                                supers $ super clafer]
+  | otherwise        = CString ""
+ 
+isRefPath clafer = (isOverlapping $ super clafer) &&
+                   ((length s > 1) || (not $ isSimplePath s))
+  where
+  s = supers $ super clafer
+
+isSimplePath :: [PExp] -> Bool
+isSimplePath [PExp _ _ _ (IClaferId _ _ _)] = True
+isSimplePath [PExp _ _ _ (IFunExp op _)] = op == iUnion
+isSimplePath _ = False
 
 -- -----------------------------------------------------------------------------
 -- Not used?
@@ -365,14 +379,13 @@ genPExp' mode resPath x@(PExp iType pid pos exp) = case exp of
     where
     optBar [] = ""
     optBar _  = " | "
-{-  IClaferId _ "parent" _  -> Concat pid $
-    [brArg id $ (CString $ genRelName $ head resPath) +++ CString ".this"] -}
   IClaferId _ sident isTop -> CString $
       if head sident == '~' then sident else
       if isNothing iType then sident' else case fromJust $ iType of
     TInteger -> vsident
     TReal -> vsident
     TString -> vsident
+    TRef _ -> vsident
     _ -> sident'
     where
     sident' = (if isTop then "" else '@' : genRelName "") ++ sident

@@ -26,7 +26,6 @@ import Front.Absclafer
 data IType = TBoolean
            | TString
            | TInteger
-           | TStrInteger -- for marking strings translated to integers
            | TReal
            | TClafer
            | TRef IType  -- a reference to the type
