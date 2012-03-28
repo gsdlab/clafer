@@ -236,7 +236,23 @@ resolveTExp env (IFunExp "." [exp1, exp2]) =
 resolveTExp env e@(IInt _) =          (env, (e, TInteger))
 resolveTExp env e@(IDouble _) =       (env, (e, TReal))
 resolveTExp env e@(IStr _) =          (env, (e, TString))
-resolveTExp env e@(IDeclPExp _ _ _) = (env, (e, TBoolean))
+resolveTExp env e@(IDeclPExp quant decls bpexp) = (env, (IDeclPExp quant decls' bpexp', TBoolean))
+    where
+    (env', decls') = resolveTDecls env decls
+    (_, bpexp') = resolveTPExp env' bpexp
+    
+    resolveTDecls env [] = (env, [])
+    resolveTDecls env (d : ds) =
+        (env'', d' : ds')
+        where
+        (env', d') = resolveTDecl env d
+        (env'', ds') = resolveTDecls env' ds
+    resolveTDecl env (IDecl isDisj decls body) =
+        (env', IDecl isDisj decls body')
+        where
+        (_, body') = resolveTPExpPreferValue env body
+        env' = env{tcTable = foldr (flip insert $ (typeOf body', Nothing)) (tcTable env) decls}
+
 
 -- Unary functions
 resolveTExp env (IFunExp op [exp]) = (env, result)
