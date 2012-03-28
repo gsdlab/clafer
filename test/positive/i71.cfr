@@ -8,7 +8,7 @@ abstract Course
 abstract Teacher
 	teaches -> Course *
   
-[ all c : Course | some t : c.taughtBy | c in t.teaches ]
+[ all c : Course | all t : c.taughtBy | c in t.teaches ]
 
 course : Course 5
 
