@@ -218,14 +218,15 @@ resolveTExpPreferValue env x = resolveTExp env x
 
 resolveTExp:: TCEnv -> IExp -> (TCEnv, TypedIExp)
 resolveTExp env e@(IClaferId _ sident _) =
-    (env', (e, TClafer))
+    (env', (e, t))
     where
     env' =
         case sident of
             "this"   -> env
             "parent" -> parentTCEnv env
             uid      -> uidTCEnv env uid
-            
+    ref uid = if tcReferenceTable env ! uid then TRef else id
+    t = ref (tcThis env') TClafer
     
 resolveTExp env (IFunExp "." [exp1, exp2]) =
     let (env1, a1) = resolveTPExp env exp1
