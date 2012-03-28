@@ -396,11 +396,6 @@ reduceNav x@(IFunExp op exps@((PExp _ _ _ iexp@(IFunExp _ (pexp0:pexp:_))):pPexp
                 tail exps}
 reduceNav x = x
 
-isParent (PExp _ _ _ (IClaferId _ id _)) = id == parent
-
-isClaferName (PExp _ _ _ (IClaferId _ id _)) =
-  id `notElem` ([this, parent, children] ++ primitiveTypes)
-
 
 desugarDecl :: Bool -> Decl -> IDecl
 desugarDecl isDisj x = case x of

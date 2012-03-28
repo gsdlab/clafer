@@ -67,6 +67,17 @@ pExpDefPid = pExpDef ""
 
 pExpDef = PExp Nothing
 
+isParent (PExp _ _ _ (IClaferId _ id _)) = id == parent
+
+isClaferName (PExp _ _ _ (IClaferId _ id _)) =
+  id `notElem` ([this, parent, children] ++ primitiveTypes)
+
+isClaferName' (PExp _ _ _ (IClaferId _ id _)) = True
+isClaferName' _ = False
+
+getClaferName (PExp _ _ _ (IClaferId _ id _)) = id
+
+
 -- -----------------------------------------------------------------------------
 -- conversions
 elemToClafer x = case x of
