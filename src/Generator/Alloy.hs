@@ -207,10 +207,11 @@ genOptCard clafer
 -- overlapping inheritance is a new clafer with val (unlike only relation)
 -- relations: overlapping inheritance (val rel), children
 -- adds parent relation
+-- 29/March/2012  Rafael Olaechea: ref is now prepended with clafer name to be able to refer to it from partial instances.
 genRelations mode clafer = maybeToList ref ++ (map mkRel $ getSubclafers $ elements clafer)
   where
   ref = if isOverlapping $ super clafer then
-        Just $ Concat "SubSig" [CString $ genRel "ref"
+        Just $ Concat "SubSig" [CString $ genRel (uid  clafer ++ "_ref")  
                                 clafer {card = Just (1, ExIntegerNum 1)} $
                                 flatten $ refType mode clafer] else Nothing
   mkRel c = Concat "SubSig" [CString $ genRel (genRelName $ uid c) c $ uid c]
@@ -245,7 +246,7 @@ genType mode x = genPExp mode [] x
 -- user constraints + parent + group constraints + reference
 -- a = NUMBER do all x : a | x = NUMBER (otherwise alloy sums a set)
 genConstraints mode resPath clafer = (genParentConst resPath clafer) :
-  (genGroupConst clafer) : genPathConst mode "ref" resPath clafer : constraints 
+  (genGroupConst clafer) : genPathConst mode  (uid clafer ++ "_ref") resPath clafer : constraints 
   where
   constraints = map genConst $ elements clafer
   genConst x = case x of
@@ -389,7 +390,8 @@ genPExp' mode resPath x@(PExp iType pid pos exp) = case exp of
     _ -> sident'
     where
     sident' = (if isTop then "" else '@' : genRelName "") ++ sident
-    vsident = sident' ++ ".@ref"
+    -- 29/March/2012  Rafael Olaechea: ref is now prepended with clafer name to be able to refer to it from partial instances.
+    vsident = sident' ++  ".@" ++ sident ++ "_ref"
   IFunExp _ _ -> case exp' of
     IFunExp op exps -> genIFunExp pid mode resPath exp'
     _ -> genPExp' mode resPath $ PExp iType pid pos exp'
