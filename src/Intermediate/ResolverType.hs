@@ -191,7 +191,7 @@ resolveTExpPreferValue env e@(IClaferId _ sident _) =
             "this"   -> env
             "parent" -> parentTCEnv env
             uid      -> uidTCEnv env uid
-    ref uid = if tcReferenceTable env ! uid then TRef else id
+    ref uid = if findWithDefault False uid $ tcReferenceTable env then TRef else id
     t = ref (tcThis env') (tcType env')
 -- Join function
 {- 
@@ -225,7 +225,7 @@ resolveTExp env e@(IClaferId _ sident _) =
             "this"   -> env
             "parent" -> parentTCEnv env
             uid      -> uidTCEnv env uid
-    ref uid = if tcReferenceTable env ! uid then TRef else id
+    ref uid = if findWithDefault False uid $ tcReferenceTable env then TRef else id
     t = ref (tcThis env') TClafer
     
 resolveTExp env (IFunExp "." [exp1, exp2]) =
