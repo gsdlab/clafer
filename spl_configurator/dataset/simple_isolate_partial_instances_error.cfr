@@ -1,0 +1,23 @@
+// Adapated from Scalable Prediction of Non-functional Properties in Software Product Lines.
+// Scaled down by dividing numbers by 1200 and rounding.
+//To execute in alloy: run  show for ...
+
+
+abstract IMeasurable
+	footprint : integer
+
+abstract SQLite
+	SQLITE_ENABLE_COLUMN_METADATA : IMeasurable  ?
+		[ !SQLITE_OMIT_DECLTYPE ]
+		[ this.footprint = 4]
+	SQLITE_OMIT_DECLTYPE : IMeasurable  ?
+		[ !SQLITE_ENABLE_COLUMN_METADATA ]
+		[ this.footprint = -1]
+					
+	total_footprint : integer
+	[ total_footprint =  SQLITE_ENABLE_COLUMN_METADATA.footprint + SQLITE_OMIT_DECLTYPE.footprint]
+
+simpleConfig : SQLite 
+
+
+//Mandatory Features all configurations will have: OperatingSystemCharacteristics EnableFeatures OmitFeatures 
