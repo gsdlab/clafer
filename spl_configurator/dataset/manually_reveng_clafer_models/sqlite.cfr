@@ -1,0 +1,183 @@
+// Adapated from Scalable Prediction of Non-functional Properties in Software Product Lines.
+//To execute in alloy: run  show for ...
+
+
+abstract IMeasurable
+	footprint : integer
+
+
+abstract SQLite
+	OperatingSystemCharacteristics : IMeasurable 
+		[ this.footprint = 1776166]
+		SQLITE_4_BYTE_ALIGNED_MALLOC : IMeasurable 
+			[ this.footprint = 1776166]
+		SQLITE_CASE_SENSITIVE_LIKE : IMeasurable  ?
+			[ this.footprint = 0]
+		SQLITE_HAVE_ISNAN : IMeasurable  ?
+			[ this.footprint = 180]
+		SQLITE_SECURE_DELETE : IMeasurable  ?
+			[ this.footprint = 0]
+		xor ChooseSQLITE_TEMP_STORE : IMeasurable  ?
+			[ this.footprint = 0]
+			SQLITE_TEMP_STORE_EQ_0 : IMeasurable 
+				[ this.footprint = 0]
+			SQLITE_TEMP_STORE_EQ_1 : IMeasurable 
+				[ this.footprint = 0]
+			SQLITE_TEMP_STORE_EQ_2 : IMeasurable 
+				[ this.footprint = 0]
+			SQLITE_TEMP_STORE_EQ_3 : IMeasurable 
+				[ this.footprint = 0]
+	EnableFeatures : IMeasurable 
+		[ this.footprint = 1776166]
+		SQLITE_ENABLE_ATOMIC_WRITE : IMeasurable  ?
+			[ this.footprint = 5482]
+		SQLITE_ENABLE_COLUMN_METADATA : IMeasurable  ?
+			[ !SQLITE_OMIT_DECLTYPE ]
+			[ this.footprint = 4429]
+		SQLITE_ENABLE_FTS3 : IMeasurable  ?
+			[ this.footprint = 200365]
+		SQLITE_ENABLE_FTS3_PARENTHESIS : IMeasurable  ?
+			[ this.footprint = 0]
+		SQLITE_ENABLE_MEMORY_MANAGEMENT : IMeasurable  ?
+			[ this.footprint = 1024]
+		xor ChooseMemSys : IMeasurable  ?
+			[ this.footprint = 6631]
+			SQLITE_ENABLE_MEMSYS3 : IMeasurable 
+				[ this.footprint = 3256]
+			SQLITE_ENABLE_MEMSYS5 : IMeasurable 
+				[ this.footprint = 0]
+		SQLITE_ENABLE_RTREE : IMeasurable  ?
+			[ this.footprint = 66149]
+		SQLITE_ENABLE_STAT2 : IMeasurable  ?
+			[ this.footprint = 8873]
+		SQLITE_ENABLE_UPDATE_DELETE_LIMIT : IMeasurable  ?
+			[ this.footprint = 1573]
+		SQLITE_ENABLE_UNLOCK_NOTIFY : IMeasurable  ?
+			[ this.footprint = 5297]
+		SQLITE_SOUNDEX : IMeasurable  ?
+			[ this.footprint = 1585]
+		YYTRACKMAXSTACKDEPTH : IMeasurable  ?
+			[ this.footprint = 0]
+	DisableFeatures : IMeasurable 
+		[ this.footprint = 1776166]
+		SQLITE_DISABLE_LFS : IMeasurable  ?
+			[ this.footprint = 0]
+		SQLITE_DISABLE_DIRSYNC : IMeasurable  ?
+			[ this.footprint = 0]
+	OmitFeatures : IMeasurable 
+		[ this.footprint = 1776166]
+		SQLITE_OMIT_ALTERTABLE : IMeasurable  ?
+			[ this.footprint = -13187]
+		SQLITE_OMIT_ANALYZE : IMeasurable  ?
+			[ this.footprint = -10660]
+		SQLITE_OMIT_ATTACH : IMeasurable  ?
+			[ this.footprint = -15856]
+		SQLITE_OMIT_AUTHORIZATION : IMeasurable  ?
+			[ this.footprint = -9988]
+		SQLITE_OMIT_AUTOINCREMENT : IMeasurable  ?
+			[ this.footprint = -6250]
+		SQLITE_OMIT_AUTOMATIC_INDEX : IMeasurable  ?
+			[ this.footprint = -7247]
+		SQLITE_OMIT_AUTOINIT : IMeasurable  ?
+			[ this.footprint = 512]
+		SQLITE_OMIT_AUTOVACUUM : IMeasurable  ?
+			[ this.footprint = -27642]
+		SQLITE_OMIT_BETWEEN_OPTIMIZATION : IMeasurable  ?
+			[ this.footprint = -530]
+		SQLITE_OMIT_BLOB_LITERAL : IMeasurable  ?
+			[ this.footprint = -1600]
+		SQLITE_OMIT_BTREECOUNT : IMeasurable  ?
+			[ this.footprint = -3584]
+		SQLITE_OMIT_BUILTIN_TEST : IMeasurable  ?
+			[ this.footprint = -4357]
+		SQLITE_OMIT_CAST : IMeasurable  ?
+			[ this.footprint = -2170]
+		SQLITE_OMIT_CHECK : IMeasurable  ?
+			[ this.footprint = -2048]
+		SQLITE_OMIT_COMPILEOPTION_DIAGS : IMeasurable  ?
+			[ this.footprint = -2252]
+		SQLITE_OMIT_COMPLETE : IMeasurable  ?
+			[ this.footprint = -1776166]
+		SQLITE_OMIT_COMPOUND_SELECT : IMeasurable  ?
+			[ this.footprint = -20275]
+		SQLITE_OMIT_CONFLICT_CLAUSE : IMeasurable  ?
+			[ this.footprint = 0]
+		SQLITE_OMIT_DATETIME_FUNCS : IMeasurable  ?
+			[ this.footprint = -20837]
+		SQLITE_OMIT_DECLTYPE : IMeasurable  ?
+			[ !SQLITE_ENABLE_COLUMN_METADATA ]
+			[ this.footprint = -1112]
+		SQLITE_OMIT_DEPRECATED : IMeasurable  ?
+			[ this.footprint = -1314]
+		SQLITE_OMIT_EXPLAIN : IMeasurable  ?
+			[ this.footprint = -19183]
+		SQLITE_OMIT_FLAG_PRAGMAS : IMeasurable  ?
+			[ this.footprint = -1565]
+		SQLITE_OMIT_FLOATING_POINT : IMeasurable  ?
+			[ this.footprint = -35142]
+		SQLITE_OMIT_FOREIGN_KEY : IMeasurable  ?
+			[ this.footprint = -29249]
+		SQLITE_OMIT_GET_TABLE : IMeasurable  ?
+			[ this.footprint = -5906]
+		SQLITE_OMIT_INCRBLOB : IMeasurable  ?
+			[ this.footprint = -13426]
+		SQLITE_OMIT_INTEGRITY_CHECK : IMeasurable  ?
+			[ this.footprint = -18712]
+		SQLITE_OMIT_LIKE_OPTIMIZATION : IMeasurable  ?
+			[ this.footprint = -4687]
+		SQLITE_OMIT_LOAD_EXTENSION : IMeasurable  ?
+			[ this.footprint = -5743]
+		SQLITE_OMIT_LOCALTIME : IMeasurable  ?
+			[ this.footprint = -2259]
+		SQLITE_OMIT_LOOKASIDE : IMeasurable  ?
+			[ this.footprint = -1055]
+		SQLITE_OMIT_MEMORYDB : IMeasurable  ?
+			[ this.footprint = -3072]
+		SQLITE_OMIT_OR_OPTIMIZATION : IMeasurable  ?
+			[ this.footprint = -10435]
+		SQLITE_OMIT_PAGER_PRAGMAS : IMeasurable  ?
+			[ this.footprint = -10006]
+		SQLITE_OMIT_PRAGMA : IMeasurable  ?
+			[ this.footprint = -31920]
+		SQLITE_OMIT_PROGRESS_CALLBACK : IMeasurable  ?
+			[ this.footprint = -1580]
+		SQLITE_OMIT_QUICKBALANCE : IMeasurable  ?
+			[ this.footprint = -2080]
+		SQLITE_OMIT_REINDEX : IMeasurable  ?
+			[ this.footprint = -2188]
+		SQLITE_OMIT_SCHEMA_PRAGMAS : IMeasurable  ?
+			[ this.footprint = -4096]
+		SQLITE_OMIT_SCHEMA_VERSION_PRAGMAS : IMeasurable  ?
+			[ this.footprint = -1087]
+		SQLITE_OMIT_SHARED_CACHE : IMeasurable  ?
+			[ this.footprint = -19092]
+		SQLITE_OMIT_SUBQUERY : IMeasurable  ?
+			[ this.footprint = -22027]
+		SQLITE_OMIT_TCL_VARIABLE : IMeasurable  ?
+			[ this.footprint = 0]
+		SQLITE_OMIT_TEMPDB : IMeasurable  ?
+			[ this.footprint = -586]
+		SQLITE_OMIT_TRACE : IMeasurable  ?
+			[ this.footprint = -6336]
+		SQLITE_OMIT_TRIGGER : IMeasurable  ?
+			[ this.footprint = -54132]
+		SQLITE_OMIT_TRUNCATE_OPTIMIZATION : IMeasurable  ?
+			[ this.footprint = 0]
+		SQLITE_OMIT_UTF16 : IMeasurable  ?
+			[ this.footprint = -15947]
+		SQLITE_OMIT_VACUUM : IMeasurable  ?
+			[ this.footprint = -8934]
+		SQLITE_OMIT_VIEW : IMeasurable  ?
+			[ this.footprint = -5798]
+		SQLITE_OMIT_VIRTUALTABLE : IMeasurable  ?
+			[ this.footprint = -39278]
+		SQLITE_OMIT_WAL : IMeasurable  ?
+			[ this.footprint = -59755]
+		SQLITE_OMIT_XFER_OPT : IMeasurable  ?
+			[ this.footprint = -5777]
+	SQLITE_DEBUG : IMeasurable  ?
+		[ this.footprint = 17376]
+	SQLITE_MEMDEBUG : IMeasurable  ?
+		[ this.footprint = 3747]
+
+simpleConfig : SQLite 

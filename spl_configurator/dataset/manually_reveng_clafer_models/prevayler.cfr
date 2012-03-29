@@ -1,0 +1,25 @@
+// Adapated from Scalable Prediction of Non-functional Properties in Software Product Lines.
+//To execute in alloy: run  show for 1 but 12 int, 6  c1_IMeasurable,   6 c2_footprint, 1 c30_Monitor,  1 c4_PrevaylerSPL,  1 c10_Replication, 1 c16_GZip,  1 c22_Censor , 1 c36_Snapshot
+
+
+abstract IMeasurable
+         footprint : integer
+
+abstract Prevayler
+	 PrevaylerSPL : IMeasurable
+		[this.footprint = 873]
+	 Replication : IMeasurable ?
+		[this.footprint = 523]
+	 GZip : IMeasurable ?
+		[this.footprint = 54]
+	 Censor : IMeasurable ?
+		[this.footprint = 50]
+		[Snapshot]
+	 Monitor : IMeasurable ?
+		[this.footprint = 77]
+	 Snapshot : IMeasurable ?
+		[this.footprint = 108]
+	 total_footprint : integer
+	 [total_footprint = PrevaylerSPL.footprint + Replication.footprint +  GZip.footprint + Censor.footprint + Monitor.footprint + Snapshot.footprint] 
+
+simpleConfig : Prevayler
