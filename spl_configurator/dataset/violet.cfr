@@ -1,0 +1,254 @@
+// Adapated from Scalable Prediction of Non-functional Properties in Software Product Lines.
+// Scaled down by dividing numbers by 1 and rounding.
+//To execute in alloy: run  show for ...
+
+
+abstract IMeasurable
+	footprint : integer
+
+
+abstract Violet
+	VioletDef : IMeasurable 
+		[ this.footprint = 1516]
+		base : IMeasurable 
+			[ this.footprint = 0]
+		MenuResources : IMeasurable  ?
+			[ this.footprint = 0]
+		GraphUtility : IMeasurable  ?
+			[ this.footprint = 0]
+		ExtensionFilter : IMeasurable  ?
+			[ this.footprint = 0]
+		FileUtility : IMeasurable  ?
+			[ this.footprint = 0]
+		InternalFrame : IMeasurable  ?
+			[ this.footprint = 0]
+		Read : IMeasurable  ?
+			[ this.footprint = 0]
+		FileMenu : IMeasurable  ?
+			[ this.footprint = 0]
+		NewFile : IMeasurable  ?
+			[ ExtensionFilter && InternalFrame && Read && GraphUtility && MenuResources && FileMenu && FileUtility ]
+			[ this.footprint = 0]
+		or File : IMeasurable  ?
+			[ ExtensionFilter && InternalFrame && Read && GraphUtility && MenuResources && FileMenu && FileUtility ]
+			[ this.footprint = 104677]
+			OpenFile : IMeasurable 
+				[ this.footprint = 0]
+			RecentFile : IMeasurable 
+				[ OpenFile ]
+				[ this.footprint = 1989]
+			SaveAs : IMeasurable 
+				[ this.footprint = 4281]
+			SaveFile : IMeasurable 
+				[ SaveAs ]
+				[ this.footprint = 1144]
+			ExportImage : IMeasurable 
+				[ this.footprint = 1535]
+			Print : IMeasurable 
+				[ this.footprint = 13428]
+			Exit : IMeasurable 
+				[ this.footprint = -2263]
+		DiagramSupport : IMeasurable  ?
+			[ this.footprint = 0]
+		UseCaseD : IMeasurable  ?
+			[ this.footprint = 0]
+		or UseCaseDiagram : IMeasurable  ?
+			[ DiagramSupport && UseCaseD && NewFile ]
+			[ this.footprint = 132402]
+			UseCaseNoteEdge : IMeasurable 
+				[ UseCaseNoteNode ]
+				[ this.footprint = 56]
+			UseCaseGeneralizationEdge : IMeasurable 
+				[ Actor ]
+				[ this.footprint = 577]
+			IncludeRelationshipEdge : IMeasurable 
+				[ Actor ]
+				[ this.footprint = 0]
+			ExtendRelationshipEdge : IMeasurable 
+				[ Actor ]
+				[ this.footprint = 0]
+			UseCaseAssociationEdge : IMeasurable 
+				[ Actor ]
+				[ this.footprint = 573]
+			UseCaseNoteNode : IMeasurable 
+				[ this.footprint = 56]
+			UseCaseNode : IMeasurable 
+				[ this.footprint = 1710]
+			Actor : IMeasurable 
+				[ this.footprint = -4]
+		ObjectD : IMeasurable  ?
+			[ this.footprint = 0]
+		or ObjectDiagram : IMeasurable  ?
+			[ DiagramSupport && ObjectD && NewFile ]
+			[ this.footprint = 143403]
+			ObjectNoteEdge : IMeasurable 
+				[ ObjectNoteNode ]
+				[ this.footprint = 56]
+			ObjectAssociationEdge : IMeasurable 
+				[ ObjectNode ]
+				[ this.footprint = 241]
+			ObjectReferenceEdge : IMeasurable 
+				[ ObjectNode ]
+				[ this.footprint = 67]
+			ObjectNoteNode : IMeasurable 
+				[ this.footprint = 56]
+			ObjectFieldNode : IMeasurable 
+				[ this.footprint = 342]
+			ObjectNode : IMeasurable 
+				[ this.footprint = 58]
+		StateD : IMeasurable  ?
+			[ this.footprint = 0]
+		or StateDiagram : IMeasurable  ?
+			[ DiagramSupport && StateD && NewFile ]
+			[ this.footprint = 134566]
+			StateNoteEdge : IMeasurable 
+				[ StateNoteNode ]
+				[ this.footprint = 56]
+			StateTransitionEdge : IMeasurable 
+				[ StateNode ]
+				[ this.footprint = 4291]
+			StateNoteNode : IMeasurable 
+				[ this.footprint = 56]
+			FinalStateNode : IMeasurable 
+				[ this.footprint = 108]
+			InitialStateNode : IMeasurable 
+				[ this.footprint = 65]
+			StateNode : IMeasurable 
+				[ this.footprint = 2181]
+		SequenceD : IMeasurable  ?
+			[ this.footprint = 0]
+		or SequenceDiagram : IMeasurable  ?
+			[ SequenceD && DiagramSupport && NewFile ]
+			[ this.footprint = 148721]
+			SequenceNoteEdge : IMeasurable 
+				[ SequenceNoteNode ]
+				[ this.footprint = 56]
+			SequenceReturnEdge : IMeasurable 
+				[ SequenceCallNode ]
+				[ this.footprint = 58]
+			SequenceCallEdge : IMeasurable 
+				[ SequenceCallNode ]
+				[ this.footprint = 21]
+			SequenceNoteNode : IMeasurable 
+				[ this.footprint = 56]
+			SequenceCallNode : IMeasurable 
+				[ this.footprint = 21]
+			SequenceParameterNode : IMeasurable 
+				[ this.footprint = -4]
+		ClassD : IMeasurable  ?
+			[ this.footprint = 0]
+		or ClassDiagram : IMeasurable  ?
+			[ DiagramSupport && NewFile && ClassD ]
+			[ this.footprint = 143951]
+			ClassNoteEdge : IMeasurable 
+				[ ClassNoteNode ]
+				[ this.footprint = 57]
+			ClassInterfaceEdge : IMeasurable 
+				[ ClassNode ]
+				[ this.footprint = 569]
+			ClassCompositionEdge : IMeasurable 
+				[ ClassNode ]
+				[ this.footprint = 412]
+			ClassAssociationEdge : IMeasurable 
+				[ ClassNode ]
+				[ this.footprint = 398]
+			ClassAggregationEdge : IMeasurable 
+				[ ClassNode ]
+				[ this.footprint = 406]
+			ClassInheritanceEdge : IMeasurable 
+				[ ClassNode ]
+				[ this.footprint = 405]
+			ClassDependencyEdge : IMeasurable 
+				[ ClassNode ]
+				[ this.footprint = 401]
+			ClassNoteNode : IMeasurable 
+				[ this.footprint = 56]
+			PackageNode : IMeasurable 
+				[ this.footprint = 59]
+			InterfaceNode : IMeasurable 
+				[ this.footprint = 61]
+			ClassNode : IMeasurable 
+				[ this.footprint = 57]
+		EditMenu : IMeasurable  ?
+			[ this.footprint = 0]
+		or Edit : IMeasurable  ?
+			[ ExtensionFilter && InternalFrame && Read && GraphUtility && MenuResources && EditMenu && FileUtility ]
+			[ this.footprint = 102602]
+			SelectPrevious : IMeasurable 
+				[ this.footprint = 1234]
+			SelectNext : IMeasurable 
+				[ this.footprint = 1155]
+			DeleteItem : IMeasurable 
+				[ this.footprint = 1146]
+			EditProperties : IMeasurable 
+				[ this.footprint = 1156]
+		ViewMenu : IMeasurable  ?
+			[ this.footprint = 0]
+		or View : IMeasurable  ?
+			[ ExtensionFilter && InternalFrame && ViewMenu && Read && GraphUtility && MenuResources && FileUtility ]
+			[ this.footprint = 102575]
+			HideGrid : IMeasurable 
+				[ this.footprint = 2953]
+			LargerGrid : IMeasurable 
+				[ this.footprint = 1186]
+			SmallerGrid : IMeasurable 
+				[ this.footprint = 1187]
+			ClipDrawingArea : IMeasurable 
+				[ this.footprint = 1549]
+			GrowDrawingArea : IMeasurable 
+				[ this.footprint = 1963]
+			ZoomIn : IMeasurable 
+				[ this.footprint = 1178]
+			ZoomOut : IMeasurable 
+				[ this.footprint = 1179]
+			LookAndFeel : IMeasurable 
+				[ this.footprint = 2229]
+		WindowMenu : IMeasurable  ?
+			[ this.footprint = 0]
+		or Window : IMeasurable  ?
+			[ ExtensionFilter && InternalFrame && WindowMenu && Read && GraphUtility && MenuResources && FileUtility ]
+			[ this.footprint = 102606]
+			NextWindow : IMeasurable 
+				[ this.footprint = 1256]
+			PreviousWindow : IMeasurable 
+				[ this.footprint = 1259]
+			MaximizeWindow : IMeasurable 
+				[ this.footprint = 1090]
+			RestoreWindow : IMeasurable 
+				[ this.footprint = 1089]
+			CloseWindow : IMeasurable 
+				[ this.footprint = 1086]
+		HelpMenu : IMeasurable  ?
+			[ this.footprint = 0]
+		or Help : IMeasurable  ?
+			[ ExtensionFilter && InternalFrame && HelpMenu && Read && GraphUtility && MenuResources && FileUtility ]
+			[ this.footprint = 102602]
+			License : IMeasurable 
+				[ this.footprint = 1755]
+			About : IMeasurable 
+				[ this.footprint = 1598]
+		or Additional : IMeasurable  ?
+			[ ExtensionFilter && InternalFrame && Read && GraphUtility && MenuResources && FileUtility ]
+			[ this.footprint = 102224]
+			Preferences : IMeasurable 
+				[ this.footprint = 3343]
+			SetTitle : IMeasurable 
+				[ this.footprint = 321]
+			ImageFilter : IMeasurable 
+				[ ExtensionFilter && ExportImage ]
+				[ this.footprint = 0]
+			VioletFilter : IMeasurable 
+				[ ExtensionFilter ]
+				[ this.footprint = 183]
+			VersionChecker : IMeasurable 
+				[ this.footprint = 1882]
+			CommandLine : IMeasurable 
+				[ OpenFile ]
+				[ this.footprint = 256]
+	total_footprint : integer
+	[ total_footprint = VioletDef.footprint + VioletDef.base.footprint + VioletDef.MenuResources.footprint + VioletDef.GraphUtility.footprint + VioletDef.ExtensionFilter.footprint + VioletDef.FileUtility.footprint + VioletDef.InternalFrame.footprint + VioletDef.Read.footprint + VioletDef.FileMenu.footprint + VioletDef.NewFile.footprint + VioletDef.File.footprint + VioletDef.File.OpenFile.footprint + VioletDef.File.RecentFile.footprint + VioletDef.File.SaveAs.footprint + VioletDef.File.SaveFile.footprint + VioletDef.File.ExportImage.footprint + VioletDef.File.Print.footprint + VioletDef.File.Exit.footprint + VioletDef.DiagramSupport.footprint + VioletDef.UseCaseD.footprint + VioletDef.UseCaseDiagram.footprint + VioletDef.UseCaseDiagram.UseCaseNoteEdge.footprint + VioletDef.UseCaseDiagram.UseCaseGeneralizationEdge.footprint + VioletDef.UseCaseDiagram.IncludeRelationshipEdge.footprint + VioletDef.UseCaseDiagram.ExtendRelationshipEdge.footprint + VioletDef.UseCaseDiagram.UseCaseAssociationEdge.footprint + VioletDef.UseCaseDiagram.UseCaseNoteNode.footprint + VioletDef.UseCaseDiagram.UseCaseNode.footprint + VioletDef.UseCaseDiagram.Actor.footprint + VioletDef.ObjectD.footprint + VioletDef.ObjectDiagram.footprint + VioletDef.ObjectDiagram.ObjectNoteEdge.footprint + VioletDef.ObjectDiagram.ObjectAssociationEdge.footprint + VioletDef.ObjectDiagram.ObjectReferenceEdge.footprint + VioletDef.ObjectDiagram.ObjectNoteNode.footprint + VioletDef.ObjectDiagram.ObjectFieldNode.footprint + VioletDef.ObjectDiagram.ObjectNode.footprint + VioletDef.StateD.footprint + VioletDef.StateDiagram.footprint + VioletDef.StateDiagram.StateNoteEdge.footprint + VioletDef.StateDiagram.StateTransitionEdge.footprint + VioletDef.StateDiagram.StateNoteNode.footprint + VioletDef.StateDiagram.FinalStateNode.footprint + VioletDef.StateDiagram.InitialStateNode.footprint + VioletDef.StateDiagram.StateNode.footprint + VioletDef.SequenceD.footprint + VioletDef.SequenceDiagram.footprint + VioletDef.SequenceDiagram.SequenceNoteEdge.footprint + VioletDef.SequenceDiagram.SequenceReturnEdge.footprint + VioletDef.SequenceDiagram.SequenceCallEdge.footprint + VioletDef.SequenceDiagram.SequenceNoteNode.footprint + VioletDef.SequenceDiagram.SequenceCallNode.footprint + VioletDef.SequenceDiagram.SequenceParameterNode.footprint + VioletDef.ClassD.footprint + VioletDef.ClassDiagram.footprint + VioletDef.ClassDiagram.ClassNoteEdge.footprint + VioletDef.ClassDiagram.ClassInterfaceEdge.footprint + VioletDef.ClassDiagram.ClassCompositionEdge.footprint + VioletDef.ClassDiagram.ClassAssociationEdge.footprint + VioletDef.ClassDiagram.ClassAggregationEdge.footprint + VioletDef.ClassDiagram.ClassInheritanceEdge.footprint + VioletDef.ClassDiagram.ClassDependencyEdge.footprint + VioletDef.ClassDiagram.ClassNoteNode.footprint + VioletDef.ClassDiagram.PackageNode.footprint + VioletDef.ClassDiagram.InterfaceNode.footprint + VioletDef.ClassDiagram.ClassNode.footprint + VioletDef.EditMenu.footprint + VioletDef.Edit.footprint + VioletDef.Edit.SelectPrevious.footprint + VioletDef.Edit.SelectNext.footprint + VioletDef.Edit.DeleteItem.footprint + VioletDef.Edit.EditProperties.footprint + VioletDef.ViewMenu.footprint + VioletDef.View.footprint + VioletDef.View.HideGrid.footprint + VioletDef.View.LargerGrid.footprint + VioletDef.View.SmallerGrid.footprint + VioletDef.View.ClipDrawingArea.footprint + VioletDef.View.GrowDrawingArea.footprint + VioletDef.View.ZoomIn.footprint + VioletDef.View.ZoomOut.footprint + VioletDef.View.LookAndFeel.footprint + VioletDef.WindowMenu.footprint + VioletDef.Window.footprint + VioletDef.Window.NextWindow.footprint + VioletDef.Window.PreviousWindow.footprint + VioletDef.Window.MaximizeWindow.footprint + VioletDef.Window.RestoreWindow.footprint + VioletDef.Window.CloseWindow.footprint + VioletDef.HelpMenu.footprint + VioletDef.Help.footprint + VioletDef.Help.License.footprint + VioletDef.Help.About.footprint + VioletDef.Additional.footprint + VioletDef.Additional.Preferences.footprint + VioletDef.Additional.SetTitle.footprint + VioletDef.Additional.ImageFilter.footprint + VioletDef.Additional.VioletFilter.footprint + VioletDef.Additional.VersionChecker.footprint + VioletDef.Additional.CommandLine.footprint ]
+
+simpleConfig : Violet 
+
+
+//Mandatory Features all configurations will have: VioletDef base 
