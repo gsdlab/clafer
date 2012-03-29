@@ -52,14 +52,15 @@ scopeAnalysis IModule{mDecls = decls} =
             | otherwise          = parentScope * lowCard
         
         lowCard = fst $ fromJust $ card clafer
-        subclaferScopes = map (analysis Map.!) subclafers
+        subclaferScopes = map (findOrError " subclafer scope not found" analysis) subclafers
         parentScope  =
             case parent of
-                Just parent' -> analysis Map.! parent'
+                Just parent' -> findOrError " parent scope not found" analysis parent'
                 Nothing      -> rootScope
-        subclafers =  subclaferMap Map.! uid clafer
+        subclafers = findOrError " subclafer not found" subclaferMap $ uid clafer
         parent     = Map.lookup (uid clafer) parentMap
         rootScope = 1
+        findOrError message map key = Map.findWithDefault (error $ key ++ message) key map
         
     
 analyzeReferences clafers analysis (IEClafer clafer) =
