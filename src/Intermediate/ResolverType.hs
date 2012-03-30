@@ -68,7 +68,12 @@ uidTCEnv (TCEnv table _ _ _ referenceTable) uid =
     case Map.lookup uid table of
     Just (newType, newParent) -> TCEnv table uid newType newParent referenceTable
     Nothing -> error $ "Unknown uid " ++ uid
-
+    
+    
+identTCEnv :: TCEnv -> String -> TCEnv
+identTCEnv env "this"   = env
+identTCEnv env "parent" = parentTCEnv env
+identTCEnv env uid      = uidTCEnv env uid
 
 
 -- The only exported function. Type checks and resolves the types.
@@ -186,11 +191,7 @@ resolveTExpPreferValue:: TCEnv -> IExp -> (TCEnv, TypedIExp)
 resolveTExpPreferValue env e@(IClaferId _ sident _) =
     (env', (e, t))
     where
-    env' =
-        case sident of
-            "this"   -> env
-            "parent" -> parentTCEnv env
-            uid      -> uidTCEnv env uid
+    env' = identTCEnv env sident
     ref uid = if findWithDefault False uid $ tcReferenceTable env then TRef else id
     t = ref (tcThis env') (tcType env')
 -- Join function
@@ -207,7 +208,7 @@ resolveTExpPreferValue env e@(IClaferId _ sident _) =
  - this refers to the current TCEnv so the example expression is evaluated to the grandparent of the current TCEnv.
  -}
 resolveTExpPreferValue env (IFunExp "." [exp1, exp2]) =
-    let (env1, a1) = resolveTPExp env exp1
+    let (env1, a1) = resolveTPExpLeftJoin env exp1
         (env2, a2) = resolveTPExpPreferValue env1 exp2
     in
     (env2, typeCheckFunction (deref $ typeOf a2) "." [E TClafer, EAny] [a1, a2])
@@ -220,16 +221,12 @@ resolveTExp:: TCEnv -> IExp -> (TCEnv, TypedIExp)
 resolveTExp env e@(IClaferId _ sident _) =
     (env', (e, t))
     where
-    env' =
-        case sident of
-            "this"   -> env
-            "parent" -> parentTCEnv env
-            uid      -> uidTCEnv env uid
+    env' = identTCEnv env sident
     ref uid = if findWithDefault False uid $ tcReferenceTable env then TRef else id
     t = ref (tcThis env') TClafer
     
 resolveTExp env (IFunExp "." [exp1, exp2]) =
-    let (env1, a1) = resolveTPExp env exp1
+    let (env1, a1) = resolveTPExpLeftJoin env exp1
         (env2, a2) = resolveTPExp env1 exp2
     in
     (env2, typeCheckFunction (deref $ typeOf a2) "." [E TClafer, EAny] [a1, a2])
@@ -314,6 +311,12 @@ resolveTExp env (IFunExp "=>else" [exp1, exp2, exp3]) = (env, result)
     (_, a1) = resolveTPExpPreferValue env exp1
     (_, a2) = resolveTPExpPreferValue env exp2
     (_, a3) = resolveTPExpPreferValue env exp3
+
+
+resolveTPExpLeftJoin :: TCEnv -> PExp -> (TCEnv, PExp)
+resolveTPExpLeftJoin env (PExp _ pid pos e@(IClaferId _ "this" _)) =
+    (env, PExp (Just TClafer) pid pos e)
+resolveTPExpLeftJoin env pexp = resolveTPExp env pexp
 
 
 --resolveTDecl :: IDecl ->  IDecl
