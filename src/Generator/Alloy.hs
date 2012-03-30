@@ -391,7 +391,9 @@ genPExp' mode resPath x@(PExp iType pid pos exp) = case exp of
     where
     sident' = (if isTop then "" else '@' : genRelName "") ++ sident
     -- 29/March/2012  Rafael Olaechea: ref is now prepended with clafer name to be able to refer to it from partial instances.
-    vsident = sident' ++  ".@" ++ sident ++ "_ref"
+    -- 30/March/2012 Rafael Olaechea added referredClaferUniqeuid to fix problems when having this.x > number  (e.g test/positive/i10.cfr )     
+    vsident = sident' ++  ".@"  ++ referredClaferUniqeuid ++ "_ref"
+        where referredClaferUniqeuid = if sident == "this" then (head resPath) else sident
   IFunExp _ _ -> case exp' of
     IFunExp op exps -> genIFunExp pid mode resPath exp'
     _ -> genPExp' mode resPath $ PExp iType pid pos exp'
