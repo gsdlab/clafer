@@ -57,7 +57,7 @@ scopeAnalysis IModule{mDecls = decls} =
             case parent of
                 Just parent' -> findOrError " parent scope not found" analysis parent'
                 Nothing      -> rootScope
-        subclafers = findOrError " subclafer not found" subclaferMap $ uid clafer
+        subclafers = Map.findWithDefault [] (uid clafer) subclaferMap
         parent     = Map.lookup (uid clafer) parentMap
         rootScope = 1
         findOrError message map key = Map.findWithDefault (error $ key ++ message) key map
