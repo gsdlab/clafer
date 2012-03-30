@@ -50,7 +50,8 @@ abstract LinkedList
 	total_footprint : integer
 	[ total_footprint = AbstractElement.footprint + AbstractElement.ElementA.footprint + AbstractElement.ElementA.footprint + AbstractElement.ElementC.footprint + AbstractIterator.footprint + AbstractIterator.ForwardIterator.footprint + AbstractIterator.BackwardIterator.footprint + AbstractSort.footprint + AbstractSort.BubbleSort.footprint + AbstractSort.MergeSort.footprint + AbstractSort.InsertionSort.footprint + AbstractSort.QuickSort.footprint + print.footprint + Measurement.footprint + Measurement.SyntheticPerformanceOrMeasuruement.footprint + Measurement.TCP_IP.footprint + Measurement.SyntheticPerformanceOrMeasuruement.Performance.footprint + Measurement.SyntheticPerformanceOrMeasuruement.MemorySize.footprint + Base.footprint ]
 
-simpleConfig : LinkedList 
+simpleConfig : LinkedList
+    [total_footprint > 490]
 
 
 //Mandatory Features all configurations will have: Base AbstractElement AbstractIterator 

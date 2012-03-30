@@ -30,7 +30,7 @@ def execute_main():
         if spl_claferanalyzer.get_clafer_Id(clafer_features)!='total_footprint':
             max_integer = max_integer + max(int(spl_claferanalyzer.get_footprint(clafer_features)), 0)
 
-    # Compute Bidwithd, we have to add 1 to max_integer due to "0", and 1 to the total due to negative numbers.
+    # Compute Bitwidth, we have to add 1 to max_integer due to "0", and 1 to the total due to negative numbers.
     max_bitwidth = math.ceil(math.log(max_integer+1, 2)) + 1 
     
     
