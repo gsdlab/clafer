@@ -3,6 +3,7 @@ from xml.etree import ElementTree
 
 from xml_parser_helper import load_xml_model
 import spl_claferanalyzer
+import math
 
 _namespaces = {'c1': 'http://gsd.uwaterloo.ca/clafer', 'xsi': 'http://www.w3.org/2001/XMLSchema-instance'}
 
@@ -23,7 +24,19 @@ def execute_main():
     print "inst partial_speedup {"
     print "    1"
     
-    # Print partial instances of individual features, children of   IMeasurable.
+    # Compute the maximum bit width for integers, first compute the highest possible 
+    max_integer = 0
+    for clafer_features in SPL.findall(".//c1:Declaration[@xsi:type='cl:IClafer']", namespaces=_namespaces):
+        if spl_claferanalyzer.get_clafer_Id(clafer_features)!='total_footprint':
+            max_integer = max_integer + max(int(spl_claferanalyzer.get_footprint(clafer_features)), 0)
+
+    # Compute Bidwithd, we have to add 1 to max_integer due to "0", and 1 to the total due to negative numbers.
+    max_bitwidth = math.ceil(math.log(max_integer+1, 2)) + 1 
+    
+    
+    print "    , %s  int" % max(4, int(max_bitwidth))
+    
+    # Print partial instances of individual features, children of IMeasurable.
     for clafer_features in SPL.findall(".//c1:Declaration[@xsi:type='cl:IClafer']", namespaces=_namespaces):
         if spl_claferanalyzer.get_clafer_Id(clafer_features)!='total_footprint':
             print "   , %s in partial_%s" %  (spl_claferanalyzer.get_clafer_UniqueId(clafer_features), spl_claferanalyzer.get_clafer_UniqueId(clafer_features) )    
