@@ -1,0 +1,8 @@
+abstract Measurable
+	 performance : integer
+
+D: Measurable
+
+C:Measurable
+
+[ C.performance = -D.performance]
