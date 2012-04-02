@@ -23,3 +23,5 @@ abstract Prevayler
 	 [total_footprint = PrevaylerSPL.footprint + Replication.footprint +  GZip.footprint + Censor.footprint + Monitor.footprint + Snapshot.footprint] 
 
 simpleConfig : Prevayler
+
+<< min simpleConfig.total_footprint >>
