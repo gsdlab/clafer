@@ -252,17 +252,19 @@ resolveTExp env e@(IDeclPExp quant decls bpexp) = (env, (IDeclPExp quant decls' 
 
 
 -- Unary functions
+-- Rafael Olaechea 02/April/2012: Added function resolveTPExpPreferValue to be used when using goals or negative.
 resolveTExp env (IFunExp op [exp]) = (env, result)
     where
     result
         | op == iNot  = typeCheckFunction TBoolean    op [E TBoolean] [a1]
         | op == iCSet = typeCheckFunction TInteger    op [E TClafer] [a1]
-        | op == iMin  = typeCheckFunction (deref $ typeOf a1) op allNumeric         [a1]
-        | op == iGMax = typeCheckFunction TInteger    op [E TClafer] [a1]
-        | op == iGMin = typeCheckFunction TInteger    op [E TClafer] [a1]       
+        | op == iMin  = typeCheckFunction TInteger op allNumeric    [a1PreferValue]
+        | op == iGMax = typeCheckFunction TInteger    op allNumeric [a1PreferValue]
+        | op == iGMin = typeCheckFunction TInteger    op allNumeric [a1PreferValue]       
         | otherwise   = error $ "Unknown unary function '" ++ op ++ "'"
     (_, a1) = resolveTPExp env exp
-
+    (_, a1PreferValue) = resolveTPExpPreferValue env exp
+    
 -- Binary functions
 resolveTExp env (IFunExp op [exp1, exp2]) = (env, result)
     where
