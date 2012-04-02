@@ -379,13 +379,13 @@ genPExp' mode resPath x@(PExp iType pid pos exp) = case exp of
     where
     optBar [] = ""
     optBar _  = " | "
+  IClaferId _ "ref" _ -> CString "@ref"
   IClaferId _ sident isTop -> CString $
       if head sident == '~' then sident else
       if isNothing iType then sident' else case fromJust $ iType of
     TInteger -> vsident
     TReal -> vsident
     TString -> vsident
-    TRef _ -> vsident
     _ -> sident'
     where
     sident' = (if isTop then "" else '@' : genRelName "") ++ sident
