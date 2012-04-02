@@ -67,6 +67,6 @@ def execute_main():
     
     print "}"
 
-    print "run show for partial_speedup"
+    print "run show for partial_speedup optimize o_global"
 
 execute_main()
