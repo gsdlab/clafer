@@ -46,10 +46,9 @@ transIdent x = case x of
 
 getSuper = getSuperId.supers.super
 
-getSuperArr clafer
+getSuperNoArr clafer
   | isOverlapping $ super clafer = "clafer"
-  | otherwise                    = (getSuperId.supers.super) clafer
-
+  | otherwise                    = getSuper clafer
 
 getSuperId = sident . Intermediate.Intclafer.exp . head
 
