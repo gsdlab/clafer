@@ -73,6 +73,7 @@ uidTCEnv (TCEnv table _ _ _ referenceTable) uid =
 identTCEnv :: TCEnv -> String -> TCEnv
 identTCEnv env "this"   = env
 identTCEnv env "parent" = parentTCEnv env
+identTCEnv env "ref"    = env
 identTCEnv env uid      = uidTCEnv env uid
 
 
@@ -86,7 +87,7 @@ resolveTModule (imodule, genv) =
     where
     symbolTable = symbolTableIElements (STEnv (sClafers genv) Nothing) (mDecls imodule)
     tcEnv = TCEnv symbolTable "root" TClafer Nothing referenceTable
-    referenceTable = Map.fromList [(uid clafer, isReference clafer) | clafer <- sClafers genv]
+    referenceTable = Map.empty
 
 
 {-
@@ -192,8 +193,7 @@ resolveTExpPreferValue env e@(IClaferId _ sident _) =
     (env', (e, t))
     where
     env' = identTCEnv env sident
-    ref uid = if findWithDefault False uid $ tcReferenceTable env then TRef else id
-    t = ref (tcThis env') (tcType env')
+    t = tcType env'
 -- Join function
 {- 
  - Join function is a special case.
@@ -211,7 +211,7 @@ resolveTExpPreferValue env (IFunExp "." [exp1, exp2]) =
     let (env1, a1) = resolveTPExpLeftJoin env exp1
         (env2, a2) = resolveTPExpPreferValue env1 exp2
     in
-    (env2, typeCheckFunction (deref $ typeOf a2) "." [E TClafer, EAny] [a1, a2])
+    (env2, typeCheckFunction (typeOf a2) "." [E TClafer, EAny] [a1, a2])
 -- Otherwise, the IExp has no value expression so return its standard expression
 resolveTExpPreferValue env x = resolveTExp env x
 
@@ -222,14 +222,13 @@ resolveTExp env e@(IClaferId _ sident _) =
     (env', (e, t))
     where
     env' = identTCEnv env sident
-    ref uid = if findWithDefault False uid $ tcReferenceTable env then TRef else id
-    t = ref (tcThis env') TClafer
+    t = TClafer
     
 resolveTExp env (IFunExp "." [exp1, exp2]) =
     let (env1, a1) = resolveTPExpLeftJoin env exp1
         (env2, a2) = resolveTPExp env1 exp2
     in
-    (env2, typeCheckFunction (deref $ typeOf a2) "." [E TClafer, EAny] [a1, a2])
+    (env2, typeCheckFunction (typeOf a2) "." [E TClafer, EAny] [a1, a2])
 resolveTExp env e@(IInt _) =          (env, (e, TInteger))
 resolveTExp env e@(IDouble _) =       (env, (e, TReal))
 resolveTExp env e@(IStr _) =          (env, (e, TString))
@@ -257,9 +256,9 @@ resolveTExp env (IFunExp op [exp]) = (env, result)
     result
         | op == iNot  = typeCheckFunction TBoolean    op [E TBoolean] [a1]
         | op == iCSet = typeCheckFunction TInteger    op [E TClafer] [a1]
-        | op == iMin  = typeCheckFunction (deref $ typeOf a1) op allNumeric         [a1]
-        | op == iGMax = typeCheckFunction (deref $ typeOf a1) op allNumeric         [a1]
-        | op == iGMin = typeCheckFunction (deref $ typeOf a1) op allNumeric         [a1]        
+        | op == iMin  = typeCheckFunction (typeOf a1) op allNumeric         [a1]
+        | op == iGMax = typeCheckFunction (typeOf a1) op allNumeric         [a1]
+        | op == iGMin = typeCheckFunction (typeOf a1) op allNumeric         [a1]        
         | otherwise   = error $ "Unknown unary function '" ++ op ++ "'"
     (_, a1) = resolveTPExp env exp
 
@@ -326,11 +325,9 @@ typeOf::PExp->IType
 typeOf = fromJust.iType
 
 coerceIfNeeded:: IType -> IType -> IType
-coerceIfNeeded t1 t2 = coerceIfNeeded' (deref t1) (deref t2)
-    where
-    coerceIfNeeded' TInteger TReal = TReal -- Coerce to real
-    coerceIfNeeded' TReal TInteger = TReal -- Coerce to real
-    coerceIfNeeded' x _ = x                -- No coercing
+coerceIfNeeded TInteger TReal = TReal -- Coerce to real
+coerceIfNeeded TReal TInteger = TReal -- Coerce to real
+coerceIfNeeded x _ = x                -- No coercing
 
 -- Expects that each argument is numeric
 allNumeric :: [TExpect]
@@ -364,21 +361,13 @@ isExact a b = checkExpect (E a) b
 -- Return true iff IType matches the expected type.
 checkExpect :: TExpect -> IType -> Bool
 -- Check exact match.
-checkExpect (E exact) itype = exact == (deref itype)
+checkExpect (E exact) itype = exact == itype
 -- Check is numeric.
 checkExpect ENumeric TInteger = True
 checkExpect ENumeric TReal    = True
-checkExpect ENumeric (TRef t) = checkExpect ENumeric t
 checkExpect ENumeric _        = False
 -- Check allows anything
 checkExpect EAny _ = True
-
-
-isReference = isOverlapping . super
-
-
-deref (TRef t) = t
-deref x = x
 
 
 data TExpect =
