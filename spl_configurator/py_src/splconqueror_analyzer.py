@@ -1,6 +1,5 @@
 _List_Mandatory_Base_Features  = []
 def set_List_Mandatory_Base_Features(List_Mandatory_Base_Features):
-    print "Setting _List_Mandatory_Base_Features to list of size %s" % len(List_Mandatory_Base_Features)
     global _List_Mandatory_Base_Features 
     _List_Mandatory_Base_Features = List_Mandatory_Base_Features
 def get_List_Mandatory_Base_Features():
