@@ -35,5 +35,6 @@ abstract PKJab
 
 simpleConfig : PKJab 
 
+<< min simpleConfig.total_footprint >>
 
 //Mandatory Features all configurations will have: Base ContactListSource ServerRoster 
