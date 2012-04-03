@@ -159,8 +159,8 @@ adjustAncestor cPath rPath = this : parents ++ (fromJust $ stripPrefix prefix rP
 
 
 mkPath' modName (howResolved, id, path) = case howResolved of
-  Subclafers -> (IClaferId modName id False, path)
   Reference  -> (toNav' ["ref", id], path)
+  _ -> (IClaferId modName id False, path)
 
 -- -----------------------------------------------------------------------------
 
