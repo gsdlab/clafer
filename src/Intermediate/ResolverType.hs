@@ -305,9 +305,10 @@ resolveTExp env (IFunExp op [exp1, exp2]) = (env, result)
                 typeCheckFunction TBoolean op [E TClafer, E TClafer] [a1PreferValue, a2PreferValue]
         | op `elem` relSetBinOps = 
             -- Expect both arguments to be the same type as the first argument
-            typeCheckFunction TBoolean op [E $ typeOf a1PreferValue, E $ typeOf a1PreferValue]  [a1PreferValue, a2PreferValue]
+            typeCheckFunction TBoolean op [E t1PV, E t1PV]  [a1PreferValue, a2PreferValue]
         | op `elem` [iUnion, iDifference, iIntersection] =
-            typeCheckFunction TClafer op [E TClafer, E TClafer]  [a1, a2]
+            -- Expect both arguments to be the same type as the first argument
+            typeCheckFunction t1PV op [E t1PV, E t1PV]  [a1PreferValue, a2PreferValue]
         | op `elem` [iUnion, iDifference, iIntersection] =
             typeCheckFunction TClafer op [E TClafer, E TClafer]  [a1, a2]
         | op `elem` [iDomain, iRange] =
@@ -323,6 +324,10 @@ resolveTExp env (IFunExp op [exp1, exp2]) = (env, result)
     (_, a2) = resolveTPExp env exp2
     (_, a1PreferValue) = resolveTPExpPreferValue env exp1
     (_, a2PreferValue) = resolveTPExpPreferValue env exp2
+    t1 = typeOf a1
+    t2 = typeOf a2
+    t1PV = typeOf a1PreferValue
+    t2PV = typeOf a2PreferValue
 
 --Ternary functions
 resolveTExp env (IFunExp "=>else" [exp1, exp2, exp3]) = (env, result)
