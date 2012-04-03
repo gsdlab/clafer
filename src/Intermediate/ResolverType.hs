@@ -77,6 +77,11 @@ identTCEnv env "ref"    = env
 identTCEnv env uid      = uidTCEnv env uid
 
 
+isReference :: TCEnv -> Bool
+isReference TCEnv{tcThis = this, tcReferenceTable = referenceTable} =
+    findWithDefault False this referenceTable
+
+
 -- The only exported function. Type checks and resolves the types.
 -- Done in 2 steps
 --   1. Traverse every clafer and build a symbol table
@@ -165,10 +170,28 @@ typeTheSuper (ISuper isOverlapping supers) = ISuper isOverlapping $ map typeTheP
 typeThePExp :: PExp -> PExp
 typeThePExp x = x{iType=Just TClafer}
 
+
 resolveTPExpPreferValue :: TCEnv -> PExp -> (TCEnv, PExp)
 resolveTPExpPreferValue env (PExp _ pid pos x) =
-    let (newEnv, (exp, typed)) = resolveTExpPreferValue env x in
-    (newEnv, PExp (Just typed) pid pos exp)
+    (newEnv, pexp')
+    where
+    (newEnv, (exp, typed)) = resolveTExpPreferValue env x
+    pexp = PExp (Just typed) pid pos exp
+    -- Sometimes need to dereference an access. For example:
+    --   Leader -> Person
+    --   abstract Person
+    --   A : Person
+    --   B : Person
+    --   [Leader = A]
+    -- Need to add a "ref" node into the IR on the access to "Leader"
+    pexp'
+        | isClaferId exp && isReference newEnv =
+            newPExp $ IFunExp "." [pexp, newPExp $ IClaferId "" "ref" False]
+        | otherwise = pexp
+    isClaferId IClaferId{} = True
+    isClaferId _           = False
+    newPExp = PExp (Just typed) "" pos
+
     
 resolveTPExp :: TCEnv -> PExp -> (TCEnv, PExp)
 resolveTPExp env (PExp _ pid pos x) =
@@ -281,7 +304,8 @@ resolveTExp env (IFunExp op [exp1, exp2]) = (env, result)
             else -- Set equality
                 typeCheckFunction TBoolean op [E TClafer, E TClafer] [a1PreferValue, a2PreferValue]
         | op `elem` relSetBinOps = 
-            typeCheckFunction TBoolean op [E TClafer, E TClafer]  [a1, a2]
+            -- Expect both arguments to be the same type as the first argument
+            typeCheckFunction TBoolean op [E $ typeOf a1PreferValue, E $ typeOf a1PreferValue]  [a1PreferValue, a2PreferValue]
         | op `elem` [iUnion, iDifference, iIntersection] =
             typeCheckFunction TClafer op [E TClafer, E TClafer]  [a1, a2]
         | op `elem` [iUnion, iDifference, iIntersection] =
