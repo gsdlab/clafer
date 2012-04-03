@@ -281,12 +281,13 @@ resolveTExp env (IFunExp op [exp]) = (env, result)
         | op == iNot  = typeCheckFunction TBoolean    op [E TBoolean] [a1]
         | op == iCSet = typeCheckFunction TInteger    op [E TClafer] [a1]
         -- We return the typeOf a1 because if a1 is real then return real (likewise for integer)
-        | op == iMin  = typeCheckFunction (typeOf a1) op allNumeric         [a1PreferValue]
-        | op == iGMax = typeCheckFunction (typeOf a1) op allNumeric         [a1PreferValue]
-        | op == iGMin = typeCheckFunction (typeOf a1) op allNumeric         [a1PreferValue]
+        | op == iMin  = typeCheckFunction t1PV op allNumeric         [a1PreferValue]
+        | op == iGMax = typeCheckFunction t1PV op allNumeric         [a1PreferValue]
+        | op == iGMin = typeCheckFunction t1PV op allNumeric         [a1PreferValue]
         | otherwise   = error $ "Unknown unary function '" ++ op ++ "'"
     (_, a1) = resolveTPExp env exp
     (_, a1PreferValue) = resolveTPExpPreferValue env exp
+    t1PV = typeOf a1PreferValue
 
 -- Binary functions
 resolveTExp env (IFunExp op [exp1, exp2]) = (env, result)
