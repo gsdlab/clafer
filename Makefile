@@ -16,6 +16,7 @@ install:
 build:
 	$(MAKE) -C $(TOOL_DIR)
 	cabal configure
+	cabal install --only-dependencies
 	cabal build
 	cp dist/build/clafer/clafer .
 
