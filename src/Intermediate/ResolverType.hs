@@ -24,7 +24,7 @@ module Intermediate.ResolverType (resolveTModule) where
 import Control.Monad.State
 import Data.Function
 import Data.Maybe
-import Data.Map hiding (map, lookup)
+import Data.Map (Map)
 import qualified Data.Map as Map
 import Debug.Trace
 import List (find)
@@ -79,7 +79,7 @@ identTCEnv env uid      = uidTCEnv env uid
 
 isReference :: TCEnv -> Bool
 isReference TCEnv{tcThis = this, tcReferenceTable = referenceTable} =
-    findWithDefault False this referenceTable
+    Map.findWithDefault False this referenceTable
 
 
 -- The only exported function. Type checks and resolves the types.
@@ -103,21 +103,21 @@ resolveTModule (imodule, genv) =
  -}
 -- Build a symbol table from the elements
 symbolTableIElements :: STEnv -> [IElement] -> SymbolTable
-symbolTableIElements env elements = foldr (union.symbolTableIElement env) empty elements
+symbolTableIElements env elements = foldr (Map.union . symbolTableIElement env) Map.empty elements
 
 symbolTableIElement :: STEnv -> IElement -> SymbolTable
 symbolTableIElement env (IEClafer x) = symbolTableIClafer env x
 -- Constraints do not add symbols to the symbol table
-symbolTableIElement env (IEConstraint _ _) = empty
+symbolTableIElement env (IEConstraint _ _) = Map.empty
 -- Goald do not add symbols to the symbol table
-symbolTableIElement env (IEGoal _ _) = empty
+symbolTableIElement env (IEGoal _ _) = Map.empty
 
 symbolTableIClafer :: STEnv -> IClafer -> SymbolTable
 symbolTableIClafer env c =
     let cuid = uid c :: String
         children = symbolTableIElements env{stParent = Just cuid} $ elements c :: SymbolTable
     in
-    insert cuid (itypeOfClafer env cuid, stParent env) children
+    Map.insert cuid (itypeOfClafer env cuid, stParent env) children
 
 itypeOfClafer :: STEnv -> String -> IType
 itypeOfClafer env id = 
@@ -271,7 +271,7 @@ resolveTExp env e@(IDeclPExp quant decls bpexp) = (env, (IDeclPExp quant decls' 
         (env', IDecl isDisj decls body')
         where
         (_, body') = resolveTPExpPreferValue env body
-        env' = env{tcTable = foldr (flip insert $ (typeOf body', Nothing)) (tcTable env) decls}
+        env' = env{tcTable = foldr (flip Map.insert $ (typeOf body', Nothing)) (tcTable env) decls}
 
 
 -- Unary functions
