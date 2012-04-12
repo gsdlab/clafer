@@ -400,6 +400,8 @@ genPExp' mode resPath x@(PExp iType pid pos exp) = case exp of
   IStr str -> error "no strings allowed"
 
 
+transformExp x@(IFunExp op exps@(e1:_))
+  | op == iMin = IFunExp op [PExp (iType e1) "" noPos (IInt 0), e1]
 transformExp x@(IFunExp op exps@(e1:e2:_))
   | op == iXor = IFunExp iNot [PExp (Just TBoolean) "" noPos (IFunExp iIff exps)]
   | op == iJoin && isClaferName' e1 && isClaferName' e2 &&

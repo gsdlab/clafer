@@ -67,6 +67,7 @@ pExpDefPid = pExpDef ""
 pExpDef = PExp Nothing
 
 isParent (PExp _ _ _ (IClaferId _ id _)) = id == parent
+isParent _ = False
 
 isClaferName (PExp _ _ _ (IClaferId _ id _)) =
   id `notElem` ([this, parent, children] ++ primitiveTypes)
@@ -198,7 +199,9 @@ parent = "parent"
 
 children = "children"
 
-specialNames = [this, parent, children]
+ref = "ref"
+
+specialNames = [this, parent, children, ref]
 
 strType = "string"
 

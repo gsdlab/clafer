@@ -185,7 +185,7 @@ resolveNone env id = error $ "resolver: " ++ id ++ " not found" ++
 -- checks if ident is one of special identifiers
 resolveSpecial :: SEnv -> String -> Maybe (HowResolved, String, [IClafer])
 resolveSpecial env id
-  | id `elem` [this, children] =
+  | id `elem` [this, children, ref] =
       Just (Special, id, resPath env)
   | id == parent   = Just (Special, id, tail $ resPath env)
   | isPrimitive id = Just (TypeSpecial, id, [])
