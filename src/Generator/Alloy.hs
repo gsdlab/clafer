@@ -530,16 +530,17 @@ mapLineCol' c@(Concat srcPos nodes) = do
    - Seems unintuitive since the brackets are now unbalanced but that's how they work in Alloy. The next
    - few lines of code is counting the beginning and ending parenthesis's and subtracting them from the
    - positions in the map file.
+   - Same is true for square brackets.
    - This next little snippet is rather inefficient since we are retraversing the Concat's to flatten.
    - But it's the simplest and correct solution I can think of right now.
    -}
   let flat = flatten c
-      raiseStart = countLeading '(' flat
-      deductEnd = -(countTrailing ')' flat)
+      raiseStart = countLeading "([" flat
+      deductEnd = -(countTrailing ")]" flat)
   modify (\s -> s {mapping = (srcPos, (posStart `addColumn` raiseStart, posEnd `addColumn` deductEnd)) : (mapping s)})
 
 addColumn (x, y) c = (x, y + c)
-countLeading c xs = length $ takeWhile (== c) xs
+countLeading c xs = length $ takeWhile (`elem` c) xs
 countTrailing c xs = countLeading c (reverse xs)
 
 lineno (l, c) str = (l + newLines, (if newLines > 0 then firstCol else c) + newCol)
