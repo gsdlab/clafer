@@ -3,12 +3,24 @@ abstract Person
 	xor maritalStatus
 		neverMarried
 		married
-			[ age >= 3 ]      // here, the modeler clearly means Person.age, not spouse.age
 			spouse -> Person
-				[ spouse != parent.parent.parent ]     // here, the modeler means spouse.maritalStatus.married.spouse 
+				[ this != Person ]   // cannot marry oneself
+				[ this.maritalStatus.married.spouse = Person ]     // here, the modeler means spouse.maritalStatus.married.spouse 
 		divorced
-	children -> Person *
-        parents -> Person 0..2
+		[ married || divorced => age >= 3 ]
+	childs -> Person *
+		[ Person in this.parents ]
+		[ spouse in this.parents ]
+		[ this.age < age ]
+	parents -> Person 0..2
+		[ Person in this.childs ]
 
 Alice : Person
+	[ age = 4 ]
+	[ married ]
+
 Bob : Person
+	[ age = 5 ]
+
+Carol : Person
+	[ age = 1 ]
