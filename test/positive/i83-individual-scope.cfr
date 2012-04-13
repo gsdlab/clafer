@@ -1,0 +1,9 @@
+// http://gsd.uwaterloo.ca:8888/question/375/individual-scope-should-never-be-smaller-than-the
+
+a ?
+b
+c +
+d 2..*
+    e ?
+    f
+    g 2..*
