@@ -68,7 +68,7 @@ def extract_integer(element):
     return extacted_integer
 
 
-def get_footprint(element):
+def get_footprint(element, property="footprint"):
     footprint_val = 0
     
     for constraint in element.findall("./c1:Declaration[@xsi:type='cl:IConstraint']", namespaces=_namespaces):
@@ -88,7 +88,7 @@ def get_footprint(element):
                 first_argument_sub_arguments[0].find("c1:Exp[@xsi:type='cl:IClaferId']/c1:Id", namespaces=_namespaces) != None and \
                 first_argument_sub_arguments[0].find("c1:Exp[@xsi:type='cl:IClaferId']/c1:Id", namespaces=_namespaces).text == 'this' and \
                 first_argument_sub_arguments[1].find("c1:Exp[@xsi:type='cl:IClaferId']/c1:Id", namespaces=_namespaces) != None and \
-                first_argument_sub_arguments[1].find("c1:Exp[@xsi:type='cl:IClaferId']/c1:Id", namespaces=_namespaces).text == 'c2_footprint'  and \
+                first_argument_sub_arguments[1].find("c1:Exp[@xsi:type='cl:IClaferId']/c1:Id", namespaces=_namespaces).text == ('c2_%s' % property)  and \
                 second_argument.find("c1:Type[@xsi:type='cl:IInteger']", namespaces=_namespaces)!= None:
                 
                     footprint_val = extract_integer(second_argument)

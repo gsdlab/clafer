@@ -144,7 +144,7 @@ genDeclaration mode x = case x of
 
 mkFact  xs = cconcat [CString "fact ", mkSet xs, CString "\n"]
 
-mkMetric goalopname xs = cconcat [CString "objectives o_global ", CString "{ ", if goalopname == iGMax then CString "maximize" else  CString "minimize", CString " [", xs, CString " ]",  CString " }" , CString "\n"]
+mkMetric goalopname xs = cconcat [CString "objectives o_global {", if goalopname == iGMax then CString "maximize" else  CString "minimize", CString " [", xs, CString " ]",  CString " }" , CString "\n"]
 
                                                     
 mkSet xs = cconcat [CString "{ ", xs, CString " }"]

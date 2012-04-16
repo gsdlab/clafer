@@ -7,13 +7,13 @@ get_parent_id, compute_tab_level, has_siblings_constraints, \
 get_mandatory_base_features, compute_is_optional, get_fully_qualified_name, \
 compute_group_cardinality, get_footprint, set_List_Mandatory_Base_Features, get_List_Mandatory_Base_Features
 
-def print_abstract_IMeasurable(args):
+def print_abstract_IMeasurable(args, property="footprint"):
 	print "// Adapated from Scalable Prediction of Non-functional Properties in Software Product Lines."
 	print "// Scaled down by dividing numbers by %s and rounding." % args.scaledownby
 	print "//To execute in alloy: run  show for ..."
 	print "\n"
 	print "abstract IMeasurable"
-	print "\tfootprint : integer\n\n"
+	print "\t%s : integer\n\n" % property
 
 
 def execute_main():
@@ -21,6 +21,8 @@ def execute_main():
 	parser = argparse.ArgumentParser(description='Reads an xml model of a Software Product Line generated for the tool SPLConqueror and generate a clafer model.')
 	
 	parser.add_argument('--scaledownby', type=int, default=1, help='Scaled the footprint by SCALEDOWNBY.')
+	
+	parser.add_argument('--property', type=str, default="footprint", help='Function property to annotate feature model with')
 	
 	parser.add_argument('feature_model_xml_filename', metavar='F', type=str, nargs=1,
 	                   help='SPLConqeuror Feature model in xml file to open.')
@@ -37,7 +39,7 @@ def execute_main():
 	args = parser.parse_args()
 	
 	
-	print_abstract_IMeasurable(args)
+	print_abstract_IMeasurable(args, property=args.property)
 	
 	 
 	xml_model = load_xml_model(args.feature_model_xml_filename[0])
@@ -88,10 +90,10 @@ def execute_main():
 		for tmp in range(num_tabs): print "\t",
 		footprint = get_footprint(xml_model_nfp, featureelement, args)
 			
-		print "\t[ this.footprint = %s]" %  footprint 
+		print "\t[ this.%s = %s]" %   (args.property ,footprint)
 	
 		# Add to the list of required summations.	
-		Constraint_Summation.append( get_fully_qualified_name(xml_model,featureelement)  + '.footprint')
+		Constraint_Summation.append( get_fully_qualified_name(xml_model,featureelement)  + ('.%s' % args.property ))
 			
 		
 	if args.fabricatebasefeature != '' and len(get_mandatory_base_features(xml_model))==0:
@@ -99,8 +101,8 @@ def execute_main():
 		print "\tSYNTETHIC_BASE_FEATURE : IMeasurable"
 		print "\t\t [ this.footprint = %s ]" % get_empty_features_footprint(xml_model_configurations)
 		
-	print "\ttotal_footprint : integer"
-	print "\t[ total_footprint = %s ]" % ' + '.join(Constraint_Summation)
+	print "\ttotal_%s : integer" % args.property
+	print "\t[ total_%s = %s ]" %  (args.property ,' + '.join(Constraint_Summation))
 	
 	print "\nsimpleConfig : %s " % xml_model.get('name')
 	
