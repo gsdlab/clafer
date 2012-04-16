@@ -1,0 +1,6 @@
+A
+    B : integer *
+         C ?
+        
+    [all b : B | some b.C ]   
+    [all b : B | b + 1 = 2 ]  

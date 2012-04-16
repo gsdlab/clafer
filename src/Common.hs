@@ -46,10 +46,9 @@ transIdent x = case x of
 
 getSuper = getSuperId.supers.super
 
-getSuperArr clafer
+getSuperNoArr clafer
   | isOverlapping $ super clafer = "clafer"
-  | otherwise                    = (getSuperId.supers.super) clafer
-
+  | otherwise                    = getSuper clafer
 
 getSuperId = sident . Intermediate.Intclafer.exp . head
 
@@ -68,6 +67,7 @@ pExpDefPid = pExpDef ""
 pExpDef = PExp Nothing
 
 isParent (PExp _ _ _ (IClaferId _ id _)) = id == parent
+isParent _ = False
 
 isClaferName (PExp _ _ _ (IClaferId _ id _)) =
   id `notElem` ([this, parent, children] ++ primitiveTypes)
@@ -199,7 +199,9 @@ parent = "parent"
 
 children = "children"
 
-specialNames = [this, parent, children]
+ref = "ref"
+
+specialNames = [this, parent, children, ref]
 
 strType = "string"
 

@@ -6,12 +6,14 @@ abstract Person
 		married
 			spouse -> Person
 				[ this.maritalStatus.married.spouse = Person ]     
+			[ spouse != Person ]
 		divorced
 		[ married || divorced => age >= 5 ]
 	childs -> Person *
-		[ this.age <= Person.age  ]    
 		[ Person in this.parents ]     
-
+		[ spouse in this.parents ]
+		[ this.age < age ]
+		
 	parents -> Person 0..2
 		[ Person in this.childs ]
 
@@ -28,4 +30,4 @@ Bob : Person
 
 Carol : Person
 	[ age = 1 ]
-	[ parents = Alice, Bob ]
+//	[ parents = Alice, Bob ]  // to be inferred

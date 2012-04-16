@@ -20,7 +20,7 @@ Dependencies
 
 On Windows only
 
-* [Cygwin](http://www.cygwin.com/) with packages `make`, `wget`
+* [Cygwin](http://www.cygwin.com/) with packages `make`, `wget`, `unzip`
 
 Building
 ------------------
