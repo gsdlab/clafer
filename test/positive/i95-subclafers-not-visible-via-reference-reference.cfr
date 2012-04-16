@@ -1,0 +1,12 @@
+//# OPTIONS -k
+
+// http://gsd.uwaterloo.ca:8888/question/451/children-clafers-not-visible-via-reference-to-a
+
+abstract A
+	x ?
+
+ref1 -> A
+
+ref2 -> ref1
+	[ this.x ]
+
