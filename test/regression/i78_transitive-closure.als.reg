@@ -5,8 +5,8 @@ pred show {}
 abstract sig c1_TimeLevel
 { r_c2_aggregatesTo : lone c2_aggregatesTo }
 
-sig c2_aggregatesTo in c1_TimeLevel
-{}
+sig c2_aggregatesTo
+{ ref : one c1_TimeLevel }
 { one @r_c2_aggregatesTo.this }
 
 abstract sig c3_YearLevel extends c1_TimeLevel
@@ -15,25 +15,25 @@ abstract sig c3_YearLevel extends c1_TimeLevel
 
 abstract sig c6_MonthLevel extends c1_TimeLevel
 {}
-{ (this.@r_c2_aggregatesTo) in c3_YearLevel }
+{ (this.(@r_c2_aggregatesTo.@ref)) in c3_YearLevel }
 
 abstract sig c10_WeekLevel extends c1_TimeLevel
 {}
-{ (this.@r_c2_aggregatesTo) in c6_MonthLevel }
+{ (this.(@r_c2_aggregatesTo.@ref)) in c6_MonthLevel }
 
 one sig c14_Year2012 extends c3_YearLevel
 {}
 
 one sig c15_Jan2012 extends c6_MonthLevel
 {}
-{ (this.@r_c2_aggregatesTo) = c14_Year2012 }
+{ (this.(@r_c2_aggregatesTo.@ref)) = c14_Year2012 }
 
 one sig c19_Week1 extends c10_WeekLevel
 {}
-{ (this.@r_c2_aggregatesTo) = c15_Jan2012 }
+{ (this.(@r_c2_aggregatesTo.@ref)) = c15_Jan2012 }
 
-sig c23_Week1AggregatesTo in c1_TimeLevel
-{}
-{ this = ((c19_Week1.@r_c2_aggregatesTo) + ((c19_Week1.@r_c2_aggregatesTo).@r_c2_aggregatesTo)) }
+sig c23_Week1AggregatesTo
+{ ref : one c1_TimeLevel }
+{ (this.@ref) = ((c19_Week1.(@r_c2_aggregatesTo.@ref)) + ((c19_Week1.@r_c2_aggregatesTo).(@ref.(@r_c2_aggregatesTo.@ref)))) }
 
-fact { c23_Week1AggregatesTo = (c15_Jan2012 + c14_Year2012) }
+fact { (c23_Week1AggregatesTo.@ref) = (c15_Jan2012 + c14_Year2012) }
