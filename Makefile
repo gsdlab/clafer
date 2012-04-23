@@ -7,14 +7,16 @@ all: build
 install:  
 	mkdir -p $(to)
 	mkdir -p $(to)/tools
-	cp tools/alloy4.jar $(to)/tools
-	cp tools/alloy4.2-rc.jar $(to)/tools
-	cp tools/XsdCheck.class $(to)/tools
+	cp -f tools/alloy4.jar $(to)/tools
+	cp -f tools/alloy4.2-rc.jar $(to)/tools
 	cabal install --bindir=$(to)
-	cp README.md $(to)/clafer-README.md
+	cp -f README.md $(to)/clafer-README.md
+	cp -f tools/XsdCheck.class $(to)/tools
+
 
 build:
 	$(MAKE) -C $(TOOL_DIR)
+	cabal install --only-dependencies
 	cabal configure
 	cabal build
 	cp dist/build/clafer/clafer .

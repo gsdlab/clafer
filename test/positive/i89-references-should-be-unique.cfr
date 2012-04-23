@@ -1,0 +1,17 @@
+abstract A 
+
+a : A +
+
+setRefToA -> A 3
+
+multisetRefToA ->> A 3
+
+/*
+a1
+a2
+a3
+a4
+
+setRefToA = a1, a3, a4
+multisetRefToA = a1, a1, a1
+*/

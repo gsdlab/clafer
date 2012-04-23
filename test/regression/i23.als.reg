@@ -20,8 +20,8 @@ one sig c4_Contractor extends c1_Person
 one sig c5_since
 { ref : one Int }
 
-sig c6_Member in c1_Person
-{}
+sig c6_Member
+{ ref : one c1_Person }
 { one @r_c6_Member.this }
 
 one sig c7_Alice extends c1_Person

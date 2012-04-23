@@ -1,11 +1,13 @@
 <!-- ........................................................................ *
   *   Clafer Project                                                          *
+  *   http://clafer.org                                                       *
   *                                                                           *
   *   File description: XML schema of Clafer intermediate representation (IR) *
   *   Depends on: Haskell IR data types defined for clafer                    *
-  *   Author: Leonardo Passos (lpassos@gsd.uwaterloo.ca)                      *
+  *   Author: Leonardo Passos <lpassos@gsd.uwaterloo.ca>                      *
+  *   Contributors: Jimmy Liang <jliang@gsd.uwaterloo.ca>                     *
   *   Date: October 19th, 2011                                                *
-  *   Last update: November 28th, 2011                                        *
+  *   Last update: April 16th, 2012                                           *
   *                                                                           *
   *   Generate scala classes with:                                            *
   *   scalaxb -p gsd.clafer.ir ClaferIR.xsd                                   *
@@ -13,11 +15,11 @@
   * ......................................................................... *
   */
 -->
-<xs:schema targetNamespace="http://gsd.uwaterloo.ca/clafer"
+<xs:schema targetNamespace="http://clafer.org/ir"
            elementFormDefault="qualified"
-           xmlns="http://gsd.uwaterloo.ca/clafer"
+           xmlns="http://clafer.org/ir"
            xmlns:xs="http://www.w3.org/2001/XMLSchema"
-           xmlns:cl="http://gsd.uwaterloo.ca/clafer">
+           xmlns:cl="http://clafer.org/ir">
 
   <!-- . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
   <!--

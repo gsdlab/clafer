@@ -94,14 +94,14 @@ run v p args = do
                             exitFailure
              Ok  tree -> do
                           let f = dropExtension $ file args
-                          conPutStrLn args "\nParse Successful!"
+--                          conPutStrLn args "\nParse Successful!"
                           dTree <- desugar args tree
                           oTree <- analyze args dTree
                           f' <- generate f args oTree
                           when (fromJust $ validate args) $ runValidate args f'
 
 desugar args tree = do
-  conPutStrLn args "[Desugaring]"
+--  conPutStrLn args "[Desugaring]"
   let dTree = desugarModule tree
   return dTree
   -- writeFile (f ++ ".des") $ printTree $
@@ -111,21 +111,21 @@ analyze args tree = do
   let dTree' = findDupModule args tree
   let au = allUnique dTree'
   let args' = args{skip_resolver = Just $ au && (fromJust $ skip_resolver args)}
-  conPutStrLn args "[Resolving]"
+--  conPutStrLn args "[Resolving]"
   let (rTree, genv) = resolveModule args' dTree'
-  conPutStrLn args "[Transforming]"
+--  conPutStrLn args "[Transforming]"
   let tTree = transModule rTree
-  conPutStrLn args "[Optimizing]"
+--  conPutStrLn args "[Optimizing]"
   return $ (optimizeModule args' (tTree, genv), genv, au)
   -- writeFile (f ++ ".ana") $ printTree $
   --  sugarModule oTree
 
 
 generate f args (oTree, genv, au) = do
-  conPutStrLn args "[Generating Code]"
+--  conPutStrLn args "[Generating Code]"
   let stats = showStats au $ statsModule oTree
   when (not $ fromJust $ no_stats args) $ putStrLn stats
-  conPutStrLn args "[Saving File]"
+--  conPutStrLn args "[Saving File]"
   let alloyCode = genModule args (astrModule oTree, genv)
   let addCommentStats = if fromJust $ no_stats args then const else addStats
   let (ext, code) = case (fromJust $ mode args) of

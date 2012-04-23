@@ -29,21 +29,21 @@ sig c5_married
 { one @r_c5_married.this
   (((this.~@r_c5_married).~@r_c3_maritalStatus).@r_c2_age.@ref) >= 3 }
 
-sig c9_spouse in c1_Person
-{}
+sig c9_spouse
+{ ref : one c1_Person }
 { one @r_c9_spouse.this
-  this != (((this.~@r_c9_spouse).~@r_c5_married).~@r_c3_maritalStatus) }
+  (this.@ref) != (((this.~@r_c9_spouse).~@r_c5_married).~@r_c3_maritalStatus) }
 
 sig c17_divorced
 {}
 { one @r_c17_divorced.this }
 
-sig c18_children in c1_Person
-{}
+sig c18_children
+{ ref : one c1_Person }
 { one @r_c18_children.this }
 
-sig c19_parents in c1_Person
-{}
+sig c19_parents
+{ ref : one c1_Person }
 { one @r_c19_parents.this }
 
 one sig c20_Alice extends c1_Person

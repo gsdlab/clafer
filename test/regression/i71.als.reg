@@ -5,23 +5,28 @@ pred show {}
 abstract sig c1_Course
 { r_c2_taughtBy : set c2_taughtBy }
 
-sig c2_taughtBy in c3_Teacher
-{}
+sig c2_taughtBy
+{ ref : one c4_Teacher
+, r_c3_x : lone c3_x }
 { one @r_c2_taughtBy.this }
 
-abstract sig c3_Teacher
-{ r_c4_teaches : set c4_teaches }
-
-sig c4_teaches in c1_Course
+sig c3_x
 {}
-{ one @r_c4_teaches.this }
+{ one @r_c3_x.this }
 
-fact { all  c : c1_Course | some  t : c.@r_c2_taughtBy | c in (t.@r_c4_teaches) }
-fact { 5 <= #c16_course and #c16_course <= 5 }
-sig c16_course extends c1_Course
+abstract sig c4_Teacher
+{ r_c5_teaches : set c5_teaches }
+
+sig c5_teaches
+{ ref : one c1_Course }
+{ one @r_c5_teaches.this }
+
+fact { all  c : c1_Course | all  t : c.@r_c2_taughtBy | (some t.@r_c3_x) && (c in (t.(@ref.(@r_c5_teaches.@ref)))) }
+fact { 5 <= #c22_course and #c22_course <= 5 }
+sig c22_course extends c1_Course
 {}
 
-fact { 3 <= #c17_teacher and #c17_teacher <= 3 }
-sig c17_teacher extends c3_Teacher
+fact { 3 <= #c23_teacher and #c23_teacher <= 3 }
+sig c23_teacher extends c4_Teacher
 {}
 

@@ -21,14 +21,16 @@ isSuperest clafers clafer = isNothing $ directSuper clafers clafer
 -- If the model only has Clafers (ie. no constraints) then the lower bound is tight.
 -- scopeAnalysis :: IModule -> Map IClafer Integer
 scopeAnalysis IModule{mDecls = decls} =
-    filter (isConcreteAndSuper . fst) finalAnalysis
+    filter (isReferenceOrSuper . fst) finalAnalysis
     where
     finalAnalysis = Map.toList $ foldl analyzeComponent referenceAnalysis connectedComponents
     
-    isConcreteAndSuper uid =
-        isConcrete clafer && isSuperest clafers clafer
+    isReferenceOrSuper uid =
+        isReference clafer || isSuperest clafers clafer
         where
         clafer = findClafer uid
+        
+    isConcrete' uid = isConcrete $ findClafer uid
     
     referenceAnalysis = foldl (analyzeReferences clafers) Map.empty decls
     (subclaferMap, parentMap) = analyzeHierarchy clafers
@@ -47,19 +49,19 @@ scopeAnalysis IModule{mDecls = decls} =
         Map.insertWith max (uid clafer) scope analysis
         where
         scope
-            | isReference clafer = 0 -- Reference scopes are already handled in the analyzeReferences
             | isAbstract clafer  = sum subclaferScopes
             | otherwise          = parentScope * lowCard
         
         lowCard = fst $ fromJust $ card clafer
-        subclaferScopes = map (analysis Map.!) subclafers
+        subclaferScopes = map (findOrError " subclafer scope not found" analysis) $ filter isConcrete' subclafers
         parentScope  =
             case parent of
-                Just parent' -> analysis Map.! parent'
+                Just parent' -> findOrError " parent scope not found" analysis parent'
                 Nothing      -> rootScope
-        subclafers =  subclaferMap Map.! uid clafer
+        subclafers = Map.findWithDefault [] (uid clafer) subclaferMap
         parent     = Map.lookup (uid clafer) parentMap
         rootScope = 1
+        findOrError message map key = Map.findWithDefault (error $ key ++ message) key map
         
     
 analyzeReferences clafers analysis (IEClafer clafer) =
@@ -67,7 +69,7 @@ analyzeReferences clafers analysis (IEClafer clafer) =
     where
     lowerBound = fst (fromJust $ card clafer)
     analysis'
-        | isReference clafer = Map.insert (uid clafer) 0 $ Map.insert (uid $ fromJust $ directSuper clafers clafer) lowerBound analysis
+        | isReference clafer = Map.insert (uid $ fromJust $ directSuper clafers clafer) lowerBound analysis
         | otherwise          = analysis
 analyzeReferences _ analysis _ = analysis
 

@@ -379,13 +379,13 @@ genPExp' mode resPath x@(PExp iType pid pos exp) = case exp of
     where
     optBar [] = ""
     optBar _  = " | "
+  IClaferId _ "ref" _ -> CString "@ref"
   IClaferId _ sident isTop -> CString $
       if head sident == '~' then sident else
       if isNothing iType then sident' else case fromJust $ iType of
     TInteger -> vsident
     TReal -> vsident
     TString -> vsident
-    TRef _ -> vsident
     _ -> sident'
     where
     sident' = (if isTop then "" else '@' : genRelName "") ++ sident
@@ -400,8 +400,13 @@ genPExp' mode resPath x@(PExp iType pid pos exp) = case exp of
   IStr str -> error "no strings allowed"
 
 
+transformExp x@(IFunExp op exps@(e1:_))
+  | op == iMin = IFunExp op [PExp (iType e1) "" noPos (IInt 0), e1]
 transformExp x@(IFunExp op exps@(e1:e2:_))
   | op == iXor = IFunExp iNot [PExp (Just TBoolean) "" noPos (IFunExp iIff exps)]
+  | op == iJoin && isClaferName' e1 && isClaferName' e2 &&
+    getClaferName e1 == this && head (getClaferName e2) == '~' =
+        IFunExp op [e1{iType = Just TClafer}, e2]
   | otherwise  = x
 transformExp x = x
 
@@ -527,16 +532,17 @@ mapLineCol' c@(Concat srcPos nodes) = do
    - Seems unintuitive since the brackets are now unbalanced but that's how they work in Alloy. The next
    - few lines of code is counting the beginning and ending parenthesis's and subtracting them from the
    - positions in the map file.
+   - Same is true for square brackets.
    - This next little snippet is rather inefficient since we are retraversing the Concat's to flatten.
    - But it's the simplest and correct solution I can think of right now.
    -}
   let flat = flatten c
-      raiseStart = countLeading '(' flat
-      deductEnd = -(countTrailing ')' flat)
+      raiseStart = countLeading "([" flat
+      deductEnd = -(countTrailing ")]" flat)
   modify (\s -> s {mapping = (srcPos, (posStart `addColumn` raiseStart, posEnd `addColumn` deductEnd)) : (mapping s)})
 
 addColumn (x, y) c = (x, y + c)
-countLeading c xs = length $ takeWhile (== c) xs
+countLeading c xs = length $ takeWhile (`elem` c) xs
 countTrailing c xs = countLeading c (reverse xs)
 
 lineno (l, c) str = (l + newLines, (if newLines > 0 then firstCol else c) + newCol)

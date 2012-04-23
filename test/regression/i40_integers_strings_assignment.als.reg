@@ -21,8 +21,8 @@ one sig c11_E3 extends c1_Entity
 {}
 { (this.@r_c2_type.@ref) = 0 }
 
-sig c15_E1TEntities in c1_Entity
-{}
+sig c15_E1TEntities
+{ ref : one c1_Entity }
 { (c1_Entity.@r_c2_type.@ref) = 0 }
 
 fact { (#c15_E1TEntities) = 3 }

@@ -51,6 +51,7 @@ data HowResolved =
   | TypeSpecial -- primitive type: integer, string
   | Binding     -- local variable (in constraints)
   | Subclafers  -- clafer's descendant
+  | Reference   -- resolved by a reference
   | Ancestor    -- clafer's ancestor
   | AbsClafer   -- abstract clafer
   | TopClafer   -- non-abstract top-level clafer
@@ -129,8 +130,7 @@ resolveNav env x isFirst = case x of
     where
     out
       | isFirst   = mkPath env $ resolveName env id
-      | otherwise = (IClaferId modName (snd3 ctx) False, trd3 ctx)
-    ctx = resolveImmName env id
+      | otherwise = mkPath' modName $ resolveImmName env id
 
 
 mkPath :: SEnv -> (HowResolved, String, [IClafer]) -> (IExp, [IClafer])
@@ -146,8 +146,9 @@ mkPath env (howResolved, id, path) = case howResolved of
   toNav = foldl
           (\exp id -> IFunExp iJoin [pExpDefPidPos exp, mkPLClaferId id False])
           (mkLClaferId this True)
-  toNav' p = (mkIFunExp iJoin $ map (\c -> mkLClaferId c False) p) :: IExp
   specIExp = if id /= this then toNav [id] else mkLClaferId id True
+
+toNav' p = (mkIFunExp iJoin $ map (\c -> mkLClaferId c False) p) :: IExp
 
 
 adjustAncestor :: [String] -> [String] -> [String]
@@ -156,6 +157,10 @@ adjustAncestor cPath rPath = this : parents ++ (fromJust $ stripPrefix prefix rP
   parents = replicate (length $ fromJust $ stripPrefix prefix cPath) parent
   prefix  = fst $ unzip $ takeWhile (uncurry (==)) $ zip cPath rPath
 
+
+mkPath' modName (howResolved, id, path) = case howResolved of
+  Reference  -> (toNav' ["ref", id], path)
+  _ -> (IClaferId modName id False, path)
 
 -- -----------------------------------------------------------------------------
 
@@ -166,7 +171,7 @@ resolveName env id = resolve env id
 
 resolveImmName :: SEnv -> String -> (HowResolved, String, [IClafer])
 resolveImmName env id = resolve env id
-  [resolveSpecial, resolveChildren, resolveNone]
+  [resolveSpecial, resolveChildren, resolveReference, resolveNone]
 
 
 resolve env id fs = fromJust $ foldr1 mplus $ map (\x -> x env id) fs
@@ -180,7 +185,7 @@ resolveNone env id = error $ "resolver: " ++ id ++ " not found" ++
 -- checks if ident is one of special identifiers
 resolveSpecial :: SEnv -> String -> Maybe (HowResolved, String, [IClafer])
 resolveSpecial env id
-  | id `elem` [this, children] =
+  | id `elem` [this, children, ref] =
       Just (Special, id, resPath env)
   | id == parent   = Just (Special, id, tail $ resPath env)
   | isPrimitive id = Just (TypeSpecial, id, [])
@@ -201,9 +206,15 @@ resolveDescendants env id =
 
 -- searches for a name in immediate subclafers (BFS)
 resolveChildren :: SEnv -> String -> Maybe (HowResolved, String, [IClafer])
-resolveChildren env id =
+resolveChildren env id = resolveChildren' env id allInhChildren Subclafers
+
+-- searches for a name by dereferencing clafer
+resolveReference :: SEnv -> String -> Maybe (HowResolved, String, [IClafer])
+resolveReference env id = resolveChildren' env id allChildren Reference
+
+resolveChildren' env id f label =
   (context env) >> (findUnique id $ map (\x -> (x, [x,fromJust $ context env]))
-                    $ allChildren env) >>= toMTriple Subclafers
+                    $ f env) >>= toMTriple label
 
 
 resolveAncestor :: SEnv -> String -> Maybe (HowResolved, String, [IClafer])
@@ -229,9 +240,9 @@ toNodeDeep env
   clafer = fromJust $ context env
   
 
-allChildren = selectChildren getSuper
+allInhChildren = selectChildren getSuperNoArr
 
-allInhChildren = selectChildren getSuperArr
+allChildren = selectChildren getSuper
 
 selectChildren f env = getSubclafers $ concat $
                        mapHierarchy elements f (sClafers $ genv env)
