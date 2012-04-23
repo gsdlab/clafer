@@ -1,0 +1,190 @@
+// Adapated from Scalable Prediction of Non-functional Properties in Software Product Lines.
+// Scaled down by dividing numbers by 64000 and rounding.
+//To execute in alloy: run  show for ...
+
+
+abstract IMeasurable
+	footprint : integer
+
+
+abstract SQLite
+	OperatingSystemCharacteristics : IMeasurable 
+		[ this.footprint = 28]
+		SQLITE_4_BYTE_ALIGNED_MALLOC : IMeasurable 
+			[ this.footprint = 0]
+		SQLITE_CASE_SENSITIVE_LIKE : IMeasurable  ?
+			[ this.footprint = 0]
+		SQLITE_HAVE_ISNAN : IMeasurable  ?
+			[ this.footprint = 0]
+		SQLITE_SECURE_DELETE : IMeasurable  ?
+			[ this.footprint = 0]
+		xor ChooseSQLITE_TEMP_STORE : IMeasurable  ?
+			[ this.footprint = 0]
+			SQLITE_TEMP_STORE_EQ_0 : IMeasurable 
+				[ this.footprint = 0]
+			SQLITE_TEMP_STORE_EQ_1 : IMeasurable 
+				[ this.footprint = 0]
+			SQLITE_TEMP_STORE_EQ_2 : IMeasurable 
+				[ this.footprint = 0]
+			SQLITE_TEMP_STORE_EQ_3 : IMeasurable 
+				[ this.footprint = 0]
+	EnableFeatures : IMeasurable 
+		[ this.footprint = 0]
+		SQLITE_ENABLE_ATOMIC_WRITE : IMeasurable  ?
+			[ this.footprint = 0]
+		SQLITE_ENABLE_COLUMN_METADATA : IMeasurable  ?
+			[ !SQLITE_OMIT_DECLTYPE ]
+			[ this.footprint = 0]
+		SQLITE_ENABLE_FTS3 : IMeasurable  ?
+			[ this.footprint = 3]
+		SQLITE_ENABLE_FTS3_PARENTHESIS : IMeasurable  ?
+			[ this.footprint = 0]
+		SQLITE_ENABLE_MEMORY_MANAGEMENT : IMeasurable  ?
+			[ this.footprint = 0]
+		xor ChooseMemSys : IMeasurable  ?
+			[ this.footprint = 0]
+			SQLITE_ENABLE_MEMSYS3 : IMeasurable 
+				[ this.footprint = 0]
+			SQLITE_ENABLE_MEMSYS5 : IMeasurable 
+				[ this.footprint = 0]
+		SQLITE_ENABLE_RTREE : IMeasurable  ?
+			[ this.footprint = 1]
+		SQLITE_ENABLE_STAT2 : IMeasurable  ?
+			[ this.footprint = 0]
+		SQLITE_ENABLE_UPDATE_DELETE_LIMIT : IMeasurable  ?
+			[ this.footprint = 0]
+		SQLITE_ENABLE_UNLOCK_NOTIFY : IMeasurable  ?
+			[ this.footprint = 0]
+		SQLITE_SOUNDEX : IMeasurable  ?
+			[ this.footprint = 0]
+		YYTRACKMAXSTACKDEPTH : IMeasurable  ?
+			[ this.footprint = 0]
+	DisableFeatures : IMeasurable 
+		[ this.footprint = 0]
+		SQLITE_DISABLE_LFS : IMeasurable  ?
+			[ this.footprint = 0]
+		SQLITE_DISABLE_DIRSYNC : IMeasurable  ?
+			[ this.footprint = 0]
+	OmitFeatures : IMeasurable 
+		[ this.footprint = 0]
+		SQLITE_OMIT_ALTERTABLE : IMeasurable  ?
+			[ this.footprint = 0]
+		SQLITE_OMIT_ANALYZE : IMeasurable  ?
+			[ this.footprint = 0]
+		SQLITE_OMIT_ATTACH : IMeasurable  ?
+			[ this.footprint = 0]
+		SQLITE_OMIT_AUTHORIZATION : IMeasurable  ?
+			[ this.footprint = 0]
+		SQLITE_OMIT_AUTOINCREMENT : IMeasurable  ?
+			[ this.footprint = 0]
+		SQLITE_OMIT_AUTOMATIC_INDEX : IMeasurable  ?
+			[ this.footprint = 0]
+		SQLITE_OMIT_AUTOINIT : IMeasurable  ?
+			[ this.footprint = 0]
+		SQLITE_OMIT_AUTOVACUUM : IMeasurable  ?
+			[ this.footprint = 0]
+		SQLITE_OMIT_BETWEEN_OPTIMIZATION : IMeasurable  ?
+			[ this.footprint = 0]
+		SQLITE_OMIT_BLOB_LITERAL : IMeasurable  ?
+			[ this.footprint = 0]
+		SQLITE_OMIT_BTREECOUNT : IMeasurable  ?
+			[ this.footprint = 0]
+		SQLITE_OMIT_BUILTIN_TEST : IMeasurable  ?
+			[ this.footprint = 0]
+		SQLITE_OMIT_CAST : IMeasurable  ?
+			[ this.footprint = 0]
+		SQLITE_OMIT_CHECK : IMeasurable  ?
+			[ this.footprint = 0]
+		SQLITE_OMIT_COMPILEOPTION_DIAGS : IMeasurable  ?
+			[ this.footprint = 0]
+		SQLITE_OMIT_COMPLETE : IMeasurable  ?
+			[ this.footprint = -28]
+		SQLITE_OMIT_COMPOUND_SELECT : IMeasurable  ?
+			[ this.footprint = 0]
+		SQLITE_OMIT_CONFLICT_CLAUSE : IMeasurable  ?
+			[ this.footprint = 0]
+		SQLITE_OMIT_DATETIME_FUNCS : IMeasurable  ?
+			[ this.footprint = 0]
+		SQLITE_OMIT_DECLTYPE : IMeasurable  ?
+			[ !SQLITE_ENABLE_COLUMN_METADATA ]
+			[ this.footprint = 0]
+		SQLITE_OMIT_DEPRECATED : IMeasurable  ?
+			[ this.footprint = 0]
+		SQLITE_OMIT_EXPLAIN : IMeasurable  ?
+			[ this.footprint = 0]
+		SQLITE_OMIT_FLAG_PRAGMAS : IMeasurable  ?
+			[ this.footprint = 0]
+		SQLITE_OMIT_FLOATING_POINT : IMeasurable  ?
+			[ this.footprint = -1]
+		SQLITE_OMIT_FOREIGN_KEY : IMeasurable  ?
+			[ this.footprint = 0]
+		SQLITE_OMIT_GET_TABLE : IMeasurable  ?
+			[ this.footprint = 0]
+		SQLITE_OMIT_INCRBLOB : IMeasurable  ?
+			[ this.footprint = 0]
+		SQLITE_OMIT_INTEGRITY_CHECK : IMeasurable  ?
+			[ this.footprint = 0]
+		SQLITE_OMIT_LIKE_OPTIMIZATION : IMeasurable  ?
+			[ this.footprint = 0]
+		SQLITE_OMIT_LOAD_EXTENSION : IMeasurable  ?
+			[ this.footprint = 0]
+		SQLITE_OMIT_LOCALTIME : IMeasurable  ?
+			[ this.footprint = 0]
+		SQLITE_OMIT_LOOKASIDE : IMeasurable  ?
+			[ this.footprint = 0]
+		SQLITE_OMIT_MEMORYDB : IMeasurable  ?
+			[ this.footprint = 0]
+		SQLITE_OMIT_OR_OPTIMIZATION : IMeasurable  ?
+			[ this.footprint = 0]
+		SQLITE_OMIT_PAGER_PRAGMAS : IMeasurable  ?
+			[ this.footprint = 0]
+		SQLITE_OMIT_PRAGMA : IMeasurable  ?
+			[ this.footprint = 0]
+		SQLITE_OMIT_PROGRESS_CALLBACK : IMeasurable  ?
+			[ this.footprint = 0]
+		SQLITE_OMIT_QUICKBALANCE : IMeasurable  ?
+			[ this.footprint = 0]
+		SQLITE_OMIT_REINDEX : IMeasurable  ?
+			[ this.footprint = 0]
+		SQLITE_OMIT_SCHEMA_PRAGMAS : IMeasurable  ?
+			[ this.footprint = 0]
+		SQLITE_OMIT_SCHEMA_VERSION_PRAGMAS : IMeasurable  ?
+			[ this.footprint = 0]
+		SQLITE_OMIT_SHARED_CACHE : IMeasurable  ?
+			[ this.footprint = 0]
+		SQLITE_OMIT_SUBQUERY : IMeasurable  ?
+			[ this.footprint = 0]
+		SQLITE_OMIT_TCL_VARIABLE : IMeasurable  ?
+			[ this.footprint = 0]
+		SQLITE_OMIT_TEMPDB : IMeasurable  ?
+			[ this.footprint = 0]
+		SQLITE_OMIT_TRACE : IMeasurable  ?
+			[ this.footprint = 0]
+		SQLITE_OMIT_TRIGGER : IMeasurable  ?
+			[ this.footprint = -1]
+		SQLITE_OMIT_TRUNCATE_OPTIMIZATION : IMeasurable  ?
+			[ this.footprint = 0]
+		SQLITE_OMIT_UTF16 : IMeasurable  ?
+			[ this.footprint = 0]
+		SQLITE_OMIT_VACUUM : IMeasurable  ?
+			[ this.footprint = 0]
+		SQLITE_OMIT_VIEW : IMeasurable  ?
+			[ this.footprint = 0]
+		SQLITE_OMIT_VIRTUALTABLE : IMeasurable  ?
+			[ this.footprint = -1]
+		SQLITE_OMIT_WAL : IMeasurable  ?
+			[ this.footprint = -1]
+		SQLITE_OMIT_XFER_OPT : IMeasurable  ?
+			[ this.footprint = 0]
+	SQLITE_DEBUG : IMeasurable  ?
+		[ this.footprint = 0]
+	SQLITE_MEMDEBUG : IMeasurable  ?
+		[ this.footprint = 0]
+	total_footprint : integer
+	[ total_footprint = OperatingSystemCharacteristics.footprint + OperatingSystemCharacteristics.SQLITE_4_BYTE_ALIGNED_MALLOC.footprint + OperatingSystemCharacteristics.SQLITE_CASE_SENSITIVE_LIKE.footprint + OperatingSystemCharacteristics.SQLITE_HAVE_ISNAN.footprint + OperatingSystemCharacteristics.SQLITE_SECURE_DELETE.footprint + OperatingSystemCharacteristics.ChooseSQLITE_TEMP_STORE.footprint + OperatingSystemCharacteristics.ChooseSQLITE_TEMP_STORE.SQLITE_TEMP_STORE_EQ_0.footprint + OperatingSystemCharacteristics.ChooseSQLITE_TEMP_STORE.SQLITE_TEMP_STORE_EQ_1.footprint + OperatingSystemCharacteristics.ChooseSQLITE_TEMP_STORE.SQLITE_TEMP_STORE_EQ_2.footprint + OperatingSystemCharacteristics.ChooseSQLITE_TEMP_STORE.SQLITE_TEMP_STORE_EQ_3.footprint + EnableFeatures.footprint + EnableFeatures.SQLITE_ENABLE_ATOMIC_WRITE.footprint + EnableFeatures.SQLITE_ENABLE_COLUMN_METADATA.footprint + EnableFeatures.SQLITE_ENABLE_FTS3.footprint + EnableFeatures.SQLITE_ENABLE_FTS3_PARENTHESIS.footprint + EnableFeatures.SQLITE_ENABLE_MEMORY_MANAGEMENT.footprint + EnableFeatures.ChooseMemSys.footprint + EnableFeatures.ChooseMemSys.SQLITE_ENABLE_MEMSYS3.footprint + EnableFeatures.ChooseMemSys.SQLITE_ENABLE_MEMSYS5.footprint + EnableFeatures.SQLITE_ENABLE_RTREE.footprint + EnableFeatures.SQLITE_ENABLE_STAT2.footprint + EnableFeatures.SQLITE_ENABLE_UPDATE_DELETE_LIMIT.footprint + EnableFeatures.SQLITE_ENABLE_UNLOCK_NOTIFY.footprint + EnableFeatures.SQLITE_SOUNDEX.footprint + EnableFeatures.YYTRACKMAXSTACKDEPTH.footprint + DisableFeatures.footprint + DisableFeatures.SQLITE_DISABLE_LFS.footprint + DisableFeatures.SQLITE_DISABLE_DIRSYNC.footprint + OmitFeatures.footprint + OmitFeatures.SQLITE_OMIT_ALTERTABLE.footprint + OmitFeatures.SQLITE_OMIT_ANALYZE.footprint + OmitFeatures.SQLITE_OMIT_ATTACH.footprint + OmitFeatures.SQLITE_OMIT_AUTHORIZATION.footprint + OmitFeatures.SQLITE_OMIT_AUTOINCREMENT.footprint + OmitFeatures.SQLITE_OMIT_AUTOMATIC_INDEX.footprint + OmitFeatures.SQLITE_OMIT_AUTOINIT.footprint + OmitFeatures.SQLITE_OMIT_AUTOVACUUM.footprint + OmitFeatures.SQLITE_OMIT_BETWEEN_OPTIMIZATION.footprint + OmitFeatures.SQLITE_OMIT_BLOB_LITERAL.footprint + OmitFeatures.SQLITE_OMIT_BTREECOUNT.footprint + OmitFeatures.SQLITE_OMIT_BUILTIN_TEST.footprint + OmitFeatures.SQLITE_OMIT_CAST.footprint + OmitFeatures.SQLITE_OMIT_CHECK.footprint + OmitFeatures.SQLITE_OMIT_COMPILEOPTION_DIAGS.footprint + OmitFeatures.SQLITE_OMIT_COMPLETE.footprint + OmitFeatures.SQLITE_OMIT_COMPOUND_SELECT.footprint + OmitFeatures.SQLITE_OMIT_CONFLICT_CLAUSE.footprint + OmitFeatures.SQLITE_OMIT_DATETIME_FUNCS.footprint + OmitFeatures.SQLITE_OMIT_DECLTYPE.footprint + OmitFeatures.SQLITE_OMIT_DEPRECATED.footprint + OmitFeatures.SQLITE_OMIT_EXPLAIN.footprint + OmitFeatures.SQLITE_OMIT_FLAG_PRAGMAS.footprint + OmitFeatures.SQLITE_OMIT_FLOATING_POINT.footprint + OmitFeatures.SQLITE_OMIT_FOREIGN_KEY.footprint + OmitFeatures.SQLITE_OMIT_GET_TABLE.footprint + OmitFeatures.SQLITE_OMIT_INCRBLOB.footprint + OmitFeatures.SQLITE_OMIT_INTEGRITY_CHECK.footprint + OmitFeatures.SQLITE_OMIT_LIKE_OPTIMIZATION.footprint + OmitFeatures.SQLITE_OMIT_LOAD_EXTENSION.footprint + OmitFeatures.SQLITE_OMIT_LOCALTIME.footprint + OmitFeatures.SQLITE_OMIT_LOOKASIDE.footprint + OmitFeatures.SQLITE_OMIT_MEMORYDB.footprint + OmitFeatures.SQLITE_OMIT_OR_OPTIMIZATION.footprint + OmitFeatures.SQLITE_OMIT_PAGER_PRAGMAS.footprint + OmitFeatures.SQLITE_OMIT_PRAGMA.footprint + OmitFeatures.SQLITE_OMIT_PROGRESS_CALLBACK.footprint + OmitFeatures.SQLITE_OMIT_QUICKBALANCE.footprint + OmitFeatures.SQLITE_OMIT_REINDEX.footprint + OmitFeatures.SQLITE_OMIT_SCHEMA_PRAGMAS.footprint + OmitFeatures.SQLITE_OMIT_SCHEMA_VERSION_PRAGMAS.footprint + OmitFeatures.SQLITE_OMIT_SHARED_CACHE.footprint + OmitFeatures.SQLITE_OMIT_SUBQUERY.footprint + OmitFeatures.SQLITE_OMIT_TCL_VARIABLE.footprint + OmitFeatures.SQLITE_OMIT_TEMPDB.footprint + OmitFeatures.SQLITE_OMIT_TRACE.footprint + OmitFeatures.SQLITE_OMIT_TRIGGER.footprint + OmitFeatures.SQLITE_OMIT_TRUNCATE_OPTIMIZATION.footprint + OmitFeatures.SQLITE_OMIT_UTF16.footprint + OmitFeatures.SQLITE_OMIT_VACUUM.footprint + OmitFeatures.SQLITE_OMIT_VIEW.footprint + OmitFeatures.SQLITE_OMIT_VIRTUALTABLE.footprint + OmitFeatures.SQLITE_OMIT_WAL.footprint + OmitFeatures.SQLITE_OMIT_XFER_OPT.footprint + SQLITE_DEBUG.footprint + SQLITE_MEMDEBUG.footprint ]
+
+simpleConfig : SQLite 
+
+<< min simpleConfig.total_footprint >>
+
+//Mandatory Features all configurations will have: OperatingSystemCharacteristics SQLITE_4_BYTE_ALIGNED_MALLOC EnableFeatures DisableFeatures OmitFeatures 

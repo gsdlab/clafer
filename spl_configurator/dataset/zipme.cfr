@@ -1,0 +1,32 @@
+// Adapated from Scalable Prediction of Non-functional Properties in Software Product Lines.
+// To execute in alloy run show for 1 but 11 int, 9  c1_IMeasurable,   9 c2_footprint,
+// scaled down by 100 
+
+abstract IMeasurable
+         footprint : integer
+
+abstract ZipMeSPL
+		base : IMeasurable
+			[this.footprint = 796]
+			zipMe : IMeasurable
+				[this.footprint = 0]
+			zipMecompress : IMeasurable
+				[this.footprint = 0]
+		zipMeCRC : IMeasurable ?
+			[this.footprint = 16]			 
+		zipMearchiveCheck : IMeasurable ?
+			[this.footprint = 3]			
+		zipMeGZIP : IMeasurable ?
+			[this.footprint = 58]
+		zipMeadaptation : IMeasurable ?
+			[this.footprint = 3]
+		zipMeadler32Chcksum : IMeasurable ?
+			[this.footprint = 0]
+		zipMeextract : IMeasurable ?
+			[this.footprint = 69]
+		total_footprint : integer
+			[total_footprint = base.footprint + base.zipMe.footprint + base.zipMecompress.footprint + zipMeCRC.footprint + zipMearchiveCheck.footprint + zipMeGZIP.footprint + zipMeadaptation.footprint + zipMeadler32Chcksum.footprint + zipMeextract.footprint]
+
+simpleZip : ZipMeSPL
+
+<< min simpleZip.total_footprint >>
