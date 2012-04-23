@@ -1,0 +1,29 @@
+// Adapated from Scalable Prediction of Non-functional Properties in Software Product Lines.
+// Scaled down by dividing numbers by 10 and rounding.
+//To execute in alloy: run  show for ...
+
+
+abstract IMeasurable
+	footprint : integer
+
+
+abstract LinkedList
+	xor AbstractSort : IMeasurable  ?
+		[ this.footprint = 57]
+		BubbleSort : IMeasurable 
+			[ this.footprint = 17]
+		MergeSort : IMeasurable 
+			[ this.footprint = 32]
+	print : IMeasurable  ?
+		[ this.footprint = 44]
+	Base : IMeasurable 
+		[ this.footprint = 455]
+	total_footprint : integer
+	[ total_footprint =  AbstractSort.footprint + AbstractSort.BubbleSort.footprint + AbstractSort.MergeSort.footprint + print.footprint + Base.footprint]
+
+simpleConfig : LinkedList
+	[total_footprint < 600]
+    [MergeSort]
+
+
+//Mandatory Features all configurations will have: Base AbstractElement AbstractIterator 

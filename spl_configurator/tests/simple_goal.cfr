@@ -1,0 +1,6 @@
+Test
+	footprint : integer
+
+[Test.footprint > 0]
+
+<< max Test.footprint >>
