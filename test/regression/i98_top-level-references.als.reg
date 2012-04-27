@@ -26,5 +26,5 @@ sig c3_married
 sig c4_NewBorn in c1_Person
 { }
 
-fact {c4_NewBorn = { p : c1_Person | ((p.@r_c2_age.@ref) = 0) && (no p.@r_c3_married) } }
+fact {c4_NewBorn = { c1_Person : c1_Person | ((c1_Person.@r_c2_age.@ref) = 0) && (no c1_Person.@r_c3_married) } }
 
