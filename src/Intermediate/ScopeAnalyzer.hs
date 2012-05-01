@@ -40,8 +40,14 @@ scopeAnalysis IModule{mDecls = decls} =
     
     analyzeComponent analysis component =
         case flattenSCC component of
-            [uid] -> analyze analysis $ findClafer uid
-            uids  -> error $ "TODO:" ++ show uids
+            [uid] -> analyzeSingleton uid analysis
+            uids  ->
+                foldr analyzeSingleton assume uids
+                where
+                -- assume that each of the scopes in the component is 1 while solving
+                assume = foldr (`Map.insert` 1) analysis uids
+        where
+        analyzeSingleton uid analysis = analyze analysis $ findClafer uid
     
     analyze :: Map String Integer -> IClafer -> Map String Integer
     analyze analysis clafer =
