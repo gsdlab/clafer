@@ -5,7 +5,16 @@ def set_List_Mandatory_Base_Features(List_Mandatory_Base_Features):
 def get_List_Mandatory_Base_Features():
     return _List_Mandatory_Base_Features
 
-    
+
+def get_features_and_code_units(xml_model):
+    """
+    Returns a sorted list of features and code units.
+    """    
+    features_and_code_units = xml_model.findall("element[@type='feature']")
+    features_and_code_units.extend(xml_model.findall("element[@type='code unit']") )
+    features_and_code_units = sorted(features_and_code_units, key=lambda element: int(element.get('id')))
+    return features_and_code_units
+
 def get_parent_element(xml_model, current_element):
     """
     Get a Reference to current_element  parent  or None if it has no parent.
@@ -27,12 +36,16 @@ def get_parent_id(current_element):
     return parent_id
 
 
-def compute_tab_level(tab_dictionary, current_element):
+def compute_tab_level(tab_dictionary, current_element, xml_model=None):
     parent_id = current_element.find('parentElement/id')
     if parent_id == None:
         num_tabs = 1
     else:
-        num_tabs = 1 + tab_dictionary.get(parent_id.text)
+        if parent_id.text in tab_dictionary.keys():
+            num_tabs = 1 + tab_dictionary.get(parent_id.text)
+        else:
+            compute_tab_level(tab_dictionary, get_parent_element(xml_model, current_element))
+            num_tabs = 1 + tab_dictionary.get(parent_id.text)
     tab_dictionary[current_element.get('id')] = num_tabs
     return num_tabs
 
@@ -81,21 +94,28 @@ def compute_is_optional(current_element):
         is_optional = ""
     return is_optional
 
+def get_path_from_root(xml_model, current_element):
+    """
+    Get the path taking  from to the root, up to and including the current element.  
+    """
+    path_from_root = []
+    tmp_element = current_element
+    while(get_parent_element(xml_model,tmp_element)!=None):
+        path_from_root.append(get_parent_element(xml_model,tmp_element))
+        tmp_element = get_parent_element(xml_model,tmp_element)
+    path_from_root.reverse()
+    
+    path_from_root.append(current_element)
 
+    return path_from_root
+    
 def get_fully_qualified_name(xml_model, current_element):
     """
     Get the fully qualified name for a given element. (e.g a path from root joined by . finalizing with the element).
     """
-    tmp_element = current_element
-    path_from_root = []
-    while(get_parent_element(xml_model,tmp_element)!=None):
-        path_from_root.append(get_parent_element(xml_model,tmp_element).get('name'))
-        tmp_element = get_parent_element(xml_model,tmp_element)
-    path_from_root.reverse()
-    
-    path_from_root.append(current_element.get('name').replace("=","_EQ_"))
-    
-    return '.'.join(path_from_root)
+
+    path_from_root = get_path_from_root(xml_model, current_element)    
+    return '.'.join([x.get('name').replace("=", "_EQ_") for x in path_from_root])
 
 
 def compute_group_cardinality(xml_model, current_element):

@@ -5,11 +5,12 @@ from xml_parser_helper import load_xml_model
 from splconqueror_analyzer import get_parent_element, \
 get_parent_id, compute_tab_level, has_siblings_constraints, \
 get_mandatory_base_features, compute_is_optional, get_fully_qualified_name, \
-compute_group_cardinality, get_footprint, set_List_Mandatory_Base_Features, get_List_Mandatory_Base_Features
+compute_group_cardinality, get_footprint, set_List_Mandatory_Base_Features, \
+ get_List_Mandatory_Base_Features, get_path_from_root 
 
 def print_abstract_IMeasurable(args, property="footprint"):
 	print "// Adapated from Scalable Prediction of Non-functional Properties in Software Product Lines."
-	print "// Scaled down by dividing numbers by %s and rounding." % args.scaledownby
+	print "// Scaled  by dividing numbers by %s and rounding." % args.scaledownby
 	print "//To execute in alloy: run  show for ..."
 	print "\n"
 	print "abstract IMeasurable"
@@ -20,8 +21,8 @@ def execute_main():
 
 	parser = argparse.ArgumentParser(description='Reads an xml model of a Software Product Line generated for the tool SPLConqueror and generate a clafer model.')
 	
-	parser.add_argument('--scaledownby', type=int, default=1, help='Scaled the footprint by SCALEDOWNBY.')
-	
+	parser.add_argument('--scaledownby', type=float, default=1.0, help='Scaled the property by dividing y the  given value')
+		
 	parser.add_argument('--property', type=str, default="footprint", help='Function property to annotate feature model with')
 	
 	parser.add_argument('feature_model_xml_filename', metavar='F', type=str, nargs=1,
@@ -60,11 +61,11 @@ def execute_main():
 	
 	features_and_code_units = xml_model.findall("element[@type='feature']")
 	features_and_code_units.extend(xml_model.findall("element[@type='code unit']") )
-	features_and_code_units = sorted(features_and_code_units, key=lambda element: int(element.get('id')))
+	features_and_code_units = sorted(features_and_code_units, key=lambda element: '_'.join([x.get('id') for x in get_path_from_root(xml_model, element)]) )
 	
 	for featureelement in features_and_code_units:
 		# Got Indentation level.
-		num_tabs = compute_tab_level(tab_dictionary, featureelement)
+		num_tabs = compute_tab_level(tab_dictionary, featureelement, xml_model)
 	
 		group_cardinality, is_exclusive_or_partial, is_or_partial  =  compute_group_cardinality(xml_model, featureelement)
 		is_optional = compute_is_optional(featureelement)
