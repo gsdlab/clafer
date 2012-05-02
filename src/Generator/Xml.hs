@@ -52,11 +52,10 @@ genXmlIntPair (x, y) = concat
 genXmlModule :: IModule -> Result
 genXmlModule imodule = concat
   [ "<?xml version=\"1.0\"?>"
-  , "<Module xmlns=\"http://gsd.uwaterloo.ca/clafer\""
+  , "<Module xmlns=\"http://clafer.org/ir\""
   , " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""
-  , " xmlns:cl=\"http://gsd.uwaterloo.ca/clafer\""
-  , " xsi:schemaLocation=\"http://gsd.uwaterloo.ca/clafer"
-  , " http://gsd.uwaterloo.ca/ClaferIR.xsd\">"
+  , " xmlns:cl=\"http://clafer.org/ir\""
+  , " xsi:schemaLocation=\"https://github.com/gsdlab/clafer/blob/master/src/ClaferIR.xsd\">"
   , tag "Name" $ mName imodule
   , concatMap genXmlElement $ mDecls imodule
   , "</Module>"]
