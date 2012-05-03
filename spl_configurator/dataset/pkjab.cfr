@@ -31,7 +31,7 @@ abstract PKJab
 	ThemeSelection : IMeasurable  ?
 		[ this.footprint = 58]
 	total_footprint : integer
-	[ total_footprint = Base.footprint + ContactListSource.footprint + ContactListSource.ServerRoster.footprint + XEP0085.footprint + XEP0085.Composing.footprint + XEP0085.SendComposing.footprint + History.footprint + Timestamps.footprint + XEP0092.footprint + XEP0092.SendVersion.footprint + ThemeSelection.footprint ]
+		[ total_footprint = sum IMeasurable.footprint ]
 
 simpleConfig : PKJab 
 

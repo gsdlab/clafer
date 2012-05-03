@@ -25,9 +25,9 @@ abstract BerkeleyDbC
 	DIAGNOSTIC : IMeasurable  ?
 		[ this.footprint = 54]
 	SYNTETHIC_BASE_FEATURE : IMeasurable
-		 [ this.footprint = 881]
+		[ this.footprint = 881]
 	total_footprint : integer
-	[ total_footprint = HAVE_CRYPTO.footprint + HAVE_HASH.footprint + HAVE_QUEUE.footprint + HAVE_REPLICATION.footprint + HAVE_VERIFY.footprint + HAVE_SEQUENCE.footprint + HAVE_STATISTICS.footprint + DIAGNOSTIC.footprint + SYNTETHIC_BASE_FEATURE.footprint]
+		[ total_footprint = sum IMeasurable.footprint ]
 
 simpleConfig : BerkeleyDbC 
 

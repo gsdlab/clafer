@@ -20,7 +20,7 @@ abstract Prevayler
 	 Snapshot : IMeasurable ?
 		[this.footprint = 108]
 	 total_footprint : integer
-	 [total_footprint = PrevaylerSPL.footprint + Replication.footprint +  GZip.footprint + Censor.footprint + Monitor.footprint + Snapshot.footprint] 
+	 	[total_footprint = sum IMeasurable.footprint ]
 
 simpleConfig : Prevayler
 
