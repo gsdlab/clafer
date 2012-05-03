@@ -1,5 +1,13 @@
 entrypoints Module ;
 
+
+-- To regenerate grammar:
+--         cd src/Front
+--         bnfc -m -haskell clafer.cf
+--         Modify files Absclafer.hs, ErrM.hs, Printclafer.hs, so that they consider Front as a module name. (can be done by running make from src).
+--         happy -gca Parclafer.y
+--         alex -g Lexclafer.x
+
 comment "//" ;
 comment "/*" "*/" ;
 
@@ -83,6 +91,7 @@ EAdd.           Exp9  ::= Exp9  "+" Exp10 ;
 ESub.           Exp9  ::= Exp9  "-" Exp10 ;
 EMul.           Exp10 ::= Exp10 "*" Exp11 ;
 EDiv.           Exp10 ::= Exp10 "/" Exp11 ;
+ESumSetExp.     Exp11 ::= "sum" Exp12;
 ECSetExp.       Exp11 ::= "#" Exp12 ;
 EMinExp.        Exp11 ::= "-" Exp12 ;
 EImpliesElse.   Exp12 ::= "if" Exp12 "then" Exp12 "else" Exp13 ;

@@ -228,6 +228,7 @@ instance Print Exp where
    ESub exp0 exp -> prPrec i 9 (concatD [prt 9 exp0 , doc (showString "-") , prt 10 exp])
    EMul exp0 exp -> prPrec i 10 (concatD [prt 10 exp0 , doc (showString "*") , prt 11 exp])
    EDiv exp0 exp -> prPrec i 10 (concatD [prt 10 exp0 , doc (showString "/") , prt 11 exp])
+   ESumSetExp exp -> prPrec i 11 (concatD [doc (showString "sum") , prt 12 exp])
    ECSetExp exp -> prPrec i 11 (concatD [doc (showString "#") , prt 12 exp])
    EMinExp exp -> prPrec i 11 (concatD [doc (showString "-") , prt 12 exp])
    EImpliesElse exp0 exp1 exp -> prPrec i 12 (concatD [doc (showString "if") , prt 12 exp0 , doc (showString "then") , prt 12 exp1 , doc (showString "else") , prt 13 exp])

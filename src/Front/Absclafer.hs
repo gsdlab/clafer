@@ -124,6 +124,7 @@ data Exp =
  | ESub Exp Exp
  | EMul Exp Exp
  | EDiv Exp Exp
+ | ESumSetExp Exp
  | ECSetExp Exp
  | EMinExp Exp
  | EImpliesElse Exp Exp Exp

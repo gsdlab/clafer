@@ -155,12 +155,13 @@ sToken p s = PT p (TS s i)
       "opt" -> 51
       "or" -> 52
       "some" -> 53
-      "then" -> 54
-      "xor" -> 55
-      "{" -> 56
-      "|" -> 57
-      "||" -> 58
-      "}" -> 59
+      "sum" -> 54
+      "then" -> 55
+      "xor" -> 56
+      "{" -> 57
+      "|" -> 58
+      "||" -> 59
+      "}" -> 60
       _ -> error $ "not a reserved word: " ++ show s
 
 -- | Get the position of a token.
