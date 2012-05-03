@@ -122,7 +122,7 @@ genModule args (imodule, _) = (flatten output, mapLineCol output)
 header args imodule = CString $ unlines
     [ if (fromJust $ mode args) == Alloy42 then "" else "open util/integer"
     , "pred show {}"
-    , if (fromJust $ validate args) then "" else "run  show for 1" ++ genScopes (scopeAnalysis imodule)
+    , if (fromJust $ validate args) ||  (fromJust $ noalloyruncommand args)  then "" else "run  show for 1" ++ genScopes (scopeAnalysis imodule)
     , ""]
     where
     genScopes scopes = " but " ++ intercalate ", " (map genScope scopes)
