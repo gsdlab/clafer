@@ -4,6 +4,9 @@ abstract IMeasurable
 abstract LinkedList
 	AbstractElement : IMeasurable  ?
 		[ this.footprint = -3]
+	total_footprint : integer
+		[total_footprint = sum IMeasurable.footprint]
 
 simpleConfig : LinkedList
 
+<< min simpleConfig.total_footprint >>
