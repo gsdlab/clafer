@@ -15,8 +15,11 @@ def execute_main():
     parser.add_argument('clafer_feature_model_xml_filename', metavar='F', type=str, nargs=1,
                        help='XML file of Software Product Line feature model in clafer to open.')
 
-    parser.add_argument('--property', type=str, default="footprint", help='Quality property to reason about')
+    parser.add_argument('--property', type=str, default="footprint", help='Quality property to reason about, by default it uses footprint.')
             
+    parser.add_argument('--alloy4compatible', default=False, action="store_true", 
+                        dest="alloy4compatible",  help='Generate partial instance block compatible with alloy4 which uses int instead of Int.')
+    
     args = parser.parse_args()
         
     xml_model = load_xml_model(args.clafer_feature_model_xml_filename[0])
@@ -35,8 +38,13 @@ def execute_main():
     # Compute Bitwidth, we have to add 1 to max_integer due to "0", and 1 to the total due to negative numbers.
     max_bitwidth = math.ceil(math.log(max_integer+1, 2)) + 1 
     
-    
-    print "    , %s  int" % max(4, int(max_bitwidth))
+ 
+    if args.alloy4compatible == True:
+        # In allyo4 we must use small int to set bitwidth.
+        print "    , %s  int" % max(4, int(max_bitwidth))
+    else:
+        # In allyo4.2 we must use large Int to set bitwidth, "int" is no longer a keyword nor allowed, only "Int".
+        print "    , %s  Int" % max(4, int(max_bitwidth))
     
     # Print partial instances of individual features, children of IMeasurable.
     for clafer_features in SPL.findall(".//c1:Declaration[@xsi:type='cl:IClafer']", namespaces=_namespaces):
