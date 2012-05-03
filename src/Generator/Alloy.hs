@@ -404,8 +404,9 @@ genPExp' mode resPath x@(PExp iType pid pos exp) = case exp of
   IStr str -> error "no strings allowed"
 
 
-transformExp x@(IFunExp op exps@(e1:_))
-  | op == iMin = IFunExp op [PExp (iType e1) "" noPos (IInt 0), e1]
+-- 3-May-2012 Rafael Olaechea.
+-- Removed transfromation from x = -2 to x = (0-2) as this creates problem with  partial instances.
+-- See http://gsd.uwaterloo.ca:8888/question/461/new-translation-of-negative-number-x-into-0-x-is .
 transformExp x@(IFunExp op exps@(e1:e2:_))
   | op == iXor = IFunExp iNot [PExp (Just TBoolean) "" noPos (IFunExp iIff exps)]
   | op == iJoin && isClaferName' e1 && isClaferName' e2 &&
