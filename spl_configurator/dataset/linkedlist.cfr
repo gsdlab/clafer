@@ -48,10 +48,9 @@ abstract LinkedList
 	Base : IMeasurable 
 		[ this.footprint = 455]
 	total_footprint : integer
-	[ total_footprint = AbstractElement.footprint + AbstractElement.ElementA.footprint + AbstractElement.ElementA.footprint + AbstractElement.ElementC.footprint + AbstractIterator.footprint + AbstractIterator.ForwardIterator.footprint + AbstractIterator.BackwardIterator.footprint + AbstractSort.footprint + AbstractSort.BubbleSort.footprint + AbstractSort.MergeSort.footprint + AbstractSort.InsertionSort.footprint + AbstractSort.QuickSort.footprint + print.footprint + Measurement.footprint + Measurement.SyntheticPerformanceOrMeasuruement.footprint + Measurement.TCP_IP.footprint + Measurement.SyntheticPerformanceOrMeasuruement.Performance.footprint + Measurement.SyntheticPerformanceOrMeasuruement.MemorySize.footprint + Base.footprint ]
+		[ total_footprint = sum IMeasurable.footprint]
 
 simpleConfig : LinkedList
-
 
 
 << min simpleConfig.total_footprint >>

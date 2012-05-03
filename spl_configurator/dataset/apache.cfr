@@ -28,7 +28,7 @@ abstract Apache
 	Handle : IMeasurable  ?
 		[ this.performance = 4]
 	total_performance : integer
-	[ total_performance = Base.performance + HostnameLookups.performance + KeepAlive.performance + EnableSendfile.performance + FollowSymLinks.performance + AccessLog.performance + ExtendedStatus.performance + InMemory.performance + Handle.performance ]
+	[ total_performance = sum IMeasurable.performance ]
 
 simpleConfig : Apache 
 
