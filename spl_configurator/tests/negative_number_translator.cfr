@@ -1,0 +1,9 @@
+abstract IMeasurable
+	footprint : integer
+
+abstract LinkedList
+	AbstractElement : IMeasurable  ?
+		[ this.footprint = -3]
+
+simpleConfig : LinkedList
+
