@@ -301,6 +301,7 @@ resolveTExp env (IFunExp op [exp]) = (env, result)
     result
         | op == iNot  = typeCheckFunction (TC TBoolean) op [E TBoolean] [a1]
         | op == iCSet = typeCheckFunction (TC TInteger) op [E TClafer] [a1]
+        | op == iSumSet = typeCheckFunction (TC TInteger) op [E TInteger] [a1PreferValue]
         -- We return the typeOf a1 because if a1 is real then return real (likewise for integer)
         | op == iMin  = typeCheckFunction t1PV op allNumeric         [a1PreferValue]
         | op == iGMax = typeCheckFunction t1PV op allNumeric         [a1PreferValue]

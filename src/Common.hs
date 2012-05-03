@@ -137,7 +137,8 @@ iCSet         = "#"
 iMin          = "-"
 iGMax         = "max"
 iGMin         = "min"
-unOps = [iNot, iCSet, iMin, iGMax, iGMin]
+iSumSet       = "sum"
+unOps = [iNot, iCSet, iMin, iGMax, iGMin, iSumSet]
 
 -- binary operators
 iIff          = "<=>"

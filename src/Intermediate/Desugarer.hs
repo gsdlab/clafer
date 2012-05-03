@@ -251,7 +251,8 @@ desugarExp' x = case x of
   ESub exp0 exp  -> dop iSub [exp0, exp]
   EMul exp0 exp  -> dop iMul [exp0, exp]
   EDiv exp0 exp  -> dop iDiv [exp0, exp]
-  ECSetExp exp   -> dop iCSet [exp]
+  ESumSetExp exp   -> dop iSumSet [exp]
+  ECSetExp exp   -> dop iCSet [exp]  
   EMinExp exp    -> dop iMin [exp]  
   EGMax exp -> dop iGMax [exp]
   EGMin exp -> dop iGMin [exp]  
@@ -320,7 +321,8 @@ sugarExp' x = case x of
     | op == iCSet          = ECSetExp
     | op == iMin           = EMinExp
     | op == iGMax          = EGMax
-    | op == iGMin          = EGMin    
+    | op == iGMin          = EGMin  
+    | op == iSumSet        = ESumSetExp
   sugarOp op
     | op == iIff           = EIff
     | op == iImpl          = EImplies
