@@ -112,11 +112,18 @@ isNull _ = False
 cunlines xs = cconcat $ map (+++ (CString "\n")) xs
 
 -- Alloy code generation
+-- 07th Mayo 2012 Rafael Olaechea 
+--      Added Logic to print a goal block in case there is at least one goal.
 genModule :: ClaferArgs -> (IModule, GEnv) -> (Result, [(String, Position)])
 genModule args (imodule, _) = (flatten output, mapLineCol output)
   where
-  output = header args imodule +++ (cconcat $ map (genDeclaration
-           (fromJust $ mode args)) (mDecls imodule))
+  output = header args imodule +++ (cconcat $ map (genDeclaration (fromJust $ mode args)) (mDecls imodule)) +++ 
+       if length goals_list > 0 then 
+                CString "objectives o_global {\n" +++   (cintercalate (CString ",\n") goals_list) +++   CString "\n}" 
+       else  
+                CString "" 
+       where 
+                goals_list = filterNull (map (genDeclarationGoalsOnly (fromJust $ mode args)) (mDecls imodule))
 
 
 header args imodule = CString $ unlines
@@ -131,10 +138,12 @@ genScope :: (String, Integer) -> String
 genScope (uid, scope) = show scope ++ " " ++ uid
 
 
-genDeclaration :: ClaferMode -> IElement -> Concat
-genDeclaration mode x = case x of
-  IEClafer clafer  -> genClafer mode [] clafer
-  IEConstraint _ pexp  -> mkFact $ genPExp mode [] pexp
+-- 07th Mayo 2012 Rafael Olaechea
+-- Modified so that we can collect all goals into a single block as required per the way goals are handled in modified alloy.
+genDeclarationGoalsOnly :: ClaferMode -> IElement -> Concat
+genDeclarationGoalsOnly mode x = case x of
+  IEClafer clafer  -> CString ""
+  IEConstraint _ pexp  -> CString ""
   IEGoal _ pexp@(PExp iType pid pos innerexp) -> case innerexp of 
         IFunExp op  exps ->  if  op == iGMax || op == iGMin then  
                         mkMetric op $ genPExp mode [] (head exps) 
@@ -142,9 +151,22 @@ genDeclaration mode x = case x of
                         error "unary operator  distinct from (min/max) at the topmost level of a goal element"
         other ->  error "no unary operator (min/max) at the topmost level of a goal element."
 
+-- 07th Mayo 2012 Rafael Olaechea
+-- Removed goal from this function as they will now  all be collected into a single block.       
+genDeclaration :: ClaferMode -> IElement -> Concat
+genDeclaration mode x = case x of
+  IEClafer clafer  -> genClafer mode [] clafer
+  IEConstraint _ pexp  -> mkFact $ genPExp mode [] pexp
+  IEGoal _ pexp@(PExp iType pid pos innerexp) -> case innerexp of 
+        IFunExp op  exps ->  if  op == iGMax || op == iGMin then  
+                       CString ""
+                else 
+                        error "unary operator  distinct from (min/max) at the topmost level of a goal element"
+        other ->  error "no unary operator (min/max) at the topmost level of a goal element."
+
 mkFact  xs = cconcat [CString "fact ", mkSet xs, CString "\n"]
 
-mkMetric goalopname xs = cconcat [CString "objectives o_global {", if goalopname == iGMax then CString "maximize" else  CString "minimize", CString " ", xs, CString " ",  CString " }" , CString "\n"]
+mkMetric goalopname xs = cconcat [ if goalopname == iGMax then CString "maximize" else  CString "minimize", CString " ", xs, CString " "]
 
                                                     
 mkSet xs = cconcat [CString "{ ", xs, CString " }"]
