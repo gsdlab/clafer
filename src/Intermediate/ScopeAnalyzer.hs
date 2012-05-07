@@ -7,6 +7,7 @@ import Data.Map (Map)
 import qualified Data.Map as Map
 import Data.Maybe
 import Data.Ord
+import Data.Ratio
 import Front.Absclafer
 import Intermediate.Intclafer
 import Prelude hiding (exp)
@@ -33,8 +34,12 @@ scopeAnalysis IModule{mDecls = decls} =
         
     isConcrete' uid = isConcrete $ findClafer uid
     
+    upperCards u =
+        Map.findWithDefault (error $ "No upper cardinality for clafer named \"" ++ u ++ "\".") u upperCardsMap
+    upperCardsMap = Map.fromList [(uid c, snd $ fromJust $ card c) | c <- clafers]
+    
     referenceAnalysis = foldl (analyzeReferences clafers) Map.empty decls
-    constraintAnalysis = analyzeConstraints constraints
+    constraintAnalysis = analyzeConstraints constraints upperCards
     (subclaferMap, parentMap) = analyzeHierarchy clafers
     connectedComponents = analyzeDependencies clafers
     clafers = concatMap findClafers decls
@@ -42,15 +47,10 @@ scopeAnalysis IModule{mDecls = decls} =
     findClafer uid = fromJust $ find (isEqClaferId uid) clafers
     
     lowCard clafer =
-        max low constraintLow'
+        max low constraintLow
         where
         low = fst $ fromJust $ card clafer
         constraintLow = Map.findWithDefault 0 (uid clafer) constraintAnalysis
-        -- Don't exceed the stated maximum
-        constraintLow' = min' constraintLow $ snd $ fromJust $ card clafer
-        
-        min' a (ExIntegerNum b) = min a b
-        min' a ExIntegerAst = a
     
     analyzeComponent analysis component =
         case flattenSCC component of
@@ -93,20 +93,23 @@ analyzeReferences clafers analysis (IEClafer clafer) =
 analyzeReferences _ analysis _ = analysis
 
 
-analyzeConstraints :: [PExp] -> Map String Integer
-analyzeConstraints constraints =
-    foldr analyzeConstraint Map.empty constraints
+analyzeConstraints :: [PExp] -> (String -> ExInteger) -> Map String Integer
+analyzeConstraints constraints upperCards =
+    foldr analyzeConstraint Map.empty $ filter isOneOrSomeConstraint constraints
     where
-    -- Only considers how quantifiers affect scope. Other types of constraints are not considered.
-    -- Constraints of the type [some path1.path2] or [no path1.path2], etc.    
-    analyzeConstraint PExp{exp = IDeclPExp{quant = quant, oDecls = [], bpexp = bpexp}} analysis =
+    isOneOrSomeConstraint PExp{exp = IDeclPExp{quant = quant}} =
+        -- Only these two quantifiers requires an increase in scope to satisfy.
         case quant of
-            IOne  -> analysis'
-            ISome -> analysis'
-            _     -> analysis -- The other quantifiers allow zero so skip.
+            IOne -> True
+            ISome -> True
+            _     -> False
+    
+    -- Only considers how quantifiers affect scope. Other types of constraints are not considered.
+    -- Constraints of the type [some path1.path2] or [no path1.path2], etc.
+    analyzeConstraint PExp{exp = IDeclPExp{quant = quant, oDecls = [], bpexp = bpexp}} analysis =
+        foldr atLeastOne analysis path
         where
-        analysis' = foldr atLeastOne analysis (top : follow)
-        top : follow = dropThisAndParent $ unfoldJoins bpexp
+        path = dropThisAndParent $ unfoldJoins bpexp
         atLeastOne = Map.insertWith max `flip` 1
         
     -- Constraints of the type [all disj a : path1.path2] or [some b : path3.path4], etc.
@@ -115,14 +118,16 @@ analyzeConstraints constraints =
     analyzeConstraint _ analysis = analysis
 
     analyzeDecl IDecl{isDisj = isDisj, decls = decls, body = body} analysis =
-        insert minScope top $ foldr (insert 1) analysis follow
+        foldr (uncurry insert) analysis $ zip path scores
         where
         -- Take the first element in the path, and change its effective lower cardinality.
         -- Can overestimate the scope.
-        top : follow = dropThisAndParent $ unfoldJoins body
+        path = dropThisAndParent $ unfoldJoins body
         -- "disj a;b;c" implies at least 3 whereas "a;b;c" implies at least one.
         minScope = if isDisj then fromIntegral $ length decls else 1
-        insert s = Map.insertWith max `flip` s
+        insert = Map.insertWith max
+        
+        scores = assign path minScope
         
         {-
          - abstract Z
@@ -138,8 +143,7 @@ analyzeConstraints constraints =
          -- a) Make the effective lower cardinality of C=4 and D=1
          -- b) Make the effective lower cardinality of C=1 and D=4
          -- c) Some other combination.
-         -- Choose b.
-         -- A greedy algorithm that starts from the lowest child progressing upwards.
+         -- Choose b, a greedy algorithm that starts from the lowest child progressing upwards.
          
         {-
          - abstract Z
@@ -156,6 +160,19 @@ analyzeConstraints constraints =
          -- This might not be optimum since now the scope allows for 6 D's.
          -- A better solution might be C=2, D=2.
          -- Well too bad, we are using the greedy algorithm.
+    assign [] _ = [1]
+    assign (p : ps) score =
+        pScore : ps'
+        where
+        upper = upperCards p
+        ps' = assign ps score
+        psScore = product $ ps'
+        pDesireScore = ceiling (score % psScore)
+        pMaxScore = upperCards p
+        pScore = min' pDesireScore pMaxScore
+        
+    min' a (ExIntegerNum b) = min a b
+    min' a ExIntegerAst = a
         
     -- The each child has at most one parent. No matter what the path in a quantifier
     -- looks like, we ignore the parent parts.
