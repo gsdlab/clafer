@@ -28,7 +28,7 @@ import Front.Absclafer
 import Intermediate.Intclafer
 import Generator.Schema
 
-tag name exp = concat ["<", name, ">", exp, "</", name, ">"]
+tag name exp = concat ["<", name, ">", exp, "</", name, ">\n"]
 
 optTag elem f = maybe "" f elem
 
