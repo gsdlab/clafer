@@ -31,9 +31,15 @@ data IType = TBoolean
            | TRef IType  -- a reference to the type
   deriving (Eq,Ord,Show)
 
--- Module is a list of top-level declarations
+-- Module is a list of fragments
 data IModule = IModule {
       mName :: String,
+      fragments :: [IModuleFragment]
+    }
+  deriving (Eq,Ord,Show)
+
+-- Fragment is a list of top-level declarations
+data IModuleFragment = IModuleFragment {
       mDecls :: [IElement]
     }
   deriving (Eq,Ord,Show)

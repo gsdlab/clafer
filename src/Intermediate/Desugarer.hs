@@ -30,11 +30,11 @@ import Data.Function
 desugarModule :: Module -> IModule
 desugarModule x = case x of
   Module declarations  -> IModule "" $
-      declarations >>= desugarEnums >>= desugarDeclaration
+      [ImoduleFragment $ declarations >>= desugarEnums >>= desugarDeclaration]
 
 
 sugarModule :: IModule -> Module
-sugarModule x = Module $ map sugarDeclaration $ mDecls x
+sugarModule x = Module $ map sugarDeclaration $ (fragments x >>= mDecls)
 
 
 -- desugars enumeration to abstract and global singleton features
