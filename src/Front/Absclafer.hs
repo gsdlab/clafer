@@ -53,8 +53,9 @@ data Super =
   deriving (Eq,Ord,Show)
 
 data SuperHow =
-   SuperHow_1
- | SuperHow_2
+   SuperColon
+ | SuperArrow
+ | SuperMArrow
   deriving (Eq,Ord,Show)
 
 data Init =

@@ -30,7 +30,7 @@ import Data.Function
 desugarModule :: Module -> IModule
 desugarModule x = case x of
   Module declarations  -> IModule "" $
-      map desugarDeclaration (declarations >>= desugarEnums)
+      declarations >>= desugarEnums >>= desugarDeclaration
 
 
 sugarModule :: IModule -> Module
@@ -45,11 +45,11 @@ desugarEnums x = case x of
     absEnum = ElementDecl $ Subclafer $ Clafer
               Abstract GCardEmpty id SuperEmpty CardEmpty InitEmpty (ElementsList [])
     mkEnum (EnumIdIdent eId) = ElementDecl $ Subclafer $ Clafer AbstractEmpty GCardEmpty
-                                  eId (SuperSome SuperHow_1 (ClaferId $ Path [ModIdIdent id])) CardEmpty InitEmpty (ElementsList [])
+                                  eId (SuperSome SuperColon (ClaferId $ Path [ModIdIdent id])) CardEmpty InitEmpty (ElementsList [])
   _ -> [x]
 
 
-desugarDeclaration :: Declaration -> IElement
+desugarDeclaration :: Declaration -> [IElement]
 desugarDeclaration x = case x of
   EnumDecl id enumids  -> error "desugared"
   ElementDecl element  -> desugarElement element
@@ -86,8 +86,8 @@ desugarSuper x = case x of
 
 desugarSuperHow :: SuperHow -> Bool
 desugarSuperHow x = case x of
-  SuperHow_1  -> False
-  SuperHow_2  -> True
+  SuperColon  -> False
+  _  -> True
 
 
 desugarInit :: Init -> [IElement]
@@ -117,8 +117,8 @@ sugarSuper x = case x of
 
 
 sugarSuperHow x = case x of
-  False -> SuperHow_1
-  True  -> SuperHow_2
+  False -> SuperColon
+  True  -> SuperMArrow
 
 
 sugarInitHow :: Bool -> InitHow
@@ -163,22 +163,26 @@ sugarAbstract x = case x of
 desugarElements :: Elements -> [IElement]
 desugarElements x = case x of
   ElementsEmpty -> []
-  ElementsList elements  -> map desugarElement elements
+  ElementsList elements  -> elements >>= desugarElement
 
 
 sugarElements :: [IElement] -> Elements
 sugarElements x = ElementsList $ map sugarElement x
 
 
-desugarElement :: Element -> IElement
+desugarElement :: Element -> [IElement]
 desugarElement x = case x of
-  Subclafer clafer  -> IEClafer $ desugarClafer clafer
-  ClaferUse name card elements  -> IEClafer $ desugarClafer $ Clafer
+  Subclafer clafer  ->
+      (IEClafer $ desugarClafer clafer) :
+      (mkArrowConstraint clafer >>= desugarElement)
+  ClaferUse name card elements  -> [IEClafer $ desugarClafer $ Clafer
       AbstractEmpty GCardEmpty (Ident $ sident $ desugarName name)
-      (SuperSome SuperHow_1 (ClaferId name)) card InitEmpty elements
-  Subconstraint constraint  -> IEConstraint True $ desugarConstraint constraint
-  Subsoftconstraint softconstraint -> IEConstraint False $ desugarSoftConstraint softconstraint
-  Subgoal goal -> IEGoal True $ desugarGoal goal
+      (SuperSome SuperColon (ClaferId name)) card InitEmpty elements]
+  Subconstraint constraint  ->
+    [IEConstraint True $ desugarConstraint constraint]
+  Subsoftconstraint softconstraint ->
+    [IEConstraint False $ desugarSoftConstraint softconstraint]
+  Subgoal goal -> [IEGoal True $ desugarGoal goal]
 
 sugarElement :: IElement -> Element
 sugarElement x = case x of
@@ -186,6 +190,19 @@ sugarElement x = case x of
   IEConstraint True constraint -> Subconstraint $ sugarConstraint constraint
   IEConstraint False softconstraint -> Subsoftconstraint $ sugarSoftConstraint softconstraint
   IEGoal _ goal -> Subgoal $ sugarGoal goal
+
+
+mkArrowConstraint (Clafer _ _ ident super _ _ _) = case super of
+  SuperSome SuperArrow _ -> [Subconstraint $
+       Constraint [DeclAllDisj
+       (Decl [LocIdIdent $ Ident "x", LocIdIdent $ Ident "y"]
+             (ClaferId  $ Path [ModIdIdent ident]))
+       (ENeq (ESetExp $ Join (ClaferId $ Path [ModIdIdent $ Ident "x"])
+                             (ClaferId $ Path [ModIdIdent $ Ident "ref"]))
+             (ESetExp $ Join (ClaferId $ Path [ModIdIdent $ Ident "y"])
+                             (ClaferId $ Path [ModIdIdent $ Ident "ref"])))]]
+  _ -> []
+
 
 desugarGCard :: GCard -> Maybe IGCard
 desugarGCard x = case x of

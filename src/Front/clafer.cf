@@ -30,7 +30,9 @@ Subsoftconstraint. Element ::=SoftConstraint;
 SuperEmpty.     Super ::=  ;
 SuperSome.      Super ::= SuperHow SetExp ;
 
-rules           SuperHow ::= ":" | "->" ;
+SuperColon.     SuperHow ::= ":" ;
+SuperArrow.     SuperHow ::= "->" ;
+SuperMArrow.    SuperHow ::= "->>" ;
 
 InitEmpty.      Init ::= ;
 InitSome.       Init ::= InitHow Exp ;

@@ -149,8 +149,9 @@ instance Print Super where
 
 instance Print SuperHow where
   prt i e = case e of
-   SuperHow_1  -> prPrec i 0 (concatD [doc (showString ":")])
-   SuperHow_2  -> prPrec i 0 (concatD [doc (showString "->")])
+   SuperColon  -> prPrec i 0 (concatD [doc (showString ":")])
+   SuperArrow  -> prPrec i 0 (concatD [doc (showString "->")])
+   SuperMArrow  -> prPrec i 0 (concatD [doc (showString "->>")])
 
 
 instance Print Init where
