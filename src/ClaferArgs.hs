@@ -106,7 +106,7 @@ mergeArgs args args'  = args' {
 -- default values for arguments (the lowest priority)
 setDefArgs args = args {
   mode                = mode args                `mplus` Just Alloy,
-  console_output      = console_output args      `mplus` Just def,
+  console_output      = console_output args      `mplus` Just (null $ file args),
   flatten_inheritance = flatten_inheritance args `mplus` Just def,
   timeout_analysis    = timeout_analysis args    `mplus` Just def,
   no_layout           = no_layout args           `mplus` Just def,
