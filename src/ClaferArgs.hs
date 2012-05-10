@@ -22,6 +22,7 @@
 {-# LANGUAGE DeriveDataTypeable #-}
 module ClaferArgs where
 
+import IO ( stdin, hGetContents )
 import System.Console.CmdArgs
 import System.Console.CmdArgs.Explicit hiding (mode)
 import Data.List
@@ -72,14 +73,16 @@ clafer = ClaferArgs {
 
 mainArgs = do
   args <- cmdArgs clafer
-  model <- readFile $ file args
+  model <- case file args of
+             "" -> hGetContents stdin
+             f  -> readFile f
   let firstLine = case lines model of
                [] -> ""
                (s:_) -> s
   let options = fromMaybe "" $ stripPrefix "//# OPTIONS " firstLine
-  return $ setDefArgs $
+  return $ (setDefArgs $
            either (\_ -> args) (\x -> mergeArgs args (cmdArgsValue x)) $
-           process (cmdArgsMode clafer) $ SplitJoin.splitArgs options
+           process (cmdArgsMode clafer) $ SplitJoin.splitArgs options, model)
 
 -- merges console arguments with pragmas in clafer models.
 -- Console arguments have higher priority.

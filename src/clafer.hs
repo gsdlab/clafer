@@ -64,15 +64,14 @@ putStrV :: VerbosityL -> String -> IO ()
 putStrV v s = if v > 1 then putStrLn s else return ()
 
 
-start v p args = if fromJust $ schema args
+start v p args model = if fromJust $ schema args
   then putStrLn Generator.Schema.xsd
-  else run v p args
+  else run v p args model
 
 
-run :: VerbosityL -> ParseFun -> ClaferArgs -> IO ()
-run v p args = do
-           input <- readFile $ file args
-           conPutStrLn args (file args)
+run :: VerbosityL -> ParseFun -> ClaferArgs -> String -> IO ()
+run v p args input = do
+--           conPutStrLn args (file args)
            let ts = (if not 
                         ((fromJust $ new_layout args) ||
                          (fromJust $ no_layout args))
@@ -175,9 +174,9 @@ validateAlloy path version = "java -cp " ++ path ++ "alloy" ++ version ++ ".jar 
 
 main :: IO ()
 main = do
-  args <- mainArgs
+  (args, model) <- mainArgs
   let timeInSec = (fromJust $ timeout_analysis args) * 10^6
   if timeInSec > 0
-    then timeout timeInSec $ start 2 pModule args
-    else Just `liftM` start 2 pModule args
+    then timeout timeInSec $ start 2 pModule args model
+    else Just `liftM` start 2 pModule args model
   return ()
