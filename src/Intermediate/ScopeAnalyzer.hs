@@ -103,6 +103,7 @@ analyzeConstraints constraints upperCards =
             IOne -> True
             ISome -> True
             _     -> False
+    isOneOrSomeConstraint _ = False
     
     -- Only considers how quantifiers affect scope. Other types of constraints are not considered.
     -- Constraints of the type [some path1.path2] or [no path1.path2], etc.
