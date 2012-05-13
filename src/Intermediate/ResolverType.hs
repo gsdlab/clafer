@@ -186,7 +186,7 @@ findClaferFromUid :: [IClafer] -> String -> IClafer
 findClaferFromUid clafers id =
 	case find ((== id).uid) clafers of
 	Just c -> c
-	Nothing -> error $ "No clafers named " ++ id
+	Nothing -> error $ "No clafers named " ++ id ++ " in " ++ show (map uid clafers)
                                 
 -- Get the super's type (primitive => only one super so we only need to look at the first one)
 -- The PExp must be a ClaferID
@@ -271,11 +271,12 @@ resolveTExpPreferValue:: TCEnv -> IExp -> (TCEnv, TypedIExp)
 -- Clafer reference
 -- Return the value type of the reference from the symbol table (possibly IClafer)
 resolveTExpPreferValue env e@(IClaferId _ sident _) =
-    (env', (e, t))
+    (env', (e, t'))
     where
     env' = identTCEnv env sident
     -- If it's TCVal, then get the actual value type
-    t = TC (typed $ tcType env') [sident]
+    t = tcType env'
+    t' = TC (typed t) (uids t)
 -- Join function
 {- 
  - Join function is a special case.
