@@ -141,12 +141,6 @@ generate f args (oTree, genv, au) = do
 
 conPutStrLn args s = when (not $ fromJust $ console_output args) $ putStrLn s
 
-showTree :: (Show a, Print a) => Int -> a -> IO ()
-showTree v tree
- = do
-      putStrV v $ "\n[Abstract Syntax]\n\n" ++ show tree
-      putStrV v $ "\n[Linearized tree]\n\n" ++ printTree tree
-
 
 addStats code stats = "/*\n" ++ stats ++ "*/\n" ++ code
 
