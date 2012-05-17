@@ -44,6 +44,7 @@ import Front.Printclafer
 import Front.Absclafer hiding (Clafer)
 import Front.LayoutResolver
 import Front.ErrM
+import Front.Mapper
 import Intermediate.Desugarer
 import Intermediate.Resolver
 import Intermediate.StringAnalyzer
@@ -101,7 +102,7 @@ run v p args input = do
 
 desugar args tree = do
 --  conPutStrLn args "[Desugaring]"
-  let dTree = desugarModule tree
+  let dTree = desugarModule $ mapModule tree
   return dTree
   -- writeFile (f ++ ".des") $ printTree $
   --  sugarModule dTree
@@ -140,12 +141,6 @@ generate f args (oTree, genv, au) = do
 
 conPutStrLn args s = when (not $ fromJust $ console_output args) $ putStrLn s
 
-showTree :: (Show a, Print a) => Int -> a -> IO ()
-showTree v tree
- = do
-      putStrV v $ "\n[Abstract Syntax]\n\n" ++ show tree
-      putStrV v $ "\n[Linearized tree]\n\n" ++ printTree tree
-
 
 addStats code stats = "/*\n" ++ stats ++ "*/\n" ++ code
 
@@ -157,8 +152,8 @@ showStats au (Stats na nr nc nconst ngoals sgl) =
           , "All names unique: " ++ show au]
 
 
-showInterval (n, ExIntegerAst) = show n ++ "..*"
-showInterval (n, ExIntegerNum m) = show n ++ ".." ++ show m
+showInterval (n, -1) = show n ++ "..*"
+showInterval (n, m) = show n ++ ".." ++ show m
 
 runValidate args fo = do
   let path = (fromJust $ tooldir args) ++ "/"

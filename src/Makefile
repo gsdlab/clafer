@@ -1,11 +1,5 @@
-define apPatch
-	$(shell patch $(1) -N -r - Front/$(2).hs Front/$(2).patch 1>/dev/null)
-endef
-
 all:
-	$(foreach file, Absclafer ErrM Lexclafer Printclafer Parclafer, \
-		$(if $(call apPatch,--dry-run,$(file)), \
-			$(call apPatch,,$(file))))
+	$(MAKE) -C Front
 	./Generator/quote.sh ClaferIR.xsd > ./Generator/Schema.hs
 
 newVersion:

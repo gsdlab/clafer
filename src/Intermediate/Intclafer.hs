@@ -31,13 +31,20 @@ data IType = TBoolean
            | TRef IType  -- a reference to the type
   deriving (Eq,Ord,Show)
 
--- Module is a list of top-level declarations
+-- Module is a list of fragments
 data IModule = IModule {
       mName :: String,
       mDecls :: [IElement]
+--      fragments :: [IModuleFragment]
     }
   deriving (Eq,Ord,Show)
 
+-- Fragment is a list of top-level declarations
+{-data IModuleFragment = IModuleFragment {
+      mDecls :: [IElement]
+    }
+  deriving (Eq,Ord,Show)
+-}
 -- Clafer has a list of fields that specify its properties. Some fields, marked as (o) are for generating optimized code
 data IClafer =
    IClafer {
@@ -81,8 +88,8 @@ data IGCard =
     }
   deriving (Eq,Ord,Show)
 
--- (Min, max) integer interval
-type Interval = (Integer, ExInteger)
+-- (Min, max) integer interval. -1 denotes *
+type Interval = (Integer, Integer)
 
 data PExp = PExp {
       iType :: Maybe IType,

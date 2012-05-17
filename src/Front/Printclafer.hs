@@ -78,20 +78,36 @@ instance Print Double where
   prt _ x = doc (shows x)
 
 
-instance Print Ident where
-  prt _ (Ident i) = doc (showString ( i))
+
+instance Print PosInteger where
+  prt _ (PosInteger (_,i)) = doc (showString ( i))
+
+
+instance Print PosDouble where
+  prt _ (PosDouble (_,i)) = doc (showString ( i))
+
+
+instance Print PosString where
+  prt _ (PosString (_,i)) = doc (showString ( i))
+
+
+instance Print PosIdent where
+  prt _ (PosIdent (_,i)) = doc (showString ( i))
 
 
 
 instance Print Module where
   prt i e = case e of
    Module declarations -> prPrec i 0 (concatD [prt 0 declarations])
+   PosModule n0 n declarations -> prPrec i 0 (concatD [prt 0 n0 , prt 0 n , prt 0 declarations])
 
 
 instance Print Declaration where
   prt i e = case e of
-   EnumDecl id enumids -> prPrec i 0 (concatD [doc (showString "enum") , prt 0 id , doc (showString "=") , prt 0 enumids])
+   EnumDecl posident enumids -> prPrec i 0 (concatD [doc (showString "enum") , prt 0 posident , doc (showString "=") , prt 0 enumids])
+   PosEnumDecl n0 n posident enumids -> prPrec i 0 (concatD [prt 0 n0 , prt 0 n , doc (showString "enum") , prt 0 posident , doc (showString "=") , prt 0 enumids])
    ElementDecl element -> prPrec i 0 (concatD [prt 0 element])
+   PosElementDecl n0 n element -> prPrec i 0 (concatD [prt 0 n0 , prt 0 n , prt 0 element])
 
   prtList es = case es of
    [] -> (concatD [])
@@ -99,43 +115,56 @@ instance Print Declaration where
 
 instance Print Clafer where
   prt i e = case e of
-   Clafer abstract gcard id super card init elements -> prPrec i 0 (concatD [prt 0 abstract , prt 0 gcard , prt 0 id , prt 0 super , prt 0 card , prt 0 init , prt 0 elements])
+   Clafer abstract gcard posident super card init elements -> prPrec i 0 (concatD [prt 0 abstract , prt 0 gcard , prt 0 posident , prt 0 super , prt 0 card , prt 0 init , prt 0 elements])
+   PosClafer n0 n abstract gcard posident super card init elements -> prPrec i 0 (concatD [prt 0 n0 , prt 0 n , prt 0 abstract , prt 0 gcard , prt 0 posident , prt 0 super , prt 0 card , prt 0 init , prt 0 elements])
 
 
 instance Print Constraint where
   prt i e = case e of
    Constraint exps -> prPrec i 0 (concatD [doc (showString "[") , prt 0 exps , doc (showString "]")])
+   PosConstraint n0 n exps -> prPrec i 0 (concatD [prt 0 n0 , prt 0 n , doc (showString "[") , prt 0 exps , doc (showString "]")])
 
 
 instance Print SoftConstraint where
   prt i e = case e of
    SoftConstraint exps -> prPrec i 0 (concatD [doc (showString "(") , prt 0 exps , doc (showString ")")])
+   PosSoftConstraint n0 n exps -> prPrec i 0 (concatD [prt 0 n0 , prt 0 n , doc (showString "(") , prt 0 exps , doc (showString ")")])
 
 
 instance Print Goal where
   prt i e = case e of
    Goal exps -> prPrec i 0 (concatD [doc (showString "<<") , prt 0 exps , doc (showString ">>")])
+   PosGoal n0 n exps -> prPrec i 0 (concatD [prt 0 n0 , prt 0 n , doc (showString "<<") , prt 0 exps , doc (showString ">>")])
 
 
 instance Print Abstract where
   prt i e = case e of
    AbstractEmpty  -> prPrec i 0 (concatD [])
+   PosAbstractEmpty n0 n -> prPrec i 0 (concatD [prt 0 n0 , prt 0 n])
    Abstract  -> prPrec i 0 (concatD [doc (showString "abstract")])
+   PosAbstract n0 n -> prPrec i 0 (concatD [prt 0 n0 , prt 0 n , doc (showString "abstract")])
 
 
 instance Print Elements where
   prt i e = case e of
    ElementsEmpty  -> prPrec i 0 (concatD [])
+   PosElementsEmpty n0 n -> prPrec i 0 (concatD [prt 0 n0 , prt 0 n])
    ElementsList elements -> prPrec i 0 (concatD [doc (showString "{") , prt 0 elements , doc (showString "}")])
+   PosElementsList n0 n elements -> prPrec i 0 (concatD [prt 0 n0 , prt 0 n , doc (showString "{") , prt 0 elements , doc (showString "}")])
 
 
 instance Print Element where
   prt i e = case e of
    Subclafer clafer -> prPrec i 0 (concatD [prt 0 clafer])
+   PosSubclafer n0 n clafer -> prPrec i 0 (concatD [prt 0 n0 , prt 0 n , prt 0 clafer])
    ClaferUse name card elements -> prPrec i 0 (concatD [doc (showString "`") , prt 0 name , prt 0 card , prt 0 elements])
+   PosClaferUse n0 n name card elements -> prPrec i 0 (concatD [prt 0 n0 , prt 0 n , doc (showString "`") , prt 0 name , prt 0 card , prt 0 elements])
    Subconstraint constraint -> prPrec i 0 (concatD [prt 0 constraint])
+   PosSubconstraint n0 n constraint -> prPrec i 0 (concatD [prt 0 n0 , prt 0 n , prt 0 constraint])
    Subgoal goal -> prPrec i 0 (concatD [prt 0 goal])
+   PosSubgoal n0 n goal -> prPrec i 0 (concatD [prt 0 n0 , prt 0 n , prt 0 goal])
    Subsoftconstraint softconstraint -> prPrec i 0 (concatD [prt 0 softconstraint])
+   PosSubsoftconstraint n0 n softconstraint -> prPrec i 0 (concatD [prt 0 n0 , prt 0 n , prt 0 softconstraint])
 
   prtList es = case es of
    [] -> (concatD [])
@@ -144,98 +173,155 @@ instance Print Element where
 instance Print Super where
   prt i e = case e of
    SuperEmpty  -> prPrec i 0 (concatD [])
+   PosSuperEmpty n0 n -> prPrec i 0 (concatD [prt 0 n0 , prt 0 n])
    SuperSome superhow setexp -> prPrec i 0 (concatD [prt 0 superhow , prt 0 setexp])
+   PosSuperSome n0 n superhow setexp -> prPrec i 0 (concatD [prt 0 n0 , prt 0 n , prt 0 superhow , prt 0 setexp])
 
 
 instance Print SuperHow where
   prt i e = case e of
    SuperColon  -> prPrec i 0 (concatD [doc (showString ":")])
+   PosSuperColon n0 n -> prPrec i 0 (concatD [prt 0 n0 , prt 0 n , doc (showString ":")])
    SuperArrow  -> prPrec i 0 (concatD [doc (showString "->")])
+   PosSuperArrow n0 n -> prPrec i 0 (concatD [prt 0 n0 , prt 0 n , doc (showString "->")])
    SuperMArrow  -> prPrec i 0 (concatD [doc (showString "->>")])
+   PosSuperMArrow n0 n -> prPrec i 0 (concatD [prt 0 n0 , prt 0 n , doc (showString "->>")])
 
 
 instance Print Init where
   prt i e = case e of
    InitEmpty  -> prPrec i 0 (concatD [])
+   PosInitEmpty n0 n -> prPrec i 0 (concatD [prt 0 n0 , prt 0 n])
    InitSome inithow exp -> prPrec i 0 (concatD [prt 0 inithow , prt 0 exp])
+   PosInitSome n0 n inithow exp -> prPrec i 0 (concatD [prt 0 n0 , prt 0 n , prt 0 inithow , prt 0 exp])
 
 
 instance Print InitHow where
   prt i e = case e of
    InitHow_1  -> prPrec i 0 (concatD [doc (showString "=")])
+   PosInitHow_1 n0 n -> prPrec i 0 (concatD [prt 0 n0 , prt 0 n , doc (showString "=")])
    InitHow_2  -> prPrec i 0 (concatD [doc (showString ":=")])
+   PosInitHow_2 n0 n -> prPrec i 0 (concatD [prt 0 n0 , prt 0 n , doc (showString ":=")])
 
 
 instance Print GCard where
   prt i e = case e of
    GCardEmpty  -> prPrec i 0 (concatD [])
+   PosGCardEmpty n0 n -> prPrec i 0 (concatD [prt 0 n0 , prt 0 n])
    GCardXor  -> prPrec i 0 (concatD [doc (showString "xor")])
+   PosGCardXor n0 n -> prPrec i 0 (concatD [prt 0 n0 , prt 0 n , doc (showString "xor")])
    GCardOr  -> prPrec i 0 (concatD [doc (showString "or")])
+   PosGCardOr n0 n -> prPrec i 0 (concatD [prt 0 n0 , prt 0 n , doc (showString "or")])
    GCardMux  -> prPrec i 0 (concatD [doc (showString "mux")])
+   PosGCardMux n0 n -> prPrec i 0 (concatD [prt 0 n0 , prt 0 n , doc (showString "mux")])
    GCardOpt  -> prPrec i 0 (concatD [doc (showString "opt")])
+   PosGCardOpt n0 n -> prPrec i 0 (concatD [prt 0 n0 , prt 0 n , doc (showString "opt")])
    GCardInterval ncard -> prPrec i 0 (concatD [prt 0 ncard])
+   PosGCardInterval n0 n ncard -> prPrec i 0 (concatD [prt 0 n0 , prt 0 n , prt 0 ncard])
 
 
 instance Print Card where
   prt i e = case e of
    CardEmpty  -> prPrec i 0 (concatD [])
+   PosCardEmpty n0 n -> prPrec i 0 (concatD [prt 0 n0 , prt 0 n])
    CardLone  -> prPrec i 0 (concatD [doc (showString "?")])
+   PosCardLone n0 n -> prPrec i 0 (concatD [prt 0 n0 , prt 0 n , doc (showString "?")])
    CardSome  -> prPrec i 0 (concatD [doc (showString "+")])
+   PosCardSome n0 n -> prPrec i 0 (concatD [prt 0 n0 , prt 0 n , doc (showString "+")])
    CardAny  -> prPrec i 0 (concatD [doc (showString "*")])
-   CardNum n -> prPrec i 0 (concatD [prt 0 n])
+   PosCardAny n0 n -> prPrec i 0 (concatD [prt 0 n0 , prt 0 n , doc (showString "*")])
+   CardNum posinteger -> prPrec i 0 (concatD [prt 0 posinteger])
+   PosCardNum n0 n posinteger -> prPrec i 0 (concatD [prt 0 n0 , prt 0 n , prt 0 posinteger])
    CardInterval ncard -> prPrec i 0 (concatD [prt 0 ncard])
+   PosCardInterval n0 n ncard -> prPrec i 0 (concatD [prt 0 n0 , prt 0 n , prt 0 ncard])
 
 
 instance Print NCard where
   prt i e = case e of
-   NCard n exinteger -> prPrec i 0 (concatD [prt 0 n , doc (showString "..") , prt 0 exinteger])
+   NCard posinteger exinteger -> prPrec i 0 (concatD [prt 0 posinteger , doc (showString "..") , prt 0 exinteger])
+   PosNCard n0 n posinteger exinteger -> prPrec i 0 (concatD [prt 0 n0 , prt 0 n , prt 0 posinteger , doc (showString "..") , prt 0 exinteger])
 
 
 instance Print ExInteger where
   prt i e = case e of
    ExIntegerAst  -> prPrec i 0 (concatD [doc (showString "*")])
-   ExIntegerNum n -> prPrec i 0 (concatD [prt 0 n])
+   PosExIntegerAst n0 n -> prPrec i 0 (concatD [prt 0 n0 , prt 0 n , doc (showString "*")])
+   ExIntegerNum posinteger -> prPrec i 0 (concatD [prt 0 posinteger])
+   PosExIntegerNum n0 n posinteger -> prPrec i 0 (concatD [prt 0 n0 , prt 0 n , prt 0 posinteger])
 
 
 instance Print Name where
   prt i e = case e of
    Path modids -> prPrec i 0 (concatD [prt 0 modids])
+   PosPath n0 n modids -> prPrec i 0 (concatD [prt 0 n0 , prt 0 n , prt 0 modids])
 
 
 instance Print Exp where
   prt i e = case e of
    DeclAllDisj decl exp -> prPrec i 0 (concatD [doc (showString "all") , doc (showString "disj") , prt 0 decl , doc (showString "|") , prt 0 exp])
+   PosDeclAllDisj n0 n decl exp -> prPrec i 0 (concatD [prt 0 n0 , prt 0 n , doc (showString "all") , doc (showString "disj") , prt 0 decl , doc (showString "|") , prt 0 exp])
    DeclAll decl exp -> prPrec i 0 (concatD [doc (showString "all") , prt 0 decl , doc (showString "|") , prt 0 exp])
+   PosDeclAll n0 n decl exp -> prPrec i 0 (concatD [prt 0 n0 , prt 0 n , doc (showString "all") , prt 0 decl , doc (showString "|") , prt 0 exp])
    DeclQuantDisj quant decl exp -> prPrec i 0 (concatD [prt 0 quant , doc (showString "disj") , prt 0 decl , doc (showString "|") , prt 0 exp])
+   PosDeclQuantDisj n0 n quant decl exp -> prPrec i 0 (concatD [prt 0 n0 , prt 0 n , prt 0 quant , doc (showString "disj") , prt 0 decl , doc (showString "|") , prt 0 exp])
    DeclQuant quant decl exp -> prPrec i 0 (concatD [prt 0 quant , prt 0 decl , doc (showString "|") , prt 0 exp])
+   PosDeclQuant n0 n quant decl exp -> prPrec i 0 (concatD [prt 0 n0 , prt 0 n , prt 0 quant , prt 0 decl , doc (showString "|") , prt 0 exp])
    EGMax exp -> prPrec i 1 (concatD [doc (showString "max") , prt 2 exp])
+   PosEGMax n0 n exp -> prPrec i 1 (concatD [prt 0 n0 , prt 0 n , doc (showString "max") , prt 2 exp])
    EGMin exp -> prPrec i 1 (concatD [doc (showString "min") , prt 2 exp])
+   PosEGMin n0 n exp -> prPrec i 1 (concatD [prt 0 n0 , prt 0 n , doc (showString "min") , prt 2 exp])
    EIff exp0 exp -> prPrec i 1 (concatD [prt 1 exp0 , doc (showString "<=>") , prt 2 exp])
+   PosEIff n0 n exp1 exp -> prPrec i 1 (concatD [prt 0 n0 , prt 0 n , prt 1 exp1 , doc (showString "<=>") , prt 2 exp])
    EImplies exp0 exp -> prPrec i 2 (concatD [prt 2 exp0 , doc (showString "=>") , prt 3 exp])
+   PosEImplies n0 n exp1 exp -> prPrec i 2 (concatD [prt 0 n0 , prt 0 n , prt 2 exp1 , doc (showString "=>") , prt 3 exp])
    EOr exp0 exp -> prPrec i 3 (concatD [prt 3 exp0 , doc (showString "||") , prt 4 exp])
+   PosEOr n0 n exp1 exp -> prPrec i 3 (concatD [prt 0 n0 , prt 0 n , prt 3 exp1 , doc (showString "||") , prt 4 exp])
    EXor exp0 exp -> prPrec i 4 (concatD [prt 4 exp0 , doc (showString "xor") , prt 5 exp])
+   PosEXor n0 n exp1 exp -> prPrec i 4 (concatD [prt 0 n0 , prt 0 n , prt 4 exp1 , doc (showString "xor") , prt 5 exp])
    EAnd exp0 exp -> prPrec i 5 (concatD [prt 5 exp0 , doc (showString "&&") , prt 6 exp])
+   PosEAnd n0 n exp1 exp -> prPrec i 5 (concatD [prt 0 n0 , prt 0 n , prt 5 exp1 , doc (showString "&&") , prt 6 exp])
    ENeg exp -> prPrec i 6 (concatD [doc (showString "!") , prt 7 exp])
+   PosENeg n0 n exp -> prPrec i 6 (concatD [prt 0 n0 , prt 0 n , doc (showString "!") , prt 7 exp])
    ELt exp0 exp -> prPrec i 7 (concatD [prt 7 exp0 , doc (showString "<") , prt 8 exp])
+   PosELt n0 n exp1 exp -> prPrec i 7 (concatD [prt 0 n0 , prt 0 n , prt 7 exp1 , doc (showString "<") , prt 8 exp])
    EGt exp0 exp -> prPrec i 7 (concatD [prt 7 exp0 , doc (showString ">") , prt 8 exp])
+   PosEGt n0 n exp1 exp -> prPrec i 7 (concatD [prt 0 n0 , prt 0 n , prt 7 exp1 , doc (showString ">") , prt 8 exp])
    EEq exp0 exp -> prPrec i 7 (concatD [prt 7 exp0 , doc (showString "=") , prt 8 exp])
+   PosEEq n0 n exp1 exp -> prPrec i 7 (concatD [prt 0 n0 , prt 0 n , prt 7 exp1 , doc (showString "=") , prt 8 exp])
    ELte exp0 exp -> prPrec i 7 (concatD [prt 7 exp0 , doc (showString "<=") , prt 8 exp])
+   PosELte n0 n exp1 exp -> prPrec i 7 (concatD [prt 0 n0 , prt 0 n , prt 7 exp1 , doc (showString "<=") , prt 8 exp])
    EGte exp0 exp -> prPrec i 7 (concatD [prt 7 exp0 , doc (showString ">=") , prt 8 exp])
+   PosEGte n0 n exp1 exp -> prPrec i 7 (concatD [prt 0 n0 , prt 0 n , prt 7 exp1 , doc (showString ">=") , prt 8 exp])
    ENeq exp0 exp -> prPrec i 7 (concatD [prt 7 exp0 , doc (showString "!=") , prt 8 exp])
+   PosENeq n0 n exp1 exp -> prPrec i 7 (concatD [prt 0 n0 , prt 0 n , prt 7 exp1 , doc (showString "!=") , prt 8 exp])
    EIn exp0 exp -> prPrec i 7 (concatD [prt 7 exp0 , doc (showString "in") , prt 8 exp])
+   PosEIn n0 n exp1 exp -> prPrec i 7 (concatD [prt 0 n0 , prt 0 n , prt 7 exp1 , doc (showString "in") , prt 8 exp])
    ENin exp0 exp -> prPrec i 7 (concatD [prt 7 exp0 , doc (showString "not") , doc (showString "in") , prt 8 exp])
+   PosENin n0 n exp1 exp -> prPrec i 7 (concatD [prt 0 n0 , prt 0 n , prt 7 exp1 , doc (showString "not") , doc (showString "in") , prt 8 exp])
    QuantExp quant exp -> prPrec i 8 (concatD [prt 0 quant , prt 12 exp])
+   PosQuantExp n0 n quant exp -> prPrec i 8 (concatD [prt 0 n0 , prt 0 n , prt 0 quant , prt 12 exp])
    EAdd exp0 exp -> prPrec i 9 (concatD [prt 9 exp0 , doc (showString "+") , prt 10 exp])
+   PosEAdd n0 n exp1 exp -> prPrec i 9 (concatD [prt 0 n0 , prt 0 n , prt 9 exp1 , doc (showString "+") , prt 10 exp])
    ESub exp0 exp -> prPrec i 9 (concatD [prt 9 exp0 , doc (showString "-") , prt 10 exp])
+   PosESub n0 n exp1 exp -> prPrec i 9 (concatD [prt 0 n0 , prt 0 n , prt 9 exp1 , doc (showString "-") , prt 10 exp])
    EMul exp0 exp -> prPrec i 10 (concatD [prt 10 exp0 , doc (showString "*") , prt 11 exp])
+   PosEMul n0 n exp1 exp -> prPrec i 10 (concatD [prt 0 n0 , prt 0 n , prt 10 exp1 , doc (showString "*") , prt 11 exp])
    EDiv exp0 exp -> prPrec i 10 (concatD [prt 10 exp0 , doc (showString "/") , prt 11 exp])
+   PosEDiv n0 n exp1 exp -> prPrec i 10 (concatD [prt 0 n0 , prt 0 n , prt 10 exp1 , doc (showString "/") , prt 11 exp])
    ECSetExp exp -> prPrec i 11 (concatD [doc (showString "#") , prt 12 exp])
+   PosECSetExp n0 n exp -> prPrec i 11 (concatD [prt 0 n0 , prt 0 n , doc (showString "#") , prt 12 exp])
    EMinExp exp -> prPrec i 11 (concatD [doc (showString "-") , prt 12 exp])
+   PosEMinExp n0 n exp -> prPrec i 11 (concatD [prt 0 n0 , prt 0 n , doc (showString "-") , prt 12 exp])
    EImpliesElse exp0 exp1 exp -> prPrec i 12 (concatD [doc (showString "if") , prt 12 exp0 , doc (showString "then") , prt 12 exp1 , doc (showString "else") , prt 13 exp])
-   EInt n -> prPrec i 13 (concatD [prt 0 n])
-   EDouble d -> prPrec i 13 (concatD [prt 0 d])
-   EStr str -> prPrec i 13 (concatD [prt 0 str])
+   PosEImpliesElse n0 n exp1 exp2 exp -> prPrec i 12 (concatD [prt 0 n0 , prt 0 n , doc (showString "if") , prt 12 exp1 , doc (showString "then") , prt 12 exp2 , doc (showString "else") , prt 13 exp])
+   EInt posinteger -> prPrec i 13 (concatD [prt 0 posinteger])
+   PosEInt n0 n posinteger -> prPrec i 13 (concatD [prt 0 n0 , prt 0 n , prt 0 posinteger])
+   EDouble posdouble -> prPrec i 13 (concatD [prt 0 posdouble])
+   PosEDouble n0 n posdouble -> prPrec i 13 (concatD [prt 0 n0 , prt 0 n , prt 0 posdouble])
+   EStr posstring -> prPrec i 13 (concatD [prt 0 posstring])
+   PosEStr n0 n posstring -> prPrec i 13 (concatD [prt 0 n0 , prt 0 n , prt 0 posstring])
    ESetExp setexp -> prPrec i 13 (concatD [prt 0 setexp])
+   PosESetExp n0 n setexp -> prPrec i 13 (concatD [prt 0 n0 , prt 0 n , prt 0 setexp])
 
   prtList es = case es of
    [] -> (concatD [])
@@ -244,31 +330,45 @@ instance Print Exp where
 instance Print SetExp where
   prt i e = case e of
    Union setexp0 setexp -> prPrec i 0 (concatD [prt 0 setexp0 , doc (showString "++") , prt 1 setexp])
+   PosUnion n0 n setexp1 setexp -> prPrec i 0 (concatD [prt 0 n0 , prt 0 n , prt 0 setexp1 , doc (showString "++") , prt 1 setexp])
    UnionCom setexp0 setexp -> prPrec i 0 (concatD [prt 0 setexp0 , doc (showString ",") , prt 1 setexp])
+   PosUnionCom n0 n setexp1 setexp -> prPrec i 0 (concatD [prt 0 n0 , prt 0 n , prt 0 setexp1 , doc (showString ",") , prt 1 setexp])
    Difference setexp0 setexp -> prPrec i 1 (concatD [prt 1 setexp0 , doc (showString "--") , prt 2 setexp])
+   PosDifference n0 n setexp1 setexp -> prPrec i 1 (concatD [prt 0 n0 , prt 0 n , prt 1 setexp1 , doc (showString "--") , prt 2 setexp])
    Intersection setexp0 setexp -> prPrec i 2 (concatD [prt 2 setexp0 , doc (showString "&") , prt 3 setexp])
+   PosIntersection n0 n setexp1 setexp -> prPrec i 2 (concatD [prt 0 n0 , prt 0 n , prt 2 setexp1 , doc (showString "&") , prt 3 setexp])
    Domain setexp0 setexp -> prPrec i 3 (concatD [prt 3 setexp0 , doc (showString "<:") , prt 4 setexp])
+   PosDomain n0 n setexp1 setexp -> prPrec i 3 (concatD [prt 0 n0 , prt 0 n , prt 3 setexp1 , doc (showString "<:") , prt 4 setexp])
    Range setexp0 setexp -> prPrec i 4 (concatD [prt 4 setexp0 , doc (showString ":>") , prt 5 setexp])
+   PosRange n0 n setexp1 setexp -> prPrec i 4 (concatD [prt 0 n0 , prt 0 n , prt 4 setexp1 , doc (showString ":>") , prt 5 setexp])
    Join setexp0 setexp -> prPrec i 5 (concatD [prt 5 setexp0 , doc (showString ".") , prt 6 setexp])
+   PosJoin n0 n setexp1 setexp -> prPrec i 5 (concatD [prt 0 n0 , prt 0 n , prt 5 setexp1 , doc (showString ".") , prt 6 setexp])
    ClaferId name -> prPrec i 6 (concatD [prt 0 name])
+   PosClaferId n0 n name -> prPrec i 6 (concatD [prt 0 n0 , prt 0 n , prt 0 name])
 
 
 instance Print Decl where
   prt i e = case e of
    Decl locids setexp -> prPrec i 0 (concatD [prt 0 locids , doc (showString ":") , prt 0 setexp])
+   PosDecl n0 n locids setexp -> prPrec i 0 (concatD [prt 0 n0 , prt 0 n , prt 0 locids , doc (showString ":") , prt 0 setexp])
 
 
 instance Print Quant where
   prt i e = case e of
    QuantNo  -> prPrec i 0 (concatD [doc (showString "no")])
+   PosQuantNo n0 n -> prPrec i 0 (concatD [prt 0 n0 , prt 0 n , doc (showString "no")])
    QuantLone  -> prPrec i 0 (concatD [doc (showString "lone")])
+   PosQuantLone n0 n -> prPrec i 0 (concatD [prt 0 n0 , prt 0 n , doc (showString "lone")])
    QuantOne  -> prPrec i 0 (concatD [doc (showString "one")])
+   PosQuantOne n0 n -> prPrec i 0 (concatD [prt 0 n0 , prt 0 n , doc (showString "one")])
    QuantSome  -> prPrec i 0 (concatD [doc (showString "some")])
+   PosQuantSome n0 n -> prPrec i 0 (concatD [prt 0 n0 , prt 0 n , doc (showString "some")])
 
 
 instance Print EnumId where
   prt i e = case e of
-   EnumIdIdent id -> prPrec i 0 (concatD [prt 0 id])
+   EnumIdIdent posident -> prPrec i 0 (concatD [prt 0 posident])
+   PosEnumIdIdent n0 n posident -> prPrec i 0 (concatD [prt 0 n0 , prt 0 n , prt 0 posident])
 
   prtList es = case es of
    [x] -> (concatD [prt 0 x])
@@ -276,7 +376,8 @@ instance Print EnumId where
 
 instance Print ModId where
   prt i e = case e of
-   ModIdIdent id -> prPrec i 0 (concatD [prt 0 id])
+   ModIdIdent posident -> prPrec i 0 (concatD [prt 0 posident])
+   PosModIdIdent n0 n posident -> prPrec i 0 (concatD [prt 0 n0 , prt 0 n , prt 0 posident])
 
   prtList es = case es of
    [x] -> (concatD [prt 0 x])
@@ -284,7 +385,8 @@ instance Print ModId where
 
 instance Print LocId where
   prt i e = case e of
-   LocIdIdent id -> prPrec i 0 (concatD [prt 0 id])
+   LocIdIdent posident -> prPrec i 0 (concatD [prt 0 posident])
+   PosLocIdIdent n0 n posident -> prPrec i 0 (concatD [prt 0 n0 , prt 0 n , prt 0 posident])
 
   prtList es = case es of
    [x] -> (concatD [prt 0 x])

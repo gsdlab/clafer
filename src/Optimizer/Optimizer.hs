@@ -35,7 +35,7 @@ import Intermediate.Intclafer
 
 optimizeModule :: ClaferArgs -> (IModule, GEnv) -> IModule
 optimizeModule args (imodule, genv) =
-  imodule{mDecls = em $ rm $ map (optimizeElement (1, ExIntegerNum 1)) $
+  imodule{mDecls = em $ rm $ map (optimizeElement (1, 1)) $
                    markTopModule $ mDecls imodule}
   where
   rm = if fromJust $ keep_unused args then id else remUnusedAbs
@@ -58,12 +58,9 @@ multInt :: Interval -> Interval -> Interval
 multInt (m, n) (m', n') = (m * m', multExInt n n')
 
 
-multExInt :: ExInteger -> ExInteger -> ExInteger
-multExInt (ExIntegerNum 0) _ = ExIntegerNum 0
-multExInt _ (ExIntegerNum 0) = ExIntegerNum 0
-multExInt ExIntegerAst _ = ExIntegerAst
-multExInt _ ExIntegerAst = ExIntegerAst
-multExInt (ExIntegerNum m) (ExIntegerNum n) = ExIntegerNum $ m * n
+multExInt 0 _ = 0
+multExInt _  0 = 0
+multExInt m n = if m == -1 || n == -1 then -1 else m * n
 
 -- -----------------------------------------------------------------------------
 

@@ -211,7 +211,7 @@ genRelations mode clafer = maybeToList ref ++ (map mkRel $ getSubclafers $ eleme
   where
   ref = if isOverlapping $ super clafer then
         Just $ Concat "SubSig" [CString $ genRel "ref"
-                                clafer {card = Just (1, ExIntegerNum 1)} $
+                                clafer {card = Just (1, 1)} $
                                 flatten $ refType mode clafer] else Nothing
   mkRel c = Concat "SubSig" [CString $ genRel (genRelName $ uid c) c $ uid c]
 
@@ -321,18 +321,18 @@ genCardCrude card = genIntervalCrude $ fromJust card
 
 
 genIntervalCrude x = case x of
-  (1, ExIntegerNum 1) -> "one"
-  (0, ExIntegerNum 1) -> "lone"
-  (1, ExIntegerAst)   -> "some"
+  (1, 1) -> "one"
+  (0, 1) -> "lone"
+  (1, -1) -> "some"
   _                   -> "set"
 
 
 genInterval :: String -> String -> Interval -> Concat
 genInterval constraintName element x = case x of
-  (1, ExIntegerNum 1) -> cardConcat constraintName [CString "one"]
-  (0, ExIntegerNum 1) -> cardConcat constraintName [CString "lone"]
-  (1, ExIntegerAst)   -> cardConcat constraintName [CString "some"]
-  (0, ExIntegerAst)   -> CString "set" -- "set"
+  (1, 1) -> cardConcat constraintName [CString "one"]
+  (0, 1) -> cardConcat constraintName [CString "lone"]
+  (1, -1)   -> cardConcat constraintName [CString "some"]
+  (0, -1)   -> CString "set" -- "set"
   (n, exinteger)  ->
     case (s1, s2) of
       (Just c1, Just c2) -> cconcat [c1, CString " and ", c2]
@@ -359,10 +359,9 @@ cardUpperConcat :: String -> [Concat] -> Concat
 cardUpperConcat constraintName = Concat ("Cardinality upper " ++ constraintName)
 
 
-genExInteger :: String -> ExInteger -> Maybe Result
-genExInteger element x = case x of
-  ExIntegerAst   -> Nothing
-  ExIntegerNum n -> Just $ concat ["#", element, " <= ", show n]
+genExInteger :: String -> Integer -> Maybe Result
+genExInteger element x =
+  if x == -1 then Nothing else Just $ concat ["#", element, " <= ", show x]
 
 
 -- -----------------------------------------------------------------------------
