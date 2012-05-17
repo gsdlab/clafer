@@ -38,11 +38,15 @@ import Intermediate.Intclafer
 -- basic functions shared by desugarer, analyzer and code generator
 type Result = String
 
-
-transIdent :: Ident -> Result
+transIdent :: PosIdent -> Result
 transIdent x = case x of
-  Ident str  -> str
+  PosIdent str  -> snd str
 
+mkIdent str = PosIdent ((0, 0), str)
+
+mkInteger (PosInteger (_, n)) = read n
+
+type Ident = PosIdent
 
 getSuper = getSuperId.supers.super
 

@@ -40,7 +40,7 @@ data Stats = Stats {
 
 statsModule :: IModule -> Stats
 statsModule imodule =
-  execState (mapM statsElement $ mDecls imodule) $ Stats 0 0 0 0 0 (1, ExIntegerNum 1)
+  execState (mapM statsElement $ mDecls imodule) $ Stats 0 0 0 0 0 (1, 1)
 
 
 statsClafer clafer = do
@@ -58,9 +58,7 @@ statsClafer clafer = do
 statsCard :: Interval -> Interval -> Interval
 statsCard (m, n) (m', n') = (max m m', maxEx n n')
   where
-  maxEx ExIntegerAst _ = ExIntegerAst
-  maxEx _ ExIntegerAst = ExIntegerAst
-  maxEx (ExIntegerNum m) (ExIntegerNum n) = ExIntegerNum $ max m n
+  maxEx m n = if m == -1 || n == -1 then -1 else max m n
 
 
 statsElement x = case x of

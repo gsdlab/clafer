@@ -93,7 +93,7 @@ analyzeReferences clafers analysis (IEClafer clafer) =
 analyzeReferences _ analysis _ = analysis
 
 
-analyzeConstraints :: [PExp] -> (String -> ExInteger) -> Map String Integer
+analyzeConstraints :: [PExp] -> (String -> Integer) -> Map String Integer
 analyzeConstraints constraints upperCards =
     foldr analyzeConstraint Map.empty $ filter isOneOrSomeConstraint constraints
     where
@@ -171,8 +171,7 @@ analyzeConstraints constraints upperCards =
         pMaxScore = upperCards p
         pScore = min' pDesireScore pMaxScore
         
-    min' a (ExIntegerNum b) = min a b
-    min' a ExIntegerAst = a
+    min' a b = if b == -1 then a else min a b
         
     -- The each child has at most one parent. No matter what the path in a quantifier
     -- looks like, we ignore the parent parts.

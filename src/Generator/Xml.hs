@@ -81,11 +81,7 @@ genXmlGCard (IGCard isKeyword interval) = tag "GroupCard" $ concat
 
 genXmlInterval (nMin, nMax) = concat
   [ tag "Min" $ genXmlInteger nMin
-  , genXmlExInteger nMax]
-
-genXmlExInteger x = case x of
-  ExIntegerAst -> tagType "Max" "ExIntegerAst" ""
-  ExIntegerNum n -> tagType "Max" "ExIntegerNum" $ genXmlInteger n
+  , tag "Max" $ genXmlInteger nMax]
 
 genXmlId ident = tag "Id" ident
 

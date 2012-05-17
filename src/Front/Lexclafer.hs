@@ -2,7 +2,7 @@
 {-# LINE 3 "Lexclafer.x" #-}
 
 {-# OPTIONS -fno-warn-incomplete-patterns #-}
-module Lexclafer where
+module Front.Lexclafer where
 
 
 

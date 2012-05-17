@@ -1,10 +1,10 @@
 {-# OPTIONS_GHC -w #-}
 {-# OPTIONS -fglasgow-exts -cpp #-}
 {-# OPTIONS -fno-warn-incomplete-patterns -fno-warn-overlapping-patterns #-}
-module Parclafer where
-import Absclafer
-import Lexclafer
-import ErrM
+module Front.Parclafer where
+import Front.Absclafer
+import Front.Lexclafer
+import Front.ErrM
 import qualified Data.Array as Happy_Data_Array
 import qualified GHC.Exts as Happy_GHC_Exts
 
@@ -654,13 +654,12 @@ happyReduction_18 (happy_x_4 `HappyStk`
 	happy_x_2 `HappyStk`
 	happy_x_1 `HappyStk`
 	happyRest)
-	 = case happyOutTok happy_x_1 of { happy_var_1 -> 
-	case happyOut26 happy_x_2 of { happy_var_2 -> 
+	 = case happyOut26 happy_x_2 of { happy_var_2 -> 
 	case happyOut23 happy_x_3 of { happy_var_3 -> 
 	case happyOut16 happy_x_4 of { happy_var_4 -> 
 	happyIn17
-		 (uncurry PosClaferUse (gp happy_var_1) happy_var_2 happy_var_3 happy_var_4
-	) `HappyStk` happyRest}}}}
+		 (ClaferUse happy_var_2 happy_var_3 happy_var_4
+	) `HappyStk` happyRest}}}
 
 happyReduce_19 = happySpecReduce_1  13# happyReduction_19
 happyReduction_19 happy_x_1

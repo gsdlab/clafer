@@ -44,6 +44,7 @@ import Front.Printclafer
 import Front.Absclafer hiding (Clafer)
 import Front.LayoutResolver
 import Front.ErrM
+import Front.Mapper
 import Intermediate.Desugarer
 import Intermediate.Resolver
 import Intermediate.StringAnalyzer
@@ -102,7 +103,7 @@ run v p args = do
 
 desugar args tree = do
 --  conPutStrLn args "[Desugaring]"
-  let dTree = desugarModule tree
+  let dTree = desugarModule $ mapModule tree
   return dTree
   -- writeFile (f ++ ".des") $ printTree $
   --  sugarModule dTree
@@ -152,8 +153,8 @@ showStats au (Stats na nr nc nconst ngoals sgl) =
           , "All names unique: " ++ show au]
 
 
-showInterval (n, ExIntegerAst) = show n ++ "..*"
-showInterval (n, ExIntegerNum m) = show n ++ ".." ++ show m
+showInterval (n, -1) = show n ++ "..*"
+showInterval (n, m) = show n ++ ".." ++ show m
 
 runValidate args fo = do
   let path = (fromJust $ tooldir args) ++ "/"

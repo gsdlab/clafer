@@ -127,7 +127,7 @@ analyzeClafer env clafer =
 
 -- only for non-overlapping
 analyzeGCard :: SEnv -> IClafer -> Maybe IGCard
-analyzeGCard env clafer = gcard' `mplus` (Just $ IGCard False (0, ExIntegerAst))
+analyzeGCard env clafer = gcard' `mplus` (Just $ IGCard False (0, -1))
   where
   gcard'
     | isOverlapping $ super clafer = gcard clafer
@@ -139,9 +139,9 @@ analyzeCard :: SEnv -> IClafer -> Maybe Interval
 analyzeCard env clafer = card clafer `mplus` Just card'
   where
   card'
-    | isAbstract clafer                          = (0, ExIntegerAst)
-    | (isJust $ context env) && isKeyword pGcard = (0, ExIntegerNum 1)
-    | otherwise                                  = (1, ExIntegerNum 1)
+    | isAbstract clafer                          = (0, -1)
+    | (isJust $ context env) && isKeyword pGcard = (0, 1)
+    | otherwise                                  = (1, 1)
   pGcard = fromJust $ gcard $ fromJust $ context env
 
 
