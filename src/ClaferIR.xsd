@@ -193,7 +193,13 @@
                 </xs:sequence>
             </xs:complexType>
           </xs:element>
-          <xs:element name="Max" type="cl:ExInteger"/>
+          <xs:element name="Max">
+            <xs:complexType>
+                <xs:sequence>
+                    <xs:element ref="IntLiteral"/>
+                </xs:sequence>
+            </xs:complexType>
+          </xs:element>
       </xs:sequence>
   </xs:complexType>
 
@@ -233,29 +239,6 @@
       </xs:sequence>
   </xs:complexType>
 
-  <!-- ......................................................................-->
-  <!-- data ExInteger =
-       ExIntegerAst
-     | ExIntegerNum Integer
-  -->
-
-  <xs:complexType name="ExInteger" abstract="true"/>
-
-  <xs:complexType name="ExIntegerAst">
-    <xs:complexContent>
-      <xs:extension base="cl:ExInteger"/>
-    </xs:complexContent>
-  </xs:complexType>
-
-  <xs:complexType name="ExIntegerNum">
-    <xs:complexContent>
-        <xs:extension base="cl:ExInteger">
-            <xs:sequence>
-                <xs:element ref="IntLiteral"/>
-            </xs:sequence>
-        </xs:extension>
-    </xs:complexContent>
-  </xs:complexType>
 
   <!-- ......................................................................-->
   <!--
