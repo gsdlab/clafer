@@ -39,7 +39,7 @@ abstract LinkedList
 		[ this.footprint = 484]
 		TCP_IP : IMeasurable
 			[ this.footprint = 0]
-		or SyntheticPerformanceOrMeasuruement : IMeasurable
+		or SyntheticPerformanceOrMemorySize : IMeasurable
 			[ this.footprint = 0]
 			Performance : IMeasurable 
 				[ this.footprint = 37]

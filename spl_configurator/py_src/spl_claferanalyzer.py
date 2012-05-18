@@ -68,7 +68,7 @@ def extract_integer(element):
     return extacted_integer
 
 
-def get_footprint(element, property="footprint"):
+def get_property(element, property="footprint"):
     footprint_val = 0
     
     for constraint in element.findall("./c1:Declaration[@xsi:type='cl:IConstraint']", namespaces=_namespaces):
@@ -96,3 +96,41 @@ def get_footprint(element, property="footprint"):
 
 def get_empty_features_footprint(xml_model_configurations, args):
     pass
+
+
+
+def get_max_value_property(SPL_Model, property):
+        """
+        Returns the maximum integer value  for a nonfunctional in the Software Product Line Feature Model.
+        """
+        max_integer = 0
+        for clafer_features in SPL_Model.findall(".//c1:Declaration[@xsi:type='cl:IClafer']", namespaces=_namespaces):
+            if get_clafer_Id(clafer_features)!=  ("total_%s" % property):
+                max_integer = max_integer + max(int(get_property(clafer_features, property)), 0)
+        return max_integer
+def get_set_extra_integers_from_feature_model(SPL_Model, property):
+    """
+    Returns a set of all integers that are not referenced in the feature model, but that might be
+    needed to represent the quality properties of a configuration of the feature model.
+    """
+    from collections import Counter
+    
+    bag_integers_in_spl_model = Counter()
+    for clafer_features in SPL_Model.findall(".//c1:Declaration[@xsi:type='cl:IClafer']", namespaces=_namespaces):
+        if get_clafer_Id(clafer_features)!=  ("total_%s" % property):    
+            # Eg add the integer to the bag.
+            bag_integers_in_spl_model.update([int(get_property(clafer_features, property))])
+    
+    set_integers_derived_from_spl_model = set()
+    
+    for feature_number in bag_integers_in_spl_model.elements(): # expand the bag (e.g BAG = {1, 1 , 1, 2} expands to 1,1,1,2 .
+        tmp_numbers_to_add = set()
+        for existing_numbers in set_integers_derived_from_spl_model:
+            tmp_numbers_to_add.add(existing_numbers + feature_number)
+        tmp_numbers_to_add.add(feature_number)
+        # For each number of the bag x, 
+        #     set_integers_derived_from_spl_model += x + each element of  set_integers_derived_from_spl_model .
+        set_integers_derived_from_spl_model.update(tmp_numbers_to_add)
+
+    return set_integers_derived_from_spl_model.difference(set(bag_integers_in_spl_model))
+    
