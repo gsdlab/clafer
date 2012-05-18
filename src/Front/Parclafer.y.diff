@@ -22,6 +22,10 @@
 <   | '{' ListElement '}' { ElementsList (reverse $2) }
 ---
 >   | '{' ListElement '}' { uncurry PosElementsList (gp $1) (reverse $2) }
+132c132
+<   | '`' Name Card Elements { ClaferUse $2 $3 $4 }
+---
+> | '`' Name Card Elements { uncurry PosClaferUse (gp $1) $2 $3 $4 }
 144,146c144,146
 < SuperHow : ':' { SuperColon } 
 <   | '->' { SuperArrow }
@@ -70,6 +74,10 @@
 ---
 > Exp1 : 'max' Exp2 { uncurry PosEGMax (gp $1) $2 } 
 >   | 'min' Exp2 { uncurry PosEGMin (gp $1) $2 }
+226c226
+< Exp6 : '!' Exp7 { ENeg $2 } 
+---
+> Exp6 : '!' Exp7 { uncurry PosENeg (gp $1) $2 } 
 260,261c260,261
 < Exp11 : '#' Exp12 { ECSetExp $2 } 
 <   | '-' Exp12 { EMinExp $2 }

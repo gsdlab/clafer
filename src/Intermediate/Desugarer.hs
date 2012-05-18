@@ -268,8 +268,8 @@ desugarGCard x = case x of
   PosGCardOr l c  -> Just $ IGCard True (1, -1)
   PosGCardMux l c -> Just $ IGCard True (0, 1)
   PosGCardOpt l c -> Just $ IGCard True (0, -1)
-  PosGCardInterval l c card@(NCard i ex) ->
-      Just $ IGCard (isOptionalDef card) (mkInteger i, desugarExInteger ex)
+  PosGCardInterval l c ncard ->
+      Just $ IGCard (isOptionalDef ncard) $ desugarNCard ncard
 
 isOptionalDef (PosNCard l c m n) = isOptionalDef $ NCard m n
 isOptionalDef (NCard m n) = (0 == mkInteger m) && (not $ isExIntegerAst n)
@@ -297,8 +297,11 @@ desugarCard x = case x of
   PosCardSome l c  ->  Just (1, -1)
   PosCardAny l c ->  Just (0, -1)
   PosCardNum l c n  -> Just (mkInteger n, mkInteger n)
-  PosCardInterval l c (NCard i ex)  -> Just (mkInteger i, desugarExInteger ex)
+  PosCardInterval l c ncard  -> Just $ desugarNCard ncard
 
+
+desugarNCard (NCard i ex) = desugarNCard $ PosNCard 0 0 i ex
+desugarNCard (PosNCard l c i ex) = (mkInteger i, desugarExInteger ex)
 
 desugarExInteger ExIntegerAst = -1
 desugarExInteger (PosExIntegerAst l c) = -1

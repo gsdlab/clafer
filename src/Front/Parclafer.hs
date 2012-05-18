@@ -654,12 +654,13 @@ happyReduction_18 (happy_x_4 `HappyStk`
 	happy_x_2 `HappyStk`
 	happy_x_1 `HappyStk`
 	happyRest)
-	 = case happyOut26 happy_x_2 of { happy_var_2 -> 
+	 = case happyOutTok happy_x_1 of { happy_var_1 -> 
+	case happyOut26 happy_x_2 of { happy_var_2 -> 
 	case happyOut23 happy_x_3 of { happy_var_3 -> 
 	case happyOut16 happy_x_4 of { happy_var_4 -> 
 	happyIn17
-		 (ClaferUse happy_var_2 happy_var_3 happy_var_4
-	) `HappyStk` happyRest}}}
+		 (uncurry PosClaferUse (gp happy_var_1) happy_var_2 happy_var_3 happy_var_4
+	) `HappyStk` happyRest}}}}
 
 happyReduce_19 = happySpecReduce_1  13# happyReduction_19
 happyReduction_19 happy_x_1
@@ -1023,10 +1024,11 @@ happyReduction_63 happy_x_1
 happyReduce_64 = happySpecReduce_2  29# happyReduction_64
 happyReduction_64 happy_x_2
 	happy_x_1
-	 =  case happyOut34 happy_x_2 of { happy_var_2 -> 
+	 =  case happyOutTok happy_x_1 of { happy_var_1 -> 
+	case happyOut34 happy_x_2 of { happy_var_2 -> 
 	happyIn33
-		 (ENeg happy_var_2
-	)}
+		 (uncurry PosENeg (gp happy_var_1) happy_var_2
+	)}}
 
 happyReduce_65 = happySpecReduce_1  29# happyReduction_65
 happyReduction_65 happy_x_1

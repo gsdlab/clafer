@@ -4,7 +4,7 @@ import Front.Absclafer
 
 mapModule x = case x of
   Module declarations  -> posModule $ map mapDeclaration declarations
-  _  -> error "no mapping"
+  _  -> error "no module mapping"
 
 posModule declarations = PosModule n0 n declarations
   where
@@ -15,7 +15,7 @@ posModule declarations = PosModule n0 n declarations
 mapDeclaration x = case x of
   PosEnumDecl n0 n posident enumids  -> x
   ElementDecl element  -> posElementDecl $ mapElement element
-  _  -> error "no mapping"
+  _  -> error "no declaration mapping"
 
 getPosDeclaration x = case x of
   PosEnumDecl n0 n  _ _  -> (n0, n)
@@ -25,7 +25,7 @@ posElementDecl element = uncurry PosElementDecl (getPosElement element) element
 
 mapClafer x = case x of
   Clafer abstract gcard posident super card init elements  -> posClafer (mapAbstract abstract) (mapGCard gcard) posident (mapSuper super) (mapCard card) (mapInit init) (mapElements elements)
-  _  -> error "no mapping"
+  _  -> error "no elementDecl mapping"
 
 getPosClafer (PosClafer n0 n _ _ _ _ _ _ _) = (n0, n)
 
@@ -40,26 +40,26 @@ posClafer abstract gcard posident super card init elements = uncurry PosClafer
 
 mapConstraint x = case x of
   PosConstraint n0 n exps  -> PosConstraint n0 n $ map mapExp exps
-  _  -> error "no mapping"
+  _  -> error "no constraint mapping"
 
 getPosConstraint (PosConstraint n0 n _) = (n0, n)
 
 mapSoftConstraint x = case x of
   PosSoftConstraint n0 n exps  -> PosSoftConstraint n0 n $ map mapExp exps
-  _  -> error "no mapping"
+  _  -> error "no softConstraint mapping"
 
 getPosSoftConstraint (PosSoftConstraint n0 n _) = (n0, n)
 
 mapGoal x = case x of
   PosGoal n0 n exps  -> PosGoal n0 n $ map mapExp exps
-  _  -> error "no mapping"
+  _  -> error "no goal mapping"
 
 getPosGoal (PosGoal n0 n _) = (n0, n)
 
 mapAbstract x = case x of
   AbstractEmpty  -> PosAbstractEmpty 0 0
   PosAbstract n0 n  -> x
-  _  -> error "no mapping"
+  _  -> error "no abstract mapping"
 
 getPosAbstract x = case x of
   PosAbstractEmpty n0 n -> (n0, n)
@@ -68,7 +68,7 @@ getPosAbstract x = case x of
 mapElements x = case x of
   ElementsEmpty  -> PosElementsEmpty 0 0
   PosElementsList n0 n elements  -> PosElementsList n0 n $ map mapElement elements
-  _  -> error "no mapping"
+  _  -> error "no elements mapping"
 
 getPosElements x = case x of
   PosElementsEmpty n0 n -> (n0, n)
@@ -80,7 +80,7 @@ mapElement x = case x of
   Subconstraint constraint  -> posSubconstraint $ mapConstraint constraint
   Subgoal goal  -> posSubgoal $ mapGoal goal
   Subsoftconstraint softconstraint  -> posSubsoftconstraint $ mapSoftConstraint softconstraint
-  _  -> error "no mapping"
+  _  -> error "no element mapping"
 
 getPosElement x = case x of
   PosSubclafer n0 n _  -> (n0, n)
@@ -100,7 +100,7 @@ posSubsoftconstraint softconstraint = uncurry PosSubsoftconstraint (getPosSoftCo
 mapSuper x = case x of
   SuperEmpty  -> PosSuperEmpty 0 0
   SuperSome superhow setexp  -> posSuperSome superhow $ mapSetExp setexp
-  _  -> error "no mapping"
+  _  -> error "no super mapping"
 
 getPosSuper x = case x of
   PosSuperEmpty n0 n -> (n0, n)
@@ -117,7 +117,7 @@ getPosSuperHow x = case x of
 mapInit x = case x of
   InitEmpty  -> PosInitEmpty 0 0
   InitSome inithow exp  -> posInitSome inithow $ mapExp exp
-  _  -> error "no mapping"
+  _  -> error "no init mapping"
 
 getPosInit x = case x of
   PosInitEmpty n0 n -> (n0, n)
@@ -136,7 +136,7 @@ mapGCard x = case x of
   PosGCardMux n0 n  -> x
   PosGCardOpt n0 n  -> x
   GCardInterval ncard  -> posGCardInterval $ mapNCard ncard
-  _  -> error "no mapping"
+  _  -> error "no gcard mapping"
 
 getPosGCard x = case x of
   PosGCardEmpty n0 n ->(n0, n)
@@ -155,7 +155,7 @@ mapCard x = case x of
   PosCardAny n0 n  ->  x
   CardNum posinteger  -> posCardNum posinteger
   CardInterval ncard  -> posCardInterval $ mapNCard ncard
-  _  -> error "no mapping"
+  _  -> error "no card mapping"
 
 getPosCard x = case x of
   PosCardEmpty n0 n  -> (n0, n)
@@ -171,7 +171,7 @@ posCardInterval ncard = uncurry PosCardInterval (getPosNCard ncard) ncard
 
 mapNCard x = case x of
   NCard posinteger exinteger  -> posNCard posinteger (mapExInteger exinteger)
-  _  -> error "no mapping"
+  _  -> error "no ncard mapping"
 
 getPosNCard (PosNCard n0 n _ _) = (n0, n)
 
@@ -180,7 +180,7 @@ posNCard posinteger exinteger = uncurry PosNCard (getPosPosInteger posinteger >-
 mapExInteger x = case x of
   PosExIntegerAst n0 n  -> x
   ExIntegerNum posinteger  -> posExIntegerNum posinteger
-  _  -> error "no mapping"
+  _  -> error "no exinteger mapping"
 
 getPosExInteger x = case x of
   PosExIntegerAst n0 n -> (n0, n)
@@ -190,7 +190,7 @@ posExIntegerNum posinteger = uncurry PosExIntegerNum (getPosPosInteger posintege
 
 mapName x = case x of
   Path modids  -> posPath $ map mapModId modids
-  _  -> error "no mapping"
+  _  -> error "no name mapping"
 
 getPosName (PosPath n0 n _) = (n0, n)
 
@@ -233,7 +233,7 @@ mapExp x = case x of
   EDouble posdouble  -> posEDouble posdouble
   EStr posstring  -> posEStr posstring
   ESetExp setexp  -> posESetExp $ mapSetExp setexp
-  _  -> error "no mapping"
+  x  -> error $ "no exp mapping: " ++ show x
 
 getPosExp x = case x of
   PosDeclAllDisj n0 n _ _ -> (n0, n)
@@ -301,7 +301,7 @@ mapSetExp x = case x of
   Range setexp0 setexp  -> posSBin PosRange setexp0 setexp
   Join setexp0 setexp  -> posSBin PosJoin setexp0 setexp
   ClaferId name  -> posClaferId $ mapName name
-  _  -> error "no mapping"
+  _  -> error "no setExp mapping"
 
 getPosSetExp x = case x of
   PosUnion n0 n _ _ -> (n0, n)
@@ -319,7 +319,7 @@ posClaferId name = uncurry PosClaferId (getPosName name) name
 
 mapDecl x = case x of
   Decl locids setexp  -> posDecl (map mapLocId locids) (mapSetExp setexp)
-  _  -> error "no mapping"
+  _  -> error "no decl mapping"
 
 getPosDecl (PosDecl n0 n _ _) = (n0, n)
 
@@ -334,7 +334,7 @@ mapQuant x = case x of
   PosQuantLone n0 n  -> x
   PosQuantOne n0 n  ->  x
   PosQuantSome n0 n  -> x
-  _  -> error "no mapping"
+  _  -> error "no quant mapping"
 
 getPosQuant x = case x of
   PosQuantNo n0 n  -> (n0, n)
@@ -344,13 +344,13 @@ getPosQuant x = case x of
 
 mapEnumId x = case x of
   EnumIdIdent posident  -> posEnumIdIdent posident
-  _  -> error "no mapping"
+  _  -> error "no enumId mapping"
 
 posEnumIdIdent posident = uncurry PosEnumIdIdent (getPosPosIdent posident) posident
 
 mapModId x = case x of
   ModIdIdent posident  -> posModIdIdent posident
-  _  -> error "no mapping"
+  _  -> error "no modId mapping"
 
 getPosModId x = case x of
   ModIdIdent posident  -> getPosPosIdent posident
@@ -359,7 +359,7 @@ posModIdIdent posident = uncurry PosModIdIdent (getPosPosIdent posident) posiden
 
 mapLocId x = case x of
   LocIdIdent posident  -> posLocIdIdent posident
-  _  -> error "no mapping"
+  _  -> error "no locId mapping"
 
 getPosLocId (PosLocIdIdent n0 n _) = (n0, n)
 
