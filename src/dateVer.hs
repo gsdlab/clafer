@@ -49,7 +49,7 @@ header = unlines
  , "SOFTWARE."
  , "-}"
  , ""
- , "module Version where"]
+ , "module Language.Clafer.Version where"]
 
 main = do
   timeZone <- getCurrentTimeZone

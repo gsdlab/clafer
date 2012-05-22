@@ -1,41 +1,61 @@
+{-
+ Copyright (C) 2012 Kacper Bak, Jimmy Liang, Michal Antkiewicz <http://gsd.uwaterloo.ca>
 
+ Permission is hereby granted, free of charge, to any person obtaining a copy of
+ this software and associated documentation files (the "Software"), to deal in
+ the Software without restriction, including without limitation the rights to
+ use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+ of the Software, and to permit persons to whom the Software is furnished to do
+ so, subject to the following conditions:
+
+ The above copyright notice and this permission notice shall be included in all
+ copies or substantial portions of the Software.
+
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ SOFTWARE.
+-}
 module Language.Clafer (
                         myLexer,  -- don't want to export (addFragment)
                         resolveLayout,-- don't want to export (addFragment)
                         resLayout, -- don't want to export (addFragment)
                         desugar,
-						analyze,
-						generate,
+                        analyze,
+                        generate,
                         Token,
                         pModule,
                         Module,
                         claferIRXSD,
-                        module Front.ErrM,
-                        module ClaferArgs,
-						voidf               
+                        module Language.Clafer.Front.ErrM,
+                        module Language.Clafer.ClaferArgs,
+                        voidf               
 ) where
 
 import Data.Maybe
 import Control.Monad
 
-import Common
-import Front.ErrM
-import ClaferArgs
-import Front.Lexclafer
-import Front.Parclafer
-import Front.Printclafer
-import Front.Absclafer hiding (Clafer)
-import Front.LayoutResolver
-import Front.Mapper
-import Intermediate.Desugarer
-import Intermediate.Resolver
-import Intermediate.StringAnalyzer
-import Intermediate.Transformer
-import Optimizer.Optimizer
-import Generator.Alloy
-import Generator.Xml
-import Generator.Schema
-import Generator.Stats
+import Language.Clafer.Common
+import Language.Clafer.Front.ErrM
+import Language.Clafer.ClaferArgs
+import Language.Clafer.Front.Lexclafer
+import Language.Clafer.Front.Parclafer
+import Language.Clafer.Front.Printclafer
+import Language.Clafer.Front.Absclafer hiding (Clafer)
+import Language.Clafer.Front.LayoutResolver
+import Language.Clafer.Front.Mapper
+import Language.Clafer.Intermediate.Desugarer
+import Language.Clafer.Intermediate.Resolver
+import Language.Clafer.Intermediate.StringAnalyzer
+import Language.Clafer.Intermediate.Transformer
+import Language.Clafer.Optimizer.Optimizer
+import Language.Clafer.Generator.Alloy
+import Language.Clafer.Generator.Xml
+import Language.Clafer.Generator.Schema
+import Language.Clafer.Generator.Stats
 
 desugar args tree = do
 --  conPutStrLn args "[Desugaring]"
@@ -90,4 +110,4 @@ showInterval (n, -1) = show n ++ "..*"
 showInterval (n, m) = show n ++ ".." ++ show m
 
 claferIRXSD :: [Char]
-claferIRXSD = Generator.Schema.xsd
+claferIRXSD = Language.Clafer.Generator.Schema.xsd

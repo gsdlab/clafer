@@ -4,7 +4,7 @@ all:
 
 newVersion:
 	ghc -isrc dateVer.hs ../dist/build/autogen/Paths_clafer.hs -outputdir dist/build --make -o dateVer
-	./dateVer > Version.hs
+	./dateVer > Language/Clafer/Version.hs
 
 clean:
 	$(MAKE) clean -C Front/
