@@ -3,7 +3,7 @@ all:
 	./Generator/quote.sh ClaferIR.xsd > ./Generator/Schema.hs
 
 newVersion:
-	ghc -outputdir dist/build --make dateVer -o dateVer
+	ghc -isrc dateVer.hs ../dist/build/autogen/Paths_clafer.hs -outputdir dist/build --make -o dateVer
 	./dateVer > Version.hs
 
 clean:

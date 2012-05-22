@@ -36,28 +36,28 @@ import System.Environment.Executable
 import Data.Maybe
 import System.FilePath.Posix
 
-import Common
-import ClaferArgs
-import Front.Lexclafer
-import Front.Parclafer
-import Front.Printclafer
-import Front.Absclafer hiding (Clafer)
-import Front.LayoutResolver
-import Front.ErrM
-import Front.Mapper
-import Intermediate.Desugarer
-import Intermediate.Resolver
-import Intermediate.StringAnalyzer
-import Intermediate.Transformer
-import Optimizer.Optimizer
-import Generator.Stats
-import Generator.Alloy
-import Generator.Xml
-import Generator.Schema
+import Language.Clafer
+
+--import Common
+--import ClaferArgs
+--import Front.Lexclafer
+--import Front.Parclafer
+--import Front.Printclafer
+--import Front.Absclafer hiding (Clafer)
+--import Front.LayoutResolver
+--import Front.ErrM
+--import Front.Mapper
+--import Intermediate.Desugarer
+--import Intermediate.Resolver
+--import Intermediate.StringAnalyzer
+--import Intermediate.Transformer
+--import Optimizer.Optimizer
+--import Generator.Stats
+--import Generator.Alloy
+--import Generator.Xml
+--import Generator.Schema
 
 type ParseFun = [Token] -> Err Module
-
-myLLexer = myLexer
 
 type VerbosityL = Int
 
@@ -66,7 +66,7 @@ putStrV v s = if v > 1 then putStrLn s else return ()
 
 
 start v p args model = if fromJust $ schema args
-  then putStrLn Generator.Schema.xsd
+  then putStrLn claferIRXSD
   else run v p args model
 
 
@@ -80,7 +80,7 @@ run v p args input = do
                        resolveLayout 
                      else 
                        id) 
-                    $ myLLexer $
+                    $ myLexer $
                     (if (not $ fromJust $ no_layout args) &&
                         (fromJust $ new_layout args)
                      then 
@@ -159,7 +159,7 @@ runValidate args fo = do
   let path = (fromJust $ tooldir args) ++ "/"
   case (fromJust $ mode args) of
     Xml -> do
-      writeFile "ClaferIR.xsd" Generator.Schema.xsd
+      writeFile "ClaferIR.xsd" claferIRXSD
       voidf $ system $ "java -classpath " ++ path ++ " XsdCheck ClaferIR.xsd " ++ fo
     Alloy ->   voidf $ system $ validateAlloy path "4" ++ fo
     Alloy42 -> voidf $ system $ validateAlloy path "4.2-rc" ++ fo
