@@ -1,5 +1,7 @@
+FRONT_DIR  = Language/Clafer/Front
+
 all:
-	$(MAKE) -C Front
+	$(MAKE) -C $(FRONT_DIR)
 	./Generator/quote.sh ClaferIR.xsd > ./Generator/Schema.hs
 
 newVersion:
@@ -7,7 +9,7 @@ newVersion:
 	./dateVer > Language/Clafer/Version.hs
 
 clean:
-	$(MAKE) clean -C Front/
+	$(MAKE) clean -C $(FRONT_DIR)
 	rm -rf dist
 	rm -r dateVer
 	find . -type f -name '*.o' -print0 | xargs -0 rm -f

@@ -21,10 +21,9 @@
 -}
 module Language.Clafer.Intermediate.ResolverName where
 
-import List
-import Monad
-import Data.Maybe
+import Control.Monad
 import Control.Monad.State
+import Data.Maybe
 import Data.Function
 import Data.List
 import Data.Map (Map)

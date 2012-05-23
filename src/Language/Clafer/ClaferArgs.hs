@@ -22,7 +22,7 @@
 {-# LANGUAGE DeriveDataTypeable #-}
 module Language.Clafer.ClaferArgs where
 
-import IO ( stdin, hGetContents )
+import System.IO ( stdin, hGetContents )
 import System.Console.CmdArgs
 import System.Console.CmdArgs.Explicit hiding (mode)
 import Data.List

@@ -25,11 +25,11 @@ module Main where
 import Prelude hiding (writeFile, readFile, print, putStrLn)
 
 import System.IO
+import System.IO  ( stdin, hGetContents )
 import System.Cmd
 import System.Exit
 import Control.Exception.Base
-import IO  ( stdin, hGetContents )
-import System ( getArgs, getProgName )
+import System.Environment ( getArgs, getProgName )
 import System.Timeout
 import Control.Monad.State
 import System.Environment.Executable

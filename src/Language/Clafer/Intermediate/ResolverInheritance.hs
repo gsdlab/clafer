@@ -21,7 +21,7 @@
 -}
 module Language.Clafer.Intermediate.ResolverInheritance where
 
-import Monad
+import Control.Monad
 import Control.Monad.State
 import Data.Maybe
 import Data.Graph

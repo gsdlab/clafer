@@ -21,7 +21,7 @@
 -}
 module Language.Clafer.Intermediate.Desugarer where
 
-import Monad
+import Control.Monad
 import Data.Function
 
 import Language.Clafer.Common

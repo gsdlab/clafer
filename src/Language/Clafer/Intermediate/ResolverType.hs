@@ -23,12 +23,11 @@ module Language.Clafer.Intermediate.ResolverType (resolveTModule) where
 
 import Control.Monad.State
 import Data.Function
-import Data.List (dropWhile, intercalate, nub)
+import Data.List (dropWhile, intercalate, nub, find)
 import Data.Maybe
 import Data.Map (Map)
 import qualified Data.Map as Map
 import Debug.Trace
-import List (find)
 
 import Language.Clafer.Common
 import Language.Clafer.Front.Printclafer
