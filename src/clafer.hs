@@ -38,52 +38,34 @@ import System.FilePath.Posix
 
 import Language.Clafer
 
-type ParseFun = [Token] -> Err Module
-
-type VerbosityL = Int
-
 putStrV :: VerbosityL -> String -> IO ()
 putStrV v s = if v > 1 then putStrLn s else return ()
 
+run :: VerbosityL -> ClaferArgs -> InputModel -> IO ()
+run v args input = do
+  case addModuleFragment args input of
+    Bad s    -> do putStrLn "\nParse Failed...\n"
+                   putStrV v "Tokens:"
+                   putStrLn s
+                   exitFailure
+    Ok  tree -> do
+                   let oTree = compile args tree
+                   f' <- save args oTree
+                   when (fromJust $ validate args) $ runValidate args f'                      
 
-start v p args model = if fromJust $ schema args
-  then putStrLn claferIRXSD
-  else run v p args model
-
-
-run :: VerbosityL -> ParseFun -> ClaferArgs -> String -> IO ()
-run v p args input = do
---           conPutStrLn args (file args)
-           let ts = (if not 
-                        ((fromJust $ new_layout args) ||
-                         (fromJust $ no_layout args))
-                     then 
-                       resolveLayout 
-                     else 
-                       id) 
-                    $ myLexer $
-                    (if (not $ fromJust $ no_layout args) &&
-                        (fromJust $ new_layout args)
-                     then 
-                       resLayout 
-                     else 
-                       id)
-                    input  in case p ts of
-             Bad s    -> do putStrLn "\nParse              Failed...\n"
-                            putStrV v "Tokens:"
-                            putStrLn s
-                            exitFailure
-             Ok  tree -> do
-                          let f = dropExtension $ file args
---                          conPutStrLn args "\nParse Successful!"
-                          dTree <- desugar args tree
-                          oTree <- analyze args dTree
-                          f' <- generate f args oTree
-                          when (fromJust $ validate args) $ runValidate args f'
-
-
+save :: ClaferArgs -> (IModule, GEnv, Bool) -> IO [Char]
+save    args          oTree                 = do
+  let (ext, code, stats, mapping) = generate args oTree
+  when (not $ fromJust $ no_stats args) $ putStrLn stats
+  let f = dropExtension $ file args                      
+  let f' = f ++ "." ++ ext
+  if fromJust $ console_output args then putStrLn code else writeFile f' code
+  when (fromJust $ alloy_mapping args) $ writeFile (f ++ "." ++ "map") $ fromJust mapping
+  return f'
+  
 conPutStrLn args s = when (not $ fromJust $ console_output args) $ putStrLn s
 
+runValidate :: ClaferArgs -> [Char] -> IO ()
 runValidate args fo = do
   let path = (fromJust $ tooldir args) ++ "/"
   case (fromJust $ mode args) of
@@ -94,6 +76,7 @@ runValidate args fo = do
     Alloy42 -> voidf $ system $ validateAlloy path "4.2-rc" ++ fo
     Clafer ->  voidf $ system $ path ++ "/clafer -s -m=clafer " ++ fo
 
+validateAlloy :: String -> String -> String
 validateAlloy path version = "java -cp " ++ path ++ "alloy" ++ version ++ ".jar edu.mit.csail.sdg.alloy4whole.ExampleUsingTheCompiler "
 
 main :: IO ()
@@ -101,6 +84,12 @@ main = do
   (args, model) <- mainArgs
   let timeInSec = (fromJust $ timeout_analysis args) * 10^6
   if timeInSec > 0
-    then timeout timeInSec $ start 2 pModule args model
-    else Just `liftM` start 2 pModule args model
+    then timeout timeInSec $ start 2 args model
+    else Just `liftM` start 2 args model
   return ()
+
+start :: VerbosityL -> ClaferArgs -> InputModel-> IO ()
+start v args model = if fromJust $ schema args
+  then putStrLn claferIRXSD
+  else run v args model
+  
