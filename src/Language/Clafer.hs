@@ -22,7 +22,9 @@
 module Language.Clafer (
                         addModuleFragment,
                         compile,
-                        generate, 
+                        compileM,
+                        generate,
+                        generateM, 
                         claferIRXSD,
                         VerbosityL,
                         InputModel,
@@ -84,6 +86,10 @@ addModuleFragment args inputModel =
 compile :: ClaferArgs -> Module -> (IModule, GEnv, Bool)
 compile args tree = analyze args $ desugar tree
 
+compileM :: ClaferArgs -> Err Module -> Err (IModule, GEnv, Bool)
+compileM args (Ok tree) = Ok (compile args tree)
+compileM _    (Bad s)   = Bad s 
+                                                 -- ext   , code  , stats , mappingToAlloy 
 generate :: ClaferArgs -> (IModule, GEnv, Bool) -> (String, String, String, Maybe String)
 generate args (iModule, genv, au) = do
   let stats = showStats au $ statsModule iModule
@@ -101,10 +107,16 @@ generate args (iModule, genv, au) = do
                       Xml     -> ("xml", genXmlModule iModule, Nothing)
                       Clafer  -> ("des.cfr", printTree $ sugarModule iModule, Nothing)
   (ext, code, stats, mappingToAlloy)
-  
+
+generateM :: ClaferArgs   -> Err (IModule, GEnv, Bool) -> (String, String, String, Maybe String)
+generateM args (Ok oTree) = generate args oTree
+generateM _    (Bad s)    = ("err", s, "", Nothing)  
+
 desugar :: Module -> IModule  
-desugar tree = do
-  desugarModule $ mapModule tree
+desugar tree = desugarModule $ mapModule tree
+
+desugarM :: Err Module -> Err IModule
+desugarM = fmap desugar
 
 analyze :: ClaferArgs -> IModule -> (IModule, GEnv, Bool)
 analyze args tree = do
