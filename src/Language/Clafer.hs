@@ -24,7 +24,8 @@ module Language.Clafer (
                         compile,
                         compileM,
                         generate,
-                        generateM, 
+                        generateM,
+                        CompilerResult(..),
                         claferIRXSD,
                         VerbosityL,
                         InputModel,
@@ -32,9 +33,9 @@ module Language.Clafer (
                         Module,
                         GEnv,
                         IModule,
-                        module Language.Clafer.Front.ErrM,
+                        voidf,
                         module Language.Clafer.ClaferArgs,
-                        voidf
+                        module Language.Clafer.Front.ErrM
                                        
 ) where
 
@@ -89,11 +90,18 @@ compile args tree = analyze args $ desugar tree
 compileM :: ClaferArgs -> Err Module -> Err (IModule, GEnv, Bool)
 compileM args (Ok tree) = Ok (compile args tree)
 compileM _    (Bad s)   = Bad s 
-                                                 -- ext   , code  , stats , mappingToAlloy 
-generate :: ClaferArgs -> (IModule, GEnv, Bool) -> (String, String, String, Maybe String)
+
+data CompilerResult = CompilerResult {
+                            extension :: String, 
+                            outputCode :: String, 
+                            statistics :: String, 
+                            mappingToAlloy :: Maybe String 
+                            }
+                                                 
+generate :: ClaferArgs -> (IModule, GEnv, Bool) -> CompilerResult
 generate args (iModule, genv, au) = do
   let stats = showStats au $ statsModule iModule
-  let (ext, code, mappingToAlloy) = case (fromJust $ mode args) of
+  let (ext, code, mapToAlloy) = case (fromJust $ mode args) of
                       Alloy   -> do
                                    let alloyCode = genModule args (astrModule iModule, genv)
                                    let addCommentStats = if fromJust $ no_stats args then const else addStats
@@ -106,17 +114,20 @@ generate args (iModule, genv, au) = do
                                    ("als", addCommentStats (fst alloyCode) stats, Just m)
                       Xml     -> ("xml", genXmlModule iModule, Nothing)
                       Clafer  -> ("des.cfr", printTree $ sugarModule iModule, Nothing)
-  (ext, code, stats, mappingToAlloy)
+  CompilerResult { extension = ext, 
+                   outputCode = code, 
+                   statistics = stats, 
+                   mappingToAlloy = mapToAlloy }
 
-generateM :: ClaferArgs   -> Err (IModule, GEnv, Bool) -> (String, String, String, Maybe String)
+generateM :: ClaferArgs   -> Err (IModule, GEnv, Bool) -> CompilerResult
 generateM args (Ok oTree) = generate args oTree
-generateM _    (Bad s)    = ("err", s, "", Nothing)  
+generateM _    (Bad s)    = CompilerResult { extension = "err", 
+                                             outputCode = s, 
+                                             statistics = "", 
+                                             mappingToAlloy = Nothing }
 
 desugar :: Module -> IModule  
 desugar tree = desugarModule $ mapModule tree
-
-desugarM :: Err Module -> Err IModule
-desugarM = fmap desugar
 
 analyze :: ClaferArgs -> IModule -> (IModule, GEnv, Bool)
 analyze args tree = do

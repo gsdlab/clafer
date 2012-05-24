@@ -55,12 +55,12 @@ run v args input = do
 
 save :: ClaferArgs -> (IModule, GEnv, Bool) -> IO [Char]
 save    args          oTree                 = do
-  let (ext, code, stats, mapping) = generate args oTree
-  when (not $ fromJust $ no_stats args) $ putStrLn stats
+  let result = generate args oTree
+  when (not $ fromJust $ no_stats args) $ putStrLn (statistics result)
   let f = dropExtension $ file args                      
-  let f' = f ++ "." ++ ext
-  if fromJust $ console_output args then putStrLn code else writeFile f' code
-  when (fromJust $ alloy_mapping args) $ writeFile (f ++ "." ++ "map") $ fromJust mapping
+  let f' = f ++ "." ++ (extension result)
+  if fromJust $ console_output args then putStrLn (outputCode result) else writeFile f' (outputCode result)
+  when (fromJust $ alloy_mapping args) $ writeFile (f ++ "." ++ "map") $ fromJust (mappingToAlloy result)
   return f'
   
 conPutStrLn args s = when (not $ fromJust $ console_output args) $ putStrLn s
