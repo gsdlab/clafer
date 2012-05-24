@@ -120,4 +120,7 @@ setDefArgs args = args {
   tooldir             = tooldir args             `mplus` Just "tools/",
   alloy_mapping       = alloy_mapping args       `mplus` Just def}
 
-defaultClaferArgs = ClaferArgs (Just Alloy) (Just False) (Just False) Nothing (Just False) (Just False) (Just True) (Just False) (Just True) (Just True) (Just False) (Just False) (Just "tools/") (Just False) ""
+
+emptyClaferArgs = ClaferArgs Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing ""
+
+defaultClaferArgs = setDefArgs emptyClaferArgs
