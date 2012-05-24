@@ -46,5 +46,30 @@ library
                      HaXml
     hs-source-dirs:  src
     ghc-options:     -Wall
-    exposed-modules: Language.Clafer
-
+    exposed-modules: 
+                     Language.Clafer,
+                     Language.Clafer.ClaferArgs,
+                     Language.Clafer.Common,
+                     Language.Clafer.Front.Absclafer,
+                     Language.Clafer.Front.ErrM,
+                     Language.Clafer.Front.LayoutResolver,
+                     Language.Clafer.Front.Lexclafer,
+                     Language.Clafer.Front.Mapper,
+                     Language.Clafer.Front.Parclafer,
+                     Language.Clafer.Front.Printclafer,
+                     Language.Clafer.Generator.Alloy,
+                     Language.Clafer.Generator.Schema,
+                     Language.Clafer.Generator.Stats,
+                     Language.Clafer.Generator.Xml,
+                     Language.Clafer.Intermediate.Desugarer,
+                     Language.Clafer.Intermediate.Intclafer,
+                     Language.Clafer.Intermediate.Resolver,
+                     Language.Clafer.Intermediate.ResolverInheritance,
+                     Language.Clafer.Intermediate.ResolverName,
+                     Language.Clafer.Intermediate.ResolverType,
+                     Language.Clafer.Intermediate.ScopeAnalyzer,
+                     Language.Clafer.Intermediate.StringAnalyzer,
+                     Language.Clafer.Intermediate.Transformer,
+                     Language.Clafer.Optimizer.Optimizer,
+                     Language.Clafer.SplitJoin,
+                     Language.Clafer.Version
