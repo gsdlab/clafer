@@ -1,4 +1,5 @@
 module Language.Clafer.Generator.Schema where
+xsd :: [Char]
 xsd = concat [ ""
   , "<!-- ........................................................................ *\n"
   , "  *   Clafer Project                                                          *\n"

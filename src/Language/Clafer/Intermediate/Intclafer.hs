@@ -21,7 +21,7 @@
 -}
 module Language.Clafer.Intermediate.Intclafer where
 
-import Language.Clafer.Front.Absclafer
+--import Language.Clafer.Front.Absclafer
 
 data IType = TBoolean
            | TString
