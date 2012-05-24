@@ -185,6 +185,8 @@ abstract SQLite
 
 simpleConfig : SQLite
    [ ! SQLITE_OMIT_COMPLETE]
+   [ SQLITE_OMIT_WAL ]
+   [ SQLITE_OMIT_TRIGGER ]
 
 << min simpleConfig.total_footprint >>
 //Mandatory Features all configurations will have: OperatingSystemCharacteristics SQLITE_4_BYTE_ALIGNED_MALLOC EnableFeatures DisableFeatures OmitFeatures 
