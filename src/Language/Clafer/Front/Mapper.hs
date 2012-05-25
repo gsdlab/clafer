@@ -70,7 +70,7 @@ posClafer abstract gcard posident super card init elements = uncurry PosClafer
    getPosSuper super >- getPosCard card >- getPosInit init >-
    getPosElements elements) abstract gcard posident super card init elements
 
-(>-) :: (Num t1, Num t) => (t, t1) -> (t, t1) -> (t, t1)
+(>-) :: (Integer, Integer) -> (Integer, Integer) -> (Integer, Integer)
 (>-) (0, 0) (m, n) = (m, n)
 (>-) (m, n) (0, 0) = (m, n)
 (>-) (m, n) _ = (m, n)
@@ -359,12 +359,11 @@ posDeclQuant quant decl exp = uncurry PosDeclQuant
 posBin :: (Integer -> Integer -> Exp -> Exp -> t) -> Exp -> Exp -> t
 posBin op exp0 exp = posBin' op exp0 exp mapExp getPosExp
 
-posBin' :: (Num a, Num b) =>
-                      (a -> b -> t2 -> t2 -> t)
+posBin' :: (Integer -> Integer -> t2 -> t2 -> t)
                       -> t1
                       -> t1
                       -> (t1 -> t2)
-                      -> (t2 -> (a, b))
+                      -> (t2 -> (Integer, Integer))
                       -> t
 posBin' op exp0 exp f g = uncurry op (g exp0' >- g exp') exp0' exp'
   where
