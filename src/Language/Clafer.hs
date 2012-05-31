@@ -35,7 +35,8 @@ module Language.Clafer (
                         IModule,
                         voidf,
                         module Language.Clafer.ClaferArgs,
-                        module Language.Clafer.Front.ErrM
+                        module Language.Clafer.Front.ErrM,
+                        module Language.Clafer.Generator.Html
                                        
 ) where
 
@@ -61,6 +62,7 @@ import Language.Clafer.Generator.Alloy
 import Language.Clafer.Generator.Xml
 import Language.Clafer.Generator.Schema
 import Language.Clafer.Generator.Stats
+import Language.Clafer.Generator.Html
 
 type VerbosityL = Int
 type InputModel = String
@@ -114,6 +116,7 @@ generate args (iModule, genv, au) = do
                                    ("als", addCommentStats (fst alloyCode) stats, Just m)
                       Xml     -> ("xml", genXmlModule iModule, Nothing)
                       Clafer  -> ("des.cfr", printTree $ sugarModule iModule, Nothing)
+                      Html    -> ("html", genHtml $ sugarModule iModule, Nothing)
   CompilerResult { extension = ext, 
                    outputCode = code, 
                    statistics = stats, 

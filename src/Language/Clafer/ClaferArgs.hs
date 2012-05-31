@@ -32,7 +32,7 @@ import Control.Monad
 import Language.Clafer.SplitJoin
 import Language.Clafer.Version
 
-data ClaferMode = Alloy42 | Alloy | Xml | Clafer
+data ClaferMode = Alloy42 | Alloy | Xml | Clafer | Html
   deriving (Eq, Show, Data, Typeable)
 
 data ClaferArgs = ClaferArgs {
