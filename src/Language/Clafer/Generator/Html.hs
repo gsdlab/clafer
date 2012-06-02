@@ -19,92 +19,110 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
 -}
-module Language.Clafer.Generator.Html (genHtml, Tag) where
+module Language.Clafer.Generator.Html (genHtml) where
 
 import Language.Clafer.Front.Absclafer
 
--- Structure of output for Wiki
--- I should probably add a "PandocHtml" flag for the wiki, and use "Html" for pure, web-ready html
--- [HtmlTag “<b>”, Text “This is an example”, HtmlTag “</b>”]
--- The wiki plugin can take this type-tagged info and convert it to pandoc,
--- so that this doesn't need to import Pandoc
--- it will have to include its own spaces (Space) and newlines (LineBreak)
-
-data Tag = Html | Text deriving (Eq,Ord,Show) --this will be used later (see above)
-
 genHtml (Module [])     = ""
-genHtml (Module ((ElementDecl x):xs)) = (genHtmlh x 0) ++ (genHtml $ Module xs)
+genHtml (Module (x:xs)) = (printDeclaration x 0) ++ (genHtml $ Module xs)
 genHtml _ = "genHtml encountered an unknown pattern"
--- For some reason it is outputting too much indentation. I don't think it will be a large problem, though
-genHtmlh (Subclafer (Clafer abstract gCard ident super card init (ElementsList elements))) indent =
+
+-- "Data Omitted" Lines are for me to quickly identify when pattern matching fails, but with useful info
+printDeclaration (EnumDecl posIdent enumIds) indent = "enum" ++ (printPosIdent posIdent indent) ++ "Enum IDs" --placeholder
+printDeclaration (ElementDecl element)       indent = printElement element indent
+
+printElement (Subclafer (Clafer abstract gCard id super card init (ElementsList elements))) indent =
   (printIndent indent) ++
-    (unwords [printAbstract abstract, printGCard gCard, printPosIdent ident, printSuper super,
-    printCard card, printInit init]) ++ "\n" ++ (concatMap (\x -> genHtmlh x (indent + 1)) elements)
---add a pattern to match constraints
-genHtmlh (Subconstraint constraints) indent =
-  (printIndent indent) ++ "[ "  ++ (printExp constraints) ++ " ]\n"
-genHtmlh _ _ = "END" --will become "", but it is "END" for testing purposes
+    (unwords [printAbstract abstract indent, printGCard gCard indent, printPosIdentAnchor id indent, printSuper super indent,
+    printCard card indent, printInit init indent]) ++ "<br>" ++ (concatMap (\x -> printElement x (indent + 1)) elements)
+printElement (Subconstraint constraint) indent = (printIndent indent) ++ printConstraint constraint indent
+printElement element indent = "Element Omitted: " ++ show element
 
--- the "Data Omitted" Lines are for me to quickly identify when pattern matching fails, but with useful info
+printAbstract Abstract indent = "<b>abstract</b>"
+printAbstract AbstractEmpty indent = ""
+printAbstract x _ = "Abstract Omitted"
 
-printAbstract Abstract = "abstract"
-printAbstract AbstractEmpty = ""
-printAbstract x = "Abstract Omitted"
+printGCard gCard indent = case gCard of
+  (GCardInterval ncard) -> printNCard ncard indent
+  GCardEmpty -> ""
+  GCardXor   -> "xor"
+  GCardOr    -> "or"
+  GCardMux   -> "mux"
+  GCardOpt   -> "opt"
+  _          -> "GCardInterval Omitted"
 
-printGCard (GCardInterval ncard) = printNCard ncard
-printGCard GCardEmpty = ""
-printGCard GCardXor = "xor"
-printGCard GCardOr = "or"
-printGCard GCardMux = "mux"
-printGCard GCardOpt = "opt"
-printGCard x = "GCardInterval Omitted"
+printNCard (NCard (PosInteger (pos, num)) exInteger) indent = if validPos pos
+    then case exInteger of
+      ExIntegerAst                -> num ++ "..*"
+      (ExIntegerNum (PosInteger (pos', num'))) -> num ++ ".." ++ num'
+    else ""
 
-printNCard (NCard (PosInteger (pos, num)) ExIntegerAst)
-  | validPos pos && num == "0" = ""
-  | validPos pos               = num ++ "..*"
-  | otherwise                  = ""
-printNCard (NCard (PosInteger (pos1, int1)) (ExIntegerNum (PosInteger (pos2, int2))))
-  | validPos pos1 && validPos pos2 = int1 ++ ".." ++ int2
-  | otherwise = ""
-printNCard _ = "NCard Omitted"
+printName (Path modids) indent = unwords $ map (\x -> printModId x indent) modids
+printName _             _      = "Name Omitted"
 
-printName (Path modids) = unwords $ map printModId modids
-printName _             = "Name Omitted"
+printModId (ModIdIdent posident) indent = printPosIdent posident indent
 
-printModId (ModIdIdent posident) = printPosIdent posident
+printPosIdentAnchor (PosIdent (pos, id)) indent
+  | id == "clafer" = ""
+  | validPos pos   = if indent == 0 then "<a name =\"" ++ id ++ "\">" ++ dropUid id ++ "</a>"
+                                    else dropUid id
+  | otherwise      = ""
 
-printPosIdent (PosIdent (pos, id))
+printPosIdent (PosIdent (pos, id)) indent
   | id == "clafer" = ""
   | validPos pos   = dropUid id
   | otherwise      = ""
 
-printSuper SuperEmpty = ""
-printSuper (SuperSome superHow setExp) = let str = printSetExp setExp in
+printSuper SuperEmpty indent = ""
+printSuper (SuperSome superHow setExp) indent = let str = printSetExp setExp indent in
   if str /= ""
-  then printSuperHow superHow ++ str
+  then printSuperHow superHow indent ++ " " ++ str
   else ""
-printSuper x = "Super Omitted"
+printSuper x _ = "Super Omitted"
 
-printSuperHow SuperColon  = ":"
-printSuperHow SuperArrow  = "->"
-printSuperHow SuperMArrow = "->>"--non-exhaustive
-printSuperHow _           = "SuperHow Omitted"
+printSuperHow SuperColon  indent = ":"
+printSuperHow SuperArrow  indent = "-> "
+printSuperHow SuperMArrow indent = "->> "
+printSuperHow _           indent = "SuperHow Omitted"
 
-printCard (CardInterval nCard) = printNCard nCard
-{-
-printCard (CardInterval (NCard (PosInteger (pos, num)) ExIntegerAst))
-  | validPos pos && num == "0" = ""
-  | validPos pos               = num ++ "..*"
-  | otherwise                  = ""-}
-printCard x = "Cardinality Omitted"
+printCard (CardInterval nCard) indent = printNCard nCard indent
+printCard x _ = "Cardinality Omitted"
 
-printInit InitEmpty = ""
-printInit x = "Initialization Omitted"
+printConstraint (Constraint exps) indent = "[ "  ++ (concat $ map (\x -> printExp x indent) exps) ++ " ]<br>"
 
-printExp _                  = "Exp Omitted"
+printDecl (Decl locids setExp) indent = ":" ++ printSetExp setExp indent
 
-printSetExp (ClaferId name) = printName name
-printSetExp _               = "setExp Omitted"
+printInit InitEmpty indent = ""
+printInit x _ = "Initialization Omitted"
+
+printExp (DeclAllDisj decl exp) indent = (printDecl decl indent) ++ (printExp exp indent)
+printExp (ENeq exp1 exp2)       indent = (printExp exp1 indent) ++ "!=" ++ (printExp exp2 indent)
+printExp (ESetExp setExp)       indent = printSetExp setExp indent
+printExp (EEq exp1 exp2)        indent = (printExp exp1 indent) ++ "=" ++ (printExp exp2 indent)
+printExp (QuantExp quant exp)   indent = printQuant quant indent ++ printExp exp indent
+printExp exp                    indent = "Exp Omitted:" ++ (show exp)
+
+printSetExp (ClaferId name) indent = printName name indent
+printSetExp (Union set1 set2) indent = (printSetExp set1 indent) ++ if not (printSetExp set1 indent == "" || printSetExp set2 indent == "")
+                                                     then "++" ++ (printSetExp set2 indent)
+                                                     else printSetExp set2 indent
+printSetExp (UnionCom set1 set2) indent = (printSetExp set1 indent) ++ if not (printSetExp set1 indent == "" || printSetExp set2 indent == "")
+                                                     then "," ++ (printSetExp set2 indent)
+                                                     else printSetExp set2 indent
+printSetExp (Difference set1 set2) indent = (printSetExp set1 indent) ++ if not (printSetExp set1 indent == "" || printSetExp set2 indent == "")
+                                                     then "--" ++ (printSetExp set2 indent)
+                                                     else printSetExp set2 indent
+printSetExp (Join set1 set2) indent = (printSetExp set1 indent) ++ if not (printSetExp set1 indent == "" || printSetExp set2 indent == "")
+                                                     then "." ++ (printSetExp set2 indent)
+                                                     else printSetExp set2 indent
+printSetExp _                 _ = "setExp Omitted"
+
+printQuant quant indent = case quant of
+  QuantNo    -> "no "
+  QuantLone  -> "lone "
+  QuantOne   -> "one "
+  QuantSome  -> "some "
+ 
 
 printIndent indent = replicate (indent * 2) ' '
 
@@ -112,4 +130,7 @@ validPos (row, col)
   | row >= 0 && col >= 0 = True
   | otherwise            = False
 
-dropUid id = tail $ dropWhile (\x -> x /= '_') id
+dropUid id = rest $ dropWhile (\x -> x /= '_') id
+--so it fails more gracefully on empty lists
+rest [] = []
+rest (x:xs) = xs

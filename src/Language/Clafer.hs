@@ -36,7 +36,6 @@ module Language.Clafer (
                         voidf,
                         module Language.Clafer.ClaferArgs,
                         module Language.Clafer.Front.ErrM,
-                        module Language.Clafer.Generator.Html
                                        
 ) where
 
