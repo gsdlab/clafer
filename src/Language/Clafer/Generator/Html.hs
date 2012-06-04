@@ -21,11 +21,15 @@
 -}
 module Language.Clafer.Generator.Html (genHtml) where
 
+-- TODO: Add links to anchors on all references
+
 import Language.Clafer.Front.Absclafer
 
-genHtml (Module [])     = ""
-genHtml (Module (x:xs)) = (printDeclaration x 0) ++ (genHtml $ Module xs)
-genHtml _ = "genHtml encountered an unknown pattern"
+genHtml tree = "<font size=\"4\"><tt>" ++ printModule tree ++ "</tt></font>"
+
+printModule (Module [])     = ""
+printModule (Module (x:xs)) = (printDeclaration x 0) ++ (printModule $ Module xs)
+printModule _ = "genHtml encountered an unknown pattern"
 
 -- "Data Omitted" Lines are for me to quickly identify when pattern matching fails, but with useful info
 printDeclaration (EnumDecl posIdent enumIds) indent = "enum" ++ (printPosIdent posIdent indent) ++ "Enum IDs" --placeholder
@@ -34,7 +38,7 @@ printDeclaration (ElementDecl element)       indent = printElement element inden
 printElement (Subclafer (Clafer abstract gCard id super card init (ElementsList elements))) indent =
   (printIndent indent) ++
     (unwords [printAbstract abstract indent, printGCard gCard indent, printPosIdentAnchor id indent, printSuper super indent,
-    printCard card indent, printInit init indent]) ++ "<br>" ++ (concatMap (\x -> printElement x (indent + 1)) elements)
+    printCard card indent, printInit init indent]) ++ "<br>\n" ++ (concatMap (\x -> printElement x (indent + 1)) elements)
 printElement (Subconstraint constraint) indent = (printIndent indent) ++ printConstraint constraint indent
 printElement element indent = "Element Omitted: " ++ show element
 
@@ -63,47 +67,74 @@ printName _             _      = "Name Omitted"
 printModId (ModIdIdent posident) indent = printPosIdent posident indent
 
 printPosIdentAnchor (PosIdent (pos, id)) indent
-  | id == "clafer" = ""
-  | validPos pos   = if indent == 0 then "<a name =\"" ++ id ++ "\">" ++ dropUid id ++ "</a>"
-                                    else dropUid id
+--  | id == "clafer" = ""
+  | validPos pos   = "<a name=\"" ++ id ++ "\">" ++ dropUid id ++ "</a>"
   | otherwise      = ""
 
 printPosIdent (PosIdent (pos, id)) indent
-  | id == "clafer" = ""
-  | validPos pos   = dropUid id
+--  | id == "clafer" = ""
+  | validPos pos   = "<a href=\"#" ++ id ++ "\">" ++ dropUid id ++ "</a>"
   | otherwise      = ""
 
 printSuper SuperEmpty indent = ""
-printSuper (SuperSome superHow setExp) indent = let str = printSetExp setExp indent in
+{-printSuper (SuperSome superHow setExp) indent = let str = printSetExp setExp indent in
   if str /= ""
   then printSuperHow superHow indent ++ " " ++ str
-  else ""
+  else ""-}
+printSuper (SuperSome superHow setExp) indent = printSuperHow superHow indent ++ printSetExp setExp indent
 printSuper x _ = "Super Omitted"
 
-printSuperHow SuperColon  indent = ":"
-printSuperHow SuperArrow  indent = "-> "
-printSuperHow SuperMArrow indent = "->> "
+printSuperHow SuperColon  indent = " : "
+printSuperHow SuperArrow  indent = " -> "
+printSuperHow SuperMArrow indent = " ->> "
 printSuperHow _           indent = "SuperHow Omitted"
 
 printCard (CardInterval nCard) indent = printNCard nCard indent
 printCard x _ = "Cardinality Omitted"
 
-printConstraint (Constraint exps) indent = "[ "  ++ (concat $ map (\x -> printExp x indent) exps) ++ " ]<br>"
+printConstraint (Constraint exps) indent = "[ "  ++ (concat $ map (\x -> printExp x indent) exps) ++ " ]<br>\n"
 
 printDecl (Decl locids setExp) indent = ":" ++ printSetExp setExp indent
 
 printInit InitEmpty indent = ""
 printInit x _ = "Initialization Omitted"
 
-printExp (DeclAllDisj decl exp) indent = (printDecl decl indent) ++ (printExp exp indent)
-printExp (ENeq exp1 exp2)       indent = (printExp exp1 indent) ++ "!=" ++ (printExp exp2 indent)
+printExp (DeclAllDisj decl exp) indent = "all disj " ++ (printDecl decl indent) ++ " | " ++ (printExp exp indent)
+printExp (DeclAll     decl exp) indent = "all " ++ (printDecl decl indent) ++ " | " ++ (printExp exp indent)
+printExp (DeclQuantDisj quant decl exp) indent = (printQuant quant indent) ++ "disj" ++ (printDecl decl indent) ++ " | " ++ (printExp exp indent)
+printExp (DeclQuant     quant decl exp) indent = (printQuant quant indent) ++ (printDecl decl indent) ++ " | " ++ (printExp exp indent)
+printExp (EGMax exp)            indent = "max " ++ printExp exp indent
+printExp (EGMin exp)            indent = "min " ++ printExp exp indent
+printExp (ENeq exp1 exp2)       indent = (printExp exp1 indent) ++ " != " ++ (printExp exp2 indent)
 printExp (ESetExp setExp)       indent = printSetExp setExp indent
-printExp (EEq exp1 exp2)        indent = (printExp exp1 indent) ++ "=" ++ (printExp exp2 indent)
 printExp (QuantExp quant exp)   indent = printQuant quant indent ++ printExp exp indent
+printExp (EImplies exp1 exp2)   indent = (printExp exp1 indent) ++ " => " ++ printExp exp2 indent
+printExp (EAnd exp1 exp2)       indent = (printExp exp1 indent) ++ " && " ++ printExp exp2 indent
+printExp (EOr exp1 exp2)        indent = (printExp exp1 indent) ++ " || " ++ printExp exp2 indent
+printExp (EXor exp1 exp2)       indent = (printExp exp1 indent) ++ " xor " ++ printExp exp2 indent
+printExp (ENeg exp)             indent = " ! " ++ printExp exp indent
+printExp (ELt exp1 exp2)        indent = (printExp exp1 indent) ++ " < " ++ printExp exp2 indent
+printExp (EGt exp1 exp2)        indent = (printExp exp1 indent) ++ " > " ++ printExp exp2 indent
+printExp (EEq exp1 exp2)        indent = (printExp exp1 indent) ++ " = " ++ printExp exp2 indent
+printExp (ELte exp1 exp2)       indent = (printExp exp1 indent) ++ " <= " ++ printExp exp2 indent
+printExp (EGte exp1 exp2)       indent = (printExp exp1 indent) ++ " >= " ++ printExp exp2 indent
+printExp (EIn exp1 exp2)        indent = (printExp exp1 indent) ++ " in " ++ printExp exp2 indent
+printExp (ENin exp1 exp2)       indent = (printExp exp1 indent) ++ " not in " ++ printExp exp2 indent
+printExp (EIff exp1 exp2)       indent = (printExp exp1 indent) ++ " <=> " ++ printExp exp2 indent
+printExp (EAdd exp1 exp2)       indent = (printExp exp1 indent) ++ " + " ++ printExp exp2 indent
+printExp (ESub exp1 exp2)       indent = (printExp exp1 indent) ++ " - " ++ printExp exp2 indent
+printExp (EMul exp1 exp2)       indent = (printExp exp1 indent) ++ " * " ++ printExp exp2 indent
+printExp (EDiv exp1 exp2)       indent = (printExp exp1 indent) ++ " / " ++ printExp exp2 indent
+printExp (ECSetExp exp)         indent = "#" ++ printExp exp indent
+printExp (EMinExp exp)          indent = "-" ++ printExp exp indent
+printExp (EImpliesElse exp1 exp2 exp3) indent = "if " ++ (printExp exp1 indent) ++ " then " ++ (printExp exp2 indent) ++ " else " ++ (printExp exp3 indent)
+printExp (EInt (PosInteger (pos, num))) indent = if validPos pos then show num else ""
+printExp (EDouble (PosDouble (pos, num))) indent = if validPos pos then show num else ""
+printExp (EStr (PosString (pos, str))) indent = if validPos pos then str else ""
 printExp exp                    indent = "Exp Omitted:" ++ (show exp)
 
 printSetExp (ClaferId name) indent = printName name indent
-printSetExp (Union set1 set2) indent = (printSetExp set1 indent) ++ if not (printSetExp set1 indent == "" || printSetExp set2 indent == "")
+{-printSetExp (Union set1 set2) indent = (printSetExp set1 indent) ++ if not (printSetExp set1 indent == "" || printSetExp set2 indent == "")
                                                      then "++" ++ (printSetExp set2 indent)
                                                      else printSetExp set2 indent
 printSetExp (UnionCom set1 set2) indent = (printSetExp set1 indent) ++ if not (printSetExp set1 indent == "" || printSetExp set2 indent == "")
@@ -114,7 +145,11 @@ printSetExp (Difference set1 set2) indent = (printSetExp set1 indent) ++ if not 
                                                      else printSetExp set2 indent
 printSetExp (Join set1 set2) indent = (printSetExp set1 indent) ++ if not (printSetExp set1 indent == "" || printSetExp set2 indent == "")
                                                      then "." ++ (printSetExp set2 indent)
-                                                     else printSetExp set2 indent
+                                                     else printSetExp set2 indent-}
+printSetExp (Union set1 set2) indent = (printSetExp set1 indent) ++ "++" ++ (printSetExp set2 indent)
+printSetExp (UnionCom set1 set2) indent = (printSetExp set1 indent) ++ "," ++ (printSetExp set2 indent)
+printSetExp (Difference set1 set2) indent = (printSetExp set1 indent) ++ "--" ++ (printSetExp set2 indent)
+printSetExp (Join set1 set2) indent = (printSetExp set1 indent) ++ "." ++ (printSetExp set2 indent)
 printSetExp _                 _ = "setExp Omitted"
 
 printQuant quant indent = case quant of
