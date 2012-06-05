@@ -21,8 +21,6 @@
 -}
 module Language.Clafer.Generator.Html (genHtml) where
 
--- TODO: Add links to anchors on all references
-
 import Language.Clafer.Front.Absclafer
 
 genHtml tree = "<font size=\"4\"><tt>" ++ printModule tree ++ "</tt></font>"
@@ -38,7 +36,7 @@ printDeclaration (ElementDecl element)       indent = printElement element inden
 printElement (Subclafer (Clafer abstract gCard id super card init (ElementsList elements))) indent =
   (printIndent indent) ++
     (unwords [printAbstract abstract indent, printGCard gCard indent, printPosIdentAnchor id indent, printSuper super indent,
-    printCard card indent, printInit init indent]) ++ "<br>\n" ++ (concatMap (\x -> printElement x (indent + 1)) elements)
+    printCard card indent, printInit init indent]) ++ "</span><br>\n" ++ (concatMap (\x -> printElement x (indent + 1)) elements)
 printElement (Subconstraint constraint) indent = (printIndent indent) ++ printConstraint constraint indent
 printElement element indent = "Element Omitted: " ++ show element
 
@@ -67,20 +65,14 @@ printName _             _      = "Name Omitted"
 printModId (ModIdIdent posident) indent = printPosIdent posident indent
 
 printPosIdentAnchor (PosIdent (pos, id)) indent
---  | id == "clafer" = ""
   | validPos pos   = "<a name=\"" ++ id ++ "\">" ++ dropUid id ++ "</a>"
   | otherwise      = ""
 
 printPosIdent (PosIdent (pos, id)) indent
---  | id == "clafer" = ""
   | validPos pos   = "<a href=\"#" ++ id ++ "\">" ++ dropUid id ++ "</a>"
   | otherwise      = ""
 
 printSuper SuperEmpty indent = ""
-{-printSuper (SuperSome superHow setExp) indent = let str = printSetExp setExp indent in
-  if str /= ""
-  then printSuperHow superHow indent ++ " " ++ str
-  else ""-}
 printSuper (SuperSome superHow setExp) indent = printSuperHow superHow indent ++ printSetExp setExp indent
 printSuper x _ = "Super Omitted"
 
@@ -92,7 +84,7 @@ printSuperHow _           indent = "SuperHow Omitted"
 printCard (CardInterval nCard) indent = printNCard nCard indent
 printCard x _ = "Cardinality Omitted"
 
-printConstraint (Constraint exps) indent = "[ "  ++ (concat $ map (\x -> printExp x indent) exps) ++ " ]<br>\n"
+printConstraint (Constraint exps) indent = "[ "  ++ (concat $ map (\x -> printExp x indent) exps) ++ " ]</span><br>\n"
 
 printDecl (Decl locids setExp) indent = ":" ++ printSetExp setExp indent
 
@@ -134,18 +126,6 @@ printExp (EStr (PosString (pos, str))) indent = if validPos pos then str else ""
 printExp exp                    indent = "Exp Omitted:" ++ (show exp)
 
 printSetExp (ClaferId name) indent = printName name indent
-{-printSetExp (Union set1 set2) indent = (printSetExp set1 indent) ++ if not (printSetExp set1 indent == "" || printSetExp set2 indent == "")
-                                                     then "++" ++ (printSetExp set2 indent)
-                                                     else printSetExp set2 indent
-printSetExp (UnionCom set1 set2) indent = (printSetExp set1 indent) ++ if not (printSetExp set1 indent == "" || printSetExp set2 indent == "")
-                                                     then "," ++ (printSetExp set2 indent)
-                                                     else printSetExp set2 indent
-printSetExp (Difference set1 set2) indent = (printSetExp set1 indent) ++ if not (printSetExp set1 indent == "" || printSetExp set2 indent == "")
-                                                     then "--" ++ (printSetExp set2 indent)
-                                                     else printSetExp set2 indent
-printSetExp (Join set1 set2) indent = (printSetExp set1 indent) ++ if not (printSetExp set1 indent == "" || printSetExp set2 indent == "")
-                                                     then "." ++ (printSetExp set2 indent)
-                                                     else printSetExp set2 indent-}
 printSetExp (Union set1 set2) indent = (printSetExp set1 indent) ++ "++" ++ (printSetExp set2 indent)
 printSetExp (UnionCom set1 set2) indent = (printSetExp set1 indent) ++ "," ++ (printSetExp set2 indent)
 printSetExp (Difference set1 set2) indent = (printSetExp set1 indent) ++ "--" ++ (printSetExp set2 indent)
@@ -159,7 +139,7 @@ printQuant quant indent = case quant of
   QuantSome  -> "some "
  
 
-printIndent indent = replicate (indent * 2) ' '
+printIndent indent = replicate (2 * indent) ' ' ++ "<span style=\"padding-left:" ++ show (20 * indent) ++ "px\">"
 
 validPos (row, col)
   | row >= 0 && col >= 0 = True
