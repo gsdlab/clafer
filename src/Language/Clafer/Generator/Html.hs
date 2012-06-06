@@ -22,35 +22,36 @@
 module Language.Clafer.Generator.Html (genHtml) where
 
 import Language.Clafer.Front.Absclafer
+import Data.List (intersperse)
 
-genHtml tree = "<font size=\"4\"><tt>" ++ printModule tree ++ "</tt></font>"
+genHtml tree = "<clafer>" ++ printModule tree ++ "</clafer>"
 
 printModule (Module [])     = ""
 printModule (Module (x:xs)) = (printDeclaration x 0) ++ (printModule $ Module xs)
 printModule _ = "genHtml encountered an unknown pattern"
 
 -- "Data Omitted" Lines are for me to quickly identify when pattern matching fails, but with useful info
-printDeclaration (EnumDecl posIdent enumIds) indent = "enum" ++ (printPosIdent posIdent indent) ++ "Enum IDs" --placeholder
+printDeclaration (EnumDecl posIdent enumIds) indent = "<keyword>enum</keyword>=" ++ (printPosIdent posIdent indent) ++ (concat $ intersperse ";" (map (\x -> printEnumId x (indent)) enumIds))
 printDeclaration (ElementDecl element)       indent = printElement element indent
 
 printElement (Subclafer (Clafer abstract gCard id super card init (ElementsList elements))) indent =
   (printIndent indent) ++
     (unwords [printAbstract abstract indent, printGCard gCard indent, printPosIdentAnchor id indent, printSuper super indent,
-    printCard card indent, printInit init indent]) ++ "</span><br>\n" ++ (concatMap (\x -> printElement x (indent + 1)) elements)
+    printCard card indent, printInit init indent]) ++ printCloseIndent indent ++ "<br>\n" ++ (concatMap (\x -> printElement x (indent + 1)) elements)
 printElement (Subconstraint constraint) indent = (printIndent indent) ++ printConstraint constraint indent
 printElement element indent = "Element Omitted: " ++ show element
 
-printAbstract Abstract indent = "<b>abstract</b>"
+printAbstract Abstract indent = "<keyword>abstract</keyword>"
 printAbstract AbstractEmpty indent = ""
 printAbstract x _ = "Abstract Omitted"
 
 printGCard gCard indent = case gCard of
   (GCardInterval ncard) -> printNCard ncard indent
   GCardEmpty -> ""
-  GCardXor   -> "xor"
-  GCardOr    -> "or"
-  GCardMux   -> "mux"
-  GCardOpt   -> "opt"
+  GCardXor   -> "<keyword>xor</keyword>"
+  GCardOr    -> "<keyword>or</keyword>"
+  GCardMux   -> "<keyword>mux</keyword>"
+  GCardOpt   -> "<keyword>opt</keyword>"
   _          -> "GCardInterval Omitted"
 
 printNCard (NCard (PosInteger (pos, num)) exInteger) indent = if validPos pos
@@ -65,28 +66,28 @@ printName _             _      = "Name Omitted"
 printModId (ModIdIdent posident) indent = printPosIdent posident indent
 
 printPosIdentAnchor (PosIdent (pos, id)) indent
-  | validPos pos   = "<a name=\"" ++ id ++ "\">" ++ dropUid id ++ "</a>"
+  | validPos pos   = "<a name=\"" ++ id ++ "\">" ++ dropUid id ++ "</a>" --identifier
   | otherwise      = ""
 
 printPosIdent (PosIdent (pos, id)) indent
-  | validPos pos   = "<a href=\"#" ++ id ++ "\">" ++ dropUid id ++ "</a>"
+  | validPos pos   = "<a href=\"#" ++ id ++ "\">" ++ dropUid id ++ "</a>" --reference
   | otherwise      = ""
 
 printSuper SuperEmpty indent = ""
 printSuper (SuperSome superHow setExp) indent = printSuperHow superHow indent ++ printSetExp setExp indent
 printSuper x _ = "Super Omitted"
 
-printSuperHow SuperColon  indent = " : "
-printSuperHow SuperArrow  indent = " -> "
-printSuperHow SuperMArrow indent = " ->> "
+printSuperHow SuperColon  indent = " <keyword>:</keyword> "
+printSuperHow SuperArrow  indent = " <keyword>-></keyword> "
+printSuperHow SuperMArrow indent = " <keyword>->></keyword> "
 printSuperHow _           indent = "SuperHow Omitted"
 
 printCard (CardInterval nCard) indent = printNCard nCard indent
 printCard x _ = "Cardinality Omitted"
 
-printConstraint (Constraint exps) indent = "[ "  ++ (concat $ map (\x -> printExp x indent) exps) ++ " ]</span><br>\n"
+printConstraint (Constraint exps) indent = "<keyword>[</keyword> "  ++ (concat $ map (\x -> printExp x indent) exps) ++ " <keyword>]</keyword>" ++ printCloseIndent indent ++ "<br>\n"
 
-printDecl (Decl locids setExp) indent = ":" ++ printSetExp setExp indent
+printDecl (Decl locids setExp) indent = "<keyword>:</keyword>" ++ printSetExp setExp indent
 
 printInit InitEmpty indent = ""
 printInit x _ = "Initialization Omitted"
@@ -133,13 +134,15 @@ printSetExp (Join set1 set2) indent = (printSetExp set1 indent) ++ "." ++ (print
 printSetExp _                 _ = "setExp Omitted"
 
 printQuant quant indent = case quant of
-  QuantNo    -> "no "
-  QuantLone  -> "lone "
-  QuantOne   -> "one "
-  QuantSome  -> "some "
- 
+  QuantNo    -> "<keyword>no</keyword> "
+  QuantLone  -> "<keyword>lone</keyword> "
+  QuantOne   -> "<keyword>one</keyword> "
+  QuantSome  -> "<keyword>some</keyword> "
 
-printIndent indent = replicate (2 * indent) ' ' ++ "<span style=\"padding-left:" ++ show (20 * indent) ++ "px\">"
+printEnumId (EnumIdIdent posident) indent = printPosIdent posident indent
+
+printIndent indent = if indent == 0 then "" else "<l" ++ show indent ++ ">"
+printCloseIndent indent = if indent == 0 then "" else "</l" ++ show indent ++ ">"
 
 validPos (row, col)
   | row >= 0 && col >= 0 = True
