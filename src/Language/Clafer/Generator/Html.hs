@@ -39,7 +39,7 @@ printElement (Subclafer (Clafer abstract gCard id super card init (ElementsList 
 printElement (Subconstraint constraint) indent = (printIndent indent) ++ printConstraint constraint indent
 printElement (ClaferUse name card elements) indent = printIndent indent ++ "`" ++ printName name indent ++ printCard card indent ++ printElements elements indent
 printElement (Subgoal goal) indent = printGoal goal indent
-printElement (SubsoftConstraint softConstraint) indent = printSoftConstraint softConstraint indent
+printElement (Subsoftconstraint softConstraint) indent = printSoftConstraint softConstraint indent
 
 printElements ElementsEmpty indent = ""
 printElements (ElementsList elements) indent = "{" ++ (concatMap (\x -> printElement x (indent + 1)) elements) ++ "}"
