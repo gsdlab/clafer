@@ -28,9 +28,7 @@ genHtml tree = "<clafer>" ++ printModule tree ++ "</clafer>"
 
 printModule (Module [])     = ""
 printModule (Module (x:xs)) = (printDeclaration x 0) ++ (printModule $ Module xs)
-printModule _ = "genHtml encountered an unknown pattern"
 
--- "Data Omitted" Lines are for me to quickly identify when pattern matching fails, but with useful info
 printDeclaration (EnumDecl posIdent enumIds) indent = "<keyword>enum</keyword>=" ++ (printPosIdent posIdent indent) ++ (concat $ intersperse ";" (map (\x -> printEnumId x (indent)) enumIds))
 printDeclaration (ElementDecl element)       indent = printElement element indent
 
@@ -39,11 +37,19 @@ printElement (Subclafer (Clafer abstract gCard id super card init (ElementsList 
     (unwords [printAbstract abstract indent, printGCard gCard indent, printPosIdentAnchor id indent, printSuper super indent,
     printCard card indent, printInit init indent]) ++ printCloseIndent indent ++ "<br>\n" ++ (concatMap (\x -> printElement x (indent + 1)) elements)
 printElement (Subconstraint constraint) indent = (printIndent indent) ++ printConstraint constraint indent
-printElement element indent = "Element Omitted: " ++ show element
+printElement (ClaferUse name card elements) indent = printIndent indent ++ "`" ++ printName name indent ++ printCard card indent ++ printElements elements indent
+printElement (Subgoal goal) indent = printGoal goal indent
+printElement (SubsoftConstraint softConstraint) indent = printSoftConstraint softConstraint indent
+
+printElements ElementsEmpty indent = ""
+printElements (ElementsList elements) indent = "{" ++ (concatMap (\x -> printElement x (indent + 1)) elements) ++ "}"
+
+printGoal (Goal exps) indent = "<<" ++ concatMap (\x -> printExp x indent) exps ++ ">>"
+
+printSoftConstraint (SoftConstraint exps) indent = "(" ++ concatMap (\x -> printExp x indent) exps ++ ")"
 
 printAbstract Abstract indent = "<keyword>abstract</keyword>"
 printAbstract AbstractEmpty indent = ""
-printAbstract x _ = "Abstract Omitted"
 
 printGCard gCard indent = case gCard of
   (GCardInterval ncard) -> printNCard ncard indent
@@ -52,7 +58,6 @@ printGCard gCard indent = case gCard of
   GCardOr    -> "<keyword>or</keyword>"
   GCardMux   -> "<keyword>mux</keyword>"
   GCardOpt   -> "<keyword>opt</keyword>"
-  _          -> "GCardInterval Omitted"
 
 printNCard (NCard (PosInteger (pos, num)) exInteger) indent = if validPos pos
     then case exInteger of
@@ -61,7 +66,6 @@ printNCard (NCard (PosInteger (pos, num)) exInteger) indent = if validPos pos
     else ""
 
 printName (Path modids) indent = unwords $ map (\x -> printModId x indent) modids
-printName _             _      = "Name Omitted"
 
 printModId (ModIdIdent posident) indent = printPosIdent posident indent
 
@@ -75,22 +79,27 @@ printPosIdent (PosIdent (pos, id)) indent
 
 printSuper SuperEmpty indent = ""
 printSuper (SuperSome superHow setExp) indent = printSuperHow superHow indent ++ printSetExp setExp indent
-printSuper x _ = "Super Omitted"
 
 printSuperHow SuperColon  indent = " <keyword>:</keyword> "
 printSuperHow SuperArrow  indent = " <keyword>-></keyword> "
 printSuperHow SuperMArrow indent = " <keyword>->></keyword> "
-printSuperHow _           indent = "SuperHow Omitted"
 
+printCard CardEmpty indent = ""
+printCard CardLone indent = "?"
+printCard CardSome indent = "+"
+printCard CardAny indent = "*"
+printCard (CardNum (PosInteger (pos,num))) indent =  if validPos pos then num else ""
 printCard (CardInterval nCard) indent = printNCard nCard indent
-printCard x _ = "Cardinality Omitted"
 
 printConstraint (Constraint exps) indent = "<keyword>[</keyword> "  ++ (concat $ map (\x -> printExp x indent) exps) ++ " <keyword>]</keyword>" ++ printCloseIndent indent ++ "<br>\n"
 
 printDecl (Decl locids setExp) indent = "<keyword>:</keyword>" ++ printSetExp setExp indent
 
 printInit InitEmpty indent = ""
-printInit x _ = "Initialization Omitted"
+printInit (InitSome initHow exp) indent = printInitHow initHow indent ++ printExp exp indent
+
+printInitHow InitHow_1 indent = "="
+printInitHow InitHow_2 indent = ":="
 
 printExp (DeclAllDisj decl exp) indent = "all disj " ++ (printDecl decl indent) ++ " | " ++ (printExp exp indent)
 printExp (DeclAll     decl exp) indent = "all " ++ (printDecl decl indent) ++ " | " ++ (printExp exp indent)
@@ -121,17 +130,18 @@ printExp (EDiv exp1 exp2)       indent = (printExp exp1 indent) ++ " / " ++ prin
 printExp (ECSetExp exp)         indent = "#" ++ printExp exp indent
 printExp (EMinExp exp)          indent = "-" ++ printExp exp indent
 printExp (EImpliesElse exp1 exp2 exp3) indent = "if " ++ (printExp exp1 indent) ++ " then " ++ (printExp exp2 indent) ++ " else " ++ (printExp exp3 indent)
-printExp (EInt (PosInteger (pos, num))) indent = if validPos pos then show num else ""
-printExp (EDouble (PosDouble (pos, num))) indent = if validPos pos then show num else ""
+printExp (EInt (PosInteger (pos, num))) indent = if validPos pos then num else ""
+printExp (EDouble (PosDouble (pos, num))) indent = if validPos pos then num else ""
 printExp (EStr (PosString (pos, str))) indent = if validPos pos then str else ""
-printExp exp                    indent = "Exp Omitted:" ++ (show exp)
 
 printSetExp (ClaferId name) indent = printName name indent
 printSetExp (Union set1 set2) indent = (printSetExp set1 indent) ++ "++" ++ (printSetExp set2 indent)
 printSetExp (UnionCom set1 set2) indent = (printSetExp set1 indent) ++ "," ++ (printSetExp set2 indent)
 printSetExp (Difference set1 set2) indent = (printSetExp set1 indent) ++ "--" ++ (printSetExp set2 indent)
+printSetExp (Intersection set1 set2) indent = (printSetExp set1 indent) ++ "&" ++ (printSetExp set2 indent)
+printSetExp (Domain set1 set2) indent = (printSetExp set1 indent) ++ "<:" ++ (printSetExp set2 indent)
+printSetExp (Range set1 set2) indent = (printSetExp set1 indent) ++ ":>" ++ (printSetExp set2 indent)
 printSetExp (Join set1 set2) indent = (printSetExp set1 indent) ++ "." ++ (printSetExp set2 indent)
-printSetExp _                 _ = "setExp Omitted"
 
 printQuant quant indent = case quant of
   QuantNo    -> "<keyword>no</keyword> "
