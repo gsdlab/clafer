@@ -541,13 +541,13 @@ mapLineCol' c@(Concat srcPos nodes) = do
   modify (\s -> s {mapping = (srcPos, (posStart `addColumn` raiseStart, posEnd `addColumn` deductEnd)) : (mapping s)})
 
 addColumn (x, y) c = (x, y + c)
-countLeading c xs = length $ takeWhile (`elem` c) xs
+countLeading c xs = toInteger $ length $ takeWhile (`elem` c) xs
 countTrailing c xs = countLeading c (reverse xs)
 
 lineno (l, c) str = (l + newLines, (if newLines > 0 then firstCol else c) + newCol)
   where
-  newLines = length $ filter (== '\n') str
-  newCol   = length $ takeWhile (/= '\n') $ reverse str
+  newLines = toInteger $ length $ filter (== '\n') str
+  newCol   = toInteger $ length $ takeWhile (/= '\n') $ reverse str
 
 firstCol  = 1 :: ColNo
 firstLine = 1 :: LineNo

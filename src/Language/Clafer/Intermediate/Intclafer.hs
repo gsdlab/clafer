@@ -166,7 +166,7 @@ data IQuant =
  | IAll
   deriving (Eq,Ord,Show)
 
-type LineNo = Int
-type ColNo  = Int
+type LineNo = Integer
+type ColNo  = Integer
 
 type Position = ((LineNo, ColNo), (LineNo, ColNo))

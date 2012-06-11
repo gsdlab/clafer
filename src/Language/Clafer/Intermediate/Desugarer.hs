@@ -24,9 +24,13 @@ module Language.Clafer.Intermediate.Desugarer where
 import Control.Monad
 import Data.Function
 
+import Debug.Trace
 import Language.Clafer.Common
 import Language.Clafer.Front.Absclafer
+import Language.Clafer.Front.Mapper
 import Language.Clafer.Intermediate.Intclafer
+
+pos (Span (Pos l1 c1) (Pos l2 c2)) = ((l1, c1), (l2, c2))
 
 desugarModule :: Module -> IModule
 desugarModule x = case x of
@@ -92,7 +96,7 @@ desugarSuper x = case x of
   SuperEmpty  -> desugarSuper $ PosSuperEmpty noSpan
   SuperSome superhow setexp -> desugarSuper $ PosSuperSome noSpan superhow setexp
   PosSuperEmpty s ->
-      ISuper False [PExp (Just TClafer) "" noPos $ mkLClaferId baseClafer True]
+      ISuper False [PExp (Just TClafer) "" (pos s) $ mkLClaferId baseClafer True]
   PosSuperSome s superhow setexp ->
       ISuper (desugarSuperHow superhow) [desugarSetExp setexp]
 
@@ -156,19 +160,19 @@ desugarConstraint :: Constraint -> PExp
 desugarConstraint x = case x of
   Constraint exps -> desugarConstraint $ PosConstraint noSpan exps
   PosConstraint s exps -> desugarPath $ desugarExp $
-    (if length exps > 1 then foldl1 EAnd else head) exps
+    (if length exps > 1 then foldl1 (PosEAnd noSpan) else head) exps
 
 desugarSoftConstraint :: SoftConstraint -> PExp
 desugarSoftConstraint x = case x of
   SoftConstraint exps -> desugarSoftConstraint $ PosSoftConstraint noSpan exps
   PosSoftConstraint s exps -> desugarPath $ desugarExp $
-    (if length exps > 1 then foldl1 EAnd else head) exps
+    (if length exps > 1 then foldl1 (PosEAnd noSpan) else head) exps
 
 desugarGoal :: Goal -> PExp
 desugarGoal x = case x of
   Goal exps -> desugarGoal $ PosGoal noSpan exps
   PosGoal s exps -> desugarPath $ desugarExp $
-    (if length exps > 1 then foldl1 EAnd else head) exps
+    (if length exps > 1 then foldl1 (PosEAnd noSpan) else head) exps
 
 sugarConstraint :: PExp -> Constraint
 sugarConstraint pexp = Constraint $ map sugarExp [pexp]
@@ -238,12 +242,12 @@ mkArrowConstraint (Clafer abstract gcard id super card init elements) =
     mkArrowConstraint $ PosClafer noSpan abstract gcard id super card init elements
 mkArrowConstraint (PosClafer s _ _ ident super _ _ _) = 
   if isSuperSomeArrow super then  [Subconstraint $
-       Constraint [DeclAllDisj
+       Constraint [PosDeclAllDisj noSpan
        (Decl [LocIdIdent $ mkIdent "x", LocIdIdent $ mkIdent "y"]
              (ClaferId  $ Path [ModIdIdent ident]))
-       (ENeq (ESetExp $ Join (ClaferId $ Path [ModIdIdent $ mkIdent "x"])
+       (PosENeq noSpan (PosESetExp noSpan $ Join (ClaferId $ Path [ModIdIdent $ mkIdent "x"])
                              (ClaferId $ Path [ModIdIdent $ mkIdent "ref"]))
-             (ESetExp $ Join (ClaferId $ Path [ModIdIdent $ mkIdent "y"])
+             (PosESetExp noSpan $ Join (ClaferId $ Path [ModIdIdent $ mkIdent "y"])
                              (ClaferId $ Path [ModIdIdent $ mkIdent "ref"])))]]
   else []
 
@@ -319,7 +323,7 @@ sugarCard x = case x of
 sugarExInteger n = if n == -1 then ExIntegerAst else (ExIntegerNum $ PosInteger ((0, 0), show n))
 
 desugarExp :: Exp -> PExp
-desugarExp x = pExpDefPidPos $ desugarExp' x
+desugarExp x = pExpDefPid (pos $ range x) $ desugarExp' x
 
 desugarExp' :: Exp -> IExp
 desugarExp' x = case x of

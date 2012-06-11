@@ -19,7 +19,7 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
 -}
-module Language.Clafer.Front.Mapper (mapModule) where
+module Language.Clafer.Front.Mapper (mapModule, Map(..)) where
 
 import Language.Clafer.Front.Absclafer
 import Debug.Trace
@@ -249,6 +249,7 @@ instance Map Exp where
   range (PosEDouble s _)          = s
   range (PosEStr s _)             = s
   range (PosESetExp s _)          = s
+  range x = error "No position for Exp " ++ $ show x
   
   
 instance Map SetExp where
