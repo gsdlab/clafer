@@ -4,7 +4,7 @@
 < import Lexclafer
 < import ErrM
 ---
-> module Front.Parclafer where
+> module Language.Clafer.Front.Parclafer where
 > import Language.Clafer.Front.Absclafer
-> import Front.Lexclafer
-> import Front.ErrM
+> import Language.Clafer.Front.Lexclafer
+> import Language.Clafer.Front.ErrM

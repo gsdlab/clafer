@@ -26,6 +26,6 @@ transIdent x = case x of
   Ident str  -> Ident $ "Pos" ++ str
 
 
-addPos is = mkInt : mkInt : is
+addPos is = NTerminal (IdCat (Ident "Span")) : is-- mkInt : mkInt : is
 
 mkInt = NTerminal (IdCat (Ident "Integer"))

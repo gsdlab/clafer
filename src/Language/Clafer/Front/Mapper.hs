@@ -19,462 +19,361 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
 -}
-module Language.Clafer.Front.Mapper where
+module Language.Clafer.Front.Mapper (mapModule) where
 
 import Language.Clafer.Front.Absclafer
+import Debug.Trace
+
 
 mapModule :: Module -> Module
-mapModule x = case x of
-  Module declarations  -> posModule $ map mapDeclaration declarations
-  _  -> error "no module mapping"
+mapModule = mapNode
 
-posModule :: [Declaration] -> Module
-posModule declarations = PosModule n0 n declarations
+
+(>-) :: Span -> Span -> Span
+(>-) (Span (Pos 0 0) (Pos 0 0)) s = s
+(>-) r (Span (Pos 0 0) (Pos 0 0)) = r
+(>-) (Span m _) (Span _ p) = Span m p
+
+doMap f e =
+  f (range e') e'
   where
-  (n0, n) = case map getPosDeclaration declarations of
-              [] -> (0, 0)
-              (x:_) -> x
-
-mapDeclaration :: Declaration -> Declaration
-mapDeclaration x = case x of
-  PosEnumDecl n0 n posident enumids  -> x
-  ElementDecl element  -> posElementDecl $ mapElement element
-  _  -> error "no declaration mapping"
-
-getPosDeclaration :: Declaration -> (Integer, Integer)
-getPosDeclaration x = case x of
-  PosEnumDecl n0 n  _ _  -> (n0, n)
-  PosElementDecl n0 n _ -> (n0, n)
-
-posElementDecl :: Element -> Declaration
-posElementDecl element = uncurry PosElementDecl (getPosElement element) element
-
-mapClafer :: Clafer -> Clafer
-mapClafer x = case x of
-  Clafer abstract gcard posident super card init elements  -> posClafer (mapAbstract abstract) (mapGCard gcard) posident (mapSuper super) (mapCard card) (mapInit init) (mapElements elements)
-  _  -> error "no elementDecl mapping"
-
-getPosClafer :: Clafer -> (Integer, Integer)
-getPosClafer (PosClafer n0 n _ _ _ _ _ _ _) = (n0, n)
-
-posClafer :: Abstract
-                        -> GCard
-                        -> PosIdent
-                        -> Super
-                        -> Card
-                        -> Init
-                        -> Elements
-                        -> Clafer
-posClafer abstract gcard posident super card init elements = uncurry PosClafer
-  (getPosAbstract abstract >- getPosGCard gcard >- getPosPosIdent posident >-
-   getPosSuper super >- getPosCard card >- getPosInit init >-
-   getPosElements elements) abstract gcard posident super card init elements
-
-(>-) :: (Integer, Integer) -> (Integer, Integer) -> (Integer, Integer)
-(>-) (0, 0) (m, n) = (m, n)
-(>-) (m, n) (0, 0) = (m, n)
-(>-) (m, n) _ = (m, n)
-
-mapConstraint :: Constraint -> Constraint
-mapConstraint x = case x of
-  PosConstraint n0 n exps  -> PosConstraint n0 n $ map mapExp exps
-  _  -> error "no constraint mapping"
-
-getPosConstraint :: Constraint -> (Integer, Integer)
-getPosConstraint (PosConstraint n0 n _) = (n0, n)
-
-mapSoftConstraint :: SoftConstraint -> SoftConstraint
-mapSoftConstraint x = case x of
-  PosSoftConstraint n0 n exps  -> PosSoftConstraint n0 n $ map mapExp exps
-  _  -> error "no softConstraint mapping"
-
-getPosSoftConstraint :: SoftConstraint -> (Integer, Integer)
-getPosSoftConstraint (PosSoftConstraint n0 n _) = (n0, n)
-
-mapGoal :: Goal -> Goal
-mapGoal x = case x of
-  PosGoal n0 n exps  -> PosGoal n0 n $ map mapExp exps
-  _  -> error "no goal mapping"
-
-getPosGoal :: Goal -> (Integer, Integer)
-getPosGoal (PosGoal n0 n _) = (n0, n)
-
-mapAbstract :: Abstract -> Abstract
-mapAbstract x = case x of
-  AbstractEmpty  -> PosAbstractEmpty 0 0
-  PosAbstract n0 n  -> x
-  _  -> error "no abstract mapping"
-
-getPosAbstract :: Abstract -> (Integer, Integer)
-getPosAbstract x = case x of
-  PosAbstractEmpty n0 n -> (n0, n)
-  PosAbstract n0 n  -> (n0, n)
-
-mapElements :: Elements -> Elements
-mapElements x = case x of
-  ElementsEmpty  -> PosElementsEmpty 0 0
-  PosElementsList n0 n elements  -> PosElementsList n0 n $ map mapElement elements
-  _  -> error "no elements mapping"
-
-getPosElements :: Elements -> (Integer, Integer)
-getPosElements x = case x of
-  PosElementsEmpty n0 n -> (n0, n)
-  PosElementsList n0 n _  -> (n0, n)
-
-mapElement :: Element -> Element
-mapElement x = case x of
-  Subclafer clafer  -> posSubclafer $ mapClafer clafer
-  PosClaferUse n0 n name card elements  -> PosClaferUse n0 n (mapName name) (mapCard card) (mapElements elements)
-  Subconstraint constraint  -> posSubconstraint $ mapConstraint constraint
-  Subgoal goal  -> posSubgoal $ mapGoal goal
-  Subsoftconstraint softconstraint  -> posSubsoftconstraint $ mapSoftConstraint softconstraint
-  _  -> error "no element mapping"
-
-getPosElement :: Element -> (Integer, Integer)
-getPosElement x = case x of
-  PosSubclafer n0 n _  -> (n0, n)
-  PosClaferUse n0 n _ _ _  -> (n0, n)
-  PosSubconstraint n0 n _  -> (n0, n)
-  PosSubgoal n0 n goal  -> (n0, n)
-  PosSubsoftconstraint n0 n _  -> (n0, n)
-
-posSubclafer :: Clafer -> Element
-posSubclafer clafer = uncurry PosSubclafer (getPosClafer clafer) clafer
-
-posSubconstraint :: Constraint -> Element
-posSubconstraint constraint = uncurry PosSubconstraint (getPosConstraint constraint) constraint
-
-posSubgoal :: Goal -> Element
-posSubgoal goal = uncurry PosSubgoal (getPosGoal goal) goal
-
-posSubsoftconstraint :: SoftConstraint -> Element
-posSubsoftconstraint softconstraint = uncurry PosSubsoftconstraint (getPosSoftConstraint softconstraint) softconstraint
-
-mapSuper :: Super -> Super
-mapSuper x = case x of
-  SuperEmpty  -> PosSuperEmpty 0 0
-  SuperSome superhow setexp  -> posSuperSome superhow $ mapSetExp setexp
-  _  -> error "no super mapping"
-
-getPosSuper :: Super -> (Integer, Integer)
-getPosSuper x = case x of
-  PosSuperEmpty n0 n -> (n0, n)
-  PosSuperSome n0 n superhow setexp  -> (n0, n)
-
-posSuperSome :: SuperHow -> SetExp -> Super
-posSuperSome superhow setexp = uncurry PosSuperSome
-  (getPosSuperHow superhow >- getPosSetExp setexp) superhow setexp
-
-getPosSuperHow :: SuperHow -> (Integer, Integer)
-getPosSuperHow x = case x of
-  PosSuperColon n0 n -> (n0, n)
-  PosSuperArrow n0 n -> (n0, n)
-  PosSuperMArrow n0 n -> (n0, n)
-
-mapInit :: Init -> Init
-mapInit x = case x of
-  InitEmpty  -> PosInitEmpty 0 0
-  InitSome inithow exp  -> posInitSome inithow $ mapExp exp
-  _  -> error "no init mapping"
-
-getPosInit :: Init -> (Integer, Integer)
-getPosInit x = case x of
-  PosInitEmpty n0 n -> (n0, n)
-  PosInitSome n0 n _ _  -> (n0, n)
-
-posInitSome :: InitHow -> Exp -> Init
-posInitSome inithow exp = uncurry PosInitSome (getPosInitHow inithow >- getPosExp exp) inithow exp
-
-getPosInitHow :: InitHow -> (Integer, Integer)
-getPosInitHow x = case x of
-  PosInitHow_1 n0 n -> (n0, n)
-  PosInitHow_2 n0 n -> (n0, n)
-
-mapGCard :: GCard -> GCard
-mapGCard x = case x of
-  GCardEmpty  -> PosGCardEmpty 0 0
-  PosGCardXor n0 n  -> x
-  PosGCardOr n0 n  ->  x
-  PosGCardMux n0 n  -> x
-  PosGCardOpt n0 n  -> x
-  GCardInterval ncard  -> posGCardInterval $ mapNCard ncard
-  _  -> error "no gcard mapping"
-
-getPosGCard :: GCard -> (Integer, Integer)
-getPosGCard x = case x of
-  PosGCardEmpty n0 n ->(n0, n)
-  PosGCardXor n0 n  -> (n0, n)
-  PosGCardOr n0 n  ->  (n0, n)
-  PosGCardMux n0 n  -> (n0, n)
-  PosGCardOpt n0 n  -> (n0, n)
-  PosGCardInterval n0 n ncard  -> (n0, n)
-
-posGCardInterval :: NCard -> GCard
-posGCardInterval ncard = uncurry PosGCardInterval (getPosNCard ncard) ncard
-
-mapCard :: Card -> Card
-mapCard x = case x of
-  CardEmpty  -> PosCardEmpty 0 0
-  PosCardLone n0 n  -> x
-  PosCardSome n0 n  -> x
-  PosCardAny n0 n  ->  x
-  CardNum posinteger  -> posCardNum posinteger
-  CardInterval ncard  -> posCardInterval $ mapNCard ncard
-  _  -> error "no card mapping"
-
-getPosCard :: Card -> (Integer, Integer)
-getPosCard x = case x of
-  PosCardEmpty n0 n  -> (n0, n)
-  PosCardLone n0 n  -> (n0, n)
-  PosCardSome n0 n  -> (n0, n)
-  PosCardAny n0 n  ->  (n0, n)
-  PosCardNum n0 n _  -> (n0, n)
-  PosCardInterval n0 n _  -> (n0, n)
-
-posCardNum :: PosInteger -> Card
-posCardNum posinteger = uncurry PosCardNum (getPosPosInteger posinteger) posinteger
-
-posCardInterval :: NCard -> Card
-posCardInterval ncard = uncurry PosCardInterval (getPosNCard ncard) ncard
-
-mapNCard :: NCard -> NCard
-mapNCard x = case x of
-  NCard posinteger exinteger  -> posNCard posinteger (mapExInteger exinteger)
-  _  -> error "no ncard mapping"
-
-getPosNCard :: NCard -> (Integer, Integer)
-getPosNCard (PosNCard n0 n _ _) = (n0, n)
-
-posNCard :: PosInteger -> ExInteger -> NCard
-posNCard posinteger exinteger = uncurry PosNCard (getPosPosInteger posinteger >- getPosExInteger exinteger) posinteger exinteger
-
-mapExInteger :: ExInteger -> ExInteger
-mapExInteger x = case x of
-  PosExIntegerAst n0 n  -> x
-  ExIntegerNum posinteger  -> posExIntegerNum posinteger
-  _  -> error "no exinteger mapping"
-
-getPosExInteger :: ExInteger -> (Integer, Integer)
-getPosExInteger x = case x of
-  PosExIntegerAst n0 n -> (n0, n)
-  PosExIntegerNum n0 n _ -> (n0, n)
-
-posExIntegerNum :: PosInteger -> ExInteger
-posExIntegerNum posinteger = uncurry PosExIntegerNum (getPosPosInteger posinteger) posinteger
-
-mapName :: Name -> Name
-mapName x = case x of
-  Path modids  -> posPath $ map mapModId modids
-  _  -> error "no name mapping"
-
-getPosName :: Name -> (Integer, Integer)
-getPosName (PosPath n0 n _) = (n0, n)
-
-posPath :: [ModId] -> Name
-posPath modids = PosPath n0 n modids
+  e' = mapNode e
+  
+doMapWithSpan f s e = 
+  f (s >- range e') e'
   where
-  (n0, n) = case map getPosModId modids of
-              [] -> (0, 0)
-              (x:_) -> x
-
-mapExp :: Exp -> Exp
-mapExp x = case x of
-  PosDeclAllDisj n0 n decl exp  -> PosDeclAllDisj n0 n (mapDecl decl) (mapExp exp)
-  PosDeclAll n0 n decl exp  -> PosDeclAll n0 n (mapDecl decl) (mapExp exp)
-  DeclQuantDisj quant decl exp  -> posDeclQuantDisj (mapQuant quant) (mapDecl decl) (mapExp exp)
-  DeclQuant quant decl exp  -> posDeclQuant (mapQuant quant) (mapDecl decl) (mapExp exp)
-  PosEGMax n0 n exp  -> PosEGMax n0 n $ mapExp exp
-  PosEGMin n0 n exp  -> PosEGMin n0 n $ mapExp exp
-  EIff exp0 exp  -> posBin PosEIff exp0 exp
-  EImplies exp0 exp  -> posBin PosEImplies exp0 exp
-  EOr exp0 exp  -> posBin PosEOr exp0 exp
-  EXor exp0 exp  -> posBin PosEXor exp0 exp
-  EAnd exp0 exp  -> posBin PosEAnd exp0 exp
-  PosENeg n0 n exp -> PosENeg n0 n $ mapExp exp
-  ELt exp0 exp  -> posBin PosELt exp0 exp
-  EGt exp0 exp  -> posBin PosEGt exp0 exp
-  EEq exp0 exp  -> posBin PosEEq exp0 exp
-  ELte exp0 exp  -> posBin PosELte exp0 exp
-  EGte exp0 exp  -> posBin PosEGte exp0 exp
-  ENeq exp0 exp  -> posBin PosENeq exp0 exp
-  EIn exp0 exp  -> posBin PosEIn exp0 exp
-  ENin exp0 exp  -> posBin PosENin exp0 exp
-  QuantExp quant exp  -> posQuantExp (mapQuant quant) (mapExp exp)
-  EAdd exp0 exp  -> posBin PosEAdd exp0 exp
-  ESub exp0 exp  -> posBin PosESub exp0 exp
-  EMul exp0 exp  -> posBin PosESub exp0 exp
-  EDiv exp0 exp  -> posBin PosEDiv exp0 exp
-  PosECSetExp n0 n exp  -> PosECSetExp n0 n $ mapExp exp
-  PosEMinExp n0 n exp  -> PosEMinExp n0 n $ mapExp exp
-  PosEImpliesElse n0 n exp1 exp2 exp  -> PosEImpliesElse n0 n (mapExp exp1) (mapExp exp2) (mapExp exp)
-  EInt posinteger  -> posEInt posinteger
-  EDouble posdouble  -> posEDouble posdouble
-  EStr posstring  -> posEStr posstring
-  ESetExp setexp  -> posESetExp $ mapSetExp setexp
-  x  -> error $ "no exp mapping: " ++ show x
-
-getPosExp :: Exp -> (Integer, Integer)
-getPosExp x = case x of
-  PosDeclAllDisj n0 n _ _ -> (n0, n)
-  PosDeclAll n0 n _ _ -> (n0, n)
-  PosDeclQuantDisj n0 n _ _ _ -> (n0, n)
-  PosDeclQuant n0 n _ _ _ -> (n0, n)
-  PosEGMax n0 n exp  -> (n0, n)
-  PosEGMin n0 n exp  -> (n0, n)
-  PosEIff n0 n _ _ -> (n0, n)
-  PosEImplies n0 n _ _ -> (n0, n)
-  PosEOr n0 n _ _ -> (n0, n)
-  PosEXor n0 n _ _ -> (n0, n)
-  PosEAnd n0 n _ _ -> (n0, n)
-  PosENeg n0 n _ -> (n0, n)
-  PosELt n0 n _ _ -> (n0, n)
-  PosEGt n0 n _ _ -> (n0, n)
-  PosEEq n0 n _ _ -> (n0, n)
-  PosELte n0 n _ _ -> (n0, n)
-  PosEGte n0 n _ _ -> (n0, n)
-  PosENeq n0 n _ _ -> (n0, n)
-  PosEIn n0 n _ _ -> (n0, n)
-  PosENin n0 n _ _ -> (n0, n)
-  PosQuantExp n0 n _ _ -> (n0, n)
-  PosEAdd n0 n _ _ -> (n0, n)
-  PosESub n0 n _ _ -> (n0, n)
-  PosEMul n0 n _ _ -> (n0, n)
-  PosEDiv n0 n _ _ -> (n0, n)
-  PosECSetExp n0 n _  -> (n0, n)
-  PosEMinExp n0 n _  -> (n0, n)
-  PosEImpliesElse n0 n _ _ _ -> (n0, n)
-  PosEInt n0 n _  -> (n0, n)
-  PosEDouble n0 n _  -> (n0, n)
-  PosEStr n0 n _  -> (n0, n)
-  PosESetExp n0 n _  -> (n0, n)
-
-posDeclQuantDisj :: Quant -> Decl -> Exp -> Exp
-posDeclQuantDisj quant decl exp = uncurry PosDeclQuantDisj
-  (getPosQuant quant >- getPosDecl decl >- getPosExp exp) quant decl exp
-
-posDeclQuant :: Quant -> Decl -> Exp -> Exp
-posDeclQuant quant decl exp = uncurry PosDeclQuant
-  (getPosQuant quant >- getPosDecl decl >- getPosExp exp) quant decl exp
-
-posBin :: (Integer -> Integer -> Exp -> Exp -> t) -> Exp -> Exp -> t
-posBin op exp0 exp = posBin' op exp0 exp mapExp getPosExp
-
-posBin' :: (Integer -> Integer -> t2 -> t2 -> t)
-                      -> t1
-                      -> t1
-                      -> (t1 -> t2)
-                      -> (t2 -> (Integer, Integer))
-                      -> t
-posBin' op exp0 exp f g = uncurry op (g exp0' >- g exp') exp0' exp'
+  e' = mapNode e
+  
+doMap2 f d e =
+  f (range d' >- range e') d' e'
   where
-  exp0' = f exp0
-  exp'  = f  exp
-
-posQuantExp :: Quant -> Exp -> Exp
-posQuantExp quant exp = uncurry PosQuantExp (getPosQuant quant >- getPosExp exp) quant exp
-
-posEInt :: PosInteger -> Exp
-posEInt posinteger = uncurry PosEInt (getPosPosInteger posinteger) posinteger
-
-posEDouble :: PosDouble -> Exp
-posEDouble posdouble = uncurry PosEDouble (getPosPosDouble posdouble) posdouble
-
-posEStr :: PosString -> Exp
-posEStr posstring = uncurry PosEStr (getPosPosString posstring) posstring
-
-posESetExp :: SetExp -> Exp
-posESetExp setexp = uncurry PosESetExp (getPosSetExp setexp) setexp
-
-mapSetExp x = case x of
-  Union setexp0 setexp  -> posSBin PosUnion setexp0 setexp
-  UnionCom setexp0 setexp  -> posSBin PosUnionCom setexp0 setexp
-  Difference setexp0 setexp  -> posSBin PosDifference setexp0 setexp
-  Intersection setexp0 setexp  -> posSBin PosIntersection setexp0 setexp
-  Domain setexp0 setexp  -> posSBin PosDomain setexp0 setexp
-  Range setexp0 setexp  -> posSBin PosRange setexp0 setexp
-  Join setexp0 setexp  -> posSBin PosJoin setexp0 setexp
-  ClaferId name  -> posClaferId $ mapName name
-  _  -> error "no setExp mapping"
-
-getPosSetExp :: SetExp -> (Integer, Integer)
-getPosSetExp x = case x of
-  PosUnion n0 n _ _ -> (n0, n)
-  PosUnionCom n0 n _ _ -> (n0, n)
-  PosDifference n0 n _ _ -> (n0, n)
-  PosIntersection n0 n _ _ -> (n0, n)
-  PosDomain n0 n _ _ -> (n0, n)
-  PosRange n0 n _ _ -> (n0, n)
-  PosJoin n0 n _ _ -> (n0, n)
-  PosClaferId n0 n _  -> (n0, n)
-
-mapSetExp :: SetExp -> SetExp
-posSBin op exp0 exp = posBin' op exp0 exp mapSetExp getPosSetExp
-
-posClaferId :: Name -> SetExp
-posClaferId name = uncurry PosClaferId (getPosName name) name
-
-mapDecl :: Decl -> Decl
-mapDecl x = case x of
-  Decl locids setexp  -> posDecl (map mapLocId locids) (mapSetExp setexp)
-  _  -> error "no decl mapping"
-
-getPosDecl :: Decl -> (Integer, Integer)
-getPosDecl (PosDecl n0 n _ _) = (n0, n)
-
-posDecl :: [LocId] -> SetExp -> Decl
-posDecl locids setexp = uncurry PosDecl (l >- getPosSetExp setexp) locids setexp
+  d' = mapNode d
+  e' = mapNode e
+  
+doMap2WithSpan f s d e =
+  f (s >- range d' >- range e') d' e'
   where
-  l = case map getPosLocId locids of
-        [] -> (0, 0)
-        (x:_) -> x
+  d' = mapNode d
+  e' = mapNode e
+  
+doMap3 f c d e =
+  f (range c' >- range d' >- range e') c' d' e'
+  where
+  c' = mapNode c
+  d' = mapNode d
+  e' = mapNode e
+  
+doMap3WithSpan f s c d e =
+  f (s >- range c' >- range d' >- range e') c' d' e'
+  where
+  c' = mapNode c
+  d' = mapNode d
+  e' = mapNode e
+  
+doMap7 f t u v w x y z =
+  f (range t' >- range u' >- range v' >- range w' >- range x' >- range y' >- range z') t' u' v' w' x' y' z'
+  where
+  t' = mapNode t
+  u' = mapNode u
+  v' = mapNode v
+  w' = mapNode w
+  x' = mapNode x
+  y' = mapNode y
+  z' = mapNode z
 
-mapQuant :: Quant -> Quant
-mapQuant x = case x of
-  PosQuantNo n0 n  -> x
-  PosQuantLone n0 n  -> x
-  PosQuantOne n0 n  ->  x
-  PosQuantSome n0 n  -> x
-  _  -> error "no quant mapping"
 
-getPosQuant :: Quant -> (Integer, Integer)
-getPosQuant x = case x of
-  PosQuantNo n0 n  -> (n0, n)
-  PosQuantLone n0 n  -> (n0, n)
-  PosQuantOne n0 n  ->  (n0, n)
-  PosQuantSome n0 n  -> (n0, n)
+class Map n where
+  mapNode :: n -> n
+  range :: n -> Span
+  
+  
+instance Map s => Map [s] where
+  mapNode = map mapNode
+  range = foldr (>-) noSpan . map range
 
-mapEnumId :: EnumId -> EnumId
-mapEnumId x = case x of
-  EnumIdIdent posident  -> posEnumIdIdent posident
-  _  -> error "no enumId mapping"
 
-posEnumIdIdent :: PosIdent -> EnumId
-posEnumIdIdent posident = uncurry PosEnumIdIdent (getPosPosIdent posident) posident
+instance Map Module where
+  mapNode (Module d) = doMap PosModule d
+  range (PosModule s _) = s
 
-mapModId :: ModId -> ModId
-mapModId x = case x of
-  ModIdIdent posident  -> posModIdIdent posident
-  _  -> error "no modId mapping"
 
-getPosModId :: ModId -> (Integer, Integer)
-getPosModId x = case x of
-  ModIdIdent posident  -> getPosPosIdent posident
+instance Map Declaration where
+  mapNode (PosEnumDecl s p e) = doMap2WithSpan PosEnumDecl s p e
+  mapNode (ElementDecl e)     = doMap PosElementDecl e
+  range (PosEnumDecl s p e)  = s
+  range (PosElementDecl s e) = s
 
-posModIdIdent :: PosIdent -> ModId
-posModIdIdent posident = uncurry PosModIdIdent (getPosPosIdent posident) posident
 
-mapLocId :: LocId -> LocId
-mapLocId x = case x of
-  LocIdIdent posident  -> posLocIdIdent posident
-  _  -> error "no locId mapping"
+instance Map Elements where
+  mapNode ElementsEmpty         = PosElementsEmpty noSpan
+  -- The span is inaccurate for some apparent reason. Not sure why yet.
+  mapNode (PosElementsList s e) = doMap PosElementsList e --doMapWithSpan PosElementsList s e
+  range (PosElementsEmpty s)  = s
+  range (PosElementsList s _) = s
 
-getPosLocId :: LocId -> (Integer, Integer)
-getPosLocId (PosLocIdIdent n0 n _) = (n0, n)
 
-posLocIdIdent :: PosIdent -> LocId
-posLocIdIdent posident = uncurry PosLocIdIdent (getPosPosIdent posident) posident
+instance Map Element where
+  mapNode (Subclafer c)          = doMap PosSubclafer c
+  mapNode (PosClaferUse s n c e) = doMap3WithSpan PosClaferUse s n c e
+  mapNode (Subconstraint c)      = doMap PosSubconstraint c
+  mapNode (Subgoal g)            = doMap PosSubgoal g
+  mapNode (Subsoftconstraint c)  = doMap PosSubsoftconstraint c
+  range (PosSubclafer s _)         = s
+  range (PosClaferUse s _ _ _)     = s
+  range (PosSubconstraint s _)     = s
+  range (PosSubgoal s _)           = s
+  range (PosSubsoftconstraint s _) = s
+  
+  
+instance Map Clafer where
+  mapNode (Clafer a b c d e f g) = doMap7 PosClafer a b c d e f g
+  range (PosClafer s _ _ _ _ _ _ _) = s
+  
+  
+instance Map Constraint where
+  mapNode (PosConstraint s e) = doMapWithSpan PosConstraint s e
+  range (PosConstraint s _) = s
 
-getPosPosInteger (PosInteger ((n0, n), _)) = (toInteger n0, toInteger n)
-getPosPosDouble  (PosDouble ((n0, n), _)) = (toInteger n0, toInteger n)
-getPosPosString  (PosString ((n0, n), _)) = (toInteger n0, toInteger n)
-getPosPosIdent   (PosIdent ((n0, n), _)) = (toInteger n0, toInteger n)
+
+instance Map SoftConstraint where
+  mapNode (PosSoftConstraint s e) = doMapWithSpan PosSoftConstraint s e
+  range (PosSoftConstraint s _) = s
+  
+  
+instance Map Goal where
+  mapNode (PosGoal s e) = doMapWithSpan PosGoal s e
+  range (PosGoal s _) = s
+  
+  
+instance Map Abstract where
+  mapNode AbstractEmpty   = PosAbstractEmpty noSpan
+  mapNode x@PosAbstract{} = x
+  range (PosAbstractEmpty s) = s
+  range (PosAbstract s)      = s
+
+
+instance Map Super where
+  mapNode SuperEmpty          = PosSuperEmpty noSpan
+  mapNode (SuperSome how exp) = doMap2 PosSuperSome how exp
+  range (PosSuperEmpty s)    = s
+  range (PosSuperSome s _ _) = s
+
+
+instance Map SuperHow where
+  mapNode = id
+  range (PosSuperColon s)   = s
+  range (PosSuperArrow s)   = s
+  range (PosSuperMArrow  s) = s
+
+
+instance Map Init where
+  mapNode InitEmpty          = PosInitEmpty noSpan
+  mapNode (InitSome how exp) = doMap2 PosInitSome how exp
+  range (PosInitEmpty s)    = s
+  range (PosInitSome s _ _) = s
+  
+  
+instance Map InitHow where
+  mapNode = id
+  range (PosInitHow_1 s) = s
+  range (PosInitHow_2 s) = s
+
+
+instance Map Decl where
+  mapNode (Decl l e) = doMap2 PosDecl l e
+  range (PosDecl s _ _) = s
+
+
+instance Map Exp where
+  mapNode (PosDeclAllDisj s decl exp)    = doMap2WithSpan PosDeclAllDisj s decl exp
+  mapNode (PosDeclAll s decl exp)        = doMap2WithSpan PosDeclAll s decl exp
+  mapNode (DeclQuantDisj quant decl exp) = doMap3 PosDeclQuantDisj quant decl exp
+  mapNode (DeclQuant quant decl exp)     = doMap3 PosDeclQuant quant decl exp
+  mapNode (PosEGMax s exp)               = doMapWithSpan PosEGMax s exp
+  mapNode (PosEGMin s exp)               = doMapWithSpan PosEGMin s exp
+  mapNode (EIff exp0 exp1)               = doMap2 PosEIff exp0 exp1
+  mapNode (EImplies exp0 exp1)           = doMap2 PosEImplies exp0 exp1
+  mapNode (EOr exp0 exp1)                = doMap2 PosEOr exp0 exp1
+  mapNode (EXor exp0 exp1)               = doMap2 PosEXor exp0 exp1
+  mapNode (EAnd exp0 exp1)               = doMap2 PosEAnd exp0 exp1
+  mapNode (PosENeg s exp)                = doMapWithSpan PosENeg s exp
+  mapNode (ELt exp0 exp1)                = doMap2 PosELt exp0 exp1
+  mapNode (EGt exp0 exp1)                = doMap2 PosEGt exp0 exp1
+  mapNode (EEq exp0 exp1)                = doMap2 PosEEq exp0 exp1
+  mapNode (ELte exp0 exp1)               = doMap2 PosELte exp0 exp1
+  mapNode (EGte exp0 exp1)               = doMap2 PosEGte exp0 exp1
+  mapNode (ENeq exp0 exp1)               = doMap2 PosENeq exp0 exp1
+  mapNode (EIn exp0 exp1)                = doMap2 PosEIn exp0 exp1
+  mapNode (ENin exp0 exp1)               = doMap2 PosENin exp0 exp1
+  mapNode (QuantExp quant exp)           = doMap2 PosQuantExp quant exp
+  mapNode (EAdd exp0 exp1)               = doMap2 PosEAdd exp0 exp1
+  mapNode (ESub exp0 exp1)               = doMap2 PosESub exp0 exp1
+  mapNode (EMul exp0 exp1)               = doMap2 PosESub exp0 exp1
+  mapNode (EDiv exp0 exp1)               = doMap2 PosEDiv exp0 exp1
+  mapNode (PosECSetExp s exp)            = doMapWithSpan PosECSetExp s exp
+  mapNode (PosEMinExp s exp)             = doMapWithSpan PosEMinExp s exp
+  mapNode (PosEImpliesElse s exp0 exp1 exp2) = doMap3WithSpan PosEImpliesElse s exp0 exp1 exp2
+  mapNode (EInt posinteger)              = doMap PosEInt posinteger
+  mapNode (EDouble posdouble)            = doMap PosEDouble posdouble
+  mapNode (EStr posstring)               = doMap PosEStr posstring
+  mapNode (ESetExp setexp)               = doMap PosESetExp setexp
+  range (PosDeclAllDisj s _ _)    = s
+  range (PosDeclAll s _ _)        = s
+  range (PosDeclQuantDisj s _ _ _) = s
+  range (PosDeclQuant s _ _ _)    = s
+  range (PosEGMax s _)            = s
+  range (PosEGMin s _)            = s
+  range (PosEIff s _ _)           = s
+  range (PosEImplies s _ _)       = s
+  range (PosEOr s _ _)            = s
+  range (PosEXor s _ _)           = s
+  range (PosEAnd s _ _)           = s
+  range (PosENeg s _)             = s
+  range (PosELt s _ _)            = s
+  range (PosEGt s _ _)            = s
+  range (PosEEq s _ _)            = s
+  range (PosELte s _ _)           = s
+  range (PosEGte s _ _)           = s
+  range (PosENeq s _ _)           = s
+  range (PosEIn s _ _)            = s
+  range (PosENin s _ _)           = s
+  range (PosQuantExp s _ _)       = s
+  range (PosEAdd s _ _)           = s
+  range (PosESub s _ _)           = s
+  range (PosEMul s _ _)           = s
+  range (PosEDiv s _ _)           = s
+  range (PosECSetExp s _)         = s
+  range (PosEMinExp s _)          = s
+  range (PosEImpliesElse s _ _ _) = s
+  range (PosEInt s _)             = s
+  range (PosEDouble s _)          = s
+  range (PosEStr s _)             = s
+  range (PosESetExp s _)          = s
+  
+  
+instance Map SetExp where
+  mapNode (Union e1 e2)        = doMap2 PosUnion e1 e2
+  mapNode (UnionCom e1 e2)     = doMap2 PosUnionCom e1 e2
+  mapNode (Difference e1 e2)   = doMap2 PosDifference e1 e2
+  mapNode (Intersection e1 e2) = doMap2 PosIntersection e1 e2
+  mapNode (Domain e1 e2)       = doMap2 PosDomain e1 e2
+  mapNode (Range e1 e2)        = doMap2 PosRange e1 e2
+  mapNode (Join e1 e2)         = doMap2 PosJoin e1 e2
+  mapNode (ClaferId n)         = doMap PosClaferId n
+  range (PosUnion s _ _)        = s
+  range (PosUnionCom s _ _)     = s
+  range (PosDifference s _ _)   = s
+  range (PosIntersection s _ _) = s
+  range (PosDomain s _ _)       = s
+  range (PosRange s _ _)        = s
+  range (PosJoin s _ _)         = s
+  range (PosClaferId s _)       = s
+  
+
+instance Map NCard where
+  mapNode (NCard l h) = doMap2 PosNCard l h
+  range (PosNCard s _ _) = s
+  
+  
+instance Map Card where
+  mapNode CardEmpty        = PosCardEmpty noSpan
+  mapNode x@PosCardLone{}  = x
+  mapNode x@PosCardSome{}  = x
+  mapNode x@PosCardAny{}   = x
+  mapNode (CardNum i)      = doMap PosCardNum i 
+  mapNode (CardInterval c) = doMap PosCardInterval c
+  range (PosCardEmpty s) = s
+  range (PosCardLone s)  = s
+  range (PosCardSome s)  = s
+  range (PosCardAny s)   = s
+  range (PosCardNum s _) = s
+  range (PosCardInterval s _) = s
+  
+  
+instance Map GCard where
+  mapNode GCardEmpty        = PosGCardEmpty noSpan
+  mapNode x@PosGCardXor{}   = x
+  mapNode x@PosGCardOr{}    = x
+  mapNode x@PosGCardMux{}   = x
+  mapNode x@PosGCardOpt{}   = x
+  mapNode (GCardInterval n) = doMap PosGCardInterval n
+  range (PosGCardEmpty s)      = s
+  range (PosGCardXor s)        = s
+  range (PosGCardOr s)         = s
+  range (PosGCardMux s)        = s
+  range (PosGCardOpt s)        = s
+  range (PosGCardInterval s _) = s
+
+
+instance Map Name where
+  mapNode (Path m) = doMap PosPath m
+  range (PosPath s _) = s
+  
+
+instance Map LocId where
+  mapNode (LocIdIdent i) = doMap PosLocIdIdent i
+  range (PosLocIdIdent s _) = s
+  
+
+instance Map ModId where
+  mapNode (ModIdIdent i) = doMap PosModIdIdent i
+  range (PosModIdIdent s _) = s
+
+
+instance Map EnumId where
+  mapNode (EnumIdIdent i) = doMap PosEnumIdIdent i
+  range (PosEnumIdIdent s _) = s
+  
+  
+instance Map Quant where
+  mapNode = id
+  range (PosQuantNo s)   = s
+  range (PosQuantLone s) = s
+  range (PosQuantOne s)  = s
+  range (PosQuantSome s) = s
+
+
+instance Map ExInteger where
+  mapNode x@PosExIntegerAst{} = x
+  mapNode (ExIntegerNum i)    = doMap PosExIntegerNum i
+  range (PosExIntegerAst s)   = s
+  range (PosExIntegerNum s _) = s  
+
+
+instance Map PosIdent where
+  mapNode = id
+  range (PosIdent ((c, l), lex)) =
+    Span (Pos c' l') (Pos c' $ l' + len lex)
+    where
+    c' = toInteger c
+    l' = toInteger l
+
+
+instance Map PosString where
+  mapNode = id
+  range (PosString ((c, l), lex)) =
+    Span (Pos c' l') (Pos c' $ l' + len lex)
+    where
+    c' = toInteger c
+    l' = toInteger l
+  
+  
+instance Map PosDouble where
+  mapNode = id  
+  range (PosDouble ((c, l), lex)) =
+    Span (Pos c' l') (Pos c' $ l' + len lex)
+    where
+    c' = toInteger c
+    l' = toInteger l
+  
+  
+instance Map PosInteger where
+  mapNode = id  
+  range (PosInteger ((c, l), lex)) =
+    Span (Pos c' l') (Pos c' $ l' + len lex)
+    where
+    c' = toInteger c
+    l' = toInteger l
+
+
+len = toInteger . length

@@ -1,4 +1,4 @@
 5c5
 < module Lexclafer where
 ---
-> module Front.Lexclafer where
+> module Language.Clafer.Front.Lexclafer where
