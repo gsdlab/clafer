@@ -48,6 +48,7 @@ data IModule = IModule {
 -- Clafer has a list of fields that specify its properties. Some fields, marked as (o) are for generating optimized code
 data IClafer =
    IClafer {
+      cinPos :: Position,     -- the position of the syntax in source code
       isAbstract :: Bool,     -- determines whether it's abstract
       gcard :: Maybe IGCard,  -- group cardinality
       ident :: String,        -- name

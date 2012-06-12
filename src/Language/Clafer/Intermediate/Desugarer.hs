@@ -24,13 +24,13 @@ module Language.Clafer.Intermediate.Desugarer where
 import Control.Monad
 import Data.Function
 
-import Debug.Trace
 import Language.Clafer.Common
 import Language.Clafer.Front.Absclafer
 import Language.Clafer.Front.Mapper
 import Language.Clafer.Intermediate.Intclafer
 
 pos (Span (Pos l1 c1) (Pos l2 c2)) = ((l1, c1), (l2, c2))
+dePos ((l1, c1), (l2, c2)) = Span (Pos l1 c1) (Pos l2 c2)
 
 desugarModule :: Module -> IModule
 desugarModule x = case x of
@@ -79,14 +79,14 @@ desugarClafer x = case x of
   Clafer abstract gcard id super card init elements  -> 
       desugarClafer $ PosClafer noSpan abstract gcard id super card init elements
   PosClafer s abstract gcard id super card init elements  -> 
-    IClafer (desugarAbstract abstract) (desugarGCard gcard) (transIdent id)
+    IClafer (pos s) (desugarAbstract abstract) (desugarGCard gcard) (transIdent id)
             "" (desugarSuper super) (desugarCard card) (0, -1)
             ((desugarInit init) ++ desugarElements elements)
 
 
 sugarClafer :: IClafer -> Clafer
 sugarClafer x = case x of
-  IClafer abstract gcard id uid super card _ elements  ->
+  IClafer _ abstract gcard id uid super card _ elements  ->
     Clafer (sugarAbstract abstract) (sugarGCard gcard) (mkIdent uid)
       (sugarSuper super) (sugarCard card) InitEmpty (sugarElements elements)
 

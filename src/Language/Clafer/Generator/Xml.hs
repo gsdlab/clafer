@@ -63,8 +63,9 @@ genXmlModule imodule = concat
 
 genXmlClafer :: IClafer -> Result
 genXmlClafer x = case x of
-  IClafer abstract gcard id uid super card glcard elements  ->
-    concat [ genXmlAbstract abstract
+  IClafer pos abstract gcard id uid super card glcard elements  ->
+    concat [ tag "Position" $ genXmlPosition pos
+           , genXmlAbstract abstract
            , optTag gcard genXmlGCard
            , genXmlId id
            , genXmlUid uid

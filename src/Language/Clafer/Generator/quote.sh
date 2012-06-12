@@ -7,7 +7,7 @@
 filename=$(basename $1)
 filename="${filename%%.*}"
 #The name of the method is print_<filename>
-echo "module Generator.Schema where"
+echo "module Language.Clafer.Generator.Schema where"
 echo "xsd = concat [ \"\""
 
 # Remove all Windows style carriage returns

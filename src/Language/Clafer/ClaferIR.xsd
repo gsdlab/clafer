@@ -95,6 +95,26 @@
       <xs:complexContent>
           <xs:extension base="IElement">
             <xs:sequence>
+                <xs:element name="Position">
+                  <xs:complexType>
+                      <xs:sequence>
+                          <xs:element name="Start">
+                              <xs:complexType>
+                                  <xs:sequence>
+                                      <xs:element ref="IntLiteral" minOccurs="2" maxOccurs="2"/>
+                                  </xs:sequence>
+                              </xs:complexType>
+                          </xs:element>
+                          <xs:element name="End">
+                              <xs:complexType>
+                                  <xs:sequence>
+                                      <xs:element ref="IntLiteral" minOccurs="2" maxOccurs="2"/>
+                                  </xs:sequence>
+                              </xs:complexType>
+                          </xs:element>
+                      </xs:sequence>
+                  </xs:complexType>
+                </xs:element>
                 <xs:element name="IsAbstract" type="xs:boolean"/>
                 <xs:element name="GroupCard"  type="cl:IGroupCard" minOccurs="0" maxOccurs="1"/>
                 <xs:element name="Id"         type="xs:string"/>

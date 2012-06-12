@@ -249,7 +249,7 @@ instance Map Exp where
   range (PosEDouble s _)          = s
   range (PosEStr s _)             = s
   range (PosESetExp s _)          = s
-  range x = error "No position for Exp " ++ $ show x
+  range x = error $ "No position for Exp " ++ show x
   
   
 instance Map SetExp where
