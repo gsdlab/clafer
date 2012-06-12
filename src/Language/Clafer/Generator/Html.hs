@@ -24,18 +24,23 @@ module Language.Clafer.Generator.Html (genHtml) where
 import Language.Clafer.Front.Absclafer
 import Data.List (intersperse)
 
-genHtml tree = "<clafer>" ++ printModule tree ++ "</clafer>"
+genHtml = printModule
 
 printModule (Module [])     = ""
 printModule (Module (x:xs)) = (printDeclaration x 0) ++ (printModule $ Module xs)
 
-printDeclaration (EnumDecl posIdent enumIds) indent = "<keyword>enum</keyword>=" ++ (printPosIdent posIdent indent) ++ (concat $ intersperse ";" (map (\x -> printEnumId x (indent)) enumIds))
+printDeclaration (EnumDecl posIdent enumIds) indent = "<span class=\"keyword\">enum</span>=" ++ (printPosIdentRef posIdent indent) ++ (concat $ intersperse ";" (map (\x -> printEnumId x (indent)) enumIds))
 printDeclaration (ElementDecl element)       indent = printElement element indent
 
-printElement (Subclafer (Clafer abstract gCard id super card init (ElementsList elements))) indent =
-  (printIndent indent) ++
-    (unwords [printAbstract abstract indent, printGCard gCard indent, printPosIdentAnchor id indent, printSuper super indent,
-    printCard card indent, printInit init indent]) ++ printCloseIndent indent ++ "<br>\n" ++ (concatMap (\x -> printElement x (indent + 1)) elements)
+printElement (Subclafer (Clafer abstract gCard id super card init (ElementsList elements))) indent
+  | indent == 0 = let (PosIdent (_, divid)) = id in
+                    "<div id=\"" ++ divid ++ "\">\n" ++ (unwords [printAbstract abstract indent, printGCard gCard indent,
+                    printPosIdent id indent, printSuper super indent, printCard card indent, printInit init indent])
+                    ++ "<br>\n" ++ (concatMap (\x -> printElement x (indent + 1)) elements) ++ "</div>"
+  | otherwise   = let (PosIdent (_, divid)) = id in
+                    "<span id=\"" ++ divid ++ "\" class=\"l" ++ show indent ++ "\">" ++ (unwords [printAbstract abstract indent, printGCard gCard indent,
+                    printPosIdent id indent, printSuper super indent, printCard card indent, printInit init indent])
+                    ++ "</span>" ++ "<br>\n" ++ (concatMap (\x -> printElement x (indent + 1)) elements)
 printElement (Subconstraint constraint) indent = (printIndent indent) ++ printConstraint constraint indent
 printElement (ClaferUse name card elements) indent = printIndent indent ++ "`" ++ printName name indent ++ printCard card indent ++ printElements elements indent
 printElement (Subgoal goal) indent = printGoal goal indent
@@ -44,20 +49,20 @@ printElement (Subsoftconstraint softConstraint) indent = printSoftConstraint sof
 printElements ElementsEmpty indent = ""
 printElements (ElementsList elements) indent = "{" ++ (concatMap (\x -> printElement x (indent + 1)) elements) ++ "}"
 
-printGoal (Goal exps) indent = "<<" ++ concatMap (\x -> printExp x indent) exps ++ ">>"
+printGoal (Goal exps) indent = "&lt;&lt;" ++ concatMap (\x -> printExp x indent) exps ++ "&gt;&gt;"
 
 printSoftConstraint (SoftConstraint exps) indent = "(" ++ concatMap (\x -> printExp x indent) exps ++ ")"
 
-printAbstract Abstract indent = "<keyword>abstract</keyword>"
+printAbstract Abstract indent = "<span class=\"keyword\">abstract</span>"
 printAbstract AbstractEmpty indent = ""
 
 printGCard gCard indent = case gCard of
   (GCardInterval ncard) -> printNCard ncard indent
   GCardEmpty -> ""
-  GCardXor   -> "<keyword>xor</keyword>"
-  GCardOr    -> "<keyword>or</keyword>"
-  GCardMux   -> "<keyword>mux</keyword>"
-  GCardOpt   -> "<keyword>opt</keyword>"
+  GCardXor   -> "<span class=\"keyword\">xor</span>"
+  GCardOr    -> "<span class=\"keyword\">or</span>"
+  GCardMux   -> "<span class=\"keyword\">mux</span>"
+  GCardOpt   -> "<span class=\"keyword\">opt</span>"
 
 printNCard (NCard (PosInteger (pos, num)) exInteger) indent = if validPos pos
     then case exInteger of
@@ -67,22 +72,22 @@ printNCard (NCard (PosInteger (pos, num)) exInteger) indent = if validPos pos
 
 printName (Path modids) indent = unwords $ map (\x -> printModId x indent) modids
 
-printModId (ModIdIdent posident) indent = printPosIdent posident indent
-
-printPosIdentAnchor (PosIdent (pos, id)) indent
-  | validPos pos   = "<a name=\"" ++ id ++ "\">" ++ dropUid id ++ "</a>" --identifier
-  | otherwise      = ""
+printModId (ModIdIdent posident) indent = printPosIdentRef posident indent
 
 printPosIdent (PosIdent (pos, id)) indent
+  | validPos pos   = dropUid id --identifier
+  | otherwise      = ""
+
+printPosIdentRef (PosIdent (pos, id)) indent
   | validPos pos   = "<a href=\"#" ++ id ++ "\">" ++ dropUid id ++ "</a>" --reference
   | otherwise      = ""
 
 printSuper SuperEmpty indent = ""
 printSuper (SuperSome superHow setExp) indent = printSuperHow superHow indent ++ printSetExp setExp indent
 
-printSuperHow SuperColon  indent = " <keyword>:</keyword> "
-printSuperHow SuperArrow  indent = " <keyword>-></keyword> "
-printSuperHow SuperMArrow indent = " <keyword>->></keyword> "
+printSuperHow SuperColon  indent = " <span class=\"keyword\">:</span> "
+printSuperHow SuperArrow  indent = " <span class=\"keyword\">-></span> "
+printSuperHow SuperMArrow indent = " <span class=\"keyword\">->></span> "
 
 printCard CardEmpty indent = ""
 printCard CardLone indent = "?"
@@ -91,9 +96,9 @@ printCard CardAny indent = "*"
 printCard (CardNum (PosInteger (pos,num))) indent =  if validPos pos then num else ""
 printCard (CardInterval nCard) indent = printNCard nCard indent
 
-printConstraint (Constraint exps) indent = "<keyword>[</keyword> "  ++ (concat $ map (\x -> printExp x indent) exps) ++ " <keyword>]</keyword>" ++ printCloseIndent indent ++ "<br>\n"
+printConstraint (Constraint exps) indent = "<span class=\"keyword\">[</span> "  ++ (concat $ map (\x -> printExp x indent) exps) ++ " <span class=\"keyword\">]</span></span><br>\n"
 
-printDecl (Decl locids setExp) indent = "<keyword>:</keyword>" ++ printSetExp setExp indent
+printDecl (Decl locids setExp) indent = "<span class=\"keyword\">:</span>" ++ printSetExp setExp indent
 
 printInit InitEmpty indent = ""
 printInit (InitSome initHow exp) indent = printInitHow initHow indent ++ printExp exp indent
@@ -144,21 +149,22 @@ printSetExp (Range set1 set2) indent = (printSetExp set1 indent) ++ ":>" ++ (pri
 printSetExp (Join set1 set2) indent = (printSetExp set1 indent) ++ "." ++ (printSetExp set2 indent)
 
 printQuant quant indent = case quant of
-  QuantNo    -> "<keyword>no</keyword> "
-  QuantLone  -> "<keyword>lone</keyword> "
-  QuantOne   -> "<keyword>one</keyword> "
-  QuantSome  -> "<keyword>some</keyword> "
+  QuantNo    -> "<span class=\"keyword\">no</span> "
+  QuantLone  -> "<span class=\"keyword\">lone</span> "
+  QuantOne   -> "<span class=\"keyword\">one</span> "
+  QuantSome  -> "<span class=\"keyword\">some</span> "
 
-printEnumId (EnumIdIdent posident) indent = printPosIdent posident indent
+printEnumId (EnumIdIdent posident) indent = printPosIdentRef posident indent
 
-printIndent indent = if indent == 0 then "" else "<l" ++ show indent ++ ">"
-printCloseIndent indent = if indent == 0 then "" else "</l" ++ show indent ++ ">"
+printIndent indent = if indent == 0 then "" else "<span class=\"l" ++ show indent ++ "\">"
+-- printCloseIndent indent = if indent == 0 then "" else "</span>"
 
 validPos (row, col)
-  | row >= 0 && col >= 0 = True
-  | otherwise            = False
+  | row >= 0 && col >= 0 = True -- make strictly greater than when implementing source mapping
+  | otherwise          = False
 
-dropUid id = rest $ dropWhile (\x -> x /= '_') id
+--dropUid id = rest $ dropWhile (\x -> x /= '_') id
+dropUid = id --for now. Just testing.
 --so it fails more gracefully on empty lists
 rest [] = []
 rest (x:xs) = xs
