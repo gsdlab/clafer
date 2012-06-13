@@ -29,14 +29,14 @@ genHtml = printModule
 printModule (Module [])     = ""
 printModule (Module (x:xs)) = (printDeclaration x 0) ++ (printModule $ Module xs)
 
-printDeclaration (EnumDecl posIdent enumIds) indent = "<span class=\"keyword\">enum</span>=" ++ (printPosIdentRef posIdent indent) ++ (concat $ intersperse ";" (map (\x -> printEnumId x (indent)) enumIds))
+printDeclaration (EnumDecl posIdent enumIds) indent = "<span class=\"keyword\">enum</span> =" ++ (printPosIdentRef posIdent indent) ++ (concat $ intersperse ";" (map (\x -> printEnumId x (indent)) enumIds))
 printDeclaration (ElementDecl element)       indent = printElement element indent
 
 printElement (Subclafer (Clafer abstract gCard id super card init (ElementsList elements))) indent
   | indent == 0 = let (PosIdent (_, divid)) = id in
                     "<div id=\"" ++ divid ++ "\">\n" ++ (unwords [printAbstract abstract indent, printGCard gCard indent,
                     printPosIdent id indent, printSuper super indent, printCard card indent, printInit init indent])
-                    ++ "<br>\n" ++ (concatMap (\x -> printElement x (indent + 1)) elements) ++ "</div>"
+                    ++ if elements == [] then "</div>\n<br>\n" else "<br>\n" ++ (concatMap (\x -> printElement x (indent + 1)) elements) ++ "</div>\n<br>\n"
   | otherwise   = let (PosIdent (_, divid)) = id in
                     "<span id=\"" ++ divid ++ "\" class=\"l" ++ show indent ++ "\">" ++ (unwords [printAbstract abstract indent, printGCard gCard indent,
                     printPosIdent id indent, printSuper super indent, printCard card indent, printInit init indent])
@@ -79,15 +79,15 @@ printPosIdent (PosIdent (pos, id)) indent
   | otherwise      = ""
 
 printPosIdentRef (PosIdent (pos, id)) indent
-  | validPos pos   = "<a href=\"#" ++ id ++ "\">" ++ dropUid id ++ "</a>" --reference
+  | validPos pos   = "<a href=\"#" ++ id ++ "\"><span class=\"reference\">" ++ dropUid id ++ "</span></a>" --reference
   | otherwise      = ""
 
 printSuper SuperEmpty indent = ""
 printSuper (SuperSome superHow setExp) indent = printSuperHow superHow indent ++ printSetExp setExp indent
 
-printSuperHow SuperColon  indent = " <span class=\"keyword\">:</span> "
-printSuperHow SuperArrow  indent = " <span class=\"keyword\">-></span> "
-printSuperHow SuperMArrow indent = " <span class=\"keyword\">->></span> "
+printSuperHow SuperColon  indent = "<span class=\"keyword\">:</span> "
+printSuperHow SuperArrow  indent = "<span class=\"keyword\">-></span> "
+printSuperHow SuperMArrow indent = "<span class=\"keyword\">->></span> "
 
 printCard CardEmpty indent = ""
 printCard CardLone indent = "?"
@@ -96,7 +96,7 @@ printCard CardAny indent = "*"
 printCard (CardNum (PosInteger (pos,num))) indent =  if validPos pos then num else ""
 printCard (CardInterval nCard) indent = printNCard nCard indent
 
-printConstraint (Constraint exps) indent = "<span class=\"keyword\">[</span> "  ++ (concat $ map (\x -> printExp x indent) exps) ++ " <span class=\"keyword\">]</span></span><br>\n"
+printConstraint (Constraint exps) indent = "<span class=\"keyword\">[</span>"  ++ (concat $ map (\x -> printExp x indent) exps) ++ " <span class=\"keyword\">]</span></span><br>\n"
 
 printDecl (Decl locids setExp) indent = "<span class=\"keyword\">:</span>" ++ printSetExp setExp indent
 
@@ -157,14 +157,13 @@ printQuant quant indent = case quant of
 printEnumId (EnumIdIdent posident) indent = printPosIdentRef posident indent
 
 printIndent indent = if indent == 0 then "" else "<span class=\"l" ++ show indent ++ "\">"
--- printCloseIndent indent = if indent == 0 then "" else "</span>"
 
 validPos (row, col)
   | row >= 0 && col >= 0 = True -- make strictly greater than when implementing source mapping
   | otherwise          = False
 
---dropUid id = rest $ dropWhile (\x -> x /= '_') id
-dropUid = id --for now. Just testing.
+dropUid uid = let id = rest $ dropWhile (\x -> x /= '_') uid in if id == "" then uid else id
+--dropUid = id --for now. Just testing.
 --so it fails more gracefully on empty lists
 rest [] = []
 rest (x:xs) = xs
