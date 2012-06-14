@@ -323,3 +323,15 @@ getc = do
   c <- gets (head.input)
   modify (\e -> e {input = tail $ input e})
   return c
+
+revertLayout :: String -> String
+revertLayout input = unlines $ revertLayout' input' 0 
+                   where input' = map unwords $ map (filter (/= "")) $ map words $ lines input
+
+revertLayout' :: [String] -> Int -> [String]
+revertLayout' (xs:[])        indent = []
+revertLayout' ([]:xss)       indent = revertLayout' xss indent
+revertLayout' (('{':xs):xss) indent = (replicate indent' ' ' ++ xs):revertLayout' xss indent'
+                                    where indent' = indent + 2
+revertLayout' ("}":xss)      indent = revertLayout' xss (indent - 2)
+revertLayout' (xs:xss)       indent = (replicate indent ' ' ++ xs):revertLayout' xss indent
