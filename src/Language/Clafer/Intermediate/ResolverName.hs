@@ -120,7 +120,7 @@ processDecl decl = do
 resolveNav :: SEnv -> IExp -> Bool -> (IExp, [IClafer])
 resolveNav env x isFirst = case x of
   IFunExp _ (pexp0:pexp:_)  ->
-    (IFunExp iJoin [pExpDef (pid pexp0) noPos exp0', pExpDef (pid pexp) noPos exp'], path')
+    (IFunExp iJoin [pExpDef (pid pexp0) noSpan exp0', pExpDef (pid pexp) noSpan exp'], path')
     where
     (exp0', path) = resolveNav env (Language.Clafer.Intermediate.Intclafer.exp pexp0) True
     (exp', path') = resolveNav env {context = listToMaybe path, resPath = path}

@@ -21,7 +21,7 @@
 -}
 module Language.Clafer.Intermediate.Intclafer where
 
---import Language.Clafer.Front.Absclafer
+import Language.Clafer.Front.Absclafer
 
 data IType = TBoolean
            | TString
@@ -48,7 +48,7 @@ data IModule = IModule {
 -- Clafer has a list of fields that specify its properties. Some fields, marked as (o) are for generating optimized code
 data IClafer =
    IClafer {
-      cinPos :: Position,     -- the position of the syntax in source code
+      cinPos :: Span,     -- the position of the syntax in source code
       isAbstract :: Bool,     -- determines whether it's abstract
       gcard :: Maybe IGCard,  -- group cardinality
       ident :: String,        -- name
@@ -95,7 +95,7 @@ type Interval = (Integer, Integer)
 data PExp = PExp {
       iType :: Maybe IType,
       pid :: String,
-      inPos :: Position,         -- position in the input Clafer file
+      inPos :: Span,         -- position in the input Clafer file
       exp :: IExp
     }
   deriving (Eq,Ord,Show)
@@ -169,5 +169,3 @@ data IQuant =
 
 type LineNo = Integer
 type ColNo  = Integer
-
-type Position = ((LineNo, ColNo), (LineNo, ColNo))

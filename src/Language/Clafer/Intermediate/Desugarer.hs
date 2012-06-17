@@ -29,8 +29,6 @@ import Language.Clafer.Front.Absclafer
 import Language.Clafer.Front.Mapper
 import Language.Clafer.Intermediate.Intclafer
 
-pos (Span (Pos l1 c1) (Pos l2 c2)) = ((l1, c1), (l2, c2))
-dePos ((l1, c1), (l2, c2)) = Span (Pos l1 c1) (Pos l2 c2)
 
 desugarModule :: Module -> IModule
 desugarModule x = case x of
@@ -79,7 +77,7 @@ desugarClafer x = case x of
   Clafer abstract gcard id super card init elements  -> 
       desugarClafer $ PosClafer noSpan abstract gcard id super card init elements
   PosClafer s abstract gcard id super card init elements  -> 
-    IClafer (pos s) (desugarAbstract abstract) (desugarGCard gcard) (transIdent id)
+    IClafer s (desugarAbstract abstract) (desugarGCard gcard) (transIdent id)
             "" (desugarSuper super) (desugarCard card) (0, -1)
             ((desugarInit init) ++ desugarElements elements)
 
@@ -96,7 +94,7 @@ desugarSuper x = case x of
   SuperEmpty  -> desugarSuper $ PosSuperEmpty noSpan
   SuperSome superhow setexp -> desugarSuper $ PosSuperSome noSpan superhow setexp
   PosSuperEmpty s ->
-      ISuper False [PExp (Just TClafer) "" (pos s) $ mkLClaferId baseClafer True]
+      ISuper False [PExp (Just TClafer) "" s $ mkLClaferId baseClafer True]
   PosSuperSome s superhow setexp ->
       ISuper (desugarSuperHow superhow) [desugarSetExp setexp]
 
@@ -323,7 +321,7 @@ sugarCard x = case x of
 sugarExInteger n = if n == -1 then ExIntegerAst else (ExIntegerNum $ PosInteger ((0, 0), show n))
 
 desugarExp :: Exp -> PExp
-desugarExp x = pExpDefPid (pos $ range x) $ desugarExp' x
+desugarExp x = pExpDefPid (range x) $ desugarExp' x
 
 desugarExp' :: Exp -> IExp
 desugarExp' x = case x of
