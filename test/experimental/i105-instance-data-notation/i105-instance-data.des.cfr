@@ -1,0 +1,21 @@
+abstract 0 .. * c1_A : clafer 0 .. * {
+  0 .. * c2_b : clafer 0 .. 1 {
+    }
+  0 .. * c3_c : clafer 0 .. * {
+    }
+  0 .. * c4_d ->> c1_A 0 .. * {
+    }
+  [all disj x ;
+  y : this . c4_d | x . ref != y . ref]
+  0 .. * c14_f : integer 0 .. 1 {
+    }
+  }
+0 .. * c15_A1 : c1_A 1 .. 1 {
+  [some this . c2_b][no this . c3_c][no this . c4_d][this . c14_f = 5]
+}
+0 .. * c25_A2 : c1_A 1 .. 1 {
+  [no this . c2_b][# this . c3_c = 2][no this . c4_d][some this . c14_f]
+}
+0 .. * c36_A3 : c1_A 1 .. 1 {
+  [some this . c2_b][one this . c3_c][this . (c4_d . ref)= c15_A1 ++ c25_A2][no this . c14_f]
+}

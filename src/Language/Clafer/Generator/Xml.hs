@@ -63,8 +63,9 @@ genXmlModule imodule = concat
 
 genXmlClafer :: IClafer -> Result
 genXmlClafer x = case x of
-  IClafer abstract gcard id uid super card glcard elements  ->
-    concat [ genXmlAbstract abstract
+  IClafer pos abstract gcard id uid super card glcard elements  ->
+    concat [ tag "Position" $ genXmlPosition pos
+           , genXmlAbstract abstract
            , optTag gcard genXmlGCard
            , genXmlId id
            , genXmlUid uid
@@ -116,9 +117,9 @@ genXmlPExp tagName (PExp iType pid pos iexp) = tag tagName $ concat
   , tag "Position" $ genXmlPosition pos
   , tagType "Exp" (genXmlIExpType iexp) $ genXmlIExp iexp]
 
-genXmlPosition (start, end) = concat
-  [ tag "Start" $ genXmlIntPair start
-  , tag "End"   $ genXmlIntPair end]
+genXmlPosition (Span (Pos s1 s2) (Pos e1 e2)) = concat
+  [ tag "Start" $ genXmlIntPair (s1, s2)
+  , tag "End"   $ genXmlIntPair (e1, e2)]
 
 genXmlIExpType x = case x of
   IDeclPExp _ _ _ -> "IDeclarationParentExp"

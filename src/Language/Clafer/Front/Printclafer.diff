@@ -1,7 +1,7 @@
 2c2
 < module Printclafer where
 ---
-> module Front.Printclafer where
+> module Language.Clafer.Front.Printclafer where
 6c6
 < import Absclafer
 ---

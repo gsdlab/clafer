@@ -63,7 +63,7 @@ getSuperId = sident . Language.Clafer.Intermediate.Intclafer.exp . head
 
 isEqClaferId = flip $ (==).uid
 
-idToPExp :: String -> Position -> String -> String -> Bool -> PExp
+idToPExp :: String -> Span -> String -> String -> Bool -> PExp
 idToPExp pid pos modids id isTop = PExp (Just TClafer) pid pos (IClaferId modids id isTop)
 
 mkLClaferId :: String -> Bool -> IExp
@@ -73,12 +73,12 @@ mkPLClaferId :: String -> Bool -> PExp
 mkPLClaferId id isTop = pExpDefPidPos $ mkLClaferId id isTop
 
 pExpDefPidPos :: IExp -> PExp
-pExpDefPidPos = pExpDefPid noPos
+pExpDefPidPos = pExpDefPid noSpan
 
-pExpDefPid :: Position -> IExp -> PExp
+pExpDefPid :: Span -> IExp -> PExp
 pExpDefPid = pExpDef ""
 
-pExpDef :: String -> Position -> IExp -> PExp
+pExpDef :: String -> Span -> IExp -> PExp
 pExpDef = PExp Nothing
 
 isParent (PExp _ _ _ (IClaferId _ id _)) = id == parent
@@ -217,7 +217,7 @@ binOps = logBinOps ++ relBinOps ++ arithBinOps ++ setBinOps
 iIfThenElse   = "=>else"
 
 mkIFunExp op (x:[]) = x
-mkIFunExp op xs = foldl1 (\x y -> IFunExp op $ map (PExp (Just TClafer) "" noPos) [x,y]) xs
+mkIFunExp op xs = foldl1 (\x y -> IFunExp op $ map (PExp (Just TClafer) "" noSpan) [x,y]) xs
 
 toLowerS "" = ""
 toLowerS (s:ss) = toLower s : ss
@@ -259,5 +259,3 @@ voidf :: Monad m => m t -> m ()
 voidf f = do
   x <- f
   return ()
-
-noPos = ((0, 0), (0, 0))

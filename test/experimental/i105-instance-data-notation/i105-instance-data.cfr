@@ -1,0 +1,23 @@
+abstract A 
+    b ?
+    c *
+    d -> A *
+    f : integer ?
+	
+A1 : A
+    [ b ]
+    [ no c ]
+    [ no d ]
+    [ f = 5 ]
+
+A2 : A
+    [ no b ]
+    [ #c = 2 ]
+    [ no d ]
+    [ f ]
+
+A3 : A
+    [ b ]
+    [ one c ]
+    [ d = A1, A2 ]
+    [ no f ]

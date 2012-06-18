@@ -233,7 +233,7 @@ resolveEInheritance predecessors unrollables absAncestor declarations allSuper
              unrollSuper >>= elements
     let super' = if (getSuper clafer `elem` unrollables)
                  then super clafer
-                 else ISuper False [idToPExp "" noPos "" "clafer" False]
+                 else ISuper False [idToPExp "" noSpan "" "clafer" False]
     return (elements', super', superList)
   where
   clafer = head allSuper

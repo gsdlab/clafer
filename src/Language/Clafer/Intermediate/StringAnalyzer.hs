@@ -37,8 +37,8 @@ astrModule imodule =
 
 
 astrClafer x = case x of
-  IClafer isAbstract gcard ident uid super card gCard elements  ->
-    IClafer isAbstract gcard ident uid super card gCard `liftM`
+  IClafer s isAbstract gcard ident uid super card gCard elements  ->
+    IClafer s isAbstract gcard ident uid super card gCard `liftM`
             mapM astrElement elements
 
 

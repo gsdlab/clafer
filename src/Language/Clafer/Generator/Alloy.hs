@@ -78,6 +78,8 @@ data Concat = CString String | Concat {
   srcPos :: String,
   nodes  :: [Concat]
   } deriving (Eq, Show)
+type Position = ((LineNo, ColNo), (LineNo, ColNo))
+
 
 mkConc pos str = Concat pos [CString str]
 
@@ -400,9 +402,9 @@ genPExp' mode resPath x@(PExp iType pid pos exp) = case exp of
 
 
 transformExp x@(IFunExp op exps@(e1:_))
-  | op == iMin = IFunExp op [PExp (iType e1) "" noPos (IInt 0), e1]
+  | op == iMin = IFunExp op [PExp (iType e1) "" noSpan (IInt 0), e1]
 transformExp x@(IFunExp op exps@(e1:e2:_))
-  | op == iXor = IFunExp iNot [PExp (Just TBoolean) "" noPos (IFunExp iIff exps)]
+  | op == iXor = IFunExp iNot [PExp (Just TBoolean) "" noSpan (IFunExp iIff exps)]
   | op == iJoin && isClaferName' e1 && isClaferName' e2 &&
     getClaferName e1 == this && head (getClaferName e2) == '~' =
         IFunExp op [e1{iType = Just TClafer}, e2]
@@ -516,6 +518,7 @@ mapLineCol' c@(Concat srcPos nodes) = do
   posStart <- gets lineCol
   mapM mapLineCol' nodes
   posEnd   <- gets lineCol
+
   {-
    - Alloy only counts inner parenthesis as part of the constraint, but not outer parenthesis.
    - ex1. the constraint looks like this in the file
@@ -540,14 +543,15 @@ mapLineCol' c@(Concat srcPos nodes) = do
       deductEnd = -(countTrailing ")]" flat)
   modify (\s -> s {mapping = (srcPos, (posStart `addColumn` raiseStart, posEnd `addColumn` deductEnd)) : (mapping s)})
 
+
 addColumn (x, y) c = (x, y + c)
-countLeading c xs = length $ takeWhile (`elem` c) xs
+countLeading c xs = toInteger $ length $ takeWhile (`elem` c) xs
 countTrailing c xs = countLeading c (reverse xs)
 
 lineno (l, c) str = (l + newLines, (if newLines > 0 then firstCol else c) + newCol)
   where
-  newLines = length $ filter (== '\n') str
-  newCol   = length $ takeWhile (/= '\n') $ reverse str
+  newLines = toInteger $ length $ filter (== '\n') str
+  newCol   = toInteger $ length $ takeWhile (/= '\n') $ reverse str
 
 firstCol  = 1 :: ColNo
 firstLine = 1 :: LineNo

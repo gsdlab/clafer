@@ -83,7 +83,7 @@ addModuleFragment args inputModel =
                  else 
                    id)
                 inputModel
-  in pModule inputTokens
+  in mapModule `fmap` pModule inputTokens
 
 compile :: ClaferArgs -> Module -> (IModule, GEnv, Bool)
 compile args tree = analyze args $ desugar tree
@@ -129,7 +129,7 @@ generateM _    (Bad s)    = CompilerResult { extension = "err",
                                              mappingToAlloy = Nothing }
 
 desugar :: Module -> IModule  
-desugar tree = desugarModule $ mapModule tree
+desugar tree = desugarModule tree
 
 analyze :: ClaferArgs -> IModule -> (IModule, GEnv, Bool)
 analyze args tree = do
