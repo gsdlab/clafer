@@ -1695,7 +1695,7 @@ thenM = (>>=)
 
 happyError :: [Token] -> Err a
 
-gp x@(PT (Pn l c _) _) = Span (Pos (toInteger l) (toInteger c)) (Pos (toInteger l) (toInteger c + toInteger (length $ prToken x)))
+gp x@(PT (Pn _ l c) _) = Span (Pos (toInteger l) (toInteger c)) (Pos (toInteger l) (toInteger c + toInteger (length $ prToken x)))
 happyError ts =
   Bad $ "syntax error at " ++ tokenPos ts ++ 
   case ts of

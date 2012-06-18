@@ -100,4 +100,4 @@
 >   | 'some' { PosQuantSome (gp $1) }
 384a385,386
 > 
-> gp x@(PT (Pn l c _) _) = Span (Pos (toInteger l) (toInteger c)) (Pos (toInteger l) (toInteger c + toInteger (length $ prToken x)))
+> gp x@(PT (Pn _ l c) _) = Span (Pos (toInteger l) (toInteger c)) (Pos (toInteger l) (toInteger c + toInteger (length $ prToken x)))
