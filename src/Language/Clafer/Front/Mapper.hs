@@ -131,7 +131,12 @@ instance Map Clafer where
   
   
 instance Map Constraint where
-  mapNode (PosConstraint s e) = doMapWithSpan PosConstraint s e
+--  mapNode (PosConstraint s e) = doMapWithSpan PosConstraint s e
+--  The span in the PosConstraint contains the span of the "[" after lexing.
+--  However, we don't have the span of the "]". It doesn't make sense to include
+--  one but not the other. Hence, ignore the "[" position and start with the first
+--  expression in the constraint instead.
+  mapNode (PosConstraint s e) = doMap PosConstraint e
   range (PosConstraint s _) = s
 
 
