@@ -19,7 +19,7 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
 -}
-module Language.Clafer.Front.Mapper (mapModule, Map(..)) where
+module Language.Clafer.Front.Mapper (mapModule, Mappable(..)) where
 
 import Language.Clafer.Front.Absclafer
 import Debug.Trace
@@ -82,29 +82,29 @@ doMap7 f t u v w x y z =
   z' = mapNode z
 
 
-class Map n where
+class Mappable n where
   mapNode :: n -> n
   range :: n -> Span
   
   
-instance Map s => Map [s] where
+instance Mappable s => Mappable [s] where
   mapNode = map mapNode
   range = foldr (>-) noSpan . map range
 
 
-instance Map Module where
+instance Mappable Module where
   mapNode (Module d) = doMap PosModule d
   range (PosModule s _) = s
 
 
-instance Map Declaration where
+instance Mappable Declaration where
   mapNode (PosEnumDecl s p e) = doMap2WithSpan PosEnumDecl s p e
   mapNode (ElementDecl e)     = doMap PosElementDecl e
   range (PosEnumDecl s p e)  = s
   range (PosElementDecl s e) = s
 
 
-instance Map Elements where
+instance Mappable Elements where
   mapNode ElementsEmpty         = PosElementsEmpty noSpan
   -- The span is inaccurate for some apparent reason. Not sure why yet.
   mapNode (PosElementsList s e) = doMap PosElementsList e --doMapWithSpan PosElementsList s e
@@ -112,7 +112,7 @@ instance Map Elements where
   range (PosElementsList s _) = s
 
 
-instance Map Element where
+instance Mappable Element where
   mapNode (Subclafer c)          = doMap PosSubclafer c
   mapNode (PosClaferUse s n c e) = doMap3WithSpan PosClaferUse s n c e
   mapNode (Subconstraint c)      = doMap PosSubconstraint c
@@ -125,12 +125,12 @@ instance Map Element where
   range (PosSubsoftconstraint s _) = s
   
   
-instance Map Clafer where
+instance Mappable Clafer where
   mapNode (Clafer a b c d e f g) = doMap7 PosClafer a b c d e f g
   range (PosClafer s _ _ _ _ _ _ _) = s
   
   
-instance Map Constraint where
+instance Mappable Constraint where
 --  mapNode (PosConstraint s e) = doMapWithSpan PosConstraint s e
 --  The span in the PosConstraint contains the span of the "[" after lexing.
 --  However, we don't have the span of the "]". It doesn't make sense to include
@@ -140,56 +140,56 @@ instance Map Constraint where
   range (PosConstraint s _) = s
 
 
-instance Map SoftConstraint where
+instance Mappable SoftConstraint where
   mapNode (PosSoftConstraint s e) = doMapWithSpan PosSoftConstraint s e
   range (PosSoftConstraint s _) = s
   
   
-instance Map Goal where
+instance Mappable Goal where
   mapNode (PosGoal s e) = doMapWithSpan PosGoal s e
   range (PosGoal s _) = s
   
   
-instance Map Abstract where
+instance Mappable Abstract where
   mapNode AbstractEmpty   = PosAbstractEmpty noSpan
   mapNode x@PosAbstract{} = x
   range (PosAbstractEmpty s) = s
   range (PosAbstract s)      = s
 
 
-instance Map Super where
+instance Mappable Super where
   mapNode SuperEmpty          = PosSuperEmpty noSpan
   mapNode (SuperSome how exp) = doMap2 PosSuperSome how exp
   range (PosSuperEmpty s)    = s
   range (PosSuperSome s _ _) = s
 
 
-instance Map SuperHow where
+instance Mappable SuperHow where
   mapNode = id
   range (PosSuperColon s)   = s
   range (PosSuperArrow s)   = s
   range (PosSuperMArrow  s) = s
 
 
-instance Map Init where
+instance Mappable Init where
   mapNode InitEmpty          = PosInitEmpty noSpan
   mapNode (InitSome how exp) = doMap2 PosInitSome how exp
   range (PosInitEmpty s)    = s
   range (PosInitSome s _ _) = s
   
   
-instance Map InitHow where
+instance Mappable InitHow where
   mapNode = id
   range (PosInitHow_1 s) = s
   range (PosInitHow_2 s) = s
 
 
-instance Map Decl where
+instance Mappable Decl where
   mapNode (Decl l e) = doMap2 PosDecl l e
   range (PosDecl s _ _) = s
 
 
-instance Map Exp where
+instance Mappable Exp where
   mapNode (PosDeclAllDisj s decl exp)    = doMap2WithSpan PosDeclAllDisj s decl exp
   mapNode (PosDeclAll s decl exp)        = doMap2WithSpan PosDeclAll s decl exp
   mapNode (DeclQuantDisj quant decl exp) = doMap3 PosDeclQuantDisj quant decl exp
@@ -257,7 +257,7 @@ instance Map Exp where
   range x = error $ "No position for Exp " ++ show x
   
   
-instance Map SetExp where
+instance Mappable SetExp where
   mapNode (Union e1 e2)        = doMap2 PosUnion e1 e2
   mapNode (UnionCom e1 e2)     = doMap2 PosUnionCom e1 e2
   mapNode (Difference e1 e2)   = doMap2 PosDifference e1 e2
@@ -274,14 +274,15 @@ instance Map SetExp where
   range (PosRange s _ _)        = s
   range (PosJoin s _ _)         = s
   range (PosClaferId s _)       = s
+  range x = error $ show x
   
 
-instance Map NCard where
+instance Mappable NCard where
   mapNode (NCard l h) = doMap2 PosNCard l h
   range (PosNCard s _ _) = s
   
   
-instance Map Card where
+instance Mappable Card where
   mapNode CardEmpty        = PosCardEmpty noSpan
   mapNode x@PosCardLone{}  = x
   mapNode x@PosCardSome{}  = x
@@ -296,7 +297,7 @@ instance Map Card where
   range (PosCardInterval s _) = s
   
   
-instance Map GCard where
+instance Mappable GCard where
   mapNode GCardEmpty        = PosGCardEmpty noSpan
   mapNode x@PosGCardXor{}   = x
   mapNode x@PosGCardOr{}    = x
@@ -311,27 +312,27 @@ instance Map GCard where
   range (PosGCardInterval s _) = s
 
 
-instance Map Name where
+instance Mappable Name where
   mapNode (Path m) = doMap PosPath m
   range (PosPath s _) = s
   
 
-instance Map LocId where
+instance Mappable LocId where
   mapNode (LocIdIdent i) = doMap PosLocIdIdent i
   range (PosLocIdIdent s _) = s
   
 
-instance Map ModId where
+instance Mappable ModId where
   mapNode (ModIdIdent i) = doMap PosModIdIdent i
   range (PosModIdIdent s _) = s
 
 
-instance Map EnumId where
+instance Mappable EnumId where
   mapNode (EnumIdIdent i) = doMap PosEnumIdIdent i
   range (PosEnumIdIdent s _) = s
   
   
-instance Map Quant where
+instance Mappable Quant where
   mapNode = id
   range (PosQuantNo s)   = s
   range (PosQuantLone s) = s
@@ -339,14 +340,14 @@ instance Map Quant where
   range (PosQuantSome s) = s
 
 
-instance Map ExInteger where
+instance Mappable ExInteger where
   mapNode x@PosExIntegerAst{} = x
   mapNode (ExIntegerNum i)    = doMap PosExIntegerNum i
   range (PosExIntegerAst s)   = s
   range (PosExIntegerNum s _) = s  
 
 
-instance Map PosIdent where
+instance Mappable PosIdent where
   mapNode = id
   range (PosIdent ((c, l), lex)) =
     Span (Pos c' l') (Pos c' $ l' + len lex)
@@ -355,7 +356,7 @@ instance Map PosIdent where
     l' = toInteger l
 
 
-instance Map PosString where
+instance Mappable PosString where
   mapNode = id
   range (PosString ((c, l), lex)) =
     Span (Pos c' l') (Pos c' $ l' + len lex)
@@ -364,7 +365,7 @@ instance Map PosString where
     l' = toInteger l
   
   
-instance Map PosDouble where
+instance Mappable PosDouble where
   mapNode = id  
   range (PosDouble ((c, l), lex)) =
     Span (Pos c' l') (Pos c' $ l' + len lex)
@@ -373,7 +374,7 @@ instance Map PosDouble where
     l' = toInteger l
   
   
-instance Map PosInteger where
+instance Mappable PosInteger where
   mapNode = id  
   range (PosInteger ((c, l), lex)) =
     Span (Pos c' l') (Pos c' $ l' + len lex)

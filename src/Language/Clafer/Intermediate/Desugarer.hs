@@ -51,7 +51,7 @@ desugarEnums x = case x of
     absEnum = ElementDecl $ Subclafer $ Clafer
               Abstract GCardEmpty id SuperEmpty CardEmpty InitEmpty (ElementsList [])
     mkEnum (PosEnumIdIdent s eId) = ElementDecl $ Subclafer $ Clafer AbstractEmpty GCardEmpty
-                                  eId (SuperSome SuperColon (ClaferId $ Path [ModIdIdent id])) CardEmpty InitEmpty (ElementsList [])
+                                  eId (SuperSome SuperColon (PosClaferId noSpan $ Path [ModIdIdent id])) CardEmpty InitEmpty (ElementsList [])
   _ -> [x]
 
 
@@ -221,7 +221,7 @@ desugarElement x = case x of
       (mkArrowConstraint clafer >>= desugarElement)
   PosClaferUse s name card elements  -> [IEClafer $ desugarClafer $ Clafer
       AbstractEmpty GCardEmpty (mkIdent $ sident $ desugarName name)
-      (SuperSome SuperColon (ClaferId name)) card InitEmpty elements]
+      (SuperSome SuperColon (PosClaferId noSpan name)) card InitEmpty elements]
   PosSubconstraint s constraint  ->
       [IEConstraint True $ desugarConstraint constraint]
   PosSubsoftconstraint s softconstraint ->
@@ -242,11 +242,11 @@ mkArrowConstraint (PosClafer s _ _ ident super _ _ _) =
   if isSuperSomeArrow super then  [Subconstraint $
        Constraint [PosDeclAllDisj noSpan
        (Decl [LocIdIdent $ mkIdent "x", LocIdIdent $ mkIdent "y"]
-             (ClaferId  $ Path [ModIdIdent ident]))
-       (PosENeq noSpan (PosESetExp noSpan $ Join (ClaferId $ Path [ModIdIdent $ mkIdent "x"])
-                             (ClaferId $ Path [ModIdIdent $ mkIdent "ref"]))
-             (PosESetExp noSpan $ Join (ClaferId $ Path [ModIdIdent $ mkIdent "y"])
-                             (ClaferId $ Path [ModIdIdent $ mkIdent "ref"])))]]
+             (PosClaferId noSpan  $ Path [ModIdIdent ident]))
+       (PosENeq noSpan (PosESetExp noSpan $ Join (PosClaferId noSpan $ Path [ModIdIdent $ mkIdent "x"])
+                             (PosClaferId noSpan $ Path [ModIdIdent $ mkIdent "ref"]))
+             (PosESetExp noSpan $ Join (PosClaferId noSpan $ Path [ModIdIdent $ mkIdent "y"])
+                             (PosClaferId noSpan $ Path [ModIdIdent $ mkIdent "ref"])))]]
   else []
 
 
@@ -405,7 +405,7 @@ desugarOp f op exps = IFunExp op $ map (trans.f) exps
 
 
 desugarSetExp :: SetExp -> PExp
-desugarSetExp x = pExpDefPidPos $ desugarSetExp' x
+desugarSetExp x = pExpDefPid (range x) $ desugarSetExp' x
 
 
 desugarSetExp' :: SetExp -> IExp
