@@ -333,5 +333,6 @@ revertLayout' (xs:[])        indent = []
 revertLayout' ([]:xss)       indent = revertLayout' xss indent
 revertLayout' (('{':xs):xss) indent = (replicate indent' ' ' ++ xs):revertLayout' xss indent'
                                     where indent' = indent + 2
-revertLayout' ("}":xss)      indent = revertLayout' xss (indent - 2)
+revertLayout' (('}':xs):xss) indent = (replicate indent' ' ' ++ xs):revertLayout' xss indent'
+                                    where indent' = indent - 2
 revertLayout' (xs:xss)       indent = (replicate indent ' ' ++ xs):revertLayout' xss indent
