@@ -28,7 +28,7 @@ import System.Console.CmdArgs.Explicit hiding (mode)
 import Data.List
 import Data.Maybe
 import Control.Monad
-
+	
 import Language.Clafer.SplitJoin
 import Language.Clafer.Version
 
@@ -54,7 +54,7 @@ data ClaferArgs = ClaferArgs {
     } deriving (Show, Data, Typeable)
 
 clafer = ClaferArgs {
-  mode                = def &= help "Generated output type. Available modes are: 'alloy' (default, Alloy 4.1); 'alloy42' (Alloy 4.2-rc); 'xml' (intermediate representation of Clafer model); 'clafer'  (analyzed and desugared clafer model)" &= name "m",
+  mode                = def &= help "Generated output type. Available modes are: 'alloy' (default, Alloy 4.1); 'alloy42' (Alloy 4.2-rc); 'xml' (intermediate representation of Clafer model); 'clafer'  (analyzed and desugared clafer model); 'html' (original model in HTML)" &= name "m",
   console_output      = def &= help "Output code on console" &= name "o",
   flatten_inheritance = def &= help "Flatten inheritance" &= name "i",
   timeout_analysis    = def &= help "Timeout for analysis",
