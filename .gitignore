@@ -1,1 +1,6 @@
 dist
+.dist-buildwrapper
+.project
+*.exe
+*.lkshs
+*.lkshw
