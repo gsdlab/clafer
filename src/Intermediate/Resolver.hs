@@ -21,10 +21,11 @@
 -}
 module Intermediate.Resolver where
 
-import List
-import Monad
-import Data.Maybe
+
+import Control.Monad
 import Control.Monad.State
+import Data.Maybe
+import Data.List
 import Data.Map (Map)
 import qualified Data.Map as Map
 

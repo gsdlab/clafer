@@ -25,7 +25,7 @@ module Common where
 import Data.Tree
 import Data.Maybe
 import Data.Char
-import List
+import Data.List
 import Data.Map (Map)
 import qualified Data.Map as Map
 import System.Console.CmdArgs

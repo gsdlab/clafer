@@ -23,14 +23,13 @@ module Intermediate.ResolverType (resolveTModule) where
 
 import Control.Monad.State
 import Data.Function
-import Data.List (dropWhile, intercalate, nub)
+import Data.List (dropWhile, intercalate, nub, find)
 import Data.Maybe
 import Data.Map (Map)
 import qualified Data.Map as Map
 import Debug.Trace
 import Front.Printclafer 
 import Intermediate.Desugarer 
-import List (find)
 
 import Common
 import Intermediate.Intclafer

@@ -23,7 +23,7 @@ module Intermediate.Desugarer where
 
 import Front.Absclafer
 import Intermediate.Intclafer
-import Monad
+import Control.Monad
 import Common
 import Data.Function
 

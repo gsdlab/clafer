@@ -21,8 +21,7 @@
 -}
 module Intermediate.ResolverName where
 
-import List
-import Monad
+import Control.Monad
 import Data.Maybe
 import Control.Monad.State
 import Data.Function
