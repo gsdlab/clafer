@@ -55,7 +55,7 @@ genXmlModule imodule = concat
   , "<Module xmlns=\"http://clafer.org/ir\""
   , " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""
   , " xmlns:cl=\"http://clafer.org/ir\""
-  , " xsi:schemaLocation=\"https://github.com/gsdlab/clafer/blob/master/src/ClaferIR.xsd\">"
+  , " xsi:schemaLocation=\"http://clafer.org/ir https://github.com/gsdlab/clafer/blob/master/src/ClaferIR.xsd\">"
   , tag "Name" $ mName imodule
   , concatMap genXmlElement $ mDecls imodule
   , "</Module>"]

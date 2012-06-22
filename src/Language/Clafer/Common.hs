@@ -26,7 +26,6 @@ import Data.Tree
 import Data.Maybe
 import Data.Char
 import Data.List
---import Data.Map (Map)
 import qualified Data.Map as Map
 --import System.Console.CmdArgs
 --import Control.Monad.State
