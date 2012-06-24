@@ -1,6 +1,10 @@
-Test
-	footprint : integer
+abstract Element
+	energy : integer
 
-[Test.footprint > 0]
+keyboard : Element ?
+	[this.energy = 1]
 
-<< max Test.footprint >>
+keyboardLight : Element ?
+	[energy = 2]
+
+<< min (sum Element.energy) >>

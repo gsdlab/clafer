@@ -1,0 +1,18 @@
+abstract IMeasurable
+        cost : integer
+
+abstract Telematics
+	xor channel : IMeasurable
+	    [this.cost = 12]
+	    single : IMeasurable
+	    	   [ this.cost = -3 ]
+	    dual : IMeasurable
+	    	 [ this.cost = 5 ]
+	extraDisplay : IMeasurable ?
+		[this.cost = 7 ]
+	total_cost : integer 
+    	    [ total_cost = sum IMeasurable.cost]
+
+telematicsconfig : Telematics
+	[ extraDisplay ]
+<< min telematicsconfig.total_cost >>
