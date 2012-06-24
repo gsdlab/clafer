@@ -43,8 +43,9 @@ isSuperest clafers clafer = isNothing $ directSuper clafers clafer
 -- Collects the global cardinality and hierarchy information into proper lower bounds.
 -- If the model only has Clafers (ie. no constraints) then the lower bound is tight.
 -- scopeAnalysis :: IModule -> Map IClafer Integer
+scopeAnalysis :: IModule -> [(String, Integer)]
 scopeAnalysis IModule{mDecls = decls} =
-    filter (isReferenceOrSuper . fst) finalAnalysis
+    [(a, b) | (a, b) <- finalAnalysis, isReferenceOrSuper a, b /= 0]
     where
     finalAnalysis = Map.toList $ foldl analyzeComponent referenceAnalysis connectedComponents
     

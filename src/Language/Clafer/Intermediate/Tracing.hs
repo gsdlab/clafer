@@ -1,4 +1,4 @@
-module Language.Clafer.Intermediate.Tracing (traceIrModule, traceAstModule) where
+module Language.Clafer.Intermediate.Tracing (traceIrModule, traceAstModule, Ir(..), Ast(..)) where
 
 import Control.Monad.State
 import Data.Map (Map)
