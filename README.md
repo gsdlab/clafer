@@ -25,7 +25,7 @@ On Windows only
 Building & Installation
 -----------------------
 
-h3. Important: Branches must correspond
+### Important: Branches must correspond
 
 Clafer and ClaferIG are following the  *simultaneous release model*. 
 The branch `master` contains releases, whereas the branch `develop` contains code under development. 
@@ -33,7 +33,7 @@ When building the tools, the branches should match:
 Releases `clafer/master` and `claferIG/master` are guaranteed to work well together.
 Development versions `clafer/develop` and `claferIG/develop` should work well together but this might not always be the case.
 
-h3. Building
+### Building
 
 1. install the dependencies
 2. in some `<source directory>` of your choice, execute `git clone git://github.com/gsdlab/clafer.git`
@@ -41,7 +41,7 @@ h3. Building
   * `cabal update`
   * `make`
 
-h3. Installation
+### Installation
 
 1. execute `make install to=<target directory>`
 2. add the `<target directory>` is on your command PATH
