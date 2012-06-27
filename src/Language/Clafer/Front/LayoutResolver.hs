@@ -325,8 +325,7 @@ getc = do
   return c
 
 revertLayout :: String -> String
-revertLayout input = unlines $ revertLayout' input' 0 
-                   where input' = map unwords $ map (filter (/= "")) $ map words $ lines input
+revertLayout input = unlines $ revertLayout' (lines input) 0 
 
 revertLayout' :: [String] -> Int -> [String]
 revertLayout' (xs:[])        indent = []

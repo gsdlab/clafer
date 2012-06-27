@@ -1,4 +1,4 @@
-module Language.Clafer.Intermediate.Tracing (traceIrModule, traceAstModule) where
+module Language.Clafer.Intermediate.Tracing (traceIrModule, traceAstModule, Ast(..), Ir(..)) where
 
 import Control.Monad.State
 import Data.Map (Map)
@@ -227,7 +227,7 @@ traverseLocId _ = []
 data Ir =
   IRClafer IClafer |
   IRPExp PExp
-  deriving Show
+  deriving (Eq, Show)
   
 data Ast =
   AstModule Module |
@@ -255,4 +255,4 @@ data Ast =
   AstEnumId EnumId |
   AstModId ModId |
   AstLocId LocId
-  deriving Show
+  deriving (Eq, Show)

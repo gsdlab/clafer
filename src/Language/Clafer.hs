@@ -115,7 +115,8 @@ generate args (iModule, genv, au) = do
                                    ("als", addCommentStats (fst alloyCode) stats, Just m)
                       Xml     -> ("xml", genXmlModule iModule, Nothing)
                       Clafer  -> ("des.cfr", printTree $ sugarModule iModule, Nothing)
-                      Html    -> ("html", genHtml $ sugarModule iModule, Nothing)
+                      Html    -> ("html", genHtml (sugarModule iModule) iModule, Nothing)
+                      --really, Html should use the original AST, and therefore should be its own function
   CompilerResult { extension = ext, 
                    outputCode = code, 
                    statistics = stats, 
