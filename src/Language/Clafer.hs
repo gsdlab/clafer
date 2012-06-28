@@ -25,6 +25,8 @@ module Language.Clafer (
                         compileM,
                         generate,
                         generateM,
+                        generateHtml,
+                        generateText,
                         CompilerResult(..),
                         claferIRXSD,
                         VerbosityL,
@@ -121,6 +123,25 @@ generate args (iModule, genv, au) = do
                    outputCode = code, 
                    statistics = stats, 
                    mappingToAlloy = mapToAlloy }
+
+generateHtml :: ClaferArgs -> Err Module -> CompilerResult
+generateHtml args (Ok tree) = let (iModule, _, _) = compile args tree in CompilerResult { extension = "html",
+                                                                                            outputCode = genHtml tree iModule,
+                                                                                            statistics = "",
+                                                                                            mappingToAlloy = Nothing }
+generateHtml _    (Bad s)   = CompilerResult { extension = "err", 
+                                             outputCode = s, 
+                                             statistics = "", 
+                                             mappingToAlloy = Nothing }
+generateText :: ClaferArgs -> Err Module -> CompilerResult
+generateText args (Ok tree) = let (iModule, _, _) = compile args tree in CompilerResult { extension = "txt",
+                                                                                            outputCode = genText tree iModule,
+                                                                                            statistics = "",
+                                                                                            mappingToAlloy = Nothing }
+generateText _    (Bad s)   = CompilerResult { extension = "err", 
+                                             outputCode = s, 
+                                             statistics = "", 
+                                             mappingToAlloy = Nothing }
 
 generateM :: ClaferArgs   -> Err (IModule, GEnv, Bool) -> CompilerResult
 generateM args (Ok oTree) = generate args oTree
