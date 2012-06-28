@@ -1,4 +1,0 @@
-5c5
-< module Lexclafer where
----
-> module Front.Lexclafer where

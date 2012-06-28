@@ -1,19 +1,15 @@
-define apPatch
-	$(shell patch $(1) -N -r - Front/$(2).hs Front/$(2).patch 1>/dev/null)
-endef
+FRONT_DIR  = Language/Clafer/Front
 
 all:
-	$(foreach file, Absclafer ErrM Lexclafer Printclafer Parclafer, \
-		$(if $(call apPatch,--dry-run,$(file)), \
-			$(call apPatch,,$(file))))
-	./Generator/quote.sh ClaferIR.xsd > ./Generator/Schema.hs
+	$(MAKE) -C $(FRONT_DIR)
+	./Language/Clafer/Generator/quote.sh Language/Clafer/ClaferIR.xsd > ./Language/Clafer/Generator/Schema.hs
 
 newVersion:
-	ghc -outputdir dist/build --make dateVer -o dateVer
-	./dateVer > Version.hs
+	ghc -isrc dateVer.hs ../dist/build/autogen/Paths_clafer.hs -outputdir dist/build --make -o dateVer
+	./dateVer > Language/Clafer/Version.hs
 
 clean:
-	$(MAKE) clean -C Front/
+	$(MAKE) clean -C $(FRONT_DIR)
 	rm -rf dist
 	rm -r dateVer
 	find . -type f -name '*.o' -print0 | xargs -0 rm -f

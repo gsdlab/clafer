@@ -87,8 +87,8 @@ sig c19_City
 { ref : one Int }
 { one @r_c19_City.this }
 
-sig c20_Country in c2_NorthAmericanCountry
-{}
+sig c20_Country
+{ ref : one c2_NorthAmericanCountry }
 { one @r_c20_Country.this }
 
 sig c21_PostalCode
@@ -97,7 +97,7 @@ sig c21_PostalCode
 
 one sig c22_JohnDoe extends c5_Person
 {}
-{ (((((((((this.@r_c6_Name.@ref) = 0) && ((this.@r_c7_Surname.@ref) = 1)) && ((this.@r_c8_DateOfBirth.@ref) = 2)) && (some (this.@r_c9_Gender).@r_c10_Male)) && (some (this.@r_c12_MaritalStatus).@r_c14_Married)) && (((this.@r_c16_Address).@r_c17_Street.@ref) = 3)) && (((this.@r_c16_Address).@r_c19_City.@ref) = 4)) && (((this.@r_c16_Address).@r_c20_Country) = c3_Canada)) && (((this.@r_c16_Address).@r_c21_PostalCode.@ref) = 5) }
+{ (((((((((this.@r_c6_Name.@ref) = 0) && ((this.@r_c7_Surname.@ref) = 1)) && ((this.@r_c8_DateOfBirth.@ref) = 2)) && (some (this.@r_c9_Gender).@r_c10_Male)) && (some (this.@r_c12_MaritalStatus).@r_c14_Married)) && (((this.@r_c16_Address).@r_c17_Street.@ref) = 3)) && (((this.@r_c16_Address).@r_c19_City.@ref) = 4)) && (((this.@r_c16_Address).(@r_c20_Country.@ref)) = c3_Canada)) && (((this.@r_c16_Address).@r_c21_PostalCode.@ref) = 5) }
 
 abstract sig c56_Student extends c5_Person
 { r_c57_StudentId : one c57_StudentId }
@@ -109,8 +109,8 @@ sig c57_StudentId
 abstract sig c58_WaitingLine
 { r_c59_participants : set c59_participants }
 
-sig c59_participants in c5_Person
-{}
+sig c59_participants
+{ ref : one c5_Person }
 { one @r_c59_participants.this }
 
 one sig c60_MaryJane extends c56_Student
@@ -119,9 +119,9 @@ one sig c60_MaryJane extends c56_Student
 
 one sig c64_BusLine extends c58_WaitingLine
 {}
-{ (c22_JohnDoe in (this.@r_c59_participants)) && (c60_MaryJane in (this.@r_c59_participants)) }
+{ (c22_JohnDoe in (this.(@r_c59_participants.@ref))) && (c60_MaryJane in (this.(@r_c59_participants.@ref))) }
 
 one sig c72_JohnAndMaryLine extends c58_WaitingLine
 {}
-{ (this.@r_c59_participants) = (c22_JohnDoe + c60_MaryJane) }
+{ (this.(@r_c59_participants.@ref)) = (c22_JohnDoe + c60_MaryJane) }
 

@@ -3,7 +3,8 @@ abstract A
 a : A +
 
 setRefToA -> A 3
-// multisetRefToA ->> A 3
+
+multisetRefToA ->> A 3
 
 /*
 a1

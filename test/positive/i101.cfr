@@ -1,0 +1,6 @@
+abstract Path
+  p : Path ?
+  isDir ?
+  [this.isDir && this.p]
+
+  pth : Path

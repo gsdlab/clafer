@@ -1,0 +1,32 @@
+open util/integer
+pred show {}
+
+
+abstract sig c1_Dimension
+{ r_c2_levels : set c2_levels }
+{ all  dl : this.@r_c2_levels | (dl.(@ref.(@r_c13_belongsTo.@ref))) = this }
+
+sig c2_levels
+{ ref : one c12_DimensionLevel }
+{ one @r_c2_levels.this }
+
+abstract sig c12_DimensionLevel
+{ r_c13_belongsTo : one c13_belongsTo }
+
+sig c13_belongsTo
+{ ref : one c1_Dimension }
+{ one @r_c13_belongsTo.this }
+
+one sig c14_dim1 extends c1_Dimension
+{}
+
+one sig c15_dim2 extends c1_Dimension
+{}
+
+one sig c16_dimLevel1 extends c12_DimensionLevel
+{}
+
+one sig c17_dimLevel2 extends c12_DimensionLevel
+{}
+
+fact { some disj dl1, dl2 : c12_DimensionLevel | (dl1.(@r_c13_belongsTo.@ref)) = (dl2.(@r_c13_belongsTo.@ref)) }

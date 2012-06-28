@@ -17,8 +17,9 @@ lone sig c4_b
 {}
 { one r_c4_b }
 
-one sig c5_a in c1_A
-{ r_c8_d : one c8_d }
+one sig c5_a
+{ ref : one c1_A
+, r_c8_d : one c8_d }
 { some (this.@r_c8_d).@r_c9_b }
 
 one sig c8_d

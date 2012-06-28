@@ -5,17 +5,17 @@ pred show {}
 abstract sig c1_Course
 { r_c2_assistants : set c2_assistants }
 
-sig c2_assistants in c3_TA
-{}
+sig c2_assistants
+{ ref : one c3_TA }
 { one @r_c2_assistants.this }
 
 abstract sig c3_TA
 { r_c4_first : lone c4_first }
 
-sig c4_first in c1_Course
-{}
+sig c4_first
+{ ref : one c1_Course }
 { one @r_c4_first.this
-  (this.~@r_c4_first) in (this.@r_c2_assistants) }
+  (this.~@r_c4_first) in (this.(@ref.(@r_c2_assistants.@ref))) }
 
 one sig c10_CompilerGradStudent extends c3_TA
 {}
@@ -29,8 +29,8 @@ one sig c12_CompilerCourse extends c1_Course
 one sig c13_MachineLearningCourse extends c1_Course
 {}
 
-fact { (c10_CompilerGradStudent.@r_c4_first) = c12_CompilerCourse }
-fact { (c11_AIGradStudent.@r_c4_first) = c13_MachineLearningCourse }
+fact { (c10_CompilerGradStudent.(@r_c4_first.@ref)) = c12_CompilerCourse }
+fact { (c11_AIGradStudent.(@r_c4_first.@ref)) = c13_MachineLearningCourse }
 one sig c24_numerOfAssistants
 { ref : one Int }
 { this.@ref = (#(c1_Course.@r_c2_assistants)) }

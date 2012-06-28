@@ -5,18 +5,18 @@ pred show {}
 abstract sig c1_Book
 { r_c2_author : some c2_author }
 
-sig c2_author in c8_Author
-{}
+sig c2_author
+{ ref : one c8_Author }
 { one @r_c2_author.this
-  (this.~@r_c2_author) in (this.@r_c9_book) }
+  (this.~@r_c2_author) in (this.(@ref.(@r_c9_book.@ref))) }
 
 abstract sig c8_Author
 { r_c9_book : some c9_book }
 
-sig c9_book in c1_Book
-{}
+sig c9_book
+{ ref : one c1_Book }
 { one @r_c9_book.this
-  (this.~@r_c9_book) in (this.@r_c2_author) }
+  (this.~@r_c9_book) in (this.(@ref.(@r_c2_author.@ref))) }
 
 fact { 5 <= #c15_B and #c15_B <= 5 }
 sig c15_B extends c1_Book

@@ -1,0 +1,11 @@
+//# OPTIONS --keep-unused
+
+// http://gsd.uwaterloo.ca:8888/question/459/abstract-reference-clafers-should-be-implemented
+
+abstract Person
+    age -> integer
+    married ?
+
+abstract NewBorn -> Person
+    [ age = 0
+      ! married ]

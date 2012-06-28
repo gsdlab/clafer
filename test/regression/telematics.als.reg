@@ -48,10 +48,10 @@ abstract sig c23_ECU extends c16_comp
 abstract sig c24_display extends c16_comp
 { r_c25_server : one c25_server
 , r_c26_options : one c26_options }
-{ (this.@r_c17_version.@ref) >= ((this.@r_c25_server).@r_c17_version.@ref) }
+{ (this.@r_c17_version.@ref) >= ((this.@r_c25_server).(@ref.@r_c17_version.@ref)) }
 
-sig c25_server in c23_ECU
-{}
+sig c25_server
+{ ref : one c23_ECU }
 { one @r_c25_server.this }
 
 sig c26_options extends c1_options
@@ -65,7 +65,7 @@ abstract sig c34_plaECU extends c23_ECU
 sig c35_display extends c24_display
 {}
 { one @r_c35_display.this
-  ((this.@r_c25_server) = (this.~@r_c35_display)) && (no (this.@r_c26_options).@r_c5_cache) }
+  ((this.(@r_c25_server.@ref)) = (this.~@r_c35_display)) && (no (this.@r_c26_options).@r_c5_cache) }
 
 one sig c44_ECU1 extends c34_plaECU
 {}
@@ -73,8 +73,8 @@ one sig c44_ECU1 extends c34_plaECU
 lone sig c45_ECU2 extends c34_plaECU
 { r_c46_master : one c46_master }
 
-lone sig c46_master in c44_ECU1
-{}
+lone sig c46_master
+{ ref : one c44_ECU1 }
 { one r_c46_master }
 
 one sig c47_telematicsSystem
