@@ -127,6 +127,7 @@ header args imodule = CString $ unlines
     , if (fromJust $ validate args) then "" else "run  show for 1" ++ genScopes (scopeAnalysis imodule)
     , ""]
     where
+    genScopes [] = ""
     genScopes scopes = " but " ++ intercalate ", " (map genScope scopes)
     
 genScope :: (String, Integer) -> String
