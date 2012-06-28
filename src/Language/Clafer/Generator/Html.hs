@@ -121,7 +121,7 @@ printPosIdent (PosIdent (pos, id)) indent irMap html = id ++ " " --identifier
 
 printPosIdentRef (PosIdent (pos, id)) indent irMap html --need to lookup UID for 'id'
   = (while html ("<a href=\"#" ++ uid ++ "\"><span class=\"reference\">")) ++ dropUid id ++ (while html "</span></a>") ++ " " --reference
-      where uid = getUid (range (PosIdent (pos, id))) irMap
+      where uid = getUid (PosIdent (pos, id)) irMap
 
 printSuper SuperEmpty indent irMap html = ""
 printSuper (PosSuperEmpty _) indent irMap html = printSuper SuperEmpty indent irMap html
@@ -267,13 +267,18 @@ dropUid uid = let id = rest $ dropWhile (\x -> x /= '_') uid in if id == "" then
 rest [] = []
 rest (_:xs) = xs
 
-getUid span irMap = if Map.lookup span irMap == Nothing
-                        then "failed"
-                        else let IRPExp pexp = head $ fromJust $ Map.lookup span irMap in
-                          getIdent $ exp pexp
-                          where {getIdent (IClaferId _ id _) = id;
-                                 getIdent _ = ""}
-
+getUid (PosIdent (pos, id)) irMap = if Map.lookup (range (PosIdent (pos, id))) irMap == Nothing
+                        then "Lookup failed"
+                        else let IRPExp pexp = head $ fromJust $ Map.lookup (range (PosIdent (pos, id))) irMap in
+                          findUid id $ getIdentPExp pexp
+                          where {getIdentPExp (PExp _ _ _ exp) = getIdentIExp exp;
+                                 getIdentIExp (IFunExp _ exps) = concatMap getIdentPExp exps;
+                                 getIdentIExp (IClaferId _ id _) = [id];
+                                 getIdentIExp (IDeclPExp _ _ pexp) = getIdentPExp pexp;
+                                 getIdentIExp _ = [];
+                                 findUid name (x:xs) = if name == dropUid x then x else findUid name xs;
+                                 findUid name []     = "Uid not found"}
+--adjust this to return a list of all ids (this, ref, etc. included) and choose the UID that reduces to the input ID.
                         
 getDivId span irMap = if Map.lookup span irMap == Nothing
                       then "Not Found"
