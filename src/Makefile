@@ -10,8 +10,8 @@ newVersion:
 
 clean:
 	$(MAKE) clean -C $(FRONT_DIR)
-	rm -rf dist
-	rm -r dateVer
+	rm -rf dist 
+	rm -rf dateVer 
 	find . -type f -name '*.o' -print0 | xargs -0 rm -f
 	find . -type f -name '*.hi' -print0 | xargs -0 rm -f
 	find . -type f -name '*.bak' -print0 | xargs -0 rm -f
