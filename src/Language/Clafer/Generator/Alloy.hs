@@ -235,10 +235,13 @@ genOptCard clafer
 -- 29/March/2012  Rafael Olaechea: ref is now prepended with clafer name to be able to refer to it from partial instances.
 genRelations claferargs clafer = maybeToList ref ++ (map mkRel $ getSubclafers $ elements clafer)
   where
-  ref = if isOverlapping $ super clafer then
-        Just $ Concat "SubSig" [CString $ genRel (uid  clafer ++ "_ref")  
-                                clafer {card = Just (1, 1)} $
-                                flatten $ refType claferargs clafer] else Nothing
+  ref = if isOverlapping $ super clafer 
+                then
+                        Just $ Concat "SubSig" [CString $ genRel (if (fromJust $ noalloyruncommand claferargs) then  (uid clafer ++ "_ref") else "ref")
+                         clafer {card = Just (1, 1)} $ 
+                         flatten $ refType claferargs clafer] 
+                else 
+                        Nothing
   mkRel c = Concat "SubSig" [CString $ genRel (genRelName $ uid c) c $ uid c]
 
 
@@ -270,12 +273,12 @@ genType mode x = genPExp mode [] x
 -- constraints
 -- user constraints + parent + group constraints + reference
 -- a = NUMBER do all x : a | x = NUMBER (otherwise alloy sums a set)
-genConstraints mode resPath clafer = (genParentConst resPath clafer) :
-  (genGroupConst clafer) : genPathConst mode  (uid clafer ++ "_ref") resPath clafer : constraints 
+genConstraints claferargs resPath clafer = (genParentConst resPath clafer) :
+  (genGroupConst clafer) : genPathConst claferargs  (if (fromJust $ noalloyruncommand claferargs) then  (uid clafer ++ "_ref") else "ref") resPath clafer : constraints 
   where
   constraints = map genConst $ elements clafer
   genConst x = case x of
-    IEConstraint _ pexp  -> genPExp mode ((uid clafer) : resPath) pexp
+    IEConstraint _ pexp  -> genPExp claferargs ((uid clafer) : resPath) pexp
     IEClafer clafer ->
         if genCardCrude crd `elem` ["one", "lone", "some"]
         then CString "" else mkCard ({- do not use the genRelName as the constraint name -} uid clafer) (genRelName $ uid clafer) $ fromJust crd
@@ -317,10 +320,10 @@ mkCard constraintName element card
   card'  = flatten $ interval'
 
 -- generates expression for references that point to expressions (not single clafers)
-genPathConst mode name resPath clafer
+genPathConst claferargs name resPath clafer
   | isRefPath clafer = cconcat [CString name, CString " = ",
                                 cintercalate (CString " + ") $
-                                map ((brArg id).(genPExp mode resPath)) $
+                                map ((brArg id).(genPExp claferargs resPath)) $
                                 supers $ super clafer]
   | otherwise        = CString ""
  
@@ -416,7 +419,7 @@ genPExp' claferargs resPath x@(PExp iType pid pos exp) = case exp of
     sident' = (if isTop then "" else '@' : genRelName "") ++ sident
     -- 29/March/2012  Rafael Olaechea: ref is now prepended with clafer name to be able to refer to it from partial instances.
     -- 30/March/2012 Rafael Olaechea added referredClaferUniqeuid to fix problems when having this.x > number  (e.g test/positive/i10.cfr )     
-    vsident = sident' ++  ".@"  ++ referredClaferUniqeuid ++ "_ref"
+    vsident = if (fromJust $ noalloyruncommand claferargs) then sident' ++  ".@"  ++ referredClaferUniqeuid ++ "_ref"  else  sident'  ++ ".@ref"
         where referredClaferUniqeuid = if sident == "this" then (head resPath) else sident
   IFunExp _ _ -> case exp' of
     IFunExp op exps -> genIFunExp pid claferargs resPath exp'
