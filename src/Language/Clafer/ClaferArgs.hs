@@ -48,6 +48,7 @@ data ClaferArgs = ClaferArgs {
       no_stats :: Maybe Bool,
       schema :: Maybe Bool,
       validate :: Maybe Bool,
+      noalloyruncommand :: Maybe Bool,
       tooldir :: Maybe FilePath,
       alloy_mapping :: Maybe Bool,
       file :: FilePath
@@ -66,6 +67,7 @@ clafer = ClaferArgs {
   no_stats            = def &= help "Don't print statistics" &= name "s",
   schema              = def &= help "Show Clafer IR (intermediate representation) XML schema",
   validate            = def &= help "Validate output. Uses 'tools/XsdCheck.class' for XML,  'tools/alloy4.jar' and 'tools/alloy4.2-rc.jar' for Alloy models, and Clafer translator for desugared Clafer models. Use --tooldir to override the default location of these tools." &= name "v",
+  noalloyruncommand   = def &= help "Don't generate the alloy 'run show for ... ' command." &= name "nr",
   tooldir             = def &= typDir &= help "Specify the tools directory. Default: 'tools/'",
   alloy_mapping       = def &= help "Generate mapping to Alloy source code" &= name "a",
   file                = def &= args   &= typ "FILE"
@@ -99,6 +101,7 @@ mergeArgs args args'  = args' {
   no_stats            = no_stats args            `mplus` no_stats args',
   schema              = schema args              `mplus` schema args',
   validate            = validate args            `mplus` validate args',
+  noalloyruncommand   = noalloyruncommand args   `mplus` noalloyruncommand args',
   tooldir             = tooldir args             `mplus` tooldir args',
   alloy_mapping       = alloy_mapping args       `mplus` alloy_mapping args',
   file                = file args}
@@ -117,10 +120,11 @@ setDefArgs args = args {
   no_stats            = no_stats args            `mplus` Just def,
   schema              = schema args              `mplus` Just def,
   validate            = validate args            `mplus` Just def,
+  noalloyruncommand   = noalloyruncommand args   `mplus` Just def,
   tooldir             = tooldir args             `mplus` Just "tools/",
   alloy_mapping       = alloy_mapping args       `mplus` Just def}
 
 
-emptyClaferArgs = ClaferArgs Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing ""
+emptyClaferArgs = ClaferArgs Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing ""
 
 defaultClaferArgs = setDefArgs emptyClaferArgs

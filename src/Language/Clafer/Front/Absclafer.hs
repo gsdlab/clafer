@@ -195,6 +195,8 @@ data Exp =
  | PosEMul Span Exp Exp
  | EDiv Exp Exp
  | PosEDiv Span Exp Exp
+ | ESumSetExp Exp
+ | PosESumSetExp Span Exp
  | ECSetExp Exp
  | PosECSetExp Span Exp
  | EMinExp Exp

@@ -78,12 +78,14 @@
 < Exp6 : '!' Exp7 { ENeg $2 } 
 ---
 > Exp6 : '!' Exp7 { PosENeg (gp $1) $2 } 
-260,261c260,261
-< Exp11 : '#' Exp12 { ECSetExp $2 } 
+261,263c261,263
+< Exp11 : 'sum' Exp12 { ESumSetExp $2 } 
+<   | '#' Exp12 { ECSetExp $2 }
 <   | '-' Exp12 { EMinExp $2 }
 ---
-> Exp11 : '#' Exp12 { PosECSetExp (gp $1) $2 } 
+> Exp11 : 'sum' Exp12 { PosESumSetExp (gp $1) $2 } 
 >   | '-' Exp12 { PosEMinExp (gp $1) $2 }
+>   | '#' Exp12 { PosECSetExp (gp $1) $2 }
 266c266
 < Exp12 : 'if' Exp12 'then' Exp12 'else' Exp13 { EImpliesElse $2 $4 $6 } 
 ---

@@ -258,7 +258,7 @@ findClafers _ = []
 findConstraints :: IElement -> [PExp]
 findConstraints IEConstraint{cpexp = c} = [c]
 findConstraints (IEClafer clafer) = concatMap findConstraints (elements clafer)
-
+findConstraints _ = []
 
 -- Finds all the direct ancestors (ie. children)
 childClafers clafer =

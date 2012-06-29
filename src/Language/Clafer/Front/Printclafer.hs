@@ -308,6 +308,8 @@ instance Print Exp where
    PosEMul span exp0 exp -> prPrec i 10 (concatD [prt 0 span , prt 10 exp0 , doc (showString "*") , prt 11 exp])
    EDiv exp0 exp -> prPrec i 10 (concatD [prt 10 exp0 , doc (showString "/") , prt 11 exp])
    PosEDiv span exp0 exp -> prPrec i 10 (concatD [prt 0 span , prt 10 exp0 , doc (showString "/") , prt 11 exp])
+   ESumSetExp exp -> prPrec i 11 (concatD [doc (showString "sum") , prt 12 exp])
+   PosESumSetExp span exp -> prPrec i 11 (concatD [prt 0 span , doc (showString "sum") , prt 12 exp])
    ECSetExp exp -> prPrec i 11 (concatD [doc (showString "#") , prt 12 exp])
    PosECSetExp span exp -> prPrec i 11 (concatD [prt 0 span , doc (showString "#") , prt 12 exp])
    EMinExp exp -> prPrec i 11 (concatD [doc (showString "-") , prt 12 exp])

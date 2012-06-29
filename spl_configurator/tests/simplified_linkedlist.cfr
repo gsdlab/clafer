@@ -1,0 +1,13 @@
+abstract IMeasurable
+	 footprint : integer
+
+
+abstract LinkedList
+	AbstractElement : IMeasurable
+		[ this.footprint = 2]
+	AbstractSort : IMeasurable ?
+		[ this.footprint = 4]
+	total_footprint : integer
+	[ total_footprint = AbstractElement.footprint + AbstractSort.footprint]
+
+simpleConfig : LinkedList

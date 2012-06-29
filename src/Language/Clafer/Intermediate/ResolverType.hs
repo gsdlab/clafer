@@ -334,11 +334,13 @@ resolveTExp env e@(IDeclPExp quant decls bpexp) = (env, (IDeclPExp quant decls' 
 
 
 -- Unary functions
+-- Rafael Olaechea 02/April/2012: Added function resolveTPExpPreferValue to be used when using goals or negative.
 resolveTExp env (IFunExp op [exp]) = (env, result)
     where
     result
         | op == iNot  = typeCheckFunction (TC TBoolean ["boolean"]) op [E TBoolean] [a1]
         | op == iCSet = typeCheckFunction (TC TInteger ["integer"]) op [E TClafer] [a1]
+        | op == iSumSet = typeCheckFunction (TC TInteger ["integer"]) op [E TInteger] [a1PreferValue]
         -- We return the typeOf a1 because if a1 is real then return real (likewise for integer)
         | op == iMin  = typeCheckFunction t1PV op allNumeric         [a1PreferValue]
         | op == iGMax = typeCheckFunction t1PV op allNumeric         [a1PreferValue]

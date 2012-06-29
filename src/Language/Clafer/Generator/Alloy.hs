@@ -114,17 +114,24 @@ isNull _ = False
 cunlines xs = cconcat $ map (+++ (CString "\n")) xs
 
 -- Alloy code generation
+-- 07th Mayo 2012 Rafael Olaechea 
+--      Added Logic to print a goal block in case there is at least one goal.
 genModule :: ClaferArgs -> (IModule, GEnv) -> (Result, [(String, Position)])
 genModule args (imodule, _) = (flatten output, mapLineCol output)
   where
-  output = header args imodule +++ (cconcat $ map (genDeclaration
-           (fromJust $ mode args)) (mDecls imodule))
+  output = header args imodule +++ (cconcat $ map (genDeclaration (fromJust $ mode args)) (mDecls imodule)) +++ 
+       if length goals_list > 0 then 
+                CString "objectives o_global {\n" +++   (cintercalate (CString ",\n") goals_list) +++   CString "\n}" 
+       else  
+                CString "" 
+       where 
+                goals_list = filterNull (map (genDeclarationGoalsOnly (fromJust $ mode args)) (mDecls imodule))
 
 
 header args imodule = CString $ unlines
     [ if (fromJust $ mode args) == Alloy42 then "" else "open util/integer"
     , "pred show {}"
-    , if (fromJust $ validate args) then "" else "run  show for 1" ++ genScopes (scopeAnalysis imodule)
+    , if (fromJust $ validate args) ||  (fromJust $ noalloyruncommand args)  then "" else "run  show for 1" ++ genScopes (scopeAnalysis imodule)
     , ""]
     where
     genScopes [] = ""
@@ -134,10 +141,12 @@ genScope :: (String, Integer) -> String
 genScope (uid, scope) = show scope ++ " " ++ uid
 
 
-genDeclaration :: ClaferMode -> IElement -> Concat
-genDeclaration mode x = case x of
-  IEClafer clafer  -> genClafer mode [] clafer
-  IEConstraint _ pexp  -> mkFact $ genPExp mode [] pexp
+-- 07th Mayo 2012 Rafael Olaechea
+-- Modified so that we can collect all goals into a single block as required per the way goals are handled in modified alloy.
+genDeclarationGoalsOnly :: ClaferMode -> IElement -> Concat
+genDeclarationGoalsOnly mode x = case x of
+  IEClafer clafer  -> CString ""
+  IEConstraint _ pexp  -> CString ""
   IEGoal _ pexp@(PExp iType pid pos innerexp) -> case innerexp of 
         IFunExp op  exps ->  if  op == iGMax || op == iGMin then  
                         mkMetric op $ genPExp mode [] (head exps) 
@@ -145,9 +154,22 @@ genDeclaration mode x = case x of
                         error "unary operator  distinct from (min/max) at the topmost level of a goal element"
         other ->  error "no unary operator (min/max) at the topmost level of a goal element."
 
+-- 07th Mayo 2012 Rafael Olaechea
+-- Removed goal from this function as they will now  all be collected into a single block.       
+genDeclaration :: ClaferMode -> IElement -> Concat
+genDeclaration mode x = case x of
+  IEClafer clafer  -> genClafer mode [] clafer
+  IEConstraint _ pexp  -> mkFact $ genPExp mode [] pexp
+  IEGoal _ pexp@(PExp iType pid pos innerexp) -> case innerexp of 
+        IFunExp op  exps ->  if  op == iGMax || op == iGMin then  
+                       CString ""
+                else 
+                        error "unary operator  distinct from (min/max) at the topmost level of a goal element"
+        other ->  error "no unary operator (min/max) at the topmost level of a goal element."
+
 mkFact  xs = cconcat [CString "fact ", mkSet xs, CString "\n"]
 
-mkMetric goalopname xs = cconcat [CString "metrics ", CString "{ ", if goalopname == iGMax then CString "max" else  CString "min", CString " [", xs, CString " ]",  CString " }" , CString "\n"]
+mkMetric goalopname xs = cconcat [ if goalopname == iGMax then CString "maximize" else  CString "minimize", CString " ", xs, CString " "]
 
                                                     
 mkSet xs = cconcat [CString "{ ", xs, CString " }"]
@@ -210,10 +232,11 @@ genOptCard clafer
 -- overlapping inheritance is a new clafer with val (unlike only relation)
 -- relations: overlapping inheritance (val rel), children
 -- adds parent relation
+-- 29/March/2012  Rafael Olaechea: ref is now prepended with clafer name to be able to refer to it from partial instances.
 genRelations mode clafer = maybeToList ref ++ (map mkRel $ getSubclafers $ elements clafer)
   where
   ref = if isOverlapping $ super clafer then
-        Just $ Concat "SubSig" [CString $ genRel "ref"
+        Just $ Concat "SubSig" [CString $ genRel (uid  clafer ++ "_ref")  
                                 clafer {card = Just (1, 1)} $
                                 flatten $ refType mode clafer] else Nothing
   mkRel c = Concat "SubSig" [CString $ genRel (genRelName $ uid c) c $ uid c]
@@ -248,7 +271,7 @@ genType mode x = genPExp mode [] x
 -- user constraints + parent + group constraints + reference
 -- a = NUMBER do all x : a | x = NUMBER (otherwise alloy sums a set)
 genConstraints mode resPath clafer = (genParentConst resPath clafer) :
-  (genGroupConst clafer) : genPathConst mode "ref" resPath clafer : constraints 
+  (genGroupConst clafer) : genPathConst mode  (uid clafer ++ "_ref") resPath clafer : constraints 
   where
   constraints = map genConst $ elements clafer
   genConst x = case x of
@@ -391,7 +414,10 @@ genPExp' mode resPath x@(PExp iType pid pos exp) = case exp of
     _ -> sident'
     where
     sident' = (if isTop then "" else '@' : genRelName "") ++ sident
-    vsident = sident' ++ ".@ref"
+    -- 29/March/2012  Rafael Olaechea: ref is now prepended with clafer name to be able to refer to it from partial instances.
+    -- 30/March/2012 Rafael Olaechea added referredClaferUniqeuid to fix problems when having this.x > number  (e.g test/positive/i10.cfr )     
+    vsident = sident' ++  ".@"  ++ referredClaferUniqeuid ++ "_ref"
+        where referredClaferUniqeuid = if sident == "this" then (head resPath) else sident
   IFunExp _ _ -> case exp' of
     IFunExp op exps -> genIFunExp pid mode resPath exp'
     _ -> genPExp' mode resPath $ PExp iType pid pos exp'
@@ -402,8 +428,11 @@ genPExp' mode resPath x@(PExp iType pid pos exp) = case exp of
   IStr str -> error "no strings allowed"
 
 
-transformExp x@(IFunExp op exps@(e1:_))
-  | op == iMin = IFunExp op [PExp (iType e1) "" noSpan (IInt 0), e1]
+
+-- 3-May-2012 Rafael Olaechea.
+-- Removed transfromation from x = -2 to x = (0-2) as this creates problem with  partial instances.
+-- See http://gsd.uwaterloo.ca:8888/question/461/new-translation-of-negative-number-x-into-0-x-is.
+
 transformExp x@(IFunExp op exps@(e1:e2:_))
   | op == iXor = IFunExp iNot [PExp (Just TBoolean) "" noSpan (IFunExp iIff exps)]
   | op == iJoin && isClaferName' e1 && isClaferName' e2 &&

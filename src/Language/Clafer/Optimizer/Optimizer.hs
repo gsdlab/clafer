@@ -186,7 +186,8 @@ allUniqueElement x = case x of
 checkConstraintElement idents x = case x of
   IEClafer clafer -> and $ map (checkConstraintElement idents) $ elements clafer
   IEConstraint _ pexp -> checkConstraintPExp idents pexp 
-
+  IEGoal _ _ ->  True
+  
 checkConstraintPExp idents pexp = checkConstraintIExp idents $
                                   Language.Clafer.Intermediate.Intclafer.exp pexp
 

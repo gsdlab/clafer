@@ -350,13 +350,14 @@ desugarExp' x = case x of
   EMul exp0 exp  -> desugarExp' $ PosEMul noSpan exp0 exp
   EDiv exp0 exp  -> desugarExp' $ PosEDiv noSpan exp0 exp
   ECSetExp exp   -> desugarExp' $ PosECSetExp noSpan exp
+  ESumSetExp sexp -> desugarExp' $ PosESumSetExp noSpan sexp  
   EMinExp exp    -> desugarExp' $ PosEMinExp noSpan exp
   EGMax exp -> desugarExp' $ PosEGMax noSpan exp
   EGMin exp -> desugarExp' $ PosEGMin noSpan exp
   EInt n -> desugarExp' $ PosEInt noSpan n
   EDouble n -> desugarExp' $ PosEDouble noSpan n
   EStr str  -> desugarExp' $ PosEStr noSpan str
-  ESetExp sexp -> desugarExp' $ PosESetExp noSpan sexp
+  ESetExp sexp -> desugarExp' $ PosESetExp noSpan sexp    
   PosDeclAllDisj s decl exp ->
       IDeclPExp IAll [desugarDecl True decl] (dpe exp)
   PosDeclAll s decl exp -> IDeclPExp IAll [desugarDecl False decl] (dpe exp)
@@ -386,6 +387,7 @@ desugarExp' x = case x of
   PosEMul s exp0 exp  -> dop iMul [exp0, exp]
   PosEDiv s exp0 exp  -> dop iDiv [exp0, exp]
   PosECSetExp s exp   -> dop iCSet [exp]
+  PosESumSetExp s exp -> dop iSumSet [exp]
   PosEMinExp s exp    -> dop iMin [exp]  
   PosEGMax s exp -> dop iGMax [exp]
   PosEGMin s exp -> dop iGMin [exp]  
@@ -463,7 +465,8 @@ sugarExp' x = case x of
     | op == iCSet          = ECSetExp
     | op == iMin           = EMinExp
     | op == iGMax          = EGMax
-    | op == iGMin          = EGMin    
+    | op == iGMin          = EGMin 
+    | op == iSumSet        = ESumSetExp   
   sugarOp op
     | op == iIff           = EIff
     | op == iImpl          = EImplies
