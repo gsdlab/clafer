@@ -1,4 +1,4 @@
-_namespaces = {'c1': 'http://gsd.uwaterloo.ca/clafer', 'xsi': 'http://www.w3.org/2001/XMLSchema-instance'}
+_namespaces = {'c1': 'http://clafer.org/ir', 'xsi': 'http://www.w3.org/2001/XMLSchema-instance'}
 
 def get_clafer_Id(element):
     return element.find('c1:Id',namespaces=_namespaces).text
@@ -7,6 +7,7 @@ def get_clafer_UniqueId(element):
         
 def get_top_level_SPL_model(xml_model):
     top_level_spl_model = None
+    assert len (xml_model.findall('./c1:Declaration', namespaces=_namespaces)) > 0
     for top_level_clafer in xml_model.findall('./c1:Declaration', namespaces=_namespaces):
         if top_level_spl_model == None and \
         top_level_clafer.find('c1:IsAbstract', namespaces=_namespaces).text == 'true' \

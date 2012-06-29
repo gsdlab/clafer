@@ -29,7 +29,7 @@ def execute_main():
 
     SPL = spl_claferanalyzer.get_top_level_SPL_model(xml_model)
     
-    
+    assert SPL != None # check SPL is correctly parsed by  spl_claferanalyzer.get_top_level_SPL_model(xml_model)
 
     if  args.sparseintegers == True:
         print "sig bag_extra_ints{"
@@ -40,6 +40,7 @@ def execute_main():
 
     print "inst partial_speedup {"
     print "    1"
+
 
     
     # Compute the maximum bit width for integers, first compute the highest possible 
