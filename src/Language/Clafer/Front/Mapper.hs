@@ -216,7 +216,8 @@ instance Mappable Exp where
   mapNode (EMul exp0 exp1)               = doMap2 PosESub exp0 exp1
   mapNode (EDiv exp0 exp1)               = doMap2 PosEDiv exp0 exp1
   mapNode (PosECSetExp s exp)            = doMapWithSpan PosECSetExp s exp
-  mapNode (PosEMinExp s exp)             = doMapWithSpan PosEMinExp s exp
+  mapNode (PosEMinExp s exp)             = doMapWithSpan PosEMinExp s exp  
+  mapNode (PosESumSetExp s exp)             = doMapWithSpan PosESumSetExp s exp
   mapNode (PosEImpliesElse s exp0 exp1 exp2) = doMap3WithSpan PosEImpliesElse s exp0 exp1 exp2
   mapNode (EInt posinteger)              = doMap PosEInt posinteger
   mapNode (EDouble posdouble)            = doMap PosEDouble posdouble
@@ -248,6 +249,7 @@ instance Mappable Exp where
   range (PosEMul s _ _)           = s
   range (PosEDiv s _ _)           = s
   range (PosECSetExp s _)         = s
+  range (PosESumSetExp s _)         = s
   range (PosEMinExp s _)          = s
   range (PosEImpliesElse s _ _ _) = s
   range (PosEInt s _)             = s

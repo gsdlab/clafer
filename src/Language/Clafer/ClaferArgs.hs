@@ -125,6 +125,6 @@ setDefArgs args = args {
   alloy_mapping       = alloy_mapping args       `mplus` Just def}
 
 
-emptyClaferArgs = ClaferArgs Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing ""
+emptyClaferArgs = ClaferArgs Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing ""
 
 defaultClaferArgs = setDefArgs emptyClaferArgs
