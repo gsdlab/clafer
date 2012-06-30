@@ -1,4 +1,5 @@
-_namespaces = {'c1': 'http://clafer.org/ir', 'xsi': 'http://www.w3.org/2001/XMLSchema-instance'}
+_namespaces = {'c1': 'http://clafer.org/ir', 
+     'xsi': 'http://www.w3.org/2001/XMLSchema-instance'}
 
 def get_clafer_Id(element):
     return element.find('c1:Id',namespaces=_namespaces).text
@@ -69,9 +70,8 @@ def extract_integer(element):
     return extacted_integer
 
 
-def get_property(element, property="footprint"):
+def get_property(element, property="footprint", property_unique_id_prefix="c2"):
     footprint_val = 0
-    
     for constraint in element.findall("./c1:Declaration[@xsi:type='cl:IConstraint']", namespaces=_namespaces):
         constraint_operation = constraint.find("c1:ParentExp/c1:Exp[@xsi:type='cl:IFunctionExp']/c1:Operation", namespaces=_namespaces)
         constraint_arguments = constraint.findall("c1:ParentExp/c1:Exp[@xsi:type='cl:IFunctionExp']/c1:Argument", namespaces=_namespaces)
@@ -81,15 +81,16 @@ def get_property(element, property="footprint"):
             second_argument = constraint_arguments[1]
 
             first_argument_sub_arguments = first_argument.findall("c1:Exp[@xsi:type='cl:IFunctionExp']/c1:Argument", namespaces=_namespaces)
-            first_argument_sub_operation = first_argument.findall("c1:Exp[@xsi:type='cl:IFunctionExp']/c1:Operation", namespaces=_namespaces)
-            
+            first_argument_sub_operation = first_argument.findall("c1:Exp[@xsi:type='cl:IFunctionExp']/c1:Operation", namespaces=_namespaces)                
             
             if len(first_argument_sub_arguments) == 2 and \
                 len(first_argument_sub_operation)>0 and  first_argument_sub_operation[0] != None and first_argument_sub_operation[0].text == '.' and \
+                \
                 first_argument_sub_arguments[0].find("c1:Exp[@xsi:type='cl:IClaferId']/c1:Id", namespaces=_namespaces) != None and \
                 first_argument_sub_arguments[0].find("c1:Exp[@xsi:type='cl:IClaferId']/c1:Id", namespaces=_namespaces).text == 'this' and \
+                \
                 first_argument_sub_arguments[1].find("c1:Exp[@xsi:type='cl:IClaferId']/c1:Id", namespaces=_namespaces) != None and \
-                first_argument_sub_arguments[1].find("c1:Exp[@xsi:type='cl:IClaferId']/c1:Id", namespaces=_namespaces).text == ('c2_%s' % property)  and \
+                first_argument_sub_arguments[1].find("c1:Exp[@xsi:type='cl:IClaferId']/c1:Id", namespaces=_namespaces).text == ('%s_%s' % (property_unique_id_prefix, property))  and \
                 second_argument.find("c1:Type[@xsi:type='cl:IInteger']", namespaces=_namespaces)!= None:
                 
                     footprint_val = extract_integer(second_argument)
@@ -100,16 +101,26 @@ def get_empty_features_footprint(xml_model_configurations, args):
 
 
 
-def get_max_value_property(SPL_Model, property):
+def get_max_value_property(SPL_Model, property_list):
         """
-        Returns the maximum integer value  for a nonfunctional in the Software Product Line Feature Model.
+        Returns the maximum integer value for a nonfunctional in the Software Product Line Feature Model.
         """
         max_integer = 0
-        for clafer_features in SPL_Model.findall(".//c1:Declaration[@xsi:type='cl:IClafer']", namespaces=_namespaces):
-            if get_clafer_Id(clafer_features)!=  ("total_%s" % property):
-                max_integer = max_integer + max(int(get_property(clafer_features, property)), 0)
+        for feature in SPL_Model.findall(".//c1:Declaration[@xsi:type='cl:IClafer']", namespaces=_namespaces):
+            if get_clafer_Id(feature) not in  ["total_%s" % nonfunctional_property for nonfunctional_property  in property_list] :
+                for nonfunctional_property in property_list:
+                    #print "Checking max_integer in %s ,  for nonfunctional_property %s. " %  (get_clafer_Id(feature), nonfunctional_property)
+                    if nonfunctional_property == "cost":
+                        nonfunctional_property_value = get_property(feature, nonfunctional_property, "c2")
+                    else:
+                        nonfunctional_property_value = get_property(feature, nonfunctional_property, "c3")                        
+                    #print  "got %s " % ( int(nonfunctional_property_value), )
+                    
+                    max_integer = max_integer + max(int(nonfunctional_property_value), 0)
         return max_integer
-def get_set_extra_integers_from_feature_model(SPL_Model, property):
+    
+
+def get_set_extra_integers_from_feature_model(SPL_Model, property_list):
     """
     Returns a set of all integers that are not referenced in the feature model, but that might be
     needed to represent the quality properties of a configuration of the feature model.

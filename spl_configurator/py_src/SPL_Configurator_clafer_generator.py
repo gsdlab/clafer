@@ -42,9 +42,13 @@ def execute_main():
     print "    1"
 
 
+    args.property = ["cost", "mass"]
     
     # Compute the maximum bit width for integers, first compute the highest possible 
     max_integer =   spl_claferanalyzer.get_max_value_property(SPL, args.property)
+    
+    #print "MAX_INTEGER = %s " % max_integer 
+    
     # Compute Bitwidth, we have to add 1 to max_integer due to "0", and 1 to the total due to negative numbers.
     max_bitwidth = math.ceil(math.log(max_integer+1, 2)) + 1         
 
