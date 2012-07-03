@@ -281,12 +281,12 @@ getUid (PosIdent (pos, id)) irMap = if Map.lookup (range (PosIdent (pos, id))) i
 --adjust this to return a list of all ids (this, ref, etc. included) and choose the UID that reduces to the input ID.
                         
 getDivId span irMap = if Map.lookup span irMap == Nothing
-                      then "Not Found"
+                      then "Uid not Found"
                       else let IRClafer iClafer = head $ fromJust $ Map.lookup span irMap in
                         uid iClafer
 
 getSuperId span irMap = if Map.lookup span irMap == Nothing
-                        then "Not Found"
+                        then "Uid not Found"
                         else let IRPExp pexp = head $ fromJust $ Map.lookup span irMap in
                           sident $ exp pexp
 

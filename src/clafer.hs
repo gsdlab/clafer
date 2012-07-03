@@ -48,10 +48,17 @@ run v args input = do
                    putStrV v "Tokens:"
                    putStrLn s
                    exitFailure
-    Ok  tree -> do
-                   let oTree = compile args tree
-                   f' <- save args oTree
-                   when (fromJust $ validate args) $ runValidate args f'                      
+    Ok  tree -> if mode args == Just Html
+                then do
+                  let result = generateHtml args $ Ok tree
+                  when (not $ fromJust $ no_stats args) $ putStrLn (statistics result)
+                  let f = dropExtension $ file args                      
+                  let f' = f ++ "." ++ (extension result)
+                  if fromJust $ console_output args then putStrLn (outputCode result) else writeFile f' (outputCode result)
+                  return()
+                else do let oTree = compile args tree
+                        f' <- save args oTree
+                        when (fromJust $ validate args) $ runValidate args f'                      
 
 save :: ClaferArgs -> (IModule, GEnv, Bool) -> IO [Char]
 save    args          oTree                 = do
