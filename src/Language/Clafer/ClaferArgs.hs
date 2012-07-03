@@ -67,7 +67,7 @@ clafer = ClaferArgs {
   no_stats            = def &= help "Don't print statistics" &= name "s",
   schema              = def &= help "Show Clafer IR (intermediate representation) XML schema",
   validate            = def &= help "Validate output. Uses 'tools/XsdCheck.class' for XML,  'tools/alloy4.jar' and 'tools/alloy4.2-rc.jar' for Alloy models, and Clafer translator for desugared Clafer models. Use --tooldir to override the default location of these tools." &= name "v",
-  noalloyruncommand   = def &= help "Don't generate the alloy 'run show for ... ' command." &= name "nr",
+  noalloyruncommand   = def &= help "For usage with partial instances: Don't generate the alloy 'run show for ... ' command, and rename @.ref with unique names." &= name "nr",
   tooldir             = def &= typDir &= help "Specify the tools directory. Default: 'tools/'",
   alloy_mapping       = def &= help "Generate mapping to Alloy source code" &= name "a",
   file                = def &= args   &= typ "FILE"
