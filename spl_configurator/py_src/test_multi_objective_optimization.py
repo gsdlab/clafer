@@ -6,7 +6,8 @@ class TestSPL_ClaferAnalyzer(unittest.TestCase):
 
     def setUp(self):
         self.spl_transformer = spl_claferanalyzer.SPL_ClaferAnalyzer("../unit_test_data/telematics_multi_objective_optimization.xml")
-    
+        
+        
     def test_load_xml_model(self):
         self.assertTrue(self.spl_transformer.xml_model != None)
 
@@ -19,6 +20,7 @@ class TestSPL_ClaferAnalyzer(unittest.TestCase):
         
     def test_get_max_value_property(self):
         max_integer =   self.spl_transformer.get_max_value_property()
+
         self.assertEqual(max_integer, 37, "The maximum possible integer should be 37 in telematics test case, got %s " % max_integer)
 
     def test_get_features_as_xml_elements(self):
