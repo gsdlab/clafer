@@ -15,4 +15,4 @@ filename="${filename%.*}"
 ../clafer --nr $fullfile
 ../clafer --mode=xml --nr $fullfile
 python py_src/SPL_Configurator_clafer_generator.py --sparseintegers ${directory:-"."}/${filename}.xml >> ${directory:-"."}/${filename}.als 
-java -jar /Users/rafaelolaechea/Downloads/alloy_moo.jar ${directory:-"."}/${filename}.als
+java -jar ../tools/alloy_moo.jar ${directory:-"."}/${filename}.als
