@@ -19,7 +19,7 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
 -}
-module Language.Clafer.Generator.Html (genHtml, genText, printModule, traceAstModule, traceIrModule) where
+module Language.Clafer.Generator.Html (genHtml, genText, genTooltip, printModule, traceAstModule, traceIrModule) where
 
 import Language.Clafer.Front.Absclafer
 import Language.Clafer.Front.LayoutResolver(revertLayout)
@@ -33,7 +33,8 @@ import Prelude hiding (exp)
 
 genHtml x ir = cleanOutput $ revertLayout $ printModule x (traceIrModule ir) True
 genText x ir = cleanOutput $ revertLayout $ printModule x (traceIrModule ir) False
-
+genTooltip m ir = cleanOutput $ revertLayout $ printModule m ir False
+                           
 printModule (Module [])     irMap html = ""
 printModule (Module (x:xs)) irMap html = (printDeclaration x 0 irMap html) ++ printModule (Module xs) irMap html
 printModule (PosModule _ declarations) irMap html = printModule (Module declarations) irMap html
@@ -190,7 +191,7 @@ printExp (EOr exp1 exp2)        indent irMap html = (printExp exp1 indent irMap 
 printExp (PosEOr _ exp1 exp2) indent irMap html = printExp (EOr exp1 exp2) indent irMap html
 printExp (EXor exp1 exp2)       indent irMap html = (printExp exp1 indent irMap html) ++ " xor " ++ printExp exp2 indent irMap html
 printExp (PosEXor _ exp1 exp2) indent irMap html = printExp (EXor exp1 exp2) indent irMap html
-printExp (ENeg exp)             indent irMap html = "!" ++ printExp exp indent irMap html
+printExp (ENeg exp)             indent irMap html = " !" ++ printExp exp indent irMap html
 printExp (PosENeg _ exp) indent irMap html = printExp (ENeg exp) indent irMap html
 printExp (ELt exp1 exp2)        indent irMap html = (printExp exp1 indent irMap html) ++ " < " ++ printExp exp2 indent irMap html
 printExp (PosELt _ exp1 exp2) indent irMap html = printExp (ELt exp1 exp2) indent irMap html

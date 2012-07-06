@@ -58,6 +58,7 @@ library
                      Language.Clafer.Front.Parclafer,
                      Language.Clafer.Front.Printclafer,
                      Language.Clafer.Generator.Alloy,
+                     Language.Clafer.Generator.Graph,
                      Language.Clafer.Generator.Html,
                      Language.Clafer.Generator.Schema,
                      Language.Clafer.Generator.Stats,

@@ -64,6 +64,7 @@ import Language.Clafer.Generator.Xml
 import Language.Clafer.Generator.Schema
 import Language.Clafer.Generator.Stats
 import Language.Clafer.Generator.Html
+import Language.Clafer.Generator.Graph
 
 type VerbosityL = Int
 type InputModel = String
