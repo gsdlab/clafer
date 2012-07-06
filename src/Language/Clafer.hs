@@ -126,18 +126,18 @@ generate args (iModule, genv, au) = do
                    mappingToAlloy = mapToAlloy }
 
 generateHtml :: ClaferArgs -> Err Module -> CompilerResult
-generateHtml args (Ok tree) = let (iModule, _, _) = compile args tree in CompilerResult { extension = "html",
+generateHtml args (Ok tree) = let (iModule, genv, au) = compile args tree in CompilerResult { extension = "html",
                                                                                             outputCode = genHtml tree iModule,
-                                                                                            statistics = "",
+                                                                                            statistics = showStats au $ statsModule iModule,
                                                                                             mappingToAlloy = Nothing }
 generateHtml _    (Bad s)   = CompilerResult { extension = "err", 
                                              outputCode = s, 
                                              statistics = "", 
                                              mappingToAlloy = Nothing }
 generateText :: ClaferArgs -> Err Module -> CompilerResult
-generateText args (Ok tree) = let (iModule, _, _) = compile args tree in CompilerResult { extension = "txt",
+generateText args (Ok tree) = let (iModule, genv, au) = compile args tree in CompilerResult { extension = "txt",
                                                                                             outputCode = genText tree iModule,
-                                                                                            statistics = "",
+                                                                                            statistics = showStats au $ statsModule iModule,
                                                                                             mappingToAlloy = Nothing }
 generateText _    (Bad s)   = CompilerResult { extension = "err", 
                                              outputCode = s, 
