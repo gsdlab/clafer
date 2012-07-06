@@ -27,6 +27,7 @@ module Language.Clafer (
                         generateM,
                         generateHtml,
                         generateText,
+                        generateGraph,
                         CompilerResult(..),
                         claferIRXSD,
                         VerbosityL,
@@ -143,6 +144,16 @@ generateText _    (Bad s)   = CompilerResult { extension = "err",
                                              outputCode = s, 
                                              statistics = "", 
                                              mappingToAlloy = Nothing }
+
+generateGraph :: ClaferArgs -> Err Module -> String -> CompilerResult
+generateGraph args (Ok tree) name = let (iModule, genv, au) = compile args tree in CompilerResult { extension = "dot",
+                                                                                                    outputCode = genGraph tree iModule name,
+                                                                                                    statistics = showStats au $ statsModule iModule,
+                                                                                                    mappingToAlloy = Nothing }
+generateGraph _    (Bad s)   _    = CompilerResult { extension = "err", 
+                                                     outputCode = s, 
+                                                     statistics = "", 
+                                                     mappingToAlloy = Nothing }
 
 generateM :: ClaferArgs   -> Err (IModule, GEnv, Bool) -> CompilerResult
 generateM args (Ok oTree) = generate args oTree
