@@ -48,7 +48,7 @@ graphDeclaration _                          _        _     = "graphDeclaration\n
 graphElement (Subclafer clafer)  topLevel irMap = graphClafer clafer topLevel irMap
 graphElement (PosSubclafer _ subclafer) topLevel irMap = graphElement (Subclafer subclafer) topLevel irMap
 graphElement (ClaferUse name card elements) topLevel irMap = if snd3 topLevel == Nothing then "" else fromJust (snd3 topLevel) ++ " -> " ++ graphName name topLevel irMap ++ " [arrowhead = onormal style = dashed constraint = false];\n"
-graphElement (PosClaferUse _ name card elements) topLevel irMap = graphElement (ClaferUse name card elements) topLevel irMap
+graphElement (PosClaferUse span name card elements) topLevel irMap = if snd3 topLevel == Nothing then "" else fromJust (snd3 topLevel) ++ " -> " ++ getUseId span irMap ++ " [arrowhead = onormal style = dashed constraint = false];\n"
 graphElement _ _ _ = ""
 
 graphElements ElementsEmpty topLevel irMap = ""
@@ -285,6 +285,12 @@ getSuperId span irMap = if Map.lookup span irMap == Nothing
                         then "Uid not Found"
                         else let IRPExp pexp = head $ fromJust $ Map.lookup span irMap in
                           sident $ exp pexp
+
+getUseId :: Span -> Map.Map Span [Ir] -> String
+getUseId span irMap = if Map.lookup span irMap == Nothing
+                      then "Uid not Found"
+                      else let IRClafer iClafer = head $ fromJust $ Map.lookup span irMap in
+                        sident $ exp $ head $ supers $ super iClafer
 
 while bool exp = if bool then exp else []
 

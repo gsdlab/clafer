@@ -49,7 +49,9 @@ printElement (PosSubclafer _ subclafer) indent irMap html = printElement (Subcla
 printElement (Subconstraint constraint) indent irMap html = printConstraint constraint indent irMap html
 printElement (PosSubconstraint _ constraint) indent irMap html = printElement (Subconstraint constraint) indent irMap html
 printElement (ClaferUse name card elements) indent irMap html = (printIndent indent html) ++ "`" ++ printName name indent irMap html ++ printCard card indent irMap html ++ (while html "</span><br>") ++ "\n" ++ printElements elements indent irMap html
-printElement (PosClaferUse _ name card elements) indent irMap html = printElement (ClaferUse name card elements) indent irMap html
+printElement (PosClaferUse span name card elements) indent irMap html = let (divId, superId) = getUseId span irMap in
+                                                                      (while html ("<span id=\"" ++ divId ++ "\" class=\"l" ++ show indent ++ "\">")) ++ "`" ++ (while html ("<a href=\"#" ++ superId ++ "\"><span class=\"reference\">")) ++ printName name indent irMap False --trick the printer into only printing the name
+                                                                        ++ (while html "</span></a>") ++ printCard card indent irMap html ++ (while html "</span><br>") ++ "\n" ++ printElements elements indent irMap html
 printElement (Subgoal goal) indent irMap html = printGoal goal indent irMap html
 printElement (PosSubgoal _ goal) indent irMap html = printElement (Subgoal goal) indent irMap html
 printElement (Subsoftconstraint softConstraint) indent irMap html = printSoftConstraint softConstraint indent irMap html
@@ -279,17 +281,22 @@ getUid (PosIdent (pos, id)) irMap = if Map.lookup (range (PosIdent (pos, id))) i
                                  getIdentIExp _ = [];
                                  findUid name (x:xs) = if name == dropUid x then x else findUid name xs;
                                  findUid name []     = "Uid not found"}
---adjust this to return a list of all ids (this, ref, etc. included) and choose the UID that reduces to the input ID.
-                        
+
 getDivId span irMap = if Map.lookup span irMap == Nothing
                       then "Uid not Found"
                       else let IRClafer iClafer = head $ fromJust $ Map.lookup span irMap in
                         uid iClafer
 
-getSuperId span irMap = if Map.lookup span irMap == Nothing
+{-getSuperId span irMap = if Map.lookup span irMap == Nothing
                         then "Uid not Found"
                         else let IRPExp pexp = head $ fromJust $ Map.lookup span irMap in
-                          sident $ exp pexp
+                          sident $ exp pexp-}
+
+getUseId :: Span -> Map.Map Span [Ir] -> (String, String)
+getUseId span irMap = if Map.lookup span irMap == Nothing
+                      then ("Uid not Found", "Uid not Found")
+                      else let IRClafer iClafer = head $ fromJust $ Map.lookup span irMap in
+                        (uid iClafer, sident $ exp $ head $ supers $ super iClafer)
 
 while bool exp = if bool then exp else []
 
