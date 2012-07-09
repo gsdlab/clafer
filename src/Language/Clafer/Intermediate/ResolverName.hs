@@ -32,6 +32,7 @@ import qualified Data.Map as Map
 import Language.Clafer.Common
 import Language.Clafer.Front.Absclafer
 import Language.Clafer.Intermediate.Intclafer
+import qualified Language.Clafer.Intermediate.Intclafer as I
 
 data SEnv = SEnv {
   clafers :: [IClafer],                 -- (constant) top level clafers
@@ -120,7 +121,7 @@ processDecl decl = do
 resolveNav :: SEnv -> IExp -> Bool -> (IExp, [IClafer])
 resolveNav env x isFirst = case x of
   IFunExp _ (pexp0:pexp:_)  ->
-    (IFunExp iJoin [pExpDef (pid pexp0) noSpan exp0', pExpDef (pid pexp) noSpan exp'], path')
+    (IFunExp iJoin [pexp0{I.exp=exp0'}, pexp{I.exp=exp'}], path')
     where
     (exp0', path) = resolveNav env (Language.Clafer.Intermediate.Intclafer.exp pexp0) True
     (exp', path') = resolveNav env {context = listToMaybe path, resPath = path}

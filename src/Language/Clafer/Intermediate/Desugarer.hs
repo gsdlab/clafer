@@ -219,7 +219,7 @@ desugarElement x = case x of
   PosSubclafer s clafer  ->
       (IEClafer $ desugarClafer clafer) :
       (mkArrowConstraint clafer >>= desugarElement)
-  PosClaferUse s name card elements  -> [IEClafer $ desugarClafer $ Clafer
+  PosClaferUse s name card elements  -> [IEClafer $ desugarClafer $ PosClafer s
       AbstractEmpty GCardEmpty (mkIdent $ sident $ desugarName name)
       (SuperSome SuperColon (PosClaferId noSpan name)) card InitEmpty elements]
   PosSubconstraint s constraint  ->
