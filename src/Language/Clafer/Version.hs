@@ -21,4 +21,4 @@ SOFTWARE.
 -}
 
 module Language.Clafer.Version where
-version = "v0.3.30-6-2012"
+version = "v0.3.10-7-2012"
