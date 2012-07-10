@@ -23,7 +23,11 @@ build:
 
 # build Schema.hs from ClaferIG.xsd, call after .xsd changed
 Schema.hs:
-	$(MAKE) -C $(SRC_DIR)
+	$(MAKE) -C $(SRC_DIR) Schema.hs
+
+# build Css.hs from clafer.css, call after .css changed
+Css.hs:
+	$(MAKE) -C $(SRC_DIR) Css.hs
 
 # enable profiler
 prof:
