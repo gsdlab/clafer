@@ -35,8 +35,10 @@ import Control.Monad.State
 import System.Environment.Executable
 import Data.Maybe
 import System.FilePath.Posix
+import System.Process (readProcessWithExitCode)
 
 import Language.Clafer
+import Language.Clafer.Css
 
 putStrV :: VerbosityL -> String -> IO ()
 putStrV v s = if v > 1 then putStrLn s else return ()
@@ -54,7 +56,20 @@ run v args input = do
                                 when (not $ fromJust $ no_stats args) $ putStrLn (statistics result)
                                 let f = dropExtension $ file args                      
                                 let f' = f ++ "." ++ (extension result)
-                                if fromJust $ console_output args then putStrLn (outputCode result) else writeFile f' (outputCode result)
+                                (ec, graph, err) <- readProcessWithExitCode "dot" ["-Tsvg"] $ outputCode $ generateGraph args (Ok tree) f
+                                let output = (if (fromJust $ self_contained args)
+                                              then header ++ css ++ "</head>\n<body>\n"
+                                              else "") ++
+                                              (if (fromJust $ add_graph args)
+                                              then "<figure>\n" ++ (if ec == ExitSuccess
+                                                                   then graph
+                                                                   else "dot returned an error status: " ++ err)
+                                                ++ "<figcaption>Model Overview</figcaption>\n</figure>"
+                                              else "") ++ outputCode result ++
+                                              if (fromJust $ self_contained args)
+                                              then "</body>\n</html>"
+                                              else ""
+                                if fromJust $ console_output args then putStrLn output else writeFile f' output
                                 return()
                 Just Graph ->  do
                                 let f = dropExtension $ file args

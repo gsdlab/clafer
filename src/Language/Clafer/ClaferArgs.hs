@@ -51,6 +51,8 @@ data ClaferArgs = ClaferArgs {
       noalloyruncommand :: Maybe Bool,
       tooldir :: Maybe FilePath,
       alloy_mapping :: Maybe Bool,
+      self_contained :: Maybe Bool,
+      add_graph :: Maybe Bool,
       file :: FilePath
     } deriving (Show, Data, Typeable)
 
@@ -70,6 +72,8 @@ clafer = ClaferArgs {
   noalloyruncommand   = def &= help "For usage with partial instances: Don't generate the alloy 'run show for ... ' command, and rename @.ref with unique names." &= name "nr",
   tooldir             = def &= typDir &= help "Specify the tools directory. Default: 'tools/'",
   alloy_mapping       = def &= help "Generate mapping to Alloy source code" &= name "a",
+  self_contained      = def &= help "Generate a self-contained html document. Only works with html mode.",
+  add_graph           = def &= help "Add a graph to the generated html model. Only works with html mode and if the \"dot\" executable is on the system path.",
   file                = def &= args   &= typ "FILE"
  } &= summary ("Clafer " ++ version) &= program "clafer"
 
@@ -104,6 +108,8 @@ mergeArgs args args'  = args' {
   noalloyruncommand   = noalloyruncommand args   `mplus` noalloyruncommand args',
   tooldir             = tooldir args             `mplus` tooldir args',
   alloy_mapping       = alloy_mapping args       `mplus` alloy_mapping args',
+  self_contained      = self_contained args      `mplus` self_contained args',
+  add_graph           = add_graph args           `mplus` add_graph args',
   file                = file args}
 
 -- default values for arguments (the lowest priority)
@@ -122,9 +128,11 @@ setDefArgs args = args {
   validate            = validate args            `mplus` Just def,
   noalloyruncommand   = noalloyruncommand args   `mplus` Just def,
   tooldir             = tooldir args             `mplus` Just "tools/",
+  self_contained      = self_contained args      `mplus` Just def,
+  add_graph           = add_graph args           `mplus` Just def,
   alloy_mapping       = alloy_mapping args       `mplus` Just def}
 
 
-emptyClaferArgs = ClaferArgs Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing ""
+emptyClaferArgs = ClaferArgs Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing ""
 
 defaultClaferArgs = setDefArgs emptyClaferArgs
