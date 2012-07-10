@@ -65,6 +65,14 @@ import Language.Clafer.Generator.Stats
 type VerbosityL = Int
 type InputModel = String
 
+data ClaferEnv = ClaferEnv {
+                            args :: ClaferArgs, 
+                            model :: String,    -- original text of the model
+                            ast :: Module,
+                            ir :: IModule,
+                            frags :: [ Int ]    -- line numbers of fragment markers
+                            }
+							
 addModuleFragment :: ClaferArgs -> InputModel -> Err Module
 addModuleFragment args inputModel = 
   let inputTokens = (if not 
