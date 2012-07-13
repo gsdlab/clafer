@@ -49,18 +49,19 @@ run v args input = do
                    putStrLn s
                    exitFailure
     Ok  tree -> do
-                   let oTree = compile args tree
-                   f' <- save args oTree
+                   let env = compile $ (makeEnv args input){ ast = Ok tree }
+                   f' <- save env
                    when (fromJust $ validate args) $ runValidate args f'                      
 
-save :: ClaferArgs -> (IModule, GEnv, Bool) -> IO [Char]
-save    args          oTree                 = do
-  let result = generate args oTree
-  when (not $ fromJust $ no_stats args) $ putStrLn (statistics result)
-  let f = dropExtension $ file args                      
+save :: ClaferEnv -> IO [Char]
+save    env = do
+  let result = generate env
+  let args' = args env
+  when (not $ fromJust $ no_stats args') $ putStrLn (statistics result)
+  let f = dropExtension $ file args'
   let f' = f ++ "." ++ (extension result)
-  if fromJust $ console_output args then putStrLn (outputCode result) else writeFile f' (outputCode result)
-  when (fromJust $ alloy_mapping args) $ writeFile (f ++ "." ++ "map") $ fromJust (mappingToAlloy result)
+  if fromJust $ console_output args' then putStrLn (outputCode result) else writeFile f' (outputCode result)
+  when (fromJust $ alloy_mapping args') $ writeFile (f ++ "." ++ "map") $ fromJust (mappingToAlloy result)
   return f'
   
 conPutStrLn args s = when (not $ fromJust $ console_output args) $ putStrLn s

@@ -101,12 +101,12 @@ addModuleFragment env =
   in env{ ast = mapModule `fmap` pModule inputTokens,
           frags = getFragments $ model env }
 
-compile :: ClaferArgs -> Module -> (IModule, GEnv, Bool)
-compile args tree = analyze args $ desugar tree
+compile :: ClaferEnv -> ClaferEnv
+compile env = let Ok m = ast env in env{ ir = Ok $ analyze (args env) $ desugar m }
 
 compileM :: ClaferEnv -> ClaferEnv
 compileM env = case ast env of
-  Ok tree -> env{ir = Ok $ compile (args env) tree}
+  Ok tree -> compile env
   Bad s   -> env{ir = Bad s}
 
 data CompilerResult = CompilerResult {
@@ -116,8 +116,8 @@ data CompilerResult = CompilerResult {
                             mappingToAlloy :: Maybe String 
                             }
                                                  
-generate :: ClaferArgs -> (IModule, GEnv, Bool) -> CompilerResult
-generate args (iModule, genv, au) = do
+generate :: ClaferEnv -> CompilerResult
+generate env@(ClaferEnv args _ _ (Ok(iModule, genv, au)) _) = do
   let stats = showStats au $ statsModule iModule
   let (ext, code, mapToAlloy) = case (fromJust $ mode args) of
                       Alloy   -> do
@@ -139,7 +139,7 @@ generate args (iModule, genv, au) = do
 
 generateM :: ClaferEnv -> CompilerResult
 generateM env = case ir env of
-  Ok oTree -> generate (args env) oTree
+  Ok oTree -> generate env
   Bad s    -> CompilerResult { extension = "err",
                                outputCode = s,
                                statistics = "",
