@@ -34,6 +34,8 @@ module Language.Clafer (
                         GEnv,
                         IModule,
                         voidf,
+                        ClaferEnv(..),
+                        makeEnv,
                         module Language.Clafer.ClaferArgs,
                         module Language.Clafer.Front.ErrM
                                        
@@ -45,6 +47,7 @@ import Control.Monad()
 import Language.Clafer.Common
 import Language.Clafer.Front.ErrM
 import Language.Clafer.ClaferArgs
+import Language.Clafer.Comments
 import Language.Clafer.Front.Lexclafer
 import Language.Clafer.Front.Parclafer
 import Language.Clafer.Front.Printclafer
@@ -68,36 +71,43 @@ type InputModel = String
 data ClaferEnv = ClaferEnv {
                             args :: ClaferArgs, 
                             model :: String,    -- original text of the model
-                            ast :: Module,
-                            ir :: IModule,
+                            ast :: Err Module,
+                            ir :: Err (IModule, GEnv, Bool),
                             frags :: [ Int ]    -- line numbers of fragment markers
                             }
+makeEnv args model = ClaferEnv { args = args,
+                                 model = model,
+                                 ast = Bad "",
+                                 ir = Bad "",
+                                 frags = [] }
 							
-addModuleFragment :: ClaferArgs -> InputModel -> Err Module
-addModuleFragment args inputModel = 
+addModuleFragment :: ClaferEnv -> ClaferEnv
+addModuleFragment env = 
   let inputTokens = (if not 
-                  ((fromJust $ new_layout args) ||
-                  (fromJust $ no_layout args))
+                  ((fromJust $ new_layout $ args env) ||
+                  (fromJust $ no_layout $ args env))
                 then 
                    resolveLayout 
                 else 
                    id) 
                 $ myLexer $
-                (if (not $ fromJust $ no_layout args) &&
-                    (fromJust $ new_layout args)
+                (if (not $ fromJust $ no_layout $ args env) &&
+                    (fromJust $ new_layout $ args env)
                  then 
                    resLayout 
                  else 
                    id)
-                inputModel
-  in mapModule `fmap` pModule inputTokens
+                $ model env
+  in env{ ast = mapModule `fmap` pModule inputTokens,
+          frags = getFragments $ model env }
 
 compile :: ClaferArgs -> Module -> (IModule, GEnv, Bool)
 compile args tree = analyze args $ desugar tree
 
-compileM :: ClaferArgs -> Err Module -> Err (IModule, GEnv, Bool)
-compileM args (Ok tree) = Ok (compile args tree)
-compileM _    (Bad s)   = Bad s 
+compileM :: ClaferEnv -> ClaferEnv
+compileM env = case ast env of
+  Ok tree -> env{ir = Ok $ compile (args env) tree}
+  Bad s   -> env{ir = Bad s}
 
 data CompilerResult = CompilerResult {
                             extension :: String, 
@@ -127,12 +137,13 @@ generate args (iModule, genv, au) = do
                    statistics = stats, 
                    mappingToAlloy = mapToAlloy }
 
-generateM :: ClaferArgs   -> Err (IModule, GEnv, Bool) -> CompilerResult
-generateM args (Ok oTree) = generate args oTree
-generateM _    (Bad s)    = CompilerResult { extension = "err", 
-                                             outputCode = s, 
-                                             statistics = "", 
-                                             mappingToAlloy = Nothing }
+generateM :: ClaferEnv -> CompilerResult
+generateM env = case ir env of
+  Ok oTree -> generate (args env) oTree
+  Bad s    -> CompilerResult { extension = "err",
+                               outputCode = s,
+                               statistics = "",
+                               mappingToAlloy = Nothing }
 
 desugar :: Module -> IModule  
 desugar tree = desugarModule tree

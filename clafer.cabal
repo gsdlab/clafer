@@ -49,6 +49,7 @@ library
     exposed-modules: 
                      Language.Clafer,
                      Language.Clafer.ClaferArgs,
+                     Language.Clafer.Comments,
                      Language.Clafer.Common,
                      Language.Clafer.Front.Absclafer,
                      Language.Clafer.Front.ErrM,

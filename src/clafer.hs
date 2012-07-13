@@ -43,7 +43,7 @@ putStrV v s = if v > 1 then putStrLn s else return ()
 
 run :: VerbosityL -> ClaferArgs -> InputModel -> IO ()
 run v args input = do
-  case addModuleFragment args input of
+  case ast $ addModuleFragment $ makeEnv args input of
     Bad s    -> do putStrLn "\nParse Failed...\n"
                    putStrV v "Tokens:"
                    putStrLn s
