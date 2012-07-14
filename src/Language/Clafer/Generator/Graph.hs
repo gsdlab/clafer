@@ -43,7 +43,7 @@ graphModule (PosModule _ declarations) irMap = graphModule (Module declarations)
 
 graphDeclaration (ElementDecl element)      topLevel irMap = graphElement element topLevel irMap
 graphDeclaration (PosElementDecl _ element) topLevel irMap = graphDeclaration (ElementDecl element) topLevel irMap
-graphDeclaration _                          _        _     = "graphDeclaration\n"
+graphDeclaration _                          _        _     = ""
 
 graphElement (Subclafer clafer)  topLevel irMap = graphClafer clafer topLevel irMap
 graphElement (PosSubclafer _ subclafer) topLevel irMap = graphElement (Subclafer subclafer) topLevel irMap
@@ -79,48 +79,10 @@ graphSuperHow (PosSuperColon _) topLevel irMap = graphSuperHow SuperColon topLev
 graphSuperHow SuperArrow  topLevel irMap = " [arrowhead = vee constraint = false" ++ (if fst3 topLevel == True then "" else " label=" ++ (fromJust $ trd3 topLevel)) ++ "];\n"
 graphSuperHow (PosSuperArrow _) topLevel irMap = graphSuperHow SuperArrow topLevel irMap
 graphSuperHow SuperMArrow topLevel irMap = " [arrowhead = veevee constraint = false" ++ (if fst3 topLevel == True then "" else " label=" ++ (fromJust $ trd3 topLevel)) ++ "];\n"
-graphSuperHow (PosSuperMArrow _) topLevel irMap = graphSuperHow SuperMArrow topLevel irMap
-         
-graphGoal (Goal exps) topLevel irMap = ""
-graphGoal (PosGoal _ exps) topLevel irMap = graphGoal (Goal exps) topLevel irMap
-
-graphSoftConstraint (SoftConstraint exps) topLevel irMap = ""
-graphSoftConstraint (PosSoftConstraint _ exps) topLevel irMap = graphSoftConstraint (SoftConstraint exps) topLevel irMap
-
-graphAbstract _ _ _ = ""
---graphAbstract Abstract topLevel irMap = (while  "<span class=\"keyword\">") ++ "abstract" ++ (while  "</span>") ++ " "
---graphAbstract (PosAbstract _) topLevel irMap = graphAbstract Abstract topLevel irMap
---graphAbstract AbstractEmpty topLevel irMap = ""
---graphAbstract (PosAbstractEmpty _) topLevel irMap = graphAbstract AbstractEmpty topLevel irMap
-
-graphGCard _ _ _ = ""{-
-graphGCard gCard topLevel irMap = case gCard of
-  (GCardInterval ncard) -> graphNCard ncard topLevel irMap
-  (PosGCardInterval _ ncard) -> graphNCard ncard topLevel irMap
-  GCardEmpty        -> ""
-  (PosGCardEmpty _) -> ""
-  GCardXor          -> while  "<span class=\"keyword\">" ++ "xor" ++ while  "</span>" ++ " "
-  (PosGCardXor _)   -> while  "<span class=\"keyword\">" ++ "xor" ++ while  "</span>" ++ " "
-  GCardOr           -> while  "<span class=\"keyword\">" ++ "or"  ++ while  "</span>" ++ " "
-  (PosGCardOr _)    -> while  "<span class=\"keyword\">" ++ "or"  ++ while  "</span>" ++ " "
-  GCardMux          -> while  "<span class=\"keyword\">" ++ "mux" ++ while  "</span>" ++ " "
-  (PosGCardMux _)   -> while  "<span class=\"keyword\">" ++ "mux" ++ while  "</span>" ++ " "
-  GCardOpt          -> while  "<span class=\"keyword\">" ++ "opt" ++ while  "</span>" ++ " "
-  (PosGCardOpt _)   -> while  "<span class=\"keyword\">" ++ "opt" ++ while  "</span>" ++ " "
--}
-graphNCard _ _ _ = ""
-graphNCard (NCard (PosInteger (pos, num)) exInteger) topLevel irMap = num ++ ".." ++ graphExInteger exInteger topLevel irMap
-graphNCard (PosNCard _ posinteger exinteger) topLevel irMap = graphNCard (NCard posinteger exinteger) topLevel irMap
-
-graphExInteger _ _ _ = ""      
-graphExInteger ExIntegerAst topLevel irMap = "*"
-graphExInteger (PosExIntegerAst _) topLevel irMap = graphExInteger ExIntegerAst topLevel irMap
-graphExInteger (ExIntegerNum (PosInteger(pos, num))) topLevel irMap = num
-graphExInteger (PosExIntegerNum _ posInteger) topLevel irMap = graphExInteger (ExIntegerNum posInteger) topLevel irMap
+graphSuperHow (PosSuperMArrow _) topLevel irMap = graphSuperHow SuperMArrow topLevel irMap     
 
 graphName (Path modids) topLevel irMap = unwords $ map (\x -> graphModId x topLevel irMap) modids
 graphName (PosPath _ modids) topLevel irMap = graphName (Path modids) topLevel irMap
-
 
 graphModId (ModIdIdent posident) topLevel irMap = graphPosIdent posident topLevel irMap
 graphModId (PosModIdIdent _ posident) topLevel irMap = graphModId (ModIdIdent posident) topLevel irMap
@@ -128,104 +90,19 @@ graphModId (PosModIdIdent _ posident) topLevel irMap = graphModId (ModIdIdent po
 graphPosIdent (PosIdent (pos, id)) topLevel irMap = getUid (PosIdent (pos, id)) irMap
 
 graphCard _ _ _ = ""
-graphCard CardEmpty topLevel irMap = ""
-graphCard (PosCardEmpty _) topLevel irMap = graphCard CardEmpty topLevel irMap
-graphCard CardLone topLevel irMap = " ?"
-graphCard (PosCardLone _) topLevel irMap = graphCard CardLone topLevel irMap
-graphCard CardSome topLevel irMap = " +"
-graphCard (PosCardSome _) topLevel irMap = graphCard CardSome topLevel irMap
-graphCard CardAny topLevel irMap = " *"
-graphCard (PosCardAny _) topLevel irMap = graphCard CardAny topLevel irMap
-graphCard (CardNum (PosInteger (pos,num))) topLevel irMap = " " ++ num 
-graphCard (PosCardNum _ posInteger) topLevel irMap = graphCard (CardNum posInteger) topLevel irMap
-graphCard (CardInterval nCard) topLevel irMap = " " ++ graphNCard nCard topLevel irMap
-graphCard (PosCardInterval _ nCard) topLevel irMap = graphCard (CardInterval nCard) topLevel irMap
-
 graphConstraint _ _ _ = ""
---graphConstraint (Constraint exps) topLevel irMap = concatMap (\x -> graphConstraint' x topLevel irMap) exps
---graphConstraint (PosConstraint _ exps) topLevel irMap = graphConstraint (Constraint exps) topLevel irMap
---graphConstraint' exp topLevel irMap = (graphIndent indent ) ++ while  "<span class=\"keyword\">" ++ "[" ++ while  "</span>" ++ " " ++ graphExp exp topLevel irMap ++ " " ++ while  "<span class=\"keyword\">" ++ "]" ++ while  "</span></span></span><br>" ++ "\n"
-
 graphDecl _ _ _ = ""
---graphDecl (Decl locids setExp) topLevel irMap = (while  "<span class=\"keyword\">") ++ ":" ++ (while  "</span>") ++ graphSetExp setExp topLevel irMap
---graphDecl (PosDecl _ locids setExp) topLevel irMap = graphDecl (Decl locids setExp) topLevel irMap
+graphInit _ _ _ = ""
+graphInitHow _ _ _ = ""
+graphExp _ _ _ = ""
+graphQuant _ _ _ = ""
+graphGoal _ _ _ = ""
+graphSoftConstraint _ _ _ = ""
+graphAbstract _ _ _ = ""
+graphGCard _ _ _ = ""
+graphNCard _ _ _ = ""
+graphExInteger _ _ _ = ""
 
-graphInit InitEmpty topLevel irMap = ""
-graphInit (PosInitEmpty _) topLevel irMap = graphInit InitEmpty topLevel irMap
-graphInit (InitSome initHow exp) topLevel irMap = graphInitHow initHow topLevel irMap ++ graphExp exp topLevel irMap
-graphInit (PosInitSome _ initHow exp) topLevel irMap = graphInit (InitSome initHow exp) topLevel irMap
-
-graphInitHow InitHow_1 topLevel irMap = " = "
-graphInitHow (PosInitHow_1 _) topLevel irMap = graphInitHow InitHow_1 topLevel irMap
-graphInitHow InitHow_2 topLevel irMap = " := "
-graphInitHow (PosInitHow_2 _) topLevel irMap = graphInitHow InitHow_2 topLevel irMap
-
-graphExp _ _ _ = "exp"{-
-graphExp (DeclAllDisj decl exp) topLevel irMap = "all disj " ++ (graphDecl decl topLevel irMap) ++ " | " ++ (graphExp exp topLevel irMap)
-graphExp (PosDeclAllDisj _ decl exp) topLevel irMap = graphExp (DeclAllDisj decl exp) topLevel irMap
-graphExp (DeclAll     decl exp) topLevel irMap = "all " ++ (graphDecl decl topLevel irMap) ++ " | " ++ (graphExp exp topLevel irMap)
-graphExp (PosDeclAll _ decl exp) topLevel irMap = graphExp (DeclAll decl exp) topLevel irMap
-graphExp (DeclQuantDisj quant decl exp) topLevel irMap = (graphQuant quant topLevel irMap) ++ "disj" ++ (graphDecl decl topLevel irMap) ++ " | " ++ (graphExp exp topLevel irMap)
-graphExp (PosDeclQuantDisj _ quant decl exp) topLevel irMap = graphExp (DeclQuantDisj quant decl exp) topLevel irMap
-graphExp (DeclQuant     quant decl exp) topLevel irMap = (graphQuant quant topLevel irMap) ++ (graphDecl decl topLevel irMap) ++ " | " ++ (graphExp exp topLevel irMap)
-graphExp (PosDeclQuant _ quant decl exp) topLevel irMap = graphExp (DeclQuant quant decl exp) topLevel irMap
-graphExp (EGMax exp)            topLevel irMap = "max " ++ graphExp exp topLevel irMap
-graphExp (PosEGMax _ exp)     topLevel irMap = graphExp (EGMax exp) topLevel irMap
-graphExp (EGMin exp)            topLevel irMap = "min " ++ graphExp exp topLevel irMap
-graphExp (PosEGMin _ exp) topLevel irMap = graphExp (EGMin exp) topLevel irMap
-graphExp (ENeq exp1 exp2)       topLevel irMap = (graphExp exp1 topLevel irMap) ++ " != " ++ (graphExp exp2 topLevel irMap)
-graphExp (PosENeq _ exp1 exp2) topLevel irMap = graphExp (ENeq exp1 exp2) topLevel irMap
-graphExp (ESetExp setExp)       topLevel irMap = graphSetExp setExp topLevel irMap
-graphExp (PosESetExp _ setExp) topLevel irMap = graphExp (ESetExp setExp) topLevel irMap
-graphExp (QuantExp quant exp)   topLevel irMap = graphQuant quant topLevel irMap ++ graphExp exp topLevel irMap
-graphExp (PosQuantExp _ quant exp) topLevel irMap = graphExp (QuantExp quant exp) topLevel irMap
-graphExp (EImplies exp1 exp2)   topLevel irMap = (graphExp exp1 topLevel irMap) ++ " => " ++ graphExp exp2 topLevel irMap
-graphExp (PosEImplies _ exp1 exp2) topLevel irMap = graphExp (EImplies exp1 exp2) topLevel irMap
-graphExp (EAnd exp1 exp2)       topLevel irMap = (graphExp exp1 topLevel irMap) ++ " && " ++ graphExp exp2 topLevel irMap
-graphExp (PosEAnd _ exp1 exp2) topLevel irMap = graphExp (EAnd exp1 exp2) topLevel irMap
-graphExp (EOr exp1 exp2)        topLevel irMap = (graphExp exp1 topLevel irMap) ++ " || " ++ graphExp exp2 topLevel irMap
-graphExp (PosEOr _ exp1 exp2) topLevel irMap = graphExp (EOr exp1 exp2) topLevel irMap
-graphExp (EXor exp1 exp2)       topLevel irMap = (graphExp exp1 topLevel irMap) ++ " xor " ++ graphExp exp2 topLevel irMap
-graphExp (PosEXor _ exp1 exp2) topLevel irMap = graphExp (EXor exp1 exp2) topLevel irMap
-graphExp (ENeg exp)             topLevel irMap = " !" ++ graphExp exp topLevel irMap
-graphExp (PosENeg _ exp) topLevel irMap = graphExp (ENeg exp) topLevel irMap
-graphExp (ELt exp1 exp2)        topLevel irMap = (graphExp exp1 topLevel irMap) ++ " < " ++ graphExp exp2 topLevel irMap
-graphExp (PosELt _ exp1 exp2) topLevel irMap = graphExp (ELt exp1 exp2) topLevel irMap
-graphExp (EGt exp1 exp2)        topLevel irMap = (graphExp exp1 topLevel irMap) ++ " > " ++ graphExp exp2 topLevel irMap
-graphExp (PosEGt _ exp1 exp2) topLevel irMap = graphExp (EGt exp1 exp2) topLevel irMap
-graphExp (EEq exp1 exp2)        topLevel irMap = (graphExp exp1 topLevel irMap) ++ " = " ++ graphExp exp2 topLevel irMap
-graphExp (PosEEq _ exp1 exp2) topLevel irMap = graphExp (EEq exp1 exp2) topLevel irMap
-graphExp (ELte exp1 exp2)       topLevel irMap = (graphExp exp1 topLevel irMap) ++ " <= " ++ graphExp exp2 topLevel irMap
-graphExp (PosELte _ exp1 exp2) topLevel irMap = graphExp (ELte exp1 exp2) topLevel irMap
-graphExp (EGte exp1 exp2)       topLevel irMap = (graphExp exp1 topLevel irMap) ++ " >= " ++ graphExp exp2 topLevel irMap
-graphExp (PosEGte _ exp1 exp2) topLevel irMap = graphExp (EGte exp1 exp2) topLevel irMap
-graphExp (EIn exp1 exp2)        topLevel irMap = (graphExp exp1 topLevel irMap) ++ " in " ++ graphExp exp2 topLevel irMap
-graphExp (PosEIn _ exp1 exp2) topLevel irMap = graphExp (EIn exp1 exp2) topLevel irMap
-graphExp (ENin exp1 exp2)       topLevel irMap = (graphExp exp1 topLevel irMap) ++ " not in " ++ graphExp exp2 topLevel irMap
-graphExp (PosENin _ exp1 exp2) topLevel irMap = graphExp (ENin exp1 exp2) topLevel irMap
-graphExp (EIff exp1 exp2)       topLevel irMap = (graphExp exp1 topLevel irMap) ++ " <=> " ++ graphExp exp2 topLevel irMap
-graphExp (PosEIff _ exp1 exp2) topLevel irMap = graphExp (EIff exp1 exp2) topLevel irMap
-graphExp (EAdd exp1 exp2)       topLevel irMap = (graphExp exp1 topLevel irMap) ++ " + " ++ graphExp exp2 topLevel irMap
-graphExp (PosEAdd _ exp1 exp2) topLevel irMap = graphExp (EAdd exp1 exp2) topLevel irMap
-graphExp (ESub exp1 exp2)       topLevel irMap = (graphExp exp1 topLevel irMap) ++ " - " ++ graphExp exp2 topLevel irMap
-graphExp (PosESub _ exp1 exp2) topLevel irMap = graphExp (ESub exp1 exp2) topLevel irMap
-graphExp (EMul exp1 exp2)       topLevel irMap = (graphExp exp1 topLevel irMap) ++ " * " ++ graphExp exp2 topLevel irMap
-graphExp (PosEMul _ exp1 exp2) topLevel irMap = graphExp (EMul exp1 exp2) topLevel irMap
-graphExp (EDiv exp1 exp2)       topLevel irMap = (graphExp exp1 topLevel irMap) ++ " / " ++ graphExp exp2 topLevel irMap
-graphExp (PosEDiv _ exp1 exp2) topLevel irMap = graphExp (EDiv exp1 exp2) topLevel irMap
-graphExp (ECSetExp exp)         topLevel irMap = "#" ++ graphExp exp topLevel irMap
-graphExp (PosECSetExp _ exp) topLevel irMap = graphExp (ECSetExp exp) topLevel irMap
-graphExp (EMinExp exp)          topLevel irMap = "-" ++ graphExp exp topLevel irMap
-graphExp (PosEMinExp _ exp) topLevel irMap = graphExp (EMinExp exp) topLevel irMap
-graphExp (EImpliesElse exp1 exp2 exp3) topLevel irMap = "if " ++ (graphExp exp1 topLevel irMap) ++ " then " ++ (graphExp exp2 topLevel irMap) ++ " else " ++ (graphExp exp3 topLevel irMap)
-graphExp (PosEImpliesElse _ exp1 exp2 exp3) topLevel irMap = graphExp (EImpliesElse exp1 exp2 exp3) topLevel irMap
-graphExp (EInt (PosInteger (_, num))) topLevel irMap = num
-graphExp (PosEInt _ posInteger) topLevel irMap = graphExp (EInt posInteger) topLevel irMap
-graphExp (EDouble (PosDouble (_, num))) topLevel irMap = num
-graphExp (PosEDouble _ posDouble) topLevel irMap = graphExp (EDouble posDouble) topLevel irMap
-graphExp (EStr (PosString (_, str))) topLevel irMap = str
-graphExp (PosEStr _ posString) topLevel irMap = graphExp (EStr posString) topLevel irMap
--}
 graphSetExp (ClaferId name) topLevel irMap = [graphName name topLevel irMap]
 graphSetExp (PosClaferId _ name) topLevel irMap = graphSetExp (ClaferId name) topLevel irMap
 graphSetExp (Union set1 set2) topLevel irMap = graphSetExp set1 topLevel irMap ++ graphSetExp set2 topLevel irMap
@@ -243,17 +120,6 @@ graphSetExp (PosRange _ set1 set2) topLevel irMap = graphSetExp (Range set1 set2
 graphSetExp (Join set1 set2) topLevel irMap = graphSetExp set1 topLevel irMap ++ graphSetExp set2 topLevel irMap
 graphSetExp (PosJoin _ set1 set2) topLevel irMap = graphSetExp (Join set1 set2) topLevel irMap
 
-graphQuant _ _ _ = "" {-
-graphQuant quant topLevel irMap = case quant of
-  QuantNo        -> while  (while  "<span class=\"keyword\">") ++ "no" ++ (while  "</span>") ++ " "
-  PosQuantNo _   -> while  (while  "<span class=\"keyword\">") ++ "no" ++ (while  "</span>") ++ " "
-  QuantLone      -> while  (while  "<span class=\"keyword\">") ++ "lone" ++ (while  "</span>") ++ " "
-  PosQuantLone _ -> while  (while  "<span class=\"keyword\">") ++ "lone" ++ (while  "</span>") ++ " "
-  QuantOne       -> while  (while  "<span class=\"keyword\">") ++ "one" ++ (while  "</span>") ++ " "
-  PosQuantOne _  -> while  (while  "<span class=\"keyword\">") ++ "one" ++ (while  "</span>") ++ " "
-  QuantSome      -> while  (while  "<span class=\"keyword\">") ++ "some" ++ (while  "</span>") ++ " "
-  PosQuantSome _ -> while  (while  "<span class=\"keyword\">") ++ "some" ++ (while  "</span>") ++ " "
--}
 graphEnumId (EnumIdIdent posident) topLevel irMap = graphPosIdent posident topLevel irMap
 graphEnumId (PosEnumIdIdent _ posident) topLevel irMap = graphEnumId (EnumIdIdent posident) topLevel irMap
 

@@ -20,7 +20,7 @@
  SOFTWARE.
 -}
 
-module Language.Clafer.Comments(getOptions, getFragments, getSummary, getComments) where
+module Language.Clafer.Comments(getOptions, getFragments, getStats, getGraph, getComments) where
 
 import Data.Map (Map)
 import qualified Data.Map as Map
@@ -42,12 +42,21 @@ getFramgents' [] _ = []
 getFragments' ("//# FRAGMENT":xs) ln = ln:getFragments' xs (ln + 1)
 getFragments' (x:xs) ln = getFragments' xs $ ln + 1
 
-getSummary :: InputModel -> Maybe Int
-getSummary [] = Nothing
-getSummary xs = getSummary' (lines xs) 1
-getSummary' [] _ = Nothing
-getSummary' ("//# SUMMARY":xs) ln = Just ln
-getSummary' (x:xs) ln = getSummary' xs $ ln + 1
+getStats :: InputModel -> [ Int ]
+getStats [] = []
+getStats xs = getStats' (lines xs) 1
+getStats' [] _ = []
+getStats' ("//# SUMMARY":xs) ln = ln:getStats' xs (ln + 1)
+getStats' ("//# STATS":xs)   ln = ln:getStats' xs (ln + 1)
+getStats' (x:xs) ln = getStats' xs $ ln + 1
+
+getGraph :: InputModel -> [ Int ]
+getGraph [] = []
+getGraph xs = getGraph' (lines xs) 1
+getGraph' [] _ = []
+getGraph' ("//# SUMMARY":xs) ln = ln:getGraph' xs (ln + 1)
+getGraph' ("//# GRAPH":xs)   ln = ln:getGraph' xs (ln + 1)
+getGraph' (x:xs) ln = getGraph' xs $ ln + 1
 
 getComments :: InputModel -> Map Span String
 getComments input = getComments' input 1 1
@@ -65,3 +74,4 @@ readBlock   xs start@(Pos row col) = let (end@(Pos row' col'), comment, rest) = 
 readBlock' ('*':'/':xs) row col comment = ((Pos row $ col + 2), comment "*/", xs)
 readBlock' ('\n':xs)    row col comment = readBlock' xs (row + 1) 1 (comment "\n" ++)
 readBlock' (x:xs)       row col comment = readBlock' xs row (col + 1) (comment [x]++)
+readBlock' []           row col comment = ((Pos row col), comment [], [])
