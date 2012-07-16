@@ -42,28 +42,42 @@ putStrV :: VerbosityL -> String -> IO ()
 putStrV v s = if v > 1 then putStrLn s else return ()
 
 run :: VerbosityL -> ClaferArgs -> InputModel -> IO ()
-run v args input = do
-  case ast $ addModuleFragment $ makeEnv args input of
-    Bad s    -> do putStrLn "\nParse Failed...\n"
-                   putStrV v "Tokens:"
-                   putStrLn s
-                   exitFailure
-    Ok  tree -> do
-                   let env = compile $ (makeEnv args input){ ast = Ok tree }
-                   f' <- save env
-                   when (fromJust $ validate args) $ runValidate args f'                      
-
-save :: ClaferEnv -> IO [Char]
-save    env = do
-  let result = generate env
-  let args' = args env
-  when (not $ fromJust $ no_stats args') $ putStrLn (statistics result)
-  let f = dropExtension $ file args'
-  let f' = f ++ "." ++ (extension result)
-  if fromJust $ console_output args' then putStrLn (outputCode result) else writeFile f' (outputCode result)
-  when (fromJust $ alloy_mapping args') $ writeFile (f ++ "." ++ "map") $ fromJust (mappingToAlloy result)
-  return f'
-  
+run v args input =
+  do
+    result <- runClaferT args $
+      do
+        addModuleFragment input
+        env <- getEnv
+        parse
+        compile
+        f' <- save
+        when (fromJust $ validate args) $ liftIO $ runValidate args f'
+    result `catch` handleErr
+  where
+  catch (Left err) f = f err
+  catch (Right r)  _ = return r
+  handleErr (ClaferErr msg) =
+    do
+      putStrLn "\nError...\n"
+      putStrLn msg
+      exitFailure
+  handleErr (ParseErr msg) =
+    do
+      putStrLn "\nParse Failed...\n"
+      putStrV v "Tokens:"
+      putStrLn msg
+      exitFailure
+      
+  save =
+    do
+      result <- generate
+      liftIO $ when (not $ fromJust $ no_stats args) $ putStrLn (statistics result)
+      let f = dropExtension $ file args
+      let f' = f ++ "." ++ (extension result)
+      liftIO $ if fromJust $ console_output args then putStrLn (outputCode result) else writeFile f' (outputCode result)
+      liftIO $ when (fromJust $ alloy_mapping args) $ writeFile (f ++ "." ++ "map") $ fromJust (mappingToAlloy result)
+      return f'
+    
 conPutStrLn args s = when (not $ fromJust $ console_output args) $ putStrLn s
 
 runValidate :: ClaferArgs -> [Char] -> IO ()
