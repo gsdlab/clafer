@@ -49,6 +49,8 @@ module Language.Clafer (
 
 import Data.List
 import Data.Maybe
+import Data.Map (Map)
+import qualified Data.Map as Map
 import Data.Ord
 import Control.Monad()
 import Control.Monad.Error
@@ -65,6 +67,7 @@ import Language.Clafer.Front.Printclafer
 import Language.Clafer.Front.Absclafer hiding (Clafer)
 import Language.Clafer.Front.LayoutResolver
 import Language.Clafer.Front.Mapper
+import Language.Clafer.Intermediate.Tracing
 import Language.Clafer.Intermediate.Intclafer
 import Language.Clafer.Intermediate.Desugarer
 import Language.Clafer.Intermediate.Resolver
@@ -84,8 +87,10 @@ data ClaferEnv = ClaferEnv {
                             model :: String,    -- original text of the model
                             cAst :: Maybe Module,
                             cIr :: Maybe (IModule, GEnv, Bool),
-                            frags :: [Pos]    -- line numbers of fragment markers
-                            }
+                            frags :: [Pos],    -- line numbers of fragment markers
+                            irModuleTrace :: Map Span [Ir],
+                            astModuleTrace :: Map Span [Ast]
+                            } deriving Show
 ast ClaferEnv{cAst = Just a} = a
 ast _ = error "No AST. Did you forget to add fragments or parse?" -- Indicates a bug in the Clafer translator.
 
@@ -96,7 +101,9 @@ makeEnv args model = ClaferEnv { args = args,
                                  model = model,
                                  cAst = Nothing,
                                  cIr = Nothing,
-                                 frags = [] }
+                                 frags = [],
+                                 irModuleTrace = Map.empty,
+                                 astModuleTrace = Map.empty}
 
 type ClaferM = ClaferT Identity
 type ClaferT m = ErrorT ClaferErr (StateT ClaferEnv m)
@@ -172,15 +179,17 @@ parse =
                  else 
                    id)
                 $ model env
-    ast' <- liftErr ParseErr $ mapModule `fmap` pModule inputTokens
-    let env' = env{ cAst = Just ast' }
+    ast <- liftErr ParseErr $ mapModule `fmap` pModule inputTokens
+    let env' = env{ cAst = Just ast, astModuleTrace = traceAstModule ast }
     putEnv env'
     
 compile :: Monad m => ClaferT m ()
 compile =
   do
     env <- getEnv
-    putEnv $ env{ cIr = Just $ analyze (args env) $ desugar (ast env) }
+    let ir = analyze (args env) $ desugar (ast env)
+    let (imodule, _, _) = ir
+    putEnv $ env{ cIr = Just ir, irModuleTrace = traceIrModule imodule }
     
 generateFragments :: Monad m => ClaferT m [String]
 generateFragments =
