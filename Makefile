@@ -12,7 +12,8 @@ install:
 	cabal install --bindir=$(to)
 	cp -f README.md $(to)/clafer-README.md
 	cp -f tools/XsdCheck.class $(to)/tools
-
+	cp -f -r spl_configurator/py_src $(to)/
+	cp -f  spl_configurator/clafer_moo.sh $(to)/
 
 build:
 	$(MAKE) -C $(TOOL_DIR)
