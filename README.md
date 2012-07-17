@@ -3,7 +3,7 @@ Clafer
 
 [Clafer](http://clafer.org) is a general-purpose lightweight structural modeling language developed at [GSD Lab](http://gsd.uwaterloo.ca/), [University of Waterloo](http://uwaterloo.ca). Clafer can be used for modeling of static structures but has no support for modeling the change of the structures over time (behavior). The main goal of Clafer is to make modeling more accessible to a wider range of users and domains. 
 
-There are many possible applications of Clafer:
+There are many possible applications of Clafer; however, two are prominent:
 
 1. *Domain Modeling* - aims at improving the understanding of the problem domain in the early stages of software development and determining the requirements with fewer defects. This is also known as *Concept Modeling* or *Ontology Modeling*.
 
@@ -12,16 +12,17 @@ There are many possible applications of Clafer:
 Clafer Compiler
 ===============
 
-v0.3.14-07-2012
+v0.3.16-7-2012
 
-Clafer compiler provides a reference language implementation. It translates models in Clafer to other formats (e.g. Alloy, XML) to allow for reasoning with existing tools.
+Clafer compiler provides a reference language implementation. It translates models in Clafer to other formats (e.g. Alloy, XML, HTML, DOT) to allow for reasoning and processing with existing tools.
 
 Currently, the compiler is used by Clafer Instance Generator ([ClaferIG](https://github.com/gsdlab/claferIG)) and Clafer Wiki ([ClaferWiki](https://github.com/gsdlab/claferwiki)).
 
 Getting Clafer Tools
 --------------------
 
-Binary distributions of Clafer and ClaferIG for Windows, Mac, and Linux, can be downloaded from [Downloads Page](http://www.clafer.org/p/software.html). In case these binaries do not work on your particular machine configuration, the tools can be easily built from source code, as described below.
+Binary distributions of Clafer and ClaferIG for Windows, Mac, and Linux, can be downloaded from [ClaferIG Downloads Page](https://github.com/gsdlab/claferig/downloads). 
+In case these binaries do not work on your particular machine configuration, the tools can be easily built from source code, as described below.
 
 Building & Installation From Source Code
 ----------------------------------------
@@ -29,7 +30,7 @@ Building & Installation From Source Code
 Dependencies
 ------------
 * [The Haskell Platform](http://hackage.haskell.org/platform/) v.2012.2.0.0
-* [Java Platform (JDK)](http://www.oracle.com/technetwork/java/javase/downloads/index.html) >= 5, 32bit
+* [Java Platform (JDK)](http://www.oracle.com/technetwork/java/javase/downloads/index.html) >= 6, 32bit
 * [Alloy4.1 and/or Alloy4.2-rc](http://alloy.mit.edu/alloy/download.html)
   * downloaded automatically  
 * [Git](http://git-scm.com/)
@@ -40,7 +41,7 @@ On Windows only
 
 ### Important: Branches must correspond
 
-Clafer and ClaferIG are following the  *simultaneous release model*. 
+Clafer and ClaferIG are following the *simultaneous release model*. 
 The branch `master` contains releases, whereas the branch `develop` contains code under development. 
 When building the tools, the branches should match:
 Releases `clafer/master` and `claferIG/master` are guaranteed to work well together.
@@ -68,7 +69,7 @@ Usage
 (As printed by `clafer --help`)
 
 ```
-Clafer v0.3.25-6-2012
+Clafer v0.3.16-7-2012
 
 clafer [OPTIONS] [FILE]
 
