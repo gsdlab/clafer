@@ -1,0 +1,24 @@
+abstract IMeasurable
+        cost : integer
+        mass : integer
+
+abstract Telematics
+	xor channel : IMeasurable
+	    [this.cost = 0]
+	    [this.mass = 0]
+	    heavycheap : IMeasurable
+	    	   [ this.cost = 4 ]
+	    	   [ this.mass = 20 ]
+	    lightexpensive : IMeasurable
+	    	 [ this.cost = 25  ]
+	    	 [this.mass = 2]
+	total_cost : integer 
+    	    [ total_cost = sum IMeasurable.cost]
+	total_mass : integer 
+    	    [ total_mass = sum IMeasurable.mass]
+    	    
+
+telematicsconfig : Telematics
+	
+<< min telematicsconfig.total_cost >>
+<< min telematicsconfig.total_mass >>

@@ -1,4 +1,0 @@
-5c5
-< module ErrM where
----
-> module Front.ErrM where

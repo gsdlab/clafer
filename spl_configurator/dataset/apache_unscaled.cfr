@@ -1,0 +1,37 @@
+// Adapated from Scalable Prediction of Non-functional Properties in Software Product Lines.
+// Scaled down by dividing numbers by 8 and rounding.
+//To execute in alloy: run  show for ...
+
+
+abstract IMeasurable
+	performance : integer
+
+
+abstract Apache
+	Base : IMeasurable 
+		[ this.performance = 1200]
+	HostnameLookups : IMeasurable  ?
+		[ this.performance = -210]
+	KeepAlive : IMeasurable  ?
+		[ this.performance = 840]
+	EnableSendfile : IMeasurable  ?
+		[ this.performance = 120]
+	FollowSymLinks : IMeasurable  ?
+		[ this.performance = 0]
+	AccessLog : IMeasurable  ?
+		[ this.performance = -120]
+	ExtendedStatus : IMeasurable  ?
+		[ this.performance = -190]
+	InMemory : IMeasurable  ?
+		[ !Handle ]
+		[ this.performance = 210]
+	Handle : IMeasurable  ?
+		[ this.performance = 30]
+	total_performance : integer
+	[ total_performance = sum IMeasurable.performance ]
+
+simpleConfig : Apache 
+
+
+<< max simpleConfig.total_performance >>
+//Mandatory Features all configurations will have: Base 

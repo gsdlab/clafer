@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<!--
+A1 : A
+    b1 : b
+    f1 : integer = 5
+
+A2 : A
+    c1 : c
+    c2 : c
+    f2 : integer = 7
+
+A3 : A
+    b2 : b
+    c3 : c
+    d1 : d = A1
+    d2 : d = A2
+/-->
+<data
+xmlns="http://clafer.org/data"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://clafer.org/data i105-instance-data.xsd">
+  <A1 id="A1">
+    <b id="b1"/>
+	<f id="f1">5</f>
+  </A1>
+  <A2 id="A2">
+    <c id="c1"/>
+	<c id="c2"/>
+	<f id="f2">5</f>
+  </A2>
+  <A3 id="A3">
+    <b id="b2"/>
+    <c id="c3"/>	
+	<d id="d1"><ref>A1</ref></d>	
+	<d id="d2"><ref>A2</ref></d>		
+  </A3>
+</data>

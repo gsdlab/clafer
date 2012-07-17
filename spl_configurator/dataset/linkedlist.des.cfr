@@ -1,0 +1,60 @@
+abstract 0 .. * c1_IMeasurable : clafer 0 .. * {
+  0 .. * c2_footprint : integer 1 .. 1 {
+    }
+  }
+abstract 0 .. * c3_LinkedList : clafer 0 .. * {
+  1 .. 1 c4_AbstractElement : c1_IMeasurable 1 .. 1 {
+    [this . c2_footprint = - 12]0 .. * c11_ElementA : c1_IMeasurable 0 .. 1 {
+      [this . c2_footprint = 12]
+    }
+    0 .. * c17_ElementB : c1_IMeasurable 0 .. 1 {
+      [this . c2_footprint = 0]
+    }
+    0 .. * c23_ElementC : c1_IMeasurable 0 .. 1 {
+      [this . c2_footprint = 0]
+    }
+    }
+  1 .. 1 c29_AbstractIterator : c1_IMeasurable 1 .. 1 {
+    [this . c2_footprint = 0]0 .. * c35_ForwardIterator : c1_IMeasurable 0 .. 1 {
+      [this . c2_footprint = 0]
+    }
+    0 .. * c41_BackwardIterator : c1_IMeasurable 0 .. 1 {
+      [this . c2_footprint = 1]
+    }
+    }
+  1 .. 1 c47_AbstractSort : c1_IMeasurable 0 .. 1 {
+    [this . c2_footprint = 57]0 .. * c53_BubbleSort : c1_IMeasurable 0 .. 1 {
+      [this . c2_footprint = 17]
+    }
+    0 .. * c59_MergeSort : c1_IMeasurable 0 .. 1 {
+      [this . c2_footprint = 32]
+    }
+    0 .. * c65_InsertionSort : c1_IMeasurable 0 .. 1 {
+      [this . c2_footprint = 0]
+    }
+    0 .. * c71_QuickSort : c1_IMeasurable 0 .. 1 {
+      [this . c2_footprint = 22]
+    }
+    }
+  0 .. * c77_print : c1_IMeasurable 0 .. 1 {
+    [this . c2_footprint = 44]
+  }
+  0 .. * c83_Measurement : c1_IMeasurable 0 .. 1 {
+    [some this . parent . c47_AbstractSort][this . c2_footprint = 484]0 .. * c91_TCP_IP : c1_IMeasurable 1 .. 1 {
+      [this . c2_footprint = 0]
+    }
+    1 .. * c97_SyntheticPerformanceOrMeasuruement : c1_IMeasurable 1 .. 1 {
+      [this . c2_footprint = 0]0 .. * c103_Performance : c1_IMeasurable 0 .. 1 {
+        [this . c2_footprint = 37]
+      }
+      0 .. * c109_MemorySize : c1_IMeasurable 0 .. 1 {
+        [this . c2_footprint = 36]
+      }
+      }
+    }
+  0 .. * c115_Base : c1_IMeasurable 1 .. 1 {
+    [this . c2_footprint = 455]
+  }
+  0 .. * c121_total_footprint : integer 1 .. 1 {
+    }
+  [this . c121_total_footprint = this . c4_AbstractElement . c2_footprint + this . c4_Abs

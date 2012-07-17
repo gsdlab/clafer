@@ -1,0 +1,60 @@
+// Adapated from Scalable Prediction of Non-functional Properties in Software Product Lines.
+// Scaled down by 10 all the footprint measurements.
+//To execute in alloy: run  show for 1 but 11 int, 19  c1_IMeasurable,   19 c2_footprint
+
+abstract IMeasurable
+	 footprint : integer
+
+abstract LinkedList
+	 Base : IMeasurable
+		[this.footprint = 409]
+	 print : IMeasurable ?
+		[this.footprint = 26]
+	 xor AbstractIterator : IMeasurable
+		[this.footprint  = 0]
+		ForwardIterator : IMeasurable
+			[this.footprint  = 0]	
+		BackwardIterator : IMeasurable
+			[this.footprint  = 0]
+	 xor AbstractElement : IMeasurable
+		[this.footprint = 0]
+	 	ElementA : IMeasurable
+			[this.footprint = 70]
+		ElementB : IMeasurable
+			[this.footprint = 0]
+		ElementC : IMeasurable
+			[this.footprint  = 0]
+	 xor AbstractSort : IMeasurable ?
+		[this.footprint = 71]
+	     	BubbleSort : IMeasurable
+			[this.footprint = 0]
+	   	MergeSort : IMeasurable
+			[this.footprint = 140]
+	    	QuickSort : IMeasurable
+			[this.footprint  = 4]
+	    	InsertionSort : IMeasurable
+			[this.footprint = -17]
+	 Measurement : IMeasurable ?
+		[this.footprint  = 396]
+	 	[AbstractSort]
+	    	TCP_IP : IMeasurable
+			[this.footprint  = 0]
+	    	or PerformanceOrMemorySize : IMeasurable
+			[this.footprint  = 0]
+	       	   	Performance : IMeasurable
+				[this.footprint  = 37]
+			MemorySize : IMeasurable
+				[this.footprint  = 36]
+	total_footprint : integer
+	[total_footprint =  Base.footprint + print.footprint + AbstractIterator.footprint + AbstractIterator.ForwardIterator.footprint + AbstractIterator.BackwardIterator.footprint + AbstractElement.footprint +  AbstractElement.ElementA.footprint + AbstractElement.ElementB.footprint + AbstractElement.ElementC.footprint + AbstractSort.footprint +  AbstractSort.BubbleSort.footprint + AbstractSort.MergeSort.footprint +  AbstractSort.QuickSort.footprint + AbstractSort.InsertionSort.footprint + Measurement.footprint + Measurement.PerformanceOrMemorySize.Performance.footprint  + Measurement.PerformanceOrMemorySize.MemorySize.footprint]
+
+
+simpleList : LinkedList
+   [Base
+   !print
+    AbstractElement
+	ElementA
+    AbstractIterator
+	ForwardIterator
+   !Measurement
+   ! AbstractSort]

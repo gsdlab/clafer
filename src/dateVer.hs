@@ -23,6 +23,8 @@ import Data.Time.Clock
 import Data.Time.Calendar
 import Data.Time.LocalTime
 import Data.List
+import Paths_clafer (version)
+import Data.Version (showVersion)
 
 header = unlines
  [ "{-"
@@ -47,11 +49,11 @@ header = unlines
  , "SOFTWARE."
  , "-}"
  , ""
- , "module Version where"]
+ , "module Language.Clafer.Version where"]
 
 main = do
   timeZone <- getCurrentTimeZone
   curTime  <- getCurrentTime
   let (y, m, d) = toGregorian $ localDay $ utcToLocalTime timeZone curTime
-  putStr  $ concat [header, "version = \"v0.2.",
+  putStr  $ concat [header, "version = \"v" ++ (showVersion version)  ++".",
                    intercalate "-" [show d, show m, show y], "\""]

@@ -23,7 +23,11 @@ build:
 
 # build Schema.hs from ClaferIG.xsd, call after .xsd changed
 Schema.hs:
-	$(MAKE) -C $(SRC_DIR)
+	$(MAKE) -C $(SRC_DIR) Schema.hs
+
+# build Css.hs from clafer.css, call after .css changed
+Css.hs:
+	$(MAKE) -C $(SRC_DIR) Css.hs
 
 # enable profiler
 prof:
@@ -43,11 +47,11 @@ newVersion:
 	$(MAKE) -C $(SRC_DIR) newVersion
 
 clean:
+	rm -f clafer
+	rm -rf dist
 	$(MAKE) -C $(TEST_DIR) clean
 	$(MAKE) -C $(SRC_DIR) clean
 	$(MAKE) -C $(TOOL_DIR) clean
-	rm -rf dist
-	rm -f clafer
 	find . -type f -name '*.o' -print0 | xargs -0 rm -f
 	find . -type f -name '*.hi' -print0 | xargs -0 rm -f
 	find . -type f -name '*~' -print0 | xargs -0 rm -f

@@ -1,0 +1,4 @@
+5c5
+< module ErrM where
+---
+> module Language.Clafer.Front.ErrM where

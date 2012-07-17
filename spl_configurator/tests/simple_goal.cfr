@@ -1,0 +1,10 @@
+abstract Element
+	energy : integer
+
+keyboard : Element ?
+	[this.energy = 1]
+
+keyboardLight : Element ?
+	[energy = 2]
+
+<< min (sum Element.energy) >>
