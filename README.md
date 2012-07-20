@@ -3,33 +3,54 @@ Clafer
 
 [Clafer](http://clafer.org) is a general-purpose lightweight structural modeling language developed at [GSD Lab](http://gsd.uwaterloo.ca/), [University of Waterloo](http://uwaterloo.ca). Clafer can be used for modeling of static structures but has no support for modeling the change of the structures over time (behavior). The main goal of Clafer is to make modeling more accessible to a wider range of users and domains. 
 
-There are many possible applications of Clafer:
+There are many possible applications of Clafer; however, three are prominent:
 
 1. *Domain Modeling* - aims at improving the understanding of the problem domain in the early stages of software development and determining the requirements with fewer defects. This is also known as *Concept Modeling* or *Ontology Modeling*.
 
 2. *Product-Line Modeling* - aims at representing and managing commonality and variability of assets in product lines and creating and verifying product configurations. Clafer naturally supports multi-staged configuration. 
 
+3. *Multi-Objective Product Optimization* - aims at finding a set of products in a given product line that are optimal with respect to a set of objectives. Clafer multi-objective optimizer generates a Pareto front of optimal product configurations.
+
 Clafer Compiler
 ===============
 
-v0.3.14-07-2012
+v0.3.17-7-2012
 
-Clafer compiler provides a reference language implementation. It translates models in Clafer to other formats (e.g. Alloy, XML) to allow for reasoning with existing tools.
+Clafer compiler provides a reference language implementation. It translates models in Clafer to other formats (e.g. Alloy, XML, HTML, DOT) to allow for reasoning and processing with existing tools.
 
-Currently, the compiler is used by Clafer Instance Generator ([ClaferIG](https://github.com/gsdlab/claferIG)) and Clafer Wiki ([ClaferWiki](https://github.com/gsdlab/claferwiki)).
+Currently, the compiler is used by Clafer Instance Generator ([ClaferIG](https://github.com/gsdlab/claferIG)), Clafer Multi-Objective Optimizer (ClaferMOO), and Clafer Wiki ([ClaferWiki](https://github.com/gsdlab/claferwiki)).
 
 Getting Clafer Tools
 --------------------
 
-Binary distributions of Clafer and ClaferIG for Windows, Mac, and Linux, can be downloaded from [Downloads Page](http://www.clafer.org/p/software.html). In case these binaries do not work on your particular machine configuration, the tools can be easily built from source code, as described below.
+Binary distributions of Clafer, ClaferMOO, and ClaferIG for Windows, Mac, and Linux, can be downloaded from [ClaferIG Downloads Page](https://github.com/gsdlab/claferig/downloads). ClaferMOO is a set of scripts in Python (cross-platform).
+In case these binaries do not work on your particular machine configuration, the tools can be easily built from source code, as described below.
+
+### Dependencies for running
+
+* [Java Platform (JDK)](http://www.oracle.com/technetwork/java/javase/downloads/index.html) v6+, 32bit
+* [Python](http://www.python.org/download/) v2.7.*
+  * Needed only by ClaferMOO
+* [Alloy4.1 and/or Alloy4.2-rc](http://alloy.mit.edu/alloy/download.html)
+
+On Windows only
+
+* [Cygwin](http://www.cygwin.com/)
+  * Needed only by ClaferMOO
+  
+### Installation
+
+1. download the binaries and unpack `<target directory>` of your choice
+2. add the `<target directory>` to your system path so that the executables can be found
+3. copy alloy's jars to the `<target directory>/tools` folder
 
 Building & Installation From Source Code
 ----------------------------------------
 
-Dependencies
-------------
+### Additional dependencies for building
+
+* Dependencies for running
 * [The Haskell Platform](http://hackage.haskell.org/platform/) v.2012.2.0.0
-* [Java Platform (JDK)](http://www.oracle.com/technetwork/java/javase/downloads/index.html) >= 5, 32bit
 * [Alloy4.1 and/or Alloy4.2-rc](http://alloy.mit.edu/alloy/download.html)
   * downloaded automatically  
 * [Git](http://git-scm.com/)
@@ -40,7 +61,7 @@ On Windows only
 
 ### Important: Branches must correspond
 
-Clafer and ClaferIG are following the  *simultaneous release model*. 
+Clafer and ClaferIG are following the *simultaneous release model*. 
 The branch `master` contains releases, whereas the branch `develop` contains code under development. 
 When building the tools, the branches should match:
 Releases `clafer/master` and `claferIG/master` are guaranteed to work well together.
@@ -63,12 +84,15 @@ Development versions `clafer/develop` and `claferIG/develop` should work well to
 > On Windows, use `/` with the `make` command instead of `\`.
 
 Usage
------
+=====
+
+Clafer Compiler
+---------------
 
 (As printed by `clafer --help`)
 
 ```
-Clafer v0.3.25-6-2012
+Clafer v0.3.17-7-2012
 
 clafer [OPTIONS] [FILE]
 
@@ -129,6 +153,13 @@ for example
 
 Options given at command line override the options given in the file using `//#` which, in turn, override the defaults.
 
+ClaferMoo
+---------
+
+`clafer_moo.sh [MODEL] [PATH TO CLAFER TOOLS]`
+
+#### Note: 
+> On Windows, run the script using Cygwin
 
 Need help?
 ==========
@@ -136,5 +167,5 @@ Need help?
   * Check out a [Clafer tutorial](http://gsd.uwaterloo.ca/node/310)
   * Try [Online translator](http://gsd.uwaterloo.ca/clafer/translator)
 * Take a look at incomplete [Clafer wiki](https://github.com/gsdlab/clafer/wiki)
-* Browse example models in the [test suite](https://github.com/gsdlab/clafer/tree/master/test/positive) 
+* Browse example models in the [test suite](https://github.com/gsdlab/clafer/tree/master/test/positive) and [MOO examples](https://github.com/gsdlab/clafer/tree/master/spl_configurator/dataset)
 * Post questions, report bugs, suggest improvements [GSD Lab Bug Tracker](http://gsd.uwaterloo.ca:8888/questions/). Tag your entries with `clafer` (so that we know what they are related to) and with `kacper-bak` or `jimmy-liang` (so that Kacper or Jimmy gets a notification).
