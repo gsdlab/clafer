@@ -25,8 +25,6 @@ module Language.Clafer (
                         parse,
                         generate,
                         generateHtml,
-                        generateText,
-                        generateGraph,
                         generateFragments,
                         runClaferT,
                         runClafer,
@@ -62,11 +60,13 @@ import Control.Monad()
 import Control.Monad.Error
 import Control.Monad.State
 import Control.Monad.Identity
+import System.FilePath.Posix (dropExtension)
 
 import Language.Clafer.Common
 import Language.Clafer.Front.ErrM
 import Language.Clafer.ClaferArgs
 import Language.Clafer.Comments
+import qualified Language.Clafer.Css as Css
 import Language.Clafer.Front.Lexclafer
 import Language.Clafer.Front.Parclafer
 import Language.Clafer.Front.Printclafer
@@ -236,7 +236,7 @@ compile =
 
 -- Splits the IR into their fragments, and generates the output for each fragment.
 -- Might not generate the entire output (for example, Alloy scope and run commands) because
--- they do not belong fragments.
+-- they do not belong in fragments.
 generateFragments :: Monad m => ClaferT m [String]
 generateFragments =
   do
@@ -269,7 +269,31 @@ generateFragments =
   generateFragment :: ClaferArgs -> [IElement] -> String
   generateFragment args frag =
     flatten $ cconcat $ map (genDeclaration args) frag
-    
+
+-- Splits the AST into their fragments, and generates the output for each fragment.
+generateHtml :: Monad m => ClaferT m CompilerResult
+generateHtml =
+  do
+    env <- getEnv
+    let PosModule _ decls = ast env
+    let irMap = irModuleTrace env
+    let (iModule, genv, au) = ir env
+    return $ CompilerResult { extension = "html", 
+                              outputCode = unlines $ generateFragments decls (frags env) irMap,
+                              statistics = showStats au $ statsModule iModule,
+                              mappingToAlloy = Nothing } 
+
+  where
+    line (PosElementDecl (Span pos _) _) = pos
+    line (PosEnumDecl (Span pos _) _  _) = pos
+    line _                               = Pos 0 0
+
+    generateFragments :: [Declaration] -> [Pos] -> Map Span [Ir] -> [String]
+    generateFragments []           _            _     = []
+    generateFragments (decl:decls) []           irMap = (cleanOutput $ revertLayout $ printDeclaration decl 0 irMap True) : generateFragments decls [] irMap
+    generateFragments (decl:decls) (frag:frags) irMap = if line decl < frag
+                                                        then (cleanOutput $ revertLayout $ printDeclaration decl 0 irMap True) : generateFragments decls (frag:frags) irMap
+                                                        else "<!-- # FRAGMENT -->" : generateFragments (decl:decls) frags irMap
 -- Generates output for the IR.
 generate :: Monad m => ClaferT m CompilerResult
 generate =
@@ -277,7 +301,6 @@ generate =
     env <- getEnv
     let cargs = args env
     let (iModule, genv, au) = ir env
-    
     let stats = showStats au $ statsModule iModule
     let (ext, code, mapToAlloy) = case (fromJust $ mode cargs) of
                         Alloy   -> do
@@ -292,6 +315,11 @@ generate =
                                      ("als", addCommentStats (fst alloyCode) stats, Just m)
                         Xml     -> ("xml", genXmlModule iModule, Nothing)
                         Clafer  -> ("des.cfr", printTree $ sugarModule iModule, Nothing)
+                        Html    -> let output = (if (fromJust $ self_contained cargs)
+                                              then Css.header ++ Css.css ++ "</head>\n<body>\n"
+                                              else "") ++ genHtml (ast env) iModule
+                                   in ("html", output, Nothing)
+                        Graph   -> ("dot", genGraph (ast env) iModule (dropExtension $ file cargs), Nothing)
     return $ CompilerResult { extension = ext, 
                      outputCode = code, 
                      statistics = stats, 
@@ -304,7 +332,7 @@ data CompilerResult = CompilerResult {
                             mappingToAlloy :: Maybe String 
                             } deriving Show
 
-generateHtml :: Monad m => ClaferT m CompilerResult
+{-generateHtml :: Monad m => ClaferT m CompilerResult
 generateHtml = do
     env <- getEnv
     let (iModule, genv, au) = ir env
@@ -332,7 +360,7 @@ generateGraph name = do
     return $ CompilerResult { extension = "dot",
                               outputCode = genGraph tree iModule name,
                               statistics = showStats au $ statsModule iModule,
-                              mappingToAlloy = Nothing }
+                              mappingToAlloy = Nothing }-}
 
 desugar :: Module -> IModule  
 desugar tree = desugarModule tree
