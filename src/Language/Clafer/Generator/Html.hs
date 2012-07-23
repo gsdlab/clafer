@@ -88,6 +88,7 @@ printClafer (PosClafer span abstract gCard id super card init elements) indent i
                     (while html ("<span id=\"" ++ uid ++ "\" class=\"l" ++ show indent ++ "\">")) ++ (concat [printAbstract abstract indent irMap html, printGCard gCard indent irMap html,
                     printPosIdent id indent irMap html, printSuper super indent irMap html, printCard card indent irMap html, printInit init indent irMap html])
                     ++ (while html "</span><br>") ++ "\n" ++ printElements elements indent irMap html
+                    
 printGoal (Goal exps) indent irMap html = (if html then "&lt;&lt;" else "<<") ++ concatMap (\x -> printExp x indent irMap html) exps ++ if html then "&gt;&gt;" else ">>"
 printGoal (PosGoal _ exps) indent irMap html = printGoal (Goal exps) indent irMap html
 

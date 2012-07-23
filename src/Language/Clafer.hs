@@ -317,7 +317,8 @@ generate =
                         Clafer  -> ("des.cfr", printTree $ sugarModule iModule, Nothing)
                         Html    -> let output = (if (fromJust $ self_contained cargs)
                                               then Css.header ++ Css.css ++ "</head>\n<body>\n"
-                                              else "") ++ genHtml (ast env) iModule
+                                              else "") ++ genHtml (ast env) iModule ++ "</body>" ++
+                                              (if (fromJust $ self_contained cargs) then "\n</html>" else "")
                                    in ("html", output, Nothing)
                         Graph   -> ("dot", genGraph (ast env) iModule (dropExtension $ file cargs), Nothing)
     return $ CompilerResult { extension = ext, 
