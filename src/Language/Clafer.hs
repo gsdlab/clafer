@@ -277,9 +277,10 @@ generateHtml =
     env <- getEnv
     let PosModule _ decls = ast env
     let irMap = irModuleTrace env
+    let comments = getComments $ model env
     let (iModule, genv, au) = ir env
     return $ CompilerResult { extension = "html", 
-                              outputCode = unlines $ generateFragments decls (frags env) irMap,
+                              outputCode = unlines $ generateFragments (model env) decls (frags env) irMap comments,
                               statistics = showStats au $ statsModule iModule,
                               mappingToAlloy = Nothing } 
 
@@ -288,12 +289,12 @@ generateHtml =
     line (PosEnumDecl (Span pos _) _  _) = pos
     line _                               = Pos 0 0
 
-    generateFragments :: [Declaration] -> [Pos] -> Map Span [Ir] -> [String]
-    generateFragments []           _            _     = []
-    generateFragments (decl:decls) []           irMap = (cleanOutput $ revertLayout $ printDeclaration decl 0 irMap True) : generateFragments decls [] irMap
-    generateFragments (decl:decls) (frag:frags) irMap = if line decl < frag
-                                                        then (cleanOutput $ revertLayout $ printDeclaration decl 0 irMap True) : generateFragments decls (frag:frags) irMap
-                                                        else "<!-- # FRAGMENT -->" : generateFragments (decl:decls) frags irMap
+    generateFragments :: String -> [Declaration] -> [Pos] -> Map Span [Ir] -> [(Span, String)] -> [String]
+    generateFragments _      []           _            _     _        = []
+    generateFragments source (decl:decls) []           irMap comments = (cleanOutput $ revertLayout $ printDeclaration decl 0 irMap True comments) : generateFragments decls [] irMap comments
+    generateFragments source (decl:decls) (frag:frags) irMap comments = if line decl < frag
+                                                                 then (cleanOutput $ revertLayout $ printDeclaration decl 0 irMap True comments) : generateFragments decls (frag:frags) irMap comments
+                                                                 else "<!-- # FRAGMENT -->" : generateFragments (decl:decls) frags irMap comments
 -- Generates output for the IR.
 generate :: Monad m => ClaferT m CompilerResult
 generate =

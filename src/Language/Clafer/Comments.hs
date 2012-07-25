@@ -58,19 +58,18 @@ getGraph' ("//# SUMMARY":xs) ln = ln:getGraph' xs (ln + 1)
 getGraph' ("//# GRAPH":xs)   ln = ln:getGraph' xs (ln + 1)
 getGraph' (x:xs) ln = getGraph' xs $ ln + 1
 
-getComments :: InputModel -> Map Span String
+getComments :: InputModel -> [(Span, String)]
 getComments input = getComments' input 1 1
-getComments' []           row col = Map.empty
+getComments' []           row col = []
 getComments' ('/':'/':xs) row col = readLine ('/':'/':xs) (Pos row col)
 getComments' ('/':'*':xs) row col = readBlock ('/':'*':xs) (Pos row col)
 getComments' ('\n':xs)    row col = getComments' xs (row + 1) 1
 getComments' (x:xs)       row col = getComments' xs row $ col + 1
 readLine    xs start@(Pos row col) = let comment = takeWhile (/= '\n') xs in 
-                                                   Map.insert (Span start (Pos row (col + toInteger (length comment)))) 
-                                                              comment $ 
-                                                              getComments' (drop (length comment + 1) xs) (row + 1) 1
+                                                   ((Span start (Pos row (col + toInteger (length comment)))),
+                                                    comment): getComments' (drop (length comment + 1) xs) (row + 1) 1
 readBlock   xs start@(Pos row col) = let (end@(Pos row' col'), comment, rest) = readBlock' xs row col id in
-                                      Map.insert (Span start end) comment $ getComments' rest row' col'
+                                      ((Span start end), comment):getComments' rest row' col'
 readBlock' ('*':'/':xs) row col comment = ((Pos row $ col + 2), comment "*/", xs)
 readBlock' ('\n':xs)    row col comment = readBlock' xs (row + 1) 1 (comment "\n" ++)
 readBlock' (x:xs)       row col comment = readBlock' xs row (col + 1) (comment [x]++)
