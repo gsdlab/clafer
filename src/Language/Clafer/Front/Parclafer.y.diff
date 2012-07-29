@@ -1,32 +1,32 @@
-100c100
+101c101
 < Declaration : 'enum' PosIdent '=' ListEnumId { EnumDecl $2 $4 } 
 ---
 > Declaration : 'enum' PosIdent '=' ListEnumId { PosEnumDecl (gp $1) $2 $4 } 
-109c109
+110c110
 < Constraint : '[' ListExp ']' { Constraint (reverse $2) } 
 ---
 > Constraint : '[' ListExp ']' { PosConstraint (gp $1) (reverse $2) } 
-113c113
+114c114
 < SoftConstraint : '(' ListExp ')' { SoftConstraint (reverse $2) } 
 ---
 > SoftConstraint : '(' ListExp ')' { PosSoftConstraint (gp $1) (reverse $2) } 
-117c117
+118c118
 < Goal : '<<' ListExp '>>' { Goal (reverse $2) } 
 ---
 > Goal : '<<' ListExp '>>' { PosGoal (gp $1) (reverse $2) } 
-122c122
+123c123
 <   | 'abstract' { Abstract }
 ---
 >   | 'abstract' { PosAbstract (gp $1) }
-127c127
+128c128
 <   | '{' ListElement '}' { ElementsList (reverse $2) }
 ---
 >   | '{' ListElement '}' { PosElementsList (gp $1) (reverse $2) }
-132c132
+133c133
 <   | '`' Name Card Elements { ClaferUse $2 $3 $4 }
 ---
 > | '`' Name Card Elements { PosClaferUse (gp $1) $2 $3 $4 }
-144,146c144,146
+145,147c145,147
 < SuperHow : ':' { SuperColon } 
 <   | '->' { SuperArrow }
 <   | '->>' { SuperMArrow }
@@ -34,13 +34,13 @@
 > SuperHow : ':' { PosSuperColon (gp $1) } 
 >   | '->' { PosSuperArrow (gp $1) }
 >   | '->>' { PosSuperMArrow (gp $1) }
-155,156c155,156
+156,157c156,157
 < InitHow : '=' { InitHow_1 } 
 <   | ':=' { InitHow_2 }
 ---
 > InitHow : '=' { PosInitHow_1 (gp $1) } 
 >   | ':=' { PosInitHow_2 (gp $1) }
-161,164c161,164
+162,165c162,165
 <   | 'xor' { GCardXor }
 <   | 'or' { GCardOr }
 <   | 'mux' { GCardMux }
@@ -50,7 +50,7 @@
 >   | 'or' { PosGCardOr (gp $1) }
 >   | 'mux' { PosGCardMux (gp $1) }
 >   | 'opt' { PosGCardOpt (gp $1) }
-170,172c170,172
+171,173c171,173
 <   | '?' { CardLone }
 <   | '+' { CardSome }
 <   | '*' { CardAny }
@@ -58,23 +58,23 @@
 >   | '?' { PosCardLone (gp $1) }
 >   | '+' { PosCardSome (gp $1) }
 >   | '*' { PosCardAny (gp $1) }
-182c182
+183c183
 < ExInteger : '*' { ExIntegerAst } 
 ---
 > ExInteger : '*' { PosExIntegerAst (gp $1) } 
-191,192c191,192
+192,193c192,193
 < Exp : 'all' 'disj' Decl '|' Exp { DeclAllDisj $3 $5 } 
 <   | 'all' Decl '|' Exp { DeclAll $2 $4 }
 ---
 > Exp : 'all' 'disj' Decl '|' Exp { PosDeclAllDisj (gp $1) $3 $5 } 
 >   | 'all' Decl '|' Exp { PosDeclAll (gp $1) $2 $4 }
-199,200c199,200
+200,201c200,201
 < Exp1 : 'max' Exp2 { EGMax $2 } 
 <   | 'min' Exp2 { EGMin $2 }
 ---
 > Exp1 : 'max' Exp2 { PosEGMax (gp $1) $2 } 
 >   | 'min' Exp2 { PosEGMin (gp $1) $2 }
-226c226
+227c227
 < Exp6 : '!' Exp7 { ENeg $2 } 
 ---
 > Exp6 : '!' Exp7 { PosENeg (gp $1) $2 } 
@@ -86,11 +86,11 @@
 > Exp11 : 'sum' Exp12 { PosESumSetExp (gp $1) $2 } 
 >   | '-' Exp12 { PosEMinExp (gp $1) $2 }
 >   | '#' Exp12 { PosECSetExp (gp $1) $2 }
-266c266
+268c268
 < Exp12 : 'if' Exp12 'then' Exp12 'else' Exp13 { EImpliesElse $2 $4 $6 } 
 ---
 > Exp12 : 'if' Exp12 'then' Exp12 'else' Exp13 { PosEImpliesElse (gp $1) $2 $4 $6 } 
-319,322c319,322
+321,324c321,324
 < Quant : 'no' { QuantNo } 
 <   | 'lone' { QuantLone }
 <   | 'one' { QuantOne }
@@ -100,6 +100,20 @@
 >   | 'lone' { PosQuantLone (gp $1) }
 >   | 'one' { PosQuantOne (gp $1) }
 >   | 'some' { PosQuantSome (gp $1) }
-384a385,386
+386a387,392
 > 
 > gp x@(PT (Pn _ l c) _) = Span (Pos (toInteger l) (toInteger c)) (Pos (toInteger l) (toInteger c + toInteger (length $ prToken x)))
+> pp (PT (Pn _ l c) _ :_) = Pos (toInteger l) (toInteger c)
+> pp (Err (Pn _ l c) :_) = Pos (toInteger l) (toInteger c)
+> pp _ = error "EOF" -- End of file. What to do here?
+> 
+388c394
+<   Bad $ "syntax error at " ++ tokenPos ts ++ 
+---
+>   Bad (pp ts) $
+391,392c397,398
+<     [Err _] -> " due to lexer error"
+<     _ -> " before " ++ unwords (map (id . prToken) (take 4 ts))
+---
+>     [Err _] -> "due to lexer error"
+>     _ -> "before " ++ unwords (map (id . prToken) (take 4 ts))
