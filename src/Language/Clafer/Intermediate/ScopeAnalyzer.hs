@@ -19,23 +19,130 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
 -}
-module Language.Clafer.Intermediate.ScopeAnalyzer (scopeAnalysis) where
+module Language.Clafer.Intermediate.ScopeAnalyzer (scopeAnalysis, scopeAnalysis1) where
 
-import Language.Clafer.Common
+{-import Language.Clafer.Common
 import Data.Graph
 import Data.List
-import Data.Map (Map)
-import qualified Data.Map as Map
 import Data.Maybe
 import Data.Ord
-import Data.Ratio
+import Data.Ratio-}
+import Data.Map (Map)
+import qualified Data.Map as Map
 import Language.Clafer.Front.Absclafer
 import Language.Clafer.Intermediate.Intclafer
-import Prelude hiding (exp)
+import qualified Language.Clafer.Intermediate.Intclafer as I
+
+import Control.Monad
+import Control.Monad.LPMonad
+import Data.LinearProgram
+import Data.LinearProgram.GLPK
+
 import Debug.Trace
 
+type Analysis = LPM String Integer
 
-isReference = isOverlapping . super
+instance (Show v, Num c, Ord c, Show c) => Show (RowValue v c) where
+  show (RowVal s i) = "(" ++ show s ++ ", " ++ show i ++ ")"
+
+root = "_root"
+
+scopeAnalysis :: IModule -> [(String, Integer)]
+scopeAnalysis imodule = []
+
+scopeAnalysis1 imodule =
+  do
+    print =<< (glpSolveAll mipDefaults $ execLPM $ analyze imodule)
+
+
+analyze imodule =
+  do
+    analyzeOF imodule
+    analyzeSS imodule
+    analyzePC imodule
+    (var root) `equalTo` 1
+
+
+
+-- analyzeOF: compute the formula to minimize
+analyzeOF IModule{mDecls = decls} =
+  do
+    setDirection Min
+    setObjective $ varSum $ concatMap analyzeOFElement decls
+
+analyzeOFElement :: IElement -> [String]
+analyzeOFElement (IEClafer clafer) = analyzeOFClafer clafer
+analyzeOFElement _ = []
+
+analyzeOFClafer :: IClafer -> [String]
+analyzeOFClafer IClafer{isAbstract = isAbstract, uid = uid, elements = elements} =
+  if isAbstract then f else uid : f
+  where
+  f = concatMap analyzeOFElement elements
+
+
+
+-- analzyeSS: does all the constraints between super and sub types.
+analyzeSS :: IModule -> Analysis ()
+analyzeSS IModule{mDecls = decls} =
+  do
+    hier <- concatMapM analyzeSSElement decls
+    -- "clafer" is the top most of the hierarchy. Leave it unconstrained to make it simpler
+    -- the integer linear programming solver.
+    let unflatHier = Map.delete "clafer" $ Map.fromListWith (++) [(a, [b]) | (a, b) <- hier]
+    mapM_ addSuperTypeConstraint $ Map.toList unflatHier
+  where
+  addSuperTypeConstraint (abstract, subs) = var abstract `equal` varSum subs
+
+analyzeSSElement (IEClafer clafer) = analyzeSSClafer clafer
+analyzeSSElement _ = return []
+
+analyzeSSClafer :: IClafer -> Analysis [(String, String)]
+analyzeSSClafer IClafer{uid = uid, super = super, card = card, elements = elements} =
+  do
+    h <- analyzeSuper super
+    r <- concatMapM analyzeSSElement elements
+    return $ h ++ r
+  where
+  lowCard (Just (low, _)) = low
+  lowCard _               = error "No lower cardinality." -- Should never happen?
+
+  analyzeSuper :: ISuper -> Analysis [(String, String)]
+  -- Reference
+  analyzeSuper (ISuper True [PExp{I.exp = IClaferId{sident = superUid}}])  = (var superUid) `geqTo` (lowCard card) >> return []
+  -- Subtype
+  analyzeSuper (ISuper False [PExp{I.exp = IClaferId{sident = superUid}}]) = return [(superUid, uid)]
+  analyzeSuper _ = error $ "Multiple inheritance not currently supported. " ++ show super
+
+
+
+-- analyzePC: does all the constraints between parent and children.
+analyzePC :: IModule -> Analysis ()
+analyzePC IModule{mDecls = decls} =
+  mapM_ (analyzePCElement root) decls
+
+analyzePCElement :: String -> IElement -> Analysis ()
+analyzePCElement parent (IEClafer clafer)    = analyzePCClafer parent clafer
+analyzePCElement parent (IEConstraint _ exp) = error $ show exp
+
+analyzePCClafer :: String -> IClafer -> Analysis ()
+analyzePCClafer parent IClafer{uid = uid, card = card, elements = elements} =
+  -- Abstract clafers has card (0, -1) so no special case for abstract clafers.
+  do
+    analyzeCard card
+    -- uid is now the parent of the sub elements.
+    mapM_ (analyzePCElement uid) elements
+  where
+  analyzeCard (Just card) = analyzeLowCard card >> analyzeHighCard card
+  analyzeCard Nothing     = return ()
+  analyzeLowCard (low, _) = (low *^ var parent) `leq` (var uid)
+  analyzeHighCard (_, -1)   = return ()
+  analyzeHighCard (_, high) = (high *^ var parent) `geq` (var uid)
+
+concatMapM :: Monad m => (a -> m [b]) -> [a] -> m [b]
+concatMapM f l = concat `liftM` mapM f l
+
+{-isReference = isOverlapping . super
 isConcrete = not . isReference
 isSuperest clafers clafer = isNothing $ directSuper clafers clafer
 
@@ -43,8 +150,8 @@ isSuperest clafers clafer = isNothing $ directSuper clafers clafer
 -- Collects the global cardinality and hierarchy information into proper lower bounds.
 -- If the model only has Clafers (ie. no constraints) then the lower bound is tight.
 -- scopeAnalysis :: IModule -> Map IClafer Integer
-scopeAnalysis :: IModule -> [(String, Integer)]
-scopeAnalysis IModule{mDecls = decls} =
+scopeAnalysis2 :: IModule -> [(String, Integer)]
+scopeAnalysis2 IModule{mDecls = decls} =
     [(a, b) | (a, b) <- finalAnalysis, isReferenceOrSuper a, b /= 0]
     where
     finalAnalysis = Map.toList $ foldl analyzeComponent referenceAnalysis connectedComponents
@@ -281,4 +388,4 @@ unfoldJoins pexp =
     unfoldJoins' PExp{exp = IClaferId{sident = sident}} =
         return $ [sident]
     unfoldJoins' _ =
-        fail "not a join"
+        fail "not a join"-}

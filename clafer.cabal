@@ -29,7 +29,8 @@ Executable clafer
                      cmdargs, 
                      executable-path, 
                      filepath,
-                     HaXml
+                     HaXml,
+                     glpk-hs
     hs-source-dirs:  src
 
 library 
@@ -43,7 +44,8 @@ library
                      cmdargs, 
                      executable-path, 
                      filepath,
-                     HaXml
+                     HaXml,
+                     glpk-hs
     hs-source-dirs:  src
     ghc-options:     -Wall
     exposed-modules: 
