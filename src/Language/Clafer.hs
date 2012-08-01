@@ -132,13 +132,14 @@ ast _ = error "No AST. Did you forget to add fragments or parse?" -- Indicates a
 ir ClaferEnv{cIr = Just i} = i
 ir _ = error "No IR. Did you forget to compile?" -- Indicates a bug in the Clafer translator.
                             
-makeEnv args model = ClaferEnv { args = args,
+makeEnv args model = ClaferEnv { args = args',
                                  model = model,
                                  cAst = Nothing,
                                  cIr = Nothing,
                                  frags = [],
                                  irModuleTrace = Map.empty,
                                  astModuleTrace = Map.empty}
+                     where args' = if mode args == Just CVLGraph then args{flatten_inheritance=Just True} else args
 
 type ClaferM = ClaferT Identity
 -- Monad for using Clafer.
@@ -280,7 +281,7 @@ generateHtml =
     let comments = getComments $ model env
     let (iModule, genv, au) = ir env
     return $ CompilerResult { extension = "html", 
-                              outputCode = unlines $ generateFragments (model env) decls (frags env) irMap comments,
+                              outputCode = unlines $ generateFragments decls (frags env) irMap comments,
                               statistics = showStats au $ statsModule iModule,
                               mappingToAlloy = Nothing } 
 
@@ -289,10 +290,10 @@ generateHtml =
     line (PosEnumDecl (Span pos _) _  _) = pos
     line _                               = Pos 0 0
 
-    generateFragments :: String -> [Declaration] -> [Pos] -> Map Span [Ir] -> [(Span, String)] -> [String]
-    generateFragments _      []           _            _     _        = []
-    generateFragments source (decl:decls) []           irMap comments = (cleanOutput $ revertLayout $ printDeclaration decl 0 irMap True comments) : generateFragments decls [] irMap comments
-    generateFragments source (decl:decls) (frag:frags) irMap comments = if line decl < frag
+    generateFragments :: [Declaration] -> [Pos] -> Map Span [Ir] -> [(Span, String)] -> [String]
+    generateFragments []           _            _     _        = []
+    generateFragments (decl:decls) []           irMap comments = (cleanOutput $ revertLayout $ printDeclaration decl 0 irMap True comments) : generateFragments decls [] irMap comments
+    generateFragments (decl:decls) (frag:frags) irMap comments = if line decl < frag
                                                                  then (cleanOutput $ revertLayout $ printDeclaration decl 0 irMap True comments) : generateFragments decls (frag:frags) irMap comments
                                                                  else "<!-- # FRAGMENT -->" : generateFragments (decl:decls) frags irMap comments
 -- Generates output for the IR.
@@ -304,24 +305,25 @@ generate =
     let (iModule, genv, au) = ir env
     let stats = showStats au $ statsModule iModule
     let (ext, code, mapToAlloy) = case (fromJust $ mode cargs) of
-                        Alloy   -> do
-                                     let alloyCode = genModule cargs (astrModule iModule, genv)
-                                     let addCommentStats = if fromJust $ no_stats cargs then const else addStats
-                                     let m = show $ snd alloyCode
-                                     ("als", addCommentStats (fst alloyCode) stats, Just m)
-                        Alloy42 -> do
-                                     let alloyCode = genModule cargs (astrModule iModule, genv)
-                                     let addCommentStats = if fromJust $ no_stats cargs then const else addStats
-                                     let m = show $ snd alloyCode
-                                     ("als", addCommentStats (fst alloyCode) stats, Just m)
-                        Xml     -> ("xml", genXmlModule iModule, Nothing)
-                        Clafer  -> ("des.cfr", printTree $ sugarModule iModule, Nothing)
-                        Html    -> let output = (if (fromJust $ self_contained cargs)
-                                              then Css.header ++ Css.css ++ "</head>\n<body>\n"
-                                              else "") ++ genHtml (ast env) iModule ++ "</body>" ++
-                                              (if (fromJust $ self_contained cargs) then "\n</html>" else "")
-                                   in ("html", output, Nothing)
-                        Graph   -> ("dot", genGraph (ast env) iModule (dropExtension $ file cargs), Nothing)
+                        Alloy   ->  do
+                                      let alloyCode = genModule cargs (astrModule iModule, genv)
+                                      let addCommentStats = if fromJust $ no_stats cargs then const else addStats
+                                      let m = show $ snd alloyCode
+                                      ("als", addCommentStats (fst alloyCode) stats, Just m)
+                        Alloy42  -> do
+                                      let alloyCode = genModule cargs (astrModule iModule, genv)
+                                      let addCommentStats = if fromJust $ no_stats cargs then const else addStats
+                                      let m = show $ snd alloyCode
+                                      ("als", addCommentStats (fst alloyCode) stats, Just m)
+                        Xml      -> ("xml", genXmlModule iModule, Nothing)
+                        Clafer   -> ("des.cfr", printTree $ sugarModule iModule, Nothing)
+                        Html     -> let output = (if (fromJust $ self_contained cargs)
+                                               then Css.header ++ Css.css ++ "</head>\n<body>\n"
+                                               else "") ++ genHtml (ast env) iModule ++ "</body>" ++
+                                               (if (fromJust $ self_contained cargs) then "\n</html>" else "")
+                                    in ("html", output, Nothing)
+                        Graph    -> ("dot", genSimpleGraph (ast env) iModule (dropExtension $ file cargs), Nothing)
+                        CVLGraph -> ("dot", genCVLGraph (ast env) iModule (dropExtension $ file cargs), Nothing)
     return $ CompilerResult { extension = ext, 
                      outputCode = code, 
                      statistics = stats, 
