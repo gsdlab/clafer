@@ -201,7 +201,7 @@ resolveBind env id = find (\bs -> id `elem` fst bs) (bindings env) >>=
 -- searches for a name in all subclafers (BFS)
 resolveDescendants :: SEnv -> String -> Maybe (HowResolved, String, [IClafer])
 resolveDescendants env id =
-  (context env) >> (findUnique id $ subClafers env) >>= (toMTriple Subclafers)
+  (context env) >> (findFirst id $ subClafers env) >>= (toMTriple Subclafers)
 
 
 -- searches for a name in immediate subclafers (BFS)
@@ -260,6 +260,12 @@ findUnique x xs =
                then "cannot be defined because the name should be unique in the same namespace.\n"
                else "is not unique. ") ++ 
                "Available paths:\n" ++ (xs'' >>= showPath)
+
+findFirst :: String -> [(IClafer, [IClafer])] -> Maybe (String, [IClafer])
+findFirst x xs =
+  case filterPaths x $ nub xs of
+    []       -> Nothing
+    (elem:_) -> Just $ (uid $ fst elem, snd elem)
 
 showPath xs = (intercalate "." $ reverse xs) ++ "\n"
 
