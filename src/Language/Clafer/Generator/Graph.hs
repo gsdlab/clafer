@@ -33,10 +33,10 @@ import qualified Data.Map as Map
 import Data.Maybe
 import Prelude hiding (exp)
 
-genSimpleGraph m ir name = cleanOutput $ "digraph " ++ name ++ "\n{\nrankdir=BT;\nranksep=0.1;\nnodesep=0.1;\nnode [shape=box margin=0.025,0.025];\n" ++ body ++ "}"
+genSimpleGraph m ir name = cleanOutput $ "digraph \"" ++ name ++ "\"\n{\nrankdir=BT;\nranksep=0.1;\nnodesep=0.1;\nnode [shape=box margin=0.025,0.025];\n" ++ body ++ "}"
                            where body = graphSimpleModule m $ traceIrModule ir
                            
-genCVLGraph m ir name = cleanOutput $ "digraph " ++ name ++ "\n{\nrankdir=BT;\nranksep=0.1;\nnodesep=0.1;\nnode [shape=box margin=0.025,0.025];\nedge [arrowhead=none];\n" ++ body ++ "}"
+genCVLGraph m ir name = cleanOutput $ "digraph \"" ++ name ++ "\"\n{\nrankdir=BT;\nranksep=0.1;\nnodesep=0.1;\nnode [shape=box margin=0.025,0.025];\nedge [arrowhead=none];\n" ++ body ++ "}"
                        where body = graphCVLModule m $ traceIrModule ir
 
 -- Simplified Notation Printer --
