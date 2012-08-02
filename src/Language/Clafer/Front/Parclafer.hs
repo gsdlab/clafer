@@ -8,7 +8,7 @@ import Language.Clafer.Front.ErrM
 import qualified Data.Array as Happy_Data_Array
 import qualified GHC.Exts as Happy_GHC_Exts
 
--- parser produced by Happy Version 1.18.6
+-- parser produced by Happy Version 1.18.9
 
 newtype HappyAbsSyn  = HappyAbsSyn HappyAny
 #if __GLASGOW_HASKELL__ >= 607
@@ -1679,7 +1679,8 @@ happyNewToken action sts stk (tk:tks) =
 	_ -> happyError' (tk:tks)
 	}
 
-happyError_ tk tks = happyError' (tk:tks)
+happyError_ 68# tk tks = happyError' tks
+happyError_ _ tk tks = happyError' (tk:tks)
 
 happyThen :: () => Err a -> (a -> Err b) -> Err b
 happyThen = (thenM)
@@ -1706,12 +1707,16 @@ thenM = (>>=)
 happyError :: [Token] -> Err a
 
 gp x@(PT (Pn _ l c) _) = Span (Pos (toInteger l) (toInteger c)) (Pos (toInteger l) (toInteger c + toInteger (length $ prToken x)))
+pp (PT (Pn _ l c) _ :_) = Pos (toInteger l) (toInteger c)
+pp (Err (Pn _ l c) :_) = Pos (toInteger l) (toInteger c)
+pp _ = error "EOF" -- End of file. What to do here?
+
 happyError ts =
-  Bad $ "syntax error at " ++ tokenPos ts ++ 
+  Bad (pp ts) $
   case ts of
     [] -> []
-    [Err _] -> " due to lexer error"
-    _ -> " before " ++ unwords (map (id . prToken) (take 4 ts))
+    [Err _] -> "due to lexer error"
+    _ -> "before " ++ unwords (map (id . prToken) (take 4 ts))
 
 myLexer = tokens
 {-# LINE 1 "templates/GenericTemplate.hs" #-}
@@ -1901,9 +1906,10 @@ happyGoto nt j tk st =
 -- Error recovery (0# is the error token)
 
 -- parse error if we are in recovery and we fail again
-happyFail  0# tk old_st _ stk =
+happyFail 0# tk old_st _ stk@(x `HappyStk` _) =
+     let (i) = (case Happy_GHC_Exts.unsafeCoerce# x of { (Happy_GHC_Exts.I# (i)) -> i }) in
 --	trace "failing" $ 
-    	happyError_ tk
+        happyError_ i tk
 
 {-  We don't need state discarding for our restricted implementation of
     "error".  In fact, it can cause some bogus parses, so I've disabled it

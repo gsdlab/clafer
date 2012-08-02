@@ -38,6 +38,7 @@ import System.FilePath.Posix
 import System.Process (readProcessWithExitCode)
 
 import Language.Clafer
+import Language.ClaferT
 import Language.Clafer.Css
 
 putStrV :: VerbosityL -> String -> IO ()
@@ -54,19 +55,21 @@ run v args input =
         compile
         f' <- save
         when (fromJust $ validate args) $ liftIO $ runValidate args f'
-    result `catch` handleErr
+    result `catch` handleErrs
   where
   catch (Left err) f = f err
   catch (Right r)  _ = return r
+  handleErrs = mapM_ handleErr
   handleErr (ClaferErr msg) =
     do
       putStrLn "\nError...\n"
       putStrLn msg
       exitFailure
-  handleErr (ParseErr msg) =
+  -- We only use one fragment. Fragment id and position is not useful to us. We
+  -- only care about the position relative to 
+  handleErr (ParseErr ErrPos{modelPos = Pos l c} msg) =
     do
-      putStrLn "\nParse Failed...\n"
-      putStrV v "Tokens:"
+      putStrLn $ "\nParse failed at line " ++ show l ++ " column " ++ show c ++ "..."
       putStrLn msg
       exitFailure
       
