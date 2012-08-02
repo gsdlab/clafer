@@ -279,18 +279,15 @@ generateFragments =
     flatten $ cconcat $ map (genDeclaration args) frag
 
 -- Splits the AST into their fragments, and generates the output for each fragment.
-generateHtml :: Monad m => ClaferT m CompilerResult
-generateHtml =
-  do
-    env <- getEnv
-    let PosModule _ decls = ast env
-    let irMap = irModuleTrace env
-    let comments = getComments $ unlines $ modelFrags env
-    let (iModule, genv, au) = ir env
-    return $ CompilerResult { extension = "html", 
-                              outputCode = unlines $ generateFragments decls (frags env) irMap comments,
-                              statistics = showStats au $ statsModule iModule,
-                              mappingToAlloy = Nothing } 
+generateHtml env =
+    let PosModule _ decls = ast env;
+        irMap = irModuleTrace env;
+        comments = getComments $ unlines $ modelFrags env;
+        (iModule, genv, au) = ir env;
+        cargs = args env;
+    in (if (fromJust $ self_contained cargs) then Css.header ++ Css.css ++ "</head>\n<body>\n" else "")
+       ++ (unlines $ generateFragments decls (frags env) irMap comments) ++ "</body>" ++
+       (if (fromJust $ self_contained cargs) then "\n</html>" else "")
 
   where
     line (PosElementDecl (Span pos _) _) = pos
@@ -324,11 +321,7 @@ generate =
                                       ("als", addCommentStats (fst alloyCode) stats, Just m)
                         Xml      -> ("xml", genXmlModule iModule, Nothing)
                         Clafer   -> ("des.cfr", printTree $ sugarModule iModule, Nothing)
-                        Html     -> let output = (if (fromJust $ self_contained cargs)
-                                               then Css.header ++ Css.css ++ "</head>\n<body>\n"
-                                               else "") ++ genHtml (ast env) iModule ++ "</body>" ++
-                                               (if (fromJust $ self_contained cargs) then "\n</html>" else "")
-                                    in ("html", output, Nothing)
+                        Html     -> ("html", generateHtml env, Nothing)
                         Graph    -> ("dot", genSimpleGraph (ast env) iModule (dropExtension $ file cargs), Nothing)
                         CVLGraph -> ("dot", genCVLGraph (ast env) iModule (dropExtension $ file cargs), Nothing)
     return $ CompilerResult { extension = ext, 
