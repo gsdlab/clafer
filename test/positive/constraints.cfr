@@ -1,0 +1,45 @@
+abstract Phone
+  networking
+    wifi ?
+        typeB ?
+        typeG ?
+        typeN ?
+    bluetooth ?
+    mobile ?
+    nfc ?
+  xor location ?
+    gps
+    agps
+  gpu *
+
+
+// boolean constraint
+PhoneWithGps : Phone
+  [gps]
+// desugared to [some this.location.gps].
+// We are working with sets, so 'this.location.gps' results in a set that must be quantified to evaluate to 'true' or 'false'. 'some' requires that the set is not empty
+
+
+// navigation
+PhoneWithWifi : Phone
+  [networking.wifi.typeN]
+// desugared to [some this.networking.wifi.typeN]
+
+
+// propositional constraint
+PhonewithWifiAndGpsNoBluetoothOrNfc : Phone
+  [wifi && gps && !(bluetooth || nfc)]
+// desugared to [(some this.networking.wifi) && (some this.location.gps) && !((some this.networking.bluetooth) || (some this.networking.nfc))]
+
+
+// quantified constraint
+PhoneWithGpu : Phone
+  [some gpu]
+// desugared to [some this.gpu]. In place of 'some' we can use the following quantifiers: 'no' (requires that the set is empty), 'lone' (requires that the set has at most one element)
+
+
+// universal quantification
+// all phones must have the 'mobile' feature
+[all p : Phone | p.networking.mobile]
+// desugared to [all  p : Phone | some p.networking.mobile]
+
