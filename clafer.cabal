@@ -48,6 +48,7 @@ library
     ghc-options:     -Wall
     exposed-modules: 
                      Language.Clafer,
+                     Language.ClaferT,
                      Language.Clafer.ClaferArgs,
                      Language.Clafer.Comments,
                      Language.Clafer.Common,

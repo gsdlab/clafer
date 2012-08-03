@@ -28,8 +28,10 @@ module Language.Clafer.Generator.Html (genHtml,
                                        traceIrModule,
                                        cleanOutput,
                                        revertLayout,
-                                       generateStandaloneComment,
-                                       generateInlineComment) where
+                                       printComment,
+                                       printPreComment,
+                                       printStandaloneComment,
+                                       printInlineComment) where
 
 import Language.Clafer.Front.Absclafer
 import Language.Clafer.Front.LayoutResolver(revertLayout)
@@ -39,18 +41,35 @@ import Language.Clafer.Intermediate.Intclafer
 import Data.List (intersperse)
 import qualified Data.Map as Map
 import Data.Maybe
+import Data.Char (isSpace)
 import Prelude hiding (exp)
---TODO: Escape '<' characters with &lt;
-generateComment :: Span -> [(Span, String)] -> ([(Span, String)], String)
-generateComment _                      [] = ([],[])
-generateComment (Span (Pos row col) _) (c@(Span (Pos row' col') _, comment):cs)
-  | row == row' = case take 2 comment of
-        "//" -> (cs,generateInlineComment comment)
-        "/*" -> (cs,generateStandaloneComment comment)
-        otherwise -> (cs,"Improper form of comment.")
+
+printPreComment :: Span -> [(Span, String)] -> ([(Span, String)], String)
+printPreComment _ [] = ([], [])
+printPreComment span@(Span (Pos row _) _) (c@((Span (Pos row' _) _), comment):cs)
+  | row > row' = findAll row ((c:cs), [])
+  | otherwise  = (c:cs, "")
+    where findAll _ ([],comments) = ([],comments)
+          findAll row ((c@((Span (Pos row' _) _), comment):cs), comments)
+            | row > row' = case take 3 comment of
+                '/':'/':'#':[] -> findAll row (cs, concat [comments, "<!-- " ++ trim (drop 3 comment) ++ " /-->\n"])
+                '/':'/':_:[]   -> findAll row (cs, concat [comments, printInlineComment comment ++ "<br>\n"])
+                '/':'*':_:[]   -> findAll row (cs, concat [comments, printInlineComment comment ++ "<br>\n"])
+                otherwise      -> (cs,"Improper form of comment.")-- Should not happen. Bug.
+            | otherwise  = ((c:cs), comments)
+          trim = let f = reverse. dropWhile isSpace in f . f
+printComment :: Span -> [(Span, String)] -> ([(Span, String)], String)
+printComment _ [] = ([],[])
+printComment span@(Span (Pos row _) _) (c@(Span (Pos row' _) _, comment):cs)
+  | row == row' = case take 3 comment of
+        '/':'/':'#':[] -> (cs,"<!-- " ++ trim (drop 3 comment) ++ " /-->\n")
+        '/':'/':_:[]   -> (cs,printInlineComment comment)
+        '/':'*':_:[]   -> (cs,printStandaloneComment comment)
+        otherwise      -> (cs,"Improper form of comment.")-- Should not happen. Bug.
   | otherwise = (c:cs, "")
-generateStandaloneComment comment = "<p class=\"standalonecomment\">" ++ comment ++ "</p>"
-generateInlineComment comment = "<span class=\"inlinecomment\">" ++ comment ++ "</span>"
+  where trim = let f = reverse. dropWhile isSpace in f . f
+printStandaloneComment comment = "<p class=\"standalonecomment\">" ++ comment ++ "</p>"
+printInlineComment comment = "<span class=\"inlinecomment\">" ++ comment ++ "</span>"
 
 genHtml x ir = cleanOutput $ revertLayout $ printModule x (traceIrModule ir) True
 genText x ir = cleanOutput $ revertLayout $ printModule x (traceIrModule ir) False
@@ -68,16 +87,17 @@ printDeclaration (PosElementDecl _ element)        indent irMap html comments = 
 printElement (Subclafer clafer) indent irMap html comments = printClafer clafer indent irMap html comments
 printElement (PosSubclafer span subclafer) indent irMap html comments = printElement (Subclafer subclafer) indent irMap html comments
 printElement (Subconstraint constraint) indent irMap html comments = printConstraint constraint indent irMap html comments
-printElement (PosSubconstraint span constraint) indent irMap html comments = let (comments', comment) = generateComment span comments in printElement (Subconstraint constraint) indent irMap html comments' ++ comment
+printElement (PosSubconstraint span constraint) indent irMap html comments = let (comments', preComments) = printPreComment span comments; (comments'', comment) = printComment span comments' in preComments ++ printElement (Subconstraint constraint) indent irMap html comments'' ++ comment
 printElement (ClaferUse name card elements) indent irMap html comments = (printIndent indent html) ++ "`" ++ printName name indent irMap html comments ++ printCard card indent irMap html comments ++ (while html "</span><br>") ++ "\n" ++ printElements elements indent irMap html comments
 printElement (PosClaferUse span name card elements) indent irMap html comments = let (divId, superId) = getUseId span irMap;
-                                                                                     (comments', comment) = generateComment span comments in
-                                                                      (while html ("<span id=\"" ++ divId ++ "\" class=\"l" ++ show indent ++ "\">")) ++ "`" ++ (while html ("<a href=\"#" ++ superId ++ "\"><span class=\"reference\">")) ++ printName name indent irMap False [] --trick the printer into only printing the name
-                                                                        ++ (while html "</span></a>") ++ printCard card indent irMap html comments ++ comment ++ (while html "</span><br>") ++ "\n" ++ printElements elements indent irMap html comments'
+                                                                                     (comments', preComments) = printPreComment span comments;
+                                                                                     (comments'', comment) = printComment span comments' in
+                                                                      preComments ++ (while html ("<span id=\"" ++ divId ++ "\" class=\"l" ++ show indent ++ "\">")) ++ "`" ++ (while html ("<a href=\"#" ++ superId ++ "\"><span class=\"reference\">")) ++ printName name indent irMap False [] --trick the printer into only printing the name
+                                                                        ++ (while html "</span></a>") ++ printCard card indent irMap html comments ++ comment ++ (while html "</span><br>") ++ "\n" ++ printElements elements indent irMap html comments''
 printElement (Subgoal goal) indent irMap html comments = printGoal goal indent irMap html comments
-printElement (PosSubgoal span goal) indent irMap html comments = let (comments', comment) = generateComment span comments in printElement (Subgoal goal) indent irMap html comments' ++ comment
+printElement (PosSubgoal span goal) indent irMap html comments = let (comments', preComments) = printPreComment span comments; (comments'', comment) = printComment span comments' in preComments ++ printElement (Subgoal goal) indent irMap html comments'' ++ comment
 printElement (Subsoftconstraint softConstraint) indent irMap html comments = printSoftConstraint softConstraint indent irMap html comments
-printElement (PosSubsoftconstraint span softConstraint) indent irMap html comments = let (comments', comment) = generateComment span comments in printElement (Subsoftconstraint softConstraint) indent irMap html comments' ++ comment
+printElement (PosSubsoftconstraint span softConstraint) indent irMap html comments = let (comments', preComments) = printPreComment span comments; (comments'', comment) = printComment span comments' in preComments ++  printElement (Subsoftconstraint softConstraint) indent irMap html comments'' ++ comment
 
 printElements ElementsEmpty indent irMap html comments = ""
 printElements (PosElementsEmpty _) indent irMap html comments = printElements ElementsEmpty indent irMap html comments
@@ -95,15 +115,17 @@ printClafer (Clafer abstract gCard id super card init elements) indent irMap htm
                     ++ (while html "</span><br>") ++ "\n" ++ printElements elements indent irMap html comments
 printClafer (PosClafer span abstract gCard id super card init elements) indent irMap html comments
   | indent == 0 = let divId = getDivId span irMap;
-                      (comments', comment) = generateComment span comments in
-                    (while html ("<div id=\"" ++ divId ++ "\">\n")) ++ (concat [printAbstract abstract indent irMap html comments, printGCard gCard indent irMap html comments,
+                      (comments', preComments) = printPreComment span comments;
+                      (comments'', comment) = printComment span comments' in
+                    preComments ++ (while html ("<div id=\"" ++ divId ++ "\">\n")) ++ (concat [printAbstract abstract indent irMap html comments, printGCard gCard indent irMap html comments,
                     printPosIdent id indent irMap html comments, printSuper super indent irMap html comments, printCard card indent irMap html comments, printInit init indent irMap html comments])
-                    ++ comment ++ (while html "<br>") ++ "\n" ++ printElements elements indent irMap html comments' ++ (while html "</div>\n<br>") ++ "\n"
+                    ++ comment ++ (while html "<br>") ++ "\n" ++ printElements elements indent irMap html comments'' ++ (while html "</div>\n<br>") ++ "\n"
   | otherwise   = let uid = getDivId span irMap;
-                            (comments', comment) = generateComment span comments in
-                    (while html ("<span id=\"" ++ uid ++ "\" class=\"l" ++ show indent ++ "\">")) ++ (concat [printAbstract abstract indent irMap html comments, printGCard gCard indent irMap html comments,
+                            (comments', preComments) = printPreComment span comments;
+                            (comments'', comment) = printComment span comments' in
+                    preComments ++ (while html ("<span id=\"" ++ uid ++ "\" class=\"l" ++ show indent ++ "\">")) ++ (concat [printAbstract abstract indent irMap html comments, printGCard gCard indent irMap html comments,
                     printPosIdent id indent irMap html comments, printSuper super indent irMap html comments, printCard card indent irMap html comments, printInit init indent irMap html comments]) ++ 
-                    comment ++ (while html "</span><br>") ++ "\n" ++ printElements elements indent irMap html comments'
+                    comment ++ (while html "</span><br>") ++ "\n" ++ printElements elements indent irMap html comments''
                     
 printGoal (Goal exps) indent irMap html comments = (if html then "&lt;&lt;" else "<<") ++ concatMap (\x -> printExp x indent irMap html comments) exps ++ if html then "&gt;&gt;" else ">>"
 printGoal (PosGoal _ exps) indent irMap html comments = printGoal (Goal exps) indent irMap html comments
