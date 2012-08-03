@@ -77,4 +77,5 @@ library
                      Language.Clafer.Intermediate.Transformer,
                      Language.Clafer.Optimizer.Optimizer,
                      Language.Clafer.SplitJoin,
-                     Language.Clafer.Version
+                     Language.Clafer.Version,
+                     Language.ClaferT
