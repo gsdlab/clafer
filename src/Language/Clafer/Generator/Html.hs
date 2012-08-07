@@ -50,22 +50,24 @@ printPreComment span@(Span (Pos row _) _) (c@((Span (Pos row' _) _), comment):cs
   | row > row' = findAll row ((c:cs), [])
   | otherwise  = (c:cs, "")
     where findAll _ ([],comments) = ([],comments)
-          findAll row ((c@((Span (Pos row' _) _), comment):cs), comments)
+          findAll row ((c@((Span (Pos row' col') _), comment):cs), comments)
             | row > row' = case take 3 comment of
                 '/':'/':'#':[] -> findAll row (cs, concat [comments, "<!-- " ++ trim (drop 3 comment) ++ " /-->\n"])
-                '/':'/':_:[]   -> findAll row (cs, concat [comments, printInlineComment comment ++ "<br>\n"])
-                '/':'*':_:[]   -> findAll row (cs, concat [comments, printInlineComment comment ++ "<br>\n"])
-                otherwise      -> (cs,"Improper form of comment.")-- Should not happen. Bug.
+                '/':'/':_:[]   -> if col' == 1
+                                  then findAll row (cs, concat [comments, printStandaloneComment comment ++ "\n"])
+                                  else findAll row (cs, concat [comments, printInlineComment comment ++ "<br>\n"])
+                '/':'*':_:[]   -> findAll row (cs, concat [comments, printStandaloneComment comment ++ "\n"])
+                otherwise      -> (cs, "Improper form of comment.")-- Should not happen. Bug.
             | otherwise  = ((c:cs), comments)
-          trim = let f = reverse. dropWhile isSpace in f . f
+          trim = let f = reverse . dropWhile isSpace in f . f
 printComment :: Span -> [(Span, String)] -> ([(Span, String)], String)
 printComment _ [] = ([],[])
-printComment span@(Span (Pos row _) _) (c@(Span (Pos row' _) _, comment):cs)
+printComment span@(Span (Pos row _) _) (c@(Span (Pos row' col') _, comment):cs)
   | row == row' = case take 3 comment of
         '/':'/':'#':[] -> (cs,"<!-- " ++ trim (drop 3 comment) ++ " /-->\n")
-        '/':'/':_:[]   -> (cs,printInlineComment comment)
-        '/':'*':_:[]   -> (cs,printStandaloneComment comment)
-        otherwise      -> (cs,"Improper form of comment.")-- Should not happen. Bug.
+        '/':'/':_:[]   -> if col' == 1 then (cs,printStandaloneComment comment) else (cs, printInlineComment comment)
+        '/':'*':_:[]   -> (cs, printStandaloneComment comment)
+        otherwise      -> (cs, "Improper form of comment.")-- Should not happen. Bug.
   | otherwise = (c:cs, "")
   where trim = let f = reverse. dropWhile isSpace in f . f
 printStandaloneComment comment = "<p class=\"standalonecomment\">" ++ comment ++ "</p>"
@@ -101,7 +103,18 @@ printElement (PosSubsoftconstraint span softConstraint) indent irMap html commen
 
 printElements ElementsEmpty indent irMap html comments = ""
 printElements (PosElementsEmpty _) indent irMap html comments = printElements ElementsEmpty indent irMap html comments
-printElements (ElementsList elements) indent irMap html comments = "\n{" ++ (concatMap (\x -> printElement x (indent + 1) irMap html comments ++ "\n") elements) ++ "\n}"
+printElements (ElementsList elements) indent irMap html comments = "\n{" ++ mapElements elements indent irMap html comments ++ "\n}" --TODO Use custom map so that 
+    where mapElements []     indent irMap html comments = []
+          mapElements (e:es) indent irMap html comments = if span e == noSpan
+                                                          then (printElement e (indent + 1) irMap html comments ++ "\n") ++ mapElements es indent irMap html comments
+                                                          else (printElement e (indent + 1) irMap html comments ++ "\n") ++ mapElements es indent irMap html (afterSpan (span e) comments)
+          afterSpan span comments = let (Span _ (Pos line _)) = span in dropWhile (\(x, _) -> let (Span _ (Pos line' _)) = x in line' <= line) comments
+          span (PosSubclafer s _) = s
+          span (PosSubconstraint s _) = s
+          span (PosClaferUse s _ _ _) = s
+          span (PosSubgoal s _) = s
+          span (PosSubsoftconstraint s _) = s
+          span _ = noSpan
 printElements (PosElementsList _ elements) indent irMap html comments = printElements (ElementsList elements) indent irMap html comments
 
 printClafer (Clafer abstract gCard id super card init elements) indent irMap html comments
