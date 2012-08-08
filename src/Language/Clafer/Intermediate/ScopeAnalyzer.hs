@@ -1,3 +1,8 @@
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE UndecidableInstances #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+
 {-
  Copyright (C) 2012 Jimmy Liang, Kacper Bak <http://gsd.uwaterloo.ca>
 
@@ -19,362 +24,296 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
 -}
-module Language.Clafer.Intermediate.ScopeAnalyzer (scopeAnalysis, scopeAnalysis1) where
+module Language.Clafer.Intermediate.ScopeAnalyzer (scopeAnalysis) where
 
-{-import Language.Clafer.Common
-import Data.Graph
-import Data.List
-import Data.Maybe
-import Data.Ord
-import Data.Ratio-}
-import Data.Map (Map)
-import qualified Data.Map as Map
 import Language.Clafer.Front.Absclafer
 import Language.Clafer.Intermediate.Intclafer
 import qualified Language.Clafer.Intermediate.Intclafer as I
 
+import Prelude hiding (exp)
 import Control.Monad
+import Control.Monad.List
 import Control.Monad.LPMonad
+import Control.Monad.State
 import Data.LinearProgram
-import Data.LinearProgram.GLPK
+import Data.List
+import Data.Map (Map)
+import qualified Data.Map as Map
+import Data.Maybe
+import System.IO.Unsafe
 
-import Debug.Trace
+newtype Analysis a = Analysis (StateT (Info, Integer) (LPM String Double) a)
+  deriving (Monad, Functor)
 
-type Analysis = LPM String Integer
+instance MonadState (LP String Double) Analysis where
+  get = Analysis $ lift get
+  put = Analysis . lift . put
+  state = Analysis . lift . state
 
-instance (Show v, Num c, Ord c, Show c) => Show (RowValue v c) where
-  show (RowVal s i) = "(" ++ show s ++ ", " ++ show i ++ ")"
+ask :: Analysis Info
+ask = Analysis $ gets fst
 
-root = "_root"
+asks :: (Info -> a) -> Analysis a
+asks f = Analysis $ gets (f . fst)
+
+-- Variables starting with "_aux_" are reserved for creating
+-- new variables at runtime.
+uniqNameSpace :: String
+uniqNameSpace = "_aux_"
+
+uniqVar :: Analysis String
+uniqVar =
+  do
+    (i, c) <- Analysis get
+    Analysis $ put (i, c + 1)
+    return $ uniqNameSpace ++ show c
+
+runAnalysis :: Analysis a -> Info -> LP String Double
+runAnalysis (Analysis s) info = execLPM $ evalStateT s (info, 0)
+  
+
+-- a is a child of b
+(|^) :: (Uidable a, Uidable b) => a -> b -> ListT Analysis (IClafer, IClafer)
+lower |^ upper =
+  ListT $ do
+    m <- asks parentMap
+    cm <- asks claferMap
+    let find n = Map.findWithDefault (error $ "|^ No uid named " ++ n) n cm
+    return [(find child, find parent) |
+            (child, parent) <- m,
+            matches (toUid lower) child,
+            matches (toUid upper) parent]
+
+-- a : b
+(|:) :: (Uidable a, Uidable b) => a -> b -> ListT Analysis (IClafer, IClafer)
+lower |: upper =
+  ListT $ do
+    m <- asks colonMap
+    cm <- asks claferMap
+    let find n = Map.findWithDefault (error $ "|: No uid named " ++ n) n cm
+    return [(find sub, find sup) |
+            (sub, sup) <- m,
+            matches (toUid lower) sub,
+            matches (toUid upper) sup]
+
+-- a -> b    
+(|->) :: (Uidable a, Uidable b) => a -> b -> ListT Analysis (IClafer, IClafer)
+lower |-> upper =
+  ListT $ do
+    m <- asks refMap
+    cm <- asks claferMap
+    let find n = Map.findWithDefault (error $ "|-> No uid named " ++ n) n cm
+    return [(find sub, find sup) |
+            (sub, sup) <- m,
+            matches (toUid lower) sub,
+            matches (toUid upper) sup]
+            
+-- constraints under
+constraintsUnder :: Uidable a => a -> ListT Analysis (IClafer, PExp)
+constraintsUnder under =
+  ListT $ do
+    m <- asks constraintMap
+    cm <- asks claferMap
+    let find n = Map.findWithDefault (error $ "(constraintsUnder) No uid named " ++ n) n cm
+    return [(find clafer, constraint) |
+            (clafer, constraint) <- m,
+            matches (toUid under) clafer]
+
+data Info = Info
+  {
+    iclafers :: [IClafer],
+    claferMap :: Map String IClafer,
+    colonMap :: SuperMap,
+    refMap :: SuperMap,
+    parentMap :: ParentMap,
+    constraintMap :: ConstraintMap
+  } deriving Show 
+
+type SuperMap = [(String, String)]
+type ParentMap = [(String, String)]
+type ConstraintMap = [(String, PExp)]
+
+clafers :: ListT Analysis IClafer
+clafers = ListT $ asks iclafers
+
+clafers' :: (IClafer -> a) -> ListT Analysis a
+clafers' f = f `fmap` clafers
+
+data Uid = Uid {uidLiteral::String} | Any deriving Show
+
+class Uidable u where
+  toUid :: u -> Uid
+  
+instance Uidable Char where
+  toUid c = Uid [c]
+  
+-- c == Char
+instance Uidable c => Uidable [c] where
+  toUid s = Uid $ concatMap uidLiteral $ map toUid s
+
+instance Uidable Uid where
+  toUid = id
+  
+instance Uidable IClafer where
+  toUid = Uid . uid
+
+anything :: Uid
+anything = Any
+
+
+rootUid :: String
+rootUid = "_root"
 
 scopeAnalysis :: IModule -> [(String, Integer)]
-scopeAnalysis imodule = []
+scopeAnalysis imodule =
+  removeZeroes $ removeRoot $ removeAux $
+    -- unsafePerformIO should be safe (?)
+    -- We aren't modifying any global state.
+    -- If we don't use unsafePerformIO, then we have to be inside the IO monad and
+    -- makes things really ugly. Might as well contain the ugliness in here.
+    case unsafePerformIO solution of
+      (Success, Just (_, s)) -> Map.toList $ Map.map truncate s
+      x -> [] -- No solution
+  where
+  solution = glpSolveVars mipDefaults{msgLev = MsgOff} $ runAnalysis setConstraints $ analyze imodule
+  -- Any scope that is 0 will take the global scope of 1 instead.
+  removeZeroes = filter ((/= 0) . snd)
+  -- The root is implied and not and not part of the actual solution.
+  removeRoot = filter ((/= rootUid) . fst)
+  -- Auxilary variables are only part of the computation, not the solution.
+  removeAux = filter (not . (uniqNameSpace `isPrefixOf`) . fst)
 
-scopeAnalysis1 imodule =
+setConstraints :: Analysis ()
+setConstraints =
   do
-    print =<< (glpSolveAll mipDefaults $ execLPM $ analyze imodule)
+    optFormula
+    colonConstraints
+    refConstraints
+    parentConstraints
+    (var rootUid) `equalTo` 1
+    
 
+matches :: Uid -> String -> Bool
+matches (Uid u1) u2 = u1 == u2
+matches Any _ = True
 
+analyze :: IModule -> Info
 analyze imodule =
-  do
-    analyzeOF imodule
-    analyzeSS imodule
-    analyzePC imodule
-    (var root) `equalTo` 1
+  Info clafers claferMap colonMap refMap parentMap constraintMap
+  where
+  root = IClafer noSpan True Nothing "_root" "_root" (ISuper False [PExp Nothing "" noSpan $ IClaferId "clafer" "clafer" True]) Nothing (0, 0) $ mDecls imodule
+  
+  clafers = analyzeClafers root
+  claferMap = Map.fromList [(uid c, c) | c <- clafers]
+  colonMap = toSuperMap $ filter (not . isOverlapping . super) clafers
+  refMap = toSuperMap $ filter (isOverlapping . super) clafers
+  parentMap = analyzePC root
+  constraintMap = []
+  
+  extends IClafer{super = ISuper _ [PExp{I.exp = IClaferId{sident = superUid}}]} = superUid
+  extends c@IClafer{super = s} = error $ show c
+  toSuperMap clafers = [(uid c, extends c) | c <- clafers]
 
-
-
--- analyzeOF: compute the formula to minimize
-analyzeOF IModule{mDecls = decls} =
+optFormula :: Analysis ()
+optFormula =
   do
     setDirection Min
-    setObjective $ varSum $ concatMap analyzeOFElement decls
+    c <- runListT clafers
+    let concretes = [uid concrete | concrete <- c, not $ isAbstract concrete]
+    setObjective $ varSum concretes
 
-analyzeOFElement :: IElement -> [String]
-analyzeOFElement (IEClafer clafer) = analyzeOFClafer clafer
-analyzeOFElement _ = []
+colonConstraints :: Analysis ()
+colonConstraints =
+  runListT_ $ do
+    -- forall c in the set of clafers' uid ...
+    c <- clafers' uid
+    -- ... find all uids of any clafer that extends c (only colons) ...
+    subs <- findAll (uid . subClafers) $ anything |: c
+    when (not $ null subs) $
+      -- ... then set the constraint scope_C = sum scope_subs
+      var c `equal` varSum subs
 
-analyzeOFClafer :: IClafer -> [String]
-analyzeOFClafer IClafer{isAbstract = isAbstract, uid = uid, elements = elements} =
-  if isAbstract then f else uid : f
-  where
-  f = concatMap analyzeOFElement elements
+refConstraints :: Analysis ()
+refConstraints =
+  runListT_ $ do
+    -- for all uids of any clafer the refs another uid ...
+    (sub, sup) <- anything |-> anything
+    let Just (low, _) = card sub
+    let usub = uid sub
+    let usup = uid sup
+    aux <- lift $ testPositive usub
+    -- scope_sup >= low-card(sub)
+    var usup `geq` (low *^ var aux)
+      
+parentConstraints :: Analysis ()
+parentConstraints =
+  runListT_ $ do
+    -- forall child under parent ...
+    (child, parent) <- anything |^ anything
+    let Just (low, high) = card child
+    let uchild = uid child
+    let uparent = uid parent
+    -- ... scope_this <= scope_parent * low-card(this) ...
+    (var uchild) `geq` (low *^ var uparent)
+    -- ... scope_this >= scope_parent * high-card(this) ...
+    -- high == -1 implies high card is unbounded
+    when (high /= -1) $ 
+      (var uchild) `leq` (high *^ var uparent)
 
-
-
--- analzyeSS: does all the constraints between super and sub types.
-analyzeSS :: IModule -> Analysis ()
-analyzeSS IModule{mDecls = decls} =
+{-
+ - Create a new variable "aux". If
+ -   v == 0 -> aux == 0
+ -   v > 0  -> aux == 1
+ -
+ - pre: v >= 0
+ -}
+testPositive :: String -> Analysis String
+testPositive v =
   do
-    hier <- concatMapM analyzeSSElement decls
-    -- "clafer" is the top most of the hierarchy. Leave it unconstrained to make it simpler
-    -- the integer linear programming solver.
-    let unflatHier = Map.delete "clafer" $ Map.fromListWith (++) [(a, [b]) | (a, b) <- hier]
-    mapM_ addSuperTypeConstraint $ Map.toList unflatHier
+    aux <- uniqVar
+    var aux `leq` var v
+    var aux `geq` (smallM *^ var v)
+    var aux `leqTo` 1
+    setVarKind aux IntVar
+    return aux
+
+{-
+ - smallM cannot be too small. For example, with glpk
+ -   0.000001 * 9 = 0
+ -}
+smallM :: Double
+smallM = 0.00001
+
+findAll f = lift . runListT . fmap f
+subClafers = fst
+superClafers = snd
+
+runListT_ :: Monad m => ListT m a -> m ()
+runListT_ l = runListT l >> return ()
+
+
+t = IModule {mName = "", mDecls = [IEClafer (IClafer {cinPos = Span (Pos 1 1) (Pos 2 4), isAbstract = False, gcard = Just (IGCard {isKeyword = False, interval = (0,-1)}), ident = "A", uid = "c1_A", super = ISuper {isOverlapping = False, supers = [PExp {iType = Just TClafer, pid = "", inPos = Span (Pos 1 3) (Pos 1 4), exp = IClaferId {modName = "", sident = "c3_C", isTop = True}}]}, card = Just (2,2), glCard = (1,1), elements = [IEClafer (IClafer {cinPos = Span (Pos 2 3) (Pos 2 4), isAbstract = False, gcard = Just (IGCard {isKeyword = False, interval = (0,-1)}), ident = "B", uid = "c2_B", super = ISuper {isOverlapping = False, supers = [PExp {iType = Just TClafer, pid = "", inPos = Span (Pos 0 0) (Pos 0 0), exp = IClaferId {modName = "", sident = "clafer", isTop = False}}]}, card = Just (1,1), glCard = (1,1), elements = []})]}),IEClafer (IClafer {cinPos = Span (Pos 3 1) (Pos 4 4), isAbstract = True, gcard = Just (IGCard {isKeyword = False, interval = (0,-1)}), ident = "C", uid = "c3_C", super = ISuper {isOverlapping = False, supers = [PExp {iType = Just TClafer, pid = "", inPos = Span (Pos 0 0) (Pos 0 0), exp = IClaferId {modName = "", sident = "clafer", isTop = False}}]}, card = Just (0,-1), glCard = (0,-1), elements = [IEClafer (IClafer {cinPos = Span (Pos 4 3) (Pos 4 4), isAbstract = False, gcard = Just (IGCard {isKeyword = False, interval = (0,-1)}), ident = "D", uid = "c4_D", super = ISuper {isOverlapping = False, supers = [PExp {iType = Just TClafer, pid = "", inPos = Span (Pos 0 0) (Pos 0 0), exp = IClaferId {modName = "", sident = "clafer", isTop = False}}]}, card = Just (1,1), glCard = (0,-1), elements = []})]})]}
+
+-- analyzeClafers: finds all the IClafers
+analyzeClafers :: IClafer -> [IClafer]
+analyzeClafers c@IClafer{elements = elements} = c : concatMap analyzeElement elements
   where
-  addSuperTypeConstraint (abstract, subs) = var abstract `equal` varSum subs
+  analyzeElement (IEClafer clafer) = analyzeClafers clafer
+  analyzeElement _ = []
 
-analyzeSSElement (IEClafer clafer) = analyzeSSClafer clafer
-analyzeSSElement _ = return []
-
-analyzeSSClafer :: IClafer -> Analysis [(String, String)]
-analyzeSSClafer IClafer{uid = uid, super = super, card = card, elements = elements} =
-  do
-    h <- analyzeSuper super
-    r <- concatMapM analyzeSSElement elements
-    return $ h ++ r
+-- analyzePC: finds the map from children to parents
+analyzePC :: IClafer -> ParentMap
+analyzePC IClafer{uid = uid, elements = elements} = concatMap (analyzePCElement uid) elements
   where
-  lowCard (Just (low, _)) = low
-  lowCard _               = error "No lower cardinality." -- Should never happen?
+  analyzePCElement :: String -> IElement -> [(String, String)]
+  analyzePCElement parent (IEClafer clafer)    = analyzePCClafer parent clafer
+  analyzePCElement _ _ = []
 
-  analyzeSuper :: ISuper -> Analysis [(String, String)]
-  -- Reference
-  analyzeSuper (ISuper True [PExp{I.exp = IClaferId{sident = superUid}}])  = (var superUid) `geqTo` (lowCard card) >> return []
-  -- Subtype
-  analyzeSuper (ISuper False [PExp{I.exp = IClaferId{sident = superUid}}]) = return [(superUid, uid)]
-  analyzeSuper _ = error $ "Multiple inheritance not currently supported. " ++ show super
+  analyzePCClafer :: String -> IClafer -> [(String, String)]
+  analyzePCClafer parent IClafer{uid = uid, elements = elements} =
+    (uid, parent) : concatMap (analyzePCElement uid) elements
 
 
-
--- analyzePC: does all the constraints between parent and children.
-analyzePC :: IModule -> Analysis ()
-analyzePC IModule{mDecls = decls} =
-  mapM_ (analyzePCElement root) decls
-
-analyzePCElement :: String -> IElement -> Analysis ()
-analyzePCElement parent (IEClafer clafer)    = analyzePCClafer parent clafer
-analyzePCElement parent (IEConstraint _ exp) = error $ show exp
-
-analyzePCClafer :: String -> IClafer -> Analysis ()
-analyzePCClafer parent IClafer{uid = uid, card = card, elements = elements} =
-  -- Abstract clafers has card (0, -1) so no special case for abstract clafers.
-  do
-    analyzeCard card
-    -- uid is now the parent of the sub elements.
-    mapM_ (analyzePCElement uid) elements
-  where
-  analyzeCard (Just card) = analyzeLowCard card >> analyzeHighCard card
-  analyzeCard Nothing     = return ()
-  analyzeLowCard (low, _) = (low *^ var parent) `leq` (var uid)
-  analyzeHighCard (_, -1)   = return ()
-  analyzeHighCard (_, high) = (high *^ var parent) `geq` (var uid)
-
-concatMapM :: Monad m => (a -> m [b]) -> [a] -> m [b]
-concatMapM f l = concat `liftM` mapM f l
-
-{-isReference = isOverlapping . super
-isConcrete = not . isReference
-isSuperest clafers clafer = isNothing $ directSuper clafers clafer
-
-
--- Collects the global cardinality and hierarchy information into proper lower bounds.
--- If the model only has Clafers (ie. no constraints) then the lower bound is tight.
--- scopeAnalysis :: IModule -> Map IClafer Integer
-scopeAnalysis2 :: IModule -> [(String, Integer)]
-scopeAnalysis2 IModule{mDecls = decls} =
-    [(a, b) | (a, b) <- finalAnalysis, isReferenceOrSuper a, b /= 0]
-    where
-    finalAnalysis = Map.toList $ foldl analyzeComponent referenceAnalysis connectedComponents
-    
-    isReferenceOrSuper uid =
-        isReference clafer || isSuperest clafers clafer
-        where
-        clafer = findClafer uid
-        
-    isConcrete' uid = isConcrete $ findClafer uid
-    
-    upperCards u =
-        Map.findWithDefault (error $ "No upper cardinality for clafer named \"" ++ u ++ "\".") u upperCardsMap
-    upperCardsMap = Map.fromList [(uid c, snd $ fromJust $ card c) | c <- clafers]
-    
-    referenceAnalysis = foldl (analyzeReferences clafers) Map.empty decls
-    constraintAnalysis = analyzeConstraints constraints upperCards
-    (subclaferMap, parentMap) = analyzeHierarchy clafers
-    connectedComponents = analyzeDependencies clafers
-    clafers = concatMap findClafers decls
-    constraints = concatMap findConstraints decls
-    findClafer uid = fromJust $ find (isEqClaferId uid) clafers
-    
-    lowCard clafer =
-        max low constraintLow
-        where
-        low = fst $ fromJust $ card clafer
-        constraintLow = Map.findWithDefault 0 (uid clafer) constraintAnalysis
-    
-    analyzeComponent analysis component =
-        case flattenSCC component of
-            [uid] -> analyzeSingleton uid analysis
-            uids  ->
-                foldr analyzeSingleton assume uids
-                where
-                -- assume that each of the scopes in the component is 1 while solving
-                assume = foldr (`Map.insert` 1) analysis uids
-        where
-        analyzeSingleton uid analysis = analyze analysis $ findClafer uid
-    
-    analyze :: Map String Integer -> IClafer -> Map String Integer
-    analyze analysis clafer =
-        -- Take the max between the reference analysis and this analysis
-        Map.insertWith max (uid clafer) scope analysis
-        where
-        scope
-            | isAbstract clafer  = sum subclaferScopes
-            | otherwise          = parentScope * lowCard clafer
-        
-        subclaferScopes = map (findOrError " subclafer scope not found" analysis) $ filter isConcrete' subclafers
-        parentScope  =
-            case parent of
-                Just parent' -> findOrError " parent scope not found" analysis parent'
-                Nothing      -> rootScope
-        subclafers = Map.findWithDefault [] (uid clafer) subclaferMap
-        parent     = Map.lookup (uid clafer) parentMap
-        rootScope = 1
-        findOrError message map key = Map.findWithDefault (error $ key ++ message) key map
-        
-    
-analyzeReferences clafers analysis (IEClafer clafer) =
-    foldl (analyzeReferences clafers) analysis' (elements clafer)
-    where
-    lowerBound = fst (fromJust $ card clafer)
-    analysis'
-        | isReference clafer = Map.insert (uid $ fromJust $ directSuper clafers clafer) lowerBound analysis
-        | otherwise          = analysis
-analyzeReferences _ analysis _ = analysis
-
-
-analyzeConstraints :: [PExp] -> (String -> Integer) -> Map String Integer
-analyzeConstraints constraints upperCards =
-    foldr analyzeConstraint Map.empty $ filter isOneOrSomeConstraint constraints
-    where
-    isOneOrSomeConstraint PExp{exp = IDeclPExp{quant = quant}} =
-        -- Only these two quantifiers requires an increase in scope to satisfy.
-        case quant of
-            IOne -> True
-            ISome -> True
-            _     -> False
-    isOneOrSomeConstraint _ = False
-    
-    -- Only considers how quantifiers affect scope. Other types of constraints are not considered.
-    -- Constraints of the type [some path1.path2] or [no path1.path2], etc.
-    analyzeConstraint PExp{exp = IDeclPExp{quant = quant, oDecls = [], bpexp = bpexp}} analysis =
-        foldr atLeastOne analysis path
-        where
-        path = dropThisAndParent $ unfoldJoins bpexp
-        atLeastOne = Map.insertWith max `flip` 1
-        
-    -- Constraints of the type [all disj a : path1.path2] or [some b : path3.path4], etc.
-    analyzeConstraint PExp{exp = IDeclPExp{oDecls = decls}} analysis =
-        foldr analyzeDecl analysis decls
-    analyzeConstraint _ analysis = analysis
-
-    analyzeDecl IDecl{isDisj = isDisj, decls = decls, body = body} analysis =
-        foldr (uncurry insert) analysis $ zip path scores
-        where
-        -- Take the first element in the path, and change its effective lower cardinality.
-        -- Can overestimate the scope.
-        path = dropThisAndParent $ unfoldJoins body
-        -- "disj a;b;c" implies at least 3 whereas "a;b;c" implies at least one.
-        minScope = if isDisj then fromIntegral $ length decls else 1
-        insert = Map.insertWith max
-        
-        scores = assign path minScope
-        
-        {-
-         - abstract Z
-         -   C *
-         -     D : integer *
-         -
-         - A : Z
-         -   B : integer
-         -   [some disj a;b;c;d : D | a = 1 && b = 2 && c = 3 && d = B]
-         -}
-         -- Need at least 4 D's per A.
-         -- Either
-         -- a) Make the effective lower cardinality of C=4 and D=1
-         -- b) Make the effective lower cardinality of C=1 and D=4
-         -- c) Some other combination.
-         -- Choose b, a greedy algorithm that starts from the lowest child progressing upwards.
-         
-        {-
-         - abstract Z
-         -   C *
-         -     D : integer 3..*
-         -
-         - A : Z
-         -   B : integer
-         -   [some disj a;b;c;d : D | a = 1 && b = 2 && c = 3 && d = B]
-         -}
-         -- The algorithm we do is greedy so it will chose D=3.
-         -- However, it still needs more D's so it will choose C=2
-         -- C=2, D=3
-         -- This might not be optimum since now the scope allows for 6 D's.
-         -- A better solution might be C=2, D=2.
-         -- Well too bad, we are using the greedy algorithm.
-    assign [] _ = [1]
-    assign (p : ps) score =
-        pScore : ps'
-        where
-        upper = upperCards p
-        ps' = assign ps score
-        psScore = product $ ps'
-        pDesireScore = ceiling (score % psScore)
-        pMaxScore = upperCards p
-        pScore = min' pDesireScore pMaxScore
-        
-    min' a b = if b == -1 then a else min a b
-        
-    -- The each child has at most one parent. No matter what the path in a quantifier
-    -- looks like, we ignore the parent parts.
-    dropThisAndParent = dropWhile (== "parent") . dropWhile (== "this")
-
-
-analyzeDependencies :: [IClafer] -> [SCC String]
-analyzeDependencies clafers = connComponents
-    where
-    connComponents  = stronglyConnComp [(key, key, depends) | (key, depends) <- dependencyGraph]
-    dependencies    = concatMap (dependency clafers) clafers
-    dependencyGraph = Map.toList $ Map.fromListWith (++) [(a, [b]) | (a, b) <- dependencies]
-
-
-dependency clafers clafer =
-    selfDependency : (maybeToList superDependency ++ childDependencies)
-    where
-     -- This is to make the "stronglyConnComp" from Data.Graph play nice. Otherwise,
-     -- clafers with no dependencies will not appear in the result.
-    selfDependency = (uid clafer, uid clafer)
-    superDependency
-        | isReference clafer = Nothing
-        | otherwise =
-            do
-                super <- directSuper clafers clafer
-                -- Need to analyze clafer before its super
-                return (uid super, uid clafer)
-    -- Need to analyze clafer before its children
-    childDependencies = [(uid child, uid clafer) | child <- childClafers clafer]
-        
-
-analyzeHierarchy :: [IClafer] -> (Map String [String], Map String String)
-analyzeHierarchy clafers =
-    foldl hierarchy (Map.empty, Map.empty) clafers
-    where
-    hierarchy (subclaferMap, parentMap) clafer = (subclaferMap', parentMap')
-        where
-            subclaferMap' = 
-                case super of
-                    Just super' -> Map.insertWith (++) (uid super') [uid clafer] subclaferMap
-                    Nothing     -> subclaferMap
-            super = directSuper clafers clafer
-            parentMap' = foldr (flip Map.insert $ uid clafer) parentMap (map uid $ childClafers clafer)
-    
-
-directSuper clafers clafer =
-    second $ findHierarchy getSuper clafers clafer
-    where
-    second [] = Nothing
-    second [x] = Nothing
-    second (x1:x2:xs) = Just x2
-    
-
--- Finds all ancestors
-findClafers :: IElement -> [IClafer]
-findClafers (IEClafer clafer) = clafer : concatMap findClafers (elements clafer)
-findClafers _ = []
-
-
--- Find all constraints
-findConstraints :: IElement -> [PExp]
-findConstraints IEConstraint{cpexp = c} = [c]
-findConstraints (IEClafer clafer) = concatMap findConstraints (elements clafer)
-findConstraints _ = []
-
--- Finds all the direct ancestors (ie. children)
-childClafers clafer =
-    mapMaybe asClafer (elements clafer)
-    where
-    asClafer (IEClafer clafer) = Just clafer
-    asClafer _ = Nothing
-    
-    
 -- Unfold joins
 -- If the expression is a tree of only joins, then this function will flatten
 -- the joins into a list.
@@ -388,4 +327,4 @@ unfoldJoins pexp =
     unfoldJoins' PExp{exp = IClaferId{sident = sident}} =
         return $ [sident]
     unfoldJoins' _ =
-        fail "not a join"-}
+        fail "not a join"
