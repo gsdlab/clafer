@@ -329,7 +329,7 @@ revertLayout :: String -> String
 revertLayout input = unlines $ revertLayout' (lines input) 0 
 
 revertLayout' :: [String] -> Int -> [String]
-revertLayout' (xs:[])        indent = []
+revertLayout' []             indent = []
 revertLayout' ([]:xss)       indent = revertLayout' xss indent
 revertLayout' (('{':xs):xss) indent = (replicate indent' ' ' ++ xs):revertLayout' xss indent'
                                     where indent' = indent + 2

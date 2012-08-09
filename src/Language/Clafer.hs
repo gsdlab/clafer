@@ -279,29 +279,39 @@ generateFragments =
     flatten $ cconcat $ map (genDeclaration args) frag
 
 -- Splits the AST into their fragments, and generates the output for each fragment.
-generateHtml :: Monad m => ClaferT m CompilerResult
-generateHtml =
-  do
-    env <- getEnv
-    let PosModule _ decls = ast env
-    let irMap = irModuleTrace env
-    let (iModule, genv, au) = ir env
-    return $ CompilerResult { extension = "html", 
-                              outputCode = unlines $ generateFragments decls (frags env) irMap,
-                              statistics = showStats au $ statsModule iModule,
-                              mappingToAlloy = Nothing } 
+generateHtml env =
+    let PosModule _ decls = ast env;
+        cargs = args env;
+        irMap = irModuleTrace env;
+        comments = if fromJust $ add_comments cargs then getComments $ unlines $ modelFrags env else [];
+        (iModule, genv, au) = ir env;
+    in (if (fromJust $ self_contained cargs) then Css.header ++ Css.css ++ "</head>\n<body>\n" else "")
+       ++ (unlines $ generateFragments decls (frags env) irMap comments) ++ "</body>" ++
+       (if (fromJust $ self_contained cargs) then "\n</html>" else "")
 
   where
     line (PosElementDecl (Span pos _) _) = pos
     line (PosEnumDecl (Span pos _) _  _) = pos
     line _                               = Pos 0 0
+    generateFragments :: [Declaration] -> [Pos] -> Map Span [Ir] -> [(Span, String)] -> [String]
+    generateFragments []           _            _     comments = printComments comments
+    generateFragments (decl:decls) []           irMap comments = let (comments', c) = printPreComment (range decl) comments in
+                                                                   [c] ++ (cleanOutput $ revertLayout $ printDeclaration decl 0 irMap True $ inDecl decl comments') : (generateFragments decls [] irMap $ afterDecl decl comments)
+    generateFragments (decl:decls) (frag:frags) irMap comments = if line decl < frag
+                                                                 then let (comments', c) = printPreComment (range decl) comments in
+                                                                   [c] ++ (cleanOutput $ revertLayout $ printDeclaration decl 0 irMap True $ inDecl decl comments') : (generateFragments decls (frag:frags) irMap $ afterDecl decl comments)
+                                                                 else "<!-- # FRAGMENT -->" : generateFragments (decl:decls) frags irMap comments
+    inDecl :: Declaration -> [(Span, String)] -> [(Span, String)]
+    inDecl decl comments = let span = range decl in dropWhile (\x -> fst x < span) comments
+    afterDecl :: Declaration -> [(Span, String)] -> [(Span, String)]
+    afterDecl decl comments = let (Span _ (Pos line _)) = range decl in dropWhile (\(x, _) -> let (Span _ (Pos line' _)) = x in line' <= line) comments
+    range (EnumDecl _ _) = noSpan
+    range (PosEnumDecl span _ _) = span
+    range (ElementDecl _) = noSpan
+    range (PosElementDecl span _) = span
+    printComments [] = []
+    printComments ((span, comment):cs) = (snd (printComment span [(span, comment)]) ++ "<br>\n"):printComments cs
 
-    generateFragments :: [Declaration] -> [Pos] -> Map Span [Ir] -> [String]
-    generateFragments []           _            _     = []
-    generateFragments (decl:decls) []           irMap = (cleanOutput $ revertLayout $ printDeclaration decl 0 irMap True) : generateFragments decls [] irMap
-    generateFragments (decl:decls) (frag:frags) irMap = if line decl < frag
-                                                        then (cleanOutput $ revertLayout $ printDeclaration decl 0 irMap True) : generateFragments decls (frag:frags) irMap
-                                                        else "<!-- # FRAGMENT -->" : generateFragments (decl:decls) frags irMap
 -- Generates output for the IR.
 generate :: Monad m => ClaferT m CompilerResult
 generate =
@@ -311,23 +321,21 @@ generate =
     let (iModule, genv, au) = ir env
     let stats = showStats au $ statsModule iModule
     let (ext, code, mapToAlloy) = case (fromJust $ mode cargs) of
-                        Alloy   -> do
-                                     let alloyCode = genModule cargs (astrModule iModule, genv)
-                                     let addCommentStats = if fromJust $ no_stats cargs then const else addStats
-                                     let m = show $ snd alloyCode
-                                     ("als", addCommentStats (fst alloyCode) stats, Just m)
-                        Alloy42 -> do
-                                     let alloyCode = genModule cargs (astrModule iModule, genv)
-                                     let addCommentStats = if fromJust $ no_stats cargs then const else addStats
-                                     let m = show $ snd alloyCode
-                                     ("als", addCommentStats (fst alloyCode) stats, Just m)
-                        Xml     -> ("xml", genXmlModule iModule, Nothing)
-                        Clafer  -> ("des.cfr", printTree $ sugarModule iModule, Nothing)
-                        Html    -> let output = (if (fromJust $ self_contained cargs)
-                                              then Css.header ++ Css.css ++ "</head>\n<body>\n"
-                                              else "") ++ genHtml (ast env) iModule
-                                   in ("html", output, Nothing)
-                        Graph   -> ("dot", genGraph (ast env) iModule (dropExtension $ file cargs), Nothing)
+                        Alloy   ->  do
+                                      let alloyCode = genModule cargs (astrModule iModule, genv)
+                                      let addCommentStats = if fromJust $ no_stats cargs then const else addStats
+                                      let m = show $ snd alloyCode
+                                      ("als", addCommentStats (fst alloyCode) stats, Just m)
+                        Alloy42  -> do
+                                      let alloyCode = genModule cargs (astrModule iModule, genv)
+                                      let addCommentStats = if fromJust $ no_stats cargs then const else addStats
+                                      let m = show $ snd alloyCode
+                                      ("als", addCommentStats (fst alloyCode) stats, Just m)
+                        Xml      -> ("xml", genXmlModule iModule, Nothing)
+                        Clafer   -> ("des.cfr", printTree $ sugarModule iModule, Nothing)
+                        Html     -> ("html", generateHtml env, Nothing)
+                        Graph    -> ("dot", genSimpleGraph (ast env) iModule (dropExtension $ file cargs), Nothing)
+                        CVLGraph -> ("dot", genCVLGraph (ast env) iModule (dropExtension $ file cargs), Nothing)
     return $ CompilerResult { extension = ext, 
                      outputCode = code, 
                      statistics = stats, 
@@ -339,36 +347,6 @@ data CompilerResult = CompilerResult {
                             statistics :: String, 
                             mappingToAlloy :: Maybe String 
                             } deriving Show
-
-{-generateHtml :: Monad m => ClaferT m CompilerResult
-generateHtml = do
-    env <- getEnv
-    let (iModule, genv, au) = ir env
-    let tree = ast env
-    return $ CompilerResult { extension = "html",
-                              outputCode = genHtml tree iModule,
-                              statistics = showStats au $ statsModule iModule,
-                              mappingToAlloy = Nothing }
-                              
-generateText :: Monad m => ClaferT m CompilerResult
-generateText = do
-    env <- getEnv
-    let (iModule, genv, au) = ir env
-    let tree = ast env
-    return $ CompilerResult { extension = "txt",
-                              outputCode = genText tree iModule,
-                              statistics = showStats au $ statsModule iModule,
-                              mappingToAlloy = Nothing }
-
-generateGraph :: Monad m => String -> ClaferT m CompilerResult
-generateGraph name = do
-    env <- getEnv
-    let (iModule, genv, au) = ir env
-    let tree = ast env
-    return $ CompilerResult { extension = "dot",
-                              outputCode = genGraph tree iModule name,
-                              statistics = showStats au $ statsModule iModule,
-                              mappingToAlloy = Nothing }-}
 
 desugar :: Module -> IModule  
 desugar tree = desugarModule tree

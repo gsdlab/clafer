@@ -86,13 +86,14 @@ ir _ = error "No IR. Did you forget to compile?" -- Indicates a bug in the Clafe
                             
                             
                             
-makeEnv args = ClaferEnv { args = args,
+makeEnv args = ClaferEnv { args = args',
                            modelFrags = [],
                            cAst = Nothing,
                            cIr = Nothing,
                            frags = [],
                            irModuleTrace = Map.empty,
                            astModuleTrace = Map.empty}
+               where args' = if mode args == Just CVLGraph then args{flatten_inheritance=Just True} else args
 
 type ClaferM = ClaferT Identity
 -- Monad for using Clafer.
