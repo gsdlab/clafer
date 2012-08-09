@@ -19,7 +19,15 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
 -}
-module Language.Clafer.Generator.Html (genHtml, genText, genTooltip, printModule, traceAstModule, traceIrModule) where
+module Language.Clafer.Generator.Html (genHtml,
+                                       genText,
+                                       genTooltip,
+                                       printModule,
+                                       printDeclaration,
+                                       traceAstModule,
+                                       traceIrModule,
+                                       cleanOutput,
+                                       revertLayout) where
 
 import Language.Clafer.Front.Absclafer
 import Language.Clafer.Front.LayoutResolver(revertLayout)
