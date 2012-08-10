@@ -50,7 +50,7 @@ run v args input =
   do
     result <- runClaferT args $
       do
-        addModuleFragment input --TODO for multi-fragments: Add model as fragments
+        addFragments $ fragments input --TODO for multi-fragments: Add model as fragments
         env <- getEnv
         parse
         compile
@@ -63,6 +63,12 @@ run v args input =
   where
   catch (Left err) f = f err
   catch (Right r)  _ = return r
+  addFragments []     = return ()
+  addFragments (x:xs) = addModuleFragment x >> addFragments xs
+  fragments model = map unlines $ fragments' $ lines model
+  fragments' []                  = []
+  fragments' ("//# FRAGMENT":xs) = fragments' xs
+  fragments' model               = takeWhile (/= "//# FRAGMENT") model : fragments' (dropWhile (/= "//# FRAGMENT") model)
 --  htmlCatch :: Either ClaferErr CompilerResult -> ClaferArgs -> String -> IO(CompilerResult)
   htmlCatch (Right r) _ _ = return r
   htmlCatch (Left err) args model =
@@ -75,10 +81,10 @@ run v args input =
   highlightErrors' :: [String] -> [ClaferErr] -> [String]
   highlightErrors' model [] = model
   highlightErrors' model ((ClaferErr msg):es) = highlightErrors' model es
-  highlightErrors' model ((ParseErr ErrPos{modelPos = Pos l c} msg):es) = do
-      let (ls, lss) = genericSplitAt l model
+  highlightErrors' model ((ParseErr ErrPos{modelPos = Pos l c, fragId = n} msg):es) = do
+      let (ls, lss) = genericSplitAt (l + toInteger n) model
       let newLine = fst (genericSplitAt (c - 1) $ last ls) ++ "<span class=\"error\" title=\"Parse failed at line " ++ show l ++ " column " ++ show c ++
-             "...\n" ++ msg ++ "\">" ++ if snd (genericSplitAt (c - 1) $ last ls) == "" then "&nbsp;" else snd (genericSplitAt (c - 1) $ last ls) ++ "</span>"
+             "...\n" ++ msg ++ "\">" ++ (if snd (genericSplitAt (c - 1) $ last ls) == "" then "&nbsp;" else snd (genericSplitAt (c - 1) $ last ls)) ++ "</span>"
       highlightErrors' (init ls ++ [newLine] ++ lss) es
   handleErrs = mapM_ handleErr
   handleErr (ClaferErr msg) =

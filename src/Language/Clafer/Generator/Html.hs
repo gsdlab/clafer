@@ -214,7 +214,7 @@ printConstraint (Constraint exps) indent irMap html comments = concatMap (\x -> 
 printConstraint (PosConstraint _ exps) indent irMap html comments = printConstraint (Constraint exps) indent irMap html comments
 printConstraint' exp indent irMap html comments = (printIndent indent html) ++ while html "<span class=\"keyword\">" ++ "[" ++ while html "</span>"
                                                   ++ " " ++ printExp exp indent irMap html comments ++ " " ++ while html "<span class=\"keyword\">" ++ "]" ++ while html "</span>"
-                                                  ++ (if indent == 0 then "" else "</span>") ++ "<br>" ++ "\n"
+                                                  ++ (if indent == 0 then "" else "</span>") ++ while html "<br>" ++ "\n"
 
 printDecl (Decl locids setExp) indent irMap html comments = (while html "<span class=\"keyword\">") ++ ":" ++ (while html "</span>") ++ printSetExp setExp indent irMap html comments
 printDecl (PosDecl _ locids setExp) indent irMap html comments = printDecl (Decl locids setExp) indent irMap html comments
