@@ -67,16 +67,19 @@ run v args input =
   htmlCatch (Right r) _ _ = return r
   htmlCatch (Left err) args model =
     do let f = (dropExtension $ file args) ++ ".html"
-       let result = (if (fromJust $ self_contained args) then header ++ css ++ "</head>\n<body>\n<pre>\n" else "") ++ highlightErrors model err ++ (if (fromJust $ self_contained args) then "\n</pre>\n</html>" else "")
+       let result = (if (fromJust $ self_contained args) then header ++ css ++ "</head>\n<body>\n<pre>\n" else "") ++ highlightErrors model err ++
+                                                               (if (fromJust $ self_contained args) then "\n</pre>\n</html>" else "")
        liftIO $ if fromJust $ console_output args then putStrLn result else writeFile f result
   highlightErrors :: String -> [ClaferErr] -> String
   highlightErrors model errors = unlines $ highlightErrors' (lines model) errors--assumes the fragments have been concatenated
   highlightErrors' :: [String] -> [ClaferErr] -> [String]
   highlightErrors' model [] = model
   highlightErrors' model ((ClaferErr msg):es) = highlightErrors' model es
-  highlightErrors' model ((ParseErr ErrPos{modelPos = Pos l c} msg):es) = do let (ls, lss) = genericSplitAt l model
-                                                                             let newLine = fst (genericSplitAt (c - 1) $ last ls) ++ "<span class=\"error\" title=\"Parse failed at line " ++ show l ++ " column " ++ show c ++ "...\n" ++ msg ++ "\">" ++ snd (genericSplitAt (c - 1) $ last ls) ++ "</span>"
-                                                                             highlightErrors' (init ls ++ [newLine] ++ lss) es
+  highlightErrors' model ((ParseErr ErrPos{modelPos = Pos l c} msg):es) = do
+      let (ls, lss) = genericSplitAt l model
+      let newLine = fst (genericSplitAt (c - 1) $ last ls) ++ "<span class=\"error\" title=\"Parse failed at line " ++ show l ++ " column " ++ show c ++
+             "...\n" ++ msg ++ "\">" ++ if snd (genericSplitAt (c - 1) $ last ls) == "" then "&nbsp;" else snd (genericSplitAt (c - 1) $ last ls) ++ "</span>"
+      highlightErrors' (init ls ++ [newLine] ++ lss) es
   handleErrs = mapM_ handleErr
   handleErr (ClaferErr msg) =
     do
