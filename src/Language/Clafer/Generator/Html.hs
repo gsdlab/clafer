@@ -103,7 +103,7 @@ printElement (PosSubsoftconstraint span softConstraint) indent irMap html commen
 
 printElements ElementsEmpty indent irMap html comments = ""
 printElements (PosElementsEmpty _) indent irMap html comments = printElements ElementsEmpty indent irMap html comments
-printElements (ElementsList elements) indent irMap html comments = "\n{" ++ mapElements elements indent irMap html comments ++ "\n}" --TODO Use custom map so that 
+printElements (ElementsList elements) indent irMap html comments = "\n{" ++ mapElements elements indent irMap html comments ++ "\n}"
     where mapElements []     indent irMap html comments = []
           mapElements (e:es) indent irMap html comments = if span e == noSpan
                                                           then (printElement e (indent + 1) irMap html comments ++ "\n") ++ mapElements es indent irMap html comments

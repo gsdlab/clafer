@@ -300,7 +300,7 @@ generateHtml env =
     generateFragments (decl:decls) (frag:frags) irMap comments = if line decl < frag
                                                                  then let (comments', c) = printPreComment (range decl) comments in
                                                                    [c] ++ (cleanOutput $ revertLayout $ printDeclaration decl 0 irMap True $ inDecl decl comments') : (generateFragments decls (frag:frags) irMap $ afterDecl decl comments)
-                                                                 else "<!-- # FRAGMENT -->" : generateFragments (decl:decls) frags irMap comments
+                                                                 else "<!-- # FRAGMENT /-->" : generateFragments (decl:decls) frags irMap comments
     inDecl :: Declaration -> [(Span, String)] -> [(Span, String)]
     inDecl decl comments = let span = range decl in dropWhile (\x -> fst x < span) comments
     afterDecl :: Declaration -> [(Span, String)] -> [(Span, String)]
