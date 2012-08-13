@@ -51,8 +51,8 @@ graphSimpleDeclaration _                          _        _     = ""
 
 graphSimpleElement (Subclafer clafer)  topLevel irMap = graphSimpleClafer clafer topLevel irMap
 graphSimpleElement (PosSubclafer _ subclafer) topLevel irMap = graphSimpleElement (Subclafer subclafer) topLevel irMap
-graphSimpleElement (ClaferUse name card elements) topLevel irMap = if snd3 topLevel == Nothing then "" else fromJust (snd3 topLevel) ++ " -> " ++ graphSimpleName name topLevel irMap ++ " [arrowhead = onormal style = dashed constraint = false];\n"
-graphSimpleElement (PosClaferUse span name card elements) topLevel irMap = if snd3 topLevel == Nothing then "" else fromJust (snd3 topLevel) ++ " -> " ++ getUseId span irMap ++ " [arrowhead = onormal style = dashed constraint = false];\n"
+graphSimpleElement (ClaferUse name card elements) topLevel irMap = if snd3 topLevel == Nothing then "" else "\"" ++ fromJust (snd3 topLevel) ++ "\" -> \"" ++ graphSimpleName name topLevel irMap ++ "\" [arrowhead = onormal style = dashed constraint = false];\n"
+graphSimpleElement (PosClaferUse span name card elements) topLevel irMap = if snd3 topLevel == Nothing then "" else "\"" ++ fromJust (snd3 topLevel) ++ "\" -> \"" ++ getUseId span irMap ++ "\" [arrowhead = onormal style = dashed constraint = false];\n"
 graphSimpleElement _ _ _ = ""
 
 graphSimpleElements ElementsEmpty topLevel irMap = ""
@@ -64,7 +64,7 @@ graphSimpleClafer (Clafer abstract gCard id super card init elements) topLevel i
 graphSimpleClafer (PosClafer span abstract gCard id super card init elements) topLevel irMap
   | fst3 topLevel == True = let {tooltip = genTooltip (Module [ElementDecl (Subclafer (Clafer abstract gCard id super card init elements))]) irMap;
                                uid = getDivId span irMap} in
-                             uid ++ " [label=\"" ++ (head $ lines tooltip) ++ "\" URL=\"#" ++ uid ++ "\" tooltip=\"" ++ htmlNewlines tooltip ++ "\"];\n"
+                             "\"" ++ uid ++ "\" [label=\"" ++ (head $ lines tooltip) ++ "\" URL=\"#" ++ uid ++ "\" tooltip=\"" ++ htmlNewlines tooltip ++ "\"];\n"
                              ++ graphSimpleSuper super (True, Just uid, Just uid) irMap ++ graphSimpleElements elements (False, Just uid, Just uid) irMap
   | otherwise             = let (PosIdent (_,ident)) = id in
                              graphSimpleSuper super (fst3 topLevel, snd3 topLevel, Just ident) irMap ++ graphSimpleElements elements (fst3 topLevel, snd3 topLevel, Just ident) irMap
@@ -75,7 +75,7 @@ graphSimpleSuper (SuperSome superHow setExp) topLevel irMap = let {parent [] = "
                                                             parent (uid@('c':xs):xss) = if '_' `elem` xs then uid else parent xss;
                                                             parent (xs:xss) = parent xss;
                                                             super = parent $ graphSimpleSetExp setExp topLevel irMap} in
-                                                            if super == "error" then "" else fromJust (snd3 topLevel) ++ " -> " ++ parent (graphSimpleSetExp setExp topLevel irMap) ++ graphSimpleSuperHow superHow topLevel irMap
+                                                            if super == "error" then "" else "\"" ++ fromJust (snd3 topLevel) ++ "\" -> \"" ++ parent (graphSimpleSetExp setExp topLevel irMap) ++ "\"" ++ graphSimpleSuperHow superHow topLevel irMap
 graphSimpleSuper (PosSuperSome _ superHow setExp) topLevel irMap = graphSimpleSuper (SuperSome superHow setExp) topLevel irMap
 
 graphSimpleSuperHow SuperColon  topLevel irMap = " [arrowhead = onormal " ++ if fst3 topLevel == True then "constraint = true];\n" else "style = dashed constraint = false];\n"
@@ -156,7 +156,7 @@ graphCVLClafer (PosClafer span abstract gCard id super card init elements) paren
           uid = getDivId span irMap;
           gcard = graphCVLGCard gCard parent irMap;
           super' = graphCVLSuper super parent irMap} in
-     uid ++ " [URL=\"#" ++ uid ++ "\" label=\"" ++ dropUid uid ++ super' ++ (if choiceCard card then "\" style=rounded"  else " [" ++ graphCVLCard card parent irMap ++ "]\"")
+     "\"" ++ uid ++ "\" [URL=\"#" ++ uid ++ "\" label=\"" ++ dropUid uid ++ super' ++ (if choiceCard card then "\" style=rounded"  else " [" ++ graphCVLCard card parent irMap ++ "]\"")
      ++ (if super' == "" then "" else " shape=oval") ++ "];\n"
      ++ (if gcard == "" then "" else "g" ++ uid ++ " [label=\"" ++ gcard ++ "\" fontsize=10 shape=triangle];\ng" ++ uid ++ " -> " ++ uid ++ " [weight=10];\n")
      ++ (if parent==Nothing then "" else uid ++ " -> " ++ fromJust parent ++ (if lowerCard card == "0" then " [style=dashed]" else "") ++ ";\n")
@@ -185,9 +185,9 @@ graphCVLPosIdent (PosIdent (pos, id)) parent irMap = getUid (PosIdent (pos, id))
 
 graphCVLConstraint (Constraint exps) parent irMap = ""
 graphCVLConstraint (PosConstraint span exps) parent irMap = let body = htmlNewlines $ genTooltip (Module [ElementDecl (Subconstraint (Constraint exps))]) irMap;
-                                                                       uid = getExpId span irMap
+                                                                       uid = "\"" ++ getExpId span irMap ++ "\""
                                                                     in uid ++ " [label=\"" ++ body ++ "\" shape=parallelogram];\n" ++
-                                                                      if parent == Nothing then "" else uid ++ " -> " ++ fromJust parent ++ ";\n"
+                                                                      if parent == Nothing then "" else uid ++ " -> \"" ++ fromJust parent ++ "\";\n"
 
 graphCVLCard card parent irMap = case card of
   CardEmpty  -> "1..1"
@@ -261,7 +261,6 @@ choiceCard (PosCardEmpty _) = choiceCard CardEmpty
 choiceCard CardLone = True
 choiceCard (PosCardLone _) = choiceCard CardLone
 choiceCard (CardInterval nCard) = case nCard of
-  -- let (PosNCard _ (PosInteger (_, low)) exInteger) = nCard in
   PosNCard _ (PosInteger (_, low)) exInteger -> choiceCard' low exInteger
   NCard (PosInteger (_, low)) exInteger -> choiceCard' low exInteger
   where choiceCard' low exInteger = if low == "0" || low == "1"
