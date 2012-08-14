@@ -93,7 +93,11 @@ makeEnv args = ClaferEnv { args = args',
                            frags = [],
                            irModuleTrace = Map.empty,
                            astModuleTrace = Map.empty}
-               where args' = if mode args == Just CVLGraph then args{flatten_inheritance=Just True} else args
+               where args' = case mode args of
+                               Just CVLGraph -> args{flatten_inheritance=Just True, keep_unused=Just True}
+                               Just Html     -> args{keep_unused=Just True}
+                               Just Graph    -> args{keep_unused=Just True}
+                               _             -> args
 
 type ClaferM = ClaferT Identity
 -- Monad for using Clafer.
