@@ -273,7 +273,7 @@ generateFragments =
   beforePos elem pos =
     case range elem of
       Span _ e -> e <= pos
-      
+      PosSpan _ _ e -> e <= pos
   generateFragment :: ClaferArgs -> [IElement] -> String
   generateFragment args frag =
     flatten $ cconcat $ map (genDeclaration args) frag

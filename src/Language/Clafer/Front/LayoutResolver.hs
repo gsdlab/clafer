@@ -49,6 +49,7 @@ data ExToken = NewLine LastNl | ExToken Token deriving Show
 data LEnv = LEnv [Int] (Maybe LastNl)
 
 getToken (ExToken t) = t
+getToken (NewLine _) = error "LayoutResolver.getToken: Cannot get ExToken NewLine"-- this shoud lever happen
 
 layoutOpen  = "{"
 layoutClose = "}"
@@ -206,6 +207,7 @@ addNewLines :: [Token] -> [ExToken]
 addNewLines = addNewLines' 0
 
 addNewLines' :: Int -> [Token] -> [ExToken]
+addNewLines' _ []         = [] -- This is newly-added to try to fix issue 137
 addNewLines' 0 (t:[])     = [ExToken t]
 addNewLines' n (t:[])
   | n == 0 && isBracketClose t = [ExToken t]
@@ -221,6 +223,7 @@ addNewLines' n (t0:t1:ts)
     ExToken t0 : addNewLines' (n - 1) (t1:ts)
   | isNewLine t0 t1  = ExToken t0 : NewLine (column t1, n) : addNewLines' n (t1:ts)
   | otherwise        = ExToken t0 : addNewLines' n (t1:ts)
+addNewLines' n (t:ts) = addNewLines' n ts
 
 adjust [] = []
 adjust (t:[]) = [t]
@@ -231,7 +234,8 @@ updToken (t0:t1:ts)
   | otherwise = (t1:ts)
   where
   sym = if isLayoutOpen t1 then "{" else "}"
-
+updToken [] = []
+updToken (t:ts) = (t:ts)
 -- | Get the position immediately to the right of the given token.
 nextPos :: Token -> Position 
 nextPos t = Pn (g + s) l (c + s + 1) 
