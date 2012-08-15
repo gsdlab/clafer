@@ -206,6 +206,7 @@ addNewLines :: [Token] -> [ExToken]
 addNewLines = addNewLines' 0
 
 addNewLines' :: Int -> [Token] -> [ExToken]
+addNewLines' _ []         = []
 addNewLines' 0 (t:[])     = [ExToken t]
 addNewLines' n (t:[])
   | n == 0 && isBracketClose t = [ExToken t]
