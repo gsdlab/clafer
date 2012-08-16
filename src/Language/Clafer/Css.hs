@@ -21,7 +21,7 @@
 -}
 module Language.Clafer.Css where
 
-header = "<!DOCTYPE html>\n<html>\n<meta http-equiv=\"X-UA-Compatible\" content=\"IE=9\">\n<head>\n"
+header = "<!DOCTYPE html>\n<html>\n<head>\n<meta http-equiv=\"X-UA-Compatible\" content=\"IE=9\">\n"
 
 css = unlines [ "<style>",
   "body { font-size: 18px }",

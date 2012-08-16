@@ -286,8 +286,8 @@ generateHtml env =
         comments = if fromJust $ add_comments cargs then getComments $ unlines $ modelFrags env else [];
         (iModule, genv, au) = ir env;
     in (if (fromJust $ self_contained cargs) then Css.header ++ Css.css ++ "</head>\n<body>\n" else "")
-       ++ (unlines $ generateFragments decls (frags env) irMap comments) ++ "</body>" ++
-       (if (fromJust $ self_contained cargs) then "\n</html>" else "")
+       ++ (unlines $ generateFragments decls (frags env) irMap comments) ++
+       (if (fromJust $ self_contained cargs) then "</body>\n</html>" else "")
 
   where
     line (PosElementDecl (Span pos _) _) = pos
