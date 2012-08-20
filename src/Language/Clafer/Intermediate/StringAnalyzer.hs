@@ -71,3 +71,4 @@ concatStrExp x = case x of
     where
     ((IStr s0):(IStr s1):_) = map concatStrExp $ map (Language.Clafer.Intermediate.Intclafer.exp) exps
   IStr string -> x
+  _ -> x

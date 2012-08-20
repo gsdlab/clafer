@@ -131,7 +131,7 @@ resolveNav env x isFirst = case x of
     out
       | isFirst   = mkPath env $ resolveName env id
       | otherwise = mkPath' modName $ resolveImmName env id
-
+  x -> error $ "Cannot resolve nav of " ++ show x 
 
 mkPath :: SEnv -> (HowResolved, String, [IClafer]) -> (IExp, [IClafer])
 mkPath env (howResolved, id, path) = case howResolved of
@@ -270,5 +270,7 @@ findFirst x xs =
 showPath xs = (intercalate "." $ reverse xs) ++ "\n"
 
 isNamespaceConflict (xs:ys:_) = tail xs == tail ys
+isNamespaceConflict x         = error $ "isNamespaceConflict must be given a list"
+                                         ++ " of at least two elements, but was given " ++ show x
 
 filterPaths x xs = filter (((==) x).ident.fst) xs

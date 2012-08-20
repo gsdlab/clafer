@@ -223,7 +223,6 @@ addNewLines' n (t0:t1:ts)
     ExToken t0 : addNewLines' (n - 1) (t1:ts)
   | isNewLine t0 t1  = ExToken t0 : NewLine (column t1, n) : addNewLines' n (t1:ts)
   | otherwise        = ExToken t0 : addNewLines' n (t1:ts)
-addNewLines' n (t:ts) = addNewLines' n ts
 
 adjust [] = []
 adjust (t:[]) = [t]

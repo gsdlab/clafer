@@ -38,7 +38,8 @@ getOptions model = case lines model of
 getFragments :: InputModel -> [ Int ]
 getFragments [] = []
 getFragments xs = getFragments' (lines xs) 1
-getFramgents' [] _ = []
+getFragments' :: [ InputModel ] -> Int -> [ Int ]
+getFragments' [] _ = []
 getFragments' ("//# FRAGMENT":xs) ln = ln:getFragments' xs (ln + 1)
 getFragments' (x:xs) ln = getFragments' xs $ ln + 1
 
@@ -65,11 +66,14 @@ getComments' ('/':'/':xs) row col = readLine ('/':'/':xs) (Pos row col)
 getComments' ('/':'*':xs) row col = readBlock ('/':'*':xs) (Pos row col)
 getComments' ('\n':xs)    row col = getComments' xs (row + 1) 1
 getComments' (x:xs)       row col = getComments' xs row $ col + 1
+readLine    [] _                   = []
 readLine    xs start@(Pos row col) = let comment = takeWhile (/= '\n') xs in 
                                                    ((Span start (Pos row (col + toInteger (length comment)))),
                                                     comment): getComments' (drop (length comment + 1) xs) (row + 1) 1
+readLine    xs (PosPos _ row col)  = readLine xs (Pos row col)
 readBlock   xs start@(Pos row col) = let (end@(Pos row' col'), comment, rest) = readBlock' xs row col id in
                                       ((Span start end), comment):getComments' rest row' col'
+readBlock  xs (PosPos pos row col) = readBlock xs (Pos row col)
 readBlock' ('*':'/':xs) row col comment = ((Pos row $ col + 2), comment "*/", xs)
 readBlock' ('\n':xs)    row col comment = readBlock' xs (row + 1) 1 (comment "\n" ++)
 readBlock' (x:xs)       row col comment = readBlock' xs row (col + 1) (comment [x]++)

@@ -463,8 +463,8 @@ optBrArg claferargs resPath x = brFun (genPExp' claferargs resPath) x
     
 
 interleave [] [] = []
-interleave (x:[]) [] = [x]
-interleave [] (x:[]) = [x]
+interleave (x:xs) [] = x:xs
+interleave [] (x:xs) = x:xs
 interleave (x:xs) ys = x : interleave ys xs
 
 
