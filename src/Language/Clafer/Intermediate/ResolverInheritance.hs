@@ -61,12 +61,14 @@ resolveNClafer declarations clafer =
 
 resolveNSuper :: [IElement] -> ISuper -> Either ClaferPErr ISuper
 resolveNSuper declarations x = case x of
-  ISuper False [PExp _ pid pos (IClaferId _ id isTop)] -> do
-    id' <- case resolveN declarations id of
-      Nothing     -> throwError $ SemanticErr (ErrModelSpan pos) $ "No superclafer found: " ++ id
-      Just (n, _) -> return n
-    return $ if isPrimitive id || id == "clafer"
-      then x else ISuper False [idToPExp pid pos "" id' isTop]
+  ISuper False [PExp _ pid pos (IClaferId _ id isTop)] ->
+    if isPrimitive id || id == "clafer"
+      then return x
+      else do
+        id' <- case resolveN declarations id of
+          Nothing     -> throwError $ SemanticErr (ErrModelSpan pos) $ "No superclafer found: " ++ id
+          Just (n, _) -> return n
+        return $ ISuper False [idToPExp pid pos "" id' isTop]
   _ -> return x
 
 
