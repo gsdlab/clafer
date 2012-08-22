@@ -52,7 +52,7 @@ printPreComment span@(Span (Pos row _) _) (c@((Span (Pos row' _) _), comment):cs
     where findAll _ ([],comments) = ([],comments)
           findAll row ((c@((Span (Pos row' col') _), comment):cs), comments)
             | row > row' = case take 3 comment of
-                '/':'/':'#':[] -> findAll row (cs, concat [comments, "<!-- " ++ trim (drop 3 comment) ++ " /-->\n"])
+                '/':'/':'#':[] -> findAll row (cs, concat [comments, "<!-- " ++ trim (drop 2 comment) ++ " /-->\n"])
                 '/':'/':_:[]   -> if col' == 1
                                   then findAll row (cs, concat [comments, printStandaloneComment comment ++ "\n"])
                                   else findAll row (cs, concat [comments, printInlineComment comment ++ "<br>\n"])
@@ -66,7 +66,7 @@ printComment :: Span -> [(Span, String)] -> ([(Span, String)], String)
 printComment _ [] = ([],[])
 printComment span@(Span (Pos row _) _) (c@(Span (Pos row' col') _, comment):cs)
   | row == row' = case take 3 comment of
-        '/':'/':'#':[] -> (cs,"<!-- " ++ trim (drop 3 comment) ++ " /-->\n")
+        '/':'/':'#':[] -> (cs,"<!-- " ++ trim (drop 2 comment) ++ " /-->\n")
         '/':'/':_:[]   -> if col' == 1 then (cs,printStandaloneComment comment) else (cs, printInlineComment comment)
         '/':'*':_:[]   -> (cs, printStandaloneComment comment)
         otherwise      -> (cs, "Improper form of comment.")-- Should not happen. Bug.

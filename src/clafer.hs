@@ -41,6 +41,7 @@ import System.Process (readProcessWithExitCode)
 import Language.Clafer
 import Language.ClaferT
 import Language.Clafer.Css
+import Language.Clafer.Generator.Graph
 
 putStrV :: VerbosityL -> String -> IO ()
 putStrV v s = if v > 1 then putStrLn s else return ()
@@ -50,7 +51,7 @@ run v args input =
   do
     result <- runClaferT args $
       do
-        addFragments $ fragments input --TODO for multi-fragments: Add model as fragments
+        addFragments $ fragments input
         env <- getEnv
         parse
         compile
@@ -103,12 +104,22 @@ run v args input =
   save =
     do
       result <- generate
-      liftIO $ when (not $ fromJust $ no_stats args) $ putStrLn (statistics result)
+      env <- getEnv
+      let (iModule, genv, au) = ir env
+      (_, graph, _) <- liftIO $ readProcessWithExitCode "dot"  ["-Tsvg"] $ genSimpleGraph (ast env) iModule (dropExtension $ file args)
+      let result' = (if (fromJust $ add_graph args) && (mode args == Just Html) then summary graph else id) result
+      liftIO $ when (not $ fromJust $ no_stats args) $ putStrLn (statistics result')
       let f = dropExtension $ file args
       let f' = f ++ "." ++ (extension result)
-      liftIO $ if fromJust $ console_output args then putStrLn (outputCode result) else writeFile f' (outputCode result)
-      liftIO $ when (fromJust $ alloy_mapping args) $ writeFile (f ++ "." ++ "map") $ fromJust (mappingToAlloy result)
+      liftIO $ if fromJust $ console_output args then putStrLn (outputCode result') else writeFile f' (outputCode result')
+      liftIO $ when (fromJust $ alloy_mapping args) $ writeFile (f ++ "." ++ "map") $ fromJust (mappingToAlloy result')
       return f'
+  summary graph result = result{outputCode=unlines $ summary' graph ("<pre>" ++ statistics result ++ "</pre>") (lines $ outputCode result)}
+  summary' _ _ [] = []
+  summary' graph stats ("<!-- # SUMMARY /-->":xs) = graph:stats:summary' graph stats xs
+  summary' graph stats ("<!-- # STATS /-->":xs) = stats:summary' graph stats xs
+  summary' graph stats ("<!-- # GRAPH /-->":xs) = graph:summary' graph stats xs
+  summary' graph stats (x:xs) = x:summary' graph stats xs
     
 conPutStrLn args s = when (not $ fromJust $ console_output args) $ putStrLn s
 
