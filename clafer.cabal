@@ -30,7 +30,9 @@ Executable clafer
                      executable-path, 
                      filepath,
                      HaXml,
-                     glpk-hs
+                     glpk-hs >= 0.3.3,
+                     MaybeT,
+                     parsec
     hs-source-dirs:  src
 
 library 
@@ -45,7 +47,9 @@ library
                      executable-path, 
                      filepath,
                      HaXml,
-                     glpk-hs
+                     glpk-hs >= 0.3.3,
+                     MaybeT,
+                     parsec 
     hs-source-dirs:  src
     ghc-options:     -Wall
     exposed-modules: 
