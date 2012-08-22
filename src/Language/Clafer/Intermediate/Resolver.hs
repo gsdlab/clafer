@@ -21,6 +21,7 @@
 -}
 module Language.Clafer.Intermediate.Resolver where
 
+import Control.Applicative
 import Control.Monad
 import Control.Monad.State
 import Data.Maybe
@@ -28,6 +29,7 @@ import Data.List
 import Data.Map (Map)
 import qualified Data.Map as Map
 
+import Language.ClaferT
 import Language.Clafer.Common
 import Language.Clafer.ClaferArgs
 import Language.Clafer.Front.Absclafer
@@ -36,8 +38,11 @@ import Language.Clafer.Intermediate.ResolverName
 import Language.Clafer.Intermediate.ResolverType
 import Language.Clafer.Intermediate.ResolverInheritance
 
-resolveModule :: ClaferArgs -> IModule -> (IModule, GEnv)
-resolveModule args declarations = resolveNamesModule args $ rom $ rem $ resolveNModule $ nameModule (fromJust $ skip_resolver args) declarations
+resolveModule :: ClaferArgs -> IModule -> Either ClaferPErr (IModule, GEnv)
+resolveModule args declarations =
+  do
+    r <- resolveNModule $ nameModule (fromJust $ skip_resolver args) declarations
+    return $ resolveNamesModule args $ rom $ rem r
   where
   rem = if fromJust $ flatten_inheritance args then resolveEModule else id
   rom = if fromJust $ skip_resolver args then id else resolveOModule

@@ -238,7 +238,7 @@ compile :: Monad m => ClaferT m ()
 compile =
   do
     env <- getEnv
-    let ir = analyze (args env) $ desugar (ast env)
+    ir <- analyze (args env) $ desugar (ast env)
     let (imodule, _, _) = ir
     putEnv $ env{ cIr = Just ir, irModuleTrace = traceIrModule imodule }
 
@@ -351,14 +351,17 @@ data CompilerResult = CompilerResult {
 desugar :: Module -> IModule  
 desugar tree = desugarModule tree
 
-analyze :: ClaferArgs -> IModule -> (IModule, GEnv, Bool)
+liftError :: (Monad m, Language.ClaferT.Throwable t) => Either t a -> ClaferT m a
+liftError = either throwErr return
+
+analyze :: Monad m => ClaferArgs -> IModule -> ClaferT m (IModule, GEnv, Bool)
 analyze args tree = do
   let dTree' = findDupModule args tree
   let au = allUnique dTree'
   let args' = args{skip_resolver = Just $ au && (fromJust $ skip_resolver args)}
-  let (rTree, genv) = resolveModule args' dTree'
+  (rTree, genv) <- liftError $ resolveModule args' dTree'
   let tTree = transModule rTree
-  (optimizeModule args' (tTree, genv), genv, au)
+  return (optimizeModule args' (tTree, genv), genv, au)
 
 addStats :: String -> String -> String
 addStats code stats = "/*\n" ++ stats ++ "*/\n" ++ code

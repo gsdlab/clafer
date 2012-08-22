@@ -72,6 +72,11 @@ run v args input =
       putStrLn $ "\nParse failed at line " ++ show l ++ " column " ++ show c ++ "..."
       putStrLn msg
       exitFailure
+  handleErr (SemanticErr ErrPos{modelPos = Pos l c} msg) =
+    do
+      putStrLn $ "\nError at line " ++ show l ++ " column " ++ show c ++ "..."
+      putStrLn msg
+      exitFailure
       
   save =
     do

@@ -21,7 +21,9 @@
 -}
 module Language.Clafer.Intermediate.ResolverInheritance where
 
+import Control.Applicative
 import Control.Monad
+import Control.Monad.Error
 import Control.Monad.State
 import Data.Maybe
 import Data.Graph
@@ -30,43 +32,49 @@ import Data.List
 import Data.Map (Map)
 import qualified Data.Map as Map
 
+import Language.ClaferT
 import Language.Clafer.Common
 import Language.Clafer.Front.Absclafer
 import Language.Clafer.Intermediate.Intclafer
 import Language.Clafer.Intermediate.ResolverName
 
+
 -- -----------------------------------------------------------------------------
 -- Non-overlapping inheritance
-resolveNModule :: (IModule, GEnv) -> (IModule, GEnv)
+resolveNModule :: (IModule, GEnv) -> Either ClaferPErr (IModule, GEnv)
 resolveNModule (imodule, genv) =
-  (imodule{mDecls = decls'}, genv {sClafers = bfs toNodeShallow $ toClafers decls'})
-  where
-  decls = mDecls imodule
-  decls' = map (resolveNElement decls) decls
+  do
+    let decls = mDecls imodule
+    decls' <- mapM (resolveNElement decls) decls
+    return (imodule{mDecls = decls'}, genv {sClafers = bfs toNodeShallow $ toClafers decls'})
+    
 
 
-resolveNClafer :: [IElement] -> IClafer -> IClafer
+resolveNClafer :: [IElement] -> IClafer -> Either ClaferPErr IClafer
 resolveNClafer declarations clafer =
-  clafer {super = resolveNSuper declarations $ super clafer,
-          elements = map (resolveNElement declarations) $ elements clafer}
+  do
+    super'    <- resolveNSuper declarations $ super clafer
+    elements' <- mapM (resolveNElement declarations) $ elements clafer
+    return $ clafer {super = super',
+            elements = elements'}
 
 
-resolveNSuper :: [IElement] -> ISuper -> ISuper
+resolveNSuper :: [IElement] -> ISuper -> Either ClaferPErr ISuper
 resolveNSuper declarations x = case x of
-  ISuper False [PExp _ pid pos (IClaferId _ id isTop)] ->
-    if isPrimitive id || id == "clafer"
+  ISuper False [PExp _ pid pos (IClaferId _ id isTop)] -> do
+    id' <- case resolveN declarations id of
+      Nothing     -> throwError $ SemanticErr (ErrModelSpan pos) $ "No superclafer found: " ++ id
+      Just (n, _) -> return n
+    return $ if isPrimitive id || id == "clafer"
       then x else ISuper False [idToPExp pid pos "" id' isTop]
-    where
-    id' = fst $ fromMaybe (error $ "No superclafer found: " ++ id) $
-          resolveN declarations id
-  _ -> x
+  _ -> return x
 
 
-resolveNElement :: [IElement] -> IElement -> IElement
+resolveNElement :: [IElement] -> IElement -> Either ClaferPErr IElement
 resolveNElement declarations x = case x of
-  IEClafer clafer  -> IEClafer $ resolveNClafer declarations clafer
-  IEConstraint _ _  -> x
-  IEGoal _ _ -> x
+  IEClafer clafer  -> IEClafer <$> resolveNClafer declarations clafer
+  IEConstraint _ _  -> return x
+  IEGoal _ _ -> return x
 
 resolveN :: [IElement] -> String -> Maybe (String, [IClafer])
 resolveN declarations id =
