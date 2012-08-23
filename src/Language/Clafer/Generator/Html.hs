@@ -109,8 +109,8 @@ printElements (PosElementsEmpty _) indent irMap html comments = printElements El
 printElements (ElementsList elements) indent irMap html comments = "\n{" ++ mapElements elements indent irMap html comments ++ "\n}"
     where mapElements []     indent irMap html comments = []
           mapElements (e:es) indent irMap html comments = if span e == noSpan
-                                                          then (printElement e (indent + 1) irMap html comments ++ "\n") ++ mapElements es indent irMap html comments
-                                                          else (printElement e (indent + 1) irMap html comments ++ "\n") ++ mapElements es indent irMap html (afterSpan (span e) comments)
+                                                          then (printElement e (indent + 1) irMap html comments {-++ "\n"-}) ++ mapElements es indent irMap html comments
+                                                          else (printElement e (indent + 1) irMap html comments {-++ "\n"-}) ++ mapElements es indent irMap html (afterSpan (span e) comments)
           afterSpan span comments = let (Span _ (Pos line _)) = span in dropWhile (\(x, _) -> let (Span _ (Pos line' _)) = x in line' <= line) comments
           span (PosSubclafer s _) = s
           span (PosSubconstraint s _) = s
@@ -124,7 +124,7 @@ printClafer (Clafer abstract gCard id super card init elements) indent irMap htm
   | indent == 0 = let (PosIdent (_, divid)) = id in
                     (while html ("<div id=\"" ++ divid ++ "\">\n")) ++ (concat [printAbstract abstract indent irMap html comments, printGCard gCard indent irMap html comments,
                     printPosIdent id indent irMap html comments, printSuper super indent irMap html comments, printCard card indent irMap html comments, printInit init indent irMap html comments])
-                    ++ (while html "<br>") ++ "\n" ++ printElements elements indent irMap html comments ++ (while html "</div>\n<br>") ++ "\n"
+                    ++ (while html "<br>") ++ "\n" ++ printElements elements indent irMap html comments ++ (while html "</div>")
   | otherwise   = let (PosIdent (_, divid)) = id in
                     (while html ("<span id=\"" ++ divid ++ "\" class=\"l" ++ show indent ++ "\">")) ++ (concat [printAbstract abstract indent irMap html comments, printGCard gCard indent irMap html comments,
                     printPosIdent id indent irMap html comments, printSuper super indent irMap html comments, printCard card indent irMap html comments, printInit init indent irMap html comments])
@@ -135,7 +135,7 @@ printClafer (PosClafer span abstract gCard id super card init elements) indent i
                       (comments'', comment) = printComment span comments' in
                     preComments ++ (while html ("<div id=\"" ++ divId ++ "\">\n")) ++ (concat [printAbstract abstract indent irMap html comments, printGCard gCard indent irMap html comments,
                     printPosIdent id indent irMap html comments, printSuper super indent irMap html comments, printCard card indent irMap html comments, printInit init indent irMap html comments])
-                    ++ comment ++ (while html "<br>") ++ "\n" ++ printElements elements indent irMap html comments'' ++ (while html "</div>\n<br>") ++ "\n"
+                    ++ comment ++ (while html "<br>") ++ "\n" ++ printElements elements indent irMap html comments'' ++ (while html "</div>")
   | otherwise   = let uid = getDivId span irMap;
                             (comments', preComments) = printPreComment span comments;
                             (comments'', comment) = printComment span comments' in
