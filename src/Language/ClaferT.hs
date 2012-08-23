@@ -25,7 +25,7 @@
  - ClaferEnv can just import this module without all the parsing/compiline/generating
  - functionality.
  -}
-module Language.ClaferT (ClaferEnv(..), makeEnv, ast, ir, ClaferM, ClaferT, CErr(..), ClaferErr(..), ClaferErrs(..), ClaferPErr(..), ClaferPErrs(..), ErrPos(..), PartialErrPos(..), throwErrs, throwErr, catchErrs, getEnv, getsEnv, modifyEnv, putEnv, runClafer, runClaferT, Throwable(..)) where
+module Language.ClaferT (ClaferEnv(..), makeEnv, ast, ir, ClaferM, ClaferT, CErr(..), ClaferErr(..), ClaferErrs(..), ClaferSErr(..), ClaferSErrs(..), ErrPos(..), PartialErrPos(..), throwErrs, throwErr, catchErrs, getEnv, getsEnv, modifyEnv, putEnv, runClafer, runClaferT, Throwable(..)) where
 
 import Control.Monad.Error
 import Control.Monad.State
@@ -102,8 +102,8 @@ type ClaferT m = ErrorT ClaferErrs (StateT ClaferEnv m)
 type ClaferErr = CErr ErrPos
 type ClaferErrs = CErrs ErrPos
 
-type ClaferPErr = CErr PartialErrPos
-type ClaferPErrs = CErrs PartialErrPos
+type ClaferSErr = CErr Span
+type ClaferSErrs = CErrs Span
 
 -- Possible errors that can occur when using Clafer
 -- Generate errors using throwErr/throwErrs:
@@ -183,6 +183,9 @@ data PartialErrPos =
   
 class ClaferErrPos p where
   toErrPos :: Monad m => p -> ClaferT m ErrPos
+  
+instance ClaferErrPos Span where
+  toErrPos = toErrPos . ErrModelSpan
   
 instance ClaferErrPos ErrPos where
   toErrPos = return . id

@@ -38,14 +38,14 @@ import Language.Clafer.Intermediate.ResolverName
 import Language.Clafer.Intermediate.ResolverType
 import Language.Clafer.Intermediate.ResolverInheritance
 
-resolveModule :: ClaferArgs -> IModule -> Either ClaferPErr (IModule, GEnv)
+resolveModule :: ClaferArgs -> IModule -> Resolve (IModule, GEnv)
 resolveModule args declarations =
   do
     r <- resolveNModule $ nameModule (fromJust $ skip_resolver args) declarations
-    return $ resolveNamesModule args $ rom $ rem r
+    resolveNamesModule args =<< (rom $ rem r)
   where
   rem = if fromJust $ flatten_inheritance args then resolveEModule else id
-  rom = if fromJust $ skip_resolver args then id else resolveOModule
+  rom = if fromJust $ skip_resolver args then return . id else resolveOModule
 
 
 -- -----------------------------------------------------------------------------
@@ -82,10 +82,13 @@ nameIExp x = case x of
 nameIDecl (IDecl isDisj dels body) = IDecl isDisj dels `liftM` (namePExp body)
 
 -- -----------------------------------------------------------------------------
-resolveNamesModule :: ClaferArgs -> (IModule, GEnv) -> (IModule, GEnv)
-resolveNamesModule args (declarations, genv) = (res, genv)
+resolveNamesModule :: ClaferArgs -> (IModule, GEnv) -> Resolve (IModule, GEnv)
+resolveNamesModule args (declarations, genv) =
+  do
+    res <- foldM (flip ($)) declarations $ map (\f -> flip (curry f) genv) funs
+    return (res, genv)
   where
-  res = foldr ($) declarations $ map (\f -> flip (curry f) genv) funs
+  funs :: [(IModule, GEnv) -> Resolve IModule]
   funs
-    | fromJust $ skip_resolver args = [resolveTModule, analyzeModule]
-    | otherwise = [resolveTModule, resolveModuleNames, analyzeModule]
+    | fromJust $ skip_resolver args = [return . analyzeModule, return . resolveTModule]
+    | otherwise = [ return . analyzeModule, resolveModuleNames, return . resolveTModule]

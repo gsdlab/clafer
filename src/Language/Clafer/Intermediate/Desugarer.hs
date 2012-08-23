@@ -512,7 +512,7 @@ desugarPath :: PExp -> PExp
 desugarPath (PExp iType pid pos x) = reducePExp $ PExp iType pid pos result
   where
   result
-    | isSet x     = IDeclPExp ISome [] (pExpDefPidPos x)
+    | isSet x     = IDeclPExp ISome [] (pExpDefPid pos x)
     | isNegSome x = IDeclPExp INo   [] $ bpexp $ Language.Clafer.Intermediate.Intclafer.exp $ head $ exps x
     | otherwise   =  x
   isNegSome (IFunExp op [PExp _ _ _ (IDeclPExp ISome [] _)]) = op == iNot

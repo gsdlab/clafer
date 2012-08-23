@@ -37,7 +37,8 @@ Executable clafer
                      cmdargs, 
                      executable-path, 
                      filepath,
-                     HaXml
+                     HaXml,
+                     MaybeT
     hs-source-dirs:  src
 
 library 
@@ -51,7 +52,8 @@ library
                      cmdargs, 
                      executable-path, 
                      filepath,
-                     HaXml
+                     HaXml,
+                     MaybeT
     hs-source-dirs:  src
     ghc-options:     -Wall
     exposed-modules: 
