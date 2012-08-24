@@ -60,7 +60,6 @@ printPreComment span@(Span (Pos row _) _) (c@((Span (Pos row' _) _), comment):cs
                 otherwise      -> (cs, "Improper form of comment.")-- Should not happen. Bug.
             | otherwise  = ((c:cs), comments)
           findAll row ((c:cs), comments) = findAll row (cs, comments)
-          trim = let f = reverse . dropWhile isSpace in f . f
 printPreComment _ cs = (cs,"")
 printComment :: Span -> [(Span, String)] -> ([(Span, String)], String)
 printComment _ [] = ([],[])
@@ -78,7 +77,7 @@ printInlineComment comment = "<span class=\"inlinecomment\">" ++ comment ++ "</s
 
 genHtml x ir = cleanOutput $ revertLayout $ printModule x (traceIrModule ir) True
 genText x ir = cleanOutput $ revertLayout $ printModule x (traceIrModule ir) False
-genTooltip m ir = cleanOutput $ revertLayout $ printModule m ir False
+genTooltip m ir = unlines $ filter (\x -> trim x /= []) $ lines $ cleanOutput $ revertLayout $ printModule m ir False
                            
 printModule (Module [])     irMap html = ""
 printModule (Module (x:xs)) irMap html = (printDeclaration x 0 irMap html []) ++ printModule (Module xs) irMap html
@@ -374,3 +373,5 @@ cleanOutput (' ':'\n':xs) = cleanOutput $ '\n':xs
 cleanOutput ('\n':'\n':xs) = cleanOutput $ '\n':xs
 cleanOutput (' ':'<':'b':'r':'>':xs) = "<br>"++cleanOutput xs
 cleanOutput (x:xs) = x : cleanOutput xs
+
+trim = let f = reverse . dropWhile isSpace in f . f
