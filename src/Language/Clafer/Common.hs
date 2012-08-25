@@ -86,13 +86,14 @@ isParent _ = False
 isClaferName :: PExp -> Bool
 isClaferName (PExp _ _ _ (IClaferId _ id _)) =
   id `notElem` ([this, parent, children] ++ primitiveTypes)
+isClaferName _ = False
 
 isClaferName' (PExp _ _ _ (IClaferId _ id _)) = True
 isClaferName' _ = False
 
 getClaferName :: PExp -> String
 getClaferName (PExp _ _ _ (IClaferId _ id _)) = id
-
+getClaferName _ = ""
 
 -- -----------------------------------------------------------------------------
 -- conversions

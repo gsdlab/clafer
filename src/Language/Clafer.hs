@@ -273,7 +273,7 @@ generateFragments =
   beforePos elem pos =
     case range elem of
       Span _ e -> e <= pos
-      
+      PosSpan _ _ e -> e <= pos
   generateFragment :: ClaferArgs -> [IElement] -> String
   generateFragment args frag =
     flatten $ cconcat $ map (genDeclaration args) frag
@@ -286,8 +286,8 @@ generateHtml env =
         comments = if fromJust $ add_comments cargs then getComments $ unlines $ modelFrags env else [];
         (iModule, genv, au) = ir env;
     in (if (fromJust $ self_contained cargs) then Css.header ++ Css.css ++ "</head>\n<body>\n" else "")
-       ++ (unlines $ generateFragments decls (frags env) irMap comments) ++ "</body>" ++
-       (if (fromJust $ self_contained cargs) then "\n</html>" else "")
+       ++ (unlines $ generateFragments decls (frags env) irMap comments) ++
+       (if (fromJust $ self_contained cargs) then "</body>\n</html>" else "")
 
   where
     line (PosElementDecl (Span pos _) _) = pos
@@ -300,7 +300,7 @@ generateHtml env =
     generateFragments (decl:decls) (frag:frags) irMap comments = if line decl < frag
                                                                  then let (comments', c) = printPreComment (range decl) comments in
                                                                    [c] ++ (cleanOutput $ revertLayout $ printDeclaration decl 0 irMap True $ inDecl decl comments') : (generateFragments decls (frag:frags) irMap $ afterDecl decl comments)
-                                                                 else "<!-- # FRAGMENT -->" : generateFragments (decl:decls) frags irMap comments
+                                                                 else "<!-- # FRAGMENT /-->" : generateFragments (decl:decls) frags irMap comments
     inDecl :: Declaration -> [(Span, String)] -> [(Span, String)]
     inDecl decl comments = let span = range decl in dropWhile (\x -> fst x < span) comments
     afterDecl :: Declaration -> [(Span, String)] -> [(Span, String)]

@@ -52,30 +52,32 @@ printPreComment span@(Span (Pos row _) _) (c@((Span (Pos row' _) _), comment):cs
     where findAll _ ([],comments) = ([],comments)
           findAll row ((c@((Span (Pos row' col') _), comment):cs), comments)
             | row > row' = case take 3 comment of
-                '/':'/':'#':[] -> findAll row (cs, concat [comments, "<!-- " ++ trim (drop 3 comment) ++ " /-->\n"])
+                '/':'/':'#':[] -> findAll row (cs, concat [comments, "<!-- " ++ trim (drop 2 comment) ++ " /-->\n"])
                 '/':'/':_:[]   -> if col' == 1
                                   then findAll row (cs, concat [comments, printStandaloneComment comment ++ "\n"])
                                   else findAll row (cs, concat [comments, printInlineComment comment ++ "<br>\n"])
                 '/':'*':_:[]   -> findAll row (cs, concat [comments, printStandaloneComment comment ++ "\n"])
                 otherwise      -> (cs, "Improper form of comment.")-- Should not happen. Bug.
             | otherwise  = ((c:cs), comments)
-          trim = let f = reverse . dropWhile isSpace in f . f
+          findAll row ((c:cs), comments) = findAll row (cs, comments)
+printPreComment _ cs = (cs,"")
 printComment :: Span -> [(Span, String)] -> ([(Span, String)], String)
 printComment _ [] = ([],[])
 printComment span@(Span (Pos row _) _) (c@(Span (Pos row' col') _, comment):cs)
   | row == row' = case take 3 comment of
-        '/':'/':'#':[] -> (cs,"<!-- " ++ trim (drop 3 comment) ++ " /-->\n")
+        '/':'/':'#':[] -> (cs,"<!-- " ++ trim (drop 2 comment) ++ " /-->\n")
         '/':'/':_:[]   -> if col' == 1 then (cs,printStandaloneComment comment) else (cs, printInlineComment comment)
         '/':'*':_:[]   -> (cs, printStandaloneComment comment)
         otherwise      -> (cs, "Improper form of comment.")-- Should not happen. Bug.
   | otherwise = (c:cs, "")
   where trim = let f = reverse. dropWhile isSpace in f . f
+printComment _ cs = (cs,"")
 printStandaloneComment comment = "<p class=\"standalonecomment\">" ++ comment ++ "</p>"
 printInlineComment comment = "<span class=\"inlinecomment\">" ++ comment ++ "</span>"
 
 genHtml x ir = cleanOutput $ revertLayout $ printModule x (traceIrModule ir) True
 genText x ir = cleanOutput $ revertLayout $ printModule x (traceIrModule ir) False
-genTooltip m ir = cleanOutput $ revertLayout $ printModule m ir False
+genTooltip m ir = unlines $ filter (\x -> trim x /= []) $ lines $ cleanOutput $ revertLayout $ printModule m ir False
                            
 printModule (Module [])     irMap html = ""
 printModule (Module (x:xs)) irMap html = (printDeclaration x 0 irMap html []) ++ printModule (Module xs) irMap html
@@ -103,11 +105,11 @@ printElement (PosSubsoftconstraint span softConstraint) indent irMap html commen
 
 printElements ElementsEmpty indent irMap html comments = ""
 printElements (PosElementsEmpty _) indent irMap html comments = printElements ElementsEmpty indent irMap html comments
-printElements (ElementsList elements) indent irMap html comments = "\n{" ++ mapElements elements indent irMap html comments ++ "\n}" --TODO Use custom map so that 
+printElements (ElementsList elements) indent irMap html comments = "\n{" ++ mapElements elements indent irMap html comments ++ "\n}"
     where mapElements []     indent irMap html comments = []
           mapElements (e:es) indent irMap html comments = if span e == noSpan
-                                                          then (printElement e (indent + 1) irMap html comments ++ "\n") ++ mapElements es indent irMap html comments
-                                                          else (printElement e (indent + 1) irMap html comments ++ "\n") ++ mapElements es indent irMap html (afterSpan (span e) comments)
+                                                          then (printElement e (indent + 1) irMap html comments {-++ "\n"-}) ++ mapElements es indent irMap html comments
+                                                          else (printElement e (indent + 1) irMap html comments {-++ "\n"-}) ++ mapElements es indent irMap html (afterSpan (span e) comments)
           afterSpan span comments = let (Span _ (Pos line _)) = span in dropWhile (\(x, _) -> let (Span _ (Pos line' _)) = x in line' <= line) comments
           span (PosSubclafer s _) = s
           span (PosSubconstraint s _) = s
@@ -121,7 +123,7 @@ printClafer (Clafer abstract gCard id super card init elements) indent irMap htm
   | indent == 0 = let (PosIdent (_, divid)) = id in
                     (while html ("<div id=\"" ++ divid ++ "\">\n")) ++ (concat [printAbstract abstract indent irMap html comments, printGCard gCard indent irMap html comments,
                     printPosIdent id indent irMap html comments, printSuper super indent irMap html comments, printCard card indent irMap html comments, printInit init indent irMap html comments])
-                    ++ (while html "<br>") ++ "\n" ++ printElements elements indent irMap html comments ++ (while html "</div>\n<br>") ++ "\n"
+                    ++ (while html "<br>") ++ "\n" ++ printElements elements indent irMap html comments ++ (while html "</div>")
   | otherwise   = let (PosIdent (_, divid)) = id in
                     (while html ("<span id=\"" ++ divid ++ "\" class=\"l" ++ show indent ++ "\">")) ++ (concat [printAbstract abstract indent irMap html comments, printGCard gCard indent irMap html comments,
                     printPosIdent id indent irMap html comments, printSuper super indent irMap html comments, printCard card indent irMap html comments, printInit init indent irMap html comments])
@@ -132,7 +134,7 @@ printClafer (PosClafer span abstract gCard id super card init elements) indent i
                       (comments'', comment) = printComment span comments' in
                     preComments ++ (while html ("<div id=\"" ++ divId ++ "\">\n")) ++ (concat [printAbstract abstract indent irMap html comments, printGCard gCard indent irMap html comments,
                     printPosIdent id indent irMap html comments, printSuper super indent irMap html comments, printCard card indent irMap html comments, printInit init indent irMap html comments])
-                    ++ comment ++ (while html "<br>") ++ "\n" ++ printElements elements indent irMap html comments'' ++ (while html "</div>\n<br>") ++ "\n"
+                    ++ comment ++ (while html "<br>") ++ "\n" ++ printElements elements indent irMap html comments'' ++ (while html "</div>")
   | otherwise   = let uid = getDivId span irMap;
                             (comments', preComments) = printPreComment span comments;
                             (comments'', comment) = printComment span comments' in
@@ -214,7 +216,7 @@ printConstraint (Constraint exps) indent irMap html comments = concatMap (\x -> 
 printConstraint (PosConstraint _ exps) indent irMap html comments = printConstraint (Constraint exps) indent irMap html comments
 printConstraint' exp indent irMap html comments = (printIndent indent html) ++ while html "<span class=\"keyword\">" ++ "[" ++ while html "</span>"
                                                   ++ " " ++ printExp exp indent irMap html comments ++ " " ++ while html "<span class=\"keyword\">" ++ "]" ++ while html "</span>"
-                                                  ++ (if indent == 0 then "" else "</span>") ++ "<br>" ++ "\n"
+                                                  ++ (if indent == 0 then "" else while html "</span>") ++ while html "<br>" ++ "\n"
 
 printDecl (Decl locids setExp) indent irMap html comments = (while html "<span class=\"keyword\">") ++ ":" ++ (while html "</span>") ++ printSetExp setExp indent irMap html comments
 printDecl (PosDecl _ locids setExp) indent irMap html comments = printDecl (Decl locids setExp) indent irMap html comments
@@ -371,3 +373,5 @@ cleanOutput (' ':'\n':xs) = cleanOutput $ '\n':xs
 cleanOutput ('\n':'\n':xs) = cleanOutput $ '\n':xs
 cleanOutput (' ':'<':'b':'r':'>':xs) = "<br>"++cleanOutput xs
 cleanOutput (x:xs) = x : cleanOutput xs
+
+trim = let f = reverse . dropWhile isSpace in f . f

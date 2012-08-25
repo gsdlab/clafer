@@ -93,7 +93,11 @@ makeEnv args = ClaferEnv { args = args',
                            frags = [],
                            irModuleTrace = Map.empty,
                            astModuleTrace = Map.empty}
-               where args' = if mode args == Just CVLGraph then args{flatten_inheritance=Just True} else args
+               where args' = case mode args of
+                               Just CVLGraph -> args{flatten_inheritance=Just True, keep_unused=Just True}
+                               Just Html     -> args{keep_unused=Just True}
+                               Just Graph    -> args{keep_unused=Just True}
+                               _             -> args
 
 type ClaferM = ClaferT Identity
 -- Monad for using Clafer.
@@ -203,6 +207,7 @@ instance ClaferErrPos PartialErrPos where
       let fragSpans = zipWith Span (Pos 1 1 : f) f
       case findFrag modelPos fragSpans of
         Just (fragId, Span fragStart _) -> return $ ErrPos fragId (modelPos `minusPos` fragStart) modelPos
+        Just (fragId, PosSpan _ fragStart _) -> return $ ErrPos fragId (modelPos `minusPos` fragStart) modelPos
         Nothing -> error $ show modelPos ++ " not within any frag spans: " ++ show fragSpans -- Indicates a bug in the Clafer translator
     where
     findFrag pos spans =
@@ -237,14 +242,17 @@ catchErrs e h = e `catchError` (h . errs)
 addPos :: Pos -> Pos -> Pos
 addPos (Pos l c) (Pos 1 d) = Pos l (c + d - 1)    -- Same line
 addPos (Pos l _) (Pos m d) = Pos (l + m - 1) d    -- Different line
-
+addPos pos (PosPos _ l c) = addPos pos (Pos l c)
+addPos (PosPos _ l c) pos = addPos (Pos l c) pos
 minusPos :: Pos -> Pos -> Pos
 minusPos (Pos l c) (Pos 1 d) = Pos l (c - d + 1)  -- Same line
 minusPos (Pos l c) (Pos m _) = Pos (l - m + 1) c  -- Different line
+minusPos pos (PosPos _ l c) = minusPos pos (Pos l c)
+minusPos (PosPos _ l c) pos = minusPos (Pos l c) pos
 
 inSpan :: Pos -> Span -> Bool
 inSpan pos (Span start end) = pos >= start && pos <= end
-
+inSpan pos (PosSpan _ s e)  = inSpan pos (Span s e)
 
 -- Get the ClaferEnv
 getEnv :: Monad m => ClaferT m ClaferEnv

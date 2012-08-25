@@ -21,7 +21,7 @@
 -}
 module Language.Clafer.Css where
 
-header = "<!DOCTYPE html>\n<html>\n<head>\n<meta http-equiv=\"X-UA-Compatible\" content=\"IE=9\" />\n"
+header = "<!DOCTYPE html>\n<html>\n<head>\n<meta http-equiv=\"X-UA-Compatible\" content=\"IE=9\">\n"
 
 css = unlines [ "<style>",
   "body { font-size: 18px }",
@@ -31,6 +31,7 @@ css = unlines [ "<style>",
   ".code { background-color: lightgray; font-size: 18px }",
   ".standalonecomment { color: green; font-style:italic }",
   ".inlinecomment { color: green; float:right; font-style:italic }",
+  ".error{background-color: yellow; color: red }",
   ".l0{}",
   ".l1{padding-left:20px}",
   ".l2{padding-left:40px}",

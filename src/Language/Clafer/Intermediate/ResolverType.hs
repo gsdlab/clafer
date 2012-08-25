@@ -206,7 +206,7 @@ typeOfISuper (ISuper _ ((PExp _ _ _ (IClaferId _ sident _)):_)) = case sident of
                                                                     "integer" -> TInteger
                                                                     "string" -> TString
                                                                     x -> error $ sident ++ " not a native super type"
-
+typeOfISuper x = error $ show x ++ " is not an ISuper"
 
 
 {-

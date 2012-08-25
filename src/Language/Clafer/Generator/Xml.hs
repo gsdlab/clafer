@@ -120,6 +120,9 @@ genXmlPExp tagName (PExp iType pid pos iexp) = tag tagName $ concat
 genXmlPosition (Span (Pos s1 s2) (Pos e1 e2)) = concat
   [ tag "Start" $ genXmlIntPair (s1, s2)
   , tag "End"   $ genXmlIntPair (e1, e2)]
+genXmlPosition (PosSpan _ s e) = genXmlPosition (Span s e)
+genXmlPosition (Span (PosPos _ s1 s2) e) = genXmlPosition (Span (Pos s1 s2) e)
+genXmlPosition (Span s (PosPos _ e1 e2)) = genXmlPosition (Span s (Pos e1 e2))
 
 genXmlIExpType x = case x of
   IDeclPExp _ _ _ -> "IDeclarationParentExp"
