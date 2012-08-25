@@ -90,5 +90,5 @@ resolveNamesModule args (declarations, genv) =
   where
   funs :: [(IModule, GEnv) -> Resolve IModule]
   funs
-    | fromJust $ skip_resolver args = [return . analyzeModule, return . resolveTModule]
-    | otherwise = [ return . analyzeModule, resolveModuleNames, return . resolveTModule]
+    | fromJust $ skip_resolver args = [return . analyzeModule, resolveTModule]
+    | otherwise = [ return . analyzeModule, resolveModuleNames, resolveTModule]
