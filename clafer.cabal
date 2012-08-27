@@ -62,7 +62,7 @@ library
                      Language.Clafer.ClaferArgs,
                      Language.Clafer.Comments,
                      Language.Clafer.Common,
-                     Language.Clafer.Css
+                     Language.Clafer.Css,
                      Language.Clafer.Front.Absclafer,
                      Language.Clafer.Front.ErrM,
                      Language.Clafer.Front.LayoutResolver,
