@@ -204,14 +204,13 @@ tokenLength t = length $ prToken t
 
 -- data ExToken = NewLine (Int, Int) | ExToken Token
 addNewLines :: [Token] -> [ExToken]
-addNewLines = addNewLines' 0
+addNewLines []    = []
+addNewLines ts@(t:_) = addNewLines' (if isBracketOpen t then 1 else 0) ts
 
 addNewLines' :: Int -> [Token] -> [ExToken]
 addNewLines' _ []         = []
 addNewLines' 0 (t:[])     = [ExToken t]
-addNewLines' n (t:[])
-  | n == 0 && isBracketClose t = [ExToken t]
-  | otherwise                  = error $ "']' bracket missing" ++ show n ++ show t
+addNewLines' n (t:[])     = error $ "']' bracket missing" ++ show n ++ show t
 addNewLines' n (t0:t1:ts)
   | isNewLine t0 t1 && isBracketOpen t1 =
     ExToken t0 : NewLine (column t1, n) : addNewLines' (n + 1) (t1:ts)
