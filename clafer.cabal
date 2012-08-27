@@ -25,6 +25,7 @@ source-repository head
 
 					 
 Executable clafer
+    build-tools:     ghc >= 7.4.1
     extensions:      DeriveDataTypeable
     main-is:         clafer.hs
     build-depends:   
@@ -42,6 +43,7 @@ Executable clafer
     hs-source-dirs:  src
 
 library 
+    build-tools:     ghc >= 7.4.1
     extensions:      DeriveDataTypeable
     build-depends:   
                      base >= 4 && < 5, 
