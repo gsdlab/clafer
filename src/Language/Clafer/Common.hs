@@ -121,11 +121,12 @@ findHierarchy :: (IClafer -> String)
                             -> [IClafer]
 findHierarchy sFun clafers clafer
   | sFun clafer == "clafer"      = [clafer]
-  | otherwise                    = clafer : superClafers
+  | otherwise                    = if clafer `elem` superClafers
+                                   then error $ "Inheritance hierarchy contains a cycle: line " ++ (show $ cinPos clafer)
+                                   else clafer : superClafers
   where
   superClafers = unfoldr (\c -> find (isEqClaferId $ sFun c) clafers >>=
                           Just . (apply id)) clafer
-
 
 -- -----------------------------------------------------------------------------
 -- generic functions
