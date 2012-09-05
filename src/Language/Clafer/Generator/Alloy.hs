@@ -440,7 +440,7 @@ transformExp x@(IFunExp op exps@(e1:e2:_))
   | op == iXor = IFunExp iNot [PExp (Just TBoolean) "" noSpan (IFunExp iIff exps)]
   | op == iJoin && isClaferName' e1 && isClaferName' e2 &&
     getClaferName e1 == this && head (getClaferName e2) == '~' =
-        IFunExp op [e1{iType = Just TClafer}, e2]
+        IFunExp op [e1{iType = Just $ TClafer []}, e2]
   | otherwise  = x
 transformExp x = x
 

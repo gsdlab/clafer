@@ -47,5 +47,5 @@ transIExp t x = case x of
   IDeclPExp quant decls pexp -> IDeclPExp quant decls $ transPExp False pexp
   IFunExp op exps -> IFunExp op $ map (transPExp cond) exps
     where
-    cond = op == iIfThenElse && t `elem` [TBoolean, TClafer]
+    cond = op == iIfThenElse && t `elem` [TBoolean, TClafer []]
   _  -> x

@@ -30,6 +30,8 @@ module Language.Clafer.Intermediate.ScopeAnalyzer (scopeAnalysis) where
 
 import Language.Clafer.Front.Absclafer hiding (Path)
 import qualified Language.Clafer.Intermediate.Intclafer as I
+import Language.Clafer.Intermediate.Analysis
+import Language.Clafer.Common
 
 import Control.Applicative hiding (Alternative(..))
 import Control.Monad
@@ -51,6 +53,7 @@ import Text.Parsec.Pos
 import Text.Parsec.Prim
 import Text.Parsec.String ()
 import Language.Clafer.Intermediate.Test
+import Debug.Trace
 
 
 {------------------------------------------------------------
@@ -66,10 +69,10 @@ scopeAnalysis imodule =
     -- makes things really ugly. Might as well contain the ugliness in here.
     case unsafePerformIO solution of
       (Success, Just (_, s)) -> Map.toList $ Map.map round s
-      _ -> [] -- No solution
+      x -> [] -- No solution
   where
-  (abstracts, analysis) = runAnalysis (setConstraints >> (clafers `suchThat` isAbstract)) $ gatherInfo imodule
-  solution = glpSolveVars mipDefaults{msgLev = MsgOff} $ analysis
+  (abstracts, analysis) = runScopeAnalysis (setConstraints >> (clafers `suchThat` isAbstract)) $ gatherInfo imodule
+  solution = {-trace (show $ unsafePerformIO $ writeLP "TESTTT" analysis) $-} glpSolveVars mipDefaults{msgLev = MsgOff} $ analysis
   -- Any scope that is 0 will take the global scope of 1 instead.
   removeZeroes = filter ((/= 0) . snd)
   -- The root is implied and not and not part of the actual solution.
@@ -81,7 +84,7 @@ scopeAnalysis imodule =
   -- needing to increase the scope of the abstract Clafer.
   removeAbstracts = filter (not . (`elem` map uid abstracts) . fst)
 
-setConstraints :: Analysis ()
+setConstraints :: ScopeAnalysis ()
 setConstraints =
   do
     reifyClafers <- constraintConstraints
@@ -94,15 +97,15 @@ setConstraints =
     (var rootUid) `equalTo` 1
 
 
-optFormula :: Analysis ()
+optFormula :: ScopeAnalysis ()
 optFormula =
   do
     setDirection Min
     c <- clafers
-    let concretes = [uid concrete | concrete <- c, not $ isAbstract concrete]
+    let concretes = [uid concrete | concrete <- c, isConcrete concrete, isDerived concrete]
     setObjective $ varSum concretes
 
-parentConstraints :: Analysis ()
+parentConstraints :: ScopeAnalysis ()
 parentConstraints =
   runListT_ $ do
     -- forall child under parent ...
@@ -124,11 +127,11 @@ parentConstraints =
     setVarKind uparent IntVar
 
 
-refConstraints :: Analysis ()
+refConstraints :: ScopeAnalysis ()
 refConstraints =
   runListT_ $ do
     -- for all uids of any clafer the refs another uid ...
-    (sub, sup) <- foreach $ anything |-> anything
+    (sub, sup) <- foreach $ (anything |-> anything) `suchThat` (isDerived . superClafers)
     let usub = uid sub
     let usup = uid sup
     aux <- testPositive usub
@@ -136,11 +139,11 @@ refConstraints =
     var usup `geq` ((max 1 $ low sub) *^ var aux)
 
 
-colonConstraints :: Analysis ()
+colonConstraints :: ScopeAnalysis ()
 colonConstraints =
   runListT_ $ do
     -- forall c in the set of clafers' uid ...
-    c <- foreach $ clafers
+    c <- foreach $ clafers `suchThat` isDerived
     -- ... find all uids of any clafer that extends c (only colons) ...
     subs <- findAll $ (anything |: c) `select` (uid . subClafers)
     when (not $ null subs) $
@@ -156,8 +159,9 @@ data Part =
   Part {steps::[String]}
   deriving (Eq, Ord, Show)
 
+
 -- Returns a list of reified clafers.
-constraintConstraints :: Analysis [SClafer]
+constraintConstraints :: ScopeAnalysis [SClafer]
 constraintConstraints =
   do  
     pathList <- runListT $ do
@@ -196,14 +200,14 @@ constraintConstraints =
   reifyVar (Part [target]) = target
   reifyVar (Part target) = uniqNameSpace ++ "reify_" ++ intercalate "_" target
   
-  reifyPart :: Part -> Analysis [Part]
+  reifyPart :: Part -> ScopeAnalysis [Part]
   reifyPart (Part steps) =
     do
       as <- claferWithUid (last steps) >>= nonTopAncestors
       forM as $
         \a -> return $ Part $ init steps ++ [uid a]
   
-  nonTopAncestors :: SClafer -> Analysis [SClafer]
+  nonTopAncestors :: SClafer -> ScopeAnalysis [SClafer]
   nonTopAncestors child =
     do
       parent <- parentOf child
@@ -212,7 +216,7 @@ constraintConstraints =
         else (++ [child]) `fmap` nonTopAncestors parent
   
   -- Does the work for one constraint.
-  constraintConstraints' :: MonadAnalysis m => SClafer -> I.IExp -> m [(Path, Double)]
+  constraintConstraints' :: MonadScope m => SClafer -> I.IExp -> m [(Path, Double)]
   constraintConstraints' curThis iexp =
     runListT $ do
       (path, mult) <- pathAndMult iexp
@@ -221,7 +225,7 @@ constraintConstraints =
 
   -- [some my.path.expression]
   --   => #my.path.expression >= 1
-  pathAndMult :: (MonadPlus m, MonadAnalysis m) => I.IExp -> m (I.PExp, Double)
+  pathAndMult :: (MonadPlus m, MonadScope m) => I.IExp -> m (I.PExp, Double)
   pathAndMult I.IDeclPExp {I.quant = I.ISome, I.oDecls = [], I.bpexp} = return (bpexp, 1)
   -- [some disj a;b : my.path.expression | ...]
   --   => my.path.expression >= 2
@@ -254,8 +258,24 @@ constraintConstraints =
   reify []  = error "Empty path." -- Bug, should never happen.
   reify xs  = Part xs
 
+constant :: Integral a => a -> I.PExp
+constant = pExpDefPidPos . I.IInt . toInteger
 
-parsePath :: MonadAnalysis m => SClafer -> I.PExp -> m [[String]]
+greaterThan x y = (x, GT, y)
+lessThan x y = (x, LT, y)
+eqTo x y = (x, EQ, y)
+
+scopeConstraint :: I.IExp -> [(I.PExp, Ordering, I.PExp)]
+scopeConstraint I.IDeclPExp {I.quant = I.ISome, I.oDecls = [], I.bpexp} = [bpexp `greaterThan` constant 1]
+scopeConstraint I.IDeclPExp {I.quant = I.ISome, I.oDecls}               = map pathAndMultDecl oDecls
+    where
+    pathAndMultDecl I.IDecl {I.isDisj = True, I.decls, I.body}  = body `greaterThan` constant (length decls)
+    pathAndMultDecl I.IDecl {I.isDisj = False, I.decls, I.body} = body `greaterThan` constant 1
+scopeConstraint I.IDeclPExp {I.quant = I.IOne, I.oDecls = [], I.bpexp} = [bpexp `eqTo` constant 1]
+scopeConstraint I.IDeclPExp {I.quant = I.IOne, I.oDecls} = [I.body oDecl `eqTo` constant 1 | oDecl <- oDecls]
+
+
+parsePath :: MonadScope m => SClafer -> I.PExp -> m [[String]]
 parsePath start pexp =
   do
     match <- patternMatch parsePath' (ParseState start []) (fromMaybe [] $ unfoldJoins pexp)
@@ -308,20 +328,20 @@ parsePath start pexp =
         <|> return [result]
       
   -- Step handles non-this token.
-  step :: MonadAnalysis m => ParseT m String
+  step :: MonadScope m => ParseT m String
   step = _this_ <|> _directChild_ <|> try (pushThis >> _indirectChild_)
   
   -- Update the state of where "this" is.
   -- Path is one step away from where "this" is.
-  follow :: MonadAnalysis m => String -> ParseT m String
+  follow :: MonadScope m => String -> ParseT m String
   follow path =
     do
       curThis <- getThis
       case path of
         "this" -> return () -- didn't move anywhere, don't change anything
-        "parent" -> parentOf curThis >>= putThis -- the parent is now "this"
-        "ref" -> refOf curThis >>= putThis -- the ref'd Clafer is now "this"
-        u -> claferWithUid u >>= putThis
+        "parent" -> lift (parentOf curThis) >>= putThis -- the parent is now "this"
+        "ref" -> lift (refOf curThis) >>= putThis -- the ref'd Clafer is now "this"
+        u -> lift (claferWithUid u) >>= putThis
       return path
 
 
@@ -332,184 +352,16 @@ parsePath start pexp =
  ---------- Internals ---------------------------------------
  ------------------------------------------------------------}
 
-newtype Analysis a = Analysis (VSupplyT (ReaderT Info (LPM String Double)) a)
-  deriving (Monad, Functor, MonadState (LP String Double), MonadSupply Var, MonadReader Info)
+newtype ScopeAnalysis a = ScopeAnalysis (VSupplyT (AnalysisT (LPM String Double)) a)
+  deriving (Monad, Functor, MonadState (LP String Double), MonadSupply Var, MonadReader Info, MonadAnalysis)
 
-class (Functor m, MonadSupply Var m, MonadReader Info m, MonadState (LP String Double) m) => MonadAnalysis m
+class (MonadAnalysis m, MonadState (LP String Double) m, MonadSupply Var m) => MonadScope m
 
-instance (Functor m, MonadSupply Var m, MonadReader Info m, MonadState (LP String Double) m) => MonadAnalysis m
-
-  
-data SSuper = Ref String | Colon String deriving Show
--- Easier to work with. IClafers have links from parents to children. SClafers have links from children to parent.
-data SClafer = SClafer {uid::String, isAbstract::Bool, low::Integer, high::Integer, parent::Maybe String, super::Maybe SSuper, constraints::[I.PExp]} deriving Show
-
-data Info = Info{sclafers :: [SClafer]} deriving Show 
+instance (MonadAnalysis m, MonadState (LP String Double) m, MonadSupply Var m) => MonadScope m
 
 
-runAnalysis :: Analysis a -> Info -> (a, LP String Double)
-runAnalysis (Analysis s) info = runLPM $ runReaderT (runVSupplyT s) info
-
-withExtraClafers :: MonadAnalysis m => [SClafer] -> m a -> m a
-withExtraClafers extra = local addInfo
-  where
-  addInfo (Info c) = Info $ c ++ extra
-
-clafers :: MonadAnalysis m => m [SClafer]
-clafers = asks sclafers
-
-claferWithUid :: MonadAnalysis m => String -> m SClafer
-claferWithUid u =
-  do
-    c <- clafers
-    case find ((==) u . uid) c of
-      Just c' -> return $ c'
-      Nothing -> fail $ "Unknown uid " ++ u
-      
-parentUid :: Monad m => SClafer -> m String
-parentUid clafer =
-  case parent clafer of
-    Just p  -> return p
-    Nothing -> fail $ "No parent uid for " ++ show clafer
-    
-parentOf :: MonadAnalysis m => SClafer -> m SClafer
-parentOf clafer = claferWithUid =<< parentUid clafer
-
-refUid :: Monad m => SClafer -> m String
-refUid clafer =
-  case super clafer of
-    Just (Ref u)  -> return u
-    _             -> fail $ "No ref uid for " ++ show clafer
-
-refOf :: MonadAnalysis m => SClafer -> m SClafer
-refOf clafer =  claferWithUid =<< refUid clafer
-
-colonUid :: Monad m => SClafer -> m String
-colonUid clafer =
-  case super clafer of
-    Just (Colon u)  -> return u
-    _               -> fail $ "No colon uid for " ++ show clafer
-
-colonOf :: MonadAnalysis m => SClafer -> m SClafer
-colonOf clafer =  claferWithUid =<< colonUid clafer
-
-
-{-
- - C is a direct child of B.
- -
- -  B
- -    C
- -}
-isDirectChild :: MonadAnalysis m => SClafer -> SClafer -> m Bool
-isDirectChild child parent = is (not . null) (child |^ parent)
- 
-{-
- - C is an direct child of B.
- -
- -  abstract A
- -    C
- -  B : A
- -}
-isIndirectChild :: MonadAnalysis m => SClafer -> SClafer -> m Bool
-isIndirectChild child parent =
-  fromMaybeT False $ do
-    s <- colonOf parent
-    when (uid s == "clafer") mzero
-    isChildren child s
-
-isChildren :: MonadAnalysis m => SClafer -> SClafer -> m Bool
-isChildren child parent =
-  liftM2 (||) (isDirectChild child parent) (isIndirectChild child parent)
-
-
-data Uid = Uid String | Any deriving Show
-
-class Uidable u where
-  toUid :: u -> Uid
-  
-instance Uidable Uid where
-  toUid = id
-  
-instance Uidable SClafer where
-  toUid = Uid . uid
-
-matches :: Uid -> String -> Bool
-matches (Uid u1) u2 = u1 == u2
-matches Any _ = True
-
-anything :: Uid
-anything = Any
-
-
--- a is a child of b
-(|^) :: (MonadAnalysis m, Uidable a, Uidable b) => a -> b -> m [(SClafer, SClafer)]
-lower |^ upper =
-  runListT $ do
-    clafer <- foreach clafers
-    parent <- parentOf clafer
-    when (not $ matches (toUid lower) (uid clafer)) mzero
-    when (not $ matches (toUid upper) (uid parent)) mzero
-    return (clafer , parent)
-
--- a -> b    
-(|->) :: (MonadAnalysis m, Uidable a, Uidable b) => a -> b -> m [(SClafer, SClafer)]
-lower |-> upper =
-  runListT $ do
-    clafer <- foreach clafers
-    super  <- refOf clafer
-    when (not $ matches (toUid lower) (uid clafer)) mzero
-    when (not $ matches (toUid upper) (uid super)) mzero
-    return (clafer, super)
-
--- a : b
-(|:) :: (MonadAnalysis m, Uidable a, Uidable b) => a -> b -> m [(SClafer, SClafer)]
-lower |: upper =
-  runListT $ do
-    clafer <- foreach clafers
-    super  <- colonOf clafer
-    when (not $ matches (toUid lower) (uid clafer)) mzero
-    when (not $ matches (toUid upper) (uid super)) mzero
-    return (clafer, super)
-
--- constraints under
-constraintsUnder :: (MonadAnalysis m, Uidable a) => a -> m [(SClafer, I.PExp)]
-constraintsUnder under =
-  runListT $ do
-    clafer <- foreach clafers
-    when (not $ matches (toUid under) (uid clafer)) mzero
-    constraint <- foreachM $ constraints clafer
-    return (clafer, constraint)
-
-
-rootUid :: String
-rootUid = "_root"
-
--- Converts IClafer to SClafer
-convertClafer :: I.IClafer -> [SClafer]
-convertClafer = 
-  convertClafer' Nothing
-  where
-  convertElement' parent (I.IEClafer clafer) = Just $ Left $ convertClafer' parent clafer
-  convertElement' _ (I.IEConstraint _ pexp)   = Just $ Right $ pexp
-  convertElement' _ _ = Nothing
-  
-  convertClafer' parent clafer =
-    SClafer (I.uid clafer) (I.isAbstract clafer) low high parent super constraints : concat children
-    where
-    (children, constraints) = partitionEithers $ mapMaybe (convertElement' $ Just $ I.uid clafer) (I.elements clafer)
-    
-    Just (low, high) = I.card clafer
-    super =
-      case I.super clafer of
-        I.ISuper True [I.PExp{I.exp = I.IClaferId{I.sident = superUid}}]  -> Just $ Ref superUid
-        I.ISuper False [I.PExp{I.exp = I.IClaferId{I.sident = superUid}}] -> Just $ Colon superUid
-        _ -> Nothing
-
-gatherInfo :: I.IModule -> Info
-gatherInfo imodule =
-  Info $ convertClafer root
-  where
-  root = I.IClafer noSpan True Nothing rootUid rootUid (I.ISuper False [I.PExp Nothing "" noSpan $ I.IClaferId "clafer" "clafer" True]) (Just (1, 1)) (0, 0) $ I.mDecls imodule
+runScopeAnalysis :: ScopeAnalysis a -> Info -> (a, LP String Double)
+runScopeAnalysis (ScopeAnalysis s) info = runLPM $ runAnalysisT (runVSupplyT s) info
 
 -- Unfold joins
 -- If the expression is a tree of only joins, then this function will flatten
@@ -532,7 +384,7 @@ unfoldJoins pexp =
 uniqNameSpace :: String
 uniqNameSpace = "_aux_"
 
-uniqVar :: MonadAnalysis m => m String
+uniqVar :: MonadScope m => m String
 uniqVar =
   do
     c <- supplyNew
@@ -545,7 +397,7 @@ uniqVar =
  -
  - pre: v >= 0
  -}
-testPositive :: MonadAnalysis m => String -> m String
+testPositive :: MonadScope m => String -> m String
 testPositive v =
   do
     aux <- uniqVar
@@ -582,20 +434,20 @@ type ParseT = ParsecT [Token] ParseState
 
 
 -- Where "this" refers to.
-getThis :: MonadAnalysis m => ParseT m SClafer
+getThis :: MonadScope m => ParseT m SClafer
 getThis =
   do
     s <- getState
     return (psThis s)
 
 -- Update where "this" refers to.
-putThis :: MonadAnalysis m => SClafer -> ParseT m ()
+putThis :: MonadScope m => SClafer -> ParseT m ()
 putThis newThis = 
   do
     state' <- getState
     putState $ state'{psThis = newThis}
 
-popStack :: MonadAnalysis m => ParseT m [SClafer]
+popStack :: MonadScope m => ParseT m [SClafer]
 popStack =
   do
     state' <- getState
@@ -603,7 +455,7 @@ popStack =
     putState state'{psStack = []}
     return stack
 
-pushThis :: MonadAnalysis m => ParseT m ()
+pushThis :: MonadScope m => ParseT m ()
 pushThis =
   do
     state' <- getState
@@ -611,43 +463,43 @@ pushThis =
 
 
 -- Parser combinator for "this"
-_this_ :: MonadAnalysis m => ParseT m String
+_this_ :: MonadScope m => ParseT m String
 _this_ = satisfy (== "this")
 
 -- Parser combinator for "parent"
-_parent_ :: MonadAnalysis m => ParseT m String
+_parent_ :: MonadScope m => ParseT m String
 _parent_ = satisfy (== "parent")
 
 -- Parser combinator for "ref"
-_ref_ :: MonadAnalysis m => ParseT m String
+_ref_ :: MonadScope m => ParseT m String
 _ref_ = satisfy (== "ref")
 
 -- Parser combinator for a uid that is not "this", "parent", or "ref"
-_child_ :: MonadAnalysis m => ParseT m String
+_child_ :: MonadScope m => ParseT m String
 _child_ = satisfy (not . (`elem` ["this", "parent", "ref"]))
 
 -- Parser combinator for a uid of direct child.
-_directChild_ :: MonadAnalysis m => ParseT m String
+_directChild_ :: MonadScope m => ParseT m String
 _directChild_ =
   try $ do
     curThis <- getThis
-    clafer <- _child_ >>= claferWithUid
-    check <- isDirectChild clafer curThis
+    clafer <- _child_ >>= lift . claferWithUid
+    check <- lift $ isDirectChild clafer curThis
     when (not check) $ unexpected $ (uid clafer) ++ " is not a direct child of " ++ (uid curThis)
     return $ uid clafer
 
 -- Parser combinator for a uid of indirect child.
-_indirectChild_ :: MonadAnalysis m => ParseT m String
+_indirectChild_ :: MonadScope m => ParseT m String
 _indirectChild_ =
   try $ do
     curThis <- getThis
-    clafer <- _child_ >>= claferWithUid
-    check <- isIndirectChild clafer curThis
+    clafer <- _child_ >>= lift . claferWithUid
+    check <- lift $ isIndirectChild clafer curThis
     when (not check) $ unexpected $ (uid clafer) ++ " is not an indirect child of " ++ (uid curThis)
     return $ uid clafer    
     
 
-satisfy :: MonadAnalysis m => (String -> Bool) -> ParseT m String
+satisfy :: MonadScope m => (String -> Bool) -> ParseT m String
 satisfy f = tLexeme <$> tokenPrim (tLexeme)
                                   (\_ c _ -> tPos c)
                                   (\c -> if f $ tLexeme c then Just c else Nothing)
@@ -657,7 +509,7 @@ spanToSourcePos :: Span -> SourcePos
 spanToSourcePos (Span (Pos l c) _) = (newPos "" (fromInteger l) (fromInteger c))
 
 
-patternMatch :: MonadAnalysis m => ParseT m a -> ParseState -> [Token] -> m (Either ParseError a)
+patternMatch :: MonadScope m => ParseT m a -> ParseState -> [Token] -> m (Either ParseError a)
 patternMatch parse' state' =
   runParserT (parse' <* eof) state' ""
 
@@ -668,35 +520,6 @@ patternMatch parse' state' =
  - Utility functions
  -
  -}
-runListT_ :: Monad m => ListT m a -> m ()
-runListT_ l = runListT l >> return ()
-
-foreach :: m[a] -> ListT m a
-foreach = ListT
-
-foreachM :: Monad m => [a] -> ListT m a
-foreachM = ListT . return
-
-
-subClafers :: (a, b) -> a
-subClafers = fst
-
-findAll :: Monad m => m a -> ListT m a
-findAll = lift
-
-select :: Monad m => m [a] -> (a -> b) -> m [b]
-select from f = from >>= return . map f
-
-is :: Monad m => (a -> Bool) -> m a -> m Bool
-is = liftM
-
-suchThat :: Monad m => m [a] -> (a -> Bool) -> m [a]
-suchThat = flip $ liftM . filter
-
-fromMaybeT :: Monad m => a -> MaybeT m a -> m a
-fromMaybeT def m = fromMaybe def `liftM` runMaybeT m
-
-
 instance MonadSupply s m => MonadSupply s (ListT m) where
   supplyNew = lift supplyNew
   

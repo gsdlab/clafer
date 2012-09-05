@@ -172,9 +172,6 @@ genXmlITypeType x = case x of
   TString -> "IString"
   TInteger -> "IInteger"
   TReal -> "IReal"
-  TClafer -> "ISet"
-  -- In the future, TRef might be needed in the Xml IR.
-  -- For now, keep it simple.
-  TRef t -> genXmlITypeType t
+  TClafer _ -> "ISet"
 
 genXmlIType x = tagType "Type" (genXmlITypeType x) ""
