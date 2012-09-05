@@ -15,7 +15,7 @@ install:
 	cp -f LICENSE $(to)/
 	cp -f CHANGES $(to)/
 	cp -f tools/alloy4.jar $(to)/tools
-	cp -f tools/alloy4.2-rc.jar $(to)/tools
+	cp -f tools/alloy4.2.jar $(to)/tools
 	cp -f tools/XsdCheck.class $(to)/tools
 
 build:
