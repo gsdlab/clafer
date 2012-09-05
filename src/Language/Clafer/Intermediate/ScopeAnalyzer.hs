@@ -62,16 +62,30 @@ import Debug.Trace
 
 scopeAnalysis :: I.IModule -> [(String, Integer)]
 scopeAnalysis imodule =
-  removeZeroes $ removeRoot $ removeAux $
-    -- unsafePerformIO should be safe (?)
-    -- We aren't modifying any global state.
-    -- If we don't use unsafePerformIO, then we have to be inside the IO monad and
-    -- makes things really ugly. Might as well contain the ugliness in here.
-    case unsafePerformIO solution of
-      (Success, Just (_, s)) -> Map.toList $ Map.map round s
-      x -> [] -- No solution
+  intScope ++ scopes
   where
-  (abstracts, analysis) = runScopeAnalysis (setConstraints >> (clafers `suchThat` isAbstract)) $ gatherInfo imodule
+  intScope = if bitwidth > 4 then return ("int", bitwidth) else fail "Bitwidth less than default."
+  bitwidth = bitwidthAnalysis (constants ++ map snd scopes)
+  
+  scopes = 
+    removeZeroes $ removeRoot $ removeAux $
+      -- unsafePerformIO should be safe (?)
+      -- We aren't modifying any global state.
+      -- If we don't use unsafePerformIO, then we have to be inside the IO monad and
+      -- makes things really ugly. Might as well contain the ugliness in here.
+      case unsafePerformIO solution of
+        (Success, Just (_, s)) -> Map.toList $ Map.map round s
+        x -> [] -- No solution
+  
+  ((abstracts, constants), analysis) = runScopeAnalysis run $ gatherInfo imodule
+  
+  run =
+    do
+      setConstraints
+      abstracts' <- clafers `suchThat` isAbstract
+      constants' <- constantsAnalysis
+      return (abstracts', constants')
+  
   solution = {-trace (show $ unsafePerformIO $ writeLP "TESTTT" analysis) $-} glpSolveVars mipDefaults{msgLev = MsgOff} $ analysis
   -- Any scope that is 0 will take the global scope of 1 instead.
   removeZeroes = filter ((/= 0) . snd)
@@ -83,6 +97,25 @@ scopeAnalysis imodule =
   -- it easier use since user can increase the scope of subclafers without
   -- needing to increase the scope of the abstract Clafer.
   removeAbstracts = filter (not . (`elem` map uid abstracts) . fst)
+
+
+bitwidthAnalysis :: [Integer] -> Integer
+bitwidthAnalysis constants =
+  toInteger $ 1 + fromJust (findIndex (\x -> all (`within` x) constants) bitRange)
+  where
+  within a (minB, maxB) = a >= minB && a <= maxB
+  bitRange = [(-2^i, 2^i-1) | i <- [0..]]
+
+  
+constantsAnalysis :: ScopeAnalysis [Integer]
+constantsAnalysis =
+  do
+    cons <- constraintsUnder anything `select` snd
+    return $ mapMaybe integerConstant [I.exp sub | con <- cons, sub <- subexpressions con]
+  where  
+  integerConstant (I.IInt i) = Just i
+  integerConstant _ = Nothing
+    
 
 setConstraints :: ScopeAnalysis ()
 setConstraints =
@@ -520,6 +553,15 @@ patternMatch parse' state' =
  - Utility functions
  -
  -}
+subexpressions :: I.PExp -> [I.PExp]
+subexpressions p@I.PExp{I.exp} =
+  p : subexpressions' exp
+  where
+  subexpressions' I.IDeclPExp{I.oDecls, I.bpexp} =
+    concatMap (subexpressions . I.body) oDecls ++ subexpressions bpexp
+  subexpressions' I.IFunExp{I.exps} = concatMap subexpressions exps
+  subexpressions' _ = []
+
 instance MonadSupply s m => MonadSupply s (ListT m) where
   supplyNew = lift supplyNew
   
