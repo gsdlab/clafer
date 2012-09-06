@@ -83,7 +83,7 @@ printModule (Module [])     irMap html = ""
 printModule (Module (x:xs)) irMap html = (printDeclaration x 0 irMap html []) ++ printModule (Module xs) irMap html
 printModule (PosModule _ declarations) irMap html = printModule (Module declarations) irMap html
 
-printDeclaration (EnumDecl posIdent enumIds)       indent irMap html comments = (while html "<span class=\"keyword\">") ++ "enum" ++ (while html "</span>") ++ " =" ++ (printPosIdentRef posIdent indent irMap html comments) ++ (concat $ intersperse ";" (map (\x -> printEnumId x indent irMap html comments) enumIds))
+printDeclaration (EnumDecl posIdent enumIds)       indent irMap html comments = (while html "<span class=\"keyword\">") ++ "enum" ++ (while html "</span>") ++ " = " ++ (printPosIdentRef posIdent indent irMap html comments) ++ (concat $ intersperse "; " (map (\x -> printEnumId x indent irMap html comments) enumIds))
 printDeclaration (PosEnumDecl _ posIdent enumIds)  indent irMap html comments = printDeclaration (EnumDecl posIdent enumIds) indent irMap html comments
 printDeclaration (ElementDecl element)             indent irMap html comments = printElement element indent irMap html comments
 printDeclaration (PosElementDecl _ element)        indent irMap html comments = printDeclaration (ElementDecl element) indent irMap html comments
@@ -91,7 +91,7 @@ printDeclaration (PosElementDecl _ element)        indent irMap html comments = 
 printElement (Subclafer clafer) indent irMap html comments = printClafer clafer indent irMap html comments
 printElement (PosSubclafer span subclafer) indent irMap html comments = printElement (Subclafer subclafer) indent irMap html comments
 printElement (Subconstraint constraint) indent irMap html comments = printConstraint constraint indent irMap html comments
-printElement (PosSubconstraint span constraint) indent irMap html comments = let (comments', preComments) = printPreComment span comments; (comments'', comment) = printComment span comments' in preComments ++ printElement (Subconstraint constraint) indent irMap html comments'' ++ comment
+printElement (PosSubconstraint span constraint) indent irMap html comments = let (comments', preComments) = printPreComment span comments; (comments'', comment) = printComment span comments' in preComments ++ printElement (Subconstraint constraint) indent irMap html comments'' ++ comment ++ while html "<br>" ++ "\n"
 printElement (ClaferUse name card elements) indent irMap html comments = (printIndent indent html) ++ "`" ++ printName name indent irMap html comments ++ printCard card indent irMap html comments ++ (while html "</span><br>") ++ "\n" ++ printElements elements indent irMap html comments
 printElement (PosClaferUse span name card elements) indent irMap html comments = let (divId, superId) = getUseId span irMap;
                                                                                      (comments', preComments) = printPreComment span comments;
@@ -167,7 +167,7 @@ printGCard gCard indent irMap html comments = case gCard of
   GCardOpt          -> while html "<span class=\"keyword\">" ++ "opt" ++ while html "</span>" ++ " "
   (PosGCardOpt _)   -> while html "<span class=\"keyword\">" ++ "opt" ++ while html "</span>" ++ " "
 
-printNCard (NCard (PosInteger (pos, num)) exInteger) indent irMap html comments = num ++ ".." ++ printExInteger exInteger indent irMap html comments
+printNCard (NCard (PosInteger (pos, num)) exInteger) indent irMap html comments = num ++ ".." ++ printExInteger exInteger indent irMap html comments ++ " "
 printNCard (PosNCard _ posinteger exinteger) indent irMap html comments = printNCard (NCard posinteger exinteger) indent irMap html comments
       
 printExInteger ExIntegerAst indent irMap html comments = "*"
@@ -216,7 +216,7 @@ printConstraint (Constraint exps) indent irMap html comments = concatMap (\x -> 
 printConstraint (PosConstraint _ exps) indent irMap html comments = printConstraint (Constraint exps) indent irMap html comments
 printConstraint' exp indent irMap html comments = (printIndent indent html) ++ while html "<span class=\"keyword\">" ++ "[" ++ while html "</span>"
                                                   ++ " " ++ printExp exp indent irMap html comments ++ " " ++ while html "<span class=\"keyword\">" ++ "]" ++ while html "</span>"
-                                                  ++ (if indent == 0 then "" else while html "</span>") ++ while html "<br>" ++ "\n"
+                                                  ++ (if indent == 0 then "" else while html "</span>") 
 
 printDecl (Decl locids setExp) indent irMap html comments = (while html "<span class=\"keyword\">") ++ ":" ++ (while html "</span>") ++ printSetExp setExp indent irMap html comments
 printDecl (PosDecl _ locids setExp) indent irMap html comments = printDecl (Decl locids setExp) indent irMap html comments
