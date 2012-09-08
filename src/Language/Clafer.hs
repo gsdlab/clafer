@@ -338,14 +338,16 @@ generate =
                         CVLGraph -> ("dot", genCVLGraph (ast env) iModule (dropExtension $ file cargs), Nothing)
     return $ CompilerResult { extension = ext, 
                      outputCode = code, 
-                     statistics = stats, 
+                     statistics = stats,
+                     outputIr   = iModule,
                      mappingToAlloy = mapToAlloy }
     
 data CompilerResult = CompilerResult {
                             extension :: String, 
                             outputCode :: String, 
-                            statistics :: String, 
-                            mappingToAlloy :: Maybe String 
+                            statistics :: String,
+                            outputIr :: IModule,
+                            mappingToAlloy :: Maybe String
                             } deriving Show
 
 desugar :: Module -> IModule  
