@@ -4,7 +4,7 @@ body { font-size: 18px }
 .reference{}
 .code { background-color: lightgray; font-size: 18px }
 .standalonecomment { color: green; font-style:italic }
-.inlinecomment { color: green; float:right; font-style:italic }
+.inlinecomment { color: green; padding-left:20px; font-style:italic }
 .error{background-color: yellow; color: red }
 .l0{}
 .l1{padding-left:20px}

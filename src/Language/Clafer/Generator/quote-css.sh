@@ -28,7 +28,7 @@ echo " SOFTWARE."
 echo "-}"
 echo "module Language.Clafer.Css where"
 echo ""
-echo "header = \"<!DOCTYPE html>\n<html>\n<meta http-equiv=\\\"X-UA-Compatible\\\" content=\\\"IE=9\\\">\n<head>\n\""
+echo "header = \"<!DOCTYPE html>\n<html>\n<head>\n<meta http-equiv=\\\"X-UA-Compatible\\\" content=\\\"IE=9\\\">\n\""
 echo ""
 echo "css = unlines [ \"<style>\","
 # Remove all Windows style carriage returns
