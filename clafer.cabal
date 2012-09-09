@@ -15,7 +15,7 @@ Extra-Source-Files:
                      CHANGES,
                      LICENSE,
                      tools/alloy4.jar,
-                     tools/alloy4.2-rc.jar,
+                     tools/alloy4.2.jar,
                      tools/XsdCheck.class
 					 
 source-repository head

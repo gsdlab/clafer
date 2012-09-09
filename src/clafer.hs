@@ -102,7 +102,7 @@ run v args input =
       exitFailure
   handleErr (SemanticErr ErrPos{modelPos = Pos l c} msg) =
     do
-      putStrLn $ "\nError at line " ++ show l ++ " column " ++ show c ++ "..."
+      putStrLn $ "\nCompile error at line " ++ show l ++ " column " ++ show c ++ "..."
       putStrLn msg
       exitFailure
       
@@ -131,12 +131,13 @@ conPutStrLn args s = when (not $ fromJust $ console_output args) $ putStrLn s
 runValidate :: ClaferArgs -> [Char] -> IO ()
 runValidate args fo = do
   let path = (fromJust $ tooldir args) ++ "/"
+  liftIO $ putStrLn ("tooldir=" ++ path)
   case (fromJust $ mode args) of
     Xml -> do
       writeFile "ClaferIR.xsd" claferIRXSD
       voidf $ system $ "java -classpath " ++ path ++ " XsdCheck ClaferIR.xsd " ++ fo
     Alloy ->   voidf $ system $ validateAlloy path "4" ++ fo
-    Alloy42 -> voidf $ system $ validateAlloy path "4.2-rc" ++ fo
+    Alloy42 -> voidf $ system $ validateAlloy path "4.2" ++ fo
     Clafer ->  voidf $ system $ path ++ "/clafer -s -m=clafer " ++ fo
 
 validateAlloy :: String -> String -> String
