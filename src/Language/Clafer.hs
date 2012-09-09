@@ -45,6 +45,7 @@ module Language.Clafer (
                         ast,
                         makeEnv,
                         Pos(..),
+                        IrTrace(..),
                         module Language.Clafer.ClaferArgs,
                         module Language.Clafer.Front.ErrM,
                                        
@@ -324,12 +325,12 @@ generate =
                         Alloy   ->  do
                                       let alloyCode = genModule cargs (astrModule iModule, genv)
                                       let addCommentStats = if fromJust $ no_stats cargs then const else addStats
-                                      let m = show $ snd alloyCode
+                                      let m = snd alloyCode
                                       ("als", addCommentStats (fst alloyCode) stats, Just m)
                         Alloy42  -> do
                                       let alloyCode = genModule cargs (astrModule iModule, genv)
                                       let addCommentStats = if fromJust $ no_stats cargs then const else addStats
-                                      let m = show $ snd alloyCode
+                                      let m = snd alloyCode
                                       ("als", addCommentStats (fst alloyCode) stats, Just m)
                         Xml      -> ("xml", genXmlModule iModule, Nothing)
                         Clafer   -> ("des.cfr", printTree $ sugarModule iModule, Nothing)
@@ -340,14 +341,14 @@ generate =
                      outputCode = code, 
                      statistics = stats,
                      outputIr   = iModule,
-                     mappingToAlloy = mapToAlloy }
+                     mappingToAlloy = fromMaybe [] mapToAlloy }
     
 data CompilerResult = CompilerResult {
                             extension :: String, 
                             outputCode :: String, 
                             statistics :: String,
                             outputIr :: IModule,
-                            mappingToAlloy :: Maybe String
+                            mappingToAlloy :: [(Span, IrTrace)] -- Maps source constraint spans in Alloy to the spans in the IR
                             } deriving Show
 
 desugar :: Module -> IModule  

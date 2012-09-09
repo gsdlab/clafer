@@ -25,7 +25,7 @@
  - ClaferEnv can just import this module without all the parsing/compiline/generating
  - functionality.
  -}
-module Language.ClaferT (ClaferEnv(..), makeEnv, ast, ir, ClaferM, ClaferT, CErr(..), ClaferErr(..), ClaferErrs(..), ClaferSErr(..), ClaferSErrs(..), ErrPos(..), PartialErrPos(..), throwErrs, throwErr, catchErrs, getEnv, getsEnv, modifyEnv, putEnv, runClafer, runClaferT, Throwable(..)) where
+module Language.ClaferT (ClaferEnv(..), makeEnv, ast, ir, ClaferM, ClaferT, CErr(..), CErrs(..), ClaferErr(..), ClaferErrs(..), ClaferSErr(..), ClaferSErrs(..), ErrPos(..), PartialErrPos(..), throwErrs, throwErr, catchErrs, getEnv, getsEnv, modifyEnv, putEnv, runClafer, runClaferT, Throwable(..), Span(..), Pos(..)) where
 
 import Control.Monad.Error
 import Control.Monad.State

@@ -117,7 +117,7 @@ run v args input =
       let f = dropExtension $ file args
       let f' = f ++ "." ++ (extension result)
       liftIO $ if fromJust $ console_output args then putStrLn (outputCode result') else writeFile f' (outputCode result')
-      liftIO $ when (fromJust $ alloy_mapping args) $ writeFile (f ++ "." ++ "map") $ fromJust (mappingToAlloy result')
+      liftIO $ when (fromJust $ alloy_mapping args) $ writeFile (f ++ "." ++ "map") $ show (mappingToAlloy result')
       return f'
   summary graph result = result{outputCode=unlines $ summary' graph ("<pre>" ++ statistics result ++ "</pre>") (lines $ outputCode result)}
   summary' _ _ [] = []
