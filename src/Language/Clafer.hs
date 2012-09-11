@@ -340,14 +340,14 @@ generate =
     return $ CompilerResult { extension = ext, 
                      outputCode = code, 
                      statistics = stats,
-                     outputIr   = iModule,
+                     claferEnv  = env,
                      mappingToAlloy = fromMaybe [] mapToAlloy }
     
 data CompilerResult = CompilerResult {
                             extension :: String, 
                             outputCode :: String, 
                             statistics :: String,
-                            outputIr :: IModule,
+                            claferEnv :: ClaferEnv,
                             mappingToAlloy :: [(Span, IrTrace)] -- Maps source constraint spans in Alloy to the spans in the IR
                             } deriving Show
 
