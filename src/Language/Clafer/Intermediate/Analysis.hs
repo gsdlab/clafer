@@ -38,6 +38,7 @@ import Control.Monad.List
 import Control.Monad.Maybe
 import Control.Monad.Reader
 import Control.Monad.State
+import Control.Monad.Writer
 import Data.Either
 import Data.List
 import Data.Maybe
@@ -70,6 +71,10 @@ instance MonadAnalysis m => MonadAnalysis (ListT m) where
 instance MonadAnalysis m => MonadAnalysis (MaybeT m) where
   clafers = lift clafers
   withExtraClafers = mapMaybeT . withExtraClafers
+
+instance (Monoid w, MonadAnalysis m) => MonadAnalysis (WriterT w m) where
+  clafers = lift clafers
+  withExtraClafers = mapWriterT . withExtraClafers
   
 instance MonadAnalysis m => MonadAnalysis (VSupplyT m) where
   clafers = lift clafers
@@ -112,6 +117,22 @@ parentUid clafer =
     
 parentOf :: (Uidable c, MonadAnalysis m) => c -> m c
 parentOf clafer = fromClafer =<< claferWithUid =<< parentUid =<< toClafer clafer
+
+parentsOf :: (Uidable c, MonadAnalysis m) => c -> m [c]
+parentsOf clafer =
+  runListT $ do
+    r <- parentOf clafer
+    return r `mplus` ListT (parentsOf r)
+
+ancestorsOf :: (Uidable c, MonadAnalysis m) => c -> m [c]
+ancestorsOf clafer = (clafer :) <$> parentsOf clafer
+
+topNonRootAncestor :: (Uidable c, MonadAnalysis m) => c -> m c
+topNonRootAncestor clafer =
+  do
+    clafer' <- toClafer clafer
+    when (uid clafer' == rootUid) $ error "Root does not have a non root ancestor."
+    (head . tail . reverse) <$> ancestorsOf clafer
 
 refUid :: Monad m => SClafer -> m String
 refUid clafer =
@@ -313,7 +334,6 @@ foreach = ListT
 foreachM :: Monad m => [a] -> ListT m a
 foreachM = ListT . return
 
-
 subClafers :: (a, b) -> a
 subClafers = fst
 
@@ -349,3 +369,11 @@ mapMaybeT f = MaybeT . f . runMaybeT
 
 mapVSupplyT :: (Monad m, Monad m1) => (m1 a1 -> m a) -> VSupplyT m1 a1 -> VSupplyT m a
 mapVSupplyT f = lift . f . runVSupplyT
+
+mapLeft :: (t -> a) -> Either t b -> Either a b
+mapLeft f (Left l)  = Left $ f l
+mapLeft _ (Right r) = Right r
+
+mapRight :: (t -> b) -> Either a t -> Either a b
+mapRight _ (Left l)  = Left l
+mapRight f (Right r) = Right $ f r

@@ -1,9 +1,4 @@
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE UndecidableInstances #-}
-{-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE NamedFieldPuns #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving, UndecidableInstances, FlexibleInstances, FlexibleContexts, MultiParamTypeClasses, NamedFieldPuns, TupleSections #-}
 
 {-
  Copyright (C) 2012 Jimmy Liang, Kacper Bak <http://gsd.uwaterloo.ca>
@@ -33,13 +28,14 @@ import qualified Language.Clafer.Intermediate.Intclafer as I
 import Language.Clafer.Intermediate.Analysis
 import Language.Clafer.Common
 
-import Control.Applicative hiding (Alternative(..))
+import Control.Applicative (Applicative(..), (<$>))
 import Control.Monad
 import Control.Monad.List
 import Control.Monad.LPMonad
 import Control.Monad.Maybe
 import Control.Monad.Reader
 import Control.Monad.State
+import Control.Monad.Writer
 import Data.Either
 import Data.LinearProgram hiding (constraints)
 import Data.List
@@ -120,7 +116,7 @@ constantsAnalysis =
 setConstraints :: ScopeAnalysis ()
 setConstraints =
   do
-    reifyClafers <- constraintConstraints
+    reifyClafers <- constraintConstraints2
     withExtraClafers reifyClafers $ do
       optFormula
       colonConstraints
@@ -202,7 +198,7 @@ constraintConstraints =
       (curThis, con) <- foreach $ constraintsUnder anything
       -- ... parse constraint expression ...
       (path, mult) <- foreach $ constraintConstraints' curThis (I.exp con)
-      
+
       -- ... set the linear programming equations
       -- The first part is owned by curThis. The rest of the parts are after refs.
       let conc = head $ parts path
@@ -253,7 +249,9 @@ constraintConstraints =
   constraintConstraints' curThis iexp =
     runListT $ do
       (path, mult) <- pathAndMult iexp
+
       p <- Path <$> (map reify <$> parsePath curThis path)
+
       return (p, mult)
 
   -- [some my.path.expression]
@@ -290,30 +288,32 @@ constraintConstraints =
   reify :: [String] -> Part
   reify []  = error "Empty path." -- Bug, should never happen.
   reify xs  = Part xs
+  
+data Expr =
+    This {path::Path} |
+    Global {path::Path} |
+    Const Integer |
+    Union [Expr]
+    deriving Show
 
-constant :: Integral a => a -> I.PExp
-constant = pExpDefPidPos . I.IInt . toInteger
-
-greaterThan x y = (x, GT, y)
-lessThan x y = (x, LT, y)
-eqTo x y = (x, EQ, y)
-
-scopeConstraint :: I.IExp -> [(I.PExp, Ordering, I.PExp)]
-scopeConstraint I.IDeclPExp {I.quant = I.ISome, I.oDecls = [], I.bpexp} = [bpexp `greaterThan` constant 1]
-scopeConstraint I.IDeclPExp {I.quant = I.ISome, I.oDecls}               = map pathAndMultDecl oDecls
-    where
-    pathAndMultDecl I.IDecl {I.isDisj = True, I.decls, I.body}  = body `greaterThan` constant (length decls)
-    pathAndMultDecl I.IDecl {I.isDisj = False, I.decls, I.body} = body `greaterThan` constant 1
-scopeConstraint I.IDeclPExp {I.quant = I.IOne, I.oDecls = [], I.bpexp} = [bpexp `eqTo` constant 1]
-scopeConstraint I.IDeclPExp {I.quant = I.IOne, I.oDecls} = [I.body oDecl `eqTo` constant 1 | oDecl <- oDecls]
-
+isThis :: Expr -> Bool
+isThis This{} = True
+isThis _ = False
+isGlobal :: Expr -> Bool
+isGlobal Global{} = True
+isGlobal _ = False
+isConst :: Expr -> Bool
+isConst Const{} = True
+isConst _ = False
+    
 
 parsePath :: MonadScope m => SClafer -> I.PExp -> m [[String]]
 parsePath start pexp =
   do
-    match <- patternMatch parsePath' (ParseState start []) (fromMaybe [] $ unfoldJoins pexp)
+    root <- claferWithUid rootUid
+    match <- patternMatch parsePath' (ParseState root []) (fromMaybe [] $ unfoldJoins pexp)
     case match of
-      Left err -> fail $ show err
+      Left err -> error $ show err
       Right s -> return $ filter (not . null) s
   where
   parsePath' =
@@ -371,7 +371,190 @@ parsePath start pexp =
     do
       curThis <- getThis
       case path of
-        "this" -> return () -- didn't move anywhere, don't change anything
+        "this" -> putThis start
+        "parent" -> lift (parentOf curThis) >>= putThis -- the parent is now "this"
+        "ref" -> lift (refOf curThis) >>= putThis -- the ref'd Clafer is now "this"
+        u -> lift (claferWithUid u) >>= putThis
+      return path
+
+constraintConstraints2 :: MonadScope m => m [SClafer]
+constraintConstraints2 =
+  do
+    parts <- fmap (nub . concat) $ do
+      runListT $ execWriterT $ do
+        (curThis, con) <- lift $ foreach $ constraintsUnder anything
+        
+        t <- topNonRootAncestor curThis
+        trace (show (uid t) ++ "::" ++ show (uid curThis)) $ return ()
+        
+        constraint <- lift $ foreach $ scopeConstraint curThis con
+        oneConstraint curThis constraint
+
+    rPartList <- forM (map steps parts) $
+      \(conc : abst) -> do
+        reifiedParts <- forM (tail $ inits abst) $
+          \abst' -> reifyPart (Part $ conc : abst')
+        return (conc, concat reifiedParts)
+    
+    -- Create reified clafers.
+    runListT $ do
+      (conc, parts) <- foreachM $ nub rPartList
+      (parent, child) <- foreachM $ zip (Part [conc] : parts) parts
+      baseClafer <- lift $ claferWithUid $ base child
+      return $ SClafer (reifyVarName child) False (low baseClafer) (high baseClafer) (Just $ reifyVarName parent) (Just $ Colon $ uid baseClafer) []
+  where
+  base (Part steps) = last steps
+  
+  oneConstraint :: (MonadWriter [Part] m, MonadScope m) => SClafer -> (Expr, Con, Expr) -> m ()
+  oneConstraint SClafer{uid} (e1, con, e2) =
+    void $ runMaybeT $ oneConstraint' e1 e2 `mplus` oneConstraint' e2 e1
+    where
+    oneConstraint' (This (Path parts)) (Const constant) =
+      -- TODO Not head
+      reifyVar (head parts) `comp` (return $ constant *^ var uid)
+    oneConstraint' (This (Path parts1)) (This (Path parts2)) =
+      reifyVar (head parts1) `comp` reifyVar (head parts2)
+    oneConstraint' (Global (Path parts)) (Const constant) =
+      reifyVar (head parts) `compTo` (return $ fromInteger constant)
+    oneConstraint' _ _ = mzero
+    
+    comp x y =
+      do
+        x' <- x
+        y' <- y
+        case con of
+          LEQ -> x' `leq` y'
+          EQU -> x' `equal` y'
+          GEQ -> x' `geq` y'
+    compTo x y =
+      do
+        x' <- x
+        y' <- y
+        case con of
+          LEQ -> x' `leqTo` y'
+          EQU -> x' `equalTo` y'
+          GEQ -> x' `geqTo` y'
+  
+  reifyVar p = tell [p] >> return (var $ reifyVarName p)
+  reifyVarName (Part [target]) = target
+  reifyVarName (Part target)   = (uniqNameSpace ++ "reify_" ++ intercalate "_" target)
+  
+  reifyPart (Part steps) =
+    do
+      as <- claferWithUid (last steps) >>= nonTopAncestors
+      forM as $
+        \a -> return $ Part $ init steps ++ [uid a]
+  
+  nonTopAncestors child =
+    do
+      parent <- parentOf child
+      if uid parent == rootUid
+        then return []
+        else (++ [child]) `fmap` nonTopAncestors parent
+  
+
+data Con = EQU | LEQ | GEQ deriving Show
+
+scopeConstraint :: MonadScope m => SClafer -> I.PExp -> m [(Expr, Con, Expr)]
+scopeConstraint curThis pexp =
+  runListT $ scopeConstraint' $ I.exp pexp
+  where
+  scopeConstraint' I.IDeclPExp {I.quant = I.ISome, I.oDecls = [], I.bpexp} = parsePath2 curThis bpexp `greaterThan` constant 1
+  scopeConstraint' I.IDeclPExp {I.quant = I.ISome, I.oDecls}               = msum $ map pathAndMultDecl oDecls
+      where
+      pathAndMultDecl I.IDecl {I.isDisj = True, I.decls, I.body}  = parsePath2 curThis body `greaterThan` constant (length decls)
+      pathAndMultDecl I.IDecl {I.isDisj = False, I.decls, I.body} = parsePath2 curThis body `greaterThan` constant 1
+  scopeConstraint' I.IDeclPExp {I.quant = I.IOne, I.oDecls = [], I.bpexp} = parsePath2 curThis bpexp `eqTo` constant 1
+  scopeConstraint' I.IDeclPExp {I.quant = I.IOne, I.oDecls} =
+    do
+      oDecl <- foreachM oDecls
+      parsePath2 curThis (I.body oDecl) `eqTo` constant 1
+  scopeConstraint' I.IFunExp {I.op, I.exps = [exp1, exp2]}
+    | op == "="  = scopeConstraintNum exp1 `eqTo` scopeConstraintNum exp2
+    | op == "<=" = scopeConstraintNum exp1 `lessThan` scopeConstraintNum exp2
+    | op == ">=" = scopeConstraintNum exp1 `greaterThan` scopeConstraintNum exp2
+  
+  scopeConstraintNum I.PExp {I.exp = I.IInt const} = constant const
+  scopeConstraintNum I.PExp {I.exp = I.IFunExp {I.op = "#", I.exps = [path]}} = parsePath2 curThis path
+  scopeConstraintNum _ = mzero
+
+  constant :: (Monad m, Integral i) => i -> m Expr
+  constant = return . Const . toInteger
+
+  greaterThan = liftM2 (,GEQ,)
+  lessThan = liftM2 (,LEQ,)
+  eqTo = liftM2 (,EQU,)
+
+
+{-
+ - We use the stack to push every abstraction we traverse through.
+ - For example:
+ - 
+ -  abstract A
+ -    B ?
+ -      C : D ?
+ -  abstract D
+ -    E ?
+ -  F : A
+ -  G : A
+ -  H : A
+ -
+ -  [some F.B.C.E]
+ -  [some G.B.C.E]
+ -
+ - The first constraint's final stack will look like ["C" ,"F"]
+ - Hence the linear programming equation will look like:
+ -
+ -  scope_F_C_E >= scope_root
+ -
+ - Adding the second constraint:
+ -
+ -  scope_G_C_E >= scope_root
+ -  scope_E >= scope_F_C_E + scope_G_C_E (*)
+ -
+ - Solving the minimization should have scope_E = 2 in its solution.
+ - The (*) equation is set in constraintConstraints
+ -}      
+parsePath2 :: MonadScope m => SClafer -> I.PExp -> m Expr
+parsePath2 start pexp =
+  do
+    root <- claferWithUid rootUid
+    match <- patternMatch parsePath' (ParseState root []) (fromMaybe [] $ unfoldJoins pexp)
+    either (error . show) return match
+  where
+  asPath :: [[String]] -> Path
+  asPath parts = Path [Part part | part <- parts, not $ null part]
+  
+  parsePath' = (This . asPath <$> parseThisPath) <|> (Global . asPath <$> parseNonthisPath)
+  
+  parseThisPath = (_this_ >>= follow) >> parseNonthisPath
+  parseNonthisPath =
+    do
+      paths <- many (step >>= follow)
+      
+      lifo <- popStack
+      let end = if null paths then [] else [last paths]
+      let result = reverse $ end ++ map uid lifo
+      
+      do
+        _ref_ >>= follow
+        -- recurse
+        rec <- parseNonthisPath
+        return $ result : rec
+        <|> return [result]
+      
+  -- Step handles non-this token.
+  step :: MonadScope m => ParseT m String
+  step = _directChild_ <|> try (pushThis >> _indirectChild_)
+  
+  -- Update the state of where "this" is.
+  -- Path is one step away from where "this" is.
+  follow :: MonadScope m => String -> ParseT m String
+  follow path =
+    do
+      curThis <- getThis
+      case path of
+        "this" -> putThis start
         "parent" -> lift (parentOf curThis) >>= putThis -- the parent is now "this"
         "ref" -> lift (refOf curThis) >>= putThis -- the ref'd Clafer is now "this"
         u -> lift (claferWithUid u) >>= putThis
