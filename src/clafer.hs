@@ -111,8 +111,11 @@ run v args input =
       result <- generate
       env <- getEnv
       let (iModule, genv, au) = ir env
-      (_, graph, _) <- liftIO $ readProcessWithExitCode "dot"  ["-Tsvg"] $ genSimpleGraph (ast env) iModule (dropExtension $ file args)
-      let result' = (if (fromJust $ add_graph args) && (mode args == Just Html) then summary graph else id) result
+      result' <- if (fromJust $ add_graph args) && (mode args == Just Html) 
+	     then do
+		   (_, graph, _) <- liftIO $ readProcessWithExitCode "dot"  ["-Tsvg"] $ genSimpleGraph (ast env) iModule (dropExtension $ file args)
+		   return $ summary graph result
+		 else return result
       liftIO $ when (not $ fromJust $ no_stats args) $ putStrLn (statistics result')
       let f = dropExtension $ file args
       let f' = f ++ "." ++ (extension result)
@@ -124,6 +127,7 @@ run v args input =
   summary' graph stats ("<!-- # SUMMARY /-->":xs) = graph:stats:summary' graph stats xs
   summary' graph stats ("<!-- # STATS /-->":xs) = stats:summary' graph stats xs
   summary' graph stats ("<!-- # GRAPH /-->":xs) = graph:summary' graph stats xs
+  summary' graph stats ("<!-- # CVLGRAPH /-->":xs) = graph:summary' graph stats xs
   summary' graph stats (x:xs) = x:summary' graph stats xs
     
 conPutStrLn args s = when (not $ fromJust $ console_output args) $ putStrLn s
