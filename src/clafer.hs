@@ -103,7 +103,7 @@ runValidate args fo = do
       writeFile "ClaferIR.xsd" claferIRXSD
       voidf $ system $ "java -classpath " ++ path ++ " XsdCheck ClaferIR.xsd " ++ fo
     Alloy ->   voidf $ system $ validateAlloy path "4" ++ fo
-    Alloy42 -> voidf $ system $ validateAlloy path "4.2-rc" ++ fo
+    Alloy42 -> voidf $ system $ validateAlloy path "4.2" ++ fo
     Clafer ->  voidf $ system $ path ++ "/clafer -s -m=clafer " ++ fo
 
 validateAlloy :: String -> String -> String

@@ -8,7 +8,7 @@ install:
 	mkdir -p $(to)
 	mkdir -p $(to)/tools
 	cp -f tools/alloy4.jar $(to)/tools
-	cp -f tools/alloy4.2-rc.jar $(to)/tools
+	cp -f tools/alloy4.2.jar $(to)/tools
 	cabal install --bindir=$(to)
 	cp -f README.md $(to)/clafer-README.md
 	cp -f tools/XsdCheck.class $(to)/tools
