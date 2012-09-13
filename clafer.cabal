@@ -5,7 +5,7 @@ Description:         Clafer is a general purpose lightweight modeling language d
 Homepage:            http://clafer.org
 License:             MIT
 License-file:        LICENSE
-Author:              Kacper Bak, Jimmy Liang, Michal Antkiewicz
+Author:              Kacper Bak, Jimmy Liang, Michal Antkiewicz, Chris Walker
 Maintainer:          kbak@gsd.uwaterloo.ca
 Stability:           Experimental
 Category:            Model
@@ -16,13 +16,12 @@ Extra-Source-Files:
                      LICENSE,
                      tools/alloy4.jar,
                      tools/alloy4.2.jar,
+                     tools/alloy4moo.jar,
                      tools/XsdCheck.class
 					 
 source-repository head
     type:            git
     location:        https://github.com/gsdlab/clafer
-
-
 					 
 Executable clafer
     build-tools:     ghc >= 7.4.1

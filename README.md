@@ -14,7 +14,7 @@ There are many possible applications of Clafer; however, three are prominent:
 Clafer Compiler
 ===============
 
-v0.3.1.10-9-2012
+v0.3.1.13-9-2012
 
 Clafer compiler provides a reference language implementation. It translates models in Clafer to other formats (e.g. Alloy, XML, HTML, DOT) to allow for reasoning and processing with existing tools.
 
@@ -32,6 +32,9 @@ In case these binaries do not work on your particular machine configuration, the
 * [Python](http://www.python.org/download/) v2.7.*
   * Needed only by ClaferMOO
 * [Alloy4.1 and/or Alloy4.2](http://alloy.mit.edu/alloy/download.html)
+* [Alloy4MOO](http://www.stevenstewart.ca/alloy4/alloy4moo.jar)
+  * NOTE: Alloy4MOO is a pre-release experimental software. Use at own risk.
+  * Needed only by ClaferMOO
 * [GraphViz](http://graphviz.org/)
   * `dot` is needed only in the `html` mode for SVG graph generation
 
@@ -54,7 +57,10 @@ Building & Installation From Source Code
 * The dependencies for running
 * [The Haskell Platform](http://hackage.haskell.org/platform/) v.2012.2.0.0
 * [Alloy4.1 and/or Alloy4.2](http://alloy.mit.edu/alloy/download.html)
-  * downloaded automatically  
+  * downloaded automatically during build
+* [Alloy4MOO](http://www.stevenstewart.ca/alloy4/alloy4moo.jar)
+  * downloaded automatically during build
+  * NOTE: Alloy4MOO is a pre-release experimental software. Use at own risk.
 * [Git](http://git-scm.com/)
 
 On Windows only
@@ -94,7 +100,7 @@ Clafer Compiler
 (As printed by `clafer --help`)
 
 ```
-Clafer v0.3.1.10-9-2012
+Clafer v0.3.1.13-9-2012
 
 clafer [OPTIONS] [FILE]
 

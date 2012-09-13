@@ -6,6 +6,7 @@
 *.cabal text
 *.css text
 *.html text
+*.gitattributes
 
 # Denote all files that are truly binary and should not be modified.
 *.png binary
