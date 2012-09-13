@@ -14,7 +14,7 @@ There are many possible applications of Clafer; however, three are prominent:
 Clafer Compiler
 ===============
 
-v0.3.12-9-2012
+v0.3.0.1.12-9-2012
 
 Clafer compiler provides a reference language implementation. It translates models in Clafer to other formats (e.g. Alloy, XML, HTML, DOT) to allow for reasoning and processing with existing tools.
 
@@ -100,7 +100,7 @@ Clafer Compiler
 (As printed by `clafer --help`)
 
 ```
-Clafer v0.3.12-9-2012
+Clafer v0.3.0.1.12-9-2012
 
 clafer [OPTIONS] [FILE]
 
