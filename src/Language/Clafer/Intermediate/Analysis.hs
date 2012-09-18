@@ -29,7 +29,7 @@ module Language.Clafer.Intermediate.Analysis where
 
 import Language.Clafer.Front.Absclafer hiding (Path)
 import qualified Language.Clafer.Intermediate.Intclafer as I
-
+import Debug.Trace
 import Control.Applicative
 import Control.Monad.LPMonad.Supply
 import Control.Monad.Error
@@ -92,7 +92,7 @@ isDerived = not . isBase
 
 data SSuper = Ref String | Colon String deriving Show
 -- Easier to work with. IClafers have links from parents to children. SClafers have links from children to parent.
-data SClafer = SClafer {uid::String, isAbstract::Bool, low::Integer, high::Integer, parent::Maybe String, super::Maybe SSuper, constraints::[I.PExp]} deriving Show
+data SClafer = SClafer {uid::String, isAbstract::Bool, low::Integer, high::Integer, groupLow::Integer, groupHigh::Integer, parent::Maybe String, super::Maybe SSuper, constraints::[I.PExp]} deriving Show
   
 data Info = Info{sclafers :: [SClafer]} deriving Show 
 
@@ -164,6 +164,15 @@ colonsOf clafer =
     r <- colonOf clafer
     return r `mplus` ListT (colonsOf r)
 
+-- "subclafers"
+colonsTo :: (Uidable c, MonadAnalysis m) => c -> m [c]
+colonsTo clafer =
+    runListT $ do
+        (sub, _) <- foreach $ anything |: clafer
+        fromClafer =<< (return sub `mplus` foreach ( colonsTo sub))
+
+    
+
 hierarchy :: (Uidable c, MonadAnalysis m) => c -> m [c]
 hierarchy t = (t :) <$> colonsOf t
 
@@ -200,7 +209,7 @@ isChild :: (Uidable c, MonadAnalysis m) => c -> c -> m Bool
 isChild child parent =
   liftM2 (||) (isDirectChild child parent) (isIndirectChild child parent)
   
-class Uidable c where
+class Matchable c => Uidable c where
   toClafer :: MonadAnalysis m => c -> m SClafer
   fromClafer :: MonadAnalysis m => SClafer -> m c
   
@@ -283,11 +292,22 @@ convertClafer =
   convertElement' _ _ = Nothing
   
   convertClafer' parent clafer =
-    SClafer (I.uid clafer) (I.isAbstract clafer) low high parent super constraints : concat children
+    sclafer : concat children
     where
-    (children, constraints) = partitionEithers $ mapMaybe (convertElement' $ Just $ I.uid clafer) (I.elements clafer)
+    sclafer
+      | maybe 1 groupLow parent == 0 && maybe 1 groupHigh parent /= -1 =
+          SClafer (I.uid clafer) (I.isAbstract clafer) 1   high gLow gHigh (uid <$> parent) super constraints
+      | otherwise =
+          SClafer (I.uid clafer) (I.isAbstract clafer) low high gLow gHigh (uid <$> parent) super constraints
+    (children, constraints) = partitionEithers $ mapMaybe (convertElement' $ Just $ sclafer) (I.elements clafer)
     
     Just (low, high) = I.card clafer
+    (gLow, gHigh) =
+      case I.gcard clafer of
+        Nothing -> (0, -1)
+        -- TODO
+        Just (I.IGCard True i) -> (0, 1)
+        Just (I.IGCard _ i)    -> i
     super =
       case I.super clafer of
         I.ISuper True [I.PExp{I.exp = I.IClaferId{I.sident = superUid}}]  -> Just $ Ref superUid
@@ -301,14 +321,14 @@ gatherInfo :: I.IModule -> Info
 gatherInfo imodule =
   Info $ sClafer : sInteger : sInt : sReal : sString : sBoolean : convertClafer root
   where
-  sClafer = SClafer "clafer" False 0 (-1) Nothing Nothing []
-  sInteger = SClafer "integer" False 0 (-1) Nothing Nothing []
-  sInt     = SClafer "int" False 0 (-1) Nothing Nothing []
-  sReal    = SClafer "real" False 0 (-1) Nothing Nothing []
-  sString  = SClafer "string" False 0 (-1) Nothing Nothing []
-  sBoolean = SClafer "boolean" False 0 (-1) Nothing Nothing []
+  sClafer = SClafer "clafer" False 0 (-1) 0 (-1) Nothing Nothing []
+  sInteger = SClafer "integer" False 0 (-1) 0 (-1) Nothing Nothing []
+  sInt     = SClafer "int" False 0 (-1) 0 (-1) Nothing Nothing []
+  sReal    = SClafer "real" False 0 (-1) 0 (-1) Nothing Nothing []
+  sString  = SClafer "string" False 0 (-1) 0 (-1) Nothing Nothing []
+  sBoolean = SClafer "boolean" False 0 (-1) 0 (-1) Nothing Nothing []
   
-  root = I.IClafer noSpan True Nothing rootUid rootUid (I.ISuper False [I.PExp Nothing "" noSpan $ I.IClaferId "clafer" "clafer" True]) (Just (1, 1)) (0, 0) $ I.mDecls imodule
+  root = I.IClafer noSpan False Nothing rootUid rootUid (I.ISuper False [I.PExp Nothing "" noSpan $ I.IClaferId "clafer" "clafer" True]) (Just (1, 1)) (0, 0) $ I.mDecls imodule
 
 
 
@@ -377,3 +397,6 @@ mapLeft _ (Right r) = Right r
 mapRight :: (t -> b) -> Either a t -> Either a b
 mapRight _ (Left l)  = Left l
 mapRight f (Right r) = Right $ f r
+
+(<:>) :: Applicative f => f a -> f [a] -> f [a]
+(<:>) = liftA2 (:)
