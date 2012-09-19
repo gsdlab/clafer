@@ -23,12 +23,11 @@
 -}
 module Language.Clafer.Intermediate.ResolverType (resolveTModule)  where
 
+import Debug.Trace
 import Prelude hiding (exp)
 import Language.Clafer.Common
 import Language.Clafer.Front.Absclafer
-import Language.Clafer.Front.Printclafer
 import Language.Clafer.Intermediate.Analysis
-import Language.Clafer.Intermediate.Desugarer
 import Language.Clafer.Intermediate.Test
 import Language.Clafer.Intermediate.Intclafer hiding (uid)
 import qualified Language.Clafer.Intermediate.Intclafer as I
@@ -357,10 +356,6 @@ addRef pexp =
   where
   newPExp = PExp Nothing "" $ inPos pexp
   
--- Returns true iff the left and right expressions are syntactically identical
-sameAs :: PExp -> PExp -> Bool
-sameAs e1 e2 = printTree (sugarExp e1) == printTree (sugarExp e2) -- Not very efficient but hopefully correct
-
 typeOf :: PExp -> IType
 typeOf pexp = fromMaybe (error "No type") $ iType pexp
 

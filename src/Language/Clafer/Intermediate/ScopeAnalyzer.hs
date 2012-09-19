@@ -391,7 +391,8 @@ constraintConstraints2 =
   do
     parts <- fmap (nub . concat) $ do
       runListT $ execWriterT $ do
-        (supThis, con) <- lift $ foreach $ constraintsUnder anything
+        supThis <- lift $ foreach $ clafers
+        con <- lift $ foreach $ optimizeConstraints <$> (constraintsUnder supThis `select` snd)
         curThis <-
             if isAbstract supThis
                 then
@@ -849,12 +850,43 @@ patternMatch parse' state' =
   runParserT (parse' <* eof) state' ""
 
 
+{-
+ - Turns constraints that look like:
+ -
+ -  [ A in List
+ -    B in List ]
+ - 
+ - to
+ -
+ -  [ A, B in List ]
+ -}
+optimizeConstraints :: [I.PExp] -> [I.PExp]
+optimizeConstraints constraints =
+    noOpt ++ opt
+    where
+    (noOpt, toOpt) = partitionEithers (constraints >>= partitionConstraint)
+    opt = [ unionPExpAll (map fst inSame) `inPExp` snd (head inSame)
+            | inSame <- groupBy (testing $ syntaxOf . snd) $ sortBy (comparing snd) toOpt ]
+    s (a, b) = syntaxOf a ++ ":::" ++ syntaxOf b
+    inPExp a b = I.PExp (Just I.TBoolean) "" noSpan $ I.IFunExp iIn [a, b]
+    unionPExpAll es = foldr1 unionPExp es
+    unionPExp a b = I.PExp (liftM2 (+++) (I.iType a) (I.iType b)) "" noSpan $ I.IFunExp iUnion [a, b]
+    
+    partitionConstraint I.PExp{I.exp = I.IFunExp {I.op = "in", I.exps = [exp1, exp2]}} = return $ Right (exp1, exp2)
+    partitionConstraint I.PExp{I.exp = I.IFunExp {I.op = "&&", I.exps = [exp1, exp2]}} = partitionConstraint exp1 `mplus` partitionConstraint exp2
+    partitionConstraint e = return $ Left e
+
+    testing   f a b = f a == f b    
+    comparing f a b = f a `compare` f b
+
 
 {-
  -
  - Utility functions
  -
  -}
+ 
+ 
 subexpressions :: I.PExp -> [I.PExp]
 subexpressions p@I.PExp{I.exp} =
   p : subexpressions' exp

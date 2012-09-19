@@ -29,6 +29,8 @@ module Language.Clafer.Intermediate.Analysis where
 
 import Language.Clafer.Front.Absclafer hiding (Path)
 import qualified Language.Clafer.Intermediate.Intclafer as I
+import Language.Clafer.Intermediate.Desugarer
+import Language.Clafer.Front.Printclafer
 import Debug.Trace
 import Control.Applicative
 import Control.Monad.LPMonad.Supply
@@ -282,6 +284,7 @@ constraintsUnder under =
 rootUid :: String
 rootUid = "_root"
 
+
 -- Converts IClafer to SClafer
 convertClafer :: I.IClafer -> [SClafer]
 convertClafer = 
@@ -305,7 +308,7 @@ convertClafer =
     (gLow, gHigh) =
       case I.gcard clafer of
         Nothing -> (0, -1)
-        -- TODO
+        -- TODO: Bug w/ keywords?
         Just (I.IGCard True i) -> (0, 1)
         Just (I.IGCard _ i)    -> i
     super =
@@ -400,3 +403,10 @@ mapRight f (Right r) = Right $ f r
 
 (<:>) :: Applicative f => f a -> f [a] -> f [a]
 (<:>) = liftA2 (:)
+
+syntaxOf :: I.PExp -> String
+syntaxOf = printTree . sugarExp
+
+-- Returns true iff the left and right expressions are syntactically identical
+sameAs :: I.PExp -> I.PExp -> Bool
+sameAs e1 e2 = syntaxOf e1 == syntaxOf e2 -- Not very efficient but hopefully correct
