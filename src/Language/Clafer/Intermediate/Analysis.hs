@@ -1,4 +1,4 @@
-{-# LANGUAGE FlexibleContexts, FlexibleInstances, UndecidableInstances, GeneralizedNewtypeDeriving, StandaloneDeriving #-}
+{-# LANGUAGE NamedFieldPuns, FlexibleContexts, FlexibleInstances, UndecidableInstances, GeneralizedNewtypeDeriving, StandaloneDeriving #-}
 
 {-
  Copyright (C) 2012 Jimmy Liang, Kacper Bak <http://gsd.uwaterloo.ca>
@@ -98,6 +98,7 @@ data SClafer = SClafer {uid::String, isAbstract::Bool, low::Integer, high::Integ
   
 data Info = Info{sclafers :: [SClafer]} deriving Show 
 
+runAnalysis :: Analysis a -> Info -> a
 runAnalysis r info = runIdentity $ runAnalysisT r info
 
 runAnalysisT :: AnalysisT m a -> Info -> m a
@@ -309,7 +310,7 @@ convertClafer =
       case I.gcard clafer of
         Nothing -> (0, -1)
         -- TODO: Bug w/ keywords?
-        Just (I.IGCard True i) -> (0, 1)
+        Just (I.IGCard True _) -> (0, 1)
         Just (I.IGCard _ i)    -> i
     super =
       case I.super clafer of

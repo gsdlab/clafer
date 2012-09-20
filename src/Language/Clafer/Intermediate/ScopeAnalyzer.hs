@@ -117,7 +117,7 @@ constantsAnalysis =
 setConstraints :: ScopeAnalysis ()
 setConstraints =
   do
-    reifyClafers <- constraintConstraints2
+    reifyClafers <- constraintConstraints
     withExtraClafers reifyClafers $ do
       optFormula
       colonConstraints
@@ -190,106 +190,6 @@ data Part =
   deriving (Eq, Ord, Show)
 
 
--- Returns a list of reified clafers.
-constraintConstraints :: ScopeAnalysis [SClafer]
-constraintConstraints =
-  do  
-    pathList <- runListT $ do
-      -- for all constraints ...
-      (curThis, con) <- foreach $ constraintsUnder anything
-      -- ... parse constraint expression ...
-      (path, mult) <- foreach $ constraintConstraints' curThis (I.exp con)
-
-      -- ... set the linear programming equations
-      -- The first part is owned by curThis. The rest of the parts are after refs.
-      let conc = head $ parts path
-      let refs = tail $ parts path
-      
-      var (reifyVar conc) `geq` (mult *^ var (uid curThis))
-
-      forM refs $
-        \part -> var (reifyVar part) `geqTo` fromInteger (low curThis)
-      
-      return path
-    
-    rPartList <- forM [steps parts' | parts' <- pathList >>= parts] $
-      \(conc : abst) -> do
-        reifiedParts <- forM (tail $ inits abst) $
-          \abst' -> reifyPart (Part $ conc : abst')
-        return (conc, concat reifiedParts)
-    
-    -- Create reified clafers.
-    runListT $ do
-      (conc, parts) <- foreachM $ nub rPartList
-      (parent, child) <- foreachM $ zip (Part [conc] : parts) parts
-      baseClafer <- lift $ claferWithUid $ base child
-      return $ SClafer (reifyVar child) False (low baseClafer) (high baseClafer) (groupLow baseClafer) (groupHigh baseClafer) (Just $ reifyVar parent) (Just $ Colon $ uid baseClafer) []
-  where 
-  base (Part steps) = last steps
-
-  reifyVar (Part [target]) = target
-  reifyVar (Part target) = uniqNameSpace ++ "reify_" ++ intercalate "_" target
-  
-  reifyPart :: Part -> ScopeAnalysis [Part]
-  reifyPart (Part steps) =
-    do
-      as <- claferWithUid (last steps) >>= nonTopAncestors
-      forM as $
-        \a -> return $ Part $ init steps ++ [uid a]
-  
-  nonTopAncestors :: SClafer -> ScopeAnalysis [SClafer]
-  nonTopAncestors child =
-    do
-      parent <- parentOf child
-      if uid parent == rootUid
-        then return []
-        else (++ [child]) `fmap` nonTopAncestors parent
-  
-  -- Does the work for one constraint.
-  constraintConstraints' :: MonadScope m => SClafer -> I.IExp -> m [(Path, Double)]
-  constraintConstraints' curThis iexp =
-    runListT $ do
-      (path, mult) <- pathAndMult iexp
-
-      p <- Path <$> (map reify <$> parsePath curThis path)
-
-      return (p, mult)
-
-  -- [some my.path.expression]
-  --   => #my.path.expression >= 1
-  pathAndMult :: (MonadPlus m, MonadScope m) => I.IExp -> m (I.PExp, Double)
-  pathAndMult I.IDeclPExp {I.quant = I.ISome, I.oDecls = [], I.bpexp} = return (bpexp, 1)
-  -- [some disj a;b : my.path.expression | ...]
-  --   => my.path.expression >= 2
-  pathAndMult I.IDeclPExp {I.quant = I.ISome, I.oDecls} = msum $ map (return . pathAndMultDecl) oDecls
-    where
-    pathAndMultDecl :: I.IDecl -> (I.PExp, Double)
-    pathAndMultDecl I.IDecl {I.isDisj = True, I.decls , I.body} = (body, fromIntegral $ length decls)
-    pathAndMultDecl I.IDecl {I.isDisj = False, I.decls , I.body} = (body, 1)
-    
-  -- [one my.path.expression]
-  --   => #my.path.expression >= 1
-  pathAndMult I.IDeclPExp {I.quant = I.IOne, I.oDecls = [], I.bpexp} = return (bpexp, 1)
-  pathAndMult I.IDeclPExp {I.quant = I.IOne, I.oDecls} = msum $ [return $ (I.body oDecl, 1) | oDecl <- oDecls]
-  
-  -- [#my.path.expression = const]
-  --   => #my.path.expression >= const
-  pathAndMult I.IFunExp {I.op = "=", I.exps = [I.PExp {I.exp = I.IFunExp {I.op = "#", I.exps = [path]}}, I.PExp {I.exp = I.IInt const}]} =
-    return (path, fromInteger const)
-  -- [const = #my.path.expression]
-  --   => #my.path.expression >= const
-  pathAndMult I.IFunExp {I.op = "=", I.exps = [I.PExp {I.exp = I.IInt const}, I.PExp {I.exp = I.IFunExp {I.op = "#", I.exps = [path]}}]} =
-    return (path, fromInteger const)
-
-  
-  -- All quantifiers can be true even if scope is 0
-  pathAndMult (I.IDeclPExp {I.quant = I.IAll}) = fail "No path."
-  pathAndMult e = fail $ "TODO::" ++ show e
-
-  reify :: [String] -> Part
-  reify []  = error "Empty path." -- Bug, should never happen.
-  reify xs  = Part xs
-  
 data Expr =
     This {path::Path, eType::I.IType} |
     Global {path::Path, eType::I.IType} |
@@ -308,76 +208,6 @@ isConst Const{} = True
 isConst _ = False
     
 
-parsePath :: MonadScope m => SClafer -> I.PExp -> m [[String]]
-parsePath start pexp =
-  do
-    root <- claferWithUid rootUid
-    match <- patternMatch parsePath' (ParseState root []) (fromMaybe [] $ unfoldJoins pexp)
-    case match of
-      Left err -> error $ show err
-      Right s -> return $ filter (not . null) s
-  where
-  parsePath' =
-    do
-      {-
-       - We use the stack to push every abstraction we traverse through.
-       - For example:
-       - 
-       -  abstract A
-       -    B ?
-       -      C : D ?
-       -  abstract D
-       -    E ?
-       -  F : A
-       -  G : A
-       -  H : A
-       -
-       -  [some F.B.C.E]
-       -  [some G.B.C.E]
-       -
-       - The first constraint's final stack will look like ["C" ,"F"]
-       - Hence the linear programming equation will look like:
-       -
-       -  scope_F_C_E >= scope_root
-       -
-       - Adding the second constraint:
-       -
-       -  scope_G_C_E >= scope_root
-       -  scope_E >= scope_F_C_E + scope_G_C_E (*)
-       -
-       - Solving the minimization should have scope_E = 2 in its solution.
-       - The (*) equation is set in constraintConstraints
-       -}
-      paths <- many (step >>= follow)
-      
-      lifo <- popStack
-      let end = if null paths then [] else [last paths]
-      let result = reverse $ end ++ map uid lifo
-      
-      do
-        _ref_ >>= follow
-        -- recurse
-        rec <- parsePath'
-        return $ result : rec
-        <|> return [result]
-      
-  -- Step handles non-this token.
-  step :: MonadScope m => ParseT m String
-  step = _this_ <|> _directChild_ <|> try (pushThis >> _indirectChild_)
-  
-  -- Update the state of where "this" is.
-  -- Path is one step away from where "this" is.
-  follow :: MonadScope m => String -> ParseT m String
-  follow path =
-    do
-      curThis <- getThis
-      case path of
-        "this" -> putThis start
-        "parent" -> lift (parentOf curThis) >>= putThis -- the parent is now "this"
-        "ref" -> lift (refOf curThis) >>= putThis -- the ref'd Clafer is now "this"
-        u -> lift (claferWithUid u) >>= putThis
-      return path
-
 parentOfPart (Part s) =
   do
     s' <- parentOf $ last s
@@ -386,13 +216,91 @@ parentOfPart (Part s) =
       then Part $ init s
       else Part $ init s ++ [s']
 
-constraintConstraints2 :: MonadScope m => m [SClafer]
-constraintConstraints2 =
+
+{-
+ - Turns constraints that look like:
+ -
+ -  [ A in List
+ -    B in List ]
+ - 
+ - to
+ -
+ -  [ A, B in List ]
+ -}
+optimizeInConstraints :: [I.PExp] -> [I.PExp]
+optimizeInConstraints constraints =
+    noOpt ++ opt
+    where
+    (noOpt, toOpt) = partitionEithers (constraints >>= partitionConstraint)
+    opt = [ unionPExpAll (map fst inSame) `inPExp` snd (head inSame)
+            | inSame <- groupBy (testing $ syntaxOf . snd) $ sortBy (comparing snd) toOpt ]
+    inPExp a b = I.PExp (Just I.TBoolean) "" noSpan $ I.IFunExp iIn [a, b]
+    unionPExpAll es = foldr1 unionPExp es
+    unionPExp a b = I.PExp (liftM2 (+++) (I.iType a) (I.iType b)) "" noSpan $ I.IFunExp iUnion [a, b]
+    
+    partitionConstraint I.PExp{I.exp = I.IFunExp {I.op = "in", I.exps = [exp1, exp2]}} = return $ Right (exp1, exp2)
+    partitionConstraint I.PExp{I.exp = I.IFunExp {I.op = "&&", I.exps = [exp1, exp2]}} = partitionConstraint exp1 `mplus` partitionConstraint exp2
+    partitionConstraint e = return $ Left e
+
+    testing   f a b = f a == f b    
+    comparing f a b = f a `compare` f b
+
+
+{-
+ -   Phone *
+ -
+ -   [all p : Phone | <constraint on p>]
+ -
+ - becomes
+ -
+ -   Phone *
+ -      [<constraint on p/this>]
+ -}
+optimizeAllConstraints :: MonadAnalysis m => SClafer -> [I.PExp] -> m [(SClafer, I.PExp)]
+optimizeAllConstraints curThis constraints =
+    runListT $ partitionConstraint =<< foreachM constraints
+    where
+    partitionConstraint I.PExp{I.exp = I.IDeclPExp I.IAll [I.IDecl _ [decl] I.PExp{I.exp = I.IClaferId{I.sident}}] bpexp} =
+        do
+            under <- claferWithUid sident
+            return (under, rename decl bpexp)
+    partitionConstraint I.PExp{I.exp = I.IFunExp {I.op = "&&", I.exps = [exp1, exp2]}} = partitionConstraint exp1 `mplus` partitionConstraint exp2
+    partitionConstraint e = return (curThis, e)
+    
+    rename :: String -> I.PExp -> I.PExp
+    rename f p@I.PExp{I.exp} =
+        p{I.exp = renameIExp exp}
+        where
+        renameIExp (I.IFunExp op exps) = I.IFunExp op $ map (rename f) exps
+        renameIExp (I.IDeclPExp quant oDecls bpexp) = I.IDeclPExp quant (map renameDecl oDecls) $ rename f bpexp
+        renameIExp (I.IClaferId modName sident isTop)
+            | f == sident = I.IClaferId modName "this" isTop
+            | otherwise   = I.IClaferId modName sident isTop
+        renameIExp i = i
+        renameDecl (I.IDecl isDisj decls body)
+            | f `elem` decls = I.IDecl isDisj decls body -- Not a free variable
+            | otherwise      = I.IDecl isDisj decls $ rename f body -- Is a free variable
+
+optConstraintsUnder :: MonadAnalysis m => SClafer -> m [(SClafer, [I.PExp])]
+optConstraintsUnder clafer =
+    do
+        cons <- constraintsUnder clafer `select` snd
+        allCons <- optimizeAllConstraints clafer cons
+        let inCons = [(fst $ head c, optimizeInConstraints $ map snd c) | c <- groupBy (testing $ uid . fst) $ sortBy (comparing $ uid . fst) allCons]
+        return inCons
+    where
+    testing f a b = f a == f b
+    comparing f a b = f a `compare` f b
+
+
+constraintConstraints :: MonadScope m => m [SClafer]
+constraintConstraints =
   do
     parts <- fmap (nub . concat) $ do
       runListT $ execWriterT $ do
-        supThis <- lift $ foreach $ clafers
-        con <- lift $ foreach $ optimizeConstraints <$> (constraintsUnder supThis `select` snd)
+        clafer <- lift $ foreach clafers
+        (supThis, cons) <- lift $ foreach $ optConstraintsUnder clafer
+        con <- lift $ foreachM cons
         curThis <-
             if isAbstract supThis
                 then
@@ -522,16 +430,16 @@ scopeConstraint curThis pexp =
   runListT $ scopeConstraint' $ I.exp pexp
   where
   scopeConstraint' I.IFunExp {I.op = "&&", I.exps} = msum $ map (scopeConstraint' . I.exp) exps
-  scopeConstraint' I.IDeclPExp {I.quant = I.ISome, I.oDecls = [], I.bpexp} = parsePath2 curThis bpexp `greaterThan` constant 1
+  scopeConstraint' I.IDeclPExp {I.quant = I.ISome, I.oDecls = [], I.bpexp} = parsePath curThis bpexp `greaterThan` constant 1
   scopeConstraint' I.IDeclPExp {I.quant = I.ISome, I.oDecls}               = msum $ map pathAndMultDecl oDecls
       where
-      pathAndMultDecl I.IDecl {I.isDisj = True, I.decls, I.body}  = parsePath2 curThis body `greaterThan` constant (length decls)
-      pathAndMultDecl I.IDecl {I.isDisj = False, I.decls, I.body} = parsePath2 curThis body `greaterThan` constant 1
-  scopeConstraint' I.IDeclPExp {I.quant = I.IOne, I.oDecls = [], I.bpexp} = parsePath2 curThis bpexp `eqTo` constant 1
+      pathAndMultDecl I.IDecl {I.isDisj = True, I.decls, I.body} = parsePath curThis body `greaterThan` constant (length decls)
+      pathAndMultDecl I.IDecl {I.isDisj = False, I.body}         = parsePath curThis body `greaterThan` constant 1
+  scopeConstraint' I.IDeclPExp {I.quant = I.IOne, I.oDecls = [], I.bpexp} = parsePath curThis bpexp `eqTo` constant 1
   scopeConstraint' I.IDeclPExp {I.quant = I.IOne, I.oDecls} =
     do
       oDecl <- foreachM oDecls
-      parsePath2 curThis (I.body oDecl) `eqTo` constant 1
+      parsePath curThis (I.body oDecl) `eqTo` constant 1
   scopeConstraint' I.IFunExp {I.op, I.exps = [exp1, exp2]}
     | op == "in" = inConstraint1 exp1 exp2 `mplus` inConstraint2 exp1 exp2
     | op == "="  = equalConstraint1 exp1 exp2 `mplus` equalConstraint2 exp1 exp2
@@ -569,7 +477,7 @@ scopeConstraint curThis pexp =
       if i
         then return $ AtLeast $ lExpr l1'
         else return $ combineDisjoint l1' l2'
-  scopeConstraintSet x = Exact <$> parsePath2 curThis x
+  scopeConstraintSet x = Exact <$> parsePath curThis x
   
   combineDisjoint (Exact e1) (Exact e2) =
     Exact (Concat ([e1, e2] >>= flattenConcat) $ eType e1 +++ eType e2)
@@ -584,7 +492,7 @@ scopeConstraint curThis pexp =
   flattenConcat e = [e]
   
   scopeConstraintNum I.PExp {I.exp = I.IInt const} = constant const
-  scopeConstraintNum I.PExp {I.exp = I.IFunExp {I.op = "#", I.exps = [path]}} = parsePath2 curThis path
+  scopeConstraintNum I.PExp {I.exp = I.IFunExp {I.op = "#", I.exps = [path]}} = parsePath curThis path
   scopeConstraintNum _ = mzero
 
   constant :: (Monad m, Integral i) => i -> m Expr
@@ -624,8 +532,8 @@ scopeConstraint curThis pexp =
  - Solving the minimization should have scope_E = 2 in its solution.
  - The (*) equation is set in constraintConstraints
  -}      
-parsePath2 :: MonadScope m => SClafer -> I.PExp -> m Expr
-parsePath2 start pexp =
+parsePath :: MonadScope m => SClafer -> I.PExp -> m Expr
+parsePath start pexp =
   do
     root <- claferWithUid rootUid
     match <- patternMatch parsePath' (ParseState root []) (fromMaybe [] $ unfoldJoins pexp)
@@ -848,36 +756,6 @@ spanToSourcePos (Span (Pos l c) _) = (newPos "" (fromInteger l) (fromInteger c))
 patternMatch :: MonadScope m => ParseT m a -> ParseState -> [Token] -> m (Either ParseError a)
 patternMatch parse' state' =
   runParserT (parse' <* eof) state' ""
-
-
-{-
- - Turns constraints that look like:
- -
- -  [ A in List
- -    B in List ]
- - 
- - to
- -
- -  [ A, B in List ]
- -}
-optimizeConstraints :: [I.PExp] -> [I.PExp]
-optimizeConstraints constraints =
-    noOpt ++ opt
-    where
-    (noOpt, toOpt) = partitionEithers (constraints >>= partitionConstraint)
-    opt = [ unionPExpAll (map fst inSame) `inPExp` snd (head inSame)
-            | inSame <- groupBy (testing $ syntaxOf . snd) $ sortBy (comparing snd) toOpt ]
-    s (a, b) = syntaxOf a ++ ":::" ++ syntaxOf b
-    inPExp a b = I.PExp (Just I.TBoolean) "" noSpan $ I.IFunExp iIn [a, b]
-    unionPExpAll es = foldr1 unionPExp es
-    unionPExp a b = I.PExp (liftM2 (+++) (I.iType a) (I.iType b)) "" noSpan $ I.IFunExp iUnion [a, b]
-    
-    partitionConstraint I.PExp{I.exp = I.IFunExp {I.op = "in", I.exps = [exp1, exp2]}} = return $ Right (exp1, exp2)
-    partitionConstraint I.PExp{I.exp = I.IFunExp {I.op = "&&", I.exps = [exp1, exp2]}} = partitionConstraint exp1 `mplus` partitionConstraint exp2
-    partitionConstraint e = return $ Left e
-
-    testing   f a b = f a == f b    
-    comparing f a b = f a `compare` f b
 
 
 {-
