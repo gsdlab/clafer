@@ -52,6 +52,8 @@ desugarEnums x = case x of
               Abstract GCardEmpty id SuperEmpty CardEmpty InitEmpty (ElementsList [])
     mkEnum (PosEnumIdIdent s eId) = ElementDecl $ Subclafer $ Clafer AbstractEmpty GCardEmpty
                                   eId (SuperSome SuperColon (PosClaferId noSpan $ Path [ModIdIdent id])) CardEmpty InitEmpty (ElementsList [])
+    mkEnum (EnumIdIdent eId) = ElementDecl $ Subclafer $ Clafer AbstractEmpty GCardEmpty
+                                  eId (SuperSome SuperColon (PosClaferId noSpan $ Path [ModIdIdent id])) CardEmpty InitEmpty (ElementsList [])
   _ -> [x]
 
 
@@ -336,6 +338,7 @@ desugarExp' x = case x of
   EOr exp0 exp  -> desugarExp' $ PosEOr noSpan exp0 exp
   EXor exp0 exp  -> desugarExp' $ PosEXor noSpan exp0 exp
   EAnd exp0 exp  -> desugarExp' $ PosEAnd noSpan exp0 exp
+  ENeg exp -> desugarExp' $ PosENeg noSpan exp
   QuantExp quant exp  -> desugarExp' $ PosQuantExp noSpan quant exp
   ELt  exp0 exp  -> desugarExp' $ PosELt noSpan exp0 exp
   EGt  exp0 exp  -> desugarExp' $ PosEGt noSpan exp0 exp
@@ -466,7 +469,8 @@ sugarExp' x = case x of
     | op == iMin           = EMinExp
     | op == iGMax          = EGMax
     | op == iGMin          = EGMin 
-    | op == iSumSet        = ESumSetExp   
+    | op == iSumSet        = ESumSetExp
+    | otherwise            = error $ show op ++ "is not an op"
   sugarOp op
     | op == iIff           = EIff
     | op == iImpl          = EImplies
@@ -485,8 +489,10 @@ sugarExp' x = case x of
     | op == iSub           = ESub
     | op == iMul           = EMul
     | op == iDiv           = EDiv
+    | otherwise            = error $ show op ++ "is not an op"
   sugarTerOp op
     | op == iIfThenElse    = EImpliesElse
+    | otherwise            = error $ show op ++ "is not an op"
 
 
 sugarSetExp :: PExp -> SetExp
@@ -512,7 +518,7 @@ desugarPath :: PExp -> PExp
 desugarPath (PExp iType pid pos x) = reducePExp $ PExp iType pid pos result
   where
   result
-    | isSet x     = IDeclPExp ISome [] (pExpDefPidPos x)
+    | isSet x     = IDeclPExp ISome [] (pExpDefPid pos x)
     | isNegSome x = IDeclPExp INo   [] $ bpexp $ Language.Clafer.Intermediate.Intclafer.exp $ head $ exps x
     | otherwise   =  x
   isNegSome (IFunExp op [PExp _ _ _ (IDeclPExp ISome [] _)]) = op == iNot

@@ -27,7 +27,7 @@ import Language.Clafer.Front.Absclafer hiding (Path)
 import qualified Language.Clafer.Intermediate.Intclafer as I
 import Language.Clafer.Intermediate.Analysis
 import Language.Clafer.Common
-import Language.Clafer.Intermediate.ResolverType2
+import Language.Clafer.Intermediate.ResolverType
 
 import Control.Applicative (Applicative(..), (<$>))
 import Control.Monad

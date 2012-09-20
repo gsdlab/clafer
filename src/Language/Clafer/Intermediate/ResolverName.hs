@@ -1,3 +1,5 @@
+{-# LANGUAGE FlexibleContexts #-}
+
 {-
  Copyright (C) 2012 Kacper Bak, Jimmy Liang <http://gsd.uwaterloo.ca>
 
@@ -21,7 +23,10 @@
 -}
 module Language.Clafer.Intermediate.ResolverName where
 
+import Control.Applicative
 import Control.Monad
+import Control.Monad.Error
+import Control.Monad.Maybe
 import Control.Monad.State
 import Data.Maybe
 import Data.Function
@@ -29,6 +34,7 @@ import Data.List
 import Data.Map (Map)
 import qualified Data.Map as Map
 
+import Language.ClaferT
 import Language.Clafer.Common
 import Language.Clafer.Front.Absclafer
 import Language.Clafer.Intermediate.Intclafer
@@ -56,6 +62,8 @@ data HowResolved =
   | AbsClafer   -- abstract clafer
   | TopClafer   -- non-abstract top-level clafer
   deriving (Eq, Show)
+  
+type Resolve = Either ClaferSErr
 
 
 defSEnv genv declarations = env {aClafers = rCl aClafers',
@@ -66,18 +74,22 @@ defSEnv genv declarations = env {aClafers = rCl aClafers',
   (aClafers', cClafers') = partition isAbstract $ clafers env
 
 
-resolveModuleNames :: (IModule, GEnv) -> IModule
+resolveModuleNames :: (IModule, GEnv) -> Resolve IModule
 resolveModuleNames (imodule, genv) =
-  imodule{mDecls = map (resolveElement (defSEnv genv decls)) decls}
+  do
+    mDecls' <- mapM (resolveElement (defSEnv genv decls)) decls
+    return $ imodule{mDecls = mDecls'}
   where
   decls = mDecls imodule
 
 
-resolveClafer :: SEnv -> IClafer -> IClafer
+resolveClafer :: SEnv -> IClafer -> Resolve IClafer
 resolveClafer env clafer =
-  clafer {elements = map (resolveElement env'{subClafers = subClafers',
+  do
+    elements' <- mapM (resolveElement env'{subClafers = subClafers',
                                               ancClafers = ancClafers'}) $
-          elements clafer}
+                          elements clafer
+    return $ clafer {elements = elements'}
   where
   env' = env {context = Just clafer, resPath = clafer : resPath env}
   subClafers' = tail $ bfs toNodeDeep [env'{resPath = [clafer]}]
@@ -86,52 +98,57 @@ resolveClafer env clafer =
 mkAncestorList env rp =
   bfs toNodeDeep [env{context = Just $ head rp, resPath = rp}]
 
-resolveElement :: SEnv -> IElement -> IElement
+resolveElement :: SEnv -> IElement -> Resolve IElement
 resolveElement env x = case x of
-  IEClafer clafer  -> IEClafer $ resolveClafer env clafer
-  IEConstraint isHard pexp  -> IEConstraint isHard $ resolvePExp env pexp
-  IEGoal isMaximize pexp  -> IEGoal isMaximize $ resolvePExp env pexp  
+  IEClafer clafer  -> IEClafer <$> resolveClafer env clafer
+  IEConstraint isHard pexp  -> IEConstraint isHard <$> resolvePExp env pexp
+  IEGoal isMaximize pexp  -> IEGoal isMaximize <$> resolvePExp env pexp  
 
 
-resolvePExp :: SEnv -> PExp -> PExp
-resolvePExp env pexp = pexp {Language.Clafer.Intermediate.Intclafer.exp = resolveIExp env $
-                             Language.Clafer.Intermediate.Intclafer.exp pexp}
+resolvePExp :: SEnv -> PExp -> Resolve PExp
+resolvePExp env pexp =
+  do
+    exp' <- resolveIExp (inPos pexp) env $ Language.Clafer.Intermediate.Intclafer.exp pexp
+    return $ pexp {Language.Clafer.Intermediate.Intclafer.exp = exp'}
 
-resolveIExp :: SEnv -> IExp -> IExp
-resolveIExp env x = case x of
-  IDeclPExp quant decls pexp -> IDeclPExp quant decls' $ resolvePExp env' pexp
-    where
-    (decls', env') = runState (mapM processDecl decls) env
-  IFunExp op exps -> if op == iJoin then resNav else IFunExp op $ map res exps
-  IInt n -> x
-  IDouble n -> x
-  IStr str -> x
+resolveIExp :: Span -> SEnv -> IExp -> Resolve IExp
+resolveIExp pos env x = case x of
+  IDeclPExp quant decls pexp -> do
+    let (decls', env') = runState (runErrorT $ (mapM (ErrorT . processDecl) decls)) env
+    IDeclPExp quant <$> decls' <*> resolvePExp env' pexp
+
+  IFunExp op exps -> if op == iJoin then resNav else IFunExp op <$> mapM res exps
+  IInt n -> return x
+  IDouble n -> return x
+  IStr str -> return x
   IClaferId _ _ _ -> resNav
   where
   res = resolvePExp env
-  resNav = fst $ resolveNav env x True
+  resNav = fst <$> resolveNav pos env x True
 
+liftError :: Monad m => Either e a -> ErrorT e m a
+liftError = ErrorT . return
 
-processDecl decl = do
-  env <- get
-  let (body', path) = resolveNav env (Language.Clafer.Intermediate.Intclafer.exp $ body decl) True
-  modify (\e -> e { bindings = (decls decl, path) : bindings e })
+processDecl :: MonadState SEnv m => IDecl -> m (Resolve IDecl)
+processDecl decl = runErrorT $ do
+  env <- lift $ get
+  (body', path) <- liftError $ resolveNav (inPos $ body decl) env (Language.Clafer.Intermediate.Intclafer.exp $ body decl) True
+  lift $ modify (\e -> e { bindings = (decls decl, path) : bindings e })
   return $ decl {body = pExpDefPidPos body'}
 
-resolveNav :: SEnv -> IExp -> Bool -> (IExp, [IClafer])
-resolveNav env x isFirst = case x of
-  IFunExp _ (pexp0:pexp:_)  ->
-    (IFunExp iJoin [pexp0{I.exp=exp0'}, pexp{I.exp=exp'}], path')
-    where
-    (exp0', path) = resolveNav env (Language.Clafer.Intermediate.Intclafer.exp pexp0) True
-    (exp', path') = resolveNav env {context = listToMaybe path, resPath = path}
-                    (Language.Clafer.Intermediate.Intclafer.exp pexp) False
+resolveNav :: Span -> SEnv -> IExp -> Bool -> Resolve (IExp, [IClafer])
+resolveNav pos env x isFirst = case x of
+  IFunExp _ (pexp0:pexp:_) -> do
+    (exp0', path) <- resolveNav (inPos pexp0) env (Language.Clafer.Intermediate.Intclafer.exp pexp0) True
+    (exp', path') <- resolveNav (inPos pexp) env {context = listToMaybe path, resPath = path}
+                     (Language.Clafer.Intermediate.Intclafer.exp pexp) False
+    return (IFunExp iJoin [pexp0{I.exp=exp0'}, pexp{I.exp=exp'}], path')
   IClaferId modName id _ -> out
     where
     out
-      | isFirst   = mkPath env $ resolveName env id
-      | otherwise = mkPath' modName $ resolveImmName env id
-
+      | isFirst   = mkPath env <$> resolveName pos env id
+      | otherwise = mkPath' modName <$> resolveImmName pos env id
+  x -> throwError $ SemanticErr pos $ "Cannot resolve nav of " ++ show x 
 
 mkPath :: SEnv -> (HowResolved, String, [IClafer]) -> (IExp, [IClafer])
 mkPath env (howResolved, id, path) = case howResolved of
@@ -164,69 +181,77 @@ mkPath' modName (howResolved, id, path) = case howResolved of
 
 -- -----------------------------------------------------------------------------
 
-resolveName :: SEnv -> String -> (HowResolved, String, [IClafer])
-resolveName env id = resolve env id
-  [resolveSpecial, resolveBind, resolveDescendants, resolveAncestor, resolveTopLevel, resolveNone]
+resolveName :: Span -> SEnv -> String -> Resolve (HowResolved, String, [IClafer])
+resolveName pos env id = resolve env id
+  [resolveSpecial, resolveBind, resolveDescendants, resolveAncestor pos, resolveTopLevel pos, resolveNone pos]
 
 
-resolveImmName :: SEnv -> String -> (HowResolved, String, [IClafer])
-resolveImmName env id = resolve env id
-  [resolveSpecial, resolveChildren, resolveReference, resolveNone]
+resolveImmName :: Span -> SEnv -> String -> Resolve (HowResolved, String, [IClafer])
+resolveImmName pos env id = resolve env id
+  [resolveSpecial, resolveChildren pos, resolveReference pos, resolveNone pos]
 
 
-resolve env id fs = fromJust $ foldr1 mplus $ map (\x -> x env id) fs
+resolve env id fs = fromJust <$> (runMaybeT $ msum $ map (\x -> MaybeT $ x env id) fs)
 
 
 -- reports error if clafer not found
-resolveNone env id = error $ "resolver: " ++ id ++ " not found" ++
+resolveNone :: Span -> SEnv -> String -> Resolve t
+resolveNone pos env id =
+  throwError $ SemanticErr pos $ "resolver: " ++ id ++ " not found" ++
   " within " ++ (showPath $ map uid $ resPath env)
 
 
 -- checks if ident is one of special identifiers
-resolveSpecial :: SEnv -> String -> Maybe (HowResolved, String, [IClafer])
+resolveSpecial :: SEnv -> String -> Resolve (Maybe (HowResolved, String, [IClafer]))
 resolveSpecial env id
   | id `elem` [this, children, ref] =
-      Just (Special, id, resPath env)
-  | id == parent   = Just (Special, id, tail $ resPath env)
-  | isPrimitive id = Just (TypeSpecial, id, [])
-  | otherwise      = Nothing 
+      return $ Just (Special, id, resPath env)
+  | id == parent   = return $ Just (Special, id, tail $ resPath env)
+  | isPrimitive id = return $ Just (TypeSpecial, id, [])
+  | otherwise      = return Nothing 
 
 
 -- checks if ident is bound locally
-resolveBind :: SEnv -> String -> Maybe (HowResolved, String, [IClafer])
-resolveBind env id = find (\bs -> id `elem` fst bs) (bindings env) >>=
+resolveBind :: SEnv -> String -> Resolve (Maybe (HowResolved, String, [IClafer]))
+resolveBind env id = return $ find (\bs -> id `elem` fst bs) (bindings env) >>=
   (\x -> Just (Binding, id, snd x))
 
 
 -- searches for a name in all subclafers (BFS)
-resolveDescendants :: SEnv -> String -> Maybe (HowResolved, String, [IClafer])
-resolveDescendants env id =
-  (context env) >> (findUnique id $ subClafers env) >>= (toMTriple Subclafers)
+resolveDescendants :: SEnv -> String -> Resolve (Maybe (HowResolved, String, [IClafer]))
+resolveDescendants env id = return $
+  (context env) >> (findFirst id $ subClafers env) >>= (toMTriple Subclafers)
 
 
 -- searches for a name in immediate subclafers (BFS)
-resolveChildren :: SEnv -> String -> Maybe (HowResolved, String, [IClafer])
-resolveChildren env id = resolveChildren' env id allInhChildren Subclafers
+resolveChildren :: Span -> SEnv -> String -> Resolve (Maybe (HowResolved, String, [IClafer]))
+resolveChildren pos env id = resolveChildren' pos env id allInhChildren Subclafers
 
 -- searches for a name by dereferencing clafer
-resolveReference :: SEnv -> String -> Maybe (HowResolved, String, [IClafer])
-resolveReference env id = resolveChildren' env id allChildren Reference
+resolveReference :: Span -> SEnv -> String -> Resolve (Maybe (HowResolved, String, [IClafer]))
+resolveReference pos env id = resolveChildren' pos env id allChildren Reference
 
-resolveChildren' env id f label =
-  (context env) >> (findUnique id $ map (\x -> (x, [x,fromJust $ context env]))
-                    $ f env) >>= toMTriple label
+resolveChildren' pos env id f label =
+  runMaybeT $ do
+    liftMaybe $ context env
+    u <- MaybeT $ findUnique pos id $ map (\x -> (x, [x,fromJust $ context env])) $ f env
+    liftMaybe $ toMTriple label u
 
+liftMaybe = MaybeT . return
 
-resolveAncestor :: SEnv -> String -> Maybe (HowResolved, String, [IClafer])
-resolveAncestor env id = context env >> (findUnique id $ ancClafers env) >>=
-                         toMTriple Ancestor
+resolveAncestor :: Span -> SEnv -> String -> Resolve (Maybe (HowResolved, String, [IClafer]))
+resolveAncestor pos env id =
+  runMaybeT $ do
+    liftMaybe $ context env
+    u <- MaybeT $ findUnique pos id $ ancClafers env
+    liftMaybe $ toMTriple Ancestor u
 
 
 -- searches for a feature starting from local root (BFS) and then continues with
 -- other declarations
-resolveTopLevel :: SEnv -> String -> Maybe (HowResolved, String, [IClafer])
-resolveTopLevel env id = foldr1 mplus $ map
-  (\(cs, hr) -> findUnique id cs >>= toMTriple hr)
+resolveTopLevel :: Span -> SEnv -> String -> Resolve (Maybe (HowResolved, String, [IClafer]))
+resolveTopLevel pos env id = runMaybeT $ foldr1 mplus $ map
+  (\(cs, hr) -> MaybeT (findUnique pos id cs) >>= (liftMaybe . toMTriple hr))
   [(aClafers env, AbsClafer), (cClafers env, TopClafer)]
 
 
@@ -248,12 +273,12 @@ selectChildren f env = getSubclafers $ concat $
                        mapHierarchy elements f (sClafers $ genv env)
                        (fromJust $ context env)
 
-findUnique :: String -> [(IClafer, [IClafer])] -> Maybe (String, [IClafer])
-findUnique x xs =
+findUnique :: Span -> String -> [(IClafer, [IClafer])] -> Resolve (Maybe (String, [IClafer]))
+findUnique pos x xs =
   case filterPaths x $ nub xs of
-    []     -> Nothing
-    [elem] -> Just $ (uid $ fst elem, snd elem)
-    xs'    -> error $ "clafer " ++ show x ++ " " ++ errMsg
+    []     -> return $ Nothing
+    [elem] -> return $ Just $ (uid $ fst elem, snd elem)
+    xs'    -> throwError $ SemanticErr pos $ "clafer " ++ show x ++ " " ++ errMsg
       where
       xs''   = map ((map uid).snd) xs'
       errMsg = (if isNamespaceConflict xs''
@@ -261,8 +286,16 @@ findUnique x xs =
                else "is not unique. ") ++ 
                "Available paths:\n" ++ (xs'' >>= showPath)
 
+findFirst :: String -> [(IClafer, [IClafer])] -> Maybe (String, [IClafer])
+findFirst x xs =
+  case filterPaths x $ nub xs of
+    []       -> Nothing
+    (elem:_) -> Just $ (uid $ fst elem, snd elem)
+
 showPath xs = (intercalate "." $ reverse xs) ++ "\n"
 
 isNamespaceConflict (xs:ys:_) = tail xs == tail ys
+isNamespaceConflict x         = error $ "isNamespaceConflict must be given a list"
+                                         ++ " of at least two elements, but was given " ++ show x
 
 filterPaths x xs = filter (((==) x).ident.fst) xs

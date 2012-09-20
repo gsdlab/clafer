@@ -21,7 +21,9 @@
 -}
 module Language.Clafer.Intermediate.ResolverInheritance where
 
+import Control.Applicative
 import Control.Monad
+import Control.Monad.Error
 import Control.Monad.State
 import Data.Maybe
 import Data.Graph
@@ -30,81 +32,91 @@ import Data.List
 import Data.Map (Map)
 import qualified Data.Map as Map
 
+import Language.ClaferT
 import Language.Clafer.Common
 import Language.Clafer.Front.Absclafer
 import Language.Clafer.Intermediate.Intclafer
 import Language.Clafer.Intermediate.ResolverName
 
+
 -- -----------------------------------------------------------------------------
 -- Non-overlapping inheritance
-resolveNModule :: (IModule, GEnv) -> (IModule, GEnv)
+resolveNModule :: (IModule, GEnv) -> Resolve (IModule, GEnv)
 resolveNModule (imodule, genv) =
-  (imodule{mDecls = decls'}, genv {sClafers = bfs toNodeShallow $ toClafers decls'})
-  where
-  decls = mDecls imodule
-  decls' = map (resolveNElement decls) decls
+  do
+    let decls = mDecls imodule
+    decls' <- mapM (resolveNElement decls) decls
+    return (imodule{mDecls = decls'}, genv {sClafers = bfs toNodeShallow $ toClafers decls'})
+    
 
 
-resolveNClafer :: [IElement] -> IClafer -> IClafer
+resolveNClafer :: [IElement] -> IClafer -> Resolve IClafer
 resolveNClafer declarations clafer =
-  clafer {super = resolveNSuper declarations $ super clafer,
-          elements = map (resolveNElement declarations) $ elements clafer}
+  do
+    super'    <- resolveNSuper declarations $ super clafer
+    elements' <- mapM (resolveNElement declarations) $ elements clafer
+    return $ clafer {super = super',
+            elements = elements'}
 
 
-resolveNSuper :: [IElement] -> ISuper -> ISuper
+resolveNSuper :: [IElement] -> ISuper -> Resolve ISuper
 resolveNSuper declarations x = case x of
   ISuper False [PExp _ pid pos (IClaferId _ id isTop)] ->
     if isPrimitive id || id == "clafer"
-      then x else ISuper False [idToPExp pid pos "" id' isTop]
-    where
-    id' = fst $ fromMaybe (error $ "No superclafer found: " ++ id) $
-          resolveN declarations id
-  _ -> x
+      then return x
+      else do
+        r <- resolveN pos declarations id
+        id' <- case r of
+          Nothing -> throwError $ SemanticErr pos $ "No superclafer found: " ++ id
+          Just m  -> return $ fst m
+        return $ ISuper False [idToPExp pid pos "" id' isTop]
+  _ -> return x
 
 
-resolveNElement :: [IElement] -> IElement -> IElement
+resolveNElement :: [IElement] -> IElement -> Resolve IElement
 resolveNElement declarations x = case x of
-  IEClafer clafer  -> IEClafer $ resolveNClafer declarations clafer
-  IEConstraint _ _  -> x
-  IEGoal _ _ -> x
+  IEClafer clafer  -> IEClafer <$> resolveNClafer declarations clafer
+  IEConstraint _ _  -> return x
+  IEGoal _ _ -> return x
 
-resolveN :: [IElement] -> String -> Maybe (String, [IClafer])
-resolveN declarations id =
-  findUnique id $ map (\x -> (x, [x])) $ filter isAbstract $ bfsClafers $
-  toClafers declarations
+resolveN :: Span -> [IElement] -> String -> Resolve (Maybe (String, [IClafer]))
+resolveN pos declarations id =
+  findUnique pos id $ map (\x -> (x, [x])) $ filter isAbstract $ bfsClafers $
+    toClafers declarations
 
 -- -----------------------------------------------------------------------------
 -- Overlapping inheritance
 
-resolveOModule :: (IModule, GEnv) -> (IModule, GEnv)
+resolveOModule :: (IModule, GEnv) -> Resolve (IModule, GEnv)
 resolveOModule (imodule, genv) =
-  (imodule {mDecls = decls'}, genv {sClafers = bfs toNodeShallow $ toClafers decls'})
-  where
-  decls = mDecls imodule
-  decls' = map (resolveOElement (defSEnv genv decls)) decls
+  do
+    let decls = mDecls imodule
+    decls' <- mapM (resolveOElement (defSEnv genv decls)) decls
+    return (imodule {mDecls = decls'}, genv {sClafers = bfs toNodeShallow $ toClafers decls'})
 
 
-resolveOClafer :: SEnv -> IClafer -> IClafer
+resolveOClafer :: SEnv -> IClafer -> Resolve IClafer
 resolveOClafer env clafer =
-  clafer {super = resolveOSuper env {context = Just clafer} $ super clafer,
-          elements = map (resolveOElement env {context = Just clafer}) $
-          elements clafer}
+  do
+    super' <- resolveOSuper env {context = Just clafer} $ super clafer
+    elements' <- mapM (resolveOElement env {context = Just clafer}) $ elements clafer
+    return $ clafer {super = super', elements = elements'}
 
 
-resolveOSuper :: SEnv -> ISuper -> ISuper
+resolveOSuper :: SEnv -> ISuper -> Resolve ISuper
 resolveOSuper env x = case x of
-  ISuper True exps -> ISuper isOverlap  exps'
-    where
-    exps'     = map (resolvePExp env) exps
-    isOverlap = not (length exps' == 1 && isPrimitive (getSuperId exps'))
-  _ -> x
+  ISuper True exps -> do
+    exps'     <- mapM (resolvePExp env) exps
+    let isOverlap = not (length exps' == 1 && isPrimitive (getSuperId exps'))
+    return $ ISuper isOverlap  exps'
+  _ -> return x
 
 
-resolveOElement :: SEnv -> IElement -> IElement
+resolveOElement :: SEnv -> IElement -> Resolve IElement
 resolveOElement env x = case x of
-  IEClafer clafer  -> IEClafer $ resolveOClafer env clafer
-  IEConstraint _ _ -> x
-  IEGoal _ _ -> x
+  IEClafer clafer  -> IEClafer <$> resolveOClafer env clafer
+  IEConstraint _ _ -> return x
+  IEGoal _ _ -> return x
   
 -- -----------------------------------------------------------------------------
 -- inherited and default cardinalities

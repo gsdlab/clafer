@@ -21,6 +21,7 @@
 -}
 module Language.Clafer.Intermediate.Resolver where
 
+import Control.Applicative
 import Control.Monad
 import Control.Monad.State
 import Data.Maybe
@@ -28,6 +29,7 @@ import Data.List
 import Data.Map (Map)
 import qualified Data.Map as Map
 
+import Language.ClaferT
 import Language.Clafer.Common
 import Language.Clafer.ClaferArgs
 import Language.Clafer.Front.Absclafer
@@ -36,11 +38,14 @@ import Language.Clafer.Intermediate.ResolverName
 import Language.Clafer.Intermediate.ResolverType
 import Language.Clafer.Intermediate.ResolverInheritance
 
-resolveModule :: ClaferArgs -> IModule -> (IModule, GEnv)
-resolveModule args declarations = resolveNamesModule args $ rom $ rem $ resolveNModule $ nameModule (fromJust $ skip_resolver args) declarations
+resolveModule :: ClaferArgs -> IModule -> Resolve (IModule, GEnv)
+resolveModule args declarations =
+  do
+    r <- resolveNModule $ nameModule (fromJust $ skip_resolver args) declarations
+    resolveNamesModule args =<< (rom $ rem r)
   where
   rem = if fromJust $ flatten_inheritance args then resolveEModule else id
-  rom = if fromJust $ skip_resolver args then id else resolveOModule
+  rom = if fromJust $ skip_resolver args then return . id else resolveOModule
 
 
 -- -----------------------------------------------------------------------------
@@ -77,10 +82,13 @@ nameIExp x = case x of
 nameIDecl (IDecl isDisj dels body) = IDecl isDisj dels `liftM` (namePExp body)
 
 -- -----------------------------------------------------------------------------
-resolveNamesModule :: ClaferArgs -> (IModule, GEnv) -> (IModule, GEnv)
-resolveNamesModule args (declarations, genv) = (res, genv)
+resolveNamesModule :: ClaferArgs -> (IModule, GEnv) -> Resolve (IModule, GEnv)
+resolveNamesModule args (declarations, genv) =
+  do
+    res <- foldM (flip ($)) declarations $ map (\f -> flip (curry f) genv) funs
+    return (res, genv)
   where
-  res = foldr ($) declarations $ map (\f -> flip (curry f) genv) funs
+  funs :: [(IModule, GEnv) -> Resolve IModule]
   funs
-    | fromJust $ skip_resolver args = [resolveTModule, analyzeModule]
-    | otherwise = [resolveTModule, resolveModuleNames, analyzeModule]
+    | fromJust $ skip_resolver args = [return . analyzeModule, resolveTModule]
+    | otherwise = [ return . analyzeModule, resolveModuleNames, resolveTModule]

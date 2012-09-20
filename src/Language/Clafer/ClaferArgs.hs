@@ -32,7 +32,7 @@ import Control.Monad
 import Language.Clafer.SplitJoin
 import Language.Clafer.Version
 
-data ClaferMode = Alloy42 | Alloy | Xml | Clafer | Html | Graph
+data ClaferMode = Alloy42 | Alloy | Xml | Clafer | Html | Graph | CVLGraph
   deriving (Eq, Show, Data, Typeable)
 
 data ClaferArgs = ClaferArgs {
@@ -53,11 +53,12 @@ data ClaferArgs = ClaferArgs {
       alloy_mapping :: Maybe Bool,
       self_contained :: Maybe Bool,
       add_graph :: Maybe Bool,
+      add_comments :: Maybe Bool,
       file :: FilePath
     } deriving (Show, Data, Typeable)
 
 clafer = ClaferArgs {
-  mode                = def &= help "Generated output type. Available CLAFERMODEs are: 'alloy' (default, Alloy 4.1); 'alloy42' (Alloy 4.2-rc); 'xml' (intermediate representation of Clafer model); 'clafer' (analyzed and desugared clafer model); 'html' (original model in HTML); 'graph' (graphical representation written in DOT language)" &= name "m",
+  mode                = def &= help "Generated output type. Available CLAFERMODEs are: 'alloy' (default, Alloy 4.1); 'alloy42' (Alloy 4.2); 'xml' (intermediate representation of Clafer model); 'clafer' (analyzed and desugared clafer model); 'html' (original model in HTML); 'graph' (graphical representation written in DOT language); 'cvlgraph' (cvl notation representation written in DOT language)" &= name "m",
   console_output      = def &= help "Output code on console" &= name "o",
   flatten_inheritance = def &= help "Flatten inheritance ('alloy' and 'alloy42' modes only)" &= name "i",
   timeout_analysis    = def &= help "Timeout for analysis",
@@ -68,12 +69,13 @@ clafer = ClaferArgs {
   keep_unused         = def &= help "Keep uninstantated abstract clafers ('alloy' and 'alloy42' modes only)" &= name "k",
   no_stats            = def &= help "Don't print statistics" &= name "s",
   schema              = def &= help "Show Clafer IR (intermediate representation) XML schema",
-  validate            = def &= help "Validate output. Uses 'tools/XsdCheck.class' for XML,  'tools/alloy4.jar' and 'tools/alloy4.2-rc.jar' for Alloy models, and Clafer translator for desugared Clafer models. Use '--tooldir' to override the default location of these tools." &= name "v",
+  validate            = def &= help "Validate output. Uses 'tools/XsdCheck.class' for XML,  'tools/alloy4.jar' and 'tools/alloy4.2.jar' for Alloy models, and Clafer translator for desugared Clafer models. Use '--tooldir' to override the default location of these tools." &= name "v",
   noalloyruncommand   = def &= help "For usage with partial instances: Don't generate the alloy 'run show for ... ' command, and rename @.ref with unique names  ('alloy' and 'alloy42' modes only)" &= name "nr",
   tooldir             = def &= typDir &= help "Specify the tools directory ('validate' only). Default: 'tools/' ",
   alloy_mapping       = def &= help "Generate mapping to Alloy source code ('alloy' and 'alloy42' modes only)" &= name "a",
   self_contained      = def &= help "Generate a self-contained html document ('html' mode only)",
   add_graph           = def &= help "Add a graph to the generated html model ('html' mode only). Requires the \"dot\" executable to be on the system path.",
+  add_comments        = def &= help "Include comments from the source file in the html output ('html' mode only).",
   file                = def &= args   &= typ "FILE"
  } &= summary ("Clafer " ++ version) &= program "clafer"
 
@@ -110,6 +112,7 @@ mergeArgs args args'  = args' {
   alloy_mapping       = alloy_mapping args       `mplus` alloy_mapping args',
   self_contained      = self_contained args      `mplus` self_contained args',
   add_graph           = add_graph args           `mplus` add_graph args',
+  add_comments        = add_comments args        `mplus` add_comments args',
   file                = file args}
 
 -- default values for arguments (the lowest priority)
@@ -130,9 +133,10 @@ setDefArgs args = args {
   tooldir             = tooldir args             `mplus` Just "tools/",
   self_contained      = self_contained args      `mplus` Just def,
   add_graph           = add_graph args           `mplus` Just def,
+  add_comments        = add_comments args        `mplus` Just def,
   alloy_mapping       = alloy_mapping args       `mplus` Just def}
 
 
-emptyClaferArgs = ClaferArgs Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing ""
+emptyClaferArgs = ClaferArgs Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing ""
 
 defaultClaferArgs = setDefArgs emptyClaferArgs

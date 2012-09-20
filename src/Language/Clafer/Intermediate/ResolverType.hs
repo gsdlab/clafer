@@ -21,10 +21,11 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
 -}
-module Language.Clafer.Intermediate.ResolverType (resolveTModule)  where
+module Language.Clafer.Intermediate.ResolverType (resolveTModule, intersects, (+++), fromUnionType, unionType)  where
 
 import Debug.Trace
 import Prelude hiding (exp)
+import Language.ClaferT
 import Language.Clafer.Common
 import Language.Clafer.Front.Absclafer
 import Language.Clafer.Intermediate.Analysis
@@ -40,16 +41,12 @@ import Data.Either
 import Data.List
 import Data.Maybe
 
-type Err = (Span, String)
 type TypeDecls = [(String, IType)]
 data TypeInfo = TypeInfo {iTypeDecls::TypeDecls, iInfo::Info, iCurThis::SClafer, iCurPath::Maybe IType}
 
-newtype TypeAnalysis a = TypeAnalysis (ReaderT TypeInfo (Either Err) a)
-  deriving (MonadError Err, Monad, Functor, MonadReader TypeInfo)
+newtype TypeAnalysis a = TypeAnalysis (ReaderT TypeInfo (Either ClaferSErr) a)
+  deriving (MonadError ClaferSErr, Monad, Functor, MonadReader TypeInfo)
   
-instance Error Err where
-  strMsg msg = (noSpan, msg)
-
 typeOfUid :: MonadTypeAnalysis m => String -> m IType
 typeOfUid uid = (fromMaybe (TClafer [uid]) . lookup uid) <$> typeDecls
 
@@ -93,7 +90,7 @@ instance MonadTypeAnalysis m => MonadTypeAnalysis (ListT m) where
   typeDecls = lift typeDecls
   localDecls = mapListT . localDecls
   
-instance MonadTypeAnalysis m => MonadTypeAnalysis (ErrorT Err m) where
+instance MonadTypeAnalysis m => MonadTypeAnalysis (ErrorT ClaferSErr m) where
   curThis = lift $ curThis
   localCurThis = mapErrorT . localCurThis
   curPath = lift $ curPath
@@ -109,7 +106,7 @@ instance MonadAnalysis TypeAnalysis where
     where
     addInfo t@TypeInfo{iInfo = Info c} = t{iInfo = Info $ extra ++ c}
 
-runTypeAnalysis :: TypeAnalysis a -> IModule -> Either Err a
+runTypeAnalysis :: TypeAnalysis a -> IModule -> Either ClaferSErr a
 runTypeAnalysis (TypeAnalysis tc) imodule = runReaderT tc $ TypeInfo [] (gatherInfo imodule) undefined Nothing
 
 unionType :: IType -> [String]
@@ -166,11 +163,11 @@ str t =
     ts   -> "[" ++ intercalate "," ts ++ "]"
 
 
-resolveTModule :: (IModule, GEnv) -> IModule
+resolveTModule :: (IModule, GEnv) -> Either ClaferSErr IModule
 resolveTModule (imodule, _) =
   case runTypeAnalysis (analysis $ mDecls imodule) imodule of
-    Right mDecls' -> imodule{mDecls = mDecls'}
-    Left err      -> error $ "Fin:" ++ show err
+    Right mDecls' -> return imodule{mDecls = mDecls'}
+    Left err      -> throwError err
   where
   analysis decls = mapM (resolveTElement $ rootUid) decls
 
@@ -185,7 +182,7 @@ resolveTElement parent (IEConstraint isHard pexp) =
   testBoolean pexp' =
     do
       unless (typeOf pexp' == TBoolean) $
-        throwError $ (inPos pexp', "Cannot construct constraint on type '" ++ str (typeOf pexp') ++ "'")
+        throwError $ SemanticErr (inPos pexp') ("Cannot construct constraint on type '" ++ str (typeOf pexp') ++ "'")
       return pexp'
 resolveTElement parent (IEGoal isMaximize pexp) =
   IEGoal isMaximize <$> resolveTConstraint parent pexp
@@ -206,7 +203,7 @@ resolveTPExp p =
       ([], [])  -> error "No results but no errors."  -- Case 2: No success and no error message. Bug.
       (_,   xs) -> return xs                          -- Case 3: At least one success.
 
-resolveTPExp' :: PExp -> TypeAnalysis [Either Err PExp]
+resolveTPExp' :: PExp -> TypeAnalysis [Either ClaferSErr PExp]
 resolveTPExp' p@PExp{inPos, exp = IClaferId{sident = "ref"}} =
   runListT $ runErrorT $ do
     curPath' <- curPath
@@ -216,8 +213,8 @@ resolveTPExp' p@PExp{inPos, exp = IClaferId{sident = "ref"}} =
         t <- runListT $ refOf =<< foreachM ut
         case fromUnionType t of
           Just t' -> return $ p `withType` t'
-          Nothing -> throwError (inPos, "Cannot ref from type '" ++ str curPath'' ++ "'")
-      Nothing -> throwError (inPos, "Cannot ref at the start of a path")
+          Nothing -> throwError $ SemanticErr inPos ("Cannot ref from type '" ++ str curPath'' ++ "'")
+      Nothing -> throwError $ SemanticErr inPos ("Cannot ref at the start of a path")
 resolveTPExp' p@PExp{inPos, exp = IClaferId{sident = "parent"}} =
   runListT $ runErrorT $ do
     curPath' <- curPath
@@ -225,19 +222,19 @@ resolveTPExp' p@PExp{inPos, exp = IClaferId{sident = "parent"}} =
       Just curPath'' -> do
         parent <- fromUnionType <$> runListT (parentOf =<< liftList (unionType curPath''))
         when (isNothing parent) $
-          throwError (inPos, "Cannot parent from root")
+          throwError $ SemanticErr inPos "Cannot parent from root"
         let result = p `withType` fromJust parent
         return result -- Case 1: Use the sident
           <++>
           addRef result -- Case 2: Dereference the sident 1..* times
-      Nothing -> throwError (inPos, "Cannot parent at the start of a path")
+      Nothing -> throwError $ SemanticErr inPos "Cannot parent at the start of a path"
 resolveTPExp' p@PExp{inPos, exp = IClaferId{sident}} =
   runListT $ runErrorT $ do
     curPath' <- curPath
     sident' <- if sident == "this" then uid <$> curThis else return sident
     when (isJust curPath') $ do
       c <- mapM (isChild sident') $ unionType $ fromJust curPath'
-      unless (or c) $ throwError (inPos, "'" ++ sident' ++ "' is not a child of type '" ++ str (fromJust curPath') ++ "'")
+      unless (or c) $ throwError $ SemanticErr inPos ("'" ++ sident' ++ "' is not a child of type '" ++ str (fromJust curPath') ++ "'")
     result <- (p `withType`) <$> typeOfUid sident'
     return result -- Case 1: Use the sident
       <++>
@@ -249,7 +246,7 @@ resolveTPExp' p@PExp{inPos, exp} =
     (iType', exp') <- ErrorT $ ListT $ resolveTExp exp
     return p{iType = Just iType', exp = exp'}
   where
-  resolveTExp :: IExp -> TypeAnalysis [Either Err (IType, IExp)]
+  resolveTExp :: IExp -> TypeAnalysis [Either ClaferSErr (IType, IExp)]
   resolveTExp e@(IInt _)    = runListT $ runErrorT $ return (TInteger, e)
   resolveTExp e@(IDouble _) = runListT $ runErrorT $ return (TReal, e)
   resolveTExp e@(IStr _)    = runListT $ runErrorT $ return (TString, e)
@@ -260,7 +257,7 @@ resolveTPExp' p@PExp{inPos, exp} =
       let t = typeOf arg'
       let test c =
             unless c $
-              throwError (inPos, "Function '" ++ op ++ "' cannot be performed on " ++ op ++ " '" ++ str t ++ "'")
+              throwError $ SemanticErr inPos ("Function '" ++ op ++ "' cannot be performed on " ++ op ++ " '" ++ str t ++ "'")
       let result
             | op == iNot = test (t == TBoolean) >> return TBoolean
             | op == iCSet = return TInteger
@@ -289,13 +286,13 @@ resolveTPExp' p@PExp{inPos, exp} =
               it <- intersection e1 e2
               case it of
                 Just it' -> return it'
-                Nothing  -> throwError (inPos, "Function '" ++ op ++ "' cannot be performed on '" ++ str t1 ++ "' " ++ op ++ " '" ++ str t2 ++ "'")
+                Nothing  -> throwError $ SemanticErr inPos ("Function '" ++ op ++ "' cannot be performed on '" ++ str t1 ++ "' " ++ op ++ " '" ++ str t2 ++ "'")
       let testNotSame e1 e2 =
             when (e1 `sameAs` e2) $
-              throwError (inPos, "Function '" ++ op ++ "' is redundant because the two subexpressions are always equivalent")
+              throwError $ SemanticErr inPos ("Function '" ++ op ++ "' is redundant because the two subexpressions are always equivalent")
       let test c =
             unless c $
-              throwError (inPos, "Function '" ++ op ++ "' cannot be performed on '" ++ str t1 ++ "' " ++ op ++ " '" ++ str t2 ++ "'")
+              throwError $ SemanticErr inPos ("Function '" ++ op ++ "' cannot be performed on '" ++ str t1 ++ "' " ++ op ++ " '" ++ str t2 ++ "'")
       let result
             | op `elem` logBinOps = test (t1 == TBoolean && t2 == TBoolean) >> return TBoolean
             | op `elem` [iLt, iGt, iLte, iGte] = test (numeric t1 && numeric t2) >> return TBoolean
@@ -323,11 +320,11 @@ resolveTPExp' p@PExp{inPos, exp} =
       let t2 = typeOf arg2'
       let t3 = typeOf arg3'
       unless (t1 == TBoolean) $
-        throwError (inPos, "Function 'if/else' cannot be performed on 'if' " ++ str t1 ++ " 'then' " ++ str t2 ++ " 'else' " ++ str t3)
+        throwError $ SemanticErr inPos ("Function 'if/else' cannot be performed on 'if' " ++ str t1 ++ " 'then' " ++ str t2 ++ " 'else' " ++ str t3)
       it <- intersection t2 t3
       t  <- case it of
         Just it' -> return it'
-        Nothing  -> throwError (inPos, "Function '=>else' cannot be performed on if '" ++ str t1 ++ "' then '" ++ str t2 ++ "' else '" ++ str t3 ++ "'")        
+        Nothing  -> throwError $ SemanticErr inPos ("Function '=>else' cannot be performed on if '" ++ str t1 ++ "' then '" ++ str t2 ++ "' else '" ++ str t3 ++ "'")        
       return (t, e{exps = [arg1', arg2', arg3']})
       
   resolveTExp e@IDeclPExp{oDecls, bpexp} =
@@ -346,7 +343,7 @@ resolveTPExp' p@PExp{inPos, exp} =
   resolveTExp e = error $ "Unknown iexp: " ++ show e
 
 -- Adds "refs" at the end, effectively dereferencing Clafers when needed.
-addRef :: PExp -> ErrorT Err (ListT TypeAnalysis) PExp
+addRef :: PExp -> ErrorT ClaferSErr (ListT TypeAnalysis) PExp
 addRef pexp =
   do
     localCurPath (typeOf pexp) $ do

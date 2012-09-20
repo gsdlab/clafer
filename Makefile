@@ -7,13 +7,17 @@ all: build
 install:  
 	mkdir -p $(to)
 	mkdir -p $(to)/tools
-	cp -f tools/alloy4.jar $(to)/tools
-	cp -f tools/alloy4.2-rc.jar $(to)/tools
 	cabal install --bindir=$(to)
 	cp -f README.md $(to)/clafer-README.md
-	cp -f tools/XsdCheck.class $(to)/tools
 	cp -f -r spl_configurator/py_src $(to)/
 	cp -f  spl_configurator/clafer_moo.sh $(to)/
+#   the following should be handled with cabal
+	cp -f LICENSE $(to)/
+	cp -f CHANGES $(to)/
+	cp -f tools/alloy4.jar $(to)/tools
+	cp -f tools/alloy4.2.jar $(to)/tools
+	cp -f tools/alloy4moo.jar $(to)/tools
+	cp -f tools/XsdCheck.class $(to)/tools
 
 build:
 	$(MAKE) -C $(TOOL_DIR)

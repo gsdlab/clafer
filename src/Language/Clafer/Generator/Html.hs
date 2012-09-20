@@ -19,7 +19,19 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
 -}
-module Language.Clafer.Generator.Html (genHtml, genText, genTooltip, printModule, traceAstModule, traceIrModule) where
+module Language.Clafer.Generator.Html (genHtml,
+                                       genText,
+                                       genTooltip,
+                                       printModule,
+                                       printDeclaration,
+                                       traceAstModule,
+                                       traceIrModule,
+                                       cleanOutput,
+                                       revertLayout,
+                                       printComment,
+                                       printPreComment,
+                                       printStandaloneComment,
+                                       printInlineComment) where
 
 import Language.Clafer.Front.Absclafer
 import Language.Clafer.Front.LayoutResolver(revertLayout)
@@ -29,71 +41,121 @@ import Language.Clafer.Intermediate.Intclafer
 import Data.List (intersperse)
 import qualified Data.Map as Map
 import Data.Maybe
+import Data.Char (isSpace)
 import Prelude hiding (exp)
+
+printPreComment :: Span -> [(Span, String)] -> ([(Span, String)], String)
+printPreComment _ [] = ([], [])
+printPreComment span@(Span (Pos row _) _) (c@((Span (Pos row' _) _), comment):cs)
+  | row > row' = findAll row ((c:cs), [])
+  | otherwise  = (c:cs, "")
+    where findAll _ ([],comments) = ([],comments)
+          findAll row ((c@((Span (Pos row' col') _), comment):cs), comments)
+            | row > row' = case take 3 comment of
+                '/':'/':'#':[] -> findAll row (cs, concat [comments, "<!-- " ++ trim (drop 2 comment) ++ " /-->\n"])
+                '/':'/':_:[]   -> if col' == 1
+                                  then findAll row (cs, concat [comments, printStandaloneComment comment ++ "\n"])
+                                  else findAll row (cs, concat [comments, printInlineComment comment ++ "<br>\n"])
+                '/':'*':_:[]   -> findAll row (cs, concat [comments, printStandaloneComment comment ++ "\n"])
+                otherwise      -> (cs, "Improper form of comment.")-- Should not happen. Bug.
+            | otherwise  = ((c:cs), comments)
+          findAll row ((c:cs), comments) = findAll row (cs, comments)
+printPreComment _ cs = (cs,"")
+printComment :: Span -> [(Span, String)] -> ([(Span, String)], String)
+printComment _ [] = ([],[])
+printComment span@(Span (Pos row _) _) (c@(Span (Pos row' col') _, comment):cs)
+  | row == row' = case take 3 comment of
+        '/':'/':'#':[] -> (cs,"<!-- " ++ trim (drop 2 comment) ++ " /-->\n")
+        '/':'/':_:[]   -> if col' == 1 then (cs,printStandaloneComment comment) else (cs, printInlineComment comment)
+        '/':'*':_:[]   -> (cs, printStandaloneComment comment)
+        otherwise      -> (cs, "Improper form of comment.")-- Should not happen. Bug.
+  | otherwise = (c:cs, "")
+  where trim = let f = reverse. dropWhile isSpace in f . f
+printComment _ cs = (cs,"")
+printStandaloneComment comment = "<p class=\"standalonecomment\">" ++ comment ++ "</p>"
+printInlineComment comment = "<span class=\"inlinecomment\">" ++ comment ++ "</span>"
 
 genHtml x ir = cleanOutput $ revertLayout $ printModule x (traceIrModule ir) True
 genText x ir = cleanOutput $ revertLayout $ printModule x (traceIrModule ir) False
-genTooltip m ir = cleanOutput $ revertLayout $ printModule m ir False
+genTooltip m ir = unlines $ filter (\x -> trim x /= []) $ lines $ cleanOutput $ revertLayout $ printModule m ir False
                            
 printModule (Module [])     irMap html = ""
-printModule (Module (x:xs)) irMap html = (printDeclaration x 0 irMap html) ++ printModule (Module xs) irMap html
+printModule (Module (x:xs)) irMap html = (printDeclaration x 0 irMap html []) ++ printModule (Module xs) irMap html
 printModule (PosModule _ declarations) irMap html = printModule (Module declarations) irMap html
 
-printDeclaration (EnumDecl posIdent enumIds)       indent irMap html = (while html "<span class=\"keyword\">") ++ "enum" ++ (while html "</span>") ++ " =" ++ (printPosIdentRef posIdent indent irMap html) ++ (concat $ intersperse ";" (map (\x -> printEnumId x indent irMap html) enumIds))
-printDeclaration (PosEnumDecl _ posIdent enumIds)  indent irMap html = printDeclaration (EnumDecl posIdent enumIds) indent irMap html
-printDeclaration (ElementDecl element)             indent irMap html = printElement element indent irMap html
-printDeclaration (PosElementDecl _ element)        indent irMap html = printDeclaration (ElementDecl element) indent irMap html
+printDeclaration (EnumDecl posIdent enumIds)       indent irMap html comments = (while html "<span class=\"keyword\">") ++ "enum" ++ (while html "</span>") ++ " = " ++ (printPosIdentRef posIdent indent irMap html comments) ++ (concat $ intersperse "; " (map (\x -> printEnumId x indent irMap html comments) enumIds))
+printDeclaration (PosEnumDecl _ posIdent enumIds)  indent irMap html comments = printDeclaration (EnumDecl posIdent enumIds) indent irMap html comments
+printDeclaration (ElementDecl element)             indent irMap html comments = printElement element indent irMap html comments
+printDeclaration (PosElementDecl _ element)        indent irMap html comments = printDeclaration (ElementDecl element) indent irMap html comments
 
-printElement (Subclafer clafer) indent irMap html = printClafer clafer indent irMap html
-printElement (PosSubclafer _ subclafer) indent irMap html = printElement (Subclafer subclafer) indent irMap html
-printElement (Subconstraint constraint) indent irMap html = printConstraint constraint indent irMap html
-printElement (PosSubconstraint _ constraint) indent irMap html = printElement (Subconstraint constraint) indent irMap html
-printElement (ClaferUse name card elements) indent irMap html = (printIndent indent html) ++ "`" ++ printName name indent irMap html ++ printCard card indent irMap html ++ (while html "</span><br>") ++ "\n" ++ printElements elements indent irMap html
-printElement (PosClaferUse span name card elements) indent irMap html = let (divId, superId) = getUseId span irMap in
-                                                                      (while html ("<span id=\"" ++ divId ++ "\" class=\"l" ++ show indent ++ "\">")) ++ "`" ++ (while html ("<a href=\"#" ++ superId ++ "\"><span class=\"reference\">")) ++ printName name indent irMap False --trick the printer into only printing the name
-                                                                        ++ (while html "</span></a>") ++ printCard card indent irMap html ++ (while html "</span><br>") ++ "\n" ++ printElements elements indent irMap html
-printElement (Subgoal goal) indent irMap html = printGoal goal indent irMap html
-printElement (PosSubgoal _ goal) indent irMap html = printElement (Subgoal goal) indent irMap html
-printElement (Subsoftconstraint softConstraint) indent irMap html = printSoftConstraint softConstraint indent irMap html
-printElement (PosSubsoftconstraint _ softConstraint) indent irMap html = printElement (Subsoftconstraint softConstraint) indent irMap html
+printElement (Subclafer clafer) indent irMap html comments = printClafer clafer indent irMap html comments
+printElement (PosSubclafer span subclafer) indent irMap html comments = printElement (Subclafer subclafer) indent irMap html comments
+printElement (Subconstraint constraint) indent irMap html comments = printConstraint constraint indent irMap html comments
+printElement (PosSubconstraint span constraint) indent irMap html comments = let (comments', preComments) = printPreComment span comments; (comments'', comment) = printComment span comments' in preComments ++ printElement (Subconstraint constraint) indent irMap html comments'' ++ comment ++ while html "<br>" ++ "\n"
+printElement (ClaferUse name card elements) indent irMap html comments = (printIndent indent html) ++ "`" ++ printName name indent irMap html comments ++ printCard card indent irMap html comments ++ (while html "</span><br>") ++ "\n" ++ printElements elements indent irMap html comments
+printElement (PosClaferUse span name card elements) indent irMap html comments = let (divId, superId) = getUseId span irMap;
+                                                                                     (comments', preComments) = printPreComment span comments;
+                                                                                     (comments'', comment) = printComment span comments' in
+                                                                      preComments ++ (while html ("<span id=\"" ++ divId ++ "\" class=\"l" ++ show indent ++ "\">")) ++ "`" ++ (while html ("<a href=\"#" ++ superId ++ "\"><span class=\"reference\">")) ++ printName name indent irMap False [] --trick the printer into only printing the name
+                                                                        ++ (while html "</span></a>") ++ printCard card indent irMap html comments ++ comment ++ (while html "</span><br>") ++ "\n" ++ printElements elements indent irMap html comments''
+printElement (Subgoal goal) indent irMap html comments = printGoal goal indent irMap html comments
+printElement (PosSubgoal span goal) indent irMap html comments = let (comments', preComments) = printPreComment span comments; (comments'', comment) = printComment span comments' in preComments ++ printElement (Subgoal goal) indent irMap html comments'' ++ comment
+printElement (Subsoftconstraint softConstraint) indent irMap html comments = printSoftConstraint softConstraint indent irMap html comments
+printElement (PosSubsoftconstraint span softConstraint) indent irMap html comments = let (comments', preComments) = printPreComment span comments; (comments'', comment) = printComment span comments' in preComments ++  printElement (Subsoftconstraint softConstraint) indent irMap html comments'' ++ comment
 
-printElements ElementsEmpty indent irMap html = ""
-printElements (PosElementsEmpty _) indent irMap html = printElements ElementsEmpty indent irMap html
-printElements (ElementsList elements) indent irMap html = "\n{" ++ (concatMap (\x -> printElement x (indent + 1) irMap html ++ "\n") elements) ++ "\n}"
-printElements (PosElementsList _ elements) indent irMap html = printElements (ElementsList elements) indent irMap html
+printElements ElementsEmpty indent irMap html comments = ""
+printElements (PosElementsEmpty _) indent irMap html comments = printElements ElementsEmpty indent irMap html comments
+printElements (ElementsList elements) indent irMap html comments = "\n{" ++ mapElements elements indent irMap html comments ++ "\n}"
+    where mapElements []     indent irMap html comments = []
+          mapElements (e:es) indent irMap html comments = if span e == noSpan
+                                                          then (printElement e (indent + 1) irMap html comments {-++ "\n"-}) ++ mapElements es indent irMap html comments
+                                                          else (printElement e (indent + 1) irMap html comments {-++ "\n"-}) ++ mapElements es indent irMap html (afterSpan (span e) comments)
+          afterSpan span comments = let (Span _ (Pos line _)) = span in dropWhile (\(x, _) -> let (Span _ (Pos line' _)) = x in line' <= line) comments
+          span (PosSubclafer s _) = s
+          span (PosSubconstraint s _) = s
+          span (PosClaferUse s _ _ _) = s
+          span (PosSubgoal s _) = s
+          span (PosSubsoftconstraint s _) = s
+          span _ = noSpan
+printElements (PosElementsList _ elements) indent irMap html comments = printElements (ElementsList elements) indent irMap html comments
 
-printClafer (Clafer abstract gCard id super card init elements) indent irMap html
+printClafer (Clafer abstract gCard id super card init elements) indent irMap html comments
   | indent == 0 = let (PosIdent (_, divid)) = id in
-                    (while html ("<div id=\"" ++ divid ++ "\">\n")) ++ (concat [printAbstract abstract indent irMap html, printGCard gCard indent irMap html,
-                    printPosIdent id indent irMap html, printSuper super indent irMap html, printCard card indent irMap html, printInit init indent irMap html])
-                    ++ (while html "<br>") ++ "\n" ++ printElements elements indent irMap html ++ (while html "</div>\n<br>") ++ "\n"
+                    (while html ("<div id=\"" ++ divid ++ "\">\n")) ++ (concat [printAbstract abstract indent irMap html comments, printGCard gCard indent irMap html comments,
+                    printPosIdent id indent irMap html comments, printSuper super indent irMap html comments, printCard card indent irMap html comments, printInit init indent irMap html comments])
+                    ++ (while html "<br>") ++ "\n" ++ printElements elements indent irMap html comments ++ (while html "</div>")
   | otherwise   = let (PosIdent (_, divid)) = id in
-                    (while html ("<span id=\"" ++ divid ++ "\" class=\"l" ++ show indent ++ "\">")) ++ (concat [printAbstract abstract indent irMap html, printGCard gCard indent irMap html,
-                    printPosIdent id indent irMap html, printSuper super indent irMap html, printCard card indent irMap html, printInit init indent irMap html])
-                    ++ (while html "</span><br>") ++ "\n" ++ printElements elements indent irMap html
-printClafer (PosClafer span abstract gCard id super card init elements) indent irMap html
-  | indent == 0 = let divId = getDivId span irMap in
-                    (while html ("<div id=\"" ++ divId ++ "\">\n")) ++ (concat [printAbstract abstract indent irMap html, printGCard gCard indent irMap html,
-                    printPosIdent id indent irMap html, printSuper super indent irMap html, printCard card indent irMap html, printInit init indent irMap html])
-                    ++ (while html "<br>") ++ "\n" ++ printElements elements indent irMap html ++ (while html "</div>\n<br>") ++ "\n"
-  | otherwise   = let uid = getDivId span irMap in
-                    (while html ("<span id=\"" ++ uid ++ "\" class=\"l" ++ show indent ++ "\">")) ++ (concat [printAbstract abstract indent irMap html, printGCard gCard indent irMap html,
-                    printPosIdent id indent irMap html, printSuper super indent irMap html, printCard card indent irMap html, printInit init indent irMap html])
-                    ++ (while html "</span><br>") ++ "\n" ++ printElements elements indent irMap html
-printGoal (Goal exps) indent irMap html = (if html then "&lt;&lt;" else "<<") ++ concatMap (\x -> printExp x indent irMap html) exps ++ if html then "&gt;&gt;" else ">>"
-printGoal (PosGoal _ exps) indent irMap html = printGoal (Goal exps) indent irMap html
+                    (while html ("<span id=\"" ++ divid ++ "\" class=\"l" ++ show indent ++ "\">")) ++ (concat [printAbstract abstract indent irMap html comments, printGCard gCard indent irMap html comments,
+                    printPosIdent id indent irMap html comments, printSuper super indent irMap html comments, printCard card indent irMap html comments, printInit init indent irMap html comments])
+                    ++ (while html "</span><br>") ++ "\n" ++ printElements elements indent irMap html comments
+printClafer (PosClafer span abstract gCard id super card init elements) indent irMap html comments
+  | indent == 0 = let divId = getDivId span irMap;
+                      (comments', preComments) = printPreComment span comments;
+                      (comments'', comment) = printComment span comments' in
+                    preComments ++ (while html ("<div id=\"" ++ divId ++ "\">\n")) ++ (concat [printAbstract abstract indent irMap html comments, printGCard gCard indent irMap html comments,
+                    printPosIdent id indent irMap html comments, printSuper super indent irMap html comments, printCard card indent irMap html comments, printInit init indent irMap html comments])
+                    ++ comment ++ (while html "<br>") ++ "\n" ++ printElements elements indent irMap html comments'' ++ (while html "</div>")
+  | otherwise   = let uid = getDivId span irMap;
+                            (comments', preComments) = printPreComment span comments;
+                            (comments'', comment) = printComment span comments' in
+                    preComments ++ (while html ("<span id=\"" ++ uid ++ "\" class=\"l" ++ show indent ++ "\">")) ++ (concat [printAbstract abstract indent irMap html comments, printGCard gCard indent irMap html comments,
+                    printPosIdent id indent irMap html comments, printSuper super indent irMap html comments, printCard card indent irMap html comments, printInit init indent irMap html comments]) ++ 
+                    comment ++ (while html "</span><br>") ++ "\n" ++ printElements elements indent irMap html comments''
+                    
+printGoal (Goal exps) indent irMap html comments = (if html then "&lt;&lt;" else "<<") ++ concatMap (\x -> printExp x indent irMap html comments) exps ++ if html then "&gt;&gt;" else ">>"
+printGoal (PosGoal _ exps) indent irMap html comments = printGoal (Goal exps) indent irMap html comments
 
-printSoftConstraint (SoftConstraint exps) indent irMap html = "(" ++ concatMap (\x -> printExp x indent irMap html) exps ++ ")"
-printSoftConstraint (PosSoftConstraint _ exps) indent irMap html = printSoftConstraint (SoftConstraint exps) indent irMap html
+printSoftConstraint (SoftConstraint exps) indent irMap html comments = "(" ++ concatMap (\x -> printExp x indent irMap html comments) exps ++ ")"
+printSoftConstraint (PosSoftConstraint _ exps) indent irMap html comments = printSoftConstraint (SoftConstraint exps) indent irMap html comments
 
-printAbstract Abstract indent irMap html = (while html "<span class=\"keyword\">") ++ "abstract" ++ (while html "</span>") ++ " "
-printAbstract (PosAbstract _) indent irMap html = printAbstract Abstract indent irMap html
-printAbstract AbstractEmpty indent irMap html = ""
-printAbstract (PosAbstractEmpty _) indent irMap html = printAbstract AbstractEmpty indent irMap html
+printAbstract Abstract indent irMap html comments = (while html "<span class=\"keyword\">") ++ "abstract" ++ (while html "</span>") ++ " "
+printAbstract (PosAbstract _) indent irMap html comments = printAbstract Abstract indent irMap html comments
+printAbstract AbstractEmpty indent irMap html comments = ""
+printAbstract (PosAbstractEmpty _) indent irMap html comments = printAbstract AbstractEmpty indent irMap html comments
 
-printGCard gCard indent irMap html = case gCard of
-  (GCardInterval ncard) -> printNCard ncard indent irMap html
-  (PosGCardInterval _ ncard) -> printNCard ncard indent irMap html
+printGCard gCard indent irMap html comments = case gCard of
+  (GCardInterval ncard) -> printNCard ncard indent irMap html comments
+  (PosGCardInterval _ ncard) -> printNCard ncard indent irMap html comments
   GCardEmpty        -> ""
   (PosGCardEmpty _) -> ""
   GCardXor          -> while html "<span class=\"keyword\">" ++ "xor" ++ while html "</span>" ++ " "
@@ -105,153 +167,155 @@ printGCard gCard indent irMap html = case gCard of
   GCardOpt          -> while html "<span class=\"keyword\">" ++ "opt" ++ while html "</span>" ++ " "
   (PosGCardOpt _)   -> while html "<span class=\"keyword\">" ++ "opt" ++ while html "</span>" ++ " "
 
-printNCard (NCard (PosInteger (pos, num)) exInteger) indent irMap html = num ++ ".." ++ printExInteger exInteger indent irMap html
-printNCard (PosNCard _ posinteger exinteger) indent irMap html = printNCard (NCard posinteger exinteger) indent irMap html
+printNCard (NCard (PosInteger (pos, num)) exInteger) indent irMap html comments = num ++ ".." ++ printExInteger exInteger indent irMap html comments ++ " "
+printNCard (PosNCard _ posinteger exinteger) indent irMap html comments = printNCard (NCard posinteger exinteger) indent irMap html comments
       
-printExInteger ExIntegerAst indent irMap html = "*"
-printExInteger (PosExIntegerAst _) indent irMap html = printExInteger ExIntegerAst indent irMap html
-printExInteger (ExIntegerNum (PosInteger(pos, num))) indent irMap html = num
-printExInteger (PosExIntegerNum _ posInteger) indent irMap html = printExInteger (ExIntegerNum posInteger) indent irMap html
+printExInteger ExIntegerAst indent irMap html comments = "*"
+printExInteger (PosExIntegerAst _) indent irMap html comments = printExInteger ExIntegerAst indent irMap html comments
+printExInteger (ExIntegerNum (PosInteger(pos, num))) indent irMap html comments = num
+printExInteger (PosExIntegerNum _ posInteger) indent irMap html comments = printExInteger (ExIntegerNum posInteger) indent irMap html comments
 
-printName (Path modids) indent irMap html = unwords $ map (\x -> printModId x indent irMap html) modids
-printName (PosPath _ modids) indent irMap html = printName (Path modids) indent irMap html
+printName (Path modids) indent irMap html comments = unwords $ map (\x -> printModId x indent irMap html comments) modids
+printName (PosPath _ modids) indent irMap html comments = printName (Path modids) indent irMap html comments
 
-printModId (ModIdIdent posident) indent irMap html = printPosIdentRef posident indent irMap html
-printModId (PosModIdIdent _ posident) indent irMap html = printModId (ModIdIdent posident) indent irMap html
+printModId (ModIdIdent posident) indent irMap html comments = printPosIdentRef posident indent irMap html comments
+printModId (PosModIdIdent _ posident) indent irMap html comments = printModId (ModIdIdent posident) indent irMap html comments
 
-printPosIdent (PosIdent (pos, id)) indent irMap html = id
+printPosIdent (PosIdent (pos, id)) indent irMap html comments = id
 
-printPosIdentRef (PosIdent (pos, id)) indent irMap html
+printPosIdentRef (PosIdent (pos, id)) indent irMap html comments
   = (while html ("<a href=\"#" ++ uid ++ "\"><span class=\"reference\">")) ++ dropUid id ++ (while html "</span></a>")
       where uid = getUid (PosIdent (pos, id)) irMap
 
-printSuper SuperEmpty indent irMap html = ""
-printSuper (PosSuperEmpty _) indent irMap html = printSuper SuperEmpty indent irMap html
-printSuper (SuperSome superHow setExp) indent irMap html = printSuperHow superHow indent irMap html ++ printSetExp setExp indent irMap html
-printSuper (PosSuperSome _ superHow setExp) indent irMap html = printSuper (SuperSome superHow setExp) indent irMap html
+printSuper SuperEmpty indent irMap html comments = ""
+printSuper (PosSuperEmpty _) indent irMap html comments = printSuper SuperEmpty indent irMap html comments
+printSuper (SuperSome superHow setExp) indent irMap html comments = printSuperHow superHow indent irMap html comments ++ printSetExp setExp indent irMap html comments
+printSuper (PosSuperSome _ superHow setExp) indent irMap html comments = printSuper (SuperSome superHow setExp) indent irMap html comments
 
-printSuperHow SuperColon  indent irMap html = (while html "<span class=\"keyword\">") ++ " :" ++ (while html "</span>") ++ " "
-printSuperHow (PosSuperColon _) indent irMap html = printSuperHow SuperColon indent irMap html
-printSuperHow SuperArrow  indent irMap html = (while html "<span class=\"keyword\">") ++ " ->" ++ (while html "</span>") ++ " "
-printSuperHow (PosSuperArrow _) indent irMap html = printSuperHow SuperArrow indent irMap html
-printSuperHow SuperMArrow indent irMap html = (while html "<span class=\"keyword\">") ++ " ->>" ++ (while html "</span>") ++ " "
-printSuperHow (PosSuperMArrow _) indent irMap html = printSuperHow SuperMArrow indent irMap html
+printSuperHow SuperColon  indent irMap html comments = (while html "<span class=\"keyword\">") ++ " :" ++ (while html "</span>") ++ " "
+printSuperHow (PosSuperColon _) indent irMap html comments = printSuperHow SuperColon indent irMap html comments
+printSuperHow SuperArrow  indent irMap html comments = (while html "<span class=\"keyword\">") ++ " ->" ++ (while html "</span>") ++ " "
+printSuperHow (PosSuperArrow _) indent irMap html comments = printSuperHow SuperArrow indent irMap html comments
+printSuperHow SuperMArrow indent irMap html comments = (while html "<span class=\"keyword\">") ++ " ->>" ++ (while html "</span>") ++ " "
+printSuperHow (PosSuperMArrow _) indent irMap html comments = printSuperHow SuperMArrow indent irMap html comments
 
-printCard CardEmpty indent irMap html = ""
-printCard (PosCardEmpty _) indent irMap html = printCard CardEmpty indent irMap html
-printCard CardLone indent irMap html = " ?"
-printCard (PosCardLone _) indent irMap html = printCard CardLone indent irMap html
-printCard CardSome indent irMap html = " +"
-printCard (PosCardSome _) indent irMap html = printCard CardSome indent irMap html
-printCard CardAny indent irMap html = " *"
-printCard (PosCardAny _) indent irMap html = printCard CardAny indent irMap html
-printCard (CardNum (PosInteger (pos,num))) indent irMap html = " " ++ num 
-printCard (PosCardNum _ posInteger) indent irMap html = printCard (CardNum posInteger) indent irMap html
-printCard (CardInterval nCard) indent irMap html = " " ++ printNCard nCard indent irMap html
-printCard (PosCardInterval _ nCard) indent irMap html = printCard (CardInterval nCard) indent irMap html
+printCard CardEmpty indent irMap html comments = ""
+printCard (PosCardEmpty _) indent irMap html comments = printCard CardEmpty indent irMap html comments
+printCard CardLone indent irMap html comments = " ?"
+printCard (PosCardLone _) indent irMap html comments = printCard CardLone indent irMap html comments
+printCard CardSome indent irMap html comments = " +"
+printCard (PosCardSome _) indent irMap html comments = printCard CardSome indent irMap html comments
+printCard CardAny indent irMap html comments = " *"
+printCard (PosCardAny _) indent irMap html comments = printCard CardAny indent irMap html comments
+printCard (CardNum (PosInteger (pos,num))) indent irMap html comments = " " ++ num 
+printCard (PosCardNum _ posInteger) indent irMap html comments = printCard (CardNum posInteger) indent irMap html comments
+printCard (CardInterval nCard) indent irMap html comments = " " ++ printNCard nCard indent irMap html comments
+printCard (PosCardInterval _ nCard) indent irMap html comments = printCard (CardInterval nCard) indent irMap html comments
 
-printConstraint (Constraint exps) indent irMap html = concatMap (\x -> printConstraint' x indent irMap html) exps
-printConstraint (PosConstraint _ exps) indent irMap html = printConstraint (Constraint exps) indent irMap html
-printConstraint' exp indent irMap html = (printIndent indent html) ++ while html "<span class=\"keyword\">" ++ "[" ++ while html "</span>" ++ " " ++ printExp exp indent irMap html ++ " " ++ while html "<span class=\"keyword\">" ++ "]" ++ while html "</span></span></span><br>" ++ "\n"
+printConstraint (Constraint exps) indent irMap html comments = concatMap (\x -> printConstraint' x indent irMap html comments) exps
+printConstraint (PosConstraint _ exps) indent irMap html comments = printConstraint (Constraint exps) indent irMap html comments
+printConstraint' exp indent irMap html comments = (printIndent indent html) ++ while html "<span class=\"keyword\">" ++ "[" ++ while html "</span>"
+                                                  ++ " " ++ printExp exp indent irMap html comments ++ " " ++ while html "<span class=\"keyword\">" ++ "]" ++ while html "</span>"
+                                                  ++ (if indent == 0 then "" else while html "</span>") 
 
-printDecl (Decl locids setExp) indent irMap html = (while html "<span class=\"keyword\">") ++ ":" ++ (while html "</span>") ++ printSetExp setExp indent irMap html
-printDecl (PosDecl _ locids setExp) indent irMap html = printDecl (Decl locids setExp) indent irMap html
+printDecl (Decl locids setExp) indent irMap html comments = (while html "<span class=\"keyword\">") ++ ":" ++ (while html "</span>") ++ printSetExp setExp indent irMap html comments
+printDecl (PosDecl _ locids setExp) indent irMap html comments = printDecl (Decl locids setExp) indent irMap html comments
 
-printInit InitEmpty indent irMap html = ""
-printInit (PosInitEmpty _) indent irMap html = printInit InitEmpty indent irMap html
-printInit (InitSome initHow exp) indent irMap html = printInitHow initHow indent irMap html ++ printExp exp indent irMap html
-printInit (PosInitSome _ initHow exp) indent irMap html = printInit (InitSome initHow exp) indent irMap html
+printInit InitEmpty indent irMap html comments = ""
+printInit (PosInitEmpty _) indent irMap html comments = printInit InitEmpty indent irMap html comments
+printInit (InitSome initHow exp) indent irMap html comments = printInitHow initHow indent irMap html comments ++ printExp exp indent irMap html comments
+printInit (PosInitSome _ initHow exp) indent irMap html comments = printInit (InitSome initHow exp) indent irMap html comments
 
-printInitHow InitHow_1 indent irMap html = " = "
-printInitHow (PosInitHow_1 _) indent irMap html = printInitHow InitHow_1 indent irMap html
-printInitHow InitHow_2 indent irMap html = " := "
-printInitHow (PosInitHow_2 _) indent irMap html = printInitHow InitHow_2 indent irMap html
+printInitHow InitHow_1 indent irMap html comments = " = "
+printInitHow (PosInitHow_1 _) indent irMap html comments = printInitHow InitHow_1 indent irMap html comments
+printInitHow InitHow_2 indent irMap html comments = " := "
+printInitHow (PosInitHow_2 _) indent irMap html comments = printInitHow InitHow_2 indent irMap html comments
 
-printExp (DeclAllDisj decl exp) indent irMap html = "all disj " ++ (printDecl decl indent irMap html) ++ " | " ++ (printExp exp indent irMap html)
-printExp (PosDeclAllDisj _ decl exp) indent irMap html = printExp (DeclAllDisj decl exp) indent irMap html
-printExp (DeclAll     decl exp) indent irMap html = "all " ++ (printDecl decl indent irMap html) ++ " | " ++ (printExp exp indent irMap html)
-printExp (PosDeclAll _ decl exp) indent irMap html = printExp (DeclAll decl exp) indent irMap html
-printExp (DeclQuantDisj quant decl exp) indent irMap html = (printQuant quant indent irMap html) ++ "disj" ++ (printDecl decl indent irMap html) ++ " | " ++ (printExp exp indent irMap html)
-printExp (PosDeclQuantDisj _ quant decl exp) indent irMap html = printExp (DeclQuantDisj quant decl exp) indent irMap html
-printExp (DeclQuant     quant decl exp) indent irMap html = (printQuant quant indent irMap html) ++ (printDecl decl indent irMap html) ++ " | " ++ (printExp exp indent irMap html)
-printExp (PosDeclQuant _ quant decl exp) indent irMap html = printExp (DeclQuant quant decl exp) indent irMap html
-printExp (EGMax exp)            indent irMap html = "max " ++ printExp exp indent irMap html
-printExp (PosEGMax _ exp)     indent irMap html = printExp (EGMax exp) indent irMap html
-printExp (EGMin exp)            indent irMap html = "min " ++ printExp exp indent irMap html
-printExp (PosEGMin _ exp) indent irMap html = printExp (EGMin exp) indent irMap html
-printExp (ENeq exp1 exp2)       indent irMap html = (printExp exp1 indent irMap html) ++ " != " ++ (printExp exp2 indent irMap html)
-printExp (PosENeq _ exp1 exp2) indent irMap html = printExp (ENeq exp1 exp2) indent irMap html
-printExp (ESetExp setExp)       indent irMap html = printSetExp setExp indent irMap html
-printExp (PosESetExp _ setExp) indent irMap html = printExp (ESetExp setExp) indent irMap html
-printExp (QuantExp quant exp)   indent irMap html = printQuant quant indent irMap html ++ printExp exp indent irMap html
-printExp (PosQuantExp _ quant exp) indent irMap html = printExp (QuantExp quant exp) indent irMap html
-printExp (EImplies exp1 exp2)   indent irMap html = (printExp exp1 indent irMap html) ++ " => " ++ printExp exp2 indent irMap html
-printExp (PosEImplies _ exp1 exp2) indent irMap html = printExp (EImplies exp1 exp2) indent irMap html
-printExp (EAnd exp1 exp2)       indent irMap html = (printExp exp1 indent irMap html) ++ " && " ++ printExp exp2 indent irMap html
-printExp (PosEAnd _ exp1 exp2) indent irMap html = printExp (EAnd exp1 exp2) indent irMap html
-printExp (EOr exp1 exp2)        indent irMap html = (printExp exp1 indent irMap html) ++ " || " ++ printExp exp2 indent irMap html
-printExp (PosEOr _ exp1 exp2) indent irMap html = printExp (EOr exp1 exp2) indent irMap html
-printExp (EXor exp1 exp2)       indent irMap html = (printExp exp1 indent irMap html) ++ " xor " ++ printExp exp2 indent irMap html
-printExp (PosEXor _ exp1 exp2) indent irMap html = printExp (EXor exp1 exp2) indent irMap html
-printExp (ENeg exp)             indent irMap html = " !" ++ printExp exp indent irMap html
-printExp (PosENeg _ exp) indent irMap html = printExp (ENeg exp) indent irMap html
-printExp (ELt exp1 exp2)        indent irMap html = (printExp exp1 indent irMap html) ++ " < " ++ printExp exp2 indent irMap html
-printExp (PosELt _ exp1 exp2) indent irMap html = printExp (ELt exp1 exp2) indent irMap html
-printExp (EGt exp1 exp2)        indent irMap html = (printExp exp1 indent irMap html) ++ " > " ++ printExp exp2 indent irMap html
-printExp (PosEGt _ exp1 exp2) indent irMap html = printExp (EGt exp1 exp2) indent irMap html
-printExp (EEq exp1 exp2)        indent irMap html = (printExp exp1 indent irMap html) ++ " = " ++ printExp exp2 indent irMap html
-printExp (PosEEq _ exp1 exp2) indent irMap html = printExp (EEq exp1 exp2) indent irMap html
-printExp (ELte exp1 exp2)       indent irMap html = (printExp exp1 indent irMap html) ++ " <= " ++ printExp exp2 indent irMap html
-printExp (PosELte _ exp1 exp2) indent irMap html = printExp (ELte exp1 exp2) indent irMap html
-printExp (EGte exp1 exp2)       indent irMap html = (printExp exp1 indent irMap html) ++ " >= " ++ printExp exp2 indent irMap html
-printExp (PosEGte _ exp1 exp2) indent irMap html = printExp (EGte exp1 exp2) indent irMap html
-printExp (EIn exp1 exp2)        indent irMap html = (printExp exp1 indent irMap html) ++ " in " ++ printExp exp2 indent irMap html
-printExp (PosEIn _ exp1 exp2) indent irMap html = printExp (EIn exp1 exp2) indent irMap html
-printExp (ENin exp1 exp2)       indent irMap html = (printExp exp1 indent irMap html) ++ " not in " ++ printExp exp2 indent irMap html
-printExp (PosENin _ exp1 exp2) indent irMap html = printExp (ENin exp1 exp2) indent irMap html
-printExp (EIff exp1 exp2)       indent irMap html = (printExp exp1 indent irMap html) ++ " <=> " ++ printExp exp2 indent irMap html
-printExp (PosEIff _ exp1 exp2) indent irMap html = printExp (EIff exp1 exp2) indent irMap html
-printExp (EAdd exp1 exp2)       indent irMap html = (printExp exp1 indent irMap html) ++ " + " ++ printExp exp2 indent irMap html
-printExp (PosEAdd _ exp1 exp2) indent irMap html = printExp (EAdd exp1 exp2) indent irMap html
-printExp (ESub exp1 exp2)       indent irMap html = (printExp exp1 indent irMap html) ++ " - " ++ printExp exp2 indent irMap html
-printExp (PosESub _ exp1 exp2) indent irMap html = printExp (ESub exp1 exp2) indent irMap html
-printExp (EMul exp1 exp2)       indent irMap html = (printExp exp1 indent irMap html) ++ " * " ++ printExp exp2 indent irMap html
-printExp (PosEMul _ exp1 exp2) indent irMap html = printExp (EMul exp1 exp2) indent irMap html
-printExp (EDiv exp1 exp2)       indent irMap html = (printExp exp1 indent irMap html) ++ " / " ++ printExp exp2 indent irMap html
-printExp (PosEDiv _ exp1 exp2) indent irMap html = printExp (EDiv exp1 exp2) indent irMap html
-printExp (ESumSetExp exp) indent irMap html = "sum " ++ printExp exp indent irMap html
-printExp (PosESumSetExp _ exp) indent irMap html = printExp (ESumSetExp exp) indent irMap html
-printExp (ECSetExp exp)         indent irMap html = "#" ++ printExp exp indent irMap html
-printExp (PosECSetExp _ exp) indent irMap html = printExp (ECSetExp exp) indent irMap html
-printExp (EMinExp exp)          indent irMap html = "-" ++ printExp exp indent irMap html
-printExp (PosEMinExp _ exp) indent irMap html = printExp (EMinExp exp) indent irMap html
-printExp (EImpliesElse exp1 exp2 exp3) indent irMap html = "if " ++ (printExp exp1 indent irMap html) ++ " then " ++ (printExp exp2 indent irMap html) ++ " else " ++ (printExp exp3 indent irMap html)
-printExp (PosEImpliesElse _ exp1 exp2 exp3) indent irMap html = printExp (EImpliesElse exp1 exp2 exp3) indent irMap html
-printExp (EInt (PosInteger (_, num))) indent irMap html = num
-printExp (PosEInt _ posInteger) indent irMap html = printExp (EInt posInteger) indent irMap html
-printExp (EDouble (PosDouble (_, num))) indent irMap html = num
-printExp (PosEDouble _ posDouble) indent irMap html = printExp (EDouble posDouble) indent irMap html
-printExp (EStr (PosString (_, str))) indent irMap html = str
-printExp (PosEStr _ posString) indent irMap html = printExp (EStr posString) indent irMap html
+printExp (DeclAllDisj decl exp) indent irMap html comments = "all disj " ++ (printDecl decl indent irMap html comments) ++ " | " ++ (printExp exp indent irMap html comments)
+printExp (PosDeclAllDisj _ decl exp) indent irMap html comments = printExp (DeclAllDisj decl exp) indent irMap html comments
+printExp (DeclAll     decl exp) indent irMap html comments = "all " ++ (printDecl decl indent irMap html comments) ++ " | " ++ (printExp exp indent irMap html comments)
+printExp (PosDeclAll _ decl exp) indent irMap html comments = printExp (DeclAll decl exp) indent irMap html comments
+printExp (DeclQuantDisj quant decl exp) indent irMap html comments = (printQuant quant indent irMap html comments) ++ "disj" ++ (printDecl decl indent irMap html comments) ++ " | " ++ (printExp exp indent irMap html comments)
+printExp (PosDeclQuantDisj _ quant decl exp) indent irMap html comments = printExp (DeclQuantDisj quant decl exp) indent irMap html comments
+printExp (DeclQuant     quant decl exp) indent irMap html comments = (printQuant quant indent irMap html comments) ++ (printDecl decl indent irMap html comments) ++ " | " ++ (printExp exp indent irMap html comments)
+printExp (PosDeclQuant _ quant decl exp) indent irMap html comments = printExp (DeclQuant quant decl exp) indent irMap html comments
+printExp (EGMax exp)            indent irMap html comments = "max " ++ printExp exp indent irMap html comments
+printExp (PosEGMax _ exp)     indent irMap html comments = printExp (EGMax exp) indent irMap html comments
+printExp (EGMin exp)            indent irMap html comments = "min " ++ printExp exp indent irMap html comments
+printExp (PosEGMin _ exp) indent irMap html comments = printExp (EGMin exp) indent irMap html comments
+printExp (ENeq exp1 exp2)       indent irMap html comments = (printExp exp1 indent irMap html comments) ++ " != " ++ (printExp exp2 indent irMap html comments)
+printExp (PosENeq _ exp1 exp2) indent irMap html comments = printExp (ENeq exp1 exp2) indent irMap html comments
+printExp (ESetExp setExp)       indent irMap html comments = printSetExp setExp indent irMap html comments
+printExp (PosESetExp _ setExp) indent irMap html comments = printExp (ESetExp setExp) indent irMap html comments
+printExp (QuantExp quant exp)   indent irMap html comments = printQuant quant indent irMap html comments ++ printExp exp indent irMap html comments
+printExp (PosQuantExp _ quant exp) indent irMap html comments = printExp (QuantExp quant exp) indent irMap html comments
+printExp (EImplies exp1 exp2)   indent irMap html comments = (printExp exp1 indent irMap html comments) ++ " => " ++ printExp exp2 indent irMap html comments
+printExp (PosEImplies _ exp1 exp2) indent irMap html comments = printExp (EImplies exp1 exp2) indent irMap html comments
+printExp (EAnd exp1 exp2)       indent irMap html comments = (printExp exp1 indent irMap html comments) ++ " && " ++ printExp exp2 indent irMap html comments
+printExp (PosEAnd _ exp1 exp2) indent irMap html comments = printExp (EAnd exp1 exp2) indent irMap html comments
+printExp (EOr exp1 exp2)        indent irMap html comments = (printExp exp1 indent irMap html comments) ++ " || " ++ printExp exp2 indent irMap html comments
+printExp (PosEOr _ exp1 exp2) indent irMap html comments = printExp (EOr exp1 exp2) indent irMap html comments
+printExp (EXor exp1 exp2)       indent irMap html comments = (printExp exp1 indent irMap html comments) ++ " xor " ++ printExp exp2 indent irMap html comments
+printExp (PosEXor _ exp1 exp2) indent irMap html comments = printExp (EXor exp1 exp2) indent irMap html comments
+printExp (ENeg exp)             indent irMap html comments = " !" ++ printExp exp indent irMap html comments
+printExp (PosENeg _ exp) indent irMap html comments = printExp (ENeg exp) indent irMap html comments
+printExp (ELt exp1 exp2)        indent irMap html comments = (printExp exp1 indent irMap html comments) ++ (if html then " &lt; " else " < ") ++ printExp exp2 indent irMap html comments
+printExp (PosELt _ exp1 exp2) indent irMap html comments = printExp (ELt exp1 exp2) indent irMap html comments
+printExp (EGt exp1 exp2)        indent irMap html comments = (printExp exp1 indent irMap html comments) ++ " > " ++ printExp exp2 indent irMap html comments
+printExp (PosEGt _ exp1 exp2) indent irMap html comments = printExp (EGt exp1 exp2) indent irMap html comments
+printExp (EEq exp1 exp2)        indent irMap html comments = (printExp exp1 indent irMap html comments) ++ " = " ++ printExp exp2 indent irMap html comments
+printExp (PosEEq _ exp1 exp2) indent irMap html comments = printExp (EEq exp1 exp2) indent irMap html comments
+printExp (ELte exp1 exp2)       indent irMap html comments = (printExp exp1 indent irMap html comments) ++ (if html then " &lt;= " else " <= ") ++ printExp exp2 indent irMap html comments
+printExp (PosELte _ exp1 exp2) indent irMap html comments = printExp (ELte exp1 exp2) indent irMap html comments
+printExp (EGte exp1 exp2)       indent irMap html comments = (printExp exp1 indent irMap html comments) ++ " >= " ++ printExp exp2 indent irMap html comments
+printExp (PosEGte _ exp1 exp2) indent irMap html comments = printExp (EGte exp1 exp2) indent irMap html comments
+printExp (EIn exp1 exp2)        indent irMap html comments = (printExp exp1 indent irMap html comments) ++ " in " ++ printExp exp2 indent irMap html comments
+printExp (PosEIn _ exp1 exp2) indent irMap html comments = printExp (EIn exp1 exp2) indent irMap html comments
+printExp (ENin exp1 exp2)       indent irMap html comments = (printExp exp1 indent irMap html comments) ++ " not in " ++ printExp exp2 indent irMap html comments
+printExp (PosENin _ exp1 exp2) indent irMap html comments = printExp (ENin exp1 exp2) indent irMap html comments
+printExp (EIff exp1 exp2)       indent irMap html comments = (printExp exp1 indent irMap html comments) ++ (if html then " &lt;=&gt; " else " <=> ") ++ printExp exp2 indent irMap html comments
+printExp (PosEIff _ exp1 exp2) indent irMap html comments = printExp (EIff exp1 exp2) indent irMap html comments
+printExp (EAdd exp1 exp2)       indent irMap html comments = (printExp exp1 indent irMap html comments) ++ " + " ++ printExp exp2 indent irMap html comments
+printExp (PosEAdd _ exp1 exp2) indent irMap html comments = printExp (EAdd exp1 exp2) indent irMap html comments
+printExp (ESub exp1 exp2)       indent irMap html comments = (printExp exp1 indent irMap html comments) ++ " - " ++ printExp exp2 indent irMap html comments
+printExp (PosESub _ exp1 exp2) indent irMap html comments = printExp (ESub exp1 exp2) indent irMap html comments
+printExp (EMul exp1 exp2)       indent irMap html comments = (printExp exp1 indent irMap html comments) ++ " * " ++ printExp exp2 indent irMap html comments
+printExp (PosEMul _ exp1 exp2) indent irMap html comments = printExp (EMul exp1 exp2) indent irMap html comments
+printExp (EDiv exp1 exp2)       indent irMap html comments = (printExp exp1 indent irMap html comments) ++ " / " ++ printExp exp2 indent irMap html comments
+printExp (PosEDiv _ exp1 exp2) indent irMap html comments = printExp (EDiv exp1 exp2) indent irMap html comments
+printExp (ESumSetExp exp) indent irMap html comments = "sum " ++ printExp exp indent irMap html comments
+printExp (PosESumSetExp _ exp) indent irMap html comments = printExp (ESumSetExp exp) indent irMap html comments
+printExp (ECSetExp exp)         indent irMap html comments = "#" ++ printExp exp indent irMap html comments
+printExp (PosECSetExp _ exp) indent irMap html comments = printExp (ECSetExp exp) indent irMap html comments
+printExp (EMinExp exp)          indent irMap html comments = "-" ++ printExp exp indent irMap html comments
+printExp (PosEMinExp _ exp) indent irMap html comments = printExp (EMinExp exp) indent irMap html comments
+printExp (EImpliesElse exp1 exp2 exp3) indent irMap html comments = "if " ++ (printExp exp1 indent irMap html comments) ++ " then " ++ (printExp exp2 indent irMap html comments) ++ " else " ++ (printExp exp3 indent irMap html comments)
+printExp (PosEImpliesElse _ exp1 exp2 exp3) indent irMap html comments = printExp (EImpliesElse exp1 exp2 exp3) indent irMap html comments
+printExp (EInt (PosInteger (_, num))) indent irMap html comments = num
+printExp (PosEInt _ posInteger) indent irMap html comments = printExp (EInt posInteger) indent irMap html comments
+printExp (EDouble (PosDouble (_, num))) indent irMap html comments = num
+printExp (PosEDouble _ posDouble) indent irMap html comments = printExp (EDouble posDouble) indent irMap html comments
+printExp (EStr (PosString (_, str))) indent irMap html comments = str
+printExp (PosEStr _ posString) indent irMap html comments = printExp (EStr posString) indent irMap html comments
 
-printSetExp (ClaferId name) indent irMap html = printName name indent irMap html
-printSetExp (PosClaferId _ name) indent irMap html = printSetExp (ClaferId name) indent irMap html
-printSetExp (Union set1 set2) indent irMap html = (printSetExp set1 indent irMap html) ++ "++" ++ (printSetExp set2 indent irMap html)
-printSetExp (PosUnion _ set1 set2) indent irMap html = printSetExp (Union set1 set2) indent irMap html
-printSetExp (UnionCom set1 set2) indent irMap html = (printSetExp set1 indent irMap html) ++ "," ++ (printSetExp set2 indent irMap html)
-printSetExp (PosUnionCom _ set1 set2) indent irMap html = printSetExp (UnionCom set1 set2) indent irMap html
-printSetExp (Difference set1 set2) indent irMap html = (printSetExp set1 indent irMap html) ++ "--" ++ (printSetExp set2 indent irMap html)
-printSetExp (PosDifference _ set1 set2) indent irMap html = printSetExp (Difference set1 set2) indent irMap html
-printSetExp (Intersection set1 set2) indent irMap html = (printSetExp set1 indent irMap html) ++ "&" ++ (printSetExp set2 indent irMap html)
-printSetExp (PosIntersection _ set1 set2) indent irMap html = printSetExp (Intersection set1 set2) indent irMap html
-printSetExp (Domain set1 set2) indent irMap html = (printSetExp set1 indent irMap html) ++ "<:" ++ (printSetExp set2 indent irMap html)
-printSetExp (PosDomain _ set1 set2) indent irMap html = printSetExp (Domain set1 set2) indent irMap html
-printSetExp (Range set1 set2) indent irMap html = (printSetExp set1 indent irMap html) ++ ":>" ++ (printSetExp set2 indent irMap html)
-printSetExp (PosRange _ set1 set2) indent irMap html = printSetExp (Range set1 set2) indent irMap html
-printSetExp (Join set1 set2) indent irMap html = (printSetExp set1 indent irMap html) ++ "." ++ (printSetExp set2 indent irMap html)
-printSetExp (PosJoin _ set1 set2) indent irMap html = printSetExp (Join set1 set2) indent irMap html
+printSetExp (ClaferId name) indent irMap html comments = printName name indent irMap html comments
+printSetExp (PosClaferId _ name) indent irMap html comments = printSetExp (ClaferId name) indent irMap html comments
+printSetExp (Union set1 set2) indent irMap html comments = (printSetExp set1 indent irMap html comments) ++ "++" ++ (printSetExp set2 indent irMap html comments)
+printSetExp (PosUnion _ set1 set2) indent irMap html comments = printSetExp (Union set1 set2) indent irMap html comments
+printSetExp (UnionCom set1 set2) indent irMap html comments = (printSetExp set1 indent irMap html comments) ++ "," ++ (printSetExp set2 indent irMap html comments)
+printSetExp (PosUnionCom _ set1 set2) indent irMap html comments = printSetExp (UnionCom set1 set2) indent irMap html comments
+printSetExp (Difference set1 set2) indent irMap html comments = (printSetExp set1 indent irMap html comments) ++ "--" ++ (printSetExp set2 indent irMap html comments)
+printSetExp (PosDifference _ set1 set2) indent irMap html comments = printSetExp (Difference set1 set2) indent irMap html comments
+printSetExp (Intersection set1 set2) indent irMap html comments = (printSetExp set1 indent irMap html comments) ++ "&" ++ (printSetExp set2 indent irMap html comments)
+printSetExp (PosIntersection _ set1 set2) indent irMap html comments = printSetExp (Intersection set1 set2) indent irMap html comments
+printSetExp (Domain set1 set2) indent irMap html comments = (printSetExp set1 indent irMap html comments) ++ "<:" ++ (printSetExp set2 indent irMap html comments)
+printSetExp (PosDomain _ set1 set2) indent irMap html comments = printSetExp (Domain set1 set2) indent irMap html comments
+printSetExp (Range set1 set2) indent irMap html comments = (printSetExp set1 indent irMap html comments) ++ ":>" ++ (printSetExp set2 indent irMap html comments)
+printSetExp (PosRange _ set1 set2) indent irMap html comments = printSetExp (Range set1 set2) indent irMap html comments
+printSetExp (Join set1 set2) indent irMap html comments = (printSetExp set1 indent irMap html comments) ++ "." ++ (printSetExp set2 indent irMap html comments)
+printSetExp (PosJoin _ set1 set2) indent irMap html comments = printSetExp (Join set1 set2) indent irMap html comments
 
-printQuant quant indent irMap html = case quant of
+printQuant quant indent irMap html comments = case quant of
   QuantNo        -> while html (while html "<span class=\"keyword\">") ++ "no" ++ (while html "</span>") ++ " "
   PosQuantNo _   -> while html (while html "<span class=\"keyword\">") ++ "no" ++ (while html "</span>") ++ " "
   QuantLone      -> while html (while html "<span class=\"keyword\">") ++ "lone" ++ (while html "</span>") ++ " "
@@ -261,14 +325,16 @@ printQuant quant indent irMap html = case quant of
   QuantSome      -> while html (while html "<span class=\"keyword\">") ++ "some" ++ (while html "</span>") ++ " "
   PosQuantSome _ -> while html (while html "<span class=\"keyword\">") ++ "some" ++ (while html "</span>") ++ " "
 
-printEnumId (EnumIdIdent posident) indent irMap html = printPosIdentRef posident indent irMap html
-printEnumId (PosEnumIdIdent _ posident) indent irMap html = printEnumId (EnumIdIdent posident) indent irMap html
+printEnumId (EnumIdIdent posident) indent irMap html comments = printPosIdentRef posident indent irMap html comments
+printEnumId (PosEnumIdIdent _ posident) indent irMap html comments = printEnumId (EnumIdIdent posident) indent irMap html comments
 
 printIndent indent html = if indent == 0 || html == False then "" else "<span class=\"l" ++ show indent ++ "\">"
 
 dropUid uid = let id = rest $ dropWhile (\x -> x /= '_') uid in if id == "" then uid else id
 
 --so it fails more gracefully on empty lists
+first [] = []
+first (x:_) = x
 rest [] = []
 rest (_:xs) = xs
 
@@ -307,3 +373,5 @@ cleanOutput (' ':'\n':xs) = cleanOutput $ '\n':xs
 cleanOutput ('\n':'\n':xs) = cleanOutput $ '\n':xs
 cleanOutput (' ':'<':'b':'r':'>':xs) = "<br>"++cleanOutput xs
 cleanOutput (x:xs) = x : cleanOutput xs
+
+trim = let f = reverse . dropWhile isSpace in f . f
