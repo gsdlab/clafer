@@ -419,16 +419,20 @@ constraintConstraints =
         x' <- x
         y' <- y
         case con of
+          LTH -> leqTo (x' ^-^ y') (-1)
           LEQ -> x' `leq` y'
           EQU -> x' `equal` y'
+          GTH -> geqTo (x' ^-^ y') 1
           GEQ -> x' `geq` y'
     compTo x y =
       do
         x' <- x
         y' <- y
         case con of
+          LTH -> x' `leqTo` (y' - 1)
           LEQ -> x' `leqTo` y'
           EQU -> x' `equalTo` y'
+          GTH -> x' `geqTo` (y' + 1)
           GEQ -> x' `geqTo` y'
   
   reifyVar p  = return (var $ reifyVarName p)
@@ -498,7 +502,9 @@ scopeConstraint curThis pexp =
   scopeConstraint' I.IFunExp {I.op, I.exps = [exp1, exp2]}
     | op == "in" = inConstraint1 exp1 exp2 `mplus` inConstraint2 exp1 exp2
     | op == "="  = equalConstraint1 exp1 exp2 `mplus` equalConstraint2 exp1 exp2
+    | op == "<"  = scopeConstraintNum exp1 `lessThan` scopeConstraintNum exp2
     | op == "<=" = scopeConstraintNum exp1 `lessThanEqual` scopeConstraintNum exp2
+    | op == ">"  = scopeConstraintNum exp1 `greaterThan` scopeConstraintNum exp2
     | op == ">=" = scopeConstraintNum exp1 `greaterThanEqual` scopeConstraintNum exp2
   scopeConstraint' e = mzero
 
@@ -553,7 +559,9 @@ scopeConstraint curThis pexp =
   constant :: (Monad m, Integral i) => i -> m Expr
   constant = return . Const . toInteger
 
+  greaterThan = liftM2 (,GTH,)
   greaterThanEqual = liftM2 (,GEQ,)
+  lessThan = liftM2 (,LTH,)
   lessThanEqual = liftM2 (,LEQ,)
   eqTo = liftM2 (,EQU,)
 
