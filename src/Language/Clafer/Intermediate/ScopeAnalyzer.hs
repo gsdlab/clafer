@@ -26,7 +26,6 @@ module Language.Clafer.Intermediate.ScopeAnalyzer (scopeAnalysis) where
 import Language.Clafer.Front.Absclafer hiding (Path)
 import qualified Language.Clafer.Intermediate.Intclafer as I
 import Language.Clafer.Intermediate.Analysis
-import Language.Clafer.Common
 import Language.Clafer.Intermediate.ResolverType
 
 import Control.Applicative (Applicative(..), (<$>))
@@ -65,7 +64,7 @@ scopeAnalysis imodule =
   bitwidth = bitwidthAnalysis (constants ++ map snd scopes)
   
   scopes = 
-    removeZeroes $ removeRoot $ removeAux $
+      removeZeroes $ removeRoot $ removeAux $
       -- unsafePerformIO should be safe (?)
       -- We aren't modifying any global state.
       -- If we don't use unsafePerformIO, then we have to be inside the IO monad and
@@ -104,6 +103,7 @@ bitwidthAnalysis constants =
   bitRange = [(-2^i, 2^i-1) | i <- [0..]]
 
   
+-- Returns all constant literals
 constantsAnalysis :: ScopeAnalysis [Integer]
 constantsAnalysis =
   do
@@ -112,17 +112,40 @@ constantsAnalysis =
   where  
   integerConstant (I.IInt i) = Just i
   integerConstant _ = Nothing
+  
+
+data Between =
+    Between Integer Integer
+    deriving Show
+
+
+simpleAnalysis :: ScopeAnalysis [(String, Between)]
+simpleAnalysis =
+    do
+        root <- claferWithUid rootUid
+        simpleAnalysis' root (Between 1 1)
+    where
+    simpleAnalysis' cur cb@(Between l h) =
+        runListT $ return (uid cur, cb) `mplus` do
+            child <- foreach $ (anything |^ cur) `select` fst
+
+            let b = Between (low child * l) (high child * h)
+            foreach (simpleAnalysis' child b)
+    mult (-1) _ = -1
+    mult _ (-1) = -1
+    mult a b = a * b
     
 
 setConstraints :: ScopeAnalysis ()
 setConstraints =
   do
-    reifyClafers <- constraintConstraints
-    withExtraClafers reifyClafers $ do
-      optFormula
-      colonConstraints
-      refConstraints
-      parentConstraints
+    p <- flatten
+    withExtraClafers p $ do
+        optFormula
+        colonConstraints
+        refConstraints
+        parentConstraints
+        constraintConstraints
 
     (var rootUid) `equalTo` 1
 
@@ -181,6 +204,43 @@ colonConstraints =
       var (uid c) `equal` varSum subs
 
 
+
+flatten :: ScopeAnalysis [SClafer]        
+flatten =
+    runListT $ do
+        abs <- clafers `suchThat` isAbstract
+        (c, s) <- foreach $ anything |: anything
+        ListT $ runReaderT (addChildren (map uid abs) (Part [uid c, uid s]) (Part [])) []
+        
+        
+addChildren abs p@(Part steps) ss@(Part supSteps) =
+    do
+        let parBase = last steps
+        
+        chis <- directChildrenOf parBase
+        achis <- forM chis $
+            \chi -> do
+                let chiP = Part $ init steps ++ [chi]
+                let par  = Part steps
+                let supP = Part $ supSteps ++ [chi]
+                
+                chiC <- claferWithUid chi
+                let s = SClafer (reifyPartName chiP) chi False (low chiC) (high chiC) (groupLow chiC) (groupHigh chiC) (Just $ reifyPartName par) (Just $ Colon $ reifyPartName supP) (constraints chiC)
+                return s <:> addChildren abs chiP ss
+        
+        col <- runMaybeT $ colonOf parBase
+        case col of
+            Just col' -> do
+                acol <- addChildren abs (Part $ steps ++ [col']) (Part $ supSteps ++ [parBase])
+                return $ concat achis ++ acol
+            Nothing -> return $ concat achis
+    where
+    notAbs = not . (`elem` abs)
+    reifyPartName (Part (t : target)) = reifyPartName' $ t : filter notAbs target
+    reifyPartName' [target] = target
+    reifyPartName' target   = uniqNameSpace ++ "reify_" ++ intercalate "_" target        
+
+
 data Path =
   Path {parts::[Part]}
   deriving (Eq, Ord, Show)
@@ -234,9 +294,9 @@ optimizeInConstraints constraints =
     (noOpt, toOpt) = partitionEithers (constraints >>= partitionConstraint)
     opt = [ unionPExpAll (map fst inSame) `inPExp` snd (head inSame)
             | inSame <- groupBy (testing $ syntaxOf . snd) $ sortBy (comparing snd) toOpt ]
-    inPExp a b = I.PExp (Just I.TBoolean) "" noSpan $ I.IFunExp iIn [a, b]
+    inPExp a b = I.PExp (Just I.TBoolean) "" noSpan $ I.IFunExp "in" [a, b]
     unionPExpAll es = foldr1 unionPExp es
-    unionPExp a b = I.PExp (liftM2 (+++) (I.iType a) (I.iType b)) "" noSpan $ I.IFunExp iUnion [a, b]
+    unionPExp a b = I.PExp (liftM2 (+++) (I.iType a) (I.iType b)) "" noSpan $ I.IFunExp "++" [a, b]
     
     partitionConstraint I.PExp{I.exp = I.IFunExp {I.op = "in", I.exps = [exp1, exp2]}} = return $ Right (exp1, exp2)
     partitionConstraint I.PExp{I.exp = I.IFunExp {I.op = "&&", I.exps = [exp1, exp2]}} = partitionConstraint exp1 `mplus` partitionConstraint exp2
@@ -293,41 +353,25 @@ optConstraintsUnder clafer =
     comparing f a b = f a `compare` f b
 
 
-constraintConstraints :: MonadScope m => m [SClafer]
+constraintConstraints :: MonadScope m => m ()
 constraintConstraints =
   do
-    parts <- fmap (nub . concat) $ do
-      runListT $ execWriterT $ do
-        clafer <- lift $ foreach clafers
-        (supThis, cons) <- lift $ foreach $ optConstraintsUnder clafer
-        con <- lift $ foreachM cons
-        curThis <-
-            if isAbstract supThis
-                then
-                    lift $ foreach $ colonsTo supThis
-                else
-                    return supThis
-
-        constraint <- lift $ foreach $ scopeConstraint curThis con
-
-        oneConstraint curThis constraint
-
-    rPartList <- forM (map steps parts) $
-      \(conc : abst) -> do
-        reifiedParts <- forM (tail $ inits abst) $
-          \abst' -> reifyPart (Part $ conc : abst')
-        return (conc, concat reifiedParts)
-    
-    -- Create reified clafers.
-    runListT $ do
-      (conc, parts) <- foreachM $ nub rPartList
-      (parent, child) <- foreachM $ zip (Part [conc] : parts) parts
-      baseClafer <- lift $ claferWithUid $ base child
-      return $ SClafer (reifyVarName child) False (low baseClafer) (high baseClafer) (groupLow baseClafer) (groupHigh baseClafer) (Just $ reifyVarName parent) (Just $ Colon $ uid baseClafer) []
+    runListT_ $ do
+      clafer <- foreach clafers
+      (supThis, cons) <- foreach $ optConstraintsUnder clafer
+      
+      con <- foreachM cons
+      curThis <-
+          if isAbstract supThis
+              then
+                  foreach $ colonsTo supThis
+              else
+                  return supThis
+      constraint <- foreach $ scopeConstraint curThis con
+      oneConstraint curThis constraint
   where
   base (Part steps) = last steps
   
-  oneConstraint :: (MonadWriter [Part] m, MonadScope m) => SClafer -> (Expr, Con, Expr) -> m ()
   oneConstraint c (e1, con, e2) =
     void $ runMaybeT $ oneConstraintOneWay c e1 con e2 `mplus` oneConstraintOneWay c e2 (reverseCon con) e1
   
@@ -387,12 +431,21 @@ constraintConstraints =
           EQU -> x' `equalTo` y'
           GEQ -> x' `geqTo` y'
   
-  reifyVar :: (MonadAnalysis m, MonadWriter [Part] m) => Part -> m (LinFunc String Double)
-  reifyVar p  = (siblingParts p >>= tell) >> return (var $ reifyVarName p)
-  reifyVars :: (MonadAnalysis m, MonadWriter [Part] m) => [Part] -> m (LinFunc String Double)
-  reifyVars p = (forM p $ \p' -> siblingParts p' >>= tell) >> return (varSum $ map reifyVarName p)
+  reifyVar p  = return (var $ reifyVarName p)
+  reifyVars p = return (varSum $ map reifyVarName p)
+  isAbstractPart (Part [_]) = False
+  isAbstractPart _ = True
   reifyVarName (Part [target]) = target
   reifyVarName (Part target)   = uniqNameSpace ++ "reify_" ++ intercalate "_" target
+  
+  reifiedSuper (Part steps) =
+    do
+      let (b : s : rest) = reverse steps
+      ss <- colonOf s
+      sss <- runMaybeT $ colonUid ss
+      if isNothing sss
+        then return $ Part $ reverse $ b : rest
+        else return $ Part $ reverse $ b : ss : rest
   
   -- TODO: correct?
   siblingParts (Part (conc : abst)) =
@@ -419,9 +472,11 @@ constraintConstraints =
         else (++ [child]) `fmap` nonTopAncestors parent
   
 
-data Con = EQU | LEQ | GEQ deriving Show
+data Con = EQU | LTH | LEQ | GTH | GEQ deriving Show
 reverseCon EQU = EQU
+reverseCon LTH = GTH
 reverseCon LEQ = GEQ
+reverseCon GTH = LTH
 reverseCon GEQ = LEQ
 data Limit = Exact {lExpr::Expr} | AtLeast {lExpr::Expr} deriving Show
 
@@ -430,11 +485,11 @@ scopeConstraint curThis pexp =
   runListT $ scopeConstraint' $ I.exp pexp
   where
   scopeConstraint' I.IFunExp {I.op = "&&", I.exps} = msum $ map (scopeConstraint' . I.exp) exps
-  scopeConstraint' I.IDeclPExp {I.quant = I.ISome, I.oDecls = [], I.bpexp} = parsePath curThis bpexp `greaterThan` constant 1
+  scopeConstraint' I.IDeclPExp {I.quant = I.ISome, I.oDecls = [], I.bpexp} = parsePath curThis bpexp `greaterThanEqual` constant 1
   scopeConstraint' I.IDeclPExp {I.quant = I.ISome, I.oDecls}               = msum $ map pathAndMultDecl oDecls
       where
-      pathAndMultDecl I.IDecl {I.isDisj = True, I.decls, I.body} = parsePath curThis body `greaterThan` constant (length decls)
-      pathAndMultDecl I.IDecl {I.isDisj = False, I.body}         = parsePath curThis body `greaterThan` constant 1
+      pathAndMultDecl I.IDecl {I.isDisj = True, I.decls, I.body} = parsePath curThis body `greaterThanEqual` constant (length decls)
+      pathAndMultDecl I.IDecl {I.isDisj = False, I.body}         = parsePath curThis body `greaterThanEqual` constant 1
   scopeConstraint' I.IDeclPExp {I.quant = I.IOne, I.oDecls = [], I.bpexp} = parsePath curThis bpexp `eqTo` constant 1
   scopeConstraint' I.IDeclPExp {I.quant = I.IOne, I.oDecls} =
     do
@@ -443,8 +498,8 @@ scopeConstraint curThis pexp =
   scopeConstraint' I.IFunExp {I.op, I.exps = [exp1, exp2]}
     | op == "in" = inConstraint1 exp1 exp2 `mplus` inConstraint2 exp1 exp2
     | op == "="  = equalConstraint1 exp1 exp2 `mplus` equalConstraint2 exp1 exp2
-    | op == "<=" = scopeConstraintNum exp1 `lessThan` scopeConstraintNum exp2
-    | op == ">=" = scopeConstraintNum exp1 `greaterThan` scopeConstraintNum exp2
+    | op == "<=" = scopeConstraintNum exp1 `lessThanEqual` scopeConstraintNum exp2
+    | op == ">=" = scopeConstraintNum exp1 `greaterThanEqual` scopeConstraintNum exp2
   scopeConstraint' e = mzero
 
   equalConstraint1 exp1 exp2 =
@@ -453,8 +508,8 @@ scopeConstraint curThis pexp =
       l2 <- scopeConstraintSet exp2
       case (l1, l2) of
         (Exact e1, Exact e2)   -> return e1 `eqTo` return e2
-        (AtLeast e1, Exact e2) -> return e1 `greaterThan` return e2
-        (Exact e1, AtLeast e2) -> return e1 `lessThan` return e2
+        (AtLeast e1, Exact e2) -> return e1 `greaterThanEqual` return e2
+        (Exact e1, AtLeast e2) -> return e1 `lessThanEqual` return e2
         _ -> mzero
   equalConstraint2 exp1 exp2 = scopeConstraintNum exp1 `eqTo` scopeConstraintNum exp2
   
@@ -465,9 +520,9 @@ scopeConstraint curThis pexp =
       l2 <- scopeConstraintSet exp2
 
       case l2 of
-        Exact e2 -> return (lExpr l1) `lessThan` return e2
+        Exact e2 -> return (lExpr l1) `lessThanEqual` return e2
         _ -> mzero
-  inConstraint2 exp1 exp2 = scopeConstraintNum exp1 `lessThan` scopeConstraintNum exp2
+  inConstraint2 exp1 exp2 = scopeConstraintNum exp1 `lessThanEqual` scopeConstraintNum exp2
 
   scopeConstraintSet I.PExp {I.exp = I.IFunExp {I.op = "++", I.exps = [e1, e2]}} =
     do
@@ -498,8 +553,8 @@ scopeConstraint curThis pexp =
   constant :: (Monad m, Integral i) => i -> m Expr
   constant = return . Const . toInteger
 
-  greaterThan = liftM2 (,GEQ,)
-  lessThan = liftM2 (,LEQ,)
+  greaterThanEqual = liftM2 (,GEQ,)
+  lessThanEqual = liftM2 (,LEQ,)
   eqTo = liftM2 (,EQU,)
 
 
@@ -532,8 +587,13 @@ scopeConstraint curThis pexp =
  - Solving the minimization should have scope_E = 2 in its solution.
  - The (*) equation is set in constraintConstraints
  -}      
-parsePath :: MonadScope m => SClafer -> I.PExp -> m Expr
 parsePath start pexp =
+    do
+        start' <- claferWithUid (origUid start)
+        parsePath2 start' pexp
+ 
+parsePath2 :: MonadScope m => SClafer -> I.PExp -> m Expr
+parsePath2 start pexp =
   do
     root <- claferWithUid rootUid
     match <- patternMatch parsePath' (ParseState root []) (fromMaybe [] $ unfoldJoins pexp)
