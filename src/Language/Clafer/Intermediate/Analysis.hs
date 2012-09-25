@@ -54,37 +54,41 @@ type Analysis = AnalysisT Identity
 
 class (Monad m, Functor m) => MonadAnalysis m where
   clafers :: m [SClafer]
-  withExtraClafers :: [SClafer] -> m a -> m a
+  withClafers :: [SClafer] -> m a -> m a
+  
+withExtraClafers :: MonadAnalysis m => [SClafer] -> m a -> m a
+withExtraClafers cs a =
+    do
+        c <- clafers
+        withClafers (cs ++ c) a
   
 instance (Monad m, Functor m) => MonadAnalysis (AnalysisT m) where
   clafers = AnalysisT $ asks sclafers
-  withExtraClafers extra = local addInfo
-    where
-    addInfo (Info c) = Info $ extra ++ c
+  withClafers cs = local (const $ Info cs)
     
 instance (Error e, MonadAnalysis m) => MonadAnalysis (ErrorT e m) where
   clafers = lift clafers
-  withExtraClafers = mapErrorT . withExtraClafers
+  withClafers = mapErrorT . withClafers
   
 instance MonadAnalysis m => MonadAnalysis (ListT m) where
   clafers = lift clafers
-  withExtraClafers = mapListT . withExtraClafers
+  withClafers = mapListT . withClafers
 
 instance MonadAnalysis m => MonadAnalysis (MaybeT m) where
   clafers = lift clafers
-  withExtraClafers = mapMaybeT . withExtraClafers
+  withClafers = mapMaybeT . withClafers
 
 instance MonadAnalysis m => MonadAnalysis (ReaderT r m) where
   clafers = lift clafers
-  withExtraClafers = mapReaderT . withExtraClafers
+  withClafers = mapReaderT . withClafers
 
 instance (Monoid w, MonadAnalysis m) => MonadAnalysis (WriterT w m) where
   clafers = lift clafers
-  withExtraClafers = mapWriterT . withExtraClafers
+  withClafers = mapWriterT . withClafers
   
 instance MonadAnalysis m => MonadAnalysis (VSupplyT m) where
   clafers = lift clafers
-  withExtraClafers = mapVSupplyT . withExtraClafers
+  withClafers = mapVSupplyT . withClafers
   
 isConcrete :: SClafer -> Bool
 isConcrete = not . isAbstract
@@ -427,8 +431,18 @@ mapRight f (Right r) = Right $ f r
 testing :: Eq b => (a -> b) -> a -> a -> Bool
 testing f a b = f a == f b
 
+comparing :: Ord b => (a -> b) -> a -> a -> Ordering
+comparing f a b = f a `compare` f b
+
 syntaxOf :: I.PExp -> String
 syntaxOf = printTree . sugarExp
+
+-- http://stackoverflow.com/questions/1714006/haskell-grouping-problem
+combine :: Ord a => [(a, b)] -> [(a, [b])]
+combine =
+    map mergeGroup . groupBy (testing fst) . sortBy (comparing fst)
+    where
+    mergeGroup ((a, b):xs) = (a, b : map snd xs)
 
 -- Returns true iff the left and right expressions are syntactically identical
 sameAs :: I.PExp -> I.PExp -> Bool

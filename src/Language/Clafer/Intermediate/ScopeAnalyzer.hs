@@ -114,31 +114,89 @@ constantsAnalysis =
   integerConstant _ = Nothing
   
 
+-- (-1) for infinity
 data Between =
     Between Integer Integer
     deriving Show
 
+atLeastOne :: Between -> Bool
+atLeastOne (Between i _) = i >= 1
+
+overlap :: Between -> Between -> Maybe Between
+overlap (Between l1 h1) (Between l2 h2)
+    | l1 > h2 && h2 /= -1 = Nothing
+    | l2 > h1 && h1 /= -1 = Nothing
+    | otherwise = Just $ Between (maxx l1 l2) (minn h1 h2)
+    where
+    minn (-1) b = b
+    minn a (-1) = a
+    minn a b = min a b
+    
+    maxx (-1) _ = -1
+    maxx _ (-1) = -1
+    maxx a b = max a b
+    
+overlapM :: Maybe Between -> Maybe Between -> Maybe Between
+overlapM a b =
+    do
+        a' <- a
+        b' <- b
+        overlap a' b'
+    
 
 simpleAnalysis :: ScopeAnalysis [(String, Between)]
 simpleAnalysis =
     do
         root <- claferWithUid rootUid
-        simpleAnalysis' root (Between 1 1)
+        analysis <- simpleAnalysis' root (Between 1 1)
+        moreAnalysis <- simpleConstraintAnalysis analysis
+        return analysis
     where
     simpleAnalysis' cur cb@(Between l h) =
         runListT $ return (uid cur, cb) `mplus` do
             child <- foreach $ (anything |^ cur) `select` fst
-
-            let b = Between (low child * l) (high child * h)
+            let b
+                 | groupLow cur == 0 && groupHigh cur == -1 = Between (low child * l) (high child `mult` h)
+                 | otherwise                                = Between 0 (-1)
             foreach (simpleAnalysis' child b)
     mult (-1) _ = -1
     mult _ (-1) = -1
     mult a b = a * b
     
+    mergeAnalysis analysis =
+        [(n, fromJust x) | (n, b) <- combine analysis, let x = foldr1 overlapM $ map Just b, isJust x]
+    
+    simpleConstraintAnalysis :: [(String, Between)] -> ScopeAnalysis [(String, Between)]
+    simpleConstraintAnalysis analysis = mergeAnalysis <$> simpleConstraintAnalysis' analysis
+    
+    simpleConstraintAnalysis' analysis =
+        runListT $ do
+            (curThis, cons) <- foreach $ constraintsUnder anything
+            constraintBetween curThis (I.exp cons)
+        where
+        constraintBetween curThis I.IDeclPExp {I.quant = I.ISome, I.oDecls = [], I.bpexp} =
+            do
+                let t = map tLexeme $ fromMaybe [] $ unfoldJoins bpexp
+                guard (not $ null t)
+                guard ("this" `notElem` t)
+                guard ("parent" `notElem` t)
+                msum $ map someStep t
+        constraintBetween curThis I.IFunExp{I.op = "&&", I.exps = [exp1, exp2]} =
+            constraintBetween curThis (I.exp exp1) `mplus` constraintBetween curThis (I.exp exp2)
+        constraintBetween _ _ = mzero
+        someStep step =
+            do
+                parent <- parentOf step
+                let parentBetween = fromMaybe (error $ "Missing parent " ++ parent) $ lookup parent analysis
+                guard $ atLeastOne parentBetween
+                return (step, Between 1 $ -1)
+        
+    
 
 setConstraints :: ScopeAnalysis ()
 setConstraints =
   do
+    simpleAnalysis
     p <- flatten
     withExtraClafers p $ do
         optFormula
@@ -254,7 +312,8 @@ data Expr =
     This {path::Path, eType::I.IType} |
     Global {path::Path, eType::I.IType} |
     Const Integer |
-    Concat {paths::[Expr], eType::I.IType}
+    Concat {paths::[Expr], eType::I.IType} |
+    Positive {allPaths :: [Path], num::Integer, eType::I.IType}
     deriving Show
 
 isThis :: Expr -> Bool
@@ -368,6 +427,7 @@ constraintConstraints =
               else
                   return supThis
       constraint <- foreach $ scopeConstraint curThis con
+
       oneConstraint curThis constraint
   where
   base (Part steps) = last steps
@@ -380,10 +440,20 @@ constraintConstraints =
     where
     oneConstraint' (This (Path []) _) _ =
       mzero
+    oneConstraint' _ (This (Path []) _) =
+      mzero
     oneConstraint' (Global (Path []) _) _ =
       mzero
     oneConstraint' _ (Global (Path []) _) =
       mzero
+    oneConstraint' (Positive [Path []] _ _) _ =
+      mzero
+    oneConstraint' _ (Positive [Path []] _ _) =
+      mzero
+    oneConstraint' (Global (Path gParts) _) p@(Positive allPaths c _) =
+      do
+        aux <- testPositives (map (reifyVarName . last . parts) allPaths)
+        reifyVar (last gParts) `comp` return (c *^ var aux)
     oneConstraint' (This (Path parts) k) (Const constant) =
       -- TODO Not head
       reifyVar (last parts) `comp` (return $ constant *^ var uid)
@@ -406,7 +476,7 @@ constraintConstraints =
           p <- parentOfPart $ last parts
           reifyVar (last parts) `comp` ((sum s *^) <$> reifyVar p)
         else if all isThis exprs
-          then reifyVar (last parts) `comp` reifyVars [last p | Global (Path p) _ <- exprs]
+          then reifyVar (last parts) `comp` reifyVars [last p | This (Path p) _ <- exprs]
           else mzero
     oneConstraint' _ _ = mzero
     
@@ -506,7 +576,25 @@ scopeConstraint curThis pexp =
     | op == "<=" = scopeConstraintNum exp1 `lessThanEqual` scopeConstraintNum exp2
     | op == ">"  = scopeConstraintNum exp1 `greaterThan` scopeConstraintNum exp2
     | op == ">=" = scopeConstraintNum exp1 `greaterThanEqual` scopeConstraintNum exp2
+    | op == "<=>" = (exp1 `implies` exp2) `mplus` (exp2 `implies` exp1)
+    | op == "=>" = exp1 `implies` exp2
   scopeConstraint' e = mzero
+  
+  implies exp1 exp2 =
+    do
+      e1 <- scopeConstraint' $ I.exp exp1
+      e2 <- scopeConstraint' $ I.exp exp2
+
+      case (e1, e2) of
+        ((This thisPath t1, GEQ, Const 1), (Global globalPath t0, comp, Positive allPaths c t2)) ->
+          return $ (Global globalPath t0, comp, Positive (thisPath : allPaths) c $ t1 +++ t2)
+        ((This thisPath e1, GEQ, Const 1), (Global globalPath e2, comp, Const c)) ->
+          return $ (Global globalPath e2, comp, Positive [thisPath] c e1)
+        ((Global path1 t1, GEQ, Const 1), (Global path2 t0, comp, Positive allPaths c t2)) ->
+          return $ (Global path2 t0, comp, Positive (path1 : allPaths) c $ t1 +++ t2)
+        ((Global path1 e1, GEQ, Const 1), (Global path2 e2, comp, Const c)) ->
+          return $ (Global path2 e2, comp, Positive [path1] c e1)
+        _ -> mzero
 
   equalConstraint1 exp1 exp2 =
     do
@@ -595,6 +683,7 @@ scopeConstraint curThis pexp =
  - Solving the minimization should have scope_E = 2 in its solution.
  - The (*) equation is set in constraintConstraints
  -}      
+parsePath :: MonadScope m => SClafer -> I.PExp -> m Expr
 parsePath start pexp =
     do
         start' <- claferWithUid (origUid start)
@@ -707,7 +796,7 @@ uniqVar =
  -   v == 0 -> aux == 0
  -   v > 0  -> aux == 1
  -
- - pre: v >= 0
+ - pre: v >= 0 and v is integer
  -}
 testPositive :: MonadScope m => String -> m String
 testPositive v =
@@ -718,6 +807,27 @@ testPositive v =
     var aux `leqTo` 1
     setVarKind aux IntVar
     return aux
+    
+{-
+ - Create a new variable "aux". If
+ -   all v == 0 -> aux == 0
+ -   all v > 0  -> aux == 1
+ -
+ - pre: all v >= 0 and all v is integer
+ -}
+testPositives :: MonadScope m => [String] -> m String
+testPositives [v] = testPositive v
+testPositives vs =
+  do
+    auxs <- mapM testPositive vs
+    aux <- uniqVar
+    (length vs *^ var aux) `equal` varSum auxs
+    
+    a <- uniqVar
+    (var a ^-^ var aux) `geqTo` (-0.9999) -- Buffer for floating point inaccuracies
+    (var a ^-^ var aux) `leqTo` 0.0001    -- Buffer for floating point inaccuracies
+    setVarKind a IntVar
+    return a
 
 {-
  - smallM cannot be too small. For example, with glpk

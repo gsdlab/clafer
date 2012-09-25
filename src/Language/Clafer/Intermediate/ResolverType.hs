@@ -101,10 +101,10 @@ instance MonadTypeAnalysis m => MonadTypeAnalysis (ErrorT ClaferSErr m) where
 
 instance MonadAnalysis TypeAnalysis where
   clafers = asks (sclafers . iInfo)
-  withExtraClafers extra r =
-    local addInfo r
+  withClafers cs r =
+    local setInfo r
     where
-    addInfo t@TypeInfo{iInfo = Info c} = t{iInfo = Info $ extra ++ c}
+    setInfo t = t{iInfo = Info cs}
 
 runTypeAnalysis :: TypeAnalysis a -> IModule -> Either ClaferSErr a
 runTypeAnalysis (TypeAnalysis tc) imodule = runReaderT tc $ TypeInfo [] (gatherInfo imodule) undefined Nothing
