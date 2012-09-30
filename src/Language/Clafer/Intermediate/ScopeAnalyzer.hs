@@ -213,7 +213,7 @@ optFormula =
   do
     setDirection Min
     c <- clafers
-    let concretes = [uid concrete | concrete <- c, isConcrete concrete, isDerived concrete]
+    let concretes = [uid concrete | concrete <- c, isConcrete concrete, isDerived concrete, not $ uniqNameSpace `isPrefixOf` uid concrete]
     setObjective $ varSum concretes
 
 parentConstraints :: ScopeAnalysis ()
@@ -225,17 +225,22 @@ parentConstraints =
     let uchild = uid child
     let uparent = uid parent
     
-    -- ... scope_this <= scope_parent * low-card(this) ...
-    var uchild `geq` (low child *^ var uparent)
-    -- ... scope_this >= scope_parent * high-card(this) ...
-    -- high == -1 implies high card is unbounded
+    if low child == high child
+        -- Saves us one constraint
+        then do
+            var uchild `equal` (low child *^ var uparent)
+        else do
+            -- ... scope_this <= scope_parent * low-card(this) ...
+            var uchild `geq` (low child *^ var uparent)
+            -- ... scope_this >= scope_parent * high-card(this) ...
+            -- high == -1 implies high card is unbounded
 
-    if high child /= -1
-      then var uchild `leq` (high child *^ var uparent)
-      else return () --(smallM *^ var uchild) `leq` var uparent
-    -- Use integer's not doubles
-    setVarKind uchild IntVar
-    setVarKind uparent IntVar
+            if high child /= -1
+              then var uchild `leq` (high child *^ var uparent)
+              else return () --(smallM *^ var uchild) `leq` var uparent
+            -- Use integer's not doubles
+            setVarKind uchild IntVar
+            setVarKind uparent IntVar
 
 
 refConstraints :: ScopeAnalysis ()
