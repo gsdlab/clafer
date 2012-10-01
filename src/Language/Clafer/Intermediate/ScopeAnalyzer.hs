@@ -143,6 +143,14 @@ overlapM a b =
         b' <- b
         overlap a' b'
     
+    
+-- Multiplies two positive integers where -1=infinity
+mult :: Integer -> Integer -> Integer
+mult (-1) _ = -1
+mult _ (-1) = -1
+mult a b = a * b
+
+
 
 simpleAnalysis :: ScopeAnalysis [(String, Between)]
 simpleAnalysis =
@@ -159,9 +167,6 @@ simpleAnalysis =
                  | groupLow cur == 0 && groupHigh cur == -1 = Between (low child * l) (high child `mult` h)
                  | otherwise                                = Between 0 (-1)
             foreach (simpleAnalysis' child b)
-    mult (-1) _ = -1
-    mult _ (-1) = -1
-    mult a b = a * b
     
     mergeAnalysis analysis =
         [(n, fromJust x) | (n, b) <- combine analysis, let x = foldr1 overlapM $ map Just b, isJust x]
@@ -180,6 +185,7 @@ simpleAnalysis =
                 guard (not $ null t)
                 guard ("this" `notElem` t)
                 guard ("parent" `notElem` t)
+                guard ("ref" `notElem` t)
                 msum $ map someStep t
         constraintBetween curThis I.IFunExp{I.op = "&&", I.exps = [exp1, exp2]} =
             constraintBetween curThis (I.exp exp1) `mplus` constraintBetween curThis (I.exp exp2)
@@ -440,7 +446,7 @@ constraintConstraints =
   oneConstraint c (e1, con, e2) =
     void $ runMaybeT $ oneConstraintOneWay c e1 con e2 `mplus` oneConstraintOneWay c e2 (reverseCon con) e1
   
-  oneConstraintOneWay SClafer{uid} e1 con e2 =
+  oneConstraintOneWay c@SClafer{uid} e1 con e2 =
     oneConstraint' e1 e2
     where
     oneConstraint' (This (Path []) _) _ =
@@ -459,15 +465,32 @@ constraintConstraints =
       do
         aux <- testPositives (map (reifyVarName . last . parts) allPaths)
         reifyVar (last gParts) `comp` return (c *^ var aux)
-    oneConstraint' (This (Path parts) k) (Const constant) =
-      -- TODO Not head
-      reifyVar (last parts) `comp` (return $ constant *^ var uid)
+    oneConstraint' (This (Path parts) k) (Const constant)
+      | con == EQU            = oneConstraintOneWay c e1 LEQ e2 >> oneConstraintOneWay c e1 GEQ e2
+      | con `elem` [GTH, GEQ] = foldM_ mkCon 1 (reverse parts)
+      | con `elem` [LTH, LEQ] = reifyVar (last parts) `compTo` (return $ fromInteger constant)
+      where
+      mkCon :: MonadScope m => Integer -> Part -> m Integer
+      mkCon multiplier part =
+        do
+          let frac = (1 / fromInteger multiplier) * fromInteger constant :: Double
+          (reifyVar part) `comp` (return $ frac *^ var uid)
+          mult multiplier <$> prod part
+    oneConstraint' (Global (Path parts) _) (Const constant)
+      | con == EQU            = oneConstraintOneWay c e1 LEQ e2 >> oneConstraintOneWay c e1 GEQ e2
+      | con `elem` [GTH, GEQ] = foldM_ mkCon 1 (reverse parts)
+      | con `elem` [LTH, LEQ] = reifyVar (last parts) `compTo` (return $ fromInteger constant)
+      where
+      mkCon :: MonadScope m => Integer -> Part -> m Integer
+      mkCon multiplier part =
+        do
+          let frac = (1 / fromInteger multiplier) * fromInteger constant :: Double
+          (reifyVar part) `comp` (return $ frac *^ var uid)
+          mult multiplier <$> prod part
     oneConstraint' (This (Path parts1) _) (This (Path parts2) _) =
       reifyVar (last parts1) `comp` reifyVar (last parts2)
     oneConstraint' (Global (Path parts1) _) (Global (Path parts2) _) =
       reifyVar (last parts1) `comp` reifyVar (last parts2)
-    oneConstraint' (Global (Path parts) _) (Const constant) =
-      reifyVar (last parts) `compTo` (return $ fromInteger constant)
     oneConstraint' (Global (Path parts) _) (Concat exprs _) =
       if all isGlobal exprs
         then reifyVar (last parts) `comp` reifyVars [last p | Global (Path p) _ <- exprs]
@@ -489,25 +512,27 @@ constraintConstraints =
       | low == high = return low
       | otherwise   = mzero
     
+    prod (Part steps) = foldr1 mult <$> mapM (return . high <=< claferWithUid) steps
+    
     comp x y =
       do
         x' <- x
         y' <- y
         case con of
-          LTH -> leqTo (x' ^-^ y') (-1)
+          LTH -> (x' ^-^ y') `leqTo` (-smallM)
           LEQ -> x' `leq` y'
           EQU -> x' `equal` y'
-          GTH -> geqTo (x' ^-^ y') 1
+          GTH -> (x' ^-^ y') `geqTo` smallM
           GEQ -> x' `geq` y'
     compTo x y =
       do
         x' <- x
         y' <- y
         case con of
-          LTH -> x' `leqTo` (y' - 1)
+          LTH -> x' `leqTo` (y' - smallM)
           LEQ -> x' `leqTo` y'
           EQU -> x' `equalTo` y'
-          GTH -> x' `geqTo` (y' + 1)
+          GTH -> x' `geqTo` (y' + smallM)
           GEQ -> x' `geqTo` y'
   
   reifyVar p  = return (var $ reifyVarName p)
@@ -551,7 +576,7 @@ constraintConstraints =
         else (++ [child]) `fmap` nonTopAncestors parent
   
 
-data Con = EQU | LTH | LEQ | GTH | GEQ deriving Show
+data Con = EQU | LTH | LEQ | GTH | GEQ deriving (Eq, Ord, Show)
 reverseCon EQU = EQU
 reverseCon LTH = GTH
 reverseCon LEQ = GEQ
@@ -646,7 +671,7 @@ scopeConstraint curThis pexp =
   flattenConcat e = [e]
   
   scopeConstraintNum I.PExp {I.exp = I.IInt const} = constant const
-  scopeConstraintNum I.PExp {I.exp = I.IFunExp {I.op = "#", I.exps = [path]}} = parsePath curThis path
+  scopeConstraintNum I.PExp {I.exp = I.IFunExp {I.op = "#", I.exps = [path]}} =parsePath curThis path
   scopeConstraintNum _ = mzero
 
   constant :: (Monad m, Integral i) => i -> m Expr
@@ -698,8 +723,11 @@ parsePath2 :: MonadScope m => SClafer -> I.PExp -> m Expr
 parsePath2 start pexp =
   do
     root <- claferWithUid rootUid
-    match <- patternMatch parsePath' (ParseState root []) (fromMaybe [] $ unfoldJoins pexp)
-    either (fail . show) return match
+    case unfoldJoins pexp of
+        Just unfold -> do
+            match <- patternMatch parsePath' (ParseState root []) unfold
+            either (fail . show) return match
+        Nothing     -> fail "Cannot unfold."
   where
   asPath :: [[String]] -> Path
   asPath parts = Path [Part part | part <- parts, not $ null part]
@@ -839,7 +867,7 @@ testPositives vs =
  -   0.000001 * 9 = 0
  -}
 smallM :: Double
-smallM = 0.00001
+smallM = 0.0005 -- 0.00001
 
 
 
