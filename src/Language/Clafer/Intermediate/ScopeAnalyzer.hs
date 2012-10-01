@@ -624,6 +624,11 @@ scopeConstraint curThis pexp =
           return $ (Global path2 t0, comp, Positive (path1 : allPaths) c $ t1 +++ t2)
         ((Global path1 e1, GEQ, Const 1), (Global path2 e2, comp, Const c)) ->
           return $ (Global path2 e2, comp, Positive [path1] c e1)
+        ((t1@(This (Path [thisPart1]) _), GEQ, Const 1), (t2@(This (Path [thisPart2]) _), GEQ, Const 1)) ->
+            do
+                c <- claferWithUid $ last $ steps thisPart1
+                guard (high c == 1)
+                return (t2, GEQ, t1)
         _ -> mzero
 
   equalConstraint1 exp1 exp2 =
