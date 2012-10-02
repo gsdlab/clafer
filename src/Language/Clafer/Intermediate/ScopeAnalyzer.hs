@@ -35,7 +35,6 @@ import Control.Monad.LPMonad
 import Control.Monad.Maybe
 import Control.Monad.Reader
 import Control.Monad.State
-import Control.Monad.Writer
 import Data.Either
 import Data.LinearProgram hiding (constraints)
 import Data.List
@@ -243,7 +242,14 @@ parentConstraints =
 
             if high child /= -1
               then var uchild `leq` (high child *^ var uparent)
-              else return () --(smallM *^ var uchild) `leq` var uparent
+              {-
+               - A
+               -   B *
+               - [#B = 4]
+               -
+               - Need this constraint so that #A=1
+               -}
+              else (smallM *^ var uchild) `leq` var uparent
             -- Use integer's not doubles
             setVarKind uchild IntVar
             setVarKind uparent IntVar
@@ -482,11 +488,16 @@ constraintConstraints =
       | con `elem` [LTH, LEQ] = reifyVar (last parts) `compTo` (return $ fromInteger constant)
       where
       mkCon :: MonadScope m => Integer -> Part -> m Integer
+      mkCon (-1) part =
+        do
+          (reifyVar part) `compTo` return 1
+          return (-1)
       mkCon multiplier part =
         do
           let frac = (1 / fromInteger multiplier) * fromInteger constant :: Double
           (reifyVar part) `comp` (return $ frac *^ var uid)
           mult multiplier <$> prod part
+        
     oneConstraint' (This (Path parts1) _) (This (Path parts2) _) =
       reifyVar (last parts1) `comp` reifyVar (last parts2)
     oneConstraint' (Global (Path parts1) _) (Global (Path parts2) _) =
@@ -676,7 +687,7 @@ scopeConstraint curThis pexp =
   flattenConcat e = [e]
   
   scopeConstraintNum I.PExp {I.exp = I.IInt const} = constant const
-  scopeConstraintNum I.PExp {I.exp = I.IFunExp {I.op = "#", I.exps = [path]}} =parsePath curThis path
+  scopeConstraintNum I.PExp {I.exp = I.IFunExp {I.op = "#", I.exps = [path]}} = parsePath curThis path
   scopeConstraintNum _ = mzero
 
   constant :: (Monad m, Integral i) => i -> m Expr
