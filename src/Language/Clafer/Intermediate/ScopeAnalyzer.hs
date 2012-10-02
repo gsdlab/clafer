@@ -47,7 +47,6 @@ import Text.Parsec.Error
 import Text.Parsec.Pos
 import Text.Parsec.Prim
 import Text.Parsec.String ()
-import Language.Clafer.Intermediate.Test
 import Debug.Trace
 
 

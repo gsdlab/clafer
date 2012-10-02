@@ -29,7 +29,6 @@ import Language.ClaferT
 import Language.Clafer.Common
 import Language.Clafer.Front.Absclafer
 import Language.Clafer.Intermediate.Analysis
-import Language.Clafer.Intermediate.Test
 import Language.Clafer.Intermediate.Intclafer hiding (uid)
 import qualified Language.Clafer.Intermediate.Intclafer as I
 
