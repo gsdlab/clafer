@@ -480,7 +480,7 @@ constraintConstraints =
       mkCon multiplier part =
         do
           let frac = (1 / fromInteger multiplier) * fromInteger constant :: Double
-          (reifyVar part) `comp` (return $ frac *^ var uid)
+          (reifyVar part) `compTo` return frac
           mult multiplier <$> prod part
     oneConstraint' (Global (Path parts) _) (Const constant)
       | con == EQU            = oneConstraintOneWay c e1 LEQ e2 >> oneConstraintOneWay c e1 GEQ e2
@@ -495,7 +495,7 @@ constraintConstraints =
       mkCon multiplier part =
         do
           let frac = (1 / fromInteger multiplier) * fromInteger constant :: Double
-          (reifyVar part) `comp` (return $ frac *^ var uid)
+          (reifyVar part) `compTo` return frac
           mult multiplier <$> prod part
         
     oneConstraint' (This (Path parts1) _) (This (Path parts2) _) =
