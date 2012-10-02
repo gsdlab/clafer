@@ -480,22 +480,27 @@ constraintConstraints =
       mkCon multiplier part =
         do
           let frac = (1 / fromInteger multiplier) * fromInteger constant :: Double
-          (reifyVar part) `compTo` return frac
+          (reifyVar part) `comp` return (frac *^ var uid)
           mult multiplier <$> prod part
     oneConstraint' (Global (Path parts) _) (Const constant)
       | con == EQU            = oneConstraintOneWay c e1 LEQ e2 >> oneConstraintOneWay c e1 GEQ e2
-      | con `elem` [GTH, GEQ] = foldM_ mkCon 1 (reverse parts)
+      | con `elem` [GTH, GEQ] =
+          do
+            k <- testPositive uid
+            trace (uid) $ return ()
+            foldM_ (mkCon k) 1 (reverse parts)
       | con `elem` [LTH, LEQ] = reifyVar (last parts) `compTo` (return $ fromInteger constant)
       where
-      mkCon :: MonadScope m => Integer -> Part -> m Integer
-      mkCon (-1) part =
+      mkCon :: MonadScope m => String -> Integer -> Part -> m Integer
+      mkCon pos (-1) part =
         do
-          (reifyVar part) `compTo` return 1
+          (reifyVar part) `comp` return (var pos)
           return (-1)
-      mkCon multiplier part =
+      mkCon pos multiplier part =
         do
           let frac = (1 / fromInteger multiplier) * fromInteger constant :: Double
-          (reifyVar part) `compTo` return frac
+          (reifyVar part) `comp` return (frac *^ var pos)
+          trace (pos) $ return ()
           mult multiplier <$> prod part
         
     oneConstraint' (This (Path parts1) _) (This (Path parts2) _) =
