@@ -455,14 +455,14 @@ constraintConstraints =
   oneConstraintOneWay c@SClafer{uid} e1 con e2 =
     oneConstraint' e1 e2
     where
-    oneConstraint' (This (Path []) _) _ =
-      mzero
     oneConstraint' _ (This (Path []) _) =
-      mzero
-    oneConstraint' (Global (Path []) _) _ =
       mzero
     oneConstraint' _ (Global (Path []) _) =
       mzero
+    oneConstraint' (This (Path []) _) (This (Path parts) _) =
+      return (var uid) `comp` reifyVar (last parts)
+    oneConstraint' (This (Path []) _) (Global (Path parts) _) =
+      return (var uid) `comp` reifyVar (last parts)
     oneConstraint' (Positive [Path []] _ _) _ =
       mzero
     oneConstraint' _ (Positive [Path []] _ _) =
