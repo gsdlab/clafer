@@ -47,7 +47,6 @@ import Text.Parsec.Error
 import Text.Parsec.Pos
 import Text.Parsec.Prim
 import Text.Parsec.String ()
-import Debug.Trace
 
 
 {------------------------------------------------------------
@@ -486,7 +485,6 @@ constraintConstraints =
       | con `elem` [GTH, GEQ] =
           do
             k <- testPositive uid
-            trace (uid) $ return ()
             foldM_ (mkCon k) 1 (reverse parts)
       | con `elem` [LTH, LEQ] = reifyVar (last parts) `compTo` (return $ fromInteger constant)
       where
@@ -499,7 +497,6 @@ constraintConstraints =
         do
           let frac = (1 / fromInteger multiplier) * fromInteger constant :: Double
           (reifyVar part) `comp` return (frac *^ var pos)
-          trace (pos) $ return ()
           mult multiplier <$> prod part
         
     oneConstraint' (This (Path parts1) _) (This (Path parts2) _) =
