@@ -55,7 +55,7 @@ printPreComment span@(Span (Pos row _) _) (c@((Span (Pos row' _) _), comment):cs
                 '/':'/':'#':[] -> findAll row (cs, concat [comments, "<!-- " ++ trim (drop 2 comment) ++ " /-->\n"])
                 '/':'/':_:[]   -> if col' == 1
                                   then findAll row (cs, concat [comments, printStandaloneComment comment ++ "\n"])
-                                  else findAll row (cs, concat [comments, printInlineComment comment ++ "<br>\n"])
+                                  else findAll row (cs, concat [comments, printInlineComment comment ++ "\n"])
                 '/':'*':_:[]   -> findAll row (cs, concat [comments, printStandaloneComment comment ++ "\n"])
                 otherwise      -> (cs, "Improper form of comment.")-- Should not happen. Bug.
             | otherwise  = ((c:cs), comments)
