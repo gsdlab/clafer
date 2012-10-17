@@ -1,0 +1,2 @@
+abstract A : B
+abstract B : A

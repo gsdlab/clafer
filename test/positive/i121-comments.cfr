@@ -1,0 +1,25 @@
+//# OPTIONS --self-contained --add-graph --add-comments
+
+//# STATS 
+
+/* 
+so, A has <br>
+<code>B</code> and <br>
+optionally <b>C</b>
+*/
+
+A
+   B
+   C ?    // C is important!
+   
+//# FRAGMENT
+
+D -> A
+
+//# SUMMARY
+
+// and now the graph
+
+//# GRAPH
+
+// that's all folks!

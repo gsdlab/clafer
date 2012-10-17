@@ -1,7 +1,7 @@
 Name:                clafer
-Version:             0.3.0.1
-Synopsis:            clafer compiles Clafer models to other formats, such as Alloy, XML.
-Description:         Clafer is a general purpose lightweight modeling language developed at GSD Lab, University of Waterloo. Lightweight modeling aims at improving the understanding of the problem domain in the early stages of software development and determining the requirements with fewer defects. Clafer's goal is to make modeling more accessible to a wider range of users and domains. The tool provides a reference language implementation. It translates models to other formats (e.g. Alloy, XML) to allow for reasoning with existing tools.
+Version:             0.3.1
+Synopsis:            clafer compiles Clafer models to other formats, such as Alloy, XML, HTML, Dot.
+Description:         Clafer is a general purpose, lightweight, structural modeling language developed at GSD Lab, University of Waterloo. Lightweight modeling aims at improving the understanding of the problem domain in the early stages of software development and determining the requirements with fewer defects. Clafer's goal is to make modeling more accessible to a wider range of users and domains. The tool provides a reference language implementation. It translates models to other formats (e.g. Alloy, XML) to allow for reasoning with existing tools.
 Homepage:            http://clafer.org
 License:             MIT
 License-file:        LICENSE
@@ -11,12 +11,20 @@ Stability:           Experimental
 Category:            Model
 Build-type:          Simple
 Cabal-version:       >= 1.8
-
+Extra-Source-Files:
+                     CHANGES.md,
+                     LICENSE,
+                     tools/alloy4.jar,
+                     tools/alloy4.2.jar,
+                     tools/alloy4moo.jar,
+                     tools/XsdCheck.class
+					 
 source-repository head
     type:            git
     location:        https://github.com/gsdlab/clafer
-
+					 
 Executable clafer
+    build-tools:     ghc >= 7.4.1
     extensions:      DeriveDataTypeable
     main-is:         clafer.hs
     build-depends:   
@@ -29,10 +37,12 @@ Executable clafer
                      cmdargs, 
                      executable-path, 
                      filepath,
-                     HaXml
+                     HaXml,
+                     MaybeT
     hs-source-dirs:  src
 
 library 
+    build-tools:     ghc >= 7.4.1
     extensions:      DeriveDataTypeable
     build-depends:   
                      base >= 4 && < 5, 
@@ -43,15 +53,17 @@ library
                      cmdargs, 
                      executable-path, 
                      filepath,
-                     HaXml
+                     HaXml,
+                     MaybeT
     hs-source-dirs:  src
     ghc-options:     -Wall
     exposed-modules: 
                      Language.Clafer,
+                     Language.ClaferT,
                      Language.Clafer.ClaferArgs,
                      Language.Clafer.Comments,
                      Language.Clafer.Common,
-                     Language.Clafer.Css
+                     Language.Clafer.Css,
                      Language.Clafer.Front.Absclafer,
                      Language.Clafer.Front.ErrM,
                      Language.Clafer.Front.LayoutResolver,

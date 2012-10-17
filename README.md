@@ -14,7 +14,7 @@ There are many possible applications of Clafer; however, three are prominent:
 Clafer Compiler
 ===============
 
-v0.3.0.1.12-9-2012
+v0.3.1.17-10-2012
 
 Clafer compiler provides a reference language implementation. It translates models in Clafer to other formats (e.g. Alloy, XML, HTML, DOT) to allow for reasoning and processing with existing tools.
 
@@ -23,7 +23,7 @@ Currently, the compiler is used by Clafer Instance Generator ([ClaferIG](https:/
 Getting Clafer Tools
 --------------------
 
-Binary distributions of Clafer, ClaferMOO, and ClaferIG for Windows, Mac, and Linux, can be downloaded from [ClaferIG Downloads Page](https://github.com/gsdlab/claferig/downloads). ClaferMOO is a set of scripts in Python (cross-platform).
+Binary distributions of Clafer, ClaferMOO, ClaferIG, and ClaferWiki for Windows, Mac, and Linux, can be downloaded from [ClaferIG Downloads Page](https://github.com/gsdlab/claferig/downloads). ClaferMOO is a set of scripts in Python (cross-platform). Clafer Wiki requires Haskell Platform to run and Cygwin on Windows.
 In case these binaries do not work on your particular machine configuration, the tools can be easily built from source code, as described below.
 
 ### Dependencies for running
@@ -54,7 +54,7 @@ Building & Installation From Source Code
 
 ### Additional dependencies for building
 
-* Dependencies for running
+* The dependencies for running
 * [The Haskell Platform](http://hackage.haskell.org/platform/) v.2012.2.0.0
 * [Alloy4.1 and/or Alloy4.2](http://alloy.mit.edu/alloy/download.html)
   * downloaded automatically during build
@@ -100,54 +100,61 @@ Clafer Compiler
 (As printed by `clafer --help`)
 
 ```
-Clafer v0.3.0.1.12-9-2012
+Clafer v0.3.1.17-10-2012
 
 clafer [OPTIONS] [FILE]
 
 Common flags:
-  -m --mode=CLAFERMODE         Generated output type. Available CLAFERMODEs are:
-                               'alloy' (default, Alloy 4.1); 'alloy42' (Alloy
-                               4.2); 'xml' (intermediate representation of
-                               Clafer model); 'clafer'  (analyzed and desugared
-                               clafer model); 'html' (original model in HTML);
-                               'graph' (graphical representation written in DOT
-                               language)
+  -m --mode=CLAFERMODE         Generated output type. Available CLAFERMODEs
+                               are: 'alloy' (default, Alloy 4.1); 'alloy42'
+                               (Alloy 4.2); 'xml' (intermediate
+                               representation of Clafer model); 'clafer'
+                               (analyzed and desugared clafer model); 'html'
+                               (original model in HTML); 'graph' (graphical
+                               representation written in DOT language);
+                               'cvlgraph' (cvl notation representation written
+                               in DOT language)
   -o --console-output          Output code on console
-  -i --flatten-inheritance     Flatten inheritance (`alloy` and `alloy42` modes 
-                               only)
+  -i --flatten-inheritance     Flatten inheritance ('alloy' and 'alloy42'
+                               modes only)
      --timeout-analysis=INT    Timeout for analysis
   -l --no-layout               Don't resolve off-side rule layout
-  -n --nl --new-layout         Use new fast layout resolver (experimental)
+     --nl --new-layout         Use new fast layout resolver (experimental)
   -c --check-duplicates        Check duplicated clafer names
   -f --skip-resolver           Skip name resolution
-  -k --keep-unused             Keep uninstantated abstract clafers (`alloy` and 
-                               `alloy42` modes only)
+  -k --keep-unused             Keep uninstantated abstract clafers ('alloy'
+                               and 'alloy42' modes only)
   -s --no-stats                Don't print statistics
-     --schema                  Show Clafer IR (intermediate representation) XML
-                               schema
-  -v --validate                Validate output. Uses 'tools/XsdCheck.class' for
-                               XML,  'tools/alloy4.jar' and
+     --schema                  Show Clafer IR (intermediate representation)
+                               XML schema
+  -v --validate                Validate output. Uses 'tools/XsdCheck.class'
+                               for XML,  'tools/alloy4.jar' and
                                'tools/alloy4.2.jar' for Alloy models, and
-                               Clafer translator for desugared Clafer models. Use
-                               --tooldir to override the default location of
-                               these tools.
+                               Clafer translator for desugared Clafer models.
+                               Use '--tooldir' to override the default location
+                               of these tools.
      --nr --noalloyruncommand  For usage with partial instances: Don't
                                generate the alloy 'run show for ... ' command,
-                               and rename @.ref with unique names.
-     --tooldir=DIR             Specify the tools directory. Default: 'tools/' 
-                               (`validate` only)
-  -a --alloy-mapping           Generate mapping to Alloy source code (`alloy` 
-                               and `alloy42` modes only)
-     --self-contained          Generate a self-contained html document. Only
-                               works with html mode.
-     --add-graph               Add a graph to the generated html model. Only
-                               works with html mode and if the "dot" executable
-                               is on the system path.
+                               and rename @.ref with unique names  ('alloy' and
+                               'alloy42' modes only)
+     --tooldir=DIR             Specify the tools directory ('validate' only).
+                               Default: 'tools/'
+  -a --alloy-mapping           Generate mapping to Alloy source code ('alloy'
+                               and 'alloy42' modes only)
+     --self-contained          Generate a self-contained html document
+                               ('html' mode only)
+     --add-graph               Add a graph to the generated html model
+                               ('html' mode only). Requires the "dot"
+                               executable to be on the system path.
+     --add-comments            Include comments from the source file in the
+                               html output ('html' mode only).
   -? --help                    Display help message
   -V --version                 Print version information
 ```
 
-Additionally, `[OPTIONS]` can also be specified directly in the model file by inserting the following as the first line of the file:
+The dependencies among the command line arguments are described in [issue 117](http://gsd.uwaterloo.ca:8888/question/570/dependencies-among-command-line-arguments).
+
+Additionally, `[OPTIONS]` can also be specified directly in the model file by inserting the following compiler directive as the first line of the file:
 
 ```
 //# [OPTIONS]
@@ -160,6 +167,21 @@ for example
 ```
 
 Options given at command line override the options given in the file using `//#` which, in turn, override the defaults.
+
+### Using compiler directives
+
+Compiler directives are comments of the form
+
+```
+//# <directive name>
+```
+
+The following directives are markers of locations in the input files for different purposes:
+
+* `//# FRAGMENT` - marks the beginning of the new [module fragment](http://gsd.uwaterloo.ca:8888/question/463/multi-fragment-modules).
+* `//# GRAPH` - marks the insertion point for a graph rendering. The graph is only produced in HTML mode with the argument `--add-graph`.
+* `//# STATS` - marks the insertion point for module statistics. The statistics can be omitted using the argument `--no-stats`. 
+* `//# SUMMARY` - shorthand for `//# GRAPH` and `//# STATS`
 
 ClaferMoo
 ---------

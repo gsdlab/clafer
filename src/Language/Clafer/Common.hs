@@ -86,13 +86,14 @@ isParent _ = False
 isClaferName :: PExp -> Bool
 isClaferName (PExp _ _ _ (IClaferId _ id _)) =
   id `notElem` ([this, parent, children] ++ primitiveTypes)
+isClaferName _ = False
 
 isClaferName' (PExp _ _ _ (IClaferId _ id _)) = True
 isClaferName' _ = False
 
 getClaferName :: PExp -> String
 getClaferName (PExp _ _ _ (IClaferId _ id _)) = id
-
+getClaferName _ = ""
 
 -- -----------------------------------------------------------------------------
 -- conversions
@@ -120,11 +121,12 @@ findHierarchy :: (IClafer -> String)
                             -> [IClafer]
 findHierarchy sFun clafers clafer
   | sFun clafer == "clafer"      = [clafer]
-  | otherwise                    = clafer : superClafers
+  | otherwise                    = if clafer `elem` superClafers
+                                   then error $ "Inheritance hierarchy contains a cycle: line " ++ (show $ cinPos clafer)
+                                   else clafer : superClafers
   where
   superClafers = unfoldr (\c -> find (isEqClaferId $ sFun c) clafers >>=
                           Just . (apply id)) clafer
-
 
 -- -----------------------------------------------------------------------------
 -- generic functions

@@ -1,3 +1,5 @@
+{-# LANGUAGE TupleSections #-}
+
 {-
  Copyright (C) 2012 Jimmy Liang, Kacper Bak <http://gsd.uwaterloo.ca>
 
@@ -21,6 +23,8 @@
 -}
 module Language.Clafer.Intermediate.ResolverType (resolveTModule) where
 
+import Control.Applicative
+import Control.Monad.Error
 import Control.Monad.State
 import Data.Function
 import Data.List (dropWhile, intercalate, nub, find)
@@ -29,11 +33,15 @@ import Data.Map (Map)
 import qualified Data.Map as Map
 import Debug.Trace
 
+import Language.ClaferT
 import Language.Clafer.Common
+import Language.Clafer.Front.Absclafer
 import Language.Clafer.Front.Printclafer
 import Language.Clafer.Intermediate.Desugarer
 import Language.Clafer.Intermediate.Intclafer
 import qualified Language.Clafer.Intermediate.Intclafer as I
+
+type Resolve = Either ClaferSErr
 
 -- Internal structure for type checking.
 -- A tuple for storing the symbol table, a clafer's uid, its type, and its parent uid.
@@ -112,14 +120,16 @@ isReference TCEnv{tcThis = this, tcReferenceTable = referenceTable} =
 -- Done in 2 steps
 --   1. Traverse every clafer and build a symbol table
 --   2. Traverse every constraint and resolve the types and type check
-resolveTModule :: (IModule, GEnv) -> IModule
+resolveTModule :: (IModule, GEnv) -> Resolve IModule
 resolveTModule (imodule, genv) =
-    imodule {mDecls = resolveTElements tcEnv $ mDecls imodule}
-    where
-    symbolTable = symbolTableIElements (STEnv (sClafers genv) Nothing) (mDecls imodule)
-    tcEnv = TCEnv symbolTable "root" (TC TClafer []) Nothing referenceTable (sClafers genv)
-    referenceTable = Map.fromList [(uid clafer, isReference clafer) | clafer <- sClafers genv]
-    isReference = isOverlapping . super
+  do
+    mDecls' <- resolveTElements tcEnv $ mDecls imodule
+    return $ imodule {mDecls = mDecls'}
+  where
+  symbolTable = symbolTableIElements (STEnv (sClafers genv) Nothing) (mDecls imodule)
+  tcEnv = TCEnv symbolTable "root" (TC TClafer []) Nothing referenceTable (sClafers genv)
+  referenceTable = Map.fromList [(uid clafer, isReference clafer) | clafer <- sClafers genv]
+  isReference = isOverlapping . super
 
 
 {-
@@ -196,7 +206,7 @@ typeOfISuper (ISuper _ ((PExp _ _ _ (IClaferId _ sident _)):_)) = case sident of
                                                                     "integer" -> TInteger
                                                                     "string" -> TString
                                                                     x -> error $ sident ++ " not a native super type"
-
+typeOfISuper x = error $ show x ++ " is not an ISuper"
 
 
 {-
@@ -205,20 +215,22 @@ typeOfISuper (ISuper _ ((PExp _ _ _ (IClaferId _ sident _)):_)) = case sident of
  -
  -}
 -- Type check the elements
-resolveTElements :: TCEnv -> [IElement] -> [IElement]
-resolveTElements env es = map (resolveTElement env) es
+resolveTElements :: TCEnv -> [IElement] -> Resolve [IElement]
+resolveTElements env es = mapM (resolveTElement env) es
 
-resolveTElement :: TCEnv -> IElement -> IElement
-resolveTElement env (IEClafer clafer) = IEClafer $ resolveTClafer env clafer
-resolveTElement env (IEConstraint isHard pexp) = IEConstraint isHard resolvedPExp where (_, (resolvedPExp, _)) = resolveTPExp env pexp    
-resolveTElement env (IEGoal isMaximize pexp) = IEGoal isMaximize resolvedPExp where (_, (resolvedPExp, _)) = resolveTPExp env pexp    
+resolveTElement :: TCEnv -> IElement -> Resolve IElement
+resolveTElement env (IEClafer clafer) = IEClafer <$> resolveTClafer env clafer
+resolveTElement env (IEConstraint isHard pexp) = IEConstraint isHard <$> (fst . snd <$> resolveTPExp env pexp)
+resolveTElement env (IEGoal isMaximize pexp) = IEGoal isMaximize  <$> (fst . snd <$> resolveTPExp env pexp)
                                                                                         
-resolveTClafer :: TCEnv -> IClafer -> IClafer
+resolveTClafer :: TCEnv -> IClafer -> Resolve IClafer
 resolveTClafer env clafer = 
-    clafer{
-        elements = resolveTElements cenv $ elements clafer,
+  do
+    let cenv = uidTCEnv env (uid clafer)
+    elements' <- resolveTElements cenv $ elements clafer
+    return $ clafer{
+        elements = elements',
         super = typeTheSuper $ super clafer}
-    where cenv = uidTCEnv env (uid clafer)
 
 -- Sets the type in all the supers to IClafer
 typeTheSuper :: ISuper -> ISuper
@@ -227,12 +239,11 @@ typeThePExp :: PExp -> PExp
 typeThePExp x = x{iType=Just TClafer}
 
 
-resolveTPExpPreferValue :: TCEnv -> PExp -> (TCEnv, TypedPExp)
+resolveTPExpPreferValue :: TCEnv -> PExp -> Resolve (TCEnv, TypedPExp)
 resolveTPExpPreferValue env (PExp _ pid pos x) =
-    (newEnv, (pexp', expType))
-    where
-    (newEnv, (exp, expType)) = resolveTExpPreferValue env x
-    pexp = PExp (Just $ tcToType expType) pid pos exp
+  do
+    (newEnv, (exp, expType)) <- resolveTExpPreferValue pos env x
+    let pexp = PExp (Just $ tcToType expType) pid pos exp
     -- Sometimes need to dereference an access. For example:
     --   Leader -> Person
     --   abstract Person
@@ -240,19 +251,22 @@ resolveTPExpPreferValue env (PExp _ pid pos x) =
     --   B : Person
     --   [Leader = A]
     -- Need to add a "ref" node into the IR on the access to "Leader"
-    pexp'
-        | isClaferId exp && isReference newEnv =
-            newPExp (Just TClafer) $ IFunExp "." [pexp, newPExp (Just $ typed expType) $ IClaferId "" "ref" False]
-        | otherwise = pexp
-    isClaferId IClaferId{} = True
-    isClaferId _           = False
-    newPExp t = PExp t "" pos
+    let pexp'
+            | isClaferId exp && isReference newEnv =
+                newPExp (Just TClafer) $ IFunExp "." [pexp, newPExp (Just $ typed expType) $ IClaferId "" "ref" False]
+            | otherwise = pexp
+    return (newEnv, (pexp', expType))
+  where
+  isClaferId IClaferId{} = True
+  isClaferId _           = False
+  newPExp t = PExp t "" pos
 
     
-resolveTPExp :: TCEnv -> PExp -> (TCEnv, TypedPExp)
+resolveTPExp :: TCEnv -> PExp -> Resolve (TCEnv, TypedPExp)
 resolveTPExp env (PExp _ pid pos x) =
-    let (newEnv, (exp, typed)) = resolveTExp env x in
-    (newEnv, (PExp (Just $ tcToType typed) pid pos exp, typed))
+  do
+    (newEnv, (exp, typed)) <- resolveTExp pos env x
+    return (newEnv, (PExp (Just $ tcToType typed) pid pos exp, typed))
 
 
 
@@ -266,11 +280,11 @@ resolveTPExp env (PExp _ pid pos x) =
     
     Returns a tuple of the type checked expression and the type.
 -}
-resolveTExpPreferValue:: TCEnv -> IExp -> (TCEnv, TypedIExp)
+resolveTExpPreferValue:: Span -> TCEnv -> IExp -> Resolve (TCEnv, TypedIExp)
 -- Clafer reference
 -- Return the value type of the reference from the symbol table (possibly IClafer)
-resolveTExpPreferValue env e@(IClaferId _ sident _) =
-    (env', (e, t'))
+resolveTExpPreferValue _ env e@(IClaferId _ sident _) =
+    return (env', (e, t'))
     where
     env' = identTCEnv env sident
     -- If it's TCVal, then get the actual value type
@@ -289,146 +303,169 @@ resolveTExpPreferValue env e@(IClaferId _ sident _) =
  - The grandparent TCEnv will be given to the outer join to pass to its right child (this).
  - this refers to the current TCEnv so the example expression is evaluated to the grandparent of the current TCEnv.
  -}
-resolveTExpPreferValue env (IFunExp "." [exp1, exp2]) =
-    let (env1, a1) = resolveTPExpLeftJoin env exp1
-        (env2, a2) = resolveTPExpPreferValue env1 exp2
-    in
-    (env2, typeCheckFunction (typeOf a2) "." [E TClafer, EAny] [a1, a2])
+resolveTExpPreferValue pos env (IFunExp "." [exp1, exp2]) =
+  do
+    (env1, a1) <- resolveTPExpLeftJoin env exp1
+    (env2, a2) <- resolveTPExpPreferValue env1 exp2
+    (env2,) <$> typeCheckFunction pos (typeOf a2) "." [E TClafer, EAny] [a1, a2]
 -- Otherwise, the IExp has no value expression so return its standard expression
-resolveTExpPreferValue env x = resolveTExp env x
+resolveTExpPreferValue pos env x = resolveTExp pos env x
 
 
 
-resolveTExp:: TCEnv -> IExp -> (TCEnv, TypedIExp)
-resolveTExp env e@(IClaferId _ sident _) =
-    (env', (e, t))
+resolveTExp:: Span -> TCEnv -> IExp -> Resolve (TCEnv, TypedIExp)
+resolveTExp _ env e@(IClaferId _ sident _) =
+    return (env', (e, t))
     where
     env' = identTCEnv env sident
     t = tcType env'
     
-resolveTExp env (IFunExp "." [exp1, exp2]) =
-    let (env1, a1) = resolveTPExp env exp1
-        (env2, a2) = resolveTPExp env1 exp2
-    in
-    (env2, typeCheckFunction (typeOf a2) "." [E TClafer, EAny] [a1, a2])
-resolveTExp env e@(IInt _) =          (env, (e, TC TInteger ["integer"]))
-resolveTExp env e@(IDouble _) =       (env, (e, TC TReal ["real"]))
-resolveTExp env e@(IStr _) =          (env, (e, TC TString ["string"]))
-resolveTExp env e@(IDeclPExp quant decls bpexp) = (env, (IDeclPExp quant decls' bpexp', TC TBoolean ["boolean"]))
-    where
-    (env', decls') = resolveTDecls env decls
-    (_, (bpexp', bpexpType')) = resolveTPExp env' bpexp
-    
-    resolveTDecls env [] = (env, [])
-    resolveTDecls env (d : ds) =
-        (env'', d' : ds')
-        where
-        (env', d') = resolveTDecl env d
-        (env'', ds') = resolveTDecls env' ds
-    resolveTDecl env (IDecl isDisj decls body) =
-        (env', IDecl isDisj decls body')
-        where
-        (_, (body', bodyType')) = resolveTPExp env body
-        -- Retrieve the actual type and bind it to the declaration
-        env' = env{tcTable = foldr (flip Map.insert $ (typed bodyType', uids bodyType', Nothing)) (tcTable env) decls}
+resolveTExp pos env (IFunExp "." [exp1, exp2]) =
+  do
+    (env1, a1) <- resolveTPExp env exp1
+    (env2, a2) <- resolveTPExp env1 exp2
+    (env2, ) <$> typeCheckFunction pos (typeOf a2) "." [E TClafer, EAny] [a1, a2]
+resolveTExp _ env e@(IInt _) =          return (env, (e, TC TInteger ["integer"]))
+resolveTExp _ env e@(IDouble _) =       return (env, (e, TC TReal ["real"]))
+resolveTExp _ env e@(IStr _) =          return (env, (e, TC TString ["string"]))
+resolveTExp pos env e@(IDeclPExp quant decls bpexp) =
+  do
+    (env', decls') <- resolveTDecls env decls
+    (_, (bpexp', bpexpType')) <- resolveTPExp env' bpexp
+    return (env, (IDeclPExp quant decls' bpexp', TC TBoolean ["boolean"]))
+  where
+  resolveTDecls env [] = return (env, [])
+  resolveTDecls env (d : ds) =
+    do
+      (env', d') <- resolveTDecl env d
+      (env'', ds') <- resolveTDecls env' ds
+      return (env'', d' : ds')
+
+  resolveTDecl env (IDecl isDisj decls body) =
+    do
+      (_, (body', bodyType')) <- resolveTPExp env body
+      -- Retrieve the actual type and bind it to the declaration
+      let env' = env{tcTable = foldr (flip Map.insert $ (typed bodyType', uids bodyType', Nothing)) (tcTable env) decls}
+      return (env', IDecl isDisj decls body')
+
 
 
 -- Unary functions
 -- Rafael Olaechea 02/April/2012: Added function resolveTPExpPreferValue to be used when using goals or negative.
-resolveTExp env (IFunExp op [exp]) = (env, result)
+resolveTExp pos env (IFunExp op [exp]) = (env,) <$> result
     where
     result
-        | op == iNot  = typeCheckFunction (TC TBoolean ["boolean"]) op [E TBoolean] [a1]
-        | op == iCSet = typeCheckFunction (TC TInteger ["integer"]) op [E TClafer] [a1]
-        | op == iSumSet = typeCheckFunction (TC TInteger ["integer"]) op [E TInteger] [a1PreferValue]
+        | op == iNot  = typeCheckFunction pos (TC TBoolean ["boolean"]) op [E TBoolean] =<< sequence [a1]
+        | op == iCSet = typeCheckFunction pos (TC TInteger ["integer"]) op [E TClafer] =<< sequence[a1]
+        | op == iSumSet = typeCheckFunction pos (TC TInteger ["integer"]) op [E TInteger] =<< sequence [a1PreferValue]
         -- We return the typeOf a1 because if a1 is real then return real (likewise for integer)
-        | op == iMin  = typeCheckFunction t1PV op allNumeric         [a1PreferValue]
-        | op == iGMax = typeCheckFunction t1PV op allNumeric         [a1PreferValue]
-        | op == iGMin = typeCheckFunction t1PV op allNumeric         [a1PreferValue]
+        | op `elem` [iMin, iGMax, iGMin] =
+          do
+            t1' <- t1PV
+            a1' <- a1PreferValue
+            typeCheckFunction pos t1' op allNumeric [a1']
         | otherwise   = error $ "Unknown unary function '" ++ op ++ "'"
-    (_, a1) = resolveTPExp env exp
-    (_, a1PreferValue) = resolveTPExpPreferValue env exp
-    t1PV = typeOf a1PreferValue
+    a1 = snd <$> resolveTPExp env exp
+    a1PreferValue = snd <$> resolveTPExpPreferValue env exp
+    t1PV = typeOf <$> a1PreferValue
 
 -- Binary functions
-resolveTExp env f@(IFunExp op [exp1, exp2]) = (env, result)
+resolveTExp pos env f@(IFunExp op [exp1, exp2]) = (env,) <$> result
     where
     result
         | op `elem` logBinOps = 
-            typeCheckFunction (TC TBoolean []) op (exact [TBoolean, TBoolean])  [a1, a2]
+            typeCheckFunction pos (TC TBoolean []) op (exact [TBoolean, TBoolean])  =<< sequence [a1, a2]
         | op `elem` [iLt, iGt, iLte, iGte] =
-            typeCheckFunction (TC TBoolean []) op allNumeric  [a1PreferValue, a2PreferValue]
+            typeCheckFunction pos (TC TBoolean []) op allNumeric  =<< sequence [a1PreferValue, a2PreferValue]
         | op `elem` [iEq, iNeq] =
-            if not $ intersects (tcClafers env) u1 u2 then
-                error $ '"' : printTree (sugarExp' f) ++ "\" is redundant because the two subexpressions are always disjoint.\nLeft type=" ++ show u1 ++ ". Right type=" ++ show u2 ++ "."
-            else if exp1 `sameAs` exp2 then
-                error $ '"' : printTree (sugarExp' f) ++ "\" is redundant because the two subexpressions are always equivalent."
-            else if isExact (tcToType t1PV) TString then -- String equality
-                typeCheckFunction (TC TBoolean []) op [E TString, E TString] [a1PreferValue, a2PreferValue]
-            else if isNumeric $ tcToType t1PV then -- Numeric equality
-                typeCheckFunction (TC TBoolean []) op allNumeric [a1PreferValue, a2PreferValue]
-            else -- Set equality
-                typeCheckFunction (TC TBoolean []) op [E TClafer, E TClafer] [a1PreferValue, a2PreferValue]
+          do
+            whenM (not <$> (intersects (tcClafers env) <$> u1 <*> u2)) $
+              throwError $ SemanticErr pos $ '"' : printTree (sugarExp' f) ++ "\" is redundant because the two subexpressions are always disjoint.\nLeft type=" ++ show u1 ++ ". Right type=" ++ show u2 ++ "."
+            when (exp1 `sameAs` exp2) $
+              throwError $ SemanticErr pos $ '"' : printTree (sugarExp' f) ++ "\" is redundant because the two subexpressions are always equivalent."
+            t <- tcToType <$> t1PV
+            if isExact t TString -- String equality
+              then typeCheckFunction pos (TC TBoolean []) op [E TString, E TString] =<< sequence [a1PreferValue, a2PreferValue]
+              else if isNumeric t -- Numeric equality
+                then typeCheckFunction pos (TC TBoolean []) op allNumeric =<< sequence [a1PreferValue, a2PreferValue]
+                else -- Set equality
+                  typeCheckFunction pos (TC TBoolean []) op [E TClafer, E TClafer] =<< sequence [a1PreferValue, a2PreferValue]
         | op `elem` relSetBinOps = 
-            if not $ intersects (tcClafers env) u1 u2 then
-                error $ '"' : printTree (sugarExp' f) ++ "\" is redundant because the two subexpressions are always disjoint.\nLeft type=" ++ show u1 ++ ". Right type=" ++ show u2 ++ "."
-            else if exp1 `sameAs` exp2 then
-                error $ '"' : printTree (sugarExp' f) ++ "\" is redundant because the two subexpressions are always equivalent."
-            else
-                -- Expect both arguments to be the same type as the first argument
-                typeCheckFunction (TC TBoolean []) op [E $ tcToType t1PV, E $ tcToType t1PV]  [a1PreferValue, a2PreferValue]
+          do
+            whenM (not <$> (intersects (tcClafers env) <$> u1 <*> u2)) $
+              throwError $ SemanticErr pos $ '"' : printTree (sugarExp' f) ++ "\" is redundant because the two subexpressions are always disjoint.\nLeft type=" ++ show u1 ++ ". Right type=" ++ show u2 ++ "."
+            when (exp1 `sameAs` exp2) $
+              throwError $ SemanticErr pos $ '"' : printTree (sugarExp' f) ++ "\" is redundant because the two subexpressions are always equivalent."
+            -- Expect both arguments to be the same type as the first argument
+            t <- t1PV
+            typeCheckFunction pos (TC TBoolean []) op [E $ tcToType t, E $ tcToType t] =<< sequence [a1PreferValue, a2PreferValue]
         | op `elem` [iUnion] =
-            typeCheckFunction (TC (tcToType t1PV) $ nub $ u1 ++ u2) op [E $ tcToType t1PV, E $ tcToType t1PV]  [a1PreferValue, a2PreferValue]
+          do
+            t   <- tcToType <$> t1PV
+            u1' <- u1
+            u2' <- u2
+            typeCheckFunction pos (TC t $ nub $ u1' ++ u2') op [E t, E t] =<< sequence [a1PreferValue, a2PreferValue]
         | op `elem` [iDifference, iIntersection] =
-            if not $ intersects (tcClafers env) u1 u2 then
-                error $ '"' : printTree (sugarExp' f) ++ "\" is redundant because the two subexpressions are always disjoint.\nLeft type=" ++ show u1 ++ ". Right type=" ++ show u2 ++ "."
-            else
-                -- Expect both arguments to be the same type as the first argument
-                typeCheckFunction t1PV op [E $ tcToType t1PV, E $ tcToType t1PV]  [a1PreferValue, a2PreferValue]
+          do
+            whenM (not <$> (intersects (tcClafers env) <$> u1 <*> u2)) $
+              throwError $ SemanticErr pos $ '"' : printTree (sugarExp' f) ++ "\" is redundant because the two subexpressions are always disjoint.\nLeft type=" ++ show u1 ++ ". Right type=" ++ show u2 ++ "."
+            -- Expect both arguments to be the same type as the first argument
+            t <- t1PV
+            typeCheckFunction pos t op [E $ tcToType t, E $ tcToType t] =<< sequence [a1PreferValue, a2PreferValue]
         | op `elem` [iDomain, iRange] =
-            typeCheckFunction (TC TClafer []) op [E TClafer, EAny]  [a1, a2PreferValue]
+            typeCheckFunction pos (TC TClafer []) op [E TClafer, EAny] =<< sequence [a1, a2PreferValue]
         | op `elem` [iSub, iMul, iDiv] =
-            typeCheckFunction (coerceIfNeeded t1PV t2PV) op allNumeric [a1PreferValue, a2PreferValue]
+          do
+            t1' <- t1PV
+            t2' <- t2PV
+            typeCheckFunction pos (coerceIfNeeded t1' t2') op allNumeric =<< sequence [a1PreferValue, a2PreferValue]
         | op == iPlus =
-            if isExact (tcToType t1PV) TString then -- String addition
-                typeCheckFunction (TC TString []) op [E TString, E TString] [a1PreferValue, a2PreferValue]
-            else -- Numeric addition or fail
-                typeCheckFunction (coerceIfNeeded t1PV t2PV) op allNumeric [a1PreferValue, a2PreferValue]
-    (_, a1) = resolveTPExp env exp1
-    (_, a2) = resolveTPExp env exp2
-    (_, a1PreferValue) = resolveTPExpPreferValue env exp1
-    (_, a2PreferValue) = resolveTPExpPreferValue env exp2
-    t1 = typeOf a1
-    t2 = typeOf a2
-    t1PV = typeOf a1PreferValue
-    t2PV = typeOf a2PreferValue
-    u1 = uids t1
-    u2 = uids t2
-    u1PV = uids t1PV
-    u2PV = uids t2PV
+          do
+            t1' <- t1PV
+            if isExact (tcToType t1') TString -- String addition
+              then typeCheckFunction pos (TC TString []) op [E TString, E TString] =<< sequence [a1PreferValue, a2PreferValue]
+              else -- Numeric addition or fail
+                do
+                  t2' <- t2PV
+                  typeCheckFunction pos (coerceIfNeeded t1' t2') op allNumeric =<< sequence [a1PreferValue, a2PreferValue]
+    a1 = snd <$> resolveTPExp env exp1
+    a2 = snd <$> resolveTPExp env exp2
+    a1PreferValue = snd <$> resolveTPExpPreferValue env exp1
+    a2PreferValue = snd <$> resolveTPExpPreferValue env exp2
+    t1 = typeOf <$> a1
+    t2 = typeOf <$> a2
+    t1PV = typeOf <$> a1PreferValue
+    t2PV = typeOf <$> a2PreferValue
+    u1 = uids <$> t1
+    u2 = uids <$> t2
+    u1PV = uids <$> t1PV
+    u2PV = uids <$> t2PV
 
 --Ternary functions
-resolveTExp env (IFunExp "=>else" [exp1, exp2, exp3]) = (env, result)
-    where
-    result
-        | isExact (tcToType t2) TString = -- String expression
-            typeCheckFunction (TC TBoolean []) "=>else" [E TBoolean, E TString, E TString] [a1, a2, a3]
-        | isNumeric $ tcToType t2 = -- Numeric expression
-            typeCheckFunction (TC TBoolean []) "=>else" [E TBoolean, ENumeric, ENumeric] [a1, a2, a3]
-        | otherwise = -- Clafer expression
-            typeCheckFunction (TC TBoolean []) "=>else" [E TBoolean, E TClafer, E TClafer] [a1, a2, a3]
-    (_, a1) = resolveTPExpPreferValue env exp1
-    (_, a2) = resolveTPExpPreferValue env exp2
-    (_, a3) = resolveTPExpPreferValue env exp3
-    
-    t1 = typeOf a1
-    t2 = typeOf a2
-    t3 = typeOf a3
+resolveTExp pos env (IFunExp "=>else" [exp1, exp2, exp3]) =
+  do
+    t <- tcToType <$> t2
+    let result
+          | isExact t TString = -- String expression
+              typeCheckFunction pos (TC TBoolean []) "=>else" [E TBoolean, E TString, E TString] =<< sequence [a1, a2, a3]
+          | isNumeric t = -- Numeric expression
+              typeCheckFunction pos (TC TBoolean []) "=>else" [E TBoolean, ENumeric, ENumeric] =<< sequence [a1, a2, a3]
+          | otherwise = -- Clafer expression
+              typeCheckFunction pos (TC TBoolean []) "=>else" [E TBoolean, E TClafer, E TClafer] =<< sequence [a1, a2, a3]
+    (env,) <$> result
+  where
+  a1 = snd <$> resolveTPExpPreferValue env exp1
+  a2 = snd <$> resolveTPExpPreferValue env exp2
+  a3 = snd <$> resolveTPExpPreferValue env exp3
+  
+  t1 = typeOf <$> a1
+  t2 = typeOf <$> a2
+  t3 = typeOf <$> a3
 
 
-resolveTPExpLeftJoin :: TCEnv -> PExp -> (TCEnv, TypedPExp)
+resolveTPExpLeftJoin :: TCEnv -> PExp -> Resolve (TCEnv, TypedPExp)
 resolveTPExpLeftJoin env (PExp _ pid pos e@(IClaferId _ "this" _)) =
-    (env, (PExp (Just TClafer) pid pos e, TC TClafer [tcThis env]))
+    return (env, (PExp (Just TClafer) pid pos e, TC TClafer [tcThis env]))
 resolveTPExpLeftJoin env pexp = resolveTPExp env pexp
 
 
@@ -455,13 +492,13 @@ exact = map E
 --   don't care (EAny).
 --   E is an EXACT match, ie. TInteger does not match with TReal. Use ENumeric where necessary.
 --   Returns a tuple of a IFunExp and its type if type checking passes.
-typeCheckFunction :: TC -> String -> [TExpect] -> [TypedPExp] -> TypedIExp
-typeCheckFunction returnType op expected inferredChildren =
+typeCheckFunction :: Span -> TC -> String -> [TExpect] -> [TypedPExp] -> Resolve TypedIExp
+typeCheckFunction pos returnType op expected inferredChildren =
     let inferred = map (tcToType . typeOf) inferredChildren in
         if all (uncurry checkExpect) (zip expected inferred) then 
-            (IFunExp op $ map fst inferredChildren, returnType)
-        else error ("function " ++ op ++ " expected arguments of type " ++ show (take (length inferred) expected)
-            ++ ", received " ++ show inferred)
+            return (IFunExp op $ map fst inferredChildren, returnType)
+        else throwError $ SemanticErr pos $ "function " ++ op ++ " expected arguments of type " ++ show (take (length inferred) expected)
+            ++ ", received " ++ show inferred
 
 -- Convenience function, returns true iff the type is a numerical type.
 isNumeric :: IType -> Bool
@@ -482,6 +519,8 @@ checkExpect ENumeric _        = False
 -- Check allows anything
 checkExpect EAny _ = True
 
+whenM :: (Monad m) => m Bool -> m () -> m ()
+whenM c m = c >>= (`when` m)
 
 tcToType (TC t _) = t
 tcToType (TCVal t _) = TClafer -- Its type is TClafer, it can be "ref"ed to t.

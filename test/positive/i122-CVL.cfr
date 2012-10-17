@@ -1,0 +1,27 @@
+Office
+   Printer ?
+      resolution : integer
+      Cartridge 1..4
+         inkVolume : integer
+         or Speed
+            High
+            Low
+         Turbo ?
+      xor Type
+         Color
+         BW
+   Scanner ?
+      GreenMode ?
+      Head 1..2
+
+PrinterPool
+   fax ?
+   printer ?
+   copier ?
+   scan ?
+   [ fax => printer ]
+
+[ (fax => printer) && (copier => (fax && printer)) ]
+
+
+// dot -Tsvg -o "i122-CVL.svg" i122-CVL.dot

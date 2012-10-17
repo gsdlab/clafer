@@ -49,6 +49,7 @@ data ExToken = NewLine LastNl | ExToken Token deriving Show
 data LEnv = LEnv [Int] (Maybe LastNl)
 
 getToken (ExToken t) = t
+getToken (NewLine _) = error "LayoutResolver.getToken: Cannot get ExToken NewLine"-- this shoud lever happen
 
 layoutOpen  = "{"
 layoutClose = "}"
@@ -203,14 +204,13 @@ tokenLength t = length $ prToken t
 
 -- data ExToken = NewLine (Int, Int) | ExToken Token
 addNewLines :: [Token] -> [ExToken]
-addNewLines = addNewLines' 0
+addNewLines []    = []
+addNewLines ts@(t:_) = addNewLines' (if isBracketOpen t then 1 else 0) ts
 
 addNewLines' :: Int -> [Token] -> [ExToken]
 addNewLines' _ []         = []
 addNewLines' 0 (t:[])     = [ExToken t]
-addNewLines' n (t:[])
-  | n == 0 && isBracketClose t = [ExToken t]
-  | otherwise                  = error $ "']' bracket missing" ++ show n ++ show t
+addNewLines' n (t:[])     = error $ "']' bracket missing" ++ show n ++ show t
 addNewLines' n (t0:t1:ts)
   | isNewLine t0 t1 && isBracketOpen t1 =
     ExToken t0 : NewLine (column t1, n) : addNewLines' (n + 1) (t1:ts)
@@ -232,7 +232,8 @@ updToken (t0:t1:ts)
   | otherwise = (t1:ts)
   where
   sym = if isLayoutOpen t1 then "{" else "}"
-
+updToken [] = []
+updToken (t:ts) = (t:ts)
 -- | Get the position immediately to the right of the given token.
 nextPos :: Token -> Position 
 nextPos t = Pn (g + s) l (c + s + 1) 
@@ -330,7 +331,7 @@ revertLayout :: String -> String
 revertLayout input = unlines $ revertLayout' (lines input) 0 
 
 revertLayout' :: [String] -> Int -> [String]
-revertLayout' (xs:[])        indent = []
+revertLayout' []             indent = []
 revertLayout' ([]:xss)       indent = revertLayout' xss indent
 revertLayout' (('{':xs):xss) indent = (replicate indent' ' ' ++ xs):revertLayout' xss indent'
                                     where indent' = indent + 2

@@ -34,70 +34,108 @@ import System.Timeout
 import Control.Monad.State
 import System.Environment.Executable
 import Data.Maybe
+import Data.List (genericSplitAt)
 import System.FilePath.Posix
 import System.Process (readProcessWithExitCode)
 
 import Language.Clafer
+import Language.ClaferT
 import Language.Clafer.Css
+import Language.Clafer.Generator.Graph
 
 putStrV :: VerbosityL -> String -> IO ()
 putStrV v s = if v > 1 then putStrLn s else return ()
 
 run :: VerbosityL -> ClaferArgs -> InputModel -> IO ()
-run v args input = do
-  case addModuleFragment args input of
-    Bad s    -> do putStrLn "\nParse Failed...\n"
-                   putStrV v "Tokens:"
-                   putStrLn s
-                   exitFailure
-    Ok  tree -> case mode args of
-                Just Html  -> do
-                                let result = generateHtml args $ Ok tree
-                                when (not $ fromJust $ no_stats args) $ putStrLn (statistics result)
-                                let f = dropExtension $ file args                      
-                                let f' = f ++ "." ++ (extension result)
-                                (ec, graph, err) <- readProcessWithExitCode "dot" ["-Tsvg"] $ outputCode $ generateGraph args (Ok tree) f
-                                let output = (if (fromJust $ self_contained args)
-                                              then header ++ css ++ "</head>\n<body>\n"
-                                              else "") ++
-                                              (if (fromJust $ add_graph args)
-                                              then "<figure>\n" ++ (if ec == ExitSuccess
-                                                                   then graph
-                                                                   else "dot returned an error status: " ++ err)
-                                                ++ "<figcaption>Model Overview</figcaption>\n</figure>"
-                                              else "") ++ outputCode result ++
-                                              if (fromJust $ self_contained args)
-                                              then "</body>\n</html>"
-                                              else ""
-                                if fromJust $ console_output args then putStrLn output else writeFile f' output
-                                return()
-                Just Graph ->  do
-                                let f = dropExtension $ file args
-                                let result = generateGraph args (Ok tree) f
-                                let f' = f ++ "." ++ (extension result)
-                                when (not $ fromJust $ no_stats args) $ putStrLn (statistics result)
-                                if fromJust $ console_output args then putStrLn (outputCode result) else writeFile f' (outputCode result)
-                                return()
-                otherwise  -> do
-                                let oTree = compile args tree
-                                f' <- save args oTree
-                                when (fromJust $ validate args) $ runValidate args f'                      
-
-save :: ClaferArgs -> (IModule, GEnv, Bool) -> IO [Char]
-save    args          oTree                 = do
-  let result = generate args oTree
-  when (not $ fromJust $ no_stats args) $ putStrLn (statistics result)
-  let f = dropExtension $ file args                      
-  let f' = f ++ "." ++ (extension result)
-  if fromJust $ console_output args then putStrLn (outputCode result) else writeFile f' (outputCode result)
-  when (fromJust $ alloy_mapping args) $ writeFile (f ++ "." ++ "map") $ fromJust (mappingToAlloy result)
-  return f'
-  
+run v args input =
+  do
+    result <- runClaferT args $
+      do
+        addFragments $ fragments input
+        env <- getEnv
+        parse
+        compile
+        f' <- save
+        when (fromJust $ validate args) $ liftIO $ runValidate args f'
+    if mode args == Just Html
+      then htmlCatch result args input
+      else return ()
+    result `catch` handleErrs
+  where
+  catch (Left err) f = f err
+  catch (Right r)  _ = return r
+  addFragments []     = return ()
+  addFragments (x:xs) = addModuleFragment x >> addFragments xs
+  fragments model = map unlines $ fragments' $ lines model
+  fragments' []                  = []
+  fragments' ("//# FRAGMENT":xs) = fragments' xs
+  fragments' model               = takeWhile (/= "//# FRAGMENT") model : fragments' (dropWhile (/= "//# FRAGMENT") model)
+--  htmlCatch :: Either ClaferErr CompilerResult -> ClaferArgs -> String -> IO(CompilerResult)
+  htmlCatch (Right r) _ _ = return r
+  htmlCatch (Left err) args model =
+    do let f = (dropExtension $ file args) ++ ".html"
+       let result = (if (fromJust $ self_contained args) then header ++ css ++ "</head>\n<body>\n<pre>\n" else "") ++ highlightErrors model err ++
+                                                               (if (fromJust $ self_contained args) then "\n</pre>\n</html>" else "")
+       liftIO $ if fromJust $ console_output args then putStrLn result else writeFile f result
+  highlightErrors :: String -> [ClaferErr] -> String
+  highlightErrors model errors = unlines $ highlightErrors' (lines model) errors--assumes the fragments have been concatenated
+  highlightErrors' :: [String] -> [ClaferErr] -> [String]
+  highlightErrors' model [] = model
+  highlightErrors' model ((ClaferErr msg):es) = highlightErrors' model es
+  highlightErrors' model ((ParseErr ErrPos{modelPos = Pos l c, fragId = n} msg):es) = do
+      let (ls, lss) = genericSplitAt (l + toInteger n) model
+      let newLine = fst (genericSplitAt (c - 1) $ last ls) ++ "<span class=\"error\" title=\"Parse failed at line " ++ show l ++ " column " ++ show c ++
+             "...\n" ++ msg ++ "\">" ++ (if snd (genericSplitAt (c - 1) $ last ls) == "" then "&nbsp;" else snd (genericSplitAt (c - 1) $ last ls)) ++ "</span>"
+      highlightErrors' (init ls ++ [newLine] ++ lss) es
+  handleErrs = mapM_ handleErr
+  handleErr (ClaferErr msg) =
+    do
+      putStrLn "\nError...\n"
+      putStrLn msg
+      exitFailure
+  -- We only use one fragment. Fragment id and position is not useful to us. We
+  -- only care about the position relative to 
+  handleErr (ParseErr ErrPos{modelPos = Pos l c} msg) =
+    do
+      putStrLn $ "\nParse failed at line " ++ show l ++ " column " ++ show c ++ "..."
+      putStrLn msg
+      exitFailure
+  handleErr (SemanticErr ErrPos{modelPos = Pos l c} msg) =
+    do
+      putStrLn $ "\nCompile error at line " ++ show l ++ " column " ++ show c ++ "..."
+      putStrLn msg
+      exitFailure
+      
+  save =
+    do
+      result <- generate
+      env <- getEnv
+      let (iModule, genv, au) = ir env
+      result' <- if (fromJust $ add_graph args) && (mode args == Just Html) 
+	     then do
+		   (_, graph, _) <- liftIO $ readProcessWithExitCode "dot"  ["-Tsvg"] $ genSimpleGraph (ast env) iModule (dropExtension $ file args)
+		   return $ summary graph result
+		 else return result
+      liftIO $ when (not $ fromJust $ no_stats args) $ putStrLn (statistics result')
+      let f = dropExtension $ file args
+      let f' = f ++ "." ++ (extension result)
+      liftIO $ if fromJust $ console_output args then putStrLn (outputCode result') else writeFile f' (outputCode result')
+      liftIO $ when (fromJust $ alloy_mapping args) $ writeFile (f ++ "." ++ "map") $ show (mappingToAlloy result')
+      return f'
+  summary graph result = result{outputCode=unlines $ summary' graph ("<pre>" ++ statistics result ++ "</pre>") (lines $ outputCode result)}
+  summary' _ _ [] = []
+  summary' graph stats ("<!-- # SUMMARY /-->":xs) = graph:stats:summary' graph stats xs
+  summary' graph stats ("<!-- # STATS /-->":xs) = stats:summary' graph stats xs
+  summary' graph stats ("<!-- # GRAPH /-->":xs) = graph:summary' graph stats xs
+  summary' graph stats ("<!-- # CVLGRAPH /-->":xs) = graph:summary' graph stats xs
+  summary' graph stats (x:xs) = x:summary' graph stats xs
+    
 conPutStrLn args s = when (not $ fromJust $ console_output args) $ putStrLn s
 
 runValidate :: ClaferArgs -> [Char] -> IO ()
 runValidate args fo = do
   let path = (fromJust $ tooldir args) ++ "/"
+  liftIO $ putStrLn ("tooldir=" ++ path)
   case (fromJust $ mode args) of
     Xml -> do
       writeFile "ClaferIR.xsd" claferIRXSD
@@ -122,4 +160,3 @@ start :: VerbosityL -> ClaferArgs -> InputModel-> IO ()
 start v args model = if fromJust $ schema args
   then putStrLn claferIRXSD
   else run v args model
-  
