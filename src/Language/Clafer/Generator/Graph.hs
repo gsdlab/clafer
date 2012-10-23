@@ -33,7 +33,7 @@ import qualified Data.Map as Map
 import Data.Maybe
 import Prelude hiding (exp)
 
-genSimpleGraph m ir name = cleanOutput $ "digraph \"" ++ name ++ "\"\n{\nrankdir=BT;\nranksep=0.1;\nnodesep=0.1;\nnode [shape=box margin=0.025,0.025];\n" ++ body ++ "}"
+genSimpleGraph m ir name = cleanOutput $ "digraph \"" ++ name ++ "\"\n{\nrankdir=BT;\nranksep=0.3;\nnodesep=0.1;\ngraph [fontname=Sans fontsize=11];\nnode [shape=box fontname=Sans fontsize=11 margin=0.020,0.020 height=0.2 ];\nedge [fontname=Sans fontsize=11];\n" ++ body ++ "}"
                            where body = graphSimpleModule m $ traceIrModule ir
                            
 genCVLGraph m ir name = cleanOutput $ "digraph \"" ++ name ++ "\"\n{\nrankdir=BT;\nranksep=0.1;\nnodesep=0.1;\nnode [shape=box margin=0.025,0.025];\nedge [arrowhead=none];\n" ++ body ++ "}"
@@ -78,11 +78,11 @@ graphSimpleSuper (SuperSome superHow setExp) topLevel irMap = let {parent [] = "
                                                             if super == "error" then "" else "\"" ++ fromJust (snd3 topLevel) ++ "\" -> \"" ++ parent (graphSimpleSetExp setExp topLevel irMap) ++ "\"" ++ graphSimpleSuperHow superHow topLevel irMap
 graphSimpleSuper (PosSuperSome _ superHow setExp) topLevel irMap = graphSimpleSuper (SuperSome superHow setExp) topLevel irMap
 
-graphSimpleSuperHow SuperColon  topLevel irMap = " [arrowhead = onormal " ++ if fst3 topLevel == True then "constraint = true];\n" else "style = dashed constraint = false];\n"
+graphSimpleSuperHow SuperColon  topLevel irMap = " [arrowhead = onormal " ++ if fst3 topLevel == True then "constraint = true weight=100];\n" else "style = dashed weight=10 color=lightgray ];\n"
 graphSimpleSuperHow (PosSuperColon _) topLevel irMap = graphSimpleSuperHow SuperColon topLevel irMap
-graphSimpleSuperHow SuperArrow  topLevel irMap = " [arrowhead = vee constraint = false" ++ (if fst3 topLevel == True then "" else " label=" ++ (fromJust $ trd3 topLevel)) ++ "];\n"
+graphSimpleSuperHow SuperArrow  topLevel irMap = " [arrowhead = vee weight=10 color=lightgray fontcolor=lightgray" ++ (if fst3 topLevel == True then "" else " label=" ++ (fromJust $ trd3 topLevel)) ++ "];\n"
 graphSimpleSuperHow (PosSuperArrow _) topLevel irMap = graphSimpleSuperHow SuperArrow topLevel irMap
-graphSimpleSuperHow SuperMArrow topLevel irMap = " [arrowhead = veevee constraint = false" ++ (if fst3 topLevel == True then "" else " label=" ++ (fromJust $ trd3 topLevel)) ++ "];\n"
+graphSimpleSuperHow SuperMArrow topLevel irMap = " [arrowhead = veevee weight=10 color=lightgray fontcolor=lightgray" ++ (if fst3 topLevel == True then "" else " label=" ++ (fromJust $ trd3 topLevel)) ++ "];\n"
 graphSimpleSuperHow (PosSuperMArrow _) topLevel irMap = graphSimpleSuperHow SuperMArrow topLevel irMap     
 
 graphSimpleName (Path modids) topLevel irMap = unwords $ map (\x -> graphSimpleModId x topLevel irMap) modids
