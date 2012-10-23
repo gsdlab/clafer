@@ -335,7 +335,7 @@ generate =
                         Xml      -> ("xml", genXmlModule iModule, Nothing)
                         Clafer   -> ("des.cfr", printTree $ sugarModule iModule, Nothing)
                         Html     -> ("html", generateHtml env, Nothing)
-                        Graph    -> ("dot", genSimpleGraph (ast env) iModule (dropExtension $ file cargs), Nothing)
+                        Graph    -> ("dot", genSimpleGraph (ast env) iModule (dropExtension $ file cargs) (fromJust $ show_references cargs), Nothing)
                         CVLGraph -> ("dot", genCVLGraph (ast env) iModule (dropExtension $ file cargs), Nothing)
     return $ CompilerResult { extension = ext, 
                      outputCode = code, 

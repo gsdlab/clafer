@@ -53,6 +53,7 @@ data ClaferArgs = ClaferArgs {
       alloy_mapping :: Maybe Bool,
       self_contained :: Maybe Bool,
       add_graph :: Maybe Bool,
+	  show_references :: Maybe Bool,
       add_comments :: Maybe Bool,
       file :: FilePath
     } deriving (Show, Data, Typeable)
@@ -75,6 +76,7 @@ clafer = ClaferArgs {
   alloy_mapping       = def &= help "Generate mapping to Alloy source code ('alloy' and 'alloy42' modes only)" &= name "a",
   self_contained      = def &= help "Generate a self-contained html document ('html' mode only)",
   add_graph           = def &= help "Add a graph to the generated html model ('html' mode only). Requires the \"dot\" executable to be on the system path.",
+  show_references     = def &= help "Whether the links for references should be rendered. ('html' and 'graph' modes only)." &= name "sr",
   add_comments        = def &= help "Include comments from the source file in the html output ('html' mode only).",
   file                = def &= args   &= typ "FILE"
  } &= summary ("Clafer " ++ version) &= program "clafer"
@@ -112,6 +114,7 @@ mergeArgs args args'  = args' {
   alloy_mapping       = alloy_mapping args       `mplus` alloy_mapping args',
   self_contained      = self_contained args      `mplus` self_contained args',
   add_graph           = add_graph args           `mplus` add_graph args',
+  show_references     = show_references args     `mplus` show_references args',  
   add_comments        = add_comments args        `mplus` add_comments args',
   file                = file args}
 
@@ -119,24 +122,25 @@ mergeArgs args args'  = args' {
 setDefArgs args = args {
   mode                = mode args                `mplus` Just Alloy,
   console_output      = console_output args      `mplus` Just (null $ file args),
-  flatten_inheritance = flatten_inheritance args `mplus` Just def,
+  flatten_inheritance = flatten_inheritance args `mplus` Just False,
   timeout_analysis    = timeout_analysis args    `mplus` Just def,
   no_layout           = no_layout args           `mplus` Just def,
   new_layout          = new_layout args          `mplus` Just def,
-  check_duplicates    = check_duplicates args    `mplus` Just def,
-  skip_resolver       = skip_resolver args       `mplus` Just def,
-  keep_unused         = keep_unused args         `mplus` Just def,
-  no_stats            = no_stats args            `mplus` Just def,
-  schema              = schema args              `mplus` Just def,
-  validate            = validate args            `mplus` Just def,
-  noalloyruncommand   = noalloyruncommand args   `mplus` Just def,
+  check_duplicates    = check_duplicates args    `mplus` Just True,
+  skip_resolver       = skip_resolver args       `mplus` Just False,
+  keep_unused         = keep_unused args         `mplus` Just False,
+  no_stats            = no_stats args            `mplus` Just False,
+  schema              = schema args              `mplus` Just False,
+  validate            = validate args            `mplus` Just False,
+  noalloyruncommand   = noalloyruncommand args   `mplus` Just False,
   tooldir             = tooldir args             `mplus` Just "tools/",
-  self_contained      = self_contained args      `mplus` Just def,
-  add_graph           = add_graph args           `mplus` Just def,
-  add_comments        = add_comments args        `mplus` Just def,
-  alloy_mapping       = alloy_mapping args       `mplus` Just def}
+  self_contained      = self_contained args      `mplus` Just False,
+  add_graph           = add_graph args           `mplus` Just False,
+  show_references     = show_references args     `mplus` Just False,
+  add_comments        = add_comments args        `mplus` Just False,
+  alloy_mapping       = alloy_mapping args       `mplus` Just False}
 
 
-emptyClaferArgs = ClaferArgs Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing ""
+emptyClaferArgs = ClaferArgs Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing ""
 
 defaultClaferArgs = setDefArgs emptyClaferArgs
