@@ -30,7 +30,7 @@ echo "module Language.Clafer.Css where"
 echo ""
 echo "header = \"<!DOCTYPE html>\n<html>\n<head>\n<meta http-equiv=\\\"X-UA-Compatible\\\" content=\\\"IE=9\\\">\n\""
 echo ""
-echo "css = unlines [ \"<style>\","
+echo "css = unlines [ "
 # Remove all Windows style carriage returns
 #Set the internal field separator to empty string to preserve leading white space
 tr -d '\r' < $1 | while IFS="" read line
@@ -39,6 +39,4 @@ do
         line=${line//\"/\\\"}
         echo "  \"$line\",";
 done
-echo "  \"</style>\"]"
-
-
+echo " \"\" ]"

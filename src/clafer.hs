@@ -74,7 +74,7 @@ run v args input =
   htmlCatch (Right r) _ _ = return r
   htmlCatch (Left err) args model =
     do let f = (dropExtension $ file args) ++ ".html"
-       let result = (if (fromJust $ self_contained args) then header ++ css ++ "</head>\n<body>\n<pre>\n" else "") ++ highlightErrors model err ++
+       let result = (if (fromJust $ self_contained args) then header ++ "<style>" ++ css ++ "</style>" ++ "</head>\n<body>\n<pre>\n" else "") ++ highlightErrors model err ++
                                                                (if (fromJust $ self_contained args) then "\n</pre>\n</html>" else "")
        liftIO $ if fromJust $ console_output args then putStrLn result else writeFile f result
   highlightErrors :: String -> [ClaferErr] -> String
