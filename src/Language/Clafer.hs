@@ -80,6 +80,7 @@ import Language.Clafer.Intermediate.StringAnalyzer
 import Language.Clafer.Intermediate.Transformer
 import Language.Clafer.Optimizer.Optimizer
 import Language.Clafer.Generator.Alloy
+import Language.Clafer.Generator.Choco
 import Language.Clafer.Generator.Xml
 import Language.Clafer.Generator.Schema
 import Language.Clafer.Generator.Stats
@@ -337,6 +338,7 @@ generate =
                         Html     -> ("html", generateHtml env, Nothing)
                         Graph    -> ("dot", genSimpleGraph (ast env) iModule (dropExtension $ file cargs), Nothing)
                         CVLGraph -> ("dot", genCVLGraph (ast env) iModule (dropExtension $ file cargs), Nothing)
+                        Choco    -> ("js", genCModule cargs (astrModule iModule, genv), Nothing)
     return $ CompilerResult { extension = ext, 
                      outputCode = code, 
                      statistics = stats,
