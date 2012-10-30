@@ -33,10 +33,10 @@ import qualified Data.Map as Map
 import Data.Maybe
 import Prelude hiding (exp)
 
-genSimpleGraph m ir name showRefs = cleanOutput $ "digraph \"" ++ name ++ "\"\n{\nrankdir=BT;\nranksep=0.3;\nnodesep=0.1;\ngraph [fontname=Sans fontsize=11];\nnode [shape=box fontname=Sans fontsize=11 margin=0.020,0.020 height=0.2 ];\nedge [fontname=Sans fontsize=11];\n" ++ body ++ "}"
+genSimpleGraph m ir name showRefs = cleanOutput $ "digraph \"" ++ name ++ "\"\n{\nconcentrate=true;\nrankdir=BT;\nranksep=0.3;\nnodesep=0.1;\ngraph [fontname=Sans fontsize=11];\nnode [shape=box color=lightgray fontname=Sans fontsize=11 margin=\"0.02,0.02\" height=0.2 ];\nedge [fontname=Sans fontsize=11];\n" ++ body ++ "}"
                            where body = graphSimpleModule m (traceIrModule ir) showRefs
                            
-genCVLGraph m ir name = cleanOutput $ "digraph \"" ++ name ++ "\"\n{\nrankdir=BT;\nranksep=0.1;\nnodesep=0.1;\nnode [shape=box margin=0.025,0.025];\nedge [arrowhead=none];\n" ++ body ++ "}"
+genCVLGraph m ir name = cleanOutput $ "digraph \"" ++ name ++ "\"\n{\nrankdir=BT;\nranksep=0.1;\nnodesep=0.1;\nnode [shape=box margin=\"0.025,0.025\"];\nedge [arrowhead=none];\n" ++ body ++ "}"
                        where body = graphCVLModule m $ traceIrModule ir
 
 -- Simplified Notation Printer --
@@ -78,14 +78,14 @@ graphSimpleSuper (SuperSome superHow setExp) topLevel irMap showRefs = let {pare
                                                             if super == "error" then "" else "\"" ++ fromJust (snd3 topLevel) ++ "\" -> \"" ++ parent (graphSimpleSetExp setExp topLevel irMap) ++ "\"" ++ graphSimpleSuperHow superHow topLevel irMap showRefs
 graphSimpleSuper (PosSuperSome _ superHow setExp) topLevel irMap showRefs = graphSimpleSuper (SuperSome superHow setExp) topLevel irMap showRefs
 
-graphSimpleSuperHow SuperColon topLevel irMap showRefs = " [arrowhead = onormal " ++ if fst3 topLevel == True then "constraint = true weight=100];\n" else "style = dashed weight=10 color=gray ];\n"
+graphSimpleSuperHow SuperColon topLevel irMap showRefs = " [arrowhead=onormal " ++ if fst3 topLevel == True then "constraint=true weight=100];\n" else "style = dashed weight=10 color=gray ];\n"
 graphSimpleSuperHow (PosSuperColon _) topLevel irMap showRefs  = graphSimpleSuperHow SuperColon topLevel irMap showRefs
-graphSimpleSuperHow SuperArrow topLevel irMap showRefs = " [arrowhead = vee weight=10 color=" ++ refColor showRefs ++ " fontcolor=" ++ refColor showRefs ++ (if fst3 topLevel == True then "" else " label=" ++ (fromJust $ trd3 topLevel)) ++ "];\n"
+graphSimpleSuperHow SuperArrow topLevel irMap showRefs = " [arrowhead=vee constraint=true weight=10 color=" ++ refColor showRefs ++ " fontcolor=" ++ refColor showRefs ++ (if fst3 topLevel == True then "" else " label=" ++ (fromJust $ trd3 topLevel)) ++ "];\n"
 graphSimpleSuperHow (PosSuperArrow _) topLevel irMap showRefs = graphSimpleSuperHow SuperArrow topLevel irMap showRefs
-graphSimpleSuperHow SuperMArrow topLevel irMap showRefs = " [arrowhead = veevee weight=10 color=" ++ refColor showRefs ++ " fontcolor=" ++ refColor showRefs ++ (if fst3 topLevel == True then "" else " label=" ++ (fromJust $ trd3 topLevel)) ++ "];\n"
+graphSimpleSuperHow SuperMArrow topLevel irMap showRefs = " [arrowhead=veevee constraint=true weight=10 color=" ++ refColor showRefs ++ " fontcolor=" ++ refColor showRefs ++ (if fst3 topLevel == True then "" else " label=" ++ (fromJust $ trd3 topLevel)) ++ "];\n"
 graphSimpleSuperHow (PosSuperMArrow _) topLevel irMap showRefs = graphSimpleSuperHow SuperMArrow topLevel irMap showRefs  
 
-refColor True = "gray" 
+refColor True = "lightgray" 
 refColor False = "transparent"
 
 graphSimpleName (Path modids) topLevel irMap = unwords $ map (\x -> graphSimpleModId x topLevel irMap) modids
