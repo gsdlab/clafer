@@ -34,7 +34,7 @@ import System.Timeout
 import Control.Monad.State
 import System.Environment.Executable
 import Data.Maybe
-import System.FilePath.Posix
+import System.FilePath (dropExtension,takeBaseName)
 import System.Process (readProcessWithExitCode)
 
 import Language.Clafer
@@ -104,7 +104,7 @@ run v args input =
       let (iModule, genv, au) = ir env
       result' <- if (fromJust $ add_graph args) && (mode args == Just Html) 
              then do
-                   (_, graph, _) <- liftIO $ readProcessWithExitCode "dot"  ["-Tsvg"] $ genSimpleGraph (ast env) iModule (dropExtension $ file args) (fromJust $ show_references args)
+                   (_, graph, _) <- liftIO $ readProcessWithExitCode "dot"  ["-Tsvg"] $ genSimpleGraph (ast env) iModule (takeBaseName $ file args) (fromJust $ show_references args)
                    return $ summary graph result
                  else return result
       liftIO $ when (not $ fromJust $ no_stats args) $ putStrLn (statistics result')
