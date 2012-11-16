@@ -472,7 +472,7 @@ constraintConstraints =
     oneConstraint' (This (Path parts) k) (Const constant)
       | con == EQU            = oneConstraintOneWay c e1 LEQ e2 >> oneConstraintOneWay c e1 GEQ e2
       | con `elem` [GTH, GEQ] = foldM_ mkCon 1 (reverse parts)
-      | con `elem` [LTH, LEQ] = reifyVar (last parts) `compTo` (return $ fromInteger constant)
+      | con `elem` [LTH, LEQ] = reifyVar (last parts) `comp` (return $ (fromInteger constant :: Double) *^ var uid)
       where
       mkCon :: MonadScope m => Integer -> Part -> m Integer
       mkCon multiplier part =
