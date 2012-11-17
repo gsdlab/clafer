@@ -20,9 +20,9 @@ genCModule :: ClaferArgs -> (IModule, GEnv) -> Result
 genCModule _ (imodule@IModule{mDecls}, _) =
     (genConcreteClafer =<< concreteClafers)
     ++ (genAbstractClafer =<< abstractClafers)
---    ++ (genConstraint =<< concreteClafers)
     ++ (genGroupCardinality =<< clafers)
     ++ (genRefClafer =<< clafers)
+    ++ (genConstraint =<< concreteClafers)
     -- "Prints the solution.
     ++ "function solution() {\n"
     ++ "    solution__root(0, \"\");\n"
@@ -152,14 +152,17 @@ genCModule _ (imodule@IModule{mDecls}, _) =
     genGroupCardinality IClafer{gcard = Nothing} = ""
     genGroupCardinality IClafer{uid, gcard = Just (IGCard _ card)}
         | length children > 0 =
-            "for (var i = 0; i < " ++ show (scopeOf uid) ++ "; i++) {\n"
-            ++ genGroupCardinality' (fst card) (snd card)
-            ++ "}\n"
+            case genGroupCardinality' (fst card) (snd card) of
+                Just group ->
+                    "for (var i = 0; i < " ++ show (scopeOf uid) ++ "; i++) {\n"
+                    ++ group
+                    ++ "}\n"
+                Nothing -> ""
         | otherwise = ""
         where
-        genGroupCardinality' 0 (-1) = ""
-        genGroupCardinality' 0 high = "    addConstraint(implies(member(i, " ++ uid ++ "), leq(" ++ childrenUnion ++ ", " ++ asNumber high ++ ")));\n"
-        genGroupCardinality' low high = "    addConstraint(implies(member(i, " ++ uid ++ "), between(" ++ asNumber low ++ ", " ++ childrenUnion ++ ", " ++ asNumber high ++ ")));\n"
+        genGroupCardinality' 0 (-1) = Nothing
+        genGroupCardinality' 0 high = Just $ "    addConstraint(implies(member(i, " ++ uid ++ "), leq(" ++ childrenUnion ++ ", " ++ asNumber high ++ ")));\n"
+        genGroupCardinality' low high = Just $ "    addConstraint(implies(member(i, " ++ uid ++ "), between(" ++ asNumber low ++ ", " ++ childrenUnion ++ ", " ++ asNumber high ++ ")));\n"
 
         children = childrenOf uid
         childrenUnion = "sum([" ++ (intercalate ", " $ ["__" ++ child ++ "[i].getCard()" | child <- children]) ++ "])"
@@ -171,13 +174,19 @@ genCModule _ (imodule@IModule{mDecls}, _) =
     genConstraint IClafer{elements} =
          unlines $ genConstraint' =<< map exp (mapMaybe iconstraint elements)
         where
-    genConstraint' (IFunExp "=" [PExp{exp = IFunExp "#" [arg1]}, arg2]) =
+    genConstraint' :: IExp -> [String]
+    genConstraint' (IFunExp "#" [arg]) =
+        do
+            arg' <- genConstraint' (exp arg)
+            return $ "singleton(" ++ arg' ++ ".getCard())"
+    genConstraint' (IFunExp "=" [arg1, arg2]) =
         do
             arg1' <- genConstraint' (exp arg1)
             arg2' <- genConstraint' (exp arg2)
-            return $ "addConstraint(eqCard(" ++ arg1' ++ ", " ++ arg2' ++ "));\n";
+            return $ "reifyConstraint(eq(" ++ arg1' ++ ", " ++ arg2' ++ "));\n";
     genConstraint' (IFunExp "." [PExp{iType = Just (TClafer [thisType]), exp = IClaferId{sident = "this"}}, PExp{exp = IClaferId{sident = child}}]) =
         ["__" ++ child ++ "[" ++ show i ++ "]" | i <- [0 .. scopeOf thisType - 1]]
+    genConstraint' (IInt i) = ["constant(" ++ show i ++ ")"]
     genConstraint' e = error $ "genConstraint: " ++ show e
     
 
