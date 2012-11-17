@@ -18,7 +18,11 @@ import Debug.Trace
 
 genCModule :: ClaferArgs -> (IModule, GEnv) -> Result
 genCModule _ (imodule@IModule{mDecls}, _) =
-    (genConcreteClafer =<< concreteClafers)
+    (genScopes =<< clafers)
+    ++ "var scope__integer = 20001;\n"
+    ++ "var scope__low__integer = -10000;\n"
+    ++ "var scope__high__integer = 10000;\n"
+    ++ (genConcreteClafer =<< concreteClafers)
     ++ (genAbstractClafer =<< abstractClafers)
     ++ (genGroupCardinality =<< clafers)
     ++ (genRefClafer =<< clafers)
@@ -76,19 +80,23 @@ genCModule _ (imodule@IModule{mDecls}, _) =
     indirectChildrenOf u = childrenOf =<< supersOf u
     indirectChildrenClaferOf u = childrenClaferOf =<< supersOf u
     
+    genScopes :: IClafer -> Result
+    genScopes IClafer{uid} =
+        "var scope__" ++ uid ++ " = " ++ show (scopeOf uid) ++ ";\n"
+        ++ "var scope__low__" ++ uid ++ " = 0;\n"
+        ++ "var scope__high__" ++ uid ++ " = " ++ show (scopeOf uid - 1) ++ ";\n"
+    
     genConcreteClafer :: IClafer -> Result
     genConcreteClafer IClafer{uid} =
         do
             IClafer{isAbstract, uid = cuid, card}  <- childrenClaferOf uid
             guard $ not isAbstract
-            let scope = scopeOf uid
-            let cScope = scopeOf cuid
             let name = "__" ++ cuid
-            cuid ++ " = set(\"" ++ cuid ++ "\", 0, " ++ show (cScope - 1) ++ ");\n"
-                ++ genClafer' uid scope name cScope card
+            cuid ++ " = set(\"" ++ cuid ++ "\", 0, scope__high__" ++ cuid ++ ");\n"
+                ++ genClafer' uid name cuid card
                 ++ "addConstraint(setUnion(" ++ name ++ ", " ++ cuid ++ "));\n"
-                ++ cuid ++ "__parent = intArray(\"" ++ cuid ++ "__parent\", " ++ show (cScope) ++ ", 0, " ++ show scope ++ ");\n"
-                ++ "addConstraint(inverseSet(" ++ cuid ++ "__parent, " ++ name ++ ".concat(setArray(\"" ++ name ++ "__unused\", 1, 0, " ++ show (cScope - 1) ++ "))));\n"
+                ++ cuid ++ "__parent = intArray(\"" ++ cuid ++ "__parent\", scope__" ++ cuid ++ ", 0, scope__" ++ uid ++ ");\n"
+                ++ "addConstraint(inverseSet(" ++ cuid ++ "__parent, " ++ name ++ ".concat(setArray(\"" ++ name ++ "__unused\", 1, 0, scope__high__" ++ cuid ++ "))));\n"
                 --addConstraint(inverseSet(intArray("B_parent", 4, 0, 2), __c2_B.concat(setArray("__c2_B_unused", 1, 0, 3))));
                 ++ "\n"
                 
@@ -96,46 +104,37 @@ genCModule _ (imodule@IModule{mDecls}, _) =
     genRefClafer IClafer{uid} =
         fromMaybe "" $ do
             ref <- refOf uid
-            let code
-                    | ref == "integer" =
-                        name ++ " = intArray(\"" ++ name ++ "\", " ++ show scope ++ ");\n"
-                    | otherwise =
-                        name ++ " = intArray(\"" ++ name ++ "\", " ++ show scope ++ ", 0, " ++ show (scopeOf ref - 1) ++ ");\n"
+            let code = name ++ " = intArray(\"" ++ name ++ "\", scope__" ++ uid ++ ", scope__low__" ++ ref ++ ", scope__high__" ++ ref ++ ");\n"
             let diff = 
-                    "for(var diff1 = 0; diff1 < " ++ show scope ++ "; diff1++) {\n"
+                    "for(var diff1 = 0; diff1 < scope__" ++ uid ++ "; diff1++) {\n"
                     ++ "    var refdiff = [];\n"
-                    ++ "    for(var diff2 = diff1 + 1; diff2 < " ++ show scope ++ "; diff2++) {\n"
+                    ++ "    for(var diff2 = diff1 + 1; diff2 < scope__" ++ uid ++ "; diff2++) {\n"
                     ++ "        refdiff.push(implies(eq(" ++ parent ++ "[diff1], " ++ parent ++ "[diff2]), neq(" ++ name ++ "[diff1], " ++ name ++ "[diff2])));\n"
                     ++ "    }\n"
-                    ++ "    addConstraint(implies(neq(" ++ parent ++ "[diff1], " ++ show parentScope ++ "), and(refdiff)));\n"
+                    ++ "    addConstraint(implies(neq(" ++ parent ++ "[diff1], scope__" ++ parentOf uid ++ "), and(refdiff)));\n"
                     ++ "}\n"
             return $ code ++ diff
         where
         name = uid ++ "__ref"
         parent = uid ++ "__parent"
-        scope = scopeOf uid
-        parentScope = scopeOf (parentOf uid)
         
     genAbstractClafer :: IClafer -> Result
     genAbstractClafer IClafer{uid} =
         do
             IClafer{isAbstract, uid = cuid, card}  <- childrenClaferOf uid
             let subs = subsOf uid
-            let scope = scopeOf uid
-            let sScopes = map scopeOf subs
-            let cScope = scopeOf cuid
             let names = ["__" ++ cuid ++ "__" ++ sub | sub <- subs]
-            cuid ++ " = set(\"" ++ cuid ++ "\", 0, " ++ show (cScope - 1) ++ ");\n"
-                ++ concat [genClafer' suid sScope name cScope card | (suid, sScope, name) <- zip3 subs sScopes names]
-                ++ cuid ++ "__parent = intArray(\"" ++ cuid ++ "__parent\", " ++ show (cScope) ++ ", 0, " ++ show scope ++ ");\n"
-                ++ "addConstraint(inverseSet(" ++ cuid ++ "__parent, " ++ concatArrays (names ++ ["setArray(\"" ++ cuid ++ "__unused\", 1, 0, " ++ show (cScope - 1) ++ ")"]) ++ "));\n"
+            cuid ++ " = set(\"" ++ cuid ++ "\", 0, scope__high__" ++ cuid ++ ");\n"
+                ++ concat [genClafer' suid name cuid card | (suid, name) <- zip subs names]
+                ++ cuid ++ "__parent = intArray(\"" ++ cuid ++ "__parent\", scope__" ++ cuid ++ ", 0, scope__" ++ uid ++ ");\n"
+                ++ "addConstraint(inverseSet(" ++ cuid ++ "__parent, " ++ concatArrays (names ++ ["setArray(\"" ++ cuid ++ "__unused\", 1, 0, scope__high" ++ cuid ++ ")"]) ++ "));\n"
                 ++ "\n"
         where
         concatArrays [x] = x
         concatArrays (x : xs) = x ++ ".concat(" ++ intercalate ", " xs ++ ")"
         
-    genClafer' parent parentScope uid scope card =
-        uid ++ " = setArray(\"" ++ uid ++ "\", " ++ show parentScope ++ ", 0, " ++ show (scope - 1) ++ ");\n"
+    genClafer' parent uid scope card =
+        uid ++ " = setArray(\"" ++ uid ++ "\", scope__" ++ parent ++ ", 0, scope__high__" ++ scope ++ ");\n"
         ++ "for (var i = 0; i < " ++ uid ++ ".length; i++) {\n"
         ++
             case card of
@@ -154,7 +153,7 @@ genCModule _ (imodule@IModule{mDecls}, _) =
         | length children > 0 =
             case genGroupCardinality' (fst card) (snd card) of
                 Just group ->
-                    "for (var i = 0; i < " ++ show (scopeOf uid) ++ "; i++) {\n"
+                    "for (var i = 0; i < scope__" ++ uid ++ "; i++) {\n"
                     ++ group
                     ++ "}\n"
                 Nothing -> ""
@@ -188,6 +187,9 @@ genCModule _ (imodule@IModule{mDecls}, _) =
         ["__" ++ child ++ "[" ++ show i ++ "]" | i <- [0 .. scopeOf thisType - 1]]
     genConstraint' (IInt i) = ["constant(" ++ show i ++ ")"]
     genConstraint' e = error $ "genConstraint: " ++ show e
+    
+    genConstraintSet iexp = ""
+            
     
 
     genToString :: IClafer -> Result
