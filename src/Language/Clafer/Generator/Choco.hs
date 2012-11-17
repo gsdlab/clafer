@@ -104,19 +104,10 @@ genCModule _ (imodule@IModule{mDecls}, _) =
     genRefClafer IClafer{uid} =
         fromMaybe "" $ do
             ref <- refOf uid
-            let code = name ++ " = intArray(\"" ++ name ++ "\", scope__" ++ uid ++ ", scope__low__" ++ ref ++ ", scope__high__" ++ ref ++ ");\n"
-            let diff = 
-                    "for(var diff1 = 0; diff1 < scope__" ++ uid ++ "; diff1++) {\n"
-                    ++ "    var refdiff = [];\n"
-                    ++ "    for(var diff2 = diff1 + 1; diff2 < scope__" ++ uid ++ "; diff2++) {\n"
-                    ++ "        refdiff.push(implies(eq(" ++ parent ++ "[diff1], " ++ parent ++ "[diff2]), neq(" ++ name ++ "[diff1], " ++ name ++ "[diff2])));\n"
-                    ++ "    }\n"
-                    ++ "    addConstraint(implies(neq(" ++ parent ++ "[diff1], scope__" ++ parentOf uid ++ "), and(refdiff)));\n"
-                    ++ "}\n"
-            return $ code ++ diff
+            return $ name ++ " = intArray(\"" ++ name ++ "\", scope__" ++ uid ++ ", scope__low__" ++ ref ++ ", scope__high__" ++ ref ++ ");\n"
         where
-        name = uid ++ "__ref"
-        parent = uid ++ "__parent"
+            name = uid ++ "__ref"
+            parent = uid ++ "__parent"
         
     genAbstractClafer :: IClafer -> Result
     genAbstractClafer IClafer{uid} =
@@ -130,8 +121,8 @@ genCModule _ (imodule@IModule{mDecls}, _) =
                 ++ "addConstraint(inverseSet(" ++ cuid ++ "__parent, " ++ concatArrays (names ++ ["setArray(\"" ++ cuid ++ "__unused\", 1, 0, scope__high" ++ cuid ++ ")"]) ++ "));\n"
                 ++ "\n"
         where
-        concatArrays [x] = x
-        concatArrays (x : xs) = x ++ ".concat(" ++ intercalate ", " xs ++ ")"
+            concatArrays [x] = x
+            concatArrays (x : xs) = x ++ ".concat(" ++ intercalate ", " xs ++ ")"
         
     genClafer' parent uid scope card =
         uid ++ " = setArray(\"" ++ uid ++ "\", scope__" ++ parent ++ ", 0, scope__high__" ++ scope ++ ");\n"
@@ -169,11 +160,26 @@ genCModule _ (imodule@IModule{mDecls}, _) =
     asNumber (-1) = "Number.POSITIVE_INFINITY"
     asNumber num = show num
 
+    genUniqueConstraint :: String -> Result
+    genUniqueConstraint uid =
+        "uniqueRef(" ++ parent ++ ", scope__" ++ parentOf uid ++ ", " ++ name ++ ")"
+        where
+            name = uid ++ "__ref"
+            parent = uid ++ "__parent"
+    
     genConstraint :: IClafer -> Result
     genConstraint IClafer{elements} =
-         unlines $ genConstraint' =<< map exp (mapMaybe iconstraint elements)
+         unlines $ ["addConstraint(" ++ c ++ ")" | c <- genConstraint' =<< map exp (mapMaybe iconstraint elements)]
         where
     genConstraint' :: IExp -> [String]
+    -- Special constraint for references.
+    -- Optimize!
+    genConstraint' (IDeclPExp IAll [IDecl True [x, y]  PExp{exp = IClaferId {sident}}]
+        PExp{exp = IFunExp "!=" [
+            PExp{exp = IFunExp "." [PExp{exp = IClaferId{sident = xident}}, PExp{exp = IClaferId{sident = "ref"}}]},
+            PExp{exp = IFunExp "." [PExp{exp = IClaferId{sident = yident}}, PExp{exp = IClaferId{sident = "ref"}}]}]})
+                | x == xident && y == yident = [genUniqueConstraint sident]
+                | otherwise                  = error "TODO:genConstraint"
     genConstraint' (IFunExp "#" [arg]) =
         do
             arg' <- genConstraint' (exp arg)
@@ -182,7 +188,7 @@ genCModule _ (imodule@IModule{mDecls}, _) =
         do
             arg1' <- genConstraint' (exp arg1)
             arg2' <- genConstraint' (exp arg2)
-            return $ "reifyConstraint(eq(" ++ arg1' ++ ", " ++ arg2' ++ "));\n";
+            return $ "eq(" ++ arg1' ++ ", " ++ arg2' ++ ");\n";
     genConstraint' (IFunExp "." [PExp{iType = Just (TClafer [thisType]), exp = IClaferId{sident = "this"}}, PExp{exp = IClaferId{sident = child}}]) =
         ["__" ++ child ++ "[" ++ show i ++ "]" | i <- [0 .. scopeOf thisType - 1]]
     genConstraint' (IInt i) = ["constant(" ++ show i ++ ")"]
