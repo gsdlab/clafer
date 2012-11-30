@@ -18,15 +18,20 @@ import Debug.Trace
 
 genCModule :: ClaferArgs -> (IModule, GEnv) -> Result
 genCModule _ (imodule@IModule{mDecls}, _) =
-    (genScopes =<< clafers)
+    "// Scopes\n"
+    ++ genScopes
     ++ "var scope__low__integer = -10000;\n"
     ++ "var scope__high__integer = 10000;\n"
+    ++ "\n"
+    ++ "// Offsets\n"
+    ++ genOffsets
+    ++ "\n"
     ++ (genConcreteClafer =<< clafers)
---     ++ (genAbstractClafer =<< abstractClafers)
+    ++ (genAbstractClafer =<< abstractClafers)
     ++ (genCardinality =<< clafers)
     ++ (genGroupCardinality =<< clafers)
     ++ (genRefClafer =<< clafers)
-    ++ (genConstraint =<< concreteClafers)
+    ++ (genConstraint =<< clafers)
     -- "Prints the solution.
     ++ "function solution() {\n"
     ++ "    solution__root(0, \"\");\n"
@@ -50,12 +55,18 @@ genCModule _ (imodule@IModule{mDecls}, _) =
     
     -- All abstract clafers u inherits
     supersOf u =
+        case superOf u of
+             Just su -> su : supersOf su
+             Nothing -> []
+        
+            
+    superOf u =
         case super $ claferWithUid u of
             ISuper False [PExp{exp = IClaferId{sident}}]
-                | sident == "clafer"  -> []
-                | sident `elem` prims -> []
-                | otherwise           -> sident : supersOf sident
-            _ -> []
+                | sident == "clafer"  -> Nothing
+                | sident `elem` prims -> Nothing
+                | otherwise           -> Just sident
+            _ -> Nothing
             
     refOf u =
         case super $ claferWithUid u of
@@ -66,9 +77,24 @@ genCModule _ (imodule@IModule{mDecls}, _) =
                 | otherwise           -> Nothing
             _ -> Nothing
             
-    -- All concrete clafers that inherit u
-    subsOf u = [uid | IClafer{uid} <- concreteClafers, u `elem` supersOf uid]
-    subClafersOf = map claferWithUid . subsOf
+    -- All clafers that inherit u
+    subOf :: String -> [String]
+    subOf u = [uid | IClafer{uid} <- clafers, Just u == superOf uid]
+    subClaferOf :: String -> [IClafer]
+    subClaferOf = map claferWithUid . subOf
+    
+    subOffsets :: [(String, String, Integer)]
+    subOffsets = [(uid, sub, off) | IClafer{uid} <- clafers, let subs = subOf uid, (sub, off) <- zip subs $ offsets subs]
+    
+    subOffsetOf :: String -> Integer
+    subOffsetOf sub = thd3 $ fromMaybe (error $ "subOffsetOf: " ++ sub) $ find ((== sub) . snd3) subOffsets
+    
+    snd3 (_, b, _) = b
+    thd3 (_, _, c) = c
+    
+    offsets :: [String] -> [Integer]
+    offsets = scanl (flip $ (+) . scopeOf) 0
+        
 
     parentOf u = fst $ fromMaybe (error $ "parentOf: \"" ++ u ++ "\" is not a clafer") $ find ((== u) . uid . snd) parentChildMap
     parentClaferOf = claferWithUid . parentOf
@@ -99,22 +125,28 @@ genCModule _ (imodule@IModule{mDecls}, _) =
             (l1, h1) <*> (l2, h2) = (l1 * l2, h1 * h2)
                  
     
-    genScopes :: IClafer -> Result
-    genScopes IClafer{uid} =
-        "var scope__" ++ uid ++ " = " ++ show (scopeOf uid) ++ ";\n"
-        ++ "var scope__low__" ++ uid ++ " = 0;\n"
-        ++ "var scope__high__" ++ uid ++ " = " ++ show (scopeOf uid - 1) ++ ";\n"
+    genScopes :: Result
+    genScopes =
+        do
+            IClafer{uid} <- clafers
+            "var scope__" ++ uid ++ " = " ++ show (scopeOf uid) ++ ";\n"
+                ++ "var scope__low__" ++ uid ++ " = 0;\n"
+                ++ "var scope__high__" ++ uid ++ " = " ++ show (scopeOf uid - 1) ++ ";\n"
+    genOffsets :: Result
+    genOffsets = concat ["var offset__" ++ sub ++ " = " ++ show off ++ ";\n" | (sup, sub, off) <- subOffsets]
     
     genConcreteClafer :: IClafer -> Result
     genConcreteClafer IClafer{uid} =
         do
-            IClafer{uid = cuid, card}  <- childrenClaferOf uid
+            IClafer{isAbstract, uid = cuid, card}  <- childrenClaferOf uid
             let name = "__" ++ cuid
-            cuid ++ " = set(\"" ++ cuid ++ "\", 0, scope__high__" ++ cuid ++ ");\n"
-                ++ name ++ " = setArray(\"" ++ name ++ "\", scope__" ++ uid ++ ", 0, scope__high__" ++ cuid ++ ");\n"
-                ++ "addConstraint(setUnion(" ++ name ++ ", " ++ cuid ++ "));\n"
-                ++ cuid ++ "__parent = intArray(\"" ++ cuid ++ "__parent\", scope__" ++ cuid ++ ", 0, scope__" ++ uid ++ ");\n"
-                ++ "addConstraint(inverseSet(" ++ cuid ++ "__parent, " ++ name ++ ".concat(setArray(\"" ++ name ++ "__unused\", 1, 0, scope__high__" ++ cuid ++ "))));\n"
+            "// Clafer - " ++ uid ++ "/" ++ cuid ++ "\n"
+                ++ cuid ++ " = set(\"" ++ cuid ++ "\", 0, scope__high__" ++ cuid ++ ");\n"
+                ++ not isAbstract `implies`
+                        (name ++ " = setArray(\"" ++ name ++ "\", scope__" ++ uid ++ ", 0, scope__high__" ++ cuid ++ ");\n"
+                        ++ "addConstraint(setUnion(" ++ name ++ ", " ++ cuid ++ "));\n"
+                        ++ cuid ++ "__parent = intArray(\"" ++ cuid ++ "__parent\", scope__" ++ cuid ++ ", 0, scope__" ++ uid ++ ");\n"
+                        ++ "addConstraint(inverseSet(" ++ cuid ++ "__parent, " ++ name ++ ".concat(setArray(\"" ++ name ++ "__unused\", 1, 0, scope__high__" ++ cuid ++ "))));\n")
                 ++ "\n"
                 
     genRefClafer :: IClafer -> Result
@@ -130,44 +162,34 @@ genCModule _ (imodule@IModule{mDecls}, _) =
         
     genAbstractClafer :: IClafer -> Result
     genAbstractClafer IClafer{uid} =
-        uid ++ " = set(\"" ++ uid ++ "\", 0, scope__" ++ uid ++ ");\n"
-            ++ "__" ++ uid ++ " = " ++ concatArrays ["__" ++ s | s <- subs] ++ ";\n"
-            ++ "addConstraint(setUnion([" ++ intercalate ", " subs ++ "], " ++ uid ++ "));\n"
-            ++ children
+        "// Abstract - " ++ uid ++ "\n"
+        ++ concat [channel sup sub | (sup, sub, _) <- subOffsets]
         where
-            subs = subsOf uid
-            children =
-                do
-                    IClafer{uid = cuid, card} <- childrenClaferOf uid
-                    let names = ["__" ++ cuid ++ "__" ++ sub | sub <- subs]
-                    cuid ++ " = set(\"" ++ cuid ++ "\", 0, scope__high__" ++ cuid ++ ");\n"
-                        ++ unlines [name ++ " = setArray(\"" ++ name  ++ "\", scope__" ++ suid  ++ ", 0, scope__high__" ++ cuid ++ ");"
-                            | (suid, name) <- zip subs names]
-                        ++ "__" ++ cuid ++ " = " ++ concatArrays names ++ ";\n"
-                        ++ cuid ++ "__parent = intArray(\"" ++ cuid ++ "__parent\", scope__" ++ cuid ++ ", 0, scope__" ++ uid ++ ");\n"
-                        ++ "addConstraint(inverseSet(" ++ cuid ++ "__parent, " ++ concatArrays (names ++ ["setArray(\"" ++ cuid ++ "__unused\", 1, 0, scope__high__" ++ cuid ++ ")"]) ++ "));\n"
-                        ++ "\n"
-            concatArrays [x] = x
-            concatArrays (x : xs) = x ++ ".concat(" ++ intercalate ", " xs ++ ")"
+            channel sup sub =
+                "for (var i = 0; i < scope__" ++ sub ++ "; i++) {\n"
+                ++ "    addConstraint(ifOnlyIf(member(i, " ++ sub ++ "), member(i + offset__" ++ sub ++ ", " ++ sup ++ ")));\n"
+                ++ "}\n"
+                ++ "\n"
         
     genCardinality IClafer{uid} =
         do
-            IClafer{isAbstract, uid = cuid, card}  <- childrenClaferOf uid
+            IClafer{isAbstract, uid = cuid, card = Just card}  <- childrenClaferOf uid
             guard $ not isAbstract
-            genCardinality' uid ("__" ++ cuid) card
-    genCardinality' parent name card =
-        "for (var i = 0; i < " ++ name ++ ".length; i++) {\n"
-        ++
-            case card of
-                Just (low, -1)   ->
-                    "    addConstraint(implies(member(i , " ++ parent ++ "), geqCard(" ++ name ++ "[i], " ++ show low ++ ")));\n"
-                Just (low, high)
-                    | low == high ->
-                        "    addConstraint(implies(member(i, " ++ parent ++ "), eqCard(" ++ name ++ "[i], " ++ show low ++ ")));\n"
-                    | otherwise   ->
-                        "    addConstraint(implies(member(i, " ++ parent ++ "), and([geqCard(" ++ name ++ "[i], " ++ show low ++ "), leqCard(" ++ name ++ "[i], " ++ show high ++ ")])));\n"
-        ++ "    addConstraint(implies(notMember(i, " ++ parent ++ "), eqCard(" ++ name ++ "[i], 0)));\n"
-        ++ "}\n"
+            let name = "__" ++ cuid
+            "// Child - " ++ uid ++ "/" ++ cuid ++ " " ++ show card ++ "\n"
+                ++ "for (var i = 0; i < " ++ name ++ ".length; i++) {\n"
+                ++
+                    case card of
+                        (low, -1)   ->
+                            "    addConstraint(implies(member(i , " ++ uid ++ "), geqCard(" ++ name ++ "[i], " ++ show low ++ ")));\n"
+                        (low, high)
+                            | low == high ->
+                                "    addConstraint(implies(member(i, " ++ uid ++ "), eqCard(" ++ name ++ "[i], " ++ show low ++ ")));\n"
+                            | otherwise   ->
+                                "    addConstraint(implies(member(i, " ++ uid ++ "), and([geqCard(" ++ name ++ "[i], " ++ show low ++ "), leqCard(" ++ name ++ "[i], " ++ show high ++ ")])));\n"
+                ++ "    addConstraint(implies(notMember(i, " ++ uid ++ "), eqCard(" ++ name ++ "[i], 0)));\n"
+                ++ "}\n"
+                ++ "\n"
 
     genGroupCardinality IClafer{gcard = Nothing} = ""
     genGroupCardinality IClafer{uid, gcard = Just (IGCard _ card)}
@@ -203,9 +225,7 @@ genCModule _ (imodule@IModule{mDecls}, _) =
         ++ unlines ["    addConstraint(" ++  c ++ ");" | c <- constraint =<< mapMaybe iconstraint elements]
         ++ "}\n"
         where
-            constraint c
-                | isQuant c = genConstraint' c
-                | otherwise = ["implies(member(__this, " ++ uid ++ "), " ++ c' ++ ")" | c' <- genConstraint' c]
+            constraint c = ["implies(member(__this, " ++ uid ++ "), " ++ c' ++ ")" | c' <- genConstraint' c]
         
     nameOfType TInteger = "integer"
     nameOfType (TClafer [t]) = t
@@ -295,30 +315,44 @@ genCModule _ (imodule@IModule{mDecls}, _) =
     
 
     genToString :: IClafer -> Result
-    genToString c@IClafer{ident, uid = puid, elements} =
+    genToString c@IClafer{isAbstract = False, ident, uid = puid, elements} =
         "function solution__" ++ puid ++ "(parent, indent) {\n"
-        ++ "    var i = getVar(" ++ name ++ "[parent]).getValue();\n"
+        ++ "    var i = getVar(__" ++ puid ++ "[parent]).getValue();\n"
         ++ "    for (var j in i) {\n"
         ++ "        var k = i[j];\n"
         ++ "        println(indent + \"" ++ ident ++ "\" + k);\n"
-        ++ concat ["        solution__" ++ cuid ++ "(k, \"    \" + indent);\n" | IClafer{uid = cuid} <- children]
-        ++ concat [
-            "        __" ++ cuid ++ " = __" ++ cuid ++ "__" ++ puid ++ ";\n"
-            ++ "        solution__" ++ cuid ++ "(k, \"    \" + indent);\n"
-            | IClafer{uid = cuid} <- indirectChildren]
-        ++ (case refOf puid of
-                Just "integer" ->
-                    "        println(\"    \" + indent + \"ref = \" + getVar(" ++ puid ++ "__ref[k]).getValue());\n"
-                Just ref ->
-                    "        println(\"    \" + indent + \"ref = " ++ sidentOf ref ++ "\" + getVar(" ++ puid ++ "__ref[k]).getValue());\n"
-                Nothing  -> "")
+        ++ genSuperString puid
+        ++ genChildrenString puid
+        ++ genRefString puid
         ++ "    }\n"
         ++ "}\n"
         ++ "\n"
-        where
-        name = "__" ++ puid
-        children = filter isNotAbstract $ childrenClaferOf puid
-        indirectChildren = filter isNotAbstract $ indirectChildrenClaferOf puid
+    genToString c@IClafer{isAbstract = True, ident, uid = puid, elements} =
+        "function solution__" ++ puid ++ "(k, indent) {\n"
+        ++ genSuperString puid
+        ++ genChildrenString puid
+        ++ genRefString puid
+        ++ "}\n"
+        ++ "\n"
+    
+    genSuperString :: String -> Result
+    genSuperString puid =
+        fromMaybe "" $ do
+            sup <- superOf puid
+            return $ "        solution__" ++ sup ++ "(k + offset__" ++ puid ++ ", indent);\n"
+    
+    genChildrenString :: String -> Result
+    genChildrenString puid =
+        concat ["        solution__" ++ cuid ++ "(k, \"    \" + indent);\n" | IClafer{uid = cuid} <- filter isNotAbstract $ childrenClaferOf puid]
+    
+    genRefString :: String -> Result
+    genRefString puid =
+        case refOf puid of
+            Just "integer" ->
+                "        println(\"    \" + indent + \"ref = \" + getVar(" ++ puid ++ "__ref[k]).getValue());\n"
+            Just ref ->
+                "        println(\"    \" + indent + \"ref = " ++ sidentOf ref ++ "\" + getVar(" ++ puid ++ "__ref[k]).getValue());\n"
+            Nothing  -> ""
                 
     sidentOf u = ident $ claferWithUid u
     scopeOf i = fromMaybe 1 $ lookup i scopes
