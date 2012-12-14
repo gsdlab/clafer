@@ -20,14 +20,14 @@ genCModule :: ClaferArgs -> (IModule, GEnv) -> Result
 genCModule _ (imodule@IModule{mDecls}, _) =
     "// Scopes\n"
     ++ genScopes
-    ++ "var scope__low__integer = -10000;\n"
-    ++ "var scope__high__integer = 10000;\n"
+    ++ "var scope__low__integer = -5;\n"
+    ++ "var scope__high__integer = 5;\n"
     ++ "\n"
     ++ "// Offsets\n"
     ++ genOffsets
     ++ "\n"
     ++ (genConcreteClafer =<< clafers)
-    ++ (genAbstractClafer =<< abstractClafers)
+    ++ genAbstractClafers
     ++ (genCardinality =<< clafers)
     ++ (genGroupCardinality =<< clafers)
     ++ (genRefClafer =<< clafers)
@@ -59,6 +59,7 @@ genCModule _ (imodule@IModule{mDecls}, _) =
              Just su -> su : supersOf su
              Nothing -> []
         
+    superHierarchyOf u = u : supersOf u
             
     superOf u =
         case super $ claferWithUid u of
@@ -106,25 +107,6 @@ genCModule _ (imodule@IModule{mDecls}, _) =
     indirectChildrenOf u = childrenOf =<< supersOf u
     indirectChildrenClaferOf u = childrenClaferOf =<< supersOf u
     
-    -- Guesses the size of the set of the expression. Returns a lower and upper bound.
-    guessSize :: PExp -> (Integer, Integer)
-    guessSize PExp{exp} =
-        case exp of
-             IFunExp "." [arg1, PExp{exp = IClaferId{sident = arg2}}]
-                                      -> guessSize arg1 <*> getCard arg2
-             IFunExp "." [arg1, arg2] -> guessSize arg1 <*> guessSize arg2
-             IClaferId{sident}        -> (0, scopeOf sident)
-             IInt _                   -> (1, 1)
-        where
-            getCard uid =
-                case card $ claferWithUid uid of
-                     Just (low, -1)   -> (min low scope, scope)
-                     Just (low, high) -> (min low scope, min high scope)
-                where
-                    scope = scopeOf uid
-            (l1, h1) <*> (l2, h2) = (l1 * l2, h1 * h2)
-                 
-    
     genScopes :: Result
     genScopes =
         do
@@ -160,13 +142,13 @@ genCModule _ (imodule@IModule{mDecls}, _) =
             name = uid ++ "__ref"
             parent = uid ++ "__parent"
         
-    genAbstractClafer :: IClafer -> Result
-    genAbstractClafer IClafer{uid} =
-        "// Abstract - " ++ uid ++ "\n"
-        ++ concat [channel sup sub | (sup, sub, _) <- subOffsets]
+    genAbstractClafers :: Result
+    genAbstractClafers =
+        concat [channel sup sub | (sup, sub, _) <- subOffsets]
         where
             channel sup sub =
-                "for (var i = 0; i < scope__" ++ sub ++ "; i++) {\n"
+                "// Abstract - " ++ sup++ "/" ++ sub ++ "\n"
+                ++ "for (var i = 0; i < scope__" ++ sub ++ "; i++) {\n"
                 ++ "    addConstraint(ifOnlyIf(member(i, " ++ sub ++ "), member(i + offset__" ++ sub ++ ", " ++ sup ++ ")));\n"
                 ++ "}\n"
                 ++ "\n"
@@ -211,7 +193,26 @@ genCModule _ (imodule@IModule{mDecls}, _) =
 
     asNumber (-1) = "Number.POSITIVE_INFINITY"
     asNumber num = show num
+    
+    asBool True  = "true"
+    asBool False = "false"
 
+    -- Is a uniqueness constraint? If so, return the name of unique clafer
+    isUniqueConstraint (IDeclPExp IAll [IDecl True [x, y] PExp{exp = IClaferId {sident}}]
+        PExp{exp = IFunExp "!=" [
+            PExp{exp = IFunExp "." [PExp{exp = IClaferId{sident = xident}}, PExp{exp = IClaferId{sident = "ref"}}]},
+            PExp{exp = IFunExp "." [PExp{exp = IClaferId{sident = yident}}, PExp{exp = IClaferId{sident = "ref"}}]}]})
+                | x == xident && y == yident = return sident
+                | otherwise                  = mzero
+    isUniqueConstraint  (IDeclPExp IAll [IDecl True [x, y] PExp{exp = IFunExp "." [PExp{exp = IClaferId{sident = "this"}}, PExp{exp = IClaferId {sident}}]}]
+        PExp{exp = IFunExp "!=" [
+            PExp{exp = IFunExp "." [PExp{exp = IClaferId{sident = xident}}, PExp{exp = IClaferId{sident = "ref"}}]},
+            PExp{exp = IFunExp "." [PExp{exp = IClaferId{sident = yident}}, PExp{exp = IClaferId{sident = "ref"}}]}]})
+                | x == xident && y == yident = return sident
+                | otherwise                  = mzero
+    isUniqueConstraint _ = mzero
+    
+    -- Ref's as set
     genUniqueConstraint :: String -> Result
     genUniqueConstraint uid =
         "uniqueRef(" ++ parent ++ ", scope__" ++ parentOf uid ++ ", " ++ name ++ ")"
@@ -225,93 +226,125 @@ genCModule _ (imodule@IModule{mDecls}, _) =
         ++ unlines ["    addConstraint(" ++  c ++ ");" | c <- constraint =<< mapMaybe iconstraint elements]
         ++ "}\n"
         where
-            constraint c = ["implies(member(__this, " ++ uid ++ "), " ++ c' ++ ")" | c' <- genConstraint' c]
+            constraint c = ["implies(member(__this, " ++ uid ++ "), " ++ genConstraintPExp c ++ ")"]
         
     nameOfType TInteger = "integer"
     nameOfType (TClafer [t]) = t
-        
-    genConstraint' :: PExp -> [String]
+    
+    namesOfType TInteger = ["integer"]
+    namesOfType (TClafer ts) = ts
+
+    genConstraintPExp :: PExp -> String
+    genConstraintPExp = fst3 . genConstraintPExp'
+
+    getCard uid =
+        case card $ claferWithUid uid of
+                Just (low, -1)   -> (low, scope)
+                Just (low, high) -> (low, high)
+        where
+            scope = scopeOf uid
+    getRefCard uid =
+        case getCard uid of
+                (0, high) -> (0, high)
+                -- TODO: can tighten if has "unique" constraint somewhere in the model
+                (_, high) -> (1, high)
+    
+    fst3 (a, _, _) = a
+    (l1, h1) <*> (l2, h2) = (l1 * l2, h1 * h2)
+    scopeCap scope (l, h) = (min scope l, min scope h)
+    
+    genConstraintPExp' :: PExp -> (String, IType, (Integer, Integer))
     -- Rearrange right joins to left joins.
-    genConstraint' p1@PExp{exp = IFunExp "." [p2, p3@PExp{exp = IFunExp "." [p4, p5]}]} =
-        genConstraintExp $ IFunExp "." [p1{iType = iType p4, exp = IFunExp "." [p2, p4]}, p5]
-    genConstraint' PExp{exp} = genConstraintExp exp
+    genConstraintPExp' p1@PExp{iType = Just typ, exp = IFunExp "." [p2, p3@PExp{exp = IFunExp "." [p4, p5]}]} =
+        genConstraintExp typ $ IFunExp "." [p1{iType = iType p4, exp = IFunExp "." [p2, p4]}, p5]
+    -- Quantifiers over various expressions are split into multiple quantifiers
+    genConstraintPExp' p1@PExp{exp = IDeclPExp quant (d1 : d2 : ds) body} =
+        genConstraintPExp' $ foldl buildPExp body (d1 : d2 : ds)
+        where
+            buildPExp body' decl' = p1{exp = IDeclPExp quant [decl'] body'}
+    genConstraintPExp' PExp{iType = Just typ, exp} =
+        (syntax, typ', scopeCap (sum $ map scopeOf $ namesOfType typ') size)
+        where
+            (syntax, typ', size) = genConstraintExp typ exp
         
-    genConstraintExp :: IExp -> [String]
+    genConstraintExp :: IType -> IExp -> (String, IType, (Integer, Integer))
     -- Special constraint for references.
     -- Optimize!
-    genConstraintExp (IDeclPExp IAll [IDecl True [x, y]  PExp{exp = IClaferId {sident}}]
-        PExp{exp = IFunExp "!=" [
-            PExp{exp = IFunExp "." [PExp{exp = IClaferId{sident = xident}}, PExp{exp = IClaferId{sident = "ref"}}]},
-            PExp{exp = IFunExp "." [PExp{exp = IClaferId{sident = yident}}, PExp{exp = IClaferId{sident = "ref"}}]}]})
-                | x == xident && y == yident = [genUniqueConstraint sident]
-                | otherwise                  = error "TODO:genConstraint"
-    genConstraintExp (IDeclPExp IAll [IDecl True [x, y] 
-        PExp{exp = IFunExp "." [PExp{exp = IClaferId{sident = "this"}}, PExp{exp = IClaferId {sident}}]}]
-        PExp{exp = IFunExp "!=" [
-            PExp{exp = IFunExp "." [PExp{exp = IClaferId{sident = xident}}, PExp{exp = IClaferId{sident = "ref"}}]},
-            PExp{exp = IFunExp "." [PExp{exp = IClaferId{sident = yident}}, PExp{exp = IClaferId{sident = "ref"}}]}]})
-                | x == xident && y == yident = [genUniqueConstraint sident]
-                | otherwise                  = error "TODO:genConstraint"
-    genConstraintExp (IDeclPExp ISome [] b) =
-        do
-            b' <- genConstraint' b
-            return $ "geqCard(" ++ b' ++ ", 1)"
-    genConstraintExp (IDeclPExp INo [] b) =
-        do
-            b' <- genConstraint' b
-            return $ "eqCard(" ++ b' ++ ", 0)"
-    genConstraintExp (IFunExp "#" [arg]) =
-        do
-            arg' <- genConstraint' arg
-            return $ "singleton(" ++ arg' ++ ".getCard())"
-    genConstraintExp (IFunExp "=" [arg1, arg2]) =
-        do
-            arg1' <- genConstraint' arg1
-            arg2' <- genConstraint' arg2
-            return $ "eq(" ++ arg1' ++ ", " ++ arg2' ++ ")";
-    genConstraintExp (IFunExp "." [arg1@PExp{iType = Just t1}, PExp{iType = Just t2, exp = IClaferId{sident = "parent"}}]) =
-        do
-            let t1' = nameOfType t1
-            let t2' = nameOfType t2
-            arg1' <- genConstraint' arg1
-            return $ "joinParent(" ++ arg1' ++ ", scope__" ++ t1' ++ ", " ++ t1' ++ "__parent, scope__" ++ t2' ++ ")"
+    genConstraintExp typ e@(IDeclPExp quant [IDecl disj decls lbody] body) =
+        case isUniqueConstraint e of
+            Just sid -> (genUniqueConstraint sid, typ, (1, 1))
+            Nothing  ->
+                (quantFun quant ++ "(" ++ syntax ++ ", " ++ show low ++ ", " ++ show high ++ ", scope__low__" ++ nameOfType typ' ++ ", scope__high__" ++ nameOfType typ' ++ ", " ++ bodyFun ++ ", " ++ asBool disj ++ ", " ++ show (length decls) ++ ")", typ, (1, 1))
+                where
+                    bodyFun =
+                        "function (args) { "
+                            ++ concat ["var " ++ v ++" = singleton(args[" ++ show i ++ "]); " | (v, i) <- zip decls [0..]]
+                            ++ "return " ++ genConstraintPExp body
+                            ++ ";}"
+                    v = head decls
+                    (syntax, typ', (low, high)) = genConstraintPExp' lbody
+                    quantFun IAll  = "allQuant"
+                    quantFun ISome = "someQuant"
+    genConstraintExp typ (IDeclPExp ISome [] b) =
+        ("geqCard(" ++ genConstraintPExp b ++ ", 1)", typ, (1, 1))
+    genConstraintExp typ (IDeclPExp INo [] b) =
+        ("eqCard(" ++ genConstraintPExp b ++ ", 0)", typ, (1, 1))
+    genConstraintExp typ (IFunExp "#" [arg]) =
+        ("singleton(" ++ genConstraintPExp arg ++ ".getCard())", typ, (1, 1))
+    genConstraintExp typ (IFunExp "=" [arg1, arg2]) =
+        ("eq(" ++ genConstraintPExp arg1 ++ ", " ++ genConstraintPExp arg2 ++ ")", typ, (1, 1))
+    genConstraintExp typ (IFunExp "." [arg1@PExp{iType = Just t1}, PExp{iType = Just t2, exp = IClaferId{sident = "parent"}}]) =
+        ("joinParent(" ++ arg1' ++ ", scope__" ++ t1' ++ ", " ++ t1' ++ "__parent, scope__" ++ t2' ++ ")", typ, size)
+        where
+            t1' = nameOfType t1
+            t2' = nameOfType t2
+            -- TODO: size can be tighter by inspecting cardinality
+            (arg1', _, size) = genConstraintPExp' arg1
     -- Optimize!
-    genConstraintExp (IFunExp "." [PExp{iType = Just (TClafer [t]), exp = IClaferId{sident = "this"}}, PExp{exp = IClaferId{sident = "ref"}}]) =
-        ["singleton(" ++ t ++ "__ref[__this])"]
+    genConstraintExp typ (IFunExp "." [PExp{iType = Just t, exp = IClaferId{sident = "this"}}, PExp{exp = IClaferId{sident = "ref"}}]) =
+        ("singleton(" ++ nameOfType t ++ "__ref[__this])", typ, (1, 1))
     -- Optimize!
-    genConstraintExp (IFunExp "." [PExp{exp = IClaferId{sident = "this"}}, PExp{exp = IClaferId{sident = child}}]) =
-        ["__" ++ child ++ "[__this]"]
-    genConstraintExp k@(IFunExp "." [arg1@PExp{iType = Just (TClafer [t1])}, PExp{iType = Just t2, exp = IClaferId{sident = "ref"}}]) =
-        do
-            let t2' = nameOfType t2
-            arg1' <- genConstraint' arg1
-            return $ "joinRef(" ++ arg1' ++ ", scope__" ++ t1 ++ ", " ++ t1 ++ "__ref" ++ ", scope__low__" ++ t2' ++ ", scope__high__" ++ t2' ++ ")"
-    genConstraintExp (IFunExp "." [arg1@PExp{iType = Just (TClafer [t1])}, PExp{exp = IClaferId{sident}}]) =
-        do
-            arg1' <- genConstraint' arg1
-            return $ "joinChild(" ++ arg1' ++ ", scope__" ++ t1 ++ ", __" ++ sident ++ ", scope__" ++ sident ++ ")"
-    genConstraintExp (IFunExp "=>" [arg1, arg2]) =
-        do
-            arg1' <- genConstraint' arg1
-            arg2' <- genConstraint' arg2
-            return $ "implies(" ++ arg1' ++ ", " ++ arg2' ++ ")"
-    genConstraintExp (IFunExp "<=>" [arg1, arg2]) =
-        do
-            arg1' <- genConstraint' arg1
-            arg2' <- genConstraint' arg2
-            return $ "ifOnlyIf(" ++ arg1' ++ ", " ++ arg2' ++ ")"
-    genConstraintExp (IFunExp "&&" [arg1, arg2]) =
-        do
-            arg1' <- genConstraint' arg1
-            arg2' <- genConstraint' arg2
-            return $ "and([" ++ arg1' ++ ", " ++ arg2' ++ "])"
-    genConstraintExp IClaferId{sident = "this"} = return "constant([__this])"
-    genConstraintExp IClaferId{sident} = return sident
-    genConstraintExp (IInt i) = ["constant([" ++ show i ++ "])"]
-    genConstraintExp e = error $ "genConstraint: " ++ show e
+    genConstraintExp typ (IFunExp "." [PExp{exp = IClaferId{sident = "this"}}, PExp{exp = IClaferId{sident = child}}]) =
+        ("__" ++ child ++ "[__this]", typ, (1, 1))
+    genConstraintExp typ k@(IFunExp "." [arg1@PExp{iType = Just t1}, PExp{iType = Just t2, exp = IClaferId{sident = "ref"}}]) =
+        ("joinRef(" ++ genConstraintPExp arg1 ++ ", scope__" ++ t1' ++ ", " ++ t1' ++ "__ref" ++ ", scope__low__" ++ t2' ++ ", scope__high__" ++ t2' ++ ")", typ, size <*> getRefCard (nameOfType t1))
+        where
+            t1' = nameOfType t1
+            t2' = nameOfType t2
+            (arg1', _, size) = genConstraintPExp' arg1
+    genConstraintExp typ (IFunExp "." [arg1, PExp{exp = IClaferId{sident}}])
+        | null offsets = ("joinChild(" ++ arg1' ++ ", scope__" ++ nameOfType t1 ++ ", __" ++ sident ++ ", scope__" ++ sident ++ ")", typ, size <*> getCard sident)
+        | otherwise    = ("joinChild(" ++ addOffset arg1' ++ ", scope__" ++ parent ++ ", __" ++ sident ++ ", scope__" ++ sident ++ ")", typ, size <*> getCard sident)
+        where
+            addOffset x
+                | null offsets = x
+                | otherwise    = "offset(" ++ x ++ ", " ++ intercalate " + " ["offset__" ++ offset | offset <- offsets] ++ ")"
+            parent = parentOf sident
+            offsets = takeWhile (/= parent) $ superHierarchyOf $ nameOfType t1
+            (arg1', t1, size) = genConstraintPExp' arg1
+    genConstraintExp typ (IFunExp "=>" [arg1, arg2]) =
+        ("implies(" ++ genConstraintPExp arg1 ++ ", " ++ genConstraintPExp arg2 ++ ")", typ, (1, 1))
+    genConstraintExp typ (IFunExp "<=>" [arg1, arg2]) =
+        ("ifOnlyIf(" ++ genConstraintPExp arg1 ++ ", " ++ genConstraintPExp arg2 ++ ")", typ, (1, 1))
+    genConstraintExp typ (IFunExp "&&" [arg1, arg2]) =
+        ("and([" ++ genConstraintPExp arg1 ++ ", " ++ genConstraintPExp arg2 ++ "])", typ, (1, 1))
+    genConstraintExp typ (IFunExp "+" [arg1, arg2]) =
+        ("singletonExpr(plus(" ++ genSum arg1 ++ ", " ++ genSum arg2 ++ "))", typ, (1, 1))
+    genConstraintExp typ (IFunExp "-" [arg1, arg2]) =
+        ("singletonExpr(minus(" ++ genSum arg1 ++ ", " ++ genSum arg2 ++ "))", typ, (1, 1))
+    genConstraintExp typ (IFunExp "*" [arg1, arg2]) =
+        ("singletonExpr(mult(" ++ genSum arg1 ++ ", " ++ genSum arg2 ++ "))", typ, (1, 1))
+    genConstraintExp typ (IFunExp "/" [arg1, arg2]) =
+        ("singletonExpr(div(" ++ genSum arg1 ++ ", " ++ genSum arg2 ++ "))", typ, (1, 1))
+    genConstraintExp typ IClaferId{sident = "this"} = ("constant([__this])", typ, (1, 1))
+    genConstraintExp typ IClaferId{sident} = (sident, typ, (0, scopeOf sident))
+    genConstraintExp typ (IInt i) = ("constant([" ++ show i ++ "])", typ, (1, 1))
+    genConstraintExp typ e = error $ "genConstraint: " ++ show e
     
-    genConstraintSet iexp = ""
-            
+    genSum pexp =
+        "sumSet(" ++ syntax ++ ", " ++ show low ++ ", " ++ show high ++ ")"
+        where
+            (syntax, _, (low, high)) = genConstraintPExp' pexp
     
 
     genToString :: IClafer -> Result
@@ -355,8 +388,11 @@ genCModule _ (imodule@IModule{mDecls}, _) =
             Nothing  -> ""
                 
     sidentOf u = ident $ claferWithUid u
+    scopeOf "integer" = integerScope
     scopeOf i = fromMaybe 1 $ lookup i scopes
     scopes = scopeAnalysis imodule
+    
+    integerScope = 20000
 
 isQuant PExp{exp = IDeclPExp{}} = True
 isQuant _ = False
