@@ -78,7 +78,7 @@ graphSimpleSuper (SuperSome superHow setExp) topLevel irMap showRefs = let {pare
                                                             if super == "error" then "" else "\"" ++ fromJust (snd3 topLevel) ++ "\" -> \"" ++ parent (graphSimpleSetExp setExp topLevel irMap) ++ "\"" ++ graphSimpleSuperHow superHow topLevel irMap showRefs
 graphSimpleSuper (PosSuperSome _ superHow setExp) topLevel irMap showRefs = graphSimpleSuper (SuperSome superHow setExp) topLevel irMap showRefs
 
-graphSimpleSuperHow SuperColon topLevel irMap showRefs = " [arrowhead=onormal " ++ if fst3 topLevel == True then "constraint=true weight=100];\n" else "style = dashed weight=10 color=gray ];\n"
+graphSimpleSuperHow SuperColon topLevel irMap showRefs = " [" ++ if fst3 topLevel == True then "arrowhead=onormal constraint=true weight=100];\n" else "arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.75 minlen=2 penwidth=0.5 constraint=false];\n"
 graphSimpleSuperHow (PosSuperColon _) topLevel irMap showRefs  = graphSimpleSuperHow SuperColon topLevel irMap showRefs
 graphSimpleSuperHow SuperArrow topLevel irMap showRefs = " [arrowhead=vee arrowsize=0.75 penwidth=0.5 constraint=true weight=10 color=" ++ refColor showRefs ++ " fontcolor=" ++ refColor showRefs ++ (if fst3 topLevel == True then "" else " label=" ++ (fromJust $ trd3 topLevel)) ++ "];\n"
 graphSimpleSuperHow (PosSuperArrow _) topLevel irMap showRefs = graphSimpleSuperHow SuperArrow topLevel irMap showRefs
