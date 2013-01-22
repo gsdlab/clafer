@@ -51,8 +51,8 @@ graphSimpleDeclaration _                          _        _     _        = ""
 
 graphSimpleElement (Subclafer clafer)                     topLevel irMap showRefs = graphSimpleClafer clafer topLevel irMap showRefs
 graphSimpleElement (PosSubclafer _ subclafer)             topLevel irMap showRefs = graphSimpleElement (Subclafer subclafer) topLevel irMap showRefs
-graphSimpleElement (ClaferUse name card elements)         topLevel irMap _        = if snd3 topLevel == Nothing then "" else "\"" ++ fromJust (snd3 topLevel) ++ "\" -> \"" ++ graphSimpleName name topLevel irMap ++ "\" [arrowhead = onormal style = dashed constraint = false];\n"
-graphSimpleElement (PosClaferUse span name card elements) topLevel irMap _        = if snd3 topLevel == Nothing then "" else "\"" ++ fromJust (snd3 topLevel) ++ "\" -> \"" ++ getUseId span irMap ++ "\" [arrowhead = onormal style = dashed constraint = false];\n"
+graphSimpleElement (ClaferUse name card elements)         topLevel irMap _        = if snd3 topLevel == Nothing then "" else "\"" ++ fromJust (snd3 topLevel) ++ "\" -> \"" ++ graphSimpleName name topLevel irMap ++ "\" [arrowhead=vee arrowtail=diamond dir=both style=solid constraint=false minlen=2 arrowsize=0.75 penwidth=0.5 ];\n"
+graphSimpleElement (PosClaferUse span name card elements) topLevel irMap _        = if snd3 topLevel == Nothing then "" else "\"" ++ fromJust (snd3 topLevel) ++ "\" -> \"" ++ getUseId span irMap ++ "\" [arrowhead=vee arrowtail=diamond dir=both style=solid constraint=false minlen=2 arrowsize=0.75 penwidth=0.5 ];\n"
 graphSimpleElement _ _ _ _ = ""
 
 graphSimpleElements ElementsEmpty                _        _     _        = ""
@@ -80,9 +80,9 @@ graphSimpleSuper (PosSuperSome _ superHow setExp) topLevel irMap showRefs = grap
 
 graphSimpleSuperHow SuperColon topLevel irMap showRefs = " [arrowhead=onormal " ++ if fst3 topLevel == True then "constraint=true weight=100];\n" else "style = dashed weight=10 color=gray ];\n"
 graphSimpleSuperHow (PosSuperColon _) topLevel irMap showRefs  = graphSimpleSuperHow SuperColon topLevel irMap showRefs
-graphSimpleSuperHow SuperArrow topLevel irMap showRefs = " [arrowhead=vee constraint=true weight=10 color=" ++ refColor showRefs ++ " fontcolor=" ++ refColor showRefs ++ (if fst3 topLevel == True then "" else " label=" ++ (fromJust $ trd3 topLevel)) ++ "];\n"
+graphSimpleSuperHow SuperArrow topLevel irMap showRefs = " [arrowhead=vee arrowsize=0.75 penwidth=0.5 constraint=true weight=10 color=" ++ refColor showRefs ++ " fontcolor=" ++ refColor showRefs ++ (if fst3 topLevel == True then "" else " label=" ++ (fromJust $ trd3 topLevel)) ++ "];\n"
 graphSimpleSuperHow (PosSuperArrow _) topLevel irMap showRefs = graphSimpleSuperHow SuperArrow topLevel irMap showRefs
-graphSimpleSuperHow SuperMArrow topLevel irMap showRefs = " [arrowhead=veevee constraint=true weight=10 color=" ++ refColor showRefs ++ " fontcolor=" ++ refColor showRefs ++ (if fst3 topLevel == True then "" else " label=" ++ (fromJust $ trd3 topLevel)) ++ "];\n"
+graphSimpleSuperHow SuperMArrow topLevel irMap showRefs = " [arrowhead=veevee arrowsize=0.75 minlen=1.5 penwidth=0.5 constraint=true weight=10 color=" ++ refColor showRefs ++ " fontcolor=" ++ refColor showRefs ++ (if fst3 topLevel == True then "" else " label=" ++ (fromJust $ trd3 topLevel)) ++ "];\n"
 graphSimpleSuperHow (PosSuperMArrow _) topLevel irMap showRefs = graphSimpleSuperHow SuperMArrow topLevel irMap showRefs  
 
 refColor True = "lightgray" 
