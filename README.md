@@ -182,14 +182,6 @@ The following directives are markers of locations in the input files for differe
 * `//# STATS` - marks the insertion point for module statistics. The statistics can be omitted using the argument `--no-stats`. 
 * `//# SUMMARY` - shorthand for `//# GRAPH` and `//# STATS`
 
-ClaferMoo
----------
-
-`clafer_moo.sh [MODEL] [PATH TO CLAFER TOOLS]`
-
-#### Note: 
-> On Windows, run the script using Cygwin
-
 Need help?
 ==========
 * See [Project's website](http://gsd.uwaterloo.ca/clafer) for news, technical reports and more
