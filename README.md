@@ -14,17 +14,22 @@ There are many possible applications of Clafer; however, three are prominent:
 Clafer Compiler
 ===============
 
-v0.3.1.17-10-2012
+v0.3.2.24-01-2013
 
 Clafer compiler provides a reference language implementation. It translates models in Clafer to other formats (e.g. Alloy, XML, HTML, DOT) to allow for reasoning and processing with existing tools.
 
-Currently, the compiler is used by Clafer Instance Generator ([ClaferIG](https://github.com/gsdlab/claferIG)), Clafer Multi-Objective Optimizer (ClaferMOO), and Clafer Wiki ([ClaferWiki](https://github.com/gsdlab/claferwiki)).
+Currently, the compiler is used by Clafer Instance Generator ([ClaferIG](https://github.com/gsdlab/claferIG)), Clafer Multi-Objective Optimizer ([ClaferMOO](https://github.com/gsdlab/ClaferMooStandalone)) and [Visualizer](https://github.com/gsdlab/ClaferMooVisualizer), and Clafer Wiki ([ClaferWiki](https://github.com/gsdlab/claferwiki)).
 
 Getting Clafer Tools
 --------------------
 
-Binary distributions of Clafer, ClaferMOO, ClaferIG, and ClaferWiki for Windows, Mac, and Linux, can be downloaded from [ClaferIG Downloads Page](https://github.com/gsdlab/claferig/downloads). ClaferMOO is a set of scripts in Python (cross-platform). Clafer Wiki requires Haskell Platform to run and Cygwin on Windows.
+Binary distributions of Clafer, ClaferIG, and ClaferWiki for Windows, Mac, and Linux, can be downloaded from [ClaferIG Downloads Page](https://github.com/gsdlab/claferig/downloads). Clafer Wiki requires Haskell Platform to run and Cygwin on Windows. 
+
 In case these binaries do not work on your particular machine configuration, the tools can be easily built from source code, as described below.
+
+[ClaferMOO](https://github.com/gsdlab/ClaferMooStandalone) is a set of scripts in Python (cross-platform). It is not part of the binary distribution and it has to be downloaded separately. 
+
+[ClaferMooVisualizer](https://github.com/gsdlab/ClaferMooVisualizer) is a client/server web application written JavaScript.It is not part of the binary distribution and it has to be downloaded separately.  
 
 ### Dependencies for running
 
@@ -32,9 +37,6 @@ In case these binaries do not work on your particular machine configuration, the
 * [Python](http://www.python.org/download/) v2.7.*
   * Needed only by ClaferMOO
 * [Alloy4.1 and/or Alloy4.2](http://alloy.mit.edu/alloy/download.html)
-* [Alloy4MOO](http://www.stevenstewart.ca/alloy4/alloy4moo.jar)
-  * NOTE: Alloy4MOO is a pre-release experimental software. Use at own risk.
-  * Needed only by ClaferMOO
 * [GraphViz](http://graphviz.org/)
   * `dot` is needed only in the `html` mode for SVG graph generation
 
@@ -58,9 +60,6 @@ Building & Installation From Source Code
 * [The Haskell Platform](http://hackage.haskell.org/platform/) v.2012.2.0.0
 * [Alloy4.1 and/or Alloy4.2](http://alloy.mit.edu/alloy/download.html)
   * downloaded automatically during build
-* [Alloy4MOO](http://www.stevenstewart.ca/alloy4/alloy4moo.jar)
-  * downloaded automatically during build
-  * NOTE: Alloy4MOO is a pre-release experimental software. Use at own risk.
 * [Git](http://git-scm.com/)
 
 On Windows only
@@ -69,7 +68,7 @@ On Windows only
 
 ### Important: Branches must correspond
 
-Clafer and ClaferIG are following the *simultaneous release model*. 
+Clafer, ClaferIG, ClaferWiki, ClaferMoo, and ClaferMooVisualizer are following the *simultaneous release model*. 
 The branch `master` contains releases, whereas the branch `develop` contains code under development. 
 When building the tools, the branches should match:
 Releases `clafer/master` and `claferIG/master` are guaranteed to work well together.
@@ -100,7 +99,7 @@ Clafer Compiler
 (As printed by `clafer --help`)
 
 ```
-Clafer v0.3.1.17-10-2012
+Clafer v0.3.2.24-01-2013
 
 clafer [OPTIONS] [FILE]
 
