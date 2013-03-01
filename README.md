@@ -94,7 +94,10 @@ Development versions `clafer/develop` and `claferIG/develop` should work well to
 
 ### Installation
 
-1. execute `make install to=<target directory>`
+1a. On Linux and Mac execute 
+  *`make install to=<target directory>`
+1b. On Windows
+  * `make glpk="c:/<your WinGLPK instal dir>/winglpk-4.48" to=<target directory>`  
 2. add the `<target directory>` is on your command PATH
 
 #### Note: 

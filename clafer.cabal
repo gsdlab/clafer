@@ -20,7 +20,7 @@ Extra-Source-Files:
 					 
 source-repository head
     type:            git
-    location:        https://github.com/gsdlab/clafer
+    location:        git://github.com/gsdlab/clafer.git
 					 
 Executable clafer
     build-tools:     ghc >= 7.4.1

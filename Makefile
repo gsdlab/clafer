@@ -1,32 +1,16 @@
-SRC_DIR  = src
-TEST_DIR = test
-TOOL_DIR = tools
-
+SRC_DIR  := src
+TEST_DIR := test
+TOOL_DIR := tools
 UNAME := $(shell uname -o | tr "A-Z" "a-z")
 
-$(info os is $(UNAME))
-
 ifeq ($(UNAME), cygwin)
-	ifdef glpk
-        GPLK_LIBS_INCLUDES := --extra-include-dirs=$(glpk)/src --extra-include-dirs=$(glpk)/src/amd --extra-include-dirs=$(glpk)/src/colamd --extra-include-dirs=$(glpk)/src/minisat --extra-include-dirs=$(glpk)/src/zlib --extra-lib-dirs=$(glpk)/w32	
-	else
-    	$(error Please provide the installation directory of WinGLPK 4.47 to the glpk parameter)
-    endif
+	GPLK_LIBS_INCLUDES := --extra-include-dirs=$(glpk)/src --extra-include-dirs=$(glpk)/src/amd --extra-include-dirs=$(glpk)/src/colamd --extra-include-dirs=$(glpk)/src/minisat --extra-include-dirs=$(glpk)/src/zlib --extra-lib-dirs=$(glpk)/w32	
+endif
+ifeq ($(UNAME), windows)
+	GPLK_LIBS_INCLUDES := --extra-include-dirs=$(glpk)/src --extra-include-dirs=$(glpk)/src/amd --extra-include-dirs=$(glpk)/src/colamd --extra-include-dirs=$(glpk)/src/minisat --extra-include-dirs=$(glpk)/src/zlib --extra-lib-dirs=$(glpk)/w32	
 endif
 
 all: build
-
-install:  
-	mkdir -p $(to)
-	mkdir -p $(to)/tools
-	cabal install --bindir=$(to) $(GPLK_LIBS_INCLUDES)
-	cp -f README.md $(to)/clafer-README.md
-#   the following should be handled with cabal
-	cp -f LICENSE $(to)/
-	cp -f CHANGES.md $(to)/clafer-CHANGES.md
-	cp -f tools/alloy4.jar $(to)/tools
-	cp -f tools/alloy4.2.jar $(to)/tools
-	cp -f tools/XsdCheck.class $(to)/tools
 
 build:
 	$(MAKE) -C $(TOOL_DIR)
@@ -34,6 +18,17 @@ build:
 	cabal configure
 	cabal build
 	cp dist/build/clafer/clafer .
+
+install:  
+	mkdir -p $(to)
+	mkdir -p $(to)/tools
+	cabal install --bindir=$(to) $(GPLK_LIBS_INCLUDES)
+	cp -f README.md $(to)/clafer-README.md
+	cp -f LICENSE $(to)/
+	cp -f CHANGES.md $(to)/clafer-CHANGES.md
+	cp -f tools/alloy4.jar $(to)/tools
+	cp -f tools/alloy4.2.jar $(to)/tools
+	cp -f tools/XsdCheck.class $(to)/tools
 
 # build Schema.hs from ClaferIG.xsd, call after .xsd changed
 Schema.hs:
