@@ -14,7 +14,7 @@ There are many possible applications of Clafer; however, three are prominent:
 Clafer Compiler
 ===============
 
-v0.3.2.24-01-2013
+v0.3.2.1-3-2013
 
 Clafer compiler provides a reference language implementation. It translates models in Clafer to other formats (e.g. Alloy, XML, HTML, DOT) to allow for reasoning and processing with existing tools.
 
@@ -112,20 +112,19 @@ Clafer Compiler
 (As printed by `clafer --help`)
 
 ```
-Clafer v0.3.2.24-01-2013
+Clafer v0.3.2.1-3-2013
 
 clafer [OPTIONS] [FILE]
 
 Common flags:
   -m --mode=CLAFERMODE         Generated output type. Available CLAFERMODEs
                                are: 'alloy' (default, Alloy 4.1); 'alloy42'
-                               (Alloy 4.2); 'xml' (intermediate
-                               representation of Clafer model); 'clafer'
-                               (analyzed and desugared clafer model); 'html'
-                               (original model in HTML); 'graph' (graphical
-                               representation written in DOT language);
-                               'cvlgraph' (cvl notation representation written
-                               in DOT language)
+                               (Alloy 4.2); 'xml' (intermediate representation
+                               of Clafer model); 'clafer' (analyzed and
+                               desugared clafer model); 'html' (original model
+                               in HTML); 'graph' (graphical representation
+                               written in DOT language); 'cvlgraph' (cvl
+                               notation representation written in DOT language)
   -o --console-output          Output code on console
   -i --flatten-inheritance     Flatten inheritance ('alloy' and 'alloy42'
                                modes only)
@@ -158,6 +157,8 @@ Common flags:
      --add-graph               Add a graph to the generated html model
                                ('html' mode only). Requires the "dot"
                                executable to be on the system path.
+     --sr --show-references    Whether the links for references should be
+                               rendered. ('html' and 'graph' modes only).
      --add-comments            Include comments from the source file in the
                                html output ('html' mode only).
   -? --help                    Display help message
