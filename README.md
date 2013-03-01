@@ -14,17 +14,22 @@ There are many possible applications of Clafer; however, three are prominent:
 Clafer Compiler
 ===============
 
-v0.3.1.13-9-2012
+v0.3.2.24-01-2013
 
 Clafer compiler provides a reference language implementation. It translates models in Clafer to other formats (e.g. Alloy, XML, HTML, DOT) to allow for reasoning and processing with existing tools.
 
-Currently, the compiler is used by Clafer Instance Generator ([ClaferIG](https://github.com/gsdlab/claferIG)), Clafer Multi-Objective Optimizer (ClaferMOO), and Clafer Wiki ([ClaferWiki](https://github.com/gsdlab/claferwiki)).
+Currently, the compiler is used by Clafer Instance Generator ([ClaferIG](https://github.com/gsdlab/claferIG)), Clafer Multi-Objective Optimizer ([ClaferMOO](https://github.com/gsdlab/ClaferMooStandalone)) and [Visualizer](https://github.com/gsdlab/ClaferMooVisualizer), and Clafer Wiki ([ClaferWiki](https://github.com/gsdlab/claferwiki)).
 
 Getting Clafer Tools
 --------------------
 
-Binary distributions of Clafer, ClaferMOO, and ClaferIG for Windows, Mac, and Linux, can be downloaded from [ClaferIG Downloads Page](https://github.com/gsdlab/claferig/downloads). ClaferMOO is a set of scripts in Python (cross-platform).
+Binary distributions of Clafer, ClaferIG, and ClaferWiki for Windows, Mac, and Linux, can be downloaded from [ClaferIG Downloads Page](https://github.com/gsdlab/claferig/downloads). Clafer Wiki requires Haskell Platform to run and Cygwin on Windows. 
+
 In case these binaries do not work on your particular machine configuration, the tools can be easily built from source code, as described below.
+
+[ClaferMOO](https://github.com/gsdlab/ClaferMooStandalone) is a set of scripts in Python (cross-platform). It is not part of the binary distribution and it has to be downloaded separately. 
+
+[ClaferMooVisualizer](https://github.com/gsdlab/ClaferMooVisualizer) is a client/server web application written JavaScript.It is not part of the binary distribution and it has to be downloaded separately.  
 
 ### Dependencies for running
 
@@ -32,9 +37,6 @@ In case these binaries do not work on your particular machine configuration, the
 * [Python](http://www.python.org/download/) v2.7.*
   * Needed only by ClaferMOO
 * [Alloy4.1 and/or Alloy4.2](http://alloy.mit.edu/alloy/download.html)
-* [Alloy4MOO](http://www.stevenstewart.ca/alloy4/alloy4moo.jar)
-  * NOTE: Alloy4MOO is a pre-release experimental software. Use at own risk.
-  * Needed only by ClaferMOO
 * [GraphViz](http://graphviz.org/)
   * `dot` is needed only in the `html` mode for SVG graph generation
 
@@ -73,7 +75,7 @@ On Windows
 
 ### Important: Branches must correspond
 
-Clafer and ClaferIG are following the *simultaneous release model*. 
+Clafer, ClaferIG, ClaferWiki, ClaferMoo, and ClaferMooVisualizer are following the *simultaneous release model*. 
 The branch `master` contains releases, whereas the branch `develop` contains code under development. 
 When building the tools, the branches should match:
 Releases `clafer/master` and `claferIG/master` are guaranteed to work well together.
@@ -107,7 +109,7 @@ Clafer Compiler
 (As printed by `clafer --help`)
 
 ```
-Clafer v0.3.1.13-9-2012
+Clafer v0.3.2.24-01-2013
 
 clafer [OPTIONS] [FILE]
 
@@ -161,7 +163,7 @@ Common flags:
 
 The dependencies among the command line arguments are described in [issue 117](http://gsd.uwaterloo.ca:8888/question/570/dependencies-among-command-line-arguments).
 
-Additionally, `[OPTIONS]` can also be specified directly in the model file by inserting the following as the first line of the file:
+Additionally, `[OPTIONS]` can also be specified directly in the model file by inserting the following compiler directive as the first line of the file:
 
 ```
 //# [OPTIONS]
@@ -175,13 +177,20 @@ for example
 
 Options given at command line override the options given in the file using `//#` which, in turn, override the defaults.
 
-ClaferMoo
----------
+### Using compiler directives
 
-`clafer_moo.sh [MODEL] [PATH TO CLAFER TOOLS]`
+Compiler directives are comments of the form
 
-#### Note: 
-> On Windows, run the script using Cygwin
+```
+//# <directive name>
+```
+
+The following directives are markers of locations in the input files for different purposes:
+
+* `//# FRAGMENT` - marks the beginning of the new [module fragment](http://gsd.uwaterloo.ca:8888/question/463/multi-fragment-modules).
+* `//# GRAPH` - marks the insertion point for a graph rendering. The graph is only produced in HTML mode with the argument `--add-graph`.
+* `//# STATS` - marks the insertion point for module statistics. The statistics can be omitted using the argument `--no-stats`. 
+* `//# SUMMARY` - shorthand for `//# GRAPH` and `//# STATS`
 
 Need help?
 ==========

@@ -53,6 +53,7 @@ data ClaferArgs = ClaferArgs {
       alloy_mapping :: Maybe Bool,
       self_contained :: Maybe Bool,
       add_graph :: Maybe Bool,
+	  show_references :: Maybe Bool,
       add_comments :: Maybe Bool,
       file :: FilePath
     } deriving (Show, Data, Typeable)
@@ -75,6 +76,7 @@ clafer = ClaferArgs {
   alloy_mapping       = def &= help "Generate mapping to Alloy source code ('alloy' and 'alloy42' modes only)" &= name "a",
   self_contained      = def &= help "Generate a self-contained html document ('html' mode only)",
   add_graph           = def &= help "Add a graph to the generated html model ('html' mode only). Requires the \"dot\" executable to be on the system path.",
+  show_references     = def &= help "Whether the links for references should be rendered. ('html' and 'graph' modes only)." &= name "sr",
   add_comments        = def &= help "Include comments from the source file in the html output ('html' mode only).",
   file                = def &= args   &= typ "FILE"
  } &= summary ("Clafer " ++ version) &= program "clafer"
@@ -112,6 +114,7 @@ mergeArgs args args'  = args' {
   alloy_mapping       = alloy_mapping args       `mplus` alloy_mapping args',
   self_contained      = self_contained args      `mplus` self_contained args',
   add_graph           = add_graph args           `mplus` add_graph args',
+  show_references     = show_references args     `mplus` show_references args',  
   add_comments        = add_comments args        `mplus` add_comments args',
   file                = file args}
 
@@ -133,10 +136,11 @@ setDefArgs args = args {
   tooldir             = tooldir args             `mplus` Just "tools/",
   self_contained      = self_contained args      `mplus` Just def,
   add_graph           = add_graph args           `mplus` Just def,
+  show_references     = show_references args     `mplus` Just def,
   add_comments        = add_comments args        `mplus` Just def,
   alloy_mapping       = alloy_mapping args       `mplus` Just def}
 
 
-emptyClaferArgs = ClaferArgs Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing ""
+emptyClaferArgs = ClaferArgs Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing ""
 
 defaultClaferArgs = setDefArgs emptyClaferArgs

@@ -23,12 +23,12 @@ module Language.Clafer.Css where
 
 header = "<!DOCTYPE html>\n<html>\n<head>\n<meta http-equiv=\"X-UA-Compatible\" content=\"IE=9\">\n"
 
-css = unlines [ "<style>",
-  "body { font-size: 18px }",
+css = unlines [ 
   ".identifier{}",
   ".keyword{font-weight:bold}",
   ".reference{}",
-  ".code { background-color: lightgray; font-size: 18px }",
+  ".code { background-color: lightgray; padding: 5px 5px 5px 5px; border: 1px solid darkgray; margin-bottom: 15px; ",
+  "        font-family: Pragmata, Menlo, 'DejaVu LGC Sans Mono', 'DejaVu Sans Mono', Consolas, 'Everson Mono', 'Lucida Console', 'Andale Mono', 'Nimbus Mono L', 'Liberation Mono', FreeMono, 'Osaka Monospaced', Courier, 'New Courier', monospace; }",
   ".standalonecomment { color: green; font-style:italic }",
   ".inlinecomment { color: green; padding-left:20px; font-style:italic }",
   ".error{background-color: yellow; color: red }",
@@ -56,4 +56,4 @@ css = unlines [ "<style>",
   "a[href$='Lookup failed'] {color: red}",
   "a[href$='Uid not found'] {color: red}",
   "a[href$='Ambiguous name'] {color: yellow}",
-  "</style>"]
+ "" ]
