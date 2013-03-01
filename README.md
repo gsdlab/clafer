@@ -58,14 +58,18 @@ Building & Installation From Source Code
 * [The Haskell Platform](http://hackage.haskell.org/platform/) v.2012.2.0.0
 * [Alloy4.1 and/or Alloy4.2](http://alloy.mit.edu/alloy/download.html)
   * downloaded automatically during build
-* [Alloy4MOO](http://www.stevenstewart.ca/alloy4/alloy4moo.jar)
-  * downloaded automatically during build
-  * NOTE: Alloy4MOO is a pre-release experimental software. Use at own risk.
 * [Git](http://git-scm.com/)
 
-On Windows only
+On Linux/Mac
+
+* [libglpk-dev](http://www.gnu.org/software/glpk/) v4.48
+  * `sudo apt-get install libglpk-dev` on the Ubuntu
+
+On Windows 
 
 * [Cygwin](http://www.cygwin.com/) with packages `make`, `wget`, `unzip`
+* [WinGLPK](http://winglpk.sourceforge.net/) v4.48
+  * in `w32` folder, copy `glpk_4_48.lib` to`glpk.lib` so that it can be found when building Haskell package `glpk-hs`
 
 ### Important: Branches must correspond
 
@@ -81,7 +85,10 @@ Development versions `clafer/develop` and `claferIG/develop` should work well to
 2. in some `<source directory>` of your choice, execute `git clone git://github.com/gsdlab/clafer.git`
 3. in `<source directory>/clafer`, execute
   * `cabal update`
+4a. On Linux and Mac
   * `make`
+4b. On Windows
+  * `make glpk="c:/<your WinGLPK instal dir>/winglpk-4.48"`
 
 ### Installation
 

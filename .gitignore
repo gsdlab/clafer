@@ -4,3 +4,4 @@ dist
 *.exe
 *.lkshs
 *.lkshw
+*.sublime*

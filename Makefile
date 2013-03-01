@@ -2,12 +2,24 @@ SRC_DIR  = src
 TEST_DIR = test
 TOOL_DIR = tools
 
+UNAME := $(shell uname -o | tr "A-Z" "a-z")
+
+$(info os is $(UNAME))
+
+ifeq ($(UNAME), cygwin)
+	ifdef glpk
+        GPLK_LIBS_INCLUDES := --extra-include-dirs=$(glpk)/src --extra-include-dirs=$(glpk)/src/amd --extra-include-dirs=$(glpk)/src/colamd --extra-include-dirs=$(glpk)/src/minisat --extra-include-dirs=$(glpk)/src/zlib --extra-lib-dirs=$(glpk)/w32	
+	else
+    	$(error Please provide the installation directory of WinGLPK 4.47 to the glpk parameter)
+    endif
+endif
+
 all: build
 
 install:  
 	mkdir -p $(to)
 	mkdir -p $(to)/tools
-	cabal install --bindir=$(to)
+	cabal install --bindir=$(to) $(GPLK_LIBS_INCLUDES)
 	cp -f README.md $(to)/clafer-README.md
 	cp -f -r spl_configurator/py_src $(to)/
 	cp -f  spl_configurator/clafer_moo.sh $(to)/
@@ -21,7 +33,7 @@ install:
 
 build:
 	$(MAKE) -C $(TOOL_DIR)
-	cabal install --only-dependencies
+	cabal install --only-dependencies $(GPLK_LIBS_INCLUDES)
 	cabal configure
 	cabal build
 	cp dist/build/clafer/clafer .
