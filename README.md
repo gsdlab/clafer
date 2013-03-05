@@ -14,7 +14,7 @@ There are many possible applications of Clafer; however, three are prominent:
 Clafer Compiler
 ===============
 
-v0.3.2.1-3-2013
+v0.3.2.5-3-2013
 
 Clafer compiler provides a reference language implementation. It translates models in Clafer to other formats (e.g. Alloy, XML, HTML, DOT) to allow for reasoning and processing with existing tools.
 
@@ -72,6 +72,7 @@ On Windows
 * [Cygwin](http://www.cygwin.com/) with packages `make`, `wget`, `unzip`
 * [WinGLPK](http://winglpk.sourceforge.net/) v4.48
   * in `w32` folder, copy `glpk_4_48.lib` to`glpk.lib` so that it can be found when building Haskell package `glpk-hs`
+  * from `w32` folder, copy `glpk_4_48.dll` to `<user>\AppData\Roaming\cabal\bin`
 
 ### Important: Branches must correspond
 
@@ -112,7 +113,7 @@ Clafer Compiler
 (As printed by `clafer --help`)
 
 ```
-Clafer v0.3.2.1-3-2013
+Clafer v0.3.2.5-3-2013
 
 clafer [OPTIONS] [FILE]
 
