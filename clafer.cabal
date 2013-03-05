@@ -80,6 +80,7 @@ library
                      Language.Clafer.Generator.Schema,
                      Language.Clafer.Generator.Stats,
                      Language.Clafer.Generator.Xml,
+                     Language.Clafer.Intermediate.Analysis,                     
                      Language.Clafer.Intermediate.Desugarer,
                      Language.Clafer.Intermediate.Intclafer,
                      Language.Clafer.Intermediate.Resolver,
