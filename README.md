@@ -1,33 +1,45 @@
 Clafer
 ======
 
-[Clafer](http://clafer.org) is a general-purpose lightweight structural modeling language developed at [GSD Lab](http://gsd.uwaterloo.ca/), [University of Waterloo](http://uwaterloo.ca). Clafer can be used for modeling of static structures but has no support for modeling the change of the structures over time (behavior). The main goal of Clafer is to make modeling more accessible to a wider range of users and domains. 
+[Clafer](http://clafer.org) is a general-purpose lightweight structural modeling language developed at [GSD Lab](http://gsd.uwaterloo.ca/), [University of Waterloo](http://uwaterloo.ca). 
+Clafer can be used for modeling of static structures but has no support for modeling the change of the structures over time (behavior). 
+The main goal of Clafer is to make modeling more accessible to a wider range of users and domains. 
 
 There are many possible applications of Clafer; however, three are prominent:
 
-1. *Domain Modeling* - aims at improving the understanding of the problem domain in the early stages of software development and determining the requirements with fewer defects. This is also known as *Concept Modeling* or *Ontology Modeling*.
+1. *Domain Modeling* - aims at improving the understanding of the problem domain in the early stages of software development and determining the requirements with fewer defects. 
+This is also known as *Concept Modeling* or *Ontology Modeling*.
 
-2. *Product-Line Modeling* - aims at representing and managing commonality and variability of assets in product lines and creating and verifying product configurations. Clafer naturally supports multi-staged configuration. 
+2. *Product-Line Modeling* - aims at representing and managing commonality and variability of assets in product lines and creating and verifying product configurations. 
+Clafer naturally supports multi-staged configuration. 
 
-3. *Multi-Objective Product Optimization* - aims at finding a set of products in a given product line that are optimal with respect to a set of objectives. Clafer multi-objective optimizer generates a Pareto front of optimal product configurations.
+3. *Multi-Objective Product Optimization* - aims at finding a set of products in a given product line that are optimal with respect to a set of objectives. 
+Clafer multi-objective optimizer generates a Pareto front of optimal product configurations.
 
 Clafer Compiler
 ===============
 
 v0.3.2.5-3-2013
 
-Clafer compiler provides a reference language implementation. It translates models in Clafer to other formats (e.g. Alloy, XML, HTML, DOT) to allow for reasoning and processing with existing tools.
+Clafer compiler provides a reference language implementation. 
+It translates models in Clafer to other formats (e.g. Alloy, XML, HTML, DOT) to allow for reasoning and processing with existing tools.
 
-Currently, the compiler is used by Clafer Instance Generator ([ClaferIG](https://github.com/gsdlab/claferIG)), Clafer Multi-Objective Optimizer ([ClaferMOO](https://github.com/gsdlab/ClaferMooStandalone)) and [Visualizer](https://github.com/gsdlab/ClaferMooVisualizer), and Clafer Wiki ([ClaferWiki](https://github.com/gsdlab/claferwiki)).
+Currently, the compiler is used by 
+Clafer Instance Generator ([ClaferIG](https://github.com/gsdlab/claferIG)), 
+Clafer Multi-Objective Optimizer ([ClaferMOO](https://github.com/gsdlab/ClaferMooStandalone)) and 
+[Visualizer](https://github.com/gsdlab/ClaferMooVisualizer), and 
+Clafer Wiki ([ClaferWiki](https://github.com/gsdlab/claferwiki)).
 
 Getting Clafer Tools
 --------------------
 
-Binary distributions of Clafer, ClaferIG, and ClaferWiki for Windows, Mac, and Linux, can be downloaded from [ClaferIG Downloads Page](https://github.com/gsdlab/claferig/downloads). Clafer Wiki requires Haskell Platform to run and Cygwin on Windows. 
+Binary distributions of Clafer, ClaferIG, and ClaferWiki for Windows, Mac, and Linux, can be downloaded from [ClaferIG Downloads Page](https://github.com/gsdlab/claferig/downloads). 
+Clafer Wiki requires Haskell Platform and MinGW to run on Windows. 
 
 In case these binaries do not work on your particular machine configuration, the tools can be easily built from source code, as described below.
 
-[ClaferMOO](https://github.com/gsdlab/ClaferMooStandalone) is a set of scripts in Python (cross-platform). It is not part of the binary distribution and it has to be downloaded separately. 
+[ClaferMOO](https://github.com/gsdlab/ClaferMooStandalone) is a set of scripts in Python (cross-platform). 
+It is not part of the binary distribution and it has to be downloaded separately. 
 
 [ClaferMooVisualizer](https://github.com/gsdlab/ClaferMooVisualizer) is a client/server web application written JavaScript.It is not part of the binary distribution and it has to be downloaded separately.  
 
@@ -39,17 +51,16 @@ In case these binaries do not work on your particular machine configuration, the
 * [Alloy4.1 and/or Alloy4.2](http://alloy.mit.edu/alloy/download.html)
 * [GraphViz](http://graphviz.org/)
   * `dot` is needed only in the `html` mode for SVG graph generation
+* [GNU Linear Programming Kit](www.gnu.org/software/glpk/)
 
-On Windows only
-
-* [Cygwin](http://www.cygwin.com/)
-  * Needed only by ClaferMOO
-  
 ### Installation
 
 1. download the binaries and unpack `<target directory>` of your choice
 2. add the `<target directory>` to your system path so that the executables can be found
 3. copy alloy's jars to the `<target directory>/tools` folder
+
+On Windows only
+4. copy GLPK's dll `glpk-0.4.48.dll` to the `<target directory>` folder or any other folder on the system path
 
 Building & Installation From Source Code
 ----------------------------------------
@@ -62,14 +73,16 @@ Building & Installation From Source Code
   * downloaded automatically during build
 * [Git](http://git-scm.com/)
 
-On Linux/Mac
+On Linux/Mac only
 
-* [libglpk-dev](http://www.gnu.org/software/glpk/) v4.48
+* [libglpk-dev](http://www.gnu.org/software/glpk/) v4.48+
   * `sudo apt-get install libglpk-dev` on the Ubuntu
 
 On Windows 
 
-* [Cygwin](http://www.cygwin.com/) with packages `make`, `wget`, `unzip`
+* [MinGW+MSYS](http://mingw.org) with packages `make`, `wget`, `unzip`
+  * since the Haskell Platform already contains MinGW, you may choose to install MinGW+MSYS to the same location, e.g., `c:\...\Haskell Platform\2012.2.0.0`
+  * add the `bin` folders of MinGW (`MinGW\bin`) and MSYS (`MinGW\MSYS\1.0\bin`) to your system path  
 * [WinGLPK](http://winglpk.sourceforge.net/) v4.48
   * in `w32` folder, copy `glpk_4_48.lib` to`glpk.lib` so that it can be found when building Haskell package `glpk-hs`
   * from `w32` folder, copy `glpk_4_48.dll` to `<user>\AppData\Roaming\cabal\bin`
@@ -91,7 +104,7 @@ Development versions `clafer/develop` and `claferIG/develop` should work well to
 4a. On Linux and Mac
   * `make`
 4b. On Windows
-  * `make glpk="c:/<your WinGLPK instal dir>/winglpk-4.48"`
+  * `make glpk="c:/<your WinGLPK install dir>/winglpk-4.48"`
 
 ### Installation
 
@@ -99,7 +112,10 @@ Development versions `clafer/develop` and `claferIG/develop` should work well to
   *`make install to=<target directory>`
 1b. On Windows
   * `make glpk="c:/<your WinGLPK instal dir>/winglpk-4.48" to=<target directory>`  
-2. add the `<target directory>` is on your command PATH
+2. add the `<target directory>` to your system PATH
+
+On Windows only
+3. copy GLPK's dll `glpk-0.4.48.dll` to the `<target directory>` folder or any other folder on the system path
 
 #### Note: 
 > On Windows, use `/` with the `make` command instead of `\`.
@@ -201,7 +217,8 @@ Need help?
 ==========
 * See [Project's website](http://gsd.uwaterloo.ca/clafer) for news, technical reports and more
   * Check out a [Clafer tutorial](http://gsd.uwaterloo.ca/node/310)
+  * Try live instance of [ClaferWiki](http://gsd.uwaterloo.ca:5001)
   * Try [Online translator](http://gsd.uwaterloo.ca/clafer/translator)
 * Take a look at incomplete [Clafer wiki](https://github.com/gsdlab/clafer/wiki)
 * Browse example models in the [test suite](https://github.com/gsdlab/clafer/tree/master/test/positive) and [MOO examples](https://github.com/gsdlab/clafer/tree/master/spl_configurator/dataset)
-* Post questions, report bugs, suggest improvements [GSD Lab Bug Tracker](http://gsd.uwaterloo.ca:8888/questions/). Tag your entries with `clafer` (so that we know what they are related to) and with `kacper-bak` or `jimmy-liang` (so that Kacper or Jimmy gets a notification).
+* Post questions, report bugs, suggest improvements [GSD Lab Bug Tracker](http://gsd.uwaterloo.ca:8888/questions/). Tag your entries with `clafer` (so that we know what they are related to) and with `kacper-bak`, `jimmy-liang`, or `michal` (so that Kacper, Jimmy, or Michał gets a notification).
