@@ -58,7 +58,7 @@ import Data.Map (Map)
 import qualified Data.Map as Map
 import Data.Ord
 import Control.Monad
-import System.FilePath.Posix (dropExtension)
+import System.FilePath (dropExtension,takeBaseName)
 
 import Language.ClaferT
 import Language.Clafer.Common
@@ -287,7 +287,7 @@ generateHtml env =
         irMap = irModuleTrace env;
         comments = if fromJust $ add_comments cargs then getComments $ unlines $ modelFrags env else [];
         (iModule, genv, au) = ir env;
-    in (if (fromJust $ self_contained cargs) then Css.header ++ Css.css ++ "</head>\n<body>\n" else "")
+    in (if (fromJust $ self_contained cargs) then Css.header ++ "<style>" ++ Css.css ++ "</style></head>\n<body>\n" else "")
        ++ (unlines $ generateFragments decls (frags env) irMap comments) ++
        (if (fromJust $ self_contained cargs) then "</body>\n</html>" else "")
 
@@ -336,8 +336,8 @@ generate =
                         Xml      -> ("xml", genXmlModule iModule, Nothing)
                         Clafer   -> ("des.cfr", printTree $ sugarModule iModule, Nothing)
                         Html     -> ("html", generateHtml env, Nothing)
-                        Graph    -> ("dot", genSimpleGraph (ast env) iModule (dropExtension $ file cargs), Nothing)
-                        CVLGraph -> ("dot", genCVLGraph (ast env) iModule (dropExtension $ file cargs), Nothing)
+                        Graph    -> ("dot", genSimpleGraph (ast env) iModule (takeBaseName $ file cargs) (fromJust $ show_references cargs), Nothing)
+                        CVLGraph -> ("dot", genCVLGraph (ast env) iModule (takeBaseName $ file cargs), Nothing)
                         Choco    -> ("js", genCModule cargs (astrModule iModule, genv), Nothing)
     return $ CompilerResult { extension = ext, 
                      outputCode = code, 

@@ -33,57 +33,62 @@ import qualified Data.Map as Map
 import Data.Maybe
 import Prelude hiding (exp)
 
-genSimpleGraph m ir name = cleanOutput $ "digraph \"" ++ name ++ "\"\n{\nrankdir=BT;\nranksep=0.1;\nnodesep=0.1;\nnode [shape=box margin=0.025,0.025];\n" ++ body ++ "}"
-                           where body = graphSimpleModule m $ traceIrModule ir
+genSimpleGraph m ir name showRefs = cleanOutput $ "digraph \"" ++ name ++ "\"\n{\n\nrankdir=BT;\nranksep=0.3;\nnodesep=0.1;\ngraph [fontname=Sans fontsize=11];\nnode [shape=box color=lightgray fontname=Sans fontsize=11 margin=\"0.02,0.02\" height=0.2 ];\nedge [fontname=Sans fontsize=11];\n" ++ body ++ "}"
+                           where body = graphSimpleModule m (traceIrModule ir) showRefs
                            
-genCVLGraph m ir name = cleanOutput $ "digraph \"" ++ name ++ "\"\n{\nrankdir=BT;\nranksep=0.1;\nnodesep=0.1;\nnode [shape=box margin=0.025,0.025];\nedge [arrowhead=none];\n" ++ body ++ "}"
+genCVLGraph m ir name = cleanOutput $ "digraph \"" ++ name ++ "\"\n{\nrankdir=BT;\nranksep=0.1;\nnodesep=0.1;\nnode [shape=box margin=\"0.025,0.025\"];\nedge [arrowhead=none];\n" ++ body ++ "}"
                        where body = graphCVLModule m $ traceIrModule ir
 
 -- Simplified Notation Printer --
 --toplevel: (Top_level (Boolean), Maybe Topmost parent, Maybe immediate parent)         
-graphSimpleModule (Module [])     irMap = ""
-graphSimpleModule (Module (x:xs)) irMap = graphSimpleDeclaration x (True, Nothing, Nothing) irMap ++ graphSimpleModule (Module xs) irMap
-graphSimpleModule (PosModule _ declarations) irMap = graphSimpleModule (Module declarations) irMap
+graphSimpleModule (Module [])                _     _        = ""
+graphSimpleModule (Module (x:xs))            irMap showRefs = graphSimpleDeclaration x (True, Nothing, Nothing) irMap showRefs ++ graphSimpleModule (Module xs) irMap showRefs
+graphSimpleModule (PosModule _ declarations) irMap showRefs = graphSimpleModule (Module declarations) irMap showRefs
 
-graphSimpleDeclaration (ElementDecl element)      topLevel irMap = graphSimpleElement element topLevel irMap
-graphSimpleDeclaration (PosElementDecl _ element) topLevel irMap = graphSimpleDeclaration (ElementDecl element) topLevel irMap
-graphSimpleDeclaration _                          _        _     = ""
+graphSimpleDeclaration (ElementDecl element)      topLevel irMap showRefs = graphSimpleElement element topLevel irMap showRefs
+graphSimpleDeclaration (PosElementDecl _ element) topLevel irMap showRefs = graphSimpleDeclaration (ElementDecl element) topLevel irMap showRefs
+graphSimpleDeclaration _                          _        _     _        = ""
 
-graphSimpleElement (Subclafer clafer)  topLevel irMap = graphSimpleClafer clafer topLevel irMap
-graphSimpleElement (PosSubclafer _ subclafer) topLevel irMap = graphSimpleElement (Subclafer subclafer) topLevel irMap
-graphSimpleElement (ClaferUse name card elements) topLevel irMap = if snd3 topLevel == Nothing then "" else "\"" ++ fromJust (snd3 topLevel) ++ "\" -> \"" ++ graphSimpleName name topLevel irMap ++ "\" [arrowhead = onormal style = dashed constraint = false];\n"
-graphSimpleElement (PosClaferUse span name card elements) topLevel irMap = if snd3 topLevel == Nothing then "" else "\"" ++ fromJust (snd3 topLevel) ++ "\" -> \"" ++ getUseId span irMap ++ "\" [arrowhead = onormal style = dashed constraint = false];\n"
-graphSimpleElement _ _ _ = ""
+graphSimpleElement (Subclafer clafer)                     topLevel irMap showRefs = graphSimpleClafer clafer topLevel irMap showRefs
+graphSimpleElement (PosSubclafer _ subclafer)             topLevel irMap showRefs = graphSimpleElement (Subclafer subclafer) topLevel irMap showRefs
+graphSimpleElement (ClaferUse name card elements)         topLevel irMap _        = if snd3 topLevel == Nothing then "" else "\"" ++ fromJust (snd3 topLevel) ++ "\" -> \"" ++ graphSimpleName name topLevel irMap ++ "\" [arrowhead=vee arrowtail=diamond dir=both style=solid constraint=false minlen=2 arrowsize=0.6 penwidth=0.5 ];\n"
+graphSimpleElement (PosClaferUse span name card elements) topLevel irMap _        = if snd3 topLevel == Nothing then "" else "\"" ++ fromJust (snd3 topLevel) ++ "\" -> \"" ++ getUseId span irMap ++ "\" [arrowhead=vee arrowtail=diamond dir=both style=solid constraint=false minlen=2 arrowsize=0.6 penwidth=0.5 ];\n"
+graphSimpleElement _ _ _ _ = ""
 
-graphSimpleElements ElementsEmpty topLevel irMap = ""
-graphSimpleElements (PosElementsEmpty _) topLevel irMap = graphSimpleElements ElementsEmpty topLevel irMap
-graphSimpleElements (ElementsList elements) topLevel irMap = concatMap (\x -> graphSimpleElement x topLevel irMap  ++ "\n") elements
-graphSimpleElements (PosElementsList _ elements) topLevel irMap = graphSimpleElements (ElementsList elements) topLevel irMap 
+graphSimpleElements ElementsEmpty                _        _     _        = ""
+graphSimpleElements (PosElementsEmpty _)         topLevel irMap showRefs = graphSimpleElements ElementsEmpty topLevel irMap showRefs
+graphSimpleElements (ElementsList elements)      topLevel irMap showRefs = concatMap (\x -> graphSimpleElement x topLevel irMap showRefs ++ "\n") elements
+graphSimpleElements (PosElementsList _ elements) topLevel irMap showRefs = graphSimpleElements (ElementsList elements) topLevel irMap showRefs
 
-graphSimpleClafer (Clafer abstract gCard id super card init elements) topLevel irMap = ""
-graphSimpleClafer (PosClafer span abstract gCard id super card init elements) topLevel irMap
+graphSimpleClafer (Clafer abstract gCard id super card init elements)         _        _     _ = ""
+graphSimpleClafer (PosClafer span abstract gCard id super card init elements) topLevel irMap showRefs
   | fst3 topLevel == True = let {tooltip = genTooltip (Module [ElementDecl (Subclafer (Clafer abstract gCard id super card init elements))]) irMap;
                                uid = getDivId span irMap} in
                              "\"" ++ uid ++ "\" [label=\"" ++ (head $ lines tooltip) ++ "\" URL=\"#" ++ uid ++ "\" tooltip=\"" ++ htmlNewlines tooltip ++ "\"];\n"
-                             ++ graphSimpleSuper super (True, Just uid, Just uid) irMap ++ graphSimpleElements elements (False, Just uid, Just uid) irMap
+                             ++ graphSimpleSuper super (True, Just uid, Just uid) irMap showRefs ++ graphSimpleElements elements (False, Just uid, Just uid) irMap showRefs
   | otherwise             = let (PosIdent (_,ident)) = id in
-                             graphSimpleSuper super (fst3 topLevel, snd3 topLevel, Just ident) irMap ++ graphSimpleElements elements (fst3 topLevel, snd3 topLevel, Just ident) irMap
+                             graphSimpleSuper super (fst3 topLevel, snd3 topLevel, Just ident) irMap showRefs ++ graphSimpleElements elements (fst3 topLevel, snd3 topLevel, Just ident) irMap showRefs
 
-graphSimpleSuper SuperEmpty topLevel irMap = ""
-graphSimpleSuper (PosSuperEmpty _) topLevel irMap = graphSimpleSuper SuperEmpty topLevel irMap
-graphSimpleSuper (SuperSome superHow setExp) topLevel irMap = let {parent [] = "error";
+graphSimpleSuper SuperEmpty _ _ _ = ""
+graphSimpleSuper (PosSuperEmpty _) topLevel irMap showRefs = graphSimpleSuper SuperEmpty topLevel irMap showRefs
+graphSimpleSuper (SuperSome superHow setExp) topLevel irMap showRefs = let {parent [] = "error";
                                                             parent (uid@('c':xs):xss) = if '_' `elem` xs then uid else parent xss;
                                                             parent (xs:xss) = parent xss;
                                                             super = parent $ graphSimpleSetExp setExp topLevel irMap} in
-                                                            if super == "error" then "" else "\"" ++ fromJust (snd3 topLevel) ++ "\" -> \"" ++ parent (graphSimpleSetExp setExp topLevel irMap) ++ "\"" ++ graphSimpleSuperHow superHow topLevel irMap
-graphSimpleSuper (PosSuperSome _ superHow setExp) topLevel irMap = graphSimpleSuper (SuperSome superHow setExp) topLevel irMap
+                                                            if super == "error" then "" else "\"" ++ fromJust (snd3 topLevel) ++ "\" -> \"" ++ parent (graphSimpleSetExp setExp topLevel irMap) ++ "\"" ++ graphSimpleSuperHow superHow topLevel irMap showRefs
+graphSimpleSuper (PosSuperSome _ superHow setExp) topLevel irMap showRefs = graphSimpleSuper (SuperSome superHow setExp) topLevel irMap showRefs
 
-graphSimpleSuperHow SuperColon  topLevel irMap = " [arrowhead = onormal " ++ if fst3 topLevel == True then "constraint = true];\n" else "style = dashed constraint = false];\n"
-graphSimpleSuperHow (PosSuperColon _) topLevel irMap = graphSimpleSuperHow SuperColon topLevel irMap
-graphSimpleSuperHow SuperArrow  topLevel irMap = " [arrowhead = vee constraint = false" ++ (if fst3 topLevel == True then "" else " label=" ++ (fromJust $ trd3 topLevel)) ++ "];\n"
-graphSimpleSuperHow (PosSuperArrow _) topLevel irMap = graphSimpleSuperHow SuperArrow topLevel irMap
-graphSimpleSuperHow SuperMArrow topLevel irMap = " [arrowhead = veevee constraint = false" ++ (if fst3 topLevel == True then "" else " label=" ++ (fromJust $ trd3 topLevel)) ++ "];\n"
-graphSimpleSuperHow (PosSuperMArrow _) topLevel irMap = graphSimpleSuperHow SuperMArrow topLevel irMap     
+graphSimpleSuperHow SuperColon topLevel irMap showRefs = " [" ++ if fst3 topLevel == True 
+                                                                 then "arrowhead=onormal constraint=true weight=100];\n" 
+                                                                 else "arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];\n"
+graphSimpleSuperHow (PosSuperColon _) topLevel irMap showRefs  = graphSimpleSuperHow SuperColon topLevel irMap showRefs
+graphSimpleSuperHow SuperArrow topLevel irMap showRefs = " [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=" ++ refColor showRefs ++ " fontcolor=" ++ refColor showRefs ++ (if fst3 topLevel == True then "" else " label=" ++ (fromJust $ trd3 topLevel)) ++ "];\n"
+graphSimpleSuperHow (PosSuperArrow _) topLevel irMap showRefs = graphSimpleSuperHow SuperArrow topLevel irMap showRefs
+graphSimpleSuperHow SuperMArrow topLevel irMap showRefs = " [arrowhead=veevee arrowsize=0.6 minlen=1.5 penwidth=0.5 constraint=true weight=10 color=" ++ refColor showRefs ++ " fontcolor=" ++ refColor showRefs ++ (if fst3 topLevel == True then "" else " label=" ++ (fromJust $ trd3 topLevel)) ++ "];\n"
+graphSimpleSuperHow (PosSuperMArrow _) topLevel irMap showRefs = graphSimpleSuperHow SuperMArrow topLevel irMap showRefs  
+
+refColor True = "lightgray" 
+refColor False = "transparent"
 
 graphSimpleName (Path modids) topLevel irMap = unwords $ map (\x -> graphSimpleModId x topLevel irMap) modids
 graphSimpleName (PosPath _ modids) topLevel irMap = graphSimpleName (Path modids) topLevel irMap

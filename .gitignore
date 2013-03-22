@@ -1,6 +1,9 @@
+*.sublime-project
+*.sublime-workspace
 dist
 .dist-buildwrapper
 .project
 *.exe
 *.lkshs
 *.lkshw
+*.sublime*
