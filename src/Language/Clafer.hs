@@ -81,6 +81,7 @@ import Language.Clafer.Intermediate.Transformer
 import Language.Clafer.Optimizer.Optimizer
 import Language.Clafer.Generator.Alloy
 import Language.Clafer.Generator.Xml
+import Language.Clafer.Generator.Python
 import Language.Clafer.Generator.Schema
 import Language.Clafer.Generator.Stats
 import Language.Clafer.Generator.Html
@@ -337,6 +338,7 @@ generate =
                         Html     -> ("html", generateHtml env, Nothing)
                         Graph    -> ("dot", genSimpleGraph (ast env) iModule (takeBaseName $ file cargs) (fromJust $ show_references cargs), Nothing)
                         CVLGraph -> ("dot", genCVLGraph (ast env) iModule (takeBaseName $ file cargs), Nothing)
+                        Python      -> ("py", genPythonModule iModule, Nothing)
     return $ CompilerResult { extension = ext, 
                      outputCode = code, 
                      statistics = stats,

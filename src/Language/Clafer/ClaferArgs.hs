@@ -28,11 +28,11 @@ import System.Console.CmdArgs.Explicit hiding (mode)
 import Data.List
 import Data.Maybe
 import Control.Monad
-	
+        
 import Language.Clafer.SplitJoin
 import Language.Clafer.Version
 
-data ClaferMode = Alloy42 | Alloy | Xml | Clafer | Html | Graph | CVLGraph
+data ClaferMode = Alloy42 | Alloy | Xml | Clafer | Html | Graph | CVLGraph | Python
   deriving (Eq, Show, Data, Typeable)
 
 data ClaferArgs = ClaferArgs {
@@ -53,13 +53,13 @@ data ClaferArgs = ClaferArgs {
       alloy_mapping :: Maybe Bool,
       self_contained :: Maybe Bool,
       add_graph :: Maybe Bool,
-	  show_references :: Maybe Bool,
+          show_references :: Maybe Bool,
       add_comments :: Maybe Bool,
       file :: FilePath
     } deriving (Show, Data, Typeable)
 
 clafer = ClaferArgs {
-  mode                = def &= help "Generated output type. Available CLAFERMODEs are: 'alloy' (default, Alloy 4.1); 'alloy42' (Alloy 4.2); 'xml' (intermediate representation of Clafer model); 'clafer' (analyzed and desugared clafer model); 'html' (original model in HTML); 'graph' (graphical representation written in DOT language); 'cvlgraph' (cvl notation representation written in DOT language)" &= name "m",
+  mode                = def &= help "Generated output type. Available CLAFERMODEs are: 'alloy' (default, Alloy 4.1); 'alloy42' (Alloy 4.2); 'xml' (intermediate representation of Clafer model); 'clafer' (analyzed and desugared clafer model); 'html' (original model in HTML); 'graph' (graphical representation written in DOT language); 'cvlgraph' (cvl notation representation written in DOT language); 'python' (generates IR in python)" &= name "m",
   console_output      = def &= help "Output code on console" &= name "o",
   flatten_inheritance = def &= help "Flatten inheritance ('alloy' and 'alloy42' modes only)" &= name "i",
   timeout_analysis    = def &= help "Timeout for analysis",
