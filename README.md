@@ -62,6 +62,11 @@ It is not part of the binary distribution and it has to be downloaded separately
 On Windows only
 4. copy GLPK's dll `glpk-0.4.48.dll` to the `<target directory>` folder or any other folder on the system path
 
+Integration with Sublime Text 2
+-------------------------------
+
+See [IDEs/README.md](IDEs/README.md)
+
 Building & Installation From Source Code
 ----------------------------------------
 
