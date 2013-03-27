@@ -1,0 +1,4 @@
+{
+	"cmd": [ "clafer.exe", "$file" ],
+	"selector": "cfr"
+}
