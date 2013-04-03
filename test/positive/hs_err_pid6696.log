@@ -1,0 +1,370 @@
+#
+# A fatal error has been detected by the Java Runtime Environment:
+#
+#  EXCEPTION_ACCESS_VIOLATION (0xc0000005) at pc=0x1000460c, pid=6696, tid=5360
+#
+# JRE version: 7.0_17-b02
+# Java VM: Java HotSpot(TM) Client VM (23.7-b01 mixed mode, sharing windows-x86 )
+# Problematic frame:
+# C  [minisatprover.dll+0x460c]
+#
+# Failed to write core dump. Minidumps are not enabled by default on client versions of Windows
+#
+# If you would like to submit a bug report, please visit:
+#   http://bugreport.sun.com/bugreport/crash.jsp
+# The crash happened outside the Java Virtual Machine in native code.
+# See problematic frame for where to report the bug.
+#
+
+---------------  T H R E A D  ---------------
+
+Current thread (0x0273ac00):  JavaThread "main" [_thread_in_native, id=5360, stack(0x008f0000,0x00940000)]
+
+siginfo: ExceptionCode=0xc0000005, reading address 0x00000000
+
+Registers:
+EAX=0x0481efa8, EBX=0x054f4f58, ECX=0x0093f0a4, EDX=0x00000000
+ESP=0x0093f050, EBP=0x0093f128, ESI=0x054aefe0, EDI=0x10011130
+EIP=0x1000460c, EFLAGS=0x00010246
+
+Top of Stack: (sp=0x0093f050)
+0x0093f050:   000001a1 0093f164 10011130 00000000
+0x0093f060:   0000000c 24a4f5a0 77d3fd82 02730000
+0x0093f070:   00000000 00000018 054bf930 00000002
+0x0093f080:   0000000c 0093f0a4 00000000 3a16a85e
+0x0093f090:   0093f0b0 767a9b9c 0093f118 00000003
+0x0093f0a0:   00000003 054aefe0 767acf54 008e0000
+0x0093f0b0:   00000000 054c90a8 767acf65 3b4eb7bc
+0x0093f0c0:   10011130 0093f1d8 00000003 6d563d23 
+
+Instructions: (pc=0x1000460c)
+0x100045ec:   8b 85 7c ff ff ff 8b 00 d1 e8 99 8b 5d 08 01 83
+0x100045fc:   60 01 00 00 11 93 64 01 00 00 8b 47 04 8b 50 04
+0x1000460c:   8b 12 89 50 04 83 c4 f8 83 c4 fe 66 6a 01 8d 45
+0x1000461c:   f0 50 e8 e5 9f 00 00 8d a5 28 ff ff ff 5b 5e 5f 
+
+
+Register to memory mapping:
+
+EAX=0x0481efa8 is pointing into the stack for thread: 0x025d8800
+EBX=0x054f4f58 is an unknown value
+ECX=0x0093f0a4 is pointing into the stack for thread: 0x0273ac00
+EDX=0x00000000 is an unknown value
+ESP=0x0093f050 is pointing into the stack for thread: 0x0273ac00
+EBP=0x0093f128 is pointing into the stack for thread: 0x0273ac00
+ESI=0x054aefe0 is an unknown value
+EDI=0x10011130 is an unknown value
+
+
+Stack: [0x008f0000,0x00940000],  sp=0x0093f050,  free space=316k
+Native frames: (J=compiled Java code, j=interpreted, Vv=VM code, C=native code)
+C  [minisatprover.dll+0x460c]
+C  [minisatprover.dll+0x9bdf]  Java_kodkod_engine_satlab_MiniSatProver_addClause+0x14f
+J  kodkod.engine.satlab.MiniSatProver.addClause(J[I)Z
+J  kodkod.engine.satlab.NativeSolver.addClause([I)Z
+j  kodkod.engine.fol2sat.Bool2CNFTranslator.visit(Lkodkod/engine/bool/ITEGate;Ljava/lang/Object;)Ljava/lang/Object;+3
+J  kodkod.engine.bool.ITEGate.accept(Lkodkod/engine/bool/BooleanVisitor;Ljava/lang/Object;)Ljava/lang/Object;
+j  kodkod.engine.fol2sat.Translator.toCNF(Lkodkod/engine/bool/BooleanFormula;ILjava/util/Map;)Lkodkod/engine/fol2sat/Translation;+22
+j  kodkod.engine.fol2sat.Translator.generateSBP(Lkodkod/engine/bool/BooleanAccumulator;Lkodkod/engine/fol2sat/LeafInterpreter;Lkodkod/engine/fol2sat/SymmetryBreaker;)Lkodkod/engine/fol2sat/Translation;+54
+j  kodkod.engine.fol2sat.Translator.toBoolean(Lkodkod/util/nodes/AnnotatedNode;Lkodkod/engine/fol2sat/SymmetryBreaker;)Lkodkod/engine/fol2sat/Translation;+186
+j  kodkod.engine.fol2sat.Translator.translate()Lkodkod/engine/fol2sat/Translation;+42
+j  kodkod.engine.fol2sat.Translator.translate(Lkodkod/ast/Formula;Lkodkod/instance/Bounds;Lkodkod/engine/config/Options;)Lkodkod/engine/fol2sat/Translation;+10
+j  kodkod.engine.Solver$SolutionIterator.next()Lkodkod/engine/Solution;+42
+j  kodkod.engine.Solver$SolutionIterator.next()Ljava/lang/Object;+1
+j  edu.mit.csail.sdg.alloy4compiler.translator.A4Solution$Peeker.<init>(Ljava/util/Iterator;)V+25
+j  edu.mit.csail.sdg.alloy4compiler.translator.A4Solution$Peeker.<init>(Ljava/util/Iterator;Ledu/mit/csail/sdg/alloy4compiler/translator/A4Solution$1;)V+2
+j  edu.mit.csail.sdg.alloy4compiler.translator.A4Solution.solve(Ledu/mit/csail/sdg/alloy4/A4Reporter;Ledu/mit/csail/sdg/alloy4compiler/ast/Command;Ledu/mit/csail/sdg/alloy4compiler/translator/Simplifier;Z)Ledu/mit/csail/sdg/alloy4compiler/translator/A4Solution;+784
+j  edu.mit.csail.sdg.alloy4compiler.translator.TranslateAlloyToKodkod.execute_command(Ledu/mit/csail/sdg/alloy4/A4Reporter;Ljava/lang/Iterable;Ledu/mit/csail/sdg/alloy4compiler/ast/Command;Ledu/mit/csail/sdg/alloy4compiler/translator/A4Options;)Ledu/mit/csail/sdg/alloy4compiler/translator/A4Solution;+73
+j  org.clafer.ig.AlloyIG.run([Ljava/lang/String;)V+258
+j  org.clafer.ig.AlloyIG.main([Ljava/lang/String;)V+15
+v  ~StubRoutines::call_stub
+V  [jvm.dll+0x12a34a]
+V  [jvm.dll+0x1d968e]
+V  [jvm.dll+0x12a3cd]
+V  [jvm.dll+0xaede4]
+V  [jvm.dll+0xb9157]
+C  [java.exe+0x205f]
+C  [java.exe+0xa591]
+C  [java.exe+0xa61b]
+C  [KERNEL32.DLL+0x28543]  BaseThreadInitThunk+0xe
+C  [ntdll.dll+0x5ac69]  RtlInitializeExceptionChain+0x85
+C  [ntdll.dll+0x5ac3c]  RtlInitializeExceptionChain+0x58
+
+Java frames: (J=compiled Java code, j=interpreted, Vv=VM code)
+J  kodkod.engine.satlab.MiniSatProver.addClause(J[I)Z
+J  kodkod.engine.satlab.NativeSolver.addClause([I)Z
+j  kodkod.engine.fol2sat.Bool2CNFTranslator.visit(Lkodkod/engine/bool/ITEGate;Ljava/lang/Object;)[I+195
+j  kodkod.engine.fol2sat.Bool2CNFTranslator.visit(Lkodkod/engine/bool/ITEGate;Ljava/lang/Object;)Ljava/lang/Object;+3
+J  kodkod.engine.bool.ITEGate.accept(Lkodkod/engine/bool/BooleanVisitor;Ljava/lang/Object;)Ljava/lang/Object;
+J  kodkod.engine.fol2sat.Bool2CNFTranslator.visit(Lkodkod/engine/bool/MultiGate;Ljava/lang/Object;)[I
+J  kodkod.engine.fol2sat.Bool2CNFTranslator.visit(Lkodkod/engine/bool/MultiGate;Ljava/lang/Object;)Ljava/lang/Object;
+J  kodkod.engine.bool.MultiGate.accept(Lkodkod/engine/bool/BooleanVisitor;Ljava/lang/Object;)Ljava/lang/Object;
+J  kodkod.engine.fol2sat.Bool2CNFTranslator.visit(Lkodkod/engine/bool/MultiGate;Ljava/lang/Object;)[I
+J  kodkod.engine.fol2sat.Bool2CNFTranslator.visit(Lkodkod/engine/bool/MultiGate;Ljava/lang/Object;)Ljava/lang/Object;
+J  kodkod.engine.bool.MultiGate.accept(Lkodkod/engine/bool/BooleanVisitor;Ljava/lang/Object;)Ljava/lang/Object;
+J  kodkod.engine.fol2sat.Bool2CNFTranslator.visit(Lkodkod/engine/bool/MultiGate;Ljava/lang/Object;)[I
+J  kodkod.engine.fol2sat.Bool2CNFTranslator.visit(Lkodkod/engine/bool/MultiGate;Ljava/lang/Object;)Ljava/lang/Object;
+J  kodkod.engine.bool.MultiGate.accept(Lkodkod/engine/bool/BooleanVisitor;Ljava/lang/Object;)Ljava/lang/Object;
+J  kodkod.engine.fol2sat.Bool2CNFTranslator.visit(Lkodkod/engine/bool/MultiGate;Ljava/lang/Object;)[I
+J  kodkod.engine.fol2sat.Bool2CNFTranslator.visit(Lkodkod/engine/bool/MultiGate;Ljava/lang/Object;)Ljava/lang/Object;
+J  kodkod.engine.bool.MultiGate.accept(Lkodkod/engine/bool/BooleanVisitor;Ljava/lang/Object;)Ljava/lang/Object;
+J  kodkod.engine.fol2sat.Bool2CNFTranslator.visit(Lkodkod/engine/bool/MultiGate;Ljava/lang/Object;)[I
+J  kodkod.engine.fol2sat.Bool2CNFTranslator.visit(Lkodkod/engine/bool/MultiGate;Ljava/lang/Object;)Ljava/lang/Object;
+J  kodkod.engine.bool.MultiGate.accept(Lkodkod/engine/bool/BooleanVisitor;Ljava/lang/Object;)Ljava/lang/Object;
+J  kodkod.engine.fol2sat.Bool2CNFTranslator.visit(Lkodkod/engine/bool/NotGate;Ljava/lang/Object;)Ljava/lang/Object;
+J  kodkod.engine.bool.NotGate.accept(Lkodkod/engine/bool/BooleanVisitor;Ljava/lang/Object;)Ljava/lang/Object;
+J  kodkod.engine.fol2sat.Bool2CNFTranslator.visit(Lkodkod/engine/bool/MultiGate;Ljava/lang/Object;)[I
+J  kodkod.engine.fol2sat.Bool2CNFTranslator.visit(Lkodkod/engine/bool/MultiGate;Ljava/lang/Object;)Ljava/lang/Object;
+J  kodkod.engine.bool.MultiGate.accept(Lkodkod/engine/bool/BooleanVisitor;Ljava/lang/Object;)Ljava/lang/Object;
+J  kodkod.engine.fol2sat.Bool2CNFTranslator.visit(Lkodkod/engine/bool/MultiGate;Ljava/lang/Object;)[I
+J  kodkod.engine.fol2sat.Bool2CNFTranslator.visit(Lkodkod/engine/bool/MultiGate;Ljava/lang/Object;)Ljava/lang/Object;
+J  kodkod.engine.bool.MultiGate.accept(Lkodkod/engine/bool/BooleanVisitor;Ljava/lang/Object;)Ljava/lang/Object;
+J  kodkod.engine.fol2sat.Bool2CNFTranslator.visit(Lkodkod/engine/bool/MultiGate;Ljava/lang/Object;)[I
+J  kodkod.engine.fol2sat.Bool2CNFTranslator.visit(Lkodkod/engine/bool/MultiGate;Ljava/lang/Object;)Ljava/lang/Object;
+J  kodkod.engine.bool.MultiGate.accept(Lkodkod/engine/bool/BooleanVisitor;Ljava/lang/Object;)Ljava/lang/Object;
+j  kodkod.engine.fol2sat.Bool2CNFTranslator.translate(Lkodkod/engine/bool/BooleanFormula;Lkodkod/engine/satlab/SATFactory;I)Lkodkod/engine/satlab/SATSolver;+60
+j  kodkod.engine.fol2sat.Translator.toCNF(Lkodkod/engine/bool/BooleanFormula;ILjava/util/Map;)Lkodkod/engine/fol2sat/Translation;+22
+j  kodkod.engine.fol2sat.Translator.generateSBP(Lkodkod/engine/bool/BooleanAccumulator;Lkodkod/engine/fol2sat/LeafInterpreter;Lkodkod/engine/fol2sat/SymmetryBreaker;)Lkodkod/engine/fol2sat/Translation;+54
+j  kodkod.engine.fol2sat.Translator.toBoolean(Lkodkod/util/nodes/AnnotatedNode;Lkodkod/engine/fol2sat/SymmetryBreaker;)Lkodkod/engine/fol2sat/Translation;+186
+j  kodkod.engine.fol2sat.Translator.translate()Lkodkod/engine/fol2sat/Translation;+42
+j  kodkod.engine.fol2sat.Translator.translate(Lkodkod/ast/Formula;Lkodkod/instance/Bounds;Lkodkod/engine/config/Options;)Lkodkod/engine/fol2sat/Translation;+10
+j  kodkod.engine.Solver$SolutionIterator.next()Lkodkod/engine/Solution;+42
+j  kodkod.engine.Solver$SolutionIterator.next()Ljava/lang/Object;+1
+j  edu.mit.csail.sdg.alloy4compiler.translator.A4Solution$Peeker.<init>(Ljava/util/Iterator;)V+25
+j  edu.mit.csail.sdg.alloy4compiler.translator.A4Solution$Peeker.<init>(Ljava/util/Iterator;Ledu/mit/csail/sdg/alloy4compiler/translator/A4Solution$1;)V+2
+j  edu.mit.csail.sdg.alloy4compiler.translator.A4Solution.solve(Ledu/mit/csail/sdg/alloy4/A4Reporter;Ledu/mit/csail/sdg/alloy4compiler/ast/Command;Ledu/mit/csail/sdg/alloy4compiler/translator/Simplifier;Z)Ledu/mit/csail/sdg/alloy4compiler/translator/A4Solution;+784
+j  edu.mit.csail.sdg.alloy4compiler.translator.TranslateAlloyToKodkod.execute_command(Ledu/mit/csail/sdg/alloy4/A4Reporter;Ljava/lang/Iterable;Ledu/mit/csail/sdg/alloy4compiler/ast/Command;Ledu/mit/csail/sdg/alloy4compiler/translator/A4Options;)Ledu/mit/csail/sdg/alloy4compiler/translator/A4Solution;+73
+j  org.clafer.ig.AlloyIG.run([Ljava/lang/String;)V+258
+j  org.clafer.ig.AlloyIG.main([Ljava/lang/String;)V+15
+v  ~StubRoutines::call_stub
+
+---------------  P R O C E S S  ---------------
+
+Java Threads: ( => current thread )
+  0x025f3c00 JavaThread "Service Thread" daemon [_thread_blocked, id=2768, stack(0x04a10000,0x04a60000)]
+  0x025ee800 JavaThread "C1 CompilerThread0" daemon [_thread_blocked, id=3996, stack(0x04980000,0x049d0000)]
+  0x025ed400 JavaThread "Attach Listener" daemon [_thread_blocked, id=5052, stack(0x048f0000,0x04940000)]
+  0x025eb000 JavaThread "Signal Dispatcher" daemon [_thread_blocked, id=5264, stack(0x04860000,0x048b0000)]
+  0x025d8800 JavaThread "Finalizer" daemon [_thread_blocked, id=6524, stack(0x047d0000,0x04820000)]
+  0x025d3400 JavaThread "Reference Handler" daemon [_thread_blocked, id=4828, stack(0x04740000,0x04790000)]
+=>0x0273ac00 JavaThread "main" [_thread_in_native, id=5360, stack(0x008f0000,0x00940000)]
+
+Other Threads:
+  0x025d2000 VMThread [stack: 0x024b0000,0x02500000] [id=4832]
+  0x02603800 WatcherThread [stack: 0x04aa0000,0x04af0000] [id=5544]
+
+VM state:not at safepoint (normal execution)
+
+VM Mutex/Monitor currently owned by a thread: None
+
+Heap
+ def new generation   total 4928K, used 593K [0x24a30000, 0x24f80000, 0x29f80000)
+  eden space 4416K,   4% used [0x24a30000, 0x24a64840, 0x24e80000)
+  from space 512K,  74% used [0x24f00000, 0x24f5fbc0, 0x24f80000)
+  to   space 512K,   0% used [0x24e80000, 0x24e80000, 0x24f00000)
+ tenured generation   total 10944K, used 2001K [0x29f80000, 0x2aa30000, 0x34a30000)
+   the space 10944K,  18% used [0x29f80000, 0x2a174690, 0x2a174800, 0x2aa30000)
+ compacting perm gen  total 12288K, used 1784K [0x34a30000, 0x35630000, 0x38a30000)
+   the space 12288K,  14% used [0x34a30000, 0x34bee148, 0x34bee200, 0x35630000)
+    ro space 10240K,  42% used [0x38a30000, 0x38e71d60, 0x38e71e00, 0x39430000)
+    rw space 12288K,  54% used [0x39430000, 0x39ab2928, 0x39ab2a00, 0x3a030000)
+
+Card table byte_map: [0x02640000,0x026f0000] byte_map_base: 0x0251ae80
+
+Polling page: 0x008d0000
+
+Code Cache  [0x02740000, 0x02860000, 0x04740000)
+ total_blobs=614 nmethods=454 adapters=94 free_code_cache=31647Kb largest_free_block=32406656
+
+Compilation events (10 events):
+Event: 14.641 Thread 0x025ee800  448             kodkod.engine.fol2sat.SymmetryBreaker::generateSBP (383 bytes)
+Event: 14.642 Thread 0x025ee800 nmethod 448 0x02855208 code [0x02855560, 0x02855f68]
+Event: 14.642 Thread 0x025ee800  449             kodkod.util.ints.IntTreeSet::access$100 (5 bytes)
+Event: 14.642 Thread 0x025ee800 nmethod 449 0x02857788 code [0x02857880, 0x028578f0]
+Event: 14.642 Thread 0x025ee800  450             kodkod.engine.bool.Operator$2::complement (4 bytes)
+Event: 14.643 Thread 0x025ee800 nmethod 450 0x02857948 code [0x02857a40, 0x02857ac0]
+Event: 14.647 Thread 0x025ee800  451             kodkod.engine.fol2sat.Bool2CNFTranslator$PolarityDetector::visit (10 bytes)
+Event: 14.647 Thread 0x025ee800 nmethod 451 0x02857b08 code [0x02857c10, 0x02857ccc]
+Event: 14.647 Thread 0x025ee800  452             kodkod.engine.fol2sat.Bool2CNFTranslator$PolarityDetector::visit (49 bytes)
+Event: 14.647 Thread 0x025ee800 nmethod 452 0x02857d48 code [0x02857e90, 0x02858060]
+
+GC Heap History (6 events):
+Event: 0.211 GC heap before
+{Heap before GC invocations=0 (full 0):
+ def new generation   total 4928K, used 4416K [0x24a30000, 0x24f80000, 0x29f80000)
+  eden space 4416K, 100% used [0x24a30000, 0x24e80000, 0x24e80000)
+  from space 512K,   0% used [0x24e80000, 0x24e80000, 0x24f00000)
+  to   space 512K,   0% used [0x24f00000, 0x24f00000, 0x24f80000)
+ tenured generation   total 10944K, used 0K [0x29f80000, 0x2aa30000, 0x34a30000)
+   the space 10944K,   0% used [0x29f80000, 0x29f80000, 0x29f80200, 0x2aa30000)
+ compacting perm gen  total 12288K, used 631K [0x34a30000, 0x35630000, 0x38a30000)
+   the space 12288K,   5% used [0x34a30000, 0x34acdcf0, 0x34acde00, 0x35630000)
+    ro space 10240K,  42% used [0x38a30000, 0x38e71d60, 0x38e71e00, 0x39430000)
+    rw space 12288K,  54% used [0x39430000, 0x39ab2928, 0x39ab2a00, 0x3a030000)
+Event: 0.215 GC heap after
+Heap after GC invocations=1 (full 0):
+ def new generation   total 4928K, used 512K [0x24a30000, 0x24f80000, 0x29f80000)
+  eden space 4416K,   0% used [0x24a30000, 0x24a30000, 0x24e80000)
+  from space 512K, 100% used [0x24f00000, 0x24f80000, 0x24f80000)
+  to   space 512K,   0% used [0x24e80000, 0x24e80000, 0x24f00000)
+ tenured generation   total 10944K, used 856K [0x29f80000, 0x2aa30000, 0x34a30000)
+   the space 10944K,   7% used [0x29f80000, 0x2a0563e8, 0x2a056400, 0x2aa30000)
+ compacting perm gen  total 12288K, used 631K [0x34a30000, 0x35630000, 0x38a30000)
+   the space 12288K,   5% used [0x34a30000, 0x34acdcf0, 0x34acde00, 0x35630000)
+    ro space 10240K,  42% used [0x38a30000, 0x38e71d60, 0x38e71e00, 0x39430000)
+    rw space 12288K,  54% used [0x39430000, 0x39ab2928, 0x39ab2a00, 0x3a030000)
+}
+Event: 0.417 GC heap before
+{Heap before GC invocations=1 (full 0):
+ def new generation   total 4928K, used 4928K [0x24a30000, 0x24f80000, 0x29f80000)
+  eden space 4416K, 100% used [0x24a30000, 0x24e80000, 0x24e80000)
+  from space 512K, 100% used [0x24f00000, 0x24f80000, 0x24f80000)
+  to   space 512K,   0% used [0x24e80000, 0x24e80000, 0x24f00000)
+ tenured generation   total 10944K, used 856K [0x29f80000, 0x2aa30000, 0x34a30000)
+   the space 10944K,   7% used [0x29f80000, 0x2a0563e8, 0x2a056400, 0x2aa30000)
+ compacting perm gen  total 12288K, used 1602K [0x34a30000, 0x35630000, 0x38a30000)
+   the space 12288K,  13% used [0x34a30000, 0x34bc0a50, 0x34bc0c00, 0x35630000)
+    ro space 10240K,  42% used [0x38a30000, 0x38e71d60, 0x38e71e00, 0x39430000)
+    rw space 12288K,  54% used [0x39430000, 0x39ab2928, 0x39ab2a00, 0x3a030000)
+Event: 0.421 GC heap after
+Heap after GC invocations=2 (full 0):
+ def new generation   total 4928K, used 512K [0x24a30000, 0x24f80000, 0x29f80000)
+  eden space 4416K,   0% used [0x24a30000, 0x24a30000, 0x24e80000)
+  from space 512K, 100% used [0x24e80000, 0x24f00000, 0x24f00000)
+  to   space 512K,   0% used [0x24f00000, 0x24f00000, 0x24f80000)
+ tenured generation   total 10944K, used 1828K [0x29f80000, 0x2aa30000, 0x34a30000)
+   the space 10944K,  16% used [0x29f80000, 0x2a1491e0, 0x2a149200, 0x2aa30000)
+ compacting perm gen  total 12288K, used 1602K [0x34a30000, 0x35630000, 0x38a30000)
+   the space 12288K,  13% used [0x34a30000, 0x34bc0a50, 0x34bc0c00, 0x35630000)
+    ro space 10240K,  42% used [0x38a30000, 0x38e71d60, 0x38e71e00, 0x39430000)
+    rw space 12288K,  54% used [0x39430000, 0x39ab2928, 0x39ab2a00, 0x3a030000)
+}
+Event: 14.636 GC heap before
+{Heap before GC invocations=2 (full 0):
+ def new generation   total 4928K, used 4928K [0x24a30000, 0x24f80000, 0x29f80000)
+  eden space 4416K, 100% used [0x24a30000, 0x24e80000, 0x24e80000)
+  from space 512K, 100% used [0x24e80000, 0x24f00000, 0x24f00000)
+  to   space 512K,   0% used [0x24f00000, 0x24f00000, 0x24f80000)
+ tenured generation   total 10944K, used 1828K [0x29f80000, 0x2aa30000, 0x34a30000)
+   the space 10944K,  16% used [0x29f80000, 0x2a1491e0, 0x2a149200, 0x2aa30000)
+ compacting perm gen  total 12288K, used 1784K [0x34a30000, 0x35630000, 0x38a30000)
+   the space 12288K,  14% used [0x34a30000, 0x34bee138, 0x34bee200, 0x35630000)
+    ro space 10240K,  42% used [0x38a30000, 0x38e71d60, 0x38e71e00, 0x39430000)
+    rw space 12288K,  54% used [0x39430000, 0x39ab2928, 0x39ab2a00, 0x3a030000)
+Event: 14.638 GC heap after
+Heap after GC invocations=3 (full 0):
+ def new generation   total 4928K, used 382K [0x24a30000, 0x24f80000, 0x29f80000)
+  eden space 4416K,   0% used [0x24a30000, 0x24a30000, 0x24e80000)
+  from space 512K,  74% used [0x24f00000, 0x24f5fbc0, 0x24f80000)
+  to   space 512K,   0% used [0x24e80000, 0x24e80000, 0x24f00000)
+ tenured generation   total 10944K, used 2001K [0x29f80000, 0x2aa30000, 0x34a30000)
+   the space 10944K,  18% used [0x29f80000, 0x2a174690, 0x2a174800, 0x2aa30000)
+ compacting perm gen  total 12288K, used 1784K [0x34a30000, 0x35630000, 0x38a30000)
+   the space 12288K,  14% used [0x34a30000, 0x34bee138, 0x34bee200, 0x35630000)
+    ro space 10240K,  42% used [0x38a30000, 0x38e71d60, 0x38e71e00, 0x39430000)
+    rw space 12288K,  54% used [0x39430000, 0x39ab2928, 0x39ab2a00, 0x3a030000)
+}
+
+Deoptimization events (0 events):
+No events
+
+Internal exceptions (10 events):
+Event: 0.471 Thread 0x0273ac00 Threw 0x24aead90 at C:\jdk7u2_32P\jdk7u17\hotspot\src\share\vm\prims\jvm.cpp:1166
+Event: 0.472 Thread 0x0273ac00 Threw 0x24aed760 at C:\jdk7u2_32P\jdk7u17\hotspot\src\share\vm\prims\jvm.cpp:1166
+Event: 0.473 Thread 0x0273ac00 Threw 0x24af4f58 at C:\jdk7u2_32P\jdk7u17\hotspot\src\share\vm\prims\jvm.cpp:1166
+Event: 0.475 Thread 0x0273ac00 Threw 0x24afc290 at C:\jdk7u2_32P\jdk7u17\hotspot\src\share\vm\prims\jvm.cpp:1166
+Event: 0.476 Thread 0x0273ac00 Threw 0x24b02300 at C:\jdk7u2_32P\jdk7u17\hotspot\src\share\vm\prims\jvm.cpp:1166
+Event: 0.476 Thread 0x0273ac00 Threw 0x24b06cd8 at C:\jdk7u2_32P\jdk7u17\hotspot\src\share\vm\prims\jvm.cpp:1166
+Event: 0.478 Thread 0x0273ac00 Threw 0x24b0f310 at C:\jdk7u2_32P\jdk7u17\hotspot\src\share\vm\prims\jvm.cpp:1166
+Event: 1.998 Thread 0x0273ac00 Threw 0x24b111b8 at C:\jdk7u2_32P\jdk7u17\hotspot\src\share\vm\prims\jvm.cpp:1166
+Event: 1.999 Thread 0x0273ac00 Threw 0x24b13688 at C:\jdk7u2_32P\jdk7u17\hotspot\src\share\vm\prims\jvm.cpp:1166
+Event: 8.797 Thread 0x0273ac00 Threw 0x24c359d0 at C:\jdk7u2_32P\jdk7u17\hotspot\src\share\vm\prims\jvm.cpp:1166
+
+Events (10 events):
+Event: 14.655 Executing VM operation: RevokeBias
+Event: 14.655 Executing VM operation: RevokeBias done
+Event: 14.656 Executing VM operation: RevokeBias
+Event: 14.656 Executing VM operation: RevokeBias done
+Event: 14.656 Executing VM operation: RevokeBias
+Event: 14.656 Executing VM operation: RevokeBias done
+Event: 14.656 Executing VM operation: BulkRevokeBias
+Event: 14.656 Executing VM operation: BulkRevokeBias done
+Event: 14.658 Executing VM operation: RevokeBias
+Event: 14.658 Executing VM operation: RevokeBias done
+
+
+Dynamic libraries:
+0x00df0000 - 0x00e1f000 	C:\windows\SysWOW64\java.exe
+0x77cf0000 - 0x77e47000 	C:\windows\SYSTEM32\ntdll.dll
+0x76670000 - 0x767a0000 	C:\windows\SYSTEM32\KERNEL32.DLL
+0x77800000 - 0x778a6000 	C:\windows\SYSTEM32\KERNELBASE.dll
+0x6bcc0000 - 0x6bd67000 	C:\windows\system32\apphelp.dll
+0x765c0000 - 0x7666e000 	C:\windows\SYSTEM32\ADVAPI32.dll
+0x77360000 - 0x77476000 	C:\windows\SYSTEM32\USER32.dll
+0x73aa0000 - 0x73c97000 	C:\windows\WinSxS\x86_microsoft.windows.common-controls_6595b64144ccf1df_6.0.9200.16384_none_893961408605e985\COMCTL32.dll
+0x767a0000 - 0x76851000 	C:\windows\SYSTEM32\msvcrt.dll
+0x77bf0000 - 0x77c24000 	C:\windows\SYSTEM32\sechost.dll
+0x774a0000 - 0x7754c000 	C:\windows\SYSTEM32\RPCRT4.dll
+0x77af0000 - 0x77bed000 	C:\windows\SYSTEM32\GDI32.dll
+0x75390000 - 0x753ac000 	C:\windows\SYSTEM32\SspiCli.dll
+0x75380000 - 0x75389000 	C:\windows\SYSTEM32\CRYPTBASE.dll
+0x75320000 - 0x75371000 	C:\windows\SYSTEM32\bcryptPrimitives.dll
+0x753b0000 - 0x753d0000 	C:\windows\system32\IMM32.DLL
+0x771a0000 - 0x7727d000 	C:\windows\SYSTEM32\MSCTF.dll
+0x6e910000 - 0x6e9ce000 	C:\Program Files (x86)\Java\jre7\bin\msvcr100.dll
+0x6d560000 - 0x6d8ac000 	C:\Program Files (x86)\Java\jre7\bin\client\jvm.dll
+0x751d0000 - 0x751d8000 	C:\windows\SYSTEM32\WSOCK32.dll
+0x74800000 - 0x74821000 	C:\windows\SYSTEM32\WINMM.dll
+0x77550000 - 0x77556000 	C:\windows\SYSTEM32\PSAPI.DLL
+0x77280000 - 0x772d0000 	C:\windows\SYSTEM32\WS2_32.dll
+0x747d0000 - 0x747fa000 	C:\windows\SYSTEM32\WINMMBASE.dll
+0x76a20000 - 0x76a28000 	C:\windows\SYSTEM32\NSI.dll
+0x6e900000 - 0x6e90c000 	C:\Program Files (x86)\Java\jre7\bin\verify.dll
+0x6e8e0000 - 0x6e900000 	C:\Program Files (x86)\Java\jre7\bin\java.dll
+0x6d540000 - 0x6d553000 	C:\Program Files (x86)\Java\jre7\bin\zip.dll
+0x10000000 - 0x10021000 	C:\dev\clafer-tools-0.3.2\lib\minisatprover.dll
+0x751b0000 - 0x751ca000 	C:\windows\SYSTEM32\CRYPTSP.dll
+0x75170000 - 0x751ae000 	C:\windows\system32\rsaenh.dll
+0x74f80000 - 0x74f9b000 	C:\windows\SYSTEM32\USERENV.dll
+0x74f60000 - 0x74f71000 	C:\windows\SYSTEM32\profapi.dll
+0x6d520000 - 0x6d534000 	C:\Program Files (x86)\Java\jre7\bin\net.dll
+0x73f80000 - 0x73fca000 	C:\windows\system32\mswsock.dll
+0x743f0000 - 0x74400000 	C:\windows\system32\napinsp.dll
+0x743d0000 - 0x743e4000 	C:\windows\system32\pnrpnsp.dll
+0x743c0000 - 0x743d0000 	C:\windows\system32\NLAapi.dll
+0x73ef0000 - 0x73f65000 	C:\windows\SYSTEM32\DNSAPI.dll
+0x743b0000 - 0x743b9000 	C:\windows\System32\winrnr.dll
+0x743a0000 - 0x743b0000 	C:\windows\system32\wshbth.dll
+0x73e00000 - 0x73e07000 	C:\Windows\System32\rasadhlp.dll
+0x74560000 - 0x74580000 	C:\windows\SYSTEM32\IPHLPAPI.DLL
+0x74550000 - 0x74558000 	C:\windows\SYSTEM32\WINNSI.DLL
+0x74360000 - 0x7439f000 	C:\windows\System32\fwpuclnt.dll
+0x6e8d0000 - 0x6e8de000 	C:\Program Files (x86)\Java\jre7\bin\nio.dll
+0x751f0000 - 0x75319000 	C:\windows\SYSTEM32\dbghelp.dll
+
+VM Arguments:
+jvm_args: -Djava.library.path=c:\dev\clafer-tools-0.3.2\lib 
+java_command: c:\dev\clafer-tools-0.3.2\alloyIG.jar
+Launcher Type: SUN_STANDARD
+
+Environment Variables:
+PATH=C:\Program Files (x86)\Haskell\bin;C:\dev\HaskellPlatform\2012.2.0.0\lib\extralibs\bin;C:\dev\HaskellPlatform\2012.2.0.0\bin;C:\windows\system32;C:\windows;C:\windows\System32\Wbem;C:\windows\System32\WindowsPowerShell\v1.0\;C:\Program Files (x86)\Bitvise SSH Client;C:\dev\Graphviz 2.28\bin;C:\dev\Python27;C:\Program Files\nodejs;c:\dev\Java\jdk1.7.0_09\bin;C:\Program Files\MiKTeX 2.9\miktex\bin\x64\;C:\Program Files (x86)\SumatraPDF;c:\dev\clafer-tools-0.3.2;C:\Users\mantkiew\AppData\Roaming\cabal\bin;C:\Users\mantkiew\AppData\Roaming\cabal;C:\Users\mantkiew\AppData\Roaming\npm;C:\dev\HaskellPlatform\2012.2.0.0\mingw\bin;C:\dev\HaskellPlatform\2012.2.0.0\mingw\msys\1.0\bin;C:\Program Files\Sublime Text 2\;C:\Users\mantkiew\AppData\Local\GitHub\PortableGit_93e8418133eb85e81a81e5e19c272776524496c6\bin
+USERNAME=mantkiew
+OS=Windows_NT
+PROCESSOR_IDENTIFIER=Intel64 Family 6 Model 23 Stepping 6, GenuineIntel
+
+
+
+---------------  S Y S T E M  ---------------
+
+OS: Windows 8 , 64 bit Build 9200 
+
+CPU:total 2 (2 cores per cpu, 1 threads per core) family 6 model 23 stepping 6, cmov, cx8, fxsr, mmx, sse, sse2, sse3, ssse3, sse4.1, tsc
+
+Memory: 4k page, physical 4193520k(1913932k free), swap 5307632k(2328892k free)
+
+vm_info: Java HotSpot(TM) Client VM (23.7-b01) for windows-x86 JRE (1.7.0_17-b02), built on Mar  1 2013 05:04:36 by "java_re" with unknown MS VC++:1600
+
+time: Wed Apr 03 10:46:47 2013
+elapsed time: 14 seconds
+

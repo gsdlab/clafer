@@ -1,0 +1,8 @@
+// http://gsd.uwaterloo.ca:8888/question/885/ref-should-only-be-needed-for-disambiguation-ii
+
+[ all disj c1; c2 : Car | c1.owner != c2.owner ]
+
+Car 4
+   owner -> Person
+
+Person 4
