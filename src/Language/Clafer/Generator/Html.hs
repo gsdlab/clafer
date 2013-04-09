@@ -104,6 +104,7 @@ printElement (Subclafer clafer) indent irMap html comments = printClafer clafer 
 printElement (PosSubclafer span subclafer) indent irMap html comments = printElement (Subclafer subclafer) indent irMap html comments
 printElement (Subconstraint constraint) indent irMap html comments = printConstraint constraint indent irMap html comments
 printElement (PosSubconstraint span constraint) indent irMap html comments = let (comments', preComments) = printPreComment span comments; (comments'', comment) = printComment span comments' in preComments ++ printElement (Subconstraint constraint) indent irMap html comments'' ++ comment ++ while html "<br>" ++ "\n"
+
 printElement (ClaferUse name card elements) indent irMap html comments = (printIndent indent html) ++ "`" ++ printName name indent irMap html comments ++ printCard card indent irMap html comments ++ (while html "</span><br>") ++ "\n" ++ printElements elements indent irMap html comments
 printElement (PosClaferUse span name card elements) indent irMap html comments = let (divId, superId) = getUseId span irMap;
                                                                                      (comments', preComments) = printPreComment span comments;
@@ -113,7 +114,7 @@ printElement (PosClaferUse span name card elements) indent irMap html comments =
 printElement (Subgoal goal) indent irMap html comments = printGoal goal indent irMap html comments
 printElement (PosSubgoal span goal) indent irMap html comments = let (comments', preComments) = printPreComment span comments; (comments'', comment) = printComment span comments' in preComments ++ printElement (Subgoal goal) indent irMap html comments'' ++ comment
 printElement (Subsoftconstraint softConstraint) indent irMap html comments = printSoftConstraint softConstraint indent irMap html comments
-printElement (PosSubsoftconstraint span softConstraint) indent irMap html comments = let (comments', preComments) = printPreComment span comments; (comments'', comment) = printComment span comments' in preComments ++  printElement (Subsoftconstraint softConstraint) indent irMap html comments'' ++ comment
+printElement (PosSubsoftconstraint span softConstraint) indent irMap html comments = let (comments', preComments) = printPreComment span comments; (comments'', comment) = printComment span comments' in preComments ++ printElement (Subsoftconstraint softConstraint) indent irMap html comments'' ++ comment ++ while html "<br>" ++ "\n"
 
 printElements ElementsEmpty indent irMap html comments = ""
 printElements (PosElementsEmpty _) indent irMap html comments = printElements ElementsEmpty indent irMap html comments
@@ -156,9 +157,6 @@ printClafer (PosClafer span abstract gCard id super card init elements) indent i
                     
 printGoal (Goal exps) indent irMap html comments = (if html then "&lt;&lt;" else "<<") ++ concatMap (\x -> printExp x indent irMap html comments) exps ++ if html then "&gt;&gt;" else ">>"
 printGoal (PosGoal _ exps) indent irMap html comments = printGoal (Goal exps) indent irMap html comments
-
-printSoftConstraint (SoftConstraint exps) indent irMap html comments = "(" ++ concatMap (\x -> printExp x indent irMap html comments) exps ++ ")"
-printSoftConstraint (PosSoftConstraint _ exps) indent irMap html comments = printSoftConstraint (SoftConstraint exps) indent irMap html comments
 
 printAbstract Abstract indent irMap html comments = (while html "<span class=\"keyword\">") ++ "abstract" ++ (while html "</span>") ++ " "
 printAbstract (PosAbstract _) indent irMap html comments = printAbstract Abstract indent irMap html comments
@@ -226,9 +224,25 @@ printCard (PosCardInterval _ nCard) indent irMap html comments = printCard (Card
 
 printConstraint (Constraint exps) indent irMap html comments = concatMap (\x -> printConstraint' x indent irMap html comments) exps
 printConstraint (PosConstraint _ exps) indent irMap html comments = printConstraint (Constraint exps) indent irMap html comments
-printConstraint' exp indent irMap html comments = (printIndent indent html) ++ while html "<span class=\"keyword\">" ++ "[" ++ while html "</span>"
-                                                  ++ " " ++ printExp exp indent irMap html comments ++ " " ++ while html "<span class=\"keyword\">" ++ "]" ++ while html "</span>"
-                                                  ++ (if indent == 0 then "" else while html "</span>") 
+printConstraint' exp indent irMap html comments = 
+    (printIndent indent html) ++ 
+    while html "<span class=\"keyword\">" ++ "[" ++ while html "</span>" ++
+    " " ++ 
+    printExp exp indent irMap html comments ++ 
+    " " ++ 
+    while html "<span class=\"keyword\">" ++ "]" ++ while html "</span>" ++ 
+    (if indent == 0 then "" else while html "</span>") 
+
+printSoftConstraint (SoftConstraint exps) indent irMap html comments = concatMap (\x -> printSoftConstraint' x indent irMap html comments) exps
+printSoftConstraint (PosSoftConstraint _ exps) indent irMap html comments = printSoftConstraint (SoftConstraint exps) indent irMap html comments
+printSoftConstraint' exp indent irMap html comments = 
+    (printIndent indent html) ++ 
+    while html "<span class=\"keyword\">" ++ "(" ++ while html "</span>" ++ 
+    " " ++
+    printExp exp indent irMap html comments ++ 
+    " " ++ 
+    while html "<span class=\"keyword\">" ++ ")" ++ while html "</span>" ++
+    (if indent == 0 then "" else while html "</span>")
 
 printDecl (Decl locids setExp) indent irMap html comments = 
   (concat $ intersperse "; " $ map printLocId locids) ++
