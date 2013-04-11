@@ -1,0 +1,8 @@
+// http://gsd.uwaterloo.ca:8888/question/674/nonboolean-consequent-in-ifthenelse
+
+AliceAge -> int
+BobAge -> int
+
+BobsBirthday ?
+
+[(if BobsBirthday then BobAge.ref else AliceAge.ref) = 5]

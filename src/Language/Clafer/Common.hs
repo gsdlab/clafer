@@ -63,7 +63,7 @@ getSuperId = sident . Language.Clafer.Intermediate.Intclafer.exp . head
 isEqClaferId = flip $ (==).uid
 
 idToPExp :: String -> Span -> String -> String -> Bool -> PExp
-idToPExp pid pos modids id isTop = PExp (Just TClafer) pid pos (IClaferId modids id isTop)
+idToPExp pid pos modids id isTop = PExp (Just $ TClafer [id]) pid pos (IClaferId modids id isTop)
 
 mkLClaferId :: String -> Bool -> IExp
 mkLClaferId = IClaferId ""
@@ -219,7 +219,7 @@ binOps = logBinOps ++ relBinOps ++ arithBinOps ++ setBinOps
 iIfThenElse   = "=>else"
 
 mkIFunExp op (x:[]) = x
-mkIFunExp op xs = foldl1 (\x y -> IFunExp op $ map (PExp (Just TClafer) "" noSpan) [x,y]) xs
+mkIFunExp op xs = foldl1 (\x y -> IFunExp op $ map (PExp (Just $ TClafer []) "" noSpan) [x,y]) xs
 
 toLowerS "" = ""
 toLowerS (s:ss) = toLower s : ss

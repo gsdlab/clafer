@@ -20,24 +20,25 @@ Extra-Source-Files:
 					 
 source-repository head
     type:            git
-    location:        https://github.com/gsdlab/clafer
+    location:        git://github.com/gsdlab/clafer.git
 					 
 Executable clafer
     build-tools:     ghc >= 7.4.1
     extensions:      DeriveDataTypeable
     main-is:         clafer.hs
-    build-depends:   
-                     clafer, 
-                     base >= 4 && < 5, 
-                     array, 
-                     process, 
-                     mtl, 
-                     containers, 
-                     cmdargs, 
-                     executable-path, 
-                     filepath,
-                     HaXml,
-                     MaybeT
+    build-depends:   base >= 4 && < 5,
+                     clafer,
+                     array >= 0.4.0.0, 
+                     process >= 1.1.0.1, 
+                     mtl >= 2.1.1, 
+                     containers >= 0.4.2.1, 
+                     cmdargs >= 0.10.2, 
+                     executable-path >= 0.0.3, 
+                     filepath >= 1.3.0.0,
+                     HaXml >= 1.23.3,
+                     MaybeT >= 0.1.2,
+                     glpk-hs >= 0.3.3,
+                     parsec >= 3.1.2
     hs-source-dirs:  src
 
 library 
@@ -45,15 +46,17 @@ library
     extensions:      DeriveDataTypeable
     build-depends:   
                      base >= 4 && < 5, 
-                     array, 
-                     process, 
-                     mtl, 
-                     containers, 
-                     cmdargs, 
-                     executable-path, 
-                     filepath,
-                     HaXml,
-                     MaybeT
+                     array >= 0.4.0.0, 
+                     process >= 1.1.0.1, 
+                     mtl >= 2.1.1, 
+                     containers >= 0.4.2.1, 
+                     cmdargs >= 0.10.2, 
+                     executable-path >= 0.0.3, 
+                     filepath >= 1.3.0.0,
+                     HaXml >= 1.23.3,
+                     MaybeT >= 0.1.2,
+                     glpk-hs >= 0.3.3,
+                     parsec >= 3.1.2
     hs-source-dirs:  src
     ghc-options:     -Wall
     exposed-modules: 
@@ -76,6 +79,7 @@ library
                      Language.Clafer.Generator.Schema,
                      Language.Clafer.Generator.Stats,
                      Language.Clafer.Generator.Xml,
+                     Language.Clafer.Intermediate.Analysis,                     
                      Language.Clafer.Intermediate.Desugarer,
                      Language.Clafer.Intermediate.Intclafer,
                      Language.Clafer.Intermediate.Resolver,

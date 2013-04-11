@@ -1,27 +1,35 @@
-SRC_DIR  = src
-TEST_DIR = test
-TOOL_DIR = tools
+SRC_DIR  := src
+TEST_DIR := test
+TOOL_DIR := tools
+UNAME := $(shell uname -o | tr "A-Z" "a-z")
+
+ifeq ($(UNAME), cygwin)
+	GPLK_LIBS_INCLUDES := --extra-include-dirs=$(glpk)/src --extra-include-dirs=$(glpk)/src/amd --extra-include-dirs=$(glpk)/src/colamd --extra-include-dirs=$(glpk)/src/minisat --extra-include-dirs=$(glpk)/src/zlib --extra-lib-dirs=$(glpk)/w32	
+endif
+ifeq ($(UNAME), windows)
+	GPLK_LIBS_INCLUDES := --extra-include-dirs=$(glpk)/src --extra-include-dirs=$(glpk)/src/amd --extra-include-dirs=$(glpk)/src/colamd --extra-include-dirs=$(glpk)/src/minisat --extra-include-dirs=$(glpk)/src/zlib --extra-lib-dirs=$(glpk)/w32	
+endif
 
 all: build
+
+build:
+	$(MAKE) -C $(TOOL_DIR)
+	cabal install --only-dependencies $(GPLK_LIBS_INCLUDES)
+	cabal configure
+	cabal build
+	cp dist/build/clafer/clafer .
 
 install:  
 	mkdir -p $(to)
 	mkdir -p $(to)/tools
-	cabal install --bindir=$(to)
+	cabal install --bindir=$(to) $(GPLK_LIBS_INCLUDES)
 	cp -f README.md $(to)/clafer-README.md
-#   the following should be handled with cabal
 	cp -f LICENSE $(to)/
 	cp -f CHANGES.md $(to)/clafer-CHANGES.md
 	cp -f tools/alloy4.jar $(to)/tools
 	cp -f tools/alloy4.2.jar $(to)/tools
 	cp -f tools/XsdCheck.class $(to)/tools
-
-build:
-	$(MAKE) -C $(TOOL_DIR)
-	cabal install --only-dependencies
-	cabal configure
-	cabal build
-	cp dist/build/clafer/clafer .
+	cp -f tools/ecore2clafer.jar $(to)/tools
 
 # build Schema.hs from ClaferIG.xsd, call after .xsd changed
 Schema.hs:

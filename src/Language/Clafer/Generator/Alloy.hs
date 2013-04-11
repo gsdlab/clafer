@@ -1,5 +1,5 @@
 {-
- Copyright (C) 2012 Kacper Bak, Jimmy Liang <http://gsd.uwaterloo.ca>
+ Copyright (C) 2012 Kacper Bak, Jimmy Liang, Rafael Olaechea <http://gsd.uwaterloo.ca>
 
  Permission is hereby granted, free of charge, to any person obtaining a copy of
  this software and associated documentation files (the "Software"), to deal in
@@ -30,7 +30,6 @@ import Language.Clafer.Common
 import Language.Clafer.ClaferArgs
 import Language.Clafer.Front.Absclafer
 import Language.Clafer.Intermediate.Intclafer
-import Language.Clafer.Intermediate.ResolverType
 import Language.Clafer.Intermediate.ScopeAnalyzer
 
 
@@ -51,7 +50,7 @@ data IrTrace =
     deriving (Eq, Show)
 
 
-mkConc pos str = Concat pos [CString str]
+mkConcat pos str = Concat pos [CString str]
 
 iscPrimitive x = isPrimitive $ flatten x
 
@@ -86,7 +85,7 @@ cunlines xs = cconcat $ map (+++ (CString "\n")) xs
 -- 07th Mayo 2012 Rafael Olaechea 
 --      Added Logic to print a goal block in case there is at least one goal.
 genModule :: ClaferArgs -> (IModule, GEnv) -> (Result, [(Span, IrTrace)])
-genModule claferargs (imodule, _) = (flatten output, filter ((/= NoTrace) . snd) $ mapLineCol output)
+genModule    claferargs    (imodule, _)     = (flatten output, filter ((/= NoTrace) . snd) $ mapLineCol output)
   where
   output = header claferargs imodule +++ (cconcat $ map (genDeclaration claferargs) (mDecls imodule)) +++ 
        if length goals_list > 0 then 
@@ -96,8 +95,8 @@ genModule claferargs (imodule, _) = (flatten output, filter ((/= NoTrace) . snd)
        where 
                 goals_list = filterNull (map (genDeclarationGoalsOnly claferargs) (mDecls imodule))
 
-
-header args imodule = CString $ unlines
+header :: ClaferArgs -> IModule -> Concat
+header    args          imodule  = CString $ unlines
     [ if (fromJust $ mode args) == Alloy42 then "" else "open util/integer"
     , "pred show {}"
     , if (fromJust $ validate args) ||  (fromJust $ noalloyruncommand args)  then "" else "run  show for 1" ++ genScopes (scopeAnalysis imodule)
@@ -107,13 +106,13 @@ header args imodule = CString $ unlines
     genScopes scopes = " but " ++ intercalate ", " (map genScope scopes)
     
 genScope :: (String, Integer) -> String
-genScope (uid, scope) = show scope ++ " " ++ uid
+genScope    (uid, scope)       = show scope ++ " " ++ uid
 
 
 -- 07th Mayo 2012 Rafael Olaechea
 -- Modified so that we can collect all goals into a single block as required per the way goals are handled in modified alloy.
 genDeclarationGoalsOnly :: ClaferArgs -> IElement -> Concat
-genDeclarationGoalsOnly claferargs x = case x of
+genDeclarationGoalsOnly    claferargs    x         = case x of
   IEClafer clafer  -> CString ""
   IEConstraint _ pexp  -> CString ""
   IEGoal _ pexp@(PExp iType pid pos innerexp) -> case innerexp of 
@@ -171,15 +170,16 @@ genClafer claferargs resPath oClafer = (cunlines $ filterNull
           c -> mkFact c
     | otherwise = CString ""
 
-
-transPrimitive clafer = clafer{super = toOverlapping $ super clafer}
+transPrimitive :: IClafer -> IClafer
+transPrimitive    clafer   = clafer{super = toOverlapping $ super clafer}
   where
   toOverlapping x@(ISuper _ [PExp _ _ _ (IClaferId _ id _)])
     | isPrimitive id = x{isOverlapping = True}
     | otherwise      = x
   toOverlapping x = x
 
-claferDecl clafer rest = cconcat [genOptCard clafer,
+claferDecl :: IClafer -> Concat -> Concat
+claferDecl    clafer     rest    = cconcat [genOptCard clafer,
   CString $ genAbstract $ isAbstract clafer, CString "sig ",
   Concat NoTrace [CString $ uid clafer, genExtends $ super clafer, CString "\n", rest]]
   where
@@ -189,8 +189,8 @@ claferDecl clafer rest = cconcat [genOptCard clafer,
   -- todo: handle multiple inheritance
   genExtends _ = CString ""
 
-
-genOptCard clafer
+genOptCard :: IClafer -> Concat
+genOptCard    clafer
   | glCard' `elem` ["lone", "one", "some"] = cardConcat (uid clafer) False [CString glCard'] +++ (CString " ")
   | otherwise                              = CString ""
   where
@@ -228,12 +228,12 @@ refType claferargs c = cintercalate (CString " + ") $ map ((genType claferargs).
 
 
 getTarget :: PExp -> PExp
-getTarget x = case x of
+getTarget    x     = case x of
   PExp _ _ _ (IFunExp op (pexp0:pexp:_))  -> if op == iJoin then pexp else x
   _ -> x
 
-
-genType claferargs x@(PExp _ _ _ y@(IClaferId _ _ _)) = genPExp claferargs []
+genType :: ClaferArgs -> PExp                              -> Concat
+genType    claferargs    x@(PExp _ _ _ y@(IClaferId _ _ _)) = genPExp claferargs []
   x{Language.Clafer.Intermediate.Intclafer.exp = y{isTop = True}}
 genType mode x = genPExp mode [] x
 
@@ -242,7 +242,8 @@ genType mode x = genPExp mode [] x
 -- constraints
 -- user constraints + parent + group constraints + reference
 -- a = NUMBER do all x : a | x = NUMBER (otherwise alloy sums a set)
-genConstraints claferargs resPath clafer = (genParentConst resPath clafer) :
+genConstraints :: ClaferArgs -> [String]      -> IClafer -> [Concat]
+genConstraints    claferargs    resPath clafer = (genParentConst resPath clafer) :
   (genGroupConst clafer) : genPathConst claferargs  (if (fromJust $ noalloyruncommand claferargs) then  (uid clafer ++ "_ref") else "ref") resPath clafer : constraints 
   where
   constraints = map genConst $ elements clafer
@@ -259,7 +260,7 @@ genParentConst [] _     = CString ""
 genParentConst _ clafer =  genOptParentConst clafer
 
 genOptParentConst :: IClafer -> Concat
-genOptParentConst clafer
+genOptParentConst    clafer
   | glCard' == "one"  = CString ""
   | glCard' == "lone" = Concat NoTrace [CString $ "one " ++ rel]
   | otherwise         = Concat NoTrace [CString $ "one @" ++ rel ++ ".this"]
@@ -270,8 +271,8 @@ genOptParentConst clafer
   rel = genRelName $ uid clafer
   glCard' = genIntervalCrude $ glCard clafer
 
-
-genGroupConst clafer
+genGroupConst :: IClafer -> Concat
+genGroupConst    clafer
   | null children || flatten card == "" = CString ""
   | otherwise = cconcat [CString "let children = ", brArg id $ CString children, CString" | ", card]
   where
@@ -289,7 +290,8 @@ mkCard constraintName group element card
   card'  = flatten $ interval'
 
 -- generates expression for references that point to expressions (not single clafers)
-genPathConst claferargs name resPath clafer
+genPathConst :: ClaferArgs -> String -> [String] -> IClafer -> Concat
+genPathConst    claferargs    name      resPath     clafer
   | isRefPath clafer = cconcat [CString name, CString " = ",
                                 cintercalate (CString " + ") $
                                 map ((brArg id).(genPExp claferargs resPath)) $
@@ -302,9 +304,9 @@ isRefPath clafer = (isOverlapping $ super clafer) &&
   s = supers $ super clafer
 
 isSimplePath :: [PExp] -> Bool
-isSimplePath [PExp _ _ _ (IClaferId _ _ _)] = True
-isSimplePath [PExp _ _ _ (IFunExp op _)] = op == iUnion
-isSimplePath _ = False
+isSimplePath    [PExp _ _ _ (IClaferId _ _ _)] = True
+isSimplePath    [PExp _ _ _ (IFunExp op _)] = op == iUnion
+isSimplePath    _ = False
 
 -- -----------------------------------------------------------------------------
 -- Not used?
@@ -312,7 +314,7 @@ isSimplePath _ = False
 
 
 genCard :: String -> Maybe Interval -> Concat
-genCard element card = genInterval element False element $ fromJust card
+genCard    element   card            = genInterval element False element $ fromJust card
 
 
 genCardCrude card = genIntervalCrude $ fromJust card
@@ -325,8 +327,8 @@ genIntervalCrude x = case x of
   _                   -> "set"
 
 
-genInterval :: String -> Bool -> String -> Interval -> Concat
-genInterval constraintName group element x = case x of
+genInterval :: String      -> Bool -> String -> Interval -> Concat
+genInterval    constraintName group   element   x         = case x of
   (1, 1) -> cardConcat constraintName group [CString "one"]
   (0, 1) -> cardConcat constraintName group [CString "lone"]
   (1, -1)   -> cardConcat constraintName group [CString "some"]
@@ -345,20 +347,20 @@ genInterval constraintName group element x = case x of
             return $ cardUpperConcat constraintName group [CString result]
 
 
-cardConcat :: String -> Bool -> [Concat] -> Concat
-cardConcat constraintName = Concat . ExactCard constraintName
+cardConcat :: String        -> Bool -> [Concat] -> Concat
+cardConcat    constraintName = Concat . ExactCard constraintName
 
 
-cardLowerConcat :: String -> Bool -> [Concat] -> Concat
-cardLowerConcat constraintName = Concat . LowerCard constraintName
+cardLowerConcat :: String        -> Bool -> [Concat] -> Concat
+cardLowerConcat    constraintName = Concat . LowerCard constraintName
 
 
-cardUpperConcat :: String -> Bool -> [Concat] -> Concat
-cardUpperConcat constraintName = Concat . UpperCard constraintName
+cardUpperConcat :: String        -> Bool -> [Concat] -> Concat
+cardUpperConcat    constraintName = Concat . UpperCard constraintName
 
 
 genExInteger :: String -> Integer -> Maybe Result
-genExInteger element x =
+genExInteger    element   x        =
   if x == -1 then Nothing else Just $ concat ["#", element, " <= ", show x]
 
 
@@ -366,9 +368,10 @@ genExInteger element x =
 -- Generate code for logical expressions
 
 genPExp :: ClaferArgs -> [String] -> PExp -> Concat
-genPExp claferargs resPath x = genPExp' claferargs resPath $ adjustPExp resPath x
+genPExp    claferargs    resPath     x     = genPExp' claferargs resPath $ adjustPExp resPath x
 
-genPExp' claferargs resPath x@(PExp iType pid pos exp) = case exp of
+genPExp' :: ClaferArgs -> [String] -> PExp                      -> Concat
+genPExp'    claferargs    resPath     x@(PExp iType pid pos exp) = case exp of
   IDeclPExp quant decls pexp -> Concat (IrPExp pid) $
     [ CString $ genQuant quant, CString " "
     , cintercalate (CString ", ") $ map ((genDecl claferargs resPath)) decls
@@ -404,17 +407,17 @@ genPExp' claferargs resPath x@(PExp iType pid pos exp) = case exp of
 -- 3-May-2012 Rafael Olaechea.
 -- Removed transfromation from x = -2 to x = (0-2) as this creates problem with  partial instances.
 -- See http://gsd.uwaterloo.ca:8888/question/461/new-translation-of-negative-number-x-into-0-x-is.
-
-transformExp x@(IFunExp op exps@(e1:e2:_))
+transformExp :: IExp -> IExp
+transformExp    x@(IFunExp op exps@(e1:e2:_))
   | op == iXor = IFunExp iNot [PExp (Just TBoolean) "" noSpan (IFunExp iIff exps)]
   | op == iJoin && isClaferName' e1 && isClaferName' e2 &&
     getClaferName e1 == this && head (getClaferName e2) == '~' =
-        IFunExp op [e1{iType = Just TClafer}, e2]
+        IFunExp op [e1{iType = Just $ TClafer []}, e2]
   | otherwise  = x
 transformExp x = x
 
-
-genIFunExp pid claferargs resPath (IFunExp op exps) = Concat (IrPExp pid) $ intl exps' (map CString $ genOp (fromJust $ mode (claferargs :: ClaferArgs)) op)
+genIFunExp :: String -> ClaferArgs -> [String] -> IExp             -> Concat
+genIFunExp    pid       claferargs    resPath     (IFunExp op exps) = Concat (IrPExp pid) $ intl exps' (map CString $ genOp (fromJust $ mode (claferargs :: ClaferArgs)) op)
   where
   intl
     | op `elem` arithBinOps && length exps == 2 = interleave
@@ -422,8 +425,8 @@ genIFunExp pid claferargs resPath (IFunExp op exps) = Concat (IrPExp pid) $ intl
   exps' = map (optBrArg claferargs resPath) exps
 
 
-
-optBrArg claferargs resPath x = brFun (genPExp' claferargs resPath) x
+optBrArg :: ClaferArgs -> [String] -> PExp -> Concat
+optBrArg    claferargs    resPath     x     = brFun (genPExp' claferargs resPath) x
   where
   brFun = case x of
     PExp _ _ _ (IClaferId _ _ _) -> ($)
@@ -439,12 +442,12 @@ interleave (x:xs) ys = x : interleave ys xs
 
 brArg f arg = cconcat [CString "(", f arg, CString ")"]
 
-
-genOp Alloy42 op
+genOp :: ClaferMode -> [Char] -> [[Char]]
+genOp    Alloy42       op
   | op == iPlus = [".plus[", "]"]
   | op == iSub  = [".minus[", "]"]
   | otherwise   = genOp Alloy op
-genOp _ op
+genOp    _             op
   | op `elem` unOps = [op]
   | op == iPlus = [".add[", "]"]
   | op == iSub  = [".sub[", "]"]
@@ -487,7 +490,7 @@ adjustNav resPath x@(IClaferId _ id _)
   | otherwise    = (x, resPath)
 
 genQuant :: IQuant -> String
-genQuant x = case x of
+genQuant    x       = case x of
   INo   -> "no"
   ILone -> "lone"
   IOne  -> "one"
@@ -496,13 +499,13 @@ genQuant x = case x of
 
 
 genDecl :: ClaferArgs -> [String] -> IDecl -> Concat
-genDecl claferargs resPath x = case x of
+genDecl    claferargs    resPath     x      = case x of
   IDecl disj locids pexp -> cconcat [CString $ genDisj disj, CString " ",
     CString $ intercalate ", " locids, CString " : ", genPExp claferargs resPath pexp]
 
 
 genDisj :: Bool -> String
-genDisj x = case x of
+genDisj    x     = case x of
   False -> ""
   True  -> "disj"
 

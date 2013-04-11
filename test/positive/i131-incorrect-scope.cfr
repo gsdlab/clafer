@@ -1,0 +1,10 @@
+// http://gsd.uwaterloo.ca:8888/question/621/incorrect-computing-of-scope-for-constraints-in
+
+abstract Animal
+  leg *
+
+Dog : Animal *
+  [#leg = 4]
+
+Spider : Animal *
+  [#leg = 8]

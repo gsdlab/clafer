@@ -27,8 +27,7 @@ data IType = TBoolean
            | TString
            | TInteger
            | TReal
-           | TClafer
-           | TRef IType  -- a reference to the type
+           | TClafer [String]
   deriving (Eq,Ord,Show)
 
 -- Module is a list of fragments

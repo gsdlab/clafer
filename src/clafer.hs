@@ -150,4 +150,15 @@ main = do
 start :: VerbosityL -> ClaferArgs -> InputModel-> IO ()
 start v args model = if fromJust $ schema args
   then putStrLn claferIRXSD
-  else run v args model
+  else if fromJust $ ecore2clafer args
+    then runEcore2Clafer (file args) $ (fromJust $ tooldir args)
+    else run v args model
+
+runEcore2Clafer :: FilePath -> FilePath -> IO ()
+runEcore2Clafer    ecoreFile toolPath
+  | null ecoreFile = do
+      putStrLn "Error: Provide a file name of the ECore model."
+  | otherwise      = do
+      putStrLn $ "Converting " ++ ecoreFile ++ " into Clafer"
+      voidf $ system $ "java -jar " ++ toolPath ++ "ecore2clafer.jar " ++ ecoreFile
+
