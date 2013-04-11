@@ -19,7 +19,7 @@ Clafer multi-objective optimizer generates a Pareto front of optimal product con
 Clafer Compiler
 ===============
 
-v0.3.2.5-3-2013
+v0.3.2.11-4-2013
 
 Clafer compiler provides a reference language implementation. 
 It translates models in Clafer to other formats (e.g. Alloy, XML, HTML, DOT) to allow for reasoning and processing with existing tools.
@@ -33,15 +33,16 @@ Clafer Wiki ([ClaferWiki](https://github.com/gsdlab/claferwiki)).
 Getting Clafer Tools
 --------------------
 
-Binary distributions of Clafer, ClaferIG, and ClaferWiki for Windows, Mac, and Linux, can be downloaded from [ClaferIG Downloads Page](https://github.com/gsdlab/claferig/downloads). 
+Binary distributions of Clafer, ClaferIG, and ClaferWiki for Windows, Mac, and Linux, can be downloaded from [Clafer Tools - Binary Distributions](http://gsd.uwaterloo.ca/node/516). 
 Clafer Wiki requires Haskell Platform and MinGW to run on Windows. 
 
 In case these binaries do not work on your particular machine configuration, the tools can be easily built from source code, as described below.
 
-[ClaferMOO](https://github.com/gsdlab/ClaferMooStandalone) is a set of scripts in Python (cross-platform). 
-It is not part of the binary distribution and it has to be downloaded separately. 
+The following tools are not part of the binary distribution and they have to be downloaded separately:
 
-[ClaferMooVisualizer](https://github.com/gsdlab/ClaferMooVisualizer) is a client/server web application written JavaScript.It is not part of the binary distribution and it has to be downloaded separately.  
+* [ClaferMOO](https://github.com/gsdlab/ClaferMooStandalone) is a set of scripts in Python (cross-platform). 
+* [ClaferMooVisualizer](https://github.com/gsdlab/ClaferMooVisualizer) is a client/server web application written JavaScript.
+* [ClaferConfigurator](https://github.com/gsdlab/ClaferConfigurator) is a client/server web application written JavaScript.
 
 ### Dependencies for running
 
@@ -51,7 +52,7 @@ It is not part of the binary distribution and it has to be downloaded separately
 * [Alloy4.1 and/or Alloy4.2](http://alloy.mit.edu/alloy/download.html)
 * [GraphViz](http://graphviz.org/)
   * `dot` is needed only in the `html` mode for SVG graph generation
-* [GNU Linear Programming Kit](www.gnu.org/software/glpk/)
+* [GNU Linear Programming Kit](www.gnu.org/software/glpk/) v4.48
 
 ### Installation
 
@@ -61,6 +62,11 @@ It is not part of the binary distribution and it has to be downloaded separately
 
 On Windows only
 4. copy GLPK's dll `glpk-0.4.48.dll` to the `<target directory>` folder or any other folder on the system path
+
+Integration with Sublime Text 2
+-------------------------------
+
+See [IDEs/README.md](IDEs/README.md)
 
 Building & Installation From Source Code
 ----------------------------------------
@@ -76,7 +82,7 @@ Building & Installation From Source Code
 On Linux/Mac only
 
 * [libglpk-dev](http://www.gnu.org/software/glpk/) v4.48+
-  * `sudo apt-get install libglpk-dev` on the Ubuntu
+  * `sudo apt-get install libglpk-dev` on Ubuntu
 
 On Windows 
 
@@ -103,15 +109,15 @@ Development versions `clafer/develop` and `claferIG/develop` should work well to
   * `cabal update`
 4a. On Linux and Mac
   * `make`
-4b. On Windows
-  * `make glpk="c:/<your WinGLPK install dir>/winglpk-4.48"`
+4b. On Windows (in MinGW)
+  * `make glpk="/c/<your WinGLPK install dir>/winglpk-4.48"`
 
 ### Installation
 
 1a. On Linux and Mac execute 
   *`make install to=<target directory>`
-1b. On Windows
-  * `make glpk="c:/<your WinGLPK instal dir>/winglpk-4.48" to=<target directory>`  
+1b. On Windows (in MinGW)
+  * `make glpk="/c/<your WinGLPK instal dir>/winglpk-4.48" to=/c/<target directory>`  
 2. add the `<target directory>` to your system PATH
 
 On Windows only
@@ -129,7 +135,7 @@ Clafer Compiler
 (As printed by `clafer --help`)
 
 ```
-Clafer v0.3.2.5-3-2013
+Clafer v0.3.2.11-4-2013
 
 clafer [OPTIONS] [FILE]
 
@@ -178,6 +184,7 @@ Common flags:
                                rendered. ('html' and 'graph' modes only).
      --add-comments            Include comments from the source file in the
                                html output ('html' mode only).
+  -e --ecore2clafer            Translate an ECore model into Clafer.
   -? --help                    Display help message
   -V --version                 Print version information
 ```
@@ -212,6 +219,8 @@ The following directives are markers of locations in the input files for differe
 * `//# GRAPH` - marks the insertion point for a graph rendering. The graph is only produced in HTML mode with the argument `--add-graph`.
 * `//# STATS` - marks the insertion point for module statistics. The statistics can be omitted using the argument `--no-stats`. 
 * `//# SUMMARY` - shorthand for `//# GRAPH` and `//# STATS`
+* `//# QUALITY_ATTRIBUTE` - is used by ClaferMooVisualizer and ClaferConfigurator to distinguish quality attributes, which should be filtered out, from other clafers.
+
 
 Need help?
 ==========
