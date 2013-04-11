@@ -58,7 +58,7 @@ import Data.Map (Map)
 import qualified Data.Map as Map
 import Data.Ord
 import Control.Monad
-import System.FilePath.Posix (dropExtension)
+import System.FilePath (dropExtension,takeBaseName)
 
 import Language.ClaferT
 import Language.Clafer.Common
@@ -335,8 +335,8 @@ generate =
                         Xml      -> ("xml", genXmlModule iModule, Nothing)
                         Clafer   -> ("des.cfr", printTree $ sugarModule iModule, Nothing)
                         Html     -> ("html", generateHtml env, Nothing)
-                        Graph    -> ("dot", genSimpleGraph (ast env) iModule (dropExtension $ file cargs) (fromJust $ show_references cargs), Nothing)
-                        CVLGraph -> ("dot", genCVLGraph (ast env) iModule (dropExtension $ file cargs), Nothing)
+                        Graph    -> ("dot", genSimpleGraph (ast env) iModule (takeBaseName $ file cargs) (fromJust $ show_references cargs), Nothing)
+                        CVLGraph -> ("dot", genCVLGraph (ast env) iModule (takeBaseName $ file cargs), Nothing)
     return $ CompilerResult { extension = ext, 
                      outputCode = code, 
                      statistics = stats,

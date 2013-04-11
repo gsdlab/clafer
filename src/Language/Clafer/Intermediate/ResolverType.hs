@@ -1,4 +1,4 @@
-{-# LANGUAGE TupleSections #-}
+{-# LANGUAGE NamedFieldPuns, ScopedTypeVariables, FlexibleContexts, FlexibleInstances, UndecidableInstances, GeneralizedNewtypeDeriving #-}
 
 {-
  Copyright (C) 2012 Jimmy Liang, Kacper Bak <http://gsd.uwaterloo.ca>
@@ -21,521 +21,348 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
 -}
-module Language.Clafer.Intermediate.ResolverType (resolveTModule) where
+module Language.Clafer.Intermediate.ResolverType (resolveTModule, intersects, (+++), fromUnionType, unionType)  where
 
-import Control.Applicative
-import Control.Monad.Error
-import Control.Monad.State
-import Data.Function
-import Data.List (dropWhile, intercalate, nub, find)
-import Data.Maybe
-import Data.Map (Map)
-import qualified Data.Map as Map
 import Debug.Trace
-
+import Prelude hiding (exp)
 import Language.ClaferT
 import Language.Clafer.Common
 import Language.Clafer.Front.Absclafer
-import Language.Clafer.Front.Printclafer
-import Language.Clafer.Intermediate.Desugarer
-import Language.Clafer.Intermediate.Intclafer
+import Language.Clafer.Intermediate.Analysis
+import Language.Clafer.Intermediate.Intclafer hiding (uid)
 import qualified Language.Clafer.Intermediate.Intclafer as I
 
-type Resolve = Either ClaferSErr
+import Control.Applicative
+import Control.Monad.Error
+import Control.Monad.List
+import Control.Monad.Reader
+import Data.Either
+import Data.List
+import Data.Maybe
 
--- Internal structure for type checking.
--- A tuple for storing the symbol table, a clafer's uid, its type, and its parent uid.
--- Every clafer has a parent except the root.
-data TCEnv = TCEnv {
-    tcTable :: SymbolTable,
-    tcThis :: String,
-    tcType :: TC,
-    tcParent :: Maybe String,
-    tcReferenceTable :: Map String Bool, -- Maps the Clafer uid to whether it is a reference or not.
-    tcClafers :: [IClafer]
-} deriving Show
+type TypeDecls = [(String, IType)]
+data TypeInfo = TypeInfo {iTypeDecls::TypeDecls, iInfo::Info, iCurThis::SClafer, iCurPath::Maybe IType}
 
-type Union = [String]
-
-data TC =
-    -- The type at the current node in the IR tree
-    TC {typed::IType, uids::Union} |
-    
-    -- The current type is TClafer BUT it can be "ref"ed to the IType stored inside TCVal.
-    -- This is important for models with quantifiers in the following form:
-    --
-    --   A : integer
-    --     B *
-    --   [some a : A | a.B + a = 5]
-    --
-    -- The bound expression must be of type "TCVal TInteger". The quantified expression can use "a" as
-    -- either an integer value OR as a Clafer and access its children.
-    -- uids is a union of all the Clafer names inside the set.
-    -- The IType in TCVal must NOT be TClafer.
-    TCVal {typed::IType, uids::Union}
-    deriving Show
-
--- Internal structure for building the symbol table.
-data STEnv = STEnv {
-    stClafers :: [IClafer],
-    -- The uid of the parent. Every clafer has a parent except the root.
-    stParent :: Maybe String
-} deriving Show
-
--- The symbol table maps a clafer's uid to its type and parent's uid.
--- Every clafer has a parent except the root.
-type SymbolTable = Map String (IType, Union, Maybe String)
-type TypedPExp = (PExp, TC)
-type TypedIExp = (IExp, TC)
-
-
-
--- Get the TCEnv of the parent
-parentTCEnv :: TCEnv -> TCEnv
-parentTCEnv t@TCEnv{tcParent = Just parent} = uidTCEnv t parent
-parentTCEnv _                               = error "Root does not have a parent"
-    
--- Get the TCEnv of the clafer matching the uid
-uidTCEnv :: TCEnv -> String -> TCEnv
-uidTCEnv t@TCEnv{tcTable = table} uid =
-    case Map.lookup uid table of
-    Just (TClafer, union, newParent) -> t{tcThis = uid, tcType = TC TClafer union, tcParent = newParent}
-    Just (newType, union, newParent) -> t{tcThis = uid, tcType = TCVal newType union, tcParent = newParent}
-    Nothing -> error $ "Unknown uid " ++ uid
-    
-    
-identTCEnv :: TCEnv -> String -> TCEnv
-identTCEnv env "this"   = env
-identTCEnv env "parent" = parentTCEnv env
-identTCEnv env "ref"    = env
-identTCEnv env uid      = uidTCEnv env uid
-
-
-isReference :: TCEnv -> Bool
-isReference TCEnv{tcThis = this, tcReferenceTable = referenceTable} =
-    Map.findWithDefault False this referenceTable
-
-
--- The only exported function. Type checks and resolves the types.
--- Done in 2 steps
---   1. Traverse every clafer and build a symbol table
---   2. Traverse every constraint and resolve the types and type check
-resolveTModule :: (IModule, GEnv) -> Resolve IModule
-resolveTModule (imodule, genv) =
-  do
-    mDecls' <- resolveTElements tcEnv $ mDecls imodule
-    return $ imodule {mDecls = mDecls'}
-  where
-  symbolTable = symbolTableIElements (STEnv (sClafers genv) Nothing) (mDecls imodule)
-  tcEnv = TCEnv symbolTable "root" (TC TClafer []) Nothing referenceTable (sClafers genv)
-  referenceTable = Map.fromList [(uid clafer, isReference clafer) | clafer <- sClafers genv]
-  isReference = isOverlapping . super
-
-
-{-
- -
- -  Symbol table building functions
- -
- -}
--- Build a symbol table from the elements
-symbolTableIElements :: STEnv -> [IElement] -> SymbolTable
-symbolTableIElements env elements = foldr (Map.union . symbolTableIElement env) Map.empty elements
-
-symbolTableIElement :: STEnv -> IElement -> SymbolTable
-symbolTableIElement env (IEClafer x) = symbolTableIClafer env x
--- Constraints do not add symbols to the symbol table
-symbolTableIElement env (IEConstraint _ _) = Map.empty
--- Goald do not add symbols to the symbol table
-symbolTableIElement env (IEGoal _ _) = Map.empty
-
-symbolTableIClafer :: STEnv -> IClafer -> SymbolTable
-symbolTableIClafer env c =
-    let cuid = uid c :: String
-        children = symbolTableIElements env{stParent = Just cuid} $ elements c :: SymbolTable
-    in
-    Map.insert cuid (itypeOfClafer env cuid, [cuid], stParent env) children
-
-itypeOfClafer :: STEnv -> String -> IType
-itypeOfClafer STEnv{stClafers = clafers} id = 
-    let clafer = findClaferFromUid clafers id :: IClafer
-        hierarchy = findHierarchy getSuper clafers clafer :: [IClafer]
-    in
-    -- Find the last IClafer (ie. highest in the hierarchy) and get super type
-    typeOfISuper $ super $ last hierarchy
-
-
-intersects :: [IClafer] -> Union -> Union -> Bool
-intersects clafers ids1 ids2 =
-    -- If any of the hierarchy intersects in the two union types, then return true.
-    or [(head h1 `elem` h2) || (head h2 `elem` h1) | h1 <- uh1, h2 <- uh2]
-    where
-    uh1 = map (hier clafers) ids1
-    uh2 = map (hier clafers) ids2
-    hier _ "integer" = ["integer"]
-    hier _ "int" = ["integer"]
-    hier _ "real" = ["real"]
-    hier _ "string" = ["string"]
-    hier _ "boolean" = ["boolean"]
-    hier _ "clafer" = ["clafer"]
-    hier c t =
-        if isPrimitive $ last hierarchy then
-            [last hierarchy]
-        else
-            hierarchy
-        where
-        archy = dropWhile isReference $ findHierarchy getSuper clafers $ findClaferFromUid c t
-        highest = hier c $ getSuper $ last archy
-        hierarchy = map uid archy ++ highest
-    isReference = isOverlapping . super
-    isPrimitive e = e `elem` ["integer", "int", "real", "string", "boolean"]
-
-
--- Find the clafer with the given uid
-findClaferFromUid :: [IClafer] -> String -> IClafer
-findClaferFromUid clafers id =
-        case find ((== id).uid) clafers of
-        Just c -> c
-        Nothing -> error $ "No clafers named " ++ id ++ " in " ++ show (map uid clafers)
-                                
--- Get the super's type (primitive => only one super so we only need to look at the first one)
--- The PExp must be a ClaferID
-typeOfISuper :: ISuper -> IType
-typeOfISuper (ISuper _ ((PExp _ _ _ (IClaferId _ sident _)):_)) = case sident of
-                                                                    "clafer" -> TClafer
-                                                                    "int" -> TInteger
-                                                                    "integer" -> TInteger
-                                                                    "string" -> TString
-                                                                    x -> error $ sident ++ " not a native super type"
-typeOfISuper x = error $ show x ++ " is not an ISuper"
-
-
-{-
- -
- -  Type checking and type resolving functions
- -
- -}
--- Type check the elements
-resolveTElements :: TCEnv -> [IElement] -> Resolve [IElement]
-resolveTElements env es = mapM (resolveTElement env) es
-
-resolveTElement :: TCEnv -> IElement -> Resolve IElement
-resolveTElement env (IEClafer clafer) = IEClafer <$> resolveTClafer env clafer
-resolveTElement env (IEConstraint isHard pexp) = IEConstraint isHard <$> (fst . snd <$> resolveTPExp env pexp)
-resolveTElement env (IEGoal isMaximize pexp) = IEGoal isMaximize  <$> (fst . snd <$> resolveTPExp env pexp)
-                                                                                        
-resolveTClafer :: TCEnv -> IClafer -> Resolve IClafer
-resolveTClafer env clafer = 
-  do
-    let cenv = uidTCEnv env (uid clafer)
-    elements' <- resolveTElements cenv $ elements clafer
-    return $ clafer{
-        elements = elements',
-        super = typeTheSuper $ super clafer}
-
--- Sets the type in all the supers to IClafer
-typeTheSuper :: ISuper -> ISuper
-typeTheSuper (ISuper isOverlapping supers) = ISuper isOverlapping $ map typeThePExp supers
-typeThePExp :: PExp -> PExp
-typeThePExp x = x{iType=Just TClafer}
-
-
-resolveTPExpPreferValue :: TCEnv -> PExp -> Resolve (TCEnv, TypedPExp)
-resolveTPExpPreferValue env (PExp _ pid pos x) =
-  do
-    (newEnv, (exp, expType)) <- resolveTExpPreferValue pos env x
-    let pexp = PExp (Just $ tcToType expType) pid pos exp
-    -- Sometimes need to dereference an access. For example:
-    --   Leader -> Person
-    --   abstract Person
-    --   A : Person
-    --   B : Person
-    --   [Leader = A]
-    -- Need to add a "ref" node into the IR on the access to "Leader"
-    let pexp'
-            | isClaferId exp && isReference newEnv =
-                newPExp (Just TClafer) $ IFunExp "." [pexp, newPExp (Just $ typed expType) $ IClaferId "" "ref" False]
-            | otherwise = pexp
-    return (newEnv, (pexp', expType))
-  where
-  isClaferId IClaferId{} = True
-  isClaferId _           = False
-  newPExp t = PExp t "" pos
-
-    
-resolveTPExp :: TCEnv -> PExp -> Resolve (TCEnv, TypedPExp)
-resolveTPExp env (PExp _ pid pos x) =
-  do
-    (newEnv, (exp, typed)) <- resolveTExp pos env x
-    return (newEnv, (PExp (Just $ tcToType typed) pid pos exp, typed))
-
-
-
-{-
-    There are two ways to retrieve the type of an IExp:
-        resolveTExpPreferValue or resolveTExp
-    
-    Some functions prefer/require working with values, ie. int, string, etc. In this case,
-    call resolveTExpPreferValue and a value type will return if the expression allows.
-    Functions that prefer/require working with IClafer calls resolveTExp.
-    
-    Returns a tuple of the type checked expression and the type.
--}
-resolveTExpPreferValue:: Span -> TCEnv -> IExp -> Resolve (TCEnv, TypedIExp)
--- Clafer reference
--- Return the value type of the reference from the symbol table (possibly IClafer)
-resolveTExpPreferValue _ env e@(IClaferId _ sident _) =
-    return (env', (e, t'))
-    where
-    env' = identTCEnv env sident
-    -- If it's TCVal, then get the actual value type
-    t = tcType env'
-    t' = TC (typed t) (uids t)
--- Join function
-{- 
- - Join function is a special case.
- - The expression a.b can produce a value if b can produce a value.
- - Join function is the only function that passes along the TCEnv of its children
- - This is needed to support parent and this relation.
- -
- - for example: ((parent.parent).this)
- - In the first join, the left child (parent) will create a TCEnv for the parent of the current TCEnv.
- - The right child (parent) will create a TCEnv for the parent of that parent (hence grandparent of the orignal TCEnv).
- - The grandparent TCEnv will be given to the outer join to pass to its right child (this).
- - this refers to the current TCEnv so the example expression is evaluated to the grandparent of the current TCEnv.
- -}
-resolveTExpPreferValue pos env (IFunExp "." [exp1, exp2]) =
-  do
-    (env1, a1) <- resolveTPExpLeftJoin env exp1
-    (env2, a2) <- resolveTPExpPreferValue env1 exp2
-    (env2,) <$> typeCheckFunction pos (typeOf a2) "." [E TClafer, EAny] [a1, a2]
--- Otherwise, the IExp has no value expression so return its standard expression
-resolveTExpPreferValue pos env x = resolveTExp pos env x
-
-
-
-resolveTExp:: Span -> TCEnv -> IExp -> Resolve (TCEnv, TypedIExp)
-resolveTExp _ env e@(IClaferId _ sident _) =
-    return (env', (e, t))
-    where
-    env' = identTCEnv env sident
-    t = tcType env'
-    
-resolveTExp pos env (IFunExp "." [exp1, exp2]) =
-  do
-    (env1, a1) <- resolveTPExp env exp1
-    (env2, a2) <- resolveTPExp env1 exp2
-    (env2, ) <$> typeCheckFunction pos (typeOf a2) "." [E TClafer, EAny] [a1, a2]
-resolveTExp _ env e@(IInt _) =          return (env, (e, TC TInteger ["integer"]))
-resolveTExp _ env e@(IDouble _) =       return (env, (e, TC TReal ["real"]))
-resolveTExp _ env e@(IStr _) =          return (env, (e, TC TString ["string"]))
-resolveTExp pos env e@(IDeclPExp quant decls bpexp) =
-  do
-    (env', decls') <- resolveTDecls env decls
-    (_, (bpexp', bpexpType')) <- resolveTPExp env' bpexp
-    return (env, (IDeclPExp quant decls' bpexp', TC TBoolean ["boolean"]))
-  where
-  resolveTDecls env [] = return (env, [])
-  resolveTDecls env (d : ds) =
-    do
-      (env', d') <- resolveTDecl env d
-      (env'', ds') <- resolveTDecls env' ds
-      return (env'', d' : ds')
-
-  resolveTDecl env (IDecl isDisj decls body) =
-    do
-      (_, (body', bodyType')) <- resolveTPExp env body
-      -- Retrieve the actual type and bind it to the declaration
-      let env' = env{tcTable = foldr (flip Map.insert $ (typed bodyType', uids bodyType', Nothing)) (tcTable env) decls}
-      return (env', IDecl isDisj decls body')
-
-
-
--- Unary functions
--- Rafael Olaechea 02/April/2012: Added function resolveTPExpPreferValue to be used when using goals or negative.
-resolveTExp pos env (IFunExp op [exp]) = (env,) <$> result
-    where
-    result
-        | op == iNot  = typeCheckFunction pos (TC TBoolean ["boolean"]) op [E TBoolean] =<< sequence [a1]
-        | op == iCSet = typeCheckFunction pos (TC TInteger ["integer"]) op [E TClafer] =<< sequence[a1]
-        | op == iSumSet = typeCheckFunction pos (TC TInteger ["integer"]) op [E TInteger] =<< sequence [a1PreferValue]
-        -- We return the typeOf a1 because if a1 is real then return real (likewise for integer)
-        | op `elem` [iMin, iGMax, iGMin] =
-          do
-            t1' <- t1PV
-            a1' <- a1PreferValue
-            typeCheckFunction pos t1' op allNumeric [a1']
-        | otherwise   = error $ "Unknown unary function '" ++ op ++ "'"
-    a1 = snd <$> resolveTPExp env exp
-    a1PreferValue = snd <$> resolveTPExpPreferValue env exp
-    t1PV = typeOf <$> a1PreferValue
-
--- Binary functions
-resolveTExp pos env f@(IFunExp op [exp1, exp2]) = (env,) <$> result
-    where
-    result
-        | op `elem` logBinOps = 
-            typeCheckFunction pos (TC TBoolean []) op (exact [TBoolean, TBoolean])  =<< sequence [a1, a2]
-        | op `elem` [iLt, iGt, iLte, iGte] =
-            typeCheckFunction pos (TC TBoolean []) op allNumeric  =<< sequence [a1PreferValue, a2PreferValue]
-        | op `elem` [iEq, iNeq] =
-          do
-            whenM (not <$> (intersects (tcClafers env) <$> u1 <*> u2)) $
-              throwError $ SemanticErr pos $ '"' : printTree (sugarExp' f) ++ "\" is redundant because the two subexpressions are always disjoint.\nLeft type=" ++ show u1 ++ ". Right type=" ++ show u2 ++ "."
-            when (exp1 `sameAs` exp2) $
-              throwError $ SemanticErr pos $ '"' : printTree (sugarExp' f) ++ "\" is redundant because the two subexpressions are always equivalent."
-            t <- tcToType <$> t1PV
-            if isExact t TString -- String equality
-              then typeCheckFunction pos (TC TBoolean []) op [E TString, E TString] =<< sequence [a1PreferValue, a2PreferValue]
-              else if isNumeric t -- Numeric equality
-                then typeCheckFunction pos (TC TBoolean []) op allNumeric =<< sequence [a1PreferValue, a2PreferValue]
-                else -- Set equality
-                  typeCheckFunction pos (TC TBoolean []) op [E TClafer, E TClafer] =<< sequence [a1PreferValue, a2PreferValue]
-        | op `elem` relSetBinOps = 
-          do
-            whenM (not <$> (intersects (tcClafers env) <$> u1 <*> u2)) $
-              throwError $ SemanticErr pos $ '"' : printTree (sugarExp' f) ++ "\" is redundant because the two subexpressions are always disjoint.\nLeft type=" ++ show u1 ++ ". Right type=" ++ show u2 ++ "."
-            when (exp1 `sameAs` exp2) $
-              throwError $ SemanticErr pos $ '"' : printTree (sugarExp' f) ++ "\" is redundant because the two subexpressions are always equivalent."
-            -- Expect both arguments to be the same type as the first argument
-            t <- t1PV
-            typeCheckFunction pos (TC TBoolean []) op [E $ tcToType t, E $ tcToType t] =<< sequence [a1PreferValue, a2PreferValue]
-        | op `elem` [iUnion] =
-          do
-            t   <- tcToType <$> t1PV
-            u1' <- u1
-            u2' <- u2
-            typeCheckFunction pos (TC t $ nub $ u1' ++ u2') op [E t, E t] =<< sequence [a1PreferValue, a2PreferValue]
-        | op `elem` [iDifference, iIntersection] =
-          do
-            whenM (not <$> (intersects (tcClafers env) <$> u1 <*> u2)) $
-              throwError $ SemanticErr pos $ '"' : printTree (sugarExp' f) ++ "\" is redundant because the two subexpressions are always disjoint.\nLeft type=" ++ show u1 ++ ". Right type=" ++ show u2 ++ "."
-            -- Expect both arguments to be the same type as the first argument
-            t <- t1PV
-            typeCheckFunction pos t op [E $ tcToType t, E $ tcToType t] =<< sequence [a1PreferValue, a2PreferValue]
-        | op `elem` [iDomain, iRange] =
-            typeCheckFunction pos (TC TClafer []) op [E TClafer, EAny] =<< sequence [a1, a2PreferValue]
-        | op `elem` [iSub, iMul, iDiv] =
-          do
-            t1' <- t1PV
-            t2' <- t2PV
-            typeCheckFunction pos (coerceIfNeeded t1' t2') op allNumeric =<< sequence [a1PreferValue, a2PreferValue]
-        | op == iPlus =
-          do
-            t1' <- t1PV
-            if isExact (tcToType t1') TString -- String addition
-              then typeCheckFunction pos (TC TString []) op [E TString, E TString] =<< sequence [a1PreferValue, a2PreferValue]
-              else -- Numeric addition or fail
-                do
-                  t2' <- t2PV
-                  typeCheckFunction pos (coerceIfNeeded t1' t2') op allNumeric =<< sequence [a1PreferValue, a2PreferValue]
-    a1 = snd <$> resolveTPExp env exp1
-    a2 = snd <$> resolveTPExp env exp2
-    a1PreferValue = snd <$> resolveTPExpPreferValue env exp1
-    a2PreferValue = snd <$> resolveTPExpPreferValue env exp2
-    t1 = typeOf <$> a1
-    t2 = typeOf <$> a2
-    t1PV = typeOf <$> a1PreferValue
-    t2PV = typeOf <$> a2PreferValue
-    u1 = uids <$> t1
-    u2 = uids <$> t2
-    u1PV = uids <$> t1PV
-    u2PV = uids <$> t2PV
-
---Ternary functions
-resolveTExp pos env (IFunExp "=>else" [exp1, exp2, exp3]) =
-  do
-    t <- tcToType <$> t2
-    let result
-          | isExact t TString = -- String expression
-              typeCheckFunction pos (TC TBoolean []) "=>else" [E TBoolean, E TString, E TString] =<< sequence [a1, a2, a3]
-          | isNumeric t = -- Numeric expression
-              typeCheckFunction pos (TC TBoolean []) "=>else" [E TBoolean, ENumeric, ENumeric] =<< sequence [a1, a2, a3]
-          | otherwise = -- Clafer expression
-              typeCheckFunction pos (TC TBoolean []) "=>else" [E TBoolean, E TClafer, E TClafer] =<< sequence [a1, a2, a3]
-    (env,) <$> result
-  where
-  a1 = snd <$> resolveTPExpPreferValue env exp1
-  a2 = snd <$> resolveTPExpPreferValue env exp2
-  a3 = snd <$> resolveTPExpPreferValue env exp3
+newtype TypeAnalysis a = TypeAnalysis (ReaderT TypeInfo (Either ClaferSErr) a)
+  deriving (MonadError ClaferSErr, Monad, Functor, MonadReader TypeInfo)
   
-  t1 = typeOf <$> a1
-  t2 = typeOf <$> a2
-  t3 = typeOf <$> a3
+typeOfUid :: MonadTypeAnalysis m => String -> m IType
+typeOfUid uid = (fromMaybe (TClafer [uid]) . lookup uid) <$> typeDecls
+
+class MonadAnalysis m => MonadTypeAnalysis m where
+  -- What "this" refers to
+  curThis :: m SClafer
+  localCurThis :: SClafer -> m a -> m a
+  
+  -- The next path is a child of curPath (or Nothing)
+  curPath :: m (Maybe IType)
+  localCurPath :: IType -> m a -> m a
+  
+  -- Extra declarations
+  typeDecls :: m TypeDecls
+  localDecls :: TypeDecls -> m a -> m a
+
+instance MonadTypeAnalysis TypeAnalysis where
+  curThis = TypeAnalysis $ asks iCurThis
+  localCurThis newThis (TypeAnalysis d) =
+    TypeAnalysis $ local setCurThis d
+    where
+    setCurThis t = t{iCurThis = newThis}
+    
+  curPath = TypeAnalysis $ asks iCurPath
+  localCurPath newPath (TypeAnalysis d) =
+    TypeAnalysis $ local setCurPath d
+    where
+    setCurPath t = t{iCurPath = Just newPath}
+    
+  typeDecls = TypeAnalysis $ asks iTypeDecls
+  localDecls extra (TypeAnalysis d) =
+    TypeAnalysis $ local addTypeDecls d
+    where
+    addTypeDecls t@TypeInfo{iTypeDecls = c} = t{iTypeDecls = extra ++ c}
+    
+instance MonadTypeAnalysis m => MonadTypeAnalysis (ListT m) where
+  curThis = lift $ curThis
+  localCurThis = mapListT . localCurThis
+  curPath = lift $ curPath
+  localCurPath = mapListT . localCurPath
+  typeDecls = lift typeDecls
+  localDecls = mapListT . localDecls
+  
+instance MonadTypeAnalysis m => MonadTypeAnalysis (ErrorT ClaferSErr m) where
+  curThis = lift $ curThis
+  localCurThis = mapErrorT . localCurThis
+  curPath = lift $ curPath
+  localCurPath = mapErrorT . localCurPath
+  typeDecls = lift typeDecls
+  localDecls = mapErrorT . localDecls
+      
+
+instance MonadAnalysis TypeAnalysis where
+  clafers = asks (sclafers . iInfo)
+  withClafers cs r =
+    local setInfo r
+    where
+    setInfo t = t{iInfo = Info cs}
+
+runTypeAnalysis :: TypeAnalysis a -> IModule -> Either ClaferSErr a
+runTypeAnalysis (TypeAnalysis tc) imodule = runReaderT tc $ TypeInfo [] (gatherInfo imodule) undefined Nothing
+
+unionType :: IType -> [String]
+unionType TString  = ["string"]
+unionType TReal    = ["real"]
+unionType TInteger = ["integer"]
+unionType TBoolean = ["boolean"]
+unionType (TClafer u) = u
+
+(+++) :: IType -> IType -> IType
+t1 +++ t2 = fromJust $ fromUnionType $ unionType t1 ++ unionType t2
+
+fromUnionType :: [String] -> Maybe IType
+fromUnionType ["string"]  = return TString
+fromUnionType ["real"]    = return TReal
+fromUnionType ["integer"] = return TInteger
+fromUnionType ["int"]     = return TInteger
+fromUnionType ["boolean"] = return TBoolean
+fromUnionType []          = Nothing
+fromUnionType u           = return $ TClafer $ nub $ sort u
+
+closure :: MonadAnalysis m => [String] -> m [String]
+closure ut = concat <$> mapM hierarchy ut
+
+intersection :: MonadAnalysis m => IType -> IType -> m (Maybe IType)
+intersection t1 t2 = 
+  do
+    h1 <- mapM hierarchy $ unionType t1
+    h2 <- mapM hierarchy $ unionType t2
+    let ut = catMaybes [contains (head u1) u2 `mplus` contains (head u2) u1 | u1 <- h1, u2 <- h2]
+    return $ fromUnionType ut
+  where
+  contains i is = if i `elem` is then Just i else Nothing
+
+intersects :: MonadAnalysis m => IType -> IType -> m Bool
+intersects t1 t2 = isJust <$> intersection t1 t2
+
+numeric :: IType -> Bool
+numeric TReal    = True
+numeric TInteger = True
+numeric _        = False
+
+coerce :: IType -> IType -> IType
+coerce TReal TReal       = TReal
+coerce TReal TInteger    = TReal
+coerce TInteger TReal    = TReal
+coerce TInteger TInteger = TInteger
+coerce x y = error $ "Not numeric: " ++ show x ++ ", " ++ show y
+
+str :: IType -> String
+str t =
+  case unionType t of
+    [t'] -> t'
+    ts   -> "[" ++ intercalate "," ts ++ "]"
 
 
-resolveTPExpLeftJoin :: TCEnv -> PExp -> Resolve (TCEnv, TypedPExp)
-resolveTPExpLeftJoin env (PExp _ pid pos e@(IClaferId _ "this" _)) =
-    return (env, (PExp (Just TClafer) pid pos e, TC TClafer [tcThis env]))
-resolveTPExpLeftJoin env pexp = resolveTPExp env pexp
+resolveTModule :: (IModule, GEnv) -> Either ClaferSErr IModule
+resolveTModule (imodule, _) =
+  case runTypeAnalysis (analysis $ mDecls imodule) imodule of
+    Right mDecls' -> return imodule{mDecls = mDecls'}
+    Left err      -> throwError err
+  where
+  analysis decls = mapM (resolveTElement $ rootUid) decls
 
+resolveTElement :: String -> IElement -> TypeAnalysis IElement
+resolveTElement _ (IEClafer iclafer) =
+  do
+    elements' <- mapM (resolveTElement $ I.uid iclafer) (elements iclafer)
+    return $ IEClafer $ iclafer{elements = elements'}
+resolveTElement parent (IEConstraint isHard pexp) =
+  IEConstraint isHard <$> (testBoolean =<< resolveTConstraint parent pexp)
+  where
+  testBoolean pexp' =
+    do
+      unless (typeOf pexp' == TBoolean) $
+        throwError $ SemanticErr (inPos pexp') ("Cannot construct constraint on type '" ++ str (typeOf pexp') ++ "'")
+      return pexp'
+resolveTElement parent (IEGoal isMaximize pexp) =
+  IEGoal isMaximize <$> resolveTConstraint parent pexp
 
---resolveTDecl :: IDecl ->  IDecl
---resolveTDecl x = liftM x{body = resolveTPExp $ body x}
-
-typeOf = snd
-
-coerceIfNeeded:: TC -> TC -> TC
-coerceIfNeeded (TC TInteger _) (TC TReal _) = TC TReal [] -- Coerce to real
-coerceIfNeeded (TC TReal _) (TC TInteger _) = TC TReal [] -- Coerce to real
-coerceIfNeeded x _ = x                -- No coercing
-
--- Expects that each argument is numeric
-allNumeric :: [TExpect]
-allNumeric = repeat ENumeric
-
--- Expects that each argument is of the exact type
-exact :: [IType] -> [TExpect]
-exact = map E
-
--- Type checks each argument.
---   Each argument must match exactly with the expect type (aka E), is numeric (ENumeric), is Clafer or
---   don't care (EAny).
---   E is an EXACT match, ie. TInteger does not match with TReal. Use ENumeric where necessary.
---   Returns a tuple of a IFunExp and its type if type checking passes.
-typeCheckFunction :: Span -> TC -> String -> [TExpect] -> [TypedPExp] -> Resolve TypedIExp
-typeCheckFunction pos returnType op expected inferredChildren =
-    let inferred = map (tcToType . typeOf) inferredChildren in
-        if all (uncurry checkExpect) (zip expected inferred) then 
-            return (IFunExp op $ map fst inferredChildren, returnType)
-        else throwError $ SemanticErr pos $ "function " ++ op ++ " expected arguments of type " ++ show (take (length inferred) expected)
-            ++ ", received " ++ show inferred
-
--- Convenience function, returns true iff the type is a numerical type.
-isNumeric :: IType -> Bool
-isNumeric itype = checkExpect ENumeric itype
-
--- Convenience function, returns true iff the type is exact type.
-isExact :: IType -> IType -> Bool
-isExact a b = checkExpect (E a) b
-
--- Return true iff IType matches the expected type.
-checkExpect :: TExpect -> IType -> Bool
--- Check exact match.
-checkExpect (E exact) itype = exact == itype
--- Check is numeric.
-checkExpect ENumeric TInteger = True
-checkExpect ENumeric TReal    = True
-checkExpect ENumeric _        = False
--- Check allows anything
-checkExpect EAny _ = True
-
-whenM :: (Monad m) => m Bool -> m () -> m ()
-whenM c m = c >>= (`when` m)
-
-tcToType (TC t _) = t
-tcToType (TCVal t _) = TClafer -- Its type is TClafer, it can be "ref"ed to t.
-
-
-data TExpect =
-    E IType |        -- The exact type
-    ENumeric | -- TInteger or TReal
-    EAny       -- No expectations
-instance Show TExpect where
-    show (E itype) = show itype
-    show ENumeric = (show TInteger) ++ "/" ++ (show TReal)
-    show EAny = "*"
+resolveTConstraint :: String -> PExp -> TypeAnalysis PExp
+resolveTConstraint curThis constraint = 
+  do
+    curThis' <- claferWithUid curThis
+    head <$> (localCurThis curThis' $ (resolveTPExp constraint :: TypeAnalysis [PExp]))
     
 
--- Returns true iff the left and right expressions are syntactically identical
-sameAs :: PExp -> PExp -> Bool
-sameAs e1 e2 = printTree (sugarExp e1) == printTree (sugarExp e2) -- Not very efficient but hopefully correct
+resolveTPExp :: PExp -> TypeAnalysis [PExp]
+resolveTPExp p = 
+  do
+    x <- resolveTPExp' p
+    case partitionEithers x of
+      (f:_, []) -> throwError f                       -- Case 1: Only fails. Complain about the first one.
+      ([], [])  -> error "No results but no errors."  -- Case 2: No success and no error message. Bug.
+      (_,   xs) -> return xs                          -- Case 3: At least one success.
+
+resolveTPExp' :: PExp -> TypeAnalysis [Either ClaferSErr PExp]
+resolveTPExp' p@PExp{inPos, exp = IClaferId{sident = "ref"}} =
+  runListT $ runErrorT $ do
+    curPath' <- curPath
+    case curPath' of
+      Just curPath'' -> do
+        ut <- closure $ unionType curPath''
+        t <- runListT $ refOf =<< foreachM ut
+        case fromUnionType t of
+          Just t' -> return $ p `withType` t'
+          Nothing -> throwError $ SemanticErr inPos ("Cannot ref from type '" ++ str curPath'' ++ "'")
+      Nothing -> throwError $ SemanticErr inPos ("Cannot ref at the start of a path")
+resolveTPExp' p@PExp{inPos, exp = IClaferId{sident = "parent"}} =
+  runListT $ runErrorT $ do
+    curPath' <- curPath
+    case curPath' of
+      Just curPath'' -> do
+        parent <- fromUnionType <$> runListT (parentOf =<< liftList (unionType curPath''))
+        when (isNothing parent) $
+          throwError $ SemanticErr inPos "Cannot parent from root"
+        let result = p `withType` fromJust parent
+        return result -- Case 1: Use the sident
+          <++>
+          addRef result -- Case 2: Dereference the sident 1..* times
+      Nothing -> throwError $ SemanticErr inPos "Cannot parent at the start of a path"
+resolveTPExp' p@PExp{inPos, exp = IClaferId{sident}} =
+  runListT $ runErrorT $ do
+    curPath' <- curPath
+    sident' <- if sident == "this" then uid <$> curThis else return sident
+    when (isJust curPath') $ do
+      c <- mapM (isChild sident') $ unionType $ fromJust curPath'
+      unless (or c) $ throwError $ SemanticErr inPos ("'" ++ sident' ++ "' is not a child of type '" ++ str (fromJust curPath') ++ "'")
+    result <- (p `withType`) <$> typeOfUid sident'
+    return result -- Case 1: Use the sident
+      <++>
+      addRef result -- Case 2: Dereference the sident 1..* times
+  
+  
+resolveTPExp' p@PExp{inPos, exp} =
+  runListT $ runErrorT $ do
+    (iType', exp') <- ErrorT $ ListT $ resolveTExp exp
+    return p{iType = Just iType', exp = exp'}
+  where
+  resolveTExp :: IExp -> TypeAnalysis [Either ClaferSErr (IType, IExp)]
+  resolveTExp e@(IInt _)    = runListT $ runErrorT $ return (TInteger, e)
+  resolveTExp e@(IDouble _) = runListT $ runErrorT $ return (TReal, e)
+  resolveTExp e@(IStr _)    = runListT $ runErrorT $ return (TString, e)
+
+  resolveTExp e@IFunExp {op, exps = [arg]} =
+    runListT $ runErrorT $ do
+      arg' <- lift $ ListT $ resolveTPExp arg
+      let t = typeOf arg'
+      let test c =
+            unless c $
+              throwError $ SemanticErr inPos ("Function '" ++ op ++ "' cannot be performed on " ++ op ++ " '" ++ str t ++ "'")
+      let result
+            | op == iNot = test (t == TBoolean) >> return TBoolean
+            | op == iCSet = return TInteger
+            | op == iSumSet = test (t == TInteger) >> return TInteger
+            | op `elem` [iMin, iGMin, iGMax] = test (numeric t) >> return t
+            | otherwise = error $ "Unknown op '" ++ op ++ "'"
+      result' <- result
+      return (result', e{exps = [arg']})
+
+  resolveTExp e@IFunExp {op = ".", exps = [arg1, arg2]} =
+    do
+      runListT $ runErrorT $ do
+        arg1' <- lift $ ListT $ resolveTPExp arg1
+        localCurPath (typeOf arg1') $ do
+            arg2' <- liftError $ lift $ ListT $ resolveTPExp arg2
+            return (fromJust $ iType arg2', e{exps = [arg1', arg2']})
+      
+  resolveTExp e@IFunExp {op, exps = [arg1, arg2]} =
+    runListT $ runErrorT $ do
+      arg1' <- lift $ ListT $ resolveTPExp arg1
+      arg2' <- lift $ ListT $ resolveTPExp arg2
+      let t1 = typeOf arg1'
+      let t2 = typeOf arg2'
+      let testIntersect e1 e2 =
+            do
+              it <- intersection e1 e2
+              case it of
+                Just it' -> return it'
+                Nothing  -> throwError $ SemanticErr inPos ("Function '" ++ op ++ "' cannot be performed on '" ++ str t1 ++ "' " ++ op ++ " '" ++ str t2 ++ "'")
+      let testNotSame e1 e2 =
+            when (e1 `sameAs` e2) $
+              throwError $ SemanticErr inPos ("Function '" ++ op ++ "' is redundant because the two subexpressions are always equivalent")
+      let test c =
+            unless c $
+              throwError $ SemanticErr inPos ("Function '" ++ op ++ "' cannot be performed on '" ++ str t1 ++ "' " ++ op ++ " '" ++ str t2 ++ "'")
+      let result
+            | op `elem` logBinOps = test (t1 == TBoolean && t2 == TBoolean) >> return TBoolean
+            | op `elem` [iLt, iGt, iLte, iGte] = test (numeric t1 && numeric t2) >> return TBoolean
+            | op `elem` [iEq, iNeq] = testNotSame arg1' arg2' >> testIntersect t1 t2 >> return TBoolean
+            | op == iUnion = return $ t1 +++ t2
+            | op == iDifference = testNotSame arg1' arg2' >> testIntersect t1 t2 >> return t1
+            | op == iIntersection = testNotSame arg1' arg2' >> testIntersect t1 t2
+            | op `elem` [iDomain, iRange] = testIntersect t1 t2
+            | op `elem` relSetBinOps = testIntersect t1 t2 >> return TBoolean
+            | op `elem` [iSub, iMul, iDiv] = test (numeric t1 && numeric t2) >> return (coerce t1 t2)
+            | op == iPlus =
+                (test (t1 == TString && t2 == TString) >> return TString) -- Case 1: String concatenation
+                `catchError`
+                const (test (numeric t1 && numeric t2) >> return (coerce t1 t2)) -- Case 2: Addition
+            | otherwise = error $ "Unknown op: " ++ show e
+      result' <- result
+      return (result', e{exps = [arg1', arg2']})
+      
+  resolveTExp e@(IFunExp "=>else" [arg1, arg2, arg3]) =
+    runListT $ runErrorT $ do
+      arg1' <- lift $ ListT $ resolveTPExp arg1
+      arg2' <- lift $ ListT $ resolveTPExp arg2
+      arg3' <- lift $ ListT $ resolveTPExp arg3
+      let t1 = typeOf arg1'
+      let t2 = typeOf arg2'
+      let t3 = typeOf arg3'
+      unless (t1 == TBoolean) $
+        throwError $ SemanticErr inPos ("Function 'if/else' cannot be performed on 'if' " ++ str t1 ++ " 'then' " ++ str t2 ++ " 'else' " ++ str t3)
+      it <- intersection t2 t3
+      t  <- case it of
+        Just it' -> return it'
+        Nothing  -> throwError $ SemanticErr inPos ("Function '=>else' cannot be performed on if '" ++ str t1 ++ "' then '" ++ str t2 ++ "' else '" ++ str t3 ++ "'")        
+      return (t, e{exps = [arg1', arg2', arg3']})
+      
+  resolveTExp e@IDeclPExp{oDecls, bpexp} =
+    runListT $ runErrorT $ do
+      oDecls' <- mapM resolveTDecl oDecls
+      let extraDecls = [(decl, typeOf $ body oDecl) | oDecl <- oDecls', decl <- decls oDecl]
+      localDecls extraDecls $ do
+        bpexp' <- liftError $ lift $ ListT $ resolveTPExp bpexp
+        return $ (TBoolean, e{oDecls = oDecls', bpexp = bpexp'})
+    where
+    resolveTDecl d@IDecl{body} =
+      do
+        body' <- lift $ ListT $ resolveTPExp body
+        return $ d{body = body'}
+        
+  resolveTExp e = error $ "Unknown iexp: " ++ show e
+
+-- Adds "refs" at the end, effectively dereferencing Clafers when needed.
+addRef :: PExp -> ErrorT ClaferSErr (ListT TypeAnalysis) PExp
+addRef pexp =
+  do
+    localCurPath (typeOf pexp) $ do
+      deref <- (ErrorT $ ListT $ resolveTPExp' $ newPExp $ IClaferId "" "ref" False) `catchError` const (lift mzero)
+      let result = (newPExp $ IFunExp "." [pexp, deref]) `withType` typeOf deref
+      return result <++> addRef result
+  where
+  newPExp = PExp Nothing "" $ inPos pexp
+  
+typeOf :: PExp -> IType
+typeOf pexp = fromMaybe (error "No type") $ iType pexp
+
+withType :: PExp -> IType -> PExp
+withType p t = p{iType = Just t}
+
+(<++>) :: (Error e, MonadPlus m) => ErrorT e m a -> ErrorT e m a -> ErrorT e m a
+(ErrorT a) <++> (ErrorT b) = ErrorT $ a `mplus` b
+
+liftError :: (MonadError e m, Error e) => ErrorT e m a -> ErrorT e m a
+liftError e =
+  liftCatch catchError e throwError
+  where
+  liftCatch catchError' m h = ErrorT $ runErrorT m `catchError'` (runErrorT . h)

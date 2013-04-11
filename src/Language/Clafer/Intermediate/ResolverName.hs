@@ -73,15 +73,49 @@ defSEnv genv declarations = env {aClafers = rCl aClafers',
   rCl cs = bfs toNodeDeep $ map (\c -> env{context = Just c, resPath = [c]}) cs
   (aClafers', cClafers') = partition isAbstract $ clafers env
 
+checkDuplicateSiblings :: IModule -> Resolve [IElement]
+checkDuplicateSiblings tree = let duplicate = checkDuplicateSiblings' $ mDecls tree
+                              in if (isJust duplicate) then let Just(name,pos) = duplicate in throwError $ SemanticErr pos $ ("Duplicate name: " ++ name) --error
+                                 else return $ mDecls tree
+                                      
+checkDuplicateSiblings' :: [IElement] -> Maybe (String,Span)
+checkDuplicateSiblings' tree =if (isJust check) then check
+                              else checkForJust $ map checkDuplicateSiblings' elementsList
+  where
+    check = checkListDuplicates $ map (\c -> (ident c, cinPos c)) $ map (\(IEClafer eclafer) -> eclafer) $ filter isIEClafer tree
+    elementsList = map (\c -> elements c) $ map (\(IEClafer eclafer) -> eclafer) $ filter isIEClafer tree
+
+
+checkForJust :: [Maybe (String,Span)] -> Maybe (String,Span)
+checkForJust [] = Nothing
+checkForJust (h:rest) = if (isJust h) then
+                          h
+                        else
+                          checkForJust rest
+                          
+checkListDuplicates :: [(String, Span)] -> Maybe (String,Span)
+checkListDuplicates list = checkListDuplicates' $ sortBy (compare `on` fst) list
+
+checkListDuplicates' :: [(String,Span)] -> Maybe (String,Span)
+checkListDuplicates' [] = Nothing
+checkListDuplicates' (a:[]) = Nothing
+checkListDuplicates' ((a,b):(c,d):rest) = if a == c then
+                                    Just (a,b)
+                                  else
+                                    checkListDuplicates' ((c,d):rest)
+                                    
+isIEClafer :: IElement -> Bool
+isIEClafer element =
+  case element of
+    IEClafer _ -> True
+    otherwise -> False
 
 resolveModuleNames :: (IModule, GEnv) -> Resolve IModule
 resolveModuleNames (imodule, genv) =
   do
+    decls <- checkDuplicateSiblings imodule
     mDecls' <- mapM (resolveElement (defSEnv genv decls)) decls
     return $ imodule{mDecls = mDecls'}
-  where
-  decls = mDecls imodule
-
 
 resolveClafer :: SEnv -> IClafer -> Resolve IClafer
 resolveClafer env clafer =

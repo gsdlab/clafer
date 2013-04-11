@@ -1,0 +1,5 @@
+// http://gsd.uwaterloo.ca:8888/question/682/or-group-keyword-has-different-semantics-than
+
+1..* A
+    B
+    C

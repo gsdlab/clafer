@@ -34,14 +34,14 @@ import System.Timeout
 import Control.Monad.State
 import System.Environment.Executable
 import Data.Maybe
-import Data.List (genericSplitAt)
-import System.FilePath.Posix
+import System.FilePath (dropExtension,takeBaseName)
 import System.Process (readProcessWithExitCode)
 
 import Language.Clafer
 import Language.ClaferT
 import Language.Clafer.Css
-import Language.Clafer.Generator.Graph
+import Language.Clafer.Generator.Html (highlightErrors)
+import Language.Clafer.Generator.Graph (genSimpleGraph)
 
 putStrV :: VerbosityL -> String -> IO ()
 putStrV v s = if v > 1 then putStrLn s else return ()
@@ -77,16 +77,7 @@ run v args input =
        let result = (if (fromJust $ self_contained args) then header ++ "<style>" ++ css ++ "</style>" ++ "</head>\n<body>\n<pre>\n" else "") ++ highlightErrors model err ++
                                                                (if (fromJust $ self_contained args) then "\n</pre>\n</html>" else "")
        liftIO $ if fromJust $ console_output args then putStrLn result else writeFile f result
-  highlightErrors :: String -> [ClaferErr] -> String
-  highlightErrors model errors = unlines $ highlightErrors' (lines model) errors--assumes the fragments have been concatenated
-  highlightErrors' :: [String] -> [ClaferErr] -> [String]
-  highlightErrors' model [] = model
-  highlightErrors' model ((ClaferErr msg):es) = highlightErrors' model es
-  highlightErrors' model ((ParseErr ErrPos{modelPos = Pos l c, fragId = n} msg):es) = do
-      let (ls, lss) = genericSplitAt (l + toInteger n) model
-      let newLine = fst (genericSplitAt (c - 1) $ last ls) ++ "<span class=\"error\" title=\"Parse failed at line " ++ show l ++ " column " ++ show c ++
-             "...\n" ++ msg ++ "\">" ++ (if snd (genericSplitAt (c - 1) $ last ls) == "" then "&nbsp;" else snd (genericSplitAt (c - 1) $ last ls)) ++ "</span>"
-      highlightErrors' (init ls ++ [newLine] ++ lss) es
+  
   handleErrs = mapM_ handleErr
   handleErr (ClaferErr msg) =
     do
@@ -113,7 +104,7 @@ run v args input =
       let (iModule, genv, au) = ir env
       result' <- if (fromJust $ add_graph args) && (mode args == Just Html) 
              then do
-                   (_, graph, _) <- liftIO $ readProcessWithExitCode "dot"  ["-Tsvg"] $ genSimpleGraph (ast env) iModule (dropExtension $ file args) (fromJust $ show_references args)
+                   (_, graph, _) <- liftIO $ readProcessWithExitCode "dot"  ["-Tsvg"] $ genSimpleGraph (ast env) iModule (takeBaseName $ file args) (fromJust $ show_references args)
                    return $ summary graph result
                  else return result
       liftIO $ when (not $ fromJust $ no_stats args) $ putStrLn (statistics result')
@@ -159,4 +150,15 @@ main = do
 start :: VerbosityL -> ClaferArgs -> InputModel-> IO ()
 start v args model = if fromJust $ schema args
   then putStrLn claferIRXSD
-  else run v args model
+  else if fromJust $ ecore2clafer args
+    then runEcore2Clafer (file args) $ (fromJust $ tooldir args)
+    else run v args model
+
+runEcore2Clafer :: FilePath -> FilePath -> IO ()
+runEcore2Clafer    ecoreFile toolPath
+  | null ecoreFile = do
+      putStrLn "Error: Provide a file name of the ECore model."
+  | otherwise      = do
+      putStrLn $ "Converting " ++ ecoreFile ++ " into Clafer"
+      voidf $ system $ "java -jar " ++ toolPath ++ "ecore2clafer.jar " ++ ecoreFile
+

@@ -6,27 +6,7 @@
 .standalonecomment { color: green; font-style:italic }
 .inlinecomment { color: green; padding-left:20px; font-style:italic }
 .error{background-color: yellow; color: red }
-.l0{}
-.l1{padding-left:20px}
-.l2{padding-left:40px}
-.l3{padding-left:60px}
-.l4{padding-left:80px}
-.l5{padding-left:100px}
-.l6{padding-left:120px}
-.l7{padding-left:140px}
-.l8{padding-left:160px}
-.l9{padding-left:180px}
-.l10{padding-left:200px}
-.l11{padding-left:220px}
-.l12{padding-left:240px}
-.l13{padding-left:260px}
-.l14{padding-left:280px}
-.l15{padding-left:300px}
-.l16{padding-left:320px}
-.l17{padding-left:340px}
-.l18{padding-left:360px}
-.l19{padding-left:380px}
-.l20{padding-left:400px}
+.indent{padding-left:20px}
 a[href$='Lookup failed'] {color: red}
 a[href$='Uid not found'] {color: red}
 a[href$='Ambiguous name'] {color: yellow}
