@@ -438,12 +438,12 @@ printEnumId (EnumIdIdent posident) indent irMap html comments = printPosIdent po
 printEnumId (PosEnumIdIdent _ posident) indent irMap html comments = printEnumId (EnumIdIdent posident) indent irMap html comments
 
 printIndent :: Int -> Bool -> String
-printIndent 0 html = (while html "<div>")
-printIndent _ html = (while html "<div class=\"indent\">")
+printIndent 0 html = (while html "<div>") ++ "\n"
+printIndent _ html = (while html "<div class=\"indent\">") ++ "\n"
 
 printIndentId :: Int -> Bool -> String -> String
-printIndentId 0 html uid = (while html "<div id=\"" ++ uid ++ "\">")
-printIndentId _ html uid = (while html "<div id=\"" ++ uid ++ "\" class=\"indent\">")
+printIndentId 0 html uid = while html ("<div id=\"" ++ uid ++ "\">") ++ "\n"
+printIndentId _ html uid = while html ("<div id=\"" ++ uid ++ "\" class=\"indent\">") ++ "\n"
 
 printIndentEnd :: Bool -> String
 printIndentEnd html = (while html "</div>") ++ "\n"
