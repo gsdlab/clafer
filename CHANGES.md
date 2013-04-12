@@ -1,4 +1,4 @@
-**Clafer Version 0.3.2 released on January 24, 2017**
+**Clafer Version 0.3.2 released on April 11, 2013**
 
 [New features and bug fixes](http://gsd.uwaterloo.ca:8888/questions/scope:all/sort:activity-desc/tags:v0.3.2,clafer/page:1/)
 

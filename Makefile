@@ -29,6 +29,7 @@ install:
 	cp -f tools/alloy4.jar $(to)/tools
 	cp -f tools/alloy4.2.jar $(to)/tools
 	cp -f tools/XsdCheck.class $(to)/tools
+	cp -f tools/ecore2clafer.jar $(to)/tools
 
 # build Schema.hs from ClaferIG.xsd, call after .xsd changed
 Schema.hs:
