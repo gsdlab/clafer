@@ -12,13 +12,15 @@ endif
 ifeq ($(UNAME), msys)
 	GPLK_LIBS_INCLUDES := --extra-include-dirs=$(glpk)/src --extra-include-dirs=$(glpk)/src/amd --extra-include-dirs=$(glpk)/src/colamd --extra-include-dirs=$(glpk)/src/minisat --extra-include-dirs=$(glpk)/src/zlib --extra-lib-dirs=$(glpk)/w32	
 endif
-
+ifeq ($(UNAME), darwin)
+	MAC_USR_LIB := --extra-lib-dir=/usr/lib
+endif
 
 all: build
 
 build:
 	$(MAKE) -C $(TOOL_DIR)
-	cabal install --only-dependencies $(GPLK_LIBS_INCLUDES)
+	cabal install --only-dependencies $(GPLK_LIBS_INCLUDES) $(MAC_USR_LIB)
 	cabal configure
 	cabal build
 	cp dist/build/clafer/clafer .
@@ -26,7 +28,7 @@ build:
 install:  
 	mkdir -p $(to)
 	mkdir -p $(to)/tools
-	cabal install --bindir=$(to) $(GPLK_LIBS_INCLUDES)
+	cabal install --bindir=$(to) $(GPLK_LIBS_INCLUDES) $(MAC_USR_LIB)
 	cp -f README.md $(to)/clafer-README.md
 	cp -f LICENSE $(to)/
 	cp -f CHANGES.md $(to)/clafer-CHANGES.md
