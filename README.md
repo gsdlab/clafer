@@ -61,7 +61,12 @@ The following tools are not part of the binary distribution and they have to be 
 3. copy alloy's jars to the `<target directory>/tools` folder
 
 On Windows only
-4. copy GLPK's dll `glpk-0.4.48.dll` to the `<target directory>` folder or any other folder on the system path
+1. install [WinGLPK](http://sourceforge.net/projects/winglpk/) v4.48
+2. copy GLPK's dll `<glpk install directory>/w32/glpk_4_48.dll` to `glpk.dll` and move it into the `<target directory>` or any other directory on the system path
+
+On Mac only
+1. install GPLK from [MacPorts](http://www.macports.org/)
+2. execute `port install glpk`
 
 Integration with Sublime Text 2
 -------------------------------
