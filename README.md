@@ -52,7 +52,7 @@ The following tools are not part of the binary distribution and they have to be 
 * [Alloy4.1 and/or Alloy4.2](http://alloy.mit.edu/alloy/download.html)
 * [GraphViz](http://graphviz.org/)
   * `dot` is needed only in the `html` mode for SVG graph generation
-* [GNU Linear Programming Kit](www.gnu.org/software/glpk/) v4.48
+* [GNU Linear Programming Kit](www.gnu.org/software/glpk/) v4.49
 
 ### Installation
 
@@ -60,11 +60,14 @@ The following tools are not part of the binary distribution and they have to be 
 2. add the `<target directory>` to your system path so that the executables can be found
 3. copy alloy's jars to the `<target directory>/tools` folder
 
-On Windows only
-1. install [WinGLPK](http://sourceforge.net/projects/winglpk/) v4.48
-2. copy GLPK's dll `<glpk install directory>/w32/glpk_4_48.dll` to `glpk.dll` and move it into the `<target directory>` or any other directory on the system path
+On Linux
+1. [libglpk-dev](http://www.gnu.org/software/glpk/) v4.49
+  * `sudo apt-get install libglpk-dev` on Ubuntu
 
-On Mac only
+On Windows
+1. The binary distribution already includes the GNU Linear Programming Kit DLL `glpk_4_49.dll`.
+
+On Mac
 1. install GPLK from [MacPorts](http://www.macports.org/)
 2. execute `port install glpk`
 
@@ -84,9 +87,8 @@ Building & Installation From Source Code
   * downloaded automatically during build
 * [Git](http://git-scm.com/)
 
-On Linux/Mac only
-
-* [libglpk-dev](http://www.gnu.org/software/glpk/) v4.48+
+On Linux
+* [libglpk-dev](http://www.gnu.org/software/glpk/) v4.49
   * `sudo apt-get install libglpk-dev` on Ubuntu
 
 On Windows 
@@ -94,9 +96,13 @@ On Windows
 * [MinGW+MSYS](http://mingw.org) with packages `make`, `wget`, `unzip`
   * since the Haskell Platform already contains MinGW, you may choose to install MinGW+MSYS to the same location, e.g., `c:\...\Haskell Platform\2012.2.0.0`
   * add the `bin` folders of MinGW (`MinGW\bin`) and MSYS (`MinGW\MSYS\1.0\bin`) to your system path  
-* [WinGLPK](http://winglpk.sourceforge.net/) v4.48
-  * in `w32` folder, copy `glpk_4_48.lib` to`glpk.lib` so that it can be found when building Haskell package `glpk-hs`
-  * from `w32` folder, copy `glpk_4_48.dll` to `<user>\AppData\Roaming\cabal\bin`
+* [WinGLPK](http://winglpk.sourceforge.net/) v4.49
+  * inside the `w32` folder, copy `glpk_4_49.dll` to`glpk.dll` so that it can be found when building Haskell package `glpk-hs`
+  * from `w32` folder, copy `glpk_4_49.dll` to `<user>\AppData\Roaming\cabal\bin`
+
+On Mac only
+1. install GPLK 4.49 from [MacPorts](http://www.macports.org/)
+2. execute `port install glpk`
 
 ### Important: Branches must correspond
 
@@ -115,18 +121,18 @@ Development versions `clafer/develop` and `claferIG/develop` should work well to
 4a. On Linux and Mac
   * `make`
 4b. On Windows (in MinGW)
-  * `make glpk="/c/<your WinGLPK install dir>/winglpk-4.48"`
+  * `make glpk="/c/<your WinGLPK install dir>/winglpk-4.49"`
 
 ### Installation
 
 1a. On Linux and Mac execute 
   *`make install to=<target directory>`
 1b. On Windows (in MinGW)
-  * `make glpk="/c/<your WinGLPK instal dir>/winglpk-4.48" to=/c/<target directory>`  
+  * `make glpk="/c/<your WinGLPK instal dir>/winglpk-4.49" to=/c/<target directory>`  
 2. add the `<target directory>` to your system PATH
 
 On Windows only
-3. copy GLPK's dll `glpk-0.4.48.dll` to the `<target directory>` folder or any other folder on the system path
+3. copy GLPK's dll `glpk-0.4.49.dll` to the `<target directory>` folder or any other folder on the system path
 
 #### Note: 
 > On Windows, use `/` with the `make` command instead of `\`.
