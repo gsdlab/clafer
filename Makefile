@@ -28,7 +28,6 @@ build:
 install:  
 	mkdir -p $(to)
 	mkdir -p $(to)/tools
-	cabal install --bindir=$(to) $(GPLK_LIBS_INCLUDES) $(MAC_USR_LIB)
 	cp -f README.md $(to)/clafer-README.md
 	cp -f LICENSE $(to)/
 	cp -f CHANGES.md $(to)/clafer-CHANGES.md
@@ -36,6 +35,8 @@ install:
 	cp -f tools/alloy4.2.jar $(to)/tools
 	cp -f tools/XsdCheck.class $(to)/tools
 	cp -f tools/ecore2clafer.jar $(to)/tools
+	cp -f -R IDEs $(to)/
+	cabal install --bindir=$(to) $(GPLK_LIBS_INCLUDES) $(MAC_USR_LIB)
 
 # build Schema.hs from ClaferIG.xsd, call after .xsd changed
 Schema.hs:
