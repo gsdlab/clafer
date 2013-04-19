@@ -61,15 +61,18 @@ The following tools are not part of the binary distribution and they have to be 
 3. copy alloy's jars to the `<target directory>/tools` folder
 
 On Linux
+
 1. [libglpk-dev](http://www.gnu.org/software/glpk/) v4.49
-  * `sudo apt-get install libglpk-dev` on Ubuntu
+  * execute `sudo apt-get install libglpk-dev` on Ubuntu
 
 On Windows
+
 1. The binary distribution already includes the GNU Linear Programming Kit DLL `glpk_4_49.dll`.
 
 On Mac
+
 1. install GPLK from [MacPorts](http://www.macports.org/)
-2. execute `port install glpk`
+  * execute `sudo port install glpk +universal`
 
 Integration with Sublime Text 2
 -------------------------------
