@@ -77,7 +77,7 @@ On Mac
 Integration with Sublime Text 2
 -------------------------------
 
-See [IDEs/README.md](IDEs/README.md)
+See [IDEs/clafer-README.md](IDEs/clafer-README.md)
 
 Building & Installation From Source Code
 ----------------------------------------
