@@ -9,12 +9,18 @@ endif
 ifeq ($(UNAME), windows)
 	GPLK_LIBS_INCLUDES := --extra-include-dirs=$(glpk)/src --extra-include-dirs=$(glpk)/src/amd --extra-include-dirs=$(glpk)/src/colamd --extra-include-dirs=$(glpk)/src/minisat --extra-include-dirs=$(glpk)/src/zlib --extra-lib-dirs=$(glpk)/w32	
 endif
+ifeq ($(UNAME), msys)
+	GPLK_LIBS_INCLUDES := --extra-include-dirs=$(glpk)/src --extra-include-dirs=$(glpk)/src/amd --extra-include-dirs=$(glpk)/src/colamd --extra-include-dirs=$(glpk)/src/minisat --extra-include-dirs=$(glpk)/src/zlib --extra-lib-dirs=$(glpk)/w32	
+endif
+ifeq ($(UNAME), darwin)
+	MAC_USR_LIB := --extra-lib-dir=/usr/lib
+endif
 
 all: build
 
 build:
 	$(MAKE) -C $(TOOL_DIR)
-	cabal install --only-dependencies $(GPLK_LIBS_INCLUDES)
+	cabal install --only-dependencies $(GPLK_LIBS_INCLUDES) $(MAC_USR_LIB)
 	cabal configure
 	cabal build
 	cp dist/build/clafer/clafer .
@@ -22,7 +28,6 @@ build:
 install:  
 	mkdir -p $(to)
 	mkdir -p $(to)/tools
-	cabal install --bindir=$(to) $(GPLK_LIBS_INCLUDES)
 	cp -f README.md $(to)/clafer-README.md
 	cp -f LICENSE $(to)/
 	cp -f CHANGES.md $(to)/clafer-CHANGES.md
@@ -30,6 +35,9 @@ install:
 	cp -f tools/alloy4.2.jar $(to)/tools
 	cp -f tools/XsdCheck.class $(to)/tools
 	cp -f tools/ecore2clafer.jar $(to)/tools
+	cp -f -R IDEs $(to)/
+	if test "$(glpk)" ; then cp -f $(glpk)/w32/glpk_4_49.dll $(to); fi
+	cabal install --bindir=$(to) $(GPLK_LIBS_INCLUDES) $(MAC_USR_LIB)
 
 # build Schema.hs from ClaferIG.xsd, call after .xsd changed
 Schema.hs:

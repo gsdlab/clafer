@@ -13,7 +13,8 @@ This build system assumes that Clafer executable is in system `PATH` and is auto
 
 ### Installation 
 
-1. Copy `Packages\User\clafer.sublime-build` into your home directory Sublime Text 2 folder.
+1. Copy the folder `User` from `IDEs\sublime-text-2\Packages` to the folder `Packages` in Sublime Text 2 folder inside your home directory.
 
-> Note: on Windows 7 and 8, the folder is `<user name>\AppData\Roaming\Sublime Text 2\Packages\User`.
-
+> Note: 
+> on Windows 7 and 8, the folder is `<user name>\AppData\Roaming\Sublime Text 2\Packages`.
+> on Mac, the folder is `~/Library/Application Support/Sublime Text 2/Packages`

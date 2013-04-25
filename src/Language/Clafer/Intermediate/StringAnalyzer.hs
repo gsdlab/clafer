@@ -53,6 +53,8 @@ astrPExp x = case x of
     PExp (Just TInteger) pid pos `liftM` astrIExp exp
   PExp t pid pos (IFunExp op exps) -> PExp t pid pos `liftM`
                               (IFunExp op `liftM` mapM astrPExp exps)
+  PExp t pid pos (IDeclPExp quant oDecls bpexp) -> PExp t pid pos `liftM`
+                              (IDeclPExp quant oDecls `liftM` (astrPExp bpexp))
   _ -> return x
 
 astrIExp x = case x of

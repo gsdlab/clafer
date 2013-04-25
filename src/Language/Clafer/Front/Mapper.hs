@@ -213,7 +213,7 @@ instance Mappable Exp where
   mapNode (QuantExp quant exp)           = doMap2 PosQuantExp quant exp
   mapNode (EAdd exp0 exp1)               = doMap2 PosEAdd exp0 exp1
   mapNode (ESub exp0 exp1)               = doMap2 PosESub exp0 exp1
-  mapNode (EMul exp0 exp1)               = doMap2 PosESub exp0 exp1
+  mapNode (EMul exp0 exp1)               = doMap2 PosEMul exp0 exp1
   mapNode (EDiv exp0 exp1)               = doMap2 PosEDiv exp0 exp1
   mapNode (PosECSetExp s exp)            = doMapWithSpan PosECSetExp s exp
   mapNode (PosEMinExp s exp)             = doMapWithSpan PosEMinExp s exp  
