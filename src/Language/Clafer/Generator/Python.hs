@@ -208,9 +208,9 @@ genPythonITypeType x = case x of
   TString -> "String"
   TInteger -> "Integer"
   TReal -> "Real"
-  TClafer -> "Set"
+  TClafer _-> "Set"
   -- In the future, TRef might be needed in the Python IR.
   -- For now, keep it simple.
-  TRef t -> genPythonITypeType t
+  --TRef t -> genPythonITypeType t
 
 genPythonIType x = concat [ "my_type=\"", (genPythonITypeType x), "\"" ]
