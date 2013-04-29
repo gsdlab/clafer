@@ -64,7 +64,7 @@ data HowResolved =
   | TopClafer   -- non-abstract top-level clafer
   deriving (Eq, Show)
   
-type Resolve = Either ClaferSErr HowResolved
+type Resolve = Either ClaferSErr
 
 -- initialize the cache (env)
 defSEnv genv declarations = env {aClafers = rCl aClafers',
