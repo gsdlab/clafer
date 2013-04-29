@@ -118,24 +118,27 @@ Development versions `clafer/develop` and `claferIG/develop` should work well to
 ### Building
 
 1. install the dependencies
-2. in some `<source directory>` of your choice, execute `git clone git://github.com/gsdlab/clafer.git`
-3. in `<source directory>/clafer`, execute
+2. open the command line terminal. On Windows, open MinGW.
+3. in some `<source directory>` of your choice, execute 
+  * `git clone git://github.com/gsdlab/clafer.git`
+4. in `<source directory>/clafer`, execute
   * `cabal update`
-4a. On Linux and Mac
+5. On Linux and Mac execute 
   * `make`
-4b. On Windows (in MinGW)
+6. On Windows (in MinGW), execute 
   * `make glpk="/c/<your WinGLPK install dir>/winglpk-4.49"`
 
 ### Installation
 
-1a. On Linux and Mac execute 
-  *`make install to=<target directory>`
-1b. On Windows (in MinGW)
+1. On Linux and Mac execute 
+  * `make install to=<target directory>` 
+2. On Windows (in MinGW), execute 
   * `make glpk="/c/<your WinGLPK instal dir>/winglpk-4.49" to=/c/<target directory>`  
-2. add the `<target directory>` to your system PATH
+3. add the `<target directory>` to your system PATH
 
 On Windows only
-3. copy GLPK's dll `glpk-0.4.49.dll` to the `<target directory>` folder or any other folder on the system path
+
+* copy GLPK's dll `glpk-0.4.49.dll` to the `<target directory>` folder or any other folder on the system path
 
 #### Note: 
 > On Windows, use `/` with the `make` command instead of `\`.
