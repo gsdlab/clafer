@@ -52,7 +52,7 @@ The following tools are not part of the binary distribution and they have to be 
 * [Alloy4.1 and/or Alloy4.2](http://alloy.mit.edu/alloy/download.html)
 * [GraphViz](http://graphviz.org/)
   * `dot` is needed only in the `html` mode for SVG graph generation
-* [GNU Linear Programming Kit](www.gnu.org/software/glpk/) v4.49
+* [GNU Linear Programming Kit](http://www.gnu.org/software/glpk/) v4.49
 
 ### Installation
 
