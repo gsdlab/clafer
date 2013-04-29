@@ -40,6 +40,7 @@ import Language.Clafer.Front.Absclafer
 import Language.Clafer.Intermediate.Intclafer
 import qualified Language.Clafer.Intermediate.Intclafer as I
 
+-- this environment is created for each clafer 
 data SEnv = SEnv {
   clafers :: [IClafer],                 -- (constant) top level clafers
   context :: Maybe IClafer,             -- context of a constraint
@@ -63,9 +64,9 @@ data HowResolved =
   | TopClafer   -- non-abstract top-level clafer
   deriving (Eq, Show)
   
-type Resolve = Either ClaferSErr
+type Resolve = Either ClaferSErr HowResolved
 
-
+-- initialize the cache (env)
 defSEnv genv declarations = env {aClafers = rCl aClafers',
                                  cClafers = rCl cClafers'}
   where
@@ -105,10 +106,8 @@ checkListDuplicates' ((a,b):(c,d):rest) = if a == c then
                                     checkListDuplicates' ((c,d):rest)
                                     
 isIEClafer :: IElement -> Bool
-isIEClafer element =
-  case element of
-    IEClafer _ -> True
-    otherwise -> False
+isIEClafer (IEClafer _) = True
+isIEClafer _            = False
 
 resolveModuleNames :: (IModule, GEnv) -> Resolve IModule
 resolveModuleNames (imodule, genv) =
@@ -184,6 +183,7 @@ resolveNav pos env x isFirst = case x of
       | otherwise = mkPath' modName <$> resolveImmName pos env id
   x -> throwError $ SemanticErr pos $ "Cannot resolve nav of " ++ show x 
 
+-- depending on how resolved construct a path
 mkPath :: SEnv -> (HowResolved, String, [IClafer]) -> (IExp, [IClafer])
 mkPath env (howResolved, id, path) = case howResolved of
   Binding -> (mkLClaferId id True, path)
@@ -225,6 +225,8 @@ resolveImmName pos env id = resolve env id
   [resolveSpecial, resolveChildren pos, resolveReference pos, resolveNone pos]
 
 
+-- when one strategy fails, we want to move to the next one
+resolve :: (Monad f, Functor f) => SEnv -> String -> [SEnv -> String -> f (Maybe b)] -> f b
 resolve env id fs = fromJust <$> (runMaybeT $ msum $ map (\x -> MaybeT $ x env id) fs)
 
 
@@ -288,9 +290,10 @@ resolveTopLevel pos env id = runMaybeT $ foldr1 mplus $ map
   (\(cs, hr) -> MaybeT (findUnique pos id cs) >>= (liftMaybe . toMTriple hr))
   [(aClafers env, AbsClafer), (cClafers env, TopClafer)]
 
-
+toNodeDeep :: SEnv -> ((IClafer, [IClafer]), [SEnv])
+              -- ((curr. clafer, resolution path), remaining children to traverse)
 toNodeDeep env
-  | length (clafer `elemIndices` resPath env) > 1 = (result, [])
+  | length (clafer `elemIndices` resPath env) > 1 = (result, [])  -- cut bfs recusion in case clafer repeats
   | otherwise = (result, map (\c -> env {context = Just c,
                                          resPath = c : resPath env}) $
                  allInhChildren env)
@@ -299,8 +302,10 @@ toNodeDeep env
   clafer = fromJust $ context env
   
 
+-- return children and inherited children but no children of reference targets
 allInhChildren = selectChildren getSuperNoArr
 
+-- return all children including inherited children children of reference targets
 allChildren = selectChildren getSuper
 
 selectChildren f env = getSubclafers $ concat $
