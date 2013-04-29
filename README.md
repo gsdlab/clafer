@@ -105,7 +105,7 @@ On Windows
 
 On Mac only
 1. install GPLK 4.49 from [MacPorts](http://www.macports.org/)
-2. execute `port install glpk`
+2. execute `sudo port install glpk +universal`
 
 ### Important: Branches must correspond
 
