@@ -2,8 +2,6 @@ UNAME := $(shell uname | tr "A-Z" "a-z")
 
 ifeq ($(UNAME), darwin)
     WGET_COMMAND := curl -O
-else ifeq ($(UNAME), mingw32_nt-6.2)
-	WGET_COMMAND := curl -O
 else
 	WGET_COMMAND := wget
 endif
