@@ -38,7 +38,7 @@ tagType name typename exp = opening ++ rest
     | null exp =" />"
     | otherwise = concat [">", exp, "</", name, ">"]
 
-genPythonInteger n = show n -- might need to include IntegerLiteral
+genPythonInteger n = concat ["IntegerLiteral.IntegerLiteral(", show n, ")" ] -- might need to include IntegerLiteral
 
 
 isNull [] = "\"\""
@@ -48,7 +48,7 @@ boolHelper (x:xs) = toUpper x : xs
 
 genPythonBoolean label b = concat [label, "=", boolHelper $ toLowerS $ show b]
 
-genPythonString str =  show str -- might need to include StringLiteral
+genPythonString str = concat [ "StringLiteral.StringLiteral(", show str, ")"] -- might need to include StringLiteral
 
 genPythonIntPair (x, y) = concat
   [ "(", genPythonInteger x 
@@ -64,11 +64,14 @@ genPythonModule imodule = concat
   , "from ast import Exp\n"
   , "from ast import Declaration\n"
   , "from ast import LocalDeclaration\n"
-  , "from ast import Constraint\n"
+  , "from ast import IRConstraint\n"
   , "from ast import FunExp\n"
   , "from ast import ClaferId\n"
   , "from ast import DeclPExp\n"
   , "from ast import Goal\n\n"
+  , "from ast import IntegerLiteral\n"
+  , "from ast import DoubleLiteral\n"
+  , "from ast import StringLiteral\n"
   , "def getModule():\n"
   , "\tstack = []\n"
   , "\tmodule = Module.Module(\"\")\n"
@@ -124,7 +127,7 @@ genPythonGlCard interval = concat ["globalCard=", genPythonInterval interval]
 genPythonElement x = case x of
   IEClafer clafer  -> concat ["##### clafer #####\n" ,genPythonClafer clafer]
   IEConstraint isHard pexp  -> concat
-                         [ "##### constraint #####\n", "\tconstraint = Constraint.Constraint(" , genPythonBoolean "isHard" isHard , " ,"
+                         [ "##### constraint #####\n", "\tconstraint = IRConstraint.IRConstraint(" , genPythonBoolean "isHard" isHard , " ,"
                          , " exp=", genPythonPExp "ParentExp" pexp , ")\n"
                          , "\tstack[-1].addElement(constraint)\n"]
   IEGoal isMaximize pexp -> concat 
@@ -139,7 +142,7 @@ genPythonAnyOp ft f xs = concatMap
 
 
 genPythonPExp tagName (PExp iType pid pos iexp) = concat
-  [ "\n\t\tExp.Exp","(expType=\"", tagName, "\", ", maybe "" genPythonIType iType
+  [ "\n\t\tExp.Exp","(expType=\"", tagName, "\", ", maybe "my_type=\"\"" genPythonIType iType
   , ", parentId=\"", pid, "\""
   , ", " , genPythonPosition pos
   , ", iExpType=\"" , genPythonIExpType iexp , "\"" 
@@ -171,7 +174,7 @@ genPythonIExp x = case x of
     , "declaration=", declHelper decls
     , "bodyParentExp=" , genPythonPExp "BodyParentExp" pexp, ")"]
   IFunExp op exps -> concat
-    [ "FunExp.FunExp(operation=\"" , op , "\", elements="
+    [ "FunExp.FunExp(operation=\"" , (if op == "-" && length exps == 1 then "UNARY_MINUS" else op) , "\", elements="
     , "[", concatMap (\x -> genPythonPExp "Argument" x ++",") (init exps) , genPythonPExp "Argument" (last exps) ,"])" ]
     where
     escape '\"'="&quot;"
@@ -181,7 +184,7 @@ genPythonIExp x = case x of
     escape '&' ="&amp;"
     escape x    = [x]
   IInt n -> genPythonInteger n
-  IDouble n ->  show n --DoubleLiteral
+  IDouble n ->  concat [ "DoubleLiteral.DoubleLiteral(", show n, ")"] --DoubleLiteral
   IStr str -> genPythonString str  
   IClaferId modName sident isTop -> concat
     [ "ClaferId.ClaferId(moduleName=\"", modName , "\", "

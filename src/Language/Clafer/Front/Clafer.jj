@@ -1,0 +1,408 @@
+//JavaCC specification for clafer scanner/parser
+//***NOT WELL TESTED!***
+//***NOT PART OF CLAFER IMPLEMENTATION*** 
+//Lookahead of 3 seems to work for the few examples I tried
+//removed empty enums from grammar
+//factored Card and NCard to not have common PosInteger prefix, although
+//  since the grammar is not LL(1), it doesn't really matter
+//Expressions need to be checked that they are working correctly
+
+options {
+  LOOKAHEAD = 3;
+/*  CHOICE_AMBIGUITY_CHECK = 2;
+  OTHER_AMBIGUITY_CHECK = 1;
+  STATIC = true;
+  DEBUG_PARSER = false;
+  DEBUG_LOOKAHEAD = false;
+  DEBUG_TOKEN_MANAGER = false;
+  ERROR_REPORTING = true;
+  JAVA_UNICODE_ESCAPE = false;
+  UNICODE_INPUT = false;
+  IGNORE_CASE = false;
+  USER_TOKEN_MANAGER = false;
+  USER_CHAR_STREAM = false;
+  BUILD_PARSER = true;
+  BUILD_TOKEN_MANAGER = true;
+  SANITY_CHECK = true;
+  FORCE_LA_CHECK = false; */
+}
+
+PARSER_BEGIN(Clafer)
+
+/** Simple brace matcher. */
+public class Clafer {
+
+  /** Main entry point. */
+  public static void main(String args[]) throws ParseException {
+    Clafer parser = new Clafer(System.in);
+    parser.Input();
+  }
+
+}
+
+PARSER_END(Clafer)
+
+SKIP :
+{
+  " "
+| "\t"
+| "\n"
+| "\r"
+| <"//" (~["\n","\r"])* ("\n" | "\r" | "\r\n")>
+}
+
+
+TOKEN :
+{
+  <NOT: "not"> |
+  <IN: "in"> |
+  <SUM: "sum"> |
+  <DIVIDE: "/"> | 
+  <POUND: "#"> |
+  <COMMA: ","> |
+  <DOT: "."> |
+  <ENUM: "enum"> |
+  <EQ: "="> |
+  <LSB: "["> |
+  <RSB: "]"> |
+  <LPAREN: "("> |
+  <RPAREN: ")"> |
+  <LDARROW: "<<"> |
+  <RDARROW: ">>"> |
+  <ABSTRACT: "abstract"> |
+  <BACKTICK: "`"> |
+  <LSQUIGGLE: "{" > |
+  <RSQUIGGLE: "}" > |
+  <COLON: ":"> |
+  <ARROW: "->" > |
+  <DARROW: "->>"> |
+  <COLONEQ: ":="> |
+  <XOR: "xor"> |
+  <OR: "or"> |
+  <MUX: "mux"> |
+  <OPT: "opt"> |
+  <QUESTION: "?"> |
+  <PLUS: "+"> |
+  <TIMES: "*"> |
+  <DOTDOT: ".."> |
+  <DISJ: "disj"> |
+  <SINGLEOR: "|"> |
+  <DOUBLEOR: "||"> |
+  <BANG: "!"> |
+  <BACKSLASH: "\\"> |
+  <SEMICOLON: ";"> |
+  <MAX: "max"> |
+  <MIN: "min"> |
+  <EQUIV: "<=>"> |
+  <IMPLIES: "=>"> |
+  <INC: "++"> |
+  <DEC: "--"> |
+  <MINUS: "-"> |
+  <AND: "&"> |
+  <DOUBLEAND: "&&"> |
+  <IF: "if"> |
+  <THEN: "then"> |
+  <ELSE: "else"> |
+  <LTCOLON: "<:"> |
+  <COLONGT: ":>"> |
+  <ALL: "all"> |
+  <NO: "no"> |
+  <LONE: "lone"> |
+  <ONE: "one"> |
+  <SOME: "some"> |
+  <POSIDENT: ["a"-"z","A"-"Z"] ( ["a"-"z","A"-"Z","0"-"9"] )* > |
+  <POSINTEGER: ["0"-"9"](["0"-"9"])* > |
+  <POSSTRING: "\"" ( ["a"-"z","A"-"Z","0"-"9","_"] )* "\""> 
+}
+
+
+/** Root production. */
+void Input() :
+{}
+{
+  Module()  <EOF>
+}
+
+void Module() :
+{}
+{
+   (Declaration())* 
+}
+
+void Declaration() :
+{}
+{
+   <ENUM> <POSIDENT> <EQ> EnumId() (<SINGLEOR> EnumId())* |
+   Element()
+}
+
+void Clafer() :
+{}
+{
+   Abstract() GCard() <POSIDENT> Super() Card() Init() Elements()
+}
+
+void Constraint():
+{}
+{
+   <LSB> (Exp())* <RSB>
+}
+
+void SoftConstraint():
+{}
+{
+   <LPAREN> (Exp())* <RPAREN>
+}
+
+void Goal():
+{}
+{
+   <LDARROW> (Exp())* <RDARROW>
+}
+
+void Abstract():
+{}
+{
+   (<ABSTRACT>)?
+}
+
+void Elements():
+{}
+{
+   (<LSQUIGGLE> (Element())* <RSQUIGGLE>)?
+}
+
+void Element():
+{}
+{
+   Clafer() | 
+   <BACKTICK> Name() Card() Elements() |
+   Constraint() |
+   Goal() |
+   SoftConstraint()  
+}
+
+void Super():
+{}
+{
+   (SuperHow() SetExp())?
+}
+
+void SuperHow():
+{}
+{
+   <COLON> | <ARROW> | <DARROW>
+}
+
+void Init():
+{}
+{
+   (InitHow() Exp())?
+}
+
+void InitHow():
+{}
+{
+   <EQ> | <COLONEQ>
+}
+
+void GCard():
+{}
+{
+   (<XOR>|<OR>|<MUX>|<OPT>|NCard())?
+}
+
+void Card():
+{}
+{
+   (<QUESTION>|<PLUS>|<TIMES>|NCard())?
+}
+
+void NCard():
+{}
+{
+   <POSINTEGER> (<DOTDOT> ExInteger())?
+}
+
+void ExInteger():
+{}
+{
+   <TIMES> | <POSINTEGER>
+}
+
+void Name():
+{}
+{
+   (ModId() (<BACKSLASH> (ModId()))*)//?
+}
+
+void Exp():
+{}
+{
+   Exp1() | 
+   <ALL> <DISJ> Decl() <SINGLEOR> Exp() | 
+   <ALL> Decl() <SINGLEOR> Exp() |
+   Quant() <DISJ> Decl() <SINGLEOR> Exp() |
+   Quant() Decl() <SINGLEOR> Exp()
+}
+
+void Exp1():
+{}
+{
+   <MAX> Exp() | 
+   <MIN> Exp() |
+   Exp2() (<EQUIV> Exp1())*
+}
+
+void Exp2():
+{}
+{
+   Exp3() (<IMPLIES> Exp2())*
+}
+
+void Exp3():
+{}
+{
+   Exp4() (<DOUBLEOR> Exp3())*
+}
+
+void Exp4():
+{}
+{
+   Exp5() (<XOR> Exp4())*
+}
+
+void Exp5():
+{}
+{
+   Exp6() (<DOUBLEAND> Exp5())*
+}
+
+void Exp6():
+{}
+{
+   Exp7() |
+   <BANG> Exp()
+}
+
+void Exp7():
+{}
+{
+   Exp8() (("<"|">"|"<="|">="|"="|"!="|"in") Exp7())* |
+   Exp8() <NOT> <IN> Exp8()
+}
+
+void Exp8():
+{}
+{
+   Exp9() | 
+   Quant() Exp()    
+}
+
+void Exp9():
+{}
+{
+   Exp10() ((<PLUS>|<MINUS>) Exp9())*
+}
+
+void Exp10():
+{}
+{
+   Exp11() ((<TIMES>|<DIVIDE>) Exp10())*
+}
+
+void Exp11():
+{}
+{
+   Exp12() |
+   <SUM> Exp12() |
+   <POUND> Exp12() |
+   <MINUS> Exp12() 
+}
+
+void Exp12():
+{}
+{
+   Exp13() |
+   <IF> Exp() <THEN> Exp() <ELSE> Exp()
+}
+
+void Exp13():
+{}
+{
+   <POSINTEGER> | <POSSTRING> | // <POSDOUBLE> |
+   SetExp()
+}
+
+
+void SetExp():
+{}
+{
+   SetExp1() ((<INC>|<COMMA>) SetExp())*
+}
+
+void SetExp1():
+{}
+{
+   SetExp2() (<DEC> SetExp1())*
+}
+
+void SetExp2():
+{}
+{
+   SetExp3() (<AND> SetExp2())*   
+}
+
+void SetExp3():
+{}
+{
+   SetExp4() (<LTCOLON> SetExp3())*
+}
+
+void SetExp4():
+{}
+{
+   SetExp5() (<COLONGT> SetExp4())*
+}
+
+void SetExp5():
+{}
+{
+   SetExp6() (<DOT> SetExp5())*
+}
+
+void SetExp6():
+{}
+{
+   Name()
+}
+
+void Decl():
+{}
+{
+   (LocId() (<SEMICOLON> LocId())*)? <COLON> SetExp()
+}
+
+void Quant():
+{}
+{
+   <NO>|<LONE>|<ONE>|<SOME>
+}
+
+void EnumId():
+{}
+{
+   <POSIDENT>
+}
+
+void ModId():
+{}
+{
+   <POSIDENT>
+}
+
+void LocId():
+{}
+{
+   <POSIDENT>
+}
