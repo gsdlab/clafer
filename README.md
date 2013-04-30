@@ -127,14 +127,14 @@ Development versions `clafer/develop` and `claferIG/develop` should work well to
 5. On Linux and Mac execute 
   * `make`
 6. On Windows (in MinGW), execute 
-  * `make glpk="/c/<your WinGLPK install dir>/winglpk-4.49"`
+  * `make glpk="/c/<your WinGLPK install dir>"`
 
 ### Installation
 
 1. On Linux and Mac execute 
   * `make install to=<target directory>` 
 2. On Windows (in MinGW), execute 
-  * `make glpk="/c/<your WinGLPK instal dir>/winglpk-4.49" to=/c/<target directory>`  
+  * `make glpk="/c/<your WinGLPK instal dir>" to=/c/<target directory>`  
 3. add the `<target directory>` to your system PATH
 
 On Windows only
