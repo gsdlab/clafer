@@ -1,0 +1,11 @@
+// Tests a larger chain of circularly inherited clafer
+//
+// Expected output:
+//   Type/Name Resolution Error
+
+abstract A : B
+abstract B : C
+abstract C : A
+
+
+ 
