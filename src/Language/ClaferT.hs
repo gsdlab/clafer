@@ -25,7 +25,7 @@
  - ClaferEnv can just import this module without all the parsing/compiline/generating
  - functionality.
  -}
-module Language.ClaferT (ClaferEnv(..), makeEnv, ast, ir, ClaferM, ClaferT, CErr(..), CErrs(..), ClaferErr(..), ClaferErrs(..), ClaferSErr(..), ClaferSErrs(..), ErrPos(..), PartialErrPos(..), throwErrs, throwErr, catchErrs, getEnv, getsEnv, modifyEnv, putEnv, runClafer, runClaferT, Throwable(..), Span(..), Pos(..)) where
+module Language.ClaferT (ClaferEnv(..), makeEnv, ast, ir, ClaferM, ClaferT, CErr(..), CErrs(..), ClaferErr(..), ClaferErrs(..), ClaferSErr(..), ClaferSErrs(..), ErrPos(..), PartialErrPos(..), throwErrs, throwErr, catchErrs, getEnv, getsEnv, modifyEnv, putEnv, runClafer, runClaferT, Throwable(..), Span(..), Pos(..), emptyEnv) where
 
 import Control.Monad.Error
 import Control.Monad.State
@@ -76,7 +76,7 @@ data ClaferEnv = ClaferEnv {
                             frags :: [Pos],    -- line numbers of fragment markers
                             irModuleTrace :: Map Span [Ir],
                             astModuleTrace :: Map Span [Ast]
-                            } deriving Show
+                            } deriving (Show, Eq)
 
 ast ClaferEnv{cAst = Just a} = a
 ast _ = error "No AST. Did you forget to add fragments or parse?" -- Indicates a bug in the Clafer translator.
@@ -283,3 +283,5 @@ runClaferT args exec =
 -- Convenience
 runClafer :: ClaferArgs -> ClaferM a -> Either [ClaferErr] a
 runClafer args = runIdentity . runClaferT args
+
+emptyEnv = ClaferEnv emptyClaferArgs [] Nothing Nothing [] Map.empty Map.empty

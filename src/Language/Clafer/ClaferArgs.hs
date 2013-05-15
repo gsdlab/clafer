@@ -57,7 +57,7 @@ data ClaferArgs = ClaferArgs {
       add_comments :: Maybe Bool,
       ecore2clafer :: Maybe Bool,      
       file :: FilePath
-    } deriving (Show, Data, Typeable)
+    } deriving (Show, Data, Typeable, Eq)
 
 clafer = ClaferArgs {
   mode                = def &= help "Generated output type. Available CLAFERMODEs are: 'alloy' (default, Alloy 4.1); 'alloy42' (Alloy 4.2); 'xml' (intermediate representation of Clafer model); 'clafer' (analyzed and desugared clafer model); 'html' (original model in HTML); 'graph' (graphical representation written in DOT language); 'cvlgraph' (cvl notation representation written in DOT language)" &= name "m",
