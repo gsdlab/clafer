@@ -284,4 +284,4 @@ runClaferT args exec =
 runClafer :: ClaferArgs -> ClaferM a -> Either [ClaferErr] a
 runClafer args = runIdentity . runClaferT args
 
-emptyEnv = ClaferEnv emptyClaferArgs [] Nothing Nothing [] Map.empty Map.empty
+emptyEnv = makeEnv emptyClaferArgs

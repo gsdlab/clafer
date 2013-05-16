@@ -1,5 +1,7 @@
-module Language.SnapShots (SnapShot(..), emptySnapShot, takeSnapshot) where
+module Language.SnapShots (SnapShots(..), emptySnapShots,getSnapShots, putSnapShots) where
 
+import Control.Monad.Error
+import Control.Monad.State
 import Language.ClaferT
 
 data SnapShots = SnapShots 	{ lexed :: ClaferEnv
@@ -7,42 +9,54 @@ data SnapShots = SnapShots 	{ lexed :: ClaferEnv
 							, parsed :: ClaferEnv
 							, mapped :: ClaferEnv
 							, desugared :: ClaferEnv
+							, foundDuplicates :: ClaferEnv
 							, resolved :: ClaferEnv 
+							, transformed :: ClaferEnv
+							, scopeAnalizaed :: ClaferEnv
 							, compiled :: ClaferEnv
 							, generated :: ClaferEnv
 							} deriving (Show, Eq)
 
-emptySnapShot = SnapShots emptyEnv emptyrEnv emptyEnv emptyEnv emptyEnv emptyEnv emptyEnv emptyEnv
+emptySnapShots = SnapShots emptyEnv emptyEnv emptyEnv emptyEnv emptyEnv emptyEnv emptyEnv emptyEnv emptyEnv emptyEnv emptyEnv
+
+type ClaferST m = ErrorT ClaferErrs (StateT SnapShots m)
+
+getSnapShots :: Monad m => ClaferST m SnapShots
+getSnapShots = get 
+
+putSnapShots :: Monad m => SnapShots -> ClaferST m ()
+putSnapShots = put
 
 
-ssAdd :: snapShots -> ClaferEnv -> SnapShots
-ssAdd s e
-	| lexed s 			== emptyEnv	= SnapShots e emptyEnv emptyEnv emptyEnv emptyEnv emptyEnv emptyEnv emptyEnv
-	| layoutResolved s 	== emptyEnv	= SnapShots (lexed s) e emptyEnv emptyEnv emptyEnv emptyEnv emptyEnv emptyEnv
-	| pasred s 			== emptyEnv	= SnapShots (lexed s) (layoutResolved s) e emptyEnv emptyEnv emptyEnv emptyEnv emptyEnv
-	| mapped s 			== emptyEnv = SnapShots (lexed s) (layoutResolved s) (pasred s) e emptyEnv emptyEnv emptyEnv emptyEnv
-	| desugared s 		== emptyEnv = SnapShots (lexed s) (layoutResolved s) (pasred s) (mapped s) e emptyEnv emptyEnv emptyEnv
-	| resolved s 		== emptyEnv = SnapShots (lexed s) (layoutResolved s) (pasred s) (mapped s) (desugared s) e emptyEnv emptyEnv
-	| compiled s 		== emptyEnv = SnapShots (lexed s) (layoutResolved s) (parsed s) (mapped s) (desugared s) (resolved s) e emptyEnv
-	| otherwise 					= SnapShots (lexed s) (layoutResolved s) (parsed s) (mapped s) (desugared s) (resolved s) (compiled s) e
 
-takeSnapShot :: SnapShots
-takeSnapShot = do
-	env <- getEnv
-	return $ ssAdd emptySnapShot env
+sAdd :: SnapShots -> ClaferEnv -> SnapShots
+sAdd s e
+	| lexed s 			== emptyEnv	= s {lexed = e}
+	| layoutResolved s 	== emptyEnv	= s {layoutResolved = e}
+	| parsed s 			== emptyEnv = s {parsed = e}
+	| mapped s 			== emptyEnv = s {mapped = e}
+	| desugared s 		== emptyEnv = s {desugared = e}
+	| foundDuplicates s == emptyEnv = s {foundDuplicates = e}
+	| resolved s 		== emptyEnv = s {resolved = e}
+	| transformed s 	== emptyEnv = s {transformed = e}
+	| scopeAnalizaed s	== emptyEnv	= s {scopeAnalizaed = e}
+	| compiled s 		== emptyEnv = s {compiled = e}
+	| otherwise						= s {generated = e}
 
+
+takeSnapShot :: Monad m => ClaferST m ()
+takeSnapShot = 
+	do
+		oldSnapShots <- getSnapShots
+		--env <- getEnv
+		newSnapShots <- return $ sAdd oldSnapShots emptyEnv
+		putSnapShots newSnapShots
 
 {-
-claferEnvSnapShot = snapShot
+takeSnapshot = 	getSnapShots >>= (\oldSnapShots ->
+				getEnv >>= (\env ->
+				(return $ sAdd oldSnapShots env) >>= (\newSnapShots ->
+				putSnapShots newSnapShots)))
 
-takeSnapshot = dp
-	env <- getEnv
-	return $ claferEnvSnapShot env
--}
-
-
-
-
-
-
-
+takeSnapshot = 	getSnapShots >>= (\oldSnapShots -> getEnv >>= (\env -> (return $ sAdd oldSnapShots env) >>= (\newSnapShots -> putSnapShots newSnapShots)))
+-}	
