@@ -25,10 +25,11 @@
  - ClaferEnv can just import this module without all the parsing/compiline/generating
  - functionality.
  -}
-module Language.ClaferT (ClaferEnv(..), makeEnv, ast, ir, ClaferM, ClaferT, CErr(..), CErrs(..), ClaferErr(..), ClaferErrs(..), ClaferSErr(..), ClaferSErrs(..), ErrPos(..), PartialErrPos(..), throwErrs, throwErr, catchErrs, getEnv, getsEnv, modifyEnv, putEnv, runClafer, runClaferT, Throwable(..), Span(..), Pos(..), emptyEnv) where
+module Language.ClaferT (ClaferEnv(..), makeEnv, ast, ir, ClaferM, ClaferT, CErr(..), CErrs(..), ClaferErr(..), ClaferErrs(..), ClaferSErr(..), ClaferSErrs(..), ErrPos(..), PartialErrPos(..), throwErrs, throwErr, catchErrs, getEnv, getsEnv, modifyEnv, putEnv, runClafer, runClaferT, Throwable(..), Span(..), Pos(..), emptyEnv,emptySnapShots,SnapShots,takeSnapShot) where
 
 import Control.Monad.Error
 import Control.Monad.State
+import Control.Monad.Writer
 import Control.Monad.Identity
 import Data.List
 import Data.Map (Map)
@@ -83,9 +84,9 @@ ast _ = error "No AST. Did you forget to add fragments or parse?" -- Indicates a
 
 ir ClaferEnv{cIr = Just i} = i
 ir _ = error "No IR. Did you forget to compile?" -- Indicates a bug in the Clafer translator.
-                            
-                            
-                            
+
+
+
 makeEnv args = ClaferEnv { args = args',
                            modelFrags = [],
                            cAst = Nothing,
@@ -99,9 +100,14 @@ makeEnv args = ClaferEnv { args = args',
                                Just Graph    -> args{keep_unused=Just True}
                                _             -> args
 
+
+type SnapShots = (Map.Map String ClaferEnv) 
+takeSnapShot env p = tell $ Map.singleton p env 
+
+
 type ClaferM = ClaferT Identity
 -- Monad for using Clafer.
-type ClaferT m = ErrorT ClaferErrs (StateT ClaferEnv m)
+type ClaferT m = ErrorT ClaferErrs (StateT SnapShots (StateT ClaferEnv m))
 
 type ClaferErr = CErr ErrPos
 type ClaferErrs = CErrs ErrPos
@@ -256,25 +262,26 @@ inSpan pos (PosSpan _ s e)  = inSpan pos (Span s e)
 
 -- Get the ClaferEnv
 getEnv :: Monad m => ClaferT m ClaferEnv
-getEnv = get
+getEnv = lift $ lift  get
 
 getsEnv :: Monad m => (ClaferEnv -> a) -> ClaferT m a
-getsEnv = gets
+getsEnv = lift . lift . gets 
 
 -- Modify the ClaferEnv
 modifyEnv :: Monad m => (ClaferEnv -> ClaferEnv) -> ClaferT m ()
-modifyEnv = modify
+modifyEnv = lift . lift . modify
 
 -- Set the ClaferEnv. Remember to set the env after every change.
 putEnv :: Monad m => ClaferEnv -> ClaferT m ()
-putEnv = put
+putEnv = lift . lift . put 
+
 
 -- Uses the ErrorT convention:
 --   Left is for error (a string containing the error message)
 --   Right is for success (with the result)
 runClaferT :: Monad m => ClaferArgs -> ClaferT m a -> m (Either [ClaferErr] a)
 runClaferT args exec =
-  mapLeft errs `liftM` evalStateT (runErrorT exec) (makeEnv args)
+  mapLeft errs `liftM` evalStateT (evalStateT (runErrorT exec) emptySnapShots) (makeEnv args)
   where
   mapLeft :: (a -> c) -> Either a b -> Either c b
   mapLeft f (Left l) = Left (f l)
@@ -282,6 +289,7 @@ runClaferT args exec =
 
 -- Convenience
 runClafer :: ClaferArgs -> ClaferM a -> Either [ClaferErr] a
-runClafer args = runIdentity . runClaferT args
+runClafer args = runIdentity . runClaferT args 
 
 emptyEnv = makeEnv emptyClaferArgs
+emptySnapShots = Map.empty :: Map.Map String ClaferEnv
