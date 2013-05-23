@@ -22,20 +22,31 @@
 module Language.Clafer.Intermediate.StringAnalyzer where
 
 import Data.Map (Map)
+import Data.Tuple
 import qualified Data.Map as Map
 import Control.Monad.State
+import Control.Monad.Writer
 
 import Language.Clafer.Common
 import Language.Clafer.Front.Absclafer
 import Language.Clafer.Intermediate.Intclafer
 
-astrModule :: IModule -> IModule
-astrModule imodule =
-  imodule{mDecls = evalState (mapM astrElement decls) $ Map.empty}
+astrModule :: IModule -> Writer (Map Int String) IModule
+--astrModule :: IModule -> IModule
+astrModule imodule = do
+  let elementsState = (mapM astrElement decls) 
+  let strMap = execState elementsState $ Map.empty
+  returnVal <- (return $ imodule{mDecls = evalState elementsState $ Map.empty}) :: Writer (Map Int String) IModule
+  tell (flipMap $ strMap)
+  return $ returnVal
   where
-  decls = mDecls imodule
+    flipMap :: (Map String Int) -> (Map Int String)
+    flipMap = Map.fromList . map swap . Map.toList
+    decls = mDecls imodule
 
 
+
+--astrClafer :: MonadState (Map String Int) m => IClafer -> m IClafer
 astrClafer x = case x of
   IClafer s isAbstract gcard ident uid super card gCard elements  ->
     IClafer s isAbstract gcard ident uid super card gCard `liftM`
@@ -43,11 +54,13 @@ astrClafer x = case x of
 
 
 -- astrs single subclafer
+--astrElement :: MonadState (Map String Int) m => IElement -> m IElement
 astrElement x = case x of
   IEClafer clafer -> IEClafer `liftM` astrClafer clafer
   IEConstraint isHard pexp -> IEConstraint isHard `liftM` astrPExp pexp
   IEGoal isMaximize pexp -> IEGoal isMaximize `liftM` astrPExp pexp
 
+--astrPExp :: MonadState (Map String Int) m => PExp -> m PExp
 astrPExp x = case x of 
   PExp (Just TString) pid pos exp ->
     PExp (Just TInteger) pid pos `liftM` astrIExp exp
@@ -57,13 +70,16 @@ astrPExp x = case x of
                               (IDeclPExp quant oDecls `liftM` (astrPExp bpexp))
   _ -> return x
 
+--astrIExp :: MonadState (Map String Int) m => IExp -> m IExp
 astrIExp x = case x of
   IFunExp op exps -> if op == iUnion
-                     then astrIExp $ concatStrExp x else return x
+                     then astrIExp $ concatStrExp x else return x                    
   IStr str -> do
     modify (\e -> Map.insertWith (flip const) str (Map.size e) e)
     st <- get
+    --lift $ tell $ Map.singleton (toInteger $ (Map.!) st str) str 
     return $  (IInt $ toInteger $ (Map.!) st str)
+     
   _ -> return x
 
 
