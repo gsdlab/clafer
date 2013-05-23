@@ -25,11 +25,10 @@
  - ClaferEnv can just import this module without all the parsing/compiline/generating
  - functionality.
  -}
-module Language.ClaferT (ClaferEnv(..), makeEnv, ast, ir, ClaferM, ClaferT, CErr(..), CErrs(..), ClaferErr(..), ClaferErrs(..), ClaferSErr(..), ClaferSErrs(..), ErrPos(..), PartialErrPos(..), throwErrs, throwErr, catchErrs, getEnv, getsEnv, modifyEnv, putEnv, runClafer, runClaferT, Throwable(..), Span(..), Pos(..),SnapShots,takeSnapShot) where
+module Language.ClaferT (ClaferEnv(..), makeEnv, ast, ir, ClaferM, ClaferT, CErr(..), CErrs(..), ClaferErr(..), ClaferErrs(..), ClaferSErr(..), ClaferSErrs(..), ErrPos(..), PartialErrPos(..), throwErrs, throwErr, catchErrs, getEnv, getsEnv, modifyEnv, putEnv, runClafer, runClaferT, Throwable(..), Span(..), Pos(..), takeSnapShot,SnapShots) where
 
 import Control.Monad.Error
 import Control.Monad.State
-import Control.Monad.Writer
 import Control.Monad.Identity
 import Data.List
 import Data.Map (Map)
@@ -101,13 +100,46 @@ makeEnv args = ClaferEnv { args = args',
                                _             -> args
 
 
-type SnapShots = (Map.Map String ClaferEnv) 
-takeSnapShot env p = tell $ Map.singleton p env 
+data SnapShots = SnapShots  { lexed :: ClaferEnv
+                            , layoutResolved :: ClaferEnv
+                            , parsed :: ClaferEnv
+                            , mapped :: ClaferEnv
+                            , desugared :: ClaferEnv
+                            , foundDuplicates :: ClaferEnv
+                            , resolved :: ClaferEnv 
+                            , transformed :: ClaferEnv
+                            , scopeAnalizaed :: ClaferEnv
+                            , compiled :: ClaferEnv
+                            , generated :: ClaferEnv
+                            } deriving (Show, Eq)
+
+
+
+takeSnapShot :: Monad m => ClaferEnv -> String -> ClaferT m ()
+takeSnapShot env p = 
+  do
+    oldSnapShots <- getSnapShots
+    newSnapShots <- return $ sAdd oldSnapShots env p
+    putSnapShots newSnapShots
+    where sAdd :: SnapShots -> ClaferEnv -> String -> SnapShots
+          sAdd s e p
+            | p   == "lexed"            = s {lexed = e}
+            | p   == "layoutResolved"   = s {layoutResolved = e}
+            | p   == "parsed"           = s {parsed = e}
+            | p   == "mapped"           = s {mapped = e}
+            | p   == "desugared"        = s {desugared = e}
+            | p   == "foundDuplicates"  = s {foundDuplicates = e}
+            | p   == "resolved"         = s {resolved = e}
+            | p   == "transformed"      = s {transformed = e}
+            | p   == "scopeAnalizaed"   = s {scopeAnalizaed = e}
+            | p   == "compiled"         = s {compiled = e}
+            | otherwise                 = s {generated = e}
+
 
 
 type ClaferM = ClaferT Identity
 -- Monad for using Clafer.
-type ClaferT m = ErrorT ClaferErrs (WriterT SnapShots (StateT ClaferEnv m))
+type ClaferT m = ErrorT ClaferErrs (StateT SnapShots (StateT ClaferEnv m))
 
 type ClaferErr = CErr ErrPos
 type ClaferErrs = CErrs ErrPos
@@ -262,7 +294,7 @@ inSpan pos (PosSpan _ s e)  = inSpan pos (Span s e)
 
 -- Get the ClaferEnv
 getEnv :: Monad m => ClaferT m ClaferEnv
-getEnv = lift $ lift  get
+getEnv = lift $ lift get
 
 getsEnv :: Monad m => (ClaferEnv -> a) -> ClaferT m a
 getsEnv = lift . lift . gets 
@@ -276,19 +308,27 @@ putEnv :: Monad m => ClaferEnv -> ClaferT m ()
 putEnv = lift . lift . put 
 
 
+-- Get and Set the envSnapshots
+getSnapShots :: Monad m => ClaferT m SnapShots
+getSnapShots = get 
+
+putSnapShots :: Monad m => SnapShots -> ClaferT m ()
+putSnapShots = put
+
 -- Uses the ErrorT convention:
 --   Left is for error (a string containing the error message)
 --   Right is for success (with the result)
-runClaferT :: Monad m => ClaferArgs -> ClaferT m a -> m ((Either [ClaferErr] a), SnapShots)
+runClaferT :: Monad m => ClaferArgs -> ClaferT m a -> m (Either [ClaferErr] a)
 runClaferT args exec =
-  mapLeft errs `liftM` evalStateT execErrorWriter env'
+  mapLeft errs `liftM` evalStateT (evalStateT (runErrorT exec) emptySnapShots) (makeEnv args)
   where
-  mapLeft :: (a -> c) -> (Either a b, SnapShots) -> (Either c b, SnapShots)
-  mapLeft f ((Left l), s) = (Left (f l), s)
-  mapLeft f ((Right r), s) = (Right r, s)
-  env' = makeEnv args
-  execErrorWriter = runWriterT $ runErrorT exec
+  mapLeft :: (a -> c) -> Either a b -> Either c b
+  mapLeft f (Left l) = Left (f l)
+  mapLeft f (Right r) = Right r
 
 -- Convenience
-runClafer :: ClaferArgs -> ClaferM a -> (Either [ClaferErr] a, SnapShots)
+runClafer :: ClaferArgs -> ClaferM a -> Either [ClaferErr] a
 runClafer args = runIdentity . runClaferT args 
+
+emptyEnv = makeEnv emptyClaferArgs
+emptySnapShots = SnapShots emptyEnv emptyEnv emptyEnv emptyEnv emptyEnv emptyEnv emptyEnv emptyEnv emptyEnv emptyEnv emptyEnv

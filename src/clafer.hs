@@ -49,7 +49,7 @@ putStrV v s = if v > 1 then putStrLn s else return ()
 run :: VerbosityL -> ClaferArgs -> InputModel -> IO ()
 run v args input =
   do
-    result <- runClaferT args $
+    result <- {-fst $-} runClaferT args $
       do
         addFragments $ fragments input
         env <- getEnv

@@ -219,6 +219,7 @@ parse =
     let env' = env{ cAst = Just ast, astModuleTrace = traceAstModule ast }
     putEnv env'
     let debug' = debug $ args env'
+    --when (fromJust debug') $ takeSnapShot env Parsed
     when (fromJust debug') $ takeSnapShot env "Parsed"
   where
   parseFrag args =
@@ -248,6 +249,7 @@ compile =
     let env' = env{ cIr = Just ir, irModuleTrace = traceIrModule imodule }
     putEnv $ env'
     let debug' = debug $ args env'
+    --when (fromJust debug') $ takeSnapShot env' Compiled
     when (fromJust debug') $ takeSnapShot env' "Compiled"
 
 -- Splits the IR into their fragments, and generates the output for each fragment.
