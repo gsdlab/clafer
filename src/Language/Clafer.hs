@@ -29,7 +29,6 @@ module Language.Clafer (
                         runClaferT,
                         runClafer,
                         ClaferErr(..),
-                        emptyEnv,
                         getEnv,
                         putEnv,
                         CompilerResult(..),
@@ -43,8 +42,7 @@ module Language.Clafer (
                         voidf,
                         ClaferEnv(..),
                         takeSnapShot,
-                        SnapShots,
-                        emptySnapShots,
+                        SnapShots(..),
                         ir,
                         ast,
                         makeEnv,
@@ -220,9 +218,8 @@ parse =
     let ast = mapModule ast'
     let env' = env{ cAst = Just ast, astModuleTrace = traceAstModule ast }
     putEnv env'
-    --let debug' = debug $ args env
-    --env' <- getEnv
-    --when (fromJust debug') $ takeSnapShot env "Parsed"
+    let debug' = debug $ args env'
+    when (fromJust debug') $ takeSnapShot env "Parsed"
   where
   parseFrag args =
     pModule .
@@ -248,10 +245,10 @@ compile =
     env <- getEnv
     ir <- analyze (args env) $ desugar (ast env)
     let (imodule, _, _) = ir
-    putEnv $ env{ cIr = Just ir, irModuleTrace = traceIrModule imodule }
-    --let debug' = debug $ args env
-    --env' <- getEnv
-    --when (fromJust debug') $ takeSnapShot "Compiled" env'
+    let env' = env{ cIr = Just ir, irModuleTrace = traceIrModule imodule }
+    putEnv $ env'
+    let debug' = debug $ args env'
+    when (fromJust debug') $ takeSnapShot env' "Compiled"
 
 -- Splits the IR into their fragments, and generates the output for each fragment.
 -- Might not generate the entire output (for example, Alloy scope and run commands) because
