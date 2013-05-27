@@ -49,7 +49,7 @@ putStrV v s = if v > 1 then putStrLn s else return ()
 run :: VerbosityL -> ClaferArgs -> InputModel -> IO ()
 run v args input =
   do
-    result <- {-fst $-} runClaferT args $
+    result <- runClaferT args $
       do
         addFragments $ fragments input
         env <- getEnv
@@ -58,9 +58,9 @@ run v args input =
         f' <- save
         when (fromJust $ validate args) $ liftIO $ runValidate args f'
     if mode args == Just Html
-      then htmlCatch (fst result) args input
+      then htmlCatch result args input
       else return ()
-    (fst result) `catch` handleErrs
+    result `catch` handleErrs
   where
   catch (Left err) f = f err
   catch (Right r)  _ = return r

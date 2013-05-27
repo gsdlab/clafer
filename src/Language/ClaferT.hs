@@ -282,8 +282,8 @@ putEnv = lift . lift . put
 -- Uses the ErrorT convention:
 --   Left is for error (a string containing the error message)
 --   Right is for success (with the result)
-runClaferT :: Monad m => ClaferArgs -> ClaferT m a -> m ((Either [ClaferErr] a), SnapShots)
-runClaferT args exec =
+runClaferTS :: Monad m => ClaferArgs -> ClaferT m a -> m ((Either [ClaferErr] a), SnapShots)
+runClaferTS args exec =
   mapLeft errs `liftM` evalStateT execErrorWriter env'
   where
   mapLeft :: (a -> c) -> (Either a b, SnapShots) -> (Either c b, SnapShots)
@@ -292,6 +292,9 @@ runClaferT args exec =
   env' = makeEnv args
   execErrorWriter = runWriterT $ runErrorT exec
 
+runClaferT :: Monad m => ClaferArgs -> ClaferT m a -> m (Either [ClaferErr] a)
+runClaferT args exec = liftM fst $ runClaferTS args exec
+
 -- Convenience
-runClafer :: ClaferArgs -> ClaferM a -> (Either [ClaferErr] a, SnapShots)
+runClafer :: ClaferArgs -> ClaferM a -> Either [ClaferErr] a
 runClafer args = runIdentity . runClaferT args 
