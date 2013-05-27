@@ -58,9 +58,9 @@ run v args input =
         f' <- save
         when (fromJust $ validate args) $ liftIO $ runValidate args f'
     if mode args == Just Html
-      then htmlCatch result args input
+      then htmlCatch (fst result) args input
       else return ()
-    result `catch` handleErrs
+    (fst result) `catch` handleErrs
   where
   catch (Left err) f = f err
   catch (Right r)  _ = return r
