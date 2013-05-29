@@ -184,7 +184,7 @@ parse :: Monad m => ClaferT m ()
 parse =
   do
     env <- getEnv
-    let debug' = debug $ args env'
+    let debug' = debug $ args env
     when (fromJust debug') $ takeSnapShot env Start
     let astsErr = map (parseFrag $ args env) $ modelFrags env
     asts <- liftParseErrs astsErr
