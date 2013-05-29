@@ -1,3 +1,4 @@
+{-# LANGUAGE FlexibleContexts #-}
 {-
  Copyright (C) 2012 Kacper Bak, Jimmy Liang <http://gsd.uwaterloo.ca>
 
@@ -25,36 +26,29 @@ import Data.Map (Map)
 import Data.Tuple
 import qualified Data.Map as Map
 import Control.Monad.State
-import Control.Monad.Writer
+import Control.Applicative
 
 import Language.Clafer.Common
 import Language.Clafer.Front.Absclafer
 import Language.Clafer.Intermediate.Intclafer
 
-astrModule :: IModule -> Writer (Map Int String) IModule
---astrModule :: IModule -> IModule
-astrModule imodule = do
-  let elementsState = (mapM astrElement decls) 
-  let strMap = execState elementsState $ Map.empty
-  returnVal <- (return $ imodule{mDecls = evalState elementsState $ Map.empty}) :: Writer (Map Int String) IModule
-  tell (flipMap $ strMap)
-  return $ returnVal
+astrModule :: IModule -> (IModule, Map Int String)
+astrModule imodule = (imodule{mDecls = decls'}, flipMap strMap')
   where
-    flipMap :: (Map String Int) -> (Map Int String)
-    flipMap = Map.fromList . map swap . Map.toList
     decls = mDecls imodule
+    (decls', strMap') = runState (mapM astrElement decls) Map.empty
+
+    flipMap :: Map String Int -> Map Int String
+    flipMap = Map.fromList . map swap . Map.toList
 
 
-
---astrClafer :: MonadState (Map String Int) m => IClafer -> m IClafer
-astrClafer x = case x of
-  IClafer s isAbstract gcard ident uid super card gCard elements  ->
-    IClafer s isAbstract gcard ident uid super card gCard `liftM`
-            mapM astrElement elements
+astrClafer :: MonadState (Map String Int) m => IClafer -> m IClafer
+astrClafer (IClafer s isAbstract gcard ident uid super card gCard elements) =
+    IClafer s isAbstract gcard ident uid super card gCard `liftM` mapM astrElement elements
 
 
 -- astrs single subclafer
---astrElement :: MonadState (Map String Int) m => IElement -> m IElement
+astrElement :: MonadState (Map String Int) m => IElement -> m IElement
 astrElement x = case x of
   IEClafer clafer -> IEClafer `liftM` astrClafer clafer
   IEConstraint isHard pexp -> IEConstraint isHard `liftM` astrPExp pexp

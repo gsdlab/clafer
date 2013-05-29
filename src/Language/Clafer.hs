@@ -322,7 +322,7 @@ generate =
     let cargs = args env
     let (iModule, genv, au) = ir env
     let stats = showStats au $ statsModule iModule
-    let (imod,strMap) = runWriter $ astrModule iModule
+    let (imod,strMap) = astrModule iModule
     let (ext, code, mapToAlloy) = case (fromJust $ mode cargs) of
                         Alloy   ->  do
                                       let alloyCode = genModule cargs (imod, genv)
