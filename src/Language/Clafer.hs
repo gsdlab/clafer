@@ -184,6 +184,8 @@ parse :: Monad m => ClaferT m ()
 parse =
   do
     env <- getEnv
+    let debug' = debug $ args env'
+    when (fromJust debug') $ takeSnapShot env Start
     let astsErr = map (parseFrag $ args env) $ modelFrags env
     asts <- liftParseErrs astsErr
 
@@ -214,12 +216,14 @@ parse =
         let completeAst = (parseFrag $ args env) completeModel
         liftParseErr completeAst
 
-    
+    let env' = env{cAst = Just ast'}
+    when (fromJust debug') $ takeSnapShot env' Parsed
+
     let ast = mapModule ast'
-    let env' = env{ cAst = Just ast, astModuleTrace = traceAstModule ast }
-    putEnv env'
-    let debug' = debug $ args env'
-    when (fromJust debug') $ takeSnapShot env Parsed
+    let env'' = env'{cAst = Just ast, astModuleTrace = traceAstModule ast}
+    when (fromJust debug') $ takeSnapShot env'' Mapped
+    putEnv env''
+
   where
   parseFrag args =
     pModule .
@@ -246,9 +250,8 @@ compile =
     ir <- analyze (args env) $ desugar (ast env)
     let (imodule, _, _) = ir
     let env' = env{ cIr = Just ir, irModuleTrace = traceIrModule imodule }
-    putEnv $ env'
+    putEnv env'
     let debug' = debug $ args env'
-    --when (fromJust debug') $ takeSnapShot env' Compiled
     when (fromJust debug') $ takeSnapShot env' Compiled
 
 -- Splits the IR into their fragments, and generates the output for each fragment.
@@ -366,13 +369,33 @@ liftError :: (Monad m, Language.ClaferT.Throwable t) => Either t a -> ClaferT m 
 liftError = either throwErr return
 
 analyze :: Monad m => ClaferArgs -> IModule -> ClaferT m (IModule, GEnv, Bool)
-analyze args tree = do
-  let dTree' = findDupModule args tree
+analyze args' tree = do
+  env <- getEnv
+  let dTree' = findDupModule args' tree
+  let env' = env{cIr = Just (dTree', (second $ fromJust $ cIr env), (third $ fromJust $ cIr env))}
+  let debug' = debug $ args env'
+  when (fromJust debug') $ takeSnapShot env' FoundDuplicates
+
   let au = allUnique dTree'
-  let args' = args{skip_resolver = Just $ au && (fromJust $ skip_resolver args)}
-  (rTree, genv) <- liftError $ resolveModule args' dTree'
+  let args'' = args'{skip_resolver = Just $ au && (fromJust $ skip_resolver args')}
+  (rTree, genv, mlist) <- liftError $ resolveModule args' dTree'
+  when (fromJust debug') $
+    mapM_ (\(x,y) -> takeSnapShot env'{cIr = Just ((x, (second $ fromJust $ cIr env'), (third $ fromJust $ cIr env')))} y) (zip mlist mlistS)
+
   let tTree = transModule rTree
-  return (optimizeModule args' (tTree, genv), genv, au)
+  let env'' = env'{cIr = Just (tTree, (second $ fromJust $ cIr env'), (third $ fromJust $ cIr env'))}
+  when (fromJust debug') $ takeSnapShot env'' Transformed
+
+  let oTree = optimizeModule args'' (tTree,genv)
+  let env''' = env''{cIr = Just (tTree, (second $ fromJust $ cIr env''),(third $ fromJust $ cIr env''))}
+  putEnv env'''
+  when (fromJust debug') $ takeSnapShot env''' Optimized
+
+  return (oTree, genv, au)
+  where
+    second (_,x,_)=x
+    third (_,_,x)=x
+    mlistS = [NameResolved, InheritanceResolved, TypeResolved]
 
 addStats :: String -> String -> String
 addStats code stats = "/*\n" ++ stats ++ "*/\n" ++ code

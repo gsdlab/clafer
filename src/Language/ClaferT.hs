@@ -101,8 +101,8 @@ makeEnv args = ClaferEnv { args = args',
                                _             -> args
 
 
-data SnapShotId = Lexed | LayoutResolved | Parsed | Mapped | Desugared | FoundDuplicates | Resolved |
-                  Transformed | ScopeAnalizaed | Compiled | Generated deriving (Show, Ord, Eq)
+data SnapShotId = Start | Parsed | Mapped | FoundDuplicates | NameResolved | InheritanceResolved | 
+                  TypeResolved | Transformed | Optimized | Compiled deriving (Show, Ord, Eq)
 
 type SnapShots = (Map.Map SnapShotId ClaferEnv) 
 takeSnapShot env p = tell $ Map.singleton p env 

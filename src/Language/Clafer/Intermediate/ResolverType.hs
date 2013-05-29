@@ -162,10 +162,13 @@ str t =
     ts   -> "[" ++ intercalate "," ts ++ "]"
 
 
-resolveTModule :: (IModule, GEnv) -> Either ClaferSErr IModule
-resolveTModule (imodule, _) =
+resolveTModule :: (IModule, GEnv, [IModule]) -> Either ClaferSErr (IModule, [IModule])
+resolveTModule (imodule, _, imoduleList) =
   case runTypeAnalysis (analysis $ mDecls imodule) imodule of
-    Right mDecls' -> return imodule{mDecls = mDecls'}
+    Right mDecls' -> do
+      let imodule' = imodule{mDecls = mDecls'}
+      let imoduleList' = imodule' : imoduleList
+      return (imodule', imoduleList')
     Left err      -> throwError err
   where
   analysis decls = mapM (resolveTElement $ rootUid) decls
