@@ -25,7 +25,7 @@
  - ClaferEnv can just import this module without all the parsing/compiline/generating
  - functionality.
  -}
-module Language.ClaferT (ClaferEnv(..), makeEnv, ast, ir, ClaferM, ClaferT, CErr(..), CErrs(..), ClaferErr(..), ClaferErrs(..), ClaferSErr(..), ClaferSErrs(..), ErrPos(..), PartialErrPos(..), throwErrs, throwErr, catchErrs, getEnv, getsEnv, modifyEnv, putEnv, runClafer, runClaferT, Throwable(..), Span(..), Pos(..),SnapShots,takeSnapShot, SnapShotId(..)) where
+module Language.ClaferT (ClaferEnv(..), makeEnv, ast, ir, ClaferM, ClaferT, CErr(..), CErrs(..), ClaferErr(..), ClaferErrs(..), ClaferSErr(..), ClaferSErrs(..), ErrPos(..), PartialErrPos(..), throwErrs, throwErr, catchErrs, getEnv, getsEnv, modifyEnv, putEnv, runClafer, runClaferT, runClaferS, runClaferTS, Throwable(..), Span(..), Pos(..),SnapShots,takeSnapShot, SnapShotId(..)) where
 
 import Control.Monad.Error
 import Control.Monad.State
@@ -298,3 +298,6 @@ runClaferT args exec = liftM fst $ runClaferTS args exec
 -- Convenience
 runClafer :: ClaferArgs -> ClaferM a -> Either [ClaferErr] a
 runClafer args = runIdentity . runClaferT args 
+
+runClaferS :: ClaferArgs -> ClaferM a -> (Either [ClaferErr] a, SnapShots)
+runClaferS args = runIdentity . runClaferTS args

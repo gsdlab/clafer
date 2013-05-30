@@ -28,6 +28,7 @@ module Language.Clafer (
                         generateFragments,
                         runClaferT,
                         runClafer,
+                        runClaferS,
                         ClaferErr(..),
                         getEnv,
                         putEnv,
