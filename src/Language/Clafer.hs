@@ -91,6 +91,9 @@ import Language.Clafer.Generator.Graph
 type VerbosityL = Int
 type InputModel = String
 
+debugPrint msg debug' = return $ when (fromJust debug') $ print msg
+debugputStrLn msg debug' = return $ when (fromJust debug') $ putStrLn msg
+
 t a b =
   runClafer defaultClaferArgs $
     do
@@ -206,6 +209,7 @@ parse =
     --
     -- The second one is easier so that's we'll do for now. There shouldn't be any errors since
     -- each individual fragment already passed.
+    debugPrint "Parsing . . . " debug'
     ast' <- case asts of
       -- Special case: if there is only one fragment, then the complete model is contained within it.
       -- Don't need to reparse. This is the common case.
@@ -218,10 +222,13 @@ parse =
 
     let env' = env{cAst = Just ast'}
     when (fromJust debug') $ takeSnapShot env' Parsed
+    debugputStrLn "Finished Parsing!" debug'
 
+    debugPrint "MappingToAlloy . . . " debug'
     let ast = mapModule ast'
     let env'' = env'{cAst = Just ast, astModuleTrace = traceAstModule ast}
     when (fromJust debug') $ takeSnapShot env'' Mapped
+    debugputStrLn "Finished MappingToAlloy!" debug'
     putEnv env''
 
   where
@@ -247,11 +254,13 @@ compile :: Monad m => ClaferT m ()
 compile =
   do
     env <- getEnv
+    let debug' = debug $ args env
+    debugPrint "Desugaring . . . " debug'
     ir <- analyze (args env) $ desugar (ast env)
     let (imodule, _, _) = ir
     let env' = env{ cIr = Just ir, irModuleTrace = traceIrModule imodule }
     putEnv env'
-    let debug' = debug $ args env'
+    debugputStrLn "Finished compiling!" debug'
     when (fromJust debug') $ takeSnapShot env' Compiled
 
 -- Splits the IR into their fragments, and generates the output for each fragment.
@@ -371,25 +380,35 @@ liftError = either throwErr return
 analyze :: Monad m => ClaferArgs -> IModule -> ClaferT m (IModule, GEnv, Bool)
 analyze args' tree = do
   env <- getEnv
+  let debug' = debug $ args env
+  debugputStrLn "Finished desugaring!" debug'
+  debugPrint "Finding duplicates . . . " debug'
   let dTree' = findDupModule args' tree
   let env' = env{cIr = Just (dTree', (second $ fromJust $ cIr env), (third $ fromJust $ cIr env))}
-  let debug' = debug $ args env'
   when (fromJust debug') $ takeSnapShot env' FoundDuplicates
+  debugputStrLn "Finished finding duplicates!" debug'
 
+  debugPrint "Resolving . . . " debug'
   let au = allUnique dTree'
   let args'' = args'{skip_resolver = Just $ au && (fromJust $ skip_resolver args')}
   (rTree, genv, mlist) <- liftError $ resolveModule args' dTree'
   when (fromJust debug') $
     mapM_ (\(x,y) -> takeSnapShot env'{cIr = Just ((x, (second $ fromJust $ cIr env'), (third $ fromJust $ cIr env')))} y) (zip mlist mlistS)
+  debugputStrLn "Finished resolving!" debug'
 
+  debugPrint "Trasforming . . . " debug'
   let tTree = transModule rTree
   let env'' = env'{cIr = Just (tTree, (second $ fromJust $ cIr env'), (third $ fromJust $ cIr env'))}
   when (fromJust debug') $ takeSnapShot env'' Transformed
+  debugputStrLn "Finished transforming!" debug'
 
+  debugPrint "Optimizing . . . " debug'
   let oTree = optimizeModule args'' (tTree,genv)
   let env''' = env''{cIr = Just (tTree, (second $ fromJust $ cIr env''),(third $ fromJust $ cIr env''))}
+  debugputStrLn "Finished Optimizing!" debug'
   putEnv env'''
   when (fromJust debug') $ takeSnapShot env''' Optimized
+  
 
   return (oTree, genv, au)
   where
