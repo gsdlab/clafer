@@ -265,7 +265,7 @@ compile =
   do
     env <- getEnv
     let debug' = debug $ args env
-    debugPrint "Desugaring . " debug'
+    debugPrint "Desugaring . . " debug'
     ir <- analyze (args env) $ desugar (ast env)
     let (imodule, _, _) = ir
     let env' = env{ cIr = Just ir, irModuleTrace = traceIrModule imodule }
@@ -397,7 +397,6 @@ liftError = either throwErr return
 analyze :: Monad m => ClaferArgs -> IModule -> ClaferT m (IModule, GEnv, Bool)
 analyze args' tree = do
   env <- getEnv
-  debugPrint ". " debug' 
   let debug' = debug $ args env
   debugPrint ". " debug' 
   debugputStrLn "Finished desugaring!" debug'
