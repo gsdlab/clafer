@@ -25,6 +25,7 @@ genCModule _ (imodule@IModule{mDecls}, _) =
     ++ (genAbstractClafer =<< abstractClafers)
     ++ (genConcreteClafer =<< concreteClafers)
     ++ (genRefClafer =<< clafers)
+    ++ (genTopConstraint =<< mDecls)
     ++ (genConstraint =<< clafers)
     where
     root :: IClafer
@@ -34,7 +35,8 @@ genCModule _ (imodule@IModule{mDecls}, _) =
     -- The sort is so that we encounter sub clafers before super clafers when abstract clafers extend other abstract clafers
     abstractClafers = reverse $ sortBy (comparing $ length . supersOf . uid) $ filter isAbstract toplevelClafers
     parentChildMap = childClafers root
-    clafers = map snd parentChildMap
+    clafers = snd <$> parentChildMap
+    claferUids = uid <$> clafers
     concreteClafers = filter isNotAbstract clafers
     minusRoot = filter ((/= "root") . uid)
     
@@ -115,6 +117,7 @@ genCModule _ (imodule@IModule{mDecls}, _) =
     genScopes :: Result
     genScopes =
         "scope({" ++ intercalate ", " scopeMap ++ "});\n"
+        ++ "intRange(-" ++ show (2 ^ (bitwidth - 1)) ++ ", " ++ show (2 ^ (bitwidth - 1) - 1) ++ ");\n"
         where
             scopeMap = [uid ++ ":" ++ show (scopeOf uid) | IClafer{uid} <- concreteClafers]
                 
@@ -135,8 +138,8 @@ genCModule _ (imodule@IModule{mDecls}, _) =
     genRefClafer :: IClafer -> Result
     genRefClafer IClafer{uid} =
         case (refOf uid, uid `elem` uniqueRefs) of
-             (Just target, True)  -> uid ++ ".refTo(" ++ genTarget target ++ ");\n"
-             (Just target, False) -> uid ++ ".refToUnique(" ++ genTarget target ++ ");\n"
+             (Just target, True)  -> uid ++ ".refToUnique(" ++ genTarget target ++ ");\n"
+             (Just target, False) -> uid ++ ".refTo(" ++ genTarget target ++ ");\n"
              _                    -> ""
         where
             genTarget "integer" = "int"
@@ -163,7 +166,13 @@ genCModule _ (imodule@IModule{mDecls}, _) =
     isUniqueConstraint _ = mzero
     
     uniqueRefs :: [String]
-    uniqueRefs = mapMaybe isUniqueConstraint $ map exp $ mapMaybe iconstraint $ clafers >>= elements
+    uniqueRefs = mapMaybe isUniqueConstraint $ map exp $ mapMaybe iconstraint $ mDecls ++ (clafers >>= elements)
+    
+    genTopConstraint :: IElement -> Result
+    genTopConstraint (IEConstraint _ pexp)
+        | isNothing $ isUniqueConstraint $ exp pexp = "constraint(" ++ genConstraintPExp pexp ++ ");\n"
+        | otherwise                                 = ""
+    genTopConstraint _ = ""
     
     genConstraint :: IClafer -> Result
     genConstraint IClafer{uid, elements} =
@@ -187,20 +196,31 @@ genCModule _ (imodule@IModule{mDecls}, _) =
     (l1, h1) <*> (l2, h2) = (l1 * l2, h1 * h2)
     scopeCap scope (l, h) = (min scope l, min scope h)
     
-    rewrite :: PExp -> IExp
+    rewrite :: PExp -> PExp
     -- Rearrange right joins to left joins.
-    rewrite p1@PExp{iType = Just typ, exp = IFunExp "." [p2, p3@PExp{exp = IFunExp "." [p4, p5]}]} =
-        IFunExp "." [p1{iType = iType p4, exp = IFunExp "." [p2, p4]}, p5]
-    rewrite PExp{exp = IFunExp{op = "-", exps = [p@PExp{exp = IInt i}]}} =
-        IInt (-i)
-    rewrite p = exp p
+    rewrite p1@PExp{iType = Just typ, exp = IFunExp "." [p2, p3@PExp{exp = IFunExp "." _}]} =
+        p1{exp = IFunExp "." [p3{iType = iType p4, exp = IFunExp "." [p2, p4]}, p5]}
+        where
+            PExp{exp = IFunExp "." [p4, p5]} = rewrite p3
+    rewrite p1@PExp{exp = IFunExp{op = "-", exps = [p@PExp{exp = IInt i}]}} =
+        -- This is so that the output looks cleaner, no other purpose since the Choco optimizer
+        -- in the backend will treat the pre-rewritten expression the same.
+        p1{exp = IInt (-i)}
+    rewrite p = p
     
     genConstraintPExp :: PExp -> String
-    genConstraintPExp = genConstraintExp . rewrite
+    genConstraintPExp = genConstraintExp . exp . rewrite
             
     genConstraintExp :: IExp -> String
-    genConstraintExp e@(IDeclPExp INo [] body) =
-        "none(" ++ genConstraintPExp body ++ ")"
+    genConstraintExp e@(IDeclPExp quant [] body) =
+        mapQuant quant ++ "(" ++ genConstraintPExp body ++ ")"
+    genConstraintExp e@(IDeclPExp quant decls body) =
+        mapQuant quant ++ "([" ++ intercalate ", " (map genDecl decls) ++ "], " ++ genConstraintPExp body ++ ")"
+        where
+            genDecl (IDecl isDisj locals body) =
+                (if isDisj then "disjDecl" else "decl") ++ "([" ++ intercalate ", " (map genLocal locals) ++ "], " ++ genConstraintPExp body ++ ")"
+            genLocal local = 
+                local ++ " = local(\"" ++ local ++ "\")"
              
     genConstraintExp (IFunExp "." [e1, PExp{exp = IClaferId{sident = "ref"}}]) =
         "joinRef(" ++ genConstraintPExp e1 ++ ")"
@@ -208,17 +228,57 @@ genCModule _ (imodule@IModule{mDecls}, _) =
         "joinParent(" ++ genConstraintPExp e1 ++ ")"
     genConstraintExp (IFunExp "." [e1, PExp{exp = IClaferId{sident}}]) =
         "join(" ++ genConstraintPExp e1 ++ ", " ++ sident ++ ")"
-    genConstraintExp (IFunExp "=" [e1, e2]) =
-        "equal(" ++ genConstraintPExp e1 ++ ", " ++ genConstraintPExp e2 ++ ")"
+    genConstraintExp (IFunExp "." [e1, e2]) =
+        error $ "Did not rewrite all joins to left joins."
+    genConstraintExp (IFunExp "-" [arg]) =
+        "minus(" ++ genConstraintPExp arg ++ ")"
+    genConstraintExp (IFunExp "-" [arg1, arg2]) =
+        "minus(" ++ genConstraintPExp arg1 ++ ", " ++ genConstraintPExp arg1 ++ ")"
+    genConstraintExp (IFunExp op args) =
+        mapFunc op ++ "(" ++ intercalate ", " (map genConstraintPExp args) ++ ")"
     -- this is a keyword in Javascript so use "$this" instead
     genConstraintExp IClaferId{sident = "this"} = "$this()"
-    genConstraintExp IClaferId{sident} = sident
+    genConstraintExp IClaferId{sident}
+        | sident `elem` claferUids = "global(" ++ sident ++ ")"
+        | otherwise                = sident
     genConstraintExp (IInt val) = "constant(" ++ show val ++ ")"
-    genConstraintExp e = error $ show e
+    genConstraintExp e = error $ "Unknown expression: " ++ show e
                 
+    mapQuant INo = "none"
+    mapQuant ISome = "some"
+    mapQuant IAll = "all"
+    mapQuant IOne = "one"
+    mapQuant ILone = "lone"
+                
+    mapFunc "!" = "not"
+    mapFunc "#" = "card"
+    mapFunc "<=>" = "ifOnlyIf"
+    mapFunc "=>" = "implies"
+    mapFunc "||" = "or"
+    mapFunc "xor" = "xor"
+    mapFunc "&&" = "and"
+    mapFunc "<" = "lessThan"
+    mapFunc ">" = "greaterThan"
+    mapFunc "=" = "equal"
+    mapFunc "<=" = "lessThanEqual"
+    mapFunc ">=" = "greaterThanEqual"
+    mapFunc "!=" = "notEqual"
+    mapFunc "in" = "$in"
+    mapFunc "nin" = "notIn"
+    mapFunc "+" = "add"
+    mapFunc "*" = "mul"
+    mapFunc "/" = "div"
+    mapFunc "++" = "union"
+    mapFunc "--" = "diff"
+    mapFunc "&" = "inter"
+    mapFunc "=>else" = "ifThenElse"
+    mapFunc op = error $ "Unknown op: " ++ op
+    
     sidentOf u = ident $ claferWithUid u
     scopeOf "integer" = undefined
+    scopeOf "int" = undefined
     scopeOf i = fromMaybe 1 $ lookup i scopes
+    bitwidth = fromMaybe 4 $ lookup "int" scopes
     scopes = scopeAnalysis imodule
     
 isQuant PExp{exp = IDeclPExp{}} = True
