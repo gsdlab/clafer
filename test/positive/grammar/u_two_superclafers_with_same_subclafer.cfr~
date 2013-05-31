@@ -1,0 +1,16 @@
+// Contains two abstract clafers, one inheriting the other, with the same field.
+//
+// Expected Output: ??
+//
+// Current Output:
+//   C 
+//     X
+//     X
+
+abstract A
+  X 2
+
+abstract B : A
+  X
+
+C : B

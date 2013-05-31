@@ -1,0 +1,23 @@
+// ClaferIG appears to not be able to handle unary minus followed
+// by a parenthesized expression.
+//
+// Tests basic arithmetic operations on integers
+// Tests that negative numbers can be assigned to integer clafers
+// Tests assignment to integer clafer with implicit this
+// Tests assignment from one integer clafer to another with explicit this
+// Tests unary minus
+//
+// Current Output:
+//   Alloy crashes on unary minus.
+//
+// Expected Output: 
+//   A
+//     x = -7
+//     y = -7 
+
+ 
+A 
+  x : integer
+  y : integer
+  [ x = -((6 + (5 - 4)) * 3) / (2 + 1) ]
+  [ this.y = x ]  

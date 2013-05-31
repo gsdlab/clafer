@@ -322,7 +322,7 @@ resolveTPExp' p@PExp{inPos, exp} =
       let t2 = typeOf arg2'
       let t3 = typeOf arg3'
       unless (t1 == TBoolean) $
-        throwError $ SemanticErr inPos ("Function 'if/else' cannot be performed on 'if' " ++ str t1 ++ " 'then' " ++ str t2 ++ " 'else' " ++ str t3)
+        throwError $ SemanticErr inPos ("Function '=>else' cannot be performed on if '" ++ str t1 ++ "' then '" ++ str t2 ++ "' else '" ++ str t3 ++ "'")
       it <- intersection t2 t3
       t  <- case it of
         Just it' -> return it'
