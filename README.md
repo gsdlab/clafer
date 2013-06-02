@@ -96,10 +96,10 @@ On Linux
 
 On Windows 
 
-* [MinGW+MSYS](http://mingw.org) with packages `make`, `wget`, `unzip`
+* [MinGW+MSYS](http://mingw.org) 
   * since the Haskell Platform already contains MinGW, you may choose to install MinGW+MSYS to the same location, e.g., `c:\...\Haskell Platform\2012.2.0.0`
   * add the `bin` folders of MinGW (`MinGW\bin`) and MSYS (`MinGW\MSYS\1.0\bin`) to your system path
-  * to install `wget` execute `mingw-get install msys-wget-bin`  
+  * `wget` will be automatically installed 
 * [WinGLPK](http://winglpk.sourceforge.net/) v4.49
   * inside the `w32` folder, copy `glpk_4_49.dll` to`glpk.dll` so that it can be found when building Haskell package `glpk-hs`
   * from `w32` folder, copy `glpk_4_49.dll` to `<user>\AppData\Roaming\cabal\bin`
