@@ -403,13 +403,9 @@ desugarExp' x = case x of
   dpe = desugarPath.desugarExp
 
 
-desugarOp f op exps = 
-    if (op == iIfThenElse)
-      then IFunExp op $ (desugarPath $ head mappedList) : (map reducePExp $ tail mappedList)
-      else IFunExp op $ map (trans.f) exps
-    where
-      mappedList = map f exps
-      trans = if op `elem` ([iNot, iIfThenElse] ++ logBinOps)
+desugarOp f op exps = IFunExp op $ map (trans.f) exps
+  where
+  trans = if op `elem` ([iNot, iIfThenElse] ++ logBinOps)
           then desugarPath else id
 
 
