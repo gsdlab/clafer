@@ -41,3 +41,4 @@ case_numberOfSnapShots2 :: Assertion
 case_numberOfSnapShots2 = 
 	(Map.size $ snd $ compileOneFragmentS defaultClaferArgs{debug = Just False} "A") == 0 
 		@? "Error not all snapshots were taken"
+

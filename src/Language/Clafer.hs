@@ -1,5 +1,5 @@
 {-
- Copyright (C) 2012 Kacper Bak, Jimmy Liang, Michal Antkiewicz <http://gsd.uwaterloo.ca>
+ Copyright (C) 2012-2013 Kacper Bak, Jimmy Liang, Michal Antkiewicz <http://gsd.uwaterloo.ca>
 
  Permission is hereby granted, free of charge, to any person obtaining a copy of
  this software and associated documentation files (the "Software"), to deal in
@@ -61,6 +61,7 @@ import Data.Map (Map)
 import qualified Data.Map as Map
 import Data.Ord
 import Control.Monad
+import Control.Monad.Writer
 import System.FilePath (dropExtension,takeBaseName)
 
 import Language.ClaferT
@@ -275,7 +276,7 @@ compile =
     when (fromJust debug') $ takeSnapShot env' Compiled
 
 -- Splits the IR into their fragments, and generates the output for each fragment.
--- Might not generate the entire output (for example, Alloy scope and run commands) because
+-- Might not generate the entirea output (for example, Alloy scope and run commands) because
 -- they do not belong in fragments.
 generateFragments :: Monad m => ClaferT m [String]
 generateFragments =
@@ -359,14 +360,15 @@ generate =
     let cargs = args env
     let (iModule, genv, au) = ir env
     let stats = showStats au $ statsModule iModule
+    let (imod,strMap) = astrModule iModule
     let (ext, code, mapToAlloy) = case (fromJust $ mode cargs) of
                         Alloy   ->  do
-                                      let alloyCode = genModule cargs (astrModule iModule, genv)
+                                      let alloyCode = genModule cargs (imod, genv)
                                       let addCommentStats = if fromJust $ no_stats cargs then const else addStats
                                       let m = snd alloyCode
                                       ("als", addCommentStats (fst alloyCode) stats, Just m)
                         Alloy42  -> do
-                                      let alloyCode = genModule cargs (astrModule iModule, genv)
+                                      let alloyCode = genModule cargs (imod, genv)
                                       let addCommentStats = if fromJust $ no_stats cargs then const else addStats
                                       let m = snd alloyCode
                                       ("als", addCommentStats (fst alloyCode) stats, Just m)
@@ -379,14 +381,16 @@ generate =
                      outputCode = code, 
                      statistics = stats,
                      claferEnv  = env,
-                     mappingToAlloy = fromMaybe [] mapToAlloy }
+                     mappingToAlloy = fromMaybe [] mapToAlloy,
+                     stringMap = strMap}
     
 data CompilerResult = CompilerResult {
                             extension :: String, 
                             outputCode :: String, 
                             statistics :: String,
                             claferEnv :: ClaferEnv,
-                            mappingToAlloy :: [(Span, IrTrace)] -- Maps source constraint spans in Alloy to the spans in the IR
+                            mappingToAlloy :: [(Span, IrTrace)], -- Maps source constraint spans in Alloy to the spans in the IR
+                            stringMap :: (Map Int String)
                             } deriving Show
 
 desugar :: Module -> IModule  

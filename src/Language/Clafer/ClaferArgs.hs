@@ -1,5 +1,5 @@
 {-
- Copyright (C) 2012 Kacper Bak, Jimmy Liang <http://gsd.uwaterloo.ca>
+ Copyright (C) 2012-2013 Kacper Bak, Jimmy Liang <http://gsd.uwaterloo.ca>
 
  Permission is hereby granted, free of charge, to any person obtaining a copy of
  this software and associated documentation files (the "Software"), to deal in
@@ -35,6 +35,9 @@ import Language.Clafer.Version
 data ClaferMode = Alloy42 | Alloy | Xml | Clafer | Html | Graph | CVLGraph
   deriving (Eq, Show, Data, Typeable)
 
+data ScopeStrategy = None | Simple | Full
+  deriving (Eq, Show, Data, Typeable)
+
 data ClaferArgs = ClaferArgs {
       mode :: Maybe ClaferMode,
       console_output :: Maybe Bool,
@@ -57,6 +60,7 @@ data ClaferArgs = ClaferArgs {
       add_comments :: Maybe Bool,
       ecore2clafer :: Maybe Bool,      
       debug :: Maybe Bool,
+      scope_strategy :: Maybe ScopeStrategy,
       file :: FilePath
     } deriving (Show, Data, Typeable, Eq)
 
@@ -82,6 +86,7 @@ clafer = ClaferArgs {
   add_comments        = def &= help "Include comments from the source file in the html output ('html' mode only).",
   ecore2clafer        = def &= help "Translate an ECore model into Clafer.",
   debug               = def &= help "Take snaphots of environment after each compiler phase.",  
+  scope_strategy      = def &= help "Use scope computation strategy: none, simple (default), or full." &= name "ss",
   file                = def &= args   &= typ "FILE"
  } &= summary ("Clafer " ++ version) &= program "clafer"
 
@@ -122,6 +127,7 @@ mergeArgs args args'  = args' {
   add_comments        = add_comments args        `mplus` add_comments args',
   ecore2clafer        = ecore2clafer args        `mplus` ecore2clafer args',
   debug               = debug args               `mplus` debug args',
+  scope_strategy      = scope_strategy args      `mplus` scope_strategy args',
   file                = file args}
 
 -- default values for arguments (the lowest priority)
@@ -147,6 +153,7 @@ setDefArgs args = args {
   add_comments        = add_comments args        `mplus` Just def,
   ecore2clafer        = ecore2clafer args        `mplus` Just def,
   debug               = debug args               `mplus` Just def }
+  scope_strategy      = scope_strategy args      `mplus` Just Simple}
 
 
 emptyClaferArgs = ClaferArgs Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing ""
