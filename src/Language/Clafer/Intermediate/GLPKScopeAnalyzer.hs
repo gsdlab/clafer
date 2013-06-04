@@ -1,7 +1,7 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving, UndecidableInstances, FlexibleInstances, FlexibleContexts, MultiParamTypeClasses, NamedFieldPuns, TupleSections #-}
 
 {-
- Copyright (C) 2012 Jimmy Liang, Kacper Bak <http://gsd.uwaterloo.ca>
+ Copyright (C) 2012-2013 Jimmy Liang, Kacper Bak <http://gsd.uwaterloo.ca>
 
  Permission is hereby granted, free of charge, to any person obtaining a copy of
  this software and associated documentation files (the "Software"), to deal in
@@ -21,7 +21,7 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
 -}
-module Language.Clafer.Intermediate.ScopeAnalyzer (scopeAnalysis) where
+module Language.Clafer.Intermediate.GLPKScopeAnalyzer (glpkScopeAnalysis) where
 
 import Language.Clafer.Front.Absclafer hiding (Path)
 import qualified Language.Clafer.Intermediate.Intclafer as I
@@ -53,8 +53,8 @@ import Text.Parsec.String ()
  ---------- Linear programming ------------------------------
  ------------------------------------------------------------}
 
-scopeAnalysis :: I.IModule -> [(String, Integer)]
-scopeAnalysis imodule =
+glpkScopeAnalysis :: I.IModule -> [(String, Integer)]
+glpkScopeAnalysis imodule =
   intScope ++ scopes
   where
   intScope = if bitwidth > 4 then return ("int", bitwidth) else fail "Bitwidth less than default."

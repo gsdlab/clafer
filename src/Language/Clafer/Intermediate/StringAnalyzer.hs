@@ -1,5 +1,6 @@
+{-# LANGUAGE FlexibleContexts #-}
 {-
- Copyright (C) 2012 Kacper Bak, Jimmy Liang <http://gsd.uwaterloo.ca>
+ Copyright (C) 2012-2013 Kacper Bak, Jimmy Liang, Luke Brown <http://gsd.uwaterloo.ca>
 
  Permission is hereby granted, free of charge, to any person obtaining a copy of
  this software and associated documentation files (the "Software"), to deal in
@@ -22,32 +23,38 @@
 module Language.Clafer.Intermediate.StringAnalyzer where
 
 import Data.Map (Map)
+import Data.Tuple
 import qualified Data.Map as Map
 import Control.Monad.State
+import Control.Applicative
 
 import Language.Clafer.Common
 import Language.Clafer.Front.Absclafer
 import Language.Clafer.Intermediate.Intclafer
 
-astrModule :: IModule -> IModule
-astrModule imodule =
-  imodule{mDecls = evalState (mapM astrElement decls) $ Map.empty}
+astrModule :: IModule -> (IModule, Map Int String)
+astrModule imodule = (imodule{mDecls = decls'}, flipMap strMap')
   where
-  decls = mDecls imodule
+    decls = mDecls imodule
+    (decls', strMap') = runState (mapM astrElement decls) Map.empty
+
+    flipMap :: Map String Int -> Map Int String
+    flipMap = Map.fromList . map swap . Map.toList
 
 
-astrClafer x = case x of
-  IClafer s isAbstract gcard ident uid super card gCard elements  ->
-    IClafer s isAbstract gcard ident uid super card gCard `liftM`
-            mapM astrElement elements
+astrClafer :: MonadState (Map String Int) m => IClafer -> m IClafer
+astrClafer (IClafer s isAbstract gcard ident uid super card gCard elements) =
+    IClafer s isAbstract gcard ident uid super card gCard `liftM` mapM astrElement elements
 
 
 -- astrs single subclafer
+astrElement :: MonadState (Map String Int) m => IElement -> m IElement
 astrElement x = case x of
   IEClafer clafer -> IEClafer `liftM` astrClafer clafer
   IEConstraint isHard pexp -> IEConstraint isHard `liftM` astrPExp pexp
   IEGoal isMaximize pexp -> IEGoal isMaximize `liftM` astrPExp pexp
 
+--astrPExp :: MonadState (Map String Int) m => PExp -> m PExp
 astrPExp x = case x of 
   PExp (Just TString) pid pos exp ->
     PExp (Just TInteger) pid pos `liftM` astrIExp exp
@@ -57,13 +64,16 @@ astrPExp x = case x of
                               (IDeclPExp quant oDecls `liftM` (astrPExp bpexp))
   _ -> return x
 
+--astrIExp :: MonadState (Map String Int) m => IExp -> m IExp
 astrIExp x = case x of
   IFunExp op exps -> if op == iUnion
-                     then astrIExp $ concatStrExp x else return x
+                     then astrIExp $ concatStrExp x else return x                    
   IStr str -> do
     modify (\e -> Map.insertWith (flip const) str (Map.size e) e)
     st <- get
+    --lift $ tell $ Map.singleton (toInteger $ (Map.!) st str) str 
     return $  (IInt $ toInteger $ (Map.!) st str)
+     
   _ -> return x
 
 
