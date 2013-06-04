@@ -1,5 +1,5 @@
 {-
- Copyright (C) 2012 Kacper Bak, Jimmy Liang, Rafael Olaechea <http://gsd.uwaterloo.ca>
+ Copyright (C) 2012-2013 Kacper Bak, Jimmy Liang, Rafael Olaechea <http://gsd.uwaterloo.ca>
 
  Permission is hereby granted, free of charge, to any person obtaining a copy of
  this software and associated documentation files (the "Software"), to deal in
@@ -30,9 +30,7 @@ import Language.Clafer.Common
 import Language.Clafer.ClaferArgs
 import Language.Clafer.Front.Absclafer
 import Language.Clafer.Intermediate.Intclafer
-import Language.Clafer.Intermediate.ScopeAnalyzer
-
-
+import Language.Clafer.Intermediate.ScopeAnalysis
 
 -- representation of strings in chunks (for line/column numbering)
 data Concat = CString String | Concat {
@@ -99,7 +97,9 @@ header :: ClaferArgs -> IModule -> Concat
 header    args          imodule  = CString $ unlines
     [ if (fromJust $ mode args) == Alloy42 then "" else "open util/integer"
     , "pred show {}"
-    , if (fromJust $ validate args) ||  (fromJust $ noalloyruncommand args)  then "" else "run  show for 1" ++ genScopes (scopeAnalysis imodule)
+    , if (fromJust $ validate args) ||  (fromJust $ noalloyruncommand args)  
+      then "" 
+      else "run show for 1" ++ genScopes (getScopeStrategy (scope_strategy args) imodule)
     , ""]
     where
     genScopes [] = ""
