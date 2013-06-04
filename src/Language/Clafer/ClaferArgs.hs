@@ -152,10 +152,10 @@ setDefArgs args = args {
   show_references     = show_references args     `mplus` Just def,
   add_comments        = add_comments args        `mplus` Just def,
   ecore2clafer        = ecore2clafer args        `mplus` Just def,
-  debug               = debug args               `mplus` Just def }
+  debug               = debug args               `mplus` Just def,
   scope_strategy      = scope_strategy args      `mplus` Just Simple}
 
 
-emptyClaferArgs = ClaferArgs Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing ""
+emptyClaferArgs = ClaferArgs Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing ""
 
 defaultClaferArgs = setDefArgs emptyClaferArgs
