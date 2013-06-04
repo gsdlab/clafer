@@ -38,8 +38,14 @@ Executable clafer
                      filepath >= 1.3.0.0,
                      HaXml >= 1.24,
                      MaybeT >= 0.1.2,
-                     glpk-hs >= 0.3.4,
-                     parsec >= 3.1.3
+                     glpk-hs >= 0.3.3,
+                     parsec >= 3.1.2,
+                     test-framework, 
+                     test-framework-hunit, 
+                     test-framework-quickcheck2,
+                     test-framework-th,
+                     QuickCheck, 
+                     HUnit 
     hs-source-dirs:  src
 
 library 
@@ -57,8 +63,14 @@ library
                      filepath >= 1.3.0.0,
                      HaXml >= 1.24,
                      MaybeT >= 0.1.2,
-                     glpk-hs >= 0.3.4,
-                     parsec >= 3.1.3
+                     glpk-hs >= 0.3.3,
+                     parsec >= 3.1.2,
+                     test-framework, 
+                     test-framework-hunit, 
+                     test-framework-quickcheck2,
+                     test-framework-th,
+                     QuickCheck, 
+                     HUnit 
     hs-source-dirs:  src
     ghc-options:     -Wall
     exposed-modules: 
@@ -97,3 +109,30 @@ library
                      Language.Clafer.Optimizer.Optimizer,
                      Language.Clafer.SplitJoin,
                      Language.Clafer.Version
+
+Test-Suite test-suite
+    type:           exitcode-stdio-1.0  
+    main-is:        test/test-suite.hs
+    build-depends:   
+                     base >= 4 && < 5, 
+                     array >= 0.4.0.0, 
+                     process >= 1.1.0.1, 
+                     mtl >= 2.1.1, 
+                     containers >= 0.4.2.1, 
+                     cmdargs >= 0.10.2, 
+                     executable-path >= 0.0.3, 
+                     filepath >= 1.3.0.0,
+                     HaXml >= 1.23.3,
+                     MaybeT >= 0.1.2,
+                     glpk-hs >= 0.3.3,
+                     parsec >= 3.1.2,
+                     clafer == 0.3.2
+    ghc-options      -Wall
+
+    build-depends:  
+                     test-framework, 
+                     test-framework-hunit, 
+                     test-framework-quickcheck2,
+                     test-framework-th,
+                     QuickCheck, 
+                     HUnit 

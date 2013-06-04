@@ -161,6 +161,33 @@ str t =
     [t'] -> t'
     ts   -> "[" ++ intercalate "," ts ++ "]"
 
+getIfThenElseType :: MonadAnalysis m => IType -> IType -> m (Maybe IType)
+-- the function is similar to 'intersection', but takes into account more ancestors to be able to combine
+-- clafers of different types, but with a common ancestor:
+-- Inputs:
+-- t1 is of type B
+-- t2 is of type C
+-- B : A
+-- C : A
+-- Outputs:
+-- the resulting type is: A, and the type combination is valid
+getIfThenElseType t1 t2 = 
+  do
+    h1 <- mapM hierarchy $ unionType t1
+    h2 <- mapM hierarchy $ unionType t2
+    let ut = catMaybes [commonHierarchy u1 u2 | u1 <- h1, u2 <- h2]
+    return $ fromUnionType ut
+  where
+  commonHierarchy h1 h2 = filterClafer $ commonHierarchy' (reverse h1) (reverse h2) Nothing
+  commonHierarchy' (x:xs) (y:ys) accumulator = 
+    if (x == y) 
+      then 
+        if (null xs || null ys) 
+          then Just x
+          else commonHierarchy' xs ys $ Just x 
+      else accumulator
+  filterClafer value = 
+    if (value == Just "clafer") then Nothing else value
 
 resolveTModule :: (IModule, GEnv) -> Either ClaferSErr IModule
 resolveTModule (imodule, _) =
@@ -309,7 +336,7 @@ resolveTPExp' p@PExp{inPos, exp} =
             | otherwise = error $ "Unknown op: " ++ show e
       result' <- result
       return (result', e{exps = [arg1', arg2']})
-      
+
   resolveTExp e@(IFunExp "=>else" [arg1, arg2, arg3]) =
     runListT $ runErrorT $ do
       arg1' <- lift $ ListT $ resolveTPExp arg1
@@ -318,12 +345,17 @@ resolveTPExp' p@PExp{inPos, exp} =
       let t1 = typeOf arg1'
       let t2 = typeOf arg2'
       let t3 = typeOf arg3'
+--      unless (False) $
+--        throwError $ SemanticErr inPos ("The types are: '" ++ str t2 ++ "' and '" ++ str t3 ++ "'")
+
       unless (t1 == TBoolean) $
-        throwError $ SemanticErr inPos ("Function '=>else' cannot be performed on if '" ++ str t1 ++ "' then '" ++ str t2 ++ "' else '" ++ str t3 ++ "'")
-      it <- intersection t2 t3
-      t  <- case it of
+        throwError $ SemanticErr inPos ("Function 'if/else' cannot be performed on 'if' " ++ str t1 ++ " 'then' " ++ str t2 ++ " 'else' " ++ str t3)
+
+      it <- getIfThenElseType t2 t3
+      t <- case it of
         Just it' -> return it'
-        Nothing  -> throwError $ SemanticErr inPos ("Function '=>else' cannot be performed on if '" ++ str t1 ++ "' then '" ++ str t2 ++ "' else '" ++ str t3 ++ "'")        
+        Nothing  -> throwError $ SemanticErr inPos ("Function '=>else' cannot be performed on if '" ++ str t1 ++ "' then '" ++ str t2 ++ "' else '" ++ str t3 ++ "'")
+
       return (t, e{exps = [arg1', arg2', arg3']})
       
   resolveTExp e@IDeclPExp{oDecls, bpexp} =
