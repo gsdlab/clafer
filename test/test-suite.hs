@@ -22,6 +22,7 @@
 -}
 import qualified Data.List as List
 import Data.Monoid
+import Control.Monad
 import Language.Clafer
 import Language.ClaferT
 import Language.Clafer.Css
@@ -38,17 +39,19 @@ tg_testsuite = $(testGroupGenerator)
 
 main = defaultMain[tg_testsuite]
 
-getClafersHelper file = if (file == "dst.cfr") then True else (txe == "rfc") && (takeWhile (/='.') (reverse eman) /= "tsd")
-						where 
-							(txe,dot:eman) = span (/='.') (reverse file)
+checkClaferExt "dst.cfr" = True
+checkClaferExt file = if ((eman == "")) then False else (txe == "rfc") && (takeWhile (/='.') (tail eman) /= "tsd")
+	where (txe, eman) = span (/='.') (reverse file)
+
 getClafers dir = do
 					files <- getDirectoryContents dir
-					let clafers = List.filter getClafersHelper files
-					mapM readFile clafers
+					let claferFiles = List.filter checkClaferExt files
+					claferModels <- mapM (\x -> readFile (dir++"/"++x)) claferFiles
+					return $ zip claferFiles claferModels
+					
 
-positiveClafers = do
-					clafers <- getClafers "test/positive"
-					return clafers
+positiveClafers = getClafers "test/positive"
+
 
 
 compileOneFragment :: ClaferArgs -> InputModel -> Either [ClaferErr] CompilerResult
@@ -64,7 +67,11 @@ compiledCheck :: Either a b -> Bool
 compiledCheck (Left _) = False
 compiledCheck (Right _) = True
 
+fromLeft (Left a) = a
+
 case_compileTest :: Assertion
 case_compileTest = do 
-						clafers <- positiveClafers
-						getAll (List.foldr (\x -> mappend $ All $ compiledCheck $ compileOneFragment defaultClaferArgs x) (All True) clafers) @? "Error in one of clafers in positive"
+					clafers <- positiveClafers
+					let compiledClafers = map (compileOneFragment defaultClaferArgs) (map snd clafers)
+					mapM_ (\(file, compiled) -> when (not $ compiledCheck compiled) $ putStrLn (file ++ " Error: " ++ (show $ fromLeft compiled))) (zip (map fst clafers) compiledClafers)
+					(getAll $ List.foldr mappend (All True) (map (All . compiledCheck) compiledClafers)) @? "Errors in the above claferModels from positive"
