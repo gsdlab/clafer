@@ -93,9 +93,6 @@ import Language.Clafer.Generator.Graph
 type VerbosityL = Int
 type InputModel = String
 
-debugPrint msg debug' = return $ when (fromJust debug') $ print msg
-debugputStrLn msg debug' = return $ when (fromJust debug') $ putStrLn msg
-
 t a b =
   runClafer defaultClaferArgs $
     do
@@ -140,12 +137,8 @@ addModuleFragment input =
   do
     env <- getEnv
     let debug' = debug $ args env
-    debugPrint "Adding module fragments . " debug' 
     let modelFrags' = modelFrags env ++ [input]
-    debugPrint ". " debug' 
     let frags' = frags env ++ [(endPos $ concat modelFrags')]
-    debugPrint ". " debug' 
-    debugputStrLn "Finished adding module fragments!" debug'
     putEnv env{ modelFrags = modelFrags', frags = frags' }
   where
   endPos "" = Pos 1 1
@@ -196,11 +189,8 @@ parse =
     env <- getEnv
     let debug' = debug $ args env
     when (fromJust debug') $ takeSnapShot env Start
-    debugPrint "Parsing " debug'
     let astsErr = map (parseFrag $ args env) $ modelFrags env
-    debugPrint ". " debug' 
     asts <- liftParseErrs astsErr
-    debugPrint ". " debug' 
 
     -- We need to somehow combine all the ASTS together into a complete AST
     -- However, the source positions inside the ASTs are relative to their
@@ -229,18 +219,12 @@ parse =
         let completeAst = (parseFrag $ args env) completeModel
         liftParseErr completeAst
 
-    debugPrint ". " debug' 
     let env' = env{cAst = Just ast'}
     when (fromJust debug') $ takeSnapShot env' Parsed
-    debugputStrLn "Finished parsing!" debug'
 
-    debugPrint "Mapping to alloy . " debug'
     let ast = mapModule ast'
-    debugPrint ". " debug' 
     let env'' = env'{cAst = Just ast, astModuleTrace = traceAstModule ast}
-    debugPrint ". " debug' 
     when (fromJust debug') $ takeSnapShot env'' Mapped
-    debugputStrLn "Finished mapping to alloy!" debug'
     putEnv env''
 
   where
@@ -267,12 +251,10 @@ compile =
   do
     env <- getEnv
     let debug' = debug $ args env
-    debugPrint "Desugaring . . " debug'
     ir <- analyze (args env) $ desugar (ast env)
     let (imodule, _, _) = ir
     let env' = env{ cIr = Just ir, irModuleTrace = traceIrModule imodule }
     putEnv env'
-    debugputStrLn "Finished compiling!" debug'
     when (fromJust debug') $ takeSnapShot env' Compiled
 
 -- Splits the IR into their fragments, and generates the output for each fragment.
@@ -283,17 +265,12 @@ generateFragments =
   do
     env <- getEnv
     let debug' = debug $ args env
-    debugPrint "Generating Fragments " debug'
     let (iModule, _, _) = ir env
-    debugPrint ". " debug' 
     let fragElems = fragment (sortBy (comparing range) $ mDecls iModule) (frags env)
-    debugPrint ". " debug' 
     
     -- Assumes output mode is Alloy for now
     
     let fragments = map (generateFragment $ args env) fragElems
-    debugPrint ". " debug' 
-    debugputStrLn "Finished generating fragments!" debug'
     return fragments
   where
   range (IEClafer IClafer{cinPos = pos}) = pos
@@ -403,42 +380,22 @@ analyze :: Monad m => ClaferArgs -> IModule -> ClaferT m (IModule, GEnv, Bool)
 analyze args' tree = do
   env <- getEnv
   let debug' = debug $ args env
-  debugPrint ". " debug' 
-  debugputStrLn "Finished desugaring!" debug'
-  debugPrint "Finding duplicates . " debug'
   let dTree' = findDupModule args' tree
-  debugPrint ". " debug' 
   let env' = env{cIr = Just (dTree', (second $ fromJust $ cIr env), (third $ fromJust $ cIr env))}
   when (fromJust debug') $ takeSnapShot env' FoundDuplicates
-  debugPrint ". " debug' 
-  debugputStrLn "Finished finding duplicates!" debug'
 
-  debugPrint "Resolving " debug'
   let au = allUnique dTree'
-  debugPrint ". " debug' 
-  let args'' = args'{skip_resolver = Just $ au && (fromJust $ skip_resolver args')}
-  debugPrint ". " debug' 
+  let args'' = args'{skip_resolver = Just $ au && (fromJust $ skip_resolver args')} 
   (rTree, genv, mlist) <- liftError $ resolveModule args' dTree'
-  debugPrint ". " debug' 
   when (fromJust debug') $
     mapM_ (\(x,y) -> takeSnapShot env'{cIr = Just ((x, (second $ fromJust $ cIr env'), (third $ fromJust $ cIr env')))} y) (zip mlist mlistS)
-  debugputStrLn "Finished resolving!" debug'
 
-  debugPrint "Trasforming " debug'
   let tTree = transModule rTree
-  debugPrint ". " debug' 
   let env'' = env'{cIr = Just (tTree, (second $ fromJust $ cIr env'), (third $ fromJust $ cIr env'))}
-  debugPrint ". " debug' 
   when (fromJust debug') $ takeSnapShot env'' Transformed
-  debugPrint ". " debug' 
-  debugputStrLn "Finished transforming!" debug'
 
-  debugPrint "Optimizing . " debug'
   let oTree = optimizeModule args'' (tTree,genv)
-  debugPrint ". " debug' 
   let env''' = env''{cIr = Just (tTree, (second $ fromJust $ cIr env''),(third $ fromJust $ cIr env''))}
-  debugPrint ". " debug' 
-  debugputStrLn "Finished Optimizing!" debug'
   putEnv env'''
   when (fromJust debug') $ takeSnapShot env''' Optimized
   
