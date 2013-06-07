@@ -1,4 +1,29 @@
 {-# OPTIONS_GHC -XTemplateHaskell #-}
+{-
+ Copyright (C) 2013 Luke Brown <http://gsd.uwaterloo.ca>
+
+ Permission is hereby granted, free of charge, to any person obtaining a copy of
+ this software and associated documentation files (the "Software"), to deal in
+ the Software without restriction, including without limitation the rights to
+ use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+ of the Software, and to permit persons to whom the Software is furnished to do
+ so, subject to the following conditions:
+
+ The above copyright notice and this permission notice shall be included in all
+ copies or substantial portions of the Software.
+
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ SOFTWARE.
+-}
+import qualified Data.List as List
+import qualified Data.Map as Map
+import Data.Monoid
+import Control.Monad
 import Language.Clafer
 import Language.ClaferT
 import Language.Clafer.Css
@@ -8,11 +33,22 @@ import Test.Framework.Providers.HUnit
 import Test.Framework.Providers.QuickCheck2
 import Test.HUnit
 import Test.QuickCheck
-import qualified Data.Map as Map
+import System.Directory
+import System.IO
 
 tg_testsuite = $(testGroupGenerator)
-
 main = defaultMain[tg_testsuite]
+
+
+getClafers :: FilePath -> IO [(String, String)] -- The first string is the file name, the second is the contents.
+getClafers dir = do
+					files <- getDirectoryContents dir
+					let claferFiles = List.filter checkClaferExt files
+					claferModels <- mapM (\x -> readFile (dir++"/"++x)) claferFiles
+					return $ zip claferFiles claferModels
+checkClaferExt "dst.cfr" = True
+checkClaferExt file = if ((eman == "")) then False else (txe == "rfc") && (takeWhile (/='.') (tail eman) /= "tsd")
+	where (txe, eman) = span (/='.') (reverse file)					
 
 compileOneFragment :: ClaferArgs -> InputModel -> Either [ClaferErr] CompilerResult
 compileOneFragment args model =
@@ -31,14 +67,27 @@ compileOneFragmentS args model =
         	compile
         	generate
 
+andMap :: (a -> Bool) -> [a] -> Bool
+andMap f lst = and $ map f lst
 
-case_numberOfSnapShots1 :: Assertion
-case_numberOfSnapShots1 = 
-	(Map.size $ snd $ compileOneFragmentS defaultClaferArgs{debug = Just True} "A") == 10 
-		@? "Error not all snapshots were taken"
+positiveClafers = getClafers "test/positive"
 
-case_numberOfSnapShots2 :: Assertion
-case_numberOfSnapShots2 = 
-	(Map.size $ snd $ compileOneFragmentS defaultClaferArgs{debug = Just False} "A") == 0 
-		@? "Error not all snapshots were taken"
+
+case_numberOfSnapShots1 :: Assertion -- Make sure all snapshots are taken when debug is set to True!
+case_numberOfSnapShots1 = do
+	clafers <- positiveClafers
+	let ssSizes = map (\(file, model) -> (file, Map.size $ snd $ compileOneFragmentS defaultClaferArgs{debug = Just True} model)) clafers
+	forM_ ssSizes (\(file, ssSize) -> when(ssSize/=10) $ putStrLn (file ++ " failed, took " ++ show ssSize ++ " snapshot(s) expected 10"))
+	(andMap ((==10) . snd) ssSizes) @? "Error not all snapshots were taken when debug was set to True! (For models gotten from test/positive)"
+
+case_numberOfSnapShots2 :: Assertion -- Make sure no snapshots are taken when debug is set to False!
+case_numberOfSnapShots2 = do
+	clafers <- positiveClafers
+	let ssSizes = map (\(file, model) -> (file, Map.size $ snd $ compileOneFragmentS defaultClaferArgs{debug = Just False} model)) clafers
+	forM_ ssSizes (\(file, ssSize) -> when(ssSize/=0) $ putStrLn (file ++ " failed, took " ++ show ssSize ++ " snapshot(s) expected 0"))
+	(andMap ((==0) . snd) ssSizes) @? "Error snapshots were taken when debug was set to False! (For models gotten from test/positive)"
+
+--cas_IDCheck :: Assertion
+--cas_IDCheck  do 
+
 

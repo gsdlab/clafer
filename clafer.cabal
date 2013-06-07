@@ -127,7 +127,7 @@ Test-Suite test-suite
                      MaybeT >= 0.1.2,
                      glpk-hs >= 0.3.3,
                      parsec >= 3.1.2,
-                     clafer == 0.3.2
+                     clafer == 0.3.3
     ghc-options      -Wall
 
     build-depends:  
@@ -136,5 +136,6 @@ Test-Suite test-suite
                      test-framework-quickcheck2,
                      test-framework-th,
                      QuickCheck, 
-                     HUnit 
+                     HUnit,
+                     directory
 
