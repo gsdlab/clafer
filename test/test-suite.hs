@@ -39,7 +39,7 @@ tg_testsuite = $(testGroupGenerator)
 main = defaultMain[tg_testsuite]
 
 
-getClafers :: FilePath -> [(String, String)]
+getClafers :: FilePath -> IO [(String, String)]
 getClafers dir = do
 					files <- getDirectoryContents dir
 					let claferFiles = List.filter checkClaferExt files
@@ -48,12 +48,7 @@ getClafers dir = do
 checkClaferExt "dst.cfr" = True
 checkClaferExt file = if ((eman == "")) then False else (txe == "rfc") && (takeWhile (/='.') (tail eman) /= "tsd")
 	where (txe, eman) = span (/='.') (reverse file)
-					
-
-positiveClafers = getClafers "test/positive"
-
-
-
+				
 compileOneFragment :: ClaferArgs -> InputModel -> Either [ClaferErr] CompilerResult
 compileOneFragment args model =
  	runClafer args $
@@ -72,6 +67,9 @@ fromLeft (Left a) = a
 
 andMap :: (a -> Bool) -> [a] -> Bool
 andMap f lst = and $ map f lst
+
+positiveClafers = getClafers "test/positive"
+
 
 case_compileTest :: Assertion
 case_compileTest = do 
