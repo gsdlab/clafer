@@ -22,11 +22,13 @@
 -}
 import qualified Data.List as List
 import qualified Data.Map as Map
+import Data.Maybe
 import Data.Monoid
 import Control.Monad
 import Language.Clafer
 import Language.ClaferT
 import Language.Clafer.Css
+import Language.Clafer.Intermediate.Intclafer
 import Test.Framework
 import Test.Framework.TH
 import Test.Framework.Providers.HUnit
@@ -70,6 +72,9 @@ compileOneFragmentS args model =
 andMap :: (a -> Bool) -> [a] -> Bool
 andMap f lst = and $ map f lst
 
+fst3 :: (a, b, c) -> a
+fst3 (x,_,_) = x
+
 positiveClafers = getClafers "test/positive"
 
 
@@ -87,7 +92,12 @@ case_numberOfSnapShots2 = do
 	forM_ ssSizes (\(file, ssSize) -> when(ssSize/=0) $ putStrLn (file ++ " failed, took " ++ show ssSize ++ " snapshot(s) expected 0"))
 	(andMap ((==0) . snd) ssSizes) @? "Error snapshots were taken when debug was set to False! (For models gotten from test/positive)"
 
---cas_IDCheck :: Assertion
---cas_IDCheck  do 
-
-
+case_IDCheck :: Assertion 
+case_IDCheck = do 
+	clafers <- positiveClafers
+	let claferSnapshotIElements = map (\(file, model) -> (file, (Map.map (mDecls. fst3 . fromJust)) $ (Map.filter (/=Nothing)) $ (Map.map cIr) $ snd $ compileOneFragmentS defaultClaferArgs{debug = Just True} model)) clafers
+	(andMap ((andMap ((andMap idCheck) . snd)) . Map.toList . snd) claferSnapshotIElements) @? "Error Clafers contain empty Parent Id's! (For models gotten from test/positive)"
+	where
+		idCheck (IEConstraint _ c) = (pid c) /= ""
+		idCheck (IEClafer c) = andMap ((/= "") . pid) (supers $ super c) && andMap idCheck (Language.Clafer.Intermediate.Intclafer.elements c)
+		idCheck _ = True
