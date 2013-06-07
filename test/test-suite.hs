@@ -72,6 +72,6 @@ fromLeft (Left a) = a
 case_compileTest :: Assertion
 case_compileTest = do 
 					clafers <- positiveClafers
-					let compiledClafers = map (compileOneFragment defaultClaferArgs) (map snd clafers)
-					mapM_ (\(file, compiled) -> when (not $ compiledCheck compiled) $ putStrLn (file ++ " Error: " ++ (show $ fromLeft compiled))) (zip (map fst clafers) compiledClafers)
-					(getAll $ List.foldr mappend (All True) (map (All . compiledCheck) compiledClafers)) @? "Errors in the above claferModels from positive"
+					let compiledClafers = map (\(file, model) -> (file, compileOneFragment defaultClaferArgs model)) clafers
+					forM_ compiledClafers (\(file, compiled) -> when (not $ compiledCheck compiled) $ putStrLn (file ++ " Error: " ++ (show $ fromLeft compiled)))
+					(and $ map (compiledCheck . snd) compiledClafers) @? "test/positive fail: The above claferModels did not compile."
