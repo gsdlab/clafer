@@ -36,18 +36,18 @@ import System.Directory
 import System.IO
 
 tg_testsuite = $(testGroupGenerator)
-
 main = defaultMain[tg_testsuite]
 
-checkClaferExt "dst.cfr" = True
-checkClaferExt file = if ((eman == "")) then False else (txe == "rfc") && (takeWhile (/='.') (tail eman) /= "tsd")
-	where (txe, eman) = span (/='.') (reverse file)
 
+getClafers :: FilePath -> [(String, String)]
 getClafers dir = do
 					files <- getDirectoryContents dir
 					let claferFiles = List.filter checkClaferExt files
 					claferModels <- mapM (\x -> readFile (dir++"/"++x)) claferFiles
 					return $ zip claferFiles claferModels
+checkClaferExt "dst.cfr" = True
+checkClaferExt file = if ((eman == "")) then False else (txe == "rfc") && (takeWhile (/='.') (tail eman) /= "tsd")
+	where (txe, eman) = span (/='.') (reverse file)
 					
 
 positiveClafers = getClafers "test/positive"
@@ -67,11 +67,15 @@ compiledCheck :: Either a b -> Bool
 compiledCheck (Left _) = False
 compiledCheck (Right _) = True
 
+fromLeft :: Either a b -> a
 fromLeft (Left a) = a
+
+andMap :: (a -> Bool) -> [a] -> Bool
+andMap f lst = and $ map f lst
 
 case_compileTest :: Assertion
 case_compileTest = do 
 					clafers <- positiveClafers
 					let compiledClafers = map (\(file, model) -> (file, compileOneFragment defaultClaferArgs model)) clafers
 					forM_ compiledClafers (\(file, compiled) -> when (not $ compiledCheck compiled) $ putStrLn (file ++ " Error: " ++ (show $ fromLeft compiled)))
-					(and $ map (compiledCheck . snd) compiledClafers) @? "test/positive fail: The above claferModels did not compile."
+					(andMap (compiledCheck . snd) compiledClafers) @? "test/positive fail: The above claferModels did not compile."
