@@ -380,6 +380,7 @@ analyze :: Monad m => ClaferArgs -> IModule -> ClaferT m (IModule, GEnv, Bool)
 analyze args' tree = do
   env <- getEnv
   let debug' = debug $ args env
+  when (fromJust debug') $ takeSnapShot env{cIr = Just (tree, (second $ fromJust $ cIr env), (third $ fromJust $ cIr env))} Desugared
   let dTree' = findDupModule args' tree
   let env' = env{cIr = Just (dTree', (second $ fromJust $ cIr env), (third $ fromJust $ cIr env))}
   when (fromJust debug') $ takeSnapShot env' FoundDuplicates
