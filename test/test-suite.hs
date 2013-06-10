@@ -75,6 +75,7 @@ andMap f lst = and $ map f lst
 fst3 :: (a, b, c) -> a
 fst3 (x,_,_) = x
 
+positiveClafers :: IO [(String, String)] -- IO [(File, Contents)]
 positiveClafers = getClafers "test/positive"
 
 
@@ -92,11 +93,14 @@ case_numberOfSnapShots2 = do
 	forM_ ssSizes (\(file, ssSize) -> when(ssSize/=0) $ putStrLn (file ++ " failed, took " ++ show ssSize ++ " snapshot(s) expected 0"))
 	(andMap ((==0) . snd) ssSizes) @? "Error snapshots were taken when debug was set to False! (For models gotten from test/positive)"
 
-case_IDCheck :: Assertion 
+case_IDCheck :: Assertion -- Make sure none of the parent ID's are empty
 case_IDCheck = do 
 	clafers <- positiveClafers
-	let claferSnapshotIElements = map (\(file, model) -> (file, (Map.map (mDecls. fst3 . fromJust)) $ (Map.filter (/=Nothing)) $ (Map.map cIr) $ snd $ compileOneFragmentS defaultClaferArgs{debug = Just True} model)) clafers
-	(andMap ((andMap ((andMap idCheck) . snd)) . Map.toList . snd) claferSnapshotIElements) @? "Error Clafers contain empty Parent Id's! (For models gotten from test/positive)"
+	let claferSnapshotResults = map (\(file, model) -> (file, Map.toList $ (Map.map ((andMap idCheck) . mDecls. fst3 . fromJust)) $ (Map.filter (/=Nothing)) $ (Map.map cIr) $ snd $ compileOneFragmentS defaultClaferArgs{debug = Just True} model)) clafers
+	forM_ claferSnapshotResults (\(file,mMap) -> when (not $ andMap snd mMap) $ do 
+		putStrLn ("Empty Parent Id in " ++ file ++ ", Failed at stage(s)")
+		forM_ mMap (\(ssID, result) -> when (not result) $ putStrLn ("   " ++ show ssID)))
+	(andMap ((andMap snd) . snd) claferSnapshotResults) @? "Error Clafers contain empty Parent Id's! (For models gotten from test/positive)"
 	where
 		idCheck (IEConstraint _ c) = (pid c) /= ""
 		idCheck (IEClafer c) = andMap ((/= "") . pid) (supers $ super c) && andMap idCheck (Language.Clafer.Intermediate.Intclafer.elements c)
