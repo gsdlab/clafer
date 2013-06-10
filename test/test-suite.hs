@@ -46,7 +46,7 @@ getClafers dir = do
 					claferModels <- mapM (\x -> readFile (dir++"/"++x)) claferFiles
 					return $ zip claferFiles claferModels
 checkClaferExt "dst.cfr" = True
-checkClaferExt file = if ((eman == "")) then False else (txe == "rfc") && (takeWhile (/='.') (tail eman) /= "tsd")
+checkClaferExt file = if ((eman == "")) then False else (txe == "rfc") && (takeWhile (/='.') (tail eman) /= "esd")
 	where (txe, eman) = span (/='.') (reverse file)
 				
 compileOneFragment :: ClaferArgs -> InputModel -> Either [ClaferErr] CompilerResult
