@@ -75,10 +75,7 @@ pExpDefPidPos :: IExp -> PExp
 pExpDefPidPos = pExpDefPid noSpan
 
 pExpDefPid :: Span -> IExp -> PExp
-pExpDefPid = pExpDef ""
-
-pExpDef :: String -> Span -> IExp -> PExp
-pExpDef = PExp Nothing
+pExpDefPid s i = PExp Nothing (genPExpName s i) s i
 
 isParent (PExp _ _ _ (IClaferId _ id _)) = id == parent
 isParent _ = False
@@ -94,6 +91,17 @@ isClaferName' _ = False
 getClaferName :: PExp -> String
 getClaferName (PExp _ _ _ (IClaferId _ id _)) = id
 getClaferName _ = ""
+
+genPExpName :: Span -> IExp -> String
+genPExpName s i = (getIExpName i) ++ "_" ++ show s
+
+getIExpName :: IExp -> String
+getIExpName (IDeclPExp _ _ (PExp _ _ _ i)) = (getIExpName i) 
+getIExpName (IFunExp o _ ) = o 
+getIExpName (IInt x) = show x
+getIExpName (IDouble d) = show d
+getIExpName (IStr s) = s
+getIExpName (IClaferId _ id _) = id
 
 -- -----------------------------------------------------------------------------
 -- conversions
@@ -219,7 +227,7 @@ binOps = logBinOps ++ relBinOps ++ arithBinOps ++ setBinOps
 iIfThenElse   = "=>else"
 
 mkIFunExp op (x:[]) = x
-mkIFunExp op xs = foldl1 (\x y -> IFunExp op $ map (PExp (Just $ TClafer []) "" noSpan) [x,y]) xs
+mkIFunExp op xs = foldl1 (\x y -> IFunExp op $ map (\z -> (PExp (Just $ TClafer []) (genPExpName noSpan z) noSpan z)) [x,y]) xs
 
 toLowerS "" = ""
 toLowerS (s:ss) = toLower s : ss

@@ -96,7 +96,7 @@ desugarSuper x = case x of
   SuperEmpty  -> desugarSuper $ PosSuperEmpty noSpan
   SuperSome superhow setexp -> desugarSuper $ PosSuperSome noSpan superhow setexp
   PosSuperEmpty s ->
-      ISuper False [PExp (Just $ TClafer []) "" s $ mkLClaferId baseClafer True]
+      ISuper False [PExp (Just $ TClafer []) (genPExpName s (mkLClaferId baseClafer True)) s $ mkLClaferId baseClafer True]
   PosSuperSome s superhow setexp ->
       ISuper (desugarSuperHow superhow) [desugarSetExp setexp]
 
