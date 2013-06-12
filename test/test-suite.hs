@@ -28,6 +28,7 @@ import Control.Monad
 import Language.Clafer
 import Language.ClaferT
 import Language.Clafer.Css
+import Language.Clafer.Common
 import qualified Language.Clafer.Intermediate.Intclafer as I
 import Test.Framework
 import Test.Framework.TH
@@ -72,9 +73,6 @@ compileOneFragmentS args model =
 andMap :: (a -> Bool) -> [a] -> Bool
 andMap f lst = and $ map f lst
 
-fst3 :: (a, b, c) -> a
-fst3 (x,_,_) = x
-
 positiveClaferModels :: IO [(String, String)] -- IO [(File, Contents)]
 positiveClaferModels = getClafers "test/positive"
 
@@ -115,3 +113,37 @@ case_IDCheck = do
 		iexpCheck (I.IDeclPExp _ o b) = andMap ((/="") . I.pid . I.body) o && andMap (iexpCheck . I.exp . I.body) o && ((I.pid b) /= "") && (iexpCheck $ I.exp b)
 		iexpCheck (I.IFunExp _ p) = andMap ((/="") . I.pid) p && andMap (iexpCheck . I.exp) p
 		iexpCheck _ = True
+
+case_IDUnique :: Assertion -- Make sure all parent ID's are unique 
+case_IDUnique = do
+	claferModels <- positiveClaferModels
+	let claferSnapShotPids = map (\(file, model) -> 
+		(file, Map.toList $ (Map.map (getPidsEle . I.mDecls . fst3 . fromJust)) $ (Map.filter (/=Nothing)) $ (Map.map cIr) $ snd $ compileOneFragmentS defaultClaferArgs{debug = Just True} model)) claferModels
+	forM_ claferSnapShotPids (\(file, mMap) -> 
+		when (not $ (andMap (\x -> (((map snd) $ snd x)==(List.nub $ (map snd) $ snd x))) mMap)) $ do
+			putStrLn ("Duplicate Parent Id's in " ++ file ++ ", Failed at stage(s)\n")
+			forM_ mMap (\(ssID, pMap) -> when (pMap /= (List.nub pMap)) $ do
+				putStrLn (show ssID)
+				printDups pMap)
+			putStrLn "")
+	let pIDs = (map  (\x -> (map ((map snd) . snd)) $ snd x) claferSnapShotPids)
+	(andMap (andMap (\x -> (x==(List.nub x)))) pIDs 
+		@? "Error Clafers contain non unique Parent ID's! (For models gotten from test/positive)")
+	where
+		getPidsEle :: [I.IElement] -> [(String, String)] -- [(GeneratedName, PID)]
+		getPidsEle ((I.IEConstraint _ (I.PExp _ p s i)):es) = ((genPExpName s i), p) : (getPidsExp i) ++ (getPidsEle es)
+		getPidsEle ((I.IEClafer c):es) = (join $ map (\p -> ((genPExpName (I.inPos p) (I.exp p)),(I.pid p)):(getPidsExp (I.exp p))) (I.supers $ I.super c)) ++ (getPidsEle $ I.elements c) ++ (getPidsEle es)
+		getPidsEle ((I.IEGoal _ (I.PExp _ p s i)):es) = ((genPExpName s i), p) : (getPidsExp i) ++ (getPidsEle es)
+		getPidsEle [] = []
+		getPidsExp :: I.IExp -> [(String, String)] -- [(GeneratedName, PID)]
+		getPidsExp (I.IDeclPExp _ o (I.PExp _ p s i)) = ((genPExpName s i), p) : (map (\x -> ((genPExpName (I.inPos $ I.body x) (I.exp $ I.body x)), (I.pid $ I.body x))) o) ++ (join $ map (getPidsExp . I.exp . I.body) o) ++ (getPidsExp i)
+		getPidsExp (I.IFunExp _ p) = map (\x -> ((genPExpName (I.inPos x) (I.exp x)), (I.pid x))) p ++ (join $ map (getPidsExp . I.exp) p)
+		getPidsExp _ = []
+		printDups :: [(String, String)] -> IO () -- [(GeneratedName, PID) -> IO ()]
+		printDups ((x,y):xs) = do
+			when (y `elem` (map snd xs)) $ do
+				putStr ("   The PID " ++ y ++ "\thas duplicates for " ++ x ++ " ")
+				forM_ xs (\(u,w) -> when (w==y) $ putStr (u ++ " "))	
+				putStrLn ""
+			printDups xs
+		printDups [] = putStrLn ""

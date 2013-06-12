@@ -96,7 +96,7 @@ genPExpName :: Span -> IExp -> String
 genPExpName s i = (getIExpName i) ++ "_" ++ show s
 
 getIExpName :: IExp -> String
-getIExpName (IDeclPExp _ _ (PExp _ _ _ i)) = (getIExpName i) 
+getIExpName (IDeclPExp q _ _) = show q 
 getIExpName (IFunExp o _ ) = o 
 getIExpName (IInt x) = show x
 getIExpName (IDouble d) = show d
