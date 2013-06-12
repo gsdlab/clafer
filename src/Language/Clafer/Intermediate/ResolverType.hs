@@ -385,7 +385,7 @@ addRef pexp =
       let result = (newPExp $ IFunExp "." [pexp, deref]) `withType` typeOf deref
       return result <++> addRef result
   where
-  newPExp i = PExp Nothing (genPExpName (inPos pexp) i) (inPos pexp) i
+  newPExp i = PExp Nothing (genPExpName Nothing (inPos pexp) i) (inPos pexp) i
   
 typeOf :: PExp -> IType
 typeOf pexp = fromMaybe (error "No type") $ iType pexp

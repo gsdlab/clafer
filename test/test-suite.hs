@@ -131,13 +131,13 @@ case_IDUnique = do
 		@? "Error Clafers contain non unique Parent ID's! (For models gotten from test/positive)")
 	where
 		getPidsEle :: [I.IElement] -> [(String, String)] -- [(GeneratedName, PID)]
-		getPidsEle ((I.IEConstraint _ (I.PExp _ p s i)):es) = ((genPExpName s i), p) : (getPidsExp i) ++ (getPidsEle es)
-		getPidsEle ((I.IEClafer c):es) = (join $ map (\p -> ((genPExpName (I.inPos p) (I.exp p)),(I.pid p)):(getPidsExp (I.exp p))) (I.supers $ I.super c)) ++ (getPidsEle $ I.elements c) ++ (getPidsEle es)
-		getPidsEle ((I.IEGoal _ (I.PExp _ p s i)):es) = ((genPExpName s i), p) : (getPidsExp i) ++ (getPidsEle es)
+		getPidsEle ((I.IEConstraint _ (I.PExp t p s i)):es) = ((genPExpName t s i), p) : (getPidsExp i) ++ (getPidsEle es)
+		getPidsEle ((I.IEClafer c):es) = (join $ map (\p -> ((genPExpName (I.iType p) (I.inPos p) (I.exp p)),(I.pid p)):(getPidsExp (I.exp p))) (I.supers $ I.super c)) ++ (getPidsEle $ I.elements c) ++ (getPidsEle es)
+		getPidsEle ((I.IEGoal _ (I.PExp t p s i)):es) = ((genPExpName t s i), p) : (getPidsExp i) ++ (getPidsEle es)
 		getPidsEle [] = []
 		getPidsExp :: I.IExp -> [(String, String)] -- [(GeneratedName, PID)]
-		getPidsExp (I.IDeclPExp _ o (I.PExp _ p s i)) = ((genPExpName s i), p) : (map (\x -> ((genPExpName (I.inPos $ I.body x) (I.exp $ I.body x)), (I.pid $ I.body x))) o) ++ (join $ map (getPidsExp . I.exp . I.body) o) ++ (getPidsExp i)
-		getPidsExp (I.IFunExp _ p) = map (\x -> ((genPExpName (I.inPos x) (I.exp x)), (I.pid x))) p ++ (join $ map (getPidsExp . I.exp) p)
+		getPidsExp (I.IDeclPExp _ o (I.PExp t p s i)) = ((genPExpName t s i), p) : (map (\x -> ((genPExpName (I.iType $ I.body x) (I.inPos $ I.body x) (I.exp $ I.body x)), (I.pid $ I.body x))) o) ++ (join $ map (getPidsExp . I.exp . I.body) o) ++ (getPidsExp i)
+		getPidsExp (I.IFunExp _ p) = map (\x -> ((genPExpName (I.iType x) (I.inPos x) (I.exp x)), (I.pid x))) p ++ (join $ map (getPidsExp . I.exp) p)
 		getPidsExp _ = []
 		printDups :: [(String, String)] -> IO () -- [(GeneratedName, PID) -> IO ()]
 		printDups ((x,y):xs) = do
