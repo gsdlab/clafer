@@ -29,6 +29,7 @@ import Language.Clafer
 import Language.ClaferT
 import Language.Clafer.Css
 import Language.Clafer.Common
+import Language.Clafer.Front.Absclafer
 import qualified Language.Clafer.Intermediate.Intclafer as I
 import Test.Framework
 import Test.Framework.TH
@@ -73,6 +74,9 @@ compileOneFragmentS args model =
 andMap :: (a -> Bool) -> [a] -> Bool
 andMap f lst = and $ map f lst
 
+lukesRule :: I.PExp -> Bool -- empty PID <=> noSpan
+lukesRule p = ((I.pid p)/="" && (I.inPos p)/=noSpan) || ((I.pid p)=="" && (I.inPos p)==noSpan)
+
 positiveClaferModels :: IO [(String, String)] -- IO [(File, Contents)]
 positiveClaferModels = getClafers "test/positive"
 
@@ -83,8 +87,9 @@ case_numberOfSnapShots1 = do
 	let ssSizes = map (\(file, model) -> 
 		(file, Map.size $ snd $ compileOneFragmentS defaultClaferArgs{debug = Just True} model)) claferModels
 	forM_ ssSizes (\(file, ssSize) -> 
-		when(ssSize/=11) $ putStrLn (file ++ " failed, took " ++ show ssSize ++ " snapshot(s) expected 11"))
-	(andMap ((==11) . snd) ssSizes) @? "Error not all snapshots were taken when debug was set to True! (For models gotten from test/positive)"
+		when(ssSize/=numberOfSS) $ putStrLn (file ++ " failed, took " ++ show ssSize ++ " snapshot(s) expected " ++ show numberOfSS))
+	(andMap ((==numberOfSS) . snd) ssSizes 
+		@? "Failed, not all snapshots were taken when debug was set to True!\n Did you remeber to update the total number of snapshots after adding new snapshot? (For models gotten from test/positive)")
 
 case_numberOfSnapShots2 :: Assertion -- Make sure no snapshots are taken when debug is set to False!
 case_numberOfSnapShots2 = do
@@ -93,10 +98,66 @@ case_numberOfSnapShots2 = do
 		(file, Map.size $ snd $ compileOneFragmentS defaultClaferArgs{debug = Just False} model)) claferModels
 	forM_ ssSizes (\(file, ssSize) -> 
 		when(ssSize/=0) $ putStrLn (file ++ " failed, took " ++ show ssSize ++ " snapshot(s) expected 0"))
-	(andMap ((==0) . snd) ssSizes) @? "Error snapshots were taken when debug was set to False! (For models gotten from test/positive)"
+	(andMap ((==0) . snd) ssSizes 
+		@? "Failed, snapshots were taken when debug was set to False! (For models gotten from test/positive)")
 
-case_IDCheck :: Assertion -- Make sure none of the parent ID's are empty
-case_IDCheck = do 
+case_IDCheck :: Assertion -- Make sure all non empty parent ID's are unique and all Parent ID's pass lukesRule
+case_IDCheck = do
+	claferModels <- positiveClaferModels
+	let claferSnapShotPids = map (\(file, model) -> 
+		(file, Map.toList $ (Map.map (getPidsEle . I.mDecls . fst3 . fromJust)) $ (Map.filter (/=Nothing)) $ (Map.map cIr) $ snd $ compileOneFragmentS defaultClaferArgs{debug = Just True} model)) claferModels
+	forM_ claferSnapShotPids (\(file, mMap) -> 
+		when (not $ (andMap (\x -> ((filter (/="") $ (map I.pid) $ snd x)==(filter (/="") $ List.nub $ (map I.pid) $ snd x))) mMap)) $ do
+			putStrLn ("Duplicate Parent Id's in " ++ file ++ ", Failed at stage(s)\n")
+			forM_ mMap (\(ssID, pMap) -> 
+				when ((filter (/="") $ map I.pid pMap) /= (filter (/="") $ List.nub $ map I.pid pMap)) $ do
+					putStrLn (show ssID)
+					printDups pMap)
+			putStrLn "")
+	forM_ claferSnapShotPids (\(file, mMap) ->
+		when (not $ andMap ((andMap lukesRule) . snd) mMap) $ do
+			putStrLn ("Failed lukesRule (empty PID <=> noSpan) at stage(s)\n")
+			forM_ mMap (\(ssID, pMap) -> 
+				when (not $ (andMap lukesRule pMap)) $ do
+					putStrLn (show ssID)
+					printFails pMap)
+			putStrLn "")
+	let dupResult = andMap (andMap (\x -> ((filter (/="") x)==(filter (/="") (List.nub x))))) (map  (\x -> (map ((map I.pid) . snd)) $ snd x) claferSnapShotPids)
+	let lukesResult = andMap  ((andMap ((andMap lukesRule) . snd)) . snd) claferSnapShotPids
+	(dupResult && lukesResult @? 
+		(errorMsg lukesResult dupResult) ++ "(For models gotten from test/positive)")
+	where
+		getPidsEle :: [I.IElement] -> [I.PExp]
+		getPidsEle ((I.IEConstraint _ p):es) = p : (getPidsExp $ I.exp p) ++ (getPidsEle es)
+		getPidsEle ((I.IEClafer c):es) = (join $ map (\p -> (p:(getPidsExp (I.exp p)))) (I.supers $ I.super c)) ++ (getPidsEle $ I.elements c) ++ (getPidsEle es)
+		getPidsEle ((I.IEGoal _ p):es) = p : (getPidsExp (I.exp p)) ++ (getPidsEle es)
+		getPidsEle [] = []
+		getPidsExp :: I.IExp -> [I.PExp]
+		getPidsExp (I.IDeclPExp _ o p) = p : (map I.body o) ++ (join $ map (getPidsExp . I.exp . I.body) o) ++ (getPidsExp (I.exp p))
+		getPidsExp (I.IFunExp _ ps) = ps ++ (join $ map (getPidsExp . I.exp) ps)
+		getPidsExp _ = []
+		printDups :: [I.PExp] -> IO ()
+		printDups (p1:ps) = do
+			when ((I.pid p1) /= "" && (I.pid p1) `elem` (map I.pid ps)) $ do
+				putStr ("   The PID " ++ show p1 ++ "\thas duplicates with ")
+				forM_ ps (\p2 -> when ((I.pid p1)==(I.pid p2)) $ putStr ((I.pid p2) ++ " "))	
+				putStrLn ""
+			printDups ps
+		printDups [] = putStrLn ""
+		printFails :: [I.PExp] -> IO ()
+		printFails (p:ps) = do
+			when (not $ lukesRule p) $ 
+				putStrLn ("   " ++ show p ++ " failed lukesRule (empty PID <=> noSpan)") 
+			printFails ps
+		printFails [] = putStrLn ""
+		errorMsg :: Bool -> Bool -> String
+		errorMsg True False = "Failed, Clafers PExp's non empty Parent Id's are not unique! "
+		errorMsg False True = "Failed, Clafers PExp's don't pass lukeRule where empty PID <=> noSpan! "
+		errorMsg False False = "Failed, Clafers PExp's don't pass lukeRule where empty PID <=> noSpan and non empty Parent Id's are not unique! "
+
+{-
+cas_IDCheck :: Assertion -- Make sure none of the parent ID's are empty
+cas_IDCheck = do 
 	claferModels <- positiveClaferModels
 	let claferSnapshotResults = map (\(file, model) -> 
 		(file, Map.toList $ (Map.map ((andMap idCheck) . I.mDecls. fst3 . fromJust)) $ (Map.filter (/=Nothing)) $ (Map.map cIr) $ snd $ compileOneFragmentS defaultClaferArgs{debug = Just True} model)) claferModels
@@ -113,37 +174,4 @@ case_IDCheck = do
 		iexpCheck (I.IDeclPExp _ o b) = andMap ((/="") . I.pid . I.body) o && andMap (iexpCheck . I.exp . I.body) o && ((I.pid b) /= "") && (iexpCheck $ I.exp b)
 		iexpCheck (I.IFunExp _ p) = andMap ((/="") . I.pid) p && andMap (iexpCheck . I.exp) p
 		iexpCheck _ = True
-
-case_IDUnique :: Assertion -- Make sure all parent ID's are unique 
-case_IDUnique = do
-	claferModels <- positiveClaferModels
-	let claferSnapShotPids = map (\(file, model) -> 
-		(file, Map.toList $ (Map.map (getPidsEle . I.mDecls . fst3 . fromJust)) $ (Map.filter (/=Nothing)) $ (Map.map cIr) $ snd $ compileOneFragmentS defaultClaferArgs{debug = Just True} model)) claferModels
-	forM_ claferSnapShotPids (\(file, mMap) -> 
-		when (not $ (andMap (\x -> (((map snd) $ snd x)==(List.nub $ (map snd) $ snd x))) mMap)) $ do
-			putStrLn ("Duplicate Parent Id's in " ++ file ++ ", Failed at stage(s)\n")
-			forM_ mMap (\(ssID, pMap) -> when (pMap /= (List.nub pMap)) $ do
-				putStrLn (show ssID)
-				printDups pMap)
-			putStrLn "")
-	let pIDs = (map  (\x -> (map ((map snd) . snd)) $ snd x) claferSnapShotPids)
-	(andMap (andMap (\x -> (x==(List.nub x)))) pIDs 
-		@? "Error Clafers contain non unique Parent ID's! (For models gotten from test/positive)")
-	where
-		getPidsEle :: [I.IElement] -> [(String, String)] -- [(GeneratedName, PID)]
-		getPidsEle ((I.IEConstraint _ (I.PExp t p s i)):es) = ((genPExpName t s i), p) : (getPidsExp i) ++ (getPidsEle es)
-		getPidsEle ((I.IEClafer c):es) = (join $ map (\p -> ((genPExpName (I.iType p) (I.inPos p) (I.exp p)),(I.pid p)):(getPidsExp (I.exp p))) (I.supers $ I.super c)) ++ (getPidsEle $ I.elements c) ++ (getPidsEle es)
-		getPidsEle ((I.IEGoal _ (I.PExp t p s i)):es) = ((genPExpName t s i), p) : (getPidsExp i) ++ (getPidsEle es)
-		getPidsEle [] = []
-		getPidsExp :: I.IExp -> [(String, String)] -- [(GeneratedName, PID)]
-		getPidsExp (I.IDeclPExp _ o (I.PExp t p s i)) = ((genPExpName t s i), p) : (map (\x -> ((genPExpName (I.iType $ I.body x) (I.inPos $ I.body x) (I.exp $ I.body x)), (I.pid $ I.body x))) o) ++ (join $ map (getPidsExp . I.exp . I.body) o) ++ (getPidsExp i)
-		getPidsExp (I.IFunExp _ p) = map (\x -> ((genPExpName (I.iType x) (I.inPos x) (I.exp x)), (I.pid x))) p ++ (join $ map (getPidsExp . I.exp) p)
-		getPidsExp _ = []
-		printDups :: [(String, String)] -> IO () -- [(GeneratedName, PID) -> IO ()]
-		printDups ((x,y):xs) = do
-			when (y `elem` (map snd xs)) $ do
-				putStr ("   The PID " ++ y ++ "\thas duplicates for " ++ x ++ " ")
-				forM_ xs (\(u,w) -> when (w==y) $ putStr (u ++ " "))	
-				putStrLn ""
-			printDups xs
-		printDups [] = putStrLn ""
+-}

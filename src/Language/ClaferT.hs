@@ -25,7 +25,7 @@
  - ClaferEnv can just import this module without all the parsing/compiline/generating
  - functionality.
  -}
-module Language.ClaferT (ClaferEnv(..), makeEnv, ast, ir, ClaferM, ClaferT, CErr(..), CErrs(..), ClaferErr(..), ClaferErrs(..), ClaferSErr(..), ClaferSErrs(..), ErrPos(..), PartialErrPos(..), throwErrs, throwErr, catchErrs, getEnv, getsEnv, modifyEnv, putEnv, runClafer, runClaferT, runClaferS, runClaferTS, Throwable(..), Span(..), Pos(..),SnapShots,takeSnapShot, SnapShotId(..)) where
+module Language.ClaferT (ClaferEnv(..), makeEnv, ast, ir, ClaferM, ClaferT, CErr(..), CErrs(..), ClaferErr(..), ClaferErrs(..), ClaferSErr(..), ClaferSErrs(..), ErrPos(..), PartialErrPos(..), throwErrs, throwErr, catchErrs, getEnv, getsEnv, modifyEnv, putEnv, runClafer, runClaferT, runClaferS, runClaferTS, Throwable(..), Span(..), Pos(..),SnapShots,takeSnapShot, SnapShotId(..), numberOfSS) where
 
 import Control.Monad.Error
 import Control.Monad.State
@@ -104,6 +104,8 @@ makeEnv args = ClaferEnv { args = args',
 data SnapShotId = Start | Parsed | Mapped | Desugared | FoundDuplicates | NameResolved 
                   | InheritanceResolved | TypeResolved | Transformed | Optimized 
                   | Compiled deriving (Show, Ord, Eq)
+numberOfSS :: Int
+numberOfSS = 11 -- REMEMBER TO UPDATE THIS WHEN ADDING SNAPSHOTS!
 
 type SnapShots = (Map.Map SnapShotId ClaferEnv) 
 takeSnapShot env p = tell $ Map.singleton p env 
