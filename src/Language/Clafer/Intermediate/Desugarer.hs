@@ -74,14 +74,13 @@ sugarDeclaration x = case x of
   IEGoal _ goal -> ElementDecl $ Subgoal $sugarGoal goal
 
 
-desugarClafer :: Clafer -> IClafer
-desugarClafer x = case x of
-  Clafer abstract gcard id super card init elements  -> 
-      desugarClafer $ PosClafer noSpan abstract gcard id super card init elements
-  PosClafer s abstract gcard id super card init elements  -> 
-    IClafer s (desugarAbstract abstract) (desugarGCard gcard) (transIdent id)
+desugarClafer :: Clafer -> [IElement]
+desugarClafer (Clafer abstract gcard id super card init elements)  = 
+    desugarClafer $ PosClafer noSpan abstract gcard id super card init elements
+desugarClafer (PosClafer s abstract gcard id super card init elements)  = 
+    (IEClafer $ IClafer s (desugarAbstract abstract) (desugarGCard gcard) (transIdent id)
             "" (desugarSuper super) (desugarCard card) (0, -1)
-            ((desugarInit init) ++ desugarElements elements)
+            (desugarElements elements)) : (desugarInit id init)
 
 
 sugarClafer :: IClafer -> Clafer
@@ -108,15 +107,13 @@ desugarSuperHow x = case x of
   _  -> True
 
 
-desugarInit :: Init -> [IElement]
-desugarInit x = case x of
-  InitEmpty  -> desugarInit $ PosInitEmpty noSpan
-  InitSome inithow exp  -> desugarInit $ PosInitSome noSpan inithow exp
-  PosInitEmpty s  -> []
-  PosInitSome s inithow exp  ->
-      [IEConstraint (desugarInitHow inithow)
-      (pExpDefPidPos (IFunExp "=" [mkPLClaferId "this" False, desugarExp exp]))]
-
+desugarInit :: PosIdent -> Init -> [IElement]
+desugarInit id InitEmpty = desugarInit id $ PosInitEmpty noSpan
+desugarInit id (InitSome inithow exp) = desugarInit id $ PosInitSome noSpan inithow exp
+desugarInit id (PosInitEmpty _) = []
+desugarInit id (PosInitSome s inithow exp) = [IEConstraint (desugarInitHow inithow) 
+  (pExpDefPid s (IFunExp "=" [mkPLClaferId (snd $ getIdent id) False, desugarExp exp]))]
+  where getIdent (PosIdent y) = y
 
 desugarInitHow :: InitHow -> Bool
 desugarInitHow x = case x of
@@ -219,11 +216,11 @@ desugarElement x = case x of
       desugarElement $ PosSubsoftconstraint noSpan softconstraint
   Subgoal goal -> desugarElement $ PosSubgoal noSpan goal
   PosSubclafer s clafer  ->
-      (IEClafer $ desugarClafer clafer) :
+      (desugarClafer clafer) ++
       (mkArrowConstraint clafer >>= desugarElement)
-  PosClaferUse s name card elements  -> [IEClafer $ desugarClafer $ PosClafer s
+  PosClaferUse s name card elements  -> desugarClafer $ PosClafer s
       AbstractEmpty GCardEmpty (mkIdent $ sident $ desugarName name)
-      (SuperSome SuperColon (PosClaferId noSpan name)) card InitEmpty elements]
+      (SuperSome SuperColon (PosClaferId noSpan name)) card InitEmpty elements
   PosSubconstraint s constraint  ->
       [IEConstraint True $ desugarConstraint constraint]
   PosSubsoftconstraint s softconstraint ->
