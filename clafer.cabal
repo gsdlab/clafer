@@ -1,11 +1,11 @@
 Name:                clafer
-Version:             0.3.2
+Version:             0.3.3
 Synopsis:            clafer compiles Clafer models to other formats, such as Alloy, XML, HTML, Dot.
 Description:         Clafer is a general purpose, lightweight, structural modeling language developed at GSD Lab, University of Waterloo. Lightweight modeling aims at improving the understanding of the problem domain in the early stages of software development and determining the requirements with fewer defects. Clafer's goal is to make modeling more accessible to a wider range of users and domains. The tool provides a reference language implementation. It translates models to other formats (e.g. Alloy, XML) to allow for reasoning with existing tools.
 Homepage:            http://clafer.org
 License:             MIT
 License-file:        LICENSE
-Author:              Kacper Bak, Jimmy Liang, Michal Antkiewicz, Chris Walker
+Author:              Kacper Bak, Jimmy Liang, Michal Antkiewicz, Chris Walker, Luke Brown
 Maintainer:          kbak@gsd.uwaterloo.ca
 Stability:           Experimental
 Category:            Model
@@ -23,23 +23,29 @@ source-repository head
     location:        git://github.com/gsdlab/clafer.git
 					 
 Executable clafer
-    build-tools:     ghc >= 7.4.1
+    build-tools:     ghc >= 7.4.2
     extensions:      DeriveDataTypeable,
                      RankNTypes
     main-is:         clafer.hs
     build-depends:   base >= 4 && < 5,
-                     clafer,
+                     clafer == 0.3.3,
                      array >= 0.4.0.0, 
                      process >= 1.1.0.1, 
-                     mtl >= 2.1.1, 
+                     mtl >= 2.1.2, 
                      containers >= 0.4.2.1, 
-                     cmdargs >= 0.10.2, 
+                     cmdargs >= 0.10.3, 
                      executable-path >= 0.0.3, 
                      filepath >= 1.3.0.0,
-                     HaXml >= 1.23.3,
+                     HaXml >= 1.24,
                      MaybeT >= 0.1.2,
                      glpk-hs >= 0.3.3,
-                     parsec >= 3.1.2
+                     parsec >= 3.1.2,
+                     test-framework, 
+                     test-framework-hunit, 
+                     test-framework-quickcheck2,
+                     test-framework-th,
+                     QuickCheck, 
+                     HUnit 
     hs-source-dirs:  src
 
 library 
@@ -50,15 +56,21 @@ library
                      base >= 4 && < 5, 
                      array >= 0.4.0.0, 
                      process >= 1.1.0.1, 
-                     mtl >= 2.1.1, 
+                     mtl >= 2.1.2, 
                      containers >= 0.4.2.1, 
-                     cmdargs >= 0.10.2, 
+                     cmdargs >= 0.10.3, 
                      executable-path >= 0.0.3, 
                      filepath >= 1.3.0.0,
-                     HaXml >= 1.23.3,
+                     HaXml >= 1.24,
                      MaybeT >= 0.1.2,
                      glpk-hs >= 0.3.3,
-                     parsec >= 3.1.2
+                     parsec >= 3.1.2,
+                     test-framework, 
+                     test-framework-hunit, 
+                     test-framework-quickcheck2,
+                     test-framework-th,
+                     QuickCheck, 
+                     HUnit 
     hs-source-dirs:  src
     ghc-options:     -Wall
     exposed-modules: 
@@ -88,10 +100,40 @@ library
                      Language.Clafer.Intermediate.ResolverInheritance,
                      Language.Clafer.Intermediate.ResolverName,
                      Language.Clafer.Intermediate.ResolverType,
-                     Language.Clafer.Intermediate.ScopeAnalyzer,
+                     Language.Clafer.Intermediate.ScopeAnalysis,
+                     Language.Clafer.Intermediate.SimpleScopeAnalyzer,
+                     Language.Clafer.Intermediate.GLPKScopeAnalyzer,
                      Language.Clafer.Intermediate.StringAnalyzer,
                      Language.Clafer.Intermediate.Tracing,
                      Language.Clafer.Intermediate.Transformer,
                      Language.Clafer.Optimizer.Optimizer,
                      Language.Clafer.SplitJoin,
                      Language.Clafer.Version
+
+Test-Suite test-suite
+    type:           exitcode-stdio-1.0  
+    main-is:        test/test-suite.hs
+    build-depends:   
+                     base >= 4 && < 5, 
+                     array >= 0.4.0.0, 
+                     process >= 1.1.0.1, 
+                     mtl >= 2.1.1, 
+                     containers >= 0.4.2.1, 
+                     cmdargs >= 0.10.2, 
+                     executable-path >= 0.0.3, 
+                     filepath >= 1.3.0.0,
+                     HaXml >= 1.23.3,
+                     MaybeT >= 0.1.2,
+                     glpk-hs >= 0.3.3,
+                     parsec >= 3.1.2,
+                     clafer == 0.3.3
+    ghc-options      -Wall
+
+    build-depends:  
+                     test-framework, 
+                     test-framework-hunit, 
+                     test-framework-quickcheck2,
+                     test-framework-th,
+                     QuickCheck, 
+                     HUnit,
+                     directory

@@ -175,11 +175,19 @@ getIfThenElseType t1 t2 =
   do
     h1 <- mapM hierarchy $ unionType t1
     h2 <- mapM hierarchy $ unionType t2
-    let ut = catMaybes [contains el1 u2 `mplus` contains el2 u1 | u1 <- h1, u2 <- h2, el1 <- u1, el2 <- u2]
+    let ut = catMaybes [commonHierarchy u1 u2 | u1 <- h1, u2 <- h2]
     return $ fromUnionType ut
   where
-    -- we have to exclude the common ancestor - clafer, which won't make any sense 
-  contains i is = if (i `elem` is) && (i /= "clafer")  then Just i else Nothing
+  commonHierarchy h1 h2 = filterClafer $ commonHierarchy' (reverse h1) (reverse h2) Nothing
+  commonHierarchy' (x:xs) (y:ys) accumulator = 
+    if (x == y) 
+      then 
+        if (null xs || null ys) 
+          then Just x
+          else commonHierarchy' xs ys $ Just x 
+      else accumulator
+  filterClafer value = 
+    if (value == Just "clafer") then Nothing else value
 
 resolveTModule :: (IModule, GEnv) -> Either ClaferSErr IModule
 resolveTModule (imodule, _) =

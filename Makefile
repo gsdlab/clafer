@@ -20,10 +20,10 @@ all: build
 
 build:
 	$(MAKE) -C $(TOOL_DIR)
-	cabal install --only-dependencies $(GPLK_LIBS_INCLUDES) $(MAC_USR_LIB)
+	cabal install --only-dependencies
 	cabal configure
 	cabal build
-	cp dist/build/clafer/clafer .
+	cp dist/build/clafer/clafer* .
 
 install:  
 	mkdir -p $(to)
@@ -48,14 +48,21 @@ Css.hs:
 	$(MAKE) -C $(SRC_DIR) Css.hs
 
 # enable profiler
+# first remove `cabal` and `ghc` folders (on win: `<User>\AppData\Roaming\cabal` and `<User>\AppData\Roaming\ghc`)
+# this will reinstall everything with profiling support, build clafer, and copy it to .
 prof:
-	$(MAKE) -C $(SRC_DIR)
-	$(MAKE) -C $(TOOL_DIR)
-	ghc -isrc -prof -auto-all -rtsopts -O -outputdir dist/build --make src/clafer -o clafer
+	cabal update
+	cabal install --only-dependencies -p --enable-executable-profiling $(GPLK_LIBS_INCLUDES) $(MAC_USR_LIB)
+	cabal configure -p --enable-executable-profiling
+	cabal build --ghc-options="-prof -auto-all -rtsopts"
+	cp dist/build/clafer/clafer* .
 
 .PHONY : test
 
 test:
+	cabal configure --enable-tests
+	cabal build
+	cabal test
 	$(MAKE) -C $(TEST_DIR) test
 
 reg:

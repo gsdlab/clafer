@@ -1,5 +1,5 @@
 {-
- Copyright (C) 2012 Kacper Bak, Jimmy Liang <http://gsd.uwaterloo.ca>
+ Copyright (C) 2012-2013 Kacper Bak, Jimmy Liang <http://gsd.uwaterloo.ca>
 
  Permission is hereby granted, free of charge, to any person obtaining a copy of
  this software and associated documentation files (the "Software"), to deal in
@@ -35,6 +35,9 @@ import Language.Clafer.Version
 data ClaferMode = Alloy42 | Alloy | Xml | Clafer | Html | Graph | CVLGraph | Choco
   deriving (Eq, Show, Data, Typeable)
 
+data ScopeStrategy = None | Simple | Full
+  deriving (Eq, Show, Data, Typeable)
+
 data ClaferArgs = ClaferArgs {
       mode :: Maybe ClaferMode,
       console_output :: Maybe Bool,
@@ -55,7 +58,8 @@ data ClaferArgs = ClaferArgs {
       add_graph :: Maybe Bool,
       show_references :: Maybe Bool,
       add_comments :: Maybe Bool,
-      ecore2clafer :: Maybe Bool,      
+      ecore2clafer :: Maybe Bool,
+      scope_strategy :: Maybe ScopeStrategy,
       file :: FilePath
     } deriving (Show, Data, Typeable)
 
@@ -80,6 +84,7 @@ clafer = ClaferArgs {
   show_references     = def &= help "Whether the links for references should be rendered. ('html' and 'graph' modes only)." &= name "sr",
   add_comments        = def &= help "Include comments from the source file in the html output ('html' mode only).",
   ecore2clafer        = def &= help "Translate an ECore model into Clafer.",
+  scope_strategy      = def &= help "Use scope computation strategy: none, simple (default), or full." &= name "ss",
   file                = def &= args   &= typ "FILE"
  } &= summary ("Clafer " ++ version) &= program "clafer"
 
@@ -119,6 +124,7 @@ mergeArgs args args'  = args' {
   show_references     = show_references args     `mplus` show_references args',  
   add_comments        = add_comments args        `mplus` add_comments args',
   ecore2clafer        = ecore2clafer args        `mplus` ecore2clafer args',
+  scope_strategy      = scope_strategy args      `mplus` scope_strategy args',
   file                = file args}
 
 -- default values for arguments (the lowest priority)
@@ -142,9 +148,10 @@ setDefArgs args = args {
   add_graph           = add_graph args           `mplus` Just def,
   show_references     = show_references args     `mplus` Just def,
   add_comments        = add_comments args        `mplus` Just def,
-  ecore2clafer        = ecore2clafer args        `mplus` Just def}
+  ecore2clafer        = ecore2clafer args        `mplus` Just def,
+  scope_strategy      = scope_strategy args      `mplus` Just Simple}
 
 
-emptyClaferArgs = ClaferArgs Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing ""
+emptyClaferArgs = ClaferArgs Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing ""
 
 defaultClaferArgs = setDefArgs emptyClaferArgs
