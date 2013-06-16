@@ -278,7 +278,7 @@ anything = Anything
 lower |^ upper =
   do
     clafers' <- filter (matches lower) <$> clafers
-    parents' <- filter (matches upper) <$> mapM parentOf clafers'
+    parents' <- filter (matches upper) <$> runListT (parentOf =<< foreachM clafers')
     return $ zip clafers' parents'
 
 -- a -> b    
@@ -286,7 +286,7 @@ lower |^ upper =
 lower |-> upper =
   do
     clafers' <- filter (matches lower) <$> clafers
-    supers'  <- filter (matches upper) <$> mapM refOf clafers'
+    supers'  <- filter (matches upper) <$> runListT (refOf =<< foreachM clafers')
     return $ zip clafers' supers'
 
 -- a : b
@@ -294,7 +294,7 @@ lower |-> upper =
 lower |: upper =
   do
     clafers' <- filter (matches lower) <$> clafers
-    supers'  <- filter (matches upper) <$> mapM colonOf clafers'
+    supers'  <- filter (matches upper) <$> runListT (colonOf =<< foreachM clafers')
     return $ zip clafers' supers'
 
 -- constraints under
