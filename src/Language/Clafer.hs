@@ -340,7 +340,7 @@ generate =
                         Html     -> ("html", generateHtml env, Nothing)
                         Graph    -> ("dot", genSimpleGraph (ast env) iModule (takeBaseName $ file cargs) (fromJust $ show_references cargs), Nothing)
                         CVLGraph -> ("dot", genCVLGraph (ast env) iModule (takeBaseName $ file cargs), Nothing)
-                        Choco    -> ("js", genCModule cargs (astrModule iModule, genv), Nothing)
+                        Choco    -> ("js", genCModule cargs (imod, genv), Nothing)
     return $ CompilerResult { extension = ext, 
                      outputCode = code, 
                      statistics = stats,
