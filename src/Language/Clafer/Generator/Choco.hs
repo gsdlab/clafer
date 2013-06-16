@@ -2,7 +2,7 @@
 
 module Language.Clafer.Generator.Choco (genCModule) where
 
-import Language.Clafer.Intermediate.ScopeAnalyzer
+import Language.Clafer.Intermediate.ScopeAnalysis
 import Control.Applicative
 import Control.Monad
 import Control.Monad.Writer
@@ -19,7 +19,7 @@ import Debug.Trace
 
 
 genCModule :: ClaferArgs -> (IModule, GEnv) -> Result
-genCModule _ (imodule@IModule{mDecls}, _) =
+genCModule args (imodule@IModule{mDecls}, _) =
     genScopes
     ++ "\n"
     ++ (genAbstractClafer =<< abstractClafers)
@@ -33,7 +33,7 @@ genCModule _ (imodule@IModule{mDecls}, _) =
     
     toplevelClafers = mapMaybe iclafer mDecls
     -- The sort is so that we encounter sub clafers before super clafers when abstract clafers extend other abstract clafers
-    abstractClafers = reverse $ sortBy (comparing $ length . supersOf . uid) $ filter isAbstract toplevelClafers
+    abstractClafers = sortBy (comparing $ length . supersOf . uid) $ filter isAbstract toplevelClafers
     parentChildMap = childClafers root
     clafers = snd <$> parentChildMap
     claferUids = uid <$> clafers
@@ -129,10 +129,11 @@ genCModule _ (imodule@IModule{mDecls}, _) =
                 case parentOf uid of
                      "root" -> "clafer"
                      puid   -> puid ++ ".addChild"
-            prop name value =
-                case value of
-                     Just value' -> "." ++ name ++ "(" ++ value' ++ ")"
-                     Nothing     -> ""
+                     
+    prop name value =
+        case value of
+                Just value' -> "." ++ name ++ "(" ++ value' ++ ")"
+                Nothing     -> ""
                 
                 
     genRefClafer :: IClafer -> Result
@@ -147,7 +148,7 @@ genCModule _ (imodule@IModule{mDecls}, _) =
         
     genAbstractClafer :: IClafer -> Result
     genAbstractClafer IClafer{uid, card = Just card} =
-        uid ++ " = abstract(\"" ++ uid ++ "\");\n"  
+        uid ++ " = abstract(\"" ++ uid ++ "\")" ++ prop "extending" (superOf uid) ++ ";\n"  
     
     -- Is a uniqueness constraint? If so, return the name of unique clafer
     isUniqueConstraint :: IExp -> Maybe String
@@ -279,7 +280,7 @@ genCModule _ (imodule@IModule{mDecls}, _) =
     scopeOf "int" = undefined
     scopeOf i = fromMaybe 1 $ lookup i scopes
     bitwidth = fromMaybe 4 $ lookup "int" scopes
-    scopes = scopeAnalysis imodule
+    scopes = getScopeStrategy (scope_strategy args) imodule
     
 isQuant PExp{exp = IDeclPExp{}} = True
 isQuant _ = False
@@ -300,6 +301,3 @@ childClafers IClafer{uid, elements} =
     childClafers' uid =<< mapMaybe iclafer elements
     where
     childClafers' parent c@IClafer{uid, elements} = (parent, c) : (childClafers' uid  =<< mapMaybe iclafer elements)
-
-implies :: MonadPlus m => Bool -> m a -> m a
-implies cond result = if cond then result else mzero
