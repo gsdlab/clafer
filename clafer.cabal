@@ -45,7 +45,8 @@ Executable clafer
                      test-framework-quickcheck2,
                      test-framework-th,
                      QuickCheck, 
-                     HUnit 
+                     HUnit,
+                     transformers
     hs-source-dirs:  src
 
 library 
@@ -70,7 +71,8 @@ library
                      test-framework-quickcheck2,
                      test-framework-th,
                      QuickCheck, 
-                     HUnit 
+                     HUnit,
+                     transformers
     hs-source-dirs:  src
     ghc-options:     -Wall
     exposed-modules: 
@@ -126,7 +128,8 @@ Test-Suite test-suite
                      MaybeT >= 0.1.2,
                      glpk-hs >= 0.3.3,
                      parsec >= 3.1.2,
-                     clafer == 0.3.3
+                     clafer == 0.3.3,
+                     transformers
     ghc-options      -Wall
 
     build-depends:  

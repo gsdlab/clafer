@@ -1,3 +1,4 @@
+{-# LANGUAGE FlexibleContexts #-}
 {-
  Copyright (C) 2012 Kacper Bak, Christopher Walker <http://gsd.uwaterloo.ca>
 
@@ -23,7 +24,7 @@ module Language.Clafer.Front.LayoutResolver where
 
 -- very simple layout resolver
 import Control.Monad.State
-import Control.Monad
+import Data.Functor.Identity (Identity)
 import Language.Clafer.Common
 
 import Language.Clafer.Front.Lexclafer
@@ -48,10 +49,13 @@ data ExToken = NewLine LastNl | ExToken Token deriving Show
 -- ident level stack, last new line
 data LEnv = LEnv [Int] (Maybe LastNl)
 
+getToken :: ExToken -> Token
 getToken (ExToken t) = t
 getToken (NewLine _) = error "LayoutResolver.getToken: Cannot get ExToken NewLine"-- this shoud lever happen
 
+layoutOpen :: [Char]
 layoutOpen  = "{"
+layoutClose :: [Char]
 layoutClose = "}"
 
 resolveLayout :: [Token] -> [Token]
@@ -73,12 +77,16 @@ resolve env@(LEnv st lastNl) (t:ts)
   (newLev, parLev) = fromJust lastNl
   st' = dropWhile (newLev <) st
 
+indent :: Token
 indent = sToken (Pn 0 0 0) "{"
+dedent :: Token
 dedent = sToken (Pn 0 0 0) "}"
 
+toToken :: ExToken -> [Token]
 toToken (NewLine _) = []
 toToken (ExToken t) = [t]
 
+isExTokenIn :: [String] -> ExToken -> Bool
 isExTokenIn l (ExToken t) = isTokenIn l t
 isExTokenIn _ _ = False
 
@@ -190,12 +198,14 @@ isTokenIn ts t = case t of
 isLayoutOpen :: Token -> Bool
 isLayoutOpen = isTokenIn [layoutOpen]
 
+isBracketOpen :: Token -> Bool
 isBracketOpen = isTokenIn ["["]
 
 -- | Check if a token is the layout close token.
 isLayoutClose :: Token -> Bool
 isLayoutClose = isTokenIn [layoutClose]
 
+isBracketClose :: Token -> Bool
 isBracketClose = isTokenIn ["]"]
 
 -- | Get the number of characters in the token.
@@ -223,10 +233,12 @@ addNewLines' n (t0:t1:ts)
   | isNewLine t0 t1  = ExToken t0 : NewLine (column t1, n) : addNewLines' n (t1:ts)
   | otherwise        = ExToken t0 : addNewLines' n (t1:ts)
 
+adjust :: [Token] -> [Token]
 adjust [] = []
 adjust (t:[]) = [t]
 adjust (t:ts) = t : adjust (updToken (t:ts))
 
+updToken :: [Token] -> [Token]
 updToken (t0:t1:ts)
   | isLayoutOpen t1 || isLayoutClose t1 = addToken (nextPos t0) sym ts
   | otherwise = (t1:ts)
@@ -249,12 +261,13 @@ addToken :: Position -- ^ Position of the new token.
 addToken p s ts = sToken p s : map (incrGlobal p (length s)) ts
 
 resLayout :: String -> String
-resLayout input = 
-  reverse $ output $ execState resolveLayout' $ LayEnv 0 [] input' [] 0
+resLayout input' = 
+  reverse $ output $ execState resolveLayout' $ LayEnv 0 [] input'' [] 0
   where
-  input' = unlines $ filter (/= "") $ lines input
+  input'' = unlines $ filter (/= "") $ lines input'
 
 
+resolveLayout' :: StateT LayEnv Identity ()
 resolveLayout' = do
   stop <- isEof
   when (not stop) $ do
@@ -263,6 +276,7 @@ resolveLayout' = do
     emit c'
     resolveLayout'
 
+handleIndent :: Char -> StateT LayEnv Identity Char
 handleIndent c = case c of
   '\n' -> do
     emit c
@@ -287,12 +301,15 @@ handleIndent c = case c of
   _ ->  return c
 
 
+emit :: MonadState LayEnv m => Char -> m ()
 emit c = modify (\e -> e {output = c : output e})
 
 
+readC :: (Num a, Ord a) => a -> StateT LayEnv Identity Char
 readC n = if n > 0 then getc else return '\n'
 
 
+eatSpaces :: StateT LayEnv Identity Int
 eatSpaces = do
   cs <- gets input
   let (sp, rest) = break (/= ' ') cs
@@ -301,6 +318,7 @@ eatSpaces = do
   if ctr > 0 then gets level else return $ length sp
 
 
+emitIndent :: MonadState LayEnv m => Int -> m ()
 emitIndent n = do
   lev <- gets level  
   when (n > lev) $ do
@@ -310,6 +328,7 @@ emitIndent n = do
     modify (\e -> e {level = n, levels = lev : levels e})
 
 
+emitDedent :: MonadState LayEnv m => Int -> m ()
 emitDedent n = do
   lev <- gets level
   when (n < lev) $ do
@@ -319,22 +338,24 @@ emitDedent n = do
     emitDedent n
 
 
+isEof :: StateT LayEnv Identity Bool
 isEof = null `liftM` (gets input)
 
 
+getc :: StateT LayEnv Identity Char
 getc = do
   c <- gets (head.input)
   modify (\e -> e {input = tail $ input e})
   return c
 
 revertLayout :: String -> String
-revertLayout input = unlines $ revertLayout' (lines input) 0 
+revertLayout input' = unlines $ revertLayout' (lines input') 0 
 
 revertLayout' :: [String] -> Int -> [String]
-revertLayout' []             indent = []
-revertLayout' ([]:xss)       indent = revertLayout' xss indent
-revertLayout' (('{':xs):xss) indent = (replicate indent' ' ' ++ xs):revertLayout' xss indent'
-                                    where indent' = indent + 2
-revertLayout' (('}':xs):xss) indent = (replicate indent' ' ' ++ xs):revertLayout' xss indent'
-                                    where indent' = indent - 2
-revertLayout' (xs:xss)       indent = (replicate indent ' ' ++ xs):revertLayout' xss indent
+revertLayout' []             _ = []
+revertLayout' ([]:xss)       indent' = revertLayout' xss indent'
+revertLayout' (('{':xs):xss) indent' = (replicate indent'' ' ' ++ xs):revertLayout' xss indent''
+                                    where indent'' = indent' + 2
+revertLayout' (('}':xs):xss) indent' = (replicate indent'' ' ' ++ xs):revertLayout' xss indent''
+                                    where indent'' = indent' - 2
+revertLayout' (xs:xss)       indent' = (replicate indent' ' ' ++ xs):revertLayout' xss indent'
