@@ -116,10 +116,11 @@ genCModule args (imodule@IModule{mDecls}, _) =
     
     genScopes :: Result
     genScopes =
-        "scope({" ++ intercalate ", " scopeMap ++ "});\n"
+        (if null scopeMap then "" else "scope({" ++ intercalate ", " scopeMap ++ "});\n")
+        ++ "defaultScope(1);\n"
         ++ "intRange(-" ++ show (2 ^ (bitwidth - 1)) ++ ", " ++ show (2 ^ (bitwidth - 1) - 1) ++ ");\n"
         where
-            scopeMap = [uid ++ ":" ++ show (scopeOf uid) | IClafer{uid} <- concreteClafers]
+            scopeMap = [uid ++ ":" ++ show scope | (uid, scope) <- scopes]
                 
     genConcreteClafer :: IClafer -> Result
     genConcreteClafer IClafer{uid, card = Just card, gcard = Just (IGCard _ gcard)} =
@@ -127,7 +128,7 @@ genCModule args (imodule@IModule{mDecls}, _) =
         where
             constructor = 
                 case parentOf uid of
-                     "root" -> "clafer"
+                     "root" -> "Clafer"
                      puid   -> puid ++ ".addChild"
                      
     prop name value =
@@ -143,12 +144,12 @@ genCModule args (imodule@IModule{mDecls}, _) =
              (Just target, False) -> uid ++ ".refTo(" ++ genTarget target ++ ");\n"
              _                    -> ""
         where
-            genTarget "integer" = "int"
+            genTarget "integer" = "Int"
             genTarget target = target
         
     genAbstractClafer :: IClafer -> Result
     genAbstractClafer IClafer{uid, card = Just card} =
-        uid ++ " = abstract(\"" ++ uid ++ "\")" ++ prop "extending" (superOf uid) ++ ";\n"  
+        uid ++ " = Abstract(\"" ++ uid ++ "\")" ++ prop "extending" (superOf uid) ++ ";\n"  
     
     -- Is a uniqueness constraint? If so, return the name of unique clafer
     isUniqueConstraint :: IExp -> Maybe String
@@ -171,7 +172,7 @@ genCModule args (imodule@IModule{mDecls}, _) =
     
     genTopConstraint :: IElement -> Result
     genTopConstraint (IEConstraint _ pexp)
-        | isNothing $ isUniqueConstraint $ exp pexp = "constraint(" ++ genConstraintPExp pexp ++ ");\n"
+        | isNothing $ isUniqueConstraint $ exp pexp = "Constraint(" ++ genConstraintPExp pexp ++ ");\n"
         | otherwise                                 = ""
     genTopConstraint _ = ""
     
