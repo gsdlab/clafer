@@ -30,85 +30,90 @@ data IType = TBoolean
            | TClafer [String]
   deriving (Eq,Ord,Show)
 
--- Module is a list of fragments
+-- each file contains exactly one mode. A module is a list of declarations
 data IModule = IModule {
-      mName :: String,
+      mName :: String,    -- always empty for now because we don't have syntax for declaring modules
       mDecls :: [IElement]
---      fragments :: [IModuleFragment]
     }
   deriving (Eq,Ord,Show)
 
--- Fragment is a list of top-level declarations
-{-data IModuleFragment = IModuleFragment {
-      mDecls :: [IElement]
-    }
-  deriving (Eq,Ord,Show)
--}
 -- Clafer has a list of fields that specify its properties. Some fields, marked as (o) are for generating optimized code
 data IClafer =
    IClafer {
-      cinPos :: Span,     -- the position of the syntax in source code
-      isAbstract :: Bool,     -- determines whether it's abstract
+      cinPos :: Span,         -- the position of the syntax in source code
+      isAbstract :: Bool,     -- whether abstract or not (i.e., concrete)
       gcard :: Maybe IGCard,  -- group cardinality
       ident :: String,        -- name
       uid :: String,          -- (o) unique identifier
       super:: ISuper,         -- superclafers
-      card :: Maybe Interval, -- cardinality
+      card :: Maybe Interval, -- clafer cardinality
       glCard :: Interval,     -- (o) global cardinality
-      elements :: [IElement]  -- subclafers or constraints specified in the context of given clafer
+      elements :: [IElement]  -- nested declarations
     }
   deriving (Eq,Ord,Show)
 
--- Clafer's subelement is either a clafer of a constraint
+-- Clafer's subelement is either a clafer, a constraint, or a goal (objective)
+-- This is a wrapper type needed to have polymorphic lists of elements
 data IElement =
    IEClafer IClafer
  | IEConstraint {
-      isHard :: Bool,
-      cpexp :: PExp
+      isHard :: Bool,     -- whether hard or not (soft)
+      cpexp :: PExp       -- the expression
     }
  | IEGoal {
-   isMaximize :: Bool,
-   cpexp :: PExp
+   isMaximize :: Bool,    -- whether maximize or minimize
+   cpexp :: PExp          -- the expression
    }
   deriving (Eq,Ord,Show)
 
--- A list of superclafers. The isOverlapping determines whether the clafer is overlapping or disjoint with other clafers extending given list of superclafers.
+-- A list of superclafers.  
+-- ->    -- overlaping unique (set)
+-- ->>   -- overlapping non-unique (bag)
+-- :     -- non overlapping (disjoint)
 data ISuper =
    ISuper {
-      isOverlapping :: Bool,
+      isOverlapping :: Bool,  -- whether overlapping or disjoint with other clafers extending given list of superclafers
       supers :: [PExp]
     }
   deriving (Eq,Ord,Show)
 
 -- Group cardinality is specified as an interval. It may also be given by a keyword.
+-- xor  -- 1..1 isKeyword = True
+-- 1..1 -- 1..1 isKeyword = False
 data IGCard =
   IGCard {
-      isKeyword :: Bool,
+      isKeyword :: Bool,    -- whether given by keyword: or, xor, mux
       interval :: Interval
     }
   deriving (Eq,Ord,Show)
 
--- (Min, max) integer interval. -1 denotes *
+-- (Min, Max) integer interval. -1 denotes *
 type Interval = (Integer, Integer)
 
+-- This is expression container (parent). It has meta information about an actual expression 'exp'
 data PExp = PExp {
-      iType :: Maybe IType,
-      pid :: String,
+      iType :: Maybe IType,  
+      pid :: String,         -- non-empy unique id for expressions with span, "" for noSpan
       inPos :: Span,         -- position in the input Clafer file
-      exp :: IExp
+      exp :: IExp            -- the actual expression
     }
   deriving (Eq,Ord,Show)
 
 data IExp = 
    -- quantified expression with declarations
+   -- e.g., [ all x1; x2 : X | x1.ref != x2.ref ]
    IDeclPExp {quant :: IQuant, oDecls :: [IDecl], bpexp :: PExp}
+   -- expression with a
+   -- unary function, e.g., -1
+   -- binary function, e.g., 2 + 3
+   -- ternary function, e.g., if x then 4 else 5
  | IFunExp {op :: String, exps :: [PExp]}
  | IInt Integer                  -- integer number
  | IDouble Double                -- real number
  | IStr String                   -- string
  | IClaferId {                   -- clafer name
-      modName :: String,         -- module name
-      sident :: String,          -- name
+      modName :: String,         -- module name - currently not used and empty since we have no module system
+      sident :: String,          -- name of the clafer being referred to
       isTop :: Bool              -- identifier refers to a top-level definition
     }
   deriving (Eq,Ord,Show)
@@ -150,6 +155,8 @@ For IFunExp standard set of operators includes:
 -}
 
 -- Local declaration
+-- disj x1; x2 : X ++ Y
+-- y1 : Y 
 data IDecl =
    IDecl {
       isDisj :: Bool,     -- is disjunct
@@ -159,11 +166,11 @@ data IDecl =
   deriving (Eq,Ord,Show)
 
 data IQuant =
-   INo
- | ILone
- | IOne
- | ISome
- | IAll
+   INo    -- does not exist
+ | ILone  -- less than one
+ | IOne   -- exactly one
+ | ISome  -- at least one (i.e., exists)
+ | IAll   -- for all
   deriving (Eq,Ord,Show)
 
 type LineNo = Integer
