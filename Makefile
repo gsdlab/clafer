@@ -23,7 +23,6 @@ build:
 	cabal install --only-dependencies
 	cabal configure
 	cabal build
-	cp dist/build/clafer/clafer* .
 
 install:  
 	mkdir -p $(to)
@@ -55,7 +54,6 @@ prof:
 	cabal install --only-dependencies -p --enable-executable-profiling $(GPLK_LIBS_INCLUDES) $(MAC_USR_LIB)
 	cabal configure -p --enable-executable-profiling
 	cabal build --ghc-options="-prof -auto-all -rtsopts"
-	cp dist/build/clafer/clafer* .
 
 .PHONY : test
 
