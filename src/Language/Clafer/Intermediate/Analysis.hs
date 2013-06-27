@@ -280,11 +280,7 @@ lower |^ upper =
 lower |-> upper =
   runListT $ do
     clafer <- foreach clafers
-    c <- clafers
-    u <- refUid =<< toClafer clafer
-    super <- (case find ((==) u . uid) c of 
-      Just _ -> refOf clafer
-      Nothing -> colonOf clafer)
+    super <- refOf clafer
     when (not $ matches lower clafer) mzero
     when (not $ matches upper super) mzero
     return (clafer, super)
