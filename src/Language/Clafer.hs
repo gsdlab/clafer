@@ -221,15 +221,15 @@ parse =
   parseFrag args =
     pModule .
     (if not 
-      ((fromJust $ new_layout args) ||
-      (fromJust $ no_layout args))
+      ((new_layout args) ||
+      (no_layout args))
     then 
        resolveLayout 
     else 
        id) 
     . myLexer .
-    (if (not $ fromJust $ no_layout args) &&
-        (fromJust $ new_layout args)
+    (if (not $ no_layout args) &&
+        (new_layout args)
      then 
        resLayout 
      else 
@@ -285,11 +285,11 @@ generateHtml env =
     let PosModule _ decls = ast env;
         cargs = args env;
         irMap = irModuleTrace env;
-        comments = if fromJust $ add_comments cargs then getComments $ unlines $ modelFrags env else [];
+        comments = if add_comments cargs then getComments $ unlines $ modelFrags env else [];
         (iModule, genv, au) = ir env;
-    in (if (fromJust $ self_contained cargs) then Css.header ++ "<style>" ++ Css.css ++ "</style></head>\n<body>\n" else "")
+    in (if (self_contained cargs) then Css.header ++ "<style>" ++ Css.css ++ "</style></head>\n<body>\n" else "")
        ++ (unlines $ generateFragments decls (frags env) irMap comments) ++
-       (if (fromJust $ self_contained cargs) then "</body>\n</html>" else "")
+       (if (self_contained cargs) then "</body>\n</html>" else "")
 
   where
     line (PosElementDecl (Span pos _) _) = pos
@@ -323,21 +323,21 @@ generate =
     let (iModule, genv, au) = ir env
     let stats = showStats au $ statsModule iModule
     let (imod,strMap) = astrModule iModule
-    let (ext, code, mapToAlloy) = case (fromJust $ mode cargs) of
+    let (ext, code, mapToAlloy) = case (mode cargs) of
                         Alloy   ->  do
                                       let alloyCode = genModule cargs (imod, genv)
-                                      let addCommentStats = if fromJust $ no_stats cargs then const else addStats
+                                      let addCommentStats = if no_stats cargs then const else addStats
                                       let m = snd alloyCode
                                       ("als", addCommentStats (fst alloyCode) stats, Just m)
                         Alloy42  -> do
                                       let alloyCode = genModule cargs (imod, genv)
-                                      let addCommentStats = if fromJust $ no_stats cargs then const else addStats
+                                      let addCommentStats = if no_stats cargs then const else addStats
                                       let m = snd alloyCode
                                       ("als", addCommentStats (fst alloyCode) stats, Just m)
                         Xml      -> ("xml", genXmlModule iModule, Nothing)
                         Clafer   -> ("des.cfr", printTree $ sugarModule iModule, Nothing)
                         Html     -> ("html", generateHtml env, Nothing)
-                        Graph    -> ("dot", genSimpleGraph (ast env) iModule (takeBaseName $ file cargs) (fromJust $ show_references cargs), Nothing)
+                        Graph    -> ("dot", genSimpleGraph (ast env) iModule (takeBaseName $ file cargs) (show_references cargs), Nothing)
                         CVLGraph -> ("dot", genCVLGraph (ast env) iModule (takeBaseName $ file cargs), Nothing)
     return $ CompilerResult { extension = ext, 
                      outputCode = code, 
@@ -365,7 +365,7 @@ analyze :: Monad m => ClaferArgs -> IModule -> ClaferT m (IModule, GEnv, Bool)
 analyze args tree = do
   let dTree' = findDupModule args tree
   let au = allUnique dTree'
-  let args' = args{skip_resolver = Just $ au && (fromJust $ skip_resolver args)}
+  let args' = args{skip_resolver = au && (skip_resolver args)}
   (rTree, genv) <- liftError $ resolveModule args' dTree'
   let tTree = transModule rTree
   return (optimizeModule args' (tTree, genv), genv, au)
