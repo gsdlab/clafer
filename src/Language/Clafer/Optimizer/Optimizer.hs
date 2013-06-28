@@ -38,8 +38,8 @@ optimizeModule args (imodule, genv) =
   imodule{mDecls = em $ rm $ map (optimizeElement (1, 1)) $
                    markTopModule $ mDecls imodule}
   where
-  rm = if fromJust $ keep_unused args then id else remUnusedAbs
-  em = if fromJust $ flatten_inheritance args then flip (curry expModule) genv else id
+  rm = if keep_unused args then id else remUnusedAbs
+  em = if flatten_inheritance args then flip (curry expModule) genv else id
 
 optimizeElement :: Interval -> IElement -> IElement
 optimizeElement interval x = case x of
@@ -208,7 +208,7 @@ findDupModule args imodule = imodule{mDecls = decls'}
   where
   decls = mDecls imodule
   decls'
-    | fromJust $ check_duplicates args = findDupModule' decls
+    | check_duplicates args = findDupModule' decls
     | otherwise                        = decls
 
 
