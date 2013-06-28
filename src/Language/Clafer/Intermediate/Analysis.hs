@@ -289,7 +289,6 @@ lower |-> upper =
     supers'  <- filter (matches upper) <$> runListT (refOf =<< foreachM clafers')
     return $ zip clafers' supers'
 
-
 -- a : b
 (|:) :: (MonadAnalysis m, Matchable a, Matchable b) => a -> b -> m [(SClafer, SClafer)]
 lower |: upper =
