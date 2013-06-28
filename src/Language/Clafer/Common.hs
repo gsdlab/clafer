@@ -200,8 +200,9 @@ iPlus         = "+"
 iSub          = "-"
 iMul          = "*"
 iDiv          = "/"
+iSumSet'      = "sum'"
 
-arithBinOps = [iPlus, iSub, iMul, iDiv]
+arithBinOps = [iPlus, iSub, iMul, iDiv, iSumSet']
 
 iUnion        = "++"
 iDifference   = "--"
