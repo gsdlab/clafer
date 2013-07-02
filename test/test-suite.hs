@@ -80,9 +80,9 @@ case_compileTest = do
 
 case_refrence_Unused_Absstract_Clafer :: Assertion
 case_refrence_Unused_Absstract_Clafer = do
-				model <- readFile "positive/i235.cfr"
+				model <- readFile "test/positive/i235.cfr"
 				let compiledClafers = 
-					[("None", compileOneFragment defaultClaferArgs{scope_strategy = Just None} model), ("Simple", compileOneFragment defaultClaferArgs{scope_strategy = Just Simple} model), ("Full", compileOneFragment defaultClaferArgs{scope_strategy = Just Full} model)]
+					[("None", compileOneFragment defaultClaferArgs{scope_strategy = None} model), ("Simple", compileOneFragment defaultClaferArgs{scope_strategy = Simple} model)]
 				forM_ compiledClafers (\(ss, compiled) -> 
 					when (not $ compiledCheck compiled) $ putStrLn ("i235.cfr failed for scope_strategy = " ++ ss))
 				(andMap (compiledCheck . snd) compiledClafers 
