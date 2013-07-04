@@ -80,6 +80,7 @@ import Language.Clafer.Intermediate.Desugarer
 import Language.Clafer.Intermediate.Resolver
 import Language.Clafer.Intermediate.StringAnalyzer
 import Language.Clafer.Intermediate.Transformer
+import Language.Clafer.Intermediate.Tracing
 import Language.Clafer.Optimizer.Optimizer
 import Language.Clafer.Generator.Alloy
 import Language.Clafer.Generator.Xml
@@ -241,28 +242,17 @@ compile :: Monad m => ClaferT m ()
 compile =
   do
     env <- getEnv
-    let cardList = foldr lt1 [] $ getCardList env
-    when ((afm $ args env) && cardList/="") $ throwErr (ClaferErr $ ("The model is not an attributed feature model .\nThe following places contain cardinality larger than 1:\n"++) $ init $ cardList :: CErr Span)
     ir <- analyze (args env) $ desugar (ast env)
     let (imodule, _, _) = ir
+
+    let spanList = foldMapIR gt1 imodule
+    when ((afm $ args env) && spanList/="") $ throwErr (ClaferErr $ ("The model is not an attributed feature model .\nThe following places contain cardinality larger than 1:\n"++) $ spanList :: CErr Span)
     putEnv $ env{ cIr = Just ir, irModuleTrace = traceIrModule imodule }
     where
-      lt1 ((CardEmpty), _) acc = acc
-      lt1 ((PosCardEmpty _), _) acc = acc
-      lt1 ((CardLone), _) acc = acc
-      lt1 ((PosCardLone _), _) acc = acc
-      lt1 ((CardNum (PosInteger (_,n))), (Span (Pos l c) _)) acc = if ((read n) <= 1 ) then acc else ("Line " ++ show l ++ " column " ++ show c ++ "\n") ++ acc 
-      lt1 ((PosCardNum _ (PosInteger (_,n))), (Span (Pos l c) _)) acc = if ((read n) <= 1 ) then acc else ("Line " ++ show l ++ " column " ++ show c ++ "\n") ++ acc
-      lt1 ((CardInterval (NCard _ (ExIntegerNum (PosInteger (_, n))))), (Span (Pos l c) _)) acc = if ((read n) <= 1 ) then acc else ("Line " ++ show l ++ " column " ++ show c ++ "\n") ++ acc
-      lt1 ((PosCardInterval _ (NCard _ (ExIntegerNum (PosInteger (_, n))))), (Span (Pos l c) _)) acc = if ((read n) <= 1 ) then acc else ("Line " ++ show l ++ " column " ++ show c ++ "\n") ++ acc
-      lt1 ((CardInterval (PosNCard _ _ (ExIntegerNum (PosInteger (_, n))))), (Span (Pos l c) _)) acc = if ((read n) <= 1 ) then acc else ("Line " ++ show l ++ " column " ++ show c ++ "\n") ++ acc
-      lt1 ((PosCardInterval _ (PosNCard _ _ (ExIntegerNum (PosInteger (_, n))))), (Span (Pos l c) _)) acc = if ((read n) <= 1 ) then acc else ("Line " ++ show l ++ " column " ++ show c ++ "\n") ++ acc
-      lt1 ((CardInterval (NCard _ (PosExIntegerNum _ (PosInteger (_, n))))), (Span (Pos l c) _)) acc = if ((read n) <= 1 ) then acc else ("Line " ++ show l ++ " column " ++ show c ++ "\n") ++ acc
-      lt1 ((PosCardInterval _ (NCard _ (PosExIntegerNum _ (PosInteger (_, n))))), (Span (Pos l c) _)) acc = if ((read n) <= 1 ) then acc else ("Line " ++ show l ++ " column " ++ show c ++ "\n") ++ acc
-      lt1 ((CardInterval (PosNCard _ _ (PosExIntegerNum _ (PosInteger (_, n))))), (Span (Pos l c) _)) acc = if ((read n) <= 1 ) then acc else ("Line " ++ show l ++ " column " ++ show c ++ "\n") ++ acc
-      lt1 ((PosCardInterval _ (PosNCard _ _ (PosExIntegerNum _ (PosInteger (_, n))))), (Span (Pos l c) _)) acc = if ((read n) <= 1 ) then acc else ("Line " ++ show l ++ " column " ++ show c ++ "\n") ++ acc
-      lt1 (_, (Span (Pos l c) _)) acc = ("Line " ++ show l ++ " column " ++ show c ++ "\n") ++ acc
-   
+      gt1 (IRClafer (IClafer (Span (Pos l c) _) _ _ _ _ _ (Just (n, m)) _ _)) = if (m > 1) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
+      gt1 (IRClafer (IClafer (PosSpan _ (Pos l c) _) _ _ _ _ _ (Just (n, m)) _ _)) = if (m > 1) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
+      gt1 _ = ""
+
 -- Splits the IR into their fragments, and generates the output for each fragment.
 -- Might not generate the entirea output (for example, Alloy scope and run commands) because
 -- they do not belong in fragments.
@@ -405,24 +395,3 @@ showInterval (n, m) = show n ++ ".." ++ show m
 
 claferIRXSD :: String
 claferIRXSD = Language.Clafer.Generator.Schema.xsd
-
-getCardList :: ClaferEnv -> [(Card, Span)]
-getCardList = foldr getCards [] . map getElem . filter removeEnum . getMod . ast 
-  where
-    getMod (Module decs) = decs
-    getMod (PosModule _ decs) = decs
-    removeEnum (ElementDecl _) = True
-    removeEnum (PosElementDecl _ _) = True
-    removeEnum _ = False
-    getElem (ElementDecl e) = e
-    getElem (PosElementDecl _ e) = e
-    getElems (ElementsList e) = e
-    getElems (PosElementsList _ e) = e
-    getElems _ = []
-    getCards (ClaferUse _ c e) acc = (c, toErrPos noSpan) : (foldr getCards acc (getElems e))
-    getCards (PosClaferUse s _ c e) acc = (c, toErrPos s) : (foldr getCards acc (getElems e))
-    getCards (Subclafer (Clafer _ _ _ _ c _ e)) acc = (c, toErrPos noSpan) : (foldr getCards acc (getElems e))
-    getCards (PosSubclafer s (Clafer _ _ _ _ c _ e)) acc = (c, toErrPos s) : (foldr getCards acc (getElems e))
-    getCards (Subclafer (PosClafer s _ _ _ _ c _ e)) acc = (c, toErrPos s) : (foldr getCards acc (getElems e)) 
-    getCards (PosSubclafer _ (PosClafer s _ _ _ _ c _ e)) acc = (c, toErrPos s) : (foldr getCards acc (getElems e))
-    getCards _ acc = acc
