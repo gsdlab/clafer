@@ -106,5 +106,4 @@ mainArgs = do
   return $ (either (\_ -> args) (\x -> args) $
            process (cmdArgsMode clafer) $ Language.Clafer.SplitJoin.splitArgs options, model)
 
-
 defaultClaferArgs = ClaferArgs Alloy True False 0 False False False False False False False False False "tools/" False False False False False False Simple False ""

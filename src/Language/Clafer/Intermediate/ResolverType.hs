@@ -119,13 +119,15 @@ unionType (TClafer u) = u
 t1 +++ t2 = fromJust $ fromUnionType $ unionType t1 ++ unionType t2
 
 fromUnionType :: [String] -> Maybe IType
-fromUnionType ["string"]  = return TString
-fromUnionType ["real"]    = return TReal
-fromUnionType ["integer"] = return TInteger
-fromUnionType ["int"]     = return TInteger
-fromUnionType ["boolean"] = return TBoolean
-fromUnionType []          = Nothing
-fromUnionType u           = return $ TClafer $ nub $ sort u
+fromUnionType u =
+    case sort $ nub $ u of
+        ["string"]  -> return TString
+        ["real"]    -> return TReal
+        ["integer"] -> return TInteger
+        ["int"]     -> return TInteger
+        ["boolean"] -> return TBoolean
+        []          -> Nothing
+        u'          -> return $ TClafer u'
 
 closure :: MonadAnalysis m => [String] -> m [String]
 closure ut = concat <$> mapM hierarchy ut
