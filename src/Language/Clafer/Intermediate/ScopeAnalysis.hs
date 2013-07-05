@@ -26,7 +26,7 @@ import Language.Clafer.Intermediate.Intclafer
 import Language.Clafer.Intermediate.GLPKScopeAnalyzer
 import Language.Clafer.Intermediate.SimpleScopeAnalyzer
 
-getScopeStrategy :: Maybe ScopeStrategy -> IModule -> [(String, Integer)]
-getScopeStrategy (Just Simple) = simpleScopeAnalysis
-getScopeStrategy (Just Full)   = glpkScopeAnalysis 
+getScopeStrategy :: ScopeStrategy -> IModule -> [(String, Integer)]
+getScopeStrategy Simple = simpleScopeAnalysis
+getScopeStrategy Full   = glpkScopeAnalysis 
 getScopeStrategy _             = const []

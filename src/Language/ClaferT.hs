@@ -94,9 +94,9 @@ makeEnv args = ClaferEnv { args = args',
                            irModuleTrace = Map.empty,
                            astModuleTrace = Map.empty}
                where args' = case mode args of
-                               Just CVLGraph -> args{flatten_inheritance=Just True, keep_unused=Just True}
-                               Just Html     -> args{keep_unused=Just True}
-                               Just Graph    -> args{keep_unused=Just True}
+                               CVLGraph -> args{flatten_inheritance=True, keep_unused=True}
+                               Html     -> args{keep_unused=True}
+                               Graph    -> args{keep_unused=True}
                                _             -> args
 
 type ClaferM = ClaferT Identity
