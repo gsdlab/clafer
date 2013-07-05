@@ -80,7 +80,6 @@ import Language.Clafer.Intermediate.Desugarer
 import Language.Clafer.Intermediate.Resolver
 import Language.Clafer.Intermediate.StringAnalyzer
 import Language.Clafer.Intermediate.Transformer
-import Language.Clafer.Intermediate.Tracing
 import Language.Clafer.Optimizer.Optimizer
 import Language.Clafer.Generator.Alloy
 import Language.Clafer.Generator.Xml
