@@ -91,14 +91,14 @@ positiveClaferModels = getClafers "test/positive"
 {-Test Cases-}
 ---------------
 
-case_compileTest :: Assertion
+case_compileTest :: Assertion -- Tests to check all files in test/positive compile
 case_compileTest = do 
 					clafers <- positiveClaferModels
 					let compiledClafers = map (\(file, model) -> (file, compileOneFragment defaultClaferArgs model)) clafers
 					forM_ compiledClafers (\(file, compiled) -> when (not $ compiledCheck compiled) $ putStrLn (file ++ " Error: " ++ (show $ fromLeft compiled)))
 					(andMap (compiledCheck . snd) compiledClafers) @? "test/positive fail: The above claferModels did not compile."
 
-case_refrence_Unused_Absstract_Clafer :: Assertion
+case_refrence_Unused_Absstract_Clafer :: Assertion -- Test to make sure i235 compiles for both ss = none / Simple
 case_refrence_Unused_Absstract_Clafer = do
 				model <- readFile "test/positive/i235.cfr"
 				let compiledClafers = 
@@ -202,6 +202,3 @@ cas_IDCheck = do
 		iexpCheck (I.IFunExp _ p) = andMap ((/="") . I.pid) p && andMap (iexpCheck . I.exp) p
 		iexpCheck _ = True
 -}
-
-
-

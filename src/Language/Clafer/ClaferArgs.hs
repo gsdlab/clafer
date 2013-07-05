@@ -65,6 +65,7 @@ data ClaferArgs = ClaferArgs {
       ecore2clafer :: Bool,
       scope_strategy :: ScopeStrategy,
       debug :: Bool,
+      afm :: Bool,
       file :: FilePath
     } deriving (Show, Data, Typeable, Eq)
 
@@ -89,8 +90,9 @@ clafer = ClaferArgs {
   show_references     = def &= help "Whether the links for references should be rendered. ('html' and 'graph' modes only)." &= name "sr",
   add_comments        = def &= help "Include comments from the source file in the html output ('html' mode only).",
   ecore2clafer        = def &= help "Translate an ECore model into Clafer.",
-  debug               = def &= help "Take snaphots of environment after each compiler phase.",  
   scope_strategy      = def &= help "Use scope computation strategy: none, simple (default), or full." &= name "ss",
+  debug               = def &= help "Take snaphots of environment after each compiler phase.",  
+  afm                 = def &= help "Throws an error if the cardinality of any of the clafers is above 1." &= name "check-afm",
   file                = def &= args   &= typ "FILE"
  } &= summary ("Clafer " ++ version) &= program "clafer"
 
@@ -106,4 +108,4 @@ mainArgs = do
   return $ (either (\_ -> args) (\x -> args) $
            process (cmdArgsMode clafer) $ Language.Clafer.SplitJoin.splitArgs options, model)
 
-defaultClaferArgs = ClaferArgs Alloy True False 0 False False False False False False False False False "tools/" False False False False False False Simple False ""
+defaultClaferArgs = ClaferArgs Alloy True False 0 False False False False False False False False False "tools/" False False False False False False Simple False False ""
