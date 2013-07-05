@@ -41,11 +41,11 @@ import Language.Clafer.Intermediate.ResolverInheritance
 resolveModule :: ClaferArgs -> IModule -> Resolve (IModule, GEnv, [IModule])
 resolveModule args declarations =
   do
-    r <- resolveNModule $ nameModule (fromJust $ skip_resolver args) declarations 
+    r <- resolveNModule $ nameModule (skip_resolver args) declarations
     resolveNamesModule args =<< (rom $ rem r)
   where
-  rem = if fromJust $ flatten_inheritance args then resolveEModule else id
-  rom = if fromJust $ skip_resolver args then return . id else resolveOModule
+  rem = if flatten_inheritance args then resolveEModule else id
+  rom = if skip_resolver args then return . id else resolveOModule
 
 
 -- -----------------------------------------------------------------------------
@@ -92,7 +92,7 @@ resolveNamesModule args (declarations, genv, modulesList) =
   where
   funs :: [(IModule, GEnv, [IModule]) -> Resolve (IModule, [IModule])]
   funs
-    | fromJust $ skip_resolver args = [return . analyzeModule, resolveTModule]
+    | skip_resolver args = [return . analyzeModule, resolveTModule]
     | otherwise = [ return . analyzeModule, resolveModuleNames, resolveTModule]
     
 applyFunc :: GEnv -> (IModule, [IModule]) -> ((IModule, GEnv, [IModule]) -> Resolve (IModule, [IModule])) -> Resolve (IModule, [IModule])

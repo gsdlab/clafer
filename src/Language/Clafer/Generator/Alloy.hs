@@ -95,9 +95,9 @@ genModule    claferargs    (imodule, _)     = (flatten output, filter ((/= NoTra
 
 header :: ClaferArgs -> IModule -> Concat
 header    args          imodule  = CString $ unlines
-    [ if (fromJust $ mode args) == Alloy42 then "" else "open util/integer"
+    [ if (mode args) == Alloy42 then "" else "open util/integer"
     , "pred show {}"
-    , if (fromJust $ validate args) ||  (fromJust $ noalloyruncommand args)  
+    , if (validate args) ||  (noalloyruncommand args)  
       then "" 
       else "run show for 1" ++ genScopes (getScopeStrategy (scope_strategy args) imodule)
     , ""]
@@ -206,7 +206,7 @@ genRelations claferargs clafer = maybeToList ref ++ (map mkRel $ getSubclafers $
   where
   ref = if isOverlapping $ super clafer 
                 then
-                        Just $ Concat NoTrace [CString $ genRel (if (fromJust $ noalloyruncommand claferargs) then  (uid clafer ++ "_ref") else "ref")
+                        Just $ Concat NoTrace [CString $ genRel (if (noalloyruncommand claferargs) then  (uid clafer ++ "_ref") else "ref")
                          clafer {card = Just (1, 1)} $ 
                          flatten $ refType claferargs clafer] 
                 else 
@@ -244,7 +244,7 @@ genType mode x = genPExp mode [] x
 -- a = NUMBER do all x : a | x = NUMBER (otherwise alloy sums a set)
 genConstraints :: ClaferArgs -> [String]      -> IClafer -> [Concat]
 genConstraints    claferargs    resPath clafer = (genParentConst resPath clafer) :
-  (genGroupConst clafer) : genPathConst claferargs  (if (fromJust $ noalloyruncommand claferargs) then  (uid clafer ++ "_ref") else "ref") resPath clafer : constraints 
+  (genGroupConst clafer) : genPathConst claferargs  (if (noalloyruncommand claferargs) then  (uid clafer ++ "_ref") else "ref") resPath clafer : constraints 
   where
   constraints = map genConst $ elements clafer
   genConst x = case x of
@@ -391,7 +391,7 @@ genPExp'    claferargs    resPath     x@(PExp iType pid pos exp) = case exp of
     sident' = (if isTop then "" else '@' : genRelName "") ++ sident
     -- 29/March/2012  Rafael Olaechea: ref is now prepended with clafer name to be able to refer to it from partial instances.
     -- 30/March/2012 Rafael Olaechea added referredClaferUniqeuid to fix problems when having this.x > number  (e.g test/positive/i10.cfr )     
-    vsident = if (fromJust $ noalloyruncommand claferargs) then sident' ++  ".@"  ++ referredClaferUniqeuid ++ "_ref"  else  sident'  ++ ".@ref"
+    vsident = if (noalloyruncommand claferargs) then sident' ++  ".@"  ++ referredClaferUniqeuid ++ "_ref"  else  sident'  ++ ".@ref"
         where referredClaferUniqeuid = if sident == "this" then (head resPath) else sident
   IFunExp _ _ -> case exp' of
     IFunExp op exps -> genIFunExp pid claferargs resPath exp'
@@ -417,7 +417,7 @@ transformExp    x@(IFunExp op exps@(e1:e2:_))
 transformExp x = x
 
 genIFunExp :: String -> ClaferArgs -> [String] -> IExp             -> Concat
-genIFunExp    pid       claferargs    resPath     (IFunExp op exps) = Concat (IrPExp pid) $ intl exps' (map CString $ genOp (fromJust $ mode (claferargs :: ClaferArgs)) op)
+genIFunExp    pid       claferargs    resPath     (IFunExp op exps) = Concat (IrPExp pid) $ intl exps' (map CString $ genOp (mode (claferargs :: ClaferArgs)) op)
   where
   intl
     | op `elem` arithBinOps && length exps == 2 = interleave

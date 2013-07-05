@@ -188,7 +188,7 @@ parse =
   do
     env <- getEnv
     let debug' = debug $ args env
-    when (fromJust debug') $ takeSnapShot env Start
+    when (debug') $ takeSnapShot env Start
     let astsErr = map (parseFrag $ args env) $ modelFrags env
     asts <- liftParseErrs astsErr
 
@@ -220,26 +220,26 @@ parse =
         liftParseErr completeAst
 
     let env' = env{cAst = Just ast'}
-    when (fromJust debug') $ takeSnapShot env' Parsed
+    when (debug') $ takeSnapShot env' Parsed
 
     let ast = mapModule ast'
     let env'' = env'{cAst = Just ast, astModuleTrace = traceAstModule ast}
-    when (fromJust debug') $ takeSnapShot env'' Mapped
+    when (debug') $ takeSnapShot env'' Mapped
     putEnv env''
 
   where
   parseFrag args =
     pModule .
     (if not 
-      ((fromJust $ new_layout args) ||
-      (fromJust $ no_layout args))
+      ((new_layout args) ||
+      (no_layout args))
     then 
        resolveLayout 
     else 
        id) 
     . myLexer .
-    (if (not $ fromJust $ no_layout args) &&
-        (fromJust $ new_layout args)
+    (if (not $ no_layout args) &&
+        (new_layout args)
      then 
        resLayout 
      else 
@@ -255,7 +255,7 @@ compile =
     let (imodule, _, _) = ir
     let env' = env{ cIr = Just ir, irModuleTrace = traceIrModule imodule }
     putEnv env'
-    when (fromJust debug') $ takeSnapShot env' Compiled
+    when (debug') $ takeSnapShot env' Compiled
 
 -- Splits the IR into their fragments, and generates the output for each fragment.
 -- Might not generate the entirea output (for example, Alloy scope and run commands) because
@@ -300,11 +300,11 @@ generateHtml env =
     let PosModule _ decls = ast env;
         cargs = args env;
         irMap = irModuleTrace env;
-        comments = if fromJust $ add_comments cargs then getComments $ unlines $ modelFrags env else [];
+        comments = if add_comments cargs then getComments $ unlines $ modelFrags env else [];
         (iModule, genv, au) = ir env;
-    in (if (fromJust $ self_contained cargs) then Css.header ++ "<style>" ++ Css.css ++ "</style></head>\n<body>\n" else "")
+    in (if (self_contained cargs) then Css.header ++ "<style>" ++ Css.css ++ "</style></head>\n<body>\n" else "")
        ++ (unlines $ generateFragments decls (frags env) irMap comments) ++
-       (if (fromJust $ self_contained cargs) then "</body>\n</html>" else "")
+       (if (self_contained cargs) then "</body>\n</html>" else "")
 
   where
     line (PosElementDecl (Span pos _) _) = pos
@@ -338,21 +338,21 @@ generate =
     let (iModule, genv, au) = ir env
     let stats = showStats au $ statsModule iModule
     let (imod,strMap) = astrModule iModule
-    let (ext, code, mapToAlloy) = case (fromJust $ mode cargs) of
+    let (ext, code, mapToAlloy) = case (mode cargs) of
                         Alloy   ->  do
                                       let alloyCode = genModule cargs (imod, genv)
-                                      let addCommentStats = if fromJust $ no_stats cargs then const else addStats
+                                      let addCommentStats = if no_stats cargs then const else addStats
                                       let m = snd alloyCode
                                       ("als", addCommentStats (fst alloyCode) stats, Just m)
                         Alloy42  -> do
                                       let alloyCode = genModule cargs (imod, genv)
-                                      let addCommentStats = if fromJust $ no_stats cargs then const else addStats
+                                      let addCommentStats = if no_stats cargs then const else addStats
                                       let m = snd alloyCode
                                       ("als", addCommentStats (fst alloyCode) stats, Just m)
                         Xml      -> ("xml", genXmlModule iModule, Nothing)
                         Clafer   -> ("des.cfr", printTree $ sugarModule iModule, Nothing)
                         Html     -> ("html", generateHtml env, Nothing)
-                        Graph    -> ("dot", genSimpleGraph (ast env) iModule (takeBaseName $ file cargs) (fromJust $ show_references cargs), Nothing)
+                        Graph    -> ("dot", genSimpleGraph (ast env) iModule (takeBaseName $ file cargs) (show_references cargs), Nothing)
                         CVLGraph -> ("dot", genCVLGraph (ast env) iModule (takeBaseName $ file cargs), Nothing)
     return $ CompilerResult { extension = ext, 
                      outputCode = code, 
@@ -380,25 +380,25 @@ analyze :: Monad m => ClaferArgs -> IModule -> ClaferT m (IModule, GEnv, Bool)
 analyze args' tree = do
   env <- getEnv
   let debug' = debug $ args env
-  when (fromJust debug') $ takeSnapShot env{cIr = Just (tree, (second $ fromJust $ cIr env), (third $ fromJust $ cIr env))} Desugared
+  when (debug') $ takeSnapShot env{cIr = Just (tree, (second $ fromJust $ cIr env), (third $ fromJust $ cIr env))} Desugared
   let dTree' = findDupModule args' tree
   let env' = env{cIr = Just (dTree', (second $ fromJust $ cIr env), (third $ fromJust $ cIr env))}
-  when (fromJust debug') $ takeSnapShot env' FoundDuplicates
+  when (debug') $ takeSnapShot env' FoundDuplicates
 
   let au = allUnique dTree'
-  let args'' = args'{skip_resolver = Just $ au && (fromJust $ skip_resolver args')} 
+  let args'' = args'{skip_resolver = au && (skip_resolver args')} 
   (rTree, genv, mlist) <- liftError $ resolveModule args' dTree'
-  when (fromJust debug') $
+  when (debug') $
     mapM_ (\(x,y) -> takeSnapShot env'{cIr = Just ((x, (second $ fromJust $ cIr env'), (third $ fromJust $ cIr env')))} y) (zip mlist mlistS)
 
   let tTree = transModule rTree
   let env'' = env'{cIr = Just (tTree, (second $ fromJust $ cIr env'), (third $ fromJust $ cIr env'))}
-  when (fromJust debug') $ takeSnapShot env'' Transformed
+  when (debug') $ takeSnapShot env'' Transformed
 
   let oTree = optimizeModule args'' (tTree,genv)
   let env''' = env''{cIr = Just (tTree, (second $ fromJust $ cIr env''),(third $ fromJust $ cIr env''))}
   putEnv env'''
-  when (fromJust debug') $ takeSnapShot env''' Optimized
+  when (debug') $ takeSnapShot env''' Optimized
   
 
   return (oTree, genv, au)

@@ -40,10 +40,11 @@ import Test.QuickCheck
 import System.Directory
 import System.IO
 
-tg_testsuite = $(testGroupGenerator)
-main = defaultMain[tg_testsuite]
+tg_testsuite = $(testGroupGenerator) -- Test Case
+main = defaultMain[tg_testsuite]     -- Generator
 
-
+{-Helper Functions-}
+---------------------
 getClafers :: FilePath -> IO [(String, String)] -- The first string is the file name, the second is the contents.
 getClafers dir = do
 					files <- getDirectoryContents dir
@@ -71,6 +72,13 @@ compileOneFragmentS args model =
         	compile
         	generate
 
+compiledCheck :: Either a b -> Bool
+compiledCheck (Left _) = False
+compiledCheck (Right _) = True
+
+fromLeft :: Either a b -> a
+fromLeft (Left a) = a
+
 andMap :: (a -> Bool) -> [a] -> Bool
 andMap f lst = and $ map f lst
 
@@ -80,12 +88,31 @@ lukesRule p = ((I.pid p)/="" && (I.inPos p)/=noSpan) || ((I.pid p)=="" && (I.inP
 positiveClaferModels :: IO [(String, String)] -- IO [(File, Contents)]
 positiveClaferModels = getClafers "test/positive"
 
+{-Test Cases-}
+---------------
+
+case_compileTest :: Assertion
+case_compileTest = do 
+					clafers <- positiveClaferModels
+					let compiledClafers = map (\(file, model) -> (file, compileOneFragment defaultClaferArgs model)) clafers
+					forM_ compiledClafers (\(file, compiled) -> when (not $ compiledCheck compiled) $ putStrLn (file ++ " Error: " ++ (show $ fromLeft compiled)))
+					(andMap (compiledCheck . snd) compiledClafers) @? "test/positive fail: The above claferModels did not compile."
+
+case_refrence_Unused_Absstract_Clafer :: Assertion
+case_refrence_Unused_Absstract_Clafer = do
+				model <- readFile "test/positive/i235.cfr"
+				let compiledClafers = 
+					[("None", compileOneFragment defaultClaferArgs{scope_strategy = None} model), ("Simple", compileOneFragment defaultClaferArgs{scope_strategy = Simple} model)]
+				forM_ compiledClafers (\(ss, compiled) -> 
+					when (not $ compiledCheck compiled) $ putStrLn ("i235.cfr failed for scope_strategy = " ++ ss))
+				(andMap (compiledCheck . snd) compiledClafers 
+					@? "refrence_Unused_Absstract_Clafer (i235) failed, error for refrencing unused abstract clafer")
 
 case_numberOfSnapShots1 :: Assertion -- Make sure all snapshots are taken when debug is set to True!
 case_numberOfSnapShots1 = do
 	claferModels <- positiveClaferModels
 	let ssSizes = map (\(file, model) -> 
-		(file, Map.size $ snd $ compileOneFragmentS defaultClaferArgs{debug = Just True} model)) claferModels
+		(file, Map.size $ snd $ compileOneFragmentS defaultClaferArgs{debug = True} model)) claferModels
 	forM_ ssSizes (\(file, ssSize) -> 
 		when(ssSize/=numberOfSS) $ putStrLn (file ++ " failed, took " ++ show ssSize ++ " snapshot(s) expected " ++ show numberOfSS))
 	(andMap ((==numberOfSS) . snd) ssSizes 
@@ -95,7 +122,7 @@ case_numberOfSnapShots2 :: Assertion -- Make sure no snapshots are taken when de
 case_numberOfSnapShots2 = do
 	claferModels <- positiveClaferModels
 	let ssSizes = map (\(file, model) -> 
-		(file, Map.size $ snd $ compileOneFragmentS defaultClaferArgs{debug = Just False} model)) claferModels
+		(file, Map.size $ snd $ compileOneFragmentS defaultClaferArgs{debug = False} model)) claferModels
 	forM_ ssSizes (\(file, ssSize) -> 
 		when(ssSize/=0) $ putStrLn (file ++ " failed, took " ++ show ssSize ++ " snapshot(s) expected 0"))
 	(andMap ((==0) . snd) ssSizes 
@@ -105,7 +132,7 @@ case_IDCheck :: Assertion -- Make sure all non empty parent ID's are unique and 
 case_IDCheck = do
 	claferModels <- positiveClaferModels
 	let claferSnapShotPids = map (\(file, model) -> 
-		(file, Map.toList $ (Map.map (getPidsEle . I.mDecls . fst3 . fromJust)) $ (Map.filter (/=Nothing)) $ (Map.map cIr) $ snd $ compileOneFragmentS defaultClaferArgs{debug = Just True} model)) claferModels
+		(file, Map.toList $ (Map.map (getPidsEle . I.mDecls . fst3 . fromJust)) $ (Map.filter (/=Nothing)) $ (Map.map cIr) $ snd $ compileOneFragmentS defaultClaferArgs{debug = True} model)) claferModels
 	forM_ claferSnapShotPids (\(file, mMap) -> 
 		when (not $ (andMap (\x -> ((filter (/="") $ (map I.pid) $ snd x)==(filter (/="") $ List.nub $ (map I.pid) $ snd x))) mMap)) $ do
 			putStrLn ("Duplicate Parent Id's in " ++ file ++ ", Failed at stage(s)\n")
@@ -175,3 +202,6 @@ cas_IDCheck = do
 		iexpCheck (I.IFunExp _ p) = andMap ((/="") . I.pid) p && andMap (iexpCheck . I.exp) p
 		iexpCheck _ = True
 -}
+
+
+
