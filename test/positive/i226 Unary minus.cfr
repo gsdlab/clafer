@@ -1,0 +1,4 @@
+// http://gsd.uwaterloo.ca:8888/question/948/unary-minus-generated-incorrectly-for-alloy42
+
+x : integer
+[x = -(1+2)/(3)]
