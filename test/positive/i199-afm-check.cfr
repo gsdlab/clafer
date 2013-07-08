@@ -1,0 +1,8 @@
+// http://gsd.uwaterloo.ca:8888/question/867/add-attributed-feature-models-check
+// This model should fail the attributed feature model check for lines 5,6, and 7
+a
+   b ?
+   c 2..*
+d +
+e *
+f 0

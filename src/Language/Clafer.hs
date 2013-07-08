@@ -248,8 +248,8 @@ compile =
     when ((afm $ args env) && spanList/="") $ throwErr (ClaferErr $ ("The model is not an attributed feature model .\nThe following places contain cardinality larger than 1:\n"++) $ spanList :: CErr Span)
     putEnv $ env{ cIr = Just ir, irModuleTrace = traceIrModule imodule }
     where
-      gt1 (IRClafer (IClafer (Span (Pos l c) _) _ _ _ _ _ (Just (n, m)) _ _)) = if (m > 1) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
-      gt1 (IRClafer (IClafer (PosSpan _ (Pos l c) _) _ _ _ _ _ (Just (n, m)) _ _)) = if (m > 1) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
+      gt1 (IRClafer (IClafer (Span (Pos l c) _) _ _ _ _ _ (Just (n, m)) _ _)) = if (m > 1 || m < 0) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
+      gt1 (IRClafer (IClafer (PosSpan _ (Pos l c) _) _ _ _ _ _ (Just (n, m)) _ _)) = if (m > 1 || m < 0) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
       gt1 _ = ""
 
 -- Splits the IR into their fragments, and generates the output for each fragment.
