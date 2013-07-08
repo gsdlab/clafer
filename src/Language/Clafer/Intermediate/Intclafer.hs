@@ -212,7 +212,7 @@ mapIR f (IModule name decls) =
 
 foldMapIR :: (Monoid m) => (Ir -> m) -> IModule -> m -- foldMap for IModule
 foldMapIR f i@(IModule _ decls) = 
-  f i `mappend` foldMap (iFoldMap f . IRIElement) decls
+  (f $ IRIModule i) `mappend` foldMap (iFoldMap f . IRIElement) decls
 
 foldIR :: (Ir -> a -> a) -> a -> IModule -> a -- a basic fold for IModule
 foldIR f e = iFold f e . IRIModule
