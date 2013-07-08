@@ -1,4 +1,4 @@
-module Language.Clafer.Intermediate.Tracing (traceIrModule, traceAstModule, Ast(..), Ir(..)) where
+module Language.Clafer.Intermediate.Tracing (traceIrModule, traceAstModule, Ast(..)) where
 
 import Control.Monad.State
 import Data.Map (Map)
@@ -10,46 +10,13 @@ import qualified Language.Clafer.Intermediate.Intclafer as I
 
 insert k a = Map.insertWith (++) k [a]
 
-traceIrModule :: IModule -> Map Span [Ir]
-traceIrModule IModule{mDecls = decls} =
-  foldr
-    traceIrElement
-    Map.empty
-    decls
-
-traceIrElement (IEClafer clafer) m = traceIrClafer clafer m
-traceIrElement IEConstraint{cpexp = pexp} m = traceIrPExp pexp m
-traceIrElement IEGoal{cpexp = pexp} m = traceIrPExp pexp m
-
-traceIrClafer c@IClafer{cinPos = span, super = super, elements = elements} m =
-  foldr
-    traceIrElement
-    (traceIrSuper super $ insert span (IRClafer c) m)
-    elements
-    
-traceIrSuper ISuper{supers = supers} m =
-  foldr
-    traceIrPExp
-    m
-    supers
-    
-traceIrPExp p@PExp{inPos = span, I.exp = e} m =
-  traceIrExp
-    e
-    (insert span (IRPExp p) m)
-    
-traceIrExp IDeclPExp{oDecls = decls, bpexp = pexp} m =
-  foldr
-    traceIrPExp
-    m
-    (pexp : map body decls)
-traceIrExp IFunExp{exps = exps} m =
-  foldr
-    traceIrPExp
-    m
-    exps
-traceIrExp _ m = m
-
+traceIrModule :: IModule -> Map Span [Ir] --Map Span [Union (IRClafer IClafer) (IRPExp PExp)]
+traceIrModule = foldMapIR getMap 
+  where
+    getMap :: Ir -> Map Span [Ir] --Map Span [Union (IRClafer IClafer) (IRPExp PExp)]
+    getMap (IRPExp (p@PExp{inPos = span, I.exp = e})) = insert span (IRPExp p) Map.empty
+    getMap (IRClafer (c@IClafer{cinPos = span, super = super, elements = elements})) = insert span (IRClafer c) Map.empty
+    getMap _ = Map.empty
 
 traceAstModule :: Module -> Map Span [Ast]
 traceAstModule x =
@@ -223,11 +190,6 @@ traverseEnumId _ = []
 traverseModId _ = []
 
 traverseLocId _ = []
-
-data Ir =
-  IRClafer IClafer |
-  IRPExp PExp
-  deriving (Eq, Show)
   
 data Ast =
   AstModule Module |
