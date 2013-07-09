@@ -61,16 +61,17 @@ import Control.Monad
 import Control.Monad.Writer
 import System.FilePath (dropExtension,takeBaseName)
 
-import Language.ClaferT
+import Language.ClaferT 
 import Language.Clafer.Common
 import Language.Clafer.Front.ErrM
-import Language.Clafer.ClaferArgs
+import Language.Clafer.ClaferArgs hiding (Clafer)
+import qualified Language.Clafer.ClaferArgs as Mode (ClaferMode (Clafer))
 import Language.Clafer.Comments
 import qualified Language.Clafer.Css as Css
 import Language.Clafer.Front.Lexclafer
 import Language.Clafer.Front.Parclafer
 import Language.Clafer.Front.Printclafer
-import Language.Clafer.Front.Absclafer hiding (Clafer)
+import Language.Clafer.Front.Absclafer 
 import Language.Clafer.Front.LayoutResolver
 import Language.Clafer.Front.Mapper
 import Language.Clafer.Intermediate.Tracing
@@ -242,7 +243,14 @@ compile =
     env <- getEnv
     ir <- analyze (args env) $ desugar (ast env)
     let (imodule, _, _) = ir
+
+    let spanList = foldMapIR gt1 imodule
+    when ((afm $ args env) && spanList/="") $ throwErr (ClaferErr $ ("The model is not an attributed feature model .\nThe following places contain cardinality larger than 1:\n"++) $ spanList :: CErr Span)
     putEnv $ env{ cIr = Just ir, irModuleTrace = traceIrModule imodule }
+    where
+      gt1 (IRClafer (IClafer (Span (Pos l c) _) _ _ _ _ _ (Just (n, m)) _ _)) = if (m > 1 || m < 0) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
+      gt1 (IRClafer (IClafer (PosSpan _ (Pos l c) _) _ _ _ _ _ (Just (n, m)) _ _)) = if (m > 1 || m < 0) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
+      gt1 _ = ""
 
 -- Splits the IR into their fragments, and generates the output for each fragment.
 -- Might not generate the entirea output (for example, Alloy scope and run commands) because
@@ -335,7 +343,7 @@ generate =
                                       let m = snd alloyCode
                                       ("als", addCommentStats (fst alloyCode) stats, Just m)
                         Xml      -> ("xml", genXmlModule iModule, Nothing)
-                        Clafer   -> ("des.cfr", printTree $ sugarModule iModule, Nothing)
+                        Mode.Clafer   -> ("des.cfr", printTree $ sugarModule iModule, Nothing)
                         Html     -> ("html", generateHtml env, Nothing)
                         Graph    -> ("dot", genSimpleGraph (ast env) iModule (takeBaseName $ file cargs) (show_references cargs), Nothing)
                         CVLGraph -> ("dot", genCVLGraph (ast env) iModule (takeBaseName $ file cargs), Nothing)

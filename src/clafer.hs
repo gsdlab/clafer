@@ -40,6 +40,7 @@ import System.Process (readProcessWithExitCode)
 import Language.Clafer
 import Language.ClaferT
 import Language.Clafer.Css
+import Language.Clafer.ClaferArgs
 import Language.Clafer.Generator.Html (highlightErrors)
 import Language.Clafer.Generator.Graph (genSimpleGraph)
 
