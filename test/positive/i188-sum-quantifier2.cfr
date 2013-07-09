@@ -1,0 +1,13 @@
+abstract Component
+   energy ->> integer 
+
+c1 : Component
+   [ energy = 1 ]
+
+c2 : Component
+   [ energy = 1 ]
+
+c3 : Component
+   [ energy = 1 ]
+
+total ->> integer = sum Component.energy
