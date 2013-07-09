@@ -20,9 +20,11 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
 -}
+import Language.Clafer.Intermediate.Intclafer
 import qualified Data.List as List
 import qualified Data.Map as Map
 import Data.Maybe
+import Data.Foldable (foldMap)
 import Data.Monoid
 import Control.Monad
 import Language.Clafer
@@ -88,25 +90,45 @@ lukesRule p = ((I.pid p)/="" && (I.inPos p)/=noSpan) || ((I.pid p)=="" && (I.inP
 positiveClaferModels :: IO [(String, String)] -- IO [(File, Contents)]
 positiveClaferModels = getClafers "test/positive"
 
+
 {-Test Cases-}
 ---------------
 
 case_compileTest :: Assertion -- Tests to check all files in test/positive compile
 case_compileTest = do 
-					clafers <- positiveClaferModels
-					let compiledClafers = map (\(file, model) -> (file, compileOneFragment defaultClaferArgs model)) clafers
-					forM_ compiledClafers (\(file, compiled) -> when (not $ compiledCheck compiled) $ putStrLn (file ++ " Error: " ++ (show $ fromLeft compiled)))
-					(andMap (compiledCheck . snd) compiledClafers) @? "test/positive fail: The above claferModels did not compile."
+	claferModels <- positiveClaferModels
+	let compiledClafers = map (\(file, model) -> 
+		(file, compileOneFragment defaultClaferArgs model)) claferModels
+	forM_ compiledClafers (\(file, compiled) -> 
+		when (not $ compiledCheck compiled) $ putStrLn (file ++ " Error: " ++ (show $ fromLeft compiled)))
+	(andMap (compiledCheck . snd) compiledClafers 
+		@? "test/positive fail: The above claferModels did not compile.")
 
 case_refrence_Unused_Absstract_Clafer :: Assertion -- Test to make sure i235 compiles for both ss = none / Simple
 case_refrence_Unused_Absstract_Clafer = do
-				model <- readFile "test/positive/i235.cfr"
-				let compiledClafers = 
-					[("None", compileOneFragment defaultClaferArgs{scope_strategy = None} model), ("Simple", compileOneFragment defaultClaferArgs{scope_strategy = Simple} model)]
-				forM_ compiledClafers (\(ss, compiled) -> 
-					when (not $ compiledCheck compiled) $ putStrLn ("i235.cfr failed for scope_strategy = " ++ ss))
-				(andMap (compiledCheck . snd) compiledClafers 
-					@? "refrence_Unused_Absstract_Clafer (i235) failed, error for refrencing unused abstract clafer")
+	model <- readFile "test/positive/i235.cfr"
+	let compiledClafers = 
+		[("None", compileOneFragment defaultClaferArgs{scope_strategy = None} model), ("Simple", compileOneFragment defaultClaferArgs{scope_strategy = Simple} model)]
+	forM_ compiledClafers (\(ss, compiled) -> 
+		when (not $ compiledCheck compiled) $ putStrLn ("i235.cfr failed for scope_strategy = " ++ ss))
+	(andMap (compiledCheck . snd) compiledClafers 
+		@? "refrence_Unused_Absstract_Clafer (i235) failed, error for refrencing unused abstract clafer")
+
+case_nonemptyCards :: Assertion
+case_nonemptyCards = do
+	claferModels <- positiveClaferModels
+	let compiledClafeIrs = foldMap getIR $ map (\(file, model) -> (file, compileOneFragment defaultClaferArgs model)) claferModels
+	forM_ compiledClafeIrs (\(file, ir) ->
+		let emptys = foldMapIR isEmptyCard ir
+		in when (emptys /= []) $ putStrLn (file ++ " Error: Contains empty Card's after analysis at\n" ++ emptys))
+	(andMap ((/=[]) . foldMapIR isEmptyCard . snd) compiledClafeIrs
+		@? "nonempty Card test failed. Files contain empty card's after fully compiling")
+	where
+		getIR (file, (Right (CompilerResult{claferEnv = ClaferEnv{cIr = Just (iMod, _, _)}}))) = [(file, iMod)]
+		getIR _ = []
+		isEmptyCard (IRClafer (IClafer{cinPos=(Span (Pos l c) _), card = Nothing})) = "Line " ++ show l ++ " column " ++ show c ++ "\n"
+		isEmptyCard (IRClafer (IClafer{cinPos=(PosSpan _ (Pos l c) _), card = Nothing})) = "Line " ++ show l ++ " column " ++ show c ++ "\n"
+		isEmptyCard	_ = ""
 
 case_numberOfSnapShots1 :: Assertion -- Make sure all snapshots are taken when debug is set to True!
 case_numberOfSnapShots1 = do
@@ -132,7 +154,7 @@ case_IDCheck :: Assertion -- Make sure all non empty parent ID's are unique and 
 case_IDCheck = do
 	claferModels <- positiveClaferModels
 	let claferSnapShotPids = map (\(file, model) -> 
-		(file, Map.toList $ (Map.map (getPidsEle . I.mDecls . fst3 . fromJust)) $ (Map.filter (/=Nothing)) $ (Map.map cIr) $ snd $ compileOneFragmentS defaultClaferArgs{debug = True} model)) claferModels
+		(file, Map.toList $ (Map.map (foldMapIR getPids . fst3 . fromJust)) $ (Map.filter (/=Nothing)) $ (Map.map cIr) $ snd $ compileOneFragmentS defaultClaferArgs{debug = True} model)) claferModels
 	forM_ claferSnapShotPids (\(file, mMap) -> 
 		when (not $ (andMap (\x -> ((filter (/="") $ (map I.pid) $ snd x)==(filter (/="") $ List.nub $ (map I.pid) $ snd x))) mMap)) $ do
 			putStrLn ("Duplicate Parent Id's in " ++ file ++ ", Failed at stage(s)\n")
@@ -154,15 +176,9 @@ case_IDCheck = do
 	(dupResult && lukesResult @? 
 		(errorMsg lukesResult dupResult) ++ "(For models gotten from test/positive)")
 	where
-		getPidsEle :: [I.IElement] -> [I.PExp]
-		getPidsEle ((I.IEConstraint _ p):es) = p : (getPidsExp $ I.exp p) ++ (getPidsEle es)
-		getPidsEle ((I.IEClafer c):es) = (join $ map (\p -> (p:(getPidsExp (I.exp p)))) (I.supers $ I.super c)) ++ (getPidsEle $ I.elements c) ++ (getPidsEle es)
-		getPidsEle ((I.IEGoal _ p):es) = p : (getPidsExp (I.exp p)) ++ (getPidsEle es)
-		getPidsEle [] = []
-		getPidsExp :: I.IExp -> [I.PExp]
-		getPidsExp (I.IDeclPExp _ o p) = p : (map I.body o) ++ (join $ map (getPidsExp . I.exp . I.body) o) ++ (getPidsExp (I.exp p))
-		getPidsExp (I.IFunExp _ ps) = ps ++ (join $ map (getPidsExp . I.exp) ps)
-		getPidsExp _ = []
+		getPids :: Ir -> [PExp]
+		getPids (I.IRPExp p) = [p]
+		getPids _ = []
 		printDups :: [I.PExp] -> IO ()
 		printDups (p1:ps) = do
 			when ((I.pid p1) /= "" && (I.pid p1) `elem` (map I.pid ps)) $ do
@@ -181,24 +197,3 @@ case_IDCheck = do
 		errorMsg True False = "Failed, Clafers PExp's non empty Parent Id's are not unique! "
 		errorMsg False True = "Failed, Clafers PExp's don't pass lukeRule where empty PID <=> noSpan! "
 		errorMsg False False = "Failed, Clafers PExp's don't pass lukeRule where empty PID <=> noSpan and non empty Parent Id's are not unique! "
-
-{-
-cas_IDCheck :: Assertion -- Make sure none of the parent ID's are empty
-cas_IDCheck = do 
-	claferModels <- positiveClaferModels
-	let claferSnapshotResults = map (\(file, model) -> 
-		(file, Map.toList $ (Map.map ((andMap idCheck) . I.mDecls. fst3 . fromJust)) $ (Map.filter (/=Nothing)) $ (Map.map cIr) $ snd $ compileOneFragmentS defaultClaferArgs{debug = Just True} model)) claferModels
-	forM_ claferSnapshotResults (\(file,mMap) -> when (not $ andMap snd mMap) $ do 
-		putStrLn ("Empty Parent Id in " ++ file ++ ", Failed at stage(s)")
-		forM_ mMap (\(ssID, result) -> when (not result) $ putStrLn ("   " ++ show ssID)))
-	(andMap ((andMap snd) . snd) claferSnapshotResults) @? "Error Clafers contain empty Parent Id's! (For models gotten from test/positive)"
-	where
-		idCheck :: I.IElement -> Bool
-		idCheck (I.IEConstraint _ c) = ((I.pid c) /= "") && (iexpCheck $ I.exp c)
-		idCheck (I.IEClafer c) = andMap (iexpCheck . I.exp) (I.supers $ I.super c) && andMap ((/= "") . I.pid) (I.supers $ I.super c) && andMap idCheck (I.elements c)
-		idCheck _ = True
-		iexpCheck :: I.IExp -> Bool
-		iexpCheck (I.IDeclPExp _ o b) = andMap ((/="") . I.pid . I.body) o && andMap (iexpCheck . I.exp . I.body) o && ((I.pid b) /= "") && (iexpCheck $ I.exp b)
-		iexpCheck (I.IFunExp _ p) = andMap ((/="") . I.pid) p && andMap (iexpCheck . I.exp) p
-		iexpCheck _ = True
--}

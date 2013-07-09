@@ -207,10 +207,12 @@ type ColNo  = Integer
 -------------------------
 
 mapIR :: (Ir -> Ir) -> IModule -> IModule -- fmap/map for IModule
-mapIR f = unWrapIModule . iMap f . IRIModule
+mapIR f (IModule name decls) = 
+  unWrapIModule $ f $ IRIModule $ IModule name $ map (unWrapIElement . iMap f . IRIElement) decls
 
 foldMapIR :: (Monoid m) => (Ir -> m) -> IModule -> m -- foldMap for IModule
-foldMapIR f = iFoldMap f . IRIModule
+foldMapIR f i@(IModule _ decls) = 
+  (f $ IRIModule i) `mappend` foldMap (iFoldMap f . IRIElement) decls
 
 foldIR :: (Ir -> a -> a) -> a -> IModule -> a -- a basic fold for IModule
 foldIR f e = iFold f e . IRIModule
@@ -223,57 +225,52 @@ them if you wish to start from somewhere other than IModule.
 -}
 
 iMap :: (Ir -> Ir) -> Ir -> Ir 
-iMap f (IRIModule (IModule name decls)) = 
-  f $ IRIModule (IModule name $ map (unWrapIElement . iMap f . IRIElement) decls)
 iMap f (IRIElement (IEClafer c)) = 
-  f (IRIElement (IEClafer $ unWrapIClafer $ iMap f $ IRClafer c))
+  f $ IRIElement $ IEClafer $ unWrapIClafer $ iMap f $ IRClafer c
 iMap f (IRIElement (IEConstraint h pexp)) =
-  f (IRIElement (IEConstraint h $ unWrapPExp $ iMap f $ IRPExp pexp)) 
+  f $ IRIElement $ IEConstraint h $ unWrapPExp $ iMap f $ IRPExp pexp
 iMap f (IRIElement (IEGoal m pexp)) =
-  f (IRIElement (IEGoal m $ unWrapPExp $ iMap f $ IRPExp pexp)) 
+  f $ IRIElement $ IEGoal m $ unWrapPExp $ iMap f $ IRPExp pexp 
 iMap f (IRClafer (IClafer p a (Just grc) i u s c goc elems)) =
-  f (IRClafer (IClafer p a (Just $ unWrapIGCard $ iMap f $ IRIGCard grc) i u (unWrapISuper $ iMap f $ IRISuper s) c goc $ map (unWrapIElement . iMap f . IRIElement) elems))
+  f $ IRClafer $ IClafer p a (Just $ unWrapIGCard $ iMap f $ IRIGCard grc) i u (unWrapISuper $ iMap f $ IRISuper s) c goc $ map (unWrapIElement . iMap f . IRIElement) elems
 iMap f (IRClafer (IClafer p a Nothing i u s c goc elems)) =
-  f (IRClafer (IClafer p a Nothing i u (unWrapISuper $ iMap f $ IRISuper s) c goc $ map (unWrapIElement . iMap f . IRIElement) elems))
+  f $ IRClafer $ IClafer p a Nothing i u (unWrapISuper $ iMap f $ IRISuper s) c goc $ map (unWrapIElement . iMap f . IRIElement) elems
 iMap f (IRIExp (IDeclPExp q decs p)) =
-  f (IRIExp (IDeclPExp (unWrapIQuant $ iMap f $ IRIQuant q) (map (unWrapIDecl . iMap f . IRIDecl) decs) $ unWrapPExp $ iMap f $ IRPExp p))
+  f $ IRIExp $ IDeclPExp (unWrapIQuant $ iMap f $ IRIQuant q) (map (unWrapIDecl . iMap f . IRIDecl) decs) $ unWrapPExp $ iMap f $ IRPExp p
 iMap f (IRIExp (IFunExp o pexps)) = 
-  f (IRIExp (IFunExp o $ map (unWrapPExp . iMap f . IRPExp) pexps))
+  f $ IRIExp $ IFunExp o $ map (unWrapPExp . iMap f . IRPExp) pexps
 iMap f (IRPExp (PExp (Just iType) pID p iExp)) =
-  f (IRPExp (PExp (Just $ unWrapIType $ iMap f $ IRIType iType) pID p $ unWrapIExp $ iMap f $ IRIExp iExp))
+  f $ IRPExp $ PExp (Just $ unWrapIType $ iMap f $ IRIType iType) pID p $ unWrapIExp $ iMap f $ IRIExp iExp
 iMap f (IRPExp (PExp Nothing pID p iExp)) =
-  f (IRPExp (PExp Nothing pID p $ unWrapIExp $ iMap f $ IRIExp iExp))
+  f $ IRPExp $ PExp Nothing pID p $ unWrapIExp $ iMap f $ IRIExp iExp
 iMap f (IRISuper (ISuper o pexps)) =
-  f (IRISuper (ISuper o $ map (unWrapPExp . iMap f . IRPExp) pexps))
+  f $ IRISuper $ ISuper o $ map (unWrapPExp . iMap f . IRPExp) pexps
 iMap f (IRIDecl (IDecl i d body)) = 
-  f (IRIDecl (IDecl i d $ unWrapPExp $ iMap f $ IRPExp body))
+  f $ IRIDecl $ IDecl i d $ unWrapPExp $ iMap f $ IRPExp body
 iMap f i = f i
 
 iFoldMap :: (Monoid m) => (Ir -> m) -> Ir -> m
-iFoldMap f (IRIModule (IModule name decls)) =
-  f (IRIModule (IModule name decls)) `mappend` foldMap (iFoldMap f . IRIElement) decls
-iFoldMap f (IRIElement (IEClafer c)) =
-  iFoldMap f $ IRClafer c
-iFoldMap f (IRIElement (IEConstraint h pexp)) =
-  f (IRIElement (IEConstraint h pexp)) `mappend` (iFoldMap f $ IRPExp pexp)
-iFoldMap f (IRIElement (IEGoal m pexp)) =
-  f (IRIElement (IEGoal m pexp)) `mappend` (iFoldMap f $ IRPExp pexp)
-iFoldMap f (IRClafer (IClafer p a Nothing i u s c goc elems)) =
-  f (IRClafer (IClafer p a Nothing i u s c goc elems)) `mappend` (iFoldMap f $ IRISuper s) `mappend` foldMap (iFoldMap f . IRIElement) elems
-iFoldMap f (IRClafer (IClafer p a (Just grc) i u s c goc elems)) =
-  f (IRClafer (IClafer p a (Just grc) i u s c goc elems)) `mappend` (iFoldMap f $ IRISuper s) `mappend` (iFoldMap f $ IRIGCard grc) `mappend` foldMap (iFoldMap f . IRIElement) elems
-iFoldMap f (IRIExp (IDeclPExp q decs p)) =
-  f (IRIExp (IDeclPExp q decs p)) `mappend` (iFoldMap f $ IRIQuant q) `mappend` (iFoldMap f $ IRPExp p) `mappend` foldMap (iFoldMap f . IRIDecl) decs
-iFoldMap f (IRIExp (IFunExp o pexps)) = 
-  f (IRIExp (IFunExp o pexps)) `mappend` foldMap (iFoldMap f . IRPExp) pexps
-iFoldMap f (IRPExp (PExp (Just iType) pID p iExp)) =
-  f (IRPExp (PExp (Just iType) pID p iExp)) `mappend` (iFoldMap f $ IRIType iType) `mappend` (iFoldMap f $ IRIExp iExp)
-iFoldMap f (IRPExp (PExp Nothing pID p iExp)) =
-  f (IRPExp (PExp Nothing pID p iExp)) `mappend` (iFoldMap f $ IRIExp iExp)
-iFoldMap f (IRISuper (ISuper o pexps)) =
-  f (IRISuper (ISuper o pexps)) `mappend` foldMap (iFoldMap f . IRPExp) pexps
-iFoldMap f (IRIDecl (IDecl i d body)) = 
-  f (IRIDecl (IDecl i d body)) `mappend` (iFoldMap f $ IRPExp body)
+iFoldMap f i@(IRIElement (IEConstraint _ pexp)) =
+  f i `mappend` (iFoldMap f $ IRPExp pexp)
+iFoldMap f i@(IRIElement (IEGoal _ pexp)) =
+  f i `mappend` (iFoldMap f $ IRPExp pexp)
+iFoldMap f i@(IRClafer (IClafer _ _ Nothing _ _ s _ _ elems)) =
+  f i `mappend` (iFoldMap f $ IRISuper s) `mappend` foldMap (iFoldMap f . IRIElement) elems
+iFoldMap f i@(IRClafer (IClafer _ _ (Just grc) _ _ s _ _ elems)) =
+  f i `mappend` (iFoldMap f $ IRISuper s) `mappend` (iFoldMap f $ IRIGCard grc) `mappend` foldMap (iFoldMap f . IRIElement) elems
+iFoldMap f i@(IRIExp (IDeclPExp q decs p)) =
+  f i `mappend` (iFoldMap f $ IRIQuant q) `mappend` (iFoldMap f $ IRPExp p) `mappend` foldMap (iFoldMap f . IRIDecl) decs
+iFoldMap f i@(IRIExp (IFunExp _ pexps)) = 
+  f i `mappend` foldMap (iFoldMap f . IRPExp) pexps
+iFoldMap f i@(IRPExp (PExp (Just iType) _ _ iExp)) =
+  f i `mappend` (iFoldMap f $ IRIType iType) `mappend` (iFoldMap f $ IRIExp iExp)
+iFoldMap f i@(IRPExp (PExp Nothing _ _ iExp)) =
+  f i `mappend` (iFoldMap f $ IRIExp iExp)
+iFoldMap f i@(IRISuper (ISuper _ pexps)) =
+  f i `mappend` foldMap (iFoldMap f . IRPExp) pexps
+iFoldMap f i@(IRIDecl (IDecl _ _ body)) = 
+  f i `mappend` (iFoldMap f $ IRPExp body)
+iFoldMap f (IRIElement (IEClafer c)) = iFoldMap f $ IRClafer c
 iFoldMap f i = f i
 
 iFold :: (Ir -> a -> a) -> a -> Ir -> a

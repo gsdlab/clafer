@@ -259,7 +259,8 @@ resolveTPExp' p@PExp{inPos, exp = IClaferId{sident = "parent"}} =
           <++>
           addRef result -- Case 2: Dereference the sident 1..* times
       Nothing -> throwError $ SemanticErr inPos "Cannot parent at the start of a path"
-resolveTPExp' p@PExp{inPos, exp = IClaferId{sident}} =
+resolveTPExp' p@PExp{inPos, exp = IClaferId{sident = "integer"}} = runListT $ runErrorT $ return $ p `withType` TInteger
+resolveTPExp' p@PExp{inPos, exp = IClaferId{sident}} = 
   runListT $ runErrorT $ do
     curPath' <- curPath
     sident' <- if sident == "this" then uid <$> curThis else return sident
