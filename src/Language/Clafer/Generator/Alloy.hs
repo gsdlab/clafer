@@ -417,9 +417,13 @@ transformExp    x@(IFunExp op exps@(e1:e2:_))
 transformExp x = x
 
 genIFunExp :: String -> ClaferArgs -> [String] -> IExp             -> Concat
-genIFunExp    pid       claferargs    resPath     (IFunExp op exps) = Concat (IrPExp pid) $ intl exps' (map CString $ genOp (mode (claferargs :: ClaferArgs)) op)
+genIFunExp    pid       claferargs    resPath     (IFunExp op exps) = 
+  if (op == iSumSet) then genIFunExp pid claferargs resPath (IFunExp iSumSet' [(removeright (head exps)), (getRight $ head exps)]) 
+    else if (op == iSumSet') then Concat (IrPExp pid) $ intl exps' (map CString $ genOp (mode (claferargs :: ClaferArgs)) iSumSet)
+      else Concat (IrPExp pid) $ intl exps' (map CString $ genOp (mode (claferargs :: ClaferArgs)) op)
   where
   intl
+    | op == iSumSet' = flip $ interleave
     | op `elem` arithBinOps && length exps == 2 = interleave
     | otherwise = \xs ys -> reverse $ interleave (reverse xs) (reverse ys)
   exps' = map (optBrArg claferargs resPath) exps
@@ -448,7 +452,8 @@ genOp    Alloy42       op
   | op == iSub  = [".minus[", "]"]
   | otherwise   = genOp Alloy op
 genOp    _             op
-  | op `elem` unOps = [op]
+  | op == iSumSet = ["sum temp : "," | temp."]
+  | op `elem` unOps  = [op]
   | op == iPlus = [".add[", "]"]
   | op == iSub  = [".sub[", "]"]
   | op == iMul = [".mul[", "]"]
@@ -562,3 +567,11 @@ lineno (l, c) str = (l + newLines, (if newLines > 0 then firstCol else c) + newC
 
 firstCol  = 1 :: ColNo
 firstLine = 1 :: LineNo
+
+removeright :: PExp -> PExp
+removeright (PExp _ _ _ (IFunExp _ (x : (PExp _ _ _ (IClaferId _ _ _)) : _))) = x
+removeright (PExp t id pos (IFunExp o (x1:x2:xs))) = (PExp t id pos (IFunExp o (x1:(removeright x2):xs)))
+
+getRight :: PExp -> PExp
+getRight (PExp _ _ _ (IFunExp _ (_:x:_))) = getRight x
+getRight p = p
