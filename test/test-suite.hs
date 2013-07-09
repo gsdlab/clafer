@@ -20,7 +20,9 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
 -}
+import Language.Clafer.Intermediate.Intclafer
 import qualified Data.List as List
+import Data.Foldable (foldMap)
 import Data.Monoid
 import Control.Monad
 import Language.Clafer
@@ -68,22 +70,41 @@ fromLeft (Left a) = a
 andMap :: (a -> Bool) -> [a] -> Bool
 andMap f lst = and $ map f lst
 
-positiveClafers = getClafers "test/positive"
+positiveClaferModels = getClafers "test/positive"
 
 
 case_compileTest :: Assertion
 case_compileTest = do 
-					clafers <- positiveClafers
-					let compiledClafers = map (\(file, model) -> (file, compileOneFragment defaultClaferArgs model)) clafers
-					forM_ compiledClafers (\(file, compiled) -> when (not $ compiledCheck compiled) $ putStrLn (file ++ " Error: " ++ (show $ fromLeft compiled)))
-					(andMap (compiledCheck . snd) compiledClafers) @? "test/positive fail: The above claferModels did not compile."
+	claferModels <- positiveClaferModels
+	let compiledClafers = map (\(file, model) -> 
+		(file, compileOneFragment defaultClaferArgs model)) claferModels
+	forM_ compiledClafers (\(file, compiled) -> 
+		when (not $ compiledCheck compiled) $ putStrLn (file ++ " Error: " ++ (show $ fromLeft compiled)))
+	(andMap (compiledCheck . snd) compiledClafers 
+		@? "test/positive fail: The above claferModels did not compile.")
 
 case_refrence_Unused_Absstract_Clafer :: Assertion
 case_refrence_Unused_Absstract_Clafer = do
-				model <- readFile "test/positive/i235.cfr"
-				let compiledClafers = 
-					[("None", compileOneFragment defaultClaferArgs{scope_strategy = None} model), ("Simple", compileOneFragment defaultClaferArgs{scope_strategy = Simple} model)]
-				forM_ compiledClafers (\(ss, compiled) -> 
-					when (not $ compiledCheck compiled) $ putStrLn ("i235.cfr failed for scope_strategy = " ++ ss))
-				(andMap (compiledCheck . snd) compiledClafers 
-					@? "refrence_Unused_Absstract_Clafer (i235) failed, error for refrencing unused abstract clafer")
+	model <- readFile "test/positive/i235.cfr"
+	let compiledClafers = 
+		[("None", compileOneFragment defaultClaferArgs{scope_strategy = None} model), ("Simple", compileOneFragment defaultClaferArgs{scope_strategy = Simple} model)]
+	forM_ compiledClafers (\(ss, compiled) -> 
+		when (not $ compiledCheck compiled) $ putStrLn ("i235.cfr failed for scope_strategy = " ++ ss))
+	(andMap (compiledCheck . snd) compiledClafers 
+		@? "refrence_Unused_Absstract_Clafer (i235) failed, error for refrencing unused abstract clafer")
+
+case_nonemptyCards :: Assertion
+case_nonemptyCards = do
+	claferModels <- positiveClaferModels
+	let compiledClafeIrs = foldMap getIR $ map (\(file, model) -> (file, compileOneFragment defaultClaferArgs model)) claferModels
+	forM_ compiledClafeIrs (\(file, ir) ->
+		let emptys = foldMapIR isEmptyCard ir
+		in when (emptys /= []) $ putStrLn (file ++ " Error: Contains empty Card's after analysis at\n" ++ emptys))
+	(andMap ((/=[]) . foldMapIR isEmptyCard . snd) compiledClafeIrs
+		@? "nonempty Card test failed. Files contain empty card's after fully compiling")
+	where
+		getIR (file, (Right (CompilerResult{claferEnv = ClaferEnv{cIr = Just (iMod, _, _)}}))) = [(file, iMod)]
+		getIR _ = []
+		isEmptyCard (IRClafer (IClafer{cinPos=(Span (Pos l c) _), card = Nothing})) = "Line " ++ show l ++ " column " ++ show c ++ "\n"
+		isEmptyCard (IRClafer (IClafer{cinPos=(PosSpan _ (Pos l c) _), card = Nothing})) = "Line " ++ show l ++ " column " ++ show c ++ "\n"
+		isEmptyCard	_ = ""
