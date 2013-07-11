@@ -47,7 +47,8 @@ Executable clafer
                     test-framework-quickcheck2 >= 0.3.0.1,
                     test-framework-th >= 0.2.3,
                     QuickCheck >= 2.5.1.1, 
-                    HUnit >= 1.2.5.1
+                    HUnit >= 1.2.5.1,
+                    directory
     hs-source-dirs: src
 
 library 
@@ -75,7 +76,8 @@ library
                      test-framework-quickcheck2 >= 0.3.0.1,
                      test-framework-th >= 0.2.3,
                      QuickCheck >= 2.5.1.1, 
-                     HUnit >= 1.2.5.1
+                     HUnit >= 1.2.5.1,
+                     directory
     hs-source-dirs:  src
     ghc-options:     -Wall
     exposed-modules: 
@@ -113,7 +115,10 @@ library
                      Language.Clafer.Intermediate.Transformer,
                      Language.Clafer.Optimizer.Optimizer,
                      Language.Clafer.SplitJoin,
-                     Language.Clafer.Version
+                     Language.Clafer.Version,
+                     Test.Functions,
+                     Test.Suite.Positive,
+                     Test.Suite.Negative
 
 Test-Suite test-suite
     default-language: 
@@ -141,5 +146,4 @@ Test-Suite test-suite
                      test-framework-quickcheck2 >= 0.3.0.1,
                      test-framework-th >= 0.2.3,
                      QuickCheck >= 2.5.1.1, 
-                     HUnit >= 1.2.5.1,
-                     directory
+                     HUnit >= 1.2.5.1
