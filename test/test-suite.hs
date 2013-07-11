@@ -100,7 +100,7 @@ case_nonemptyCards = do
 	forM_ compiledClafeIrs (\(file, ir) ->
 		let emptys = foldMapIR isEmptyCard ir
 		in when (emptys /= []) $ putStrLn (file ++ " Error: Contains empty Card's after analysis at\n" ++ emptys))
-	(andMap ((/=[]) . foldMapIR isEmptyCard . snd) compiledClafeIrs
+	(andMap ((==[]) . foldMapIR isEmptyCard . snd) compiledClafeIrs
 		@? "nonempty Card test failed. Files contain empty card's after fully compiling")
 	where
 		getIR (file, (Right (CompilerResult{claferEnv = ClaferEnv{cIr = Just (iMod, _, _)}}))) = [(file, iMod)]
