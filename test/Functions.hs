@@ -20,7 +20,7 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
 -}
-module Test.Functions where
+module Functions where
 
 import Language.Clafer.Intermediate.Intclafer
 import qualified Data.List as List

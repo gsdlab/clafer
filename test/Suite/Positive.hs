@@ -20,9 +20,9 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
 -}
-module Test.Suite.Positive (tg_Test_Suite_Positive) where
+module Suite.Positive (tg_Test_Suite_Positive) where
 
-import Test.Functions
+import Functions
 import Language.Clafer.Intermediate.Intclafer
 import qualified Data.List as List
 import Data.Foldable (foldMap)

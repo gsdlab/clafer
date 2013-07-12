@@ -58,10 +58,10 @@ prof:
 .PHONY : test
 
 test:
-	$(MAKE) -C $(TEST_DIR) test
 	cabal configure --enable-tests
 	cabal build
 	cabal test	
+	$(MAKE) -C $(TEST_DIR) test
 
 reg:
 	$(MAKE) -C $(TEST_DIR) reg

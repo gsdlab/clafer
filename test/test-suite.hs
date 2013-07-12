@@ -20,9 +20,9 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
 -}
-import Test.Suite.Positive
-import Test.Suite.Negative
-import Test.Functions
+import Suite.Positive
+import Suite.Negative
+import Functions
 import Test.Framework
 import Test.Framework.TH
 

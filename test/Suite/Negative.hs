@@ -20,9 +20,9 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
 -}
-module Test.Suite.Negative (tg_Test_Suite_Negative) where
+module Suite.Negative (tg_Test_Suite_Negative) where
 
-import Test.Functions
+import Functions
 import Language.Clafer.Intermediate.Intclafer
 import Control.Monad
 import Test.Framework
