@@ -29,6 +29,7 @@ import Data.Maybe
 import Data.Graph
 import Data.Tree
 import Data.List
+import Data.Foldable (foldMap)
 import Data.Map (Map)
 import qualified Data.Map as Map
 
@@ -53,19 +54,19 @@ resolveNModule (imodule, genv) =
 resolveNClafer :: [IElement] -> IClafer -> Resolve IClafer
 resolveNClafer declarations clafer =
   do
-    super'    <- resolveNSuper declarations $ super clafer
+    super'    <- resolveNSuper (cinPos clafer) declarations (getSuperType $ super $ rootAncestorOf clafer $ toClafers declarations) $ super clafer
     elements' <- mapM (resolveNElement declarations) $ elements clafer
     return $ clafer {super = super',
             elements = elements'}
 
 
-resolveNSuper :: [IElement] -> ISuper -> Resolve ISuper
-resolveNSuper declarations x = case x of
+resolveNSuper :: Span -> [IElement] -> String -> ISuper -> Resolve ISuper
+resolveNSuper s declarations tid x = case x of
   ISuper False [PExp _ pid pos (IClaferId _ id isTop)] ->
     if isPrimitive id || id == "clafer"
       then return x
       else do
-        r <- resolveN pos declarations id
+        r <- resolveN s tid pos declarations id
         id' <- case r of
           Nothing -> throwError $ SemanticErr pos $ "No superclafer found: " ++ id
           Just m  -> return $ fst m
@@ -79,10 +80,14 @@ resolveNElement declarations x = case x of
   IEConstraint _ _  -> return x
   IEGoal _ _ -> return x
 
-resolveN :: Span -> [IElement] -> String -> Resolve (Maybe (String, [IClafer]))
-resolveN pos declarations id =
-  findUnique pos id $ map (\x -> (x, [x])) $ filter isAbstract $ bfsClafers $
+resolveN :: Span -> String -> Span -> [IElement] -> String -> Resolve (Maybe (String, [IClafer]))
+resolveN s tid pos declarations id =
+  findUnique pos id $ map (\x -> (x, [x])) $ foldMap (findPossibilites s) $ bfsClafers $
     toClafers declarations
+    where
+      findPossibilites s i@(IClafer _ True _ ident _ _ _ _ elems) = 
+        [i] ++ if(tid == ident) then (getLevel s i) else [] 
+      findPossibilites s _ = []
 
 -- -----------------------------------------------------------------------------
 -- Overlapping inheritance
@@ -256,3 +261,28 @@ resolveEElement predecessors unrollables absAncestor declarations x = case x of
     resolveEClafer predecessors unrollables absAncestor declarations clafer
   IEConstraint _ _  -> return x
   IEGoal _ _ -> return x
+
+rootAncestorOf :: IClafer -> [IClafer] -> IClafer
+rootAncestorOf clafer (c:cs) = if (clafer `elem` descendantsOf c) then c
+  else rootAncestorOf clafer cs
+
+getLevel :: Span -> IClafer -> [IClafer]
+getLevel s parent = 
+  let children = toClafers $ elements parent
+  in if ( (getColumn s) `elem` map (getColumn . cinPos) children) then children
+    else foldMap (getLevel s) children
+  where
+    getColumn :: Span -> Integer
+    getColumn (Span (Pos _ c) _) = c
+    
+descendantsOf :: IClafer -> [IClafer]
+descendantsOf = iFoldMap getChildren . IRClafer
+
+getChildren :: Ir -> [IClafer]
+getChildren (IRClafer i@(IClafer{elements = elems})) = i : toClafers elems
+getChildren  _ = []
+
+getSuperType :: ISuper -> String
+getSuperType (ISuper _ ((PExp _ _ _ (IClaferId _ ident True)):_)) = ident
+getSuperType _ = ""
+

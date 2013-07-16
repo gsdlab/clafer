@@ -54,6 +54,7 @@ module Language.Clafer (
 import Data.Either
 import Data.List
 import Data.Maybe
+import Data.Foldable (foldMap)
 import Data.Map (Map)
 import qualified Data.Map as Map
 import Data.Ord
@@ -216,7 +217,8 @@ parse =
 
     
     let ast = mapModule ast'
-    let env' = env{ cAst = Just ast, astModuleTrace = traceAstModule ast }
+    let astTrace = traceAstModule ast
+    let env' = env{ cAst = Just ast, astModuleTrace = astTrace}
     putEnv env'
   where
   parseFrag args =
@@ -243,11 +245,23 @@ compile =
     env <- getEnv
     ir <- analyze (args env) $ desugar (ast env)
     let (imodule, _, _) = ir
+    let imodTrace = traceIrModule imodule
 
-    let spanList = foldMapIR gt1 imodule
-    when ((afm $ args env) && spanList/="") $ throwErr (ClaferErr $ ("The model is not an attributed feature model .\nThe following places contain cardinality larger than 1:\n"++) $ spanList :: CErr Span)
-    putEnv $ env{ cIr = Just ir, irModuleTrace = traceIrModule imodule }
+    let spanList = (filter (/=noSpan) $ map fst $ Map.toList imodTrace) 
+    let pMap = foldMap (\s1 -> Map.singleton s1 $ getParentSpan s1 $ filter (\s2 -> (s2/=s1) && containsSpan s1 s2) spanList) spanList 
+
+    let failSpanList = foldMapIR gt1 imodule
+    when ((afm $ args env) && failSpanList/="") $ throwErr (ClaferErr $ ("The model is not an attributed feature model .\nThe following places contain cardinality larger than 1:\n"++) $ failSpanList :: CErr Span)
+    putEnv $ env{ cIr = Just ir, irModuleTrace = imodTrace, parentMap = pMap}
     where
+      containsSpan :: Span -> Span -> Bool
+      containsSpan (Span (Pos r1 c) (Pos r2 _)) (Span (Pos x1 y) (Pos x2 _)) =
+        r1 > x1 && c > y && r2 < x2
+
+      getParentSpan :: Span -> [Span] -> Span
+      getParentSpan s@(Span (Pos r c) _) ss = foldr (\s1@(Span (Pos x1 y1) _) s2@(Span (Pos x2 y2) _) -> 
+        if (r > x1 && c > y1 && x1 > x2 || (x2==0 && y2==0)) then s1 else s2) noSpan ss
+
       gt1 (IRClafer (IClafer (Span (Pos l c) _) _ _ _ _ _ (Just (n, m)) _ _)) = if (m > 1 || m < 0) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
       gt1 (IRClafer (IClafer (PosSpan _ (Pos l c) _) _ _ _ _ _ (Just (n, m)) _ _)) = if (m > 1 || m < 0) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
       gt1 _ = ""

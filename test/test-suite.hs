@@ -67,6 +67,9 @@ compiledCheck (Right _) = True
 fromLeft :: Either a b -> a
 fromLeft (Left a) = a
 
+fromRight :: Either a b -> b
+fromRight (Right b) = b
+
 andMap :: (a -> Bool) -> [a] -> Bool
 andMap f lst = and $ map f lst
 
