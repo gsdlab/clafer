@@ -41,8 +41,8 @@ module Language.Clafer (
                         IModule,
                         voidf,
                         ClaferEnv(..),
-                        ir,
-                        ast,
+                        getIr,
+                        getAst,
                         makeEnv,
                         Pos(..),
                         IrTrace(..),
@@ -184,7 +184,7 @@ parse :: Monad m => ClaferT m ()
 parse =
   do
     env <- getEnv
-    let astsErr = map (parseFrag $ args env) $ modelFrags env
+    astsErr <- mapM (parseFrag $ args env) $ modelFrags env
     asts <- liftParseErrs astsErr
 
     -- We need to somehow combine all the ASTS together into a complete AST
@@ -211,7 +211,7 @@ parse =
       _ -> do
         -- Combine all the fragment syntaxes
         let completeModel = concat $ modelFrags env
-        let completeAst = (parseFrag $ args env) completeModel
+        completeAst <- (parseFrag $ args env) completeModel
         liftParseErr completeAst
 
     
@@ -219,15 +219,16 @@ parse =
     let env' = env{ cAst = Just ast, astModuleTrace = traceAstModule ast }
     putEnv env'
   where
+  parseFrag :: (Monad m) => ClaferArgs -> String -> ClaferT m (Err Module)
   parseFrag args =
-    pModule .
+    (>>= (return . pModule)) .
     (if not 
       ((new_layout args) ||
       (no_layout args))
     then 
        resolveLayout 
     else 
-       id) 
+       return) 
     . myLexer .
     (if (not $ no_layout args) &&
         (new_layout args)
@@ -241,7 +242,8 @@ compile :: Monad m => ClaferT m ()
 compile =
   do
     env <- getEnv
-    ir <- analyze (args env) $ desugar (ast env)
+    ast' <- getAst
+    ir <- analyze (args env) $ desugar ast'
     let (imodule, _, _) = ir
 
     let spanList = foldMapIR gt1 imodule
@@ -259,8 +261,8 @@ generateFragments :: Monad m => ClaferT m [String]
 generateFragments =
   do
     env <- getEnv
-    let (iModule, _, _) = ir env
-    let fragElems = fragment (sortBy (comparing range) $ mDecls iModule) (frags env)
+    (iModule, _, _) <- getIr
+    fragElems <- fragment (sortBy (comparing range) $ mDecls iModule) (frags env)
     
     -- Assumes output mode is Alloy for now
     
@@ -272,13 +274,13 @@ generateFragments =
   
   -- Groups IElements by their fragments.
   --   elems must be sorted by range.
-  fragment :: [IElement] -> [Pos] -> [[IElement]]
-  fragment [] [] = []
+  fragment :: (Monad m) => [IElement] -> [Pos] -> ClaferT m [[IElement]]
+  fragment [] [] = return []
   fragment elems (frag : rest) =
-    curFrag : fragment restFrags rest
+    fragment restFrags rest >>= return . (curFrag:)
     where
     (curFrag, restFrags) = span (`beforePos` frag) elems
-  fragment _ [] = error $ "Unexpected fragment." -- Should not happen. Bug.
+  fragment _ [] = throwErr $ (ClaferErr $ "Unexpected fragment." :: CErr Span) -- Should not happen. Bug.
   
   beforePos elem pos =
     case range elem of
@@ -289,12 +291,12 @@ generateFragments =
     flatten $ cconcat $ map (genDeclaration args) frag
 
 -- Splits the AST into their fragments, and generates the output for each fragment.
-generateHtml env =
-    let PosModule _ decls = ast env;
+generateHtml env ast' ir' =
+    let PosModule _ decls = ast';
         cargs = args env;
         irMap = irModuleTrace env;
         comments = if add_comments cargs then getComments $ unlines $ modelFrags env else [];
-        (iModule, genv, au) = ir env;
+        (iModule, genv, au) = ir';
     in (if (self_contained cargs) then Css.header ++ "<style>" ++ Css.css ++ "</style></head>\n<body>\n" else "")
        ++ (unlines $ generateFragments decls (frags env) irMap comments) ++
        (if (self_contained cargs) then "</body>\n</html>" else "")
@@ -327,8 +329,9 @@ generate :: Monad m => ClaferT m CompilerResult
 generate =
   do
     env <- getEnv
+    ast' <- getAst
+    ir'@(iModule, genv, au) <- getIr
     let cargs = args env
-    let (iModule, genv, au) = ir env
     let stats = showStats au $ statsModule iModule
     let (imod,strMap) = astrModule iModule
     let (ext, code, mapToAlloy) = case (mode cargs) of
@@ -344,9 +347,9 @@ generate =
                                       ("als", addCommentStats (fst alloyCode) stats, Just m)
                         Xml      -> ("xml", genXmlModule iModule, Nothing)
                         Mode.Clafer   -> ("des.cfr", printTree $ sugarModule iModule, Nothing)
-                        Html     -> ("html", generateHtml env, Nothing)
-                        Graph    -> ("dot", genSimpleGraph (ast env) iModule (takeBaseName $ file cargs) (show_references cargs), Nothing)
-                        CVLGraph -> ("dot", genCVLGraph (ast env) iModule (takeBaseName $ file cargs), Nothing)
+                        Html     -> ("html", generateHtml env ast' ir', Nothing)
+                        Graph    -> ("dot", genSimpleGraph ast' iModule (takeBaseName $ file cargs) (show_references cargs), Nothing)
+                        CVLGraph -> ("dot", genCVLGraph ast' iModule (takeBaseName $ file cargs), Nothing)
     return $ CompilerResult { extension = ext, 
                      outputCode = code, 
                      statistics = stats,
