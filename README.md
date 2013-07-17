@@ -2,7 +2,7 @@ Clafer
 ======
 
 [Clafer](http://clafer.org) is a general-purpose lightweight structural modeling language developed at [GSD Lab](http://gsd.uwaterloo.ca/), [University of Waterloo](http://uwaterloo.ca). 
-Clafer can be used for modeling of static structures but has no support for modeling the change of the structures over time (behavior). 
+Clafer can be used for modeling of static hierarchical structures but has no support for modeling the change of the structures over time (behavior). 
 The main goal of Clafer is to make modeling more accessible to a wider range of users and domains. 
 
 There are many possible applications of Clafer; however, three are prominent:
@@ -19,7 +19,7 @@ Clafer multi-objective optimizer generates a Pareto front of optimal product con
 Clafer Compiler
 ===============
 
-v0.3.2.11-4-2013
+v0.3.3.10-7-2013
 
 Clafer compiler provides a reference language implementation. 
 It translates models in Clafer to other formats (e.g. Alloy, XML, HTML, DOT) to allow for reasoning and processing with existing tools.
@@ -52,7 +52,7 @@ The following tools are not part of the binary distribution and they have to be 
 * [Alloy4.1 and/or Alloy4.2](http://alloy.mit.edu/alloy/download.html)
 * [GraphViz](http://graphviz.org/)
   * `dot` is needed only in the `html` mode for SVG graph generation
-* [GNU Linear Programming Kit](http://www.gnu.org/software/glpk/) v4.49
+* [GNU Linear Programming Kit](http://www.gnu.org/software/glpk/) v4.51
 
 ### Installation
 
@@ -62,12 +62,12 @@ The following tools are not part of the binary distribution and they have to be 
 
 On Linux
 
-1. [libglpk-dev](http://www.gnu.org/software/glpk/) v4.49
+1. [libglpk-dev](http://www.gnu.org/software/glpk/) v4.51
   * execute `sudo apt-get install libglpk-dev` on Ubuntu
 
 On Windows
 
-1. The binary distribution already includes the GNU Linear Programming Kit DLL `glpk_4_49.dll`.
+1. The binary distribution already includes the GNU Linear Programming Kit DLL `glpk_4_51.dll`.
 
 On Mac
 
@@ -85,27 +85,27 @@ Building & Installation From Source Code
 ### Additional dependencies for building
 
 * The dependencies for running
-* [The Haskell Platform](http://hackage.haskell.org/platform/) v.2012.2.0.0
+* [The Haskell Platform](http://hackage.haskell.org/platform/) v2012.4.0.0
 * [Alloy4.1 and/or Alloy4.2](http://alloy.mit.edu/alloy/download.html)
   * downloaded automatically during build
 * [Git](http://git-scm.com/)
 
 On Linux
-* [libglpk-dev](http://www.gnu.org/software/glpk/) v4.49
+* [libglpk-dev](http://www.gnu.org/software/glpk/) v4.51
   * `sudo apt-get install libglpk-dev` on Ubuntu
 
 On Windows 
 
 * [MinGW+MSYS](http://mingw.org) 
-  * since the Haskell Platform already contains MinGW, you may choose to install MinGW+MSYS to the same location, e.g., `c:\...\Haskell Platform\2012.2.0.0`
+  * since the Haskell Platform already contains MinGW, you may choose to install MinGW+MSYS to the same location, e.g., `c:\...\Haskell Platform\2012.4.0.0`
   * add the `bin` folders of MinGW (`MinGW\bin`) and MSYS (`MinGW\MSYS\1.0\bin`) to your system path
   * `wget` will be automatically installed 
-* [WinGLPK](http://winglpk.sourceforge.net/) v4.49
-  * inside the `w32` folder, copy `glpk_4_49.dll` to`glpk.dll` so that it can be found when building Haskell package `glpk-hs`
-  * from `w32` folder, copy `glpk_4_49.dll` to `<user>\AppData\Roaming\cabal\bin`
+* [WinGLPK](http://winglpk.sourceforge.net/) v4.51
+  * inside the `w32` folder, copy `glpk_4_51.dll` to`glpk.dll` so that it can be found when building Haskell package `glpk-hs`
+  * from `w32` folder, copy `glpk_4_51.dll` to `<user>\AppData\Roaming\cabal\bin`
 
 On Mac only
-1. install GPLK 4.49 from [MacPorts](http://www.macports.org/)
+1. install GPLK 4.51 from [MacPorts](http://www.macports.org/)
 2. execute `sudo port install glpk +universal`
 
 ### Important: Branches must correspond
@@ -139,7 +139,7 @@ Development versions `clafer/develop` and `claferIG/develop` should work well to
 
 On Windows only
 
-* copy GLPK's dll `glpk-0.4.49.dll` to the `<target directory>` folder or any other folder on the system path
+* copy GLPK's dll `glpk-0.4.51.dll` to the `<target directory>` folder or any other folder on the system path
 
 #### Note: 
 > On Windows, use `/` with the `make` command instead of `\`.
@@ -153,58 +153,74 @@ Clafer Compiler
 (As printed by `clafer --help`)
 
 ```
-Clafer v0.3.2.11-4-2013
+Clafer v0.3.3.10-7-2013
 
 clafer [OPTIONS] [FILE]
 
 Common flags:
-  -m --mode=CLAFERMODE         Generated output type. Available CLAFERMODEs
-                               are: 'alloy' (default, Alloy 4.1); 'alloy42'
-                               (Alloy 4.2); 'xml' (intermediate representation
-                               of Clafer model); 'clafer' (analyzed and
-                               desugared clafer model); 'html' (original model
-                               in HTML); 'graph' (graphical representation
-                               written in DOT language); 'cvlgraph' (cvl
-                               notation representation written in DOT language)
-  -o --console-output          Output code on console
-  -i --flatten-inheritance     Flatten inheritance ('alloy' and 'alloy42'
-                               modes only)
-     --timeout-analysis=INT    Timeout for analysis
-  -l --no-layout               Don't resolve off-side rule layout
-     --nl --new-layout         Use new fast layout resolver (experimental)
-  -c --check-duplicates        Check duplicated clafer names
-  -f --skip-resolver           Skip name resolution
-  -k --keep-unused             Keep uninstantated abstract clafers ('alloy'
-                               and 'alloy42' modes only)
-  -s --no-stats                Don't print statistics
-     --schema                  Show Clafer IR (intermediate representation)
-                               XML schema
-  -v --validate                Validate output. Uses 'tools/XsdCheck.class'
-                               for XML,  'tools/alloy4.jar' and
-                               'tools/alloy4.2.jar' for Alloy models, and
-                               Clafer translator for desugared Clafer models.
-                               Use '--tooldir' to override the default location
-                               of these tools.
-     --nr --noalloyruncommand  For usage with partial instances: Don't
-                               generate the alloy 'run show for ... ' command,
-                               and rename @.ref with unique names  ('alloy' and
-                               'alloy42' modes only)
-     --tooldir=DIR             Specify the tools directory ('validate' only).
-                               Default: 'tools/'
-  -a --alloy-mapping           Generate mapping to Alloy source code ('alloy'
-                               and 'alloy42' modes only)
-     --self-contained          Generate a self-contained html document
-                               ('html' mode only)
-     --add-graph               Add a graph to the generated html model
-                               ('html' mode only). Requires the "dot"
-                               executable to be on the system path.
-     --sr --show-references    Whether the links for references should be
-                               rendered. ('html' and 'graph' modes only).
-     --add-comments            Include comments from the source file in the
-                               html output ('html' mode only).
-  -e --ecore2clafer            Translate an ECore model into Clafer.
-  -? --help                    Display help message
-  -V --version                 Print version information
+  -m --mode=CLAFERMODE                    Generated output type. Available
+                                          CLAFERMODEs are: 'alloy' (default,
+                                          Alloy 4.1); 'alloy42' (Alloy 4.2);
+                                          'xml' (intermediate representation of
+                                          Clafer model); 'clafer' (analyzed and
+                                          desugared clafer model); 'html'
+                                          (original model in HTML); 'graph'
+                                          (graphical representation written in
+                                          DOT language); 'cvlgraph' (cvl
+                                          notation representation written in
+                                          DOT language)
+  -o --console-output                     Output code on console
+  -i --flatten-inheritance                Flatten inheritance ('alloy' and
+                                          'alloy42' modes only)
+     --timeout-analysis=INT               Timeout for analysis
+  -l --no-layout                          Don't resolve off-side rule layout
+     --nl --new-layout                    Use new fast layout resolver
+                                          (experimental)
+  -c --check-duplicates                   Check duplicated clafer names
+  -f --skip-resolver                      Skip name resolution
+  -k --keep-unused                        Keep uninstantated abstract clafers
+                                          ('alloy' and 'alloy42' modes only)
+  -s --no-stats                           Don't print statistics
+     --schema                             Show Clafer IR (intermediate
+                                          representation) XML schema
+  -v --validate                           Validate output. Uses
+                                          'tools/XsdCheck.class' for XML,
+                                          'tools/alloy4.jar' and
+                                          'tools/alloy4.2.jar' for Alloy
+                                          models, and Clafer translator for
+                                          desugared Clafer models. Use
+                                          '--tooldir' to override the default
+                                          location of these tools.
+     --nr --noalloyruncommand             For usage with partial instances:
+                                          Don't generate the alloy 'run show
+                                          for ... ' command, and rename @.ref
+                                          with unique names  ('alloy' and
+                                          'alloy42' modes only)
+     --tooldir=DIR                        Specify the tools directory
+                                          ('validate' only). Default: 'tools/'
+  -a --alloy-mapping                      Generate mapping to Alloy source
+                                          code ('alloy' and 'alloy42' modes
+                                          only)
+     --self-contained                     Generate a self-contained html
+                                          document ('html' mode only)
+     --add-graph                          Add a graph to the generated html
+                                          model ('html' mode only). Requires
+                                          the "dot" executable to be on the
+                                          system path.
+     --sr --show-references               Whether the links for references
+                                          should be rendered. ('html' and
+                                          'graph' modes only).
+     --add-comments                       Include comments from the source
+                                          file in the html output ('html' mode
+                                          only).
+  -e --ecore2clafer                       Translate an ECore model into
+                                          Clafer.
+     --ss=SCOPESTRATEGY --scope-strategy  Use scope computation strategy:
+                                          none, simple (default), or full.
+     --check-afm --afm                    Throws an error if the cardinality
+                                          of any of the clafers is above 1.
+  -? --help                               Display help message
+  -V --version                            Print version information
 ```
 
 The dependencies among the command line arguments are described in [issue 117](http://gsd.uwaterloo.ca:8888/question/570/dependencies-among-command-line-arguments).

@@ -1,6 +1,6 @@
 abstract Path
   p : Path ?
   isDir ?
-  [this.isDir && this.p]
+  [this.isDir => this.p]
 
-  pth : Path
+pth : Path

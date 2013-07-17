@@ -20,12 +20,37 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
 -}
-import Suite.Positive
-import Suite.Negative
+module Suite.Negative (tg_Test_Suite_Negative) where
+
 import Functions
+import Language.Clafer.Intermediate.Intclafer
+import Control.Monad
 import Test.Framework
 import Test.Framework.TH
+import Test.Framework.Providers.HUnit
+import Test.Framework.Providers.QuickCheck2
+import Test.HUnit
+import Test.QuickCheck
+import Language.Clafer.ClaferArgs
 
+tg_Test_Suite_Negative = $(testGroupGenerator)
 
-tg_Main_Test_Suite = $(testGroupGenerator)
-main = defaultMain[tg_Main_Test_Suite, tg_Test_Suite_Positive, tg_Test_Suite_Negative]
+negativeClaferModels = do
+	claferModels <- getClafers "test/negative"
+	return $ filter ((`notElem` crashModels) . fst ) claferModels
+	where
+		crashModels = ["i127-loop.cfr", "i141-constraints.cfr"]
+{-Put models in the list above that completly crash 
+  the compiler, this will avoid crashing the test suite
+  Note: If the model is giving an unexpected error it 
+  should be located in failing/negative not here!-}
+
+case_failTest :: Assertion
+case_failTest = do 
+	claferModels <- negativeClaferModels
+	let compiledClafers = map (\(file, model) -> 
+		(file, compileOneFragment defaultClaferArgs model)) claferModels
+	forM_ compiledClafers (\(file, compiled) -> 
+		when (compiledCheck compiled) $ putStrLn (file ++ " compiled when it should not of"))
+	(andMap (not . compiledCheck . snd) compiledClafers 
+		@? "test/negatived fail: The above claferModels compiled.")

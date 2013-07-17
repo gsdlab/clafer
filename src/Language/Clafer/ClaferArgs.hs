@@ -34,32 +34,37 @@ import Language.Clafer.Version
 
 data ClaferMode = Alloy42 | Alloy | Xml | Clafer | Html | Graph | CVLGraph
   deriving (Eq, Show, Data, Typeable)
+instance Default ClaferMode where
+  def = Alloy
 
 data ScopeStrategy = None | Simple | Full
   deriving (Eq, Show, Data, Typeable)
+instance Default ScopeStrategy where
+  def = Simple
 
 data ClaferArgs = ClaferArgs {
-      mode :: Maybe ClaferMode,
-      console_output :: Maybe Bool,
-      flatten_inheritance :: Maybe Bool,
-      timeout_analysis :: Maybe Int,
-      no_layout :: Maybe Bool,
-      new_layout :: Maybe Bool,
-      check_duplicates :: Maybe Bool,
-      skip_resolver :: Maybe Bool,
-      keep_unused :: Maybe Bool,
-      no_stats :: Maybe Bool,
-      schema :: Maybe Bool,
-      validate :: Maybe Bool,
-      noalloyruncommand :: Maybe Bool,
-      tooldir :: Maybe FilePath,
-      alloy_mapping :: Maybe Bool,
-      self_contained :: Maybe Bool,
-      add_graph :: Maybe Bool,
-      show_references :: Maybe Bool,
-      add_comments :: Maybe Bool,
-      ecore2clafer :: Maybe Bool,
-      scope_strategy :: Maybe ScopeStrategy,
+      mode :: ClaferMode,
+      console_output :: Bool,
+      flatten_inheritance :: Bool,
+      timeout_analysis :: Int,
+      no_layout :: Bool,
+      new_layout :: Bool,
+      check_duplicates :: Bool,
+      skip_resolver :: Bool,
+      keep_unused :: Bool,
+      no_stats :: Bool,
+      schema :: Bool,
+      validate :: Bool,
+      noalloyruncommand :: Bool,
+      tooldir :: FilePath,
+      alloy_mapping :: Bool,
+      self_contained :: Bool,
+      add_graph :: Bool,
+      show_references :: Bool,
+      add_comments :: Bool,
+      ecore2clafer :: Bool,
+      scope_strategy :: ScopeStrategy,
+      afm :: Bool,
       file :: FilePath
     } deriving (Show, Data, Typeable)
 
@@ -85,6 +90,7 @@ clafer = ClaferArgs {
   add_comments        = def &= help "Include comments from the source file in the html output ('html' mode only).",
   ecore2clafer        = def &= help "Translate an ECore model into Clafer.",
   scope_strategy      = def &= help "Use scope computation strategy: none, simple (default), or full." &= name "ss",
+  afm                 = def &= help "Throws an error if the cardinality of any of the clafers is above 1." &= name "check-afm",
   file                = def &= args   &= typ "FILE"
  } &= summary ("Clafer " ++ version) &= program "clafer"
 
@@ -97,61 +103,7 @@ mainArgs = do
                [] -> ""
                (s:_) -> s
   let options = fromMaybe "" $ stripPrefix "//# OPTIONS " firstLine
-  return $ (setDefArgs $
-           either (\_ -> args) (\x -> mergeArgs args (cmdArgsValue x)) $
+  return $ (either (\_ -> args) (\x -> args) $
            process (cmdArgsMode clafer) $ Language.Clafer.SplitJoin.splitArgs options, model)
 
--- merges console arguments with pragmas in clafer models.
--- Console arguments have higher priority.
-mergeArgs args args'  = args' {
-  mode                = mode args                `mplus` mode args',
-  console_output      = console_output args      `mplus` console_output args',
-  flatten_inheritance = flatten_inheritance args `mplus` flatten_inheritance args',
-  timeout_analysis    = timeout_analysis args    `mplus` timeout_analysis args',
-  no_layout           = no_layout args           `mplus` no_layout args',
-  new_layout          = new_layout args          `mplus` new_layout args',
-  check_duplicates    = check_duplicates args    `mplus` check_duplicates args',
-  skip_resolver       = skip_resolver args       `mplus` skip_resolver args',
-  keep_unused         = keep_unused args         `mplus` keep_unused args',
-  no_stats            = no_stats args            `mplus` no_stats args',
-  schema              = schema args              `mplus` schema args',
-  validate            = validate args            `mplus` validate args',
-  noalloyruncommand   = noalloyruncommand args   `mplus` noalloyruncommand args',
-  tooldir             = tooldir args             `mplus` tooldir args',
-  alloy_mapping       = alloy_mapping args       `mplus` alloy_mapping args',
-  self_contained      = self_contained args      `mplus` self_contained args',
-  add_graph           = add_graph args           `mplus` add_graph args',
-  show_references     = show_references args     `mplus` show_references args',  
-  add_comments        = add_comments args        `mplus` add_comments args',
-  ecore2clafer        = ecore2clafer args        `mplus` ecore2clafer args',
-  scope_strategy      = scope_strategy args      `mplus` scope_strategy args',
-  file                = file args}
-
--- default values for arguments (the lowest priority)
-setDefArgs args = args {
-  mode                = mode args                `mplus` Just Alloy,
-  console_output      = console_output args      `mplus` Just (null $ file args),
-  flatten_inheritance = flatten_inheritance args `mplus` Just def,
-  timeout_analysis    = timeout_analysis args    `mplus` Just def,
-  no_layout           = no_layout args           `mplus` Just def,
-  new_layout          = new_layout args          `mplus` Just def,
-  check_duplicates    = check_duplicates args    `mplus` Just def,
-  skip_resolver       = skip_resolver args       `mplus` Just def,
-  keep_unused         = keep_unused args         `mplus` Just def,
-  no_stats            = no_stats args            `mplus` Just def,
-  schema              = schema args              `mplus` Just def,
-  validate            = validate args            `mplus` Just def,
-  noalloyruncommand   = noalloyruncommand args   `mplus` Just def,
-  tooldir             = tooldir args             `mplus` Just "tools/",
-  alloy_mapping       = alloy_mapping args       `mplus` Just def,
-  self_contained      = self_contained args      `mplus` Just def,
-  add_graph           = add_graph args           `mplus` Just def,
-  show_references     = show_references args     `mplus` Just def,
-  add_comments        = add_comments args        `mplus` Just def,
-  ecore2clafer        = ecore2clafer args        `mplus` Just def,
-  scope_strategy      = scope_strategy args      `mplus` Just Simple}
-
-
-emptyClaferArgs = ClaferArgs Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing ""
-
-defaultClaferArgs = setDefArgs emptyClaferArgs
+defaultClaferArgs = ClaferArgs Alloy True False 0 False False False False False False False False False "tools/" False False False False False False Simple False ""

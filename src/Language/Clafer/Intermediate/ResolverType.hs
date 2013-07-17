@@ -119,13 +119,15 @@ unionType (TClafer u) = u
 t1 +++ t2 = fromJust $ fromUnionType $ unionType t1 ++ unionType t2
 
 fromUnionType :: [String] -> Maybe IType
-fromUnionType ["string"]  = return TString
-fromUnionType ["real"]    = return TReal
-fromUnionType ["integer"] = return TInteger
-fromUnionType ["int"]     = return TInteger
-fromUnionType ["boolean"] = return TBoolean
-fromUnionType []          = Nothing
-fromUnionType u           = return $ TClafer $ nub $ sort u
+fromUnionType u =
+    case sort $ nub $ u of
+        ["string"]  -> return TString
+        ["real"]    -> return TReal
+        ["integer"] -> return TInteger
+        ["int"]     -> return TInteger
+        ["boolean"] -> return TBoolean
+        []          -> Nothing
+        u'          -> return $ TClafer u'
 
 closure :: MonadAnalysis m => [String] -> m [String]
 closure ut = concat <$> mapM hierarchy ut
@@ -254,7 +256,8 @@ resolveTPExp' p@PExp{inPos, exp = IClaferId{sident = "parent"}} =
           <++>
           addRef result -- Case 2: Dereference the sident 1..* times
       Nothing -> throwError $ SemanticErr inPos "Cannot parent at the start of a path"
-resolveTPExp' p@PExp{inPos, exp = IClaferId{sident}} =
+resolveTPExp' p@PExp{inPos, exp = IClaferId{sident = "integer"}} = runListT $ runErrorT $ return $ p `withType` TInteger
+resolveTPExp' p@PExp{inPos, exp = IClaferId{sident}} = 
   runListT $ runErrorT $ do
     curPath' <- curPath
     sident' <- if sident == "this" then uid <$> curThis else return sident

@@ -38,8 +38,8 @@ optimizeModule args (imodule, genv) =
   imodule{mDecls = em $ rm $ map (optimizeElement (1, 1)) $
                    markTopModule $ mDecls imodule}
   where
-  rm = if fromJust $ keep_unused args then id else remUnusedAbs
-  em = if fromJust $ flatten_inheritance args then flip (curry expModule) genv else id
+  rm = if keep_unused args then makeZeroUnusedAbs else remUnusedAbs
+  em = if flatten_inheritance args then flip (curry expModule) genv else id
 
 optimizeElement :: Interval -> IElement -> IElement
 optimizeElement interval x = case x of
@@ -63,6 +63,14 @@ multExInt _  0 = 0
 multExInt m n = if m == -1 || n == -1 then -1 else m * n
 
 -- -----------------------------------------------------------------------------
+
+makeZeroUnusedAbs :: [IElement] -> [IElement]
+makeZeroUnusedAbs decls = map (\x -> if (x `elem` unusedAbs) then IEClafer (getIClafer x){card = Just (0, 0)} else x) decls
+  where
+  unusedAbs = map IEClafer $ findUnusedAbs clafers $ map uid $
+              filter (not.isAbstract) clafers
+  clafers   = toClafers decls 
+  getIClafer (IEClafer c) = c
 
 remUnusedAbs :: [IElement] -> [IElement]
 remUnusedAbs decls = decls \\ unusedAbs
@@ -208,7 +216,7 @@ findDupModule args imodule = imodule{mDecls = decls'}
   where
   decls = mDecls imodule
   decls'
-    | fromJust $ check_duplicates args = findDupModule' decls
+    | check_duplicates args = findDupModule' decls
     | otherwise                        = decls
 
 
