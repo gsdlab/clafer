@@ -267,7 +267,7 @@ genConstraints    cargs    resPath c = (genParentConst resPath c) :
   crd = card c
 
 -- optimization: if only boolean features then the parent is unique
-genParentConst :: forall t. [t] -> IClafer -> Concat
+genParentConst :: [String] -> IClafer -> Concat
 genParentConst [] _     = CString ""
 genParentConst _ c =  genOptParentConst c
 
@@ -329,15 +329,15 @@ isSimplePath    _ = False
 genCard :: String -> Maybe Interval -> Concat
 genCard    element   crd            = genInterval element False element $ fromJust crd
 
-genCardCrude :: forall t t1. (Eq t, Eq t1, Num t, Num t1) => Maybe (t, t1) -> [Char]
+genCardCrude :: Maybe Interval -> String
 genCardCrude crd = genIntervalCrude $ fromJust crd
 
-genIntervalCrude :: forall t t1. (Eq t, Eq t1, Num t, Num t1) => (t, t1) -> [Char]
+genIntervalCrude :: Interval -> String
 genIntervalCrude x = case x of
-  (1, 1) -> "one"
-  (0, 1) -> "lone"
+  (1, 1)  -> "one"
+  (0, 1)  -> "lone"
   (1, -1) -> "some"
-  _                   -> "set"
+  _       -> "set"
 
 
 genInterval :: String      -> Bool -> String -> Interval -> Concat
@@ -451,7 +451,7 @@ optBrArg    claferargs    resPath     x     = brFun (genPExp' claferargs resPath
     PExp _ _ _ (IInt _) -> ($)
     _  -> brArg
     
-interleave :: forall a. [a] -> [a] -> [a]
+interleave :: [Concat] -> [Concat] -> [Concat]
 interleave [] [] = []
 interleave (x:xs) [] = x:xs
 interleave [] (x:xs) = x:xs
@@ -576,11 +576,11 @@ mapLineCol' c@(Concat srcPos' n) = do
       deductEnd = -(countTrailing ")]" flat)
   modify (\s -> s {mapping = (Span (uncurry Pos $ posStart `addColumn` raiseStart) (uncurry Pos $ posEnd `addColumn` deductEnd), srcPos') : (mapping s)})
 
-addColumn :: forall t t1. Num t1 => (t, t1) -> t1 -> (t, t1) 
+addColumn :: Interval -> Integer -> Interval
 addColumn (x, y) c = (x, y + c)
-countLeading :: forall a. Eq a => [a] -> [a] -> Integer
+countLeading :: [Char] -> [Char] -> Integer
 countLeading c xs = toInteger $ length $ takeWhile (`elem` c) xs
-countTrailing :: forall a. Eq a => [a] -> [a] -> Integer
+countTrailing :: [Char] -> [Char] -> Integer
 countTrailing c xs = countLeading c (reverse xs)
 
 lineno :: (Integer, ColNo) -> [Char] -> (Integer, ColNo)
