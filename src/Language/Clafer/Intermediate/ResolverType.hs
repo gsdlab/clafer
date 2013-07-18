@@ -304,6 +304,12 @@ resolveTPExp' p@PExp{inPos, exp} =
             arg2' <- liftError $ lift $ ListT $ resolveTPExp arg2
             return (fromJust $ iType arg2', e{exps = [arg1', arg2']})
       
+  resolveTExp e@IFunExp {op = "++", exps = [arg1, arg2]} =
+    do
+      arg1s' <- resolveTPExp arg1
+      arg2s' <- resolveTPExp arg2
+      let union a b = typeOf a +++ typeOf b
+      return $ [return (union arg1' arg2', e{exps = [arg1', arg2']}) | (arg1', arg2') <- sortBy (comparing $ uncurry union) $ liftM2 (,) arg1s' arg2s']
   resolveTExp e@IFunExp {op, exps = [arg1, arg2]} =
     runListT $ runErrorT $ do
       arg1' <- lift $ ListT $ resolveTPExp arg1
@@ -326,7 +332,6 @@ resolveTPExp' p@PExp{inPos, exp} =
             | op `elem` logBinOps = test (t1 == TBoolean && t2 == TBoolean) >> return TBoolean
             | op `elem` [iLt, iGt, iLte, iGte] = test (numeric t1 && numeric t2) >> return TBoolean
             | op `elem` [iEq, iNeq] = testNotSame arg1' arg2' >> testIntersect t1 t2 >> return TBoolean
-            | op == iUnion = return $ t1 +++ t2
             | op == iDifference = testNotSame arg1' arg2' >> testIntersect t1 t2 >> return t1
             | op == iIntersection = testNotSame arg1' arg2' >> testIntersect t1 t2
             | op `elem` [iDomain, iRange] = testIntersect t1 t2
