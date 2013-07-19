@@ -27,7 +27,7 @@ Executable clafer
     default-extensions:
                     DeriveDataTypeable,
                     RankNTypes
-    main-is:         clafer.hs
+    main-is:        clafer.hs
     build-depends:   
                     base >= 4 && < 5,
                     clafer == 0.3.3,
@@ -47,7 +47,8 @@ Executable clafer
                     test-framework-quickcheck2 >= 0.3.0.1,
                     test-framework-th >= 0.2.3,
                     QuickCheck >= 2.5.1.1, 
-                    HUnit >= 1.2.5.1
+                    HUnit >= 1.2.5.1,
+                    directory
     hs-source-dirs: src
 
 library 
@@ -75,7 +76,8 @@ library
                      test-framework-quickcheck2 >= 0.3.0.1,
                      test-framework-th >= 0.2.3,
                      QuickCheck >= 2.5.1.1, 
-                     HUnit >= 1.2.5.1
+                     HUnit >= 1.2.5.1,
+                     directory
     hs-source-dirs:  src
     ghc-options:     -Wall
     exposed-modules: 
@@ -114,12 +116,14 @@ library
                      Language.Clafer.Optimizer.Optimizer,
                      Language.Clafer.SplitJoin,
                      Language.Clafer.Version
+                     
 
 Test-Suite test-suite
     default-language: 
                     Haskell2010
     type:           exitcode-stdio-1.0  
-    main-is:        test/test-suite.hs
+    main-is:        test-suite.hs
+    hs-source-dirs: test
     build-depends:  base >= 4 && < 5,
                     clafer == 0.3.3,
                     array >= 0.4.0.0, 
@@ -132,14 +136,17 @@ Test-Suite test-suite
                     HaXml >= 1.24,
                     MaybeT >= 0.1.2,
                     glpk-hs == 0.3.4,
-                    parsec >= 3.1.2
+                    parsec >= 3.1.2,
+                    directory
     ghc-options      -Wall
-
+    other-modules:
+                    Functions,
+                    Suite.Positive,
+                    Suite.Negative
     build-depends:  
                      test-framework >= 0.8, 
                      test-framework-hunit >= 0.3.0, 
                      test-framework-quickcheck2 >= 0.3.0.1,
                      test-framework-th >= 0.2.3,
                      QuickCheck >= 2.5.1.1, 
-                     HUnit >= 1.2.5.1,
-                     directory
+                     HUnit >= 1.2.5.1

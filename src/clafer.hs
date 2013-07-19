@@ -102,10 +102,11 @@ run v args input =
     do
       result <- generate
       env <- getEnv
-      let (iModule, genv, au) = ir env
+      (iModule, genv, au) <- getIr
       result' <- if (add_graph args) && (mode args == Html) 
              then do
-                   (_, graph, _) <- liftIO $ readProcessWithExitCode "dot"  ["-Tsvg"] $ genSimpleGraph (ast env) iModule (takeBaseName $ file args) (show_references args)
+                   ast' <- getAst
+                   (_, graph, _) <- liftIO $ readProcessWithExitCode "dot"  ["-Tsvg"] $ genSimpleGraph ast' iModule (takeBaseName $ file args) (show_references args)
                    return $ summary graph result
                  else return result
       liftIO $ when (not $ no_stats args) $ putStrLn (statistics result')

@@ -60,7 +60,7 @@ prof:
 test:
 	cabal configure --enable-tests
 	cabal build
-	cabal test
+	cabal test	
 	$(MAKE) -C $(TEST_DIR) test
 
 reg:

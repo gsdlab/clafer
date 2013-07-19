@@ -1,7 +1,0 @@
-// http://gsd.uwaterloo.ca:8888/question/367/type-system-should-disallow-assignment-to-non
-
-xor a
-    b
-    c
-
-[ a = b ]
