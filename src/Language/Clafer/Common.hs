@@ -1,3 +1,4 @@
+{-# LANGUAGE DeriveDataTypeable, RankNTypes, KindSignatures, FlexibleContexts #-}
 {-
  Copyright (C) 2012 Kacper Bak, Jimmy Liang <http://gsd.uwaterloo.ca>
 
@@ -19,7 +20,6 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
 -}
-{-# LANGUAGE DeriveDataTypeable, RankNTypes, KindSignatures, FlexibleContexts #-}
 module Language.Clafer.Common where
 
 import Data.Tree
@@ -27,8 +27,6 @@ import Data.Maybe
 import Data.Char
 import Data.List
 import qualified Data.Map as Map
---import System.Console.CmdArgs
---import Control.Monad.State
 
 import Language.Clafer.Front.Absclafer
 import Language.Clafer.Intermediate.Intclafer
@@ -251,41 +249,39 @@ relBinOps :: [String]
 relBinOps = relGenBinOps ++ relSetBinOps
 
 iPlus :: String
-
 iPlus         = "+"
+
 iSub :: String
-
 iSub          = "-"
+
 iMul :: String
-
 iMul          = "*"
+
 iDiv :: String
-
 iDiv          = "/"
-iSumSet' :: String
 
+iSumSet' :: String
 iSumSet'      = "sum'"
 
 arithBinOps :: [String]
 arithBinOps = [iPlus, iSub, iMul, iDiv, iSumSet']
 
 iUnion :: String
-
 iUnion        = "++"
+
 iDifference :: String
-
 iDifference   = "--"
+
 iIntersection :: String
-
 iIntersection = "&"
+
 iDomain :: String
-
 iDomain       = "<:"
+
 iRange :: String
-
 iRange        = ":>"
-iJoin :: String
 
+iJoin :: String
 iJoin         = "."
 
 setBinOps :: [String]
@@ -296,7 +292,6 @@ binOps = logBinOps ++ relBinOps ++ arithBinOps ++ setBinOps
 
 -- ternary operators
 iIfThenElse :: String
-
 iIfThenElse   = "=>else"
 
 mkIFunExp :: String -> [IExp] -> IExp

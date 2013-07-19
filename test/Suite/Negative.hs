@@ -22,18 +22,15 @@
 -}
 module Suite.Negative (tg_Test_Suite_Negative) where
 
+import Functions
 import Control.Monad
-import Test.Framework
+import qualified Test.Framework as T
 import Test.Framework.TH
 import Test.Framework.Providers.HUnit
 import Test.HUnit
 import Language.Clafer.ClaferArgs
-import System.Directory
-import qualified Data.List as List
-import Language.ClaferT
-import Language.Clafer
 
-tg_Test_Suite_Negative :: Test.Framework.Test
+tg_Test_Suite_Negative :: T.Test
 tg_Test_Suite_Negative = $(testGroupGenerator)
 
 negativeClaferModels :: IO [([Char], String)]

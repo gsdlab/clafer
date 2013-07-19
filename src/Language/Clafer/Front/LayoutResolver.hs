@@ -56,6 +56,7 @@ getToken (NewLine (x, y)) = throwErr $ ParseErr (ErrPos 0 fPos fPos) $ "LayoutRe
   where
     fPos = Pos (fromIntegral x) (fromIntegral y)
 
+
 layoutOpen :: String
 layoutOpen  = "{"
 layoutClose :: String

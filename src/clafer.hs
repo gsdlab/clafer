@@ -159,4 +159,3 @@ runEcore2Clafer    ecoreFile toolPath
   | otherwise      = do
       putStrLn $ "Converting " ++ ecoreFile ++ " into Clafer"
       voidf $ system $ "java -jar " ++ toolPath ++ "ecore2clafer.jar " ++ ecoreFile
-

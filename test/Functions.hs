@@ -31,6 +31,7 @@ getClafers dir = do
 					let claferFiles = List.filter checkClaferExt files
 					claferModels <- mapM (\x -> readFile (dir++"/"++x)) claferFiles
 					return $ zip claferFiles claferModels
+
 checkClaferExt :: String -> Bool
 checkClaferExt "dst.cfr" = True
 checkClaferExt file' = if ((eman == "")) then False else (txe == "rfc") && (takeWhile (/='.') (tail eman) /= "esd")
@@ -52,6 +53,7 @@ compiledCheck (Right _) = True
 fromLeft :: Either a b -> a
 fromLeft (Left a) = a
 fromLeft (Right _) = error "Function fromLeft expects argument of the form 'Left a'"
+
 
 andMap :: (a -> Bool) -> [a] -> Bool
 andMap f lst = and $ map f lst

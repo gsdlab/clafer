@@ -24,18 +24,16 @@ module Suite.Positive (tg_Test_Suite_Positive) where
 
 import Functions
 import Language.Clafer.Intermediate.Intclafer
-import qualified Data.List as List
 import Data.Foldable (foldMap)
 import Control.Monad
 import Language.Clafer
 import Language.ClaferT
-import Test.Framework
+import qualified Test.Framework as T
 import Test.Framework.TH
 import Test.Framework.Providers.HUnit
 import Test.HUnit
-import System.Directory
 
-tg_Test_Suite_Positive :: Test.Framework.Test
+tg_Test_Suite_Positive :: T.Test
 tg_Test_Suite_Positive = $(testGroupGenerator)
  
 positiveClaferModels :: IO [(String, String)]
