@@ -193,7 +193,7 @@ claferDecl    c     rest    = cconcat [genOptCard c,
   Concat NoTrace [CString $ uid c, genExtends $ super c, CString "\n", rest]]
   where
   genAbstract isAbs = if isAbs then "abstract " else ""
-  genExtends (ISuper False [PExp _ _ _ (IClaferId _ "cclafer" _)]) = CString ""
+  genExtends (ISuper False [PExp _ _ _ (IClaferId _ "clafer" _)]) = CString ""
   genExtends (ISuper False [PExp _ _ _ (IClaferId _ i _)]) = CString " " +++ Concat NoTrace [CString $ "extends " ++ i]
   -- todo: handle multiple inheritance
   genExtends _ = CString ""
