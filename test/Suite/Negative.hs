@@ -22,19 +22,21 @@
 -}
 module Suite.Negative (tg_Test_Suite_Negative) where
 
-import Functions
-import Language.Clafer.Intermediate.Intclafer
 import Control.Monad
 import Test.Framework
 import Test.Framework.TH
 import Test.Framework.Providers.HUnit
-import Test.Framework.Providers.QuickCheck2
 import Test.HUnit
-import Test.QuickCheck
 import Language.Clafer.ClaferArgs
+import System.Directory
+import qualified Data.List as List
+import Language.ClaferT
+import Language.Clafer
 
+tg_Test_Suite_Negative :: Test.Framework.Test
 tg_Test_Suite_Negative = $(testGroupGenerator)
 
+negativeClaferModels :: IO [([Char], String)]
 negativeClaferModels = do
 	claferModels <- getClafers "test/negative"
 	return $ filter ((`notElem` crashModels) . fst ) claferModels
@@ -48,9 +50,9 @@ negativeClaferModels = do
 case_failTest :: Assertion
 case_failTest = do 
 	claferModels <- negativeClaferModels
-	let compiledClafers = map (\(file, model) -> 
-		(file, compileOneFragment defaultClaferArgs model)) claferModels
-	forM_ compiledClafers (\(file, compiled) -> 
-		when (compiledCheck compiled) $ putStrLn (file ++ " compiled when it should not of"))
+	let compiledClafers = map (\(file', model) -> 
+		(file', compileOneFragment defaultClaferArgs model)) claferModels
+	forM_ compiledClafers (\(file', compiled) -> 
+		when (compiledCheck compiled) $ putStrLn (file' ++ " compiled when it should not of"))
 	(andMap (not . compiledCheck . snd) compiledClafers 
 		@? "test/negatived fail: The above claferModels compiled.")

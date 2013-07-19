@@ -1,4 +1,4 @@
-{-# LANGUAGE RankNTypes, KindSignatures, FlexibleContexts #-}
+{-# LANGUAGE FlexibleContexts #-}
 {-
  Copyright (C) 2012 Kacper Bak, Jimmy Liang <http://gsd.uwaterloo.ca>
 
@@ -102,37 +102,27 @@ getExtended c =
 expModule :: ([IElement], GEnv) -> [IElement]
 expModule (decls', genv) = evalState (mapM expElement decls') genv
 
-expClafer :: forall (m :: * -> *).
-              MonadState GEnv m =>
-              IClafer -> m IClafer
+expClafer :: MonadState GEnv m => IClafer -> m IClafer
 expClafer claf = do
   super' <- expSuper $ super claf
   elements' <- mapM expElement $ elements claf
   return $ claf {super = super', elements = elements'}
 
-expSuper :: forall (m :: * -> *).
-            MonadState GEnv m =>
-            ISuper -> m ISuper
+expSuper :: MonadState GEnv m => ISuper -> m ISuper
 expSuper x = case x of
   ISuper False _ -> return x
   ISuper True pexps -> ISuper True `liftM` mapM expPExp pexps
 
-expElement :: forall (m :: * -> *).
-              MonadState GEnv m =>
-              IElement -> m IElement
+expElement :: MonadState GEnv m => IElement -> m IElement
 expElement x = case x of
   IEClafer claf  -> IEClafer `liftM` expClafer claf
   IEConstraint isHard' constraint  -> IEConstraint isHard' `liftM` expPExp constraint
   IEGoal isMaximize' goal -> IEGoal isMaximize' `liftM` expPExp goal
 
-expPExp :: forall (m :: * -> *).
-           MonadState GEnv m =>
-           PExp -> m PExp
+expPExp :: MonadState GEnv m => PExp -> m PExp
 expPExp (PExp t pid' pos' exp') = PExp t pid' pos' `liftM` expIExp exp'
 
-expIExp :: forall (m :: * -> *).
-           MonadState GEnv m =>
-           IExp -> m IExp
+expIExp :: MonadState GEnv m => IExp -> m IExp
 expIExp x = case x of
   IDeclPExp quant' decls' pexp -> do
     decls'' <- mapM expDecl decls'
@@ -143,21 +133,17 @@ expIExp x = case x of
   IClaferId _ _ _ -> expNav x
   _ -> return x
 
-expDecl :: forall (m :: * -> *).
-           MonadState GEnv m =>
-           IDecl -> m IDecl
+expDecl :: MonadState GEnv m => IDecl -> m IDecl
 expDecl x = case x of
   IDecl disj locids pexp -> IDecl disj locids `liftM` expPExp pexp
 
-expNav :: forall (m :: * -> *). MonadState GEnv m => IExp -> m IExp
+expNav :: MonadState GEnv m => IExp -> m IExp
 expNav x = do
   xs <- split' x return
   xs' <- mapM (expNav' "") xs
   return $ mkIFunExp iUnion $ map fst xs'
 
-expNav' :: forall (m :: * -> *).
-           MonadState GEnv m =>
-           [Char] -> IExp -> m (IExp, String)
+expNav' :: MonadState GEnv m => String -> IExp -> m (IExp, String)
 expNav' context (IFunExp _ (p0:p:_)) = do    
   (exp0', context') <- expNav' context  $ Language.Clafer.Intermediate.Intclafer.exp p0
   (exp', context'') <- expNav' context' $ Language.Clafer.Intermediate.Intclafer.exp p
@@ -177,9 +163,7 @@ expNav' context x@(IClaferId modName' id' isTop') = do
       return (x, id')
 expNav' _ _ = error "Function expNav' from Optimizer expects an argument of type ClaferId or IFunExp but was given another IExp"
 
-split' :: forall (m :: * -> *) b.
-          MonadState GEnv m =>
-          IExp -> (IExp -> m b) -> m [b] 
+split' :: MonadState GEnv m => IExp -> (IExp -> m IExp) -> m [IExp] 
 split'(IFunExp _ (p:pexp:_)) f =
     split' (Language.Clafer.Intermediate.Intclafer.exp p) (\s -> f $ IFunExp iJoin
       [p {Language.Clafer.Intermediate.Intclafer.exp = s}, pexp])

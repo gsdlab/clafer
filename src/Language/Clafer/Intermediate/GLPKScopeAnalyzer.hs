@@ -1,4 +1,4 @@
-{-# LANGUAGE GeneralizedNewtypeDeriving, UndecidableInstances, FlexibleInstances, FlexibleContexts, MultiParamTypeClasses, NamedFieldPuns, TupleSections, RankNTypes, KindSignatures #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving, UndecidableInstances, FlexibleInstances, FlexibleContexts, MultiParamTypeClasses, NamedFieldPuns, TupleSections #-}
 
 {-
  Copyright (C) 2012-2013 Jimmy Liang, Kacper Bak <http://gsd.uwaterloo.ca>
@@ -285,9 +285,7 @@ flatten =
         (c, s) <- foreach $ anything |: anything
         ListT $ runReaderT (addChildren (map uid abs') (Part [uid c, uid s]) (Part [])) []
         
-addChildren :: forall (m :: * -> *).
-               MonadAnalysis m =>
-               [[Char]] -> Part -> Part -> m [SClafer]        
+addChildren :: MonadAnalysis m => [String] -> Part -> Part -> m [SClafer]        
 addChildren abs' (Part steps) ss@(Part supSteps) =
     do
         let parBase = last steps
@@ -344,9 +342,7 @@ isGlobal _ = False
 isConst Const{} = True
 isConst _ = False-}
     
-parentOfPart :: forall (m :: * -> *).
-                MonadAnalysis m =>
-                Part -> m Part
+parentOfPart :: MonadAnalysis m => Part -> m Part
 parentOfPart (Part s) =
   do
     s' <- parentOf $ last s

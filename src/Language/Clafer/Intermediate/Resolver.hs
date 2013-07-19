@@ -1,4 +1,4 @@
-{-# LANGUAGE RankNTypes, KindSignatures, FlexibleContexts #-}
+{-# LANGUAGE FlexibleContexts #-}
 {-
  Copyright (C) 2012 Kacper Bak <http://gsd.uwaterloo.ca>
 
@@ -49,35 +49,27 @@ nameModule skipResolver imodule = (imodule{mDecls = decls'}, genv')
   where
   (decls', genv') = runState (mapM (nameElement skipResolver) $ mDecls imodule) $ GEnv 0 Map.empty []
 
-nameElement :: forall (m :: * -> *).
-               MonadState GEnv m =>
-               Bool -> IElement -> m IElement
+nameElement :: MonadState GEnv m => Bool -> IElement -> m IElement
 nameElement skipResolver x = case x of
   IEClafer claf -> IEClafer `liftM` (nameClafer skipResolver claf)
   IEConstraint isHard' pexp -> IEConstraint isHard' `liftM` (namePExp pexp)
   IEGoal isMaximize' pexp -> IEGoal isMaximize' `liftM` (namePExp pexp)
 
 
-nameClafer :: forall (m :: * -> *).
-              MonadState GEnv m =>
-              Bool -> IClafer -> m IClafer
+nameClafer :: MonadState GEnv m => Bool -> IClafer -> m IClafer
 nameClafer skipResolver claf = do
   claf' <- if skipResolver then return claf{uid = ident claf} else (renameClafer (not skipResolver)) claf
   elements' <- mapM (nameElement skipResolver) $ elements claf
   return $ claf' {elements = elements'}
 
 
-namePExp :: forall (m :: * -> *).
-            MonadState GEnv m =>
-            PExp -> m PExp
+namePExp :: MonadState GEnv m => PExp -> m PExp
 namePExp pexp@(PExp _ _ _ exp') = do
   pid' <- genId "exp"
   exp'' <- nameIExp exp'
   return $ pexp {pid = pid', Language.Clafer.Intermediate.Intclafer.exp = exp''}
 
-nameIExp :: forall (m :: * -> *).
-            MonadState GEnv m =>
-            IExp -> m IExp
+nameIExp :: MonadState GEnv m => IExp -> m IExp
 nameIExp x = case x of
   IDeclPExp quant' decls' pexp -> do
     decls'' <- mapM nameIDecl decls'
@@ -86,9 +78,7 @@ nameIExp x = case x of
   IFunExp op' pexps -> IFunExp op' `liftM` (mapM namePExp pexps)
   _ -> return x
 
-nameIDecl :: forall (m :: * -> *).
-             MonadState GEnv m =>
-             IDecl -> m IDecl
+nameIDecl :: MonadState GEnv m => IDecl -> m IDecl
 nameIDecl (IDecl isDisj' dels body') = IDecl isDisj' dels `liftM` (namePExp body')
 
 -- -----------------------------------------------------------------------------

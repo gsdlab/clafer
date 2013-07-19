@@ -27,7 +27,6 @@ import System.Console.CmdArgs
 import System.Console.CmdArgs.Explicit hiding (mode)
 import Data.List
 import Data.Maybe
-import Control.Monad
 	
 import Language.Clafer.SplitJoin
 import Language.Clafer.Version
@@ -68,6 +67,7 @@ data ClaferArgs = ClaferArgs {
       file :: FilePath
     } deriving (Show, Data, Typeable)
 
+clafer :: ClaferArgs
 clafer = ClaferArgs {
   mode                = def &= help "Generated output type. Available CLAFERMODEs are: 'alloy' (default, Alloy 4.1); 'alloy42' (Alloy 4.2); 'xml' (intermediate representation of Clafer model); 'clafer' (analyzed and desugared clafer model); 'html' (original model in HTML); 'graph' (graphical representation written in DOT language); 'cvlgraph' (cvl notation representation written in DOT language)" &= name "m",
   console_output      = def &= help "Output code on console" &= name "o",
@@ -94,16 +94,18 @@ clafer = ClaferArgs {
   file                = def &= args   &= typ "FILE"
  } &= summary ("Clafer " ++ version) &= program "clafer"
 
+mainArgs :: IO (ClaferArgs, String)
 mainArgs = do
-  args <- cmdArgs clafer
-  model <- case file args of
+  args' <- cmdArgs clafer
+  model <- case file args' of
              "" -> hGetContents stdin
              f  -> readFile f
   let firstLine = case lines model of
                [] -> ""
                (s:_) -> s
   let options = fromMaybe "" $ stripPrefix "//# OPTIONS " firstLine
-  return $ (either (\_ -> args) (\x -> args) $
+  return $ (either (\_ -> args') (\_ -> args') $
            process (cmdArgsMode clafer) $ Language.Clafer.SplitJoin.splitArgs options, model)
 
+defaultClaferArgs :: ClaferArgs
 defaultClaferArgs = ClaferArgs Alloy True False 0 False False False False False False False False False "tools/" False False False False False False Simple False ""

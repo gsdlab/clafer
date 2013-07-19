@@ -383,7 +383,7 @@ desugarExp' x = case x of
   dop = desugarOp desugarExp
   dpe = desugarPath.desugarExp
 
-desugarOp :: forall a. (a -> PExp) -> String -> [a] -> IExp
+desugarOp :: (a -> PExp) -> String -> [a] -> IExp
 desugarOp f op' exps' = 
     if (op' == iIfThenElse)
       then IFunExp op' $ (desugarPath $ head mappedList) : (map reducePExp $ tail mappedList)

@@ -56,9 +56,9 @@ getToken (NewLine (x, y)) = throwErr $ ParseErr (ErrPos 0 fPos fPos) $ "LayoutRe
   where
     fPos = Pos (fromIntegral x) (fromIntegral y)
 
-layoutOpen :: [Char]
+layoutOpen :: String
 layoutOpen  = "{"
-layoutClose :: [Char]
+layoutClose :: String
 layoutClose = "}"
 
 resolveLayout :: (Monad m) => [Token] -> ClaferT m  [Token]

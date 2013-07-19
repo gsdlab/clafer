@@ -330,7 +330,7 @@ lowerCard crd = takeWhile (/= '.') $ graphCVLCard crd Nothing Map.empty
 dropUid :: String -> String
 dropUid uid' = let id' = rest $ dropWhile (\x -> x /= '_') uid' in if id' == "" then uid' else id'
 
-rest :: [Char] -> [Char]
+rest :: String -> String
 rest [] = []
 rest (_:xs) = xs
 
@@ -353,7 +353,7 @@ getDivId s irMap = if Map.lookup s irMap == Nothing
                       else let IRClafer iClafer = head $ fromJust $ Map.lookup s irMap in
                         uid iClafer
 
-{-getSuperId :: Span -> Map.Map Span [Ir] -> [Char]
+{-getSuperId :: Span -> Map.Map Span [Ir] -> String
 getSuperId s irMap = if Map.lookup s irMap == Nothing
                         then "Uid not Found"
                         else let IRPExp pexp = head $ fromJust $ Map.lookup s irMap in

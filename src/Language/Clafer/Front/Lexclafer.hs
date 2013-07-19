@@ -68,7 +68,7 @@ data Token =
  | Err Posn
   deriving (Eq,Show,Ord)
 
-tokenPos :: [Token] -> [Char]
+tokenPos :: [Token] -> String
 tokenPos (PT (Pn _ l _) _ :_) = "line " ++ show l
 tokenPos (Err (Pn _ l _) :_) = "line " ++ show l
 tokenPos _ = "end of file"

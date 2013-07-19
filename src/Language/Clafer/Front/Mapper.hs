@@ -442,9 +442,9 @@ instance Mappable PosInteger where
 len :: [a] -> Integer
 len = toInteger . length
 
-errMsg :: Show a => [Char] -> [Char] -> a -> t
+errMsg :: Show a => String -> String -> a -> t
 errMsg function expected actual = error $ "Error: Function '" ++ function ++ "' expected argument of type(s) " ++ expected ++ " got " ++ show actual
-errMsgM :: Show a => [Char] -> a -> t
+errMsgM :: Show a => String -> a -> t
 errMsgM e a = errMsg "mapNode" e a
-errMsgR :: Show a => [Char] -> a -> t
+errMsgR :: Show a => String -> a -> t
 errMsgR e a = errMsg "range" e a

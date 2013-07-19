@@ -485,10 +485,10 @@ dropUid uid' = let id' = rest $ dropWhile (/= '_') uid'
                 else id'
 
 --so it fails more gracefully on empty lists
-{-first :: [Char] -> Char
+{-first :: String -> String
 first [] = []
 first (x:_) = x-}
-rest :: [Char] -> [Char]
+rest :: String -> String
 rest [] = []
 rest (_:xs) = xs
 
@@ -505,7 +505,7 @@ getUid (PosIdent (pos', id')) irMap = if Map.lookup (range (PosIdent (pos', id')
                                  findUid name (x:xs) = if name == dropUid x then x else findUid name xs;
                                  findUid _ []     = "Uid not found"}
 
-getDivId :: Span -> Map.Map Span [Ir] -> [Char]
+getDivId :: Span -> Map.Map Span [Ir] -> String
 getDivId s irMap = if Map.lookup s irMap == Nothing
                       then "Uid not Found"
                       else let IRClafer iClafer = head $ fromJust $ Map.lookup s irMap in

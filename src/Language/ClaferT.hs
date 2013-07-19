@@ -1,3 +1,4 @@
+{-# LANGUAGE RankNTypes #-}
 {-
  Copyright (C) 2012 Kacper Bak, Jimmy Liang, Michal Antkiewicz <http://gsd.uwaterloo.ca>
 
@@ -25,13 +26,12 @@
  - ClaferEnv can just import this module without all the parsing/compiline/generating
  - functionality.
  -}
-module Language.ClaferT (ClaferEnv(..), makeEnv, getAst, getIr, ClaferM, ClaferT, CErr(..), CErrs(..), ClaferErr(..), ClaferErrs(..), ClaferSErr(..), ClaferSErrs(..), ErrPos(..), PartialErrPos(..), throwErrs, throwErr, catchErrs, getEnv, getsEnv, modifyEnv, putEnv, runClafer, runClaferT, Throwable(..), Span(..), Pos(..)) where
+module Language.ClaferT (ClaferEnv(..), makeEnv, getAst, getIr, ClaferM, ClaferT, CErr(..), CErrs(..), ClaferErr, ClaferErrs, ClaferSErr, ClaferSErrs, ErrPos(..), PartialErrPos(..), throwErrs, throwErr, catchErrs, getEnv, getsEnv, modifyEnv, putEnv, runClafer, runClaferT, Throwable(..), Span(..), Pos(..)) where
 
 import Control.Monad.Error
 import Control.Monad.State
 import Control.Monad.Identity
 import Data.List
-import Data.Maybe
 import Data.Map (Map)
 import qualified Data.Map as Map
 
@@ -92,19 +92,20 @@ getIr = do
   case cIr env of
     (Just i) -> return i
     _ -> throwErr (ClaferErr "No IR. Did you forget to compile?" :: CErr Span) -- Indicates a bug in the Clafer translator.
-                                                                                
-makeEnv args = ClaferEnv { args = args',
+
+makeEnv :: ClaferArgs -> ClaferEnv                                                                            
+makeEnv args' = ClaferEnv { args = args'',
                            modelFrags = [],
                            cAst = Nothing,
                            cIr = Nothing,
                            frags = [],
                            irModuleTrace = Map.empty,
                            astModuleTrace = Map.empty}
-               where args' = case mode args of
-                               CVLGraph -> args{flatten_inheritance=True, keep_unused=True}
-                               Html     -> args{keep_unused=True}
-                               Graph    -> args{keep_unused=True}
-                               _             -> args
+               where args'' = case mode args' of
+                               CVLGraph -> args'{flatten_inheritance=True, keep_unused=True}
+                               Html     -> args'{keep_unused=True}
+                               Graph    -> args'{keep_unused=True}
+                               _             -> args'
 
 type ClaferM = ClaferT Identity
 -- Monad for using Clafer.
@@ -202,30 +203,33 @@ instance ClaferErrPos ErrPos where
   toErrPos = return . id
   
 instance ClaferErrPos PartialErrPos where
-  toErrPos (ErrFragPos fragId fragPos) =
+  toErrPos (ErrFragPos frgId frgPos) =
     do
       f <- getsEnv frags
-      let pos = ((Pos 1 1 : f) !! fragId) `addPos` fragPos
-      return $ ErrPos fragId fragPos pos
-  toErrPos (ErrFragSpan fragId (Span fragPos _)) = toErrPos $ ErrFragPos fragId fragPos
-  toErrPos (ErrModelPos modelPos) =
+      let pos' = ((Pos 1 1 : f) !! frgId) `addPos` frgPos
+      return $ ErrPos frgId frgPos pos'
+  toErrPos (ErrFragSpan frgId (Span frgPos _)) = toErrPos $ ErrFragPos frgId frgPos
+  toErrPos (ErrFragSpan frgId (PosSpan _ frgPos _)) = toErrPos $ ErrFragPos frgId frgPos -- Should never happen
+  toErrPos (ErrModelPos modelPos') =
     do
       f <- getsEnv frags
       let fragSpans = zipWith Span (Pos 1 1 : f) f
-      case findFrag modelPos fragSpans of
-        Just (fragId, Span fragStart _) -> return $ ErrPos fragId (modelPos `minusPos` fragStart) modelPos
-        Just (fragId, PosSpan _ fragStart _) -> return $ ErrPos fragId (modelPos `minusPos` fragStart) modelPos
-        Nothing -> error $ show modelPos ++ " not within any frag spans: " ++ show fragSpans -- Indicates a bug in the Clafer translator
+      case findFrag modelPos' fragSpans of
+        Just (frgId, Span fragStart _) -> return $ ErrPos frgId (modelPos' `minusPos` fragStart) modelPos'
+        Just (frgId, PosSpan _ fragStart _) -> return $ ErrPos frgId (modelPos' `minusPos` fragStart) modelPos'
+        Nothing -> error $ show modelPos' ++ " not within any frag spans: " ++ show fragSpans -- Indicates a bug in the Clafer translator
     where
-    findFrag pos spans =
-      find (inSpan pos . snd) (zip [0..] spans)
-  toErrPos (ErrModelSpan (Span modelPos _)) = toErrPos $ ErrModelPos modelPos
-  
+    findFrag pos'' spans =
+      find (inSpan pos'' . snd) (zip [0..] spans)
+  toErrPos (ErrModelSpan (Span modelPos'' _)) = toErrPos $ ErrModelPos modelPos''
+  toErrPos (ErrModelSpan (PosSpan _ modelPos'' _)) = toErrPos $ ErrModelPos modelPos'' -- Should never happen
+
+
 class Throwable t where
   toErr :: t -> Monad m => ClaferT m ClaferErr
   
 instance ClaferErrPos p => Throwable (CErr p) where
-  toErr (ClaferErr msg) = return $ ClaferErr msg
+  toErr (ClaferErr mesg) = return $ ClaferErr mesg
   toErr err =
     do
       pos' <- toErrPos $ pos err
@@ -235,8 +239,8 @@ instance ClaferErrPos p => Throwable (CErr p) where
 throwErrs :: (Monad m, Throwable t) => [t] -> ClaferT m a
 throwErrs throws =
   do
-    errs <- mapM toErr throws
-    throwError $ ClaferErrs errs
+    errors <- mapM toErr throws
+    throwError $ ClaferErrs errors
 
 -- Throw one error.
 throwErr :: (Monad m, Throwable t) => t -> ClaferT m a
@@ -249,17 +253,17 @@ catchErrs e h = e `catchError` (h . errs)
 addPos :: Pos -> Pos -> Pos
 addPos (Pos l c) (Pos 1 d) = Pos l (c + d - 1)    -- Same line
 addPos (Pos l _) (Pos m d) = Pos (l + m - 1) d    -- Different line
-addPos pos (PosPos _ l c) = addPos pos (Pos l c)
-addPos (PosPos _ l c) pos = addPos (Pos l c) pos
+addPos pos' (PosPos _ l c) = addPos pos' (Pos l c)
+addPos (PosPos _ l c) pos' = addPos (Pos l c) pos'
 minusPos :: Pos -> Pos -> Pos
 minusPos (Pos l c) (Pos 1 d) = Pos l (c - d + 1)  -- Same line
 minusPos (Pos l c) (Pos m _) = Pos (l - m + 1) c  -- Different line
-minusPos pos (PosPos _ l c) = minusPos pos (Pos l c)
-minusPos (PosPos _ l c) pos = minusPos (Pos l c) pos
+minusPos pos' (PosPos _ l c) = minusPos pos' (Pos l c)
+minusPos (PosPos _ l c) pos' = minusPos (Pos l c) pos'
 
 inSpan :: Pos -> Span -> Bool
-inSpan pos (Span start end) = pos >= start && pos <= end
-inSpan pos (PosSpan _ s e)  = inSpan pos (Span s e)
+inSpan pos' (Span start end) = pos' >= start && pos' <= end
+inSpan pos' (PosSpan _ s e)  = inSpan pos' (Span s e)
 
 -- Get the ClaferEnv
 getEnv :: Monad m => ClaferT m ClaferEnv
@@ -280,13 +284,13 @@ putEnv = put
 --   Left is for error (a string containing the error message)
 --   Right is for success (with the result)
 runClaferT :: Monad m => ClaferArgs -> ClaferT m a -> m (Either [ClaferErr] a)
-runClaferT args exec =
-  mapLeft errs `liftM` evalStateT (runErrorT exec) (makeEnv args)
+runClaferT args' exec =
+  mapLeft errs `liftM` evalStateT (runErrorT exec) (makeEnv args')
   where
   mapLeft :: (a -> c) -> Either a b -> Either c b
   mapLeft f (Left l) = Left (f l)
-  mapLeft f (Right r) = Right r
+  mapLeft _ (Right r) = Right r
 
 -- Convenience
 runClafer :: ClaferArgs -> ClaferM a -> Either [ClaferErr] a
-runClafer args = runIdentity . runClaferT args
+runClafer args' = runIdentity . runClaferT args'

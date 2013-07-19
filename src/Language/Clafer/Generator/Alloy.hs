@@ -1,4 +1,4 @@
-{-# LANGUAGE RankNTypes, KindSignatures, FlexibleContexts #-}
+{-# LANGUAGE RankNTypes, FlexibleContexts #-}
 {-
  Copyright (C) 2012-2013 Kacper Bak, Jimmy Liang, Rafael Olaechea <http://gsd.uwaterloo.ca>
 
@@ -457,7 +457,7 @@ interleave (x:xs) [] = x:xs
 interleave [] (x:xs) = x:xs
 interleave (x:xs) ys = x : interleave ys xs
 
-brArg :: forall t. (t -> Concat) -> t -> Concat 
+brArg :: (a -> Concat) -> a -> Concat 
 brArg f arg = cconcat [CString "(", f arg, CString ")"]
 
 genOp :: ClaferMode -> String -> [String]
@@ -542,10 +542,10 @@ data AlloyEnv = AlloyEnv {
 mapLineCol :: Concat -> [(Span, IrTrace)]
 mapLineCol code = mapping $ execState (mapLineCol' code) (AlloyEnv (firstLine, firstCol) [])
 
-addCode :: forall (m :: * -> *). MonadState AlloyEnv m => [Char] -> m () 
+addCode :: MonadState AlloyEnv m => String -> m () 
 addCode str = modify (\s -> s {lineCol = lineno (lineCol s) str})
 
-mapLineCol' :: forall (m :: * -> *). MonadState AlloyEnv m => Concat -> m ()
+mapLineCol' :: MonadState AlloyEnv m => Concat -> m ()
 mapLineCol' (CString str) = addCode str
 mapLineCol' c@(Concat srcPos' n) = do
   posStart <- gets lineCol
@@ -578,12 +578,12 @@ mapLineCol' c@(Concat srcPos' n) = do
 
 addColumn :: Interval -> Integer -> Interval
 addColumn (x, y) c = (x, y + c)
-countLeading :: [Char] -> [Char] -> Integer
+countLeading :: String -> String -> Integer
 countLeading c xs = toInteger $ length $ takeWhile (`elem` c) xs
-countTrailing :: [Char] -> [Char] -> Integer
+countTrailing :: String -> String -> Integer
 countTrailing c xs = countLeading c (reverse xs)
 
-lineno :: (Integer, ColNo) -> [Char] -> (Integer, ColNo)
+lineno :: (Integer, ColNo) -> String -> (Integer, ColNo)
 lineno (l, c) str = (l + newLines, (if newLines > 0 then firstCol else c) + newCol)
   where
   newLines = toInteger $ length $ filter (== '\n') str

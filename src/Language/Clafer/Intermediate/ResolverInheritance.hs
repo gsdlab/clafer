@@ -1,4 +1,4 @@
-{-# LANGUAGE RankNTypes, KindSignatures, FlexibleContexts #-}
+{-# LANGUAGE FlexibleContexts #-}
 {-
  Copyright (C) 2012 Kacper Bak <http://gsd.uwaterloo.ca>
 
@@ -204,9 +204,7 @@ getDirUnrollables dependencies = (filter isUnrollable $ map (map v2n) $
   isUnrollable _ = True
 
 -- -----------------------------------------------------------------------------
-resolveEClafer :: forall (m :: * -> *) t.
-                  MonadState GEnv m =>
-                  [String] -> [String] -> Bool -> t -> IClafer -> m IClafer
+resolveEClafer :: MonadState GEnv m => [String] -> [String] -> Bool -> [IElement] -> IClafer -> m IClafer
 resolveEClafer predecessors unrollables absAncestor declarations clafer = do
   sClafers' <- gets sClafers
   clafer' <- renameClafer absAncestor clafer
@@ -223,32 +221,23 @@ resolveEClafer predecessors unrollables absAncestor declarations clafer = do
             $ elements clafer
   return $ clafer' {super = super', elements = elements' ++ sElements}
 
-renameClafer :: forall (m :: * -> *).
-                MonadState GEnv m =>
-                Bool -> IClafer -> m IClafer
+renameClafer :: MonadState GEnv m => Bool -> IClafer -> m IClafer
 renameClafer False clafer = return clafer
 renameClafer True  clafer = renameClafer' clafer
 
-renameClafer' :: forall (m :: * -> *).
-                 MonadState GEnv m =>
-                 IClafer -> m IClafer
+renameClafer' :: MonadState GEnv m => IClafer -> m IClafer
 renameClafer' clafer = do
   uid' <- genId $ ident clafer
   return $ clafer {uid = uid'}
 
 
-genId :: forall (m :: * -> *).
-         MonadState GEnv m =>
-         [Char] -> m [Char]
+genId :: MonadState GEnv m => String -> m String
 genId id' = do
   modify (\e -> e {num = 1 + num e})
   n <- gets num
   return $ concat ["c", show n, "_",  id']
 
-resolveEInheritance :: forall t (m :: * -> *).
-                       MonadState GEnv m
-                       => [String] -> [String] -> Bool -> t -> [IClafer] 
-                       -> m ([IElement], ISuper, [IClafer])
+resolveEInheritance :: MonadState GEnv m => [String] -> [String] -> Bool -> [IElement] -> [IClafer]  -> m ([IElement], ISuper, [IClafer])
 resolveEInheritance predecessors unrollables absAncestor declarations allSuper
   | isOverlapping $ super clafer = return ([], super clafer, [clafer])
   | otherwise = do
@@ -264,9 +253,7 @@ resolveEInheritance predecessors unrollables absAncestor declarations allSuper
   where
   clafer = head allSuper
 
-resolveEElement :: forall t (m :: * -> *).
-                   MonadState GEnv m =>
-                   [String] -> [String] -> Bool -> t -> IElement -> m IElement
+resolveEElement :: MonadState GEnv m => [String] -> [String] -> Bool -> [IElement] -> IElement -> m IElement
 resolveEElement predecessors unrollables absAncestor declarations x = case x of
   IEClafer clafer  -> if isAbstract clafer then return x else IEClafer `liftM`
     resolveEClafer predecessors unrollables absAncestor declarations clafer

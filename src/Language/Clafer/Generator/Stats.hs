@@ -1,4 +1,4 @@
-{-# LANGUAGE RankNTypes, KindSignatures, FlexibleContexts #-}
+{-# LANGUAGE FlexibleContexts #-}
 {-
  Copyright (C) 2012 Kacper Bak <http://gsd.uwaterloo.ca>
 
@@ -39,9 +39,7 @@ statsModule :: IModule -> Stats
 statsModule imodule =
   execState (mapM statsElement $ mDecls imodule) $ Stats 0 0 0 0 0 (1, 1)
 
-statsClafer :: forall (m :: * -> *).
-               MonadState Stats m =>
-               IClafer -> m ()
+statsClafer :: MonadState Stats m => IClafer -> m ()
 statsClafer claf = do
   if isAbstract claf
     then modify (\e -> e {naClafers = naClafers e + 1})
@@ -59,9 +57,7 @@ statsCard (m1, n1) (m2, n2) = (max m1 m2, maxEx n1 n2)
   where
   maxEx m' n' = if m' == -1 || n' == -1 then -1 else max m' n'
 
-statsElement :: forall (m :: * -> *).
-                MonadState Stats m =>
-                IElement -> m ()
+statsElement :: MonadState Stats m => IElement -> m ()
 statsElement x = case x of
   IEClafer clafer -> statsClafer clafer
   IEConstraint _ _ -> modify (\e -> e {nConstraints = nConstraints e + 1})

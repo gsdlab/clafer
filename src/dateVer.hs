@@ -26,6 +26,7 @@ import Data.List
 import Paths_clafer (version)
 import Data.Version (showVersion)
 
+header :: String
 header = unlines
  [ "{-"
  , "Copyright (C) 2012 Kacper Bak <http://gsd.uwaterloo.ca>"

@@ -1,4 +1,4 @@
-{-# LANGUAGE RankNTypes, KindSignatures, FlexibleContexts #-}
+{-# LANGUAGE FlexibleContexts #-}
 
 {-
  Copyright (C) 2012 Kacper Bak, Jimmy Liang <http://gsd.uwaterloo.ca>
@@ -275,7 +275,7 @@ resolveChildren' pos' env id' f label =
     u <- MaybeT $ findUnique pos' id' $ map (\x -> (x, [x,fromJust $ context env])) $ f env
     liftMaybe $ toMTriple label u
 
-liftMaybe :: forall a. Maybe a -> MaybeT (Either ClaferSErr) a
+liftMaybe :: Maybe a -> MaybeT (Either ClaferSErr) a
 liftMaybe = MaybeT . return
 
 resolveAncestor :: Span -> SEnv -> String -> Resolve (Maybe (HowResolved, String, [IClafer]))

@@ -1,4 +1,3 @@
-{-# LANGUAGE RankNTypes, KindSignatures, FlexibleContexts #-}
 module Language.Clafer.Intermediate.Tracing (traceIrModule, traceAstModule, Ast(..)) where
 
 import Data.Map (Map)
@@ -7,12 +6,12 @@ import Language.Clafer.Front.Absclafer
 import Language.Clafer.Front.Mapper
 import Language.Clafer.Intermediate.Intclafer
 
-insert :: forall a. Span -> a -> Map Span [a] -> Map Span [a]
-insert k a = Map.insertWith (++) k [a]
 
 traceIrModule :: IModule -> Map Span [Ir] --Map Span [Union (IRClafer IClafer) (IRPExp PExp)]
 traceIrModule = foldMapIR getMap 
   where
+    insert :: Span -> Ir -> Map Span [Ir] -> Map Span [Ir]
+    insert k a = Map.insertWith (++) k [a]
     getMap :: Ir -> Map Span [Ir] --Map Span [Union (IRClafer IClafer) (IRPExp PExp)]
     getMap (IRPExp (p@PExp{inPos = s})) = insert s (IRPExp p) Map.empty
     getMap (IRClafer (c@IClafer{cinPos = s})) = insert s (IRClafer c) Map.empty
@@ -25,7 +24,7 @@ traceAstModule x =
     Map.empty
     (traverseModule x)
   where
-  ins y = insert (i y) y
+  ins y = Map.insertWith (++) (i y) [y]
   i (AstModule a) = range a
   i (AstDeclaration a) = range a
   i (AstClafer a) = range a

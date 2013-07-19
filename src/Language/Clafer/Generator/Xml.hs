@@ -1,4 +1,3 @@
-{-# LANGUAGE RankNTypes #-}
 {-
  Copyright (C) 2012 Kacper Bak, Jimmy Liang <http://gsd.uwaterloo.ca>
 
@@ -31,7 +30,7 @@ import Language.Clafer.Intermediate.Intclafer
 tag :: String -> String -> String
 tag name exp' = concat ["<", name, ">", exp', "</", name, ">\n"]
 
-optTag :: forall a. Maybe a -> (a -> [Char]) -> [Char]
+optTag :: Maybe a -> (a -> String) -> String
 optTag ele f = maybe "" f ele
 
 tagType :: String -> String -> String -> String
@@ -123,7 +122,7 @@ genXmlElement x = case x of
                          , genXmlPExp "ParentExp" pexp]
                          
 
-genXmlAnyOp :: forall t. (t -> String) -> (t -> String) -> [(String, t)] -> [Char]                                                    
+genXmlAnyOp :: (a -> String) -> (a -> String) -> [(String, a)] -> String                                                    
 genXmlAnyOp ft f xs = concatMap
   (\(tname, texp) -> tagType tname (ft texp) $ f texp) xs
 
