@@ -45,7 +45,7 @@ getClafers dir = do
 					let claferFiles = List.filter checkClaferExt files
 					claferModels <- mapM (\x -> readFile (dir++"/"++x)) claferFiles
 					return $ zip claferFiles claferModels
-checkClaferExt "dst.cfr" = True
+checkClaferExt "des.cfr" = True
 checkClaferExt file = if ((eman == "")) then False else (txe == "rfc") && (takeWhile (/='.') (tail eman) /= "esd")
 	where (txe, eman) = span (/='.') (reverse file)
 				
