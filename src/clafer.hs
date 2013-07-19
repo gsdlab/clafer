@@ -135,7 +135,7 @@ runValidate args fo = do
       voidf $ system $ "java -classpath " ++ path ++ " XsdCheck ClaferIR.xsd " ++ fo
     Alloy ->   voidf $ system $ validateAlloy path "4" ++ fo
     Alloy42 -> voidf $ system $ validateAlloy path "4.2" ++ fo
-    Clafer ->  voidf $ system $ path ++ "/clafer -s -m=clafer " ++ fo
+    Clafer ->  voidf $ system $ path ++ "clafer -s -m=clafer " ++ fo
 
 validateAlloy :: String -> String -> String
 validateAlloy path version = "java -cp " ++ path ++ "alloy" ++ version ++ ".jar edu.mit.csail.sdg.alloy4whole.ExampleUsingTheCompiler "
