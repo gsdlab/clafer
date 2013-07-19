@@ -1,8 +1,8 @@
 TOOL_DIR = ../tools
 SUITE_DIR = positive
 REG_DIR = regression
-CLAFER = ../dist/build/clafer/clafer -s -v --tooldir=$(TOOL_DIR)
-CLAFER_SELF = ../dist/build/clafer/clafer -s -v --tooldir=..
+CLAFER = ../dist/build/clafer/clafer -s -v -k --tooldir=$(TOOL_DIR)
+CLAFER_SELF = ../dist/build/clafer/clafer -s -v -k --tooldir=..
 
 UNAME := $(shell uname | tr "A-Z" "a-z")
 
