@@ -346,9 +346,6 @@ data GEnv = GEnv {
   } deriving (Eq, Show)
 
 voidf :: Monad m => m t -> m ()
-voidf _ = return ()
-{-
 voidf f = do
-  x <- f
+  _ <- f
   return ()
--}
