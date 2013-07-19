@@ -174,69 +174,67 @@ toMTriple a (b,c) = Just (a, b, c)
 
 -- unary operators
 iNot :: String
-
 iNot          = "!"
+
 iCSet :: String
-
 iCSet         = "#"
+
 iMin :: String
-
 iMin          = "-"
+
 iGMax :: String
-
 iGMax         = "max"
+
 iGMin :: String
-
 iGMin         = "min"
-iSumSet :: String
 
+iSumSet :: String
 iSumSet       = "sum"
+
 unOps :: [String]
 unOps = [iNot, iCSet, iMin, iGMax, iGMin, iSumSet]
 
 -- binary operators
 iIff :: String
-
 iIff          = "<=>"
+
 iImpl :: String
-
 iImpl         = "=>"
+
 iOr :: String
-
 iOr           = "||"
+
 iXor :: String
-
 iXor          = "xor"
-iAnd :: String
 
+iAnd :: String
 iAnd          = "&&"
 
 logBinOps :: [String]
 logBinOps = [iIff, iImpl, iOr, iXor, iAnd]
 
 iLt :: String
-
 iLt           = "<"
+
 iGt :: String
-
 iGt           = ">"
+
 iEq :: String
-
 iEq           = "="
+
 iLte :: String
-
 iLte          = "<="
+
 iGte :: String
-
 iGte          = ">="
+
 iNeq :: String
-
 iNeq          = "!="
+
 iIn :: String
-
 iIn           = "in"
-iNin :: String
 
+iNin :: String
 iNin          = "not in"
 
 relGenBinOps :: [String]
