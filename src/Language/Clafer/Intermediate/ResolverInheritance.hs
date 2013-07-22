@@ -155,11 +155,10 @@ analyzeCard :: SEnv -> IClafer -> Maybe Interval
 analyzeCard env clafer = card clafer `mplus` Just card'
   where
   card'
-    | isAbstract clafer                          = (0, -1)
-    | (isJust $ context env) && isKeyword pGcard = (0, 1)
-    | otherwise                                  = (1, 1)
-  pGcard = fromJust $ gcard $ fromJust $ context env
-
+    | isAbstract clafer = (0, -1)
+    | (isJust $ context env) && pGcard == (0, -1) = (1, 1) 
+    | otherwise = (0, 1)
+  pGcard = interval $ fromJust $ gcard $ fromJust $ context env
 
 analyzeElement :: SEnv -> IElement -> IElement
 analyzeElement env x = case x of

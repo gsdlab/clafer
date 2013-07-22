@@ -102,10 +102,11 @@ run v args input =
     do
       result <- generate
       env <- getEnv
-      let (iModule, genv, au) = ir env
+      (iModule, genv, au) <- getIr
       result' <- if (add_graph args) && (mode args == Html) 
              then do
-                   (_, graph, _) <- liftIO $ readProcessWithExitCode "dot"  ["-Tsvg"] $ genSimpleGraph (ast env) iModule (takeBaseName $ file args) (show_references args)
+                   ast' <- getAst
+                   (_, graph, _) <- liftIO $ readProcessWithExitCode "dot"  ["-Tsvg"] $ genSimpleGraph ast' iModule (takeBaseName $ file args) (show_references args)
                    return $ summary graph result
                  else return result
       liftIO $ when (not $ no_stats args) $ putStrLn (statistics result')
@@ -127,14 +128,14 @@ conPutStrLn args s = when (not $ console_output args) $ putStrLn s
 runValidate :: ClaferArgs -> [Char] -> IO ()
 runValidate args fo = do
   let path = (tooldir args) ++ "/"
-  liftIO $ putStrLn ("tooldir=" ++ path)
+  liftIO $ putStrLn ("Validating " ++ (file args))
   case (mode args) of
     Xml -> do
       writeFile "ClaferIR.xsd" claferIRXSD
       voidf $ system $ "java -classpath " ++ path ++ " XsdCheck ClaferIR.xsd " ++ fo
     Alloy ->   voidf $ system $ validateAlloy path "4" ++ fo
     Alloy42 -> voidf $ system $ validateAlloy path "4.2" ++ fo
-    Clafer ->  voidf $ system $ path ++ "/clafer -s -m=clafer " ++ fo
+    Clafer ->  voidf $ system $ path ++ "clafer -s -m=clafer " ++ fo
 
 validateAlloy :: String -> String -> String
 validateAlloy path version = "java -cp " ++ path ++ "alloy" ++ version ++ ".jar edu.mit.csail.sdg.alloy4whole.ExampleUsingTheCompiler "

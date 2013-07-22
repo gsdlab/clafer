@@ -2,56 +2,62 @@ Name:                clafer
 Version:             0.3.3
 Synopsis:            clafer compiles Clafer models to other formats, such as Alloy, XML, HTML, Dot.
 Description:         Clafer is a general purpose, lightweight, structural modeling language developed at GSD Lab, University of Waterloo. Lightweight modeling aims at improving the understanding of the problem domain in the early stages of software development and determining the requirements with fewer defects. Clafer's goal is to make modeling more accessible to a wider range of users and domains. The tool provides a reference language implementation. It translates models to other formats (e.g. Alloy, XML) to allow for reasoning with existing tools.
-Homepage:            http://clafer.org
-License:             MIT
-License-file:        LICENSE
-Author:              Kacper Bak, Jimmy Liang, Michal Antkiewicz, Chris Walker, Luke Brown
-Maintainer:          kbak@gsd.uwaterloo.ca
-Stability:           Experimental
-Category:            Model
-Build-type:          Simple
-Cabal-version:       >= 1.8
+Homepage:           http://clafer.org
+License:            MIT
+License-file:       LICENSE
+Author:             Kacper Bak, Jimmy Liang, Michal Antkiewicz, Chris Walker, Luke Michael Brown
+Maintainer:         kbak@gsd.uwaterloo.ca
+Stability:          Experimental
+Category:           Model
+Build-type:         Simple
+Cabal-version:      >= 1.16
 Extra-Source-Files:
-                     CHANGES.md,
-                     LICENSE,
-                     tools/alloy4.jar,
-                     tools/alloy4.2.jar,
-                     tools/XsdCheck.class
-					 
+                    CHANGES.md,
+                    LICENSE,
+                    tools/alloy4.jar,
+                    tools/alloy4.2.jar,
+                    tools/XsdCheck.class
 source-repository head
-    type:            git
-    location:        git://github.com/gsdlab/clafer.git
-					 
+    type:           git
+    location:       git://github.com/gsdlab/clafer.git
 Executable clafer
-    build-tools:     ghc >= 7.4.2
-    extensions:      DeriveDataTypeable,
-                     RankNTypes
-    main-is:         clafer.hs
-    build-depends:   base >= 4 && < 5,
-                     clafer == 0.3.3,
-                     array >= 0.4.0.0, 
-                     process >= 1.1.0.1, 
-                     mtl >= 2.1.2, 
-                     containers >= 0.4.2.1, 
-                     cmdargs >= 0.10.3, 
-                     executable-path >= 0.0.3, 
-                     filepath >= 1.3.0.0,
-                     HaXml >= 1.24,
-                     MaybeT >= 0.1.2,
-                     glpk-hs >= 0.3.3,
-                     parsec >= 3.1.2,
-                     test-framework, 
-                     test-framework-hunit, 
-                     test-framework-quickcheck2,
-                     test-framework-th,
-                     QuickCheck, 
-                     HUnit 
-    hs-source-dirs:  src
+    build-tools:    ghc >= 7.6.3
+    default-language: 
+                    Haskell2010
+    default-extensions:
+                    DeriveDataTypeable,
+                    RankNTypes
+    main-is:        clafer.hs
+    build-depends:   
+                    base >= 4 && < 5,
+                    clafer == 0.3.3,
+                    array >= 0.4.0.0, 
+                    process >= 1.1.0.1, 
+                    mtl >= 2.1.2, 
+                    containers >= 0.4.2.1, 
+                    cmdargs >= 0.10.3, 
+                    executable-path >= 0.0.3, 
+                    filepath >= 1.3.0.0,
+                    HaXml >= 1.24,
+                    MaybeT >= 0.1.2,
+                    glpk-hs == 0.3.4,
+                    parsec >= 3.1.3,
+                    test-framework >= 0.8, 
+                    test-framework-hunit >= 0.3.0, 
+                    test-framework-quickcheck2 >= 0.3.0.1,
+                    test-framework-th >= 0.2.3,
+                    QuickCheck >= 2.5.1.1, 
+                    HUnit >= 1.2.5.1,
+                    directory
+    hs-source-dirs: src
 
 library 
-    build-tools:     ghc >= 7.4.1
-    extensions:      DeriveDataTypeable,
-                     RankNTypes
+    build-tools:    ghc >= 7.6.3
+    default-language: 
+                    Haskell2010    
+    default-extensions:
+                    DeriveDataTypeable,
+                    RankNTypes
     build-depends:   
                      base >= 4 && < 5, 
                      array >= 0.4.0.0, 
@@ -63,14 +69,15 @@ library
                      filepath >= 1.3.0.0,
                      HaXml >= 1.24,
                      MaybeT >= 0.1.2,
-                     glpk-hs >= 0.3.3,
+                     glpk-hs == 0.3.4,
                      parsec >= 3.1.2,
-                     test-framework, 
-                     test-framework-hunit, 
-                     test-framework-quickcheck2,
-                     test-framework-th,
-                     QuickCheck, 
-                     HUnit 
+                     test-framework >= 0.8, 
+                     test-framework-hunit >= 0.3.0, 
+                     test-framework-quickcheck2 >= 0.3.0.1,
+                     test-framework-th >= 0.2.3,
+                     QuickCheck >= 2.5.1.1, 
+                     HUnit >= 1.2.5.1,
+                     directory
     hs-source-dirs:  src
     ghc-options:     -Wall
     exposed-modules: 
@@ -108,34 +115,39 @@ library
                      Language.Clafer.Intermediate.Transformer,
                      Language.Clafer.Optimizer.Optimizer,
                      Language.Clafer.SplitJoin,
-                     Language.Clafer.Version                          
-
+                     Language.Clafer.Version
+                     
 
 Test-Suite test-suite
+    build-tools:    ghc >= 7.6.3
+    default-language: 
+                    Haskell2010    
     type:           exitcode-stdio-1.0  
-    main-is:        test/test-suite.hs
-    build-depends:   
-                     base >= 4 && < 5, 
-                     array >= 0.4.0.0, 
-                     process >= 1.1.0.1, 
-                     mtl >= 2.1.1, 
-                     containers >= 0.4.2.1, 
-                     cmdargs >= 0.10.2, 
-                     executable-path >= 0.0.3, 
-                     filepath >= 1.3.0.0,
-                     HaXml >= 1.23.3,
-                     MaybeT >= 0.1.2,
-                     glpk-hs >= 0.3.3,
-                     parsec >= 3.1.2,
-                     clafer == 0.3.3
+    main-is:        test-suite.hs
+    hs-source-dirs: test
+    build-depends:  base >= 4 && < 5,
+                    clafer == 0.3.3,
+                    array >= 0.4.0.0, 
+                    process >= 1.1.0.1, 
+                    mtl >= 2.1.2, 
+                    containers >= 0.4.2.1, 
+                    cmdargs >= 0.10.3, 
+                    executable-path >= 0.0.3, 
+                    filepath >= 1.3.0.0,
+                    HaXml >= 1.24,
+                    MaybeT >= 0.1.2,
+                    glpk-hs == 0.3.4,
+                    parsec >= 3.1.2,
+                    directory
     ghc-options      -Wall
-
+    other-modules:
+                    Functions,
+                    Suite.Positive,
+                    Suite.Negative
     build-depends:  
-                     test-framework, 
-                     test-framework-hunit, 
-                     test-framework-quickcheck2,
-                     test-framework-th,
-                     QuickCheck, 
-                     HUnit,
-                     directory
-
+                     test-framework >= 0.8, 
+                     test-framework-hunit >= 0.3.0, 
+                     test-framework-quickcheck2 >= 0.3.0.1,
+                     test-framework-th >= 0.2.3,
+                     QuickCheck >= 2.5.1.1, 
+                     HUnit >= 1.2.5.1

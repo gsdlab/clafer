@@ -20,7 +20,7 @@ all: build
 
 build:
 	$(MAKE) -C $(TOOL_DIR)
-	cabal install --only-dependencies
+	cabal install --only-dependencies $(GPLK_LIBS_INCLUDES) $(MAC_USR_LIB)
 	cabal configure
 	cabal build
 
@@ -60,7 +60,7 @@ prof:
 test:
 	cabal configure --enable-tests
 	cabal build
-	cabal test
+	cabal test	
 	$(MAKE) -C $(TEST_DIR) test
 
 reg:

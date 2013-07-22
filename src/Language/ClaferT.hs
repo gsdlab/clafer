@@ -25,13 +25,14 @@
  - ClaferEnv can just import this module without all the parsing/compiline/generating
  - functionality.
  -}
-module Language.ClaferT (ClaferEnv(..), makeEnv, ast, ir, ClaferM, ClaferT, CErr(..), CErrs(..), ClaferErr(..), ClaferErrs(..), ClaferSErr(..), ClaferSErrs(..), ErrPos(..), PartialErrPos(..), throwErrs, throwErr, catchErrs, getEnv, getsEnv, modifyEnv, putEnv, runClafer, runClaferT, runClaferS, runClaferTS, Throwable(..), Span(..), Pos(..),SnapShots,takeSnapShot, SnapShotId(..), numberOfSS) where
+module Language.ClaferT (ClaferEnv(..), makeEnv, getAst, getIr, ClaferM, ClaferT, CErr(..), CErrs(..), ClaferErr(..), ClaferErrs(..), ClaferSErr(..), ClaferSErrs(..), ErrPos(..), PartialErrPos(..), throwErrs, throwErr, catchErrs, getEnv, getsEnv, modifyEnv, putEnv, runClafer, runClaferT, Throwable(..), Span(..), Pos(..),SnapShots,takeSnapShot, SnapShotId(..), numberOfSS, runClaferS) where
 
 import Control.Monad.Error
 import Control.Monad.State
 import Control.Monad.Writer
 import Control.Monad.Identity
 import Data.List
+import Data.Maybe
 import Data.Map (Map)
 import qualified Data.Map as Map
 
@@ -79,14 +80,20 @@ data ClaferEnv = ClaferEnv {
                             astModuleTrace :: Map Span [Ast]
                             } deriving (Show, Eq)
 
-ast ClaferEnv{cAst = Just a} = a
-ast _ = error "No AST. Did you forget to add fragments or parse?" -- Indicates a bug in the Clafer translator.
+getAst :: (Monad m) => ClaferT m Module
+getAst = do
+  env <- getEnv
+  case cAst env of
+    (Just a) -> return a
+    _ -> throwErr (ClaferErr "No AST. Did you forget to add fragments or parse?" :: CErr Span) -- Indicates a bug in the Clafer translator.
 
-ir ClaferEnv{cIr = Just i} = i
-ir _ = error "No IR. Did you forget to compile?" -- Indicates a bug in the Clafer translator.
-
-
-
+getIr :: (Monad m) => ClaferT m (IModule, GEnv, Bool)
+getIr = do
+  env <- getEnv
+  case cIr env of
+    (Just i) -> return i
+    _ -> throwErr (ClaferErr "No IR. Did you forget to compile?" :: CErr Span) -- Indicates a bug in the Clafer translator.
+                                                                                
 makeEnv args = ClaferEnv { args = args',
                            modelFrags = [],
                            cAst = Nothing,

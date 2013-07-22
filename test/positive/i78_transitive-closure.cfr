@@ -15,16 +15,18 @@ abstract WeekLevel : TimeLevel
 Year2012 : YearLevel
 
 Jan2012 : MonthLevel
-    [ aggregatesTo = Year2012 ]
+    [ this.aggregatesTo = Year2012 ]
 
 Week1 : WeekLevel
-    [ aggregatesTo = Jan2012 ]
+    [ this.aggregatesTo = Jan2012 ]
 
 // should be the following using the transitive closure operator ^
 // Week1AggregatesTo -> TimeLevel * = Week1.^aggregatesTo
 
 // currently need to manually expand
-Week1AggregatesTo -> TimeLevel * = Week1.aggregatesTo, Week1.aggregatesTo.aggregatesTo
+Week1AggregatesTo -> TimeLevel *
+[ Week1.aggregatesTo in Week1AggregatesTo ]
+[ Week1.aggregatesTo.aggregatesTo in Week1AggregatesTo ]
 
 // assertion 
 [ Week1AggregatesTo = Jan2012, Year2012 ]
