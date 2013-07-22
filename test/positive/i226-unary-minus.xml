@@ -17,7 +17,7 @@
 <Id>x</Id>
 <UniqueId>c1_x</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><ParentId></ParentId>
+<Super><ParentId>integer_((3,5),(3,12))</ParentId>
 <Position><Start><IntLiteral>3</IntLiteral>
 <IntLiteral>5</IntLiteral>
 </Start>
@@ -50,7 +50,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>._((4,2),(4,3))</ParentId>
 <Position><Start><IntLiteral>4</IntLiteral>
 <IntLiteral>2</IntLiteral>
 </Start>
@@ -71,7 +71,7 @@
 <Id>c1_x</Id>
 <IsTop>true</IsTop>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>ref_((4,2),(4,3))</ParentId>
 <Position><Start><IntLiteral>4</IntLiteral>
 <IntLiteral>2</IntLiteral>
 </Start>

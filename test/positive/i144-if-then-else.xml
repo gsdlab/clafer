@@ -17,7 +17,7 @@
 <Id>AliceAge</Id>
 <UniqueId>c1_AliceAge</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><ParentId></ParentId>
+<Super><ParentId>int_((3,13),(3,16))</ParentId>
 <Position><Start><IntLiteral>3</IntLiteral>
 <IntLiteral>13</IntLiteral>
 </Start>
@@ -162,7 +162,7 @@
 <Id>BobAge</Id>
 <UniqueId>c11_BobAge</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><ParentId></ParentId>
+<Super><ParentId>int_((4,11),(4,14))</ParentId>
 <Position><Start><IntLiteral>4</IntLiteral>
 <IntLiteral>11</IntLiteral>
 </Start>

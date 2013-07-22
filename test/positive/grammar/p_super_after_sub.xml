@@ -17,7 +17,7 @@
 <Id>A</Id>
 <UniqueId>c1_A</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Super><Type xsi:type="cl:ISet" /><ParentId>B_((8,5),(8,6))</ParentId>
 <Position><Start><IntLiteral>8</IntLiteral>
 <IntLiteral>5</IntLiteral>
 </Start>

@@ -58,7 +58,7 @@
 <Id>y</Id>
 <UniqueId>c2_y</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><ParentId></ParentId>
+<Super><ParentId>int_((2,7),(2,10))</ParentId>
 <Position><Start><IntLiteral>2</IntLiteral>
 <IntLiteral>7</IntLiteral>
 </Start>

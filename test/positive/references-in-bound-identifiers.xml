@@ -58,7 +58,7 @@
 <Id>B</Id>
 <UniqueId>c2_B</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><ParentId></ParentId>
+<Super><ParentId>integer_((2,9),(2,16))</ParentId>
 <Position><Start><IntLiteral>2</IntLiteral>
 <IntLiteral>9</IntLiteral>
 </Start>
@@ -276,7 +276,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>+</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>._((6,18),(6,19))</ParentId>
 <Position><Start><IntLiteral>6</IntLiteral>
 <IntLiteral>18</IntLiteral>
 </Start>
@@ -297,7 +297,7 @@
 <Id>b</Id>
 <IsTop>true</IsTop>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>ref_((6,18),(6,19))</ParentId>
 <Position><Start><IntLiteral>6</IntLiteral>
 <IntLiteral>18</IntLiteral>
 </Start>

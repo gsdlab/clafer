@@ -58,7 +58,7 @@
 <Id>x</Id>
 <UniqueId>c2_x</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><ParentId></ParentId>
+<Super><ParentId>integer_((20,7),(20,14))</ParentId>
 <Position><Start><IntLiteral>20</IntLiteral>
 <IntLiteral>7</IntLiteral>
 </Start>
@@ -99,7 +99,7 @@
 <Id>y</Id>
 <UniqueId>c3_y</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><ParentId></ParentId>
+<Super><ParentId>integer_((21,7),(21,14))</ParentId>
 <Position><Start><IntLiteral>21</IntLiteral>
 <IntLiteral>7</IntLiteral>
 </Start>
@@ -350,7 +350,7 @@
 <Id>this</Id>
 <IsTop>true</IsTop>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>._((23,10),(23,11))</ParentId>
 <Position><Start><IntLiteral>23</IntLiteral>
 <IntLiteral>10</IntLiteral>
 </Start>
@@ -371,7 +371,7 @@
 <Id>c3_y</Id>
 <IsTop>false</IsTop>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>ref_((23,10),(23,11))</ParentId>
 <Position><Start><IntLiteral>23</IntLiteral>
 <IntLiteral>10</IntLiteral>
 </Start>

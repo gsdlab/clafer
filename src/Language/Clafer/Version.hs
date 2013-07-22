@@ -21,4 +21,5 @@ SOFTWARE.
 -}
 
 module Language.Clafer.Version where
+version :: String
 version = "v0.3.3.19-7-2013"

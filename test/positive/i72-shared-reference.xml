@@ -58,7 +58,7 @@
 <Id>JohnDoe</Id>
 <UniqueId>c2_JohnDoe</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Super><Type xsi:type="cl:ISet" /><ParentId>Person_((4,11),(4,17))</ParentId>
 <Position><Start><IntLiteral>4</IntLiteral>
 <IntLiteral>11</IntLiteral>
 </Start>
@@ -99,7 +99,7 @@
 <Id>MaryJane</Id>
 <UniqueId>c3_MaryJane</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Super><Type xsi:type="cl:ISet" /><ParentId>Person_((5,12),(5,18))</ParentId>
 <Position><Start><IntLiteral>5</IntLiteral>
 <IntLiteral>12</IntLiteral>
 </Start>
@@ -181,7 +181,7 @@
 <Id>participants</Id>
 <UniqueId>c5_participants</UniqueId>
 <Supers><IsOverlapping>true</IsOverlapping>
-<Super><ParentId></ParentId>
+<Super><ParentId>Person_((8,21),(8,27))</ParentId>
 <Position><Start><IntLiteral>8</IntLiteral>
 <IntLiteral>21</IntLiteral>
 </Start>
@@ -348,7 +348,7 @@
 <Id>BusLine</Id>
 <UniqueId>c15_BusLine</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Super><Type xsi:type="cl:ISet" /><ParentId>WaitingLine_((10,11),(10,22))</ParentId>
 <Position><Start><IntLiteral>10</IntLiteral>
 <IntLiteral>11</IntLiteral>
 </Start>
@@ -556,7 +556,7 @@
 <Id>JohnAndMaryLine</Id>
 <UniqueId>c23_JohnAndMaryLine</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Super><Type xsi:type="cl:ISet" /><ParentId>WaitingLine_((14,19),(14,30))</ParentId>
 <Position><Start><IntLiteral>14</IntLiteral>
 <IntLiteral>19</IntLiteral>
 </Start>

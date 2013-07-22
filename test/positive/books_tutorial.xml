@@ -58,7 +58,7 @@
 <Id>title</Id>
 <UniqueId>c2_title</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><ParentId></ParentId>
+<Super><ParentId>string_((5,13),(5,19))</ParentId>
 <Position><Start><IntLiteral>5</IntLiteral>
 <IntLiteral>13</IntLiteral>
 </Start>
@@ -99,7 +99,7 @@
 <Id>subtitle</Id>
 <UniqueId>c3_subtitle</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><ParentId></ParentId>
+<Super><ParentId>string_((6,20),(6,26))</ParentId>
 <Position><Start><IntLiteral>6</IntLiteral>
 <IntLiteral>20</IntLiteral>
 </Start>
@@ -140,7 +140,7 @@
 <Id>year</Id>
 <UniqueId>c4_year</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><ParentId></ParentId>
+<Super><ParentId>integer_((7,12),(7,19))</ParentId>
 <Position><Start><IntLiteral>7</IntLiteral>
 <IntLiteral>12</IntLiteral>
 </Start>
@@ -632,7 +632,7 @@
 <Id>other</Id>
 <UniqueId>c16_other</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><ParentId></ParentId>
+<Super><ParentId>string_((19,17),(19,23))</ParentId>
 <Position><Start><IntLiteral>19</IntLiteral>
 <IntLiteral>17</IntLiteral>
 </Start>
@@ -673,7 +673,7 @@
 <Id>authors</Id>
 <UniqueId>c17_authors</UniqueId>
 <Supers><IsOverlapping>true</IsOverlapping>
-<Super><ParentId></ParentId>
+<Super><ParentId>Author_((20,16),(20,22))</ParentId>
 <Position><Start><IntLiteral>20</IntLiteral>
 <IntLiteral>16</IntLiteral>
 </Start>
@@ -970,7 +970,7 @@
 <Id>ISBN</Id>
 <UniqueId>c33_ISBN</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><ParentId></ParentId>
+<Super><ParentId>string_((22,12),(22,18))</ParentId>
 <Position><Start><IntLiteral>22</IntLiteral>
 <IntLiteral>12</IntLiteral>
 </Start>
@@ -1011,7 +1011,7 @@
 <Id>GS1</Id>
 <UniqueId>c34_GS1</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><ParentId></ParentId>
+<Super><ParentId>string_((23,15),(23,21))</ParentId>
 <Position><Start><IntLiteral>23</IntLiteral>
 <IntLiteral>15</IntLiteral>
 </Start>
@@ -1245,7 +1245,7 @@
 <Id>name</Id>
 <UniqueId>c42_name</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><ParentId></ParentId>
+<Super><ParentId>string_((27,12),(27,18))</ParentId>
 <Position><Start><IntLiteral>27</IntLiteral>
 <IntLiteral>12</IntLiteral>
 </Start>
@@ -1286,7 +1286,7 @@
 <Id>dob</Id>
 <UniqueId>c43_dob</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><ParentId></ParentId>
+<Super><ParentId>string_((28,11),(28,17))</ParentId>
 <Position><Start><IntLiteral>28</IntLiteral>
 <IntLiteral>11</IntLiteral>
 </Start>
@@ -1327,7 +1327,7 @@
 <Id>Author</Id>
 <UniqueId>c44_Author</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Super><Type xsi:type="cl:ISet" /><ParentId>Person_((30,19),(30,25))</ParentId>
 <Position><Start><IntLiteral>30</IntLiteral>
 <IntLiteral>19</IntLiteral>
 </Start>
@@ -1368,7 +1368,7 @@
 <Id>books</Id>
 <UniqueId>c45_books</UniqueId>
 <Supers><IsOverlapping>true</IsOverlapping>
-<Super><ParentId></ParentId>
+<Super><ParentId>Book_((31,14),(31,18))</ParentId>
 <Position><Start><IntLiteral>31</IntLiteral>
 <IntLiteral>14</IntLiteral>
 </Start>
@@ -1535,7 +1535,7 @@
 <Id>GenerativeProgramming</Id>
 <UniqueId>c55_GenerativeProgramming</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Super><Type xsi:type="cl:ISet" /><ParentId>Book_((33,25),(33,29))</ParentId>
 <Position><Start><IntLiteral>33</IntLiteral>
 <IntLiteral>25</IntLiteral>
 </Start>
@@ -2309,7 +2309,7 @@
 <Id>Czarnecki</Id>
 <UniqueId>c90_Czarnecki</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Super><Type xsi:type="cl:ISet" /><ParentId>Author_((44,13),(44,19))</ParentId>
 <Position><Start><IntLiteral>44</IntLiteral>
 <IntLiteral>13</IntLiteral>
 </Start>
@@ -2515,7 +2515,7 @@
 <Id>Eisenecker</Id>
 <UniqueId>c98_Eisenecker</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Super><Type xsi:type="cl:ISet" /><ParentId>Author_((48,14),(48,20))</ParentId>
 <Position><Start><IntLiteral>48</IntLiteral>
 <IntLiteral>14</IntLiteral>
 </Start>

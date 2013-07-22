@@ -58,7 +58,7 @@
 <Id>aRef</Id>
 <UniqueId>c2_aRef</UniqueId>
 <Supers><IsOverlapping>true</IsOverlapping>
-<Super><ParentId></ParentId>
+<Super><ParentId>A_((3,9),(3,10))</ParentId>
 <Position><Start><IntLiteral>3</IntLiteral>
 <IntLiteral>9</IntLiteral>
 </Start>

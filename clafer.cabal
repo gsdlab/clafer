@@ -48,7 +48,8 @@ Executable clafer
                     test-framework-th >= 0.2.3,
                     QuickCheck >= 2.5.1.1, 
                     HUnit >= 1.2.5.1,
-                    directory
+                    directory,
+                    transformers >= 0.3.0.0
     hs-source-dirs: src
 
 library 
@@ -77,9 +78,11 @@ library
                      test-framework-th >= 0.2.3,
                      QuickCheck >= 2.5.1.1, 
                      HUnit >= 1.2.5.1,
-                     directory
+                     directory,
+                     transformers >= 0.3.0.0
+
     hs-source-dirs:  src
-    ghc-options:     -Wall
+    ghc-options:     -Wall -fno-warn-unused-do-bind -fno-warn-orphans
     exposed-modules: 
                      Language.Clafer,
                      Language.ClaferT,
@@ -117,7 +120,6 @@ library
                      Language.Clafer.SplitJoin,
                      Language.Clafer.Version
                      
-
 Test-Suite test-suite
     build-tools:    ghc >= 7.6.3
     default-language: 
@@ -139,7 +141,8 @@ Test-Suite test-suite
                     glpk-hs == 0.3.4,
                     parsec >= 3.1.2,
                     directory
-    ghc-options      -Wall
+    ghc-options     -Wall -fno-warn-unused-do-bind -fno-warn-orphans
+
     other-modules:
                     Functions,
                     Suite.Positive,

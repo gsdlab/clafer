@@ -58,7 +58,7 @@
 <Id>author</Id>
 <UniqueId>c2_author</UniqueId>
 <Supers><IsOverlapping>true</IsOverlapping>
-<Super><ParentId></ParentId>
+<Super><ParentId>Author_((2,19),(2,25))</ParentId>
 <Position><Start><IntLiteral>2</IntLiteral>
 <IntLiteral>19</IntLiteral>
 </Start>
@@ -389,7 +389,7 @@
 <Id>book</Id>
 <UniqueId>c18_book</UniqueId>
 <Supers><IsOverlapping>true</IsOverlapping>
-<Super><ParentId></ParentId>
+<Super><ParentId>Book_((6,17),(6,21))</ParentId>
 <Position><Start><IntLiteral>6</IntLiteral>
 <IntLiteral>17</IntLiteral>
 </Start>
@@ -679,7 +679,7 @@
 <Id>B</Id>
 <UniqueId>c33_B</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Super><Type xsi:type="cl:ISet" /><ParentId>Book_((9,5),(9,9))</ParentId>
 <Position><Start><IntLiteral>9</IntLiteral>
 <IntLiteral>5</IntLiteral>
 </Start>
@@ -720,7 +720,7 @@
 <Id>A</Id>
 <UniqueId>c34_A</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Super><Type xsi:type="cl:ISet" /><ParentId>Author_((10,5),(10,11))</ParentId>
 <Position><Start><IntLiteral>10</IntLiteral>
 <IntLiteral>5</IntLiteral>
 </Start>

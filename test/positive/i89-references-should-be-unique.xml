@@ -58,7 +58,7 @@
 <Id>a</Id>
 <UniqueId>c2_a</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Super><Type xsi:type="cl:ISet" /><ParentId>A_((3,5),(3,6))</ParentId>
 <Position><Start><IntLiteral>3</IntLiteral>
 <IntLiteral>5</IntLiteral>
 </Start>
@@ -99,7 +99,7 @@
 <Id>setRefToA</Id>
 <UniqueId>c3_setRefToA</UniqueId>
 <Supers><IsOverlapping>true</IsOverlapping>
-<Super><ParentId></ParentId>
+<Super><ParentId>A_((5,14),(5,15))</ParentId>
 <Position><Start><IntLiteral>5</IntLiteral>
 <IntLiteral>14</IntLiteral>
 </Start>
@@ -244,7 +244,7 @@
 <Id>multisetRefToA</Id>
 <UniqueId>c13_multisetRefToA</UniqueId>
 <Supers><IsOverlapping>true</IsOverlapping>
-<Super><ParentId></ParentId>
+<Super><ParentId>A_((7,20),(7,21))</ParentId>
 <Position><Start><IntLiteral>7</IntLiteral>
 <IntLiteral>20</IntLiteral>
 </Start>

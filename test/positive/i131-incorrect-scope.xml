@@ -99,7 +99,7 @@
 <Id>Dog</Id>
 <UniqueId>c3_Dog</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Super><Type xsi:type="cl:ISet" /><ParentId>Animal_((6,7),(6,13))</ParentId>
 <Position><Start><IntLiteral>6</IntLiteral>
 <IntLiteral>7</IntLiteral>
 </Start>
@@ -205,7 +205,7 @@
 <Id>Spider</Id>
 <UniqueId>c8_Spider</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Super><Type xsi:type="cl:ISet" /><ParentId>Animal_((9,10),(9,16))</ParentId>
 <Position><Start><IntLiteral>9</IntLiteral>
 <IntLiteral>10</IntLiteral>
 </Start>

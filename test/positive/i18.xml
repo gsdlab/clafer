@@ -58,7 +58,7 @@
 <Id>s</Id>
 <UniqueId>c2_s</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><ParentId></ParentId>
+<Super><ParentId>string_((2,7),(2,13))</ParentId>
 <Position><Start><IntLiteral>2</IntLiteral>
 <IntLiteral>7</IntLiteral>
 </Start>
@@ -99,7 +99,7 @@
 <Id>A1</Id>
 <UniqueId>c3_A1</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Super><Type xsi:type="cl:ISet" /><ParentId>A_((4,6),(4,7))</ParentId>
 <Position><Start><IntLiteral>4</IntLiteral>
 <IntLiteral>6</IntLiteral>
 </Start>

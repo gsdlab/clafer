@@ -230,7 +230,7 @@
 <Id>a1</Id>
 <UniqueId>c10_a1</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Super><Type xsi:type="cl:ISet" /><ParentId>A_((6,6),(6,7))</ParentId>
 <Position><Start><IntLiteral>6</IntLiteral>
 <IntLiteral>6</IntLiteral>
 </Start>

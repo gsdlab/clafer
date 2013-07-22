@@ -140,7 +140,7 @@
 <Id>Pet</Id>
 <UniqueId>c4_Pet</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Super><Type xsi:type="cl:ISet" /><ParentId>Animal_((7,9),(7,15))</ParentId>
 <Position><Start><IntLiteral>7</IntLiteral>
 <IntLiteral>9</IntLiteral>
 </Start>
@@ -181,7 +181,7 @@
 <Id>SnakeOwner</Id>
 <UniqueId>c5_SnakeOwner</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Super><Type xsi:type="cl:ISet" /><ParentId>Owner_((9,14),(9,19))</ParentId>
 <Position><Start><IntLiteral>9</IntLiteral>
 <IntLiteral>14</IntLiteral>
 </Start>
@@ -288,7 +288,7 @@
 <Id>DogOwner</Id>
 <UniqueId>c10_DogOwner</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Super><Type xsi:type="cl:ISet" /><ParentId>Owner_((12,12),(12,17))</ParentId>
 <Position><Start><IntLiteral>12</IntLiteral>
 <IntLiteral>12</IntLiteral>
 </Start>

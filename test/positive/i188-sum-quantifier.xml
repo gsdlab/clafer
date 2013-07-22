@@ -17,7 +17,7 @@
 <Id>a</Id>
 <UniqueId>c1_a</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><ParentId></ParentId>
+<Super><ParentId>integer_((1,7),(1,14))</ParentId>
 <Position><Start><IntLiteral>1</IntLiteral>
 <IntLiteral>7</IntLiteral>
 </Start>
@@ -58,7 +58,7 @@
 <Id>b</Id>
 <UniqueId>c2_b</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><ParentId></ParentId>
+<Super><ParentId>integer_((3,6),(3,13))</ParentId>
 <Position><Start><IntLiteral>3</IntLiteral>
 <IntLiteral>6</IntLiteral>
 </Start>
@@ -134,7 +134,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>sum</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>._((3,20),(3,21))</ParentId>
 <Position><Start><IntLiteral>3</IntLiteral>
 <IntLiteral>20</IntLiteral>
 </Start>
@@ -155,7 +155,7 @@
 <Id>c1_a</Id>
 <IsTop>true</IsTop>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>ref_((3,20),(3,21))</ParentId>
 <Position><Start><IntLiteral>3</IntLiteral>
 <IntLiteral>20</IntLiteral>
 </Start>
@@ -284,7 +284,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>._((4,3),(4,4))</ParentId>
 <Position><Start><IntLiteral>4</IntLiteral>
 <IntLiteral>3</IntLiteral>
 </Start>
@@ -305,7 +305,7 @@
 <Id>c2_b</Id>
 <IsTop>true</IsTop>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>ref_((4,3),(4,4))</ParentId>
 <Position><Start><IntLiteral>4</IntLiteral>
 <IntLiteral>3</IntLiteral>
 </Start>

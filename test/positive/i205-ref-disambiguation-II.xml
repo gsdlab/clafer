@@ -206,7 +206,7 @@
 <Id>owner</Id>
 <UniqueId>c15_owner</UniqueId>
 <Supers><IsOverlapping>true</IsOverlapping>
-<Super><ParentId></ParentId>
+<Super><ParentId>Person_((6,13),(6,19))</ParentId>
 <Position><Start><IntLiteral>6</IntLiteral>
 <IntLiteral>13</IntLiteral>
 </Start>

@@ -99,7 +99,7 @@
 <Id>resolution</Id>
 <UniqueId>c3_resolution</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><ParentId></ParentId>
+<Super><ParentId>integer_((3,20),(3,27))</ParentId>
 <Position><Start><IntLiteral>3</IntLiteral>
 <IntLiteral>20</IntLiteral>
 </Start>
@@ -181,7 +181,7 @@
 <Id>inkVolume</Id>
 <UniqueId>c5_inkVolume</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><ParentId></ParentId>
+<Super><ParentId>integer_((5,22),(5,29))</ParentId>
 <Position><Start><IntLiteral>5</IntLiteral>
 <IntLiteral>22</IntLiteral>
 </Start>

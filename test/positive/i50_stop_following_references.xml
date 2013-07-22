@@ -99,7 +99,7 @@
 <Id>A1</Id>
 <UniqueId>c3_A1</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Super><Type xsi:type="cl:ISet" /><ParentId>A_((6,6),(6,7))</ParentId>
 <Position><Start><IntLiteral>6</IntLiteral>
 <IntLiteral>6</IntLiteral>
 </Start>
@@ -310,7 +310,7 @@
 <Id>a</Id>
 <UniqueId>c12_a</UniqueId>
 <Supers><IsOverlapping>true</IsOverlapping>
-<Super><ParentId></ParentId>
+<Super><ParentId>A_((12,10),(12,11))</ParentId>
 <Position><Start><IntLiteral>12</IntLiteral>
 <IntLiteral>10</IntLiteral>
 </Start>

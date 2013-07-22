@@ -17,7 +17,7 @@
 <Id>date</Id>
 <UniqueId>c1_date</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><ParentId></ParentId>
+<Super><ParentId>string_((3,17),(3,23))</ParentId>
 <Position><Start><IntLiteral>3</IntLiteral>
 <IntLiteral>17</IntLiteral>
 </Start>
@@ -222,7 +222,7 @@
 <Id>Name</Id>
 <UniqueId>c6_Name</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><ParentId></ParentId>
+<Super><ParentId>string_((9,12),(9,18))</ParentId>
 <Position><Start><IntLiteral>9</IntLiteral>
 <IntLiteral>12</IntLiteral>
 </Start>
@@ -263,7 +263,7 @@
 <Id>Surname</Id>
 <UniqueId>c7_Surname</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><ParentId></ParentId>
+<Super><ParentId>string_((10,15),(10,21))</ParentId>
 <Position><Start><IntLiteral>10</IntLiteral>
 <IntLiteral>15</IntLiteral>
 </Start>
@@ -304,7 +304,7 @@
 <Id>DateOfBirth</Id>
 <UniqueId>c8_DateOfBirth</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Super><Type xsi:type="cl:ISet" /><ParentId>date_((11,19),(11,23))</ParentId>
 <Position><Start><IntLiteral>11</IntLiteral>
 <IntLiteral>19</IntLiteral>
 </Start>
@@ -673,7 +673,7 @@
 <Id>Street</Id>
 <UniqueId>c17_Street</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><ParentId></ParentId>
+<Super><ParentId>string_((20,18),(20,24))</ParentId>
 <Position><Start><IntLiteral>20</IntLiteral>
 <IntLiteral>18</IntLiteral>
 </Start>
@@ -714,7 +714,7 @@
 <Id>UnitNo</Id>
 <UniqueId>c18_UnitNo</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><ParentId></ParentId>
+<Super><ParentId>string_((21,24),(21,30))</ParentId>
 <Position><Start><IntLiteral>21</IntLiteral>
 <IntLiteral>24</IntLiteral>
 </Start>
@@ -755,7 +755,7 @@
 <Id>City</Id>
 <UniqueId>c19_City</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><ParentId></ParentId>
+<Super><ParentId>string_((22,16),(22,22))</ParentId>
 <Position><Start><IntLiteral>22</IntLiteral>
 <IntLiteral>16</IntLiteral>
 </Start>
@@ -796,7 +796,7 @@
 <Id>Country</Id>
 <UniqueId>c20_Country</UniqueId>
 <Supers><IsOverlapping>true</IsOverlapping>
-<Super><ParentId></ParentId>
+<Super><ParentId>NorthAmericanCountry_((23,20),(23,40))</ParentId>
 <Position><Start><IntLiteral>23</IntLiteral>
 <IntLiteral>20</IntLiteral>
 </Start>
@@ -963,7 +963,7 @@
 <Id>PostalCode</Id>
 <UniqueId>c30_PostalCode</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><ParentId></ParentId>
+<Super><ParentId>string_((24,22),(24,28))</ParentId>
 <Position><Start><IntLiteral>24</IntLiteral>
 <IntLiteral>22</IntLiteral>
 </Start>
@@ -1004,7 +1004,7 @@
 <Id>JohnDoe</Id>
 <UniqueId>c31_JohnDoe</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Super><Type xsi:type="cl:ISet" /><ParentId>Person_((26,11),(26,17))</ParentId>
 <Position><Start><IntLiteral>26</IntLiteral>
 <IntLiteral>11</IntLiteral>
 </Start>
@@ -1878,7 +1878,7 @@
 <Id>Student</Id>
 <UniqueId>c65_Student</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Super><Type xsi:type="cl:ISet" /><ParentId>Person_((37,21),(37,27))</ParentId>
 <Position><Start><IntLiteral>37</IntLiteral>
 <IntLiteral>21</IntLiteral>
 </Start>
@@ -1919,7 +1919,7 @@
 <Id>StudentId</Id>
 <UniqueId>c66_StudentId</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><ParentId></ParentId>
+<Super><ParentId>string_((38,17),(38,23))</ParentId>
 <Position><Start><IntLiteral>38</IntLiteral>
 <IntLiteral>17</IntLiteral>
 </Start>
@@ -2001,7 +2001,7 @@
 <Id>participants</Id>
 <UniqueId>c68_participants</UniqueId>
 <Supers><IsOverlapping>true</IsOverlapping>
-<Super><ParentId></ParentId>
+<Super><ParentId>Person_((41,21),(41,27))</ParentId>
 <Position><Start><IntLiteral>41</IntLiteral>
 <IntLiteral>21</IntLiteral>
 </Start>
@@ -2168,7 +2168,7 @@
 <Id>MaryJane</Id>
 <UniqueId>c78_MaryJane</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Super><Type xsi:type="cl:ISet" /><ParentId>Student_((43,12),(43,19))</ParentId>
 <Position><Start><IntLiteral>43</IntLiteral>
 <IntLiteral>12</IntLiteral>
 </Start>
@@ -2286,7 +2286,7 @@
 <Id>BusLine</Id>
 <UniqueId>c82_BusLine</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Super><Type xsi:type="cl:ISet" /><ParentId>WaitingLine_((46,11),(46,22))</ParentId>
 <Position><Start><IntLiteral>46</IntLiteral>
 <IntLiteral>11</IntLiteral>
 </Start>
@@ -2494,7 +2494,7 @@
 <Id>JohnAndMaryLine</Id>
 <UniqueId>c90_JohnAndMaryLine</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Super><Type xsi:type="cl:ISet" /><ParentId>WaitingLine_((50,19),(50,30))</ParentId>
 <Position><Start><IntLiteral>50</IntLiteral>
 <IntLiteral>19</IntLiteral>
 </Start>
@@ -2636,7 +2636,7 @@
 <Id>TwoPersonLine</Id>
 <UniqueId>c96_TwoPersonLine</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Super><Type xsi:type="cl:ISet" /><ParentId>WaitingLine_((53,26),(53,37))</ParentId>
 <Position><Start><IntLiteral>53</IntLiteral>
 <IntLiteral>26</IntLiteral>
 </Start>
@@ -2742,7 +2742,7 @@
 <Id>OneToTenPersonLine</Id>
 <UniqueId>c101_OneToTenPersonLine</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Super><Type xsi:type="cl:ISet" /><ParentId>WaitingLine_((56,31),(56,42))</ParentId>
 <Position><Start><IntLiteral>56</IntLiteral>
 <IntLiteral>31</IntLiteral>
 </Start>

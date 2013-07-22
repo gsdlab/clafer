@@ -58,7 +58,7 @@
 <Id>assistants</Id>
 <UniqueId>c2_assistants</UniqueId>
 <Supers><IsOverlapping>true</IsOverlapping>
-<Super><ParentId></ParentId>
+<Super><ParentId>TA_((4,24),(4,26))</ParentId>
 <Position><Start><IntLiteral>4</IntLiteral>
 <IntLiteral>24</IntLiteral>
 </Start>
@@ -266,7 +266,7 @@
 <Id>first</Id>
 <UniqueId>c13_first</UniqueId>
 <Supers><IsOverlapping>true</IsOverlapping>
-<Super><ParentId></ParentId>
+<Super><ParentId>Course_((7,19),(7,25))</ParentId>
 <Position><Start><IntLiteral>7</IntLiteral>
 <IntLiteral>19</IntLiteral>
 </Start>
@@ -556,7 +556,7 @@
 <Id>CompilerGradStudent</Id>
 <UniqueId>c28_CompilerGradStudent</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Super><Type xsi:type="cl:ISet" /><ParentId>TA_((10,23),(10,25))</ParentId>
 <Position><Start><IntLiteral>10</IntLiteral>
 <IntLiteral>23</IntLiteral>
 </Start>
@@ -597,7 +597,7 @@
 <Id>AIGradStudent</Id>
 <UniqueId>c29_AIGradStudent</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Super><Type xsi:type="cl:ISet" /><ParentId>TA_((12,17),(12,19))</ParentId>
 <Position><Start><IntLiteral>12</IntLiteral>
 <IntLiteral>17</IntLiteral>
 </Start>
@@ -638,7 +638,7 @@
 <Id>CompilerCourse</Id>
 <UniqueId>c30_CompilerCourse</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Super><Type xsi:type="cl:ISet" /><ParentId>Course_((14,18),(14,24))</ParentId>
 <Position><Start><IntLiteral>14</IntLiteral>
 <IntLiteral>18</IntLiteral>
 </Start>
@@ -679,7 +679,7 @@
 <Id>MachineLearningCourse</Id>
 <UniqueId>c31_MachineLearningCourse</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Super><Type xsi:type="cl:ISet" /><ParentId>Course_((16,25),(16,31))</ParentId>
 <Position><Start><IntLiteral>16</IntLiteral>
 <IntLiteral>25</IntLiteral>
 </Start>
@@ -733,7 +733,7 @@
 <Id>c28_CompilerGradStudent</Id>
 <IsTop>true</IsTop>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>._((18,22),(18,27))</ParentId>
 <Position><Start><IntLiteral>18</IntLiteral>
 <IntLiteral>22</IntLiteral>
 </Start>
@@ -754,7 +754,7 @@
 <Id>c13_first</Id>
 <IsTop>false</IsTop>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>ref_((18,22),(18,27))</ParentId>
 <Position><Start><IntLiteral>18</IntLiteral>
 <IntLiteral>22</IntLiteral>
 </Start>
@@ -812,7 +812,7 @@
 <Id>c29_AIGradStudent</Id>
 <IsTop>true</IsTop>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>._((20,16),(20,21))</ParentId>
 <Position><Start><IntLiteral>20</IntLiteral>
 <IntLiteral>16</IntLiteral>
 </Start>
@@ -833,7 +833,7 @@
 <Id>c13_first</Id>
 <IsTop>false</IsTop>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>ref_((20,16),(20,21))</ParentId>
 <Position><Start><IntLiteral>20</IntLiteral>
 <IntLiteral>16</IntLiteral>
 </Start>
@@ -878,7 +878,7 @@
 <Id>numerOfAssistants</Id>
 <UniqueId>c42_numerOfAssistants</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><ParentId></ParentId>
+<Super><ParentId>integer_((25,21),(25,28))</ParentId>
 <Position><Start><IntLiteral>25</IntLiteral>
 <IntLiteral>21</IntLiteral>
 </Start>

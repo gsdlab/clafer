@@ -58,7 +58,7 @@
 <Id>taughtBy</Id>
 <UniqueId>c2_taughtBy</UniqueId>
 <Supers><IsOverlapping>true</IsOverlapping>
-<Super><ParentId></ParentId>
+<Super><ParentId>Teacher_((6,21),(6,28))</ParentId>
 <Position><Start><IntLiteral>6</IntLiteral>
 <IntLiteral>21</IntLiteral>
 </Start>
@@ -307,7 +307,7 @@
 <Id>teaches</Id>
 <UniqueId>c14_teaches</UniqueId>
 <Supers><IsOverlapping>true</IsOverlapping>
-<Super><ParentId></ParentId>
+<Super><ParentId>Course_((10,20),(10,26))</ParentId>
 <Position><Start><IntLiteral>10</IntLiteral>
 <IntLiteral>20</IntLiteral>
 </Start>
@@ -698,7 +698,7 @@
 <Id>course</Id>
 <UniqueId>c40_course</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Super><Type xsi:type="cl:ISet" /><ParentId>Course_((14,10),(14,16))</ParentId>
 <Position><Start><IntLiteral>14</IntLiteral>
 <IntLiteral>10</IntLiteral>
 </Start>
@@ -739,7 +739,7 @@
 <Id>teacher</Id>
 <UniqueId>c41_teacher</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Super><Type xsi:type="cl:ISet" /><ParentId>Teacher_((16,11),(16,18))</ParentId>
 <Position><Start><IntLiteral>16</IntLiteral>
 <IntLiteral>11</IntLiteral>
 </Start>

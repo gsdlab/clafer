@@ -58,7 +58,7 @@
 <Id>age</Id>
 <UniqueId>c2_age</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><ParentId></ParentId>
+<Super><ParentId>integer_((6,12),(6,19))</ParentId>
 <Position><Start><IntLiteral>6</IntLiteral>
 <IntLiteral>12</IntLiteral>
 </Start>
@@ -266,7 +266,7 @@
 <Id>NewBorn</Id>
 <UniqueId>c13_NewBorn</UniqueId>
 <Supers><IsOverlapping>true</IsOverlapping>
-<Super><ParentId></ParentId>
+<Super><ParentId>Person_((9,21),(9,27))</ParentId>
 <Position><Start><IntLiteral>9</IntLiteral>
 <IntLiteral>21</IntLiteral>
 </Start>

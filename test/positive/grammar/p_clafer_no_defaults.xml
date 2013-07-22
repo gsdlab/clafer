@@ -58,7 +58,7 @@
 <Id>A</Id>
 <UniqueId>c2_A</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Super><Type xsi:type="cl:ISet" /><ParentId>B_((9,19),(9,20))</ParentId>
 <Position><Start><IntLiteral>9</IntLiteral>
 <IntLiteral>19</IntLiteral>
 </Start>
@@ -140,7 +140,7 @@
 <Id>C</Id>
 <UniqueId>c4_C</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Super><Type xsi:type="cl:ISet" /><ParentId>A_((12,5),(12,6))</ParentId>
 <Position><Start><IntLiteral>12</IntLiteral>
 <IntLiteral>5</IntLiteral>
 </Start>

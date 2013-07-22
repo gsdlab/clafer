@@ -58,7 +58,7 @@
 <Id>x</Id>
 <UniqueId>c2_x</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><ParentId></ParentId>
+<Super><ParentId>integer_((4,13),(4,20))</ParentId>
 <Position><Start><IntLiteral>4</IntLiteral>
 <IntLiteral>13</IntLiteral>
 </Start>
@@ -91,7 +91,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>&gt;=</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>._((5,19),(5,23))</ParentId>
 <Position><Start><IntLiteral>5</IntLiteral>
 <IntLiteral>19</IntLiteral>
 </Start>
@@ -112,7 +112,7 @@
 <Id>this</Id>
 <IsTop>true</IsTop>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>ref_((5,19),(5,23))</ParentId>
 <Position><Start><IntLiteral>5</IntLiteral>
 <IntLiteral>19</IntLiteral>
 </Start>

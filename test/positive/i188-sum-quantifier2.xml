@@ -58,7 +58,7 @@
 <Id>energy</Id>
 <UniqueId>c2_energy</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><ParentId></ParentId>
+<Super><ParentId>integer_((2,15),(2,22))</ParentId>
 <Position><Start><IntLiteral>2</IntLiteral>
 <IntLiteral>15</IntLiteral>
 </Start>
@@ -99,7 +99,7 @@
 <Id>c1</Id>
 <UniqueId>c3_c1</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Super><Type xsi:type="cl:ISet" /><ParentId>Component_((4,6),(4,15))</ParentId>
 <Position><Start><IntLiteral>4</IntLiteral>
 <IntLiteral>6</IntLiteral>
 </Start>
@@ -217,7 +217,7 @@
 <Id>c2</Id>
 <UniqueId>c7_c2</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Super><Type xsi:type="cl:ISet" /><ParentId>Component_((7,6),(7,15))</ParentId>
 <Position><Start><IntLiteral>7</IntLiteral>
 <IntLiteral>6</IntLiteral>
 </Start>
@@ -335,7 +335,7 @@
 <Id>c3</Id>
 <UniqueId>c11_c3</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Super><Type xsi:type="cl:ISet" /><ParentId>Component_((10,6),(10,15))</ParentId>
 <Position><Start><IntLiteral>10</IntLiteral>
 <IntLiteral>6</IntLiteral>
 </Start>
@@ -453,7 +453,7 @@
 <Id>total</Id>
 <UniqueId>c15_total</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><ParentId></ParentId>
+<Super><ParentId>integer_((13,11),(13,18))</ParentId>
 <Position><Start><IntLiteral>13</IntLiteral>
 <IntLiteral>11</IntLiteral>
 </Start>
@@ -550,7 +550,7 @@
 <Id>c1_Component</Id>
 <IsTop>true</IsTop>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>._((13,35),(13,41))</ParentId>
 <Position><Start><IntLiteral>13</IntLiteral>
 <IntLiteral>35</IntLiteral>
 </Start>
@@ -571,7 +571,7 @@
 <Id>c2_energy</Id>
 <IsTop>false</IsTop>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>ref_((13,35),(13,41))</ParentId>
 <Position><Start><IntLiteral>13</IntLiteral>
 <IntLiteral>35</IntLiteral>
 </Start>

@@ -550,7 +550,7 @@
 <Id>PhoneWithGps</Id>
 <UniqueId>c14_PhoneWithGps</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Super><Type xsi:type="cl:ISet" /><ParentId>Phone_((17,16),(17,21))</ParentId>
 <Position><Start><IntLiteral>17</IntLiteral>
 <IntLiteral>16</IntLiteral>
 </Start>
@@ -657,7 +657,7 @@
 <Id>PhoneWithWifi</Id>
 <UniqueId>c17_PhoneWithWifi</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Super><Type xsi:type="cl:ISet" /><ParentId>Phone_((24,17),(24,22))</ParentId>
 <Position><Start><IntLiteral>24</IntLiteral>
 <IntLiteral>17</IntLiteral>
 </Start>
@@ -786,7 +786,7 @@
 <Id>PhonewithWifiAndGpsNoBluetoothOrNfc</Id>
 <UniqueId>c24_PhonewithWifiAndGpsNoBluetoothOrNfc</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Super><Type xsi:type="cl:ISet" /><ParentId>Phone_((30,39),(30,44))</ParentId>
 <Position><Start><IntLiteral>30</IntLiteral>
 <IntLiteral>39</IntLiteral>
 </Start>
@@ -1128,7 +1128,7 @@
 <Id>PhoneWithGpu</Id>
 <UniqueId>c37_PhoneWithGpu</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Super><Type xsi:type="cl:ISet" /><ParentId>Phone_((36,16),(36,21))</ParentId>
 <Position><Start><IntLiteral>36</IntLiteral>
 <IntLiteral>16</IntLiteral>
 </Start>

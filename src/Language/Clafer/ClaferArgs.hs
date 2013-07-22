@@ -1,3 +1,4 @@
+{-# LANGUAGE DeriveDataTypeable #-}
 {-
  Copyright (C) 2012-2013 Kacper Bak, Jimmy Liang <http://gsd.uwaterloo.ca>
 
@@ -19,7 +20,6 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
 -}
-{-# LANGUAGE DeriveDataTypeable #-}
 module Language.Clafer.ClaferArgs where
 
 import System.IO ( stdin, hGetContents )
@@ -27,7 +27,6 @@ import System.Console.CmdArgs
 import System.Console.CmdArgs.Explicit hiding (mode)
 import Data.List
 import Data.Maybe
-import Control.Monad
 	
 import Language.Clafer.SplitJoin
 import Language.Clafer.Version
@@ -69,6 +68,7 @@ data ClaferArgs = ClaferArgs {
       file :: FilePath
     } deriving (Show, Data, Typeable, Eq)
 
+clafer :: ClaferArgs
 clafer = ClaferArgs {
   mode                = def &= help "Generated output type. Available CLAFERMODEs are: 'alloy' (default, Alloy 4.1); 'alloy42' (Alloy 4.2); 'xml' (intermediate representation of Clafer model); 'clafer' (analyzed and desugared clafer model); 'html' (original model in HTML); 'graph' (graphical representation written in DOT language); 'cvlgraph' (cvl notation representation written in DOT language)" &= name "m",
   console_output      = def &= help "Output code on console" &= name "o",
@@ -96,16 +96,42 @@ clafer = ClaferArgs {
   file                = def &= args   &= typ "FILE"
  } &= summary ("Clafer " ++ version) &= program "clafer"
 
+mergeArgs :: ClaferArgs -> ClaferArgs -> ClaferArgs
+mergeArgs a1 a2  = ClaferArgs (mergeArg mode) (coMergeArg) 
+  (mergeArg flatten_inheritance) (mergeArg timeout_analysis) 
+  (mergeArg no_layout) (mergeArg new_layout) 
+  (mergeArg check_duplicates) (mergeArg skip_resolver) 
+  (mergeArg keep_unused) (mergeArg no_stats) (mergeArg schema)
+  (mergeArg validate) (mergeArg noalloyruncommand) (toolMergeArg) 
+  (mergeArg alloy_mapping) (mergeArg self_contained) 
+  (mergeArg add_graph) (mergeArg show_references) 
+  (mergeArg add_comments) (mergeArg ecore2clafer) 
+  (mergeArg scope_strategy) (mergeArg debug) (mergeArg afm) 
+  (mergeArg file)
+  where
+    coMergeArg :: Bool
+    coMergeArg = if (r1 /= False) then r1 else 
+      if (r2 /= False) then r2 else (null $ file a1)
+         where r1 = console_output a1;r2 = console_output a2
+    toolMergeArg :: String
+    toolMergeArg = if (r1 /= "") then r1 else 
+      if (r2 /= "") then r2 else "/tools"
+      where r1 = tooldir a1;r2 = tooldir a2
+    mergeArg :: (Default a, Eq a) => (ClaferArgs -> a) -> a
+    mergeArg f = (\r -> if (r /= def) then r else f a2) $ f a1
+
+mainArgs :: IO (ClaferArgs, String)
 mainArgs = do
-  args <- cmdArgs clafer
-  model <- case file args of
+  args' <- cmdArgs clafer 
+  model <- case file args' of
              "" -> hGetContents stdin
              f  -> readFile f
   let firstLine = case lines model of
                [] -> ""
                (s:_) -> s
   let options = fromMaybe "" $ stripPrefix "//# OPTIONS " firstLine
-  return $ (either (\_ -> args) (\x -> args) $
+  return $ (either (\_ -> args') (\x -> mergeArgs args' (cmdArgsValue x)) $
            process (cmdArgsMode clafer) $ Language.Clafer.SplitJoin.splitArgs options, model)
 
+defaultClaferArgs :: ClaferArgs
 defaultClaferArgs = ClaferArgs Alloy True False 0 False False False False False False False False False "tools/" False False False False False False Simple False False ""
