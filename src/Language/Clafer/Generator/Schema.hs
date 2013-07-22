@@ -20,6 +20,7 @@
  SOFTWARE.
 -}
 module Language.Clafer.Generator.Schema where
+xsd :: String
 xsd = concat [ ""
   , "<!-- ........................................................................ *\n"
   , "  *   Clafer Project                                                          *\n"

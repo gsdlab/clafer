@@ -31,7 +31,6 @@ import Language.Clafer.Front.Absclafer hiding (Path)
 import qualified Language.Clafer.Intermediate.Intclafer as I
 import Language.Clafer.Intermediate.Desugarer
 import Language.Clafer.Front.Printclafer
-import Debug.Trace
 import Control.Applicative
 import Control.Monad.LPMonad.Supply
 import Control.Monad.Error
@@ -443,6 +442,7 @@ combine =
     map mergeGroup . groupBy (testing fst) . sortBy (comparing fst)
     where
     mergeGroup ((a, b):xs) = (a, b : map snd xs)
+    mergeGroup [] = error "Function mergeGroup from Analysis expected a non empty list, but was given an empty one"
 
 -- Returns true iff the left and right expressions are syntactically identical
 sameAs :: I.PExp -> I.PExp -> Bool

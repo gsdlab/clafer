@@ -1,8 +1,9 @@
 TOOL_DIR = ../tools
 SUITE_DIR = positive
 REG_DIR = regression
-CLAFER = ../clafer -s -v --tooldir=$(TOOL_DIR)
-CLAFER_SELF = ../clafer -s -v --tooldir=../
+CLAFER = ../dist/build/clafer/clafer -s -v -k --tooldir=$(TOOL_DIR)
+#Disabled clafer self testing for now
+#CLAFER_SELF = ../dist/build/clafer/clafer -s -v -k --tooldir=../dist/build/clafer
 
 UNAME := $(shell uname | tr "A-Z" "a-z")
 
@@ -23,27 +24,49 @@ endif
 
 
 test:
+	@echo "========================"
+	@echo "| Beginning testing of |"
+	@echo "========================"
+	@$(CLAFER) -V
+
+	@echo "==============="
+	@echo "| Cleaning up |"
+	@echo "==============="
 	$(MAKE) clean
+
+	@echo "======================================================"
+	@echo "| Testing 'Positive' suite - validating Alloy output |"
+	@echo "======================================================"
+
 	@if test ! -f $(TOOL_DIR)/"alloy4.jar"; then \
-		echo "[ERROR] Missing $(TOOL_DIR)/alloy4.jar."; false; \
+		@echo "[ERROR] Missing $(TOOL_DIR)/alloy4.jar."; false; \
 	fi
 
 	find $(SUITE_DIR) -type f \( -iname "*.cfr" ! -iname "*.des.cfr" \) |  xargs -L1 $(CLAFER) ; true ; \
 
+	@echo "===================================================="
+	@echo "| Testing 'Positive' suite - validating XML output |"
+	@echo "===================================================="
+
 	@if test ! -f $(TOOL_DIR)/"XsdCheck.class"; then \
-		echo "[ERROR] Missing $(TOOL_DIR)/XsdCheck.class."; false; \
+		@echo "[ERROR] Missing $(TOOL_DIR)/XsdCheck.class."; false; \
 	fi
 
-	echo "Testing 'Positive' Suite for expected output to match" 
-
 	find $(SUITE_DIR) -type f \( -iname "*.cfr" ! -iname "*.des.cfr" \) | xargs -L1 $(CLAFER) -m=xml ; true ; \
-	find $(SUITE_DIR) -type f \( -iname "*.cfr" ! -iname "*.des.cfr" \) | xargs -L1 $(CLAFER_SELF) -m=clafer ; true \
 
+#	@echo "======================================================="
+#	@echo "| Testing 'Positive' suite - validating Clafer output |"
+#	@echo "======================================================="
+#	
+#	find $(SUITE_DIR) -type f \( -iname "*.cfr" ! -iname "*.des.cfr" \) | xargs -L1 $(CLAFER_SELF) -m=clafer ; true \
+
+	@echo "======================================================="
+	@echo "| Testing 'Positive' suite - Diffing with regressions |"
+	@echo "======================================================="
 
 	$(FIND_COMMAND) | $(XARGS_DIFF_COMMAND) ; true 
 
 reg:
-
 	rm $(REG_DIR)/*.reg
 
 	$(FIND_COMMAND) | $(XARGS_CP_REGS)	

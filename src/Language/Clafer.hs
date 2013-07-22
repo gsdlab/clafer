@@ -28,7 +28,7 @@ module Language.Clafer (
                         generateFragments,
                         runClaferT,
                         runClafer,
-                        ClaferErr(..),
+                        ClaferErr,
                         getEnv,
                         putEnv,
                         CompilerResult(..),
@@ -59,8 +59,7 @@ import Data.Map (Map)
 import qualified Data.Map as Map
 import Data.Ord
 import Control.Monad
-import Control.Monad.Writer
-import System.FilePath (dropExtension,takeBaseName)
+import System.FilePath (takeBaseName)
 
 import Language.ClaferT 
 import Language.Clafer.Common
@@ -92,6 +91,8 @@ import Language.Clafer.Generator.Graph
 type VerbosityL = Int
 type InputModel = String
 
+{-
+t :: InputModel -> InputModel -> Either [ClaferErr] [String]
 t a b =
   runClafer defaultClaferArgs $
     do
@@ -101,7 +102,7 @@ t a b =
       compile
       generateFragments
 
-{- Example of compiling a model consisting of one fragment:
+ - Example of compiling a model consisting of one fragment:
  -  compileOneFragment :: ClaferArgs -> InputModel -> Either ClaferErr CompilerResult
  -  compileOneFragment args model =
  -    runClafer args $
@@ -132,47 +133,46 @@ t a b =
 
 -- Add a new fragment to the model. Fragments should be added in order.
 addModuleFragment :: Monad m => InputModel -> ClaferT m ()
-addModuleFragment input =
+addModuleFragment i =
   do
     env <- getEnv
-    let modelFrags' = modelFrags env ++ [input]
+    let modelFrags' = modelFrags env ++ [i]
     let frags' = frags env ++ [(endPos $ concat modelFrags')]
     putEnv env{ modelFrags = modelFrags', frags = frags' }
   where
   endPos "" = Pos 1 1
   endPos model =
-    Pos line column
+    Pos line' column'
     where
-    input = lines model
-    line = toInteger $ length input
-    column = 1 + (toInteger $ length $ last input)
+    input' = lines' model
+    line' = toInteger $ length input'
+    column' = 1 + (toInteger $ length $ last input')
     -- Can't use the builtin lines because it ignores the last empty lines (as of base 4.5).
-    lines "" = [""]
-    lines input =
-      line : rest'
+    lines' "" = [""]
+    lines' input'' =
+      line'' : rest'
       where
-      (line, rest) = break (== '\n') input
+      (line'', rest) = break (== '\n') input''
       rest' =
         case rest of
           "" -> []
-          ('\n' : r) -> lines r
+          ('\n' : r) -> lines' r
           x -> error $ "linesing " ++ x -- How can it be nonempty and not start with a newline after the break? Should never happen.
       
 -- Converts the Err monads (created by the BNFC parser generator) to ClaferT
 liftParseErrs :: Monad m => [Err a] -> ClaferT m [a]
 liftParseErrs e =
   do
-    env <- getEnv
     result <- zipWithM extract [0..] e
     case partitionEithers result of
       ([], ok) -> return ok
       (e',  _) -> throwErrs e'
   where
   extract _ (Ok m)  = return $ Right m
-  extract fragId (Bad p s) =
+  extract frgId (Bad p s) =
     do
       -- Bad maps to ParseErr
-      return $ Left $ ParseErr (ErrFragPos fragId p) s
+      return $ Left $ ParseErr (ErrFragPos frgId p) s
 
 -- Converts one Err. liftParseErrs is better if you want to report multiple errors. This method will only report
 -- one before ceasing execution.
@@ -222,18 +222,18 @@ parse =
     putEnv env'
   where
   parseFrag :: (Monad m) => ClaferArgs -> String -> ClaferT m (Err Module)
-  parseFrag args =
+  parseFrag args' =
     (>>= (return . pModule)) .
     (if not 
-      ((new_layout args) ||
-      (no_layout args))
+      ((new_layout args') ||
+      (no_layout args'))
     then 
        resolveLayout 
     else 
        return) 
     . myLexer .
-    (if (not $ no_layout args) &&
-        (new_layout args)
+    (if (not $ no_layout args') &&
+        (new_layout args')
      then 
        resLayout 
      else 
@@ -259,13 +259,17 @@ compile =
       containsSpan :: Span -> Span -> Bool
       containsSpan (Span (Pos r1 c) (Pos r2 _)) (Span (Pos x1 y) (Pos x2 _)) =
         r1 > x1 && c > y && r2 < x2
+      containsSpan _ _ = error "Function containsSpan from Clafer was given invalid arguments" -- Should never happen
 
       getParentSpan :: Span -> [Span] -> Span
-      getParentSpan s@(Span (Pos r c) _) ss = foldr (\s1@(Span (Pos x1 y1) _) s2@(Span (Pos x2 y2) _) -> 
+      getParentSpan (Span (Pos r c) _) ss = foldr (\s1@(Span (Pos x1 y1) _) s2@(Span (Pos x2 y2) _) -> 
         if (r > x1 && c > y1 && x1 > x2 || (x2==0 && y2==0)) then s1 else s2) noSpan ss
+      getParentSpan _ _ = error "Function getParentSpan from Clafer was given invalid arguments" -- Should never happen
 
-      gt1 (IRClafer (IClafer (Span (Pos l c) _) _ _ _ _ _ (Just (n, m)) _ _)) = if (m > 1 || m < 0) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
-      gt1 (IRClafer (IClafer (PosSpan _ (Pos l c) _) _ _ _ _ _ (Just (n, m)) _ _)) = if (m > 1 || m < 0) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
+      gt1 (IRClafer (IClafer (Span (Pos l c) _) _ _ _ _ _ (Just (_, m)) _ _)) = if (m > 1 || m < 0) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
+      gt1 (IRClafer (IClafer (Span (PosPos _ l c) _) _ _ _ _ _ (Just (_, m)) _ _)) = if (m > 1 || m < 0) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
+      gt1 (IRClafer (IClafer (PosSpan _ (Pos l c) _) _ _ _ _ _ (Just (_, m)) _ _)) = if (m > 1 || m < 0) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
+      gt1 (IRClafer (IClafer (PosSpan _ (PosPos _ l c) _) _ _ _ _ _ (Just (_, m)) _ _)) = if (m > 1 || m < 0) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
       gt1 _ = ""
 
 -- Splits the IR into their fragments, and generates the output for each fragment.
@@ -276,15 +280,15 @@ generateFragments =
   do
     env <- getEnv
     (iModule, _, _) <- getIr
-    fragElems <- fragment (sortBy (comparing range) $ mDecls iModule) (frags env)
+    fragElems <- fragment (sortBy (comparing rnge) $ mDecls iModule) (frags env)
     
     -- Assumes output mode is Alloy for now
     
     return $ map (generateFragment $ args env) fragElems
   where
-  range (IEClafer IClafer{cinPos = pos}) = pos
-  range IEConstraint{cpexp = PExp{inPos = pos}} = pos
-  range IEGoal{cpexp = PExp{inPos = pos}} = pos
+  rnge (IEClafer IClafer{cinPos = p}) = p
+  rnge IEConstraint{cpexp = PExp{inPos = p}} = p
+  rnge IEGoal{cpexp = PExp{inPos = p}} = p
   
   -- Groups IElements by their fragments.
   --   elems must be sorted by range.
@@ -296,47 +300,47 @@ generateFragments =
     (curFrag, restFrags) = span (`beforePos` frag) elems
   fragment _ [] = throwErr $ (ClaferErr $ "Unexpected fragment." :: CErr Span) -- Should not happen. Bug.
   
-  beforePos elem pos =
-    case range elem of
-      Span _ e -> e <= pos
-      PosSpan _ _ e -> e <= pos
+  beforePos ele p =
+    case rnge ele of
+      Span _ e -> e <= p
+      PosSpan _ _ e -> e <= p
   generateFragment :: ClaferArgs -> [IElement] -> String
-  generateFragment args frag =
-    flatten $ cconcat $ map (genDeclaration args) frag
+  generateFragment args' frag =
+    flatten $ cconcat $ map (genDeclaration args') frag
 
 -- Splits the AST into their fragments, and generates the output for each fragment.
-generateHtml env ast' ir' =
-    let PosModule _ decls = ast';
+generateHtml :: ClaferEnv -> Module -> String
+generateHtml env ast' =
+    let PosModule _ decls' = ast';
         cargs = args env;
         irMap = irModuleTrace env;
         comments = if add_comments cargs then getComments $ unlines $ modelFrags env else [];
-        (iModule, genv, au) = ir';
     in (if (self_contained cargs) then Css.header ++ "<style>" ++ Css.css ++ "</style></head>\n<body>\n" else "")
-       ++ (unlines $ generateFragments decls (frags env) irMap comments) ++
+       ++ (unlines $ genFragments decls' (frags env) irMap comments) ++
        (if (self_contained cargs) then "</body>\n</html>" else "")
 
   where
-    line (PosElementDecl (Span pos _) _) = pos
-    line (PosEnumDecl (Span pos _) _  _) = pos
-    line _                               = Pos 0 0
-    generateFragments :: [Declaration] -> [Pos] -> Map Span [Ir] -> [(Span, String)] -> [String]
-    generateFragments []           _            _     comments = printComments comments
-    generateFragments (decl:decls) []           irMap comments = let (comments', c) = printPreComment (range decl) comments in
-                                                                   [c] ++ (cleanOutput $ revertLayout $ printDeclaration decl 0 irMap True $ inDecl decl comments') : (generateFragments decls [] irMap $ afterDecl decl comments)
-    generateFragments (decl:decls) (frag:frags) irMap comments = if line decl < frag
+    lne (PosElementDecl (Span p _) _) = p
+    lne (PosEnumDecl (Span p _) _  _) = p
+    lne _                               = Pos 0 0
+    genFragments :: [Declaration] -> [Pos] -> Map Span [Ir] -> [(Span, String)] -> [String]
+    genFragments []           _            _     comments = printComments comments
+    genFragments (decl:decls') []           irMap comments = let (comments', c) = printPreComment (range decl) comments in
+                                                                   [c] ++ (cleanOutput $ revertLayout $ printDeclaration decl 0 irMap True $ inDecl decl comments') : (genFragments decls' [] irMap $ afterDecl decl comments)
+    genFragments (decl:decls') (frg:frgs) irMap comments = if lne decl < frg
                                                                  then let (comments', c) = printPreComment (range decl) comments in
-                                                                   [c] ++ (cleanOutput $ revertLayout $ printDeclaration decl 0 irMap True $ inDecl decl comments') : (generateFragments decls (frag:frags) irMap $ afterDecl decl comments)
-                                                                 else "<!-- # FRAGMENT /-->" : generateFragments (decl:decls) frags irMap comments
+                                                                   [c] ++ (cleanOutput $ revertLayout $ printDeclaration decl 0 irMap True $ inDecl decl comments') : (genFragments decls' (frg:frgs) irMap $ afterDecl decl comments)
+                                                                 else "<!-- # FRAGMENT /-->" : genFragments (decl:decls') frgs irMap comments
     inDecl :: Declaration -> [(Span, String)] -> [(Span, String)]
-    inDecl decl comments = let span = range decl in dropWhile (\x -> fst x < span) comments
+    inDecl decl comments = let s = rnge decl in dropWhile (\x -> fst x < s) comments
     afterDecl :: Declaration -> [(Span, String)] -> [(Span, String)]
-    afterDecl decl comments = let (Span _ (Pos line _)) = range decl in dropWhile (\(x, _) -> let (Span _ (Pos line' _)) = x in line' <= line) comments
-    range (EnumDecl _ _) = noSpan
-    range (PosEnumDecl span _ _) = span
-    range (ElementDecl _) = noSpan
-    range (PosElementDecl span _) = span
+    afterDecl decl comments = let (Span _ (Pos line' _)) = rnge decl in dropWhile (\(x, _) -> let (Span _ (Pos line'' _)) = x in line'' <= line') comments
+    rnge (EnumDecl _ _) = noSpan
+    rnge (PosEnumDecl s _ _) = s
+    rnge (ElementDecl _) = noSpan
+    rnge (PosElementDecl s _) = s
     printComments [] = []
-    printComments ((span, comment):cs) = (snd (printComment span [(span, comment)]) ++ "<br>\n"):printComments cs
+    printComments ((s, comment):cs) = (snd (printComment s [(s, comment)]) ++ "<br>\n"):printComments cs
 
 -- Generates output for the IR.
 generate :: Monad m => ClaferT m CompilerResult
@@ -344,7 +348,7 @@ generate =
   do
     env <- getEnv
     ast' <- getAst
-    ir'@(iModule, genv, au) <- getIr
+    (iModule, genv, au) <- getIr
     let cargs = args env
     let stats = showStats au $ statsModule iModule
     let (imod,strMap) = astrModule iModule
@@ -361,7 +365,8 @@ generate =
                                       ("als", addCommentStats (fst alloyCode) stats, Just m)
                         Xml      -> ("xml", genXmlModule iModule, Nothing)
                         Mode.Clafer   -> ("des.cfr", printTree $ sugarModule iModule, Nothing)
-                        Html     -> ("html", generateHtml env ast' ir', Nothing)
+                        Html     -> ("html", generateHtml env ast'
+                          , Nothing)
                         Graph    -> ("dot", genSimpleGraph ast' iModule (takeBaseName $ file cargs) (show_references cargs), Nothing)
                         CVLGraph -> ("dot", genCVLGraph ast' iModule (takeBaseName $ file cargs), Nothing)
     return $ CompilerResult { extension = ext, 
@@ -387,13 +392,13 @@ liftError :: (Monad m, Language.ClaferT.Throwable t) => Either t a -> ClaferT m 
 liftError = either throwErr return
 
 analyze :: Monad m => ClaferArgs -> IModule -> ClaferT m (IModule, GEnv, Bool)
-analyze args tree = do
-  let dTree' = findDupModule args tree
+analyze args' tree = do
+  let dTree' = findDupModule args' tree
   let au = allUnique dTree'
-  let args' = args{skip_resolver = au && (skip_resolver args)}
-  (rTree, genv) <- liftError $ resolveModule args' dTree'
+  let args'' = args'{skip_resolver = au && (skip_resolver args')}
+  (rTree, genv) <- liftError $ resolveModule args'' dTree'
   let tTree = transModule rTree
-  return (optimizeModule args' (tTree, genv), genv, au)
+  return (optimizeModule args'' (tTree, genv), genv, au)
 
 addStats :: String -> String -> String
 addStats code stats = "/*\n" ++ stats ++ "*/\n" ++ code

@@ -23,11 +23,9 @@
 -}
 module Language.Clafer.Intermediate.ResolverType (resolveTModule, intersects, (+++), fromUnionType, unionType)  where
 
-import Debug.Trace
 import Prelude hiding (exp)
 import Language.ClaferT
 import Language.Clafer.Common
-import Language.Clafer.Front.Absclafer
 import Language.Clafer.Intermediate.Analysis
 import Language.Clafer.Intermediate.Intclafer hiding (uid)
 import qualified Language.Clafer.Intermediate.Intclafer as I
@@ -188,6 +186,7 @@ getIfThenElseType t1 t2 =
           then Just x
           else commonHierarchy' xs ys $ Just x 
       else accumulator
+  commonHierarchy' _ _ _ = error "Function commonHierarchy' from ResolverType expects two non empty lists but was given at least one empty list!" -- Should never happen    
   filterClafer value = 
     if (value == Just "clafer") then Nothing else value
 
@@ -204,22 +203,22 @@ resolveTElement _ (IEClafer iclafer) =
   do
     elements' <- mapM (resolveTElement $ I.uid iclafer) (elements iclafer)
     return $ IEClafer $ iclafer{elements = elements'}
-resolveTElement parent (IEConstraint isHard pexp) =
-  IEConstraint isHard <$> (testBoolean =<< resolveTConstraint parent pexp)
+resolveTElement parent' (IEConstraint isHard pexp) =
+  IEConstraint isHard <$> (testBoolean =<< resolveTConstraint parent' pexp)
   where
   testBoolean pexp' =
     do
       unless (typeOf pexp' == TBoolean) $
         throwError $ SemanticErr (inPos pexp') ("Cannot construct constraint on type '" ++ str (typeOf pexp') ++ "'")
       return pexp'
-resolveTElement parent (IEGoal isMaximize pexp) =
-  IEGoal isMaximize <$> resolveTConstraint parent pexp
+resolveTElement parent' (IEGoal isMaximize pexp) =
+  IEGoal isMaximize <$> resolveTConstraint parent' pexp
 
 resolveTConstraint :: String -> PExp -> TypeAnalysis PExp
-resolveTConstraint curThis constraint = 
+resolveTConstraint curThis' constraint = 
   do
-    curThis' <- claferWithUid curThis
-    head <$> (localCurThis curThis' $ (resolveTPExp constraint :: TypeAnalysis [PExp]))
+    curThis'' <- claferWithUid curThis'
+    head <$> (localCurThis curThis'' $ (resolveTPExp constraint :: TypeAnalysis [PExp]))
     
 
 resolveTPExp :: PExp -> TypeAnalysis [PExp]
@@ -248,15 +247,15 @@ resolveTPExp' p@PExp{inPos, exp = IClaferId{sident = "parent"}} =
     curPath' <- curPath
     case curPath' of
       Just curPath'' -> do
-        parent <- fromUnionType <$> runListT (parentOf =<< liftList (unionType curPath''))
-        when (isNothing parent) $
+        parent' <- fromUnionType <$> runListT (parentOf =<< liftList (unionType curPath''))
+        when (isNothing parent') $
           throwError $ SemanticErr inPos "Cannot parent from root"
-        let result = p `withType` fromJust parent
+        let result = p `withType` fromJust parent'
         return result -- Case 1: Use the sident
           <++>
           addRef result -- Case 2: Dereference the sident 1..* times
       Nothing -> throwError $ SemanticErr inPos "Cannot parent at the start of a path"
-resolveTPExp' p@PExp{inPos, exp = IClaferId{sident = "integer"}} = runListT $ runErrorT $ return $ p `withType` TInteger
+resolveTPExp' p@PExp{exp = IClaferId{sident = "integer"}} = runListT $ runErrorT $ return $ p `withType` TInteger
 resolveTPExp' p@PExp{inPos, exp = IClaferId{sident}} = 
   runListT $ runErrorT $ do
     curPath' <- curPath
@@ -308,8 +307,8 @@ resolveTPExp' p@PExp{inPos, exp} =
     do
       arg1s' <- resolveTPExp arg1
       arg2s' <- resolveTPExp arg2
-      let union a b = typeOf a +++ typeOf b
-      return $ [return (union arg1' arg2', e{exps = [arg1', arg2']}) | (arg1', arg2') <- sortBy (comparing $ uncurry union) $ liftM2 (,) arg1s' arg2s']
+      let union' a b = typeOf a +++ typeOf b
+      return $ [return (union' arg1' arg2', e{exps = [arg1', arg2']}) | (arg1', arg2') <- sortBy (comparing $ uncurry union') $ liftM2 (,) arg1s' arg2s']
   resolveTExp e@IFunExp {op, exps = [arg1, arg2]} =
     runListT $ runErrorT $ do
       arg1' <- lift $ ListT $ resolveTPExp arg1

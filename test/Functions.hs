@@ -1,4 +1,3 @@
-{-# OPTIONS_GHC -XTemplateHaskell #-}
 {-
  Copyright (C) 2013 Luke Brown <http://gsd.uwaterloo.ca>
 
@@ -22,22 +21,9 @@
 -}
 module Functions where
 
-import Language.Clafer.Intermediate.Intclafer
 import qualified Data.List as List
-import Data.Foldable (foldMap)
-import Data.Monoid
-import Control.Monad
 import Language.Clafer
-import Language.ClaferT
-import Language.Clafer.Css
-import Test.Framework
-import Test.Framework.TH
-import Test.Framework.Providers.HUnit
-import Test.Framework.Providers.QuickCheck2
-import Test.HUnit
-import Test.QuickCheck
 import System.Directory
-import System.IO
 
 getClafers :: FilePath -> IO [(String, String)]
 getClafers dir = do
@@ -45,13 +31,16 @@ getClafers dir = do
 					let claferFiles = List.filter checkClaferExt files
 					claferModels <- mapM (\x -> readFile (dir++"/"++x)) claferFiles
 					return $ zip claferFiles claferModels
-checkClaferExt "dst.cfr" = True
-checkClaferExt file = if ((eman == "")) then False else (txe == "rfc") && (takeWhile (/='.') (tail eman) /= "esd")
-	where (txe, eman) = span (/='.') (reverse file)
+
+checkClaferExt :: String -> Bool
+checkClaferExt "des.cfr" = True
+checkClaferExt file' = if ((eman == "")) then False else (txe == "rfc") && (takeWhile (/='.') (tail eman) /= "esd")
+	where (txe, eman) = span (/='.') (reverse file')
+
 				
 compileOneFragment :: ClaferArgs -> InputModel -> Either [ClaferErr] CompilerResult
-compileOneFragment args model =
- 	runClafer args $
+compileOneFragment args' model =
+ 	runClafer args' $
 		do
 			addModuleFragment model
 			parse
@@ -64,6 +53,8 @@ compiledCheck (Right _) = True
 
 fromLeft :: Either a b -> a
 fromLeft (Left a) = a
+fromLeft (Right _) = error "Function fromLeft expects argument of the form 'Left a'"
+
 
 andMap :: (a -> Bool) -> [a] -> Bool
 andMap f lst = and $ map f lst
