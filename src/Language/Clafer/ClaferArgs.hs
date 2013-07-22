@@ -94,9 +94,32 @@ clafer = ClaferArgs {
   file                = def &= args   &= typ "FILE"
  } &= summary ("Clafer " ++ version) &= program "clafer"
 
+mergeArgs :: ClaferArgs -> ClaferArgs -> ClaferArgs
+mergeArgs a1 a2  = ClaferArgs (mergeArg mode) (coMergeArg) 
+  (mergeArg flatten_inheritance) (mergeArg timeout_analysis) 
+  (mergeArg no_layout) (mergeArg new_layout) 
+  (mergeArg check_duplicates) (mergeArg skip_resolver) 
+  (mergeArg keep_unused) (mergeArg no_stats) (mergeArg schema)
+  (mergeArg validate) (mergeArg noalloyruncommand) (toolMergeArg) 
+  (mergeArg alloy_mapping) (mergeArg self_contained) 
+  (mergeArg add_graph) (mergeArg show_references) 
+  (mergeArg add_comments) (mergeArg ecore2clafer) 
+  (mergeArg scope_strategy) (mergeArg afm) (mergeArg file)
+  where
+    coMergeArg :: Bool
+    coMergeArg = if (r1 /= False) then r1 else 
+      if (r2 /= False) then r2 else (null $ file a1)
+         where r1 = console_output a1;r2 = console_output a2
+    toolMergeArg :: String
+    toolMergeArg = if (r1 /= "") then r1 else 
+      if (r2 /= "") then r2 else "/tools"
+      where r1 = tooldir a1;r2 = tooldir a2
+    mergeArg :: (Default a, Eq a) => (ClaferArgs -> a) -> a
+    mergeArg f = (\r -> if (r /= def) then r else f a2) $ f a1
+
 mainArgs :: IO (ClaferArgs, String)
 mainArgs = do
-  args' <- cmdArgs clafer
+  args' <- cmdArgs clafer 
   model <- case file args' of
              "" -> hGetContents stdin
              f  -> readFile f
@@ -104,7 +127,7 @@ mainArgs = do
                [] -> ""
                (s:_) -> s
   let options = fromMaybe "" $ stripPrefix "//# OPTIONS " firstLine
-  return $ (either (\_ -> args') (\_ -> args') $
+  return $ (either (\_ -> args') (\x -> mergeArgs args' (cmdArgsValue x)) $
            process (cmdArgsMode clafer) $ Language.Clafer.SplitJoin.splitArgs options, model)
 
 defaultClaferArgs :: ClaferArgs
