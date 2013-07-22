@@ -117,7 +117,6 @@ run _ args' input =
   summary' graph stats ("<!-- # CVLGRAPH /-->":xs) = graph:summary' graph stats xs
   summary' graph stats (x:xs) = x:summary' graph stats xs
 
-<<<<<<< HEAD
 conPutStrLn :: ClaferArgs -> String -> IO ()
 conPutStrLn args' s = when (not $ console_output args') $ putStrLn s
 
@@ -126,24 +125,13 @@ runValidate args' fo = do
   let path = (tooldir args') ++ "/"
   liftIO $ putStrLn ("tooldir=" ++ path)
   case (mode args') of
-=======
-runValidate :: ClaferArgs -> [Char] -> IO ()
-runValidate args fo = do
-  let path = (tooldir args) ++ "/"
-  liftIO $ putStrLn ("Validating " ++ (file args))
-  case (mode args) of
->>>>>>> develop
     Xml -> do
       writeFile "ClaferIR.xsd" claferIRXSD
       voidf $ system $ "java -classpath " ++ path ++ " XsdCheck ClaferIR.xsd " ++ fo
     Alloy ->   voidf $ system $ validateAlloy path "4" ++ fo
     Alloy42 -> voidf $ system $ validateAlloy path "4.2" ++ fo
-<<<<<<< HEAD
     Clafer ->  voidf $ system $ path ++ "/clafer -s -m=clafer " ++ fo
     _ -> error "Function runValidate from Main file was given an invalid mode"
-=======
-    Clafer ->  voidf $ system $ path ++ "clafer -s -m=clafer " ++ fo
->>>>>>> develop
 
 validateAlloy :: String -> String -> String
 validateAlloy path version = "java -cp " ++ path ++ "alloy" ++ version ++ ".jar edu.mit.csail.sdg.alloy4whole.ExampleUsingTheCompiler "
