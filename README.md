@@ -19,7 +19,7 @@ Clafer multi-objective optimizer generates a Pareto front of optimal product con
 Clafer Compiler
 ===============
 
-v0.3.3.10-7-2013
+v0.3.3.19-7-2013
 
 Clafer compiler provides a reference language implementation. 
 It translates models in Clafer to other formats (e.g. Alloy, XML, HTML, DOT) to allow for reasoning and processing with existing tools.
@@ -85,7 +85,7 @@ Building & Installation From Source Code
 ### Additional dependencies for building
 
 * The dependencies for running
-* [The Haskell Platform](http://hackage.haskell.org/platform/) v2012.4.0.0
+* [The Haskell Platform](http://hackage.haskell.org/platform/) v2013.2.0.0
 * [Alloy4.1 and/or Alloy4.2](http://alloy.mit.edu/alloy/download.html)
   * downloaded automatically during build
 * [Git](http://git-scm.com/)
@@ -97,7 +97,7 @@ On Linux
 On Windows 
 
 * [MinGW+MSYS](http://mingw.org) 
-  * since the Haskell Platform already contains MinGW, you may choose to install MinGW+MSYS to the same location, e.g., `c:\...\Haskell Platform\2012.4.0.0`
+  * since the Haskell Platform already contains MinGW, you may choose to install MinGW+MSYS to the same location, e.g., `c:\...\Haskell Platform\2013.2.0.0`
   * add the `bin` folders of MinGW (`MinGW\bin`) and MSYS (`MinGW\MSYS\1.0\bin`) to your system path
   * `wget` will be automatically installed 
 * [WinGLPK](http://winglpk.sourceforge.net/) v4.51
@@ -153,7 +153,7 @@ Clafer Compiler
 (As printed by `clafer --help`)
 
 ```
-Clafer v0.3.3.10-7-2013
+Clafer v0.3.3.19-7-2013
 
 clafer [OPTIONS] [FILE]
 

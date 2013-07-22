@@ -1,0 +1,15 @@
+open util/integer
+pred show {}
+
+
+fact { #c1_a <= 0 }
+abstract sig c1_a
+{}
+
+lone sig c2_b
+{}
+
+lone sig c3_c
+{}
+
+fact { some c1_a }

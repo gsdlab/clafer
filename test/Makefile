@@ -2,11 +2,17 @@ TOOL_DIR = ../tools
 SUITE_DIR = positive
 REG_DIR = regression
 <<<<<<< HEAD
+<<<<<<< HEAD
 CLAFER = clafer -s -v --tooldir=$(TOOL_DIR)
 CLAFER_SELF = clafer -s -v --tooldir=../
 =======
 CLAFER = ../dist/build/clafer/clafer -s -v --tooldir=$(TOOL_DIR)
 CLAFER_SELF = ../dist/build/clafer/clafer -s -v --tooldir=../
+>>>>>>> develop
+=======
+CLAFER = ../dist/build/clafer/clafer -s -v -k --tooldir=$(TOOL_DIR)
+#Disabled clafer self testing for now
+#CLAFER_SELF = ../dist/build/clafer/clafer -s -v -k --tooldir=../dist/build/clafer
 >>>>>>> develop
 
 UNAME := $(shell uname | tr "A-Z" "a-z")
@@ -58,11 +64,11 @@ test:
 
 	find $(SUITE_DIR) -type f \( -iname "*.cfr" ! -iname "*.des.cfr" \) | xargs -L1 $(CLAFER) -m=xml ; true ; \
 
-	@echo "======================================================="
-	@echo "| Testing 'Positive' suite - validating Clafer output |"
-	@echo "======================================================="
-	
-	find $(SUITE_DIR) -type f \( -iname "*.cfr" ! -iname "*.des.cfr" \) | xargs -L1 $(CLAFER_SELF) -m=clafer ; true \
+#	@echo "======================================================="
+#	@echo "| Testing 'Positive' suite - validating Clafer output |"
+#	@echo "======================================================="
+#	
+#	find $(SUITE_DIR) -type f \( -iname "*.cfr" ! -iname "*.des.cfr" \) | xargs -L1 $(CLAFER_SELF) -m=clafer ; true \
 
 	@echo "======================================================="
 	@echo "| Testing 'Positive' suite - Diffing with regressions |"
