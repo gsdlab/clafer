@@ -324,13 +324,28 @@ data Part =
   deriving (Eq, Ord, Show)
 
 
-data Expr =
+{-data Expr =
     This {path::Path, eType::I.IType} |
     Global {path::Path, eType::I.IType} |
     Const Integer |
     Concat {paths::[Expr], eType::I.IType} |
     Positive {allPaths :: [Path], num::Integer, eType::I.IType}
+    deriving Show-}
+
+data Expr =
+    This Path I.IType |
+    Global Path I.IType |
+    Const Integer |
+    Concat [Expr] I.IType |
+    Positive [Path] Integer I.IType
     deriving Show
+
+eType :: Expr -> I.IType
+eType (This _ e) = e
+eType (Global _ e) = e
+eType (Concat _ e) = e
+eType (Positive _ _ e) = e
+eType (Const _) = error "Function eType from GLPK did not expect a Concat"
 
 isThis :: Expr -> Bool
 isThis This{} = True
