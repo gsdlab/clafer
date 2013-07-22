@@ -345,7 +345,7 @@ eType (This _ e) = e
 eType (Global _ e) = e
 eType (Concat _ e) = e
 eType (Positive _ _ e) = e
-eType (Const _) = error "Function eType from GLPK did not expect a Concat"
+eType (Const _) = error "Function eType from GLPK did not expect a Const"
 
 isThis :: Expr -> Bool
 isThis This{} = True
