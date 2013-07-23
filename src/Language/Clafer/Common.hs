@@ -95,8 +95,8 @@ getClaferName (PExp _ _ _ (IClaferId _ id' _)) = id'
 getClaferName _ = ""
 
 genPExpName :: Span -> IExp -> String
-genPExpName (Span (Pos 0 0) (Pos 0 0)) _ = ""
-genPExpName s i = (getIExpName i) ++ "_" ++ show s
+genPExpName s i = if (s==noSpan) then ""
+ else (getIExpName i) ++ "_" ++ show s
 
 getIExpName :: IExp -> String
 getIExpName (IDeclPExp q _ _) = show q 

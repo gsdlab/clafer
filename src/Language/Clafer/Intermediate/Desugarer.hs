@@ -520,7 +520,9 @@ isSet _ = False
 
 -- reduce parent
 reducePExp :: PExp -> PExp
-reducePExp (PExp t pid' pos' x) = PExp t pid' pos' $ reduceIExp x
+reducePExp (PExp t _ pos' x) = PExp t (genPExpName pos' newIExp) pos' newIExp
+  where
+    newIExp = reduceIExp x
 
 reduceIExp :: IExp -> IExp
 reduceIExp (IDeclPExp quant' decls' pexp) = IDeclPExp quant' decls' $ reducePExp pexp

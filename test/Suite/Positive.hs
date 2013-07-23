@@ -98,8 +98,8 @@ case_numberOfSnapShots2 = do
 	(andMap ((==0) . snd) ssSizes 
 		@? "Failed, snapshots were taken when debug was set to False! (For models gotten from test/positive)")
 
-iDCheck :: Assertion -- Make sure all non empty parent ID's are unique and all Parent ID's pass lukesRule
-iDCheck = do
+case_iDCheck :: Assertion -- Make sure all non empty parent ID's are unique and all Parent ID's pass lukesRule
+case_iDCheck = do
 	claferModels <- positiveClaferModels
 	let claferSnapShotPids = map (\(file, model) -> 
 		(file, Map.toList $ (Map.map (foldMapIR getPids . fst3 . fromJust)) $ (Map.filter (/=Nothing)) $ (Map.map cIr) $ snd $ compileOneFragmentS defaultClaferArgs{debug = True} model)) claferModels
@@ -130,8 +130,8 @@ iDCheck = do
 		printDups :: [PExp] -> IO ()
 		printDups (p1:ps) = do
 			when ((pid p1) /= "" && (pid p1) `elem` (map pid ps)) $ do
-				putStr ("   The PID " ++ show p1 ++ "\thas duplicates with ")
-				forM_ ps (\p2 -> when ((pid p1)==(pid p2)) $ putStr ((pid p2) ++ " "))	
+				putStr ("   The PExp " ++ show p1 ++ "\thas duplicates Pid's with ")
+				forM_ ps (\p2 -> when ((pid p1)==(pid p2)) $ putStr ((show p2) ++ " "))	
 				putStrLn ""
 			printDups ps
 		printDups [] = putStrLn ""
