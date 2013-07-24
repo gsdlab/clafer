@@ -123,14 +123,14 @@ conPutStrLn args' s = when (not $ console_output args') $ putStrLn s
 runValidate :: ClaferArgs -> String -> IO ()
 runValidate args' fo = do
   let path = (tooldir args') ++ "/"
-  liftIO $ putStrLn ("tooldir=" ++ path)
+  liftIO $ putStrLn ("Validating " ++ (file args'))
   case (mode args') of
     Xml -> do
       writeFile "ClaferIR.xsd" claferIRXSD
       voidf $ system $ "java -classpath " ++ path ++ " XsdCheck ClaferIR.xsd " ++ fo
     Alloy ->   voidf $ system $ validateAlloy path "4" ++ fo
     Alloy42 -> voidf $ system $ validateAlloy path "4.2" ++ fo
-    Clafer ->  voidf $ system $ path ++ "/clafer -s -m=clafer " ++ fo
+    Clafer ->  voidf $ system $ path ++ "clafer -s -m=clafer " ++ fo
     _ -> error "Function runValidate from Main file was given an invalid mode"
 
 validateAlloy :: String -> String -> String
