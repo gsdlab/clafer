@@ -14,6 +14,6 @@ sig c3_c
 {}
 { one @r_c3_c.this }
 
-one sig c10_a1 extends c1_A
+lone sig c10_a1 extends c1_A
 {}
 

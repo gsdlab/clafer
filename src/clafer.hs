@@ -40,6 +40,7 @@ import System.Process (readProcessWithExitCode)
 import Language.Clafer
 import Language.ClaferT
 import Language.Clafer.Css
+import Language.Clafer.ClaferArgs
 import Language.Clafer.Generator.Html (highlightErrors)
 import Language.Clafer.Generator.Graph (genSimpleGraph)
 
@@ -56,8 +57,8 @@ run v args input =
         parse
         compile
         f' <- save
-        when (fromJust $ validate args) $ liftIO $ runValidate args f'
-    if mode args == Just Html
+        when (validate args) $ liftIO $ runValidate args f'
+    if mode args == Html
       then htmlCatch result args input
       else return ()
     result `catch` handleErrs
@@ -74,9 +75,9 @@ run v args input =
   htmlCatch (Right r) _ _ = return r
   htmlCatch (Left err) args model =
     do let f = (dropExtension $ file args) ++ ".html"
-       let result = (if (fromJust $ self_contained args) then header ++ "<style>" ++ css ++ "</style>" ++ "</head>\n<body>\n<pre>\n" else "") ++ highlightErrors model err ++
-                                                               (if (fromJust $ self_contained args) then "\n</pre>\n</html>" else "")
-       liftIO $ if fromJust $ console_output args then putStrLn result else writeFile f result
+       let result = (if (self_contained args) then header ++ "<style>" ++ css ++ "</style>" ++ "</head>\n<body>\n<pre>\n" else "") ++ highlightErrors model err ++
+                                                               (if (self_contained args) then "\n</pre>\n</html>" else "")
+       liftIO $ if console_output args then putStrLn result else writeFile f result
   
   handleErrs = mapM_ handleErr
   handleErr (ClaferErr msg) =
@@ -101,17 +102,18 @@ run v args input =
     do
       result <- generate
       env <- getEnv
-      let (iModule, genv, au) = ir env
-      result' <- if (fromJust $ add_graph args) && (mode args == Just Html) 
+      (iModule, genv, au) <- getIr
+      result' <- if (add_graph args) && (mode args == Html) 
              then do
-                   (_, graph, _) <- liftIO $ readProcessWithExitCode "dot"  ["-Tsvg"] $ genSimpleGraph (ast env) iModule (takeBaseName $ file args) (fromJust $ show_references args)
+                   ast' <- getAst
+                   (_, graph, _) <- liftIO $ readProcessWithExitCode "dot"  ["-Tsvg"] $ genSimpleGraph ast' iModule (takeBaseName $ file args) (show_references args)
                    return $ summary graph result
                  else return result
-      liftIO $ when (not $ fromJust $ no_stats args) $ putStrLn (statistics result')
+      liftIO $ when (not $ no_stats args) $ putStrLn (statistics result')
       let f = dropExtension $ file args
       let f' = f ++ "." ++ (extension result)
-      liftIO $ if fromJust $ console_output args then putStrLn (outputCode result') else writeFile f' (outputCode result')
-      liftIO $ when (fromJust $ alloy_mapping args) $ writeFile (f ++ "." ++ "map") $ show (mappingToAlloy result')
+      liftIO $ if console_output args then putStrLn (outputCode result') else writeFile f' (outputCode result')
+      liftIO $ when (alloy_mapping args) $ writeFile (f ++ "." ++ "map") $ show (mappingToAlloy result')
       return f'
   summary graph result = result{outputCode=unlines $ summary' graph ("<pre>" ++ statistics result ++ "</pre>") (lines $ outputCode result)}
   summary' _ _ [] = []
@@ -121,19 +123,19 @@ run v args input =
   summary' graph stats ("<!-- # CVLGRAPH /-->":xs) = graph:summary' graph stats xs
   summary' graph stats (x:xs) = x:summary' graph stats xs
     
-conPutStrLn args s = when (not $ fromJust $ console_output args) $ putStrLn s
+conPutStrLn args s = when (not $ console_output args) $ putStrLn s
 
 runValidate :: ClaferArgs -> [Char] -> IO ()
 runValidate args fo = do
-  let path = (fromJust $ tooldir args) ++ "/"
-  liftIO $ putStrLn ("tooldir=" ++ path)
-  case (fromJust $ mode args) of
+  let path = (tooldir args) ++ "/"
+  liftIO $ putStrLn ("Validating " ++ (file args))
+  case (mode args) of
     Xml -> do
       writeFile "ClaferIR.xsd" claferIRXSD
       voidf $ system $ "java -classpath " ++ path ++ " XsdCheck ClaferIR.xsd " ++ fo
     Alloy ->   voidf $ system $ validateAlloy path "4" ++ fo
     Alloy42 -> voidf $ system $ validateAlloy path "4.2" ++ fo
-    Clafer ->  voidf $ system $ path ++ "/clafer -s -m=clafer " ++ fo
+    Clafer ->  voidf $ system $ path ++ "clafer -s -m=clafer " ++ fo
 
 validateAlloy :: String -> String -> String
 validateAlloy path version = "java -cp " ++ path ++ "alloy" ++ version ++ ".jar edu.mit.csail.sdg.alloy4whole.ExampleUsingTheCompiler "
@@ -141,17 +143,17 @@ validateAlloy path version = "java -cp " ++ path ++ "alloy" ++ version ++ ".jar 
 main :: IO ()
 main = do
   (args, model) <- mainArgs
-  let timeInSec = (fromJust $ timeout_analysis args) * 10^6
+  let timeInSec = (timeout_analysis args) * 10^6
   if timeInSec > 0
     then timeout timeInSec $ start 2 args model
     else Just `liftM` start 2 args model
   return ()
 
 start :: VerbosityL -> ClaferArgs -> InputModel-> IO ()
-start v args model = if fromJust $ schema args
+start v args model = if schema args
   then putStrLn claferIRXSD
-  else if fromJust $ ecore2clafer args
-    then runEcore2Clafer (file args) $ (fromJust $ tooldir args)
+  else if ecore2clafer args
+    then runEcore2Clafer (file args) $ (tooldir args)
     else run v args model
 
 runEcore2Clafer :: FilePath -> FilePath -> IO ()

@@ -5,22 +5,24 @@ pred show {}
 abstract sig c1_Person
 { r_c2_age : one c2_age
 , r_c6_maritalStatus : one c6_maritalStatus
-, r_c29_childs : set c29_childs
-, r_c42_parents : set c42_parents }
-{ #r_c42_parents <= 2 }
+, r_c41_childs : set c41_childs
+, r_c66_parents : set c66_parents }
+{ all disj x, y : this.@r_c41_childs | (x.@ref) != (y.@ref)
+  #r_c66_parents <= 2
+  all disj x, y : this.@r_c66_parents | (x.@ref) != (y.@ref) }
 
 sig c2_age
 { ref : one Int }
 { one @r_c2_age.this
-  this.@ref >= 0 }
+  (this.@ref) >= 0 }
 
 sig c6_maritalStatus
 { r_c7_neverMarried : lone c7_neverMarried
 , r_c8_married : lone c8_married
-, r_c19_divorced : lone c19_divorced }
+, r_c31_divorced : lone c31_divorced }
 { one @r_c6_maritalStatus.this
-  let children = (r_c7_neverMarried + r_c8_married + r_c19_divorced) | one children
-  ((some this.@r_c8_married) || (some this.@r_c19_divorced)) => (((this.~@r_c6_maritalStatus).@r_c2_age.@ref) >= 5) }
+  let children = (r_c7_neverMarried + r_c8_married + r_c31_divorced) | one children
+  ((some this.@r_c8_married) || (some this.@r_c31_divorced)) => (((this.~@r_c6_maritalStatus).(@r_c2_age.@ref)) >= 5) }
 
 sig c7_neverMarried
 {}
@@ -28,38 +30,40 @@ sig c7_neverMarried
 
 sig c8_married
 { r_c9_spouse : one c9_spouse }
-{ one @r_c8_married.this }
+{ one @r_c8_married.this
+  all disj x, y : this.@r_c9_spouse | (x.@ref) != (y.@ref)
+  (this.(@r_c9_spouse.@ref)) != ((this.~@r_c8_married).~@r_c6_maritalStatus) }
 
 sig c9_spouse
 { ref : one c1_Person }
 { one @r_c9_spouse.this
   (((this.(@ref.@r_c6_maritalStatus)).@r_c8_married).(@r_c9_spouse.@ref)) = (((this.~@r_c9_spouse).~@r_c8_married).~@r_c6_maritalStatus) }
 
-sig c19_divorced
+sig c31_divorced
 {}
-{ one @r_c19_divorced.this }
+{ one @r_c31_divorced.this }
 
-sig c29_childs
+sig c41_childs
 { ref : one c1_Person }
-{ one @r_c29_childs.this
-  (this.(@ref.@r_c2_age.@ref)) <= ((this.~@r_c29_childs).@r_c2_age.@ref)
-  (this.~@r_c29_childs) in (this.(@ref.(@r_c42_parents.@ref))) }
+{ one @r_c41_childs.this
+  (this.~@r_c41_childs) in (this.(@ref.(@r_c66_parents.@ref)))
+  ((((this.~@r_c41_childs).@r_c6_maritalStatus).@r_c8_married).(@r_c9_spouse.@ref)) in (this.(@ref.(@r_c66_parents.@ref)))
+  (this.(@ref.(@r_c2_age.@ref))) < ((this.~@r_c41_childs).(@r_c2_age.@ref)) }
 
-sig c42_parents
+sig c66_parents
 { ref : one c1_Person }
-{ one @r_c42_parents.this
-  (this.~@r_c42_parents) in (this.(@ref.(@r_c29_childs.@ref))) }
+{ one @r_c66_parents.this
+  (this.~@r_c66_parents) in (this.(@ref.(@r_c41_childs.@ref))) }
 
-one sig c48_Alice extends c1_Person
+lone sig c81_Alice extends c1_Person
 {}
-{ (this.@r_c2_age.@ref) = 6
-  (((this.@r_c6_maritalStatus).@r_c8_married).(@r_c9_spouse.@ref)) = c55_Bob }
+{ (this.(@r_c2_age.@ref)) = 6
+  (((this.@r_c6_maritalStatus).@r_c8_married).(@r_c9_spouse.@ref)) = c88_Bob }
 
-one sig c55_Bob extends c1_Person
+lone sig c88_Bob extends c1_Person
 {}
 
-one sig c56_Carol extends c1_Person
+lone sig c89_Carol extends c1_Person
 {}
-{ (this.@r_c2_age.@ref) = 1
-  (this.(@r_c42_parents.@ref)) = (c48_Alice + c55_Bob) }
+{ (this.(@r_c2_age.@ref)) = 1 }
 

@@ -20,60 +20,12 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
 -}
-import qualified Data.List as List
-import Data.Monoid
-import Control.Monad
-import Language.Clafer
-import Language.ClaferT
-import Language.Clafer.Css
+import Suite.Positive
+import Suite.Negative
+import Functions
 import Test.Framework
 import Test.Framework.TH
-import Test.Framework.Providers.HUnit
-import Test.Framework.Providers.QuickCheck2
-import Test.HUnit
-import Test.QuickCheck
-import System.Directory
-import System.IO
-
-tg_testsuite = $(testGroupGenerator)
-main = defaultMain[tg_testsuite]
 
 
-getClafers :: FilePath -> IO [(String, String)]
-getClafers dir = do
-					files <- getDirectoryContents dir
-					let claferFiles = List.filter checkClaferExt files
-					claferModels <- mapM (\x -> readFile (dir++"/"++x)) claferFiles
-					return $ zip claferFiles claferModels
-checkClaferExt "dst.cfr" = True
-checkClaferExt file = if ((eman == "")) then False else (txe == "rfc") && (takeWhile (/='.') (tail eman) /= "esd")
-	where (txe, eman) = span (/='.') (reverse file)
-				
-compileOneFragment :: ClaferArgs -> InputModel -> Either [ClaferErr] CompilerResult
-compileOneFragment args model =
- 	runClafer args $
-		do
-			addModuleFragment model
-			parse
-			compile
-			generate
-
-compiledCheck :: Either a b -> Bool
-compiledCheck (Left _) = False
-compiledCheck (Right _) = True
-
-fromLeft :: Either a b -> a
-fromLeft (Left a) = a
-
-andMap :: (a -> Bool) -> [a] -> Bool
-andMap f lst = and $ map f lst
-
-positiveClafers = getClafers "test/positive"
-
-
-case_compileTest :: Assertion
-case_compileTest = do 
-					clafers <- positiveClafers
-					let compiledClafers = map (\(file, model) -> (file, compileOneFragment defaultClaferArgs model)) clafers
-					forM_ compiledClafers (\(file, compiled) -> when (not $ compiledCheck compiled) $ putStrLn (file ++ " Error: " ++ (show $ fromLeft compiled)))
-					(andMap (compiledCheck . snd) compiledClafers) @? "test/positive fail: The above claferModels did not compile."
+tg_Main_Test_Suite = $(testGroupGenerator)
+main = defaultMain[tg_Main_Test_Suite, tg_Test_Suite_Positive, tg_Test_Suite_Negative]

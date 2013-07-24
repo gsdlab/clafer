@@ -9,7 +9,7 @@ sig c2_s
 { ref : one Int }
 { one @r_c2_s.this }
 
-one sig c3_A1 extends c1_A
+lone sig c3_A1 extends c1_A
 {}
-{ (this.@r_c2_s.@ref) = 0 }
+{ (this.(@r_c2_s.@ref)) = 0 }
 

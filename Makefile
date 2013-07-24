@@ -20,10 +20,9 @@ all: build
 
 build:
 	$(MAKE) -C $(TOOL_DIR)
-	cabal install --only-dependencies
+	cabal install --only-dependencies $(GPLK_LIBS_INCLUDES) $(MAC_USR_LIB)
 	cabal configure
 	cabal build
-	cp dist/build/clafer/clafer* .
 
 install:  
 	mkdir -p $(to)
@@ -55,14 +54,13 @@ prof:
 	cabal install --only-dependencies -p --enable-executable-profiling $(GPLK_LIBS_INCLUDES) $(MAC_USR_LIB)
 	cabal configure -p --enable-executable-profiling
 	cabal build --ghc-options="-prof -auto-all -rtsopts"
-	cp dist/build/clafer/clafer* .
 
 .PHONY : test
 
 test:
 	cabal configure --enable-tests
 	cabal build
-	cabal test
+	cabal test	
 	$(MAKE) -C $(TEST_DIR) test
 
 reg:

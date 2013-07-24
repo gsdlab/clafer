@@ -41,8 +41,8 @@ module Language.Clafer (
                         IModule,
                         voidf,
                         ClaferEnv(..),
-                        ir,
-                        ast,
+                        getIr,
+                        getAst,
                         makeEnv,
                         Pos(..),
                         IrTrace(..),
@@ -61,16 +61,17 @@ import Control.Monad
 import Control.Monad.Writer
 import System.FilePath (dropExtension,takeBaseName)
 
-import Language.ClaferT
+import Language.ClaferT 
 import Language.Clafer.Common
 import Language.Clafer.Front.ErrM
-import Language.Clafer.ClaferArgs
+import Language.Clafer.ClaferArgs hiding (Clafer)
+import qualified Language.Clafer.ClaferArgs as Mode (ClaferMode (Clafer))
 import Language.Clafer.Comments
 import qualified Language.Clafer.Css as Css
 import Language.Clafer.Front.Lexclafer
 import Language.Clafer.Front.Parclafer
 import Language.Clafer.Front.Printclafer
-import Language.Clafer.Front.Absclafer hiding (Clafer)
+import Language.Clafer.Front.Absclafer 
 import Language.Clafer.Front.LayoutResolver
 import Language.Clafer.Front.Mapper
 import Language.Clafer.Intermediate.Tracing
@@ -184,7 +185,7 @@ parse :: Monad m => ClaferT m ()
 parse =
   do
     env <- getEnv
-    let astsErr = map (parseFrag $ args env) $ modelFrags env
+    astsErr <- mapM (parseFrag $ args env) $ modelFrags env
     asts <- liftParseErrs astsErr
 
     -- We need to somehow combine all the ASTS together into a complete AST
@@ -211,7 +212,7 @@ parse =
       _ -> do
         -- Combine all the fragment syntaxes
         let completeModel = concat $ modelFrags env
-        let completeAst = (parseFrag $ args env) completeModel
+        completeAst <- (parseFrag $ args env) completeModel
         liftParseErr completeAst
 
     
@@ -219,18 +220,19 @@ parse =
     let env' = env{ cAst = Just ast, astModuleTrace = traceAstModule ast }
     putEnv env'
   where
+  parseFrag :: (Monad m) => ClaferArgs -> String -> ClaferT m (Err Module)
   parseFrag args =
-    pModule .
+    (>>= (return . pModule)) .
     (if not 
-      ((fromJust $ new_layout args) ||
-      (fromJust $ no_layout args))
+      ((new_layout args) ||
+      (no_layout args))
     then 
        resolveLayout 
     else 
-       id) 
+       return) 
     . myLexer .
-    (if (not $ fromJust $ no_layout args) &&
-        (fromJust $ new_layout args)
+    (if (not $ no_layout args) &&
+        (new_layout args)
      then 
        resLayout 
      else 
@@ -241,9 +243,17 @@ compile :: Monad m => ClaferT m ()
 compile =
   do
     env <- getEnv
-    ir <- analyze (args env) $ desugar (ast env)
+    ast' <- getAst
+    ir <- analyze (args env) $ desugar ast'
     let (imodule, _, _) = ir
+
+    let spanList = foldMapIR gt1 imodule
+    when ((afm $ args env) && spanList/="") $ throwErr (ClaferErr $ ("The model is not an attributed feature model .\nThe following places contain cardinality larger than 1:\n"++) $ spanList :: CErr Span)
     putEnv $ env{ cIr = Just ir, irModuleTrace = traceIrModule imodule }
+    where
+      gt1 (IRClafer (IClafer (Span (Pos l c) _) _ _ _ _ _ (Just (n, m)) _ _)) = if (m > 1 || m < 0) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
+      gt1 (IRClafer (IClafer (PosSpan _ (Pos l c) _) _ _ _ _ _ (Just (n, m)) _ _)) = if (m > 1 || m < 0) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
+      gt1 _ = ""
 
 -- Splits the IR into their fragments, and generates the output for each fragment.
 -- Might not generate the entirea output (for example, Alloy scope and run commands) because
@@ -252,8 +262,8 @@ generateFragments :: Monad m => ClaferT m [String]
 generateFragments =
   do
     env <- getEnv
-    let (iModule, _, _) = ir env
-    let fragElems = fragment (sortBy (comparing range) $ mDecls iModule) (frags env)
+    (iModule, _, _) <- getIr
+    fragElems <- fragment (sortBy (comparing range) $ mDecls iModule) (frags env)
     
     -- Assumes output mode is Alloy for now
     
@@ -265,13 +275,13 @@ generateFragments =
   
   -- Groups IElements by their fragments.
   --   elems must be sorted by range.
-  fragment :: [IElement] -> [Pos] -> [[IElement]]
-  fragment [] [] = []
+  fragment :: (Monad m) => [IElement] -> [Pos] -> ClaferT m [[IElement]]
+  fragment [] [] = return []
   fragment elems (frag : rest) =
-    curFrag : fragment restFrags rest
+    fragment restFrags rest >>= return . (curFrag:)
     where
     (curFrag, restFrags) = span (`beforePos` frag) elems
-  fragment _ [] = error $ "Unexpected fragment." -- Should not happen. Bug.
+  fragment _ [] = throwErr $ (ClaferErr $ "Unexpected fragment." :: CErr Span) -- Should not happen. Bug.
   
   beforePos elem pos =
     case range elem of
@@ -282,15 +292,15 @@ generateFragments =
     flatten $ cconcat $ map (genDeclaration args) frag
 
 -- Splits the AST into their fragments, and generates the output for each fragment.
-generateHtml env =
-    let PosModule _ decls = ast env;
+generateHtml env ast' ir' =
+    let PosModule _ decls = ast';
         cargs = args env;
         irMap = irModuleTrace env;
-        comments = if fromJust $ add_comments cargs then getComments $ unlines $ modelFrags env else [];
-        (iModule, genv, au) = ir env;
-    in (if (fromJust $ self_contained cargs) then Css.header ++ "<style>" ++ Css.css ++ "</style></head>\n<body>\n" else "")
+        comments = if add_comments cargs then getComments $ unlines $ modelFrags env else [];
+        (iModule, genv, au) = ir';
+    in (if (self_contained cargs) then Css.header ++ "<style>" ++ Css.css ++ "</style></head>\n<body>\n" else "")
        ++ (unlines $ generateFragments decls (frags env) irMap comments) ++
-       (if (fromJust $ self_contained cargs) then "</body>\n</html>" else "")
+       (if (self_contained cargs) then "</body>\n</html>" else "")
 
   where
     line (PosElementDecl (Span pos _) _) = pos
@@ -320,26 +330,27 @@ generate :: Monad m => ClaferT m CompilerResult
 generate =
   do
     env <- getEnv
+    ast' <- getAst
+    ir'@(iModule, genv, au) <- getIr
     let cargs = args env
-    let (iModule, genv, au) = ir env
     let stats = showStats au $ statsModule iModule
     let (imod,strMap) = astrModule iModule
-    let (ext, code, mapToAlloy) = case (fromJust $ mode cargs) of
+    let (ext, code, mapToAlloy) = case (mode cargs) of
                         Alloy   ->  do
                                       let alloyCode = genModule cargs (imod, genv)
-                                      let addCommentStats = if fromJust $ no_stats cargs then const else addStats
+                                      let addCommentStats = if no_stats cargs then const else addStats
                                       let m = snd alloyCode
                                       ("als", addCommentStats (fst alloyCode) stats, Just m)
                         Alloy42  -> do
                                       let alloyCode = genModule cargs (imod, genv)
-                                      let addCommentStats = if fromJust $ no_stats cargs then const else addStats
+                                      let addCommentStats = if no_stats cargs then const else addStats
                                       let m = snd alloyCode
                                       ("als", addCommentStats (fst alloyCode) stats, Just m)
                         Xml      -> ("xml", genXmlModule iModule, Nothing)
-                        Clafer   -> ("des.cfr", printTree $ sugarModule iModule, Nothing)
-                        Html     -> ("html", generateHtml env, Nothing)
-                        Graph    -> ("dot", genSimpleGraph (ast env) iModule (takeBaseName $ file cargs) (fromJust $ show_references cargs), Nothing)
-                        CVLGraph -> ("dot", genCVLGraph (ast env) iModule (takeBaseName $ file cargs), Nothing)
+                        Mode.Clafer   -> ("des.cfr", printTree $ sugarModule iModule, Nothing)
+                        Html     -> ("html", generateHtml env ast' ir', Nothing)
+                        Graph    -> ("dot", genSimpleGraph ast' iModule (takeBaseName $ file cargs) (show_references cargs), Nothing)
+                        CVLGraph -> ("dot", genCVLGraph ast' iModule (takeBaseName $ file cargs), Nothing)
                         Choco    -> ("js", genCModule cargs (imod, genv), Nothing)
     return $ CompilerResult { extension = ext, 
                      outputCode = code, 
@@ -367,7 +378,7 @@ analyze :: Monad m => ClaferArgs -> IModule -> ClaferT m (IModule, GEnv, Bool)
 analyze args tree = do
   let dTree' = findDupModule args tree
   let au = allUnique dTree'
-  let args' = args{skip_resolver = Just $ au && (fromJust $ skip_resolver args)}
+  let args' = args{skip_resolver = au && (skip_resolver args)}
   (rTree, genv) <- liftError $ resolveModule args' dTree'
   let tTree = transModule rTree
   return (optimizeModule args' (tTree, genv), genv, au)

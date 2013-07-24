@@ -110,8 +110,10 @@ analyzeReferences clafers analysis (IEClafer clafer) =
     where
     lowerBound = fst (fromJust $ card clafer)
     analysis'
-        | isReference clafer = Map.insert (uid $ fromJust $ directSuper clafers clafer) lowerBound analysis
-        | otherwise          = analysis
+        | isReference clafer = case (directSuper clafers clafer) of 
+            (Just c) -> Map.insert (uid c) lowerBound analysis
+            Nothing -> analysis
+        | otherwise          = analysis 
 analyzeReferences _ analysis _ = analysis
 
 

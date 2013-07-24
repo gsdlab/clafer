@@ -1,0 +1,3 @@
+x ->> integer *
+y ->> integer *
+z -> integer = sum (x ++ y)

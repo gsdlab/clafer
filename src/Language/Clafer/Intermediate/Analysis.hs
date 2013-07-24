@@ -275,27 +275,30 @@ anything = Anything
 
 -- a is a child of b
 (|^) :: (MonadAnalysis m, Matchable a, Matchable b) => a -> b -> m [(SClafer, SClafer)]
-lower |^ upper =
-  do
-    clafers' <- filter (matches lower) <$> clafers
-    parents' <- filter (matches upper) <$> runListT (parentOf =<< foreachM clafers')
-    return $ zip clafers' parents'
+lower |^ upper = runListT $ do
+    clafer <- foreach clafers
+    guard $ matches lower clafer
+    parent <- parentOf clafer
+    guard $ matches upper parent
+    return (clafer , parent) 
 
 -- a -> b    
 (|->) :: (MonadAnalysis m, Matchable a, Matchable b) => a -> b -> m [(SClafer, SClafer)]
-lower |-> upper =
-  do
-    clafers' <- filter (matches lower) <$> clafers
-    supers'  <- filter (matches upper) <$> runListT (refOf =<< foreachM clafers')
-    return $ zip clafers' supers'
+lower |-> upper = runListT $ do
+    clafer <- foreach clafers
+    guard $ matches lower clafer
+    super  <- refOf clafer
+    guard $ matches upper super
+    return (clafer, super) 
 
 -- a : b
 (|:) :: (MonadAnalysis m, Matchable a, Matchable b) => a -> b -> m [(SClafer, SClafer)]
-lower |: upper =
-  do
-    clafers' <- filter (matches lower) <$> clafers
-    supers'  <- filter (matches upper) <$> runListT (colonOf =<< foreachM clafers')
-    return $ zip clafers' supers'
+lower |: upper = runListT $ do
+    clafer <- foreach clafers
+    guard $ matches lower clafer
+    super  <- colonOf clafer
+    guard $ matches upper super
+    return (clafer, super) 
 
 -- constraints under
 constraintsUnder :: (MonadAnalysis m, Matchable a) => a -> m [(SClafer, I.PExp)]
