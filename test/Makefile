@@ -39,7 +39,7 @@ test:
 	@echo "======================================================"
 
 	@if test ! -f $(TOOL_DIR)/"alloy4.jar"; then \
-		@echo "[ERROR] Missing $(TOOL_DIR)/alloy4.jar."; false; \
+		echo "[ERROR] Missing $(TOOL_DIR)/alloy4.jar."; false; \
 	fi
 
 	find $(SUITE_DIR) -type f \( -iname "*.cfr" ! -iname "*.des.cfr" \) |  xargs -L1 $(CLAFER) ; true ; \
@@ -49,7 +49,7 @@ test:
 	@echo "===================================================="
 
 	@if test ! -f $(TOOL_DIR)/"XsdCheck.class"; then \
-		@echo "[ERROR] Missing $(TOOL_DIR)/XsdCheck.class."; false; \
+		echo "[ERROR] Missing $(TOOL_DIR)/XsdCheck.class."; false; \
 	fi
 
 	find $(SUITE_DIR) -type f \( -iname "*.cfr" ! -iname "*.des.cfr" \) | xargs -L1 $(CLAFER) -m=xml ; true ; \
