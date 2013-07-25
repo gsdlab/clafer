@@ -230,16 +230,15 @@ renameClafer True  clafer = renameClafer' clafer
 
 renameClafer' :: MonadState GEnv m => IClafer -> m IClafer
 renameClafer' clafer = do
-  uid' <- genId (cinPos clafer) $ ident clafer
+  uid' <- genId $ ident clafer
   return $ clafer {uid = uid'}
 
 
-genId :: MonadState GEnv m => Span -> String -> m String
-genId s id' = do
+genId :: MonadState GEnv m => String -> m String
+genId id' = do
   modify (\e -> e {num = 1 + num e})
   n <- gets num
-  return (if (s==noSpan) then "" 
-    else concat ["c", show n, "_",  id'])
+  return $ concat ["c", show n, "_",  id']
 
 resolveEInheritance :: MonadState GEnv m => [String] -> [String] -> Bool -> [IElement] -> [IClafer]  -> m ([IElement], ISuper, [IClafer])
 resolveEInheritance predecessors unrollables absAncestor declarations allSuper
