@@ -44,7 +44,7 @@ desugarEnums (PosEnumDecl _ id' enumids) = absEnum : map mkEnum enumids
     where
     oneToOne = (CardInterval $ NCard (PosInteger ((0,0), "1")) (ExIntegerNum $ PosInteger ((0,0), "1")))
     absEnum = ElementDecl $ Subclafer $ Clafer
-              Abstract GCardEmpty id' SuperEmpty oneToOne InitEmpty (ElementsList [])
+              Abstract GCardEmpty id' SuperEmpty CardEmpty InitEmpty (ElementsList [])
     mkEnum (PosEnumIdIdent _ eId) = ElementDecl $ Subclafer $ Clafer AbstractEmpty GCardEmpty
                                   eId (SuperSome SuperColon (PosClaferId noSpan $ Path [ModIdIdent id'])) oneToOne InitEmpty (ElementsList [])
     mkEnum (EnumIdIdent eId) = ElementDecl $ Subclafer $ Clafer AbstractEmpty GCardEmpty

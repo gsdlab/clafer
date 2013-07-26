@@ -8,10 +8,10 @@ abstract sig c1_date
 abstract sig c2_NorthAmericanCountry
 {}
 
-lone sig c3_Canada extends c2_NorthAmericanCountry
+one sig c3_Canada extends c2_NorthAmericanCountry
 {}
 
-lone sig c4_USA extends c2_NorthAmericanCountry
+one sig c4_USA extends c2_NorthAmericanCountry
 {}
 
 abstract sig c5_Person
