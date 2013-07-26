@@ -32,6 +32,7 @@ import qualified Test.Framework as T
 import Test.Framework.TH
 import Test.Framework.Providers.HUnit
 import Test.HUnit
+import qualified Data.Map as Map
 
 tg_Test_Suite_Positive :: T.Test
 tg_Test_Suite_Positive = $(testGroupGenerator)
