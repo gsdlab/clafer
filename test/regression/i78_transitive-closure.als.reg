@@ -22,14 +22,14 @@ abstract sig c19_WeekLevel extends c1_TimeLevel
 {}
 { (this.(@r_c2_aggregatesTo.@ref)) in c15_MonthLevel }
 
-lone sig c23_Year2012 extends c12_YearLevel
+one sig c23_Year2012 extends c12_YearLevel
 {}
 
-lone sig c24_Jan2012 extends c15_MonthLevel
+one sig c24_Jan2012 extends c15_MonthLevel
 {}
 { (this.(@r_c2_aggregatesTo.@ref)) = c23_Year2012 }
 
-lone sig c30_Week1 extends c19_WeekLevel
+one sig c30_Week1 extends c19_WeekLevel
 {}
 { (this.(@r_c2_aggregatesTo.@ref)) = c24_Jan2012 }
 

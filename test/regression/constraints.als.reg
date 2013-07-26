@@ -62,19 +62,19 @@ sig c13_gpu
 {}
 { one @r_c13_gpu.this }
 
-lone sig c14_PhoneWithGps extends c1_Phone
+one sig c14_PhoneWithGps extends c1_Phone
 {}
 { some (this.@r_c10_location).@r_c11_gps }
 
-lone sig c17_PhoneWithWifi extends c1_Phone
+one sig c17_PhoneWithWifi extends c1_Phone
 {}
 { some ((this.@r_c2_networking).@r_c3_wifi).@r_c6_typeN }
 
-lone sig c24_PhonewithWifiAndGpsNoBluetoothOrNfc extends c1_Phone
+one sig c24_PhonewithWifiAndGpsNoBluetoothOrNfc extends c1_Phone
 {}
 { ((some (this.@r_c2_networking).@r_c3_wifi) && (some (this.@r_c10_location).@r_c11_gps)) && (!((some (this.@r_c2_networking).@r_c7_bluetooth) || (some (this.@r_c2_networking).@r_c9_nfc))) }
 
-lone sig c37_PhoneWithGpu extends c1_Phone
+one sig c37_PhoneWithGpu extends c1_Phone
 {}
 { some this.@r_c13_gpu }
 

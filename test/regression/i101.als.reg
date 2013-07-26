@@ -15,6 +15,6 @@ sig c3_isDir
 {}
 { one @r_c3_isDir.this }
 
-lone sig c13_pth extends c1_Path
+one sig c13_pth extends c1_Path
 {}
 

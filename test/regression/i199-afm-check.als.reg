@@ -2,7 +2,7 @@ open util/integer
 pred show {}
 
 
-lone sig c1_a
+one sig c1_a
 { r_c2_b : lone c2_b
 , r_c3_c : set c3_c }
 { 2 <= #r_c3_c }

@@ -117,15 +117,15 @@ sig c45_books
 { ref : one c1_Book }
 { one @r_c45_books.this }
 
-lone sig c55_GenerativeProgramming extends c1_Book
+one sig c55_GenerativeProgramming extends c1_Book
 {}
 { (((((((((this.(@r_c2_title.@ref)) = 0) && (no (this.@r_c2_title).@r_c3_subtitle)) && ((this.(@r_c4_year.@ref)) = 5)) && ((#(this.@r_c5_page)) = 4)) && (some (this.@r_c6_format).@r_c7_paper)) && (some (this.@r_c10_kind).@r_c15_nonfiction)) && ((this.(@r_c17_authors.@ref)) = (c90_Czarnecki + c98_Eisenecker))) && ((this.(@r_c33_ISBN.@ref)) = 0)) && (no (this.@r_c33_ISBN).@r_c34_GS1) }
 
-lone sig c90_Czarnecki extends c44_Author
+one sig c90_Czarnecki extends c44_Author
 {}
 { ((this.(@r_c42_name.@ref)) = 0) && (c55_GenerativeProgramming in (this.(@r_c45_books.@ref))) }
 
-lone sig c98_Eisenecker extends c44_Author
+one sig c98_Eisenecker extends c44_Author
 {}
 { ((this.(@r_c42_name.@ref)) = 0) && (c55_GenerativeProgramming in (this.(@r_c45_books.@ref))) }
 

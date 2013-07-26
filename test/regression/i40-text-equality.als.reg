@@ -2,15 +2,15 @@ open util/integer
 pred show {}
 
 
-lone sig c1_text
+one sig c1_text
 { ref : one Int }
 
 fact { (c1_text.@ref) = 0 }
-lone sig c5_text1
+one sig c5_text1
 { ref : one Int }
 
 fact { (c5_text1.@ref) = 0 }
-lone sig c9_text2
+one sig c9_text2
 { ref : one Int }
 
 fact { (c9_text2.@ref) = 0 }

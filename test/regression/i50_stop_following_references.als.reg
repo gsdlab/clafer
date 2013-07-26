@@ -9,11 +9,11 @@ sig c2_b
 {}
 { one @r_c2_b.this }
 
-lone sig c3_A1 extends c1_A
+one sig c3_A1 extends c1_A
 {}
 { no this.@r_c2_b }
 
-lone sig c6_C
+one sig c6_C
 { r_c7_b : lone c7_b
 , r_c12_a : one c12_a }
 { some c6_C.@r_c7_b
@@ -23,15 +23,13 @@ lone sig c7_b
 {}
 { one r_c7_b }
 
-lone sig c12_a
+one sig c12_a
 { ref : one c1_A
 , r_c15_d : one c15_d }
-{ one r_c12_a
-  some (this.@r_c15_d).@r_c16_b }
+{ some (this.@r_c15_d).@r_c16_b }
 
-lone sig c15_d
+one sig c15_d
 { r_c16_b : lone c16_b }
-{ one r_c15_d }
 
 lone sig c16_b
 {}

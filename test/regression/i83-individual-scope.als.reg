@@ -5,7 +5,7 @@ pred show {}
 lone sig c1_a
 {}
 
-lone sig c2_b
+one sig c2_b
 {}
 
 some sig c3_c

@@ -2,7 +2,7 @@ open util/integer
 pred show {}
 
 
-lone sig c1_Office
+one sig c1_Office
 { r_c2_Printer : lone c2_Printer
 , r_c13_Scanner : lone c13_Scanner }
 
@@ -73,7 +73,7 @@ sig c15_Head
 {}
 { one @r_c15_Head.this }
 
-lone sig c16_PrinterPool
+one sig c16_PrinterPool
 { r_c17_fax : lone c17_fax
 , r_c18_printer : lone c18_printer
 , r_c19_copier : lone c19_copier

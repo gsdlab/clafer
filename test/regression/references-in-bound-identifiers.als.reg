@@ -2,7 +2,7 @@ open util/integer
 pred show {}
 
 
-lone sig c1_A
+one sig c1_A
 { r_c2_B : set c2_B }
 { all  b : this.@r_c2_B | some b.@r_c3_C
   all  b : this.@r_c2_B | ((b.@ref).add[1]) = 2 }

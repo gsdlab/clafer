@@ -96,7 +96,7 @@ sig c30_PostalCode
 { ref : one Int }
 { one @r_c30_PostalCode.this }
 
-lone sig c31_JohnDoe extends c5_Person
+one sig c31_JohnDoe extends c5_Person
 {}
 { (((((((((this.(@r_c6_Name.@ref)) = 0) && ((this.(@r_c7_Surname.@ref)) = 1)) && ((this.(@r_c8_DateOfBirth.@ref)) = 2)) && (some (this.@r_c9_Gender).@r_c10_Male)) && (some (this.@r_c12_MaritalStatus).@r_c14_Married)) && (((this.@r_c16_Address).(@r_c17_Street.@ref)) = 3)) && (((this.@r_c16_Address).(@r_c19_City.@ref)) = 4)) && (((this.@r_c16_Address).(@r_c20_Country.@ref)) = c3_Canada)) && (((this.@r_c16_Address).(@r_c30_PostalCode.@ref)) = 5) }
 
@@ -115,15 +115,15 @@ sig c68_participants
 { ref : one c5_Person }
 { one @r_c68_participants.this }
 
-lone sig c78_MaryJane extends c65_Student
+one sig c78_MaryJane extends c65_Student
 {}
 { (this.(@r_c66_StudentId.@ref)) = 6 }
 
-lone sig c82_BusLine extends c67_WaitingLine
+one sig c82_BusLine extends c67_WaitingLine
 {}
 { (c31_JohnDoe in (this.(@r_c68_participants.@ref))) && (c78_MaryJane in (this.(@r_c68_participants.@ref))) }
 
-lone sig c90_JohnAndMaryLine extends c67_WaitingLine
+one sig c90_JohnAndMaryLine extends c67_WaitingLine
 {}
 { (this.(@r_c68_participants.@ref)) = (c31_JohnDoe + c78_MaryJane) }
 

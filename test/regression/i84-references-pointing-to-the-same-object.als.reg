@@ -19,16 +19,16 @@ sig c24_belongsTo
 { ref : one c1_Dimension }
 { one @r_c24_belongsTo.this }
 
-lone sig c34_dim1 extends c1_Dimension
+one sig c34_dim1 extends c1_Dimension
 {}
 
-lone sig c35_dim2 extends c1_Dimension
+one sig c35_dim2 extends c1_Dimension
 {}
 
-lone sig c36_dimLevel1 extends c23_DimensionLevel
+one sig c36_dimLevel1 extends c23_DimensionLevel
 {}
 
-lone sig c37_dimLevel2 extends c23_DimensionLevel
+one sig c37_dimLevel2 extends c23_DimensionLevel
 {}
 
 fact { some disj dl1, dl2 : c23_DimensionLevel | ((dl1.@r_c24_belongsTo).@ref) = ((dl2.@r_c24_belongsTo).@ref) }

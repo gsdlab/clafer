@@ -55,15 +55,15 @@ sig c66_parents
 { one @r_c66_parents.this
   (this.~@r_c66_parents) in (this.(@ref.(@r_c41_childs.@ref))) }
 
-lone sig c81_Alice extends c1_Person
+one sig c81_Alice extends c1_Person
 {}
 { (this.(@r_c2_age.@ref)) = 6
   (((this.@r_c6_maritalStatus).@r_c8_married).(@r_c9_spouse.@ref)) = c88_Bob }
 
-lone sig c88_Bob extends c1_Person
+one sig c88_Bob extends c1_Person
 {}
 
-lone sig c89_Carol extends c1_Person
+one sig c89_Carol extends c1_Person
 {}
 { (this.(@r_c2_age.@ref)) = 1 }
 

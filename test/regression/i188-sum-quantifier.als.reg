@@ -5,7 +5,7 @@ pred show {}
 sig c1_a
 { ref : one Int }
 
-lone sig c2_b
+one sig c2_b
 { ref : one Int }
 
 fact { (c2_b.@ref) = (sum temp : c1_a | temp.@ref) }

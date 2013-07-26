@@ -17,7 +17,7 @@ sig c4_DateOfBirth extends c1_date
 {}
 { one @r_c4_DateOfBirth.this }
 
-lone sig c5_JohnDoe extends c2_Person
+one sig c5_JohnDoe extends c2_Person
 {}
 { ((this.(@r_c3_Name.@ref)) = 0) && ((this.(@r_c4_DateOfBirth.@ref)) = 1) }
 
