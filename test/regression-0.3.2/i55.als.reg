@@ -1,0 +1,19 @@
+open util/integer
+pred show {}
+
+
+one sig c1_D
+{ r_c2_b : lone c2_b
+, r_c3_c : lone c3_c }
+{ (this.(@r_c3_c.@ref)) = 5
+  (this.(@r_c3_c.@ref)) = 5
+  some this.@r_c2_b }
+
+lone sig c2_b
+{}
+{ one r_c2_b }
+
+lone sig c3_c
+{ ref : one Int }
+{ one r_c3_c }
+
