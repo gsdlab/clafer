@@ -30,12 +30,12 @@
 <IsTop>false</IsTop>
 </Exp></Super>
 </Supers>
-<Card><Min><IntLiteral>0</IntLiteral>
+<Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
 </Max>
 </Card>
-<GlobalCard><Min><IntLiteral>0</IntLiteral>
+<GlobalCard><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
 </Max>
@@ -123,7 +123,7 @@
 </Max>
 </GlobalCard>
 </Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>c4_exp</ParentId>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
 <IntLiteral>0</IntLiteral>
 </Start>
@@ -132,7 +132,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>&amp;&amp;</Operation>
-<Argument><Type xsi:type="cl:IBoolean" /><ParentId>c5_exp</ParentId>
+<Argument><Type xsi:type="cl:IBoolean" /><ParentId>=>_((4,7),(4,15))</ParentId>
 <Position><Start><IntLiteral>4</IntLiteral>
 <IntLiteral>7</IntLiteral>
 </Start>
@@ -141,7 +141,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=&gt;</Operation>
-<Argument><Type xsi:type="cl:IBoolean" /><ParentId>c6_exp</ParentId>
+<Argument><Type xsi:type="cl:IBoolean" /><ParentId>ISome_((4,7),(4,8))</ParentId>
 <Position><Start><IntLiteral>4</IntLiteral>
 <IntLiteral>7</IntLiteral>
 </Start>
@@ -149,7 +149,7 @@
 <IntLiteral>8</IntLiteral>
 </End>
 </Position>
-<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>c7_exp</ParentId>
+<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>x_((4,7),(4,8))</ParentId>
 <Position><Start><IntLiteral>4</IntLiteral>
 <IntLiteral>7</IntLiteral>
 </Start>
@@ -184,7 +184,7 @@
 </Exp></Argument>
 </Exp></BodyParentExp>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IBoolean" /><ParentId>c8_exp</ParentId>
+<Argument><Type xsi:type="cl:IBoolean" /><ParentId>INo_((4,12),(4,15))</ParentId>
 <Position><Start><IntLiteral>4</IntLiteral>
 <IntLiteral>12</IntLiteral>
 </Start>
@@ -192,7 +192,7 @@
 <IntLiteral>15</IntLiteral>
 </End>
 </Position>
-<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:INo" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>c9_exp</ParentId>
+<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:INo" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>y_((4,14),(4,15))</ParentId>
 <Position><Start><IntLiteral>4</IntLiteral>
 <IntLiteral>14</IntLiteral>
 </Start>
@@ -228,7 +228,7 @@
 </Exp></BodyParentExp>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IBoolean" /><ParentId>c10_exp</ParentId>
+<Argument><Type xsi:type="cl:IBoolean" /><ParentId>=>_((5,8),(5,16))</ParentId>
 <Position><Start><IntLiteral>5</IntLiteral>
 <IntLiteral>8</IntLiteral>
 </Start>
@@ -237,7 +237,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=&gt;</Operation>
-<Argument><Type xsi:type="cl:IBoolean" /><ParentId>c11_exp</ParentId>
+<Argument><Type xsi:type="cl:IBoolean" /><ParentId>ISome_((5,8),(5,9))</ParentId>
 <Position><Start><IntLiteral>5</IntLiteral>
 <IntLiteral>8</IntLiteral>
 </Start>
@@ -245,7 +245,7 @@
 <IntLiteral>9</IntLiteral>
 </End>
 </Position>
-<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>c12_exp</ParentId>
+<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>y_((5,8),(5,9))</ParentId>
 <Position><Start><IntLiteral>5</IntLiteral>
 <IntLiteral>8</IntLiteral>
 </Start>
@@ -280,7 +280,7 @@
 </Exp></Argument>
 </Exp></BodyParentExp>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IBoolean" /><ParentId>c13_exp</ParentId>
+<Argument><Type xsi:type="cl:IBoolean" /><ParentId>INo_((5,13),(5,16))</ParentId>
 <Position><Start><IntLiteral>5</IntLiteral>
 <IntLiteral>13</IntLiteral>
 </Start>
@@ -288,7 +288,7 @@
 <IntLiteral>16</IntLiteral>
 </End>
 </Position>
-<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:INo" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>c14_exp</ParentId>
+<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:INo" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>x_((5,15),(5,16))</ParentId>
 <Position><Start><IntLiteral>5</IntLiteral>
 <IntLiteral>15</IntLiteral>
 </Start>

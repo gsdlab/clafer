@@ -145,6 +145,7 @@ Test-Suite test-suite
 
     other-modules:
                     Functions,
+                    Suite.Example,
                     Suite.Positive,
                     Suite.Negative
     build-depends:  

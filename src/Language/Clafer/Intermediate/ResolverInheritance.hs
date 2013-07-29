@@ -154,9 +154,14 @@ analyzeCard env clafer = card clafer `mplus` Just card'
   where
   card'
     | isAbstract clafer = (0, -1)
-    | (isJust $ context env) && pGcard == (0, -1) = (1, 1) 
+    | (isJust $ context env) && pGcard == (0, -1) 
+      || (isTopLevel $ cinPos clafer) = (1, 1) 
     | otherwise = (0, 1)
   pGcard = interval $ fromJust $ gcard $ fromJust $ context env
+  isTopLevel (Span (Pos _ c) _) = c==1
+  isTopLevel (Span (PosPos _ _ c) _) = c==1
+  isTopLevel (PosSpan _ (Pos _ c) _) = c==1
+  isTopLevel (PosSpan _ (PosPos _ _ c) _) = c==1
 
 analyzeElement :: SEnv -> IElement -> IElement
 analyzeElement env x = case x of

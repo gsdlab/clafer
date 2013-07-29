@@ -112,18 +112,18 @@
 <IsTop>true</IsTop>
 </Exp></Super>
 </Supers>
-<Card><Min><IntLiteral>0</IntLiteral>
+<Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
 </Max>
 </Card>
-<GlobalCard><Min><IntLiteral>0</IntLiteral>
+<GlobalCard><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
 </Max>
 </GlobalCard>
 <Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>c4_exp</ParentId>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>=_((5,6),(5,16))</ParentId>
 <Position><Start><IntLiteral>5</IntLiteral>
 <IntLiteral>6</IntLiteral>
 </Start>
@@ -132,7 +132,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>c5_exp</ParentId>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>energy_((5,6),(5,12))</ParentId>
 <Position><Start><IntLiteral>5</IntLiteral>
 <IntLiteral>6</IntLiteral>
 </Start>
@@ -188,7 +188,7 @@
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>c6_exp</ParentId>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>1_((5,15),(5,16))</ParentId>
 <Position><Start><IntLiteral>5</IntLiteral>
 <IntLiteral>15</IntLiteral>
 </Start>
@@ -215,7 +215,7 @@
 </Interval>
 </GroupCard>
 <Id>c2</Id>
-<UniqueId>c7_c2</UniqueId>
+<UniqueId>c4_c2</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
 <Super><Type xsi:type="cl:ISet" /><ParentId>Component_((7,6),(7,15))</ParentId>
 <Position><Start><IntLiteral>7</IntLiteral>
@@ -230,18 +230,18 @@
 <IsTop>true</IsTop>
 </Exp></Super>
 </Supers>
-<Card><Min><IntLiteral>0</IntLiteral>
+<Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
 </Max>
 </Card>
-<GlobalCard><Min><IntLiteral>0</IntLiteral>
+<GlobalCard><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
 </Max>
 </GlobalCard>
 <Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>c8_exp</ParentId>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>=_((8,6),(8,16))</ParentId>
 <Position><Start><IntLiteral>8</IntLiteral>
 <IntLiteral>6</IntLiteral>
 </Start>
@@ -250,7 +250,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>c9_exp</ParentId>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>energy_((8,6),(8,12))</ParentId>
 <Position><Start><IntLiteral>8</IntLiteral>
 <IntLiteral>6</IntLiteral>
 </Start>
@@ -306,7 +306,7 @@
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>c10_exp</ParentId>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>1_((8,15),(8,16))</ParentId>
 <Position><Start><IntLiteral>8</IntLiteral>
 <IntLiteral>15</IntLiteral>
 </Start>
@@ -333,7 +333,7 @@
 </Interval>
 </GroupCard>
 <Id>c3</Id>
-<UniqueId>c11_c3</UniqueId>
+<UniqueId>c5_c3</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
 <Super><Type xsi:type="cl:ISet" /><ParentId>Component_((10,6),(10,15))</ParentId>
 <Position><Start><IntLiteral>10</IntLiteral>
@@ -348,18 +348,18 @@
 <IsTop>true</IsTop>
 </Exp></Super>
 </Supers>
-<Card><Min><IntLiteral>0</IntLiteral>
+<Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
 </Max>
 </Card>
-<GlobalCard><Min><IntLiteral>0</IntLiteral>
+<GlobalCard><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
 </Max>
 </GlobalCard>
 <Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>c12_exp</ParentId>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>=_((11,6),(11,16))</ParentId>
 <Position><Start><IntLiteral>11</IntLiteral>
 <IntLiteral>6</IntLiteral>
 </Start>
@@ -368,7 +368,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>c13_exp</ParentId>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>energy_((11,6),(11,12))</ParentId>
 <Position><Start><IntLiteral>11</IntLiteral>
 <IntLiteral>6</IntLiteral>
 </Start>
@@ -424,7 +424,7 @@
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>c14_exp</ParentId>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>1_((11,15),(11,16))</ParentId>
 <Position><Start><IntLiteral>11</IntLiteral>
 <IntLiteral>15</IntLiteral>
 </Start>
@@ -451,7 +451,7 @@
 </Interval>
 </GroupCard>
 <Id>total</Id>
-<UniqueId>c15_total</UniqueId>
+<UniqueId>c6_total</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
 <Super><ParentId>integer_((13,11),(13,18))</ParentId>
 <Position><Start><IntLiteral>13</IntLiteral>
@@ -466,18 +466,18 @@
 <IsTop>true</IsTop>
 </Exp></Super>
 </Supers>
-<Card><Min><IntLiteral>0</IntLiteral>
+<Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
 </Max>
 </Card>
-<GlobalCard><Min><IntLiteral>0</IntLiteral>
+<GlobalCard><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
 </Max>
 </GlobalCard>
 </Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>c16_exp</ParentId>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>=_((13,19),(13,41))</ParentId>
 <Position><Start><IntLiteral>13</IntLiteral>
 <IntLiteral>19</IntLiteral>
 </Start>
@@ -495,7 +495,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>c17_exp</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
 <IntLiteral>0</IntLiteral>
 </Start>
@@ -504,7 +504,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>c15_total</Id>
+<Id>c6_total</Id>
 <IsTop>true</IsTop>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
@@ -520,7 +520,7 @@
 <IsTop>false</IsTop>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>c18_exp</ParentId>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>sum_((13,21),(13,41))</ParentId>
 <Position><Start><IntLiteral>13</IntLiteral>
 <IntLiteral>21</IntLiteral>
 </Start>
@@ -529,7 +529,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>sum</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>c19_exp</ParentId>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>._((13,25),(13,41))</ParentId>
 <Position><Start><IntLiteral>13</IntLiteral>
 <IntLiteral>25</IntLiteral>
 </Start>
@@ -538,7 +538,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>c20_exp</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>Component_((13,25),(13,34))</ParentId>
 <Position><Start><IntLiteral>13</IntLiteral>
 <IntLiteral>25</IntLiteral>
 </Start>
@@ -559,7 +559,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>c21_exp</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>energy_((13,35),(13,41))</ParentId>
 <Position><Start><IntLiteral>13</IntLiteral>
 <IntLiteral>35</IntLiteral>
 </Start>

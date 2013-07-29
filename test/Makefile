@@ -29,9 +29,6 @@ test:
 	@echo "========================"
 	@$(CLAFER) -V
 
-	@echo "==============="
-	@echo "| Cleaning up |"
-	@echo "==============="
 	$(MAKE) clean
 
 	@echo "======================================================"
@@ -39,26 +36,26 @@ test:
 	@echo "======================================================"
 
 	@if test ! -f $(TOOL_DIR)/"alloy4.jar"; then \
-		@echo "[ERROR] Missing $(TOOL_DIR)/alloy4.jar."; false; \
+		echo "[ERROR] Missing $(TOOL_DIR)/alloy4.jar."; false; \
 	fi
 
-	find $(SUITE_DIR) -type f \( -iname "*.cfr" ! -iname "*.des.cfr" \) |  xargs -L1 $(CLAFER) ; true ; \
+	@find $(SUITE_DIR) -type f \( -iname "*.cfr" ! -iname "*.des.cfr" \) |  xargs -L1 $(CLAFER) ; true ; \
 
 	@echo "===================================================="
 	@echo "| Testing 'Positive' suite - validating XML output |"
 	@echo "===================================================="
 
 	@if test ! -f $(TOOL_DIR)/"XsdCheck.class"; then \
-		@echo "[ERROR] Missing $(TOOL_DIR)/XsdCheck.class."; false; \
+		echo "[ERROR] Missing $(TOOL_DIR)/XsdCheck.class."; false; \
 	fi
 
-	find $(SUITE_DIR) -type f \( -iname "*.cfr" ! -iname "*.des.cfr" \) | xargs -L1 $(CLAFER) -m=xml ; true ; \
+	@find $(SUITE_DIR) -type f \( -iname "*.cfr" ! -iname "*.des.cfr" \) | xargs -L1 $(CLAFER) -m=xml ; true ; \
 
 #	@echo "======================================================="
 #	@echo "| Testing 'Positive' suite - validating Clafer output |"
 #	@echo "======================================================="
 #	
-#	find $(SUITE_DIR) -type f \( -iname "*.cfr" ! -iname "*.des.cfr" \) | xargs -L1 $(CLAFER_SELF) -m=clafer ; true \
+#	@find $(SUITE_DIR) -type f \( -iname "*.cfr" ! -iname "*.des.cfr" \) | xargs -L1 $(CLAFER_SELF) -m=clafer ; true \
 
 	@echo "======================================================="
 	@echo "| Testing 'Positive' suite - Diffing with regressions |"
@@ -73,9 +70,17 @@ reg:
 	git add $(REG_DIR)/*.reg
 
 clean:
-	$(MAKE) -C $(SUITE_DIR) clean
-	find . -type f -name '*~' -print0 | xargs -0 rm -f
-	find . -type f -name '*.als' -print0 | xargs -0 rm -f
-	find . -type f -name '*.cfr.des' -print0 | xargs -0 rm -f
-	find . -type f -name '*.xml' -print0 | grep -v experimental | xargs -0 rm -f
-	find . -type f -name '*~' -print0 | xargs -0 rm -f
+	@echo "==============="
+	@echo "| Cleaning up |"
+	@echo "==============="
+	@echo ""
+	@echo 'Removing *~'
+	@find . -type f -name '*~' -print0 | xargs -0 rm -f
+	@echo 'Removing *.als'
+	@find . -type f -name '*.als' -print0 | xargs -0 rm -f
+	@echo 'Removing *.cfr.des'
+	@find . -type f -name '*.cfr.des' -print0 | xargs -0 rm -f
+	@echo 'Removing *.xml'
+	@find . -type f -name '*.xml' -print0 | xargs -0 rm -f
+	@echo 'Removing *~'
+	@find . -type f -name '*~' -print0 | xargs -0 rm -f

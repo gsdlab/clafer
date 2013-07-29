@@ -1,0 +1,15 @@
+open util/integer
+pred show {}
+
+
+one sig c1_A
+{ r_c2_B : one c2_B
+, r_c3_C : one c3_C }
+{ let children = (r_c2_B + r_c3_C) | some children }
+
+one sig c2_B
+{}
+
+one sig c3_C
+{}
+

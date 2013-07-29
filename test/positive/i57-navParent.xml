@@ -30,12 +30,12 @@
 <IsTop>false</IsTop>
 </Exp></Super>
 </Supers>
-<Card><Min><IntLiteral>0</IntLiteral>
+<Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
 </Max>
 </Card>
-<GlobalCard><Min><IntLiteral>0</IntLiteral>
+<GlobalCard><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
 </Max>
@@ -76,7 +76,7 @@
 <Max><IntLiteral>1</IntLiteral>
 </Max>
 </Card>
-<GlobalCard><Min><IntLiteral>0</IntLiteral>
+<GlobalCard><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
 </Max>
@@ -117,13 +117,13 @@
 <Max><IntLiteral>1</IntLiteral>
 </Max>
 </Card>
-<GlobalCard><Min><IntLiteral>0</IntLiteral>
+<GlobalCard><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
 </Max>
 </GlobalCard>
 <Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>c4_exp</ParentId>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>ISome_((4,9),(4,22))</ParentId>
 <Position><Start><IntLiteral>4</IntLiteral>
 <IntLiteral>9</IntLiteral>
 </Start>
@@ -131,7 +131,7 @@
 <IntLiteral>22</IntLiteral>
 </End>
 </Position>
-<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>c5_exp</ParentId>
+<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>._((4,9),(4,22))</ParentId>
 <Position><Start><IntLiteral>4</IntLiteral>
 <IntLiteral>9</IntLiteral>
 </Start>
@@ -140,7 +140,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>c6_exp</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>parent_((4,9),(4,15))</ParentId>
 <Position><Start><IntLiteral>4</IntLiteral>
 <IntLiteral>9</IntLiteral>
 </Start>
@@ -174,7 +174,7 @@
 <IsTop>true</IsTop>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>c7_exp</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>parent_((4,16),(4,22))</ParentId>
 <Position><Start><IntLiteral>4</IntLiteral>
 <IntLiteral>16</IntLiteral>
 </Start>

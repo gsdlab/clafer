@@ -30,12 +30,12 @@
 <IsTop>false</IsTop>
 </Exp></Super>
 </Supers>
-<Card><Min><IntLiteral>0</IntLiteral>
+<Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
 </Max>
 </Card>
-<GlobalCard><Min><IntLiteral>0</IntLiteral>
+<GlobalCard><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
 </Max>
@@ -76,13 +76,13 @@
 <Max><IntLiteral>1</IntLiteral>
 </Max>
 </Card>
-<GlobalCard><Min><IntLiteral>0</IntLiteral>
+<GlobalCard><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
 </Max>
 </GlobalCard>
 <Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>c3_exp</ParentId>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>>=_((5,19),(5,28))</ParentId>
 <Position><Start><IntLiteral>5</IntLiteral>
 <IntLiteral>19</IntLiteral>
 </Start>
@@ -100,7 +100,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>c4_exp</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>this_((5,19),(5,23))</ParentId>
 <Position><Start><IntLiteral>5</IntLiteral>
 <IntLiteral>19</IntLiteral>
 </Start>
@@ -125,7 +125,7 @@
 <IsTop>false</IsTop>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>c5_exp</ParentId>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>0_((5,27),(5,28))</ParentId>
 <Position><Start><IntLiteral>5</IntLiteral>
 <IntLiteral>27</IntLiteral>
 </Start>

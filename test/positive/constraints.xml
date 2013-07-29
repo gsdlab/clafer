@@ -563,18 +563,18 @@
 <IsTop>true</IsTop>
 </Exp></Super>
 </Supers>
-<Card><Min><IntLiteral>0</IntLiteral>
+<Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
 </Max>
 </Card>
-<GlobalCard><Min><IntLiteral>0</IntLiteral>
+<GlobalCard><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
 </Max>
 </GlobalCard>
 <Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>c15_exp</ParentId>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>ISome_((18,4),(18,7))</ParentId>
 <Position><Start><IntLiteral>18</IntLiteral>
 <IntLiteral>4</IntLiteral>
 </Start>
@@ -582,7 +582,7 @@
 <IntLiteral>7</IntLiteral>
 </End>
 </Position>
-<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>c16_exp</ParentId>
+<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>gps_((18,4),(18,7))</ParentId>
 <Position><Start><IntLiteral>18</IntLiteral>
 <IntLiteral>4</IntLiteral>
 </Start>
@@ -655,7 +655,7 @@
 </Interval>
 </GroupCard>
 <Id>PhoneWithWifi</Id>
-<UniqueId>c17_PhoneWithWifi</UniqueId>
+<UniqueId>c15_PhoneWithWifi</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
 <Super><Type xsi:type="cl:ISet" /><ParentId>Phone_((24,17),(24,22))</ParentId>
 <Position><Start><IntLiteral>24</IntLiteral>
@@ -670,18 +670,18 @@
 <IsTop>true</IsTop>
 </Exp></Super>
 </Supers>
-<Card><Min><IntLiteral>0</IntLiteral>
+<Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
 </Max>
 </Card>
-<GlobalCard><Min><IntLiteral>0</IntLiteral>
+<GlobalCard><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
 </Max>
 </GlobalCard>
 <Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>c18_exp</ParentId>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>ISome_((25,4),(25,25))</ParentId>
 <Position><Start><IntLiteral>25</IntLiteral>
 <IntLiteral>4</IntLiteral>
 </Start>
@@ -689,7 +689,7 @@
 <IntLiteral>25</IntLiteral>
 </End>
 </Position>
-<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>c19_exp</ParentId>
+<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>._((25,4),(25,25))</ParentId>
 <Position><Start><IntLiteral>25</IntLiteral>
 <IntLiteral>4</IntLiteral>
 </Start>
@@ -698,7 +698,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>c20_exp</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>._((25,4),(25,19))</ParentId>
 <Position><Start><IntLiteral>25</IntLiteral>
 <IntLiteral>4</IntLiteral>
 </Start>
@@ -707,7 +707,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>c21_exp</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>networking_((25,4),(25,14))</ParentId>
 <Position><Start><IntLiteral>25</IntLiteral>
 <IntLiteral>4</IntLiteral>
 </Start>
@@ -741,7 +741,7 @@
 <IsTop>false</IsTop>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>c22_exp</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>wifi_((25,15),(25,19))</ParentId>
 <Position><Start><IntLiteral>25</IntLiteral>
 <IntLiteral>15</IntLiteral>
 </Start>
@@ -754,7 +754,7 @@
 <IsTop>false</IsTop>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>c23_exp</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>typeN_((25,20),(25,25))</ParentId>
 <Position><Start><IntLiteral>25</IntLiteral>
 <IntLiteral>20</IntLiteral>
 </Start>
@@ -784,7 +784,7 @@
 </Interval>
 </GroupCard>
 <Id>PhonewithWifiAndGpsNoBluetoothOrNfc</Id>
-<UniqueId>c24_PhonewithWifiAndGpsNoBluetoothOrNfc</UniqueId>
+<UniqueId>c16_PhonewithWifiAndGpsNoBluetoothOrNfc</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
 <Super><Type xsi:type="cl:ISet" /><ParentId>Phone_((30,39),(30,44))</ParentId>
 <Position><Start><IntLiteral>30</IntLiteral>
@@ -799,18 +799,18 @@
 <IsTop>true</IsTop>
 </Exp></Super>
 </Supers>
-<Card><Min><IntLiteral>0</IntLiteral>
+<Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
 </Max>
 </Card>
-<GlobalCard><Min><IntLiteral>0</IntLiteral>
+<GlobalCard><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
 </Max>
 </GlobalCard>
 <Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>c25_exp</ParentId>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>&&_((31,4),(31,37))</ParentId>
 <Position><Start><IntLiteral>31</IntLiteral>
 <IntLiteral>4</IntLiteral>
 </Start>
@@ -819,7 +819,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>&amp;&amp;</Operation>
-<Argument><Type xsi:type="cl:IBoolean" /><ParentId>c26_exp</ParentId>
+<Argument><Type xsi:type="cl:IBoolean" /><ParentId>&&_((31,4),(31,15))</ParentId>
 <Position><Start><IntLiteral>31</IntLiteral>
 <IntLiteral>4</IntLiteral>
 </Start>
@@ -828,7 +828,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>&amp;&amp;</Operation>
-<Argument><Type xsi:type="cl:IBoolean" /><ParentId>c27_exp</ParentId>
+<Argument><Type xsi:type="cl:IBoolean" /><ParentId>ISome_((31,4),(31,8))</ParentId>
 <Position><Start><IntLiteral>31</IntLiteral>
 <IntLiteral>4</IntLiteral>
 </Start>
@@ -836,7 +836,7 @@
 <IntLiteral>8</IntLiteral>
 </End>
 </Position>
-<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>c28_exp</ParentId>
+<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>wifi_((31,4),(31,8))</ParentId>
 <Position><Start><IntLiteral>31</IntLiteral>
 <IntLiteral>4</IntLiteral>
 </Start>
@@ -893,7 +893,7 @@
 </Exp></Argument>
 </Exp></BodyParentExp>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IBoolean" /><ParentId>c29_exp</ParentId>
+<Argument><Type xsi:type="cl:IBoolean" /><ParentId>ISome_((31,12),(31,15))</ParentId>
 <Position><Start><IntLiteral>31</IntLiteral>
 <IntLiteral>12</IntLiteral>
 </Start>
@@ -901,7 +901,7 @@
 <IntLiteral>15</IntLiteral>
 </End>
 </Position>
-<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>c30_exp</ParentId>
+<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>gps_((31,12),(31,15))</ParentId>
 <Position><Start><IntLiteral>31</IntLiteral>
 <IntLiteral>12</IntLiteral>
 </Start>
@@ -959,7 +959,7 @@
 </Exp></BodyParentExp>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IBoolean" /><ParentId>c31_exp</ParentId>
+<Argument><Type xsi:type="cl:IBoolean" /><ParentId>!_((31,19),(31,37))</ParentId>
 <Position><Start><IntLiteral>31</IntLiteral>
 <IntLiteral>19</IntLiteral>
 </Start>
@@ -968,7 +968,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>!</Operation>
-<Argument><Type xsi:type="cl:IBoolean" /><ParentId>c32_exp</ParentId>
+<Argument><Type xsi:type="cl:IBoolean" /><ParentId>||_((31,21),(31,37))</ParentId>
 <Position><Start><IntLiteral>31</IntLiteral>
 <IntLiteral>21</IntLiteral>
 </Start>
@@ -977,7 +977,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>||</Operation>
-<Argument><Type xsi:type="cl:IBoolean" /><ParentId>c33_exp</ParentId>
+<Argument><Type xsi:type="cl:IBoolean" /><ParentId>ISome_((31,21),(31,30))</ParentId>
 <Position><Start><IntLiteral>31</IntLiteral>
 <IntLiteral>21</IntLiteral>
 </Start>
@@ -985,7 +985,7 @@
 <IntLiteral>30</IntLiteral>
 </End>
 </Position>
-<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>c34_exp</ParentId>
+<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>bluetooth_((31,21),(31,30))</ParentId>
 <Position><Start><IntLiteral>31</IntLiteral>
 <IntLiteral>21</IntLiteral>
 </Start>
@@ -1042,7 +1042,7 @@
 </Exp></Argument>
 </Exp></BodyParentExp>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IBoolean" /><ParentId>c35_exp</ParentId>
+<Argument><Type xsi:type="cl:IBoolean" /><ParentId>ISome_((31,34),(31,37))</ParentId>
 <Position><Start><IntLiteral>31</IntLiteral>
 <IntLiteral>34</IntLiteral>
 </Start>
@@ -1050,7 +1050,7 @@
 <IntLiteral>37</IntLiteral>
 </End>
 </Position>
-<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>c36_exp</ParentId>
+<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>nfc_((31,34),(31,37))</ParentId>
 <Position><Start><IntLiteral>31</IntLiteral>
 <IntLiteral>34</IntLiteral>
 </Start>
@@ -1126,7 +1126,7 @@
 </Interval>
 </GroupCard>
 <Id>PhoneWithGpu</Id>
-<UniqueId>c37_PhoneWithGpu</UniqueId>
+<UniqueId>c17_PhoneWithGpu</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
 <Super><Type xsi:type="cl:ISet" /><ParentId>Phone_((36,16),(36,21))</ParentId>
 <Position><Start><IntLiteral>36</IntLiteral>
@@ -1141,18 +1141,18 @@
 <IsTop>true</IsTop>
 </Exp></Super>
 </Supers>
-<Card><Min><IntLiteral>0</IntLiteral>
+<Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
 </Max>
 </Card>
-<GlobalCard><Min><IntLiteral>0</IntLiteral>
+<GlobalCard><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
 </Max>
 </GlobalCard>
 <Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>c38_exp</ParentId>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>ISome_((37,4),(37,12))</ParentId>
 <Position><Start><IntLiteral>37</IntLiteral>
 <IntLiteral>4</IntLiteral>
 </Start>
@@ -1160,7 +1160,7 @@
 <IntLiteral>12</IntLiteral>
 </End>
 </Position>
-<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>c39_exp</ParentId>
+<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>gpu_((37,9),(37,12))</ParentId>
 <Position><Start><IntLiteral>37</IntLiteral>
 <IntLiteral>9</IntLiteral>
 </Start>
@@ -1196,7 +1196,7 @@
 </Exp></BodyParentExp>
 </Exp></ParentExp>
 </Declaration></Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>c40_exp</ParentId>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>IAll_((43,2),(43,37))</ParentId>
 <Position><Start><IntLiteral>43</IntLiteral>
 <IntLiteral>2</IntLiteral>
 </Start>
@@ -1219,7 +1219,7 @@
 <IsTop>true</IsTop>
 </Exp></Body>
 </Declaration>
-<BodyParentExp><Type xsi:type="cl:IBoolean" /><ParentId>c42_exp</ParentId>
+<BodyParentExp><Type xsi:type="cl:IBoolean" /><ParentId>ISome_((43,18),(43,37))</ParentId>
 <Position><Start><IntLiteral>43</IntLiteral>
 <IntLiteral>18</IntLiteral>
 </Start>
@@ -1227,7 +1227,7 @@
 <IntLiteral>37</IntLiteral>
 </End>
 </Position>
-<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>c43_exp</ParentId>
+<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>._((43,18),(43,37))</ParentId>
 <Position><Start><IntLiteral>43</IntLiteral>
 <IntLiteral>18</IntLiteral>
 </Start>
@@ -1236,7 +1236,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>c44_exp</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>._((43,18),(43,30))</ParentId>
 <Position><Start><IntLiteral>43</IntLiteral>
 <IntLiteral>18</IntLiteral>
 </Start>
@@ -1245,7 +1245,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>c45_exp</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>p_((43,18),(43,19))</ParentId>
 <Position><Start><IntLiteral>43</IntLiteral>
 <IntLiteral>18</IntLiteral>
 </Start>
@@ -1257,7 +1257,7 @@
 <Id>p</Id>
 <IsTop>true</IsTop>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>c46_exp</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>networking_((43,20),(43,30))</ParentId>
 <Position><Start><IntLiteral>43</IntLiteral>
 <IntLiteral>20</IntLiteral>
 </Start>
@@ -1270,7 +1270,7 @@
 <IsTop>false</IsTop>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>c47_exp</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>mobile_((43,31),(43,37))</ParentId>
 <Position><Start><IntLiteral>43</IntLiteral>
 <IntLiteral>31</IntLiteral>
 </Start>

@@ -112,18 +112,18 @@
 <IsTop>true</IsTop>
 </Exp></Super>
 </Supers>
-<Card><Min><IntLiteral>0</IntLiteral>
+<Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
 </Max>
 </Card>
-<GlobalCard><Min><IntLiteral>0</IntLiteral>
+<GlobalCard><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
 </Max>
 </GlobalCard>
 </Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>c4_exp</ParentId>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>=_((3,14),(3,27))</ParentId>
 <Position><Start><IntLiteral>3</IntLiteral>
 <IntLiteral>14</IntLiteral>
 </Start>
@@ -141,7 +141,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>c5_exp</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
 <IntLiteral>0</IntLiteral>
 </Start>
@@ -166,7 +166,7 @@
 <IsTop>false</IsTop>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>c6_exp</ParentId>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>sum_((3,16),(3,27))</ParentId>
 <Position><Start><IntLiteral>3</IntLiteral>
 <IntLiteral>16</IntLiteral>
 </Start>
@@ -175,7 +175,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>sum</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>c7_exp</ParentId>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>++_((3,21),(3,27))</ParentId>
 <Position><Start><IntLiteral>3</IntLiteral>
 <IntLiteral>21</IntLiteral>
 </Start>
@@ -193,7 +193,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>c8_exp</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>x_((3,21),(3,22))</ParentId>
 <Position><Start><IntLiteral>3</IntLiteral>
 <IntLiteral>21</IntLiteral>
 </Start>
@@ -227,7 +227,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>c9_exp</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>y_((3,26),(3,27))</ParentId>
 <Position><Start><IntLiteral>3</IntLiteral>
 <IntLiteral>26</IntLiteral>
 </Start>
@@ -256,7 +256,7 @@
 </Exp></Argument>
 </Exp></ParentExp>
 </Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>c10_exp</ParentId>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
 <IntLiteral>0</IntLiteral>
 </Start>
@@ -280,7 +280,7 @@
 <IsTop>true</IsTop>
 </Exp></Body>
 </Declaration>
-<BodyParentExp><Type xsi:type="cl:IBoolean" /><ParentId>c12_exp</ParentId>
+<BodyParentExp><Type xsi:type="cl:IBoolean" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
 <IntLiteral>0</IntLiteral>
 </Start>
@@ -289,7 +289,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>!=</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>c13_exp</ParentId>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
 <IntLiteral>0</IntLiteral>
 </Start>
@@ -298,7 +298,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>c14_exp</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
 <IntLiteral>0</IntLiteral>
 </Start>
@@ -310,7 +310,7 @@
 <Id>x</Id>
 <IsTop>true</IsTop>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>c15_exp</ParentId>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
 <IntLiteral>0</IntLiteral>
 </Start>
@@ -323,7 +323,7 @@
 <IsTop>false</IsTop>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>c16_exp</ParentId>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
 <IntLiteral>0</IntLiteral>
 </Start>
@@ -332,7 +332,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>c17_exp</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
 <IntLiteral>0</IntLiteral>
 </Start>
@@ -344,7 +344,7 @@
 <Id>y</Id>
 <IsTop>true</IsTop>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>c18_exp</ParentId>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
 <IntLiteral>0</IntLiteral>
 </Start>

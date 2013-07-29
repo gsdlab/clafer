@@ -30,12 +30,12 @@
 <IsTop>false</IsTop>
 </Exp></Super>
 </Supers>
-<Card><Min><IntLiteral>0</IntLiteral>
+<Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
 </Max>
 </Card>
-<GlobalCard><Min><IntLiteral>0</IntLiteral>
+<GlobalCard><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
 </Max>
@@ -76,13 +76,13 @@
 <Max><IntLiteral>1</IntLiteral>
 </Max>
 </Card>
-<GlobalCard><Min><IntLiteral>0</IntLiteral>
+<GlobalCard><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
 </Max>
 </GlobalCard>
 <Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>c3_exp</ParentId>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>=_((5,19),(5,27))</ParentId>
 <Position><Start><IntLiteral>5</IntLiteral>
 <IntLiteral>19</IntLiteral>
 </Start>
@@ -100,7 +100,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>c4_exp</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>this_((5,19),(5,23))</ParentId>
 <Position><Start><IntLiteral>5</IntLiteral>
 <IntLiteral>19</IntLiteral>
 </Start>
@@ -125,7 +125,7 @@
 <IsTop>false</IsTop>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>c5_exp</ParentId>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>1_((5,26),(5,27))</ParentId>
 <Position><Start><IntLiteral>5</IntLiteral>
 <IntLiteral>26</IntLiteral>
 </Start>
@@ -137,7 +137,7 @@
 </Exp></Argument>
 </Exp></ParentExp>
 </Declaration></Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>c6_exp</ParentId>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>=_((6,11),(6,21))</ParentId>
 <Position><Start><IntLiteral>6</IntLiteral>
 <IntLiteral>11</IntLiteral>
 </Start>
@@ -146,7 +146,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>c7_exp</ParentId>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>._((6,11),(6,17))</ParentId>
 <Position><Start><IntLiteral>6</IntLiteral>
 <IntLiteral>11</IntLiteral>
 </Start>
@@ -155,7 +155,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>c8_exp</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>this_((6,11),(6,15))</ParentId>
 <Position><Start><IntLiteral>6</IntLiteral>
 <IntLiteral>11</IntLiteral>
 </Start>
@@ -176,7 +176,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>c9_exp</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>i_((6,16),(6,17))</ParentId>
 <Position><Start><IntLiteral>6</IntLiteral>
 <IntLiteral>16</IntLiteral>
 </Start>
@@ -202,7 +202,7 @@
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>c10_exp</ParentId>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>1_((6,20),(6,21))</ParentId>
 <Position><Start><IntLiteral>6</IntLiteral>
 <IntLiteral>20</IntLiteral>
 </Start>
@@ -214,7 +214,7 @@
 </Exp></Argument>
 </Exp></ParentExp>
 </Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>c11_exp</ParentId>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>=_((7,11),(7,16))</ParentId>
 <Position><Start><IntLiteral>7</IntLiteral>
 <IntLiteral>11</IntLiteral>
 </Start>
@@ -223,7 +223,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>c12_exp</ParentId>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>i_((7,11),(7,12))</ParentId>
 <Position><Start><IntLiteral>7</IntLiteral>
 <IntLiteral>11</IntLiteral>
 </Start>
@@ -279,7 +279,7 @@
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>c13_exp</ParentId>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>1_((7,15),(7,16))</ParentId>
 <Position><Start><IntLiteral>7</IntLiteral>
 <IntLiteral>15</IntLiteral>
 </Start>

@@ -30,12 +30,12 @@
 <IsTop>false</IsTop>
 </Exp></Super>
 </Supers>
-<Card><Min><IntLiteral>0</IntLiteral>
+<Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
 </Max>
 </Card>
-<GlobalCard><Min><IntLiteral>0</IntLiteral>
+<GlobalCard><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
 </Max>
@@ -76,13 +76,13 @@
 <Max><IntLiteral>1</IntLiteral>
 </Max>
 </Card>
-<GlobalCard><Min><IntLiteral>0</IntLiteral>
+<GlobalCard><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
 </Max>
 </GlobalCard>
 </Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>c3_exp</ParentId>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>=_((3,4),(3,10))</ParentId>
 <Position><Start><IntLiteral>3</IntLiteral>
 <IntLiteral>4</IntLiteral>
 </Start>
@@ -91,7 +91,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>c4_exp</ParentId>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>y_((3,4),(3,5))</ParentId>
 <Position><Start><IntLiteral>3</IntLiteral>
 <IntLiteral>4</IntLiteral>
 </Start>
@@ -147,7 +147,7 @@
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>c5_exp</ParentId>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>*_((3,8),(3,10))</ParentId>
 <Position><Start><IntLiteral>3</IntLiteral>
 <IntLiteral>8</IntLiteral>
 </Start>
@@ -156,7 +156,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>*</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>c6_exp</ParentId>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>-1_((3,8),(3,10))</ParentId>
 <Position><Start><IntLiteral>3</IntLiteral>
 <IntLiteral>8</IntLiteral>
 </Start>
@@ -166,7 +166,7 @@
 </Position>
 <Exp xsi:type="cl:IIntExp"><IntLiteral>-1</IntLiteral>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>c7_exp</ParentId>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>1_((3,9),(3,10))</ParentId>
 <Position><Start><IntLiteral>3</IntLiteral>
 <IntLiteral>9</IntLiteral>
 </Start>

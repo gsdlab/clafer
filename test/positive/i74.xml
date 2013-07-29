@@ -112,12 +112,12 @@
 <IsTop>false</IsTop>
 </Exp></Super>
 </Supers>
-<Card><Min><IntLiteral>0</IntLiteral>
+<Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
 </Max>
 </Card>
-<GlobalCard><Min><IntLiteral>0</IntLiteral>
+<GlobalCard><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
 </Max>
@@ -158,13 +158,13 @@
 <Max><IntLiteral>1</IntLiteral>
 </Max>
 </Card>
-<GlobalCard><Min><IntLiteral>0</IntLiteral>
+<GlobalCard><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
 </Max>
 </GlobalCard>
 </Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>c5_exp</ParentId>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>ISome_((5,5),(5,18))</ParentId>
 <Position><Start><IntLiteral>5</IntLiteral>
 <IntLiteral>5</IntLiteral>
 </Start>
@@ -172,7 +172,7 @@
 <IntLiteral>18</IntLiteral>
 </End>
 </Position>
-<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>c6_exp</ParentId>
+<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>._((5,5),(5,18))</ParentId>
 <Position><Start><IntLiteral>5</IntLiteral>
 <IntLiteral>5</IntLiteral>
 </Start>
@@ -181,7 +181,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>c7_exp</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>Kernel_((5,5),(5,11))</ParentId>
 <Position><Start><IntLiteral>5</IntLiteral>
 <IntLiteral>5</IntLiteral>
 </Start>
@@ -193,7 +193,7 @@
 <Id>c1_Kernel</Id>
 <IsTop>true</IsTop>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>c8_exp</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>memory_((5,12),(5,18))</ParentId>
 <Position><Start><IntLiteral>5</IntLiteral>
 <IntLiteral>12</IntLiteral>
 </Start>

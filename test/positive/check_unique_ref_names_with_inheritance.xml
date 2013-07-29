@@ -194,18 +194,18 @@
 <IsTop>true</IsTop>
 </Exp></Super>
 </Supers>
-<Card><Min><IntLiteral>0</IntLiteral>
+<Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
 </Max>
 </Card>
-<GlobalCard><Min><IntLiteral>0</IntLiteral>
+<GlobalCard><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
 </Max>
 </GlobalCard>
 <Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>c6_exp</ParentId>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
 <IntLiteral>0</IntLiteral>
 </Start>
@@ -214,7 +214,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>&amp;&amp;</Operation>
-<Argument><Type xsi:type="cl:IBoolean" /><ParentId>c7_exp</ParentId>
+<Argument><Type xsi:type="cl:IBoolean" /><ParentId>=_((11,7),(11,20))</ParentId>
 <Position><Start><IntLiteral>11</IntLiteral>
 <IntLiteral>7</IntLiteral>
 </Start>
@@ -223,7 +223,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
-<Argument><Type xsi:type="cl:IString" /><ParentId>c8_exp</ParentId>
+<Argument><Type xsi:type="cl:IString" /><ParentId>Name_((11,7),(11,11))</ParentId>
 <Position><Start><IntLiteral>11</IntLiteral>
 <IntLiteral>7</IntLiteral>
 </Start>
@@ -279,7 +279,7 @@
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IString" /><ParentId>c9_exp</ParentId>
+<Argument><Type xsi:type="cl:IString" /><ParentId>"John"_((11,14),(11,20))</ParentId>
 <Position><Start><IntLiteral>11</IntLiteral>
 <IntLiteral>14</IntLiteral>
 </Start>
@@ -290,7 +290,7 @@
 <Exp xsi:type="cl:IStringExp"><StringLiteral>"John"</StringLiteral>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IBoolean" /><ParentId>c10_exp</ParentId>
+<Argument><Type xsi:type="cl:IBoolean" /><ParentId>=_((12,7),(12,33))</ParentId>
 <Position><Start><IntLiteral>12</IntLiteral>
 <IntLiteral>7</IntLiteral>
 </Start>
@@ -299,7 +299,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
-<Argument><Type xsi:type="cl:IString" /><ParentId>c11_exp</ParentId>
+<Argument><Type xsi:type="cl:IString" /><ParentId>DateOfBirth_((12,7),(12,18))</ParentId>
 <Position><Start><IntLiteral>12</IntLiteral>
 <IntLiteral>7</IntLiteral>
 </Start>
@@ -355,7 +355,7 @@
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IString" /><ParentId>c12_exp</ParentId>
+<Argument><Type xsi:type="cl:IString" /><ParentId>"01/02/1985"_((12,21),(12,33))</ParentId>
 <Position><Start><IntLiteral>12</IntLiteral>
 <IntLiteral>21</IntLiteral>
 </Start>

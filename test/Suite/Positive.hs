@@ -35,6 +35,7 @@ import qualified Test.Framework as T
 import Test.Framework.TH
 import Test.Framework.Providers.HUnit
 import Test.HUnit
+import qualified Data.Map as Map
 
 tg_Test_Suite_Positive :: T.Test
 tg_Test_Suite_Positive = $(testGroupGenerator)
@@ -77,6 +78,11 @@ case_nonempty_Cards = do
 		isEmptyCard (IRClafer (IClafer{cinPos=(Span (Pos l c) _), card = Nothing})) = "Line " ++ show l ++ " column " ++ show c ++ "\n"
 		isEmptyCard (IRClafer (IClafer{cinPos=(PosSpan _ (Pos l c) _), card = Nothing})) = "Line " ++ show l ++ " column " ++ show c ++ "\n"
 		isEmptyCard	_ = ""
+
+case_stringEqual :: Assertion
+case_stringEqual = do
+	let strMap = stringMap $ fromRight $ compileOneFragment defaultClaferArgs "A\n    text1 : string = \"some text\"\n    text2 : string = \"some text\""
+	(Map.size strMap) == 1 @? "Error string's assigned to differnet numbers!"
 
 case_numberOfSnapShots1 :: Assertion -- Make sure all snapshots are taken when debug is set to True!
 case_numberOfSnapShots1 = do

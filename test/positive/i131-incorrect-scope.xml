@@ -123,7 +123,7 @@
 </Max>
 </GlobalCard>
 <Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>c4_exp</ParentId>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>=_((7,4),(7,12))</ParentId>
 <Position><Start><IntLiteral>7</IntLiteral>
 <IntLiteral>4</IntLiteral>
 </Start>
@@ -132,7 +132,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>c5_exp</ParentId>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>#_((7,4),(7,8))</ParentId>
 <Position><Start><IntLiteral>7</IntLiteral>
 <IntLiteral>4</IntLiteral>
 </Start>
@@ -141,7 +141,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>#</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>c6_exp</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>leg_((7,5),(7,8))</ParentId>
 <Position><Start><IntLiteral>7</IntLiteral>
 <IntLiteral>5</IntLiteral>
 </Start>
@@ -176,7 +176,7 @@
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>c7_exp</ParentId>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>4_((7,11),(7,12))</ParentId>
 <Position><Start><IntLiteral>7</IntLiteral>
 <IntLiteral>11</IntLiteral>
 </Start>
@@ -203,7 +203,7 @@
 </Interval>
 </GroupCard>
 <Id>Spider</Id>
-<UniqueId>c8_Spider</UniqueId>
+<UniqueId>c4_Spider</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
 <Super><Type xsi:type="cl:ISet" /><ParentId>Animal_((9,10),(9,16))</ParentId>
 <Position><Start><IntLiteral>9</IntLiteral>
@@ -229,7 +229,7 @@
 </Max>
 </GlobalCard>
 <Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>c9_exp</ParentId>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>=_((10,4),(10,12))</ParentId>
 <Position><Start><IntLiteral>10</IntLiteral>
 <IntLiteral>4</IntLiteral>
 </Start>
@@ -238,7 +238,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>c10_exp</ParentId>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>#_((10,4),(10,8))</ParentId>
 <Position><Start><IntLiteral>10</IntLiteral>
 <IntLiteral>4</IntLiteral>
 </Start>
@@ -247,7 +247,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>#</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>c11_exp</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>leg_((10,5),(10,8))</ParentId>
 <Position><Start><IntLiteral>10</IntLiteral>
 <IntLiteral>5</IntLiteral>
 </Start>
@@ -282,7 +282,7 @@
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>c12_exp</ParentId>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>8_((10,11),(10,12))</ParentId>
 <Position><Start><IntLiteral>10</IntLiteral>
 <IntLiteral>11</IntLiteral>
 </Start>

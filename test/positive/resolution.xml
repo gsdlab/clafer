@@ -30,12 +30,12 @@
 <IsTop>false</IsTop>
 </Exp></Super>
 </Supers>
-<Card><Min><IntLiteral>0</IntLiteral>
+<Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
 </Max>
 </Card>
-<GlobalCard><Min><IntLiteral>0</IntLiteral>
+<GlobalCard><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
 </Max>
@@ -76,7 +76,7 @@
 <Max><IntLiteral>1</IntLiteral>
 </Max>
 </Card>
-<GlobalCard><Min><IntLiteral>0</IntLiteral>
+<GlobalCard><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
 </Max>
@@ -117,13 +117,13 @@
 <Max><IntLiteral>1</IntLiteral>
 </Max>
 </Card>
-<GlobalCard><Min><IntLiteral>0</IntLiteral>
+<GlobalCard><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
 </Max>
 </GlobalCard>
 </Declaration></Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>c4_exp</ParentId>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>ISome_((4,4),(4,5))</ParentId>
 <Position><Start><IntLiteral>4</IntLiteral>
 <IntLiteral>4</IntLiteral>
 </Start>
@@ -131,7 +131,7 @@
 <IntLiteral>5</IntLiteral>
 </End>
 </Position>
-<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>c5_exp</ParentId>
+<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>x_((4,4),(4,5))</ParentId>
 <Position><Start><IntLiteral>4</IntLiteral>
 <IntLiteral>4</IntLiteral>
 </Start>
@@ -182,7 +182,7 @@
 </Interval>
 </GroupCard>
 <Id>Z</Id>
-<UniqueId>c6_Z</UniqueId>
+<UniqueId>c4_Z</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
 <Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -197,12 +197,12 @@
 <IsTop>false</IsTop>
 </Exp></Super>
 </Supers>
-<Card><Min><IntLiteral>0</IntLiteral>
+<Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
 </Max>
 </Card>
-<GlobalCard><Min><IntLiteral>0</IntLiteral>
+<GlobalCard><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
 </Max>
@@ -223,7 +223,7 @@
 </Interval>
 </GroupCard>
 <Id>z</Id>
-<UniqueId>c7_z</UniqueId>
+<UniqueId>c5_z</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
 <Super><ParentId>int_((7,7),(7,10))</ParentId>
 <Position><Start><IntLiteral>7</IntLiteral>
@@ -243,7 +243,7 @@
 <Max><IntLiteral>1</IntLiteral>
 </Max>
 </Card>
-<GlobalCard><Min><IntLiteral>0</IntLiteral>
+<GlobalCard><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
 </Max>
@@ -264,7 +264,7 @@
 </Interval>
 </GroupCard>
 <Id>y</Id>
-<UniqueId>c8_y</UniqueId>
+<UniqueId>c6_y</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
 <Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -284,13 +284,13 @@
 <Max><IntLiteral>1</IntLiteral>
 </Max>
 </Card>
-<GlobalCard><Min><IntLiteral>0</IntLiteral>
+<GlobalCard><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
 </Max>
 </GlobalCard>
 </Declaration></Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>c9_exp</ParentId>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>>_((9,4),(9,9))</ParentId>
 <Position><Start><IntLiteral>9</IntLiteral>
 <IntLiteral>4</IntLiteral>
 </Start>
@@ -299,7 +299,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>&gt;</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>c10_exp</ParentId>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>z_((9,4),(9,5))</ParentId>
 <Position><Start><IntLiteral>9</IntLiteral>
 <IntLiteral>4</IntLiteral>
 </Start>
@@ -338,7 +338,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>c7_z</Id>
+<Id>c5_z</Id>
 <IsTop>false</IsTop>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
@@ -355,7 +355,7 @@
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>c11_exp</ParentId>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>0_((9,8),(9,9))</ParentId>
 <Position><Start><IntLiteral>9</IntLiteral>
 <IntLiteral>8</IntLiteral>
 </Start>

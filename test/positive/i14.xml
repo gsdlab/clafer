@@ -112,18 +112,18 @@
 <IsTop>true</IsTop>
 </Exp></Super>
 </Supers>
-<Card><Min><IntLiteral>0</IntLiteral>
+<Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
 </Max>
 </Card>
-<GlobalCard><Min><IntLiteral>0</IntLiteral>
+<GlobalCard><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
 </Max>
 </GlobalCard>
 <Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>c4_exp</ParentId>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>=_((8,11),(8,17))</ParentId>
 <Position><Start><IntLiteral>8</IntLiteral>
 <IntLiteral>11</IntLiteral>
 </Start>
@@ -132,7 +132,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>c5_exp</ParentId>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>a_((8,11),(8,12))</ParentId>
 <Position><Start><IntLiteral>8</IntLiteral>
 <IntLiteral>11</IntLiteral>
 </Start>
@@ -188,7 +188,7 @@
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>c6_exp</ParentId>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>10_((8,15),(8,17))</ParentId>
 <Position><Start><IntLiteral>8</IntLiteral>
 <IntLiteral>15</IntLiteral>
 </Start>

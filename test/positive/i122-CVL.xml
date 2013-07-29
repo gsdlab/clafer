@@ -30,12 +30,12 @@
 <IsTop>false</IsTop>
 </Exp></Super>
 </Supers>
-<Card><Min><IntLiteral>0</IntLiteral>
+<Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
 </Max>
 </Card>
-<GlobalCard><Min><IntLiteral>0</IntLiteral>
+<GlobalCard><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
 </Max>
@@ -645,12 +645,12 @@
 <IsTop>false</IsTop>
 </Exp></Super>
 </Supers>
-<Card><Min><IntLiteral>0</IntLiteral>
+<Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
 </Max>
 </Card>
-<GlobalCard><Min><IntLiteral>0</IntLiteral>
+<GlobalCard><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
 </Max>
@@ -820,7 +820,7 @@
 </Max>
 </GlobalCard>
 </Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>c21_exp</ParentId>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>=>_((22,6),(22,20))</ParentId>
 <Position><Start><IntLiteral>22</IntLiteral>
 <IntLiteral>6</IntLiteral>
 </Start>
@@ -829,7 +829,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=&gt;</Operation>
-<Argument><Type xsi:type="cl:IBoolean" /><ParentId>c22_exp</ParentId>
+<Argument><Type xsi:type="cl:IBoolean" /><ParentId>ISome_((22,6),(22,9))</ParentId>
 <Position><Start><IntLiteral>22</IntLiteral>
 <IntLiteral>6</IntLiteral>
 </Start>
@@ -837,7 +837,7 @@
 <IntLiteral>9</IntLiteral>
 </End>
 </Position>
-<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>c23_exp</ParentId>
+<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>fax_((22,6),(22,9))</ParentId>
 <Position><Start><IntLiteral>22</IntLiteral>
 <IntLiteral>6</IntLiteral>
 </Start>
@@ -872,7 +872,7 @@
 </Exp></Argument>
 </Exp></BodyParentExp>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IBoolean" /><ParentId>c24_exp</ParentId>
+<Argument><Type xsi:type="cl:IBoolean" /><ParentId>ISome_((22,13),(22,20))</ParentId>
 <Position><Start><IntLiteral>22</IntLiteral>
 <IntLiteral>13</IntLiteral>
 </Start>
@@ -880,7 +880,7 @@
 <IntLiteral>20</IntLiteral>
 </End>
 </Position>
-<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>c25_exp</ParentId>
+<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>printer_((22,13),(22,20))</ParentId>
 <Position><Start><IntLiteral>22</IntLiteral>
 <IntLiteral>13</IntLiteral>
 </Start>
@@ -917,7 +917,7 @@
 </Exp></Argument>
 </Exp></ParentExp>
 </Declaration></Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>c26_exp</ParentId>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>&&_((24,4),(24,49))</ParentId>
 <Position><Start><IntLiteral>24</IntLiteral>
 <IntLiteral>4</IntLiteral>
 </Start>
@@ -926,7 +926,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>&amp;&amp;</Operation>
-<Argument><Type xsi:type="cl:IBoolean" /><ParentId>c27_exp</ParentId>
+<Argument><Type xsi:type="cl:IBoolean" /><ParentId>=>_((24,4),(24,18))</ParentId>
 <Position><Start><IntLiteral>24</IntLiteral>
 <IntLiteral>4</IntLiteral>
 </Start>
@@ -935,7 +935,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=&gt;</Operation>
-<Argument><Type xsi:type="cl:IBoolean" /><ParentId>c28_exp</ParentId>
+<Argument><Type xsi:type="cl:IBoolean" /><ParentId>ISome_((24,4),(24,7))</ParentId>
 <Position><Start><IntLiteral>24</IntLiteral>
 <IntLiteral>4</IntLiteral>
 </Start>
@@ -943,7 +943,7 @@
 <IntLiteral>7</IntLiteral>
 </End>
 </Position>
-<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>c29_exp</ParentId>
+<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>fax_((24,4),(24,7))</ParentId>
 <Position><Start><IntLiteral>24</IntLiteral>
 <IntLiteral>4</IntLiteral>
 </Start>
@@ -978,7 +978,7 @@
 </Exp></Argument>
 </Exp></BodyParentExp>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IBoolean" /><ParentId>c30_exp</ParentId>
+<Argument><Type xsi:type="cl:IBoolean" /><ParentId>ISome_((24,11),(24,18))</ParentId>
 <Position><Start><IntLiteral>24</IntLiteral>
 <IntLiteral>11</IntLiteral>
 </Start>
@@ -986,7 +986,7 @@
 <IntLiteral>18</IntLiteral>
 </End>
 </Position>
-<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>c31_exp</ParentId>
+<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>printer_((24,11),(24,18))</ParentId>
 <Position><Start><IntLiteral>24</IntLiteral>
 <IntLiteral>11</IntLiteral>
 </Start>
@@ -1022,7 +1022,7 @@
 </Exp></BodyParentExp>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IBoolean" /><ParentId>c32_exp</ParentId>
+<Argument><Type xsi:type="cl:IBoolean" /><ParentId>=>_((24,24),(24,49))</ParentId>
 <Position><Start><IntLiteral>24</IntLiteral>
 <IntLiteral>24</IntLiteral>
 </Start>
@@ -1031,7 +1031,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=&gt;</Operation>
-<Argument><Type xsi:type="cl:IBoolean" /><ParentId>c33_exp</ParentId>
+<Argument><Type xsi:type="cl:IBoolean" /><ParentId>ISome_((24,24),(24,30))</ParentId>
 <Position><Start><IntLiteral>24</IntLiteral>
 <IntLiteral>24</IntLiteral>
 </Start>
@@ -1039,7 +1039,7 @@
 <IntLiteral>30</IntLiteral>
 </End>
 </Position>
-<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>c34_exp</ParentId>
+<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>copier_((24,24),(24,30))</ParentId>
 <Position><Start><IntLiteral>24</IntLiteral>
 <IntLiteral>24</IntLiteral>
 </Start>
@@ -1074,7 +1074,7 @@
 </Exp></Argument>
 </Exp></BodyParentExp>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IBoolean" /><ParentId>c35_exp</ParentId>
+<Argument><Type xsi:type="cl:IBoolean" /><ParentId>&&_((24,35),(24,49))</ParentId>
 <Position><Start><IntLiteral>24</IntLiteral>
 <IntLiteral>35</IntLiteral>
 </Start>
@@ -1083,7 +1083,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>&amp;&amp;</Operation>
-<Argument><Type xsi:type="cl:IBoolean" /><ParentId>c36_exp</ParentId>
+<Argument><Type xsi:type="cl:IBoolean" /><ParentId>ISome_((24,35),(24,38))</ParentId>
 <Position><Start><IntLiteral>24</IntLiteral>
 <IntLiteral>35</IntLiteral>
 </Start>
@@ -1091,7 +1091,7 @@
 <IntLiteral>38</IntLiteral>
 </End>
 </Position>
-<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>c37_exp</ParentId>
+<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>fax_((24,35),(24,38))</ParentId>
 <Position><Start><IntLiteral>24</IntLiteral>
 <IntLiteral>35</IntLiteral>
 </Start>
@@ -1126,7 +1126,7 @@
 </Exp></Argument>
 </Exp></BodyParentExp>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IBoolean" /><ParentId>c38_exp</ParentId>
+<Argument><Type xsi:type="cl:IBoolean" /><ParentId>ISome_((24,42),(24,49))</ParentId>
 <Position><Start><IntLiteral>24</IntLiteral>
 <IntLiteral>42</IntLiteral>
 </Start>
@@ -1134,7 +1134,7 @@
 <IntLiteral>49</IntLiteral>
 </End>
 </Position>
-<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>c39_exp</ParentId>
+<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>printer_((24,42),(24,49))</ParentId>
 <Position><Start><IntLiteral>24</IntLiteral>
 <IntLiteral>42</IntLiteral>
 </Start>

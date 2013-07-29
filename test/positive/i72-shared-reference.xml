@@ -71,12 +71,12 @@
 <IsTop>true</IsTop>
 </Exp></Super>
 </Supers>
-<Card><Min><IntLiteral>0</IntLiteral>
+<Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
 </Max>
 </Card>
-<GlobalCard><Min><IntLiteral>0</IntLiteral>
+<GlobalCard><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
 </Max>
@@ -112,12 +112,12 @@
 <IsTop>true</IsTop>
 </Exp></Super>
 </Supers>
-<Card><Min><IntLiteral>0</IntLiteral>
+<Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
 </Max>
 </Card>
-<GlobalCard><Min><IntLiteral>0</IntLiteral>
+<GlobalCard><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
 </Max>
@@ -205,7 +205,7 @@
 </Max>
 </GlobalCard>
 </Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>c6_exp</ParentId>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
 <IntLiteral>0</IntLiteral>
 </Start>
@@ -251,7 +251,7 @@
 </Exp></Argument>
 </Exp></Body>
 </Declaration>
-<BodyParentExp><Type xsi:type="cl:IBoolean" /><ParentId>c8_exp</ParentId>
+<BodyParentExp><Type xsi:type="cl:IBoolean" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
 <IntLiteral>0</IntLiteral>
 </Start>
@@ -260,7 +260,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>!=</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>c9_exp</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
 <IntLiteral>0</IntLiteral>
 </Start>
@@ -269,7 +269,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>c10_exp</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
 <IntLiteral>0</IntLiteral>
 </Start>
@@ -281,7 +281,7 @@
 <Id>x</Id>
 <IsTop>true</IsTop>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>c11_exp</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
 <IntLiteral>0</IntLiteral>
 </Start>
@@ -294,7 +294,7 @@
 <IsTop>false</IsTop>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>c12_exp</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
 <IntLiteral>0</IntLiteral>
 </Start>
@@ -303,7 +303,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>c13_exp</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
 <IntLiteral>0</IntLiteral>
 </Start>
@@ -315,7 +315,7 @@
 <Id>y</Id>
 <IsTop>true</IsTop>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>c14_exp</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
 <IntLiteral>0</IntLiteral>
 </Start>
@@ -346,7 +346,7 @@
 </Interval>
 </GroupCard>
 <Id>BusLine</Id>
-<UniqueId>c15_BusLine</UniqueId>
+<UniqueId>c6_BusLine</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
 <Super><Type xsi:type="cl:ISet" /><ParentId>WaitingLine_((10,11),(10,22))</ParentId>
 <Position><Start><IntLiteral>10</IntLiteral>
@@ -361,18 +361,18 @@
 <IsTop>true</IsTop>
 </Exp></Super>
 </Supers>
-<Card><Min><IntLiteral>0</IntLiteral>
+<Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
 </Max>
 </Card>
-<GlobalCard><Min><IntLiteral>0</IntLiteral>
+<GlobalCard><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
 </Max>
 </GlobalCard>
 <Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>c16_exp</ParentId>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
 <IntLiteral>0</IntLiteral>
 </Start>
@@ -381,7 +381,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>&amp;&amp;</Operation>
-<Argument><Type xsi:type="cl:IBoolean" /><ParentId>c17_exp</ParentId>
+<Argument><Type xsi:type="cl:IBoolean" /><ParentId>in_((11,7),(11,30))</ParentId>
 <Position><Start><IntLiteral>11</IntLiteral>
 <IntLiteral>7</IntLiteral>
 </Start>
@@ -390,7 +390,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>in</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>c18_exp</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>JohnDoe_((11,7),(11,14))</ParentId>
 <Position><Start><IntLiteral>11</IntLiteral>
 <IntLiteral>7</IntLiteral>
 </Start>
@@ -402,7 +402,7 @@
 <Id>c2_JohnDoe</Id>
 <IsTop>true</IsTop>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>c19_exp</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>participants_((11,18),(11,30))</ParentId>
 <Position><Start><IntLiteral>11</IntLiteral>
 <IntLiteral>18</IntLiteral>
 </Start>
@@ -459,7 +459,7 @@
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IBoolean" /><ParentId>c20_exp</ParentId>
+<Argument><Type xsi:type="cl:IBoolean" /><ParentId>in_((12,7),(12,31))</ParentId>
 <Position><Start><IntLiteral>12</IntLiteral>
 <IntLiteral>7</IntLiteral>
 </Start>
@@ -468,7 +468,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>in</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>c21_exp</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>MaryJane_((12,7),(12,15))</ParentId>
 <Position><Start><IntLiteral>12</IntLiteral>
 <IntLiteral>7</IntLiteral>
 </Start>
@@ -480,7 +480,7 @@
 <Id>c3_MaryJane</Id>
 <IsTop>true</IsTop>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>c22_exp</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>participants_((12,19),(12,31))</ParentId>
 <Position><Start><IntLiteral>12</IntLiteral>
 <IntLiteral>19</IntLiteral>
 </Start>
@@ -554,7 +554,7 @@
 </Interval>
 </GroupCard>
 <Id>JohnAndMaryLine</Id>
-<UniqueId>c23_JohnAndMaryLine</UniqueId>
+<UniqueId>c7_JohnAndMaryLine</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
 <Super><Type xsi:type="cl:ISet" /><ParentId>WaitingLine_((14,19),(14,30))</ParentId>
 <Position><Start><IntLiteral>14</IntLiteral>
@@ -569,18 +569,18 @@
 <IsTop>true</IsTop>
 </Exp></Super>
 </Supers>
-<Card><Min><IntLiteral>0</IntLiteral>
+<Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
 </Max>
 </Card>
-<GlobalCard><Min><IntLiteral>0</IntLiteral>
+<GlobalCard><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
 </Max>
 </GlobalCard>
 <Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>c24_exp</ParentId>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>=_((15,7),(15,40))</ParentId>
 <Position><Start><IntLiteral>15</IntLiteral>
 <IntLiteral>7</IntLiteral>
 </Start>
@@ -589,7 +589,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>c25_exp</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>participants_((15,7),(15,19))</ParentId>
 <Position><Start><IntLiteral>15</IntLiteral>
 <IntLiteral>7</IntLiteral>
 </Start>
@@ -645,7 +645,7 @@
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>c26_exp</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>++_((15,23),(15,40))</ParentId>
 <Position><Start><IntLiteral>15</IntLiteral>
 <IntLiteral>23</IntLiteral>
 </Start>
@@ -654,7 +654,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>++</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>c27_exp</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>JohnDoe_((15,23),(15,30))</ParentId>
 <Position><Start><IntLiteral>15</IntLiteral>
 <IntLiteral>23</IntLiteral>
 </Start>
@@ -666,7 +666,7 @@
 <Id>c2_JohnDoe</Id>
 <IsTop>true</IsTop>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>c28_exp</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>MaryJane_((15,32),(15,40))</ParentId>
 <Position><Start><IntLiteral>15</IntLiteral>
 <IntLiteral>32</IntLiteral>
 </Start>

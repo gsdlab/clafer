@@ -261,10 +261,9 @@ genConstraints    cargs    resPath c = (genParentConst resPath c) :
   genConst x = case x of
     IEConstraint _ pexp  -> genPExp cargs ((uid c) : resPath) pexp
     IEClafer c' ->
-        if genCardCrude crd `elem` ["one", "lone", "some"]
-        then CString "" else mkCard ({- do not use the genRelName as the constraint name -} uid c') False (genRelName $ uid c') $ fromJust crd
+        if genCardCrude (card c') `elem` ["one", "lone", "some"]
+        then CString "" else mkCard ({- do not use the genRelName as the constraint name -} uid c') False (genRelName $ uid c') $ fromJust (card c')
     IEGoal _ _ -> error "getConst function from Alloy generator was given a Goal, this function should only be given a Constrain or Clafer" -- This should never happen
-  crd = card c
 
 -- optimization: if only boolean features then the parent is unique
 genParentConst :: [String] -> IClafer -> Concat
@@ -356,7 +355,7 @@ genInterval    constraintName group'   element   x         = case x of
     s1 = if n == 0 then Nothing else Just $ cardLowerConcat constraintName group' [CString $ concat [show n, " <= #",  element]]
     s2 =
         do
-            result <- genExInteger element exinteger
+            result <- genExInteger element x exinteger
             return $ cardUpperConcat constraintName group' [CString result]
 
 
@@ -372,9 +371,10 @@ cardUpperConcat :: String        -> Bool -> [Concat] -> Concat
 cardUpperConcat    constraintName = Concat . UpperCard constraintName
 
 
-genExInteger :: String -> Integer -> Maybe Result
-genExInteger    element   x        =
-  if x == -1 then Nothing else Just $ concat ["#", element, " <= ", show x]
+genExInteger :: String -> Interval -> Integer -> Maybe Result
+genExInteger    element  (y,z) x  =
+  if (y==0 && z==0) then Just $ concat ["#", element, " = ", "0"] else
+    if x == -1 then Nothing else Just $ concat ["#", element, " <= ", show x]
 
 
 -- -----------------------------------------------------------------------------
