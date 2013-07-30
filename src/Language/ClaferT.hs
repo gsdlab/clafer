@@ -104,7 +104,7 @@ data ClaferEnv = ClaferEnv {
                             frags :: [Pos],    -- line numbers of fragment markers
                             irModuleTrace :: Map Span [Ir],
                             astModuleTrace :: Map Span [Ast],
-                            parentMap :: Map Span Span
+                            parentMap :: Map Span IClafer
                             } deriving Show
 
 getAst :: (Monad m) => ClaferT m Module

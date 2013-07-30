@@ -28,15 +28,16 @@ import qualified Data.Map as Map
 
 import Language.Clafer.Common
 import Language.Clafer.ClaferArgs
+import Language.Clafer.Front.Absclafer
 import Language.Clafer.Intermediate.Intclafer
 import Language.Clafer.Intermediate.ResolverName
 import Language.Clafer.Intermediate.ResolverType
 import Language.Clafer.Intermediate.ResolverInheritance
 
-resolveModule :: ClaferArgs -> IModule -> Resolve (IModule, GEnv)
-resolveModule args' declarations =
+resolveModule :: (Map.Map Span IClafer) -> ClaferArgs -> IModule -> Resolve (IModule, GEnv)
+resolveModule m args' declarations =
   do
-    r <- resolveNModule $ nameModule (skip_resolver args') declarations
+    r <- resolveNModule m $ nameModule (skip_resolver args') declarations
     resolveNamesModule args' =<< (rom' $ rem' r)
   where
   rem' = if flatten_inheritance args' then resolveEModule else id
