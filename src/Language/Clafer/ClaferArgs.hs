@@ -64,6 +64,7 @@ data ClaferArgs = ClaferArgs {
       ecore2clafer :: Bool,
       scope_strategy :: ScopeStrategy,
       afm :: Bool,
+      skip_goals :: Bool,
       file :: FilePath
     } deriving (Show, Data, Typeable)
 
@@ -91,6 +92,7 @@ clafer = ClaferArgs {
   ecore2clafer        = def &= help "Translate an ECore model into Clafer.",
   scope_strategy      = def &= help "Use scope computation strategy: none, simple (default), or full." &= name "ss",
   afm                 = def &= help "Throws an error if the cardinality of any of the clafers is above 1." &= name "check-afm",
+  skip_goals          = def &= help "Still compiles, typecheckes etc goals but the alloy code is not generated for them/" &= name "sg",
   file                = def &= args   &= typ "FILE"
  } &= summary ("Clafer " ++ version) &= program "clafer"
 
@@ -104,7 +106,8 @@ mergeArgs a1 a2  = ClaferArgs (mergeArg mode) (coMergeArg)
   (mergeArg alloy_mapping) (mergeArg self_contained) 
   (mergeArg add_graph) (mergeArg show_references) 
   (mergeArg add_comments) (mergeArg ecore2clafer) 
-  (mergeArg scope_strategy) (mergeArg afm) (mergeArg file)
+  (mergeArg scope_strategy) (mergeArg afm) (mergeArg skip_goals) 
+  (mergeArg file)
   where
     coMergeArg :: Bool
     coMergeArg = if (r1 /= False) then r1 else 
@@ -131,4 +134,4 @@ mainArgs = do
            process (cmdArgsMode clafer) $ Language.Clafer.SplitJoin.splitArgs options, model)
 
 defaultClaferArgs :: ClaferArgs
-defaultClaferArgs = ClaferArgs Alloy True False 0 False False False False False False False False False "tools/" False False False False False False Simple False ""
+defaultClaferArgs = ClaferArgs Alloy True False 0 False False False False False False False False False "tools/" False False False False False False Simple False False ""

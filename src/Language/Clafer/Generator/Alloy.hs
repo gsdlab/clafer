@@ -91,7 +91,7 @@ genModule :: ClaferArgs -> (IModule, GEnv) -> (Result, [(Span, IrTrace)])
 genModule    claferargs    (imodule, _)     = (flatten output, filter ((/= NoTrace) . snd) $ mapLineCol output)
   where
   output = header claferargs imodule +++ (cconcat $ map (genDeclaration claferargs) (mDecls imodule)) +++ 
-       if length goals_list > 0 then 
+       if ((not $ skip_goals claferargs) && length goals_list > 0) then 
                 CString "objectives o_global {\n" +++   (cintercalate (CString ",\n") goals_list) +++   CString "\n}" 
        else  
                 CString "" 
