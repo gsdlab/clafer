@@ -1,0 +1,27 @@
+abstract car
+    xor transmission
+        automatic
+        manual
+    `fca ?
+    `cc
+    [acc => fca]
+//# FRAGMENT
+abstract fca
+    xor sensor
+        radar
+        lidar
+//# FRAGMENT
+abstract cc
+    switches 2..3
+        backlight ?
+    acc ?
+//# FRAGMENT
+abstract camaro : car
+    [all s : switches | s.backlight]
+    transformer ?
+        [ # switches = 3 ]
+//# FRAGMENT
+bumbleBee : camaro
+    [ transformer ]
+    [ manual ]
+//# FRAGMENT

@@ -1,0 +1,66 @@
+abstract Person
+  Name : string
+  Surname : string
+  DateOfBirth  : date
+  or Gender
+    Male
+    Female
+  xor MaritalStatus
+    NeverMarried
+    Married
+    Divorced
+  Address
+    Street : string
+      UnitNo : string ?
+    City : string
+    Country : string
+    PostalCode : string
+//# FRAGMENT
+abstract date : string
+// here should go format regular expression
+//# FRAGMENT
+JohnDoe : Person
+  [ Name = "John" ]
+  [ Surname = "Doe" ]
+  [ DateOfBirth = "01/02/1985" ]
+  [ Male ]
+  [ Married ]
+  [ Street = "123 Main St." ]
+  [ City = "Great Town" ]
+  [ Country = "Canada" ]
+  [ PostalCode = "A1B 2C3" ]
+
+//# FRAGMENT
+abstract Student : Person
+  StudentId : string
+//# FRAGMENT
+abstract  WaitingLine 
+  participants -> Person *
+//# FRAGMENT
+MaryJane  :  Student
+  [ Name = "Mary Jane" ]
+  [ StudentId = "MJ13421354" ]
+//# FRAGMENT
+BusLine : WaitingLine
+  [ JohnDoe in participants ]
+  [ MaryJane in participants ]
+//# FRAGMENT
+JohnAndMaryLine : WaitingLine
+  [ participants = JohnDoe, MaryJane ]
+//# FRAGMENT
+abstract TwoPersonLine : WaitingLine
+  [ # participants  = 2 ]
+//# FRAGMENT
+abstract OneToTenPersonLine : WaitingLine
+  [ # participants  >= 1 ]
+  [ # participants  <= 10]
+
+//# FRAGMENT
+enum NorthAmericanCountry = Canada | USA | Mexico
+
+abstract Person2
+  Country -> NorthAmericanCountry
+//# FRAGMENT
+JohnDoe2 : Person2
+  [ Country = Canada ]
+//# FRAGMENT

@@ -1,0 +1,16 @@
+abstract Value
+
+abstract Attribute
+    value -> Value
+
+abstract ActionName: Attribute
+abstract Role: Attribute
+abstract ResourceName: Attribute
+
+abstract Element
+    abstract attributes: Attribute *    // added "abstract" - derived union!!!
+//# FRAGMENT
+enum Effect = Permit | Deny | NotApplicable | Indeterminate
+//# FRAGMENT
+enum CombiningAlgo = PermitOverrides | DenyOverrides | OnlyOneApplicable
+//# FRAGMENT

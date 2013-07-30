@@ -1,0 +1,73 @@
+open util/integer
+pred show {}
+
+
+abstract sig c1_Car
+{ r_c2_ABS : lone c2_ABS
+, r_c3_CC : lone c3_CC
+, r_c7_Transmission : one c7_Transmission
+, r_c10_FCA : lone c10_FCA }
+
+sig c2_ABS
+{}
+{ one @r_c2_ABS.this }
+
+sig c3_CC
+{ r_c4_ACC : lone c4_ACC }
+{ one @r_c3_CC.this }
+
+sig c4_ACC
+{}
+{ one @r_c4_ACC.this
+  some ((this.~@r_c4_ACC).~@r_c3_CC).@r_c10_FCA }
+
+sig c7_Transmission
+{ r_c8_Automatic : lone c8_Automatic
+, r_c9_Manual : lone c9_Manual }
+{ one @r_c7_Transmission.this
+  let children = (r_c8_Automatic + r_c9_Manual) | one children }
+
+sig c8_Automatic
+{}
+{ one @r_c8_Automatic.this }
+
+sig c9_Manual
+{}
+{ one @r_c9_Manual.this }
+
+sig c10_FCA
+{ r_c11_Sensor : one c11_Sensor
+, r_c14_Alert : lone c14_Alert }
+{ one @r_c10_FCA.this }
+
+sig c11_Sensor
+{ r_c12_Radar : lone c12_Radar
+, r_c13_Lidar : lone c13_Lidar }
+{ one @r_c11_Sensor.this
+  let children = (r_c12_Radar + r_c13_Lidar) | one children }
+
+sig c12_Radar
+{}
+{ one @r_c12_Radar.this }
+
+sig c13_Lidar
+{}
+{ one @r_c13_Lidar.this }
+
+sig c14_Alert
+{ r_c15_Haptic : lone c15_Haptic
+, r_c16_Audible : lone c16_Audible }
+{ one @r_c14_Alert.this
+  let children = (r_c15_Haptic + r_c16_Audible) | one children }
+
+sig c15_Haptic
+{}
+{ one @r_c15_Haptic.this }
+
+sig c16_Audible
+{}
+{ one @r_c16_Audible.this }
+
+lone sig c17_aCar extends c1_Car
+{}
+
