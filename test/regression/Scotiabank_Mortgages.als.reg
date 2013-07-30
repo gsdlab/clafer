@@ -1,0 +1,150 @@
+open util/integer
+pred show {}
+
+
+fact { #c1_Currency <= 0 }
+abstract sig c1_Currency
+{ ref : one Int }
+
+fact { #c2_Percentage <= 0 }
+abstract sig c2_Percentage
+{ ref : one Int }
+{ ((this.@ref) >= 0) && ((this.@ref) <= 100) }
+
+fact { #c10_Mortgage <= 0 }
+abstract sig c10_Mortgage
+{ r_c11_valueProposition : one c11_valueProposition
+, r_c12_term : one c12_term
+, r_c22_kind : one c22_kind
+, r_c25_principalMortgageAmount : one c25_principalMortgageAmount
+, r_c42_balance : one c42_balance
+, r_c55_propertyValue : one c55_propertyValue
+, r_c65_loanToValue : one c65_loanToValue
+, r_c75_amortization : one c75_amortization
+, r_c83_interestRate : one c83_interestRate
+, r_c86_currentInterestRate : one c86_currentInterestRate
+, r_c96_currentPayment : one c96_currentPayment
+, r_c106_paymentFrequency : one c106_paymentFrequency
+, r_c111_financingAvailable : one c111_financingAvailable }
+{ all disj x, y : this.@r_c12_term | (x.@ref) != (y.@ref)
+  all disj x, y : this.@r_c25_principalMortgageAmount | (x.@ref) != (y.@ref)
+  (5000 <= (this.((@r_c25_principalMortgageAmount.@ref).@ref))) && ((this.((@r_c25_principalMortgageAmount.@ref).@ref)) <= 9999999)
+  all disj x, y : this.@r_c42_balance | (x.@ref) != (y.@ref)
+  (this.((@r_c42_balance.@ref).@ref)) <= (this.((@r_c25_principalMortgageAmount.@ref).@ref))
+  all disj x, y : this.@r_c55_propertyValue | (x.@ref) != (y.@ref)
+  all disj x, y : this.@r_c65_loanToValue | (x.@ref) != (y.@ref)
+  (1 <= (this.(@r_c75_amortization.@ref))) && ((this.(@r_c75_amortization.@ref)) <= 30)
+  all disj x, y : this.@r_c86_currentInterestRate | (x.@ref) != (y.@ref)
+  all disj x, y : this.@r_c96_currentPayment | (x.@ref) != (y.@ref) }
+
+sig c11_valueProposition
+{ ref : one Int }
+{ one @r_c11_valueProposition.this }
+
+sig c12_term
+{ ref : one c114_MortgageTerm }
+{ one @r_c12_term.this }
+
+sig c22_kind
+{ r_c23_open : lone c23_open
+, r_c24_closed : lone c24_closed }
+{ one @r_c22_kind.this
+  let children = (r_c23_open + r_c24_closed) | one children }
+
+sig c23_open
+{}
+{ one @r_c23_open.this }
+
+sig c24_closed
+{}
+{ one @r_c24_closed.this }
+
+sig c25_principalMortgageAmount
+{ ref : one c1_Currency }
+{ one @r_c25_principalMortgageAmount.this }
+
+sig c42_balance
+{ ref : one c1_Currency }
+{ one @r_c42_balance.this }
+
+sig c55_propertyValue
+{ ref : one c1_Currency }
+{ one @r_c55_propertyValue.this }
+
+sig c65_loanToValue
+{ ref : one c2_Percentage }
+{ one @r_c65_loanToValue.this }
+
+sig c75_amortization
+{ ref : one Int }
+{ one @r_c75_amortization.this }
+
+sig c83_interestRate
+{ r_c84_fixedForTheFullTerm : lone c84_fixedForTheFullTerm
+, r_c85_resetTogetherWithPaymentAmountEachTimeScotiabankPrimeRateChanges : lone c85_resetTogetherWithPaymentAmountEachTimeScotiabankPrimeRateChanges }
+{ one @r_c83_interestRate.this
+  let children = (r_c84_fixedForTheFullTerm + r_c85_resetTogetherWithPaymentAmountEachTimeScotiabankPrimeRateChanges) | one children }
+
+sig c84_fixedForTheFullTerm
+{}
+{ one @r_c84_fixedForTheFullTerm.this }
+
+sig c85_resetTogetherWithPaymentAmountEachTimeScotiabankPrimeRateChanges
+{}
+{ one @r_c85_resetTogetherWithPaymentAmountEachTimeScotiabankPrimeRateChanges.this }
+
+sig c86_currentInterestRate
+{ ref : one c2_Percentage }
+{ one @r_c86_currentInterestRate.this }
+
+sig c96_currentPayment
+{ ref : one c1_Currency }
+{ one @r_c96_currentPayment.this }
+
+sig c106_paymentFrequency
+{ r_c107_weekly : lone c107_weekly
+, r_c108_biweekly : lone c108_biweekly
+, r_c109_semiMonthly : lone c109_semiMonthly
+, r_c110_monthly : lone c110_monthly }
+{ one @r_c106_paymentFrequency.this
+  let children = (r_c107_weekly + r_c108_biweekly + r_c109_semiMonthly + r_c110_monthly) | one children }
+
+sig c107_weekly
+{}
+{ one @r_c107_weekly.this }
+
+sig c108_biweekly
+{}
+{ one @r_c108_biweekly.this }
+
+sig c109_semiMonthly
+{}
+{ one @r_c109_semiMonthly.this }
+
+sig c110_monthly
+{}
+{ one @r_c110_monthly.this }
+
+sig c111_financingAvailable
+{ r_c112_conventional : lone c112_conventional
+, r_c113_insured : lone c113_insured }
+{ one @r_c111_financingAvailable.this
+  let children = (r_c112_conventional + r_c113_insured) | one children }
+
+sig c112_conventional
+{}
+{ one @r_c112_conventional.this }
+
+sig c113_insured
+{}
+{ one @r_c113_insured.this }
+
+abstract sig c114_MortgageTerm
+{}
+
+lone sig c115_sixMonths extends c114_MortgageTerm
+{}
+
+lone sig c116_oneYear extends c114_MortgageTerm
+{}
+

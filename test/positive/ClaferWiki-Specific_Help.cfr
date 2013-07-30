@@ -1,0 +1,14 @@
+abstract A
+  c -> C *
+
+A1 : A
+  [ #c = 2 ]
+
+abstract B : A
+
+abstract C
+//# FRAGMENT
+C1 : C
+
+C2 : C
+//# FRAGMENT
