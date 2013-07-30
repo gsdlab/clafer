@@ -1,0 +1,61 @@
+abstract Feature
+    cost: integer
+
+abstract ComfortFeature : Feature
+    comfort: integer
+
+abstract FuelFeature : ComfortFeature
+    fuel: integer
+//# FRAGMENT
+abstract Car
+    ABS : Feature ?
+        [this.cost = 2]
+    CC : FuelFeature ?
+        [this.fuel = 1]
+        [this.comfort = 3]
+        [this.cost = 4]
+        ACC : FuelFeature ?
+            [this.fuel = 2]
+            [this.comfort = 6]
+            [this.cost = 3]
+            [FCA]
+    xor Transmission : Feature
+        [this.cost = 0]
+        Automatic : FuelFeature
+            [this.fuel = 2]
+            [this.comfort = 2]
+            [this.cost = 3]     
+        Manual : FuelFeature
+            [this.fuel = 0]
+            [this.comfort = 1]
+            [this.cost = 2]
+    FCA : FuelFeature ?
+        [this.fuel = 2]
+        [this.comfort = 4]
+        [this.cost = 5]
+        xor Sensor : Feature
+            [this.cost = 0]
+            Radar : Feature
+                [this.cost = 2]
+            Lidar : Feature
+                [this.cost = 4]
+                
+        xor Alert : Feature ?
+            [this.cost = 0]
+            Haptic : ComfortFeature
+                [this.comfort = 4]
+                [this.cost = 2]                
+            Audible : ComfortFeature
+                [this.comfort = 2]
+                [this.cost = 1]
+
+    total_cost : integer = sum Feature.cost
+    total_comfort : integer = sum ComfortFeature.cost
+    total_fuel : integer = sum FuelFeature.cost
+//# FRAGMENT
+aCar : Car
+//# FRAGMENT
+<< min aCar.total_cost >>
+<< min aCar.total_fuel >>
+<< max aCar.total_comfort >>
+//# FRAGMENT

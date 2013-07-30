@@ -1,0 +1,88 @@
+abstract degree : integer
+    [ this > 0 && this <= 360 ]
+//# FRAGMENT
+abstract Vehicle
+    `DriveConfiguration
+    `ElectronicStabilityControlSystem
+    `AntiLockBreakSystem
+    `TractionControlSystem
+    AckermanSteerAngle -> degree
+    speed : integer
+    lateralAcceleration -> integer
+    sideSlipAngle -> degree
+    yawRate -> degree
+    normalYawRate -> degree
+        givenAckermanSteerAngle
+    hasOversteer ?
+    [yawRate > normalYawRate <=> hasOversteer ]
+    hasUndersteer ?
+    [yawRate < normalYawRate <=> hasUndersteer ]
+    GVWR : integer
+//# FRAGMENT
+abstract xor DriveConfiguration
+    twoWheelDrive
+    frontWheelDrive
+    rearWheelDrive
+    allWheelDrive
+    xor fourWheelDrive
+        highGearWithLockedDifferential
+        lowGear
+//# FRAGMENT
+abstract ElectronicStabilityControlSystem
+    vehicle -> Vehicle
+    augmentsVehiclesDirectionalStability
+        adjustsBrakeTorquesToInduceCorrectingYawMoment
+            toEachWheelIndividually
+    limits
+       understeer
+       oversteer
+    estimates
+        YawRate
+        sideSlip 
+            derivativeWithRespectToTime
+    monitors 
+        driverSteeringInputs
+        modifiesEngineTorque
+    isOperational ?
+        [ vehicle.speed > 20 ]
+        duringAllPhasesOfDriving
+            acceleration
+            coasting
+            deceleration
+            breaking
+        withAntiLockBrakeSystem
+        withTractionControlSystem
+    or isNotOperational
+        whenTurnedOffByTheDriver ?
+        whenDrivenInReverse ?
+        duringSystemInitialization ?
+    Mode
+        driverSelected ?
+        xor type
+            standard // (default)
+            performance
+            snowOrSlipperyRoad
+            Off
+    entersStandardModeAfterIgnition
+    satisfies
+        stabilityCriteria
+        responsivenessCriterion
+    or MalfunctionTelltale ?
+        malfunctionDetected
+            mustRemainContinuouslyIlluminatedForAsLongAsMalfunctionExists
+        ignitionLockInOnPosition
+        mustExtinguishAtTheNextIgnitionCycleAfterTheMalfunctionHasBeenCorrected
+        flashingWhenInOperation ?
+        mustIlluminateWhenIgnitionControlInCheckPosition
+    SystemControls
+        Off
+        xor ignitionControlPosition
+            Off
+            Check
+            On
+            Start
+
+abstract AntiLockBreakSystem
+
+abstract TractionControlSystem
+//# FRAGMENT

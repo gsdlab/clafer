@@ -1,0 +1,80 @@
+abstract Feature
+    productivity : integer
+    cost : integer
+    batterylife : integer
+    security : integer
+//# FRAGMENT
+abstract MobilePhone
+    Connectivity : Feature
+        [ batterylife = -12]
+        [ productivity = 14]
+        [ security = 43]
+        [ cost = 101]        
+        xor Bluetooth : Feature        
+            [ batterylife = 0]
+            [ productivity = 0]
+            [ security = 0]
+            [ cost = 0]
+            Bluetooth20EDR : Feature
+                [ batterylife = -4]
+                [ productivity = 1]
+                [ security = -15]
+                [ cost = 1]
+            Bluetooth21EDR : Feature
+                [ batterylife = -2]
+                [ productivity = 4]
+                [ security = -10]
+                [ cost = 1]
+            Bluetooth40 : Feature
+                [ batterylife = -1]
+                [ productivity = 16]
+                [ security = -2]
+                [ cost = 2]
+        GSM : Feature
+            [ batterylife = -2]
+            [ productivity = 2]
+            [ security = -10]
+            [ cost = 1]
+        LTE : Feature ?
+            [ batterylife = -1]
+            [ productivity = 16]
+            [ security = -3]
+            [ cost = 3]
+        WiFi: Feature ?
+            [ batterylife = -10]
+            [ productivity = 20]
+            [ security = -15]
+            [ cost = 20]
+        USB : Feature ?
+            [ batterylife = 10]
+            [ productivity = 20]
+            [ security = 0]
+            [ cost = 3]
+    xor Battery : Feature
+        [ batterylife = 0]
+        [ productivity = 0]
+        [ security = 0]
+        [ cost = 0]
+        LiBattery1150 : Feature
+            [ batterylife = 60]
+            [ productivity = 0]
+            [ security = 0]
+            [ cost = 10]
+        LiBattery1400 : Feature
+            [ batterylife = 70]
+            [ productivity = 0]
+            [ security = 0]
+            [ cost = 15]
+
+    total_productivity : integer = sum Feature.productivity
+    total_batterylife : integer = sum Feature.batterylife
+    total_security : integer = sum Feature.security
+    total_cost : integer = sum Feature.cost
+//# FRAGMENT
+<< max OptimalPhone.total_batterylife >>
+<< max OptimalPhone.total_productivity >>
+<< max OptimalPhone.total_security >>
+<< min OptimalPhone.total_cost >>
+//# FRAGMENT
+OptimalPhone : MobilePhone
+//# FRAGMENT
