@@ -92,7 +92,7 @@ clafer = ClaferArgs {
   ecore2clafer        = def &= help "Translate an ECore model into Clafer.",
   scope_strategy      = def &= help "Use scope computation strategy: none, simple (default), or full." &= name "ss",
   afm                 = def &= help "Throws an error if the cardinality of any of the clafers is above 1." &= name "check-afm",
-  skip_goals          = def &= help "Still compiles, typecheckes etc goals but the alloy code is not generated for them/" &= name "sg",
+  skip_goals          = def &= help "Still compiles, typecheckes etc for goals but the alloy code is not generated for them" &= name "sg",
   file                = def &= args   &= typ "FILE"
  } &= summary ("Clafer " ++ version) &= program "clafer"
 
