@@ -30,7 +30,6 @@ import Data.Maybe
 import Data.Graph
 import Data.Tree
 import Data.List
-import Data.Foldable (foldMap)
 import qualified Data.Map as Map
 
 import Language.ClaferT
@@ -38,6 +37,7 @@ import Language.Clafer.Common
 import Language.Clafer.Front.Absclafer
 import Language.Clafer.Intermediate.Intclafer
 import Language.Clafer.Intermediate.ResolverName
+import Prelude hiding (exp)
 
 
 -- -----------------------------------------------------------------------------
@@ -92,8 +92,9 @@ resolveN pMap clafer' pos' declarations id' =
             par2 = Map.lookup (cinPos claf2) parMap
         in if (par2 == Nothing) then True else
           if (par1 == Nothing) then False else
-            if ((getSuperType $ super $ fromJust par1) /= (ident $ fromJust par2)) then False else
-              commonNesting (fromJust par1) (fromJust par2) parMap
+            if ((sident $ exp $ head $ supers $ super $ fromJust par1) == (ident $ fromJust par2)) 
+              then commonNesting (fromJust par1) (fromJust par2) parMap
+                else False
 
 -- -----------------------------------------------------------------------------
 -- Overlapping inheritance
@@ -274,32 +275,3 @@ resolveEElement predecessors unrollables absAncestor declarations x = case x of
     resolveEClafer predecessors unrollables absAncestor declarations clafer
   IEConstraint _ _  -> return x
   IEGoal _ _ -> return x
-
-rootAncestorOf :: IClafer -> [IClafer] -> IClafer
-rootAncestorOf clafer (c:cs) = if (clafer `elem` descendantsOf c) then c
-  else rootAncestorOf clafer cs
-rootAncestorOf _ [] = error "Given empty list of clafers" -- This doesn't make any sense
-
-getLevel :: Span -> IClafer -> [IClafer]
-getLevel s parent' = 
-  let children' = toClafers $ elements parent'
-  in if ( (getColumn s) `elem` map (getColumn . cinPos) children') then children'
-    else foldMap (getLevel s) children'
-  where
-    getColumn :: Span -> Integer
-    getColumn (Span (Pos _ c) _) = c
-    getColumn (Span (PosPos _ _ c) _) = c
-    getColumn (PosSpan _ (Pos _ c) _) = c
-    getColumn (PosSpan _ (PosPos _ _ c) _) = c
-    
-descendantsOf :: IClafer -> [IClafer]
-descendantsOf = iFoldMap getChildren . IRClafer
-
-getChildren :: Ir -> [IClafer]
-getChildren (IRClafer i@(IClafer{elements = elems})) = i : toClafers elems
-getChildren  _ = []
-
-getSuperType :: ISuper -> String
-getSuperType (ISuper _ ((PExp _ _ _ (IClaferId _ ident' True)):_)) = ident'
-getSuperType _ = ""
-
