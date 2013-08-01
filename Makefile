@@ -39,7 +39,7 @@ install:
 	cabal install --bindir=$(to) $(GPLK_LIBS_INCLUDES) $(MAC_USR_LIB) --ghc-option="-O"
 
 # Removes current build and makes a clean new one (Don't use if starting from scratch!)
-new:
+cleanEnv:
 	make clean
 	ghc-pkg unregister clafer
 	rm `which clafer`
