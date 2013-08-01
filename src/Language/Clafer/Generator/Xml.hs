@@ -23,6 +23,7 @@ module Language.Clafer.Generator.Xml where
 
 -- import Text.XML.HaXml.XmlContent.Haskell hiding (Result)
 
+import Data.Maybe (fromJust)
 import Language.Clafer.Common
 import Language.Clafer.Front.Absclafer
 import Language.Clafer.Intermediate.Intclafer
@@ -69,7 +70,7 @@ genXmlModule imodule = concat
 
 genXmlClafer :: IClafer -> Result
 genXmlClafer x = case x of
-  IClafer pos abstract gcrd id' uid' super' crd glcard es  ->
+  IClafer pos abstract gcrd id' uid' super' crd glcard es ->
     concat [ tag "Position" $ genXmlPosition pos
            , genXmlAbstract abstract
            , optTag gcrd genXmlGCard
@@ -78,7 +79,8 @@ genXmlClafer x = case x of
            , genXmlSuper super'
            , optTag crd genXmlCard
            , genXmlGlCard glcard
-           , concatMap genXmlElement es]
+           , concatMap genXmlElement es] 
+
 
 genXmlAbstract :: Bool -> String
 genXmlAbstract isAbs = genXmlBoolean "IsAbstract" isAbs
@@ -101,9 +103,10 @@ genXmlUid uid' = tag "UniqueId" uid'
 
 genXmlSuper :: ISuper -> String
 genXmlSuper x = case x of
-  ISuper isOverlapping' pexps -> tag "Supers" $ concat
-    [ genXmlBoolean "IsOverlapping" isOverlapping'
-    , concatMap (genXmlPExp "Super") pexps]
+  ISuper isOverlapping' r pexps -> tag "Supers" $ concat $
+    (genXmlBoolean "IsOverlapping" isOverlapping') :
+    if (r==Nothing) then [] else [tag "Relation Span" $ show $ fromJust r] ++
+    [concatMap (genXmlPExp "Super") pexps]
 
 genXmlCard :: (Integer, Integer) -> String
 genXmlCard interval' = tag "Card" $ genXmlInterval interval'

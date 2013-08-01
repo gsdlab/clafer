@@ -22,17 +22,52 @@
 -}
 module Language.Clafer.Intermediate.Desugarer where
 
+import qualified Data.Map as Map
+import Data.Maybe
+import Prelude hiding (exp)
 import Language.Clafer.Common
 import Language.Clafer.Front.Absclafer
 import Language.Clafer.Front.Mapper
 import Language.Clafer.Intermediate.Intclafer
 
 
-desugarModule :: Module -> IModule
+desugarModule :: Module -> (IModule, Map.Map Span IClafer)
 desugarModule (Module declarations) = desugarModule $ PosModule noSpan declarations
-desugarModule (PosModule _ declarations) = IModule "" $
-      declarations >>= desugarEnums >>= desugarDeclaration
---      [ImoduleFragment $ declarations >>= desugarEnums >>= desugarDeclaration]
+desugarModule (PosModule _ declarations) = 
+  let iMod = IModule "" $ 
+        declarations >>= desugarEnums >>= desugarDeclaration
+          --[ImoduleFragment $ declarations >>= desugarEnums >>= desugarDeclaration]
+      pMap = foldMapIR makeMap iMod
+  in (mapIR (addrSpan pMap $ bfsClafers $ toClafers $ mDecls iMod) iMod, pMap)
+  where
+    makeMap :: Ir -> Map.Map Span IClafer
+    makeMap (IRClafer c) = Map.fromList $ zip (map getPos $ elements c) (repeat c)
+    makeMap _ = Map.empty
+
+    getPos :: IElement -> Span
+    getPos (IEClafer c) = cinPos c
+    getPos e = inPos $ cpexp e
+
+    addrSpan :: Map.Map Span IClafer -> [IClafer] -> Ir -> Ir
+    addrSpan _ [] i = i
+    addrSpan parMap (c:cs) irclaf@(IRClafer claf)  = 
+      if ((getSuperType claf) == ident c && commonNesting claf c parMap) 
+        then IRClafer $ claf{super = (super claf){rSpan = Just $ cinPos c}} 
+          else addrSpan parMap cs irclaf 
+    addrSpan _ _ i = i 
+
+    commonNesting :: IClafer -> IClafer -> Map.Map Span IClafer -> Bool
+    commonNesting claf1 claf2 parMap = 
+      let par1 = Map.lookup (cinPos claf1) parMap
+          par2 = Map.lookup (cinPos claf2) parMap
+      in if (par2 == Nothing) then True else
+        if (par1 == Nothing) then False else
+          if ((getSuperType $ fromJust par1) == (ident $ fromJust par2)) 
+            then commonNesting (fromJust par1) (fromJust par2) parMap
+              else False
+
+    getSuperType :: IClafer -> String
+    getSuperType claf = sident $ exp $ head $ supers $ super claf
 
 sugarModule :: IModule -> Module
 sugarModule x = Module $ map sugarDeclaration $ mDecls x -- (fragments x >>= mDecls)
@@ -86,9 +121,9 @@ desugarSuper :: Super -> ISuper
 desugarSuper SuperEmpty = desugarSuper $ PosSuperEmpty noSpan
 desugarSuper (SuperSome superhow setexp) = desugarSuper $ PosSuperSome noSpan superhow setexp
 desugarSuper (PosSuperEmpty s) =
-      ISuper False [PExp (Just $ TClafer []) "" s $ mkLClaferId baseClafer True]
+      ISuper False Nothing [PExp (Just $ TClafer []) "" s $ mkLClaferId baseClafer True]
 desugarSuper (PosSuperSome _ superhow setexp) =
-      ISuper (desugarSuperHow superhow) [desugarSetExp setexp]
+      ISuper (desugarSuperHow superhow) Nothing [desugarSetExp setexp]
 
 
 desugarSuperHow :: SuperHow -> Bool
@@ -126,8 +161,8 @@ sugarModId :: String -> ModId
 sugarModId modid = ModIdIdent $ mkIdent modid
 
 sugarSuper :: ISuper -> Super
-sugarSuper (ISuper _ []) = SuperEmpty
-sugarSuper (ISuper isOverlapping' [pexp]) = SuperSome (sugarSuperHow isOverlapping') (sugarSetExp pexp)
+sugarSuper (ISuper _ _ []) = SuperEmpty
+sugarSuper (ISuper isOverlapping' _ [pexp]) = SuperSome (sugarSuperHow isOverlapping') (sugarSetExp pexp)
 sugarSuper _ = error "Function sugarSuper from Desugarer expects an ISuper with a list of length one, but it was given one with a list larger than one" -- Should never happen
 
 sugarSuperHow :: Bool -> SuperHow

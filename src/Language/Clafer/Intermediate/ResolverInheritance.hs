@@ -42,59 +42,49 @@ import Prelude hiding (exp)
 
 -- -----------------------------------------------------------------------------
 -- Non-overlapping inheritance
-resolveNModule :: (Map.Map Span IClafer) -> (IModule, GEnv) -> Resolve (IModule, GEnv)
-resolveNModule m (imodule, genv') =
+resolveNModule :: (IModule, GEnv) -> Resolve (IModule, GEnv)
+resolveNModule (imodule, genv') =
   do
     let decls' = mDecls imodule
-    decls'' <- mapM (resolveNElement m decls') decls'
+    decls'' <- mapM (resolveNElement decls') decls'
     return (imodule{mDecls = decls''}, genv' {sClafers = bfs toNodeShallow $ toClafers decls''})
     
 
 
-resolveNClafer :: (Map.Map Span IClafer) -> [IElement] -> IClafer -> Resolve IClafer
-resolveNClafer m declarations clafer =
+resolveNClafer :: [IElement] -> IClafer -> Resolve IClafer
+resolveNClafer declarations clafer =
   do
-    super'    <- resolveNSuper m declarations clafer
-    elements' <- mapM (resolveNElement m declarations) $ elements clafer
+    super'    <- resolveNSuper declarations clafer
+    elements' <- mapM (resolveNElement declarations) $ elements clafer
     return $ clafer {super = super',
             elements = elements'}
 
 
 
-resolveNSuper :: (Map.Map Span IClafer) -> [IElement] -> IClafer -> Resolve ISuper
-resolveNSuper m declarations x = case (super x) of
-  ISuper False [PExp _ pid' pos' (IClaferId _ id' isTop')] ->
+resolveNSuper :: [IElement] -> IClafer -> Resolve ISuper
+resolveNSuper declarations x = case (super x) of
+  ISuper False s [PExp _ pid' pos' (IClaferId _ id' isTop')] ->
     if isPrimitive id' || id' == "clafer"
       then return (super x)
       else do
-        r <- resolveN m x pos' declarations id'
+        r <- resolveN x pos' declarations id'
         id'' <- case r of
           Nothing -> throwError $ SemanticErr pos' $ "No superclafer found: " ++ id'
           Just mo  -> return $ fst mo
-        return $ ISuper False [idToPExp pid' pos' "" id'' isTop']
+        return $ ISuper False s [idToPExp pid' pos' "" id'' isTop']
   _ -> return (super x)
 
-resolveNElement :: (Map.Map Span IClafer) -> [IElement] -> IElement -> Resolve IElement
-resolveNElement m declarations x = case x of
-  IEClafer clafer  -> IEClafer <$> resolveNClafer m declarations clafer
+resolveNElement :: [IElement] -> IElement -> Resolve IElement
+resolveNElement declarations x = case x of
+  IEClafer clafer  -> IEClafer <$> resolveNClafer declarations clafer
   IEConstraint _ _  -> return x
   IEGoal _ _ -> return x
 
-resolveN :: (Map.Map Span IClafer) -> IClafer -> Span -> [IElement] -> String -> Resolve (Maybe (String, [IClafer]))
-resolveN pMap clafer' pos' declarations id' =
+resolveN :: IClafer -> Span -> [IElement] -> String -> Resolve (Maybe (String, [IClafer]))
+resolveN clafer' pos' declarations id' =
   findUnique pos' id' $ map (\x -> (x, [x])) $ 
-    filter (\c -> (isAbstract c) || ((id' == ident c ) && commonNesting clafer' c pMap)) $ 
+    filter (\c -> (isAbstract c) || ((rSpan $ super clafer') == (Just $ cinPos c))) $ 
       bfsClafers $ toClafers declarations
-    where
-      commonNesting :: IClafer -> IClafer -> Map.Map Span IClafer -> Bool
-      commonNesting claf1 claf2 parMap = 
-        let par1 = Map.lookup (cinPos claf1) parMap
-            par2 = Map.lookup (cinPos claf2) parMap
-        in if (par2 == Nothing) then True else
-          if (par1 == Nothing) then False else
-            if ((sident $ exp $ head $ supers $ super $ fromJust par1) == (ident $ fromJust par2)) 
-              then commonNesting (fromJust par1) (fromJust par2) parMap
-                else False
 
 -- -----------------------------------------------------------------------------
 -- Overlapping inheritance
@@ -117,10 +107,10 @@ resolveOClafer env clafer =
 
 resolveOSuper :: SEnv -> ISuper -> Resolve ISuper
 resolveOSuper env x = case x of
-  ISuper True exps' -> do
+  ISuper True s exps' -> do
     exps''     <- mapM (resolvePExp env) exps'
     let isOverlap = not (length exps'' == 1 && isPrimitive (getSuperId exps''))
-    return $ ISuper isOverlap  exps''
+    return $ ISuper isOverlap s exps''
   _ -> return x
 
 
@@ -264,7 +254,7 @@ resolveEInheritance predecessors unrollables absAncestor declarations allSuper
              unrollSuper >>= elements
     let super' = if (getSuper clafer `elem` unrollables)
                  then super clafer
-                 else ISuper False [idToPExp "" noSpan "" "clafer" False]
+                 else ISuper False (rSpan $ super clafer) [idToPExp "" noSpan "" "clafer" False]
     return (elements', super', superList)
   where
   clafer = head allSuper

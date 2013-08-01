@@ -86,6 +86,7 @@ import Language.Clafer.Generator.Schema
 import Language.Clafer.Generator.Stats
 import Language.Clafer.Generator.Html
 import Language.Clafer.Generator.Graph
+import Prelude hiding (exp)
 
 type VerbosityL = Int
 type InputModel = String
@@ -244,8 +245,7 @@ compile =
   do
     env <- getEnv
     ast' <- getAst
-    let desugaredModule = desugar ast'
-    let pMap = foldMapIR makeMap desugaredModule
+    let (desugaredModule, pMap) = desugar ast'
     putEnv $ env{parentMap = pMap}
 
     ir <- analyze (args env) desugaredModule
@@ -256,14 +256,6 @@ compile =
     when ((afm $ args env) && failSpanList/="") $ throwErr (ClaferErr $ ("The model is not an attributed feature model .\nThe following places contain cardinality larger than 1:\n"++) $ failSpanList :: CErr Span)
     putEnv $ env{ cIr = Just ir, irModuleTrace = imodTrace, parentMap = pMap}
     where
-      makeMap :: Ir -> Map.Map Span IClafer
-      makeMap (IRClafer c) = Map.fromList $ zip (map getPos $ elements c) (repeat c)
-      makeMap _ = Map.empty
-
-      getPos :: IElement -> Span
-      getPos (IEClafer c) = cinPos c
-      getPos e = inPos $ cpexp e
-
       gt1 :: Ir -> String
       gt1 (IRClafer (IClafer (Span (Pos l c) _) _ _ _ _ _ (Just (_, m)) _ _)) = if (m > 1 || m < 0) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
       gt1 (IRClafer (IClafer (Span (PosPos _ l c) _) _ _ _ _ _ (Just (_, m)) _ _)) = if (m > 1 || m < 0) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
@@ -283,7 +275,7 @@ generateFragments =
     
     -- Assumes output mode is Alloy for now
     
-    return $ map (generateFragment $ args env) fragElems
+    return $ map (generateFragment iModule $ args env) fragElems
   where
   rnge (IEClafer IClafer{cinPos = p}) = p
   rnge IEConstraint{cpexp = PExp{inPos = p}} = p
@@ -303,9 +295,9 @@ generateFragments =
     case rnge ele of
       Span _ e -> e <= p
       PosSpan _ _ e -> e <= p
-  generateFragment :: ClaferArgs -> [IElement] -> String
-  generateFragment args' frag =
-    flatten $ cconcat $ map (genDeclaration args') frag
+  generateFragment :: IModule -> ClaferArgs -> [IElement] -> String
+  generateFragment im args' frag =
+    flatten $ cconcat $ map (genDeclaration im args') frag
 
 -- Splits the AST into their fragments, and generates the output for each fragment.
 generateHtml :: ClaferEnv -> Module -> String
@@ -353,12 +345,12 @@ generate =
     let (imod,strMap) = astrModule iModule
     let (ext, code, mapToAlloy) = case (mode cargs) of
                         Alloy   ->  do
-                                      let alloyCode = genModule cargs (imod, genv)
+                                      let alloyCode = genModule iModule cargs (imod, genv)
                                       let addCommentStats = if no_stats cargs then const else addStats
                                       let m = snd alloyCode
                                       ("als", addCommentStats (fst alloyCode) stats, Just m)
                         Alloy42  -> do
-                                      let alloyCode = genModule cargs (imod, genv)
+                                      let alloyCode = genModule iModule cargs (imod, genv)
                                       let addCommentStats = if no_stats cargs then const else addStats
                                       let m = snd alloyCode
                                       ("als", addCommentStats (fst alloyCode) stats, Just m)
@@ -384,7 +376,7 @@ data CompilerResult = CompilerResult {
                             stringMap :: (Map Int String)
                             } deriving Show
 
-desugar :: Module -> IModule  
+desugar :: Module -> (IModule, Map.Map Span IClafer)  
 desugar tree = desugarModule tree
 
 liftError :: (Monad m, Language.ClaferT.Throwable t) => Either t a -> ClaferT m a
@@ -395,8 +387,7 @@ analyze args' tree = do
   let dTree' = findDupModule args' tree
   let au = allUnique dTree'
   let args'' = args'{skip_resolver = au && (skip_resolver args')}
-  env <- getEnv 
-  (rTree, genv) <- liftError $ resolveModule (parentMap env) args'' dTree'
+  (rTree, genv) <- liftError $ resolveModule args'' dTree'
   let tTree = transModule rTree
   return (optimizeModule args'' (tTree, genv), genv, au)
 

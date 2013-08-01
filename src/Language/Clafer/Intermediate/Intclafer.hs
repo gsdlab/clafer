@@ -88,6 +88,7 @@ data IElement =
 data ISuper =
    ISuper {
       isOverlapping :: Bool,  -- whether overlapping or disjoint with other clafers extending given list of superclafers
+      rSpan :: Maybe Span,    -- the Span of the clafer it has a relation with
       supers :: [PExp]
     }
   deriving (Eq,Ord,Show)
@@ -232,8 +233,8 @@ iMap f (IRPExp (PExp (Just iType') pID p iExp)) =
   f $ IRPExp $ PExp (Just $ unWrapIType $ iMap f $ IRIType iType') pID p $ unWrapIExp $ iMap f $ IRIExp iExp
 iMap f (IRPExp (PExp Nothing pID p iExp)) =
   f $ IRPExp $ PExp Nothing pID p $ unWrapIExp $ iMap f $ IRIExp iExp
-iMap f (IRISuper (ISuper o pexps)) =
-  f $ IRISuper $ ISuper o $ map (unWrapPExp . iMap f . IRPExp) pexps
+iMap f (IRISuper (ISuper o r pexps)) =
+  f $ IRISuper $ ISuper o r $ map (unWrapPExp . iMap f . IRPExp) pexps
 iMap f (IRIDecl (IDecl i d body')) = 
   f $ IRIDecl $ IDecl i d $ unWrapPExp $ iMap f $ IRPExp body'
 iMap f i = f i
@@ -255,7 +256,7 @@ iFoldMap f i@(IRPExp (PExp (Just iType') _ _ iExp)) =
   f i `mappend` (iFoldMap f $ IRIType iType') `mappend` (iFoldMap f $ IRIExp iExp)
 iFoldMap f i@(IRPExp (PExp Nothing _ _ iExp)) =
   f i `mappend` (iFoldMap f $ IRIExp iExp)
-iFoldMap f i@(IRISuper (ISuper _ pexps)) =
+iFoldMap f i@(IRISuper (ISuper _ _ pexps)) =
   f i `mappend` foldMap (iFoldMap f . IRPExp) pexps
 iFoldMap f i@(IRIDecl (IDecl _ _ body')) = 
   f i `mappend` (iFoldMap f $ IRPExp body')

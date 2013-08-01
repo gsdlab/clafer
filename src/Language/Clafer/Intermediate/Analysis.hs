@@ -339,8 +339,8 @@ convertClafer =
         Just (I.IGCard _ i)    -> i
     super =
       case I.super clafer of
-        I.ISuper True [I.PExp{I.exp = I.IClaferId{I.sident = superUid}}]  -> Just $ Ref superUid
-        I.ISuper False [I.PExp{I.exp = I.IClaferId{I.sident = superUid}}] ->
+        I.ISuper True _ [I.PExp{I.exp = I.IClaferId{I.sident = superUid}}]  -> Just $ Ref superUid
+        I.ISuper False _ [I.PExp{I.exp = I.IClaferId{I.sident = superUid}}] ->
           if superUid `elem` ["string", "real", "int", "integer", "boolean"]
             then Just $ Ref superUid
             else Just $ Colon superUid
@@ -350,14 +350,14 @@ gatherInfo :: I.IModule -> Info
 gatherInfo imodule =
   Info $ sClafer : sInteger : sInt : sReal : sString : sBoolean : convertClafer root
   where
-  sClafer = SClafer "clafer" "clafer" False 0 (-1) 0 (-1) Nothing Nothing []
+  sClafer  = SClafer "clafer" "clafer" False 0 (-1) 0 (-1) Nothing Nothing []
   sInteger = SClafer "integer" "integer" False 0 (-1) 0 (-1) Nothing Nothing []
   sInt     = SClafer "int" "int" False 0 (-1) 0 (-1) Nothing Nothing []
   sReal    = SClafer "real" "real" False 0 (-1) 0 (-1) Nothing Nothing []
   sString  = SClafer "string" "string" False 0 (-1) 0 (-1) Nothing Nothing []
   sBoolean = SClafer "boolean" "boolean" False 0 (-1) 0 (-1) Nothing Nothing []
   
-  root = I.IClafer noSpan False Nothing rootUid rootUid (I.ISuper False [I.PExp Nothing "" noSpan $ I.IClaferId "clafer" "clafer" True]) (Just (1, 1)) (0, 0) $ I.mDecls imodule
+  root = I.IClafer noSpan False Nothing rootUid rootUid (I.ISuper False Nothing [I.PExp Nothing "" noSpan $ I.IClaferId "clafer" "clafer" True]) (Just (1, 1)) (0, 0) (I.mDecls imodule)
 
 
 
