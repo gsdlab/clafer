@@ -202,10 +202,10 @@ claferDecl  im  c     rest    = cconcat $ [genOptCard c,
   spanLookUp span' = uid . head . foldMapIR (slookup span') 
   slookup span' (IRClafer claf) = if (cinPos claf == span') then [claf] else []
   slookup _ _ = []
-  istop (Span (Pos 1 _) _) = True
-  istop (Span (PosPos _ 1 _) _) = True
-  istop (PosSpan _ (Pos 1 _) _) = True
-  istop (PosSpan _ (PosPos _ 1 _) _) = True
+  istop (Span (Pos _ 1) _) = True
+  istop (Span (PosPos _ _ 1) _) = True
+  istop (PosSpan _ (Pos _ 1) _) = True
+  istop (PosSpan _ (PosPos _ _ 1) _) = True
   istop _ = False
 
 genOptCard :: IClafer -> Concat
