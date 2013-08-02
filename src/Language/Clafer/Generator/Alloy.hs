@@ -271,10 +271,9 @@ genConstraints    cargs    resPath c = (genParentConst resPath c) :
   genConst x = case x of
     IEConstraint _ pexp  -> genPExp cargs ((uid c) : resPath) pexp
     IEClafer c' ->
-        if genCardCrude crd `elem` ["one", "lone", "some"]
-        then CString "" else mkCard ({- do not use the genRelName as the constraint name -} uid c') False (genRelName $ uid c') $ fromJust crd
+        if genCardCrude (card c') `elem` ["one", "lone", "some"]
+        then CString "" else mkCard ({- do not use the genRelName as the constraint name -} uid c') False (genRelName $ uid c') $ fromJust $ card c'
     IEGoal _ _ -> error "getConst function from Alloy generator was given a Goal, this function should only be given a Constrain or Clafer" -- This should never happen
-  crd = card c
 
 -- optimization: if only boolean features then the parent is unique
 genParentConst :: [String] -> IClafer -> Concat
