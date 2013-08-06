@@ -22,8 +22,6 @@
 
 module Language.Clafer.Comments(getOptions, getFragments, getStats, getGraph, getComments) where
 
-import Data.Map (Map)
-import qualified Data.Map as Map
 import Data.Maybe (fromMaybe)
 import Data.List (stripPrefix)
 import Language.Clafer.Front.Absclafer
@@ -35,46 +33,57 @@ getOptions model = case lines model of
   []    -> ""
   (s:_) -> fromMaybe "" $ stripPrefix "//# OPTIONS " s
 
-getFragments :: InputModel -> [ Int ]
+getFragments :: InputModel -> [Int]
 getFragments [] = []
 getFragments xs = getFragments' (lines xs) 1
-getFragments' :: [ InputModel ] -> Int -> [ Int ]
+getFragments' :: [ InputModel ] -> Int -> [Int]
 getFragments' [] _ = []
 getFragments' ("//# FRAGMENT":xs) ln = ln:getFragments' xs (ln + 1)
-getFragments' (x:xs) ln = getFragments' xs $ ln + 1
+getFragments' (_:xs) ln = getFragments' xs $ ln + 1
 
-getStats :: InputModel -> [ Int ]
+getStats :: InputModel -> [Int]
 getStats [] = []
 getStats xs = getStats' (lines xs) 1
+getStats' :: [String] -> Int -> [Int]
 getStats' [] _ = []
 getStats' ("//# SUMMARY":xs) ln = ln:getStats' xs (ln + 1)
 getStats' ("//# STATS":xs)   ln = ln:getStats' xs (ln + 1)
-getStats' (x:xs) ln = getStats' xs $ ln + 1
+getStats' (_:xs) ln = getStats' xs $ ln + 1
 
-getGraph :: InputModel -> [ Int ]
+getGraph :: InputModel -> [Int]
 getGraph [] = []
 getGraph xs = getGraph' (lines xs) 1
+getGraph' :: [String] -> Int -> [Int]
 getGraph' [] _ = []
 getGraph' ("//# SUMMARY":xs) ln = ln:getGraph' xs (ln + 1)
 getGraph' ("//# GRAPH":xs)   ln = ln:getGraph' xs (ln + 1)
-getGraph' (x:xs) ln = getGraph' xs $ ln + 1
+getGraph' (_:xs) ln = getGraph' xs $ ln + 1
 
 getComments :: InputModel -> [(Span, String)]
 getComments input = getComments' input 1 1
-getComments' []           row col = []
-getComments' ('/':'/':xs) row col = readLine ('/':'/':xs) (Pos row col)
-getComments' ('/':'*':xs) row col = readBlock ('/':'*':xs) (Pos row col)
-getComments' ('\n':xs)    row col = getComments' xs (row + 1) 1
-getComments' (x:xs)       row col = getComments' xs row $ col + 1
+getComments' :: String -> Integer -> Integer -> [(Span, String)]
+getComments' []           _   _     = []
+getComments' ('/':'/':xs) row col  = readLine ('/':'/':xs) (Pos row col)
+getComments' ('/':'*':xs) row col  = readBlock ('/':'*':xs) (Pos row col)
+getComments' ('\n':xs)    row _    = getComments' xs (row + 1) 1
+getComments' (_:xs)       row col  = getComments' xs row $ col + 1
+
+readLine :: String -> Pos -> [(Span, String)]
 readLine    [] _                   = []
 readLine    xs start@(Pos row col) = let comment = takeWhile (/= '\n') xs in 
                                                    ((Span start (Pos row (col + toInteger (length comment)))),
                                                     comment): getComments' (drop (length comment + 1) xs) (row + 1) 1
 readLine    xs (PosPos _ row col)  = readLine xs (Pos row col)
+
+
+readBlock :: String -> Pos -> [(Span, String)]  
 readBlock   xs start@(Pos row col) = let (end@(Pos row' col'), comment, rest) = readBlock' xs row col id in
-                                      ((Span start end), comment):getComments' rest row' col'
-readBlock  xs (PosPos pos row col) = readBlock xs (Pos row col)
+                                      ((Span start end), comment):getComments' rest row' col'                                    
+readBlock  xs (PosPos _ row col) = readBlock xs (Pos row col)
+readBlock' :: String -> Integer
+              -> Integer -> (String -> String)
+              -> (Pos, String,String)
 readBlock' ('*':'/':xs) row col comment = ((Pos row $ col + 2), comment "*/", xs)
-readBlock' ('\n':xs)    row col comment = readBlock' xs (row + 1) 1 (comment "\n" ++)
+readBlock' ('\n':xs)    row _   comment = readBlock' xs (row + 1) 1 (comment "\n" ++)
 readBlock' (x:xs)       row col comment = readBlock' xs row (col + 1) (comment [x]++)
 readBlock' []           row col comment = ((Pos row col), comment [], [])

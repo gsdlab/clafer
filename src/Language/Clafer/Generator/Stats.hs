@@ -1,3 +1,4 @@
+{-# LANGUAGE FlexibleContexts #-}
 {-
  Copyright (C) 2012 Kacper Bak <http://gsd.uwaterloo.ca>
 
@@ -22,11 +23,7 @@
 module Language.Clafer.Generator.Stats where
 
 import Control.Monad.State
-
-import Language.Clafer.Common
-import Language.Clafer.Front.Absclafer
 import Language.Clafer.Intermediate.Intclafer
-import Language.Clafer.Optimizer.Optimizer
 
 data Stats = Stats {
       naClafers :: Int,
@@ -42,25 +39,25 @@ statsModule :: IModule -> Stats
 statsModule imodule =
   execState (mapM statsElement $ mDecls imodule) $ Stats 0 0 0 0 0 (1, 1)
 
-
-statsClafer clafer = do
-  if isAbstract clafer
+statsClafer :: MonadState Stats m => IClafer -> m ()
+statsClafer claf = do
+  if isAbstract claf
     then modify (\e -> e {naClafers = naClafers e + 1})
     else
-      if isOverlapping $ super clafer
+      if isOverlapping $ super claf
         then modify (\e -> e {nrClafers = nrClafers e + 1})
         else modify (\e -> e {ncClafers = ncClafers e + 1})
   sglCard' <- gets sglCard
-  modify (\e -> e {sglCard = statsCard sglCard' $ glCard clafer})
-  mapM_ statsElement $ elements clafer
+  modify (\e -> e {sglCard = statsCard sglCard' $ glCard claf})
+  mapM_ statsElement $ elements claf
 
 
 statsCard :: Interval -> Interval -> Interval
-statsCard (m, n) (m', n') = (max m m', maxEx n n')
+statsCard (m1, n1) (m2, n2) = (max m1 m2, maxEx n1 n2)
   where
-  maxEx m n = if m == -1 || n == -1 then -1 else max m n
+  maxEx m' n' = if m' == -1 || n' == -1 then -1 else max m' n'
 
-
+statsElement :: MonadState Stats m => IElement -> m ()
 statsElement x = case x of
   IEClafer clafer -> statsClafer clafer
   IEConstraint _ _ -> modify (\e -> e {nConstraints = nConstraints e + 1})

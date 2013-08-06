@@ -37,17 +37,6 @@ data Ir =
   IRIDecl IDecl |
   IRIGCard IGCard
   deriving (Eq, Show)
-unWrapIModule (IRIModule x) = x
-unWrapIElement (IRIElement x) = x
-unWrapIType (IRIType x) = x
-unWrapIClafer (IRClafer x) = x
-unWrapIExp (IRIExp x) = x
-unWrapPExp (IRPExp x) = x
-unWrapISuper (IRISuper x) = x
-unWrapIQuant (IRIQuant x) = x
-unWrapIDecl (IRIDecl x) = x
-unWrapIGCard (IRIGCard x) = x
-
 
 data IType = TBoolean
            | TString
@@ -207,12 +196,12 @@ type ColNo  = Integer
 -------------------------
 
 mapIR :: (Ir -> Ir) -> IModule -> IModule -- fmap/map for IModule
-mapIR f (IModule name decls) = 
-  unWrapIModule $ f $ IRIModule $ IModule name $ map (unWrapIElement . iMap f . IRIElement) decls
+mapIR f (IModule name decls') = 
+  unWrapIModule $ f $ IRIModule $ IModule name $ map (unWrapIElement . iMap f . IRIElement) decls'
 
 foldMapIR :: (Monoid m) => (Ir -> m) -> IModule -> m -- foldMap for IModule
-foldMapIR f i@(IModule _ decls) = 
-  (f $ IRIModule i) `mappend` foldMap (iFoldMap f . IRIElement) decls
+foldMapIR f i@(IModule _ decls') = 
+  (f $ IRIModule i) `mappend` foldMap (iFoldMap f . IRIElement) decls'
 
 foldIR :: (Ir -> a -> a) -> a -> IModule -> a -- a basic fold for IModule
 foldIR f e m = appEndo (foldMapIR (Endo . f) m) e
@@ -239,14 +228,14 @@ iMap f (IRIExp (IDeclPExp q decs p)) =
   f $ IRIExp $ IDeclPExp (unWrapIQuant $ iMap f $ IRIQuant q) (map (unWrapIDecl . iMap f . IRIDecl) decs) $ unWrapPExp $ iMap f $ IRPExp p
 iMap f (IRIExp (IFunExp o pexps)) = 
   f $ IRIExp $ IFunExp o $ map (unWrapPExp . iMap f . IRPExp) pexps
-iMap f (IRPExp (PExp (Just iType) pID p iExp)) =
-  f $ IRPExp $ PExp (Just $ unWrapIType $ iMap f $ IRIType iType) pID p $ unWrapIExp $ iMap f $ IRIExp iExp
+iMap f (IRPExp (PExp (Just iType') pID p iExp)) =
+  f $ IRPExp $ PExp (Just $ unWrapIType $ iMap f $ IRIType iType') pID p $ unWrapIExp $ iMap f $ IRIExp iExp
 iMap f (IRPExp (PExp Nothing pID p iExp)) =
   f $ IRPExp $ PExp Nothing pID p $ unWrapIExp $ iMap f $ IRIExp iExp
 iMap f (IRISuper (ISuper o pexps)) =
   f $ IRISuper $ ISuper o $ map (unWrapPExp . iMap f . IRPExp) pexps
-iMap f (IRIDecl (IDecl i d body)) = 
-  f $ IRIDecl $ IDecl i d $ unWrapPExp $ iMap f $ IRPExp body
+iMap f (IRIDecl (IDecl i d body')) = 
+  f $ IRIDecl $ IDecl i d $ unWrapPExp $ iMap f $ IRPExp body'
 iMap f i = f i
 
 iFoldMap :: (Monoid m) => (Ir -> m) -> Ir -> m
@@ -262,16 +251,48 @@ iFoldMap f i@(IRIExp (IDeclPExp q decs p)) =
   f i `mappend` (iFoldMap f $ IRIQuant q) `mappend` (iFoldMap f $ IRPExp p) `mappend` foldMap (iFoldMap f . IRIDecl) decs
 iFoldMap f i@(IRIExp (IFunExp _ pexps)) = 
   f i `mappend` foldMap (iFoldMap f . IRPExp) pexps
-iFoldMap f i@(IRPExp (PExp (Just iType) _ _ iExp)) =
-  f i `mappend` (iFoldMap f $ IRIType iType) `mappend` (iFoldMap f $ IRIExp iExp)
+iFoldMap f i@(IRPExp (PExp (Just iType') _ _ iExp)) =
+  f i `mappend` (iFoldMap f $ IRIType iType') `mappend` (iFoldMap f $ IRIExp iExp)
 iFoldMap f i@(IRPExp (PExp Nothing _ _ iExp)) =
   f i `mappend` (iFoldMap f $ IRIExp iExp)
 iFoldMap f i@(IRISuper (ISuper _ pexps)) =
   f i `mappend` foldMap (iFoldMap f . IRPExp) pexps
-iFoldMap f i@(IRIDecl (IDecl _ _ body)) = 
-  f i `mappend` (iFoldMap f $ IRPExp body)
+iFoldMap f i@(IRIDecl (IDecl _ _ body')) = 
+  f i `mappend` (iFoldMap f $ IRPExp body')
 iFoldMap f (IRIElement (IEClafer c)) = iFoldMap f $ IRClafer c
 iFoldMap f i = f i
 
 iFold :: (Ir -> a -> a) -> a -> Ir -> a
 iFold f e m = appEndo (iFoldMap (Endo . f) m) e
+
+
+unWrapIModule :: Ir -> IModule
+unWrapIModule (IRIModule x) = x
+unWrapIModule x = error $ "Can't call unWarpIModule on " ++ show x
+unWrapIElement :: Ir -> IElement
+unWrapIElement (IRIElement x) = x
+unWrapIElement x = error $ "Can't call unWarpIElement on " ++ show x
+unWrapIType :: Ir -> IType
+unWrapIType (IRIType x) = x
+unWrapIType x = error $ "Can't call unWarpIType on " ++ show x
+unWrapIClafer :: Ir -> IClafer
+unWrapIClafer (IRClafer x) = x
+unWrapIClafer x = error $ "Can't call unWarpIClafer on " ++ show x
+unWrapIExp :: Ir -> IExp
+unWrapIExp (IRIExp x) = x
+unWrapIExp x = error $ "Can't call unWarpIExp on " ++ show x
+unWrapPExp :: Ir -> PExp
+unWrapPExp (IRPExp x) = x
+unWrapPExp x = error $ "Can't call unWarpPExp on " ++ show x
+unWrapISuper :: Ir -> ISuper
+unWrapISuper (IRISuper x) = x
+unWrapISuper x = error $ "Can't call unWarpISuper on " ++ show x
+unWrapIQuant :: Ir -> IQuant
+unWrapIQuant (IRIQuant x) = x
+unWrapIQuant x = error $ "Can't call unWarpIQuant on " ++ show x
+unWrapIDecl :: Ir -> IDecl
+unWrapIDecl (IRIDecl x) = x
+unWrapIDecl x = error $ "Can't call unWarpIDecl on " ++ show x
+unWrapIGCard :: Ir -> IGCard
+unWrapIGCard (IRIGCard x) = x
+unWrapIGCard x = error $ "Can't call unWarpIGcard on " ++ show x

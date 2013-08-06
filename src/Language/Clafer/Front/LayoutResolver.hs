@@ -1,3 +1,4 @@
+{-# LANGUAGE FlexibleContexts #-}
 {-
  Copyright (C) 2012 Kacper Bak, Christopher Walker <http://gsd.uwaterloo.ca>
 
@@ -23,7 +24,7 @@ module Language.Clafer.Front.LayoutResolver where
 
 -- very simple layout resolver
 import Control.Monad.State
-import Control.Monad
+import Data.Functor.Identity (Identity)
 import Language.Clafer.Common
 import Language.ClaferT
 
@@ -51,9 +52,14 @@ data LEnv = LEnv [Int] (Maybe LastNl)
 
 getToken :: (Monad m) => ExToken -> ClaferT m Token
 getToken (ExToken t) = return t
-getToken (NewLine (x, y)) = throwErr $ ParseErr ErrPos{modelPos = Pos (fromIntegral x) (fromIntegral y)} $ "LayoutResolver.getToken: Cannot get ExToken NewLine"-- this shoud never happen
+getToken (NewLine (x, y)) = throwErr $ ParseErr (ErrPos 0 fPos fPos) $ "LayoutResolver.getToken: Cannot get ExToken NewLine"-- this shoud never happen
+  where
+    fPos = Pos (fromIntegral x) (fromIntegral y)
 
+
+layoutOpen :: String
 layoutOpen  = "{"
+layoutClose :: String
 layoutClose = "}"
 
 resolveLayout :: (Monad m) => [Token] -> ClaferT m  [Token]
@@ -83,12 +89,16 @@ resolve env@(LEnv st lastNl) (t:ts)
   (newLev, parLev) = fromJust lastNl
   st' = dropWhile (newLev <) st
 
+indent :: Token
 indent = PT (Pn 0 0 0) (TS "{" $ tokenLookup "{")
+dedent :: Token
 dedent = PT (Pn 0 0 0) (TS "}" $ tokenLookup "}") 
 
+toToken :: ExToken -> [Token]
 toToken (NewLine _) = []
 toToken (ExToken t) = [t]
 
+isExTokenIn :: [String] -> ExToken -> Bool
 isExTokenIn l (ExToken t) = isTokenIn l t
 isExTokenIn _ _ = False
 
@@ -106,10 +116,12 @@ incrGlobal :: (Monad m) => Position -- ^ If the token is on the same line
 incrGlobal (Pn _ l0 _) i (PT (Pn g l c) t) =
   return $ if l /= l0 then PT (Pn (g + i) l c) t
              else PT (Pn (g + i) l (c + i)) t
-incrGlobal _ _ t@(Err (Pn _ x y)) = do
+incrGlobal _ _ (Err (Pn z x y)) = do
   env <- getEnv
   let claferModel = lines $ unlines $ modelFrags env
-  throwErr $ ParseErr ErrPos{modelPos = Pos (fromIntegral x) (fromIntegral y)} $ "Cannot add token at '" ++ (take y $ claferModel !! (x-1)) ++ "'"
+  throwErr $ ParseErr (ErrPos z fPos fPos) $ "Cannot add token at '" ++ (take y $ claferModel !! (x-1)) ++ "'"
+  where
+    fPos = Pos (fromIntegral x) (fromIntegral y)
 
 
 tokenLookup :: String -> Int
@@ -203,12 +215,14 @@ isTokenIn ts t = case t of
 isLayoutOpen :: Token -> Bool
 isLayoutOpen = isTokenIn [layoutOpen]
 
+isBracketOpen :: Token -> Bool
 isBracketOpen = isTokenIn ["["]
 
 -- | Check if a token is the layout close token.
 isLayoutClose :: Token -> Bool
 isLayoutClose = isTokenIn [layoutClose]
 
+isBracketClose :: Token -> Bool
 isBracketClose = isTokenIn ["]"]
 
 -- | Get the number of characters in the token.
@@ -221,9 +235,11 @@ addNewLines []    = return []
 addNewLines ts@(t:_) = addNewLines' (if isBracketOpen t then 1 else 0) ts
 
 addNewLines' :: (Monad m) => Int -> [Token] -> ClaferT m [ExToken]
-addNewLines' _ []         = return []
-addNewLines' 0 (t:[])     = return [ExToken t]
-addNewLines' n ((PT (Pn _ x y) t):[])     = throwErr $ ParseErr ErrPos{modelPos = Pos (fromIntegral x) (fromIntegral y)} $"']' bracket missing for (" ++ show t ++ ")"
+addNewLines' _ []                     = return []
+addNewLines' 0 (t:[])                 = return [ExToken t]
+addNewLines' _ ((PT (Pn z x y) t):[]) = throwErr $ ParseErr (ErrPos z fPos fPos) $ "']' bracket missing for (" ++ show t ++ ")"
+  where
+    fPos = (Pos (fromIntegral x) (fromIntegral y))
 addNewLines' n (t0:t1:ts)
   | isNewLine t0 t1 && isBracketOpen t1 =
     addNewLines' (n + 1) (t1:ts) >>= (return . (ExToken t0:) . (NewLine (column t1, n):))
@@ -235,6 +251,8 @@ addNewLines' n (t0:t1:ts)
     addNewLines' (n - 1) (t1:ts) >>= (return . (ExToken t0:)) 
   | isNewLine t0 t1  = addNewLines' n (t1:ts) >>= (return . (ExToken t0:) . (NewLine (column t1, n):)) 
   | otherwise        = addNewLines' n (t1:ts) >>= (return . (ExToken t0:)) 
+addNewLines' _ _ = throwErr (ClaferErr "Function addNewLines' from LayoutResolver was given invalid arguments" :: CErr Span) -- This should never happen!
+
 
 adjust :: (Monad m) => [Token] -> ClaferT m [Token]
 adjust [] = return []
@@ -261,19 +279,21 @@ addToken :: (Monad m) => Position -- ^ Position of the new token.
          -> [Token]  -- ^ The rest of the tokens. These will have their
                      --   positions updated to make room for the new token.
          -> ClaferT m [Token]
-addToken p@(Pn _ x y) s ts = do
-  when (i==0) $ throwErr $ ParseErr ErrPos{modelPos = Pos (fromIntegral x) (fromIntegral y)} $ "not a reserved word: " ++ show s
+addToken p@(Pn z x y) s ts = do
+  when (i==0) $ throwErr $ ParseErr (ErrPos z fPos fPos) $ "not a reserved word: " ++ show s
   (>>= (return . (PT p (TS s i):))) $ mapM (incrGlobal p (length s)) ts
   where
+    fPos = Pos (fromIntegral x) (fromIntegral y)
     i = tokenLookup s
 
 resLayout :: String -> String
-resLayout input = 
-  reverse $ output $ execState resolveLayout' $ LayEnv 0 [] input' [] 0
+resLayout input' = 
+  reverse $ output $ execState resolveLayout' $ LayEnv 0 [] input'' [] 0
   where
-  input' = unlines $ filter (/= "") $ lines input
+  input'' = unlines $ filter (/= "") $ lines input'
 
 
+resolveLayout' :: StateT LayEnv Identity ()
 resolveLayout' = do
   stop <- isEof
   when (not stop) $ do
@@ -282,6 +302,7 @@ resolveLayout' = do
     emit c'
     resolveLayout'
 
+handleIndent :: Char -> StateT LayEnv Identity Char
 handleIndent c = case c of
   '\n' -> do
     emit c
@@ -306,12 +327,15 @@ handleIndent c = case c of
   _ ->  return c
 
 
+emit :: MonadState LayEnv m => Char -> m ()
 emit c = modify (\e -> e {output = c : output e})
 
 
+readC :: (Num a, Ord a) => a -> StateT LayEnv Identity Char
 readC n = if n > 0 then getc else return '\n'
 
 
+eatSpaces :: StateT LayEnv Identity Int
 eatSpaces = do
   cs <- gets input
   let (sp, rest) = break (/= ' ') cs
@@ -320,6 +344,7 @@ eatSpaces = do
   if ctr > 0 then gets level else return $ length sp
 
 
+emitIndent :: MonadState LayEnv m => Int -> m ()
 emitIndent n = do
   lev <- gets level  
   when (n > lev) $ do
@@ -329,6 +354,7 @@ emitIndent n = do
     modify (\e -> e {level = n, levels = lev : levels e})
 
 
+emitDedent :: MonadState LayEnv m => Int -> m ()
 emitDedent n = do
   lev <- gets level
   when (n < lev) $ do
@@ -338,22 +364,24 @@ emitDedent n = do
     emitDedent n
 
 
+isEof :: StateT LayEnv Identity Bool
 isEof = null `liftM` (gets input)
 
 
+getc :: StateT LayEnv Identity Char
 getc = do
   c <- gets (head.input)
   modify (\e -> e {input = tail $ input e})
   return c
 
 revertLayout :: String -> String
-revertLayout input = unlines $ revertLayout' (lines input) 0 
+revertLayout input' = unlines $ revertLayout' (lines input') 0 
 
 revertLayout' :: [String] -> Int -> [String]
-revertLayout' []             indent = []
-revertLayout' ([]:xss)       indent = revertLayout' xss indent
-revertLayout' (('{':xs):xss) indent = (replicate indent' ' ' ++ xs):revertLayout' xss indent'
-                                    where indent' = indent + 2
-revertLayout' (('}':xs):xss) indent = (replicate indent' ' ' ++ xs):revertLayout' xss indent'
-                                    where indent' = indent - 2
-revertLayout' (xs:xss)       indent = (replicate indent ' ' ++ xs):revertLayout' xss indent
+revertLayout' []             _ = []
+revertLayout' ([]:xss)       i = revertLayout' xss i
+revertLayout' (('{':xs):xss) i = (replicate i' ' ' ++ xs):revertLayout' xss i'
+                                    where i' = i + 2
+revertLayout' (('}':xs):xss) i = (replicate i' ' ' ++ xs):revertLayout' xss i'
+                                    where i' = i - 2
+revertLayout' (xs:xss)       i = (replicate i ' ' ++ xs):revertLayout' xss i
