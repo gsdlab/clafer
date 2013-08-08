@@ -191,17 +191,17 @@ claferDecl :: IModule -> IClafer -> Concat -> Concat
 claferDecl  im  c     rest    = cconcat $ [genOptCard c,
   CString $ genAbstract $ isAbstract c, CString "sig ",
   Concat NoTrace [CString $ uid c, genExtends $ super c, CString "\n", rest]]
-  ++ if ((rSpan $ super c) /= Nothing && (not $ istop $ read $ fromJust $ rSpan $ super c)) then [genHFact c] else []
+  ++ if ((rInfo $ super c) /= Nothing && (not $ istop $ fst $ fromJust $ rInfo $ super c)) then [genHFact c] else []
   where
   genAbstract isAbs = if isAbs then "abstract " else ""
   genExtends (ISuper False _ [PExp _ _ _ (IClaferId _ "clafer" _)]) = CString ""
   genExtends (ISuper False _ [PExp _ _ _ (IClaferId _ i _)]) = CString " " +++ Concat NoTrace [CString $ "extends " ++ i]
   -- todo: handle multiple inheritance
   genExtends _ = CString ""
-  genHFact claf = CString $ "\n\nfact { r_" ++ uid claf ++ " in r_" ++ (spanLookUp (read $ fromJust $ rSpan $ super claf) im) ++ " }"
-  spanLookUp span' = uid . head . foldMapIR (slookup span') 
+  genHFact claf = CString $ "\n\nfact { r_" ++ uid claf ++ " in r_" ++ (snd $ fromJust $ rInfo $ super claf) ++ " }"
+  {-spanLookUp span' = uid . head . foldMapIR (slookup span') 
   slookup span' (IRClafer claf) = if (cinPos claf == span') then [claf] else []
-  slookup _ _ = []
+  slookup _ _ = []-}
   istop (Span (Pos _ 1) _) = True
   istop (Span (PosPos _ _ 1) _) = True
   istop (PosSpan _ (Pos _ 1) _) = True

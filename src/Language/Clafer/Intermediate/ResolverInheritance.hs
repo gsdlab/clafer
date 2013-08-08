@@ -83,7 +83,7 @@ resolveNElement declarations x = case x of
 resolveN :: IClafer -> Span -> [IElement] -> String -> Resolve (Maybe (String, [IClafer]))
 resolveN clafer' pos' declarations id' =
   findUnique pos' id' $ map (\x -> (x, [x])) $ 
-    filter (\c -> (isAbstract c) || ((rSpan $ super clafer') == (Just $ show $ cinPos c))) $ 
+    filter (\c -> (isAbstract c) || (((rInfo $ super clafer') /= Nothing) && ((fst $ fromJust $ rInfo $ super clafer') == (cinPos c)))) $ 
       bfsClafers $ toClafers declarations
 
 -- -----------------------------------------------------------------------------
@@ -254,7 +254,7 @@ resolveEInheritance predecessors unrollables absAncestor declarations allSuper
              unrollSuper >>= elements
     let super' = if (getSuper clafer `elem` unrollables)
                  then super clafer
-                 else ISuper False (rSpan $ super clafer) [idToPExp "" noSpan "" "clafer" False]
+                 else ISuper False (rInfo $ super clafer) [idToPExp "" noSpan "" "clafer" False]
     return (elements', super', superList)
   where
   clafer = head allSuper

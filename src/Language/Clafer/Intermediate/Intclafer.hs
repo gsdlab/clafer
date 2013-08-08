@@ -87,8 +87,8 @@ data IElement =
 -- :     -- non overlapping (disjoint)
 data ISuper =
    ISuper {
-      isOverlapping :: Bool,  -- whether overlapping or disjoint with other clafers extending given list of superclafers
-      rSpan :: Maybe String,  -- the Span of the clafer it has a relation with
+      isOverlapping :: Bool,          -- whether overlapping or disjoint with other clafers extending given list of superclafers
+      rInfo :: Maybe (Span, String),  -- Span of the clafer it has a relation with and the uid
       supers :: [PExp]
     }
   deriving (Eq,Ord,Show)

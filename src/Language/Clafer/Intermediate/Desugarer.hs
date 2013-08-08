@@ -38,7 +38,7 @@ desugarModule (PosModule _ declarations) =
         declarations >>= desugarEnums >>= desugarDeclaration
           --[ImoduleFragment $ declarations >>= desugarEnums >>= desugarDeclaration]
       pMap = foldMapIR makeMap iMod
-  in (mapIR (addrSpan pMap $ bfsClafers $ toClafers $ mDecls iMod) iMod, pMap)
+  in (flip mapIR iMod $ addrSpan pMap $ bfsClafers $ toClafers $ mDecls iMod , pMap)
 
 sugarModule :: IModule -> Module
 sugarModule x = Module $ map sugarDeclaration $ mDecls x -- (fragments x >>= mDecls)
@@ -593,12 +593,18 @@ getPos e = iFoldMap getPExpPos $ IRIElement e
     getPExpPos _ = []
 
 addrSpan :: Map.Map Span IClafer -> [IClafer] -> Ir -> Ir
-addrSpan _ [] i = i
 addrSpan parMap (c:cs) irclaf@(IRClafer claf)  = 
   if ((getSuperType claf) == ident c && commonNesting claf c parMap) 
-    then IRClafer $ claf{super = (super claf){rSpan = Just $ show $ cinPos c}} 
+    then IRClafer $ claf{super = (super claf){rInfo = Just $ (cinPos c,"")}} 
       else addrSpan parMap cs irclaf 
 addrSpan _ _ i = i 
+
+addrUid :: Map.Map Span IClafer -> [IClafer] -> Ir -> Ir
+addrUid parMap (c:cs) irclaf@(IRClafer claf) = 
+  if (((rInfo $ super claf) /= Nothing) && ((fst $ fromJust $ rInfo $ super claf) == (cinPos c)))
+    then IRClafer $ claf{super = (super claf){rInfo = Just $ (fst $ fromJust $ rInfo $ super claf ,uid c)}} 
+      else addrUid parMap cs irclaf 
+addrUid _ _ i = i 
 
 commonNesting :: IClafer -> IClafer -> Map.Map Span IClafer -> Bool
 commonNesting claf1 claf2 parMap = 

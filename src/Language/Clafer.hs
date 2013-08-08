@@ -248,10 +248,12 @@ compile =
     let (desugaredModule, pMap') = desugar ast'
     putEnv $ env{parentMap = pMap'}
 
-    ir <- analyze (args env) desugaredModule
-    let (imodule, _, _) = ir
+    ir' <- analyze (args env) desugaredModule
+    let (imodule', g, b) = ir'
+    let pMap = foldMapIR makeMap imodule'
+    let imodule = flip mapIR imodule' $ addrUid pMap $ bfsClafers $ toClafers $ mDecls imodule'
     let imodTrace = traceIrModule imodule
-    let pMap = foldMapIR makeMap imodule
+    let ir = (imodule, g, b)
 
     let failSpanList = foldMapIR gt1 imodule
     when ((afm $ args env) && failSpanList/="") $ throwErr (ClaferErr $ ("The model is not an attributed feature model .\nThe following places contain cardinality larger than 1:\n"++) $ failSpanList :: CErr Span)
