@@ -83,7 +83,7 @@ resolveNElement declarations x = case x of
 resolveN :: IClafer -> Span -> [IElement] -> String -> Resolve (Maybe (String, [IClafer]))
 resolveN clafer' pos' declarations id' =
   findUnique pos' id' $ map (\x -> (x, [x])) $ 
-    filter (\c -> (isAbstract c) || ((rSpan $ super clafer') == (Just $ cinPos c))) $ 
+    filter (\c -> (isAbstract c) || ((rSpan $ super clafer') == (Just $ show $ cinPos c))) $ 
       bfsClafers $ toClafers declarations
 
 -- -----------------------------------------------------------------------------

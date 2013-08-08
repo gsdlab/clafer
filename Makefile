@@ -41,7 +41,7 @@ install:
 # Removes current build and makes a clean new one (Don't use if starting from scratch!)
 cleanEnv:
 	make clean
-	ghc-pkg unregister clafer
+	ghc-pkg unregister clafer --force
 	rm `which clafer`
 	make 
 

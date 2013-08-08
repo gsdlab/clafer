@@ -269,10 +269,10 @@ data LocId =
 data Pos =
    Pos Integer Integer
  | PosPos Span Integer Integer
-  deriving (Eq,Ord,Show)
+  deriving (Eq,Ord,Show,Read)
 
 data Span =
    Span Pos Pos
  | PosSpan Span Pos Pos
-  deriving (Eq,Ord,Show)
+  deriving (Eq,Ord,Show,Read)
 

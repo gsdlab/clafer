@@ -245,12 +245,13 @@ compile =
   do
     env <- getEnv
     ast' <- getAst
-    let (desugaredModule, pMap) = desugar ast'
-    putEnv $ env{parentMap = pMap}
+    let (desugaredModule, pMap') = desugar ast'
+    putEnv $ env{parentMap = pMap'}
 
     ir <- analyze (args env) desugaredModule
     let (imodule, _, _) = ir
     let imodTrace = traceIrModule imodule
+    let pMap = foldMapIR makeMap imodule
 
     let failSpanList = foldMapIR gt1 imodule
     when ((afm $ args env) && failSpanList/="") $ throwErr (ClaferErr $ ("The model is not an attributed feature model .\nThe following places contain cardinality larger than 1:\n"++) $ failSpanList :: CErr Span)
@@ -338,6 +339,7 @@ generate :: Monad m => ClaferT m CompilerResult
 generate =
   do
     env <- getEnv
+    let parMap = parentMap env
     ast' <- getAst
     (iModule, genv, au) <- getIr
     let cargs = args env
@@ -354,7 +356,7 @@ generate =
                                       let addCommentStats = if no_stats cargs then const else addStats
                                       let m = snd alloyCode
                                       ("als", addCommentStats (fst alloyCode) stats, Just m)
-                        Xml      -> ("xml", genXmlModule iModule, Nothing)
+                        Xml      -> ("xml", genXmlModule parMap iModule, Nothing)
                         Mode.Clafer   -> ("des.cfr", printTree $ sugarModule iModule, Nothing)
                         Html     -> ("html", generateHtml env ast'
                           , Nothing)

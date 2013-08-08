@@ -39,35 +39,6 @@ desugarModule (PosModule _ declarations) =
           --[ImoduleFragment $ declarations >>= desugarEnums >>= desugarDeclaration]
       pMap = foldMapIR makeMap iMod
   in (mapIR (addrSpan pMap $ bfsClafers $ toClafers $ mDecls iMod) iMod, pMap)
-  where
-    makeMap :: Ir -> Map.Map Span IClafer
-    makeMap (IRClafer c) = Map.fromList $ zip (map getPos $ elements c) (repeat c)
-    makeMap _ = Map.empty
-
-    getPos :: IElement -> Span
-    getPos (IEClafer c) = cinPos c
-    getPos e = inPos $ cpexp e
-
-    addrSpan :: Map.Map Span IClafer -> [IClafer] -> Ir -> Ir
-    addrSpan _ [] i = i
-    addrSpan parMap (c:cs) irclaf@(IRClafer claf)  = 
-      if ((getSuperType claf) == ident c && commonNesting claf c parMap) 
-        then IRClafer $ claf{super = (super claf){rSpan = Just $ cinPos c}} 
-          else addrSpan parMap cs irclaf 
-    addrSpan _ _ i = i 
-
-    commonNesting :: IClafer -> IClafer -> Map.Map Span IClafer -> Bool
-    commonNesting claf1 claf2 parMap = 
-      let par1 = Map.lookup (cinPos claf1) parMap
-          par2 = Map.lookup (cinPos claf2) parMap
-      in if (par2 == Nothing) then True else
-        if (par1 == Nothing) then False else
-          if ((getSuperType $ fromJust par1) == (ident $ fromJust par2)) 
-            then commonNesting (fromJust par1) (fromJust par2) parMap
-              else False
-
-    getSuperType :: IClafer -> String
-    getSuperType claf = sident $ exp $ head $ supers $ super claf
 
 sugarModule :: IModule -> Module
 sugarModule x = Module $ map sugarDeclaration $ mDecls x -- (fragments x >>= mDecls)
@@ -609,3 +580,35 @@ sugarQuant ILone = QuantLone
 sugarQuant IOne = QuantOne
 sugarQuant ISome = QuantSome
 sugarQuant IAll = error "sugarQaunt was called on IAll, this is not allowed!" --Should never happen
+
+makeMap :: Ir -> Map.Map Span IClafer
+makeMap (IRClafer c) = Map.fromList $ zip (concat $ map getPos $ elements c) (repeat c)
+makeMap _ = Map.empty
+
+getPos :: IElement -> [Span]
+getPos (IEClafer c) = [cinPos c]
+getPos e = iFoldMap getPExpPos $ IRIElement e
+  where
+    getPExpPos (IRPExp p) = [inPos p]
+    getPExpPos _ = []
+
+addrSpan :: Map.Map Span IClafer -> [IClafer] -> Ir -> Ir
+addrSpan _ [] i = i
+addrSpan parMap (c:cs) irclaf@(IRClafer claf)  = 
+  if ((getSuperType claf) == ident c && commonNesting claf c parMap) 
+    then IRClafer $ claf{super = (super claf){rSpan = Just $ show $ cinPos c}} 
+      else addrSpan parMap cs irclaf 
+addrSpan _ _ i = i 
+
+commonNesting :: IClafer -> IClafer -> Map.Map Span IClafer -> Bool
+commonNesting claf1 claf2 parMap = 
+  let par1 = Map.lookup (cinPos claf1) parMap
+      par2 = Map.lookup (cinPos claf2) parMap
+  in if (par2 == Nothing) then True else
+    if (par1 == Nothing) then False else
+      if ((getSuperType $ fromJust par1) == (ident $ fromJust par2)) 
+        then commonNesting (fromJust par1) (fromJust par2) parMap
+          else False
+
+getSuperType :: IClafer -> String
+getSuperType claf = sident $ exp $ head $ supers $ super claf
