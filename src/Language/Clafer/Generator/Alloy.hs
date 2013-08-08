@@ -87,10 +87,10 @@ cunlines xs = cconcat $ map (+++ (CString "\n")) xs
 -- Alloy code generation
 -- 07th Mayo 2012 Rafael Olaechea 
 --      Added Logic to print a goal block in case there is at least one goal.
-genModule :: IModule -> ClaferArgs -> (IModule, GEnv) -> (Result, [(Span, IrTrace)])
-genModule  im  claferargs    (imodule, _)     = (flatten output, filter ((/= NoTrace) . snd) $ mapLineCol output)
+genModule :: ClaferArgs -> (IModule, GEnv) -> (Result, [(Span, IrTrace)])
+genModule  claferargs    (imodule, _)     = (flatten output, filter ((/= NoTrace) . snd) $ mapLineCol output)
   where
-  output = header claferargs imodule +++ (cconcat $ map (genDeclaration im claferargs) (mDecls imodule)) +++ 
+  output = header claferargs imodule +++ (cconcat $ map (genDeclaration claferargs) (mDecls imodule)) +++ 
        if length goals_list > 0 then 
                 CString "objectives o_global {\n" +++   (cintercalate (CString ",\n") goals_list) +++   CString "\n}" 
        else  
@@ -129,9 +129,9 @@ genDeclarationGoalsOnly    claferargs    x         = case x of
 
 -- 07th Mayo 2012 Rafael Olaechea
 -- Removed goal from this function as they will now  all be collected into a single block.       
-genDeclaration :: IModule -> ClaferArgs -> IElement -> Concat
-genDeclaration im claferargs x = case x of
-  IEClafer clafer'  -> genClafer im claferargs [] clafer'
+genDeclaration :: ClaferArgs -> IElement -> Concat
+genDeclaration claferargs x = case x of
+  IEClafer clafer'  -> genClafer claferargs [] clafer'
   IEConstraint _ pexp  -> mkFact $ genPExp claferargs [] pexp
   IEGoal _ (PExp _ _ _ innerexp) -> case innerexp of 
         IFunExp op'  _ ->  if  op' == iGMax || op' == iGMin then  
@@ -161,16 +161,16 @@ optShowSet xs = CString "\n" +++ showSet (CString "\n  ") xs
 
 -- optimization: top level cardinalities
 -- optimization: if only boolean parents, then set card is known
-genClafer :: IModule -> ClaferArgs -> [String] -> IClafer -> Concat
-genClafer im claferargs resPath oClafer = (cunlines $ filterNull
-  [ cardFact +++ claferDecl im clafer'
+genClafer :: ClaferArgs -> [String] -> IClafer -> Concat
+genClafer claferargs resPath oClafer = (cunlines $ filterNull
+  [ cardFact +++ claferDecl clafer'
         ((showSet (CString "\n, ") $ genRelations claferargs clafer') +++
         (optShowSet $ filterNull $ genConstraints claferargs resPath clafer'))
   ]) +++ CString "\n" +++ children'
   where
   clafer' = transPrimitive oClafer
   children' = cconcat $ filterNull $ map
-             (genClafer im claferargs ((uid clafer') : resPath)) $
+             (genClafer claferargs ((uid clafer') : resPath)) $
              getSubclafers $ elements clafer'
   cardFact
     | null resPath && (null $ flatten $ genOptCard clafer') =
@@ -187,8 +187,8 @@ transPrimitive    clafer'   = clafer'{super = toOverlapping $ super clafer'}
     | otherwise      = x
   toOverlapping x = x
 
-claferDecl :: IModule -> IClafer -> Concat -> Concat
-claferDecl  im  c     rest    = cconcat $ [genOptCard c,
+claferDecl :: IClafer -> Concat -> Concat
+claferDecl  c     rest    = cconcat $ [genOptCard c,
   CString $ genAbstract $ isAbstract c, CString "sig ",
   Concat NoTrace [CString $ uid c, genExtends $ super c, CString "\n", rest]]
   ++ if ((rInfo $ super c) /= Nothing && (not $ istop $ fst $ fromJust $ rInfo $ super c)) then [genHFact c] else []

@@ -278,7 +278,7 @@ generateFragments =
     
     -- Assumes output mode is Alloy for now
     
-    return $ map (generateFragment iModule $ args env) fragElems
+    return $ map (generateFragment $ args env) fragElems
   where
   rnge (IEClafer IClafer{cinPos = p}) = p
   rnge IEConstraint{cpexp = PExp{inPos = p}} = p
@@ -298,9 +298,9 @@ generateFragments =
     case rnge ele of
       Span _ e -> e <= p
       PosSpan _ _ e -> e <= p
-  generateFragment :: IModule -> ClaferArgs -> [IElement] -> String
-  generateFragment im args' frag =
-    flatten $ cconcat $ map (genDeclaration im args') frag
+  generateFragment :: ClaferArgs -> [IElement] -> String
+  generateFragment args' frag =
+    flatten $ cconcat $ flip map frag $ genDeclaration args'
 
 -- Splits the AST into their fragments, and generates the output for each fragment.
 generateHtml :: ClaferEnv -> Module -> String
@@ -349,12 +349,12 @@ generate =
     let (imod,strMap) = astrModule iModule
     let (ext, code, mapToAlloy) = case (mode cargs) of
                         Alloy   ->  do
-                                      let alloyCode = genModule iModule cargs (imod, genv)
+                                      let alloyCode = genModule cargs (imod, genv)
                                       let addCommentStats = if no_stats cargs then const else addStats
                                       let m = snd alloyCode
                                       ("als", addCommentStats (fst alloyCode) stats, Just m)
                         Alloy42  -> do
-                                      let alloyCode = genModule iModule cargs (imod, genv)
+                                      let alloyCode = genModule cargs (imod, genv)
                                       let addCommentStats = if no_stats cargs then const else addStats
                                       let m = snd alloyCode
                                       ("als", addCommentStats (fst alloyCode) stats, Just m)

@@ -23,6 +23,7 @@
 module Language.Clafer.Intermediate.Desugarer where
 
 import qualified Data.Map as Map
+import Data.List
 import Data.Maybe
 import Prelude hiding (exp)
 import Language.Clafer.Common
@@ -38,7 +39,8 @@ desugarModule (PosModule _ declarations) =
         declarations >>= desugarEnums >>= desugarDeclaration
           --[ImoduleFragment $ declarations >>= desugarEnums >>= desugarDeclaration]
       pMap = foldMapIR makeMap iMod
-  in (flip mapIR iMod $ addrSpan pMap $ bfsClafers $ toClafers $ mDecls iMod , pMap)
+      clafers = bfsClafers $ toClafers $ mDecls iMod
+  in (flip mapIR iMod $ addrSpan pMap clafers clafers , pMap)
 
 sugarModule :: IModule -> Module
 sugarModule x = Module $ map sugarDeclaration $ mDecls x -- (fragments x >>= mDecls)
@@ -592,12 +594,12 @@ getPos e = iFoldMap getPExpPos $ IRIElement e
     getPExpPos (IRPExp p) = [inPos p]
     getPExpPos _ = []
 
-addrSpan :: Map.Map Span IClafer -> [IClafer] -> Ir -> Ir
-addrSpan parMap (c:cs) irclaf@(IRClafer claf)  = 
-  if ((getSuperType claf) == ident c && commonNesting claf c parMap) 
+addrSpan :: Map.Map Span IClafer -> [IClafer] -> [IClafer] -> Ir -> Ir
+addrSpan parMap (c:cs) clafers irclaf@(IRClafer claf)  = 
+  if ((getSuperType claf) == ident c && commonNesting claf c parMap clafers) 
     then IRClafer $ claf{super = (super claf){rInfo = Just $ (cinPos c,"")}} 
-      else addrSpan parMap cs irclaf 
-addrSpan _ _ i = i 
+      else addrSpan parMap cs clafers irclaf 
+addrSpan _ _ _ i = i 
 
 addrUid :: Map.Map Span IClafer -> [IClafer] -> Ir -> Ir
 addrUid parMap (c:cs) irclaf@(IRClafer claf) = 
@@ -606,15 +608,25 @@ addrUid parMap (c:cs) irclaf@(IRClafer claf) =
       else addrUid parMap cs irclaf 
 addrUid _ _ i = i 
 
-commonNesting :: IClafer -> IClafer -> Map.Map Span IClafer -> Bool
-commonNesting claf1 claf2 parMap = 
+commonNesting :: IClafer -> IClafer -> Map.Map Span IClafer -> [IClafer] -> Bool
+commonNesting claf1 claf2 parMap clafers = 
   let par1 = Map.lookup (cinPos claf1) parMap
       par2 = Map.lookup (cinPos claf2) parMap
   in if (par2 == Nothing) then True else
     if (par1 == Nothing) then False else
-      if ((getSuperType $ fromJust par1) == (ident $ fromJust par2)) 
-        then commonNesting (fromJust par1) (fromJust par2) parMap
+      --if ((getSuperType $ fromJust par1) == (ident $ fromJust par2)) 
+      if (recursiveCheck (fromJust par1) (fromJust par2) clafers)
+        then commonNesting (fromJust par1) (fromJust par2) parMap clafers
           else False
+  where
+    recursiveCheck p1 p2 clafs = 
+      let p1S = supers $ super p1
+      in if (p1S==[]) then False else 
+        let p1ST = sident $ exp $ head $ p1S
+        in if (p1ST == (ident p2)) then True else 
+          let p3 = (flip find clafs $ (==p1ST) . ident)
+          in if (p3==Nothing) then False else
+            recursiveCheck (fromJust p3) p2 clafs
 
 getSuperType :: IClafer -> String
 getSuperType claf = sident $ exp $ head $ supers $ super claf
