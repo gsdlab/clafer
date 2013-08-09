@@ -82,9 +82,12 @@ resolveNElement declarations x = case x of
 
 resolveN :: IClafer -> Span -> [IElement] -> String -> Resolve (Maybe (String, [IClafer]))
 resolveN clafer' pos' declarations id' =
-  findUnique pos' id' $ map (\x -> (x, [x])) $ 
-    filter (\c -> (isAbstract c) || (((rInfo $ super clafer') /= Nothing) && ((fst $ fromJust $ rInfo $ super clafer') == (cinPos c)))) $ 
-      bfsClafers $ toClafers declarations
+  let posibilities = filter (\c -> (isAbstract c) || (((rInfo $ super clafer') /= Nothing) && ((fst $ fromJust $ rInfo $ super clafer') == (cinPos c)))) $ 
+                      bfsClafers $ toClafers declarations
+      nonAbsposibilities = filter (\c -> (c /= clafer') && (not $ isAbstract c)) posibilities
+  in if ((length posibilities) == 1 || nonAbsposibilities == []) then 
+      findUnique pos' id' $ map (\x -> (x, [x])) $ posibilities else
+         findUnique pos' id' $ map (\x -> (x, [x])) $ nonAbsposibilities
 
 -- -----------------------------------------------------------------------------
 -- Overlapping inheritance

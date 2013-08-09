@@ -25,6 +25,7 @@ module Language.Clafer.Intermediate.Desugarer where
 import qualified Data.Map as Map
 import Data.List
 import Data.Maybe
+import Data.Function (on)
 import Prelude hiding (exp)
 import Language.Clafer.Common
 import Language.Clafer.Front.Absclafer
@@ -40,7 +41,7 @@ desugarModule (PosModule _ declarations) =
           --[ImoduleFragment $ declarations >>= desugarEnums >>= desugarDeclaration]
       pMap = foldMapIR makeMap iMod
       clafers = bfsClafers $ toClafers $ mDecls iMod
-  in (flip mapIR iMod $ addrSpan pMap clafers clafers , pMap)
+  in (flip mapIR iMod $ addrSpan pMap clafers clafers [] , pMap)
 
 sugarModule :: IModule -> Module
 sugarModule x = Module $ map sugarDeclaration $ mDecls x -- (fragments x >>= mDecls)
@@ -594,12 +595,20 @@ getPos e = iFoldMap getPExpPos $ IRIElement e
     getPExpPos (IRPExp p) = [inPos p]
     getPExpPos _ = []
 
-addrSpan :: Map.Map Span IClafer -> [IClafer] -> [IClafer] -> Ir -> Ir
-addrSpan parMap (c:cs) clafers irclaf@(IRClafer claf)  = 
-  if ((getSuperType claf) == ident c && commonNesting claf c parMap clafers) 
-    then IRClafer $ claf{super = (super claf){rInfo = Just $ (cinPos c,"")}} 
-      else addrSpan parMap cs clafers irclaf 
-addrSpan _ _ _ i = i 
+addrSpan :: Map.Map Span IClafer -> [IClafer] -> [IClafer] -> [IClafer] -> Ir -> Ir -- The three IClafer lists are as follows 1. The list we are mapping through
+addrSpan _ [] _ [] i = i                                                            --                                        2. A list of all clafers
+addrSpan _ [] _ acc _ =                                                             --                                        3. An accumlator gathering all posibilities
+  (IRClafer (maximumBy (compare `on` (depth . fst . fromJust . rInfo . super)) acc)) 
+  where
+    depth (Span (Pos _ c) _) = c
+    depth (PosSpan _ (Pos _ c) _) = c
+    depth (Span (PosPos _ _ c) _) = c
+    depth (PosSpan _ (PosPos _ _ c) _) = c
+addrSpan parMap (c:cs) clafers acc irclaf@(IRClafer claf)  = flip (addrSpan parMap cs clafers) irclaf $
+  if (((getSuperType claf) == ident c || ident claf == ident c) && commonNesting claf c parMap clafers) 
+    then (:acc) $ claf{super = (super claf){rInfo = Just $ (cinPos c,"")}} 
+      else acc 
+addrSpan _ _ _ _ i =  i 
 
 addrUid :: Map.Map Span IClafer -> [IClafer] -> Ir -> Ir
 addrUid parMap (c:cs) irclaf@(IRClafer claf) = 
