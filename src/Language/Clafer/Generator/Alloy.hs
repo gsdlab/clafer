@@ -202,11 +202,6 @@ claferDecl  c     rest    = cconcat $ [genOptCard c,
   {-spanLookUp span' = uid . head . foldMapIR (slookup span') 
   slookup span' (IRClafer claf) = if (cinPos claf == span') then [claf] else []
   slookup _ _ = []-}
-  istop (Span (Pos _ 1) _) = True
-  istop (Span (PosPos _ _ 1) _) = True
-  istop (PosSpan _ (Pos _ 1) _) = True
-  istop (PosSpan _ (PosPos _ _ 1) _) = True
-  istop _ = False
 
 genOptCard :: IClafer -> Concat
 genOptCard    c
@@ -403,7 +398,7 @@ genPExp'    claferargs    resPath     (PExp iType' pid' pos exp') = case exp' of
     optBar [] = ""
     optBar _  = " | "
   IClaferId _ "ref" _ -> CString "@ref"
-  IClaferId _ sid istop -> CString $
+  IClaferId _ sid istop' -> CString $
       if head sid == '~' then sid else
       if isNothing iType' then sid' else case fromJust $ iType' of
     TInteger -> vsident
@@ -411,7 +406,7 @@ genPExp'    claferargs    resPath     (PExp iType' pid' pos exp') = case exp' of
     TString -> vsident
     _ -> sid'
     where
-    sid' = (if istop then "" else '@' : genRelName "") ++ sid
+    sid' = (if istop' then "" else '@' : genRelName "") ++ sid
     -- 29/March/2012  Rafael Olaechea: ref is now prepended with clafer name to be able to refer to it from partial instances.
     -- 30/March/2012 Rafael Olaechea added referredClaferUniqeuid to fix problems when having this.x > number  (e.g test/positive/i10.cfr )     
     vsident = if (noalloyruncommand claferargs) then sid' ++  ".@"  ++ referredClaferUniqeuid ++ "_ref"  else  sid'  ++ ".@ref"

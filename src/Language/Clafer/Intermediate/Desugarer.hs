@@ -41,7 +41,7 @@ desugarModule (PosModule _ declarations) =
           --[ImoduleFragment $ declarations >>= desugarEnums >>= desugarDeclaration]
       pMap = foldMapIR makeMap iMod
       clafers = bfsClafers $ toClafers $ mDecls iMod
-  in (flip mapIR iMod $ addrSpan pMap clafers clafers [] , pMap)
+  in (flip mapIR iMod $ addrSpan pMap clafers clafers [], pMap)
 
 sugarModule :: IModule -> Module
 sugarModule x = Module $ map sugarDeclaration $ mDecls x -- (fragments x >>= mDecls)
@@ -605,7 +605,7 @@ addrSpan _ [] _ acc _ =                                                         
     depth (Span (PosPos _ _ c) _) = c
     depth (PosSpan _ (PosPos _ _ c) _) = c
 addrSpan parMap (c:cs) clafers acc irclaf@(IRClafer claf)  = flip (addrSpan parMap cs clafers) irclaf $
-  if (((getSuperType claf) == ident c || ident claf == ident c) && commonNesting claf c parMap clafers) 
+  if (((getSuperType claf) == ident c || ident claf == ident c) && (cinPos claf /= cinPos c) && commonNesting claf c parMap clafers) 
     then (:acc) $ claf{super = (super claf){rInfo = Just $ (cinPos c,"")}} 
       else acc 
 addrSpan _ _ _ _ i =  i 
@@ -623,7 +623,6 @@ commonNesting claf1 claf2 parMap clafers =
       par2 = Map.lookup (cinPos claf2) parMap
   in if (par2 == Nothing) then True else
     if (par1 == Nothing) then False else
-      --if ((getSuperType $ fromJust par1) == (ident $ fromJust par2)) 
       if (recursiveCheck (fromJust par1) (fromJust par2) clafers)
         then commonNesting (fromJust par1) (fromJust par2) parMap clafers
           else False
