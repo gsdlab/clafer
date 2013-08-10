@@ -1,0 +1,214 @@
+< - 0.3.3 
+> - 0.3.2
+
+diff -w -B regression/i150-or-groups.als.reg positive/i150-or-groups.als
+#Michal: OK - as expected
+6,7c6,7
+< { r_c2_B : lone c2_B
+< , r_c3_C : lone c3_C }
+---
+> { r_c2_B : one c2_B
+> , r_c3_C : one c3_C }
+10c10
+< lone sig c2_B
+---
+> one sig c2_B
+12d11
+< { one r_c2_B }
+14c13
+< lone sig c3_C
+---
+> one sig c3_C
+16d14
+< { one r_c3_C }
+
+
+diff -w -B regression/i17.als.reg positive/i17.als
+#Michal: OK - as expected
+
+5d4
+< fact { #c1_A <= 0 }
+
+
+diff -w -B regression/i188-sum-quantifier.als.reg positive/i188-sum-quantifier.als
+#Michal: OK - as expected
+9a10
+> { (this.@ref) = (sum(c1_a.@ref)) }
+11d11
+< fact { (c2_b.@ref) = (sum temp : c1_a | temp.@ref) }
+
+
+diff -w -B regression/i188-sum-quantifier2.als.reg positive/i188-sum-quantifier2.als
+#Michal: OK - as expected
+25a26
+> { (this.@ref) = (sum(c1_Component.(@r_c2_energy.@ref))) }
+27d27
+< fact { (c15_total.@ref) = (sum temp : (c1_Component.@r_c2_energy) | temp.@ref) }
+
+
+diff -w -B regression/i226-unary-minus.als.reg positive/i226-unary-minus.als
+#Michal: OK - as expected
+8c8
+< fact { (c1_x.@ref) = ((-1.mul[(1.add[2])]).div[3]) }
+---
+> fact { (c1_x.@ref) = ((-(1.add[2])).div[3]) }
+
+
+diff -w -B regression/i235.als.reg positive/i235.als
+#Michal: OK - as expected
+5d4
+< fact { #c1_A <= 0 }
+
+
+diff -w -B regression/i40-text-equality.als.reg positive/i40-text-equality.als
+#Michal: OK - as expected
+
+6a7
+> { (this.@ref) = 0 }
+8d8
+< fact { (c1_text.@ref) = 0 }
+10a11
+> { (this.@ref) = 0 }
+12d12
+< fact { (c5_text1.@ref) = 0 }
+14a15
+> { (this.@ref) = 0 }
+16d16
+< fact { (c9_text2.@ref) = 0 }
+
+
+diff -w -B regression/i50.als.reg positive/i50.als
+#Michal: OK - as expected
+5d4
+< fact { #c1_A <= 0 }
+
+
+diff -w -B regression/i61-cardinalities.als.reg positive/i61-cardinalities.als
+#Michal: OK - as expected
+
+6c6
+< { r_c2_b : lone c2_b
+---
+> { r_c2_b : one c2_b
+8c8
+< , r_c4_d : lone c4_d }
+---
+> , r_c4_d : one c4_d }
+11c11
+< lone sig c2_b
+---
+> one sig c2_b
+13d12
+< { one r_c2_b }
+18c17
+< lone sig c4_d
+---
+> one sig c4_d
+20d18
+< { one r_c4_d }
+
+
+diff -w -B regression/i74.als.reg positive/i74.als
+#Michal: OK - as expected
+5d4
+< fact { #c1_Kernel <= 0 }
+
+
+diff -w -B regression/i98_top-level-references.als.reg positive/i98_top-level-references.als
+#Michal: OK - as expected
+
+5d4
+< fact { #c1_Person <= 0 }
+19d17
+< fact { #c13_NewBorn <= 0 }
+
+
+diff -w -B regression/negative.als.reg positive/negative.als
+#Michal: OK - as expected
+
+7c7
+< { (this.(@r_c2_y.@ref)) = (-1.mul[1]) }
+---
+> { (this.(@r_c2_y.@ref)) = (-1) }
+
+
+diff -w -B regression/person_tutorial.als.reg positive/person_tutorial.als
+#Michal: OK - as expected
+130d129
+< fact { #c96_TwoPersonLine <= 0 }
+135d133
+< fact { #c101_OneToTenPersonLine <= 0 }
+
+
+diff -w -B regression/subtyping-primitive-types.als.reg positive/subtyping-primitive-types.als
+#Michal: OK - as expected
+10a11
+> { (this.@ref) = 2 }
+12d12
+< fact { (c9_twoPercent.@ref) = 2 }
+14a15
+> { (this.@ref) = ((c9_twoPercent.@ref).add[1]) }
+16d16
+< fact { (c13_threePercent.@ref) = ((c9_twoPercent.@ref).add[1]) }
+21a22
+> { (this.@ref) = 0 }
+23d23
+< fact { (c20_today.@ref) = 0 }
+26,27c26,28
+< , r_c25_minute : one c25_minute
+< , r_c33_hour : one c33_hour }
+---
+> , r_c30_minute : one c30_minute
+> , r_c38_hour : one c38_hour }
+> { (this.@ref) = ((this.(@r_c30_minute.@ref)).add[(this.(@r_c38_hour.@ref))]) }
+29c30
+< sig c25_minute
+---
+> sig c30_minute
+31c32
+< { one @r_c25_minute.this
+---
+> { one @r_c30_minute.this
+34c35
+< sig c33_hour
+---
+> sig c38_hour
+36c37
+< { one @r_c33_hour.this
+---
+> { one @r_c38_hour.this
+39d39
+< fact { (c24_time.@ref) = ((c24_time.(@r_c25_minute.@ref)).add[(c24_time.(@r_c33_hour.@ref))]) }
+42,43c42,43
+< { (this.(@r_c25_minute.@ref)) = 3
+<   (this.(@r_c33_hour.@ref)) = 1 }
+---
+> { (this.(@r_c30_minute.@ref)) = 3
+>   (this.(@r_c38_hour.@ref)) = 1 }
+
+
+diff -w -B regression/telematics.als.reg positive/telematics.als
+#Michal: OK - as expected
+39d38
+< { (this.(@r_c17_version.@ref)) = (1.add[2]) }
+43c42,43
+< { one @r_c17_version.this }
+---
+> { one @r_c17_version.this
+>   (this.@ref) = (1.add[2]) }
+
+
+diff -w -B regression/test_neg_typesystem.als.reg positive/test_neg_typesystem.als
+#Michal: OK - as expected
+18c18
+< fact { (c4_C.(@r_c2_performance.@ref)) = (-1.mul[(c3_D.(@r_c2_performance.@ref))]) }
+---
+> fact { (c4_C.(@r_c2_performance.@ref)) = (-(c3_D.(@r_c2_performance.@ref))) }
+
+
+diff -w -B regression/top_level_constraints_with_relational_joins.als.reg positive/top_level_constraints_with_relational_joins.als
+#Michal: OK - as expected
+37a38
+> { (this.@ref) = (#(c1_Course.@r_c2_assistants)) }
+39d39
+< fact { (c42_numerOfAssistants.@ref) = (#(c1_Course.@r_c2_assistants)) }

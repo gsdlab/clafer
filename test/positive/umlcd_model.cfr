@@ -1,4 +1,4 @@
-//# OPTIONS -k --nr
+//# OPTIONS -k
 
 abstract Boolean
 
