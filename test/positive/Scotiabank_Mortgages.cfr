@@ -1,0 +1,37 @@
+abstract Currency : integer
+
+abstract Percentage : integer
+    [ this >= 0 && this <= 100 ]
+//# FRAGMENT
+abstract Mortgage
+    valueProposition : string
+    term -> MortgageTerm
+    xor kind
+        open
+        closed
+    principalMortgageAmount -> Currency
+    [ 5000 <= principalMortgageAmount && principalMortgageAmount <= 9999999 ]
+    balance -> Currency
+    [ balance <= principalMortgageAmount ] 
+    propertyValue -> Currency
+    loanToValue -> Percentage
+//    [ loanToValue == balance / propertyValue ]
+    amortization : integer
+    [ 1 <= amortization && amortization <= 30 ]
+    xor interestRate
+        fixedForTheFullTerm 
+        resetTogetherWithPaymentAmountEachTimeScotiabankPrimeRateChanges
+    currentInterestRate -> Percentage
+    // [ 0.5 <= currentInterestRate && currentInterestRate <= 25 ]
+    currentPayment -> Currency
+    xor paymentFrequency
+        weekly 
+        biweekly
+        semiMonthly
+        monthly
+    xor financingAvailable 
+        conventional
+        insured
+//# FRAGMENT
+enum MortgageTerm = sixMonths | oneYear
+//# FRAGMENT

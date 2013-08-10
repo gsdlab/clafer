@@ -1,0 +1,35 @@
+MISC_FILESYSTEMS ?
+    display -> string = "Miscellaneous filesystems"
+    CYGPKG_FS_JFFS2 ?
+        display -> string = "Journalling Flash File System"
+        [CYGPKG_CRC]
+        [MTD]
+
+        CYGOPT_FS_JFFS2_DEBUG -> int
+            (this = 0)
+            display -> string = "Debug level"
+            [0 <= this && this <= 2]
+            description -> string = "Debug verbosity of...."
+
+        CYGOPT_FS_JFFS2_NAND ?
+        [CYGOPT_FS_JFFS2_NAND <=> HAS_IOMEM]
+
+        (CYGOPT_FS_JFFS2_COMPRESS)
+        CYGOPT_FS_JFFS2_COMPRESS ?
+            display -> string = "Compress data"
+
+            (CYGOPT_FS_JFFS2_COMPRESS_ZLIB)
+            CYGOPT_FS_JFFS2_COMPRESS_ZLIB ?
+                display -> string = "Compress data using zlib"
+                [CYGPKG_COMPRESS_ZLIB]
+
+            CYGOPT_FS_JFFS2_COMPRESS_CMODE -> string
+                (this = "PRIORITY")
+                display -> string = "Set the default compression mode"
+                [this = "NONE" || this = "PRIORITY" || this = "SIZE"]
+//# FRAGMENT
+CYGPKG_CRC
+MTD
+CYGPKG_COMPRESS_ZLIB
+HAS_IOMEM
+//# FRAGMENT

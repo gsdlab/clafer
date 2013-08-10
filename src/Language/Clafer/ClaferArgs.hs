@@ -65,6 +65,7 @@ data ClaferArgs = ClaferArgs {
       scope_strategy :: ScopeStrategy,
       debug :: Bool,
       afm :: Bool,
+      skip_goals :: Bool,
       file :: FilePath
     } deriving (Show, Data, Typeable, Eq)
 
@@ -93,6 +94,7 @@ clafer = ClaferArgs {
   scope_strategy      = def &= help "Use scope computation strategy: none, simple (default), or full." &= name "ss",
   debug               = def &= help "Take snaphots of environment after each compiler phase.",  
   afm                 = def &= help "Throws an error if the cardinality of any of the clafers is above 1." &= name "check-afm",
+  skip_goals          = def &= help "Skip generation of Alloy code for goals. Useful for all tools working with standard Alloy." &= name "sg",
   file                = def &= args   &= typ "FILE"
  } &= summary ("Clafer " ++ version) &= program "clafer"
 
@@ -106,7 +108,8 @@ mergeArgs a1 a2  = ClaferArgs (mergeArg mode) (coMergeArg)
   (mergeArg alloy_mapping) (mergeArg self_contained) 
   (mergeArg add_graph) (mergeArg show_references) 
   (mergeArg add_comments) (mergeArg ecore2clafer) 
-  (mergeArg scope_strategy) (mergeArg debug) (mergeArg afm) 
+  (mergeArg scope_strategy) (mergeArg debug) 
+  (mergeArg afm) (mergeArg skip_goals) 
   (mergeArg file)
   where
     coMergeArg :: Bool

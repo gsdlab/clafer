@@ -252,7 +252,10 @@ compile =
     env <- getEnv
     let debug' = debug $ args env
     ast' <- getAst
-    ir <- analyze (args env) $ desugar ast'
+    let desugaredMod = desugar ast'
+    let clafersWithKeyWords = foldMapIR isKeyWord desugaredMod
+    when (""/=clafersWithKeyWords) $ throwErr (ClaferErr $ ("The model contains clafers with keyWords as names.\nThe following places contain keyWords as names:\n"++) $ clafersWithKeyWords :: CErr Span)
+    ir <- analyze (args env) desugaredMod
     let (imodule, _, _) = ir
     let spanList = foldMapIR gt1 imodule
     when ((afm $ args env) && spanList/="") $ throwErr (ClaferErr $ ("The model is not an attributed feature model .\nThe following places contain cardinality larger than 1:\n"++) $ spanList :: CErr Span)
@@ -261,6 +264,13 @@ compile =
     putEnv env'
     when (debug') $ takeSnapShot env' Compiled
     where
+      isKeyWord :: Ir -> String
+      isKeyWord (IRClafer IClafer{cinPos = (Span (Pos l c) _) ,ident=i}) = if (i `elem` keyWords) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
+      isKeyWord (IRClafer IClafer{cinPos = (PosSpan _ (Pos l c) _) ,ident=i}) = if (i `elem` keyWords) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
+      isKeyWord (IRClafer IClafer{cinPos = (Span (PosPos _ l c) _) ,ident=i}) = if (i `elem` keyWords) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
+      isKeyWord (IRClafer IClafer{cinPos = (PosSpan _ (PosPos _ l c) _) ,ident=i}) = if (i `elem` keyWords) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
+      isKeyWord _ = ""
+      gt1 :: Ir -> String
       gt1 (IRClafer (IClafer (Span (Pos l c) _) _ _ _ _ _ (Just (_, m)) _ _)) = if (m > 1 || m < 0) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
       gt1 (IRClafer (IClafer (Span (PosPos _ l c) _) _ _ _ _ _ (Just (_, m)) _ _)) = if (m > 1 || m < 0) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else "" 
       gt1 (IRClafer (IClafer (PosSpan _ (Pos l c) _) _ _ _ _ _ (Just (_, m)) _ _)) = if (m > 1 || m < 0) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
@@ -434,3 +444,6 @@ showInterval (n, m) = show n ++ ".." ++ show m
 
 claferIRXSD :: String
 claferIRXSD = Language.Clafer.Generator.Schema.xsd
+
+keyWords :: [String]
+keyWords = ["ref","parent","Abstract","abstract", "else", "in", "no", "opt", "xor", "all", "enum", "lone", "not", "or", "disj", "extends", "mux", "one", "some"]
