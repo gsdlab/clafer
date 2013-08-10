@@ -1,3 +1,5 @@
+//# OPTIONS --sg
+
 abstract Feature
     productivity : integer
     cost : integer
