@@ -1,3 +1,5 @@
+//# OPTIONS --sg
+
 aCar : Car
 
 << min aCar.total_cost >>
