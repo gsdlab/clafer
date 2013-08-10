@@ -2,7 +2,7 @@ open util/integer
 pred show {}
 
 
-lone sig c1_BumbleBee extends c4_Camaro
+one sig c1_BumbleBee extends c4_Camaro
 {}
 { some this.@r_c9_transformer }
 

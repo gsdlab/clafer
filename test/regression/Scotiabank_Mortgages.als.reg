@@ -2,16 +2,16 @@ open util/integer
 pred show {}
 
 
-fact { #c1_Currency <= 0 }
+fact { #c1_Currency = 0 }
 abstract sig c1_Currency
 { ref : one Int }
 
-fact { #c2_Percentage <= 0 }
+fact { #c2_Percentage = 0 }
 abstract sig c2_Percentage
 { ref : one Int }
 { ((this.@ref) >= 0) && ((this.@ref) <= 100) }
 
-fact { #c10_Mortgage <= 0 }
+fact { #c10_Mortgage = 0 }
 abstract sig c10_Mortgage
 { r_c11_valueProposition : one c11_valueProposition
 , r_c12_term : one c12_term
@@ -142,9 +142,9 @@ sig c113_insured
 abstract sig c114_MortgageTerm
 {}
 
-lone sig c115_sixMonths extends c114_MortgageTerm
+one sig c115_sixMonths extends c114_MortgageTerm
 {}
 
-lone sig c116_oneYear extends c114_MortgageTerm
+one sig c116_oneYear extends c114_MortgageTerm
 {}
 

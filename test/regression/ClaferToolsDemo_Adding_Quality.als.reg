@@ -157,12 +157,6 @@ sig c210_total_cost
 { ref : one Int }
 { one @r_c210_total_cost.this }
 
-lone sig c233_OptimalPhone extends c6_MobilePhone
+one sig c233_OptimalPhone extends c6_MobilePhone
 {}
 
-objectives o_global {
-maximize c233_OptimalPhone.(@r_c196_total_batterylife.@ref) ,
-maximize c233_OptimalPhone.(@r_c189_total_productivity.@ref) ,
-maximize c233_OptimalPhone.(@r_c203_total_security.@ref) ,
-minimize c233_OptimalPhone.(@r_c210_total_cost.@ref) 
-}

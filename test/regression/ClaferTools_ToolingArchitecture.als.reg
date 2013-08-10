@@ -2,18 +2,17 @@ open util/integer
 pred show {}
 
 
-lone sig c1_claferCompiler extends c5_claferLib
+one sig c1_claferCompiler extends c5_claferLib
 {}
 
-lone sig c2_claferIG extends c5_claferLib
+one sig c2_claferIG extends c5_claferLib
 {}
 
-lone sig c3_claferMOO extends c5_claferLib
+one sig c3_claferMOO extends c5_claferLib
 { r_c4_moo : one c4_moo }
 
-lone sig c4_moo
+one sig c4_moo
 {}
-{ one r_c4_moo }
 
 abstract sig c5_claferLib
 { r_c6_common : one c6_common
@@ -45,16 +44,16 @@ sig c10_generator extends c124_Generator
 abstract sig c11_Representation
 {}
 
-lone sig c12_text extends c11_Representation
+one sig c12_text extends c11_Representation
 {}
 
-lone sig c13_tokens extends c11_Representation
+one sig c13_tokens extends c11_Representation
 {}
 
-lone sig c14_ast extends c11_Representation
+one sig c14_ast extends c11_Representation
 {}
 
-lone sig c15_ir extends c11_Representation
+one sig c15_ir extends c11_Representation
 {}
 
 abstract sig c16_io

@@ -42,23 +42,23 @@ sig c21_wife
 { one @r_c21_wife.this
   (this.~@r_c21_wife) in (this.(@ref.(@r_c6_husband.@ref))) }
 
-lone sig c88_ada extends c1_Person
+one sig c88_ada extends c1_Person
 {}
 { ((((((this.(@r_c2_name.@ref)) = 6) && ((this.(@r_c3_civstat.@ref)) = 3)) && ((this.(@r_c4_gender.@ref)) = 4)) && (some this.@r_c5_alive)) && (no this.@r_c6_husband)) && (no this.@r_c21_wife) }
 
-lone sig c109_cyd extends c1_Person
+one sig c109_cyd extends c1_Person
 {}
 { ((((((this.(@r_c2_name.@ref)) = 7) && ((this.(@r_c3_civstat.@ref)) = 1)) && ((this.(@r_c4_gender.@ref)) = 5)) && (no this.@r_c5_alive)) && (no this.@r_c6_husband)) && (no this.@r_c21_wife) }
 
-lone sig c130_eve extends c1_Person
+one sig c130_eve extends c1_Person
 {}
 { ((((((this.(@r_c2_name.@ref)) = 8) && ((this.(@r_c3_civstat.@ref)) = 1)) && ((this.(@r_c4_gender.@ref)) = 4)) && (some this.@r_c5_alive)) && ((this.(@r_c6_husband.@ref)) = c173_dan)) && (no this.@r_c21_wife) }
 
-lone sig c152_bob extends c1_Person
+one sig c152_bob extends c1_Person
 {}
 { ((((((this.(@r_c2_name.@ref)) = 9) && ((this.(@r_c3_civstat.@ref)) = 2)) && ((this.(@r_c4_gender.@ref)) = 5)) && (some this.@r_c5_alive)) && (no this.@r_c6_husband)) && (no this.@r_c21_wife) }
 
-lone sig c173_dan extends c1_Person
+one sig c173_dan extends c1_Person
 {}
 { ((((((this.(@r_c2_name.@ref)) = 10) && ((this.(@r_c3_civstat.@ref)) = 1)) && ((this.(@r_c4_gender.@ref)) = 5)) && (some this.@r_c5_alive)) && (no this.@r_c6_husband)) && ((this.(@r_c21_wife.@ref)) = c130_eve) }
 

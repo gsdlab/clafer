@@ -2,7 +2,7 @@ open util/integer
 pred show {}
 
 
-lone sig c1_midYearReview extends c79_Meeting
+one sig c1_midYearReview extends c79_Meeting
 { r_c2_month : one c2_month
 , r_c15_chair : one c15_chair
 , r_c28_room : one c28_room }
@@ -14,34 +14,29 @@ lone sig c1_midYearReview extends c79_Meeting
   all disj x, y : this.@r_c28_room | (x.@ref) != (y.@ref)
   some this.@r_c105_onlineParticipant }
 
-lone sig c2_month
+one sig c2_month
 { ref : one c145_Month }
-{ one r_c2_month }
 
-lone sig c15_chair
+one sig c15_chair
 { ref : one c148_Member }
-{ one r_c15_chair }
 
-lone sig c28_room
+one sig c28_room
 { ref : one c149_Room }
-{ one r_c28_room }
 
-lone sig c43_Steven extends c148_Member
+one sig c43_Steven extends c148_Member
 {}
 
-lone sig c44_C extends c149_Room
+one sig c44_C extends c149_Room
 { r_c45_whiteboard : one c45_whiteboard
 , r_c46_audioConferencing : one c46_audioConferencing }
 
-lone sig c45_whiteboard
+one sig c45_whiteboard
 {}
-{ one r_c45_whiteboard }
 
-lone sig c46_audioConferencing
+one sig c46_audioConferencing
 {}
-{ one r_c46_audioConferencing }
 
-lone sig c47_ondemandMeeting extends c79_Meeting
+one sig c47_ondemandMeeting extends c79_Meeting
 { r_c48_chair : one c48_chair
 , r_c63_room : one c63_room }
 { (this.(@r_c48_chair.@ref)) = c76_Joanna
@@ -50,23 +45,20 @@ lone sig c47_ondemandMeeting extends c79_Meeting
   (this.(@r_c63_room.@ref)) = c77_D
   all disj x, y : this.@r_c63_room | (x.@ref) != (y.@ref) }
 
-lone sig c48_chair
+one sig c48_chair
 { ref : one c148_Member }
-{ one r_c48_chair }
 
-lone sig c63_room
+one sig c63_room
 { ref : one c149_Room }
-{ one r_c63_room }
 
-lone sig c76_Joanna extends c148_Member
+one sig c76_Joanna extends c148_Member
 {}
 
-lone sig c77_D extends c149_Room
+one sig c77_D extends c149_Room
 { r_c78_whiteboard : one c78_whiteboard }
 
-lone sig c78_whiteboard
+one sig c78_whiteboard
 {}
-{ one r_c78_whiteboard }
 
 abstract sig c79_Meeting
 { r_c80_chair : one c80_chair
@@ -101,10 +93,10 @@ sig c120_room
 abstract sig c145_Month
 {}
 
-lone sig c146_June extends c145_Month
+one sig c146_June extends c145_Month
 {}
 
-lone sig c147_July extends c145_Month
+one sig c147_July extends c145_Month
 {}
 
 abstract sig c148_Member
@@ -152,7 +144,7 @@ fact { 5 <= #c166_M and #c166_M <= 5 }
 sig c166_M extends c148_Member
 {}
 
-lone sig c167_SueAgenda extends c209_Agenda
+one sig c167_SueAgenda extends c209_Agenda
 { r_c168_m1 : lone c168_m1
 , r_c181_m2 : lone c181_m2 }
 { (this.(@r_c168_m1.@ref)) = c194_M1
