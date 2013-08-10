@@ -28,6 +28,7 @@ module Language.Clafer (
                         generateFragments,
                         runClaferT,
                         runClafer,
+                        runClaferS,
                         ClaferErr,
                         getEnv,
                         putEnv,
@@ -41,6 +42,8 @@ module Language.Clafer (
                         IModule,
                         voidf,
                         ClaferEnv(..),
+                        takeSnapShot,
+                        SnapShots,
                         getIr,
                         getAst,
                         makeEnv,
@@ -183,6 +186,8 @@ parse :: Monad m => ClaferT m ()
 parse =
   do
     env <- getEnv
+    let debug' = debug $ args env
+    when (debug') $ takeSnapShot env Start
     astsErr <- mapM (parseFrag $ args env) $ modelFrags env
     asts <- liftParseErrs astsErr
 
@@ -213,10 +218,14 @@ parse =
         completeAst <- (parseFrag $ args env) completeModel
         liftParseErr completeAst
 
-    
+    let env' = env{cAst = Just ast'}
+    when (debug') $ takeSnapShot env' Parsed
+
     let ast = mapModule ast'
-    let env' = env{ cAst = Just ast, astModuleTrace = traceAstModule ast }
-    putEnv env'
+    let env'' = env'{cAst = Just ast, astModuleTrace = traceAstModule ast}
+    when (debug') $ takeSnapShot env'' Mapped
+    putEnv env''
+
   where
   parseFrag :: (Monad m) => ClaferArgs -> String -> ClaferT m (Err Module)
   parseFrag args' =
@@ -241,16 +250,19 @@ compile :: Monad m => ClaferT m ()
 compile =
   do
     env <- getEnv
+    let debug' = debug $ args env
     ast' <- getAst
     let desugaredMod = desugar ast'
     let clafersWithKeyWords = foldMapIR isKeyWord desugaredMod
     when (""/=clafersWithKeyWords) $ throwErr (ClaferErr $ ("The model contains clafers with keyWords as names.\nThe following places contain keyWords as names:\n"++) $ clafersWithKeyWords :: CErr Span)
     ir <- analyze (args env) desugaredMod
     let (imodule, _, _) = ir
-
     let spanList = foldMapIR gt1 imodule
     when ((afm $ args env) && spanList/="") $ throwErr (ClaferErr $ ("The model is not an attributed feature model .\nThe following places contain cardinality larger than 1:\n"++) $ spanList :: CErr Span)
-    putEnv $ env{ cIr = Just ir, irModuleTrace = traceIrModule imodule }
+
+    let env' = env{ cIr = Just ir, irModuleTrace = traceIrModule imodule }
+    putEnv env'
+    when (debug') $ takeSnapShot env' Compiled
     where
       isKeyWord :: Ir -> String
       isKeyWord (IRClafer IClafer{cinPos = (Span (Pos l c) _) ,ident=i}) = if (i `elem` keyWords) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
@@ -277,7 +289,8 @@ generateFragments =
     
     -- Assumes output mode is Alloy for now
     
-    return $ map (generateFragment $ args env) fragElems
+    let fragments = map (generateFragment $ args env) fragElems
+    return fragments
   where
   rnge (IEClafer IClafer{cinPos = p}) = p
   rnge IEConstraint{cpexp = PExp{inPos = p}} = p
@@ -386,12 +399,34 @@ liftError = either throwErr return
 
 analyze :: Monad m => ClaferArgs -> IModule -> ClaferT m (IModule, GEnv, Bool)
 analyze args' tree = do
+  env <- getEnv
+  let debug' = debug $ args env
+  when (debug') $ takeSnapShot env{cIr = Just (tree, (second $ fromJust $ cIr env), (third $ fromJust $ cIr env))} Desugared
   let dTree' = findDupModule args' tree
+  let env' = env{cIr = Just (dTree', (second $ fromJust $ cIr env), (third $ fromJust $ cIr env))}
+  when (debug') $ takeSnapShot env' FoundDuplicates
+
   let au = allUnique dTree'
-  let args'' = args'{skip_resolver = au && (skip_resolver args')}
-  (rTree, genv) <- liftError $ resolveModule args'' dTree'
+  let args'' = args'{skip_resolver = au && (skip_resolver args')} 
+  (rTree, genv, mlist) <- liftError $ resolveModule args' dTree'
+  when (debug') $
+    mapM_ (\(x,y) -> takeSnapShot env'{cIr = Just ((x, (second $ fromJust $ cIr env'), (third $ fromJust $ cIr env')))} y) (zip mlist mlistS)
+
   let tTree = transModule rTree
-  return (optimizeModule args'' (tTree, genv), genv, au)
+  let env'' = env'{cIr = Just (tTree, (second $ fromJust $ cIr env'), (third $ fromJust $ cIr env'))}
+  when (debug') $ takeSnapShot env'' Transformed
+
+  let oTree = optimizeModule args'' (tTree,genv)
+  let env''' = env''{cIr = Just (tTree, (second $ fromJust $ cIr env''),(third $ fromJust $ cIr env''))}
+  putEnv env'''
+  when (debug') $ takeSnapShot env''' Optimized
+  
+
+  return (oTree, genv, au)
+  where
+    second (_,x,_)=x
+    third (_,_,x)=x
+    mlistS = [NameResolved, InheritanceResolved, TypeResolved]
 
 addStats :: String -> String -> String
 addStats code stats = "/*\n" ++ stats ++ "*/\n" ++ code

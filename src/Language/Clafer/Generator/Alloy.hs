@@ -422,7 +422,7 @@ genPExp'    claferargs    resPath     (PExp iType' pid' pos exp') = case exp' of
 -- See http://gsd.uwaterloo.ca:8888/question/461/new-translation-of-negative-number-x-into-0-x-is.
 transformExp :: IExp -> IExp
 transformExp    x@(IFunExp op' exps'@(e1:e2:_))
-  | op' == iXor = IFunExp iNot [PExp (Just TBoolean) "" noSpan (IFunExp iIff exps')]
+  | op' == iXor = IFunExp iNot [PExp (Just TBoolean) (genPExpName noSpan (IFunExp iIff exps')) noSpan (IFunExp iIff exps')]
   | op' == iJoin && isClaferName' e1 && isClaferName' e2 &&
     getClaferName e1 == this && head (getClaferName e2) == '~' =
         IFunExp op' [e1{iType = Just $ TClafer []}, e2]

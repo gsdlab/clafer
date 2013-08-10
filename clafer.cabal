@@ -120,7 +120,6 @@ library
                      Language.Clafer.SplitJoin,
                      Language.Clafer.Version
                      
-
 Test-Suite test-suite
     build-tools:    ghc >= 7.6.3
     default-language: 

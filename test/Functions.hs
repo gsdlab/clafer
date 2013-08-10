@@ -21,6 +21,8 @@
 -}
 module Functions where
 
+import Language.Clafer.Intermediate.Intclafer
+import Language.Clafer.Front.Absclafer
 import qualified Data.List as List
 import Language.Clafer
 import System.Directory
@@ -47,6 +49,15 @@ compileOneFragment args' model =
 			compile
 			generate
 
+compileOneFragmentS :: ClaferArgs -> InputModel -> (Either [ClaferErr] CompilerResult, SnapShots)
+compileOneFragmentS args' model =
+    runClaferS args' $
+    	do
+        	addModuleFragment model
+        	parse
+        	compile
+        	generate
+
 compiledCheck :: Either a b -> Bool
 compiledCheck (Left _) = False
 compiledCheck (Right _) = True
@@ -61,3 +72,9 @@ fromRight (Left _) = error "Function fromLeft expects argument of the form 'Righ
 
 andMap :: (a -> Bool) -> [a] -> Bool
 andMap f lst = and $ map f lst
+
+lukesRule :: PExp -> Bool -- empty PID <=> noSpan
+lukesRule p = ((pid p)/="" && (inPos p)/=noSpan) || ((pid p)=="" && (inPos p)==noSpan)
+
+fst3 :: (a, b, c) -> a
+fst3 (a,_,_) = a

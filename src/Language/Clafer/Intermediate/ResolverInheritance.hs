@@ -41,14 +41,13 @@ import Language.Clafer.Intermediate.ResolverName
 
 -- -----------------------------------------------------------------------------
 -- Non-overlapping inheritance
-resolveNModule :: (IModule, GEnv) -> Resolve (IModule, GEnv)
-resolveNModule (imodule, genv') =
+resolveNModule :: (IModule, GEnv, [IModule]) -> Resolve (IModule, GEnv, [IModule])
+resolveNModule (imodule, genv', iModulesList) =
   do
     let decls' = mDecls imodule
     decls'' <- mapM (resolveNElement decls') decls'
-    return (imodule{mDecls = decls''}, genv' {sClafers = bfs toNodeShallow $ toClafers decls''})
-    
-
+    return (imodule{mDecls = decls''}, genv' {sClafers = bfs toNodeShallow $ toClafers decls''}, imodule{mDecls = decls''}:iModulesList)
+ 
 
 resolveNClafer :: [IElement] -> IClafer -> Resolve IClafer
 resolveNClafer declarations clafer =
@@ -87,14 +86,16 @@ resolveN pos' declarations id' =
 -- -----------------------------------------------------------------------------
 -- Overlapping inheritance
 
-resolveOModule :: (IModule, GEnv) -> Resolve (IModule, GEnv)
-resolveOModule (imodule, genv') =
+resolveOModule :: (IModule, GEnv, [IModule]) -> Resolve (IModule, GEnv, [IModule])
+resolveOModule (imodule, genv', iModulesList) =
   do
     let decls' = mDecls imodule
     decls'' <- mapM (resolveOElement (defSEnv genv' decls')) decls'
-    return (imodule {mDecls = decls''}, genv' {sClafers = bfs toNodeShallow $ toClafers decls''})
-
-
+    let imodule' = imodule {mDecls = decls''}
+    let genv'' = genv' {sClafers = bfs toNodeShallow $ toClafers decls''}
+    let iModulesList' = imodule' : iModulesList
+    return (imodule', genv'', iModulesList')
+           
 resolveOClafer :: SEnv -> IClafer -> Resolve IClafer
 resolveOClafer env clafer =
   do
@@ -121,11 +122,12 @@ resolveOElement env x = case x of
 -- -----------------------------------------------------------------------------
 -- inherited and default cardinalities
 
-analyzeModule :: (IModule, GEnv) -> IModule
-analyzeModule (imodule, genv') =
-  imodule{mDecls = map (analyzeElement (defSEnv genv' decls')) decls'}
+analyzeModule :: (IModule, GEnv, [IModule]) -> (IModule, [IModule])
+analyzeModule (imodule, genv', iModulesList) = (imodule',iModulesList')
   where
-  decls' = mDecls imodule
+    decls' = mDecls imodule
+    imodule' = imodule{mDecls = map (analyzeElement (defSEnv genv' decls')) decls'}
+    iModulesList' = imodule' : iModulesList
 
 
 analyzeClafer :: SEnv -> IClafer -> IClafer
@@ -169,13 +171,15 @@ analyzeElement env x = case x of
 
 -- -----------------------------------------------------------------------------
 -- Expand inheritance
-resolveEModule :: (IModule, GEnv) -> (IModule, GEnv)
-resolveEModule (imodule, genv') = (imodule{mDecls = decls''}, genv'')
+resolveEModule :: (IModule, GEnv, [IModule]) -> (IModule, GEnv, [IModule])
+resolveEModule (imodule, genv', iModulesList) = (imodule', genv'', iModulesList')
   where
   decls' = mDecls imodule
   (decls'', genv'') = runState (mapM (resolveEElement []
                                     (unrollableModule imodule)
                                     False decls') decls') genv'
+  imodule' = imodule{mDecls = decls''}
+  iModulesList' = imodule' : iModulesList
 
 -- -----------------------------------------------------------------------------
 unrollableModule :: IModule -> [String]

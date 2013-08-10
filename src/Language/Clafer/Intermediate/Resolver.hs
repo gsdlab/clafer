@@ -33,7 +33,7 @@ import Language.Clafer.Intermediate.ResolverName
 import Language.Clafer.Intermediate.ResolverType
 import Language.Clafer.Intermediate.ResolverInheritance
 
-resolveModule :: ClaferArgs -> IModule -> Resolve (IModule, GEnv)
+resolveModule :: ClaferArgs -> IModule -> Resolve (IModule, GEnv, [IModule])
 resolveModule args' declarations =
   do
     r <- resolveNModule $ nameModule (skip_resolver args') declarations
@@ -44,10 +44,12 @@ resolveModule args' declarations =
 
 
 -- -----------------------------------------------------------------------------
-nameModule :: Bool -> IModule -> (IModule, GEnv)
-nameModule skipResolver imodule = (imodule{mDecls = decls'}, genv')
+nameModule :: Bool -> IModule -> (IModule, GEnv,[IModule])
+nameModule skipResolver imodule = (imodule{mDecls = decls'}, genv', irModuleList')
   where
-  (decls', genv') = runState (mapM (nameElement skipResolver) $ mDecls imodule) $ GEnv 0 Map.empty []
+    (decls', genv') = runState (mapM (nameElement skipResolver) $ mDecls imodule) $ GEnv 0 Map.empty []
+    irModule' = imodule{mDecls = decls'}
+    irModuleList' = [irModule']
 
 nameElement :: MonadState GEnv m => Bool -> IElement -> m IElement
 nameElement skipResolver x = case x of
@@ -64,8 +66,8 @@ nameClafer skipResolver claf = do
 
 
 namePExp :: MonadState GEnv m => PExp -> m PExp
-namePExp pexp@(PExp _ _ _ exp') = do
-  pid' <- genId "exp"
+namePExp pexp@(PExp _ _ s exp') = do
+  let pid' = genPExpName s exp'
   exp'' <- nameIExp exp'
   return $ pexp {pid = pid', Language.Clafer.Intermediate.Intclafer.exp = exp''}
 
@@ -82,13 +84,17 @@ nameIDecl :: MonadState GEnv m => IDecl -> m IDecl
 nameIDecl (IDecl isDisj' dels body') = IDecl isDisj' dels `liftM` (namePExp body')
 
 -- -----------------------------------------------------------------------------
-resolveNamesModule :: ClaferArgs -> (IModule, GEnv) -> Resolve (IModule, GEnv)
-resolveNamesModule args' (declarations, genv') =
+resolveNamesModule :: ClaferArgs -> (IModule, GEnv, [IModule]) -> Resolve (IModule, GEnv, [IModule])
+resolveNamesModule args' (declarations, genv', modulesList) =
   do
-    res <- foldM (flip ($)) declarations $ map (\f -> flip (curry f) genv') funs
-    return (res, genv')
+    (res,list') <- foldM (\acc f -> applyFunc genv' acc f ) ( declarations, modulesList ) funs
+    return (res,genv',list')
   where
-  funs :: [(IModule, GEnv) -> Resolve IModule]
+  funs :: [(IModule, GEnv, [IModule]) -> Resolve (IModule, [IModule])]
   funs
     | skip_resolver args' = [return . analyzeModule, resolveTModule]
     | otherwise = [ return . analyzeModule, resolveModuleNames, resolveTModule]
+    
+applyFunc :: GEnv -> (IModule, [IModule]) -> ((IModule, GEnv, [IModule]) -> Resolve (IModule, [IModule])) -> Resolve (IModule, [IModule])
+applyFunc genv' (irModule, irModulesList) func = 
+    func (irModule, genv', irModulesList)

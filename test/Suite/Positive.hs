@@ -24,7 +24,10 @@ module Suite.Positive (tg_Test_Suite_Positive) where
 
 import Functions
 import Language.Clafer.Intermediate.Intclafer
+import qualified Data.Map as Map
+import Data.List (nub)
 import Data.Foldable (foldMap)
+import Data.Maybe
 import Control.Monad
 import Language.Clafer
 import Language.ClaferT
@@ -80,3 +83,71 @@ case_stringEqual :: Assertion
 case_stringEqual = do
 	let strMap = stringMap $ fromRight $ compileOneFragment defaultClaferArgs "A\n    text1 : string = \"some text\"\n    text2 : string = \"some text\""
 	(Map.size strMap) == 1 @? "Error string's assigned to differnet numbers!"
+
+case_numberOfSnapShots1 :: Assertion -- Make sure all snapshots are taken when debug is set to True!
+case_numberOfSnapShots1 = do
+	claferModels <- positiveClaferModels
+	let ssSizes = map (\(file, model) -> 
+		(file, Map.size $ snd $ compileOneFragmentS defaultClaferArgs{debug = True} model)) claferModels
+	forM_ ssSizes (\(file, ssSize) -> 
+		when(ssSize/=numberOfSS) $ putStrLn (file ++ " failed, took " ++ show ssSize ++ " snapshot(s) expected " ++ show numberOfSS))
+	(andMap ((==numberOfSS) . snd) ssSizes 
+		@? "Failed, not all snapshots were taken when debug was set to True!\n Did you remeber to update the total number of snapshots after adding new snapshot? (For models gotten from test/positive)")
+
+case_numberOfSnapShots2 :: Assertion -- Make sure no snapshots are taken when debug is set to False!
+case_numberOfSnapShots2 = do
+	claferModels <- positiveClaferModels
+	let ssSizes = map (\(file, model) -> 
+		(file, Map.size $ snd $ compileOneFragmentS defaultClaferArgs{debug = False} model)) claferModels
+	forM_ ssSizes (\(file, ssSize) -> 
+		when(ssSize/=0) $ putStrLn (file ++ " failed, took " ++ show ssSize ++ " snapshot(s) expected 0"))
+	(andMap ((==0) . snd) ssSizes 
+		@? "Failed, snapshots were taken when debug was set to False! (For models gotten from test/positive)")
+
+case_iDCheck :: Assertion -- Make sure all non empty parent ID's are unique and all Parent ID's pass lukesRule
+case_iDCheck = do
+	claferModels <- positiveClaferModels
+	let claferSnapShotPids = map (\(file, model) -> 
+		(file, Map.toList $ (Map.map (foldMapIR getPids . fst3 . fromJust)) $ (Map.filter (/=Nothing)) $ (Map.map cIr) $ snd $ compileOneFragmentS defaultClaferArgs{debug = True} model)) claferModels
+	forM_ claferSnapShotPids (\(file, mMap) -> 
+		when (not $ (andMap (\x -> ((filter (/="") $ (map pid) $ snd x)==(filter (/="") $ nub $ (map pid) $ snd x))) mMap)) $ do
+			putStrLn ("Duplicate Parent Id's in " ++ file ++ ", Failed at stage(s)\n")
+			forM_ mMap (\(ssID, pMap) -> 
+				when ((filter (/="") $ map pid pMap) /= (filter (/="") $ nub $ map pid pMap)) $ do
+					putStrLn (show ssID)
+					printDups pMap)
+			putStrLn "")
+	forM_ claferSnapShotPids (\(file, mMap) ->
+		when (not $ andMap ((andMap lukesRule) . snd) mMap) $ do
+			putStrLn ("Failed lukesRule (empty PID <=> noSpan) at stage(s)\n")
+			forM_ mMap (\(ssID, pMap) -> 
+				when (not $ (andMap lukesRule pMap)) $ do
+					putStrLn (show ssID)
+					printFails pMap)
+			putStrLn "")
+	let dupResult = andMap (andMap (\x -> ((filter (/="") x)==(filter (/="") (nub x))))) (map  (\x -> (map ((map pid) . snd)) $ snd x) claferSnapShotPids)
+	let lukesResult = andMap  ((andMap ((andMap lukesRule) . snd)) . snd) claferSnapShotPids
+	(dupResult && lukesResult @? 
+		(errorMsg lukesResult dupResult) ++ "(For models gotten from test/positive)")
+	where
+		getPids :: Ir -> [PExp]
+		getPids (IRPExp p) = [p]
+		getPids _ = []
+		printDups :: [PExp] -> IO ()
+		printDups (p1:ps) = do
+			when ((pid p1) /= "" && (pid p1) `elem` (map pid ps)) $ do
+				putStr ("   The PExp " ++ show p1 ++ "\thas duplicates Pid's with ")
+				forM_ ps (\p2 -> when ((pid p1)==(pid p2)) $ putStr ((show p2) ++ " "))	
+				putStrLn ""
+			printDups ps
+		printDups [] = putStrLn ""
+		printFails :: [PExp] -> IO ()
+		printFails (p:ps) = do
+			when (not $ lukesRule p) $ 
+				putStrLn ("   " ++ show p ++ " failed lukesRule (empty PID <=> noSpan)") 
+			printFails ps
+		printFails [] = putStrLn ""
+		errorMsg :: Bool -> Bool -> String
+		errorMsg True False = "Failed, Clafers PExp's non empty Parent Id's are not unique! "
+		errorMsg False True = "Failed, Clafers PExp's don't pass lukeRule where empty PID <=> noSpan! "
+		errorMsg False False = "Failed, Clafers PExp's don't pass lukeRule where empty PID <=> noSpan and non empty Parent Id's are not unique! "

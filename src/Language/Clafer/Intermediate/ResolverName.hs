@@ -107,12 +107,14 @@ isIEClafer :: IElement -> Bool
 isIEClafer (IEClafer _) = True
 isIEClafer _            = False
 
-resolveModuleNames :: (IModule, GEnv) -> Resolve IModule
-resolveModuleNames (imodule, genv') =
+resolveModuleNames :: (IModule, GEnv, [IModule]) -> Resolve (IModule, [IModule])
+resolveModuleNames (imodule, genv', imoduleList) =
   do
     decls' <- checkDuplicateSiblings imodule
     mDecls' <- mapM (resolveElement (defSEnv genv' decls')) decls'
-    return $ imodule{mDecls = mDecls'}
+    let imodule' = imodule{mDecls = mDecls'}
+    let imoduleList' = imodule' : imoduleList
+    return $ (imodule', imoduleList')
 
 resolveClafer :: SEnv -> IClafer -> Resolve IClafer
 resolveClafer env clafer =

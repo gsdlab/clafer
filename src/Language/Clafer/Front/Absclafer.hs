@@ -269,10 +269,18 @@ data LocId =
 data Pos =
    Pos Integer Integer
  | PosPos Span Integer Integer
-  deriving (Eq,Ord,Show)
+  deriving (Eq,Ord)
+
+instance Show Pos where
+  show (Pos x y) = show (x, y)
+  show (PosPos s x y) = show (s, (x, y))
 
 data Span =
    Span Pos Pos
  | PosSpan Span Pos Pos
-  deriving (Eq,Ord,Show)
+  deriving (Eq,Ord)
+
+instance Show Span where
+  show (Span p1 p2) = show (p1, p2)
+  show (PosSpan s p1 p2) = show (s, (p1, p2))
 

@@ -86,7 +86,7 @@ desugarSuper :: Super -> ISuper
 desugarSuper SuperEmpty = desugarSuper $ PosSuperEmpty noSpan
 desugarSuper (SuperSome superhow setexp) = desugarSuper $ PosSuperSome noSpan superhow setexp
 desugarSuper (PosSuperEmpty s) =
-      ISuper False [PExp (Just $ TClafer []) "" s $ mkLClaferId baseClafer True]
+      ISuper False [PExp (Just $ TClafer []) (genPExpName s (mkLClaferId baseClafer True)) s $ mkLClaferId baseClafer True]
 desugarSuper (PosSuperSome _ superhow setexp) =
       ISuper (desugarSuperHow superhow) [desugarSetExp setexp]
 
@@ -521,7 +521,9 @@ isSet _ = False
 
 -- reduce parent
 reducePExp :: PExp -> PExp
-reducePExp (PExp t pid' pos' x) = PExp t pid' pos' $ reduceIExp x
+reducePExp (PExp t _ pos' x) = PExp t (genPExpName pos' newIExp) pos' newIExp
+  where
+    newIExp = reduceIExp x
 
 reduceIExp :: IExp -> IExp
 reduceIExp (IDeclPExp quant' decls' pexp) = IDeclPExp quant' decls' $ reducePExp pexp
