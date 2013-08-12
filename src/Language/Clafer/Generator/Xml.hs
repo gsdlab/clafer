@@ -104,9 +104,9 @@ genXmlUid uid' = tag "UniqueId" uid'
 
 genXmlSuper :: Map.Map Span IClafer -> ISuper -> String
 genXmlSuper pMap x = case x of
-  ISuper isOverlapping' r pexps -> tag "Supers" $ concat $
+  ISuper isOverlapping' sk pexps -> tag "Supers" $ concat $
     (genXmlBoolean "IsOverlapping" isOverlapping') :
-    if (r==Nothing) then [] else [tag "RelationClaferInfo" $ show $ fromJust r] ++
+    (tag "superKind" $ show $ sk) :
     [concatMap (genXmlPExp "Super" pMap) pexps]
 
 genXmlCard :: (Integer, Integer) -> String

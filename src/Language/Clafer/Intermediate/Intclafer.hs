@@ -87,11 +87,13 @@ data IElement =
 -- :     -- non overlapping (disjoint)
 data ISuper =
    ISuper {
-      isOverlapping :: Bool,          -- whether overlapping or disjoint with other clafers extending given list of superclafers
-      rInfo :: Maybe (Span, String),  -- Span of the clafer it has a relation with and the uid
+      isOverlapping :: Bool,   -- whether overlapping or disjoint with other clafers extending given list of superclafers
+      superKind :: SuperKind,  -- Span of the clafer it has a relation with and the uid
       supers :: [PExp]
     }
   deriving (Eq,Ord,Show)
+
+data SuperKind = TopLevel | Nested | Redefinition deriving (Eq, Ord, Show)
 
 -- Group cardinality is specified as an interval. It may also be given by a keyword.
 -- xor  -- 1..1 isKeyword = True

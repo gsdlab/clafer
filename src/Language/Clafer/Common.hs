@@ -48,7 +48,7 @@ mkInteger (PosInteger (_, n)) = read n
 type Ident = PosIdent
 
 getSuper :: IClafer -> String
-getSuper = getSuperId.supers.super
+getSuper = getSuperId . supers . super
 
 getSuperNoArr :: IClafer -> String
 

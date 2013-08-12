@@ -25,7 +25,6 @@ module Language.Clafer.Intermediate.Desugarer where
 import qualified Data.Map as Map
 import Data.List
 import Data.Maybe
-import Data.Function (on)
 import Prelude hiding (exp)
 import Language.Clafer.Common
 import Language.Clafer.Front.Absclafer
@@ -40,8 +39,7 @@ desugarModule (PosModule _ declarations) =
         declarations >>= desugarEnums >>= desugarDeclaration
           --[ImoduleFragment $ declarations >>= desugarEnums >>= desugarDeclaration]
       pMap = foldMapIR makeMap iMod
-      clafers = bfsClafers $ toClafers $ mDecls iMod
-  in (flip mapIR iMod $ addrSpan pMap clafers clafers [], pMap)
+  in (iMod, pMap)
 
 sugarModule :: IModule -> Module
 sugarModule x = Module $ map sugarDeclaration $ mDecls x -- (fragments x >>= mDecls)
@@ -95,9 +93,9 @@ desugarSuper :: Super -> ISuper
 desugarSuper SuperEmpty = desugarSuper $ PosSuperEmpty noSpan
 desugarSuper (SuperSome superhow setexp) = desugarSuper $ PosSuperSome noSpan superhow setexp
 desugarSuper (PosSuperEmpty s) =
-      ISuper False Nothing [PExp (Just $ TClafer []) "" s $ mkLClaferId baseClafer True]
+      ISuper False TopLevel [PExp (Just $ TClafer []) "" s $ mkLClaferId baseClafer True]
 desugarSuper (PosSuperSome _ superhow setexp) =
-      ISuper (desugarSuperHow superhow) Nothing [desugarSetExp setexp]
+      ISuper (desugarSuperHow superhow) TopLevel [desugarSetExp setexp]
 
 
 desugarSuperHow :: SuperHow -> Bool
@@ -595,7 +593,7 @@ getPos e = iFoldMap getPExpPos $ IRIElement e
     getPExpPos (IRPExp p) = [inPos p]
     getPExpPos _ = []
 
-addrSpan :: Map.Map Span IClafer -> [IClafer] -> [IClafer] -> [IClafer] -> Ir -> Ir -- The three IClafer lists are as follows 1. The list we are mapping through
+{-addrSpan :: Map.Map Span IClafer -> [IClafer] -> [IClafer] -> [IClafer] -> Ir -> Ir -- The three IClafer lists are as follows 1. The list we are mapping through
 addrSpan _ [] _ [] i = i                                                            --                                        2. A list of all clafers
 addrSpan _ [] _ acc _ =                                                             --                                        3. An accumlator gathering all posibilities
   (IRClafer (maximumBy (compare `on` (depth . fst . fromJust . rInfo . super)) acc)) 
@@ -605,7 +603,7 @@ addrSpan _ [] _ acc _ =                                                         
     depth (Span (PosPos _ _ c) _) = c
     depth (PosSpan _ (PosPos _ _ c) _) = c
 addrSpan parMap (c:cs) clafers acc irclaf@(IRClafer claf)  = flip (addrSpan parMap cs clafers) irclaf $
-  if (((getSuperType claf) == ident c || ident claf == ident c) && (cinPos claf /= cinPos c) && commonNesting claf c parMap clafers) 
+  if (((getSuper claf) == ident c || ident claf == ident c) && (cinPos claf /= cinPos c) && commonNesting claf c parMap clafers) 
     then (:acc) $ claf{super = (super claf){rInfo = Just $ (cinPos c,"")}} 
       else acc 
 addrSpan _ _ _ _ i =  i 
@@ -615,26 +613,5 @@ addrUid parMap (c:cs) irclaf@(IRClafer claf) =
   if (((rInfo $ super claf) /= Nothing) && ((fst $ fromJust $ rInfo $ super claf) == (cinPos c)))
     then IRClafer $ claf{super = (super claf){rInfo = Just $ (fst $ fromJust $ rInfo $ super claf ,uid c)}} 
       else addrUid parMap cs irclaf 
-addrUid _ _ i = i 
+addrUid _ _ i = i -}
 
-commonNesting :: IClafer -> IClafer -> Map.Map Span IClafer -> [IClafer] -> Bool
-commonNesting claf1 claf2 parMap clafers = 
-  let par1 = Map.lookup (cinPos claf1) parMap
-      par2 = Map.lookup (cinPos claf2) parMap
-  in if (par2 == Nothing) then True else
-    if (par1 == Nothing) then False else
-      if (recursiveCheck (fromJust par1) (fromJust par2) clafers)
-        then commonNesting (fromJust par1) (fromJust par2) parMap clafers
-          else False
-  where
-    recursiveCheck p1 p2 clafs = 
-      let p1S = supers $ super p1
-      in if (p1S==[]) then False else 
-        let p1ST = sident $ exp $ head $ p1S
-        in if (p1ST == (ident p2)) then True else 
-          let p3 = (flip find clafs $ (==p1ST) . ident)
-          in if (p3==Nothing) then False else
-            recursiveCheck (fromJust p3) p2 clafs
-
-getSuperType :: IClafer -> String
-getSuperType claf = sident $ exp $ head $ supers $ super claf

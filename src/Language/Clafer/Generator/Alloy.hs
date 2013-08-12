@@ -191,14 +191,14 @@ claferDecl :: IClafer -> Concat -> Concat
 claferDecl  c     rest    = cconcat $ [genOptCard c,
   CString $ genAbstract $ isAbstract c, CString "sig ",
   Concat NoTrace [CString $ uid c, genExtends $ super c, CString "\n", rest]]
-  ++ if ((rInfo $ super c) /= Nothing && (not $ istop $ fst $ fromJust $ rInfo $ super c)) then [genHFact c] else []
+  ++ if ((superKind $ super c) == Nested) then [genHFact c] else []
   where
   genAbstract isAbs = if isAbs then "abstract " else ""
   genExtends (ISuper False _ [PExp _ _ _ (IClaferId _ "clafer" _)]) = CString ""
   genExtends (ISuper False _ [PExp _ _ _ (IClaferId _ i _)]) = CString " " +++ Concat NoTrace [CString $ "extends " ++ i]
   -- todo: handle multiple inheritance
   genExtends _ = CString ""
-  genHFact claf = CString $ "\n\nfact { r_" ++ uid claf ++ " in r_" ++ (snd $ fromJust $ rInfo $ super claf) ++ " }"
+  genHFact claf = CString $ "\n\nfact { r_" ++ uid claf ++ " in r_" ++ (getSuper claf) ++ " }"
   {-spanLookUp span' = uid . head . foldMapIR (slookup span') 
   slookup span' (IRClafer claf) = if (cinPos claf == span') then [claf] else []
   slookup _ _ = []-}
