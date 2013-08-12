@@ -71,13 +71,14 @@ genXmlModule pMap imodule = concat
 
 genXmlClafer :: Map.Map Span IClafer -> IClafer -> Result
 genXmlClafer pMap x = case x of
-  IClafer pos abstract gcrd id' uid' super' crd glcard es ->
+  IClafer pos abstract gcrd id' uid' super' ref' crd glcard es ->
     concat [ tag "Position" $ genXmlPosition pos
            , genXmlAbstract abstract
            , optTag gcrd genXmlGCard
            , genXmlId id'
            , genXmlUid uid'
            , genXmlSuper pMap super'
+           , genXmlRef pMap ref'
            , optTag crd genXmlCard
            , genXmlGlCard glcard
            , concatMap (genXmlElement pMap) es] 
@@ -103,11 +104,16 @@ genXmlUid :: String -> String
 genXmlUid uid' = tag "UniqueId" uid'
 
 genXmlSuper :: Map.Map Span IClafer -> ISuper -> String
-genXmlSuper pMap x = case x of
-  ISuper isOverlapping' r pexps -> tag "Supers" $ concat $
-    (genXmlBoolean "IsOverlapping" isOverlapping') :
+genXmlSuper pMap (ISuper r pexps) = 
+  tag "Supers" $ concat $
     if (r==Nothing) then [] else [tag "RelationClaferInfo" $ show $ fromJust r] ++
-    [concatMap (genXmlPExp "Super" pMap) pexps]
+      [concatMap (genXmlPExp "Super" pMap) pexps]
+
+genXmlRef :: Map.Map Span IClafer -> IReference -> String
+genXmlRef pMap (IReference s pexps) =
+  tag "Refs" $ concat $
+    (genXmlBoolean "IsSet" s) :
+      [concatMap (genXmlPExp "Ref" pMap) pexps]
 
 genXmlCard :: (Integer, Integer) -> String
 genXmlCard interval' = tag "Card" $ genXmlInterval interval'

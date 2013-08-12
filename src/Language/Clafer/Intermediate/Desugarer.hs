@@ -81,29 +81,38 @@ desugarClafer (Clafer abstract gcrd id' super' crd init' es)  =
     desugarClafer $ PosClafer noSpan abstract gcrd id' super' crd init' es
 desugarClafer (PosClafer s abstract gcrd id' super' crd init' es)  = 
     (IEClafer $ IClafer s (desugarAbstract abstract) (desugarGCard gcrd) (transIdent id')
-            "" (desugarSuper super') (desugarCard crd) (0, -1)
+            "" (desugarSuper super') (desugarRefrence super') (desugarCard crd) (0, -1)
             (desugarElements es)) : (desugarInit id' init')
 
-
 sugarClafer :: IClafer -> Clafer
-sugarClafer (IClafer _ abstract gcard' _ uid' super' crd _ es) = 
+sugarClafer (IClafer _ abstract gcard' _ uid' super' ref' crd _ es) = 
     Clafer (sugarAbstract abstract) (sugarGCard gcard') (mkIdent uid')
-      (sugarSuper super') (sugarCard crd) InitEmpty (sugarElements es)
+      (sugarSuper super' ref') (sugarCard crd) InitEmpty (sugarElements es)
 
 
 desugarSuper :: Super -> ISuper
 desugarSuper SuperEmpty = desugarSuper $ PosSuperEmpty noSpan
 desugarSuper (SuperSome superhow setexp) = desugarSuper $ PosSuperSome noSpan superhow setexp
 desugarSuper (PosSuperEmpty s) =
-      ISuper False Nothing [PExp (Just $ TClafer []) "" s $ mkLClaferId baseClafer True]
-desugarSuper (PosSuperSome _ superhow setexp) =
-      ISuper (desugarSuperHow superhow) Nothing [desugarSetExp setexp]
+      ISuper Nothing [PExp (Just $ TClafer []) "" s $ mkLClaferId baseClafer True]
+desugarSuper (PosSuperSome _ _ setexp) =
+      ISuper Nothing [desugarSetExp setexp]
+
+desugarRefrence :: Super -> IReference
+desugarRefrence (SuperSome superhow setexp) = desugarRefrence $ PosSuperSome noSpan superhow setexp
+desugarRefrence (PosSuperSome _ superhow setexp) = case superhow of
+  SuperColon -> IReference False []
+  (PosSuperColon _) -> IReference False []
+  _ -> IReference (desugarSuperHow superhow) [desugarSetExp setexp]
+desugarRefrence _ = IReference False []
 
 
 desugarSuperHow :: SuperHow -> Bool
-desugarSuperHow SuperColon = desugarSuperHow $ PosSuperColon noSpan
-desugarSuperHow (PosSuperColon _) = False
-desugarSuperHow _  = True
+desugarSuperHow SuperArrow = desugarSuperHow $ PosSuperArrow noSpan
+desugarSuperHow SuperMArrow = desugarSuperHow $ PosSuperMArrow noSpan
+desugarSuperHow (PosSuperArrow _) = True
+desugarSuperHow (PosSuperMArrow _) = False
+desugarSuperHow _  = error "desugarSuperHow function from desugarer did not work properly" --Should never happen
 
 
 desugarInit :: PosIdent -> Init -> [IElement]
@@ -134,14 +143,11 @@ desugarModId (PosModIdIdent _ id') = transIdent id'
 sugarModId :: String -> ModId
 sugarModId modid = ModIdIdent $ mkIdent modid
 
-sugarSuper :: ISuper -> Super
-sugarSuper (ISuper _ _ []) = SuperEmpty
-sugarSuper (ISuper isOverlapping' _ [pexp]) = SuperSome (sugarSuperHow isOverlapping') (sugarSetExp pexp)
-sugarSuper _ = error "Function sugarSuper from Desugarer expects an ISuper with a list of length one, but it was given one with a list larger than one" -- Should never happen
-
-sugarSuperHow :: Bool -> SuperHow
-sugarSuperHow False = SuperColon
-sugarSuperHow True  = SuperMArrow
+sugarSuper :: ISuper -> IReference -> Super
+sugarSuper (ISuper _ []) (IReference _ []) = SuperEmpty
+sugarSuper (ISuper _ [pexp]) (IReference _ []) = SuperSome SuperColon (sugarSetExp pexp)
+sugarSuper (ISuper _ []) (IReference i [pexp]) = SuperSome (if i then SuperArrow else SuperMArrow) (sugarSetExp pexp)
+sugarSuper _ _ = error "Function sugarSuper from Desugarer expects an ISuper and IReference with a lists of length one or less, but it was given one with a list larger than one" -- Should never happen
 
 
 sugarInitHow :: Bool -> InitHow
@@ -515,17 +521,17 @@ desugarPath :: PExp -> PExp
 desugarPath (PExp iType' pid' pos' x) = reducePExp $ PExp iType' pid' pos' result
   where
   result
-    | isSet x     = IDeclPExp ISome [] (pExpDefPid pos' x)
+    | isset x     = IDeclPExp ISome [] (pExpDefPid pos' x)
     | isNegSome x = IDeclPExp INo   [] $ bpexp $ Language.Clafer.Intermediate.Intclafer.exp $ head $ exps x
     | otherwise   =  x
   isNegSome (IFunExp op' [PExp _ _ _ (IDeclPExp ISome [] _)]) = op' == iNot
   isNegSome _ = False
 
 
-isSet :: IExp -> Bool
-isSet (IClaferId _ _ _)  = True
-isSet (IFunExp op' _) = op' `elem` setBinOps
-isSet _ = False
+isset :: IExp -> Bool
+isset (IClaferId _ _ _)  = True
+isset (IFunExp op' _) = op' `elem` setBinOps
+isset _ = False
 
 
 -- reduce parent

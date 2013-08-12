@@ -520,7 +520,10 @@ getUseId :: Span -> Map.Map Span [Ir] -> (String, String)
 getUseId s irMap = if Map.lookup s irMap == Nothing
                       then ("Uid not Found", "Uid not Found")
                       else let IRClafer iClafer = head $ fromJust $ Map.lookup s irMap in
-                        (uid iClafer, sident $ exp $ head $ supers $ super iClafer)
+                        if ((supers $ super iClafer) /= []) then
+                          (uid iClafer, sident $ exp $ head $ supers $ super iClafer)
+                            else
+                              (uid iClafer, sident $ exp $ head $ refs $ refrence iClafer)
 
 while :: Bool -> String -> String
 while bool exp' = if bool then exp' else ""

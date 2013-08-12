@@ -338,9 +338,9 @@ convertClafer =
         Just (I.IGCard True _) -> (0, 1)
         Just (I.IGCard _ i)    -> i
     super =
-      case I.super clafer of
-        I.ISuper True _ [I.PExp{I.exp = I.IClaferId{I.sident = superUid}}]  -> Just $ Ref superUid
-        I.ISuper False _ [I.PExp{I.exp = I.IClaferId{I.sident = superUid}}] ->
+      case (I.super clafer, I.refrence clafer) of
+        (I.ISuper _ [], I.IReference _ [I.PExp{I.exp = I.IClaferId{I.sident = superUid}}]) -> Just $ Ref superUid
+        (I.ISuper _ [I.PExp{I.exp = I.IClaferId{I.sident = superUid}}], I.IReference _ []) ->
           if superUid `elem` ["string", "real", "int", "integer", "boolean"]
             then Just $ Ref superUid
             else Just $ Colon superUid
@@ -357,7 +357,7 @@ gatherInfo imodule =
   sString  = SClafer "string" "string" False 0 (-1) 0 (-1) Nothing Nothing []
   sBoolean = SClafer "boolean" "boolean" False 0 (-1) 0 (-1) Nothing Nothing []
   
-  root = I.IClafer noSpan False Nothing rootUid rootUid (I.ISuper False Nothing [I.PExp Nothing "" noSpan $ I.IClaferId "clafer" "clafer" True]) (Just (1, 1)) (0, 0) (I.mDecls imodule)
+  root = I.IClafer noSpan False Nothing rootUid rootUid (I.ISuper Nothing [I.PExp Nothing "" noSpan $ I.IClaferId "clafer" "clafer" True]) (I.IReference False []) (Just (1, 1)) (0, 0) (I.mDecls imodule)
 
 
 

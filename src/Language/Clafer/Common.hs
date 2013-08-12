@@ -51,10 +51,9 @@ getSuper :: IClafer -> String
 getSuper = getSuperId.supers.super
 
 getSuperNoArr :: IClafer -> String
-
 getSuperNoArr clafer
-  | isOverlapping $ super clafer = "clafer"
-  | otherwise                    = getSuper clafer
+  | isOverlapping clafer = "clafer"
+  | otherwise            = getSuper clafer
 
 getSuperId :: [PExp] -> String
 getSuperId = sident . Language.Clafer.Intermediate.Intclafer.exp . head

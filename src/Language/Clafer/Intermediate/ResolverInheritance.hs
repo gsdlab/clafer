@@ -54,16 +54,14 @@ resolveNModule (imodule, genv') =
 resolveNClafer :: [IElement] -> IClafer -> Resolve IClafer
 resolveNClafer declarations clafer =
   do
-    super'    <- resolveNSuper declarations clafer
+    super' <- resolveNSuper declarations clafer
     elements' <- mapM (resolveNElement declarations) $ elements clafer
-    return $ clafer {super = super',
-            elements = elements'}
-
+    return $ clafer {super = super', elements = elements'}
 
 
 resolveNSuper :: [IElement] -> IClafer -> Resolve ISuper
 resolveNSuper declarations x = case (super x) of
-  ISuper False s [PExp _ pid' pos' (IClaferId _ id' isTop')] ->
+  (ISuper s [PExp _ pid' pos' (IClaferId _ id' isTop')]) ->
     if isPrimitive id' || id' == "clafer"
       then return (super x)
       else do
@@ -71,7 +69,7 @@ resolveNSuper declarations x = case (super x) of
         id'' <- case r of
           Nothing -> throwError $ SemanticErr pos' $ "No superclafer found: " ++ id'
           Just mo  -> return $ fst mo
-        return $ ISuper False s [idToPExp pid' pos' "" id'' isTop']
+        return $ ISuper s [idToPExp pid' pos' "" id'' isTop']
   _ -> return (super x)
 
 resolveNElement :: [IElement] -> IElement -> Resolve IElement
@@ -103,18 +101,16 @@ resolveOModule (imodule, genv') =
 resolveOClafer :: SEnv -> IClafer -> Resolve IClafer
 resolveOClafer env clafer =
   do
-    super' <- resolveOSuper env {context = Just clafer} $ super clafer
+    (super', ref') <- resolveOSuper env {context = Just clafer} $ reference clafer
     elements' <- mapM (resolveOElement env {context = Just clafer}) $ elements clafer
-    return $ clafer {super = super', elements = elements'}
+    return $ clafer {super = super', reference = ref', elements = elements'}
 
-
-resolveOSuper :: SEnv -> ISuper -> Resolve ISuper
-resolveOSuper env x = case x of
-  ISuper True s exps' -> do
-    exps''     <- mapM (resolvePExp env) exps'
-    let isOverlap = not (length exps'' == 1 && isPrimitive (getSuperId exps''))
-    return $ ISuper isOverlap s exps''
-  _ -> return x
+resolveOSuper :: SEnv -> ISuper -> IReference -> Resolve (ISuper, IReference)
+resolveOSuper env s@(ISuper r []) (IReference s exps') = do
+  exps'' <- mapM (resolvePExp env) exps'
+  let isOverlap = not (length exps'' == 1 && isPrimitive (getSuperId exps''))
+  return $ if isOverlap then (ISuper r exps'', IReference False []) else (s,IReference s exps'') 
+resolveOSuper _ s r = return (s, r)
 
 
 resolveOElement :: SEnv -> IElement -> Resolve IElement

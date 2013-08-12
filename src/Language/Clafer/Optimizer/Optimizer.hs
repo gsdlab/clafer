@@ -94,7 +94,7 @@ getExtended :: IClafer -> [String]
 getExtended c =
   sName ++ ((getSubclafers $ elements c) >>= getExtended)
   where
-  sName = if not $ isOverlapping $ super c then [getSuper c] else []
+  sName = if not $ isOverlapping c then [getSuper c] else []
 
 -- -----------------------------------------------------------------------------
 -- inheritance  expansions
