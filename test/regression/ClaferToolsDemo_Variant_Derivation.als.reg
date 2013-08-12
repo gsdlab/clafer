@@ -67,7 +67,7 @@ sig c16_LiBattery1400
 {}
 { one @r_c16_LiBattery1400.this }
 
-fact { #c17_LowEndPhone <= 0 }
+fact { #c17_LowEndPhone = 0 }
 abstract sig c17_LowEndPhone extends c5_MobilePhone
 {}
 { no (this.@r_c6_Connectivity).@r_c12_WiFi }
@@ -80,13 +80,13 @@ sig c26_QuadCPU
 {}
 { one @r_c26_QuadCPU.this }
 
-lone sig c27_Phone1 extends c5_MobilePhone
+one sig c27_Phone1 extends c5_MobilePhone
 {}
 { some (this.@r_c6_Connectivity).@r_c12_WiFi
   some (this.@r_c6_Connectivity).@r_c9_LTE
   some ((this.@r_c6_Connectivity).@r_c7_Bluetooth).@r_c3_Bluetooth21 }
 
-lone sig c34_Phone2 extends c20_HighEndPhone
+one sig c34_Phone2 extends c20_HighEndPhone
 {}
 { some (this.@r_c6_Connectivity).@r_c9_LTE
   some ((this.@r_c6_Connectivity).@r_c7_Bluetooth).@r_c3_Bluetooth21

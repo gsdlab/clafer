@@ -86,7 +86,7 @@ sig c17_PostalCode
 abstract sig c18_date
 { ref : one Int }
 
-lone sig c19_JohnDoe extends c1_Person
+one sig c19_JohnDoe extends c1_Person
 {}
 { (this.(@r_c2_Name.@ref)) = 0
   (this.(@r_c3_Surname.@ref)) = 1
@@ -113,26 +113,26 @@ sig c48_participants
 { ref : one c1_Person }
 { one @r_c48_participants.this }
 
-lone sig c58_MaryJane extends c45_Student
+one sig c58_MaryJane extends c45_Student
 {}
 { (this.(@r_c2_Name.@ref)) = 7
   (this.(@r_c46_StudentId.@ref)) = 8 }
 
-lone sig c65_BusLine extends c47_WaitingLine
+one sig c65_BusLine extends c47_WaitingLine
 {}
 { c19_JohnDoe in (this.(@r_c48_participants.@ref))
   c58_MaryJane in (this.(@r_c48_participants.@ref)) }
 
-lone sig c72_JohnAndMaryLine extends c47_WaitingLine
+one sig c72_JohnAndMaryLine extends c47_WaitingLine
 {}
 { (this.(@r_c48_participants.@ref)) = (c19_JohnDoe + c58_MaryJane) }
 
-fact { #c78_TwoPersonLine <= 0 }
+fact { #c78_TwoPersonLine = 0 }
 abstract sig c78_TwoPersonLine extends c47_WaitingLine
 {}
 { (#(this.@r_c48_participants)) = 2 }
 
-fact { #c83_OneToTenPersonLine <= 0 }
+fact { #c83_OneToTenPersonLine = 0 }
 abstract sig c83_OneToTenPersonLine extends c47_WaitingLine
 {}
 { (#(this.@r_c48_participants)) >= 1
@@ -141,13 +141,13 @@ abstract sig c83_OneToTenPersonLine extends c47_WaitingLine
 abstract sig c92_NorthAmericanCountry
 {}
 
-lone sig c93_Canada extends c92_NorthAmericanCountry
+one sig c93_Canada extends c92_NorthAmericanCountry
 {}
 
-lone sig c94_USA extends c92_NorthAmericanCountry
+one sig c94_USA extends c92_NorthAmericanCountry
 {}
 
-lone sig c95_Mexico extends c92_NorthAmericanCountry
+one sig c95_Mexico extends c92_NorthAmericanCountry
 {}
 
 abstract sig c96_Person2
@@ -158,7 +158,7 @@ sig c97_Country
 { ref : one c92_NorthAmericanCountry }
 { one @r_c97_Country.this }
 
-lone sig c107_JohnDoe2 extends c96_Person2
+one sig c107_JohnDoe2 extends c96_Person2
 {}
 { (this.(@r_c97_Country.@ref)) = c93_Canada }
 

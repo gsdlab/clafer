@@ -2,7 +2,7 @@ open util/integer
 pred show {}
 
 
-lone sig c1_aCar extends c18_Car
+one sig c1_aCar extends c18_Car
 {}
 
 abstract sig c18_Car
@@ -160,9 +160,3 @@ sig c188_fuel
 { ref : one Int }
 { one @r_c188_fuel.this }
 
-objectives o_global {
-minimize c1_aCar.(@r_c154_total_cost.@ref) ,
-minimize c1_aCar.(@r_c168_total_fuel.@ref) ,
-maximize c1_aCar.(@r_c161_total_comfort.@ref) ,
-minimize c1_aCar.(@r_c175_total_mass.@ref) 
-}

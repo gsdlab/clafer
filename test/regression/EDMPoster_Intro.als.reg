@@ -2,135 +2,114 @@ open util/integer
 pred show {}
 
 
-lone sig c1_ExamplePhone1
+one sig c1_ExamplePhone1
 { r_c2_display : one c2_display
 , r_c4_GSM : one c4_GSM
 , r_c5_CPU : one c5_CPU
 , r_c6_keyboard : one c6_keyboard }
 
-lone sig c2_display
+one sig c2_display
 { r_c3_LCD : one c3_LCD }
-{ one r_c2_display }
 
-lone sig c3_LCD
+one sig c3_LCD
 {}
-{ one r_c3_LCD }
 
-lone sig c4_GSM
+one sig c4_GSM
 {}
-{ one r_c4_GSM }
 
-lone sig c5_CPU
+one sig c5_CPU
 {}
-{ one r_c5_CPU }
 
-lone sig c6_keyboard
+one sig c6_keyboard
 {}
-{ one r_c6_keyboard }
 
-lone sig c7_ExamplePhone2
+one sig c7_ExamplePhone2
 { r_c8_display : one c8_display
 , r_c10_GSM : one c10_GSM
 , r_c11_touchscreen : one c11_touchscreen }
 
-lone sig c8_display
+one sig c8_display
 { r_c9_OLED : one c9_OLED }
-{ one r_c8_display }
 
-lone sig c9_OLED
+one sig c9_OLED
 {}
-{ one r_c9_OLED }
 
-lone sig c10_GSM
+one sig c10_GSM
 {}
-{ one r_c10_GSM }
 
-lone sig c11_touchscreen
+one sig c11_touchscreen
 {}
-{ one r_c11_touchscreen }
 
-lone sig c12_ExampleTablet1
+one sig c12_ExampleTablet1
 { r_c13_display : one c13_display
 , r_c15_HSPA : one c15_HSPA
 , r_c16_CPU : set c16_CPU
 , r_c17_touchscreen : one c17_touchscreen }
 { 4 <= #r_c16_CPU and #r_c16_CPU <= 4 }
 
-lone sig c13_display
+one sig c13_display
 { r_c14_AMOLED : one c14_AMOLED }
-{ one r_c13_display }
 
-lone sig c14_AMOLED
+one sig c14_AMOLED
 {}
-{ one r_c14_AMOLED }
 
-lone sig c15_HSPA
+one sig c15_HSPA
 {}
-{ one r_c15_HSPA }
 
 sig c16_CPU
 {}
 { one @r_c16_CPU.this }
 
-lone sig c17_touchscreen
+one sig c17_touchscreen
 {}
-{ one r_c17_touchscreen }
 
-lone sig c18_ExamplePhone3
+one sig c18_ExamplePhone3
 { r_c19_display : one c19_display
 , r_c21_GSM : one c21_GSM
 , r_c22_CPU : set c22_CPU
 , r_c23_keyboard : one c23_keyboard }
 { 4 <= #r_c22_CPU and #r_c22_CPU <= 4 }
 
-lone sig c19_display
+one sig c19_display
 { r_c20_LCD : one c20_LCD }
-{ one r_c19_display }
 
-lone sig c20_LCD
+one sig c20_LCD
 {}
-{ one r_c20_LCD }
 
-lone sig c21_GSM
+one sig c21_GSM
 {}
-{ one r_c21_GSM }
 
 sig c22_CPU
 {}
 { one @r_c22_CPU.this }
 
-lone sig c23_keyboard
+one sig c23_keyboard
 {}
-{ one r_c23_keyboard }
 
-lone sig c24_ExampleTablet2
+one sig c24_ExampleTablet2
 { r_c25_display : one c25_display
 , r_c27_HSPA : one c27_HSPA
 , r_c28_CPU : set c28_CPU
 , r_c29_keyboard : one c29_keyboard }
 { 4 <= #r_c28_CPU and #r_c28_CPU <= 4 }
 
-lone sig c25_display
+one sig c25_display
 { r_c26_AMOLED : one c26_AMOLED }
-{ one r_c25_display }
 
-lone sig c26_AMOLED
+one sig c26_AMOLED
 {}
-{ one r_c26_AMOLED }
 
-lone sig c27_HSPA
+one sig c27_HSPA
 {}
-{ one r_c27_HSPA }
 
 sig c28_CPU
 {}
 { one @r_c28_CPU.this }
 
-lone sig c29_keyboard
+one sig c29_keyboard
 {}
-{ one r_c29_keyboard }
 
-fact { #c30_AndroidDevice1 <= 0 }
+fact { #c30_AndroidDevice1 = 0 }
 abstract sig c30_AndroidDevice1
 { r_c31_display : one c31_display
 , r_c37_GSM : one c37_GSM
@@ -244,7 +223,7 @@ sig c62_touchscreen
 {}
 { one @r_c62_touchscreen.this }
 
-lone sig c63_AndroidPhone4 extends c43_AndroidPhone
+one sig c63_AndroidPhone4 extends c43_AndroidPhone
 { r_c64_display : one c64_display
 , r_c66_GSM : one c66_GSM
 , r_c67_HSPA : one c67_HSPA
@@ -252,31 +231,25 @@ lone sig c63_AndroidPhone4 extends c43_AndroidPhone
 , r_c69_input : one c69_input }
 { 2 <= #r_c68_CPU and #r_c68_CPU <= 2 }
 
-lone sig c64_display
+one sig c64_display
 { r_c65_AMOLED : one c65_AMOLED }
-{ one r_c64_display }
 
-lone sig c65_AMOLED
+one sig c65_AMOLED
 {}
-{ one r_c65_AMOLED }
 
-lone sig c66_GSM
+one sig c66_GSM
 {}
-{ one r_c66_GSM }
 
-lone sig c67_HSPA
+one sig c67_HSPA
 {}
-{ one r_c67_HSPA }
 
 sig c68_CPU
 {}
 { one @r_c68_CPU.this }
 
-lone sig c69_input
+one sig c69_input
 { r_c70_touchscreen : one c70_touchscreen }
-{ one r_c69_input }
 
-lone sig c70_touchscreen
+one sig c70_touchscreen
 {}
-{ one r_c70_touchscreen }
 

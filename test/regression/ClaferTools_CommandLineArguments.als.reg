@@ -163,34 +163,34 @@ sig c48_version extends c1_Argument
 {}
 { one @r_c48_version.this }
 
-lone sig c49_ca1 extends c6_ClaferArgs
+one sig c49_ca1 extends c6_ClaferArgs
 {}
 { some ((this.@r_c7_functional).@r_c8_mode).@r_c9_alloy }
 
-lone sig c52_ca2 extends c6_ClaferArgs
+one sig c52_ca2 extends c6_ClaferArgs
 {}
 { some ((this.@r_c7_functional).@r_c8_mode).@r_c9_alloy
   some (this.@r_c7_functional).@r_c38_validate
   (((this.@r_c7_functional).@r_c38_validate).(@r_c45_tooldir.@ref)) = 0 }
 
-lone sig c60_ca3 extends c6_ClaferArgs
+one sig c60_ca3 extends c6_ClaferArgs
 {}
 { some (((this.@r_c7_functional).@r_c8_mode).@r_c9_alloy).@r_c10_alloy42
   some (this.@r_c7_functional).@r_c28_keep_unused
   some (this.@r_c7_functional).@r_c29_flatten_inheritance }
 
-lone sig c67_ca4 extends c6_ClaferArgs
+one sig c67_ca4 extends c6_ClaferArgs
 {}
 { some ((this.@r_c7_functional).@r_c8_mode).@r_c14_html }
 
-lone sig c70_ca5 extends c6_ClaferArgs
+one sig c70_ca5 extends c6_ClaferArgs
 {}
 { some ((this.@r_c7_functional).@r_c8_mode).@r_c14_html
   some (((this.@r_c7_functional).@r_c8_mode).@r_c14_html).@r_c17_self_contained
   some (((this.@r_c7_functional).@r_c8_mode).@r_c14_html).@r_c18_add_graph
   some (((this.@r_c7_functional).@r_c8_mode).@r_c14_html).@r_c19_add_comments }
 
-lone sig c79_ca6 extends c6_ClaferArgs
+one sig c79_ca6 extends c6_ClaferArgs
 {}
 { some ((this.@r_c7_functional).@r_c8_mode).@r_c23_cvlGraph }
 

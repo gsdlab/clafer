@@ -2,31 +2,31 @@ open util/integer
 pred show {}
 
 
-fact { #c1_Boolean <= 0 }
+fact { #c1_Boolean = 0 }
 abstract sig c1_Boolean
 {}
 
-fact { #c2_Integer <= 0 }
+fact { #c2_Integer = 0 }
 abstract sig c2_Integer
 {}
 
-fact { #c3_String <= 0 }
+fact { #c3_String = 0 }
 abstract sig c3_String
 {}
 
-fact { #c4_UnlimitedNatural <= 0 }
+fact { #c4_UnlimitedNatural = 0 }
 abstract sig c4_UnlimitedNatural
 {}
 
-fact { #c5_Sequence <= 0 }
+fact { #c5_Sequence = 0 }
 abstract sig c5_Sequence
 {}
 
-fact { #c6_Set <= 0 }
+fact { #c6_Set = 0 }
 abstract sig c6_Set
 {}
 
-fact { #c7_Element <= 0 }
+fact { #c7_Element = 0 }
 abstract sig c7_Element
 { r_c8_ownedElement : set c8_ownedElement
 , r_c27_owner : lone c27_owner }
@@ -43,7 +43,7 @@ sig c27_owner
 { ref : one c7_Element }
 { one @r_c27_owner.this }
 
-fact { #c46_NamedElement <= 0 }
+fact { #c46_NamedElement = 0 }
 abstract sig c46_NamedElement extends c7_Element
 { r_c47_name : lone c47_name
 , r_c48_qualifiedName : lone c48_qualifiedName
@@ -62,11 +62,11 @@ sig c49_visibility
 { ref : one c376_VisibilityKind }
 { one @r_c49_visibility.this }
 
-fact { #c59_ValueSpecification <= 0 }
+fact { #c59_ValueSpecification = 0 }
 abstract sig c59_ValueSpecification extends c46_NamedElement
 {}
 
-fact { #c60_DirectedRelationship <= 0 }
+fact { #c60_DirectedRelationship = 0 }
 abstract sig c60_DirectedRelationship
 { r_c61_relatedElement : some c61_relatedElement
 , r_c71_source : some c71_source
@@ -87,7 +87,7 @@ sig c81_target
 { ref : one c7_Element }
 { one @r_c81_target.this }
 
-fact { #c91_Class <= 0 }
+fact { #c91_Class = 0 }
 abstract sig c91_Class extends c271_Classifier
 { r_c92_isActive : lone c92_isActive
 , r_c93_superClass : set c93_superClass
@@ -106,7 +106,7 @@ sig c103_nestedClassifier extends c271_Classifier
 {}
 { one @r_c103_nestedClassifier.this }
 
-fact { #c104_Property <= 0 }
+fact { #c104_Property = 0 }
 abstract sig c104_Property extends c391_StructuralFeature
 { r_c105_default : lone c105_default
 , r_c106_isComposite : lone c106_isComposite
@@ -198,7 +198,7 @@ sig c221_associationEnd
 { ref : one c104_Property }
 { one @r_c221_associationEnd.this }
 
-fact { #c240_Enumeration <= 0 }
+fact { #c240_Enumeration = 0 }
 abstract sig c240_Enumeration extends c245_DataType
 { r_c241_ownedLiteral : set c241_ownedLiteral }
 
@@ -207,7 +207,7 @@ sig c241_ownedLiteral extends c250_EnumerationLiteral
 { one @r_c241_ownedLiteral.this
   (this.~@r_c241_ownedLiteral) in (this.(@r_c251_enumeration.@ref)) }
 
-fact { #c245_DataType <= 0 }
+fact { #c245_DataType = 0 }
 abstract sig c245_DataType extends c271_Classifier
 { r_c246_ownedAttribute : set c246_ownedAttribute }
 
@@ -216,7 +216,7 @@ sig c246_ownedAttribute extends c104_Property
 { one @r_c246_ownedAttribute.this
   (this.~@r_c246_ownedAttribute) in (this.(@r_c178_datatype.@ref)) }
 
-fact { #c250_EnumerationLiteral <= 0 }
+fact { #c250_EnumerationLiteral = 0 }
 abstract sig c250_EnumerationLiteral extends c399_InstanceSpecification
 { r_c251_enumeration : lone c251_enumeration }
 { all disj x, y : this.@r_c251_enumeration | (x.@ref) != (y.@ref)
@@ -226,11 +226,11 @@ sig c251_enumeration
 { ref : one c240_Enumeration }
 { one @r_c251_enumeration.this }
 
-fact { #c270_PrimitiveType <= 0 }
+fact { #c270_PrimitiveType = 0 }
 abstract sig c270_PrimitiveType extends c245_DataType
 {}
 
-fact { #c271_Classifier <= 0 }
+fact { #c271_Classifier = 0 }
 abstract sig c271_Classifier extends c46_NamedElement
 { r_c272_isAbstract : lone c272_isAbstract
 , r_c273_feature : set c273_feature
@@ -282,7 +282,7 @@ sig c336_powertypeExtent
 { ref : one c565_GeneralizationSet }
 { one @r_c336_powertypeExtent.this }
 
-fact { #c355_Feature <= 0 }
+fact { #c355_Feature = 0 }
 abstract sig c355_Feature extends c46_NamedElement
 { r_c356_isStatic : lone c356_isStatic
 , r_c357_featuringClassifier : set c357_featuringClassifier }
@@ -300,19 +300,19 @@ sig c357_featuringClassifier
 abstract sig c376_VisibilityKind
 {}
 
-lone sig c377_package extends c376_VisibilityKind
+one sig c377_package extends c376_VisibilityKind
 {}
 
-lone sig c378_private extends c376_VisibilityKind
+one sig c378_private extends c376_VisibilityKind
 {}
 
-lone sig c379_protected extends c376_VisibilityKind
+one sig c379_protected extends c376_VisibilityKind
 {}
 
-lone sig c380_public extends c376_VisibilityKind
+one sig c380_public extends c376_VisibilityKind
 {}
 
-fact { #c381_LiteralBoolean <= 0 }
+fact { #c381_LiteralBoolean = 0 }
 abstract sig c381_LiteralBoolean extends c383_LiteralSpecification
 { r_c382_value : lone c382_value }
 
@@ -320,11 +320,11 @@ sig c382_value
 {}
 { one @r_c382_value.this }
 
-fact { #c383_LiteralSpecification <= 0 }
+fact { #c383_LiteralSpecification = 0 }
 abstract sig c383_LiteralSpecification extends c59_ValueSpecification
 {}
 
-fact { #c384_LiteralString <= 0 }
+fact { #c384_LiteralString = 0 }
 abstract sig c384_LiteralString extends c383_LiteralSpecification
 { r_c385_value : lone c385_value }
 
@@ -332,11 +332,11 @@ sig c385_value extends c3_String
 {}
 { one @r_c385_value.this }
 
-fact { #c386_LiteralNull <= 0 }
+fact { #c386_LiteralNull = 0 }
 abstract sig c386_LiteralNull extends c383_LiteralSpecification
 {}
 
-fact { #c387_LiteralInteger <= 0 }
+fact { #c387_LiteralInteger = 0 }
 abstract sig c387_LiteralInteger extends c383_LiteralSpecification
 { r_c388_value : lone c388_value }
 
@@ -344,7 +344,7 @@ sig c388_value extends c2_Integer
 {}
 { one @r_c388_value.this }
 
-fact { #c389_LiteralUnlimitedNatural <= 0 }
+fact { #c389_LiteralUnlimitedNatural = 0 }
 abstract sig c389_LiteralUnlimitedNatural extends c383_LiteralSpecification
 { r_c390_value : lone c390_value }
 
@@ -352,7 +352,7 @@ sig c390_value extends c4_UnlimitedNatural
 {}
 { one @r_c390_value.this }
 
-fact { #c391_StructuralFeature <= 0 }
+fact { #c391_StructuralFeature = 0 }
 abstract sig c391_StructuralFeature extends c355_Feature
 { r_c392_isReadOnly : lone c392_isReadOnly
 , r_c393_isOrdered : lone c393_isOrdered
@@ -390,7 +390,7 @@ sig c398_lowerValue extends c59_ValueSpecification
 {}
 { one @r_c398_lowerValue.this }
 
-fact { #c399_InstanceSpecification <= 0 }
+fact { #c399_InstanceSpecification = 0 }
 abstract sig c399_InstanceSpecification extends c46_NamedElement
 { r_c400_slot : set c400_slot
 , r_c404_classifier : set c404_classifier
@@ -410,7 +410,7 @@ sig c414_specification extends c59_ValueSpecification
 {}
 { one @r_c414_specification.this }
 
-fact { #c415_Slot <= 0 }
+fact { #c415_Slot = 0 }
 abstract sig c415_Slot extends c7_Element
 { r_c416_owningInstance : one c416_owningInstance
 , r_c435_value : set c435_value
@@ -431,7 +431,7 @@ sig c436_definingFeature
 { ref : one c391_StructuralFeature }
 { one @r_c436_definingFeature.this }
 
-fact { #c446_InstanceValue <= 0 }
+fact { #c446_InstanceValue = 0 }
 abstract sig c446_InstanceValue extends c59_ValueSpecification
 { r_c447_instance : one c447_instance }
 { all disj x, y : this.@r_c447_instance | (x.@ref) != (y.@ref) }
@@ -440,7 +440,7 @@ sig c447_instance
 { ref : one c399_InstanceSpecification }
 { one @r_c447_instance.this }
 
-fact { #c457_Generalization <= 0 }
+fact { #c457_Generalization = 0 }
 abstract sig c457_Generalization extends c60_DirectedRelationship
 { r_c458_isSubstitutable : lone c458_isSubstitutable
 , r_c459_specific : one c459_specific
@@ -468,7 +468,7 @@ sig c488_generalizationSet
 { ref : one c565_GeneralizationSet }
 { one @r_c488_generalizationSet.this }
 
-fact { #c507_Association <= 0 }
+fact { #c507_Association = 0 }
 abstract sig c507_Association extends c271_Classifier
 { r_c508_relatedElement : some c508_relatedElement
 , r_c518_isDerived : lone c518_isDerived
@@ -503,23 +503,23 @@ sig c533_memberEnd
 { ref : one c104_Property }
 { one @r_c533_memberEnd.this }
 
-fact { #c560_ExtensionEnd <= 0 }
+fact { #c560_ExtensionEnd = 0 }
 abstract sig c560_ExtensionEnd extends c104_Property
 {}
 
 abstract sig c561_AggregationKind
 {}
 
-lone sig c562_composite extends c561_AggregationKind
+one sig c562_composite extends c561_AggregationKind
 {}
 
-lone sig c563_none extends c561_AggregationKind
+one sig c563_none extends c561_AggregationKind
 {}
 
-lone sig c564_shared extends c561_AggregationKind
+one sig c564_shared extends c561_AggregationKind
 {}
 
-fact { #c565_GeneralizationSet <= 0 }
+fact { #c565_GeneralizationSet = 0 }
 abstract sig c565_GeneralizationSet extends c46_NamedElement
 { r_c566_isCovering : lone c566_isCovering
 , r_c567_isDisjoint : lone c567_isDisjoint

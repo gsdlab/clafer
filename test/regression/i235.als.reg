@@ -2,7 +2,7 @@ open util/integer
 pred show {}
 
 
-fact { #c1_A <= 0 }
+fact { #c1_A = 0 }
 abstract sig c1_A
 {}
 

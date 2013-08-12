@@ -10,20 +10,20 @@ sig c2_c
 { ref : one c18_C }
 { one @r_c2_c.this }
 
-lone sig c12_A1 extends c1_A
+one sig c12_A1 extends c1_A
 {}
 { (#(this.@r_c2_c)) = 2 }
 
-fact { #c17_B <= 0 }
+fact { #c17_B = 0 }
 abstract sig c17_B extends c1_A
 {}
 
 abstract sig c18_C
 {}
 
-lone sig c19_C1 extends c18_C
+one sig c19_C1 extends c18_C
 {}
 
-lone sig c20_C2 extends c18_C
+one sig c20_C2 extends c18_C
 {}
 

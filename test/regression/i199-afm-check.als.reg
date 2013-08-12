@@ -21,7 +21,7 @@ some sig c4_d
 sig c5_e
 {}
 
-fact { #c6_f <= 0 }
+fact { #c6_f = 0 }
 sig c6_f
 {}
 

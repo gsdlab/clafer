@@ -73,7 +73,7 @@ sig c27_transformer
 { one @r_c27_transformer.this
   (#(((this.~@r_c27_transformer).@r_c6_cc).@r_c17_switches)) = 3 }
 
-lone sig c32_bumbleBee extends c20_camaro
+one sig c32_bumbleBee extends c20_camaro
 {}
 { some this.@r_c27_transformer
   some (this.@r_c2_transmission).@r_c4_manual }

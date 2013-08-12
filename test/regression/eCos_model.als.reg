@@ -92,15 +92,15 @@ lone sig c123_display
 { ref : one Int }
 { one r_c123_display }
 
-lone sig c156_CYGPKG_CRC
+one sig c156_CYGPKG_CRC
 {}
 
-lone sig c157_MTD
+one sig c157_MTD
 {}
 
-lone sig c158_CYGPKG_COMPRESS_ZLIB
+one sig c158_CYGPKG_COMPRESS_ZLIB
 {}
 
-lone sig c159_HAS_IOMEM
+one sig c159_HAS_IOMEM
 {}
 

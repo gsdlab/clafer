@@ -1,3 +1,4 @@
+//# OPTIONS --sg
 abstract Feature
     cost: integer
 

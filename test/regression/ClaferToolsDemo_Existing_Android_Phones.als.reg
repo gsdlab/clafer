@@ -2,70 +2,57 @@ open util/integer
 pred show {}
 
 
-lone sig c1_AndroidPhone1
+one sig c1_AndroidPhone1
 { r_c2_Connectivity : one c2_Connectivity
 , r_c7_Battery : one c7_Battery }
 
-lone sig c2_Connectivity
+one sig c2_Connectivity
 { r_c3_Bluetooth40 : one c3_Bluetooth40
 , r_c4_GSM : one c4_GSM
 , r_c5_WiFi : one c5_WiFi
 , r_c6_USB : one c6_USB }
-{ one r_c2_Connectivity }
 
-lone sig c3_Bluetooth40
+one sig c3_Bluetooth40
 {}
-{ one r_c3_Bluetooth40 }
 
-lone sig c4_GSM
+one sig c4_GSM
 {}
-{ one r_c4_GSM }
 
-lone sig c5_WiFi
+one sig c5_WiFi
 {}
-{ one r_c5_WiFi }
 
-lone sig c6_USB
+one sig c6_USB
 {}
-{ one r_c6_USB }
 
-lone sig c7_Battery
+one sig c7_Battery
 { r_c8_LiBattery1450 : one c8_LiBattery1450 }
-{ one r_c7_Battery }
 
-lone sig c8_LiBattery1450
+one sig c8_LiBattery1450
 {}
-{ one r_c8_LiBattery1450 }
 
-lone sig c9_AndroidPhone2
+one sig c9_AndroidPhone2
 { r_c10_Connectivity : one c10_Connectivity
 , r_c14_Battery : one c14_Battery }
 
-lone sig c10_Connectivity
+one sig c10_Connectivity
 { r_c11_Bluetooth21 : one c11_Bluetooth21
 , r_c12_GSM : one c12_GSM
 , r_c13_USB : one c13_USB }
-{ one r_c10_Connectivity }
 
-lone sig c11_Bluetooth21
+one sig c11_Bluetooth21
 {}
-{ one r_c11_Bluetooth21 }
 
-lone sig c12_GSM
+one sig c12_GSM
 {}
-{ one r_c12_GSM }
 
-lone sig c13_USB
+one sig c13_USB
 {}
-{ one r_c13_USB }
 
-lone sig c14_Battery
+one sig c14_Battery
 { r_c15_LiBattery1150 : one c15_LiBattery1150 }
-{ one r_c14_Battery }
 
-lone sig c15_LiBattery1150
+one sig c15_LiBattery1150
 {}
-{ one r_c15_LiBattery1150 }
 
 abstract sig c16_Bluetooth
 { r_c17_Bluetooth20 : lone c17_Bluetooth20
@@ -132,11 +119,11 @@ sig c31_LiBattery1400
 {}
 { one @r_c31_LiBattery1400.this }
 
-lone sig c32_LowEndPhones extends c20_MobilePhone
+one sig c32_LowEndPhones extends c20_MobilePhone
 {}
 { no (this.@r_c21_Connectivity).@r_c27_WiFi }
 
-lone sig c35_HighEndPhones extends c20_MobilePhone
+one sig c35_HighEndPhones extends c20_MobilePhone
 { r_c41_QuadCPU : lone c41_QuadCPU }
 { (some (this.@r_c21_Connectivity).@r_c28_USB) && (some (this.@r_c21_Connectivity).@r_c27_WiFi) }
 
