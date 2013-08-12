@@ -106,7 +106,7 @@ genXmlUid uid' = tag "UniqueId" uid'
 genXmlSuper :: Map.Map Span IClafer -> ISuper -> String
 genXmlSuper pMap (ISuper r pexps) = 
   tag "Supers" $ concat $
-    if (r==Nothing) then [] else [tag "RelationClaferInfo" $ show $ fromJust r] ++
+    (tag "superKind" $ show $ sk) :
       [concatMap (genXmlPExp "Super" pMap) pexps]
 
 genXmlRef :: Map.Map Span IClafer -> IReference -> String

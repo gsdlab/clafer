@@ -251,9 +251,8 @@ compile =
     when (""/=clafersWithKeyWords) $ throwErr (ClaferErr $ ("The model contains clafers with keyWords as names.\nThe following places contain keyWords as names:\n"++) $ clafersWithKeyWords :: CErr Span)
 
     ir' <- analyze (args env) desugaredModule
-    let (imodule', g, b) = ir'
-    let pMap = foldMapIR makeMap imodule'
-    let imodule = flip mapIR imodule' $ addrUid pMap $ bfsClafers $ toClafers $ mDecls imodule'
+    let (imodule, g, b) = ir'
+    let pMap = foldMapIR makeMap imodule
     let imodTrace = traceIrModule imodule
     let ir = (imodule, g, b)
 
@@ -399,7 +398,9 @@ analyze args' tree = do
   let dTree' = findDupModule args' tree
   let au = allUnique dTree'
   let args'' = args'{skip_resolver = au && (skip_resolver args')}
-  (rTree, genv) <- liftError $ resolveModule args'' dTree'
+  env <- getEnv
+  let pMap = parentMap env
+  (rTree, genv) <- liftError $ resolveModule pMap args'' dTree'
   let tTree = transModule rTree
   return (optimizeModule args'' (tTree, genv), genv, au)
 
