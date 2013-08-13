@@ -237,7 +237,7 @@ genAlloyRel :: String -> String -> String -> String
 genAlloyRel name card' rType = concat [name, " : ", card', " ", rType]
 
 refType :: ClaferArgs -> IClafer -> Concat
-refType claferargs c = cintercalate (CString " + ") $ map ((genType claferargs).getTarget) $ supers $ super c
+refType claferargs c = cintercalate (CString " + ") $ map ((genType claferargs).getTarget) $ refs $ reference c 
 
 
 getTarget :: PExp -> PExp
