@@ -1,0 +1,98 @@
+open util/integer
+pred show {}
+
+
+one sig c1_BumbleBee extends c4_Camaro
+{}
+{ some this.@r_c9_transformer }
+
+abstract sig c4_Camaro extends c10_Car
+{ r_c9_transformer : lone c9_transformer }
+{ some (this.@r_c16_CC).@r_c32_ACC
+  some ((this.@r_c16_CC).@r_c30_switch).@r_c31_backlight }
+
+sig c9_transformer
+{}
+{ one @r_c9_transformer.this }
+
+abstract sig c10_Car
+{ r_c11_ABS : lone c11_ABS
+, r_c12_Transmission : one c12_Transmission
+, r_c15_FCA : lone c15_FCA
+, r_c16_CC : lone c16_CC }
+{ (some (this.@r_c16_CC).@r_c32_ACC) => (some this.@r_c15_FCA) }
+
+sig c11_ABS
+{}
+{ one @r_c11_ABS.this }
+
+sig c12_Transmission
+{ r_c13_Automatic : lone c13_Automatic
+, r_c14_Manual : lone c14_Manual }
+{ one @r_c12_Transmission.this
+  let children = (r_c13_Automatic + r_c14_Manual) | one children }
+
+sig c13_Automatic
+{}
+{ one @r_c13_Automatic.this }
+
+sig c14_Manual
+{}
+{ one @r_c14_Manual.this }
+
+sig c15_FCA extends c22_FCA
+{}
+{ one @r_c15_FCA.this }
+
+sig c16_CC extends c29_CC
+{}
+{ one @r_c16_CC.this }
+
+abstract sig c22_FCA
+{ r_c23_Sensor : one c23_Sensor
+, r_c26_Alert : one c26_Alert }
+
+sig c23_Sensor
+{ r_c24_Radar : lone c24_Radar
+, r_c25_Lidar : lone c25_Lidar }
+{ one @r_c23_Sensor.this
+  let children = (r_c24_Radar + r_c25_Lidar) | one children }
+
+sig c24_Radar
+{}
+{ one @r_c24_Radar.this }
+
+sig c25_Lidar
+{}
+{ one @r_c25_Lidar.this }
+
+sig c26_Alert
+{ r_c27_Haptic : lone c27_Haptic
+, r_c28_Audible : lone c28_Audible }
+{ one @r_c26_Alert.this
+  let children = (r_c27_Haptic + r_c28_Audible) | one children }
+
+sig c27_Haptic
+{}
+{ one @r_c27_Haptic.this }
+
+sig c28_Audible
+{}
+{ one @r_c28_Audible.this }
+
+abstract sig c29_CC
+{ r_c30_switch : one c30_switch
+, r_c32_ACC : lone c32_ACC }
+
+sig c30_switch
+{ r_c31_backlight : lone c31_backlight }
+{ one @r_c30_switch.this }
+
+sig c31_backlight
+{}
+{ one @r_c31_backlight.this }
+
+sig c32_ACC
+{}
+{ one @r_c32_ACC.this }
+

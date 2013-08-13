@@ -1,3 +1,4 @@
+{-# LANGUAGE FlexibleContexts #-}
 {-
  Copyright (C) 2012 Kacper Bak <http://gsd.uwaterloo.ca>
 
@@ -29,7 +30,7 @@ import Data.Maybe
 import Data.Graph
 import Data.Tree
 import Data.List
-import Data.Map (Map)
+import Data.Tuple 
 import qualified Data.Map as Map
 
 import Language.ClaferT
@@ -37,62 +38,88 @@ import Language.Clafer.Common
 import Language.Clafer.Front.Absclafer
 import Language.Clafer.Intermediate.Intclafer
 import Language.Clafer.Intermediate.ResolverName
+import Prelude hiding (exp)
 
 
 -- -----------------------------------------------------------------------------
 -- Non-overlapping inheritance
-resolveNModule :: (IModule, GEnv) -> Resolve (IModule, GEnv)
-resolveNModule (imodule, genv) =
+resolveNModule :: Map.Map Span IClafer -> (IModule, GEnv) -> Resolve (IModule, GEnv)
+resolveNModule m (imodule, genv') =
   do
-    let decls = mDecls imodule
-    decls' <- mapM (resolveNElement decls) decls
-    return (imodule{mDecls = decls'}, genv {sClafers = bfs toNodeShallow $ toClafers decls'})
+    let decls' = mDecls imodule
+    decls'' <- mapM (resolveNElement m decls') decls'
+    return (imodule{mDecls = decls''}, genv' {sClafers = bfs toNodeShallow $ toClafers decls''})
     
 
 
-resolveNClafer :: [IElement] -> IClafer -> Resolve IClafer
-resolveNClafer declarations clafer =
+resolveNClafer :: Map.Map Span IClafer -> [IElement] -> IClafer -> Resolve IClafer
+resolveNClafer m declarations clafer =
   do
-    super'    <- resolveNSuper declarations $ super clafer
-    elements' <- mapM (resolveNElement declarations) $ elements clafer
+    super'    <- resolveNSuper m declarations clafer
+    elements' <- mapM (resolveNElement m declarations) $ elements clafer
     return $ clafer {super = super',
             elements = elements'}
 
 
-resolveNSuper :: [IElement] -> ISuper -> Resolve ISuper
-resolveNSuper declarations x = case x of
-  ISuper False [PExp _ pid pos (IClaferId _ id isTop)] ->
-    if isPrimitive id || id == "clafer"
-      then return x
+
+resolveNSuper :: Map.Map Span IClafer -> [IElement] -> IClafer -> Resolve ISuper
+resolveNSuper m declarations x = case (super x) of
+  ISuper False _ [PExp _ pid' pos' (IClaferId _ id' isTop')] ->
+    if isPrimitive id' || id' == "clafer"
+      then return (super x)
       else do
-        r <- resolveN pos declarations id
-        id' <- case r of
-          Nothing -> throwError $ SemanticErr pos $ "No superclafer found: " ++ id
-          Just m  -> return $ fst m
-        return $ ISuper False [idToPExp pid pos "" id' isTop]
-  _ -> return x
+        (r, sk) <- resolveN m x pos' declarations id'
+        id'' <- case r of
+          Nothing -> throwError $ SemanticErr pos' $ "No superclafer found: " ++ id'
+          Just mo  -> return $ fst mo
+        return $ ISuper False sk [idToPExp pid' pos' "" id'' isTop']
+  _ -> return (super x)
 
-
-resolveNElement :: [IElement] -> IElement -> Resolve IElement
-resolveNElement declarations x = case x of
-  IEClafer clafer  -> IEClafer <$> resolveNClafer declarations clafer
+resolveNElement :: Map.Map Span IClafer -> [IElement] -> IElement -> Resolve IElement
+resolveNElement m declarations x = case x of
+  IEClafer clafer  -> IEClafer <$> resolveNClafer m declarations clafer
   IEConstraint _ _  -> return x
   IEGoal _ _ -> return x
 
-resolveN :: Span -> [IElement] -> String -> Resolve (Maybe (String, [IClafer]))
-resolveN pos declarations id =
-  findUnique pos id $ map (\x -> (x, [x])) $ filter isAbstract $ bfsClafers $
-    toClafers declarations
+resolveN :: Map.Map Span IClafer -> IClafer -> Span -> [IElement] -> String -> Resolve (Maybe (String, [IClafer]), SuperKind)
+resolveN pMap claf pos' declarations id' =
+  let clafs = bfsClafers $ toClafers declarations
+      posibilities = filter (\c -> (isAbstract c) || (((getSuper claf) == ident c || ident claf == ident c) && (cinPos claf /= cinPos c) && commonNesting claf c pMap clafs)) $ clafs
+      nonAbsposibilities = filter (\c -> (c /= claf) && (not $ isAbstract c)) posibilities
+  in if (nonAbsposibilities == []) then 
+       (>>= (return . swap . makePair TopLevel)) $ findUnique pos' id' $ map (\x -> (x, [x])) $ posibilities else
+         (>>= (\x -> return $ makePair x (if (x==Nothing || (istop $ cinPos $ head $ snd $ fromJust x)) then TopLevel else Nested))) $ findUnique pos' id' $ map (\x -> (x, [x])) $ nonAbsposibilities
+  where
+  makePair :: a -> b -> (a,b)
+  makePair a b = (a,b)
+  commonNesting :: IClafer -> IClafer -> Map.Map Span IClafer -> [IClafer] -> Bool
+  commonNesting claf1 claf2 parMap cs = 
+    let par1 = Map.lookup (cinPos claf1) parMap
+        par2 = Map.lookup (cinPos claf2) parMap
+    in if (par2 == Nothing) then True else
+      if (par1 == Nothing) then False else
+        if (recursiveCheck (fromJust par1) (fromJust par2) cs)
+          then commonNesting (fromJust par1) (fromJust par2) parMap cs
+            else False
+    where
+    recursiveCheck p1 p2 clafs = 
+      let p1S = supers $ super p1
+      in if (p1S==[]) then False else 
+        let p1ST = sident $ exp $ head $ p1S
+        in if (p1ST == (ident p2)) then True else 
+          let p3 = (flip find clafs $ (==p1ST) . ident)
+          in if (p3==Nothing) then False else
+            recursiveCheck (fromJust p3) p2 clafs
 
 -- -----------------------------------------------------------------------------
 -- Overlapping inheritance
 
 resolveOModule :: (IModule, GEnv) -> Resolve (IModule, GEnv)
-resolveOModule (imodule, genv) =
+resolveOModule (imodule, genv') =
   do
-    let decls = mDecls imodule
-    decls' <- mapM (resolveOElement (defSEnv genv decls)) decls
-    return (imodule {mDecls = decls'}, genv {sClafers = bfs toNodeShallow $ toClafers decls'})
+    let decls' = mDecls imodule
+    decls'' <- mapM (resolveOElement (defSEnv genv' decls')) decls'
+    return (imodule {mDecls = decls''}, genv' {sClafers = bfs toNodeShallow $ toClafers decls''})
 
 
 resolveOClafer :: SEnv -> IClafer -> Resolve IClafer
@@ -105,10 +132,10 @@ resolveOClafer env clafer =
 
 resolveOSuper :: SEnv -> ISuper -> Resolve ISuper
 resolveOSuper env x = case x of
-  ISuper True exps -> do
-    exps'     <- mapM (resolvePExp env) exps
-    let isOverlap = not (length exps' == 1 && isPrimitive (getSuperId exps'))
-    return $ ISuper isOverlap  exps'
+  ISuper True s exps' -> do
+    exps''     <- mapM (resolvePExp env) exps'
+    let isOverlap = not (length exps'' == 1 && isPrimitive (getSuperId exps''))
+    return $ ISuper isOverlap s exps''
   _ -> return x
 
 
@@ -122,10 +149,10 @@ resolveOElement env x = case x of
 -- inherited and default cardinalities
 
 analyzeModule :: (IModule, GEnv) -> IModule
-analyzeModule (imodule, genv) =
-  imodule{mDecls = map (analyzeElement (defSEnv genv decls)) decls}
+analyzeModule (imodule, genv') =
+  imodule{mDecls = map (analyzeElement (defSEnv genv' decls')) decls'}
   where
-  decls = mDecls imodule
+  decls' = mDecls imodule
 
 
 analyzeClafer :: SEnv -> IClafer -> IClafer
@@ -151,11 +178,15 @@ analyzeCard :: SEnv -> IClafer -> Maybe Interval
 analyzeCard env clafer = card clafer `mplus` Just card'
   where
   card'
-    | isAbstract clafer                          = (0, -1)
-    | (isJust $ context env) && isKeyword pGcard = (0, 1)
-    | otherwise                                  = (1, 1)
-  pGcard = fromJust $ gcard $ fromJust $ context env
-
+    | isAbstract clafer = (0, -1)
+    | (isJust $ context env) && pGcard == (0, -1) 
+      || (isTopLevel $ cinPos clafer) = (1, 1) 
+    | otherwise = (0, 1)
+  pGcard = interval $ fromJust $ gcard $ fromJust $ context env
+  isTopLevel (Span (Pos _ c) _) = c==1
+  isTopLevel (Span (PosPos _ _ c) _) = c==1
+  isTopLevel (PosSpan _ (Pos _ c) _) = c==1
+  isTopLevel (PosSpan _ (PosPos _ _ c) _) = c==1
 
 analyzeElement :: SEnv -> IElement -> IElement
 analyzeElement env x = case x of
@@ -166,18 +197,19 @@ analyzeElement env x = case x of
 -- -----------------------------------------------------------------------------
 -- Expand inheritance
 resolveEModule :: (IModule, GEnv) -> (IModule, GEnv)
-resolveEModule (imodule, genv) = (imodule{mDecls = decls'}, genv')
+resolveEModule (imodule, genv') = (imodule{mDecls = decls''}, genv'')
   where
-  decls = mDecls imodule
-  (decls', genv') = runState (mapM (resolveEElement []
+  decls' = mDecls imodule
+  (decls'', genv'') = runState (mapM (resolveEElement []
                                     (unrollableModule imodule)
-                                    False decls) decls) genv
+                                    False decls') decls') genv'
 
 -- -----------------------------------------------------------------------------
 unrollableModule :: IModule -> [String]
 unrollableModule imodule = getDirUnrollables $
   mapMaybe unrollabeDeclaration $ mDecls imodule
 
+unrollabeDeclaration :: IElement -> Maybe (String, [String])
 unrollabeDeclaration x = case x of
   IEClafer clafer -> if isAbstract clafer
                         then Just (uid clafer, unrollableClafer clafer)
@@ -185,7 +217,7 @@ unrollabeDeclaration x = case x of
   IEConstraint _ _ -> Nothing
   IEGoal _ _ -> Nothing
 
-
+unrollableClafer :: IClafer -> [String]
 unrollableClafer clafer
   | isOverlapping $ super clafer = []
   | getSuper clafer == "clafer"  = deps
@@ -198,11 +230,12 @@ getDirUnrollables :: [(String, [String])] -> [String]
 getDirUnrollables dependencies = (filter isUnrollable $ map (map v2n) $
                                   map flatten (scc graph)) >>= map fst3
   where
-  (graph, v2n, k2v) = graphFromEdges $map (\(c, ss) -> (c, c, ss)) dependencies
+  (graph, v2n, _) = graphFromEdges $map (\(c, ss) -> (c, c, ss)) dependencies
   isUnrollable (x:[]) = fst3 x `elem` trd3 x
   isUnrollable _ = True
 
 -- -----------------------------------------------------------------------------
+resolveEClafer :: MonadState GEnv m => [String] -> [String] -> Bool -> [IElement] -> IClafer -> m IClafer
 resolveEClafer predecessors unrollables absAncestor declarations clafer = do
   sClafers' <- gets sClafers
   clafer' <- renameClafer absAncestor clafer
@@ -219,22 +252,23 @@ resolveEClafer predecessors unrollables absAncestor declarations clafer = do
             $ elements clafer
   return $ clafer' {super = super', elements = elements' ++ sElements}
 
-
+renameClafer :: MonadState GEnv m => Bool -> IClafer -> m IClafer
 renameClafer False clafer = return clafer
 renameClafer True  clafer = renameClafer' clafer
 
-
+renameClafer' :: MonadState GEnv m => IClafer -> m IClafer
 renameClafer' clafer = do
   uid' <- genId $ ident clafer
   return $ clafer {uid = uid'}
 
 
-genId id = do
+genId :: MonadState GEnv m => String -> m String
+genId id' = do
   modify (\e -> e {num = 1 + num e})
   n <- gets num
-  return $ concat ["c", show n, "_",  id]
+  return $ concat ["c", show n, "_",  id']
 
-
+resolveEInheritance :: MonadState GEnv m => [String] -> [String] -> Bool -> [IElement] -> [IClafer]  -> m ([IElement], ISuper, [IClafer])
 resolveEInheritance predecessors unrollables absAncestor declarations allSuper
   | isOverlapping $ super clafer = return ([], super clafer, [clafer])
   | otherwise = do
@@ -245,12 +279,12 @@ resolveEInheritance predecessors unrollables absAncestor declarations allSuper
              unrollSuper >>= elements
     let super' = if (getSuper clafer `elem` unrollables)
                  then super clafer
-                 else ISuper False [idToPExp "" noSpan "" "clafer" False]
+                 else ISuper False (superKind $ super clafer) [idToPExp "" noSpan "" "clafer" False]
     return (elements', super', superList)
   where
   clafer = head allSuper
 
-
+resolveEElement :: MonadState GEnv m => [String] -> [String] -> Bool -> [IElement] -> IElement -> m IElement
 resolveEElement predecessors unrollables absAncestor declarations x = case x of
   IEClafer clafer  -> if isAbstract clafer then return x else IEClafer `liftM`
     resolveEClafer predecessors unrollables absAncestor declarations clafer

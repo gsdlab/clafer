@@ -1,0 +1,7 @@
+// http://gsd.uwaterloo.ca:8888/question/952/resolve-types-for-this-and-parent-expressions
+
+A
+	b ->> A ?
+		[ parent ]
+	[ this ]
+	

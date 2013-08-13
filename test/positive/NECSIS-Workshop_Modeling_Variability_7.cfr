@@ -1,0 +1,30 @@
+BumbleBee : Camaro
+    [ transformer ]
+//# FRAGMENT
+abstract Camaro : Car
+    [ ACC ]
+    [ backlight ]
+    transformer ?
+//# FRAGMENT
+abstract Car
+    ABS ?
+    xor Transmission
+        Automatic
+        Manual
+    `FCA ?
+    `CC ?
+    [ ACC => FCA ]
+//# FRAGMENT
+abstract FCA
+    xor Sensor
+        Radar
+        Lidar
+    xor Alert
+        Haptic
+        Audible
+//# FRAGMENT
+abstract CC
+    switch
+        backlight ?
+    ACC ?
+//# FRAGMENT

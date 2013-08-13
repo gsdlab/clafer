@@ -1,0 +1,214 @@
+abstract Element
+//# FRAGMENT
+abstract End : Element	
+    attainable ?
+    xor term
+        short
+        long
+    xor focusedOn
+        enterprise
+        businessArea
+//# FRAGMENT
+abstract Mean : Element
+//# FRAGMENT
+abstract Vision : End		
+    [ enterprise ]
+    [ long ]
+    amplifiedBy -> Goal + 		// inverseOf amplifies
+    madeOperativeBy -> Mission  	// inverseOf makesOperative
+//# FRAGMENT
+abstract DesiredResult : End
+    supportedBy -> CourseOfAction +
+    xor kind
+        qualitative
+        quantitative
+//# FRAGMENT
+abstract Goal : DesiredResult
+    amplifies -> Vision		// inverseOf isAmplifiedBy
+    general
+    ongoing
+    [ businessArea ]
+    [ attainable ]
+    [ qualitative ]
+    [ long ]
+    // measuresOfPerformance -> Metric +
+//# FRAGMENT
+abstract Objective : DesiredResult
+    SMART
+        specific
+        // measurable -> Metric +
+        [ attainable ]
+        relevant
+        timeBound
+    limitedInTimeframe  
+        cyclical ?
+    [ businessArea ]
+    [ quantitative ]
+    [ short ]
+    quantifies -> Goal +
+//# FRAGMENT
+abstract CourseOfAction : Mean
+    channelsEffortsToward -> DesiredResult	// inverseOf supportedBy
+    governedBy -> Directive  				// inverseOf governs
+    formulatedBasedOn -> Directive  		// inverseOf sourceOf
+    //realizedBy -> BusinessProcess
+    xor scope
+        broad
+        narrow
+    xor term
+        short
+        long
+    [ broad && long || narrow && short ]
+    includes -> CourseOfAction *  // composition of courses of action
+    enables -> CourseOfAction *
+//# FRAGMENT
+abstract Strategy : CourseOfAction
+    implementedBy -> Tactic   // inverseOf implements
+    aComponentOfThePlanFor -> Mission  // inverseOf plannedByMeansOf 
+    // [ channelsEffortsToward -> Goal ]
+    rightApproachGiven
+        // constraints -> Constraint *
+        // risks -> Risk *
+    /* 
+    [ includes -> Strategy  * // strategies can only contain other strategies and not tactics
+      enables -> Strategy *    // strategies can only enable other strategies and not tactics ]  
+   */
+//# FRAGMENT
+abstract Tactic : CourseOfAction
+    implements -> Strategy // inverseOf implementedBy
+    effectsEnforcementLevelOf -> BusinessRule
+    /* 
+    [ channelsEffortsToward -> Objective
+      includes -> Tactic *  // tactics can only contain other tactics and not strategies
+      enables -> Tactic * // tactics can only enable other tactics and not strategies ] 
+   */
+//# FRAGMENT
+abstract Mission : Mean
+    makesOperative -> Vision	  	// inverseOf madeOperativeBy
+    plannedByMeansOf -> Strategy  	// inverseOf aComponentOfTHePlanFor
+//# FRAGMENT
+abstract Directive : Mean
+    governs -> CourseOfAction
+    sourceOf -> CourseOfAction
+    supportsTheAchievementOf -> DesiredResult
+    xor influencesAspectOfEnterprise
+        defines
+        constraints
+        liberates
+        asserts
+        controls
+    declarative
+    actsAs -> Regulation  // inverseOf aRolePlayedBy
+    xor degreeOfStructure
+        lessStructured
+        highlyStructured
+    xor granularity
+        lessDiscreteAndComposite
+        discreteAndAtomic
+    actionable ?
+    automatable ?
+    // motivatedBy -> Assessment 
+//# FRAGMENT
+abstract BusinessPolicy : Directive
+    providesBasisFor -> BusinessRule +
+    // governsBP -> BusinessProcess +    /* = governs.realizedBy // derived from the processes that realize the courses of action */
+    governs -> CourseOfAction *
+       control
+       guide
+       shape
+    // [ supportsTheAchievementOf -> Goal ]    
+    [ lessStructured ]
+    [ lessDiscreteAndComposite ]
+    [ ! actionable ]
+    [ ! automatable ]
+    includes -> BusinessPolicy *  // composition of business policies
+//# FRAGMENT
+abstract BusinessRule : Directive
+   // [ supportsTheAchievementOf -> Objective ]  - explicit constraint is needed for this
+   [ all o : supportsTheAchievementOf | o.ref in Objective ]
+   xor enforcementLevel
+      strictlyEnforced
+      deferredEnforcement
+      preAuthorizedOverride
+      postJustifiedOverride
+      overrideWithExplanation
+      guideline
+   hasEnforcementLevelEffectedBy -> Tactic
+   [ highlyStructured ]
+   [ discreteAndAtomic ]
+   [ actionable ]
+   expressedUsingStandardBusinessVocabulary
+//# FRAGMENT
+abstract Regulation : Element 
+   aRolePlayedBy -> Directive 		// inverseOf actsAs
+//# FRAGMENT
+abstract or Influencer : Element	// multiple inheritance in spec expressed by 'or' groups
+    or externalInfluencer
+        environment
+        technology
+        regulation 
+            xor prescribedBy
+                government
+                management
+        supplier
+            xor provides
+                products
+                services
+        customer
+            xor productsOrServices
+                investigated
+                ordered
+                received
+                paidFor
+        competitor
+        partner
+    or internalInfluencer
+        infrastructure
+        issue
+        assumption
+        resource
+        habit
+        managementPrerogative
+        xor corporateValue
+            explicitCorporateValue
+            implicitCorporateValue
+//# FRAGMENT
+abstract Assessment : Element 
+    identifies -> PotentialImpact  // inverseOf significantTo
+    about -> Influencer
+    or affects
+        employmentOf -> Mean +
+        achievementOf -> End +
+    madeBy -> OrganizationUnit  // Michal: how to inject a derived inverse 'makes' into the TOGAF metamodel?
+    uses -> Assessment *
+    xor SWOT
+        strength
+        weakness
+        opportunity
+        threat
+//# FRAGMENT
+abstract PotentialImpact : Element
+    significantTo -> Assessment
+    providesImpetusFor -> Directive
+    xor type
+        risk
+            probabilityOfLoss : integer 	// in %
+            potentialLoss : integer
+            unitOfMeasure -> Currency			
+        potentialReward
+            probabilityOfGain : integer 	// in %
+            potentialGain : integer
+            unitOfMeasure -> Currency
+//# FRAGMENT
+abstract Metric : Element
+//# FRAGMENT
+abstract KeyPerformanceIndicator : Metric
+//# FRAGMENT
+abstract CriticalSuccessFactor : Metric
+//# FRAGMENT
+enum Currency = USD | EUR | CAD
+//# FRAGMENT
+abstract OrganizationUnit
+
+abstract BusinessProcess
+//# FRAGMENT

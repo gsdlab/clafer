@@ -1,0 +1,164 @@
+open util/integer
+pred show {}
+
+
+abstract sig c1_Person
+{ r_c2_Name : one c2_Name
+, r_c3_Surname : one c3_Surname
+, r_c4_DateOfBirth : one c4_DateOfBirth
+, r_c5_Gender : one c5_Gender
+, r_c8_MaritalStatus : one c8_MaritalStatus
+, r_c12_Address : one c12_Address }
+
+sig c2_Name
+{ ref : one Int }
+{ one @r_c2_Name.this }
+
+sig c3_Surname
+{ ref : one Int }
+{ one @r_c3_Surname.this }
+
+sig c4_DateOfBirth extends c18_date
+{}
+{ one @r_c4_DateOfBirth.this }
+
+sig c5_Gender
+{ r_c6_Male : lone c6_Male
+, r_c7_Female : lone c7_Female }
+{ one @r_c5_Gender.this
+  let children = (r_c6_Male + r_c7_Female) | some children }
+
+sig c6_Male
+{}
+{ one @r_c6_Male.this }
+
+sig c7_Female
+{}
+{ one @r_c7_Female.this }
+
+sig c8_MaritalStatus
+{ r_c9_NeverMarried : lone c9_NeverMarried
+, r_c10_Married : lone c10_Married
+, r_c11_Divorced : lone c11_Divorced }
+{ one @r_c8_MaritalStatus.this
+  let children = (r_c9_NeverMarried + r_c10_Married + r_c11_Divorced) | one children }
+
+sig c9_NeverMarried
+{}
+{ one @r_c9_NeverMarried.this }
+
+sig c10_Married
+{}
+{ one @r_c10_Married.this }
+
+sig c11_Divorced
+{}
+{ one @r_c11_Divorced.this }
+
+sig c12_Address
+{ r_c13_Street : one c13_Street
+, r_c15_City : one c15_City
+, r_c16_Country : one c16_Country
+, r_c17_PostalCode : one c17_PostalCode }
+{ one @r_c12_Address.this }
+
+sig c13_Street
+{ ref : one Int
+, r_c14_UnitNo : lone c14_UnitNo }
+{ one @r_c13_Street.this }
+
+sig c14_UnitNo
+{ ref : one Int }
+{ one @r_c14_UnitNo.this }
+
+sig c15_City
+{ ref : one Int }
+{ one @r_c15_City.this }
+
+sig c16_Country
+{ ref : one Int }
+{ one @r_c16_Country.this }
+
+sig c17_PostalCode
+{ ref : one Int }
+{ one @r_c17_PostalCode.this }
+
+abstract sig c18_date
+{ ref : one Int }
+
+one sig c19_JohnDoe extends c1_Person
+{}
+{ (this.(@r_c2_Name.@ref)) = 0
+  (this.(@r_c3_Surname.@ref)) = 1
+  (this.(@r_c4_DateOfBirth.@ref)) = 2
+  some (this.@r_c5_Gender).@r_c6_Male
+  some (this.@r_c8_MaritalStatus).@r_c10_Married
+  ((this.@r_c12_Address).(@r_c13_Street.@ref)) = 3
+  ((this.@r_c12_Address).(@r_c15_City.@ref)) = 4
+  ((this.@r_c12_Address).(@r_c16_Country.@ref)) = 5
+  ((this.@r_c12_Address).(@r_c17_PostalCode.@ref)) = 6 }
+
+abstract sig c45_Student extends c1_Person
+{ r_c46_StudentId : one c46_StudentId }
+
+sig c46_StudentId
+{ ref : one Int }
+{ one @r_c46_StudentId.this }
+
+abstract sig c47_WaitingLine
+{ r_c48_participants : set c48_participants }
+{ all disj x, y : this.@r_c48_participants | (x.@ref) != (y.@ref) }
+
+sig c48_participants
+{ ref : one c1_Person }
+{ one @r_c48_participants.this }
+
+one sig c58_MaryJane extends c45_Student
+{}
+{ (this.(@r_c2_Name.@ref)) = 7
+  (this.(@r_c46_StudentId.@ref)) = 8 }
+
+one sig c65_BusLine extends c47_WaitingLine
+{}
+{ c19_JohnDoe in (this.(@r_c48_participants.@ref))
+  c58_MaryJane in (this.(@r_c48_participants.@ref)) }
+
+one sig c72_JohnAndMaryLine extends c47_WaitingLine
+{}
+{ (this.(@r_c48_participants.@ref)) = (c19_JohnDoe + c58_MaryJane) }
+
+fact { #c78_TwoPersonLine = 0 }
+abstract sig c78_TwoPersonLine extends c47_WaitingLine
+{}
+{ (#(this.@r_c48_participants)) = 2 }
+
+fact { #c83_OneToTenPersonLine = 0 }
+abstract sig c83_OneToTenPersonLine extends c47_WaitingLine
+{}
+{ (#(this.@r_c48_participants)) >= 1
+  (#(this.@r_c48_participants)) <= 10 }
+
+abstract sig c92_NorthAmericanCountry
+{}
+
+one sig c93_Canada extends c92_NorthAmericanCountry
+{}
+
+one sig c94_USA extends c92_NorthAmericanCountry
+{}
+
+one sig c95_Mexico extends c92_NorthAmericanCountry
+{}
+
+abstract sig c96_Person2
+{ r_c97_Country : one c97_Country }
+{ all disj x, y : this.@r_c97_Country | (x.@ref) != (y.@ref) }
+
+sig c97_Country
+{ ref : one c92_NorthAmericanCountry }
+{ one @r_c97_Country.this }
+
+one sig c107_JohnDoe2 extends c96_Person2
+{}
+{ (this.(@r_c97_Country.@ref)) = c93_Canada }
+

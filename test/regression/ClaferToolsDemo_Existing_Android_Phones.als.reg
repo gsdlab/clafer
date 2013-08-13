@@ -1,0 +1,133 @@
+open util/integer
+pred show {}
+
+
+one sig c1_AndroidPhone1
+{ r_c2_Connectivity : one c2_Connectivity
+, r_c7_Battery : one c7_Battery }
+
+one sig c2_Connectivity
+{ r_c3_Bluetooth40 : one c3_Bluetooth40
+, r_c4_GSM : one c4_GSM
+, r_c5_WiFi : one c5_WiFi
+, r_c6_USB : one c6_USB }
+
+one sig c3_Bluetooth40
+{}
+
+one sig c4_GSM
+{}
+
+one sig c5_WiFi
+{}
+
+one sig c6_USB
+{}
+
+one sig c7_Battery
+{ r_c8_LiBattery1450 : one c8_LiBattery1450 }
+
+one sig c8_LiBattery1450
+{}
+
+one sig c9_AndroidPhone2
+{ r_c10_Connectivity : one c10_Connectivity
+, r_c14_Battery : one c14_Battery }
+
+one sig c10_Connectivity
+{ r_c11_Bluetooth21 : one c11_Bluetooth21
+, r_c12_GSM : one c12_GSM
+, r_c13_USB : one c13_USB }
+
+one sig c11_Bluetooth21
+{}
+
+one sig c12_GSM
+{}
+
+one sig c13_USB
+{}
+
+one sig c14_Battery
+{ r_c15_LiBattery1150 : one c15_LiBattery1150 }
+
+one sig c15_LiBattery1150
+{}
+
+abstract sig c16_Bluetooth
+{ r_c17_Bluetooth20 : lone c17_Bluetooth20
+, r_c18_Bluetooth21 : lone c18_Bluetooth21
+, r_c19_Bluetooth40 : lone c19_Bluetooth40 }
+{ let children = (r_c17_Bluetooth20 + r_c18_Bluetooth21 + r_c19_Bluetooth40) | one children }
+
+sig c17_Bluetooth20
+{}
+{ one @r_c17_Bluetooth20.this }
+
+sig c18_Bluetooth21
+{}
+{ one @r_c18_Bluetooth21.this }
+
+sig c19_Bluetooth40
+{}
+{ one @r_c19_Bluetooth40.this }
+
+abstract sig c20_MobilePhone
+{ r_c21_Connectivity : one c21_Connectivity
+, r_c29_Battery : one c29_Battery }
+
+sig c21_Connectivity
+{ r_c22_Bluetooth : one c22_Bluetooth
+, r_c23_GSM : one c23_GSM
+, r_c24_LTE : lone c24_LTE
+, r_c27_WiFi : lone c27_WiFi
+, r_c28_USB : lone c28_USB }
+{ one @r_c21_Connectivity.this }
+
+sig c22_Bluetooth extends c16_Bluetooth
+{}
+{ one @r_c22_Bluetooth.this }
+
+sig c23_GSM
+{}
+{ one @r_c23_GSM.this }
+
+sig c24_LTE
+{}
+{ one @r_c24_LTE.this
+  some (((this.~@r_c24_LTE).~@r_c21_Connectivity).@r_c29_Battery).@r_c31_LiBattery1400 }
+
+sig c27_WiFi
+{}
+{ one @r_c27_WiFi.this }
+
+sig c28_USB
+{}
+{ one @r_c28_USB.this }
+
+sig c29_Battery
+{ r_c30_LiBattery1150 : lone c30_LiBattery1150
+, r_c31_LiBattery1400 : lone c31_LiBattery1400 }
+{ one @r_c29_Battery.this
+  let children = (r_c30_LiBattery1150 + r_c31_LiBattery1400) | one children }
+
+sig c30_LiBattery1150
+{}
+{ one @r_c30_LiBattery1150.this }
+
+sig c31_LiBattery1400
+{}
+{ one @r_c31_LiBattery1400.this }
+
+one sig c32_LowEndPhones extends c20_MobilePhone
+{}
+{ no (this.@r_c21_Connectivity).@r_c27_WiFi }
+
+one sig c35_HighEndPhones extends c20_MobilePhone
+{ r_c41_QuadCPU : lone c41_QuadCPU }
+{ (some (this.@r_c21_Connectivity).@r_c28_USB) && (some (this.@r_c21_Connectivity).@r_c27_WiFi) }
+
+lone sig c41_QuadCPU
+{}
+{ one r_c41_QuadCPU }
+

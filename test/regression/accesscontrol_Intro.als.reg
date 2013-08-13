@@ -1,0 +1,64 @@
+open util/integer
+pred show {}
+
+
+fact { #c1_Value = 0 }
+abstract sig c1_Value
+{}
+
+fact { #c2_Attribute = 0 }
+abstract sig c2_Attribute
+{ r_c3_value : one c3_value }
+{ all disj x, y : this.@r_c3_value | (x.@ref) != (y.@ref) }
+
+sig c3_value
+{ ref : one c1_Value }
+{ one @r_c3_value.this }
+
+fact { #c13_ActionName = 0 }
+abstract sig c13_ActionName extends c2_Attribute
+{}
+
+fact { #c14_Role = 0 }
+abstract sig c14_Role extends c2_Attribute
+{}
+
+fact { #c15_ResourceName = 0 }
+abstract sig c15_ResourceName extends c2_Attribute
+{}
+
+fact { #c16_Element = 0 }
+abstract sig c16_Element
+{ r_c17_attributes : set c17_attributes }
+
+abstract sig c17_attributes extends c2_Attribute
+{}
+{ one @r_c17_attributes.this }
+
+abstract sig c18_Effect
+{}
+
+one sig c19_Permit extends c18_Effect
+{}
+
+one sig c20_Deny extends c18_Effect
+{}
+
+one sig c21_NotApplicable extends c18_Effect
+{}
+
+one sig c22_Indeterminate extends c18_Effect
+{}
+
+abstract sig c23_CombiningAlgo
+{}
+
+one sig c24_PermitOverrides extends c23_CombiningAlgo
+{}
+
+one sig c25_DenyOverrides extends c23_CombiningAlgo
+{}
+
+one sig c26_OnlyOneApplicable extends c23_CombiningAlgo
+{}
+

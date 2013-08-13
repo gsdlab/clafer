@@ -1,0 +1,12 @@
+// Tests if a clafer can be named the same as a "keyword" clafer
+//
+// Expected Output: Namespace error (integer is uninstantiable).
+//
+// Note : This causes a circularity error for string and double,
+//          presumably because they are not fully implemented.
+//
+// Current Output:
+//   A = 7
+
+abstract integer : integer
+A : integer
