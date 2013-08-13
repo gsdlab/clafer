@@ -63,7 +63,7 @@ data IClafer =
       ident :: String,          -- name
       uid :: String,            -- (o) unique identifier
       super :: ISuper,          -- superclafers
-      refrence :: IReference,   -- refrence types
+      reference :: IReference,  -- refrence types
       card :: Maybe Interval,   -- clafer cardinality
       glCard :: Interval,       -- (o) global cardinality
       elements :: [IElement]    -- nested declarations

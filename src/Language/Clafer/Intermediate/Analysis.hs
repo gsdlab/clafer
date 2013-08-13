@@ -338,7 +338,7 @@ convertClafer =
         Just (I.IGCard True _) -> (0, 1)
         Just (I.IGCard _ i)    -> i
     super =
-      case (I.super clafer, I.refrence clafer) of
+      case (I.super clafer, I.reference clafer) of
         (I.ISuper _ [], I.IReference _ [I.PExp{I.exp = I.IClaferId{I.sident = superUid}}]) -> Just $ Ref superUid
         (I.ISuper _ [I.PExp{I.exp = I.IClaferId{I.sident = superUid}}], I.IReference _ []) ->
           if superUid `elem` ["string", "real", "int", "integer", "boolean"]

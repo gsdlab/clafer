@@ -180,12 +180,9 @@ genClafer claferargs resPath oClafer = (cunlines $ filterNull
     | otherwise = CString ""
 
 transPrimitive :: IClafer -> IClafer
-transPrimitive    clafer'   = clafer'{super = toOverlapping $ super clafer'}
-  where
-  toOverlapping x@(ISuper _ _ [PExp _ _ _ (IClaferId _ id' _)])
-    | isPrimitive id' = x{isOverlapping = True}
-    | otherwise      = x
-  toOverlapping x = x
+transPrimitive clafer' = if ((supers $ super clafer') /= [] && (isPrimitive $ getSuper clafer'))
+  then clafer'{super = (super clafer'){supers = []}, reference = (reference clafer'){refs = supers $ super clafer'}}
+    else clafer'
 
 claferDecl :: IClafer -> Concat -> Concat
 claferDecl  c     rest    = cconcat $ [genOptCard c,
@@ -194,8 +191,8 @@ claferDecl  c     rest    = cconcat $ [genOptCard c,
   ++ if ((superKind $ super c) == Nested) then [genHFact c] else []
   where
   genAbstract isAbs = if isAbs then "abstract " else ""
-  genExtends (ISuper False _ [PExp _ _ _ (IClaferId _ "clafer" _)]) = CString ""
-  genExtends (ISuper False _ [PExp _ _ _ (IClaferId _ i _)]) = CString " " +++ Concat NoTrace [CString $ "extends " ++ i]
+  genExtends (ISuper _ [PExp _ _ _ (IClaferId _ "clafer" _)]) = CString ""
+  genExtends (ISuper _ [PExp _ _ _ (IClaferId _ i _)]) = CString " " +++ Concat NoTrace [CString $ "extends " ++ i]
   -- todo: handle multiple inheritance
   genExtends _ = CString ""
   genHFact claf = CString $ "\n\nfact { r_" ++ uid claf ++ " in r_" ++ (getSuper claf) ++ " }"
@@ -219,7 +216,7 @@ genOptCard    c
 genRelations :: ClaferArgs -> IClafer -> [Concat]
 genRelations claferargs c = maybeToList r ++ (map mkRel $ getSubclafers $ elements c)
   where
-  r = if isOverlapping $ super c 
+  r = if isOverlapping c 
                 then
                         Just $ Concat NoTrace [CString $ genRel (if (noalloyruncommand claferargs) then  (uid c ++ "_ref") else "ref")
                          c {card = Just (1, 1)} $ 
@@ -315,10 +312,13 @@ genPathConst    claferargs    name      resPath     c
   | otherwise        = CString ""
 
 isRefPath :: IClafer -> Bool
-isRefPath c = (isOverlapping $ super c) &&
+isRefPath c = (isOverlapping c) &&
                    ((length s > 1) || (not $ isSimplePath s))
   where
-  s = supers $ super c
+  s = 
+    if (supers $ super c) == [] 
+      then (refs $ reference c) 
+        else supers $ super c
 
 isSimplePath :: [PExp] -> Bool
 isSimplePath    [PExp _ _ _ (IClaferId _ _ _)] = True

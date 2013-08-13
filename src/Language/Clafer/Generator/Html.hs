@@ -523,7 +523,7 @@ getUseId s irMap = if Map.lookup s irMap == Nothing
                         if ((supers $ super iClafer) /= []) then
                           (uid iClafer, sident $ exp $ head $ supers $ super iClafer)
                             else
-                              (uid iClafer, sident $ exp $ head $ refs $ refrence iClafer)
+                              (uid iClafer, sident $ exp $ head $ refs $ reference iClafer)
 
 while :: Bool -> String -> String
 while bool exp' = if bool then exp' else ""

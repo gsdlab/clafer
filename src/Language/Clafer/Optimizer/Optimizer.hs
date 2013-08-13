@@ -104,14 +104,14 @@ expModule (decls', genv) = evalState (mapM expElement decls') genv
 
 expClafer :: MonadState GEnv m => IClafer -> m IClafer
 expClafer claf = do
-  super' <- expSuper $ super claf
+  ref' <- expSuper $ reference claf
   elements' <- mapM expElement $ elements claf
-  return $ claf {super = super', elements = elements'}
+  return $ claf {reference = ref', elements = elements'}
 
-expSuper :: MonadState GEnv m => ISuper -> m ISuper
+expSuper :: MonadState GEnv m => IReference -> m IReference
 expSuper x = case x of
-  ISuper False _ _ -> return x
-  ISuper True r pexps -> ISuper True r `liftM` mapM expPExp pexps
+  IReference _ [] -> return x
+  IReference s pexps -> IReference s `liftM` mapM expPExp pexps 
 
 expElement :: MonadState GEnv m => IElement -> m IElement
 expElement x = case x of
@@ -264,12 +264,16 @@ markTopModule decls' = map (markTopElement (
 
 markTopClafer :: [String] -> IClafer -> IClafer
 markTopClafer clafers c =
-  c {super = markTopSuper clafers $ super c, 
-          elements = map (markTopElement clafers) $ elements c}
+  let (super',ref') = markTopSuper clafers (reference c) $ super c
+  in c{super = super', reference = ref', 
+        elements = map (markTopElement clafers) $ elements c}
 
 
-markTopSuper :: [String] -> ISuper -> ISuper
-markTopSuper clafers x = x{supers = map (markTopPExp clafers) $ supers x}
+markTopSuper :: [String] -> IReference -> ISuper -> (ISuper, IReference)
+markTopSuper clafers r s = 
+  if ([] == supers s) then
+    (s,r{refs = map (markTopPExp clafers) $ refs r}) else
+     (s{supers = map (markTopPExp clafers) $ supers s},r)
 
 
 markTopElement :: [String] -> IElement -> IElement

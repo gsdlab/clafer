@@ -62,7 +62,7 @@ resolveNClafer m declarations clafer =
 
 resolveNSuper :: Map.Map Span IClafer -> [IElement] -> IClafer -> Resolve ISuper
 resolveNSuper m declarations x = case (super x) of
-  (ISuper s [PExp _ pid' pos' (IClaferId _ id' isTop')]) ->
+  (ISuper _ [PExp _ pid' pos' (IClaferId _ id' isTop')]) ->
     if isPrimitive id' || id' == "clafer"
       then return (super x)
       else do
@@ -70,8 +70,7 @@ resolveNSuper m declarations x = case (super x) of
         id'' <- case r of
           Nothing -> throwError $ SemanticErr pos' $ "No superclafer found: " ++ id'
           Just mo  -> return $ fst mo
-        return $ ISuper s [idToPExp pid' pos' "" id'' isTop']
-        return $ ISuper False sk [idToPExp pid' pos' "" id'' isTop']
+        return $ ISuper sk [idToPExp pid' pos' "" id'' isTop']
   _ -> return (super x)
 
 resolveNElement :: Map.Map Span IClafer -> [IElement] -> IElement -> Resolve IElement
@@ -124,15 +123,15 @@ resolveOModule (imodule, genv') =
 resolveOClafer :: SEnv -> IClafer -> Resolve IClafer
 resolveOClafer env clafer =
   do
-    (super', ref') <- resolveOSuper env {context = Just clafer} $ reference clafer
+    (super', ref') <- resolveOSuper env {context = Just clafer} (super clafer) $ reference clafer
     elements' <- mapM (resolveOElement env {context = Just clafer}) $ elements clafer
     return $ clafer {super = super', reference = ref', elements = elements'}
 
 resolveOSuper :: SEnv -> ISuper -> IReference -> Resolve (ISuper, IReference)
-resolveOSuper env s@(ISuper r []) (IReference s exps') = do
+resolveOSuper env s@(ISuper r []) (IReference sk exps') = do
   exps'' <- mapM (resolvePExp env) exps'
   let isOverlap = not (length exps'' == 1 && isPrimitive (getSuperId exps''))
-  return $ if isOverlap then (ISuper r exps'', IReference False []) else (s,IReference s exps'') 
+  return $ if isOverlap then (ISuper r exps'', IReference False []) else (s,IReference sk exps'') 
 resolveOSuper _ s r = return (s, r)
 
 
@@ -166,9 +165,9 @@ analyzeGCard :: SEnv -> IClafer -> Maybe IGCard
 analyzeGCard env clafer = gcard' `mplus` (Just $ IGCard False (0, -1))
   where
   gcard'
-    | isOverlapping $ super clafer = gcard clafer
-    | otherwise                    = listToMaybe $ mapMaybe gcard $
-                                     findHierarchy getSuper (clafers env) clafer
+    | isOverlapping clafer = gcard clafer
+    | otherwise            = listToMaybe $ mapMaybe gcard $
+                              findHierarchy getSuper (clafers env) clafer
 
 
 analyzeCard :: SEnv -> IClafer -> Maybe Interval
@@ -216,7 +215,7 @@ unrollabeDeclaration x = case x of
 
 unrollableClafer :: IClafer -> [String]
 unrollableClafer clafer
-  | isOverlapping $ super clafer = []
+  | isOverlapping clafer = []
   | getSuper clafer == "clafer"  = deps
   | otherwise                    = getSuper clafer : deps
   where
@@ -267,7 +266,7 @@ genId id' = do
 
 resolveEInheritance :: MonadState GEnv m => [String] -> [String] -> Bool -> [IElement] -> [IClafer]  -> m ([IElement], ISuper, [IClafer])
 resolveEInheritance predecessors unrollables absAncestor declarations allSuper
-  | isOverlapping $ super clafer = return ([], super clafer, [clafer])
+  | isOverlapping clafer = return ([], super clafer, [clafer])
   | otherwise = do
     let superList = (if absAncestor then id else tail) allSuper
     let unrollSuper = filter (\s -> uid s `notElem` unrollables) $ tail allSuper
@@ -276,7 +275,7 @@ resolveEInheritance predecessors unrollables absAncestor declarations allSuper
              unrollSuper >>= elements
     let super' = if (getSuper clafer `elem` unrollables)
                  then super clafer
-                 else ISuper False (superKind $ super clafer) [idToPExp "" noSpan "" "clafer" False]
+                 else ISuper (superKind $ super clafer) [idToPExp "" noSpan "" "clafer" False]
     return (elements', super', superList)
   where
   clafer = head allSuper
