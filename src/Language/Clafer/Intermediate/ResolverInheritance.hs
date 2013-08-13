@@ -128,11 +128,13 @@ resolveOClafer env clafer =
     return $ clafer {super = super', reference = ref', elements = elements'}
 
 resolveOSuper :: SEnv -> ISuper -> IReference -> Resolve (ISuper, IReference)
-resolveOSuper env s@(ISuper r []) (IReference sk exps') = do
-  exps'' <- mapM (resolvePExp env) exps'
-  let isOverlap = not (length exps'' == 1 && isPrimitive (getSuperId exps''))
-  return $ if isOverlap then (ISuper r exps'', IReference False []) else (s,IReference sk exps'') 
-resolveOSuper _ s r = return (s, r)
+resolveOSuper env s r = case (s,r) of
+  (_,IReference _ []) -> return (s,r)
+  (s',IReference is exps') -> do
+    exps'' <- mapM (resolvePExp env) exps'
+    return $ if (not (length exps'' == 1 && isPrimitive (getSuperId exps''))) 
+      then (s', IReference is exps'') 
+        else (ISuper TopLevel exps'', IReference False [])
 
 
 resolveOElement :: SEnv -> IElement -> Resolve IElement

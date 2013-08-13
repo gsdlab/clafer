@@ -93,25 +93,29 @@ desugarSuper SuperEmpty = desugarSuper $ PosSuperEmpty noSpan
 desugarSuper (SuperSome superhow setexp) = desugarSuper $ PosSuperSome noSpan superhow setexp
 desugarSuper (PosSuperEmpty s) =
       ISuper TopLevel [PExp (Just $ TClafer []) "" s $ mkLClaferId baseClafer True]
-desugarSuper (PosSuperSome _ _ setexp) =
-      ISuper TopLevel [desugarSetExp setexp]
+desugarSuper (PosSuperSome _ superhow setexp) =
+      ISuper TopLevel $ if (desugarSuperHowS superhow) then [desugarSetExp setexp] else []
+
+desugarSuperHowS :: SuperHow -> Bool
+desugarSuperHowS SuperColon = desugarSuperHowS $ PosSuperColon noSpan
+desugarSuperHowS (PosSuperColon _) = True
+desugarSuperHowS _ = False
+
 
 desugarRefrence :: Super -> IReference
 desugarRefrence (SuperSome superhow setexp) = desugarRefrence $ PosSuperSome noSpan superhow setexp
 desugarRefrence (PosSuperSome _ superhow setexp) = case superhow of
   SuperColon -> IReference False []
   (PosSuperColon _) -> IReference False []
-  _ -> IReference (desugarSuperHow superhow) [desugarSetExp setexp]
+  _ -> IReference (desugarSuperHowR superhow) [desugarSetExp setexp]
 desugarRefrence _ = IReference False []
 
-
-
-desugarSuperHow :: SuperHow -> Bool
-desugarSuperHow SuperArrow = desugarSuperHow $ PosSuperArrow noSpan
-desugarSuperHow SuperMArrow = desugarSuperHow $ PosSuperMArrow noSpan
-desugarSuperHow (PosSuperArrow _) = True
-desugarSuperHow (PosSuperMArrow _) = False
-desugarSuperHow _  = error "desugarSuperHow function from desugarer did not work properly" --Should never happen
+desugarSuperHowR :: SuperHow -> Bool
+desugarSuperHowR SuperArrow = desugarSuperHowR $ PosSuperArrow noSpan
+desugarSuperHowR SuperMArrow = desugarSuperHowR $ PosSuperMArrow noSpan
+desugarSuperHowR (PosSuperArrow _) = True
+desugarSuperHowR (PosSuperMArrow _) = False
+desugarSuperHowR _  = error "desugarSuperHowR function from desugarer did not work properly" --Should never happen
 
 
 desugarInit :: PosIdent -> Init -> [IElement]
