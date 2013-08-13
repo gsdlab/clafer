@@ -105,10 +105,10 @@ desugarSuperHowS _ = False
 desugarRefrence :: Super -> IReference
 desugarRefrence (SuperSome superhow setexp) = desugarRefrence $ PosSuperSome noSpan superhow setexp
 desugarRefrence (PosSuperSome _ superhow setexp) = case superhow of
-  SuperColon -> IReference False []
-  (PosSuperColon _) -> IReference False []
+  SuperColon -> emptyIReference 
+  (PosSuperColon _) -> emptyIReference
   _ -> IReference (desugarSuperHowR superhow) [desugarSetExp setexp]
-desugarRefrence _ = IReference False []
+desugarRefrence _ = emptyIReference
 
 desugarSuperHowR :: SuperHow -> Bool
 desugarSuperHowR SuperArrow = desugarSuperHowR $ PosSuperArrow noSpan
@@ -592,6 +592,9 @@ sugarQuant ILone = QuantLone
 sugarQuant IOne = QuantOne
 sugarQuant ISome = QuantSome
 sugarQuant IAll = error "sugarQaunt was called on IAll, this is not allowed!" --Should never happen
+
+emptyIReference :: IReference
+emptyIReference = IReference False []
 
 makeMap :: Ir -> Map.Map Span IClafer
 makeMap (IRClafer c) = Map.fromList $ zip (concat $ map getPos $ elements c) (repeat c)

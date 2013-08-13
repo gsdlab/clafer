@@ -93,6 +93,8 @@ data ISuper =
     }
   deriving (Eq,Ord,Show)
 
+data SuperKind = TopLevel | Nested | Redefinition deriving (Eq, Ord, Show)
+
 -- ->   -- overlapping unique (set) [isSet=True]
 -- ->>  -- overlapping non-unique (bag) [isSet=False]
 data IReference = 
@@ -104,8 +106,6 @@ data IReference =
 
 isOverlapping :: IClafer -> Bool
 isOverlapping claf = ([]==) $ supers $ super claf
-
-data SuperKind = TopLevel | Nested | Redefinition deriving (Eq, Ord, Show)
 
 
 -- Group cardinality is specified as an interval. It may also be given by a keyword.

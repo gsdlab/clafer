@@ -357,7 +357,7 @@ gatherInfo imodule =
   sString  = SClafer "string" "string" False 0 (-1) 0 (-1) Nothing Nothing []
   sBoolean = SClafer "boolean" "boolean" False 0 (-1) 0 (-1) Nothing Nothing []
   
-  root = I.IClafer noSpan False Nothing rootUid rootUid (I.ISuper I.TopLevel [I.PExp Nothing "" noSpan $ I.IClaferId "clafer" "clafer" True]) (I.IReference False []) (Just (1, 1)) (0, 0) (I.mDecls imodule)
+  root = I.IClafer noSpan False Nothing rootUid rootUid (I.ISuper I.TopLevel [I.PExp Nothing "" noSpan $ I.IClaferId "clafer" "clafer" True]) emptyIReference (Just (1, 1)) (0, 0) (I.mDecls imodule)
 
 
 
