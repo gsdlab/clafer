@@ -1,0 +1,5 @@
+//# OPTIONS --check-afm
+
+abstract A
+
+a : A
