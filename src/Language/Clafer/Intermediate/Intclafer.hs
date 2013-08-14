@@ -55,17 +55,33 @@ data IModule = IModule {
 -- Clafer has a list of fields that specify its properties. Some fields, marked as (o) are for generating optimized code
 data IClafer =
    IClafer {
-      cinPos :: Span,         -- the position of the syntax in source code
-      isAbstract :: Bool,     -- whether abstract or not (i.e., concrete)
-      gcard :: Maybe IGCard,  -- group cardinality
-      ident :: String,        -- name
-      uid :: String,          -- (o) unique identifier
-      super:: ISuper,         -- superclafers
-      card :: Maybe Interval, -- clafer cardinality
-      glCard :: Interval,     -- (o) global cardinality
-      elements :: [IElement]  -- nested declarations
+      getParent :: Maybe IClafer, -- Nothing => TopLevel, Just x => x is the parent of this clafer
+      cinPos :: Span,             -- the position of the syntax in source code
+      isAbstract :: Bool,         -- whether abstract or not (i.e., concrete)
+      gcard :: Maybe IGCard,      -- group cardinality
+      ident :: String,            -- name
+      uid :: String,              -- (o) unique identifier
+      super:: ISuper,             -- superclafers
+      card :: Maybe Interval,     -- clafer cardinality
+      glCard :: Interval,         -- (o) global cardinality
+      elements :: [IElement]      -- nested declarations
     }
-  deriving (Eq,Ord,Show)
+
+data IClaferInstace =                                          -- IClafer without the Parent,
+  IClaferInstace Span Bool (Maybe IGCard) String String ISuper -- used to help derive instances
+  (Maybe Interval) Interval [IElement] deriving (Eq,Ord,Show)  -- that will ignore the Parent.
+
+instance Eq IClafer where
+  (==) (IClafer _ cp ia g i u s c gc es) (IClafer _ cp' ia' g' i' u' s' c' gc' es') = 
+    (IClaferInstace cp ia g i u s c gc es) == (IClaferInstace cp' ia' g' i' u' s' c' gc' es')
+
+instance Ord IClafer where
+  compare (IClafer _ cp ia g i u s c gc es) (IClafer _ cp' ia' g' i' u' s' c' gc' es') = 
+    IClaferInstace cp ia g i u s c gc es `compare` IClaferInstace cp' ia' g' i' u' s' c' gc' es'
+
+instance Show IClafer where
+  show (IClafer _ cp ia g i u s c gc es) = show $ IClaferInstace cp ia g i u s c gc es
+
 
 -- Clafer's subelement is either a clafer, a constraint, or a goal (objective)
 -- This is a wrapper type needed to have polymorphic lists of elements
@@ -220,10 +236,10 @@ iMap f (IRIElement (IEConstraint h pexp)) =
   f $ IRIElement $ IEConstraint h $ unWrapPExp $ iMap f $ IRPExp pexp
 iMap f (IRIElement (IEGoal m pexp)) =
   f $ IRIElement $ IEGoal m $ unWrapPExp $ iMap f $ IRPExp pexp 
-iMap f (IRClafer (IClafer p a (Just grc) i u s c goc elems)) =
-  f $ IRClafer $ IClafer p a (Just $ unWrapIGCard $ iMap f $ IRIGCard grc) i u (unWrapISuper $ iMap f $ IRISuper s) c goc $ map (unWrapIElement . iMap f . IRIElement) elems
-iMap f (IRClafer (IClafer p a Nothing i u s c goc elems)) =
-  f $ IRClafer $ IClafer p a Nothing i u (unWrapISuper $ iMap f $ IRISuper s) c goc $ map (unWrapIElement . iMap f . IRIElement) elems
+iMap f (IRClafer (IClafer par p a (Just grc) i u s c goc elems)) =
+  f $ IRClafer $ IClafer par p a (Just $ unWrapIGCard $ iMap f $ IRIGCard grc) i u (unWrapISuper $ iMap f $ IRISuper s) c goc $ map (unWrapIElement . iMap f . IRIElement) elems
+iMap f (IRClafer (IClafer par p a Nothing i u s c goc elems)) =
+  f $ IRClafer $ IClafer par p a Nothing i u (unWrapISuper $ iMap f $ IRISuper s) c goc $ map (unWrapIElement . iMap f . IRIElement) elems
 iMap f (IRIExp (IDeclPExp q decs p)) =
   f $ IRIExp $ IDeclPExp (unWrapIQuant $ iMap f $ IRIQuant q) (map (unWrapIDecl . iMap f . IRIDecl) decs) $ unWrapPExp $ iMap f $ IRPExp p
 iMap f (IRIExp (IFunExp o pexps)) = 
@@ -243,9 +259,9 @@ iFoldMap f i@(IRIElement (IEConstraint _ pexp)) =
   f i `mappend` (iFoldMap f $ IRPExp pexp)
 iFoldMap f i@(IRIElement (IEGoal _ pexp)) =
   f i `mappend` (iFoldMap f $ IRPExp pexp)
-iFoldMap f i@(IRClafer (IClafer _ _ Nothing _ _ s _ _ elems)) =
+iFoldMap f i@(IRClafer (IClafer _ _ _ Nothing _ _ s _ _ elems)) =
   f i `mappend` (iFoldMap f $ IRISuper s) `mappend` foldMap (iFoldMap f . IRIElement) elems
-iFoldMap f i@(IRClafer (IClafer _ _ (Just grc) _ _ s _ _ elems)) =
+iFoldMap f i@(IRClafer (IClafer _ _ _ (Just grc) _ _ s _ _ elems)) =
   f i `mappend` (iFoldMap f $ IRISuper s) `mappend` (iFoldMap f $ IRIGCard grc) `mappend` foldMap (iFoldMap f . IRIElement) elems
 iFoldMap f i@(IRIExp (IDeclPExp q decs p)) =
   f i `mappend` (iFoldMap f $ IRIQuant q) `mappend` (iFoldMap f $ IRPExp p) `mappend` foldMap (iFoldMap f . IRIDecl) decs

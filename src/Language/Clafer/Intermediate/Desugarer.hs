@@ -30,9 +30,16 @@ import Language.Clafer.Intermediate.Intclafer
 
 desugarModule :: Module -> IModule
 desugarModule (Module declarations) = desugarModule $ PosModule noSpan declarations
-desugarModule (PosModule _ declarations) = IModule "" $
+desugarModule (PosModule _ declarations) = mapIR addParents $ IModule "" $
       declarations >>= desugarEnums >>= desugarDeclaration
 --      [ImoduleFragment $ declarations >>= desugarEnums >>= desugarDeclaration]
+  where
+    addParents :: Ir -> Ir
+    addParents (IRClafer clafer) = IRClafer $ clafer{elements = 
+      map (\e -> case e of
+        (IEClafer c) -> IEClafer $ c{getParent = Just clafer}
+        e' -> e') $ elements clafer}
+    addParents i = i
 
 sugarModule :: IModule -> Module
 sugarModule x = Module $ map sugarDeclaration $ mDecls x -- (fragments x >>= mDecls)
@@ -71,13 +78,13 @@ desugarClafer :: Clafer -> [IElement]
 desugarClafer (Clafer abstract gcrd id' super' crd init' es)  = 
     desugarClafer $ PosClafer noSpan abstract gcrd id' super' crd init' es
 desugarClafer (PosClafer s abstract gcrd id' super' crd init' es)  = 
-    (IEClafer $ IClafer s (desugarAbstract abstract) (desugarGCard gcrd) (transIdent id')
+    (IEClafer $ IClafer Nothing s (desugarAbstract abstract) (desugarGCard gcrd) (transIdent id')
             "" (desugarSuper super') (desugarCard crd) (0, -1)
             (desugarElements es)) : (desugarInit id' init')
 
 
 sugarClafer :: IClafer -> Clafer
-sugarClafer (IClafer _ abstract gcard' _ uid' super' crd _ es) = 
+sugarClafer (IClafer _ _ abstract gcard' _ uid' super' crd _ es) = 
     Clafer (sugarAbstract abstract) (sugarGCard gcard') (mkIdent uid')
       (sugarSuper super') (sugarCard crd) InitEmpty (sugarElements es)
 
