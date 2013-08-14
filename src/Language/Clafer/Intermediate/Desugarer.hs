@@ -39,7 +39,43 @@ desugarModule (PosModule _ declarations) =
         declarations >>= desugarEnums >>= desugarDeclaration
           --[ImoduleFragment $ declarations >>= desugarEnums >>= desugarDeclaration]
       pMap = foldMapIR makeMap iMod
-  in (iMod, pMap)
+      clafers = bfsClafers $ toClafers $ mDecls iMod
+  --in (iMod, pMap)
+  in (flip mapIR iMod $ reDefAdd clafers clafers pMap, pMap)
+  where
+    reDefAdd :: [IClafer] -> [IClafer] -> Map.Map Span IClafer -> Ir -> Ir
+    reDefAdd clafs (c:cs) parMap i@(IRClafer clafer) =
+      if (isRefDef parMap c clafer) then (if (isSpecified c clafer) then
+        IRClafer $ clafer{super = ISuper Redefinition [PExp (Just $ TClafer []) "" noSpan (IClaferId "" (ident c) $ istop $ cinPos c)]}
+          else error $ "Incorrect redefinition,\nClafer: " ++ show clafer ++ "\nis an improper redefinition of\nClafer: " ++ show c)
+      else reDefAdd clafs cs parMap i
+      where
+        isRefDef :: Map.Map Span IClafer -> IClafer -> IClafer -> Bool
+        isRefDef pareMap c1 c2 = 
+          let p1 = flip Map.lookup pareMap $ cinPos c1
+              p2 = flip Map.lookup pareMap $ cinPos c2
+          in if (p1==Nothing && p2==Nothing) then ((not $ isOverlapping c2) && (getSuper c2 == ident c1))
+            else if (p1==Nothing || p2==Nothing) then False
+              else if (ident c1 == ident c2) then isRefDef pareMap (fromJust p1) $ fromJust p2
+                else False
+        isSpecified :: IClafer -> IClafer -> Bool
+        isSpecified claf1 claf2 = 
+          (card claf2 `withinCard` card claf1) && (gcard claf2 `withinGRCard` gcard claf1)
+            && (glCard claf2 `withinGLCard` glCard claf1)
+          where
+            withinCard (Just (x2,y2)) (Just (x1,y1)) = x1 `lt` x2 && y1 `gt` y2
+            withinCard Nothing (Just (x1,y1)) = x1 `lt` 1 && y1 `gt` 1
+            withinCard (Just (x2,y2)) Nothing = 1 `lt` x2 && 1 `gt` y2
+            withinCard _ _ = True
+            withinGRCard (Just (IGCard _ (x2,y2))) (Just (IGCard _ (x1,y1))) = x1 `lt` x2 && y1 `gt` y2
+            withinGRCard Nothing (Just (IGCard _ (x1,y1))) = x1 `lt` 0 && y1 `gt` (-1)
+            withinGRCard (Just (IGCard _ (x2,y2))) Nothing = 0 `lt` x2 && (-1) `gt` y2
+            withinGRCard _ _ = True
+            withinGLCard (x2,y2) (x1,y1) = x1 `lt` x2 && y1 `gt` y2
+            lt x y = if (x == -1) then (y == -1) else if (y == -1) then True else x <= y
+            gt x y = (not $ x `lt` y) || x==y
+    reDefAdd _ _ _ i = i
+
 
 sugarModule :: IModule -> Module
 sugarModule x = Module $ map sugarDeclaration $ mDecls x -- (fragments x >>= mDecls)

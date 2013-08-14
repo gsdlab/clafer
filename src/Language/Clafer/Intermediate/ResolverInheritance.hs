@@ -87,7 +87,8 @@ resolveN pMap claf pos' declarations id' =
       nonAbsposibilities = filter (\c -> (c /= claf) && (not $ isAbstract c)) posibilities
   in if (nonAbsposibilities == []) then 
        (>>= (return . swap . makePair TopLevel)) $ findUnique pos' id' $ map (\x -> (x, [x])) $ posibilities else
-         (>>= (\x -> return $ makePair x (if (x==Nothing || (istop $ cinPos $ head $ snd $ fromJust x)) then TopLevel else Nested))) $ findUnique pos' id' $ map (\x -> (x, [x])) $ nonAbsposibilities
+        (>>= (\x -> return $ makePair x (if (Redefinition == (superKind $ super claf)) then Redefinition else 
+          if (x==Nothing || (istop $ cinPos $ head $ snd $ fromJust x)) then TopLevel else Nested))) $ findUnique pos' id' $ map (\x -> (x, [x])) $ nonAbsposibilities
   where
   makePair :: a -> b -> (a,b)
   makePair a b = (a,b)

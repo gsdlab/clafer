@@ -351,6 +351,7 @@ voidf :: Monad m => m t -> m ()
 voidf f = do
   _ <- f
   return ()
+  
 istop :: Span -> Bool
 istop (Span (Pos _ 1) _) = True
 istop (Span (PosPos _ _ 1) _) = True

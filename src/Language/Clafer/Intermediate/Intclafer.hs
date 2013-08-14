@@ -105,7 +105,7 @@ data IReference =
  deriving (Eq,Ord,Show)
 
 isOverlapping :: IClafer -> Bool
-isOverlapping claf = ([]==) $ supers $ super claf
+isOverlapping = ([]/=) . refs . reference
 
 
 -- Group cardinality is specified as an interval. It may also be given by a keyword.

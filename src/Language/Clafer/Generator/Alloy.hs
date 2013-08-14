@@ -188,7 +188,7 @@ claferDecl :: IClafer -> Concat -> Concat
 claferDecl  c     rest    = cconcat $ [genOptCard c,
   CString $ genAbstract $ isAbstract c, CString "sig ",
   Concat NoTrace [CString $ uid c, genExtends $ super c, CString "\n", rest]]
-  ++ if ((superKind $ super c) == Nested) then [genHFact c] else []
+  ++ if ((superKind $ super c) /= TopLevel) then [genHFact c] else []
   where
   genAbstract isAbs = if isAbs then "abstract " else ""
   genExtends (ISuper _ [PExp _ _ _ (IClaferId _ "clafer" _)]) = CString ""
