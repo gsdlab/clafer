@@ -36,6 +36,7 @@ import qualified Data.Map as Map
 import Language.ClaferT
 import Language.Clafer.Common
 import Language.Clafer.Front.Absclafer
+import Language.Clafer.Intermediate.Desugarer
 import Language.Clafer.Intermediate.Intclafer
 import Language.Clafer.Intermediate.ResolverName
 import Prelude hiding (exp)
@@ -134,7 +135,7 @@ resolveOSuper env s r = case (s,r) of
     exps'' <- mapM (resolvePExp env) exps'
     return $ if (not (length exps'' == 1 && isPrimitive (getSuperId exps''))) 
       then (s', IReference is exps'') 
-        else (ISuper TopLevel exps'', IReference False [])
+        else (ISuper TopLevel exps'', emptyIReference)
 
 
 resolveOElement :: SEnv -> IElement -> Resolve IElement
