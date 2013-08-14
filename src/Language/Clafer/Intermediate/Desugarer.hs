@@ -47,7 +47,7 @@ desugarModule (PosModule _ declarations) =
     reDefAdd clafs (c:cs) parMap i@(IRClafer clafer) =
       if (isRefDef parMap c clafer) then (if (isSpecified c clafer) then
         IRClafer $ clafer{super = ISuper Redefinition [PExp (Just $ TClafer []) "" noSpan (IClaferId "" (ident c) $ istop $ cinPos c)]}
-          else error $ "Incorrect redefinition,\nClafer: " ++ show clafer ++ "\nis an improper redefinition of\nClafer: " ++ show c)
+          else error $ "Incorrect redefinition, Clafer:\n" ++ show clafer ++ "\nis an improper redefinition of Clafer:\n" ++ show c)
       else reDefAdd clafs cs parMap i
       where
         isRefDef :: Map.Map Span IClafer -> IClafer -> IClafer -> Bool
