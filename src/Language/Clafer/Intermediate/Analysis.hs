@@ -98,8 +98,10 @@ isBase = (`elem` ["clafer", "string", "real", "int", "integer", "boolean"]) . ui
 isDerived :: SClafer -> Bool
 isDerived = not . isBase
  
+data Ref = Ref {refSident :: String, isSet :: Bool} deriving Show
+data Colon = Colon {colonSident :: String} deriving Show
 
-data SSuper = SSuper {ref :: Maybe String,  colon :: Maybe String} deriving Show
+data SSuper = SSuper {colon :: Maybe Colon, ref :: Maybe Ref} deriving Show
 -- Easier to work with. IClafers have links from parents to children. SClafers have links from children to parent.
 data SClafer = SClafer {uid::String, origUid::String, isAbstract::Bool, low::Integer, high::Integer, groupLow::Integer, groupHigh::Integer, parent::Maybe String, super::Maybe SSuper, constraints::[I.PExp]} deriving Show
   
@@ -162,7 +164,7 @@ topNonRootAncestor clafer =
 refUid :: Monad m => SClafer -> m String
 refUid clafer =
   case super clafer of
-    Just (SSuper _ (Just u))  -> return u
+    Just (SSuper _ (Just u))  -> return $ refSident u
     _                        -> fail $ "No ref uid for " ++ show clafer
 
 refOf :: (Uidable c, MonadAnalysis m) => c -> m c
@@ -181,7 +183,7 @@ colonUid c =
   do
     clafer <- toClafer c
     case super clafer of
-      Just (SSuper (Just u) _)  -> return u
+      Just (SSuper (Just u) _)  -> return $ colonSident u
       _                          -> fail $ "No colon uid for " ++ show clafer
 
 colonOf :: (Uidable c, MonadAnalysis m) => c -> m c
@@ -339,15 +341,15 @@ convertClafer =
         Just (I.IGCard _ i)    -> i
     super =
       case (I.super clafer, I.reference clafer) of
-        (I.ISuper _ [], I.IReference _ [I.PExp{I.exp = I.IClaferId{I.sident = superUid}}]) -> Just $ SSuper Nothing $ Just superUid
+        (I.ISuper _ [], I.IReference is [I.PExp{I.exp = I.IClaferId{I.sident = superUid}}]) -> Just $ SSuper Nothing $ Just $ Ref superUid is
         (I.ISuper _ [I.PExp{I.exp = I.IClaferId{I.sident = superUid}}], I.IReference _ []) ->
           if superUid `elem` ["string", "real", "int", "integer", "boolean"]
-            then Just $ SSuper Nothing $ Just superUid
-            else Just $ flip SSuper Nothing $ Just superUid
-        (I.ISuper _ [I.PExp{I.exp = I.IClaferId{I.sident = superUid}}],I.IReference _ [I.PExp{I.exp = I.IClaferId{I.sident = superUid'}}]) ->
+            then Just $ SSuper Nothing $ Just $ Ref superUid True
+            else Just $ flip SSuper Nothing $ Just $ Colon superUid
+        (I.ISuper _ [I.PExp{I.exp = I.IClaferId{I.sident = superUid}}],I.IReference is [I.PExp{I.exp = I.IClaferId{I.sident = superUid'}}]) ->
           if superUid `elem` ["string", "real", "int", "integer", "boolean"]
-            then Just $ SSuper Nothing $ Just superUid
-            else Just $ SSuper (Just superUid) $ Just superUid'
+            then Just $ SSuper Nothing $ Just $ Ref superUid True
+            else Just $ SSuper (Just $ Colon superUid) $ Just $ Ref superUid' is
         _ -> Nothing
 
 gatherInfo :: I.IModule -> Info

@@ -298,7 +298,7 @@ addChildren abs' (Part steps) ss@(Part supSteps) =
                 let supP = Part $ supSteps ++ [chi]
                 
                 chiC <- claferWithUid chi
-                let s = SClafer (reifyPartName chiP) chi False (low chiC) (high chiC) (groupLow chiC) (groupHigh chiC) (Just $ reifyPartName par) (Just $ flip SSuper Nothing $ Just $ reifyPartName supP) (constraints chiC)
+                let s = SClafer (reifyPartName chiP) chi False (low chiC) (high chiC) (groupLow chiC) (groupHigh chiC) (Just $ reifyPartName par) (Just $ flip SSuper Nothing $ Just $ Colon $ reifyPartName supP) (constraints chiC)
                 return s <:> addChildren abs' chiP ss
         
         col <- runMaybeT $ colonOf parBase
