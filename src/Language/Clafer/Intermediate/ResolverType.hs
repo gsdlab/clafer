@@ -23,11 +23,9 @@
 -}
 module Language.Clafer.Intermediate.ResolverType (resolveTModule, intersects, (+++), fromUnionType, unionType)  where
 
-import Debug.Trace
 import Prelude hiding (exp)
 import Language.ClaferT
 import Language.Clafer.Common
-import Language.Clafer.Front.Absclafer
 import Language.Clafer.Intermediate.Analysis
 import Language.Clafer.Intermediate.Intclafer hiding (uid)
 import qualified Language.Clafer.Intermediate.Intclafer as I
@@ -119,13 +117,15 @@ unionType (TClafer u) = u
 t1 +++ t2 = fromJust $ fromUnionType $ unionType t1 ++ unionType t2
 
 fromUnionType :: [String] -> Maybe IType
-fromUnionType ["string"]  = return TString
-fromUnionType ["real"]    = return TReal
-fromUnionType ["integer"] = return TInteger
-fromUnionType ["int"]     = return TInteger
-fromUnionType ["boolean"] = return TBoolean
-fromUnionType []          = Nothing
-fromUnionType u           = return $ TClafer $ nub $ sort u
+fromUnionType u =
+    case sort $ nub $ u of
+        ["string"]  -> return TString
+        ["real"]    -> return TReal
+        ["integer"] -> return TInteger
+        ["int"]     -> return TInteger
+        ["boolean"] -> return TBoolean
+        []          -> Nothing
+        u'          -> return $ TClafer u'
 
 closure :: MonadAnalysis m => [String] -> m [String]
 closure ut = concat <$> mapM hierarchy ut
@@ -161,6 +161,34 @@ str t =
     [t'] -> t'
     ts   -> "[" ++ intercalate "," ts ++ "]"
 
+getIfThenElseType :: MonadAnalysis m => IType -> IType -> m (Maybe IType)
+-- the function is similar to 'intersection', but takes into account more ancestors to be able to combine
+-- clafers of different types, but with a common ancestor:
+-- Inputs:
+-- t1 is of type B
+-- t2 is of type C
+-- B : A
+-- C : A
+-- Outputs:
+-- the resulting type is: A, and the type combination is valid
+getIfThenElseType t1 t2 = 
+  do
+    h1 <- mapM hierarchy $ unionType t1
+    h2 <- mapM hierarchy $ unionType t2
+    let ut = catMaybes [commonHierarchy u1 u2 | u1 <- h1, u2 <- h2]
+    return $ fromUnionType ut
+  where
+  commonHierarchy h1 h2 = filterClafer $ commonHierarchy' (reverse h1) (reverse h2) Nothing
+  commonHierarchy' (x:xs) (y:ys) accumulator = 
+    if (x == y) 
+      then 
+        if (null xs || null ys) 
+          then Just x
+          else commonHierarchy' xs ys $ Just x 
+      else accumulator
+  commonHierarchy' _ _ _ = error "Function commonHierarchy' from ResolverType expects two non empty lists but was given at least one empty list!" -- Should never happen    
+  filterClafer value = 
+    if (value == Just "clafer") then Nothing else value
 
 resolveTModule :: (IModule, GEnv) -> Either ClaferSErr IModule
 resolveTModule (imodule, _) =
@@ -175,22 +203,22 @@ resolveTElement _ (IEClafer iclafer) =
   do
     elements' <- mapM (resolveTElement $ I.uid iclafer) (elements iclafer)
     return $ IEClafer $ iclafer{elements = elements'}
-resolveTElement parent (IEConstraint isHard pexp) =
-  IEConstraint isHard <$> (testBoolean =<< resolveTConstraint parent pexp)
+resolveTElement parent' (IEConstraint isHard pexp) =
+  IEConstraint isHard <$> (testBoolean =<< resolveTConstraint parent' pexp)
   where
   testBoolean pexp' =
     do
       unless (typeOf pexp' == TBoolean) $
         throwError $ SemanticErr (inPos pexp') ("Cannot construct constraint on type '" ++ str (typeOf pexp') ++ "'")
       return pexp'
-resolveTElement parent (IEGoal isMaximize pexp) =
-  IEGoal isMaximize <$> resolveTConstraint parent pexp
+resolveTElement parent' (IEGoal isMaximize pexp) =
+  IEGoal isMaximize <$> resolveTConstraint parent' pexp
 
 resolveTConstraint :: String -> PExp -> TypeAnalysis PExp
-resolveTConstraint curThis constraint = 
+resolveTConstraint curThis' constraint = 
   do
-    curThis' <- claferWithUid curThis
-    head <$> (localCurThis curThis' $ (resolveTPExp constraint :: TypeAnalysis [PExp]))
+    curThis'' <- claferWithUid curThis'
+    head <$> (localCurThis curThis'' $ (resolveTPExp constraint :: TypeAnalysis [PExp]))
     
 
 resolveTPExp :: PExp -> TypeAnalysis [PExp]
@@ -219,15 +247,16 @@ resolveTPExp' p@PExp{inPos, exp = IClaferId{sident = "parent"}} =
     curPath' <- curPath
     case curPath' of
       Just curPath'' -> do
-        parent <- fromUnionType <$> runListT (parentOf =<< liftList (unionType curPath''))
-        when (isNothing parent) $
+        parent' <- fromUnionType <$> runListT (parentOf =<< liftList (unionType curPath''))
+        when (isNothing parent') $
           throwError $ SemanticErr inPos "Cannot parent from root"
-        let result = p `withType` fromJust parent
+        let result = p `withType` fromJust parent'
         return result -- Case 1: Use the sident
           <++>
           addRef result -- Case 2: Dereference the sident 1..* times
       Nothing -> throwError $ SemanticErr inPos "Cannot parent at the start of a path"
-resolveTPExp' p@PExp{inPos, exp = IClaferId{sident}} =
+resolveTPExp' p@PExp{exp = IClaferId{sident = "integer"}} = runListT $ runErrorT $ return $ p `withType` TInteger
+resolveTPExp' p@PExp{inPos, exp = IClaferId{sident}} = 
   runListT $ runErrorT $ do
     curPath' <- curPath
     sident' <- if sident == "this" then uid <$> curThis else return sident
@@ -274,6 +303,12 @@ resolveTPExp' p@PExp{inPos, exp} =
             arg2' <- liftError $ lift $ ListT $ resolveTPExp arg2
             return (fromJust $ iType arg2', e{exps = [arg1', arg2']})
       
+  resolveTExp e@IFunExp {op = "++", exps = [arg1, arg2]} =
+    do
+      arg1s' <- resolveTPExp arg1
+      arg2s' <- resolveTPExp arg2
+      let union' a b = typeOf a +++ typeOf b
+      return $ [return (union' arg1' arg2', e{exps = [arg1', arg2']}) | (arg1', arg2') <- sortBy (comparing $ length . unionType . uncurry union') $ liftM2 (,) arg1s' arg2s']
   resolveTExp e@IFunExp {op, exps = [arg1, arg2]} =
     runListT $ runErrorT $ do
       arg1' <- lift $ ListT $ resolveTPExp arg1
@@ -296,7 +331,6 @@ resolveTPExp' p@PExp{inPos, exp} =
             | op `elem` logBinOps = test (t1 == TBoolean && t2 == TBoolean) >> return TBoolean
             | op `elem` [iLt, iGt, iLte, iGte] = test (numeric t1 && numeric t2) >> return TBoolean
             | op `elem` [iEq, iNeq] = testNotSame arg1' arg2' >> testIntersect t1 t2 >> return TBoolean
-            | op == iUnion = return $ t1 +++ t2
             | op == iDifference = testNotSame arg1' arg2' >> testIntersect t1 t2 >> return t1
             | op == iIntersection = testNotSame arg1' arg2' >> testIntersect t1 t2
             | op `elem` [iDomain, iRange] = testIntersect t1 t2
@@ -309,7 +343,7 @@ resolveTPExp' p@PExp{inPos, exp} =
             | otherwise = error $ "Unknown op: " ++ show e
       result' <- result
       return (result', e{exps = [arg1', arg2']})
-      
+
   resolveTExp e@(IFunExp "=>else" [arg1, arg2, arg3]) =
     runListT $ runErrorT $ do
       arg1' <- lift $ ListT $ resolveTPExp arg1
@@ -318,12 +352,17 @@ resolveTPExp' p@PExp{inPos, exp} =
       let t1 = typeOf arg1'
       let t2 = typeOf arg2'
       let t3 = typeOf arg3'
+--      unless (False) $
+--        throwError $ SemanticErr inPos ("The types are: '" ++ str t2 ++ "' and '" ++ str t3 ++ "'")
+
       unless (t1 == TBoolean) $
         throwError $ SemanticErr inPos ("Function 'if/else' cannot be performed on 'if' " ++ str t1 ++ " 'then' " ++ str t2 ++ " 'else' " ++ str t3)
-      it <- intersection t2 t3
-      t  <- case it of
+
+      it <- getIfThenElseType t2 t3
+      t <- case it of
         Just it' -> return it'
-        Nothing  -> throwError $ SemanticErr inPos ("Function '=>else' cannot be performed on if '" ++ str t1 ++ "' then '" ++ str t2 ++ "' else '" ++ str t3 ++ "'")        
+        Nothing  -> throwError $ SemanticErr inPos ("Function '=>else' cannot be performed on if '" ++ str t1 ++ "' then '" ++ str t2 ++ "' else '" ++ str t3 ++ "'")
+
       return (t, e{exps = [arg1', arg2', arg3']})
       
   resolveTExp e@IDeclPExp{oDecls, bpexp} =

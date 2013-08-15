@@ -1,0 +1,106 @@
+open util/integer
+pred show {}
+
+
+lone sig c1_MISC_FILESYSTEMS
+{ r_c2_display : one c2_display
+, r_c15_CYGPKG_FS_JFFS2 : lone c15_CYGPKG_FS_JFFS2 }
+{ (this.(@r_c2_display.@ref)) = 0
+  all disj x, y : this.@r_c2_display | (x.@ref) != (y.@ref) }
+
+lone sig c2_display
+{ ref : one Int }
+{ one r_c2_display }
+
+lone sig c15_CYGPKG_FS_JFFS2
+{ r_c16_display : one c16_display
+, r_c33_CYGOPT_FS_JFFS2_DEBUG : one c33_CYGOPT_FS_JFFS2_DEBUG
+, r_c79_CYGOPT_FS_JFFS2_NAND : lone c79_CYGOPT_FS_JFFS2_NAND
+, r_c87_CYGOPT_FS_JFFS2_COMPRESS : lone c87_CYGOPT_FS_JFFS2_COMPRESS }
+{ one r_c15_CYGPKG_FS_JFFS2
+  (this.(@r_c16_display.@ref)) = 1
+  all disj x, y : this.@r_c16_display | (x.@ref) != (y.@ref)
+  some c156_CYGPKG_CRC
+  some c157_MTD
+  all disj x, y : this.@r_c33_CYGOPT_FS_JFFS2_DEBUG | (x.@ref) != (y.@ref)
+  (some this.@r_c79_CYGOPT_FS_JFFS2_NAND) <=> (some c159_HAS_IOMEM)
+  some this.@r_c87_CYGOPT_FS_JFFS2_COMPRESS }
+
+lone sig c16_display
+{ ref : one Int }
+{ one r_c16_display }
+
+lone sig c33_CYGOPT_FS_JFFS2_DEBUG
+{ ref : one Int
+, r_c37_display : one c37_display
+, r_c57_description : one c57_description }
+{ one r_c33_CYGOPT_FS_JFFS2_DEBUG
+  (this.@ref) = 0
+  (this.(@r_c37_display.@ref)) = 2
+  all disj x, y : this.@r_c37_display | (x.@ref) != (y.@ref)
+  (0 <= (this.@ref)) && ((this.@ref) <= 2)
+  (this.(@r_c57_description.@ref)) = 3
+  all disj x, y : this.@r_c57_description | (x.@ref) != (y.@ref) }
+
+lone sig c37_display
+{ ref : one Int }
+{ one r_c37_display }
+
+lone sig c57_description
+{ ref : one Int }
+{ one r_c57_description }
+
+lone sig c79_CYGOPT_FS_JFFS2_NAND
+{}
+{ one r_c79_CYGOPT_FS_JFFS2_NAND }
+
+lone sig c87_CYGOPT_FS_JFFS2_COMPRESS
+{ r_c88_display : one c88_display
+, r_c103_CYGOPT_FS_JFFS2_COMPRESS_ZLIB : lone c103_CYGOPT_FS_JFFS2_COMPRESS_ZLIB
+, r_c119_CYGOPT_FS_JFFS2_COMPRESS_CMODE : one c119_CYGOPT_FS_JFFS2_COMPRESS_CMODE }
+{ one r_c87_CYGOPT_FS_JFFS2_COMPRESS
+  (this.(@r_c88_display.@ref)) = 4
+  all disj x, y : this.@r_c88_display | (x.@ref) != (y.@ref)
+  some this.@r_c103_CYGOPT_FS_JFFS2_COMPRESS_ZLIB
+  all disj x, y : this.@r_c119_CYGOPT_FS_JFFS2_COMPRESS_CMODE | (x.@ref) != (y.@ref) }
+
+lone sig c88_display
+{ ref : one Int }
+{ one r_c88_display }
+
+lone sig c103_CYGOPT_FS_JFFS2_COMPRESS_ZLIB
+{ r_c104_display : one c104_display }
+{ one r_c103_CYGOPT_FS_JFFS2_COMPRESS_ZLIB
+  (this.(@r_c104_display.@ref)) = 5
+  all disj x, y : this.@r_c104_display | (x.@ref) != (y.@ref)
+  some c158_CYGPKG_COMPRESS_ZLIB }
+
+lone sig c104_display
+{ ref : one Int }
+{ one r_c104_display }
+
+lone sig c119_CYGOPT_FS_JFFS2_COMPRESS_CMODE
+{ ref : one Int
+, r_c123_display : one c123_display }
+{ one r_c119_CYGOPT_FS_JFFS2_COMPRESS_CMODE
+  (this.@ref) = 6
+  (this.(@r_c123_display.@ref)) = 7
+  all disj x, y : this.@r_c123_display | (x.@ref) != (y.@ref)
+  (((this.@ref) = 8) || ((this.@ref) = 6)) || ((this.@ref) = 9) }
+
+lone sig c123_display
+{ ref : one Int }
+{ one r_c123_display }
+
+one sig c156_CYGPKG_CRC
+{}
+
+one sig c157_MTD
+{}
+
+one sig c158_CYGPKG_COMPRESS_ZLIB
+{}
+
+one sig c159_HAS_IOMEM
+{}
+

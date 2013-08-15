@@ -71,8 +71,9 @@ sig c16_Address
 { r_c17_Street : one c17_Street
 , r_c19_City : one c19_City
 , r_c20_Country : one c20_Country
-, r_c21_PostalCode : one c21_PostalCode }
-{ one @r_c16_Address.this }
+, r_c30_PostalCode : one c30_PostalCode }
+{ one @r_c16_Address.this
+  all disj x, y : this.@r_c20_Country | (x.@ref) != (y.@ref) }
 
 sig c17_Street
 { ref : one Int
@@ -91,37 +92,48 @@ sig c20_Country
 { ref : one c2_NorthAmericanCountry }
 { one @r_c20_Country.this }
 
-sig c21_PostalCode
+sig c30_PostalCode
 { ref : one Int }
-{ one @r_c21_PostalCode.this }
+{ one @r_c30_PostalCode.this }
 
-one sig c22_JohnDoe extends c5_Person
+one sig c31_JohnDoe extends c5_Person
 {}
-{ (((((((((this.@r_c6_Name.@ref) = 0) && ((this.@r_c7_Surname.@ref) = 1)) && ((this.@r_c8_DateOfBirth.@ref) = 2)) && (some (this.@r_c9_Gender).@r_c10_Male)) && (some (this.@r_c12_MaritalStatus).@r_c14_Married)) && (((this.@r_c16_Address).@r_c17_Street.@ref) = 3)) && (((this.@r_c16_Address).@r_c19_City.@ref) = 4)) && (((this.@r_c16_Address).(@r_c20_Country.@ref)) = c3_Canada)) && (((this.@r_c16_Address).@r_c21_PostalCode.@ref) = 5) }
+{ (((((((((this.(@r_c6_Name.@ref)) = 0) && ((this.(@r_c7_Surname.@ref)) = 1)) && ((this.(@r_c8_DateOfBirth.@ref)) = 2)) && (some (this.@r_c9_Gender).@r_c10_Male)) && (some (this.@r_c12_MaritalStatus).@r_c14_Married)) && (((this.@r_c16_Address).(@r_c17_Street.@ref)) = 3)) && (((this.@r_c16_Address).(@r_c19_City.@ref)) = 4)) && (((this.@r_c16_Address).(@r_c20_Country.@ref)) = c3_Canada)) && (((this.@r_c16_Address).(@r_c30_PostalCode.@ref)) = 5) }
 
-abstract sig c56_Student extends c5_Person
-{ r_c57_StudentId : one c57_StudentId }
+abstract sig c65_Student extends c5_Person
+{ r_c66_StudentId : one c66_StudentId }
 
-sig c57_StudentId
+sig c66_StudentId
 { ref : one Int }
-{ one @r_c57_StudentId.this }
+{ one @r_c66_StudentId.this }
 
-abstract sig c58_WaitingLine
-{ r_c59_participants : set c59_participants }
+abstract sig c67_WaitingLine
+{ r_c68_participants : set c68_participants }
+{ all disj x, y : this.@r_c68_participants | (x.@ref) != (y.@ref) }
 
-sig c59_participants
+sig c68_participants
 { ref : one c5_Person }
-{ one @r_c59_participants.this }
+{ one @r_c68_participants.this }
 
-one sig c60_MaryJane extends c56_Student
+one sig c78_MaryJane extends c65_Student
 {}
-{ (this.@r_c57_StudentId.@ref) = 6 }
+{ (this.(@r_c66_StudentId.@ref)) = 6 }
 
-one sig c64_BusLine extends c58_WaitingLine
+one sig c82_BusLine extends c67_WaitingLine
 {}
-{ (c22_JohnDoe in (this.(@r_c59_participants.@ref))) && (c60_MaryJane in (this.(@r_c59_participants.@ref))) }
+{ (c31_JohnDoe in (this.(@r_c68_participants.@ref))) && (c78_MaryJane in (this.(@r_c68_participants.@ref))) }
 
-one sig c72_JohnAndMaryLine extends c58_WaitingLine
+one sig c90_JohnAndMaryLine extends c67_WaitingLine
 {}
-{ (this.(@r_c59_participants.@ref)) = (c22_JohnDoe + c60_MaryJane) }
+{ (this.(@r_c68_participants.@ref)) = (c31_JohnDoe + c78_MaryJane) }
+
+fact { #c96_TwoPersonLine = 0 }
+abstract sig c96_TwoPersonLine extends c67_WaitingLine
+{}
+{ (#(this.@r_c68_participants)) = 2 }
+
+fact { #c101_OneToTenPersonLine = 0 }
+abstract sig c101_OneToTenPersonLine extends c67_WaitingLine
+{}
+{ ((#(this.@r_c68_participants)) >= 1) && ((#(this.@r_c68_participants)) <= 10) }
 

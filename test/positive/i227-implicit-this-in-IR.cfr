@@ -1,0 +1,7 @@
+// http://gsd.uwaterloo.ca:8888/question/951/different-ir-produced-for-explicit-this-and
+
+A
+	i : integer 
+		[ this = 1 ]
+	[ this.i = 1 ]
+	[ i = 1 ]

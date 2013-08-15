@@ -1,6 +1,8 @@
+// http://gsd.uwaterloo.ca:8888/question/396/problems-with-references-pointing-to-same-object
+
 abstract Dimension
 	levels -> DimensionLevel *
-	[all dl : this.levels | dl.belongsTo = this]
+	[all dl : this.levels | dl.belongsTo.ref = this]
 
 abstract DimensionLevel
 	belongsTo -> Dimension
@@ -11,4 +13,4 @@ dim2 : Dimension
 dimLevel1 : DimensionLevel
 dimLevel2 : DimensionLevel
 
-[some disj dl1;dl2 : DimensionLevel | dl1.belongsTo = dl2.belongsTo]
+[some disj dl1;dl2 : DimensionLevel | dl1.belongsTo.ref = dl2.belongsTo.ref ]

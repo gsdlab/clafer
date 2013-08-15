@@ -1,0 +1,48 @@
+telematicsSystem
+    xor channel
+        single
+        dual
+    extraDisplay ?
+    xor size
+        small
+        large
+    [ dual <=> ECU2 ]
+    [ extraDisplay <=> #ECU1.display = 2 ]
+    [ extraDisplay <=> (ECU2 => #ECU2.display = 2) ]
+    [ large <=> ! plaECU.display.options.size.small ]
+    [ small <=> ! plaECU.display.options.size.large ]
+//# FRAGMENT
+abstract comp
+    version : integer
+//# FRAGMENT
+abstract ECU : comp
+
+abstract display : comp
+    server -> ECU
+    `options
+    [this.version >= server.version]
+//# FRAGMENT
+abstract options
+    xor size
+        small
+        large
+    cache ?
+        size : integer
+            fixed ?
+    [small && cache => fixed]
+//# FRAGMENT
+abstract plaECU : ECU
+    `display 1..2
+        [server = parent ]
+        [ ! options.cache]
+
+ECU1 : plaECU
+
+ECU2 : plaECU ?
+    master -> ECU1
+//# FRAGMENT
+[dual ]
+[ extraDisplay ]
+[ telematicsSystem.size.large ]
+[ comp.version = 1 ]
+//# FRAGMENT

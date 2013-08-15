@@ -1,0 +1,6 @@
+// Tests the different forms of a clafer
+
+
+
+abstract  clafer1 : clafer2 
+abstract  clafer2 : integer

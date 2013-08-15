@@ -1,3 +1,4 @@
+{-# LANGUAGE DeriveDataTypeable, RankNTypes, KindSignatures, FlexibleContexts #-}
 {-
  Copyright (C) 2012 Kacper Bak, Jimmy Liang <http://gsd.uwaterloo.ca>
 
@@ -19,7 +20,6 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
 -}
-{-# LANGUAGE DeriveDataTypeable #-}
 module Language.Clafer.Common where
 
 import Data.Tree
@@ -27,8 +27,6 @@ import Data.Maybe
 import Data.Char
 import Data.List
 import qualified Data.Map as Map
---import System.Console.CmdArgs
---import Control.Monad.State
 
 import Language.Clafer.Front.Absclafer
 import Language.Clafer.Intermediate.Intclafer
@@ -52,7 +50,8 @@ type Ident = PosIdent
 getSuper :: IClafer -> String
 getSuper = getSuperId.supers.super
 
-getSuperNoArr :: IClafer -> [Char]
+getSuperNoArr :: IClafer -> String
+
 getSuperNoArr clafer
   | isOverlapping $ super clafer = "clafer"
   | otherwise                    = getSuper clafer
@@ -60,16 +59,17 @@ getSuperNoArr clafer
 getSuperId :: [PExp] -> String
 getSuperId = sident . Language.Clafer.Intermediate.Intclafer.exp . head
 
+isEqClaferId :: String -> IClafer -> Bool
 isEqClaferId = flip $ (==).uid
 
 idToPExp :: String -> Span -> String -> String -> Bool -> PExp
-idToPExp pid pos modids id isTop = PExp (Just $ TClafer [id]) pid pos (IClaferId modids id isTop)
+idToPExp pid' pos modids id' isTop' = PExp (Just $ TClafer [id']) pid' pos (IClaferId modids id' isTop')
 
 mkLClaferId :: String -> Bool -> IExp
 mkLClaferId = IClaferId ""
 
 mkPLClaferId :: String -> Bool -> PExp
-mkPLClaferId id isTop = pExpDefPidPos $ mkLClaferId id isTop
+mkPLClaferId id' isTop' = pExpDefPidPos $ mkLClaferId id' isTop'
 
 pExpDefPidPos :: IExp -> PExp
 pExpDefPidPos = pExpDefPid noSpan
@@ -80,27 +80,31 @@ pExpDefPid = pExpDef ""
 pExpDef :: String -> Span -> IExp -> PExp
 pExpDef = PExp Nothing
 
-isParent (PExp _ _ _ (IClaferId _ id _)) = id == parent
+isParent :: PExp -> Bool
+isParent (PExp _ _ _ (IClaferId _ id' _)) = id' == parent
 isParent _ = False
 
 isClaferName :: PExp -> Bool
-isClaferName (PExp _ _ _ (IClaferId _ id _)) =
-  id `notElem` ([this, parent, children] ++ primitiveTypes)
+isClaferName (PExp _ _ _ (IClaferId _ id' _)) =
+  id' `notElem` ([this, parent, children] ++ primitiveTypes)
 isClaferName _ = False
 
-isClaferName' (PExp _ _ _ (IClaferId _ id _)) = True
+isClaferName' :: PExp -> Bool
+isClaferName' (PExp _ _ _ (IClaferId _ _ _)) = True
 isClaferName' _ = False
 
 getClaferName :: PExp -> String
-getClaferName (PExp _ _ _ (IClaferId _ id _)) = id
+getClaferName (PExp _ _ _ (IClaferId _ id' _)) = id'
 getClaferName _ = ""
 
 -- -----------------------------------------------------------------------------
 -- conversions
+elemToClafer :: IElement -> Maybe IClafer
 elemToClafer x = case x of
   IEClafer clafer  -> Just clafer
   _  -> Nothing
 
+toClafers :: [IElement] -> [IClafer]
 toClafers = mapMaybe elemToClafer
 
 -- -----------------------------------------------------------------------------
@@ -131,10 +135,11 @@ findHierarchy sFun clafers clafer
 -- -----------------------------------------------------------------------------
 -- generic functions
 
+apply :: forall t t1. (t -> t1) -> t -> (t, t1)
 apply f x = (x, f x)
 
 -- lists all nodes of a tree (BFS). Take a function to extract subforest
-bfs :: (b1 -> (b, [b1])) -> [b1] -> [b]
+bfs :: forall b b1. (b1 -> (b, [b1])) -> [b1] -> [b]
 bfs toNode seed = map rootLabel $ concat $ takeWhile (not.null) $
   iterate (concatMap subForest) $ unfoldForest toNode seed
 
@@ -150,105 +155,188 @@ getSubclafers = mapMaybe elemToClafer
 bfsClafers :: [IClafer] -> [IClafer]
 bfsClafers clafers = bfs toNodeShallow clafers
 
-
+lurry :: forall t t1. ([t1] -> t) -> t1 -> t1 -> t
 lurry f x y = f [x,y]
 
-
+fst3 :: forall t t1 t2. (t, t1, t2) -> t
 fst3 (a, _, _) = a
+snd3 :: forall t t1 t2. (t, t1, t2) -> t1
 snd3 (_, b, _) = b
+trd3 :: forall t t1 t2. (t, t1, t2) -> t2
 trd3 (_, _, c) = c
 
+
+toTriple :: forall t t1 t2. t -> (t1, t2) -> (t, t1, t2)
 toTriple a (b,c) = (a, b, c)
 
+toMTriple :: forall t t1 t2. t -> (t1, t2) -> Maybe (t, t1, t2)
 toMTriple a (b,c) = Just (a, b, c)
 
 -- unary operators
+iNot :: String
 iNot          = "!"
+
+iCSet :: String
 iCSet         = "#"
+
+iMin :: String
 iMin          = "-"
+
+iGMax :: String
 iGMax         = "max"
+
+iGMin :: String
 iGMin         = "min"
+
+iSumSet :: String
 iSumSet       = "sum"
+
+unOps :: [String]
 unOps = [iNot, iCSet, iMin, iGMax, iGMin, iSumSet]
 
 -- binary operators
+iIff :: String
 iIff          = "<=>"
+
+iImpl :: String
 iImpl         = "=>"
+
+iOr :: String
 iOr           = "||"
+
+iXor :: String
 iXor          = "xor"
+
+iAnd :: String
 iAnd          = "&&"
 
+logBinOps :: [String]
 logBinOps = [iIff, iImpl, iOr, iXor, iAnd]
 
+iLt :: String
 iLt           = "<"
+
+iGt :: String
 iGt           = ">"
+
+iEq :: String
 iEq           = "="
+
+iLte :: String
 iLte          = "<="
+
+iGte :: String
 iGte          = ">="
+
+iNeq :: String
 iNeq          = "!="
+
+iIn :: String
 iIn           = "in"
+
+iNin :: String
 iNin          = "not in"
 
-relGenBinOps :: [[Char]]
+relGenBinOps :: [String]
 relGenBinOps = [iLt, iGt, iEq, iLte, iGte, iNeq]
 
+relSetBinOps :: [String]
 relSetBinOps = [iIn, iNin]
 
+relBinOps :: [String]
 relBinOps = relGenBinOps ++ relSetBinOps
 
+iPlus :: String
 iPlus         = "+"
+
+iSub :: String
 iSub          = "-"
+
+iMul :: String
 iMul          = "*"
+
+iDiv :: String
 iDiv          = "/"
 
-arithBinOps = [iPlus, iSub, iMul, iDiv]
+iSumSet' :: String
+iSumSet'      = "sum'"
 
+arithBinOps :: [String]
+arithBinOps = [iPlus, iSub, iMul, iDiv, iSumSet']
+
+iUnion :: String
 iUnion        = "++"
+
+iDifference :: String
 iDifference   = "--"
+
+iIntersection :: String
 iIntersection = "&"
+
+iDomain :: String
 iDomain       = "<:"
+
+iRange :: String
 iRange        = ":>"
+
+iJoin :: String
 iJoin         = "."
 
+setBinOps :: [String]
 setBinOps = [iUnion, iDifference, iIntersection, iDomain, iRange, iJoin]
 
-binOps :: [[Char]]
+binOps :: [String]
 binOps = logBinOps ++ relBinOps ++ arithBinOps ++ setBinOps
 
 -- ternary operators
+iIfThenElse :: String
 iIfThenElse   = "=>else"
 
-mkIFunExp op (x:[]) = x
-mkIFunExp op xs = foldl1 (\x y -> IFunExp op $ map (PExp (Just $ TClafer []) "" noSpan) [x,y]) xs
+mkIFunExp :: String -> [IExp] -> IExp
+mkIFunExp _ (x:[]) = x
+mkIFunExp op' xs = foldl1 (\x y -> IFunExp op' $ map (PExp (Just $ TClafer []) "" noSpan) [x,y]) xs
 
+toLowerS :: String -> String
 toLowerS "" = ""
 toLowerS (s:ss) = toLower s : ss
 
 -- -----------------------------------------------------------------------------
 -- Constants
 
+this :: String
 this = "this"
 
+parent :: String
 parent = "parent"
 
+children :: String
 children = "children"
 
+ref :: String
 ref = "ref"
 
+specialNames :: [String]
 specialNames = [this, parent, children, ref]
 
+strType :: String
 strType = "string"
 
+intType :: String
 intType = "int"
 
+integerType :: String
 integerType = "integer"
 
+baseClafer :: String
 baseClafer = "clafer"
 
+modSep :: String
 modSep = "\\"
 
+primitiveTypes :: [String]
 primitiveTypes = [strType, intType, integerType]
 
+isPrimitive :: String -> Bool
 isPrimitive = flip elem primitiveTypes
 
 data GEnv = GEnv {
@@ -259,5 +347,5 @@ data GEnv = GEnv {
 
 voidf :: Monad m => m t -> m ()
 voidf f = do
-  x <- f
+  _ <- f
   return ()

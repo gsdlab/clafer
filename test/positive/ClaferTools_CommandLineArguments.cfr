@@ -1,0 +1,72 @@
+abstract Argument
+
+abstract IntegerArgument : integer
+
+abstract StringArgument : string
+
+abstract Value
+
+abstract DefaultValue
+//# FRAGMENT
+abstract xor ClaferArgs
+   functional
+      xor mode : Argument
+         alloy : DefaultValue
+            alloy42 : Value ?
+            noalloyruncommand : Argument ?
+            alloy_mapping : Argument ?
+         clafer : Value
+         html : Value
+            [ keep_unused ]
+            self_contained : Argument ?
+            add_graph : Argument ?
+            add_comments : Argument ?
+         graph : Value
+            [ keep_unused ]
+         cvlGraph : Value
+            [ flatten_inheritance ]
+            [ keep_unused ]
+      keep_unused : Argument ?
+      flatten_inheritance : Argument ?
+      console_output : Argument ?
+      timeout_analysis : IntegerArgument ?
+      mux layout ?
+         no_layout : Argument
+         new_layout : Argument
+      check_duplicates : Argument ?
+      skip_resolver : Argument ?
+      no_stats : Argument ?
+      validate : Argument ?
+         [ no html ]
+         [ no graph ]
+         [ no cvlGraph ]
+         tooldir : StringArgument
+   schema : Argument
+   help : Argument
+   version : Argument
+//# FRAGMENT
+ca1 : ClaferArgs
+   [ alloy ]
+//# FRAGMENT
+ca2 : ClaferArgs
+   [ alloy ]
+   [ validate ]
+   [ tooldir = "~/clafer-tools-0.3.1/tools" ]
+//# FRAGMENT
+ca3 : ClaferArgs
+   [ alloy42 ]
+   [ keep_unused ]
+   [ flatten_inheritance ]
+//# FRAGMENT
+ca4 : ClaferArgs
+   [ html ]
+//# FRAGMENT
+ca5 : ClaferArgs
+   [ html ]
+   [ self_contained ]
+   [ add_graph ]
+   [ add_comments ]
+//# FRAGMENT
+ca6 : ClaferArgs
+   [ cvlGraph ]
+//# FRAGMENT

@@ -17,10 +17,10 @@ joinArgs = unwords . map f
                 hasSpace = any isSpace x
                 q = ['\"' | hasSpace || null x]
 
-                g ('\\':'\"':xs) = '\\':'\\':'\\':'\"': g xs
+                g ('\\':'\"':xs') = '\\':'\\':'\\':'\"': g xs'
                 g "\\" | hasSpace = "\\\\"
-                g ('\"':xs) = '\\':'\"': g xs
-                g (x:xs) = x : g xs
+                g ('\"':xs') = '\\':'\"': g xs'
+                g (x':xs') = x' : g xs'
                 g [] = []
 
 
@@ -51,4 +51,4 @@ splitArgs = join . f Init
         f Quot ('\"':xs) = f Norm xs
         f Norm (x:xs) | isSpace x = Nothing : f Init xs
         f m (x:xs) = Just x : f m xs
-        f m [] = []
+        f _ [] = []

@@ -1,0 +1,59 @@
+midYearReview : Meeting
+    month -> Month = June
+    chair -> Member = Steven 
+    room -> Room = C
+    [ some onlineParticipant ]
+
+Steven : Member
+
+C : Room
+    whiteboard
+    audioConferencing
+//# FRAGMENT
+ondemandMeeting : Meeting
+    chair -> Member = Joanna
+    [ no onlineParticipant ]
+    room -> Room = D
+
+Joanna : Member
+
+D : Room
+    whiteboard
+//# FRAGMENT
+abstract Meeting
+    chair -> Member
+    participant -> Member +
+    [ chair.ref not in participant ]
+    onlineParticipant -> Member *
+    [ chair.ref not in onlineParticipant ]
+    room -> Room
+        [ this.capacity >= # participant + 1 ]
+    [ some onlineParticipant => room.audioConferencing ]
+
+enum Month = June | July 
+
+abstract Member
+//# FRAGMENT
+abstract Room
+    capacity -> integer
+    or whiteboard
+        traditional
+        electronic
+    projector ?
+    computer ?
+    audioConferencing ?
+//# FRAGMENT
+M : Member 5
+//# FRAGMENT
+SueAgenda : Agenda
+    m1 -> Meeting ? = M1
+    m2 -> Meeting ? = M2
+
+M1 : Meeting ?
+
+M2 : Meeting ?
+   time -> integer = 10
+//# FRAGMENT
+abstract Agenda
+    mt -> Meeting *
+//# FRAGMENT
