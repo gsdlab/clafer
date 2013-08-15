@@ -155,7 +155,7 @@ start v args' model = if schema args'
 runEcore2Clafer :: FilePath -> FilePath -> IO ()
 runEcore2Clafer    ecoreFile toolPath
   | null ecoreFile = do
-      putStrLn "Error: Provide a file name of the ECore model."
+      putStrLn "Error: Provide a file name of an ECore model."
   | otherwise      = do
       putStrLn $ "Converting " ++ ecoreFile ++ " into Clafer"
-      voidf $ system $ "java -jar " ++ toolPath ++ "ecore2clafer.jar " ++ ecoreFile
+      voidf $ system $ "java -jar " ++ toolPath ++ "/ecore2clafer.jar " ++ ecoreFile

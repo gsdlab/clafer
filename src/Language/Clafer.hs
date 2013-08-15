@@ -249,7 +249,7 @@ compile =
     let (imodule, _, _) = ir
 
     let spanList = foldMapIR gt1 imodule
-    when ((afm $ args env) && spanList/="") $ throwErr (ClaferErr $ ("The model is not an attributed feature model .\nThe following places contain cardinality larger than 1:\n"++) $ spanList :: CErr Span)
+    when ((afm $ args env) && spanList/="") $ throwErr (ClaferErr $ ("The model is not an attributed feature model.\nThe following places contain cardinality larger than 1:\n"++) $ spanList :: CErr Span)
     putEnv $ env{ cIr = Just ir, irModuleTrace = traceIrModule imodule }
     where
       isKeyWord :: Ir -> String
