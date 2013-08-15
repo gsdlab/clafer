@@ -1,0 +1,9 @@
+// Tests that a clafer can inherit from an abstract clafer declared after it
+// Tests that a clafer 
+//
+// Expected Output:
+//   A
+
+
+A : B
+abstract B 

@@ -1,30 +1,24 @@
-/*
-// http://gsd.uwaterloo.ca:8888/question/459/abstract-reference-clafers-should-be-implemented
-
-All clafers: 4 | Abstract: 2 | Concrete: 2 | References: 0
-Constraints: 1
-Goals: 0
-Global scope: 1..*
-All names unique: False
-*/
 open util/integer
 pred show {}
-run  show for 1 
 
+
+fact { #c1_Person = 0 }
 abstract sig c1_Person
 { r_c2_age : one c2_age
-, r_c3_married : lone c3_married }
+, r_c12_married : lone c12_married }
+{ all disj x, y : this.@r_c2_age | (x.@ref) != (y.@ref) }
 
 sig c2_age
 { ref : one Int }
 { one @r_c2_age.this }
 
-sig c3_married
+sig c12_married
 {}
-{ one @r_c3_married.this }
+{ one @r_c12_married.this }
 
-sig c4_NewBorn in c1_Person
-{ }
+fact { #c13_NewBorn = 0 }
+abstract sig c13_NewBorn
+{ ref : one c1_Person }
+{ ((c1_Person.(@r_c2_age.@ref)) = 0) && (no c1_Person.@r_c12_married) }
 
-fact {c4_NewBorn = { c1_Person : c1_Person | ((c1_Person.@r_c2_age.@ref) = 0) && (no c1_Person.@r_c3_married) } }
-
+fact { all disj x, y : c13_NewBorn | (x.@ref) != (y.@ref) }

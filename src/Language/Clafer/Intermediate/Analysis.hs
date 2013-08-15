@@ -31,7 +31,6 @@ import Language.Clafer.Front.Absclafer hiding (Path)
 import qualified Language.Clafer.Intermediate.Intclafer as I
 import Language.Clafer.Intermediate.Desugarer
 import Language.Clafer.Front.Printclafer
-import Debug.Trace
 import Control.Applicative
 import Control.Monad.LPMonad.Supply
 import Control.Monad.Error
@@ -117,7 +116,7 @@ claferWithUid u =
   do
     c <- clafers
     case find ((==) u . uid) c of
-      Just c' -> return $ c'
+      Just c' -> return c'
       Nothing -> error $ "claferWithUid: Unknown uid " ++ u
       
 parentUid :: Monad m => SClafer -> m String
@@ -127,13 +126,15 @@ parentUid clafer =
     Nothing -> fail $ "No parent uid for " ++ show clafer
     
 parentOf :: (Uidable c, MonadAnalysis m) => c -> m c
-parentOf clafer = fromClafer =<< claferWithUid =<< parentUid =<< toClafer clafer
+parentOf clafer = fromUid =<< parentUid =<< toClafer clafer
 
 parentsOf :: (Uidable c, MonadAnalysis m) => c -> m [c]
 parentsOf clafer =
-  runListT $ do
-    r <- parentOf clafer
-    return r `mplus` ListT (parentsOf r)
+  do
+    r <- runMaybeT $ parentOf clafer
+    case r of
+         Just r' -> (r' :) <$> parentsOf r'
+         Nothing -> return []
 
 ancestorsOf :: (Uidable c, MonadAnalysis m) => c -> m [c]
 ancestorsOf clafer = (clafer :) <$> parentsOf clafer
@@ -154,8 +155,8 @@ directDescendantsOf c =
 topNonRootAncestor :: (Uidable c, MonadAnalysis m) => c -> m c
 topNonRootAncestor clafer =
   do
-    clafer' <- toClafer clafer
-    when (uid clafer' == rootUid) $ error "Root does not have a non root ancestor."
+    uid' <- toUid clafer
+    when (uid' == rootUid) $ error "Root does not have a non root ancestor."
     (head . tail . reverse) <$> ancestorsOf clafer
 
 refUid :: Monad m => SClafer -> m String
@@ -165,13 +166,15 @@ refUid clafer =
     _             -> fail $ "No ref uid for " ++ show clafer
 
 refOf :: (Uidable c, MonadAnalysis m) => c -> m c
-refOf clafer = fromClafer =<< claferWithUid =<< refUid =<< toClafer clafer
+refOf clafer = fromUid =<< refUid =<< toClafer clafer
 
 refsOf :: (Uidable c, MonadAnalysis m) => c -> m [c]
 refsOf clafer =
-  runListT $ do
-    r <- refOf clafer
-    return r `mplus` ListT (refsOf r)
+  do
+    r <- runMaybeT $ refOf clafer
+    case r of
+         Just r' -> (r' :) <$> refsOf r'
+         Nothing -> return []
 
 colonUid :: (Uidable c, MonadAnalysis m) => c -> m String
 colonUid c =
@@ -182,13 +185,15 @@ colonUid c =
       _               -> fail $ "No colon uid for " ++ show clafer
 
 colonOf :: (Uidable c, MonadAnalysis m) => c -> m c
-colonOf clafer = fromClafer =<< claferWithUid =<< colonUid =<< toClafer clafer
+colonOf clafer = fromUid =<< colonUid =<< toClafer clafer
 
 colonsOf :: (Uidable c, MonadAnalysis m) => c -> m [c]
 colonsOf clafer =
-  runListT $ do
-    r <- colonOf clafer
-    return r `mplus` ListT (colonsOf r)
+  do
+    r <- runMaybeT $ colonOf clafer
+    case r of
+         Just r' -> (r' :) <$> colonsOf r'
+         Nothing -> return []
 
 -- "subclafers"
 colonsTo :: (Uidable c, MonadAnalysis m) => c -> m [c]
@@ -209,11 +214,7 @@ hierarchy t = (t :) <$> colonsOf t
  -    C
  -}
 isDirectChild :: (Uidable c, MonadAnalysis m) => c -> c -> m Bool
-isDirectChild c p =
-  do
-    child <- toClafer c
-    parent <- toClafer p
-    is (not . null) (child |^ parent)
+isDirectChild c p = (not . null) <$> (c |^ p)
  
 {-
  - C is an direct child of B.
@@ -238,14 +239,20 @@ isChild child parent =
 class Matchable c => Uidable c where
   toClafer :: MonadAnalysis m => c -> m SClafer
   fromClafer :: MonadAnalysis m => SClafer -> m c
+  toUid :: MonadAnalysis m => c -> m String
+  fromUid :: MonadAnalysis m => String -> m c
   
 instance Uidable SClafer where
   toClafer = return
   fromClafer = return
+  toUid = return . uid
+  fromUid = claferWithUid
   
 instance Uidable String where
   toClafer = claferWithUid
   fromClafer = return . uid
+  toUid = return
+  fromUid = return
 
 data Anything = Anything
 
@@ -267,42 +274,37 @@ anything = Anything
 
 -- a is a child of b
 (|^) :: (MonadAnalysis m, Matchable a, Matchable b) => a -> b -> m [(SClafer, SClafer)]
-lower |^ upper =
-  runListT $ do
+lower |^ upper = runListT $ do
     clafer <- foreach clafers
+    guard $ matches lower clafer
     parent <- parentOf clafer
-    when (not $ matches lower clafer) mzero
-    when (not $ matches upper parent) mzero
-    return (clafer , parent)
+    guard $ matches upper parent
+    return (clafer , parent) 
 
 -- a -> b    
 (|->) :: (MonadAnalysis m, Matchable a, Matchable b) => a -> b -> m [(SClafer, SClafer)]
-lower |-> upper =
-  runListT $ do
+lower |-> upper = runListT $ do
     clafer <- foreach clafers
+    guard $ matches lower clafer
     super  <- refOf clafer
-    when (not $ matches lower clafer) mzero
-    when (not $ matches upper super) mzero
-    return (clafer, super)
+    guard $ matches upper super
+    return (clafer, super) 
 
 -- a : b
 (|:) :: (MonadAnalysis m, Matchable a, Matchable b) => a -> b -> m [(SClafer, SClafer)]
-lower |: upper =
-  runListT $ do
+lower |: upper = runListT $ do
     clafer <- foreach clafers
+    guard $ matches lower clafer
     super  <- colonOf clafer
-    when (not $ matches lower clafer) mzero
-    when (not $ matches upper super) mzero
-    return (clafer, super)
+    guard $ matches upper super
+    return (clafer, super) 
 
 -- constraints under
 constraintsUnder :: (MonadAnalysis m, Matchable a) => a -> m [(SClafer, I.PExp)]
 constraintsUnder under =
-  runListT $ do
-    clafer <- foreach clafers
-    when (not $ matches under clafer) mzero
-    constraint <- foreachM $ constraints clafer
-    return (clafer, constraint)
+  do
+    clafers' <- filter (matches under) <$> clafers
+    return [(clafer, constraint) | clafer <- clafers', constraint <- constraints clafer]
 
 
 rootUid :: String
@@ -393,9 +395,6 @@ findAll = lift
 select :: Monad m => m [a] -> (a -> b) -> m [b]
 select from f = from >>= return . map f
 
-is :: Monad m => (a -> Bool) -> m a -> m Bool
-is = liftM
-
 suchThat :: Monad m => m [a] -> (a -> Bool) -> m [a]
 suchThat = flip $ liftM . filter
 
@@ -443,6 +442,7 @@ combine =
     map mergeGroup . groupBy (testing fst) . sortBy (comparing fst)
     where
     mergeGroup ((a, b):xs) = (a, b : map snd xs)
+    mergeGroup [] = error "Function mergeGroup from Analysis expected a non empty list, but was given an empty one"
 
 -- Returns true iff the left and right expressions are syntactically identical
 sameAs :: I.PExp -> I.PExp -> Bool

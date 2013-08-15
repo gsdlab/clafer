@@ -1,0 +1,12 @@
+// Tests a clafer that uses no implicit modifiers.
+//
+// Expected Output: ?? (I'm not seeing why this has no instances)
+//      
+// Current Output:
+//   Compiles, no instances.
+
+abstract B
+abstract 2..3 A : B 4
+  X *
+
+C : A 4

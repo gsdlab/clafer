@@ -1,0 +1,14 @@
+// Tests circularity of subclafers of abstract clafers
+//
+// Expected Output: Circularity Error?
+//
+// Current Output:
+//   Infinite Loop
+
+abstract A
+  b : B
+
+abstract B
+  a : A
+
+x : A

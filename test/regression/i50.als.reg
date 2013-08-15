@@ -2,6 +2,7 @@ open util/integer
 pred show {}
 
 
+fact { #c1_A = 0 }
 abstract sig c1_A
 { r_c2_b : lone c2_b }
 
@@ -12,6 +13,7 @@ sig c2_b
 one sig c3_C
 { r_c4_b : lone c4_b
 , r_c5_a : one c5_a }
+{ all disj x, y : this.@r_c5_a | (x.@ref) != (y.@ref) }
 
 lone sig c4_b
 {}

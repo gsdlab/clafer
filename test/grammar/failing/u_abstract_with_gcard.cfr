@@ -1,0 +1,21 @@
+// Tests if an abstract clafer can have a group cardinality.
+// 
+// Note: Currently Clafer REQUIRES the notation "a..a" rather than just "a" for group cardinality. This should be changed.
+//
+// Expected Output: Compiles?
+//   A
+//     X
+//     X
+//
+// Current Output:
+//   Parse Error
+
+abstract 2..3 B
+  X *
+
+//This line fails
+abstract 2 D
+  Y *
+
+A : B
+C : D

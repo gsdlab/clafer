@@ -23,7 +23,6 @@ build:
 	cabal install --only-dependencies $(GPLK_LIBS_INCLUDES) $(MAC_USR_LIB)
 	cabal configure
 	cabal build
-	cp dist/build/clafer/clafer .
 
 install:  
 	mkdir -p $(to)
@@ -36,8 +35,15 @@ install:
 	cp -f tools/XsdCheck.class $(to)/tools
 	cp -f tools/ecore2clafer.jar $(to)/tools
 	cp -f -R IDEs $(to)/
-	if test "$(glpk)" ; then cp -f $(glpk)/w32/glpk_4_49.dll $(to); fi
-	cabal install --bindir=$(to) $(GPLK_LIBS_INCLUDES) $(MAC_USR_LIB)
+	if test "$(glpk)" ; then cp -f $(glpk)/w32/glpk_4_52.dll $(to); fi
+	cabal install --bindir=$(to) $(GPLK_LIBS_INCLUDES) $(MAC_USR_LIB) --ghc-option="-O"
+
+# Removes current build and makes a clean new one (Don't use if starting from scratch!)
+cleanEnv:
+	make clean
+	ghc-pkg unregister clafer
+	rm `which clafer`
+	make 
 
 # build Schema.hs from ClaferIG.xsd, call after .xsd changed
 Schema.hs:
@@ -48,14 +54,20 @@ Css.hs:
 	$(MAKE) -C $(SRC_DIR) Css.hs
 
 # enable profiler
+# first remove `cabal` and `ghc` folders (on win: `<User>\AppData\Roaming\cabal` and `<User>\AppData\Roaming\ghc`)
+# this will reinstall everything with profiling support, build clafer, and copy it to .
 prof:
-	$(MAKE) -C $(SRC_DIR)
-	$(MAKE) -C $(TOOL_DIR)
-	ghc -isrc -prof -auto-all -rtsopts -O -outputdir dist/build --make src/clafer -o clafer
+	cabal update
+	cabal install --only-dependencies -p --enable-executable-profiling $(GPLK_LIBS_INCLUDES) $(MAC_USR_LIB)
+	cabal configure -p --enable-executable-profiling
+	cabal build --ghc-options="-prof -auto-all -rtsopts"
 
 .PHONY : test
 
 test:
+	cabal configure --enable-tests
+	cabal build
+	cabal test	
 	$(MAKE) -C $(TEST_DIR) test
 
 reg:

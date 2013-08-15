@@ -1,0 +1,165 @@
+//# OPTIONS -k
+
+abstract Boolean
+
+abstract Integer
+
+abstract String
+
+abstract UnlimitedNatural
+
+abstract Sequence
+
+abstract Set
+
+abstract Element
+    ownedElement -> Element *
+    [all x : this.ownedElement | this in x.owner]
+    owner -> Element ?
+    [all x : this.owner | this in x.ownedElement]
+
+abstract NamedElement : Element 
+    name : String ?
+    qualifiedName : String ?
+    visibility -> VisibilityKind ?
+
+abstract ValueSpecification : NamedElement
+
+abstract DirectedRelationship
+    relatedElement -> Element +
+    source -> Element +
+    target -> Element +
+
+abstract Class : Classifier 
+    isActive ?
+    superClass -> Class *
+    nestedClassifier : Classifier *
+
+abstract Property : StructuralFeature
+    default : String ?
+    isComposite ?
+    isDerived ?
+    isDerivedUnion ?
+    aggregation -> AggregationKind ?
+    class -> Class ?
+    opposite -> Property ?
+    owningAssociation -> Association ?
+    [all x : this.owningAssociation | this in x.ownedEnd]
+    redefinedProperty -> Property *
+    subsettedProperty -> Property *
+    datatype -> DataType ?
+    [all x : this.datatype | this in x.ownedAttribute]
+    association -> Association ?
+    [all x : this.association | this in x.memberEnd]
+    defaultValue : ValueSpecification ?
+    qualifier : Property *
+        [parent in associationEnd]
+    associationEnd -> Property ?
+    [all x : this.associationEnd | this in x.qualifier]
+
+abstract Enumeration : DataType 
+    ownedLiteral : EnumerationLiteral *
+        [parent in enumeration]
+
+abstract DataType : Classifier 
+    ownedAttribute : Property *
+        [parent in datatype]
+
+abstract EnumerationLiteral : InstanceSpecification 
+    enumeration -> Enumeration ?
+    [all x : this.enumeration | this in x.ownedLiteral]
+
+abstract PrimitiveType : DataType 
+
+abstract Classifier : NamedElement 
+    isAbstract ?
+    feature -> Feature *
+    [all x : this.feature | this in x.featuringClassifier]
+    inheritedMember -> NamedElement *
+    general -> Classifier *
+    generalization : Generalization *
+        [parent in specific]
+    attribute -> Property *
+    redefinedClassifier -> Classifier *
+    powertypeExtent -> GeneralizationSet *
+    [all x : this.powertypeExtent | this in x.powertype]
+
+abstract Feature : NamedElement 
+    isStatic ?
+    featuringClassifier -> Classifier *
+    [all x : this.featuringClassifier | this in x.feature]
+
+enum VisibilityKind = package | private | protected | public
+
+abstract LiteralBoolean : LiteralSpecification 
+    value ?
+
+abstract LiteralSpecification : ValueSpecification 
+
+abstract LiteralString : LiteralSpecification 
+    value : String ?
+
+abstract LiteralNull : LiteralSpecification 
+
+abstract LiteralInteger : LiteralSpecification 
+    value : Integer ?
+
+abstract LiteralUnlimitedNatural : LiteralSpecification 
+    value : UnlimitedNatural ?
+
+abstract StructuralFeature : Feature
+    isReadOnly ?
+    isOrdered ?
+    isUnique ?
+    lower : Integer ?
+    upper : UnlimitedNatural ?
+    upperValue : ValueSpecification ?
+    lowerValue : ValueSpecification ?
+
+abstract InstanceSpecification : NamedElement
+    slot : Slot *
+        [parent in owningInstance]
+    classifier -> Classifier *
+    specification : ValueSpecification ?
+
+abstract Slot : Element 
+    owningInstance -> InstanceSpecification 
+    [all x : this.owningInstance | this in x.slot]
+    value : ValueSpecification *
+    definingFeature -> StructuralFeature 
+
+abstract InstanceValue : ValueSpecification 
+    instance -> InstanceSpecification 
+
+abstract Generalization : DirectedRelationship 
+    isSubstitutable ?
+    specific -> Classifier 
+    [all x : this.specific | this in x.generalization]
+    general -> Classifier 
+    generalizationSet -> GeneralizationSet *
+    [all x : this.generalizationSet | this in x.generalization]
+
+abstract Association : Classifier
+    relatedElement -> Element +
+    isDerived ?
+    ownedEnd : Property *
+        [parent in owningAssociation]
+    endType -> NamedElement +
+    memberEnd -> Property 2..*
+    [all x : this.memberEnd | this in x.association]
+    // extra constraints <br />
+    [#memberEnd > 2 => memberEnd in ownedEnd]
+
+abstract ExtensionEnd : Property 
+
+enum AggregationKind = composite | none | shared
+
+abstract GeneralizationSet : NamedElement 
+    isCovering ?
+    isDisjoint ?
+    powertype -> Classifier ?
+    [all x : this.powertype | this in x.powertypeExtent]
+    generalization -> Generalization *
+    [all x : this.generalization | this in x.generalizationSet]
+
+//# FRAGMENT
