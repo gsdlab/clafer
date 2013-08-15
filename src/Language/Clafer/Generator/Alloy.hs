@@ -21,6 +21,7 @@
  SOFTWARE.
 -}
 module Language.Clafer.Generator.Alloy where
+import Prelude hiding (exp)
 import Data.List
 import Data.Maybe
 import Control.Monad.State
@@ -216,7 +217,7 @@ genOptCard    c
 genRelations :: ClaferArgs -> IClafer -> [Concat]
 genRelations claferargs c = maybeToList r ++ (map mkRel $ getSubclafers $ elements c)
   where
-  r = if isOverlapping c 
+  r = if isOverlapping c && (superKind $ super c) /= Redefinition
                 then
                         Just $ Concat NoTrace [CString $ genRel (if (noalloyruncommand claferargs) then  (uid c ++ "_ref") else "ref")
                          c {card = Just (1, 1)} $ 
@@ -256,8 +257,10 @@ genType m x = genPExp m [] x
 -- user constraints + parent + group constraints + reference
 -- a = NUMBER do all x : a | x = NUMBER (otherwise alloy sums a set)
 genConstraints :: ClaferArgs -> [String]      -> IClafer -> [Concat]
-genConstraints    cargs    resPath c = (genParentConst resPath c) :
-  (genGroupConst c) : genPathConst cargs  (if (noalloyruncommand cargs) then  (uid c ++ "_ref") else "ref") resPath c : constraints 
+genConstraints    cargs    resPath c = 
+  let constraintSoFar = (genParentConst resPath c) : (genGroupConst c) : genPathConst cargs  (if (noalloyruncommand cargs) then  (uid c ++ "_ref") else "ref") resPath c : constraints 
+  in (if (all (== head constraintSoFar) $ tail constraintSoFar) then 
+    (genRedefConst c "") else (genRedefConst c " && ")) : constraintSoFar
   where
   constraints = map genConst $ elements c
   genConst x = case x of
@@ -266,6 +269,12 @@ genConstraints    cargs    resPath c = (genParentConst resPath c) :
         if genCardCrude (card c') `elem` ["one", "lone", "some"]
         then CString "" else mkCard ({- do not use the genRelName as the constraint name -} uid c') False (genRelName $ uid c') $ fromJust $ card c'
     IEGoal _ _ -> error "getConst function from Alloy generator was given a Goal, this function should only be given a Constrain or Clafer" -- This should never happen
+
+genRedefConst :: IClafer -> String -> Concat
+genRedefConst claf and' = 
+  let ref' = (refs $ reference claf)
+  in if ((superKind $ super claf) /= Redefinition || ref' == []) then CString ""
+    else CString $ "ref in @" ++ (sident $ exp $ head ref') ++ and'
 
 -- optimization: if only boolean features then the parent is unique
 genParentConst :: [String] -> IClafer -> Concat
