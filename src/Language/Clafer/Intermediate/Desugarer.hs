@@ -44,20 +44,28 @@ desugarModule (PosModule _ declarations) =
   in (flip mapIR iMod $ reDefAdd clafers clafers pMap, pMap)
   where
     reDefAdd :: [IClafer] -> [IClafer] -> Map.Map Span IClafer -> Ir -> Ir
-    reDefAdd clafs (c:cs) parMap i@(IRClafer clafer) =
-      if (isRefDef parMap c clafer) then (if (isSpecified c clafer) then
+    reDefAdd clafers' (c:cs) parMap i@(IRClafer clafer) =
+      if ((not $ istop $ cinPos clafer) && isRefDef parMap clafers' c clafer) then (if (isSpecified c clafer) then
         IRClafer $ clafer{super = ISuper Redefinition [PExp (Just $ TClafer []) "" noSpan (IClaferId "" (ident c) $ istop $ cinPos c)]}
           else error $ "Incorrect redefinition, Clafer:\n" ++ show clafer ++ "\nis an improper redefinition of Clafer:\n" ++ show c)
-      else reDefAdd clafs cs parMap i
+      else reDefAdd clafers' cs parMap i
       where
-        isRefDef :: Map.Map Span IClafer -> IClafer -> IClafer -> Bool
-        isRefDef pareMap c1 c2 = 
-          let p1 = flip Map.lookup pareMap $ cinPos c1
-              p2 = flip Map.lookup pareMap $ cinPos c2
-          in if (p1==Nothing && p2==Nothing) then ((not $ isOverlapping c2) && (getSuper c2 == ident c1))
+        isRefDef :: Map.Map Span IClafer -> [IClafer] -> IClafer -> IClafer -> Bool
+        isRefDef pareMap clafs claf1 claf2 = 
+          let p1 = flip Map.lookup pareMap $ cinPos claf1
+              p2 = flip Map.lookup pareMap $ cinPos claf2
+          in if (p1==Nothing && p2==Nothing) then (recursiveCheck clafs claf1 claf2)
             else if (p1==Nothing || p2==Nothing) then False
-              else if (ident c1 == ident c2) then isRefDef pareMap (fromJust p1) $ fromJust p2
+              else if (ident claf1 == ident claf2) then isRefDef pareMap clafs (fromJust p1) $ fromJust p2
                 else False
+          where
+            recursiveCheck :: [IClafer] -> IClafer -> IClafer -> Bool
+            recursiveCheck clafs' c1 c2 = 
+              let match = flip find clafs' $ (== getSuper c2) . ident
+              in if (ident c1 == getSuper c2) then True
+                else if (match == Nothing) then False
+                  else recursiveCheck clafs' c1 $ fromJust match
+
         isSpecified :: IClafer -> IClafer -> Bool
         isSpecified claf1 claf2 = 
           (card claf2 `withinCard` card claf1) && (gcard claf2 `withinGRCard` gcard claf1)
