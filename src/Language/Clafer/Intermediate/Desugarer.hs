@@ -25,6 +25,7 @@ module Language.Clafer.Intermediate.Desugarer where
 import qualified Data.Map as Map
 import Data.List
 import Data.Maybe
+import Data.Function (on)
 import Prelude hiding (exp)
 import Language.Clafer.Common
 import Language.Clafer.Front.Absclafer
@@ -41,9 +42,9 @@ desugarModule (PosModule _ declarations) =
       pMap = foldMapIR makeMap iMod
       clafers = bfsClafers $ toClafers $ mDecls iMod
   --in (iMod, pMap)
-  in (flip mapIR iMod $ reDefAdd clafers clafers pMap, pMap)
+  in (flip mapIR iMod $ reDefAdd clafers pMap, pMap)
   where
-    reDefAdd :: [IClafer] -> [IClafer] -> Map.Map Span IClafer -> Ir -> Ir
+    {-reDefAdd :: [IClafer] -> [IClafer] -> Map.Map Span IClafer -> Ir -> Ir
     reDefAdd clafers' (c:cs) parMap i@(IRClafer clafer) =
       if ((not $ istop $ cinPos clafer) && isRefDef parMap clafers' c clafer) then (if (isSpecified c clafer) then
         IRClafer $ clafer{super = ISuper Redefinition [PExp (Just $ TClafer []) "" noSpan (IClaferId "" (ident c) $ istop $ cinPos c)]}
@@ -64,8 +65,33 @@ desugarModule (PosModule _ declarations) =
               let match = flip find clafs' $ (== getSuper c2) . ident
               in if (ident c1 == getSuper c2) then True
                 else if (match == Nothing) then False
-                  else recursiveCheck clafs' c1 $ fromJust match
-
+                  else recursiveCheck clafs' c1 $ fromJust match-}
+    reDefAdd :: [IClafer] -> Map.Map Span IClafer -> Ir -> Ir
+    reDefAdd clafs parMap i@(IRClafer clafer) = 
+      let ranks = filter (\(_,n) -> n/=0) $ flip map clafs $ \x -> if (istop $ cinPos clafer) then (x,0) else getReDefRank x 1 x clafer
+      in if (ranks==[]) then i else 
+        let c = fst $ minimumBy (compare `on` snd) ranks
+        in if (isSpecified c clafer) then 
+          IRClafer $ clafer{super = ISuper Redefinition [PExp (Just $ TClafer []) "" noSpan (IClaferId "" (ident c) $ istop $ cinPos c)]}
+            else error $ "Incorrect redefinition, Clafer:\n" ++ show clafer ++ "\nis an improper redefinition of Clafer:\n" ++ show c
+      where
+        getReDefRank :: IClafer -> Integer -> IClafer -> IClafer -> (IClafer, Integer)
+        getReDefRank oClaf acc claf1 claf2 =
+          let par1 = flip Map.lookup parMap $ cinPos claf1
+              par2 = flip Map.lookup parMap $ cinPos claf2
+          in if (par1==Nothing && par2==Nothing && recursiveCheck claf1 claf2) 
+            then (oClaf, acc) else if (par1==Nothing || par2==Nothing) 
+              then (oClaf, 0) else if (ident claf1 == ident claf2) 
+                then getReDefRank oClaf (acc+1) (fromJust par1) $ fromJust par2
+                  else (oClaf, 0)
+          where
+          recursiveCheck :: IClafer -> IClafer -> Bool
+          recursiveCheck c1 c2 = 
+            let match = flip find clafs $ (== getSuper c2) . ident
+            in if (ident c1 == getSuper c2) then True
+              else if (match == Nothing) then False
+                else recursiveCheck c1 $ fromJust match
+            
         isSpecified :: IClafer -> IClafer -> Bool
         isSpecified claf1 claf2 = 
           (card claf2 `withinCard` card claf1) && (gcard claf2 `withinGRCard` gcard claf1)
@@ -82,7 +108,7 @@ desugarModule (PosModule _ declarations) =
             withinGLCard (x2,y2) (x1,y1) = x1 `lt` x2 && y1 `gt` y2
             lt x y = if (x == -1) then (y == -1) else if (y == -1) then True else x <= y
             gt x y = (not $ x `lt` y) || x==y
-    reDefAdd _ _ _ i = i
+    reDefAdd _ _ i = i
 
 
 sugarModule :: IModule -> Module
