@@ -31,6 +31,7 @@ import Control.Monad
 import Control.Monad.State
 import qualified Data.Map as Map
 
+import Language.ClaferT
 import Language.Clafer.Common
 import Language.Clafer.ClaferArgs
 import Language.Clafer.Front.Absclafer
@@ -44,12 +45,21 @@ resolveModule pMap args' declarations =
   do
     let (iMod', genv') = nameModule (skip_resolver args') declarations
     let clafs = bfsClafers $ toClafers $ mDecls iMod'
-    let iMod = flip mapIR iMod' $ reDefAdd clafs pMap
-    r <- resolveNModule pMap (iMod, genv')
-    resolveNamesModule args' =<< (rom' $ rem' r)
+    let iMod = forIR iMod' $ reDefAdd clafs pMap
+    let failList = foldMapIR getFails iMod
+    if (failList /= []) then 
+      Left $ (ClaferErr $ unlines $ "Improper redefinition for cardinalities at," : failList :: ClaferSErr) 
+        else resolveNamesModule args' =<< (rom' . rem') =<< 
+          resolveNModule pMap (iMod, genv')
   where
+  rem' :: (IModule, GEnv) -> (IModule, GEnv)
   rem' = if flatten_inheritance args' then resolveEModule else id
+  rom' :: (IModule, GEnv) -> Resolve (IModule, GEnv)
   rom' = if skip_resolver args' then return . id else resolveOModule
+
+  getFails :: Ir -> [String]
+  getFails (IRClafer (IClafer{super = ISuper{superKind = RedefinitionFail str}})) = [str]
+  getFails _ = mempty
 
   reDefAdd :: [IClafer] -> Map.Map Span IClafer -> Ir -> Ir
   reDefAdd clafs parMap i@(IRClafer claf) = 
@@ -58,7 +68,7 @@ resolveModule pMap args' declarations =
       let c = fst $ minimumBy (compare `on` snd) ranks
       in if (isSpecifiedCard c claf) then 
         IRClafer $ claf{super = ISuper (Redefinition c) [PExp (Just $ TClafer []) "" noSpan (IClaferId "" (ident c) $ istop $ cinPos c)]}
-          else error $ getErrMsg (cinPos claf) $ cinPos c
+          else IRClafer $ claf{super = (super claf){superKind = (RedefinitionFail $ getErrMsg (cinPos claf) $ cinPos c)}} 
     where
       getReDefRank :: IClafer -> IClafer -> IClafer -> [(IClafer, Integer)]
       getReDefRank oClaf claf1 claf2 =
@@ -95,9 +105,9 @@ resolveModule pMap args' declarations =
           gt x y = (not $ x `lt` y) || x==y
       getErrMsg :: Span -> Span -> String
       getErrMsg (Span (Pos l1 c1) _) (Span (Pos l2 c2) _) = 
-        "Incorrect redefinition for cardinalities:\nThe clafer at line " ++ show l1 ++ " coloum " ++ show c1 ++ " is an improper redefinition of\nthe clafer at line " ++ show l2 ++ " coloum " ++ show c2
+        "line " ++ show l1 ++ " coloum " ++ show c1 ++ " redefining the clafer at line " ++ show l2 ++ " coloum " ++ show c2
       getErrMsg s1 s2 = 
-        "Incorrect redefinition for cardinalities:\nThe clafer at span " ++ show s1 ++" is an improper redefinition of\nthe clafer at span " ++ show s2
+        "span " ++ show s1 ++" redefining the clafer at span " ++ show s2
   reDefAdd _ _ i = i
 
 

@@ -266,8 +266,10 @@ genConstraints    cargs    resPath c =
   genConst x = case x of
     IEConstraint _ pexp  -> genPExp cargs ((uid c) : resPath) pexp
     IEClafer c' ->
-        if genCardCrude (card c') `elem` ["one", "lone", "some"]
-        then CString "" else mkCard ({- do not use the genRelName as the constraint name -} uid c') False (genRelName $ uid c') $ fromJust $ card c'
+      let constraint' = if genCardCrude (card c') `elem` ["one", "lone", "some"] then CString "" else mkCard ({- do not use the genRelName as the constraint name -} uid c') False (genRelName $ uid c') $ fromJust $ card c'
+      in (if (show $ superKind $ super c') == "Redefinition" 
+        then CString $ "some r_" ++ (uid $ getReDefClafer c') ++ " => some r_" ++ (uid c') ++ (if (constraint' == CString "") then " " else " && ") 
+          else CString "") +++ constraint'     
     IEGoal _ _ -> error "getConst function from Alloy generator was given a Goal, this function should only be given a Constrain or Clafer" -- This should never happen
 
 genRedefConst :: IClafer -> String -> Concat

@@ -93,16 +93,19 @@ data ISuper =
     }
   deriving (Eq,Ord,Show)
 
-data SuperKind = TopLevel | Nested | Redefinition IClafer deriving Ord
+data SuperKind = TopLevel | Nested | Redefinition IClafer | RedefinitionFail String deriving Ord
 instance Eq SuperKind where
   (==) TopLevel TopLevel = True
   (==) Nested Nested = True
   (==) (Redefinition _) (Redefinition _) = True
+  (==) (RedefinitionFail _) (RedefinitionFail _) = True
   (==) _ _ = False
 instance Show SuperKind where
   show TopLevel = "TopLevel"
   show Nested = "Nested"
   show (Redefinition _) = "Redefinition"
+  show (RedefinitionFail _) = "RedefinitionFail"
+
 
 getReDefClafer :: IClafer -> IClafer
 getReDefClafer (IClafer{super = ISuper{superKind = Redefinition i}}) = i
@@ -228,6 +231,9 @@ mapIR :: (Ir -> Ir) -> IModule -> IModule -- fmap/map for IModule
 mapIR f (IModule name decls') = 
   unWrapIModule $ f $ IRIModule $ IModule name $ map (unWrapIElement . iMap f . IRIElement) decls'
 
+forIR :: IModule -> (Ir -> Ir) -> IModule -- mapIR with arguments fliped
+forIR = flip mapIR
+
 foldMapIR :: (Monoid m) => (Ir -> m) -> IModule -> m -- foldMap for IModule
 foldMapIR f i@(IModule _ decls') = 
   (f $ IRIModule i) `mappend` foldMap (iFoldMap f . IRIElement) decls'
@@ -264,6 +270,9 @@ iMap f (IRIReference (IReference s pexps)) =
 iMap f (IRIDecl (IDecl i d body')) = 
   f $ IRIDecl $ IDecl i d $ unWrapPExp $ iMap f $ IRPExp body'
 iMap f i = f i
+
+iFor :: Ir -> (Ir -> Ir) -> Ir
+iFor = flip iMap
 
 iFoldMap :: (Monoid m) => (Ir -> m) -> Ir -> m
 iFoldMap f i@(IRIElement (IEConstraint _ pexp)) =
