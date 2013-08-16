@@ -22,6 +22,11 @@
 -}
 module Language.Clafer.Intermediate.Resolver where
 
+import Data.Maybe
+import Data.Monoid
+import Data.List
+import Data.Function (on)
+import Data.Foldable (foldMap)
 import Control.Monad
 import Control.Monad.State
 import qualified Data.Map as Map
@@ -35,13 +40,65 @@ import Language.Clafer.Intermediate.ResolverType
 import Language.Clafer.Intermediate.ResolverInheritance
 
 resolveModule :: Map.Map Span IClafer -> ClaferArgs -> IModule -> Resolve (IModule, GEnv)
-resolveModule m args' declarations =
+resolveModule pMap args' declarations =
   do
-    r <- resolveNModule m $ nameModule (skip_resolver args') declarations
+    let (iMod', genv') = nameModule (skip_resolver args') declarations
+    let clafs = bfsClafers $ toClafers $ mDecls iMod'
+    let iMod = flip mapIR iMod' $ reDefAdd clafs pMap
+    r <- resolveNModule pMap (iMod, genv')
     resolveNamesModule args' =<< (rom' $ rem' r)
   where
   rem' = if flatten_inheritance args' then resolveEModule else id
   rom' = if skip_resolver args' then return . id else resolveOModule
+
+  reDefAdd :: [IClafer] -> Map.Map Span IClafer -> Ir -> Ir
+  reDefAdd clafs parMap i@(IRClafer claf) = 
+    let ranks = flip foldMap clafs $ \x -> if (istop $ cinPos claf) then mempty else getReDefRank x x claf 
+    in if (ranks==[]) then i else 
+      let c = fst $ minimumBy (compare `on` snd) ranks
+      in if (isSpecifiedCard c claf) then 
+        IRClafer $ claf{super = ISuper (Redefinition c) [PExp (Just $ TClafer []) "" noSpan (IClaferId "" (ident c) $ istop $ cinPos c)]}
+          else error $ getErrMsg (cinPos claf) $ cinPos c
+    where
+      getReDefRank :: IClafer -> IClafer -> IClafer -> [(IClafer, Integer)]
+      getReDefRank oClaf claf1 claf2 =
+        let par1 = flip Map.lookup parMap $ cinPos claf1
+            par2 = flip Map.lookup parMap $ cinPos claf2
+        in if (par1==Nothing && par2==Nothing) then 
+          (let depth = recursiveCheck 1 claf1 claf2
+           in if (depth==0) then mempty else [(oClaf, depth)])
+          else if (par1==Nothing || par2==Nothing) 
+            then mempty else if (ident claf1 == ident claf2) 
+              then getReDefRank oClaf (fromJust par1) $ fromJust par2
+                else mempty
+        where
+        recursiveCheck :: Integer -> IClafer -> IClafer -> Integer
+        recursiveCheck acc c1 c2 = 
+          let match = flip find clafs $ (== getSuper c2) . ident
+          in if (ident c1 == getSuper c2) then acc
+            else if (match == Nothing) then 0
+              else recursiveCheck (acc+1) c1 $ fromJust match
+          
+      isSpecifiedCard :: IClafer -> IClafer -> Bool
+      isSpecifiedCard claf1 claf2 = 
+        (card claf2 `withinCard` card claf1) && (gcard claf2 `withinGCard` gcard claf1)
+        where
+          withinCard (Just (x2,y2)) (Just (x1,y1)) = x1 `lt` x2 && y1 `gt` y2
+          withinCard Nothing (Just (x1,y1)) = x1 `lt` 1 && y1 `gt` 1
+          withinCard (Just (x2,y2)) Nothing = 1 `lt` x2 && 1 `gt` y2
+          withinCard _ _ = True
+          withinGCard (Just (IGCard _ (x2,y2))) (Just (IGCard _ (x1,y1))) = x1 `lt` x2 && y1 `gt` y2
+          withinGCard Nothing (Just (IGCard _ (x1,y1))) = x1 `lt` 0 && y1 `gt` (-1)
+          withinGCard (Just (IGCard _ (x2,y2))) Nothing = 0 `lt` x2 && (-1) `gt` y2
+          withinGCard _ _ = True
+          lt x y = if (x == -1) then (y == -1) else if (y == -1) then True else x <= y
+          gt x y = (not $ x `lt` y) || x==y
+      getErrMsg :: Span -> Span -> String
+      getErrMsg (Span (Pos l1 c1) _) (Span (Pos l2 c2) _) = 
+        "Incorrect redefinition for cardinalities:\nThe clafer at line " ++ show l1 ++ " coloum " ++ show c1 ++ " is an improper redefinition of\nthe clafer at line " ++ show l2 ++ " coloum " ++ show c2
+      getErrMsg s1 s2 = 
+        "Incorrect redefinition for cardinalities:\nThe clafer at span " ++ show s1 ++" is an improper redefinition of\nthe clafer at span " ++ show s2
+  reDefAdd _ _ i = i
 
 
 -- -----------------------------------------------------------------------------

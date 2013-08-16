@@ -217,7 +217,7 @@ genOptCard    c
 genRelations :: ClaferArgs -> IClafer -> [Concat]
 genRelations claferargs c = maybeToList r ++ (map mkRel $ getSubclafers $ elements c)
   where
-  r = if isOverlapping c && (superKind $ super c) /= Redefinition
+  r = if isOverlapping c && (show $ superKind $ super c) /= "Redefinition"
                 then
                         Just $ Concat NoTrace [CString $ genRel (if (noalloyruncommand claferargs) then  (uid c ++ "_ref") else "ref")
                          c {card = Just (1, 1)} $ 
@@ -260,7 +260,7 @@ genConstraints :: ClaferArgs -> [String]      -> IClafer -> [Concat]
 genConstraints    cargs    resPath c = 
   let constraintSoFar = (genParentConst resPath c) : (genGroupConst c) : genPathConst cargs  (if (noalloyruncommand cargs) then  (uid c ++ "_ref") else "ref") resPath c : constraints 
   in (if (all (== head constraintSoFar) $ tail constraintSoFar) then 
-    (genRedefConst c "") else (genRedefConst c " && ")) : constraintSoFar
+    (genRedefConst c " ") else (genRedefConst c " && ")) : constraintSoFar
   where
   constraints = map genConst $ elements c
   genConst x = case x of
@@ -273,7 +273,7 @@ genConstraints    cargs    resPath c =
 genRedefConst :: IClafer -> String -> Concat
 genRedefConst claf and' = 
   let ref' = (refs $ reference claf)
-  in if ((superKind $ super claf) /= Redefinition || ref' == []) then CString ""
+  in if ((show $ superKind $ super claf) /= "Redefinition" || ref' == []) then CString ""
     else CString $ "ref in @" ++ (sident $ exp $ head ref') ++ and'
 
 -- optimization: if only boolean features then the parent is unique

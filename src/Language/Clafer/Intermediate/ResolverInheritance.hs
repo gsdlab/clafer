@@ -83,12 +83,15 @@ resolveNElement m declarations x = case x of
 resolveN :: Map.Map Span IClafer -> IClafer -> Span -> [IElement] -> String -> Resolve (Maybe (String, [IClafer]), SuperKind)
 resolveN pMap claf pos' declarations id' =
   let clafs = bfsClafers $ toClafers declarations
-      posibilities = filter (\c -> (isAbstract c) || (((getSuper claf) == ident c || ident claf == ident c) && (cinPos claf /= cinPos c) && commonNesting claf c pMap clafs)) $ clafs
-      nonAbsposibilities = filter (\c -> (c /= claf) && (not $ isAbstract c)) posibilities
+      --posibilities = filter (\c -> (isAbstract c) || ({-((getSuper claf) == ident c || ident claf == ident c) && (cinPos claf /= cinPos c) &&-} commonNesting claf c pMap clafs)) $ clafs
+      posibilities = flip filter clafs $ \c -> (getSuper claf == ident c && commonNesting claf c pMap clafs) || (getSuper claf == ident c && isAbstract c)
+      nonAbsposibilities = flip filter posibilities $ \c -> not $ isAbstract c
   in if (nonAbsposibilities == []) then 
        (>>= (return . swap . makePair TopLevel)) $ findUnique pos' id' $ map (\x -> (x, [x])) $ posibilities else
-        (>>= (\x -> return $ makePair x (if (Redefinition == (superKind $ super claf)) then Redefinition else 
-          if (x==Nothing || (istop $ cinPos $ head $ snd $ fromJust x)) then TopLevel else Nested))) $ findUnique pos' id' $ map (\x -> (x, [x])) $ nonAbsposibilities
+        if ("Redefinition" == (show $ superKind $ super $ claf)) then
+          (>>= (return . swap . makePair (Redefinition $ getReDefClafer claf))) $ findUnique pos' id' $ map (\x -> (x, [x])) $ [getReDefClafer claf] else     
+            (>>= (\x -> return $ makePair x (if (x==Nothing || (istop $ cinPos $ head $ snd $ fromJust x)) then TopLevel 
+              else Nested))) $ findUnique pos' id' $ map (\x -> (x, [x])) $ nonAbsposibilities
   where
   makePair :: a -> b -> (a,b)
   makePair a b = (a,b)

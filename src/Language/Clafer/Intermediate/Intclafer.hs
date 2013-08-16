@@ -93,7 +93,20 @@ data ISuper =
     }
   deriving (Eq,Ord,Show)
 
-data SuperKind = TopLevel | Nested | Redefinition deriving (Eq, Ord, Show)
+data SuperKind = TopLevel | Nested | Redefinition IClafer deriving Ord
+instance Eq SuperKind where
+  (==) TopLevel TopLevel = True
+  (==) Nested Nested = True
+  (==) (Redefinition _) (Redefinition _) = True
+  (==) _ _ = False
+instance Show SuperKind where
+  show TopLevel = "TopLevel"
+  show Nested = "Nested"
+  show (Redefinition _) = "Redefinition"
+
+getReDefClafer :: IClafer -> IClafer
+getReDefClafer (IClafer{super = ISuper{superKind = Redefinition i}}) = i
+getReDefClafer _ = error "Tried to get redefintion clafer from a clafer that is not redefined"
 
 -- ->   -- overlapping unique (set) [isSet=True]
 -- ->>  -- overlapping non-unique (bag) [isSet=False]
