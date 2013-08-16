@@ -149,7 +149,7 @@ sugarModId modid = ModIdIdent $ mkIdent modid
 sugarSuper :: ISuper -> IReference -> Super
 sugarSuper (ISuper _ []) (IReference _ []) = SuperEmpty
 sugarSuper (ISuper _ [pexp]) (IReference _ []) = SuperSome SuperColon (sugarSetExp pexp)
-sugarSuper (ISuper _ []) (IReference i [pexp]) = SuperSome (if i then SuperArrow else SuperMArrow) (sugarSetExp pexp)
+sugarSuper (ISuper _ _) (IReference i [pexp]) = SuperSome (if i then SuperArrow else SuperMArrow) (sugarSetExp pexp)
 sugarSuper _ _ = error "Function sugarSuper from Desugarer expects an ISuper and IReference with a lists of length one or less, but it was given one with a list larger than one" -- Should never happen
 
 
