@@ -249,7 +249,7 @@ compile =
     putEnv $ env{parentMap = pMap'}
     let clafersWithKeyWords = foldMapIR isKeyWord desugaredModule
     when (""/=clafersWithKeyWords) $ throwErr (ClaferErr $ ("The model contains clafers with keyWords as names.\nThe following places contain keyWords as names:\n"++) $ clafersWithKeyWords :: CErr Span)
-
+    
     ir' <- analyze (args env) desugaredModule
     let (imodule, g, b) = ir'
     let pMap = foldMapIR makeMap imodule

@@ -1,0 +1,10 @@
+// [i216] http://gsd.uwaterloo.ca:8888/question/917/inheritance-among-concrete-clafers
+
+// this one compiles, which is correct, and fails in IG, which is also correct
+
+car  *
+   engine
+
+myCar : car
+   engine1 : engine
+   engine2 : engine
