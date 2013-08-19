@@ -1,0 +1,9 @@
+// Ensures that a clafer cannot inherit from a non-abstract clafer
+//
+// Note: The error message is pretty poor.
+//
+// Expected Output:
+//   Type/Name Resolution Error
+
+B
+A : B

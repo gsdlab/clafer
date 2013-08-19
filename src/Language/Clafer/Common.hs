@@ -48,7 +48,7 @@ mkInteger (PosInteger (_, n)) = read n
 type Ident = PosIdent
 
 getSuper :: IClafer -> String
-getSuper = getSuperId.supers.super
+getSuper = getSuperId . supers . super
 
 getSuperNoArr :: IClafer -> String
 
@@ -349,3 +349,9 @@ voidf :: Monad m => m t -> m ()
 voidf f = do
   _ <- f
   return ()
+istop :: Span -> Bool
+istop (Span (Pos _ 1) _) = True
+istop (Span (PosPos _ _ 1) _) = True
+istop (PosSpan _ (Pos _ 1) _) = True
+istop (PosSpan _ (PosPos _ _ 1) _) = True
+istop _ = False

@@ -1,0 +1,14 @@
+// [i60] http://gsd.uwaterloo.ca:8888/question/252/add-support-for-hierarchy-specification-and
+// [i216] http://gsd.uwaterloo.ca:8888/question/917/inheritance-among-concrete-clafers
+
+abstract year
+  month 4
+    week 3
+      day 2
+
+year2012 : year
+   january : month
+      week1 : week
+         day12 : day 2
+      week2 : week
+         day34 : day 2

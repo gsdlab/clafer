@@ -1,0 +1,5 @@
+car *
+   engine
+   radio
+
+allEngines -> engine *
