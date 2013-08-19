@@ -1,9 +1,12 @@
 //# OPTIONS --check-afm
 // http://gsd.uwaterloo.ca:8888/question/867/add-attributed-feature-models-check
-// This model should pass the attributed feature model check
-a
-   b ?
-   c 0..1
+// This model should fail the afm test for lines 9, 10, 11, and 12
+
+a 0..0
+b ?
+c 
 d 1..1
-e 0..0
-f 1
+e 0..*
+f +
+g 1..*
+h 2..5
