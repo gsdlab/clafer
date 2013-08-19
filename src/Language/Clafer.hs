@@ -422,4 +422,4 @@ claferIRXSD :: String
 claferIRXSD = Language.Clafer.Generator.Schema.xsd
 
 keyWords :: [String]
-keyWords = ["ref","parent","Abstract","abstract", "else", "in", "no", "opt", "xor", "all", "enum", "lone", "not", "or", "disj", "extends", "mux", "one", "some"]
+keyWords = ["ref","parent","Abstract","abstract", "else", "in", "no", "opt", "xor", "all", "enum", "lone", "not", "or", "disj", "extends", "mux", "one", "some", "clafer"]

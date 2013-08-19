@@ -15,7 +15,7 @@ abstract xor ClaferArgs
             alloy42 : Value ?
             noalloyruncommand : Argument ?
             alloy_mapping : Argument ?
-         clafer : Value
+         Clafer : Value
          html : Value
             [ keep_unused ]
             self_contained : Argument ?
