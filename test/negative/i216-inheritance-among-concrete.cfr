@@ -1,0 +1,6 @@
+car  *
+   engine
+
+myCar : car
+   engine1 : engine
+   engine2 : engine
