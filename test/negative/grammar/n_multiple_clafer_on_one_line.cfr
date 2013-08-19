@@ -1,0 +1,11 @@
+// Test illustrating 2 clafers on the same line.
+//
+// Current Output:
+//   Compiles, considers the second A as a subclafer of b.
+//
+// Expected Output:
+//   Parser/Layout Resolution Error
+
+abstract B
+A
+  b : B A 3

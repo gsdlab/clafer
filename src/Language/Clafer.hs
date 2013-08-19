@@ -55,6 +55,7 @@ import Data.Either
 import Data.List
 import Data.Maybe
 import Data.Map (Map)
+import qualified Data.Map as Map
 import Data.Ord
 import Control.Monad
 import System.FilePath (takeBaseName)
@@ -85,6 +86,7 @@ import Language.Clafer.Generator.Schema
 import Language.Clafer.Generator.Stats
 import Language.Clafer.Generator.Html
 import Language.Clafer.Generator.Graph
+import Prelude hiding (exp)
 
 type VerbosityL = Int
 type InputModel = String
@@ -215,7 +217,8 @@ parse =
 
     
     let ast = mapModule ast'
-    let env' = env{ cAst = Just ast, astModuleTrace = traceAstModule ast }
+    let astTrace = traceAstModule ast
+    let env' = env{ cAst = Just ast, astModuleTrace = astTrace}
     putEnv env'
   where
   parseFrag :: (Monad m) => ClaferArgs -> String -> ClaferT m (Err Module)
@@ -242,15 +245,20 @@ compile =
   do
     env <- getEnv
     ast' <- getAst
-    let desugaredMod = desugar ast'
-    let clafersWithKeyWords = foldMapIR isKeyWord desugaredMod
+    let (desugaredModule, pMap') = desugar ast'
+    putEnv $ env{parentMap = pMap'}
+    let clafersWithKeyWords = foldMapIR isKeyWord desugaredModule
     when (""/=clafersWithKeyWords) $ throwErr (ClaferErr $ ("The model contains clafers with keyWords as names.\nThe following places contain keyWords as names:\n"++) $ clafersWithKeyWords :: CErr Span)
-    ir <- analyze (args env) desugaredMod
-    let (imodule, _, _) = ir
+    
+    ir' <- analyze (args env) desugaredModule
+    let (imodule, g, b) = ir'
+    let pMap = foldMapIR makeMap imodule
+    let imodTrace = traceIrModule imodule
+    let ir = (imodule, g, b)
 
-    let spanList = foldMapIR gt1 imodule
-    when ((afm $ args env) && spanList/="") $ throwErr (ClaferErr $ ("The model is not an attributed feature model.\nThe following places contain cardinality larger than 1:\n"++) $ spanList :: CErr Span)
-    putEnv $ env{ cIr = Just ir, irModuleTrace = traceIrModule imodule }
+    let failSpanList = foldMapIR gt1 imodule
+    when ((afm $ args env) && failSpanList/="") $ throwErr (ClaferErr $ ("The model is not an attributed feature model .\nThe following places contain cardinality larger than 1:\n"++) $ failSpanList :: CErr Span)
+    putEnv $ env{ cIr = Just ir, irModuleTrace = imodTrace, parentMap = pMap}
     where
       isKeyWord :: Ir -> String
       isKeyWord (IRClafer IClafer{cinPos = (Span (Pos l c) _) ,ident=i}) = if (i `elem` keyWords) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
@@ -299,7 +307,7 @@ generateFragments =
       PosSpan _ _ e -> e <= p
   generateFragment :: ClaferArgs -> [IElement] -> String
   generateFragment args' frag =
-    flatten $ cconcat $ map (genDeclaration args') frag
+    flatten $ cconcat $ flip map frag $ genDeclaration args'
 
 -- Splits the AST into their fragments, and generates the output for each fragment.
 generateHtml :: ClaferEnv -> Module -> String
@@ -340,6 +348,7 @@ generate :: Monad m => ClaferT m CompilerResult
 generate =
   do
     env <- getEnv
+    let parMap = parentMap env
     ast' <- getAst
     (iModule, genv, au) <- getIr
     let cargs = args env
@@ -356,7 +365,7 @@ generate =
                                       let addCommentStats = if no_stats cargs then const else addStats
                                       let m = snd alloyCode
                                       ("als", addCommentStats (fst alloyCode) stats, Just m)
-                        Xml      -> ("xml", genXmlModule iModule, Nothing)
+                        Xml      -> ("xml", genXmlModule parMap iModule, Nothing)
                         Mode.Clafer   -> ("des.cfr", printTree $ sugarModule iModule, Nothing)
                         Html     -> ("html", generateHtml env ast'
                           , Nothing)
@@ -378,7 +387,7 @@ data CompilerResult = CompilerResult {
                             stringMap :: (Map Int String)
                             } deriving Show
 
-desugar :: Module -> IModule  
+desugar :: Module -> (IModule, Map.Map Span IClafer)  
 desugar tree = desugarModule tree
 
 liftError :: (Monad m, Language.ClaferT.Throwable t) => Either t a -> ClaferT m a
@@ -389,7 +398,9 @@ analyze args' tree = do
   let dTree' = findDupModule args' tree
   let au = allUnique dTree'
   let args'' = args'{skip_resolver = au && (skip_resolver args')}
-  (rTree, genv) <- liftError $ resolveModule args'' dTree'
+  env <- getEnv
+  let pMap = parentMap env
+  (rTree, genv) <- liftError $ resolveModule pMap args'' dTree'
   let tTree = transModule rTree
   return (optimizeModule args'' (tTree, genv), genv, au)
 

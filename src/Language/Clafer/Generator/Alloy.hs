@@ -88,7 +88,7 @@ cunlines xs = cconcat $ map (+++ (CString "\n")) xs
 -- 07th Mayo 2012 Rafael Olaechea 
 --      Added Logic to print a goal block in case there is at least one goal.
 genModule :: ClaferArgs -> (IModule, GEnv) -> (Result, [(Span, IrTrace)])
-genModule    claferargs    (imodule, _)     = (flatten output, filter ((/= NoTrace) . snd) $ mapLineCol output)
+genModule  claferargs    (imodule, _)     = (flatten output, filter ((/= NoTrace) . snd) $ mapLineCol output)
   where
   output = header claferargs imodule +++ (cconcat $ map (genDeclaration claferargs) (mDecls imodule)) +++ 
        if ((not $ skip_goals claferargs) && length goals_list > 0) then 
@@ -182,21 +182,26 @@ genClafer claferargs resPath oClafer = (cunlines $ filterNull
 transPrimitive :: IClafer -> IClafer
 transPrimitive    clafer'   = clafer'{super = toOverlapping $ super clafer'}
   where
-  toOverlapping x@(ISuper _ [PExp _ _ _ (IClaferId _ id' _)])
+  toOverlapping x@(ISuper _ _ [PExp _ _ _ (IClaferId _ id' _)])
     | isPrimitive id' = x{isOverlapping = True}
     | otherwise      = x
   toOverlapping x = x
 
 claferDecl :: IClafer -> Concat -> Concat
-claferDecl    c     rest    = cconcat [genOptCard c,
+claferDecl  c     rest    = cconcat $ [genOptCard c,
   CString $ genAbstract $ isAbstract c, CString "sig ",
   Concat NoTrace [CString $ uid c, genExtends $ super c, CString "\n", rest]]
+  ++ if ((superKind $ super c) == Nested) then [genHFact c] else []
   where
   genAbstract isAbs = if isAbs then "abstract " else ""
-  genExtends (ISuper False [PExp _ _ _ (IClaferId _ "clafer" _)]) = CString ""
-  genExtends (ISuper False [PExp _ _ _ (IClaferId _ i _)]) = CString " " +++ Concat NoTrace [CString $ "extends " ++ i]
+  genExtends (ISuper False _ [PExp _ _ _ (IClaferId _ "clafer" _)]) = CString ""
+  genExtends (ISuper False _ [PExp _ _ _ (IClaferId _ i _)]) = CString " " +++ Concat NoTrace [CString $ "extends " ++ i]
   -- todo: handle multiple inheritance
   genExtends _ = CString ""
+  genHFact claf = CString $ "\n\nfact { r_" ++ uid claf ++ " in r_" ++ (getSuper claf) ++ " }"
+  {-spanLookUp span' = uid . head . foldMapIR (slookup span') 
+  slookup span' (IRClafer claf) = if (cinPos claf == span') then [claf] else []
+  slookup _ _ = []-}
 
 genOptCard :: IClafer -> Concat
 genOptCard    c
@@ -262,7 +267,7 @@ genConstraints    cargs    resPath c = (genParentConst resPath c) :
     IEConstraint _ pexp  -> genPExp cargs ((uid c) : resPath) pexp
     IEClafer c' ->
         if genCardCrude (card c') `elem` ["one", "lone", "some"]
-        then CString "" else mkCard ({- do not use the genRelName as the constraint name -} uid c') False (genRelName $ uid c') $ fromJust (card c')
+        then CString "" else mkCard ({- do not use the genRelName as the constraint name -} uid c') False (genRelName $ uid c') $ fromJust $ card c'
     IEGoal _ _ -> error "getConst function from Alloy generator was given a Goal, this function should only be given a Constrain or Clafer" -- This should never happen
 
 -- optimization: if only boolean features then the parent is unique
@@ -393,7 +398,7 @@ genPExp'    claferargs    resPath     (PExp iType' pid' pos exp') = case exp' of
     optBar [] = ""
     optBar _  = " | "
   IClaferId _ "ref" _ -> CString "@ref"
-  IClaferId _ sid istop -> CString $
+  IClaferId _ sid istop' -> CString $
       if head sid == '~' then sid else
       if isNothing iType' then sid' else case fromJust $ iType' of
     TInteger -> vsident
@@ -401,7 +406,7 @@ genPExp'    claferargs    resPath     (PExp iType' pid' pos exp') = case exp' of
     TString -> vsident
     _ -> sid'
     where
-    sid' = (if istop then "" else '@' : genRelName "") ++ sid
+    sid' = (if istop' then "" else '@' : genRelName "") ++ sid
     -- 29/March/2012  Rafael Olaechea: ref is now prepended with clafer name to be able to refer to it from partial instances.
     -- 30/March/2012 Rafael Olaechea added referredClaferUniqeuid to fix problems when having this.x > number  (e.g test/positive/i10.cfr )     
     vsident = if (noalloyruncommand claferargs) then sid' ++  ".@"  ++ referredClaferUniqeuid ++ "_ref"  else  sid'  ++ ".@ref"

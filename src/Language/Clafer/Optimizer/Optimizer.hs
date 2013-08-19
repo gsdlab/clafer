@@ -110,8 +110,8 @@ expClafer claf = do
 
 expSuper :: MonadState GEnv m => ISuper -> m ISuper
 expSuper x = case x of
-  ISuper False _ -> return x
-  ISuper True pexps -> ISuper True `liftM` mapM expPExp pexps
+  ISuper False _ _ -> return x
+  ISuper True r pexps -> ISuper True r `liftM` mapM expPExp pexps
 
 expElement :: MonadState GEnv m => IElement -> m IElement
 expElement x = case x of

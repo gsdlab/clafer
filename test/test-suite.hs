@@ -26,6 +26,6 @@ import Functions
 import Test.Framework
 import Test.Framework.TH
 
-
 tg_Main_Test_Suite = $(testGroupGenerator)
 main = defaultMain[tg_Main_Test_Suite, tg_Test_Suite_Positive, tg_Test_Suite_Negative]
+

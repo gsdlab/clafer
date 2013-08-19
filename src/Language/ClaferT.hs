@@ -103,7 +103,8 @@ data ClaferEnv = ClaferEnv {
                             cIr :: Maybe (IModule, GEnv, Bool),
                             frags :: [Pos],    -- line numbers of fragment markers
                             irModuleTrace :: Map Span [Ir],
-                            astModuleTrace :: Map Span [Ast]
+                            astModuleTrace :: Map Span [Ast],
+                            parentMap :: Map Span IClafer
                             } deriving Show
 
 getAst :: (Monad m) => ClaferT m Module
@@ -127,13 +128,14 @@ makeEnv args' = ClaferEnv { args = args'',
                            cIr = Nothing,
                            frags = [],
                            irModuleTrace = Map.empty,
-                           astModuleTrace = Map.empty}
+                           astModuleTrace = Map.empty,
+                           parentMap = Map.empty}
                where args'' = case mode args' of
                                CVLGraph -> args'{flatten_inheritance=True, keep_unused=True}
                                Html     -> args'{keep_unused=True}
                                Graph    -> args'{keep_unused=True}
                                _             -> args'
-
+                               
 type ClaferM = ClaferT Identity
 -- Monad for using Clafer.
 type ClaferT m = ErrorT ClaferErrs (StateT ClaferEnv m)

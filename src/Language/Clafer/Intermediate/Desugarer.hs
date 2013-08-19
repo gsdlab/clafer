@@ -22,17 +22,24 @@
 -}
 module Language.Clafer.Intermediate.Desugarer where
 
+import qualified Data.Map as Map
+import Data.List
+import Data.Maybe
+import Prelude hiding (exp)
 import Language.Clafer.Common
 import Language.Clafer.Front.Absclafer
 import Language.Clafer.Front.Mapper
 import Language.Clafer.Intermediate.Intclafer
 
 
-desugarModule :: Module -> IModule
+desugarModule :: Module -> (IModule, Map.Map Span IClafer)
 desugarModule (Module declarations) = desugarModule $ PosModule noSpan declarations
-desugarModule (PosModule _ declarations) = IModule "" $
-      declarations >>= desugarEnums >>= desugarDeclaration
---      [ImoduleFragment $ declarations >>= desugarEnums >>= desugarDeclaration]
+desugarModule (PosModule _ declarations) = 
+  let iMod = IModule "" $ 
+        declarations >>= desugarEnums >>= desugarDeclaration
+          --[ImoduleFragment $ declarations >>= desugarEnums >>= desugarDeclaration]
+      pMap = foldMapIR makeMap iMod
+  in (iMod, pMap)
 
 sugarModule :: IModule -> Module
 sugarModule x = Module $ map sugarDeclaration $ mDecls x -- (fragments x >>= mDecls)
@@ -86,9 +93,9 @@ desugarSuper :: Super -> ISuper
 desugarSuper SuperEmpty = desugarSuper $ PosSuperEmpty noSpan
 desugarSuper (SuperSome superhow setexp) = desugarSuper $ PosSuperSome noSpan superhow setexp
 desugarSuper (PosSuperEmpty s) =
-      ISuper False [PExp (Just $ TClafer []) "" s $ mkLClaferId baseClafer True]
+      ISuper False TopLevel [PExp (Just $ TClafer []) "" s $ mkLClaferId baseClafer True]
 desugarSuper (PosSuperSome _ superhow setexp) =
-      ISuper (desugarSuperHow superhow) [desugarSetExp setexp]
+      ISuper (desugarSuperHow superhow) TopLevel [desugarSetExp setexp]
 
 
 desugarSuperHow :: SuperHow -> Bool
@@ -126,8 +133,8 @@ sugarModId :: String -> ModId
 sugarModId modid = ModIdIdent $ mkIdent modid
 
 sugarSuper :: ISuper -> Super
-sugarSuper (ISuper _ []) = SuperEmpty
-sugarSuper (ISuper isOverlapping' [pexp]) = SuperSome (sugarSuperHow isOverlapping') (sugarSetExp pexp)
+sugarSuper (ISuper _ _ []) = SuperEmpty
+sugarSuper (ISuper isOverlapping' _ [pexp]) = SuperSome (sugarSuperHow isOverlapping') (sugarSetExp pexp)
 sugarSuper _ = error "Function sugarSuper from Desugarer expects an ISuper with a list of length one, but it was given one with a list larger than one" -- Should never happen
 
 sugarSuperHow :: Bool -> SuperHow
@@ -574,3 +581,37 @@ sugarQuant ILone = QuantLone
 sugarQuant IOne = QuantOne
 sugarQuant ISome = QuantSome
 sugarQuant IAll = error "sugarQaunt was called on IAll, this is not allowed!" --Should never happen
+
+makeMap :: Ir -> Map.Map Span IClafer
+makeMap (IRClafer c) = Map.fromList $ zip (concat $ map getPos $ elements c) (repeat c)
+makeMap _ = Map.empty
+
+getPos :: IElement -> [Span]
+getPos (IEClafer c) = [cinPos c]
+getPos e = iFoldMap getPExpPos $ IRIElement e
+  where
+    getPExpPos (IRPExp p) = [inPos p]
+    getPExpPos _ = []
+
+{-addrSpan :: Map.Map Span IClafer -> [IClafer] -> [IClafer] -> [IClafer] -> Ir -> Ir -- The three IClafer lists are as follows 1. The list we are mapping through
+addrSpan _ [] _ [] i = i                                                            --                                        2. A list of all clafers
+addrSpan _ [] _ acc _ =                                                             --                                        3. An accumlator gathering all posibilities
+  (IRClafer (maximumBy (compare `on` (depth . fst . fromJust . rInfo . super)) acc)) 
+  where
+    depth (Span (Pos _ c) _) = c
+    depth (PosSpan _ (Pos _ c) _) = c
+    depth (Span (PosPos _ _ c) _) = c
+    depth (PosSpan _ (PosPos _ _ c) _) = c
+addrSpan parMap (c:cs) clafers acc irclaf@(IRClafer claf)  = flip (addrSpan parMap cs clafers) irclaf $
+  if (((getSuper claf) == ident c || ident claf == ident c) && (cinPos claf /= cinPos c) && commonNesting claf c parMap clafers) 
+    then (:acc) $ claf{super = (super claf){rInfo = Just $ (cinPos c,"")}} 
+      else acc 
+addrSpan _ _ _ _ i =  i 
+
+addrUid :: Map.Map Span IClafer -> [IClafer] -> Ir -> Ir
+addrUid parMap (c:cs) irclaf@(IRClafer claf) = 
+  if (((rInfo $ super claf) /= Nothing) && ((fst $ fromJust $ rInfo $ super claf) == (cinPos c)))
+    then IRClafer $ claf{super = (super claf){rInfo = Just $ (fst $ fromJust $ rInfo $ super claf ,uid c)}} 
+      else addrUid parMap cs irclaf 
+addrUid _ _ i = i -}
+
