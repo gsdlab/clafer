@@ -105,7 +105,7 @@ resolveModule pMap args' declarations =
           gt x y = (not $ x `lt` y) || x==y
       getErrMsg :: Span -> Span -> String
       getErrMsg (Span (Pos l1 c1) _) (Span (Pos l2 c2) _) = 
-        "line " ++ show l1 ++ " coloum " ++ show c1 ++ " redefining the clafer at line " ++ show l2 ++ " coloum " ++ show c2
+        "line " ++ show l1 ++ " coloum " ++ show c1 ++ " redefining the clafer at line " ++ show l2 ++ " column " ++ show c2
       getErrMsg s1 s2 = 
         "span " ++ show s1 ++" redefining the clafer at span " ++ show s2
   reDefAdd _ _ i = i

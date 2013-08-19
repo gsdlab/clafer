@@ -63,11 +63,11 @@ abstract AndroidDevice
       touchscreen
 //# FRAGMENT
 AndroidPhone4 : AndroidPhone
-   display
+   xor display
       AMOLED
    GSM
    HSPA
    CPU 2
-   input 
+   xor input 
       touchscreen
 //# FRAGMENT
