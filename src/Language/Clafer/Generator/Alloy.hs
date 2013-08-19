@@ -217,14 +217,16 @@ genOptCard    c
 genRelations :: ClaferArgs -> IClafer -> [Concat]
 genRelations claferargs c = maybeToList r ++ (map mkRel $ getSubclafers $ elements c)
   where
-  r = if isOverlapping c && (show $ superKind $ super c) /= "Redefinition"
-                then
-                        Just $ Concat NoTrace [CString $ genRel (if (noalloyruncommand claferargs) then  (uid c ++ "_ref") else "ref")
-                         c {card = Just (1, 1)} $ 
-                         flatten $ refType claferargs c] 
-                else 
-                        Nothing
-  mkRel c' = Concat NoTrace [CString $ genRel (genRelName $ uid c') c' $ uid c']
+    r = case (superKind $ super c) of
+      (Redefinition _) -> Nothing
+      _ -> if isOverlapping c
+            then
+                Just $ Concat NoTrace [CString $ genRel (if (noalloyruncommand claferargs) then  (uid c ++ "_ref") else "ref")
+                 c {card = Just (1, 1)} $ 
+                 flatten $ refType claferargs c] 
+            else 
+                Nothing
+    mkRel c' = Concat NoTrace [CString $ genRel (genRelName $ uid c') c' $ uid c']
 
 genRelName :: String -> String
 genRelName name = "r_" ++ name
@@ -267,9 +269,11 @@ genConstraints    cargs    resPath c =
     IEConstraint _ pexp  -> genPExp cargs ((uid c) : resPath) pexp
     IEClafer c' ->
       let constraint' = if genCardCrude (card c') `elem` ["one", "lone", "some"] then CString "" else mkCard ({- do not use the genRelName as the constraint name -} uid c') False (genRelName $ uid c') $ fromJust $ card c'
-      in (if (show $ superKind $ super c') == "Redefinition" 
-        then CString $ "some r_" ++ (uid $ getReDefClafer c') ++ " => some r_" ++ (uid c') ++ (if (constraint' == CString "") then " " else " && ") 
-          else CString "") +++ constraint'     
+      in (case (superKind $ super c') of 
+        (Redefinition _) -> 
+          CString $ "some r_" ++ (uid $ getReDefClafer c') ++ " => some r_" ++ (uid c') ++ (if (constraint' == CString "") then " " else " && ") 
+        _ -> 
+          CString "") +++ constraint'     
     IEGoal _ _ -> error "getConst function from Alloy generator was given a Goal, this function should only be given a Constrain or Clafer" -- This should never happen
 
 genRedefConst :: IClafer -> String -> Concat

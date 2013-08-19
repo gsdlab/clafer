@@ -97,14 +97,14 @@ data SuperKind = TopLevel | Nested | Redefinition IClafer | RedefinitionFail Str
 instance Eq SuperKind where
   (==) TopLevel TopLevel = True
   (==) Nested Nested = True
-  (==) (Redefinition _) (Redefinition _) = True
+  (==) (Redefinition c1) (Redefinition c2) = uid c1 == uid c2
   (==) (RedefinitionFail _) (RedefinitionFail _) = True
   (==) _ _ = False
 instance Show SuperKind where
   show TopLevel = "TopLevel"
   show Nested = "Nested"
-  show (Redefinition _) = "Redefinition"
-  show (RedefinitionFail _) = "RedefinitionFail"
+  show (Redefinition c) = "Redefinition: " ++ uid c
+  show (RedefinitionFail msg) = "RedefinitionFail: " ++ msg
 
 
 getReDefClafer :: IClafer -> IClafer

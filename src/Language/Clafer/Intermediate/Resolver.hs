@@ -34,7 +34,6 @@ import qualified Data.Map as Map
 import Language.ClaferT
 import Language.Clafer.Common
 import Language.Clafer.ClaferArgs
-import Language.Clafer.Front.Absclafer
 import Language.Clafer.Intermediate.Intclafer
 import Language.Clafer.Intermediate.ResolverName
 import Language.Clafer.Intermediate.ResolverType
@@ -67,7 +66,7 @@ resolveModule pMap args' declarations =
     in if (ranks==[]) then i else 
       let c = fst $ minimumBy (compare `on` snd) ranks
       in if (isSpecifiedCard c claf) then 
-        IRClafer $ claf{super = ISuper (Redefinition c) [PExp (Just $ TClafer []) "" noSpan (IClaferId "" (ident c) $ istop $ cinPos c)]}
+        IRClafer $ claf{super = ISuper (Redefinition c) [PExp (Just $ TClafer []) "" (cinPos claf) (IClaferId "" (ident c) $ istop $ cinPos c)]}
           else IRClafer $ claf{super = (super claf){superKind = (RedefinitionFail $ getErrMsg (cinPos claf) $ cinPos c)}} 
     where
       getReDefRank :: IClafer -> IClafer -> IClafer -> [(IClafer, Integer)]
