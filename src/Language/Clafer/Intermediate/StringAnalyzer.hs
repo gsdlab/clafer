@@ -41,8 +41,8 @@ astrModule imodule = (imodule{mDecls = decls''}, flipMap strMap')
 
 
 astrClafer :: MonadState (Map String Int) m => IClafer -> m IClafer
-astrClafer (IClafer s isAbs gcrd ident' uid' super' crd gCard es) =
-    IClafer s isAbs gcrd ident' uid' super' crd gCard `liftM` mapM astrElement es
+astrClafer (IClafer par s isAbs gcrd ident' uid' super' crd gCard es) =
+    IClafer par s isAbs gcrd ident' uid' super' crd gCard `liftM` mapM astrElement es
 
 
 -- astrs single subclafer
@@ -53,11 +53,11 @@ astrElement x = case x of
   IEGoal isMaximize' pexp -> IEGoal isMaximize' `liftM` astrPExp pexp
 
 astrPExp :: MonadState (Map String Int) m => PExp -> m PExp
-astrPExp (PExp (Just TString) pid' pos' exp') =
-    PExp (Just TInteger) pid' pos' `liftM` astrIExp exp'
-astrPExp (PExp t pid' pos' (IFunExp op' exps')) = PExp t pid' pos' `liftM`
+astrPExp (PExp par' (Just TString) pid' pos' exp') =
+    PExp par' (Just TInteger) pid' pos' `liftM` astrIExp exp'
+astrPExp (PExp par' t pid' pos' (IFunExp op' exps')) = PExp par' t pid' pos' `liftM`
                               (IFunExp op' `liftM` mapM astrPExp exps')
-astrPExp (PExp t pid' pos' (IDeclPExp quant' oDecls' bpexp')) = PExp t pid' pos' `liftM`
+astrPExp (PExp par' t pid' pos' (IDeclPExp quant' oDecls' bpexp')) = PExp par' t pid' pos' `liftM`
                               (IDeclPExp quant' oDecls' `liftM` (astrPExp bpexp'))
 astrPExp x = return x
 
