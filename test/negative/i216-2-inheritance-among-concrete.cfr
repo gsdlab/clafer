@@ -1,0 +1,9 @@
+// [i216] http://gsd.uwaterloo.ca:8888/question/917/inheritance-among-concrete-clafers
+
+year *
+   month 12
+      week 4
+         day 7
+
+myBirthDate
+   january : month

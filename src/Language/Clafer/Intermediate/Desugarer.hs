@@ -22,6 +22,9 @@
 -}
 module Language.Clafer.Intermediate.Desugarer where
 
+import Data.List
+import Data.Maybe
+import Prelude hiding (exp)
 import Language.Clafer.Common
 import Language.Clafer.Front.Absclafer
 import Language.Clafer.Front.Mapper
@@ -38,7 +41,7 @@ desugarModule (PosModule _ declarations) = mapIR addParents $ IModule "" $
     addParents (IRClafer clafer) = IRClafer $ clafer{elements = 
       map (\e -> case e of
         (IEClafer c) -> IEClafer $ c{getParent = Just clafer}
-        e' -> e') $ elements clafer}
+        e' -> e'{cpexp = (cpexp e'){getParentP = Just clafer}}) $ elements clafer}
     addParents i = i
 
 sugarModule :: IModule -> Module
@@ -93,9 +96,9 @@ desugarSuper :: Super -> ISuper
 desugarSuper SuperEmpty = desugarSuper $ PosSuperEmpty noSpan
 desugarSuper (SuperSome superhow setexp) = desugarSuper $ PosSuperSome noSpan superhow setexp
 desugarSuper (PosSuperEmpty s) =
-      ISuper False [PExp (Just $ TClafer []) "" s $ mkLClaferId baseClafer True]
+      ISuper False TopLevel [PExp Nothing (Just $ TClafer []) "" s $ mkLClaferId baseClafer True]
 desugarSuper (PosSuperSome _ superhow setexp) =
-      ISuper (desugarSuperHow superhow) [desugarSetExp setexp]
+      ISuper (desugarSuperHow superhow) TopLevel [desugarSetExp setexp]
 
 
 desugarSuperHow :: SuperHow -> Bool
@@ -133,8 +136,8 @@ sugarModId :: String -> ModId
 sugarModId modid = ModIdIdent $ mkIdent modid
 
 sugarSuper :: ISuper -> Super
-sugarSuper (ISuper _ []) = SuperEmpty
-sugarSuper (ISuper isOverlapping' [pexp]) = SuperSome (sugarSuperHow isOverlapping') (sugarSetExp pexp)
+sugarSuper (ISuper _ _ []) = SuperEmpty
+sugarSuper (ISuper isOverlapping' _ [pexp]) = SuperSome (sugarSuperHow isOverlapping') (sugarSetExp pexp)
 sugarSuper _ = error "Function sugarSuper from Desugarer expects an ISuper with a list of length one, but it was given one with a list larger than one" -- Should never happen
 
 sugarSuperHow :: Bool -> SuperHow
@@ -510,13 +513,13 @@ sugarSetExp' (IClaferId modName' id' _) = ClaferId $ Path $ (sugarModId modName'
 sugarSetExp' _ = error "IDecelPexp, IInt, IDobule, and IStr can not be sugared into a setExp!" --This should never happen
 
 desugarPath :: PExp -> PExp
-desugarPath (PExp iType' pid' pos' x) = reducePExp $ PExp iType' pid' pos' result
+desugarPath (PExp par' iType' pid' pos' x) = reducePExp $ PExp par' iType' pid' pos' result
   where
   result
     | isSet x     = IDeclPExp ISome [] (pExpDefPid pos' x)
     | isNegSome x = IDeclPExp INo   [] $ bpexp $ Language.Clafer.Intermediate.Intclafer.exp $ head $ exps x
     | otherwise   =  x
-  isNegSome (IFunExp op' [PExp _ _ _ (IDeclPExp ISome [] _)]) = op' == iNot
+  isNegSome (IFunExp op' [PExp _ _ _ _ (IDeclPExp ISome [] _)]) = op' == iNot
   isNegSome _ = False
 
 
@@ -528,7 +531,7 @@ isSet _ = False
 
 -- reduce parent
 reducePExp :: PExp -> PExp
-reducePExp (PExp t pid' pos' x) = PExp t pid' pos' $ reduceIExp x
+reducePExp (PExp par' t pid' pos' x) = PExp par' t pid' pos' $ reduceIExp x
 
 reduceIExp :: IExp -> IExp
 reduceIExp (IDeclPExp quant' decls' pexp) = IDeclPExp quant' decls' $ reducePExp pexp
@@ -538,7 +541,7 @@ reduceIExp (IFunExp op' exps') = redNav $ IFunExp op' $ map redExps exps'
 reduceIExp x = x
 
 reduceNav :: IExp -> IExp
-reduceNav x@(IFunExp op' exps'@((PExp _ _ _ iexp@(IFunExp _ (pexp0:pexp:_))):pPexp:_)) = 
+reduceNav x@(IFunExp op' exps'@((PExp _ _ _ _ iexp@(IFunExp _ (pexp0:pexp:_))):pPexp:_)) = 
   if op' == iJoin && isParent pPexp && isClaferName pexp
   then reduceNav $ Language.Clafer.Intermediate.Intclafer.exp pexp0
   else x{exps = (head exps'){Language.Clafer.Intermediate.Intclafer.exp = reduceIExp iexp} :

@@ -308,7 +308,7 @@ resolveTPExp' p@PExp{inPos, exp} =
       arg1s' <- resolveTPExp arg1
       arg2s' <- resolveTPExp arg2
       let union' a b = typeOf a +++ typeOf b
-      return $ [return (union' arg1' arg2', e{exps = [arg1', arg2']}) | (arg1', arg2') <- sortBy (comparing $ length . unionType . uncurry union') $ liftM2 (,) arg1s' arg2s']
+      return $ [return (union' arg1' arg2', e{exps = [arg1', arg2']}) | (arg1', arg2') <- sortBy (comparing $ uncurry union') $ liftM2 (,) arg1s' arg2s']
   resolveTExp e@IFunExp {op, exps = [arg1, arg2]} =
     runListT $ runErrorT $ do
       arg1' <- lift $ ListT $ resolveTPExp arg1
@@ -389,7 +389,7 @@ addRef pexp =
       let result = (newPExp $ IFunExp "." [pexp, deref]) `withType` typeOf deref
       return result <++> addRef result
   where
-  newPExp = PExp Nothing "" $ inPos pexp
+  newPExp = PExp Nothing Nothing "" $ inPos pexp
   
 typeOf :: PExp -> IType
 typeOf pexp = fromMaybe (error "No type") $ iType pexp

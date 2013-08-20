@@ -1,0 +1,44 @@
+/*
+All clafers: 9 | Abstract: 0 | Concrete: 9 | References: 0
+Constraints: 0
+Goals: 0
+Global scope: 1..*
+All names unique: False
+*/
+open util/integer
+pred show {}
+run show for 1
+
+sig c1_year
+{ r_c2_month : set c2_month }
+
+sig c2_month
+{ r_c3_week : set c3_week }
+{ one @r_c2_month.this
+  12 <= #r_c3_week and #r_c3_week <= 12 }
+
+sig c3_week
+{ r_c4_day : set c4_day }
+{ one @r_c3_week.this
+  4 <= #r_c4_day and #r_c4_day <= 4 }
+
+sig c4_day
+{}
+{ one @r_c4_day.this }
+
+one sig c5_year2012 extends c1_year
+{ r_c6_january : one c6_january }
+
+one sig c6_january extends c2_month
+{ r_c7_week1 : one c7_week1
+, r_c9_week2 : one c9_week2 }
+
+one sig c7_week1 extends c3_week
+{ r_c8_day1to7 : one c8_day1to7 }
+
+one sig c8_day1to7 extends c4_day
+{}
+
+one sig c9_week2 extends c3_week
+{}
+

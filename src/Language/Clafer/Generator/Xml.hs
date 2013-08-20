@@ -23,6 +23,7 @@ module Language.Clafer.Generator.Xml where
 
 -- import Text.XML.HaXml.XmlContent.Haskell hiding (Result)
 
+import Data.Maybe (fromJust)
 import Language.Clafer.Common
 import Language.Clafer.Front.Absclafer
 import Language.Clafer.Intermediate.Intclafer
@@ -69,7 +70,7 @@ genXmlModule imodule = concat
 
 genXmlClafer :: IClafer -> Result
 genXmlClafer x = case x of
-  IClafer _ pos abstract gcrd id' uid' super' crd glcard es  ->
+  IClafer _ pos abstract gcrd id' uid' super' crd glcard es ->
     concat [ tag "Position" $ genXmlPosition pos
            , genXmlAbstract abstract
            , optTag gcrd genXmlGCard
@@ -78,7 +79,8 @@ genXmlClafer x = case x of
            , genXmlSuper super'
            , optTag crd genXmlCard
            , genXmlGlCard glcard
-           , concatMap genXmlElement es]
+           , concatMap genXmlElement es] 
+
 
 genXmlAbstract :: Bool -> String
 genXmlAbstract isAbs = genXmlBoolean "IsAbstract" isAbs
@@ -101,9 +103,10 @@ genXmlUid uid' = tag "UniqueId" uid'
 
 genXmlSuper :: ISuper -> String
 genXmlSuper x = case x of
-  ISuper isOverlapping' pexps -> tag "Supers" $ concat
-    [ genXmlBoolean "IsOverlapping" isOverlapping'
-    , concatMap (genXmlPExp "Super") pexps]
+  ISuper isOverlapping' sk pexps -> tag "Supers" $ concat $
+    (genXmlBoolean "IsOverlapping" isOverlapping') :
+    (tag "superKind" $ show $ sk) :
+    [concatMap (genXmlPExp "Super") pexps]
 
 genXmlCard :: (Integer, Integer) -> String
 genXmlCard interval' = tag "Card" $ genXmlInterval interval'
@@ -127,11 +130,15 @@ genXmlAnyOp ft f xs = concatMap
   (\(tname, texp) -> tagType tname (ft texp) $ f texp) xs
 
 genXmlPExp :: String -> PExp -> String
-genXmlPExp tagName (PExp iType' pid' pos' iexp) = tag tagName $ concat
+genXmlPExp tagName (PExp par iType' pid' pos' iexp)  = 
+  let parentID = par
+      parentParentID = if parentID == Nothing then Nothing 
+        else getParent $ fromJust par
+  in tag tagName $ concat
   [ optTag iType' genXmlIType
   , tag "ParentId" pid'
   , tag "Position" $ genXmlPosition pos'
-  , tagType "Exp" (genXmlIExpType iexp) $ genXmlIExp iexp]
+  , tagType "Exp" (genXmlIExpType iexp) $ genXmlIExp iexp parentID parentParentID]
 
 genXmlPosition :: Span -> String
 genXmlPosition (Span (Pos s1 s2) (Pos e1 e2)) = concat
@@ -150,8 +157,8 @@ genXmlIExpType x = case x of
   IStr _ -> "IStringExp"
   IClaferId _ _ _ -> "IClaferId"
 
-genXmlIExp :: IExp -> String
-genXmlIExp x = case x of
+genXmlIExp :: IExp -> Maybe IClafer -> Maybe IClafer -> String
+genXmlIExp x pid' ppid' = case x of
   IDeclPExp quant' decls' pexp -> concat
     [ tagType "Quantifier" (genXmlQuantType quant') ""
     , concatMap genXmlDecl decls'
@@ -171,8 +178,11 @@ genXmlIExp x = case x of
   IStr str -> genXmlString str  
   IClaferId modName' sident' isTop' -> concat
     [ tag "ModuleName" modName'
-    , tag "Id" sident'
-    , genXmlBoolean "IsTop" isTop']
+    , tag "Id" (if (sident'=="this" && pid'/=Nothing) then (uid $ fromJust pid') 
+        else if (sident'=="parent" && ppid'/=Nothing) then (uid $ fromJust ppid') 
+          else sident')
+    , genXmlBoolean "IsTop" isTop'
+    , tag "kind" $ if (sident' `elem` ["this","parent"]) then sident' else "clafer"]
 
 genXmlDecl :: IDecl -> String
 genXmlDecl (IDecl disj locids pexp) = tag "Declaration" $ concat

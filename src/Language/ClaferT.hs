@@ -133,7 +133,7 @@ makeEnv args' = ClaferEnv { args = args'',
                                Html     -> args'{keep_unused=True}
                                Graph    -> args'{keep_unused=True}
                                _             -> args'
-
+                               
 type ClaferM = ClaferT Identity
 -- Monad for using Clafer.
 type ClaferT m = ErrorT ClaferErrs (StateT ClaferEnv m)

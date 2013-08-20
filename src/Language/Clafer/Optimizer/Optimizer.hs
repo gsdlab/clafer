@@ -110,8 +110,8 @@ expClafer claf = do
 
 expSuper :: MonadState GEnv m => ISuper -> m ISuper
 expSuper x = case x of
-  ISuper False _ -> return x
-  ISuper True pexps -> ISuper True `liftM` mapM expPExp pexps
+  ISuper False _ _ -> return x
+  ISuper True r pexps -> ISuper True r `liftM` mapM expPExp pexps
 
 expElement :: MonadState GEnv m => IElement -> m IElement
 expElement x = case x of
@@ -120,7 +120,7 @@ expElement x = case x of
   IEGoal isMaximize' goal -> IEGoal isMaximize' `liftM` expPExp goal
 
 expPExp :: MonadState GEnv m => PExp -> m PExp
-expPExp (PExp t pid' pos' exp') = PExp t pid' pos' `liftM` expIExp exp'
+expPExp (PExp par' t pid' pos' exp') = PExp par' t pid' pos' `liftM` expIExp exp'
 
 expIExp :: MonadState GEnv m => IExp -> m IExp
 expIExp x = case x of

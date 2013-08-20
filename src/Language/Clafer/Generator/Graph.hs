@@ -339,7 +339,7 @@ getUid (PosIdent (pos, id')) irMap = if Map.lookup (range (PosIdent (pos, id')))
                         then id'
                         else let IRPExp pexp = head $ fromJust $ Map.lookup (range (PosIdent (pos, id'))) irMap in
                           findUid id' $ getIdentPExp pexp
-                          where {getIdentPExp (PExp _ _ _ exp') = getIdentIExp exp';
+                          where {getIdentPExp (PExp _ _ _ _ exp') = getIdentIExp exp';
                                  getIdentIExp (IFunExp _ exps') = concatMap getIdentPExp exps';
                                  getIdentIExp (IClaferId _ id'' _) = [id''];
                                  getIdentIExp (IDeclPExp _ _ pexp) = getIdentPExp pexp;

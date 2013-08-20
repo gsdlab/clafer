@@ -64,7 +64,7 @@ nameClafer skipResolver claf = do
 
 
 namePExp :: MonadState GEnv m => PExp -> m PExp
-namePExp pexp@(PExp _ _ _ exp') = do
+namePExp pexp@(PExp _ _ _ _ exp') = do
   pid' <- genId "exp"
   exp'' <- nameIExp exp'
   return $ pexp {pid = pid', Language.Clafer.Intermediate.Intclafer.exp = exp''}

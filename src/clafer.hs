@@ -123,14 +123,14 @@ conPutStrLn args' s = when (not $ console_output args') $ putStrLn s
 runValidate :: ClaferArgs -> String -> IO ()
 runValidate args' fo = do
   let path = (tooldir args') ++ "/"
-  liftIO $ putStrLn ("Validating " ++ (file args'))
+  liftIO $ putStrLn ("tooldir=" ++ path)
   case (mode args') of
     Xml -> do
       writeFile "ClaferIR.xsd" claferIRXSD
       voidf $ system $ "java -classpath " ++ path ++ " XsdCheck ClaferIR.xsd " ++ fo
     Alloy ->   voidf $ system $ validateAlloy path "4" ++ fo
     Alloy42 -> voidf $ system $ validateAlloy path "4.2" ++ fo
-    Clafer ->  voidf $ system $ path ++ "clafer -s -m=clafer " ++ fo
+    Clafer ->  voidf $ system $ path ++ "/clafer -s -m=clafer " ++ fo
     _ -> error "Function runValidate from Main file was given an invalid mode"
 
 validateAlloy :: String -> String -> String
@@ -155,7 +155,7 @@ start v args' model = if schema args'
 runEcore2Clafer :: FilePath -> FilePath -> IO ()
 runEcore2Clafer    ecoreFile toolPath
   | null ecoreFile = do
-      putStrLn "Error: Provide a file name of the ECore model."
+      putStrLn "Error: Provide a file name of an ECore model."
   | otherwise      = do
       putStrLn $ "Converting " ++ ecoreFile ++ " into Clafer"
-      voidf $ system $ "java -jar " ++ toolPath ++ "ecore2clafer.jar " ++ ecoreFile
+      voidf $ system $ "java -jar " ++ toolPath ++ "/ecore2clafer.jar " ++ ecoreFile
