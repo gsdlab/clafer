@@ -203,16 +203,16 @@ resolveTElement _ (IEClafer iclafer) =
   do
     elements' <- mapM (resolveTElement $ I.uid iclafer) (elements iclafer)
     return $ IEClafer $ iclafer{elements = elements'}
-resolveTElement parent' (IEConstraint isHard pexp) =
-  IEConstraint isHard <$> (testBoolean =<< resolveTConstraint parent' pexp)
+resolveTElement parent' (IEConstraint par' isHard pexp) =
+  IEConstraint par' isHard <$> (testBoolean =<< resolveTConstraint parent' pexp)
   where
   testBoolean pexp' =
     do
       unless (typeOf pexp' == TBoolean) $
         throwError $ SemanticErr (inPos pexp') ("Cannot construct constraint on type '" ++ str (typeOf pexp') ++ "'")
       return pexp'
-resolveTElement parent' (IEGoal isMaximize pexp) =
-  IEGoal isMaximize <$> resolveTConstraint parent' pexp
+resolveTElement parent' (IEGoal par' isMaximize pexp) =
+  IEGoal par' isMaximize <$> resolveTConstraint parent' pexp
 
 resolveTConstraint :: String -> PExp -> TypeAnalysis PExp
 resolveTConstraint curThis' constraint = 

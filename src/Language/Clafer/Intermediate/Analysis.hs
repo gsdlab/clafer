@@ -319,7 +319,7 @@ convertClafer =
   convertClafer' Nothing
   where
   convertElement' parent (I.IEClafer clafer) = Just $ Left $ convertClafer' parent clafer
-  convertElement' _ (I.IEConstraint _ pexp)   = Just $ Right $ pexp
+  convertElement' _ (I.IEConstraint _ _ pexp)   = Just $ Right $ pexp
   convertElement' _ _ = Nothing
   
   convertClafer' parent clafer =

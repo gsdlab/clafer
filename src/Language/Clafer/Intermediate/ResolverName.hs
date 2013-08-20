@@ -133,8 +133,8 @@ mkAncestorList env rp =
 resolveElement :: SEnv -> IElement -> Resolve IElement
 resolveElement env x = case x of
   IEClafer clafer  -> IEClafer <$> resolveClafer env clafer
-  IEConstraint isHard' pexp  -> IEConstraint isHard' <$> resolvePExp env pexp
-  IEGoal isMaximize' pexp  -> IEGoal isMaximize' <$> resolvePExp env pexp  
+  IEConstraint par' isHard' pexp  -> IEConstraint par' isHard' <$> resolvePExp env pexp
+  IEGoal par' isMaximize' pexp  -> IEGoal par' isMaximize' <$> resolvePExp env pexp  
 
 
 resolvePExp :: SEnv -> PExp -> Resolve PExp

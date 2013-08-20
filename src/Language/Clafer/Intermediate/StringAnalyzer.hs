@@ -48,8 +48,8 @@ astrClafer (IClafer par' s isAbs gcrd ident' uid' super' ref' crd gCard es) =
 astrElement :: MonadState (Map String Int) m => IElement -> m IElement
 astrElement x = case x of
   IEClafer clafer -> IEClafer `liftM` astrClafer clafer
-  IEConstraint isHard' pexp -> IEConstraint isHard' `liftM` astrPExp pexp
-  IEGoal isMaximize' pexp -> IEGoal isMaximize' `liftM` astrPExp pexp
+  IEConstraint par' isHard' pexp -> IEConstraint par' isHard' `liftM` astrPExp pexp
+  IEGoal par' isMaximize' pexp -> IEGoal par' isMaximize' `liftM` astrPExp pexp
 
 astrPExp :: MonadState (Map String Int) m => PExp -> m PExp
 astrPExp (PExp par' (Just TString) pid' pos' exp') =

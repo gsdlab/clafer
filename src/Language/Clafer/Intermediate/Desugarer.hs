@@ -40,8 +40,13 @@ desugarModule (PosModule _ declarations) = mapIR addParents $ IModule "" $
     addParents :: Ir -> Ir
     addParents (IRClafer clafer) = IRClafer $ clafer{elements = 
       map (\e -> case e of
-        (IEClafer c) -> IEClafer $ c{getParent = Just clafer}
-        e' -> e'{cpexp = (cpexp e'){getParentP = Just clafer}}) $ elements clafer}
+        (IEClafer c) -> IEClafer c{claferParent = Just clafer}
+        (IEConstraint _ b p) -> IEConstraint (Just clafer) b p
+        (IEGoal _ b p) -> IEGoal (Just clafer) b p) $ elements clafer}
+    addParents (IRPExp pexp) = IRPExp pexp{exp = case (exp pexp) of
+      (IDeclPExp q d pexp') -> IDeclPExp q d pexp'{pExpParent = Just pexp}
+      (IFunExp op' pexps) -> IFunExp op' $ map (\p -> p{pExpParent = Just pexp}) pexps
+      exp' -> exp'}
     addParents i = i
 
 sugarModule :: IModule -> Module
@@ -70,11 +75,11 @@ desugarDeclaration _ = error "desugared"
 
 sugarDeclaration :: IElement -> Declaration
 sugarDeclaration (IEClafer clafer) = ElementDecl $ Subclafer $ sugarClafer clafer
-sugarDeclaration (IEConstraint True constraint) =
+sugarDeclaration (IEConstraint _ True constraint) =
       ElementDecl $ Subconstraint $ sugarConstraint constraint
-sugarDeclaration  (IEConstraint False softconstraint) =
+sugarDeclaration  (IEConstraint _ False softconstraint) =
       ElementDecl $ Subsoftconstraint $ sugarSoftConstraint softconstraint
-sugarDeclaration  (IEGoal _ goal) = ElementDecl $ Subgoal $ sugarGoal goal
+sugarDeclaration  (IEGoal _ _ goal) = ElementDecl $ Subgoal $ sugarGoal goal
 
 
 desugarClafer :: Clafer -> [IElement]
@@ -125,7 +130,7 @@ desugarInit :: PosIdent -> Init -> [IElement]
 desugarInit id' InitEmpty = desugarInit id' $ PosInitEmpty noSpan
 desugarInit id' (InitSome inithow exp') = desugarInit id' $ PosInitSome noSpan inithow exp'
 desugarInit _ (PosInitEmpty _) = []
-desugarInit id' (PosInitSome s inithow exp') = [IEConstraint (desugarInitHow inithow) 
+desugarInit id' (PosInitSome s inithow exp') = [IEConstraint Nothing (desugarInitHow inithow) 
   (pExpDefPid s (IFunExp "=" [mkPLClaferId (snd $ getIdent id') False, desugarExp exp']))]
   where getIdent (PosIdent y) = y
 
@@ -224,17 +229,17 @@ desugarElement x = case x of
       AbstractEmpty GCardEmpty (mkIdent $ sident $ desugarName name)
       (SuperSome SuperColon (PosClaferId noSpan name)) crd InitEmpty es
   PosSubconstraint _ constraint  ->
-      [IEConstraint True $ desugarConstraint constraint]
+      [IEConstraint Nothing True $ desugarConstraint constraint]
   PosSubsoftconstraint _ softconstraint ->
-      [IEConstraint False $ desugarSoftConstraint softconstraint]
-  PosSubgoal _ goal -> [IEGoal True $ desugarGoal goal]
+      [IEConstraint Nothing False $ desugarSoftConstraint softconstraint]
+  PosSubgoal _ goal -> [IEGoal Nothing True $ desugarGoal goal]
 
 sugarElement :: IElement -> Element
 sugarElement x = case x of
   IEClafer claf  -> Subclafer $ sugarClafer claf
-  IEConstraint True constraint -> Subconstraint $ sugarConstraint constraint
-  IEConstraint False softconstraint -> Subsoftconstraint $ sugarSoftConstraint softconstraint
-  IEGoal _ goal -> Subgoal $ sugarGoal goal
+  IEConstraint _ True constraint -> Subconstraint $ sugarConstraint constraint
+  IEConstraint _ False softconstraint -> Subsoftconstraint $ sugarSoftConstraint softconstraint
+  IEGoal _ _ goal -> Subgoal $ sugarGoal goal
 
 mkArrowConstraint :: Clafer -> [Element]
 mkArrowConstraint (Clafer abstract gcard' id' super' crd init' es) =

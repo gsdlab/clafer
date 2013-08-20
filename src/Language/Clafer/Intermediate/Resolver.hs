@@ -66,13 +66,13 @@ resolveModule args' declarations =
     in if (ranks==[]) then i else 
       let c = fst $ minimumBy (compare `on` snd) ranks
       in if (isSpecifiedCard c claf) then 
-        IRClafer $ claf{super = ISuper (Redefinition c) [PExp (getParent claf) (Just $ TClafer []) "" (cinPos claf) (IClaferId "" (ident c) $ istop $ cinPos c)]}
+        IRClafer $ claf{super = ISuper (Redefinition c) [PExp Nothing (Just $ TClafer []) "" (cinPos claf) (IClaferId "" (ident c) $ istop $ cinPos c)]}
           else IRClafer $ claf{super = (super claf){superKind = (RedefinitionFail $ getErrMsg (cinPos claf) $ cinPos c)}} 
     where
       getReDefRank :: IClafer -> IClafer -> IClafer -> [(IClafer, Integer)]
       getReDefRank oClaf claf1 claf2 =
-        let par1 = getParent claf1
-            par2 = getParent claf2
+        let par1 = claferParent claf1
+            par2 = claferParent claf2
         in if (par1==Nothing && par2==Nothing) then 
           (let depth = recursiveCheck 1 claf1 claf2
            in if (depth==0) then mempty else [(oClaf, depth)])
@@ -119,8 +119,8 @@ nameModule skipResolver imodule = (imodule{mDecls = decls'}, genv')
 nameElement :: MonadState GEnv m => Bool -> IElement -> m IElement
 nameElement skipResolver x = case x of
   IEClafer claf -> IEClafer `liftM` (nameClafer skipResolver claf)
-  IEConstraint isHard' pexp -> IEConstraint isHard' `liftM` (namePExp pexp)
-  IEGoal isMaximize' pexp -> IEGoal isMaximize' `liftM` (namePExp pexp)
+  IEConstraint par' isHard' pexp -> IEConstraint par' isHard' `liftM` (namePExp pexp)
+  IEGoal par' isMaximize' pexp -> IEGoal par' isMaximize' `liftM` (namePExp pexp)
 
 
 nameClafer :: MonadState GEnv m => Bool -> IClafer -> m IClafer

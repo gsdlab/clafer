@@ -64,7 +64,7 @@ getSuperId = sident . Language.Clafer.Intermediate.Intclafer.exp . head
 isEqClaferId :: String -> IClafer -> Bool
 isEqClaferId = flip $ (==).uid
 
-idToPExp :: Maybe IClafer -> String -> Span -> String -> String -> Bool -> PExp
+idToPExp :: Maybe PExp -> String -> Span -> String -> String -> Bool -> PExp
 idToPExp par' pid' pos modids id' isTop' = PExp par' (Just $ TClafer [id']) pid' pos (IClaferId modids id' isTop')
 
 mkLClaferId :: String -> Bool -> IExp

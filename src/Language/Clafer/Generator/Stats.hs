@@ -60,5 +60,5 @@ statsCard (m1, n1) (m2, n2) = (max m1 m2, maxEx n1 n2)
 statsElement :: MonadState Stats m => IElement -> m ()
 statsElement x = case x of
   IEClafer clafer -> statsClafer clafer
-  IEConstraint _ _ -> modify (\e -> e {nConstraints = nConstraints e + 1})
-  IEGoal _ _ -> modify (\e -> e {nGoals = nGoals e + 1})
+  IEConstraint _ _ _ -> modify (\e -> e {nConstraints = nConstraints e + 1})
+  IEGoal _ _ _ -> modify (\e -> e {nGoals = nGoals e + 1})
