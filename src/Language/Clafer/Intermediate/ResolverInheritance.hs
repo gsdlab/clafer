@@ -77,9 +77,9 @@ resolveNSuper declarations x = case (super x) of
 
 resolveNElement :: [IElement] -> IElement -> Resolve IElement
 resolveNElement declarations x = case x of
-  IEClafer clafer  -> IEClafer <$> resolveNClafer declarations clafer
-  IEConstraint _ _  -> return x
-  IEGoal _ _ -> return x
+  IEClafer clafer -> IEClafer <$> resolveNClafer declarations clafer
+  IEConstraint _ _ _  -> return x
+  IEGoal _ _ _ -> return x
 
 resolveN :: IClafer -> Span -> [IElement] -> String -> Resolve (Maybe (String, [IClafer]), SuperKind)
 resolveN claf pos' declarations id' =
@@ -94,8 +94,8 @@ resolveN claf pos' declarations id' =
   makePair a b = (a,b)
   commonNesting :: IClafer -> IClafer -> [IClafer] -> Bool
   commonNesting claf1 claf2 cs = 
-    let par1 = getParent claf1
-        par2 = getParent claf2
+    let par1 = claferParent claf1
+        par2 = claferParent claf2
     in if (par2 == Nothing) then True else
       if (par1 == Nothing) then False else
         if (recursiveCheck (fromJust par1) (fromJust par2) cs)
@@ -142,8 +142,8 @@ resolveOSuper env x = case x of
 resolveOElement :: SEnv -> IElement -> Resolve IElement
 resolveOElement env x = case x of
   IEClafer clafer  -> IEClafer <$> resolveOClafer env clafer
-  IEConstraint _ _ -> return x
-  IEGoal _ _ -> return x
+  IEConstraint _ _ _ -> return x
+  IEGoal _ _ _ -> return x
   
 -- -----------------------------------------------------------------------------
 -- inherited and default cardinalities
@@ -191,8 +191,8 @@ analyzeCard env clafer = card clafer `mplus` Just card'
 analyzeElement :: SEnv -> IElement -> IElement
 analyzeElement env x = case x of
   IEClafer clafer  -> IEClafer $ analyzeClafer env clafer
-  IEConstraint _ _ -> x
-  IEGoal _ _ -> x
+  IEConstraint _ _ _ -> x
+  IEGoal _ _ _ -> x
 
 -- -----------------------------------------------------------------------------
 -- Expand inheritance
@@ -214,8 +214,8 @@ unrollabeDeclaration x = case x of
   IEClafer clafer -> if isAbstract clafer
                         then Just (uid clafer, unrollableClafer clafer)
                         else Nothing
-  IEConstraint _ _ -> Nothing
-  IEGoal _ _ -> Nothing
+  IEConstraint _ _ _ -> Nothing
+  IEGoal _ _ _ -> Nothing
 
 unrollableClafer :: IClafer -> [String]
 unrollableClafer clafer
@@ -288,5 +288,5 @@ resolveEElement :: MonadState GEnv m => [String] -> [String] -> Bool -> [IElemen
 resolveEElement predecessors unrollables absAncestor declarations x = case x of
   IEClafer clafer  -> if isAbstract clafer then return x else IEClafer `liftM`
     resolveEClafer predecessors unrollables absAncestor declarations clafer
-  IEConstraint _ _  -> return x
-  IEGoal _ _ -> return x
+  IEConstraint _ _ _  -> return x
+  IEGoal _ _ _ -> return x

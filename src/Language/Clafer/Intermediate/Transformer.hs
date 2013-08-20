@@ -32,8 +32,8 @@ transModule imodule = imodule{mDecls = map transElement $ mDecls imodule}
 transElement :: IElement -> IElement
 transElement x = case x of
   IEClafer clafer  -> IEClafer $ transClafer clafer
-  IEConstraint isHard' pexp  -> IEConstraint isHard' $ transPExp False pexp
-  IEGoal isMaximize' pexp  -> IEGoal isMaximize' $ transPExp False pexp  
+  IEConstraint par' isHard' pexp  -> IEConstraint par' isHard' $ transPExp False pexp
+  IEGoal par' isMaximize' pexp  -> IEGoal par' isMaximize' $ transPExp False pexp  
 
 transClafer :: IClafer -> IClafer
 transClafer clafer = clafer{elements = map transElement $ elements clafer}

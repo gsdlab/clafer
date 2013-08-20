@@ -119,8 +119,8 @@ genScope    (uid', scope)       = show scope ++ " " ++ uid'
 genDeclarationGoalsOnly :: ClaferArgs -> IElement -> Concat
 genDeclarationGoalsOnly    claferargs    x         = case x of
   IEClafer _  -> CString ""
-  IEConstraint _ _  -> CString ""
-  IEGoal _ (PExp _ _ _ _ innerexp) -> case innerexp of 
+  IEConstraint _ _ _  -> CString ""
+  IEGoal _ _ (PExp _ _ _ _ innerexp) -> case innerexp of 
         IFunExp op'  exps' ->  if  op' == iGMax || op' == iGMin then  
                         mkMetric op' $ genPExp claferargs [] (head exps') 
                 else 
@@ -132,8 +132,8 @@ genDeclarationGoalsOnly    claferargs    x         = case x of
 genDeclaration :: ClaferArgs -> IElement -> Concat
 genDeclaration claferargs x = case x of
   IEClafer clafer'  -> genClafer claferargs [] clafer'
-  IEConstraint _ pexp  -> mkFact $ genPExp claferargs [] pexp
-  IEGoal _ (PExp _ _ _ _ innerexp) -> case innerexp of 
+  IEConstraint _ _ pexp  -> mkFact $ genPExp claferargs [] pexp
+  IEGoal _ _ (PExp _ _ _ _ innerexp) -> case innerexp of 
         IFunExp op'  _ ->  if  op' == iGMax || op' == iGMin then  
                        CString ""
                 else 
@@ -264,11 +264,11 @@ genConstraints    cargs    resPath c = (genParentConst resPath c) :
   where
   constraints = map genConst $ elements c
   genConst x = case x of
-    IEConstraint _ pexp  -> genPExp cargs ((uid c) : resPath) pexp
+    IEConstraint _ _ pexp  -> genPExp cargs ((uid c) : resPath) pexp
     IEClafer c' ->
         if genCardCrude (card c') `elem` ["one", "lone", "some"]
         then CString "" else mkCard ({- do not use the genRelName as the constraint name -} uid c') False (genRelName $ uid c') $ fromJust $ card c'
-    IEGoal _ _ -> error "getConst function from Alloy generator was given a Goal, this function should only be given a Constrain or Clafer" -- This should never happen
+    IEGoal _ _ _ -> error "getConst function from Alloy generator was given a Goal, this function should only be given a Constrain or Clafer" -- This should never happen
 
 -- optimization: if only boolean features then the parent is unique
 genParentConst :: [String] -> IClafer -> Concat

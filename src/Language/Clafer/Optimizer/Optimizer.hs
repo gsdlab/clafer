@@ -42,8 +42,8 @@ optimizeModule args (imodule, genv) =
 optimizeElement :: Interval -> IElement -> IElement
 optimizeElement interval' x = case x of
   IEClafer c  -> IEClafer $ optimizeClafer interval' c
-  IEConstraint _ _  -> x
-  IEGoal _ _ -> x
+  IEConstraint _ _ _  -> x
+  IEGoal _ _ _ -> x
 
 optimizeClafer :: Interval -> IClafer -> IClafer
 optimizeClafer interval' c = c {glCard = glCard',
@@ -116,8 +116,8 @@ expSuper x = case x of
 expElement :: MonadState GEnv m => IElement -> m IElement
 expElement x = case x of
   IEClafer claf  -> IEClafer `liftM` expClafer claf
-  IEConstraint isHard' constraint  -> IEConstraint isHard' `liftM` expPExp constraint
-  IEGoal isMaximize' goal -> IEGoal isMaximize' `liftM` expPExp goal
+  IEConstraint par' isHard' constraint  -> IEConstraint par' isHard' `liftM` expPExp constraint
+  IEGoal par' isMaximize' goal -> IEGoal par' isMaximize' `liftM` expPExp goal
 
 expPExp :: MonadState GEnv m => PExp -> m PExp
 expPExp (PExp par' t pid' pos' exp') = PExp par' t pid' pos' `liftM` expIExp exp'
@@ -192,14 +192,14 @@ allUniqueClafer claf =
 allUniqueElement :: IElement -> (Bool, [String])
 allUniqueElement x = case x of
   IEClafer claf -> allUniqueClafer claf
-  IEConstraint _ _ -> (True, [])
-  IEGoal _ _ -> (True, [])
+  IEConstraint _ _ _ -> (True, [])
+  IEGoal _ _ _ -> (True, [])
 
 checkConstraintElement :: [String] -> IElement -> Bool
 checkConstraintElement idents x = case x of
   IEClafer claf -> and $ map (checkConstraintElement idents) $ elements claf
-  IEConstraint _ pexp -> checkConstraintPExp idents pexp 
-  IEGoal _ _ ->  True
+  IEConstraint _ _ pexp -> checkConstraintPExp idents pexp 
+  IEGoal _ _ _ ->  True
 
 checkConstraintPExp :: [String] -> PExp -> Bool
 checkConstraintPExp idents pexp = checkConstraintIExp idents $
@@ -245,8 +245,8 @@ findDupClafer claf = if null dups
 findDupElement :: IElement -> IElement
 findDupElement x = case x of
   IEClafer claf -> IEClafer $ findDupClafer claf
-  IEConstraint _ _ -> x
-  IEGoal _ _ -> x
+  IEConstraint _ _ _ -> x
+  IEGoal _ _ _ -> x
 
 
 findDuplicates :: [IClafer] -> [String]
@@ -275,8 +275,8 @@ markTopSuper clafers x = x{supers = map (markTopPExp clafers) $ supers x}
 markTopElement :: [String] -> IElement -> IElement
 markTopElement clafers x = case x of
   IEClafer c  -> IEClafer $ markTopClafer clafers c
-  IEConstraint isHard' pexp  -> IEConstraint isHard' $ markTopPExp clafers pexp
-  IEGoal isMaximize' pexp -> IEGoal isMaximize' $ markTopPExp clafers pexp
+  IEConstraint par' isHard' pexp  -> IEConstraint par' isHard' $ markTopPExp clafers pexp
+  IEGoal par' isMaximize' pexp -> IEGoal par' isMaximize' $ markTopPExp clafers pexp
 
 markTopPExp :: [String] -> PExp -> PExp
 markTopPExp clafers pexp =

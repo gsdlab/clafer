@@ -22,6 +22,7 @@
 module Language.Clafer.Intermediate.Intclafer where
 
 import Language.Clafer.Front.Absclafer
+import Data.Maybe
 import Data.Monoid
 import Data.Foldable (foldMap)
 
@@ -55,21 +56,21 @@ data IModule = IModule {
 -- Clafer has a list of fields that specify its properties. Some fields, marked as (o) are for generating optimized code
 data IClafer =
    IClafer {
-      getParent :: Maybe IClafer, -- Nothing => TopLevel, Just x => x is the parent of this clafer
-      cinPos :: Span,             -- the position of the syntax in source code
-      isAbstract :: Bool,         -- whether abstract or not (i.e., concrete)
-      gcard :: Maybe IGCard,      -- group cardinality
-      ident :: String,            -- name
-      uid :: String,              -- (o) unique identifier
-      super:: ISuper,             -- superclafers
-      card :: Maybe Interval,     -- clafer cardinality
-      glCard :: Interval,         -- (o) global cardinality
-      elements :: [IElement]      -- nested declarations
+      claferParent :: Maybe IClafer,  -- Nothing => TopLevel, Just x => x is the parent of this clafer
+      cinPos :: Span,                 -- the position of the syntax in source code
+      isAbstract :: Bool,             -- whether abstract or not (i.e., concrete)
+      gcard :: Maybe IGCard,          -- group cardinality
+      ident :: String,                -- name
+      uid :: String,                  -- (o) unique identifier
+      super:: ISuper,                 -- superclafers
+      card :: Maybe Interval,         -- clafer cardinality
+      glCard :: Interval,             -- (o) global cardinality
+      elements :: [IElement]          -- nested declarations
     }
 
 data IClaferInstance =                                          -- IClafer without the Parent,
   IClaferInstance Span Bool (Maybe IGCard) String String ISuper -- used to help derive instances
-  (Maybe Interval) Interval [IElement] deriving (Eq,Ord,Show)  -- that will ignore the Parent.
+  (Maybe Interval) Interval [IElement] deriving (Eq,Ord,Show)   -- that will ignore the Parent.
 
 instance Eq IClafer where
   (==) (IClafer _ cp ia g i u s c gc es) (IClafer _ cp' ia' g' i' u' s' c' gc' es') = 
@@ -80,7 +81,13 @@ instance Ord IClafer where
     IClaferInstance cp ia g i u s c gc es `compare` IClaferInstance cp' ia' g' i' u' s' c' gc' es'
 
 instance Show IClafer where
-  show (IClafer _ cp ia g i u s c gc es) = show $ IClaferInstance cp ia g i u s c gc es
+  show (IClafer p cp ia g i u s c gc es) = 
+    "IClafer {claferParentUid = " ++ 
+      (if p == Nothing then "Nothing" else uid $ fromJust p) ++ " cinPos = " 
+        ++ show cp ++ " isAbstract = " ++ show ia ++ " gcard = " ++ show g ++
+         " ident = " ++ show i ++ " uid " ++ show u ++ " super = " ++ show s 
+          ++ " card = " ++ show c ++ " glCard = " ++ show gc 
+            ++ " elements = " ++ show es
 
 
 -- Clafer's subelement is either a clafer, a constraint, or a goal (objective)
@@ -88,14 +95,50 @@ instance Show IClafer where
 data IElement =
    IEClafer IClafer
  | IEConstraint {
-      isHard :: Bool,     -- whether hard or not (soft)
-      cpexp :: PExp       -- the expression
+      constraintParent :: Maybe IClafer,-- Nothing => TopLevel, Just x => x is the parent of this constraint
+      isHard :: Bool,                   -- whether hard or not (soft)
+      cpexp :: PExp                     -- the expression
     }
  | IEGoal {
-   isMaximize :: Bool,    -- whether maximize or minimize
-   cpexp :: PExp          -- the expression
+   goalParent :: Maybe IClafer,-- Nothing => TopLevel, Just x => x is the parent of this goal
+   isMaximize :: Bool,         -- whether maximize or minimize
+   cpexp :: PExp               -- the expression
    }
-  deriving (Eq,Ord,Show)
+
+data ElementInstance = ElementInstance Bool PExp deriving (Eq, Ord, Show)
+
+instance Eq IElement where
+  (==) (IEClafer c) (IEClafer c') = c == c'
+  (==) (IEConstraint _ b p) (IEConstraint _ b' p') = 
+    (ElementInstance b p) == (ElementInstance b' p')
+  (==) (IEGoal _ b p) (IEGoal _ b' p') =
+    (ElementInstance b p) == (ElementInstance b' p')
+  (==) _ _ = False
+
+instance Ord IElement where
+  compare (IEClafer c) (IEClafer c') = c `compare` c'
+  compare (IEConstraint _ b p) (IEConstraint _ b' p') =
+    (ElementInstance b p) `compare` (ElementInstance b' p')
+  compare (IEGoal _ b p) (IEGoal _ b' p') =
+    (ElementInstance b p) `compare` (ElementInstance b' p')
+  compare (IEClafer _) (IEConstraint _ _ _) = LT
+  compare  (IEConstraint _ _ _) (IEClafer _) = GT
+  compare (IEConstraint _ _ _) (IEGoal _ _ _) = LT
+  compare (IEGoal _ _ _) (IEConstraint _ _ _) = GT
+  compare (IEClafer _) (IEGoal _ _ _) = LT
+  compare (IEGoal _ _ _) (IEClafer _)  = GT
+
+instance Show IElement where
+  show (IEClafer c) = "IEClafer " ++ show c 
+  show (IEConstraint cp b p) = 
+    "IEConstraint {constraintParentUid = " ++ 
+      (if cp == Nothing then "Nothing" else uid $ fromJust cp) 
+        ++ " isHard = " ++ show b ++ " cpexp = " ++ show p
+  show (IEGoal gp b p) = 
+     "IEConstraint {goalParnetUid = " ++ 
+      (if gp == Nothing then "Nothing" else uid $ fromJust gp) 
+        ++ " isMaximize = " ++ show b ++ " cpexp = " ++ show p
+
 
 -- A list of superclafers.  
 -- ->    -- overlaping unique (set)
@@ -126,14 +169,15 @@ type Interval = (Integer, Integer)
 
 -- This is expression container (parent). It has meta information about an actual expression 'exp'
 data PExp = PExp {
-      getParentP :: Maybe IClafer,  -- Nothing => TopLevel, Just x => x is the parent of this PExp
+      pExpParent :: Maybe PExp, -- Nothing => TopLevel, Just x => x is the parent of this PExp
       iType :: Maybe IType,  
-      pid :: String,                -- non-empy unique id for expressions with span, "" for noSpan
-      inPos :: Span,                -- position in the input Clafer file
-      exp :: IExp                   -- the actual expression
+      pid :: String,            -- non-empy unique id for expressions with span, "" for noSpan
+      inPos :: Span,            -- position in the input Clafer file
+      exp :: IExp               -- the actual expression
     }
 
-data PExpInstance = PExpInstance (Maybe IType) String Span IExp deriving (Eq,Ord,Show)
+data PExpInstance = PExpInstance (Maybe IType) String Span IExp 
+  deriving (Eq,Ord,Show)
 
 instance Eq PExp where
   (==) (PExp _ t p pos e) (PExp _ t' p' pos' e') = 
@@ -144,7 +188,11 @@ instance Ord PExp where
     (PExpInstance t p pos e) `compare` (PExpInstance t' p' pos' e')
 
 instance Show PExp where
-  show (PExp _ t p pos e) = show $ PExpInstance t p pos e
+  show (PExp par t p pos e) = 
+    "PExp {pExpParentPid = " ++ 
+      (if par == Nothing then "Nothing" else pid $ fromJust par) ++ 
+        " iType = " ++ show t ++ " pid = " ++ show p ++ " inPos = " ++ 
+            show pos ++ " exp = "  ++ show e
 
 data IExp = 
    -- quantified expression with declarations
@@ -248,10 +296,10 @@ them if you wish to start from somewhere other than IModule.
 iMap :: (Ir -> Ir) -> Ir -> Ir 
 iMap f (IRIElement (IEClafer c)) = 
   f $ IRIElement $ IEClafer $ unWrapIClafer $ iMap f $ IRClafer c
-iMap f (IRIElement (IEConstraint h pexp)) =
-  f $ IRIElement $ IEConstraint h $ unWrapPExp $ iMap f $ IRPExp pexp
-iMap f (IRIElement (IEGoal m pexp)) =
-  f $ IRIElement $ IEGoal m $ unWrapPExp $ iMap f $ IRPExp pexp 
+iMap f (IRIElement (IEConstraint par' h pexp)) =
+  f $ IRIElement $ IEConstraint par' h $ unWrapPExp $ iMap f $ IRPExp pexp
+iMap f (IRIElement (IEGoal par' m pexp)) =
+  f $ IRIElement $ IEGoal par' m $ unWrapPExp $ iMap f $ IRPExp pexp 
 iMap f (IRClafer (IClafer par p a (Just grc) i u s c goc elems)) =
   f $ IRClafer $ IClafer par p a (Just $ unWrapIGCard $ iMap f $ IRIGCard grc) i u (unWrapISuper $ iMap f $ IRISuper s) c goc $ map (unWrapIElement . iMap f . IRIElement) elems
 iMap f (IRClafer (IClafer par p a Nothing i u s c goc elems)) =
@@ -271,9 +319,9 @@ iMap f (IRIDecl (IDecl i d body')) =
 iMap f i = f i
 
 iFoldMap :: (Monoid m) => (Ir -> m) -> Ir -> m
-iFoldMap f i@(IRIElement (IEConstraint _ pexp)) =
+iFoldMap f i@(IRIElement (IEConstraint _ _ pexp)) =
   f i `mappend` (iFoldMap f $ IRPExp pexp)
-iFoldMap f i@(IRIElement (IEGoal _ pexp)) =
+iFoldMap f i@(IRIElement (IEGoal _ _ pexp)) =
   f i `mappend` (iFoldMap f $ IRPExp pexp)
 iFoldMap f i@(IRClafer (IClafer _ _ _ Nothing _ _ s _ _ elems)) =
   f i `mappend` (iFoldMap f $ IRISuper s) `mappend` foldMap (iFoldMap f . IRIElement) elems

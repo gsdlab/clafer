@@ -52,8 +52,8 @@ nameModule skipResolver imodule = (imodule{mDecls = decls'}, genv')
 nameElement :: MonadState GEnv m => Bool -> IElement -> m IElement
 nameElement skipResolver x = case x of
   IEClafer claf -> IEClafer `liftM` (nameClafer skipResolver claf)
-  IEConstraint isHard' pexp -> IEConstraint isHard' `liftM` (namePExp pexp)
-  IEGoal isMaximize' pexp -> IEGoal isMaximize' `liftM` (namePExp pexp)
+  IEConstraint par' isHard' pexp -> IEConstraint par' isHard' `liftM` (namePExp pexp)
+  IEGoal par' isMaximize' pexp -> IEGoal par' isMaximize' `liftM` (namePExp pexp)
 
 
 nameClafer :: MonadState GEnv m => Bool -> IClafer -> m IClafer
