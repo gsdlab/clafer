@@ -27,7 +27,6 @@ import Data.Maybe (fromJust)
 import Language.Clafer.Common
 import Language.Clafer.Front.Absclafer
 import Language.Clafer.Intermediate.Intclafer
-import qualified Data.Map as Map
 
 tag :: String -> String -> String
 tag name exp' = concat ["<", name, ">", exp', "</", name, ">\n"]
@@ -57,30 +56,30 @@ genXmlIntPair (x, y) = concat
   [ genXmlInteger x
   , genXmlInteger y]
 
-genXmlModule :: Map.Map Span IClafer -> IModule -> Result
-genXmlModule pMap imodule = concat
+genXmlModule :: IModule -> Result
+genXmlModule imodule = concat
   [ "<?xml version=\"1.0\"?>"
   , "<Module xmlns=\"http://clafer.org/ir\""
   , " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""
   , " xmlns:cl=\"http://clafer.org/ir\""
   , " xsi:schemaLocation=\"http://clafer.org/ir https://github.com/gsdlab/clafer/blob/master/src/ClaferIR.xsd\">"
   , tag "Name" $ mName imodule
-  , concatMap (genXmlElement pMap) $ mDecls imodule
+  , concatMap genXmlElement $ mDecls imodule
   , "</Module>"]
 
 
-genXmlClafer :: Map.Map Span IClafer -> IClafer -> Result
-genXmlClafer pMap x = case x of
-  IClafer pos abstract gcrd id' uid' super' crd glcard es ->
+genXmlClafer :: IClafer -> Result
+genXmlClafer x = case x of
+  IClafer _ pos abstract gcrd id' uid' super' crd glcard es ->
     concat [ tag "Position" $ genXmlPosition pos
            , genXmlAbstract abstract
            , optTag gcrd genXmlGCard
            , genXmlId id'
            , genXmlUid uid'
-           , genXmlSuper pMap super'
+           , genXmlSuper super'
            , optTag crd genXmlCard
            , genXmlGlCard glcard
-           , concatMap (genXmlElement pMap) es] 
+           , concatMap genXmlElement es] 
 
 
 genXmlAbstract :: Bool -> String
@@ -102,12 +101,12 @@ genXmlId ident' = tag "Id" ident'
 genXmlUid :: String -> String
 genXmlUid uid' = tag "UniqueId" uid'
 
-genXmlSuper :: Map.Map Span IClafer -> ISuper -> String
-genXmlSuper pMap x = case x of
+genXmlSuper :: ISuper -> String
+genXmlSuper x = case x of
   ISuper isOverlapping' sk pexps -> tag "Supers" $ concat $
     (genXmlBoolean "IsOverlapping" isOverlapping') :
     (tag "superKind" $ show $ sk) :
-    [concatMap (genXmlPExp "Super" pMap) pexps]
+    [concatMap (genXmlPExp "Super") pexps]
 
 genXmlCard :: (Integer, Integer) -> String
 genXmlCard interval' = tag "Card" $ genXmlInterval interval'
@@ -115,31 +114,31 @@ genXmlCard interval' = tag "Card" $ genXmlInterval interval'
 genXmlGlCard :: (Integer, Integer) -> String
 genXmlGlCard interval' = tag "GlobalCard" $ genXmlInterval interval'
 
-genXmlElement :: Map.Map Span IClafer -> IElement -> String
-genXmlElement pMap x = case x of
-  IEClafer clafer  -> tagType "Declaration" "IClafer" $ genXmlClafer pMap clafer
+genXmlElement :: IElement -> String
+genXmlElement x = case x of
+  IEClafer clafer  -> tagType "Declaration" "IClafer" $ genXmlClafer clafer
   IEConstraint isHard' pexp  -> tagType "Declaration" "IConstraint" $ concat
                          [ genXmlBoolean "IsHard" isHard'
-                         , genXmlPExp "ParentExp" pMap pexp]
+                         , genXmlPExp "ParentExp" pexp]
   IEGoal isMaximize' pexp -> tagType "Declaration" "IGoal" $ concat 
                          [ genXmlBoolean "IsMaximize" isMaximize'
-                         , genXmlPExp "ParentExp" pMap pexp]
+                         , genXmlPExp "ParentExp" pexp]
                          
 
 genXmlAnyOp :: (a -> String) -> (a -> String) -> [(String, a)] -> String                                                    
 genXmlAnyOp ft f xs = concatMap
   (\(tname, texp) -> tagType tname (ft texp) $ f texp) xs
 
-genXmlPExp :: String -> Map.Map Span IClafer -> PExp -> String
-genXmlPExp tagName pMap (PExp iType' pid' pos' iexp)  = 
-  let parentID = Map.lookup pos' pMap
-      parentParentID = if parentID == Nothing then Nothing else
-        flip Map.lookup pMap $ cinPos $ fromJust parentID
+genXmlPExp :: String -> PExp -> String
+genXmlPExp tagName (PExp par iType' pid' pos' iexp)  = 
+  let parentID = par
+      parentParentID = if parentID == Nothing then Nothing 
+        else getParent $ fromJust par
   in tag tagName $ concat
   [ optTag iType' genXmlIType
   , tag "ParentId" pid'
   , tag "Position" $ genXmlPosition pos'
-  , tagType "Exp" (genXmlIExpType iexp) $ genXmlIExp pMap iexp parentID parentParentID]
+  , tagType "Exp" (genXmlIExpType iexp) $ genXmlIExp iexp parentID parentParentID]
 
 genXmlPosition :: Span -> String
 genXmlPosition (Span (Pos s1 s2) (Pos e1 e2)) = concat
@@ -158,15 +157,15 @@ genXmlIExpType x = case x of
   IStr _ -> "IStringExp"
   IClaferId _ _ _ -> "IClaferId"
 
-genXmlIExp :: Map.Map Span IClafer -> IExp -> Maybe IClafer -> Maybe IClafer -> String
-genXmlIExp pMap x pid' ppid' = case x of
+genXmlIExp :: IExp -> Maybe IClafer -> Maybe IClafer -> String
+genXmlIExp x pid' ppid' = case x of
   IDeclPExp quant' decls' pexp -> concat
     [ tagType "Quantifier" (genXmlQuantType quant') ""
-    , concatMap (genXmlDecl pMap) decls'
-    , genXmlPExp "BodyParentExp" pMap pexp]
+    , concatMap genXmlDecl decls'
+    , genXmlPExp "BodyParentExp" pexp]
   IFunExp op' exps' -> concat
     [ tag "Operation" $ concatMap escape op'
-    , concatMap (genXmlPExp "Argument" pMap) exps']
+    , concatMap (genXmlPExp "Argument") exps']
     where
     escape '\"' = "&quot;"
     escape '\'' = "&apos;"
@@ -185,11 +184,11 @@ genXmlIExp pMap x pid' ppid' = case x of
     , genXmlBoolean "IsTop" isTop'
     , tag "kind" $ if (sident' `elem` ["this","parent"]) then sident' else "clafer"]
 
-genXmlDecl :: Map.Map Span IClafer -> IDecl -> String
-genXmlDecl pMap (IDecl disj locids pexp) = tag "Declaration" $ concat
+genXmlDecl :: IDecl -> String
+genXmlDecl (IDecl disj locids pexp) = tag "Declaration" $ concat
   [ genXmlBoolean "IsDisjunct" disj
   , concatMap (tag "LocalDeclaration") locids
-  , genXmlPExp "Body" pMap pexp]
+  , genXmlPExp "Body" pexp]
 
 genXmlQuantType :: IQuant -> String
 genXmlQuantType x = case x of

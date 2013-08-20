@@ -55,7 +55,6 @@ import Data.Either
 import Data.List
 import Data.Maybe
 import Data.Map (Map)
-import qualified Data.Map as Map
 import Data.Ord
 import Control.Monad
 import System.FilePath (takeBaseName)
@@ -245,20 +244,18 @@ compile =
   do
     env <- getEnv
     ast' <- getAst
-    let (desugaredModule, pMap') = desugar ast'
-    putEnv $ env{parentMap = pMap'}
+    let desugaredModule = desugar ast'
     let clafersWithKeyWords = foldMapIR isKeyWord desugaredModule
     when (""/=clafersWithKeyWords) $ throwErr (ClaferErr $ ("The model contains clafers with keyWords as names.\nThe following places contain keyWords as names:\n"++) $ clafersWithKeyWords :: CErr Span)
     
     ir' <- analyze (args env) desugaredModule
     let (imodule, g, b) = ir'
-    let pMap = foldMapIR makeMap imodule
     let imodTrace = traceIrModule imodule
     let ir = (imodule, g, b)
 
     let failSpanList = foldMapIR gt1 imodule
     when ((afm $ args env) && failSpanList/="") $ throwErr (ClaferErr $ ("The model is not an attributed feature model .\nThe following places contain cardinality larger than 1:\n"++) $ failSpanList :: CErr Span)
-    putEnv $ env{ cIr = Just ir, irModuleTrace = imodTrace, parentMap = pMap}
+    putEnv $ env{ cIr = Just ir, irModuleTrace = imodTrace}
     where
       isKeyWord :: Ir -> String
       isKeyWord (IRClafer IClafer{cinPos = (Span (Pos l c) _) ,ident=i}) = if (i `elem` keyWords) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
@@ -267,10 +264,10 @@ compile =
       isKeyWord (IRClafer IClafer{cinPos = (PosSpan _ (PosPos _ l c) _) ,ident=i}) = if (i `elem` keyWords) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
       isKeyWord _ = ""
       gt1 :: Ir -> String
-      gt1 (IRClafer (IClafer (Span (Pos l c) _) False _ _ _ _ (Just (_, m)) _ _)) = if (m > 1 || m < 0) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
-      gt1 (IRClafer (IClafer (Span (PosPos _ l c) _) False _ _ _ _ (Just (_, m)) _ _)) = if (m > 1 || m < 0) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else "" 
-      gt1 (IRClafer (IClafer (PosSpan _ (Pos l c) _) False _ _ _ _ (Just (_, m)) _ _)) = if (m > 1 || m < 0) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
-      gt1 (IRClafer (IClafer (PosSpan _ (PosPos _ l c) _) False _ _ _ _ (Just (_, m)) _ _)) = if (m > 1 || m < 0) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
+      gt1 (IRClafer (IClafer _ (Span (Pos l c) _) False _ _ _ _ (Just (_, m)) _ _)) = if (m > 1 || m < 0) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
+      gt1 (IRClafer (IClafer _ (Span (PosPos _ l c) _) False _ _ _ _ (Just (_, m)) _ _)) = if (m > 1 || m < 0) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else "" 
+      gt1 (IRClafer (IClafer _ (PosSpan _ (Pos l c) _) False _ _ _ _ (Just (_, m)) _ _)) = if (m > 1 || m < 0) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
+      gt1 (IRClafer (IClafer _ (PosSpan _ (PosPos _ l c) _) False _ _ _ _ (Just (_, m)) _ _)) = if (m > 1 || m < 0) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
       gt1 _ = ""
 
 -- Splits the IR into their fragments, and generates the output for each fragment.
@@ -348,7 +345,6 @@ generate :: Monad m => ClaferT m CompilerResult
 generate =
   do
     env <- getEnv
-    let parMap = parentMap env
     ast' <- getAst
     (iModule, genv, au) <- getIr
     let cargs = args env
@@ -365,7 +361,7 @@ generate =
                                       let addCommentStats = if no_stats cargs then const else addStats
                                       let m = snd alloyCode
                                       ("als", addCommentStats (fst alloyCode) stats, Just m)
-                        Xml      -> ("xml", genXmlModule parMap iModule, Nothing)
+                        Xml      -> ("xml", genXmlModule iModule, Nothing)
                         Mode.Clafer   -> ("des.cfr", printTree $ sugarModule iModule, Nothing)
                         Html     -> ("html", generateHtml env ast'
                           , Nothing)
@@ -387,7 +383,7 @@ data CompilerResult = CompilerResult {
                             stringMap :: (Map Int String)
                             } deriving Show
 
-desugar :: Module -> (IModule, Map.Map Span IClafer)  
+desugar :: Module -> IModule
 desugar tree = desugarModule tree
 
 liftError :: (Monad m, Language.ClaferT.Throwable t) => Either t a -> ClaferT m a
@@ -398,9 +394,7 @@ analyze args' tree = do
   let dTree' = findDupModule args' tree
   let au = allUnique dTree'
   let args'' = args'{skip_resolver = au && (skip_resolver args')}
-  env <- getEnv
-  let pMap = parentMap env
-  (rTree, genv) <- liftError $ resolveModule pMap args'' dTree'
+  (rTree, genv) <- liftError $ resolveModule args'' dTree'
   let tTree = transModule rTree
   return (optimizeModule args'' (tTree, genv), genv, au)
 

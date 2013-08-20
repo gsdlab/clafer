@@ -384,9 +384,9 @@ optimizeInConstraints constraints =
     (noOpt, toOpt) = partitionEithers (constraints >>= partitionConstraint)
     opt = [ unionPExpAll (map fst inSame) `inPExp` snd (head inSame)
             | inSame <- groupBy (testing' $ syntaxOf . snd) $ sortBy (comparing' snd) toOpt ]
-    inPExp a b = I.PExp (Just I.TBoolean) "" noSpan $ I.IFunExp "in" [a, b]
+    inPExp a b = I.PExp Nothing (Just I.TBoolean) "" noSpan $ I.IFunExp "in" [a, b]
     unionPExpAll es = foldr1 unionPExp es
-    unionPExp a b = I.PExp (liftM2 (+++) (I.iType a) (I.iType b)) "" noSpan $ I.IFunExp "++" [a, b]
+    unionPExp a b = I.PExp Nothing (liftM2 (+++) (I.iType a) (I.iType b)) "" noSpan $ I.IFunExp "++" [a, b]
     
     partitionConstraint I.PExp{I.exp = I.IFunExp {I.op = "in", I.exps = [exp1, exp2]}} = return $ Right (exp1, exp2)
     partitionConstraint I.PExp{I.exp = I.IFunExp {I.op = "&&", I.exps = [exp1, exp2]}} = partitionConstraint exp1 `mplus` partitionConstraint exp2

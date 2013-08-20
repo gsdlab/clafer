@@ -28,16 +28,15 @@ import qualified Data.Map as Map
 
 import Language.Clafer.Common
 import Language.Clafer.ClaferArgs
-import Language.Clafer.Front.Absclafer
 import Language.Clafer.Intermediate.Intclafer
 import Language.Clafer.Intermediate.ResolverName
 import Language.Clafer.Intermediate.ResolverType
 import Language.Clafer.Intermediate.ResolverInheritance
 
-resolveModule :: Map.Map Span IClafer -> ClaferArgs -> IModule -> Resolve (IModule, GEnv)
-resolveModule m args' declarations =
+resolveModule :: ClaferArgs -> IModule -> Resolve (IModule, GEnv)
+resolveModule args' declarations =
   do
-    r <- resolveNModule m $ nameModule (skip_resolver args') declarations
+    r <- resolveNModule $ nameModule (skip_resolver args') declarations
     resolveNamesModule args' =<< (rom' $ rem' r)
   where
   rem' = if flatten_inheritance args' then resolveEModule else id
@@ -65,7 +64,7 @@ nameClafer skipResolver claf = do
 
 
 namePExp :: MonadState GEnv m => PExp -> m PExp
-namePExp pexp@(PExp _ _ _ exp') = do
+namePExp pexp@(PExp _ _ _ _ exp') = do
   pid' <- genId "exp"
   exp'' <- nameIExp exp'
   return $ pexp {pid = pid', Language.Clafer.Intermediate.Intclafer.exp = exp''}

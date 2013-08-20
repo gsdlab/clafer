@@ -62,8 +62,8 @@ getSuperId = sident . Language.Clafer.Intermediate.Intclafer.exp . head
 isEqClaferId :: String -> IClafer -> Bool
 isEqClaferId = flip $ (==).uid
 
-idToPExp :: String -> Span -> String -> String -> Bool -> PExp
-idToPExp pid' pos modids id' isTop' = PExp (Just $ TClafer [id']) pid' pos (IClaferId modids id' isTop')
+idToPExp :: Maybe IClafer -> String -> Span -> String -> String -> Bool -> PExp
+idToPExp par' pid' pos modids id' isTop' = PExp par' (Just $ TClafer [id']) pid' pos (IClaferId modids id' isTop')
 
 mkLClaferId :: String -> Bool -> IExp
 mkLClaferId = IClaferId ""
@@ -78,23 +78,23 @@ pExpDefPid :: Span -> IExp -> PExp
 pExpDefPid = pExpDef ""
 
 pExpDef :: String -> Span -> IExp -> PExp
-pExpDef = PExp Nothing
+pExpDef = PExp Nothing Nothing
 
 isParent :: PExp -> Bool
-isParent (PExp _ _ _ (IClaferId _ id' _)) = id' == parent
+isParent (PExp _ _ _ _ (IClaferId _ id' _)) = id' == parent
 isParent _ = False
 
 isClaferName :: PExp -> Bool
-isClaferName (PExp _ _ _ (IClaferId _ id' _)) =
+isClaferName (PExp _ _ _ _ (IClaferId _ id' _)) =
   id' `notElem` ([this, parent, children] ++ primitiveTypes)
 isClaferName _ = False
 
 isClaferName' :: PExp -> Bool
-isClaferName' (PExp _ _ _ (IClaferId _ _ _)) = True
+isClaferName' (PExp _ _ _ _ (IClaferId _ _ _)) = True
 isClaferName' _ = False
 
 getClaferName :: PExp -> String
-getClaferName (PExp _ _ _ (IClaferId _ id' _)) = id'
+getClaferName (PExp _ _ _ _ (IClaferId _ id' _)) = id'
 getClaferName _ = ""
 
 -- -----------------------------------------------------------------------------
@@ -294,7 +294,7 @@ iIfThenElse   = "=>else"
 
 mkIFunExp :: String -> [IExp] -> IExp
 mkIFunExp _ (x:[]) = x
-mkIFunExp op' xs = foldl1 (\x y -> IFunExp op' $ map (PExp (Just $ TClafer []) "" noSpan) [x,y]) xs
+mkIFunExp op' xs = foldl1 (\x y -> IFunExp op' $ map (PExp Nothing (Just $ TClafer []) "" noSpan) [x,y]) xs
 
 toLowerS :: String -> String
 toLowerS "" = ""

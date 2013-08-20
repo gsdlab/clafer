@@ -120,7 +120,7 @@ expElement x = case x of
   IEGoal isMaximize' goal -> IEGoal isMaximize' `liftM` expPExp goal
 
 expPExp :: MonadState GEnv m => PExp -> m PExp
-expPExp (PExp t pid' pos' exp') = PExp t pid' pos' `liftM` expIExp exp'
+expPExp (PExp par' t pid' pos' exp') = PExp par' t pid' pos' `liftM` expIExp exp'
 
 expIExp :: MonadState GEnv m => IExp -> m IExp
 expIExp x = case x of
