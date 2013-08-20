@@ -417,3 +417,18 @@ claferIRXSD = Language.Clafer.Generator.Schema.xsd
 
 keyWords :: [String]
 keyWords = ["ref","parent","Abstract","abstract", "else", "in", "no", "opt", "xor", "all", "enum", "lone", "not", "or", "disj", "extends", "mux", "one", "some"]
+
+{-
+Use this to update the parent pointers in Ir if needed (mapIR addParents imodule)
+addParents :: Ir -> Ir
+addParents (IRClafer clafer) = IRClafer $ clafer{elements = 
+  map (\e -> case e of
+    (IEClafer c) -> IEClafer c{claferParent = Just clafer}
+    (IEConstraint _ b p) -> IEConstraint (Just clafer) b p
+    (IEGoal _ b p) -> IEGoal (Just clafer) b p) $ elements clafer}
+addParents (IRPExp pexp) = IRPExp pexp{exp = case (exp pexp) of
+  (IDeclPExp q d pexp') -> IDeclPExp q d pexp'{pExpParent = Just pexp}
+  (IFunExp op' pexps) -> IFunExp op' $ map (\p -> p{pExpParent = Just pexp}) pexps
+  exp' -> exp'}
+addParents i = i
+-}

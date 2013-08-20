@@ -103,7 +103,7 @@ genXmlUid uid' = tag "UniqueId" uid'
 
 genXmlSuper :: IElement -> ISuper -> String
 genXmlSuper e x = case x of
-  ISuper isOverlapping' sk pexps -> tag "Supers" $ concat $
+  ISuper _ isOverlapping' sk pexps -> tag "Supers" $ concat $
     (genXmlBoolean "IsOverlapping" isOverlapping') :
     (tag "superKind" $ show $ sk) :
     [concatMap (genXmlPExp "Super" e) pexps]

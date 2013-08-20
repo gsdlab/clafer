@@ -182,7 +182,7 @@ genClafer claferargs resPath oClafer = (cunlines $ filterNull
 transPrimitive :: IClafer -> IClafer
 transPrimitive    clafer'   = clafer'{super = toOverlapping $ super clafer'}
   where
-  toOverlapping x@(ISuper _ _ [PExp _ _ _ _ (IClaferId _ id' _)])
+  toOverlapping x@(ISuper _ _ _ [PExp _ _ _ _ (IClaferId _ id' _)])
     | isPrimitive id' = x{isOverlapping = True}
     | otherwise      = x
   toOverlapping x = x
@@ -194,8 +194,8 @@ claferDecl  c     rest    = cconcat $ [genOptCard c,
   ++ if ((superKind $ super c) == Nested) then [genHFact c] else []
   where
   genAbstract isAbs = if isAbs then "abstract " else ""
-  genExtends (ISuper False _ [PExp _ _ _ _ (IClaferId _ "clafer" _)]) = CString ""
-  genExtends (ISuper False _ [PExp _ _ _ _ (IClaferId _ i _)]) = CString " " +++ Concat NoTrace [CString $ "extends " ++ i]
+  genExtends (ISuper _ False _ [PExp _ _ _ _ (IClaferId _ "clafer" _)]) = CString ""
+  genExtends (ISuper _ False _ [PExp _ _ _ _ (IClaferId _ i _)]) = CString " " +++ Concat NoTrace [CString $ "extends " ++ i]
   -- todo: handle multiple inheritance
   genExtends _ = CString ""
   genHFact claf = CString $ "\n\nfact { r_" ++ uid claf ++ " in r_" ++ (getSuper claf) ++ " }"

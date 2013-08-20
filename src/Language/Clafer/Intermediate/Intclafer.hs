@@ -22,6 +22,7 @@
 module Language.Clafer.Intermediate.Intclafer where
 
 import Language.Clafer.Front.Absclafer
+import Prelude hiding (exp)
 import Data.Maybe
 import Data.Monoid
 import Data.Foldable (foldMap)
@@ -70,7 +71,7 @@ data IClafer =
 
 data IClaferInstance =                                          -- IClafer without the Parent,
   IClaferInstance Span Bool (Maybe IGCard) String String ISuper -- used to help derive instances
-  (Maybe Interval) Interval [IElement] deriving (Eq,Ord,Show)   -- that will ignore the Parent.
+  (Maybe Interval) Interval [IElement] deriving (Eq,Ord)        -- that will ignore the Parent.
 
 instance Eq IClafer where
   (==) (IClafer _ cp ia g i u s c gc es) (IClafer _ cp' ia' g' i' u' s' c' gc' es') = 
@@ -83,11 +84,11 @@ instance Ord IClafer where
 instance Show IClafer where
   show (IClafer p cp ia g i u s c gc es) = 
     "IClafer {claferParentUid = " ++ 
-      (if p == Nothing then "Nothing" else uid $ fromJust p) ++ " cinPos = " 
-        ++ show cp ++ " isAbstract = " ++ show ia ++ " gcard = " ++ show g ++
-         " ident = " ++ show i ++ " uid " ++ show u ++ " super = " ++ show s 
-          ++ " card = " ++ show c ++ " glCard = " ++ show gc 
-            ++ " elements = " ++ show es
+      (if p == Nothing then "Nothing" else ident $ fromJust p) ++ ", cinPos = " 
+        ++ show cp ++ ", isAbstract = " ++ show ia ++ ", gcard = " ++ show g ++
+         ", ident = " ++ show i ++ ", uid " ++ show u ++ ", super = " ++ show s 
+          ++ ", card = " ++ show c ++ ", glCard = " ++ show gc 
+            ++ ", elements = " ++ show es
 
 
 -- Clafer's subelement is either a clafer, a constraint, or a goal (objective)
@@ -105,7 +106,7 @@ data IElement =
    cpexp :: PExp               -- the expression
    }
 
-data ElementInstance = ElementInstance Bool PExp deriving (Eq, Ord, Show)
+data ElementInstance = ElementInstance Bool PExp deriving (Eq, Ord)
 
 instance Eq IElement where
   (==) (IEClafer c) (IEClafer c') = c == c'
@@ -132,11 +133,11 @@ instance Show IElement where
   show (IEClafer c) = "IEClafer " ++ show c 
   show (IEConstraint cp b p) = 
     "IEConstraint {constraintParentUid = " ++ 
-      (if cp == Nothing then "Nothing" else uid $ fromJust cp) 
+      (if cp == Nothing then "Nothing" else ident $ fromJust cp) 
         ++ " isHard = " ++ show b ++ " cpexp = " ++ show p
   show (IEGoal gp b p) = 
      "IEConstraint {goalParnetUid = " ++ 
-      (if gp == Nothing then "Nothing" else uid $ fromJust gp) 
+      (if gp == Nothing then "Nothing" else ident $ fromJust gp) 
         ++ " isMaximize = " ++ show b ++ " cpexp = " ++ show p
 
 
@@ -144,15 +145,31 @@ instance Show IElement where
 -- ->    -- overlaping unique (set)
 -- ->>   -- overlapping non-unique (bag)
 -- :     -- non overlapping (disjoint)
+
+data SuperKind = TopLevel | Nested | Redefinition deriving (Eq, Ord, Show)
+
 data ISuper =
    ISuper {
+      iSuperParent :: IClafer, -- The Parent clafer of this ISuper 
       isOverlapping :: Bool,   -- whether overlapping or disjoint with other clafers extending given list of superclafers
       superKind :: SuperKind,  -- Span of the clafer it has a relation with and the uid
       supers :: [PExp]
     }
-  deriving (Eq,Ord,Show)
 
-data SuperKind = TopLevel | Nested | Redefinition deriving (Eq, Ord, Show)
+data ISuperInstance = ISuperInstance Bool SuperKind [PExp] deriving (Eq, Ord)
+
+instance Eq ISuper where
+  (==) (ISuper _ b sk ss) (ISuper _ b' sk' ss') = 
+    (ISuperInstance b sk ss) == (ISuperInstance b' sk' ss')
+
+instance Ord ISuper where
+  compare (ISuper _ b sk ss) (ISuper _ b' sk' ss') = 
+    (ISuperInstance b sk ss) `compare` (ISuperInstance b' sk' ss')
+
+instance Show ISuper where
+  show (ISuper par b sk ss) = 
+    "ISuper {iSuperParentUid = " ++ ident par ++ ", isOverlapping = " ++ 
+      show b ++ ", superKind = " ++ show sk ++ ", supers = " ++ show ss
 
 -- Group cardinality is specified as an interval. It may also be given by a keyword.
 -- xor  -- 1..1 isKeyword = True
@@ -177,7 +194,7 @@ data PExp = PExp {
     }
 
 data PExpInstance = PExpInstance (Maybe IType) String Span IExp 
-  deriving (Eq,Ord,Show)
+  deriving (Eq,Ord)
 
 instance Eq PExp where
   (==) (PExp _ t p pos e) (PExp _ t' p' pos' e') = 
@@ -190,9 +207,17 @@ instance Ord PExp where
 instance Show PExp where
   show (PExp par t p pos e) = 
     "PExp {pExpParentPid = " ++ 
-      (if par == Nothing then "Nothing" else pid $ fromJust par) ++ 
-        " iType = " ++ show t ++ " pid = " ++ show p ++ " inPos = " ++ 
-            show pos ++ " exp = "  ++ show e
+      (if par == Nothing then "Nothing" else getPExpName $ fromJust par) ++ 
+        ", iType = " ++ show t ++ ", pid = " ++ show p ++ ", inPos = " ++ 
+            show pos ++ ", exp = "  ++ show e
+
+getPExpName :: PExp -> String
+getPExpName PExp{exp = IClaferId _ id' _} = id'
+getPExpName PExp{exp = (IDeclPExp d _ _)} = show d
+getPExpName PExp{exp = (IFunExp op' _)} = op'
+getPExpName PExp{exp = (IInt i)} = show i
+getPExpName PExp{exp = (IDouble d)} = show d
+getPExpName PExp{exp = (IStr s)} = s
 
 data IExp = 
    -- quantified expression with declarations
@@ -312,8 +337,8 @@ iMap f (IRPExp (PExp par (Just iType') pID p iExp)) =
   f $ IRPExp $ PExp par (Just $ unWrapIType $ iMap f $ IRIType iType') pID p $ unWrapIExp $ iMap f $ IRIExp iExp
 iMap f (IRPExp (PExp par Nothing pID p iExp)) =
   f $ IRPExp $ PExp par Nothing pID p $ unWrapIExp $ iMap f $ IRIExp iExp
-iMap f (IRISuper (ISuper o r pexps)) =
-  f $ IRISuper $ ISuper o r $ map (unWrapPExp . iMap f . IRPExp) pexps
+iMap f (IRISuper (ISuper par o r pexps)) =
+  f $ IRISuper $ ISuper par o r $ map (unWrapPExp . iMap f . IRPExp) pexps
 iMap f (IRIDecl (IDecl i d body')) = 
   f $ IRIDecl $ IDecl i d $ unWrapPExp $ iMap f $ IRPExp body'
 iMap f i = f i
@@ -335,7 +360,7 @@ iFoldMap f i@(IRPExp (PExp _ (Just iType') _ _ iExp)) =
   f i `mappend` (iFoldMap f $ IRIType iType') `mappend` (iFoldMap f $ IRIExp iExp)
 iFoldMap f i@(IRPExp (PExp _ Nothing _ _ iExp)) =
   f i `mappend` (iFoldMap f $ IRIExp iExp)
-iFoldMap f i@(IRISuper (ISuper _ _ pexps)) =
+iFoldMap f i@(IRISuper (ISuper _ _ _ pexps)) =
   f i `mappend` foldMap (iFoldMap f . IRPExp) pexps
 iFoldMap f i@(IRIDecl (IDecl _ _ body')) = 
   f i `mappend` (iFoldMap f $ IRPExp body')
