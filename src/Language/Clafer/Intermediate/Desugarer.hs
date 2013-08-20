@@ -79,7 +79,7 @@ desugarClafer par (PosClafer s abstract gcrd id' super' crd init' es)  =
     ic = IClafer par s (desugarAbstract abstract) (desugarGCard gcrd) 
       (transIdent id') "" is (desugarCard crd) (0, -1) ies
     is = desugarSuper ic super'
-    ies = desugarElements (Just ic) es
+    ies = flip desugarElements es $ Just ic
 
 
 sugarClafer :: IClafer -> Clafer

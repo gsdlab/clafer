@@ -213,11 +213,11 @@ instance Show PExp where
 
 getPExpName :: PExp -> String
 getPExpName PExp{exp = IClaferId _ id' _} = id'
-getPExpName PExp{exp = (IDeclPExp d _ _)} = show d
-getPExpName PExp{exp = (IFunExp op' _)} = op'
-getPExpName PExp{exp = (IInt i)} = show i
-getPExpName PExp{exp = (IDouble d)} = show d
-getPExpName PExp{exp = (IStr s)} = s
+getPExpName PExp{exp = IDeclPExp d _ _} = show d
+getPExpName PExp{exp = IFunExp op' _} = op'
+getPExpName PExp{exp = IInt i} = show i
+getPExpName PExp{exp = IDouble d} = show d
+getPExpName PExp{exp = IStr s} = s
 
 data IExp = 
    -- quantified expression with declarations
