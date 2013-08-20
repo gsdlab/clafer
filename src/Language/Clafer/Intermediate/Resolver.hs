@@ -39,17 +39,17 @@ import Language.Clafer.Intermediate.ResolverName
 import Language.Clafer.Intermediate.ResolverType
 import Language.Clafer.Intermediate.ResolverInheritance
 
-resolveModule :: Map.Map Span IClafer -> ClaferArgs -> IModule -> Resolve (IModule, GEnv)
-resolveModule pMap args' declarations =
+resolveModule :: ClaferArgs -> IModule -> Resolve (IModule, GEnv)
+resolveModule args' declarations =
   do
     let (iMod', genv') = nameModule (skip_resolver args') declarations
     let clafs = bfsClafers $ toClafers $ mDecls iMod'
-    let iMod = forIR iMod' $ reDefAdd clafs pMap
+    let iMod = forIR iMod' $ reDefAdd clafs
     let failList = foldMapIR getFails iMod
     if (failList /= []) then 
       Left $ (ClaferErr $ unlines $ "Improper redefinition for cardinalities at," : failList :: ClaferSErr) 
         else resolveNamesModule args' =<< (rom' . rem') =<< 
-          resolveNModule pMap (iMod, genv')
+          resolveNModule (iMod, genv')
   where
   rem' :: (IModule, GEnv) -> (IModule, GEnv)
   rem' = if flatten_inheritance args' then resolveEModule else id
@@ -60,19 +60,19 @@ resolveModule pMap args' declarations =
   getFails (IRClafer (IClafer{super = ISuper{superKind = RedefinitionFail str}})) = [str]
   getFails _ = mempty
 
-  reDefAdd :: [IClafer] -> Map.Map Span IClafer -> Ir -> Ir
-  reDefAdd clafs parMap i@(IRClafer claf) = 
+  reDefAdd :: [IClafer] -> Ir -> Ir
+  reDefAdd clafs i@(IRClafer claf) = 
     let ranks = flip foldMap clafs $ \x -> if (istop $ cinPos claf) then mempty else getReDefRank x x claf 
     in if (ranks==[]) then i else 
       let c = fst $ minimumBy (compare `on` snd) ranks
       in if (isSpecifiedCard c claf) then 
-        IRClafer $ claf{super = ISuper (Redefinition c) [PExp (Just $ TClafer []) "" (cinPos claf) (IClaferId "" (ident c) $ istop $ cinPos c)]}
+        IRClafer $ claf{super = ISuper (Redefinition c) [PExp (getParent claf) (Just $ TClafer []) "" (cinPos claf) (IClaferId "" (ident c) $ istop $ cinPos c)]}
           else IRClafer $ claf{super = (super claf){superKind = (RedefinitionFail $ getErrMsg (cinPos claf) $ cinPos c)}} 
     where
       getReDefRank :: IClafer -> IClafer -> IClafer -> [(IClafer, Integer)]
       getReDefRank oClaf claf1 claf2 =
-        let par1 = flip Map.lookup parMap $ cinPos claf1
-            par2 = flip Map.lookup parMap $ cinPos claf2
+        let par1 = getParent claf1
+            par2 = getParent claf2
         in if (par1==Nothing && par2==Nothing) then 
           (let depth = recursiveCheck 1 claf1 claf2
            in if (depth==0) then mempty else [(oClaf, depth)])
@@ -107,7 +107,7 @@ resolveModule pMap args' declarations =
         "line " ++ show l1 ++ " coloum " ++ show c1 ++ " redefining the clafer at line " ++ show l2 ++ " column " ++ show c2
       getErrMsg s1 s2 = 
         "span " ++ show s1 ++" redefining the clafer at span " ++ show s2
-  reDefAdd _ _ i = i
+  reDefAdd _ i = i
 
 
 -- -----------------------------------------------------------------------------
@@ -131,7 +131,7 @@ nameClafer skipResolver claf = do
 
 
 namePExp :: MonadState GEnv m => PExp -> m PExp
-namePExp pexp@(PExp _ _ _ exp') = do
+namePExp pexp@(PExp _ _ _ _ exp') = do
   pid' <- genId "exp"
   exp'' <- nameIExp exp'
   return $ pexp {pid = pid', Language.Clafer.Intermediate.Intclafer.exp = exp''}

@@ -44,47 +44,46 @@ import Prelude hiding (exp)
 
 -- -----------------------------------------------------------------------------
 -- Non-overlapping inheritance
-resolveNModule :: Map.Map Span IClafer -> (IModule, GEnv) -> Resolve (IModule, GEnv)
-resolveNModule m (imodule, genv') =
+resolveNModule :: (IModule, GEnv) -> Resolve (IModule, GEnv)
+resolveNModule (imodule, genv') =
   do
     let decls' = mDecls imodule
-    decls'' <- mapM (resolveNElement m decls') decls'
+    decls'' <- mapM (resolveNElement decls') decls'
     return (imodule{mDecls = decls''}, genv' {sClafers = bfs toNodeShallow $ toClafers decls''})
     
 
 
-resolveNClafer :: Map.Map Span IClafer -> [IElement] -> IClafer -> Resolve IClafer
-resolveNClafer m declarations clafer =
+resolveNClafer :: [IElement] -> IClafer -> Resolve IClafer
+resolveNClafer declarations clafer =
   do
-    super' <- resolveNSuper m declarations clafer
-    elements' <- mapM (resolveNElement m declarations) $ elements clafer
+    super' <- resolveNSuper declarations clafer
+    elements' <- mapM (resolveNElement declarations) $ elements clafer
     return $ clafer {super = super', elements = elements'}
 
 
-resolveNSuper :: Map.Map Span IClafer -> [IElement] -> IClafer -> Resolve ISuper
-resolveNSuper m declarations x = case (super x) of
-  (ISuper _ [PExp _ pid' pos' (IClaferId _ id' isTop')]) ->
+resolveNSuper :: [IElement] -> IClafer -> Resolve ISuper
+resolveNSuper declarations x = case (super x) of
+  (ISuper _ [PExp par' _ pid' pos' (IClaferId _ id' isTop')]) ->
     if isPrimitive id' || id' == "clafer"
       then return (super x)
       else do
-        (r, sk) <- resolveN m x pos' declarations id'
+        (r, sk) <- resolveN x pos' declarations id'
         id'' <- case r of
           Nothing -> throwError $ SemanticErr pos' $ "No superclafer found: " ++ id'
           Just mo  -> return $ fst mo
-        return $ ISuper sk [idToPExp pid' pos' "" id'' isTop']
+        return $ ISuper sk [idToPExp par' pid' pos' "" id'' isTop']
   _ -> return (super x)
 
-resolveNElement :: Map.Map Span IClafer -> [IElement] -> IElement -> Resolve IElement
-resolveNElement m declarations x = case x of
-  IEClafer clafer  -> IEClafer <$> resolveNClafer m declarations clafer
+resolveNElement :: [IElement] -> IElement -> Resolve IElement
+resolveNElement declarations x = case x of
+  IEClafer clafer  -> IEClafer <$> resolveNClafer declarations clafer
   IEConstraint _ _  -> return x
   IEGoal _ _ -> return x
 
-resolveN :: Map.Map Span IClafer -> IClafer -> Span -> [IElement] -> String -> Resolve (Maybe (String, [IClafer]), SuperKind)
-resolveN pMap claf pos' declarations id' =
+resolveN :: IClafer -> Span -> [IElement] -> String -> Resolve (Maybe (String, [IClafer]), SuperKind)
+resolveN claf pos' declarations id' =
   let clafs = bfsClafers $ toClafers declarations
-      --posibilities = filter (\c -> (isAbstract c) || ({-((getSuper claf) == ident c || ident claf == ident c) && (cinPos claf /= cinPos c) &&-} commonNesting claf c pMap clafs)) $ clafs
-      posibilities = flip filter clafs $ \c -> (getSuper claf == ident c && commonNesting claf c pMap clafs) || (getSuper claf == ident c && isAbstract c)
+      posibilities = flip filter clafs $ \c -> (getSuper claf == ident c && commonNesting claf c clafs) || (getSuper claf == ident c && isAbstract c)
       nonAbsposibilities = flip filter posibilities $ \c -> not $ isAbstract c
   in case (superKind $ super $ claf) of 
     (Redefinition _) ->
@@ -97,14 +96,14 @@ resolveN pMap claf pos' declarations id' =
   where
   makePair :: a -> b -> (a,b)
   makePair a b = (a,b)
-  commonNesting :: IClafer -> IClafer -> Map.Map Span IClafer -> [IClafer] -> Bool
-  commonNesting claf1 claf2 parMap cs = 
-    let par1 = Map.lookup (cinPos claf1) parMap
-        par2 = Map.lookup (cinPos claf2) parMap
+  commonNesting :: IClafer -> IClafer -> [IClafer] -> Bool
+  commonNesting claf1 claf2 cs = 
+    let par1 = getParent claf1
+        par2 = getParent claf2
     in if (par2 == Nothing) then True else
       if (par1 == Nothing) then False else
         if (recursiveCheck (fromJust par1) (fromJust par2) cs)
-          then commonNesting (fromJust par1) (fromJust par2) parMap cs
+          then commonNesting (fromJust par1) (fromJust par2) cs
             else False
     where
     recursiveCheck p1 p2 clafs = 
@@ -284,7 +283,7 @@ resolveEInheritance predecessors unrollables absAncestor declarations allSuper
              unrollSuper >>= elements
     let super' = if (getSuper clafer `elem` unrollables)
                  then super clafer
-                 else ISuper (superKind $ super clafer) [idToPExp "" noSpan "" "clafer" False]
+                 else ISuper (superKind $ super clafer) [idToPExp Nothing "" noSpan "" "clafer" False]
     return (elements', super', superList)
   where
   clafer = head allSuper

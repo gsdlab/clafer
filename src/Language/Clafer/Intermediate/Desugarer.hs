@@ -22,7 +22,6 @@
 -}
 module Language.Clafer.Intermediate.Desugarer where
 
-import qualified Data.Map as Map
 import Data.List
 import Data.Maybe
 import Prelude hiding (exp)
@@ -32,14 +31,18 @@ import Language.Clafer.Front.Mapper
 import Language.Clafer.Intermediate.Intclafer
 
 
-desugarModule :: Module -> (IModule, Map.Map Span IClafer)
+desugarModule :: Module -> IModule
 desugarModule (Module declarations) = desugarModule $ PosModule noSpan declarations
-desugarModule (PosModule _ declarations) = 
-  let iMod = IModule "" $ 
-        declarations >>= desugarEnums >>= desugarDeclaration
-          --[ImoduleFragment $ declarations >>= desugarEnums >>= desugarDeclaration]
-      pMap = foldMapIR makeMap iMod
-  in (iMod, pMap)
+desugarModule (PosModule _ declarations) = mapIR addParents $ IModule "" $
+      declarations >>= desugarEnums >>= desugarDeclaration
+--      [ImoduleFragment $ declarations >>= desugarEnums >>= desugarDeclaration]
+  where
+    addParents :: Ir -> Ir
+    addParents (IRClafer clafer) = IRClafer $ clafer{elements = 
+      map (\e -> case e of
+        (IEClafer c) -> IEClafer $ c{getParent = Just clafer}
+        e' -> e'{cpexp = (cpexp e'){getParentP = Just clafer}}) $ elements clafer}
+    addParents i = i
 
 sugarModule :: IModule -> Module
 sugarModule x = Module $ map sugarDeclaration $ mDecls x -- (fragments x >>= mDecls)
@@ -78,12 +81,12 @@ desugarClafer :: Clafer -> [IElement]
 desugarClafer (Clafer abstract gcrd id' super' crd init' es)  = 
     desugarClafer $ PosClafer noSpan abstract gcrd id' super' crd init' es
 desugarClafer (PosClafer s abstract gcrd id' super' crd init' es)  = 
-    (IEClafer $ IClafer s (desugarAbstract abstract) (desugarGCard gcrd) (transIdent id')
+    (IEClafer $ IClafer Nothing s (desugarAbstract abstract) (desugarGCard gcrd) (transIdent id')
             "" (desugarSuper super') (desugarRefrence super') (desugarCard crd) (0, -1)
             (desugarElements es)) : (desugarInit id' init')
 
 sugarClafer :: IClafer -> Clafer
-sugarClafer (IClafer _ abstract gcard' _ uid' super' ref' crd _ es) = 
+sugarClafer (IClafer _ _ abstract gcard' _ uid' super' ref' crd _ es) = 
     Clafer (sugarAbstract abstract) (sugarGCard gcard') (mkIdent uid')
       (sugarSuper super' ref') (sugarCard crd) InitEmpty (sugarElements es)
 
@@ -92,7 +95,7 @@ desugarSuper :: Super -> ISuper
 desugarSuper SuperEmpty = desugarSuper $ PosSuperEmpty noSpan
 desugarSuper (SuperSome superhow setexp) = desugarSuper $ PosSuperSome noSpan superhow setexp
 desugarSuper (PosSuperEmpty s) =
-      ISuper TopLevel [PExp (Just $ TClafer []) "" s $ mkLClaferId baseClafer True]
+      ISuper TopLevel [PExp Nothing (Just $ TClafer []) "" s $ mkLClaferId baseClafer True]
 desugarSuper (PosSuperSome _ superhow setexp) =
       ISuper TopLevel $ if (desugarSuperHowS superhow) then [desugarSetExp setexp] else []
 
@@ -521,13 +524,13 @@ sugarSetExp' (IClaferId modName' id' _) = ClaferId $ Path $ (sugarModId modName'
 sugarSetExp' _ = error "IDecelPexp, IInt, IDobule, and IStr can not be sugared into a setExp!" --This should never happen
 
 desugarPath :: PExp -> PExp
-desugarPath (PExp iType' pid' pos' x) = reducePExp $ PExp iType' pid' pos' result
+desugarPath (PExp par' iType' pid' pos' x) = reducePExp $ PExp par' iType' pid' pos' result
   where
   result
     | isset x     = IDeclPExp ISome [] (pExpDefPid pos' x)
     | isNegSome x = IDeclPExp INo   [] $ bpexp $ Language.Clafer.Intermediate.Intclafer.exp $ head $ exps x
     | otherwise   =  x
-  isNegSome (IFunExp op' [PExp _ _ _ (IDeclPExp ISome [] _)]) = op' == iNot
+  isNegSome (IFunExp op' [PExp _ _ _ _ (IDeclPExp ISome [] _)]) = op' == iNot
   isNegSome _ = False
 
 
@@ -539,7 +542,7 @@ isset _ = False
 
 -- reduce parent
 reducePExp :: PExp -> PExp
-reducePExp (PExp t pid' pos' x) = PExp t pid' pos' $ reduceIExp x
+reducePExp (PExp par' t pid' pos' x) = PExp par' t pid' pos' $ reduceIExp x
 
 reduceIExp :: IExp -> IExp
 reduceIExp (IDeclPExp quant' decls' pexp) = IDeclPExp quant' decls' $ reducePExp pexp
@@ -549,7 +552,7 @@ reduceIExp (IFunExp op' exps') = redNav $ IFunExp op' $ map redExps exps'
 reduceIExp x = x
 
 reduceNav :: IExp -> IExp
-reduceNav x@(IFunExp op' exps'@((PExp _ _ _ iexp@(IFunExp _ (pexp0:pexp:_))):pPexp:_)) = 
+reduceNav x@(IFunExp op' exps'@((PExp _ _ _ _ iexp@(IFunExp _ (pexp0:pexp:_))):pPexp:_)) = 
   if op' == iJoin && isParent pPexp && isClaferName pexp
   then reduceNav $ Language.Clafer.Intermediate.Intclafer.exp pexp0
   else x{exps = (head exps'){Language.Clafer.Intermediate.Intclafer.exp = reduceIExp iexp} :
@@ -595,37 +598,3 @@ sugarQuant IAll = error "sugarQaunt was called on IAll, this is not allowed!" --
 
 emptyIReference :: IReference
 emptyIReference = IReference False []
-
-makeMap :: Ir -> Map.Map Span IClafer
-makeMap (IRClafer c) = Map.fromList $ zip (concat $ map getPos $ elements c) (repeat c)
-makeMap _ = Map.empty
-
-getPos :: IElement -> [Span]
-getPos (IEClafer c) = [cinPos c]
-getPos e = iFoldMap getPExpPos $ IRIElement e
-  where
-    getPExpPos (IRPExp p) = [inPos p]
-    getPExpPos _ = []
-
-{-addrSpan :: Map.Map Span IClafer -> [IClafer] -> [IClafer] -> [IClafer] -> Ir -> Ir -- The three IClafer lists are as follows 1. The list we are mapping through
-addrSpan _ [] _ [] i = i                                                            --                                        2. A list of all clafers
-addrSpan _ [] _ acc _ =                                                             --                                        3. An accumlator gathering all posibilities
-  (IRClafer (maximumBy (compare `on` (depth . fst . fromJust . rInfo . super)) acc)) 
-  where
-    depth (Span (Pos _ c) _) = c
-    depth (PosSpan _ (Pos _ c) _) = c
-    depth (Span (PosPos _ _ c) _) = c
-    depth (PosSpan _ (PosPos _ _ c) _) = c
-addrSpan parMap (c:cs) clafers acc irclaf@(IRClafer claf)  = flip (addrSpan parMap cs clafers) irclaf $
-  if (((getSuper claf) == ident c || ident claf == ident c) && (cinPos claf /= cinPos c) && commonNesting claf c parMap clafers) 
-    then (:acc) $ claf{super = (super claf){rInfo = Just $ (cinPos c,"")}} 
-      else acc 
-addrSpan _ _ _ _ i =  i 
-
-addrUid :: Map.Map Span IClafer -> [IClafer] -> Ir -> Ir
-addrUid parMap (c:cs) irclaf@(IRClafer claf) = 
-  if (((rInfo $ super claf) /= Nothing) && ((fst $ fromJust $ rInfo $ super claf) == (cinPos c)))
-    then IRClafer $ claf{super = (super claf){rInfo = Just $ (fst $ fromJust $ rInfo $ super claf ,uid c)}} 
-      else addrUid parMap cs irclaf 
-addrUid _ _ i = i -}
-

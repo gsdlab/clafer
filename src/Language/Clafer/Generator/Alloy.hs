@@ -121,7 +121,7 @@ genDeclarationGoalsOnly :: ClaferArgs -> IElement -> Concat
 genDeclarationGoalsOnly    claferargs    x         = case x of
   IEClafer _  -> CString ""
   IEConstraint _ _  -> CString ""
-  IEGoal _ (PExp _ _ _ innerexp) -> case innerexp of 
+  IEGoal _ (PExp _ _ _ _ innerexp) -> case innerexp of 
         IFunExp op'  exps' ->  if  op' == iGMax || op' == iGMin then  
                         mkMetric op' $ genPExp claferargs [] (head exps') 
                 else 
@@ -134,7 +134,7 @@ genDeclaration :: ClaferArgs -> IElement -> Concat
 genDeclaration claferargs x = case x of
   IEClafer clafer'  -> genClafer claferargs [] clafer'
   IEConstraint _ pexp  -> mkFact $ genPExp claferargs [] pexp
-  IEGoal _ (PExp _ _ _ innerexp) -> case innerexp of 
+  IEGoal _ (PExp _ _ _ _ innerexp) -> case innerexp of 
         IFunExp op'  _ ->  if  op' == iGMax || op' == iGMin then  
                        CString ""
                 else 
@@ -192,8 +192,8 @@ claferDecl  c     rest    = cconcat $ [genOptCard c,
   ++ if ((superKind $ super c) /= TopLevel) then [genHFact c] else []
   where
   genAbstract isAbs = if isAbs then "abstract " else ""
-  genExtends (ISuper _ [PExp _ _ _ (IClaferId _ "clafer" _)]) = CString ""
-  genExtends (ISuper _ [PExp _ _ _ (IClaferId _ i _)]) = CString " " +++ Concat NoTrace [CString $ "extends " ++ i]
+  genExtends (ISuper _ [PExp _ _ _ _ (IClaferId _ "clafer" _)]) = CString ""
+  genExtends (ISuper _ [PExp _ _ _ _ (IClaferId _ i _)]) = CString " " +++ Concat NoTrace [CString $ "extends " ++ i]
   -- todo: handle multiple inheritance
   genExtends _ = CString ""
   genHFact claf = CString $ "\n\nfact { "++ (genRelName $ uid claf) ++ " in " ++ (genRelName $ getSuper claf) ++ " }"
@@ -245,11 +245,11 @@ refType claferargs c = cintercalate (CString " + ") $ map ((genType claferargs).
 
 getTarget :: PExp -> PExp
 getTarget    x     = case x of
-  PExp _ _ _ (IFunExp op' (_:pexp:_))  -> if op' == iJoin then pexp else x
+  PExp _ _ _ _ (IFunExp op' (_:pexp:_))  -> if op' == iJoin then pexp else x
   _ -> x
 
 genType :: ClaferArgs -> PExp                              -> Concat
-genType    claferargs    x@(PExp _ _ _ y@(IClaferId _ _ _)) = genPExp claferargs []
+genType    claferargs    x@(PExp _ _ _ _ y@(IClaferId _ _ _)) = genPExp claferargs []
   x{Language.Clafer.Intermediate.Intclafer.exp = y{isTop = True}}
 genType m x = genPExp m [] x
 
@@ -336,8 +336,8 @@ isRefPath c = (isOverlapping c) &&
         else supers $ super c
 
 isSimplePath :: [PExp] -> Bool
-isSimplePath    [PExp _ _ _ (IClaferId _ _ _)] = True
-isSimplePath    [PExp _ _ _ (IFunExp op' _)] = op' == iUnion
+isSimplePath    [PExp _ _ _ _ (IClaferId _ _ _)] = True
+isSimplePath    [PExp _ _ _ _ (IFunExp op' _)] = op' == iUnion
 isSimplePath    _ = False
 
 -- -----------------------------------------------------------------------------
@@ -404,7 +404,7 @@ genPExp :: ClaferArgs -> [String] -> PExp -> Concat
 genPExp    claferargs    resPath     x     = genPExp' claferargs resPath $ adjustPExp resPath x
 
 genPExp' :: ClaferArgs -> [String] -> PExp                      -> Concat
-genPExp'    claferargs    resPath     (PExp iType' pid' pos exp') = case exp' of
+genPExp'    claferargs    resPath     (PExp par' iType' pid' pos exp') = case exp' of
   IDeclPExp q d pexp -> Concat (IrPExp pid') $
     [ CString $ genQuant q, CString " "
     , cintercalate (CString ", ") $ map ((genDecl claferargs resPath)) d
@@ -428,7 +428,7 @@ genPExp'    claferargs    resPath     (PExp iType' pid' pos exp') = case exp' of
         where referredClaferUniqeuid = if sid == "this" then (head resPath) else sid
   IFunExp _ _ -> case exp'' of
     IFunExp _ _ -> genIFunExp pid' claferargs resPath exp''
-    _ -> genPExp' claferargs resPath $ PExp iType' pid' pos exp''
+    _ -> genPExp' claferargs resPath $ PExp par' iType' pid' pos exp''
     where
     exp'' = transformExp exp'
   IInt n -> CString $ show n
@@ -442,7 +442,7 @@ genPExp'    claferargs    resPath     (PExp iType' pid' pos exp') = case exp' of
 -- See http://gsd.uwaterloo.ca:8888/question/461/new-translation-of-negative-number-x-into-0-x-is.
 transformExp :: IExp -> IExp
 transformExp    x@(IFunExp op' exps'@(e1:e2:_))
-  | op' == iXor = IFunExp iNot [PExp (Just TBoolean) "" noSpan (IFunExp iIff exps')]
+  | op' == iXor = IFunExp iNot [PExp Nothing (Just TBoolean) "" noSpan (IFunExp iIff exps')]
   | op' == iJoin && isClaferName' e1 && isClaferName' e2 &&
     getClaferName e1 == this && head (getClaferName e2) == '~' =
         IFunExp op' [e1{iType = Just $ TClafer []}, e2]
@@ -467,8 +467,8 @@ optBrArg :: ClaferArgs -> [String] -> PExp -> Concat
 optBrArg    claferargs    resPath     x     = brFun (genPExp' claferargs resPath) x
   where
   brFun = case x of
-    PExp _ _ _ (IClaferId _ _ _) -> ($)
-    PExp _ _ _ (IInt _) -> ($)
+    PExp _ _ _ _ (IClaferId _ _ _) -> ($)
+    PExp _ _ _ _ (IInt _) -> ($)
     _  -> brArg
     
 interleave :: [Concat] -> [Concat] -> [Concat]
@@ -504,7 +504,7 @@ genOp _ _ = error "This should never happen"
 
 -- adjust parent
 adjustPExp :: [String] -> PExp -> PExp
-adjustPExp resPath (PExp t pid' pos x) = PExp t pid' pos $ adjustIExp resPath x
+adjustPExp resPath (PExp par' t pid' pos x) = PExp par' t pid' pos $ adjustIExp resPath x
 
 adjustIExp :: [String] -> IExp -> IExp 
 adjustIExp resPath x = case x of
@@ -615,10 +615,10 @@ firstLine :: LineNo
 firstLine = 1 :: LineNo
 
 removeright :: PExp -> PExp
-removeright (PExp _ _ _ (IFunExp _ (x : (PExp _ _ _ (IClaferId _ _ _)) : _))) = x
-removeright (PExp t id' pos (IFunExp o (x1:x2:xs))) = (PExp t id' pos (IFunExp o (x1:(removeright x2):xs)))
-removeright (PExp _ _ _ _) = error "Function removeright from the AlloyGenerator expects a PExp with a IFunExp inside, was given something else" --This should never happen
+removeright (PExp _ _ _ _ (IFunExp _ (x : (PExp _ _ _ _ (IClaferId _ _ _)) : _))) = x
+removeright (PExp par' t id' pos (IFunExp o (x1:x2:xs))) = (PExp par' t id' pos (IFunExp o (x1:(removeright x2):xs)))
+removeright (PExp _ _ _ _ _) = error "Function removeright from the AlloyGenerator expects a PExp with a IFunExp inside, was given something else" --This should never happen
 
 getRight :: PExp -> PExp
-getRight (PExp _ _ _ (IFunExp _ (_:x:_))) = getRight x
+getRight (PExp _ _ _ _ (IFunExp _ (_:x:_))) = getRight x
 getRight p = p
