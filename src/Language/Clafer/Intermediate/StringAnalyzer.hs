@@ -22,6 +22,7 @@
 -}
 module Language.Clafer.Intermediate.StringAnalyzer where
 
+import Prelude hiding (exp)
 import Data.Map (Map)
 import Data.Tuple
 import qualified Data.Map as Map
@@ -29,6 +30,7 @@ import Control.Monad.State
 
 import Language.Clafer.Common
 import Language.Clafer.Intermediate.Intclafer
+import Language.Clafer.Intermediate.ResolverName
 
 astrModule :: IModule -> (IModule, Map Int String)
 astrModule imodule = (imodule{mDecls = decls''}, flipMap strMap')
@@ -41,8 +43,14 @@ astrModule imodule = (imodule{mDecls = decls''}, flipMap strMap')
 
 
 astrClafer :: MonadState (Map String Int) m => IClafer -> m IClafer
-astrClafer (IClafer par' s isAbs gcrd ident' uid' super' ref' crd gCard es) =
-    IClafer par' s isAbs gcrd ident' uid' super' ref' crd gCard `liftM` mapM astrElement es
+astrClafer (IClafer par' s isAbs gcrd ident' uid' super' ref' crd gCard es) = do
+    clafer <- IClafer par' s isAbs gcrd ident' uid' super' ref' crd gCard `liftM` mapM astrElement es
+    return $ 
+      let clafer' = clafer{super = super'', reference = ref'', elements = elements'}
+          super'' = super'{iSuperParent = clafer'}
+          ref'' = ref'{iReferenceParent = clafer'}
+          elements' = flip addParents clafer' $ elements clafer
+      in clafer'
 
 -- astrs single subclafer
 astrElement :: MonadState (Map String Int) m => IElement -> m IElement
@@ -52,12 +60,25 @@ astrElement x = case x of
   IEGoal par' isMaximize' pexp -> IEGoal par' isMaximize' `liftM` astrPExp pexp
 
 astrPExp :: MonadState (Map String Int) m => PExp -> m PExp
-astrPExp (PExp par' (Just TString) pid' pos' exp') =
-    PExp par' (Just TInteger) pid' pos' `liftM` astrIExp exp'
-astrPExp (PExp par' t pid' pos' (IFunExp op' exps')) = PExp par' t pid' pos' `liftM`
-                              (IFunExp op' `liftM` mapM astrPExp exps')
-astrPExp (PExp par' t pid' pos' (IDeclPExp quant' oDecls' bpexp')) = PExp par' t pid' pos' `liftM`
-                              (IDeclPExp quant' oDecls' `liftM` (astrPExp bpexp'))
+astrPExp (PExp par' (Just TString) pid' pos' exp') = do
+    pexp <- PExp par' (Just TInteger) pid' pos' `liftM` astrIExp exp'
+    return $
+      let pexp' = pexp{exp = iexp}
+          iexp = flip addParentsPExp pexp' $ exp pexp
+      in pexp'
+
+astrPExp (PExp par' t pid' pos' (IFunExp op' exps')) = do
+  pexp <- PExp par' t pid' pos' `liftM` (IFunExp op' `liftM` mapM astrPExp exps')
+  return $ 
+    let pexp' = pexp{exp = iexp}
+        iexp = flip addParentsPExp pexp' $ exp pexp
+    in pexp'
+astrPExp (PExp par' t pid' pos' (IDeclPExp quant' oDecls' bpexp')) = do 
+  pexp <- PExp par' t pid' pos' `liftM` (IDeclPExp quant' oDecls' `liftM` (astrPExp bpexp'))
+  return $
+    let pexp' = pexp{exp = iexp}
+        iexp = flip addParentsPExp pexp' $ exp pexp
+    in pexp'
 astrPExp x = return x
 
 astrIExp :: MonadState (Map String Int) m => IExp -> m IExp

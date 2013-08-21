@@ -120,7 +120,12 @@ resolveClafer env clafer =
     elements' <- mapM (resolveElement env'{subClafers = subClafers',
                                               ancClafers = ancClafers'}) $
                           elements clafer
-    return $ clafer {elements = elements'}
+    return $ 
+      let clafer' = clafer {super = super', reference = ref', elements = elements''}
+          super' = (super clafer){iSuperParent = clafer'}
+          ref' = (reference clafer){iReferenceParent = clafer'}
+          elements'' = addParents elements' clafer'
+      in clafer'
   where
   env' = env {context = Just clafer, resPath = clafer : resPath env}
   subClafers' = tail $ bfs toNodeDeep [env'{resPath = [clafer]}]
@@ -141,7 +146,10 @@ resolvePExp :: SEnv -> PExp -> Resolve PExp
 resolvePExp env pexp =
   do
     exp' <- resolveIExp (inPos pexp) env $ Language.Clafer.Intermediate.Intclafer.exp pexp
-    return $ pexp {Language.Clafer.Intermediate.Intclafer.exp = exp'}
+    return $ 
+      let pexp' = pexp {Language.Clafer.Intermediate.Intclafer.exp = iexp}
+          iexp = addParentsPExp exp' pexp'
+      in pexp'
 
 resolveIExp :: Span -> SEnv -> IExp -> Resolve IExp
 resolveIExp pos' env x = case x of
@@ -347,3 +355,15 @@ isNamespaceConflict x         = error $ "isNamespaceConflict must be given a lis
 
 filterPaths :: String -> [(IClafer, [IClafer])] -> [(IClafer, [IClafer])]
 filterPaths x xs = filter (((==) x).ident.fst) xs
+
+addParents :: [IElement] -> IClafer -> [IElement]
+addParents es par' = flip map es $ \e -> case e of
+  (IEClafer ic) -> IEClafer ic{claferParent = Just par'}
+  (IEConstraint _ h p) -> IEConstraint (Just par') h p
+  (IEGoal _ m p) -> IEGoal (Just par') m p
+
+addParentsPExp :: IExp -> PExp -> IExp
+addParentsPExp iexp par' = case iexp of
+            (IDeclPExp q d p) -> IDeclPExp q d p{pExpParent = Just par'}
+            (IFunExp op' ps) -> IFunExp op' $ flip map ps $ \p -> p{pExpParent = Just par'}
+            _ -> iexp

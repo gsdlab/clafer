@@ -127,14 +127,21 @@ nameClafer :: MonadState GEnv m => Bool -> IClafer -> m IClafer
 nameClafer skipResolver claf = do
   claf' <- if skipResolver then return claf{uid = ident claf} else (renameClafer (not skipResolver)) claf
   elements' <- mapM (nameElement skipResolver) $ elements claf
-  return $ claf' {elements = elements'}
-
+  return $ 
+    let claf'' = claf'{super = super', reference = ref', elements = elements''}
+        elements'' = addParents elements' claf''
+        super' = (super claf'){iSuperParent = claf''}
+        ref' = (reference claf'){iReferenceParent = claf''}
+    in claf''
 
 namePExp :: MonadState GEnv m => PExp -> m PExp
 namePExp pexp@(PExp _ _ _ _ exp') = do
   pid' <- genId "exp"
   exp'' <- nameIExp exp'
-  return $ pexp {pid = pid', Language.Clafer.Intermediate.Intclafer.exp = exp''}
+  return $ 
+    let pexp' = pexp {pid = pid', Language.Clafer.Intermediate.Intclafer.exp = iexp}
+        iexp = addParentsPExp exp'' pexp'
+    in pexp'
 
 nameIExp :: MonadState GEnv m => IExp -> m IExp
 nameIExp x = case x of

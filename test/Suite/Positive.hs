@@ -82,8 +82,8 @@ case_stringEqual = do
 	let strMap = stringMap $ fromRight $ compileOneFragment defaultClaferArgs "A\n    text1 : string = \"some text\"\n    text2 : string = \"some text\""
 	(Map.size strMap) == 1 @? "Error string's assigned to differnet numbers!"
 
-{-cas_correctParents :: Assertion
-cas_correctParents = do
+case_correctParents :: Assertion
+case_correctParents = do
 	claferModels <- positiveClaferModels
 	let compiledClaferIrs = foldMap getIR $ map (\(file', model) -> (file', compileOneFragment defaultClaferArgs model)) claferModels
 	forM_ compiledClaferIrs (\(file', ir') ->
@@ -94,17 +94,17 @@ cas_correctParents = do
 	where
 		parentCheck :: Ir -> All
 		parentCheck (IRClafer clafer)
-			= All $ (ident clafer == (ident $ iSuperParent $ super clafer)) 
-				&& (ident clafer == (ident $ iReferenceParent $ reference clafer)) 
+			= All $ (uid clafer == (uid $ iSuperParent $ super clafer)) 
+				&& (uid clafer == (uid $ iReferenceParent $ reference clafer)) 
 					&& (and $ map elementCheck $ elements clafer)
 			where
 				elementCheck :: IElement -> Bool
-				elementCheck (IEClafer claf) = claferParent claf == Nothing || ident clafer == (ident $ fromJust $ claferParent claf)
-				elementCheck (IEConstraint par _ _) = par == Nothing || ident clafer == (ident $ fromJust par)
-				elementCheck (IEGoal par _ _) = par == Nothing || ident clafer == (ident $ fromJust par)
+				elementCheck (IEClafer claf) = claferParent claf /= Nothing && uid clafer == (uid $ fromJust $ claferParent claf)
+				elementCheck (IEConstraint par _ _) = par /= Nothing &&  uid clafer == (uid $ fromJust par)
+				elementCheck (IEGoal par _ _) = par /= Nothing &&  uid clafer == (uid $ fromJust par)
 		parentCheck (IRPExp pexp) = 
 			All $ case exp pexp of
-				(IDeclPExp _ _ pexp') -> pExpParent pexp' == Nothing || getPExpName pexp == (getPExpName $ fromJust $ pExpParent pexp')
-				(IFunExp _ pexps) -> and $ flip map pexps $ \pexp' -> pExpParent pexp' == Nothing || getPExpName pexp == (getPExpName $ fromJust $ pExpParent pexp')
+				(IDeclPExp _ _ pexp') -> pExpParent pexp' /= Nothing && pid pexp == (pid $ fromJust $ pExpParent pexp')
+				(IFunExp _ pexps) -> and $ flip map pexps $ \pexp' -> pExpParent pexp' /= Nothing && pid pexp == (pid $ fromJust $ pExpParent pexp')
 				_ -> True
-		parentCheck _ = All True-}
+		parentCheck _ = All True
