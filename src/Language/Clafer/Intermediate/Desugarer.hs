@@ -96,7 +96,7 @@ desugarSuper ic' (SuperSome superhow setexp) = desugarSuper ic' $ PosSuperSome n
 desugarSuper ic' (PosSuperEmpty s) =
       ISuper ic' TopLevel [PExp Nothing (Just $ TClafer []) "" s $ mkLClaferId baseClafer True]
 desugarSuper ic' (PosSuperSome _ superhow setexp) =
-      ISuper ic' TopLevel $ if (desugarSuperHowS superhow) then [desugarSetExp setexp] else []
+      ISuper ic' TopLevel $ if (desugarSuperHowS superhow) then [desugarSetExp Nothing setexp] else []
 
 desugarSuperHowS :: SuperHow -> Bool
 desugarSuperHowS SuperColon = desugarSuperHowS $ PosSuperColon noSpan
@@ -109,7 +109,7 @@ desugarRefrence ic' (SuperSome superhow setexp) = desugarRefrence ic' $ PosSuper
 desugarRefrence ic' (PosSuperSome _ superhow setexp) = case superhow of
   SuperColon -> emptyIReference ic' 
   (PosSuperColon _) -> emptyIReference ic' 
-  _ -> IReference ic' (desugarSuperHowR superhow) [desugarSetExp setexp]
+  _ -> IReference ic' (desugarSuperHowR superhow) [desugarSetExp Nothing setexp]
 desugarRefrence ic' _ = emptyIReference ic' 
 
 desugarSuperHowR :: SuperHow -> Bool
@@ -124,9 +124,12 @@ desugarInit :: PosIdent -> Init -> [IElement]
 desugarInit id' InitEmpty = desugarInit id' $ PosInitEmpty noSpan
 desugarInit id' (InitSome inithow exp') = desugarInit id' $ PosInitSome noSpan inithow exp'
 desugarInit _ (PosInitEmpty _) = []
-desugarInit id' (PosInitSome s inithow exp') = [IEConstraint Nothing (desugarInitHow inithow) 
-  (pExpDefPid s (IFunExp "=" [mkPLClaferId (snd $ getIdent id') False, desugarExp Nothing exp']))]
-  where getIdent (PosIdent y) = y
+desugarInit id' (PosInitSome s inithow exp') = [IEConstraint Nothing (desugarInitHow inithow) pexp']
+  where 
+    pexp' = pExpDefPid s (IFunExp "=" [pexp'', pexp'''])
+    pexp'' = PExp (Just pexp') Nothing "" noSpan $ IClaferId "" (snd $ getIdent id') False
+    pexp''' = desugarExp (Just pexp') exp'
+    getIdent (PosIdent y) = y
 
 desugarInitHow :: InitHow -> Bool
 desugarInitHow InitHow_1  = desugarInitHow $ PosInitHow_1 noSpan
@@ -402,7 +405,7 @@ desugarExp' par x = case x of
   PosEInt _ n  -> IInt $ mkInteger n
   PosEDouble _ (PosDouble n) -> IDouble $ read $ snd n
   PosEStr _ (PosString str)  -> IStr $ snd str
-  PosESetExp _ sexp -> desugarSetExp' sexp
+  PosESetExp _ sexp -> desugarSetExp' par sexp
   where
   dop = desugarOp (desugarExp par)
   dpe = desugarPath.(desugarExp par)
@@ -418,20 +421,23 @@ desugarOp f op' exps' =
           then desugarPath else id
 
 
-desugarSetExp :: SetExp -> PExp
-desugarSetExp x = pExpDefPid (range x) $ desugarSetExp' x
+desugarSetExp :: Maybe PExp -> SetExp -> PExp
+desugarSetExp par' x = pexp
+  where
+    pexp = PExp par' Nothing "" (range x) iexp
+    iexp = flip desugarSetExp' x $ Just pexp
 
 
-desugarSetExp' :: SetExp -> IExp
-desugarSetExp' x = case x of
-  Union exp0 exp'        -> desugarSetExp' $ PosUnion noSpan exp0 exp'
-  UnionCom exp0 exp'     -> desugarSetExp' $ PosUnionCom noSpan exp0 exp'
-  Difference exp0 exp'   -> desugarSetExp' $ PosDifference noSpan exp0 exp'
-  Intersection exp0 exp' -> desugarSetExp' $ PosIntersection noSpan exp0 exp'
-  Domain exp0 exp'       -> desugarSetExp' $ PosDomain noSpan exp0 exp'
-  Range exp0 exp'        -> desugarSetExp' $ PosRange noSpan exp0 exp'
-  Join exp0 exp'         -> desugarSetExp' $ PosJoin noSpan exp0 exp'
-  ClaferId name  -> desugarSetExp' $ PosClaferId noSpan name
+desugarSetExp' :: Maybe PExp -> SetExp -> IExp
+desugarSetExp' par' x = case x of
+  Union exp0 exp'        -> desugarSetExp' par' $ PosUnion noSpan exp0 exp'
+  UnionCom exp0 exp'     -> desugarSetExp' par' $ PosUnionCom noSpan exp0 exp'
+  Difference exp0 exp'   -> desugarSetExp' par' $ PosDifference noSpan exp0 exp'
+  Intersection exp0 exp' -> desugarSetExp' par' $ PosIntersection noSpan exp0 exp'
+  Domain exp0 exp'       -> desugarSetExp' par' $ PosDomain noSpan exp0 exp'
+  Range exp0 exp'        -> desugarSetExp' par' $ PosRange noSpan exp0 exp'
+  Join exp0 exp'         -> desugarSetExp' par' $ PosJoin noSpan exp0 exp'
+  ClaferId name  -> desugarSetExp' par' $ PosClaferId noSpan name
   PosUnion _ exp0 exp'        -> dop iUnion        [exp0, exp']
   PosUnionCom _ exp0 exp'     -> dop iUnion        [exp0, exp']
   PosDifference _ exp0 exp'   -> dop iDifference   [exp0, exp']
@@ -442,7 +448,7 @@ desugarSetExp' x = case x of
   PosClaferId _ name  -> desugarName name
 
   where
-  dop = desugarOp desugarSetExp
+  dop = desugarOp (desugarSetExp par')
 
 
 sugarExp :: PExp -> Exp
@@ -526,12 +532,16 @@ sugarSetExp' (IClaferId modName' id' _) = ClaferId $ Path $ (sugarModId modName'
 sugarSetExp' _ = error "IDecelPexp, IInt, IDobule, and IStr can not be sugared into a setExp!" --This should never happen
 
 desugarPath :: PExp -> PExp
-desugarPath (PExp par' iType' pid' pos' x) = reducePExp $ PExp par' iType' pid' pos' result
+desugarPath (PExp par' iType' pid' pos' x) = pexp 
   where
+  pexp = reducePExp $ PExp par' iType' pid' pos' result
   result
-    | isset x     = IDeclPExp ISome [] (pExpDefPid pos' x)
-    | isNegSome x = IDeclPExp INo   [] $ bpexp $ Language.Clafer.Intermediate.Intclafer.exp $ head $ exps x
-    | otherwise   =  x
+    | isset x     = IDeclPExp ISome [] $ PExp (Just pexp) Nothing "" pos' x
+    | isNegSome x = IDeclPExp INo   [] (bpexp $ Language.Clafer.Intermediate.Intclafer.exp $ head $ exps x){pExpParent = Just pexp}
+    | otherwise   =  case x of
+      (IDeclPExp q d p) -> IDeclPExp q d p{pExpParent = Just pexp}
+      (IFunExp op' ps) -> IFunExp op' $ flip map ps $ \p -> p{pExpParent = Just pexp}
+      _ -> x
   isNegSome (IFunExp op' [PExp _ _ _ _ (IDeclPExp ISome [] _)]) = op' == iNot
   isNegSome _ = False
 
@@ -544,28 +554,33 @@ isset _ = False
 
 -- reduce parent
 reducePExp :: PExp -> PExp
-reducePExp (PExp par' t pid' pos' x) = PExp par' t pid' pos' $ reduceIExp x
+reducePExp (PExp par' t pid' pos' x) = 
+  let pexp = PExp par' t pid' pos' iexp
+      iexp = flip reduceIExp x $ Just pexp
+  in pexp
 
-reduceIExp :: IExp -> IExp
-reduceIExp (IDeclPExp quant' decls' pexp) = IDeclPExp quant' decls' $ reducePExp pexp
-reduceIExp (IFunExp op' exps') = redNav $ IFunExp op' $ map redExps exps'
+reduceIExp :: Maybe PExp -> IExp -> IExp
+reduceIExp par' (IDeclPExp quant' decls' pexp) = IDeclPExp quant' decls' (reducePExp pexp){pExpParent = par'}
+reduceIExp par' (IFunExp op' exps') = redNav $ IFunExp op' $ flip map exps' $ \e -> (redExps e){pExpParent = par'}
     where
     (redNav, redExps) = if op' == iJoin then (reduceNav, id) else (id, reducePExp) 
-reduceIExp x = x
+reduceIExp _ x = x
 
 reduceNav :: IExp -> IExp
 reduceNav x@(IFunExp op' exps'@((PExp _ _ _ _ iexp@(IFunExp _ (pexp0:pexp:_))):pPexp:_)) = 
   if op' == iJoin && isParent pPexp && isClaferName pexp
   then reduceNav $ Language.Clafer.Intermediate.Intclafer.exp pexp0
-  else x{exps = (head exps'){Language.Clafer.Intermediate.Intclafer.exp = reduceIExp iexp} :
-                tail exps'}
+  else 
+    let pexp' = (head exps'){Language.Clafer.Intermediate.Intclafer.exp = iexp'}
+        iexp' = flip reduceIExp iexp $ Just pexp'
+    in x{exps = pexp' : tail exps'}
 reduceNav x = x
 
 
 desugarDecl :: Bool -> Decl -> IDecl
 desugarDecl isDisj' (Decl locids exp') = desugarDecl isDisj' $ PosDecl noSpan locids exp'
 desugarDecl isDisj' (PosDecl _ locids exp') =
-    IDecl isDisj' (map desugarLocId locids) (desugarSetExp exp')
+    IDecl isDisj' (map desugarLocId locids) (desugarSetExp Nothing exp')
 
 
 sugarDecl :: IDecl -> Decl

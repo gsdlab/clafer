@@ -420,6 +420,7 @@ keyWords = ["ref","parent","Abstract","abstract", "else", "in", "no", "opt", "xo
 
 {-
 Use this to update the parent pointers in Ir if needed (mapIR addParents imodule)
+This is an old version before ISuper and IRefrence Parents were added please change accordingly
 addParents :: Ir -> Ir
 addParents (IRClafer clafer) = IRClafer $ clafer{elements = 
   map (\e -> case e of

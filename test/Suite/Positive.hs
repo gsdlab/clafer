@@ -22,9 +22,12 @@
 -}
 module Suite.Positive (tg_Test_Suite_Positive) where
 
+import Prelude hiding (exp)
 import Functions
 import Language.Clafer.Intermediate.Intclafer
 import Data.Foldable (foldMap)
+import Data.Monoid
+import Data.Maybe
 import Control.Monad
 import Language.Clafer
 import Language.ClaferT
@@ -63,15 +66,13 @@ case_refrence_Unused_Absstract_Clafer = do
 case_nonempty_Cards :: Assertion
 case_nonempty_Cards = do
 	claferModels <- positiveClaferModels
-	let compiledClafeIrs = foldMap getIR $ map (\(file', model) -> (file', compileOneFragment defaultClaferArgs model)) claferModels
-	forM_ compiledClafeIrs (\(file', ir') ->
+	let compiledClaferIrs = foldMap getIR $ map (\(file', model) -> (file', compileOneFragment defaultClaferArgs model)) claferModels
+	forM_ compiledClaferIrs (\(file', ir') ->
 		let emptys = foldMapIR isEmptyCard ir'
 		in when (emptys /= []) $ putStrLn (file' ++ " Error: Contains empty Card's after analysis at\n" ++ emptys))
-	(andMap ((==[]) . foldMapIR isEmptyCard . snd) compiledClafeIrs
+	(andMap ((==[]) . foldMapIR isEmptyCard . snd) compiledClaferIrs
 		@? "nonempty Card test failed. Files contain empty card's after fully compiling")
 	where
-		getIR (file', (Right (CompilerResult{claferEnv = ClaferEnv{cIr = Just (iMod, _, _)}}))) = [(file', iMod)]
-		getIR _ = []
 		isEmptyCard (IRClafer (IClafer{cinPos=(Span (Pos l c) _), card = Nothing})) = "Line " ++ show l ++ " column " ++ show c ++ "\n"
 		isEmptyCard (IRClafer (IClafer{cinPos=(PosSpan _ (Pos l c) _), card = Nothing})) = "Line " ++ show l ++ " column " ++ show c ++ "\n"
 		isEmptyCard	_ = ""
@@ -80,3 +81,30 @@ case_stringEqual :: Assertion
 case_stringEqual = do
 	let strMap = stringMap $ fromRight $ compileOneFragment defaultClaferArgs "A\n    text1 : string = \"some text\"\n    text2 : string = \"some text\""
 	(Map.size strMap) == 1 @? "Error string's assigned to differnet numbers!"
+
+{-cas_correctParents :: Assertion
+cas_correctParents = do
+	claferModels <- positiveClaferModels
+	let compiledClaferIrs = foldMap getIR $ map (\(file', model) -> (file', compileOneFragment defaultClaferArgs model)) claferModels
+	forM_ compiledClaferIrs (\(file', ir') ->
+		let parentsMatch = getAll $ foldMapIR parentCheck ir'
+		in when (not $ parentsMatch) $ putStrLn (file' ++ " Error: Ir's parent were not properly matched"))
+	(andMap (getAll . foldMapIR parentCheck . snd) compiledClaferIrs 
+		@? "Correct Parent test failed. Files contain non matching parents in the Ir after fully compiling") 
+	where
+		parentCheck :: Ir -> All
+		parentCheck (IRClafer clafer)
+			= All $ (ident clafer == (ident $ iSuperParent $ super clafer)) 
+				&& (ident clafer == (ident $ iReferenceParent $ reference clafer)) 
+					&& (and $ map elementCheck $ elements clafer)
+			where
+				elementCheck :: IElement -> Bool
+				elementCheck (IEClafer claf) = claferParent claf == Nothing || ident clafer == (ident $ fromJust $ claferParent claf)
+				elementCheck (IEConstraint par _ _) = par == Nothing || ident clafer == (ident $ fromJust par)
+				elementCheck (IEGoal par _ _) = par == Nothing || ident clafer == (ident $ fromJust par)
+		parentCheck (IRPExp pexp) = 
+			All $ case exp pexp of
+				(IDeclPExp _ _ pexp') -> pExpParent pexp' == Nothing || getPExpName pexp == (getPExpName $ fromJust $ pExpParent pexp')
+				(IFunExp _ pexps) -> and $ flip map pexps $ \pexp' -> pExpParent pexp' == Nothing || getPExpName pexp == (getPExpName $ fromJust $ pExpParent pexp')
+				_ -> True
+		parentCheck _ = All True-}
