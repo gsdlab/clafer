@@ -518,12 +518,16 @@ sugarSetExp' (IClaferId modName' id' _) = ClaferId $ Path $ (sugarModId modName'
 sugarSetExp' _ = error "IDecelPexp, IInt, IDobule, and IStr can not be sugared into a setExp!" --This should never happen
 
 desugarPath :: PExp -> PExp
-desugarPath (PExp par' iType' pid' pos' x) = reducePExp $ PExp par' iType' pid' pos' result
+desugarPath (PExp par' iType' pid' pos' x) = pexp 
   where
+  pexp = reducePExp $ PExp par' iType' pid' pos' result
   result
-    | isSet x     = IDeclPExp ISome [] (pExpDefPid pos' x)
-    | isNegSome x = IDeclPExp INo   [] $ bpexp $ Language.Clafer.Intermediate.Intclafer.exp $ head $ exps x
-    | otherwise   =  x
+    | isSet x     = IDeclPExp ISome [] $ PExp (Just pexp) Nothing "" pos' x
+    | isNegSome x = IDeclPExp INo   [] (bpexp $ Language.Clafer.Intermediate.Intclafer.exp $ head $ exps x){pExpParent = Just pexp}
+    | otherwise   =  case x of
+      (IDeclPExp q d p) -> IDeclPExp q d p{pExpParent = Just pexp}
+      (IFunExp op' ps) -> IFunExp op' $ flip map ps $ \p -> p{pExpParent = Just pexp}
+      _ -> x
   isNegSome (IFunExp op' [PExp _ _ _ _ (IDeclPExp ISome [] _)]) = op' == iNot
   isNegSome _ = False
 
@@ -536,21 +540,26 @@ isSet _ = False
 
 -- reduce parent
 reducePExp :: PExp -> PExp
-reducePExp (PExp par' t pid' pos' x) = PExp par' t pid' pos' $ reduceIExp x
+reducePExp (PExp par' t pid' pos' x) = 
+  let pexp = PExp par' t pid' pos' iexp
+      iexp = flip reduceIExp x $ Just pexp
+  in pexp
 
-reduceIExp :: IExp -> IExp
-reduceIExp (IDeclPExp quant' decls' pexp) = IDeclPExp quant' decls' $ reducePExp pexp
-reduceIExp (IFunExp op' exps') = redNav $ IFunExp op' $ map redExps exps'
+reduceIExp :: Maybe PExp -> IExp -> IExp
+reduceIExp par' (IDeclPExp quant' decls' pexp) = IDeclPExp quant' decls' (reducePExp pexp){pExpParent = par'}
+reduceIExp par' (IFunExp op' exps') = redNav $ IFunExp op' $ flip map exps' $ \e -> (redExps e){pExpParent = par'}
     where
     (redNav, redExps) = if op' == iJoin then (reduceNav, id) else (id, reducePExp) 
-reduceIExp x = x
+reduceIExp _ x = x
 
 reduceNav :: IExp -> IExp
 reduceNav x@(IFunExp op' exps'@((PExp _ _ _ _ iexp@(IFunExp _ (pexp0:pexp:_))):pPexp:_)) = 
   if op' == iJoin && isParent pPexp && isClaferName pexp
   then reduceNav $ Language.Clafer.Intermediate.Intclafer.exp pexp0
-  else x{exps = (head exps'){Language.Clafer.Intermediate.Intclafer.exp = reduceIExp iexp} :
-                tail exps'}
+  else 
+    let pexp' = (head exps'){Language.Clafer.Intermediate.Intclafer.exp = iexp'}
+        iexp' = flip reduceIExp iexp $ Just pexp'
+    in x{exps = pexp' : tail exps'}
 reduceNav x = x
 
 
