@@ -110,8 +110,8 @@ desugarInit _ (PosInitEmpty _) = []
 desugarInit id' (PosInitSome s inithow exp') = [IEConstraint Nothing (desugarInitHow inithow) pexp']
   where 
     pexp' = pExpDefPid s (IFunExp "=" [pexp'', pexp'''])
-    pexp'' = PExp pexp' Nothing "" noSpan $ IClaferId "" (snd $ getIdent id') False
-    pexp''' = desugarExp pexp' exp'
+    pexp'' = PExp (Just pexp') Nothing "" noSpan $ IClaferId "" (snd $ getIdent id') False
+    pexp''' = desugarExp (Just pexp') exp'
     getIdent (PosIdent y) = y
 
 desugarInitHow :: InitHow -> Bool
