@@ -46,7 +46,7 @@ Executable clafer
                     test-framework-hunit >= 0.3.0, 
                     test-framework-quickcheck2 >= 0.3.0.1,
                     test-framework-th >= 0.2.4,
-                    QuickCheck >= 2.5.1.1, 
+                    QuickCheck == 2.5.1.1, 
                     HUnit >= 1.2.5.2,
                     directory >= 1.2.0.1,
                     transformers >= 0.3.0.0
@@ -76,7 +76,7 @@ library
                     test-framework-hunit >= 0.3.0, 
                     test-framework-quickcheck2 >= 0.3.0.1,
                     test-framework-th >= 0.2.4,
-                    QuickCheck >= 2.5.1.1, 
+                    QuickCheck == 2.5.1.1, 
                     HUnit >= 1.2.5.2,
                     directory >= 1.2.0.1,
                     transformers >= 0.3.0.0
@@ -157,5 +157,5 @@ Test-Suite test-suite
                     test-framework-hunit >= 0.3.0, 
                     test-framework-quickcheck2 >= 0.3.0.1,
                     test-framework-th >= 0.2.4,
-                    QuickCheck >= 2.5.1.1, 
+                    QuickCheck == 2.5.1.1, 
                     HUnit >= 1.2.5.2
