@@ -104,12 +104,12 @@ expModule (decls', genv) = evalState (mapM expElement decls') genv
 
 expClafer :: MonadState GEnv m => IClafer -> m IClafer
 expClafer claf = do
-  ref' <- expSuper $ reference claf
+  ref' <- expReference $ reference claf
   elements' <- mapM expElement $ elements claf
   return $ claf {reference = ref', elements = elements'}
 
-expSuper :: MonadState GEnv m => IReference -> m IReference
-expSuper x = case x of
+expReference :: MonadState GEnv m => IReference -> m IReference
+expReference x = case x of
   IReference _ [] -> return x
   IReference s pexps -> IReference s `liftM` mapM expPExp pexps 
 

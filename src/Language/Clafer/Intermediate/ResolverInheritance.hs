@@ -63,7 +63,7 @@ resolveNClafer declarations clafer =
 
 resolveNSuper :: [IElement] -> IClafer -> Resolve ISuper
 resolveNSuper declarations x = case (super x) of
-  (ISuper _ [PExp par' _ pid' pos' (IClaferId _ id' isTop')]) ->
+  (ISuper _ _ [PExp par' _ pid' pos' (IClaferId _ id' isTop')]) ->
     if isPrimitive id' || id' == "clafer"
       then return (super x)
       else do
@@ -71,7 +71,7 @@ resolveNSuper declarations x = case (super x) of
         id'' <- case r of
           Nothing -> throwError $ SemanticErr pos' $ "No superclafer found: " ++ id'
           Just mo  -> return $ fst mo
-        return $ ISuper sk [idToPExp par' pid' pos' "" id'' isTop']
+        return $ ISuper x sk [idToPExp par' pid' pos' "" id'' isTop']
   _ -> return (super x)
 
 resolveNElement :: [IElement] -> IElement -> Resolve IElement
@@ -140,8 +140,7 @@ resolveOSuper env s r = case (s,r) of
     exps'' <- mapM (resolvePExp env) exps'
     return $ if (not (length exps'' == 1 && isPrimitive (getSuperId exps''))) 
       then (s', IReference is exps'') 
-        else (ISuper TopLevel exps'', emptyIReference)
-
+        else (ISuper (iSuperParent s) TopLevel exps'', emptyIReference)
 
 resolveOElement :: SEnv -> IElement -> Resolve IElement
 resolveOElement env x = case x of
@@ -283,7 +282,7 @@ resolveEInheritance predecessors unrollables absAncestor declarations allSuper
              unrollSuper >>= elements
     let super' = if (getSuper clafer `elem` unrollables)
                  then super clafer
-                 else ISuper (superKind $ super clafer) [idToPExp Nothing "" noSpan "" "clafer" False]
+                 else ISuper clafer (superKind $ super clafer) [idToPExp Nothing "" noSpan "" "clafer" False]
     return (elements', super', superList)
   where
   clafer = head allSuper
