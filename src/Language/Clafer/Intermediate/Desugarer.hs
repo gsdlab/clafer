@@ -107,9 +107,12 @@ desugarInit :: PosIdent -> Init -> [IElement]
 desugarInit id' InitEmpty = desugarInit id' $ PosInitEmpty noSpan
 desugarInit id' (InitSome inithow exp') = desugarInit id' $ PosInitSome noSpan inithow exp'
 desugarInit _ (PosInitEmpty _) = []
-desugarInit id' (PosInitSome s inithow exp') = [IEConstraint Nothing (desugarInitHow inithow) 
-  (pExpDefPid s (IFunExp "=" [mkPLClaferId (snd $ getIdent id') False, desugarExp Nothing exp']))]
-  where getIdent (PosIdent y) = y
+desugarInit id' (PosInitSome s inithow exp') = [IEConstraint Nothing (desugarInitHow inithow) pexp']
+  where 
+    pexp' = pExpDefPid s (IFunExp "=" [pexp'', pexp'''])
+    pexp'' = PExp pexp' Nothing "" noSpan $ IClaferId "" (snd $ getIdent id') False
+    pexp''' = desugarExp pexp' exp'
+    getIdent (PosIdent y) = y
 
 desugarInitHow :: InitHow -> Bool
 desugarInitHow InitHow_1  = desugarInitHow $ PosInitHow_1 noSpan
