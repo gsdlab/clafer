@@ -22,6 +22,7 @@
 -}
 module Language.Clafer.Optimizer.Optimizer where
 
+import Prelude hiding (exp)
 import Data.Maybe
 import Data.List
 import Control.Monad.State
@@ -30,6 +31,7 @@ import qualified Data.Map as Map
 import Language.Clafer.Common
 import Language.Clafer.ClaferArgs
 import Language.Clafer.Intermediate.Intclafer
+import Language.Clafer.Intermediate.ResolverName (addParents, addParentsPExp)
 
 optimizeModule :: ClaferArgs -> (IModule, GEnv) -> IModule
 optimizeModule args (imodule, genv) =
@@ -46,8 +48,13 @@ optimizeElement interval' x = case x of
   IEGoal _ _ _ -> x
 
 optimizeClafer :: Interval -> IClafer -> IClafer
-optimizeClafer interval' c = c {glCard = glCard',
-  elements = map (optimizeElement glCard') $ elements c}
+optimizeClafer interval' c = 
+  let clafer' = c {glCard = glCard', super = super', reference = ref',
+    elements = elements'}
+      super' = (super c){iSuperParent = clafer'}
+      ref' = (reference c){iReferenceParent = clafer'}
+      elements' = flip addParents clafer' $ map (optimizeElement glCard') $ elements c
+  in clafer'
   where
   glCard' = multInt (fromJust $ card c) interval'
 
@@ -106,7 +113,12 @@ expClafer :: MonadState GEnv m => IClafer -> m IClafer
 expClafer claf = do
   ref' <- expReference $ reference claf
   elements' <- mapM expElement $ elements claf
-  return $ claf {reference = ref', elements = elements'}
+  return $ 
+    let clafer' = claf {super = super', reference = ref'', elements = elements''}
+        super' = (super claf){iSuperParent = clafer'}
+        ref'' = ref'{iReferenceParent = clafer'}
+        elements'' = addParents elements' clafer'
+    in clafer'
 
 expReference :: MonadState GEnv m => IReference -> m IReference
 expReference x = case x of
@@ -120,7 +132,12 @@ expElement x = case x of
   IEGoal par' isMaximize' goal -> IEGoal par' isMaximize' `liftM` expPExp goal
 
 expPExp :: MonadState GEnv m => PExp -> m PExp
-expPExp (PExp par' t pid' pos' exp') = PExp par' t pid' pos' `liftM` expIExp exp'
+expPExp (PExp par' t pid' pos' exp') = do
+  pexp <- PExp par' t pid' pos' `liftM` expIExp exp'
+  return $
+    let pexp' = pexp{exp = iexp}
+        iexp = flip addParentsPExp pexp' $ exp pexp
+    in pexp'
 
 expIExp :: MonadState GEnv m => IExp -> m IExp
 expIExp x = case x of

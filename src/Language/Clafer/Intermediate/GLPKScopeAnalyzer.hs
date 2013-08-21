@@ -23,6 +23,7 @@
 -}
 module Language.Clafer.Intermediate.GLPKScopeAnalyzer (glpkScopeAnalysis) where
 
+import Language.Clafer.Intermediate.ResolverName (addParentsPExp)
 import Language.Clafer.Front.Absclafer hiding (Path)
 import qualified Language.Clafer.Intermediate.Intclafer as I
 import Language.Clafer.Intermediate.Analysis
@@ -419,7 +420,9 @@ optimizeAllConstraints curThis constraints =
     
     rename :: String -> I.PExp -> I.PExp
     rename f p@I.PExp{I.exp = exp'} =
-        p{I.exp = renameIExp exp'}
+      let pexp = p{I.exp = iexp}
+          iexp = flip addParentsPExp pexp $ renameIExp exp'
+      in pexp
         where
         renameIExp (I.IFunExp op exps) = I.IFunExp op $ map (rename f) exps
         renameIExp (I.IDeclPExp quant oDecls bpexp) = I.IDeclPExp quant (map renameDecl oDecls) $ rename f bpexp

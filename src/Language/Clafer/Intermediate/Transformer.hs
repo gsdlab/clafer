@@ -25,6 +25,7 @@ import Data.Maybe
 import Language.Clafer.Common
 import Language.Clafer.Intermediate.Intclafer
 import Language.Clafer.Intermediate.Desugarer
+import Language.Clafer.Intermediate.ResolverName
 
 transModule :: IModule -> IModule
 transModule imodule = imodule{mDecls = map transElement $ mDecls imodule}
@@ -36,10 +37,18 @@ transElement x = case x of
   IEGoal par' isMaximize' pexp  -> IEGoal par' isMaximize' $ transPExp False pexp  
 
 transClafer :: IClafer -> IClafer
-transClafer clafer = clafer{elements = map transElement $ elements clafer}
+transClafer clafer = 
+  let clafer' = clafer{super = super', reference = ref', elements = elements'}
+      super' = (super clafer){iSuperParent = clafer'}
+      ref' = (reference clafer){iReferenceParent = clafer'}
+      elements' = flip addParents clafer' $ map transElement $ elements clafer 
+  in clafer'
 
 transPExp :: Bool -> PExp -> PExp
-transPExp some (PExp par' t pid' pos' x) = trans $ PExp par' t pid' pos' $ transIExp (fromJust t) x
+transPExp some (PExp par' t pid' pos' x) = 
+  let pexp = trans $ PExp par' t pid' pos' iexp 
+      iexp = flip addParentsPExp pexp $  transIExp (fromJust t) x
+  in pexp
   where
   trans = if some then desugarPath else id
 

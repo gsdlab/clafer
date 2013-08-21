@@ -82,29 +82,42 @@ case_stringEqual = do
 	let strMap = stringMap $ fromRight $ compileOneFragment defaultClaferArgs "A\n    text1 : string = \"some text\"\n    text2 : string = \"some text\""
 	(Map.size strMap) == 1 @? "Error string's assigned to differnet numbers!"
 
-case_correctParents :: Assertion
-case_correctParents = do
+case_correctElementParents :: Assertion
+case_correctElementParents = do
 	claferModels <- positiveClaferModels
 	let compiledClaferIrs = foldMap getIR $ map (\(file', model) -> (file', compileOneFragment defaultClaferArgs model)) claferModels
 	forM_ compiledClaferIrs (\(file', ir') ->
 		let parentsMatch = getAll $ foldMapIR parentCheck ir'
-		in when (not $ parentsMatch) $ putStrLn (file' ++ " Error: Ir's parent were not properly matched"))
+		in when (not $ parentsMatch) $ putStrLn (file' ++ " Error: Ir's element parents were not properly matched"))
 	(andMap (getAll . foldMapIR parentCheck . snd) compiledClaferIrs 
-		@? "Correct Parent test failed. Files contain non matching parents in the Ir after fully compiling") 
+		@? "Correct Parent test failed. Files contain non matching parents in the Ir for elements after fully compiling") 
 	where
 		parentCheck :: Ir -> All
 		parentCheck (IRClafer clafer)
-			= All $ (uid clafer == (uid $ iSuperParent $ super clafer)) 
-				&& (uid clafer == (uid $ iReferenceParent $ reference clafer)) 
+			= All $ (clafer == (iSuperParent $ super clafer)) 
+				&& (clafer == (iReferenceParent $ reference clafer)) 
 					&& (and $ map elementCheck $ elements clafer)
 			where
 				elementCheck :: IElement -> Bool
-				elementCheck (IEClafer claf) = claferParent claf /= Nothing && uid clafer == (uid $ fromJust $ claferParent claf)
-				elementCheck (IEConstraint par _ _) = par /= Nothing &&  uid clafer == (uid $ fromJust par)
-				elementCheck (IEGoal par _ _) = par /= Nothing &&  uid clafer == (uid $ fromJust par)
+				elementCheck (IEClafer claf) = claferParent claf /= Nothing && clafer == (fromJust $ claferParent claf)
+				elementCheck (IEConstraint par _ _) = par /= Nothing &&  clafer == (fromJust par)
+				elementCheck (IEGoal par _ _) = par /= Nothing &&  clafer == (fromJust par)
+		parentCheck _ = All True
+
+case_correctPExpParents :: Assertion
+case_correctPExpParents = do
+	claferModels <- positiveClaferModels
+	let compiledClaferIrs = foldMap getIR $ map (\(file', model) -> (file', compileOneFragment defaultClaferArgs model)) claferModels
+	forM_ compiledClaferIrs (\(file', ir') ->
+		let parentsMatch = getAll $ foldMapIR parentCheck ir'
+		in when (not $ parentsMatch) $ putStrLn (file' ++ " Error: Ir's PExp parents were not properly matched"))
+	(andMap (getAll . foldMapIR parentCheck . snd) compiledClaferIrs 
+		@? "Correct Parent test failed. Files contain non matching parents in the Ir for PExp's after fully compiling") 
+	where
+		parentCheck :: Ir -> All
 		parentCheck (IRPExp pexp) = 
 			All $ case exp pexp of
-				(IDeclPExp _ _ pexp') -> pExpParent pexp' /= Nothing && pid pexp == (pid $ fromJust $ pExpParent pexp')
-				(IFunExp _ pexps) -> and $ flip map pexps $ \pexp' -> pExpParent pexp' /= Nothing && pid pexp == (pid $ fromJust $ pExpParent pexp')
+				(IDeclPExp _ _ pexp') -> pExpParent pexp' /= Nothing && pexp == (fromJust $ pExpParent pexp')
+				(IFunExp _ pexps) -> and $ flip map pexps $ \pexp' -> pExpParent pexp' /= Nothing && pexp == (fromJust $ pExpParent pexp')
 				_ -> True
 		parentCheck _ = All True

@@ -399,7 +399,7 @@ desugarExp' par x = case x of
   PosEDiv _ exp0 exp'  -> dop iDiv [exp0, exp']
   PosECSetExp _ exp'   -> dop iCSet [exp']
   PosESumSetExp _ exp' -> dop iSumSet [exp']
-  PosEMinExp s exp'    -> dop iMin [exp']  
+  PosEMinExp _ exp'    -> dop iMin [exp']  
   PosEGMax _ exp' -> dop iGMax [exp']
   PosEGMin _ exp' -> dop iGMin [exp']  
   PosEInt _ n  -> IInt $ mkInteger n

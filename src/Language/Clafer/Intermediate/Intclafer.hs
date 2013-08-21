@@ -87,11 +87,12 @@ instance Ord IClafer where
 instance Show IClafer where
   show (IClafer p cp ia g i u s r c gc es) = 
     "IClafer {claferParentIdent = " ++ 
-      (if p == Nothing then "Nothing" else ident $ fromJust p) ++ " cinPos = " 
-        ++ show cp ++ " isAbstract = " ++ show ia ++ " gcard = " ++ show g ++
-         " ident = " ++ show i ++ " uid " ++ show u ++ " super = " ++ show s 
-          ++ " reference = " ++ show r ++ " card = " ++ show c ++ " glCard = " 
-            ++ show gc ++ " elements = " ++ show es
+      (if p == Nothing then "Nothing" else if (uid p) /= "" then uid p else ident $ fromJust p) 
+        ++ " cinPos = " ++ show cp ++ " isAbstract = " ++ show ia ++ 
+          " gcard = " ++ show g ++ " ident = " ++ show i ++ " uid " ++ 
+            show u ++ " super = " ++ show s ++ " reference = " ++ show r 
+              ++ " card = " ++ show c ++ " glCard = " ++ show gc ++ 
+                " elements = " ++ show es
 
 
 -- Clafer's subelement is either a clafer, a constraint, or a goal (objective)
@@ -179,8 +180,9 @@ instance Ord ISuper where
 
 instance Show ISuper where
   show (ISuper par sk ss) = 
-    "ISuper {iSuperParentIdent = " ++ ident par ++ ", superKind = " 
-      ++ show sk ++ ", supers = " ++ show ss
+    "ISuper {iSuperParentIdent = " ++ 
+      (if (uid par) == "" then ident par else uid par) ++ 
+        ", superKind = " ++ show sk ++ ", supers = " ++ show ss
 
 
 getReDefClafer :: IClafer -> IClafer
@@ -208,8 +210,9 @@ instance Ord IReference where
 
 instance Show IReference where
   show (IReference par s r) = 
-    "IReference {iReferenceParentIdent = " ++ ident par ++ " superKind = "
-      ++ show s ++ " refs = " ++ show r
+    "IReference {iReferenceParentIdent = " ++ 
+      (if (uid par) == "" then ident par else uid par) ++ 
+        " superKind = " ++ show s ++ " refs = " ++ show r
 
 isOverlapping :: IClafer -> Bool
 isOverlapping = ([]/=) . refs . reference
@@ -251,9 +254,9 @@ instance Ord PExp where
 instance Show PExp where
   show (PExp par t p pos e) = 
     "PExp {pExpParentIdent = " ++ 
-      (if par == Nothing then "Nothing" else getPExpName $ fromJust par) ++ 
-        ", iType = " ++ show t ++ ", pid = " ++ show p ++ ", inPos = " ++ 
-            show pos ++ ", exp = "  ++ show e
+      (if par == Nothing then "Nothing" else if (pid par) /= "" then pid par else getPExpName $ fromJust par)
+        ++ ", iType = " ++ show t ++ ", pid = " ++ show p ++ 
+          ", inPos = " ++ show pos ++ ", exp = "  ++ show e
 
 getPExpName :: PExp -> String
 getPExpName PExp{exp = IClaferId _ id' _} = id'
