@@ -135,12 +135,12 @@ resolveOClafer env clafer =
 
 resolveOSuper :: SEnv -> ISuper -> IReference -> Resolve (ISuper, IReference)
 resolveOSuper env s r = case (s,r) of
-  (_,IReference _ []) -> return (s,r)
-  (s',IReference is exps') -> do
+  (_,IReference _ _ []) -> return (s,r)
+  (s',IReference par is exps') -> do
     exps'' <- mapM (resolvePExp env) exps'
     return $ if (not (length exps'' == 1 && isPrimitive (getSuperId exps''))) 
-      then (s', IReference is exps'') 
-        else (ISuper (iSuperParent s) TopLevel exps'', emptyIReference)
+      then (s', IReference par is exps'') 
+        else (ISuper par TopLevel exps'', emptyIReference par)
 
 resolveOElement :: SEnv -> IElement -> Resolve IElement
 resolveOElement env x = case x of

@@ -341,12 +341,12 @@ convertClafer =
         Just (I.IGCard _ i)    -> i
     super =
       case (I.super clafer, I.reference clafer) of
-        (I.ISuper _ _ [], I.IReference is [I.PExp{I.exp = I.IClaferId{I.sident = superUid}}]) -> Just $ SSuper Nothing $ Just $ Ref superUid is
-        (I.ISuper _ _ [I.PExp{I.exp = I.IClaferId{I.sident = superUid}}], I.IReference _ []) ->
+        (I.ISuper _ _ [], I.IReference _ is [I.PExp{I.exp = I.IClaferId{I.sident = superUid}}]) -> Just $ SSuper Nothing $ Just $ Ref superUid is
+        (I.ISuper _ _ [I.PExp{I.exp = I.IClaferId{I.sident = superUid}}], I.IReference _ _ []) ->
           if superUid `elem` ["string", "real", "int", "integer", "boolean"]
             then Just $ SSuper Nothing $ Just $ Ref superUid True
             else Just $ flip SSuper Nothing $ Just $ Colon superUid
-        (I.ISuper _ _ [I.PExp{I.exp = I.IClaferId{I.sident = superUid}}],I.IReference is [I.PExp{I.exp = I.IClaferId{I.sident = superUid'}}]) ->
+        (I.ISuper _ _ [I.PExp{I.exp = I.IClaferId{I.sident = superUid}}],I.IReference _ is [I.PExp{I.exp = I.IClaferId{I.sident = superUid'}}]) ->
           if superUid `elem` ["string", "real", "int", "integer", "boolean"]
             then Just $ SSuper Nothing $ Just $ Ref superUid True
             else Just $ SSuper (Just $ Colon superUid) $ Just $ Ref superUid' is
@@ -363,7 +363,8 @@ gatherInfo imodule =
   sString  = SClafer "string" "string" False 0 (-1) 0 (-1) Nothing Nothing []
   sBoolean = SClafer "boolean" "boolean" False 0 (-1) 0 (-1) Nothing Nothing []
   
-  root = I.IClafer Nothing noSpan False Nothing rootUid rootUid (I.ISuper undefined I.TopLevel [I.PExp Nothing Nothing "" noSpan $ I.IClaferId "clafer" "clafer" True]) emptyIReference (Just (1, 1)) (0, 0) (I.mDecls imodule)
+  root = I.IClafer Nothing noSpan False Nothing rootUid rootUid (I.ISuper undefined I.TopLevel [I.PExp Nothing Nothing "" noSpan $ I.IClaferId "clafer" "clafer" True]) ref (Just (1, 1)) (0, 0) (I.mDecls imodule)
+  ref = emptyIReference root
 
 
 

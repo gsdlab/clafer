@@ -110,8 +110,8 @@ expClafer claf = do
 
 expReference :: MonadState GEnv m => IReference -> m IReference
 expReference x = case x of
-  IReference _ [] -> return x
-  IReference s pexps -> IReference s `liftM` mapM expPExp pexps 
+  IReference _ _ [] -> return x
+  IReference par' s pexps -> IReference par' s `liftM` mapM expPExp pexps 
 
 expElement :: MonadState GEnv m => IElement -> m IElement
 expElement x = case x of

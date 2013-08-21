@@ -86,7 +86,7 @@ instance Ord IClafer where
 
 instance Show IClafer where
   show (IClafer p cp ia g i u s r c gc es) = 
-    "IClafer {claferParentUid = " ++ 
+    "IClafer {claferParentIdent = " ++ 
       (if p == Nothing then "Nothing" else ident $ fromJust p) ++ " cinPos = " 
         ++ show cp ++ " isAbstract = " ++ show ia ++ " gcard = " ++ show g ++
          " ident = " ++ show i ++ " uid " ++ show u ++ " super = " ++ show s 
@@ -135,11 +135,11 @@ instance Ord IElement where
 instance Show IElement where
   show (IEClafer c) = "IEClafer " ++ show c 
   show (IEConstraint cp b p) = 
-    "IEConstraint {constraintParentUid = " ++ 
+    "IEConstraint {constraintParentIdent = " ++ 
       (if cp == Nothing then "Nothing" else ident $ fromJust cp) 
         ++ " isHard = " ++ show b ++ " cpexp = " ++ show p
   show (IEGoal gp b p) = 
-     "IEConstraint {goalParnetUid = " ++ 
+     "IEConstraint {goalParnetIdent = " ++ 
       (if gp == Nothing then "Nothing" else ident $ fromJust gp) 
         ++ " isMaximize = " ++ show b ++ " cpexp = " ++ show p
 
@@ -179,7 +179,7 @@ instance Ord ISuper where
 
 instance Show ISuper where
   show (ISuper par sk ss) = 
-    "ISuper {iSuperParentUid = " ++ ident par ++ ", superKind = " 
+    "ISuper {iSuperParentIdent = " ++ ident par ++ ", superKind = " 
       ++ show sk ++ ", supers = " ++ show ss
 
 
@@ -191,14 +191,28 @@ getReDefClafer _ = error "Tried to get redefintion clafer from a clafer that is 
 -- ->>  -- overlapping non-unique (bag) [isSet=False]
 data IReference = 
   IReference {
+    iReferenceParent :: IClafer,
     isSet :: Bool,  -- True - set reference clafer, False - bag reference clafer
     refs :: [PExp]
   }
- deriving (Eq,Ord,Show)
+
+data IReferenceInstance = IReferenceInstance Bool [PExp] deriving (Eq, Ord)
+
+instance Eq IReference where
+  (==) (IReference _ s r) (IReference _ s' r') = 
+    (IReferenceInstance s r) == (IReferenceInstance s' r')
+
+instance Ord IReference where
+  compare (IReference _ s r) (IReference _ s' r') = 
+    (IReferenceInstance s r) `compare` (IReferenceInstance s' r')
+
+instance Show IReference where
+  show (IReference par s r) = 
+    "IReference {iReferenceParentIdent = " ++ ident par ++ " superKind = "
+      ++ show s ++ " refs = " ++ show r
 
 isOverlapping :: IClafer -> Bool
 isOverlapping = ([]/=) . refs . reference
-
 
 
 -- Group cardinality is specified as an interval. It may also be given by a keyword.
@@ -236,7 +250,7 @@ instance Ord PExp where
 
 instance Show PExp where
   show (PExp par t p pos e) = 
-    "PExp {pExpParentPid = " ++ 
+    "PExp {pExpParentIdent = " ++ 
       (if par == Nothing then "Nothing" else getPExpName $ fromJust par) ++ 
         ", iType = " ++ show t ++ ", pid = " ++ show p ++ ", inPos = " ++ 
             show pos ++ ", exp = "  ++ show e
@@ -368,8 +382,8 @@ iMap f (IRPExp (PExp par iType' pID p iExp)) =
   f $ IRPExp $ PExp par (if iType'==Nothing then iType' else Just $ unWrapIType $ iMap f $ IRIType $ fromJust iType') pID p $ unWrapIExp $ iMap f $ IRIExp iExp
 iMap f (IRISuper (ISuper par r pexps)) =
   f $ IRISuper $ ISuper par r $ map (unWrapPExp . iMap f . IRPExp) pexps
-iMap f (IRIReference (IReference s pexps)) =
-  f $ IRIReference $ IReference s $ map (unWrapPExp . iMap f . IRPExp) pexps
+iMap f (IRIReference (IReference par s pexps)) =
+  f $ IRIReference $ IReference par s $ map (unWrapPExp . iMap f . IRPExp) pexps
 iMap f (IRIDecl (IDecl i d body')) = 
   f $ IRIDecl $ IDecl i d $ unWrapPExp $ iMap f $ IRPExp body'
 iMap f i = f i
@@ -392,7 +406,7 @@ iFoldMap f i@(IRPExp (PExp _ iType' _ _ iExp)) =
   f i `mappend` (if iType'==Nothing then mempty else iFoldMap f $ IRIType $ fromJust iType') `mappend` (iFoldMap f $ IRIExp iExp)
 iFoldMap f i@(IRISuper (ISuper _ _ pexps)) =
   f i `mappend` foldMap (iFoldMap f . IRPExp) pexps
-iFoldMap f i@(IRIReference (IReference _ pexps)) =
+iFoldMap f i@(IRIReference (IReference _ _ pexps)) =
   f i `mappend` foldMap (iFoldMap f . IRPExp) pexps
 iFoldMap f i@(IRIDecl (IDecl _ _ body')) = 
   f i `mappend` (iFoldMap f $ IRPExp body')

@@ -109,7 +109,7 @@ genXmlSuper e (ISuper _ sk pexps) =
       [concatMap (genXmlPExp "Super" e) pexps]
 
 genXmlRef :: IElement -> IReference -> String
-genXmlRef e (IReference s pexps) =
+genXmlRef e (IReference _ s pexps) =
   tag "Refs" $ concat $
     (genXmlBoolean "IsSet" s) :
       [concatMap (genXmlPExp "Ref" e) pexps]

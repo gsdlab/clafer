@@ -77,9 +77,10 @@ desugarClafer par (PosClafer s abstract gcrd id' super' crd init' es)  =
   (IEClafer ic) : (desugarInit id' init')
   where
     ic = IClafer par s (desugarAbstract abstract) (desugarGCard gcrd) 
-          (transIdent id') "" is (desugarRefrence super') (desugarCard crd) 
+          (transIdent id') "" is ir (desugarCard crd) 
             (0, -1) ies
     is = desugarSuper ic super'
+    ir = desugarRefrence ic super'
     ies = flip desugarElements es $ Just ic
 
 
@@ -103,13 +104,13 @@ desugarSuperHowS (PosSuperColon _) = True
 desugarSuperHowS _ = False
 
 
-desugarRefrence :: Super -> IReference
-desugarRefrence (SuperSome superhow setexp) = desugarRefrence $ PosSuperSome noSpan superhow setexp
-desugarRefrence (PosSuperSome _ superhow setexp) = case superhow of
-  SuperColon -> emptyIReference 
-  (PosSuperColon _) -> emptyIReference
-  _ -> IReference (desugarSuperHowR superhow) [desugarSetExp setexp]
-desugarRefrence _ = emptyIReference
+desugarRefrence :: IClafer -> Super -> IReference
+desugarRefrence ic' (SuperSome superhow setexp) = desugarRefrence ic' $ PosSuperSome noSpan superhow setexp
+desugarRefrence ic' (PosSuperSome _ superhow setexp) = case superhow of
+  SuperColon -> emptyIReference ic' 
+  (PosSuperColon _) -> emptyIReference ic' 
+  _ -> IReference ic' (desugarSuperHowR superhow) [desugarSetExp setexp]
+desugarRefrence ic' _ = emptyIReference ic' 
 
 desugarSuperHowR :: SuperHow -> Bool
 desugarSuperHowR SuperArrow = desugarSuperHowR $ PosSuperArrow noSpan
@@ -148,9 +149,9 @@ sugarModId :: String -> ModId
 sugarModId modid = ModIdIdent $ mkIdent modid
 
 sugarSuper :: ISuper -> IReference -> Super
-sugarSuper (ISuper _ _ []) (IReference _ []) = SuperEmpty
-sugarSuper (ISuper _ _ [pexp]) (IReference _ []) = SuperSome SuperColon (sugarSetExp pexp)
-sugarSuper (ISuper _ _ _) (IReference i [pexp]) = SuperSome (if i then SuperArrow else SuperMArrow) (sugarSetExp pexp)
+sugarSuper (ISuper _ _ []) (IReference _ _ []) = SuperEmpty
+sugarSuper (ISuper _ _ [pexp]) (IReference _ _ []) = SuperSome SuperColon (sugarSetExp pexp)
+sugarSuper (ISuper _ _ _) (IReference _ i [pexp]) = SuperSome (if i then SuperArrow else SuperMArrow) (sugarSetExp pexp)
 sugarSuper _ _ = error "Function sugarSuper from Desugarer expects an ISuper and IReference with a lists of length one or less, but it was given one with a list larger than one" -- Should never happen
 
 
@@ -597,6 +598,6 @@ sugarQuant IOne = QuantOne
 sugarQuant ISome = QuantSome
 sugarQuant IAll = error "sugarQaunt was called on IAll, this is not allowed!" --Should never happen
 
-emptyIReference :: IReference
-emptyIReference = IReference False []
+emptyIReference :: IClafer -> IReference
+emptyIReference par' = IReference par' False []
 
