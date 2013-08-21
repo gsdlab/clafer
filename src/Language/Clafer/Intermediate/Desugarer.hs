@@ -94,7 +94,7 @@ desugarSuper ic' (SuperSome superhow setexp) = desugarSuper ic' $ PosSuperSome n
 desugarSuper ic' (PosSuperEmpty s) =
       ISuper ic' False TopLevel [PExp Nothing (Just $ TClafer []) "" s $ mkLClaferId baseClafer True]
 desugarSuper ic' (PosSuperSome _ superhow setexp) =
-      ISuper ic' (desugarSuperHow superhow) TopLevel [desugarSetExp setexp]
+      ISuper ic' (desugarSuperHow superhow) TopLevel [desugarSetExp Nothing setexp]
 
 
 desugarSuperHow :: SuperHow -> Bool
@@ -391,7 +391,7 @@ desugarExp' par x = case x of
   PosEInt _ n  -> IInt $ mkInteger n
   PosEDouble _ (PosDouble n) -> IDouble $ read $ snd n
   PosEStr _ (PosString str)  -> IStr $ snd str
-  PosESetExp _ sexp -> desugarSetExp' sexp
+  PosESetExp _ sexp -> desugarSetExp' par sexp
   where
   dop = desugarOp (desugarExp par)
   dpe = desugarPath.(desugarExp par)
@@ -407,31 +407,34 @@ desugarOp f op' exps' =
           then desugarPath else id
 
 
-desugarSetExp :: SetExp -> PExp
-desugarSetExp x = pExpDefPid (range x) $ desugarSetExp' x
+desugarSetExp :: Maybe PExp -> SetExp -> PExp
+desugarSetExp par' x = pexp
+  where
+    pexp = PExp par' Nothing "" (range x) iexp
+    iexp = flip desugarSetExp' x $ Just pexp
 
 
-desugarSetExp' :: SetExp -> IExp
-desugarSetExp' x = case x of
-  Union exp0 exp'        -> desugarSetExp' $ PosUnion noSpan exp0 exp'
-  UnionCom exp0 exp'     -> desugarSetExp' $ PosUnionCom noSpan exp0 exp'
-  Difference exp0 exp'   -> desugarSetExp' $ PosDifference noSpan exp0 exp'
-  Intersection exp0 exp' -> desugarSetExp' $ PosIntersection noSpan exp0 exp'
-  Domain exp0 exp'       -> desugarSetExp' $ PosDomain noSpan exp0 exp'
-  Range exp0 exp'        -> desugarSetExp' $ PosRange noSpan exp0 exp'
-  Join exp0 exp'         -> desugarSetExp' $ PosJoin noSpan exp0 exp'
-  ClaferId name  -> desugarSetExp' $ PosClaferId noSpan name
-  PosUnion _ exp0 exp'        -> dop iUnion        [exp0, exp']
-  PosUnionCom _ exp0 exp'     -> dop iUnion        [exp0, exp']
-  PosDifference _ exp0 exp'   -> dop iDifference   [exp0, exp']
-  PosIntersection _ exp0 exp' -> dop iIntersection [exp0, exp']
-  PosDomain _ exp0 exp'       -> dop iDomain       [exp0, exp']
-  PosRange _ exp0 exp'        -> dop iRange        [exp0, exp']
-  PosJoin _ exp0 exp'         -> dop iJoin         [exp0, exp']
+desugarSetExp' :: Maybe PExp -> SetExp -> IExp
+desugarSetExp' par' x = case x of
+  Union exp0 exp'        -> desugarSetExp' par' $ PosUnion noSpan exp0 exp'
+  UnionCom exp0 exp'     -> desugarSetExp' par' $ PosUnionCom noSpan exp0 exp'
+  Difference exp0 exp'   -> desugarSetExp' par' $ PosDifference noSpan exp0 exp'
+  Intersection exp0 exp' -> desugarSetExp' par' $ PosIntersection noSpan exp0 exp'
+  Domain exp0 exp'       -> desugarSetExp' par' $ PosDomain noSpan exp0 exp'
+  Range exp0 exp'        -> desugarSetExp' par' $ PosRange noSpan exp0 exp'
+  Join exp0 exp'         -> desugarSetExp' par' $ PosJoin noSpan exp0 exp'
+  ClaferId name  -> desugarSetExp' par' $ PosClaferId noSpan name
+  PosUnion _ exp0 exp'        -> dop par' iUnion        [exp0, exp']
+  PosUnionCom _ exp0 exp'     -> dop par' iUnion        [exp0, exp']
+  PosDifference _ exp0 exp'   -> dop par' iDifference   [exp0, exp']
+  PosIntersection _ exp0 exp' -> dop par' iIntersection [exp0, exp']
+  PosDomain _ exp0 exp'       -> dop par' iDomain       [exp0, exp']
+  PosRange _ exp0 exp'        -> dop par' iRange        [exp0, exp']
+  PosJoin _ exp0 exp'         -> dop par' iJoin         [exp0, exp']
   PosClaferId _ name  -> desugarName name
 
   where
-  dop = desugarOp desugarSetExp
+  dop pare' = desugarOp (desugarSetExp pare')
 
 
 sugarExp :: PExp -> Exp
@@ -554,7 +557,7 @@ reduceNav x = x
 desugarDecl :: Bool -> Decl -> IDecl
 desugarDecl isDisj' (Decl locids exp') = desugarDecl isDisj' $ PosDecl noSpan locids exp'
 desugarDecl isDisj' (PosDecl _ locids exp') =
-    IDecl isDisj' (map desugarLocId locids) (desugarSetExp exp')
+    IDecl isDisj' (map desugarLocId locids) (desugarSetExp Nothing exp')
 
 
 sugarDecl :: IDecl -> Decl
