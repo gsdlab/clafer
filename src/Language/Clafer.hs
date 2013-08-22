@@ -248,10 +248,9 @@ compile =
     let clafersWithKeyWords = foldMapIR isKeyWord desugaredModule
     when (""/=clafersWithKeyWords) $ throwErr (ClaferErr $ ("The model contains clafers with keywords as names.\nThe following places contain keyWords as names:\n"++) $ clafersWithKeyWords :: CErr Span)
     
-    ir' <- analyze (args env) desugaredModule
-    let (imodule, g, b) = ir'
+    ir <- analyze (args env) desugaredModule
+    let (imodule, _, _) = ir
     let imodTrace = traceIrModule imodule
-    let ir = (imodule, g, b)
 
     let failSpanList = foldMapIR gt1 imodule
     when ((afm $ args env) && failSpanList/="") $ throwErr (ClaferErr $ ("The model is not an attributed feature model .\nThe following places contain cardinality larger than 1:\n"++) $ failSpanList :: ClaferSErr)
