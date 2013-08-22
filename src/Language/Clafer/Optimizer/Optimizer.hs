@@ -53,7 +53,7 @@ optimizeClafer interval' c =
     elements = elements'}
       super' = (super c){iSuperParent = clafer'}
       ref' = (reference c){iReferenceParent = clafer'}
-      elements' = flip addParents clafer' $ map (optimizeElement glCard') $ elements c
+      elements' = addParents clafer' $ map (optimizeElement glCard') $ elements c
   in clafer'
   where
   glCard' = multInt (fromJust $ card c) interval'
@@ -117,7 +117,7 @@ expClafer claf = do
     let clafer' = claf {super = super', reference = ref'', elements = elements''}
         super' = (super claf){iSuperParent = clafer'}
         ref'' = ref'{iReferenceParent = clafer'}
-        elements'' = addParents elements' clafer'
+        elements'' = addParents clafer' elements' 
     in clafer'
 
 expReference :: MonadState GEnv m => IReference -> m IReference
@@ -136,7 +136,7 @@ expPExp (PExp par' t pid' pos' exp') = do
   pexp <- PExp par' t pid' pos' `liftM` expIExp exp'
   return $
     let pexp' = pexp{exp = iexp}
-        iexp = flip addParentsPExp pexp' $ exp pexp
+        iexp = addParentsPExp pexp' $ exp pexp
     in pexp'
 
 expIExp :: MonadState GEnv m => IExp -> m IExp

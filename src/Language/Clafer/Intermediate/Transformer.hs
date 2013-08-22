@@ -37,20 +37,20 @@ transElement x = case x of
   IEGoal par' isMaximize' pexp  -> IEGoal par' isMaximize' $ transPExp False pexp  
 
 transClafer :: IClafer -> IClafer
-transClafer clafer = 
-  let clafer' = clafer{super = super', reference = ref', elements = elements'}
-      super' = (super clafer){iSuperParent = clafer'}
-      ref' = (reference clafer){iReferenceParent = clafer'}
-      elements' = flip addParents clafer' $ map transElement $ elements clafer 
-  in clafer'
+transClafer clafer = clafer'
+  where
+    clafer' = clafer{super = super', reference = ref', elements = elements'}
+    super' = (super clafer){iSuperParent = clafer'}
+    ref' = (reference clafer){iReferenceParent = clafer'}
+    elements' = addParents clafer' $ map transElement $ elements clafer 
+
 
 transPExp :: Bool -> PExp -> PExp
-transPExp some (PExp par' t pid' pos' x) = 
-  let pexp = trans $ PExp par' t pid' pos' iexp 
-      iexp = flip addParentsPExp pexp $  transIExp (fromJust t) x
-  in pexp
+transPExp some (PExp par' t pid' pos' x) = pexp
   where
-  trans = if some then desugarPath else id
+    pexp = trans $ PExp par' t pid' pos' iexp 
+    iexp = addParentsPExp pexp $  transIExp (fromJust t) x
+    trans = if some then desugarPath else id
 
 transIExp :: IType -> IExp -> IExp
 transIExp t x = case x of

@@ -129,7 +129,7 @@ nameClafer skipResolver claf = do
   elements' <- mapM (nameElement skipResolver) $ elements claf
   return $ 
     let claf'' = claf'{super = super', reference = ref', elements = elements''}
-        elements'' = addParents elements' claf''
+        elements'' = addParents claf'' elements' 
         super' = (super claf'){iSuperParent = claf''}
         ref' = (reference claf'){iReferenceParent = claf''}
     in claf''
@@ -140,7 +140,7 @@ namePExp pexp@(PExp _ _ _ _ exp') = do
   exp'' <- nameIExp exp'
   return $ 
     let pexp' = pexp {pid = pid', Language.Clafer.Intermediate.Intclafer.exp = iexp}
-        iexp = addParentsPExp exp'' pexp'
+        iexp = addParentsPExp pexp' exp'' 
     in pexp'
 
 nameIExp :: MonadState GEnv m => IExp -> m IExp

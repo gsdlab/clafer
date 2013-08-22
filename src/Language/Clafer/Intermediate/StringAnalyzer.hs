@@ -49,7 +49,7 @@ astrClafer (IClafer par' s isAbs gcrd ident' uid' super' ref' crd gCard es) = do
       let clafer' = clafer{super = super'', reference = ref'', elements = elements'}
           super'' = super'{iSuperParent = clafer'}
           ref'' = ref'{iReferenceParent = clafer'}
-          elements' = flip addParents clafer' $ elements clafer
+          elements' = addParents clafer' $ elements clafer
       in clafer'
 
 -- astrs single subclafer
@@ -64,20 +64,20 @@ astrPExp (PExp par' (Just TString) pid' pos' exp') = do
     pexp <- PExp par' (Just TInteger) pid' pos' `liftM` astrIExp exp'
     return $
       let pexp' = pexp{exp = iexp}
-          iexp = flip addParentsPExp pexp' $ exp pexp
+          iexp = addParentsPExp pexp' $ exp pexp
       in pexp'
 
 astrPExp (PExp par' t pid' pos' (IFunExp op' exps')) = do
   pexp <- PExp par' t pid' pos' `liftM` (IFunExp op' `liftM` mapM astrPExp exps')
   return $ 
     let pexp' = pexp{exp = iexp}
-        iexp = flip addParentsPExp pexp' $ exp pexp
+        iexp = addParentsPExp pexp' $ exp pexp
     in pexp'
 astrPExp (PExp par' t pid' pos' (IDeclPExp quant' oDecls' bpexp')) = do 
   pexp <- PExp par' t pid' pos' `liftM` (IDeclPExp quant' oDecls' `liftM` (astrPExp bpexp'))
   return $
     let pexp' = pexp{exp = iexp}
-        iexp = flip addParentsPExp pexp' $ exp pexp
+        iexp = addParentsPExp pexp' $ exp pexp
     in pexp'
 astrPExp x = return x
 

@@ -62,7 +62,7 @@ resolveNClafer declarations clafer =
       let clafer' = clafer {super = super'', reference = ref', elements = elements''}
           super'' = super'{iSuperParent = clafer'}
           ref' = (reference clafer){iReferenceParent = clafer'}
-          elements'' = addParents elements' clafer'
+          elements'' = addParents clafer' elements' 
       in clafer'
 
 
@@ -140,7 +140,7 @@ resolveOClafer env clafer =
       let clafer' = clafer {super = super'', reference = ref'', elements = elements''}
           super'' = super'{iSuperParent = clafer'}
           ref'' = ref'{iReferenceParent = clafer'}
-          elements'' = addParents elements' clafer'
+          elements'' = addParents clafer' elements' 
       in clafer'
 
 
@@ -170,16 +170,15 @@ analyzeModule (imodule, genv') =
 
 
 analyzeClafer :: SEnv -> IClafer -> IClafer
-analyzeClafer env clafer =
-  let clafer'' = clafer'{super = super', reference = ref', elements = elements'}
-      elements' = 
-        flip addParents clafer'' $ 
-          map (analyzeElement env {context = Just clafer'}) $ 
-            elements clafer'
-      super' = (super clafer'){iSuperParent = clafer''}
-      ref' = (reference clafer'){iReferenceParent = clafer''}
-  in clafer''
+analyzeClafer env clafer = clafer''
   where
+  clafer'' = clafer'{super = super', reference = ref', elements = elements'}
+  elements' = 
+    addParents clafer'' $ 
+      map (analyzeElement env {context = Just clafer'}) $ 
+        elements clafer'
+  super' = (super clafer'){iSuperParent = clafer''}
+  ref' = (reference clafer'){iReferenceParent = clafer''}
   clafer' = clafer {gcard = analyzeGCard env clafer,
                     card  = analyzeCard  env clafer}
 
@@ -274,7 +273,7 @@ resolveEClafer predecessors unrollables absAncestor declarations clafer = do
     let clafer'' = clafer' {super = super'', reference = ref', elements = elements''}
         super'' = super'{iSuperParent = clafer''} 
         ref' = (reference clafer){iReferenceParent = clafer''}
-        elements'' = flip addParents clafer'' $ elements' ++ sElements
+        elements'' = addParents clafer'' $ elements' ++ sElements
     in clafer''
 
 renameClafer :: MonadState GEnv m => Bool -> IClafer -> m IClafer

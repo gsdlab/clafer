@@ -38,12 +38,13 @@ install:
 	if test "$(glpk)" ; then cp -f $(glpk)/w32/glpk_4_52.dll $(to); fi
 	cabal install --bindir=$(to) $(GPLK_LIBS_INCLUDES) $(MAC_USR_LIB) --ghc-option="-O"
 
-# Removes current build and makes a clean new one (Don't use if starting from scratch!)
+# Removes current build and makes a clean new one
 cleanEnv:
 	make clean
-	ghc-pkg unregister clafer --force
-	rm `which clafer`
+	ghc-pkg unregister clafer --force || true  	
+	rm `which clafer` || true 					
 	make 
+	echo "Don't forget to call 'make install to=<location of your choice>'"
 
 # build Schema.hs from ClaferIG.xsd, call after .xsd changed
 Schema.hs:

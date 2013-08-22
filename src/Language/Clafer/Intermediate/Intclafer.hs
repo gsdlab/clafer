@@ -87,7 +87,7 @@ instance Ord IClafer where
 instance Show IClafer where
   show (IClafer p cp ia g i u s r c gc es) = 
     "IClafer {claferParentIdent = " ++ 
-      (if p == Nothing then "Nothing" else if (uid p) /= "" then uid p else ident $ fromJust p) 
+      (if p == Nothing then "Nothing" else if (uid $ fromJust p) /= "" then (uid $ fromJust p) else ident $ fromJust p) 
         ++ " cinPos = " ++ show cp ++ " isAbstract = " ++ show ia ++ 
           " gcard = " ++ show g ++ " ident = " ++ show i ++ " uid " ++ 
             show u ++ " super = " ++ show s ++ " reference = " ++ show r 
@@ -254,7 +254,7 @@ instance Ord PExp where
 instance Show PExp where
   show (PExp par t p pos e) = 
     "PExp {pExpParentIdent = " ++ 
-      (if par == Nothing then "Nothing" else if (pid par) /= "" then pid par else getPExpName $ fromJust par)
+      (if par == Nothing then "Nothing" else if (pid $ fromJust par) /= "" then (pid $ fromJust par) else getPExpName $ fromJust par)
         ++ ", iType = " ++ show t ++ ", pid = " ++ show p ++ 
           ", inPos = " ++ show pos ++ ", exp = "  ++ show e
 
