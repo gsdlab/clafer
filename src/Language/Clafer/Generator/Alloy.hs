@@ -421,6 +421,8 @@ genPExp'    claferargs    resPath     (PExp iType' pid' pos exp') = case exp' of
 -- Removed transfromation from x = -2 to x = (0-2) as this creates problem with  partial instances.
 -- See http://gsd.uwaterloo.ca:8888/question/461/new-translation-of-negative-number-x-into-0-x-is.
 transformExp :: IExp -> IExp
+transformExp (IFunExp op' (e1:_))
+  | op' == iMin = IFunExp iMul [PExp (iType e1) "" noSpan $ IInt (-1), e1]
 transformExp    x@(IFunExp op' exps'@(e1:e2:_))
   | op' == iXor = IFunExp iNot [PExp (Just TBoolean) "" noSpan (IFunExp iIff exps')]
   | op' == iJoin && isClaferName' e1 && isClaferName' e2 &&
