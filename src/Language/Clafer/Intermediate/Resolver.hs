@@ -39,6 +39,7 @@ import Language.Clafer.Intermediate.Intclafer
 import Language.Clafer.Intermediate.ResolverName
 import Language.Clafer.Intermediate.ResolverType
 import Language.Clafer.Intermediate.ResolverInheritance
+import Language.Clafer.Front.Absclafer (noSpan)
 
 resolveModule :: ClaferArgs -> IModule -> Resolve (IModule, GEnv)
 resolveModule args' declarations =
@@ -59,7 +60,7 @@ resolveModule args' declarations =
 
   reDefAdd :: [IClafer] -> Ir -> Ir -- Checks if clafer is a redefinition and changes the superKind accordingly
   reDefAdd clafs i@(IRClafer claf) = 
-    let ranks = flip foldMap clafs $ \x -> if (istop $ cinPos claf) then mempty else getReDefRank x x claf 
+    let ranks = flip foldMap clafs $ \x -> if (istop $ cinPos claf) || (cinPos claf == noSpan) then mempty else getReDefRank x x claf 
     in if (ranks==[]) then i else 
         let c = fst $ minimumBy (compare `on` snd) ranks
             claf'= claf{super = super', reference = ref', elements = elements'}
