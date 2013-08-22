@@ -39,17 +39,16 @@ transElement x = case x of
 transClafer :: IClafer -> IClafer
 transClafer clafer = clafer'
   where
-    clafer' = clafer{super = super', reference = ref', elements = elements'}
-    super' = (super clafer){iSuperParent = clafer'}
-    ref' = (reference clafer){iReferenceParent = clafer'}
-    elements' = addParents clafer' $ map transElement $ elements clafer 
+    clafer' = clafer{super = (super clafer){iSuperParent = clafer'}, 
+      reference = (reference clafer){iReferenceParent = clafer'}, 
+        elements = addParents clafer' $ map transElement $ elements clafer} 
 
 
 transPExp :: Bool -> PExp -> PExp
 transPExp some (PExp par' t pid' pos' x) = pexp
   where
-    pexp = trans $ PExp par' t pid' pos' iexp 
-    iexp = addParentsPExp pexp $  transIExp (fromJust t) x
+    pexp = trans $ PExp par' t pid' pos' $ 
+      addParentsPExp pexp $  transIExp (fromJust t) x
     trans = if some then desugarPath else id
 
 transIExp :: IType -> IExp -> IExp

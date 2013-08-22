@@ -30,6 +30,7 @@ import Data.Foldable (foldMap)
 import Control.Monad
 import Control.Monad.State
 import qualified Data.Map as Map
+import Prelude hiding (exp)
 
 import Language.ClaferT
 import Language.Clafer.Common
@@ -128,10 +129,9 @@ nameClafer skipResolver claf = do
   claf' <- if skipResolver then return claf{uid = ident claf} else (renameClafer (not skipResolver)) claf
   elements' <- mapM (nameElement skipResolver) $ elements claf
   return $ 
-    let claf'' = claf'{super = super', reference = ref', elements = elements''}
-        elements'' = addParents claf'' elements' 
-        super' = (super claf'){iSuperParent = claf''}
-        ref' = (reference claf'){iReferenceParent = claf''}
+    let claf'' = claf'{super = (super claf'){iSuperParent = claf''}, 
+      reference = (reference claf'){iReferenceParent = claf''}, 
+        elements = addParents claf'' elements'}
     in claf''
 
 namePExp :: MonadState GEnv m => PExp -> m PExp
@@ -139,8 +139,7 @@ namePExp pexp@(PExp _ _ _ _ exp') = do
   pid' <- genId "exp"
   exp'' <- nameIExp exp'
   return $ 
-    let pexp' = pexp {pid = pid', Language.Clafer.Intermediate.Intclafer.exp = iexp}
-        iexp = addParentsPExp pexp' exp'' 
+    let pexp' = pexp {pid = pid', exp = addParentsPExp pexp' exp''} 
     in pexp'
 
 nameIExp :: MonadState GEnv m => IExp -> m IExp

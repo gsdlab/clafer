@@ -59,10 +59,9 @@ resolveNClafer declarations clafer =
     super' <- resolveNSuper declarations clafer
     elements' <- mapM (resolveNElement declarations) $ elements clafer
     return $ 
-      let clafer' = clafer {super = super'', reference = ref', elements = elements''}
-          super'' = super'{iSuperParent = clafer'}
-          ref' = (reference clafer){iReferenceParent = clafer'}
-          elements'' = addParents clafer' elements' 
+      let clafer' = clafer {super = super'{iSuperParent = clafer'}, 
+        reference = (reference clafer){iReferenceParent = clafer'}, 
+          elements = addParents clafer' elements'}
       in clafer'
 
 
@@ -137,10 +136,9 @@ resolveOClafer env clafer =
     (super', ref') <- resolveOSuper env {context = Just clafer} (super clafer) $ reference clafer
     elements' <- mapM (resolveOElement env {context = Just clafer}) $ elements clafer
     return $ 
-      let clafer' = clafer {super = super'', reference = ref'', elements = elements''}
-          super'' = super'{iSuperParent = clafer'}
-          ref'' = ref'{iReferenceParent = clafer'}
-          elements'' = addParents clafer' elements' 
+      let clafer' = clafer {super = super'{iSuperParent = clafer'}, 
+        reference = ref'{iReferenceParent = clafer'}, 
+          elements = addParents clafer' elements' }
       in clafer'
 
 
@@ -172,13 +170,11 @@ analyzeModule (imodule, genv') =
 analyzeClafer :: SEnv -> IClafer -> IClafer
 analyzeClafer env clafer = clafer''
   where
-  clafer'' = clafer'{super = super', reference = ref', elements = elements'}
-  elements' = 
-    addParents clafer'' $ 
-      map (analyzeElement env {context = Just clafer'}) $ 
-        elements clafer'
-  super' = (super clafer'){iSuperParent = clafer''}
-  ref' = (reference clafer'){iReferenceParent = clafer''}
+  clafer'' = clafer'{super = (super clafer'){iSuperParent = clafer''}, 
+    reference = (reference clafer'){iReferenceParent = clafer''}, 
+      elements = addParents clafer'' $ 
+        map (analyzeElement env {context = Just clafer'}) $ 
+          elements clafer'}
   clafer' = clafer {gcard = analyzeGCard env clafer,
                     card  = analyzeCard  env clafer}
 
@@ -270,10 +266,9 @@ resolveEClafer predecessors unrollables absAncestor declarations clafer = do
       mapM (resolveEElement predecessors' unrollables absAncestor declarations)
             $ elements clafer
   return $ 
-    let clafer'' = clafer' {super = super'', reference = ref', elements = elements''}
-        super'' = super'{iSuperParent = clafer''} 
-        ref' = (reference clafer){iReferenceParent = clafer''}
-        elements'' = addParents clafer'' $ elements' ++ sElements
+    let clafer'' = clafer' {super = super'{iSuperParent = clafer''} , 
+      reference = (reference clafer){iReferenceParent = clafer''}, 
+        elements = addParents clafer'' $ elements' ++ sElements}
     in clafer''
 
 renameClafer :: MonadState GEnv m => Bool -> IClafer -> m IClafer

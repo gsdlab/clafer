@@ -49,11 +49,8 @@ optimizeElement interval' x = case x of
 
 optimizeClafer :: Interval -> IClafer -> IClafer
 optimizeClafer interval' c = 
-  let clafer' = c {glCard = glCard', super = super', reference = ref',
-    elements = elements'}
-      super' = (super c){iSuperParent = clafer'}
-      ref' = (reference c){iReferenceParent = clafer'}
-      elements' = addParents clafer' $ map (optimizeElement glCard') $ elements c
+  let clafer' = c {glCard = glCard', super = (super c){iSuperParent = clafer'}, reference = (reference c){iReferenceParent = clafer'},
+    elements = addParents clafer' $ map (optimizeElement glCard') $ elements c}
   in clafer'
   where
   glCard' = multInt (fromJust $ card c) interval'
@@ -114,10 +111,9 @@ expClafer claf = do
   ref' <- expReference $ reference claf
   elements' <- mapM expElement $ elements claf
   return $ 
-    let clafer' = claf {super = super', reference = ref'', elements = elements''}
-        super' = (super claf){iSuperParent = clafer'}
-        ref'' = ref'{iReferenceParent = clafer'}
-        elements'' = addParents clafer' elements' 
+    let clafer' = claf {super = (super claf){iSuperParent = clafer'}, 
+      reference = ref'{iReferenceParent = clafer'}, 
+        elements = addParents clafer' elements'}
     in clafer'
 
 expReference :: MonadState GEnv m => IReference -> m IReference
@@ -135,8 +131,7 @@ expPExp :: MonadState GEnv m => PExp -> m PExp
 expPExp (PExp par' t pid' pos' exp') = do
   pexp <- PExp par' t pid' pos' `liftM` expIExp exp'
   return $
-    let pexp' = pexp{exp = iexp}
-        iexp = addParentsPExp pexp' $ exp pexp
+    let pexp' = pexp{exp = addParentsPExp pexp' $ exp pexp}
     in pexp'
 
 expIExp :: MonadState GEnv m => IExp -> m IExp
@@ -280,10 +275,12 @@ markTopModule decls' = map (markTopElement (
 
 
 markTopClafer :: [String] -> IClafer -> IClafer
-markTopClafer clafers c =
-  let (super',ref') = markTopSuper clafers (reference c) $ super c
-  in c{super = super', reference = ref', 
-        elements = map (markTopElement clafers) $ elements c}
+markTopClafer clafers c = c'
+  where
+    (super',ref') = markTopSuper clafers (reference c) $ super c
+    c' = c{super = super'{iSuperParent = c'}, 
+      reference = ref'{iReferenceParent = c'}, 
+        elements = addParents c' $ map (markTopElement clafers) $ elements c}
 
 
 markTopSuper :: [String] -> IReference -> ISuper -> (ISuper, IReference)
@@ -300,9 +297,9 @@ markTopElement clafers x = case x of
   IEGoal par' isMaximize' pexp -> IEGoal par' isMaximize' $ markTopPExp clafers pexp
 
 markTopPExp :: [String] -> PExp -> PExp
-markTopPExp clafers pexp =
-  pexp {Language.Clafer.Intermediate.Intclafer.exp = markTopIExp clafers $
-        Language.Clafer.Intermediate.Intclafer.exp pexp}
+markTopPExp clafers pexp = pexp'
+  where pexp' = pexp {exp = addParentsPExp pexp'
+   $ markTopIExp clafers $ exp pexp}
 
 
 markTopIExp :: [String] -> IExp -> IExp

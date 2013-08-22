@@ -31,6 +31,7 @@ import Control.Monad.State
 import Data.Maybe
 import Data.Function
 import Data.List
+import Prelude hiding (exp)
 
 import Language.ClaferT
 import Language.Clafer.Common
@@ -121,10 +122,9 @@ resolveClafer env clafer =
                                               ancClafers = ancClafers'}) $
                           elements clafer
     return $ 
-      let clafer' = clafer {super = super', reference = ref', elements = elements''}
-          super' = (super clafer){iSuperParent = clafer'}
-          ref' = (reference clafer){iReferenceParent = clafer'}
-          elements'' = addParents clafer' elements' 
+      let clafer' = clafer {super = (super clafer){iSuperParent = clafer'}, 
+        reference = (reference clafer){iReferenceParent = clafer'}, 
+          elements = addParents clafer' elements'} 
       in clafer'
   where
   env' = env {context = Just clafer, resPath = clafer : resPath env}
@@ -147,8 +147,7 @@ resolvePExp env pexp =
   do
     exp' <- resolveIExp (inPos pexp) env $ Language.Clafer.Intermediate.Intclafer.exp pexp
     return $ 
-      let pexp' = pexp {Language.Clafer.Intermediate.Intclafer.exp = iexp}
-          iexp = addParentsPExp pexp' exp' 
+      let pexp' = pexp {exp = addParentsPExp pexp' exp'} 
       in pexp'
 
 resolveIExp :: Span -> SEnv -> IExp -> Resolve IExp
