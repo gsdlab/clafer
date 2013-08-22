@@ -279,7 +279,7 @@ genRedefConst claf and' =
   in case (superKind $ super claf) of
     Redefinition _ -> if (ref' == []) then CString ""
       else CString $ "ref in @" ++ (sident $ exp $ head ref') ++ and'
-      _ -> CString ""
+    _ -> CString ""
 
 -- optimization: if only boolean features then the parent is unique
 genParentConst :: [String] -> IClafer -> Concat
