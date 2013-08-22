@@ -1,5 +1,5 @@
 {-
- Copyright (C) 2012 Kacper Bak, Jimmy Liang <http://gsd.uwaterloo.ca>
+ Copyright (C) 2012 Kacper Bak, Jimmy Liang, Luke Brown <http://gsd.uwaterloo.ca>
 
  Permission is hereby granted, free of charge, to any person obtaining a copy of
  this software and associated documentation files (the "Software"), to deal in
@@ -100,14 +100,14 @@ instance Show IClafer where
 data IElement =
    IEClafer IClafer
  | IEConstraint {
-      constraintParent :: Maybe IClafer,-- Nothing => TopLevel, Just x => x is the parent of this constraint
-      isHard :: Bool,                   -- whether hard or not (soft)
-      cpexp :: PExp                     -- the expression
+    constraintParent :: Maybe IClafer,-- Nothing => TopLevel, Just x => x is the parent of this constraint
+    isHard :: Bool,                   -- whether hard or not (soft)
+    cpexp :: PExp                     -- the expression
     }
  | IEGoal {
-   goalParent :: Maybe IClafer,-- Nothing => TopLevel, Just x => x is the parent of this goal
-   isMaximize :: Bool,         -- whether maximize or minimize
-   cpexp :: PExp               -- the expression
+    goalParent :: Maybe IClafer,-- Nothing => TopLevel, Just x => x is the parent of this goal
+    isMaximize :: Bool,         -- whether maximize or minimize
+    cpexp :: PExp               -- the expression
    }
 
 data ElementInstance = ElementInstance Bool PExp deriving (Eq, Ord)
@@ -137,11 +137,11 @@ instance Show IElement where
   show (IEClafer c) = "IEClafer " ++ show c 
   show (IEConstraint cp b p) = 
     "IEConstraint {constraintParentIdent = " ++ 
-      (if cp == Nothing then "Nothing" else ident $ fromJust cp) 
+      (if cp == Nothing then "Nothing" else if (uid $ fromJust cp) /= "" then (uid $ fromJust cp) else ident $ fromJust cp) 
         ++ " isHard = " ++ show b ++ " cpexp = " ++ show p
   show (IEGoal gp b p) = 
      "IEConstraint {goalParnetIdent = " ++ 
-      (if gp == Nothing then "Nothing" else ident $ fromJust gp) 
+      (if gp == Nothing then "Nothing" else if (uid $ fromJust gp) /= "" then (uid $ fromJust gp) else ident $ fromJust gp) 
         ++ " isMaximize = " ++ show b ++ " cpexp = " ++ show p
 
 
@@ -159,13 +159,14 @@ data SuperKind = TopLevel | Nested | Redefinition IClafer | RedefinitionFail Str
 instance Eq SuperKind where
   (==) TopLevel TopLevel = True
   (==) Nested Nested = True
-  (==) (Redefinition c1) (Redefinition c2) = uid c1 == uid c2
+  (==) (Redefinition c1) (Redefinition c2) = c1 == c2
   (==) (RedefinitionFail _) (RedefinitionFail _) = True
   (==) _ _ = False
 instance Show SuperKind where
   show TopLevel = "TopLevel"
   show Nested = "Nested"
-  show (Redefinition c) = "Redefinition: " ++ uid c
+  show (Redefinition c) = "Redefinition: " ++ 
+    (if uid c /= "" then uid c else ident c)
   show (RedefinitionFail msg) = "RedefinitionFail: " ++ msg
 
 data ISuperInstance = ISuperInstance SuperKind [PExp] deriving (Eq, Ord)

@@ -1,6 +1,6 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-
- Copyright (C) 2012 Kacper Bak <http://gsd.uwaterloo.ca>
+ Copyright (C) 2012 Kacper Bak, Luke Brown <http://gsd.uwaterloo.ca>
 
  Permission is hereby granted, free of charge, to any person obtaining a copy of
  this software and associated documentation files (the "Software"), to deal in
@@ -57,21 +57,23 @@ resolveModule args' declarations =
   rom' :: (IModule, GEnv) -> Resolve (IModule, GEnv)
   rom' = if skip_resolver args' then return . id else resolveOModule
 
-  getFails :: Ir -> [String]
-  getFails (IRClafer (IClafer{super = ISuper{superKind = RedefinitionFail str}})) = [str]
-  getFails _ = mempty
-
-  reDefAdd :: [IClafer] -> Ir -> Ir
+  reDefAdd :: [IClafer] -> Ir -> Ir -- Checks if clafer is a redefinition and changes the superKind accordingly
   reDefAdd clafs i@(IRClafer claf) = 
     let ranks = flip foldMap clafs $ \x -> if (istop $ cinPos claf) then mempty else getReDefRank x x claf 
     in if (ranks==[]) then i else 
-      let c = fst $ minimumBy (compare `on` snd) ranks
-      in if (isSpecifiedCard c claf) then 
-        IRClafer $ claf{super = ISuper claf (Redefinition c) [PExp Nothing (Just $ TClafer []) "" (cinPos claf) (IClaferId "" (ident c) $ istop $ cinPos c)]}
-          else IRClafer $ claf{super = (super claf){superKind = (RedefinitionFail $ getErrMsg (cinPos claf) $ cinPos c)}} 
+        let c = fst $ minimumBy (compare `on` snd) ranks
+            claf'= claf{super = super', reference = ref', elements = elements'}
+            super' = 
+              if (isSpecifiedCard c claf) then 
+                ISuper claf' (Redefinition c) [PExp Nothing (Just $ TClafer []) "" (cinPos claf) (IClaferId "" (ident c) $ istop $ cinPos c)]
+              else
+                (super claf){iSuperParent = claf', superKind = (RedefinitionFail $ getErrMsg (cinPos claf) $ cinPos c)}
+            ref' = (reference claf){iReferenceParent = claf'}
+            elements' = addParents claf' $ elements claf
+        in IRClafer claf'
     where
-      getReDefRank :: IClafer -> IClafer -> IClafer -> [(IClafer, Integer)]
-      getReDefRank oClaf claf1 claf2 =
+      getReDefRank :: IClafer -> IClafer -> IClafer -> [(IClafer, Integer)] -- Ranks clafer on depth of super, lower = better change of redefintion. 0 is expection: 0 = not redefinition
+      getReDefRank oClaf claf1 claf2 =                                      -- like common nesting function from resolve inheritance but names must be the same
         let par1 = claferParent claf1
             par2 = claferParent claf2
         in if (par1==Nothing && par2==Nothing) then 
@@ -89,7 +91,7 @@ resolveModule args' declarations =
             else if (match == Nothing) then 0
               else recursiveCheck (acc+1) c1 $ fromJust match
           
-      isSpecifiedCard :: IClafer -> IClafer -> Bool
+      isSpecifiedCard :: IClafer -> IClafer -> Bool -- Checks to make sure the redefintion is valid for cardinalities
       isSpecifiedCard claf1 claf2 = 
         (card claf2 `withinCard` card claf1) && (gcard claf2 `withinGCard` gcard claf1)
         where
@@ -109,6 +111,10 @@ resolveModule args' declarations =
       getErrMsg s1 s2 = 
         "span " ++ show s1 ++" redefining the clafer at span " ++ show s2
   reDefAdd _ i = i
+
+  getFails :: Ir -> [String] -- Function used to obtain all the error messages from Redefinition Cardinalities fails 
+  getFails (IRClafer (IClafer{super = ISuper{superKind = RedefinitionFail str}})) = [str]
+  getFails _ = mempty
 
 
 -- -----------------------------------------------------------------------------

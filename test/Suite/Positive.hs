@@ -66,7 +66,9 @@ case_refrence_Unused_Absstract_Clafer = do
 case_nonempty_Cards :: Assertion
 case_nonempty_Cards = do
 	claferModels <- positiveClaferModels
-	let compiledClaferIrs = foldMap getIR $ map (\(file', model) -> (file', compileOneFragment defaultClaferArgs model)) claferModels
+	let compiledClaferIrs = 
+		foldMap getIR $ map (\(file', model) ->
+			(file', compileOneFragment defaultClaferArgs model)) claferModels
 	forM_ compiledClaferIrs (\(file', ir') ->
 		let emptys = foldMapIR isEmptyCard ir'
 		in when (emptys /= []) $ putStrLn (file' ++ " Error: Contains empty Card's after analysis at\n" ++ emptys))
@@ -80,7 +82,8 @@ case_nonempty_Cards = do
 case_stringEqual :: Assertion
 case_stringEqual = do
 	let strMap = stringMap $ fromRight $ compileOneFragment defaultClaferArgs "A\n    text1 : string = \"some text\"\n    text2 : string = \"some text\""
-	(Map.size strMap) == 1 @? "Error string's assigned to differnet numbers!"
+	((Map.size strMap) == 1 
+		@? "Error string's assigned to differnet numbers!")
 
 case_correctElementParents :: Assertion
 case_correctElementParents = do

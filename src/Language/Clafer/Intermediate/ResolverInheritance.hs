@@ -1,6 +1,6 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-
- Copyright (C) 2012 Kacper Bak <http://gsd.uwaterloo.ca>
+ Copyright (C) 2012 Kacper Bak, Luke Brown <http://gsd.uwaterloo.ca>
 
  Permission is hereby granted, free of charge, to any person obtaining a copy of
  this software and associated documentation files (the "Software"), to deal in
@@ -91,17 +91,18 @@ resolveN claf pos' declarations id' =
       nonAbsposibilities = flip filter posibilities $ \c -> not $ isAbstract c
   in case (superKind $ super $ claf) of 
     (Redefinition _) ->
-      (>>= (return . swap . makePair (Redefinition $ getReDefClafer claf))) $ findUnique pos' id' $ map (\x -> (x, [x])) $ [getReDefClafer claf]
+      (>>= (return . swap . makePair (Redefinition $ getReDefClafer claf))) $ findUnique pos' id' $ map (\x -> (x, [x])) $ [getReDefClafer claf] -- If redefintion just use the clafer found in the resolver
     _ ->
       if (nonAbsposibilities == []) then 
-        (>>= (return . swap . makePair TopLevel)) $ findUnique pos' id' $ map (\x -> (x, [x])) $ posibilities else   
-        (>>= (\x -> return $ makePair x (if (x==Nothing || (istop $ cinPos $ head $ snd $ fromJust x)) then TopLevel 
+        (>>= (return . swap . makePair TopLevel)) $ findUnique pos' id' $ map (\x -> (x, [x])) $ posibilities else   -- Not hiearchy or redefintion so just search through abstract clafers
+        (>>= (\x -> return $ makePair x (if (x==Nothing || (istop $ cinPos $ head $ snd $ fromJust x)) then TopLevel -- Hiearchy search though matches that are not abstract clafers and add Nested superKind to make sure to add proper alloy code later
           else Nested))) $ findUnique pos' id' $ map (\x -> (x, [x])) $ nonAbsposibilities
   where
   makePair :: a -> b -> (a,b)
   makePair a b = (a,b)
-  commonNesting :: IClafer -> IClafer -> [IClafer] -> Bool
-  commonNesting claf1 claf2 cs = 
+
+  commonNesting :: IClafer -> IClafer -> [IClafer] -> Bool -- Function used to determine if two clafers have the same nesting
+  commonNesting claf1 claf2 cs =                           -- like getReDefRank from Resolver except checking if name of hiearchy is equal to super types not names don't have to be exactly the same
     let par1 = claferParent claf1
         par2 = claferParent claf2
     in if (par2 == Nothing) then True else
