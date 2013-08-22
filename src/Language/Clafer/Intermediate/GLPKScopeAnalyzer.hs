@@ -421,8 +421,7 @@ optimizeAllConstraints curThis constraints =
     rename :: String -> I.PExp -> I.PExp
     rename f p@I.PExp{I.exp = exp'} = pexp
         where
-        pexp = p{I.exp = iexp}
-        iexp = addParentsPExp pexp $ renameIExp exp'
+        pexp = p{I.exp = addParentsPExp pexp $ renameIExp exp'}
         renameIExp (I.IFunExp op exps) = I.IFunExp op $ map (rename f) exps
         renameIExp (I.IDeclPExp quant oDecls bpexp) = I.IDeclPExp quant (map renameDecl oDecls) $ rename f bpexp
         renameIExp (I.IClaferId modName sident isTop)
