@@ -551,7 +551,7 @@ isset _ = False
 -- reduce parent
 reducePExp :: PExp -> PExp
 reducePExp (PExp par' t pid' pos' x) = pexp
-  where pexp = PExp par' t pid' pos' $ iexp = flip reduceIExp x $ Just pexp
+  where pexp = PExp par' t pid' pos' $ flip reduceIExp x $ Just pexp
 
 reduceIExp :: Maybe PExp -> IExp -> IExp
 reduceIExp par' (IDeclPExp quant' decls' pexp) = IDeclPExp quant' decls' (reducePExp pexp){pExpParent = par'}
