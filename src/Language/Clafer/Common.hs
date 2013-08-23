@@ -65,7 +65,8 @@ isEqClaferId :: String -> IClafer -> Bool
 isEqClaferId = flip $ (==).uid
 
 idToPExp :: Maybe PExp -> String -> Span -> String -> String -> Bool -> PExp
-idToPExp par' pid' pos modids id' isTop' = PExp par' (Just $ TClafer [id']) pid' pos (IClaferId modids id' isTop')
+idToPExp par' _ pos modids id' isTop' = PExp par' (Just $ TClafer [id']) (genPExpName pos iexp) pos iexp
+  where iexp = IClaferId modids id' isTop'
 
 mkLClaferId :: String -> Bool -> IExp
 mkLClaferId = IClaferId ""

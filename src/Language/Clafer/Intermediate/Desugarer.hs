@@ -326,7 +326,10 @@ sugarExInteger n = if n == -1 then ExIntegerAst else (ExIntegerNum $ PosInteger 
 
 desugarExp :: Maybe PExp -> Exp -> PExp
 desugarExp par x = pexp
-  where pexp = PExp par Nothing "" (range x) $ flip desugarExp' x $ Just pexp
+  where 
+    pexp = PExp par Nothing (genPExpName s iexp) s iexp
+    iexp = flip desugarExp' x $ Just pexp
+    s = range x
 
 
 desugarExp' :: Maybe PExp -> Exp -> IExp
@@ -420,7 +423,10 @@ desugarOp f op' exps' =
 desugarSetExp :: Maybe PExp -> SetExp -> PExp
 desugarSetExp par' x = pexp
   where
-    pexp = PExp par' Nothing "" (range x) $ flip desugarSetExp' x $ Just pexp
+    pexp = PExp par' Nothing (genPExpName s iexp) s iexp
+    iexp = flip desugarSetExp' x $ Just pexp
+    s = range x
+
 
 
 desugarSetExp' :: Maybe PExp -> SetExp -> IExp

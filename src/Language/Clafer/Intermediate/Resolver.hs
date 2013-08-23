@@ -66,7 +66,10 @@ resolveModule args' declarations =
             claf'= claf{super = super', reference = ref', elements = elements'}
             super' = 
               if (isSpecifiedCard c claf) then 
-                ISuper claf' (Redefinition c) [PExp Nothing (Just $ TClafer []) "" (cinPos claf) (IClaferId "" (ident c) $ istop $ cinPos c)]
+                let s = ISuper claf' (Redefinition c) [PExp Nothing (Just $ TClafer []) (genPExpName span' iexp) span' iexp]
+                    span' = cinPos claf
+                    iexp = (IClaferId "" (ident c) $ istop $ cinPos c)
+                in s
               else
                 (super claf){iSuperParent = claf', superKind = (RedefinitionFail $ getErrMsg (cinPos claf) $ cinPos c)}
             ref' = (reference claf){iReferenceParent = claf'}
