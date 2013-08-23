@@ -123,7 +123,7 @@ conPutStrLn args' s = when (not $ console_output args') $ putStrLn s
 runValidate :: ClaferArgs -> String -> IO ()
 runValidate args' fo = do
   let path = (tooldir args') ++ "/"
-  liftIO $ putStrLn ("tooldir=" ++ path)
+  liftIO $ putStrLn ("Validating " ++ (file args'))
   case (mode args') of
     Xml -> do
       writeFile "ClaferIR.xsd" claferIRXSD
