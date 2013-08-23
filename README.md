@@ -19,7 +19,7 @@ This is also known as *Concept Modeling* or *Ontology Modeling*.
 Clafer Compiler
 ===============
 
-v0.3.4.20-8-2013
+v0.3.4.23-8-2013
 
 Clafer compiler provides a reference language implementation. 
 It translates models in Clafer to other formats (e.g. Alloy, XML, HTML, DOT) to allow for reasoning and processing with existing tools.
@@ -153,7 +153,7 @@ Clafer Compiler
 (As printed by `clafer --help`)
 
 ```
-Clafer v0.3.4.20-8-2013
+Clafer v0.3.4.23-8-2013
 
 clafer [OPTIONS] [FILE]
 
