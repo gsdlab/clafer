@@ -70,7 +70,7 @@ reg:
 	rm $(REG_DIR)/*.reg
 
 	$(FIND_COMMAND) | $(XARGS_CP_REGS)	
-	git add $(REG_DIR)/*.reg
+	git add $(REG_DIR)/*.reg || true
 
 clean:
 	$(MAKE) -C $(SUITE_DIR) clean
