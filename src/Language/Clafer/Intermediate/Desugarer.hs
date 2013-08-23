@@ -77,11 +77,9 @@ desugarClafer par (PosClafer s abstract gcrd id' super' crd init' es)  =
   (IEClafer ic) : (desugarInit id' init')
   where
     ic = IClafer par s (desugarAbstract abstract) (desugarGCard gcrd) 
-          (transIdent id') "" is ir (desugarCard crd) 
-            (0, -1) ies
-    is = desugarSuper ic super'
-    ir = desugarRefrence ic super'
-    ies = flip desugarElements es $ Just ic
+          (transIdent id') "" (desugarSuper ic super') 
+            (desugarRefrence ic super') (desugarCard crd) (0, -1) 
+             $ flip desugarElements es $ Just ic
 
 
 sugarClafer :: IClafer -> Clafer
@@ -328,10 +326,9 @@ sugarExInteger :: Integer -> ExInteger
 sugarExInteger n = if n == -1 then ExIntegerAst else (ExIntegerNum $ PosInteger ((0, 0), show n))
 
 desugarExp :: Maybe PExp -> Exp -> PExp
-desugarExp par x = 
-  let pexp = PExp par Nothing "" (range x) iexp
-      iexp = flip desugarExp' x $ Just pexp
-  in pexp
+desugarExp par x = pexp
+  where pexp = PExp par Nothing "" (range x) $ flip desugarExp' x $ Just pexp
+
 
 desugarExp' :: Maybe PExp -> Exp -> IExp
 desugarExp' par x = case x of
@@ -424,8 +421,7 @@ desugarOp f op' exps' =
 desugarSetExp :: Maybe PExp -> SetExp -> PExp
 desugarSetExp par' x = pexp
   where
-    pexp = PExp par' Nothing "" (range x) iexp
-    iexp = flip desugarSetExp' x $ Just pexp
+    pexp = PExp par' Nothing "" (range x) $ flip desugarSetExp' x $ Just pexp
 
 
 desugarSetExp' :: Maybe PExp -> SetExp -> IExp
@@ -554,10 +550,8 @@ isset _ = False
 
 -- reduce parent
 reducePExp :: PExp -> PExp
-reducePExp (PExp par' t pid' pos' x) = 
-  let pexp = PExp par' t pid' pos' iexp
-      iexp = flip reduceIExp x $ Just pexp
-  in pexp
+reducePExp (PExp par' t pid' pos' x) = pexp
+  where pexp = PExp par' t pid' pos' $ iexp = flip reduceIExp x $ Just pexp
 
 reduceIExp :: Maybe PExp -> IExp -> IExp
 reduceIExp par' (IDeclPExp quant' decls' pexp) = IDeclPExp quant' decls' (reducePExp pexp){pExpParent = par'}
