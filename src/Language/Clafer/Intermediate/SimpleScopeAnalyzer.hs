@@ -34,7 +34,7 @@ import Prelude hiding (exp)
 
 
 isReference :: IClafer -> Bool
-isReference = isOverlapping . super
+isReference = isOverlapping
 isConcrete :: IClafer -> Bool
 isConcrete = not . isReference
 isSuperest :: [IClafer] -> IClafer -> Bool

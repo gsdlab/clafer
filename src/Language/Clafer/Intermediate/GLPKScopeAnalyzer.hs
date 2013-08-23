@@ -23,11 +23,11 @@
 -}
 module Language.Clafer.Intermediate.GLPKScopeAnalyzer (glpkScopeAnalysis) where
 
+import Language.Clafer.Intermediate.ResolverName (addParentsPExp)
 import Language.Clafer.Front.Absclafer hiding (Path)
 import qualified Language.Clafer.Intermediate.Intclafer as I
 import Language.Clafer.Intermediate.Analysis
 import Language.Clafer.Intermediate.ResolverType
-import Language.Clafer.Common
 
 import Control.Applicative (Applicative(..), (<$>))
 import Control.Monad
@@ -299,7 +299,7 @@ addChildren abs' (Part steps) ss@(Part supSteps) =
                 let supP = Part $ supSteps ++ [chi]
                 
                 chiC <- claferWithUid chi
-                let s = SClafer (reifyPartName chiP) chi False (low chiC) (high chiC) (groupLow chiC) (groupHigh chiC) (Just $ reifyPartName par) (Just $ Colon $ reifyPartName supP) (constraints chiC)
+                let s = SClafer (reifyPartName chiP) chi False (low chiC) (high chiC) (groupLow chiC) (groupHigh chiC) (Just $ reifyPartName par) (Just $ flip SSuper Nothing $ Just $ Colon $ reifyPartName supP) (constraints chiC)
                 return s <:> addChildren abs' chiP ss
         
         col <- runMaybeT $ colonOf parBase
@@ -385,9 +385,9 @@ optimizeInConstraints constraints =
     (noOpt, toOpt) = partitionEithers (constraints >>= partitionConstraint)
     opt = [ unionPExpAll (map fst inSame) `inPExp` snd (head inSame)
             | inSame <- groupBy (testing' $ syntaxOf . snd) $ sortBy (comparing' snd) toOpt ]
-    inPExp a b = I.PExp (Just I.TBoolean) (genPExpName noSpan (I.IFunExp "in" [a, b])) noSpan $ I.IFunExp "in" [a, b]
+    inPExp a b = I.PExp Nothing (Just I.TBoolean) (I.genPExpName noSpan (I.IFunExp "in" [a, b])) noSpan $ I.IFunExp "in" [a, b]
     unionPExpAll es = foldr1 unionPExp es
-    unionPExp a b = I.PExp (liftM2 (+++) (I.iType a) (I.iType b)) (genPExpName noSpan (I.IFunExp "++" [a, b])) noSpan $ I.IFunExp "++" [a, b]
+    unionPExp a b = I.PExp Nothing (liftM2 (+++) (I.iType a) (I.iType b)) (I.genPExpName noSpan (I.IFunExp "++" [a, b])) noSpan $ I.IFunExp "++" [a, b]
     
     partitionConstraint I.PExp{I.exp = I.IFunExp {I.op = "in", I.exps = [exp1, exp2]}} = return $ Right (exp1, exp2)
     partitionConstraint I.PExp{I.exp = I.IFunExp {I.op = "&&", I.exps = [exp1, exp2]}} = partitionConstraint exp1 `mplus` partitionConstraint exp2
@@ -419,9 +419,9 @@ optimizeAllConstraints curThis constraints =
     partitionConstraint e = return (curThis, e)
     
     rename :: String -> I.PExp -> I.PExp
-    rename f p@I.PExp{I.exp = exp'} =
-        p{I.exp = renameIExp exp'}
+    rename f p@I.PExp{I.exp = exp'} = pexp
         where
+        pexp = p{I.exp = addParentsPExp pexp $ renameIExp exp'}
         renameIExp (I.IFunExp op exps) = I.IFunExp op $ map (rename f) exps
         renameIExp (I.IDeclPExp quant oDecls bpexp) = I.IDeclPExp quant (map renameDecl oDecls) $ rename f bpexp
         renameIExp (I.IClaferId modName sident isTop)

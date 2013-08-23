@@ -126,15 +126,15 @@ lone sig c155_display
 { ref : one Int }
 { one r_c155_display }
 
-lone sig c168_MTD
+one sig c168_MTD
 {}
 
-lone sig c169_CRC32
+one sig c169_CRC32
 {}
 
-lone sig c170_HAS_IOMEM
+one sig c170_HAS_IOMEM
 {}
 
-lone sig c171_ZLIB_INFLATE
+one sig c171_ZLIB_INFLATE
 {}
 

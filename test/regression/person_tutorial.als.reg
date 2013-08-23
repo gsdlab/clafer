@@ -127,12 +127,12 @@ one sig c90_JohnAndMaryLine extends c67_WaitingLine
 {}
 { (this.(@r_c68_participants.@ref)) = (c31_JohnDoe + c78_MaryJane) }
 
-fact { #c96_TwoPersonLine <= 0 }
+fact { #c96_TwoPersonLine = 0 }
 abstract sig c96_TwoPersonLine extends c67_WaitingLine
 {}
 { (#(this.@r_c68_participants)) = 2 }
 
-fact { #c101_OneToTenPersonLine <= 0 }
+fact { #c101_OneToTenPersonLine = 0 }
 abstract sig c101_OneToTenPersonLine extends c67_WaitingLine
 {}
 { ((#(this.@r_c68_participants)) >= 1) && ((#(this.@r_c68_participants)) <= 10) }

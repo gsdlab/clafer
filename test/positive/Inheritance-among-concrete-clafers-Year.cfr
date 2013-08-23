@@ -1,0 +1,10 @@
+quarter *
+   month 3
+      week 4
+         day 7
+
+Q1 : quarter
+   january : month
+      week1 : week
+         day1 : day
+      week2 : week

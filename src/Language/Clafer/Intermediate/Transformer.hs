@@ -25,6 +25,7 @@ import Data.Maybe
 import Language.Clafer.Common
 import Language.Clafer.Intermediate.Intclafer
 import Language.Clafer.Intermediate.Desugarer
+import Language.Clafer.Intermediate.ResolverName
 
 transModule :: IModule -> IModule
 transModule imodule = imodule{mDecls = map transElement $ mDecls imodule}
@@ -32,16 +33,23 @@ transModule imodule = imodule{mDecls = map transElement $ mDecls imodule}
 transElement :: IElement -> IElement
 transElement x = case x of
   IEClafer clafer  -> IEClafer $ transClafer clafer
-  IEConstraint isHard' pexp  -> IEConstraint isHard' $ transPExp False pexp
-  IEGoal isMaximize' pexp  -> IEGoal isMaximize' $ transPExp False pexp  
+  IEConstraint par' isHard' pexp  -> IEConstraint par' isHard' $ transPExp False pexp
+  IEGoal par' isMaximize' pexp  -> IEGoal par' isMaximize' $ transPExp False pexp  
 
 transClafer :: IClafer -> IClafer
-transClafer clafer = clafer{elements = map transElement $ elements clafer}
+transClafer clafer = clafer'
+  where
+    clafer' = clafer{super = (super clafer){iSuperParent = clafer'}, 
+      reference = (reference clafer){iReferenceParent = clafer'}, 
+        elements = addParents clafer' $ map transElement $ elements clafer} 
+
 
 transPExp :: Bool -> PExp -> PExp
-transPExp some (PExp t pid' pos' x) = trans $ PExp t pid' pos' $ transIExp (fromJust t) x
+transPExp some (PExp par' t pid' pos' x) = pexp
   where
-  trans = if some then desugarPath else id
+    pexp = trans $ PExp par' t pid' pos' $ 
+      addParentsPExp pexp $  transIExp (fromJust t) x
+    trans = if some then desugarPath else id
 
 transIExp :: IType -> IExp -> IExp
 transIExp t x = case x of

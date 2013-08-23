@@ -206,16 +206,16 @@ resolveTElement _ (IEClafer iclafer) =
   do
     elements' <- mapM (resolveTElement $ I.uid iclafer) (elements iclafer)
     return $ IEClafer $ iclafer{elements = elements'}
-resolveTElement parent' (IEConstraint isHard pexp) =
-  IEConstraint isHard <$> (testBoolean =<< resolveTConstraint parent' pexp)
+resolveTElement parent' (IEConstraint par' isHard pexp) =
+  IEConstraint par' isHard <$> (testBoolean =<< resolveTConstraint parent' pexp)
   where
   testBoolean pexp' =
     do
       unless (typeOf pexp' == TBoolean) $
         throwError $ SemanticErr (inPos pexp') ("Cannot construct constraint on type '" ++ str (typeOf pexp') ++ "'")
       return pexp'
-resolveTElement parent' (IEGoal isMaximize pexp) =
-  IEGoal isMaximize <$> resolveTConstraint parent' pexp
+resolveTElement parent' (IEGoal par' isMaximize pexp) =
+  IEGoal par' isMaximize <$> resolveTConstraint parent' pexp
 
 resolveTConstraint :: String -> PExp -> TypeAnalysis PExp
 resolveTConstraint curThis' constraint = 
@@ -311,7 +311,7 @@ resolveTPExp' p@PExp{inPos, exp} =
       arg1s' <- resolveTPExp arg1
       arg2s' <- resolveTPExp arg2
       let union' a b = typeOf a +++ typeOf b
-      return $ [return (union' arg1' arg2', e{exps = [arg1', arg2']}) | (arg1', arg2') <- sortBy (comparing $ length . unionType . uncurry union') $ liftM2 (,) arg1s' arg2s']
+      return $ [return (union' arg1' arg2', e{exps = [arg1', arg2']}) | (arg1', arg2') <- sortBy (comparing $ uncurry union') $ liftM2 (,) arg1s' arg2s']
   resolveTExp e@IFunExp {op, exps = [arg1, arg2]} =
     runListT $ runErrorT $ do
       arg1' <- lift $ ListT $ resolveTPExp arg1
@@ -392,7 +392,7 @@ addRef pexp =
       let result = (newPExp $ IFunExp "." [pexp, deref]) `withType` typeOf deref
       return result <++> addRef result
   where
-  newPExp i = PExp Nothing (genPExpName (inPos pexp) i) (inPos pexp) i
+  newPExp i = PExp Nothing Nothing (genPExpName (inPos pexp) i) (inPos pexp) i
   
 typeOf :: PExp -> IType
 typeOf pexp = fromMaybe (error "No type") $ iType pexp

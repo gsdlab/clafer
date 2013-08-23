@@ -78,3 +78,8 @@ lukesRule p = ((pid p)/="" && (inPos p)/=noSpan) || ((pid p)=="" && (inPos p)==n
 
 fst3 :: (a, b, c) -> a
 fst3 (a,_,_) = a
+
+getIR :: (String, Either [ClaferErr] CompilerResult) -> [(String, IModule)]
+getIR (file', (Right (CompilerResult{claferEnv = ClaferEnv{cIr = Just (iMod, _, _)}}))) = [(file', iMod)]
+getIR _ = []
+

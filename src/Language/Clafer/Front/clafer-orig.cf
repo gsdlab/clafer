@@ -37,7 +37,10 @@ Subsoftconstraint. Element ::=SoftConstraint;
 
 SuperEmpty.     Super ::=  ;
 SuperSome.      Super ::= SuperHow SetExp ;
-
+// Super -> SuperType Ref
+// SuperType -> ; ":" SetExp
+// Ref -> ; Arrow SetExp
+// Arrow -> "->" ; "->>"
 SuperColon.     SuperHow ::= ":" ;
 SuperArrow.     SuperHow ::= "->" ;
 SuperMArrow.    SuperHow ::= "->>" ;
@@ -139,4 +142,4 @@ coercions SetExp 6 ;
 position token PosInteger (digit+) ;
 position token PosDouble (digit+ '.' digit+ ('e' '-'? digit+)?) ;
 position token PosString '"' ((char - ["\"\\"]) | ('\\' ["\"\\nt"]))* '"' ;
-position token PosIdent (letter (letter|digit|'_'|'\'')*) ;
+position token PosIdent (letter (letter|digit|'$'|'_'|'\'')*) ;

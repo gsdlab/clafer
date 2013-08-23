@@ -7,7 +7,7 @@ midYearReview : Meeting
 Steven : Member
 
 C : Room
-    whiteboard
+    or whiteboard
     audioConferencing
 //# FRAGMENT
 ondemandMeeting : Meeting
@@ -18,7 +18,7 @@ ondemandMeeting : Meeting
 Joanna : Member
 
 D : Room
-    whiteboard
+    or whiteboard
 //# FRAGMENT
 abstract Meeting
     chair -> Member

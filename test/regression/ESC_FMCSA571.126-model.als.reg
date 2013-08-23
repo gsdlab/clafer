@@ -2,12 +2,12 @@ open util/integer
 pred show {}
 
 
-fact { #c1_degree <= 0 }
+fact { #c1_degree = 0 }
 abstract sig c1_degree
 { ref : one Int }
 { ((this.@ref) > 0) && ((this.@ref) <= 360) }
 
-fact { #c9_Vehicle <= 0 }
+fact { #c9_Vehicle = 0 }
 abstract sig c9_Vehicle
 { r_c10_DriveConfiguration : one c10_DriveConfiguration
 , r_c11_ElectronicStabilityControlSystem : one c11_ElectronicStabilityControlSystem
@@ -87,7 +87,7 @@ sig c80_GVWR
 { ref : one Int }
 { one @r_c80_GVWR.this }
 
-fact { #c81_DriveConfiguration <= 0 }
+fact { #c81_DriveConfiguration = 0 }
 abstract sig c81_DriveConfiguration
 { r_c82_twoWheelDrive : lone c82_twoWheelDrive
 , r_c83_frontWheelDrive : lone c83_frontWheelDrive
@@ -126,7 +126,7 @@ sig c88_lowGear
 {}
 { one @r_c88_lowGear.this }
 
-fact { #c89_ElectronicStabilityControlSystem <= 0 }
+fact { #c89_ElectronicStabilityControlSystem = 0 }
 abstract sig c89_ElectronicStabilityControlSystem
 { r_c90_vehicle : one c90_vehicle
 , r_c100_augmentsVehiclesDirectionalStability : one c100_augmentsVehiclesDirectionalStability
@@ -374,11 +374,11 @@ sig c154_Start
 {}
 { one @r_c154_Start.this }
 
-fact { #c155_AntiLockBreakSystem <= 0 }
+fact { #c155_AntiLockBreakSystem = 0 }
 abstract sig c155_AntiLockBreakSystem
 {}
 
-fact { #c156_TractionControlSystem <= 0 }
+fact { #c156_TractionControlSystem = 0 }
 abstract sig c156_TractionControlSystem
 {}
 

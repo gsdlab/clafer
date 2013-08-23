@@ -1,5 +1,5 @@
 {-
- Copyright (C) 2012-2013 Kacper Bak, Jimmy Liang <http://gsd.uwaterloo.ca>
+ Copyright (C) 2012-2013 Kacper Bak, Jimmy Liang, Luke Brown <http://gsd.uwaterloo.ca>
 
  Permission is hereby granted, free of charge, to any person obtaining a copy of
  this software and associated documentation files (the "Software"), to deal in
@@ -130,7 +130,7 @@ runValidate args' fo = do
       voidf $ system $ "java -classpath " ++ path ++ " XsdCheck ClaferIR.xsd " ++ fo
     Alloy ->   voidf $ system $ validateAlloy path "4" ++ fo
     Alloy42 -> voidf $ system $ validateAlloy path "4.2" ++ fo
-    Clafer ->  voidf $ system $ path ++ "clafer -s -m=clafer " ++ fo
+    Clafer ->  voidf $ system $ path ++ "/clafer -s -m=clafer " ++ fo
     _ -> error "Function runValidate from Main file was given an invalid mode"
 
 validateAlloy :: String -> String -> String
@@ -155,7 +155,7 @@ start v args' model = if schema args'
 runEcore2Clafer :: FilePath -> FilePath -> IO ()
 runEcore2Clafer    ecoreFile toolPath
   | null ecoreFile = do
-      putStrLn "Error: Provide a file name of the ECore model."
+      putStrLn "Error: Provide a file name of an ECore model."
   | otherwise      = do
       putStrLn $ "Converting " ++ ecoreFile ++ " into Clafer"
-      voidf $ system $ "java -jar " ++ toolPath ++ "ecore2clafer.jar " ++ ecoreFile
+      voidf $ system $ "java -jar " ++ toolPath ++ "/ecore2clafer.jar " ++ ecoreFile

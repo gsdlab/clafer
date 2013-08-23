@@ -2,7 +2,7 @@ open util/integer
 pred show {}
 
 
-fact { #c1_Kernel <= 0 }
+fact { #c1_Kernel = 0 }
 abstract sig c1_Kernel
 { r_c2_memory : lone c2_memory }
 

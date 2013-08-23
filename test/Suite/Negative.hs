@@ -48,7 +48,10 @@ case_failTest :: Assertion
 case_failTest = do 
 	claferModels <- negativeClaferModels
 	let compiledClafers = map (\(file', model) -> 
-		(file', compileOneFragment defaultClaferArgs model)) claferModels
+		if file' == "i199-afm-check.cfr" then
+			(file', compileOneFragment defaultClaferArgs{afm=True} model)
+		else
+			(file', compileOneFragment defaultClaferArgs model)) claferModels
 	forM_ compiledClafers (\(file', compiled) -> 
 		when (compiledCheck compiled) $ putStrLn (file' ++ " compiled when it should not of"))
 	(andMap (not . compiledCheck . snd) compiledClafers 

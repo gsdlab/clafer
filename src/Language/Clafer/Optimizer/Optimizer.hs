@@ -22,6 +22,7 @@
 -}
 module Language.Clafer.Optimizer.Optimizer where
 
+import Prelude hiding (exp)
 import Data.Maybe
 import Data.List
 import Control.Monad.State
@@ -30,6 +31,7 @@ import qualified Data.Map as Map
 import Language.Clafer.Common
 import Language.Clafer.ClaferArgs
 import Language.Clafer.Intermediate.Intclafer
+import Language.Clafer.Intermediate.ResolverName (addParents, addParentsPExp)
 
 optimizeModule :: ClaferArgs -> (IModule, GEnv) -> IModule
 optimizeModule args (imodule, genv) =
@@ -42,12 +44,14 @@ optimizeModule args (imodule, genv) =
 optimizeElement :: Interval -> IElement -> IElement
 optimizeElement interval' x = case x of
   IEClafer c  -> IEClafer $ optimizeClafer interval' c
-  IEConstraint _ _  -> x
-  IEGoal _ _ -> x
+  IEConstraint _ _ _  -> x
+  IEGoal _ _ _ -> x
 
 optimizeClafer :: Interval -> IClafer -> IClafer
-optimizeClafer interval' c = c {glCard = glCard',
-  elements = map (optimizeElement glCard') $ elements c}
+optimizeClafer interval' c = 
+  let clafer' = c {glCard = glCard', super = (super c){iSuperParent = clafer'}, reference = (reference c){iReferenceParent = clafer'},
+    elements = addParents clafer' $ map (optimizeElement glCard') $ elements c}
+  in clafer'
   where
   glCard' = multInt (fromJust $ card c) interval'
 
@@ -94,7 +98,7 @@ getExtended :: IClafer -> [String]
 getExtended c =
   sName ++ ((getSubclafers $ elements c) >>= getExtended)
   where
-  sName = if not $ isOverlapping $ super c then [getSuper c] else []
+  sName = if not $ isOverlapping c then [getSuper c] else []
 
 -- -----------------------------------------------------------------------------
 -- inheritance  expansions
@@ -104,23 +108,31 @@ expModule (decls', genv) = evalState (mapM expElement decls') genv
 
 expClafer :: MonadState GEnv m => IClafer -> m IClafer
 expClafer claf = do
-  super' <- expSuper $ super claf
+  ref' <- expReference $ reference claf
   elements' <- mapM expElement $ elements claf
-  return $ claf {super = super', elements = elements'}
+  return $ 
+    let clafer' = claf {super = (super claf){iSuperParent = clafer'}, 
+      reference = ref'{iReferenceParent = clafer'}, 
+        elements = addParents clafer' elements'}
+    in clafer'
 
-expSuper :: MonadState GEnv m => ISuper -> m ISuper
-expSuper x = case x of
-  ISuper False _ -> return x
-  ISuper True pexps -> ISuper True `liftM` mapM expPExp pexps
+expReference :: MonadState GEnv m => IReference -> m IReference
+expReference x = case x of
+  IReference _ _ [] -> return x
+  IReference par' s pexps -> IReference par' s `liftM` mapM expPExp pexps 
 
 expElement :: MonadState GEnv m => IElement -> m IElement
 expElement x = case x of
   IEClafer claf  -> IEClafer `liftM` expClafer claf
-  IEConstraint isHard' constraint  -> IEConstraint isHard' `liftM` expPExp constraint
-  IEGoal isMaximize' goal -> IEGoal isMaximize' `liftM` expPExp goal
+  IEConstraint par' isHard' constraint  -> IEConstraint par' isHard' `liftM` expPExp constraint
+  IEGoal par' isMaximize' goal -> IEGoal par' isMaximize' `liftM` expPExp goal
 
 expPExp :: MonadState GEnv m => PExp -> m PExp
-expPExp (PExp t pid' pos' exp') = PExp t pid' pos' `liftM` expIExp exp'
+expPExp (PExp par' t pid' pos' exp') = do
+  pexp <- PExp par' t pid' pos' `liftM` expIExp exp'
+  return $
+    let pexp' = pexp{exp = addParentsPExp pexp' $ exp pexp}
+    in pexp'
 
 expIExp :: MonadState GEnv m => IExp -> m IExp
 expIExp x = case x of
@@ -192,14 +204,14 @@ allUniqueClafer claf =
 allUniqueElement :: IElement -> (Bool, [String])
 allUniqueElement x = case x of
   IEClafer claf -> allUniqueClafer claf
-  IEConstraint _ _ -> (True, [])
-  IEGoal _ _ -> (True, [])
+  IEConstraint _ _ _ -> (True, [])
+  IEGoal _ _ _ -> (True, [])
 
 checkConstraintElement :: [String] -> IElement -> Bool
 checkConstraintElement idents x = case x of
   IEClafer claf -> and $ map (checkConstraintElement idents) $ elements claf
-  IEConstraint _ pexp -> checkConstraintPExp idents pexp 
-  IEGoal _ _ ->  True
+  IEConstraint _ _ pexp -> checkConstraintPExp idents pexp 
+  IEGoal _ _ _ ->  True
 
 checkConstraintPExp :: [String] -> PExp -> Bool
 checkConstraintPExp idents pexp = checkConstraintIExp idents $
@@ -245,8 +257,8 @@ findDupClafer claf = if null dups
 findDupElement :: IElement -> IElement
 findDupElement x = case x of
   IEClafer claf -> IEClafer $ findDupClafer claf
-  IEConstraint _ _ -> x
-  IEGoal _ _ -> x
+  IEConstraint _ _ _ -> x
+  IEGoal _ _ _ -> x
 
 
 findDuplicates :: [IClafer] -> [String]
@@ -263,25 +275,31 @@ markTopModule decls' = map (markTopElement (
 
 
 markTopClafer :: [String] -> IClafer -> IClafer
-markTopClafer clafers c =
-  c {super = markTopSuper clafers $ super c, 
-          elements = map (markTopElement clafers) $ elements c}
+markTopClafer clafers c = c'
+  where
+    (super',ref') = markTopSuper clafers (reference c) $ super c
+    c' = c{super = super'{iSuperParent = c'}, 
+      reference = ref'{iReferenceParent = c'}, 
+        elements = addParents c' $ map (markTopElement clafers) $ elements c}
 
 
-markTopSuper :: [String] -> ISuper -> ISuper
-markTopSuper clafers x = x{supers = map (markTopPExp clafers) $ supers x}
+markTopSuper :: [String] -> IReference -> ISuper -> (ISuper, IReference)
+markTopSuper clafers r s = 
+  if ([] == supers s) then
+    (s,r{refs = map (markTopPExp clafers) $ refs r}) else
+     (s{supers = map (markTopPExp clafers) $ supers s},r)
 
 
 markTopElement :: [String] -> IElement -> IElement
 markTopElement clafers x = case x of
   IEClafer c  -> IEClafer $ markTopClafer clafers c
-  IEConstraint isHard' pexp  -> IEConstraint isHard' $ markTopPExp clafers pexp
-  IEGoal isMaximize' pexp -> IEGoal isMaximize' $ markTopPExp clafers pexp
+  IEConstraint par' isHard' pexp  -> IEConstraint par' isHard' $ markTopPExp clafers pexp
+  IEGoal par' isMaximize' pexp -> IEGoal par' isMaximize' $ markTopPExp clafers pexp
 
 markTopPExp :: [String] -> PExp -> PExp
-markTopPExp clafers pexp =
-  pexp {Language.Clafer.Intermediate.Intclafer.exp = markTopIExp clafers $
-        Language.Clafer.Intermediate.Intclafer.exp pexp}
+markTopPExp clafers pexp = pexp'
+  where pexp' = pexp {exp = addParentsPExp pexp'
+   $ markTopIExp clafers $ exp pexp}
 
 
 markTopIExp :: [String] -> IExp -> IExp

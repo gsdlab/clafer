@@ -1,0 +1,52 @@
+/*
+All clafers: 12 | Abstract: 1 | Concrete: 11 | References: 0
+Constraints: 0
+Goals: 0
+Global scope: 1..*
+All names unique: False
+*/
+open util/integer
+pred show {}
+run show for 1 but 2 c1_Person, 2 c2_Head, 4 c3_Eye, 1 c4_Couple
+
+abstract sig c1_Person
+{ r_c2_Head : one c2_Head }
+
+sig c2_Head
+{ r_c3_Eye : set c3_Eye }
+{ one @r_c2_Head.this }
+
+sig c3_Eye
+{}
+{ one @r_c3_Eye.this }
+
+one sig c4_Couple
+{ r_c5_Alice : one c5_Alice
+, r_c9_Bob : one c9_Bob }
+
+one sig c5_Alice extends c1_Person
+{ r_c6_AliceHead : one c6_AliceHead }
+
+one sig c6_AliceHead extends c2_Head
+{ r_c7_e1 : one c7_e1
+, r_c8_e2 : one c8_e2 }
+
+one sig c7_e1 extends c3_Eye
+{}
+
+one sig c8_e2 extends c3_Eye
+{}
+
+one sig c9_Bob extends c1_Person
+{ r_c10_BobHead : one c10_BobHead }
+
+one sig c10_BobHead extends c2_Head
+{ r_c11_e1 : one c11_e1
+, r_c12_e2 : one c12_e2 }
+
+one sig c11_e1 extends c3_Eye
+{}
+
+one sig c12_e2 extends c3_Eye
+{}
+

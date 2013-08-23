@@ -5,19 +5,19 @@ pred show {}
 abstract sig c1_Person
 {}
 
-lone sig c2_ada extends c1_Person
+one sig c2_ada extends c1_Person
 {}
 
-lone sig c3_cyd extends c1_Person
+one sig c3_cyd extends c1_Person
 {}
 
-lone sig c4_eve extends c1_Person
+one sig c4_eve extends c1_Person
 {}
 
-lone sig c5_bob extends c1_Person
+one sig c5_bob extends c1_Person
 {}
 
-lone sig c6_dan extends c1_Person
+one sig c6_dan extends c1_Person
 {}
 
 abstract sig c7_Exam
@@ -46,15 +46,15 @@ sig c32_examinee
 { ref : one c1_Person }
 { one @r_c32_examinee.this }
 
-lone sig c42_ada_bob_cyd extends c7_Exam
+one sig c42_ada_bob_cyd extends c7_Exam
 {}
 { ((((this.(@r_c8_date.@ref)) = 1) && ((this.(@r_c12_recorder.@ref)) = c3_cyd)) && ((this.(@r_c22_examiner.@ref)) = c5_bob)) && ((this.(@r_c32_examinee.@ref)) = c2_ada) }
 
-lone sig c58_dan_bob_ada extends c7_Exam
+one sig c58_dan_bob_ada extends c7_Exam
 {}
 { ((((this.(@r_c8_date.@ref)) = 2) && ((this.(@r_c12_recorder.@ref)) = c2_ada)) && ((this.(@r_c22_examiner.@ref)) = c5_bob)) && ((this.(@r_c32_examinee.@ref)) = c6_dan) }
 
-lone sig c74_eve_ada_dan extends c7_Exam
+one sig c74_eve_ada_dan extends c7_Exam
 {}
 { ((((this.(@r_c8_date.@ref)) = 3) && ((this.(@r_c12_recorder.@ref)) = c6_dan)) && ((this.(@r_c22_examiner.@ref)) = c2_ada)) && ((this.(@r_c32_examinee.@ref)) = c4_eve) }
 

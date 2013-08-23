@@ -2,11 +2,11 @@ open util/integer
 pred show {}
 
 
-fact { #c1_Element <= 0 }
+fact { #c1_Element = 0 }
 abstract sig c1_Element
 {}
 
-fact { #c2_End <= 0 }
+fact { #c2_End = 0 }
 abstract sig c2_End extends c1_Element
 { r_c3_attainable : lone c3_attainable
 , r_c4_term : one c4_term
@@ -44,11 +44,11 @@ sig c9_businessArea
 {}
 { one @r_c9_businessArea.this }
 
-fact { #c10_Mean <= 0 }
+fact { #c10_Mean = 0 }
 abstract sig c10_Mean extends c1_Element
 {}
 
-fact { #c11_Vision <= 0 }
+fact { #c11_Vision = 0 }
 abstract sig c11_Vision extends c2_End
 { r_c16_amplifiedBy : some c16_amplifiedBy
 , r_c26_madeOperativeBy : one c26_madeOperativeBy }
@@ -65,7 +65,7 @@ sig c26_madeOperativeBy
 { ref : one c207_Mission }
 { one @r_c26_madeOperativeBy.this }
 
-fact { #c36_DesiredResult <= 0 }
+fact { #c36_DesiredResult = 0 }
 abstract sig c36_DesiredResult extends c2_End
 { r_c37_supportedBy : some c37_supportedBy
 , r_c47_kind : one c47_kind }
@@ -89,7 +89,7 @@ sig c49_quantitative
 {}
 { one @r_c49_quantitative.this }
 
-fact { #c50_Goal <= 0 }
+fact { #c50_Goal = 0 }
 abstract sig c50_Goal extends c36_DesiredResult
 { r_c51_amplifies : one c51_amplifies
 , r_c61_general : one c61_general
@@ -112,7 +112,7 @@ sig c62_ongoing
 {}
 { one @r_c62_ongoing.this }
 
-fact { #c71_Objective <= 0 }
+fact { #c71_Objective = 0 }
 abstract sig c71_Objective extends c36_DesiredResult
 { r_c72_SMART : one c72_SMART
 , r_c78_limitedInTimeframe : one c78_limitedInTimeframe
@@ -153,7 +153,7 @@ sig c86_quantifies
 { ref : one c50_Goal }
 { one @r_c86_quantifies.this }
 
-fact { #c96_CourseOfAction <= 0 }
+fact { #c96_CourseOfAction = 0 }
 abstract sig c96_CourseOfAction extends c10_Mean
 { r_c97_channelsEffortsToward : one c97_channelsEffortsToward
 , r_c107_governedBy : one c107_governedBy
@@ -217,7 +217,7 @@ sig c154_enables
 { ref : one c96_CourseOfAction }
 { one @r_c154_enables.this }
 
-fact { #c164_Strategy <= 0 }
+fact { #c164_Strategy = 0 }
 abstract sig c164_Strategy extends c96_CourseOfAction
 { r_c165_implementedBy : one c165_implementedBy
 , r_c175_aComponentOfThePlanFor : one c175_aComponentOfThePlanFor
@@ -237,7 +237,7 @@ sig c185_rightApproachGiven
 {}
 { one @r_c185_rightApproachGiven.this }
 
-fact { #c186_Tactic <= 0 }
+fact { #c186_Tactic = 0 }
 abstract sig c186_Tactic extends c96_CourseOfAction
 { r_c187_implements : one c187_implements
 , r_c197_effectsEnforcementLevelOf : one c197_effectsEnforcementLevelOf }
@@ -252,7 +252,7 @@ sig c197_effectsEnforcementLevelOf
 { ref : one c326_BusinessRule }
 { one @r_c197_effectsEnforcementLevelOf.this }
 
-fact { #c207_Mission <= 0 }
+fact { #c207_Mission = 0 }
 abstract sig c207_Mission extends c10_Mean
 { r_c208_makesOperative : one c208_makesOperative
 , r_c218_plannedByMeansOf : one c218_plannedByMeansOf }
@@ -267,7 +267,7 @@ sig c218_plannedByMeansOf
 { ref : one c164_Strategy }
 { one @r_c218_plannedByMeansOf.this }
 
-fact { #c228_Directive <= 0 }
+fact { #c228_Directive = 0 }
 abstract sig c228_Directive extends c10_Mean
 { r_c229_governs : one c229_governs
 , r_c239_sourceOf : one c239_sourceOf
@@ -369,7 +369,7 @@ sig c283_automatable
 {}
 { one @r_c283_automatable.this }
 
-fact { #c284_BusinessPolicy <= 0 }
+fact { #c284_BusinessPolicy = 0 }
 abstract sig c284_BusinessPolicy extends c228_Directive
 { r_c285_providesBasisFor : some c285_providesBasisFor
 , r_c295_governs : set c295_governs
@@ -409,7 +409,7 @@ sig c316_includes
 { ref : one c284_BusinessPolicy }
 { one @r_c316_includes.this }
 
-fact { #c326_BusinessRule <= 0 }
+fact { #c326_BusinessRule = 0 }
 abstract sig c326_BusinessRule extends c228_Directive
 { r_c334_enforcementLevel : one c334_enforcementLevel
 , r_c341_hasEnforcementLevelEffectedBy : one c341_hasEnforcementLevelEffectedBy
@@ -462,7 +462,7 @@ sig c357_expressedUsingStandardBusinessVocabulary
 {}
 { one @r_c357_expressedUsingStandardBusinessVocabulary.this }
 
-fact { #c358_Regulation <= 0 }
+fact { #c358_Regulation = 0 }
 abstract sig c358_Regulation extends c1_Element
 { r_c359_aRolePlayedBy : one c359_aRolePlayedBy }
 { all disj x, y : this.@r_c359_aRolePlayedBy | (x.@ref) != (y.@ref) }
@@ -471,7 +471,7 @@ sig c359_aRolePlayedBy
 { ref : one c228_Directive }
 { one @r_c359_aRolePlayedBy.this }
 
-fact { #c369_Influencer <= 0 }
+fact { #c369_Influencer = 0 }
 abstract sig c369_Influencer extends c1_Element
 { r_c370_externalInfluencer : lone c370_externalInfluencer
 , r_c389_internalInfluencer : lone c389_internalInfluencer }
@@ -617,7 +617,7 @@ sig c398_implicitCorporateValue
 {}
 { one @r_c398_implicitCorporateValue.this }
 
-fact { #c399_Assessment <= 0 }
+fact { #c399_Assessment = 0 }
 abstract sig c399_Assessment extends c1_Element
 { r_c400_identifies : one c400_identifies
 , r_c410_about : one c410_about
@@ -686,7 +686,7 @@ sig c465_threat
 {}
 { one @r_c465_threat.this }
 
-fact { #c466_PotentialImpact <= 0 }
+fact { #c466_PotentialImpact = 0 }
 abstract sig c466_PotentialImpact extends c1_Element
 { r_c467_significantTo : one c467_significantTo
 , r_c477_providesImpetusFor : one c477_providesImpetusFor
@@ -746,35 +746,35 @@ sig c504_unitOfMeasure
 { ref : one c517_Currency }
 { one @r_c504_unitOfMeasure.this }
 
-fact { #c514_Metric <= 0 }
+fact { #c514_Metric = 0 }
 abstract sig c514_Metric extends c1_Element
 {}
 
-fact { #c515_KeyPerformanceIndicator <= 0 }
+fact { #c515_KeyPerformanceIndicator = 0 }
 abstract sig c515_KeyPerformanceIndicator extends c514_Metric
 {}
 
-fact { #c516_CriticalSuccessFactor <= 0 }
+fact { #c516_CriticalSuccessFactor = 0 }
 abstract sig c516_CriticalSuccessFactor extends c514_Metric
 {}
 
 abstract sig c517_Currency
 {}
 
-lone sig c518_USD extends c517_Currency
+one sig c518_USD extends c517_Currency
 {}
 
-lone sig c519_EUR extends c517_Currency
+one sig c519_EUR extends c517_Currency
 {}
 
-lone sig c520_CAD extends c517_Currency
+one sig c520_CAD extends c517_Currency
 {}
 
-fact { #c521_OrganizationUnit <= 0 }
+fact { #c521_OrganizationUnit = 0 }
 abstract sig c521_OrganizationUnit
 {}
 
-fact { #c522_BusinessProcess <= 0 }
+fact { #c522_BusinessProcess = 0 }
 abstract sig c522_BusinessProcess
 {}
 

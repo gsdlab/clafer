@@ -497,7 +497,7 @@ getUid (PosIdent (pos', id')) irMap = if Map.lookup (range (PosIdent (pos', id')
                         then "Lookup failed"
                         else let IRPExp pexp = head $ fromJust $ Map.lookup (range (PosIdent (pos', id'))) irMap in
                           findUid id' $ getIdentPExp pexp
-                          where {getIdentPExp (PExp _ _ _ exp') = getIdentIExp exp';
+                          where {getIdentPExp (PExp _ _ _ _ exp') = getIdentIExp exp';
                                  getIdentIExp (IFunExp _ exps') = concatMap getIdentPExp exps';
                                  getIdentIExp (IClaferId _ id'' _) = [id''];
                                  getIdentIExp (IDeclPExp _ _ pexp) = getIdentPExp pexp;
@@ -520,7 +520,10 @@ getUseId :: Span -> Map.Map Span [Ir] -> (String, String)
 getUseId s irMap = if Map.lookup s irMap == Nothing
                       then ("Uid not Found", "Uid not Found")
                       else let IRClafer iClafer = head $ fromJust $ Map.lookup s irMap in
-                        (uid iClafer, sident $ exp $ head $ supers $ super iClafer)
+                        if ((supers $ super iClafer) /= []) then
+                          (uid iClafer, sident $ exp $ head $ supers $ super iClafer)
+                            else
+                              (uid iClafer, sident $ exp $ head $ refs $ reference iClafer)
 
 while :: Bool -> String -> String
 while bool exp' = if bool then exp' else ""

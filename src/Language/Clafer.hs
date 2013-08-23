@@ -1,5 +1,5 @@
 {-
- Copyright (C) 2012-2013 Kacper Bak, Jimmy Liang, Michal Antkiewicz <http://gsd.uwaterloo.ca>
+ Copyright (C) 2012-2013 Kacper Bak, Jimmy Liang, Michal Antkiewicz, Luke Brown <http://gsd.uwaterloo.ca>
 
  Permission is hereby granted, free of charge, to any person obtaining a copy of
  this software and associated documentation files (the "Software"), to deal in
@@ -88,6 +88,7 @@ import Language.Clafer.Generator.Schema
 import Language.Clafer.Generator.Stats
 import Language.Clafer.Generator.Html
 import Language.Clafer.Generator.Graph
+import Prelude hiding (exp)
 
 type VerbosityL = Int
 type InputModel = String
@@ -225,7 +226,6 @@ parse =
     let env'' = env'{cAst = Just ast, astModuleTrace = traceAstModule ast}
     when (debug') $ takeSnapShot env'' Mapped
     putEnv env''
-
   where
   parseFrag :: (Monad m) => ClaferArgs -> String -> ClaferT m (Err Module)
   parseFrag args' =
@@ -252,13 +252,14 @@ compile =
     env <- getEnv
     let debug' = debug $ args env
     ast' <- getAst
-    let desugaredMod = desugar ast'
-    let clafersWithKeyWords = foldMapIR isKeyWord desugaredMod
-    when (""/=clafersWithKeyWords) $ throwErr (ClaferErr $ ("The model contains clafers with keyWords as names.\nThe following places contain keyWords as names:\n"++) $ clafersWithKeyWords :: CErr Span)
-    ir <- analyze (args env) desugaredMod
+    let desugaredModule = desugar ast'
+    let clafersWithKeyWords = foldMapIR isKeyWord desugaredModule
+    when (""/=clafersWithKeyWords) $ throwErr (ClaferErr $ ("The model contains clafers with keywords as names.\nThe following places contain keyWords as names:\n"++) $ clafersWithKeyWords :: CErr Span)
+    
+    ir <- analyze (args env) desugaredModule
     let (imodule, _, _) = ir
-    let spanList = foldMapIR gt1 imodule
-    when ((afm $ args env) && spanList/="") $ throwErr (ClaferErr $ ("The model is not an attributed feature model .\nThe following places contain cardinality larger than 1:\n"++) $ spanList :: CErr Span)
+    let failSpanList = foldMapIR gt1 imodule
+    when ((afm $ args env) && failSpanList/="") $ throwErr (ClaferErr $ ("The model is not an attributed feature model .\nThe following places contain cardinality larger than 1:\n"++) $ failSpanList :: ClaferSErr)
 
     let env' = env{ cIr = Just ir, irModuleTrace = traceIrModule imodule }
     putEnv env'
@@ -271,10 +272,10 @@ compile =
       isKeyWord (IRClafer IClafer{cinPos = (PosSpan _ (PosPos _ l c) _) ,ident=i}) = if (i `elem` keyWords) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
       isKeyWord _ = ""
       gt1 :: Ir -> String
-      gt1 (IRClafer (IClafer (Span (Pos l c) _) _ _ _ _ _ (Just (_, m)) _ _)) = if (m > 1 || m < 0) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
-      gt1 (IRClafer (IClafer (Span (PosPos _ l c) _) _ _ _ _ _ (Just (_, m)) _ _)) = if (m > 1 || m < 0) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else "" 
-      gt1 (IRClafer (IClafer (PosSpan _ (Pos l c) _) _ _ _ _ _ (Just (_, m)) _ _)) = if (m > 1 || m < 0) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
-      gt1 (IRClafer (IClafer (PosSpan _ (PosPos _ l c) _) _ _ _ _ _ (Just (_, m)) _ _)) = if (m > 1 || m < 0) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
+      gt1 (IRClafer (IClafer _ (Span (Pos l c) _) False _ _ _ _  _ (Just (_, m)) _ _)) = if (m > 1 || m < 0) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
+      gt1 (IRClafer (IClafer _ (Span (PosPos _ l c) _) False _ _ _ _ _ (Just (_, m)) _ _)) = if (m > 1 || m < 0) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else "" 
+      gt1 (IRClafer (IClafer _ (PosSpan _ (Pos l c) _) False _ _ _ _ _ (Just (_, m)) _ _)) = if (m > 1 || m < 0) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
+      gt1 (IRClafer (IClafer _ (PosSpan _ (PosPos _ l c) _) False _ _ _ _ _ (Just (_, m)) _ _)) = if (m > 1 || m < 0) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
       gt1 _ = ""
 
 -- Splits the IR into their fragments, and generates the output for each fragment.
@@ -312,7 +313,7 @@ generateFragments =
       PosSpan _ _ e -> e <= p
   generateFragment :: ClaferArgs -> [IElement] -> String
   generateFragment args' frag =
-    flatten $ cconcat $ map (genDeclaration args') frag
+    flatten $ cconcat $ flip map frag $ genDeclaration args'
 
 -- Splits the AST into their fragments, and generates the output for each fragment.
 generateHtml :: ClaferEnv -> Module -> String
@@ -391,7 +392,7 @@ data CompilerResult = CompilerResult {
                             stringMap :: (Map Int String)
                             } deriving Show
 
-desugar :: Module -> IModule  
+desugar :: Module -> IModule
 desugar tree = desugarModule tree
 
 liftError :: (Monad m, Language.ClaferT.Throwable t) => Either t a -> ClaferT m a
@@ -446,4 +447,21 @@ claferIRXSD :: String
 claferIRXSD = Language.Clafer.Generator.Schema.xsd
 
 keyWords :: [String]
-keyWords = ["ref","parent","Abstract","abstract", "else", "in", "no", "opt", "xor", "all", "enum", "lone", "not", "or", "disj", "extends", "mux", "one", "some"]
+
+keyWords = ["ref","parent","Abstract","abstract", "else", "in", "no", "opt", "xor", "all", "enum", "lone", "not", "or", "disj", "extends", "mux", "one", "some", "clafer"]
+
+{-
+Use this to update the parent pointers in Ir if needed (mapIR addParents imodule)
+This is an old version before ISuper and IRefrence Parents were added please change accordingly
+addParents :: Ir -> Ir
+addParents (IRClafer clafer) = IRClafer $ clafer{elements = 
+  map (\e -> case e of
+    (IEClafer c) -> IEClafer c{claferParent = Just clafer}
+    (IEConstraint _ b p) -> IEConstraint (Just clafer) b p
+    (IEGoal _ b p) -> IEGoal (Just clafer) b p) $ elements clafer}
+addParents (IRPExp pexp) = IRPExp pexp{exp = case (exp pexp) of
+  (IDeclPExp q d pexp') -> IDeclPExp q d pexp'{pExpParent = Just pexp}
+  (IFunExp op' pexps) -> IFunExp op' $ map (\p -> p{pExpParent = Just pexp}) pexps
+  exp' -> exp'}
+addParents i = i
+-}

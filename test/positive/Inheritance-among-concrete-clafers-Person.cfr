@@ -1,0 +1,13 @@
+abstract Person
+	Head
+		Eye 2
+
+Couple
+	Alice : Person
+		AliceHead : Head
+			e1 : Eye
+			e2 : Eye
+	Bob : Person
+		BobHead : Head
+			e1 : Eye
+			e2 : Eye

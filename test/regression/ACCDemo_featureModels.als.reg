@@ -68,6 +68,6 @@ sig c16_Audible
 {}
 { one @r_c16_Audible.this }
 
-lone sig c17_aCar extends c1_Car
+one sig c17_aCar extends c1_Car
 {}
 

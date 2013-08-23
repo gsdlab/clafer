@@ -2,7 +2,7 @@ open util/integer
 pred show {}
 
 
-lone sig c1_telematicsSystem
+one sig c1_telematicsSystem
 { r_c2_channel : one c2_channel
 , r_c5_extraDisplay : lone c5_extraDisplay
 , r_c6_size : one c6_size }
@@ -12,11 +12,10 @@ lone sig c1_telematicsSystem
   (some (this.@r_c6_size).@r_c8_large) <=> (no (((c98_plaECU.@r_c99_display).@r_c75_options).@r_c84_size).@r_c85_small)
   (some (this.@r_c6_size).@r_c7_small) <=> (no (((c98_plaECU.@r_c99_display).@r_c75_options).@r_c84_size).@r_c86_large) }
 
-lone sig c2_channel
+one sig c2_channel
 { r_c3_single : lone c3_single
 , r_c4_dual : lone c4_dual }
-{ one r_c2_channel
-  let children = (r_c3_single + r_c4_dual) | one children }
+{ let children = (r_c3_single + r_c4_dual) | one children }
 
 lone sig c3_single
 {}
@@ -30,11 +29,10 @@ lone sig c5_extraDisplay
 {}
 { one r_c5_extraDisplay }
 
-lone sig c6_size
+one sig c6_size
 { r_c7_small : lone c7_small
 , r_c8_large : lone c8_large }
-{ one r_c6_size
-  let children = (r_c7_small + r_c8_large) | one children }
+{ let children = (r_c7_small + r_c8_large) | one children }
 
 lone sig c7_small
 {}
@@ -110,7 +108,7 @@ sig c99_display extends c64_display
   (this.(@r_c65_server.@ref)) = (this.~@r_c99_display)
   no (this.@r_c75_options).@r_c87_cache }
 
-lone sig c107_ECU1 extends c98_plaECU
+one sig c107_ECU1 extends c98_plaECU
 {}
 
 lone sig c108_ECU2 extends c98_plaECU

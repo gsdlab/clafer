@@ -132,11 +132,6 @@ sig c162_total_fuel
 { ref : one Int }
 { one @r_c162_total_fuel.this }
 
-lone sig c169_aCar extends c7_Car
+one sig c169_aCar extends c7_Car
 {}
 
-objectives o_global {
-minimize c169_aCar.(@r_c148_total_cost.@ref) ,
-minimize c169_aCar.(@r_c162_total_fuel.@ref) ,
-maximize c169_aCar.(@r_c155_total_comfort.@ref) 
-}

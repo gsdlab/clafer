@@ -1,6 +1,6 @@
 {-# LANGUAGE RankNTypes, FlexibleContexts #-}
 {-
- Copyright (C) 2012 Kacper Bak, Jimmy Liang, Michal Antkiewicz <http://gsd.uwaterloo.ca>
+ Copyright (C) 2012 Kacper Bak, Jimmy Liang, Michal Antkiewicz, Luke Brown <http://gsd.uwaterloo.ca>
 
  Permission is hereby granted, free of charge, to any person obtaining a copy of
  this software and associated documentation files (the "Software"), to deal in
@@ -144,6 +144,7 @@ makeEnv args' = ClaferEnv { args = args'',
 data SnapShotId = Start | Parsed | Mapped | Desugared | FoundDuplicates | NameResolved 
                   | InheritanceResolved | TypeResolved | Transformed | Optimized 
                   | Compiled deriving (Show, Ord, Eq)
+                  
 numberOfSS :: Int
 numberOfSS = 11 -- REMEMBER TO UPDATE THIS WHEN ADDING SNAPSHOTS!
 
@@ -151,6 +152,7 @@ type SnapShots = (Map.Map SnapShotId ClaferEnv)
 
 takeSnapShot :: MonadWriter (Map SnapShotId ClaferEnv) m => ClaferEnv -> SnapShotId -> m()
 takeSnapShot env p = tell $ Map.singleton p env 
+
 
 type ClaferM = ClaferT Identity
 -- Monad for using Clafer.

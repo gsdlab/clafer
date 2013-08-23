@@ -1,0 +1,13 @@
+// Tests whether abstract clafers can be declared non-top level 
+//
+// Expected Output: ??
+//
+// Current Output:
+//   C
+//     D
+
+abstract A
+  abstract B
+	 
+C : A
+D : B
