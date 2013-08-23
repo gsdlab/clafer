@@ -415,6 +415,7 @@ claferIRXSD :: String
 claferIRXSD = Language.Clafer.Generator.Schema.xsd
 
 keyWords :: [String]
+
 keyWords = ["ref","parent","Abstract","abstract", "else", "in", "no", "opt", "xor", "all", "enum", "lone", "not", "or", "disj", "extends", "mux", "one", "some", "clafer"]
 
 {-
@@ -432,4 +433,3 @@ addParents (IRPExp pexp) = IRPExp pexp{exp = case (exp pexp) of
   exp' -> exp'}
 addParents i = i
 -}
-
