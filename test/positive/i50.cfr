@@ -5,6 +5,8 @@
 abstract A
     b ?
 
+a : A
+
 C
     b  ?
     a -> A
