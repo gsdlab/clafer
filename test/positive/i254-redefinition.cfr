@@ -3,12 +3,14 @@
 C 10
 
 abstract A
-   b ->> C *
+   b ->> C 2..*
 
-A1 : A
+a : A 3
 
 CC : C 5
 
-AA : A
-   b -> CC 3..10
+abstract AA : A
+   b -> CC 2..5
 // b : super.b -> CC 1..10
+
+aa : AA 3
