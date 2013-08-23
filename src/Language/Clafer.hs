@@ -1,5 +1,5 @@
 {-
- Copyright (C) 2012-2013 Kacper Bak, Jimmy Liang, Michal Antkiewicz <http://gsd.uwaterloo.ca>
+ Copyright (C) 2012-2013 Kacper Bak, Jimmy Liang, Michal Antkiewicz, Luke Brown <http://gsd.uwaterloo.ca>
 
  Permission is hereby granted, free of charge, to any person obtaining a copy of
  this software and associated documentation files (the "Software"), to deal in
@@ -246,15 +246,14 @@ compile =
     ast' <- getAst
     let desugaredModule = desugar ast'
     let clafersWithKeyWords = foldMapIR isKeyWord desugaredModule
-    when (""/=clafersWithKeyWords) $ throwErr (ClaferErr $ ("The model contains clafers with keyWords as names.\nThe following places contain keyWords as names:\n"++) $ clafersWithKeyWords :: CErr Span)
+    when (""/=clafersWithKeyWords) $ throwErr (ClaferErr $ ("The model contains clafers with keywords as names.\nThe following places contain keyWords as names:\n"++) $ clafersWithKeyWords :: CErr Span)
     
-    ir' <- analyze (args env) desugaredModule
-    let (imodule, g, b) = ir'
+    ir <- analyze (args env) desugaredModule
+    let (imodule, _, _) = ir
     let imodTrace = traceIrModule imodule
-    let ir = (imodule, g, b)
 
     let failSpanList = foldMapIR gt1 imodule
-    when ((afm $ args env) && failSpanList/="") $ throwErr (ClaferErr $ ("The model is not an attributed feature model .\nThe following places contain cardinality larger than 1:\n"++) $ failSpanList :: CErr Span)
+    when ((afm $ args env) && failSpanList/="") $ throwErr (ClaferErr $ ("The model is not an attributed feature model .\nThe following places contain cardinality larger than 1:\n"++) $ failSpanList :: ClaferSErr)
     putEnv $ env{ cIr = Just ir, irModuleTrace = imodTrace}
     where
       isKeyWord :: Ir -> String
@@ -264,10 +263,10 @@ compile =
       isKeyWord (IRClafer IClafer{cinPos = (PosSpan _ (PosPos _ l c) _) ,ident=i}) = if (i `elem` keyWords) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
       isKeyWord _ = ""
       gt1 :: Ir -> String
-      gt1 (IRClafer (IClafer _ (Span (Pos l c) _) False _ _ _ _ (Just (_, m)) _ _)) = if (m > 1 || m < 0) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
-      gt1 (IRClafer (IClafer _ (Span (PosPos _ l c) _) False _ _ _ _ (Just (_, m)) _ _)) = if (m > 1 || m < 0) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else "" 
-      gt1 (IRClafer (IClafer _ (PosSpan _ (Pos l c) _) False _ _ _ _ (Just (_, m)) _ _)) = if (m > 1 || m < 0) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
-      gt1 (IRClafer (IClafer _ (PosSpan _ (PosPos _ l c) _) False _ _ _ _ (Just (_, m)) _ _)) = if (m > 1 || m < 0) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
+      gt1 (IRClafer (IClafer _ (Span (Pos l c) _) False _ _ _ _  _ (Just (_, m)) _ _)) = if (m > 1 || m < 0) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
+      gt1 (IRClafer (IClafer _ (Span (PosPos _ l c) _) False _ _ _ _ _ (Just (_, m)) _ _)) = if (m > 1 || m < 0) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else "" 
+      gt1 (IRClafer (IClafer _ (PosSpan _ (Pos l c) _) False _ _ _ _ _ (Just (_, m)) _ _)) = if (m > 1 || m < 0) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
+      gt1 (IRClafer (IClafer _ (PosSpan _ (PosPos _ l c) _) False _ _ _ _ _ (Just (_, m)) _ _)) = if (m > 1 || m < 0) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
       gt1 _ = ""
 
 -- Splits the IR into their fragments, and generates the output for each fragment.
@@ -416,10 +415,12 @@ claferIRXSD :: String
 claferIRXSD = Language.Clafer.Generator.Schema.xsd
 
 keyWords :: [String]
-keyWords = ["ref","parent","Abstract","abstract", "else", "in", "no", "opt", "xor", "all", "enum", "lone", "not", "or", "disj", "extends", "mux", "one", "some"]
+
+keyWords = ["ref","parent","Abstract","abstract", "else", "in", "no", "opt", "xor", "all", "enum", "lone", "not", "or", "disj", "extends", "mux", "one", "some", "clafer"]
 
 {-
 Use this to update the parent pointers in Ir if needed (mapIR addParents imodule)
+This is an old version before ISuper and IRefrence Parents were added please change accordingly
 addParents :: Ir -> Ir
 addParents (IRClafer clafer) = IRClafer $ clafer{elements = 
   map (\e -> case e of

@@ -1,5 +1,5 @@
 {-
- Copyright (C) 2012-2013 Kacper Bak, Jimmy Liang <http://gsd.uwaterloo.ca>
+ Copyright (C) 2012-2013 Kacper Bak, Jimmy Liang, Luke Brown <http://gsd.uwaterloo.ca>
 
  Permission is hereby granted, free of charge, to any person obtaining a copy of
  this software and associated documentation files (the "Software"), to deal in
@@ -123,7 +123,7 @@ conPutStrLn args' s = when (not $ console_output args') $ putStrLn s
 runValidate :: ClaferArgs -> String -> IO ()
 runValidate args' fo = do
   let path = (tooldir args') ++ "/"
-  liftIO $ putStrLn ("tooldir=" ++ path)
+  liftIO $ putStrLn ("Validating " ++ (file args'))
   case (mode args') of
     Xml -> do
       writeFile "ClaferIR.xsd" claferIRXSD

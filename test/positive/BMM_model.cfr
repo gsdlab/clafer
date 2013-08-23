@@ -112,7 +112,7 @@ abstract Directive : Mean
 abstract BusinessPolicy : Directive
     providesBasisFor -> BusinessRule +
     // governsBP -> BusinessProcess +    /* = governs.realizedBy // derived from the processes that realize the courses of action */
-    governs -> CourseOfAction *
+    governs -> CourseOfAction 
        control
        guide
        shape

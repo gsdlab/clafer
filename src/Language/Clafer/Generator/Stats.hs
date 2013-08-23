@@ -44,7 +44,7 @@ statsClafer claf = do
   if isAbstract claf
     then modify (\e -> e {naClafers = naClafers e + 1})
     else
-      if isOverlapping $ super claf
+      if isOverlapping claf
         then modify (\e -> e {nrClafers = nrClafers e + 1})
         else modify (\e -> e {ncClafers = ncClafers e + 1})
   sglCard' <- gets sglCard

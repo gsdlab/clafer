@@ -1,4 +1,6 @@
-quarter *
+// [i216] http://gsd.uwaterloo.ca:8888/question/917/inheritance-among-concrete-clafers
+
+quarter +
    month 3
       week 4
          day 7

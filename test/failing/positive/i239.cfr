@@ -1,0 +1,10 @@
+// run with larger bitwidth to prevent overflows
+
+x ->> integer 2..*
+	[ this >= -5 && this <= 5 ]
+
+y ->> integer 2..*
+	[ this >= -5 && this <= 5 ]
+
+z -> integer = sum (x ++ y)  // this is wrong but should return the same result as
+Z -> integer = sum x + sum y   // that is always correct

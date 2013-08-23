@@ -7,7 +7,7 @@ filename=$(basename $1)
 filename="${filename%%.*}"
 #The name of the method is print_<filename>
 echo "{-"
-echo " Copyright (C) 2012 Jimmy Liang <http://gsd.uwaterloo.ca>"
+echo " Copyright (C) 2012, 2013 Jimmy Liang <http://gsd.uwaterloo.ca>"
 echo ""
 echo " Permission is hereby granted, free of charge, to any person obtaining a copy of"
 echo " this software and associated documentation files (the \"Software\"), to deal in"
@@ -28,6 +28,7 @@ echo " OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 echo " SOFTWARE."
 echo "-}"
 echo "module Language.Clafer.Generator.Schema where"
+echo "xsd :: String"
 echo "xsd = concat [ \"\""
 # Remove all Windows style carriage returns
 #Set the internal field separator to empty string to preserve leading white space

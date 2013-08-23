@@ -6,7 +6,7 @@ filename=$(basename $1)
 filename="${filename%%.*}"
 #The name of the method is print_<filename>
 echo "{-"
-echo " Copyright (C) 2012 Christopher Walker <http://gsd.uwaterloo.ca>"
+echo " Copyright (C) 2012, 2013 Christopher Walker, Michal Antkiewicz <http://gsd.uwaterloo.ca>"
 echo ""
 echo " Permission is hereby granted, free of charge, to any person obtaining a copy of"
 echo " this software and associated documentation files (the \"Software\"), to deal in"
@@ -30,6 +30,7 @@ echo "module Language.Clafer.Css where"
 echo ""
 echo "header = \"<!DOCTYPE html>\n<html>\n<head>\n<meta http-equiv=\\\"X-UA-Compatible\\\" content=\\\"IE=9\\\">\n\""
 echo ""
+echo "css :: String"
 echo "css = unlines [ "
 # Remove all Windows style carriage returns
 #Set the internal field separator to empty string to preserve leading white space

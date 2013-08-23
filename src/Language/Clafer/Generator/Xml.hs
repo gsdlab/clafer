@@ -1,5 +1,5 @@
 {-
- Copyright (C) 2012 Kacper Bak, Jimmy Liang <http://gsd.uwaterloo.ca>
+ Copyright (C) 2012 Kacper Bak, Jimmy Liang, Luke Brown <http://gsd.uwaterloo.ca>
 
  Permission is hereby granted, free of charge, to any person obtaining a copy of
  this software and associated documentation files (the "Software"), to deal in
@@ -70,13 +70,14 @@ genXmlModule imodule = concat
 
 genXmlClafer :: IClafer -> Result
 genXmlClafer x = case x of
-  IClafer _ pos abstract gcrd id' uid' super' crd glcard es ->
+  IClafer _ pos abstract gcrd id' uid' super' ref' crd glcard es ->
     concat [ tag "Position" $ genXmlPosition pos
            , genXmlAbstract abstract
            , optTag gcrd genXmlGCard
            , genXmlId id'
            , genXmlUid uid'
            , flip genXmlSuper super' $ IEClafer x
+           , flip genXmlRef ref' $ IEClafer x
            , optTag crd genXmlCard
            , genXmlGlCard glcard
            , concatMap genXmlElement es] 
@@ -102,11 +103,16 @@ genXmlUid :: String -> String
 genXmlUid uid' = tag "UniqueId" uid'
 
 genXmlSuper :: IElement -> ISuper -> String
-genXmlSuper e x = case x of
-  ISuper _ isOverlapping' sk pexps -> tag "Supers" $ concat $
-    (genXmlBoolean "IsOverlapping" isOverlapping') :
-    (tag "superKind" $ show $ sk) :
-    [concatMap (genXmlPExp "Super" e) pexps]
+genXmlSuper e (ISuper _ sk pexps) = 
+  tag "Supers" $ concat $
+    (tag "SuperKind" $ show $ sk) :
+      [concatMap (genXmlPExp "Super" e) pexps]
+
+genXmlRef :: IElement -> IReference -> String
+genXmlRef e (IReference _ s pexps) =
+  tag "Refs" $ concat $
+    (genXmlBoolean "IsSet" s) :
+      [concatMap (genXmlPExp "Ref" e) pexps]
 
 genXmlCard :: (Integer, Integer) -> String
 genXmlCard interval' = tag "Card" $ genXmlInterval interval'
@@ -185,7 +191,9 @@ genXmlIExp x e pid' ppid' = case x of
         else if (sident'=="parent" && ppid'/=Nothing) then (uid $ fromJust ppid') 
           else sident')
     , genXmlBoolean "IsTop" isTop'
-    , tag "kind" $ if (sident' `elem` ["this","parent"]) then sident' else "clafer"]
+--    , tag "kind" $ if (sident' `elem` ["this","parent"]) then sident' else "clafer"
+--  this is not in IR and it's not clear how the users of XML need that. Not in ClaferIR.xsd either
+    ]
 
 genXmlDecl :: IElement -> IDecl -> String
 genXmlDecl e (IDecl disj locids pexp) = tag "Declaration" $ concat

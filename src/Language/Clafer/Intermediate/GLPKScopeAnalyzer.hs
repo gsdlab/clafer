@@ -23,6 +23,7 @@
 -}
 module Language.Clafer.Intermediate.GLPKScopeAnalyzer (glpkScopeAnalysis) where
 
+import Language.Clafer.Intermediate.ResolverName (addParentsPExp)
 import Language.Clafer.Front.Absclafer hiding (Path)
 import qualified Language.Clafer.Intermediate.Intclafer as I
 import Language.Clafer.Intermediate.Analysis
@@ -298,7 +299,7 @@ addChildren abs' (Part steps) ss@(Part supSteps) =
                 let supP = Part $ supSteps ++ [chi]
                 
                 chiC <- claferWithUid chi
-                let s = SClafer (reifyPartName chiP) chi False (low chiC) (high chiC) (groupLow chiC) (groupHigh chiC) (Just $ reifyPartName par) (Just $ Colon $ reifyPartName supP) (constraints chiC)
+                let s = SClafer (reifyPartName chiP) chi False (low chiC) (high chiC) (groupLow chiC) (groupHigh chiC) (Just $ reifyPartName par) (Just $ flip SSuper Nothing $ Just $ Colon $ reifyPartName supP) (constraints chiC)
                 return s <:> addChildren abs' chiP ss
         
         col <- runMaybeT $ colonOf parBase
@@ -418,9 +419,9 @@ optimizeAllConstraints curThis constraints =
     partitionConstraint e = return (curThis, e)
     
     rename :: String -> I.PExp -> I.PExp
-    rename f p@I.PExp{I.exp = exp'} =
-        p{I.exp = renameIExp exp'}
+    rename f p@I.PExp{I.exp = exp'} = pexp
         where
+        pexp = p{I.exp = addParentsPExp pexp $ renameIExp exp'}
         renameIExp (I.IFunExp op exps) = I.IFunExp op $ map (rename f) exps
         renameIExp (I.IDeclPExp quant oDecls bpexp) = I.IDeclPExp quant (map renameDecl oDecls) $ rename f bpexp
         renameIExp (I.IClaferId modName sident isTop)

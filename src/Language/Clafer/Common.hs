@@ -1,6 +1,6 @@
 {-# LANGUAGE DeriveDataTypeable, RankNTypes, KindSignatures, FlexibleContexts #-}
 {-
- Copyright (C) 2012 Kacper Bak, Jimmy Liang <http://gsd.uwaterloo.ca>
+ Copyright (C) 2012 Kacper Bak, Jimmy Liang, Luke Brown <http://gsd.uwaterloo.ca>
 
  Permission is hereby granted, free of charge, to any person obtaining a copy of
  this software and associated documentation files (the "Software"), to deal in
@@ -48,13 +48,15 @@ mkInteger (PosInteger (_, n)) = read n
 type Ident = PosIdent
 
 getSuper :: IClafer -> String
-getSuper = getSuperId . supers . super
+getSuper clafer' = 
+  if ([] == (supers $ super clafer')) then 
+    getSuperId $ refs $ reference clafer' else
+      getSuperId $ supers $ super clafer'
 
 getSuperNoArr :: IClafer -> String
-
 getSuperNoArr clafer
-  | isOverlapping $ super clafer = "clafer"
-  | otherwise                    = getSuper clafer
+  | isOverlapping clafer = "clafer"
+  | otherwise            = getSuper clafer
 
 getSuperId :: [PExp] -> String
 getSuperId = sident . Language.Clafer.Intermediate.Intclafer.exp . head
@@ -349,6 +351,7 @@ voidf :: Monad m => m t -> m ()
 voidf f = do
   _ <- f
   return ()
+  
 istop :: Span -> Bool
 istop (Span (Pos _ 1) _) = True
 istop (Span (PosPos _ _ 1) _) = True

@@ -61,3 +61,7 @@ fromRight (Left _) = error "Function fromLeft expects argument of the form 'Righ
 
 andMap :: (a -> Bool) -> [a] -> Bool
 andMap f lst = and $ map f lst
+
+getIR :: (String, Either [ClaferErr] CompilerResult) -> [(String, IModule)]
+getIR (file', (Right (CompilerResult{claferEnv = ClaferEnv{cIr = Just (iMod, _, _)}}))) = [(file', iMod)]
+getIR _ = []

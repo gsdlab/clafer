@@ -1,6 +1,6 @@
 {-# LANGUAGE RankNTypes #-}
 {-
- Copyright (C) 2012 Kacper Bak, Jimmy Liang <http://gsd.uwaterloo.ca>
+ Copyright (C) 2012 Kacper Bak, Jimmy Liang, Luke Brown <http://gsd.uwaterloo.ca>
 
  Permission is hereby granted, free of charge, to any person obtaining a copy of
  this software and associated documentation files (the "Software"), to deal in
@@ -77,30 +77,45 @@ desugarClafer par (PosClafer s abstract gcrd id' super' crd init' es)  =
   (IEClafer ic) : (desugarInit id' init')
   where
     ic = IClafer par s (desugarAbstract abstract) (desugarGCard gcrd) 
-      (transIdent id') "" is (desugarCard crd) (0, -1) ies
-    is = desugarSuper ic super'
-    ies = flip desugarElements es $ Just ic
+          (transIdent id') "" (desugarSuper ic super') 
+            (desugarRefrence ic super') (desugarCard crd) (0, -1) 
+             $ flip desugarElements es $ Just ic
 
 
 sugarClafer :: IClafer -> Clafer
-sugarClafer (IClafer _ _ abstract gcard' _ uid' super' crd _ es) = 
+sugarClafer (IClafer _ _ abstract gcard' _ uid' super' ref' crd _ es) = 
     Clafer (sugarAbstract abstract) (sugarGCard gcard') (mkIdent uid')
-      (sugarSuper super') (sugarCard crd) InitEmpty (sugarElements es)
+      (sugarSuper super' ref') (sugarCard crd) InitEmpty (sugarElements es)
 
 
 desugarSuper :: IClafer -> Super -> ISuper
 desugarSuper ic' SuperEmpty = desugarSuper ic' $ PosSuperEmpty noSpan
 desugarSuper ic' (SuperSome superhow setexp) = desugarSuper ic' $ PosSuperSome noSpan superhow setexp
 desugarSuper ic' (PosSuperEmpty s) =
-      ISuper ic' False TopLevel [PExp Nothing (Just $ TClafer []) "" s $ mkLClaferId baseClafer True]
+      ISuper ic' TopLevel [PExp Nothing (Just $ TClafer []) "" s $ mkLClaferId baseClafer True]
 desugarSuper ic' (PosSuperSome _ superhow setexp) =
-      ISuper ic' (desugarSuperHow superhow) TopLevel [desugarSetExp Nothing setexp]
+      ISuper ic' TopLevel $ if (desugarSuperHowS superhow) then [desugarSetExp Nothing setexp] else []
+
+desugarSuperHowS :: SuperHow -> Bool
+desugarSuperHowS SuperColon = desugarSuperHowS $ PosSuperColon noSpan
+desugarSuperHowS (PosSuperColon _) = True
+desugarSuperHowS _ = False
 
 
-desugarSuperHow :: SuperHow -> Bool
-desugarSuperHow SuperColon = desugarSuperHow $ PosSuperColon noSpan
-desugarSuperHow (PosSuperColon _) = False
-desugarSuperHow _  = True
+desugarRefrence :: IClafer -> Super -> IReference
+desugarRefrence ic' (SuperSome superhow setexp) = desugarRefrence ic' $ PosSuperSome noSpan superhow setexp
+desugarRefrence ic' (PosSuperSome _ superhow setexp) = case superhow of
+  SuperColon -> emptyIReference ic' 
+  (PosSuperColon _) -> emptyIReference ic' 
+  _ -> IReference ic' (desugarSuperHowR superhow) [desugarSetExp Nothing setexp]
+desugarRefrence ic' _ = emptyIReference ic' 
+
+desugarSuperHowR :: SuperHow -> Bool
+desugarSuperHowR SuperArrow = desugarSuperHowR $ PosSuperArrow noSpan
+desugarSuperHowR SuperMArrow = desugarSuperHowR $ PosSuperMArrow noSpan
+desugarSuperHowR (PosSuperArrow _) = True
+desugarSuperHowR (PosSuperMArrow _) = False
+desugarSuperHowR _  = error "desugarSuperHowR function from desugarer did not work properly" --Should never happen
 
 
 desugarInit :: PosIdent -> Init -> [IElement]
@@ -134,14 +149,11 @@ desugarModId (PosModIdIdent _ id') = transIdent id'
 sugarModId :: String -> ModId
 sugarModId modid = ModIdIdent $ mkIdent modid
 
-sugarSuper :: ISuper -> Super
-sugarSuper (ISuper _ _ _ []) = SuperEmpty
-sugarSuper (ISuper _ isOverlapping' _ [pexp]) = SuperSome (sugarSuperHow isOverlapping') (sugarSetExp pexp)
-sugarSuper _ = error "Function sugarSuper from Desugarer expects an ISuper with a list of length one, but it was given one with a list larger than one" -- Should never happen
-
-sugarSuperHow :: Bool -> SuperHow
-sugarSuperHow False = SuperColon
-sugarSuperHow True  = SuperMArrow
+sugarSuper :: ISuper -> IReference -> Super
+sugarSuper (ISuper _ _ []) (IReference _ _ []) = SuperEmpty
+sugarSuper (ISuper _ _ [pexp]) (IReference _ _ []) = SuperSome SuperColon (sugarSetExp pexp)
+sugarSuper (ISuper _ _ _) (IReference _ i [pexp]) = SuperSome (if i then SuperArrow else SuperMArrow) (sugarSetExp pexp)
+sugarSuper _ _ = error "Function sugarSuper from Desugarer expects an ISuper and IReference with a lists of length one or less, but it was given one with a list larger than one" -- Should never happen
 
 
 sugarInitHow :: Bool -> InitHow
@@ -314,10 +326,9 @@ sugarExInteger :: Integer -> ExInteger
 sugarExInteger n = if n == -1 then ExIntegerAst else (ExIntegerNum $ PosInteger ((0, 0), show n))
 
 desugarExp :: Maybe PExp -> Exp -> PExp
-desugarExp par x = 
-  let pexp = PExp par Nothing "" (range x) iexp
-      iexp = flip desugarExp' x $ Just pexp
-  in pexp
+desugarExp par x = pexp
+  where pexp = PExp par Nothing "" (range x) $ flip desugarExp' x $ Just pexp
+
 
 desugarExp' :: Maybe PExp -> Exp -> IExp
 desugarExp' par x = case x of
@@ -410,8 +421,7 @@ desugarOp f op' exps' =
 desugarSetExp :: Maybe PExp -> SetExp -> PExp
 desugarSetExp par' x = pexp
   where
-    pexp = PExp par' Nothing "" (range x) iexp
-    iexp = flip desugarSetExp' x $ Just pexp
+    pexp = PExp par' Nothing "" (range x) $ flip desugarSetExp' x $ Just pexp
 
 
 desugarSetExp' :: Maybe PExp -> SetExp -> IExp
@@ -424,17 +434,17 @@ desugarSetExp' par' x = case x of
   Range exp0 exp'        -> desugarSetExp' par' $ PosRange noSpan exp0 exp'
   Join exp0 exp'         -> desugarSetExp' par' $ PosJoin noSpan exp0 exp'
   ClaferId name  -> desugarSetExp' par' $ PosClaferId noSpan name
-  PosUnion _ exp0 exp'        -> dop par' iUnion        [exp0, exp']
-  PosUnionCom _ exp0 exp'     -> dop par' iUnion        [exp0, exp']
-  PosDifference _ exp0 exp'   -> dop par' iDifference   [exp0, exp']
-  PosIntersection _ exp0 exp' -> dop par' iIntersection [exp0, exp']
-  PosDomain _ exp0 exp'       -> dop par' iDomain       [exp0, exp']
-  PosRange _ exp0 exp'        -> dop par' iRange        [exp0, exp']
-  PosJoin _ exp0 exp'         -> dop par' iJoin         [exp0, exp']
+  PosUnion _ exp0 exp'        -> dop iUnion        [exp0, exp']
+  PosUnionCom _ exp0 exp'     -> dop iUnion        [exp0, exp']
+  PosDifference _ exp0 exp'   -> dop iDifference   [exp0, exp']
+  PosIntersection _ exp0 exp' -> dop iIntersection [exp0, exp']
+  PosDomain _ exp0 exp'       -> dop iDomain       [exp0, exp']
+  PosRange _ exp0 exp'        -> dop iRange        [exp0, exp']
+  PosJoin _ exp0 exp'         -> dop iJoin         [exp0, exp']
   PosClaferId _ name  -> desugarName name
 
   where
-  dop pare' = desugarOp (desugarSetExp pare')
+  dop = desugarOp (desugarSetExp par')
 
 
 sugarExp :: PExp -> Exp
@@ -522,7 +532,7 @@ desugarPath (PExp par' iType' pid' pos' x) = pexp
   where
   pexp = reducePExp $ PExp par' iType' pid' pos' result
   result
-    | isSet x     = IDeclPExp ISome [] $ PExp (Just pexp) Nothing "" pos' x
+    | isset x     = IDeclPExp ISome [] $ PExp (Just pexp) Nothing "" pos' x
     | isNegSome x = IDeclPExp INo   [] (bpexp $ Language.Clafer.Intermediate.Intclafer.exp $ head $ exps x){pExpParent = Just pexp}
     | otherwise   =  case x of
       (IDeclPExp q d p) -> IDeclPExp q d p{pExpParent = Just pexp}
@@ -532,18 +542,16 @@ desugarPath (PExp par' iType' pid' pos' x) = pexp
   isNegSome _ = False
 
 
-isSet :: IExp -> Bool
-isSet (IClaferId _ _ _)  = True
-isSet (IFunExp op' _) = op' `elem` setBinOps
-isSet _ = False
+isset :: IExp -> Bool
+isset (IClaferId _ _ _)  = True
+isset (IFunExp op' _) = op' `elem` setBinOps
+isset _ = False
 
 
 -- reduce parent
 reducePExp :: PExp -> PExp
-reducePExp (PExp par' t pid' pos' x) = 
-  let pexp = PExp par' t pid' pos' iexp
-      iexp = flip reduceIExp x $ Just pexp
-  in pexp
+reducePExp (PExp par' t pid' pos' x) = pexp
+  where pexp = PExp par' t pid' pos' $ flip reduceIExp x $ Just pexp
 
 reduceIExp :: Maybe PExp -> IExp -> IExp
 reduceIExp par' (IDeclPExp quant' decls' pexp) = IDeclPExp quant' decls' (reducePExp pexp){pExpParent = par'}
@@ -598,3 +606,7 @@ sugarQuant ILone = QuantLone
 sugarQuant IOne = QuantOne
 sugarQuant ISome = QuantSome
 sugarQuant IAll = error "sugarQaunt was called on IAll, this is not allowed!" --Should never happen
+
+emptyIReference :: IClafer -> IReference
+emptyIReference par' = IReference par' False []
+

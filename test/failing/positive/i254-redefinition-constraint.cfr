@@ -1,0 +1,28 @@
+// http://gsd.uwaterloo.ca:8888/question/1065/separate-the-super-clafer-and-reference-type
+
+C 10
+
+abstract A
+   b ->> C 2..*
+
+a : A 3
+
+CC : C 5
+
+abstract AA : A
+   b -> CC 2..5
+// b : super.b -> CC 1..10
+
+aa : AA 3
+// in this constraint, the name resolver currently fails
+
+[ all disj a1; a2 : aa | no (a1.b.ref & a2.b.ref) ]
+
+/* Compile error at line 17 column 33...
+clafer "b" cannot be defined because the name should be unique in the same namespace.
+Available paths:
+c17_aa.c7_b
+c17_aa.c3_b
+
+The name resolver should pick c7_b!
+*/
