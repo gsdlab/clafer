@@ -46,7 +46,7 @@ cleanEnv:
 	make 
 	echo "Don't forget to call 'make install to=<location of your choice>'"
 
-# build Schema.hs from ClaferIG.xsd, call after .xsd changed
+# build Schema.hs from ClaferIR.xsd, call after .xsd changed
 Schema.hs:
 	$(MAKE) -C $(SRC_DIR) Schema.hs
 

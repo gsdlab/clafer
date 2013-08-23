@@ -81,14 +81,17 @@
   <!-- . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
   <!-- data IClafer =
        IClafer {
-          isAbstract :: Bool,     - determines whether it's abstract
-          gcard :: Maybe IGCard,  - group cardinality
-          ident :: String,        - name
-          uid :: String,          - (o) unique identifier
-          super:: ISuper,         - superclafers
-          card :: Maybe Interval, - cardinality
-          glCard :: Interval,     - (o) global cardinality
-          elements :: [IElement]  - subclafers or constraints specified in the context of given clafer
+          claferParent :: Maybe IClafer,  -- Nothing => TopLevel, Just x => x is the parent of this clafer
+          cinPos :: Span,                 -- the position of the syntax in source code
+          isAbstract :: Bool,             -- whether abstract or not (i.e., concrete)
+          gcard :: Maybe IGCard,          -- group cardinality
+          ident :: String,                -- name
+          uid :: String,                  -- (o) unique identifier
+          super :: ISuper,                -- superclafers
+          reference :: IReference,        -- refrence types
+          card :: Maybe Interval,         -- clafer cardinality
+          glCard :: Interval,             -- (o) global cardinality
+          elements :: [IElement]          -- nested declarations
         }
   -->
   <xs:complexType name="IClafer">
@@ -120,6 +123,7 @@
                 <xs:element name="Id"         type="xs:string"/>
                 <xs:element name="UniqueId"   type="xs:string"/>
                 <xs:element name="Supers"     type="cl:ISuper"/>
+                <xs:element name="References" type="cl:IReference"/>
                 <xs:element name="Card"       type="cl:IInterval" minOccurs="0" maxOccurs="1"/>
                 <xs:element name="GlobalCard" type="cl:IInterval"/>
                 <xs:element ref="Declaration" minOccurs="0" maxOccurs="unbounded"/>
@@ -173,16 +177,36 @@
   </xs:complexType>
 
   <!-- . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
-  <!-- data ISuper =
-       ISuper {
-          isOverlapping :: Bool,
-          supers :: [PExp]
-        }
+  <!-- -- A list of superclafers.  
+       -- non overlapping (disjoint)
+        data ISuper =
+           ISuper {
+              iSuperParent :: IClafer, 
+              superKind :: SuperKind,
+              supers :: [PExp]
+            }
+        data SuperKind = TopLevel | Nested | Redefinition IClafer | RedefinitionFail String deriving Ord
   -->
   <xs:complexType name="ISuper">
     <xs:sequence>
-        <xs:element name="IsOverlapping" type="xs:boolean"/>
-        <xs:element name="Super"         type="cl:IParentExp" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element name="superKind" type="xs:string"/>  <!-- "TopLevel", "Nested", "Redefinition <uid>" /-->
+        <xs:element name="Super"     type="cl:IParentExp" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+<!--  -- ->   -- overlapping unique (set) [isSet=True]
+      -- ->>  -- overlapping non-unique (bag) [isSet=False]
+      data IReference = 
+        IReference {
+          iReferenceParent :: IClafer,
+          isSet :: Bool,  -- True - set reference clafer, False - bag reference clafer
+          refs :: [PExp]
+        }
+/-->
+  <xs:complexType name="IReference">
+    <xs:sequence>
+        <xs:element name="isSet" type="xs:boolean"/>  <!-- "TopLevel", "Nested", "Redefinition <uid>" /-->
+        <xs:element name="Reference" type="cl:IParentExp" minOccurs="0" maxOccurs="unbounded"/>
     </xs:sequence>
   </xs:complexType>
 
