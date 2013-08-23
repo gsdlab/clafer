@@ -105,7 +105,7 @@ genXmlUid uid' = tag "UniqueId" uid'
 genXmlSuper :: IElement -> ISuper -> String
 genXmlSuper e (ISuper _ sk pexps) = 
   tag "Supers" $ concat $
-    (tag "superKind" $ show $ sk) :
+    (tag "SuperKind" $ show $ sk) :
       [concatMap (genXmlPExp "Super" e) pexps]
 
 genXmlRef :: IElement -> IReference -> String
@@ -191,7 +191,9 @@ genXmlIExp x e pid' ppid' = case x of
         else if (sident'=="parent" && ppid'/=Nothing) then (uid $ fromJust ppid') 
           else sident')
     , genXmlBoolean "IsTop" isTop'
-    , tag "kind" $ if (sident' `elem` ["this","parent"]) then sident' else "clafer"]
+--    , tag "kind" $ if (sident' `elem` ["this","parent"]) then sident' else "clafer"
+--  this is not in IR and it's not clear how the users of XML need that. Not in ClaferIR.xsd either
+    ]
 
 genXmlDecl :: IElement -> IDecl -> String
 genXmlDecl e (IDecl disj locids pexp) = tag "Declaration" $ concat
