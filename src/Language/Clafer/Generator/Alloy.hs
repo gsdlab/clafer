@@ -166,7 +166,7 @@ genClafer :: ClaferArgs -> [String] -> IClafer -> Concat
 genClafer claferargs resPath oClafer = (cunlines $ filterNull
   [ cardFact +++ claferDecl clafer'
         ((showSet (CString "\n, ") $ genRelations claferargs clafer') +++
-        (optShowSet $ filterNull $ genConstraints claferargs resPath clafer'))
+        (optShowSet $ filterNull $ genConstraints oClafer claferargs resPath clafer'))
   ]) +++ CString "\n" +++ children'
   where
   clafer' = transPrimitive oClafer
@@ -255,8 +255,8 @@ genType m x = genPExp m [] x
 -- constraints
 -- user constraints + parent + group constraints + reference
 -- a = NUMBER do all x : a | x = NUMBER (otherwise alloy sums a set)
-genConstraints :: ClaferArgs -> [String]      -> IClafer -> [Concat]
-genConstraints    cargs    resPath c = 
+genConstraints :: IClafer -> ClaferArgs -> [String]-> IClafer -> [Concat]
+genConstraints oc cargs resPath c = 
   let constraintSoFar = (genParentConst resPath c) : (genGroupConst c) : genPathConst cargs  (if (noalloyruncommand cargs) then  (uid c ++ "_ref") else "ref") resPath c : constraints 
   in (if (all (== head constraintSoFar) $ tail constraintSoFar) then 
     (genRedefConst c " ") else (genRedefConst c " && ")) : constraintSoFar
@@ -268,7 +268,10 @@ genConstraints    cargs    resPath c =
       let constraint' = if genCardCrude (card c') `elem` ["one", "lone", "some"] then CString "" else mkCard ({- do not use the genRelName as the constraint name -} uid c') False (genRelName $ uid c') $ fromJust $ card c'
       in (case (superKind $ super c') of 
         (Redefinition _) -> 
-          CString $ "some r_" ++ (uid $ getReDefClafer c') ++ " => some r_" ++ (uid c') ++ (if (constraint' == CString "") then " " else " && ") 
+          --CString $ "some r_" ++ (uid $ getReDefClafer c') ++ " => some r_" ++ (uid c') ++ (if (constraint' == CString "") then " " else " && ") 
+          --CString $ (uid oc) ++ " <: r_" ++ (uid $ getReDefClafer c') ++ " in " ++ (uid oc) ++ " <: r_" ++ (uid c') ++ (if (constraint' == CString "") then " " else " && ")
+          --CString $ "@r_" ++ (uid $ getReDefClafer c') ++ " in r_" ++ (uid c') ++ (if (constraint' == CString "") then " " else " && ") 
+          CString $ (uid oc) ++ " <: @r_" ++ (uid $ getReDefClafer c') ++ " in @r_" ++ (uid c') ++ (if (constraint' == CString "") then " " else " && ")
         _ -> 
           CString "") +++ constraint'     
     IEGoal _ _ _ -> error "getConst function from Alloy generator was given a Goal, this function should only be given a Constrain or Clafer" -- This should never happen
