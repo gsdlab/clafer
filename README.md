@@ -64,6 +64,8 @@ On Linux
 
 1. [libglpk-dev](http://www.gnu.org/software/glpk/) v4.52
   * execute `sudo apt-get install libglpk-dev` on Ubuntu
+2. [libgmp-dev](http://gmplib.org/)
+  * execute `sudo apt-get install libgmp-dev` on Ubuntu
 
 On Windows
 
