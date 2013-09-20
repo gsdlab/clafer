@@ -1,6 +1,8 @@
 Clafer
 ======
 
+v0.3.4.20-9-2013
+
 [Clafer](http://clafer.org) is a general-purpose lightweight structural modeling language developed at [GSD Lab](http://gsd.uwaterloo.ca/), [University of Waterloo](http://uwaterloo.ca). 
 Clafer can be used for modeling of static hierarchical structures but has no support for modeling the change of the structures over time (behavior). 
 The main goal of Clafer is to make modeling more accessible to a wider range of users and domains. 
@@ -19,8 +21,6 @@ This is also known as *Concept Modeling* or *Ontology Modeling*.
 Clafer Compiler
 ===============
 
-v0.3.4.20-9-2013
-
 Clafer compiler provides a reference language implementation. 
 It translates models in Clafer to other formats (e.g. Alloy, XML, HTML, DOT) to allow for reasoning and processing with existing tools.
 
@@ -30,19 +30,29 @@ Clafer Multi-Objective Optimizer ([ClaferMOO](https://github.com/gsdlab/ClaferMo
 [Visualizer](https://github.com/gsdlab/ClaferMooVisualizer), and 
 Clafer Wiki ([ClaferWiki](https://github.com/gsdlab/claferwiki)).
 
+Contributors
+------------
+
+* [Kacper Bak](http://gsd.uwaterloo.ca/kbak), Ph.D. Candidate. Main developer.
+* [Jimmy Liang](http://gsd.uwaterloo.ca/jliang), MSc. Candidate. Main developer.
+* [Michał Antkiewicz](http://gsd.uwaterloo.ca/mantkiew), Research Engineer. Requirements, development, architecture, testing, technology transfer.
+* Luke Michael Brown, co-op student May-Aug 2013. Many improvements.
+
 Getting Clafer Tools
 --------------------
 
-Binary distributions of Clafer, ClaferIG, and ClaferWiki for Windows, Mac, and Linux, can be downloaded from [Clafer Tools - Binary Distributions](http://gsd.uwaterloo.ca/node/516). 
+Binary distributions of release 0.3.4 of 
+Clafer, 
+ClaferIG, 
+ClaferWiki, 
+ClaferMoo, 
+ClaferMooVisualizer, 
+and ClaferConfigurator 
+for Windows, Mac, and Linux, 
+can be downloaded from [Clafer Tools - Binary Distributions](http://gsd.uwaterloo.ca/node/516). 
 Clafer Wiki requires Haskell Platform and MinGW to run on Windows. 
 
 In case these binaries do not work on your particular machine configuration, the tools can be easily built from source code, as described below.
-
-The following tools are not part of the binary distribution and they have to be downloaded separately:
-
-* [ClaferMOO](https://github.com/gsdlab/ClaferMooStandalone) is a set of scripts in Python (cross-platform). 
-* [ClaferMooVisualizer](https://github.com/gsdlab/ClaferMooVisualizer) is a client/server web application written JavaScript.
-* [ClaferConfigurator](https://github.com/gsdlab/ClaferConfigurator) is a client/server web application written JavaScript.
 
 ### Dependencies for running
 
@@ -112,7 +122,7 @@ On Mac only
 
 ### Important: Branches must correspond
 
-Clafer, ClaferIG, ClaferWiki, ClaferMoo, and ClaferMooVisualizer are following the *simultaneous release model*. 
+Clafer, ClaferIG, ClaferWiki, ClaferMoo,  ClaferMooVisualizer, and ClaferConfigurator are following the *simultaneous release model*. 
 The branch `master` contains releases, whereas the branch `develop` contains code under development. 
 When building the tools, the branches should match:
 Releases `clafer/master` and `claferIG/master` are guaranteed to work well together.
@@ -265,7 +275,7 @@ Need help?
 ==========
 * See [Project's website](http://gsd.uwaterloo.ca/clafer) for news, technical reports and more
   * Check out a [Clafer tutorial](http://gsd.uwaterloo.ca/node/310)
-  * Try live instance of [ClaferWiki](http://gsd.uwaterloo.ca:5001)
+  * Try live instance of [ClaferWiki](http://t3-necsis.cs.uwaterloo.ca:8091)
   * Try [Online translator](http://gsd.uwaterloo.ca/clafer/translator)
 * Take a look at incomplete [Clafer wiki](https://github.com/gsdlab/clafer/wiki)
 * Browse example models in the [test suite](https://github.com/gsdlab/clafer/tree/master/test/positive) and [MOO examples](https://github.com/gsdlab/clafer/tree/master/spl_configurator/dataset)
