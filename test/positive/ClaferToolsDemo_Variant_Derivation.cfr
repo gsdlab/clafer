@@ -1,0 +1,34 @@
+abstract xor Bluetooth
+    Bluetooth20 ?
+    Bluetooth21 ?
+    Bluetooth40 ?
+
+abstract MobilePhone
+    Connectivity
+        `Bluetooth
+        GSM
+        LTE ?
+            [LiBattery1400]
+        WiFi ?
+        USB ?
+    xor Battery
+        LiBattery1150 ?
+        LiBattery1400 ?
+
+abstract LowEndPhone : MobilePhone
+    [no WiFi]
+
+abstract HighEndPhone : MobilePhone
+    [USB && WiFi]
+    QuadCPU ?
+//# FRAGMENT
+Phone1 : MobilePhone
+   [ WiFi ] 
+   [ LTE ]
+   [ Bluetooth21 ]
+//# FRAGMENT
+Phone2 : HighEndPhone
+   [ LTE ]
+   [ Bluetooth21 ]
+   [ QuadCPU ]
+//# FRAGMENT

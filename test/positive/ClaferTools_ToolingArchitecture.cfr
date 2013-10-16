@@ -1,0 +1,77 @@
+claferCompiler : claferLib
+
+claferIG : claferLib
+
+claferMOO : claferLib
+    moo
+//# FRAGMENT
+abstract claferLib
+    common
+    front : Front
+    intermediate : Intermediate
+    optimizer
+    generator : Generator
+//# FRAGMENT
+enum Representation = text | tokens | ast | ir
+//# FRAGMENT
+abstract io
+    input -> Representation
+    output -> Representation
+//# FRAGMENT
+abstract text2tokens : io
+    [input = text && output = tokens]
+
+abstract tokens2tokens : io
+    [input = tokens && output = tokens]
+
+abstract tokens2ast : io
+    [input = tokens && output = ast]
+
+abstract ast2ast : io
+    [input = ast && output = ast]
+
+abstract ast2text : io
+    [input = ast && output = text]
+
+abstract ast2ir : io
+    [input = ast && output = ir]
+
+abstract ir2ir : io
+    [input = ir && output = ir]
+
+abstract ir2text : io
+    [input = ir && output = text]
+//# FRAGMENT
+abstract Front
+    lexer : text2tokens
+    xor layoutResolver : tokens2tokens ?
+        stable
+        experimental
+    parser : tokens2ast
+    mapper : ast2ast
+    prettyPrinter : ast2text ?
+//# FRAGMENT
+abstract Intermediate
+    desugarer : ast2ir
+    findDuplicates ?
+    resolver : ir2ir ?
+        setUid
+        inheritanceFlattener ?
+        nameResolution
+            nameResolver ?
+                [findDuplicates]
+            inheritanceResolver
+            typeResolver
+    transformer : ir2ir
+    stringAnalyzer : ir2ir ?
+    scopeAnalysis : ir2ir ?
+//# FRAGMENT
+abstract xor Generator : ir2text
+    alloy
+        [Intermediate.stringAnalyzer && Intermediate.scopeAnalysis]
+    stats
+    xml
+    desClafer
+        [Front.prettyPrinter]
+    xsdSchema
+//# FRAGMENT

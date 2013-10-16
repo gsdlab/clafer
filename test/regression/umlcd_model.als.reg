@@ -1,0 +1,548 @@
+open util/integer
+pred show {}
+
+
+fact { #c1_Boolean = 0 }
+abstract sig c1_Boolean
+{}
+
+fact { #c2_Integer = 0 }
+abstract sig c2_Integer
+{}
+
+fact { #c3_String = 0 }
+abstract sig c3_String
+{}
+
+fact { #c4_UnlimitedNatural = 0 }
+abstract sig c4_UnlimitedNatural
+{}
+
+fact { #c5_Sequence = 0 }
+abstract sig c5_Sequence
+{}
+
+fact { #c6_Set = 0 }
+abstract sig c6_Set
+{}
+
+fact { #c7_Element = 0 }
+abstract sig c7_Element
+{ r_c8_ownedElement : set c8_ownedElement
+, r_c27_owner : lone c27_owner }
+{ all disj x, y : this.@r_c8_ownedElement | (x.@ref) != (y.@ref)
+  all  x : this.@r_c8_ownedElement | this in (x.(@ref.(@r_c27_owner.@ref)))
+  all disj x, y : this.@r_c27_owner | (x.@ref) != (y.@ref)
+  all  x : this.@r_c27_owner | this in (x.(@ref.(@r_c8_ownedElement.@ref))) }
+
+sig c8_ownedElement
+{ ref : one c7_Element }
+{ one @r_c8_ownedElement.this }
+
+sig c27_owner
+{ ref : one c7_Element }
+{ one @r_c27_owner.this }
+
+fact { #c46_NamedElement = 0 }
+abstract sig c46_NamedElement extends c7_Element
+{ r_c47_name : lone c47_name
+, r_c48_qualifiedName : lone c48_qualifiedName
+, r_c49_visibility : lone c49_visibility }
+{ all disj x, y : this.@r_c49_visibility | (x.@ref) != (y.@ref) }
+
+sig c47_name extends c3_String
+{}
+{ one @r_c47_name.this }
+
+sig c48_qualifiedName extends c3_String
+{}
+{ one @r_c48_qualifiedName.this }
+
+sig c49_visibility
+{ ref : one c376_VisibilityKind }
+{ one @r_c49_visibility.this }
+
+fact { #c59_ValueSpecification = 0 }
+abstract sig c59_ValueSpecification extends c46_NamedElement
+{}
+
+fact { #c60_DirectedRelationship = 0 }
+abstract sig c60_DirectedRelationship
+{ r_c61_relatedElement : some c61_relatedElement
+, r_c71_source : some c71_source
+, r_c81_target : some c81_target }
+{ all disj x, y : this.@r_c61_relatedElement | (x.@ref) != (y.@ref)
+  all disj x, y : this.@r_c71_source | (x.@ref) != (y.@ref)
+  all disj x, y : this.@r_c81_target | (x.@ref) != (y.@ref) }
+
+sig c61_relatedElement
+{ ref : one c7_Element }
+{ one @r_c61_relatedElement.this }
+
+sig c71_source
+{ ref : one c7_Element }
+{ one @r_c71_source.this }
+
+sig c81_target
+{ ref : one c7_Element }
+{ one @r_c81_target.this }
+
+fact { #c91_Class = 0 }
+abstract sig c91_Class extends c271_Classifier
+{ r_c92_isActive : lone c92_isActive
+, r_c93_superClass : set c93_superClass
+, r_c103_nestedClassifier : set c103_nestedClassifier }
+{ all disj x, y : this.@r_c93_superClass | (x.@ref) != (y.@ref) }
+
+sig c92_isActive
+{}
+{ one @r_c92_isActive.this }
+
+sig c93_superClass
+{ ref : one c91_Class }
+{ one @r_c93_superClass.this }
+
+sig c103_nestedClassifier extends c271_Classifier
+{}
+{ one @r_c103_nestedClassifier.this }
+
+fact { #c104_Property = 0 }
+abstract sig c104_Property extends c391_StructuralFeature
+{ r_c105_default : lone c105_default
+, r_c106_isComposite : lone c106_isComposite
+, r_c107_isDerived : lone c107_isDerived
+, r_c108_isDerivedUnion : lone c108_isDerivedUnion
+, r_c109_aggregation : lone c109_aggregation
+, r_c119_class : lone c119_class
+, r_c129_opposite : lone c129_opposite
+, r_c139_owningAssociation : lone c139_owningAssociation
+, r_c158_redefinedProperty : set c158_redefinedProperty
+, r_c168_subsettedProperty : set c168_subsettedProperty
+, r_c178_datatype : lone c178_datatype
+, r_c197_association : lone c197_association
+, r_c216_defaultValue : lone c216_defaultValue
+, r_c217_qualifier : set c217_qualifier
+, r_c221_associationEnd : lone c221_associationEnd }
+{ all disj x, y : this.@r_c109_aggregation | (x.@ref) != (y.@ref)
+  all disj x, y : this.@r_c119_class | (x.@ref) != (y.@ref)
+  all disj x, y : this.@r_c129_opposite | (x.@ref) != (y.@ref)
+  all disj x, y : this.@r_c139_owningAssociation | (x.@ref) != (y.@ref)
+  all  x : this.@r_c139_owningAssociation | this in (x.(@ref.@r_c519_ownedEnd))
+  all disj x, y : this.@r_c158_redefinedProperty | (x.@ref) != (y.@ref)
+  all disj x, y : this.@r_c168_subsettedProperty | (x.@ref) != (y.@ref)
+  all disj x, y : this.@r_c178_datatype | (x.@ref) != (y.@ref)
+  all  x : this.@r_c178_datatype | this in (x.(@ref.@r_c246_ownedAttribute))
+  all disj x, y : this.@r_c197_association | (x.@ref) != (y.@ref)
+  all  x : this.@r_c197_association | this in (x.(@ref.(@r_c533_memberEnd.@ref)))
+  all disj x, y : this.@r_c221_associationEnd | (x.@ref) != (y.@ref)
+  all  x : this.@r_c221_associationEnd | this in (x.(@ref.@r_c217_qualifier)) }
+
+sig c105_default extends c3_String
+{}
+{ one @r_c105_default.this }
+
+sig c106_isComposite
+{}
+{ one @r_c106_isComposite.this }
+
+sig c107_isDerived
+{}
+{ one @r_c107_isDerived.this }
+
+sig c108_isDerivedUnion
+{}
+{ one @r_c108_isDerivedUnion.this }
+
+sig c109_aggregation
+{ ref : one c561_AggregationKind }
+{ one @r_c109_aggregation.this }
+
+sig c119_class
+{ ref : one c91_Class }
+{ one @r_c119_class.this }
+
+sig c129_opposite
+{ ref : one c104_Property }
+{ one @r_c129_opposite.this }
+
+sig c139_owningAssociation
+{ ref : one c507_Association }
+{ one @r_c139_owningAssociation.this }
+
+sig c158_redefinedProperty
+{ ref : one c104_Property }
+{ one @r_c158_redefinedProperty.this }
+
+sig c168_subsettedProperty
+{ ref : one c104_Property }
+{ one @r_c168_subsettedProperty.this }
+
+sig c178_datatype
+{ ref : one c245_DataType }
+{ one @r_c178_datatype.this }
+
+sig c197_association
+{ ref : one c507_Association }
+{ one @r_c197_association.this }
+
+sig c216_defaultValue extends c59_ValueSpecification
+{}
+{ one @r_c216_defaultValue.this }
+
+sig c217_qualifier extends c104_Property
+{}
+{ one @r_c217_qualifier.this
+  (this.~@r_c217_qualifier) in (this.(@r_c221_associationEnd.@ref)) }
+
+sig c221_associationEnd
+{ ref : one c104_Property }
+{ one @r_c221_associationEnd.this }
+
+fact { #c240_Enumeration = 0 }
+abstract sig c240_Enumeration extends c245_DataType
+{ r_c241_ownedLiteral : set c241_ownedLiteral }
+
+sig c241_ownedLiteral extends c250_EnumerationLiteral
+{}
+{ one @r_c241_ownedLiteral.this
+  (this.~@r_c241_ownedLiteral) in (this.(@r_c251_enumeration.@ref)) }
+
+fact { #c245_DataType = 0 }
+abstract sig c245_DataType extends c271_Classifier
+{ r_c246_ownedAttribute : set c246_ownedAttribute }
+
+sig c246_ownedAttribute extends c104_Property
+{}
+{ one @r_c246_ownedAttribute.this
+  (this.~@r_c246_ownedAttribute) in (this.(@r_c178_datatype.@ref)) }
+
+fact { #c250_EnumerationLiteral = 0 }
+abstract sig c250_EnumerationLiteral extends c399_InstanceSpecification
+{ r_c251_enumeration : lone c251_enumeration }
+{ all disj x, y : this.@r_c251_enumeration | (x.@ref) != (y.@ref)
+  all  x : this.@r_c251_enumeration | this in (x.(@ref.@r_c241_ownedLiteral)) }
+
+sig c251_enumeration
+{ ref : one c240_Enumeration }
+{ one @r_c251_enumeration.this }
+
+fact { #c270_PrimitiveType = 0 }
+abstract sig c270_PrimitiveType extends c245_DataType
+{}
+
+fact { #c271_Classifier = 0 }
+abstract sig c271_Classifier extends c46_NamedElement
+{ r_c272_isAbstract : lone c272_isAbstract
+, r_c273_feature : set c273_feature
+, r_c292_inheritedMember : set c292_inheritedMember
+, r_c302_general : set c302_general
+, r_c312_generalization : set c312_generalization
+, r_c316_attribute : set c316_attribute
+, r_c326_redefinedClassifier : set c326_redefinedClassifier
+, r_c336_powertypeExtent : set c336_powertypeExtent }
+{ all disj x, y : this.@r_c273_feature | (x.@ref) != (y.@ref)
+  all  x : this.@r_c273_feature | this in (x.(@ref.(@r_c357_featuringClassifier.@ref)))
+  all disj x, y : this.@r_c292_inheritedMember | (x.@ref) != (y.@ref)
+  all disj x, y : this.@r_c302_general | (x.@ref) != (y.@ref)
+  all disj x, y : this.@r_c316_attribute | (x.@ref) != (y.@ref)
+  all disj x, y : this.@r_c326_redefinedClassifier | (x.@ref) != (y.@ref)
+  all disj x, y : this.@r_c336_powertypeExtent | (x.@ref) != (y.@ref)
+  all  x : this.@r_c336_powertypeExtent | this in (x.(@ref.(@r_c568_powertype.@ref))) }
+
+sig c272_isAbstract
+{}
+{ one @r_c272_isAbstract.this }
+
+sig c273_feature
+{ ref : one c355_Feature }
+{ one @r_c273_feature.this }
+
+sig c292_inheritedMember
+{ ref : one c46_NamedElement }
+{ one @r_c292_inheritedMember.this }
+
+sig c302_general
+{ ref : one c271_Classifier }
+{ one @r_c302_general.this }
+
+sig c312_generalization extends c457_Generalization
+{}
+{ one @r_c312_generalization.this
+  (this.~@r_c312_generalization) in (this.(@r_c459_specific.@ref)) }
+
+sig c316_attribute
+{ ref : one c104_Property }
+{ one @r_c316_attribute.this }
+
+sig c326_redefinedClassifier
+{ ref : one c271_Classifier }
+{ one @r_c326_redefinedClassifier.this }
+
+sig c336_powertypeExtent
+{ ref : one c565_GeneralizationSet }
+{ one @r_c336_powertypeExtent.this }
+
+fact { #c355_Feature = 0 }
+abstract sig c355_Feature extends c46_NamedElement
+{ r_c356_isStatic : lone c356_isStatic
+, r_c357_featuringClassifier : set c357_featuringClassifier }
+{ all disj x, y : this.@r_c357_featuringClassifier | (x.@ref) != (y.@ref)
+  all  x : this.@r_c357_featuringClassifier | this in (x.(@ref.(@r_c273_feature.@ref))) }
+
+sig c356_isStatic
+{}
+{ one @r_c356_isStatic.this }
+
+sig c357_featuringClassifier
+{ ref : one c271_Classifier }
+{ one @r_c357_featuringClassifier.this }
+
+abstract sig c376_VisibilityKind
+{}
+
+one sig c377_package extends c376_VisibilityKind
+{}
+
+one sig c378_private extends c376_VisibilityKind
+{}
+
+one sig c379_protected extends c376_VisibilityKind
+{}
+
+one sig c380_public extends c376_VisibilityKind
+{}
+
+fact { #c381_LiteralBoolean = 0 }
+abstract sig c381_LiteralBoolean extends c383_LiteralSpecification
+{ r_c382_value : lone c382_value }
+
+sig c382_value
+{}
+{ one @r_c382_value.this }
+
+fact { #c383_LiteralSpecification = 0 }
+abstract sig c383_LiteralSpecification extends c59_ValueSpecification
+{}
+
+fact { #c384_LiteralString = 0 }
+abstract sig c384_LiteralString extends c383_LiteralSpecification
+{ r_c385_value : lone c385_value }
+
+sig c385_value extends c3_String
+{}
+{ one @r_c385_value.this }
+
+fact { #c386_LiteralNull = 0 }
+abstract sig c386_LiteralNull extends c383_LiteralSpecification
+{}
+
+fact { #c387_LiteralInteger = 0 }
+abstract sig c387_LiteralInteger extends c383_LiteralSpecification
+{ r_c388_value : lone c388_value }
+
+sig c388_value extends c2_Integer
+{}
+{ one @r_c388_value.this }
+
+fact { #c389_LiteralUnlimitedNatural = 0 }
+abstract sig c389_LiteralUnlimitedNatural extends c383_LiteralSpecification
+{ r_c390_value : lone c390_value }
+
+sig c390_value extends c4_UnlimitedNatural
+{}
+{ one @r_c390_value.this }
+
+fact { #c391_StructuralFeature = 0 }
+abstract sig c391_StructuralFeature extends c355_Feature
+{ r_c392_isReadOnly : lone c392_isReadOnly
+, r_c393_isOrdered : lone c393_isOrdered
+, r_c394_isUnique : lone c394_isUnique
+, r_c395_lower : lone c395_lower
+, r_c396_upper : lone c396_upper
+, r_c397_upperValue : lone c397_upperValue
+, r_c398_lowerValue : lone c398_lowerValue }
+
+sig c392_isReadOnly
+{}
+{ one @r_c392_isReadOnly.this }
+
+sig c393_isOrdered
+{}
+{ one @r_c393_isOrdered.this }
+
+sig c394_isUnique
+{}
+{ one @r_c394_isUnique.this }
+
+sig c395_lower extends c2_Integer
+{}
+{ one @r_c395_lower.this }
+
+sig c396_upper extends c4_UnlimitedNatural
+{}
+{ one @r_c396_upper.this }
+
+sig c397_upperValue extends c59_ValueSpecification
+{}
+{ one @r_c397_upperValue.this }
+
+sig c398_lowerValue extends c59_ValueSpecification
+{}
+{ one @r_c398_lowerValue.this }
+
+fact { #c399_InstanceSpecification = 0 }
+abstract sig c399_InstanceSpecification extends c46_NamedElement
+{ r_c400_slot : set c400_slot
+, r_c404_classifier : set c404_classifier
+, r_c414_specification : lone c414_specification }
+{ all disj x, y : this.@r_c404_classifier | (x.@ref) != (y.@ref) }
+
+sig c400_slot extends c415_Slot
+{}
+{ one @r_c400_slot.this
+  (this.~@r_c400_slot) in (this.(@r_c416_owningInstance.@ref)) }
+
+sig c404_classifier
+{ ref : one c271_Classifier }
+{ one @r_c404_classifier.this }
+
+sig c414_specification extends c59_ValueSpecification
+{}
+{ one @r_c414_specification.this }
+
+fact { #c415_Slot = 0 }
+abstract sig c415_Slot extends c7_Element
+{ r_c416_owningInstance : one c416_owningInstance
+, r_c435_value : set c435_value
+, r_c436_definingFeature : one c436_definingFeature }
+{ all disj x, y : this.@r_c416_owningInstance | (x.@ref) != (y.@ref)
+  all  x : this.@r_c416_owningInstance | this in (x.(@ref.@r_c400_slot))
+  all disj x, y : this.@r_c436_definingFeature | (x.@ref) != (y.@ref) }
+
+sig c416_owningInstance
+{ ref : one c399_InstanceSpecification }
+{ one @r_c416_owningInstance.this }
+
+sig c435_value extends c59_ValueSpecification
+{}
+{ one @r_c435_value.this }
+
+sig c436_definingFeature
+{ ref : one c391_StructuralFeature }
+{ one @r_c436_definingFeature.this }
+
+fact { #c446_InstanceValue = 0 }
+abstract sig c446_InstanceValue extends c59_ValueSpecification
+{ r_c447_instance : one c447_instance }
+{ all disj x, y : this.@r_c447_instance | (x.@ref) != (y.@ref) }
+
+sig c447_instance
+{ ref : one c399_InstanceSpecification }
+{ one @r_c447_instance.this }
+
+fact { #c457_Generalization = 0 }
+abstract sig c457_Generalization extends c60_DirectedRelationship
+{ r_c458_isSubstitutable : lone c458_isSubstitutable
+, r_c459_specific : one c459_specific
+, r_c478_general : one c478_general
+, r_c488_generalizationSet : set c488_generalizationSet }
+{ all disj x, y : this.@r_c459_specific | (x.@ref) != (y.@ref)
+  all  x : this.@r_c459_specific | this in (x.(@ref.@r_c312_generalization))
+  all disj x, y : this.@r_c478_general | (x.@ref) != (y.@ref)
+  all disj x, y : this.@r_c488_generalizationSet | (x.@ref) != (y.@ref)
+  all  x : this.@r_c488_generalizationSet | this in (x.(@ref.(@r_c587_generalization.@ref))) }
+
+sig c458_isSubstitutable
+{}
+{ one @r_c458_isSubstitutable.this }
+
+sig c459_specific
+{ ref : one c271_Classifier }
+{ one @r_c459_specific.this }
+
+sig c478_general
+{ ref : one c271_Classifier }
+{ one @r_c478_general.this }
+
+sig c488_generalizationSet
+{ ref : one c565_GeneralizationSet }
+{ one @r_c488_generalizationSet.this }
+
+fact { #c507_Association = 0 }
+abstract sig c507_Association extends c271_Classifier
+{ r_c508_relatedElement : some c508_relatedElement
+, r_c518_isDerived : lone c518_isDerived
+, r_c519_ownedEnd : set c519_ownedEnd
+, r_c523_endType : some c523_endType
+, r_c533_memberEnd : set c533_memberEnd }
+{ all disj x, y : this.@r_c508_relatedElement | (x.@ref) != (y.@ref)
+  all disj x, y : this.@r_c523_endType | (x.@ref) != (y.@ref)
+  2 <= #r_c533_memberEnd
+  all disj x, y : this.@r_c533_memberEnd | (x.@ref) != (y.@ref)
+  all  x : this.@r_c533_memberEnd | this in (x.(@ref.(@r_c197_association.@ref)))
+  ((#(this.@r_c533_memberEnd)) > 2) => ((this.(@r_c533_memberEnd.@ref)) in (this.@r_c519_ownedEnd)) }
+
+sig c508_relatedElement
+{ ref : one c7_Element }
+{ one @r_c508_relatedElement.this }
+
+sig c518_isDerived
+{}
+{ one @r_c518_isDerived.this }
+
+sig c519_ownedEnd extends c104_Property
+{}
+{ one @r_c519_ownedEnd.this
+  (this.~@r_c519_ownedEnd) in (this.(@r_c139_owningAssociation.@ref)) }
+
+sig c523_endType
+{ ref : one c46_NamedElement }
+{ one @r_c523_endType.this }
+
+sig c533_memberEnd
+{ ref : one c104_Property }
+{ one @r_c533_memberEnd.this }
+
+fact { #c560_ExtensionEnd = 0 }
+abstract sig c560_ExtensionEnd extends c104_Property
+{}
+
+abstract sig c561_AggregationKind
+{}
+
+one sig c562_composite extends c561_AggregationKind
+{}
+
+one sig c563_none extends c561_AggregationKind
+{}
+
+one sig c564_shared extends c561_AggregationKind
+{}
+
+fact { #c565_GeneralizationSet = 0 }
+abstract sig c565_GeneralizationSet extends c46_NamedElement
+{ r_c566_isCovering : lone c566_isCovering
+, r_c567_isDisjoint : lone c567_isDisjoint
+, r_c568_powertype : lone c568_powertype
+, r_c587_generalization : set c587_generalization }
+{ all disj x, y : this.@r_c568_powertype | (x.@ref) != (y.@ref)
+  all  x : this.@r_c568_powertype | this in (x.(@ref.(@r_c336_powertypeExtent.@ref)))
+  all disj x, y : this.@r_c587_generalization | (x.@ref) != (y.@ref)
+  all  x : this.@r_c587_generalization | this in (x.(@ref.(@r_c488_generalizationSet.@ref))) }
+
+sig c566_isCovering
+{}
+{ one @r_c566_isCovering.this }
+
+sig c567_isDisjoint
+{}
+{ one @r_c567_isDisjoint.this }
+
+sig c568_powertype
+{ ref : one c271_Classifier }
+{ one @r_c568_powertype.this }
+
+sig c587_generalization
+{ ref : one c457_Generalization }
+{ one @r_c587_generalization.this }
+

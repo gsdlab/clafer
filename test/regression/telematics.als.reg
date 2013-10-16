@@ -68,7 +68,7 @@ sig c44_display extends c24_display
 { one @r_c44_display.this
   ((this.(@r_c25_server.@ref)) = (this.~@r_c44_display)) && (no (this.@r_c35_options).@r_c5_cache) }
 
-lone sig c53_ECU1 extends c43_plaECU
+one sig c53_ECU1 extends c43_plaECU
 {}
 
 lone sig c54_ECU2 extends c43_plaECU
@@ -79,17 +79,16 @@ lone sig c55_master
 { ref : one c53_ECU1 }
 { one r_c55_master }
 
-lone sig c65_telematicsSystem
+one sig c65_telematicsSystem
 { r_c66_channel : one c66_channel
 , r_c69_extraDisplay : lone c69_extraDisplay
 , r_c70_size : one c70_size }
 { (((((some (this.@r_c66_channel).@r_c68_dual) <=> (some c54_ECU2)) && ((some this.@r_c69_extraDisplay) <=> ((#(c53_ECU1.@r_c44_display)) = 2))) && ((some this.@r_c69_extraDisplay) <=> ((some c54_ECU2) => ((#(c54_ECU2.@r_c44_display)) = 2)))) && ((some (this.@r_c70_size).@r_c72_large) <=> (no (((c43_plaECU.@r_c44_display).@r_c35_options).@r_c2_size).@r_c3_small))) && ((some (this.@r_c70_size).@r_c71_small) <=> (no (((c43_plaECU.@r_c44_display).@r_c35_options).@r_c2_size).@r_c4_large)) }
 
-lone sig c66_channel
+one sig c66_channel
 { r_c67_single : lone c67_single
 , r_c68_dual : lone c68_dual }
-{ one r_c66_channel
-  let children = (r_c67_single + r_c68_dual) | one children }
+{ let children = (r_c67_single + r_c68_dual) | one children }
 
 lone sig c67_single
 {}
@@ -103,11 +102,10 @@ lone sig c69_extraDisplay
 {}
 { one r_c69_extraDisplay }
 
-lone sig c70_size
+one sig c70_size
 { r_c71_small : lone c71_small
 , r_c72_large : lone c72_large }
-{ one r_c70_size
-  let children = (r_c71_small + r_c72_large) | one children }
+{ let children = (r_c71_small + r_c72_large) | one children }
 
 lone sig c71_small
 {}

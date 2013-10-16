@@ -1,0 +1,140 @@
+open util/integer
+pred show {}
+
+
+abstract sig c1_tristate
+{ r_c2_module : lone c2_module }
+
+sig c2_module
+{}
+{ one @r_c2_module.this }
+
+lone sig c3_MISC_FILESYSTEMS
+{ r_c4_display : one c4_display
+, r_c17_JFFS2_FS : lone c17_JFFS2_FS }
+{ (this.(@r_c4_display.@ref)) = 0
+  all disj x, y : this.@r_c4_display | (x.@ref) != (y.@ref) }
+
+lone sig c4_display
+{ ref : one Int }
+{ one r_c4_display }
+
+lone sig c17_JFFS2_FS extends c1_tristate
+{ r_c18_display : one c18_display
+, r_c38_FFS2_FS_DEBUG : one c38_FFS2_FS_DEBUG
+, r_c71_JFFS2_FS_WRITEBUFFER : lone c71_JFFS2_FS_WRITEBUFFER
+, r_c77_JFFS2_COMPRESS : lone c77_JFFS2_COMPRESS }
+{ one r_c17_JFFS2_FS
+  (this.(@r_c18_display.@ref)) = 1
+  all disj x, y : this.@r_c18_display | (x.@ref) != (y.@ref)
+  some c168_MTD
+  (some c168_MTD) => (some c169_CRC32)
+  all disj x, y : this.@r_c38_FFS2_FS_DEBUG | (x.@ref) != (y.@ref)
+  (some this.@r_c71_JFFS2_FS_WRITEBUFFER) <=> (some c170_HAS_IOMEM) }
+
+lone sig c18_display
+{ ref : one Int }
+{ one r_c18_display }
+
+lone sig c38_FFS2_FS_DEBUG
+{ ref : one Int
+, r_c42_display : one c42_display }
+{ one r_c38_FFS2_FS_DEBUG
+  (this.@ref) = 0
+  (this.(@r_c42_display.@ref)) = 2
+  all disj x, y : this.@r_c42_display | (x.@ref) != (y.@ref)
+  (0 <= (this.@ref)) && ((this.@ref) <= 2) }
+
+lone sig c42_display
+{ ref : one Int }
+{ one r_c42_display }
+
+lone sig c71_JFFS2_FS_WRITEBUFFER
+{}
+{ one r_c71_JFFS2_FS_WRITEBUFFER }
+
+lone sig c77_JFFS2_COMPRESS
+{ r_c78_display : one c78_display
+, r_c93_JFFS2_ZLIB : lone c93_JFFS2_ZLIB
+, r_c109_CompressionChoice : one c109_CompressionChoice }
+{ one r_c77_JFFS2_COMPRESS
+  (this.(@r_c78_display.@ref)) = 3
+  all disj x, y : this.@r_c78_display | (x.@ref) != (y.@ref)
+  some this.@r_c93_JFFS2_ZLIB }
+
+lone sig c78_display
+{ ref : one Int }
+{ one r_c78_display }
+
+lone sig c93_JFFS2_ZLIB
+{ r_c94_display : one c94_display }
+{ one r_c93_JFFS2_ZLIB
+  (this.(@r_c94_display.@ref)) = 4
+  all disj x, y : this.@r_c94_display | (x.@ref) != (y.@ref)
+  some c171_ZLIB_INFLATE }
+
+lone sig c94_display
+{ ref : one Int }
+{ one r_c94_display }
+
+lone sig c109_CompressionChoice
+{ r_c110_display : one c110_display
+, r_c125_choice : one c125_choice }
+{ one r_c109_CompressionChoice
+  (this.(@r_c110_display.@ref)) = 5
+  all disj x, y : this.@r_c110_display | (x.@ref) != (y.@ref)
+  some (this.@r_c125_choice).@r_c140_JFFS2_CMODE_PRIORITY }
+
+lone sig c110_display
+{ ref : one Int }
+{ one r_c110_display }
+
+lone sig c125_choice
+{ r_c126_JFFS2_CMODE_NONE : lone c126_JFFS2_CMODE_NONE
+, r_c140_JFFS2_CMODE_PRIORITY : lone c140_JFFS2_CMODE_PRIORITY
+, r_c154_JFFS2_CMODE_SIZE : lone c154_JFFS2_CMODE_SIZE }
+{ one r_c125_choice
+  let children = (r_c126_JFFS2_CMODE_NONE + r_c140_JFFS2_CMODE_PRIORITY + r_c154_JFFS2_CMODE_SIZE) | one children }
+
+lone sig c126_JFFS2_CMODE_NONE
+{ r_c127_display : one c127_display }
+{ one r_c126_JFFS2_CMODE_NONE
+  (this.(@r_c127_display.@ref)) = 6
+  all disj x, y : this.@r_c127_display | (x.@ref) != (y.@ref) }
+
+lone sig c127_display
+{ ref : one Int }
+{ one r_c127_display }
+
+lone sig c140_JFFS2_CMODE_PRIORITY
+{ r_c141_display : one c141_display }
+{ one r_c140_JFFS2_CMODE_PRIORITY
+  (this.(@r_c141_display.@ref)) = 7
+  all disj x, y : this.@r_c141_display | (x.@ref) != (y.@ref) }
+
+lone sig c141_display
+{ ref : one Int }
+{ one r_c141_display }
+
+lone sig c154_JFFS2_CMODE_SIZE
+{ r_c155_display : one c155_display }
+{ one r_c154_JFFS2_CMODE_SIZE
+  (this.(@r_c155_display.@ref)) = 8
+  all disj x, y : this.@r_c155_display | (x.@ref) != (y.@ref) }
+
+lone sig c155_display
+{ ref : one Int }
+{ one r_c155_display }
+
+one sig c168_MTD
+{}
+
+one sig c169_CRC32
+{}
+
+one sig c170_HAS_IOMEM
+{}
+
+one sig c171_ZLIB_INFLATE
+{}
+

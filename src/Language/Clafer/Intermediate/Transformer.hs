@@ -26,26 +26,27 @@ import Language.Clafer.Common
 import Language.Clafer.Intermediate.Intclafer
 import Language.Clafer.Intermediate.Desugarer
 
+transModule :: IModule -> IModule
 transModule imodule = imodule{mDecls = map transElement $ mDecls imodule}
 
 transElement :: IElement -> IElement
 transElement x = case x of
   IEClafer clafer  -> IEClafer $ transClafer clafer
-  IEConstraint isHard pexp  -> IEConstraint isHard $ transPExp False pexp
-  IEGoal isMaximize pexp  -> IEGoal isMaximize $ transPExp False pexp  
+  IEConstraint isHard' pexp  -> IEConstraint isHard' $ transPExp False pexp
+  IEGoal isMaximize' pexp  -> IEGoal isMaximize' $ transPExp False pexp  
 
 transClafer :: IClafer -> IClafer
 transClafer clafer = clafer{elements = map transElement $ elements clafer}
 
 transPExp :: Bool -> PExp -> PExp
-transPExp some (PExp t pid pos x) = trans $ PExp t pid pos $ transIExp (fromJust t) x
+transPExp some (PExp t pid' pos' x) = trans $ PExp t pid' pos' $ transIExp (fromJust t) x
   where
   trans = if some then desugarPath else id
 
 transIExp :: IType -> IExp -> IExp
 transIExp t x = case x of
-  IDeclPExp quant decls pexp -> IDeclPExp quant decls $ transPExp False pexp
-  IFunExp op exps -> IFunExp op $ map (transPExp cond) exps
+  IDeclPExp quant' decls' pexp -> IDeclPExp quant' decls' $ transPExp False pexp
+  IFunExp op' exps' -> IFunExp op' $ map (transPExp cond) exps'
     where
-    cond = op == iIfThenElse && t `elem` [TBoolean, TClafer []]
+    cond = op' == iIfThenElse && t `elem` [TBoolean, TClafer []]
   _  -> x

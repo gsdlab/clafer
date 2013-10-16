@@ -35,8 +35,15 @@ install:
 	cp -f tools/XsdCheck.class $(to)/tools
 	cp -f tools/ecore2clafer.jar $(to)/tools
 	cp -f -R IDEs $(to)/
-	if test "$(glpk)" ; then cp -f $(glpk)/w32/glpk_4_49.dll $(to); fi
-	cabal install --bindir=$(to) $(GPLK_LIBS_INCLUDES) $(MAC_USR_LIB)
+	if test "$(glpk)" ; then cp -f $(glpk)/w32/glpk_4_52.dll $(to); fi
+	cabal install --bindir=$(to) $(GPLK_LIBS_INCLUDES) $(MAC_USR_LIB) --ghc-option="-O"
+
+# Removes current build and makes a clean new one (Don't use if starting from scratch!)
+cleanEnv:
+	make clean
+	ghc-pkg unregister clafer
+	rm `which clafer`
+	make 
 
 # build Schema.hs from ClaferIG.xsd, call after .xsd changed
 Schema.hs:

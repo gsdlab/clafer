@@ -1,0 +1,18 @@
+abstract Car
+    ABS ?
+    CC ?
+        ACC ?
+            [FCA]
+    xor Transmission 
+        Automatic
+        Manual
+    FCA ?
+        xor Sensor 
+            Radar 
+            Lidar 
+        xor Alert  ?
+            Haptic 
+            Audible 
+
+aCar : Car
+//# FRAGMENT

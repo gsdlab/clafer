@@ -2,7 +2,7 @@ open util/integer
 pred show {}
 
 
-lone sig c1_A
+one sig c1_A
 { r_c2_b : lone c2_b
 , r_c3_c : one c3_c
 , r_c4_d : lone c4_d }
@@ -12,15 +12,14 @@ lone sig c2_b
 {}
 { one r_c2_b }
 
-lone sig c3_c
+one sig c3_c
 {}
-{ one r_c3_c }
 
 lone sig c4_d
 {}
 { one r_c4_d }
 
-lone sig c5_E
+one sig c5_E
 { r_c6_f : lone c6_f
 , r_c7_g : lone c7_g }
 { let children = (r_c6_f + r_c7_g) | one children }
@@ -33,27 +32,24 @@ lone sig c7_g
 {}
 { one r_c7_g }
 
-lone sig c8_D
+one sig c8_D
 { r_c9_Z : one c9_Z
 , r_c10_K : lone c10_K }
 
-lone sig c9_Z
+one sig c9_Z
 {}
-{ one r_c9_Z }
 
 lone sig c10_K
 {}
 { one r_c10_K }
 
-lone sig c11_L
+one sig c11_L
 { r_c12_M : one c12_M
 , r_c13_N : one c13_N }
 
-lone sig c12_M
+one sig c12_M
 {}
-{ one r_c12_M }
 
-lone sig c13_N
+one sig c13_N
 {}
-{ one r_c13_N }
 

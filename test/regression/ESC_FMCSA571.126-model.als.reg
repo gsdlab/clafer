@@ -1,0 +1,384 @@
+open util/integer
+pred show {}
+
+
+fact { #c1_degree = 0 }
+abstract sig c1_degree
+{ ref : one Int }
+{ ((this.@ref) > 0) && ((this.@ref) <= 360) }
+
+fact { #c9_Vehicle = 0 }
+abstract sig c9_Vehicle
+{ r_c10_DriveConfiguration : one c10_DriveConfiguration
+, r_c11_ElectronicStabilityControlSystem : one c11_ElectronicStabilityControlSystem
+, r_c12_AntiLockBreakSystem : one c12_AntiLockBreakSystem
+, r_c13_TractionControlSystem : one c13_TractionControlSystem
+, r_c14_AckermanSteerAngle : one c14_AckermanSteerAngle
+, r_c24_speed : one c24_speed
+, r_c25_lateralAcceleration : one c25_lateralAcceleration
+, r_c35_sideSlipAngle : one c35_sideSlipAngle
+, r_c45_yawRate : one c45_yawRate
+, r_c55_normalYawRate : one c55_normalYawRate
+, r_c66_hasOversteer : lone c66_hasOversteer
+, r_c73_hasUndersteer : lone c73_hasUndersteer
+, r_c80_GVWR : one c80_GVWR }
+{ all disj x, y : this.@r_c14_AckermanSteerAngle | (x.@ref) != (y.@ref)
+  all disj x, y : this.@r_c25_lateralAcceleration | (x.@ref) != (y.@ref)
+  all disj x, y : this.@r_c35_sideSlipAngle | (x.@ref) != (y.@ref)
+  all disj x, y : this.@r_c45_yawRate | (x.@ref) != (y.@ref)
+  all disj x, y : this.@r_c55_normalYawRate | (x.@ref) != (y.@ref)
+  ((this.((@r_c45_yawRate.@ref).@ref)) > (this.((@r_c55_normalYawRate.@ref).@ref))) <=> (some this.@r_c66_hasOversteer)
+  ((this.((@r_c45_yawRate.@ref).@ref)) < (this.((@r_c55_normalYawRate.@ref).@ref))) <=> (some this.@r_c73_hasUndersteer) }
+
+sig c10_DriveConfiguration extends c81_DriveConfiguration
+{}
+{ one @r_c10_DriveConfiguration.this }
+
+sig c11_ElectronicStabilityControlSystem extends c89_ElectronicStabilityControlSystem
+{}
+{ one @r_c11_ElectronicStabilityControlSystem.this }
+
+sig c12_AntiLockBreakSystem extends c155_AntiLockBreakSystem
+{}
+{ one @r_c12_AntiLockBreakSystem.this }
+
+sig c13_TractionControlSystem extends c156_TractionControlSystem
+{}
+{ one @r_c13_TractionControlSystem.this }
+
+sig c14_AckermanSteerAngle
+{ ref : one c1_degree }
+{ one @r_c14_AckermanSteerAngle.this }
+
+sig c24_speed
+{ ref : one Int }
+{ one @r_c24_speed.this }
+
+sig c25_lateralAcceleration
+{ ref : one Int }
+{ one @r_c25_lateralAcceleration.this }
+
+sig c35_sideSlipAngle
+{ ref : one c1_degree }
+{ one @r_c35_sideSlipAngle.this }
+
+sig c45_yawRate
+{ ref : one c1_degree }
+{ one @r_c45_yawRate.this }
+
+sig c55_normalYawRate
+{ ref : one c1_degree
+, r_c56_givenAckermanSteerAngle : one c56_givenAckermanSteerAngle }
+{ one @r_c55_normalYawRate.this }
+
+sig c56_givenAckermanSteerAngle
+{}
+{ one @r_c56_givenAckermanSteerAngle.this }
+
+sig c66_hasOversteer
+{}
+{ one @r_c66_hasOversteer.this }
+
+sig c73_hasUndersteer
+{}
+{ one @r_c73_hasUndersteer.this }
+
+sig c80_GVWR
+{ ref : one Int }
+{ one @r_c80_GVWR.this }
+
+fact { #c81_DriveConfiguration = 0 }
+abstract sig c81_DriveConfiguration
+{ r_c82_twoWheelDrive : lone c82_twoWheelDrive
+, r_c83_frontWheelDrive : lone c83_frontWheelDrive
+, r_c84_rearWheelDrive : lone c84_rearWheelDrive
+, r_c85_allWheelDrive : lone c85_allWheelDrive
+, r_c86_fourWheelDrive : lone c86_fourWheelDrive }
+{ let children = (r_c82_twoWheelDrive + r_c83_frontWheelDrive + r_c84_rearWheelDrive + r_c85_allWheelDrive + r_c86_fourWheelDrive) | one children }
+
+sig c82_twoWheelDrive
+{}
+{ one @r_c82_twoWheelDrive.this }
+
+sig c83_frontWheelDrive
+{}
+{ one @r_c83_frontWheelDrive.this }
+
+sig c84_rearWheelDrive
+{}
+{ one @r_c84_rearWheelDrive.this }
+
+sig c85_allWheelDrive
+{}
+{ one @r_c85_allWheelDrive.this }
+
+sig c86_fourWheelDrive
+{ r_c87_highGearWithLockedDifferential : lone c87_highGearWithLockedDifferential
+, r_c88_lowGear : lone c88_lowGear }
+{ one @r_c86_fourWheelDrive.this
+  let children = (r_c87_highGearWithLockedDifferential + r_c88_lowGear) | one children }
+
+sig c87_highGearWithLockedDifferential
+{}
+{ one @r_c87_highGearWithLockedDifferential.this }
+
+sig c88_lowGear
+{}
+{ one @r_c88_lowGear.this }
+
+fact { #c89_ElectronicStabilityControlSystem = 0 }
+abstract sig c89_ElectronicStabilityControlSystem
+{ r_c90_vehicle : one c90_vehicle
+, r_c100_augmentsVehiclesDirectionalStability : one c100_augmentsVehiclesDirectionalStability
+, r_c103_limits : one c103_limits
+, r_c106_estimates : one c106_estimates
+, r_c110_monitors : one c110_monitors
+, r_c113_isOperational : lone c113_isOperational
+, r_c126_isNotOperational : one c126_isNotOperational
+, r_c130_Mode : one c130_Mode
+, r_c137_entersStandardModeAfterIgnition : one c137_entersStandardModeAfterIgnition
+, r_c138_satisfies : one c138_satisfies
+, r_c141_MalfunctionTelltale : lone c141_MalfunctionTelltale
+, r_c148_SystemControls : one c148_SystemControls }
+{ all disj x, y : this.@r_c90_vehicle | (x.@ref) != (y.@ref) }
+
+sig c90_vehicle
+{ ref : one c9_Vehicle }
+{ one @r_c90_vehicle.this }
+
+sig c100_augmentsVehiclesDirectionalStability
+{ r_c101_adjustsBrakeTorquesToInduceCorrectingYawMoment : one c101_adjustsBrakeTorquesToInduceCorrectingYawMoment }
+{ one @r_c100_augmentsVehiclesDirectionalStability.this }
+
+sig c101_adjustsBrakeTorquesToInduceCorrectingYawMoment
+{ r_c102_toEachWheelIndividually : one c102_toEachWheelIndividually }
+{ one @r_c101_adjustsBrakeTorquesToInduceCorrectingYawMoment.this }
+
+sig c102_toEachWheelIndividually
+{}
+{ one @r_c102_toEachWheelIndividually.this }
+
+sig c103_limits
+{ r_c104_understeer : one c104_understeer
+, r_c105_oversteer : one c105_oversteer }
+{ one @r_c103_limits.this }
+
+sig c104_understeer
+{}
+{ one @r_c104_understeer.this }
+
+sig c105_oversteer
+{}
+{ one @r_c105_oversteer.this }
+
+sig c106_estimates
+{ r_c107_YawRate : one c107_YawRate
+, r_c108_sideSlip : one c108_sideSlip }
+{ one @r_c106_estimates.this }
+
+sig c107_YawRate
+{}
+{ one @r_c107_YawRate.this }
+
+sig c108_sideSlip
+{ r_c109_derivativeWithRespectToTime : one c109_derivativeWithRespectToTime }
+{ one @r_c108_sideSlip.this }
+
+sig c109_derivativeWithRespectToTime
+{}
+{ one @r_c109_derivativeWithRespectToTime.this }
+
+sig c110_monitors
+{ r_c111_driverSteeringInputs : one c111_driverSteeringInputs
+, r_c112_modifiesEngineTorque : one c112_modifiesEngineTorque }
+{ one @r_c110_monitors.this }
+
+sig c111_driverSteeringInputs
+{}
+{ one @r_c111_driverSteeringInputs.this }
+
+sig c112_modifiesEngineTorque
+{}
+{ one @r_c112_modifiesEngineTorque.this }
+
+sig c113_isOperational
+{ r_c119_duringAllPhasesOfDriving : one c119_duringAllPhasesOfDriving
+, r_c124_withAntiLockBrakeSystem : one c124_withAntiLockBrakeSystem
+, r_c125_withTractionControlSystem : one c125_withTractionControlSystem }
+{ one @r_c113_isOperational.this
+  (((this.~@r_c113_isOperational).@r_c90_vehicle).(@ref.(@r_c24_speed.@ref))) > 20 }
+
+sig c119_duringAllPhasesOfDriving
+{ r_c120_acceleration : one c120_acceleration
+, r_c121_coasting : one c121_coasting
+, r_c122_deceleration : one c122_deceleration
+, r_c123_breaking : one c123_breaking }
+{ one @r_c119_duringAllPhasesOfDriving.this }
+
+sig c120_acceleration
+{}
+{ one @r_c120_acceleration.this }
+
+sig c121_coasting
+{}
+{ one @r_c121_coasting.this }
+
+sig c122_deceleration
+{}
+{ one @r_c122_deceleration.this }
+
+sig c123_breaking
+{}
+{ one @r_c123_breaking.this }
+
+sig c124_withAntiLockBrakeSystem
+{}
+{ one @r_c124_withAntiLockBrakeSystem.this }
+
+sig c125_withTractionControlSystem
+{}
+{ one @r_c125_withTractionControlSystem.this }
+
+sig c126_isNotOperational
+{ r_c127_whenTurnedOffByTheDriver : lone c127_whenTurnedOffByTheDriver
+, r_c128_whenDrivenInReverse : lone c128_whenDrivenInReverse
+, r_c129_duringSystemInitialization : lone c129_duringSystemInitialization }
+{ one @r_c126_isNotOperational.this
+  let children = (r_c127_whenTurnedOffByTheDriver + r_c128_whenDrivenInReverse + r_c129_duringSystemInitialization) | some children }
+
+sig c127_whenTurnedOffByTheDriver
+{}
+{ one @r_c127_whenTurnedOffByTheDriver.this }
+
+sig c128_whenDrivenInReverse
+{}
+{ one @r_c128_whenDrivenInReverse.this }
+
+sig c129_duringSystemInitialization
+{}
+{ one @r_c129_duringSystemInitialization.this }
+
+sig c130_Mode
+{ r_c131_driverSelected : lone c131_driverSelected
+, r_c132_type : one c132_type }
+{ one @r_c130_Mode.this }
+
+sig c131_driverSelected
+{}
+{ one @r_c131_driverSelected.this }
+
+sig c132_type
+{ r_c133_standard : lone c133_standard
+, r_c134_performance : lone c134_performance
+, r_c135_snowOrSlipperyRoad : lone c135_snowOrSlipperyRoad
+, r_c136_Off : lone c136_Off }
+{ one @r_c132_type.this
+  let children = (r_c133_standard + r_c134_performance + r_c135_snowOrSlipperyRoad + r_c136_Off) | one children }
+
+sig c133_standard
+{}
+{ one @r_c133_standard.this }
+
+sig c134_performance
+{}
+{ one @r_c134_performance.this }
+
+sig c135_snowOrSlipperyRoad
+{}
+{ one @r_c135_snowOrSlipperyRoad.this }
+
+sig c136_Off
+{}
+{ one @r_c136_Off.this }
+
+sig c137_entersStandardModeAfterIgnition
+{}
+{ one @r_c137_entersStandardModeAfterIgnition.this }
+
+sig c138_satisfies
+{ r_c139_stabilityCriteria : one c139_stabilityCriteria
+, r_c140_responsivenessCriterion : one c140_responsivenessCriterion }
+{ one @r_c138_satisfies.this }
+
+sig c139_stabilityCriteria
+{}
+{ one @r_c139_stabilityCriteria.this }
+
+sig c140_responsivenessCriterion
+{}
+{ one @r_c140_responsivenessCriterion.this }
+
+sig c141_MalfunctionTelltale
+{ r_c142_malfunctionDetected : lone c142_malfunctionDetected
+, r_c144_ignitionLockInOnPosition : lone c144_ignitionLockInOnPosition
+, r_c145_mustExtinguishAtTheNextIgnitionCycleAfterTheMalfunctionHasBeenCorrected : lone c145_mustExtinguishAtTheNextIgnitionCycleAfterTheMalfunctionHasBeenCorrected
+, r_c146_flashingWhenInOperation : lone c146_flashingWhenInOperation
+, r_c147_mustIlluminateWhenIgnitionControlInCheckPosition : lone c147_mustIlluminateWhenIgnitionControlInCheckPosition }
+{ one @r_c141_MalfunctionTelltale.this
+  let children = (r_c142_malfunctionDetected + r_c144_ignitionLockInOnPosition + r_c145_mustExtinguishAtTheNextIgnitionCycleAfterTheMalfunctionHasBeenCorrected + r_c146_flashingWhenInOperation + r_c147_mustIlluminateWhenIgnitionControlInCheckPosition) | some children }
+
+sig c142_malfunctionDetected
+{ r_c143_mustRemainContinuouslyIlluminatedForAsLongAsMalfunctionExists : one c143_mustRemainContinuouslyIlluminatedForAsLongAsMalfunctionExists }
+{ one @r_c142_malfunctionDetected.this }
+
+sig c143_mustRemainContinuouslyIlluminatedForAsLongAsMalfunctionExists
+{}
+{ one @r_c143_mustRemainContinuouslyIlluminatedForAsLongAsMalfunctionExists.this }
+
+sig c144_ignitionLockInOnPosition
+{}
+{ one @r_c144_ignitionLockInOnPosition.this }
+
+sig c145_mustExtinguishAtTheNextIgnitionCycleAfterTheMalfunctionHasBeenCorrected
+{}
+{ one @r_c145_mustExtinguishAtTheNextIgnitionCycleAfterTheMalfunctionHasBeenCorrected.this }
+
+sig c146_flashingWhenInOperation
+{}
+{ one @r_c146_flashingWhenInOperation.this }
+
+sig c147_mustIlluminateWhenIgnitionControlInCheckPosition
+{}
+{ one @r_c147_mustIlluminateWhenIgnitionControlInCheckPosition.this }
+
+sig c148_SystemControls
+{ r_c149_Off : one c149_Off
+, r_c150_ignitionControlPosition : one c150_ignitionControlPosition }
+{ one @r_c148_SystemControls.this }
+
+sig c149_Off
+{}
+{ one @r_c149_Off.this }
+
+sig c150_ignitionControlPosition
+{ r_c151_Off : lone c151_Off
+, r_c152_Check : lone c152_Check
+, r_c153_On : lone c153_On
+, r_c154_Start : lone c154_Start }
+{ one @r_c150_ignitionControlPosition.this
+  let children = (r_c151_Off + r_c152_Check + r_c153_On + r_c154_Start) | one children }
+
+sig c151_Off
+{}
+{ one @r_c151_Off.this }
+
+sig c152_Check
+{}
+{ one @r_c152_Check.this }
+
+sig c153_On
+{}
+{ one @r_c153_On.this }
+
+sig c154_Start
+{}
+{ one @r_c154_Start.this }
+
+fact { #c155_AntiLockBreakSystem = 0 }
+abstract sig c155_AntiLockBreakSystem
+{}
+
+fact { #c156_TractionControlSystem = 0 }
+abstract sig c156_TractionControlSystem
+{}
+

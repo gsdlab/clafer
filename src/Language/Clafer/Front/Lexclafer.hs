@@ -1,4 +1,5 @@
 {-# LANGUAGE CPP,MagicHash #-}
+{-# OPTIONS_GHC -w #-}
 {-# LINE 3 "Lexclafer.x" #-}
 
 {-# OPTIONS -fno-warn-incomplete-patterns #-}
@@ -37,10 +38,12 @@ alex_check = AlexA# "\xff\xff\x09\x00\x0a\x00\x0b\x00\x0c\x00\x0d\x00\x2d\x00\x2
 alex_deflt :: AlexAddr
 alex_deflt = AlexA# "\xff\xff\x0c\x00\x0c\x00\xff\xff\xff\xff\x0c\x00\x0c\x00\x0d\x00\x0d\x00\x10\x00\xff\xff\x10\x00\x0c\x00\x16\x00\x16\x00\xff\xff\x10\x00\xff\xff\xff\xff\xff\xff\x17\x00\x17\x00\x17\x00\x17\x00\xff\xff\x0c\x00\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff"#
 
+alex_accept :: Array Int [AlexAcc (Posn -> String -> Token) user]
 alex_accept = listArray (0::Int,42) [[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[(AlexAccSkip)],[(AlexAccSkip)],[(AlexAccSkip)],[(AlexAccSkip)],[(AlexAcc (alex_action_3))],[(AlexAcc (alex_action_3))],[(AlexAcc (alex_action_3))],[(AlexAcc (alex_action_3))],[(AlexAcc (alex_action_3))],[(AlexAcc (alex_action_3))],[(AlexAcc (alex_action_3))],[(AlexAcc (alex_action_3))],[(AlexAcc (alex_action_3))],[(AlexAcc (alex_action_3))],[(AlexAcc (alex_action_3))],[(AlexAcc (alex_action_4))],[(AlexAcc (alex_action_5))],[(AlexAcc (alex_action_5))],[(AlexAcc (alex_action_6))],[(AlexAcc (alex_action_7))]]
 {-# LINE 39 "Lexclafer.x" #-}
 
 
+tok :: (t1 -> t2 -> t) -> t1 -> t2 -> t
 tok f p s = f p s
 
 share :: String -> String
@@ -65,13 +68,17 @@ data Token =
  | Err Posn
   deriving (Eq,Show,Ord)
 
+tokenPos :: [Token] -> String
 tokenPos (PT (Pn _ l _) _ :_) = "line " ++ show l
 tokenPos (Err (Pn _ l _) :_) = "line " ++ show l
 tokenPos _ = "end of file"
 
+posLineCol :: Posn -> (Int, Int)
 posLineCol (Pn _ l c) = (l,c)
+mkPosToken :: Token -> ((Int, Int), String)
 mkPosToken t@(PT p _) = (posLineCol p, prToken t)
 
+prToken :: Token -> String
 prToken t = case t of
   PT _ (TS s _) -> s
   PT _ (TL s)   -> s
@@ -95,6 +102,7 @@ eitherResIdent tv s = treeFind resWords
                               | s > a  = treeFind right
                               | s == a = t
 
+resWords :: BTree
 resWords = b ">=" 31 (b "." 16 (b "*" 8 (b "&" 4 (b "!=" 2 (b "!" 1 N N) (b "#" 3 N N)) (b "(" 6 (b "&&" 5 N N) (b ")" 7 N N))) (b "-" 12 (b "++" 10 (b "+" 9 N N) (b "," 11 N N)) (b "->" 14 (b "--" 13 N N) (b "->>" 15 N N)))) (b "<:" 24 (b ":=" 20 (b "/" 18 (b ".." 17 N N) (b ":" 19 N N)) (b ";" 22 (b ":>" 21 N N) (b "<" 23 N N))) (b "=" 28 (b "<=" 26 (b "<<" 25 N N) (b "<=>" 27 N N)) (b ">" 30 (b "=>" 29 N N) N)))) (b "min" 47 (b "all" 39 (b "\\" 35 (b "?" 33 (b ">>" 32 N N) (b "[" 34 N N)) (b "`" 37 (b "]" 36 N N) (b "abstract" 38 N N))) (b "if" 43 (b "else" 41 (b "disj" 40 N N) (b "enum" 42 N N)) (b "lone" 45 (b "in" 44 N N) (b "max" 46 N N)))) (b "sum" 55 (b "one" 51 (b "no" 49 (b "mux" 48 N N) (b "not" 50 N N)) (b "or" 53 (b "opt" 52 N N) (b "some" 54 N N))) (b "|" 59 (b "xor" 57 (b "then" 56 N N) (b "{" 58 N N)) (b "}" 61 (b "||" 60 N N) N))))
    where b s n = let bs = id s
                   in B bs (TS bs n)
@@ -122,7 +130,7 @@ alexStartPos = Pn 0 1 1
 
 alexMove :: Posn -> Char -> Posn
 alexMove (Pn a l c) '\t' = Pn (a+1)  l     (((c+7) `div` 8)*8+1)
-alexMove (Pn a l c) '\n' = Pn (a+1) (l+1)   1
+alexMove (Pn a l _) '\n' = Pn (a+1) (l+1)   1
 alexMove (Pn a l c) _    = Pn (a+1)  l     (c+1)
 
 type AlexInput = (Posn,     -- current position,
@@ -133,34 +141,41 @@ tokens :: String -> [Token]
 tokens str = go (alexStartPos, '\n', str)
     where
       go :: AlexInput -> [Token]
-      go inp@(pos, _, str) =
+      go inp@(pos, _, str') =
                case alexScan inp 0 of
                 AlexEOF                -> []
-                AlexError (pos, _, _)  -> [Err pos]
-                AlexSkip  inp' len     -> go inp'
-                AlexToken inp' len act -> act pos (take len str) : (go inp')
+                AlexError (pos', _, _)  -> [Err pos']
+                AlexSkip  inp' _     -> go inp'
+                AlexToken inp' len act -> act pos (take len str') : (go inp')
 
 alexGetChar :: AlexInput -> Maybe (Char,AlexInput)
 alexGetChar (p, _, s) =
   case  s of
     []  -> Nothing
-    (c:s) ->
+    (c:s') ->
              let p' = alexMove p c
-              in p' `seq` Just (c, (p', c, s))
+              in p' `seq` Just (c, (p', c, s'))
 
 alexGetByte :: AlexInput -> Maybe (Int,AlexInput)
 alexGetByte i = fmap f (alexGetChar i)
   where f (c, i') = (fromEnum c, i')
 
 alexInputPrevChar :: AlexInput -> Char
-alexInputPrevChar (p, c, s) = c
+alexInputPrevChar (_, c, _) = c
 
+alex_action_3 :: Posn -> String -> Token
 alex_action_3 =  tok (\p s -> PT p (eitherResIdent (TV . share) s)) 
+alex_action_4 :: Posn -> String -> Token
 alex_action_4 =  tok (\p s -> PT p (eitherResIdent (T_PosInteger . share) s)) 
+alex_action_5 :: Posn -> String -> Token
 alex_action_5 =  tok (\p s -> PT p (eitherResIdent (T_PosDouble . share) s)) 
+alex_action_6 :: Posn -> String -> Token
 alex_action_6 =  tok (\p s -> PT p (eitherResIdent (T_PosString . share) s)) 
+alex_action_7 :: Posn -> String -> Token
 alex_action_7 =  tok (\p s -> PT p (eitherResIdent (T_PosIdent . share) s)) 
+alex_action_8 :: Posn -> String -> Token
 alex_action_8 =  tok (\p s -> PT p (eitherResIdent (TV . share) s)) 
+alex_action_9 :: Posn -> String -> Token
 alex_action_9 =  tok (\p s -> PT p (TI $ share s))    
 {-# LINE 1 "templates/GenericTemplate.hs" #-}
 {-# LINE 1 "templates/GenericTemplate.hs" #-}
@@ -188,6 +203,7 @@ uncheckedShiftL# = shiftL#
 #endif
 
 {-# INLINE alexIndexInt16OffAddr #-}
+alexIndexInt16OffAddr :: AlexAddr -> Int# -> Int#
 alexIndexInt16OffAddr (AlexA# arr) off =
 #ifdef WORDS_BIGENDIAN
   narrow16Int# i
@@ -205,6 +221,7 @@ alexIndexInt16OffAddr (AlexA# arr) off =
 
 
 {-# INLINE alexIndexInt32OffAddr #-}
+alexIndexInt32OffAddr :: AlexAddr -> Int# -> Int#
 alexIndexInt32OffAddr (AlexA# arr) off = 
 #ifdef WORDS_BIGENDIAN
   narrow32Int# i
@@ -229,6 +246,7 @@ alexIndexInt32OffAddr (AlexA# arr) off =
 quickIndex arr i = arr ! i
 #else
 -- GHC >= 503, unsafeAt is available from Data.Array.Base.
+--quickIndex :: Array Int [AlexAcc (Posn -> String -> Token) (Any *)] -> Int -> [AlexAcc (Posn -> String -> Token) (Any *)]
 quickIndex = unsafeAt
 #endif
 
@@ -245,9 +263,11 @@ data AlexReturn a
   | AlexToken  !AlexInput !Int a
 
 -- alexScan :: AlexInput -> StartCode -> AlexReturn a
+alexScan :: AlexInput -> Int -> AlexReturn (Posn -> String -> Token)
 alexScan input (I# (sc))
   = alexScanUser undefined input (I# (sc))
 
+--alexScanUser :: Any * -> AlexInput -> Int -> AlexReturn (Posn -> String -> Token)
 alexScanUser user input (I# (sc))
   = case alex_scan_tkn user input 0# input sc AlexNone of
 	(AlexNone, input') ->
@@ -279,6 +299,7 @@ alexScanUser user input (I# (sc))
 -- Push the input through the DFA, remembering the most recent accepting
 -- state it encountered.
 
+--alex_scan_tkn :: Any * -> AlexInput -> Int# -> AlexInput -> Int# -> AlexLastAcc (Posn -> String -> Token) -> (AlexLastAcc (Posn -> String -> Token), AlexInput)
 alex_scan_tkn user orig_input len input s last_acc =
   input `seq` -- strict in the input
   let 
@@ -313,10 +334,10 @@ alex_scan_tkn user orig_input len input s last_acc =
 	check_accs [] = last_acc
 	check_accs (AlexAcc a : _) = AlexLastAcc a input (I# (len))
 	check_accs (AlexAccSkip : _)  = AlexLastSkip  input (I# (len))
-	check_accs (AlexAccPred a predx : rest)
+	check_accs (AlexAccPred a predx : _)
 	   | predx user orig_input (I# (len)) input
 	   = AlexLastAcc a input (I# (len))
-	check_accs (AlexAccSkipPred predx : rest)
+	check_accs (AlexAccSkipPred predx : _)
 	   | predx user orig_input (I# (len)) input
 	   = AlexLastSkip input (I# (len))
 	check_accs (_ : rest) = check_accs rest
@@ -327,9 +348,9 @@ data AlexLastAcc a
   | AlexLastSkip  !AlexInput !Int
 
 instance Functor AlexLastAcc where
-    fmap f AlexNone = AlexNone
+    fmap _ AlexNone = AlexNone
     fmap f (AlexLastAcc x y z) = AlexLastAcc (f x) y z
-    fmap f (AlexLastSkip x y) = AlexLastSkip x y
+    fmap _ (AlexLastSkip x y) = AlexLastSkip x y
 
 data AlexAcc a user
   = AlexAcc a
@@ -342,18 +363,23 @@ type AlexAccPred user = user -> AlexInput -> Int -> AlexInput -> Bool
 -- -----------------------------------------------------------------------------
 -- Predicates on a rule
 
+alexAndPred :: (t -> t1 -> t2 -> t3 -> Bool) -> (t -> t1 -> t2 -> t3 -> Bool) -> t -> t1 -> t2 -> t3 -> Bool
 alexAndPred p1 p2 user in1 len in2
   = p1 user in1 len in2 && p2 user in1 len in2
 
 --alexPrevCharIsPred :: Char -> AlexAccPred _ 
+alexPrevCharIs :: Char -> t -> AlexInput -> t1 -> t2 -> Bool
 alexPrevCharIs c _ input _ _ = c == alexInputPrevChar input
 
+alexPrevCharMatches :: (Char -> t3) -> t -> AlexInput -> t1 -> t2 -> t3
 alexPrevCharMatches f _ input _ _ = f (alexInputPrevChar input)
 
 --alexPrevCharIsOneOfPred :: Array Char Bool -> AlexAccPred _ 
+alexPrevCharIsOneOf :: Array Char e -> t -> AlexInput -> t1 -> t2 -> e
 alexPrevCharIsOneOf arr _ input _ _ = arr ! alexInputPrevChar input
 
 --alexRightContext :: Int -> AlexAccPred _
+--alexRightContext :: Int -> Any * -> t -> t1 -> AlexInput -> Bool
 alexRightContext (I# (sc)) user _ _ input = 
      case alex_scan_tkn user input 0# input sc AlexNone of
 	  (AlexNone, _) -> False
@@ -363,4 +389,5 @@ alexRightContext (I# (sc)) user _ _ input =
 	-- the first match will do.
 
 -- used by wrappers
+iUnbox :: Int -> Int#
 iUnbox (I# (i)) = i
