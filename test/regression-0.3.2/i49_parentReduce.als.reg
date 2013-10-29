@@ -1,0 +1,16 @@
+open util/integer
+pred show {}
+
+
+one sig c1_claferA
+{ r_c2_claferB : one c2_claferB }
+
+one sig c2_claferB
+{ r_c5_claferC : one c5_claferC }
+{ some this.~@r_c2_claferB }
+
+one sig c5_claferC
+{}
+{ some this.~@r_c5_claferC
+  some (this.~@r_c5_claferC).@r_c5_claferC }
+

@@ -1,0 +1,162 @@
+open util/integer
+pred show {}
+
+
+abstract sig c1_Feature
+{ r_c2_productivity : one c2_productivity
+, r_c3_cost : one c3_cost
+, r_c4_batterylife : one c4_batterylife
+, r_c5_security : one c5_security }
+
+sig c2_productivity
+{ ref : one Int }
+{ one @r_c2_productivity.this }
+
+sig c3_cost
+{ ref : one Int }
+{ one @r_c3_cost.this }
+
+sig c4_batterylife
+{ ref : one Int }
+{ one @r_c4_batterylife.this }
+
+sig c5_security
+{ ref : one Int }
+{ one @r_c5_security.this }
+
+abstract sig c6_MobilePhone
+{ r_c7_Connectivity : one c7_Connectivity
+, r_c150_Battery : one c150_Battery
+, r_c189_total_productivity : one c189_total_productivity
+, r_c196_total_batterylife : one c196_total_batterylife
+, r_c203_total_security : one c203_total_security
+, r_c210_total_cost : one c210_total_cost }
+{ (this.(@r_c189_total_productivity.@ref)) = (sum temp : (c1_Feature.@r_c2_productivity) | temp.@ref)
+  (this.(@r_c196_total_batterylife.@ref)) = (sum temp : (c1_Feature.@r_c4_batterylife) | temp.@ref)
+  (this.(@r_c203_total_security.@ref)) = (sum temp : (c1_Feature.@r_c5_security) | temp.@ref)
+  (this.(@r_c210_total_cost.@ref)) = (sum temp : (c1_Feature.@r_c3_cost) | temp.@ref) }
+
+sig c7_Connectivity extends c1_Feature
+{ r_c22_Bluetooth : one c22_Bluetooth
+, r_c86_GSM : one c86_GSM
+, r_c103_LTE : lone c103_LTE
+, r_c120_WiFi : lone c120_WiFi
+, r_c137_USB : lone c137_USB }
+{ one @r_c7_Connectivity.this
+  (this.(@r_c4_batterylife.@ref)) = (-1.mul[12])
+  (this.(@r_c2_productivity.@ref)) = 14
+  (this.(@r_c5_security.@ref)) = 43
+  (this.(@r_c3_cost.@ref)) = 101 }
+
+sig c22_Bluetooth extends c1_Feature
+{ r_c35_Bluetooth20EDR : lone c35_Bluetooth20EDR
+, r_c52_Bluetooth21EDR : lone c52_Bluetooth21EDR
+, r_c69_Bluetooth40 : lone c69_Bluetooth40 }
+{ one @r_c22_Bluetooth.this
+  let children = (r_c35_Bluetooth20EDR + r_c52_Bluetooth21EDR + r_c69_Bluetooth40) | one children
+  (this.(@r_c4_batterylife.@ref)) = 0
+  (this.(@r_c2_productivity.@ref)) = 0
+  (this.(@r_c5_security.@ref)) = 0
+  (this.(@r_c3_cost.@ref)) = 0 }
+
+sig c35_Bluetooth20EDR extends c1_Feature
+{}
+{ one @r_c35_Bluetooth20EDR.this
+  (this.(@r_c4_batterylife.@ref)) = (-1.mul[4])
+  (this.(@r_c2_productivity.@ref)) = 1
+  (this.(@r_c5_security.@ref)) = (-1.mul[15])
+  (this.(@r_c3_cost.@ref)) = 1 }
+
+sig c52_Bluetooth21EDR extends c1_Feature
+{}
+{ one @r_c52_Bluetooth21EDR.this
+  (this.(@r_c4_batterylife.@ref)) = (-1.mul[2])
+  (this.(@r_c2_productivity.@ref)) = 4
+  (this.(@r_c5_security.@ref)) = (-1.mul[10])
+  (this.(@r_c3_cost.@ref)) = 1 }
+
+sig c69_Bluetooth40 extends c1_Feature
+{}
+{ one @r_c69_Bluetooth40.this
+  (this.(@r_c4_batterylife.@ref)) = (-1.mul[1])
+  (this.(@r_c2_productivity.@ref)) = 16
+  (this.(@r_c5_security.@ref)) = (-1.mul[2])
+  (this.(@r_c3_cost.@ref)) = 2 }
+
+sig c86_GSM extends c1_Feature
+{}
+{ one @r_c86_GSM.this
+  (this.(@r_c4_batterylife.@ref)) = (-1.mul[2])
+  (this.(@r_c2_productivity.@ref)) = 2
+  (this.(@r_c5_security.@ref)) = (-1.mul[10])
+  (this.(@r_c3_cost.@ref)) = 1 }
+
+sig c103_LTE extends c1_Feature
+{}
+{ one @r_c103_LTE.this
+  (this.(@r_c4_batterylife.@ref)) = (-1.mul[1])
+  (this.(@r_c2_productivity.@ref)) = 16
+  (this.(@r_c5_security.@ref)) = (-1.mul[3])
+  (this.(@r_c3_cost.@ref)) = 3 }
+
+sig c120_WiFi extends c1_Feature
+{}
+{ one @r_c120_WiFi.this
+  (this.(@r_c4_batterylife.@ref)) = (-1.mul[10])
+  (this.(@r_c2_productivity.@ref)) = 20
+  (this.(@r_c5_security.@ref)) = (-1.mul[15])
+  (this.(@r_c3_cost.@ref)) = 20 }
+
+sig c137_USB extends c1_Feature
+{}
+{ one @r_c137_USB.this
+  (this.(@r_c4_batterylife.@ref)) = 10
+  (this.(@r_c2_productivity.@ref)) = 20
+  (this.(@r_c5_security.@ref)) = 0
+  (this.(@r_c3_cost.@ref)) = 3 }
+
+sig c150_Battery extends c1_Feature
+{ r_c163_LiBattery1150 : lone c163_LiBattery1150
+, r_c176_LiBattery1400 : lone c176_LiBattery1400 }
+{ one @r_c150_Battery.this
+  let children = (r_c163_LiBattery1150 + r_c176_LiBattery1400) | one children
+  (this.(@r_c4_batterylife.@ref)) = 0
+  (this.(@r_c2_productivity.@ref)) = 0
+  (this.(@r_c5_security.@ref)) = 0
+  (this.(@r_c3_cost.@ref)) = 0 }
+
+sig c163_LiBattery1150 extends c1_Feature
+{}
+{ one @r_c163_LiBattery1150.this
+  (this.(@r_c4_batterylife.@ref)) = 60
+  (this.(@r_c2_productivity.@ref)) = 0
+  (this.(@r_c5_security.@ref)) = 0
+  (this.(@r_c3_cost.@ref)) = 10 }
+
+sig c176_LiBattery1400 extends c1_Feature
+{}
+{ one @r_c176_LiBattery1400.this
+  (this.(@r_c4_batterylife.@ref)) = 70
+  (this.(@r_c2_productivity.@ref)) = 0
+  (this.(@r_c5_security.@ref)) = 0
+  (this.(@r_c3_cost.@ref)) = 15 }
+
+sig c189_total_productivity
+{ ref : one Int }
+{ one @r_c189_total_productivity.this }
+
+sig c196_total_batterylife
+{ ref : one Int }
+{ one @r_c196_total_batterylife.this }
+
+sig c203_total_security
+{ ref : one Int }
+{ one @r_c203_total_security.this }
+
+sig c210_total_cost
+{ ref : one Int }
+{ one @r_c210_total_cost.this }
+
+one sig c233_OptimalPhone extends c6_MobilePhone
+{}
+

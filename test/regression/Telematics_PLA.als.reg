@@ -1,0 +1,125 @@
+open util/integer
+pred show {}
+
+
+one sig c1_telematicsSystem
+{ r_c2_channel : one c2_channel
+, r_c5_extraDisplay : lone c5_extraDisplay
+, r_c6_size : one c6_size }
+{ (some (this.@r_c2_channel).@r_c4_dual) <=> (some c108_ECU2)
+  (some this.@r_c5_extraDisplay) <=> ((#(c107_ECU1.@r_c99_display)) = 2)
+  (some this.@r_c5_extraDisplay) <=> ((some c108_ECU2) => ((#(c108_ECU2.@r_c99_display)) = 2))
+  (some (this.@r_c6_size).@r_c8_large) <=> (no (((c98_plaECU.@r_c99_display).@r_c75_options).@r_c84_size).@r_c85_small)
+  (some (this.@r_c6_size).@r_c7_small) <=> (no (((c98_plaECU.@r_c99_display).@r_c75_options).@r_c84_size).@r_c86_large) }
+
+one sig c2_channel
+{ r_c3_single : lone c3_single
+, r_c4_dual : lone c4_dual }
+{ let children = (r_c3_single + r_c4_dual) | one children }
+
+lone sig c3_single
+{}
+{ one r_c3_single }
+
+lone sig c4_dual
+{}
+{ one r_c4_dual }
+
+lone sig c5_extraDisplay
+{}
+{ one r_c5_extraDisplay }
+
+one sig c6_size
+{ r_c7_small : lone c7_small
+, r_c8_large : lone c8_large }
+{ let children = (r_c7_small + r_c8_large) | one children }
+
+lone sig c7_small
+{}
+{ one r_c7_small }
+
+lone sig c8_large
+{}
+{ one r_c8_large }
+
+abstract sig c61_comp
+{ r_c62_version : one c62_version }
+
+sig c62_version
+{ ref : one Int }
+{ one @r_c62_version.this }
+
+abstract sig c63_ECU extends c61_comp
+{}
+
+abstract sig c64_display extends c61_comp
+{ r_c65_server : one c65_server
+, r_c75_options : one c75_options }
+{ all disj x, y : this.@r_c65_server | (x.@ref) != (y.@ref)
+  (this.(@r_c62_version.@ref)) >= ((this.@r_c65_server).(@ref.(@r_c62_version.@ref))) }
+
+sig c65_server
+{ ref : one c63_ECU }
+{ one @r_c65_server.this }
+
+sig c75_options extends c83_options
+{}
+{ one @r_c75_options.this }
+
+abstract sig c83_options
+{ r_c84_size : one c84_size
+, r_c87_cache : lone c87_cache }
+{ ((some (this.@r_c84_size).@r_c85_small) && (some this.@r_c87_cache)) => (some ((this.@r_c87_cache).@r_c88_size).@r_c89_fixed) }
+
+sig c84_size
+{ r_c85_small : lone c85_small
+, r_c86_large : lone c86_large }
+{ one @r_c84_size.this
+  let children = (r_c85_small + r_c86_large) | one children }
+
+sig c85_small
+{}
+{ one @r_c85_small.this }
+
+sig c86_large
+{}
+{ one @r_c86_large.this }
+
+sig c87_cache
+{ r_c88_size : one c88_size }
+{ one @r_c87_cache.this }
+
+sig c88_size
+{ ref : one Int
+, r_c89_fixed : lone c89_fixed }
+{ one @r_c88_size.this }
+
+sig c89_fixed
+{}
+{ one @r_c89_fixed.this }
+
+abstract sig c98_plaECU extends c63_ECU
+{ r_c99_display : set c99_display }
+{ 1 <= #r_c99_display and #r_c99_display <= 2 }
+
+sig c99_display extends c64_display
+{}
+{ one @r_c99_display.this
+  (this.(@r_c65_server.@ref)) = (this.~@r_c99_display)
+  no (this.@r_c75_options).@r_c87_cache }
+
+one sig c107_ECU1 extends c98_plaECU
+{}
+
+lone sig c108_ECU2 extends c98_plaECU
+{ r_c109_master : one c109_master }
+{ all disj x, y : this.@r_c109_master | (x.@ref) != (y.@ref) }
+
+lone sig c109_master
+{ ref : one c107_ECU1 }
+{ one r_c109_master }
+
+fact { some (c1_telematicsSystem.@r_c2_channel).@r_c4_dual }
+fact { some c1_telematicsSystem.@r_c5_extraDisplay }
+fact { some (c1_telematicsSystem.@r_c6_size).@r_c8_large }
+fact { (c61_comp.(@r_c62_version.@ref)) = 1 }

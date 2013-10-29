@@ -1,0 +1,9 @@
+// Test group cardinality.
+//
+// Expected Output: Compiles, produces multiple instances.
+//
+// Current Output:
+//   Compiles, produces 0 instances.
+
+2..3 A
+  X 1..5

@@ -1,5 +1,5 @@
 {-
-Copyright (C) 2012 Kacper Bak <http://gsd.uwaterloo.ca>
+Copyright (C) 2013 Kacper Bak <http://gsd.uwaterloo.ca>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
@@ -21,4 +21,5 @@ SOFTWARE.
 -}
 
 module Language.Clafer.Version where
-version = "v0.3.2.11-4-2013"
+version :: String
+version = "v0.3.4.20-9-2013"

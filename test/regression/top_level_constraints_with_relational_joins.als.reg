@@ -4,34 +4,36 @@ pred show {}
 
 abstract sig c1_Course
 { r_c2_assistants : set c2_assistants }
+{ all disj x, y : this.@r_c2_assistants | (x.@ref) != (y.@ref) }
 
 sig c2_assistants
-{ ref : one c3_TA }
+{ ref : one c12_TA }
 { one @r_c2_assistants.this }
 
-abstract sig c3_TA
-{ r_c4_first : lone c4_first }
+abstract sig c12_TA
+{ r_c13_first : lone c13_first }
+{ all disj x, y : this.@r_c13_first | (x.@ref) != (y.@ref) }
 
-sig c4_first
+sig c13_first
 { ref : one c1_Course }
-{ one @r_c4_first.this
-  (this.~@r_c4_first) in (this.(@ref.(@r_c2_assistants.@ref))) }
+{ one @r_c13_first.this
+  (this.~@r_c13_first) in (this.(@ref.(@r_c2_assistants.@ref))) }
 
-one sig c10_CompilerGradStudent extends c3_TA
+one sig c28_CompilerGradStudent extends c12_TA
 {}
 
-one sig c11_AIGradStudent extends c3_TA
+one sig c29_AIGradStudent extends c12_TA
 {}
 
-one sig c12_CompilerCourse extends c1_Course
+one sig c30_CompilerCourse extends c1_Course
 {}
 
-one sig c13_MachineLearningCourse extends c1_Course
+one sig c31_MachineLearningCourse extends c1_Course
 {}
 
-fact { (c10_CompilerGradStudent.(@r_c4_first.@ref)) = c12_CompilerCourse }
-fact { (c11_AIGradStudent.(@r_c4_first.@ref)) = c13_MachineLearningCourse }
-one sig c24_numerOfAssistants
+fact { (c28_CompilerGradStudent.(@r_c13_first.@ref)) = c30_CompilerCourse }
+fact { (c29_AIGradStudent.(@r_c13_first.@ref)) = c31_MachineLearningCourse }
+one sig c42_numerOfAssistants
 { ref : one Int }
-{ this.@ref = (#(c1_Course.@r_c2_assistants)) }
 
+fact { (c42_numerOfAssistants.@ref) = (#(c1_Course.@r_c2_assistants)) }

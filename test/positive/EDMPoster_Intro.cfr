@@ -1,0 +1,73 @@
+ExamplePhone1 
+   display
+      LCD
+   GSM
+   CPU
+   keyboard
+//# FRAGMENT
+ExamplePhone2 
+   display
+      OLED
+   GSM
+   touchscreen
+//# FRAGMENT
+ExampleTablet1 
+   display
+      AMOLED
+   HSPA
+   CPU 4
+   touchscreen
+//# FRAGMENT
+ExamplePhone3
+   display
+      LCD
+   GSM
+   CPU 4
+   keyboard
+//# FRAGMENT
+ExampleTablet2 
+   display
+      AMOLED
+   HSPA
+   CPU 4
+   keyboard
+//# FRAGMENT
+abstract AndroidDevice1
+   xor display
+      LCD
+      OLED
+      AMOLED
+          [ no keyboard ]
+   GSM
+   HSPA ?
+   CPU 1..4
+   xor input 
+      keyboard
+      touchscreen
+//# FRAGMENT
+abstract AndroidPhone : AndroidDevice
+   [ GSM ] 
+   [ # CPU < 4 ]
+//# FRAGMENT
+abstract AndroidDevice
+   xor display
+      LCD
+      OLED
+      AMOLED
+          [ no keyboard ]
+   GSM ?
+   HSPA ?
+   CPU 1..4
+   xor input 
+      keyboard
+      touchscreen
+//# FRAGMENT
+AndroidPhone4 : AndroidPhone
+   display
+      AMOLED
+   GSM
+   HSPA
+   CPU 2
+   input 
+      touchscreen
+//# FRAGMENT
