@@ -1,4 +1,5 @@
 {-# LANGUAGE NamedFieldPuns #-}
+{-# LANGUAGE ViewPatterns #-}
 
 module Language.Clafer.Generator.Choco (genCModule) where
 
@@ -27,6 +28,7 @@ genCModule args (imodule@IModule{mDecls}, _) =
     ++ (genRefClafer =<< clafers)
     ++ (genTopConstraint =<< mDecls)
     ++ (genConstraint =<< clafers)
+    ++ (genGoal =<< mDecls)
     where
     root :: IClafer
     root = IClafer noSpan False Nothing "root" "root" (ISuper False [PExp Nothing "" noSpan $ IClaferId "clafer" "clafer" True]) (Just (1, 1)) (0, 0) mDecls
@@ -181,6 +183,12 @@ genCModule args (imodule@IModule{mDecls}, _) =
         unlines [uid ++ ".addConstraint(" ++ genConstraintPExp c ++ ");"
             | c <- filter (isNothing . isUniqueConstraint . exp) $ mapMaybe iconstraint elements]
             
+    genGoal :: IElement -> Result
+    genGoal (IEGoal _ PExp{exp = IFunExp{op="max", exps=[expr]}})  = "max(" ++ genConstraintPExp expr ++ ");\n"
+    genGoal (IEGoal _ PExp{exp = IFunExp{op="min", exps=[expr]}})  = "min(" ++ genConstraintPExp expr ++ ");\n"
+    genGoal (IEGoal _ _) = error $ "Unknown objective"
+    genGoal _ = ""
+            
     nameOfType TInteger = "integer"
     nameOfType (TClafer [t]) = t
     
@@ -236,6 +244,10 @@ genCModule args (imodule@IModule{mDecls}, _) =
         "minus(" ++ genConstraintPExp arg ++ ")"
     genConstraintExp (IFunExp "-" [arg1, arg2]) =
         "minus(" ++ genConstraintPExp arg1 ++ ", " ++ genConstraintPExp arg1 ++ ")"
+    genConstraintExp (IFunExp "sum" args)
+        | [arg] <- args, PExp{exp = IFunExp{exps = [a, PExp{exp = IClaferId{sident = "ref"}}]}} <- rewrite arg =
+            "sum(" ++ genConstraintPExp a ++ ")"
+        | otherwise = error "Unexpected sum argument."
     genConstraintExp (IFunExp op args) =
         mapFunc op ++ "(" ++ intercalate ", " (map genConstraintPExp args) ++ ")"
     -- this is a keyword in Javascript so use "$this" instead
