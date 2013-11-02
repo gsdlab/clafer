@@ -86,7 +86,7 @@ isParent _ = False
 
 isClaferName :: PExp -> Bool
 isClaferName (PExp _ _ _ (IClaferId _ id' _)) =
-  id' `notElem` ([this, parent, children] ++ primitiveTypes)
+  id' `notElem` ([this, parent, children, ref] ++ primitiveTypes)
 isClaferName _ = False
 
 isClaferName' :: PExp -> Bool
@@ -340,7 +340,8 @@ isPrimitive :: String -> Bool
 isPrimitive = flip elem primitiveTypes
 
 data GEnv = GEnv {
-  num :: Int,
+  identCountMap :: Map.Map String Int,
+  expCount :: Int,
   stable :: Map.Map String [[String]], -- super clafer names of a given clafer
   sClafers ::[IClafer] -- all clafers (no going through references)
   } deriving (Eq, Show)

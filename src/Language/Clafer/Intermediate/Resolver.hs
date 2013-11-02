@@ -47,7 +47,7 @@ resolveModule args' declarations =
 nameModule :: Bool -> IModule -> (IModule, GEnv)
 nameModule skipResolver imodule = (imodule{mDecls = decls'}, genv')
   where
-  (decls', genv') = runState (mapM (nameElement skipResolver) $ mDecls imodule) $ GEnv 0 Map.empty []
+  (decls', genv') = runState (mapM (nameElement skipResolver) $ mDecls imodule) $ GEnv Map.empty 0 Map.empty []
 
 nameElement :: MonadState GEnv m => Bool -> IElement -> m IElement
 nameElement skipResolver x = case x of
@@ -65,9 +65,10 @@ nameClafer skipResolver claf = do
 
 namePExp :: MonadState GEnv m => PExp -> m PExp
 namePExp pexp@(PExp _ _ _ exp') = do
-  pid' <- genId "exp"
+  n <- gets expCount
+  modify (\genv -> genv {expCount = 1 + n})
   exp'' <- nameIExp exp'
-  return $ pexp {pid = pid', Language.Clafer.Intermediate.Intclafer.exp = exp''}
+  return $ pexp {pid = "exp$" ++ show n, Language.Clafer.Intermediate.Intclafer.exp = exp''}
 
 nameIExp :: MonadState GEnv m => IExp -> m IExp
 nameIExp x = case x of
