@@ -229,11 +229,6 @@ renameClafer :: MonadState GEnv m => Bool -> IClafer -> m IClafer
 renameClafer False clafer = return clafer
 renameClafer True  clafer = renameClafer' clafer
 
-{-
-  depending on the number of times a given name has already appeared
-  0 - uid = ident
-  i - uid = ident$i, i++
--}
 renameClafer' :: MonadState GEnv m => IClafer -> m IClafer
 renameClafer' clafer = do
   let claferIdent = ident clafer 
