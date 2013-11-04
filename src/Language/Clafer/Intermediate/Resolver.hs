@@ -66,9 +66,9 @@ nameClafer skipResolver claf = do
 namePExp :: MonadState GEnv m => PExp -> m PExp
 namePExp pexp@(PExp _ _ _ exp') = do
   n <- gets expCount
-  modify (\genv -> genv {expCount = 1 + n})
+  modify (\e -> e {expCount = 1 + n})
   exp'' <- nameIExp exp'
-  return $ pexp {pid = "exp$" ++ show n, Language.Clafer.Intermediate.Intclafer.exp = exp''}
+  return $ pexp {pid = concat [ "e", show n, "_"], Language.Clafer.Intermediate.Intclafer.exp = exp''}
 
 nameIExp :: MonadState GEnv m => IExp -> m IExp
 nameIExp x = case x of

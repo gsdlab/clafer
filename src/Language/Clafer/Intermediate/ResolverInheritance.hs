@@ -243,9 +243,7 @@ renameClafer' clafer = do
   return $ clafer { uid = genId claferIdent count }
 
 genId :: String -> Int -> String
-genId id' 0 = id'
-genId id' count = concat [id', "$", show count]
-              --  concat ["c", show count, "_",  id'] -- old way
+genId id' count = concat ["c", show count, "_",  id']
 
 resolveEInheritance :: MonadState GEnv m => [String] -> [String] -> Bool -> [IElement] -> [IClafer]  -> m ([IElement], ISuper, [IClafer])
 resolveEInheritance predecessors unrollables absAncestor declarations allSuper

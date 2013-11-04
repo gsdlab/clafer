@@ -50,6 +50,6 @@ case_failTest = do
 	let compiledClafers = map (\(file', model) -> 
 		(file', compileOneFragment defaultClaferArgs model)) claferModels
 	forM_ compiledClafers (\(file', compiled) -> 
-		when (compiledCheck compiled) $ putStrLn (file' ++ " compiled when it should not of"))
+		when (compiledCheck compiled) $ putStrLn (file' ++ " compiled when it should not have."))
 	(andMap (not . compiledCheck . snd) compiledClafers 
-		@? "test/negatived fail: The above claferModels compiled.")
+		@? "test/negative fail: The above clafer models compiled.")

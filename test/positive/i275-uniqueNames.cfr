@@ -1,0 +1,11 @@
+abstract A
+	b
+
+a : A
+	b
+
+abstract b
+
+c
+	`b
+		a
