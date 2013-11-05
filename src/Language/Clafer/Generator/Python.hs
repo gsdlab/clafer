@@ -157,7 +157,7 @@ genPythonElement x = case x of
 
 genPythonPExp :: String -> PExp -> String
 genPythonPExp tagName (PExp iType' pid' pos' iexp') = concat
-  [ "\n\t\tExp.Exp","(expType=\"", tagName, "\", ", maybe "my_type=\"\"" genPythonIType iType'
+  [ "\n\t\tExp.Exp","(expType=\"", tagName, "\", ", maybe "exptype=\"\"" genPythonIType iType'
   , ", parentId=\"", pid', "\""
   , ", " , genPythonPosition pos'
   , ", iExpType=\"" , genPythonIExpType iexp' , "\"" 
@@ -236,4 +236,4 @@ genPythonITypeType x = case x of
   --TRef t -> genPythonITypeType t
 
 genPythonIType :: IType -> String
-genPythonIType x = concat [ "my_type=\"", (genPythonITypeType x), "\"" ]
+genPythonIType x = concat [ "exptype=\"", (genPythonITypeType x), "\"" ]
