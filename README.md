@@ -36,6 +36,7 @@ Contributors
 * [Kacper Bak](http://gsd.uwaterloo.ca/kbak), Ph.D. Candidate. Main developer.
 * [Jimmy Liang](http://gsd.uwaterloo.ca/jliang), MSc. Candidate. Main developer.
 * [Michał Antkiewicz](http://gsd.uwaterloo.ca/mantkiew), Research Engineer. Requirements, development, architecture, testing, technology transfer.
+* [Ed Zulkoski](http://gsd.uwaterloo.ca/ezulkosk), Pd.D. Candidate. Python IR Generator.
 * Luke Michael Brown, co-op student May-Aug 2013. Many improvements.
 
 Getting Clafer Tools
@@ -44,8 +45,11 @@ Getting Clafer Tools
 Binary distributions of release 0.3.5 of 
 Clafer, 
 ClaferIG, 
-ClaferWiki, 
-ClaferMoo, 
+ClaferWiki,
+ClaferIDE, 
+ClaferMoo,
+ChocoSolver,
+ClaferZ3, 
 ClaferMooVisualizer, 
 and ClaferConfigurator 
 for Windows, Mac, and Linux, 
@@ -122,11 +126,11 @@ On Mac only
 
 ### Important: Branches must correspond
 
-Clafer, ClaferIG, ClaferWiki, ClaferMoo,  ClaferMooVisualizer, and ClaferConfigurator are following the *simultaneous release model*. 
+All related projects are following the *simultaneous release model*. 
 The branch `master` contains releases, whereas the branch `develop` contains code under development. 
-When building the tools, the branches should match:
-Releases `clafer/master` and `claferIG/master` are guaranteed to work well together.
-Development versions `clafer/develop` and `claferIG/develop` should work well together but this might not always be the case.
+When building the tools, the branches should match.
+Releases from branches 'master` are guaranteed to work well together.
+Development versions from branches `develop` should work well together but this might not always be the case.
 
 ### Building
 
@@ -173,14 +177,15 @@ Common flags:
   -m --mode=CLAFERMODE                    Generated output type. Available
                                           CLAFERMODEs are: 'alloy' (default,
                                           Alloy 4.1); 'alloy42' (Alloy 4.2);
-                                          'xml' (intermediate representation o
-                                          Clafer model); 'clafer' (analyzed an
+                                          'xml' (intermediate representation of
+                                          Clafer model); 'clafer' (analyzed and
                                           desugared clafer model); 'html'
                                           (original model in HTML); 'graph'
                                           (graphical representation written in
                                           DOT language); 'cvlgraph' (cvl
                                           notation representation written in
-                                          DOT language)
+                                          DOT language); 'python' (generates IR
+                                          in python)
   -o --console-output                     Output code on console
   -i --flatten-inheritance                Flatten inheritance ('alloy' and
                                           'alloy42' modes only)
