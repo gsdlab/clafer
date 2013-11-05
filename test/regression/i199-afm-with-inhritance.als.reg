@@ -1,0 +1,10 @@
+open util/integer
+pred show {}
+
+
+abstract sig c1_A
+{}
+
+one sig c2_a extends c1_A
+{}
+
