@@ -231,15 +231,14 @@ renameClafer True  clafer = renameClafer' clafer
 
 renameClafer' :: MonadState GEnv m => IClafer -> m IClafer
 renameClafer' clafer = do
-  uid' <- genId $ ident clafer
-  return $ clafer {uid = uid'}
+  let claferIdent = ident clafer 
+  identCountMap' <- gets identCountMap
+  let count = Map.findWithDefault 0 claferIdent identCountMap'
+  modify (\e -> e { identCountMap = Map.alter (\_ -> Just (count+1)) claferIdent identCountMap' } )
+  return $ clafer { uid = genId claferIdent count }
 
-
-genId :: MonadState GEnv m => String -> m String
-genId id' = do
-  modify (\e -> e {num = 1 + num e})
-  n <- gets num
-  return $ concat ["c", show n, "_",  id']
+genId :: String -> Int -> String
+genId id' count = concat ["c", show count, "_",  id']
 
 resolveEInheritance :: MonadState GEnv m => [String] -> [String] -> Bool -> [IElement] -> [IClafer]  -> m ([IElement], ISuper, [IClafer])
 resolveEInheritance predecessors unrollables absAncestor declarations allSuper

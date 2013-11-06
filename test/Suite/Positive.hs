@@ -50,25 +50,25 @@ case_compileTest = do
 	(andMap (compiledCheck . snd) compiledClafers 
 		@? "test/positive fail: The above claferModels did not compile.")
 
-case_refrence_Unused_Absstract_Clafer :: Assertion
-case_refrence_Unused_Absstract_Clafer = do
+case_reference_Unused_Abstract_Clafer :: Assertion
+case_reference_Unused_Abstract_Clafer = do
 	model <- readFile "test/positive/i235.cfr"
 	let compiledClafers = 
 		[("None", compileOneFragment defaultClaferArgs{scope_strategy = None} model), ("Simple", compileOneFragment defaultClaferArgs{scope_strategy = Simple} model)]
 	forM_ compiledClafers (\(ss, compiled) -> 
 		when (not $ compiledCheck compiled) $ putStrLn ("i235.cfr failed for scope_strategy = " ++ ss))
 	(andMap (compiledCheck . snd) compiledClafers 
-		@? "refrence_Unused_Absstract_Clafer (i235) failed, error for refrencing unused abstract clafer")
+		@? "reference_Unused_Abstract_Clafer (i235) failed, error for referencing unused abstract clafer")
 
-case_nonempty_Cards :: Assertion
-case_nonempty_Cards = do
+case_nonempty_cards :: Assertion
+case_nonempty_cards = do
 	claferModels <- positiveClaferModels
 	let compiledClafeIrs = foldMap getIR $ map (\(file', model) -> (file', compileOneFragment defaultClaferArgs model)) claferModels
 	forM_ compiledClafeIrs (\(file', ir') ->
 		let emptys = foldMapIR isEmptyCard ir'
-		in when (emptys /= []) $ putStrLn (file' ++ " Error: Contains empty Card's after analysis at\n" ++ emptys))
+		in when (emptys /= []) $ putStrLn (file' ++ " Error: Contains empty cardinalities after analysis at\n" ++ emptys))
 	(andMap ((==[]) . foldMapIR isEmptyCard . snd) compiledClafeIrs
-		@? "nonempty Card test failed. Files contain empty card's after fully compiling")
+		@? "nonempty card test failed. Files contain empty cardinalities after fully compiling")
 	where
 		getIR (file', (Right (CompilerResult{claferEnv = ClaferEnv{cIr = Just (iMod, _, _)}}))) = [(file', iMod)]
 		getIR _ = []
@@ -79,4 +79,4 @@ case_nonempty_Cards = do
 case_stringEqual :: Assertion
 case_stringEqual = do
 	let strMap = stringMap $ fromRight $ compileOneFragment defaultClaferArgs "A\n    text1 : string = \"some text\"\n    text2 : string = \"some text\""
-	(Map.size strMap) == 1 @? "Error string's assigned to differnet numbers!"
+	(Map.size strMap) == 1 @? "Error: same string assigned to differnet numbers!"

@@ -403,7 +403,7 @@ showStats au (Stats na nr nc nconst ngoals sgl) =
   unlines [ "All clafers: " ++ (show (na + nr + nc)) ++ " | Abstract: " ++ (show na) ++ " | Concrete: " ++ (show nc) ++ " | References: " ++ (show nr)          , "Constraints: " ++ show nconst
           , "Goals: " ++ show ngoals  
           , "Global scope: " ++ showInterval sgl
-          , "All names unique: " ++ show au]
+          , "Can skip resolver: " ++ show au]
 
 showInterval :: (Integer, Integer) -> String
 showInterval (n, -1) = show n ++ "..*"
@@ -413,4 +413,4 @@ claferIRXSD :: String
 claferIRXSD = Language.Clafer.Generator.Schema.xsd
 
 keyWords :: [String]
-keyWords = ["ref","parent","Abstract","abstract", "else", "in", "no", "opt", "xor", "all", "enum", "lone", "not", "or", "disj", "extends", "mux", "one", "some"]
+keyWords = ["ref","parent","abstract", "else", "in", "no", "opt", "xor", "all", "enum", "lone", "not", "or", "disj", "extends", "mux", "one", "some"]

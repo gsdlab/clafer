@@ -34,6 +34,7 @@ import Language.Clafer.Intermediate.Intclafer
 -- -----------------------------------------------------------------------------
 -- basic functions shared by desugarer, analyzer and code generator
 type Result = String
+type FQName = String    -- fully qualified name, e.g., Person::name or ::Company::Department::chair
 
 transIdent :: PosIdent -> Result
 transIdent x = case x of
@@ -86,7 +87,7 @@ isParent _ = False
 
 isClaferName :: PExp -> Bool
 isClaferName (PExp _ _ _ (IClaferId _ id' _)) =
-  id' `notElem` ([this, parent, children] ++ primitiveTypes)
+  id' `notElem` ([this, parent, children, ref] ++ primitiveTypes)
 isClaferName _ = False
 
 isClaferName' :: PExp -> Bool
@@ -340,8 +341,9 @@ isPrimitive :: String -> Bool
 isPrimitive = flip elem primitiveTypes
 
 data GEnv = GEnv {
-  num :: Int,
-  stable :: Map.Map String [[String]], -- super clafer names of a given clafer
+  identCountMap :: Map.Map String Int,
+  expCount :: Int,
+  stable :: Map.Map UID [[UID]], -- super clafer names of a given clafer
   sClafers ::[IClafer] -- all clafers (no going through references)
   } deriving (Eq, Show)
 
