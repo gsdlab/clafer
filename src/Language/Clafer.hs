@@ -80,6 +80,7 @@ import Language.Clafer.Intermediate.StringAnalyzer
 import Language.Clafer.Intermediate.Transformer
 import Language.Clafer.Optimizer.Optimizer
 import Language.Clafer.Generator.Alloy
+import Language.Clafer.Generator.Choco
 import Language.Clafer.Generator.Xml
 import Language.Clafer.Generator.Python
 import Language.Clafer.Generator.Schema
@@ -364,6 +365,7 @@ generate =
                         Graph    -> ("dot", genSimpleGraph ast' iModule (takeBaseName $ file cargs) (show_references cargs), Nothing)
                         CVLGraph -> ("dot", genCVLGraph ast' iModule (takeBaseName $ file cargs), Nothing)
                         Python      -> ("py", genPythonModule iModule, Nothing)
+                        Choco    -> ("js", genCModule cargs (imod, genv), Nothing)
     return $ CompilerResult { extension = ext, 
                      outputCode = code, 
                      statistics = stats,
