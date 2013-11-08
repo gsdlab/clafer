@@ -20,12 +20,55 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
 -}
+import Data.List
+import Language.Clafer
+
 import Suite.Positive
 import Suite.Negative
 import Functions
+import Test.HUnit
 import Test.Framework
 import Test.Framework.TH
-
+import Test.Framework.Providers.HUnit
 
 tg_Main_Test_Suite = $(testGroupGenerator)
 main = defaultMain[tg_Main_Test_Suite, tg_Test_Suite_Positive, tg_Test_Suite_Negative]
+
+{-
+a            // ::a -> c0_a
+    b        // ::a::b -> c0_b
+b            // ::b -> c1_b
+c            // ::c -> c0_c
+    d        // ::c::d -> c0_d
+         b   // ::c::d::b -> c2_b
+d            // ::d -> c1_d
+    b        // ::d::b -> c3_b
+
+"b" -> "c0_b", "c1_b", "c2_b", "c3_b"
+"d::b" -> "c2_b", "c3_b"
+"c::d" -> "c0_d"
+"d" -> "c0_d", "c1_d"
+"x" -> []
+
+a\n    b\nb\nc\n    d\n         b\nd\n    b
+-}
+case_FQMapLookup :: Assertion
+case_FQMapLookup = do
+	let
+		(Just (iModule, _, _)) = cIr $ claferEnv $ fromRight $ compileOneFragment defaultClaferArgs "a\n    b\nb\nc\n    d\n         b\nd\n    b"
+		fqNameMap = deriveFQNameMap iModule
+	[ "c0_a" ] == (findUIDsByFQName fqNameMap "::a" ) @? "UID for `::a` different from `c0_a`"
+	[ "c0_b" ] == (findUIDsByFQName fqNameMap "::a::b" ) @? "UID for `::a::b` different from `c0_b`"
+	[ "c1_b" ] == (findUIDsByFQName fqNameMap "::b" ) @? "UID for `::b` different from `c1_b`"
+	[ "c0_c" ] == (findUIDsByFQName fqNameMap "::c" ) @? "UID for `::c` different from `c0_c`"
+	[ "c0_d" ] == (findUIDsByFQName fqNameMap "::c::d" ) @? "UID for `::c::d` different from `c0_d`"
+	[ "c0_d" ] == (findUIDsByFQName fqNameMap "c::d" ) @? "UID for `c::d` different from `c0_d`"
+	[ "c2_b" ] == (findUIDsByFQName fqNameMap "::c::d::b" ) @? "UID for `::c::d::b` different from `c2_b`"
+	[ "c1_d" ] == (findUIDsByFQName fqNameMap "::d" ) @? "UID for `::d` different from `c1_d`"
+	[ "c3_b" ] == (findUIDsByFQName fqNameMap "::d::b" ) @? "UID for `::d::b` different from `c3_d`"
+	null ([ "c0_b", "c1_b", "c2_b", "c3_b" ] \\ (findUIDsByFQName fqNameMap "b" )) @? "UIDs for `b` different from `c0_b`, `c1_b`, `c2_b`, `c3_b` "
+	null ([ "c2_b", "c3_b" ] \\ (findUIDsByFQName fqNameMap "d::b" )) @? "UIDs for `d::b` different from `c2_b`, `c3_b` "
+	null ([ "c0_d", "c1_d" ] \\ (findUIDsByFQName fqNameMap "d" )) @? "UIDs for `d` different from `c0_d`, `c1_d` "	
+	null (findUIDsByFQName fqNameMap "x") @? "UID for `x` different from []"
+	null (findUIDsByFQName fqNameMap "::x") @? "UID for `::x` different from []"
+
