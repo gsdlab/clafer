@@ -147,7 +147,7 @@ genPythonElement x = case x of
                          , "\tstack[-1].addElement(constraint)\n"]
   IEGoal isMaximize' pexp' -> concat 
                          [ "##### goal #####\n" ,"\tgoal = Goal.Goal(" , genPythonBoolean "isMaximize" isMaximize'
-                         , " exp=", genPythonPExp "ParentExp" pexp' , ")\n"
+                         , ", exp=", genPythonPExp "ParentExp" pexp' , ")\n"
                          , "\tstack[-1].addElement(goal)\n"]
                          
                                                          
