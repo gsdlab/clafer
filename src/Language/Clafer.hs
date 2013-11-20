@@ -19,8 +19,7 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
 -}
-module Language.Clafer (
-                        addModuleFragment,
+module Language.Clafer (addModuleFragment,
                         compile,
                         parse,
                         generate,
@@ -48,8 +47,9 @@ module Language.Clafer (
                         IrTrace(..),
                         module Language.Clafer.ClaferArgs,
                         module Language.Clafer.Front.ErrM,
-                        deriveFQNameMap,
-                        findUIDsByFQName)
+                        deriveFQNameUIDMap,
+                        findUIDsByFQName,
+                        FQNameUIDMap)
 where
 
 import Data.Either
@@ -420,14 +420,15 @@ claferIRXSD = Language.Clafer.Generator.Schema.xsd
 keyWords :: [String]
 keyWords = ["ref","parent","abstract", "else", "in", "no", "opt", "xor", "all", "enum", "lone", "not", "or", "disj", "extends", "mux", "one", "some"]
 
+type FQNameUIDMap = SMap.StringMap UID
 
-deriveFQNameMap :: IModule -> SMap.StringMap UID
-deriveFQNameMap iModule = addElements ["::"] (mDecls iModule) SMap.empty
+deriveFQNameUIDMap :: IModule -> FQNameUIDMap
+deriveFQNameUIDMap iModule = addElements ["::"] (mDecls iModule) SMap.empty
 
-addElements :: [String] -> [IElement] -> SMap.StringMap UID -> SMap.StringMap UID
+addElements :: [String] -> [IElement] -> FQNameUIDMap -> FQNameUIDMap
 addElements    path        elems         smap               = foldl (addClafer path) smap elems
 
-addClafer :: [String] -> SMap.StringMap UID -> IElement          -> SMap.StringMap UID
+addClafer :: [String] -> FQNameUIDMap -> IElement          -> FQNameUIDMap
 addClafer    path      smap                  (IEClafer iClafer) = 
   let newPath = (ident iClafer) : path 
   in
@@ -441,7 +442,7 @@ addClafer    _         smap                  _                  = smap
 b::c
 c
 -}
-findUIDsByFQName :: SMap.StringMap UID -> FQName -> [ UID ]
+findUIDsByFQName :: FQNameUIDMap -> FQName -> [ UID ]
 findUIDsByFQName    smap                  fqName@(':':':':_) = SMap.lookup (reverseFQName fqName) smap
 findUIDsByFQName    smap                  fqName = SMap.prefixFind (reverseFQName fqName) smap 
 

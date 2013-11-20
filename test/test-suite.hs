@@ -56,7 +56,7 @@ case_FQMapLookup :: Assertion
 case_FQMapLookup = do
 	let
 		(Just (iModule, _, _)) = cIr $ claferEnv $ fromRight $ compileOneFragment defaultClaferArgs "a\n    b\nb\nc\n    d\n         b\nd\n    b"
-		fqNameMap = deriveFQNameMap iModule
+		fqNameMap = deriveFQNameUIDMap iModule
 	[ "c0_a" ] == (findUIDsByFQName fqNameMap "::a" ) @? "UID for `::a` different from `c0_a`"
 	[ "c0_b" ] == (findUIDsByFQName fqNameMap "::a::b" ) @? "UID for `::a::b` different from `c0_b`"
 	[ "c1_b" ] == (findUIDsByFQName fqNameMap "::b" ) @? "UID for `::b` different from `c1_b`"
