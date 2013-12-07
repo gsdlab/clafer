@@ -70,7 +70,7 @@ case_nonempty_cards = do
 	(andMap ((==[]) . foldMapIR isEmptyCard . snd) compiledClafeIrs
 		@? "nonempty card test failed. Files contain empty cardinalities after fully compiling")
 	where
-		getIR (file', (Right (CompilerResult{claferEnv = ClaferEnv{cIr = Just (iMod, _, _)}}))) = [(file', iMod)]
+		getIR (file', (Right ([CompilerResult{claferEnv = ClaferEnv{cIr = Just (iMod, _, _)}}]))) = [(file', iMod)]
 		getIR _ = []
 		isEmptyCard (IRClafer (IClafer{cinPos=(Span (Pos l c) _), card = Nothing})) = "Line " ++ show l ++ " column " ++ show c ++ "\n"
 		isEmptyCard (IRClafer (IClafer{cinPos=(PosSpan _ (Pos l c) _), card = Nothing})) = "Line " ++ show l ++ " column " ++ show c ++ "\n"
@@ -78,5 +78,5 @@ case_nonempty_cards = do
 
 case_stringEqual :: Assertion
 case_stringEqual = do
-	let strMap = stringMap $ fromRight $ compileOneFragment defaultClaferArgs "A\n    text1 : string = \"some text\"\n    text2 : string = \"some text\""
+	let strMap = stringMap $ head $ fromRight $ compileOneFragment defaultClaferArgs "A\n    text1 : string = \"some text\"\n    text2 : string = \"some text\""
 	(Map.size strMap) == 1 @? "Error: same string assigned to differnet numbers!"

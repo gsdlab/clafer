@@ -38,9 +38,9 @@ checkClaferExt file' = if ((eman == "")) then False else (txe == "rfc") && (take
 	where (txe, eman) = span (/='.') (reverse file')
 
 				
-compileOneFragment :: ClaferArgs -> InputModel -> Either [ClaferErr] CompilerResult
+compileOneFragment :: ClaferArgs -> InputModel -> Either [ClaferErr] [CompilerResult]
 compileOneFragment args' model =
- 	runClafer args' $
+ 	runClafer args' $  
 		do
 			addModuleFragment model
 			parse

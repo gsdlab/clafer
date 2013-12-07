@@ -50,9 +50,9 @@ run _ args' input =
         addFragments $ fragments input
         parse
         compile
-        f' <- save
-        when (validate args') $ liftIO $ runValidate args' f'
-    if mode args' == Html
+        fs <- save
+        when (validate args') $ forM_ fs (\f'-> liftIO $ runValidate args' f')
+    if Html `elem` (mode args')
       then htmlCatch result args' input
       else return ()
     result `cth` handleErrs
@@ -95,20 +95,21 @@ run _ args' input =
 
   save =
     do
-      result <- generate
+      results <- generate
       (iModule, _, _) <- getIr
-      result' <- if (add_graph args') && (mode args' == Html) 
-             then do
-                   ast' <- getAst
-                   (_, graph, _) <- liftIO $ readProcessWithExitCode "dot"  ["-Tsvg"] $ genSimpleGraph ast' iModule (takeBaseName $ file args') (show_references args')
-                   return $ summary graph result
-                 else return result
-      liftIO $ when (not $ no_stats args') $ putStrLn (statistics result')
-      let f = dropExtension $ file args'
-      let f' = f ++ "." ++ (extension result)
-      liftIO $ if console_output args' then putStrLn (outputCode result') else writeFile f' (outputCode result')
-      liftIO $ when (alloy_mapping args') $ writeFile (f ++ "." ++ "map") $ show (mappingToAlloy result')
-      return f'
+      forM results $ \result -> do
+        result' <- if (add_graph args') && (Html `elem` (mode args')) 
+               then do
+                     ast' <- getAst
+                     (_, graph, _) <- liftIO $ readProcessWithExitCode "dot"  ["-Tsvg"] $ genSimpleGraph ast' iModule (takeBaseName $ file args') (show_references args')
+                     return $ summary graph result
+                   else return result
+        liftIO $ when (not $ no_stats args') $ putStrLn (statistics result')
+        let f = dropExtension $ file args'
+        let f' = f ++ "." ++ (extension result)
+        liftIO $ if console_output args' then putStrLn (outputCode result') else writeFile f' (outputCode result')
+        liftIO $ when (alloy_mapping args') $ writeFile (f ++ "." ++ "map") $ show (mappingToAlloy result')
+        return f'
   summary graph result = result{outputCode=unlines $ summary' graph ("<pre>" ++ statistics result ++ "</pre>") (lines $ outputCode result)}
   summary' _ _ [] = []
   summary' graph stats ("<!-- # SUMMARY /-->":xs) = graph:stats:summary' graph stats xs
@@ -124,14 +125,16 @@ runValidate :: ClaferArgs -> String -> IO ()
 runValidate args' fo = do
   let path = (tooldir args') ++ "/"
   liftIO $ putStrLn ("Validating " ++ (file args'))
-  case (mode args') of
-    Xml -> do
+  let modes = mode args' 
+  when (Xml `elem` modes) $ do
       writeFile "ClaferIR.xsd" claferIRXSD
       voidf $ system $ "java -classpath " ++ path ++ " XsdCheck ClaferIR.xsd " ++ fo
-    Alloy ->   voidf $ system $ validateAlloy path "4" ++ fo
-    Alloy42 -> voidf $ system $ validateAlloy path "4.2" ++ fo
-    Clafer ->  voidf $ system $ path ++ "clafer -s -m=clafer " ++ fo
-    _ -> error "Function runValidate from Main file was given an invalid mode"
+  when (Alloy `elem` modes) $ do
+    voidf $ system $ validateAlloy path "4" ++ fo
+  when (Alloy42 `elem` modes) $ do
+    voidf $ system $ validateAlloy path "4.2" ++ fo
+  when (Clafer `elem` modes) $ do  
+    voidf $ system $ path ++ "clafer -s -m=clafer " ++ fo
 
 validateAlloy :: String -> String -> String
 validateAlloy path version = "java -cp " ++ path ++ "alloy" ++ version ++ ".jar edu.mit.csail.sdg.alloy4whole.ExampleUsingTheCompiler "

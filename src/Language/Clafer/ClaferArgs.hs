@@ -41,7 +41,7 @@ instance Default ScopeStrategy where
   def = Simple
 
 data ClaferArgs = ClaferArgs {
-      mode :: ClaferMode,
+      mode :: [ ClaferMode ],
       console_output :: Bool,
       flatten_inheritance :: Bool,
       timeout_analysis :: Int,
@@ -96,7 +96,7 @@ clafer = ClaferArgs {
  } &= summary ("Clafer " ++ version) &= program "clafer"
 
 mergeArgs :: ClaferArgs -> ClaferArgs -> ClaferArgs
-mergeArgs a1 a2  = ClaferArgs (mergeArg mode) (coMergeArg) 
+mergeArgs a1 a2  = ClaferArgs (mode a1) (coMergeArg) 
   (mergeArg flatten_inheritance) (mergeArg timeout_analysis) 
   (mergeArg no_layout) (mergeArg new_layout) 
   (mergeArg check_duplicates) (mergeArg skip_resolver) 
@@ -133,4 +133,4 @@ mainArgs = do
            process (cmdArgsMode clafer) $ Language.Clafer.SplitJoin.splitArgs options, model)
 
 defaultClaferArgs :: ClaferArgs
-defaultClaferArgs = ClaferArgs Alloy True False 0 False False False False False False False False False "tools/" False False False False False False Simple False False ""
+defaultClaferArgs = ClaferArgs [ Alloy ] True False 0 False False False False False False False False False "tools/" False False False False False False Simple False False ""

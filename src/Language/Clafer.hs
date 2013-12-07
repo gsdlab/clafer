@@ -56,7 +56,7 @@ import Data.Either
 import Data.List
 import Data.List.Split
 import Data.Maybe
-import Data.Map (Map)
+import Data.Map (Map, empty)
 import qualified Data.StringMap as SMap
 import Data.Ord
 import Control.Monad
@@ -340,8 +340,8 @@ generateHtml env ast' =
     printComments [] = []
     printComments ((s, comment):cs) = (snd (printComment s [(s, comment)]) ++ "<br>\n"):printComments cs
 
--- Generates output for the IR.
-generate :: Monad m => ClaferT m CompilerResult
+-- Generates output for the given IR.
+generate :: Monad m => ClaferT m [ CompilerResult ]
 generate =
   do
     env <- getEnv
@@ -349,32 +349,110 @@ generate =
     (iModule, genv, au) <- getIr
     let cargs = args env
     let stats = showStats au $ statsModule iModule
-    let (imod,strMap) = astrModule iModule
-    let (ext, code, mapToAlloy) = case (mode cargs) of
-                        Alloy   ->  do
-                                      let alloyCode = genModule cargs (imod, genv)
-                                      let addCommentStats = if no_stats cargs then const else addStats
-                                      let m = snd alloyCode
-                                      ("als", addCommentStats (fst alloyCode) stats, Just m)
-                        Alloy42  -> do
-                                      let alloyCode = genModule cargs (imod, genv)
-                                      let addCommentStats = if no_stats cargs then const else addStats
-                                      let m = snd alloyCode
-                                      ("als", addCommentStats (fst alloyCode) stats, Just m)
-                        Xml      -> ("xml", genXmlModule iModule, Nothing)
-                        Mode.Clafer   -> ("des.cfr", printTree $ sugarModule iModule, Nothing)
-                        Html     -> ("html", generateHtml env ast'
-                          , Nothing)
-                        Graph    -> ("dot", genSimpleGraph ast' iModule (takeBaseName $ file cargs) (show_references cargs), Nothing)
-                        CVLGraph -> ("dot", genCVLGraph ast' iModule (takeBaseName $ file cargs), Nothing)
-                        Python      -> ("py", genPythonModule iModule, Nothing)
-                        Choco    -> ("js", genCModule cargs (imod, genv), Nothing)
-    return $ CompilerResult { extension = ext, 
-                     outputCode = code, 
+    let modes = mode cargs
+    return ( 
+        -- result for Alloy or Alloy42
+        (if (Alloy `elem` modes || Alloy42 `elem` modes)
+          then let 
+                  (imod,strMap) = astrModule iModule
+                  alloyCode = genModule cargs (imod, genv)
+                  addCommentStats = if no_stats cargs then const else addStats 
+               in 
+                  [ CompilerResult { 
+                     extension = "als", 
+                     outputCode = addCommentStats (fst alloyCode) stats, 
                      statistics = stats,
                      claferEnv  = env,
-                     mappingToAlloy = fromMaybe [] mapToAlloy,
-                     stringMap = strMap}
+                     mappingToAlloy = fromMaybe [] (Just $ snd alloyCode),
+                     stringMap = strMap
+                  } ]
+          else []
+        )  
+        -- result for XML    
+        ++ (if (Xml `elem` modes)
+          then [ CompilerResult { 
+                   extension = "xml", 
+                   outputCode = genXmlModule iModule, 
+                   statistics = stats,
+                   claferEnv  = env,
+                   mappingToAlloy = [],
+                   stringMap = empty
+                } ]
+          else []
+        )
+        -- result for Clafer
+        ++ (if (Mode.Clafer `elem` modes)
+          then [ CompilerResult { 
+                   extension = "des.cfr", 
+                   outputCode = printTree $ sugarModule iModule, 
+                   statistics = stats,
+                   claferEnv  = env,
+                   mappingToAlloy = [],
+                   stringMap = empty
+                } ]
+          else []
+        )
+        -- result for Html    
+        ++ (if (Html `elem` modes)
+          then [ CompilerResult { 
+                   extension = "html", 
+                   outputCode = generateHtml env ast', 
+                   statistics = stats,
+                   claferEnv  = env,
+                   mappingToAlloy = [],
+                   stringMap = empty
+                } ]
+          else []
+        )
+        ++ (if (Graph `elem` modes || CVLGraph `elem` modes)
+          then case (Graph `elem` modes) of
+            -- result for Graph    
+            True -> [ CompilerResult { 
+                       extension = "dot", 
+                       outputCode = genSimpleGraph ast' iModule (takeBaseName $ file cargs) (show_references cargs), 
+                       statistics = stats,
+                       claferEnv  = env,
+                       mappingToAlloy = [],
+                       stringMap = empty
+                    } ]
+            -- result for CVLGraph    
+            False -> [ CompilerResult { 
+                       extension = "dot", 
+                       outputCode = genCVLGraph ast' iModule (takeBaseName $ file cargs), 
+                       statistics = stats,
+                       claferEnv  = env,
+                       mappingToAlloy = [],
+                       stringMap = empty
+                    } ]
+          else []
+        )
+        -- result for Python    
+        ++ (if (Python `elem` modes)
+          then [ CompilerResult { 
+                   extension = "py", 
+                   outputCode = genPythonModule iModule,
+                   statistics = stats,
+                   claferEnv  = env,
+                   mappingToAlloy = [],
+                   stringMap = empty
+                } ]
+          else []
+        )
+        -- result for Choco    
+        ++ (if (Choco `elem` modes)
+          then let 
+                  (imod,strMap) = astrModule iModule
+               in
+                  [ CompilerResult { 
+                     extension = "js", 
+                     outputCode = genCModule cargs (imod, genv), 
+                     statistics = stats,
+                     claferEnv  = env,
+                     mappingToAlloy = [],
+                     stringMap = strMap
+                  } ]
+          else []
+        ))
     
 data CompilerResult = CompilerResult {
                             extension :: String, 
