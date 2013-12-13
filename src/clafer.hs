@@ -50,7 +50,7 @@ run _ args' input =
         addFragments $ fragments input
         parse
         compile
-        fs <- save
+        fs <- save args'
         when (validate args') $ forM_ fs (\f'-> liftIO $ runValidate args' f')
     if Html `elem` (mode args')
       then htmlCatch result args' input
@@ -93,30 +93,38 @@ run _ args' input =
       exitFailure
   handleErr _ = error "Function handleErr from Main file was given an invalid argument"
 
-  save =
-    do
-      results <- generate
-      (iModule, _, _) <- getIr
-      forM results $ \result -> do
-        result' <- if (add_graph args') && (Html `elem` (mode args')) 
-               then do
-                     ast' <- getAst
-                     (_, graph, _) <- liftIO $ readProcessWithExitCode "dot"  ["-Tsvg"] $ genSimpleGraph ast' iModule (takeBaseName $ file args') (show_references args')
-                     return $ summary graph result
-                   else return result
-        liftIO $ when (not $ no_stats args') $ putStrLn (statistics result')
-        let f = dropExtension $ file args'
-        let f' = f ++ "." ++ (extension result)
-        liftIO $ if console_output args' then putStrLn (outputCode result') else writeFile f' (outputCode result')
-        liftIO $ when (alloy_mapping args') $ writeFile (f ++ "." ++ "map") $ show (mappingToAlloy result')
-        return f'
-  summary graph result = result{outputCode=unlines $ summary' graph ("<pre>" ++ statistics result ++ "</pre>") (lines $ outputCode result)}
-  summary' _ _ [] = []
-  summary' graph stats ("<!-- # SUMMARY /-->":xs) = graph:stats:summary' graph stats xs
-  summary' graph stats ("<!-- # STATS /-->":xs) = stats:summary' graph stats xs
-  summary' graph stats ("<!-- # GRAPH /-->":xs) = graph:summary' graph stats xs
-  summary' graph stats ("<!-- # CVLGRAPH /-->":xs) = graph:summary' graph stats xs
-  summary' graph stats (x:xs) = x:summary' graph stats xs
+save :: MonadIO m => ClaferArgs -> ClaferT m [ String ]
+save args'=
+  do
+    results <- generate
+    -- print stats only once
+    when (not $ no_stats args') $ liftIO $ printStats results
+    -- save the outputs
+    (iModule, _, _) <- getIr
+    forM results $ \result -> do
+      result' <- if (add_graph args') && (Html `elem` (mode args') && (extension result == "dot")) 
+            then do
+                   ast' <- getAst
+                   (_, graph, _) <- liftIO $ readProcessWithExitCode "dot"  ["-Tsvg"] $ genSimpleGraph ast' iModule (takeBaseName $ file args') (show_references args')
+                   return $ summary graph result
+            else return result
+      let f = dropExtension $ file args'
+      let f' = f ++ "." ++ (extension result)
+      liftIO $ if console_output args' then putStrLn (outputCode result') else writeFile f' (outputCode result')
+      liftIO $ when (alloy_mapping args') $ writeFile (f ++ "." ++ "map") $ show (mappingToAlloy result')
+      return f'  
+  where
+    printStats :: [ CompilerResult ] -> IO ()
+    printStats (r:_) = putStrLn (statistics r)
+    printStats []     = putStrLn "No compiler output."
+
+summary graph result = result{outputCode=unlines $ summary' graph ("<pre>" ++ statistics result ++ "</pre>") (lines $ outputCode result)}
+summary' _ _ [] = []
+summary' graph stats ("<!-- # SUMMARY /-->":xs) = graph:stats:summary' graph stats xs
+summary' graph stats ("<!-- # STATS /-->":xs) = stats:summary' graph stats xs
+summary' graph stats ("<!-- # GRAPH /-->":xs) = graph:summary' graph stats xs
+summary' graph stats ("<!-- # CVLGRAPH /-->":xs) = graph:summary' graph stats xs
+summary' graph stats (x:xs) = x:summary' graph stats xs
 
 conPutStrLn :: ClaferArgs -> String -> IO ()
 conPutStrLn args' s = when (not $ console_output args') $ putStrLn s
