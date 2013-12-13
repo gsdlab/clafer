@@ -69,7 +69,7 @@ data ClaferArgs = ClaferArgs {
 
 clafer :: ClaferArgs
 clafer = ClaferArgs {
-  mode                = def &= help "Generated output type. Available CLAFERMODEs are: 'alloy' (default, Alloy 4.1); 'alloy42' (Alloy 4.2); 'xml' (intermediate representation of Clafer model); 'clafer' (analyzed and desugared clafer model); 'html' (original model in HTML); 'graph' (graphical representation written in DOT language); 'cvlgraph' (cvl notation representation written in DOT language); 'python' (generates IR in python); 'choco' (Choco constraint programming solver)" &= name "m",
+  mode                = [] &= help "Generated output type. Available CLAFERMODEs are: 'alloy' (default, Alloy 4.1); 'alloy42' (Alloy 4.2); 'xml' (intermediate representation of Clafer model); 'clafer' (analyzed and desugared clafer model); 'html' (original model in HTML); 'graph' (graphical representation written in DOT language); 'cvlgraph' (cvl notation representation written in DOT language); 'python' (generates IR in python); 'choco' (Choco constraint programming solver)" &= name "m",
   console_output      = def &= help "Output code on console" &= name "o",
   flatten_inheritance = def &= help "Flatten inheritance ('alloy' and 'alloy42' modes only)" &= name "i",
   timeout_analysis    = def &= help "Timeout for analysis",
@@ -129,8 +129,15 @@ mainArgs = do
                [] -> ""
                (s:_) -> s
   let options = fromMaybe "" $ stripPrefix "//# OPTIONS " firstLine
-  return $ (either (\_ -> args') (\x -> mergeArgs args' (cmdArgsValue x)) $
-           process (cmdArgsMode clafer) $ Language.Clafer.SplitJoin.splitArgs options, model)
+  let args'' = either (\_ -> args') (\x -> mergeArgs args' (cmdArgsValue x)) $
+               process (cmdArgsMode clafer) $ Language.Clafer.SplitJoin.splitArgs options
+  -- Alloy should be the default mode but only if nothing else was not specified
+  -- cannot use [ Alloy ] as the default in the definition of `clafer :: ClaferArgs` since 
+  -- Alloy will always be a mode in addition to the other specified modes
+  let args''' = if mode args'' == []
+                then args''{mode = [ Alloy ]}
+                else args''
+  return $ (args''', model)
 
 defaultClaferArgs :: ClaferArgs
-defaultClaferArgs = ClaferArgs [ Alloy ] True False 0 False False False False False False False False False "tools/" False False False False False False Simple False False ""
+defaultClaferArgs = ClaferArgs [ def ] True False 0 False False False False False False False False False "tools/" False False False False False False Simple False False ""
