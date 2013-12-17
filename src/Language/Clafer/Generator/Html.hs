@@ -101,7 +101,7 @@ printDeclaration (EnumDecl posIdent enumIds) indent irMap html comments =
     printIndentId 0 html divid ++
     (while html "<span class=\"keyword\">") ++ "enum" ++ (while html "</span>") ++ 
     " " ++ 
-    (printPosIdent posIdent) ++ 
+    (printPosIdent posIdent Nothing html) ++ 
     " = " ++ 
     (concat $ intersperse " | " (map (\x -> printEnumId x indent irMap html comments) enumIds)) ++
     printIndentEnd html
@@ -110,7 +110,7 @@ printDeclaration (PosEnumDecl s posIdent enumIds)  indent irMap html comments =
     printIndentId 0 html uid' ++
     (while html "<sspan class=\"keyword\">") ++ "enum" ++ (while html "</span>") ++ 
     " " ++ 
-    (printPosIdent posIdent) ++ 
+    (printPosIdent posIdent (Just uid') html) ++ 
     " = " ++ 
     (concat $ intersperse " | " (map (\x -> printEnumId x indent irMap html comments) enumIds)) ++
     comment ++
@@ -216,7 +216,7 @@ printClafer (Clafer abstract gCard id' super' crd init' es) indent irMap html co
     claferDeclaration = concat [
       printAbstract abstract html, 
       printGCard gCard html,
-      printPosIdent id', 
+      printPosIdent id' Nothing html, 
       printSuper super' indent irMap html comments, 
       printCard crd, 
       printInit init' indent irMap html comments]
@@ -235,7 +235,7 @@ printClafer (PosClafer s abstract gCard id' super' crd init' es) indent irMap ht
     claferDeclaration = concat [
       printAbstract abstract html, 
       printGCard gCard html,
-      printPosIdent id', 
+      printPosIdent id' (Just uid') html, 
       printSuper super' indent irMap html comments, 
       printCard crd, 
       printInit init' indent irMap html comments]
@@ -286,8 +286,9 @@ printModId :: ModId -> Int -> Map.Map Span [Ir] -> Bool -> [(Span, String)] -> S
 printModId (ModIdIdent posident) _ irMap html _ = printPosIdentRef posident irMap html
 printModId (PosModIdIdent _ posident) indent irMap html comments = printModId (ModIdIdent posident) indent irMap html comments
 
-printPosIdent :: PosIdent -> String
-printPosIdent (PosIdent (_, id')) = id'
+printPosIdent :: PosIdent -> Maybe String -> Bool -> String
+printPosIdent (PosIdent (_, id')) Nothing _ = id'
+printPosIdent (PosIdent (_, id')) (Just uid') html = (while html $ "<a href=\"" ++ uid' ++ "\">") ++ id' ++ (while html "</a>")
 
 printPosIdentRef :: PosIdent -> Map.Map Span [Ir] -> Bool -> String
 printPosIdentRef (PosIdent (p, id')) irMap html
@@ -464,7 +465,7 @@ printQuant quant' html = case quant' of
   PosQuantSome _ -> (while html "<span class=\"keyword\">") ++ "some" ++ (while html "</span>") ++ " "
 
 printEnumId :: EnumId -> Int -> Map.Map Span [Ir] -> Bool -> [(Span, String)] -> String
-printEnumId (EnumIdIdent posident) _ _ _ _ = printPosIdent posident
+printEnumId (EnumIdIdent posident) _ _ html _ = printPosIdent posident Nothing html
 printEnumId (PosEnumIdIdent _ posident) indent irMap html comments = printEnumId (EnumIdIdent posident) indent irMap html comments
 
 printIndent :: Int -> Bool -> String
