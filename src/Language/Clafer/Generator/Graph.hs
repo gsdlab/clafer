@@ -62,8 +62,8 @@ graphSimpleElement :: Element
                       -> String
 graphSimpleElement (Subclafer clafer)                     topLevel irMap showRefs = graphSimpleClafer clafer topLevel irMap showRefs
 graphSimpleElement (PosSubclafer _ subclafer)             topLevel irMap showRefs = graphSimpleElement (Subclafer subclafer) topLevel irMap showRefs
-graphSimpleElement (ClaferUse name _ _)         topLevel irMap _        = if snd3 topLevel == Nothing then "" else "\"" ++ fromJust (snd3 topLevel) ++ "\" -> \"" ++ graphSimpleName name topLevel irMap ++ "\" [arrowhead=vee arrowtail=diamond dir=both style=solid constraint=false minlen=2 arrowsize=0.6 penwidth=0.5 ];\n"
-graphSimpleElement (PosClaferUse s _ _ _) topLevel irMap _        = if snd3 topLevel == Nothing then "" else "\"" ++ fromJust (snd3 topLevel) ++ "\" -> \"" ++ getUseId s irMap ++ "\" [arrowhead=vee arrowtail=diamond dir=both style=solid constraint=false minlen=2 arrowsize=0.6 penwidth=0.5 ];\n"
+graphSimpleElement (ClaferUse name _ _)         topLevel irMap _        = if snd3 topLevel == Nothing then "" else "\"" ++ fromJust (snd3 topLevel) ++ "\" -> \"" ++ graphSimpleName name topLevel irMap ++ "\" [arrowhead=vee arrowtail=diamond dir=both style=solid constraint=true weight=5 minlen=2 arrowsize=0.6 penwidth=0.5 ];\n"
+graphSimpleElement (PosClaferUse s _ _ _) topLevel irMap _        = if snd3 topLevel == Nothing then "" else "\"" ++ fromJust (snd3 topLevel) ++ "\" -> \"" ++ getUseId s irMap ++ "\" [arrowhead=vee arrowtail=diamond dir=both style=solid constraint=true weight=5 minlen=2 arrowsize=0.6 penwidth=0.5 ];\n"
 graphSimpleElement _ _ _ _ = ""
 
 graphSimpleElements :: Elements
