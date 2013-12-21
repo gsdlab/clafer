@@ -134,17 +134,17 @@ conPutStrLn args' s = when (not $ console_output args') $ putStrLn s
 runValidate :: ClaferArgs -> String -> IO ()
 runValidate args' fo = do
   let path = (tooldir args') ++ "/"
-  liftIO $ putStrLn ("Validating " ++ (file args'))
+  liftIO $ putStrLn ("Validating '" ++ fo ++"'")
   let modes = mode args' 
-  when (Xml `elem` modes) $ do
+  when (Xml `elem` modes && "xml" `List.isSuffixOf` fo) $ do
       writeFile "ClaferIR.xsd" claferIRXSD
       voidf $ system $ "java -classpath " ++ path ++ " XsdCheck ClaferIR.xsd " ++ fo
-  when (Alloy `elem` modes) $ do
+  when (Alloy `elem` modes && "als" `List.isSuffixOf` fo) $ do
     voidf $ system $ validateAlloy path "4" ++ fo
-  when (Alloy42 `elem` modes) $ do
+  when (Alloy42 `elem` modes && "als4" `List.isSuffixOf` fo) $ do
     voidf $ system $ validateAlloy path "4.2" ++ fo
-  when (Clafer `elem` modes) $ do  
-    voidf $ system $ path ++ "clafer -s -m=clafer " ++ fo
+  when (Clafer `elem` modes && "des.cfr" `List.isSuffixOf` fo) $ do  
+    voidf $ system $ "../dist/build/clafer/clafer -s -m=clafer " ++ fo
 
 validateAlloy :: String -> String -> String
 validateAlloy path version = "java -cp " ++ path ++ "alloy" ++ version ++ ".jar edu.mit.csail.sdg.alloy4whole.ExampleUsingTheCompiler "
