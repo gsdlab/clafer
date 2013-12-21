@@ -2,9 +2,6 @@ TOOL_DIR = ../tools
 SUITE_DIR = positive
 REG_DIR = regression
 CLAFER = ../dist/build/clafer/clafer -s -v -k --tooldir=$(TOOL_DIR)
-CLAFERGEN = ../dist/build/clafer/clafer -s -k 
-#Disabled clafer self testing for now
-#CLAFER_SELF = ../dist/build/clafer/clafer -s -v -k --tooldir=../dist/build/clafer
 
 UNAME := $(shell uname | tr "A-Z" "a-z")
 
@@ -32,47 +29,23 @@ test:
 	@echo "========================"
 	@$(CLAFER) -V
 	$(MAKE) clean
-	$(MAKE) validateAlloy
-	$(MAKE) validateXML
-#	$(MAKE) validateClafer
-	$(MAKE) generatePython
+	$(MAKE) validateAlloyXMLClaferPython
 	$(MAKE) diffRegressions
 
-validateAlloy:
-	@echo "======================================================"
-	@echo "| Testing 'Positive' suite - validating Alloy output |"
-	@echo "======================================================"
+validateAlloyXMLClaferPython:
+	@echo "======================================================================="
+	@echo "| Testing 'Positive' suite - validating Alloy, XML, and Clafer output |"
+	@echo "======================================================================="
 
 	@if test ! -f $(TOOL_DIR)/"alloy4.jar"; then \
 		echo "[ERROR] Missing $(TOOL_DIR)/alloy4.jar."; false; \
 	fi
 
-	@find $(SUITE_DIR) -type f \( -iname "*.cfr" ! -iname "*.des.cfr" \) |  xargs -L1 $(CLAFER) ; true ; \
-
-validateXML:
-	@echo "===================================================="
-	@echo "| Testing 'Positive' suite - validating XML output |"
-	@echo "===================================================="
-
 	@if test ! -f $(TOOL_DIR)/"XsdCheck.class"; then \
 		echo "[ERROR] Missing $(TOOL_DIR)/XsdCheck.class."; false; \
 	fi
 
-	@find $(SUITE_DIR) -type f \( -iname "*.cfr" ! -iname "*.des.cfr" \) | xargs -L1 $(CLAFER) -m=xml ; true ; \
-
-generatePython:
-	@echo "======================================================="
-	@echo "| Testing 'Positive' suite - generating Python output |"
-	@echo "======================================================="
-
-	@find $(SUITE_DIR) -type f \( -iname "*.cfr" ! -iname "*.des.cfr" \) | xargs -L1 $(CLAFERGEN) -m=python ; true ; \
-
-#validateClafer:
-#	@echo "======================================================="
-#	@echo "| Testing 'Positive' suite - validating Clafer output |"
-#	@echo "======================================================="
-#	
-#	@find $(SUITE_DIR) -type f \( -iname "*.cfr" ! -iname "*.des.cfr" \) | xargs -L1 $(CLAFER_SELF) -m=clafer ; true \
+	@find $(SUITE_DIR) -type f \( -iname "*.cfr" ! -iname "*.des.cfr" \) |  xargs -L1 $(CLAFER) -m=alloy -m=xml -m=clafer -m=python; true ; \
 
 diffRegressions:
 	@echo "======================================================="
@@ -114,8 +87,8 @@ clean:
 	@find . -type f -name '*~' -print0 | xargs -0 rm -f
 	@echo 'Removing *.als'
 	@find . -type f -name '*.als' -print0 | xargs -0 rm -f
-	@echo 'Removing *.cfr.des'
-	@find . -type f -name '*.cfr.des' -print0 | xargs -0 rm -f
+	@echo 'Removing *.des.cfr'
+	@find . -type f -name '*.des.cfr' -print0 | xargs -0 rm -f
 	@echo 'Removing *.xml'
 	@find . -type f -name '*.xml' -print0 | xargs -0 rm -f
 	@echo 'Removing *.py'

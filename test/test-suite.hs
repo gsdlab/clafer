@@ -21,6 +21,8 @@
  SOFTWARE.
 -}
 import Data.List
+import qualified Data.Map as Map
+import Data.Maybe
 import Language.Clafer
 
 import Suite.Positive
@@ -55,7 +57,7 @@ a\n    b\nb\nc\n    d\n         b\nd\n    b
 case_FQMapLookup :: Assertion
 case_FQMapLookup = do
 	let
-		(Just (iModule, _, _)) = cIr $ claferEnv $ fromRight $ compileOneFragment defaultClaferArgs "a\n    b\nb\nc\n    d\n         b\nd\n    b"
+		(Just (iModule, _, _)) = cIr $ claferEnv $ fromJust $ Map.lookup Alloy $ fromRight $ compileOneFragment defaultClaferArgs "a\n    b\nb\nc\n    d\n         b\nd\n    b"
 		fqNameMap = deriveFQNameUIDMap iModule
 	[ "c0_a" ] == (findUIDsByFQName fqNameMap "::a" ) @? "UID for `::a` different from `c0_a`"
 	[ "c0_b" ] == (findUIDsByFQName fqNameMap "::a::b" ) @? "UID for `::a::b` different from `c0_b`"

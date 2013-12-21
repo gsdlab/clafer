@@ -121,18 +121,18 @@ getIr = do
     _ -> throwErr (ClaferErr "No IR. Did you forget to compile?" :: CErr Span) -- Indicates a bug in the Clafer translator.
 
 makeEnv :: ClaferArgs -> ClaferEnv                                                                            
-makeEnv args' = ClaferEnv { args = args'',
+makeEnv args' = ClaferEnv { args = args'''',
                            modelFrags = [],
                            cAst = Nothing,
                            cIr = Nothing,
                            frags = [],
                            irModuleTrace = Map.empty,
                            astModuleTrace = Map.empty}
-               where args'' = case mode args' of
-                               CVLGraph -> args'{flatten_inheritance=True, keep_unused=True, scope_strategy=None}
-                               Html     -> args'{keep_unused=True, scope_strategy=None}
-                               Graph    -> args'{keep_unused=True, scope_strategy=None}
-                               _             -> args'
+               where 
+                  args'' = if CVLGraph `elem` (mode args') then args'{flatten_inheritance=True, keep_unused=True, scope_strategy=None} else args'
+                  args''' = if Html `elem` (mode args') then args''{keep_unused=True, scope_strategy=None} else args''
+                  args'''' = if Graph `elem` (mode args') then args'''{keep_unused=True, scope_strategy=None} else args'''
+
 
 type ClaferM = ClaferT Identity
 -- Monad for using Clafer.

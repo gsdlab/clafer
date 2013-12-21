@@ -6,17 +6,14 @@ module Language.Clafer.Generator.Choco (genCModule) where
 import Language.Clafer.Intermediate.ScopeAnalysis
 import Control.Applicative
 import Control.Monad
-import Control.Monad.Writer
 import Data.List
 import Data.Maybe
 import Data.Ord
 import Prelude hiding (exp)
-import System.Process
 import Language.Clafer.ClaferArgs
 import Language.Clafer.Common
 import Language.Clafer.Front.Absclafer
 import Language.Clafer.Intermediate.Intclafer
-import Debug.Trace
 
 
 genCModule :: ClaferArgs -> (IModule, GEnv) -> Result
@@ -40,7 +37,7 @@ genCModule args (imodule@IModule{mDecls}, _) =
     clafers = snd <$> parentChildMap
     claferUids = uid <$> clafers
     concreteClafers = filter isNotAbstract clafers
-    minusRoot = filter ((/= "root") . uid)
+--    minusRoot = filter ((/= "root") . uid)
     
     claferWithUid u = fromMaybe (error $ "claferWithUid: \"" ++ u ++ "\" is not a clafer") $ find ((== u) . uid) clafers
     
@@ -65,7 +62,7 @@ genCModule args (imodule@IModule{mDecls}, _) =
 
     superWithRef u =
         case mapMaybe refOf $ supersOf u of
-             r : rs -> r
+             r : _ -> r
              _      -> u ++ " does not inherit a ref"
             
     refOf u =
@@ -87,10 +84,7 @@ genCModule args (imodule@IModule{mDecls}, _) =
     subOffsets = [(uid, sub, off) | IClafer{uid} <- clafers, let subs = subOf uid, (sub, off) <- zip subs $ offsets subs]
     
     subOffsetOf :: String -> Integer
-    subOffsetOf sub = thd3 $ fromMaybe (error $ "subOffsetOf: " ++ sub) $ find ((== sub) . snd3) subOffsets
-    
-    snd3 (_, b, _) = b
-    thd3 (_, _, c) = c
+    subOffsetOf sub = trd3 $ fromMaybe (error $ "subOffsetOf: " ++ sub) $ find ((== sub) . snd3) subOffsets
     
     offsets :: [String] -> [Integer]
     offsets = scanl (flip $ (+) . scopeOf) 0
@@ -150,9 +144,11 @@ genCModule args (imodule@IModule{mDecls}, _) =
             genTarget target = target
         
     genAbstractClafer :: IClafer -> Result
-    genAbstractClafer IClafer{uid, card = Just card} =
+    genAbstractClafer IClafer{uid, card = Just _} =
         uid ++ " = Abstract(\"" ++ uid ++ "\")" ++ prop "extending" (superOf uid) ++ ";\n"  
-    
+    genAbstractClafer IClafer{uid, card = Nothing} =
+        uid ++ " = Abstract(\"" ++ uid ++ "\")" ++ prop "extending" (superOf uid) ++ ";\n" 
+
     -- Is a uniqueness constraint? If so, return the name of unique clafer
     isUniqueConstraint :: IExp -> Maybe String
     isUniqueConstraint (IDeclPExp IAll [IDecl True [x, y] PExp{exp = IClaferId {sident}}]
@@ -202,7 +198,6 @@ genCModule args (imodule@IModule{mDecls}, _) =
         where
             scope = scopeOf uid
     
-    fst3 (a, _, _) = a
     (l1, h1) <*> (l2, h2) = (l1 * l2, h1 * h2)
     scopeCap scope (l, h) = (min scope l, min scope h)
     

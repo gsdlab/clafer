@@ -100,7 +100,7 @@ genModule    claferargs    (imodule, _)     = (flatten output, filter ((/= NoTra
 
 header :: ClaferArgs -> IModule -> Concat
 header    args          imodule  = CString $ unlines
-    [ if (mode args) == Alloy42 then "" else "open util/integer"
+    [ if Alloy42 `elem` (mode args) then "" else "open util/integer"
     , "pred show {}"
     , if (validate args) ||  (noalloyruncommand args)  
       then "" 
@@ -433,9 +433,11 @@ transformExp x = x
 
 genIFunExp :: String -> ClaferArgs -> [String] -> IExp             -> Concat
 genIFunExp    pid'       claferargs    resPath     (IFunExp op' exps') = 
-  if (op' == iSumSet) then genIFunExp pid' claferargs resPath (IFunExp iSumSet' [(removeright (head exps')), (getRight $ head exps')]) 
-    else if (op' == iSumSet') then Concat (IrPExp pid') $ intl exps'' (map CString $ genOp (mode (claferargs :: ClaferArgs)) iSumSet)
-      else Concat (IrPExp pid') $ intl exps'' (map CString $ genOp (mode (claferargs :: ClaferArgs)) op')
+  if (op' == iSumSet) 
+    then genIFunExp pid' claferargs resPath (IFunExp iSumSet' [(removeright (head exps')), (getRight $ head exps')]) 
+    else if (op' == iSumSet') 
+      then Concat (IrPExp pid') $ intl exps'' (map CString $ genOp (Alloy42 `elem` (mode claferargs)) iSumSet)
+      else Concat (IrPExp pid') $ intl exps'' (map CString $ genOp (Alloy42 `elem` (mode claferargs)) op')
   where
   intl
     | op' == iSumSet' = flip $ interleave
@@ -462,11 +464,12 @@ interleave (x:xs) ys = x : interleave ys xs
 brArg :: (a -> Concat) -> a -> Concat 
 brArg f arg = cconcat [CString "(", f arg, CString ")"]
 
-genOp :: ClaferMode -> String -> [String]
-genOp    Alloy42       op'
+--     isAlloy42
+genOp :: Bool -> String -> [String]
+genOp    True       op'
   | op' == iPlus = [".plus[", "]"]
   | op' == iSub  = [".minus[", "]"]
-  | otherwise   = genOp Alloy op'
+  | otherwise   = genOp False op'
 genOp    _             op'
   | op' == iSumSet = ["sum temp : "," | temp."]
   | op' `elem` unOps  = [op']

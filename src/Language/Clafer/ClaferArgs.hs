@@ -31,7 +31,7 @@ import Language.Clafer.SplitJoin
 import Language.Clafer.Version
 
 data ClaferMode = Alloy42 | Alloy | Xml | Clafer | Html | Graph | CVLGraph | Python | Choco
-  deriving (Eq, Show, Data, Typeable)
+  deriving (Eq, Show, Ord, Data, Typeable)
 instance Default ClaferMode where
   def = Alloy
 
@@ -41,7 +41,7 @@ instance Default ScopeStrategy where
   def = Simple
 
 data ClaferArgs = ClaferArgs {
-      mode :: ClaferMode,
+      mode :: [ ClaferMode ],
       console_output :: Bool,
       flatten_inheritance :: Bool,
       timeout_analysis :: Int,
@@ -69,7 +69,7 @@ data ClaferArgs = ClaferArgs {
 
 clafer :: ClaferArgs
 clafer = ClaferArgs {
-  mode                = def &= help "Generated output type. Available CLAFERMODEs are: 'alloy' (default, Alloy 4.1); 'alloy42' (Alloy 4.2); 'xml' (intermediate representation of Clafer model); 'clafer' (analyzed and desugared clafer model); 'html' (original model in HTML); 'graph' (graphical representation written in DOT language); 'cvlgraph' (cvl notation representation written in DOT language); 'python' (generates IR in python); 'choco' (Choco constraint programming solver)" &= name "m",
+  mode                = [] &= help "Generated output type. Available CLAFERMODEs are: 'alloy' (default, Alloy 4.1); 'alloy42' (Alloy 4.2); 'xml' (intermediate representation of Clafer model); 'clafer' (analyzed and desugared clafer model); 'html' (original model in HTML); 'graph' (graphical representation written in DOT language); 'cvlgraph' (cvl notation representation written in DOT language); 'python' (generates IR in python); 'choco' (Choco constraint programming solver)" &= name "m",
   console_output      = def &= help "Output code on console" &= name "o",
   flatten_inheritance = def &= help "Flatten inheritance ('alloy' and 'alloy42' modes only)" &= name "i",
   timeout_analysis    = def &= help "Timeout for analysis",
@@ -96,7 +96,7 @@ clafer = ClaferArgs {
  } &= summary ("Clafer " ++ version) &= program "clafer"
 
 mergeArgs :: ClaferArgs -> ClaferArgs -> ClaferArgs
-mergeArgs a1 a2  = ClaferArgs (mergeArg mode) (coMergeArg) 
+mergeArgs a1 a2  = ClaferArgs (mode a1) (coMergeArg) 
   (mergeArg flatten_inheritance) (mergeArg timeout_analysis) 
   (mergeArg no_layout) (mergeArg new_layout) 
   (mergeArg check_duplicates) (mergeArg skip_resolver) 
@@ -129,8 +129,15 @@ mainArgs = do
                [] -> ""
                (s:_) -> s
   let options = fromMaybe "" $ stripPrefix "//# OPTIONS " firstLine
-  return $ (either (\_ -> args') (\x -> mergeArgs args' (cmdArgsValue x)) $
-           process (cmdArgsMode clafer) $ Language.Clafer.SplitJoin.splitArgs options, model)
+  let args'' = either (const args') (mergeArgs args' . cmdArgsValue) $
+               process (cmdArgsMode clafer) $ Language.Clafer.SplitJoin.splitArgs options
+  -- Alloy should be the default mode but only if nothing else was specified
+  -- cannot use [ Alloy ] as the default in the definition of `clafer :: ClaferArgs` since 
+  -- Alloy will always be a mode in addition to the other specified modes (it will become mandatory)
+  let args''' = if null $ mode args''
+                then args''{mode = [ Alloy ]}
+                else args''
+  return $ (args''', model)
 
 defaultClaferArgs :: ClaferArgs
-defaultClaferArgs = ClaferArgs Alloy True False 0 False False False False False False False False False "tools/" False False False False False False Simple False False ""
+defaultClaferArgs = ClaferArgs [ def ] True False 0 False False False False False False False False False "tools/" False False False False False False Simple False False ""
