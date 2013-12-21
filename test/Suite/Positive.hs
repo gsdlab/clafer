@@ -25,6 +25,7 @@ module Suite.Positive (tg_Test_Suite_Positive) where
 import Functions
 import Language.Clafer.Intermediate.Intclafer
 import Data.Foldable (foldMap)
+import Data.Maybe
 import Control.Monad
 import Language.Clafer
 import Language.ClaferT
@@ -70,13 +71,17 @@ case_nonempty_cards = do
 	(andMap ((==[]) . foldMapIR isEmptyCard . snd) compiledClafeIrs
 		@? "nonempty card test failed. Files contain empty cardinalities after fully compiling")
 	where
-		getIR (file', (Right ([CompilerResult{claferEnv = ClaferEnv{cIr = Just (iMod, _, _)}}]))) = [(file', iMod)]
-		getIR _ = []
+		getIR (file', (Right (resultMap))) = 
+			let
+				CompilerResult{claferEnv = ClaferEnv{cIr = Just (iMod, _, _)}} = fromJust $ Map.lookup Alloy resultMap
+			in
+				[(file', iMod)]
+		getIR (_, _) = []
 		isEmptyCard (IRClafer (IClafer{cinPos=(Span (Pos l c) _), card = Nothing})) = "Line " ++ show l ++ " column " ++ show c ++ "\n"
 		isEmptyCard (IRClafer (IClafer{cinPos=(PosSpan _ (Pos l c) _), card = Nothing})) = "Line " ++ show l ++ " column " ++ show c ++ "\n"
 		isEmptyCard	_ = ""
 
 case_stringEqual :: Assertion
 case_stringEqual = do
-	let strMap = stringMap $ head $ fromRight $ compileOneFragment defaultClaferArgs "A\n    text1 : string = \"some text\"\n    text2 : string = \"some text\""
+	let strMap = stringMap $ fromJust $ Map.lookup Alloy $ fromRight $ compileOneFragment defaultClaferArgs "A\n    text1 : string = \"some text\"\n    text2 : string = \"some text\""
 	(Map.size strMap) == 1 @? "Error: same string assigned to differnet numbers!"

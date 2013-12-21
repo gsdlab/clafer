@@ -23,7 +23,8 @@
 module Main where
 
 import Prelude hiding (writeFile, readFile, print, putStrLn)
-
+import qualified Data.Map as Map
+import qualified Data.List as List
 import System.IO
 import System.Cmd
 import System.Exit
@@ -51,7 +52,7 @@ run _ args' input =
         parse
         compile
         fs <- save args'
-        when (validate args') $ forM_ fs (\f'-> liftIO $ runValidate args' f')
+        when (validate args') $ forM_ fs (liftIO . runValidate args' )
     if Html `elem` (mode args')
       then htmlCatch result args' input
       else return ()
@@ -96,13 +97,14 @@ run _ args' input =
 save :: MonadIO m => ClaferArgs -> ClaferT m [ String ]
 save args'=
   do
-    results <- generate
+    resultsMap <- generate
+    let results = snd $ List.unzip $ Map.toList resultsMap
     -- print stats only once
     when (not $ no_stats args') $ liftIO $ printStats results
     -- save the outputs
     (iModule, _, _) <- getIr
     forM results $ \result -> do
-      result' <- if (add_graph args') && (Html `elem` (mode args') && (extension result == "dot")) 
+      result' <- if (add_graph args') && (Html `elem` (mode args') && ("dot" `List.isSuffixOf` (extension result))) 
             then do
                    ast' <- getAst
                    (_, graph, _) <- liftIO $ readProcessWithExitCode "dot"  ["-Tsvg"] $ genSimpleGraph ast' iModule (takeBaseName $ file args') (show_references args')
@@ -114,9 +116,9 @@ save args'=
       liftIO $ when (alloy_mapping args') $ writeFile (f ++ "." ++ "map") $ show (mappingToAlloy result')
       return f'  
   where
-    printStats :: [ CompilerResult ] -> IO ()
+    printStats :: [CompilerResult] -> IO ()
+    printStats []         = putStrLn "No compiler output."
     printStats (r:_) = putStrLn (statistics r)
-    printStats []     = putStrLn "No compiler output."
 
 summary graph result = result{outputCode=unlines $ summary' graph ("<pre>" ++ statistics result ++ "</pre>") (lines $ outputCode result)}
 summary' _ _ [] = []

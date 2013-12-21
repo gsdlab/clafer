@@ -129,9 +129,9 @@ makeEnv args' = ClaferEnv { args = args'''',
                            irModuleTrace = Map.empty,
                            astModuleTrace = Map.empty}
                where 
-                  args'' = if (CVLGraph `elem` (mode args')) then args'{flatten_inheritance=True, keep_unused=True, scope_strategy=None} else args'
-                  args''' = if (Html `elem` (mode args')) then args''{keep_unused=True, scope_strategy=None} else args''
-                  args'''' = if (Graph `elem` (mode args')) then args'''{keep_unused=True, scope_strategy=None} else args'''
+                  args'' = if CVLGraph `elem` (mode args') then args'{flatten_inheritance=True, keep_unused=True, scope_strategy=None} else args'
+                  args''' = if Html `elem` (mode args') then args''{keep_unused=True, scope_strategy=None} else args''
+                  args'''' = if Graph `elem` (mode args') then args'''{keep_unused=True, scope_strategy=None} else args'''
 
 
 type ClaferM = ClaferT Identity

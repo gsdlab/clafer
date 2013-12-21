@@ -31,7 +31,7 @@ import Language.Clafer.SplitJoin
 import Language.Clafer.Version
 
 data ClaferMode = Alloy42 | Alloy | Xml | Clafer | Html | Graph | CVLGraph | Python | Choco
-  deriving (Eq, Show, Data, Typeable)
+  deriving (Eq, Show, Ord, Data, Typeable)
 instance Default ClaferMode where
   def = Alloy
 
@@ -129,12 +129,12 @@ mainArgs = do
                [] -> ""
                (s:_) -> s
   let options = fromMaybe "" $ stripPrefix "//# OPTIONS " firstLine
-  let args'' = either (\_ -> args') (\x -> mergeArgs args' (cmdArgsValue x)) $
+  let args'' = either (const args') (mergeArgs args' . cmdArgsValue) $
                process (cmdArgsMode clafer) $ Language.Clafer.SplitJoin.splitArgs options
-  -- Alloy should be the default mode but only if nothing else was not specified
+  -- Alloy should be the default mode but only if nothing else was specified
   -- cannot use [ Alloy ] as the default in the definition of `clafer :: ClaferArgs` since 
-  -- Alloy will always be a mode in addition to the other specified modes
-  let args''' = if mode args'' == []
+  -- Alloy will always be a mode in addition to the other specified modes (it will become mandatory)
+  let args''' = if null $ mode args''
                 then args''{mode = [ Alloy ]}
                 else args''
   return $ (args''', model)
