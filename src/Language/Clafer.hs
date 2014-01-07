@@ -554,4 +554,4 @@ findUIDsByFQName    smap                  fqName@(':':':':_) = SMap.lookup (reve
 findUIDsByFQName    smap                  fqName = SMap.prefixFind (reverseFQName fqName) smap 
 
 reverseFQName :: FQName -> FQName
-reverseFQName fqName = concat $ reverse $ split (onSublist "::") fqName
+reverseFQName fqName = concat $ reverse $ split (onSublist "::") fqName       

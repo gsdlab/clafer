@@ -24,12 +24,16 @@ module Main where
 
 import Prelude hiding (writeFile, readFile, print, putStrLn)
 import qualified Data.Map as Map
+import qualified Data.StringMap as SMap
 import qualified Data.List as List
+import Data.List.Split
+import Data.Json.Builder
+import Data.String.Conversions
+import Control.Monad.State
 import System.IO
 import System.Cmd
 import System.Exit
 import System.Timeout
-import Control.Monad.State
 import System.FilePath (dropExtension,takeBaseName)
 import System.Process (readProcessWithExitCode)
 
@@ -37,6 +41,7 @@ import Language.Clafer
 import Language.ClaferT
 import Language.Clafer.Css
 import Language.Clafer.ClaferArgs
+import Language.Clafer.Intermediate.Intclafer
 import Language.Clafer.Generator.Html (highlightErrors)
 import Language.Clafer.Generator.Graph (genSimpleGraph)
 
@@ -113,7 +118,8 @@ save args'=
       let f = dropExtension $ file args'
       let f' = f ++ "." ++ (extension result)
       liftIO $ if console_output args' then putStrLn (outputCode result') else writeFile f' (outputCode result')
-      liftIO $ when (alloy_mapping args') $ writeFile (f ++ "." ++ "map") $ show (mappingToAlloy result')
+      liftIO $ when (alloy_mapping args') $ writeFile (f ++ ".map") $ show (mappingToAlloy result')
+      liftIO $ when (name_uid_map args') $ writeFile (f ++ ".cfr-map") $ generateJSONnameUIDMap $ deriveFQNameUIDMap iModule
       return f'  
   where
     printStats :: [CompilerResult] -> IO ()
@@ -127,6 +133,39 @@ summary' graph stats ("<!-- # STATS /-->":xs) = stats:summary' graph stats xs
 summary' graph stats ("<!-- # GRAPH /-->":xs) = graph:summary' graph stats xs
 summary' graph stats ("<!-- # CVLGRAPH /-->":xs) = graph:summary' graph stats xs
 summary' graph stats (x:xs) = x:summary' graph stats xs
+
+generateJSONnameUIDMap :: FQNameUIDMap -> String
+generateJSONnameUIDMap    smap          = 
+    convertString $ toJsonBS $ SMap.foldWithKey (generateJSONEntry smap) mempty smap
+
+generateJSONEntry :: FQNameUIDMap -> SMap.Key -> UID -> Array -> Array
+generateJSONEntry    smap            key         uid    array = 
+    mappend array $ element $ mconcat [ 
+        row "fqName" fqName, 
+        row "pqName" pqName,
+        row "uid" uid ]
+    where
+      -- need to reverse the key to get a fully qualified name
+      fqName = concat $ reverse $ split (onSublist "::") key
+      -- name qualified just sufficiently to uniquely identify the clafer
+      pqName = findLeastQualifiedName fqName smap
+
+      findLeastQualifiedName :: String -> FQNameUIDMap -> String
+      -- handle fully qualified name case
+      findLeastQualifiedName fqName@(':':':':pqName) smap =
+          if (length (findUIDsByFQName smap pqName) > 1)
+              then fqName
+              else findLeastQualifiedName pqName smap
+      -- handle partially qualified name case
+      findLeastQualifiedName pqName smap =
+         let
+            -- remove one segment of qualification 
+            lessQName =  concat $ drop 2 $ split (onSublist "::") pqName
+         in 
+            if (length (findUIDsByFQName smap lessQName) > 1)
+              then pqName
+              else findLeastQualifiedName lessQName smap
+
 
 conPutStrLn :: ClaferArgs -> String -> IO ()
 conPutStrLn args' s = when (not $ console_output args') $ putStrLn s
