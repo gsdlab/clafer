@@ -308,4 +308,4 @@ childClafers :: IClafer -> [(String, IClafer)]
 childClafers IClafer{uid, elements} =
     childClafers' uid =<< mapMaybe iclafer elements
     where
-    childClafers' parent c@IClafer{uid, elements} = (parent, c) : (childClafers' uid  =<< mapMaybe iclafer elements)
+    childClafers' parent' c@IClafer{uid, elements} = (parent', c) : (childClafers' uid  =<< mapMaybe iclafer elements)
