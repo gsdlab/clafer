@@ -34,7 +34,6 @@ import Language.Clafer.Intermediate.Intclafer
 -- -----------------------------------------------------------------------------
 -- basic functions shared by desugarer, analyzer and code generator
 type Result = String
-type FQName = String    -- fully qualified name, e.g., Person::name or ::Company::Department::chair
 
 transIdent :: PosIdent -> Result
 transIdent x = case x of

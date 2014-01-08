@@ -41,6 +41,7 @@ import Language.Clafer
 import Language.ClaferT
 import Language.Clafer.Css
 import Language.Clafer.ClaferArgs
+import Language.Clafer.QNameUID
 import Language.Clafer.Intermediate.Intclafer
 import Language.Clafer.Generator.Html (highlightErrors)
 import Language.Clafer.Generator.Graph (genSimpleGraph)
@@ -119,12 +120,40 @@ save args'=
       let f' = f ++ "." ++ (extension result)
       liftIO $ if console_output args' then putStrLn (outputCode result') else writeFile f' (outputCode result')
       liftIO $ when (alloy_mapping args') $ writeFile (f ++ ".map") $ show (mappingToAlloy result')
-      liftIO $ when (name_uid_map args') $ writeFile (f ++ ".cfr-map") $ generateJSONnameUIDMap $ deriveFQNameUIDMap iModule
+      liftIO $ when (name_uid_map args') $ writeFile (f ++ ".cfr-map") $ generateJSONnameUIDMap iModule
       return f'  
   where
     printStats :: [CompilerResult] -> IO ()
     printStats []         = putStrLn "No compiler output."
     printStats (r:_) = putStrLn (statistics r)
+
+generateJSONnameUIDMap :: IModule -> String
+generateJSONnameUIDMap    iModule     = 
+    breakLines $ convertString $ toJsonBS $ foldl generateJSONArrayEntry mempty sortedTriples 
+    where
+      qNameMaps :: QNameMaps
+      qNameMaps = deriveQNameMaps iModule
+
+      sortedTriples :: [(FQName, PQName, UID)]
+      sortedTriples = List.sortBy (\(fqName1, _, _) (fqName2, _, _) -> compare fqName1 fqName2) $ getQNameUIDTriples qNameMaps
+
+      -- insert a new line after  [, {, and ,
+      -- insert a new line before ], }
+      breakLines :: String -> String
+      breakLines ('[':line) = '[':'\n':(breakLines line)
+      breakLines (']':line) = '\n':']':(breakLines line)
+      breakLines ('{':line) = '{':'\n':(breakLines line)
+      breakLines ('}':line) = '\n':'}':(breakLines line)
+      breakLines (',':line) = ',':'\n':(breakLines line)
+      breakLines (c:line) =  c:(breakLines line)
+      breakLines ""         = ""
+
+generateJSONArrayEntry :: Array -> (FQName, PQName, UID) -> Array
+generateJSONArrayEntry    array    (fqName, pqName, uid) = 
+    mappend array $ element $ mconcat [ 
+        row "fqName" fqName, 
+        row "pqName" pqName,
+        row "uid" uid ]
 
 summary graph result = result{outputCode=unlines $ summary' graph ("<pre>" ++ statistics result ++ "</pre>") (lines $ outputCode result)}
 summary' _ _ [] = []
@@ -133,43 +162,6 @@ summary' graph stats ("<!-- # STATS /-->":xs) = stats:summary' graph stats xs
 summary' graph stats ("<!-- # GRAPH /-->":xs) = graph:summary' graph stats xs
 summary' graph stats ("<!-- # CVLGRAPH /-->":xs) = graph:summary' graph stats xs
 summary' graph stats (x:xs) = x:summary' graph stats xs
-
-generateJSONnameUIDMap :: FQNameUIDMap -> String
-generateJSONnameUIDMap    smap          = 
-    breakLines $ convertString $ toJsonBS $ SMap.foldWithKey (generateJSONEntry smap) mempty smap
-    where
-      -- insert a new line after each [, ], {, }, and ,
-      breakLines :: String -> String
-      breakLines = List.intercalate "\n" . split (oneOf ",")
-
-generateJSONEntry :: FQNameUIDMap -> SMap.Key -> UID -> Array -> Array
-generateJSONEntry    smap            key         uid    array = 
-    mappend array $ element $ mconcat [ 
-        row "fqName" fqName, 
-        row "pqName" pqName,
-        row "uid" uid ]
-    where
-      -- need to reverse the key to get a fully qualified name
-      fqName = concat $ reverse $ split (onSublist "::") key
-      -- name qualified just sufficiently to uniquely identify the clafer
-      pqName = findLeastQualifiedName fqName smap
-
-      findLeastQualifiedName :: String -> FQNameUIDMap -> String
-      -- handle fully qualified name case
-      findLeastQualifiedName fqName@(':':':':pqName) smap =
-          if (length (findUIDsByFQName smap pqName) > 1)
-              then fqName
-              else findLeastQualifiedName pqName smap
-      -- handle partially qualified name case
-      findLeastQualifiedName pqName smap =
-         let
-            -- remove one segment of qualification 
-            lessQName =  concat $ drop 2 $ split (onSublist "::") pqName
-         in 
-            if (length (findUIDsByFQName smap lessQName) > 1)
-              then pqName
-              else findLeastQualifiedName lessQName smap
-
 
 conPutStrLn :: ClaferArgs -> String -> IO ()
 conPutStrLn args' s = when (not $ console_output args') $ putStrLn s

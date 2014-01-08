@@ -46,18 +46,13 @@ module Language.Clafer (addModuleFragment,
                         Pos(..),
                         IrTrace(..),
                         module Language.Clafer.ClaferArgs,
-                        module Language.Clafer.Front.ErrM,
-                        deriveFQNameUIDMap,
-                        findUIDsByFQName,
-                        FQNameUIDMap)
+                        module Language.Clafer.Front.ErrM)
 where
 
 import Data.Either
 import Data.List
-import Data.List.Split
 import Data.Maybe
 import qualified Data.Map as Map
-import qualified Data.StringMap as SMap
 import Data.Ord
 import Control.Monad
 import System.FilePath (takeBaseName)
@@ -526,32 +521,3 @@ claferIRXSD = Language.Clafer.Generator.Schema.xsd
 
 keyWords :: [String]
 keyWords = ["ref","parent","abstract", "else", "in", "no", "opt", "xor", "all", "enum", "lone", "not", "or", "disj", "extends", "mux", "one", "some"]
-
-type FQNameUIDMap = SMap.StringMap UID
-
-deriveFQNameUIDMap :: IModule -> FQNameUIDMap
-deriveFQNameUIDMap iModule = addElements ["::"] (mDecls iModule) SMap.empty
-
-addElements :: [String] -> [IElement] -> FQNameUIDMap -> FQNameUIDMap
-addElements    path        elems         smap               = foldl (addClafer path) smap elems
-
-addClafer :: [String] -> FQNameUIDMap -> IElement          -> FQNameUIDMap
-addClafer    path      smap                  (IEClafer iClafer) = 
-  let newPath = (ident iClafer) : path 
-  in
-    let smap' = SMap.insert (concat newPath) (uid iClafer) smap
-    in 
-      addElements ("::" : newPath) (elements iClafer) smap'
-addClafer    _         smap                  _                  = smap
-
-{- FQName is of the format
-::a::b::c
-b::c
-c
--}
-findUIDsByFQName :: FQNameUIDMap -> FQName -> [ UID ]
-findUIDsByFQName    smap                  fqName@(':':':':_) = SMap.lookup (reverseFQName fqName) smap
-findUIDsByFQName    smap                  fqName = SMap.prefixFind (reverseFQName fqName) smap 
-
-reverseFQName :: FQName -> FQName
-reverseFQName fqName = concat $ reverse $ split (onSublist "::") fqName       
