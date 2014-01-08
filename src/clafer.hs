@@ -136,7 +136,11 @@ summary' graph stats (x:xs) = x:summary' graph stats xs
 
 generateJSONnameUIDMap :: FQNameUIDMap -> String
 generateJSONnameUIDMap    smap          = 
-    convertString $ toJsonBS $ SMap.foldWithKey (generateJSONEntry smap) mempty smap
+    breakLines $ convertString $ toJsonBS $ SMap.foldWithKey (generateJSONEntry smap) mempty smap
+    where
+      -- insert a new line after each [, ], {, }, and ,
+      breakLines :: String -> String
+      breakLines = List.intercalate "\n" . split (oneOf ",")
 
 generateJSONEntry :: FQNameUIDMap -> SMap.Key -> UID -> Array -> Array
 generateJSONEntry    smap            key         uid    array = 
