@@ -80,7 +80,7 @@ deriveQNameMaps :: IModule -> QNameMaps
 deriveQNameMaps    iModule = 
     let
         (fqNameUIDMap, uidFqNameMap) = deriveFQNameUIDMaps iModule
-        uidLpqNameMap = deriveUidLpqNameMap fqNameUIDMap uidFqNameMap
+        uidLpqNameMap = deriveUidLpqNameMap fqNameUIDMap
     in 
         QNameMaps fqNameUIDMap uidFqNameMap uidLpqNameMap
 
@@ -118,12 +118,12 @@ getQNameFromKey :: FQKey -> QName
 getQNameFromKey = reverseOnQualifier
 
 
-deriveUidLpqNameMap :: FQNameUIDMap ->  UIDFqNameMap -> UIDLpqNameMap
-deriveUidLpqNameMap    fqNameUIDMap     uidFqNameMap = 
-    SMap.foldWithKey (generateUIDLpqMapEntry fqNameUIDMap uidFqNameMap) Map.empty fqNameUIDMap
+deriveUidLpqNameMap :: FQNameUIDMap ->  UIDLpqNameMap
+deriveUidLpqNameMap    fqNameUIDMap = 
+    SMap.foldWithKey (generateUIDLpqMapEntry fqNameUIDMap) Map.empty fqNameUIDMap
 
-generateUIDLpqMapEntry :: FQNameUIDMap ->  UIDFqNameMap -> SMap.Key -> UID -> UIDLpqNameMap -> UIDLpqNameMap
-generateUIDLpqMapEntry    fqNameUIDMap     uidFqNameMap    fqKey       uid'   uidLpqNameMap = 
+generateUIDLpqMapEntry :: FQNameUIDMap ->  SMap.Key -> UID -> UIDLpqNameMap -> UIDLpqNameMap
+generateUIDLpqMapEntry    fqNameUIDMap     fqKey       uid'   uidLpqNameMap = 
     Map.insert uid' lpqName uidLpqNameMap
     where
       -- need to reverse the key to get a fully qualified name
@@ -137,24 +137,24 @@ generateUIDLpqMapEntry    fqNameUIDMap     uidFqNameMap    fqKey       uid'   ui
 
       findLeastQualifiedName :: String -> FQNameUIDMap -> String
       -- handle fully qualified name case
-      findLeastQualifiedName fqName@(':':':':pqName) fqNameUIDMap =
-          if (length (findUIDsByFQName fqNameUIDMap pqName) > 1)
-              then fqName
-              else findLeastQualifiedName pqName fqNameUIDMap
+      findLeastQualifiedName fqName'@(':':':':pqName) fqNameUIDMap' =
+          if (length (findUIDsByFQName fqNameUIDMap' pqName) > 1)
+              then fqName'
+              else findLeastQualifiedName pqName fqNameUIDMap'
       -- handle partially qualified name case
-      findLeastQualifiedName pqName fqNameUIDMap =
+      findLeastQualifiedName pqName fqNameUIDMap' =
          let
             -- remove one segment of qualification 
             lessQName =  concat $ drop 2 $ split (onSublist "::") pqName
          in 
-            if (length (findUIDsByFQName fqNameUIDMap lessQName) > 1)
+            if (length (findUIDsByFQName fqNameUIDMap' lessQName) > 1)
               then pqName
-              else findLeastQualifiedName lessQName fqNameUIDMap      
+              else findLeastQualifiedName lessQName fqNameUIDMap'      
 
 getQNameUIDTriples :: QNameMaps -> [(FQName, PQName, UID)]
-getQNameUIDTriples qNameMaps@(QNameMaps _ uidFqNameMap uidLpqNameMap) =
+getQNameUIDTriples qNameMaps@(QNameMaps _ uidFqNameMap _) =
     let
       uidFqNameList :: [(UID, FQName)]
       uidFqNameList = Map.toList uidFqNameMap
     in
-      map (\(uid, fqName) -> (fqName, fromMaybe fqName $ getLPQName qNameMaps uid, uid)) uidFqNameList
+      map (\(uid', fqName) -> (fqName, fromMaybe fqName $ getLPQName qNameMaps uid', uid')) uidFqNameList

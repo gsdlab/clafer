@@ -27,6 +27,7 @@ import qualified Data.Map as Map
 import qualified Data.StringMap as SMap
 import qualified Data.List as List
 import Data.List.Split
+import Data.Maybe
 import Data.Json.Builder
 import Data.String.Conversions
 import Control.Monad.State
@@ -120,40 +121,73 @@ save args'=
       let f' = f ++ "." ++ (extension result)
       liftIO $ if console_output args' then putStrLn (outputCode result') else writeFile f' (outputCode result')
       liftIO $ when (alloy_mapping args') $ writeFile (f ++ ".map") $ show (mappingToAlloy result')
-      liftIO $ when (name_uid_map args') $ writeFile (f ++ ".cfr-map") $ generateJSONnameUIDMap iModule
+      let 
+        qNameMaps :: QNameMaps
+        qNameMaps = deriveQNameMaps iModule
+      liftIO $ when (name_uid_map args') $ writeFile (f ++ ".cfr-map") $ generateJSONnameUIDMap qNameMaps
+      liftIO $ when (name_uid_map args' && inScopeModes) $ writeFile (f ++ ".cfr-scope") $ generateJSONScopes qNameMaps $ getScopesList resultsMap
       return f'  
   where
     printStats :: [CompilerResult] -> IO ()
     printStats []         = putStrLn "No compiler output."
     printStats (r:_) = putStrLn (statistics r)
 
-generateJSONnameUIDMap :: IModule -> String
-generateJSONnameUIDMap    iModule     = 
-    breakLines $ convertString $ toJsonBS $ foldl generateJSONArrayEntry mempty sortedTriples 
-    where
-      qNameMaps :: QNameMaps
-      qNameMaps = deriveQNameMaps iModule
+    inScopeModes :: Bool
+    inScopeModes = 
+      Alloy `elem` mode args' ||
+      Alloy42 `elem` mode args' ||
+      Choco `elem` mode args'
 
+    getScopesList :: (Map.Map ClaferMode CompilerResult) -> [(UID, Integer)]
+    getScopesList    resultsMap =
+        let
+           alloyResult = Map.lookup Alloy resultsMap
+           alloy42Result = Map.lookup Alloy42 resultsMap
+           chocoResult = Map.lookup Choco resultsMap
+        in 
+           if (isNothing alloyResult)
+           then []
+           else scopesList $ fromJust alloyResult
+
+generateJSONnameUIDMap :: QNameMaps -> String
+generateJSONnameUIDMap    qNameMaps     = 
+    prettyPrintJSON $ convertString $ toJsonBS $ foldl generateQNameUIDArrayEntry mempty sortedTriples 
+    where
       sortedTriples :: [(FQName, PQName, UID)]
       sortedTriples = List.sortBy (\(fqName1, _, _) (fqName2, _, _) -> compare fqName1 fqName2) $ getQNameUIDTriples qNameMaps
 
-      -- insert a new line after  [, {, and ,
-      -- insert a new line before ], }
-      breakLines :: String -> String
-      breakLines ('[':line) = '[':'\n':(breakLines line)
-      breakLines (']':line) = '\n':']':(breakLines line)
-      breakLines ('{':line) = '{':'\n':(breakLines line)
-      breakLines ('}':line) = '\n':'}':(breakLines line)
-      breakLines (',':line) = ',':'\n':(breakLines line)
-      breakLines (c:line) =  c:(breakLines line)
-      breakLines ""         = ""
-
-generateJSONArrayEntry :: Array -> (FQName, PQName, UID) -> Array
-generateJSONArrayEntry    array    (fqName, pqName, uid) = 
+generateQNameUIDArrayEntry :: Array -> (FQName, PQName, UID) -> Array
+generateQNameUIDArrayEntry    array    (fqName, lpqName, uid) = 
     mappend array $ element $ mconcat [ 
         row "fqName" fqName, 
-        row "pqName" pqName,
+        row "lpqName" lpqName,
         row "uid" uid ]
+
+generateJSONScopes :: QNameMaps -> [(UID, Integer)] -> String
+generateJSONScopes    qNameMaps    scopes       =
+    prettyPrintJSON $ convertString $ toJsonBS $ foldl generateLpqNameScopeArrayEntry mempty sortedLpqNameScopeList
+    where
+      lpqNameScopeList = map (\(uid, scope) -> (fromMaybe uid $ getLPQName qNameMaps uid, scope)) scopes
+      sortedLpqNameScopeList :: [(PQName, Integer)]
+      sortedLpqNameScopeList = List.sortBy (\(lpqName1, _) (lpqName2, _) -> compare lpqName1 lpqName2) lpqNameScopeList
+
+
+generateLpqNameScopeArrayEntry :: Array -> (PQName, Integer)   -> Array
+generateLpqNameScopeArrayEntry    array    (lpqName, scope) = 
+    mappend array $ element $ mconcat [ 
+        row "lpqName" lpqName,
+        row "scope" scope ]
+
+-- insert a new line after  [, {, and ,
+-- insert a new line before ], }
+prettyPrintJSON :: String -> String
+prettyPrintJSON ('[':line) = '[':'\n':(prettyPrintJSON line)
+prettyPrintJSON (']':line) = '\n':']':(prettyPrintJSON line)
+prettyPrintJSON ('{':line) = '{':'\n':(prettyPrintJSON line)
+prettyPrintJSON ('}':line) = '\n':'}':(prettyPrintJSON line)
+prettyPrintJSON (',':line) = ',':'\n':(prettyPrintJSON line)
+prettyPrintJSON (c:line) =  c:(prettyPrintJSON line)
+prettyPrintJSON ""         = ""
 
 summary graph result = result{outputCode=unlines $ summary' graph ("<pre>" ++ statistics result ++ "</pre>") (lines $ outputCode result)}
 summary' _ _ [] = []

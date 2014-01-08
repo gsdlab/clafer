@@ -76,6 +76,7 @@ import Language.Clafer.Intermediate.Desugarer
 import Language.Clafer.Intermediate.Resolver
 import Language.Clafer.Intermediate.StringAnalyzer
 import Language.Clafer.Intermediate.Transformer
+import Language.Clafer.Intermediate.ScopeAnalysis
 import Language.Clafer.Optimizer.Optimizer
 import Language.Clafer.Generator.Alloy
 import Language.Clafer.Generator.Choco
@@ -342,15 +343,17 @@ generate =
     env <- getEnv
     ast' <- getAst
     (iModule, genv, au) <- getIr
-    let cargs = args env
-    let stats = showStats au $ statsModule iModule
-    let modes = mode cargs
+    let 
+      cargs = args env
+      stats = showStats au $ statsModule iModule
+      modes = mode cargs
+      scopes = getScopeStrategy (scope_strategy cargs) iModule
     return $ Map.fromList ( 
         -- result for Alloy
         (if (Alloy `elem` modes)
           then let 
                   (imod,strMap) = astrModule iModule
-                  alloyCode = genModule cargs{mode = [Alloy]} (imod, genv)
+                  alloyCode = genModule cargs{mode = [Alloy]} (imod, genv) scopes
                   addCommentStats = if no_stats cargs then const else addStats 
                in 
                   [ (Alloy, 
@@ -360,7 +363,8 @@ generate =
                      statistics = stats,
                      claferEnv  = env,
                      mappingToAlloy = fromMaybe [] (Just $ snd alloyCode),
-                     stringMap = strMap
+                     stringMap = strMap,
+                     scopesList = scopes
                     })
                   ]
           else []
@@ -370,7 +374,7 @@ generate =
         (if (Alloy42 `elem` modes)
           then let 
                   (imod,strMap) = astrModule iModule
-                  alloyCode = genModule cargs{mode = [Alloy42]} (imod, genv)
+                  alloyCode = genModule cargs{mode = [Alloy42]} (imod, genv) scopes
                   addCommentStats = if no_stats cargs then const else addStats 
                in 
                   [ (Alloy42, 
@@ -380,7 +384,8 @@ generate =
                      statistics = stats,
                      claferEnv  = env,
                      mappingToAlloy = fromMaybe [] (Just $ snd alloyCode),
-                     stringMap = strMap
+                     stringMap = strMap,
+                     scopesList = scopes
                     })
                   ]
           else []
@@ -394,7 +399,8 @@ generate =
                    statistics = stats,
                    claferEnv  = env,
                    mappingToAlloy = [],
-                   stringMap = Map.empty
+                   stringMap = Map.empty,
+                   scopesList = []
                   }) ]
           else []
         )
@@ -407,7 +413,8 @@ generate =
                    statistics = stats,
                    claferEnv  = env,
                    mappingToAlloy = [],
-                   stringMap = Map.empty
+                   stringMap = Map.empty,
+                   scopesList = []
                   }) ]
           else []
         )
@@ -420,7 +427,8 @@ generate =
                    statistics = stats,
                    claferEnv  = env,
                    mappingToAlloy = [],
-                   stringMap = Map.empty
+                   stringMap = Map.empty,
+                   scopesList = []
                   }) ]
           else []
         )
@@ -432,7 +440,8 @@ generate =
                      statistics = stats,
                      claferEnv  = env,
                      mappingToAlloy = [],
-                     stringMap = Map.empty
+                     stringMap = Map.empty,
+                     scopesList = []
                   }) ]
           else []
         )
@@ -444,7 +453,8 @@ generate =
                        statistics = stats,
                        claferEnv  = env,
                        mappingToAlloy = [],
-                       stringMap = Map.empty
+                       stringMap = Map.empty,
+                       scopesList = []
                   }) ]
           else []
         )
@@ -457,7 +467,8 @@ generate =
                    statistics = stats,
                    claferEnv  = env,
                    mappingToAlloy = [],
-                   stringMap = Map.empty
+                   stringMap = Map.empty,
+                   scopesList = scopes
                   }) ]
           else []
         )
@@ -469,11 +480,12 @@ generate =
                   [ (Choco, 
                      CompilerResult { 
                          extension = "js", 
-                         outputCode = genCModule cargs (imod, genv), 
+                         outputCode = genCModule cargs (imod, genv) scopes, 
                          statistics = stats,
                          claferEnv  = env,
                          mappingToAlloy = [],
-                         stringMap = strMap
+                         stringMap = strMap,
+                         scopesList = scopes
                       }) ]
           else []
         ))
@@ -484,7 +496,8 @@ data CompilerResult = CompilerResult {
                             statistics :: String,
                             claferEnv :: ClaferEnv,
                             mappingToAlloy :: [(Span, IrTrace)], -- Maps source constraint spans in Alloy to the spans in the IR
-                            stringMap :: (Map.Map Int String)
+                            stringMap :: (Map.Map Int String),
+                            scopesList :: [(UID, Integer)]
                             } deriving Show
 
 desugar :: Module -> IModule  
