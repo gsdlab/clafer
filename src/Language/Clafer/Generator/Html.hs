@@ -97,8 +97,8 @@ printModule (PosModule _ declarations) irMap html = printModule (Module declarat
 
 printDeclaration :: Declaration -> Int -> Map.Map Span [Ir] -> Bool -> [(Span, String)] -> String
 printDeclaration (EnumDecl posIdent enumIds) indent irMap html comments = 
-  let (PosIdent (_, divid)) = posIdent in
-    printIndentId 0 html divid ++
+  let (PosIdent (_, _)) = posIdent in
+    printIndentId 0 html ++
     (while html "<span class=\"keyword\">") ++ "enum" ++ (while html "</span>") ++ 
     " " ++ 
     (printPosIdent posIdent Nothing html) ++ 
@@ -107,8 +107,8 @@ printDeclaration (EnumDecl posIdent enumIds) indent irMap html comments =
     printIndentEnd html
 printDeclaration (PosEnumDecl s posIdent enumIds)  indent irMap html comments = 
     preComments ++
-    printIndentId 0 html uid' ++
-    (while html "<sspan class=\"keyword\">") ++ "enum" ++ (while html "</span>") ++ 
+    printIndentId 0 html ++
+    (while html "<span class=\"keyword\">") ++ "enum" ++ (while html "</span>") ++ 
     " " ++ 
     (printPosIdent posIdent (Just uid') html) ++ 
     " = " ++ 
@@ -116,7 +116,7 @@ printDeclaration (PosEnumDecl s posIdent enumIds)  indent irMap html comments =
     comment ++
     printIndentEnd html
   where
-    uid' = getDivId s irMap;
+    uid' = getUid posIdent irMap;
     (comments', preComments) = printPreComment s comments;
     (_, comment) = printComment s comments'
 printDeclaration (ElementDecl element)      indent irMap html comments = printElement element indent irMap html comments
@@ -134,7 +134,7 @@ printElement (ClaferUse name crd es) indent irMap html comments =
   printElements es indent irMap html comments
 printElement (PosClaferUse s name crd es) indent irMap html comments = 
   preComments ++ 
-  printIndentId indent html divId ++
+  printIndentId indent html ++
   "`" ++ (while html ("<a href=\"#" ++ superId ++ "\"><span class=\"reference\">")) ++ 
   printName name indent irMap False [] --trick the printer into only printing the name
   ++ (while html "</span></a>") ++ 
@@ -143,7 +143,7 @@ printElement (PosClaferUse s name crd es) indent irMap html comments =
   printIndentEnd html ++ 
   printElements es indent irMap html comments''
   where
-    (divId, superId) = getUseId s irMap;
+    (_, superId) = getUseId s irMap;
     (comments', preComments) = printPreComment s comments;
     (comments'', comment) = printComment s comments' 
 
@@ -207,12 +207,11 @@ printElements (PosElementsList _ es) indent irMap html comments = printElements 
 
 printClafer :: Clafer -> Int -> Map.Map Span [Ir] -> Bool -> [(Span, String)] -> String
 printClafer (Clafer abstract gCard id' super' crd init' es) indent irMap html comments =
-  printIndentId indent html divid ++ 
+  printIndentId indent html ++ 
   claferDeclaration ++ 
   printElements es indent irMap html comments ++
   printIndentEnd html
   where
-    (PosIdent (_, divid)) = id';
     claferDeclaration = concat [
       printAbstract abstract html, 
       printGCard gCard html,
@@ -223,7 +222,7 @@ printClafer (Clafer abstract gCard id' super' crd init' es) indent irMap html co
 
 printClafer (PosClafer s abstract gCard id' super' crd init' es) indent irMap html comments =
   preComments ++ 
-  printIndentId indent html uid' ++ 
+  printIndentId indent html ++ 
   claferDeclaration ++ 
   comment ++ 
   printElements es indent irMap html comments'' ++
@@ -288,7 +287,7 @@ printModId (PosModIdIdent _ posident) indent irMap html comments = printModId (M
 
 printPosIdent :: PosIdent -> Maybe String -> Bool -> String
 printPosIdent (PosIdent (_, id')) Nothing _ = id'
-printPosIdent (PosIdent (_, id')) (Just uid') html = (while html $ "<a href=\"" ++ uid' ++ "\">") ++ id' ++ (while html "</a>")
+printPosIdent (PosIdent (_, id')) (Just uid') html = (while html $ "<span class=\"claferDecl\" id=\"" ++ uid' ++ "\">") ++ id' ++ (while html "</span>")
 
 printPosIdentRef :: PosIdent -> Map.Map Span [Ir] -> Bool -> String
 printPosIdentRef (PosIdent (p, id')) irMap html
@@ -465,16 +464,18 @@ printQuant quant' html = case quant' of
   PosQuantSome _ -> (while html "<span class=\"keyword\">") ++ "some" ++ (while html "</span>") ++ " "
 
 printEnumId :: EnumId -> Int -> Map.Map Span [Ir] -> Bool -> [(Span, String)] -> String
-printEnumId (EnumIdIdent posident) _ _ html _ = printPosIdent posident Nothing html
+printEnumId (EnumIdIdent posident) _ irMap html _ = printPosIdent posident (Just uid') html
+  where
+    uid' = getUid posident irMap
 printEnumId (PosEnumIdIdent _ posident) indent irMap html comments = printEnumId (EnumIdIdent posident) indent irMap html comments
 
 printIndent :: Int -> Bool -> String
 printIndent 0 html = (while html "<div>") ++ "\n"
 printIndent _ html = (while html "<div class=\"indent\">") ++ "\n"
 
-printIndentId :: Int -> Bool -> String -> String
-printIndentId 0 html uid' = while html ("<div id=\"" ++ uid' ++ "\">") ++ "\n"
-printIndentId _ html uid' = while html ("<div id=\"" ++ uid' ++ "\" class=\"indent\">") ++ "\n"
+printIndentId :: Int -> Bool -> String
+printIndentId 0 html = while html ("<div>") ++ "\n"
+printIndentId _ html = while html ("<div class=\"indent\">") ++ "\n"
 
 printIndentEnd :: Bool -> String
 printIndentEnd html = (while html "</div>") ++ "\n"
@@ -494,17 +495,18 @@ rest [] = []
 rest (_:xs) = xs
 
 getUid :: PosIdent -> Map.Map Span [Ir] -> String
-getUid (PosIdent (pos', id')) irMap = if Map.lookup (range (PosIdent (pos', id'))) irMap == Nothing
-                        then "Lookup failed"
-                        else let IRPExp pexp = head $ fromJust $ Map.lookup (range (PosIdent (pos', id'))) irMap in
-                          findUid id' $ getIdentPExp pexp
-                          where {getIdentPExp (PExp _ _ _ exp') = getIdentIExp exp';
-                                 getIdentIExp (IFunExp _ exps') = concatMap getIdentPExp exps';
-                                 getIdentIExp (IClaferId _ id'' _) = [id''];
-                                 getIdentIExp (IDeclPExp _ _ pexp) = getIdentPExp pexp;
-                                 getIdentIExp _ = [];
-                                 findUid name (x:xs) = if name == dropUid x then x else findUid name xs;
-                                 findUid _ []     = "Uid not found"}
+getUid posIdent@(PosIdent (pos', id')) irMap = 
+    if Map.lookup (range posIdent) irMap == Nothing
+    then "Lookup failed"
+    else let IRPExp pexp = head $ fromJust $ Map.lookup (range posIdent) irMap in
+      findUid id' $ getIdentPExp pexp
+      where {getIdentPExp (PExp _ _ _ exp') = getIdentIExp exp';
+             getIdentIExp (IFunExp _ exps') = concatMap getIdentPExp exps';
+             getIdentIExp (IClaferId _ id'' _) = [id''];
+             getIdentIExp (IDeclPExp _ _ pexp) = getIdentPExp pexp;
+             getIdentIExp _ = [];
+             findUid name (x:xs) = if name == dropUid x then x else findUid name xs;
+             findUid _ []     = "Uid not found"}
 
 getDivId :: Span -> Map.Map Span [Ir] -> String
 getDivId s irMap = if Map.lookup s irMap == Nothing
