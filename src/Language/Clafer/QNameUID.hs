@@ -20,6 +20,7 @@
  SOFTWARE.
 -}
 module Language.Clafer.QNameUID (
+        QName,
         FQName,
         PQName, 
         QNameMaps,
@@ -54,7 +55,7 @@ type FQKey = String
 -- | e.g., `Person::name`, `chair`
 type PQName = String    
 
--- a map from reversed FQName (Key) to UID (Value)
+-- a map from reversed FQName (FQKey) to UID
 type FQNameUIDMap = SMap.StringMap UID
 
 type UIDFqNameMap = Map.Map UID FQName
