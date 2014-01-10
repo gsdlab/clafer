@@ -151,7 +151,10 @@ save args'=
                 else scopesList $ fromJust alloy42Result
            else scopesList $ fromJust alloyResult
 
+summary :: String -> CompilerResult -> CompilerResult
 summary graph result = result{outputCode=unlines $ summary' graph ("<pre>" ++ statistics result ++ "</pre>") (lines $ outputCode result)}
+
+summary' :: String -> String -> [String] -> [String]
 summary' _ _ [] = []
 summary' graph stats ("<!-- # SUMMARY /-->":xs) = graph:stats:summary' graph stats xs
 summary' graph stats ("<!-- # STATS /-->":xs) = stats:summary' graph stats xs
