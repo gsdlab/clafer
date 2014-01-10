@@ -495,7 +495,7 @@ rest [] = []
 rest (_:xs) = xs
 
 getUid :: PosIdent -> Map.Map Span [Ir] -> String
-getUid posIdent@(PosIdent (pos', id')) irMap = 
+getUid posIdent@(PosIdent (_, id')) irMap = 
     if Map.lookup (range posIdent) irMap == Nothing
     then "Lookup failed"
     else let IRPExp pexp = head $ fromJust $ Map.lookup (range posIdent) irMap in
