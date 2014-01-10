@@ -25,11 +25,13 @@ module Main where
 import Prelude hiding (writeFile, readFile, print, putStrLn)
 import qualified Data.Map as Map
 import qualified Data.List as List
+import Data.List.Split
+import Data.Maybe
+import Control.Monad.State
 import System.IO
 import System.Cmd
 import System.Exit
 import System.Timeout
-import Control.Monad.State
 import System.FilePath (dropExtension,takeBaseName)
 import System.Process (readProcessWithExitCode)
 
@@ -37,6 +39,9 @@ import Language.Clafer
 import Language.ClaferT
 import Language.Clafer.Css
 import Language.Clafer.ClaferArgs
+import Language.Clafer.JSONMetaData
+import Language.Clafer.QNameUID
+import Language.Clafer.Intermediate.Intclafer
 import Language.Clafer.Generator.Html (highlightErrors)
 import Language.Clafer.Generator.Graph (genSimpleGraph)
 
@@ -113,13 +118,38 @@ save args'=
       let f = dropExtension $ file args'
       let f' = f ++ "." ++ (extension result)
       liftIO $ if console_output args' then putStrLn (outputCode result') else writeFile f' (outputCode result')
-      liftIO $ when (alloy_mapping args') $ writeFile (f ++ "." ++ "map") $ show (mappingToAlloy result')
+      liftIO $ when (alloy_mapping args') $ writeFile (f ++ ".map") $ show (mappingToAlloy result')
+      let 
+        qNameMaps :: QNameMaps
+        qNameMaps = deriveQNameMaps iModule
+      liftIO $ when (name_uid_map args') $ writeFile (f ++ ".cfr-map") $ generateJSONnameUIDMap qNameMaps
+      liftIO $ when (name_uid_map args' && inScopeModes) $ writeFile (f ++ ".cfr-scope") $ generateJSONScopes qNameMaps $ getScopesList resultsMap
       return f'  
   where
     printStats :: [CompilerResult] -> IO ()
     printStats []         = putStrLn "No compiler output."
     printStats (r:_) = putStrLn (statistics r)
 
+    inScopeModes :: Bool
+    inScopeModes = 
+      Alloy `elem` mode args' ||
+      Alloy42 `elem` mode args' ||
+      Choco `elem` mode args'
+
+    getScopesList :: (Map.Map ClaferMode CompilerResult) -> [(UID, Integer)]
+    getScopesList    resultsMap =
+        let
+           alloyResult = Map.lookup Alloy resultsMap
+           alloy42Result = Map.lookup Alloy42 resultsMap
+           chocoResult = Map.lookup Choco resultsMap
+        in 
+           if (isNothing alloyResult)
+           then if (isNothing alloy42Result)
+                then if (isNothing chocoResult)
+                     then []
+                     else scopesList $ fromJust chocoResult
+                else scopesList $ fromJust alloy42Result
+           else scopesList $ fromJust alloyResult
 
 summary :: String -> CompilerResult -> CompilerResult
 summary graph result = result{outputCode=unlines $ summary' graph ("<pre>" ++ statistics result ++ "</pre>") (lines $ outputCode result)}

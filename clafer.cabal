@@ -42,6 +42,8 @@ Executable clafer
                     transformers >= 0.3.0.0,
 
                     data-stringmap >= 0.9.1,
+                    json-builder >= 0.3,
+                    string-conversions >= 0.3,
                     cmdargs >= 0.10.5, 
                     executable-path >= 0.0.3, 
                     glpk-hs >= 0.3.4,
@@ -77,6 +79,8 @@ library
                     transformers >= 0.3.0.0,
 
                     data-stringmap >= 0.9.1,
+                    json-builder >= 0.3,
+                    string-conversions >= 0.3,
                     cmdargs >= 0.10.5, 
                     executable-path >= 0.0.3, 
                     glpk-hs >= 0.3.4,
@@ -97,6 +101,8 @@ library
                      Language.Clafer.Comments,
                      Language.Clafer.Common,
                      Language.Clafer.Css,
+                     Language.Clafer.JSONMetaData,
+                     Language.Clafer.QNameUID,
                      Language.Clafer.Front.Absclafer,
                      Language.Clafer.Front.ErrM,
                      Language.Clafer.Front.LayoutResolver,
@@ -152,6 +158,8 @@ Test-Suite test-suite
                     transformers >= 0.3.0.0,
 
                     data-stringmap >= 0.9.1,
+                    json-builder >= 0.3,
+                    string-conversions >= 0.3,
                     cmdargs >= 0.10.5, 
                     executable-path >= 0.0.3, 
                     glpk-hs >= 0.3.4,

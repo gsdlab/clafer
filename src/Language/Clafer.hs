@@ -46,18 +46,13 @@ module Language.Clafer (addModuleFragment,
                         Pos(..),
                         IrTrace(..),
                         module Language.Clafer.ClaferArgs,
-                        module Language.Clafer.Front.ErrM,
-                        deriveFQNameUIDMap,
-                        findUIDsByFQName,
-                        FQNameUIDMap)
+                        module Language.Clafer.Front.ErrM)
 where
 
 import Data.Either
 import Data.List
-import Data.List.Split
 import Data.Maybe
 import qualified Data.Map as Map
-import qualified Data.StringMap as SMap
 import Data.Ord
 import Control.Monad
 import System.FilePath (takeBaseName)
@@ -81,6 +76,7 @@ import Language.Clafer.Intermediate.Desugarer
 import Language.Clafer.Intermediate.Resolver
 import Language.Clafer.Intermediate.StringAnalyzer
 import Language.Clafer.Intermediate.Transformer
+import Language.Clafer.Intermediate.ScopeAnalysis
 import Language.Clafer.Optimizer.Optimizer
 import Language.Clafer.Generator.Alloy
 import Language.Clafer.Generator.Choco
@@ -347,15 +343,17 @@ generate =
     env <- getEnv
     ast' <- getAst
     (iModule, genv, au) <- getIr
-    let cargs = args env
-    let stats = showStats au $ statsModule iModule
-    let modes = mode cargs
+    let 
+      cargs = args env
+      stats = showStats au $ statsModule iModule
+      modes = mode cargs
+      scopes = getScopeStrategy (scope_strategy cargs) iModule
     return $ Map.fromList ( 
         -- result for Alloy
         (if (Alloy `elem` modes)
           then let 
                   (imod,strMap) = astrModule iModule
-                  alloyCode = genModule cargs{mode = [Alloy]} (imod, genv)
+                  alloyCode = genModule cargs{mode = [Alloy]} (imod, genv) scopes
                   addCommentStats = if no_stats cargs then const else addStats 
                in 
                   [ (Alloy, 
@@ -365,7 +363,8 @@ generate =
                      statistics = stats,
                      claferEnv  = env,
                      mappingToAlloy = fromMaybe [] (Just $ snd alloyCode),
-                     stringMap = strMap
+                     stringMap = strMap,
+                     scopesList = scopes
                     })
                   ]
           else []
@@ -375,7 +374,7 @@ generate =
         (if (Alloy42 `elem` modes)
           then let 
                   (imod,strMap) = astrModule iModule
-                  alloyCode = genModule cargs{mode = [Alloy42]} (imod, genv)
+                  alloyCode = genModule cargs{mode = [Alloy42]} (imod, genv) scopes
                   addCommentStats = if no_stats cargs then const else addStats 
                in 
                   [ (Alloy42, 
@@ -385,7 +384,8 @@ generate =
                      statistics = stats,
                      claferEnv  = env,
                      mappingToAlloy = fromMaybe [] (Just $ snd alloyCode),
-                     stringMap = strMap
+                     stringMap = strMap,
+                     scopesList = scopes
                     })
                   ]
           else []
@@ -399,7 +399,8 @@ generate =
                    statistics = stats,
                    claferEnv  = env,
                    mappingToAlloy = [],
-                   stringMap = Map.empty
+                   stringMap = Map.empty,
+                   scopesList = []
                   }) ]
           else []
         )
@@ -412,7 +413,8 @@ generate =
                    statistics = stats,
                    claferEnv  = env,
                    mappingToAlloy = [],
-                   stringMap = Map.empty
+                   stringMap = Map.empty,
+                   scopesList = []
                   }) ]
           else []
         )
@@ -425,7 +427,8 @@ generate =
                    statistics = stats,
                    claferEnv  = env,
                    mappingToAlloy = [],
-                   stringMap = Map.empty
+                   stringMap = Map.empty,
+                   scopesList = []
                   }) ]
           else []
         )
@@ -437,7 +440,8 @@ generate =
                      statistics = stats,
                      claferEnv  = env,
                      mappingToAlloy = [],
-                     stringMap = Map.empty
+                     stringMap = Map.empty,
+                     scopesList = []
                   }) ]
           else []
         )
@@ -449,7 +453,8 @@ generate =
                        statistics = stats,
                        claferEnv  = env,
                        mappingToAlloy = [],
-                       stringMap = Map.empty
+                       stringMap = Map.empty,
+                       scopesList = []
                   }) ]
           else []
         )
@@ -462,7 +467,8 @@ generate =
                    statistics = stats,
                    claferEnv  = env,
                    mappingToAlloy = [],
-                   stringMap = Map.empty
+                   stringMap = Map.empty,
+                   scopesList = scopes
                   }) ]
           else []
         )
@@ -474,11 +480,12 @@ generate =
                   [ (Choco, 
                      CompilerResult { 
                          extension = "js", 
-                         outputCode = genCModule cargs (imod, genv), 
+                         outputCode = genCModule cargs (imod, genv) scopes, 
                          statistics = stats,
                          claferEnv  = env,
                          mappingToAlloy = [],
-                         stringMap = strMap
+                         stringMap = strMap,
+                         scopesList = scopes
                       }) ]
           else []
         ))
@@ -489,7 +496,8 @@ data CompilerResult = CompilerResult {
                             statistics :: String,
                             claferEnv :: ClaferEnv,
                             mappingToAlloy :: [(Span, IrTrace)], -- Maps source constraint spans in Alloy to the spans in the IR
-                            stringMap :: (Map.Map Int String)
+                            stringMap :: (Map.Map Int String),
+                            scopesList :: [(UID, Integer)]
                             } deriving Show
 
 desugar :: Module -> IModule  
@@ -526,32 +534,3 @@ claferIRXSD = Language.Clafer.Generator.Schema.xsd
 
 keyWords :: [String]
 keyWords = ["ref","parent","abstract", "else", "in", "no", "opt", "xor", "all", "enum", "lone", "not", "or", "disj", "extends", "mux", "one", "some"]
-
-type FQNameUIDMap = SMap.StringMap UID
-
-deriveFQNameUIDMap :: IModule -> FQNameUIDMap
-deriveFQNameUIDMap iModule = addElements ["::"] (mDecls iModule) SMap.empty
-
-addElements :: [String] -> [IElement] -> FQNameUIDMap -> FQNameUIDMap
-addElements    path        elems         smap               = foldl (addClafer path) smap elems
-
-addClafer :: [String] -> FQNameUIDMap -> IElement          -> FQNameUIDMap
-addClafer    path      smap                  (IEClafer iClafer) = 
-  let newPath = (ident iClafer) : path 
-  in
-    let smap' = SMap.insert (concat newPath) (uid iClafer) smap
-    in 
-      addElements ("::" : newPath) (elements iClafer) smap'
-addClafer    _         smap                  _                  = smap
-
-{- FQName is of the format
-::a::b::c
-b::c
-c
--}
-findUIDsByFQName :: FQNameUIDMap -> FQName -> [ UID ]
-findUIDsByFQName    smap                  fqName@(':':':':_) = SMap.lookup (reverseFQName fqName) smap
-findUIDsByFQName    smap                  fqName = SMap.prefixFind (reverseFQName fqName) smap 
-
-reverseFQName :: FQName -> FQName
-reverseFQName fqName = concat $ reverse $ split (onSublist "::") fqName

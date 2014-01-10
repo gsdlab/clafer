@@ -64,6 +64,7 @@ data ClaferArgs = ClaferArgs {
       scope_strategy :: ScopeStrategy,
       afm :: Bool,
       skip_goals :: Bool,
+      name_uid_map :: Bool,
       file :: FilePath
     } deriving (Show, Data, Typeable)
 
@@ -92,6 +93,7 @@ clafer = ClaferArgs {
   scope_strategy      = def &= help "Use scope computation strategy: none, simple (default), or full." &= name "ss",
   afm                 = def &= help "Throws an error if the cardinality of any of the clafers is above 1." &= name "check-afm",
   skip_goals          = def &= help "Skip generation of Alloy code for goals. Useful for all tools working with standard Alloy." &= name "sg",
+  name_uid_map        = def &= help "Generate a 'fully qualified name'-'least qualified name'-'unique ID' map.",
   file                = def &= args   &= typ "FILE"
  } &= summary ("Clafer " ++ version) &= program "clafer"
 
@@ -106,7 +108,7 @@ mergeArgs a1 a2  = ClaferArgs (mode a1) (coMergeArg)
   (mergeArg add_graph) (mergeArg show_references) 
   (mergeArg add_comments) (mergeArg ecore2clafer) 
   (mergeArg scope_strategy) (mergeArg afm) (mergeArg skip_goals) 
-  (mergeArg file)
+  (mergeArg name_uid_map) (mergeArg file)
   where
     coMergeArg :: Bool
     coMergeArg = if (r1 /= False) then r1 else 
@@ -140,4 +142,4 @@ mainArgs = do
   return $ (args''', model)
 
 defaultClaferArgs :: ClaferArgs
-defaultClaferArgs = ClaferArgs [ def ] True False 0 False False False False False False False False False "tools/" False False False False False False Simple False False ""
+defaultClaferArgs = ClaferArgs [ def ] True False 0 False False False False False False False False False "tools/" False False False False False False Simple False False False ""

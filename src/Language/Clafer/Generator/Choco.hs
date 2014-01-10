@@ -16,8 +16,8 @@ import Language.Clafer.Front.Absclafer
 import Language.Clafer.Intermediate.Intclafer
 
 
-genCModule :: ClaferArgs -> (IModule, GEnv) -> Result
-genCModule args (imodule@IModule{mDecls}, _) =
+genCModule :: ClaferArgs -> (IModule, GEnv) -> [(UID, Integer)] -> Result
+genCModule args (imodule@IModule{mDecls}, _) scopes =
     genScopes
     ++ "\n"
     ++ (genAbstractClafer =<< abstractClafers)
@@ -288,7 +288,6 @@ genCModule args (imodule@IModule{mDecls}, _) =
     scopeOf "int" = undefined
     scopeOf i = fromMaybe 1 $ lookup i scopes
     bitwidth = fromMaybe 4 $ lookup "int" scopes
-    scopes = getScopeStrategy (scope_strategy args) imodule
     
 isQuant PExp{exp = IDeclPExp{}} = True
 isQuant _ = False
