@@ -1,7 +1,7 @@
 Clafer
 ======
 
-v0.3.5.??-??-????
+v0.3.5.10-01-2014
 
 [Clafer](http://clafer.org) is a general-purpose lightweight structural modeling language developed at [GSD Lab](http://gsd.uwaterloo.ca/), [University of Waterloo](http://uwaterloo.ca). 
 Clafer can be used for modeling of static hierarchical structures but has no support for modeling the change of the structures over time (behavior). 
@@ -49,7 +49,6 @@ ClaferWiki,
 ClaferIDE, 
 ClaferMoo,
 ChocoSolver,
-ClaferZ3, 
 ClaferMooVisualizer, 
 and ClaferConfigurator 
 for Windows, Mac, and Linux, 
@@ -169,7 +168,7 @@ Clafer Compiler
 (As printed by `clafer --help`)
 
 ```
-Clafer v0.3.5.??-??-????
+Clafer v0.3.5.10-01-2014
 
 clafer [OPTIONS] [FILE]
 
@@ -185,22 +184,25 @@ Common flags:
                                           DOT language); 'cvlgraph' (cvl
                                           notation representation written in
                                           DOT language); 'python' (generates IR
-                                          in python)
-  -o --console-output                     Output code on console
+                                          in python); 'choco' (Choco constraint
+                                          programming solver). Multiple modes
+                                          can be specified at the same time,
+                                          e.g., '-m alloy -m html'.
+  -o --console-output                     Output code on console.
   -i --flatten-inheritance                Flatten inheritance ('alloy' and
-                                          'alloy42' modes only)
-     --timeout-analysis=INT               Timeout for analysis
-  -l --no-layout                          Don't resolve off-side rule layout
+                                          'alloy42' modes only).
+     --timeout-analysis=INT               Timeout for analysis.
+  -l --no-layout                          Don't resolve off-side rule layout.
      --nl --new-layout                    Use new fast layout resolver
-                                          (experimental)
-  -c --check-duplicates                   Check duplicated clafer names
-  -f --skip-resolver                      Skip name resolution
+                                          (experimental).
+  -c --check-duplicates                   Check duplicated clafer names.
+  -f --skip-resolver                      Skip name resolution.
   -k --keep-unused                        Keep uninstantated abstract clafers
-                                          ('alloy' and 'alloy42' modes only)
-  -s --no-stats                           Don't print statistics
+                                          ('alloy' and 'alloy42' modes only).
+  -s --no-stats                           Don't print statistics.
      --schema                             Show Clafer IR (intermediate
-                                          representation) XML schema
-  -v --validate                           Validate output. Uses
+                                          representation) XML schema.
+  -v --validate                           Validate outputs of all modes. Uses
                                           'tools/XsdCheck.class' for XML,
                                           'tools/alloy4.jar' and
                                           'tools/alloy4.2.jar' for Alloy
@@ -212,14 +214,14 @@ Common flags:
                                           Don't generate the alloy 'run show
                                           for ... ' command, and rename @.ref
                                           with unique names  ('alloy' and
-                                          'alloy42' modes only)
+                                          'alloy42' modes only).
      --tooldir=DIR                        Specify the tools directory
-                                          ('validate' only). Default: 'tools/'
+                                          ('validate' only). Default: 'tools/'.
   -a --alloy-mapping                      Generate mapping to Alloy source
                                           code ('alloy' and 'alloy42' modes
-                                          only)
+                                          only).
      --self-contained                     Generate a self-contained html
-                                          document ('html' mode only)
+                                          document ('html' mode only).
      --add-graph                          Add a graph to the generated html
                                           model ('html' mode only). Requires
                                           the "dot" executable to be on the
@@ -239,6 +241,12 @@ Common flags:
      --sg --skip-goals                    Skip generation of Alloy code for
                                           goals. Useful for all tools working
                                           with standard Alloy.
+     --meta-data                          Generate a 'fully qualified
+                                          name'-'least-partially-qualified
+                                          name'-'unique ID' map ('.cfr-map').
+                                          In Alloy, Alloy42, and Choco modes,
+                                          generate the scopes map
+                                          ('.cfr-scope').
   -? --help                               Display help message
   -V --version                            Print version information
 ```

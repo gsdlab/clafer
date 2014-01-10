@@ -64,28 +64,28 @@ data ClaferArgs = ClaferArgs {
       scope_strategy :: ScopeStrategy,
       afm :: Bool,
       skip_goals :: Bool,
-      name_uid_map :: Bool,
+      meta_data :: Bool,
       file :: FilePath
     } deriving (Show, Data, Typeable)
 
 clafer :: ClaferArgs
 clafer = ClaferArgs {
-  mode                = [] &= help "Generated output type. Available CLAFERMODEs are: 'alloy' (default, Alloy 4.1); 'alloy42' (Alloy 4.2); 'xml' (intermediate representation of Clafer model); 'clafer' (analyzed and desugared clafer model); 'html' (original model in HTML); 'graph' (graphical representation written in DOT language); 'cvlgraph' (cvl notation representation written in DOT language); 'python' (generates IR in python); 'choco' (Choco constraint programming solver)" &= name "m",
-  console_output      = def &= help "Output code on console" &= name "o",
-  flatten_inheritance = def &= help "Flatten inheritance ('alloy' and 'alloy42' modes only)" &= name "i",
-  timeout_analysis    = def &= help "Timeout for analysis",
-  no_layout           = def &= help "Don't resolve off-side rule layout" &= name "l",
-  new_layout          = def &= help "Use new fast layout resolver (experimental)" &= name "nl",
-  check_duplicates    = def &= help "Check duplicated clafer names"  &= name "c",
-  skip_resolver       = def &= help "Skip name resolution" &= name "f",
-  keep_unused         = def &= help "Keep uninstantated abstract clafers ('alloy' and 'alloy42' modes only)" &= name "k",
-  no_stats            = def &= help "Don't print statistics" &= name "s",
-  schema              = def &= help "Show Clafer IR (intermediate representation) XML schema",
-  validate            = def &= help "Validate output. Uses 'tools/XsdCheck.class' for XML,  'tools/alloy4.jar' and 'tools/alloy4.2.jar' for Alloy models, and Clafer translator for desugared Clafer models. Use '--tooldir' to override the default location of these tools." &= name "v",
-  noalloyruncommand   = def &= help "For usage with partial instances: Don't generate the alloy 'run show for ... ' command, and rename @.ref with unique names  ('alloy' and 'alloy42' modes only)" &= name "nr",
-  tooldir             = def &= typDir &= help "Specify the tools directory ('validate' only). Default: 'tools/' ",
-  alloy_mapping       = def &= help "Generate mapping to Alloy source code ('alloy' and 'alloy42' modes only)" &= name "a",
-  self_contained      = def &= help "Generate a self-contained html document ('html' mode only)",
+  mode                = [] &= help "Generated output type. Available CLAFERMODEs are: 'alloy' (default, Alloy 4.1); 'alloy42' (Alloy 4.2); 'xml' (intermediate representation of Clafer model); 'clafer' (analyzed and desugared clafer model); 'html' (original model in HTML); 'graph' (graphical representation written in DOT language); 'cvlgraph' (cvl notation representation written in DOT language); 'python' (generates IR in python); 'choco' (Choco constraint programming solver). Multiple modes can be specified at the same time, e.g., '-m alloy -m html'." &= name "m",
+  console_output      = def &= help "Output code on console." &= name "o",
+  flatten_inheritance = def &= help "Flatten inheritance ('alloy' and 'alloy42' modes only)." &= name "i",
+  timeout_analysis    = def &= help "Timeout for analysis.",
+  no_layout           = def &= help "Don't resolve off-side rule layout." &= name "l",
+  new_layout          = def &= help "Use new fast layout resolver (experimental)." &= name "nl",
+  check_duplicates    = def &= help "Check duplicated clafer names."  &= name "c",
+  skip_resolver       = def &= help "Skip name resolution." &= name "f",
+  keep_unused         = def &= help "Keep uninstantated abstract clafers ('alloy' and 'alloy42' modes only)." &= name "k",
+  no_stats            = def &= help "Don't print statistics." &= name "s",
+  schema              = def &= help "Show Clafer IR (intermediate representation) XML schema.",
+  validate            = def &= help "Validate outputs of all modes. Uses 'tools/XsdCheck.class' for XML,  'tools/alloy4.jar' and 'tools/alloy4.2.jar' for Alloy models, and Clafer translator for desugared Clafer models. Use '--tooldir' to override the default location of these tools." &= name "v",
+  noalloyruncommand   = def &= help "For usage with partial instances: Don't generate the alloy 'run show for ... ' command, and rename @.ref with unique names  ('alloy' and 'alloy42' modes only)." &= name "nr",
+  tooldir             = def &= typDir &= help "Specify the tools directory ('validate' only). Default: 'tools/'.",
+  alloy_mapping       = def &= help "Generate mapping to Alloy source code ('alloy' and 'alloy42' modes only)." &= name "a",
+  self_contained      = def &= help "Generate a self-contained html document ('html' mode only).",
   add_graph           = def &= help "Add a graph to the generated html model ('html' mode only). Requires the \"dot\" executable to be on the system path.",
   show_references     = def &= help "Whether the links for references should be rendered. ('html' and 'graph' modes only)." &= name "sr",
   add_comments        = def &= help "Include comments from the source file in the html output ('html' mode only).",
@@ -93,7 +93,7 @@ clafer = ClaferArgs {
   scope_strategy      = def &= help "Use scope computation strategy: none, simple (default), or full." &= name "ss",
   afm                 = def &= help "Throws an error if the cardinality of any of the clafers is above 1." &= name "check-afm",
   skip_goals          = def &= help "Skip generation of Alloy code for goals. Useful for all tools working with standard Alloy." &= name "sg",
-  name_uid_map        = def &= help "Generate a 'fully qualified name'-'least qualified name'-'unique ID' map.",
+  meta_data           = def &= help "Generate a 'fully qualified name'-'least-partially-qualified name'-'unique ID' map ('.cfr-map'). In Alloy, Alloy42, and Choco modes, generate the scopes map ('.cfr-scope').",
   file                = def &= args   &= typ "FILE"
  } &= summary ("Clafer " ++ version) &= program "clafer"
 
@@ -108,7 +108,7 @@ mergeArgs a1 a2  = ClaferArgs (mode a1) (coMergeArg)
   (mergeArg add_graph) (mergeArg show_references) 
   (mergeArg add_comments) (mergeArg ecore2clafer) 
   (mergeArg scope_strategy) (mergeArg afm) (mergeArg skip_goals) 
-  (mergeArg name_uid_map) (mergeArg file)
+  (mergeArg meta_data) (mergeArg file)
   where
     coMergeArg :: Bool
     coMergeArg = if (r1 /= False) then r1 else 

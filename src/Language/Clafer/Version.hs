@@ -22,4 +22,4 @@ SOFTWARE.
 
 module Language.Clafer.Version where
 version :: String
-version = "v0.3.5.??-??-????"
+version = "v0.3.5.10-01-2014"

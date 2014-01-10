@@ -122,8 +122,8 @@ save args'=
       let 
         qNameMaps :: QNameMaps
         qNameMaps = deriveQNameMaps iModule
-      liftIO $ when (name_uid_map args') $ writeFile (f ++ ".cfr-map") $ generateJSONnameUIDMap qNameMaps
-      liftIO $ when (name_uid_map args' && inScopeModes) $ writeFile (f ++ ".cfr-scope") $ generateJSONScopes qNameMaps $ getScopesList resultsMap
+      liftIO $ when (meta_data args') $ writeFile (f ++ ".cfr-map") $ generateJSONnameUIDMap qNameMaps
+      liftIO $ when (meta_data args' && inScopeModes) $ writeFile (f ++ ".cfr-scope") $ generateJSONScopes qNameMaps $ getScopesList resultsMap
       return f'  
   where
     printStats :: [CompilerResult] -> IO ()
