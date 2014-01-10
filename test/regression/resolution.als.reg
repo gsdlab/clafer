@@ -2,24 +2,24 @@ open util/integer
 pred show {}
 
 
-one sig c1_X
-{ r_c2_x : one c2_x }
-{ some this.@r_c2_x }
+one sig c0_X
+{ r_c0_x : one c0_x }
+{ some this.@r_c0_x }
 
-one sig c2_x
-{ r_c3_y : one c3_y }
+one sig c0_x
+{ r_c0_y : one c0_y }
 
-one sig c3_y
+one sig c0_y
 {}
 
-one sig c6_Z
-{ r_c7_z : one c7_z }
-{ (this.(@r_c7_z.@ref)) > 0 }
+one sig c0_Z
+{ r_c0_z : one c0_z }
+{ (this.(@r_c0_z.@ref)) > 0 }
 
-one sig c7_z
+one sig c0_z
 { ref : one Int
-, r_c8_y : one c8_y }
+, r_c1_y : one c1_y }
 
-one sig c8_y
+one sig c1_y
 {}
 

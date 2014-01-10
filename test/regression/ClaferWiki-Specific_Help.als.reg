@@ -2,28 +2,28 @@ open util/integer
 pred show {}
 
 
-abstract sig c1_A
-{ r_c2_c : set c2_c }
-{ all disj x, y : this.@r_c2_c | (x.@ref) != (y.@ref) }
+abstract sig c0_A
+{ r_c0_c : set c0_c }
+{ all disj x, y : this.@r_c0_c | (x.@ref) != (y.@ref) }
 
-sig c2_c
-{ ref : one c18_C }
-{ one @r_c2_c.this }
+sig c0_c
+{ ref : one c0_C }
+{ one @r_c0_c.this }
 
-one sig c12_A1 extends c1_A
+one sig c0_A1 extends c0_A
 {}
-{ (#(this.@r_c2_c)) = 2 }
+{ (#(this.@r_c0_c)) = 2 }
 
-fact { #c17_B = 0 }
-abstract sig c17_B extends c1_A
-{}
-
-abstract sig c18_C
+fact { #c0_B = 0 }
+abstract sig c0_B extends c0_A
 {}
 
-one sig c19_C1 extends c18_C
+abstract sig c0_C
 {}
 
-one sig c20_C2 extends c18_C
+one sig c0_C1 extends c0_C
+{}
+
+one sig c0_C2 extends c0_C
 {}
 

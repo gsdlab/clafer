@@ -2,14 +2,14 @@ open util/integer
 pred show {}
 
 
-sig c1_x
+sig c0_x
 { ref : one Int }
 
-sig c2_y
+sig c0_y
 { ref : one Int }
 
-one sig c3_z
+one sig c0_z
 { ref : one Int }
 
-fact { (c3_z.@ref) = (sum temp : ((c1_x.@ref) + c2_y) | temp.@ref) }
-fact { all disj x, y : c3_z | (x.@ref) != (y.@ref) }
+fact { (c0_z.@ref) = (sum temp : ((c0_x.@ref) + c0_y) | temp.@ref) }
+fact { all disj x, y : c0_z | (x.@ref) != (y.@ref) }

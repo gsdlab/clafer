@@ -2,24 +2,24 @@ open util/integer
 pred show {}
 
 
-one sig c1_person
-{ r_c2_haha : one c2_haha
-, r_c5_ble : one c5_ble }
+one sig c0_person
+{ r_c0_haha : one c0_haha
+, r_c0_ble : one c0_ble }
 
-one sig c2_haha
-{ r_c3_lala : one c3_lala }
+one sig c0_haha
+{ r_c0_lala : one c0_lala }
 
-one sig c3_lala
-{ r_c4_age : one c4_age }
+one sig c0_lala
+{ r_c0_age : one c0_age }
 
-one sig c4_age
+one sig c0_age
 { ref : one Int }
 
-one sig c5_ble
-{ r_c6_married : lone c6_married }
+one sig c0_ble
+{ r_c0_married : lone c0_married }
 
-lone sig c6_married
+lone sig c0_married
 {}
-{ one r_c6_married
-  (((((this.~@r_c6_married).~@r_c5_ble).@r_c2_haha).@r_c3_lala).(@r_c4_age.@ref)) >= 18 }
+{ one r_c0_married
+  (((((this.~@r_c0_married).~@r_c0_ble).@r_c0_haha).@r_c0_lala).(@r_c0_age.@ref)) >= 18 }
 

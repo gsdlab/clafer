@@ -2,18 +2,18 @@ open util/integer
 pred show {}
 
 
-one sig c1_A
-{ r_c2_B : one c2_B
-, r_c3_C : lone c3_C }
+one sig c0_A
+{ r_c0_B : one c0_B
+, r_c0_C : lone c0_C }
 
-one sig c2_B
+one sig c0_B
 {}
 
-lone sig c3_C
+lone sig c0_C
 {}
-{ one r_c3_C }
+{ one r_c0_C }
 
-one sig c4_D
-{ ref : one c1_A }
+one sig c0_D
+{ ref : one c0_A }
 
-fact { all disj x, y : c4_D | (x.@ref) != (y.@ref) }
+fact { all disj x, y : c0_D | (x.@ref) != (y.@ref) }

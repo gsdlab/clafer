@@ -2,98 +2,98 @@ open util/integer
 pred show {}
 
 
-one sig c1_Office
-{ r_c2_Printer : lone c2_Printer
-, r_c13_Scanner : lone c13_Scanner }
+one sig c0_Office
+{ r_c0_Printer : lone c0_Printer
+, r_c0_Scanner : lone c0_Scanner }
 
-lone sig c2_Printer
-{ r_c3_resolution : one c3_resolution
-, r_c4_Cartridge : set c4_Cartridge
-, r_c10_Type : one c10_Type }
-{ one r_c2_Printer
-  1 <= #r_c4_Cartridge and #r_c4_Cartridge <= 4 }
+lone sig c0_Printer
+{ r_c0_resolution : one c0_resolution
+, r_c0_Cartridge : set c0_Cartridge
+, r_c0_Type : one c0_Type }
+{ one r_c0_Printer
+  1 <= #r_c0_Cartridge and #r_c0_Cartridge <= 4 }
 
-lone sig c3_resolution
+lone sig c0_resolution
 { ref : one Int }
-{ one r_c3_resolution }
+{ one r_c0_resolution }
 
-sig c4_Cartridge
-{ r_c5_inkVolume : one c5_inkVolume
-, r_c6_Speed : one c6_Speed
-, r_c9_Turbo : lone c9_Turbo }
-{ one @r_c4_Cartridge.this }
+sig c0_Cartridge
+{ r_c0_inkVolume : one c0_inkVolume
+, r_c0_Speed : one c0_Speed
+, r_c0_Turbo : lone c0_Turbo }
+{ one @r_c0_Cartridge.this }
 
-sig c5_inkVolume
+sig c0_inkVolume
 { ref : one Int }
-{ one @r_c5_inkVolume.this }
+{ one @r_c0_inkVolume.this }
 
-sig c6_Speed
-{ r_c7_High : lone c7_High
-, r_c8_Low : lone c8_Low }
-{ one @r_c6_Speed.this
-  let children = (r_c7_High + r_c8_Low) | some children }
+sig c0_Speed
+{ r_c0_High : lone c0_High
+, r_c0_Low : lone c0_Low }
+{ one @r_c0_Speed.this
+  let children = (r_c0_High + r_c0_Low) | some children }
 
-sig c7_High
+sig c0_High
 {}
-{ one @r_c7_High.this }
+{ one @r_c0_High.this }
 
-sig c8_Low
+sig c0_Low
 {}
-{ one @r_c8_Low.this }
+{ one @r_c0_Low.this }
 
-sig c9_Turbo
+sig c0_Turbo
 {}
-{ one @r_c9_Turbo.this }
+{ one @r_c0_Turbo.this }
 
-lone sig c10_Type
-{ r_c11_Color : lone c11_Color
-, r_c12_BW : lone c12_BW }
-{ one r_c10_Type
-  let children = (r_c11_Color + r_c12_BW) | one children }
+lone sig c0_Type
+{ r_c0_Color : lone c0_Color
+, r_c0_BW : lone c0_BW }
+{ one r_c0_Type
+  let children = (r_c0_Color + r_c0_BW) | one children }
 
-lone sig c11_Color
+lone sig c0_Color
 {}
-{ one r_c11_Color }
+{ one r_c0_Color }
 
-lone sig c12_BW
+lone sig c0_BW
 {}
-{ one r_c12_BW }
+{ one r_c0_BW }
 
-lone sig c13_Scanner
-{ r_c14_GreenMode : lone c14_GreenMode
-, r_c15_Head : set c15_Head }
-{ one r_c13_Scanner
-  1 <= #r_c15_Head and #r_c15_Head <= 2 }
+lone sig c0_Scanner
+{ r_c0_GreenMode : lone c0_GreenMode
+, r_c0_Head : set c0_Head }
+{ one r_c0_Scanner
+  1 <= #r_c0_Head and #r_c0_Head <= 2 }
 
-lone sig c14_GreenMode
+lone sig c0_GreenMode
 {}
-{ one r_c14_GreenMode }
+{ one r_c0_GreenMode }
 
-sig c15_Head
+sig c0_Head
 {}
-{ one @r_c15_Head.this }
+{ one @r_c0_Head.this }
 
-one sig c16_PrinterPool
-{ r_c17_fax : lone c17_fax
-, r_c18_printer : lone c18_printer
-, r_c19_copier : lone c19_copier
-, r_c20_scan : lone c20_scan }
-{ (some this.@r_c17_fax) => (some this.@r_c18_printer) }
+one sig c0_PrinterPool
+{ r_c0_fax : lone c0_fax
+, r_c0_printer : lone c0_printer
+, r_c0_copier : lone c0_copier
+, r_c0_scan : lone c0_scan }
+{ (some this.@r_c0_fax) => (some this.@r_c0_printer) }
 
-lone sig c17_fax
+lone sig c0_fax
 {}
-{ one r_c17_fax }
+{ one r_c0_fax }
 
-lone sig c18_printer
+lone sig c0_printer
 {}
-{ one r_c18_printer }
+{ one r_c0_printer }
 
-lone sig c19_copier
+lone sig c0_copier
 {}
-{ one r_c19_copier }
+{ one r_c0_copier }
 
-lone sig c20_scan
+lone sig c0_scan
 {}
-{ one r_c20_scan }
+{ one r_c0_scan }
 
-fact { ((some c16_PrinterPool.@r_c17_fax) => (some c16_PrinterPool.@r_c18_printer)) && ((some c16_PrinterPool.@r_c19_copier) => ((some c16_PrinterPool.@r_c17_fax) && (some c16_PrinterPool.@r_c18_printer))) }
+fact { ((some c0_PrinterPool.@r_c0_fax) => (some c0_PrinterPool.@r_c0_printer)) && ((some c0_PrinterPool.@r_c0_copier) => ((some c0_PrinterPool.@r_c0_fax) && (some c0_PrinterPool.@r_c0_printer))) }

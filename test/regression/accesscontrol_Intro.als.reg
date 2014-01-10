@@ -2,63 +2,63 @@ open util/integer
 pred show {}
 
 
-fact { #c1_Value = 0 }
-abstract sig c1_Value
+fact { #c0_Value = 0 }
+abstract sig c0_Value
 {}
 
-fact { #c2_Attribute = 0 }
-abstract sig c2_Attribute
-{ r_c3_value : one c3_value }
-{ all disj x, y : this.@r_c3_value | (x.@ref) != (y.@ref) }
+fact { #c0_Attribute = 0 }
+abstract sig c0_Attribute
+{ r_c0_value : one c0_value }
+{ all disj x, y : this.@r_c0_value | (x.@ref) != (y.@ref) }
 
-sig c3_value
-{ ref : one c1_Value }
-{ one @r_c3_value.this }
+sig c0_value
+{ ref : one c0_Value }
+{ one @r_c0_value.this }
 
-fact { #c13_ActionName = 0 }
-abstract sig c13_ActionName extends c2_Attribute
+fact { #c0_ActionName = 0 }
+abstract sig c0_ActionName extends c0_Attribute
 {}
 
-fact { #c14_Role = 0 }
-abstract sig c14_Role extends c2_Attribute
+fact { #c0_Role = 0 }
+abstract sig c0_Role extends c0_Attribute
 {}
 
-fact { #c15_ResourceName = 0 }
-abstract sig c15_ResourceName extends c2_Attribute
+fact { #c0_ResourceName = 0 }
+abstract sig c0_ResourceName extends c0_Attribute
 {}
 
-fact { #c16_Element = 0 }
-abstract sig c16_Element
-{ r_c17_attributes : set c17_attributes }
+fact { #c0_Element = 0 }
+abstract sig c0_Element
+{ r_c0_attributes : set c0_attributes }
 
-abstract sig c17_attributes extends c2_Attribute
+abstract sig c0_attributes extends c0_Attribute
 {}
-{ one @r_c17_attributes.this }
+{ one @r_c0_attributes.this }
 
-abstract sig c18_Effect
-{}
-
-one sig c19_Permit extends c18_Effect
+abstract sig c0_Effect
 {}
 
-one sig c20_Deny extends c18_Effect
+one sig c0_Permit extends c0_Effect
 {}
 
-one sig c21_NotApplicable extends c18_Effect
+one sig c0_Deny extends c0_Effect
 {}
 
-one sig c22_Indeterminate extends c18_Effect
+one sig c0_NotApplicable extends c0_Effect
 {}
 
-abstract sig c23_CombiningAlgo
+one sig c0_Indeterminate extends c0_Effect
 {}
 
-one sig c24_PermitOverrides extends c23_CombiningAlgo
+abstract sig c0_CombiningAlgo
 {}
 
-one sig c25_DenyOverrides extends c23_CombiningAlgo
+one sig c0_PermitOverrides extends c0_CombiningAlgo
 {}
 
-one sig c26_OnlyOneApplicable extends c23_CombiningAlgo
+one sig c0_DenyOverrides extends c0_CombiningAlgo
+{}
+
+one sig c0_OnlyOneApplicable extends c0_CombiningAlgo
 {}
 

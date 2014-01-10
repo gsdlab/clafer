@@ -2,13 +2,13 @@ open util/integer
 pred show {}
 
 
-lone sig c1_a
+lone sig c0_a
 { ref : one Int
-, r_c2_b : lone c2_b }
+, r_c0_b : lone c0_b }
 
-lone sig c2_b
+lone sig c0_b
 {}
-{ one r_c2_b
-  (this.(~@r_c2_b.@ref)) = 4 }
+{ one r_c0_b
+  (this.(~@r_c0_b.@ref)) = 4 }
 
-fact { all disj x, y : c1_a | (x.@ref) != (y.@ref) }
+fact { all disj x, y : c0_a | (x.@ref) != (y.@ref) }

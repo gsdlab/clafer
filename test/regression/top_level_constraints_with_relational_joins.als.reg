@@ -2,38 +2,38 @@ open util/integer
 pred show {}
 
 
-abstract sig c1_Course
-{ r_c2_assistants : set c2_assistants }
-{ all disj x, y : this.@r_c2_assistants | (x.@ref) != (y.@ref) }
+abstract sig c0_Course
+{ r_c0_assistants : set c0_assistants }
+{ all disj x, y : this.@r_c0_assistants | (x.@ref) != (y.@ref) }
 
-sig c2_assistants
-{ ref : one c12_TA }
-{ one @r_c2_assistants.this }
+sig c0_assistants
+{ ref : one c0_TA }
+{ one @r_c0_assistants.this }
 
-abstract sig c12_TA
-{ r_c13_first : lone c13_first }
-{ all disj x, y : this.@r_c13_first | (x.@ref) != (y.@ref) }
+abstract sig c0_TA
+{ r_c0_first : lone c0_first }
+{ all disj x, y : this.@r_c0_first | (x.@ref) != (y.@ref) }
 
-sig c13_first
-{ ref : one c1_Course }
-{ one @r_c13_first.this
-  (this.~@r_c13_first) in (this.(@ref.(@r_c2_assistants.@ref))) }
+sig c0_first
+{ ref : one c0_Course }
+{ one @r_c0_first.this
+  (this.~@r_c0_first) in (this.(@ref.(@r_c0_assistants.@ref))) }
 
-one sig c28_CompilerGradStudent extends c12_TA
+one sig c0_CompilerGradStudent extends c0_TA
 {}
 
-one sig c29_AIGradStudent extends c12_TA
+one sig c0_AIGradStudent extends c0_TA
 {}
 
-one sig c30_CompilerCourse extends c1_Course
+one sig c0_CompilerCourse extends c0_Course
 {}
 
-one sig c31_MachineLearningCourse extends c1_Course
+one sig c0_MachineLearningCourse extends c0_Course
 {}
 
-fact { (c28_CompilerGradStudent.(@r_c13_first.@ref)) = c30_CompilerCourse }
-fact { (c29_AIGradStudent.(@r_c13_first.@ref)) = c31_MachineLearningCourse }
-one sig c42_numerOfAssistants
+fact { (c0_CompilerGradStudent.(@r_c0_first.@ref)) = c0_CompilerCourse }
+fact { (c0_AIGradStudent.(@r_c0_first.@ref)) = c0_MachineLearningCourse }
+one sig c0_numerOfAssistants
 { ref : one Int }
 
-fact { (c42_numerOfAssistants.@ref) = (#(c1_Course.@r_c2_assistants)) }
+fact { (c0_numerOfAssistants.@ref) = (#(c0_Course.@r_c0_assistants)) }

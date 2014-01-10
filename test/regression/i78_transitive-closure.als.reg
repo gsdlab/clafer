@@ -2,41 +2,41 @@ open util/integer
 pred show {}
 
 
-abstract sig c1_TimeLevel
-{ r_c2_aggregatesTo : lone c2_aggregatesTo }
-{ all disj x, y : this.@r_c2_aggregatesTo | (x.@ref) != (y.@ref) }
+abstract sig c0_TimeLevel
+{ r_c0_aggregatesTo : lone c0_aggregatesTo }
+{ all disj x, y : this.@r_c0_aggregatesTo | (x.@ref) != (y.@ref) }
 
-sig c2_aggregatesTo
-{ ref : one c1_TimeLevel }
-{ one @r_c2_aggregatesTo.this }
+sig c0_aggregatesTo
+{ ref : one c0_TimeLevel }
+{ one @r_c0_aggregatesTo.this }
 
-abstract sig c12_YearLevel extends c1_TimeLevel
+abstract sig c0_YearLevel extends c0_TimeLevel
 {}
-{ no this.@r_c2_aggregatesTo }
+{ no this.@r_c0_aggregatesTo }
 
-abstract sig c15_MonthLevel extends c1_TimeLevel
+abstract sig c0_MonthLevel extends c0_TimeLevel
 {}
-{ (this.(@r_c2_aggregatesTo.@ref)) in c12_YearLevel }
+{ (this.(@r_c0_aggregatesTo.@ref)) in c0_YearLevel }
 
-abstract sig c19_WeekLevel extends c1_TimeLevel
+abstract sig c0_WeekLevel extends c0_TimeLevel
 {}
-{ (this.(@r_c2_aggregatesTo.@ref)) in c15_MonthLevel }
+{ (this.(@r_c0_aggregatesTo.@ref)) in c0_MonthLevel }
 
-one sig c23_Year2012 extends c12_YearLevel
+one sig c0_Year2012 extends c0_YearLevel
 {}
 
-one sig c24_Jan2012 extends c15_MonthLevel
+one sig c0_Jan2012 extends c0_MonthLevel
 {}
-{ (this.(@r_c2_aggregatesTo.@ref)) = c23_Year2012 }
+{ (this.(@r_c0_aggregatesTo.@ref)) = c0_Year2012 }
 
-one sig c30_Week1 extends c19_WeekLevel
+one sig c0_Week1 extends c0_WeekLevel
 {}
-{ (this.(@r_c2_aggregatesTo.@ref)) = c24_Jan2012 }
+{ (this.(@r_c0_aggregatesTo.@ref)) = c0_Jan2012 }
 
-sig c36_Week1AggregatesTo
-{ ref : one c1_TimeLevel }
+sig c0_Week1AggregatesTo
+{ ref : one c0_TimeLevel }
 
-fact { all disj x, y : c36_Week1AggregatesTo | (x.@ref) != (y.@ref) }
-fact { (c30_Week1.(@r_c2_aggregatesTo.@ref)) in (c36_Week1AggregatesTo.@ref) }
-fact { ((c30_Week1.@r_c2_aggregatesTo).(@ref.(@r_c2_aggregatesTo.@ref))) in (c36_Week1AggregatesTo.@ref) }
-fact { (c36_Week1AggregatesTo.@ref) = (c24_Jan2012 + c23_Year2012) }
+fact { all disj x, y : c0_Week1AggregatesTo | (x.@ref) != (y.@ref) }
+fact { (c0_Week1.(@r_c0_aggregatesTo.@ref)) in (c0_Week1AggregatesTo.@ref) }
+fact { ((c0_Week1.@r_c0_aggregatesTo).(@ref.(@r_c0_aggregatesTo.@ref))) in (c0_Week1AggregatesTo.@ref) }
+fact { (c0_Week1AggregatesTo.@ref) = (c0_Jan2012 + c0_Year2012) }

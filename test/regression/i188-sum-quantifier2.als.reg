@@ -2,26 +2,26 @@ open util/integer
 pred show {}
 
 
-abstract sig c1_Component
-{ r_c2_energy : one c2_energy }
+abstract sig c0_Component
+{ r_c0_energy : one c0_energy }
 
-sig c2_energy
+sig c0_energy
 { ref : one Int }
-{ one @r_c2_energy.this }
+{ one @r_c0_energy.this }
 
-one sig c3_c1 extends c1_Component
+one sig c0_c1 extends c0_Component
 {}
-{ (this.(@r_c2_energy.@ref)) = 1 }
+{ (this.(@r_c0_energy.@ref)) = 1 }
 
-one sig c7_c2 extends c1_Component
+one sig c0_c2 extends c0_Component
 {}
-{ (this.(@r_c2_energy.@ref)) = 1 }
+{ (this.(@r_c0_energy.@ref)) = 1 }
 
-one sig c11_c3 extends c1_Component
+one sig c0_c3 extends c0_Component
 {}
-{ (this.(@r_c2_energy.@ref)) = 1 }
+{ (this.(@r_c0_energy.@ref)) = 1 }
 
-one sig c15_total
+one sig c0_total
 { ref : one Int }
 
-fact { (c15_total.@ref) = (sum temp : (c1_Component.@r_c2_energy) | temp.@ref) }
+fact { (c0_total.@ref) = (sum temp : (c0_Component.@r_c0_energy) | temp.@ref) }

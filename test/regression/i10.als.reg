@@ -2,10 +2,10 @@ open util/integer
 pred show {}
 
 
-one sig c1_A
-{ r_c2_x : one c2_x }
+one sig c0_A
+{ r_c0_x : one c0_x }
 
-one sig c2_x
+one sig c0_x
 { ref : one Int }
 { (this.@ref) >= 0 }
 

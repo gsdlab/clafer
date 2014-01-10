@@ -2,15 +2,15 @@ open util/integer
 pred show {}
 
 
-one sig c1_AliceAge
+one sig c0_AliceAge
 { ref : one Int }
 
-fact { all disj x, y : c1_AliceAge | (x.@ref) != (y.@ref) }
-one sig c11_BobAge
+fact { all disj x, y : c0_AliceAge | (x.@ref) != (y.@ref) }
+one sig c0_BobAge
 { ref : one Int }
 
-fact { all disj x, y : c11_BobAge | (x.@ref) != (y.@ref) }
-lone sig c21_BobsBirthday
+fact { all disj x, y : c0_BobAge | (x.@ref) != (y.@ref) }
+lone sig c0_BobsBirthday
 {}
 
-fact { ((some c21_BobsBirthday) => (c11_BobAge.@ref) else (c1_AliceAge.@ref)) = 5 }
+fact { ((some c0_BobsBirthday) => (c0_BobAge.@ref) else (c0_AliceAge.@ref)) = 5 }

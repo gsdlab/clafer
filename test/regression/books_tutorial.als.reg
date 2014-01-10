@@ -2,130 +2,130 @@ open util/integer
 pred show {}
 
 
-abstract sig c1_Book
-{ r_c2_title : one c2_title
-, r_c4_year : one c4_year
-, r_c5_page : set c5_page
-, r_c6_format : one c6_format
-, r_c10_kind : one c10_kind
-, r_c17_authors : some c17_authors
-, r_c33_ISBN : lone c33_ISBN }
-{ 2 <= #r_c5_page
-  all disj x, y : this.@r_c17_authors | (x.@ref) != (y.@ref)
-  ((this.(@r_c4_year.@ref)) >= 5) => (some this.@r_c33_ISBN) }
+abstract sig c0_Book
+{ r_c0_title : one c0_title
+, r_c0_year : one c0_year
+, r_c0_page : set c0_page
+, r_c0_format : one c0_format
+, r_c0_kind : one c0_kind
+, r_c0_authors : some c0_authors
+, r_c0_ISBN : lone c0_ISBN }
+{ 2 <= #r_c0_page
+  all disj x, y : this.@r_c0_authors | (x.@ref) != (y.@ref)
+  ((this.(@r_c0_year.@ref)) >= 5) => (some this.@r_c0_ISBN) }
 
-sig c2_title
+sig c0_title
 { ref : one Int
-, r_c3_subtitle : lone c3_subtitle }
-{ one @r_c2_title.this }
+, r_c0_subtitle : lone c0_subtitle }
+{ one @r_c0_title.this }
 
-sig c3_subtitle
+sig c0_subtitle
 { ref : one Int }
-{ one @r_c3_subtitle.this }
+{ one @r_c0_subtitle.this }
 
-sig c4_year
+sig c0_year
 { ref : one Int }
-{ one @r_c4_year.this }
+{ one @r_c0_year.this }
 
-sig c5_page
+sig c0_page
 {}
-{ one @r_c5_page.this }
+{ one @r_c0_page.this }
 
-sig c6_format
-{ r_c7_paper : lone c7_paper
-, r_c9_electronic : lone c9_electronic }
-{ one @r_c6_format.this
-  let children = (r_c7_paper + r_c9_electronic) | one children }
+sig c0_format
+{ r_c0_paper : lone c0_paper
+, r_c0_electronic : lone c0_electronic }
+{ one @r_c0_format.this
+  let children = (r_c0_paper + r_c0_electronic) | one children }
 
-sig c7_paper
-{ r_c8_hardcover : lone c8_hardcover }
-{ one @r_c7_paper.this }
+sig c0_paper
+{ r_c0_hardcover : lone c0_hardcover }
+{ one @r_c0_paper.this }
 
-sig c8_hardcover
+sig c0_hardcover
 {}
-{ one @r_c8_hardcover.this }
+{ one @r_c0_hardcover.this }
 
-sig c9_electronic
+sig c0_electronic
 {}
-{ one @r_c9_electronic.this }
+{ one @r_c0_electronic.this }
 
-sig c10_kind
-{ r_c11_textbook : lone c11_textbook
-, r_c12_manual : lone c12_manual
-, r_c13_reference : lone c13_reference
-, r_c14_fiction : lone c14_fiction
-, r_c15_nonfiction : lone c15_nonfiction
-, r_c16_other : lone c16_other }
-{ one @r_c10_kind.this
-  let children = (r_c11_textbook + r_c12_manual + r_c13_reference + r_c14_fiction + r_c15_nonfiction + r_c16_other) | one children }
+sig c0_kind
+{ r_c0_textbook : lone c0_textbook
+, r_c0_manual : lone c0_manual
+, r_c0_reference : lone c0_reference
+, r_c0_fiction : lone c0_fiction
+, r_c0_nonfiction : lone c0_nonfiction
+, r_c0_other : lone c0_other }
+{ one @r_c0_kind.this
+  let children = (r_c0_textbook + r_c0_manual + r_c0_reference + r_c0_fiction + r_c0_nonfiction + r_c0_other) | one children }
 
-sig c11_textbook
+sig c0_textbook
 {}
-{ one @r_c11_textbook.this }
+{ one @r_c0_textbook.this }
 
-sig c12_manual
+sig c0_manual
 {}
-{ one @r_c12_manual.this }
+{ one @r_c0_manual.this }
 
-sig c13_reference
+sig c0_reference
 {}
-{ one @r_c13_reference.this }
+{ one @r_c0_reference.this }
 
-sig c14_fiction
+sig c0_fiction
 {}
-{ one @r_c14_fiction.this }
+{ one @r_c0_fiction.this }
 
-sig c15_nonfiction
+sig c0_nonfiction
 {}
-{ one @r_c15_nonfiction.this }
+{ one @r_c0_nonfiction.this }
 
-sig c16_other
+sig c0_other
 { ref : one Int }
-{ one @r_c16_other.this }
+{ one @r_c0_other.this }
 
-sig c17_authors
-{ ref : one c44_Author }
-{ one @r_c17_authors.this }
+sig c0_authors
+{ ref : one c0_Author }
+{ one @r_c0_authors.this }
 
-sig c33_ISBN
+sig c0_ISBN
 { ref : one Int
-, r_c34_GS1 : lone c34_GS1 }
-{ one @r_c33_ISBN.this
-  (((this.~@r_c33_ISBN).(@r_c4_year.@ref)) >= 6) => (some this.@r_c34_GS1) }
+, r_c0_GS1 : lone c0_GS1 }
+{ one @r_c0_ISBN.this
+  (((this.~@r_c0_ISBN).(@r_c0_year.@ref)) >= 6) => (some this.@r_c0_GS1) }
 
-sig c34_GS1
+sig c0_GS1
 { ref : one Int }
-{ one @r_c34_GS1.this }
+{ one @r_c0_GS1.this }
 
-abstract sig c41_Person
-{ r_c42_name : one c42_name
-, r_c43_dob : lone c43_dob }
+abstract sig c0_Person
+{ r_c0_name : one c0_name
+, r_c0_dob : lone c0_dob }
 
-sig c42_name
+sig c0_name
 { ref : one Int }
-{ one @r_c42_name.this }
+{ one @r_c0_name.this }
 
-sig c43_dob
+sig c0_dob
 { ref : one Int }
-{ one @r_c43_dob.this }
+{ one @r_c0_dob.this }
 
-abstract sig c44_Author extends c41_Person
-{ r_c45_books : some c45_books }
-{ all disj x, y : this.@r_c45_books | (x.@ref) != (y.@ref) }
+abstract sig c0_Author extends c0_Person
+{ r_c0_books : some c0_books }
+{ all disj x, y : this.@r_c0_books | (x.@ref) != (y.@ref) }
 
-sig c45_books
-{ ref : one c1_Book }
-{ one @r_c45_books.this }
+sig c0_books
+{ ref : one c0_Book }
+{ one @r_c0_books.this }
 
-one sig c55_GenerativeProgramming extends c1_Book
+one sig c0_GenerativeProgramming extends c0_Book
 {}
-{ (((((((((this.(@r_c2_title.@ref)) = 0) && (no (this.@r_c2_title).@r_c3_subtitle)) && ((this.(@r_c4_year.@ref)) = 5)) && ((#(this.@r_c5_page)) = 4)) && (some (this.@r_c6_format).@r_c7_paper)) && (some (this.@r_c10_kind).@r_c15_nonfiction)) && ((this.(@r_c17_authors.@ref)) = (c90_Czarnecki + c98_Eisenecker))) && ((this.(@r_c33_ISBN.@ref)) = 0)) && (no (this.@r_c33_ISBN).@r_c34_GS1) }
+{ (((((((((this.(@r_c0_title.@ref)) = 0) && (no (this.@r_c0_title).@r_c0_subtitle)) && ((this.(@r_c0_year.@ref)) = 5)) && ((#(this.@r_c0_page)) = 4)) && (some (this.@r_c0_format).@r_c0_paper)) && (some (this.@r_c0_kind).@r_c0_nonfiction)) && ((this.(@r_c0_authors.@ref)) = (c0_Czarnecki + c0_Eisenecker))) && ((this.(@r_c0_ISBN.@ref)) = 0)) && (no (this.@r_c0_ISBN).@r_c0_GS1) }
 
-one sig c90_Czarnecki extends c44_Author
+one sig c0_Czarnecki extends c0_Author
 {}
-{ ((this.(@r_c42_name.@ref)) = 0) && (c55_GenerativeProgramming in (this.(@r_c45_books.@ref))) }
+{ ((this.(@r_c0_name.@ref)) = 0) && (c0_GenerativeProgramming in (this.(@r_c0_books.@ref))) }
 
-one sig c98_Eisenecker extends c44_Author
+one sig c0_Eisenecker extends c0_Author
 {}
-{ ((this.(@r_c42_name.@ref)) = 0) && (c55_GenerativeProgramming in (this.(@r_c45_books.@ref))) }
+{ ((this.(@r_c0_name.@ref)) = 0) && (c0_GenerativeProgramming in (this.(@r_c0_books.@ref))) }
 

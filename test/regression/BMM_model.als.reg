@@ -2,779 +2,779 @@ open util/integer
 pred show {}
 
 
-fact { #c1_Element = 0 }
-abstract sig c1_Element
+fact { #c0_Element = 0 }
+abstract sig c0_Element
 {}
 
-fact { #c2_End = 0 }
-abstract sig c2_End extends c1_Element
-{ r_c3_attainable : lone c3_attainable
-, r_c4_term : one c4_term
-, r_c7_focusedOn : one c7_focusedOn }
+fact { #c0_End = 0 }
+abstract sig c0_End extends c0_Element
+{ r_c0_attainable : lone c0_attainable
+, r_c0_term : one c0_term
+, r_c0_focusedOn : one c0_focusedOn }
 
-sig c3_attainable
+sig c0_attainable
 {}
-{ one @r_c3_attainable.this }
+{ one @r_c0_attainable.this }
 
-sig c4_term
-{ r_c5_short : lone c5_short
-, r_c6_long : lone c6_long }
-{ one @r_c4_term.this
-  let children = (r_c5_short + r_c6_long) | one children }
+sig c0_term
+{ r_c0_short : lone c0_short
+, r_c0_long : lone c0_long }
+{ one @r_c0_term.this
+  let children = (r_c0_short + r_c0_long) | one children }
 
-sig c5_short
+sig c0_short
 {}
-{ one @r_c5_short.this }
+{ one @r_c0_short.this }
 
-sig c6_long
+sig c0_long
 {}
-{ one @r_c6_long.this }
+{ one @r_c0_long.this }
 
-sig c7_focusedOn
-{ r_c8_enterprise : lone c8_enterprise
-, r_c9_businessArea : lone c9_businessArea }
-{ one @r_c7_focusedOn.this
-  let children = (r_c8_enterprise + r_c9_businessArea) | one children }
+sig c0_focusedOn
+{ r_c0_enterprise : lone c0_enterprise
+, r_c0_businessArea : lone c0_businessArea }
+{ one @r_c0_focusedOn.this
+  let children = (r_c0_enterprise + r_c0_businessArea) | one children }
 
-sig c8_enterprise
+sig c0_enterprise
 {}
-{ one @r_c8_enterprise.this }
+{ one @r_c0_enterprise.this }
 
-sig c9_businessArea
+sig c0_businessArea
 {}
-{ one @r_c9_businessArea.this }
+{ one @r_c0_businessArea.this }
 
-fact { #c10_Mean = 0 }
-abstract sig c10_Mean extends c1_Element
+fact { #c0_Mean = 0 }
+abstract sig c0_Mean extends c0_Element
 {}
 
-fact { #c11_Vision = 0 }
-abstract sig c11_Vision extends c2_End
-{ r_c16_amplifiedBy : some c16_amplifiedBy
-, r_c26_madeOperativeBy : one c26_madeOperativeBy }
-{ some (this.@r_c7_focusedOn).@r_c8_enterprise
-  some (this.@r_c4_term).@r_c6_long
-  all disj x, y : this.@r_c16_amplifiedBy | (x.@ref) != (y.@ref)
-  all disj x, y : this.@r_c26_madeOperativeBy | (x.@ref) != (y.@ref) }
+fact { #c0_Vision = 0 }
+abstract sig c0_Vision extends c0_End
+{ r_c0_amplifiedBy : some c0_amplifiedBy
+, r_c0_madeOperativeBy : one c0_madeOperativeBy }
+{ some (this.@r_c0_focusedOn).@r_c0_enterprise
+  some (this.@r_c0_term).@r_c0_long
+  all disj x, y : this.@r_c0_amplifiedBy | (x.@ref) != (y.@ref)
+  all disj x, y : this.@r_c0_madeOperativeBy | (x.@ref) != (y.@ref) }
 
-sig c16_amplifiedBy
-{ ref : one c50_Goal }
-{ one @r_c16_amplifiedBy.this }
+sig c0_amplifiedBy
+{ ref : one c0_Goal }
+{ one @r_c0_amplifiedBy.this }
 
-sig c26_madeOperativeBy
-{ ref : one c207_Mission }
-{ one @r_c26_madeOperativeBy.this }
+sig c0_madeOperativeBy
+{ ref : one c0_Mission }
+{ one @r_c0_madeOperativeBy.this }
 
-fact { #c36_DesiredResult = 0 }
-abstract sig c36_DesiredResult extends c2_End
-{ r_c37_supportedBy : some c37_supportedBy
-, r_c47_kind : one c47_kind }
-{ all disj x, y : this.@r_c37_supportedBy | (x.@ref) != (y.@ref) }
+fact { #c0_DesiredResult = 0 }
+abstract sig c0_DesiredResult extends c0_End
+{ r_c0_supportedBy : some c0_supportedBy
+, r_c0_kind : one c0_kind }
+{ all disj x, y : this.@r_c0_supportedBy | (x.@ref) != (y.@ref) }
 
-sig c37_supportedBy
-{ ref : one c96_CourseOfAction }
-{ one @r_c37_supportedBy.this }
+sig c0_supportedBy
+{ ref : one c0_CourseOfAction }
+{ one @r_c0_supportedBy.this }
 
-sig c47_kind
-{ r_c48_qualitative : lone c48_qualitative
-, r_c49_quantitative : lone c49_quantitative }
-{ one @r_c47_kind.this
-  let children = (r_c48_qualitative + r_c49_quantitative) | one children }
+sig c0_kind
+{ r_c0_qualitative : lone c0_qualitative
+, r_c0_quantitative : lone c0_quantitative }
+{ one @r_c0_kind.this
+  let children = (r_c0_qualitative + r_c0_quantitative) | one children }
 
-sig c48_qualitative
+sig c0_qualitative
 {}
-{ one @r_c48_qualitative.this }
+{ one @r_c0_qualitative.this }
 
-sig c49_quantitative
+sig c0_quantitative
 {}
-{ one @r_c49_quantitative.this }
+{ one @r_c0_quantitative.this }
 
-fact { #c50_Goal = 0 }
-abstract sig c50_Goal extends c36_DesiredResult
-{ r_c51_amplifies : one c51_amplifies
-, r_c61_general : one c61_general
-, r_c62_ongoing : one c62_ongoing }
-{ all disj x, y : this.@r_c51_amplifies | (x.@ref) != (y.@ref)
-  some (this.@r_c7_focusedOn).@r_c9_businessArea
-  some this.@r_c3_attainable
-  some (this.@r_c47_kind).@r_c48_qualitative
-  some (this.@r_c4_term).@r_c6_long }
+fact { #c0_Goal = 0 }
+abstract sig c0_Goal extends c0_DesiredResult
+{ r_c0_amplifies : one c0_amplifies
+, r_c0_general : one c0_general
+, r_c0_ongoing : one c0_ongoing }
+{ all disj x, y : this.@r_c0_amplifies | (x.@ref) != (y.@ref)
+  some (this.@r_c0_focusedOn).@r_c0_businessArea
+  some this.@r_c0_attainable
+  some (this.@r_c0_kind).@r_c0_qualitative
+  some (this.@r_c0_term).@r_c0_long }
 
-sig c51_amplifies
-{ ref : one c11_Vision }
-{ one @r_c51_amplifies.this }
+sig c0_amplifies
+{ ref : one c0_Vision }
+{ one @r_c0_amplifies.this }
 
-sig c61_general
+sig c0_general
 {}
-{ one @r_c61_general.this }
+{ one @r_c0_general.this }
 
-sig c62_ongoing
+sig c0_ongoing
 {}
-{ one @r_c62_ongoing.this }
+{ one @r_c0_ongoing.this }
 
-fact { #c71_Objective = 0 }
-abstract sig c71_Objective extends c36_DesiredResult
-{ r_c72_SMART : one c72_SMART
-, r_c78_limitedInTimeframe : one c78_limitedInTimeframe
-, r_c86_quantifies : some c86_quantifies }
-{ some (this.@r_c7_focusedOn).@r_c9_businessArea
-  some (this.@r_c47_kind).@r_c49_quantitative
-  some (this.@r_c4_term).@r_c5_short
-  all disj x, y : this.@r_c86_quantifies | (x.@ref) != (y.@ref) }
+fact { #c0_Objective = 0 }
+abstract sig c0_Objective extends c0_DesiredResult
+{ r_c0_SMART : one c0_SMART
+, r_c0_limitedInTimeframe : one c0_limitedInTimeframe
+, r_c0_quantifies : some c0_quantifies }
+{ some (this.@r_c0_focusedOn).@r_c0_businessArea
+  some (this.@r_c0_kind).@r_c0_quantitative
+  some (this.@r_c0_term).@r_c0_short
+  all disj x, y : this.@r_c0_quantifies | (x.@ref) != (y.@ref) }
 
-sig c72_SMART
-{ r_c73_specific : one c73_specific
-, r_c76_relevant : one c76_relevant
-, r_c77_timeBound : one c77_timeBound }
-{ one @r_c72_SMART.this
-  some (this.~@r_c72_SMART).@r_c3_attainable }
+sig c0_SMART
+{ r_c0_specific : one c0_specific
+, r_c0_relevant : one c0_relevant
+, r_c0_timeBound : one c0_timeBound }
+{ one @r_c0_SMART.this
+  some (this.~@r_c0_SMART).@r_c0_attainable }
 
-sig c73_specific
+sig c0_specific
 {}
-{ one @r_c73_specific.this }
+{ one @r_c0_specific.this }
 
-sig c76_relevant
+sig c0_relevant
 {}
-{ one @r_c76_relevant.this }
+{ one @r_c0_relevant.this }
 
-sig c77_timeBound
+sig c0_timeBound
 {}
-{ one @r_c77_timeBound.this }
+{ one @r_c0_timeBound.this }
 
-sig c78_limitedInTimeframe
-{ r_c79_cyclical : lone c79_cyclical }
-{ one @r_c78_limitedInTimeframe.this }
+sig c0_limitedInTimeframe
+{ r_c0_cyclical : lone c0_cyclical }
+{ one @r_c0_limitedInTimeframe.this }
 
-sig c79_cyclical
+sig c0_cyclical
 {}
-{ one @r_c79_cyclical.this }
+{ one @r_c0_cyclical.this }
 
-sig c86_quantifies
-{ ref : one c50_Goal }
-{ one @r_c86_quantifies.this }
+sig c0_quantifies
+{ ref : one c0_Goal }
+{ one @r_c0_quantifies.this }
 
-fact { #c96_CourseOfAction = 0 }
-abstract sig c96_CourseOfAction extends c10_Mean
-{ r_c97_channelsEffortsToward : one c97_channelsEffortsToward
-, r_c107_governedBy : one c107_governedBy
-, r_c117_formulatedBasedOn : one c117_formulatedBasedOn
-, r_c127_scope : one c127_scope
-, r_c130_term : one c130_term
-, r_c144_includes : set c144_includes
-, r_c154_enables : set c154_enables }
-{ all disj x, y : this.@r_c97_channelsEffortsToward | (x.@ref) != (y.@ref)
-  all disj x, y : this.@r_c107_governedBy | (x.@ref) != (y.@ref)
-  all disj x, y : this.@r_c117_formulatedBasedOn | (x.@ref) != (y.@ref)
-  ((some (this.@r_c127_scope).@r_c128_broad) && (some (this.@r_c130_term).@r_c132_long)) || ((some (this.@r_c127_scope).@r_c129_narrow) && (some (this.@r_c130_term).@r_c131_short))
-  all disj x, y : this.@r_c144_includes | (x.@ref) != (y.@ref)
-  all disj x, y : this.@r_c154_enables | (x.@ref) != (y.@ref) }
+fact { #c0_CourseOfAction = 0 }
+abstract sig c0_CourseOfAction extends c0_Mean
+{ r_c0_channelsEffortsToward : one c0_channelsEffortsToward
+, r_c0_governedBy : one c0_governedBy
+, r_c0_formulatedBasedOn : one c0_formulatedBasedOn
+, r_c0_scope : one c0_scope
+, r_c1_term : one c1_term
+, r_c0_includes : set c0_includes
+, r_c0_enables : set c0_enables }
+{ all disj x, y : this.@r_c0_channelsEffortsToward | (x.@ref) != (y.@ref)
+  all disj x, y : this.@r_c0_governedBy | (x.@ref) != (y.@ref)
+  all disj x, y : this.@r_c0_formulatedBasedOn | (x.@ref) != (y.@ref)
+  ((some (this.@r_c0_scope).@r_c0_broad) && (some (this.@r_c1_term).@r_c1_long)) || ((some (this.@r_c0_scope).@r_c0_narrow) && (some (this.@r_c1_term).@r_c1_short))
+  all disj x, y : this.@r_c0_includes | (x.@ref) != (y.@ref)
+  all disj x, y : this.@r_c0_enables | (x.@ref) != (y.@ref) }
 
-sig c97_channelsEffortsToward
-{ ref : one c36_DesiredResult }
-{ one @r_c97_channelsEffortsToward.this }
+sig c0_channelsEffortsToward
+{ ref : one c0_DesiredResult }
+{ one @r_c0_channelsEffortsToward.this }
 
-sig c107_governedBy
-{ ref : one c228_Directive }
-{ one @r_c107_governedBy.this }
+sig c0_governedBy
+{ ref : one c0_Directive }
+{ one @r_c0_governedBy.this }
 
-sig c117_formulatedBasedOn
-{ ref : one c228_Directive }
-{ one @r_c117_formulatedBasedOn.this }
-
-sig c127_scope
-{ r_c128_broad : lone c128_broad
-, r_c129_narrow : lone c129_narrow }
-{ one @r_c127_scope.this
-  let children = (r_c128_broad + r_c129_narrow) | one children }
-
-sig c128_broad
-{}
-{ one @r_c128_broad.this }
-
-sig c129_narrow
-{}
-{ one @r_c129_narrow.this }
-
-sig c130_term
-{ r_c131_short : lone c131_short
-, r_c132_long : lone c132_long }
-{ one @r_c130_term.this
-  let children = (r_c131_short + r_c132_long) | one children }
-
-sig c131_short
-{}
-{ one @r_c131_short.this }
-
-sig c132_long
-{}
-{ one @r_c132_long.this }
-
-sig c144_includes
-{ ref : one c96_CourseOfAction }
-{ one @r_c144_includes.this }
-
-sig c154_enables
-{ ref : one c96_CourseOfAction }
-{ one @r_c154_enables.this }
+sig c0_formulatedBasedOn
+{ ref : one c0_Directive }
+{ one @r_c0_formulatedBasedOn.this }
+
+sig c0_scope
+{ r_c0_broad : lone c0_broad
+, r_c0_narrow : lone c0_narrow }
+{ one @r_c0_scope.this
+  let children = (r_c0_broad + r_c0_narrow) | one children }
+
+sig c0_broad
+{}
+{ one @r_c0_broad.this }
+
+sig c0_narrow
+{}
+{ one @r_c0_narrow.this }
+
+sig c1_term
+{ r_c1_short : lone c1_short
+, r_c1_long : lone c1_long }
+{ one @r_c1_term.this
+  let children = (r_c1_short + r_c1_long) | one children }
+
+sig c1_short
+{}
+{ one @r_c1_short.this }
+
+sig c1_long
+{}
+{ one @r_c1_long.this }
+
+sig c0_includes
+{ ref : one c0_CourseOfAction }
+{ one @r_c0_includes.this }
+
+sig c0_enables
+{ ref : one c0_CourseOfAction }
+{ one @r_c0_enables.this }
 
-fact { #c164_Strategy = 0 }
-abstract sig c164_Strategy extends c96_CourseOfAction
-{ r_c165_implementedBy : one c165_implementedBy
-, r_c175_aComponentOfThePlanFor : one c175_aComponentOfThePlanFor
-, r_c185_rightApproachGiven : one c185_rightApproachGiven }
-{ all disj x, y : this.@r_c165_implementedBy | (x.@ref) != (y.@ref)
-  all disj x, y : this.@r_c175_aComponentOfThePlanFor | (x.@ref) != (y.@ref) }
+fact { #c0_Strategy = 0 }
+abstract sig c0_Strategy extends c0_CourseOfAction
+{ r_c0_implementedBy : one c0_implementedBy
+, r_c0_aComponentOfThePlanFor : one c0_aComponentOfThePlanFor
+, r_c0_rightApproachGiven : one c0_rightApproachGiven }
+{ all disj x, y : this.@r_c0_implementedBy | (x.@ref) != (y.@ref)
+  all disj x, y : this.@r_c0_aComponentOfThePlanFor | (x.@ref) != (y.@ref) }
 
-sig c165_implementedBy
-{ ref : one c186_Tactic }
-{ one @r_c165_implementedBy.this }
+sig c0_implementedBy
+{ ref : one c0_Tactic }
+{ one @r_c0_implementedBy.this }
 
-sig c175_aComponentOfThePlanFor
-{ ref : one c207_Mission }
-{ one @r_c175_aComponentOfThePlanFor.this }
+sig c0_aComponentOfThePlanFor
+{ ref : one c0_Mission }
+{ one @r_c0_aComponentOfThePlanFor.this }
 
-sig c185_rightApproachGiven
+sig c0_rightApproachGiven
 {}
-{ one @r_c185_rightApproachGiven.this }
+{ one @r_c0_rightApproachGiven.this }
 
-fact { #c186_Tactic = 0 }
-abstract sig c186_Tactic extends c96_CourseOfAction
-{ r_c187_implements : one c187_implements
-, r_c197_effectsEnforcementLevelOf : one c197_effectsEnforcementLevelOf }
-{ all disj x, y : this.@r_c187_implements | (x.@ref) != (y.@ref)
-  all disj x, y : this.@r_c197_effectsEnforcementLevelOf | (x.@ref) != (y.@ref) }
+fact { #c0_Tactic = 0 }
+abstract sig c0_Tactic extends c0_CourseOfAction
+{ r_c0_implements : one c0_implements
+, r_c0_effectsEnforcementLevelOf : one c0_effectsEnforcementLevelOf }
+{ all disj x, y : this.@r_c0_implements | (x.@ref) != (y.@ref)
+  all disj x, y : this.@r_c0_effectsEnforcementLevelOf | (x.@ref) != (y.@ref) }
 
-sig c187_implements
-{ ref : one c164_Strategy }
-{ one @r_c187_implements.this }
+sig c0_implements
+{ ref : one c0_Strategy }
+{ one @r_c0_implements.this }
 
-sig c197_effectsEnforcementLevelOf
-{ ref : one c326_BusinessRule }
-{ one @r_c197_effectsEnforcementLevelOf.this }
+sig c0_effectsEnforcementLevelOf
+{ ref : one c0_BusinessRule }
+{ one @r_c0_effectsEnforcementLevelOf.this }
 
-fact { #c207_Mission = 0 }
-abstract sig c207_Mission extends c10_Mean
-{ r_c208_makesOperative : one c208_makesOperative
-, r_c218_plannedByMeansOf : one c218_plannedByMeansOf }
-{ all disj x, y : this.@r_c208_makesOperative | (x.@ref) != (y.@ref)
-  all disj x, y : this.@r_c218_plannedByMeansOf | (x.@ref) != (y.@ref) }
+fact { #c0_Mission = 0 }
+abstract sig c0_Mission extends c0_Mean
+{ r_c0_makesOperative : one c0_makesOperative
+, r_c0_plannedByMeansOf : one c0_plannedByMeansOf }
+{ all disj x, y : this.@r_c0_makesOperative | (x.@ref) != (y.@ref)
+  all disj x, y : this.@r_c0_plannedByMeansOf | (x.@ref) != (y.@ref) }
 
-sig c208_makesOperative
-{ ref : one c11_Vision }
-{ one @r_c208_makesOperative.this }
+sig c0_makesOperative
+{ ref : one c0_Vision }
+{ one @r_c0_makesOperative.this }
 
-sig c218_plannedByMeansOf
-{ ref : one c164_Strategy }
-{ one @r_c218_plannedByMeansOf.this }
+sig c0_plannedByMeansOf
+{ ref : one c0_Strategy }
+{ one @r_c0_plannedByMeansOf.this }
 
-fact { #c228_Directive = 0 }
-abstract sig c228_Directive extends c10_Mean
-{ r_c229_governs : one c229_governs
-, r_c239_sourceOf : one c239_sourceOf
-, r_c249_supportsTheAchievementOf : one c249_supportsTheAchievementOf
-, r_c259_influencesAspectOfEnterprise : one c259_influencesAspectOfEnterprise
-, r_c265_declarative : one c265_declarative
-, r_c266_actsAs : one c266_actsAs
-, r_c276_degreeOfStructure : one c276_degreeOfStructure
-, r_c279_granularity : one c279_granularity
-, r_c282_actionable : lone c282_actionable
-, r_c283_automatable : lone c283_automatable }
-{ all disj x, y : this.@r_c229_governs | (x.@ref) != (y.@ref)
-  all disj x, y : this.@r_c239_sourceOf | (x.@ref) != (y.@ref)
-  all disj x, y : this.@r_c249_supportsTheAchievementOf | (x.@ref) != (y.@ref)
-  all disj x, y : this.@r_c266_actsAs | (x.@ref) != (y.@ref) }
+fact { #c0_Directive = 0 }
+abstract sig c0_Directive extends c0_Mean
+{ r_c0_governs : one c0_governs
+, r_c0_sourceOf : one c0_sourceOf
+, r_c0_supportsTheAchievementOf : one c0_supportsTheAchievementOf
+, r_c0_influencesAspectOfEnterprise : one c0_influencesAspectOfEnterprise
+, r_c0_declarative : one c0_declarative
+, r_c0_actsAs : one c0_actsAs
+, r_c0_degreeOfStructure : one c0_degreeOfStructure
+, r_c0_granularity : one c0_granularity
+, r_c0_actionable : lone c0_actionable
+, r_c0_automatable : lone c0_automatable }
+{ all disj x, y : this.@r_c0_governs | (x.@ref) != (y.@ref)
+  all disj x, y : this.@r_c0_sourceOf | (x.@ref) != (y.@ref)
+  all disj x, y : this.@r_c0_supportsTheAchievementOf | (x.@ref) != (y.@ref)
+  all disj x, y : this.@r_c0_actsAs | (x.@ref) != (y.@ref) }
 
-sig c229_governs
-{ ref : one c96_CourseOfAction }
-{ one @r_c229_governs.this }
+sig c0_governs
+{ ref : one c0_CourseOfAction }
+{ one @r_c0_governs.this }
 
-sig c239_sourceOf
-{ ref : one c96_CourseOfAction }
-{ one @r_c239_sourceOf.this }
+sig c0_sourceOf
+{ ref : one c0_CourseOfAction }
+{ one @r_c0_sourceOf.this }
 
-sig c249_supportsTheAchievementOf
-{ ref : one c36_DesiredResult }
-{ one @r_c249_supportsTheAchievementOf.this }
+sig c0_supportsTheAchievementOf
+{ ref : one c0_DesiredResult }
+{ one @r_c0_supportsTheAchievementOf.this }
 
-sig c259_influencesAspectOfEnterprise
-{ r_c260_defines : lone c260_defines
-, r_c261_constraints : lone c261_constraints
-, r_c262_liberates : lone c262_liberates
-, r_c263_asserts : lone c263_asserts
-, r_c264_controls : lone c264_controls }
-{ one @r_c259_influencesAspectOfEnterprise.this
-  let children = (r_c260_defines + r_c261_constraints + r_c262_liberates + r_c263_asserts + r_c264_controls) | one children }
+sig c0_influencesAspectOfEnterprise
+{ r_c0_defines : lone c0_defines
+, r_c0_constraints : lone c0_constraints
+, r_c0_liberates : lone c0_liberates
+, r_c0_asserts : lone c0_asserts
+, r_c0_controls : lone c0_controls }
+{ one @r_c0_influencesAspectOfEnterprise.this
+  let children = (r_c0_defines + r_c0_constraints + r_c0_liberates + r_c0_asserts + r_c0_controls) | one children }
 
-sig c260_defines
+sig c0_defines
 {}
-{ one @r_c260_defines.this }
+{ one @r_c0_defines.this }
 
-sig c261_constraints
+sig c0_constraints
 {}
-{ one @r_c261_constraints.this }
+{ one @r_c0_constraints.this }
 
-sig c262_liberates
+sig c0_liberates
 {}
-{ one @r_c262_liberates.this }
+{ one @r_c0_liberates.this }
 
-sig c263_asserts
+sig c0_asserts
 {}
-{ one @r_c263_asserts.this }
+{ one @r_c0_asserts.this }
 
-sig c264_controls
+sig c0_controls
 {}
-{ one @r_c264_controls.this }
+{ one @r_c0_controls.this }
 
-sig c265_declarative
+sig c0_declarative
 {}
-{ one @r_c265_declarative.this }
+{ one @r_c0_declarative.this }
 
-sig c266_actsAs
-{ ref : one c358_Regulation }
-{ one @r_c266_actsAs.this }
+sig c0_actsAs
+{ ref : one c0_Regulation }
+{ one @r_c0_actsAs.this }
 
-sig c276_degreeOfStructure
-{ r_c277_lessStructured : lone c277_lessStructured
-, r_c278_highlyStructured : lone c278_highlyStructured }
-{ one @r_c276_degreeOfStructure.this
-  let children = (r_c277_lessStructured + r_c278_highlyStructured) | one children }
+sig c0_degreeOfStructure
+{ r_c0_lessStructured : lone c0_lessStructured
+, r_c0_highlyStructured : lone c0_highlyStructured }
+{ one @r_c0_degreeOfStructure.this
+  let children = (r_c0_lessStructured + r_c0_highlyStructured) | one children }
 
-sig c277_lessStructured
+sig c0_lessStructured
 {}
-{ one @r_c277_lessStructured.this }
+{ one @r_c0_lessStructured.this }
 
-sig c278_highlyStructured
+sig c0_highlyStructured
 {}
-{ one @r_c278_highlyStructured.this }
+{ one @r_c0_highlyStructured.this }
 
-sig c279_granularity
-{ r_c280_lessDiscreteAndComposite : lone c280_lessDiscreteAndComposite
-, r_c281_discreteAndAtomic : lone c281_discreteAndAtomic }
-{ one @r_c279_granularity.this
-  let children = (r_c280_lessDiscreteAndComposite + r_c281_discreteAndAtomic) | one children }
+sig c0_granularity
+{ r_c0_lessDiscreteAndComposite : lone c0_lessDiscreteAndComposite
+, r_c0_discreteAndAtomic : lone c0_discreteAndAtomic }
+{ one @r_c0_granularity.this
+  let children = (r_c0_lessDiscreteAndComposite + r_c0_discreteAndAtomic) | one children }
 
-sig c280_lessDiscreteAndComposite
+sig c0_lessDiscreteAndComposite
 {}
-{ one @r_c280_lessDiscreteAndComposite.this }
+{ one @r_c0_lessDiscreteAndComposite.this }
 
-sig c281_discreteAndAtomic
+sig c0_discreteAndAtomic
 {}
-{ one @r_c281_discreteAndAtomic.this }
+{ one @r_c0_discreteAndAtomic.this }
 
-sig c282_actionable
+sig c0_actionable
 {}
-{ one @r_c282_actionable.this }
+{ one @r_c0_actionable.this }
 
-sig c283_automatable
+sig c0_automatable
 {}
-{ one @r_c283_automatable.this }
+{ one @r_c0_automatable.this }
 
-fact { #c284_BusinessPolicy = 0 }
-abstract sig c284_BusinessPolicy extends c228_Directive
-{ r_c285_providesBasisFor : some c285_providesBasisFor
-, r_c295_governs : set c295_governs
-, r_c316_includes : set c316_includes }
-{ all disj x, y : this.@r_c285_providesBasisFor | (x.@ref) != (y.@ref)
-  all disj x, y : this.@r_c295_governs | (x.@ref) != (y.@ref)
-  some (this.@r_c276_degreeOfStructure).@r_c277_lessStructured
-  some (this.@r_c279_granularity).@r_c280_lessDiscreteAndComposite
-  no this.@r_c282_actionable
-  no this.@r_c283_automatable
-  all disj x, y : this.@r_c316_includes | (x.@ref) != (y.@ref) }
+fact { #c0_BusinessPolicy = 0 }
+abstract sig c0_BusinessPolicy extends c0_Directive
+{ r_c0_providesBasisFor : some c0_providesBasisFor
+, r_c1_governs : set c1_governs
+, r_c1_includes : set c1_includes }
+{ all disj x, y : this.@r_c0_providesBasisFor | (x.@ref) != (y.@ref)
+  all disj x, y : this.@r_c1_governs | (x.@ref) != (y.@ref)
+  some (this.@r_c0_degreeOfStructure).@r_c0_lessStructured
+  some (this.@r_c0_granularity).@r_c0_lessDiscreteAndComposite
+  no this.@r_c0_actionable
+  no this.@r_c0_automatable
+  all disj x, y : this.@r_c1_includes | (x.@ref) != (y.@ref) }
 
-sig c285_providesBasisFor
-{ ref : one c326_BusinessRule }
-{ one @r_c285_providesBasisFor.this }
+sig c0_providesBasisFor
+{ ref : one c0_BusinessRule }
+{ one @r_c0_providesBasisFor.this }
 
-sig c295_governs
-{ ref : one c96_CourseOfAction
-, r_c296_control : one c296_control
-, r_c297_guide : one c297_guide
-, r_c298_shape : one c298_shape }
-{ one @r_c295_governs.this }
+sig c1_governs
+{ ref : one c0_CourseOfAction
+, r_c0_control : one c0_control
+, r_c0_guide : one c0_guide
+, r_c0_shape : one c0_shape }
+{ one @r_c1_governs.this }
 
-sig c296_control
+sig c0_control
 {}
-{ one @r_c296_control.this }
+{ one @r_c0_control.this }
 
-sig c297_guide
+sig c0_guide
 {}
-{ one @r_c297_guide.this }
+{ one @r_c0_guide.this }
 
-sig c298_shape
+sig c0_shape
 {}
-{ one @r_c298_shape.this }
+{ one @r_c0_shape.this }
 
-sig c316_includes
-{ ref : one c284_BusinessPolicy }
-{ one @r_c316_includes.this }
+sig c1_includes
+{ ref : one c0_BusinessPolicy }
+{ one @r_c1_includes.this }
 
-fact { #c326_BusinessRule = 0 }
-abstract sig c326_BusinessRule extends c228_Directive
-{ r_c334_enforcementLevel : one c334_enforcementLevel
-, r_c341_hasEnforcementLevelEffectedBy : one c341_hasEnforcementLevelEffectedBy
-, r_c357_expressedUsingStandardBusinessVocabulary : one c357_expressedUsingStandardBusinessVocabulary }
-{ all  o : this.@r_c249_supportsTheAchievementOf | (o.@ref) in c71_Objective
-  all disj x, y : this.@r_c341_hasEnforcementLevelEffectedBy | (x.@ref) != (y.@ref)
-  some (this.@r_c276_degreeOfStructure).@r_c278_highlyStructured
-  some (this.@r_c279_granularity).@r_c281_discreteAndAtomic
-  some this.@r_c282_actionable }
+fact { #c0_BusinessRule = 0 }
+abstract sig c0_BusinessRule extends c0_Directive
+{ r_c0_enforcementLevel : one c0_enforcementLevel
+, r_c0_hasEnforcementLevelEffectedBy : one c0_hasEnforcementLevelEffectedBy
+, r_c0_expressedUsingStandardBusinessVocabulary : one c0_expressedUsingStandardBusinessVocabulary }
+{ all  o : this.@r_c0_supportsTheAchievementOf | (o.@ref) in c0_Objective
+  all disj x, y : this.@r_c0_hasEnforcementLevelEffectedBy | (x.@ref) != (y.@ref)
+  some (this.@r_c0_degreeOfStructure).@r_c0_highlyStructured
+  some (this.@r_c0_granularity).@r_c0_discreteAndAtomic
+  some this.@r_c0_actionable }
 
-sig c334_enforcementLevel
-{ r_c335_strictlyEnforced : lone c335_strictlyEnforced
-, r_c336_deferredEnforcement : lone c336_deferredEnforcement
-, r_c337_preAuthorizedOverride : lone c337_preAuthorizedOverride
-, r_c338_postJustifiedOverride : lone c338_postJustifiedOverride
-, r_c339_overrideWithExplanation : lone c339_overrideWithExplanation
-, r_c340_guideline : lone c340_guideline }
-{ one @r_c334_enforcementLevel.this
-  let children = (r_c335_strictlyEnforced + r_c336_deferredEnforcement + r_c337_preAuthorizedOverride + r_c338_postJustifiedOverride + r_c339_overrideWithExplanation + r_c340_guideline) | one children }
+sig c0_enforcementLevel
+{ r_c0_strictlyEnforced : lone c0_strictlyEnforced
+, r_c0_deferredEnforcement : lone c0_deferredEnforcement
+, r_c0_preAuthorizedOverride : lone c0_preAuthorizedOverride
+, r_c0_postJustifiedOverride : lone c0_postJustifiedOverride
+, r_c0_overrideWithExplanation : lone c0_overrideWithExplanation
+, r_c0_guideline : lone c0_guideline }
+{ one @r_c0_enforcementLevel.this
+  let children = (r_c0_strictlyEnforced + r_c0_deferredEnforcement + r_c0_preAuthorizedOverride + r_c0_postJustifiedOverride + r_c0_overrideWithExplanation + r_c0_guideline) | one children }
 
-sig c335_strictlyEnforced
+sig c0_strictlyEnforced
 {}
-{ one @r_c335_strictlyEnforced.this }
+{ one @r_c0_strictlyEnforced.this }
 
-sig c336_deferredEnforcement
+sig c0_deferredEnforcement
 {}
-{ one @r_c336_deferredEnforcement.this }
+{ one @r_c0_deferredEnforcement.this }
 
-sig c337_preAuthorizedOverride
+sig c0_preAuthorizedOverride
 {}
-{ one @r_c337_preAuthorizedOverride.this }
+{ one @r_c0_preAuthorizedOverride.this }
 
-sig c338_postJustifiedOverride
+sig c0_postJustifiedOverride
 {}
-{ one @r_c338_postJustifiedOverride.this }
+{ one @r_c0_postJustifiedOverride.this }
 
-sig c339_overrideWithExplanation
+sig c0_overrideWithExplanation
 {}
-{ one @r_c339_overrideWithExplanation.this }
+{ one @r_c0_overrideWithExplanation.this }
 
-sig c340_guideline
+sig c0_guideline
 {}
-{ one @r_c340_guideline.this }
+{ one @r_c0_guideline.this }
 
-sig c341_hasEnforcementLevelEffectedBy
-{ ref : one c186_Tactic }
-{ one @r_c341_hasEnforcementLevelEffectedBy.this }
+sig c0_hasEnforcementLevelEffectedBy
+{ ref : one c0_Tactic }
+{ one @r_c0_hasEnforcementLevelEffectedBy.this }
 
-sig c357_expressedUsingStandardBusinessVocabulary
+sig c0_expressedUsingStandardBusinessVocabulary
 {}
-{ one @r_c357_expressedUsingStandardBusinessVocabulary.this }
+{ one @r_c0_expressedUsingStandardBusinessVocabulary.this }
 
-fact { #c358_Regulation = 0 }
-abstract sig c358_Regulation extends c1_Element
-{ r_c359_aRolePlayedBy : one c359_aRolePlayedBy }
-{ all disj x, y : this.@r_c359_aRolePlayedBy | (x.@ref) != (y.@ref) }
+fact { #c0_Regulation = 0 }
+abstract sig c0_Regulation extends c0_Element
+{ r_c0_aRolePlayedBy : one c0_aRolePlayedBy }
+{ all disj x, y : this.@r_c0_aRolePlayedBy | (x.@ref) != (y.@ref) }
 
-sig c359_aRolePlayedBy
-{ ref : one c228_Directive }
-{ one @r_c359_aRolePlayedBy.this }
+sig c0_aRolePlayedBy
+{ ref : one c0_Directive }
+{ one @r_c0_aRolePlayedBy.this }
 
-fact { #c369_Influencer = 0 }
-abstract sig c369_Influencer extends c1_Element
-{ r_c370_externalInfluencer : lone c370_externalInfluencer
-, r_c389_internalInfluencer : lone c389_internalInfluencer }
-{ let children = (r_c370_externalInfluencer + r_c389_internalInfluencer) | some children }
+fact { #c0_Influencer = 0 }
+abstract sig c0_Influencer extends c0_Element
+{ r_c0_externalInfluencer : lone c0_externalInfluencer
+, r_c0_internalInfluencer : lone c0_internalInfluencer }
+{ let children = (r_c0_externalInfluencer + r_c0_internalInfluencer) | some children }
 
-sig c370_externalInfluencer
-{ r_c371_environment : lone c371_environment
-, r_c372_technology : lone c372_technology
-, r_c373_regulation : lone c373_regulation
-, r_c377_supplier : lone c377_supplier
-, r_c381_customer : lone c381_customer
-, r_c387_competitor : lone c387_competitor
-, r_c388_partner : lone c388_partner }
-{ one @r_c370_externalInfluencer.this
-  let children = (r_c371_environment + r_c372_technology + r_c373_regulation + r_c377_supplier + r_c381_customer + r_c387_competitor + r_c388_partner) | some children }
+sig c0_externalInfluencer
+{ r_c0_environment : lone c0_environment
+, r_c0_technology : lone c0_technology
+, r_c0_regulation : lone c0_regulation
+, r_c0_supplier : lone c0_supplier
+, r_c0_customer : lone c0_customer
+, r_c0_competitor : lone c0_competitor
+, r_c0_partner : lone c0_partner }
+{ one @r_c0_externalInfluencer.this
+  let children = (r_c0_environment + r_c0_technology + r_c0_regulation + r_c0_supplier + r_c0_customer + r_c0_competitor + r_c0_partner) | some children }
 
-sig c371_environment
+sig c0_environment
 {}
-{ one @r_c371_environment.this }
+{ one @r_c0_environment.this }
 
-sig c372_technology
+sig c0_technology
 {}
-{ one @r_c372_technology.this }
+{ one @r_c0_technology.this }
 
-sig c373_regulation
-{ r_c374_prescribedBy : one c374_prescribedBy }
-{ one @r_c373_regulation.this }
+sig c0_regulation
+{ r_c0_prescribedBy : one c0_prescribedBy }
+{ one @r_c0_regulation.this }
 
-sig c374_prescribedBy
-{ r_c375_government : lone c375_government
-, r_c376_management : lone c376_management }
-{ one @r_c374_prescribedBy.this
-  let children = (r_c375_government + r_c376_management) | one children }
+sig c0_prescribedBy
+{ r_c0_government : lone c0_government
+, r_c0_management : lone c0_management }
+{ one @r_c0_prescribedBy.this
+  let children = (r_c0_government + r_c0_management) | one children }
 
-sig c375_government
+sig c0_government
 {}
-{ one @r_c375_government.this }
+{ one @r_c0_government.this }
 
-sig c376_management
+sig c0_management
 {}
-{ one @r_c376_management.this }
+{ one @r_c0_management.this }
 
-sig c377_supplier
-{ r_c378_provides : one c378_provides }
-{ one @r_c377_supplier.this }
+sig c0_supplier
+{ r_c0_provides : one c0_provides }
+{ one @r_c0_supplier.this }
 
-sig c378_provides
-{ r_c379_products : lone c379_products
-, r_c380_services : lone c380_services }
-{ one @r_c378_provides.this
-  let children = (r_c379_products + r_c380_services) | one children }
+sig c0_provides
+{ r_c0_products : lone c0_products
+, r_c0_services : lone c0_services }
+{ one @r_c0_provides.this
+  let children = (r_c0_products + r_c0_services) | one children }
 
-sig c379_products
+sig c0_products
 {}
-{ one @r_c379_products.this }
+{ one @r_c0_products.this }
 
-sig c380_services
+sig c0_services
 {}
-{ one @r_c380_services.this }
+{ one @r_c0_services.this }
 
-sig c381_customer
-{ r_c382_productsOrServices : one c382_productsOrServices }
-{ one @r_c381_customer.this }
+sig c0_customer
+{ r_c0_productsOrServices : one c0_productsOrServices }
+{ one @r_c0_customer.this }
 
-sig c382_productsOrServices
-{ r_c383_investigated : lone c383_investigated
-, r_c384_ordered : lone c384_ordered
-, r_c385_received : lone c385_received
-, r_c386_paidFor : lone c386_paidFor }
-{ one @r_c382_productsOrServices.this
-  let children = (r_c383_investigated + r_c384_ordered + r_c385_received + r_c386_paidFor) | one children }
+sig c0_productsOrServices
+{ r_c0_investigated : lone c0_investigated
+, r_c0_ordered : lone c0_ordered
+, r_c0_received : lone c0_received
+, r_c0_paidFor : lone c0_paidFor }
+{ one @r_c0_productsOrServices.this
+  let children = (r_c0_investigated + r_c0_ordered + r_c0_received + r_c0_paidFor) | one children }
 
-sig c383_investigated
+sig c0_investigated
 {}
-{ one @r_c383_investigated.this }
+{ one @r_c0_investigated.this }
 
-sig c384_ordered
+sig c0_ordered
 {}
-{ one @r_c384_ordered.this }
+{ one @r_c0_ordered.this }
 
-sig c385_received
+sig c0_received
 {}
-{ one @r_c385_received.this }
+{ one @r_c0_received.this }
 
-sig c386_paidFor
+sig c0_paidFor
 {}
-{ one @r_c386_paidFor.this }
+{ one @r_c0_paidFor.this }
 
-sig c387_competitor
+sig c0_competitor
 {}
-{ one @r_c387_competitor.this }
+{ one @r_c0_competitor.this }
 
-sig c388_partner
+sig c0_partner
 {}
-{ one @r_c388_partner.this }
+{ one @r_c0_partner.this }
 
-sig c389_internalInfluencer
-{ r_c390_infrastructure : lone c390_infrastructure
-, r_c391_issue : lone c391_issue
-, r_c392_assumption : lone c392_assumption
-, r_c393_resource : lone c393_resource
-, r_c394_habit : lone c394_habit
-, r_c395_managementPrerogative : lone c395_managementPrerogative
-, r_c396_corporateValue : lone c396_corporateValue }
-{ one @r_c389_internalInfluencer.this
-  let children = (r_c390_infrastructure + r_c391_issue + r_c392_assumption + r_c393_resource + r_c394_habit + r_c395_managementPrerogative + r_c396_corporateValue) | some children }
+sig c0_internalInfluencer
+{ r_c0_infrastructure : lone c0_infrastructure
+, r_c0_issue : lone c0_issue
+, r_c0_assumption : lone c0_assumption
+, r_c0_resource : lone c0_resource
+, r_c0_habit : lone c0_habit
+, r_c0_managementPrerogative : lone c0_managementPrerogative
+, r_c0_corporateValue : lone c0_corporateValue }
+{ one @r_c0_internalInfluencer.this
+  let children = (r_c0_infrastructure + r_c0_issue + r_c0_assumption + r_c0_resource + r_c0_habit + r_c0_managementPrerogative + r_c0_corporateValue) | some children }
 
-sig c390_infrastructure
+sig c0_infrastructure
 {}
-{ one @r_c390_infrastructure.this }
+{ one @r_c0_infrastructure.this }
 
-sig c391_issue
+sig c0_issue
 {}
-{ one @r_c391_issue.this }
+{ one @r_c0_issue.this }
 
-sig c392_assumption
+sig c0_assumption
 {}
-{ one @r_c392_assumption.this }
+{ one @r_c0_assumption.this }
 
-sig c393_resource
+sig c0_resource
 {}
-{ one @r_c393_resource.this }
+{ one @r_c0_resource.this }
 
-sig c394_habit
+sig c0_habit
 {}
-{ one @r_c394_habit.this }
+{ one @r_c0_habit.this }
 
-sig c395_managementPrerogative
+sig c0_managementPrerogative
 {}
-{ one @r_c395_managementPrerogative.this }
+{ one @r_c0_managementPrerogative.this }
 
-sig c396_corporateValue
-{ r_c397_explicitCorporateValue : lone c397_explicitCorporateValue
-, r_c398_implicitCorporateValue : lone c398_implicitCorporateValue }
-{ one @r_c396_corporateValue.this
-  let children = (r_c397_explicitCorporateValue + r_c398_implicitCorporateValue) | one children }
+sig c0_corporateValue
+{ r_c0_explicitCorporateValue : lone c0_explicitCorporateValue
+, r_c0_implicitCorporateValue : lone c0_implicitCorporateValue }
+{ one @r_c0_corporateValue.this
+  let children = (r_c0_explicitCorporateValue + r_c0_implicitCorporateValue) | one children }
 
-sig c397_explicitCorporateValue
+sig c0_explicitCorporateValue
 {}
-{ one @r_c397_explicitCorporateValue.this }
+{ one @r_c0_explicitCorporateValue.this }
 
-sig c398_implicitCorporateValue
+sig c0_implicitCorporateValue
 {}
-{ one @r_c398_implicitCorporateValue.this }
+{ one @r_c0_implicitCorporateValue.this }
 
-fact { #c399_Assessment = 0 }
-abstract sig c399_Assessment extends c1_Element
-{ r_c400_identifies : one c400_identifies
-, r_c410_about : one c410_about
-, r_c420_affects : one c420_affects
-, r_c441_madeBy : one c441_madeBy
-, r_c451_uses : set c451_uses
-, r_c461_SWOT : one c461_SWOT }
-{ all disj x, y : this.@r_c400_identifies | (x.@ref) != (y.@ref)
-  all disj x, y : this.@r_c410_about | (x.@ref) != (y.@ref)
-  all disj x, y : this.@r_c441_madeBy | (x.@ref) != (y.@ref)
-  all disj x, y : this.@r_c451_uses | (x.@ref) != (y.@ref) }
+fact { #c0_Assessment = 0 }
+abstract sig c0_Assessment extends c0_Element
+{ r_c0_identifies : one c0_identifies
+, r_c0_about : one c0_about
+, r_c0_affects : one c0_affects
+, r_c0_madeBy : one c0_madeBy
+, r_c0_uses : set c0_uses
+, r_c0_SWOT : one c0_SWOT }
+{ all disj x, y : this.@r_c0_identifies | (x.@ref) != (y.@ref)
+  all disj x, y : this.@r_c0_about | (x.@ref) != (y.@ref)
+  all disj x, y : this.@r_c0_madeBy | (x.@ref) != (y.@ref)
+  all disj x, y : this.@r_c0_uses | (x.@ref) != (y.@ref) }
 
-sig c400_identifies
-{ ref : one c466_PotentialImpact }
-{ one @r_c400_identifies.this }
+sig c0_identifies
+{ ref : one c0_PotentialImpact }
+{ one @r_c0_identifies.this }
 
-sig c410_about
-{ ref : one c369_Influencer }
-{ one @r_c410_about.this }
+sig c0_about
+{ ref : one c0_Influencer }
+{ one @r_c0_about.this }
 
-sig c420_affects
-{ r_c421_employmentOf : some c421_employmentOf
-, r_c431_achievementOf : some c431_achievementOf }
-{ one @r_c420_affects.this
-  let children = (r_c421_employmentOf + r_c431_achievementOf) | some children
-  all disj x, y : this.@r_c421_employmentOf | (x.@ref) != (y.@ref)
-  all disj x, y : this.@r_c431_achievementOf | (x.@ref) != (y.@ref) }
+sig c0_affects
+{ r_c0_employmentOf : some c0_employmentOf
+, r_c0_achievementOf : some c0_achievementOf }
+{ one @r_c0_affects.this
+  let children = (r_c0_employmentOf + r_c0_achievementOf) | some children
+  all disj x, y : this.@r_c0_employmentOf | (x.@ref) != (y.@ref)
+  all disj x, y : this.@r_c0_achievementOf | (x.@ref) != (y.@ref) }
 
-sig c421_employmentOf
-{ ref : one c10_Mean }
-{ one @r_c421_employmentOf.this }
+sig c0_employmentOf
+{ ref : one c0_Mean }
+{ one @r_c0_employmentOf.this }
 
-sig c431_achievementOf
-{ ref : one c2_End }
-{ one @r_c431_achievementOf.this }
+sig c0_achievementOf
+{ ref : one c0_End }
+{ one @r_c0_achievementOf.this }
 
-sig c441_madeBy
-{ ref : one c521_OrganizationUnit }
-{ one @r_c441_madeBy.this }
+sig c0_madeBy
+{ ref : one c0_OrganizationUnit }
+{ one @r_c0_madeBy.this }
 
-sig c451_uses
-{ ref : one c399_Assessment }
-{ one @r_c451_uses.this }
+sig c0_uses
+{ ref : one c0_Assessment }
+{ one @r_c0_uses.this }
 
-sig c461_SWOT
-{ r_c462_strength : lone c462_strength
-, r_c463_weakness : lone c463_weakness
-, r_c464_opportunity : lone c464_opportunity
-, r_c465_threat : lone c465_threat }
-{ one @r_c461_SWOT.this
-  let children = (r_c462_strength + r_c463_weakness + r_c464_opportunity + r_c465_threat) | one children }
+sig c0_SWOT
+{ r_c0_strength : lone c0_strength
+, r_c0_weakness : lone c0_weakness
+, r_c0_opportunity : lone c0_opportunity
+, r_c0_threat : lone c0_threat }
+{ one @r_c0_SWOT.this
+  let children = (r_c0_strength + r_c0_weakness + r_c0_opportunity + r_c0_threat) | one children }
 
-sig c462_strength
+sig c0_strength
 {}
-{ one @r_c462_strength.this }
+{ one @r_c0_strength.this }
 
-sig c463_weakness
+sig c0_weakness
 {}
-{ one @r_c463_weakness.this }
+{ one @r_c0_weakness.this }
 
-sig c464_opportunity
+sig c0_opportunity
 {}
-{ one @r_c464_opportunity.this }
+{ one @r_c0_opportunity.this }
 
-sig c465_threat
+sig c0_threat
 {}
-{ one @r_c465_threat.this }
+{ one @r_c0_threat.this }
 
-fact { #c466_PotentialImpact = 0 }
-abstract sig c466_PotentialImpact extends c1_Element
-{ r_c467_significantTo : one c467_significantTo
-, r_c477_providesImpetusFor : one c477_providesImpetusFor
-, r_c487_type : one c487_type }
-{ all disj x, y : this.@r_c467_significantTo | (x.@ref) != (y.@ref)
-  all disj x, y : this.@r_c477_providesImpetusFor | (x.@ref) != (y.@ref) }
+fact { #c0_PotentialImpact = 0 }
+abstract sig c0_PotentialImpact extends c0_Element
+{ r_c0_significantTo : one c0_significantTo
+, r_c0_providesImpetusFor : one c0_providesImpetusFor
+, r_c0_type : one c0_type }
+{ all disj x, y : this.@r_c0_significantTo | (x.@ref) != (y.@ref)
+  all disj x, y : this.@r_c0_providesImpetusFor | (x.@ref) != (y.@ref) }
 
-sig c467_significantTo
-{ ref : one c399_Assessment }
-{ one @r_c467_significantTo.this }
+sig c0_significantTo
+{ ref : one c0_Assessment }
+{ one @r_c0_significantTo.this }
 
-sig c477_providesImpetusFor
-{ ref : one c228_Directive }
-{ one @r_c477_providesImpetusFor.this }
+sig c0_providesImpetusFor
+{ ref : one c0_Directive }
+{ one @r_c0_providesImpetusFor.this }
 
-sig c487_type
-{ r_c488_risk : lone c488_risk
-, r_c501_potentialReward : lone c501_potentialReward }
-{ one @r_c487_type.this
-  let children = (r_c488_risk + r_c501_potentialReward) | one children }
+sig c0_type
+{ r_c0_risk : lone c0_risk
+, r_c0_potentialReward : lone c0_potentialReward }
+{ one @r_c0_type.this
+  let children = (r_c0_risk + r_c0_potentialReward) | one children }
 
-sig c488_risk
-{ r_c489_probabilityOfLoss : one c489_probabilityOfLoss
-, r_c490_potentialLoss : one c490_potentialLoss
-, r_c491_unitOfMeasure : one c491_unitOfMeasure }
-{ one @r_c488_risk.this
-  all disj x, y : this.@r_c491_unitOfMeasure | (x.@ref) != (y.@ref) }
+sig c0_risk
+{ r_c0_probabilityOfLoss : one c0_probabilityOfLoss
+, r_c0_potentialLoss : one c0_potentialLoss
+, r_c0_unitOfMeasure : one c0_unitOfMeasure }
+{ one @r_c0_risk.this
+  all disj x, y : this.@r_c0_unitOfMeasure | (x.@ref) != (y.@ref) }
 
-sig c489_probabilityOfLoss
+sig c0_probabilityOfLoss
 { ref : one Int }
-{ one @r_c489_probabilityOfLoss.this }
+{ one @r_c0_probabilityOfLoss.this }
 
-sig c490_potentialLoss
+sig c0_potentialLoss
 { ref : one Int }
-{ one @r_c490_potentialLoss.this }
+{ one @r_c0_potentialLoss.this }
 
-sig c491_unitOfMeasure
-{ ref : one c517_Currency }
-{ one @r_c491_unitOfMeasure.this }
+sig c0_unitOfMeasure
+{ ref : one c0_Currency }
+{ one @r_c0_unitOfMeasure.this }
 
-sig c501_potentialReward
-{ r_c502_probabilityOfGain : one c502_probabilityOfGain
-, r_c503_potentialGain : one c503_potentialGain
-, r_c504_unitOfMeasure : one c504_unitOfMeasure }
-{ one @r_c501_potentialReward.this
-  all disj x, y : this.@r_c504_unitOfMeasure | (x.@ref) != (y.@ref) }
+sig c0_potentialReward
+{ r_c0_probabilityOfGain : one c0_probabilityOfGain
+, r_c0_potentialGain : one c0_potentialGain
+, r_c1_unitOfMeasure : one c1_unitOfMeasure }
+{ one @r_c0_potentialReward.this
+  all disj x, y : this.@r_c1_unitOfMeasure | (x.@ref) != (y.@ref) }
 
-sig c502_probabilityOfGain
+sig c0_probabilityOfGain
 { ref : one Int }
-{ one @r_c502_probabilityOfGain.this }
+{ one @r_c0_probabilityOfGain.this }
 
-sig c503_potentialGain
+sig c0_potentialGain
 { ref : one Int }
-{ one @r_c503_potentialGain.this }
+{ one @r_c0_potentialGain.this }
 
-sig c504_unitOfMeasure
-{ ref : one c517_Currency }
-{ one @r_c504_unitOfMeasure.this }
+sig c1_unitOfMeasure
+{ ref : one c0_Currency }
+{ one @r_c1_unitOfMeasure.this }
 
-fact { #c514_Metric = 0 }
-abstract sig c514_Metric extends c1_Element
+fact { #c0_Metric = 0 }
+abstract sig c0_Metric extends c0_Element
 {}
 
-fact { #c515_KeyPerformanceIndicator = 0 }
-abstract sig c515_KeyPerformanceIndicator extends c514_Metric
+fact { #c0_KeyPerformanceIndicator = 0 }
+abstract sig c0_KeyPerformanceIndicator extends c0_Metric
 {}
 
-fact { #c516_CriticalSuccessFactor = 0 }
-abstract sig c516_CriticalSuccessFactor extends c514_Metric
+fact { #c0_CriticalSuccessFactor = 0 }
+abstract sig c0_CriticalSuccessFactor extends c0_Metric
 {}
 
-abstract sig c517_Currency
+abstract sig c0_Currency
 {}
 
-one sig c518_USD extends c517_Currency
+one sig c0_USD extends c0_Currency
 {}
 
-one sig c519_EUR extends c517_Currency
+one sig c0_EUR extends c0_Currency
 {}
 
-one sig c520_CAD extends c517_Currency
+one sig c0_CAD extends c0_Currency
 {}
 
-fact { #c521_OrganizationUnit = 0 }
-abstract sig c521_OrganizationUnit
+fact { #c0_OrganizationUnit = 0 }
+abstract sig c0_OrganizationUnit
 {}
 
-fact { #c522_BusinessProcess = 0 }
-abstract sig c522_BusinessProcess
+fact { #c0_BusinessProcess = 0 }
+abstract sig c0_BusinessProcess
 {}
 

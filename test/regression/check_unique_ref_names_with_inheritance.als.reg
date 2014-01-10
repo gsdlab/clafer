@@ -2,22 +2,22 @@ open util/integer
 pred show {}
 
 
-abstract sig c1_date
+abstract sig c0_date
 { ref : one Int }
 
-abstract sig c2_Person
-{ r_c3_Name : one c3_Name
-, r_c4_DateOfBirth : one c4_DateOfBirth }
+abstract sig c0_Person
+{ r_c0_Name : one c0_Name
+, r_c0_DateOfBirth : one c0_DateOfBirth }
 
-sig c3_Name
+sig c0_Name
 { ref : one Int }
-{ one @r_c3_Name.this }
+{ one @r_c0_Name.this }
 
-sig c4_DateOfBirth extends c1_date
+sig c0_DateOfBirth extends c0_date
 {}
-{ one @r_c4_DateOfBirth.this }
+{ one @r_c0_DateOfBirth.this }
 
-one sig c5_JohnDoe extends c2_Person
+one sig c0_JohnDoe extends c0_Person
 {}
-{ ((this.(@r_c3_Name.@ref)) = 0) && ((this.(@r_c4_DateOfBirth.@ref)) = 1) }
+{ ((this.(@r_c0_Name.@ref)) = 0) && ((this.(@r_c0_DateOfBirth.@ref)) = 1) }
 

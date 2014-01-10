@@ -2,32 +2,32 @@ open util/integer
 pred show {}
 
 
-fact { #c1_A = 0 }
-abstract sig c1_A
+fact { #c0_A = 0 }
+abstract sig c0_A
+{ r_c0_b : lone c0_b }
+
+sig c0_b
+{}
+{ one @r_c0_b.this }
+
+one sig c0_C
+{ r_c1_b : lone c1_b
+, r_c0_a : one c0_a }
+{ all disj x, y : this.@r_c0_a | (x.@ref) != (y.@ref) }
+
+lone sig c1_b
+{}
+{ one r_c1_b }
+
+one sig c0_a
+{ ref : one c0_A
+, r_c0_d : one c0_d }
+{ some (this.@r_c0_d).@r_c2_b }
+
+one sig c0_d
 { r_c2_b : lone c2_b }
 
-sig c2_b
+lone sig c2_b
 {}
-{ one @r_c2_b.this }
-
-one sig c3_C
-{ r_c4_b : lone c4_b
-, r_c5_a : one c5_a }
-{ all disj x, y : this.@r_c5_a | (x.@ref) != (y.@ref) }
-
-lone sig c4_b
-{}
-{ one r_c4_b }
-
-one sig c5_a
-{ ref : one c1_A
-, r_c8_d : one c8_d }
-{ some (this.@r_c8_d).@r_c9_b }
-
-one sig c8_d
-{ r_c9_b : lone c9_b }
-
-lone sig c9_b
-{}
-{ one r_c9_b }
+{ one r_c2_b }
 

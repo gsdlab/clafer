@@ -2,43 +2,43 @@ open util/integer
 pred show {}
 
 
-abstract sig c1_percent
+abstract sig c0_percent
 { ref : one Int }
 { ((this.@ref) >= 0) && ((this.@ref) <= 5) }
 
-one sig c9_twoPercent extends c1_percent
+one sig c0_twoPercent extends c0_percent
 {}
 
-fact { (c9_twoPercent.@ref) = 2 }
-one sig c13_threePercent extends c1_percent
+fact { (c0_twoPercent.@ref) = 2 }
+one sig c0_threePercent extends c0_percent
 {}
 
-fact { (c13_threePercent.@ref) = ((c9_twoPercent.@ref).add[1]) }
-abstract sig c19_date
+fact { (c0_threePercent.@ref) = ((c0_twoPercent.@ref).add[1]) }
+abstract sig c0_date
 { ref : one Int }
 
-one sig c20_today extends c19_date
+one sig c0_today extends c0_date
 {}
 
-fact { (c20_today.@ref) = 0 }
-abstract sig c24_time
+fact { (c0_today.@ref) = 0 }
+abstract sig c0_time
 { ref : one Int
-, r_c25_minute : one c25_minute
-, r_c33_hour : one c33_hour }
+, r_c0_minute : one c0_minute
+, r_c0_hour : one c0_hour }
 
-sig c25_minute
+sig c0_minute
 { ref : one Int }
-{ one @r_c25_minute.this
+{ one @r_c0_minute.this
   ((this.@ref) >= 0) && ((this.@ref) <= 5) }
 
-sig c33_hour
+sig c0_hour
 { ref : one Int }
-{ one @r_c33_hour.this
+{ one @r_c0_hour.this
   ((this.@ref) >= 0) && ((this.@ref) <= 5) }
 
-fact { (c24_time.@ref) = ((c24_time.(@r_c25_minute.@ref)).add[(c24_time.(@r_c33_hour.@ref))]) }
-one sig c46_now extends c24_time
+fact { (c0_time.@ref) = ((c0_time.(@r_c0_minute.@ref)).add[(c0_time.(@r_c0_hour.@ref))]) }
+one sig c0_now extends c0_time
 {}
-{ (this.(@r_c25_minute.@ref)) = 3
-  (this.(@r_c33_hour.@ref)) = 1 }
+{ (this.(@r_c0_minute.@ref)) = 3
+  (this.(@r_c0_hour.@ref)) = 1 }
 

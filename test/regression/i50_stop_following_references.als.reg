@@ -2,36 +2,36 @@ open util/integer
 pred show {}
 
 
-abstract sig c1_A
+abstract sig c0_A
+{ r_c0_b : lone c0_b }
+
+sig c0_b
+{}
+{ one @r_c0_b.this }
+
+one sig c0_A1 extends c0_A
+{}
+{ no this.@r_c0_b }
+
+one sig c0_C
+{ r_c1_b : lone c1_b
+, r_c0_a : one c0_a }
+{ some c0_C.@r_c1_b
+  all disj x, y : this.@r_c0_a | (x.@ref) != (y.@ref) }
+
+lone sig c1_b
+{}
+{ one r_c1_b }
+
+one sig c0_a
+{ ref : one c0_A
+, r_c0_d : one c0_d }
+{ some (this.@r_c0_d).@r_c2_b }
+
+one sig c0_d
 { r_c2_b : lone c2_b }
 
-sig c2_b
+lone sig c2_b
 {}
-{ one @r_c2_b.this }
-
-one sig c3_A1 extends c1_A
-{}
-{ no this.@r_c2_b }
-
-one sig c6_C
-{ r_c7_b : lone c7_b
-, r_c12_a : one c12_a }
-{ some c6_C.@r_c7_b
-  all disj x, y : this.@r_c12_a | (x.@ref) != (y.@ref) }
-
-lone sig c7_b
-{}
-{ one r_c7_b }
-
-one sig c12_a
-{ ref : one c1_A
-, r_c15_d : one c15_d }
-{ some (this.@r_c15_d).@r_c16_b }
-
-one sig c15_d
-{ r_c16_b : lone c16_b }
-
-lone sig c16_b
-{}
-{ one r_c16_b }
+{ one r_c2_b }
 

@@ -2,28 +2,28 @@ open util/integer
 pred show {}
 
 
-abstract sig c1_Entity
-{ r_c2_type : one c2_type }
+abstract sig c0_Entity
+{ r_c0_type : one c0_type }
 
-sig c2_type
+sig c0_type
 { ref : one Int }
-{ one @r_c2_type.this }
+{ one @r_c0_type.this }
 
-one sig c3_E1 extends c1_Entity
+one sig c0_E1 extends c0_Entity
 {}
-{ (this.(@r_c2_type.@ref)) = 0 }
+{ (this.(@r_c0_type.@ref)) = 0 }
 
-one sig c7_E2 extends c1_Entity
+one sig c0_E2 extends c0_Entity
 {}
-{ (this.(@r_c2_type.@ref)) = 0 }
+{ (this.(@r_c0_type.@ref)) = 0 }
 
-one sig c11_E3 extends c1_Entity
+one sig c0_E3 extends c0_Entity
 {}
-{ (this.(@r_c2_type.@ref)) = 0 }
+{ (this.(@r_c0_type.@ref)) = 0 }
 
-sig c15_E1TEntities
-{ ref : one c1_Entity }
-{ (c1_Entity.(@r_c2_type.@ref)) = 0 }
+sig c0_E1TEntities
+{ ref : one c0_Entity }
+{ (c0_Entity.(@r_c0_type.@ref)) = 0 }
 
-fact { all disj x, y : c15_E1TEntities | (x.@ref) != (y.@ref) }
-fact { (#c15_E1TEntities) = 3 }
+fact { all disj x, y : c0_E1TEntities | (x.@ref) != (y.@ref) }
+fact { (#c0_E1TEntities) = 3 }

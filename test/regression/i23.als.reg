@@ -2,33 +2,33 @@ open util/integer
 pred show {}
 
 
-abstract sig c1_Person
-{ r_c2_Age : one c2_Age }
+abstract sig c0_Person
+{ r_c0_Age : one c0_Age }
 
-sig c2_Age
+sig c0_Age
 { ref : one Int }
-{ one @r_c2_Age.this }
+{ one @r_c0_Age.this }
 
-one sig c3_Team
-{ r_c4_Contractor : one c4_Contractor
-, r_c15_Member : set c15_Member }
-{ 2 <= #r_c15_Member
-  all disj x, y : this.@r_c15_Member | (x.@ref) != (y.@ref) }
+one sig c0_Team
+{ r_c0_Contractor : one c0_Contractor
+, r_c0_Member : set c0_Member }
+{ 2 <= #r_c0_Member
+  all disj x, y : this.@r_c0_Member | (x.@ref) != (y.@ref) }
 
-one sig c4_Contractor extends c1_Person
-{ r_c5_since : one c5_since }
-{ all disj x, y : this.@r_c5_since | (x.@ref) != (y.@ref) }
+one sig c0_Contractor extends c0_Person
+{ r_c0_since : one c0_since }
+{ all disj x, y : this.@r_c0_since | (x.@ref) != (y.@ref) }
 
-one sig c5_since
+one sig c0_since
 { ref : one Int }
 
-sig c15_Member
-{ ref : one c1_Person }
-{ one @r_c15_Member.this }
+sig c0_Member
+{ ref : one c0_Person }
+{ one @r_c0_Member.this }
 
-one sig c25_Alice extends c1_Person
+one sig c0_Alice extends c0_Person
 {}
 
-one sig c26_Bob extends c1_Person
+one sig c0_Bob extends c0_Person
 {}
 
