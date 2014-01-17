@@ -1,7 +1,7 @@
 Clafer
 ======
 
-v0.3.5.15-01-2014
+v0.3.5.17-01-2014
 
 [Clafer](http://clafer.org) is a general-purpose lightweight structural modeling language developed at [GSD Lab](http://gsd.uwaterloo.ca/), [University of Waterloo](http://uwaterloo.ca). 
 Clafer can be used for modeling of static hierarchical structures but has no support for modeling the change of the structures over time (behavior). 
@@ -162,7 +162,7 @@ Clafer Compiler
 (As printed by `clafer --help`)
 
 ```
-Clafer v0.3.5.15-01-2014
+Clafer v0.3.5.17-01-2014
 
 clafer [OPTIONS] [FILE]
 
