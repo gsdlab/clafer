@@ -48,7 +48,7 @@ simpleScopeAnalysis :: IModule -> [(String, Integer)]
 simpleScopeAnalysis IModule{mDecls = decls'} =
     [(a, b) | (a, b) <- finalAnalysis, isReferenceOrSuper a, b /= 0]
     where
-    finalAnalysis = Map.toList $ foldl analyzeComponent referenceAnalysis connectedComponents
+    finalAnalysis = Map.toList $ foldl analyzeComponent supersAnalysis connectedComponents
     
     isReferenceOrSuper uid' =
         isReference clafer || isSuperest clafers clafer
@@ -61,7 +61,7 @@ simpleScopeAnalysis IModule{mDecls = decls'} =
         Map.findWithDefault (error $ "No upper cardinality for clafer named \"" ++ u ++ "\".") u upperCardsMap
     upperCardsMap = Map.fromList [(uid c, snd $ fromJust $ card c) | c <- clafers]
     
-    referenceAnalysis = foldl (analyzeReferences clafers) Map.empty decls'
+    supersAnalysis = foldl (analyzeSupers clafers) Map.empty decls'
     constraintAnalysis = analyzeConstraints constraints upperCards
     (subclaferMap, parentMap) = analyzeHierarchy clafers
     connectedComponents = analyzeDependencies clafers
@@ -105,17 +105,19 @@ simpleScopeAnalysis IModule{mDecls = decls'} =
         rootScope = 1
         findOrError message m key = Map.findWithDefault (error $ key ++ message) key m
         
-analyzeReferences :: [IClafer] -> Map String Integer -> IElement -> Map String Integer    
-analyzeReferences clafers analysis (IEClafer clafer) =
-    foldl (analyzeReferences clafers) analysis' (elements clafer)
+analyzeSupers :: [IClafer] -> Map String Integer -> IElement -> Map String Integer    
+analyzeSupers clafers analysis (IEClafer clafer) =
+    foldl (analyzeSupers clafers) analysis' (elements clafer)
     where
-    lowerBound = fst (fromJust $ card clafer)
-    analysis'
-        | isReference clafer = case (directSuper clafers clafer) of 
-            (Just c) -> Map.insert (uid c) lowerBound analysis
-            Nothing -> analysis
-        | otherwise          = analysis 
-analyzeReferences _ analysis _ = analysis
+    lowerBound = max 1 $ fst (fromJust $ card clafer)
+    analysis' = case (directSuper clafers clafer) of
+            (Just c) -> Map.alter ((if isReference clafer then maxLB else incLB) lowerBound) (uid c) analysis
+            Nothing -> analysis                     
+    incLB lb' Nothing = Just lb'
+    incLB lb' (Just lb) = Just (lb + lb')
+    maxLB lb' Nothing = Just lb'
+    maxLB lb' (Just lb) = Just (max lb lb')
+analyzeSupers _ analysis _ = analysis
 
 
 analyzeConstraints :: [PExp] -> (String -> Integer) -> Map String Integer
