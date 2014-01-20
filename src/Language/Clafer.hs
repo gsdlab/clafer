@@ -245,7 +245,7 @@ compile =
     ast' <- getAst
     let desugaredMod = desugar ast'
     let clafersWithKeyWords = foldMapIR isKeyWord desugaredMod
-    when (""/=clafersWithKeyWords) $ throwErr (ClaferErr $ ("The model contains clafers with keyWords as names.\nThe following places contain keyWords as names:\n"++) $ clafersWithKeyWords :: CErr Span)
+    when (""/=clafersWithKeyWords) $ throwErr (ClaferErr $ ("The model contains clafers with keywords as names in the following places:\n"++) $ clafersWithKeyWords :: CErr Span)
     ir <- analyze (args env) desugaredMod
     let (imodule, _, _) = ir
 
