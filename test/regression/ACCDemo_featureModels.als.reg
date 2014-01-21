@@ -2,72 +2,72 @@ open util/integer
 pred show {}
 
 
-abstract sig c1_Car
-{ r_c2_ABS : lone c2_ABS
-, r_c3_CC : lone c3_CC
-, r_c7_Transmission : one c7_Transmission
-, r_c10_FCA : lone c10_FCA }
+abstract sig c0_Car
+{ r_c0_ABS : lone c0_ABS
+, r_c0_CC : lone c0_CC
+, r_c0_Transmission : one c0_Transmission
+, r_c0_FCA : lone c0_FCA }
 
-sig c2_ABS
+sig c0_ABS
 {}
-{ one @r_c2_ABS.this }
+{ one @r_c0_ABS.this }
 
-sig c3_CC
-{ r_c4_ACC : lone c4_ACC }
-{ one @r_c3_CC.this }
+sig c0_CC
+{ r_c0_ACC : lone c0_ACC }
+{ one @r_c0_CC.this }
 
-sig c4_ACC
+sig c0_ACC
 {}
-{ one @r_c4_ACC.this
-  some ((this.~@r_c4_ACC).~@r_c3_CC).@r_c10_FCA }
+{ one @r_c0_ACC.this
+  some ((this.~@r_c0_ACC).~@r_c0_CC).@r_c0_FCA }
 
-sig c7_Transmission
-{ r_c8_Automatic : lone c8_Automatic
-, r_c9_Manual : lone c9_Manual }
-{ one @r_c7_Transmission.this
-  let children = (r_c8_Automatic + r_c9_Manual) | one children }
+sig c0_Transmission
+{ r_c0_Automatic : lone c0_Automatic
+, r_c0_Manual : lone c0_Manual }
+{ one @r_c0_Transmission.this
+  let children = (r_c0_Automatic + r_c0_Manual) | one children }
 
-sig c8_Automatic
+sig c0_Automatic
 {}
-{ one @r_c8_Automatic.this }
+{ one @r_c0_Automatic.this }
 
-sig c9_Manual
+sig c0_Manual
 {}
-{ one @r_c9_Manual.this }
+{ one @r_c0_Manual.this }
 
-sig c10_FCA
-{ r_c11_Sensor : one c11_Sensor
-, r_c14_Alert : lone c14_Alert }
-{ one @r_c10_FCA.this }
+sig c0_FCA
+{ r_c0_Sensor : one c0_Sensor
+, r_c0_Alert : lone c0_Alert }
+{ one @r_c0_FCA.this }
 
-sig c11_Sensor
-{ r_c12_Radar : lone c12_Radar
-, r_c13_Lidar : lone c13_Lidar }
-{ one @r_c11_Sensor.this
-  let children = (r_c12_Radar + r_c13_Lidar) | one children }
+sig c0_Sensor
+{ r_c0_Radar : lone c0_Radar
+, r_c0_Lidar : lone c0_Lidar }
+{ one @r_c0_Sensor.this
+  let children = (r_c0_Radar + r_c0_Lidar) | one children }
 
-sig c12_Radar
+sig c0_Radar
 {}
-{ one @r_c12_Radar.this }
+{ one @r_c0_Radar.this }
 
-sig c13_Lidar
+sig c0_Lidar
 {}
-{ one @r_c13_Lidar.this }
+{ one @r_c0_Lidar.this }
 
-sig c14_Alert
-{ r_c15_Haptic : lone c15_Haptic
-, r_c16_Audible : lone c16_Audible }
-{ one @r_c14_Alert.this
-  let children = (r_c15_Haptic + r_c16_Audible) | one children }
+sig c0_Alert
+{ r_c0_Haptic : lone c0_Haptic
+, r_c0_Audible : lone c0_Audible }
+{ one @r_c0_Alert.this
+  let children = (r_c0_Haptic + r_c0_Audible) | one children }
 
-sig c15_Haptic
+sig c0_Haptic
 {}
-{ one @r_c15_Haptic.this }
+{ one @r_c0_Haptic.this }
 
-sig c16_Audible
+sig c0_Audible
 {}
-{ one @r_c16_Audible.this }
+{ one @r_c0_Audible.this }
 
-one sig c17_aCar extends c1_Car
+one sig c0_aCar extends c0_Car
 {}
 

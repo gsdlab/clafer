@@ -1,7 +1,7 @@
 Clafer
 ======
 
-v0.3.4.20-9-2013
+v0.3.5.20-01-2014
 
 [Clafer](http://clafer.org) is a general-purpose lightweight structural modeling language developed at [GSD Lab](http://gsd.uwaterloo.ca/), [University of Waterloo](http://uwaterloo.ca). 
 Clafer can be used for modeling of static hierarchical structures but has no support for modeling the change of the structures over time (behavior). 
@@ -26,6 +26,8 @@ It translates models in Clafer to other formats (e.g. Alloy, XML, HTML, DOT) to 
 
 Currently, the compiler is used by 
 Clafer Instance Generator ([ClaferIG](https://github.com/gsdlab/claferIG)), 
+Clafer Integrated Development Environment ([ClaferIDE](https://github.com/gsdlab/claferIDE)),
+Clafer Configurator ([ClaferConfigurator](https://github.com/gsdlab/ClaferConfigurator)), 
 Clafer Multi-Objective Optimizer ([ClaferMOO](https://github.com/gsdlab/ClaferMooStandalone)) and 
 [Visualizer](https://github.com/gsdlab/ClaferMooVisualizer), and 
 Clafer Wiki ([ClaferWiki](https://github.com/gsdlab/claferwiki)).
@@ -36,23 +38,18 @@ Contributors
 * [Kacper Bak](http://gsd.uwaterloo.ca/kbak), Ph.D. Candidate. Main developer.
 * [Jimmy Liang](http://gsd.uwaterloo.ca/jliang), MSc. Candidate. Main developer.
 * [Michał Antkiewicz](http://gsd.uwaterloo.ca/mantkiew), Research Engineer. Requirements, development, architecture, testing, technology transfer.
+* [Ed Zulkoski](http://gsd.uwaterloo.ca/ezulkosk), Pd.D. Candidate. Python IR Generator.
 * Luke Michael Brown, co-op student May-Aug 2013. Many improvements.
+* [Rafael Olaechea](http://gsd.uwaterloo.ca/rolaechea), Pd.D. Candidate. Multi-Objective Optimization extensions.
 
 Getting Clafer Tools
 --------------------
 
-Binary distributions of release 0.3.4 of 
-Clafer, 
-ClaferIG, 
-ClaferWiki, 
-ClaferMoo, 
-ClaferMooVisualizer, 
-and ClaferConfigurator 
-for Windows, Mac, and Linux, 
-can be downloaded from [Clafer Tools - Binary Distributions](http://gsd.uwaterloo.ca/node/516). 
+Binary distributions of the release 0.3.5 of Clafer Tools for Windows, Mac, and Linux, 
+can be downloaded from [Clafer Tools - Binary Distributions](http://http://gsd.uwaterloo.ca/clafer-tools-binary-distributions). 
 Clafer Wiki requires Haskell Platform and MinGW to run on Windows. 
 
-In case these binaries do not work on your particular machine configuration, the tools can be easily built from source code, as described below.
+In case these binaries do not work on your particular machine configuration, the tools can be built from source code, as described below.
 
 ### Dependencies for running
 
@@ -122,11 +119,11 @@ On Mac only
 
 ### Important: Branches must correspond
 
-Clafer, ClaferIG, ClaferWiki, ClaferMoo,  ClaferMooVisualizer, and ClaferConfigurator are following the *simultaneous release model*. 
+All related projects are following the *simultaneous release model*. 
 The branch `master` contains releases, whereas the branch `develop` contains code under development. 
-When building the tools, the branches should match:
-Releases `clafer/master` and `claferIG/master` are guaranteed to work well together.
-Development versions `clafer/develop` and `claferIG/develop` should work well together but this might not always be the case.
+When building the tools, the branches should match.
+Releases from branches 'master` are guaranteed to work well together.
+Development versions from branches `develop` should work well together but this might not always be the case.
 
 ### Building
 
@@ -165,7 +162,7 @@ Clafer Compiler
 (As printed by `clafer --help`)
 
 ```
-Clafer v0.3.4.20-9-2013
+Clafer v0.3.5.20-01-2014
 
 clafer [OPTIONS] [FILE]
 
@@ -173,29 +170,33 @@ Common flags:
   -m --mode=CLAFERMODE                    Generated output type. Available
                                           CLAFERMODEs are: 'alloy' (default,
                                           Alloy 4.1); 'alloy42' (Alloy 4.2);
-                                          'xml' (intermediate representation o
-                                          Clafer model); 'clafer' (analyzed an
+                                          'xml' (intermediate representation of
+                                          Clafer model); 'clafer' (analyzed and
                                           desugared clafer model); 'html'
                                           (original model in HTML); 'graph'
                                           (graphical representation written in
                                           DOT language); 'cvlgraph' (cvl
                                           notation representation written in
-                                          DOT language)
-  -o --console-output                     Output code on console
+                                          DOT language); 'python' (generates IR
+                                          in python); 'choco' (Choco constraint
+                                          programming solver). Multiple modes
+                                          can be specified at the same time,
+                                          e.g., '-m alloy -m html'.
+  -o --console-output                     Output code on console.
   -i --flatten-inheritance                Flatten inheritance ('alloy' and
-                                          'alloy42' modes only)
-     --timeout-analysis=INT               Timeout for analysis
-  -l --no-layout                          Don't resolve off-side rule layout
+                                          'alloy42' modes only).
+     --timeout-analysis=INT               Timeout for analysis.
+  -l --no-layout                          Don't resolve off-side rule layout.
      --nl --new-layout                    Use new fast layout resolver
-                                          (experimental)
-  -c --check-duplicates                   Check duplicated clafer names
-  -f --skip-resolver                      Skip name resolution
+                                          (experimental).
+  -c --check-duplicates                   Check duplicated clafer names.
+  -f --skip-resolver                      Skip name resolution.
   -k --keep-unused                        Keep uninstantated abstract clafers
-                                          ('alloy' and 'alloy42' modes only)
-  -s --no-stats                           Don't print statistics
+                                          ('alloy' and 'alloy42' modes only).
+  -s --no-stats                           Don't print statistics.
      --schema                             Show Clafer IR (intermediate
-                                          representation) XML schema
-  -v --validate                           Validate output. Uses
+                                          representation) XML schema.
+  -v --validate                           Validate outputs of all modes. Uses
                                           'tools/XsdCheck.class' for XML,
                                           'tools/alloy4.jar' and
                                           'tools/alloy4.2.jar' for Alloy
@@ -207,14 +208,14 @@ Common flags:
                                           Don't generate the alloy 'run show
                                           for ... ' command, and rename @.ref
                                           with unique names  ('alloy' and
-                                          'alloy42' modes only)
+                                          'alloy42' modes only).
      --tooldir=DIR                        Specify the tools directory
-                                          ('validate' only). Default: 'tools/'
+                                          ('validate' only). Default: 'tools/'.
   -a --alloy-mapping                      Generate mapping to Alloy source
                                           code ('alloy' and 'alloy42' modes
-                                          only)
+                                          only).
      --self-contained                     Generate a self-contained html
-                                          document ('html' mode only)
+                                          document ('html' mode only).
      --add-graph                          Add a graph to the generated html
                                           model ('html' mode only). Requires
                                           the "dot" executable to be on the
@@ -234,11 +235,17 @@ Common flags:
      --sg --skip-goals                    Skip generation of Alloy code for
                                           goals. Useful for all tools working
                                           with standard Alloy.
+     --meta-data                          Generate a 'fully qualified
+                                          name'-'least-partially-qualified
+                                          name'-'unique ID' map ('.cfr-map').
+                                          In Alloy, Alloy42, and Choco modes,
+                                          generate the scopes map
+                                          ('.cfr-scope').
   -? --help                               Display help message
   -V --version                            Print version information
 ```
 
-The dependencies among the command line arguments are described in [issue 117](http://gsd.uwaterloo.ca:8888/question/570/dependencies-among-command-line-arguments).
+The dependencies among the command line arguments are described on the [model wiki](http://t3-necsis.cs.uwaterloo.ca:8091/ClaferTools/CommandLineArguments).
 
 Additionally, `[OPTIONS]` can also be specified directly in the model file by inserting the following compiler directive as the first line of the file:
 
@@ -273,10 +280,12 @@ The following directives are markers of locations in the input files for differe
 
 Need help?
 ==========
-* See [Project's website](http://gsd.uwaterloo.ca/clafer) for news, technical reports and more
-  * Check out a [Clafer tutorial](http://gsd.uwaterloo.ca/node/310)
-  * Try live instance of [ClaferWiki](http://t3-necsis.cs.uwaterloo.ca:8091)
-  * Try [Online translator](http://gsd.uwaterloo.ca/clafer/translator)
-* Take a look at incomplete [Clafer wiki](https://github.com/gsdlab/clafer/wiki)
+* See [language's website](http://clafer.org) for news, technical reports and more
+  * Check out a [Clafer tutorial](http://t3-necsis.cs.uwaterloo.ca:8091/Tutorial/Intro)
+  * Try a live instance of [ClaferWiki](http://t3-necsis.cs.uwaterloo.ca:8091)
+  * Try a live instance of [ClaferIDE](http://t3-necsis.cs.uwaterloo.ca:8094)
+  * Try a live instance of [ClaferConfigurator](http://t3-necsis.cs.uwaterloo.ca:8093)
+  * Try a live instance of [ClaferMooVisualizer](http://t3-necsis.cs.uwaterloo.ca:8092)
+* Take a look at (incomplete) [Clafer wiki](https://github.com/gsdlab/clafer/wiki)
 * Browse example models in the [test suite](https://github.com/gsdlab/clafer/tree/master/test/positive) and [MOO examples](https://github.com/gsdlab/clafer/tree/master/spl_configurator/dataset)
-* Post questions, report bugs, suggest improvements [GSD Lab Bug Tracker](http://gsd.uwaterloo.ca:8888/questions/). Tag your entries with `clafer` (so that we know what they are related to) and with `kacper-bak`, `jimmy-liang`, or `michal` (so that Kacper, Jimmy, or Michał gets a notification).
+* Post questions, report bugs, suggest improvements [GSD Lab Bug Tracker](http://gsd.uwaterloo.ca:8888/questions/). Tag your entries with `clafer` (so that we know what they are related to) and with `jimmy-liang` or `michal` (so that Jimmy or Michał gets a notification).

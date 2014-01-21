@@ -2,25 +2,25 @@ open util/integer
 pred show {}
 
 
-abstract sig c1_Animal
-{ r_c2_leg : set c2_leg }
+abstract sig c0_Animal
+{ r_c0_leg : set c0_leg }
 
-sig c2_leg
+sig c0_leg
 {}
-{ one @r_c2_leg.this }
+{ one @r_c0_leg.this }
 
-abstract sig c3_Owner
-{ r_c4_Pet : one c4_Pet }
+abstract sig c0_Owner
+{ r_c0_Pet : one c0_Pet }
 
-sig c4_Pet extends c1_Animal
+sig c0_Pet extends c0_Animal
 {}
-{ one @r_c4_Pet.this }
+{ one @r_c0_Pet.this }
 
-some sig c5_SnakeOwner extends c3_Owner
+some sig c0_SnakeOwner extends c0_Owner
 {}
-{ no (this.@r_c4_Pet).@r_c2_leg }
+{ no (this.@r_c0_Pet).@r_c0_leg }
 
-some sig c10_DogOwner extends c3_Owner
+some sig c0_DogOwner extends c0_Owner
 {}
-{ (#((this.@r_c4_Pet).@r_c2_leg)) = 4 }
+{ (#((this.@r_c0_Pet).@r_c0_leg)) = 4 }
 

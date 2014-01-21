@@ -2,80 +2,80 @@ open util/integer
 pred show {}
 
 
-abstract sig c1_Phone
-{ r_c2_networking : one c2_networking
-, r_c10_location : lone c10_location
-, r_c13_gpu : set c13_gpu }
+abstract sig c0_Phone
+{ r_c0_networking : one c0_networking
+, r_c0_location : lone c0_location
+, r_c0_gpu : set c0_gpu }
 
-sig c2_networking
-{ r_c3_wifi : lone c3_wifi
-, r_c7_bluetooth : lone c7_bluetooth
-, r_c8_mobile : lone c8_mobile
-, r_c9_nfc : lone c9_nfc }
-{ one @r_c2_networking.this }
+sig c0_networking
+{ r_c0_wifi : lone c0_wifi
+, r_c0_bluetooth : lone c0_bluetooth
+, r_c0_mobile : lone c0_mobile
+, r_c0_nfc : lone c0_nfc }
+{ one @r_c0_networking.this }
 
-sig c3_wifi
-{ r_c4_typeB : lone c4_typeB
-, r_c5_typeG : lone c5_typeG
-, r_c6_typeN : lone c6_typeN }
-{ one @r_c3_wifi.this }
+sig c0_wifi
+{ r_c0_typeB : lone c0_typeB
+, r_c0_typeG : lone c0_typeG
+, r_c0_typeN : lone c0_typeN }
+{ one @r_c0_wifi.this }
 
-sig c4_typeB
+sig c0_typeB
 {}
-{ one @r_c4_typeB.this }
+{ one @r_c0_typeB.this }
 
-sig c5_typeG
+sig c0_typeG
 {}
-{ one @r_c5_typeG.this }
+{ one @r_c0_typeG.this }
 
-sig c6_typeN
+sig c0_typeN
 {}
-{ one @r_c6_typeN.this }
+{ one @r_c0_typeN.this }
 
-sig c7_bluetooth
+sig c0_bluetooth
 {}
-{ one @r_c7_bluetooth.this }
+{ one @r_c0_bluetooth.this }
 
-sig c8_mobile
+sig c0_mobile
 {}
-{ one @r_c8_mobile.this }
+{ one @r_c0_mobile.this }
 
-sig c9_nfc
+sig c0_nfc
 {}
-{ one @r_c9_nfc.this }
+{ one @r_c0_nfc.this }
 
-sig c10_location
-{ r_c11_gps : lone c11_gps
-, r_c12_agps : lone c12_agps }
-{ one @r_c10_location.this
-  let children = (r_c11_gps + r_c12_agps) | one children }
+sig c0_location
+{ r_c0_gps : lone c0_gps
+, r_c0_agps : lone c0_agps }
+{ one @r_c0_location.this
+  let children = (r_c0_gps + r_c0_agps) | one children }
 
-sig c11_gps
+sig c0_gps
 {}
-{ one @r_c11_gps.this }
+{ one @r_c0_gps.this }
 
-sig c12_agps
+sig c0_agps
 {}
-{ one @r_c12_agps.this }
+{ one @r_c0_agps.this }
 
-sig c13_gpu
+sig c0_gpu
 {}
-{ one @r_c13_gpu.this }
+{ one @r_c0_gpu.this }
 
-one sig c14_PhoneWithGps extends c1_Phone
+one sig c0_PhoneWithGps extends c0_Phone
 {}
-{ some (this.@r_c10_location).@r_c11_gps }
+{ some (this.@r_c0_location).@r_c0_gps }
 
-one sig c17_PhoneWithWifi extends c1_Phone
+one sig c0_PhoneWithWifi extends c0_Phone
 {}
-{ some ((this.@r_c2_networking).@r_c3_wifi).@r_c6_typeN }
+{ some ((this.@r_c0_networking).@r_c0_wifi).@r_c0_typeN }
 
-one sig c24_PhonewithWifiAndGpsNoBluetoothOrNfc extends c1_Phone
+one sig c0_PhonewithWifiAndGpsNoBluetoothOrNfc extends c0_Phone
 {}
-{ ((some (this.@r_c2_networking).@r_c3_wifi) && (some (this.@r_c10_location).@r_c11_gps)) && (!((some (this.@r_c2_networking).@r_c7_bluetooth) || (some (this.@r_c2_networking).@r_c9_nfc))) }
+{ ((some (this.@r_c0_networking).@r_c0_wifi) && (some (this.@r_c0_location).@r_c0_gps)) && (!((some (this.@r_c0_networking).@r_c0_bluetooth) || (some (this.@r_c0_networking).@r_c0_nfc))) }
 
-one sig c37_PhoneWithGpu extends c1_Phone
+one sig c0_PhoneWithGpu extends c0_Phone
 {}
-{ some this.@r_c13_gpu }
+{ some this.@r_c0_gpu }
 
-fact { all  p : c1_Phone | some (p.@r_c2_networking).@r_c8_mobile }
+fact { all  p : c0_Phone | some (p.@r_c0_networking).@r_c0_mobile }

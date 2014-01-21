@@ -1,5 +1,5 @@
 Name:                clafer
-Version:             0.3.4
+Version:             0.3.5
 Synopsis:            clafer compiles Clafer models to other formats, such as Alloy, XML, HTML, Dot.
 Description:         Clafer is a general purpose, lightweight, structural modeling language developed at GSD Lab, University of Waterloo. Lightweight modeling aims at improving the understanding of the problem domain in the early stages of software development and determining the requirements with fewer defects. Clafer's goal is to make modeling more accessible to a wider range of users and domains. The tool provides a reference language implementation. It translates models to other formats (e.g. Alloy, XML) to allow for reasoning with existing tools.
 Homepage:           http://clafer.org
@@ -41,17 +41,21 @@ Executable clafer
                     QuickCheck >= 2.5.1.1, 
                     transformers >= 0.3.0.0,
 
+                    data-stringmap >= 0.9.1,
+                    json-builder >= 0.3,
+                    string-conversions >= 0.3,
                     cmdargs >= 0.10.5, 
                     executable-path >= 0.0.3, 
                     glpk-hs >= 0.3.4,
                     HaXml >= 1.24,
                     MaybeT >= 0.1.2,
+                    split >= 0.2.2, 
                     test-framework >= 0.8, 
                     test-framework-hunit >= 0.3.0, 
                     test-framework-quickcheck2 >= 0.3.0.1,
                     test-framework-th >= 0.2.4,
 
-                    clafer == 0.3.4
+                    clafer == 0.3.5
     hs-source-dirs: src
 
 library 
@@ -74,11 +78,15 @@ library
                     QuickCheck >= 2.5.1.1, 
                     transformers >= 0.3.0.0,
 
+                    data-stringmap >= 0.9.1,
+                    json-builder >= 0.3,
+                    string-conversions >= 0.3,
                     cmdargs >= 0.10.5, 
                     executable-path >= 0.0.3, 
                     glpk-hs >= 0.3.4,
                     HaXml >= 1.24,
                     MaybeT >= 0.1.2,
+                    split >= 0.2.2, 
                     test-framework >= 0.8, 
                     test-framework-hunit >= 0.3.0, 
                     test-framework-quickcheck2 >= 0.3.0.1,
@@ -93,6 +101,8 @@ library
                      Language.Clafer.Comments,
                      Language.Clafer.Common,
                      Language.Clafer.Css,
+                     Language.Clafer.JSONMetaData,
+                     Language.Clafer.QNameUID,
                      Language.Clafer.Front.Absclafer,
                      Language.Clafer.Front.ErrM,
                      Language.Clafer.Front.LayoutResolver,
@@ -101,8 +111,10 @@ library
                      Language.Clafer.Front.Parclafer,
                      Language.Clafer.Front.Printclafer,
                      Language.Clafer.Generator.Alloy,
+                     Language.Clafer.Generator.Choco,
                      Language.Clafer.Generator.Graph,
                      Language.Clafer.Generator.Html,
+                     Language.Clafer.Generator.Python,
                      Language.Clafer.Generator.Schema,
                      Language.Clafer.Generator.Stats,
                      Language.Clafer.Generator.Xml,
@@ -145,17 +157,21 @@ Test-Suite test-suite
                     QuickCheck >= 2.5.1.1, 
                     transformers >= 0.3.0.0,
 
+                    data-stringmap >= 0.9.1,
+                    json-builder >= 0.3,
+                    string-conversions >= 0.3,
                     cmdargs >= 0.10.5, 
                     executable-path >= 0.0.3, 
                     glpk-hs >= 0.3.4,
                     HaXml >= 1.24,
                     MaybeT >= 0.1.2,
+                    split >= 0.2.2, 
                     test-framework >= 0.8, 
                     test-framework-hunit >= 0.3.0, 
                     test-framework-quickcheck2 >= 0.3.0.1,
                     test-framework-th >= 0.2.4,
 
-                    clafer == 0.3.4
+                    clafer == 0.3.5
 
     ghc-options     -Wall -fno-warn-unused-do-bind -fno-warn-orphans
 

@@ -2,17 +2,17 @@ open util/integer
 pred show {}
 
 
-abstract sig c1_Measurable
-{ r_c2_performance : one c2_performance }
+abstract sig c0_Measurable
+{ r_c0_performance : one c0_performance }
 
-sig c2_performance
+sig c0_performance
 { ref : one Int }
-{ one @r_c2_performance.this }
+{ one @r_c0_performance.this }
 
-one sig c3_D extends c1_Measurable
+one sig c0_D extends c0_Measurable
 {}
 
-one sig c4_C extends c1_Measurable
+one sig c0_C extends c0_Measurable
 {}
 
-fact { (c4_C.(@r_c2_performance.@ref)) = (-1.mul[(c3_D.(@r_c2_performance.@ref))]) }
+fact { (c0_C.(@r_c0_performance.@ref)) = (-1.mul[(c0_D.(@r_c0_performance.@ref))]) }

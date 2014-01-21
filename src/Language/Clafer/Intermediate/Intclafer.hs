@@ -25,6 +25,9 @@ import Language.Clafer.Front.Absclafer
 import Data.Monoid
 import Data.Foldable (foldMap)
 
+type UID = String    -- unique identifier of a clafer
+type CName = String  -- clafer name as declared in the source model
+
 data Ir =
   IRIModule IModule | 
   IRIElement IElement |
@@ -58,8 +61,8 @@ data IClafer =
       cinPos :: Span,         -- the position of the syntax in source code
       isAbstract :: Bool,     -- whether abstract or not (i.e., concrete)
       gcard :: Maybe IGCard,  -- group cardinality
-      ident :: String,        -- name
-      uid :: String,          -- (o) unique identifier
+      ident :: CName,         -- name
+      uid :: UID,             -- (o) unique identifier
       super:: ISuper,         -- superclafers
       card :: Maybe Interval, -- clafer cardinality
       glCard :: Interval,     -- (o) global cardinality
@@ -128,7 +131,7 @@ data IExp =
  | IStr String                   -- string
  | IClaferId {                   -- clafer name
       modName :: String,         -- module name - currently not used and empty since we have no module system
-      sident :: String,          -- name of the clafer being referred to
+      sident :: CName,          -- name of the clafer being referred to
       isTop :: Bool              -- identifier refers to a top-level definition
     }
   deriving (Eq,Ord,Show)
@@ -175,7 +178,7 @@ For IFunExp standard set of operators includes:
 data IDecl =
    IDecl {
       isDisj :: Bool,     -- is disjunct
-      decls :: [String],  -- a list of local names
+      decls :: [CName],  -- a list of local names
       body :: PExp        -- set to which local names refer to
     }
   deriving (Eq,Ord,Show)

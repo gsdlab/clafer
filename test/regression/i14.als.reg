@@ -2,14 +2,14 @@ open util/integer
 pred show {}
 
 
-abstract sig c1_A
-{ r_c2_a : one c2_a }
+abstract sig c0_A
+{ r_c0_a : one c0_a }
 
-sig c2_a
+sig c0_a
 { ref : one Int }
-{ one @r_c2_a.this }
+{ one @r_c0_a.this }
 
-one sig c3_A1 extends c1_A
+one sig c0_A1 extends c0_A
 {}
-{ (this.(@r_c2_a.@ref)) = 10 }
+{ (this.(@r_c0_a.@ref)) = 10 }
 

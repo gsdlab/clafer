@@ -23,12 +23,15 @@
 module Main where
 
 import Prelude hiding (writeFile, readFile, print, putStrLn)
-
+import qualified Data.Map as Map
+import qualified Data.List as List
+import Data.List.Split
+import Data.Maybe
+import Control.Monad.State
 import System.IO
 import System.Cmd
 import System.Exit
 import System.Timeout
-import Control.Monad.State
 import System.FilePath (dropExtension,takeBaseName)
 import System.Process (readProcessWithExitCode)
 
@@ -36,6 +39,9 @@ import Language.Clafer
 import Language.ClaferT
 import Language.Clafer.Css
 import Language.Clafer.ClaferArgs
+import Language.Clafer.JSONMetaData
+import Language.Clafer.QNameUID
+import Language.Clafer.Intermediate.Intclafer
 import Language.Clafer.Generator.Html (highlightErrors)
 import Language.Clafer.Generator.Graph (genSimpleGraph)
 
@@ -50,9 +56,9 @@ run _ args' input =
         addFragments $ fragments input
         parse
         compile
-        f' <- save
-        when (validate args') $ liftIO $ runValidate args' f'
-    if mode args' == Html
+        fs <- save args'
+        when (validate args') $ forM_ fs (liftIO . runValidate args' )
+    if Html `elem` (mode args')
       then htmlCatch result args' input
       else return ()
     result `cth` handleErrs
@@ -93,29 +99,68 @@ run _ args' input =
       exitFailure
   handleErr _ = error "Function handleErr from Main file was given an invalid argument"
 
-  save =
-    do
-      result <- generate
-      (iModule, _, _) <- getIr
-      result' <- if (add_graph args') && (mode args' == Html) 
-             then do
+save :: MonadIO m => ClaferArgs -> ClaferT m [ String ]
+save args'=
+  do
+    resultsMap <- generate
+    let results = snd $ List.unzip $ Map.toList resultsMap
+    -- print stats only once
+    when (not $ no_stats args') $ liftIO $ printStats results
+    -- save the outputs
+    (iModule, _, _) <- getIr
+    forM results $ \result -> do
+      result' <- if (add_graph args') && (Html `elem` (mode args') && ("dot" `List.isSuffixOf` (extension result))) 
+            then do
                    ast' <- getAst
                    (_, graph, _) <- liftIO $ readProcessWithExitCode "dot"  ["-Tsvg"] $ genSimpleGraph ast' iModule (takeBaseName $ file args') (show_references args')
                    return $ summary graph result
-                 else return result
-      liftIO $ when (not $ no_stats args') $ putStrLn (statistics result')
+            else return result
       let f = dropExtension $ file args'
       let f' = f ++ "." ++ (extension result)
       liftIO $ if console_output args' then putStrLn (outputCode result') else writeFile f' (outputCode result')
-      liftIO $ when (alloy_mapping args') $ writeFile (f ++ "." ++ "map") $ show (mappingToAlloy result')
-      return f'
-  summary graph result = result{outputCode=unlines $ summary' graph ("<pre>" ++ statistics result ++ "</pre>") (lines $ outputCode result)}
-  summary' _ _ [] = []
-  summary' graph stats ("<!-- # SUMMARY /-->":xs) = graph:stats:summary' graph stats xs
-  summary' graph stats ("<!-- # STATS /-->":xs) = stats:summary' graph stats xs
-  summary' graph stats ("<!-- # GRAPH /-->":xs) = graph:summary' graph stats xs
-  summary' graph stats ("<!-- # CVLGRAPH /-->":xs) = graph:summary' graph stats xs
-  summary' graph stats (x:xs) = x:summary' graph stats xs
+      liftIO $ when (alloy_mapping args') $ writeFile (f ++ ".map") $ show (mappingToAlloy result')
+      let 
+        qNameMaps :: QNameMaps
+        qNameMaps = deriveQNameMaps iModule
+      liftIO $ when (meta_data args') $ writeFile (f ++ ".cfr-map") $ generateJSONnameUIDMap qNameMaps
+      liftIO $ when (meta_data args' && inScopeModes) $ writeFile (f ++ ".cfr-scope") $ generateJSONScopes qNameMaps $ getScopesList resultsMap
+      return f'  
+  where
+    printStats :: [CompilerResult] -> IO ()
+    printStats []         = putStrLn "No compiler output."
+    printStats (r:_) = putStrLn (statistics r)
+
+    inScopeModes :: Bool
+    inScopeModes = 
+      Alloy `elem` mode args' ||
+      Alloy42 `elem` mode args' ||
+      Choco `elem` mode args'
+
+    getScopesList :: (Map.Map ClaferMode CompilerResult) -> [(UID, Integer)]
+    getScopesList    resultsMap =
+        let
+           alloyResult = Map.lookup Alloy resultsMap
+           alloy42Result = Map.lookup Alloy42 resultsMap
+           chocoResult = Map.lookup Choco resultsMap
+        in 
+           if (isNothing alloyResult)
+           then if (isNothing alloy42Result)
+                then if (isNothing chocoResult)
+                     then []
+                     else scopesList $ fromJust chocoResult
+                else scopesList $ fromJust alloy42Result
+           else scopesList $ fromJust alloyResult
+
+summary :: String -> CompilerResult -> CompilerResult
+summary graph result = result{outputCode=unlines $ summary' graph ("<pre>" ++ statistics result ++ "</pre>") (lines $ outputCode result)}
+
+summary' :: String -> String -> [String] -> [String]
+summary' _ _ [] = []
+summary' graph stats ("<!-- # SUMMARY /-->":xs) = graph:stats:summary' graph stats xs
+summary' graph stats ("<!-- # STATS /-->":xs) = stats:summary' graph stats xs
+summary' graph stats ("<!-- # GRAPH /-->":xs) = graph:summary' graph stats xs
+summary' graph stats ("<!-- # CVLGRAPH /-->":xs) = graph:summary' graph stats xs
+summary' graph stats (x:xs) = x:summary' graph stats xs
 
 conPutStrLn :: ClaferArgs -> String -> IO ()
 conPutStrLn args' s = when (not $ console_output args') $ putStrLn s
@@ -123,15 +168,17 @@ conPutStrLn args' s = when (not $ console_output args') $ putStrLn s
 runValidate :: ClaferArgs -> String -> IO ()
 runValidate args' fo = do
   let path = (tooldir args') ++ "/"
-  liftIO $ putStrLn ("Validating " ++ (file args'))
-  case (mode args') of
-    Xml -> do
+  liftIO $ putStrLn ("Validating '" ++ fo ++"'")
+  let modes = mode args' 
+  when (Xml `elem` modes && "xml" `List.isSuffixOf` fo) $ do
       writeFile "ClaferIR.xsd" claferIRXSD
       voidf $ system $ "java -classpath " ++ path ++ " XsdCheck ClaferIR.xsd " ++ fo
-    Alloy ->   voidf $ system $ validateAlloy path "4" ++ fo
-    Alloy42 -> voidf $ system $ validateAlloy path "4.2" ++ fo
-    Clafer ->  voidf $ system $ path ++ "clafer -s -m=clafer " ++ fo
-    _ -> error "Function runValidate from Main file was given an invalid mode"
+  when (Alloy `elem` modes && "als" `List.isSuffixOf` fo) $ do
+    voidf $ system $ validateAlloy path "4" ++ fo
+  when (Alloy42 `elem` modes && "als4" `List.isSuffixOf` fo) $ do
+    voidf $ system $ validateAlloy path "4.2" ++ fo
+  when (Clafer `elem` modes && "des.cfr" `List.isSuffixOf` fo) $ do  
+    voidf $ system $ "../dist/build/clafer/clafer -s -m=clafer " ++ fo
 
 validateAlloy :: String -> String -> String
 validateAlloy path version = "java -cp " ++ path ++ "alloy" ++ version ++ ".jar edu.mit.csail.sdg.alloy4whole.ExampleUsingTheCompiler "

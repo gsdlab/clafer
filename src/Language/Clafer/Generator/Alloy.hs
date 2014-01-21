@@ -29,7 +29,6 @@ import Language.Clafer.Common
 import Language.Clafer.ClaferArgs
 import Language.Clafer.Front.Absclafer
 import Language.Clafer.Intermediate.Intclafer
-import Language.Clafer.Intermediate.ScopeAnalysis
 
 -- representation of strings in chunks (for line/column numbering)
 data Concat = CString String | Concat {
@@ -87,10 +86,10 @@ cunlines xs = cconcat $ map (+++ (CString "\n")) xs
 -- Alloy code generation
 -- 07th Mayo 2012 Rafael Olaechea 
 --      Added Logic to print a goal block in case there is at least one goal.
-genModule :: ClaferArgs -> (IModule, GEnv) -> (Result, [(Span, IrTrace)])
-genModule    claferargs    (imodule, _)     = (flatten output, filter ((/= NoTrace) . snd) $ mapLineCol output)
+genModule :: ClaferArgs -> (IModule, GEnv) -> [(UID, Integer)] -> (Result, [(Span, IrTrace)])
+genModule    claferargs    (imodule, _)       scopes           = (flatten output, filter ((/= NoTrace) . snd) $ mapLineCol output)
   where
-  output = header claferargs imodule +++ (cconcat $ map (genDeclaration claferargs) (mDecls imodule)) +++ 
+  output = header claferargs scopes +++ (cconcat $ map (genDeclaration claferargs) (mDecls imodule)) +++ 
        if ((not $ skip_goals claferargs) && length goals_list > 0) then 
                 CString "objectives o_global {\n" +++   (cintercalate (CString ",\n") goals_list) +++   CString "\n}" 
        else  
@@ -98,19 +97,19 @@ genModule    claferargs    (imodule, _)     = (flatten output, filter ((/= NoTra
        where 
                 goals_list = filterNull (map (genDeclarationGoalsOnly claferargs) (mDecls imodule))
 
-header :: ClaferArgs -> IModule -> Concat
-header    args          imodule  = CString $ unlines
-    [ if (mode args) == Alloy42 then "" else "open util/integer"
+header :: ClaferArgs -> [(UID, Integer)] -> Concat
+header    args          scopes       = CString $ unlines
+    [ if Alloy42 `elem` (mode args) then "" else "open util/integer"
     , "pred show {}"
     , if (validate args) ||  (noalloyruncommand args)  
       then "" 
-      else "run show for 1" ++ genScopes (getScopeStrategy (scope_strategy args) imodule)
+      else "run show for 1" ++ genScopes scopes
     , ""]
     where
     genScopes [] = ""
-    genScopes scopes = " but " ++ intercalate ", " (map genScope scopes)
+    genScopes scopes' = " but " ++ intercalate ", " (map genScope scopes')
     
-genScope :: (String, Integer) -> String
+genScope :: (UID, Integer) -> String
 genScope    (uid', scope)       = show scope ++ " " ++ uid'
 
 
@@ -433,9 +432,11 @@ transformExp x = x
 
 genIFunExp :: String -> ClaferArgs -> [String] -> IExp             -> Concat
 genIFunExp    pid'       claferargs    resPath     (IFunExp op' exps') = 
-  if (op' == iSumSet) then genIFunExp pid' claferargs resPath (IFunExp iSumSet' [(removeright (head exps')), (getRight $ head exps')]) 
-    else if (op' == iSumSet') then Concat (IrPExp pid') $ intl exps'' (map CString $ genOp (mode (claferargs :: ClaferArgs)) iSumSet)
-      else Concat (IrPExp pid') $ intl exps'' (map CString $ genOp (mode (claferargs :: ClaferArgs)) op')
+  if (op' == iSumSet) 
+    then genIFunExp pid' claferargs resPath (IFunExp iSumSet' [(removeright (head exps')), (getRight $ head exps')]) 
+    else if (op' == iSumSet') 
+      then Concat (IrPExp pid') $ intl exps'' (map CString $ genOp (Alloy42 `elem` (mode claferargs)) iSumSet)
+      else Concat (IrPExp pid') $ intl exps'' (map CString $ genOp (Alloy42 `elem` (mode claferargs)) op')
   where
   intl
     | op' == iSumSet' = flip $ interleave
@@ -462,11 +463,12 @@ interleave (x:xs) ys = x : interleave ys xs
 brArg :: (a -> Concat) -> a -> Concat 
 brArg f arg = cconcat [CString "(", f arg, CString ")"]
 
-genOp :: ClaferMode -> String -> [String]
-genOp    Alloy42       op'
+--     isAlloy42
+genOp :: Bool -> String -> [String]
+genOp    True       op'
   | op' == iPlus = [".plus[", "]"]
   | op' == iSub  = [".minus[", "]"]
-  | otherwise   = genOp Alloy op'
+  | otherwise   = genOp False op'
 genOp    _             op'
   | op' == iSumSet = ["sum temp : "," | temp."]
   | op' `elem` unOps  = [op']

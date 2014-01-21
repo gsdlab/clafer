@@ -2,136 +2,136 @@ open util/integer
 pred show {}
 
 
-abstract sig c1_Feature
-{ r_c2_cost : one c2_cost }
+abstract sig c0_Feature
+{ r_c0_cost : one c0_cost }
 
-sig c2_cost
+sig c0_cost
 { ref : one Int }
-{ one @r_c2_cost.this }
+{ one @r_c0_cost.this }
 
-abstract sig c3_ComfortFeature extends c1_Feature
-{ r_c4_comfort : one c4_comfort }
+abstract sig c0_ComfortFeature extends c0_Feature
+{ r_c0_comfort : one c0_comfort }
 
-sig c4_comfort
+sig c0_comfort
 { ref : one Int }
-{ one @r_c4_comfort.this }
+{ one @r_c0_comfort.this }
 
-abstract sig c5_FuelFeature extends c3_ComfortFeature
-{ r_c6_fuel : one c6_fuel }
+abstract sig c0_FuelFeature extends c0_ComfortFeature
+{ r_c0_fuel : one c0_fuel }
 
-sig c6_fuel
+sig c0_fuel
 { ref : one Int }
-{ one @r_c6_fuel.this }
+{ one @r_c0_fuel.this }
 
-abstract sig c7_Car
-{ r_c8_ABS : lone c8_ABS
-, r_c14_CC : lone c14_CC
-, r_c48_Transmission : one c48_Transmission
-, r_c86_FCA : lone c86_FCA
-, r_c148_total_cost : one c148_total_cost
-, r_c155_total_comfort : one c155_total_comfort
-, r_c162_total_fuel : one c162_total_fuel }
-{ (this.(@r_c148_total_cost.@ref)) = (sum temp : (c1_Feature.@r_c2_cost) | temp.@ref)
-  (this.(@r_c155_total_comfort.@ref)) = (sum temp : (c3_ComfortFeature.@r_c2_cost) | temp.@ref)
-  (this.(@r_c162_total_fuel.@ref)) = (sum temp : (c5_FuelFeature.@r_c2_cost) | temp.@ref) }
+abstract sig c0_Car
+{ r_c0_ABS : lone c0_ABS
+, r_c0_CC : lone c0_CC
+, r_c0_Transmission : one c0_Transmission
+, r_c0_FCA : lone c0_FCA
+, r_c0_total_cost : one c0_total_cost
+, r_c0_total_comfort : one c0_total_comfort
+, r_c0_total_fuel : one c0_total_fuel }
+{ (this.(@r_c0_total_cost.@ref)) = (sum temp : (c0_Feature.@r_c0_cost) | temp.@ref)
+  (this.(@r_c0_total_comfort.@ref)) = (sum temp : (c0_ComfortFeature.@r_c0_cost) | temp.@ref)
+  (this.(@r_c0_total_fuel.@ref)) = (sum temp : (c0_FuelFeature.@r_c0_cost) | temp.@ref) }
 
-sig c8_ABS extends c1_Feature
+sig c0_ABS extends c0_Feature
 {}
-{ one @r_c8_ABS.this
-  (this.(@r_c2_cost.@ref)) = 2 }
+{ one @r_c0_ABS.this
+  (this.(@r_c0_cost.@ref)) = 2 }
 
-sig c14_CC extends c5_FuelFeature
-{ r_c30_ACC : lone c30_ACC }
-{ one @r_c14_CC.this
-  (this.(@r_c6_fuel.@ref)) = 1
-  (this.(@r_c4_comfort.@ref)) = 3
-  (this.(@r_c2_cost.@ref)) = 4 }
+sig c0_CC extends c0_FuelFeature
+{ r_c0_ACC : lone c0_ACC }
+{ one @r_c0_CC.this
+  (this.(@r_c0_fuel.@ref)) = 1
+  (this.(@r_c0_comfort.@ref)) = 3
+  (this.(@r_c0_cost.@ref)) = 4 }
 
-sig c30_ACC extends c5_FuelFeature
+sig c0_ACC extends c0_FuelFeature
 {}
-{ one @r_c30_ACC.this
-  (this.(@r_c6_fuel.@ref)) = 2
-  (this.(@r_c4_comfort.@ref)) = 6
-  (this.(@r_c2_cost.@ref)) = 3
-  some ((this.~@r_c30_ACC).~@r_c14_CC).@r_c86_FCA }
+{ one @r_c0_ACC.this
+  (this.(@r_c0_fuel.@ref)) = 2
+  (this.(@r_c0_comfort.@ref)) = 6
+  (this.(@r_c0_cost.@ref)) = 3
+  some ((this.~@r_c0_ACC).~@r_c0_CC).@r_c0_FCA }
 
-sig c48_Transmission extends c1_Feature
-{ r_c54_Automatic : lone c54_Automatic
-, r_c70_Manual : lone c70_Manual }
-{ one @r_c48_Transmission.this
-  let children = (r_c54_Automatic + r_c70_Manual) | one children
-  (this.(@r_c2_cost.@ref)) = 0 }
+sig c0_Transmission extends c0_Feature
+{ r_c0_Automatic : lone c0_Automatic
+, r_c0_Manual : lone c0_Manual }
+{ one @r_c0_Transmission.this
+  let children = (r_c0_Automatic + r_c0_Manual) | one children
+  (this.(@r_c0_cost.@ref)) = 0 }
 
-sig c54_Automatic extends c5_FuelFeature
+sig c0_Automatic extends c0_FuelFeature
 {}
-{ one @r_c54_Automatic.this
-  (this.(@r_c6_fuel.@ref)) = 2
-  (this.(@r_c4_comfort.@ref)) = 2
-  (this.(@r_c2_cost.@ref)) = 3 }
+{ one @r_c0_Automatic.this
+  (this.(@r_c0_fuel.@ref)) = 2
+  (this.(@r_c0_comfort.@ref)) = 2
+  (this.(@r_c0_cost.@ref)) = 3 }
 
-sig c70_Manual extends c5_FuelFeature
+sig c0_Manual extends c0_FuelFeature
 {}
-{ one @r_c70_Manual.this
-  (this.(@r_c6_fuel.@ref)) = 0
-  (this.(@r_c4_comfort.@ref)) = 1
-  (this.(@r_c2_cost.@ref)) = 2 }
+{ one @r_c0_Manual.this
+  (this.(@r_c0_fuel.@ref)) = 0
+  (this.(@r_c0_comfort.@ref)) = 1
+  (this.(@r_c0_cost.@ref)) = 2 }
 
-sig c86_FCA extends c5_FuelFeature
-{ r_c102_Sensor : one c102_Sensor
-, r_c120_Alert : lone c120_Alert }
-{ one @r_c86_FCA.this
-  (this.(@r_c6_fuel.@ref)) = 2
-  (this.(@r_c4_comfort.@ref)) = 4
-  (this.(@r_c2_cost.@ref)) = 5 }
+sig c0_FCA extends c0_FuelFeature
+{ r_c0_Sensor : one c0_Sensor
+, r_c0_Alert : lone c0_Alert }
+{ one @r_c0_FCA.this
+  (this.(@r_c0_fuel.@ref)) = 2
+  (this.(@r_c0_comfort.@ref)) = 4
+  (this.(@r_c0_cost.@ref)) = 5 }
 
-sig c102_Sensor extends c1_Feature
-{ r_c108_Radar : lone c108_Radar
-, r_c114_Lidar : lone c114_Lidar }
-{ one @r_c102_Sensor.this
-  let children = (r_c108_Radar + r_c114_Lidar) | one children
-  (this.(@r_c2_cost.@ref)) = 0 }
+sig c0_Sensor extends c0_Feature
+{ r_c0_Radar : lone c0_Radar
+, r_c0_Lidar : lone c0_Lidar }
+{ one @r_c0_Sensor.this
+  let children = (r_c0_Radar + r_c0_Lidar) | one children
+  (this.(@r_c0_cost.@ref)) = 0 }
 
-sig c108_Radar extends c1_Feature
+sig c0_Radar extends c0_Feature
 {}
-{ one @r_c108_Radar.this
-  (this.(@r_c2_cost.@ref)) = 2 }
+{ one @r_c0_Radar.this
+  (this.(@r_c0_cost.@ref)) = 2 }
 
-sig c114_Lidar extends c1_Feature
+sig c0_Lidar extends c0_Feature
 {}
-{ one @r_c114_Lidar.this
-  (this.(@r_c2_cost.@ref)) = 4 }
+{ one @r_c0_Lidar.this
+  (this.(@r_c0_cost.@ref)) = 4 }
 
-sig c120_Alert extends c1_Feature
-{ r_c126_Haptic : lone c126_Haptic
-, r_c137_Audible : lone c137_Audible }
-{ one @r_c120_Alert.this
-  let children = (r_c126_Haptic + r_c137_Audible) | one children
-  (this.(@r_c2_cost.@ref)) = 0 }
+sig c0_Alert extends c0_Feature
+{ r_c0_Haptic : lone c0_Haptic
+, r_c0_Audible : lone c0_Audible }
+{ one @r_c0_Alert.this
+  let children = (r_c0_Haptic + r_c0_Audible) | one children
+  (this.(@r_c0_cost.@ref)) = 0 }
 
-sig c126_Haptic extends c3_ComfortFeature
+sig c0_Haptic extends c0_ComfortFeature
 {}
-{ one @r_c126_Haptic.this
-  (this.(@r_c4_comfort.@ref)) = 4
-  (this.(@r_c2_cost.@ref)) = 2 }
+{ one @r_c0_Haptic.this
+  (this.(@r_c0_comfort.@ref)) = 4
+  (this.(@r_c0_cost.@ref)) = 2 }
 
-sig c137_Audible extends c3_ComfortFeature
+sig c0_Audible extends c0_ComfortFeature
 {}
-{ one @r_c137_Audible.this
-  (this.(@r_c4_comfort.@ref)) = 2
-  (this.(@r_c2_cost.@ref)) = 1 }
+{ one @r_c0_Audible.this
+  (this.(@r_c0_comfort.@ref)) = 2
+  (this.(@r_c0_cost.@ref)) = 1 }
 
-sig c148_total_cost
+sig c0_total_cost
 { ref : one Int }
-{ one @r_c148_total_cost.this }
+{ one @r_c0_total_cost.this }
 
-sig c155_total_comfort
+sig c0_total_comfort
 { ref : one Int }
-{ one @r_c155_total_comfort.this }
+{ one @r_c0_total_comfort.this }
 
-sig c162_total_fuel
+sig c0_total_fuel
 { ref : one Int }
-{ one @r_c162_total_fuel.this }
+{ one @r_c0_total_fuel.this }
 
-one sig c169_aCar extends c7_Car
+one sig c0_aCar extends c0_Car
 {}
 

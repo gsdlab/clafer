@@ -2,231 +2,231 @@ open util/integer
 pred show {}
 
 
-one sig c1_claferCompiler extends c5_claferLib
+one sig c0_claferCompiler extends c0_claferLib
 {}
 
-one sig c2_claferIG extends c5_claferLib
+one sig c0_claferIG extends c0_claferLib
 {}
 
-one sig c3_claferMOO extends c5_claferLib
-{ r_c4_moo : one c4_moo }
+one sig c0_claferMOO extends c0_claferLib
+{ r_c0_moo : one c0_moo }
 
-one sig c4_moo
+one sig c0_moo
 {}
 
-abstract sig c5_claferLib
-{ r_c6_common : one c6_common
-, r_c7_front : one c7_front
-, r_c8_intermediate : one c8_intermediate
-, r_c9_optimizer : one c9_optimizer
-, r_c10_generator : one c10_generator }
+abstract sig c0_claferLib
+{ r_c0_common : one c0_common
+, r_c0_front : one c0_front
+, r_c0_intermediate : one c0_intermediate
+, r_c0_optimizer : one c0_optimizer
+, r_c0_generator : one c0_generator }
 
-sig c6_common
+sig c0_common
 {}
-{ one @r_c6_common.this }
+{ one @r_c0_common.this }
 
-sig c7_front extends c101_Front
+sig c0_front extends c0_Front
 {}
-{ one @r_c7_front.this }
+{ one @r_c0_front.this }
 
-sig c8_intermediate extends c109_Intermediate
+sig c0_intermediate extends c0_Intermediate
 {}
-{ one @r_c8_intermediate.this }
+{ one @r_c0_intermediate.this }
 
-sig c9_optimizer
+sig c0_optimizer
 {}
-{ one @r_c9_optimizer.this }
+{ one @r_c0_optimizer.this }
 
-sig c10_generator extends c124_Generator
+sig c0_generator extends c0_Generator
 {}
-{ one @r_c10_generator.this }
+{ one @r_c0_generator.this }
 
-abstract sig c11_Representation
-{}
-
-one sig c12_text extends c11_Representation
+abstract sig c0_Representation
 {}
 
-one sig c13_tokens extends c11_Representation
+one sig c0_text extends c0_Representation
 {}
 
-one sig c14_ast extends c11_Representation
+one sig c0_tokens extends c0_Representation
 {}
 
-one sig c15_ir extends c11_Representation
+one sig c0_ast extends c0_Representation
 {}
 
-abstract sig c16_io
-{ r_c17_input : one c17_input
-, r_c27_output : one c27_output }
-{ all disj x, y : this.@r_c17_input | (x.@ref) != (y.@ref)
-  all disj x, y : this.@r_c27_output | (x.@ref) != (y.@ref) }
-
-sig c17_input
-{ ref : one c11_Representation }
-{ one @r_c17_input.this }
-
-sig c27_output
-{ ref : one c11_Representation }
-{ one @r_c27_output.this }
-
-abstract sig c37_text2tokens extends c16_io
+one sig c0_ir extends c0_Representation
 {}
-{ ((this.(@r_c17_input.@ref)) = c12_text) && ((this.(@r_c27_output.@ref)) = c13_tokens) }
 
-abstract sig c45_tokens2tokens extends c16_io
+abstract sig c0_io
+{ r_c0_input : one c0_input
+, r_c0_output : one c0_output }
+{ all disj x, y : this.@r_c0_input | (x.@ref) != (y.@ref)
+  all disj x, y : this.@r_c0_output | (x.@ref) != (y.@ref) }
+
+sig c0_input
+{ ref : one c0_Representation }
+{ one @r_c0_input.this }
+
+sig c0_output
+{ ref : one c0_Representation }
+{ one @r_c0_output.this }
+
+abstract sig c0_text2tokens extends c0_io
 {}
-{ ((this.(@r_c17_input.@ref)) = c13_tokens) && ((this.(@r_c27_output.@ref)) = c13_tokens) }
+{ ((this.(@r_c0_input.@ref)) = c0_text) && ((this.(@r_c0_output.@ref)) = c0_tokens) }
 
-abstract sig c53_tokens2ast extends c16_io
+abstract sig c0_tokens2tokens extends c0_io
 {}
-{ ((this.(@r_c17_input.@ref)) = c13_tokens) && ((this.(@r_c27_output.@ref)) = c14_ast) }
+{ ((this.(@r_c0_input.@ref)) = c0_tokens) && ((this.(@r_c0_output.@ref)) = c0_tokens) }
 
-abstract sig c61_ast2ast extends c16_io
+abstract sig c0_tokens2ast extends c0_io
 {}
-{ ((this.(@r_c17_input.@ref)) = c14_ast) && ((this.(@r_c27_output.@ref)) = c14_ast) }
+{ ((this.(@r_c0_input.@ref)) = c0_tokens) && ((this.(@r_c0_output.@ref)) = c0_ast) }
 
-abstract sig c69_ast2text extends c16_io
+abstract sig c0_ast2ast extends c0_io
 {}
-{ ((this.(@r_c17_input.@ref)) = c14_ast) && ((this.(@r_c27_output.@ref)) = c12_text) }
+{ ((this.(@r_c0_input.@ref)) = c0_ast) && ((this.(@r_c0_output.@ref)) = c0_ast) }
 
-abstract sig c77_ast2ir extends c16_io
+abstract sig c0_ast2text extends c0_io
 {}
-{ ((this.(@r_c17_input.@ref)) = c14_ast) && ((this.(@r_c27_output.@ref)) = c15_ir) }
+{ ((this.(@r_c0_input.@ref)) = c0_ast) && ((this.(@r_c0_output.@ref)) = c0_text) }
 
-abstract sig c85_ir2ir extends c16_io
+abstract sig c0_ast2ir extends c0_io
 {}
-{ ((this.(@r_c17_input.@ref)) = c15_ir) && ((this.(@r_c27_output.@ref)) = c15_ir) }
+{ ((this.(@r_c0_input.@ref)) = c0_ast) && ((this.(@r_c0_output.@ref)) = c0_ir) }
 
-abstract sig c93_ir2text extends c16_io
+abstract sig c0_ir2ir extends c0_io
 {}
-{ ((this.(@r_c17_input.@ref)) = c15_ir) && ((this.(@r_c27_output.@ref)) = c12_text) }
+{ ((this.(@r_c0_input.@ref)) = c0_ir) && ((this.(@r_c0_output.@ref)) = c0_ir) }
 
-abstract sig c101_Front
-{ r_c102_lexer : one c102_lexer
-, r_c103_layoutResolver : lone c103_layoutResolver
-, r_c106_parser : one c106_parser
-, r_c107_mapper : one c107_mapper
-, r_c108_prettyPrinter : lone c108_prettyPrinter }
-
-sig c102_lexer extends c37_text2tokens
+abstract sig c0_ir2text extends c0_io
 {}
-{ one @r_c102_lexer.this }
+{ ((this.(@r_c0_input.@ref)) = c0_ir) && ((this.(@r_c0_output.@ref)) = c0_text) }
 
-sig c103_layoutResolver extends c45_tokens2tokens
-{ r_c104_stable : lone c104_stable
-, r_c105_experimental : lone c105_experimental }
-{ one @r_c103_layoutResolver.this
-  let children = (r_c104_stable + r_c105_experimental) | one children }
+abstract sig c0_Front
+{ r_c0_lexer : one c0_lexer
+, r_c0_layoutResolver : lone c0_layoutResolver
+, r_c0_parser : one c0_parser
+, r_c0_mapper : one c0_mapper
+, r_c0_prettyPrinter : lone c0_prettyPrinter }
 
-sig c104_stable
+sig c0_lexer extends c0_text2tokens
 {}
-{ one @r_c104_stable.this }
+{ one @r_c0_lexer.this }
 
-sig c105_experimental
+sig c0_layoutResolver extends c0_tokens2tokens
+{ r_c0_stable : lone c0_stable
+, r_c0_experimental : lone c0_experimental }
+{ one @r_c0_layoutResolver.this
+  let children = (r_c0_stable + r_c0_experimental) | one children }
+
+sig c0_stable
 {}
-{ one @r_c105_experimental.this }
+{ one @r_c0_stable.this }
 
-sig c106_parser extends c53_tokens2ast
+sig c0_experimental
 {}
-{ one @r_c106_parser.this }
+{ one @r_c0_experimental.this }
 
-sig c107_mapper extends c61_ast2ast
+sig c0_parser extends c0_tokens2ast
 {}
-{ one @r_c107_mapper.this }
+{ one @r_c0_parser.this }
 
-sig c108_prettyPrinter extends c69_ast2text
+sig c0_mapper extends c0_ast2ast
 {}
-{ one @r_c108_prettyPrinter.this }
+{ one @r_c0_mapper.this }
 
-abstract sig c109_Intermediate
-{ r_c110_desugarer : one c110_desugarer
-, r_c111_findDuplicates : lone c111_findDuplicates
-, r_c112_resolver : lone c112_resolver
-, r_c121_transformer : one c121_transformer
-, r_c122_stringAnalyzer : lone c122_stringAnalyzer
-, r_c123_scopeAnalysis : lone c123_scopeAnalysis }
-
-sig c110_desugarer extends c77_ast2ir
+sig c0_prettyPrinter extends c0_ast2text
 {}
-{ one @r_c110_desugarer.this }
+{ one @r_c0_prettyPrinter.this }
 
-sig c111_findDuplicates
+abstract sig c0_Intermediate
+{ r_c0_desugarer : one c0_desugarer
+, r_c0_findDuplicates : lone c0_findDuplicates
+, r_c0_resolver : lone c0_resolver
+, r_c0_transformer : one c0_transformer
+, r_c0_stringAnalyzer : lone c0_stringAnalyzer
+, r_c0_scopeAnalysis : lone c0_scopeAnalysis }
+
+sig c0_desugarer extends c0_ast2ir
 {}
-{ one @r_c111_findDuplicates.this }
+{ one @r_c0_desugarer.this }
 
-sig c112_resolver extends c85_ir2ir
-{ r_c113_setUid : one c113_setUid
-, r_c114_inheritanceFlattener : lone c114_inheritanceFlattener
-, r_c115_nameResolution : one c115_nameResolution }
-{ one @r_c112_resolver.this }
-
-sig c113_setUid
+sig c0_findDuplicates
 {}
-{ one @r_c113_setUid.this }
+{ one @r_c0_findDuplicates.this }
 
-sig c114_inheritanceFlattener
+sig c0_resolver extends c0_ir2ir
+{ r_c0_setUid : one c0_setUid
+, r_c0_inheritanceFlattener : lone c0_inheritanceFlattener
+, r_c0_nameResolution : one c0_nameResolution }
+{ one @r_c0_resolver.this }
+
+sig c0_setUid
 {}
-{ one @r_c114_inheritanceFlattener.this }
+{ one @r_c0_setUid.this }
 
-sig c115_nameResolution
-{ r_c116_nameResolver : lone c116_nameResolver
-, r_c119_inheritanceResolver : one c119_inheritanceResolver
-, r_c120_typeResolver : one c120_typeResolver }
-{ one @r_c115_nameResolution.this }
-
-sig c116_nameResolver
+sig c0_inheritanceFlattener
 {}
-{ one @r_c116_nameResolver.this
-  some (((this.~@r_c116_nameResolver).~@r_c115_nameResolution).~@r_c112_resolver).@r_c111_findDuplicates }
+{ one @r_c0_inheritanceFlattener.this }
 
-sig c119_inheritanceResolver
+sig c0_nameResolution
+{ r_c0_nameResolver : lone c0_nameResolver
+, r_c0_inheritanceResolver : one c0_inheritanceResolver
+, r_c0_typeResolver : one c0_typeResolver }
+{ one @r_c0_nameResolution.this }
+
+sig c0_nameResolver
 {}
-{ one @r_c119_inheritanceResolver.this }
+{ one @r_c0_nameResolver.this
+  some (((this.~@r_c0_nameResolver).~@r_c0_nameResolution).~@r_c0_resolver).@r_c0_findDuplicates }
 
-sig c120_typeResolver
+sig c0_inheritanceResolver
 {}
-{ one @r_c120_typeResolver.this }
+{ one @r_c0_inheritanceResolver.this }
 
-sig c121_transformer extends c85_ir2ir
+sig c0_typeResolver
 {}
-{ one @r_c121_transformer.this }
+{ one @r_c0_typeResolver.this }
 
-sig c122_stringAnalyzer extends c85_ir2ir
+sig c0_transformer extends c0_ir2ir
 {}
-{ one @r_c122_stringAnalyzer.this }
+{ one @r_c0_transformer.this }
 
-sig c123_scopeAnalysis extends c85_ir2ir
+sig c0_stringAnalyzer extends c0_ir2ir
 {}
-{ one @r_c123_scopeAnalysis.this }
+{ one @r_c0_stringAnalyzer.this }
 
-abstract sig c124_Generator extends c93_ir2text
-{ r_c125_alloy : lone c125_alloy
-, r_c135_stats : lone c135_stats
-, r_c136_xml : lone c136_xml
-, r_c137_desClafer : lone c137_desClafer
-, r_c142_xsdSchema : lone c142_xsdSchema }
-{ let children = (r_c125_alloy + r_c135_stats + r_c136_xml + r_c137_desClafer + r_c142_xsdSchema) | one children }
-
-sig c125_alloy
+sig c0_scopeAnalysis extends c0_ir2ir
 {}
-{ one @r_c125_alloy.this
-  (some c109_Intermediate.@r_c122_stringAnalyzer) && (some c109_Intermediate.@r_c123_scopeAnalysis) }
+{ one @r_c0_scopeAnalysis.this }
 
-sig c135_stats
-{}
-{ one @r_c135_stats.this }
+abstract sig c0_Generator extends c0_ir2text
+{ r_c0_alloy : lone c0_alloy
+, r_c0_stats : lone c0_stats
+, r_c0_xml : lone c0_xml
+, r_c0_desClafer : lone c0_desClafer
+, r_c0_xsdSchema : lone c0_xsdSchema }
+{ let children = (r_c0_alloy + r_c0_stats + r_c0_xml + r_c0_desClafer + r_c0_xsdSchema) | one children }
 
-sig c136_xml
+sig c0_alloy
 {}
-{ one @r_c136_xml.this }
+{ one @r_c0_alloy.this
+  (some c0_Intermediate.@r_c0_stringAnalyzer) && (some c0_Intermediate.@r_c0_scopeAnalysis) }
 
-sig c137_desClafer
+sig c0_stats
 {}
-{ one @r_c137_desClafer.this
-  some c101_Front.@r_c108_prettyPrinter }
+{ one @r_c0_stats.this }
 
-sig c142_xsdSchema
+sig c0_xml
 {}
-{ one @r_c142_xsdSchema.this }
+{ one @r_c0_xml.this }
+
+sig c0_desClafer
+{}
+{ one @r_c0_desClafer.this
+  some c0_Front.@r_c0_prettyPrinter }
+
+sig c0_xsdSchema
+{}
+{ one @r_c0_xsdSchema.this }
 

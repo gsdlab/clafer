@@ -2,19 +2,19 @@ open util/integer
 pred show {}
 
 
-abstract sig c1_Path
-{ r_c2_p : lone c2_p
-, r_c3_isDir : lone c3_isDir }
-{ (some this.@r_c3_isDir) => (some this.@r_c2_p) }
+abstract sig c0_Path
+{ r_c0_p : lone c0_p
+, r_c0_isDir : lone c0_isDir }
+{ (some this.@r_c0_isDir) => (some this.@r_c0_p) }
 
-sig c2_p extends c1_Path
+sig c0_p extends c0_Path
 {}
-{ one @r_c2_p.this }
+{ one @r_c0_p.this }
 
-sig c3_isDir
+sig c0_isDir
 {}
-{ one @r_c3_isDir.this }
+{ one @r_c0_isDir.this }
 
-one sig c13_pth extends c1_Path
+one sig c0_pth extends c0_Path
 {}
 

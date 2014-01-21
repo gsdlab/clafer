@@ -1,0 +1,8 @@
+open util/integer
+pred show {}
+
+
+one sig c0_A
+{}
+{ ((1.add[2]).mul[3]) = 9 }
+

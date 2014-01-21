@@ -2,254 +2,254 @@ open util/integer
 pred show {}
 
 
-one sig c1_ExamplePhone1
+one sig c0_ExamplePhone1
+{ r_c0_display : one c0_display
+, r_c0_GSM : one c0_GSM
+, r_c0_CPU : one c0_CPU
+, r_c0_keyboard : one c0_keyboard }
+
+one sig c0_display
+{ r_c0_LCD : one c0_LCD }
+
+one sig c0_LCD
+{}
+
+one sig c0_GSM
+{}
+
+one sig c0_CPU
+{}
+
+one sig c0_keyboard
+{}
+
+one sig c0_ExamplePhone2
+{ r_c1_display : one c1_display
+, r_c1_GSM : one c1_GSM
+, r_c0_touchscreen : one c0_touchscreen }
+
+one sig c1_display
+{ r_c0_OLED : one c0_OLED }
+
+one sig c0_OLED
+{}
+
+one sig c1_GSM
+{}
+
+one sig c0_touchscreen
+{}
+
+one sig c0_ExampleTablet1
 { r_c2_display : one c2_display
-, r_c4_GSM : one c4_GSM
-, r_c5_CPU : one c5_CPU
-, r_c6_keyboard : one c6_keyboard }
+, r_c0_HSPA : one c0_HSPA
+, r_c1_CPU : set c1_CPU
+, r_c1_touchscreen : one c1_touchscreen }
+{ 4 <= #r_c1_CPU and #r_c1_CPU <= 4 }
 
 one sig c2_display
-{ r_c3_LCD : one c3_LCD }
+{ r_c0_AMOLED : one c0_AMOLED }
 
-one sig c3_LCD
+one sig c0_AMOLED
 {}
 
-one sig c4_GSM
+one sig c0_HSPA
 {}
 
-one sig c5_CPU
+sig c1_CPU
+{}
+{ one @r_c1_CPU.this }
+
+one sig c1_touchscreen
 {}
 
-one sig c6_keyboard
+one sig c0_ExamplePhone3
+{ r_c3_display : one c3_display
+, r_c2_GSM : one c2_GSM
+, r_c2_CPU : set c2_CPU
+, r_c1_keyboard : one c1_keyboard }
+{ 4 <= #r_c2_CPU and #r_c2_CPU <= 4 }
+
+one sig c3_display
+{ r_c1_LCD : one c1_LCD }
+
+one sig c1_LCD
 {}
 
-one sig c7_ExamplePhone2
-{ r_c8_display : one c8_display
-, r_c10_GSM : one c10_GSM
-, r_c11_touchscreen : one c11_touchscreen }
-
-one sig c8_display
-{ r_c9_OLED : one c9_OLED }
-
-one sig c9_OLED
+one sig c2_GSM
 {}
 
-one sig c10_GSM
+sig c2_CPU
+{}
+{ one @r_c2_CPU.this }
+
+one sig c1_keyboard
 {}
 
-one sig c11_touchscreen
+one sig c0_ExampleTablet2
+{ r_c4_display : one c4_display
+, r_c1_HSPA : one c1_HSPA
+, r_c3_CPU : set c3_CPU
+, r_c2_keyboard : one c2_keyboard }
+{ 4 <= #r_c3_CPU and #r_c3_CPU <= 4 }
+
+one sig c4_display
+{ r_c1_AMOLED : one c1_AMOLED }
+
+one sig c1_AMOLED
 {}
 
-one sig c12_ExampleTablet1
-{ r_c13_display : one c13_display
-, r_c15_HSPA : one c15_HSPA
-, r_c16_CPU : set c16_CPU
-, r_c17_touchscreen : one c17_touchscreen }
-{ 4 <= #r_c16_CPU and #r_c16_CPU <= 4 }
-
-one sig c13_display
-{ r_c14_AMOLED : one c14_AMOLED }
-
-one sig c14_AMOLED
+one sig c1_HSPA
 {}
 
-one sig c15_HSPA
+sig c3_CPU
+{}
+{ one @r_c3_CPU.this }
+
+one sig c2_keyboard
 {}
 
-sig c16_CPU
+fact { #c0_AndroidDevice1 = 0 }
+abstract sig c0_AndroidDevice1
+{ r_c5_display : one c5_display
+, r_c3_GSM : one c3_GSM
+, r_c2_HSPA : lone c2_HSPA
+, r_c4_CPU : set c4_CPU
+, r_c0_input : one c0_input }
+{ 1 <= #r_c4_CPU and #r_c4_CPU <= 4 }
+
+sig c5_display
+{ r_c2_LCD : lone c2_LCD
+, r_c1_OLED : lone c1_OLED
+, r_c2_AMOLED : lone c2_AMOLED }
+{ one @r_c5_display.this
+  let children = (r_c2_LCD + r_c1_OLED + r_c2_AMOLED) | one children }
+
+sig c2_LCD
 {}
-{ one @r_c16_CPU.this }
+{ one @r_c2_LCD.this }
 
-one sig c17_touchscreen
+sig c1_OLED
 {}
+{ one @r_c1_OLED.this }
 
-one sig c18_ExamplePhone3
-{ r_c19_display : one c19_display
-, r_c21_GSM : one c21_GSM
-, r_c22_CPU : set c22_CPU
-, r_c23_keyboard : one c23_keyboard }
-{ 4 <= #r_c22_CPU and #r_c22_CPU <= 4 }
-
-one sig c19_display
-{ r_c20_LCD : one c20_LCD }
-
-one sig c20_LCD
+sig c2_AMOLED
 {}
+{ one @r_c2_AMOLED.this
+  no (((this.~@r_c2_AMOLED).~@r_c5_display).@r_c0_input).@r_c3_keyboard }
 
-one sig c21_GSM
+sig c3_GSM
 {}
+{ one @r_c3_GSM.this }
 
-sig c22_CPU
+sig c2_HSPA
 {}
-{ one @r_c22_CPU.this }
+{ one @r_c2_HSPA.this }
 
-one sig c23_keyboard
+sig c4_CPU
 {}
+{ one @r_c4_CPU.this }
 
-one sig c24_ExampleTablet2
-{ r_c25_display : one c25_display
-, r_c27_HSPA : one c27_HSPA
-, r_c28_CPU : set c28_CPU
-, r_c29_keyboard : one c29_keyboard }
-{ 4 <= #r_c28_CPU and #r_c28_CPU <= 4 }
+sig c0_input
+{ r_c3_keyboard : lone c3_keyboard
+, r_c2_touchscreen : lone c2_touchscreen }
+{ one @r_c0_input.this
+  let children = (r_c3_keyboard + r_c2_touchscreen) | one children }
 
-one sig c25_display
-{ r_c26_AMOLED : one c26_AMOLED }
-
-one sig c26_AMOLED
+sig c3_keyboard
 {}
+{ one @r_c3_keyboard.this }
 
-one sig c27_HSPA
+sig c2_touchscreen
 {}
+{ one @r_c2_touchscreen.this }
 
-sig c28_CPU
+abstract sig c0_AndroidPhone extends c0_AndroidDevice
 {}
-{ one @r_c28_CPU.this }
+{ some this.@r_c4_GSM
+  (#(this.@r_c5_CPU)) < 4 }
 
-one sig c29_keyboard
+abstract sig c0_AndroidDevice
+{ r_c6_display : one c6_display
+, r_c4_GSM : lone c4_GSM
+, r_c3_HSPA : lone c3_HSPA
+, r_c5_CPU : set c5_CPU
+, r_c1_input : one c1_input }
+{ 1 <= #r_c5_CPU and #r_c5_CPU <= 4 }
+
+sig c6_display
+{ r_c3_LCD : lone c3_LCD
+, r_c2_OLED : lone c2_OLED
+, r_c3_AMOLED : lone c3_AMOLED }
+{ one @r_c6_display.this
+  let children = (r_c3_LCD + r_c2_OLED + r_c3_AMOLED) | one children }
+
+sig c3_LCD
 {}
+{ one @r_c3_LCD.this }
 
-fact { #c30_AndroidDevice1 = 0 }
-abstract sig c30_AndroidDevice1
-{ r_c31_display : one c31_display
-, r_c37_GSM : one c37_GSM
-, r_c38_HSPA : lone c38_HSPA
-, r_c39_CPU : set c39_CPU
-, r_c40_input : one c40_input }
-{ 1 <= #r_c39_CPU and #r_c39_CPU <= 4 }
-
-sig c31_display
-{ r_c32_LCD : lone c32_LCD
-, r_c33_OLED : lone c33_OLED
-, r_c34_AMOLED : lone c34_AMOLED }
-{ one @r_c31_display.this
-  let children = (r_c32_LCD + r_c33_OLED + r_c34_AMOLED) | one children }
-
-sig c32_LCD
+sig c2_OLED
 {}
-{ one @r_c32_LCD.this }
+{ one @r_c2_OLED.this }
 
-sig c33_OLED
+sig c3_AMOLED
 {}
-{ one @r_c33_OLED.this }
+{ one @r_c3_AMOLED.this
+  no (((this.~@r_c3_AMOLED).~@r_c6_display).@r_c1_input).@r_c4_keyboard }
 
-sig c34_AMOLED
+sig c4_GSM
 {}
-{ one @r_c34_AMOLED.this
-  no (((this.~@r_c34_AMOLED).~@r_c31_display).@r_c40_input).@r_c41_keyboard }
+{ one @r_c4_GSM.this }
 
-sig c37_GSM
+sig c3_HSPA
 {}
-{ one @r_c37_GSM.this }
+{ one @r_c3_HSPA.this }
 
-sig c38_HSPA
+sig c5_CPU
 {}
-{ one @r_c38_HSPA.this }
+{ one @r_c5_CPU.this }
 
-sig c39_CPU
+sig c1_input
+{ r_c4_keyboard : lone c4_keyboard
+, r_c3_touchscreen : lone c3_touchscreen }
+{ one @r_c1_input.this
+  let children = (r_c4_keyboard + r_c3_touchscreen) | one children }
+
+sig c4_keyboard
 {}
-{ one @r_c39_CPU.this }
+{ one @r_c4_keyboard.this }
 
-sig c40_input
-{ r_c41_keyboard : lone c41_keyboard
-, r_c42_touchscreen : lone c42_touchscreen }
-{ one @r_c40_input.this
-  let children = (r_c41_keyboard + r_c42_touchscreen) | one children }
-
-sig c41_keyboard
+sig c3_touchscreen
 {}
-{ one @r_c41_keyboard.this }
+{ one @r_c3_touchscreen.this }
 
-sig c42_touchscreen
-{}
-{ one @r_c42_touchscreen.this }
+one sig c0_AndroidPhone4 extends c0_AndroidPhone
+{ r_c7_display : one c7_display
+, r_c5_GSM : one c5_GSM
+, r_c4_HSPA : one c4_HSPA
+, r_c6_CPU : set c6_CPU
+, r_c2_input : one c2_input }
+{ 2 <= #r_c6_CPU and #r_c6_CPU <= 2 }
 
-abstract sig c43_AndroidPhone extends c50_AndroidDevice
-{}
-{ some this.@r_c57_GSM
-  (#(this.@r_c59_CPU)) < 4 }
+one sig c7_display
+{ r_c4_AMOLED : one c4_AMOLED }
 
-abstract sig c50_AndroidDevice
-{ r_c51_display : one c51_display
-, r_c57_GSM : lone c57_GSM
-, r_c58_HSPA : lone c58_HSPA
-, r_c59_CPU : set c59_CPU
-, r_c60_input : one c60_input }
-{ 1 <= #r_c59_CPU and #r_c59_CPU <= 4 }
-
-sig c51_display
-{ r_c52_LCD : lone c52_LCD
-, r_c53_OLED : lone c53_OLED
-, r_c54_AMOLED : lone c54_AMOLED }
-{ one @r_c51_display.this
-  let children = (r_c52_LCD + r_c53_OLED + r_c54_AMOLED) | one children }
-
-sig c52_LCD
-{}
-{ one @r_c52_LCD.this }
-
-sig c53_OLED
-{}
-{ one @r_c53_OLED.this }
-
-sig c54_AMOLED
-{}
-{ one @r_c54_AMOLED.this
-  no (((this.~@r_c54_AMOLED).~@r_c51_display).@r_c60_input).@r_c61_keyboard }
-
-sig c57_GSM
-{}
-{ one @r_c57_GSM.this }
-
-sig c58_HSPA
-{}
-{ one @r_c58_HSPA.this }
-
-sig c59_CPU
-{}
-{ one @r_c59_CPU.this }
-
-sig c60_input
-{ r_c61_keyboard : lone c61_keyboard
-, r_c62_touchscreen : lone c62_touchscreen }
-{ one @r_c60_input.this
-  let children = (r_c61_keyboard + r_c62_touchscreen) | one children }
-
-sig c61_keyboard
-{}
-{ one @r_c61_keyboard.this }
-
-sig c62_touchscreen
-{}
-{ one @r_c62_touchscreen.this }
-
-one sig c63_AndroidPhone4 extends c43_AndroidPhone
-{ r_c64_display : one c64_display
-, r_c66_GSM : one c66_GSM
-, r_c67_HSPA : one c67_HSPA
-, r_c68_CPU : set c68_CPU
-, r_c69_input : one c69_input }
-{ 2 <= #r_c68_CPU and #r_c68_CPU <= 2 }
-
-one sig c64_display
-{ r_c65_AMOLED : one c65_AMOLED }
-
-one sig c65_AMOLED
+one sig c4_AMOLED
 {}
 
-one sig c66_GSM
+one sig c5_GSM
 {}
 
-one sig c67_HSPA
+one sig c4_HSPA
 {}
 
-sig c68_CPU
+sig c6_CPU
 {}
-{ one @r_c68_CPU.this }
+{ one @r_c6_CPU.this }
 
-one sig c69_input
-{ r_c70_touchscreen : one c70_touchscreen }
+one sig c2_input
+{ r_c4_touchscreen : one c4_touchscreen }
 
-one sig c70_touchscreen
+one sig c4_touchscreen
 {}
 

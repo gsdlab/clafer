@@ -2,26 +2,25 @@ open util/integer
 pred show {}
 
 
-one sig c1_a
-{ r_c2_b : lone c2_b
-, r_c3_c : set c3_c }
-{ 2 <= #r_c3_c }
+one sig c0_a
+{ r_c0_b : lone c0_b
+, r_c0_c : lone c0_c }
 
-lone sig c2_b
+lone sig c0_b
 {}
-{ one r_c2_b }
+{ one r_c0_b }
 
-sig c3_c
+lone sig c0_c
 {}
-{ one @r_c3_c.this }
+{ one r_c0_c }
 
-some sig c4_d
-{}
-
-sig c5_e
+one sig c0_d
 {}
 
-fact { #c6_f = 0 }
-sig c6_f
+fact { #c0_e = 0 }
+sig c0_e
+{}
+
+one sig c0_f
 {}
 

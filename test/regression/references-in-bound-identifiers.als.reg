@@ -2,17 +2,17 @@ open util/integer
 pred show {}
 
 
-one sig c1_A
-{ r_c2_B : set c2_B }
-{ all  b : this.@r_c2_B | some b.@r_c3_C
-  all  b : this.@r_c2_B | ((b.@ref).add[1]) = 2 }
+one sig c0_A
+{ r_c0_B : set c0_B }
+{ all  b : this.@r_c0_B | some b.@r_c0_C
+  all  b : this.@r_c0_B | ((b.@ref).add[1]) = 2 }
 
-sig c2_B
+sig c0_B
 { ref : one Int
-, r_c3_C : lone c3_C }
-{ one @r_c2_B.this }
+, r_c0_C : lone c0_C }
+{ one @r_c0_B.this }
 
-sig c3_C
+sig c0_C
 {}
-{ one @r_c3_C.this }
+{ one @r_c0_C.this }
 
