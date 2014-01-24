@@ -30,7 +30,7 @@ import Language.Clafer.ClaferArgs
 import Language.Clafer.Front.Absclafer
 import Language.Clafer.Intermediate.Intclafer
 
--- representation of strings in chunks (for line/column numbering)
+-- | representation of strings in chunks (for line/column numbering)
 data Concat = CString String | Concat {
   srcPos :: IrTrace,
   nodes  :: [Concat]
@@ -83,7 +83,7 @@ isNull _ = False
 cunlines :: [Concat] -> Concat
 cunlines xs = cconcat $ map (+++ (CString "\n")) xs
 
--- Alloy code generation
+-- | Alloy code generation
 -- 07th Mayo 2012 Rafael Olaechea 
 --      Added Logic to print a goal block in case there is at least one goal.
 genModule :: ClaferArgs -> (IModule, GEnv) -> [(UID, Integer)] -> (Result, [(Span, IrTrace)])

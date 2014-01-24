@@ -1,7 +1,7 @@
 {-# LANGUAGE NamedFieldPuns, ScopedTypeVariables, FlexibleContexts, FlexibleInstances, UndecidableInstances, GeneralizedNewtypeDeriving #-}
 
 {-
- Copyright (C) 2012 Jimmy Liang, Kacper Bak <http://gsd.uwaterloo.ca>
+ Copyright (C) 2012-2013 Jimmy Liang, Kacper Bak <http://gsd.uwaterloo.ca>
 
  Permission is hereby granted, free of charge, to any person obtaining a copy of
  this software and associated documentation files (the "Software"), to deal in
@@ -103,6 +103,7 @@ instance MonadAnalysis TypeAnalysis where
     where
     setInfo t = t{iInfo = Info cs}
 
+-- | Type inference and checking
 runTypeAnalysis :: TypeAnalysis a -> IModule -> Either ClaferSErr a
 runTypeAnalysis (TypeAnalysis tc) imodule = runReaderT tc $ TypeInfo [] (gatherInfo imodule) undefined Nothing
 

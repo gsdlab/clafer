@@ -39,8 +39,7 @@ import Language.Clafer.Intermediate.Intclafer
 import Language.Clafer.Intermediate.ResolverName
 
 
--- -----------------------------------------------------------------------------
--- Non-overlapping inheritance
+-- | Resolve Non-overlapping inheritance
 resolveNModule :: (IModule, GEnv) -> Resolve (IModule, GEnv)
 resolveNModule (imodule, genv') =
   do
@@ -84,9 +83,7 @@ resolveN pos' declarations id' =
   findUnique pos' id' $ map (\x -> (x, [x])) $ filter isAbstract $ bfsClafers $
     toClafers declarations
 
--- -----------------------------------------------------------------------------
--- Overlapping inheritance
-
+-- | Resolve overlapping inheritance
 resolveOModule :: (IModule, GEnv) -> Resolve (IModule, GEnv)
 resolveOModule (imodule, genv') =
   do
@@ -118,9 +115,8 @@ resolveOElement env x = case x of
   IEConstraint _ _ -> return x
   IEGoal _ _ -> return x
   
--- -----------------------------------------------------------------------------
--- inherited and default cardinalities
 
+-- | Resolve inherited and default cardinalities
 analyzeModule :: (IModule, GEnv) -> IModule
 analyzeModule (imodule, genv') =
   imodule{mDecls = map (analyzeElement (defSEnv genv' decls')) decls'}
@@ -167,8 +163,7 @@ analyzeElement env x = case x of
   IEConstraint _ _ -> x
   IEGoal _ _ -> x
 
--- -----------------------------------------------------------------------------
--- Expand inheritance
+-- | Expand inheritance
 resolveEModule :: (IModule, GEnv) -> (IModule, GEnv)
 resolveEModule (imodule, genv') = (imodule{mDecls = decls''}, genv'')
   where

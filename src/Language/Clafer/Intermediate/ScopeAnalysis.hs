@@ -26,6 +26,7 @@ import Language.Clafer.Intermediate.Intclafer
 import Language.Clafer.Intermediate.GLPKScopeAnalyzer
 import Language.Clafer.Intermediate.SimpleScopeAnalyzer
 
+-- | Return an appropriate scope analysis for a given strategy 
 getScopeStrategy :: ScopeStrategy -> IModule -> [(String, Integer)]
 getScopeStrategy Simple = simpleScopeAnalysis
 getScopeStrategy Full   = glpkScopeAnalysis 

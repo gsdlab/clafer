@@ -31,10 +31,12 @@ import qualified Data.Map as Map
 import Data.Maybe
 import Prelude hiding (exp)
 
+-- | Generate a graph in the simplified notation
 genSimpleGraph :: Module -> IModule -> String -> Bool -> String
 genSimpleGraph m ir name showRefs = cleanOutput $ "digraph \"" ++ name ++ "\"\n{\n\nrankdir=BT;\nranksep=0.3;\nnodesep=0.1;\ngraph [fontname=Sans fontsize=11];\nnode [shape=box color=lightgray fontname=Sans fontsize=11 margin=\"0.02,0.02\" height=0.2 ];\nedge [fontname=Sans fontsize=11];\n" ++ b ++ "}"
                            where b = graphSimpleModule m (traceIrModule ir) showRefs
 
+-- | Generate a graph in CVL variability abstraction notation
 genCVLGraph :: Module -> IModule -> String -> String                          
 genCVLGraph m ir name = cleanOutput $ "digraph \"" ++ name ++ "\"\n{\nrankdir=BT;\nranksep=0.1;\nnodesep=0.1;\nnode [shape=box margin=\"0.025,0.025\"];\nedge [arrowhead=none];\n" ++ b ++ "}"
                        where b = graphCVLModule m $ traceIrModule ir

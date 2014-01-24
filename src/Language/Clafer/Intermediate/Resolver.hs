@@ -33,6 +33,7 @@ import Language.Clafer.Intermediate.ResolverName
 import Language.Clafer.Intermediate.ResolverType
 import Language.Clafer.Intermediate.ResolverInheritance
 
+-- | Run the various resolvers
 resolveModule :: ClaferArgs -> IModule -> Resolve (IModule, GEnv)
 resolveModule args' declarations =
   do
@@ -43,7 +44,7 @@ resolveModule args' declarations =
   rom' = if skip_resolver args' then return . id else resolveOModule
 
 
--- -----------------------------------------------------------------------------
+-- | Name resolver
 nameModule :: Bool -> IModule -> (IModule, GEnv)
 nameModule skipResolver imodule = (imodule{mDecls = decls'}, genv')
   where

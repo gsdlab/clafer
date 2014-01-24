@@ -6,9 +6,8 @@ import Data.Maybe
 
 
 -- | Given a sequence of arguments, join them together in a manner that could be used on
---   the command line, giving preference to the Windows @cmd@ shell quoting conventions.
---
---   For an alternative version, intended for actual running the result in a shell, see "System.Process.showCommandForUser"
+-- |  the command line, giving preference to the Windows @cmd@ shell quoting conventions.
+-- | For an alternative version, intended for actual running the result in a shell, see "System.Process.showCommandForUser"
 joinArgs :: [String] -> String
 joinArgs = unwords . map f
     where

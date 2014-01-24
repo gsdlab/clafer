@@ -31,6 +31,7 @@ import Language.Clafer.Common
 import Language.Clafer.ClaferArgs
 import Language.Clafer.Intermediate.Intclafer
 
+-- | Apply optimizations for unused abstract clafers and inheritance flattening
 optimizeModule :: ClaferArgs -> (IModule, GEnv) -> IModule
 optimizeModule args (imodule, genv) =
   imodule{mDecls = em $ rm $ map (optimizeElement (1, 1)) $

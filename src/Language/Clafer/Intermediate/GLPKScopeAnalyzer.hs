@@ -53,6 +53,7 @@ import Text.Parsec.String ()
  ---------- Linear programming ------------------------------
  ------------------------------------------------------------}
 
+-- | Compute scopes for clafers by solving a system of linear equations
 glpkScopeAnalysis :: I.IModule -> [(String, Integer)]
 glpkScopeAnalysis imodule =
   intScope ++ scopes

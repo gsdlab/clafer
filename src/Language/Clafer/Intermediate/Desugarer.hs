@@ -27,7 +27,7 @@ import Language.Clafer.Front.Absclafer
 import Language.Clafer.Front.Mapper
 import Language.Clafer.Intermediate.Intclafer
 
-
+-- | Transform the AST into the intermediate representation (IR)
 desugarModule :: Module -> IModule
 desugarModule (Module declarations) = desugarModule $ PosModule noSpan declarations
 desugarModule (PosModule _ declarations) = IModule "" $
@@ -37,7 +37,7 @@ desugarModule (PosModule _ declarations) = IModule "" $
 sugarModule :: IModule -> Module
 sugarModule x = Module $ map sugarDeclaration $ mDecls x -- (fragments x >>= mDecls)
 
--- desugars enumeration to abstract and global singleton features
+-- | desugars enumeration to abstract and global singleton features
 desugarEnums :: Declaration -> [Declaration]
 desugarEnums (EnumDecl id' enumids) = desugarEnums $ PosEnumDecl noSpan id' enumids
 desugarEnums (PosEnumDecl _ id' enumids) = absEnum : map mkEnum enumids

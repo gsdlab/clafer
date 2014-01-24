@@ -63,6 +63,7 @@ genPythonIntPair (x, y) = concat
   , ","
   , genPythonInteger y, ")"]
 
+-- | Generate an API for the IR in Python
 genPythonModule :: IModule -> Result
 genPythonModule imodule = concat
   [ "from ast import Module\n"

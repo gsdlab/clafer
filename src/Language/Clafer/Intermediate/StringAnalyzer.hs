@@ -1,6 +1,6 @@
 {-# LANGUAGE RankNTypes, KindSignatures ,FlexibleContexts #-}
 {-
- Copyright (C) 2012-2013 Kacper Bak, Jimmy Liang, Luke Brown <http://gsd.uwaterloo.ca>
+ Copyright (C) 2012-2014 Kacper Bak, Jimmy Liang, Luke Brown <http://gsd.uwaterloo.ca>
 
  Permission is hereby granted, free of charge, to any person obtaining a copy of
  this software and associated documentation files (the "Software"), to deal in
@@ -30,6 +30,8 @@ import Control.Monad.State
 import Language.Clafer.Common
 import Language.Clafer.Intermediate.Intclafer
 
+-- | Convert all strings into ints for analysis
+-- | Return an inverse map from ints back to strings
 astrModule :: IModule -> (IModule, Map Int String)
 astrModule imodule = (imodule{mDecls = decls''}, flipMap strMap')
   where

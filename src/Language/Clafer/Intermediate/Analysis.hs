@@ -100,7 +100,7 @@ isDerived = not . isBase
  
 
 data SSuper = Ref String | Colon String deriving Show
--- Easier to work with. IClafers have links from parents to children. SClafers have links from children to parent.
+-- | Easier to work with. IClafers have links from parents to children. SClafers have links from children to parent.
 data SClafer = SClafer {uid::String, origUid::String, isAbstract::Bool, low::Integer, high::Integer, groupLow::Integer, groupHigh::Integer, parent::Maybe String, super::Maybe SSuper, constraints::[I.PExp]} deriving Show
   
 data Info = Info{sclafers :: [SClafer]} deriving Show 

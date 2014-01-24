@@ -37,7 +37,7 @@ import Language.Clafer.Common
 import Language.Clafer.Intermediate.Intclafer
 import qualified Language.Clafer.Intermediate.Intclafer as I
 
--- this environment is created for each clafer 
+-- | this environment is created for each clafer 
 data SEnv = SEnv {
   clafers :: [IClafer],                 -- (constant) top level clafers
   context :: Maybe IClafer,             -- context of a constraint
@@ -50,15 +50,24 @@ data SEnv = SEnv {
   cClafers :: [(IClafer, [IClafer])]    -- (constant) all concrete clafers (BFS)
   } deriving Show
 
+-- | How a given name was resolved
 data HowResolved =
-    Special     -- "this", "parent", "children"
-  | TypeSpecial -- primitive type: integer, string
-  | Binding     -- local variable (in constraints)
-  | Subclafers  -- clafer's descendant
-  | Reference   -- resolved by a reference
-  | Ancestor    -- clafer's ancestor
-  | AbsClafer   -- abstract clafer
-  | TopClafer   -- non-abstract top-level clafer
+  -- | "this", "parent", "children"
+    Special     
+  -- | primitive type: integer, string
+  | TypeSpecial 
+  -- | local variable (in constraints)
+  | Binding     
+  -- | clafer's descendant
+  | Subclafers  
+  -- | resolved by a reference
+  | Reference   
+  -- | clafer's ancestor
+  | Ancestor    
+  -- | abstract clafer
+  | AbsClafer   
+  -- | non-abstract top-level clafer
+  | TopClafer   
   deriving (Eq, Show)
   
 type Resolve = Either ClaferSErr

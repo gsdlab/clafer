@@ -55,6 +55,7 @@ genXmlIntPair (x, y) = concat
   [ genXmlInteger x
   , genXmlInteger y]
 
+-- | Generate an XML representation of the IR
 genXmlModule :: IModule -> Result
 genXmlModule imodule = concat
   [ "<?xml version=\"1.0\"?>"

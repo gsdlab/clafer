@@ -33,6 +33,8 @@ import Data.String.Conversions
 
 import Language.Clafer.QNameUID
 
+-- | Generate a JSON list of triples containing a fully-qualified-, least-partially-qualified name, and unique id.
+-- | Both the FQNames and UIDs are brittle. LPQNames are the least brittle.
 generateJSONnameUIDMap :: QNameMaps -> String
 generateJSONnameUIDMap    qNameMaps     = 
     prettyPrintJSON $ convertString $ toJsonBS $ foldl generateQNameUIDArrayEntry mempty sortedTriples 
@@ -47,6 +49,7 @@ generateQNameUIDArrayEntry    array    (fqName, lpqName, uid) =
         row "lpqName" lpqName,
         row "uid" uid ]
 
+-- | Generate a JSON list of tuples containing a least-partially-qualified name and a scope
 generateJSONScopes :: QNameMaps -> [(UID, Integer)] -> String
 generateJSONScopes    qNameMaps    scopes       =
     prettyPrintJSON $ convertString $ toJsonBS $ foldl generateLpqNameScopeArrayEntry mempty sortedLpqNameScopeList

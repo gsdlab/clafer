@@ -1,6 +1,6 @@
 {-# LANGUAGE DeriveDataTypeable #-}
 {-
- Copyright (C) 2012-2013 Kacper Bak, Jimmy Liang <http://gsd.uwaterloo.ca>
+ Copyright (C) 2012-2014 Kacper Bak, Jimmy Liang <http://gsd.uwaterloo.ca>
 
  Permission is hereby granted, free of charge, to any person obtaining a copy of
  this software and associated documentation files (the "Software"), to deal in
@@ -30,11 +30,13 @@ import Data.Maybe
 import Language.Clafer.SplitJoin
 import Language.Clafer.Version
 
+-- | Type of output to be generated at the end of compilation
 data ClaferMode = Alloy42 | Alloy | Xml | Clafer | Html | Graph | CVLGraph | Python | Choco
   deriving (Eq, Show, Ord, Data, Typeable)
 instance Default ClaferMode where
   def = Alloy
 
+-- | Scope inference strategy
 data ScopeStrategy = None | Simple | Full
   deriving (Eq, Show, Data, Typeable)
 instance Default ScopeStrategy where

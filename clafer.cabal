@@ -11,12 +11,14 @@ Stability:          Experimental
 Category:           Model
 Build-type:         Simple
 Cabal-version:      >= 1.16
-Extra-Source-Files:
+Extra-Source-Files: README.md,
                     CHANGES.md,
-                    LICENSE,
-                    tools/alloy4.jar,
-                    tools/alloy4.2.jar,
-                    tools/XsdCheck.class
+                    IDEs,
+                    logo.pdf
+data-files:         Makefile,
+                    tools/XsdCheck.class,
+                    tools/ecore2clafer.jar,
+                    tools/Makefile
 source-repository head
     type:           git
     location:       git://github.com/gsdlab/clafer.git

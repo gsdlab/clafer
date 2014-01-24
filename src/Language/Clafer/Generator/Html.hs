@@ -83,8 +83,11 @@ printStandaloneComment comment = "<div class=\"standalonecomment\">" ++ comment 
 printInlineComment :: String -> String
 printInlineComment comment = "<span class=\"inlinecomment\">" ++ comment ++ "</span>"
 
+-- | Generate the model as HTML document
 genHtml :: Module -> IModule -> String
 genHtml x ir = cleanOutput $ revertLayout $ printModule x (traceIrModule ir) True
+-- | Generate the model as plain text 
+-- | This is used by the graph generator for tooltips
 genText :: Module -> IModule -> String
 genText x ir = cleanOutput $ revertLayout $ printModule x (traceIrModule ir) False
 genTooltip :: Module -> Map.Map Span [Ir] -> String

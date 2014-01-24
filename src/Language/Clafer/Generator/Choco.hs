@@ -15,7 +15,7 @@ import Language.Clafer.Common
 import Language.Clafer.Front.Absclafer
 import Language.Clafer.Intermediate.Intclafer
 
-
+-- | Choco 3 code generation
 genCModule :: ClaferArgs -> (IModule, GEnv) -> [(UID, Integer)] -> Result
 genCModule args (imodule@IModule{mDecls}, _) scopes =
     genScopes
