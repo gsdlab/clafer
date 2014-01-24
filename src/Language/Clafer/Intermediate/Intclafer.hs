@@ -85,7 +85,7 @@ data IClafer =
   deriving (Eq,Ord,Show)
 
 -- | Clafer's subelement is either a clafer, a constraint, or a goal (objective)
--- | This is a wrapper type needed to have polymorphic lists of elements
+--   This is a wrapper type needed to have polymorphic lists of elements
 data IElement =
    IEClafer IClafer
  | IEConstraint {
@@ -102,9 +102,9 @@ data IElement =
   deriving (Eq,Ord,Show)
 
 -- | A list of superclafers.  
--- | ->    overlaping unique (set)
--- | ->>   overlapping non-unique (bag)
--- | :     non overlapping (disjoint)
+--   ->    overlaping unique (set)
+--   ->>   overlapping non-unique (bag)
+--   :     non overlapping (disjoint)
 data ISuper =
    ISuper {
       isOverlapping :: Bool,  -- whether overlapping or disjoint with other clafers extending given list of superclafers
@@ -113,8 +113,8 @@ data ISuper =
   deriving (Eq,Ord,Show)
 
 -- | Group cardinality is specified as an interval. It may also be given by a keyword.
--- | xor    1..1 isKeyword = True
--- | 1..1   1..1 isKeyword = False
+--   xor    1..1 isKeyword = True
+--   1..1   1..1 isKeyword = False
 data IGCard =
   IGCard {
       isKeyword :: Bool,    -- whether given by keyword: or, xor, mux
@@ -126,11 +126,11 @@ data IGCard =
 type Interval = (Integer, Integer)
 
 -- | This is expression container (parent). 
--- | It has meta information about an actual expression 'exp'
+--   It has meta information about an actual expression 'exp'
 data PExp = PExp {
       -- | the inferred type
       iType :: Maybe IType,  
-      -- | non-empy unique id for expressions with span, "" for noSpan
+      -- | non-empty unique id for expressions with span, \"\" for noSpan
       pid :: String,         
       -- | position in the input Clafer file
       inPos :: Span,         
@@ -142,12 +142,12 @@ data PExp = PExp {
 
 data IExp = 
    -- | quantified expression with declarations
-   -- | e.g., [ all x1; x2 : X | x1.ref != x2.ref ]
+   --   e.g., [ all x1; x2 : X | x1.ref != x2.ref ]
    IDeclPExp {quant :: IQuant, oDecls :: [IDecl], bpexp :: PExp}
    -- | expression with a
-   -- | unary function, e.g., -1
-   -- | binary function, e.g., 2 + 3
-   -- | ternary function, e.g., if x then 4 else 5
+   --   unary function, e.g., -1
+   --   binary function, e.g., 2 + 3
+   --   ternary function, e.g., if x then 4 else 5
  | IFunExp {op :: String, exps :: [PExp]}
  -- | integer number
  | IInt Integer
@@ -169,42 +169,42 @@ data IExp =
 {- |
 For IFunExp standard set of operators includes:
 1. Unary operators:
-        !          -- not (logical)
-        #          -- set counting operator
-        -          -- negation (arithmetic)
-        max        -- maximum (created for goals)
-        min        -- minimum (created for goals)
+        !          - not (logical)
+        #          - set counting operator
+        -          - negation (arithmetic)
+        max        - maximum (created for goals)
+        min        - minimum (created for goals)
 2. Binary operators:
-        <=>        -- equivalence
-        =>         -- implication
-        ||         -- disjunction
-        xor        -- exclusive or
-        &&         -- conjunction
-        <          -- less than
-        >          -- greater than
-        =          -- equality
-        <=         -- less than or equal
-        >=         -- greater than or equal
-        !=         -- inequality
-        in         -- belonging to a set/being a subset
-        nin        -- not belonging to a set/not being a subset
-        +          -- addition/string concatenation
-        -          -- substraction
-        *          -- multiplication
-        /          -- division
-        ++         -- set union
-        --         -- set difference
-        &          -- set intersection
-        <:         -- domain restriction
-        :>         -- range restriction
-        .          -- relational join
+        \<=\>        - equivalence
+        =\>         - implication
+        ||         - disjunction
+        xor        - exclusive or
+        &&         - conjunction
+        \<          - less than
+        \>          - greater than
+        =          - equality
+        \<=         - less than or equal
+        \>=         - greater than or equal
+        !=         - inequality
+        in         - belonging to a set/being a subset
+        nin        - not belonging to a set/not being a subset
+        +          - addition/string concatenation
+        -          - substraction
+        *          - multiplication
+        /          - division
+        ++         - set union
+        \-\-         - set difference
+        &          - set intersection
+        \<:         - domain restriction
+        :\>         - range restriction
+        .          - relational join
 3. Ternary operators
         ifthenelse -- if then else
 -}
 
 -- | Local declaration
--- | disj x1; x2 : X ++ Y
--- | y1 : Y 
+--   disj x1; x2 : X ++ Y
+--   y1 : Y 
 data IDecl =
    IDecl {
       -- | is disjunct

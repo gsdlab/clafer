@@ -3,7 +3,6 @@
 
 module Language.Clafer.Generator.Choco (genCModule) where
 
-import Language.Clafer.Intermediate.ScopeAnalysis
 import Control.Applicative
 import Control.Monad
 import Data.List
@@ -17,7 +16,7 @@ import Language.Clafer.Intermediate.Intclafer
 
 -- | Choco 3 code generation
 genCModule :: ClaferArgs -> (IModule, GEnv) -> [(UID, Integer)] -> Result
-genCModule args (imodule@IModule{mDecls}, _) scopes =
+genCModule _ (IModule{mDecls}, _) scopes =
     genScopes
     ++ "\n"
     ++ (genAbstractClafer =<< abstractClafers)
@@ -50,7 +49,7 @@ genCModule args (imodule@IModule{mDecls}, _) scopes =
              Just su -> su : supersOf su
              Nothing -> []
         
-    superHierarchyOf u = u : supersOf u
+--    superHierarchyOf u = u : supersOf u
             
     superOf u =
         case super $ claferWithUid u of
@@ -60,10 +59,10 @@ genCModule args (imodule@IModule{mDecls}, _) scopes =
                 | otherwise           -> Just sident
             _ -> Nothing
 
-    superWithRef u =
+{-    superWithRef u =
         case mapMaybe refOf $ supersOf u of
              r : _ -> r
-             _      -> u ++ " does not inherit a ref"
+             _      -> u ++ " does not inherit a ref" -}
             
     refOf u =
         case super $ claferWithUid u of
@@ -75,7 +74,7 @@ genCModule args (imodule@IModule{mDecls}, _) scopes =
             _ -> Nothing
             
     -- All clafers that inherit u
-    subOf :: String -> [String]
+{-    subOf :: String -> [String]
     subOf u = [uid | IClafer{uid} <- clafers, Just u == superOf uid]
     subClaferOf :: String -> [IClafer]
     subClaferOf = map claferWithUid . subOf
@@ -88,22 +87,22 @@ genCModule args (imodule@IModule{mDecls}, _) scopes =
     
     offsets :: [String] -> [Integer]
     offsets = scanl (flip $ (+) . scopeOf) 0
-        
+-}        
 
     parentOf u = fst $ fromMaybe (error $ "parentOf: \"" ++ u ++ "\" is not a clafer") $ find ((== u) . uid . snd) parentChildMap
-    parentClaferOf = claferWithUid . parentOf
+{-    parentClaferOf = claferWithUid . parentOf
     -- Direct childrens
     childrenOf = map uid . childrenClaferOf
-    childrenClaferOf u = [c | (p, c) <- parentChildMap, p == u]
+    childrenClaferOf u = [c | (p, c) <- parentChildMap, p == u] 
     
     -- Indirect childrens
     indirectChildrenOf u = childrenOf =<< supersOf u
-    indirectChildrenClaferOf u = childrenClaferOf =<< supersOf u
+    indirectChildrenClaferOf u = childrenClaferOf =<< supersOf u  
     
     isBounded :: Interval -> Bool
     isBounded (0, -1) = False
     isBounded _       = True
-    
+-}    
     genCard :: Interval -> Maybe String
     genCard (0, -1) = Nothing
     genCard (low, -1) = return $ show low
@@ -185,7 +184,7 @@ genCModule args (imodule@IModule{mDecls}, _) scopes =
     genGoal (IEGoal _ _) = error $ "Unknown objective"
     genGoal _ = ""
             
-    nameOfType TInteger = "integer"
+{-    nameOfType TInteger = "integer"
     nameOfType (TClafer [t]) = t
     
     namesOfType TInteger = ["integer"]
@@ -200,14 +199,14 @@ genCModule args (imodule@IModule{mDecls}, _) scopes =
     
     (l1, h1) <*> (l2, h2) = (l1 * l2, h1 * h2)
     scopeCap scope (l, h) = (min scope l, min scope h)
-    
+-}    
     rewrite :: PExp -> PExp
     -- Rearrange right joins to left joins.
-    rewrite p1@PExp{iType = Just typ, exp = IFunExp "." [p2, p3@PExp{exp = IFunExp "." _}]} =
+    rewrite p1@PExp{iType = Just _, exp = IFunExp "." [p2, p3@PExp{exp = IFunExp "." _}]} =
         p1{exp = IFunExp "." [p3{iType = iType p4, exp = IFunExp "." [p2, p4]}, p5]}
         where
             PExp{exp = IFunExp "." [p4, p5]} = rewrite p3
-    rewrite p1@PExp{exp = IFunExp{op = "-", exps = [p@PExp{exp = IInt i}]}} =
+    rewrite p1@PExp{exp = IFunExp{op = "-", exps = [PExp{exp = IInt i}]}} =
         -- This is so that the output looks cleaner, no other purpose since the Choco optimizer
         -- in the backend will treat the pre-rewritten expression the same.
         p1{exp = IInt (-i)}
@@ -217,13 +216,13 @@ genCModule args (imodule@IModule{mDecls}, _) scopes =
     genConstraintPExp = genConstraintExp . exp . rewrite
             
     genConstraintExp :: IExp -> String
-    genConstraintExp e@(IDeclPExp quant [] body) =
+    genConstraintExp (IDeclPExp quant [] body) =
         mapQuant quant ++ "(" ++ genConstraintPExp body ++ ")"
-    genConstraintExp e@(IDeclPExp quant decls body) =
+    genConstraintExp (IDeclPExp quant decls body) =
         mapQuant quant ++ "([" ++ intercalate ", " (map genDecl decls) ++ "], " ++ genConstraintPExp body ++ ")"
         where
-            genDecl (IDecl isDisj locals body) =
-                (if isDisj then "disjDecl" else "decl") ++ "([" ++ intercalate ", " (map genLocal locals) ++ "], " ++ genConstraintPExp body ++ ")"
+            genDecl (IDecl isDisj locals body') =
+                (if isDisj then "disjDecl" else "decl") ++ "([" ++ intercalate ", " (map genLocal locals) ++ "], " ++ genConstraintPExp body' ++ ")"
             genLocal local = 
                 local ++ " = local(\"" ++ local ++ "\")"
              
@@ -233,18 +232,18 @@ genCModule args (imodule@IModule{mDecls}, _) scopes =
         "joinParent(" ++ genConstraintPExp e1 ++ ")"
     genConstraintExp (IFunExp "." [e1, PExp{exp = IClaferId{sident}}]) =
         "join(" ++ genConstraintPExp e1 ++ ", " ++ sident ++ ")"
-    genConstraintExp (IFunExp "." [e1, e2]) =
+    genConstraintExp (IFunExp "." [_, _]) =
         error $ "Did not rewrite all joins to left joins."
     genConstraintExp (IFunExp "-" [arg]) =
         "minus(" ++ genConstraintPExp arg ++ ")"
     genConstraintExp (IFunExp "-" [arg1, arg2]) =
-        "minus(" ++ genConstraintPExp arg1 ++ ", " ++ genConstraintPExp arg1 ++ ")"
-    genConstraintExp (IFunExp "sum" args)
-        | [arg] <- args, PExp{exp = IFunExp{exps = [a, PExp{exp = IClaferId{sident = "ref"}}]}} <- rewrite arg =
+        "minus(" ++ genConstraintPExp arg1 ++ ", " ++ genConstraintPExp arg2 ++ ")"
+    genConstraintExp (IFunExp "sum" args')
+        | [arg] <- args', PExp{exp = IFunExp{exps = [a, PExp{exp = IClaferId{sident = "ref"}}]}} <- rewrite arg =
             "sum(" ++ genConstraintPExp a ++ ")"
         | otherwise = error "Unexpected sum argument."
-    genConstraintExp (IFunExp op args) =
-        mapFunc op ++ "(" ++ intercalate ", " (map genConstraintPExp args) ++ ")"
+    genConstraintExp (IFunExp op args') =
+        mapFunc op ++ "(" ++ intercalate ", " (map genConstraintPExp args') ++ ")"
     -- this is a keyword in Javascript so use "$this" instead
     genConstraintExp IClaferId{sident = "this"} = "$this()"
     genConstraintExp IClaferId{sident}
@@ -283,14 +282,14 @@ genCModule args (imodule@IModule{mDecls}, _) scopes =
     mapFunc "=>else" = "ifThenElse"
     mapFunc op = error $ "Unknown op: " ++ op
     
-    sidentOf u = ident $ claferWithUid u
+{-    sidentOf u = ident $ claferWithUid u
     scopeOf "integer" = undefined
     scopeOf "int" = undefined
-    scopeOf i = fromMaybe 1 $ lookup i scopes
-    bitwidth = fromMaybe 4 $ lookup "int" scopes
+    scopeOf i = fromMaybe 1 $ lookup i scopes -}
+    bitwidth = fromMaybe 4 $ lookup "int" scopes :: Integer
     
-isQuant PExp{exp = IDeclPExp{}} = True
-isQuant _ = False
+-- isQuant PExp{exp = IDeclPExp{}} = True
+-- isQuant _ = False
 
 isNotAbstract :: IClafer -> Bool
 isNotAbstract = not . isAbstract

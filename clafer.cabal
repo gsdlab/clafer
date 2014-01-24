@@ -6,7 +6,7 @@ Homepage:           http://clafer.org
 License:            MIT
 License-file:       LICENSE
 Author:             Kacper Bak, Jimmy Liang, Michal Antkiewicz, Chris Walker, Luke Michael Brown
-Maintainer:         kbak@gsd.uwaterloo.ca
+Maintainer:         mantkiew@gsd.uwaterloo.ca
 Stability:          Experimental
 Category:           Model
 Build-type:         Simple
