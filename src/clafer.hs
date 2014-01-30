@@ -35,6 +35,7 @@ import System.Timeout
 import System.FilePath (dropExtension,takeBaseName)
 import System.Process (readProcessWithExitCode)
 
+import Paths_clafer
 import Language.Clafer
 import Language.ClaferT
 import Language.Clafer.Css

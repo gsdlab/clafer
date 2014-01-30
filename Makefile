@@ -88,9 +88,6 @@ diffRegressions:
 reg:
 	$(MAKE) -C $(TEST_DIR) reg
 
-newVersion:
-	$(MAKE) -C $(SRC_DIR) newVersion
-
 clean:
 	rm -f clafer
 	rm -rf dist

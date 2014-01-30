@@ -32,7 +32,8 @@ import System.Console.CmdArgs.Explicit hiding (mode)
 import Data.List
 import Data.Maybe
 import Language.Clafer.SplitJoin
-import Language.Clafer.Version
+import Paths_clafer (version)
+import Data.Version (showVersion)
 
 -- | Type of output to be generated at the end of compilation
 data ClaferMode = Alloy42 | Alloy | Xml | Clafer | Html | Graph | CVLGraph | Python | Choco
@@ -101,7 +102,7 @@ clafer = ClaferArgs {
   skip_goals          = def &= help "Skip generation of Alloy code for goals. Useful for all tools working with standard Alloy." &= name "sg",
   meta_data           = def &= help "Generate a 'fully qualified name'-'least-partially-qualified name'-'unique ID' map ('.cfr-map'). In Alloy, Alloy42, and Choco modes, generate the scopes map ('.cfr-scope').",
   file                = def &= args   &= typ "FILE"
- } &= summary ("Clafer " ++ version) &= program "clafer"
+ } &= summary ("Clafer " ++ showVersion Paths_clafer.version) &= program "clafer"
 
 mergeArgs :: ClaferArgs -> ClaferArgs -> ClaferArgs
 mergeArgs a1 a2  = ClaferArgs (mode a1) (coMergeArg) 
