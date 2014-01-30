@@ -137,7 +137,7 @@ library
                      Language.Clafer.Intermediate.Transformer,
                      Language.Clafer.Optimizer.Optimizer,
                      Language.Clafer.SplitJoin
-
+    other-modules: Paths_clafer
 Test-Suite test-suite
     build-tools:    ghc >= 7.6.3
     default-language: 
@@ -177,7 +177,7 @@ Test-Suite test-suite
 
     ghc-options     -Wall -fno-warn-unused-do-bind -fno-warn-orphans
 
-    other-modules:
+    other-modules:  Paths_clafer,
                     Functions,
                     Suite.Example,
                     Suite.Positive,
