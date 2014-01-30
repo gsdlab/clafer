@@ -88,6 +88,22 @@ Integration with Sublime Text 2
 
 See [IDEs/clafer-README.md](IDEs/clafer-README.md)
 
+Installation From Hackage
+-------------------------
+
+Dependencies
+
+* [The Haskell Platform](http://hackage.haskell.org/platform/) v2013.2.0.0
+* GLPK v4.52
+
+Clafer is now available on [Hackage](http://hackage.haskell.org/package/clafer-0.3.5/) and it can be installed using
+
+* `cabal update`
+* `cabal install clafer`
+* To automatically download Alloy jars, execute `make` in `clafer-0.3.5/tools` inside the Cabal's library folder
+
+You'll still need to install GLPK 4.52 for your operating system as described below.
+
 Building & Installation From Source Code
 ----------------------------------------
 

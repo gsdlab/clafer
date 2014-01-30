@@ -1,7 +1,7 @@
-Name:                clafer
-Version:             0.3.5
-Synopsis:            clafer compiles Clafer models to other formats, such as Alloy, XML, HTML, Dot.
-Description:         Clafer is a general purpose, lightweight, structural modeling language developed at GSD Lab, University of Waterloo. Lightweight modeling aims at improving the understanding of the problem domain in the early stages of software development and determining the requirements with fewer defects. Clafer's goal is to make modeling more accessible to a wider range of users and domains. The tool provides a reference language implementation. It translates models to other formats (e.g. Alloy, XML) to allow for reasoning with existing tools.
+Name:               clafer
+Version:            0.3.5
+Synopsis:           clafer compiles Clafer models to other formats, such as Alloy, XML, HTML, Dot.
+Description:        Clafer is a general purpose, lightweight, structural modeling language developed at GSD Lab, University of Waterloo. Lightweight modeling aims at improving the understanding of the problem domain in the early stages of software development and determining the requirements with fewer defects. Clafer's goal is to make modeling more accessible to a wider range of users and domains. The tool provides a reference language implementation. It translates models to other formats (e.g. Alloy, XML) to allow for reasoning with existing tools.
 Homepage:           http://clafer.org
 License:            MIT
 License-file:       LICENSE
@@ -11,11 +11,12 @@ Stability:          Experimental
 Category:           Model
 Build-type:         Simple
 Cabal-version:      >= 1.16
-Extra-Source-Files: README.md,
+data-files:         README.md,
                     CHANGES.md,
-                    IDEs,
-                    logo.pdf
-data-files:         Makefile,
+                    logo.pdf,
+                    IDEs/clafer-README.md,
+                    IDEs/sublime-text-2/Packages/User/clafer.sublime-build
+                    Makefile,
                     tools/XsdCheck.class,
                     tools/ecore2clafer.jar,
                     tools/Makefile
@@ -59,6 +60,7 @@ Executable clafer
 
                     clafer == 0.3.5
     hs-source-dirs: src
+    other-modules: Paths_clafer
 
 library 
     build-tools:    ghc >= 7.6.3
@@ -134,9 +136,7 @@ library
                      Language.Clafer.Intermediate.Tracing,
                      Language.Clafer.Intermediate.Transformer,
                      Language.Clafer.Optimizer.Optimizer,
-                     Language.Clafer.SplitJoin,
-                     Language.Clafer.Version
-                     
+                     Language.Clafer.SplitJoin
 
 Test-Suite test-suite
     build-tools:    ghc >= 7.6.3
