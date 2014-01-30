@@ -1,6 +1,7 @@
 {-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE ViewPatterns #-}
 
+-- | Generates JS representation of IR for the <https://github.com/gsdlab/chocosolver Chocosolver>.
 module Language.Clafer.Generator.Choco (genCModule) where
 
 import Control.Applicative

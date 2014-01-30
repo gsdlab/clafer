@@ -19,6 +19,50 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
 -}
+{- | Top-level interface to the Clafer compiler
+
+Normal usage:
+
+> t :: InputModel -> InputModel -> Either [ClaferErr] [String]
+> t a b =
+>   runClafer defaultClaferArgs $
+>     do
+>       addModuleFragment a
+>       addModuleFragment b
+>       parse
+>       compile
+>       generateFragments
+
+Example of compiling a model consisting of one fragment:
+
+> compileOneFragment :: ClaferArgs -> InputModel -> Either ClaferErr CompilerResult
+> compileOneFragment args model =
+>   runClafer args $
+>     do
+>       addModuleFragment model
+>       parse
+>       compile
+>       generate
+
+Use "generateFragments" instead to generate output based on their fragments.
+
+> compileTwoFragments :: ClaferArgs -> InputModel -> InputModel -> Either ClaferErr [String]
+> compileTwoFragments args frag1 frag2 =
+>   runClafer args $
+>    do
+>      addModuleFragment frag1
+>      addModuleFragment frag2
+>      parse
+>      compile
+>      generateFragments
+
+Use "throwErr" to halt execution:
+
+> runClafer args $
+>   when (notValid args) $ throwErr (ClaferErr "Invalid arguments.")
+
+Use "catchErrs" to catch the errors.
+-}
 module Language.Clafer (addModuleFragment,
                         compile,
                         parse,
@@ -89,46 +133,6 @@ import Language.Clafer.Generator.Graph
 
 type VerbosityL = Int
 type InputModel = String
-
-{-
-t :: InputModel -> InputModel -> Either [ClaferErr] [String]
-t a b =
-  runClafer defaultClaferArgs $
-    do
-      addModuleFragment a
-      addModuleFragment b
-      parse
-      compile
-      generateFragments
-
- - Example of compiling a model consisting of one fragment:
- -  compileOneFragment :: ClaferArgs -> InputModel -> Either ClaferErr CompilerResult
- -  compileOneFragment args model =
- -    runClafer args $
- -      do
- -        addModuleFragment model
- -        parse
- -        compile
- -        generate
- -
- -
- - Use "generateFragments" instead to generate output based on their fragments.
- -  compileTwoFragments :: ClaferArgs -> InputModel -> InputModel -> Either ClaferErr [String]
- -  compileTwoFragments args frag1 frag2 =
- -    runClafer args $
- -      do
- -        addModuleFragment frag1
- -        addModuleFragment frag2
- -        parse
- -        compile
- -        generateFragments
- -
- - Use "throwErr" to halt execution:
- -  runClafer args $
- -    when (notValid args) $ throwErr (ClaferErr "Invalid arguments.")
- -
- - Use "catchErrs" to catch the errors.
- -}
 
 -- | Add a new fragment to the model. Fragments should be added in order.
 addModuleFragment :: Monad m => InputModel -> ClaferT m ()

@@ -20,6 +20,7 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
 -}
+-- | Resolves indentation into explicit nesting using { }
 module Language.Clafer.Front.LayoutResolver where
 
 -- very simple layout resolver

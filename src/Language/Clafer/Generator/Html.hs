@@ -19,6 +19,7 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
 -}
+-- | Generates HTML and plain text rendering of a Clafer model.
 module Language.Clafer.Generator.Html (genHtml,
                                        genText,
                                        genTooltip,

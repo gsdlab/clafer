@@ -19,6 +19,7 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
 -}
+-- | Support for dealing with unique IDs (UIDs), fully- and least-partially qualified names.
 module Language.Clafer.QNameUID (
         QName,
         FQName,

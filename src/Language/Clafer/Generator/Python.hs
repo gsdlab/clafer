@@ -19,6 +19,7 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
 -}
+-- | Generates Python representation of IR for the <https://github.com/gsdlab/ClaferZ3 ClaferZ3>.
 module Language.Clafer.Generator.Python where
 
 import Language.Clafer.Common

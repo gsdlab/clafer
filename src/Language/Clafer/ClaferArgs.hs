@@ -20,6 +20,10 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
 -}
+{- | Command Line Arguments of the compiler.
+
+See also <http://t3-necsis.cs.uwaterloo.ca:8091/ClaferTools/CommandLineArguments a model of the arguments in Clafer>,  including constraints and examples.
+-}
 module Language.Clafer.ClaferArgs where
 
 import System.IO ( stdin, hGetContents )

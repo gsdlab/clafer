@@ -19,6 +19,7 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
 -}
+-- | Generates simple graph and CVL graph representation for a Clafer model in GraphViz DOT.
 module Language.Clafer.Generator.Graph (genSimpleGraph, genCVLGraph, traceAstModule, traceIrModule) where
 
 import Language.Clafer.Common(fst3,snd3,trd3)

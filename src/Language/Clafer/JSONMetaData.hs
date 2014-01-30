@@ -19,6 +19,7 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
 -}
+-- | Creates JSON outputs for different kinds of metadata.
 module Language.Clafer.JSONMetaData (
   generateJSONnameUIDMap,
   generateJSONScopes

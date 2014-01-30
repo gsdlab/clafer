@@ -19,6 +19,7 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
 -}
+-- | Intermediate representation (IR) of a Clafer model
 module Language.Clafer.Intermediate.Intclafer where
 
 import Language.Clafer.Front.Absclafer

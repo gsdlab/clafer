@@ -1,3 +1,4 @@
+-- | Abstract syntax of the Clafer language.
 module Language.Clafer.Front.Absclafer where
 noSpan :: Span
 noSpan = Span noPos noPos

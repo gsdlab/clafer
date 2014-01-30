@@ -21,10 +21,9 @@
  SOFTWARE.
 -}
 
-{-
- - This is in a separate module from Language.Clafer so that other modules that require
- - ClaferEnv can just import this module without all the parsing/compiline/generating
- - functionality.
+{- |
+This is in a separate module from the module "Language.Clafer" so that other modules that require
+ClaferEnv can just import this module without all the parsing/compiline/generating functionality.
  -}
 module Language.ClaferT (
                          ClaferEnv(..), 
