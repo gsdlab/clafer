@@ -105,8 +105,9 @@ Clafer is now available on [Hackage](http://hackage.haskell.org/package/clafer-0
 
 1. `cabal update`
 2. `cabal install clafer`
-3. to automatically download Alloy jars
-  * execute `make` in `clafer-0.3.5.1/tools` inside the Cabal's library folder
+3. `cd <cabal's lib or share folder>`  (`C:\Users\<user>\AppData\Roaming\cabal\i386-windows-ghc-7.6.3\clafer-0.3.5.1` on Windows or `.cabal/share/x86_64-linux-ghc-7.6.3/clafer-0.3.5.1/` on Linux)
+4. to automatically download Alloy jars
+  * execute `make` in `tools` 
 
 On Windows 
 
