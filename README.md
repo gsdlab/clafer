@@ -121,6 +121,13 @@ Dependencies
   * downloaded automatically during build
 * [Git](http://git-scm.com/)
 
+On Windows 
+
+* [MinGW+MSYS](http://mingw.org) 
+  * since the Haskell Platform already contains MinGW, you may choose to install MinGW+MSYS to the same location, e.g., `c:\...\HaskellPlatform\2013.2.0.0`
+  * add the `bin` folders of MinGW (`MinGW\bin`) and MSYS (`MinGW\MSYS\1.0\bin`) to your system path
+  * `unzip` will be automatically installed 
+
 #### Important: Branches must correspond
 
 All related projects are following the *simultaneous release model*. 
