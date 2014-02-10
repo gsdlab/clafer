@@ -116,7 +116,7 @@ genCModule _ (IModule{mDecls}, _) scopes =
         ++ "defaultScope(1);\n"
         ++ "intRange(-" ++ show (2 ^ (bitwidth - 1)) ++ ", " ++ show (2 ^ (bitwidth - 1) - 1) ++ ");\n"
         where
-            scopeMap = [uid ++ ":" ++ show scope | (uid, scope) <- scopes]
+            scopeMap = [uid ++ ":" ++ show scope | (uid, scope) <- scopes, uid /= "int"]
                 
     genConcreteClafer :: IClafer -> Result
     genConcreteClafer IClafer{uid, card = Just card, gcard = Just (IGCard _ gcard)} =
