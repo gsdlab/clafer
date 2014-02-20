@@ -238,7 +238,7 @@ genCModule _ (IModule{mDecls}, _) scopes =
     genConstraintExp (IFunExp "-" [arg]) =
         "minus(" ++ genConstraintPExp arg ++ ")"
     genConstraintExp (IFunExp "-" [arg1, arg2]) =
-        "minus(" ++ genConstraintPExp arg1 ++ ", " ++ genConstraintPExp arg2 ++ ")"
+        "sub(" ++ genConstraintPExp arg1 ++ ", " ++ genConstraintPExp arg2 ++ ")"
     genConstraintExp (IFunExp "sum" args')
         | [arg] <- args', PExp{exp = IFunExp{exps = [a, PExp{exp = IClaferId{sident = "ref"}}]}} <- rewrite arg =
             "sum(" ++ genConstraintPExp a ++ ")"
