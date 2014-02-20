@@ -47,6 +47,7 @@ Executable clafer
 
                     data-stringmap >= 0.9.1,
                     json-builder >= 0.3,
+                    lens >= 4.0.3,
                     string-conversions >= 0.3,
                     cmdargs >= 0.10.5, 
                     executable-path >= 0.0.3, 
@@ -85,6 +86,7 @@ library
 
                     data-stringmap >= 0.9.1,
                     json-builder >= 0.3,
+                    lens >= 4.0.3,
                     string-conversions >= 0.3,
                     cmdargs >= 0.10.5, 
                     executable-path >= 0.0.3, 
@@ -162,6 +164,7 @@ Test-Suite test-suite
 
                     data-stringmap >= 0.9.1,
                     json-builder >= 0.3,
+                    lens >= 4.0.3,
                     string-conversions >= 0.3,
                     cmdargs >= 0.10.5, 
                     executable-path >= 0.0.3, 

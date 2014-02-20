@@ -1,3 +1,4 @@
+{-# LANGUAGE TemplateHaskell #-}
 {-
  Copyright (C) 2012-2014 Kacper Bak, Jimmy Liang, Luke Michael Brown <http://gsd.uwaterloo.ca>
 
@@ -23,6 +24,7 @@
 module Language.Clafer.Intermediate.Intclafer where
 
 import Language.Clafer.Front.Absclafer
+import Control.Lens
 import Data.Monoid
 import Data.Foldable (foldMap)
 
@@ -88,7 +90,10 @@ data IClafer =
 -- | Clafer's subelement is either a clafer, a constraint, or a goal (objective)
 --   This is a wrapper type needed to have polymorphic lists of elements
 data IElement =
-   IEClafer IClafer
+   IEClafer { 
+      -- | the actual clafer 
+      iClafer :: IClafer
+    }
  | IEConstraint {
       -- | whether hard or not (soft)
       isHard :: Bool,     
@@ -97,8 +102,8 @@ data IElement =
     }
   -- | Goal (optimization objective)
  | IEGoal {
-   isMaximize :: Bool,    -- whether maximize or minimize
-   cpexp :: PExp          -- the expression
+   isMaximize :: Bool,    -- | whether maximize or minimize
+   cpexp :: PExp          -- | the expression
    }
   deriving (Eq,Ord,Show)
 
@@ -139,7 +144,6 @@ data PExp = PExp {
       exp :: IExp            
     }
   deriving (Eq,Ord,Show)
-
 
 data IExp = 
    -- | quantified expression with declarations
@@ -342,3 +346,53 @@ unWrapIDecl x = error $ "Can't call unWarpIDecl on " ++ show x
 unWrapIGCard :: Ir -> IGCard
 unWrapIGCard (IRIGCard x) = x
 unWrapIGCard x = error $ "Can't call unWarpIGcard on " ++ show x
+
+
+makeLensesFor [ ("mName", "mNameL")
+              , ("mDecls", "mDeclsL") 
+              ] ''IModule
+
+makeLensesFor [ ("cinPos", "cinPosL")
+              , ("isAbstract", "isAbstractL")
+              , ("gcard", "gcardL")
+              , ("ident", "identL")
+              , ("uid", "uidL")
+              , ("super", "superL")
+              , ("card", "cardL")
+              , ("glCard", "glCardL")
+              , ("elements", "elementsL")
+              ] ''IClafer
+
+makeLensesFor [ ("iClafer", "iClaferL")
+              , ("isHard", "isHardL")
+              , ("cpexp", "cpexpL")
+              , ("isMaximize", "isMaximizeL")] ''IElement
+
+makeLensesFor [ ("isOverlapping", "isOverlappingL")
+              , ("supers", "supersL")
+              ] ''ISuper
+
+makeLensesFor [ ("isKeyword", "isKeywordL")
+              , ("interval", "intervalL")
+              ] ''IGCard
+
+makeLensesFor [ ("iType", "iTypeL")
+              , ("pid", "pidL")
+              , ("inPos", "inPosL")
+              , ("exp", "expL")
+              ] ''PExp
+
+makeLensesFor [ ("quant", "quantL")
+              , ("oDecls", "oDeclsL")
+              , ("bpexp", "bpexpL")
+              , ("op", "opL")
+              , ("exps", "expsL")
+              , ("modName", "modNameL")
+              , ("sident", "sidentL")
+              , ("isTop", "isTopL")
+              ] ''IExp
+
+makeLensesFor [ ("isDisj", "isDisjL")
+              , ("decls", "declsL")
+              , ("body", "bodyL")
+              ] ''IDecl
