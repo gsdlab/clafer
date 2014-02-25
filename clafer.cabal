@@ -182,4 +182,5 @@ Test-Suite test-suite
                     Functions,
                     Suite.Example,
                     Suite.Positive,
-                    Suite.Negative
+                    Suite.Negative,
+                    Suite.SimpleScopeAnalyser
