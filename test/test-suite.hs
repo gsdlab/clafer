@@ -28,6 +28,7 @@ import Language.Clafer.QNameUID
 
 import Suite.Positive
 import Suite.Negative
+import Suite.SimpleScopeAnalyser
 import Functions
 import Test.HUnit
 import Test.Framework
@@ -35,7 +36,7 @@ import Test.Framework.TH
 import Test.Framework.Providers.HUnit
 
 tg_Main_Test_Suite = $(testGroupGenerator)
-main = defaultMain[tg_Main_Test_Suite, tg_Test_Suite_Positive, tg_Test_Suite_Negative]
+main = defaultMain[tg_Main_Test_Suite, tg_Test_Suite_Positive, tg_Test_Suite_Negative, tg_Test_Suite_SimpleScopeAnalyser]
 
 {-
 a            // ::a -> c0_a
