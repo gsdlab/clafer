@@ -54,16 +54,18 @@ case_ScopeTest = do
 			, "    i ?"
 			, "    j *"
 			, "    k 2"
-			, "HS -> H 3..*"
+			, "Hs -> H 3..*"
 			, "H1 : H 2"
 			, "    H12 : H 2"
 			, "H2 : H 4..4"
 			, "H3 : H 1..2"
 			, "H4 : H 5..*"
-			, "HS2 -> H 7..*"
+			, "Hs2 -> H 0..*"
+			, "Hs3 -> H 5..8"
+			, "    l ?"
 			, "abstract F : H"
 			, "f1 : F 2..5"
-			, "    f12 0"
+			, "    m 0"
 			]
 		-- use simple scope inference 
 		(Right compilerResultMap) = compileOneFragment defaultClaferArgs model
@@ -83,16 +85,18 @@ case_ScopeTest = do
 										 , ("c0_i", 22)
 										 , ("c0_j", 22)
 										 , ("c0_k", 44)
-										 , ("c0_HS", 3)
+										 , ("c0_Hs", 16)  -- not sure where the 16 comes from
 										 , ("c0_H1", 2)
 										 , ("c0_H12", 4)
 										 , ("c0_H2", 4)
 										 , ("c0_H3", 2)
 										 , ("c0_H4", 5)
-										 , ("c0_HS2", 7)
+										 , ("c0_Hs2", 16)  -- not sure where the 16 comes from
+										 , ("c0_Hs3", 8)
+										 , ("c0_l", 8)
 										 , ("c0_F", 5)
 										 , ("c0_f1", 5)
-										 , ("c0_f12", 0)
+										 , ("c0_m", 0)
 										 ]
 
 		-- aggregates a difference

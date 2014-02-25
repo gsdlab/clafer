@@ -68,11 +68,16 @@ simpleScopeAnalysis IModule{mDecls = decls'} =
     constraints = concatMap findConstraints decls'
     findClafer uid' = fromJust $ find (isEqClaferId uid') clafers
     
-    lowerOrUpperFixedCard clafer =
-        maximum [cardLb, cardUb, lowFromConstraints, oneForStar ]
+    lowerOrUpperFixedCard analysis' clafer =
+        maximum [cardLb, cardUb, lowFromConstraints, oneForStar, targetScopeForStar ]
         where
         Just (cardLb, cardUb) = card clafer
         oneForStar = if (cardLb == 0 && cardUb == -1) then 1 else 0
+        targetScopeForStar = if (isReference clafer && cardUb == -1) 
+            then case (directSuper clafers clafer) of
+                    (Just targetClafer) -> Map.findWithDefault 0 (uid targetClafer) analysis'
+                    Nothing -> 0
+            else 0
         lowFromConstraints = Map.findWithDefault 0 (uid clafer) constraintAnalysis
     
     analyzeComponent analysis' component =
@@ -87,18 +92,18 @@ simpleScopeAnalysis IModule{mDecls = decls'} =
         analyzeSingleton uid' analysis'' = analyze analysis'' $ findClafer uid'
     
     analyze :: Map String Integer -> IClafer -> Map String Integer
-    analyze analysis clafer =
+    analyze analysis' clafer =
         -- Take the max between the supers and references analysis and this analysis
-        Map.insertWith max (uid clafer) scope analysis
+        Map.insertWith max (uid clafer) scope analysis'
         where
         scope
             | isAbstract clafer  = sum subclaferScopes
-            | otherwise          = parentScope * (lowerOrUpperFixedCard clafer)
+            | otherwise          = parentScope * (lowerOrUpperFixedCard analysis' clafer)
         
-        subclaferScopes = map (findOrError " subclafer scope not found" analysis) $ filter isConcrete' subclafers
+        subclaferScopes = map (findOrError " subclafer scope not found" analysis') $ filter isConcrete' subclafers
         parentScope  =
             case parentMaybe of
-                Just parent'' -> findOrError " parent scope not found" analysis parent''
+                Just parent'' -> findOrError " parent scope not found" analysis' parent''
                 Nothing      -> rootScope
         subclafers = Map.findWithDefault [] (uid clafer) subclaferMap
         parentMaybe = Map.lookup (uid clafer) parentMap
@@ -125,7 +130,7 @@ analyzeRefs clafers analysis (IEClafer clafer) =
     foldl (analyzeRefs clafers) analysis' (elements clafer)
     where
     (Just (cardLb, cardUb)) = card clafer
-    lowerOrFixedUpperBound = max 1 $ max cardLb cardUb
+    lowerOrFixedUpperBound = maximum [1, cardLb, cardUb]
     analysis' = if (isReference clafer) 
                 then case (directSuper clafers clafer) of
                     (Just c) -> Map.alter (maxLB lowerOrFixedUpperBound) (uid c) analysis
