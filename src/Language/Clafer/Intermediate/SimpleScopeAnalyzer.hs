@@ -22,6 +22,7 @@
 module Language.Clafer.Intermediate.SimpleScopeAnalyzer (simpleScopeAnalysis) where
 
 import Language.Clafer.Common
+import Control.Lens hiding (elements)
 import Data.Graph
 import Data.List
 import Data.Map (Map)
@@ -287,12 +288,7 @@ findConstraints _ = []
 
 -- Finds all the direct ancestors (ie. children)
 childClafers :: IClafer -> [IClafer]
-childClafers clafer =
-    mapMaybe asClafer (elements clafer)
-    where
-    asClafer (IEClafer claf) = Just claf
-    asClafer _ = Nothing
-    
+childClafers clafer = clafer ^.. elementsL.traversed.iClaferL 
     
 -- Unfold joins
 -- If the expression is a tree of only joins, then this function will flatten

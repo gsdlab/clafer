@@ -1,4 +1,4 @@
-{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE TemplateHaskell, DeriveDataTypeable #-}
 {-
  Copyright (C) 2012-2014 Kacper Bak, Jimmy Liang, Luke Michael Brown <http://gsd.uwaterloo.ca>
 
@@ -25,6 +25,8 @@ module Language.Clafer.Intermediate.Intclafer where
 
 import Language.Clafer.Front.Absclafer
 import Control.Lens
+import Data.Data
+import Data.Typeable
 import Data.Monoid
 import Data.Foldable (foldMap)
 
@@ -45,14 +47,14 @@ data Ir =
   IRIQuant IQuant |
   IRIDecl IDecl |
   IRIGCard IGCard
-  deriving (Eq, Show)
+  deriving (Eq, Show,Data,Typeable)
 
 data IType = TBoolean
            | TString
            | TInteger
            | TReal
            | TClafer [String]
-  deriving (Eq,Ord,Show)
+  deriving (Eq,Ord,Show,Data,Typeable)
 
 -- | each file contains exactly one mode. A module is a list of declarations
 data IModule = IModule {
@@ -61,7 +63,7 @@ data IModule = IModule {
       -- | List of top-level elements
       mDecls :: [IElement]
     }
-  deriving (Eq,Ord,Show)
+  deriving (Eq,Ord,Show,Data,Typeable)
 
 -- | Clafer has a list of fields that specify its properties. Some fields, marked as (o) are for generating optimized code
 data IClafer =
@@ -85,7 +87,7 @@ data IClafer =
       -- | nested elements
       elements :: [IElement]  
     }
-  deriving (Eq,Ord,Show)
+  deriving (Eq,Ord,Show,Data,Typeable)
 
 -- | Clafer's subelement is either a clafer, a constraint, or a goal (objective)
 --   This is a wrapper type needed to have polymorphic lists of elements
@@ -105,7 +107,7 @@ data IElement =
    isMaximize :: Bool,    -- | whether maximize or minimize
    cpexp :: PExp          -- | the expression
    }
-  deriving (Eq,Ord,Show)
+  deriving (Eq,Ord,Show,Data,Typeable)
 
 -- | A list of superclafers.  
 --   ->    overlaping unique (set)
@@ -116,7 +118,7 @@ data ISuper =
       isOverlapping :: Bool,  -- whether overlapping or disjoint with other clafers extending given list of superclafers
       supers :: [PExp]
     }
-  deriving (Eq,Ord,Show)
+  deriving (Eq,Ord,Show,Data,Typeable)
 
 -- | Group cardinality is specified as an interval. It may also be given by a keyword.
 --   xor    1..1 isKeyword = True
@@ -126,7 +128,7 @@ data IGCard =
       isKeyword :: Bool,    -- whether given by keyword: or, xor, mux
       interval :: Interval
     }
-  deriving (Eq,Ord,Show)
+  deriving (Eq,Ord,Show,Data,Typeable)
 
 -- | (Min, Max) integer interval. -1 denotes *
 type Interval = (Integer, Integer)
@@ -143,7 +145,7 @@ data PExp = PExp {
       -- | the actual expression
       exp :: IExp            
     }
-  deriving (Eq,Ord,Show)
+  deriving (Eq,Ord,Show,Data,Typeable)
 
 data IExp = 
    -- | quantified expression with declarations
@@ -169,7 +171,7 @@ data IExp =
       -- | identifier refers to a top-level definition
       isTop :: Bool
     }
-  deriving (Eq,Ord,Show)
+  deriving (Eq,Ord,Show,Data,Typeable)
 
 {- |
 For IFunExp standard set of operators includes:
@@ -219,7 +221,7 @@ data IDecl =
       -- | set to which local names refer to
       body :: PExp        
     }
-  deriving (Eq,Ord,Show)
+  deriving (Eq,Ord,Show,Data,Typeable)
 
 -- | quantifier
 data IQuant =
@@ -233,7 +235,7 @@ data IQuant =
  | ISome  
  -- | for all
  | IAll   
-  deriving (Eq,Ord,Show)
+  deriving (Eq,Ord,Show,Data,Typeable)
 
 type LineNo = Integer
 type ColNo  = Integer
@@ -347,6 +349,10 @@ unWrapIGCard :: Ir -> IGCard
 unWrapIGCard (IRIGCard x) = x
 unWrapIGCard x = error $ "Can't call unWarpIGcard on " ++ show x
 
+
+instance Plated IClafer
+instance Plated PExp
+instance Plated IExp
 
 makeLensesFor [ ("mName", "mNameL")
               , ("mDecls", "mDeclsL") 
