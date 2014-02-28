@@ -119,10 +119,9 @@ getFQKey = reverseOnQualifier
 getQNameFromKey :: FQKey -> QName
 getQNameFromKey = reverseOnQualifier
 
-
 deriveUidLpqNameMap :: FQNameUIDMap ->  UIDLpqNameMap
 deriveUidLpqNameMap    fqNameUIDMap = 
-    SMap.foldWithKey (generateUIDLpqMapEntry fqNameUIDMap) Map.empty fqNameUIDMap
+    SMap.foldrWithKey (generateUIDLpqMapEntry fqNameUIDMap) Map.empty fqNameUIDMap
 
 generateUIDLpqMapEntry :: FQNameUIDMap ->  SMap.Key -> UID -> UIDLpqNameMap -> UIDLpqNameMap
 generateUIDLpqMapEntry    fqNameUIDMap     fqKey       uid'   uidLpqNameMap = 
