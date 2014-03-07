@@ -1,0 +1,24 @@
+a 0..0
+b ?
+c
+d *
+e +
+f 2..4
+g 3..*
+gs -> g 2
+abstract H
+    i ?
+    j *
+    k 2
+Hs -> H 3..*
+H1 : H 2
+    H12 : H 2
+H2 : H 4..4
+H3 : H 1..2
+H4 : H 5..*
+Hs2 -> H 0..*
+Hs3 -> H 5..8
+    l ?
+abstract F : H
+f1 : F 2..5
+    m 0
