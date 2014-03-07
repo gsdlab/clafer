@@ -1,3 +1,4 @@
+{-# LANGUAGE OverloadedStrings #-}
 {-
  Copyright (C) 2014 Michal Antkiewicz <http://gsd.uwaterloo.ca>
 
@@ -22,15 +23,19 @@
 -- | Creates JSON outputs for different kinds of metadata.
 module Language.Clafer.JSONMetaData (
   generateJSONnameUIDMap,
-  generateJSONScopes
+  generateJSONScopes,
+  parseJSONScopes
 )
         
 where
 
+import Control.Lens hiding (element)
+import Data.Aeson.Lens
 import qualified Data.List as List
 import Data.Maybe
 import Data.Json.Builder
 import Data.String.Conversions
+import qualified Data.Text as T
 
 import Language.Clafer.QNameUID
 
@@ -46,9 +51,9 @@ generateJSONnameUIDMap    qNameMaps     =
 generateQNameUIDArrayEntry :: Array -> (FQName, PQName, UID) -> Array
 generateQNameUIDArrayEntry    array    (fqName, lpqName, uid) = 
     mappend array $ element $ mconcat [ 
-        row "fqName" fqName, 
-        row "lpqName" lpqName,
-        row "uid" uid ]
+        row ("fqName" :: String) fqName, 
+        row ("lpqName" :: String) lpqName,
+        row ("uid" :: String) uid ]
 
 -- | Generate a JSON list of tuples containing a least-partially-qualified name and a scope
 generateJSONScopes :: QNameMaps -> [(UID, Integer)] -> String
@@ -63,8 +68,8 @@ generateJSONScopes    qNameMaps    scopes       =
 generateLpqNameScopeArrayEntry :: Array -> (PQName, Integer)   -> Array
 generateLpqNameScopeArrayEntry    array    (lpqName, scope) = 
     mappend array $ element $ mconcat [ 
-        row "lpqName" lpqName,
-        row "scope" scope ]
+        row ("lpqName" :: String) lpqName,
+        row ("scope" :: String) scope ]
 
 -- insert a new line after  [, {, and ,
 prettyPrintJSON :: String -> String
@@ -77,3 +82,18 @@ prettyPrintJSON ('}':line) = '\n':'}':(prettyPrintJSON line)
 -- just rewrite and continue
 prettyPrintJSON (c:line) =  c:(prettyPrintJSON line)
 prettyPrintJSON ""         = ""
+
+-- | given the QNameMaps, parse the JSON scopes and return list of scopes 
+parseJSONScopes :: QNameMaps -> String    -> [ (UID, Integer) ]
+parseJSONScopes    qNameMaps    scopesJSON = 
+    foldl (\uidScopes qScope -> (qNameToUIDs qScope) ++ uidScopes) [] decodedScopes
+    where
+      --                  QName 
+      decodedScopes :: [ (T.Text, Integer) ]
+      decodedScopes = scopesJSON ^.. _Array . traverse 
+                                       . to (\o -> ( o ^?! key "lpqName" . _String
+                                                   , o ^?! key "scope"  . _Integer)
+                                            )
+      -- a QName may resolve to potentially multiple UIDs
+      qNameToUIDs :: (T.Text, Integer) -> [ (UID, Integer) ]
+      qNameToUIDs    (qName, scope)  = [ (uid, scope) | uid <- getUIDs qNameMaps $ convertString qName ]

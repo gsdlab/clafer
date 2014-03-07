@@ -46,6 +46,7 @@ Executable clafer
                     transformers >= 0.3.0.0,
 
                     data-stringmap >= 0.9.1,
+                    aeson >= 0.7.0.1, 
                     json-builder >= 0.3,
                     lens >= 4.0.3,
                     string-conversions >= 0.3,
@@ -59,6 +60,7 @@ Executable clafer
                     test-framework-hunit >= 0.3.0, 
                     test-framework-quickcheck2 >= 0.3.0.1,
                     test-framework-th >= 0.2.4,
+                    text >= 0.11.3.1,
 
                     clafer == 0.3.5.1
     hs-source-dirs: src
@@ -85,6 +87,7 @@ library
                     transformers >= 0.3.0.0,
 
                     data-stringmap >= 0.9.1,
+                    aeson >= 0.7.0.1, 
                     json-builder >= 0.3,
                     lens >= 4.0.3,
                     string-conversions >= 0.3,
@@ -97,7 +100,8 @@ library
                     test-framework >= 0.8, 
                     test-framework-hunit >= 0.3.0, 
                     test-framework-quickcheck2 >= 0.3.0.1,
-                    test-framework-th >= 0.2.4
+                    test-framework-th >= 0.2.4,
+                    text >= 0.11.3.1
 
     hs-source-dirs:  src
     ghc-options:     -Wall -fno-warn-unused-do-bind -fno-warn-orphans
@@ -163,6 +167,7 @@ Test-Suite test-suite
                     transformers >= 0.3.0.0,
 
                     data-stringmap >= 0.9.1,
+                    aeson >= 0.7.0.1, 
                     json-builder >= 0.3,
                     lens >= 4.0.3,
                     string-conversions >= 0.3,
@@ -176,6 +181,7 @@ Test-Suite test-suite
                     test-framework-hunit >= 0.3.0, 
                     test-framework-quickcheck2 >= 0.3.0.1,
                     test-framework-th >= 0.2.4,
+                    text >= 0.11.3.1,
 
                     clafer == 0.3.5.1
 
