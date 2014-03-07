@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -XTemplateHaskell #-}
+{-# LANGUAGE TemplateHaskell #-}
 {-
  Copyright (C) 2013 Luke Brown <http://gsd.uwaterloo.ca>
 
