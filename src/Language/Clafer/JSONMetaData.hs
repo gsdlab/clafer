@@ -24,18 +24,23 @@
 module Language.Clafer.JSONMetaData (
   generateJSONnameUIDMap,
   generateJSONScopes,
-  parseJSONScopes
+  parseJSONScopes,
+  writeCfrScopeFile,
+  readCfrScopeFile
 )
         
 where
 
 import Control.Lens hiding (element)
+import Control.Monad
 import Data.Aeson.Lens
 import qualified Data.List as List
 import Data.Maybe
 import Data.Json.Builder
 import Data.String.Conversions
 import qualified Data.Text as T
+import System.FilePath
+import System.Directory
 
 import Language.Clafer.QNameUID
 
@@ -96,4 +101,25 @@ parseJSONScopes    qNameMaps    scopesJSON =
                                             )
       -- a QName may resolve to potentially multiple UIDs
       qNameToUIDs :: (T.Text, Integer) -> [ (UID, Integer) ]
-      qNameToUIDs    (qName, scope)  = [ (uid, scope) | uid <- getUIDs qNameMaps $ convertString qName ]
+      qNameToUIDs   (qName, scope)  = if T.null qName
+                                       then [ ("", scope) ] 
+                                       else [ (uid, scope) | uid <- getUIDs qNameMaps $ convertString qName]
+
+-- | Write a .cfr-scope file
+writeCfrScopeFile :: [ (UID, Integer) ] -> QNameMaps -> FilePath        -> IO ()
+writeCfrScopeFile    uidScopes             qNameMaps    modelName = do
+    let
+        scopesInJSON = generateJSONScopes qNameMaps uidScopes
+    writeFile (replaceExtension modelName ".cfr-scope") scopesInJSON
+
+-- | Read a .cfr-scope file
+readCfrScopeFile :: QNameMaps -> FilePath        -> IO (Maybe [ (UID, Integer) ])
+readCfrScopeFile    qNameMaps    modelName = do
+    let
+        cfrScopeFileName = replaceExtension modelName ".cfr-scope"
+    exists <- doesFileExist cfrScopeFileName
+    if exists 
+    then do
+        scopesInJSON <- readFile cfrScopeFileName
+        return $ Just $ parseJSONScopes qNameMaps scopesInJSON
+    else return Nothing
