@@ -89,5 +89,5 @@ case_AllClafersGenerics = do
 		(Just (iModule, _, _)) = cIr $ claferEnv $ fromJust $ Map.lookup Alloy $ fromRight $ compileOneFragment defaultClaferArgs model
 		allClafers :: [ IClafer ]
 		allClafers = universeOn biplate iModule
-		allClafersUids = map uid allClafers
+		allClafersUids = map _uid allClafers
 	allClafersUids == [ "c0_a", "c0_b", "c1_b", "c0_c", "c0_d", "c2_b", "c1_d", "c3_b"] @? "All clafers\n" ++ show allClafersUids

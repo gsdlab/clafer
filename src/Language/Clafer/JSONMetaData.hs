@@ -32,7 +32,6 @@ module Language.Clafer.JSONMetaData (
 where
 
 import Control.Lens hiding (element)
-import Control.Monad
 import Data.Aeson.Lens
 import qualified Data.List as List
 import Data.Maybe

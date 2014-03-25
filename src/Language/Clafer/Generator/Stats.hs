@@ -37,19 +37,19 @@ data Stats = Stats {
 
 statsModule :: IModule -> Stats
 statsModule imodule =
-  execState (mapM statsElement $ mDecls imodule) $ Stats 0 0 0 0 0 (1, 1)
+  execState (mapM statsElement $ _mDecls imodule) $ Stats 0 0 0 0 0 (1, 1)
 
 statsClafer :: MonadState Stats m => IClafer -> m ()
 statsClafer claf = do
-  if isAbstract claf
+  if _isAbstract claf
     then modify (\e -> e {naClafers = naClafers e + 1})
     else
-      if isOverlapping $ super claf
+      if _isOverlapping $ _super claf
         then modify (\e -> e {nrClafers = nrClafers e + 1})
         else modify (\e -> e {ncClafers = ncClafers e + 1})
   sglCard' <- gets sglCard
-  modify (\e -> e {sglCard = statsCard sglCard' $ glCard claf})
-  mapM_ statsElement $ elements claf
+  modify (\e -> e {sglCard = statsCard sglCard' $ _glCard claf})
+  mapM_ statsElement $ _elements claf
 
 
 statsCard :: Interval -> Interval -> Interval

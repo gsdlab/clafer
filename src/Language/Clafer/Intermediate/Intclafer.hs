@@ -26,7 +26,6 @@ module Language.Clafer.Intermediate.Intclafer where
 import Language.Clafer.Front.Absclafer
 import Control.Lens
 import Data.Data
-import Data.Typeable
 import Data.Monoid
 import Data.Foldable (foldMap)
 
@@ -47,7 +46,7 @@ data Ir =
   IRIQuant IQuant |
   IRIDecl IDecl |
   IRIGCard IGCard
-  deriving (Eq, Show,Data,Typeable)
+  deriving (Eq, Show)
 
 data IType = TBoolean
            | TString
@@ -59,9 +58,9 @@ data IType = TBoolean
 -- | each file contains exactly one mode. A module is a list of declarations
 data IModule = IModule {
       -- | always empty for now because we don't have syntax for declaring modules
-      mName :: String,    
+      _mName :: String,    
       -- | List of top-level elements
-      mDecls :: [IElement]
+      _mDecls :: [IElement]
     }
   deriving (Eq,Ord,Show,Data,Typeable)
 
@@ -69,23 +68,23 @@ data IModule = IModule {
 data IClafer =
    IClafer {
       -- | the position of the syntax in source code
-      cinPos :: Span,         
+      _cinPos :: Span,         
       -- | whether abstract or not (i.e., concrete)
-      isAbstract :: Bool,     
+      _isAbstract :: Bool,     
       -- | group cardinality
-      gcard :: Maybe IGCard,  
+      _gcard :: Maybe IGCard,  
       -- | name declared in the model
-      ident :: CName,         
+      _ident :: CName,         
       -- | a unique identifier
-      uid :: UID,             
+      _uid :: UID,             
       -- | superclafers
-      super:: ISuper,         
+      _super:: ISuper,         
       -- | clafer cardinality
-      card :: Maybe Interval,
+      _card :: Maybe Interval,
        -- | (o) global cardinality 
-      glCard :: Interval,    
+      _glCard :: Interval,    
       -- | nested elements
-      elements :: [IElement]  
+      _elements :: [IElement]  
     }
   deriving (Eq,Ord,Show,Data,Typeable)
 
@@ -94,18 +93,18 @@ data IClafer =
 data IElement =
    IEClafer { 
       -- | the actual clafer 
-      iClafer :: IClafer
+      _iClafer :: IClafer
     }
  | IEConstraint {
       -- | whether hard or not (soft)
-      isHard :: Bool,     
+      _isHard :: Bool,     
       -- | the container of the actual expression
-      cpexp :: PExp       
+      _cpexp :: PExp       
     }
   -- | Goal (optimization objective)
  | IEGoal {
-   isMaximize :: Bool,    -- | whether maximize or minimize
-   cpexp :: PExp          -- | the expression
+   _isMaximize :: Bool,    -- | whether maximize or minimize
+   _cpexp :: PExp          -- | the expression
    }
   deriving (Eq,Ord,Show,Data,Typeable)
 
@@ -115,8 +114,8 @@ data IElement =
 --   :     non overlapping (disjoint)
 data ISuper =
    ISuper {
-      isOverlapping :: Bool,  -- whether overlapping or disjoint with other clafers extending given list of superclafers
-      supers :: [PExp]
+      _isOverlapping :: Bool,  -- whether overlapping or disjoint with other clafers extending given list of superclafers
+      _supers :: [PExp]
     }
   deriving (Eq,Ord,Show,Data,Typeable)
 
@@ -125,8 +124,8 @@ data ISuper =
 --   1..1   1..1 isKeyword = False
 data IGCard =
   IGCard {
-      isKeyword :: Bool,    -- whether given by keyword: or, xor, mux
-      interval :: Interval
+      _isKeyword :: Bool,    -- whether given by keyword: or, xor, mux
+      _interval :: Interval
     }
   deriving (Eq,Ord,Show,Data,Typeable)
 
@@ -137,25 +136,32 @@ type Interval = (Integer, Integer)
 --   It has meta information about an actual expression 'exp'
 data PExp = PExp {
       -- | the inferred type
-      iType :: Maybe IType,  
+      _iType :: Maybe IType,  
       -- | non-empty unique id for expressions with span, \"\" for noSpan
-      pid :: String,         
+      _pid :: String,         
       -- | position in the input Clafer file
-      inPos :: Span,         
+      _inPos :: Span,         
       -- | the actual expression
-      exp :: IExp            
+      _exp :: IExp            
     }
   deriving (Eq,Ord,Show,Data,Typeable)
 
 data IExp = 
    -- | quantified expression with declarations
    --   e.g., [ all x1; x2 : X | x1.ref != x2.ref ]
-   IDeclPExp {quant :: IQuant, oDecls :: [IDecl], bpexp :: PExp}
+   IDeclPExp {
+      _quant :: IQuant, 
+      _oDecls :: [IDecl], 
+      _bpexp :: PExp
+    }
    -- | expression with a
    --   unary function, e.g., -1
    --   binary function, e.g., 2 + 3
    --   ternary function, e.g., if x then 4 else 5
- | IFunExp {op :: String, exps :: [PExp]}
+ | IFunExp {
+      _op :: String, 
+      _exps :: [PExp]
+    }
  -- | integer number
  | IInt Integer
  -- | real number
@@ -165,11 +171,11 @@ data IExp =
  -- | a reference to a clafer name
  | IClaferId {                   
       -- | module name - currently not used and empty since we have no module system
-      modName :: String,         
+      _modName :: String,         
       -- | name of the clafer being referred to
-      sident :: CName,          
+      _sident :: CName,          
       -- | identifier refers to a top-level definition
-      isTop :: Bool
+      _isTop :: Bool
     }
   deriving (Eq,Ord,Show,Data,Typeable)
 
@@ -215,11 +221,11 @@ For IFunExp standard set of operators includes:
 data IDecl =
    IDecl {
       -- | is disjunct
-      isDisj :: Bool,    
+      _isDisj :: Bool,    
       -- | a list of local names 
-      decls :: [CName],  
+      _decls :: [CName],  
       -- | set to which local names refer to
-      body :: PExp        
+      _body :: PExp        
     }
   deriving (Eq,Ord,Show,Data,Typeable)
 
@@ -354,51 +360,18 @@ instance Plated IClafer
 instance Plated PExp
 instance Plated IExp
 
-makeLensesFor [ ("mName", "mNameL")
-              , ("mDecls", "mDeclsL") 
-              ] ''IModule
+makeLenses ''IModule
 
-makeLensesFor [ ("cinPos", "cinPosL")
-              , ("isAbstract", "isAbstractL")
-              , ("gcard", "gcardL")
-              , ("ident", "identL")
-              , ("uid", "uidL")
-              , ("super", "superL")
-              , ("card", "cardL")
-              , ("glCard", "glCardL")
-              , ("elements", "elementsL")
-              ] ''IClafer
+makeLenses ''IClafer
 
-makeLensesFor [ ("iClafer", "iClaferL")
-              , ("isHard", "isHardL")
-              , ("cpexp", "cpexpL")
-              , ("isMaximize", "isMaximizeL")] ''IElement
+makeLenses ''IElement
 
-makeLensesFor [ ("isOverlapping", "isOverlappingL")
-              , ("supers", "supersL")
-              ] ''ISuper
+makeLenses ''ISuper
 
-makeLensesFor [ ("isKeyword", "isKeywordL")
-              , ("interval", "intervalL")
-              ] ''IGCard
+makeLenses ''IGCard
 
-makeLensesFor [ ("iType", "iTypeL")
-              , ("pid", "pidL")
-              , ("inPos", "inPosL")
-              , ("exp", "expL")
-              ] ''PExp
+makeLenses ''PExp
 
-makeLensesFor [ ("quant", "quantL")
-              , ("oDecls", "oDeclsL")
-              , ("bpexp", "bpexpL")
-              , ("op", "opL")
-              , ("exps", "expsL")
-              , ("modName", "modNameL")
-              , ("sident", "sidentL")
-              , ("isTop", "isTopL")
-              ] ''IExp
+makeLenses ''IExp
 
-makeLensesFor [ ("isDisj", "isDisjL")
-              , ("decls", "declsL")
-              , ("body", "bodyL")
-              ] ''IDecl
+makeLenses ''IDecl
