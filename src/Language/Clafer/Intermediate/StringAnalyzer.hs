@@ -33,9 +33,9 @@ import Language.Clafer.Intermediate.Intclafer
 -- | Convert all strings into ints for analysis
 -- | Return an inverse map from ints back to strings
 astrModule :: IModule -> (IModule, Map Int String)
-astrModule imodule = (imodule{mDecls = decls''}, flipMap strMap')
+astrModule imodule = (imodule{_mDecls = decls''}, flipMap strMap')
   where
-    decls' = mDecls imodule
+    decls' = _mDecls imodule
     (decls'', strMap') = runState (mapM astrElement decls') Map.empty
 
     flipMap :: Map String Int -> Map Int String
@@ -80,6 +80,6 @@ concatStrExp :: IExp -> IExp
 concatStrExp x = case x of
   IFunExp _ exps' -> IStr $ s0 ++ s1 
     where
-    ((IStr s0):(IStr s1):_) = map concatStrExp $ map (Language.Clafer.Intermediate.Intclafer.exp) exps'
+    ((IStr s0):(IStr s1):_) = map concatStrExp $ map (Language.Clafer.Intermediate.Intclafer._exp) exps'
   IStr _ -> x
   _ -> x

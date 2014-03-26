@@ -21,13 +21,14 @@
 -}
 module Language.Clafer.Intermediate.Transformer where
 
+import Control.Lens hiding (elements)
 import Data.Maybe
 import Language.Clafer.Common
 import Language.Clafer.Intermediate.Intclafer
 import Language.Clafer.Intermediate.Desugarer
 
 transModule :: IModule -> IModule
-transModule imodule = imodule{mDecls = map transElement $ mDecls imodule}
+transModule imodule = imodule{_mDecls = map transElement $ _mDecls imodule}
 
 transElement :: IElement -> IElement
 transElement x = case x of
@@ -36,7 +37,8 @@ transElement x = case x of
   IEGoal isMaximize' pexp  -> IEGoal isMaximize' $ transPExp False pexp  
 
 transClafer :: IClafer -> IClafer
-transClafer clafer = clafer{elements = map transElement $ elements clafer}
+transClafer clafer = elements . traversed %~ transElement  $ clafer
+  -- clafer{_elements = map transElement $ _elements clafer}
 
 transPExp :: Bool -> PExp -> PExp
 transPExp some (PExp t pid' pos' x) = trans $ PExp t pid' pos' $ transIExp (fromJust t) x

@@ -48,19 +48,19 @@ mkInteger (PosInteger (_, n)) = read n
 type Ident = PosIdent
 
 getSuper :: IClafer -> String
-getSuper = getSuperId.supers.super
+getSuper = getSuperId._supers._super
 
 getSuperNoArr :: IClafer -> String
 
 getSuperNoArr clafer
-  | isOverlapping $ super clafer = "clafer"
+  | _isOverlapping $ _super clafer = "clafer"
   | otherwise                    = getSuper clafer
 
 getSuperId :: [PExp] -> String
-getSuperId = sident . Language.Clafer.Intermediate.Intclafer.exp . head
+getSuperId = _sident . Language.Clafer.Intermediate.Intclafer._exp . head
 
 isEqClaferId :: String -> IClafer -> Bool
-isEqClaferId = flip $ (==).uid
+isEqClaferId = flip $ (==)._uid
 
 idToPExp :: String -> Span -> String -> String -> Bool -> PExp
 idToPExp pid' pos modids id' isTop' = PExp (Just $ TClafer [id']) pid' pos (IClaferId modids id' isTop')
@@ -126,7 +126,7 @@ findHierarchy :: (IClafer -> String)
 findHierarchy sFun clafers clafer
   | sFun clafer == "clafer"      = [clafer]
   | otherwise                    = if clafer `elem` superClafers
-                                   then error $ "Inheritance hierarchy contains a cycle: line " ++ (show $ cinPos clafer)
+                                   then error $ "Inheritance hierarchy contains a cycle: line " ++ (show $ _cinPos clafer)
                                    else clafer : superClafers
   where
   superClafers = unfoldr (\c -> find (isEqClaferId $ sFun c) clafers >>=
@@ -145,7 +145,7 @@ bfs toNode seed = map rootLabel $ concat $ takeWhile (not.null) $
 
 
 toNodeShallow :: IClafer -> (IClafer, [IClafer])
-toNodeShallow = apply (getSubclafers.elements)
+toNodeShallow = apply (getSubclafers._elements)
 
 
 getSubclafers :: [IElement] -> [IClafer]

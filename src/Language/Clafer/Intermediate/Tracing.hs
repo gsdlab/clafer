@@ -33,8 +33,8 @@ traceIrModule = foldMapIR getMap
     insert :: Span -> Ir -> Map Span [Ir] -> Map Span [Ir]
     insert k a = Map.insertWith (++) k [a]
     getMap :: Ir -> Map Span [Ir] --Map Span [Union (IRClafer IClafer) (IRPExp PExp)]
-    getMap (IRPExp (p@PExp{inPos = s})) = insert s (IRPExp p) Map.empty
-    getMap (IRClafer (c@IClafer{cinPos = s})) = insert s (IRClafer c) Map.empty
+    getMap (IRPExp (p@PExp{_inPos = s})) = insert s (IRPExp p) Map.empty
+    getMap (IRClafer (c@IClafer{_cinPos = s})) = insert s (IRClafer c) Map.empty
     getMap _ = Map.empty
 
 traceAstModule :: Module -> Map Span [Ast]
