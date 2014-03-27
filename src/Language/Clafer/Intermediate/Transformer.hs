@@ -21,10 +21,11 @@
 -}
 module Language.Clafer.Intermediate.Transformer where
 
-import Control.Lens hiding (elements)
+import Control.Lens
 import Data.Maybe
 import Language.Clafer.Common
-import Language.Clafer.Intermediate.Intclafer
+import qualified Language.Clafer.Intermediate.Intclafer as I (exp, elements, op)
+import Language.Clafer.Intermediate.Intclafer hiding (exp, elements, op)
 import Language.Clafer.Intermediate.Desugarer
 
 transModule :: IModule -> IModule
@@ -36,16 +37,18 @@ transElement (IEConstraint isHard' pexp) = IEConstraint isHard' $ transPExp Fals
 transElement (IEGoal isMaximize' pexp)   = IEGoal isMaximize' $ transPExp False pexp  
 
 transClafer :: IClafer -> IClafer
-transClafer = elements . traversed %~ transElement 
+transClafer = I.elements . traversed %~ transElement 
 
 transPExp :: Bool -> PExp -> PExp
-transPExp some (PExp t pid' pos' x) = trans $ PExp t pid' pos' $ transIExp (fromJust t) x
-  where
-  trans = if some then desugarPath else id
+transPExp True  pexp' = desugarPath $ I.exp %~ transIExp (fromJust $ pexp' ^. iType) $ pexp'
+transPExp False pexp' = pexp'
 
 transIExp :: IType -> IExp -> IExp
-transIExp t (IDeclPExp quant' decls' pexp) = IDeclPExp quant' decls' $ transPExp False pexp
-transIExp t (IFunExp op' exps')            = IFunExp op' $ map (transPExp cond) exps'
-    where
-    cond = op' == iIfThenElse && t `elem` [TBoolean, TClafer []]
-transIExp _ = id
+transIExp t idpe@(IDeclPExp _ _ _) = bpexp            %~ transPExp False $ idpe
+transIExp t ife@(IFunExp op' _)    = exps . traversed %~ transPExp cond  $ ife
+  where
+    cond = op' == iIfThenElse && 
+           t `elem` [TBoolean, TClafer []]
+transIExp _ x = x 
+
+
