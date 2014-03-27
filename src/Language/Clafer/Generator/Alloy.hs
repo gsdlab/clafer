@@ -22,14 +22,17 @@
 -}
 -- | Generates Alloy4.1 or 4.2 code for a Clafer model
 module Language.Clafer.Generator.Alloy where
+
+import Control.Lens hiding (elements, mapping)
+import Control.Monad.State
 import Data.List
 import Data.Maybe
-import Control.Monad.State
 
 import Language.Clafer.Common
 import Language.Clafer.ClaferArgs
 import Language.Clafer.Front.Absclafer
-import Language.Clafer.Intermediate.Intclafer
+import Language.Clafer.Intermediate.Intclafer hiding (exp)
+-- import qualified Language.Clafer.Intermediate.Intclafer as I (exp)
 
 -- | representation of strings in chunks (for line/column numbering)
 data Concat = CString String | Concat {
@@ -180,12 +183,12 @@ genClafer claferargs resPath oClafer = (cunlines $ filterNull
     | otherwise = CString ""
 
 transPrimitive :: IClafer -> IClafer
-transPrimitive    clafer'   = clafer'{_super = toOverlapping $ _super clafer'}
+transPrimitive = super %~ toOverlapping
   where
-  toOverlapping x@(ISuper _ [PExp _ _ _ (IClaferId _ id' _)])
-    | isPrimitive id' = x{_isOverlapping = True}
-    | otherwise      = x
-  toOverlapping x = x
+    toOverlapping x@(ISuper _ [PExp _ _ _ (IClaferId _ id' _)])
+      | isPrimitive id' = x{_isOverlapping = True}
+      | otherwise      = x
+    toOverlapping x = x
 
 claferDecl :: IClafer -> Concat -> Concat
 claferDecl    c     rest    = cconcat [genOptCard c,
@@ -245,7 +248,7 @@ getTarget    x     = case x of
 
 genType :: ClaferArgs -> PExp                              -> Concat
 genType    claferargs    x@(PExp _ _ _ y@(IClaferId _ _ _)) = genPExp claferargs []
-  x{Language.Clafer.Intermediate.Intclafer._exp = y{_isTop = True}}
+  x{_exp = y{_isTop = True}}
 genType m x = genPExp m [] x
 
 
@@ -310,7 +313,7 @@ genPathConst    claferargs    name      resPath     c
   | otherwise        = CString ""
 
 isRefPath :: IClafer -> Bool
-isRefPath c = (_isOverlapping $ _super c) &&
+isRefPath c = (c ^. super . isOverlapping) &&
                    ((length s > 1) || (not $ isSimplePath s))
   where
   s = _supers $ _super c
@@ -506,12 +509,12 @@ adjustIExp resPath x = case x of
 adjustNav :: [String] -> IExp -> (IExp, [String]) 
 adjustNav resPath x@(IFunExp op' (pexp0:pexp:_))
   | op' == iJoin = (IFunExp iJoin
-                   [pexp0{Language.Clafer.Intermediate.Intclafer._exp = iexp0},
-                    pexp{Language.Clafer.Intermediate.Intclafer._exp = iexp}], path')
+                   [pexp0{_exp = iexp0},
+                    pexp{_exp = iexp}], path')
   | otherwise   = (x, resPath)
   where
-  (iexp0, path) = adjustNav resPath (Language.Clafer.Intermediate.Intclafer._exp pexp0)
-  (iexp, path') = adjustNav path    (Language.Clafer.Intermediate.Intclafer._exp pexp)
+  (iexp0, path) = adjustNav resPath (_exp pexp0)
+  (iexp, path') = adjustNav path    (_exp pexp)
 adjustNav resPath x@(IClaferId _ id' _)
   | id' == parent = (x{_sident = "~@" ++ (genRelName $ head resPath)}, tail resPath)
   | otherwise    = (x, resPath)
