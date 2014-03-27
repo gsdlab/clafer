@@ -40,15 +40,15 @@ transClafer :: IClafer -> IClafer
 transClafer = I.elements . traversed %~ transElement 
 
 transPExp :: Bool -> PExp -> PExp
-transPExp True  pexp' = desugarPath $ I.exp %~ transIExp (fromJust $ pexp' ^. iType) $ pexp'
-transPExp False pexp' = pexp'
+transPExp True  pexp'@(PExp iType' _ _ _) = desugarPath $ I.exp %~ transIExp (fromJust $ iType') $ pexp'
+transPExp False pexp'                     = pexp'
 
 transIExp :: IType -> IExp -> IExp
-transIExp t idpe@(IDeclPExp _ _ _) = bpexp            %~ transPExp False $ idpe
-transIExp t ife@(IFunExp op' _)    = exps . traversed %~ transPExp cond  $ ife
+transIExp iType' idpe@(IDeclPExp _ _ _) = bpexp            %~ transPExp False $ idpe
+transIExp iType' ife@(IFunExp op' _)    = exps . traversed %~ transPExp cond  $ ife
   where
     cond = op' == iIfThenElse && 
-           t `elem` [TBoolean, TClafer []]
-transIExp _ x = x 
+           iType' `elem` [TBoolean, TClafer []]
+transIExp _      iexp' = iexp'
 
 
