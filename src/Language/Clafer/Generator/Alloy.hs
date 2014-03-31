@@ -295,12 +295,12 @@ genGroupConst    clafer'
   card'     = mkCard (_uid clafer') True "children" $ _interval $ fromJust $ _gcard $ clafer'
 
 mkCard :: String -> Bool -> String -> (Integer, Integer) -> Concat
-mkCard constraintName group' element crd
+mkCard constraintName group' element' crd
   | crd' == "set" || crd' == ""        = CString ""
-  | crd' `elem` ["one", "lone", "some"] = CString $ crd' ++ " " ++ element
+  | crd' `elem` ["one", "lone", "some"] = CString $ crd' ++ " " ++ element'
   | otherwise                            = interval'
   where
-  interval' = genInterval constraintName group' element crd
+  interval' = genInterval constraintName group' element' crd
   crd'  = flatten $ interval'
 
 -- generates expression for references that point to expressions (not single clafers)
@@ -329,7 +329,7 @@ isSimplePath    _ = False
 
 
 genCard :: String -> Maybe Interval -> Concat
-genCard    element   crd            = genInterval element False element $ fromJust crd
+genCard    element'   crd            = genInterval element' False element' $ fromJust crd
 
 genCardCrude :: Maybe Interval -> String
 genCardCrude crd = genIntervalCrude $ fromJust crd
@@ -343,7 +343,7 @@ genIntervalCrude x = case x of
 
 
 genInterval :: String      -> Bool -> String -> Interval -> Concat
-genInterval    constraintName group'   element   x         = case x of
+genInterval    constraintName group'   element'   x         = case x of
   (1, 1) -> cardConcat constraintName group' [CString "one"]
   (0, 1) -> cardConcat constraintName group' [CString "lone"]
   (1, -1)   -> cardConcat constraintName group' [CString "some"]
@@ -355,10 +355,10 @@ genInterval    constraintName group'   element   x         = case x of
       (Nothing, Just c2) -> c2
       (Nothing, Nothing) -> undefined
     where
-    s1 = if n == 0 then Nothing else Just $ cardLowerConcat constraintName group' [CString $ concat [show n, " <= #",  element]]
+    s1 = if n == 0 then Nothing else Just $ cardLowerConcat constraintName group' [CString $ concat [show n, " <= #",  element']]
     s2 =
         do
-            result <- genExInteger element x exinteger
+            result <- genExInteger element' x exinteger
             return $ cardUpperConcat constraintName group' [CString result]
 
 
@@ -375,9 +375,9 @@ cardUpperConcat    constraintName = Concat . UpperCard constraintName
 
 
 genExInteger :: String -> Interval -> Integer -> Maybe Result
-genExInteger    element  (y,z) x  =
-  if (y==0 && z==0) then Just $ concat ["#", element, " = ", "0"] else
-    if x == -1 then Nothing else Just $ concat ["#", element, " <= ", show x]
+genExInteger    element'  (y,z) x  =
+  if (y==0 && z==0) then Just $ concat ["#", element', " = ", "0"] else
+    if x == -1 then Nothing else Just $ concat ["#", element', " <= ", show x]
 
 
 -- -----------------------------------------------------------------------------

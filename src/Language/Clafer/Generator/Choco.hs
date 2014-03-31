@@ -116,7 +116,7 @@ genCModule _ (IModule{_mDecls}, _) scopes =
         ++ "defaultScope(1);\n"
         ++ "intRange(-" ++ show (2 ^ (bitwidth - 1)) ++ ", " ++ show (2 ^ (bitwidth - 1) - 1) ++ ");\n"
         where
-            scopeMap = [uid ++ ":" ++ show scope | (uid, scope) <- scopes, uid /= "int"]
+            scopeMap = [uid' ++ ":" ++ show scope | (uid', scope) <- scopes, uid' /= "int"]
                 
     genConcreteClafer :: IClafer -> Result
     genConcreteClafer IClafer{_uid, _card = Just _card, _gcard = Just (IGCard _ _gcard)} =
@@ -222,8 +222,8 @@ genCModule _ (IModule{_mDecls}, _) scopes =
     genConstraintExp (IDeclPExp quant' decls' body') =
         mapQuant quant' ++ "([" ++ intercalate ", " (map genDecl decls') ++ "], " ++ genConstraintPExp body' ++ ")"
         where
-            genDecl (IDecl isDisj locals body') =
-                (if isDisj then "disjDecl" else "decl") ++ "([" ++ intercalate ", " (map genLocal locals) ++ "], " ++ genConstraintPExp body' ++ ")"
+            genDecl (IDecl isDisj' locals body'') =
+                (if isDisj' then "disjDecl" else "decl") ++ "([" ++ intercalate ", " (map genLocal locals) ++ "], " ++ genConstraintPExp body'' ++ ")"
             genLocal local = 
                 local ++ " = local(\"" ++ local ++ "\")"
              
@@ -243,8 +243,8 @@ genCModule _ (IModule{_mDecls}, _) scopes =
         | [arg] <- args', PExp{_exp = IFunExp{_exps = [a, PExp{_exp = IClaferId{_sident = "ref"}}]}} <- rewrite arg =
             "sum(" ++ genConstraintPExp a ++ ")"
         | otherwise = error "Unexpected sum argument."
-    genConstraintExp (IFunExp op args') =
-        mapFunc op ++ "(" ++ intercalate ", " (map genConstraintPExp args') ++ ")"
+    genConstraintExp (IFunExp op' args') =
+        mapFunc op' ++ "(" ++ intercalate ", " (map genConstraintPExp args') ++ ")"
     -- this is a keyword in Javascript so use "$this" instead
     genConstraintExp IClaferId{_sident = "this"} = "$this()"
     genConstraintExp IClaferId{_sident}
@@ -281,7 +281,7 @@ genCModule _ (IModule{_mDecls}, _) scopes =
     mapFunc "--" = "diff"
     mapFunc "&" = "inter"
     mapFunc "=>else" = "ifThenElse"
-    mapFunc op = error $ "Unknown op: " ++ op
+    mapFunc op' = error $ "Unknown op: " ++ op'
     
 {-    sidentOf u = ident $ claferWithUid u
     scopeOf "integer" = undefined
