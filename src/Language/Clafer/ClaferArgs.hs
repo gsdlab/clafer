@@ -134,12 +134,7 @@ mainArgs = do
   model <- case file args' of
              "" -> hGetContents stdin
              f  -> readFile f
-  let firstLine = case lines model of
-               [] -> ""
-               (s:_) -> s
-  let options = fromMaybe "" $ stripPrefix "//# OPTIONS " firstLine
-  let args'' = either (const args') (mergeArgs args' . cmdArgsValue) $
-               process (cmdArgsMode clafer) $ Language.Clafer.SplitJoin.splitArgs options
+  let args'' = argsWithOPTIONS args' model
   -- Alloy should be the default mode but only if nothing else was specified
   -- cannot use [ Alloy ] as the default in the definition of `clafer :: ClaferArgs` since 
   -- Alloy will always be a mode in addition to the other specified modes (it will become mandatory)
@@ -147,6 +142,17 @@ mainArgs = do
                 then args''{mode = [ Alloy ]}
                 else args''
   return $ (args''', model)
+
+argsWithOPTIONS :: ClaferArgs -> String -> ClaferArgs
+argsWithOPTIONS    args'         model   =
+  let 
+    firstLine = case lines model of
+                 [] -> ""
+                 (s:_) -> s
+    options = fromMaybe "" $ stripPrefix "//# OPTIONS " firstLine
+  in
+    either (const args') (mergeArgs args' . cmdArgsValue) $
+               process (cmdArgsMode clafer) $ Language.Clafer.SplitJoin.splitArgs options
 
 defaultClaferArgs :: ClaferArgs
 defaultClaferArgs = ClaferArgs [ def ] True False 0 False False False False False False False False False "tools/" False False False False False False Simple False False False ""
