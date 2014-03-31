@@ -83,7 +83,7 @@ clafer = ClaferArgs {
   timeout_analysis    = def &= help "Timeout for analysis.",
   no_layout           = def &= help "Don't resolve off-side rule layout." &= name "l",
   new_layout          = def &= help "Use new fast layout resolver (experimental)." &= name "nl",
-  check_duplicates    = def &= help "Check duplicated clafer names."  &= name "c",
+  check_duplicates    = def &= help "Check duplicated clafer names in the entire model."  &= name "c",
   skip_resolver       = def &= help "Skip name resolution." &= name "f",
   keep_unused         = def &= help "Keep uninstantated abstract clafers ('alloy' and 'alloy42' modes only)." &= name "k",
   no_stats            = def &= help "Don't print statistics." &= name "s",

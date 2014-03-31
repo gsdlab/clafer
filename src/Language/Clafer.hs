@@ -512,17 +512,18 @@ data CompilerResult = CompilerResult {
                             } deriving Show
 
 desugar :: Module -> IModule  
-desugar tree = desugarModule tree
+desugar iModule = desugarModule iModule
 
 liftError :: (Monad m, Language.ClaferT.Throwable t) => Either t a -> ClaferT m a
 liftError = either throwErr return
 
 analyze :: Monad m => ClaferArgs -> IModule -> ClaferT m (IModule, GEnv, Bool)
-analyze args' tree = do
-  let dTree' = findDupModule args' tree
-  let au = allUnique dTree'
+analyze args' iModule = do
+  liftError $ findDupModule args' iModule
+  let 
+    au = allUnique iModule
   let args'' = args'{skip_resolver = au && (skip_resolver args')}
-  (rTree, genv) <- liftError $ resolveModule args'' dTree'
+  (rTree, genv) <- liftError $ resolveModule args'' iModule
   let tTree = transModule rTree
   return (optimizeModule args'' (tTree, genv), genv, au)
 
