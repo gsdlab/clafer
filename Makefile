@@ -1,19 +1,14 @@
 SRC_DIR  := src
 TEST_DIR := test
 TOOL_DIR := tools
-UNAME := $(shell uname -o | tr "A-Z" "a-z")
 
-ifeq ($(UNAME), cygwin)
-	GPLK_LIBS_INCLUDES := --extra-include-dirs=$(glpk)/src --extra-include-dirs=$(glpk)/src/amd --extra-include-dirs=$(glpk)/src/colamd --extra-include-dirs=$(glpk)/src/minisat --extra-include-dirs=$(glpk)/src/zlib --extra-lib-dirs=$(glpk)/w32	
-endif
-ifeq ($(UNAME), windows)
-	GPLK_LIBS_INCLUDES := --extra-include-dirs=$(glpk)/src --extra-include-dirs=$(glpk)/src/amd --extra-include-dirs=$(glpk)/src/colamd --extra-include-dirs=$(glpk)/src/minisat --extra-include-dirs=$(glpk)/src/zlib --extra-lib-dirs=$(glpk)/w32	
-endif
-ifeq ($(UNAME), msys)
-	GPLK_LIBS_INCLUDES := --extra-include-dirs=$(glpk)/src --extra-include-dirs=$(glpk)/src/amd --extra-include-dirs=$(glpk)/src/colamd --extra-include-dirs=$(glpk)/src/minisat --extra-include-dirs=$(glpk)/src/zlib --extra-lib-dirs=$(glpk)/w32	
-endif
-ifeq ($(UNAME), darwin)
-	MAC_USR_LIB := --extra-lib-dir=/usr/lib
+ifeq ($(OS),Windows_NT)
+	GPLK_LIBS_INCLUDES := --extra-include-dirs=$(glpk)/src --extra-include-dirs=$(glpk)/src/amd --extra-include-dirs=$(glpk)/src/colamd --extra-include-dirs=$(glpk)/src/minisat --extra-include-dirs=$(glpk)/src/zlib --extra-lib-dirs=$(glpk)/w32
+else
+	UNAME_S := $(shell uname -s)
+	ifeq ($(UNAME_S),Darwin)
+	MAC_USR_LIB := --extra-lib-dir=/opt/local/lib --extra-include-dir=/opt/local/include/
+	endif
 endif
 
 all: build
@@ -65,8 +60,6 @@ prof:
 .PHONY : test
 
 test:
-	cabal configure --enable-tests
-	cabal build
 	cabal test	
 	$(MAKE) -C $(TEST_DIR) test
 
