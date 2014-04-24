@@ -1,7 +1,7 @@
 Clafer
 ======
 
-v0.3.5.1
+v0.3.6
 
 [Clafer](http://clafer.org) is a general-purpose lightweight structural modeling language developed by 
 [GSD Lab](http://gsd.uwaterloo.ca/), [University of Waterloo](http://uwaterloo.ca), and 
@@ -59,7 +59,7 @@ Required:
 
 Optional:
 
-* [Java Platform (JDK)](http://www.oracle.com/technetwork/java/javase/downloads/index.html) v6+, 32bit
+* [Java Platform (JDK)](http://www.oracle.com/technetwork/java/javase/downloads/index.html) v7+, 32bit
   * needed only for running XML output validation
 * [Alloy4.1 and/or Alloy4.2](http://alloy.mit.edu/alloy/download.html)
   * needed only for Alloy output validation
@@ -82,13 +82,14 @@ On Windows
   * inside the `w32` folder, copy `glpk_4_52.dll` to `glpk.dll` so that it can be found when building Haskell package `glpk-hs`
   * from `w32` folder, copy `glpk_4_52.dll` to `<user>\AppData\Roaming\cabal\bin`
 
-On Mac only
+On Mac
+
 1. install GPLK 4.52 from [MacPorts](http://www.macports.org/)
   * execute `sudo port install glpk +universal`
 
 ### Installation from binaries
 
-Binary distributions of the release 0.3.5.1 of Clafer Tools for Windows, Mac, and Linux, 
+Binary distributions of the release 0.3.6 of Clafer Tools for Windows, Mac, and Linux, 
 can be downloaded from 
 [Clafer Tools - Binary Distributions](http://http://gsd.uwaterloo.ca/clafer-tools-binary-distributions). 
 
@@ -101,11 +102,11 @@ Dependencies
 
 * [The Haskell Platform](http://hackage.haskell.org/platform/) v2013.2.0.0
 
-Clafer is now available on [Hackage](http://hackage.haskell.org/package/clafer-0.3.5.1/) and it can be installed using
+Clafer is now available on [Hackage](http://hackage.haskell.org/package/clafer-0.3.6/) and it can be installed using
 
 1. `cabal update`
 2. `cabal install clafer`
-3. `cd <cabal's lib or share folder>`  (`C:\Users\<user>\AppData\Roaming\cabal\i386-windows-ghc-7.6.3\clafer-0.3.5.1` on Windows or `.cabal/share/x86_64-linux-ghc-7.6.3/clafer-0.3.5.1/` on Linux)
+3. `cd <cabal's lib or share folder>`  (`C:\Users\<user>\AppData\Roaming\cabal\i386-windows-ghc-7.6.3\clafer-0.3.6` on Windows or `.cabal/share/x86_64-linux-ghc-7.6.3/clafer-0.3.6/` on Linux)
 4. to automatically download Alloy jars
   * execute `make` in `tools` 
 
@@ -119,7 +120,7 @@ Dependencies
 
 * [The Haskell Platform](http://hackage.haskell.org/platform/) v2013.2.0.0
 * [Alloy4.1 and/or Alloy4.2](http://alloy.mit.edu/alloy/download.html)
-  * downloaded automatically during build
+  * downloaded automatically during the build
 * [Git](http://git-scm.com/)
 
 On Windows 
@@ -148,15 +149,14 @@ Development versions from branches `develop` should work well together but this 
 5. On Linux and Mac execute 
   * `make`
 6. On Windows (in MinGW), execute 
-  * `make glpk="/c/<your WinGLPK install dir>"`
+  * `make glpk=/c/<your WinGLPK install dir>`
 
 ### Installation
 
 1. On Linux and Mac execute 
   * `make install to=<target directory>` 
 2. On Windows (in MinGW), execute 
-  * `make glpk="/c/<your WinGLPK instal dir>" to=/c/<target directory>`  
-3. add the `<target directory>` to your system PATH
+  * `make glpk=/c/<your WinGLPK instal dir> to=/c/Users/<your user name>/AppData/Roaming/cabal/bin`
 
 #### Note: 
 > On Windows, use `/` with the `make` command instead of `\`.
@@ -176,7 +176,7 @@ Clafer Compiler
 (As printed by `clafer --help`)
 
 ```
-Clafer v0.3.5.1
+Clafer v0.3.6
 
 clafer [OPTIONS] [FILE]
 

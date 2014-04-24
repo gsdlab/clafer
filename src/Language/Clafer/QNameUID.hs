@@ -87,23 +87,23 @@ deriveQNameMaps    iModule =
         QNameMaps fqNameUIDMap uidFqNameMap uidLpqNameMap
 
 deriveFQNameUIDMaps :: IModule -> (FQNameUIDMap, UIDFqNameMap)
-deriveFQNameUIDMaps    iModule = addElements ["::"] (mDecls iModule) (SMap.empty, Map.empty)
+deriveFQNameUIDMaps    iModule = addElements ["::"] (_mDecls iModule) (SMap.empty, Map.empty)
 
 addElements :: [String] -> [IElement] -> (FQNameUIDMap, UIDFqNameMap) -> (FQNameUIDMap, UIDFqNameMap)
 addElements    path        elems         maps                         = foldl (addClafer path) maps elems
 
 addClafer :: [String] -> (FQNameUIDMap, UIDFqNameMap) -> IElement          -> (FQNameUIDMap, UIDFqNameMap)
-addClafer    path        (fqNameUIDMap, uidFqNameMap)    (IEClafer iClafer) = 
+addClafer    path        (fqNameUIDMap, uidFqNameMap)    (IEClafer iClaf) = 
     let 
-        newPath = (ident iClafer) : path 
+        newPath = (_ident iClaf) : path 
         fqKey :: FQKey
         fqKey = concat newPath
         fqName :: FQName
         fqName = getQNameFromKey fqKey
-        fqNameUIDMap' = SMap.insert fqKey (uid iClafer) fqNameUIDMap
-        uidFqNameMap' = Map.insert (uid iClafer) fqName uidFqNameMap
+        fqNameUIDMap' = SMap.insert fqKey (_uid iClaf) fqNameUIDMap
+        uidFqNameMap' = Map.insert (_uid iClaf) fqName uidFqNameMap
     in 
-        addElements ("::" : newPath) (elements iClafer) (fqNameUIDMap', uidFqNameMap')
+        addElements ("::" : newPath) (_elements iClaf) (fqNameUIDMap', uidFqNameMap')
 addClafer    _           maps                            _                  = maps
 
 findUIDsByFQName :: FQNameUIDMap -> FQName            -> [ UID ]
@@ -119,10 +119,9 @@ getFQKey = reverseOnQualifier
 getQNameFromKey :: FQKey -> QName
 getQNameFromKey = reverseOnQualifier
 
-
 deriveUidLpqNameMap :: FQNameUIDMap ->  UIDLpqNameMap
 deriveUidLpqNameMap    fqNameUIDMap = 
-    SMap.foldWithKey (generateUIDLpqMapEntry fqNameUIDMap) Map.empty fqNameUIDMap
+    SMap.foldrWithKey (generateUIDLpqMapEntry fqNameUIDMap) Map.empty fqNameUIDMap
 
 generateUIDLpqMapEntry :: FQNameUIDMap ->  SMap.Key -> UID -> UIDLpqNameMap -> UIDLpqNameMap
 generateUIDLpqMapEntry    fqNameUIDMap     fqKey       uid'   uidLpqNameMap = 

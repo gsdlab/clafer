@@ -41,7 +41,7 @@ checkClaferExt file' = if ((eman == "")) then False else (txe == "rfc") && (take
 				
 compileOneFragment :: ClaferArgs -> InputModel -> Either [ClaferErr] (Map.Map ClaferMode CompilerResult)
 compileOneFragment args' model =
- 	runClafer args' $  
+ 	runClafer (argsWithOPTIONS args' model) $  
 		do
 			addModuleFragment model
 			parse

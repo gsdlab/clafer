@@ -1,0 +1,9 @@
+//# OPTIONS --check-duplicates
+// this model should fail the check with clafers "a", "b", and "c"
+a
+  b
+    c
+  a
+    c
+c
+  b

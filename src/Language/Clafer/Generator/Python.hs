@@ -86,7 +86,7 @@ genPythonModule imodule = concat
   , "\tstack = []\n"
   , "\tmodule = Module.Module(\"\")\n"
   , "\tstack.append(module)\n"
-  , concatMap genPythonElement $ mDecls imodule
+  , concatMap genPythonElement $ _mDecls imodule
   , "\treturn module"
   ]
 

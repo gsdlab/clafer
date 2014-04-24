@@ -325,22 +325,22 @@ convertClafer =
     where
     sclafer
       | maybe 1 groupLow parent == 0 && maybe 1 groupHigh parent /= -1 =
-          SClafer (I.uid clafer) (I.uid clafer) (I.isAbstract clafer) 1   high gLow gHigh (uid <$> parent) super constraints
+          SClafer (I._uid clafer) (I._uid clafer) (I._isAbstract clafer) 1   high gLow gHigh (uid <$> parent) super constraints
       | otherwise =
-          SClafer (I.uid clafer) (I.uid clafer) (I.isAbstract clafer) low high gLow gHigh (uid <$> parent) super constraints
-    (children, constraints) = partitionEithers $ mapMaybe (convertElement' $ Just $ sclafer) (I.elements clafer)
+          SClafer (I._uid clafer) (I._uid clafer) (I._isAbstract clafer) low high gLow gHigh (uid <$> parent) super constraints
+    (children, constraints) = partitionEithers $ mapMaybe (convertElement' $ Just $ sclafer) (I._elements clafer)
     
-    Just (low, high) = I.card clafer
+    Just (low, high) = I._card clafer
     (gLow, gHigh) =
-      case I.gcard clafer of
+      case I._gcard clafer of
         Nothing -> (0, -1)
         -- TODO: Bug w/ keywords?
         Just (I.IGCard True _) -> (0, 1)
         Just (I.IGCard _ i)    -> i
     super =
-      case I.super clafer of
-        I.ISuper True [I.PExp{I.exp = I.IClaferId{I.sident = superUid}}]  -> Just $ Ref superUid
-        I.ISuper False [I.PExp{I.exp = I.IClaferId{I.sident = superUid}}] ->
+      case I._super clafer of
+        I.ISuper True [I.PExp{I._exp = I.IClaferId{I._sident = superUid}}]  -> Just $ Ref superUid
+        I.ISuper False [I.PExp{I._exp = I.IClaferId{I._sident = superUid}}] ->
           if superUid `elem` ["string", "real", "int", "integer", "boolean"]
             then Just $ Ref superUid
             else Just $ Colon superUid
@@ -357,7 +357,7 @@ gatherInfo imodule =
   sString  = SClafer "string" "string" False 0 (-1) 0 (-1) Nothing Nothing []
   sBoolean = SClafer "boolean" "boolean" False 0 (-1) 0 (-1) Nothing Nothing []
   
-  root = I.IClafer noSpan False Nothing rootUid rootUid (I.ISuper False [I.PExp Nothing "" noSpan $ I.IClaferId "clafer" "clafer" True]) (Just (1, 1)) (0, 0) $ I.mDecls imodule
+  root = I.IClafer noSpan False Nothing rootUid rootUid (I.ISuper False [I.PExp Nothing "" noSpan $ I.IClaferId "clafer" "clafer" True]) (Just (1, 1)) (0, 0) $ I._mDecls imodule
 
 
 

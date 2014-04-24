@@ -258,10 +258,10 @@ compile =
     putEnv $ env{ cIr = Just ir, irModuleTrace = traceIrModule imodule }
     where
       isKeyWord :: Ir -> String
-      isKeyWord (IRClafer IClafer{cinPos = (Span (Pos l c) _) ,ident=i}) = if (i `elem` keyWords) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
-      isKeyWord (IRClafer IClafer{cinPos = (PosSpan _ (Pos l c) _) ,ident=i}) = if (i `elem` keyWords) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
-      isKeyWord (IRClafer IClafer{cinPos = (Span (PosPos _ l c) _) ,ident=i}) = if (i `elem` keyWords) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
-      isKeyWord (IRClafer IClafer{cinPos = (PosSpan _ (PosPos _ l c) _) ,ident=i}) = if (i `elem` keyWords) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
+      isKeyWord (IRClafer IClafer{_cinPos = (Span (Pos l c) _) ,_ident=i}) = if (i `elem` keyWords) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
+      isKeyWord (IRClafer IClafer{_cinPos = (PosSpan _ (Pos l c) _) ,_ident=i}) = if (i `elem` keyWords) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
+      isKeyWord (IRClafer IClafer{_cinPos = (Span (PosPos _ l c) _) ,_ident=i}) = if (i `elem` keyWords) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
+      isKeyWord (IRClafer IClafer{_cinPos = (PosSpan _ (PosPos _ l c) _) ,_ident=i}) = if (i `elem` keyWords) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
       isKeyWord _ = ""
       gt1 :: Ir -> String
       gt1 (IRClafer (IClafer (Span (Pos l c) _) False _ _ _ _ (Just (_, m)) _ _)) = if (m > 1 || m < 0) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
@@ -278,15 +278,15 @@ generateFragments =
   do
     env <- getEnv
     (iModule, _, _) <- getIr
-    fragElems <- fragment (sortBy (comparing rnge) $ mDecls iModule) (frags env)
+    fragElems <- fragment (sortBy (comparing rnge) $ _mDecls iModule) (frags env)
     
     -- Assumes output mode is Alloy for now
     
     return $ map (generateFragment $ args env) fragElems
   where
-  rnge (IEClafer IClafer{cinPos = p}) = p
-  rnge IEConstraint{cpexp = PExp{inPos = p}} = p
-  rnge IEGoal{cpexp = PExp{inPos = p}} = p
+  rnge (IEClafer IClafer{_cinPos = p}) = p
+  rnge IEConstraint{_cpexp = PExp{_inPos = p}} = p
+  rnge IEGoal{_cpexp = PExp{_inPos = p}} = p
   
   -- Groups IElements by their fragments.
   --   elems must be sorted by range.
@@ -512,17 +512,18 @@ data CompilerResult = CompilerResult {
                             } deriving Show
 
 desugar :: Module -> IModule  
-desugar tree = desugarModule tree
+desugar iModule = desugarModule iModule
 
 liftError :: (Monad m, Language.ClaferT.Throwable t) => Either t a -> ClaferT m a
 liftError = either throwErr return
 
 analyze :: Monad m => ClaferArgs -> IModule -> ClaferT m (IModule, GEnv, Bool)
-analyze args' tree = do
-  let dTree' = findDupModule args' tree
-  let au = allUnique dTree'
+analyze args' iModule = do
+  liftError $ findDupModule args' iModule
+  let 
+    au = allUnique iModule
   let args'' = args'{skip_resolver = au && (skip_resolver args')}
-  (rTree, genv) <- liftError $ resolveModule args'' dTree'
+  (rTree, genv) <- liftError $ resolveModule args'' iModule
   let tTree = transModule rTree
   return (optimizeModule args'' (tTree, genv), genv, au)
 

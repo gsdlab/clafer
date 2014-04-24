@@ -106,7 +106,7 @@ constantsAnalysis :: ScopeAnalysis [Integer]
 constantsAnalysis =
   do
     cons <- constraintsUnder anything `select` snd
-    return $ mapMaybe integerConstant [I.exp sub | con <- cons, sub <- subexpressions con]
+    return $ mapMaybe integerConstant [I._exp sub | con <- cons, sub <- subexpressions con]
   where  
   integerConstant (I.IInt i) = Just i
   integerConstant _ = Nothing
@@ -175,9 +175,9 @@ simpleAnalysis =
     simpleConstraintAnalysis' analysis =
         runListT $ do
             (curThis, cons) <- foreach $ constraintsUnder anything
-            constraintBetween curThis (I.exp cons)
+            constraintBetween curThis (I._exp cons)
         where
-        constraintBetween _ I.IDeclPExp {I.quant = I.ISome, I.oDecls = [], I.bpexp} =
+        constraintBetween _ I.IDeclPExp {I._quant = I.ISome, I._oDecls = [], I._bpexp} =
             do
                 let t = map tLexeme $ fromMaybe [] $ unfoldJoins bpexp
                 guard (not $ null t)
@@ -185,8 +185,8 @@ simpleAnalysis =
                 guard ("parent" `notElem` t)
                 guard ("ref" `notElem` t)
                 msum $ map someStep t
-        constraintBetween curThis I.IFunExp{I.op = "&&", I.exps = [exp1, exp2]} =
-            constraintBetween curThis (I.exp exp1) `mplus` constraintBetween curThis (I.exp exp2)
+        constraintBetween curThis I.IFunExp{I._op = "&&", I._exps = [exp1, exp2]} =
+            constraintBetween curThis (I._exp exp1) `mplus` constraintBetween curThis (I._exp exp2)
         constraintBetween _ _ = mzero
         someStep step =
             do
@@ -387,10 +387,10 @@ optimizeInConstraints constraints =
             | inSame <- groupBy (testing' $ syntaxOf . snd) $ sortBy (comparing' snd) toOpt ]
     inPExp a b = I.PExp (Just I.TBoolean) "" noSpan $ I.IFunExp "in" [a, b]
     unionPExpAll es = foldr1 unionPExp es
-    unionPExp a b = I.PExp (liftM2 (+++) (I.iType a) (I.iType b)) "" noSpan $ I.IFunExp "++" [a, b]
+    unionPExp a b = I.PExp (liftM2 (+++) (I._iType a) (I._iType b)) "" noSpan $ I.IFunExp "++" [a, b]
     
-    partitionConstraint I.PExp{I.exp = I.IFunExp {I.op = "in", I.exps = [exp1, exp2]}} = return $ Right (exp1, exp2)
-    partitionConstraint I.PExp{I.exp = I.IFunExp {I.op = "&&", I.exps = [exp1, exp2]}} = partitionConstraint exp1 `mplus` partitionConstraint exp2
+    partitionConstraint I.PExp{I._exp = I.IFunExp {I._op = "in", I._exps = [exp1, exp2]}} = return $ Right (exp1, exp2)
+    partitionConstraint I.PExp{I._exp = I.IFunExp {I._op = "&&", I._exps = [exp1, exp2]}} = partitionConstraint exp1 `mplus` partitionConstraint exp2
     partitionConstraint e = return $ Left e
 
     testing'   f a b = f a == f b    
@@ -411,16 +411,16 @@ optimizeAllConstraints :: MonadAnalysis m => SClafer -> [I.PExp] -> m [(SClafer,
 optimizeAllConstraints curThis constraints =
     runListT $ partitionConstraint =<< foreachM constraints
     where
-    partitionConstraint I.PExp{I.exp = I.IDeclPExp I.IAll [I.IDecl _ [decl] I.PExp{I.exp = I.IClaferId{I.sident}}] bpexp} =
+    partitionConstraint I.PExp{I._exp = I.IDeclPExp I.IAll [I.IDecl _ [decl] I.PExp{I._exp = I.IClaferId{I._sident}}] bpexp} =
         do
-            under <- claferWithUid sident
+            under <- claferWithUid _sident
             return (under, rename decl bpexp)
-    partitionConstraint I.PExp{I.exp = I.IFunExp {I.op = "&&", I.exps = [exp1, exp2]}} = partitionConstraint exp1 `mplus` partitionConstraint exp2
+    partitionConstraint I.PExp{I._exp = I.IFunExp {I._op = "&&", I._exps = [exp1, exp2]}} = partitionConstraint exp1 `mplus` partitionConstraint exp2
     partitionConstraint e = return (curThis, e)
     
     rename :: String -> I.PExp -> I.PExp
-    rename f p@I.PExp{I.exp = exp'} =
-        p{I.exp = renameIExp exp'}
+    rename f p@I.PExp{I._exp = exp'} =
+        p{I._exp = renameIExp exp'}
         where
         renameIExp (I.IFunExp op exps) = I.IFunExp op $ map (rename f) exps
         renameIExp (I.IDeclPExp quant oDecls bpexp) = I.IDeclPExp quant (map renameDecl oDecls) $ rename f bpexp
@@ -620,34 +620,34 @@ data Limit = Exact {lExpr::Expr} | AtLeast {lExpr::Expr} deriving Show
 
 scopeConstraint :: MonadScope m => SClafer -> I.PExp -> m [(Expr, Con, Expr)]
 scopeConstraint curThis pexp =
-  runListT $ scopeConstraint' $ I.exp pexp
+  runListT $ scopeConstraint' $ I._exp pexp
   where
-  scopeConstraint' I.IFunExp {I.op = "&&", I.exps} = msum $ map (scopeConstraint' . I.exp) exps
-  scopeConstraint' I.IDeclPExp {I.quant = I.ISome, I.oDecls = [], I.bpexp} = parsePath curThis bpexp `greaterThanEqual` constant (1::Integer)
-  scopeConstraint' I.IDeclPExp {I.quant = I.ISome, I.oDecls}               = msum $ map pathAndMultDecl oDecls
+  scopeConstraint' I.IFunExp {I._op = "&&", I._exps} = msum $ map (scopeConstraint' . I._exp) _exps
+  scopeConstraint' I.IDeclPExp {I._quant = I.ISome, I._oDecls = [], I._bpexp} = parsePath curThis _bpexp `greaterThanEqual` constant (1::Integer)
+  scopeConstraint' I.IDeclPExp {I._quant = I.ISome, I._oDecls}               = msum $ map pathAndMultDecl _oDecls
       where
-      pathAndMultDecl I.IDecl {I.isDisj = True, I.decls, I.body} = parsePath curThis body `greaterThanEqual` constant (length decls)
-      pathAndMultDecl I.IDecl {I.isDisj = False, I.body}         = parsePath curThis body `greaterThanEqual` constant (1::Integer)
-  scopeConstraint' I.IDeclPExp {I.quant = I.IOne, I.oDecls = [], I.bpexp} = parsePath curThis bpexp `eqTo` constant (1::Integer)
-  scopeConstraint' I.IDeclPExp {I.quant = I.IOne, I.oDecls} =
+      pathAndMultDecl I.IDecl {I._isDisj = True, I._decls, I._body} = parsePath curThis _body `greaterThanEqual` constant (length _decls)
+      pathAndMultDecl I.IDecl {I._isDisj = False, I._body}         = parsePath curThis _body `greaterThanEqual` constant (1::Integer)
+  scopeConstraint' I.IDeclPExp {I._quant = I.IOne, I._oDecls = [], I._bpexp} = parsePath curThis _bpexp `eqTo` constant (1::Integer)
+  scopeConstraint' I.IDeclPExp {I._quant = I.IOne, I._oDecls} =
     do
-      oDecl <- foreachM oDecls
-      parsePath curThis (I.body oDecl) `eqTo` constant (1::Integer)
-  scopeConstraint' I.IFunExp {I.op, I.exps = [exp1, exp2]}
-    | op == "in" = inConstraint1 exp1 exp2 `mplus` inConstraint2 exp1 exp2
-    | op == "="  = equalConstraint1 exp1 exp2 `mplus` equalConstraint2 exp1 exp2
-    | op == "<"  = scopeConstraintNum exp1 `lessThan` scopeConstraintNum exp2
-    | op == "<=" = scopeConstraintNum exp1 `lessThanEqual` scopeConstraintNum exp2
-    | op == ">"  = scopeConstraintNum exp1 `greaterThan` scopeConstraintNum exp2
-    | op == ">=" = scopeConstraintNum exp1 `greaterThanEqual` scopeConstraintNum exp2
-    | op == "<=>" = (exp1 `implies` exp2) `mplus` (exp2 `implies` exp1)
-    | op == "=>" = exp1 `implies` exp2
+      oDecl <- foreachM _oDecls
+      parsePath curThis (I._body oDecl) `eqTo` constant (1::Integer)
+  scopeConstraint' I.IFunExp {I._op, I._exps = [exp1, exp2]}
+    | _op == "in" = inConstraint1 exp1 exp2 `mplus` inConstraint2 exp1 exp2
+    | _op == "="  = equalConstraint1 exp1 exp2 `mplus` equalConstraint2 exp1 exp2
+    | _op == "<"  = scopeConstraintNum exp1 `lessThan` scopeConstraintNum exp2
+    | _op == "<=" = scopeConstraintNum exp1 `lessThanEqual` scopeConstraintNum exp2
+    | _op == ">"  = scopeConstraintNum exp1 `greaterThan` scopeConstraintNum exp2
+    | _op == ">=" = scopeConstraintNum exp1 `greaterThanEqual` scopeConstraintNum exp2
+    | _op == "<=>" = (exp1 `implies` exp2) `mplus` (exp2 `implies` exp1)
+    | _op == "=>" = exp1 `implies` exp2
   scopeConstraint' _ = mzero
   
   implies exp1 exp2 =
     do
-      e1 <- scopeConstraint' $ I.exp exp1
-      e2 <- scopeConstraint' $ I.exp exp2
+      e1 <- scopeConstraint' $ I._exp exp1
+      e2 <- scopeConstraint' $ I._exp exp2
 
       case (e1, e2) of
         ((This thisPath t1, GEQ, Const 1), (Global globalPath t0, comp, Positive allPaths c t2)) ->
@@ -687,7 +687,7 @@ scopeConstraint curThis pexp =
         _ -> mzero
   inConstraint2 exp1 exp2 = scopeConstraintNum exp1 `lessThanEqual` scopeConstraintNum exp2
 
-  scopeConstraintSet I.PExp {I.exp = I.IFunExp {I.op = "++", I.exps = [e1, e2]}} =
+  scopeConstraintSet I.PExp {I._exp = I.IFunExp {I._op = "++", I._exps = [e1, e2]}} =
     do
       l1' <- scopeConstraintSet e1
       l2' <- scopeConstraintSet e2
@@ -709,8 +709,8 @@ scopeConstraint curThis pexp =
   flattenConcat (Concat es _) = es >>= flattenConcat
   flattenConcat e = [e]
   
-  scopeConstraintNum I.PExp {I.exp = I.IInt const'} = constant const'
-  scopeConstraintNum I.PExp {I.exp = I.IFunExp {I.op = "#", I.exps = [path]}} = parsePath curThis path
+  scopeConstraintNum I.PExp {I._exp = I.IInt const'} = constant const'
+  scopeConstraintNum I.PExp {I._exp = I.IFunExp {I._op = "#", I._exps = [path]}} = parsePath curThis path
   scopeConstraintNum _ = mzero
 
   constant :: (Monad m, Integral i) => i -> m Expr
@@ -844,10 +844,10 @@ unfoldJoins :: Monad m => I.PExp -> m [Token]
 unfoldJoins pexp =
     unfoldJoins' pexp
     where
-    unfoldJoins' I.PExp{I.exp = (I.IFunExp "." args)} =
+    unfoldJoins' I.PExp{I._exp = (I.IFunExp "." args)} =
         return $ args >>= (fromMaybe [] . unfoldJoins)
-    unfoldJoins' I.PExp{I.inPos, I.exp = I.IClaferId{I.sident}} =
-        return $ [Token (spanToSourcePos inPos) sident]
+    unfoldJoins' I.PExp{I._inPos, I._exp = I.IClaferId{I._sident}} =
+        return $ [Token (spanToSourcePos _inPos) _sident]
     unfoldJoins' _ =
         fail "not a join"
 
@@ -1016,12 +1016,12 @@ patternMatch parse' state' =
  -}
  
 subexpressions :: I.PExp -> [I.PExp]
-subexpressions p@I.PExp{I.exp = exp'} =
+subexpressions p@I.PExp{I._exp = exp'} =
   p : subexpressions' exp'
   where
-  subexpressions' I.IDeclPExp{I.oDecls, I.bpexp} =
-    concatMap (subexpressions . I.body) oDecls ++ subexpressions bpexp
-  subexpressions' I.IFunExp{I.exps} = concatMap subexpressions exps
+  subexpressions' I.IDeclPExp{I._oDecls, I._bpexp} =
+    concatMap (subexpressions . I._body) _oDecls ++ subexpressions _bpexp
+  subexpressions' I.IFunExp{I._exps} = concatMap subexpressions _exps
   subexpressions' _ = []
 
 instance MonadSupply s m => MonadSupply s (ListT m) where

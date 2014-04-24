@@ -353,8 +353,8 @@ getUid (PosIdent (pos, id')) irMap = if Map.lookup (range (PosIdent (pos, id')))
 getDivId :: Span -> Map.Map Span [Ir] -> String                  
 getDivId s irMap = if Map.lookup s irMap == Nothing
                       then "Uid not Found"
-                      else let IRClafer iClafer = head $ fromJust $ Map.lookup s irMap in
-                        uid iClafer
+                      else let IRClafer iClaf = head $ fromJust $ Map.lookup s irMap in
+                        _uid iClaf
 
 {-getSuperId :: Span -> Map.Map Span [Ir] -> String
 getSuperId s irMap = if Map.lookup s irMap == Nothing
@@ -365,13 +365,13 @@ getSuperId s irMap = if Map.lookup s irMap == Nothing
 getUseId :: Span -> Map.Map Span [Ir] -> String
 getUseId s irMap = if Map.lookup s irMap == Nothing
                       then "Uid not Found"
-                      else let IRClafer iClafer = head $ fromJust $ Map.lookup s irMap in
-                        sident $ exp $ head $ supers $ super iClafer
+                      else let IRClafer iClaf = head $ fromJust $ Map.lookup s irMap in
+                        _sident $ _exp $ head $ _supers $ _super iClaf
 
 getExpId :: Span -> Map.Map Span [Ir] -> String
 getExpId s irMap = if Map.lookup s irMap == Nothing
                       then "Uid not Found"
-                      else let IRPExp pexp = head $ fromJust $ Map.lookup s irMap in pid pexp
+                      else let IRPExp pexp = head $ fromJust $ Map.lookup s irMap in _pid pexp
 
 {-while :: Bool -> [IExp] -> [IExp]
 while bool exp' = if bool then exp' else []-}

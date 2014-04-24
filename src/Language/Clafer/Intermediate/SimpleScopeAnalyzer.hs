@@ -22,6 +22,7 @@
 module Language.Clafer.Intermediate.SimpleScopeAnalyzer (simpleScopeAnalysis) where
 
 import Language.Clafer.Common
+import Control.Lens hiding (elements, assign)
 import Data.Graph
 import Data.List
 import Data.Map (Map)
@@ -34,7 +35,7 @@ import Prelude hiding (exp)
 
 
 isReference :: IClafer -> Bool
-isReference = isOverlapping . super
+isReference = _isOverlapping . _super
 isConcrete :: IClafer -> Bool
 isConcrete = not . isReference
 isSuperest :: [IClafer] -> IClafer -> Bool
@@ -43,7 +44,7 @@ isSuperest clafers clafer = isNothing $ directSuper clafers clafer
 
 -- | Collects the global cardinality and hierarchy information into proper, not necessarily lower, bounds.
 simpleScopeAnalysis :: IModule -> [(String, Integer)]
-simpleScopeAnalysis IModule{mDecls = decls'} =
+simpleScopeAnalysis IModule{_mDecls = decls'} =
     [(a, b) | (a, b) <- finalAnalysis, isReferenceOrSuper a, b /= 1]
     where
     finalAnalysis = Map.toList $ foldl analyzeComponent supersAndRefsAnalysis connectedComponents
@@ -57,7 +58,7 @@ simpleScopeAnalysis IModule{mDecls = decls'} =
     
     upperCards u =
         Map.findWithDefault (error $ "No upper cardinality for clafer named \"" ++ u ++ "\".") u upperCardsMap
-    upperCardsMap = Map.fromList [(uid c, snd $ fromJust $ card c) | c <- clafers]
+    upperCardsMap = Map.fromList [(_uid c, snd $ fromJust $ _card c) | c <- clafers]
     
     supersAnalysis = foldl (analyzeSupers clafers) Map.empty decls'
     supersAndRefsAnalysis = foldl (analyzeRefs clafers) supersAnalysis decls'
@@ -71,14 +72,14 @@ simpleScopeAnalysis IModule{mDecls = decls'} =
     lowerOrUpperFixedCard analysis' clafer =
         maximum [cardLb, cardUb, lowFromConstraints, oneForStar, targetScopeForStar ]
         where
-        Just (cardLb, cardUb) = card clafer
+        Just (cardLb, cardUb) = _card clafer
         oneForStar = if (cardLb == 0 && cardUb == -1) then 1 else 0
         targetScopeForStar = if (isReference clafer && cardUb == -1) 
             then case (directSuper clafers clafer) of
-                    (Just targetClafer) -> Map.findWithDefault 0 (uid targetClafer) analysis'
+                    (Just targetClafer) -> Map.findWithDefault 0 (_uid targetClafer) analysis'
                     Nothing -> 0
             else 0
-        lowFromConstraints = Map.findWithDefault 0 (uid clafer) constraintAnalysis
+        lowFromConstraints = Map.findWithDefault 0 (_uid clafer) constraintAnalysis
     
     analyzeComponent analysis' component =
         case flattenSCC component of
@@ -94,10 +95,10 @@ simpleScopeAnalysis IModule{mDecls = decls'} =
     analyze :: Map String Integer -> IClafer -> Map String Integer
     analyze analysis' clafer =
         -- Take the max between the supers and references analysis and this analysis
-        Map.insertWith max (uid clafer) scope analysis'
+        Map.insertWith max (_uid clafer) scope analysis'
         where
         scope
-            | isAbstract clafer  = sum subclaferScopes
+            | _isAbstract clafer  = sum subclaferScopes
             | otherwise          = parentScope * (lowerOrUpperFixedCard analysis' clafer)
         
         subclaferScopes = map (findOrError " subclafer scope not found" analysis') $ filter isConcrete' subclafers
@@ -105,21 +106,21 @@ simpleScopeAnalysis IModule{mDecls = decls'} =
             case parentMaybe of
                 Just parent'' -> findOrError " parent scope not found" analysis' parent''
                 Nothing      -> rootScope
-        subclafers = Map.findWithDefault [] (uid clafer) subclaferMap
-        parentMaybe = Map.lookup (uid clafer) parentMap
+        subclafers = Map.findWithDefault [] (_uid clafer) subclaferMap
+        parentMaybe = Map.lookup (_uid clafer) parentMap
         rootScope = 1
         findOrError message m key = Map.findWithDefault (error $ key ++ message) key m
         
 analyzeSupers :: [IClafer] -> Map String Integer -> IElement -> Map String Integer    
 analyzeSupers clafers analysis (IEClafer clafer) =
-    foldl (analyzeSupers clafers) analysis' (elements clafer)
+    foldl (analyzeSupers clafers) analysis' (_elements clafer)
     where
-    (Just (cardLb, cardUb)) = card clafer
+    (Just (cardLb, cardUb)) = _card clafer
     lowerOrFixedUpperBound = maximum [1, cardLb, cardUb ]
     analysis' = if (isReference clafer) 
                 then analysis
                 else case (directSuper clafers clafer) of
-                  (Just c) -> Map.alter (incLB lowerOrFixedUpperBound) (uid c) analysis
+                  (Just c) -> Map.alter (incLB lowerOrFixedUpperBound) (_uid c) analysis
                   Nothing -> analysis                     
     incLB lb' Nothing = Just lb'
     incLB lb' (Just lb) = Just (lb + lb')
@@ -127,13 +128,13 @@ analyzeSupers _ analysis _ = analysis
 
 analyzeRefs :: [IClafer] -> Map String Integer -> IElement -> Map String Integer    
 analyzeRefs clafers analysis (IEClafer clafer) =
-    foldl (analyzeRefs clafers) analysis' (elements clafer)
+    foldl (analyzeRefs clafers) analysis' (_elements clafer)
     where
-    (Just (cardLb, cardUb)) = card clafer
+    (Just (cardLb, cardUb)) = _card clafer
     lowerOrFixedUpperBound = maximum [1, cardLb, cardUb]
     analysis' = if (isReference clafer) 
                 then case (directSuper clafers clafer) of
-                    (Just c) -> Map.alter (maxLB lowerOrFixedUpperBound) (uid c) analysis
+                    (Just c) -> Map.alter (maxLB lowerOrFixedUpperBound) (_uid c) analysis
                     Nothing -> analysis
                 else analysis                     
     maxLB lb' Nothing = Just lb'
@@ -144,7 +145,7 @@ analyzeConstraints :: [PExp] -> (String -> Integer) -> Map String Integer
 analyzeConstraints constraints upperCards =
     foldr analyzeConstraint Map.empty $ filter isOneOrSomeConstraint constraints
     where
-    isOneOrSomeConstraint PExp{exp = IDeclPExp{quant = quant'}} =
+    isOneOrSomeConstraint PExp{_exp = IDeclPExp{_quant = quant'}} =
         -- Only these two quantifiers requires an increase in scope to satisfy.
         case quant' of
             IOne -> True
@@ -154,18 +155,18 @@ analyzeConstraints constraints upperCards =
     
     -- Only considers how quantifiers affect scope. Other types of constraints are not considered.
     -- Constraints of the type [some path1.path2] or [no path1.path2], etc.
-    analyzeConstraint PExp{exp = IDeclPExp{oDecls = [], bpexp = bpexp'}} analysis =
+    analyzeConstraint PExp{_exp = IDeclPExp{_oDecls = [], _bpexp = bpexp'}} analysis =
         foldr atLeastOne analysis path'
         where
         path' = dropThisAndParent $ unfoldJoins bpexp'
         atLeastOne = Map.insertWith max `flip` 1
         
     -- Constraints of the type [all disj a : path1.path2] or [some b : path3.path4], etc.
-    analyzeConstraint PExp{exp = IDeclPExp{oDecls = decls'}} analysis =
+    analyzeConstraint PExp{_exp = IDeclPExp{_oDecls = decls'}} analysis =
         foldr analyzeDecl analysis decls'
     analyzeConstraint _ analysis = analysis
 
-    analyzeDecl IDecl{isDisj = isDisj', decls = decls', body = body'} analysis =
+    analyzeDecl IDecl{_isDisj = isDisj', _decls = decls', _body = body'} analysis =
         foldr (uncurry insert') analysis $ zip path' scores
         where
         -- Take the first element in the path', and change its effective lower cardinality.
@@ -239,16 +240,16 @@ dependency clafers clafer =
     where
      -- This is to make the "stronglyConnComp" from Data.Graph play nice. Otherwise,
      -- clafers with no dependencies will not appear in the result.
-    selfDependency = (uid clafer, uid clafer)
+    selfDependency = (_uid clafer, _uid clafer)
     superDependency
         | isReference clafer = Nothing
         | otherwise =
             do
                 super' <- directSuper clafers clafer
                 -- Need to analyze clafer before its super
-                return (uid super', uid clafer)
+                return (_uid super', _uid clafer)
     -- Need to analyze clafer before its children
-    childDependencies = [(uid child, uid clafer) | child <- childClafers clafer]
+    childDependencies = [(_uid child, _uid clafer) | child <- childClafers clafer]
         
 
 analyzeHierarchy :: [IClafer] -> (Map String [String], Map String String)
@@ -259,10 +260,10 @@ analyzeHierarchy clafers =
         where
             subclaferMap' = 
                 case super' of
-                    Just super'' -> Map.insertWith (++) (uid super'') [uid clafer] subclaferMap
+                    Just super'' -> Map.insertWith (++) (_uid super'') [_uid clafer] subclaferMap
                     Nothing     -> subclaferMap
             super' = directSuper clafers clafer
-            parentMap' = foldr (flip Map.insert $ uid clafer) parentMap (map uid $ childClafers clafer)
+            parentMap' = foldr (flip Map.insert $ _uid clafer) parentMap (map _uid $ childClafers clafer)
     
 directSuper :: [IClafer] -> IClafer -> Maybe IClafer
 directSuper clafers clafer =
@@ -275,24 +276,19 @@ directSuper clafers clafer =
 
 -- Finds all ancestors
 findClafers :: IElement -> [IClafer]
-findClafers (IEClafer clafer) = clafer : concatMap findClafers (elements clafer)
+findClafers (IEClafer clafer) = clafer : concatMap findClafers (_elements clafer)
 findClafers _ = []
 
 
 -- Find all constraints
 findConstraints :: IElement -> [PExp]
-findConstraints IEConstraint{cpexp = c} = [c]
-findConstraints (IEClafer clafer) = concatMap findConstraints (elements clafer)
+findConstraints IEConstraint{_cpexp = c} = [c]
+findConstraints (IEClafer clafer) = concatMap findConstraints (_elements clafer)
 findConstraints _ = []
 
 -- Finds all the direct ancestors (ie. children)
 childClafers :: IClafer -> [IClafer]
-childClafers clafer =
-    mapMaybe asClafer (elements clafer)
-    where
-    asClafer (IEClafer claf) = Just claf
-    asClafer _ = Nothing
-    
+childClafers clafer = clafer ^.. elements.traversed.iClafer
     
 -- Unfold joins
 -- If the expression is a tree of only joins, then this function will flatten
@@ -302,9 +298,9 @@ unfoldJoins :: PExp -> [String]
 unfoldJoins pexp =
     fromMaybe [] $ unfoldJoins' pexp
     where
-    unfoldJoins' PExp{exp = (IFunExp "." args)} =
+    unfoldJoins' PExp{_exp = (IFunExp "." args)} =
         return $ args >>= unfoldJoins
-    unfoldJoins' PExp{exp = IClaferId{sident = sident'}} =
+    unfoldJoins' PExp{_exp = IClaferId{_sident = sident'}} =
         return $ [sident']
     unfoldJoins' _ =
         fail "not a join"
