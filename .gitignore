@@ -7,3 +7,4 @@ dist
 *.lkshs
 *.lkshw
 *.sublime*
+cabal.sandbox.config
