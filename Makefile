@@ -13,9 +13,12 @@ endif
 
 all: build
 
-build:
-	$(MAKE) -C $(TOOL_DIR)
+init:
+	cabal sandbox init --sandbox=../.clafertools-cabal-sandbox
 	cabal install --only-dependencies $(GPLK_LIBS_INCLUDES) $(MAC_USR_LIB)
+
+build: 
+	$(MAKE) -C $(TOOL_DIR)
 	cabal configure
 	cabal build
 
