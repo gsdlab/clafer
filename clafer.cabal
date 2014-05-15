@@ -10,7 +10,7 @@ Maintainer:         Michał Antkiewicz <mantkiew@gsd.uwaterloo.ca>
 Stability:          Experimental
 Category:           Model
 Build-type:         Simple
-Cabal-version:      >= 1.16
+Cabal-version:      >= 1.18
 data-files:         README.md,
                     CHANGES.md,
                     logo.pdf,
@@ -185,7 +185,7 @@ Test-Suite test-suite
 
                     clafer == 0.3.6
 
-    ghc-options     -Wall -fno-warn-unused-do-bind -fno-warn-orphans
+    ghc-options:    -Wall -fno-warn-unused-do-bind -fno-warn-orphans
 
     other-modules:  Paths_clafer,
                     Functions,

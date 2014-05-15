@@ -119,6 +119,7 @@ On Windows
 Dependencies
 
 * [The Haskell Platform](http://hackage.haskell.org/platform/) v2013.2.0.0
+  * Cabal >= 1.18
 * [Alloy4.1 and/or Alloy4.2](http://alloy.mit.edu/alloy/download.html)
   * downloaded automatically during the build
 * [Git](http://git-scm.com/)
@@ -147,6 +148,7 @@ Development versions from branches `develop` should work well together but this 
 4. in `<source directory>/clafer`, execute
   * `cabal update`
 5. On Linux and Mac execute 
+  * `make init`
   * `make`
 6. On Windows (in MinGW), execute 
   * `make glpk=/c/<your WinGLPK install dir>`
