@@ -103,8 +103,10 @@ data IElement =
     }
   -- | Goal (optimization objective)
  | IEGoal {
-   _isMaximize :: Bool,    -- | whether maximize or minimize
-   _cpexp :: PExp          -- | the expression
+   -- | whether maximize or minimize
+   _isMaximize :: Bool,    
+   -- | the expression
+   _cpexp :: PExp          
    }
   deriving (Eq,Ord,Show,Data,Typeable)
 
