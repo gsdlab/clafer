@@ -27,12 +27,17 @@ Clafer compiler provides a reference language implementation.
 It translates models in Clafer to other formats (e.g. Alloy, XML, Python, JS, HTML, DOT) to allow for reasoning and processing with existing tools (Alloy Analyzer, Choco3, and Z3 SMT solver).
 
 Currently, the compiler is used by 
-Clafer Instance Generator ([ClaferIG](https://github.com/gsdlab/claferIG)), 
-Clafer Integrated Development Environment ([ClaferIDE](https://github.com/gsdlab/claferIDE)),
-Clafer Configurator ([ClaferConfigurator](https://github.com/gsdlab/ClaferConfigurator)), 
-Clafer Multi-Objective Optimizer ([ClaferMOO](https://github.com/gsdlab/ClaferMooStandalone)) and 
-[Visualizer](https://github.com/gsdlab/ClaferMooVisualizer), and 
-Clafer Wiki ([ClaferWiki](https://github.com/gsdlab/claferwiki)).
+
+* Backends
+  * Alloy-based Instance Generator ([ClaferIG](https://github.com/gsdlab/claferIG)), 
+  * Alloy-based Multi-Objective Optimizer ([ClaferMOO](https://github.com/gsdlab/ClaferMooStandalone)),
+  * Choco3-based Instance Generator and Multi-Objective Optimizer ([ChocoIG](https://github.com/gsdlab/claferIG)), and
+  * Z3-based Instance Generator and Multi-Objective Optimizer ([ClaferZ3](https://github.com/gsdlab/claferIG)), 
+* Frontends
+  * Clafer Integrated Development Environment ([ClaferIDE](https://github.com/gsdlab/claferIDE)),
+  * Clafer Configurator ([ClaferConfigurator](https://github.com/gsdlab/ClaferConfigurator)), 
+  * Multi-Objective [Visualizer and Explorer](https://github.com/gsdlab/ClaferMooVisualizer), and 
+  * Clafer Wiki ([ClaferWiki](https://github.com/gsdlab/claferwiki)).
 
 Contributors
 ------------
@@ -127,9 +132,11 @@ Dependencies
 On Windows 
 
 * [MinGW+MSYS](http://mingw.org) 
-  * since the Haskell Platform already contains MinGW, you may choose to install MinGW+MSYS to the same location, e.g., `c:\...\HaskellPlatform\2013.2.0.0`
-  * add the `bin` folders of MinGW (`MinGW\bin`) and MSYS (`MinGW\MSYS\1.0\bin`) to your system path
-  * `unzip` will be automatically installed 
+  * download [mingw-get-setup.exe](http://sourceforge.net/projects/mingw/files/Installer/mingw-get/)
+  * since the Haskell Platform already contains MinGW, only install MSYS. Installing another MinGW causes problems as it contains different versions of tools as compared to the MinGW in the Haskell Platform
+  * choose the existing MinGW location, e.g., `c:\...\HaskellPlatform\2013.2.0.0\MinGw`
+  * ensure `wget` and `unzip` are selected to be installed 
+  * add the `bin` folder of MSYS (`MinGW\MSYS\1.0\bin`) to your system path
 
 #### Important: Branches must correspond
 
@@ -303,7 +310,7 @@ Need help?
 ==========
 * See [language's website](http://clafer.org) for news, technical reports and more
   * Check out a [Clafer tutorial](http://t3-necsis.cs.uwaterloo.ca:8091/Tutorial/Intro)
-  * Try a live instance of [ClaferWiki](http://t3-necsis.cs.uwaterloo.ca:8091)
+  * Try a live instance of [ClaferWiki](http://t3-necsis.cs.uwaterloo.ca:8091) which contains a repository of models for various applications
   * Try a live instance of [ClaferIDE](http://t3-necsis.cs.uwaterloo.ca:8094)
   * Try a live instance of [ClaferConfigurator](http://t3-necsis.cs.uwaterloo.ca:8093)
   * Try a live instance of [ClaferMooVisualizer](http://t3-necsis.cs.uwaterloo.ca:8092)
