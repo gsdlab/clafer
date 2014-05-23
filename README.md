@@ -185,7 +185,7 @@ Clafer Compiler
 (As printed by `clafer --help`)
 
 ```
-Clafer v0.3.6
+Clafer 0.3.6
 
 clafer [OPTIONS] [FILE]
 
@@ -212,7 +212,8 @@ Common flags:
   -l --no-layout                          Don't resolve off-side rule layout.
      --nl --new-layout                    Use new fast layout resolver
                                           (experimental).
-  -c --check-duplicates                   Check duplicated clafer names.
+  -c --check-duplicates                   Check duplicated clafer names in
+                                          the entire model.
   -f --skip-resolver                      Skip name resolution.
   -k --keep-unused                        Keep uninstantated abstract clafers
                                           ('alloy' and 'alloy42' modes only).
