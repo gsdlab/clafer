@@ -1,5 +1,10 @@
+{-# LANGUAGE DeriveDataTypeable #-}
+
 -- | Abstract syntax of the Clafer language.
 module Language.Clafer.Front.Absclafer where
+
+import Data.Data
+
 noSpan :: Span
 noSpan = Span noPos noPos
 noPos :: Pos
@@ -270,10 +275,10 @@ data LocId =
 data Pos =
    Pos Integer Integer
  | PosPos Span Integer Integer
-  deriving (Eq,Ord,Show)
+  deriving (Eq,Ord,Show,Data,Typeable)
 
 data Span =
    Span Pos Pos
  | PosSpan Span Pos Pos
-  deriving (Eq,Ord,Show)
+  deriving (Eq,Ord,Show,Data,Typeable)
 

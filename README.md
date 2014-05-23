@@ -1,7 +1,7 @@
 Clafer
 ======
 
-v0.3.5.1
+v0.3.6
 
 [Clafer](http://clafer.org) is a general-purpose lightweight structural modeling language developed by 
 [GSD Lab](http://gsd.uwaterloo.ca/), [University of Waterloo](http://uwaterloo.ca), and 
@@ -27,12 +27,17 @@ Clafer compiler provides a reference language implementation.
 It translates models in Clafer to other formats (e.g. Alloy, XML, Python, JS, HTML, DOT) to allow for reasoning and processing with existing tools (Alloy Analyzer, Choco3, and Z3 SMT solver).
 
 Currently, the compiler is used by 
-Clafer Instance Generator ([ClaferIG](https://github.com/gsdlab/claferIG)), 
-Clafer Integrated Development Environment ([ClaferIDE](https://github.com/gsdlab/claferIDE)),
-Clafer Configurator ([ClaferConfigurator](https://github.com/gsdlab/ClaferConfigurator)), 
-Clafer Multi-Objective Optimizer ([ClaferMOO](https://github.com/gsdlab/ClaferMooStandalone)) and 
-[Visualizer](https://github.com/gsdlab/ClaferMooVisualizer), and 
-Clafer Wiki ([ClaferWiki](https://github.com/gsdlab/claferwiki)).
+
+* Backends
+  * Alloy-based Instance Generator ([ClaferIG](https://github.com/gsdlab/claferIG)), 
+  * Alloy-based Multi-Objective Optimizer ([ClaferMOO](https://github.com/gsdlab/ClaferMooStandalone)),
+  * Choco3-based Instance Generator and Multi-Objective Optimizer ([ChocoIG](https://github.com/gsdlab/claferIG)), and
+  * Z3-based Instance Generator and Multi-Objective Optimizer ([ClaferZ3](https://github.com/gsdlab/claferIG)), 
+* Frontends
+  * Clafer Integrated Development Environment ([ClaferIDE](https://github.com/gsdlab/claferIDE)),
+  * Clafer Configurator ([ClaferConfigurator](https://github.com/gsdlab/ClaferConfigurator)), 
+  * Multi-Objective [Visualizer and Explorer](https://github.com/gsdlab/ClaferMooVisualizer), and 
+  * Clafer Wiki ([ClaferWiki](https://github.com/gsdlab/claferwiki)).
 
 Contributors
 ------------
@@ -59,7 +64,7 @@ Required:
 
 Optional:
 
-* [Java Platform (JDK)](http://www.oracle.com/technetwork/java/javase/downloads/index.html) v6+, 32bit
+* [Java Platform (JDK)](http://www.oracle.com/technetwork/java/javase/downloads/index.html) v7+, 32bit
   * needed only for running XML output validation
 * [Alloy4.1 and/or Alloy4.2](http://alloy.mit.edu/alloy/download.html)
   * needed only for Alloy output validation
@@ -82,13 +87,14 @@ On Windows
   * inside the `w32` folder, copy `glpk_4_52.dll` to `glpk.dll` so that it can be found when building Haskell package `glpk-hs`
   * from `w32` folder, copy `glpk_4_52.dll` to `<user>\AppData\Roaming\cabal\bin`
 
-On Mac only
+On Mac
+
 1. install GPLK 4.52 from [MacPorts](http://www.macports.org/)
   * execute `sudo port install glpk +universal`
 
 ### Installation from binaries
 
-Binary distributions of the release 0.3.5.1 of Clafer Tools for Windows, Mac, and Linux, 
+Binary distributions of the release 0.3.6 of Clafer Tools for Windows, Mac, and Linux, 
 can be downloaded from 
 [Clafer Tools - Binary Distributions](http://http://gsd.uwaterloo.ca/clafer-tools-binary-distributions). 
 
@@ -101,11 +107,11 @@ Dependencies
 
 * [The Haskell Platform](http://hackage.haskell.org/platform/) v2013.2.0.0
 
-Clafer is now available on [Hackage](http://hackage.haskell.org/package/clafer-0.3.5.1/) and it can be installed using
+Clafer is now available on [Hackage](http://hackage.haskell.org/package/clafer-0.3.6/) and it can be installed using
 
 1. `cabal update`
 2. `cabal install clafer`
-3. `cd <cabal's lib or share folder>`  (`C:\Users\<user>\AppData\Roaming\cabal\i386-windows-ghc-7.6.3\clafer-0.3.5.1` on Windows or `.cabal/share/x86_64-linux-ghc-7.6.3/clafer-0.3.5.1/` on Linux)
+3. `cd <cabal's lib or share folder>`  (`C:\Users\<user>\AppData\Roaming\cabal\i386-windows-ghc-7.6.3\clafer-0.3.6` on Windows or `.cabal/share/x86_64-linux-ghc-7.6.3/clafer-0.3.6/` on Linux)
 4. to automatically download Alloy jars
   * execute `make` in `tools` 
 
@@ -118,16 +124,19 @@ On Windows
 Dependencies
 
 * [The Haskell Platform](http://hackage.haskell.org/platform/) v2013.2.0.0
+  * Cabal >= 1.18
 * [Alloy4.1 and/or Alloy4.2](http://alloy.mit.edu/alloy/download.html)
-  * downloaded automatically during build
+  * downloaded automatically during the build
 * [Git](http://git-scm.com/)
 
 On Windows 
 
 * [MinGW+MSYS](http://mingw.org) 
-  * since the Haskell Platform already contains MinGW, you may choose to install MinGW+MSYS to the same location, e.g., `c:\...\HaskellPlatform\2013.2.0.0`
-  * add the `bin` folders of MinGW (`MinGW\bin`) and MSYS (`MinGW\MSYS\1.0\bin`) to your system path
-  * `unzip` will be automatically installed 
+  * download [mingw-get-setup.exe](http://sourceforge.net/projects/mingw/files/Installer/mingw-get/)
+  * since the Haskell Platform already contains MinGW, only install MSYS. Installing another MinGW causes problems as it contains different versions of tools as compared to the MinGW in the Haskell Platform
+  * choose the existing MinGW location, e.g., `c:\...\HaskellPlatform\2013.2.0.0\MinGw`
+  * ensure `wget` and `unzip` are selected to be installed 
+  * add the `bin` folder of MSYS (`MinGW\MSYS\1.0\bin`) to your system path
 
 #### Important: Branches must correspond
 
@@ -146,17 +155,17 @@ Development versions from branches `develop` should work well together but this 
 4. in `<source directory>/clafer`, execute
   * `cabal update`
 5. On Linux and Mac execute 
+  * `make init`
   * `make`
 6. On Windows (in MinGW), execute 
-  * `make glpk="/c/<your WinGLPK install dir>"`
+  * `make glpk=/c/<your WinGLPK install dir>`
 
 ### Installation
 
 1. On Linux and Mac execute 
   * `make install to=<target directory>` 
 2. On Windows (in MinGW), execute 
-  * `make glpk="/c/<your WinGLPK instal dir>" to=/c/<target directory>`  
-3. add the `<target directory>` to your system PATH
+  * `make glpk=/c/<your WinGLPK instal dir> to=/c/Users/<your user name>/AppData/Roaming/cabal/bin`
 
 #### Note: 
 > On Windows, use `/` with the `make` command instead of `\`.
@@ -176,7 +185,7 @@ Clafer Compiler
 (As printed by `clafer --help`)
 
 ```
-Clafer v0.3.5.1
+Clafer 0.3.6
 
 clafer [OPTIONS] [FILE]
 
@@ -203,7 +212,8 @@ Common flags:
   -l --no-layout                          Don't resolve off-side rule layout.
      --nl --new-layout                    Use new fast layout resolver
                                           (experimental).
-  -c --check-duplicates                   Check duplicated clafer names.
+  -c --check-duplicates                   Check duplicated clafer names in
+                                          the entire model.
   -f --skip-resolver                      Skip name resolution.
   -k --keep-unused                        Keep uninstantated abstract clafers
                                           ('alloy' and 'alloy42' modes only).
@@ -301,7 +311,7 @@ Need help?
 ==========
 * See [language's website](http://clafer.org) for news, technical reports and more
   * Check out a [Clafer tutorial](http://t3-necsis.cs.uwaterloo.ca:8091/Tutorial/Intro)
-  * Try a live instance of [ClaferWiki](http://t3-necsis.cs.uwaterloo.ca:8091)
+  * Try a live instance of [ClaferWiki](http://t3-necsis.cs.uwaterloo.ca:8091) which contains a repository of models for various applications
   * Try a live instance of [ClaferIDE](http://t3-necsis.cs.uwaterloo.ca:8094)
   * Try a live instance of [ClaferConfigurator](http://t3-necsis.cs.uwaterloo.ca:8093)
   * Try a live instance of [ClaferMooVisualizer](http://t3-necsis.cs.uwaterloo.ca:8092)

@@ -515,8 +515,8 @@ getUid posIdent@(PosIdent (_, id')) irMap =
 getDivId :: Span -> Map.Map Span [Ir] -> String
 getDivId s irMap = if Map.lookup s irMap == Nothing
                       then "Uid not Found"
-                      else let IRClafer iClafer = head $ fromJust $ Map.lookup s irMap in
-                        uid iClafer
+                      else let IRClafer iClaf = head $ fromJust $ Map.lookup s irMap in
+                        _uid iClaf
 
 {-getSuperId span irMap = if Map.lookup span irMap == Nothing
                         then "Uid not Found"
@@ -526,8 +526,8 @@ getDivId s irMap = if Map.lookup s irMap == Nothing
 getUseId :: Span -> Map.Map Span [Ir] -> (String, String)
 getUseId s irMap = if Map.lookup s irMap == Nothing
                       then ("Uid not Found", "Uid not Found")
-                      else let IRClafer iClafer = head $ fromJust $ Map.lookup s irMap in
-                        (uid iClafer, sident $ exp $ head $ supers $ super iClafer)
+                      else let IRClafer iClaf = head $ fromJust $ Map.lookup s irMap in
+                        (_uid iClaf, _sident $ _exp $ head $ _supers $ _super iClaf)
 
 while :: Bool -> String -> String
 while bool exp' = if bool then exp' else ""

@@ -21,32 +21,34 @@
 -}
 module Language.Clafer.Intermediate.Transformer where
 
+import Control.Lens
 import Data.Maybe
 import Language.Clafer.Common
-import Language.Clafer.Intermediate.Intclafer
+import qualified Language.Clafer.Intermediate.Intclafer as I (exp, elements, op)
+import Language.Clafer.Intermediate.Intclafer hiding (exp, elements, op)
 import Language.Clafer.Intermediate.Desugarer
 
 transModule :: IModule -> IModule
-transModule imodule = imodule{mDecls = map transElement $ mDecls imodule}
+transModule = mDecls . traversed %~ transElement
 
 transElement :: IElement -> IElement
-transElement x = case x of
-  IEClafer clafer  -> IEClafer $ transClafer clafer
-  IEConstraint isHard' pexp  -> IEConstraint isHard' $ transPExp False pexp
-  IEGoal isMaximize' pexp  -> IEGoal isMaximize' $ transPExp False pexp  
+transElement (IEClafer clafer)           = IEClafer $ transClafer clafer
+transElement (IEConstraint isHard' pexp) = IEConstraint isHard' $ transPExp False pexp
+transElement (IEGoal isMaximize' pexp)   = IEGoal isMaximize' $ transPExp False pexp  
 
 transClafer :: IClafer -> IClafer
-transClafer clafer = clafer{elements = map transElement $ elements clafer}
+transClafer = I.elements . traversed %~ transElement 
 
 transPExp :: Bool -> PExp -> PExp
-transPExp some (PExp t pid' pos' x) = trans $ PExp t pid' pos' $ transIExp (fromJust t) x
-  where
-  trans = if some then desugarPath else id
+transPExp True  pexp'@(PExp iType' _ _ _) = desugarPath $ I.exp %~ transIExp (fromJust $ iType') $ pexp'
+transPExp False pexp'                     = pexp'
 
 transIExp :: IType -> IExp -> IExp
-transIExp t x = case x of
-  IDeclPExp quant' decls' pexp -> IDeclPExp quant' decls' $ transPExp False pexp
-  IFunExp op' exps' -> IFunExp op' $ map (transPExp cond) exps'
-    where
-    cond = op' == iIfThenElse && t `elem` [TBoolean, TClafer []]
-  _  -> x
+transIExp iType' idpe@(IDeclPExp _ _ _) = bpexp            %~ transPExp False $ idpe
+transIExp iType' ife@(IFunExp op' _)    = exps . traversed %~ transPExp cond  $ ife
+  where
+    cond = op' == iIfThenElse && 
+           iType' `elem` [TBoolean, TClafer []]
+transIExp _      iexp' = iexp'
+
+

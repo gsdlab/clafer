@@ -193,27 +193,27 @@ getIfThenElseType t1 t2 =
 
 resolveTModule :: (IModule, GEnv) -> Either ClaferSErr IModule
 resolveTModule (imodule, _) =
-  case runTypeAnalysis (analysis $ mDecls imodule) imodule of
-    Right mDecls' -> return imodule{mDecls = mDecls'}
+  case runTypeAnalysis (analysis $ _mDecls imodule) imodule of
+    Right mDecls' -> return imodule{_mDecls = mDecls'}
     Left err      -> throwError err
   where
-  analysis decls = mapM (resolveTElement $ rootUid) decls
+  analysis decls1 = mapM (resolveTElement $ rootUid) decls1
 
 resolveTElement :: String -> IElement -> TypeAnalysis IElement
 resolveTElement _ (IEClafer iclafer) =
   do
-    elements' <- mapM (resolveTElement $ I.uid iclafer) (elements iclafer)
-    return $ IEClafer $ iclafer{elements = elements'}
-resolveTElement parent' (IEConstraint isHard pexp) =
-  IEConstraint isHard <$> (testBoolean =<< resolveTConstraint parent' pexp)
+    elements' <- mapM (resolveTElement $ I._uid iclafer) (_elements iclafer)
+    return $ IEClafer $ iclafer{_elements = elements'}
+resolveTElement parent' (IEConstraint _isHard _pexp) =
+  IEConstraint _isHard <$> (testBoolean =<< resolveTConstraint parent' _pexp)
   where
   testBoolean pexp' =
     do
       unless (typeOf pexp' == TBoolean) $
-        throwError $ SemanticErr (inPos pexp') ("Cannot construct constraint on type '" ++ str (typeOf pexp') ++ "'")
+        throwError $ SemanticErr (_inPos pexp') ("Cannot construct constraint on type '" ++ str (typeOf pexp') ++ "'")
       return pexp'
-resolveTElement parent' (IEGoal isMaximize pexp) =
-  IEGoal isMaximize <$> resolveTConstraint parent' pexp
+resolveTElement parent' (IEGoal isMaximize' pexp') =
+  IEGoal isMaximize' <$> resolveTConstraint parent' pexp'
 
 resolveTConstraint :: String -> PExp -> TypeAnalysis PExp
 resolveTConstraint curThis' constraint = 
@@ -232,7 +232,7 @@ resolveTPExp p =
       (_,   xs) -> return xs                          -- Case 3: At least one success.
 
 resolveTPExp' :: PExp -> TypeAnalysis [Either ClaferSErr PExp]
-resolveTPExp' p@PExp{inPos, exp = IClaferId{sident = "ref"}} =
+resolveTPExp' p@PExp{_inPos, _exp = IClaferId{_sident = "ref"}} =
   runListT $ runErrorT $ do
     curPath' <- curPath
     case curPath' of
@@ -241,76 +241,76 @@ resolveTPExp' p@PExp{inPos, exp = IClaferId{sident = "ref"}} =
         t <- runListT $ refOf =<< foreachM ut
         case fromUnionType t of
           Just t' -> return $ p `withType` t'
-          Nothing -> throwError $ SemanticErr inPos ("Cannot ref from type '" ++ str curPath'' ++ "'")
-      Nothing -> throwError $ SemanticErr inPos ("Cannot ref at the start of a path")
-resolveTPExp' p@PExp{inPos, exp = IClaferId{sident = "parent"}} =
+          Nothing -> throwError $ SemanticErr _inPos ("Cannot ref from type '" ++ str curPath'' ++ "'")
+      Nothing -> throwError $ SemanticErr _inPos ("Cannot ref at the start of a path")
+resolveTPExp' p@PExp{_inPos, _exp = IClaferId{_sident = "parent"}} =
   runListT $ runErrorT $ do
     curPath' <- curPath
     case curPath' of
       Just curPath'' -> do
         parent' <- fromUnionType <$> runListT (parentOf =<< liftList (unionType curPath''))
         when (isNothing parent') $
-          throwError $ SemanticErr inPos "Cannot parent from root"
+          throwError $ SemanticErr _inPos "Cannot parent from root"
         let result = p `withType` fromJust parent'
         return result -- Case 1: Use the sident
           <++>
           addRef result -- Case 2: Dereference the sident 1..* times
-      Nothing -> throwError $ SemanticErr inPos "Cannot parent at the start of a path"
-resolveTPExp' p@PExp{exp = IClaferId{sident = "integer"}} = runListT $ runErrorT $ return $ p `withType` TInteger
-resolveTPExp' p@PExp{inPos, exp = IClaferId{sident}} = 
+      Nothing -> throwError $ SemanticErr _inPos "Cannot parent at the start of a path"
+resolveTPExp' p@PExp{_exp = IClaferId{_sident = "integer"}} = runListT $ runErrorT $ return $ p `withType` TInteger
+resolveTPExp' p@PExp{_inPos, _exp = IClaferId{_sident}} = 
   runListT $ runErrorT $ do
     curPath' <- curPath
-    sident' <- if sident == "this" then uid <$> curThis else return sident
+    sident' <- if _sident == "this" then uid <$> curThis else return _sident
     when (isJust curPath') $ do
       c <- mapM (isChild sident') $ unionType $ fromJust curPath'
-      unless (or c) $ throwError $ SemanticErr inPos ("'" ++ sident' ++ "' is not a child of type '" ++ str (fromJust curPath') ++ "'")
+      unless (or c) $ throwError $ SemanticErr _inPos ("'" ++ sident' ++ "' is not a child of type '" ++ str (fromJust curPath') ++ "'")
     result <- (p `withType`) <$> typeOfUid sident'
     return result -- Case 1: Use the sident
       <++>
       addRef result -- Case 2: Dereference the sident 1..* times
   
   
-resolveTPExp' p@PExp{inPos, exp} =
+resolveTPExp' p@PExp{_inPos, _exp} =
   runListT $ runErrorT $ do
-    (iType', exp') <- ErrorT $ ListT $ resolveTExp exp
-    return p{iType = Just iType', exp = exp'}
+    (iType', exp') <- ErrorT $ ListT $ resolveTExp _exp
+    return p{_iType = Just iType', _exp = exp'}
   where
   resolveTExp :: IExp -> TypeAnalysis [Either ClaferSErr (IType, IExp)]
   resolveTExp e@(IInt _)    = runListT $ runErrorT $ return (TInteger, e)
   resolveTExp e@(IDouble _) = runListT $ runErrorT $ return (TReal, e)
   resolveTExp e@(IStr _)    = runListT $ runErrorT $ return (TString, e)
 
-  resolveTExp e@IFunExp {op, exps = [arg]} =
+  resolveTExp e@IFunExp {_op, _exps = [arg]} =
     runListT $ runErrorT $ do
       arg' <- lift $ ListT $ resolveTPExp arg
       let t = typeOf arg'
       let test c =
             unless c $
-              throwError $ SemanticErr inPos ("Function '" ++ op ++ "' cannot be performed on " ++ op ++ " '" ++ str t ++ "'")
+              throwError $ SemanticErr _inPos ("Function '" ++ _op ++ "' cannot be performed on " ++ _op ++ " '" ++ str t ++ "'")
       let result
-            | op == iNot = test (t == TBoolean) >> return TBoolean
-            | op == iCSet = return TInteger
-            | op == iSumSet = test (t == TInteger) >> return TInteger
-            | op `elem` [iMin, iGMin, iGMax] = test (numeric t) >> return t
-            | otherwise = error $ "Unknown op '" ++ op ++ "'"
+            | _op == iNot = test (t == TBoolean) >> return TBoolean
+            | _op == iCSet = return TInteger
+            | _op == iSumSet = test (t == TInteger) >> return TInteger
+            | _op `elem` [iMin, iGMin, iGMax] = test (numeric t) >> return t
+            | otherwise = error $ "Unknown op '" ++ _op ++ "'"
       result' <- result
-      return (result', e{exps = [arg']})
+      return (result', e{_exps = [arg']})
 
-  resolveTExp e@IFunExp {op = ".", exps = [arg1, arg2]} =
+  resolveTExp e@IFunExp {_op = ".", _exps = [arg1, arg2]} =
     do
       runListT $ runErrorT $ do
         arg1' <- lift $ ListT $ resolveTPExp arg1
         localCurPath (typeOf arg1') $ do
             arg2' <- liftError $ lift $ ListT $ resolveTPExp arg2
-            return (fromJust $ iType arg2', e{exps = [arg1', arg2']})
+            return (fromJust $ _iType arg2', e{_exps = [arg1', arg2']})
       
-  resolveTExp e@IFunExp {op = "++", exps = [arg1, arg2]} =
+  resolveTExp e@IFunExp {_op = "++", _exps = [arg1, arg2]} =
     do
       arg1s' <- resolveTPExp arg1
       arg2s' <- resolveTPExp arg2
       let union' a b = typeOf a +++ typeOf b
-      return $ [return (union' arg1' arg2', e{exps = [arg1', arg2']}) | (arg1', arg2') <- sortBy (comparing $ length . unionType . uncurry union') $ liftM2 (,) arg1s' arg2s']
-  resolveTExp e@IFunExp {op, exps = [arg1, arg2]} =
+      return $ [return (union' arg1' arg2', e{_exps = [arg1', arg2']}) | (arg1', arg2') <- sortBy (comparing $ length . unionType . uncurry union') $ liftM2 (,) arg1s' arg2s']
+  resolveTExp e@IFunExp {_op, _exps = [arg1, arg2]} =
     runListT $ runErrorT $ do
       arg1' <- lift $ ListT $ resolveTPExp arg1
       arg2' <- lift $ ListT $ resolveTPExp arg2
@@ -321,29 +321,29 @@ resolveTPExp' p@PExp{inPos, exp} =
               it <- intersection e1 e2
               case it of
                 Just it' -> return it'
-                Nothing  -> throwError $ SemanticErr inPos ("Function '" ++ op ++ "' cannot be performed on '" ++ str t1 ++ "' " ++ op ++ " '" ++ str t2 ++ "'")
+                Nothing  -> throwError $ SemanticErr _inPos ("Function '" ++ _op ++ "' cannot be performed on '" ++ str t1 ++ "' " ++ _op ++ " '" ++ str t2 ++ "'")
       let testNotSame e1 e2 =
             when (e1 `sameAs` e2) $
-              throwError $ SemanticErr inPos ("Function '" ++ op ++ "' is redundant because the two subexpressions are always equivalent")
+              throwError $ SemanticErr _inPos ("Function '" ++ _op ++ "' is redundant because the two subexpressions are always equivalent")
       let test c =
             unless c $
-              throwError $ SemanticErr inPos ("Function '" ++ op ++ "' cannot be performed on '" ++ str t1 ++ "' " ++ op ++ " '" ++ str t2 ++ "'")
+              throwError $ SemanticErr _inPos ("Function '" ++ _op ++ "' cannot be performed on '" ++ str t1 ++ "' " ++ _op ++ " '" ++ str t2 ++ "'")
       let result
-            | op `elem` logBinOps = test (t1 == TBoolean && t2 == TBoolean) >> return TBoolean
-            | op `elem` [iLt, iGt, iLte, iGte] = test (numeric t1 && numeric t2) >> return TBoolean
-            | op `elem` [iEq, iNeq] = testNotSame arg1' arg2' >> testIntersect t1 t2 >> return TBoolean
-            | op == iDifference = testNotSame arg1' arg2' >> testIntersect t1 t2 >> return t1
-            | op == iIntersection = testNotSame arg1' arg2' >> testIntersect t1 t2
-            | op `elem` [iDomain, iRange] = testIntersect t1 t2
-            | op `elem` relSetBinOps = testIntersect t1 t2 >> return TBoolean
-            | op `elem` [iSub, iMul, iDiv] = test (numeric t1 && numeric t2) >> return (coerce t1 t2)
-            | op == iPlus =
+            | _op `elem` logBinOps = test (t1 == TBoolean && t2 == TBoolean) >> return TBoolean
+            | _op `elem` [iLt, iGt, iLte, iGte] = test (numeric t1 && numeric t2) >> return TBoolean
+            | _op `elem` [iEq, iNeq] = testNotSame arg1' arg2' >> testIntersect t1 t2 >> return TBoolean
+            | _op == iDifference = testNotSame arg1' arg2' >> testIntersect t1 t2 >> return t1
+            | _op == iIntersection = testNotSame arg1' arg2' >> testIntersect t1 t2
+            | _op `elem` [iDomain, iRange] = testIntersect t1 t2
+            | _op `elem` relSetBinOps = testIntersect t1 t2 >> return TBoolean
+            | _op `elem` [iSub, iMul, iDiv] = test (numeric t1 && numeric t2) >> return (coerce t1 t2)
+            | _op == iPlus =
                 (test (t1 == TString && t2 == TString) >> return TString) -- Case 1: String concatenation
                 `catchError`
                 const (test (numeric t1 && numeric t2) >> return (coerce t1 t2)) -- Case 2: Addition
             | otherwise = error $ "Unknown op: " ++ show e
       result' <- result
-      return (result', e{exps = [arg1', arg2']})
+      return (result', e{_exps = [arg1', arg2']})
 
   resolveTExp e@(IFunExp "=>else" [arg1, arg2, arg3]) =
     runListT $ runErrorT $ do
@@ -357,27 +357,27 @@ resolveTPExp' p@PExp{inPos, exp} =
 --        throwError $ SemanticErr inPos ("The types are: '" ++ str t2 ++ "' and '" ++ str t3 ++ "'")
 
       unless (t1 == TBoolean) $
-        throwError $ SemanticErr inPos ("Function 'if/else' cannot be performed on 'if' " ++ str t1 ++ " 'then' " ++ str t2 ++ " 'else' " ++ str t3)
+        throwError $ SemanticErr _inPos ("Function 'if/else' cannot be performed on 'if' " ++ str t1 ++ " 'then' " ++ str t2 ++ " 'else' " ++ str t3)
 
       it <- getIfThenElseType t2 t3
       t <- case it of
         Just it' -> return it'
-        Nothing  -> throwError $ SemanticErr inPos ("Function '=>else' cannot be performed on if '" ++ str t1 ++ "' then '" ++ str t2 ++ "' else '" ++ str t3 ++ "'")
+        Nothing  -> throwError $ SemanticErr _inPos ("Function '=>else' cannot be performed on if '" ++ str t1 ++ "' then '" ++ str t2 ++ "' else '" ++ str t3 ++ "'")
 
-      return (t, e{exps = [arg1', arg2', arg3']})
+      return (t, e{_exps = [arg1', arg2', arg3']})
       
-  resolveTExp e@IDeclPExp{oDecls, bpexp} =
+  resolveTExp e@IDeclPExp{_oDecls, _bpexp} =
     runListT $ runErrorT $ do
-      oDecls' <- mapM resolveTDecl oDecls
-      let extraDecls = [(decl, typeOf $ body oDecl) | oDecl <- oDecls', decl <- decls oDecl]
+      oDecls' <- mapM resolveTDecl _oDecls
+      let extraDecls = [(decl, typeOf $ _body oDecl) | oDecl <- oDecls', decl <- _decls oDecl]
       localDecls extraDecls $ do
-        bpexp' <- liftError $ lift $ ListT $ resolveTPExp bpexp
-        return $ (TBoolean, e{oDecls = oDecls', bpexp = bpexp'})
+        bpexp' <- liftError $ lift $ ListT $ resolveTPExp _bpexp
+        return $ (TBoolean, e{_oDecls = oDecls', _bpexp = bpexp'})
     where
-    resolveTDecl d@IDecl{body} =
+    resolveTDecl d@IDecl{_body} =
       do
-        body' <- lift $ ListT $ resolveTPExp body
-        return $ d{body = body'}
+        body' <- lift $ ListT $ resolveTPExp _body
+        return $ d{_body = body'}
         
   resolveTExp e = error $ "Unknown iexp: " ++ show e
 
@@ -390,13 +390,13 @@ addRef pexp =
       let result = (newPExp $ IFunExp "." [pexp, deref]) `withType` typeOf deref
       return result <++> addRef result
   where
-  newPExp = PExp Nothing "" $ inPos pexp
+  newPExp = PExp Nothing "" $ _inPos pexp
   
 typeOf :: PExp -> IType
-typeOf pexp = fromMaybe (error "No type") $ iType pexp
+typeOf pexp = fromMaybe (error "No type") $ _iType pexp
 
 withType :: PExp -> IType -> PExp
-withType p t = p{iType = Just t}
+withType p t = p{_iType = Just t}
 
 (<++>) :: (Error e, MonadPlus m) => ErrorT e m a -> ErrorT e m a -> ErrorT e m a
 (ErrorT a) <++> (ErrorT b) = ErrorT $ a `mplus` b

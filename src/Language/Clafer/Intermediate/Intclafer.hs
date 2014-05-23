@@ -1,3 +1,4 @@
+{-# LANGUAGE TemplateHaskell, DeriveDataTypeable #-}
 {-
  Copyright (C) 2012-2014 Kacper Bak, Jimmy Liang, Luke Michael Brown <http://gsd.uwaterloo.ca>
 
@@ -23,6 +24,8 @@
 module Language.Clafer.Intermediate.Intclafer where
 
 import Language.Clafer.Front.Absclafer
+import Control.Lens
+import Data.Data
 import Data.Monoid
 import Data.Foldable (foldMap)
 
@@ -50,57 +53,60 @@ data IType = TBoolean
            | TInteger
            | TReal
            | TClafer [String]
-  deriving (Eq,Ord,Show)
+  deriving (Eq,Ord,Show,Data,Typeable)
 
 -- | each file contains exactly one mode. A module is a list of declarations
 data IModule = IModule {
       -- | always empty for now because we don't have syntax for declaring modules
-      mName :: String,    
+      _mName :: String,    
       -- | List of top-level elements
-      mDecls :: [IElement]
+      _mDecls :: [IElement]
     }
-  deriving (Eq,Ord,Show)
+  deriving (Eq,Ord,Show,Data,Typeable)
 
 -- | Clafer has a list of fields that specify its properties. Some fields, marked as (o) are for generating optimized code
 data IClafer =
    IClafer {
       -- | the position of the syntax in source code
-      cinPos :: Span,         
+      _cinPos :: Span,         
       -- | whether abstract or not (i.e., concrete)
-      isAbstract :: Bool,     
+      _isAbstract :: Bool,     
       -- | group cardinality
-      gcard :: Maybe IGCard,  
+      _gcard :: Maybe IGCard,  
       -- | name declared in the model
-      ident :: CName,         
+      _ident :: CName,         
       -- | a unique identifier
-      uid :: UID,             
+      _uid :: UID,             
       -- | superclafers
-      super:: ISuper,         
+      _super:: ISuper,         
       -- | clafer cardinality
-      card :: Maybe Interval,
+      _card :: Maybe Interval,
        -- | (o) global cardinality 
-      glCard :: Interval,    
+      _glCard :: Interval,    
       -- | nested elements
-      elements :: [IElement]  
+      _elements :: [IElement]  
     }
-  deriving (Eq,Ord,Show)
+  deriving (Eq,Ord,Show,Data,Typeable)
 
 -- | Clafer's subelement is either a clafer, a constraint, or a goal (objective)
 --   This is a wrapper type needed to have polymorphic lists of elements
 data IElement =
-   IEClafer IClafer
+   IEClafer { 
+      -- | the actual clafer 
+      _iClafer :: IClafer
+    }
  | IEConstraint {
       -- | whether hard or not (soft)
-      isHard :: Bool,     
+      _isHard :: Bool,     
       -- | the container of the actual expression
-      cpexp :: PExp       
+      _cpexp :: PExp       
     }
   -- | Goal (optimization objective)
  | IEGoal {
-   isMaximize :: Bool,    -- whether maximize or minimize
-   cpexp :: PExp          -- the expression
+   _isMaximize :: Bool,    -- | whether maximize or minimize
+   _cpexp :: PExp          -- | the expression
    }
-  deriving (Eq,Ord,Show)
+  deriving (Eq,Ord,Show,Data,Typeable)
 
 -- | A list of superclafers.  
 --   ->    overlaping unique (set)
@@ -108,20 +114,20 @@ data IElement =
 --   :     non overlapping (disjoint)
 data ISuper =
    ISuper {
-      isOverlapping :: Bool,  -- whether overlapping or disjoint with other clafers extending given list of superclafers
-      supers :: [PExp]
+      _isOverlapping :: Bool,  -- whether overlapping or disjoint with other clafers extending given list of superclafers
+      _supers :: [PExp]
     }
-  deriving (Eq,Ord,Show)
+  deriving (Eq,Ord,Show,Data,Typeable)
 
 -- | Group cardinality is specified as an interval. It may also be given by a keyword.
 --   xor    1..1 isKeyword = True
 --   1..1   1..1 isKeyword = False
 data IGCard =
   IGCard {
-      isKeyword :: Bool,    -- whether given by keyword: or, xor, mux
-      interval :: Interval
+      _isKeyword :: Bool,    -- whether given by keyword: or, xor, mux
+      _interval :: Interval
     }
-  deriving (Eq,Ord,Show)
+  deriving (Eq,Ord,Show,Data,Typeable)
 
 -- | (Min, Max) integer interval. -1 denotes *
 type Interval = (Integer, Integer)
@@ -130,26 +136,32 @@ type Interval = (Integer, Integer)
 --   It has meta information about an actual expression 'exp'
 data PExp = PExp {
       -- | the inferred type
-      iType :: Maybe IType,  
+      _iType :: Maybe IType,  
       -- | non-empty unique id for expressions with span, \"\" for noSpan
-      pid :: String,         
+      _pid :: String,         
       -- | position in the input Clafer file
-      inPos :: Span,         
+      _inPos :: Span,         
       -- | the actual expression
-      exp :: IExp            
+      _exp :: IExp            
     }
-  deriving (Eq,Ord,Show)
-
+  deriving (Eq,Ord,Show,Data,Typeable)
 
 data IExp = 
    -- | quantified expression with declarations
    --   e.g., [ all x1; x2 : X | x1.ref != x2.ref ]
-   IDeclPExp {quant :: IQuant, oDecls :: [IDecl], bpexp :: PExp}
+   IDeclPExp {
+      _quant :: IQuant, 
+      _oDecls :: [IDecl], 
+      _bpexp :: PExp
+    }
    -- | expression with a
    --   unary function, e.g., -1
    --   binary function, e.g., 2 + 3
    --   ternary function, e.g., if x then 4 else 5
- | IFunExp {op :: String, exps :: [PExp]}
+ | IFunExp {
+      _op :: String, 
+      _exps :: [PExp]
+    }
  -- | integer number
  | IInt Integer
  -- | real number
@@ -159,13 +171,13 @@ data IExp =
  -- | a reference to a clafer name
  | IClaferId {                   
       -- | module name - currently not used and empty since we have no module system
-      modName :: String,         
+      _modName :: String,         
       -- | name of the clafer being referred to
-      sident :: CName,          
+      _sident :: CName,          
       -- | identifier refers to a top-level definition
-      isTop :: Bool
+      _isTop :: Bool
     }
-  deriving (Eq,Ord,Show)
+  deriving (Eq,Ord,Show,Data,Typeable)
 
 {- |
 For IFunExp standard set of operators includes:
@@ -209,13 +221,13 @@ For IFunExp standard set of operators includes:
 data IDecl =
    IDecl {
       -- | is disjunct
-      isDisj :: Bool,    
+      _isDisj :: Bool,    
       -- | a list of local names 
-      decls :: [CName],  
+      _decls :: [CName],  
       -- | set to which local names refer to
-      body :: PExp        
+      _body :: PExp        
     }
-  deriving (Eq,Ord,Show)
+  deriving (Eq,Ord,Show,Data,Typeable)
 
 -- | quantifier
 data IQuant =
@@ -229,7 +241,7 @@ data IQuant =
  | ISome  
  -- | for all
  | IAll   
-  deriving (Eq,Ord,Show)
+  deriving (Eq,Ord,Show,Data,Typeable)
 
 type LineNo = Integer
 type ColNo  = Integer
@@ -342,3 +354,24 @@ unWrapIDecl x = error $ "Can't call unWarpIDecl on " ++ show x
 unWrapIGCard :: Ir -> IGCard
 unWrapIGCard (IRIGCard x) = x
 unWrapIGCard x = error $ "Can't call unWarpIGcard on " ++ show x
+
+
+instance Plated IClafer
+instance Plated PExp
+instance Plated IExp
+
+makeLenses ''IModule
+
+makeLenses ''IClafer
+
+makeLenses ''IElement
+
+makeLenses ''ISuper
+
+makeLenses ''IGCard
+
+makeLenses ''PExp
+
+makeLenses ''IExp
+
+makeLenses ''IDecl
