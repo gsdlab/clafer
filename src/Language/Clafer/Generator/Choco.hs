@@ -243,6 +243,9 @@ genCModule _ (IModule{_mDecls}, _) scopes =
         | [arg] <- args', PExp{_exp = IFunExp{_exps = [a, PExp{_exp = IClaferId{_sident = "ref"}}]}} <- rewrite arg =
             "sum(" ++ genConstraintPExp a ++ ")"
         | otherwise = error "Unexpected sum argument."
+    genConstraintExp (IFunExp "+" args') =
+	(if _iType (head args') == Just TString then "concat" else "add") ++
+            "(" ++ intercalate ", " (map genConstraintPExp args') ++ ")"
     genConstraintExp (IFunExp op' args') =
         mapFunc op' ++ "(" ++ intercalate ", " (map genConstraintPExp args') ++ ")"
     -- this is a keyword in Javascript so use "$this" instead
@@ -251,7 +254,7 @@ genCModule _ (IModule{_mDecls}, _) scopes =
         | _sident `elem` claferUids = "global(" ++ _sident ++ ")"
         | otherwise                = _sident
     genConstraintExp (IInt val) = "constant(" ++ show val ++ ")"
-    genConstraintExp (IStr val) = "constant(\"" ++ val ++ "\")"
+    genConstraintExp (IStr val) = "constant(" ++ show val ++ ")"
     genConstraintExp e = error $ "Unknown expression: " ++ show e
                 
     mapQuant INo = "none"

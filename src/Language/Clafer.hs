@@ -479,7 +479,7 @@ generate =
         -- result for Choco    
         ++ (if (Choco `elem` modes)
           then let 
-                  (imod,strMap) = astrModule iModule
+                  imod = iModule
                in
                   [ (Choco, 
                      CompilerResult { 
@@ -488,7 +488,7 @@ generate =
                          statistics = stats,
                          claferEnv  = env,
                          mappingToAlloy = [],
-                         stringMap = strMap,
+                         stringMap = Map.empty,
                          scopesList = scopes
                       }) ]
           else []
