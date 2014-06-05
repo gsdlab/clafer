@@ -251,6 +251,7 @@ genCModule _ (IModule{_mDecls}, _) scopes =
         | _sident `elem` claferUids = "global(" ++ _sident ++ ")"
         | otherwise                = _sident
     genConstraintExp (IInt val) = "constant(" ++ show val ++ ")"
+    genConstraintExp (IStr val) = "constant(\"" ++ val ++ "\")"
     genConstraintExp e = error $ "Unknown expression: " ++ show e
                 
     mapQuant INo = "none"
