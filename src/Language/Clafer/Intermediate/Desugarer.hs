@@ -104,9 +104,17 @@ desugarInit :: PosIdent -> Init -> [IElement]
 desugarInit id' InitEmpty = desugarInit id' $ PosInitEmpty noSpan
 desugarInit id' (InitSome inithow exp') = desugarInit id' $ PosInitSome noSpan inithow exp'
 desugarInit _ (PosInitEmpty _) = []
-desugarInit id' (PosInitSome s inithow exp') = [IEConstraint (desugarInitHow inithow) 
-  (pExpDefPid s (IFunExp "=" [mkPLClaferId (snd $ getIdent id') False, desugarExp exp']))]
-  where getIdent (PosIdent y) = y
+desugarInit id' (PosInitSome s inithow exp') = [ IEConstraint (desugarInitHow inithow) (pExpDefPid s implIExp) ]
+  where 
+    cId :: PExp
+    cId = mkPLClaferId (snd $ getIdent id') False
+    -- <id> = <exp'>
+    assignIExp :: IExp
+    assignIExp = (IFunExp "=" [cId, desugarExp exp'])
+    -- some <id> => <assignIExp>
+    implIExp :: IExp
+    implIExp = (IFunExp "=>" [ pExpDefPid s $ IDeclPExp ISome [] cId, pExpDefPid s assignIExp ])
+    getIdent (PosIdent y) = y
 
 desugarInitHow :: InitHow -> Bool
 desugarInitHow InitHow_1  = desugarInitHow $ PosInitHow_1 noSpan
