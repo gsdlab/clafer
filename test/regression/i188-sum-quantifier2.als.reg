@@ -24,4 +24,4 @@ one sig c0_c3 extends c0_Component
 one sig c0_total
 { ref : one Int }
 
-fact { (c0_total.@ref) = (sum temp : (c0_Component.@r_c0_energy) | temp.@ref) }
+fact { (some c0_total) => ((c0_total.@ref) = (sum temp : (c0_Component.@r_c0_energy) | temp.@ref)) }

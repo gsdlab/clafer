@@ -11,5 +11,5 @@ sig c0_y
 one sig c0_z
 { ref : one Int }
 
-fact { (c0_z.@ref) = (sum temp : ((c0_x.@ref) + c0_y) | temp.@ref) }
+fact { (some c0_z) => ((c0_z.@ref) = (sum temp : ((c0_x.@ref) + c0_y) | temp.@ref)) }
 fact { all disj x, y : c0_z | (x.@ref) != (y.@ref) }

@@ -36,4 +36,4 @@ fact { (c0_AIGradStudent.(@r_c0_first.@ref)) = c0_MachineLearningCourse }
 one sig c0_numerOfAssistants
 { ref : one Int }
 
-fact { (c0_numerOfAssistants.@ref) = (#(c0_Course.@r_c0_assistants)) }
+fact { (some c0_numerOfAssistants) => ((c0_numerOfAssistants.@ref) = (#(c0_Course.@r_c0_assistants))) }

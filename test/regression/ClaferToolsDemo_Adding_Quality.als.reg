@@ -31,10 +31,10 @@ abstract sig c0_MobilePhone
 , r_c0_total_batterylife : one c0_total_batterylife
 , r_c0_total_security : one c0_total_security
 , r_c0_total_cost : one c0_total_cost }
-{ (this.(@r_c0_total_productivity.@ref)) = (sum temp : (c0_Feature.@r_c0_productivity) | temp.@ref)
-  (this.(@r_c0_total_batterylife.@ref)) = (sum temp : (c0_Feature.@r_c0_batterylife) | temp.@ref)
-  (this.(@r_c0_total_security.@ref)) = (sum temp : (c0_Feature.@r_c0_security) | temp.@ref)
-  (this.(@r_c0_total_cost.@ref)) = (sum temp : (c0_Feature.@r_c0_cost) | temp.@ref) }
+{ (some this.@r_c0_total_productivity) => ((this.(@r_c0_total_productivity.@ref)) = (sum temp : (c0_Feature.@r_c0_productivity) | temp.@ref))
+  (some this.@r_c0_total_batterylife) => ((this.(@r_c0_total_batterylife.@ref)) = (sum temp : (c0_Feature.@r_c0_batterylife) | temp.@ref))
+  (some this.@r_c0_total_security) => ((this.(@r_c0_total_security.@ref)) = (sum temp : (c0_Feature.@r_c0_security) | temp.@ref))
+  (some this.@r_c0_total_cost) => ((this.(@r_c0_total_cost.@ref)) = (sum temp : (c0_Feature.@r_c0_cost) | temp.@ref)) }
 
 sig c0_Connectivity extends c0_Feature
 { r_c0_Bluetooth : one c0_Bluetooth
