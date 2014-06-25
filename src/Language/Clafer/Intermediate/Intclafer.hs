@@ -165,11 +165,17 @@ data IExp =
       _exps :: [PExp]
     }
  -- | integer number
- | IInt Integer
+ | IInt {
+      _iint :: Integer
+    }
  -- | real number
- | IDouble Double
+ | IDouble {
+      _idouble :: Double
+    }
  -- | string
- | IStr String
+ | IStr {
+      _istr :: String
+    }
  -- | a reference to a clafer name
  | IClaferId {                   
       -- | module name - currently not used and empty since we have no module system
