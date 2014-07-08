@@ -5,7 +5,9 @@
 module Language.Clafer.Generator.Choco (genCModule) where
 
 import Control.Applicative
+import Control.Lens.Plated
 import Control.Monad
+import Data.Data.Lens
 import Data.List
 import Data.Maybe
 import Data.Ord
@@ -17,7 +19,7 @@ import Language.Clafer.Intermediate.Intclafer
 
 -- | Choco 3 code generation
 genCModule :: ClaferArgs -> (IModule, GEnv) -> [(UID, Integer)] -> Result
-genCModule _ (IModule{_mDecls}, _) scopes =
+genCModule _ (imodule@IModule{_mDecls}, _) scopes =
     genScopes
     ++ "\n"
     ++ (genAbstractClafer =<< abstractClafers)
@@ -115,8 +117,19 @@ genCModule _ (IModule{_mDecls}, _) scopes =
         (if null scopeMap then "" else "scope({" ++ intercalate ", " scopeMap ++ "});\n")
         ++ "defaultScope(1);\n"
         ++ "intRange(-" ++ show (2 ^ (bitwidth - 1)) ++ ", " ++ show (2 ^ (bitwidth - 1) - 1) ++ ");\n"
+        ++ "stringLength(" ++ show longestString ++ ");\n"
         where
             scopeMap = [uid' ++ ":" ++ show scope | (uid', scope) <- scopes, uid' /= "int"]
+
+    exps :: [IExp]
+    exps = universeOn biplate imodule
+
+    stringLength :: IExp -> Maybe Int
+    stringLength (IStr string) = Just $ length string
+    stringLength _ = Nothing
+
+    longestString :: Int
+    longestString = maximum $ 16 : mapMaybe stringLength exps
                 
     genConcreteClafer :: IClafer -> Result
     genConcreteClafer IClafer{_uid, _card = Just _card, _gcard = Just (IGCard _ _gcard)} =

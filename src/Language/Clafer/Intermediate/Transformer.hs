@@ -24,7 +24,7 @@ module Language.Clafer.Intermediate.Transformer where
 import Control.Lens
 import Data.Maybe
 import Language.Clafer.Common
-import qualified Language.Clafer.Intermediate.Intclafer as I (exp, elements, op)
+import qualified Language.Clafer.Intermediate.Intclafer as I (exp, elements)
 import Language.Clafer.Intermediate.Intclafer hiding (exp, elements, op)
 import Language.Clafer.Intermediate.Desugarer
 
@@ -44,7 +44,7 @@ transPExp True  pexp'@(PExp iType' _ _ _) = desugarPath $ I.exp %~ transIExp (fr
 transPExp False pexp'                     = pexp'
 
 transIExp :: IType -> IExp -> IExp
-transIExp iType' idpe@(IDeclPExp _ _ _) = bpexp            %~ transPExp False $ idpe
+transIExp _ idpe@(IDeclPExp _ _ _) = bpexp            %~ transPExp False $ idpe
 transIExp iType' ife@(IFunExp op' _)    = exps . traversed %~ transPExp cond  $ ife
   where
     cond = op' == iIfThenElse && 

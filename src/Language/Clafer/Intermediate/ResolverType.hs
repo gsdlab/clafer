@@ -31,6 +31,7 @@ import Language.Clafer.Intermediate.Intclafer hiding (uid)
 import qualified Language.Clafer.Intermediate.Intclafer as I
 
 import Control.Applicative
+import Control.Exception (assert)
 import Control.Monad.Error
 import Control.Monad.List
 import Control.Monad.Reader
@@ -203,7 +204,7 @@ resolveTElement :: String -> IElement -> TypeAnalysis IElement
 resolveTElement _ (IEClafer iclafer) =
   do
     elements' <- mapM (resolveTElement $ I._uid iclafer) (_elements iclafer)
-    return $ IEClafer $ iclafer{_elements = elements'}
+    return $ IEClafer iclafer{_elements = elements'}
 resolveTElement parent' (IEConstraint _isHard _pexp) =
   IEConstraint _isHard <$> (testBoolean =<< resolveTConstraint parent' _pexp)
   where
@@ -228,7 +229,7 @@ resolveTPExp p =
     x <- resolveTPExp' p
     case partitionEithers x of
       (f:_, []) -> throwError f                       -- Case 1: Only fails. Complain about the first one.
-      ([], [])  -> error "No results but no errors."  -- Case 2: No success and no error message. Bug.
+      ([], [])  -> assert False $ error "No results but no errors."  -- Case 2: No success and no error message. Bug.
       (_,   xs) -> return xs                          -- Case 3: At least one success.
 
 resolveTPExp' :: PExp -> TypeAnalysis [Either ClaferSErr PExp]
@@ -292,7 +293,7 @@ resolveTPExp' p@PExp{_inPos, _exp} =
             | _op == iCSet = return TInteger
             | _op == iSumSet = test (t == TInteger) >> return TInteger
             | _op `elem` [iMin, iGMin, iGMax] = test (numeric t) >> return t
-            | otherwise = error $ "Unknown op '" ++ _op ++ "'"
+            | otherwise = assert False $ error $ "Unknown op '" ++ _op ++ "'"
       result' <- result
       return (result', e{_exps = [arg']})
 

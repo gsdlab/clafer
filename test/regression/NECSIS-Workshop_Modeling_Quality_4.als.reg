@@ -15,10 +15,10 @@ abstract sig c0_Car
 , r_c0_total_fuel : one c0_total_fuel
 , r_c0_total_mass : one c0_total_mass }
 { (some (this.@r_c0_CC).@r_c0_ACC) => (some this.@r_c0_FCA)
-  (this.(@r_c0_total_cost.@ref)) = (sum temp : (c0_Feature.@r_c0_cost) | temp.@ref)
-  (this.(@r_c0_total_comfort.@ref)) = (sum temp : (c0_ComfortFeature.@r_c0_cost) | temp.@ref)
-  (this.(@r_c0_total_fuel.@ref)) = (sum temp : (c0_FuelFeature.@r_c0_cost) | temp.@ref)
-  (this.(@r_c0_total_mass.@ref)) = (sum temp : (c0_FuelFeature.@r_c0_mass) | temp.@ref) }
+  (some this.@r_c0_total_cost) => ((this.(@r_c0_total_cost.@ref)) = (sum temp : (c0_Feature.@r_c0_cost) | temp.@ref))
+  (some this.@r_c0_total_comfort) => ((this.(@r_c0_total_comfort.@ref)) = (sum temp : (c0_ComfortFeature.@r_c0_cost) | temp.@ref))
+  (some this.@r_c0_total_fuel) => ((this.(@r_c0_total_fuel.@ref)) = (sum temp : (c0_FuelFeature.@r_c0_cost) | temp.@ref))
+  (some this.@r_c0_total_mass) => ((this.(@r_c0_total_mass.@ref)) = (sum temp : (c0_FuelFeature.@r_c0_mass) | temp.@ref)) }
 
 sig c0_ABS extends c0_ComfortFeature
 {}

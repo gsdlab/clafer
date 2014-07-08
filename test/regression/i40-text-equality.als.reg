@@ -5,15 +5,15 @@ pred show {}
 one sig c0_text
 { ref : one Int }
 
-fact { (c0_text.@ref) = 0 }
+fact { (some c0_text) => ((c0_text.@ref) = 0) }
 one sig c0_text1
 { ref : one Int }
 
-fact { (c0_text1.@ref) = 0 }
+fact { (some c0_text1) => ((c0_text1.@ref) = 0) }
 one sig c0_text2
 { ref : one Int }
 
-fact { (c0_text2.@ref) = 0 }
+fact { (some c0_text2) => ((c0_text2.@ref) = 0) }
 lone sig c0_equal1
 {}
 { (c0_text.@ref) = (c0_text1.@ref) }
