@@ -39,7 +39,6 @@ module Language.Clafer.Generator.Html (genHtml,
 import Language.ClaferT
 import Language.Clafer.Front.Absclafer
 import Language.Clafer.Front.LayoutResolver(revertLayout)
-import Language.Clafer.Front.Mapper(range)
 import Language.Clafer.Intermediate.Tracing
 import Language.Clafer.Intermediate.Intclafer
 import Data.List (intersperse,genericSplitAt)
@@ -500,9 +499,9 @@ rest (_:xs) = xs
 
 getUid :: PosIdent -> Map.Map Span [Ir] -> String
 getUid posIdent@(PosIdent (_, id')) irMap = 
-    if Map.lookup (range posIdent) irMap == Nothing
+    if Map.lookup (getSpan posIdent) irMap == Nothing
     then "Lookup failed"
-    else let IRPExp pexp = head $ fromJust $ Map.lookup (range posIdent) irMap in
+    else let IRPExp pexp = head $ fromJust $ Map.lookup (getSpan posIdent) irMap in
       findUid id' $ getIdentPExp pexp
       where {getIdentPExp (PExp _ _ _ exp') = getIdentIExp exp';
              getIdentIExp (IFunExp _ exps') = concatMap getIdentPExp exps';

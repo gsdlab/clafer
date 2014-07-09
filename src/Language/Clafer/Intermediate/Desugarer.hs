@@ -27,7 +27,6 @@ module Language.Clafer.Intermediate.Desugarer where
 
 import Language.Clafer.Common
 import Language.Clafer.Front.Absclafer
-import Language.Clafer.Front.Mapper
 import Language.Clafer.Intermediate.Intclafer
 
 -- | Transform the AST into the intermediate representation (IR)

@@ -113,7 +113,6 @@ import Language.Clafer.Front.Parclafer
 import Language.Clafer.Front.Printclafer
 import Language.Clafer.Front.Absclafer 
 import Language.Clafer.Front.LayoutResolver
-import Language.Clafer.Front.Mapper
 import Language.Clafer.Intermediate.Tracing
 import Language.Clafer.Intermediate.Intclafer
 import Language.Clafer.Intermediate.Desugarer

@@ -126,7 +126,6 @@ library
                      Language.Clafer.Front.ErrM,
                      Language.Clafer.Front.LayoutResolver,
                      Language.Clafer.Front.Lexclafer,
-                     Language.Clafer.Front.Mapper,
                      Language.Clafer.Front.Parclafer,
                      Language.Clafer.Front.Printclafer,
                      Language.Clafer.Generator.Alloy,

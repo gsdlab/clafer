@@ -24,7 +24,6 @@ module Language.Clafer.Intermediate.Tracing (traceIrModule, traceAstModule, Ast(
 import Data.Map (Map)
 import qualified Data.Map as Map
 import Language.Clafer.Front.Absclafer
-import Language.Clafer.Front.Mapper
 import Language.Clafer.Intermediate.Intclafer
 
 traceIrModule :: IModule -> Map Span [Ir] --Map Span [Union (IRClafer IClafer) (IRPExp PExp)]

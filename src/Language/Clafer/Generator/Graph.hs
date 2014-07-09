@@ -24,7 +24,6 @@ module Language.Clafer.Generator.Graph (genSimpleGraph, genCVLGraph, traceAstMod
 
 import Language.Clafer.Common(fst3,snd3,trd3)
 import Language.Clafer.Front.Absclafer
-import Language.Clafer.Front.Mapper(range)
 import Language.Clafer.Intermediate.Tracing
 import Language.Clafer.Intermediate.Intclafer
 import Language.Clafer.Generator.Html(genTooltip)
@@ -338,9 +337,9 @@ rest [] = []
 rest (_:xs) = xs
 
 getUid :: PosIdent -> Map.Map Span [Ir] -> String
-getUid (PosIdent (pos, id')) irMap = if Map.lookup (range (PosIdent (pos, id'))) irMap == Nothing
+getUid (PosIdent (pos, id')) irMap = if Map.lookup (getSpan (PosIdent (pos, id'))) irMap == Nothing
                         then id'
-                        else let IRPExp pexp = head $ fromJust $ Map.lookup (range (PosIdent (pos, id'))) irMap in
+                        else let IRPExp pexp = head $ fromJust $ Map.lookup (getSpan (PosIdent (pos, id'))) irMap in
                           findUid id' $ getIdentPExp pexp
                           where {getIdentPExp (PExp _ _ _ exp') = getIdentIExp exp';
                                  getIdentIExp (IFunExp _ exps') = concatMap getIdentPExp exps';
