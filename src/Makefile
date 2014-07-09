@@ -6,18 +6,14 @@ endef
 
 grammar:
 	bnfc -p "Language.Clafer.Front" --ghc clafer.cf
-#	patch Parclafer.y Parclafer.y.diff
 	happy -gca $(FRONT_DIR)/Parclafer.y
 	alex -g $(FRONT_DIR)/Lexclafer.x
-#	latex Docclafer.tex; dvips Docclafer.dvi -o Docclafer.ps
-#	patch Absclafer.hs Absclafer.diff
-#	patch ErrM.hs ErrM.diff
-#	patch Lexclafer.hs Lexclafer.diff
-#	patch Printclafer.hs Printclafer.diff
-#	patch Parclafer.hs Parclafer.diff
-#	$(foreach file, Absclafer ErrM Lexclafer Printclafer Parclafer, \
-#		$(if $(call apPatch,--dry-run,$(file)), \
-#			$(call apPatch,,$(file))))
+	rm $(FRONT_DIR)/Skelclafer.hs
+	rm $(FRONT_DIR)/Testclafer.hs
+
+grammarDoc:
+	bnfc --latex clafer.cf
+	pdflatex $(FRONT_DIR)/Docclafer.tex
 
 Schema.hs:
 	./Language/Clafer/Generator/quote-xsd.sh Language/Clafer/ClaferIR.xsd > ./Language/Clafer/Generator/Schema.hs
