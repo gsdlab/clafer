@@ -123,9 +123,6 @@ EnumIdIdent.    EnumId ::= PosIdent ;
 ModIdIdent.     ModId  ::= PosIdent ;
 LocIdIdent.     LocId  ::= PosIdent ;
 
-Pos . Pos ::= Integer Integer;
-Span . Span ::= Pos Pos;
-
 separator           Declaration ""  ;
 separator  nonempty EnumId      "|" ;
 separator           Element     ""  ;
