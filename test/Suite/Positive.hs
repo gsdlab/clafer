@@ -78,7 +78,6 @@ case_nonempty_cards = do
 				[(file', iMod)]
 		getIR (_, _) = []
 		isEmptyCard (IRClafer (IClafer{_cinPos=(Span (Pos l c) _), _card = Nothing})) = "Line " ++ show l ++ " column " ++ show c ++ "\n"
-		isEmptyCard (IRClafer (IClafer{_cinPos=(PosSpan _ (Pos l c) _), _card = Nothing})) = "Line " ++ show l ++ " column " ++ show c ++ "\n"
 		isEmptyCard	_ = ""
 
 case_stringEqual :: Assertion
