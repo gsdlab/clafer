@@ -248,14 +248,11 @@ instance ClaferErrPos PartialErrPos where
       let fragSpans = zipWith Span (Pos 1 1 : f) f
       case findFrag modelPos' fragSpans of
         Just (frgId, Span fragStart _) -> return $ ErrPos frgId (modelPos' `minusPos` fragStart) modelPos'
-        Just (frgId, PosSpan _ fragStart _) -> return $ ErrPos frgId (modelPos' `minusPos` fragStart) modelPos'
         Nothing -> error $ show modelPos' ++ " not within any frag spans: " ++ show fragSpans -- Indicates a bug in the Clafer translator
     where
     findFrag pos'' spans =
       find (inSpan pos'' . snd) (zip [0..] spans)
   toErrPos (ErrModelSpan (Span modelPos'' _)) = toErrPos $ ErrModelPos modelPos''
-  toErrPos (ErrModelSpan (PosSpan _ modelPos'' _)) = toErrPos $ ErrModelPos modelPos'' -- Should never happen
-
 
 class Throwable t where
   toErr :: t -> Monad m => ClaferT m ClaferErr
@@ -291,7 +288,6 @@ minusPos (Pos l c) (Pos m _) = Pos (l - m + 1) c  -- Different line
 
 inSpan :: Pos -> Span -> Bool
 inSpan pos' (Span start end) = pos' >= start && pos' <= end
-inSpan pos' (PosSpan _ s e)  = inSpan pos' (Span s e)
 
 -- | Get the ClaferEnv
 getEnv :: Monad m => ClaferT m ClaferEnv
