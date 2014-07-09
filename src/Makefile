@@ -7,8 +7,8 @@ endef
 grammar:
 	bnfc -p "Language.Clafer.Front" --ghc clafer.cf
 #	patch Parclafer.y Parclafer.y.diff
-#	happy -gca Parclafer.y
-#	alex -g Lexclafer.x
+	happy -gca $(FRONT_DIR)/Parclafer.y
+	alex -g $(FRONT_DIR)/Lexclafer.x
 #	latex Docclafer.tex; dvips Docclafer.dvi -o Docclafer.ps
 #	patch Absclafer.hs Absclafer.diff
 #	patch ErrM.hs ErrM.diff
