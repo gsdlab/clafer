@@ -1,199 +1,142 @@
 entrypoints Module ;
+
+
+-- To regenerate grammar:
+--         cd src/Front
+--         bnfc -m -haskell clafer.cf
+--         Modify files Absclafer.hs, ErrM.hs, Printclafer.hs, so that they consider Front as a module name. (can be done by running make from src).
+--         happy -gca Parclafer.y
+--         alex -g Lexclafer.x
+
 comment "//" ;
 comment "/*" "*/" ;
-Module . Module ::= [Declaration];
-internal PosModule . Module ::= Span [Declaration];
-EnumDecl . Declaration ::= "enum" PosIdent "=" [EnumId];
-internal PosEnumDecl . Declaration ::= Span "enum" PosIdent "=" [EnumId];
-ElementDecl . Declaration ::= Element ;
-internal PosElementDecl . Declaration ::= Span Element ;
-Clafer . Clafer ::= Abstract GCard PosIdent Super Card Init Elements ;
-internal PosClafer . Clafer ::= Span Abstract GCard PosIdent Super Card Init Elements ;
-Constraint . Constraint ::= "[" [Exp]"]" ;
-internal PosConstraint . Constraint ::= Span "[" [Exp]"]" ;
-SoftConstraint . SoftConstraint ::= "(" [Exp]")" ;
-internal PosSoftConstraint . SoftConstraint ::= Span "(" [Exp]")" ;
-Goal . Goal ::= "<<" [Exp]">>" ;
-internal PosGoal . Goal ::= Span "<<" [Exp]">>" ;
-AbstractEmpty . Abstract ::= ;
-internal PosAbstractEmpty . Abstract ::= Span ;
-Abstract . Abstract ::= "abstract" ;
-internal PosAbstract . Abstract ::= Span "abstract" ;
-ElementsEmpty . Elements ::= ;
-internal PosElementsEmpty . Elements ::= Span ;
-ElementsList . Elements ::= "{" [Element]"}" ;
-internal PosElementsList . Elements ::= Span "{" [Element]"}" ;
-Subclafer . Element ::= Clafer ;
-internal PosSubclafer . Element ::= Span Clafer ;
-ClaferUse . Element ::= "`" Name Card Elements ;
-internal PosClaferUse . Element ::= Span "`" Name Card Elements ;
-Subconstraint . Element ::= Constraint ;
-internal PosSubconstraint . Element ::= Span Constraint ;
-Subgoal . Element ::= Goal ;
-internal PosSubgoal . Element ::= Span Goal ;
-Subsoftconstraint . Element ::= SoftConstraint ;
-internal PosSubsoftconstraint . Element ::= Span SoftConstraint ;
-SuperEmpty . Super ::= ;
-internal PosSuperEmpty . Super ::= Span ;
-SuperSome . Super ::= SuperHow SetExp ;
-internal PosSuperSome . Super ::= Span SuperHow SetExp ;
-SuperColon . SuperHow ::= ":" ;
-internal PosSuperColon . SuperHow ::= Span ":" ;
-SuperArrow . SuperHow ::= "->" ;
-internal PosSuperArrow . SuperHow ::= Span "->" ;
-SuperMArrow . SuperHow ::= "->>" ;
-internal PosSuperMArrow . SuperHow ::= Span "->>" ;
-InitEmpty . Init ::= ;
-internal PosInitEmpty . Init ::= Span ;
-InitSome . Init ::= InitHow Exp ;
-internal PosInitSome . Init ::= Span InitHow Exp ;
-InitHow_1 . InitHow ::= "=" ;
-internal PosInitHow_1 . InitHow ::= Span "=" ;
-InitHow_2 . InitHow ::= ":=" ;
-internal PosInitHow_2 . InitHow ::= Span ":=" ;
-GCardEmpty . GCard ::= ;
-internal PosGCardEmpty . GCard ::= Span ;
-GCardXor . GCard ::= "xor" ;
-internal PosGCardXor . GCard ::= Span "xor" ;
-GCardOr . GCard ::= "or" ;
-internal PosGCardOr . GCard ::= Span "or" ;
-GCardMux . GCard ::= "mux" ;
-internal PosGCardMux . GCard ::= Span "mux" ;
-GCardOpt . GCard ::= "opt" ;
-internal PosGCardOpt . GCard ::= Span "opt" ;
-GCardInterval . GCard ::= NCard ;
-internal PosGCardInterval . GCard ::= Span NCard ;
-CardEmpty . Card ::= ;
-internal PosCardEmpty . Card ::= Span ;
-CardLone . Card ::= "?" ;
-internal PosCardLone . Card ::= Span "?" ;
-CardSome . Card ::= "+" ;
-internal PosCardSome . Card ::= Span "+" ;
-CardAny . Card ::= "*" ;
-internal PosCardAny . Card ::= Span "*" ;
-CardNum . Card ::= PosInteger ;
-internal PosCardNum . Card ::= Span PosInteger ;
-CardInterval . Card ::= NCard ;
-internal PosCardInterval . Card ::= Span NCard ;
-NCard . NCard ::= PosInteger ".." ExInteger ;
-internal PosNCard . NCard ::= Span PosInteger ".." ExInteger ;
-ExIntegerAst . ExInteger ::= "*" ;
-internal PosExIntegerAst . ExInteger ::= Span "*" ;
-ExIntegerNum . ExInteger ::= PosInteger ;
-internal PosExIntegerNum . ExInteger ::= Span PosInteger ;
-Path . Name ::= [ModId];
-internal PosPath . Name ::= Span [ModId];
-DeclAllDisj . Exp ::= "all" "disj" Decl "|" Exp ;
-internal PosDeclAllDisj . Exp ::= Span "all" "disj" Decl "|" Exp ;
-DeclAll . Exp ::= "all" Decl "|" Exp ;
-internal PosDeclAll . Exp ::= Span "all" Decl "|" Exp ;
-DeclQuantDisj . Exp ::= Quant "disj" Decl "|" Exp ;
-internal PosDeclQuantDisj . Exp ::= Span Quant "disj" Decl "|" Exp ;
-DeclQuant . Exp ::= Quant Decl "|" Exp ;
-internal PosDeclQuant . Exp ::= Span Quant Decl "|" Exp ;
-EGMax . Exp1 ::= "max" Exp2 ;
-internal PosEGMax . Exp1 ::= Span "max" Exp2 ;
-EGMin . Exp1 ::= "min" Exp2 ;
-internal PosEGMin . Exp1 ::= Span "min" Exp2 ;
-EIff . Exp1 ::= Exp1 "<=>" Exp2 ;
-internal PosEIff . Exp1 ::= Span Exp1 "<=>" Exp2 ;
-EImplies . Exp2 ::= Exp2 "=>" Exp3 ;
-internal PosEImplies . Exp2 ::= Span Exp2 "=>" Exp3 ;
-EOr . Exp3 ::= Exp3 "||" Exp4 ;
-internal PosEOr . Exp3 ::= Span Exp3 "||" Exp4 ;
-EXor . Exp4 ::= Exp4 "xor" Exp5 ;
-internal PosEXor . Exp4 ::= Span Exp4 "xor" Exp5 ;
-EAnd . Exp5 ::= Exp5 "&&" Exp6 ;
-internal PosEAnd . Exp5 ::= Span Exp5 "&&" Exp6 ;
-ENeg . Exp6 ::= "!" Exp7 ;
-internal PosENeg . Exp6 ::= Span "!" Exp7 ;
-ELt . Exp7 ::= Exp7 "<" Exp8 ;
-internal PosELt . Exp7 ::= Span Exp7 "<" Exp8 ;
-EGt . Exp7 ::= Exp7 ">" Exp8 ;
-internal PosEGt . Exp7 ::= Span Exp7 ">" Exp8 ;
-EEq . Exp7 ::= Exp7 "=" Exp8 ;
-internal PosEEq . Exp7 ::= Span Exp7 "=" Exp8 ;
-ELte . Exp7 ::= Exp7 "<=" Exp8 ;
-internal PosELte . Exp7 ::= Span Exp7 "<=" Exp8 ;
-EGte . Exp7 ::= Exp7 ">=" Exp8 ;
-internal PosEGte . Exp7 ::= Span Exp7 ">=" Exp8 ;
-ENeq . Exp7 ::= Exp7 "!=" Exp8 ;
-internal PosENeq . Exp7 ::= Span Exp7 "!=" Exp8 ;
-EIn . Exp7 ::= Exp7 "in" Exp8 ;
-internal PosEIn . Exp7 ::= Span Exp7 "in" Exp8 ;
-ENin . Exp7 ::= Exp7 "not" "in" Exp8 ;
-internal PosENin . Exp7 ::= Span Exp7 "not" "in" Exp8 ;
-QuantExp . Exp8 ::= Quant Exp12 ;
-internal PosQuantExp . Exp8 ::= Span Quant Exp12 ;
-EAdd . Exp9 ::= Exp9 "+" Exp10 ;
-internal PosEAdd . Exp9 ::= Span Exp9 "+" Exp10 ;
-ESub . Exp9 ::= Exp9 "-" Exp10 ;
-internal PosESub . Exp9 ::= Span Exp9 "-" Exp10 ;
-EMul . Exp10 ::= Exp10 "*" Exp11 ;
-internal PosEMul . Exp10 ::= Span Exp10 "*" Exp11 ;
-EDiv . Exp10 ::= Exp10 "/" Exp11 ;
-internal PosEDiv . Exp10 ::= Span Exp10 "/" Exp11 ;
-ESumSetExp . Exp11 ::= "sum" Exp12 ;
-internal PosESumSetExp . Exp11 ::= Span "sum" Exp12 ;
-ECSetExp . Exp11 ::= "#" Exp12 ;
-internal PosECSetExp . Exp11 ::= Span "#" Exp12 ;
-EMinExp . Exp11 ::= "-" Exp12 ;
-internal PosEMinExp . Exp11 ::= Span "-" Exp12 ;
-EImpliesElse . Exp12 ::= "if" Exp12 "then" Exp12 "else" Exp13 ;
-internal PosEImpliesElse . Exp12 ::= Span "if" Exp12 "then" Exp12 "else" Exp13 ;
-EInt . Exp13 ::= PosInteger ;
-internal PosEInt . Exp13 ::= Span PosInteger ;
-EDouble . Exp13 ::= PosDouble ;
-internal PosEDouble . Exp13 ::= Span PosDouble ;
-EStr . Exp13 ::= PosString ;
-internal PosEStr . Exp13 ::= Span PosString ;
-ESetExp . Exp13 ::= SetExp ;
-internal PosESetExp . Exp13 ::= Span SetExp ;
-Union . SetExp ::= SetExp "++" SetExp1 ;
-internal PosUnion . SetExp ::= Span SetExp "++" SetExp1 ;
-UnionCom . SetExp ::= SetExp "," SetExp1 ;
-internal PosUnionCom . SetExp ::= Span SetExp "," SetExp1 ;
-Difference . SetExp1 ::= SetExp1 "--" SetExp2 ;
-internal PosDifference . SetExp1 ::= Span SetExp1 "--" SetExp2 ;
-Intersection . SetExp2 ::= SetExp2 "&" SetExp3 ;
-internal PosIntersection . SetExp2 ::= Span SetExp2 "&" SetExp3 ;
-Domain . SetExp3 ::= SetExp3 "<:" SetExp4 ;
-internal PosDomain . SetExp3 ::= Span SetExp3 "<:" SetExp4 ;
-Range . SetExp4 ::= SetExp4 ":>" SetExp5 ;
-internal PosRange . SetExp4 ::= Span SetExp4 ":>" SetExp5 ;
-Join . SetExp5 ::= SetExp5 "." SetExp6 ;
-internal PosJoin . SetExp5 ::= Span SetExp5 "." SetExp6 ;
-ClaferId . SetExp6 ::= Name ;
-internal PosClaferId . SetExp6 ::= Span Name ;
-Decl . Decl ::= [LocId]":" SetExp ;
-internal PosDecl . Decl ::= Span [LocId]":" SetExp ;
-QuantNo . Quant ::= "no" ;
-internal PosQuantNo . Quant ::= Span "no" ;
-QuantLone . Quant ::= "lone" ;
-internal PosQuantLone . Quant ::= Span "lone" ;
-QuantOne . Quant ::= "one" ;
-internal PosQuantOne . Quant ::= Span "one" ;
-QuantSome . Quant ::= "some" ;
-internal PosQuantSome . Quant ::= Span "some" ;
-EnumIdIdent . EnumId ::= PosIdent ;
-internal PosEnumIdIdent . EnumId ::= Span PosIdent ;
-ModIdIdent . ModId ::= PosIdent ;
-internal PosModIdIdent . ModId ::= Span PosIdent ;
-LocIdIdent . LocId ::= PosIdent ;
-internal PosLocIdIdent . LocId ::= Span PosIdent ;
-Pos . Pos ::= Integer Integer ;
-internal PosPos . Pos ::= Span Integer Integer ;
-Span . Span ::= Pos Pos ;
-internal PosSpan . Span ::= Span Pos Pos ;
-separator Declaration "" ;
-separator nonempty EnumId "|" ;
-separator Element "" ;
-separator Exp "" ;
-separator nonempty LocId ";" ;
-separator nonempty ModId "\\" ;
+
+Module.         Module ::= [Declaration] ;
+
+EnumDecl.       Declaration ::= "enum" PosIdent "=" [EnumId] ;
+ElementDecl.    Declaration ::= Element ;
+
+Clafer.         Clafer ::= Abstract GCard PosIdent Super Card Init Elements ;
+Constraint.     Constraint ::= "[" [Exp] "]" ;
+SoftConstraint. SoftConstraint ::= "(" [Exp] ")";
+Goal.   	Goal ::= "<<" [Exp] ">>" ;
+
+
+AbstractEmpty.  Abstract ::= ;
+Abstract.       Abstract ::= "abstract" ;
+
+-- ElementsEmpty causes parsing problems
+ElementsEmpty.  Elements ::= ;
+ElementsList.   Elements ::= "{" [Element] "}" ;
+
+Subclafer.      Element ::= Clafer ;
+ClaferUse.      Element ::= "`" Name Card Elements ;
+Subconstraint.  Element ::= Constraint ;
+Subgoal. 	Element ::= Goal; 
+Subsoftconstraint. Element ::=SoftConstraint;
+
+SuperEmpty.     Super ::=  ;
+SuperSome.      Super ::= SuperHow SetExp ;
+
+SuperColon.     SuperHow ::= ":" ;
+SuperArrow.     SuperHow ::= "->" ;
+SuperMArrow.    SuperHow ::= "->>" ;
+
+InitEmpty.      Init ::= ;
+InitSome.       Init ::= InitHow Exp ;
+
+InitHow_1.      InitHow ::= "=" ;
+InitHow_2.      InitHow ::= ":=" ;
+
+GCardEmpty.     GCard ::= ;
+GCardXor.       GCard ::= "xor" ;
+GCardOr.        GCard ::= "or" ;
+GCardMux.       GCard ::= "mux" ;
+GCardOpt.       GCard ::= "opt" ;
+GCardInterval.  GCard ::= NCard ;
+
+CardEmpty.      Card ::= ;
+CardLone.       Card ::= "?" ;
+CardSome.       Card ::= "+" ;
+CardAny.        Card ::= "*" ;
+CardNum.        Card ::= PosInteger ;
+CardInterval.   Card ::= NCard ;
+
+NCard.          NCard  ::= PosInteger ".." ExInteger ;
+
+ExIntegerAst.   ExInteger ::= "*" ;
+ExIntegerNum.   ExInteger ::= PosInteger ;
+
+Path.           Name ::= [ModId] ;
+
+DeclAllDisj.    Exp   ::= "all" "disj" Decl "|" Exp ;
+DeclAll.        Exp   ::= "all"        Decl "|" Exp ;
+DeclQuantDisj.  Exp   ::= Quant "disj" Decl "|" Exp ;
+DeclQuant.      Exp   ::= Quant        Decl "|" Exp ;
+EGMax.          Exp1  ::= "max" Exp2 ;
+EGMin.          Exp1  ::= "min" Exp2 ;
+EIff.           Exp1  ::= Exp1 "<=>" Exp2 ;
+EImplies.       Exp2  ::= Exp2 "=>"  Exp3 ;
+EOr.            Exp3  ::= Exp3 "||"  Exp4 ;
+EXor.           Exp4  ::= Exp4 "xor" Exp5 ;
+EAnd.           Exp5  ::= Exp5 "&&"  Exp6 ;
+ENeg.           Exp6  ::= "!" Exp7 ;
+ELt.            Exp7  ::= Exp7 "<"  Exp8 ;
+EGt.            Exp7  ::= Exp7 ">"  Exp8 ;
+EEq.            Exp7  ::= Exp7 "="  Exp8 ;
+ELte.           Exp7  ::= Exp7 "<=" Exp8 ;
+EGte.           Exp7  ::= Exp7 ">=" Exp8 ;
+ENeq.           Exp7  ::= Exp7 "!=" Exp8 ;
+EIn.            Exp7  ::= Exp7 "in" Exp8 ;
+ENin.           Exp7  ::= Exp7 "not" "in" Exp8 ;
+QuantExp.       Exp8  ::= Quant Exp12 ;
+EAdd.           Exp9  ::= Exp9  "+" Exp10 ;
+ESub.           Exp9  ::= Exp9  "-" Exp10 ;
+EMul.           Exp10 ::= Exp10 "*" Exp11 ;
+EDiv.           Exp10 ::= Exp10 "/" Exp11 ;
+ESumSetExp.     Exp11 ::= "sum" Exp12;
+ECSetExp.       Exp11 ::= "#" Exp12 ;
+EMinExp.        Exp11 ::= "-" Exp12 ;
+EImpliesElse.   Exp12 ::= "if" Exp12 "then" Exp12 "else" Exp13 ;
+EInt.           Exp13 ::= PosInteger ;
+EDouble.        Exp13 ::= PosDouble ;
+EStr.           Exp13 ::= PosString ;
+ESetExp.        Exp13 ::= SetExp ;
+
+Union.          SetExp  ::= SetExp  "++" SetExp1 ;
+UnionCom.       SetExp  ::= SetExp  ","  SetExp1 ;
+Difference.     SetExp1 ::= SetExp1 "--" SetExp2 ;
+Intersection.   SetExp2 ::= SetExp2 "&"  SetExp3 ;
+Domain.         SetExp3 ::= SetExp3 "<:" SetExp4 ;
+Range.          SetExp4 ::= SetExp4 ":>" SetExp5 ;
+Join.           SetExp5 ::= SetExp5 "."  SetExp6 ;
+ClaferId.       SetExp6 ::= Name ;
+
+Decl.           Decl ::= [LocId] ":" SetExp ;
+
+QuantNo.        Quant ::= "no" ;
+QuantLone.      Quant ::= "lone" ;
+QuantOne.       Quant ::= "one" ;
+QuantSome.      Quant ::= "some" ;
+
+EnumIdIdent.    EnumId ::= PosIdent ;
+ModIdIdent.     ModId  ::= PosIdent ;
+LocIdIdent.     LocId  ::= PosIdent ;
+
+Pos . Pos ::= Integer Integer;
+Span . Span ::= Pos Pos;
+
+separator           Declaration ""  ;
+separator  nonempty EnumId      "|" ;
+separator           Element     ""  ;
+separator           Exp         ""  ;
+separator  nonempty LocId       ";" ;
+separator  nonempty ModId       "\\" ;
+
 coercions Exp 13 ;
 coercions SetExp 6 ;
-position token PosInteger digit + ;
-position token PosDouble digit + '.' digit + ('e' '-' ? digit +)? ;
-position token PosString '"' (char - ["\"\\"]| '\\' ["\"\\nt"]) * '"' ;
-position token PosIdent letter (letter | digit | '_' | '\'')*
+
+position token PosInteger (digit+) ;
+position token PosDouble (digit+ '.' digit+ ('e' '-'? digit+)?) ;
+position token PosString '"' ((char - ["\"\\"]) | ('\\' ["\"\\nt"]))* '"' ;
+position token PosIdent (letter (letter|digit|'_'|'\'')*) ;
