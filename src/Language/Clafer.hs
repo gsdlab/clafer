@@ -207,7 +207,7 @@ parse =
     --
     -- The second one is easier so that's we'll do for now. There shouldn't be any errors since
     -- each individual fragment already passed.
-    ast' <- case asts of
+    ast <- case asts of
       -- Special case: if there is only one fragment, then the complete model is contained within it.
       -- Don't need to reparse. This is the common case.
       [oneFrag] -> return oneFrag
@@ -217,8 +217,6 @@ parse =
         completeAst <- (parseFrag $ args env) completeModel
         liftParseErr completeAst
 
-    
-    let ast = mapModule ast'
     let env' = env{ cAst = Just ast, astModuleTrace = traceAstModule ast }
     putEnv env'
   where
@@ -325,8 +323,8 @@ generateHtml env ast' =
     inDecl decl comments = let s = rnge decl in dropWhile (\x -> fst x < s) comments
     afterDecl :: Declaration -> [(Span, String)] -> [(Span, String)]
     afterDecl decl comments = let (Span _ (Pos line' _)) = rnge decl in dropWhile (\(x, _) -> let (Span _ (Pos line'' _)) = x in line'' <= line') comments
-    rnge (EnumDecl _ _) = noSpan
-    rnge (ElementDecl _) = noSpan
+    rnge (EnumDecl _ _ _) = noSpan
+    rnge (ElementDecl _ _) = noSpan
     printComments [] = []
     printComments ((s, comment):cs) = (snd (printComment s [(s, comment)]) ++ "<br>\n"):printComments cs
 
