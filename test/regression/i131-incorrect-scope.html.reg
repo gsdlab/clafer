@@ -1,0 +1,21 @@
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Animal">Animal</span>
+  <div class="indent">
+  <span class="claferDecl" id="c0_leg">leg</span> *</div>
+</div>
+
+
+<div>
+<span class="claferDecl" id="c0_Dog">Dog</span><span class="keyword"> :</span> <a href="#c0_Animal"><span class="reference">Animal</span></a> *
+  <div class="indent">
+  <span class="keyword">[</span> # <a href="#c0_leg"><span class="reference">leg</span></a> = 4 <span class="keyword">]</span></div>
+</div>
+
+
+<div>
+<span class="claferDecl" id="c0_Spider">Spider</span><span class="keyword"> :</span> <a href="#c0_Animal"><span class="reference">Animal</span></a> *
+  <div class="indent">
+  <span class="keyword">[</span> # <a href="#c0_leg"><span class="reference">leg</span></a> = 8 <span class="keyword">]</span></div>
+</div>
+

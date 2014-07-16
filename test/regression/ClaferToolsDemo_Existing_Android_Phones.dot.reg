@@ -1,0 +1,18 @@
+digraph "ClaferToolsDemo_Existing_Android_Phones"
+{
+rankdir=BT;
+ranksep=0.3;
+nodesep=0.1;
+graph [fontname=Sans fontsize=11];
+node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
+edge [fontname=Sans fontsize=11];
+"c0_AndroidPhone1" [label="AndroidPhone1" URL="#c0_AndroidPhone1" tooltip="AndroidPhone1&#10;  Connectivity&#10;    Bluetooth40&#10;    GSM&#10;    WiFi&#10;    USB&#10;  Battery&#10;    LiBattery1450&#10;"];
+"c0_AndroidPhone2" [label="AndroidPhone2" URL="#c0_AndroidPhone2" tooltip="AndroidPhone2&#10;  Connectivity&#10;    Bluetooth21&#10;    GSM&#10;    USB&#10;  Battery&#10;    LiBattery1150&#10;"];
+"c0_Bluetooth" [label="abstract xor Bluetooth" URL="#c0_Bluetooth" tooltip="abstract xor Bluetooth&#10;  Bluetooth20 ?&#10;  Bluetooth21 ?&#10;  Bluetooth40 ?&#10;"];
+"c0_MobilePhone" [label="abstract MobilePhone" URL="#c0_MobilePhone" tooltip="abstract MobilePhone&#10;  Connectivity&#10;    `Bluetooth&#10;    GSM&#10;    LTE ?&#10;      [ LiBattery1400 ]&#10;    WiFi ?&#10;    USB ?&#10;  xor Battery&#10;    LiBattery1150 ?&#10;    LiBattery1400 ?&#10;"];
+"c0_MobilePhone" -> "c0_Bluetooth" [arrowhead=vee arrowtail=diamond dir=both style=solid constraint=true weight=5 minlen=2 arrowsize=0.6 penwidth=0.5 ];
+"c0_LowEndPhones" [label="LowEndPhones : MobilePhone" URL="#c0_LowEndPhones" tooltip="LowEndPhones : MobilePhone&#10;  [ no WiFi ]&#10;"];
+"c0_LowEndPhones" -> "c0_MobilePhone" [arrowhead=onormal constraint=true weight=100];
+"c0_HighEndPhones" [label="HighEndPhones : MobilePhone" URL="#c0_HighEndPhones" tooltip="HighEndPhones : MobilePhone&#10;  [ USB && WiFi ]&#10;  QuadCPU ?&#10;"];
+"c0_HighEndPhones" -> "c0_MobilePhone" [arrowhead=onormal constraint=true weight=100];
+}

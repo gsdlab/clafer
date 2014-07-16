@@ -1,0 +1,43 @@
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Car">Car</span>
+  <div class="indent">
+  <span class="claferDecl" id="c0_ABS">ABS</span> ?</div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_CC">CC</span> ?
+    <div class="indent">
+    <span class="claferDecl" id="c0_ACC">ACC</span> ?
+      <div class="indent">
+      <span class="keyword">[</span> <a href="#c0_FCA"><span class="reference">FCA</span></a> <span class="keyword">]</span></div>
+    </div>
+  </div>
+  <div class="indent">
+  <span class="keyword">xor</span> <span class="claferDecl" id="c0_Transmission">Transmission</span>
+    <div class="indent">
+    <span class="claferDecl" id="c0_Automatic">Automatic</span></div>
+    <div class="indent">
+    <span class="claferDecl" id="c0_Manual">Manual</span></div>
+  </div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_FCA">FCA</span> ?
+    <div class="indent">
+    <span class="keyword">xor</span> <span class="claferDecl" id="c0_Sensor">Sensor</span>
+      <div class="indent">
+      <span class="claferDecl" id="c0_Radar">Radar</span></div>
+      <div class="indent">
+      <span class="claferDecl" id="c0_Lidar">Lidar</span></div>
+    </div>
+    <div class="indent">
+    <span class="keyword">xor</span> <span class="claferDecl" id="c0_Alert">Alert</span> ?
+      <div class="indent">
+      <span class="claferDecl" id="c0_Haptic">Haptic</span></div>
+      <div class="indent">
+      <span class="claferDecl" id="c0_Audible">Audible</span></div>
+    </div>
+  </div>
+</div>
+
+
+<div>
+<span class="claferDecl" id="c0_aCar">aCar</span><span class="keyword"> :</span> <a href="#c0_Car"><span class="reference">Car</span></a></div>
+

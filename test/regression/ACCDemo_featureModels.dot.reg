@@ -1,0 +1,12 @@
+digraph "ACCDemo_featureModels"
+{
+rankdir=BT;
+ranksep=0.3;
+nodesep=0.1;
+graph [fontname=Sans fontsize=11];
+node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
+edge [fontname=Sans fontsize=11];
+"c0_Car" [label="abstract Car" URL="#c0_Car" tooltip="abstract Car&#10;  ABS ?&#10;  CC ?&#10;    ACC ?&#10;      [ FCA ]&#10;  xor Transmission&#10;    Automatic&#10;    Manual&#10;  FCA ?&#10;    xor Sensor&#10;      Radar&#10;      Lidar&#10;    xor Alert ?&#10;      Haptic&#10;      Audible&#10;"];
+"c0_aCar" [label="aCar : Car" URL="#c0_aCar" tooltip="aCar : Car&#10;"];
+"c0_aCar" -> "c0_Car" [arrowhead=onormal constraint=true weight=100];
+}

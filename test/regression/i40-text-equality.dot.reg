@@ -1,0 +1,14 @@
+digraph "i40-text-equality"
+{
+rankdir=BT;
+ranksep=0.3;
+nodesep=0.1;
+graph [fontname=Sans fontsize=11];
+node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
+edge [fontname=Sans fontsize=11];
+"c0_text" [label="text : string = "some text"" URL="#c0_text" tooltip="text : string = "some text"&#10;"];
+"c0_text1" [label="text1 : string = "some text"" URL="#c0_text1" tooltip="text1 : string = "some text"&#10;"];
+"c0_text2" [label="text2 : string = "some text"" URL="#c0_text2" tooltip="text2 : string = "some text"&#10;"];
+"c0_equal1" [label="equal1 ?" URL="#c0_equal1" tooltip="equal1 ?&#10;  [ text = text1 ]&#10;"];
+"c0_equal2" [label="equal2 ?" URL="#c0_equal2" tooltip="equal2 ?&#10;  [ text1 = text2 ]&#10;"];
+}

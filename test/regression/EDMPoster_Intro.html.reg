@@ -1,0 +1,176 @@
+
+<div>
+<span class="claferDecl" id="c0_ExamplePhone1">ExamplePhone1</span>
+  <div class="indent">
+  <span class="claferDecl" id="c0_display">display</span>
+    <div class="indent">
+    <span class="claferDecl" id="c0_LCD">LCD</span></div>
+  </div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_GSM">GSM</span></div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_CPU">CPU</span></div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_keyboard">keyboard</span></div>
+</div>
+
+<!-- # FRAGMENT /-->
+
+<div>
+<span class="claferDecl" id="c0_ExamplePhone2">ExamplePhone2</span>
+  <div class="indent">
+  <span class="claferDecl" id="c1_display">display</span>
+    <div class="indent">
+    <span class="claferDecl" id="c0_OLED">OLED</span></div>
+  </div>
+  <div class="indent">
+  <span class="claferDecl" id="c1_GSM">GSM</span></div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_touchscreen">touchscreen</span></div>
+</div>
+
+<!-- # FRAGMENT /-->
+
+<div>
+<span class="claferDecl" id="c0_ExampleTablet1">ExampleTablet1</span>
+  <div class="indent">
+  <span class="claferDecl" id="c2_display">display</span>
+    <div class="indent">
+    <span class="claferDecl" id="c0_AMOLED">AMOLED</span></div>
+  </div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_HSPA">HSPA</span></div>
+  <div class="indent">
+  <span class="claferDecl" id="c1_CPU">CPU</span> 4</div>
+  <div class="indent">
+  <span class="claferDecl" id="c1_touchscreen">touchscreen</span></div>
+</div>
+
+<!-- # FRAGMENT /-->
+
+<div>
+<span class="claferDecl" id="c0_ExamplePhone3">ExamplePhone3</span>
+  <div class="indent">
+  <span class="claferDecl" id="c3_display">display</span>
+    <div class="indent">
+    <span class="claferDecl" id="c1_LCD">LCD</span></div>
+  </div>
+  <div class="indent">
+  <span class="claferDecl" id="c2_GSM">GSM</span></div>
+  <div class="indent">
+  <span class="claferDecl" id="c2_CPU">CPU</span> 4</div>
+  <div class="indent">
+  <span class="claferDecl" id="c1_keyboard">keyboard</span></div>
+</div>
+
+<!-- # FRAGMENT /-->
+
+<div>
+<span class="claferDecl" id="c0_ExampleTablet2">ExampleTablet2</span>
+  <div class="indent">
+  <span class="claferDecl" id="c4_display">display</span>
+    <div class="indent">
+    <span class="claferDecl" id="c1_AMOLED">AMOLED</span></div>
+  </div>
+  <div class="indent">
+  <span class="claferDecl" id="c1_HSPA">HSPA</span></div>
+  <div class="indent">
+  <span class="claferDecl" id="c3_CPU">CPU</span> 4</div>
+  <div class="indent">
+  <span class="claferDecl" id="c2_keyboard">keyboard</span></div>
+</div>
+
+<!-- # FRAGMENT /-->
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_AndroidDevice1">AndroidDevice1</span>
+  <div class="indent">
+  <span class="keyword">xor</span> <span class="claferDecl" id="c5_display">display</span>
+    <div class="indent">
+    <span class="claferDecl" id="c2_LCD">LCD</span></div>
+    <div class="indent">
+    <span class="claferDecl" id="c1_OLED">OLED</span></div>
+    <div class="indent">
+    <span class="claferDecl" id="c2_AMOLED">AMOLED</span>
+      <div class="indent">
+      <span class="keyword">[</span> <span class="keyword">no</span> <a href="#c3_keyboard"><span class="reference">keyboard</span></a> <span class="keyword">]</span></div>
+    </div>
+  </div>
+  <div class="indent">
+  <span class="claferDecl" id="c3_GSM">GSM</span></div>
+  <div class="indent">
+  <span class="claferDecl" id="c2_HSPA">HSPA</span> ?</div>
+  <div class="indent">
+  <span class="claferDecl" id="c4_CPU">CPU</span> 1..4 </div>
+  <div class="indent">
+  <span class="keyword">xor</span> <span class="claferDecl" id="c0_input">input</span>
+    <div class="indent">
+    <span class="claferDecl" id="c3_keyboard">keyboard</span></div>
+    <div class="indent">
+    <span class="claferDecl" id="c2_touchscreen">touchscreen</span></div>
+  </div>
+</div>
+
+<!-- # FRAGMENT /-->
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_AndroidPhone">AndroidPhone</span><span class="keyword"> :</span> <a href="#c0_AndroidDevice"><span class="reference">AndroidDevice</span></a>
+  <div class="indent">
+  <span class="keyword">[</span> <a href="#c4_GSM"><span class="reference">GSM</span></a> <span class="keyword">]</span></div>
+  <div class="indent">
+  <span class="keyword">[</span> # <a href="#c5_CPU"><span class="reference">CPU</span></a> &lt; 4 <span class="keyword">]</span></div>
+</div>
+
+<!-- # FRAGMENT /-->
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_AndroidDevice">AndroidDevice</span>
+  <div class="indent">
+  <span class="keyword">xor</span> <span class="claferDecl" id="c6_display">display</span>
+    <div class="indent">
+    <span class="claferDecl" id="c3_LCD">LCD</span></div>
+    <div class="indent">
+    <span class="claferDecl" id="c2_OLED">OLED</span></div>
+    <div class="indent">
+    <span class="claferDecl" id="c3_AMOLED">AMOLED</span>
+      <div class="indent">
+      <span class="keyword">[</span> <span class="keyword">no</span> <a href="#c4_keyboard"><span class="reference">keyboard</span></a> <span class="keyword">]</span></div>
+    </div>
+  </div>
+  <div class="indent">
+  <span class="claferDecl" id="c4_GSM">GSM</span> ?</div>
+  <div class="indent">
+  <span class="claferDecl" id="c3_HSPA">HSPA</span> ?</div>
+  <div class="indent">
+  <span class="claferDecl" id="c5_CPU">CPU</span> 1..4 </div>
+  <div class="indent">
+  <span class="keyword">xor</span> <span class="claferDecl" id="c1_input">input</span>
+    <div class="indent">
+    <span class="claferDecl" id="c4_keyboard">keyboard</span></div>
+    <div class="indent">
+    <span class="claferDecl" id="c3_touchscreen">touchscreen</span></div>
+  </div>
+</div>
+
+<!-- # FRAGMENT /-->
+
+<div>
+<span class="claferDecl" id="c0_AndroidPhone4">AndroidPhone4</span><span class="keyword"> :</span> <a href="#c0_AndroidPhone"><span class="reference">AndroidPhone</span></a>
+  <div class="indent">
+  <span class="claferDecl" id="c7_display">display</span>
+    <div class="indent">
+    <span class="claferDecl" id="c4_AMOLED">AMOLED</span></div>
+  </div>
+  <div class="indent">
+  <span class="claferDecl" id="c5_GSM">GSM</span></div>
+  <div class="indent">
+  <span class="claferDecl" id="c4_HSPA">HSPA</span></div>
+  <div class="indent">
+  <span class="claferDecl" id="c6_CPU">CPU</span> 2</div>
+  <div class="indent">
+  <span class="claferDecl" id="c2_input">input</span>
+    <div class="indent">
+    <span class="claferDecl" id="c4_touchscreen">touchscreen</span></div>
+  </div>
+</div>
+

@@ -1,0 +1,18 @@
+digraph "constraints"
+{
+rankdir=BT;
+ranksep=0.3;
+nodesep=0.1;
+graph [fontname=Sans fontsize=11];
+node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
+edge [fontname=Sans fontsize=11];
+"c0_Phone" [label="abstract Phone" URL="#c0_Phone" tooltip="abstract Phone&#10;  networking&#10;    wifi ?&#10;      typeB ?&#10;      typeG ?&#10;      typeN ?&#10;    bluetooth ?&#10;    mobile ?&#10;    nfc ?&#10;  xor location ?&#10;    gps&#10;    agps&#10;  gpu *&#10;"];
+"c0_PhoneWithGps" [label="PhoneWithGps : Phone" URL="#c0_PhoneWithGps" tooltip="PhoneWithGps : Phone&#10;  [ gps ]&#10;"];
+"c0_PhoneWithGps" -> "c0_Phone" [arrowhead=onormal constraint=true weight=100];
+"c0_PhoneWithWifi" [label="PhoneWithWifi : Phone" URL="#c0_PhoneWithWifi" tooltip="PhoneWithWifi : Phone&#10;  [ networking.wifi.typeN ]&#10;"];
+"c0_PhoneWithWifi" -> "c0_Phone" [arrowhead=onormal constraint=true weight=100];
+"c0_PhonewithWifiAndGpsNoBluetoothOrNfc" [label="PhonewithWifiAndGpsNoBluetoothOrNfc : Phone" URL="#c0_PhonewithWifiAndGpsNoBluetoothOrNfc" tooltip="PhonewithWifiAndGpsNoBluetoothOrNfc : Phone&#10;  [ wifi && gps &&  ! bluetooth || nfc ]&#10;"];
+"c0_PhonewithWifiAndGpsNoBluetoothOrNfc" -> "c0_Phone" [arrowhead=onormal constraint=true weight=100];
+"c0_PhoneWithGpu" [label="PhoneWithGpu : Phone" URL="#c0_PhoneWithGpu" tooltip="PhoneWithGpu : Phone&#10;  [ some gpu ]&#10;"];
+"c0_PhoneWithGpu" -> "c0_Phone" [arrowhead=onormal constraint=true weight=100];
+}

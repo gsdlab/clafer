@@ -1,0 +1,201 @@
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_degree">degree</span><span class="keyword"> :</span> <a href="#integer"><span class="reference">integer</span></a>
+  <div class="indent">
+  <span class="keyword">[</span> <a href="#this"><span class="reference">this</span></a> > 0 && <a href="#this"><span class="reference">this</span></a> &lt;= 360 <span class="keyword">]</span></div>
+</div>
+
+<!-- # FRAGMENT /-->
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Vehicle">Vehicle</span>
+  <div class="indent">
+  `<a href="#c1_DriveConfiguration"><span class="reference">DriveConfiguration</span></a></div>
+  <div class="indent">
+  `<a href="#c1_ElectronicStabilityControlSystem"><span class="reference">ElectronicStabilityControlSystem</span></a></div>
+  <div class="indent">
+  `<a href="#c1_AntiLockBreakSystem"><span class="reference">AntiLockBreakSystem</span></a></div>
+  <div class="indent">
+  `<a href="#c1_TractionControlSystem"><span class="reference">TractionControlSystem</span></a></div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_AckermanSteerAngle">AckermanSteerAngle</span><span class="keyword"> -></span> <a href="#c0_degree"><span class="reference">degree</span></a></div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_speed">speed</span><span class="keyword"> :</span> <a href="#integer"><span class="reference">integer</span></a></div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_lateralAcceleration">lateralAcceleration</span><span class="keyword"> -></span> <a href="#integer"><span class="reference">integer</span></a></div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_sideSlipAngle">sideSlipAngle</span><span class="keyword"> -></span> <a href="#c0_degree"><span class="reference">degree</span></a></div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_yawRate">yawRate</span><span class="keyword"> -></span> <a href="#c0_degree"><span class="reference">degree</span></a></div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_normalYawRate">normalYawRate</span><span class="keyword"> -></span> <a href="#c0_degree"><span class="reference">degree</span></a>
+    <div class="indent">
+    <span class="claferDecl" id="c0_givenAckermanSteerAngle">givenAckermanSteerAngle</span></div>
+  </div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_hasOversteer">hasOversteer</span> ?</div>
+  <div class="indent">
+  <span class="keyword">[</span> <a href="#c0_yawRate"><span class="reference">yawRate</span></a> > <a href="#c0_normalYawRate"><span class="reference">normalYawRate</span></a> &lt;=&gt; <a href="#c0_hasOversteer"><span class="reference">hasOversteer</span></a> <span class="keyword">]</span></div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_hasUndersteer">hasUndersteer</span> ?</div>
+  <div class="indent">
+  <span class="keyword">[</span> <a href="#c0_yawRate"><span class="reference">yawRate</span></a> &lt; <a href="#c0_normalYawRate"><span class="reference">normalYawRate</span></a> &lt;=&gt; <a href="#c0_hasUndersteer"><span class="reference">hasUndersteer</span></a> <span class="keyword">]</span></div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_GVWR">GVWR</span><span class="keyword"> :</span> <a href="#integer"><span class="reference">integer</span></a></div>
+</div>
+
+<!-- # FRAGMENT /-->
+
+<div>
+<span class="keyword">abstract</span> <span class="keyword">xor</span> <span class="claferDecl" id="c1_DriveConfiguration">DriveConfiguration</span>
+  <div class="indent">
+  <span class="claferDecl" id="c0_twoWheelDrive">twoWheelDrive</span></div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_frontWheelDrive">frontWheelDrive</span></div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_rearWheelDrive">rearWheelDrive</span></div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_allWheelDrive">allWheelDrive</span></div>
+  <div class="indent">
+  <span class="keyword">xor</span> <span class="claferDecl" id="c0_fourWheelDrive">fourWheelDrive</span>
+    <div class="indent">
+    <span class="claferDecl" id="c0_highGearWithLockedDifferential">highGearWithLockedDifferential</span></div>
+    <div class="indent">
+    <span class="claferDecl" id="c0_lowGear">lowGear</span></div>
+  </div>
+</div>
+
+<!-- # FRAGMENT /-->
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c1_ElectronicStabilityControlSystem">ElectronicStabilityControlSystem</span>
+  <div class="indent">
+  <span class="claferDecl" id="c0_vehicle">vehicle</span><span class="keyword"> -></span> <a href="#c0_Vehicle"><span class="reference">Vehicle</span></a></div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_augmentsVehiclesDirectionalStability">augmentsVehiclesDirectionalStability</span>
+    <div class="indent">
+    <span class="claferDecl" id="c0_adjustsBrakeTorquesToInduceCorrectingYawMoment">adjustsBrakeTorquesToInduceCorrectingYawMoment</span>
+      <div class="indent">
+      <span class="claferDecl" id="c0_toEachWheelIndividually">toEachWheelIndividually</span></div>
+    </div>
+  </div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_limits">limits</span>
+    <div class="indent">
+    <span class="claferDecl" id="c0_understeer">understeer</span></div>
+    <div class="indent">
+    <span class="claferDecl" id="c0_oversteer">oversteer</span></div>
+  </div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_estimates">estimates</span>
+    <div class="indent">
+    <span class="claferDecl" id="c0_YawRate">YawRate</span></div>
+    <div class="indent">
+    <span class="claferDecl" id="c0_sideSlip">sideSlip</span>
+      <div class="indent">
+      <span class="claferDecl" id="c0_derivativeWithRespectToTime">derivativeWithRespectToTime</span></div>
+    </div>
+  </div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_monitors">monitors</span>
+    <div class="indent">
+    <span class="claferDecl" id="c0_driverSteeringInputs">driverSteeringInputs</span></div>
+    <div class="indent">
+    <span class="claferDecl" id="c0_modifiesEngineTorque">modifiesEngineTorque</span></div>
+  </div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_isOperational">isOperational</span> ?
+    <div class="indent">
+    <span class="keyword">[</span> <a href="#c0_vehicle"><span class="reference">vehicle</span></a>.<a href="#c0_speed"><span class="reference">speed</span></a> > 20 <span class="keyword">]</span></div>
+    <div class="indent">
+    <span class="claferDecl" id="c0_duringAllPhasesOfDriving">duringAllPhasesOfDriving</span>
+      <div class="indent">
+      <span class="claferDecl" id="c0_acceleration">acceleration</span></div>
+      <div class="indent">
+      <span class="claferDecl" id="c0_coasting">coasting</span></div>
+      <div class="indent">
+      <span class="claferDecl" id="c0_deceleration">deceleration</span></div>
+      <div class="indent">
+      <span class="claferDecl" id="c0_breaking">breaking</span></div>
+    </div>
+    <div class="indent">
+    <span class="claferDecl" id="c0_withAntiLockBrakeSystem">withAntiLockBrakeSystem</span></div>
+    <div class="indent">
+    <span class="claferDecl" id="c0_withTractionControlSystem">withTractionControlSystem</span></div>
+  </div>
+  <div class="indent">
+  <span class="keyword">or</span> <span class="claferDecl" id="c0_isNotOperational">isNotOperational</span>
+    <div class="indent">
+    <span class="claferDecl" id="c0_whenTurnedOffByTheDriver">whenTurnedOffByTheDriver</span> ?</div>
+    <div class="indent">
+    <span class="claferDecl" id="c0_whenDrivenInReverse">whenDrivenInReverse</span> ?</div>
+    <div class="indent">
+    <span class="claferDecl" id="c0_duringSystemInitialization">duringSystemInitialization</span> ?</div>
+  </div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_Mode">Mode</span>
+    <div class="indent">
+    <span class="claferDecl" id="c0_driverSelected">driverSelected</span> ?</div>
+    <div class="indent">
+    <span class="keyword">xor</span> <span class="claferDecl" id="c0_type">type</span>
+      <div class="indent">
+      <span class="claferDecl" id="c0_standard">standard</span></div>
+      <div class="indent">
+      <span class="claferDecl" id="c0_performance">performance</span></div>
+      <div class="indent">
+      <span class="claferDecl" id="c0_snowOrSlipperyRoad">snowOrSlipperyRoad</span></div>
+      <div class="indent">
+      <span class="claferDecl" id="c0_Off">Off</span></div>
+    </div>
+  </div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_entersStandardModeAfterIgnition">entersStandardModeAfterIgnition</span></div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_satisfies">satisfies</span>
+    <div class="indent">
+    <span class="claferDecl" id="c0_stabilityCriteria">stabilityCriteria</span></div>
+    <div class="indent">
+    <span class="claferDecl" id="c0_responsivenessCriterion">responsivenessCriterion</span></div>
+  </div>
+  <div class="indent">
+  <span class="keyword">or</span> <span class="claferDecl" id="c0_MalfunctionTelltale">MalfunctionTelltale</span> ?
+    <div class="indent">
+    <span class="claferDecl" id="c0_malfunctionDetected">malfunctionDetected</span>
+      <div class="indent">
+      <span class="claferDecl" id="c0_mustRemainContinuouslyIlluminatedForAsLongAsMalfunctionExists">mustRemainContinuouslyIlluminatedForAsLongAsMalfunctionExists</span></div>
+    </div>
+    <div class="indent">
+    <span class="claferDecl" id="c0_ignitionLockInOnPosition">ignitionLockInOnPosition</span></div>
+    <div class="indent">
+    <span class="claferDecl" id="c0_mustExtinguishAtTheNextIgnitionCycleAfterTheMalfunctionHasBeenCorrected">mustExtinguishAtTheNextIgnitionCycleAfterTheMalfunctionHasBeenCorrected</span></div>
+    <div class="indent">
+    <span class="claferDecl" id="c0_flashingWhenInOperation">flashingWhenInOperation</span> ?</div>
+    <div class="indent">
+    <span class="claferDecl" id="c0_mustIlluminateWhenIgnitionControlInCheckPosition">mustIlluminateWhenIgnitionControlInCheckPosition</span></div>
+  </div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_SystemControls">SystemControls</span>
+    <div class="indent">
+    <span class="claferDecl" id="c1_Off">Off</span></div>
+    <div class="indent">
+    <span class="keyword">xor</span> <span class="claferDecl" id="c0_ignitionControlPosition">ignitionControlPosition</span>
+      <div class="indent">
+      <span class="claferDecl" id="c2_Off">Off</span></div>
+      <div class="indent">
+      <span class="claferDecl" id="c0_Check">Check</span></div>
+      <div class="indent">
+      <span class="claferDecl" id="c0_On">On</span></div>
+      <div class="indent">
+      <span class="claferDecl" id="c0_Start">Start</span></div>
+    </div>
+  </div>
+</div>
+
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c1_AntiLockBreakSystem">AntiLockBreakSystem</span></div>
+
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c1_TractionControlSystem">TractionControlSystem</span></div>
+

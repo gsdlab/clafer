@@ -1,0 +1,24 @@
+digraph "ESC_FMCSA571.126-model"
+{
+rankdir=BT;
+ranksep=0.3;
+nodesep=0.1;
+graph [fontname=Sans fontsize=11];
+node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
+edge [fontname=Sans fontsize=11];
+"c0_degree" [label="abstract degree : integer" URL="#c0_degree" tooltip="abstract degree : integer&#10;  [ this > 0 && this <= 360 ]&#10;"];
+"c0_Vehicle" [label="abstract Vehicle" URL="#c0_Vehicle" tooltip="abstract Vehicle&#10;  `DriveConfiguration&#10;  `ElectronicStabilityControlSystem&#10;  `AntiLockBreakSystem&#10;  `TractionControlSystem&#10;  AckermanSteerAngle -> degree&#10;  speed : integer&#10;  lateralAcceleration -> integer&#10;  sideSlipAngle -> degree&#10;  yawRate -> degree&#10;  normalYawRate -> degree&#10;    givenAckermanSteerAngle&#10;  hasOversteer ?&#10;  [ yawRate > normalYawRate <=> hasOversteer ]&#10;  hasUndersteer ?&#10;  [ yawRate < normalYawRate <=> hasUndersteer ]&#10;  GVWR : integer&#10;"];
+"c0_Vehicle" -> "c1_DriveConfiguration" [arrowhead=vee arrowtail=diamond dir=both style=solid constraint=true weight=5 minlen=2 arrowsize=0.6 penwidth=0.5 ];
+"c0_Vehicle" -> "c1_ElectronicStabilityControlSystem" [arrowhead=vee arrowtail=diamond dir=both style=solid constraint=true weight=5 minlen=2 arrowsize=0.6 penwidth=0.5 ];
+"c0_Vehicle" -> "c1_AntiLockBreakSystem" [arrowhead=vee arrowtail=diamond dir=both style=solid constraint=true weight=5 minlen=2 arrowsize=0.6 penwidth=0.5 ];
+"c0_Vehicle" -> "c1_TractionControlSystem" [arrowhead=vee arrowtail=diamond dir=both style=solid constraint=true weight=5 minlen=2 arrowsize=0.6 penwidth=0.5 ];
+"c0_Vehicle" -> "c0_degree" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=AckermanSteerAngle];
+"c0_Vehicle" -> "c0_degree" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=sideSlipAngle];
+"c0_Vehicle" -> "c0_degree" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=yawRate];
+"c0_Vehicle" -> "c0_degree" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=normalYawRate];
+"c1_DriveConfiguration" [label="abstract xor DriveConfiguration" URL="#c1_DriveConfiguration" tooltip="abstract xor DriveConfiguration&#10;  twoWheelDrive&#10;  frontWheelDrive&#10;  rearWheelDrive&#10;  allWheelDrive&#10;  xor fourWheelDrive&#10;    highGearWithLockedDifferential&#10;    lowGear&#10;"];
+"c1_ElectronicStabilityControlSystem" [label="abstract ElectronicStabilityControlSystem" URL="#c1_ElectronicStabilityControlSystem" tooltip="abstract ElectronicStabilityControlSystem&#10;  vehicle -> Vehicle&#10;  augmentsVehiclesDirectionalStability&#10;    adjustsBrakeTorquesToInduceCorrectingYawMoment&#10;      toEachWheelIndividually&#10;  limits&#10;    understeer&#10;    oversteer&#10;  estimates&#10;    YawRate&#10;    sideSlip&#10;      derivativeWithRespectToTime&#10;  monitors&#10;    driverSteeringInputs&#10;    modifiesEngineTorque&#10;  isOperational ?&#10;    [ vehicle.speed > 20 ]&#10;    duringAllPhasesOfDriving&#10;      acceleration&#10;      coasting&#10;      deceleration&#10;      breaking&#10;    withAntiLockBrakeSystem&#10;    withTractionControlSystem&#10;  or isNotOperational&#10;    whenTurnedOffByTheDriver ?&#10;    whenDrivenInReverse ?&#10;    duringSystemInitialization ?&#10;  Mode&#10;    driverSelected ?&#10;    xor type&#10;      standard&#10;      performance&#10;      snowOrSlipperyRoad&#10;      Off&#10;  entersStandardModeAfterIgnition&#10;  satisfies&#10;    stabilityCriteria&#10;    responsivenessCriterion&#10;  or MalfunctionTelltale ?&#10;    malfunctionDetected&#10;      mustRemainContinuouslyIlluminatedForAsLongAsMalfunctionExists&#10;    ignitionLockInOnPosition&#10;    mustExtinguishAtTheNextIgnitionCycleAfterTheMalfunctionHasBeenCorrected&#10;    flashingWhenInOperation ?&#10;    mustIlluminateWhenIgnitionControlInCheckPosition&#10;  SystemControls&#10;    Off&#10;    xor ignitionControlPosition&#10;      Off&#10;      Check&#10;      On&#10;      Start&#10;"];
+"c1_ElectronicStabilityControlSystem" -> "c0_Vehicle" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=vehicle];
+"c1_AntiLockBreakSystem" [label="abstract AntiLockBreakSystem" URL="#c1_AntiLockBreakSystem" tooltip="abstract AntiLockBreakSystem&#10;"];
+"c1_TractionControlSystem" [label="abstract TractionControlSystem" URL="#c1_TractionControlSystem" tooltip="abstract TractionControlSystem&#10;"];
+}

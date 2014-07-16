@@ -1,0 +1,16 @@
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_a">a</span> 0</div>
+
+
+<div>
+<span class="claferDecl" id="c0_b">b</span></div>
+
+
+<div>
+<span class="claferDecl" id="c0_c">c</span> ?</div>
+
+
+<div>
+<span class="keyword">[</span> <span class="keyword">some</span> <a href="#c0_a"><span class="reference">a</span></a> <span class="keyword">]</span></div>
+

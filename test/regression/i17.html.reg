@@ -1,0 +1,12 @@
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_A">A</span>
+  <div class="indent">
+  <span class="claferDecl" id="c0_b">b</span> *
+    <div class="indent">
+    <span class="claferDecl" id="c0_c">c</span> ?</div>
+  </div>
+  <div class="indent">
+  <span class="keyword">[</span> <span class="keyword">some</span> b1<span class="keyword"> : </span><a href="#Lookup failed"><span class="reference">b</span></a> | <a href="#b1"><span class="reference">b1</span></a>.<a href="#c0_c"><span class="reference">c</span></a> <span class="keyword">]</span></div>
+</div>
+

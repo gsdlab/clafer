@@ -1,0 +1,30 @@
+
+<div>
+<span class="claferDecl" id="c0_Clafer1">Clafer1</span>
+  <div class="indent">
+  <span class="keyword">xor</span> <span class="claferDecl" id="c0_type">type</span>
+    <div class="indent">
+    <span class="claferDecl" id="c0_Type1">Type1</span></div>
+    <div class="indent">
+    <span class="claferDecl" id="c0_Type2">Type2</span></div>
+  </div>
+</div>
+
+
+<div>
+<span class="claferDecl" id="c0_Clafer2">Clafer2</span>
+  <div class="indent">
+  <span class="claferDecl" id="c0_clafer1">clafer1</span><span class="keyword"> -></span> <a href="#c0_Clafer1"><span class="reference">Clafer1</span></a></div>
+  <div class="indent">
+  <span class="keyword">xor</span> <span class="claferDecl" id="c1_type">type</span>
+    <div class="indent">
+    <span class="claferDecl" id="c1_Type1">Type1</span></div>
+    <div class="indent">
+    <span class="claferDecl" id="c1_Type2">Type2</span></div>
+  </div>
+  <div class="indent">
+  <span class="keyword">[</span> <a href="#c1_type"><span class="reference">type</span></a>.<a href="#c1_Type1"><span class="reference">Type1</span></a> => <a href="#c0_clafer1"><span class="reference">clafer1</span></a>.<a href="#c0_type"><span class="reference">type</span></a>.<a href="#c0_Type2"><span class="reference">Type2</span></a> <span class="keyword">]</span></div>
+  <div class="indent">
+  <span class="keyword">[</span> <a href="#this"><span class="reference">this</span></a>.<a href="#c1_type"><span class="reference">type</span></a>.<a href="#c1_Type1"><span class="reference">Type1</span></a> => <a href="#c0_clafer1"><span class="reference">clafer1</span></a>.<a href="#c0_type"><span class="reference">type</span></a>.<a href="#c0_Type2"><span class="reference">Type2</span></a> <span class="keyword">]</span></div>
+</div>
+

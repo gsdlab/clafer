@@ -1,0 +1,13 @@
+
+<div>
+<span class="claferDecl" id="c0_Person">Person</span>
+  <div class="indent">
+  <span class="claferDecl" id="c0_maritalStatus">maritalStatus</span>
+    <div class="indent">
+    <span class="claferDecl" id="c0_married">married</span>
+      <div class="indent">
+      <span class="keyword">[</span> <a href="#parent"><span class="reference">parent</span></a>.<a href="#parent"><span class="reference">parent</span></a> <span class="keyword">]</span></div>
+    </div>
+  </div>
+</div>
+

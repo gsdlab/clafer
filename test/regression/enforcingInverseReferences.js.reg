@@ -1,0 +1,15 @@
+scope({c0_A:6, c0_Author:6, c0_B:5, c0_Book:5, c0_author:30, c0_book:30});
+defaultScope(1);
+intRange(-8, 7);
+stringLength(16);
+
+c0_Book = Abstract("c0_Book");
+c0_Author = Abstract("c0_Author");
+c0_author = c0_Book.addChild("c0_author").withCard(1);
+c0_book = c0_Author.addChild("c0_book").withCard(1);
+c0_B = Clafer("c0_B").withCard(5, 5).extending(c0_Book);
+c0_A = Clafer("c0_A").withCard(6, 6).extending(c0_Author);
+c0_author.refToUnique(c0_Author);
+c0_book.refToUnique(c0_Book);
+c0_author.addConstraint($in(joinParent($this()), joinRef(join(joinRef($this()), c0_book))));
+c0_book.addConstraint($in(joinParent($this()), joinRef(join(joinRef($this()), c0_author))));

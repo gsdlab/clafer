@@ -1,0 +1,20 @@
+digraph "subtyping-primitive-types"
+{
+rankdir=BT;
+ranksep=0.3;
+nodesep=0.1;
+graph [fontname=Sans fontsize=11];
+node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
+edge [fontname=Sans fontsize=11];
+"c0_percent" [label="abstract percent : integer" URL="#c0_percent" tooltip="abstract percent : integer&#10;  [ this >= 0 && this <= 5 ]&#10;"];
+"c0_twoPercent" [label="twoPercent : percent = 2" URL="#c0_twoPercent" tooltip="twoPercent : percent = 2&#10;"];
+"c0_twoPercent" -> "c0_percent" [arrowhead=onormal constraint=true weight=100];
+"c0_threePercent" [label="threePercent : percent = twoPercent + 1" URL="#c0_threePercent" tooltip="threePercent : percent = twoPercent + 1&#10;"];
+"c0_threePercent" -> "c0_percent" [arrowhead=onormal constraint=true weight=100];
+"c0_date" [label="abstract date : string" URL="#c0_date" tooltip="abstract date : string&#10;"];
+"c0_today" [label="today : date = "Mar 20, 2012"" URL="#c0_today" tooltip="today : date = "Mar 20, 2012"&#10;"];
+"c0_today" -> "c0_date" [arrowhead=onormal constraint=true weight=100];
+"c0_time" [label="abstract time : integer = minute + hour" URL="#c0_time" tooltip="abstract time : integer = minute + hour&#10;  minute : integer&#10;    [ this >= 0 && this <= 5 ]&#10;  hour : integer&#10;    [ this >= 0 && this <= 5 ]&#10;"];
+"c0_now" [label="now : time" URL="#c0_now" tooltip="now : time&#10;  [ minute = 3 ]&#10;  [ hour = 1 ]&#10;"];
+"c0_now" -> "c0_time" [arrowhead=onormal constraint=true weight=100];
+}

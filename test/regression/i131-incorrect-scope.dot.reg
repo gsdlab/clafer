@@ -1,0 +1,14 @@
+digraph "i131-incorrect-scope"
+{
+rankdir=BT;
+ranksep=0.3;
+nodesep=0.1;
+graph [fontname=Sans fontsize=11];
+node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
+edge [fontname=Sans fontsize=11];
+"c0_Animal" [label="abstract Animal" URL="#c0_Animal" tooltip="abstract Animal&#10;  leg *&#10;"];
+"c0_Dog" [label="Dog : Animal *" URL="#c0_Dog" tooltip="Dog : Animal *&#10;  [ # leg = 4 ]&#10;"];
+"c0_Dog" -> "c0_Animal" [arrowhead=onormal constraint=true weight=100];
+"c0_Spider" [label="Spider : Animal *" URL="#c0_Spider" tooltip="Spider : Animal *&#10;  [ # leg = 8 ]&#10;"];
+"c0_Spider" -> "c0_Animal" [arrowhead=onormal constraint=true weight=100];
+}

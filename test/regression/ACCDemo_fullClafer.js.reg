@@ -1,0 +1,27 @@
+scope({c0_backlight:3, c0_switches:3});
+defaultScope(1);
+intRange(-8, 7);
+stringLength(16);
+
+c0_car = Abstract("c0_car");
+c1_fca = Abstract("c1_fca");
+c1_cc = Abstract("c1_cc");
+c0_camaro = Abstract("c0_camaro").extending(c0_car);
+c0_transmission = c0_car.addChild("c0_transmission").withCard(1, 1).withGroupCard(1, 1);
+c0_automatic = c0_transmission.addChild("c0_automatic").withCard(0, 1);
+c0_manual = c0_transmission.addChild("c0_manual").withCard(0, 1);
+c0_fca = c0_car.addChild("c0_fca").withCard(0, 1).extending(c1_fca);
+c0_cc = c0_car.addChild("c0_cc").withCard(1, 1).extending(c1_cc);
+c0_sensor = c1_fca.addChild("c0_sensor").withCard(1, 1).withGroupCard(1, 1);
+c0_radar = c0_sensor.addChild("c0_radar").withCard(0, 1);
+c0_lidar = c0_sensor.addChild("c0_lidar").withCard(0, 1);
+c0_switches = c1_cc.addChild("c0_switches").withCard(2, 3);
+c0_backlight = c0_switches.addChild("c0_backlight").withCard(0, 1);
+c0_acc = c1_cc.addChild("c0_acc").withCard(0, 1);
+c0_transformer = c0_camaro.addChild("c0_transformer").withCard(0, 1);
+c0_bumbleBee = Clafer("c0_bumbleBee").withCard(1, 1).extending(c0_camaro);
+c0_car.addConstraint(implies(some(join(join($this(), c0_cc), c0_acc)), some(join($this(), c0_fca))));
+c0_camaro.addConstraint(all([decl([s = local("s")], join(join($this(), c0_cc), c0_switches))], some(join(s, c0_backlight))));
+c0_transformer.addConstraint(equal(card(join(join(joinParent($this()), c0_cc), c0_switches)), constant(3)));
+c0_bumbleBee.addConstraint(some(join($this(), c0_transformer)));
+c0_bumbleBee.addConstraint(some(join(join($this(), c0_transmission), c0_manual)));

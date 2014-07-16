@@ -1,0 +1,15 @@
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Path">Path</span>
+  <div class="indent">
+  <span class="claferDecl" id="c0_p">p</span><span class="keyword"> :</span> <a href="#c0_Path"><span class="reference">Path</span></a> ?</div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_isDir">isDir</span> ?</div>
+  <div class="indent">
+  <span class="keyword">[</span> <a href="#this"><span class="reference">this</span></a>.<a href="#c0_isDir"><span class="reference">isDir</span></a> => <a href="#this"><span class="reference">this</span></a>.<a href="#c0_p"><span class="reference">p</span></a> <span class="keyword">]</span></div>
+</div>
+
+
+<div>
+<span class="claferDecl" id="c0_pth">pth</span><span class="keyword"> :</span> <a href="#c0_Path"><span class="reference">Path</span></a></div>
+

@@ -1,0 +1,48 @@
+digraph "oclBench_b3"
+{
+rankdir=BT;
+ranksep=0.3;
+nodesep=0.1;
+graph [fontname=Sans fontsize=11];
+node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
+edge [fontname=Sans fontsize=11];
+"c0_Person" [label="abstract Person" URL="#c0_Person" tooltip="abstract Person&#10;"];
+"c0_ada" [label="ada : Person" URL="#c0_ada" tooltip="ada : Person&#10;"];
+"c0_ada" -> "c0_Person" [arrowhead=onormal constraint=true weight=100];
+"c0_cyd" [label="cyd : Person" URL="#c0_cyd" tooltip="cyd : Person&#10;"];
+"c0_cyd" -> "c0_Person" [arrowhead=onormal constraint=true weight=100];
+"c0_eve" [label="eve : Person" URL="#c0_eve" tooltip="eve : Person&#10;"];
+"c0_eve" -> "c0_Person" [arrowhead=onormal constraint=true weight=100];
+"c0_bob" [label="bob : Person" URL="#c0_bob" tooltip="bob : Person&#10;"];
+"c0_bob" -> "c0_Person" [arrowhead=onormal constraint=true weight=100];
+"c0_dan" [label="dan : Person" URL="#c0_dan" tooltip="dan : Person&#10;"];
+"c0_dan" -> "c0_Person" [arrowhead=onormal constraint=true weight=100];
+"c0_Exam" [label="abstract Exam" URL="#c0_Exam" tooltip="abstract Exam&#10;  date : string&#10;    [ this != "" ]&#10;  recorder -> Person&#10;  examiner -> Person&#10;  examinee -> Person&#10;"];
+"c0_Exam" -> "c0_Person" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=recorder];
+"c0_Exam" -> "c0_Person" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=examiner];
+"c0_Exam" -> "c0_Person" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=examinee];
+"c0_ada_bob_cyd" [label="ada_bob_cyd : Exam" URL="#c0_ada_bob_cyd" tooltip="ada_bob_cyd : Exam&#10;  [ date = "20001023" ][ recorder = cyd ][ examiner = bob ][ examinee = ada ]&#10;"];
+"c0_ada_bob_cyd" -> "c0_Exam" [arrowhead=onormal constraint=true weight=100];
+"c0_dan_bob_ada" [label="dan_bob_ada : Exam" URL="#c0_dan_bob_ada" tooltip="dan_bob_ada : Exam&#10;  [ date = "20040817" ][ recorder = ada ][ examiner = bob ][ examinee = dan ]&#10;"];
+"c0_dan_bob_ada" -> "c0_Exam" [arrowhead=onormal constraint=true weight=100];
+"c0_eve_ada_dan" [label="eve_ada_dan : Exam" URL="#c0_eve_ada_dan" tooltip="eve_ada_dan : Exam&#10;  [ date = "20080331" ][ recorder = dan ][ examiner = ada ][ examinee = eve ]&#10;"];
+"c0_eve_ada_dan" -> "c0_Exam" [arrowhead=onormal constraint=true weight=100];
+"c0_examineeAda" [label="examineeAda -> Exam *" URL="#c0_examineeAda" tooltip="examineeAda -> Exam *&#10;  [ this.examinee = ada ]&#10;"];
+"c0_examineeAda" -> "c0_Exam" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent];
+"c0_recorderAda" [label="recorderAda -> Exam *" URL="#c0_recorderAda" tooltip="recorderAda -> Exam *&#10;  [ this.recorder = ada ]&#10;"];
+"c0_recorderAda" -> "c0_Exam" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent];
+"c0_examinerAda" [label="examinerAda -> Exam *" URL="#c0_examinerAda" tooltip="examinerAda -> Exam *&#10;  [ this.examiner = ada ]&#10;"];
+"c0_examinerAda" -> "c0_Exam" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent];
+"c0_examineeOfAdaAsExaminer" [label="examineeOfAdaAsExaminer -> Person *" URL="#c0_examineeOfAdaAsExaminer" tooltip="examineeOfAdaAsExaminer -> Person *&#10;  [ one e : Exam | e.examiner = ada && e.examinee = this ]&#10;"];
+"c0_examineeOfAdaAsExaminer" -> "c0_Person" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent];
+"c0_examineeOfAdaAsRecorder" [label="examineeOfAdaAsRecorder -> Person *" URL="#c0_examineeOfAdaAsRecorder" tooltip="examineeOfAdaAsRecorder -> Person *&#10;  [ one e : Exam | e.recorder = ada && e.examinee = this ]&#10;"];
+"c0_examineeOfAdaAsRecorder" -> "c0_Person" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent];
+"c0_examinerOfAdaAsExaminee" [label="examinerOfAdaAsExaminee -> Person *" URL="#c0_examinerOfAdaAsExaminee" tooltip="examinerOfAdaAsExaminee -> Person *&#10;  [ one e : Exam | e.examinee = ada && e.examiner = this ]&#10;"];
+"c0_examinerOfAdaAsExaminee" -> "c0_Person" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent];
+"c0_examinerOfAdaAsRecorder" [label="examinerOfAdaAsRecorder -> Person *" URL="#c0_examinerOfAdaAsRecorder" tooltip="examinerOfAdaAsRecorder -> Person *&#10;  [ one e : Exam | e.recorder = ada && e.examiner = this ]&#10;"];
+"c0_examinerOfAdaAsRecorder" -> "c0_Person" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent];
+"c0_recorderOfAdaAsExaminee" [label="recorderOfAdaAsExaminee -> Person *" URL="#c0_recorderOfAdaAsExaminee" tooltip="recorderOfAdaAsExaminee -> Person *&#10;  [ one e : Exam | e.examinee = ada && e.recorder = this ]&#10;"];
+"c0_recorderOfAdaAsExaminee" -> "c0_Person" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent];
+"c0_recorderOfAdaAsExaminer" [label="recorderOfAdaAsExaminer -> Person *" URL="#c0_recorderOfAdaAsExaminer" tooltip="recorderOfAdaAsExaminer -> Person *&#10;  [ one e : Exam | e.examiner = ada && e.recorder = this ]&#10;"];
+"c0_recorderOfAdaAsExaminer" -> "c0_Person" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent];
+}

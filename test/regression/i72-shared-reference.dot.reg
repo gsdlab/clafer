@@ -1,0 +1,20 @@
+digraph "i72-shared-reference"
+{
+rankdir=BT;
+ranksep=0.3;
+nodesep=0.1;
+graph [fontname=Sans fontsize=11];
+node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
+edge [fontname=Sans fontsize=11];
+"c0_Person" [label="abstract Person" URL="#c0_Person" tooltip="abstract Person&#10;"];
+"c0_JohnDoe" [label="JohnDoe : Person" URL="#c0_JohnDoe" tooltip="JohnDoe : Person&#10;"];
+"c0_JohnDoe" -> "c0_Person" [arrowhead=onormal constraint=true weight=100];
+"c0_MaryJane" [label="MaryJane : Person" URL="#c0_MaryJane" tooltip="MaryJane : Person&#10;"];
+"c0_MaryJane" -> "c0_Person" [arrowhead=onormal constraint=true weight=100];
+"c0_WaitingLine" [label="abstract WaitingLine" URL="#c0_WaitingLine" tooltip="abstract WaitingLine&#10;  participants -> Person *&#10;"];
+"c0_WaitingLine" -> "c0_Person" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=participants];
+"c0_BusLine" [label="BusLine : WaitingLine" URL="#c0_BusLine" tooltip="BusLine : WaitingLine&#10;  [ JohnDoe in participants ][ MaryJane in participants ]&#10;"];
+"c0_BusLine" -> "c0_WaitingLine" [arrowhead=onormal constraint=true weight=100];
+"c0_JohnAndMaryLine" [label="JohnAndMaryLine : WaitingLine" URL="#c0_JohnAndMaryLine" tooltip="JohnAndMaryLine : WaitingLine&#10;  [ participants = JohnDoe, MaryJane ]&#10;"];
+"c0_JohnAndMaryLine" -> "c0_WaitingLine" [arrowhead=onormal constraint=true weight=100];
+}

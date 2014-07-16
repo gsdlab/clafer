@@ -1,0 +1,454 @@
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Element">Element</span></div>
+
+<!-- # FRAGMENT /-->
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_End">End</span><span class="keyword"> :</span> <a href="#c0_Element"><span class="reference">Element</span></a>
+  <div class="indent">
+  <span class="claferDecl" id="c0_attainable">attainable</span> ?</div>
+  <div class="indent">
+  <span class="keyword">xor</span> <span class="claferDecl" id="c0_term">term</span>
+    <div class="indent">
+    <span class="claferDecl" id="c0_short">short</span></div>
+    <div class="indent">
+    <span class="claferDecl" id="c0_long">long</span></div>
+  </div>
+  <div class="indent">
+  <span class="keyword">xor</span> <span class="claferDecl" id="c0_focusedOn">focusedOn</span>
+    <div class="indent">
+    <span class="claferDecl" id="c0_enterprise">enterprise</span></div>
+    <div class="indent">
+    <span class="claferDecl" id="c0_businessArea">businessArea</span></div>
+  </div>
+</div>
+
+<!-- # FRAGMENT /-->
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Mean">Mean</span><span class="keyword"> :</span> <a href="#c0_Element"><span class="reference">Element</span></a></div>
+
+<!-- # FRAGMENT /-->
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Vision">Vision</span><span class="keyword"> :</span> <a href="#c0_End"><span class="reference">End</span></a>
+  <div class="indent">
+  <span class="keyword">[</span> <a href="#c0_enterprise"><span class="reference">enterprise</span></a> <span class="keyword">]</span></div>
+  <div class="indent">
+  <span class="keyword">[</span> <a href="#c0_long"><span class="reference">long</span></a> <span class="keyword">]</span></div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_amplifiedBy">amplifiedBy</span><span class="keyword"> -></span> <a href="#c0_Goal"><span class="reference">Goal</span></a> +</div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_madeOperativeBy">madeOperativeBy</span><span class="keyword"> -></span> <a href="#c0_Mission"><span class="reference">Mission</span></a></div>
+</div>
+
+<!-- # FRAGMENT /-->
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_DesiredResult">DesiredResult</span><span class="keyword"> :</span> <a href="#c0_End"><span class="reference">End</span></a>
+  <div class="indent">
+  <span class="claferDecl" id="c0_supportedBy">supportedBy</span><span class="keyword"> -></span> <a href="#c0_CourseOfAction"><span class="reference">CourseOfAction</span></a> +</div>
+  <div class="indent">
+  <span class="keyword">xor</span> <span class="claferDecl" id="c0_kind">kind</span>
+    <div class="indent">
+    <span class="claferDecl" id="c0_qualitative">qualitative</span></div>
+    <div class="indent">
+    <span class="claferDecl" id="c0_quantitative">quantitative</span></div>
+  </div>
+</div>
+
+<!-- # FRAGMENT /-->
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Goal">Goal</span><span class="keyword"> :</span> <a href="#c0_DesiredResult"><span class="reference">DesiredResult</span></a>
+  <div class="indent">
+  <span class="claferDecl" id="c0_amplifies">amplifies</span><span class="keyword"> -></span> <a href="#c0_Vision"><span class="reference">Vision</span></a></div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_general">general</span></div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_ongoing">ongoing</span></div>
+  <div class="indent">
+  <span class="keyword">[</span> <a href="#c0_businessArea"><span class="reference">businessArea</span></a> <span class="keyword">]</span></div>
+  <div class="indent">
+  <span class="keyword">[</span> <a href="#c0_attainable"><span class="reference">attainable</span></a> <span class="keyword">]</span></div>
+  <div class="indent">
+  <span class="keyword">[</span> <a href="#c0_qualitative"><span class="reference">qualitative</span></a> <span class="keyword">]</span></div>
+  <div class="indent">
+  <span class="keyword">[</span> <a href="#c0_long"><span class="reference">long</span></a> <span class="keyword">]</span></div>
+</div>
+
+<!-- # FRAGMENT /-->
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Objective">Objective</span><span class="keyword"> :</span> <a href="#c0_DesiredResult"><span class="reference">DesiredResult</span></a>
+  <div class="indent">
+  <span class="claferDecl" id="c0_SMART">SMART</span>
+    <div class="indent">
+    <span class="claferDecl" id="c0_specific">specific</span></div>
+    <div class="indent">
+    <span class="keyword">[</span> <a href="#c0_attainable"><span class="reference">attainable</span></a> <span class="keyword">]</span></div>
+    <div class="indent">
+    <span class="claferDecl" id="c0_relevant">relevant</span></div>
+    <div class="indent">
+    <span class="claferDecl" id="c0_timeBound">timeBound</span></div>
+  </div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_limitedInTimeframe">limitedInTimeframe</span>
+    <div class="indent">
+    <span class="claferDecl" id="c0_cyclical">cyclical</span> ?</div>
+  </div>
+  <div class="indent">
+  <span class="keyword">[</span> <a href="#c0_businessArea"><span class="reference">businessArea</span></a> <span class="keyword">]</span></div>
+  <div class="indent">
+  <span class="keyword">[</span> <a href="#c0_quantitative"><span class="reference">quantitative</span></a> <span class="keyword">]</span></div>
+  <div class="indent">
+  <span class="keyword">[</span> <a href="#c0_short"><span class="reference">short</span></a> <span class="keyword">]</span></div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_quantifies">quantifies</span><span class="keyword"> -></span> <a href="#c0_Goal"><span class="reference">Goal</span></a> +</div>
+</div>
+
+<!-- # FRAGMENT /-->
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_CourseOfAction">CourseOfAction</span><span class="keyword"> :</span> <a href="#c0_Mean"><span class="reference">Mean</span></a>
+  <div class="indent">
+  <span class="claferDecl" id="c0_channelsEffortsToward">channelsEffortsToward</span><span class="keyword"> -></span> <a href="#c0_DesiredResult"><span class="reference">DesiredResult</span></a></div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_governedBy">governedBy</span><span class="keyword"> -></span> <a href="#c0_Directive"><span class="reference">Directive</span></a></div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_formulatedBasedOn">formulatedBasedOn</span><span class="keyword"> -></span> <a href="#c0_Directive"><span class="reference">Directive</span></a></div>
+  <div class="indent">
+  <span class="keyword">xor</span> <span class="claferDecl" id="c0_scope">scope</span>
+    <div class="indent">
+    <span class="claferDecl" id="c0_broad">broad</span></div>
+    <div class="indent">
+    <span class="claferDecl" id="c0_narrow">narrow</span></div>
+  </div>
+  <div class="indent">
+  <span class="keyword">xor</span> <span class="claferDecl" id="c1_term">term</span>
+    <div class="indent">
+    <span class="claferDecl" id="c1_short">short</span></div>
+    <div class="indent">
+    <span class="claferDecl" id="c1_long">long</span></div>
+  </div>
+  <div class="indent">
+  <span class="keyword">[</span> <a href="#c0_broad"><span class="reference">broad</span></a> && <a href="#c1_long"><span class="reference">long</span></a> || <a href="#c0_narrow"><span class="reference">narrow</span></a> && <a href="#c1_short"><span class="reference">short</span></a> <span class="keyword">]</span></div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_includes">includes</span><span class="keyword"> -></span> <a href="#c0_CourseOfAction"><span class="reference">CourseOfAction</span></a> *</div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_enables">enables</span><span class="keyword"> -></span> <a href="#c0_CourseOfAction"><span class="reference">CourseOfAction</span></a> *</div>
+</div>
+
+<!-- # FRAGMENT /-->
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Strategy">Strategy</span><span class="keyword"> :</span> <a href="#c0_CourseOfAction"><span class="reference">CourseOfAction</span></a>
+  <div class="indent">
+  <span class="claferDecl" id="c0_implementedBy">implementedBy</span><span class="keyword"> -></span> <a href="#c0_Tactic"><span class="reference">Tactic</span></a></div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_aComponentOfThePlanFor">aComponentOfThePlanFor</span><span class="keyword"> -></span> <a href="#c0_Mission"><span class="reference">Mission</span></a></div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_rightApproachGiven">rightApproachGiven</span></div>
+</div>
+
+<!-- # FRAGMENT /-->
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Tactic">Tactic</span><span class="keyword"> :</span> <a href="#c0_CourseOfAction"><span class="reference">CourseOfAction</span></a>
+  <div class="indent">
+  <span class="claferDecl" id="c0_implements">implements</span><span class="keyword"> -></span> <a href="#c0_Strategy"><span class="reference">Strategy</span></a></div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_effectsEnforcementLevelOf">effectsEnforcementLevelOf</span><span class="keyword"> -></span> <a href="#c0_BusinessRule"><span class="reference">BusinessRule</span></a></div>
+</div>
+
+<!-- # FRAGMENT /-->
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Mission">Mission</span><span class="keyword"> :</span> <a href="#c0_Mean"><span class="reference">Mean</span></a>
+  <div class="indent">
+  <span class="claferDecl" id="c0_makesOperative">makesOperative</span><span class="keyword"> -></span> <a href="#c0_Vision"><span class="reference">Vision</span></a></div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_plannedByMeansOf">plannedByMeansOf</span><span class="keyword"> -></span> <a href="#c0_Strategy"><span class="reference">Strategy</span></a></div>
+</div>
+
+<!-- # FRAGMENT /-->
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Directive">Directive</span><span class="keyword"> :</span> <a href="#c0_Mean"><span class="reference">Mean</span></a>
+  <div class="indent">
+  <span class="claferDecl" id="c0_governs">governs</span><span class="keyword"> -></span> <a href="#c0_CourseOfAction"><span class="reference">CourseOfAction</span></a></div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_sourceOf">sourceOf</span><span class="keyword"> -></span> <a href="#c0_CourseOfAction"><span class="reference">CourseOfAction</span></a></div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_supportsTheAchievementOf">supportsTheAchievementOf</span><span class="keyword"> -></span> <a href="#c0_DesiredResult"><span class="reference">DesiredResult</span></a></div>
+  <div class="indent">
+  <span class="keyword">xor</span> <span class="claferDecl" id="c0_influencesAspectOfEnterprise">influencesAspectOfEnterprise</span>
+    <div class="indent">
+    <span class="claferDecl" id="c0_defines">defines</span></div>
+    <div class="indent">
+    <span class="claferDecl" id="c0_constraints">constraints</span></div>
+    <div class="indent">
+    <span class="claferDecl" id="c0_liberates">liberates</span></div>
+    <div class="indent">
+    <span class="claferDecl" id="c0_asserts">asserts</span></div>
+    <div class="indent">
+    <span class="claferDecl" id="c0_controls">controls</span></div>
+  </div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_declarative">declarative</span></div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_actsAs">actsAs</span><span class="keyword"> -></span> <a href="#c0_Regulation"><span class="reference">Regulation</span></a></div>
+  <div class="indent">
+  <span class="keyword">xor</span> <span class="claferDecl" id="c0_degreeOfStructure">degreeOfStructure</span>
+    <div class="indent">
+    <span class="claferDecl" id="c0_lessStructured">lessStructured</span></div>
+    <div class="indent">
+    <span class="claferDecl" id="c0_highlyStructured">highlyStructured</span></div>
+  </div>
+  <div class="indent">
+  <span class="keyword">xor</span> <span class="claferDecl" id="c0_granularity">granularity</span>
+    <div class="indent">
+    <span class="claferDecl" id="c0_lessDiscreteAndComposite">lessDiscreteAndComposite</span></div>
+    <div class="indent">
+    <span class="claferDecl" id="c0_discreteAndAtomic">discreteAndAtomic</span></div>
+  </div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_actionable">actionable</span> ?</div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_automatable">automatable</span> ?</div>
+</div>
+
+<!-- # FRAGMENT /-->
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_BusinessPolicy">BusinessPolicy</span><span class="keyword"> :</span> <a href="#c0_Directive"><span class="reference">Directive</span></a>
+  <div class="indent">
+  <span class="claferDecl" id="c0_providesBasisFor">providesBasisFor</span><span class="keyword"> -></span> <a href="#c0_BusinessRule"><span class="reference">BusinessRule</span></a> +</div>
+  <div class="indent">
+  <span class="claferDecl" id="c1_governs">governs</span><span class="keyword"> -></span> <a href="#c0_CourseOfAction"><span class="reference">CourseOfAction</span></a> *
+    <div class="indent">
+    <span class="claferDecl" id="c0_control">control</span></div>
+    <div class="indent">
+    <span class="claferDecl" id="c0_guide">guide</span></div>
+    <div class="indent">
+    <span class="claferDecl" id="c0_shape">shape</span></div>
+  </div>
+  <div class="indent">
+  <span class="keyword">[</span> <a href="#c0_lessStructured"><span class="reference">lessStructured</span></a> <span class="keyword">]</span></div>
+  <div class="indent">
+  <span class="keyword">[</span> <a href="#c0_lessDiscreteAndComposite"><span class="reference">lessDiscreteAndComposite</span></a> <span class="keyword">]</span></div>
+  <div class="indent">
+  <span class="keyword">[</span>  ! <a href="#c0_actionable"><span class="reference">actionable</span></a> <span class="keyword">]</span></div>
+  <div class="indent">
+  <span class="keyword">[</span>  ! <a href="#c0_automatable"><span class="reference">automatable</span></a> <span class="keyword">]</span></div>
+  <div class="indent">
+  <span class="claferDecl" id="c1_includes">includes</span><span class="keyword"> -></span> <a href="#c0_BusinessPolicy"><span class="reference">BusinessPolicy</span></a> *</div>
+</div>
+
+<!-- # FRAGMENT /-->
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_BusinessRule">BusinessRule</span><span class="keyword"> :</span> <a href="#c0_Directive"><span class="reference">Directive</span></a>
+  <div class="indent">
+  <span class="keyword">[</span> all o<span class="keyword"> : </span><a href="#Lookup failed"><span class="reference">supportsTheAchievementOf</span></a> | <a href="#o"><span class="reference">o</span></a>.<a href="#ref"><span class="reference">ref</span></a> in <a href="#c0_Objective"><span class="reference">Objective</span></a> <span class="keyword">]</span></div>
+  <div class="indent">
+  <span class="keyword">xor</span> <span class="claferDecl" id="c0_enforcementLevel">enforcementLevel</span>
+    <div class="indent">
+    <span class="claferDecl" id="c0_strictlyEnforced">strictlyEnforced</span></div>
+    <div class="indent">
+    <span class="claferDecl" id="c0_deferredEnforcement">deferredEnforcement</span></div>
+    <div class="indent">
+    <span class="claferDecl" id="c0_preAuthorizedOverride">preAuthorizedOverride</span></div>
+    <div class="indent">
+    <span class="claferDecl" id="c0_postJustifiedOverride">postJustifiedOverride</span></div>
+    <div class="indent">
+    <span class="claferDecl" id="c0_overrideWithExplanation">overrideWithExplanation</span></div>
+    <div class="indent">
+    <span class="claferDecl" id="c0_guideline">guideline</span></div>
+  </div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_hasEnforcementLevelEffectedBy">hasEnforcementLevelEffectedBy</span><span class="keyword"> -></span> <a href="#c0_Tactic"><span class="reference">Tactic</span></a></div>
+  <div class="indent">
+  <span class="keyword">[</span> <a href="#c0_highlyStructured"><span class="reference">highlyStructured</span></a> <span class="keyword">]</span></div>
+  <div class="indent">
+  <span class="keyword">[</span> <a href="#c0_discreteAndAtomic"><span class="reference">discreteAndAtomic</span></a> <span class="keyword">]</span></div>
+  <div class="indent">
+  <span class="keyword">[</span> <a href="#c0_actionable"><span class="reference">actionable</span></a> <span class="keyword">]</span></div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_expressedUsingStandardBusinessVocabulary">expressedUsingStandardBusinessVocabulary</span></div>
+</div>
+
+<!-- # FRAGMENT /-->
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Regulation">Regulation</span><span class="keyword"> :</span> <a href="#c0_Element"><span class="reference">Element</span></a>
+  <div class="indent">
+  <span class="claferDecl" id="c0_aRolePlayedBy">aRolePlayedBy</span><span class="keyword"> -></span> <a href="#c0_Directive"><span class="reference">Directive</span></a></div>
+</div>
+
+<!-- # FRAGMENT /-->
+
+<div>
+<span class="keyword">abstract</span> <span class="keyword">or</span> <span class="claferDecl" id="c0_Influencer">Influencer</span><span class="keyword"> :</span> <a href="#c0_Element"><span class="reference">Element</span></a>
+  <div class="indent">
+  <span class="keyword">or</span> <span class="claferDecl" id="c0_externalInfluencer">externalInfluencer</span>
+    <div class="indent">
+    <span class="claferDecl" id="c0_environment">environment</span></div>
+    <div class="indent">
+    <span class="claferDecl" id="c0_technology">technology</span></div>
+    <div class="indent">
+    <span class="claferDecl" id="c0_regulation">regulation</span>
+      <div class="indent">
+      <span class="keyword">xor</span> <span class="claferDecl" id="c0_prescribedBy">prescribedBy</span>
+        <div class="indent">
+        <span class="claferDecl" id="c0_government">government</span></div>
+        <div class="indent">
+        <span class="claferDecl" id="c0_management">management</span></div>
+      </div>
+    </div>
+    <div class="indent">
+    <span class="claferDecl" id="c0_supplier">supplier</span>
+      <div class="indent">
+      <span class="keyword">xor</span> <span class="claferDecl" id="c0_provides">provides</span>
+        <div class="indent">
+        <span class="claferDecl" id="c0_products">products</span></div>
+        <div class="indent">
+        <span class="claferDecl" id="c0_services">services</span></div>
+      </div>
+    </div>
+    <div class="indent">
+    <span class="claferDecl" id="c0_customer">customer</span>
+      <div class="indent">
+      <span class="keyword">xor</span> <span class="claferDecl" id="c0_productsOrServices">productsOrServices</span>
+        <div class="indent">
+        <span class="claferDecl" id="c0_investigated">investigated</span></div>
+        <div class="indent">
+        <span class="claferDecl" id="c0_ordered">ordered</span></div>
+        <div class="indent">
+        <span class="claferDecl" id="c0_received">received</span></div>
+        <div class="indent">
+        <span class="claferDecl" id="c0_paidFor">paidFor</span></div>
+      </div>
+    </div>
+    <div class="indent">
+    <span class="claferDecl" id="c0_competitor">competitor</span></div>
+    <div class="indent">
+    <span class="claferDecl" id="c0_partner">partner</span></div>
+  </div>
+  <div class="indent">
+  <span class="keyword">or</span> <span class="claferDecl" id="c0_internalInfluencer">internalInfluencer</span>
+    <div class="indent">
+    <span class="claferDecl" id="c0_infrastructure">infrastructure</span></div>
+    <div class="indent">
+    <span class="claferDecl" id="c0_issue">issue</span></div>
+    <div class="indent">
+    <span class="claferDecl" id="c0_assumption">assumption</span></div>
+    <div class="indent">
+    <span class="claferDecl" id="c0_resource">resource</span></div>
+    <div class="indent">
+    <span class="claferDecl" id="c0_habit">habit</span></div>
+    <div class="indent">
+    <span class="claferDecl" id="c0_managementPrerogative">managementPrerogative</span></div>
+    <div class="indent">
+    <span class="keyword">xor</span> <span class="claferDecl" id="c0_corporateValue">corporateValue</span>
+      <div class="indent">
+      <span class="claferDecl" id="c0_explicitCorporateValue">explicitCorporateValue</span></div>
+      <div class="indent">
+      <span class="claferDecl" id="c0_implicitCorporateValue">implicitCorporateValue</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- # FRAGMENT /-->
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Assessment">Assessment</span><span class="keyword"> :</span> <a href="#c0_Element"><span class="reference">Element</span></a>
+  <div class="indent">
+  <span class="claferDecl" id="c0_identifies">identifies</span><span class="keyword"> -></span> <a href="#c0_PotentialImpact"><span class="reference">PotentialImpact</span></a></div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_about">about</span><span class="keyword"> -></span> <a href="#c0_Influencer"><span class="reference">Influencer</span></a></div>
+  <div class="indent">
+  <span class="keyword">or</span> <span class="claferDecl" id="c0_affects">affects</span>
+    <div class="indent">
+    <span class="claferDecl" id="c0_employmentOf">employmentOf</span><span class="keyword"> -></span> <a href="#c0_Mean"><span class="reference">Mean</span></a> +</div>
+    <div class="indent">
+    <span class="claferDecl" id="c0_achievementOf">achievementOf</span><span class="keyword"> -></span> <a href="#c0_End"><span class="reference">End</span></a> +</div>
+  </div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_madeBy">madeBy</span><span class="keyword"> -></span> <a href="#c0_OrganizationUnit"><span class="reference">OrganizationUnit</span></a></div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_uses">uses</span><span class="keyword"> -></span> <a href="#c0_Assessment"><span class="reference">Assessment</span></a> *</div>
+  <div class="indent">
+  <span class="keyword">xor</span> <span class="claferDecl" id="c0_SWOT">SWOT</span>
+    <div class="indent">
+    <span class="claferDecl" id="c0_strength">strength</span></div>
+    <div class="indent">
+    <span class="claferDecl" id="c0_weakness">weakness</span></div>
+    <div class="indent">
+    <span class="claferDecl" id="c0_opportunity">opportunity</span></div>
+    <div class="indent">
+    <span class="claferDecl" id="c0_threat">threat</span></div>
+  </div>
+</div>
+
+<!-- # FRAGMENT /-->
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_PotentialImpact">PotentialImpact</span><span class="keyword"> :</span> <a href="#c0_Element"><span class="reference">Element</span></a>
+  <div class="indent">
+  <span class="claferDecl" id="c0_significantTo">significantTo</span><span class="keyword"> -></span> <a href="#c0_Assessment"><span class="reference">Assessment</span></a></div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_providesImpetusFor">providesImpetusFor</span><span class="keyword"> -></span> <a href="#c0_Directive"><span class="reference">Directive</span></a></div>
+  <div class="indent">
+  <span class="keyword">xor</span> <span class="claferDecl" id="c0_type">type</span>
+    <div class="indent">
+    <span class="claferDecl" id="c0_risk">risk</span>
+      <div class="indent">
+      <span class="claferDecl" id="c0_probabilityOfLoss">probabilityOfLoss</span><span class="keyword"> :</span> <a href="#integer"><span class="reference">integer</span></a></div>
+      <div class="indent">
+      <span class="claferDecl" id="c0_potentialLoss">potentialLoss</span><span class="keyword"> :</span> <a href="#integer"><span class="reference">integer</span></a></div>
+      <div class="indent">
+      <span class="claferDecl" id="c0_unitOfMeasure">unitOfMeasure</span><span class="keyword"> -></span> <a href="#c0_Currency"><span class="reference">Currency</span></a></div>
+    </div>
+    <div class="indent">
+    <span class="claferDecl" id="c0_potentialReward">potentialReward</span>
+      <div class="indent">
+      <span class="claferDecl" id="c0_probabilityOfGain">probabilityOfGain</span><span class="keyword"> :</span> <a href="#integer"><span class="reference">integer</span></a></div>
+      <div class="indent">
+      <span class="claferDecl" id="c0_potentialGain">potentialGain</span><span class="keyword"> :</span> <a href="#integer"><span class="reference">integer</span></a></div>
+      <div class="indent">
+      <span class="claferDecl" id="c1_unitOfMeasure">unitOfMeasure</span><span class="keyword"> -></span> <a href="#c0_Currency"><span class="reference">Currency</span></a></div>
+    </div>
+  </div>
+</div>
+
+<!-- # FRAGMENT /-->
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Metric">Metric</span><span class="keyword"> :</span> <a href="#c0_Element"><span class="reference">Element</span></a></div>
+
+<!-- # FRAGMENT /-->
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_KeyPerformanceIndicator">KeyPerformanceIndicator</span><span class="keyword"> :</span> <a href="#c0_Metric"><span class="reference">Metric</span></a></div>
+
+<!-- # FRAGMENT /-->
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_CriticalSuccessFactor">CriticalSuccessFactor</span><span class="keyword"> :</span> <a href="#c0_Metric"><span class="reference">Metric</span></a></div>
+
+<!-- # FRAGMENT /-->
+
+<div>
+<span class="keyword">enum</span> <span class="claferDecl" id="Lookup failed">Currency</span> = <span class="claferDecl" id="Lookup failed">USD</span> | <span class="claferDecl" id="Lookup failed">EUR</span> | <span class="claferDecl" id="Lookup failed">CAD</span></div>
+
+<!-- # FRAGMENT /-->
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_OrganizationUnit">OrganizationUnit</span></div>
+
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_BusinessProcess">BusinessProcess</span></div>
+

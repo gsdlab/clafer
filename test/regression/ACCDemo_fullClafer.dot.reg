@@ -1,0 +1,18 @@
+digraph "ACCDemo_fullClafer"
+{
+rankdir=BT;
+ranksep=0.3;
+nodesep=0.1;
+graph [fontname=Sans fontsize=11];
+node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
+edge [fontname=Sans fontsize=11];
+"c0_car" [label="abstract car" URL="#c0_car" tooltip="abstract car&#10;  xor transmission&#10;    automatic&#10;    manual&#10;  `fca ?&#10;  `cc&#10;  [ acc => fca ]&#10;"];
+"c0_car" -> "c1_fca" [arrowhead=vee arrowtail=diamond dir=both style=solid constraint=true weight=5 minlen=2 arrowsize=0.6 penwidth=0.5 ];
+"c0_car" -> "c1_cc" [arrowhead=vee arrowtail=diamond dir=both style=solid constraint=true weight=5 minlen=2 arrowsize=0.6 penwidth=0.5 ];
+"c1_fca" [label="abstract fca" URL="#c1_fca" tooltip="abstract fca&#10;  xor sensor&#10;    radar&#10;    lidar&#10;"];
+"c1_cc" [label="abstract cc" URL="#c1_cc" tooltip="abstract cc&#10;  switches 2..3&#10;    backlight ?&#10;  acc ?&#10;"];
+"c0_camaro" [label="abstract camaro : car" URL="#c0_camaro" tooltip="abstract camaro : car&#10;  [ all s : switches | s.backlight ]&#10;  transformer ?&#10;    [ # switches = 3 ]&#10;"];
+"c0_camaro" -> "c0_car" [arrowhead=onormal constraint=true weight=100];
+"c0_bumbleBee" [label="bumbleBee : camaro" URL="#c0_bumbleBee" tooltip="bumbleBee : camaro&#10;  [ transformer ]&#10;  [ manual ]&#10;"];
+"c0_bumbleBee" -> "c0_camaro" [arrowhead=onormal constraint=true weight=100];
+}

@@ -1,0 +1,9 @@
+
+<div>
+1..* <span class="claferDecl" id="c0_A">A</span>
+  <div class="indent">
+  <span class="claferDecl" id="c0_B">B</span></div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_C">C</span></div>
+</div>
+
