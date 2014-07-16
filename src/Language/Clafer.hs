@@ -113,7 +113,6 @@ import Language.Clafer.Front.Parclafer
 import Language.Clafer.Front.Printclafer
 import Language.Clafer.Front.Absclafer 
 import Language.Clafer.Front.LayoutResolver
-import Language.Clafer.Front.Mapper
 import Language.Clafer.Intermediate.Tracing
 import Language.Clafer.Intermediate.Intclafer
 import Language.Clafer.Intermediate.Desugarer
@@ -208,7 +207,7 @@ parse =
     --
     -- The second one is easier so that's we'll do for now. There shouldn't be any errors since
     -- each individual fragment already passed.
-    ast' <- case asts of
+    ast <- case asts of
       -- Special case: if there is only one fragment, then the complete model is contained within it.
       -- Don't need to reparse. This is the common case.
       [oneFrag] -> return oneFrag
@@ -218,8 +217,6 @@ parse =
         completeAst <- (parseFrag $ args env) completeModel
         liftParseErr completeAst
 
-    
-    let ast = mapModule ast'
     let env' = env{ cAst = Just ast, astModuleTrace = traceAstModule ast }
     putEnv env'
   where
@@ -259,15 +256,9 @@ compile =
     where
       isKeyWord :: Ir -> String
       isKeyWord (IRClafer IClafer{_cinPos = (Span (Pos l c) _) ,_ident=i}) = if (i `elem` keyWords) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
-      isKeyWord (IRClafer IClafer{_cinPos = (PosSpan _ (Pos l c) _) ,_ident=i}) = if (i `elem` keyWords) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
-      isKeyWord (IRClafer IClafer{_cinPos = (Span (PosPos _ l c) _) ,_ident=i}) = if (i `elem` keyWords) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
-      isKeyWord (IRClafer IClafer{_cinPos = (PosSpan _ (PosPos _ l c) _) ,_ident=i}) = if (i `elem` keyWords) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
       isKeyWord _ = ""
       gt1 :: Ir -> String
       gt1 (IRClafer (IClafer (Span (Pos l c) _) False _ _ _ _ (Just (_, m)) _ _)) = if (m > 1 || m < 0) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
-      gt1 (IRClafer (IClafer (Span (PosPos _ l c) _) False _ _ _ _ (Just (_, m)) _ _)) = if (m > 1 || m < 0) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else "" 
-      gt1 (IRClafer (IClafer (PosSpan _ (Pos l c) _) False _ _ _ _ (Just (_, m)) _ _)) = if (m > 1 || m < 0) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
-      gt1 (IRClafer (IClafer (PosSpan _ (PosPos _ l c) _) False _ _ _ _ (Just (_, m)) _ _)) = if (m > 1 || m < 0) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
       gt1 _ = ""
 
 -- | Splits the IR into their fragments, and generates the output for each fragment.
@@ -301,7 +292,6 @@ generateFragments =
   beforePos ele p =
     case rnge ele of
       Span _ e -> e <= p
-      PosSpan _ _ e -> e <= p
   generateFragment :: ClaferArgs -> [IElement] -> String
   generateFragment args' frag =
     flatten $ cconcat $ map (genDeclaration args') frag
@@ -309,7 +299,7 @@ generateFragments =
 -- | Splits the AST into their fragments, and generates the output for each fragment.
 generateHtml :: ClaferEnv -> Module -> String
 generateHtml env ast' =
-    let PosModule _ decls' = ast';
+    let Module _ decls' = ast';
         cargs = args env;
         irMap = irModuleTrace env;
         comments = if add_comments cargs then getComments $ unlines $ modelFrags env else [];
@@ -318,25 +308,21 @@ generateHtml env ast' =
        (if (self_contained cargs) then "</body>\n</html>" else "")
 
   where
-    lne (PosElementDecl (Span p _) _) = p
-    lne (PosEnumDecl (Span p _) _  _) = p
+    lne (ElementDecl (Span p _) _) = p
+    lne (EnumDecl (Span p _) _  _) = p
     lne _                               = Pos 0 0
     genFragments :: [Declaration] -> [Pos] -> Map.Map Span [Ir] -> [(Span, String)] -> [String]
     genFragments []           _            _     comments = printComments comments
-    genFragments (decl:decls') []           irMap comments = let (comments', c) = printPreComment (range decl) comments in
+    genFragments (decl:decls') []           irMap comments = let (comments', c) = printPreComment (getSpan decl) comments in
                                                                    [c] ++ (cleanOutput $ revertLayout $ printDeclaration decl 0 irMap True $ inDecl decl comments') : (genFragments decls' [] irMap $ afterDecl decl comments)
     genFragments (decl:decls') (frg:frgs) irMap comments = if lne decl < frg
-                                                                 then let (comments', c) = printPreComment (range decl) comments in
+                                                                 then let (comments', c) = printPreComment (getSpan decl) comments in
                                                                    [c] ++ (cleanOutput $ revertLayout $ printDeclaration decl 0 irMap True $ inDecl decl comments') : (genFragments decls' (frg:frgs) irMap $ afterDecl decl comments)
                                                                  else "<!-- # FRAGMENT /-->" : genFragments (decl:decls') frgs irMap comments
     inDecl :: Declaration -> [(Span, String)] -> [(Span, String)]
-    inDecl decl comments = let s = rnge decl in dropWhile (\x -> fst x < s) comments
+    inDecl decl comments = let s = getSpan decl in dropWhile (\x -> fst x < s) comments
     afterDecl :: Declaration -> [(Span, String)] -> [(Span, String)]
-    afterDecl decl comments = let (Span _ (Pos line' _)) = rnge decl in dropWhile (\(x, _) -> let (Span _ (Pos line'' _)) = x in line'' <= line') comments
-    rnge (EnumDecl _ _) = noSpan
-    rnge (PosEnumDecl s _ _) = s
-    rnge (ElementDecl _) = noSpan
-    rnge (PosElementDecl s _) = s
+    afterDecl decl comments = let (Span _ (Pos line' _)) = getSpan decl in dropWhile (\(x, _) -> let (Span _ (Pos line'' _)) = x in line'' <= line') comments
     printComments [] = []
     printComments ((s, comment):cs) = (snd (printComment s [(s, comment)]) ++ "<br>\n"):printComments cs
 

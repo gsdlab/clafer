@@ -43,6 +43,10 @@ cleanEnv:
 	rm `which clafer`
 	make 
 
+# regenerate grammar, call after clafer.cf changed
+grammar:
+	$(MAKE) -C $(SRC_DIR) grammar
+
 # build Schema.hs from ClaferIG.xsd, call after .xsd changed
 Schema.hs:
 	$(MAKE) -C $(SRC_DIR) Schema.hs
@@ -77,12 +81,9 @@ reg:
 
 clean:
 	rm -f clafer
-	rm -rf dist
+	cabal clean
 	$(MAKE) -C $(SRC_DIR) clean
 	$(MAKE) -C $(TOOL_DIR) clean
-	find . -type f -name '*.o' -print0 | xargs -0 rm -f
-	find . -type f -name '*.hi' -print0 | xargs -0 rm -f
-	find . -type f -name '*~' -print0 | xargs -0 rm -f
 	$(MAKE) cleanTest
 
 cleanTest:

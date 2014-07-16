@@ -1001,9 +1001,6 @@ satisfy f = tLexeme <$> tokenPrim (tLexeme)
 
 spanToSourcePos :: Span -> SourcePos
 spanToSourcePos (Span (Pos l c) _) = (newPos "" (fromInteger l) (fromInteger c))
-spanToSourcePos (PosSpan _ (Pos l c) _) = (newPos "" (fromInteger l) (fromInteger c))
-spanToSourcePos (Span (PosPos _ l c) _) = (newPos "" (fromInteger l) (fromInteger c))
-spanToSourcePos (PosSpan _ (PosPos _ l c) _) = (newPos "" (fromInteger l) (fromInteger c))
 
 patternMatch :: MonadScope m => ParseT m a -> ParseState -> [Token] -> m (Either ParseError a)
 patternMatch parse' state' =

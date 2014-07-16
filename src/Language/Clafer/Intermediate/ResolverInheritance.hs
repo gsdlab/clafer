@@ -153,9 +153,6 @@ analyzeCard env clafer = _card clafer `mplus` Just card'
     | otherwise = (0, 1)
   pGcard = _interval $ fromJust $ _gcard $ fromJust $ context env
   isTopLevel (Span (Pos _ c) _) = c==1
-  isTopLevel (Span (PosPos _ _ c) _) = c==1
-  isTopLevel (PosSpan _ (Pos _ c) _) = c==1
-  isTopLevel (PosSpan _ (PosPos _ _ c) _) = c==1
 
 analyzeElement :: SEnv -> IElement -> IElement
 analyzeElement env x = case x of

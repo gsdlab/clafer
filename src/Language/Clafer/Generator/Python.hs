@@ -168,9 +168,6 @@ genPythonPExp tagName (PExp iType' pid' pos' iexp') = concat
 genPythonPosition :: Span -> String
 genPythonPosition (Span (Pos s1 s2) (Pos e1 e2)) = concat
   [ "pos=(", genPythonIntPair (s1, s2), ", ", genPythonIntPair (e1, e2), ")"]
-genPythonPosition (PosSpan _ s e) = genPythonPosition (Span s e)
-genPythonPosition (Span (PosPos _ s1 s2) e) = genPythonPosition (Span (Pos s1 s2) e)
-genPythonPosition (Span s (PosPos _ e1 e2)) = genPythonPosition (Span s (Pos e1 e2))
 
 genPythonIExpType :: IExp -> String
 genPythonIExpType x = case x of

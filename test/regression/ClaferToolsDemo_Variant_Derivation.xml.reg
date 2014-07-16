@@ -3,7 +3,7 @@
 <IntLiteral>1</IntLiteral>
 </Start>
 <End><IntLiteral>4</IntLiteral>
-<IntLiteral>18</IntLiteral>
+<IntLiteral>20</IntLiteral>
 </End>
 </Position>
 <IsAbstract>true</IsAbstract>
@@ -167,7 +167,7 @@
 <IntLiteral>1</IntLiteral>
 </Start>
 <End><IntLiteral>16</IntLiteral>
-<IntLiteral>24</IntLiteral>
+<IntLiteral>28</IntLiteral>
 </End>
 </Position>
 <IsAbstract>true</IsAbstract>
@@ -208,7 +208,7 @@
 <IntLiteral>5</IntLiteral>
 </Start>
 <End><IntLiteral>13</IntLiteral>
-<IntLiteral>14</IntLiteral>
+<IntLiteral>16</IntLiteral>
 </End>
 </Position>
 <IsAbstract>false</IsAbstract>
@@ -264,11 +264,11 @@
 <UniqueId>c1_Bluetooth</UniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
 <Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
+<Position><Start><IntLiteral>8</IntLiteral>
+<IntLiteral>9</IntLiteral>
 </Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
+<End><IntLiteral>8</IntLiteral>
+<IntLiteral>19</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
@@ -331,7 +331,7 @@
 <IntLiteral>9</IntLiteral>
 </Start>
 <End><IntLiteral>11</IntLiteral>
-<IntLiteral>27</IntLiteral>
+<IntLiteral>30</IntLiteral>
 </End>
 </Position>
 <IsAbstract>false</IsAbstract>
@@ -564,7 +564,7 @@
 <IntLiteral>5</IntLiteral>
 </Start>
 <End><IntLiteral>16</IntLiteral>
-<IntLiteral>24</IntLiteral>
+<IntLiteral>26</IntLiteral>
 </End>
 </Position>
 <IsAbstract>false</IsAbstract>
@@ -687,7 +687,7 @@
 <IntLiteral>1</IntLiteral>
 </Start>
 <End><IntLiteral>19</IntLiteral>
-<IntLiteral>13</IntLiteral>
+<IntLiteral>16</IntLiteral>
 </End>
 </Position>
 <IsAbstract>true</IsAbstract>
@@ -794,7 +794,7 @@
 <IntLiteral>1</IntLiteral>
 </Start>
 <End><IntLiteral>23</IntLiteral>
-<IntLiteral>14</IntLiteral>
+<IntLiteral>16</IntLiteral>
 </End>
 </Position>
 <IsAbstract>true</IsAbstract>
@@ -1017,7 +1017,7 @@
 <IntLiteral>1</IntLiteral>
 </Start>
 <End><IntLiteral>27</IntLiteral>
-<IntLiteral>17</IntLiteral>
+<IntLiteral>21</IntLiteral>
 </End>
 </Position>
 <IsAbstract>false</IsAbstract>
@@ -1278,7 +1278,7 @@
 <IntLiteral>1</IntLiteral>
 </Start>
 <End><IntLiteral>31</IntLiteral>
-<IntLiteral>13</IntLiteral>
+<IntLiteral>17</IntLiteral>
 </End>
 </Position>
 <IsAbstract>false</IsAbstract>
