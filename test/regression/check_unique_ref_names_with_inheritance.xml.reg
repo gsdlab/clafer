@@ -1,0 +1,370 @@
+<?xml version="1.0"?><Module xmlns="http://clafer.org/ir" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cl="http://clafer.org/ir" xsi:schemaLocation="http://clafer.org/ir https://github.com/gsdlab/clafer/blob/master/src/ClaferIR.xsd"><Name></Name>
+<Declaration xsi:type="cl:IClafer"><Position><Start><IntLiteral>4</IntLiteral>
+<IntLiteral>1</IntLiteral>
+</Start>
+<End><IntLiteral>4</IntLiteral>
+<IntLiteral>23</IntLiteral>
+</End>
+</Position>
+<IsAbstract>true</IsAbstract>
+<GroupCard><IsKeyword>false</IsKeyword>
+<Interval><Min><IntLiteral>0</IntLiteral>
+</Min>
+<Max><IntLiteral>-1</IntLiteral>
+</Max>
+</Interval>
+</GroupCard>
+<Id>date</Id>
+<UniqueId>c0_date</UniqueId>
+<Supers><IsOverlapping>false</IsOverlapping>
+<Super><ParentId></ParentId>
+<Position><Start><IntLiteral>4</IntLiteral>
+<IntLiteral>17</IntLiteral>
+</Start>
+<End><IntLiteral>4</IntLiteral>
+<IntLiteral>23</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>string</Id>
+<IsTop>true</IsTop>
+</Exp></Super>
+</Supers>
+<Card><Min><IntLiteral>0</IntLiteral>
+</Min>
+<Max><IntLiteral>-1</IntLiteral>
+</Max>
+</Card>
+<GlobalCard><Min><IntLiteral>0</IntLiteral>
+</Min>
+<Max><IntLiteral>-1</IntLiteral>
+</Max>
+</GlobalCard>
+</Declaration><Declaration xsi:type="cl:IClafer"><Position><Start><IntLiteral>6</IntLiteral>
+<IntLiteral>1</IntLiteral>
+</Start>
+<End><IntLiteral>8</IntLiteral>
+<IntLiteral>23</IntLiteral>
+</End>
+</Position>
+<IsAbstract>true</IsAbstract>
+<GroupCard><IsKeyword>false</IsKeyword>
+<Interval><Min><IntLiteral>0</IntLiteral>
+</Min>
+<Max><IntLiteral>-1</IntLiteral>
+</Max>
+</Interval>
+</GroupCard>
+<Id>Person</Id>
+<UniqueId>c0_Person</UniqueId>
+<Supers><IsOverlapping>false</IsOverlapping>
+<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Position><Start><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</Start>
+<End><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>clafer</Id>
+<IsTop>false</IsTop>
+</Exp></Super>
+</Supers>
+<Card><Min><IntLiteral>0</IntLiteral>
+</Min>
+<Max><IntLiteral>-1</IntLiteral>
+</Max>
+</Card>
+<GlobalCard><Min><IntLiteral>0</IntLiteral>
+</Min>
+<Max><IntLiteral>-1</IntLiteral>
+</Max>
+</GlobalCard>
+<Declaration xsi:type="cl:IClafer"><Position><Start><IntLiteral>7</IntLiteral>
+<IntLiteral>5</IntLiteral>
+</Start>
+<End><IntLiteral>7</IntLiteral>
+<IntLiteral>18</IntLiteral>
+</End>
+</Position>
+<IsAbstract>false</IsAbstract>
+<GroupCard><IsKeyword>false</IsKeyword>
+<Interval><Min><IntLiteral>0</IntLiteral>
+</Min>
+<Max><IntLiteral>-1</IntLiteral>
+</Max>
+</Interval>
+</GroupCard>
+<Id>Name</Id>
+<UniqueId>c0_Name</UniqueId>
+<Supers><IsOverlapping>false</IsOverlapping>
+<Super><ParentId></ParentId>
+<Position><Start><IntLiteral>7</IntLiteral>
+<IntLiteral>12</IntLiteral>
+</Start>
+<End><IntLiteral>7</IntLiteral>
+<IntLiteral>18</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>string</Id>
+<IsTop>true</IsTop>
+</Exp></Super>
+</Supers>
+<Card><Min><IntLiteral>1</IntLiteral>
+</Min>
+<Max><IntLiteral>1</IntLiteral>
+</Max>
+</Card>
+<GlobalCard><Min><IntLiteral>0</IntLiteral>
+</Min>
+<Max><IntLiteral>-1</IntLiteral>
+</Max>
+</GlobalCard>
+</Declaration><Declaration xsi:type="cl:IClafer"><Position><Start><IntLiteral>8</IntLiteral>
+<IntLiteral>5</IntLiteral>
+</Start>
+<End><IntLiteral>8</IntLiteral>
+<IntLiteral>23</IntLiteral>
+</End>
+</Position>
+<IsAbstract>false</IsAbstract>
+<GroupCard><IsKeyword>false</IsKeyword>
+<Interval><Min><IntLiteral>0</IntLiteral>
+</Min>
+<Max><IntLiteral>-1</IntLiteral>
+</Max>
+</Interval>
+</GroupCard>
+<Id>DateOfBirth</Id>
+<UniqueId>c0_DateOfBirth</UniqueId>
+<Supers><IsOverlapping>false</IsOverlapping>
+<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Position><Start><IntLiteral>8</IntLiteral>
+<IntLiteral>19</IntLiteral>
+</Start>
+<End><IntLiteral>8</IntLiteral>
+<IntLiteral>23</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>c0_date</Id>
+<IsTop>true</IsTop>
+</Exp></Super>
+</Supers>
+<Card><Min><IntLiteral>1</IntLiteral>
+</Min>
+<Max><IntLiteral>1</IntLiteral>
+</Max>
+</Card>
+<GlobalCard><Min><IntLiteral>0</IntLiteral>
+</Min>
+<Max><IntLiteral>-1</IntLiteral>
+</Max>
+</GlobalCard>
+</Declaration></Declaration><Declaration xsi:type="cl:IClafer"><Position><Start><IntLiteral>10</IntLiteral>
+<IntLiteral>1</IntLiteral>
+</Start>
+<End><IntLiteral>12</IntLiteral>
+<IntLiteral>33</IntLiteral>
+</End>
+</Position>
+<IsAbstract>false</IsAbstract>
+<GroupCard><IsKeyword>false</IsKeyword>
+<Interval><Min><IntLiteral>0</IntLiteral>
+</Min>
+<Max><IntLiteral>-1</IntLiteral>
+</Max>
+</Interval>
+</GroupCard>
+<Id>JohnDoe</Id>
+<UniqueId>c0_JohnDoe</UniqueId>
+<Supers><IsOverlapping>false</IsOverlapping>
+<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Position><Start><IntLiteral>10</IntLiteral>
+<IntLiteral>11</IntLiteral>
+</Start>
+<End><IntLiteral>10</IntLiteral>
+<IntLiteral>17</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>c0_Person</Id>
+<IsTop>true</IsTop>
+</Exp></Super>
+</Supers>
+<Card><Min><IntLiteral>1</IntLiteral>
+</Min>
+<Max><IntLiteral>1</IntLiteral>
+</Max>
+</Card>
+<GlobalCard><Min><IntLiteral>1</IntLiteral>
+</Min>
+<Max><IntLiteral>1</IntLiteral>
+</Max>
+</GlobalCard>
+<Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e0_</ParentId>
+<Position><Start><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</Start>
+<End><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IFunctionExp"><Operation>&amp;&amp;</Operation>
+<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e1_</ParentId>
+<Position><Start><IntLiteral>11</IntLiteral>
+<IntLiteral>7</IntLiteral>
+</Start>
+<End><IntLiteral>11</IntLiteral>
+<IntLiteral>20</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
+<Argument><Type xsi:type="cl:IString" /><ParentId>e2_</ParentId>
+<Position><Start><IntLiteral>11</IntLiteral>
+<IntLiteral>7</IntLiteral>
+</Start>
+<End><IntLiteral>11</IntLiteral>
+<IntLiteral>11</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
+<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Position><Start><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</Start>
+<End><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>this</Id>
+<IsTop>true</IsTop>
+</Exp></Argument>
+<Argument><Type xsi:type="cl:IString" /><ParentId></ParentId>
+<Position><Start><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</Start>
+<End><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
+<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Position><Start><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</Start>
+<End><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>c0_Name</Id>
+<IsTop>false</IsTop>
+</Exp></Argument>
+<Argument><Type xsi:type="cl:IString" /><ParentId></ParentId>
+<Position><Start><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</Start>
+<End><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>ref</Id>
+<IsTop>false</IsTop>
+</Exp></Argument>
+</Exp></Argument>
+</Exp></Argument>
+<Argument><Type xsi:type="cl:IString" /><ParentId>e3_</ParentId>
+<Position><Start><IntLiteral>11</IntLiteral>
+<IntLiteral>14</IntLiteral>
+</Start>
+<End><IntLiteral>11</IntLiteral>
+<IntLiteral>20</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IStringExp"><StringLiteral>"John"</StringLiteral>
+</Exp></Argument>
+</Exp></Argument>
+<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e4_</ParentId>
+<Position><Start><IntLiteral>12</IntLiteral>
+<IntLiteral>7</IntLiteral>
+</Start>
+<End><IntLiteral>12</IntLiteral>
+<IntLiteral>33</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
+<Argument><Type xsi:type="cl:IString" /><ParentId>e5_</ParentId>
+<Position><Start><IntLiteral>12</IntLiteral>
+<IntLiteral>7</IntLiteral>
+</Start>
+<End><IntLiteral>12</IntLiteral>
+<IntLiteral>18</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
+<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Position><Start><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</Start>
+<End><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>this</Id>
+<IsTop>true</IsTop>
+</Exp></Argument>
+<Argument><Type xsi:type="cl:IString" /><ParentId></ParentId>
+<Position><Start><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</Start>
+<End><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
+<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Position><Start><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</Start>
+<End><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>c0_DateOfBirth</Id>
+<IsTop>false</IsTop>
+</Exp></Argument>
+<Argument><Type xsi:type="cl:IString" /><ParentId></ParentId>
+<Position><Start><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</Start>
+<End><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>ref</Id>
+<IsTop>false</IsTop>
+</Exp></Argument>
+</Exp></Argument>
+</Exp></Argument>
+<Argument><Type xsi:type="cl:IString" /><ParentId>e6_</ParentId>
+<Position><Start><IntLiteral>12</IntLiteral>
+<IntLiteral>21</IntLiteral>
+</Start>
+<End><IntLiteral>12</IntLiteral>
+<IntLiteral>33</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IStringExp"><StringLiteral>"01/02/1985"</StringLiteral>
+</Exp></Argument>
+</Exp></Argument>
+</Exp></ParentExp>
+</Declaration></Declaration></Module>

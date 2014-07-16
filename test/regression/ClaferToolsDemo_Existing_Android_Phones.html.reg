@@ -1,0 +1,100 @@
+
+<div>
+<span class="claferDecl" id="c0_AndroidPhone1">AndroidPhone1</span>
+  <div class="indent">
+  <span class="claferDecl" id="c0_Connectivity">Connectivity</span>
+    <div class="indent">
+    <span class="claferDecl" id="c0_Bluetooth40">Bluetooth40</span></div>
+    <div class="indent">
+    <span class="claferDecl" id="c0_GSM">GSM</span></div>
+    <div class="indent">
+    <span class="claferDecl" id="c0_WiFi">WiFi</span></div>
+    <div class="indent">
+    <span class="claferDecl" id="c0_USB">USB</span></div>
+  </div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_Battery">Battery</span>
+    <div class="indent">
+    <span class="claferDecl" id="c0_LiBattery1450">LiBattery1450</span></div>
+  </div>
+</div>
+
+<!-- # FRAGMENT /-->
+
+<div>
+<span class="claferDecl" id="c0_AndroidPhone2">AndroidPhone2</span>
+  <div class="indent">
+  <span class="claferDecl" id="c1_Connectivity">Connectivity</span>
+    <div class="indent">
+    <span class="claferDecl" id="c0_Bluetooth21">Bluetooth21</span></div>
+    <div class="indent">
+    <span class="claferDecl" id="c1_GSM">GSM</span></div>
+    <div class="indent">
+    <span class="claferDecl" id="c1_USB">USB</span></div>
+  </div>
+  <div class="indent">
+  <span class="claferDecl" id="c1_Battery">Battery</span>
+    <div class="indent">
+    <span class="claferDecl" id="c0_LiBattery1150">LiBattery1150</span></div>
+  </div>
+</div>
+
+<!-- # FRAGMENT /-->
+
+<div>
+<span class="keyword">abstract</span> <span class="keyword">xor</span> <span class="claferDecl" id="c0_Bluetooth">Bluetooth</span>
+  <div class="indent">
+  <span class="claferDecl" id="c0_Bluetooth20">Bluetooth20</span> ?</div>
+  <div class="indent">
+  <span class="claferDecl" id="c1_Bluetooth21">Bluetooth21</span> ?</div>
+  <div class="indent">
+  <span class="claferDecl" id="c1_Bluetooth40">Bluetooth40</span> ?</div>
+</div>
+
+<!-- # FRAGMENT /-->
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_MobilePhone">MobilePhone</span>
+  <div class="indent">
+  <span class="claferDecl" id="c2_Connectivity">Connectivity</span>
+    <div class="indent">
+    `<a href="#c0_Bluetooth"><span class="reference">Bluetooth</span></a></div>
+    <div class="indent">
+    <span class="claferDecl" id="c2_GSM">GSM</span></div>
+    <div class="indent">
+    <span class="claferDecl" id="c0_LTE">LTE</span> ?
+      <div class="indent">
+      <span class="keyword">[</span> <a href="#c0_LiBattery1400"><span class="reference">LiBattery1400</span></a> <span class="keyword">]</span></div>
+    </div>
+    <div class="indent">
+    <span class="claferDecl" id="c1_WiFi">WiFi</span> ?</div>
+    <div class="indent">
+    <span class="claferDecl" id="c2_USB">USB</span> ?</div>
+  </div>
+  <div class="indent">
+  <span class="keyword">xor</span> <span class="claferDecl" id="c2_Battery">Battery</span>
+    <div class="indent">
+    <span class="claferDecl" id="c1_LiBattery1150">LiBattery1150</span> ?</div>
+    <div class="indent">
+    <span class="claferDecl" id="c0_LiBattery1400">LiBattery1400</span> ?</div>
+  </div>
+</div>
+
+<!-- # FRAGMENT /-->
+
+<div>
+<span class="claferDecl" id="c0_LowEndPhones">LowEndPhones</span><span class="keyword"> :</span> <a href="#c0_MobilePhone"><span class="reference">MobilePhone</span></a>
+  <div class="indent">
+  <span class="keyword">[</span> <span class="keyword">no</span> <a href="#c1_WiFi"><span class="reference">WiFi</span></a> <span class="keyword">]</span></div>
+</div>
+
+<!-- # FRAGMENT /-->
+
+<div>
+<span class="claferDecl" id="c0_HighEndPhones">HighEndPhones</span><span class="keyword"> :</span> <a href="#c0_MobilePhone"><span class="reference">MobilePhone</span></a>
+  <div class="indent">
+  <span class="keyword">[</span> <a href="#c2_USB"><span class="reference">USB</span></a> && <a href="#c1_WiFi"><span class="reference">WiFi</span></a> <span class="keyword">]</span></div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_QuadCPU">QuadCPU</span> ?</div>
+</div>
+

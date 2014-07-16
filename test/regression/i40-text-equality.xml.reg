@@ -1,0 +1,667 @@
+<?xml version="1.0"?><Module xmlns="http://clafer.org/ir" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cl="http://clafer.org/ir" xsi:schemaLocation="http://clafer.org/ir https://github.com/gsdlab/clafer/blob/master/src/ClaferIR.xsd"><Name></Name>
+<Declaration xsi:type="cl:IClafer"><Position><Start><IntLiteral>3</IntLiteral>
+<IntLiteral>1</IntLiteral>
+</Start>
+<End><IntLiteral>3</IntLiteral>
+<IntLiteral>28</IntLiteral>
+</End>
+</Position>
+<IsAbstract>false</IsAbstract>
+<GroupCard><IsKeyword>false</IsKeyword>
+<Interval><Min><IntLiteral>0</IntLiteral>
+</Min>
+<Max><IntLiteral>-1</IntLiteral>
+</Max>
+</Interval>
+</GroupCard>
+<Id>text</Id>
+<UniqueId>c0_text</UniqueId>
+<Supers><IsOverlapping>false</IsOverlapping>
+<Super><ParentId></ParentId>
+<Position><Start><IntLiteral>3</IntLiteral>
+<IntLiteral>8</IntLiteral>
+</Start>
+<End><IntLiteral>3</IntLiteral>
+<IntLiteral>14</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>string</Id>
+<IsTop>true</IsTop>
+</Exp></Super>
+</Supers>
+<Card><Min><IntLiteral>1</IntLiteral>
+</Min>
+<Max><IntLiteral>1</IntLiteral>
+</Max>
+</Card>
+<GlobalCard><Min><IntLiteral>1</IntLiteral>
+</Min>
+<Max><IntLiteral>1</IntLiteral>
+</Max>
+</GlobalCard>
+</Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e0_</ParentId>
+<Position><Start><IntLiteral>3</IntLiteral>
+<IntLiteral>15</IntLiteral>
+</Start>
+<End><IntLiteral>3</IntLiteral>
+<IntLiteral>28</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IFunctionExp"><Operation>=&gt;</Operation>
+<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e1_</ParentId>
+<Position><Start><IntLiteral>3</IntLiteral>
+<IntLiteral>15</IntLiteral>
+</Start>
+<End><IntLiteral>3</IntLiteral>
+<IntLiteral>28</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>e2_</ParentId>
+<Position><Start><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</Start>
+<End><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>c0_text</Id>
+<IsTop>true</IsTop>
+</Exp></BodyParentExp>
+</Exp></Argument>
+<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e3_</ParentId>
+<Position><Start><IntLiteral>3</IntLiteral>
+<IntLiteral>15</IntLiteral>
+</Start>
+<End><IntLiteral>3</IntLiteral>
+<IntLiteral>28</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
+<Argument><Type xsi:type="cl:IString" /><ParentId></ParentId>
+<Position><Start><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</Start>
+<End><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e4_</ParentId>
+<Position><Start><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</Start>
+<End><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>c0_text</Id>
+<IsTop>true</IsTop>
+</Exp></Argument>
+<Argument><Type xsi:type="cl:IString" /><ParentId></ParentId>
+<Position><Start><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</Start>
+<End><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>ref</Id>
+<IsTop>false</IsTop>
+</Exp></Argument>
+</Exp></Argument>
+<Argument><Type xsi:type="cl:IString" /><ParentId>e5_</ParentId>
+<Position><Start><IntLiteral>3</IntLiteral>
+<IntLiteral>17</IntLiteral>
+</Start>
+<End><IntLiteral>3</IntLiteral>
+<IntLiteral>28</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IStringExp"><StringLiteral>"some text"</StringLiteral>
+</Exp></Argument>
+</Exp></Argument>
+</Exp></ParentExp>
+</Declaration><Declaration xsi:type="cl:IClafer"><Position><Start><IntLiteral>4</IntLiteral>
+<IntLiteral>1</IntLiteral>
+</Start>
+<End><IntLiteral>4</IntLiteral>
+<IntLiteral>29</IntLiteral>
+</End>
+</Position>
+<IsAbstract>false</IsAbstract>
+<GroupCard><IsKeyword>false</IsKeyword>
+<Interval><Min><IntLiteral>0</IntLiteral>
+</Min>
+<Max><IntLiteral>-1</IntLiteral>
+</Max>
+</Interval>
+</GroupCard>
+<Id>text1</Id>
+<UniqueId>c0_text1</UniqueId>
+<Supers><IsOverlapping>false</IsOverlapping>
+<Super><ParentId></ParentId>
+<Position><Start><IntLiteral>4</IntLiteral>
+<IntLiteral>9</IntLiteral>
+</Start>
+<End><IntLiteral>4</IntLiteral>
+<IntLiteral>15</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>string</Id>
+<IsTop>true</IsTop>
+</Exp></Super>
+</Supers>
+<Card><Min><IntLiteral>1</IntLiteral>
+</Min>
+<Max><IntLiteral>1</IntLiteral>
+</Max>
+</Card>
+<GlobalCard><Min><IntLiteral>1</IntLiteral>
+</Min>
+<Max><IntLiteral>1</IntLiteral>
+</Max>
+</GlobalCard>
+</Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e6_</ParentId>
+<Position><Start><IntLiteral>4</IntLiteral>
+<IntLiteral>16</IntLiteral>
+</Start>
+<End><IntLiteral>4</IntLiteral>
+<IntLiteral>29</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IFunctionExp"><Operation>=&gt;</Operation>
+<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e7_</ParentId>
+<Position><Start><IntLiteral>4</IntLiteral>
+<IntLiteral>16</IntLiteral>
+</Start>
+<End><IntLiteral>4</IntLiteral>
+<IntLiteral>29</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>e8_</ParentId>
+<Position><Start><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</Start>
+<End><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>c0_text1</Id>
+<IsTop>true</IsTop>
+</Exp></BodyParentExp>
+</Exp></Argument>
+<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e9_</ParentId>
+<Position><Start><IntLiteral>4</IntLiteral>
+<IntLiteral>16</IntLiteral>
+</Start>
+<End><IntLiteral>4</IntLiteral>
+<IntLiteral>29</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
+<Argument><Type xsi:type="cl:IString" /><ParentId></ParentId>
+<Position><Start><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</Start>
+<End><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e10_</ParentId>
+<Position><Start><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</Start>
+<End><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>c0_text1</Id>
+<IsTop>true</IsTop>
+</Exp></Argument>
+<Argument><Type xsi:type="cl:IString" /><ParentId></ParentId>
+<Position><Start><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</Start>
+<End><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>ref</Id>
+<IsTop>false</IsTop>
+</Exp></Argument>
+</Exp></Argument>
+<Argument><Type xsi:type="cl:IString" /><ParentId>e11_</ParentId>
+<Position><Start><IntLiteral>4</IntLiteral>
+<IntLiteral>18</IntLiteral>
+</Start>
+<End><IntLiteral>4</IntLiteral>
+<IntLiteral>29</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IStringExp"><StringLiteral>"some text"</StringLiteral>
+</Exp></Argument>
+</Exp></Argument>
+</Exp></ParentExp>
+</Declaration><Declaration xsi:type="cl:IClafer"><Position><Start><IntLiteral>5</IntLiteral>
+<IntLiteral>1</IntLiteral>
+</Start>
+<End><IntLiteral>5</IntLiteral>
+<IntLiteral>29</IntLiteral>
+</End>
+</Position>
+<IsAbstract>false</IsAbstract>
+<GroupCard><IsKeyword>false</IsKeyword>
+<Interval><Min><IntLiteral>0</IntLiteral>
+</Min>
+<Max><IntLiteral>-1</IntLiteral>
+</Max>
+</Interval>
+</GroupCard>
+<Id>text2</Id>
+<UniqueId>c0_text2</UniqueId>
+<Supers><IsOverlapping>false</IsOverlapping>
+<Super><ParentId></ParentId>
+<Position><Start><IntLiteral>5</IntLiteral>
+<IntLiteral>9</IntLiteral>
+</Start>
+<End><IntLiteral>5</IntLiteral>
+<IntLiteral>15</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>string</Id>
+<IsTop>true</IsTop>
+</Exp></Super>
+</Supers>
+<Card><Min><IntLiteral>1</IntLiteral>
+</Min>
+<Max><IntLiteral>1</IntLiteral>
+</Max>
+</Card>
+<GlobalCard><Min><IntLiteral>1</IntLiteral>
+</Min>
+<Max><IntLiteral>1</IntLiteral>
+</Max>
+</GlobalCard>
+</Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e12_</ParentId>
+<Position><Start><IntLiteral>5</IntLiteral>
+<IntLiteral>16</IntLiteral>
+</Start>
+<End><IntLiteral>5</IntLiteral>
+<IntLiteral>29</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IFunctionExp"><Operation>=&gt;</Operation>
+<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e13_</ParentId>
+<Position><Start><IntLiteral>5</IntLiteral>
+<IntLiteral>16</IntLiteral>
+</Start>
+<End><IntLiteral>5</IntLiteral>
+<IntLiteral>29</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>e14_</ParentId>
+<Position><Start><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</Start>
+<End><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>c0_text2</Id>
+<IsTop>true</IsTop>
+</Exp></BodyParentExp>
+</Exp></Argument>
+<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e15_</ParentId>
+<Position><Start><IntLiteral>5</IntLiteral>
+<IntLiteral>16</IntLiteral>
+</Start>
+<End><IntLiteral>5</IntLiteral>
+<IntLiteral>29</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
+<Argument><Type xsi:type="cl:IString" /><ParentId></ParentId>
+<Position><Start><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</Start>
+<End><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e16_</ParentId>
+<Position><Start><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</Start>
+<End><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>c0_text2</Id>
+<IsTop>true</IsTop>
+</Exp></Argument>
+<Argument><Type xsi:type="cl:IString" /><ParentId></ParentId>
+<Position><Start><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</Start>
+<End><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>ref</Id>
+<IsTop>false</IsTop>
+</Exp></Argument>
+</Exp></Argument>
+<Argument><Type xsi:type="cl:IString" /><ParentId>e17_</ParentId>
+<Position><Start><IntLiteral>5</IntLiteral>
+<IntLiteral>18</IntLiteral>
+</Start>
+<End><IntLiteral>5</IntLiteral>
+<IntLiteral>29</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IStringExp"><StringLiteral>"some text"</StringLiteral>
+</Exp></Argument>
+</Exp></Argument>
+</Exp></ParentExp>
+</Declaration><Declaration xsi:type="cl:IClafer"><Position><Start><IntLiteral>7</IntLiteral>
+<IntLiteral>1</IntLiteral>
+</Start>
+<End><IntLiteral>8</IntLiteral>
+<IntLiteral>23</IntLiteral>
+</End>
+</Position>
+<IsAbstract>false</IsAbstract>
+<GroupCard><IsKeyword>false</IsKeyword>
+<Interval><Min><IntLiteral>0</IntLiteral>
+</Min>
+<Max><IntLiteral>-1</IntLiteral>
+</Max>
+</Interval>
+</GroupCard>
+<Id>equal1</Id>
+<UniqueId>c0_equal1</UniqueId>
+<Supers><IsOverlapping>false</IsOverlapping>
+<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Position><Start><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</Start>
+<End><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>clafer</Id>
+<IsTop>false</IsTop>
+</Exp></Super>
+</Supers>
+<Card><Min><IntLiteral>0</IntLiteral>
+</Min>
+<Max><IntLiteral>1</IntLiteral>
+</Max>
+</Card>
+<GlobalCard><Min><IntLiteral>0</IntLiteral>
+</Min>
+<Max><IntLiteral>1</IntLiteral>
+</Max>
+</GlobalCard>
+<Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e18_</ParentId>
+<Position><Start><IntLiteral>8</IntLiteral>
+<IntLiteral>11</IntLiteral>
+</Start>
+<End><IntLiteral>8</IntLiteral>
+<IntLiteral>23</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
+<Argument><Type xsi:type="cl:IString" /><ParentId></ParentId>
+<Position><Start><IntLiteral>8</IntLiteral>
+<IntLiteral>11</IntLiteral>
+</Start>
+<End><IntLiteral>8</IntLiteral>
+<IntLiteral>15</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e19_</ParentId>
+<Position><Start><IntLiteral>8</IntLiteral>
+<IntLiteral>11</IntLiteral>
+</Start>
+<End><IntLiteral>8</IntLiteral>
+<IntLiteral>15</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>c0_text</Id>
+<IsTop>true</IsTop>
+</Exp></Argument>
+<Argument><Type xsi:type="cl:IString" /><ParentId></ParentId>
+<Position><Start><IntLiteral>8</IntLiteral>
+<IntLiteral>11</IntLiteral>
+</Start>
+<End><IntLiteral>8</IntLiteral>
+<IntLiteral>15</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>ref</Id>
+<IsTop>false</IsTop>
+</Exp></Argument>
+</Exp></Argument>
+<Argument><Type xsi:type="cl:IString" /><ParentId></ParentId>
+<Position><Start><IntLiteral>8</IntLiteral>
+<IntLiteral>18</IntLiteral>
+</Start>
+<End><IntLiteral>8</IntLiteral>
+<IntLiteral>23</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e20_</ParentId>
+<Position><Start><IntLiteral>8</IntLiteral>
+<IntLiteral>18</IntLiteral>
+</Start>
+<End><IntLiteral>8</IntLiteral>
+<IntLiteral>23</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>c0_text1</Id>
+<IsTop>true</IsTop>
+</Exp></Argument>
+<Argument><Type xsi:type="cl:IString" /><ParentId></ParentId>
+<Position><Start><IntLiteral>8</IntLiteral>
+<IntLiteral>18</IntLiteral>
+</Start>
+<End><IntLiteral>8</IntLiteral>
+<IntLiteral>23</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>ref</Id>
+<IsTop>false</IsTop>
+</Exp></Argument>
+</Exp></Argument>
+</Exp></ParentExp>
+</Declaration></Declaration><Declaration xsi:type="cl:IClafer"><Position><Start><IntLiteral>10</IntLiteral>
+<IntLiteral>1</IntLiteral>
+</Start>
+<End><IntLiteral>11</IntLiteral>
+<IntLiteral>24</IntLiteral>
+</End>
+</Position>
+<IsAbstract>false</IsAbstract>
+<GroupCard><IsKeyword>false</IsKeyword>
+<Interval><Min><IntLiteral>0</IntLiteral>
+</Min>
+<Max><IntLiteral>-1</IntLiteral>
+</Max>
+</Interval>
+</GroupCard>
+<Id>equal2</Id>
+<UniqueId>c0_equal2</UniqueId>
+<Supers><IsOverlapping>false</IsOverlapping>
+<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Position><Start><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</Start>
+<End><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>clafer</Id>
+<IsTop>false</IsTop>
+</Exp></Super>
+</Supers>
+<Card><Min><IntLiteral>0</IntLiteral>
+</Min>
+<Max><IntLiteral>1</IntLiteral>
+</Max>
+</Card>
+<GlobalCard><Min><IntLiteral>0</IntLiteral>
+</Min>
+<Max><IntLiteral>1</IntLiteral>
+</Max>
+</GlobalCard>
+<Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e21_</ParentId>
+<Position><Start><IntLiteral>11</IntLiteral>
+<IntLiteral>11</IntLiteral>
+</Start>
+<End><IntLiteral>11</IntLiteral>
+<IntLiteral>24</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
+<Argument><Type xsi:type="cl:IString" /><ParentId></ParentId>
+<Position><Start><IntLiteral>11</IntLiteral>
+<IntLiteral>11</IntLiteral>
+</Start>
+<End><IntLiteral>11</IntLiteral>
+<IntLiteral>16</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e22_</ParentId>
+<Position><Start><IntLiteral>11</IntLiteral>
+<IntLiteral>11</IntLiteral>
+</Start>
+<End><IntLiteral>11</IntLiteral>
+<IntLiteral>16</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>c0_text1</Id>
+<IsTop>true</IsTop>
+</Exp></Argument>
+<Argument><Type xsi:type="cl:IString" /><ParentId></ParentId>
+<Position><Start><IntLiteral>11</IntLiteral>
+<IntLiteral>11</IntLiteral>
+</Start>
+<End><IntLiteral>11</IntLiteral>
+<IntLiteral>16</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>ref</Id>
+<IsTop>false</IsTop>
+</Exp></Argument>
+</Exp></Argument>
+<Argument><Type xsi:type="cl:IString" /><ParentId></ParentId>
+<Position><Start><IntLiteral>11</IntLiteral>
+<IntLiteral>19</IntLiteral>
+</Start>
+<End><IntLiteral>11</IntLiteral>
+<IntLiteral>24</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e23_</ParentId>
+<Position><Start><IntLiteral>11</IntLiteral>
+<IntLiteral>19</IntLiteral>
+</Start>
+<End><IntLiteral>11</IntLiteral>
+<IntLiteral>24</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>c0_text2</Id>
+<IsTop>true</IsTop>
+</Exp></Argument>
+<Argument><Type xsi:type="cl:IString" /><ParentId></ParentId>
+<Position><Start><IntLiteral>11</IntLiteral>
+<IntLiteral>19</IntLiteral>
+</Start>
+<End><IntLiteral>11</IntLiteral>
+<IntLiteral>24</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>ref</Id>
+<IsTop>false</IsTop>
+</Exp></Argument>
+</Exp></Argument>
+</Exp></ParentExp>
+</Declaration></Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e24_</ParentId>
+<Position><Start><IntLiteral>14</IntLiteral>
+<IntLiteral>3</IntLiteral>
+</Start>
+<End><IntLiteral>14</IntLiteral>
+<IntLiteral>9</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>e25_</ParentId>
+<Position><Start><IntLiteral>14</IntLiteral>
+<IntLiteral>3</IntLiteral>
+</Start>
+<End><IntLiteral>14</IntLiteral>
+<IntLiteral>9</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>c0_equal1</Id>
+<IsTop>true</IsTop>
+</Exp></BodyParentExp>
+</Exp></ParentExp>
+</Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e26_</ParentId>
+<Position><Start><IntLiteral>15</IntLiteral>
+<IntLiteral>3</IntLiteral>
+</Start>
+<End><IntLiteral>15</IntLiteral>
+<IntLiteral>9</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>e27_</ParentId>
+<Position><Start><IntLiteral>15</IntLiteral>
+<IntLiteral>3</IntLiteral>
+</Start>
+<End><IntLiteral>15</IntLiteral>
+<IntLiteral>9</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>c0_equal2</Id>
+<IsTop>true</IsTop>
+</Exp></BodyParentExp>
+</Exp></ParentExp>
+</Declaration></Module>

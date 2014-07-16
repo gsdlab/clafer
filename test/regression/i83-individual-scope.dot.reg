@@ -1,0 +1,13 @@
+digraph "i83-individual-scope"
+{
+rankdir=BT;
+ranksep=0.3;
+nodesep=0.1;
+graph [fontname=Sans fontsize=11];
+node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
+edge [fontname=Sans fontsize=11];
+"c0_a" [label="a ?" URL="#c0_a" tooltip="a ?&#10;"];
+"c0_b" [label="b" URL="#c0_b" tooltip="b&#10;"];
+"c0_c" [label="c +" URL="#c0_c" tooltip="c +&#10;"];
+"c0_d" [label="d 2..*" URL="#c0_d" tooltip="d 2..*&#10;  e ?&#10;  f&#10;  g 2..*&#10;"];
+}

@@ -1,0 +1,17 @@
+
+<div>
+<span class="claferDecl" id="c0_claferA">claferA</span>
+  <div class="indent">
+  <span class="claferDecl" id="c0_claferB">claferB</span>
+    <div class="indent">
+    <span class="keyword">[</span> <a href="#parent"><span class="reference">parent</span></a> <span class="keyword">]</span></div>
+    <div class="indent">
+    <span class="claferDecl" id="c0_claferC">claferC</span>
+      <div class="indent">
+      <span class="keyword">[</span> <a href="#Lookup failed"><span class="reference">parent</span></a>.<a href="#Lookup failed"><span class="reference">claferC</span></a>.<a href="#Lookup failed"><span class="reference">parent</span></a> <span class="keyword">]</span></div>
+      <div class="indent">
+      <span class="keyword">[</span> <a href="#parent"><span class="reference">parent</span></a>.<a href="#c0_claferC"><span class="reference">claferC</span></a> <span class="keyword">]</span></div>
+    </div>
+  </div>
+</div>
+

@@ -1,0 +1,32 @@
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Component">Component</span>
+  <div class="indent">
+  <span class="claferDecl" id="c0_energy">energy</span><span class="keyword"> ->></span> <a href="#integer"><span class="reference">integer</span></a></div>
+</div>
+
+
+<div>
+<span class="claferDecl" id="c0_c1">c1</span><span class="keyword"> :</span> <a href="#c0_Component"><span class="reference">Component</span></a>
+  <div class="indent">
+  <span class="keyword">[</span> <a href="#c0_energy"><span class="reference">energy</span></a> = 1 <span class="keyword">]</span></div>
+</div>
+
+
+<div>
+<span class="claferDecl" id="c0_c2">c2</span><span class="keyword"> :</span> <a href="#c0_Component"><span class="reference">Component</span></a>
+  <div class="indent">
+  <span class="keyword">[</span> <a href="#c0_energy"><span class="reference">energy</span></a> = 1 <span class="keyword">]</span></div>
+</div>
+
+
+<div>
+<span class="claferDecl" id="c0_c3">c3</span><span class="keyword"> :</span> <a href="#c0_Component"><span class="reference">Component</span></a>
+  <div class="indent">
+  <span class="keyword">[</span> <a href="#c0_energy"><span class="reference">energy</span></a> = 1 <span class="keyword">]</span></div>
+</div>
+
+
+<div>
+<span class="claferDecl" id="c0_total">total</span><span class="keyword"> ->></span> <a href="#integer"><span class="reference">integer</span></a> = sum <a href="#c0_Component"><span class="reference">Component</span></a>.<a href="#c0_energy"><span class="reference">energy</span></a></div>
+

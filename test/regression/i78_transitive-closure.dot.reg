@@ -1,0 +1,25 @@
+digraph "i78_transitive-closure"
+{
+rankdir=BT;
+ranksep=0.3;
+nodesep=0.1;
+graph [fontname=Sans fontsize=11];
+node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
+edge [fontname=Sans fontsize=11];
+"c0_TimeLevel" [label="abstract TimeLevel" URL="#c0_TimeLevel" tooltip="abstract TimeLevel&#10;  aggregatesTo -> TimeLevel ?&#10;"];
+"c0_TimeLevel" -> "c0_TimeLevel" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=aggregatesTo];
+"c0_YearLevel" [label="abstract YearLevel : TimeLevel" URL="#c0_YearLevel" tooltip="abstract YearLevel : TimeLevel&#10;  [ no aggregatesTo ]&#10;"];
+"c0_YearLevel" -> "c0_TimeLevel" [arrowhead=onormal constraint=true weight=100];
+"c0_MonthLevel" [label="abstract MonthLevel : TimeLevel" URL="#c0_MonthLevel" tooltip="abstract MonthLevel : TimeLevel&#10;  [ aggregatesTo in YearLevel ]&#10;"];
+"c0_MonthLevel" -> "c0_TimeLevel" [arrowhead=onormal constraint=true weight=100];
+"c0_WeekLevel" [label="abstract WeekLevel : TimeLevel" URL="#c0_WeekLevel" tooltip="abstract WeekLevel : TimeLevel&#10;  [ aggregatesTo in MonthLevel ]&#10;"];
+"c0_WeekLevel" -> "c0_TimeLevel" [arrowhead=onormal constraint=true weight=100];
+"c0_Year2012" [label="Year2012 : YearLevel" URL="#c0_Year2012" tooltip="Year2012 : YearLevel&#10;"];
+"c0_Year2012" -> "c0_YearLevel" [arrowhead=onormal constraint=true weight=100];
+"c0_Jan2012" [label="Jan2012 : MonthLevel" URL="#c0_Jan2012" tooltip="Jan2012 : MonthLevel&#10;  [ this.aggregatesTo = Year2012 ]&#10;"];
+"c0_Jan2012" -> "c0_MonthLevel" [arrowhead=onormal constraint=true weight=100];
+"c0_Week1" [label="Week1 : WeekLevel" URL="#c0_Week1" tooltip="Week1 : WeekLevel&#10;  [ this.aggregatesTo = Jan2012 ]&#10;"];
+"c0_Week1" -> "c0_WeekLevel" [arrowhead=onormal constraint=true weight=100];
+"c0_Week1AggregatesTo" [label="Week1AggregatesTo -> TimeLevel *" URL="#c0_Week1AggregatesTo" tooltip="Week1AggregatesTo -> TimeLevel *&#10;"];
+"c0_Week1AggregatesTo" -> "c0_TimeLevel" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent];
+}

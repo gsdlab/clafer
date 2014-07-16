@@ -1,0 +1,57 @@
+
+<div>
+<span class="claferDecl" id="c0_Office">Office</span>
+  <div class="indent">
+  <span class="claferDecl" id="c0_Printer">Printer</span> ?
+    <div class="indent">
+    <span class="claferDecl" id="c0_resolution">resolution</span><span class="keyword"> :</span> <a href="#integer"><span class="reference">integer</span></a></div>
+    <div class="indent">
+    <span class="claferDecl" id="c0_Cartridge">Cartridge</span> 1..4
+      <div class="indent">
+      <span class="claferDecl" id="c0_inkVolume">inkVolume</span><span class="keyword"> :</span> <a href="#integer"><span class="reference">integer</span></a></div>
+      <div class="indent">
+      <span class="keyword">or</span> <span class="claferDecl" id="c0_Speed">Speed</span>
+        <div class="indent">
+        <span class="claferDecl" id="c0_High">High</span></div>
+        <div class="indent">
+        <span class="claferDecl" id="c0_Low">Low</span></div>
+      </div>
+      <div class="indent">
+      <span class="claferDecl" id="c0_Turbo">Turbo</span> ?</div>
+    </div>
+    <div class="indent">
+    <span class="keyword">xor</span> <span class="claferDecl" id="c0_Type">Type</span>
+      <div class="indent">
+      <span class="claferDecl" id="c0_Color">Color</span></div>
+      <div class="indent">
+      <span class="claferDecl" id="c0_BW">BW</span></div>
+    </div>
+  </div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_Scanner">Scanner</span> ?
+    <div class="indent">
+    <span class="claferDecl" id="c0_GreenMode">GreenMode</span> ?</div>
+    <div class="indent">
+    <span class="claferDecl" id="c0_Head">Head</span> 1..2 </div>
+  </div>
+</div>
+
+
+<div>
+<span class="claferDecl" id="c0_PrinterPool">PrinterPool</span>
+  <div class="indent">
+  <span class="claferDecl" id="c0_fax">fax</span> ?</div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_printer">printer</span> ?</div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_copier">copier</span> ?</div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_scan">scan</span> ?</div>
+  <div class="indent">
+  <span class="keyword">[</span> <a href="#c0_fax"><span class="reference">fax</span></a> => <a href="#c0_printer"><span class="reference">printer</span></a> <span class="keyword">]</span></div>
+</div>
+
+
+<div>
+<span class="keyword">[</span> <a href="#c0_fax"><span class="reference">fax</span></a> => <a href="#c0_printer"><span class="reference">printer</span></a> && <a href="#c0_copier"><span class="reference">copier</span></a> => <a href="#c0_fax"><span class="reference">fax</span></a> && <a href="#c0_printer"><span class="reference">printer</span></a> <span class="keyword">]</span></div>
+

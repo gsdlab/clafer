@@ -1,0 +1,11 @@
+
+<div>
+<span class="claferDecl" id="c0_A">A</span>
+  <div class="indent">
+  <span class="claferDecl" id="c0_x">x</span> ?</div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_y">y</span> ?</div>
+  <div class="indent">
+  <span class="keyword">[</span> <a href="#c0_x"><span class="reference">x</span></a> =>  ! <a href="#c0_y"><span class="reference">y</span></a> <span class="keyword">]</span><span class="keyword">[</span> <a href="#c0_y"><span class="reference">y</span></a> =>  ! <a href="#c0_x"><span class="reference">x</span></a> <span class="keyword">]</span></div>
+</div>
+

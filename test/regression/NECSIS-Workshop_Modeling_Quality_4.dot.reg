@@ -1,0 +1,30 @@
+digraph "NECSIS-Workshop_Modeling_Quality_4"
+{
+rankdir=BT;
+ranksep=0.3;
+nodesep=0.1;
+graph [fontname=Sans fontsize=11];
+node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
+edge [fontname=Sans fontsize=11];
+"c0_aCar" [label="aCar : Car" URL="#c0_aCar" tooltip="aCar : Car&#10;"];
+"c0_aCar" -> "c0_Car" [arrowhead=onormal constraint=true weight=100];
+"c0_Car" [label="abstract Car" URL="#c0_Car" tooltip="abstract Car&#10;  ABS : ComfortFeature ?&#10;    [ cost = 2 ]&#10;    [ mass = 1 ]&#10;    [ comfort = 1 ]&#10;  xor Transmission : Feature&#10;    [ cost = 0 ]&#10;    [ mass = 0 ]&#10;    Automatic : FuelFeature&#10;      [ fuel = 2 ]&#10;      [ mass = 1 ]&#10;      [ comfort = 2 ]&#10;      [ cost = 4 ]&#10;    Manual : FuelFeature&#10;      [ fuel = 0 ]&#10;      [ mass = 1 ]&#10;      [ comfort = 1 ]&#10;      [ cost = 3 ]&#10;  FCA : FuelFeature ?&#10;    [ fuel = 2 ]&#10;    [ mass = 2 ]&#10;    [ comfort = 4 ]&#10;    [ cost = 5 ]&#10;    xor Sensor : Feature&#10;      [ cost = 0 ]&#10;      [ mass = 0 ]&#10;      Radar : Feature&#10;        [ cost = 3 ]&#10;        [ mass = 1 ]&#10;      Lidar : Feature&#10;        [ cost = 5 ]&#10;        [ mass = 1 ]&#10;    xor Alert : Feature ?&#10;      [ cost = 0 ]&#10;      [ mass = 0 ]&#10;      Haptic : ComfortFeature&#10;        [ comfort = 4 ]&#10;        [ cost = 2 ]&#10;        [ mass = 1 ]&#10;      Audible : ComfortFeature&#10;        [ comfort = 2 ]&#10;        [ cost = 1 ]&#10;        [ mass = 1 ]&#10;  CC : FuelFeature ?&#10;    [ fuel = 1 ]&#10;    [ mass = 1 ]&#10;    [ comfort = 3 ]&#10;    [ cost = 4 ]&#10;    ACC : FuelFeature ?&#10;      [ fuel = 2 ]&#10;      [ mass = 2 ]&#10;      [ comfort = 6 ]&#10;      [ cost = 3 ]&#10;  [ ACC => FCA ]&#10;  total_cost : integer = sum Feature.cost&#10;  total_comfort : integer = sum ComfortFeature.cost&#10;  total_fuel : integer = sum FuelFeature.cost&#10;  total_mass : integer = sum FuelFeature.mass&#10;"];
+"c0_Car" -> "c0_ComfortFeature" [arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];
+"c0_Car" -> "c0_Feature" [arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];
+"c0_Car" -> "c0_FuelFeature" [arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];
+"c0_Car" -> "c0_FuelFeature" [arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];
+"c0_Car" -> "c0_FuelFeature" [arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];
+"c0_Car" -> "c0_Feature" [arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];
+"c0_Car" -> "c0_Feature" [arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];
+"c0_Car" -> "c0_Feature" [arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];
+"c0_Car" -> "c0_Feature" [arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];
+"c0_Car" -> "c0_ComfortFeature" [arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];
+"c0_Car" -> "c0_ComfortFeature" [arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];
+"c0_Car" -> "c0_FuelFeature" [arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];
+"c0_Car" -> "c0_FuelFeature" [arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];
+"c0_Feature" [label="abstract Feature" URL="#c0_Feature" tooltip="abstract Feature&#10;  cost : integer&#10;  mass : integer&#10;"];
+"c0_ComfortFeature" [label="abstract ComfortFeature : Feature" URL="#c0_ComfortFeature" tooltip="abstract ComfortFeature : Feature&#10;  comfort : integer&#10;"];
+"c0_ComfortFeature" -> "c0_Feature" [arrowhead=onormal constraint=true weight=100];
+"c0_FuelFeature" [label="abstract FuelFeature : ComfortFeature" URL="#c0_FuelFeature" tooltip="abstract FuelFeature : ComfortFeature&#10;  fuel : integer&#10;"];
+"c0_FuelFeature" -> "c0_ComfortFeature" [arrowhead=onormal constraint=true weight=100];
+}

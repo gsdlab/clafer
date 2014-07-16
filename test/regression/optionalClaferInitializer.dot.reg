@@ -1,0 +1,11 @@
+digraph "optionalClaferInitializer"
+{
+rankdir=BT;
+ranksep=0.3;
+nodesep=0.1;
+graph [fontname=Sans fontsize=11];
+node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
+edge [fontname=Sans fontsize=11];
+"c0_intVal" [label="intVal ->> integer ? = 1" URL="#c0_intVal" tooltip="intVal ->> integer ? = 1&#10;"];
+"c0_stringVal" [label="stringVal ->> string ? = "aaa"" URL="#c0_stringVal" tooltip="stringVal ->> string ? = "aaa"&#10;"];
+}

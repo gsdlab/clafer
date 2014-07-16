@@ -1,0 +1,21 @@
+
+<div>
+<span class="claferDecl" id="c0_a">a</span>
+  <div class="indent">
+  <span class="claferDecl" id="c0_b">b</span> ?</div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_c">c</span> 0..1 </div>
+</div>
+
+
+<div>
+<span class="claferDecl" id="c0_d">d</span> 1..1 </div>
+
+
+<div>
+<span class="claferDecl" id="c0_e">e</span> 0..0 </div>
+
+
+<div>
+<span class="claferDecl" id="c0_f">f</span> 1</div>
+

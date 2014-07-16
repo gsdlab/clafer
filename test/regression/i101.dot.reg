@@ -1,0 +1,13 @@
+digraph "i101"
+{
+rankdir=BT;
+ranksep=0.3;
+nodesep=0.1;
+graph [fontname=Sans fontsize=11];
+node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
+edge [fontname=Sans fontsize=11];
+"c0_Path" [label="abstract Path" URL="#c0_Path" tooltip="abstract Path&#10;  p : Path ?&#10;  isDir ?&#10;  [ this.isDir => this.p ]&#10;"];
+"c0_Path" -> "c0_Path" [arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];
+"c0_pth" [label="pth : Path" URL="#c0_pth" tooltip="pth : Path&#10;"];
+"c0_pth" -> "c0_Path" [arrowhead=onormal constraint=true weight=100];
+}

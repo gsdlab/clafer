@@ -1,0 +1,20 @@
+digraph "EDMPoster_Intro"
+{
+rankdir=BT;
+ranksep=0.3;
+nodesep=0.1;
+graph [fontname=Sans fontsize=11];
+node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
+edge [fontname=Sans fontsize=11];
+"c0_ExamplePhone1" [label="ExamplePhone1" URL="#c0_ExamplePhone1" tooltip="ExamplePhone1&#10;  display&#10;    LCD&#10;  GSM&#10;  CPU&#10;  keyboard&#10;"];
+"c0_ExamplePhone2" [label="ExamplePhone2" URL="#c0_ExamplePhone2" tooltip="ExamplePhone2&#10;  display&#10;    OLED&#10;  GSM&#10;  touchscreen&#10;"];
+"c0_ExampleTablet1" [label="ExampleTablet1" URL="#c0_ExampleTablet1" tooltip="ExampleTablet1&#10;  display&#10;    AMOLED&#10;  HSPA&#10;  CPU 4&#10;  touchscreen&#10;"];
+"c0_ExamplePhone3" [label="ExamplePhone3" URL="#c0_ExamplePhone3" tooltip="ExamplePhone3&#10;  display&#10;    LCD&#10;  GSM&#10;  CPU 4&#10;  keyboard&#10;"];
+"c0_ExampleTablet2" [label="ExampleTablet2" URL="#c0_ExampleTablet2" tooltip="ExampleTablet2&#10;  display&#10;    AMOLED&#10;  HSPA&#10;  CPU 4&#10;  keyboard&#10;"];
+"c0_AndroidDevice1" [label="abstract AndroidDevice1" URL="#c0_AndroidDevice1" tooltip="abstract AndroidDevice1&#10;  xor display&#10;    LCD&#10;    OLED&#10;    AMOLED&#10;      [ no keyboard ]&#10;  GSM&#10;  HSPA ?&#10;  CPU 1..4&#10;  xor input&#10;    keyboard&#10;    touchscreen&#10;"];
+"c0_AndroidPhone" [label="abstract AndroidPhone : AndroidDevice" URL="#c0_AndroidPhone" tooltip="abstract AndroidPhone : AndroidDevice&#10;  [ GSM ]&#10;  [ # CPU < 4 ]&#10;"];
+"c0_AndroidPhone" -> "c0_AndroidDevice" [arrowhead=onormal constraint=true weight=100];
+"c0_AndroidDevice" [label="abstract AndroidDevice" URL="#c0_AndroidDevice" tooltip="abstract AndroidDevice&#10;  xor display&#10;    LCD&#10;    OLED&#10;    AMOLED&#10;      [ no keyboard ]&#10;  GSM ?&#10;  HSPA ?&#10;  CPU 1..4&#10;  xor input&#10;    keyboard&#10;    touchscreen&#10;"];
+"c0_AndroidPhone4" [label="AndroidPhone4 : AndroidPhone" URL="#c0_AndroidPhone4" tooltip="AndroidPhone4 : AndroidPhone&#10;  display&#10;    AMOLED&#10;  GSM&#10;  HSPA&#10;  CPU 2&#10;  input&#10;    touchscreen&#10;"];
+"c0_AndroidPhone4" -> "c0_AndroidPhone" [arrowhead=onormal constraint=true weight=100];
+}

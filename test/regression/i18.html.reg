@@ -1,0 +1,14 @@
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_A">A</span>
+  <div class="indent">
+  <span class="claferDecl" id="c0_s">s</span><span class="keyword"> :</span> <a href="#string"><span class="reference">string</span></a> ?</div>
+</div>
+
+
+<div>
+<span class="claferDecl" id="c0_A1">A1</span><span class="keyword"> :</span> <a href="#c0_A"><span class="reference">A</span></a>
+  <div class="indent">
+  <span class="keyword">[</span> <a href="#c0_s"><span class="reference">s</span></a> = "text value" <span class="keyword">]</span></div>
+</div>
+

@@ -1,0 +1,40 @@
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Value">Value</span></div>
+
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Attribute">Attribute</span>
+  <div class="indent">
+  <span class="claferDecl" id="c0_value">value</span><span class="keyword"> -></span> <a href="#c0_Value"><span class="reference">Value</span></a></div>
+</div>
+
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_ActionName">ActionName</span><span class="keyword"> :</span> <a href="#c0_Attribute"><span class="reference">Attribute</span></a></div>
+
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Role">Role</span><span class="keyword"> :</span> <a href="#c0_Attribute"><span class="reference">Attribute</span></a></div>
+
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_ResourceName">ResourceName</span><span class="keyword"> :</span> <a href="#c0_Attribute"><span class="reference">Attribute</span></a></div>
+
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Element">Element</span>
+  <div class="indent">
+  <span class="keyword">abstract</span> <span class="claferDecl" id="c0_attributes">attributes</span><span class="keyword"> :</span> <a href="#c0_Attribute"><span class="reference">Attribute</span></a> *</div>
+</div>
+
+<!-- # FRAGMENT /-->
+
+<div>
+<span class="keyword">enum</span> <span class="claferDecl" id="Lookup failed">Effect</span> = <span class="claferDecl" id="Lookup failed">Permit</span> | <span class="claferDecl" id="Lookup failed">Deny</span> | <span class="claferDecl" id="Lookup failed">NotApplicable</span> | <span class="claferDecl" id="Lookup failed">Indeterminate</span></div>
+
+<!-- # FRAGMENT /-->
+
+<div>
+<span class="keyword">enum</span> <span class="claferDecl" id="Lookup failed">CombiningAlgo</span> = <span class="claferDecl" id="Lookup failed">PermitOverrides</span> | <span class="claferDecl" id="Lookup failed">DenyOverrides</span> | <span class="claferDecl" id="Lookup failed">OnlyOneApplicable</span></div>
+

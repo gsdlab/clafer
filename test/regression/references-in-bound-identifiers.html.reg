@@ -1,0 +1,14 @@
+
+<div>
+<span class="claferDecl" id="c0_A">A</span>
+  <div class="indent">
+  <span class="claferDecl" id="c0_B">B</span><span class="keyword"> :</span> <a href="#integer"><span class="reference">integer</span></a> *
+    <div class="indent">
+    <span class="claferDecl" id="c0_C">C</span> ?</div>
+  </div>
+  <div class="indent">
+  <span class="keyword">[</span> all b<span class="keyword"> : </span><a href="#Lookup failed"><span class="reference">B</span></a> | <span class="keyword">some</span> <a href="#b"><span class="reference">b</span></a>.<a href="#c0_C"><span class="reference">C</span></a> <span class="keyword">]</span></div>
+  <div class="indent">
+  <span class="keyword">[</span> all b<span class="keyword"> : </span><a href="#Lookup failed"><span class="reference">B</span></a> | <a href="#b"><span class="reference">b</span></a> + 1 = 2 <span class="keyword">]</span></div>
+</div>
+

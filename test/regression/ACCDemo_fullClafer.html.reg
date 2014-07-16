@@ -1,0 +1,67 @@
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_car">car</span>
+  <div class="indent">
+  <span class="keyword">xor</span> <span class="claferDecl" id="c0_transmission">transmission</span>
+    <div class="indent">
+    <span class="claferDecl" id="c0_automatic">automatic</span></div>
+    <div class="indent">
+    <span class="claferDecl" id="c0_manual">manual</span></div>
+  </div>
+  <div class="indent">
+  `<a href="#c1_fca"><span class="reference">fca</span></a> ?</div>
+  <div class="indent">
+  `<a href="#c1_cc"><span class="reference">cc</span></a></div>
+  <div class="indent">
+  <span class="keyword">[</span> <a href="#c0_acc"><span class="reference">acc</span></a> => <a href="#c0_fca"><span class="reference">fca</span></a> <span class="keyword">]</span></div>
+</div>
+
+<!-- # FRAGMENT /-->
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c1_fca">fca</span>
+  <div class="indent">
+  <span class="keyword">xor</span> <span class="claferDecl" id="c0_sensor">sensor</span>
+    <div class="indent">
+    <span class="claferDecl" id="c0_radar">radar</span></div>
+    <div class="indent">
+    <span class="claferDecl" id="c0_lidar">lidar</span></div>
+  </div>
+</div>
+
+<!-- # FRAGMENT /-->
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c1_cc">cc</span>
+  <div class="indent">
+  <span class="claferDecl" id="c0_switches">switches</span> 2..3
+    <div class="indent">
+    <span class="claferDecl" id="c0_backlight">backlight</span> ?</div>
+  </div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_acc">acc</span> ?</div>
+</div>
+
+<!-- # FRAGMENT /-->
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_camaro">camaro</span><span class="keyword"> :</span> <a href="#c0_car"><span class="reference">car</span></a>
+  <div class="indent">
+  <span class="keyword">[</span> all s<span class="keyword"> : </span><a href="#Lookup failed"><span class="reference">switches</span></a> | <a href="#s"><span class="reference">s</span></a>.<a href="#c0_backlight"><span class="reference">backlight</span></a> <span class="keyword">]</span></div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_transformer">transformer</span> ?
+    <div class="indent">
+    <span class="keyword">[</span> # <a href="#c0_switches"><span class="reference">switches</span></a> = 3 <span class="keyword">]</span></div>
+  </div>
+</div>
+
+<!-- # FRAGMENT /-->
+
+<div>
+<span class="claferDecl" id="c0_bumbleBee">bumbleBee</span><span class="keyword"> :</span> <a href="#c0_camaro"><span class="reference">camaro</span></a>
+  <div class="indent">
+  <span class="keyword">[</span> <a href="#c0_transformer"><span class="reference">transformer</span></a> <span class="keyword">]</span></div>
+  <div class="indent">
+  <span class="keyword">[</span> <a href="#c0_manual"><span class="reference">manual</span></a> <span class="keyword">]</span></div>
+</div>
+

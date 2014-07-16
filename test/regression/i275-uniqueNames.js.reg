@@ -1,0 +1,12 @@
+defaultScope(1);
+intRange(-8, 7);
+stringLength(16);
+
+c0_A = Abstract("c0_A");
+c2_b = Abstract("c2_b");
+c0_b = c0_A.addChild("c0_b").withCard(1, 1);
+c0_a = Clafer("c0_a").withCard(1, 1).extending(c0_A);
+c1_b = c0_a.addChild("c1_b").withCard(1, 1);
+c0_c = Clafer("c0_c").withCard(1, 1);
+c3_b = c0_c.addChild("c3_b").withCard(1, 1).extending(c2_b);
+c1_a = c3_b.addChild("c1_a").withCard(1, 1);
