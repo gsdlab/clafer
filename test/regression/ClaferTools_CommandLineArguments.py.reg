@@ -89,7 +89,7 @@ def getModule():
 	stack.append(currClafer)
 	stack.pop()
 ##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(10),IntegerLiteral.IntegerLiteral(1)), (IntegerLiteral.IntegerLiteral(45),IntegerLiteral.IntegerLiteral(22)))
+	pos=((IntegerLiteral.IntegerLiteral(10),IntegerLiteral.IntegerLiteral(1)), (IntegerLiteral.IntegerLiteral(45),IntegerLiteral.IntegerLiteral(24)))
 	isAbstract=True
 	groupCard = GCard.GCard(isKeyword=True, interval=(IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(1)))
 	id="ClaferArgs"
@@ -102,7 +102,7 @@ def getModule():
 	stack[-1].addElement(currClafer)
 	stack.append(currClafer)
 ##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(11),IntegerLiteral.IntegerLiteral(4)), (IntegerLiteral.IntegerLiteral(42),IntegerLiteral.IntegerLiteral(34)))
+	pos=((IntegerLiteral.IntegerLiteral(11),IntegerLiteral.IntegerLiteral(4)), (IntegerLiteral.IntegerLiteral(42),IntegerLiteral.IntegerLiteral(38)))
 	isAbstract=False
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
 	id="functional"
@@ -115,7 +115,7 @@ def getModule():
 	stack[-1].addElement(currClafer)
 	stack.append(currClafer)
 ##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(12),IntegerLiteral.IntegerLiteral(7)), (IntegerLiteral.IntegerLiteral(27),IntegerLiteral.IntegerLiteral(26)))
+	pos=((IntegerLiteral.IntegerLiteral(12),IntegerLiteral.IntegerLiteral(7)), (IntegerLiteral.IntegerLiteral(27),IntegerLiteral.IntegerLiteral(32)))
 	isAbstract=False
 	groupCard = GCard.GCard(isKeyword=True, interval=(IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(1)))
 	id="mode"
@@ -128,7 +128,7 @@ def getModule():
 	stack[-1].addElement(currClafer)
 	stack.append(currClafer)
 ##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(13),IntegerLiteral.IntegerLiteral(10)), (IntegerLiteral.IntegerLiteral(16),IntegerLiteral.IntegerLiteral(39)))
+	pos=((IntegerLiteral.IntegerLiteral(13),IntegerLiteral.IntegerLiteral(10)), (IntegerLiteral.IntegerLiteral(16),IntegerLiteral.IntegerLiteral(41)))
 	isAbstract=False
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
 	id="alloy"
@@ -198,7 +198,7 @@ def getModule():
 	stack.append(currClafer)
 	stack.pop()
 ##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(18),IntegerLiteral.IntegerLiteral(10)), (IntegerLiteral.IntegerLiteral(22),IntegerLiteral.IntegerLiteral(38)))
+	pos=((IntegerLiteral.IntegerLiteral(18),IntegerLiteral.IntegerLiteral(10)), (IntegerLiteral.IntegerLiteral(22),IntegerLiteral.IntegerLiteral(40)))
 	isAbstract=False
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
 	id="html"
@@ -265,7 +265,7 @@ def getModule():
 	stack.pop()
 	stack.pop()
 ##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(23),IntegerLiteral.IntegerLiteral(10)), (IntegerLiteral.IntegerLiteral(24),IntegerLiteral.IntegerLiteral(26)))
+	pos=((IntegerLiteral.IntegerLiteral(23),IntegerLiteral.IntegerLiteral(10)), (IntegerLiteral.IntegerLiteral(24),IntegerLiteral.IntegerLiteral(30)))
 	isAbstract=False
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
 	id="graph"
@@ -290,7 +290,7 @@ def getModule():
 	stack[-1].addElement(constraint)
 	stack.pop()
 ##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(25),IntegerLiteral.IntegerLiteral(10)), (IntegerLiteral.IntegerLiteral(27),IntegerLiteral.IntegerLiteral(26)))
+	pos=((IntegerLiteral.IntegerLiteral(25),IntegerLiteral.IntegerLiteral(10)), (IntegerLiteral.IntegerLiteral(27),IntegerLiteral.IntegerLiteral(30)))
 	isAbstract=False
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
 	id="cvlGraph"
@@ -383,7 +383,7 @@ def getModule():
 	stack.append(currClafer)
 	stack.pop()
 ##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(32),IntegerLiteral.IntegerLiteral(7)), (IntegerLiteral.IntegerLiteral(34),IntegerLiteral.IntegerLiteral(31)))
+	pos=((IntegerLiteral.IntegerLiteral(32),IntegerLiteral.IntegerLiteral(7)), (IntegerLiteral.IntegerLiteral(34),IntegerLiteral.IntegerLiteral(33)))
 	isAbstract=False
 	groupCard = GCard.GCard(isKeyword=True, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(1)))
 	id="layout"
@@ -467,7 +467,7 @@ def getModule():
 	stack.append(currClafer)
 	stack.pop()
 ##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(38),IntegerLiteral.IntegerLiteral(7)), (IntegerLiteral.IntegerLiteral(42),IntegerLiteral.IntegerLiteral(34)))
+	pos=((IntegerLiteral.IntegerLiteral(38),IntegerLiteral.IntegerLiteral(7)), (IntegerLiteral.IntegerLiteral(42),IntegerLiteral.IntegerLiteral(36)))
 	isAbstract=False
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
 	id="validate"
@@ -572,7 +572,7 @@ def getModule():
 	stack.pop()
 	stack.pop()
 ##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(46),IntegerLiteral.IntegerLiteral(1)), (IntegerLiteral.IntegerLiteral(47),IntegerLiteral.IntegerLiteral(11)))
+	pos=((IntegerLiteral.IntegerLiteral(46),IntegerLiteral.IntegerLiteral(1)), (IntegerLiteral.IntegerLiteral(47),IntegerLiteral.IntegerLiteral(15)))
 	isAbstract=False
 	groupCard = GCard.GCard(isKeyword=True, interval=(IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(1)))
 	id="ca1"
@@ -597,7 +597,7 @@ def getModule():
 	stack[-1].addElement(constraint)
 	stack.pop()
 ##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(48),IntegerLiteral.IntegerLiteral(1)), (IntegerLiteral.IntegerLiteral(51),IntegerLiteral.IntegerLiteral(44)))
+	pos=((IntegerLiteral.IntegerLiteral(48),IntegerLiteral.IntegerLiteral(1)), (IntegerLiteral.IntegerLiteral(51),IntegerLiteral.IntegerLiteral(48)))
 	isAbstract=False
 	groupCard = GCard.GCard(isKeyword=True, interval=(IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(1)))
 	id="ca2"
@@ -645,7 +645,7 @@ def getModule():
 	stack[-1].addElement(constraint)
 	stack.pop()
 ##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(52),IntegerLiteral.IntegerLiteral(1)), (IntegerLiteral.IntegerLiteral(55),IntegerLiteral.IntegerLiteral(25)))
+	pos=((IntegerLiteral.IntegerLiteral(52),IntegerLiteral.IntegerLiteral(1)), (IntegerLiteral.IntegerLiteral(55),IntegerLiteral.IntegerLiteral(29)))
 	isAbstract=False
 	groupCard = GCard.GCard(isKeyword=True, interval=(IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(1)))
 	id="ca3"
@@ -690,7 +690,7 @@ def getModule():
 	stack[-1].addElement(constraint)
 	stack.pop()
 ##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(56),IntegerLiteral.IntegerLiteral(1)), (IntegerLiteral.IntegerLiteral(57),IntegerLiteral.IntegerLiteral(10)))
+	pos=((IntegerLiteral.IntegerLiteral(56),IntegerLiteral.IntegerLiteral(1)), (IntegerLiteral.IntegerLiteral(57),IntegerLiteral.IntegerLiteral(14)))
 	isAbstract=False
 	groupCard = GCard.GCard(isKeyword=True, interval=(IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(1)))
 	id="ca4"
@@ -715,7 +715,7 @@ def getModule():
 	stack[-1].addElement(constraint)
 	stack.pop()
 ##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(58),IntegerLiteral.IntegerLiteral(1)), (IntegerLiteral.IntegerLiteral(62),IntegerLiteral.IntegerLiteral(18)))
+	pos=((IntegerLiteral.IntegerLiteral(58),IntegerLiteral.IntegerLiteral(1)), (IntegerLiteral.IntegerLiteral(62),IntegerLiteral.IntegerLiteral(22)))
 	isAbstract=False
 	groupCard = GCard.GCard(isKeyword=True, interval=(IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(1)))
 	id="ca5"
@@ -779,7 +779,7 @@ def getModule():
 	stack[-1].addElement(constraint)
 	stack.pop()
 ##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(63),IntegerLiteral.IntegerLiteral(1)), (IntegerLiteral.IntegerLiteral(64),IntegerLiteral.IntegerLiteral(14)))
+	pos=((IntegerLiteral.IntegerLiteral(63),IntegerLiteral.IntegerLiteral(1)), (IntegerLiteral.IntegerLiteral(64),IntegerLiteral.IntegerLiteral(18)))
 	isAbstract=False
 	groupCard = GCard.GCard(isKeyword=True, interval=(IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(1)))
 	id="ca6"

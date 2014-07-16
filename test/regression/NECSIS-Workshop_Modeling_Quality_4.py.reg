@@ -69,7 +69,7 @@ def getModule():
 		Exp.Exp(expType="Argument", exptype="Integer", parentId="", pos=((IntegerLiteral.IntegerLiteral(8),IntegerLiteral.IntegerLiteral(13)), (IntegerLiteral.IntegerLiteral(8),IntegerLiteral.IntegerLiteral(23))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="ref", isTop=False)])])])])])])]))
 	stack[-1].addElement(goal)
 ##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(9),IntegerLiteral.IntegerLiteral(1)), (IntegerLiteral.IntegerLiteral(67),IntegerLiteral.IntegerLiteral(48)))
+	pos=((IntegerLiteral.IntegerLiteral(9),IntegerLiteral.IntegerLiteral(1)), (IntegerLiteral.IntegerLiteral(67),IntegerLiteral.IntegerLiteral(50)))
 	isAbstract=True
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
 	id="Car"
@@ -82,7 +82,7 @@ def getModule():
 	stack[-1].addElement(currClafer)
 	stack.append(currClafer)
 ##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(10),IntegerLiteral.IntegerLiteral(5)), (IntegerLiteral.IntegerLiteral(13),IntegerLiteral.IntegerLiteral(21)))
+	pos=((IntegerLiteral.IntegerLiteral(10),IntegerLiteral.IntegerLiteral(5)), (IntegerLiteral.IntegerLiteral(13),IntegerLiteral.IntegerLiteral(24)))
 	isAbstract=False
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
 	id="ABS"
@@ -126,7 +126,7 @@ def getModule():
 	stack[-1].addElement(constraint)
 	stack.pop()
 ##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(14),IntegerLiteral.IntegerLiteral(5)), (IntegerLiteral.IntegerLiteral(26),IntegerLiteral.IntegerLiteral(22)))
+	pos=((IntegerLiteral.IntegerLiteral(14),IntegerLiteral.IntegerLiteral(5)), (IntegerLiteral.IntegerLiteral(26),IntegerLiteral.IntegerLiteral(27)))
 	isAbstract=False
 	groupCard = GCard.GCard(isKeyword=True, interval=(IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(1)))
 	id="Transmission"
@@ -159,7 +159,7 @@ def getModule():
 		Exp.Exp(expType="Argument", exptype="Integer", parentId="e30_", pos=((IntegerLiteral.IntegerLiteral(16),IntegerLiteral.IntegerLiteral(17)), (IntegerLiteral.IntegerLiteral(16),IntegerLiteral.IntegerLiteral(18))), iExpType="IIntExp", iExp=[IntegerLiteral.IntegerLiteral(0)])])]))
 	stack[-1].addElement(constraint)
 ##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(17),IntegerLiteral.IntegerLiteral(9)), (IntegerLiteral.IntegerLiteral(21),IntegerLiteral.IntegerLiteral(22)))
+	pos=((IntegerLiteral.IntegerLiteral(17),IntegerLiteral.IntegerLiteral(9)), (IntegerLiteral.IntegerLiteral(21),IntegerLiteral.IntegerLiteral(25)))
 	isAbstract=False
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
 	id="Automatic"
@@ -213,7 +213,7 @@ def getModule():
 	stack[-1].addElement(constraint)
 	stack.pop()
 ##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(22),IntegerLiteral.IntegerLiteral(9)), (IntegerLiteral.IntegerLiteral(26),IntegerLiteral.IntegerLiteral(22)))
+	pos=((IntegerLiteral.IntegerLiteral(22),IntegerLiteral.IntegerLiteral(9)), (IntegerLiteral.IntegerLiteral(26),IntegerLiteral.IntegerLiteral(25)))
 	isAbstract=False
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
 	id="Manual"
@@ -268,7 +268,7 @@ def getModule():
 	stack.pop()
 	stack.pop()
 ##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(27),IntegerLiteral.IntegerLiteral(5)), (IntegerLiteral.IntegerLiteral(51),IntegerLiteral.IntegerLiteral(26)))
+	pos=((IntegerLiteral.IntegerLiteral(27),IntegerLiteral.IntegerLiteral(5)), (IntegerLiteral.IntegerLiteral(51),IntegerLiteral.IntegerLiteral(33)))
 	isAbstract=False
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
 	id="FCA"
@@ -321,7 +321,7 @@ def getModule():
 		Exp.Exp(expType="Argument", exptype="Integer", parentId="e66_", pos=((IntegerLiteral.IntegerLiteral(31),IntegerLiteral.IntegerLiteral(17)), (IntegerLiteral.IntegerLiteral(31),IntegerLiteral.IntegerLiteral(18))), iExpType="IIntExp", iExp=[IntegerLiteral.IntegerLiteral(5)])])]))
 	stack[-1].addElement(constraint)
 ##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(32),IntegerLiteral.IntegerLiteral(9)), (IntegerLiteral.IntegerLiteral(40),IntegerLiteral.IntegerLiteral(26)))
+	pos=((IntegerLiteral.IntegerLiteral(32),IntegerLiteral.IntegerLiteral(9)), (IntegerLiteral.IntegerLiteral(40),IntegerLiteral.IntegerLiteral(31)))
 	isAbstract=False
 	groupCard = GCard.GCard(isKeyword=True, interval=(IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(1)))
 	id="Sensor"
@@ -354,7 +354,7 @@ def getModule():
 		Exp.Exp(expType="Argument", exptype="Integer", parentId="e72_", pos=((IntegerLiteral.IntegerLiteral(34),IntegerLiteral.IntegerLiteral(21)), (IntegerLiteral.IntegerLiteral(34),IntegerLiteral.IntegerLiteral(22))), iExpType="IIntExp", iExp=[IntegerLiteral.IntegerLiteral(0)])])]))
 	stack[-1].addElement(constraint)
 ##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(35),IntegerLiteral.IntegerLiteral(13)), (IntegerLiteral.IntegerLiteral(37),IntegerLiteral.IntegerLiteral(26)))
+	pos=((IntegerLiteral.IntegerLiteral(35),IntegerLiteral.IntegerLiteral(13)), (IntegerLiteral.IntegerLiteral(37),IntegerLiteral.IntegerLiteral(29)))
 	isAbstract=False
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
 	id="Radar"
@@ -388,7 +388,7 @@ def getModule():
 	stack[-1].addElement(constraint)
 	stack.pop()
 ##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(38),IntegerLiteral.IntegerLiteral(13)), (IntegerLiteral.IntegerLiteral(40),IntegerLiteral.IntegerLiteral(26)))
+	pos=((IntegerLiteral.IntegerLiteral(38),IntegerLiteral.IntegerLiteral(13)), (IntegerLiteral.IntegerLiteral(40),IntegerLiteral.IntegerLiteral(29)))
 	isAbstract=False
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
 	id="Lidar"
@@ -423,7 +423,7 @@ def getModule():
 	stack.pop()
 	stack.pop()
 ##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(41),IntegerLiteral.IntegerLiteral(9)), (IntegerLiteral.IntegerLiteral(51),IntegerLiteral.IntegerLiteral(26)))
+	pos=((IntegerLiteral.IntegerLiteral(41),IntegerLiteral.IntegerLiteral(9)), (IntegerLiteral.IntegerLiteral(51),IntegerLiteral.IntegerLiteral(31)))
 	isAbstract=False
 	groupCard = GCard.GCard(isKeyword=True, interval=(IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(1)))
 	id="Alert"
@@ -456,7 +456,7 @@ def getModule():
 		Exp.Exp(expType="Argument", exptype="Integer", parentId="e90_", pos=((IntegerLiteral.IntegerLiteral(43),IntegerLiteral.IntegerLiteral(21)), (IntegerLiteral.IntegerLiteral(43),IntegerLiteral.IntegerLiteral(22))), iExpType="IIntExp", iExp=[IntegerLiteral.IntegerLiteral(0)])])]))
 	stack[-1].addElement(constraint)
 ##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(44),IntegerLiteral.IntegerLiteral(13)), (IntegerLiteral.IntegerLiteral(47),IntegerLiteral.IntegerLiteral(26)))
+	pos=((IntegerLiteral.IntegerLiteral(44),IntegerLiteral.IntegerLiteral(13)), (IntegerLiteral.IntegerLiteral(47),IntegerLiteral.IntegerLiteral(29)))
 	isAbstract=False
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
 	id="Haptic"
@@ -500,7 +500,7 @@ def getModule():
 	stack[-1].addElement(constraint)
 	stack.pop()
 ##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(48),IntegerLiteral.IntegerLiteral(13)), (IntegerLiteral.IntegerLiteral(51),IntegerLiteral.IntegerLiteral(26)))
+	pos=((IntegerLiteral.IntegerLiteral(48),IntegerLiteral.IntegerLiteral(13)), (IntegerLiteral.IntegerLiteral(51),IntegerLiteral.IntegerLiteral(29)))
 	isAbstract=False
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
 	id="Audible"
@@ -546,7 +546,7 @@ def getModule():
 	stack.pop()
 	stack.pop()
 ##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(52),IntegerLiteral.IntegerLiteral(5)), (IntegerLiteral.IntegerLiteral(61),IntegerLiteral.IntegerLiteral(22)))
+	pos=((IntegerLiteral.IntegerLiteral(52),IntegerLiteral.IntegerLiteral(5)), (IntegerLiteral.IntegerLiteral(61),IntegerLiteral.IntegerLiteral(27)))
 	isAbstract=False
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
 	id="CC"
@@ -599,7 +599,7 @@ def getModule():
 		Exp.Exp(expType="Argument", exptype="Integer", parentId="e120_", pos=((IntegerLiteral.IntegerLiteral(56),IntegerLiteral.IntegerLiteral(17)), (IntegerLiteral.IntegerLiteral(56),IntegerLiteral.IntegerLiteral(18))), iExpType="IIntExp", iExp=[IntegerLiteral.IntegerLiteral(4)])])]))
 	stack[-1].addElement(constraint)
 ##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(57),IntegerLiteral.IntegerLiteral(9)), (IntegerLiteral.IntegerLiteral(61),IntegerLiteral.IntegerLiteral(22)))
+	pos=((IntegerLiteral.IntegerLiteral(57),IntegerLiteral.IntegerLiteral(9)), (IntegerLiteral.IntegerLiteral(61),IntegerLiteral.IntegerLiteral(25)))
 	isAbstract=False
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
 	id="ACC"
@@ -805,7 +805,7 @@ def getModule():
 	stack[-1].addElement(constraint)
 	stack.pop()
 ##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(68),IntegerLiteral.IntegerLiteral(1)), (IntegerLiteral.IntegerLiteral(70),IntegerLiteral.IntegerLiteral(18)))
+	pos=((IntegerLiteral.IntegerLiteral(68),IntegerLiteral.IntegerLiteral(1)), (IntegerLiteral.IntegerLiteral(70),IntegerLiteral.IntegerLiteral(20)))
 	isAbstract=True
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
 	id="Feature"
@@ -847,7 +847,7 @@ def getModule():
 	stack.pop()
 	stack.pop()
 ##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(71),IntegerLiteral.IntegerLiteral(1)), (IntegerLiteral.IntegerLiteral(72),IntegerLiteral.IntegerLiteral(21)))
+	pos=((IntegerLiteral.IntegerLiteral(71),IntegerLiteral.IntegerLiteral(1)), (IntegerLiteral.IntegerLiteral(72),IntegerLiteral.IntegerLiteral(23)))
 	isAbstract=True
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
 	id="ComfortFeature"
@@ -875,7 +875,7 @@ def getModule():
 	stack.pop()
 	stack.pop()
 ##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(73),IntegerLiteral.IntegerLiteral(1)), (IntegerLiteral.IntegerLiteral(74),IntegerLiteral.IntegerLiteral(18)))
+	pos=((IntegerLiteral.IntegerLiteral(73),IntegerLiteral.IntegerLiteral(1)), (IntegerLiteral.IntegerLiteral(74),IntegerLiteral.IntegerLiteral(20)))
 	isAbstract=True
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
 	id="FuelFeature"
