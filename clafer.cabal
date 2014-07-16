@@ -1,5 +1,5 @@
 Name:               clafer
-Version:            0.3.6.1
+Version:            0.3.7
 Synopsis:           clafer compiles Clafer models to other formats, such as Alloy, XML, HTML, Dot.
 Description:        Clafer is a general purpose, lightweight, structural modeling language developed at GSD Lab, University of Waterloo. Lightweight modeling aims at improving the understanding of the problem domain in the early stages of software development and determining the requirements with fewer defects. Clafer's goal is to make modeling more accessible to a wider range of users and domains. The tool provides a reference language implementation. It translates models to other formats (e.g. Alloy, XML) to allow for reasoning with existing tools.
 Homepage:           http://clafer.org
@@ -61,7 +61,7 @@ Executable clafer
                     test-framework-th >= 0.2.4,
                     text >= 0.11.3.1,
 
-                    clafer == 0.3.6.1
+                    clafer == 0.3.7
     if os(windows)
         build-depends: HaXml == 1.24
     else
@@ -189,7 +189,7 @@ Test-Suite test-suite
                     test-framework-th >= 0.2.4,
                     text >= 0.11.3.1,
 
-                    clafer == 0.3.6.1
+                    clafer == 0.3.7
 
     if os(windows)
         build-depends: HaXml == 1.24
