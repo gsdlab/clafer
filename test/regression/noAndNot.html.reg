@@ -1,0 +1,18 @@
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Person">Person</span>
+  <div class="indent">
+  <span class="claferDecl" id="c0_married">married</span> ?</div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_child">child</span><span class="keyword"> -></span> <a href="#c0_Person"><span class="reference">Person</span></a> *</div>
+</div>
+
+
+<div>
+<span class="claferDecl" id="c0_Alice">Alice</span><span class="keyword"> :</span> <a href="#c0_Person"><span class="reference">Person</span></a>
+  <div class="indent">
+  <span class="keyword">[</span> <span class="keyword">not</span> <a href="#c0_married"><span class="reference">married</span></a> <span class="keyword">]</span></div>
+  <div class="indent">
+  <span class="keyword">[</span> <span class="keyword">no</span> <a href="#c0_child"><span class="reference">child</span></a> <span class="keyword">]</span></div>
+</div>
+
