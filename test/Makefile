@@ -97,6 +97,9 @@ reg:
 	@echo "| Creating new regressions |"
 	@echo "============================"
 	@rm $(REG_DIR)/*.reg
+	$(MAKE) newReg
+	
+newReg:
 	@echo "---------------------"
 	@echo "| Alloy regressions |"
 	@echo "---------------------"
