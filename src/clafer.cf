@@ -114,6 +114,7 @@ ClaferId.       SetExp6 ::= Name ;
 Decl.           Decl ::= [LocId] ":" SetExp ;
 
 QuantNo.        Quant ::= "no" ;
+QuantNot.		Quant ::= "not" ;
 QuantLone.      Quant ::= "lone" ;
 QuantOne.       Quant ::= "one" ;
 QuantSome.      Quant ::= "some" ;

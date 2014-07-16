@@ -475,12 +475,13 @@ sugarLocId x = LocIdIdent noSpan $ mkIdent x
 
 desugarQuant :: Quant -> IQuant
 desugarQuant (QuantNo _) = INo
+desugarQuant (QuantNot _) = INo
 desugarQuant (QuantLone _) = ILone
 desugarQuant (QuantOne _) = IOne
 desugarQuant (QuantSome _) = ISome
 
 sugarQuant :: IQuant -> Quant
-sugarQuant INo = QuantNo noSpan
+sugarQuant INo = QuantNo noSpan  -- will never sugar to QuantNOT
 sugarQuant ILone = QuantLone noSpan
 sugarQuant IOne = QuantOne noSpan
 sugarQuant ISome = QuantSome noSpan

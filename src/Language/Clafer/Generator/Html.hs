@@ -336,6 +336,7 @@ printSetExp (Join _ set1 set2) indent irMap html comments = (printSetExp set1 in
 printQuant :: Quant -> Bool -> String
 printQuant quant' html = case quant' of
   (QuantNo _)       -> (while html "<span class=\"keyword\">") ++ "no" ++ (while html "</span>") ++ " "
+  (QuantNot _)       -> (while html "<span class=\"keyword\">") ++ "not" ++ (while html "</span>") ++ " "
   (QuantLone _)     -> (while html "<span class=\"keyword\">") ++ "lone" ++ (while html "</span>") ++ " "
   (QuantOne _)      -> (while html "<span class=\"keyword\">") ++ "one" ++ (while html "</span>") ++ " "
   (QuantSome _)     -> (while html "<span class=\"keyword\">") ++ "some" ++ (while html "</span>") ++ " "

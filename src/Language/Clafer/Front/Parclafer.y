@@ -317,6 +317,7 @@ Decl : ListLocId ':' SetExp { Decl ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCat
 
 Quant :: { Quant }
 Quant : 'no' { QuantNo ((mkTokenSpan $1)) } 
+  | 'not' { QuantNot ((mkTokenSpan $1)) }
   | 'lone' { QuantLone ((mkTokenSpan $1)) }
   | 'one' { QuantOne ((mkTokenSpan $1)) }
   | 'some' { QuantSome ((mkTokenSpan $1)) }

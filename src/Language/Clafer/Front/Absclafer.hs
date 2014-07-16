@@ -183,6 +183,7 @@ data Decl =
 
 data Quant =
    QuantNo Span
+ | QuantNot Span
  | QuantLone Span
  | QuantOne Span
  | QuantSome Span
@@ -327,6 +328,7 @@ instance Spannable Decl where
 
 instance Spannable Quant where
   getSpan ( QuantNo s ) = s
+  getSpan ( QuantNot s ) = s
   getSpan ( QuantLone s ) = s
   getSpan ( QuantOne s ) = s
   getSpan ( QuantSome s ) = s

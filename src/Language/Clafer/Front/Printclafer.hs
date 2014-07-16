@@ -275,6 +275,7 @@ instance Print Decl where
 instance Print Quant where
   prt i e = case e of
    QuantNo _  -> prPrec i 0 (concatD [doc (showString "no")])
+   QuantNot _  -> prPrec i 0 (concatD [doc (showString "not")])
    QuantLone _  -> prPrec i 0 (concatD [doc (showString "lone")])
    QuantOne _  -> prPrec i 0 (concatD [doc (showString "one")])
    QuantSome _  -> prPrec i 0 (concatD [doc (showString "some")])

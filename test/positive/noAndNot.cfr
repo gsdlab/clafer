@@ -1,0 +1,7 @@
+abstract Person
+	married ?
+	child -> Person *
+
+Alice : Person
+	[ not married ]
+	[ no child ]

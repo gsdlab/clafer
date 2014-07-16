@@ -167,6 +167,7 @@ All other symbols are terminals.
   |  |  **|**  | ``(`` //SetExp// ``)`` 
   | //Decl// | -> | //[LocId]// ``:`` //SetExp// 
   | //Quant// | -> | ``no`` 
+  |  |  **|**  | ``not`` 
   |  |  **|**  | ``lone`` 
   |  |  **|**  | ``one`` 
   |  |  **|**  | ``some`` 
