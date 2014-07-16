@@ -320,11 +320,9 @@ generateHtml env ast' =
                                                                    [c] ++ (cleanOutput $ revertLayout $ printDeclaration decl 0 irMap True $ inDecl decl comments') : (genFragments decls' (frg:frgs) irMap $ afterDecl decl comments)
                                                                  else "<!-- # FRAGMENT /-->" : genFragments (decl:decls') frgs irMap comments
     inDecl :: Declaration -> [(Span, String)] -> [(Span, String)]
-    inDecl decl comments = let s = rnge decl in dropWhile (\x -> fst x < s) comments
+    inDecl decl comments = let s = getSpan decl in dropWhile (\x -> fst x < s) comments
     afterDecl :: Declaration -> [(Span, String)] -> [(Span, String)]
-    afterDecl decl comments = let (Span _ (Pos line' _)) = rnge decl in dropWhile (\(x, _) -> let (Span _ (Pos line'' _)) = x in line'' <= line') comments
-    rnge (EnumDecl _ _ _) = noSpan
-    rnge (ElementDecl _ _) = noSpan
+    afterDecl decl comments = let (Span _ (Pos line' _)) = getSpan decl in dropWhile (\(x, _) -> let (Span _ (Pos line'' _)) = x in line'' <= line') comments
     printComments [] = []
     printComments ((s, comment):cs) = (snd (printComment s [(s, comment)]) ++ "<br>\n"):printComments cs
 
