@@ -66,17 +66,8 @@ test:
 	cabal test	
 	$(MAKE) -C $(TEST_DIR) test
 
-validateAlloy:
-	$(MAKE) -C $(TEST_DIR) validateAlloy
-
-validateXML:	
-	$(MAKE) -C $(TEST_DIR) validateXML
-
-validateClafer:
-#	$(MAKE) -C $(TEST_DIR) validateClafer
-
-generatePython:
-	$(MAKE) -C $(TEST_DIR) generatePython
+generateAlloyJSPythonXMLXHTMLDot:
+	$(MAKE) -C $(TEST_DIR) generateAlloyJSPythonXMLXHTMLDot
 
 diffRegressions:
 	$(MAKE) -C $(TEST_DIR) diffRegressions
