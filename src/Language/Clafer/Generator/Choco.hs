@@ -141,7 +141,7 @@ genCModule _ (imodule@IModule{_mDecls}, _) scopes =
                      puid   -> puid ++ ".addChild"
     genConcreteClafer (IClafer _ _ Nothing _ _ _ _ _ _) = error "Choco.getConcreteClafer undefined"
     genConcreteClafer (IClafer _ _ (Just (IGCard _ _)) _ _ _ Nothing _ _) = error "Choco.getConcreteClafer undefined"
-
+                     
     prop name value =
         case value of
                 Just value' -> "." ++ name ++ "(" ++ value' ++ ")"

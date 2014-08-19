@@ -176,6 +176,15 @@ toMTriple a (b,c) = Just (a, b, c)
 iNot :: String
 iNot          = "!"
 
+iG :: String
+iG          = "G"
+
+iF :: String
+iF          = "F"
+
+iX :: String
+iX          = "X"
+
 iCSet :: String
 iCSet         = "#"
 
@@ -192,7 +201,7 @@ iSumSet :: String
 iSumSet       = "sum"
 
 unOps :: [String]
-unOps = [iNot, iCSet, iMin, iGMax, iGMin, iSumSet]
+unOps = [iNot, iCSet, iMin, iGMax, iGMin, iSumSet, iX, iF, iG]
 
 -- binary operators
 iIff :: String
@@ -210,8 +219,14 @@ iXor          = "xor"
 iAnd :: String
 iAnd          = "&&"
 
+iU :: String
+iU          = "U"
+
+iW :: String
+iW          = "W"
+
 logBinOps :: [String]
-logBinOps = [iIff, iImpl, iOr, iXor, iAnd]
+logBinOps = [iIff, iImpl, iOr, iXor, iAnd, iU, iW]
 
 iLt :: String
 iLt           = "<"

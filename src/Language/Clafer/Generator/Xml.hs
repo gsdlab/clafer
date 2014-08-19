@@ -71,7 +71,7 @@ genXmlModule imodule = concat
 
 genXmlClafer :: IClafer -> Result
 genXmlClafer x = case x of
-  IClafer pos abstract gcrd id' uid' super' crd glcard es  ->
+  IClafer pos abstract gcrd id' uid' super' crd glcard mut es  ->
     concat [ tag "Position" $ genXmlPosition pos
            , genXmlAbstract abstract
            , optTag gcrd genXmlGCard
@@ -79,7 +79,7 @@ genXmlClafer x = case x of
            , genXmlUid uid'
            , genXmlSuper super'
            , optTag crd genXmlCard
-           , genXmlGlCard glcard
+           , genXmlGlCard glcard -- TODO serialize mutability details
            , concatMap genXmlElement es]
 
 genXmlAbstract :: Bool -> String
@@ -119,12 +119,12 @@ genXmlElement x = case x of
   IEConstraint isHard' pexp  -> tagType "Declaration" "IConstraint" $ concat
                          [ genXmlBoolean "IsHard" isHard'
                          , genXmlPExp "ParentExp" pexp]
-  IEGoal isMaximize' pexp -> tagType "Declaration" "IGoal" $ concat 
+  IEGoal isMaximize' pexp -> tagType "Declaration" "IGoal" $ concat
                          [ genXmlBoolean "IsMaximize" isMaximize'
                          , genXmlPExp "ParentExp" pexp]
-                         
 
-genXmlAnyOp :: (a -> String) -> (a -> String) -> [(String, a)] -> String                                                    
+
+genXmlAnyOp :: (a -> String) -> (a -> String) -> [(String, a)] -> String
 genXmlAnyOp ft f xs = concatMap
   (\(tname, texp) -> tagType tname (ft texp) $ f texp) xs
 
@@ -167,7 +167,7 @@ genXmlIExp x = case x of
     escape y    = [y]
   IInt n -> genXmlInteger n
   IDouble n -> tag "DoubleLiteral" $ show n
-  IStr str -> genXmlString str  
+  IStr str -> genXmlString str
   IClaferId modName' sident' isTop' -> concat
     [ tag "ModuleName" modName'
     , tag "Id" sident'

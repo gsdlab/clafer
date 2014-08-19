@@ -20,7 +20,7 @@ $i = [$l $d _ ']          -- identifier character
 $u = [\0-\255]          -- universal: any character
 
 @rsyms =    -- symbols and non-identifier-like reserved words
-   \= | \[ | \] | \( | \) | \< \< | \> \> | \{ | \} | \` | \: | \- \> | \- \> \> | \: \= | \? | \+ | \* | \. \. | \| | \< \= \> | \= \> | \| \| | \& \& | \! | \< | \> | \< \= | \> \= | \! \= | \- | \/ | \# | \+ \+ | \, | \- \- | \& | \< \: | \: \> | \. | \; | \\
+   \= | \[ | \] | \( | \) | \< \< | \> \> | \{ | \} | \` | \: | \- \> | \- \> \> | \: \= | \? | \+ | \* | \. \. | \| | \< \= \> | \= \> | \| \| | \& \& | \! | \< | \> | \< \= | \> \= | \! \= | \- | \/ | \# | \- \- \> | \- \[ | \] \- \> | \= \= \> | \= \[ | \] \= \> | \# \# \> | \# \[ | \] \# \> | \+ \+ | \, | \- \- | \& | \< \: | \: \> | \. | \; | \\
 
 :-
 "//" [.]* ; -- Toss single line comments
@@ -98,7 +98,7 @@ eitherResIdent tv s = treeFind resWords
                               | s > a  = treeFind right
                               | s == a = t
 
-resWords = b ">=" 31 (b "." 16 (b "*" 8 (b "&" 4 (b "!=" 2 (b "!" 1 N N) (b "#" 3 N N)) (b "(" 6 (b "&&" 5 N N) (b ")" 7 N N))) (b "-" 12 (b "++" 10 (b "+" 9 N N) (b "," 11 N N)) (b "->" 14 (b "--" 13 N N) (b "->>" 15 N N)))) (b "<:" 24 (b ":=" 20 (b "/" 18 (b ".." 17 N N) (b ":" 19 N N)) (b ";" 22 (b ":>" 21 N N) (b "<" 23 N N))) (b "=" 28 (b "<=" 26 (b "<<" 25 N N) (b "<=>" 27 N N)) (b ">" 30 (b "=>" 29 N N) N)))) (b "min" 47 (b "all" 39 (b "\\" 35 (b "?" 33 (b ">>" 32 N N) (b "[" 34 N N)) (b "`" 37 (b "]" 36 N N) (b "abstract" 38 N N))) (b "if" 43 (b "else" 41 (b "disj" 40 N N) (b "enum" 42 N N)) (b "lone" 45 (b "in" 44 N N) (b "max" 46 N N)))) (b "sum" 55 (b "one" 51 (b "no" 49 (b "mux" 48 N N) (b "not" 50 N N)) (b "or" 53 (b "opt" 52 N N) (b "some" 54 N N))) (b "|" 59 (b "xor" 57 (b "then" 56 N N) (b "{" 58 N N)) (b "}" 61 (b "||" 60 N N) N))))
+resWords = b "[" 45 (b ":" 23 (b "++" 12 (b "&" 6 (b "#" 3 (b "!=" 2 (b "!" 1 N N) N) (b "#[" 5 (b "##>" 4 N N) N)) (b ")" 9 (b "(" 8 (b "&&" 7 N N) N) (b "+" 11 (b "*" 10 N N) N))) (b "->>" 18 (b "--" 15 (b "-" 14 (b "," 13 N N) N) (b "->" 17 (b "-->" 16 N N) N)) (b ".." 21 (b "." 20 (b "-[" 19 N N) N) (b "/" 22 N N)))) (b "=>" 34 (b "<<" 29 (b ";" 26 (b ":>" 25 (b ":=" 24 N N) N) (b "<:" 28 (b "<" 27 N N) N)) (b "=" 32 (b "<=>" 31 (b "<=" 30 N N) N) (b "==>" 33 N N))) (b "F" 40 (b ">=" 37 (b ">" 36 (b "=[" 35 N N) N) (b "?" 39 (b ">>" 38 N N) N)) (b "W" 43 (b "U" 42 (b "G" 41 N N) N) (b "X" 44 N N))))) (b "initially" 68 (b "between" 57 (b "`" 51 (b "]#>" 48 (b "]" 47 (b "\\" 46 N N) N) (b "]=>" 50 (b "]->" 49 N N) N)) (b "all" 54 (b "after" 53 (b "abstract" 52 N N) N) (b "before" 56 (b "and" 55 N N) N))) (b "finally" 63 (b "enum" 60 (b "else" 59 (b "disj" 58 N N) N) (b "final" 62 (b "eventually" 61 N N) N)) (b "in" 66 (b "if" 65 (b "globally" 64 N N) N) (b "initial" 67 N N)))) (b "or" 79 (b "next" 74 (b "max" 71 (b "lone" 70 (b "let" 69 N N) N) (b "mux" 73 (b "min" 72 N N) N)) (b "one" 77 (b "not" 76 (b "no" 75 N N) N) (b "opt" 78 N N))) (b "xor" 85 (b "then" 82 (b "sum" 81 (b "some" 80 N N) N) (b "weakuntil" 84 (b "until" 83 N N) N)) (b "||" 88 (b "|" 87 (b "{" 86 N N) N) (b "}" 89 N N)))))
    where b s n = let bs = id s
                   in B bs (TS bs n)
 

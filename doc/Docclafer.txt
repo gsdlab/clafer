@@ -34,11 +34,16 @@ PosIdent literals are recognized by the regular expression
 The set of reserved words is the set of terminals appearing in the grammar. Those reserved words that consist of non-letter characters are called symbols, and they are treated in a different way from those that are similar to identifiers. The lexer follows rules familiar from languages like Haskell, C, and Java, including longest match and spacing conventions.
 
 The reserved words used in clafer are the following:
-  | ``abstract`` | ``all`` | ``disj`` | ``else``
-  | ``enum`` | ``if`` | ``in`` | ``lone``
-  | ``max`` | ``min`` | ``mux`` | ``no``
-  | ``not`` | ``one`` | ``opt`` | ``or``
-  | ``some`` | ``sum`` | ``then`` | ``xor``
+  | ``F`` | ``G`` | ``U`` | ``W``
+  | ``X`` | ``abstract`` | ``after`` | ``all``
+  | ``and`` | ``before`` | ``between`` | ``disj``
+  | ``else`` | ``enum`` | ``eventually`` | ``final``
+  | ``finally`` | ``globally`` | ``if`` | ``in``
+  | ``initial`` | ``initially`` | ``let`` | ``lone``
+  | ``max`` | ``min`` | ``mux`` | ``next``
+  | ``no`` | ``not`` | ``one`` | ``opt``
+  | ``or`` | ``some`` | ``sum`` | ``then``
+  | ``until`` | ``weakuntil`` | ``xor`` | 
 
 The symbols used in clafer are the following:
   | = | [ | ] | (
@@ -49,9 +54,11 @@ The symbols used in clafer are the following:
   | => | || | && | !
   | < | > | <= | >=
   | != | - | / | #
-  | ++ | , | -- | &
-  | <: | :> | . | ;
-  | \ |  |  | 
+  | --> | -[ | ]-> | ==>
+  | =[ | ]=> | ##> | #[
+  | ]#> | ++ | , | --
+  | & | <: | :> | .
+  | ; | \ |  | 
 
 ===Comments===
 Single-line comments begin with //.Multiple-line comments are  enclosed with /* and */.
@@ -65,10 +72,16 @@ All other symbols are terminals.
   | //Module// | -> | //[Declaration]// 
   | //Declaration// | -> | ``enum`` //PosIdent// ``=`` //[EnumId]// 
   |  |  **|**  | //Element// 
-  | //Clafer// | -> | //Abstract// //GCard// //PosIdent// //Super// //Card// //Init// //Elements// 
-  | //Constraint// | -> | ``[`` //[Exp]// ``]`` 
+  | //Clafer// | -> | //Abstract// //TempModifier// //GCard// //PosIdent// //Super// //Card// //Init// //Transition// //Elements// 
+  | //Constraint// | -> | ``[`` ``final`` ``]`` 
+  |  |  **|**  | ``[`` //[Exp]// ``]`` 
   | //SoftConstraint// | -> | ``(`` //[Exp]// ``)`` 
   | //Goal// | -> | ``<<`` //[Exp]// ``>>`` 
+  | //TempModifier// | -> | **eps**
+  |  |  **|**  | ``initial`` 
+  |  |  **|**  | ``final`` 
+  | //Transition// | -> | **eps**
+  |  |  **|**  | //TransArrow// //Exp// 
   | //Abstract// | -> | **eps**
   |  |  **|**  | ``abstract`` 
   | //Elements// | -> | **eps**
@@ -103,53 +116,83 @@ All other symbols are terminals.
   | //ExInteger// | -> | ``*`` 
   |  |  **|**  | //PosInteger// 
   | //Name// | -> | //[ModId]// 
-  | //Exp// | -> | ``all`` ``disj`` //Decl// ``|`` //Exp// 
-  |  |  **|**  | ``all`` //Decl// ``|`` //Exp// 
-  |  |  **|**  | //Quant// ``disj`` //Decl// ``|`` //Exp// 
-  |  |  **|**  | //Quant// //Decl// ``|`` //Exp// 
+  | //Exp// | -> | //Exp1// //TransArrow// //Exp// 
   |  |  **|**  | //Exp1// 
-  | //Exp1// | -> | ``max`` //Exp2// 
-  |  |  **|**  | ``min`` //Exp2// 
-  |  |  **|**  | //Exp1// ``<=>`` //Exp2// 
+  | //Exp1// | -> | ``all`` ``disj`` //Decl// ``|`` //Exp1// 
+  |  |  **|**  | ``all`` //Decl// ``|`` //Exp1// 
+  |  |  **|**  | //Quant// ``disj`` //Decl// ``|`` //Exp1// 
+  |  |  **|**  | //Quant// //Decl// ``|`` //Exp1// 
+  |  |  **|**  | ``let`` //VarBinding// ``in`` //Exp1// 
   |  |  **|**  | //Exp2// 
-  | //Exp2// | -> | //Exp2// ``=>`` //Exp3// 
+  | //Exp2// | -> | //Exp3// ``before`` //Exp3// //PatternScope// 
+  |  |  **|**  | //Exp3// ``after`` //Exp3// //PatternScope// 
+  |  |  **|**  | ``initially`` //Exp3// 
+  |  |  **|**  | ``finally`` //Exp3// 
   |  |  **|**  | //Exp3// 
-  | //Exp3// | -> | //Exp3// ``||`` //Exp4// 
+  | //Exp3// | -> | ``max`` //Exp4// 
+  |  |  **|**  | ``min`` //Exp4// 
+  |  |  **|**  | //Exp3// ``<=>`` //Exp4// 
   |  |  **|**  | //Exp4// 
-  | //Exp4// | -> | //Exp4// ``xor`` //Exp5// 
+  | //Exp4// | -> | //Exp4// ``=>`` //Exp5// 
   |  |  **|**  | //Exp5// 
-  | //Exp5// | -> | //Exp5// ``&&`` //Exp6// 
+  | //Exp5// | -> | //Exp5// ``||`` //Exp6// 
   |  |  **|**  | //Exp6// 
-  | //Exp6// | -> | ``!`` //Exp7// 
+  | //Exp6// | -> | //Exp6// ``xor`` //Exp7// 
   |  |  **|**  | //Exp7// 
-  | //Exp7// | -> | //Exp7// ``<`` //Exp8// 
-  |  |  **|**  | //Exp7// ``>`` //Exp8// 
-  |  |  **|**  | //Exp7// ``=`` //Exp8// 
-  |  |  **|**  | //Exp7// ``<=`` //Exp8// 
-  |  |  **|**  | //Exp7// ``>=`` //Exp8// 
-  |  |  **|**  | //Exp7// ``!=`` //Exp8// 
-  |  |  **|**  | //Exp7// ``in`` //Exp8// 
-  |  |  **|**  | //Exp7// ``not`` ``in`` //Exp8// 
+  | //Exp7// | -> | //Exp7// ``&&`` //Exp8// 
   |  |  **|**  | //Exp8// 
-  | //Exp8// | -> | //Quant// //Exp12// 
+  | //Exp8// | -> | //Exp8// ``U`` //Exp9// 
+  |  |  **|**  | //Exp8// ``until`` //Exp9// 
   |  |  **|**  | //Exp9// 
-  | //Exp9// | -> | //Exp9// ``+`` //Exp10// 
-  |  |  **|**  | //Exp9// ``-`` //Exp10// 
+  | //Exp9// | -> | //Exp9// ``W`` //Exp10// 
+  |  |  **|**  | //Exp9// ``weakuntil`` //Exp10// 
   |  |  **|**  | //Exp10// 
-  | //Exp10// | -> | //Exp10// ``*`` //Exp11// 
-  |  |  **|**  | //Exp10// ``/`` //Exp11// 
+  | //Exp10// | -> | ``F`` //Exp10// 
+  |  |  **|**  | ``eventually`` //Exp10// 
+  |  |  **|**  | ``G`` //Exp10// 
+  |  |  **|**  | ``globally`` //Exp10// 
+  |  |  **|**  | ``X`` //Exp10// 
+  |  |  **|**  | ``next`` //Exp10// 
+  |  |  **|**  | ``!`` //Exp10// 
   |  |  **|**  | //Exp11// 
-  | //Exp11// | -> | ``sum`` //Exp12// 
-  |  |  **|**  | ``#`` //Exp12// 
-  |  |  **|**  | ``-`` //Exp12// 
-  |  |  **|**  | //Exp12// 
-  | //Exp12// | -> | ``if`` //Exp12// ``then`` //Exp12// ``else`` //Exp13// 
-  |  |  **|**  | //Exp13// 
-  | //Exp13// | -> | //PosInteger// 
+  | //Exp15// | -> | //Exp15// ``<`` //Exp16// 
+  |  |  **|**  | //Exp15// ``>`` //Exp16// 
+  |  |  **|**  | //Exp15// ``=`` //Exp16// 
+  |  |  **|**  | //Exp15// ``<=`` //Exp16// 
+  |  |  **|**  | //Exp15// ``>=`` //Exp16// 
+  |  |  **|**  | //Exp15// ``!=`` //Exp16// 
+  |  |  **|**  | //Exp15// ``in`` //Exp16// 
+  |  |  **|**  | //Exp15// ``not`` ``in`` //Exp16// 
+  |  |  **|**  | //Exp16// 
+  | //Exp16// | -> | //Quant// //Exp20// 
+  |  |  **|**  | //Exp17// 
+  | //Exp17// | -> | //Exp17// ``+`` //Exp18// 
+  |  |  **|**  | //Exp17// ``-`` //Exp18// 
+  |  |  **|**  | //Exp18// 
+  | //Exp18// | -> | //Exp18// ``*`` //Exp19// 
+  |  |  **|**  | //Exp18// ``/`` //Exp19// 
+  |  |  **|**  | //Exp19// 
+  | //Exp19// | -> | ``sum`` //Exp20// 
+  |  |  **|**  | ``#`` //Exp20// 
+  |  |  **|**  | ``-`` //Exp20// 
+  |  |  **|**  | //Exp20// 
+  | //Exp20// | -> | ``if`` //Exp20// ``then`` //Exp20// ``else`` //Exp21// 
+  |  |  **|**  | //Exp21// 
+  | //Exp21// | -> | //PosInteger// 
   |  |  **|**  | //PosDouble// 
   |  |  **|**  | //PosString// 
   |  |  **|**  | //SetExp// 
   |  |  **|**  | ``(`` //Exp// ``)`` 
+  | //TransGuard// | -> | //Exp1// 
+  | //TransArrow// | -> | ``-->`` 
+  |  |  **|**  | ``-[`` //TransGuard// ``]->`` 
+  |  |  **|**  | ``==>`` 
+  |  |  **|**  | ``=[`` //TransGuard// ``]=>`` 
+  |  |  **|**  | ``##>`` 
+  |  |  **|**  | ``#[`` //TransGuard// ``]#>`` 
+  | //PatternScope// | -> | **eps**
+  |  |  **|**  | ``between`` //Exp// ``and`` //Exp// 
+  |  |  **|**  | ``after`` //Exp// ``until`` //Exp// 
   | //SetExp// | -> | //SetExp// ``++`` //SetExp1// 
   |  |  **|**  | //SetExp// ``,`` //SetExp1// 
   |  |  **|**  | //SetExp1// 
@@ -166,6 +209,7 @@ All other symbols are terminals.
   | //SetExp6// | -> | //Name// 
   |  |  **|**  | ``(`` //SetExp// ``)`` 
   | //Decl// | -> | //[LocId]// ``:`` //SetExp// 
+  | //VarBinding// | -> | //LocId// ``=`` //Name// 
   | //Quant// | -> | ``no`` 
   |  |  **|**  | ``not`` 
   |  |  **|**  | ``lone`` 
@@ -186,5 +230,9 @@ All other symbols are terminals.
   |  |  **|**  | //LocId// ``;`` //[LocId]// 
   | //[ModId]// | -> | //ModId// 
   |  |  **|**  | //ModId// ``\`` //[ModId]// 
+  | //Exp11// | -> | //Exp12// 
+  | //Exp12// | -> | //Exp13// 
+  | //Exp13// | -> | //Exp14// 
+  | //Exp14// | -> | //Exp15// 
 
 

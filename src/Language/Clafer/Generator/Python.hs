@@ -60,7 +60,7 @@ genPythonString str = concat [ "StringLiteral.StringLiteral(", show str, ")"] --
 
 genPythonIntPair :: (Integer, Integer) -> String
 genPythonIntPair (x, y) = concat
-  [ "(", genPythonInteger x 
+  [ "(", genPythonInteger x
   , ","
   , genPythonInteger y, ")"]
 
@@ -93,8 +93,8 @@ genPythonModule imodule = concat
 
 genPythonClafer :: IClafer -> Result
 genPythonClafer x = case x of
-  IClafer pos' abstract' gcard' id' uid' super' card' glcard' elements'  ->
-    concat [ "\t", genPythonPosition pos', "\n" 
+  IClafer pos' abstract' gcard' id' uid' super' card' glcard' mut elements'  ->
+    concat [ "\t", genPythonPosition pos', "\n"
            , "\t", genPythonAbstract abstract', "\n"
            , "\t", maybe "" genPythonGCard gcard', "\n"
            , "\t", genPythonId id', "\n"
@@ -107,18 +107,18 @@ genPythonClafer x = case x of
            , "\tstack.append(currClafer)\n"
            , concatMap genPythonElement elements'
            , "\tstack.pop()\n"]
-  
+
 genPythonAbstract :: Bool -> String
 genPythonAbstract isAbstract' = concat [ genPythonBoolean "isAbstract" isAbstract']
 
 genPythonGCard :: IGCard -> String
-genPythonGCard (IGCard isKeyword' interval') = concat 
-		[ "groupCard = GCard.GCard(", genPythonBoolean "isKeyword" isKeyword', ", " 
+genPythonGCard (IGCard isKeyword' interval') = concat
+		[ "groupCard = GCard.GCard(", genPythonBoolean "isKeyword" isKeyword', ", "
     	, "interval=" , genPythonInterval interval' , ")"]
 
 genPythonInterval :: (Integer, Integer) -> String
 genPythonInterval (nMin, nMax) = concat
-  [ "(", genPythonInteger nMin 
+  [ "(", genPythonInteger nMin
   , ",", genPythonInteger nMax
   , ")"]
 
@@ -147,12 +147,12 @@ genPythonElement x = case x of
                          [ "##### constraint #####\n", "\tconstraint = IRConstraint.IRConstraint(" , genPythonBoolean "isHard" isHard' , " ,"
                          , " exp=", genPythonPExp "ParentExp" pexp' , ")\n"
                          , "\tstack[-1].addElement(constraint)\n"]
-  IEGoal isMaximize' pexp' -> concat 
+  IEGoal isMaximize' pexp' -> concat
                          [ "##### goal #####\n" ,"\tgoal = Goal.Goal(" , genPythonBoolean "isMaximize" isMaximize'
                          , ", exp=", genPythonPExp "ParentExp" pexp' , ")\n"
                          , "\tstack[-1].addElement(goal)\n"]
-                         
-                                                         
+
+
 {-genPythonAnyOp ft f xs = concatMap
   (\(tname, texp) -> tagType tname (ft texp) $ f texp) xs -}
 
@@ -162,9 +162,9 @@ genPythonPExp tagName (PExp iType' pid' pos' iexp') = concat
   [ "\n\t\tExp.Exp","(expType=\"", tagName, "\", ", maybe "exptype=\"\"" genPythonIType iType'
   , ", parentId=\"", pid', "\""
   , ", " , genPythonPosition pos'
-  , ", iExpType=\"" , genPythonIExpType iexp' , "\"" 
+  , ", iExpType=\"" , genPythonIExpType iexp' , "\""
   , ", iExp=[" , genPythonIExp iexp' ,"])"]
-  
+
 genPythonPosition :: Span -> String
 genPythonPosition (Span (Pos s1 s2) (Pos e1 e2)) = concat
   [ "pos=(", genPythonIntPair (s1, s2), ", ", genPythonIntPair (e1, e2), ")"]
@@ -201,7 +201,7 @@ genPythonIExp x = case x of
     escape x    = [x] -}
   IInt n -> genPythonInteger n
   IDouble n ->  concat [ "DoubleLiteral.DoubleLiteral(", show n, ")"] --DoubleLiteral
-  IStr str -> genPythonString str  
+  IStr str -> genPythonString str
   IClaferId modName' sident' isTop' -> concat
     [ "ClaferId.ClaferId(moduleName=\"", modName' , "\", "
     , "my_id=\"", sident' , "\", "
