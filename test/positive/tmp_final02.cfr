@@ -1,0 +1,33 @@
+// Test for final (immutable) constraint
+
+a
+ b ?
+  c ?
+  d ?
+  final e ?
+   
+
+
+// Rao: 20140811: Even though this code does not failed to parse, it is not working as expected.
+// This should desugars to 
+/*
+a {
+  b ? {
+    c ? d ? e ? {
+      [final]
+    }
+    }
+  }
+
+
+
+But it desugars to the followiing, which is wrong
+
+a {
+  b ? {
+    c ? d ? final e ? 
+  }
+  }
+
+*/
+

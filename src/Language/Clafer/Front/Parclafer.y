@@ -129,7 +129,7 @@ Declaration : 'enum' PosIdent '=' ListEnumId { EnumDecl ((mkTokenSpan $1) >- (mk
 
 
 Clafer :: { Clafer }
-Clafer : Abstract TempModifier GCard PosIdent Super Card Init Transition Elements { Clafer ((mkCatSpan $1) >- (mkCatSpan $2) >- (mkCatSpan $3) >- (mkCatSpan $4) >- (mkCatSpan $5) >- (mkCatSpan $6) >- (mkCatSpan $7) >- (mkCatSpan $8) >- (mkCatSpan $9)) $1 $2 $3 $4 $5 $6 $7 $8 $9 } 
+Clafer : Abstract ListTempModifier GCard PosIdent Super Card Init Transition Elements { Clafer ((mkCatSpan $1) >- (mkCatSpan $2) >- (mkCatSpan $3) >- (mkCatSpan $4) >- (mkCatSpan $5) >- (mkCatSpan $6) >- (mkCatSpan $7) >- (mkCatSpan $8) >- (mkCatSpan $9)) $1 (reverse $2) $3 $4 $5 $6 $7 $8 $9 } 
 
 
 Constraint :: { Constraint }
@@ -146,8 +146,7 @@ Goal : '<<' ListExp '>>' { Goal ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkTokenS
 
 
 TempModifier :: { TempModifier }
-TempModifier : {- empty -} { NoTempModifier noSpan } 
-  | 'initial' { Initial ((mkTokenSpan $1)) }
+TempModifier : 'initial' { Initial ((mkTokenSpan $1)) } 
   | 'final' { Final ((mkTokenSpan $1)) }
 
 
@@ -241,7 +240,10 @@ Exp1 : 'all' 'disj' Decl '|' Exp1 { DeclAllDisj ((mkTokenSpan $1) >- (mkTokenSpa
 
 
 Exp2 :: { Exp }
-Exp2 : Exp3 'before' Exp3 PatternScope { TmpPatBefore ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3) >- (mkCatSpan $4)) $1 $3 $4 } 
+Exp2 : Exp3 PatternScope { TmpPatJustScope ((mkCatSpan $1) >- (mkCatSpan $2)) $1 $2 } 
+  | Exp3 'before' Exp3 { TmpPatBeforeNoScope ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
+  | Exp3 'after' Exp3 { TmpPatAfterNoScope ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
+  | Exp3 'before' Exp3 PatternScope { TmpPatBefore ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3) >- (mkCatSpan $4)) $1 $3 $4 }
   | Exp3 'after' Exp3 PatternScope { TmpPatAfter ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3) >- (mkCatSpan $4)) $1 $3 $4 }
   | 'initially' Exp3 { TmpInitially ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
   | 'finally' Exp3 { TmpFinally ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
@@ -361,8 +363,7 @@ TransArrow : '-->' { AsyncTransArrow ((mkTokenSpan $1)) }
 
 
 PatternScope :: { PatternScope }
-PatternScope : {- empty -} { PatScopeEmpty noSpan } 
-  | 'between' Exp 'and' Exp { PatScopeBetween ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkTokenSpan $3) >- (mkCatSpan $4)) $2 $4 }
+PatternScope : 'between' Exp 'and' Exp { PatScopeBetween ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkTokenSpan $3) >- (mkCatSpan $4)) $2 $4 } 
   | 'after' Exp 'until' Exp { PatScopeUntil ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkTokenSpan $3) >- (mkCatSpan $4)) $2 $4 }
 
 
@@ -448,6 +449,11 @@ ListElement : {- empty -} { []  }
 ListExp :: { [Exp] }
 ListExp : {- empty -} { []  } 
   | ListExp Exp { flip (:)  $1 $2 }
+
+
+ListTempModifier :: { [TempModifier] }
+ListTempModifier : {- empty -} { []  } 
+  | ListTempModifier TempModifier { flip (:)  $1 $2 }
 
 
 ListLocId :: { [LocId] }

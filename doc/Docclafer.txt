@@ -72,13 +72,12 @@ All other symbols are terminals.
   | //Module// | -> | //[Declaration]// 
   | //Declaration// | -> | ``enum`` //PosIdent// ``=`` //[EnumId]// 
   |  |  **|**  | //Element// 
-  | //Clafer// | -> | //Abstract// //TempModifier// //GCard// //PosIdent// //Super// //Card// //Init// //Transition// //Elements// 
+  | //Clafer// | -> | //Abstract// //[TempModifier]// //GCard// //PosIdent// //Super// //Card// //Init// //Transition// //Elements// 
   | //Constraint// | -> | ``[`` ``final`` ``]`` 
   |  |  **|**  | ``[`` //[Exp]// ``]`` 
   | //SoftConstraint// | -> | ``(`` //[Exp]// ``)`` 
   | //Goal// | -> | ``<<`` //[Exp]// ``>>`` 
-  | //TempModifier// | -> | **eps**
-  |  |  **|**  | ``initial`` 
+  | //TempModifier// | -> | ``initial`` 
   |  |  **|**  | ``final`` 
   | //Transition// | -> | **eps**
   |  |  **|**  | //TransArrow// //Exp// 
@@ -124,7 +123,10 @@ All other symbols are terminals.
   |  |  **|**  | //Quant// //Decl// ``|`` //Exp1// 
   |  |  **|**  | ``let`` //VarBinding// ``in`` //Exp1// 
   |  |  **|**  | //Exp2// 
-  | //Exp2// | -> | //Exp3// ``before`` //Exp3// //PatternScope// 
+  | //Exp2// | -> | //Exp3// //PatternScope// 
+  |  |  **|**  | //Exp3// ``before`` //Exp3// 
+  |  |  **|**  | //Exp3// ``after`` //Exp3// 
+  |  |  **|**  | //Exp3// ``before`` //Exp3// //PatternScope// 
   |  |  **|**  | //Exp3// ``after`` //Exp3// //PatternScope// 
   |  |  **|**  | ``initially`` //Exp3// 
   |  |  **|**  | ``finally`` //Exp3// 
@@ -190,8 +192,7 @@ All other symbols are terminals.
   |  |  **|**  | ``=[`` //TransGuard// ``]=>`` 
   |  |  **|**  | ``##>`` 
   |  |  **|**  | ``#[`` //TransGuard// ``]#>`` 
-  | //PatternScope// | -> | **eps**
-  |  |  **|**  | ``between`` //Exp// ``and`` //Exp// 
+  | //PatternScope// | -> | ``between`` //Exp// ``and`` //Exp// 
   |  |  **|**  | ``after`` //Exp// ``until`` //Exp// 
   | //SetExp// | -> | //SetExp// ``++`` //SetExp1// 
   |  |  **|**  | //SetExp// ``,`` //SetExp1// 
@@ -226,6 +227,8 @@ All other symbols are terminals.
   |  |  **|**  | //Element// //[Element]// 
   | //[Exp]// | -> | **eps**
   |  |  **|**  | //Exp// //[Exp]// 
+  | //[TempModifier]// | -> | **eps**
+  |  |  **|**  | //TempModifier// //[TempModifier]// 
   | //[LocId]// | -> | //LocId// 
   |  |  **|**  | //LocId// ``;`` //[LocId]// 
   | //[ModId]// | -> | //ModId// 

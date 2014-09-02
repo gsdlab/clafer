@@ -252,6 +252,12 @@ iIn           = "in"
 iNin :: String
 iNin          = "not in"
 
+ltlBinOps :: [String]
+ltlBinOps = [iW, iU]
+
+ltlUnOps :: [String]
+ltlUnOps = [iX, iG, iF]
+
 relGenBinOps :: [String]
 relGenBinOps = [iLt, iGt, iEq, iLte, iGte, iNeq]
 

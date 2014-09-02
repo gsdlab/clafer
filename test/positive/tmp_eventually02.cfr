@@ -1,0 +1,6 @@
+// Test for eventually constraint
+
+a
+ b ?
+  c ?
+ [F c]

@@ -1,0 +1,11 @@
+// Test for before constraint
+
+a
+ b ?
+  c ?
+  d ?
+  [c before d]
+
+// Rao: 08-08-2014: This fails with the following error.
+// Parse failed at line 7 column 15...
+// before ] } }

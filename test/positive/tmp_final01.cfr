@@ -1,0 +1,9 @@
+// Test for final (immutable) constraint
+
+a
+ b ?
+  c ?
+  d ?
+  e ?
+   [final]
+

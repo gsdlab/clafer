@@ -1,0 +1,23 @@
+// Test for transition guard constraint
+
+a
+ xor b ?
+      c 
+      d 
+      e 
+      [c -[e]-> d]   
+
+
+/*
+Rao: 20140811: It should be translated to 
+
+a {
+  b ? {
+    c ? d ? e ? [e => (c --> d)]
+  }
+  }
+
+but it is not, so is this the expected behavior.
+
+
+*/

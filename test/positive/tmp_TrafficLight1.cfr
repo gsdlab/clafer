@@ -1,0 +1,10 @@
+abstract xor TrafficLight_1
+	initial xor on --> off
+		initial xor normal --> flashing
+			initial green --> yellow
+			yellow --> red 
+			red --> green 
+		xor flashing --> normal
+			initial yellow_on ==> yellow_off
+			yellow_off ==> yellow_on
+	off --> on

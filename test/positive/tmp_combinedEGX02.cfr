@@ -1,0 +1,16 @@
+// Test for combined : globally, eventually, next constraint
+
+a
+ b ?
+  c ?
+  [F G X c]
+  //[X G F  c]
+  [eventually X globally c]
+
+
+// Rao: 2014-08-06: Out of above 3 constraints except first one, 
+// the other two are failing to parse. Here are messages.
+// line7 constraint. Parse failed at line 7 column 9... before G F c ]
+// line 8 cnstraint: Parse failed at line 8 column 20... before globally c ] }
+
+

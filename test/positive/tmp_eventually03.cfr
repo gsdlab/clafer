@@ -1,0 +1,6 @@
+// Test for eventually combined constraint
+
+a
+ b ?
+  c ?
+ [eventually next c]

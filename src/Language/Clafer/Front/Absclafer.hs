@@ -44,7 +44,7 @@ data Declaration =
   deriving (Eq,Ord,Show,Read,Data,Typeable,Generic)
 
 data Clafer =
-   Clafer Span Abstract TempModifier GCard PosIdent Super Card Init Transition Elements
+   Clafer Span Abstract [TempModifier] GCard PosIdent Super Card Init Transition Elements
   deriving (Eq,Ord,Show,Read,Data,Typeable,Generic)
 
 data Constraint =
@@ -61,8 +61,7 @@ data Goal =
   deriving (Eq,Ord,Show,Read,Data,Typeable,Generic)
 
 data TempModifier =
-   NoTempModifier Span
- | Initial Span
+   Initial Span
  | Final Span
   deriving (Eq,Ord,Show,Read,Data,Typeable,Generic)
 
@@ -148,6 +147,9 @@ data Exp =
  | DeclQuantDisj Span Quant Decl Exp
  | DeclQuant Span Quant Decl Exp
  | LetExp Span VarBinding Exp
+ | TmpPatJustScope Span Exp PatternScope
+ | TmpPatBeforeNoScope Span Exp Exp
+ | TmpPatAfterNoScope Span Exp Exp
  | TmpPatBefore Span Exp Exp PatternScope
  | TmpPatAfter Span Exp Exp PatternScope
  | TmpInitially Span Exp
@@ -207,8 +209,7 @@ data TransArrow =
   deriving (Eq,Ord,Show,Read,Data,Typeable,Generic)
 
 data PatternScope =
-   PatScopeEmpty Span
- | PatScopeBetween Span Exp Exp
+   PatScopeBetween Span Exp Exp
  | PatScopeUntil Span Exp Exp
   deriving (Eq,Ord,Show,Read,Data,Typeable,Generic)
 
@@ -272,7 +273,6 @@ instance Spannable Goal where
   getSpan ( Goal s _ ) = s
 
 instance Spannable TempModifier where
-  getSpan ( NoTempModifier s ) = s
   getSpan ( Initial s ) = s
   getSpan ( Final s ) = s
 
@@ -345,6 +345,9 @@ instance Spannable Exp where
   getSpan ( DeclQuantDisj s _ _ _ ) = s
   getSpan ( DeclQuant s _ _ _ ) = s
   getSpan ( LetExp s _ _ ) = s
+  getSpan ( TmpPatJustScope s _ _ ) = s
+  getSpan ( TmpPatBeforeNoScope s _ _ ) = s
+  getSpan ( TmpPatAfterNoScope s _ _ ) = s
   getSpan ( TmpPatBefore s _ _ _ ) = s
   getSpan ( TmpPatAfter s _ _ _ ) = s
   getSpan ( TmpInitially s _ ) = s
@@ -401,7 +404,6 @@ instance Spannable TransArrow where
   getSpan ( GuardedNextTransArrow s _ ) = s
 
 instance Spannable PatternScope where
-  getSpan ( PatScopeEmpty s ) = s
   getSpan ( PatScopeBetween s _ _ ) = s
   getSpan ( PatScopeUntil s _ _ ) = s
 

@@ -1,0 +1,12 @@
+// Test for globally combined constraint
+
+a
+ b ?
+  c ?
+  [next globally c]
+
+
+// Rao: 2014-08-06: Parse failed with following message
+// Parse failed at line 6 column 9...
+// before globally c ] }
+

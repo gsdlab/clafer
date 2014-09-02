@@ -1,0 +1,12 @@
+// Test for between and constraint
+
+a
+ b ?
+  c ?
+  d ?
+  e ?
+  [c between d and e ]
+
+// Rao: 08-08-2014: Parse failed with following message
+// Parse failed at line 8 column 5...before between d and e
+

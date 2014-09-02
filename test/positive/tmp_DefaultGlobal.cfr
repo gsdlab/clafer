@@ -1,0 +1,6 @@
+// behavioral clafer test for default globally or G
+
+a
+ b ?
+  c ?
+ [c]

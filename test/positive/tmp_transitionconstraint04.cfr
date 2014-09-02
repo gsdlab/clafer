@@ -1,0 +1,30 @@
+// Test for initially constraint
+
+a
+ xor b 
+      c 
+      d 
+      e 
+      [c --> d || e]   
+
+
+/*
+Rao: 20140811: The above clafer code is getting translated into  
+
+a {
+  xor b {
+    c  d  e  [c --> d || e]
+  }
+  }
+
+
+It should be translated to ?? as per Andrzej's notes. 
+
+a {
+  xor b ? {
+    c  d  e [c --> (d || e)]
+  }
+  }
+Whether parser also follows right associate rule? 
+
+*/

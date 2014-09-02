@@ -290,6 +290,7 @@ resolveTPExp' p@PExp{_inPos, _exp} =
               throwError $ SemanticErr _inPos ("Function '" ++ _op ++ "' cannot be performed on " ++ _op ++ " '" ++ str t ++ "'")
       let result
             | _op == iNot = test (t == TBoolean) >> return TBoolean
+            | _op `elem` ltlUnOps = test (t == TBoolean) >> return TBoolean
             | _op == iCSet = return TInteger
             | _op == iSumSet = test (t == TInteger) >> return TInteger
             | _op `elem` [iMin, iGMin, iGMax] = test (numeric t) >> return t
@@ -331,6 +332,7 @@ resolveTPExp' p@PExp{_inPos, _exp} =
               throwError $ SemanticErr _inPos ("Function '" ++ _op ++ "' cannot be performed on '" ++ str t1 ++ "' " ++ _op ++ " '" ++ str t2 ++ "'")
       let result
             | _op `elem` logBinOps = test (t1 == TBoolean && t2 == TBoolean) >> return TBoolean
+            | _op `elem` ltlBinOps = test (t1 == TBoolean && t2 == TBoolean) >> return TBoolean
             | _op `elem` [iLt, iGt, iLte, iGte] = test (numeric t1 && numeric t2) >> return TBoolean
             | _op `elem` [iEq, iNeq] = testNotSame arg1' arg2' >> testIntersect t1 t2 >> return TBoolean
             | _op == iDifference = testNotSame arg1' arg2' >> testIntersect t1 t2 >> return t1
