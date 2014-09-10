@@ -32,34 +32,15 @@ Executable clafer
                     DeriveDataTypeable,
                     RankNTypes
     main-is:        clafer.hs
-    build-depends:  array >= 0.4.0.1,
-                    base >= 4.6.0.1 && < 5,
+    hs-source-dirs: src-cmd
+    build-depends:  base >= 4.6.0.1 && < 5,
                     containers >= 0.5.0.0,
-                    directory >= 1.2.0.1,
                     filepath >= 1.3.0.1,
                     process >= 1.1.0.2,
 
-                    HUnit >= 1.2.5.2,
                     mtl >= 2.1.2,
-                    parsec >= 3.1.3,
-                    QuickCheck >= 2.6, 
-                    transformers >= 0.3.0.0,
-
-                    data-stringmap >= 1.0.1.1,
-                    aeson >= 0.7.0.2,
-                    json-builder >= 0.3,
-                    lens >= 4.1.1 && < 4.4,
-                    string-conversions >= 0.3.0.2,
                     cmdargs >= 0.10.7, 
-                    executable-path >= 0.0.3, 
-                    glpk-hs >= 0.3.4,
-                    MaybeT >= 0.1.2,
                     split >= 0.2.2, 
-                    test-framework >= 0.8.0.3, 
-                    test-framework-hunit >= 0.3.0.1, 
-                    test-framework-quickcheck2 >= 0.3.0.2,
-                    test-framework-th >= 0.2.4,
-                    text >= 0.11.3.1,
 
                     clafer == 0.3.7
     if os(windows)
@@ -67,7 +48,6 @@ Executable clafer
     else
         build-depends: HaXml >= 1.24
 
-    hs-source-dirs: src
     other-modules: Paths_clafer
 
 library 
@@ -84,14 +64,12 @@ library
                     filepath >= 1.3.0.1,
                     process >= 1.1.0.2,
 
-                    HUnit >= 1.2.5.2,
                     mtl >= 2.1.2,
                     parsec >= 3.1.3,
-                    QuickCheck >= 2.6, 
                     transformers >= 0.3.0.0,
 
                     data-stringmap >= 1.0.1.1,
-                    aeson >= 0.7.0.2,
+                    aeson >= 0.7.0.6,
                     json-builder >= 0.3,
                     lens >= 4.1.1 && < 4.4,
                     string-conversions >= 0.3.0.2,
@@ -100,10 +78,6 @@ library
                     glpk-hs >= 0.3.4,
                     MaybeT >= 0.1.2,
                     split >= 0.2.2, 
-                    test-framework >= 0.8.0.3, 
-                    test-framework-hunit >= 0.3.0.1, 
-                    test-framework-quickcheck2 >= 0.3.0.2,
-                    test-framework-th >= 0.2.4,
                     text >= 0.11.3.1
 
     if os(windows)
@@ -160,34 +134,20 @@ Test-Suite test-suite
     main-is:        test-suite.hs
     hs-source-dirs: test
     build-depends:  
-                    array >= 0.4.0.1,
                     base >= 4.6.0.1 && < 5,
                     containers >= 0.5.0.0,
                     directory >= 1.2.0.1,
                     filepath >= 1.3.0.1,
-                    process >= 1.1.0.2,
 
                     HUnit >= 1.2.5.2,
                     mtl >= 2.1.2,
-                    parsec >= 3.1.3,
                     QuickCheck >= 2.6, 
-                    transformers >= 0.3.0.0,
 
-                    data-stringmap >= 1.0.1.1,
-                    aeson >= 0.7.0.2,
-                    json-builder >= 0.3,
                     lens >= 4.1.1 && < 4.4,
-                    string-conversions >= 0.3.0.2,
-                    cmdargs >= 0.10.7, 
-                    executable-path >= 0.0.3, 
-                    glpk-hs >= 0.3.4,
-                    MaybeT >= 0.1.2,
-                    split >= 0.2.2, 
                     test-framework >= 0.8.0.3, 
                     test-framework-hunit >= 0.3.0.1, 
                     test-framework-quickcheck2 >= 0.3.0.2,
                     test-framework-th >= 0.2.4,
-                    text >= 0.11.3.1,
 
                     clafer == 0.3.7
 

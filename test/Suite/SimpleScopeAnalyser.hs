@@ -24,7 +24,6 @@ module Suite.SimpleScopeAnalyser (tg_Test_Suite_SimpleScopeAnalyser) where
 
 import Language.Clafer
 import Language.Clafer.Intermediate.Intclafer
-import Language.Clafer.Intermediate.SimpleScopeAnalyzer
 import Language.Clafer.JSONMetaData
 import Language.Clafer.QNameUID
 import Functions

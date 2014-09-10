@@ -21,9 +21,7 @@
  SOFTWARE.
 -}
 import Control.Lens
-import Data.Data
 import Data.Data.Lens
-import Data.Typeable
 import Data.List
 import qualified Data.Map as Map
 import Data.Maybe
@@ -40,7 +38,10 @@ import Test.Framework
 import Test.Framework.TH
 import Test.Framework.Providers.HUnit
 
+tg_Main_Test_Suite :: Test.Framework.Test
 tg_Main_Test_Suite = $(testGroupGenerator)
+
+main :: IO ()
 main = defaultMain[tg_Main_Test_Suite, tg_Test_Suite_Positive, tg_Test_Suite_Negative, tg_Test_Suite_SimpleScopeAnalyser]
 
 {-
@@ -61,6 +62,7 @@ d            // ::d -> c1_d
 
 a\n    b\nb\nc\n    d\n         b\nd\n    b
 -}
+model :: String
 model = "a\n    b\nb\nc\n    d\n         b\nd\n    b"
 
 case_FQMapLookup :: Assertion
