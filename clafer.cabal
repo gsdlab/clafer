@@ -144,10 +144,9 @@ Test-Suite test-suite
                     QuickCheck >= 2.6, 
 
                     lens >= 4.1.1 && < 4.4,
-                    test-framework >= 0.8.0.3, 
-                    test-framework-hunit >= 0.3.0.1, 
-                    test-framework-quickcheck2 >= 0.3.0.2,
-                    test-framework-th >= 0.2.4,
+                    tasty >= 0.10,
+                    tasty-hunit >= 0.9,
+                    tasty-th >= 0.1.2,
 
                     clafer == 0.3.7
 
@@ -156,7 +155,7 @@ Test-Suite test-suite
     else
         build-depends: HaXml >= 1.24
 
-    ghc-options:    -Wall -fno-warn-unused-do-bind -fno-warn-orphans
+    ghc-options:    -Wall -fno-warn-unused-do-bind -fno-warn-orphans -threaded
 
     other-modules:  Paths_clafer,
                     Functions,

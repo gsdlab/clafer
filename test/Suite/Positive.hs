@@ -29,13 +29,12 @@ import Data.Maybe
 import Control.Monad
 import Language.Clafer
 import Language.ClaferT
-import qualified Test.Framework as T
-import Test.Framework.TH
-import Test.Framework.Providers.HUnit
-import Test.HUnit
+import Test.Tasty
+import Test.Tasty.HUnit
+import Test.Tasty.TH
 import qualified Data.Map as Map
 
-tg_Test_Suite_Positive :: T.Test
+tg_Test_Suite_Positive :: TestTree
 tg_Test_Suite_Positive = $(testGroupGenerator)
  
 positiveClaferModels :: IO [(String, String)]

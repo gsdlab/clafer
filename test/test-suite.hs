@@ -33,16 +33,15 @@ import Suite.Positive
 import Suite.Negative
 import Suite.SimpleScopeAnalyser
 import Functions
-import Test.HUnit
-import Test.Framework
-import Test.Framework.TH
-import Test.Framework.Providers.HUnit
+import Test.Tasty
+import Test.Tasty.HUnit
+import Test.Tasty.TH
 
-tg_Main_Test_Suite :: Test.Framework.Test
+tg_Main_Test_Suite :: TestTree
 tg_Main_Test_Suite = $(testGroupGenerator)
 
 main :: IO ()
-main = defaultMain[tg_Main_Test_Suite, tg_Test_Suite_Positive, tg_Test_Suite_Negative, tg_Test_Suite_SimpleScopeAnalyser]
+main = defaultMain $ testGroup "Tests" [tg_Main_Test_Suite, tg_Test_Suite_Positive, tg_Test_Suite_Negative, tg_Test_Suite_SimpleScopeAnalyser]
 
 {-
 a            // ::a -> c0_a
