@@ -268,6 +268,7 @@ genCModule _ (imodule@IModule{_mDecls}, _) scopes =
         | otherwise                = _sident
     genConstraintExp (IInt val) = "constant(" ++ show val ++ ")"
     genConstraintExp (IStr val) = "constant(" ++ show val ++ ")"
+    genConstraintExp (IDouble val) = "constant(" ++ show val ++ ")"
     genConstraintExp e = error $ "Unknown expression: " ++ show e
                 
     mapQuant INo = "none"
