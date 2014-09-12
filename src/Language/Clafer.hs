@@ -93,12 +93,14 @@ module Language.Clafer (addModuleFragment,
                         module Language.Clafer.Front.ErrM)
 where
 
+import Data.Data.Lens
 import Data.Either
 import Data.List
 import Data.Maybe
 import qualified Data.Map as Map
 import Data.Ord
 import Control.Monad
+import Control.Lens.Plated
 import System.FilePath (takeBaseName)
 
 import Language.ClaferT 
@@ -326,6 +328,15 @@ generateHtml env ast' =
     printComments [] = []
     printComments ((s, comment):cs) = (snd (printComment s [(s, comment)]) ++ "<br>\n"):printComments cs
 
+noReals :: IModule -> Bool
+noReals iModule = reals == []
+  where 
+    iexps :: [ IExp ]
+    iexps = universeOn biplate iModule
+    reals = filter isIDouble iexps
+    isIDouble (IDouble _) = True
+    isIDouble _           = False
+
 -- | Generates outputs for the given IR.
 generate :: Monad m => ClaferT m (Map.Map ClaferMode CompilerResult)
 generate =
@@ -334,50 +345,66 @@ generate =
     ast' <- getAst
     (iModule, genv, au) <- getIr
     let 
+      hasNoReals = noReals iModule
       cargs = args env
-      stats = showStats au $ statsModule iModule
       modes = mode cargs
+      stats = showStats au $ statsModule iModule
       scopes = getScopeStrategy (scope_strategy cargs) iModule
+
     return $ Map.fromList ( 
         -- result for Alloy
         (if (Alloy `elem` modes)
-          then let 
-                  (imod,strMap) = astrModule iModule
-                  alloyCode = genModule cargs{mode = [Alloy]} (imod, genv) scopes
-                  addCommentStats = if no_stats cargs then const else addStats 
-               in 
-                  [ (Alloy, 
-                    CompilerResult { 
-                     extension = "als", 
-                     outputCode = addCommentStats (fst alloyCode) stats, 
-                     statistics = stats,
-                     claferEnv  = env,
-                     mappingToAlloy = fromMaybe [] (Just $ snd alloyCode),
-                     stringMap = strMap,
-                     scopesList = scopes
-                    })
-                  ]
+          then if (hasNoReals)
+                then 
+                  let 
+                    (imod,strMap) = astrModule iModule
+                    alloyCode = genModule cargs{mode = [Alloy]} (imod, genv) scopes
+                    addCommentStats = if no_stats cargs then const else addStats 
+                  in 
+                    [ (Alloy, 
+                      CompilerResult { 
+                       extension = "als", 
+                       outputCode = addCommentStats (fst alloyCode) stats, 
+                       statistics = stats,
+                       claferEnv  = env,
+                       mappingToAlloy = fromMaybe [] (Just $ snd alloyCode),
+                       stringMap = strMap,
+                       scopesList = scopes
+                      })
+                    ]
+                else [ (Alloy, 
+                        NoCompilerResult { 
+                         reason = "Alloy output unavailable because the model contains real numbers." 
+                        })
+                     ]
           else []
         ) 
         ++
         -- result for Alloy42
         (if (Alloy42 `elem` modes)
-          then let 
-                  (imod,strMap) = astrModule iModule
-                  alloyCode = genModule cargs{mode = [Alloy42]} (imod, genv) scopes
-                  addCommentStats = if no_stats cargs then const else addStats 
-               in 
-                  [ (Alloy42, 
-                    CompilerResult { 
-                     extension = "als4", 
-                     outputCode = addCommentStats (fst alloyCode) stats, 
-                     statistics = stats,
-                     claferEnv  = env,
-                     mappingToAlloy = fromMaybe [] (Just $ snd alloyCode),
-                     stringMap = strMap,
-                     scopesList = scopes
-                    })
-                  ]
+          then if (hasNoReals)
+                then
+                   let 
+                      (imod,strMap) = astrModule iModule
+                      alloyCode = genModule cargs{mode = [Alloy42]} (imod, genv) scopes
+                      addCommentStats = if no_stats cargs then const else addStats 
+                   in 
+                      [ (Alloy42, 
+                        CompilerResult { 
+                         extension = "als4", 
+                         outputCode = addCommentStats (fst alloyCode) stats, 
+                         statistics = stats,
+                         claferEnv  = env,
+                         mappingToAlloy = fromMaybe [] (Just $ snd alloyCode),
+                         stringMap = strMap,
+                         scopesList = scopes
+                        })
+                      ]
+                else [ (Alloy, 
+                        NoCompilerResult { 
+                         reason = "Alloy output unavailable because the model contains real numbers." 
+                        })
+                     ]
           else []
         )   
         -- result for XML    
@@ -495,7 +522,10 @@ data CompilerResult = CompilerResult {
                             stringMap :: (Map.Map Int String),
                             -- | scopes generated by scope inference
                             scopesList :: [(UID, Integer)]
-                            } deriving Show
+                            } 
+                      | NoCompilerResult {
+                            reason :: String
+                      } deriving Show
 
 desugar :: Module -> IModule  
 desugar iModule = desugarModule iModule
