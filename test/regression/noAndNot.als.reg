@@ -1,13 +1,6 @@
-/*
-All clafers: 4 | Abstract: 1 | Concrete: 2 | References: 1
-Constraints: 3
-Goals: 0
-Global scope: 1..*
-Can skip resolver: False
-*/
 open util/integer
 pred show {}
-run show for 1
+
 
 abstract sig c0_Person
 { r_c0_married : lone c0_married
