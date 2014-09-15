@@ -91,9 +91,9 @@ resolve env@(LEnv st lastNl) (t:ts)
   st' = dropWhile (newLev <) st
 
 indent :: Token
-indent = PT (Pn 0 0 0) (TS "{" $ tokenLookup "{")
+indent = PT (Pn 0 0 0) (TS "{" $ fromJust $ tokenLookup "{")
 dedent :: Token
-dedent = PT (Pn 0 0 0) (TS "}" $ tokenLookup "}") 
+dedent = PT (Pn 0 0 0) (TS "}" $ fromJust $ tokenLookup "}")
 
 toToken :: ExToken -> [Token]
 toToken (NewLine _) = []
@@ -124,73 +124,16 @@ incrGlobal _ _ (Err (Pn z x y)) = do
   where
     fPos = Pos (fromIntegral x) (fromIntegral y)
 
-
-tokenLookup :: String -> Int
-tokenLookup s = i
+tokenLookup :: String -> Maybe Int
+tokenLookup s = treeFind resWords
   where
-    i = case s of
-      "!" -> 1
-      "!=" -> 2
-      "#" -> 3
-      "&" -> 4
-      "&&" -> 5
-      "(" -> 6
-      ")" -> 7
-      "*" -> 8
-      "+" -> 9
-      "++" -> 10
-      "," -> 11
-      "-" -> 12
-      "--" -> 13
-      "->" -> 14
-      "->>" -> 15
-      "." -> 16
-      ".." -> 17
-      "/" -> 18
-      ":" -> 19
-      ":=" -> 20
-      ":>" -> 21
-      ";" -> 22
-      "<" -> 23
-      "<:" -> 24
-      "<<" -> 25
-      "<=" -> 26      
-      "<=>" -> 27
-      "=" -> 28
-      "=>" -> 29
-      ">" -> 30
-      ">=" -> 31
-      ">>" -> 32
-      "?" -> 33
-      "[" -> 34
-      "\\" -> 35
-      "]" -> 36
-      "`" -> 37
-      "abstract" -> 38
-      "all" -> 39
-      "disj" -> 40
-      "else" -> 41
-      "enum" -> 42
-      "if" -> 43
-      "in" -> 44
-      "lone" -> 45
-      "max" -> 46
-      "min" -> 47
-      "mux" -> 48
-      "no" -> 49
-      "not" -> 50
-      "one" -> 51
-      "opt" -> 52
-      "or" -> 53
-      "some" -> 54
-      "sum" -> 55       
-      "then" -> 56
-      "xor" -> 57
-      "{" -> 58
-      "|" -> 59
-      "||" -> 60
-      "}" -> 61
-      _ -> 0
+  treeFind N = Nothing
+  treeFind (B a t left right) | s < a  = treeFind left
+                              | s > a  = treeFind right
+                              | s == a = tokenCode t
+  tokenCode :: Tok -> Maybe Int
+  tokenCode (TS s c) = Just c
+  tokenCode _ = Nothing
 
 -- | Get the position of a token.
 position :: Token -> Position
@@ -249,9 +192,9 @@ addNewLines' n (t0:t1:ts)
   | isLayoutOpen t1  || isBracketOpen t1 =
     addNewLines' (n + 1) (t1:ts) >>= (return . (ExToken t0:))
   | isLayoutClose t1 || isBracketClose t1 =
-    addNewLines' (n - 1) (t1:ts) >>= (return . (ExToken t0:)) 
-  | isNewLine t0 t1  = addNewLines' n (t1:ts) >>= (return . (ExToken t0:) . (NewLine (column t1, n):)) 
-  | otherwise        = addNewLines' n (t1:ts) >>= (return . (ExToken t0:)) 
+    addNewLines' (n - 1) (t1:ts) >>= (return . (ExToken t0:))
+  | isNewLine t0 t1  = addNewLines' n (t1:ts) >>= (return . (ExToken t0:) . (NewLine (column t1, n):))
+  | otherwise        = addNewLines' n (t1:ts) >>= (return . (ExToken t0:))
 addNewLines' _ _ = throwErr (ClaferErr "Function addNewLines' from LayoutResolver was given invalid arguments" :: CErr Span) -- This should never happen!
 
 
@@ -267,8 +210,8 @@ updToken (t0:t1:ts)
   where
   sym = if isLayoutOpen t1 then "{" else "}"
   -- | Get the position immediately to the right of the given token.
-  nextPos :: Token -> Position 
-  nextPos t = Pn (g + s) l (c + s + 1) 
+  nextPos :: Token -> Position
+  nextPos t = Pn (g + s) l (c + s + 1)
     where Pn g l c = position t
           s = tokenLength t
 updToken [] = return []
@@ -281,11 +224,13 @@ addToken :: (Monad m) => Position -- ^ Position of the new token.
                      --   positions updated to make room for the new token.
          -> ClaferT m [Token]
 addToken p@(Pn z x y) s ts = do
-  when (i==0) $ throwErr $ ParseErr (ErrPos z fPos fPos) $ "not a reserved word: " ++ show s
-  (>>= (return . (PT p (TS s i):))) $ mapM (incrGlobal p (length s)) ts
+  when (not $ validToken t) $ throwErr $ ParseErr (ErrPos z fPos fPos) $ "not a reserved word: " ++ show s
+  (>>= (return . (PT p (TS s (fromJust t)):))) $ mapM (incrGlobal p (length s)) ts
   where
     fPos = Pos (fromIntegral x) (fromIntegral y)
-    i = tokenLookup s
+    validToken Nothing = False
+    validToken (Just _) = True
+    t = tokenLookup s
 
 resLayout :: String -> String
 resLayout input' = 
