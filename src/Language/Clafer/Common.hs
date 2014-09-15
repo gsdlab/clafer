@@ -327,6 +327,9 @@ intType = "int"
 integerType :: String
 integerType = "integer"
 
+realType :: String
+realType = "real"
+
 baseClafer :: String
 baseClafer = "clafer"
 
@@ -334,7 +337,7 @@ modSep :: String
 modSep = "\\"
 
 primitiveTypes :: [String]
-primitiveTypes = [strType, intType, integerType]
+primitiveTypes = [strType, intType, integerType, realType]
 
 isPrimitive :: String -> Bool
 isPrimitive = flip elem primitiveTypes

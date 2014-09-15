@@ -71,10 +71,9 @@ case_nonempty_cards = do
 		@? "nonempty card test failed. Files contain empty cardinalities after fully compiling")
 	where
 		getIR (file', (Right (resultMap))) = 
-			let
-				CompilerResult{claferEnv = ClaferEnv{cIr = Just (iMod, _, _)}} = fromJust $ Map.lookup Alloy resultMap
-			in
-				[(file', iMod)]
+			case Map.lookup Alloy resultMap of
+				Just CompilerResult{claferEnv = ClaferEnv{cIr = Just (iMod, _, _)}} -> [(file', iMod)]
+				_ -> []
 		getIR (_, _) = []
 		isEmptyCard (IRClafer (IClafer{_cinPos=(Span (Pos l c) _), _card = Nothing})) = "Line " ++ show l ++ " column " ++ show c ++ "\n"
 		isEmptyCard	_ = ""
