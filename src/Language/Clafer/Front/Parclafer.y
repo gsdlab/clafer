@@ -57,30 +57,34 @@ import Language.Clafer.Front.ErrM
  'disj' { PT _ (TS _ 40) }
  'else' { PT _ (TS _ 41) }
  'enum' { PT _ (TS _ 42) }
- 'if' { PT _ (TS _ 43) }
- 'in' { PT _ (TS _ 44) }
- 'lone' { PT _ (TS _ 45) }
- 'max' { PT _ (TS _ 46) }
- 'min' { PT _ (TS _ 47) }
- 'mux' { PT _ (TS _ 48) }
- 'no' { PT _ (TS _ 49) }
- 'not' { PT _ (TS _ 50) }
- 'one' { PT _ (TS _ 51) }
- 'opt' { PT _ (TS _ 52) }
- 'or' { PT _ (TS _ 53) }
- 'some' { PT _ (TS _ 54) }
- 'sum' { PT _ (TS _ 55) }
- 'then' { PT _ (TS _ 56) }
- 'xor' { PT _ (TS _ 57) }
- '{' { PT _ (TS _ 58) }
- '|' { PT _ (TS _ 59) }
- '||' { PT _ (TS _ 60) }
- '}' { PT _ (TS _ 61) }
+ 'file://' { PT _ (TS _ 43) }
+ 'http://' { PT _ (TS _ 44) }
+ 'if' { PT _ (TS _ 45) }
+ 'import' { PT _ (TS _ 46) }
+ 'in' { PT _ (TS _ 47) }
+ 'lone' { PT _ (TS _ 48) }
+ 'max' { PT _ (TS _ 49) }
+ 'min' { PT _ (TS _ 50) }
+ 'mux' { PT _ (TS _ 51) }
+ 'no' { PT _ (TS _ 52) }
+ 'not' { PT _ (TS _ 53) }
+ 'one' { PT _ (TS _ 54) }
+ 'opt' { PT _ (TS _ 55) }
+ 'or' { PT _ (TS _ 56) }
+ 'some' { PT _ (TS _ 57) }
+ 'sum' { PT _ (TS _ 58) }
+ 'then' { PT _ (TS _ 59) }
+ 'xor' { PT _ (TS _ 60) }
+ '{' { PT _ (TS _ 61) }
+ '|' { PT _ (TS _ 62) }
+ '||' { PT _ (TS _ 63) }
+ '}' { PT _ (TS _ 64) }
 
 L_PosInteger { PT _ (T_PosInteger _) }
 L_PosDouble { PT _ (T_PosDouble _) }
 L_PosString { PT _ (T_PosString _) }
 L_PosIdent { PT _ (T_PosIdent _) }
+L_PosURL { PT _ (T_PosURL _) }
 L_err    { _ }
 
 
@@ -90,9 +94,21 @@ PosInteger    :: { PosInteger} : L_PosInteger { PosInteger (mkPosToken $1)}
 PosDouble    :: { PosDouble} : L_PosDouble { PosDouble (mkPosToken $1)}
 PosString    :: { PosString} : L_PosString { PosString (mkPosToken $1)}
 PosIdent    :: { PosIdent} : L_PosIdent { PosIdent (mkPosToken $1)}
+PosURL    :: { PosURL} : L_PosURL { PosURL (mkPosToken $1)}
 
 Module :: { Module }
-Module : ListDeclaration { Module ((mkCatSpan $1)) (reverse $1) } 
+Module : ListImport ListDeclaration { Module ((mkCatSpan $1) >- (mkCatSpan $2)) $1 (reverse $2) } 
+
+
+ListImport :: { [Import] }
+ListImport : Import { (:[])  $1 } 
+  | Import ListImport { (:)  $1 $2 }
+
+
+Import :: { Import }
+Import : 'import' 'file://' PosURL { ImportFile ((mkTokenSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $3 } 
+  | 'import' 'http://' PosURL { ImportHttp ((mkTokenSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $3 }
+  | 'import' PosURL { ImportEmpty ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
 
 
 Declaration :: { Declaration }

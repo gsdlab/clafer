@@ -35,8 +35,15 @@ newtype PosInteger = PosInteger ((Int,Int),String) deriving (Eq,Ord,Show,Read,Da
 newtype PosDouble = PosDouble ((Int,Int),String) deriving (Eq,Ord,Show,Read,Data,Typeable,Generic)
 newtype PosString = PosString ((Int,Int),String) deriving (Eq,Ord,Show,Read,Data,Typeable,Generic)
 newtype PosIdent = PosIdent ((Int,Int),String) deriving (Eq,Ord,Show,Read,Data,Typeable,Generic)
+newtype PosURL = PosURL ((Int,Int),String) deriving (Eq,Ord,Show,Read,Data,Typeable,Generic)
 data Module =
-   Module Span [Declaration]
+   Module Span [Import] [Declaration]
+  deriving (Eq,Ord,Show,Read,Data,Typeable,Generic)
+
+data Import =
+   ImportFile Span PosURL
+ | ImportHttp Span PosURL
+ | ImportEmpty Span PosURL
   deriving (Eq,Ord,Show,Read,Data,Typeable,Generic)
 
 data Declaration =
@@ -202,7 +209,12 @@ data LocId =
   deriving (Eq,Ord,Show,Read,Data,Typeable,Generic)
 
 instance Spannable Module where
-  getSpan ( Module s _ ) = s
+  getSpan ( Module s _ _ ) = s
+
+instance Spannable Import where
+  getSpan ( ImportFile s _ ) = s
+  getSpan ( ImportHttp s _ ) = s
+  getSpan ( ImportEmpty s _ ) = s
 
 instance Spannable Declaration where
   getSpan ( EnumDecl s _ _ ) = s
@@ -365,6 +377,13 @@ instance Spannable PosString where
 
 instance Spannable PosIdent where
   getSpan (PosIdent ((c, l), lex')) =
+    Span (Pos c' l') (Pos c' $ l' + len lex')
+    where
+      c' = toInteger c
+      l' = toInteger l
+
+instance Spannable PosURL where
+  getSpan (PosURL ((c, l), lex')) =
     Span (Pos c' l') (Pos c' $ l' + len lex')
     where
       c' = toInteger c

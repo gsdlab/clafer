@@ -95,11 +95,25 @@ instance Print PosIdent where
   prt _ (PosIdent (_,i)) = doc (showString ( i))
 
 
+instance Print PosURL where
+  prt _ (PosURL (_,i)) = doc (showString ( i))
+
+
 
 instance Print Module where
   prt i e = case e of
-   Module _ declarations -> prPrec i 0 (concatD [prt 0 declarations])
+   Module _ imports declarations -> prPrec i 0 (concatD [prt 0 imports , prt 0 declarations])
 
+
+instance Print Import where
+  prt i e = case e of
+   ImportFile _ posurl -> prPrec i 0 (concatD [doc (showString "import") , doc (showString "file://") , prt 0 posurl])
+   ImportHttp _ posurl -> prPrec i 0 (concatD [doc (showString "import") , doc (showString "http://") , prt 0 posurl])
+   ImportEmpty _ posurl -> prPrec i 0 (concatD [doc (showString "import") , prt 0 posurl])
+
+  prtList es = case es of
+   [x] -> (concatD [prt 0 x])
+   x:xs -> (concatD [prt 0 x , prt 0 xs])
 
 instance Print Declaration where
   prt i e = case e of

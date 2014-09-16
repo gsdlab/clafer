@@ -10,7 +10,14 @@ entrypoints Module ;
 comment "//" ;
 comment "/*" "*/" ;
 
-Module.         Module ::= [Declaration] ;
+Module.         Module ::= [Import] [Declaration] ;
+
+(:[]).          [Import] ::= Import;
+(:).            [Import] ::= Import [Import]; 
+
+ImportFile.     Import ::= "import" "file://" PosURL ;
+ImportHttp.     Import ::= "import" "http://" PosURL ;
+ImportEmpty.    Import ::= "import" PosURL ;
 
 EnumDecl.       Declaration ::= "enum" PosIdent "=" [EnumId] ;
 ElementDecl.    Declaration ::= Element ;
@@ -18,8 +25,7 @@ ElementDecl.    Declaration ::= Element ;
 Clafer.         Clafer ::= Abstract GCard PosIdent Super Card Init Elements ;
 Constraint.     Constraint ::= "[" [Exp] "]" ;
 SoftConstraint. SoftConstraint ::= "(" [Exp] ")";
-Goal.   		Goal ::= "<<" [Exp] ">>" ;
-
+Goal.           Goal ::= "<<" [Exp] ">>" ;
 
 AbstractEmpty.  Abstract ::= ;
 Abstract.       Abstract ::= "abstract" ;
@@ -137,3 +143,4 @@ position token PosInteger (digit+) ;
 position token PosDouble (digit+ '.' digit+ ('e' '-'? digit+)?) ;
 position token PosString '"' ((char - ["\"\\"]) | ('\\' ["\"\\nt"]))* '"' ;
 position token PosIdent (letter (letter|digit|'_'|'\'')*) ;
+position token PosURL ((letter|digit|'-' | '_' | '.' | '~' | '!' | '*' | '\'' | '(' | ')' | ';' | ':' | '@' | '&' | '=' | '+' | '$' | ',' | '/' | '?' | '%' | '#' | '[' | ']')+) ;
