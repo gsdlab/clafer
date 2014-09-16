@@ -1,6 +1,6 @@
 {-# LANGUAGE RankNTypes #-}
 {-
- Copyright (C) 2012 Kacper Bak, Jimmy Liang <http://gsd.uwaterloo.ca>
+ Copyright (C) 2012 Kacper Bak, Jimmy Liang, Michal Antkiewicz <http://gsd.uwaterloo.ca>
 
  Permission is hereby granted, free of charge, to any person obtaining a copy of
  this software and associated documentation files (the "Software"), to deal in
@@ -25,18 +25,21 @@ into Intermediate representation (IR) from "Language.Clafer.Intermediate.Intclaf
 -}
 module Language.Clafer.Intermediate.Desugarer where
 
+import qualified Data.Map as Map
+
 import Language.Clafer.Common
 import Language.Clafer.Front.Absclafer
 import Language.Clafer.Intermediate.Intclafer
 
 -- | Transform the AST into the intermediate representation (IR)
-desugarModule :: Module -> IModule
-desugarModule (Module _ declarations) = IModule "" $
-      declarations >>= desugarEnums >>= desugarDeclaration
+desugarModule :: (Map.Map String IModule) -> Module                        -> IModule
+desugarModule    importsMap                 (Module _ imports declarations) = IModule "" 
+      (map (desugarImport importsMap) imports)
+      (declarations >>= desugarEnums >>= desugarDeclaration)
 --      [ImoduleFragment $ declarations >>= desugarEnums >>= desugarDeclaration]
 
 sugarModule :: IModule -> Module
-sugarModule x = Module noSpan $ map sugarDeclaration $ _mDecls x -- (fragments x >>= mDecls)
+sugarModule (IModule _ imports declarations) = Module noSpan (map sugarImport imports) (map sugarDeclaration declarations) -- (fragments x >>= mDecls)
 
 -- | desugars enumeration to abstract and global singleton features
 desugarEnums :: Declaration -> [Declaration]
@@ -49,6 +52,22 @@ desugarEnums (EnumDecl s id' enumids) = (absEnum s) : map (mkEnum s) enumids
                                    Clafer s2 (AbstractEmpty s2) (GCardEmpty s2) eId ((SuperSome s2) (SuperColon s2) (ClaferId s2 $ Path s2 [ModIdIdent s2 id'])) oneToOne (InitEmpty s2) (ElementsList s2 [])
 desugarEnums x = [x]
 
+desugarImport :: (Map.Map String IModule) -> Import -> IModule
+desugarImport importsMap anImport  = 
+  case Map.lookup url importsMap of
+    Nothing -> error $ "Bug: imported module not found for " ++ url   -- should never happen
+    Just iModule -> iModule
+  where
+    url = getURL anImport
+    getURL (ImportFile _ (PosURL (_, url))) = "file://" ++ url
+    getURL (ImportHttp _ (PosURL (_, url))) = "http://" ++ url
+    getURL (ImportEmpty _ (PosURL (_, url))) = url
+
+sugarImport :: IModule        -> Import
+sugarImport (IModule name _ _) = case name of
+    ('f':'i':'l':'e':':':'/':'/':n) -> ImportFile noSpan $ PosURL ((0, 0), n)
+    ('h':'t':'t':'p':':':'/':'/':n) -> ImportHttp noSpan $ PosURL ((0, 0), n)
+    n                               -> ImportEmpty noSpan $ PosURL ((0, 0), n)
 
 desugarDeclaration :: Declaration -> [IElement]
 desugarDeclaration (ElementDecl _ element) = desugarElement element
