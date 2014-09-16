@@ -1,1 +1,3 @@
+import EAST-ADL-function.cfr
+
 abstract FunctionalDevice : AnalysisFunction

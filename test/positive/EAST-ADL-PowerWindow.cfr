@@ -1,8 +1,8 @@
-import EAST-ADL-device.cfr
+import EAST-ADL-funcdevice.cfr
 import file://EAST-ADL-connector.cfr
-// import http://t3-necsis.cs.uwaterloo.ca:8091/standards/EAST-ADL.cfr
+import http://t3-necsis.cs.uwaterloo.ca:8091/clafer/standards_EAST-ADL-device.cfr
 
-PowerWindowArchitecture
+abstract PWSubsystemFunctionalArchitecture
 	WinController : AnalysisFunction
 	Motor : FunctionalDevice
 	Switch : FunctionalDevice
@@ -13,3 +13,13 @@ PowerWindowArchitecture
 	conCommand : AFConnector
 		[ src = WinController ]
 		[ dest = Motor ]
+
+abstract ECU : Device
+  [smart]
+
+abstract PWSubsystemHardware
+  doorModule : ECU ?
+  bcm : ECU ?
+
+  dumbSwitch : Device ?
+    [no smart]
