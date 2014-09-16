@@ -1,0 +1,5 @@
+import EAST-ADL-function.cfr
+
+abstract AFConnector
+	src ->> AnalysisFunction
+	dest ->> AnalysisFunction

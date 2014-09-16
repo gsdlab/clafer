@@ -1,0 +1,15 @@
+import EAST-ADL-device.cfr
+import file://EAST-ADL-connector.cfr
+// import http://t3-necsis.cs.uwaterloo.ca:8091/standards/EAST-ADL.cfr
+
+PowerWindowArchitecture
+	WinController : AnalysisFunction
+	Motor : FunctionalDevice
+	Switch : FunctionalDevice
+
+	conRequest : AFConnector
+		[ src = Switch ]
+		[ dest = WinController ]
+	conCommand : AFConnector
+		[ src = WinController ]
+		[ dest = Motor ]
