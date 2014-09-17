@@ -104,9 +104,7 @@ printImports :: Bool -> [Import] -> String
 printImports    html    imports   = foldr (\imp acc -> acc ++ (printImport html imp [])) "" imports 
 
 printImport :: Bool -> Import -> [(Span, String)] -> String
-printImport html (ImportFile  _ (PosURL (_, u))) comments = (while html "<div><span class=\"keyword\">") ++ "import " ++ (while html "</span><a href=\""        ++ u ++ ".cfr\">") ++ "file://" ++ u ++ (while html "</a></div>")
-printImport html (ImportHttp  _ (PosURL (_, u))) comments = (while html "<div><span class=\"keyword\">") ++ "import " ++ (while html "</span><a href=\"http://" ++ u ++ ".cfr\">") ++ "http://" ++ u ++ (while html "</a></div>")
-printImport html (ImportEmpty _ (PosURL (_, u))) comments = (while html "<div><span class=\"keyword\">") ++ "import " ++ (while html "</span><a href=\""        ++ u ++ ".cfr\">") ++              u ++ (while html "</a></div>")
+printImport html (Import  _ (PosURL (_, u))) comments = (while html "<div><span class=\"keyword\">") ++ "import " ++ (while html "</span><a href=\"" ++ u ++ ".cfr\">") ++ u ++ (while html "</a></div>")
 
 printDeclarations :: [Declaration] -> Map.Map Span [Ir] -> Bool -> String
 printDeclarations []     _     _    = ""

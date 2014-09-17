@@ -20,7 +20,7 @@ $i = [$l $d _ ']          -- identifier character
 $u = [\0-\255]          -- universal: any character
 
 @rsyms =    -- symbols and non-identifier-like reserved words
-   "file" \: \/ \/ | "http" \: \/ \/ | \= | \[ | \] | \( | \) | \< \< | \> \> | \{ | \} | \` | \: | \- \> | \- \> \> | \: \= | \? | \+ | \* | \. \. | \| | \< \= \> | \= \> | \| \| | \& \& | \! | \< | \> | \< \= | \> \= | \! \= | \- | \/ | \# | \+ \+ | \, | \- \- | \& | \< \: | \: \> | \. | \; | \: \:
+   \= | \[ | \] | \( | \) | \< \< | \> \> | \{ | \} | \` | \: | \- \> | \- \> \> | \: \= | \? | \+ | \* | \. \. | \| | \< \= \> | \= \> | \| \| | \& \& | \! | \< | \> | \< \= | \> \= | \! \= | \- | \/ | \# | \+ \+ | \, | \- \- | \& | \< \: | \: \> | \. | \; | \: \:
 
 :-
 "//" [.]* ; -- Toss single line comments
@@ -32,7 +32,7 @@ $d + { tok (\p s -> PT p (eitherResIdent (T_PosInteger . share) s)) }
 $d + \. $d + (e \- ? $d +)? { tok (\p s -> PT p (eitherResIdent (T_PosDouble . share) s)) }
 \" ($u # [\" \\]| \\ [\" \\ n t]) * \" { tok (\p s -> PT p (eitherResIdent (T_PosString . share) s)) }
 $l ($l | $d | \_ | \')* { tok (\p s -> PT p (eitherResIdent (T_PosIdent . share) s)) }
-($l | $d | \- | \_ | \. | \~ | \! | \* | \' | \( | \) | \; | \: | \@ | \& | \= | \+ | \$ | \, | \/ | \? | \% | \# | \[ | \])+ { tok (\p s -> PT p (eitherResIdent (T_PosURL . share) s)) }
+(f i l e \: \/ \/ | h t t p \: \/ \/ | f t p \: \/ \/)($l | $d | \- | \_ | \. | \~ | \! | \* | \' | \( | \) | \; | \: | \@ | \& | \= | \+ | \$ | \, | \/ | \? | \% | \# | \[ | \])+ { tok (\p s -> PT p (eitherResIdent (T_PosURL . share) s)) }
 
 $l $i*   { tok (\p s -> PT p (eitherResIdent (TV . share) s)) }
 
@@ -101,7 +101,7 @@ eitherResIdent tv s = treeFind resWords
                               | s > a  = treeFind right
                               | s == a = t
 
-resWords = b ">>" 33 (b ".." 17 (b "+" 9 (b "&&" 5 (b "#" 3 (b "!=" 2 (b "!" 1 N N) N) (b "&" 4 N N)) (b ")" 7 (b "(" 6 N N) (b "*" 8 N N))) (b "--" 13 (b "," 11 (b "++" 10 N N) (b "-" 12 N N)) (b "->>" 15 (b "->" 14 N N) (b "." 16 N N)))) (b "<:" 25 (b ":=" 21 (b ":" 19 (b "/" 18 N N) (b "::" 20 N N)) (b ";" 23 (b ":>" 22 N N) (b "<" 24 N N))) (b "=" 29 (b "<=" 27 (b "<<" 26 N N) (b "<=>" 28 N N)) (b ">" 31 (b "=>" 30 N N) (b ">=" 32 N N))))) (b "max" 49 (b "else" 41 (b "`" 37 (b "[" 35 (b "?" 34 N N) (b "]" 36 N N)) (b "all" 39 (b "abstract" 38 N N) (b "disj" 40 N N))) (b "if" 45 (b "file://" 43 (b "enum" 42 N N) (b "http://" 44 N N)) (b "in" 47 (b "import" 46 N N) (b "lone" 48 N N)))) (b "some" 57 (b "not" 53 (b "mux" 51 (b "min" 50 N N) (b "no" 52 N N)) (b "opt" 55 (b "one" 54 N N) (b "or" 56 N N))) (b "{" 61 (b "then" 59 (b "sum" 58 N N) (b "xor" 60 N N)) (b "||" 63 (b "|" 62 N N) (b "}" 64 N N)))))
+resWords = b ">=" 32 (b "." 16 (b "*" 8 (b "&" 4 (b "!=" 2 (b "!" 1 N N) (b "#" 3 N N)) (b "(" 6 (b "&&" 5 N N) (b ")" 7 N N))) (b "-" 12 (b "++" 10 (b "+" 9 N N) (b "," 11 N N)) (b "->" 14 (b "--" 13 N N) (b "->>" 15 N N)))) (b "<" 24 (b "::" 20 (b "/" 18 (b ".." 17 N N) (b ":" 19 N N)) (b ":>" 22 (b ":=" 21 N N) (b ";" 23 N N))) (b "<=>" 28 (b "<<" 26 (b "<:" 25 N N) (b "<=" 27 N N)) (b "=>" 30 (b "=" 29 N N) (b ">" 31 N N))))) (b "min" 48 (b "disj" 40 (b "]" 36 (b "?" 34 (b ">>" 33 N N) (b "[" 35 N N)) (b "abstract" 38 (b "`" 37 N N) (b "all" 39 N N))) (b "import" 44 (b "enum" 42 (b "else" 41 N N) (b "if" 43 N N)) (b "lone" 46 (b "in" 45 N N) (b "max" 47 N N)))) (b "sum" 56 (b "one" 52 (b "no" 50 (b "mux" 49 N N) (b "not" 51 N N)) (b "or" 54 (b "opt" 53 N N) (b "some" 55 N N))) (b "|" 60 (b "xor" 58 (b "then" 57 N N) (b "{" 59 N N)) (b "}" 62 (b "||" 61 N N) N))))
    where b s n = let bs = id s
                   in B bs (TS bs n)
 

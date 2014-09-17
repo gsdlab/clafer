@@ -1,5 +1,5 @@
-import EAST-ADL-funcdevice
-import file://EAST-ADL-connector
+import file://EAST-ADL-funcdevice
+import ftp://t3-necsis.cs.uwaterloo.ca/EAST-ADL-connector
 import http://t3-necsis.cs.uwaterloo.ca:8091/clafer/standards_EAST-ADL-device
 
 abstract PWSubsystemFunctionalArchitecture

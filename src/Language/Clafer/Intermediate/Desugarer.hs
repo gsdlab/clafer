@@ -58,15 +58,10 @@ desugarImport    importsMap                  imp  =
     Just iModule -> iModule
   where
     impUrl = getURL imp
-    getURL (ImportFile  _ (PosURL (_, u))) = "file://" ++ u
-    getURL (ImportHttp  _ (PosURL (_, u))) = "http://" ++ u
-    getURL (ImportEmpty _ (PosURL (_, u))) = u
+    getURL (Import _ (PosURL (_, u))) = u
 
 sugarImport :: IModule        -> Import
-sugarImport (IModule name _ _) = case name of
-    ('f':'i':'l':'e':':':'/':'/':n) -> ImportFile noSpan $ PosURL ((0, 0), n)
-    ('h':'t':'t':'p':':':'/':'/':n) -> ImportHttp noSpan $ PosURL ((0, 0), n)
-    n                               -> ImportEmpty noSpan $ PosURL ((0, 0), n)
+sugarImport (IModule name _ _) = Import noSpan $ PosURL ((0, 0), name)
 
 desugarDeclaration :: Declaration -> [IElement]
 desugarDeclaration (ElementDecl _ element) = desugarElement element

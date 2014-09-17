@@ -31,7 +31,7 @@ PosIdent literals are recognized by the regular expression
 `````letter (letter | digit | '_' | ''')*`````
 
 PosURL literals are recognized by the regular expression
-`````(letter | digit | '-' | '_' | '.' | '~' | '!' | '*' | ''' | '(' | ')' | ';' | ':' | '@' | '&' | '=' | '+' | '$' | ',' | '/' | '?' | '%' | '#' | '[' | ']')+`````
+`````({"file://"} | {"http://"} | {"ftp://"}) (letter | digit | '-' | '_' | '.' | '~' | '!' | '*' | ''' | '(' | ')' | ';' | ':' | '@' | '&' | '=' | '+' | '$' | ',' | '/' | '?' | '%' | '#' | '[' | ']')+`````
 
 
 ===Reserved words and symbols===
@@ -46,17 +46,17 @@ The reserved words used in clafer are the following:
   | ``xor`` |  |  | 
 
 The symbols used in clafer are the following:
-  | file:// | http:// | = | [
-  | ] | ( | ) | <<
-  | >> | { | } | `
-  | : | -> | ->> | :=
-  | ? | + | * | ..
-  | | | <=> | => | ||
-  | && | ! | < | >
-  | <= | >= | != | -
-  | / | # | ++ | ,
-  | -- | & | <: | :>
-  | . | ; | :: | 
+  | = | [ | ] | (
+  | ) | << | >> | {
+  | } | ` | : | ->
+  | ->> | := | ? | +
+  | * | .. | | | <=>
+  | => | || | && | !
+  | < | > | <= | >=
+  | != | - | / | #
+  | ++ | , | -- | &
+  | <: | :> | . | ;
+  | :: |  |  | 
 
 ===Comments===
 Single-line comments begin with //.Multiple-line comments are  enclosed with /* and */.
@@ -68,9 +68,7 @@ and **eps** (empty rule) belong to the BNF notation.
 All other symbols are terminals.
 
   | //Module// | -> | //[Import]// //[Declaration]// 
-  | //Import// | -> | ``import`` ``file://`` //PosURL// 
-  |  |  **|**  | ``import`` ``http://`` //PosURL// 
-  |  |  **|**  | ``import`` //PosURL// 
+  | //Import// | -> | ``import`` //PosURL// 
   | //Declaration// | -> | ``enum`` //PosIdent// ``=`` //[EnumId]// 
   |  |  **|**  | //Element// 
   | //Clafer// | -> | //Abstract// //GCard// //PosIdent// //Super// //Card// //Init// //Elements// 

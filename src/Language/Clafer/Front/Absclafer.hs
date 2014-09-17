@@ -41,9 +41,7 @@ data Module =
   deriving (Eq,Ord,Show,Read,Data,Typeable,Generic)
 
 data Import =
-   ImportFile Span PosURL
- | ImportHttp Span PosURL
- | ImportEmpty Span PosURL
+   Import Span PosURL
   deriving (Eq,Ord,Show,Read,Data,Typeable,Generic)
 
 data Declaration =
@@ -212,9 +210,7 @@ instance Spannable Module where
   getSpan ( Module s _ _ ) = s
 
 instance Spannable Import where
-  getSpan ( ImportFile s _ ) = s
-  getSpan ( ImportHttp s _ ) = s
-  getSpan ( ImportEmpty s _ ) = s
+  getSpan ( Import s _ ) = s
 
 instance Spannable Declaration where
   getSpan ( EnumDecl s _ _ ) = s

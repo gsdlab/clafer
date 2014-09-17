@@ -12,9 +12,7 @@ comment "/*" "*/" ;
 
 Module.         Module ::= [Import] [Declaration] ;
 
-ImportFile.     Import ::= "import" "file://" PosURL ;
-ImportHttp.     Import ::= "import" "http://" PosURL ;
-ImportEmpty.    Import ::= "import" PosURL ;
+Import.         Import ::= "import" PosURL ;
 
 EnumDecl.       Declaration ::= "enum" PosIdent "=" [EnumId] ;
 ElementDecl.    Declaration ::= Element ;
@@ -141,4 +139,4 @@ position token PosInteger (digit+) ;
 position token PosDouble (digit+ '.' digit+ ('e' '-'? digit+)?) ;
 position token PosString '"' ((char - ["\"\\"]) | ('\\' ["\"\\nt"]))* '"' ;
 position token PosIdent (letter (letter|digit|'_'|'\'')*) ;
-position token PosURL ((letter|digit|'-' | '_' | '.' | '~' | '!' | '*' | '\'' | '(' | ')' | ';' | ':' | '@' | '&' | '=' | '+' | '$' | ',' | '/' | '?' | '%' | '#' | '[' | ']')+) ;
+position token PosURL (({"file://"}|{"http://"}|{"ftp://"})(letter|digit|'-'|'_'|'.'|'~'|'!'|'*'|'\''|'('|')'|';'|':'|'@'|'&'|'='|'+'|'$'|','|'/'|'?'|'%'|'#'|'['|']')+) ;

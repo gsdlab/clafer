@@ -1,4 +1,4 @@
-import EAST-ADL-function.cfr
+import file://EAST-ADL-function
 
 abstract FunctionalDevice : AnalysisFunction
 

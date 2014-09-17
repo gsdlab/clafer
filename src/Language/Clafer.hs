@@ -275,9 +275,7 @@ computeImportsMap ast' = do
       where
         url = getURL imp
         iModule = IModule url [] []
-    getURL (ImportFile _ (PosURL (_, u))) = "file://" ++ u
-    getURL (ImportHttp _ (PosURL (_, u))) = "http://" ++ u
-    getURL (ImportEmpty _ (PosURL (_, u))) = u
+    getURL (Import _ (PosURL (_, u))) = u
 
 
 -- | Splits the IR into their fragments, and generates the output for each fragment.

@@ -107,9 +107,7 @@ instance Print Module where
 
 instance Print Import where
   prt i e = case e of
-   ImportFile _ posurl -> prPrec i 0 (concatD [doc (showString "import") , doc (showString "file://") , prt 0 posurl])
-   ImportHttp _ posurl -> prPrec i 0 (concatD [doc (showString "import") , doc (showString "http://") , prt 0 posurl])
-   ImportEmpty _ posurl -> prPrec i 0 (concatD [doc (showString "import") , prt 0 posurl])
+   Import _ posurl -> prPrec i 0 (concatD [doc (showString "import") , prt 0 posurl])
 
   prtList es = case es of
    [] -> (concatD [])

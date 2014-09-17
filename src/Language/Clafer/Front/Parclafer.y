@@ -61,28 +61,26 @@ import Language.Clafer.Front.ErrM
  'disj' { PT _ (TS _ 40) }
  'else' { PT _ (TS _ 41) }
  'enum' { PT _ (TS _ 42) }
- 'file://' { PT _ (TS _ 43) }
- 'http://' { PT _ (TS _ 44) }
- 'if' { PT _ (TS _ 45) }
- 'import' { PT _ (TS _ 46) }
- 'in' { PT _ (TS _ 47) }
- 'lone' { PT _ (TS _ 48) }
- 'max' { PT _ (TS _ 49) }
- 'min' { PT _ (TS _ 50) }
- 'mux' { PT _ (TS _ 51) }
- 'no' { PT _ (TS _ 52) }
- 'not' { PT _ (TS _ 53) }
- 'one' { PT _ (TS _ 54) }
- 'opt' { PT _ (TS _ 55) }
- 'or' { PT _ (TS _ 56) }
- 'some' { PT _ (TS _ 57) }
- 'sum' { PT _ (TS _ 58) }
- 'then' { PT _ (TS _ 59) }
- 'xor' { PT _ (TS _ 60) }
- '{' { PT _ (TS _ 61) }
- '|' { PT _ (TS _ 62) }
- '||' { PT _ (TS _ 63) }
- '}' { PT _ (TS _ 64) }
+ 'if' { PT _ (TS _ 43) }
+ 'import' { PT _ (TS _ 44) }
+ 'in' { PT _ (TS _ 45) }
+ 'lone' { PT _ (TS _ 46) }
+ 'max' { PT _ (TS _ 47) }
+ 'min' { PT _ (TS _ 48) }
+ 'mux' { PT _ (TS _ 49) }
+ 'no' { PT _ (TS _ 50) }
+ 'not' { PT _ (TS _ 51) }
+ 'one' { PT _ (TS _ 52) }
+ 'opt' { PT _ (TS _ 53) }
+ 'or' { PT _ (TS _ 54) }
+ 'some' { PT _ (TS _ 55) }
+ 'sum' { PT _ (TS _ 56) }
+ 'then' { PT _ (TS _ 57) }
+ 'xor' { PT _ (TS _ 58) }
+ '{' { PT _ (TS _ 59) }
+ '|' { PT _ (TS _ 60) }
+ '||' { PT _ (TS _ 61) }
+ '}' { PT _ (TS _ 62) }
 
 L_PosInteger { PT _ (T_PosInteger _) }
 L_PosDouble { PT _ (T_PosDouble _) }
@@ -105,9 +103,7 @@ Module : ListImport ListDeclaration { Module ((mkCatSpan $1) >- (mkCatSpan $2)) 
 
 
 Import :: { Import }
-Import : 'import' 'file://' PosURL { ImportFile ((mkTokenSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $3 } 
-  | 'import' 'http://' PosURL { ImportHttp ((mkTokenSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $3 }
-  | 'import' PosURL { ImportEmpty ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
+Import : 'import' PosURL { Import ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 } 
 
 
 Declaration :: { Declaration }
