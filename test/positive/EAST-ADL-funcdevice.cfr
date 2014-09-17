@@ -1,3 +1,6 @@
 import EAST-ADL-function.cfr
 
 abstract FunctionalDevice : AnalysisFunction
+
+// to be removed once imports work
+abstract AnalysisFunction

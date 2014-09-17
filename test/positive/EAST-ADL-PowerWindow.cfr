@@ -1,25 +1,35 @@
-import EAST-ADL-funcdevice.cfr
-import file://EAST-ADL-connector.cfr
-import http://t3-necsis.cs.uwaterloo.ca:8091/clafer/standards_EAST-ADL-device.cfr
+import EAST-ADL-funcdevice
+import file://EAST-ADL-connector
+import http://t3-necsis.cs.uwaterloo.ca:8091/clafer/standards_EAST-ADL-device
 
 abstract PWSubsystemFunctionalArchitecture
-	WinController : AnalysisFunction
-	Motor : FunctionalDevice
-	Switch : FunctionalDevice
-
-	conRequest : AFConnector
-		[ src = Switch ]
-		[ dest = WinController ]
-	conCommand : AFConnector
-		[ src = WinController ]
-		[ dest = Motor ]
+    WinController : AnalysisFunction
+    Motor : FunctionalDevice
+    Switch : FunctionalDevice
+    conRequest : AFConnector
+        [ src = Switch ]
+        [ dest = WinController ]
+    conCommand : AFConnector
+        [ src = WinController ]
+        [ dest = Motor ]
 
 abstract ECU : Device
-  [smart]
+    [ smart ]
 
 abstract PWSubsystemHardware
-  doorModule : ECU ?
-  bcm : ECU ?
+    doorModule : ECU ?
+    bcm : ECU ?
+    dumbSwitch : Device ?
+        [ not smart ]
 
-  dumbSwitch : Device ?
-    [no smart]
+// to be removed once imports work
+abstract AnalysisFunction
+
+abstract FunctionalDevice : AnalysisFunction
+
+abstract AFConnector
+    src ->> AnalysisFunction
+    dest ->> AnalysisFunction
+
+abstract Device
+    smart ?

@@ -3,3 +3,6 @@ import EAST-ADL-function.cfr
 abstract AFConnector
 	src ->> AnalysisFunction
 	dest ->> AnalysisFunction
+
+// to be removed once imports work
+abstract AnalysisFunction
