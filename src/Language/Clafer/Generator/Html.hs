@@ -26,6 +26,7 @@ module Language.Clafer.Generator.Html (genHtml,
                                        printModule,
                                        printDeclaration,
                                        printDecl,
+                                       printImport,
                                        traceAstModule,
                                        traceIrModule,
                                        cleanOutput,
@@ -90,9 +91,27 @@ genText x ir = cleanOutput $ revertLayout $ printModule x (traceIrModule ir) Fal
 genTooltip :: Module -> Map.Map Span [Ir] -> String
 genTooltip m ir = unlines $ filter (\x -> trim x /= []) $ lines $ cleanOutput $ revertLayout $ printModule m ir False
 
-printModule :: Module -> Map.Map Span [Ir] -> Bool -> String
-printModule (Module _ [])     _ _ = ""
-printModule (Module s (x:xs)) irMap html = (printDeclaration x 0 irMap html []) ++ printModule (Module s xs) irMap html
+printModule :: Module     -> Map.Map Span [Ir] -> Bool -> String
+printModule (Module _ []      []          ) _     _    = ""
+printModule (Module _ imports []          ) _     html = printImports html imports
+printModule (Module _ []      declarations) irMap html = printDeclarations declarations irMap html
+printModule (Module _ imports declarations) irMap html = 
+  (printImports html imports) ++
+  (while html "<br/>") ++ 
+  (printDeclarations declarations irMap html)
+
+printImports :: Bool -> [Import] -> String
+printImports    html    imports   = foldr (\imp acc -> acc ++ (printImport html imp [])) "" imports 
+
+printImport :: Bool -> Import -> [(Span, String)] -> String
+printImport html (ImportFile  _ (PosURL (_, u))) comments = (while html "<div><span class=\"keyword\">") ++ "import " ++ (while html "</span><a href=\""        ++ u ++ ".cfr\">") ++ "file://" ++ u ++ (while html "</a></div>")
+printImport html (ImportHttp  _ (PosURL (_, u))) comments = (while html "<div><span class=\"keyword\">") ++ "import " ++ (while html "</span><a href=\"http://" ++ u ++ ".cfr\">") ++ "http://" ++ u ++ (while html "</a></div>")
+printImport html (ImportEmpty _ (PosURL (_, u))) comments = (while html "<div><span class=\"keyword\">") ++ "import " ++ (while html "</span><a href=\""        ++ u ++ ".cfr\">") ++              u ++ (while html "</a></div>")
+
+printDeclarations :: [Declaration] -> Map.Map Span [Ir] -> Bool -> String
+printDeclarations []     _     _    = ""
+printDeclarations (x:xs) irMap html = 
+  (printDeclaration x 0 irMap html []) ++ printDeclarations xs irMap html
 
 printDeclaration :: Declaration -> Int -> Map.Map Span [Ir] -> Bool -> [(Span, String)] -> String
 printDeclaration (EnumDecl s posIdent enumIds)  indent irMap html comments = 

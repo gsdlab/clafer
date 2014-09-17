@@ -100,6 +100,7 @@ import Data.Maybe
 import qualified Data.Map as Map
 import Data.Ord
 import Control.Monad
+import Control.Monad.State
 import Control.Lens.Plated
 import System.FilePath (takeBaseName)
 
@@ -218,9 +219,7 @@ parse =
         let completeModel = concat $ modelFrags env
         completeAst <- (parseFrag $ args env) completeModel
         liftParseErr completeAst
-
-    let env' = env{ cAst = Just ast, astModuleTrace = traceAstModule ast }
-    putEnv env'
+    putEnv env{ cAst = Just ast, astModuleTrace = traceAstModule ast }
   where
   parseFrag :: (Monad m) => ClaferArgs -> String -> ClaferT m (Err Module)
   parseFrag args' =
@@ -246,7 +245,8 @@ compile =
   do
     env <- getEnv
     ast' <- getAst
-    let desugaredMod = desugar ast'
+    importsMap <- computeImportsMap ast'
+    let desugaredMod = desugarModule importsMap ast'
     let clafersWithKeyWords = foldMapIR isKeyWord desugaredMod
     when (""/=clafersWithKeyWords) $ throwErr (ClaferErr $ ("The model contains clafers with keywords as names in the following places:\n"++) $ clafersWithKeyWords :: CErr Span)
     ir <- analyze (args env) desugaredMod
@@ -262,6 +262,23 @@ compile =
       gt1 :: Ir -> String
       gt1 (IRClafer (IClafer (Span (Pos l c) _) False _ _ _ _ (Just (_, m)) _ _)) = if (m > 1 || m < 0) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
       gt1 _ = ""
+
+computeImportsMap :: Monad m => Module -> ClaferT m (Map.Map String IModule)
+computeImportsMap ast' = do
+  let 
+    (Module _ imports _) = ast' 
+    importedIModules = map import2IModule imports 
+  return $ Map.fromList importedIModules
+  where
+    import2IModule :: Import -> (String, IModule)
+    import2IModule    imp = (url, iModule)
+      where
+        url = getURL imp
+        iModule = IModule url [] []
+    getURL (ImportFile _ (PosURL (_, u))) = "file://" ++ u
+    getURL (ImportHttp _ (PosURL (_, u))) = "http://" ++ u
+    getURL (ImportEmpty _ (PosURL (_, u))) = u
+
 
 -- | Splits the IR into their fragments, and generates the output for each fragment.
 -- | Might not generate the entire output (for example, Alloy scope and run commands) because
@@ -299,32 +316,52 @@ generateFragments =
     flatten $ cconcat $ map (genDeclaration args') frag
 
 -- | Splits the AST into their fragments, and generates the output for each fragment.
-generateHtml :: ClaferEnv -> Module -> String
-generateHtml env ast' =
-    let Module _ decls' = ast';
+generateHtml :: ClaferEnv -> String
+generateHtml env =
+    let (Just (Module _ imports' decls')) = cAst env;
         cargs = args env;
         irMap = irModuleTrace env;
         comments = if add_comments cargs then getComments $ unlines $ modelFrags env else [];
     in (if (self_contained cargs) then Css.header ++ "<style>" ++ Css.css ++ "</style></head>\n<body>\n" else "")
-       ++ (unlines $ genFragments decls' (frags env) irMap comments) ++
+       ++ (unlines $ genFragments imports' decls' (frags env) irMap comments) ++
        (if (self_contained cargs) then "</body>\n</html>" else "")
 
   where
     lne (ElementDecl (Span p _) _) = p
     lne (EnumDecl (Span p _) _  _) = p
     lne _                               = Pos 0 0
-    genFragments :: [Declaration] -> [Pos] -> Map.Map Span [Ir] -> [(Span, String)] -> [String]
-    genFragments []           _            _     comments = printComments comments
-    genFragments (decl:decls') []           irMap comments = let (comments', c) = printPreComment (getSpan decl) comments in
-                                                                   [c] ++ (cleanOutput $ revertLayout $ printDeclaration decl 0 irMap True $ inDecl decl comments') : (genFragments decls' [] irMap $ afterDecl decl comments)
-    genFragments (decl:decls') (frg:frgs) irMap comments = if lne decl < frg
-                                                                 then let (comments', c) = printPreComment (getSpan decl) comments in
-                                                                   [c] ++ (cleanOutput $ revertLayout $ printDeclaration decl 0 irMap True $ inDecl decl comments') : (genFragments decls' (frg:frgs) irMap $ afterDecl decl comments)
-                                                                 else "<!-- # FRAGMENT /-->" : genFragments (decl:decls') frgs irMap comments
-    inDecl :: Declaration -> [(Span, String)] -> [(Span, String)]
-    inDecl decl comments = let s = getSpan decl in dropWhile (\x -> fst x < s) comments
-    afterDecl :: Declaration -> [(Span, String)] -> [(Span, String)]
-    afterDecl decl comments = let (Span _ (Pos line' _)) = getSpan decl in dropWhile (\(x, _) -> let (Span _ (Pos line'' _)) = x in line'' <= line') comments
+    genFragments :: [Import] -> [Declaration] -> [Pos]   -> Map.Map Span [Ir] -> [(Span, String)] -> [String]
+    genFragments    []          []               _          _                    comments = 
+      printComments comments
+    genFragments    (imp:imps)  declarations     positions  irMap                comments =
+      let
+        impSpan = (getSpan imp) 
+        (comments', c) = printPreComment impSpan comments 
+      in
+        [c]
+        ++ (cleanOutput $ printImport True imp $ inSpan impSpan comments') 
+        : (genFragments imps declarations positions  irMap $ afterSpan impSpan comments')
+    genFragments    []          (decl:decls')    []         irMap                comments = 
+      let 
+        (comments', c) = printPreComment (getSpan decl) comments 
+      in
+        [c] 
+        ++ (cleanOutput $ revertLayout $ printDeclaration decl 0 irMap True $ inSpan (getSpan decl) comments') 
+        : (genFragments [] decls' [] irMap $ afterSpan (getSpan decl) comments)
+    genFragments    []          (decl:decls')    (frg:frgs) irMap                comments = 
+      if lne decl < frg
+        then let 
+               (comments', c) = printPreComment (getSpan decl) comments 
+             in
+               [c] 
+               ++ (cleanOutput $ revertLayout $ printDeclaration decl 0 irMap True $ inSpan (getSpan decl) comments') 
+               : (genFragments [] decls' (frg:frgs) irMap $ afterSpan (getSpan decl) comments)
+        else "<!-- # FRAGMENT /-->" : genFragments [] (decl:decls') frgs irMap comments
+    inSpan :: Span -> [(Span, String)] -> [(Span, String)]
+    inSpan s comments = dropWhile (\x -> fst x < s) comments
+    afterSpan :: Span -> [(Span, String)] -> [(Span, String)]
+    afterSpan (Span _ (Pos line' _)) comments = 
+      dropWhile (\(x, _) -> let (Span _ (Pos line'' _)) = x in line'' <= line') comments
     printComments [] = []
     printComments ((s, comment):cs) = (snd (printComment s [(s, comment)]) ++ "<br>\n"):printComments cs
 
@@ -440,7 +477,7 @@ generate =
           then [ (Html,
                   CompilerResult { 
                    extension = "html", 
-                   outputCode = generateHtml env ast', 
+                   outputCode = generateHtml env, 
                    statistics = stats,
                    claferEnv  = env,
                    mappingToAlloy = [],
@@ -527,9 +564,6 @@ data CompilerResult = CompilerResult {
                             reason :: String
                       } deriving Show
 
-desugar :: Module -> IModule  
-desugar iModule = desugarModule iModule
-
 liftError :: (Monad m, Language.ClaferT.Throwable t) => Either t a -> ClaferT m a
 liftError = either throwErr return
 
@@ -563,4 +597,4 @@ claferIRXSD = Language.Clafer.Generator.Schema.xsd
 
 -- | reserved keywords
 keyWords :: [String]
-keyWords = ["ref","parent","abstract", "else", "in", "no", "opt", "xor", "all", "enum", "lone", "not", "or", "disj", "extends", "mux", "one", "some"]
+keyWords = ["ref", "parent", "children", "abstract", "else", "import", "in", "no", "opt", "xor", "all", "enum", "lone", "not", "or", "disj", "extends", "mux", "one", "some"]

@@ -102,7 +102,8 @@ data ClaferEnv = ClaferEnv {
                             cIr :: Maybe (IModule, GEnv, Bool),
                             frags :: [Pos],    -- line numbers of fragment markers
                             irModuleTrace :: Map Span [Ir],
-                            astModuleTrace :: Map Span [Ast]
+                            astModuleTrace :: Map Span [Ast],
+                            cImports :: [ClaferEnv]
                             } deriving Show
 
 getAst :: (Monad m) => ClaferT m Module
@@ -126,7 +127,8 @@ makeEnv args' = ClaferEnv { args = args'',
                            cIr = Nothing,
                            frags = [],
                            irModuleTrace = Map.empty,
-                           astModuleTrace = Map.empty}
+                           astModuleTrace = Map.empty,
+                           cImports = []}
                where 
                   args'' = if (CVLGraph `elem` (mode args') ||
                                Html `elem` (mode args') ||

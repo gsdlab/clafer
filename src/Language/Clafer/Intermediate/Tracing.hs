@@ -55,6 +55,7 @@ traceAstModule x =
   i (AstElement a) = getSpan a
   i (AstSuper a) = getSpan a
   i (AstSuperHow a) = getSpan a
+  i (AstImport a) = getSpan a
   i (AstInit a) = getSpan a
   i (AstInitHow a) = getSpan a
   i (AstGCard a) = getSpan a
@@ -71,7 +72,7 @@ traceAstModule x =
   i (AstLocId a) = getSpan a
 
 traverseModule :: Module -> [Ast]
-traverseModule x@(Module _ _ d) = AstModule x : concatMap traverseDeclaration d 
+traverseModule x@(Module _ i d) = AstModule x : (map AstImport i ++ concatMap traverseDeclaration d)
 
 traverseDeclaration :: Declaration -> [Ast]
 traverseDeclaration x =
@@ -247,6 +248,7 @@ data Ast =
   AstElement Element |
   AstSuper Super |
   AstSuperHow SuperHow |
+  AstImport Import |
   AstInit Init |
   AstInitHow InitHow |
   AstGCard GCard |

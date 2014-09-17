@@ -36,7 +36,6 @@ desugarModule :: (Map.Map String IModule) -> Module                        -> IM
 desugarModule    importsMap                 (Module _ imports declarations) = IModule "" 
       (map (desugarImport importsMap) imports)
       (declarations >>= desugarEnums >>= desugarDeclaration)
---      [ImoduleFragment $ declarations >>= desugarEnums >>= desugarDeclaration]
 
 sugarModule :: IModule -> Module
 sugarModule (IModule _ imports declarations) = Module noSpan (map sugarImport imports) (map sugarDeclaration declarations) -- (fragments x >>= mDecls)
@@ -52,16 +51,16 @@ desugarEnums (EnumDecl s id' enumids) = (absEnum s) : map (mkEnum s) enumids
                                    Clafer s2 (AbstractEmpty s2) (GCardEmpty s2) eId ((SuperSome s2) (SuperColon s2) (ClaferId s2 $ Path s2 [ModIdIdent s2 id'])) oneToOne (InitEmpty s2) (ElementsList s2 [])
 desugarEnums x = [x]
 
-desugarImport :: (Map.Map String IModule) -> Import -> IModule
-desugarImport importsMap anImport  = 
-  case Map.lookup url importsMap of
-    Nothing -> error $ "Bug: imported module not found for " ++ url   -- should never happen
+desugarImport :: (Map.Map String IModule) -> Import   -> IModule
+desugarImport    importsMap                  imp  = 
+  case Map.lookup impUrl importsMap of
+    Nothing -> error $ "Bug: imported module not found for " ++ impUrl   -- should never happen
     Just iModule -> iModule
   where
-    url = getURL anImport
-    getURL (ImportFile _ (PosURL (_, url))) = "file://" ++ url
-    getURL (ImportHttp _ (PosURL (_, url))) = "http://" ++ url
-    getURL (ImportEmpty _ (PosURL (_, url))) = url
+    impUrl = getURL imp
+    getURL (ImportFile  _ (PosURL (_, u))) = "file://" ++ u
+    getURL (ImportHttp  _ (PosURL (_, u))) = "http://" ++ u
+    getURL (ImportEmpty _ (PosURL (_, u))) = u
 
 sugarImport :: IModule        -> Import
 sugarImport (IModule name _ _) = case name of

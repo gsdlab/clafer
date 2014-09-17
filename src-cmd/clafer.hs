@@ -54,7 +54,7 @@ run _ args' input =
   do
     result <- runClaferT args' $
       do
-        addFragments $ fragments input
+        forM_ (fragments input) addModuleFragment
         parse
         compile
         fs <- save args'
@@ -66,8 +66,6 @@ run _ args' input =
   where
   cth (Left err) f = f err
   cth (Right r)  _ = return r
-  addFragments []     = return ()
-  addFragments (x:xs) = addModuleFragment x >> addFragments xs
   fragments model = map unlines $ fragments' $ lines model
   fragments' []                  = []
   fragments' ("//# FRAGMENT":xs) = fragments' xs

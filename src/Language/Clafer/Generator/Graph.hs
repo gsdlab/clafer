@@ -44,8 +44,8 @@ genCVLGraph m ir name = cleanOutput $ "digraph \"" ++ name ++ "\"\n{\nrankdir=BT
 -- Simplified Notation Printer --
 --toplevel: (Top_level (Boolean), Maybe Topmost parent, Maybe immediate parent)         
 graphSimpleModule :: Module -> Map.Map Span [Ir] -> Bool -> String
-graphSimpleModule (Module _ [])                _     _        = ""
-graphSimpleModule (Module s (x:xs))            irMap showRefs = graphSimpleDeclaration x (True, Nothing, Nothing) irMap showRefs ++ graphSimpleModule (Module s xs) irMap showRefs
+graphSimpleModule (Module _ _       [])                _     _        = ""
+graphSimpleModule (Module s imports (x:xs))            irMap showRefs = graphSimpleDeclaration x (True, Nothing, Nothing) irMap showRefs ++ graphSimpleModule (Module s imports xs) irMap showRefs
 
 graphSimpleDeclaration :: Declaration
                           -> (Bool, Maybe String, Maybe String)
@@ -78,7 +78,7 @@ graphSimpleClafer :: Clafer
                       -> Bool
                       -> String 
 graphSimpleClafer (Clafer s abstract gCard id' super' crd init' es) topLevel irMap showRefs
-  | fst3 topLevel == True = let {tooltip = genTooltip (Module s [ElementDecl s (Subclafer s (Clafer s abstract gCard id' super' crd init' es))]) irMap;
+  | fst3 topLevel == True = let {tooltip = genTooltip (Module s [] [ElementDecl s (Subclafer s (Clafer s abstract gCard id' super' crd init' es))]) irMap;
                                uid' = getDivId s irMap} in
                              "\"" ++ uid' ++ "\" [label=\"" ++ (head $ lines tooltip) ++ "\" URL=\"#" ++ uid' ++ "\" tooltip=\"" ++ htmlNewlines tooltip ++ "\"];\n"
                              ++ graphSimpleSuper super' (True, Just uid', Just uid') irMap showRefs ++ graphSimpleElements es (False, Just uid', Just uid') irMap showRefs
@@ -148,8 +148,8 @@ graphSimpleEnumId (PosEnumIdIdent _ posident) topLevel irMap = graphSimpleEnumId
 -- CVL Printer --
 --parent is Maybe the uid of the immediate parent
 graphCVLModule :: Module -> Map.Map Span [Ir] -> String
-graphCVLModule (Module _ [])     _ = ""
-graphCVLModule (Module s (x:xs)) irMap = graphCVLDeclaration x Nothing irMap ++ graphCVLModule (Module s xs) irMap
+graphCVLModule (Module _ _ [])     _ = ""
+graphCVLModule (Module s imports (x:xs)) irMap = graphCVLDeclaration x Nothing irMap ++ graphCVLModule (Module s imports xs) irMap
 
 graphCVLDeclaration :: Declaration -> Maybe String -> Map.Map Span [Ir] -> String
 graphCVLDeclaration (ElementDecl _ element)      parent irMap = graphCVLElement element parent irMap
@@ -198,19 +198,19 @@ graphCVLPosIdent :: PosIdent -> Map.Map Span [Ir] -> String
 graphCVLPosIdent (PosIdent (pos, id')) irMap = getUid (PosIdent (pos, id')) irMap
 
 graphCVLConstraint :: Constraint -> Maybe String -> Map.Map Span [Ir] -> String
-graphCVLConstraint (Constraint s exps') parent irMap = let body' = htmlNewlines $ genTooltip (Module s [ElementDecl s (Subconstraint s (Constraint s exps'))]) irMap;
+graphCVLConstraint (Constraint s exps') parent irMap = let body' = htmlNewlines $ genTooltip (Module s [] [ElementDecl s (Subconstraint s (Constraint s exps'))]) irMap;
                                                                        uid' = "\"" ++ getExpId s irMap ++ "\""
                                                                     in uid' ++ " [label=\"" ++ body' ++ "\" shape=parallelogram];\n" ++
                                                                       if parent == Nothing then "" else uid' ++ " -> \"" ++ fromJust parent ++ "\";\n"
 
 graphCVLSoftConstraint :: SoftConstraint -> Maybe String -> Map.Map Span [Ir] -> String
-graphCVLSoftConstraint (SoftConstraint s exps') parent irMap = let body' = htmlNewlines $ genTooltip (Module s [ElementDecl s (Subsoftconstraint s (SoftConstraint s exps'))]) irMap;
+graphCVLSoftConstraint (SoftConstraint s exps') parent irMap = let body' = htmlNewlines $ genTooltip (Module s [] [ElementDecl s (Subsoftconstraint s (SoftConstraint s exps'))]) irMap;
                                                                        uid' = "\"" ++ getExpId s irMap ++ "\""
                                                                     in uid' ++ " [label=\"" ++ body' ++ "\" shape=parallelogram];\n" ++
                                                                       if parent == Nothing then "" else uid' ++ " -> \"" ++ fromJust parent ++ "\";\n"
 
 graphCVLGoal :: Goal -> Maybe String -> Map.Map Span [Ir] -> String
-graphCVLGoal (Goal s exps') parent irMap = let body' = htmlNewlines $ genTooltip (Module s [ElementDecl s (Subgoal s (Goal s exps'))]) irMap;
+graphCVLGoal (Goal s exps') parent irMap = let body' = htmlNewlines $ genTooltip (Module s [] [ElementDecl s (Subgoal s (Goal s exps'))]) irMap;
                                                                        uid' = "\"" ++ getExpId s irMap ++ "\""
                                                                     in uid' ++ " [label=\"" ++ body' ++ "\" shape=parallelogram];\n" ++
                                                                       if parent == Nothing then "" else uid' ++ " -> \"" ++ fromJust parent ++ "\";\n"                                                                      
