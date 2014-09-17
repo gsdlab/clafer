@@ -112,7 +112,7 @@ instance Print Import where
    ImportEmpty _ posurl -> prPrec i 0 (concatD [doc (showString "import") , prt 0 posurl])
 
   prtList es = case es of
-   [x] -> (concatD [prt 0 x])
+   [] -> (concatD [])
    x:xs -> (concatD [prt 0 x , prt 0 xs])
 
 instance Print Declaration where
@@ -309,7 +309,7 @@ instance Print ModId where
 
   prtList es = case es of
    [x] -> (concatD [prt 0 x])
-   x:xs -> (concatD [prt 0 x , doc (showString "\\") , prt 0 xs])
+   x:xs -> (concatD [prt 0 x , doc (showString "::") , prt 0 xs])
 
 instance Print LocId where
   prt i e = case e of

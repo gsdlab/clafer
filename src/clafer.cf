@@ -1,4 +1,4 @@
-entrypoints Module ;
+entrypoints Module, Clafer, Constraint, SoftConstraint, Goal ;
 
 
 -- To regenerate grammar (see src/Makefile, the goal 'grammar'):
@@ -11,9 +11,6 @@ comment "//" ;
 comment "/*" "*/" ;
 
 Module.         Module ::= [Import] [Declaration] ;
-
-(:[]).          [Import] ::= Import;
-(:).            [Import] ::= Import [Import]; 
 
 ImportFile.     Import ::= "import" "file://" PosURL ;
 ImportHttp.     Import ::= "import" "http://" PosURL ;
@@ -129,12 +126,13 @@ EnumIdIdent.    EnumId ::= PosIdent ;
 ModIdIdent.     ModId  ::= PosIdent ;
 LocIdIdent.     LocId  ::= PosIdent ;
 
+separator           Import      ""  ;
 separator           Declaration ""  ;
 separator  nonempty EnumId      "|" ;
 separator           Element     ""  ;
 separator           Exp         ""  ;
 separator  nonempty LocId       ";" ;
-separator  nonempty ModId       "\\" ;
+separator  nonempty ModId       "::" ;
 
 coercions Exp 13 ;
 coercions SetExp 6 ;

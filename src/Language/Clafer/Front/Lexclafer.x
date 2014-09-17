@@ -20,7 +20,7 @@ $i = [$l $d _ ']          -- identifier character
 $u = [\0-\255]          -- universal: any character
 
 @rsyms =    -- symbols and non-identifier-like reserved words
-   "file" \: \/ \/ | "http" \: \/ \/ | \= | \[ | \] | \( | \) | \< \< | \> \> | \{ | \} | \` | \: | \- \> | \- \> \> | \: \= | \? | \+ | \* | \. \. | \| | \< \= \> | \= \> | \| \| | \& \& | \! | \< | \> | \< \= | \> \= | \! \= | \- | \/ | \# | \+ \+ | \, | \- \- | \& | \< \: | \: \> | \. | \; | \\
+   "file" \: \/ \/ | "http" \: \/ \/ | \= | \[ | \] | \( | \) | \< \< | \> \> | \{ | \} | \` | \: | \- \> | \- \> \> | \: \= | \? | \+ | \* | \. \. | \| | \< \= \> | \= \> | \| \| | \& \& | \! | \< | \> | \< \= | \> \= | \! \= | \- | \/ | \# | \+ \+ | \, | \- \- | \& | \< \: | \: \> | \. | \; | \: \:
 
 :-
 "//" [.]* ; -- Toss single line comments
@@ -101,7 +101,7 @@ eitherResIdent tv s = treeFind resWords
                               | s > a  = treeFind right
                               | s == a = t
 
-resWords = b "?" 33 (b ".." 17 (b "+" 9 (b "&&" 5 (b "#" 3 (b "!=" 2 (b "!" 1 N N) N) (b "&" 4 N N)) (b ")" 7 (b "(" 6 N N) (b "*" 8 N N))) (b "--" 13 (b "," 11 (b "++" 10 N N) (b "-" 12 N N)) (b "->>" 15 (b "->" 14 N N) (b "." 16 N N)))) (b "<<" 25 (b ":>" 21 (b ":" 19 (b "/" 18 N N) (b ":=" 20 N N)) (b "<" 23 (b ";" 22 N N) (b "<:" 24 N N))) (b "=>" 29 (b "<=>" 27 (b "<=" 26 N N) (b "=" 28 N N)) (b ">=" 31 (b ">" 30 N N) (b ">>" 32 N N))))) (b "max" 49 (b "else" 41 (b "`" 37 (b "\\" 35 (b "[" 34 N N) (b "]" 36 N N)) (b "all" 39 (b "abstract" 38 N N) (b "disj" 40 N N))) (b "if" 45 (b "file://" 43 (b "enum" 42 N N) (b "http://" 44 N N)) (b "in" 47 (b "import" 46 N N) (b "lone" 48 N N)))) (b "some" 57 (b "not" 53 (b "mux" 51 (b "min" 50 N N) (b "no" 52 N N)) (b "opt" 55 (b "one" 54 N N) (b "or" 56 N N))) (b "{" 61 (b "then" 59 (b "sum" 58 N N) (b "xor" 60 N N)) (b "||" 63 (b "|" 62 N N) (b "}" 64 N N)))))
+resWords = b ">>" 33 (b ".." 17 (b "+" 9 (b "&&" 5 (b "#" 3 (b "!=" 2 (b "!" 1 N N) N) (b "&" 4 N N)) (b ")" 7 (b "(" 6 N N) (b "*" 8 N N))) (b "--" 13 (b "," 11 (b "++" 10 N N) (b "-" 12 N N)) (b "->>" 15 (b "->" 14 N N) (b "." 16 N N)))) (b "<:" 25 (b ":=" 21 (b ":" 19 (b "/" 18 N N) (b "::" 20 N N)) (b ";" 23 (b ":>" 22 N N) (b "<" 24 N N))) (b "=" 29 (b "<=" 27 (b "<<" 26 N N) (b "<=>" 28 N N)) (b ">" 31 (b "=>" 30 N N) (b ">=" 32 N N))))) (b "max" 49 (b "else" 41 (b "`" 37 (b "[" 35 (b "?" 34 N N) (b "]" 36 N N)) (b "all" 39 (b "abstract" 38 N N) (b "disj" 40 N N))) (b "if" 45 (b "file://" 43 (b "enum" 42 N N) (b "http://" 44 N N)) (b "in" 47 (b "import" 46 N N) (b "lone" 48 N N)))) (b "some" 57 (b "not" 53 (b "mux" 51 (b "min" 50 N N) (b "no" 52 N N)) (b "opt" 55 (b "one" 54 N N) (b "or" 56 N N))) (b "{" 61 (b "then" 59 (b "sum" 58 N N) (b "xor" 60 N N)) (b "||" 63 (b "|" 62 N N) (b "}" 64 N N)))))
    where b s n = let bs = id s
                   in B bs (TS bs n)
 

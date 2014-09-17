@@ -9,6 +9,10 @@ import Language.Clafer.Front.ErrM
 }
 
 %name pModule Module
+%name pClafer Clafer
+%name pConstraint Constraint
+%name pSoftConstraint SoftConstraint
+%name pGoal Goal
 
 -- no lexer declaration
 %monad { Err } { thenM } { returnM }
@@ -34,22 +38,22 @@ import Language.Clafer.Front.ErrM
  '..' { PT _ (TS _ 17) }
  '/' { PT _ (TS _ 18) }
  ':' { PT _ (TS _ 19) }
- ':=' { PT _ (TS _ 20) }
- ':>' { PT _ (TS _ 21) }
- ';' { PT _ (TS _ 22) }
- '<' { PT _ (TS _ 23) }
- '<:' { PT _ (TS _ 24) }
- '<<' { PT _ (TS _ 25) }
- '<=' { PT _ (TS _ 26) }
- '<=>' { PT _ (TS _ 27) }
- '=' { PT _ (TS _ 28) }
- '=>' { PT _ (TS _ 29) }
- '>' { PT _ (TS _ 30) }
- '>=' { PT _ (TS _ 31) }
- '>>' { PT _ (TS _ 32) }
- '?' { PT _ (TS _ 33) }
- '[' { PT _ (TS _ 34) }
- '\\' { PT _ (TS _ 35) }
+ '::' { PT _ (TS _ 20) }
+ ':=' { PT _ (TS _ 21) }
+ ':>' { PT _ (TS _ 22) }
+ ';' { PT _ (TS _ 23) }
+ '<' { PT _ (TS _ 24) }
+ '<:' { PT _ (TS _ 25) }
+ '<<' { PT _ (TS _ 26) }
+ '<=' { PT _ (TS _ 27) }
+ '<=>' { PT _ (TS _ 28) }
+ '=' { PT _ (TS _ 29) }
+ '=>' { PT _ (TS _ 30) }
+ '>' { PT _ (TS _ 31) }
+ '>=' { PT _ (TS _ 32) }
+ '>>' { PT _ (TS _ 33) }
+ '?' { PT _ (TS _ 34) }
+ '[' { PT _ (TS _ 35) }
  ']' { PT _ (TS _ 36) }
  '`' { PT _ (TS _ 37) }
  'abstract' { PT _ (TS _ 38) }
@@ -97,12 +101,7 @@ PosIdent    :: { PosIdent} : L_PosIdent { PosIdent (mkPosToken $1)}
 PosURL    :: { PosURL} : L_PosURL { PosURL (mkPosToken $1)}
 
 Module :: { Module }
-Module : ListImport ListDeclaration { Module ((mkCatSpan $1) >- (mkCatSpan $2)) $1 (reverse $2) } 
-
-
-ListImport :: { [Import] }
-ListImport : Import { (:[])  $1 } 
-  | Import ListImport { (:)  $1 $2 }
+Module : ListImport ListDeclaration { Module ((mkCatSpan $1) >- (mkCatSpan $2)) (reverse $1) (reverse $2) } 
 
 
 Import :: { Import }
@@ -351,6 +350,11 @@ LocId :: { LocId }
 LocId : PosIdent { LocIdIdent ((mkCatSpan $1)) $1 } 
 
 
+ListImport :: { [Import] }
+ListImport : {- empty -} { []  } 
+  | ListImport Import { flip (:)  $1 $2 }
+
+
 ListDeclaration :: { [Declaration] }
 ListDeclaration : {- empty -} { []  } 
   | ListDeclaration Declaration { flip (:)  $1 $2 }
@@ -378,7 +382,7 @@ ListLocId : LocId { (:[])  $1 }
 
 ListModId :: { [ModId] }
 ListModId : ModId { (:[])  $1 } 
-  | ModId '\\' ListModId { (:)  $1 $3 }
+  | ModId '::' ListModId { (:)  $1 $3 }
 
 
 
