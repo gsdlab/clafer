@@ -1,0 +1,4 @@
+abstract Device
+    electronic ?
+    smart ?
+        [electronic]

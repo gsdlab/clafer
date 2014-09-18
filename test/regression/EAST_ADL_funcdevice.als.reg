@@ -1,0 +1,10 @@
+open EAST_ADL_function
+
+open util/integer
+pred show {}
+
+
+fact { #c0_FunctionalDevice = 0 }
+abstract sig c0_FunctionalDevice extends c0_AnalysisFunction
+{}
+

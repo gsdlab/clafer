@@ -1,0 +1,8 @@
+open util/integer
+pred show {}
+
+
+fact { #c0_AnalysisFunction = 0 }
+abstract sig c0_AnalysisFunction
+{}
+

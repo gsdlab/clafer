@@ -1,0 +1,11 @@
+open util/integer
+pred show {}
+
+fact { #c0_Device = 0 }
+abstract sig c0_Device
+{ r_c0_smart : lone c0_smart }
+
+sig c0_smart
+{}
+{ one @r_c0_smart.this }
+
