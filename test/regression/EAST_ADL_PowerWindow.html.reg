@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=9">
+<style>.identifier{}
+.keyword{font-weight:bold}
+.reference{}
+.code { background-color: lightgray; padding: 5px 5px 5px 5px; border: 1px solid darkgray; margin-bottom: 15px; 
+        font-family: Pragmata, Menlo, 'DejaVu LGC Sans Mono', 'DejaVu Sans Mono', Consolas, 'Everson Mono', 'Lucida Console', 'Andale Mono', 'Nimbus Mono L', 'Liberation Mono', FreeMono, 'Osaka Monospaced', Courier, 'New Courier', monospace; }
+.standalonecomment { color: green; font-style:italic }
+.inlinecomment { color: green; padding-left:20px; font-style:italic }
+.error{background-color: yellow; color: red }
+.indent{padding-left:20px}
+a[href$='Lookup failed'] {color: red}
+a[href$='Uid not found'] {color: red}
+a[href$='Ambiguous name'] {color: yellow}
+
+</style></head>
+<body>
+
+<div><span class="keyword">import </span><a href="EAST_ADL_funcdevice.html">file://EAST_ADL_funcdevice</a></div>
+
+<div><span class="keyword">import </span><a href="EAST_ADL_connector.html">ftp://t3-necsis.cs.uwaterloo.ca/EAST_ADL_connector</a></div>
+
+<div><span class="keyword">import </span><a href="EAST_ADL_device.html">http://t3-necsis.cs.uwaterloo.ca:8091/clafer/EAST_ADL_device</a></div>
+
+<div>
+<span class="claferDecl" id="c0_PWSubsystemFunctionalArchitecture">PWSubsystemFunctionalArchitecture</span>
+  <div class="indent">
+  <span class="claferDecl" id="c0_WinController">WinController</span><span class="keyword"> :</span> <a href="EAST_ADL_function.html#c0_AnalysisFunction"><span class="reference">AnalysisFunction</span></a></div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_Motor">Motor</span><span class="keyword"> :</span> <a href="EAST_ADL_funcdevice.html#c0_FunctionalDevice"><span class="reference">FunctionalDevice</span></a></div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_Switch">Switch</span><span class="keyword"> :</span> <a href="EAST_ADL_funcdevice.html#c0_FunctionalDevice"><span class="reference">FunctionalDevice</span></a></div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_conRequest">conRequest</span><span class="keyword"> :</span> <a href="EAST_ADL_connector.html#c0_AFConnector"><span class="reference">AFConnector</span></a>
+    <div class="indent">
+    <span class="keyword">[</span> <a href="EAST_ADL_connector.html#c0_src"><span class="reference">src</span></a> = <a href="#c0_Switch"><span class="reference">Switch</span></a> <span class="keyword">]</span></div>
+    <div class="indent">
+    <span class="keyword">[</span> <a href="EAST_ADL_connector.html#c0_dest"><span class="reference">dest</span></a> = <a href="#c0_WinController"><span class="reference">WinController</span></a> <span class="keyword">]</span></div>
+  </div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_conCommand">conCommand</span><span class="keyword"> :</span> <a href="EAST_ADL_connector.html#c0_AFConnector"><span class="reference">AFConnector</span></a>
+    <div class="indent">
+    <span class="keyword">[</span> <a href="EAST_ADL_connector.html#c0_src"><span class="reference">src</span></a> = <a href="#c0_WinController"><span class="reference">WinController</span></a> <span class="keyword">]</span></div>
+    <div class="indent">
+    <span class="keyword">[</span> <a href="EAST_ADL_connector.html#c0_dest"><span class="reference">dest</span></a> = <a href="#c0_Motor"><span class="reference">Motor</span></a> <span class="keyword">]</span></div>
+  </div>
+</div>
+
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_ECU">ECU</span><span class="keyword"> :</span> <a href="EAST_ADL_device.html#c0_Device"><span class="reference">Device</span></a>
+  <div class="indent">
+  <span class="keyword">[</span> <a href="EAST_ADL_device.html#c0_smart"><span class="reference">smart</span></a> <span class="keyword">]</span></div>
+</div>
+
+
+<div>
+<span class="claferDecl" id="c0_PWSubsystemHardware">PWSubsystemHardware</span>
+  <div class="indent">
+  <span class="claferDecl" id="c0_doorModule">doorModule</span><span class="keyword"> :</span> <a href="#c0_ECU"><span class="reference">ECU</span></a> ?</div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_bcm">bcm</span><span class="keyword"> :</span> <a href="#c0_ECU"><span class="reference">ECU</span></a> ?</div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_dumbSwitch">dumbSwitch</span><span class="keyword"> :</span> <a href="EAST_ADL_device.html#c0_Device"><span class="reference">Device</span></a> ?
+    <div class="indent">
+    <span class="keyword">[</span> <span class="keyword">not</span> <a href="EAST_ADL_device.html#c0_smart"><span class="reference">smart</span></a> <span class="keyword">]</span></div>
+  </div>
+</div>
+
+</body>
+</html>
