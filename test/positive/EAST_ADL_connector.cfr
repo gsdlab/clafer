@@ -1,4 +1,4 @@
-import file://EAST-ADL-function
+import file://EAST_ADL_function
 
 abstract AFConnector
 	src ->> AnalysisFunction

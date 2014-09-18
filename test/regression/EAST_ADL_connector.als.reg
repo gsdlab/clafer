@@ -1,10 +1,7 @@
 open EAST_ADL_function
-
 open util/integer
 pred show {}
 
-
-fact { #c0_AFConnector = 0 }
 abstract sig c0_AFConnector
 { r_c0_src : one c0_src
 , r_c0_dest : one c0_dest }

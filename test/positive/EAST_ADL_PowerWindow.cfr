@@ -1,8 +1,8 @@
-import file://EAST-ADL-funcdevice
-import ftp://t3-necsis.cs.uwaterloo.ca/EAST-ADL-connector
-import http://t3-necsis.cs.uwaterloo.ca:8091/clafer/standards_EAST-ADL-device
+import file://EAST_ADL_funcdevice
+import ftp://t3-necsis.cs.uwaterloo.ca/EAST_ADL_connector
+import http://t3-necsis.cs.uwaterloo.ca:8091/clafer/EAST_ADL_device
 
-abstract PWSubsystemFunctionalArchitecture
+PWSubsystemFunctionalArchitecture
     WinController : AnalysisFunction
     Motor : FunctionalDevice
     Switch : FunctionalDevice
@@ -16,7 +16,7 @@ abstract PWSubsystemFunctionalArchitecture
 abstract ECU : Device
     [ smart ]
 
-abstract PWSubsystemHardware
+PWSubsystemHardware
     doorModule : ECU ?
     bcm : ECU ?
     dumbSwitch : Device ?
@@ -32,4 +32,6 @@ abstract AFConnector
     dest ->> AnalysisFunction
 
 abstract Device
+    electronic ?
     smart ?
+        [electronic]

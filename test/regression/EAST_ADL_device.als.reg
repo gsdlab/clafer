@@ -1,11 +1,16 @@
 open util/integer
 pred show {}
 
-fact { #c0_Device = 0 }
 abstract sig c0_Device
-{ r_c0_smart : lone c0_smart }
+{ r_c0_electronic : lone c0_electronic
+, r_c0_smart : lone c0_smart }
+
+sig c0_electronic
+{}
+{ one @r_c0_electronic.this }
 
 sig c0_smart
 {}
-{ one @r_c0_smart.this }
+{ one @r_c0_smart.this
+  some (this.~@r_c0_smart).@r_c0_electronic }
 

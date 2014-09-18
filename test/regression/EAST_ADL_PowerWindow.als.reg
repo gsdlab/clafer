@@ -3,61 +3,53 @@ open EAST_ADL_connector
 open EAST_ADL_device
 open util/integer
 pred show {}
+run show for 1 but 2 c0_AFConnector, 3 c0_AnalysisFunction, 3 c0_Device, 2 c0_ECU, 2 c0_FunctionalDevice, 2 c0_dest, 3 c0_electronic, 3 c0_smart, 2 c0_src
 
-run show for 1
-
-fact { #c0_PWSubsystemFunctionalArchitecture = 0 }
-abstract sig c0_PWSubsystemFunctionalArchitecture
+one sig c0_PWSubsystemFunctionalArchitecture
 { r_c0_WinController : one c0_WinController
 , r_c0_Motor : one c0_Motor
 , r_c0_Switch : one c0_Switch
 , r_c0_conRequest : one c0_conRequest
 , r_c0_conCommand : one c0_conCommand }
 
-sig c0_WinController extends c0_AnalysisFunction
+one sig c0_WinController extends c0_AnalysisFunction
 {}
-{ one @r_c0_WinController.this }
 
-sig c0_Motor extends c0_FunctionalDevice
+one sig c0_Motor extends c0_FunctionalDevice
 {}
-{ one @r_c0_Motor.this }
 
-sig c0_Switch extends c0_FunctionalDevice
+one sig c0_Switch extends c0_FunctionalDevice
 {}
-{ one @r_c0_Switch.this }
 
-sig c0_conRequest extends c0_AFConnector
+one sig c0_conRequest extends c0_AFConnector
 {}
-{ one @r_c0_conRequest.this
-  (this.(@r_c0_src.@ref)) = ((this.~@r_c0_conRequest).@r_c0_Switch)
+{ (this.(@r_c0_src.@ref)) = ((this.~@r_c0_conRequest).@r_c0_Switch)
   (this.(@r_c0_dest.@ref)) = ((this.~@r_c0_conRequest).@r_c0_WinController) }
 
-sig c0_conCommand extends c0_AFConnector
+one sig c0_conCommand extends c0_AFConnector
 {}
-{ one @r_c0_conCommand.this
-  (this.(@r_c0_src.@ref)) = ((this.~@r_c0_conCommand).@r_c0_WinController)
+{ (this.(@r_c0_src.@ref)) = ((this.~@r_c0_conCommand).@r_c0_WinController)
   (this.(@r_c0_dest.@ref)) = ((this.~@r_c0_conCommand).@r_c0_Motor) }
 
-fact { #c0_ECU = 0 }
 abstract sig c0_ECU extends c0_Device
 {}
 { some this.@r_c0_smart }
 
-fact { #c0_PWSubsystemHardware = 0 }
-abstract sig c0_PWSubsystemHardware
+one sig c0_PWSubsystemHardware
 { r_c0_doorModule : lone c0_doorModule
 , r_c0_bcm : lone c0_bcm
 , r_c0_dumbSwitch : lone c0_dumbSwitch }
 
-sig c0_doorModule extends c0_ECU
+lone sig c0_doorModule extends c0_ECU
 {}
-{ one @r_c0_doorModule.this }
+{ one r_c0_doorModule }
 
-sig c0_bcm extends c0_ECU
+lone sig c0_bcm extends c0_ECU
 {}
-{ one @r_c0_bcm.this }
+{ one r_c0_bcm }
 
-sig c0_dumbSwitch extends c0_Device
+lone sig c0_dumbSwitch extends c0_Device
 {}
-{ one @r_c0_dumbSwitch.this
+{ one r_c0_dumbSwitch
   no this.@r_c0_smart }
+
