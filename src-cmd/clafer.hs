@@ -179,9 +179,9 @@ runValidate args' fo = do
   when (Xml `elem` modes && "xml" `List.isSuffixOf` fo) $ do
       writeFile "ClaferIR.xsd" claferIRXSD
       voidf $ system $ "java -classpath " ++ path ++ " XsdCheck ClaferIR.xsd " ++ fo
-  when (Alloy `elem` modes && "als" `List.isSuffixOf` fo) $ do
+  when (Alloy `elem` modes && "als41" `List.isSuffixOf` fo) $ do
     voidf $ system $ validateAlloy path "4" ++ fo
-  when (Alloy42 `elem` modes && "als4" `List.isSuffixOf` fo) $ do
+  when (Alloy42 `elem` modes && "als" `List.isSuffixOf` fo) $ do
     voidf $ system $ validateAlloy path "4.2" ++ fo
   when (Clafer `elem` modes && "des.cfr" `List.isSuffixOf` fo) $ do  
     voidf $ system $ "../dist/build/clafer/clafer -s -m=clafer " ++ fo

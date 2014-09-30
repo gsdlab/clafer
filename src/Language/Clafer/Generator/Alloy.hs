@@ -103,7 +103,7 @@ genModule    claferargs    (imodule, _)       scopes           = (flatten output
 
 header :: ClaferArgs -> [(UID, Integer)] -> Concat
 header    args          scopes       = CString $ unlines
-    [ if Alloy42 `elem` (mode args) then "" else "open util/integer"
+    [ "open util/integer"
     , "pred show {}"
     , if (validate args) ||  (noalloyruncommand args)  
       then "" 
