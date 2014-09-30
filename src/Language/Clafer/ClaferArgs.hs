@@ -77,7 +77,7 @@ data ClaferArgs = ClaferArgs {
 
 clafer :: ClaferArgs
 clafer = ClaferArgs {
-  mode                = [] &= help "Generated output type. Available CLAFERMODEs are: 'alloy' (default, Alloy 4.1); 'alloy42' (Alloy 4.2); 'xml' (intermediate representation of Clafer model); 'clafer' (analyzed and desugared clafer model); 'html' (original model in HTML); 'graph' (graphical representation written in DOT language); 'cvlgraph' (cvl notation representation written in DOT language); 'python' (generates IR in python); 'choco' (Choco constraint programming solver). Multiple modes can be specified at the same time, e.g., '-m alloy -m html'." &= name "m",
+  mode                = [] &= help "Generated output type. Available CLAFERMODEs are: 'alloy' (Alloy 4.1); 'alloy42' (default, Alloy 4.2); 'xml' (intermediate representation of Clafer model); 'clafer' (analyzed and desugared clafer model); 'html' (original model in HTML); 'graph' (graphical representation written in DOT language); 'cvlgraph' (cvl notation representation written in DOT language); 'python' (generates IR in python); 'choco' (Choco constraint programming solver). Multiple modes can be specified at the same time, e.g., '-m alloy -m html'." &= name "m",
   console_output      = def &= help "Output code on console." &= name "o",
   flatten_inheritance = def &= help "Flatten inheritance ('alloy' and 'alloy42' modes only)." &= name "i",
   timeout_analysis    = def &= help "Timeout for analysis.",
@@ -135,11 +135,11 @@ mainArgs = do
              "" -> hGetContents stdin
              f  -> readFile f
   let args'' = argsWithOPTIONS args' model
-  -- Alloy should be the default mode but only if nothing else was specified
-  -- cannot use [ Alloy ] as the default in the definition of `clafer :: ClaferArgs` since 
-  -- Alloy will always be a mode in addition to the other specified modes (it will become mandatory)
+  -- Alloy42 should be the default mode but only if nothing else was specified
+  -- cannot use [ Alloy42 ] as the default in the definition of `clafer :: ClaferArgs` since 
+  -- Alloy42 will always be a mode in addition to the other specified modes (it will become mandatory)
   let args''' = if null $ mode args''
-                then args''{mode = [ Alloy ]}
+                then args''{mode = [ Alloy42 ]}
                 else args''
   return $ (args''', model)
 
