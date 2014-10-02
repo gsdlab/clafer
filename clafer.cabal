@@ -5,8 +5,8 @@ Description:        Clafer is a general purpose, lightweight, structural modelin
 Homepage:           http://clafer.org
 License:            MIT
 License-file:       LICENSE
-Author:             Kacper Bąk, Jimmy Liang, Michał Antkiewicz, Chris Walker, Luke Michael Brown
-Maintainer:         Michał Antkiewicz <mantkiew@gsd.uwaterloo.ca>
+Author:             Kacper Bak, Jimmy Liang, Michal Antkiewicz, Chris Walker, Luke Michael Brown
+Maintainer:         Michal Antkiewicz <mantkiew@gsd.uwaterloo.ca>
 Stability:          Experimental
 Category:           Model
 Build-type:         Simple
