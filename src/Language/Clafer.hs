@@ -312,7 +312,7 @@ generateHtml env ast' =
   where
     lne (ElementDecl (Span p _) _) = p
     lne (EnumDecl (Span p _) _  _) = p
-    lne _                               = Pos 0 0
+    lne _                          = Pos 0 0
     genFragments :: [Declaration] -> [Pos] -> Map.Map Span [Ir] -> [(Span, String)] -> [String]
     genFragments []           _            _     comments = printComments comments
     genFragments (decl:decls') []           irMap comments = let (comments', c) = printPreComment (getSpan decl) comments in

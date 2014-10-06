@@ -43,7 +43,7 @@ type TypeDecls = [(String, IType)]
 data TypeInfo = TypeInfo {iTypeDecls::TypeDecls, iInfo::Info, iCurThis::SClafer, iCurPath::Maybe IType}
 
 newtype TypeAnalysis a = TypeAnalysis (ReaderT TypeInfo (Either ClaferSErr) a)
-  deriving (MonadError ClaferSErr, Monad, Functor, MonadReader TypeInfo)
+  deriving (MonadError ClaferSErr, Monad, Functor, MonadReader TypeInfo, Applicative)
   
 typeOfUid :: MonadTypeAnalysis m => String -> m IType
 typeOfUid uid = (fromMaybe (TClafer [uid]) . lookup uid) <$> typeDecls

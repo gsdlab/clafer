@@ -29,7 +29,7 @@ import Data.List.Split
 import Data.Maybe
 import Control.Monad.State
 import System.IO
-import System.Cmd
+import System.Process
 import System.Exit
 import System.Timeout
 import System.FilePath (dropExtension,takeBaseName)

@@ -47,7 +47,7 @@ import Data.Maybe
 
 
 newtype AnalysisT m a = AnalysisT (ReaderT Info m a)
-  deriving (Monad, Functor, MonadReader Info, MonadState s, MonadTrans, MonadPlus, MonadError e, Applicative)
+  deriving (Monad, Functor, MonadReader Info, MonadState s, MonadTrans, MonadPlus, MonadError e, Applicative, Alternative)
   
 type Analysis = AnalysisT Identity
 
