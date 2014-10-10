@@ -68,6 +68,7 @@ module Language.Clafer (runCompiler,
                         addModuleFragment,
                         compile,
                         parse,
+                        desugar,
                         generate,
                         generateHtml,
                         generateFragments,
@@ -97,7 +98,6 @@ where
 import Data.Data.Lens
 import Data.Either
 import Data.List
-import Data.List.Split
 import Data.Maybe
 import qualified Data.Map as Map
 import Data.Ord
@@ -142,18 +142,23 @@ import Language.Clafer.QNameUID
 
 type InputModel = String
 
-runCompiler :: ClaferArgs -> InputModel -> IO ()
-runCompiler args' input =
+-- | Run the Clafer compiler. 
+-- mURL = Nothing means compile the top-level module
+-- mURL = Just url means compile an imported module from the given url
+runCompiler :: Maybe URL -> ClaferArgs -> InputModel -> IO ()
+runCompiler    mURL         args'         inputModel =
   do
     result <- runClaferT args' $
       do
-        forM_ (fragments input) addModuleFragment
+        forM_ (fragments inputModel) addModuleFragment
         parse
-        compile
+        iModule <- desugar mURL
+        -- need to runCompiler on imports
+        compile iModule
         fs <- save args'
         when (validate args') $ forM_ fs (liftIO . runValidate args' )
     if Html `elem` (mode args')
-      then htmlCatch result args' input
+      then htmlCatch result args' inputModel
       else return ()
     result `cth` handleErrs
   where
@@ -388,14 +393,15 @@ parse =
      else 
        id)
 
+desugar :: Monad m => Maybe URL -> ClaferT m IModule
+desugar mURL = do
+  ast' <- getAst
+  return $ desugarModule mURL ast'
+
 -- | Compiles the AST into IR.    
-compile :: Monad m => ClaferT m ()
-compile =
-  do
+compile :: Monad m => IModule -> ClaferT m ()
+compile desugaredMod = do
     env <- getEnv
-    ast' <- getAst
-    importsMap <- computeImportsMap ast'
-    let desugaredMod = desugarModule importsMap ast'
     let clafersWithKeyWords = foldMapIR isKeyWord desugaredMod
     when (""/=clafersWithKeyWords) $ throwErr (ClaferErr $ ("The model contains clafers with keywords as names in the following places:\n"++) $ clafersWithKeyWords :: CErr Span)
     ir <- analyze (args env) desugaredMod
@@ -476,7 +482,6 @@ generateHtml env =
   where
     lne (ElementDecl (Span p _) _) = p
     lne (EnumDecl (Span p _) _  _) = p
-    lne _                          = Pos 0 0
     genFragments :: [Import] -> [Declaration] -> [Pos]   -> Map.Map Span [Ir] -> [(Span, String)] -> [String]
     genFragments    []          []               _          _                    comments = 
       printComments comments
