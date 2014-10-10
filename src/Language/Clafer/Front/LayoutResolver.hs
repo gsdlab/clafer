@@ -132,7 +132,7 @@ tokenLookup s = treeFind resWords
                               | s > a  = treeFind right
                               | s == a = tokenCode t
   tokenCode :: Tok -> Maybe Int
-  tokenCode (TS s c) = Just c
+  tokenCode (TS _ c) = Just c
   tokenCode _ = Nothing
 
 -- | Get the position of a token.
