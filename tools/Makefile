@@ -1,7 +1,7 @@
 WGET_COMMAND := wget
 ifeq ($(OS),Windows_NT)
 	ifeq ($(shell which wget), which: wget: unkown command)
-		mingw-get install msys-wget-bin
+		pacman -S make wget
 	endif
 else
 	UNAME_S := $(shell uname -s)

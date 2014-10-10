@@ -1,14 +1,14 @@
 ;; define several class of keywords
 (defvar clafer-keywords
-  '("abstract" "else" "in" "no" "opt" "xor" "all" "enum" "lone" "not" "or" "disj" "extends" "mux" "one" "some")
+  '("abstract" "else" "in" "no" "not" "opt" "xor" "all" "enum" "lone" "not" "or" "disj" "mux" "one" "some")
   "Clafer keywords.")
 
 (defvar clafer-types
-  '("integer" "string")
+  '("integer" "string" "real" "int")
   "Clafer types.")
 
 (defvar clafer-operators
-  '("->" ":")
+  '("->" "->>" ":")
   "Clafer Operators.")
 
 (defvar clafer-cardinalities
@@ -16,7 +16,7 @@
   "Clafer Cardinalities.")
 
 (defvar clafer-constraints-operators
-  '("<" ">" ">=" "<=" "<:" ":>" "=>" "+" "++" "~" "!=" "*" "#" "`" "in" "nin")
+  '("<" ">" ">=" "<=" "<:" ":>" "=>" "+" "++" "~" "!=" "*" "#" "`" "in" "not in")
   "Clafer Constraints Operators.")
 
 ;; create the regex string for each class of keywords

@@ -120,7 +120,6 @@ genCModule _ (imodule@IModule{_mDecls}, _) scopes =
         ++ "stringLength(" ++ show longestString ++ ");\n"
         where
             scopeMap = [uid' ++ ":" ++ show scope | (uid', scope) <- scopes, uid' /= "int"]
-
     exprs :: [IExp]
     exprs = universeOn biplate imodule
 

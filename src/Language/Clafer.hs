@@ -327,7 +327,7 @@ generateHtml env =
   where
     lne (ElementDecl (Span p _) _) = p
     lne (EnumDecl (Span p _) _  _) = p
-    lne _                               = Pos 0 0
+    lne _                          = Pos 0 0
     genFragments :: [Import] -> [Declaration] -> [Pos]   -> Map.Map Span [Ir] -> [(Span, String)] -> [String]
     genFragments    []          []               _          _                    comments = 
       printComments comments
@@ -360,6 +360,7 @@ generateHtml env =
     afterSpan :: Span -> [(Span, String)] -> [(Span, String)]
     afterSpan (Span _ (Pos line' _)) comments = 
       dropWhile (\(x, _) -> let (Span _ (Pos line'' _)) = x in line'' <= line') comments
+
     printComments [] = []
     printComments ((s, comment):cs) = (snd (printComment s [(s, comment)]) ++ "<br>\n"):printComments cs
 

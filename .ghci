@@ -4,4 +4,3 @@
 :set stop :list
 :def seq (\arg -> return ("seq (" ++ arg ++ ") ()"))
 :set -fprint-evld-with-show
-:set editor "/c/Program Files/Sublime Text 2/sublime_text.exe"
