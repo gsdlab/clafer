@@ -33,6 +33,8 @@ import Data.Foldable (foldMap)
 type UID = String    
 -- | clafer name as declared in the source model
 type CName = String  
+-- | file:// ftp:// or http:// prefixed URL
+type URL = String
 
 -- | A "supertype" of all IR types
 data Ir =
@@ -60,7 +62,7 @@ data IModule = IModule {
       -- | always empty for now because we don't have syntax for declaring modules
       _mName :: String,
       -- | List of imported modules
-      _mModules :: [IModule],
+      _mModules :: [URL],
       -- | List of top-level elements
       _mDecls :: [IElement]
     }
@@ -263,12 +265,12 @@ type ColNo  = Integer
 -- | map over IR
 mapIR :: (Ir -> Ir) -> IModule -> IModule -- fmap/map for IModule
 mapIR f (IModule name modules' decls' ) = 
-  unWrapIModule $ f $ IRIModule $ IModule name (map (mapIR f) modules') (map (unWrapIElement . iMap f . IRIElement) decls')
+  unWrapIModule $ f $ IRIModule $ IModule name modules' (map (unWrapIElement . iMap f . IRIElement) decls')
 
 -- | foldMap over IR
 foldMapIR :: (Monoid m) => (Ir -> m) -> IModule -> m -- foldMap for IModule
-foldMapIR f i@(IModule _ modules' decls' ) = 
-  (f $ IRIModule i) `mappend` foldMap (iFoldMap f . IRIModule) modules' `mappend` foldMap (iFoldMap f . IRIElement) decls'
+foldMapIR f i@(IModule _ _ decls' ) = 
+  (f $ IRIModule i) `mappend` foldMap (iFoldMap f . IRIElement) decls'
 
 -- | fold the IR
 foldIR :: (Ir -> a -> a) -> a -> IModule -> a -- a basic fold for IModule

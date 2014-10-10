@@ -28,13 +28,15 @@ module Language.Clafer.Intermediate.Desugarer where
 import qualified Data.Map as Map
 
 import Language.Clafer.Common
+import Data.Maybe (fromMaybe)
 import Language.Clafer.Front.Absclafer
 import Language.Clafer.Intermediate.Intclafer
 
 -- | Transform the AST into the intermediate representation (IR)
-desugarModule :: (Map.Map String IModule) -> Module                        -> IModule
-desugarModule    importsMap                 (Module _ imports declarations) = IModule "" 
-      (map (desugarImport importsMap) imports)
+desugarModule :: Maybe String -> Module                         -> IModule
+desugarModule    mURL         (Module _ imports declarations) = IModule 
+      (fromMaybe "" mURL) 
+      (map desugarImport imports)
       (declarations >>= desugarEnums >>= desugarDeclaration)
 
 sugarModule :: IModule -> Module
@@ -51,22 +53,15 @@ desugarEnums (EnumDecl s id' enumids) = (absEnum s) : map (mkEnum s) enumids
                                    Clafer s2 (AbstractEmpty s2) (GCardEmpty s2) eId ((SuperSome s2) (SuperColon s2) (ClaferId s2 $ Path s2 [ModIdIdent s2 id'])) oneToOne (InitEmpty s2) (ElementsList s2 [])
 desugarEnums x = [x]
 
-desugarImport :: (Map.Map String IModule) -> Import   -> IModule
-desugarImport    importsMap                  imp  = 
-  case Map.lookup impUrl importsMap of
-    Nothing -> error $ "Bug: imported module not found for " ++ impUrl   -- should never happen
-    Just iModule -> iModule
-  where
-    impUrl = getURL imp
-    getURL (Import _ (PosURL (_, u))) = u
-
-sugarImport :: IModule        -> Import
-sugarImport (IModule name _ _) = Import noSpan $ PosURL ((0, 0), name)
+desugarImport :: Import                    -> URL
+desugarImport    (Import _ (PosURL (_, u))) = u  
+  
+sugarImport :: URL -> Import
+sugarImport    url  = Import noSpan $ PosURL ((0, 0), url)
 
 desugarDeclaration :: Declaration -> [IElement]
 desugarDeclaration (ElementDecl _ element) = desugarElement element
 desugarDeclaration _ = error "desugared"
-
 
 sugarDeclaration :: IElement -> Declaration
 sugarDeclaration (IEClafer clafer) = ElementDecl (_cinPos clafer) $ Subclafer (_cinPos clafer) $ sugarClafer clafer
