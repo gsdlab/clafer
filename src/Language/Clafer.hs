@@ -76,7 +76,6 @@ module Language.Clafer (addModuleFragment,
                         putEnv,
                         CompilerResult(..),
                         claferIRXSD,
-                        VerbosityL,
                         InputModel,
                         Token,
                         Module,
@@ -133,7 +132,6 @@ import Language.Clafer.Generator.Stats
 import Language.Clafer.Generator.Html
 import Language.Clafer.Generator.Graph
 
-type VerbosityL = Int
 type InputModel = String
 
 -- | Add a new fragment to the model. Fragments should be added in order.

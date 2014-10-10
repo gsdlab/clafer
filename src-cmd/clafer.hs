@@ -46,11 +46,8 @@ import Language.Clafer.Intermediate.Intclafer
 import Language.Clafer.Generator.Html (highlightErrors)
 import Language.Clafer.Generator.Graph (genSimpleGraph)
 
-putStrV :: VerbosityL -> String -> IO ()
-putStrV v s = if v > 1 then putStrLn s else return ()
-
-run :: VerbosityL -> ClaferArgs -> InputModel -> IO ()
-run _ args' input =
+runCompiler :: ClaferArgs -> InputModel -> IO ()
+runCompiler args' input =
   do
     result <- runClaferT args' $
       do
@@ -194,16 +191,16 @@ main = do
   (args', model) <- mainArgs
   let timeInSec = (timeout_analysis args') * 10^(6::Integer)
   if timeInSec > 0
-    then timeout timeInSec $ start 2 args' model
-    else Just `liftM` start 2 args' model
+    then timeout timeInSec $ start args' model
+    else Just `liftM` start args' model
   return ()
 
-start :: VerbosityL -> ClaferArgs -> InputModel-> IO ()
-start v args' model = if schema args'
+start :: ClaferArgs -> InputModel-> IO ()
+start args' model = if schema args'
   then putStrLn claferIRXSD
   else if ecore2clafer args'
     then runEcore2Clafer (file args') $ (tooldir args')
-    else run v args' model
+    else runCompiler args' model
 
 runEcore2Clafer :: FilePath -> FilePath -> IO ()
 runEcore2Clafer    ecoreFile toolPath
