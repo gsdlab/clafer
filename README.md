@@ -169,11 +169,10 @@ Development versions from branches `develop` should work well together but this 
 #### Note: 
 > On Windows, use `/` with the `make` command instead of `\`.
 
-Integration with Sublime Text 3
+Integration with Sublime Text 2/3
 -------------------------------
 
-See [clafer-tools-st3](https://github.com/gsdlab/clafer-tools-st3)
-
+See [ClaferToolsST](https://github.com/gsdlab/ClaferToolsST)
 
 Usage
 =====
