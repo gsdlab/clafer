@@ -14,8 +14,6 @@ Cabal-version:      >= 1.18
 data-files:         README.md,
                     CHANGES.md,
                     logo.pdf,
-                    IDEs/clafer-README.md,
-                    IDEs/sublime-text-2/Packages/User/clafer.sublime-build
                     Makefile,
                     tools/XsdCheck.java,
                     tools/XsdCheck.class,
