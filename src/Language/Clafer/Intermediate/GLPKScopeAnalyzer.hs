@@ -60,8 +60,8 @@ glpkScopeAnalysis imodule =
   where
   intScope = if bitwidth > 4 then return ("int", bitwidth) else fail "Bitwidth less than default."
   bitwidth = bitwidthAnalysis (constants ++ map snd scopes)
-  
-  scopes = 
+
+  scopes =
       removeZeroes $ removeRoot $ removeAux $
       -- unsafePerformIO should be safe (?)
       -- We aren't modifying any global state.
@@ -70,16 +70,16 @@ glpkScopeAnalysis imodule =
       case unsafePerformIO solution of
         (Success, Just (_, s)) -> Map.toList $ Map.map round s
         _ -> [] -- No solution
-  
+
   ((_, constants), analysis) = runScopeAnalysis run $ gatherInfo imodule
-  
+
   run =
     do
       setConstraints
       abstracts' <- clafers `suchThat` isAbstract
       constants' <- constantsAnalysis
       return (abstracts', constants')
-  
+
   solution = {-trace (show $ unsafePerformIO $ writeLP "TESTTT" analysis) $-} glpSolveVars mipDefaults{msgLev = MsgOff} $ analysis
   -- Any scope that is 0 will take the global scope of 1 instead.
   removeZeroes = filter ((/= 0) . snd)
@@ -100,17 +100,17 @@ bitwidthAnalysis constants =
   within a (minB, maxB) = a >= minB && a <= maxB
   bitRange = [(-2^i, 2^i-1) | i <- ([0..]::[Integer])]
 
-  
+
 -- Returns all constant literals
 constantsAnalysis :: ScopeAnalysis [Integer]
 constantsAnalysis =
   do
     cons <- constraintsUnder anything `select` snd
     return $ mapMaybe integerConstant [I._exp sub | con <- cons, sub <- subexpressions con]
-  where  
+  where
   integerConstant (I.IInt i) = Just i
   integerConstant _ = Nothing
-  
+
 
 -- (-1) for infinity
 data Between =
@@ -129,7 +129,7 @@ overlap (Between l1 h1) (Between l2 h2)
     minn (-1) b = b
     minn a (-1) = a
     minn a b = min a b
-    
+
     maxx (-1) _ = -1
     maxx _ (-1) = -1
     maxx a b = max a b
@@ -140,8 +140,8 @@ overlapM a b =
         a' <- a
         b' <- b
         overlap a' b'
--} 
-    
+-}
+
 -- Multiplies two positive integers where -1=infinity
 mult :: Integer -> Integer -> Integer
 mult (-1) _ = -1
@@ -165,13 +165,13 @@ simpleAnalysis =
                  | groupLow cur == 0 && groupHigh cur == -1 = Between (low child * l) (high child `mult` h)
                  | otherwise                                = Between 0 (-1)
             foreach (simpleAnalysis' child b)
-{-    
+{-
     mergeAnalysis analysis =
         [(n, fromJust x) | (n, b) <- combine analysis, let x = foldr1 overlapM $ map Just b, isJust x]
-  
+
     simpleConstraintAnalysis :: [(String, Between)] -> ScopeAnalysis [(String, Between)]
     simpleConstraintAnalysis analysis = mergeAnalysis <$> simpleConstraintAnalysis' analysis
-    
+
     simpleConstraintAnalysis' analysis =
         runListT $ do
             (curThis, cons) <- foreach $ constraintsUnder anything
@@ -194,8 +194,8 @@ simpleAnalysis =
                 let parentBetween = fromMaybe (error $ "Missing parent " ++ parent) $ lookup parent analysis
                 guard $ atLeastOne parentBetween
                 return (step, Between 1 $ -1)
--}       
-    
+-}
+
 
 setConstraints :: ScopeAnalysis ()
 setConstraints =
@@ -228,7 +228,7 @@ parentConstraints =
 
     let uchild = uid child
     let uparent = uid parent
-    
+
     if low child == high child
         -- Saves us one constraint
         then do
@@ -279,29 +279,29 @@ colonConstraints =
 
 
 
-flatten :: ScopeAnalysis [SClafer]        
+flatten :: ScopeAnalysis [SClafer]
 flatten =
     runListT $ do
         abs' <- clafers `suchThat` isAbstract
         (c, s) <- foreach $ anything |: anything
         ListT $ runReaderT (addChildren (map uid abs') (Part [uid c, uid s]) (Part [])) []
-        
-addChildren :: MonadAnalysis m => [String] -> Part -> Part -> m [SClafer]        
+
+addChildren :: MonadAnalysis m => [String] -> Part -> Part -> m [SClafer]
 addChildren abs' (Part steps) ss@(Part supSteps) =
     do
         let parBase = last steps
-        
+
         chis <- directChildrenOf parBase
         achis <- forM chis $
             \chi -> do
                 let chiP = Part $ init steps ++ [chi]
                 let par  = Part steps
                 let supP = Part $ supSteps ++ [chi]
-                
+
                 chiC <- claferWithUid chi
                 let s = SClafer (reifyPartName chiP) chi False (low chiC) (high chiC) (groupLow chiC) (groupHigh chiC) (Just $ reifyPartName par) (Just $ Colon $ reifyPartName supP) (constraints chiC)
                 return s <:> addChildren abs' chiP ss
-        
+
         col <- runMaybeT $ colonOf parBase
         case col of
             Just col' -> do
@@ -313,7 +313,7 @@ addChildren abs' (Part steps) ss@(Part supSteps) =
     reifyPartName (Part (t : target)) = reifyPartName' $ t : filter notAbs target
     reifyPartName (Part []) = error "Function reifyPartName from GLPKScopeAnalyzer expects a non empty Part, but was given one!" -- This should never happen
     reifyPartName' [target] = target
-    reifyPartName' target   = uniqNameSpace ++ "reify_" ++ intercalate "_" target        
+    reifyPartName' target   = uniqNameSpace ++ "reify_" ++ intercalate "_" target
 
 
 data Path =
@@ -357,7 +357,7 @@ isGlobal _ = False
 {-isConst :: Expr -> Bool
 isConst Const{} = True
 isConst _ = False-}
-    
+
 parentOfPart :: MonadAnalysis m => Part -> m Part
 parentOfPart (Part s) =
   do
@@ -373,7 +373,7 @@ parentOfPart (Part s) =
  -
  -  [ A in List
  -    B in List ]
- - 
+ -
  - to
  -
  -  [ A, B in List ]
@@ -388,12 +388,12 @@ optimizeInConstraints constraints =
     inPExp a b = I.PExp (Just I.TBoolean) "" noSpan $ I.IFunExp "in" [a, b]
     unionPExpAll es = foldr1 unionPExp es
     unionPExp a b = I.PExp (liftM2 (+++) (I._iType a) (I._iType b)) "" noSpan $ I.IFunExp "++" [a, b]
-    
+
     partitionConstraint I.PExp{I._exp = I.IFunExp {I._op = "in", I._exps = [exp1, exp2]}} = return $ Right (exp1, exp2)
     partitionConstraint I.PExp{I._exp = I.IFunExp {I._op = "&&", I._exps = [exp1, exp2]}} = partitionConstraint exp1 `mplus` partitionConstraint exp2
     partitionConstraint e = return $ Left e
 
-    testing'   f a b = f a == f b    
+    testing'   f a b = f a == f b
     comparing' f a b = f a `compare` f b
 
 
@@ -417,16 +417,16 @@ optimizeAllConstraints curThis constraints =
             return (under, rename decl bpexp)
     partitionConstraint I.PExp{I._exp = I.IFunExp {I._op = "&&", I._exps = [exp1, exp2]}} = partitionConstraint exp1 `mplus` partitionConstraint exp2
     partitionConstraint e = return (curThis, e)
-    
+
     rename :: String -> I.PExp -> I.PExp
     rename f p@I.PExp{I._exp = exp'} =
         p{I._exp = renameIExp exp'}
         where
         renameIExp (I.IFunExp op exps) = I.IFunExp op $ map (rename f) exps
         renameIExp (I.IDeclPExp quant oDecls bpexp) = I.IDeclPExp quant (map renameDecl oDecls) $ rename f bpexp
-        renameIExp (I.IClaferId modName sident isTop)
-            | f == sident = I.IClaferId modName "this" isTop
-            | otherwise   = I.IClaferId modName sident isTop
+        renameIExp exp'@(I.IClaferId modName sident isTop bind)
+            | f == sident = I.IClaferId modName "this" isTop bind
+            | otherwise   = exp'
         renameIExp i = i
         renameDecl (I.IDecl isDisj decls body)
             | f `elem` decls = I.IDecl isDisj decls body -- Not a free variable
@@ -450,7 +450,7 @@ constraintConstraints =
     runListT_ $ do
       clafer <- foreach clafers
       (supThis, cons) <- foreach $ optConstraintsUnder clafer
-      
+
       con <- foreachM cons
       curThis <-
           if isAbstract supThis
@@ -463,10 +463,10 @@ constraintConstraints =
       oneConstraint curThis constraint
   where
   --base (Part steps) = last steps
-  
+
   oneConstraint c (e1, con, e2) =
     void $ runMaybeT $ oneConstraintOneWay c e1 con e2 `mplus` oneConstraintOneWay c e2 (reverseCon con) e1
-  
+
   oneConstraintOneWay c@SClafer{uid} e1 con e2 =
     oneConstraint' e1 e2
     where
@@ -515,7 +515,7 @@ constraintConstraints =
           let frac = (1 / fromInteger multiplier) * fromInteger constant :: Double
           (reifyVar part) `comp` return (frac *^ var pos)
           mult multiplier <$> prod part
-        
+
     oneConstraint' (This (Path parts1) _) (This (Path parts2) _) =
       reifyVar (last parts1) `comp` reifyVar (last parts2)
     oneConstraint' (Global (Path parts1) _) (Global (Path parts2) _) =
@@ -536,13 +536,13 @@ constraintConstraints =
           then reifyVar (last parts) `comp` reifyVars [last p | This (Path p) _ <- exprs]
           else mzero
     oneConstraint' _ _ = mzero
-    
+
     constantCard SClafer{low, high}
       | low == high = return low
       | otherwise   = mzero
-    
+
     prod (Part steps) = foldr1 mult <$> mapM (return . high <=< claferWithUid) steps
-    
+
     comp x y =
       do
         x' <- x
@@ -568,7 +568,7 @@ constraintConstraints =
   reifyVars p = return (varSum $ map reifyVarName p)
   reifyVarName (Part [target]) = target
   reifyVarName (Part target)   = uniqNameSpace ++ "reify_" ++ intercalate "_" target
-{- 
+{-
   isAbstractPart (Part [_]) = False
   isAbstractPart _ = True
 
@@ -580,7 +580,7 @@ constraintConstraints =
       if isNothing sss
         then return $ Part $ reverse $ b : rest
         else return $ Part $ reverse $ b : ss : rest
-  
+
   -- TODO: correct?
 
   siblingParts (Part (conc : abst)) =
@@ -593,20 +593,20 @@ constraintConstraints =
             (sub, _) <- foreach $ anything |: sup'
             return $ Part $ uid sub : abst
   siblingParts [] = error "Function siblingParts from GLpkScopeAnalyzer expects a non empty list, given an empty one!" -- This should never happen
-  
+
   reifyPart (Part steps) =
     do
       as <- claferWithUid (last steps) >>= nonTopAncestors
       forM as $
         \a -> return $ Part $ init steps ++ [uid a]
-  
+
   nonTopAncestors child =
     do
       parent <- parentOf child
       if uid parent == rootUid
         then return []
         else (++ [child]) `fmap` nonTopAncestors parent
- -} 
+ -}
 
 data Con = EQU | LTH | LEQ | GTH | GEQ deriving (Eq, Ord, Show)
 
@@ -643,7 +643,7 @@ scopeConstraint curThis pexp =
     | _op == "<=>" = (exp1 `implies` exp2) `mplus` (exp2 `implies` exp1)
     | _op == "=>" = exp1 `implies` exp2
   scopeConstraint' _ = mzero
-  
+
   implies exp1 exp2 =
     do
       e1 <- scopeConstraint' $ I._exp exp1
@@ -675,7 +675,7 @@ scopeConstraint curThis pexp =
         (Exact e1, AtLeast e2) -> return e1 `lessThanEqual` return e2
         _ -> mzero
   equalConstraint2 exp1 exp2 = scopeConstraintNum exp1 `eqTo` scopeConstraintNum exp2
-  
+
   -- exp1 in exp2
   inConstraint1 exp1 exp2 =
     do
@@ -696,7 +696,7 @@ scopeConstraint curThis pexp =
         then return $ AtLeast $ lExpr l1'
         else return $ combineDisjoint l1' l2'
   scopeConstraintSet x = Exact <$> parsePath curThis x
-  
+
   combineDisjoint (Exact e1) (Exact e2) =
     Exact (Concat ([e1, e2] >>= flattenConcat) $ eType e1 +++ eType e2)
   combineDisjoint l1 l2 =
@@ -704,11 +704,11 @@ scopeConstraint curThis pexp =
     where
     e1 = lExpr l1
     e2 = lExpr l2
-    
+
 
   flattenConcat (Concat es _) = es >>= flattenConcat
   flattenConcat e = [e]
-  
+
   scopeConstraintNum I.PExp {I._exp = I.IInt const'} = constant const'
   scopeConstraintNum I.PExp {I._exp = I.IFunExp {I._op = "#", I._exps = [path]}} = parsePath curThis path
   scopeConstraintNum _ = mzero
@@ -726,7 +726,7 @@ scopeConstraint curThis pexp =
 {-
  - We use the stack to push every abstraction we traverse through.
  - For example:
- - 
+ -
  -  abstract A
  -    B ?
  -      C : D ?
@@ -751,13 +751,13 @@ scopeConstraint curThis pexp =
  -
  - Solving the minimization should have scope_E = 2 in its solution.
  - The (*) equation is set in constraintConstraints
- -}      
+ -}
 parsePath :: MonadScope m => SClafer -> I.PExp -> m Expr
 parsePath start pexp =
     do
         start' <- claferWithUid (origUid start)
         parsePath2 start' pexp
- 
+
 parsePath2 :: MonadScope m => SClafer -> I.PExp -> m Expr
 parsePath2 start pexp =
   do
@@ -770,14 +770,14 @@ parsePath2 start pexp =
   where
   asPath :: [[String]] -> Path
   asPath parts = Path [Part part | part <- parts, not $ null part]
-  
+
   parsePath' = (This <$> (asPath <$> parseThisPath) <*> getThisType) <|> (Global <$> (asPath <$> parseNonthisPath) <*> getThisType)
-  
+
   getThisType =
     do
         t <- getThis
         return $ fromJust $ fromUnionType [uid t]
-  
+
   parseThisPath =
     do
       t <- _this_
@@ -788,22 +788,22 @@ parsePath2 start pexp =
   parseNonthisPath =
     do
       paths <- many (step >>= follow)
-      
+
       lifo <- popStack
       let end = if null paths then [] else [last paths]
       let result = reverse $ end ++ map uid lifo
-      
+
       do
         _ref_ >>= follow
         -- recurse
         rec <- parseNonthisPath
         return $ result : rec
         <|> return [result]
-      
+
   -- Step handles non-this token.
   step :: MonadScope m => ParseT m String
   step = _parent_ <|> _directChild_ <|> try (pushThis >> _indirectChild_)
-  
+
   -- Update the state of where "this" is.
   -- Path is one step away from where "this" is.
   follow :: MonadScope m => String -> ParseT m String
@@ -819,8 +819,8 @@ parsePath2 start pexp =
 
 
 
-      
-      
+
+
 {------------------------------------------------------------
  ---------- Internals ---------------------------------------
  ------------------------------------------------------------}
@@ -879,7 +879,7 @@ testPositive v =
     var aux `leqTo` 1
     setVarKind aux IntVar
     return aux
-    
+
 {-
  - Create a new variable "aux". If
  -   all v == 0 -> aux == 0
@@ -894,7 +894,7 @@ testPositives vs =
     auxs <- mapM testPositive vs
     aux <- uniqVar
     (length vs *^ var aux) `equal` varSum auxs
-    
+
     a <- uniqVar
     (var a ^-^ var aux) `geqTo` (-0.9999) -- Buffer for floating point inaccuracies
     (var a ^-^ var aux) `leqTo` 0.0001    -- Buffer for floating point inaccuracies
@@ -936,7 +936,7 @@ getThis =
 
 -- Update where "this" refers to.
 putThis :: MonadScope m => SClafer -> ParseT m ()
-putThis newThis = 
+putThis newThis =
   do
     state' <- getState
     putState $ state'{psThis = newThis}
@@ -990,8 +990,8 @@ _indirectChild_ =
     clafer <- _child_ >>= lift . claferWithUid
     check <- lift $ isIndirectChild clafer curThis
     when (not check) $ unexpected $ (uid clafer) ++ " is not an indirect child of " ++ (uid curThis)
-    return $ uid clafer    
-    
+    return $ uid clafer
+
 
 satisfy :: MonadScope m => (String -> Bool) -> ParseT m String
 satisfy f = tLexeme <$> tokenPrim (tLexeme)
@@ -1011,7 +1011,7 @@ patternMatch parse' state' =
  - Utility functions
  -
  -}
- 
+
 subexpressions :: I.PExp -> [I.PExp]
 subexpressions p@I.PExp{I._exp = exp'} =
   p : subexpressions' exp'
@@ -1023,7 +1023,7 @@ subexpressions p@I.PExp{I._exp = exp'} =
 
 instance MonadSupply s m => MonadSupply s (ListT m) where
   supplyNew = lift supplyNew
-  
+
 instance MonadSupply s m => MonadSupply s (MaybeT m) where
   supplyNew = lift supplyNew
 

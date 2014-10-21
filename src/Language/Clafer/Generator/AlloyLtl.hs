@@ -21,7 +21,7 @@
  SOFTWARE.
 -}
 -- | Generates Alloy4.1 or 4.2 code for a Clafer model
-module Language.Clafer.Generator.Alloy where
+module Language.Clafer.Generator.AlloyLtl (genAlloyLtlModule) where
 
 import Control.Lens hiding (elements, mapping)
 import Control.Monad.State
@@ -35,11 +35,25 @@ import Language.Clafer.Generator.Concat
 import Language.Clafer.Intermediate.Intclafer hiding (exp)
 -- import qualified Language.Clafer.Intermediate.Intclafer as I (exp)
 
--- | Alloy code generation
+-- | representation of strings in chunks (for line/column numbering)
+
+data GenCtx = GenCtx {
+    cArgs :: ClaferArgs,
+    resPath::[String],
+    time :: Maybe String
+  } deriving (Show)
+
+timeSig = "Time"
+
+bOrFoldl1 :: [Bool] -> Bool
+bOrFoldl1 [] = False
+bOrFoldl1 xs = foldl1 (\res val -> res || val) xs
+
+-- Alloy code generation
 -- 07th Mayo 2012 Rafael Olaechea
 --      Added Logic to print a goal block in case there is at least one goal.
-genModule :: ClaferArgs -> (IModule, GEnv) -> [(UID, Integer)] -> (Result, [(Span, IrTrace)])
-genModule    claferargs    (imodule, _)       scopes           = (flatten output, filter ((/= NoTrace) . snd) $ mapLineCol output)
+genAlloyLtlModule :: ClaferArgs -> (IModule, GEnv) -> [(UID, Integer)] -> (Result, [(Span, IrTrace)])
+genAlloyLtlModule    claferargs    (imodule, _)       scopes           = (flatten output, filter ((/= NoTrace) . snd) $ mapLineCol output)
   where
   output = header claferargs scopes +++ (cconcat $ map (genDeclaration claferargs) (_mDecls imodule)) +++
        if ((not $ skip_goals claferargs) && length goals_list > 0) then
@@ -51,15 +65,26 @@ genModule    claferargs    (imodule, _)       scopes           = (flatten output
 
 header :: ClaferArgs -> [(UID, Integer)] -> Concat
 header    args          scopes       = CString $ unlines
-    [ "open util/integer"
+    [ if Alloy42 `elem` (mode args) then "" else "open util/integer"
+    , if Alloy42Ltl `elem` (mode args) then "open util/ordering[Time]" else ""
     , "pred show {}"
     , if (validate args) ||  (noalloyruncommand args)
       then ""
-      else "run show for 1" ++ genScopes scopes
-    , ""]
+      else mkScope
+    , ""
+    , behavioralSigs
+    ]
     where
-    genScopes [] = ""
-    genScopes scopes' = " but " ++ intercalate ", " (map genScope scopes')
+      mkScope = if Alloy42Ltl `elem` (mode args)
+      then
+        "run show for " ++ show (fixed_scope args)
+      else
+        "run show for 1" ++ genScopes scopes
+      genScopes [] = ""
+      genScopes scopes' = " but " ++ intercalate ", " (map genScope scopes')
+      behavioralSigs = unlines [
+        "sig Time {loop: lone Time}",
+        "fact Loop {loop in last->Time}"]
 
 genScope :: (UID, Integer) -> String
 genScope    (uid', scope)       = show scope ++ " " ++ uid'
@@ -73,7 +98,7 @@ genDeclarationGoalsOnly    claferargs    x         = case x of
   IEConstraint _ _  -> CString ""
   IEGoal _ (PExp _ _ _ innerexp) -> case innerexp of
         IFunExp op'  exps' ->  if  op' == iGMax || op' == iGMin then
-                        mkMetric op' $ genPExp claferargs [] (head exps')
+                        mkMetric op' $ genPExp (GenCtx claferargs [] Nothing) (head exps')
                 else
                         error "unary operator  distinct from (min/max) at the topmost level of a goal element"
         _ ->  error "no unary operator (min/max) at the topmost level of a goal element."
@@ -83,7 +108,7 @@ genDeclarationGoalsOnly    claferargs    x         = case x of
 genDeclaration :: ClaferArgs -> IElement -> Concat
 genDeclaration claferargs x = case x of
   IEClafer clafer'  -> genClafer claferargs [] clafer'
-  IEConstraint _ pexp  -> mkFact $ genPExp claferargs [] pexp
+  IEConstraint _ pexp  -> mkFact $ genPExp (GenCtx claferargs [] Nothing) pexp
   IEGoal _ (PExp _ _ _ innerexp) -> case innerexp of
         IFunExp op'  _ ->  if  op' == iGMax || op' == iGMin then
                        CString ""
@@ -116,7 +141,7 @@ genClafer :: ClaferArgs -> [String] -> IClafer -> Concat
 genClafer claferargs resPath oClafer = (cunlines $ filterNull
   [ cardFact +++ claferDecl clafer'
         ((showSet (CString "\n, ") $ genRelations claferargs clafer') +++
-        (optShowSet $ filterNull $ genConstraints claferargs resPath clafer'))
+        (optShowSet $ filterNull $ genConstraints (GenCtx claferargs resPath Nothing) clafer'))
   ]) +++ CString "\n" +++ children'
   where
   clafer' = transPrimitive oClafer
@@ -195,26 +220,72 @@ getTarget    x     = case x of
   _ -> x
 
 genType :: ClaferArgs -> PExp                              -> Concat
-genType    claferargs    x@(PExp _ _ _ y@(IClaferId _ _ _ _)) = genPExp claferargs []
+genType    claferargs    x@(PExp _ _ _ y@(IClaferId _ _ _ _)) = genPExp (GenCtx claferargs [] Nothing)
   x{_exp = y{_isTop = True}}
-genType m x = genPExp m [] x
+genType m x = genPExp (GenCtx m [] Nothing) x
 
 
 -- -----------------------------------------------------------------------------
 -- constraints
 -- user constraints + parent + group constraints + reference
 -- a = NUMBER do all x : a | x = NUMBER (otherwise alloy sums a set)
-genConstraints :: ClaferArgs -> [String]      -> IClafer -> [Concat]
-genConstraints    cargs    resPath c = (genParentConst resPath c) :
-  (genGroupConst c) : genPathConst cargs  (if (noalloyruncommand cargs) then  (_uid c ++ "_ref") else "ref") resPath c : constraints
+
+containsTimedRel :: PExp -> Bool
+containsTimedRel pexp@(PExp iType _ _ exp) =  case exp of
+  IFunExp _ exps -> bOrFoldl1 $ map containsTimedRel exps
+  IClaferId _ sident isTop (Just c) -> timedIClaferId
+    where
+    mutable = _mutable c
+    timedIClaferId
+      | sident == "ref" = mutable
+      | head sident == '~' = False
+      | isNothing iType = checkIfMut
+      | otherwise = case fromJust $ iType of
+        TInteger -> False
+        TReal -> False
+        TString -> False
+        _ -> checkIfMut
+    checkIfMut = if isTop then False else mutable
+  IDeclPExp _ decls e -> bOrFoldl1 (map containsMut decls) || containsTimedRel e
+  _ -> False
+  where
+  containsMut (IDecl _ _ body) = containsTimedRel body
+
+genConstraints :: GenCtx -> IClafer -> [Concat]
+genConstraints    ctx c = (genParentConst (resPath ctx) c) :
+  (genGroupConst c) : genPathConst ctx  (if (noalloyruncommand (cArgs ctx)) then  (_uid c ++ "_ref") else "ref") c : constraints
   where
   constraints = map genConst $ _elements c
   genConst x = case x of
-    IEConstraint _ pexp  -> genPExp cargs ((_uid c) : resPath) pexp
+    IEConstraint _ pexp  -> -- genPExp cargs ((_uid c) : resPath) pexp
+        if containsTimedRel pexp
+        then cconcat [genTimeDecl "t", genPExp ctx { time = Just "t", resPath = ((_uid c) : (resPath ctx))} pexp]
+        else cconcat [genPExp ctx { time = Nothing, resPath = ((_uid c) : (resPath ctx))} pexp]
     IEClafer c' ->
         if genCardCrude (_card c') `elem` ["one", "lone", "some"]
         then CString "" else mkCard ({- do not use the genRelName as the constraint name -} _uid c') False (genRelName $ _uid c') $ fromJust (_card c')
     IEGoal _ _ -> error "getConst function from Alloy generator was given a Goal, this function should only be given a Constrain or Clafer" -- This should never happen
+
+
+genTimeDecl :: String -> Concat
+genTimeDecl tvar = CString ("all " ++ tvar ++ " : (" ++ timeSig ++ " <: first) " ++ " | " )
+
+-- generates cardinality constraints for mutable subclafers
+-- typically all t: Time | lone r_field.t
+genMutSubClafersConst :: ClaferArgs -> IClafer -> Concat
+genMutSubClafersConst claferargs c = genTimeDecl allSubExp +++ (cintercalate (CString " && ") allSubExp)
+  where
+  allSubExp = map genMutCardConst mutClafers ++ refCardConst
+  refCardConst
+    | (_mutable c) && (_isOverlapping $ _super c) = [CString $ "one this.@" ++ (refRelName c) ++ ".t"]
+    | otherwise = []
+  isMutableNonRef c = (not._isOverlapping $ _super c) && (_mutable c)
+  mutClafers = filter isMutableNonRef $ getSubclafers $ _elements c
+  cardStr c = genCardCrude $ _card c
+  genTimeDecl [] = CString ""
+  genTimeDecl _ = CString $ "all t : " ++ timeSig ++ " | "
+  genMutCardConst c =  CString $ (cardStr c) ++ " " ++ (genRelName $ _uid c) ++ ".t"
+  refRelName c = (if (noalloyruncommand claferargs) then  (_uid c ++ "_ref") else "ref")
 
 -- optimization: if only boolean features then the parent is unique
 genParentConst :: [String] -> IClafer -> Concat
@@ -252,11 +323,11 @@ mkCard constraintName group' element' crd
   crd'  = flatten $ interval'
 
 -- generates expression for references that point to expressions (not single clafers)
-genPathConst :: ClaferArgs -> String -> [String] -> IClafer -> Concat
-genPathConst    claferargs    name      resPath     c
+genPathConst :: GenCtx -> String -> IClafer -> Concat
+genPathConst    ctx       name      c
   | isRefPath c = cconcat [CString name, CString " = ",
                                 cintercalate (CString " + ") $
-                                map ((brArg id).(genPExp claferargs resPath)) $
+                                map ((brArg id).(genPExp ctx)) $
                                 _supers $ _super c]
   | otherwise        = CString ""
 
@@ -331,20 +402,26 @@ genExInteger    element'  (y,z) x  =
 -- -----------------------------------------------------------------------------
 -- Generate code for logical expressions
 
-genPExp :: ClaferArgs -> [String] -> PExp -> Concat
-genPExp    claferargs    resPath     x     = genPExp' claferargs resPath $ adjustPExp resPath x
+genPExp :: GenCtx -> PExp -> Concat
+genPExp    ctx       x     = genPExp' ctx $ adjustPExp ctx x
 
-genPExp' :: ClaferArgs -> [String] -> PExp                      -> Concat
-genPExp'    claferargs    resPath     (PExp iType' pid' pos exp') = case exp' of
+genPExp' :: GenCtx -> PExp                      -> Concat
+genPExp'    ctx     (PExp iType' pid' pos exp') = case exp' of
   IDeclPExp q d pexp -> Concat (IrPExp pid') $
     [ CString $ genQuant q, CString " "
-    , cintercalate (CString ", ") $ map ((genDecl claferargs resPath)) d
-    , CString $ optBar d, genPExp' claferargs resPath pexp]
+    , cintercalate (CString ", ") $ map ((genDecl ctx)) d
+    , CString $ optBar d, genPExp' ctx pexp]
     where
     optBar [] = ""
     optBar _  = " | "
-  IClaferId _ "ref" _ _ -> CString "@ref"
-  IClaferId _ sid istop _ -> CString $
+  IClaferId _ "ref" _  bind -> CString $ "@ref" ++ timeJoin
+    where
+    timeJoin = case bind of
+      Just c -> case (_mutable c, time ctx) of
+        (True, Just t) -> "." ++ t
+        _ -> ""
+      _ -> ""
+  IClaferId _ sid istop bind -> CString $
       if head sid == '~' then sid else
       if isNothing iType' then sid' else case fromJust $ iType' of
     TInteger -> vsident
@@ -352,14 +429,17 @@ genPExp'    claferargs    resPath     (PExp iType' pid' pos exp') = case exp' of
     TString -> vsident
     _ -> sid'
     where
-    sid' = (if istop then "" else '@' : genRelName "") ++ sid
+    sid' = (if istop then "" else '@' : genRelName "") ++ sid ++ timeJoin
+    timeJoin = case (bind, time ctx) of
+      (Just IClafer {_mutable=true}, Just t) -> "." ++ t
+      _ -> ""
     -- 29/March/2012  Rafael Olaechea: ref is now prepended with clafer name to be able to refer to it from partial instances.
     -- 30/March/2012 Rafael Olaechea added referredClaferUniqeuid to fix problems when having this.x > number  (e.g test/positive/i10.cfr )
-    vsident = if (noalloyruncommand claferargs) then sid' ++  ".@"  ++ referredClaferUniqeuid ++ "_ref"  else  sid'  ++ ".@ref"
-        where referredClaferUniqeuid = if sid == "this" then (head resPath) else sid
+    vsident = if (noalloyruncommand $ cArgs ctx) then sid' ++  ".@"  ++ referredClaferUniqeuid ++ "_ref"  else  sid'  ++ ".@ref"
+        where referredClaferUniqeuid = if sid == "this" then (head $ resPath ctx) else sid
   IFunExp _ _ -> case exp'' of
-    IFunExp _ _ -> genIFunExp pid' claferargs resPath exp''
-    _ -> genPExp' claferargs resPath $ PExp iType' pid' pos exp''
+    IFunExp _ _ -> genIFunExp pid' ctx exp''
+    _ -> genPExp' ctx $ PExp iType' pid' pos exp''
     where
     exp'' = transformExp exp'
   IInt n -> CString $ show n
@@ -382,24 +462,63 @@ transformExp    x@(IFunExp op' exps'@(e1:e2:_))
   | otherwise  = x
 transformExp x = x
 
-genIFunExp :: String -> ClaferArgs -> [String] -> IExp             -> Concat
-genIFunExp    pid'       claferargs    resPath     (IFunExp op' exps') =
-  if (op' == iSumSet)
-    then genIFunExp pid' claferargs resPath (IFunExp iSumSet' [(removeright (head exps')), (getRight $ head exps')])
+genIFunExp :: String -> GenCtx -> IExp             -> Concat
+genIFunExp    pid'       ctx     (IFunExp op' exps') =
+  if (op' `elem` ltlOps)
+  then Concat (IrPExp pid') $ surroundPar $ genLtlExp ctx op' exps'
+  else if (op' == iSumSet)
+    then genIFunExp pid' ctx (IFunExp iSumSet' [(removeright (head exps')), (getRight $ head exps')])
     else if (op' == iSumSet')
-      then Concat (IrPExp pid') $ intl exps'' (map CString $ genOp (Alloy42 `elem` (mode claferargs)) iSumSet)
-      else Concat (IrPExp pid') $ intl exps'' (map CString $ genOp (Alloy42 `elem` (mode claferargs)) op')
+      then Concat (IrPExp pid') $ intl exps'' (map CString $ genOp (Alloy42 `elem` (mode $ cArgs ctx)) iSumSet)
+      else Concat (IrPExp pid') $ intl exps'' (map CString $ genOp (Alloy42 `elem` (mode $ cArgs ctx)) op')
   where
+  surroundPar [] = []
+  surroundPar xs = CString "(" : (xs ++ [CString ")"])
   intl
     | op' == iSumSet' = flip $ interleave
     | op' `elem` arithBinOps && length exps' == 2 = interleave
     | otherwise = \xs ys -> reverse $ interleave (reverse xs) (reverse ys)
-  exps'' = map (optBrArg claferargs resPath) exps'
-genIFunExp _ _ _ _ = error "Function genIFunExp from Alloy Generator expected a IFunExp as an argument but was given something else" --This should never happen
+  exps'' = map (optBrArg ctx) exps'
+genIFunExp _ _ _ = error "Function genIFunExp from Alloy Generator expected a IFunExp as an argument but was given something else" --This should never happen
+
+genLtlExp :: GenCtx -> String -> [PExp] -> [Concat]
+genLtlExp ctx op exps = dispatcher exps
+  where
+  dispatcher
+    | op == iF = genF
+    | op == iX = genX
+    | op == iG = genG
+    | op == iU = genU
+    | otherwise = (\_ -> [])
+  genF [e1]
+    | containsMutable e1 = mapToCStr ["some ", nextT, ":", currT, ".*", nextNLoop, " | "] ++ [genPExp' (ctx {time = Just nextT}) e1]
+    | otherwise = [genPExp' (ctx {time = Just nextT}) e1]
+  genX [e1]
+    | containsMutable e1 = mapToCStr ["let ", nextT, "=", currT, ".", nextNLoop, " | some ", nextT, " and "] ++ [genPExp' (ctx {time = Just nextT}) e1]
+    | otherwise = [genPExp' (ctx {time = Just nextT}) e1]
+  genG [e1]
+    | containsMutable e1 = mapToCStr ["some loop and all ", nextT, ":", currT, ".*", nextNLoop, " | "] ++ [genPExp' (ctx {time = Just nextT}) e1]
+    | otherwise = [genPExp' (ctx {time = Just nextT}) e1]
+  genU (e1:e2:_) = mapToCStr ["some ", nextT, ":", currT, ".*", nextNLoop, " | "] ++ [genPExp' (ctx {time = Just nextT}) e2] ++
+    mapToCStr [" and ( all ", nextT', ":", currT, ".*", nextNLoop, " & ^", nextNLoop, ".", nextT, "|"] ++ [genPExp' (ctx {time = Just nextT'}) e1, CString ")"]
+  nextNLoop = "(" ++ timeSig ++ " <: next + loop)"
+  currT = maybe "t" id $ time ctx
+  nextT = currT ++ "'"
+  nextT' = nextT ++ "'"
 
 
-optBrArg :: ClaferArgs -> [String] -> PExp -> Concat
-optBrArg    claferargs    resPath     x     = brFun (genPExp' claferargs resPath) x
+containsMutable :: PExp -> Bool
+containsMutable pexp@(PExp _ _ _ exp) = case exp of
+  (IFunExp _ exps) -> bOrFoldl1 $ map containsMutable exps
+  (IClaferId _ _ _ (Just c)) -> _mutable c
+  (IDeclPExp _ decls e) -> bOrFoldl1 (map containsMut decls) || containsMutable e
+  _ -> False
+  where
+  containsMut (IDecl _ _ body) = containsMutable body
+
+
+optBrArg :: GenCtx -> PExp -> Concat
+optBrArg    ctx       x     = brFun (genPExp' ctx) x
   where
   brFun = case x of
     PExp _ _ _ (IClaferId _ _ _ _) -> ($)
@@ -439,20 +558,20 @@ genOp    _             op'
 genOp _ _ = error "This should never happen"
 
 -- adjust parent
-adjustPExp :: [String] -> PExp -> PExp
-adjustPExp resPath (PExp t pid' pos x) = PExp t pid' pos $ adjustIExp resPath x
+adjustPExp :: GenCtx -> PExp -> PExp
+adjustPExp ctx (PExp t pid' pos x) = PExp t pid' pos $ adjustIExp ctx x
 
-adjustIExp :: [String] -> IExp -> IExp
-adjustIExp resPath x = case x of
-  IDeclPExp q d pexp -> IDeclPExp q d $ adjustPExp resPath pexp
+adjustIExp :: GenCtx -> IExp -> IExp
+adjustIExp ctx x = case x of
+  IDeclPExp q d pexp -> IDeclPExp q d $ adjustPExp ctx pexp
   IFunExp op' exps' -> adjNav $ IFunExp op' $ map adjExps exps'
     where
     (adjNav, adjExps) = if op' == iJoin then (aNav, id)
-                        else (id, adjustPExp resPath)
-  IClaferId _ _ _ _ -> aNav x
+                        else (id, adjustPExp ctx)
+  IClaferId _ _ _  _-> aNav x
   _  -> x
   where
-  aNav = fst.(adjustNav resPath)
+  aNav = fst.(adjustNav $ resPath ctx)
 
 adjustNav :: [String] -> IExp -> (IExp, [String])
 adjustNav resPath x@(IFunExp op' (pexp0:pexp:_))
@@ -477,10 +596,10 @@ genQuant    x       = case x of
   IAll -> "all"
 
 
-genDecl :: ClaferArgs -> [String] -> IDecl -> Concat
-genDecl    claferargs    resPath     x      = case x of
+genDecl :: GenCtx -> IDecl -> Concat
+genDecl    ctx       x      = case x of
   IDecl disj locids pexp -> cconcat [CString $ genDisj disj, CString " ",
-    CString $ intercalate ", " locids, CString " : ", genPExp claferargs resPath pexp]
+    CString $ intercalate ", " locids, CString " : ", genPExp ctx pexp]
 
 
 genDisj :: Bool -> String

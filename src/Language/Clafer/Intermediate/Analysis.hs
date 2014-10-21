@@ -358,7 +358,7 @@ gatherInfo imodule =
   sBoolean = SClafer "boolean" "boolean" False 0 (-1) 0 (-1) Nothing Nothing []
   
   root =
-    let super = I.ISuper False [I.PExp Nothing "" noSpan $ I.IClaferId "clafer" "clafer" True]
+    let super = I.ISuper False [I.PExp Nothing "" noSpan $ I.IClaferId "clafer" "clafer" True Nothing]
     in I.IClafer noSpan False Nothing rootUid rootUid super  (Just (1, 1)) (0, 0) True $ I._mDecls imodule
 
 

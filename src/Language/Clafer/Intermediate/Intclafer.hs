@@ -152,6 +152,15 @@ data PExp = PExp {
     }
   deriving (Eq,Ord,Show,Data,Typeable)
 
+-- | Embedes reference to a resolved Clafer
+type ClaferBinding = Maybe IClafer
+
+{-UnknownBinding-}
+  {- |  ClaferBinding { -}
+      {-_clafer :: IClafer-}
+    {-}-}
+  {-deriving (Eq,Ord,Show,Data,Typeable)-}
+
 data IExp =
    -- | quantified expression with declarations
    --   e.g., [ all x1; x2 : X | x1.ref != x2.ref ]
@@ -187,7 +196,9 @@ data IExp =
       -- | name of the clafer being referred to
       _sident :: CName,
       -- | identifier refers to a top-level definition
-      _isTop :: Bool
+      _isTop :: Bool,
+      -- | binding to clafer
+      _binding :: ClaferBinding
     }
   deriving (Eq,Ord,Show,Data,Typeable)
 

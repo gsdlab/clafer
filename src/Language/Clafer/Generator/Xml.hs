@@ -147,7 +147,7 @@ genXmlIExpType x = case x of
   IInt _ -> "IIntExp"
   IDouble _ -> "IDoubleExp"
   IStr _ -> "IStringExp"
-  IClaferId _ _ _ -> "IClaferId"
+  IClaferId _ _ _ _ -> "IClaferId"
 
 genXmlIExp :: IExp -> String
 genXmlIExp x = case x of
@@ -168,7 +168,7 @@ genXmlIExp x = case x of
   IInt n -> genXmlInteger n
   IDouble n -> tag "DoubleLiteral" $ show n
   IStr str -> genXmlString str
-  IClaferId modName' sident' isTop' -> concat
+  IClaferId modName' sident' isTop' _ -> concat
     [ tag "ModuleName" modName'
     , tag "Id" sident'
     , genXmlBoolean "IsTop" isTop']

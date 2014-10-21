@@ -36,7 +36,7 @@ import Paths_clafer (version)
 import Data.Version (showVersion)
 
 -- | Type of output to be generated at the end of compilation
-data ClaferMode = Alloy42 | Alloy | Xml | Clafer | Html | Graph | CVLGraph | Python | Choco
+data ClaferMode = Alloy42Ltl | Alloy42 | Alloy | Xml | Clafer | Html | Graph | CVLGraph | Python | Choco
   deriving (Eq, Show, Ord, Data, Typeable)
 instance Default ClaferMode where
   def = Alloy
@@ -68,6 +68,7 @@ data ClaferArgs = ClaferArgs {
       show_references :: Bool,
       add_comments :: Bool,
       ecore2clafer :: Bool,
+      fixed_scope :: Int,
       scope_strategy :: ScopeStrategy,
       afm :: Bool,
       skip_goals :: Bool,
@@ -97,6 +98,7 @@ clafer = ClaferArgs {
   show_references     = def &= help "Whether the links for references should be rendered. ('html' and 'graph' modes only)." &= name "sr",
   add_comments        = def &= help "Include comments from the source file in the html output ('html' mode only).",
   ecore2clafer        = def &= help "Translate an ECore model into Clafer.",
+  fixed_scope         = def &= help "Define fixed scope if desired." &= name "fs",
   scope_strategy      = def &= help "Use scope computation strategy: none, simple (default), or full." &= name "ss",
   afm                 = def &= help "Throws an error if the cardinality of any of the clafers is above 1." &= name "check-afm",
   skip_goals          = def &= help "Skip generation of Alloy code for goals. Useful for all tools working with standard Alloy." &= name "sg",
@@ -114,6 +116,7 @@ mergeArgs a1 a2  = ClaferArgs (mode a1) (coMergeArg)
   (mergeArg alloy_mapping) (mergeArg self_contained) 
   (mergeArg add_graph) (mergeArg show_references) 
   (mergeArg add_comments) (mergeArg ecore2clafer) 
+  (mergeArg fixed_scope)
   (mergeArg scope_strategy) (mergeArg afm) (mergeArg skip_goals) 
   (mergeArg meta_data) (mergeArg file)
   where
@@ -155,4 +158,4 @@ argsWithOPTIONS    args'         model   =
                process (cmdArgsMode clafer) $ Language.Clafer.SplitJoin.splitArgs options
 
 defaultClaferArgs :: ClaferArgs
-defaultClaferArgs = ClaferArgs [ def ] True False 0 False False False False False False False False False "tools/" False False False False False False Simple False False False ""
+defaultClaferArgs = ClaferArgs [ def ] True False 0 False False False False False False False False False "tools/" False False False False False False 10 Simple False False False ""

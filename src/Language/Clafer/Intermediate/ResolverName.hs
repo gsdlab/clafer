@@ -37,7 +37,7 @@ import Language.Clafer.Common
 import Language.Clafer.Intermediate.Intclafer
 import qualified Language.Clafer.Intermediate.Intclafer as I
 
--- | this environment is created for each clafer 
+-- | this environment is created for each clafer
 data SEnv = SEnv {
   clafers :: [IClafer],                 -- (constant) top level clafers
   context :: Maybe IClafer,             -- context of a constraint
@@ -53,23 +53,23 @@ data SEnv = SEnv {
 -- | How a given name was resolved
 data HowResolved =
   -- | "this", "parent", "children"
-    Special     
+    Special
   -- | primitive type: integer, string
-  | TypeSpecial 
+  | TypeSpecial
   -- | local variable (in constraints)
-  | Binding     
+  | Binding
   -- | clafer's descendant
-  | Subclafers  
+  | Subclafers
   -- | resolved by a reference
-  | Reference   
+  | Reference
   -- | clafer's ancestor
-  | Ancestor    
+  | Ancestor
   -- | abstract clafer
-  | AbsClafer   
+  | AbsClafer
   -- | non-abstract top-level clafer
-  | TopClafer   
+  | TopClafer
   deriving (Eq, Show)
-  
+
 type Resolve = Either ClaferSErr
 
 -- initialize the cache (env)
@@ -85,7 +85,7 @@ checkDuplicateSiblings :: IModule -> Resolve [IElement]
 checkDuplicateSiblings tree = let duplicate = checkDuplicateSiblings' $ _mDecls tree
                               in if (isJust duplicate) then let Just(name,pos') = duplicate in throwError $ SemanticErr pos' $ ("Duplicate name: " ++ name) --error
                                  else return $ _mDecls tree
-                                      
+
 checkDuplicateSiblings' :: [IElement] -> Maybe (String,Span)
 checkDuplicateSiblings' tree =if (isJust check) then check
                               else checkForJust $ map checkDuplicateSiblings' elementsList
@@ -100,7 +100,7 @@ checkForJust (h:rest) = if (isJust h) then
                           h
                         else
                           checkForJust rest
-                          
+
 checkListDuplicates :: [(String, Span)] -> Maybe (String,Span)
 checkListDuplicates list = checkListDuplicates' $ sortBy (compare `on` fst) list
 
@@ -111,7 +111,7 @@ checkListDuplicates' ((a,b):(c,d):rest) = if a == c then
                                     Just (a,b)
                                   else
                                     checkListDuplicates' ((c,d):rest)
-                                    
+
 isIEClafer :: IElement -> Bool
 isIEClafer (IEClafer _) = True
 isIEClafer _            = False
@@ -143,7 +143,7 @@ resolveElement :: SEnv -> IElement -> Resolve IElement
 resolveElement env x = case x of
   IEClafer clafer  -> IEClafer <$> resolveClafer env clafer
   IEConstraint isHard' pexp  -> IEConstraint isHard' <$> resolvePExp env pexp
-  IEGoal isMaximize' pexp  -> IEGoal isMaximize' <$> resolvePExp env pexp  
+  IEGoal isMaximize' pexp  -> IEGoal isMaximize' <$> resolvePExp env pexp
 
 
 resolvePExp :: SEnv -> PExp -> Resolve PExp
@@ -162,7 +162,7 @@ resolveIExp pos' env x = case x of
   IInt _ -> return x
   IDouble _ -> return x
   IStr _ -> return x
-  IClaferId _ _ _ -> resNav
+  IClaferId _ _ _ _ -> resNav
   where
   res = resolvePExp env
   resNav = fst <$> resolveNav pos' env x True
@@ -184,44 +184,54 @@ resolveNav pos' env x isFirst = case x of
     (exp', path') <- resolveNav (_inPos pexp) env {context = listToMaybe path, resPath = path}
                      (I._exp pexp) False
     return (IFunExp iJoin [pexp0{I._exp=exp0'}, pexp{I._exp=exp'}], path')
-  IClaferId modName' id' _ -> out
+  IClaferId modName' id' _ _ -> out
     where
     out
       | isFirst   = mkPath env <$> resolveName pos' env id'
       | otherwise = mkPath' modName' <$> resolveImmName pos' env id'
-  y -> throwError $ SemanticErr pos' $ "Cannot resolve nav of " ++ show y 
+  y -> throwError $ SemanticErr pos' $ "Cannot resolve nav of " ++ show y
 
 -- depending on how resolved construct a path
 mkPath :: SEnv -> (HowResolved, String, [IClafer]) -> (IExp, [IClafer])
 mkPath env (howResolved, id', path) = case howResolved of
-  Binding -> (mkLClaferId id' True, path)
+  Binding -> (mkLClaferId id' True Nothing, path)
   Special -> (specIExp, path)
-  TypeSpecial -> (mkLClaferId id' True, path)
-  Subclafers -> (toNav $ tail $ reverse $ map _uid path, path)
-  Ancestor -> (toNav' $ adjustAncestor (reverse $ map _uid $ resPath env)
-                                       (reverse $ map _uid path), path)
-  _ -> (toNav' $ reverse $ map _uid path, path)
+  TypeSpecial -> (mkLClaferId id' True Nothing, path)
+  Subclafers -> (toNav $ tail $ reverse $ map toTuple path, path)
+  Ancestor -> (toNav' $ adjustAncestor (fromJust $ context env)
+                                       (reverse $ map toTuple $ resPath env)
+                                       (reverse $ map toTuple path), path)
+  _ -> (toNav' $ reverse $ map toTuple path, path)
   where
+
   toNav = foldl
-          (\exp' id'' -> IFunExp iJoin [pExpDefPidPos exp', mkPLClaferId id'' False])
-          (mkLClaferId this True)
-  specIExp = if id' /= this then toNav [id'] else mkLClaferId id' True
+          (\exp' (id'', c) -> IFunExp iJoin [pExpDefPidPos exp', mkPLClaferId id'' False c])
+          (mkLClaferId this True (context env))
+  specIExp = if id' /= this then toNav [(id', Just (head path))] else mkLClaferId id' True (context env)
 
-toNav' :: [String] -> IExp
-toNav' p = (mkIFunExp iJoin $ map (\c -> mkLClaferId c False) p) :: IExp
+toTuple :: IClafer->(String, ClaferBinding)
+toTuple c = (_uid c, Just c)
+
+toNav' :: [(String, ClaferBinding)] -> IExp
+toNav' p = (mkIFunExp iJoin $ map (\(id, cbind) -> mkLClaferId id False cbind) p) :: IExp
 
 
-adjustAncestor :: [String] -> [String] -> [String]
-adjustAncestor cPath rPath = this : parents ++ (fromJust $ stripPrefix prefix rPath)
+adjustAncestor :: IClafer -> [(String, ClaferBinding)] -> [(String, ClaferBinding)] -> [(String, ClaferBinding)]
+adjustAncestor ctx cPath rPath = (this, Just ctx) : parents ++ (fromJust $ stripPrefix prefix rPath)
   where
-  parents = replicate (length $ fromJust $ stripPrefix prefix cPath) parent
-  prefix  = fst $ unzip $ takeWhile (uncurry (==)) $ zip cPath rPath
+  parents = replicate (length $ fromJust $ stripPrefix prefix cPath) (parent, Nothing)
+  prefix  = fst $ unzip $ takeWhile (uncurry eqIds) $ zip cPath rPath
+  eqIds a b = (fst a) == (fst b)
 
 
 mkPath' :: String -> (HowResolved, String, [IClafer]) -> (IExp, [IClafer])
 mkPath' modName' (howResolved, id', path) = case howResolved of
-  Reference  -> (toNav' ["ref", id'], path)
-  _ -> (IClaferId modName' id' False, path)
+  Reference  -> (toNav' (zip ["ref", id'] (map Just path)), path)
+  _ -> (IClaferId modName' id' False binding, path)
+  where
+  binding = case path of
+    [] -> Nothing
+    c:xs -> Just c
 
 -- -----------------------------------------------------------------------------
 
@@ -254,7 +264,7 @@ resolveSpecial env id'
       return $ Just (Special, id', resPath env)
   | id' == parent   = return $ Just (Special, id', tail $ resPath env)
   | isPrimitive id' = return $ Just (TypeSpecial, id', [])
-  | otherwise      = return Nothing 
+  | otherwise      = return Nothing
 
 
 -- checks if ident is bound locally
@@ -312,7 +322,7 @@ toNodeDeep env
   where
   result = (clafer, resPath env)
   clafer = fromJust $ context env
-  
+
 
 -- return children and inherited children but no children of reference targets
 allInhChildren :: SEnv -> [IClafer]
@@ -337,7 +347,7 @@ findUnique pos' x xs =
       xs''   = map ((map _uid).snd) xs'
       errMsg = (if isNamespaceConflict xs''
                then "cannot be defined because the name should be unique in the same namespace.\n"
-               else "is not unique. ") ++ 
+               else "is not unique. ") ++
                "Available paths:\n" ++ (xs'' >>= showPath)
 
 findFirst :: String -> [(IClafer, [IClafer])] -> Maybe (String, [IClafer])

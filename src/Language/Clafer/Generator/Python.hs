@@ -176,7 +176,7 @@ genPythonIExpType x = case x of
   IInt _ -> "IIntExp"
   IDouble _ -> "IDoubleExp"
   IStr _ -> "IStringExp"
-  IClaferId _ _ _ -> "IClaferId"
+  IClaferId _ _ _ _ -> "IClaferId"
 
 
 declHelper :: [IDecl] -> String
@@ -202,7 +202,7 @@ genPythonIExp x = case x of
   IInt n -> genPythonInteger n
   IDouble n ->  concat [ "DoubleLiteral.DoubleLiteral(", show n, ")"] --DoubleLiteral
   IStr str -> genPythonString str
-  IClaferId modName' sident' isTop' -> concat
+  IClaferId modName' sident' isTop' _ -> concat
     [ "ClaferId.ClaferId(moduleName=\"", modName' , "\", "
     , "my_id=\"", sident' , "\", "
     , genPythonBoolean "isTop" isTop', ")"]

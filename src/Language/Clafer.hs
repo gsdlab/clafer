@@ -103,7 +103,7 @@ import Control.Monad
 import Control.Lens.Plated
 import System.FilePath (takeBaseName)
 
-import Language.ClaferT 
+import Language.ClaferT
 import Language.Clafer.Common
 import Language.Clafer.Front.ErrM
 import Language.Clafer.ClaferArgs hiding (Clafer)
@@ -113,7 +113,7 @@ import qualified Language.Clafer.Css as Css
 import Language.Clafer.Front.Lexclafer
 import Language.Clafer.Front.Parclafer
 import Language.Clafer.Front.Printclafer
-import Language.Clafer.Front.Absclafer 
+import Language.Clafer.Front.Absclafer
 import Language.Clafer.Front.LayoutResolver
 import Language.Clafer.Intermediate.Tracing
 import Language.Clafer.Intermediate.Intclafer
@@ -124,7 +124,9 @@ import Language.Clafer.Intermediate.Transformer
 import Language.Clafer.Intermediate.ScopeAnalysis
 import Language.Clafer.Optimizer.Optimizer
 import Language.Clafer.Generator.Alloy
+import Language.Clafer.Generator.AlloyLtl
 import Language.Clafer.Generator.Choco
+import Language.Clafer.Generator.Concat
 import Language.Clafer.Generator.Xml
 import Language.Clafer.Generator.Python
 import Language.Clafer.Generator.Schema
@@ -162,7 +164,7 @@ addModuleFragment i =
           "" -> []
           ('\n' : r) -> lines' r
           x -> error $ "linesing " ++ x -- How can it be nonempty and not start with a newline after the break? Should never happen.
-      
+
 -- | Converts the Err monads (created by the BNFC parser generator) to ClaferT
 liftParseErrs :: Monad m => [Err a] -> ClaferT m [a]
 liftParseErrs e =
@@ -178,7 +180,7 @@ liftParseErrs e =
       -- Bad maps to ParseErr
       return $ Left $ ParseErr (ErrFragPos frgId p) s
 
--- | Converts one Err. liftParseErrs is better if you want to report multiple errors. 
+-- | Converts one Err. liftParseErrs is better if you want to report multiple errors.
 -- | This method will only report one before ceasing execution.
 liftParseErr :: Monad m => Err a -> ClaferT m a
 liftParseErr e = head `liftM` liftParseErrs [e]
@@ -225,22 +227,22 @@ parse =
   parseFrag :: (Monad m) => ClaferArgs -> String -> ClaferT m (Err Module)
   parseFrag args' =
     (>>= (return . pModule)) .
-    (if not 
+    (if not
       ((new_layout args') ||
       (no_layout args'))
-    then 
-       resolveLayout 
-    else 
-       return) 
+    then
+       resolveLayout
+    else
+       return)
     . myLexer .
     (if (not $ no_layout args') &&
         (new_layout args')
-     then 
-       resLayout 
-     else 
+     then
+       resLayout
+     else
        id)
 
--- | Compiles the AST into IR.    
+-- | Compiles the AST into IR.
 compile :: Monad m => ClaferT m ()
 compile =
   do
@@ -272,15 +274,15 @@ generateFragments =
     env <- getEnv
     (iModule, _, _) <- getIr
     fragElems <- fragment (sortBy (comparing rnge) $ _mDecls iModule) (frags env)
-    
+
     -- Assumes output mode is Alloy for now
-    
+
     return $ map (generateFragment $ args env) fragElems
   where
   rnge (IEClafer IClafer{_cinPos = p}) = p
   rnge IEConstraint{_cpexp = PExp{_inPos = p}} = p
   rnge IEGoal{_cpexp = PExp{_inPos = p}} = p
-  
+
   -- Groups IElements by their fragments.
   --   elems must be sorted by range.
   fragment :: (Monad m) => [IElement] -> [Pos] -> ClaferT m [[IElement]]
@@ -290,7 +292,7 @@ generateFragments =
     where
     (curFrag, restFrags) = span (`beforePos` frag) elems
   fragment _ [] = throwErr $ (ClaferErr $ "Unexpected fragment." :: CErr Span) -- Should not happen. Bug.
-  
+
   beforePos ele p =
     case rnge ele of
       Span _ e -> e <= p
@@ -345,14 +347,14 @@ generate =
     env <- getEnv
     ast' <- getAst
     (iModule, genv, au) <- getIr
-    let 
+    let
       hasNoReals = noReals iModule
       cargs = args env
       modes = mode cargs
       stats = showStats au $ statsModule iModule
       scopes = getScopeStrategy (scope_strategy cargs) iModule
 
-    return $ Map.fromList ( 
+    return $ Map.fromList (
         -- result for Alloy
         (if (Alloy `elem` modes)
           then if (hasNoReals)
@@ -360,12 +362,12 @@ generate =
                   let 
                   (imod,strMap) = astrModule iModule
                   alloyCode = genModule cargs{mode = [Alloy]} (imod, genv) scopes
-                  addCommentStats = if no_stats cargs then const else addStats 
-               in 
-                  [ (Alloy, 
-                    CompilerResult { 
+                  addCommentStats = if no_stats cargs then const else addStats
+               in
+                  [ (Alloy,
+                    CompilerResult {
                        extension = "als41", 
-                     outputCode = addCommentStats (fst alloyCode) stats, 
+                     outputCode = addCommentStats (fst alloyCode) stats,
                      statistics = stats,
                      claferEnv  = env,
                      mappingToAlloy = fromMaybe [] (Just $ snd alloyCode),
@@ -379,7 +381,7 @@ generate =
                     })
                   ]
           else []
-        ) 
+        )
         ++
         -- result for Alloy42
         (if (Alloy42 `elem` modes)
@@ -388,12 +390,12 @@ generate =
                    let 
                   (imod,strMap) = astrModule iModule
                   alloyCode = genModule cargs{mode = [Alloy42]} (imod, genv) scopes
-                  addCommentStats = if no_stats cargs then const else addStats 
-               in 
-                  [ (Alloy42, 
-                    CompilerResult { 
+                  addCommentStats = if no_stats cargs then const else addStats
+               in
+                  [ (Alloy42,
+                    CompilerResult {
                          extension = "als", 
-                     outputCode = addCommentStats (fst alloyCode) stats, 
+                     outputCode = addCommentStats (fst alloyCode) stats,
                      statistics = stats,
                      claferEnv  = env,
                      mappingToAlloy = fromMaybe [] (Just $ snd alloyCode),
@@ -407,13 +409,34 @@ generate =
                     })
                   ]
           else []
-        )   
-        -- result for XML    
+        )
+        ++
+        -- result for AlloyLtl
+        (if (Alloy42Ltl `elem` modes)
+          then let
+                  (imod,strMap) = astrModule iModule
+                  alloyCode = genAlloyLtlModule cargs{mode = [Alloy42Ltl]} (imod, genv) scopes
+                  addCommentStats = if no_stats cargs then const else addStats
+               in
+                  [ (Alloy42Ltl,
+                    CompilerResult {
+                     extension = "alsltl",
+                     outputCode = addCommentStats (fst alloyCode) stats,
+                     statistics = stats,
+                     claferEnv  = env,
+                     mappingToAlloy = fromMaybe [] (Just $ snd alloyCode),
+                     stringMap = strMap,
+                     scopesList = scopes
+                    })
+                  ]
+          else []
+        )
+        -- result for XML
         ++ (if (Xml `elem` modes)
           then [ (Xml,
-                  CompilerResult { 
-                   extension = "xml", 
-                   outputCode = genXmlModule iModule, 
+                  CompilerResult {
+                   extension = "xml",
+                   outputCode = genXmlModule iModule,
                    statistics = stats,
                    claferEnv  = env,
                    mappingToAlloy = [],
@@ -425,9 +448,9 @@ generate =
         -- result for Clafer
         ++ (if (Mode.Clafer `elem` modes)
           then [ (Mode.Clafer,
-                  CompilerResult { 
-                   extension = "des.cfr", 
-                   outputCode = printTree $ sugarModule iModule, 
+                  CompilerResult {
+                   extension = "des.cfr",
+                   outputCode = printTree $ sugarModule iModule,
                    statistics = stats,
                    claferEnv  = env,
                    mappingToAlloy = [],
@@ -436,12 +459,12 @@ generate =
                   }) ]
           else []
         )
-        -- result for Html    
+        -- result for Html
         ++ (if (Html `elem` modes)
           then [ (Html,
-                  CompilerResult { 
-                   extension = "html", 
-                   outputCode = generateHtml env ast', 
+                  CompilerResult {
+                   extension = "html",
+                   outputCode = generateHtml env ast',
                    statistics = stats,
                    claferEnv  = env,
                    mappingToAlloy = [],
@@ -452,9 +475,9 @@ generate =
         )
         ++ (if (Graph `elem` modes)
           then [ (Graph,
-                  CompilerResult { 
-                     extension = "dot", 
-                     outputCode = genSimpleGraph ast' iModule (takeBaseName $ file cargs) (show_references cargs), 
+                  CompilerResult {
+                     extension = "dot",
+                     outputCode = genSimpleGraph ast' iModule (takeBaseName $ file cargs) (show_references cargs),
                      statistics = stats,
                      claferEnv  = env,
                      mappingToAlloy = [],
@@ -465,9 +488,9 @@ generate =
         )
         ++ (if (CVLGraph `elem` modes)
           then [ (CVLGraph,
-                  CompilerResult { 
-                       extension = "cvl.dot", 
-                       outputCode = genCVLGraph ast' iModule (takeBaseName $ file cargs), 
+                  CompilerResult {
+                       extension = "cvl.dot",
+                       outputCode = genCVLGraph ast' iModule (takeBaseName $ file cargs),
                        statistics = stats,
                        claferEnv  = env,
                        mappingToAlloy = [],
@@ -476,11 +499,11 @@ generate =
                   }) ]
           else []
         )
-        -- result for Python    
+        -- result for Python
         ++ (if (Python `elem` modes)
-          then [ (Python, 
-                  CompilerResult { 
-                   extension = "py", 
+          then [ (Python,
+                  CompilerResult {
+                   extension = "py",
                    outputCode = genPythonModule iModule,
                    statistics = stats,
                    claferEnv  = env,
@@ -490,15 +513,15 @@ generate =
                   }) ]
           else []
         )
-        -- result for Choco    
+        -- result for Choco
         ++ (if (Choco `elem` modes)
-          then let 
+          then let
                   imod = iModule
                in
-                  [ (Choco, 
-                     CompilerResult { 
-                         extension = "js", 
-                         outputCode = genCModule cargs (imod, genv) scopes, 
+                  [ (Choco,
+                     CompilerResult {
+                         extension = "js",
+                         outputCode = genCModule cargs (imod, genv) scopes,
                          statistics = stats,
                          claferEnv  = env,
                          mappingToAlloy = [],
@@ -507,18 +530,18 @@ generate =
                       }) ]
           else []
         ))
-    
+
 -- | Result of generation for a given mode
 data CompilerResult = CompilerResult {
                             -- | output file extension
-                            extension :: String, 
+                            extension :: String,
                             -- | output text
-                            outputCode :: String, 
+                            outputCode :: String,
                             statistics :: String,
                             -- | the final environment of the compiler
                             claferEnv :: ClaferEnv,
                             -- | Maps source constraint spans in Alloy to the spans in the IR
-                            mappingToAlloy :: [(Span, IrTrace)], 
+                            mappingToAlloy :: [(Span, IrTrace)],
                             -- | Map back from Ints used to represent Strings
                             stringMap :: (Map.Map Int String),
                             -- | scopes generated by scope inference
@@ -528,7 +551,7 @@ data CompilerResult = CompilerResult {
                             reason :: String
                             } deriving Show
 
-desugar :: Module -> IModule  
+desugar :: Module -> IModule
 desugar iModule = desugarModule iModule
 
 liftError :: (Monad m, Language.ClaferT.Throwable t) => Either t a -> ClaferT m a
@@ -537,7 +560,7 @@ liftError = either throwErr return
 analyze :: Monad m => ClaferArgs -> IModule -> ClaferT m (IModule, GEnv, Bool)
 analyze args' iModule = do
   liftError $ findDupModule args' iModule
-  let 
+  let
     au = allUnique iModule
   let args'' = args'{skip_resolver = au && (skip_resolver args')}
   (rTree, genv) <- liftError $ resolveModule args'' iModule
@@ -551,7 +574,7 @@ showStats :: Bool -> Stats -> String
 showStats au (Stats na nr nc nconst ngoals sgl) =
   unlines [ "All clafers: " ++ (show (na + nr + nc)) ++ " | Abstract: " ++ (show na) ++ " | Concrete: " ++ (show nc) ++ " | References: " ++ (show nr)
           , "Constraints: " ++ show nconst
-          , "Goals: " ++ show ngoals  
+          , "Goals: " ++ show ngoals
           , "Global scope: " ++ showInterval sgl
           , "Can skip resolver: " ++ if au then "yes" else "no" ]
 
