@@ -46,6 +46,7 @@ Contributors
 * [Michał Antkiewicz](http://gsd.uwaterloo.ca/mantkiew), Requirements, development, architecture, testing, technology transfer.
 * [Ed Zulkoski](http://gsd.uwaterloo.ca/ezulkosk), Python IR Generator.
 * Luke Michael Brown, co-op student May-Aug 2013. Many improvements.
+* Paulius Juodisius, [customized BNFC generator](https://github.com/juodaspaulius/bnfc) and layout resolver.
 * [Rafael Olaechea](http://gsd.uwaterloo.ca/rolaechea), Multi-Objective Optimization extensions.
 
 Getting the Clafer Compiler
@@ -170,9 +171,14 @@ Development versions from branches `develop` should work well together but this 
 > On Windows, use `/` with the `make` command instead of `\`.
 
 Integration with Sublime Text 2/3
--------------------------------
+---------------------------------
 
 See [ClaferToolsST](https://github.com/gsdlab/ClaferToolsST)
+
+Integration with VIM
+--------------------
+
+See [clafer-vim](https://github.com/wasowski/clafer-vim)
 
 Usage
 =====
