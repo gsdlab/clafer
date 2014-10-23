@@ -136,7 +136,9 @@ On Windows
 
 * [MSYS2](http://msys2.sourceforge.net/) 
   * download MSYS2 installer
-  * in MSYS2 console, execute `pacman -S make wget unzip`
+  * in MSYS2 console, execute
+     * `pacman -Syu` 
+     * `pacman -S make wget unzip diffutils`
 
 #### Important: Branches must correspond
 
