@@ -342,7 +342,7 @@ resolveTPExp' p@PExp{_inPos, _exp} =
                 (test (t1 == TString && t2 == TString) >> return TString) -- Case 1: String concatenation
                 `catchError`
                 const (test (numeric t1 && numeric t2) >> return (coerce t1 t2)) -- Case 2: Addition
-            | otherwise = error $ "Unknown op: " ++ show e
+            | otherwise = error $ "ResolverType: Unknown op: " ++ show e
       result' <- result
       return (result', e{_exps = [arg1', arg2']})
 
