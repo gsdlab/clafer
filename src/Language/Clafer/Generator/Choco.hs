@@ -257,7 +257,7 @@ genCModule _ (imodule@IModule{_mDecls}, _) scopes =
     genConstraintExp (IFunExp "sum" args')
         | [arg] <- args', PExp{_exp = IFunExp{_exps = [a, PExp{_exp = IClaferId{_sident = "ref"}}]}} <- rewrite arg =
             "sum(" ++ genConstraintPExp a ++ ")"
-        | otherwise = error "Unexpected sum argument."
+        | otherwise = error "Choco: Unexpected sum argument."
     genConstraintExp (IFunExp "+" args') =
 	(if _iType (head args') == Just TString then "concat" else "add") ++
             "(" ++ intercalate ", " (map genConstraintPExp args') ++ ")"
@@ -292,7 +292,7 @@ genCModule _ (imodule@IModule{_mDecls}, _) scopes =
     mapFunc ">=" = "greaterThanEqual"
     mapFunc "!=" = "notEqual"
     mapFunc "in" = "$in"
-    mapFunc "nin" = "notIn"
+    mapFunc "not in" = "notIn"
     mapFunc "+" = "add"
     mapFunc "*" = "mul"
     mapFunc "/" = "div"
@@ -300,7 +300,7 @@ genCModule _ (imodule@IModule{_mDecls}, _) scopes =
     mapFunc "--" = "diff"
     mapFunc "&" = "inter"
     mapFunc "=>else" = "ifThenElse"
-    mapFunc op' = error $ "Unknown op: " ++ op'
+    mapFunc op' = error $ "Choco: Unknown op: " ++ op'
     
 {-    sidentOf u = ident $ claferWithUid u
     scopeOf "integer" = undefined
