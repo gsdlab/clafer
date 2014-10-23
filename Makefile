@@ -15,7 +15,7 @@ all: build
 
 init:
 	cabal sandbox init --sandbox=../.clafertools-cabal-sandbox
-	cabal install --only-dependencies $(GPLK_LIBS_INCLUDES) $(MAC_USR_LIB)
+	cabal install --only-dependencies $(GPLK_LIBS_INCLUDES) $(MAC_USR_LIB) --enable-tests
 
 build: 
 	$(MAKE) -C $(TOOL_DIR)
@@ -32,16 +32,19 @@ install:
 	cp -f tools/alloy4.2.jar $(to)/tools
 	cp -f tools/XsdCheck.class $(to)/tools
 	cp -f tools/ecore2clafer.jar $(to)/tools
-	cp -f -R IDEs $(to)/
-	if test "$(glpk)" ; then cp -f $(glpk)/w32/glpk_4_52.dll $(to); fi
+	if test "$(glpk)" ; then cp -f $(glpk)/w32/glpk_4_55.dll $(to); fi
 	cabal install --bindir=$(to) $(GPLK_LIBS_INCLUDES) $(MAC_USR_LIB) --ghc-option="-O"
 
 # Removes current build and makes a clean new one (Don't use if starting from scratch!)
 cleanEnv:
 	make clean
-	ghc-pkg unregister clafer
+	ghc-pkg unregister clafer --package-db=../.clafertools-cabal-sandbox/x86_64-windows-ghc-7.8.3
 	rm `which clafer`
 	make 
+
+# regenerate grammar, call after clafer.cf changed
+grammar:
+	$(MAKE) -C $(SRC_DIR) grammar
 
 # build Schema.hs from ClaferIG.xsd, call after .xsd changed
 Schema.hs:
@@ -77,12 +80,9 @@ reg:
 
 clean:
 	rm -f clafer
-	rm -rf dist
+	cabal clean
 	$(MAKE) -C $(SRC_DIR) clean
 	$(MAKE) -C $(TOOL_DIR) clean
-	find . -type f -name '*.o' -print0 | xargs -0 rm -f
-	find . -type f -name '*.hi' -print0 | xargs -0 rm -f
-	find . -type f -name '*~' -print0 | xargs -0 rm -f
 	$(MAKE) cleanTest
 
 cleanTest:

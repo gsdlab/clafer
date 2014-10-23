@@ -19,7 +19,7 @@ def getModule():
 	module = Module.Module("")
 	stack.append(module)
 ##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(3),IntegerLiteral.IntegerLiteral(1)), (IntegerLiteral.IntegerLiteral(9),IntegerLiteral.IntegerLiteral(17)))
+	pos=((IntegerLiteral.IntegerLiteral(3),IntegerLiteral.IntegerLiteral(1)), (IntegerLiteral.IntegerLiteral(9),IntegerLiteral.IntegerLiteral(24)))
 	isAbstract=False
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
 	id="person"
@@ -32,7 +32,7 @@ def getModule():
 	stack[-1].addElement(currClafer)
 	stack.append(currClafer)
 ##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(4),IntegerLiteral.IntegerLiteral(3)), (IntegerLiteral.IntegerLiteral(6),IntegerLiteral.IntegerLiteral(16)))
+	pos=((IntegerLiteral.IntegerLiteral(4),IntegerLiteral.IntegerLiteral(3)), (IntegerLiteral.IntegerLiteral(6),IntegerLiteral.IntegerLiteral(20)))
 	isAbstract=False
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
 	id="haha"
@@ -45,7 +45,7 @@ def getModule():
 	stack[-1].addElement(currClafer)
 	stack.append(currClafer)
 ##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(5),IntegerLiteral.IntegerLiteral(5)), (IntegerLiteral.IntegerLiteral(6),IntegerLiteral.IntegerLiteral(16)))
+	pos=((IntegerLiteral.IntegerLiteral(5),IntegerLiteral.IntegerLiteral(5)), (IntegerLiteral.IntegerLiteral(6),IntegerLiteral.IntegerLiteral(18)))
 	isAbstract=False
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
 	id="lala"
@@ -74,7 +74,7 @@ def getModule():
 	stack.pop()
 	stack.pop()
 ##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(7),IntegerLiteral.IntegerLiteral(3)), (IntegerLiteral.IntegerLiteral(9),IntegerLiteral.IntegerLiteral(17)))
+	pos=((IntegerLiteral.IntegerLiteral(7),IntegerLiteral.IntegerLiteral(3)), (IntegerLiteral.IntegerLiteral(9),IntegerLiteral.IntegerLiteral(22)))
 	isAbstract=False
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
 	id="ble"
@@ -87,7 +87,7 @@ def getModule():
 	stack[-1].addElement(currClafer)
 	stack.append(currClafer)
 ##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(8),IntegerLiteral.IntegerLiteral(5)), (IntegerLiteral.IntegerLiteral(9),IntegerLiteral.IntegerLiteral(17)))
+	pos=((IntegerLiteral.IntegerLiteral(8),IntegerLiteral.IntegerLiteral(5)), (IntegerLiteral.IntegerLiteral(9),IntegerLiteral.IntegerLiteral(20)))
 	isAbstract=False
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
 	id="married"

@@ -1,12 +1,11 @@
 entrypoints Module ;
 
 
--- To regenerate grammar:
---         cd src/Front
---         bnfc -m -haskell clafer.cf
---         Modify files Absclafer.hs, ErrM.hs, Printclafer.hs, so that they consider Front as a module name. (can be done by running make from src).
---         happy -gca Parclafer.y
---         alex -g Lexclafer.x
+-- To regenerate grammar (see src/Makefile, the goal 'grammar'):
+--         cd src/
+--         bnfc -p "Language.Clafer.Front" --ghc clafer.cf
+--         happy -gca Language/Clafer/Front/Parclafer.y
+--         alex -g Language/Clafer/Front/Lexclafer.x
 
 comment "//" ;
 comment "/*" "*/" ;
@@ -19,7 +18,7 @@ ElementDecl.    Declaration ::= Element ;
 Clafer.         Clafer ::= Abstract GCard PosIdent Super Card Init Elements ;
 Constraint.     Constraint ::= "[" [Exp] "]" ;
 SoftConstraint. SoftConstraint ::= "(" [Exp] ")";
-Goal.   	Goal ::= "<<" [Exp] ">>" ;
+Goal.   		Goal ::= "<<" [Exp] ">>" ;
 
 
 AbstractEmpty.  Abstract ::= ;
@@ -32,8 +31,8 @@ ElementsList.   Elements ::= "{" [Element] "}" ;
 Subclafer.      Element ::= Clafer ;
 ClaferUse.      Element ::= "`" Name Card Elements ;
 Subconstraint.  Element ::= Constraint ;
-Subgoal. 	Element ::= Goal; 
-Subsoftconstraint. Element ::=SoftConstraint;
+Subgoal. 		Element ::= Goal; 
+Subsoftconstraint. Element ::= SoftConstraint;
 
 SuperEmpty.     Super ::=  ;
 SuperSome.      Super ::= SuperHow SetExp ;
@@ -115,6 +114,7 @@ ClaferId.       SetExp6 ::= Name ;
 Decl.           Decl ::= [LocId] ":" SetExp ;
 
 QuantNo.        Quant ::= "no" ;
+QuantNot.		Quant ::= "not" ;
 QuantLone.      Quant ::= "lone" ;
 QuantOne.       Quant ::= "one" ;
 QuantSome.      Quant ::= "some" ;
@@ -122,9 +122,6 @@ QuantSome.      Quant ::= "some" ;
 EnumIdIdent.    EnumId ::= PosIdent ;
 ModIdIdent.     ModId  ::= PosIdent ;
 LocIdIdent.     LocId  ::= PosIdent ;
-
-Pos . Pos ::= Integer Integer;
-Span . Span ::= Pos Pos;
 
 separator           Declaration ""  ;
 separator  nonempty EnumId      "|" ;

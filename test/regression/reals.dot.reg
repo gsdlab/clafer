@@ -1,0 +1,11 @@
+digraph "reals"
+{
+rankdir=BT;
+ranksep=0.3;
+nodesep=0.1;
+graph [fontname=Sans fontsize=11];
+node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
+edge [fontname=Sans fontsize=11];
+"c0_rate" [label="rate -> real" URL="#c0_rate" tooltip="rate -> real&#10;"];
+"c0_interest" [label="interest -> real = 100 * rate" URL="#c0_interest" tooltip="interest -> real = 100 * rate&#10;"];
+}

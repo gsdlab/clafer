@@ -19,7 +19,7 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
 -}
-{-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE DeriveDataTypeable, NamedFieldPuns #-}
 module Main where
 
 import Prelude hiding (writeFile, readFile, print, putStrLn)
@@ -29,7 +29,7 @@ import Data.List.Split
 import Data.Maybe
 import Control.Monad.State
 import System.IO
-import System.Cmd
+import System.Process
 import System.Exit
 import System.Timeout
 import System.FilePath (dropExtension,takeBaseName)
@@ -81,6 +81,7 @@ run _ args' input =
        liftIO $ if console_output args'' then putStrLn result else writeFile f result
   
   handleErrs = mapM_ handleErr
+  
   handleErr (ClaferErr mesg) =
     do
       putStrLn "\nError...\n"
@@ -98,7 +99,6 @@ run _ args' input =
       putStrLn $ "\nCompile error at line " ++ show l ++ " column " ++ show c ++ "..."
       putStrLn mesg
       exitFailure
-  handleErr _ = error "Function handleErr from Main file was given an invalid argument"
 
 save :: MonadIO m => ClaferArgs -> ClaferT m [ String ]
 save args'=
@@ -109,27 +109,34 @@ save args'=
     when (not $ no_stats args') $ liftIO $ printStats results
     -- save the outputs
     (iModule, _, _) <- getIr
-    forM results $ \result -> do
-      result' <- if (add_graph args') && (Html `elem` (mode args') && ("dot" `List.isSuffixOf` (extension result))) 
+    forM results $ saveResult iModule resultsMap
+  where
+    -- saveResult :: MonadIO m => CompilerResult -> IModule -> (Map.Map ClaferMode CompilerResult) -> ClaferT m String
+    saveResult iModule' resultsMap' result@CompilerResult { extension } = do
+      result' <- if (add_graph args') && (Html `elem` (mode args') && ("dot" `List.isSuffixOf` (extension))) 
             then do
                    ast' <- getAst
-                   (_, graph, _) <- liftIO $ readProcessWithExitCode "dot"  ["-Tsvg"] $ genSimpleGraph ast' iModule (takeBaseName $ file args') (show_references args')
+                   (_, graph, _) <- liftIO $ readProcessWithExitCode "dot"  ["-Tsvg"] $ genSimpleGraph ast' iModule' (takeBaseName $ file args') (show_references args')
                    return $ summary graph result
             else return result
       let f = dropExtension $ file args'
-      let f' = f ++ "." ++ (extension result)
+      let f' = f ++ "." ++ extension
       liftIO $ if console_output args' then putStrLn (outputCode result') else writeFile f' (outputCode result')
       liftIO $ when (alloy_mapping args') $ writeFile (f ++ ".map") $ show (mappingToAlloy result')
       let 
         qNameMaps :: QNameMaps
-        qNameMaps = deriveQNameMaps iModule
+        qNameMaps = deriveQNameMaps iModule'
       liftIO $ when (meta_data args') $ writeFile (f ++ ".cfr-map") $ generateJSONnameUIDMap qNameMaps
-      liftIO $ when (meta_data args' && inScopeModes) $ writeFile (f ++ ".cfr-scope") $ generateJSONScopes qNameMaps $ getScopesList resultsMap
+      liftIO $ when (meta_data args' && inScopeModes) $ writeFile (f ++ ".cfr-scope") $ generateJSONScopes qNameMaps $ getScopesList resultsMap'
       return f'  
-  where
+    saveResult _ _ NoCompilerResult { reason } = do 
+      liftIO $ putStrLn reason
+      return ""
     printStats :: [CompilerResult] -> IO ()
     printStats []         = putStrLn "No compiler output."
-    printStats (r:_) = putStrLn (statistics r)
+    printStats (r:rs) = case r of
+      CompilerResult { statistics } -> putStrLn statistics
+      (NoCompilerResult _) -> printStats rs
 
     inScopeModes :: Bool
     inScopeModes = 
@@ -174,9 +181,9 @@ runValidate args' fo = do
   when (Xml `elem` modes && "xml" `List.isSuffixOf` fo) $ do
       writeFile "ClaferIR.xsd" claferIRXSD
       voidf $ system $ "java -classpath " ++ path ++ " XsdCheck ClaferIR.xsd " ++ fo
-  when (Alloy `elem` modes && "als" `List.isSuffixOf` fo) $ do
+  when (Alloy `elem` modes && "als41" `List.isSuffixOf` fo) $ do
     voidf $ system $ validateAlloy path "4" ++ fo
-  when (Alloy42 `elem` modes && "als4" `List.isSuffixOf` fo) $ do
+  when (Alloy42 `elem` modes && "als" `List.isSuffixOf` fo) $ do
     voidf $ system $ validateAlloy path "4.2" ++ fo
   when (Clafer `elem` modes && "des.cfr" `List.isSuffixOf` fo) $ do  
     voidf $ system $ "../dist/build/clafer/clafer -s -m=clafer " ++ fo

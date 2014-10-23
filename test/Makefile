@@ -46,8 +46,8 @@ generateAlloyJSPythonXMLXHTMLDot:
 	@echo "|                          - validating Alloy and XML output                           |"
 	@echo "========================================================================================"
 
-	@if test ! -f $(TOOL_DIR)/"alloy4.jar"; then \
-		echo "[ERROR] Missing $(TOOL_DIR)/alloy4.jar."; false; \
+	@if test ! -f $(TOOL_DIR)/"alloy4.2.jar"; then \
+		echo "[ERROR] Missing $(TOOL_DIR)/alloy4.2.jar."; false; \
 	fi
 
 	@if test ! -f $(TOOL_DIR)/"XsdCheck.class"; then \
@@ -55,7 +55,7 @@ generateAlloyJSPythonXMLXHTMLDot:
 	fi
 
 	# Compile the positive test suite to Alloy, Choco, Python, XML, HTML, and Graph
-	@find $(SUITE_DIR) -type f \( -iname "*.cfr" ! -iname "*.des.cfr" \) |  xargs -L1 $(CLAFER) -m=alloy -m=choco -m=python -m=xml -m=html -m=graph ; true ; \
+	@find $(SUITE_DIR) -type f \( -iname "*.cfr" ! -iname "*.des.cfr" \) |  xargs -L1 $(CLAFER) -m=alloy42 -m=choco -m=python -m=xml -m=html -m=graph ; true ; \
 
 diffRegressions:
 	@echo "======================================================="
@@ -97,6 +97,9 @@ reg:
 	@echo "| Creating new regressions |"
 	@echo "============================"
 	@rm $(REG_DIR)/*.reg
+	$(MAKE) newReg
+	
+newReg:
 	@echo "---------------------"
 	@echo "| Alloy regressions |"
 	@echo "---------------------"

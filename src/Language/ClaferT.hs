@@ -242,21 +242,17 @@ instance ClaferErrPos PartialErrPos where
       let pos' = ((Pos 1 1 : f) !! frgId) `addPos` frgPos
       return $ ErrPos frgId frgPos pos'
   toErrPos (ErrFragSpan frgId (Span frgPos _)) = toErrPos $ ErrFragPos frgId frgPos
-  toErrPos (ErrFragSpan frgId (PosSpan _ frgPos _)) = toErrPos $ ErrFragPos frgId frgPos -- Should never happen
   toErrPos (ErrModelPos modelPos') =
     do
       f <- getsEnv frags
       let fragSpans = zipWith Span (Pos 1 1 : f) f
       case findFrag modelPos' fragSpans of
         Just (frgId, Span fragStart _) -> return $ ErrPos frgId (modelPos' `minusPos` fragStart) modelPos'
-        Just (frgId, PosSpan _ fragStart _) -> return $ ErrPos frgId (modelPos' `minusPos` fragStart) modelPos'
         Nothing -> error $ show modelPos' ++ " not within any frag spans: " ++ show fragSpans -- Indicates a bug in the Clafer translator
     where
     findFrag pos'' spans =
       find (inSpan pos'' . snd) (zip [0..] spans)
   toErrPos (ErrModelSpan (Span modelPos'' _)) = toErrPos $ ErrModelPos modelPos''
-  toErrPos (ErrModelSpan (PosSpan _ modelPos'' _)) = toErrPos $ ErrModelPos modelPos'' -- Should never happen
-
 
 class Throwable t where
   toErr :: t -> Monad m => ClaferT m ClaferErr
@@ -286,17 +282,12 @@ catchErrs e h = e `catchError` (h . errs)
 addPos :: Pos -> Pos -> Pos
 addPos (Pos l c) (Pos 1 d) = Pos l (c + d - 1)    -- Same line
 addPos (Pos l _) (Pos m d) = Pos (l + m - 1) d    -- Different line
-addPos pos' (PosPos _ l c) = addPos pos' (Pos l c)
-addPos (PosPos _ l c) pos' = addPos (Pos l c) pos'
 minusPos :: Pos -> Pos -> Pos
 minusPos (Pos l c) (Pos 1 d) = Pos l (c - d + 1)  -- Same line
 minusPos (Pos l c) (Pos m _) = Pos (l - m + 1) c  -- Different line
-minusPos pos' (PosPos _ l c) = minusPos pos' (Pos l c)
-minusPos (PosPos _ l c) pos' = minusPos (Pos l c) pos'
 
 inSpan :: Pos -> Span -> Bool
 inSpan pos' (Span start end) = pos' >= start && pos' <= end
-inSpan pos' (PosSpan _ s e)  = inSpan pos' (Span s e)
 
 -- | Get the ClaferEnv
 getEnv :: Monad m => ClaferT m ClaferEnv

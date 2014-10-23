@@ -19,7 +19,7 @@ def getModule():
 	module = Module.Module("")
 	stack.append(module)
 ##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(1)), (IntegerLiteral.IntegerLiteral(6),IntegerLiteral.IntegerLiteral(12)))
+	pos=((IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(1)), (IntegerLiteral.IntegerLiteral(6),IntegerLiteral.IntegerLiteral(14)))
 	isAbstract=False
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
 	id="ExamplePhone1"
@@ -32,7 +32,7 @@ def getModule():
 	stack[-1].addElement(currClafer)
 	stack.append(currClafer)
 ##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(2),IntegerLiteral.IntegerLiteral(4)), (IntegerLiteral.IntegerLiteral(3),IntegerLiteral.IntegerLiteral(10)))
+	pos=((IntegerLiteral.IntegerLiteral(2),IntegerLiteral.IntegerLiteral(4)), (IntegerLiteral.IntegerLiteral(3),IntegerLiteral.IntegerLiteral(12)))
 	isAbstract=False
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
 	id="display"
@@ -103,7 +103,7 @@ def getModule():
 	stack.pop()
 	stack.pop()
 ##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(7),IntegerLiteral.IntegerLiteral(1)), (IntegerLiteral.IntegerLiteral(11),IntegerLiteral.IntegerLiteral(15)))
+	pos=((IntegerLiteral.IntegerLiteral(7),IntegerLiteral.IntegerLiteral(1)), (IntegerLiteral.IntegerLiteral(11),IntegerLiteral.IntegerLiteral(17)))
 	isAbstract=False
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
 	id="ExamplePhone2"
@@ -116,7 +116,7 @@ def getModule():
 	stack[-1].addElement(currClafer)
 	stack.append(currClafer)
 ##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(8),IntegerLiteral.IntegerLiteral(4)), (IntegerLiteral.IntegerLiteral(9),IntegerLiteral.IntegerLiteral(11)))
+	pos=((IntegerLiteral.IntegerLiteral(8),IntegerLiteral.IntegerLiteral(4)), (IntegerLiteral.IntegerLiteral(9),IntegerLiteral.IntegerLiteral(13)))
 	isAbstract=False
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
 	id="display"
@@ -173,7 +173,7 @@ def getModule():
 	stack.pop()
 	stack.pop()
 ##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(12),IntegerLiteral.IntegerLiteral(1)), (IntegerLiteral.IntegerLiteral(17),IntegerLiteral.IntegerLiteral(15)))
+	pos=((IntegerLiteral.IntegerLiteral(12),IntegerLiteral.IntegerLiteral(1)), (IntegerLiteral.IntegerLiteral(17),IntegerLiteral.IntegerLiteral(17)))
 	isAbstract=False
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
 	id="ExampleTablet1"
@@ -186,7 +186,7 @@ def getModule():
 	stack[-1].addElement(currClafer)
 	stack.append(currClafer)
 ##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(13),IntegerLiteral.IntegerLiteral(4)), (IntegerLiteral.IntegerLiteral(14),IntegerLiteral.IntegerLiteral(13)))
+	pos=((IntegerLiteral.IntegerLiteral(13),IntegerLiteral.IntegerLiteral(4)), (IntegerLiteral.IntegerLiteral(14),IntegerLiteral.IntegerLiteral(15)))
 	isAbstract=False
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
 	id="display"
@@ -257,7 +257,7 @@ def getModule():
 	stack.pop()
 	stack.pop()
 ##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(18),IntegerLiteral.IntegerLiteral(1)), (IntegerLiteral.IntegerLiteral(23),IntegerLiteral.IntegerLiteral(12)))
+	pos=((IntegerLiteral.IntegerLiteral(18),IntegerLiteral.IntegerLiteral(1)), (IntegerLiteral.IntegerLiteral(23),IntegerLiteral.IntegerLiteral(14)))
 	isAbstract=False
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
 	id="ExamplePhone3"
@@ -270,7 +270,7 @@ def getModule():
 	stack[-1].addElement(currClafer)
 	stack.append(currClafer)
 ##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(19),IntegerLiteral.IntegerLiteral(4)), (IntegerLiteral.IntegerLiteral(20),IntegerLiteral.IntegerLiteral(10)))
+	pos=((IntegerLiteral.IntegerLiteral(19),IntegerLiteral.IntegerLiteral(4)), (IntegerLiteral.IntegerLiteral(20),IntegerLiteral.IntegerLiteral(12)))
 	isAbstract=False
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
 	id="display"
@@ -341,7 +341,7 @@ def getModule():
 	stack.pop()
 	stack.pop()
 ##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(24),IntegerLiteral.IntegerLiteral(1)), (IntegerLiteral.IntegerLiteral(29),IntegerLiteral.IntegerLiteral(12)))
+	pos=((IntegerLiteral.IntegerLiteral(24),IntegerLiteral.IntegerLiteral(1)), (IntegerLiteral.IntegerLiteral(29),IntegerLiteral.IntegerLiteral(14)))
 	isAbstract=False
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
 	id="ExampleTablet2"
@@ -354,7 +354,7 @@ def getModule():
 	stack[-1].addElement(currClafer)
 	stack.append(currClafer)
 ##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(25),IntegerLiteral.IntegerLiteral(4)), (IntegerLiteral.IntegerLiteral(26),IntegerLiteral.IntegerLiteral(13)))
+	pos=((IntegerLiteral.IntegerLiteral(25),IntegerLiteral.IntegerLiteral(4)), (IntegerLiteral.IntegerLiteral(26),IntegerLiteral.IntegerLiteral(15)))
 	isAbstract=False
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
 	id="display"
@@ -425,7 +425,7 @@ def getModule():
 	stack.pop()
 	stack.pop()
 ##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(30),IntegerLiteral.IntegerLiteral(1)), (IntegerLiteral.IntegerLiteral(41),IntegerLiteral.IntegerLiteral(18)))
+	pos=((IntegerLiteral.IntegerLiteral(30),IntegerLiteral.IntegerLiteral(1)), (IntegerLiteral.IntegerLiteral(41),IntegerLiteral.IntegerLiteral(22)))
 	isAbstract=True
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
 	id="AndroidDevice1"
@@ -438,7 +438,7 @@ def getModule():
 	stack[-1].addElement(currClafer)
 	stack.append(currClafer)
 ##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(31),IntegerLiteral.IntegerLiteral(4)), (IntegerLiteral.IntegerLiteral(35),IntegerLiteral.IntegerLiteral(24)))
+	pos=((IntegerLiteral.IntegerLiteral(31),IntegerLiteral.IntegerLiteral(4)), (IntegerLiteral.IntegerLiteral(35),IntegerLiteral.IntegerLiteral(30)))
 	isAbstract=False
 	groupCard = GCard.GCard(isKeyword=True, interval=(IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(1)))
 	id="display"
@@ -479,7 +479,7 @@ def getModule():
 	stack.append(currClafer)
 	stack.pop()
 ##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(34),IntegerLiteral.IntegerLiteral(7)), (IntegerLiteral.IntegerLiteral(35),IntegerLiteral.IntegerLiteral(24)))
+	pos=((IntegerLiteral.IntegerLiteral(34),IntegerLiteral.IntegerLiteral(7)), (IntegerLiteral.IntegerLiteral(35),IntegerLiteral.IntegerLiteral(28)))
 	isAbstract=False
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
 	id="AMOLED"
@@ -549,7 +549,7 @@ def getModule():
 	stack.append(currClafer)
 	stack.pop()
 ##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(39),IntegerLiteral.IntegerLiteral(4)), (IntegerLiteral.IntegerLiteral(41),IntegerLiteral.IntegerLiteral(18)))
+	pos=((IntegerLiteral.IntegerLiteral(39),IntegerLiteral.IntegerLiteral(4)), (IntegerLiteral.IntegerLiteral(41),IntegerLiteral.IntegerLiteral(20)))
 	isAbstract=False
 	groupCard = GCard.GCard(isKeyword=True, interval=(IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(1)))
 	id="input"
@@ -592,7 +592,7 @@ def getModule():
 	stack.pop()
 	stack.pop()
 ##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(42),IntegerLiteral.IntegerLiteral(1)), (IntegerLiteral.IntegerLiteral(44),IntegerLiteral.IntegerLiteral(15)))
+	pos=((IntegerLiteral.IntegerLiteral(42),IntegerLiteral.IntegerLiteral(1)), (IntegerLiteral.IntegerLiteral(44),IntegerLiteral.IntegerLiteral(19)))
 	isAbstract=True
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
 	id="AndroidPhone"
@@ -622,7 +622,7 @@ def getModule():
 	stack[-1].addElement(constraint)
 	stack.pop()
 ##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(45),IntegerLiteral.IntegerLiteral(1)), (IntegerLiteral.IntegerLiteral(56),IntegerLiteral.IntegerLiteral(18)))
+	pos=((IntegerLiteral.IntegerLiteral(45),IntegerLiteral.IntegerLiteral(1)), (IntegerLiteral.IntegerLiteral(56),IntegerLiteral.IntegerLiteral(22)))
 	isAbstract=True
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
 	id="AndroidDevice"
@@ -635,7 +635,7 @@ def getModule():
 	stack[-1].addElement(currClafer)
 	stack.append(currClafer)
 ##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(46),IntegerLiteral.IntegerLiteral(4)), (IntegerLiteral.IntegerLiteral(50),IntegerLiteral.IntegerLiteral(24)))
+	pos=((IntegerLiteral.IntegerLiteral(46),IntegerLiteral.IntegerLiteral(4)), (IntegerLiteral.IntegerLiteral(50),IntegerLiteral.IntegerLiteral(30)))
 	isAbstract=False
 	groupCard = GCard.GCard(isKeyword=True, interval=(IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(1)))
 	id="display"
@@ -676,7 +676,7 @@ def getModule():
 	stack.append(currClafer)
 	stack.pop()
 ##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(49),IntegerLiteral.IntegerLiteral(7)), (IntegerLiteral.IntegerLiteral(50),IntegerLiteral.IntegerLiteral(24)))
+	pos=((IntegerLiteral.IntegerLiteral(49),IntegerLiteral.IntegerLiteral(7)), (IntegerLiteral.IntegerLiteral(50),IntegerLiteral.IntegerLiteral(28)))
 	isAbstract=False
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
 	id="AMOLED"
@@ -746,7 +746,7 @@ def getModule():
 	stack.append(currClafer)
 	stack.pop()
 ##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(54),IntegerLiteral.IntegerLiteral(4)), (IntegerLiteral.IntegerLiteral(56),IntegerLiteral.IntegerLiteral(18)))
+	pos=((IntegerLiteral.IntegerLiteral(54),IntegerLiteral.IntegerLiteral(4)), (IntegerLiteral.IntegerLiteral(56),IntegerLiteral.IntegerLiteral(20)))
 	isAbstract=False
 	groupCard = GCard.GCard(isKeyword=True, interval=(IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(1)))
 	id="input"
@@ -789,7 +789,7 @@ def getModule():
 	stack.pop()
 	stack.pop()
 ##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(57),IntegerLiteral.IntegerLiteral(1)), (IntegerLiteral.IntegerLiteral(64),IntegerLiteral.IntegerLiteral(18)))
+	pos=((IntegerLiteral.IntegerLiteral(57),IntegerLiteral.IntegerLiteral(1)), (IntegerLiteral.IntegerLiteral(64),IntegerLiteral.IntegerLiteral(22)))
 	isAbstract=False
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
 	id="AndroidPhone4"
@@ -802,7 +802,7 @@ def getModule():
 	stack[-1].addElement(currClafer)
 	stack.append(currClafer)
 ##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(58),IntegerLiteral.IntegerLiteral(4)), (IntegerLiteral.IntegerLiteral(59),IntegerLiteral.IntegerLiteral(13)))
+	pos=((IntegerLiteral.IntegerLiteral(58),IntegerLiteral.IntegerLiteral(4)), (IntegerLiteral.IntegerLiteral(59),IntegerLiteral.IntegerLiteral(15)))
 	isAbstract=False
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
 	id="display"
@@ -872,7 +872,7 @@ def getModule():
 	stack.append(currClafer)
 	stack.pop()
 ##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(63),IntegerLiteral.IntegerLiteral(4)), (IntegerLiteral.IntegerLiteral(64),IntegerLiteral.IntegerLiteral(18)))
+	pos=((IntegerLiteral.IntegerLiteral(63),IntegerLiteral.IntegerLiteral(4)), (IntegerLiteral.IntegerLiteral(64),IntegerLiteral.IntegerLiteral(20)))
 	isAbstract=False
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
 	id="input"

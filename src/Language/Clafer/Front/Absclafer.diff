@@ -1,8 +1,0 @@
-1c1,5
-< module Absclafer where
----
-> module Language.Clafer.Front.Absclafer where
-> noSpan :: Span
-> noSpan = Span noPos noPos
-> noPos :: Pos
-> noPos = Pos 0 0

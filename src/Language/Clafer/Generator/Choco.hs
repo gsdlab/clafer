@@ -5,7 +5,7 @@
 module Language.Clafer.Generator.Choco (genCModule) where
 
 import Control.Applicative
-import Control.Lens.Plated
+import Control.Lens.Plated hiding (rewrite)
 import Control.Monad
 import Data.Data.Lens
 import Data.List
@@ -121,15 +121,15 @@ genCModule _ (imodule@IModule{_mDecls}, _) scopes =
         where
             scopeMap = [uid' ++ ":" ++ show scope | (uid', scope) <- scopes, uid' /= "int"]
 
-    exps :: [IExp]
-    exps = universeOn biplate imodule
+    exps' :: [IExp]
+    exps' = universeOn biplate imodule
 
     stringLength :: IExp -> Maybe Int
     stringLength (IStr string) = Just $ length string
     stringLength _ = Nothing
 
     longestString :: Int
-    longestString = maximum $ 16 : mapMaybe stringLength exps
+    longestString = maximum $ 16 : mapMaybe stringLength exps'
                 
     genConcreteClafer :: IClafer -> Result
     genConcreteClafer IClafer{_uid, _card = Just _card, _gcard = Just (IGCard _ _gcard)} =
@@ -139,7 +139,9 @@ genCModule _ (imodule@IModule{_mDecls}, _) scopes =
                 case parentOf _uid of
                      "root" -> "Clafer"
                      puid   -> puid ++ ".addChild"
-                     
+    genConcreteClafer (IClafer _ _ Nothing _ _ _ _ _ _) = error "Choco.getConcreteClafer undefined"
+    genConcreteClafer (IClafer _ _ (Just (IGCard _ _)) _ _ _ Nothing _ _) = error "Choco.getConcreteClafer undefined"
+
     prop name value =
         case value of
                 Just value' -> "." ++ name ++ "(" ++ value' ++ ")"
@@ -255,7 +257,7 @@ genCModule _ (imodule@IModule{_mDecls}, _) scopes =
     genConstraintExp (IFunExp "sum" args')
         | [arg] <- args', PExp{_exp = IFunExp{_exps = [a, PExp{_exp = IClaferId{_sident = "ref"}}]}} <- rewrite arg =
             "sum(" ++ genConstraintPExp a ++ ")"
-        | otherwise = error "Unexpected sum argument."
+        | otherwise = error "Choco: Unexpected sum argument."
     genConstraintExp (IFunExp "+" args') =
 	(if _iType (head args') == Just TString then "concat" else "add") ++
             "(" ++ intercalate ", " (map genConstraintPExp args') ++ ")"
@@ -268,7 +270,7 @@ genCModule _ (imodule@IModule{_mDecls}, _) scopes =
         | otherwise                = _sident
     genConstraintExp (IInt val) = "constant(" ++ show val ++ ")"
     genConstraintExp (IStr val) = "constant(" ++ show val ++ ")"
-    genConstraintExp e = error $ "Unknown expression: " ++ show e
+    genConstraintExp (IDouble val) = "constant(" ++ show val ++ ")"
                 
     mapQuant INo = "none"
     mapQuant ISome = "some"
@@ -290,7 +292,7 @@ genCModule _ (imodule@IModule{_mDecls}, _) scopes =
     mapFunc ">=" = "greaterThanEqual"
     mapFunc "!=" = "notEqual"
     mapFunc "in" = "$in"
-    mapFunc "nin" = "notIn"
+    mapFunc "not in" = "notIn"
     mapFunc "+" = "add"
     mapFunc "*" = "mul"
     mapFunc "/" = "div"
@@ -298,7 +300,7 @@ genCModule _ (imodule@IModule{_mDecls}, _) scopes =
     mapFunc "--" = "diff"
     mapFunc "&" = "inter"
     mapFunc "=>else" = "ifThenElse"
-    mapFunc op' = error $ "Unknown op: " ++ op'
+    mapFunc op' = error $ "Choco: Unknown op: " ++ op'
     
 {-    sidentOf u = ident $ claferWithUid u
     scopeOf "integer" = undefined

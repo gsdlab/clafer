@@ -24,20 +24,18 @@ module Suite.SimpleScopeAnalyser (tg_Test_Suite_SimpleScopeAnalyser) where
 
 import Language.Clafer
 import Language.Clafer.Intermediate.Intclafer
-import Language.Clafer.Intermediate.SimpleScopeAnalyzer
 import Language.Clafer.JSONMetaData
 import Language.Clafer.QNameUID
 import Functions
 
 import qualified Data.Map as M
 
-import qualified Test.Framework as T
-import Test.Framework.TH
-import Test.Framework.Providers.HUnit
-import Test.HUnit
+import Test.Tasty
+import Test.Tasty.HUnit
+import Test.Tasty.TH
 
 
-tg_Test_Suite_SimpleScopeAnalyser :: T.Test
+tg_Test_Suite_SimpleScopeAnalyser :: TestTree
 tg_Test_Suite_SimpleScopeAnalyser = $(testGroupGenerator)
  
 model :: String

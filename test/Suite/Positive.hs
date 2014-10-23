@@ -29,13 +29,12 @@ import Data.Maybe
 import Control.Monad
 import Language.Clafer
 import Language.ClaferT
-import qualified Test.Framework as T
-import Test.Framework.TH
-import Test.Framework.Providers.HUnit
-import Test.HUnit
+import Test.Tasty
+import Test.Tasty.HUnit
+import Test.Tasty.TH
 import qualified Data.Map as Map
 
-tg_Test_Suite_Positive :: T.Test
+tg_Test_Suite_Positive :: TestTree
 tg_Test_Suite_Positive = $(testGroupGenerator)
  
 positiveClaferModels :: IO [(String, String)]
@@ -72,13 +71,11 @@ case_nonempty_cards = do
 		@? "nonempty card test failed. Files contain empty cardinalities after fully compiling")
 	where
 		getIR (file', (Right (resultMap))) = 
-			let
-				CompilerResult{claferEnv = ClaferEnv{cIr = Just (iMod, _, _)}} = fromJust $ Map.lookup Alloy resultMap
-			in
-				[(file', iMod)]
+			case Map.lookup Alloy resultMap of
+				Just CompilerResult{claferEnv = ClaferEnv{cIr = Just (iMod, _, _)}} -> [(file', iMod)]
+				_ -> []
 		getIR (_, _) = []
 		isEmptyCard (IRClafer (IClafer{_cinPos=(Span (Pos l c) _), _card = Nothing})) = "Line " ++ show l ++ " column " ++ show c ++ "\n"
-		isEmptyCard (IRClafer (IClafer{_cinPos=(PosSpan _ (Pos l c) _), _card = Nothing})) = "Line " ++ show l ++ " column " ++ show c ++ "\n"
 		isEmptyCard	_ = ""
 
 case_stringEqual :: Assertion

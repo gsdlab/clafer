@@ -88,7 +88,7 @@ sig c0_onlineParticipant
 sig c2_room
 { ref : one c0_Room }
 { one @r_c2_room.this
-  (this.(@ref.(@r_c0_capacity.@ref))) >= ((#((this.~@r_c2_room).@r_c0_participant)).add[1]) }
+  (this.(@ref.(@r_c0_capacity.@ref))) >= ((#((this.~@r_c2_room).@r_c0_participant)).plus[1]) }
 
 abstract sig c0_Month
 {}
