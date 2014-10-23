@@ -490,8 +490,10 @@ generateHtml env =
        (if (self_contained cargs) then "</body>\n</html>" else "")
 
   where
+    lne :: Declaration -> Pos
     lne (ElementDecl (Span p _) _) = p
     lne (EnumDecl (Span p _) _  _) = p
+
     genFragments :: [Import] -> [Declaration] -> [Pos]   -> Map.Map Span [Ir] -> [(Span, String)] -> [String]
     genFragments    []          []               _          _                    comments = 
       printComments comments

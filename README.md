@@ -46,6 +46,7 @@ Contributors
 * [Michał Antkiewicz](http://gsd.uwaterloo.ca/mantkiew), Requirements, development, architecture, testing, technology transfer.
 * [Ed Zulkoski](http://gsd.uwaterloo.ca/ezulkosk), Python IR Generator.
 * Luke Michael Brown, co-op student May-Aug 2013. Many improvements.
+* Paulius Juodisius, [customized BNFC generator](https://github.com/juodaspaulius/bnfc) and layout resolver.
 * [Rafael Olaechea](http://gsd.uwaterloo.ca/rolaechea), Multi-Objective Optimization extensions.
 
 Getting the Clafer Compiler
@@ -135,7 +136,9 @@ On Windows
 
 * [MSYS2](http://msys2.sourceforge.net/) 
   * download MSYS2 installer
-  * in MSYS2 console, execute `pacman -S make wget unzip`
+  * in MSYS2 console, execute
+     * `pacman -Syu` 
+     * `pacman -S make wget unzip diffutils`
 
 #### Important: Branches must correspond
 
@@ -169,11 +172,15 @@ Development versions from branches `develop` should work well together but this 
 #### Note: 
 > On Windows, use `/` with the `make` command instead of `\`.
 
-Integration with Sublime Text 2
--------------------------------
+Integration with Sublime Text 2/3
+---------------------------------
 
-See [IDEs/clafer-README.md](IDEs/clafer-README.md)
+See [ClaferToolsST](https://github.com/gsdlab/ClaferToolsST)
 
+Integration with VIM
+--------------------
+
+See [clafer-vim](https://github.com/wasowski/clafer-vim)
 
 Usage
 =====

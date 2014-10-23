@@ -131,6 +131,7 @@ tokenLookup s = treeFind resWords
   treeFind (B a t left right) | s < a  = treeFind left
                               | s > a  = treeFind right
                               | s == a = tokenCode t
+  treeFind (B _ _ _ _) = error "LayoutResolver.treeFind should never happen"
   tokenCode :: Tok -> Maybe Int
   tokenCode (TS _ c) = Just c
   tokenCode _ = Nothing

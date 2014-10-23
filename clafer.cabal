@@ -5,7 +5,7 @@ Description:        Clafer is a general purpose, lightweight, structural modelin
 Homepage:           http://clafer.org
 License:            MIT
 License-file:       LICENSE
-Author:             Kacper Bak, Jimmy Liang, Michal Antkiewicz, Chris Walker, Luke Michael Brown
+Author:             Kacper Bak, Jimmy Liang, Michal Antkiewicz, Ed Zulkoski, Luke Michael Brown, Paulius Juodisius, Rafael Olaechea
 Maintainer:         Michal Antkiewicz <mantkiew@gsd.uwaterloo.ca>
 Stability:          Experimental
 Category:           Model
@@ -14,8 +14,6 @@ Cabal-version:      >= 1.18
 data-files:         README.md,
                     CHANGES.md,
                     logo.pdf,
-                    IDEs/clafer-README.md,
-                    IDEs/sublime-text-2/Packages/User/clafer.sublime-build
                     Makefile,
                     tools/XsdCheck.java,
                     tools/XsdCheck.class,

@@ -17,7 +17,7 @@ instance Monad Err where
   return      = Ok
   fail        = Bad noPos
   Ok a  >>= f = f a
-  Bad p s >>= f = Bad p s
+  Bad p s >>= _ = Bad p s
 
 instance Applicative Err where
   pure = Ok

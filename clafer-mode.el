@@ -16,7 +16,7 @@
   "Clafer Cardinalities.")
 
 (defvar clafer-constraints-operators
-  '("<" ">" ">=" "<=" "<:" ":>" "=>" "+" "++" "~" "!=" "*" "#" "`" "in" "not in")
+  '("<" ">" ">=" "<=" "<:" ":>" "=>" "+" "++" "!" "!=" "*" "#" "`" "in" "not in")
   "Clafer Constraints Operators.")
 
 ;; create the regex string for each class of keywords
