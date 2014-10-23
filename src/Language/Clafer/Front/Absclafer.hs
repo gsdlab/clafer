@@ -26,7 +26,6 @@ instance Spannable n => Spannable [n] where
 (>-) (Span (Pos 0 0) (Pos 0 0)) s = s
 (>-) r (Span (Pos 0 0) (Pos 0 0)) = r
 (>-) (Span m _) (Span _ p) = Span m p
-(>-) _ _ = error "Function '>-' was not given (Span (Pos 0 0) (Pos 0 0)) as one of it's argumented expected one argument of (Span (Pos 0 0) (Pos 0 0))"
 
 len :: [a] -> Integer
 len = toInteger . length

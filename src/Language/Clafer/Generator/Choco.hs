@@ -5,7 +5,7 @@
 module Language.Clafer.Generator.Choco (genCModule) where
 
 import Control.Applicative
-import Control.Lens.Plated
+import Control.Lens.Plated hiding (rewrite)
 import Control.Monad
 import Data.Data.Lens
 import Data.List
@@ -139,7 +139,9 @@ genCModule _ (imodule@IModule{_mDecls}, _) scopes =
                 case parentOf _uid of
                      "root" -> "Clafer"
                      puid   -> puid ++ ".addChild"
-                     
+    genConcreteClafer (IClafer _ _ Nothing _ _ _ _ _ _) = error "Choco.getConcreteClafer undefined"
+    genConcreteClafer (IClafer _ _ (Just (IGCard _ _)) _ _ _ Nothing _ _) = error "Choco.getConcreteClafer undefined"
+
     prop name value =
         case value of
                 Just value' -> "." ++ name ++ "(" ++ value' ++ ")"
