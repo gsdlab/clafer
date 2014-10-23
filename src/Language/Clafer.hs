@@ -157,9 +157,8 @@ runCompiler    mURL         args'         inputModel =
         liftIO $ do
           forM_ (_mModules iModule) $ \url -> do 
             -- use the same args just change the file name
-            let importArgs = args' { file = stripProtocol url }
             importedModel <- retrieveModelFromURL url
-            runCompiler (Just url) importArgs importedModel
+            runCompiler (Just url) (args' { file = getFileName url }) importedModel
         compile iModule
         fs <- save args'
         when (validate args') $ forM_ fs (liftIO . runValidate args' )
@@ -168,11 +167,11 @@ runCompiler    mURL         args'         inputModel =
       else return ()
     result `cth` handleErrs
   where
-  stripProtocol :: URL                         -> FilePath
-  stripProtocol ('f':'i':'l':'e':':':'/':'/':n) = n
-  stripProtocol ('h':'t':'t':'p':':':'/':'/':n) = takeFileName n
-  stripProtocol ('f':'t':'p':':':'/':'/':n)     = takeFileName n
-  stripProtocol n                               = n
+  getFileName :: URL                         -> FilePath
+  getFileName ('f':'i':'l':'e':':':'/':'/':n) = takeFileName n
+  getFileName ('h':'t':'t':'p':':':'/':'/':n) = takeFileName n
+  getFileName ('f':'t':'p':':':'/':'/':n)     = takeFileName n
+  getFileName n                               = n
   cth (Left err) f = f err
   cth (Right r)  _ = return r
   fragments model = map unlines $ fragments' $ lines model

@@ -146,11 +146,11 @@ mainArgs = do
 retrieveModelFromURL :: String -> IO String
 retrieveModelFromURL    url     = do
   case url of
-    "" -> hGetContents stdin
+    "" -> hGetContents stdin                       -- this is the pre-module system behavior
     ('f':'i':'l':'e':':':'/':'/':n) -> readFile n
     ('h':'t':'t':'p':':':'/':'/':_) -> getURL url
-    ('f':'t':'p':':':'/':'/':_) -> getURL url
-    f  -> readFile f
+    ('f':'t':'p':':':'/':'/':_)     -> getURL url
+    n                               -> readFile n  -- this is the pre-module system behavior
 
 
 argsWithOPTIONS :: ClaferArgs -> String -> ClaferArgs

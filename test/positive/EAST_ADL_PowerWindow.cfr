@@ -1,6 +1,6 @@
-import file://EAST_ADL_funcdevice
-import ftp://t3-necsis.cs.uwaterloo.ca/EAST_ADL_connector
-import http://t3-necsis.cs.uwaterloo.ca:8091/clafer/EAST_ADL_device
+import file://EAST_ADL_funcdevice.cfr
+import file://EAST_ADL_connector.cfr
+import http://t3-necsis.cs.uwaterloo.ca:8091/clafer/standards_EAST-ADL-device.cfr
 
 PWSubsystemFunctionalArchitecture
     WinController : AnalysisFunction
