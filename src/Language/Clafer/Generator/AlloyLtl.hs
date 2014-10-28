@@ -66,7 +66,7 @@ genAlloyLtlModule    claferargs    (imodule, _)       scopes           = (flatte
 header :: ClaferArgs -> [(UID, Integer)] -> Concat
 header    args          scopes       = CString $ unlines
     [ if Alloy42 `elem` (mode args) then "" else "open util/integer"
-    , if Alloy42Ltl `elem` (mode args) then "open util/ordering[Time]" else ""
+    , if AlloyLtl `elem` (mode args) then "open util/ordering[Time]" else ""
     , "pred show {}"
     , if (validate args) ||  (noalloyruncommand args)
       then ""
@@ -75,7 +75,7 @@ header    args          scopes       = CString $ unlines
     , behavioralSigs
     ]
     where
-      mkScope = if Alloy42Ltl `elem` (mode args)
+      mkScope = if AlloyLtl `elem` (mode args)
       then
         "run show for " ++ show (fixed_scope args)
       else
