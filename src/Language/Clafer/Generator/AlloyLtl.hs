@@ -34,7 +34,7 @@ import Language.Clafer.Front.Absclafer
 import Language.Clafer.Generator.Concat
 import Language.Clafer.Intermediate.Intclafer hiding (exp)
 -- import qualified Language.Clafer.Intermediate.Intclafer as I (exp)
-
+import Debug.Trace
 -- | representation of strings in chunks (for line/column numbering)
 
 data GenCtx = GenCtx {
@@ -164,10 +164,11 @@ transPrimitive = super %~ toOverlapping
     toOverlapping x = x
 
 claferDecl :: IClafer -> Concat -> Concat
-claferDecl    c     rest    = cconcat [genOptCard c,
+claferDecl    c     rest    = cconcat [genSigCard,
   CString $ genAbstract $ _isAbstract c, CString "sig ",
   Concat NoTrace [CString $ _uid c, genExtends $ _super c, CString "\n", rest]]
   where
+  genSigCard = if not (_mutable c) then genOptCard c else CString ""
   genAbstract isAbs = if isAbs then "abstract " else ""
   genExtends (ISuper False [PExp _ _ _ (IClaferId _ "clafer" _ _)]) = CString ""
   genExtends (ISuper False [PExp _ _ _ (IClaferId _ i _ _)]) = CString " " +++ Concat NoTrace [CString $ "extends " ++ i]
@@ -202,13 +203,20 @@ genRelations claferargs c = maybeToList r ++ (map mkRel $ getSubclafers $ _eleme
 genRelName :: String -> String
 genRelName name = "r_" ++ name
 
+-- trace ("----- genRel ----\n" ++ show c) $
 genRel :: String -> IClafer -> String -> String
-genRel name c rType = genAlloyRel name (genCardCrude $ _card c) rType'
+genRel name c rType = if _mutable c
+  then genMutAlloyRel name rType'
+  else genAlloyRel name (genCardCrude $ _card c) rType'
   where
   rType' = if isPrimitive rType then "Int" else rType
 
+
 genAlloyRel :: String -> String -> String -> String
 genAlloyRel name card' rType = concat [name, " : ", card', " ", rType]
+
+genMutAlloyRel :: String -> String -> String
+genMutAlloyRel name rType = concat [name, " : ", rType, " -> ", timeSig]
 
 refType :: ClaferArgs -> IClafer -> Concat
 refType claferargs c = cintercalate (CString " + ") $ map ((genType claferargs).getTarget) $ _supers $ _super c
@@ -253,6 +261,7 @@ containsTimedRel pexp@(PExp iType _ _ exp) =  case exp of
 
 genConstraints :: GenCtx -> IClafer -> [Concat]
 genConstraints    ctx c = (genParentConst (resPath ctx) c) :
+  (genMutSubClafersConst (cArgs ctx) c) :
   (genGroupConst c) : genPathConst ctx  (if (noalloyruncommand (cArgs ctx)) then  (_uid c ++ "_ref") else "ref") c : constraints
   where
   constraints = map genConst $ _elements c
@@ -482,7 +491,7 @@ genIFunExp    pid'       ctx     (IFunExp op' exps') =
 genIFunExp _ _ _ = error "Function genIFunExp from Alloy Generator expected a IFunExp as an argument but was given something else" --This should never happen
 
 genLtlExp :: GenCtx -> String -> [PExp] -> [Concat]
-genLtlExp ctx op exps = dispatcher exps
+genLtlExp ctx op exps = {- trace ("call in genLtlExp; exps:\n" ++ show exps) $ -} dispatcher exps
   where
   dispatcher
     | op == iF = genF

@@ -31,7 +31,7 @@ import Language.Clafer.Common
 import Language.Clafer.Front.Absclafer
 import Language.Clafer.Intermediate.Intclafer
 
-
+import Debug.Trace
 -- | Transform the AST into the intermediate representation (IR)
 desugarModule :: Module -> IModule
 desugarModule (Module _ declarations) = IModule "" $
@@ -148,14 +148,14 @@ desugarTrans' s e1 arrow e2 =  case arrow of
 
 
 desugarMutability :: [TempModifier] -> Elements -> Mutability
-desugarMutability mods es = containsFinal || (containsFinalConstr es)
+desugarMutability mods es = not ( containsFinal || (containsFinalConstr es) )
   where
     containsFinal = any isFinalMod mods
     containsFinalConstr (ElementsEmpty _) = False
-    containsFinalConstr (ElementsList _ es) = any isMutableEl es
-    isMutableEl :: Element -> Bool
-    isMutableEl (Subconstraint _ (FinalConstraint _ )) = True
-    isMutableEl _ = False
+    containsFinalConstr (ElementsList _ es) = any isFinalEl es
+    isFinalEl :: Element -> Bool
+    isFinalEl (Subconstraint _ (FinalConstraint _ )) = True
+    isFinalEl _ = False
     isFinalMod (Final _) = True
     isFinalMod _ = False
 
@@ -229,10 +229,10 @@ sugarElements mut x = ElementsList noSpan $ mutConstraint ++ (map sugarElement x
       False -> []
 
 
+      {-(let desugared = desugarClafer claf  in trace ("desugarClafer; desugared:\n" ++ show desugared ++"\nsugared:\n"++show claf) desugared) ++-}
 desugarElement :: Element -> [IElement]
 desugarElement x = case x of
-  Subclafer _ claf  ->
-      (desugarClafer claf) ++
+  Subclafer _ claf  -> desugarClafer claf ++
       (mkArrowConstraint claf >>= desugarElement)
   ClaferUse s name crd es  -> desugarClafer $ Clafer s
       (AbstractEmpty s) [] (GCardEmpty s) (mkIdent $ _sident $ desugarName name)
