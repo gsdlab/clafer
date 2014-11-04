@@ -55,7 +55,9 @@ bOrFoldl1 xs = foldl1 (\res val -> res || val) xs
 genAlloyLtlModule :: ClaferArgs -> (IModule, GEnv) -> [(UID, Integer)] -> (Result, [(Span, IrTrace)])
 genAlloyLtlModule    claferargs    (imodule, _)       scopes           = (flatten output, filter ((/= NoTrace) . snd) $ mapLineCol output)
   where
-  output = header claferargs scopes +++ (cconcat $ map (genDeclaration claferargs) (_mDecls imodule)) +++
+  rootClafer = IEClafer $ IClafer noSpan False (Just $ IGCard False (0, -1)) "root" "root" (ISuper False []) (Just (1,1)) (1, 1) False (_mDecls imodule)
+  -- output = header claferargs scopes +++ (cconcat $ map (genDeclaration claferargs) (_mDecls imodule)) +++
+  output = header claferargs scopes +++ (genDeclaration claferargs rootClafer) +++
        if ((not $ skip_goals claferargs) && length goals_list > 0) then
                 CString "objectives o_global {\n" +++   (cintercalate (CString ",\n") goals_list) +++   CString "\n}"
        else
@@ -241,19 +243,18 @@ genType m x = genPExp (GenCtx m [] Nothing) x
 containsTimedRel :: PExp -> Bool
 containsTimedRel pexp@(PExp iType _ _ exp) =  case exp of
   IFunExp _ exps -> bOrFoldl1 $ map containsTimedRel exps
-  IClaferId _ sident isTop (Just c) -> timedIClaferId
+  IClaferId _ sident _ (Just c) -> timedIClaferId
     where
     mutable = _mutable c
     timedIClaferId
       | sident == "ref" = mutable
       | head sident == '~' = False
-      | isNothing iType = checkIfMut
+      | isNothing iType = mutable
       | otherwise = case fromJust $ iType of
         TInteger -> False
         TReal -> False
         TString -> False
-        _ -> checkIfMut
-    checkIfMut = if isTop then False else mutable
+        _ -> mutable
   IDeclPExp _ decls e -> bOrFoldl1 (map containsMut decls) || containsTimedRel e
   _ -> False
   where
@@ -268,16 +269,19 @@ genConstraints    ctx c = (genParentConst (resPath ctx) c) :
   genConst x = case x of
     IEConstraint _ pexp  -> -- genPExp cargs ((_uid c) : resPath) pexp
         if containsTimedRel pexp
-        then cconcat [genTimeDecl "t", genPExp ctx { time = Just "t", resPath = ((_uid c) : (resPath ctx))} pexp]
+        then cconcat [genTimeDecl "t" ctx c, genPExp ctx { time = Just "t", resPath = ((_uid c) : (resPath ctx))} pexp]
         else cconcat [genPExp ctx { time = Nothing, resPath = ((_uid c) : (resPath ctx))} pexp]
     IEClafer c' ->
         if genCardCrude (_card c') `elem` ["one", "lone", "some"]
         then CString "" else mkCard ({- do not use the genRelName as the constraint name -} _uid c') False (genRelName $ _uid c') $ fromJust (_card c')
     IEGoal _ _ -> error "getConst function from Alloy generator was given a Goal, this function should only be given a Constrain or Clafer" -- This should never happen
 
-
-genTimeDecl :: String -> Concat
-genTimeDecl tvar = CString ("all " ++ tvar ++ " : (" ++ timeSig ++ " <: first) " ++ " | " )
+-- generates time variable binding declaration which appears as a first expression in mutable constraints
+-- it references all time moments when context clafer instance is active
+-- typical binding form is: this.(ParentSig.ContextClaferRelation)
+genTimeDecl :: String -> GenCtx -> IClafer -> Concat
+genTimeDecl tvar ctx c = CString ("all " ++ tvar ++ " : (this.(" ++ head (resPath ctx)  ++ ".@" ++ genRelName (_uid c) ++ ")) | " )
+-- genTimeDecl tvar = CString ("all " ++ tvar ++ " : (" ++ timeSig ++ " <: first) " ++ " | " )
 
 -- generates cardinality constraints for mutable subclafers
 -- typically all t: Time | lone r_field.t
@@ -439,7 +443,7 @@ genPExp'    ctx     (PExp iType' pid' pos exp') = case exp' of
     _ -> sid'
     where
     sid' = (if istop then "" else '@' : genRelName "") ++ sid ++ timeJoin
-    timeJoin = case (bind, time ctx) of
+    timeJoin = if sid == "this" then "" else case (bind, time ctx) of
       (Just IClafer {_mutable=true}, Just t) -> "." ++ t
       _ -> ""
     -- 29/March/2012  Rafael Olaechea: ref is now prepended with clafer name to be able to refer to it from partial instances.
