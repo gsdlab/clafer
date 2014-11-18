@@ -112,7 +112,6 @@ import Language.ClaferT
 import Language.Clafer.Common
 import Language.Clafer.Front.ErrM
 import Language.Clafer.ClaferArgs hiding (Clafer)
-import qualified Language.Clafer.ClaferArgs as CA (ClaferMode(Clafer))
 import qualified Language.Clafer.ClaferArgs as Mode (ClaferMode (Clafer))
 import Language.Clafer.Comments
 import qualified Language.Clafer.Css as Css
@@ -293,11 +292,7 @@ runValidate args' fo = do
     voidf $ system $ validateAlloy path "4" ++ fo
   when (Alloy42 `elem` modes && "als" `isSuffixOf` fo) $ do
     voidf $ system $ validateAlloy path "4.2" ++ fo
-<<<<<<< HEAD
-  when (CA.Clafer `elem` modes && "des.cfr" `isSuffixOf` fo) $ do  
-=======
   when (Mode.Clafer `elem` modes && "des.cfr" `isSuffixOf` fo) $ do  
->>>>>>> develop
     voidf $ system $ "../dist/build/clafer/clafer -s -m=clafer " ++ fo
 
 validateAlloy :: String -> String -> String
@@ -387,10 +382,6 @@ parse =
         let completeModel = concat $ modelFrags env
         completeAst <- (parseFrag $ args env) completeModel
         liftParseErr completeAst
-<<<<<<< HEAD
-=======
-
->>>>>>> develop
     putEnv env{ cAst = Just ast, astModuleTrace = traceAstModule ast }
   where
   parseFrag :: (Monad m) => ClaferArgs -> String -> ClaferT m (Err Module)
@@ -489,11 +480,7 @@ generateFragments =
 -- | Splits the AST into their fragments, and generates the output for each fragment.
 generateHtml :: ClaferEnv -> String
 generateHtml env =
-<<<<<<< HEAD
     let (Just (Module _ imports' decls')) = cAst env;
-=======
-    let (Just (Module _ decls')) = cAst env;
->>>>>>> develop
         cargs = args env;
         irMap = irModuleTrace env;
         comments = if add_comments cargs then getComments $ unlines $ modelFrags env else [];
@@ -775,9 +762,4 @@ claferIRXSD = Language.Clafer.Generator.Schema.xsd
 
 -- | reserved keywords
 keyWords :: [String]
-<<<<<<< HEAD
 keyWords = ["ref", "parent", "children", "abstract", "else", "import", "in", "no", "opt", "xor", "all", "enum", "lone", "not", "or", "disj", "extends", "mux", "one", "some"]
-
-=======
-keyWords = ["ref", "parent", "children", "abstract", "else", "import", "in", "no", "opt", "xor", "all", "enum", "lone", "not", "or", "disj", "extends", "mux", "one", "some"]
->>>>>>> develop
