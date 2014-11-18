@@ -45,7 +45,8 @@ compileOneFragment args' model =
 		do
 			addModuleFragment model
 			parse
-			compile
+			iModule <- desugar Nothing
+			compile iModule
 			generate
 
 compiledCheck :: Either a b -> Bool

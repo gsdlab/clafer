@@ -33,6 +33,8 @@ import Data.Foldable (foldMap)
 type UID = String
 -- | clafer name as declared in the source model
 type CName = String
+-- | file:// ftp:// or http:// prefixed URL
+type URL = String  
 
 -- | A "supertype" of all IR types
 data Ir =

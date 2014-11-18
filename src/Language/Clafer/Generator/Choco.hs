@@ -120,17 +120,16 @@ genCModule _ (imodule@IModule{_mDecls}, _) scopes =
         ++ "stringLength(" ++ show longestString ++ ");\n"
         where
             scopeMap = [uid' ++ ":" ++ show scope | (uid', scope) <- scopes, uid' /= "int"]
-
-    exps' :: [IExp]
-    exps' = universeOn biplate imodule
+    exprs :: [IExp]
+    exprs = universeOn biplate imodule
 
     stringLength :: IExp -> Maybe Int
     stringLength (IStr string) = Just $ length string
     stringLength _ = Nothing
 
     longestString :: Int
-    longestString = maximum $ 16 : mapMaybe stringLength exps'
-
+    longestString = maximum $ 16 : mapMaybe stringLength exprs
+                
     genConcreteClafer :: IClafer -> Result
     genConcreteClafer IClafer{_uid, _card = Just _card, _gcard = Just (IGCard _ _gcard)} =
             _uid ++ " = " ++ constructor ++ "(\"" ++ _uid ++ "\")" ++ prop "withCard" (genCard _card) ++ prop "withGroupCard" (genCard _gcard) ++ prop "extending" (superOf _uid) ++ ";\n"
