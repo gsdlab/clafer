@@ -1,4 +1,4 @@
-entrypoints Module ;
+entrypoints Module, Clafer, Constraint, SoftConstraint, Goal ;
 
 
 -- To regenerate grammar (see src/Makefile, the goal 'grammar'):
@@ -18,7 +18,7 @@ ElementDecl.    Declaration ::= Element ;
 Clafer.         Clafer ::= Abstract GCard PosIdent Super Card Init Elements ;
 Constraint.     Constraint ::= "[" [Exp] "]" ;
 SoftConstraint. SoftConstraint ::= "(" [Exp] ")";
-Goal.   		Goal ::= "<<" [Exp] ">>" ;
+Goal.           Goal ::= "<<" [Exp] ">>" ;
 
 
 AbstractEmpty.  Abstract ::= ;
@@ -31,7 +31,7 @@ ElementsList.   Elements ::= "{" [Element] "}" ;
 Subclafer.      Element ::= Clafer ;
 ClaferUse.      Element ::= "`" Name Card Elements ;
 Subconstraint.  Element ::= Constraint ;
-Subgoal. 		Element ::= Goal; 
+Subgoal.        Element ::= Goal; 
 Subsoftconstraint. Element ::= SoftConstraint;
 
 SuperEmpty.     Super ::=  ;

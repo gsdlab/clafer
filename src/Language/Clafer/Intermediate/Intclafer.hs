@@ -47,6 +47,9 @@ data Ir
   | IRILocId      CName
   deriving (Eq, Show)
 
+-- | file:// ftp:// or http:// prefixed URL
+type URL = String  
+
 -- | A mapping from MUIDs to Ir elements
 --   0-indexed, IModule always has index 0
 type IRModuleMap = V.Vector Ir

@@ -43,6 +43,7 @@ import Data.Ord
 
 import Language.ClaferT 
 import Language.Clafer.Common
+import Data.Maybe (fromMaybe)
 import Language.Clafer.Front.Absclafer
 import Language.Clafer.Intermediate.Intclafer
 
@@ -85,11 +86,12 @@ addIrElement    muid    irElement   parentsMUID    irSpan = do
   irSpans    %= ((muid, irSpan) :)
 
 -- | Transform the AST into the intermediate representation (IR)
-desugar :: Monad m => Module -> ClaferT m (IModule, [String], [String])
-desugar    ast     = do
+desugar :: Monad m => Maybe URL -> ClaferT m (IModule, [String], [String])
+desugar               mURL       = do
+  ast <- getAst
   let 
     (iModule, dState) = runState
-      (desugarModule ast) 
+      (desugarModule mURL ast) 
       (DesugarerState Map.empty [] [] [] 0 0 0 0 0 0 (1, 1) [] [])
   env <- getEnv
   putEnv env
@@ -109,14 +111,14 @@ desugar    ast     = do
     prepareList :: [(MUID, a)] -> [a]
     prepareList    xs           = map snd $ sortBy (comparing fst) $ filter (\(m, _) -> m >= 0) xs
 
-desugarModule :: Module -> State DesugarerState IModule
-desugarModule aModule@(Module span' declarations') = do
+desugarModule :: Maybe String -> Module -> State DesugarerState IModule
+desugarModule mURL aModule@(Module span' declarations') = do
   muid <- genNewMUID   -- will always return 0 for the module
   let 
     parentsMUID = muid -- the module is its own parent
   iDeclarations <- concat <$> mapM (desugarDeclaration muid) (declarations' >>= desugarEnums)
   let
-    iModule = IModule "" iDeclarations
+    iModule = IModule (fromMaybe "" mURL) iDeclarations
   addIrElement muid (IRIModule iModule) parentsMUID span'
   addAstElement (AstModule aModule) span'
   return iModule      

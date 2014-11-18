@@ -26,6 +26,7 @@ module Language.Clafer.Front.LayoutResolver where
 -- very simple layout resolver
 import Control.Monad.State
 import Data.Functor.Identity (Identity)
+import Language.Clafer.Common (voidf)
 import Language.ClaferT
 
 import Language.Clafer.Front.Lexclafer
@@ -271,11 +272,6 @@ handleIndent c = case c of
     modify (\e -> e {brCtr = brCtr e - 1})
     return c
   _ ->  return c
-  where
-    voidf :: Monad m => m t -> m ()
-    voidf f = do
-      _ <- f
-      return ()
 
 emit :: MonadState LayEnv m => Char -> m ()
 emit c = modify (\e -> e {output = c : output e})

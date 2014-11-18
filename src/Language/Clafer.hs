@@ -1,3 +1,4 @@
+{-# LANGUAGE DeriveDataTypeable, NamedFieldPuns #-}
 {-
  Copyright (C) 2012-2014 Kacper Bak, Jimmy Liang, Michal Antkiewicz <http://gsd.uwaterloo.ca>
 
@@ -63,9 +64,11 @@ Use "throwErr" to halt execution:
 
 Use "catchErrs" to catch the errors.
 -}
-module Language.Clafer (addModuleFragment,
+module Language.Clafer (runCompiler, 
+                        addModuleFragment,
                         compile,
                         parse,
+                        desugar,
                         generate,
                         generateHtml,
                         generateFragments,
@@ -76,7 +79,6 @@ module Language.Clafer (addModuleFragment,
                         putEnv,
                         CompilerResult(..),
                         claferIRXSD,
-                        VerbosityL,
                         InputModel,
                         Token,
                         Module,
@@ -99,8 +101,11 @@ import Data.Maybe
 import qualified Data.Map as Map
 import Data.Ord
 import Control.Monad
+import Control.Monad.State
 import Control.Lens.Plated
-import System.FilePath (takeBaseName)
+import System.Exit
+import System.FilePath (dropExtension,takeBaseName)
+import System.Process (readProcessWithExitCode, system)
 
 import Language.ClaferT 
 import Language.Clafer.Common
@@ -128,9 +133,165 @@ import Language.Clafer.Generator.Python
 import Language.Clafer.Generator.Schema
 import Language.Clafer.Generator.Html
 import Language.Clafer.Generator.Graph
+import Language.Clafer.JSONMetaData
+import Language.Clafer.QNameUID
 
-type VerbosityL = Int
 type InputModel = String
+
+-- | Run the Clafer compiler. 
+-- mURL = Nothing means compile the top-level module
+-- mURL = Just url means compile an imported module from the given url
+runCompiler :: Maybe URL -> ClaferArgs -> InputModel -> IO ()
+runCompiler    mURL         args'         inputModel =
+  do
+    result <- runClaferT args' $
+      do
+        forM_ (fragments inputModel) addModuleFragment
+        parse
+        desugared <- desugar mURL
+        {- need to runCompiler on imports
+        liftIO $ do
+          forM_ (_mModules iModule) $ \url -> do 
+            -- use the same args just change the file name
+            importedModel <- retrieveModelFromURL url
+            runCompiler (Just url) (args' { file = getFileName url }) importedModel
+        -}
+        compile desugared
+        fs <- save args'
+        when (validate args') $ forM_ fs (liftIO . runValidate args' )
+    if Html `elem` (mode args')
+      then htmlCatch result args' inputModel
+      else return ()
+    result `cth` handleErrs
+  where
+  cth (Left err) f = f err
+  cth (Right r)  _ = return r
+  fragments model = map unlines $ fragments' $ lines model
+  fragments' []                  = []
+  fragments' ("//# FRAGMENT":xs) = fragments' xs
+  fragments' model               = takeWhile (/= "//# FRAGMENT") model : fragments' (dropWhile (/= "//# FRAGMENT") model)
+--  htmlCatch :: Either ClaferErr CompilerResult -> ClaferArgs -> String -> IO(CompilerResult)
+  htmlCatch (Right r) _ _ = return r
+  htmlCatch (Left err) args'' model =
+    do let f = (dropExtension $ file args'') ++ ".html"
+       let result = (if (self_contained args'') 
+                     then Css.header ++ "<style>" ++ Css.css ++ "</style>" ++ "</head>\n<body>\n<pre>\n" 
+                     else "") 
+                     ++ highlightErrors model err ++
+                     (if (self_contained args'') 
+                      then "\n</pre>\n</html>" 
+                      else "")
+       liftIO $ if console_output args'' then putStrLn result else writeFile f result
+  
+  handleErrs = mapM_ handleErr
+  
+  handleErr (ClaferErr mesg) =
+    do
+      putStrLn "\nError...\n"
+      putStrLn mesg
+      exitFailure
+  -- We only use one fragment. Fragment id and position is not useful to us. We
+  -- only care about the position relative to 
+  handleErr (ParseErr ErrPos{modelPos = Pos l c} mesg) =
+    do
+      putStrLn $ "\nParse failed at line " ++ show l ++ " column " ++ show c ++ "..."
+      putStrLn mesg
+      exitFailure
+  handleErr (SemanticErr ErrPos{modelPos = Pos l c} mesg) =
+    do
+      putStrLn $ "\nCompile error at line " ++ show l ++ " column " ++ show c ++ "..."
+      putStrLn mesg
+      exitFailure
+
+save :: MonadIO m => ClaferArgs -> ClaferT m [ String ]
+save args'=
+  do
+    resultsMap <- generate
+    let results = snd $ unzip $ Map.toList resultsMap
+    -- print stats only once
+    when (not $ no_stats args') $ liftIO $ printStats results
+    -- save the outputs
+    (iModule, _, _) <- getIr
+    forM results $ saveResult iModule resultsMap
+  where
+    saveResult :: MonadIO m => IModule -> (Map.Map ClaferMode CompilerResult) -> CompilerResult -> ClaferT m String
+    saveResult iModule' resultsMap' result@CompilerResult { extension } = do
+      result' <- if (add_graph args') && (Html `elem` (mode args') && ("dot" `isSuffixOf` (extension))) 
+            then do
+                   ast' <- getAst
+                   irModuleTrace' <- getIRModuleTrace
+                   (_, graph, _) <- liftIO $ readProcessWithExitCode "dot" ["-Tsvg"] $ genSimpleGraph ast' irModuleTrace' (takeBaseName $ file args') (show_references args')
+                   return $ summary graph result
+            else return result
+      let f = dropExtension $ file args'
+      let f' = f ++ "." ++ extension
+      liftIO $ if console_output args' then putStrLn (outputCode result') else writeFile f' (outputCode result')
+      liftIO $ when (alloy_mapping args') $ writeFile (f ++ ".map") $ show (mappingToAlloy result')
+      let 
+        qNameMaps :: QNameMaps
+        qNameMaps = deriveQNameMaps iModule'
+      liftIO $ when (meta_data args') $ writeFile (f ++ ".cfr-map") $ generateJSONnameUIDMap qNameMaps
+      liftIO $ when (meta_data args' && inScopeModes) $ writeFile (f ++ ".cfr-scope") $ generateJSONScopes qNameMaps $ getScopesList resultsMap'
+      return f'  
+    saveResult _ _ NoCompilerResult { reason } = do 
+      liftIO $ putStrLn reason
+      return ""
+    printStats :: [CompilerResult] -> IO ()
+    printStats []         = putStrLn "No compiler output."
+    printStats (r:rs) = case r of
+      CompilerResult { statistics } -> putStrLn statistics
+      (NoCompilerResult _) -> printStats rs
+
+    inScopeModes :: Bool
+    inScopeModes = 
+      Alloy `elem` mode args' ||
+      Alloy42 `elem` mode args' ||
+      Choco `elem` mode args'
+
+    getScopesList :: (Map.Map ClaferMode CompilerResult) -> [(UID, Integer)]
+    getScopesList    resultsMap =
+        let
+           alloyResult = Map.lookup Alloy resultsMap
+           alloy42Result = Map.lookup Alloy42 resultsMap
+           chocoResult = Map.lookup Choco resultsMap
+        in 
+           if (isNothing alloyResult)
+           then if (isNothing alloy42Result)
+                then if (isNothing chocoResult)
+                     then []
+                     else scopesList $ fromJust chocoResult
+                else scopesList $ fromJust alloy42Result
+           else scopesList $ fromJust alloyResult
+
+summary :: String -> CompilerResult -> CompilerResult
+summary graph result = result{outputCode=unlines $ summary' graph ("<pre>" ++ statistics result ++ "</pre>") (lines $ outputCode result)}
+
+summary' :: String -> String -> [String] -> [String]
+summary' _ _ [] = []
+summary' graph stats ("<!-- # SUMMARY /-->":xs) = graph:stats:summary' graph stats xs
+summary' graph stats ("<!-- # STATS /-->":xs) = stats:summary' graph stats xs
+summary' graph stats ("<!-- # GRAPH /-->":xs) = graph:summary' graph stats xs
+summary' graph stats ("<!-- # CVLGRAPH /-->":xs) = graph:summary' graph stats xs
+summary' graph stats (x:xs) = x:summary' graph stats xs
+
+runValidate :: ClaferArgs -> String -> IO ()
+runValidate args' fo = do
+  let path = (tooldir args') ++ "/"
+  liftIO $ putStrLn ("Validating '" ++ fo ++"'")
+  let modes = mode args' 
+  when (Xml `elem` modes && "xml" `isSuffixOf` fo) $ do
+      writeFile "ClaferIR.xsd" claferIRXSD
+      voidf $ system $ "java -classpath " ++ path ++ " XsdCheck ClaferIR.xsd " ++ fo
+  when (Alloy `elem` modes && "als41" `isSuffixOf` fo) $ do
+    voidf $ system $ validateAlloy path "4" ++ fo
+  when (Alloy42 `elem` modes && "als" `isSuffixOf` fo) $ do
+    voidf $ system $ validateAlloy path "4.2" ++ fo
+  when (Mode.Clafer `elem` modes && "des.cfr" `isSuffixOf` fo) $ do  
+    voidf $ system $ "../dist/build/clafer/clafer -s -m=clafer " ++ fo
+
+validateAlloy :: String -> String -> String
+validateAlloy path version = "java -cp " ++ path ++ "alloy" ++ version ++ ".jar edu.mit.csail.sdg.alloy4whole.ExampleUsingTheCompiler "
+
 
 -- | Add a new fragment to the model. Fragments should be added in order.
 addModuleFragment :: Monad m => InputModel -> ClaferT m ()
@@ -216,8 +377,7 @@ parse =
         completeAst <- (parseFrag $ args env) completeModel
         liftParseErr completeAst
 
-    let env' = env{ cAst = Just ast }
-    putEnv env'
+    putEnv env{ cAst = Just ast }
   where
   parseFrag :: (Monad m) => ClaferArgs -> String -> ClaferT m (Err Module)
   parseFrag args' =
@@ -238,12 +398,9 @@ parse =
        id)
 
 -- | Compiles the AST into IR.    
-compile :: Monad m => ClaferT m ()
-compile =
-  do
-    ast' <- getAst
-    (desugaredMod, clafersWithKeyWords, multipleClafers) <- desugar ast'
-    
+compile :: Monad m => (IModule, [String], [String]) -> ClaferT m ()
+compile (desugaredMod, clafersWithKeyWords, multipleClafers) =
+  do    
     env <- getEnv   -- need to read env because desugarer has updated it
     when (not $ null clafersWithKeyWords) $ 
       throwErr (ClaferErr $ ("The model contains clafers with keywords as names in the following places:\n"++) $ (concat clafersWithKeyWords) :: CErr Span)
@@ -289,9 +446,9 @@ generateFragments =
     flatten $ cconcat $ map (genDeclaration args') frag
 
 -- | Splits the AST into their fragments, and generates the output for each fragment.
-generateHtml :: ClaferEnv -> Module -> String
-generateHtml env ast' =
-    let Module _ decls' = ast';
+generateHtml :: ClaferEnv -> String
+generateHtml env =
+    let (Just (Module _ decls')) = cAst env;
         cargs = args env;
         irMap = irModuleTrace env;
         comments = if add_comments cargs then getComments $ unlines $ modelFrags env else [];
@@ -433,7 +590,7 @@ generate =
           then [ (Html,
                   CompilerResult { 
                    extension = "html", 
-                   outputCode = generateHtml env ast', 
+                   outputCode = generateHtml env, 
                    statistics = stats,
                    claferEnv  = env,
                    mappingToAlloy = [],

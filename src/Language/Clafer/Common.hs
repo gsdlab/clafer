@@ -402,3 +402,8 @@ data GEnv = GEnv
   { stable :: Map.Map UID [[UID]]  -- super clafer names of a given clafer
   , sClafers ::[IClafer]           -- all clafers (no going through references)
   } deriving (Eq, Show)
+
+voidf :: Monad m => m t -> m ()
+voidf f = do
+  _ <- f
+  return ()

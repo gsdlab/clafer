@@ -35,6 +35,8 @@ import Language.Clafer.SplitJoin
 import Paths_clafer (version)
 import Data.Version (showVersion)
 
+import GetURL
+
 -- | Type of output to be generated at the end of compilation
 data ClaferMode = Alloy42 | Alloy | Xml | Clafer | Html | Graph | CVLGraph | Python | Choco
   deriving (Eq, Show, Ord, Data, Typeable)
@@ -131,9 +133,7 @@ mergeArgs a1 a2  = ClaferArgs (mode a1) (coMergeArg)
 mainArgs :: IO (ClaferArgs, String)
 mainArgs = do
   args' <- cmdArgs clafer 
-  model <- case file args' of
-             "" -> hGetContents stdin
-             f  -> readFile f
+  model <- retrieveModelFromURL $ file args'
   let args'' = argsWithOPTIONS args' model
   -- Alloy42 should be the default mode but only if nothing else was specified
   -- cannot use [ Alloy42 ] as the default in the definition of `clafer :: ClaferArgs` since 
@@ -142,6 +142,15 @@ mainArgs = do
                 then args''{mode = [ Alloy42 ]}
                 else args''
   return $ (args''', model)
+
+retrieveModelFromURL :: String -> IO String
+retrieveModelFromURL url = do
+  case url of
+    "" -> hGetContents stdin -- this is the pre-module system behavior
+    ('f':'i':'l':'e':':':'/':'/':n) -> readFile n
+    ('h':'t':'t':'p':':':'/':'/':_) -> getURL url
+    ('f':'t':'p':':':'/':'/':_) -> getURL url
+    n -> readFile n -- this is the pre-module system behavior
 
 argsWithOPTIONS :: ClaferArgs -> String -> ClaferArgs
 argsWithOPTIONS    args'         model   =
