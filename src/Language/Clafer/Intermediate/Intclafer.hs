@@ -1,6 +1,6 @@
-{-# LANGUAGE TemplateHaskell, DeriveDataTypeable #-}
+{-# LANGUAGE TemplateHaskell, DeriveDataTypeable, NamedFieldPuns #-}
 {-
- Copyright (C) 2012-2014 Kacper Bak, Jimmy Liang, Luke Michael Brown <http://gsd.uwaterloo.ca>
+ Copyright (C) 2012-2014 Kacper Bak, Jimmy Liang, Michal Antkiewicz, Luke Michael Brown <http://gsd.uwaterloo.ca>
 
  Permission is hereby granted, free of charge, to any person obtaining a copy of
  this software and associated documentation files (the "Software"), to deal in
@@ -23,169 +23,208 @@
 -- | Intermediate representation (IR) of a Clafer model
 module Language.Clafer.Intermediate.Intclafer where
 
+import qualified Data.Vector as V
+import qualified Data.Vector.Unboxed as VU
 import Language.Clafer.Front.Absclafer
 import Control.Lens
 import Data.Data
-import Data.Monoid
-import Data.Foldable (foldMap)
 
--- | unique identifier of a clafer
+-- | readable unique identifier of a clafer, constraint, goal, pexpression, local declaration
 type UID = String    
 -- | clafer name as declared in the source model
 type CName = String  
+-- | Module-unique identifier used internally by the compiler
+type MUID = Int 
 
--- | A "supertype" of all IR types
-data Ir =
-  IRIModule IModule | 
-  IRIElement IElement |
-  IRIType IType |
-  IRClafer IClafer |
-  IRIExp IExp |
-  IRPExp PExp |
-  IRISuper ISuper |
-  IRIQuant IQuant |
-  IRIDecl IDecl |
-  IRIGCard IGCard
+-- | A "supertype" of IR types identifiable with MUID
+data Ir 
+  = IRIModule     IModule
+  | IRIClafer     IClafer
+  | IRIConstraint IConstraint
+  | IRIGoal       IGoal
+  | IRPExp        PExp
+  | IRIDecl       IDecl
+  | IRILocId      CName
   deriving (Eq, Show)
 
-data IType = TBoolean
-           | TString
-           | TInteger
-           | TReal
-           | TClafer [String]
+-- | A mapping from MUIDs to Ir elements
+--   0-indexed, IModule always has index 0
+type IRModuleMap = V.Vector Ir
+
+newEmptyIRModuleMap :: IRModuleMap
+newEmptyIRModuleMap = V.empty
+
+-- | Construct the IRModuleMap from a list of elements. IModule must be first. 
+newIRModuleMap :: [Ir]                        -> IRModuleMap
+newIRModuleMap    irElements@((IRIModule _):_) = V.fromList irElements
+newIRModuleMap    _                            = error "BUG: newIRModuleMap got a list of IR elements in which IRIModule was not the head."
+
+getIRElement :: IRModuleMap -> MUID  -> Ir
+getIRElement    irModuleMap    muid   = irModuleMap V.! muid
+
+getLargestMUID :: IRModuleMap -> Int
+getLargestMUID    irModuleMap =  (V.length irModuleMap)-1
+
+-- | A mapping from MUID of an Ir element to a MUID of it's parent 
+--   0-indexed, IModule's parent is always itself (MUID 0)
+type IRParentMap = VU.Vector MUID
+
+newEmptyIRParentMap :: IRParentMap
+newEmptyIRParentMap = VU.empty
+
+newIRParentMap :: [MUID]           -> IRParentMap
+newIRParentMap    parentMUIDs@(0:_) = VU.fromList parentMUIDs
+newIRParentMap    _                 = error "BUG: newIRParentMap got a list of MUIDs which does not begin with 0."
+
+getIRParentMUID :: IRParentMap -> MUID  -> MUID
+getIRParentMUID    irParentMap    muid   = irParentMap VU.! muid
+
+-- | A mapping from MUID of an IR element to the Span of the original AST node
+type MUIDSpanMap = V.Vector Span
+
+getSpanForMUID :: MUIDSpanMap -> MUID  -> Span
+getSpanForMUID    muidSpanMap    muid   = muidSpanMap V.! muid
+
+newEmptyMUIDSpanMap :: MUIDSpanMap
+newEmptyMUIDSpanMap = V.empty
+
+newMUIDSpanMap :: [Span] -> MUIDSpanMap
+newMUIDSpanMap    spans@((Span (Pos 1 1) _) :_) = V.fromList spans
+newMUIDSpanMap    spans                         = error $ "BUG: newMUIDSpanMap got a list of Spans which does not begin with (Span (Pos 1 1) _).\n" ++ (show spans)
+
+data IType 
+  = TBoolean
+  | TString
+  | TInteger
+  | TReal
+  -- | the type is an intersection of the listed clafers
+  --   supports having paths in the inheritance hierarchy
+  --   supports multiple inheritance
+  | TClafer [MUID]  
   deriving (Eq,Ord,Show,Data,Typeable)
 
 -- | each file contains exactly one mode. A module is a list of declarations
-data IModule = IModule {
-      -- | always empty for now because we don't have syntax for declaring modules
-      _mName :: String,    
-      -- | List of top-level elements
-      _mDecls :: [IElement]
-    }
-  deriving (Eq,Ord,Show,Data,Typeable)
+data IModule 
+  = IModule 
+    { _mName  :: String     -- ^ always empty (no syntax for declaring modules)
+    , _mDecls :: [IElement] -- ^ List of top-level elements
+    } deriving (Eq,Ord,Show,Data,Typeable)
+
+-- | The MUID of the IModule is always 0, since it is always the first top-level element in the IR
+_imoduleMUID :: IModule -> MUID
+_imoduleMUID    _        = 0
 
 -- | Clafer has a list of fields that specify its properties. Some fields, marked as (o) are for generating optimized code
-data IClafer =
-   IClafer {
-      -- | the position of the syntax in source code
-      _cinPos :: Span,         
-      -- | whether abstract or not (i.e., concrete)
-      _isAbstract :: Bool,     
-      -- | group cardinality
-      _gcard :: Maybe IGCard,  
-      -- | name declared in the model
-      _ident :: CName,         
-      -- | a unique identifier
-      _uid :: UID,             
-      -- | superclafers
-      _super:: ISuper,         
-      -- | clafer cardinality
-      _card :: Maybe Interval,
-       -- | (o) global cardinality 
-      _glCard :: Interval,    
-      -- | nested elements
-      _elements :: [IElement]  
-    }
-  deriving (Eq,Ord,Show,Data,Typeable)
+data IClafer 
+  = IClafer 
+    { _claferMUID :: !MUID          -- ^ module-unique identifier
+    , _cinPos     :: Span           -- ^ the position of the syntax in source code
+    , _isAbstract :: !Bool          -- ^ whether abstract or not (i.e., concrete)
+    , _gcard      :: Maybe IGCard   -- ^ group cardinality
+    , _ident      :: CName          -- ^ name declared in the model
+    , _super      :: ISuper         -- ^ superclafers
+    , _card       :: Maybe Interval -- ^ clafer cardinality
+    , _glCard     :: Interval       -- ^ (o) global cardinality
+    , _elements   :: [IElement]     -- ^ nested elements
+    } deriving (Eq,Ord,Show,Data,Typeable)
+
+_uid :: IClafer -> UID
+_uid    IClafer{_ident, _claferMUID}  = concat [ "c", show _claferMUID, "_", _ident ]
+
+data IConstraint 
+  = IConstraint 
+    { _constraintMUID :: !MUID -- ^ module-unique identifier
+    , _isHard         :: !Bool -- ^ whether a hard constraint or an assertion
+    , _cpexp          :: PExp  -- ^ the container of the actual expression
+    } deriving (Eq,Ord,Show,Data,Typeable)
+
+data IGoal 
+  = IGoal 
+    { _goalMUID   :: !MUID -- ^ module-unique identifier
+    , _isMaximize :: !Bool -- ^ whether maximize or minimize
+    , _gpexp      :: PExp  -- ^ the container of the actual expression
+    } deriving (Eq,Ord,Show,Data,Typeable)
 
 -- | Clafer's subelement is either a clafer, a constraint, or a goal (objective)
 --   This is a wrapper type needed to have polymorphic lists of elements
-data IElement =
-   IEClafer { 
-      -- | the actual clafer 
-      _iClafer :: IClafer
+data IElement 
+  = IEClafer 
+    { _iClafer :: IClafer -- ^ the actual clafer 
     }
- | IEConstraint {
-      -- | whether hard or not (soft)
-      _isHard :: Bool,     
-      -- | the container of the actual expression
-      _cpexp :: PExp       
+  | IEConstraint 
+    { _iConstraint :: IConstraint -- ^ the actual constraint
     }
-  -- | Goal (optimization objective)
- | IEGoal {
-   -- | whether maximize or minimize
-   _isMaximize :: Bool,    
-   -- | the expression
-   _cpexp :: PExp          
-   }
-  deriving (Eq,Ord,Show,Data,Typeable)
+  | IEGoal 
+    { _iGoal :: IGoal -- ^ the actual goal (objective)
+    } deriving (Eq,Ord,Show,Data,Typeable)
 
 -- | A list of superclafers.  
 --   ->    overlaping unique (set)
 --   ->>   overlapping non-unique (bag)
 --   :     non overlapping (disjoint)
-data ISuper =
-   ISuper {
-      _isOverlapping :: Bool,  -- whether overlapping or disjoint with other clafers extending given list of superclafers
-      _supers :: [PExp]
-    }
-  deriving (Eq,Ord,Show,Data,Typeable)
+data ISuper 
+  = ISuper
+    { _isOverlapping :: !Bool  -- ^ whether overlapping or disjoint with other clafers extending given list of superclafers
+    , _supers :: [PExp]
+    } deriving (Eq,Ord,Show,Data,Typeable)
 
 -- | Group cardinality is specified as an interval. It may also be given by a keyword.
 --   xor    1..1 isKeyword = True
 --   1..1   1..1 isKeyword = False
-data IGCard =
-  IGCard {
-      _isKeyword :: Bool,    -- whether given by keyword: or, xor, mux
-      _interval :: Interval
-    }
-  deriving (Eq,Ord,Show,Data,Typeable)
+data IGCard 
+  = IGCard 
+    { _isKeyword :: !Bool -- ^ whether given by keyword: or, xor, mux
+    , _interval :: Interval
+    } deriving (Eq,Ord,Show,Data,Typeable)
 
 -- | (Min, Max) integer interval. -1 denotes *
 type Interval = (Integer, Integer)
 
 -- | This is expression container (parent). 
 --   It has meta information about an actual expression 'exp'
-data PExp = PExp {
-      -- | the inferred type
-      _iType :: Maybe IType,  
-      -- | non-empty unique id for expressions with span, \"\" for noSpan
-      _pid :: String,         
-      -- | position in the input Clafer file
-      _inPos :: Span,         
-      -- | the actual expression
-      _exp :: IExp            
-    }
-  deriving (Eq,Ord,Show,Data,Typeable)
+data PExp 
+  = PExp 
+    { _pexpMUID :: !MUID        -- ^ module-unique identifier
+    , _iType    :: Maybe IType  -- ^ the inferred type
+    , _inPos    :: Span         -- ^ position in the input Clafer file
+    , _exp      :: IExp         -- ^ the actual expression
+    } deriving (Eq,Ord,Show,Data,Typeable)
 
-data IExp = 
-   -- | quantified expression with declarations
-   --   e.g., [ all x1; x2 : X | x1.ref != x2.ref ]
-   IDeclPExp {
-      _quant :: IQuant, 
-      _oDecls :: [IDecl], 
-      _bpexp :: PExp
+_pid :: PExp -> String
+_pid PExp { _pexpMUID } = "pexp" ++ (show _pexpMUID)
+
+data IExp 
+  -- | quantified expression with declarations
+  --   e.g., [ all x1; x2 : X | x1.ref != x2.ref ]
+  = IDeclPExp 
+    { _quant :: IQuant
+    , _oDecls :: [IDecl]
+    , _bpexp :: PExp
     }
-   -- | expression with a
-   --   unary function, e.g., -1
-   --   binary function, e.g., 2 + 3
-   --   ternary function, e.g., if x then 4 else 5
- | IFunExp {
-      _op :: String, 
-      _exps :: [PExp]
+  -- | expression with a
+  --   unary function, e.g., -1
+  --   binary function, e.g., 2 + 3
+  --   ternary function, e.g., if x then 4 else 5
+  | IFunExp 
+    { _op :: String -- ^ operator
+    , _exps :: [PExp] -- ^ list of arguments containing 1, 2, or 3 elements 
     }
- -- | integer number
- | IInt {
-      _iint :: Integer
-    }
- -- | real number
- | IDouble {
-      _idouble :: Double
-    }
- -- | string
- | IStr {
-      _istr :: String
-    }
- -- | a reference to a clafer name
- | IClaferId {                   
-      -- | module name - currently not used and empty since we have no module system
-      _modName :: String,         
-      -- | name of the clafer being referred to
-      _sident :: CName,          
-      -- | identifier refers to a top-level definition
-      _isTop :: Bool
-    }
-  deriving (Eq,Ord,Show,Data,Typeable)
+  -- | integer number
+  | IInt 
+    { _iint :: Integer }
+  -- | real number
+  | IDouble 
+    { _idouble :: Double }
+  -- | string
+  | IStr 
+    { _istr :: String }
+  -- | a reference to a clafer name
+  | IClaferId 
+    { _modName  :: String -- ^ module name - empty since we have no module system
+    , _sident   :: CName  -- ^ name of the clafer being referred to
+    , _sMUID    :: MUID   -- ^ MUID of the clafer being referred to 
+    , _isTop    :: Bool   -- ^ identifier refers to a top-level definition
+    } deriving (Eq,Ord,Show,Data,Typeable)
 
 {- |
 For IFunExp standard set of operators includes:
@@ -226,143 +265,52 @@ For IFunExp standard set of operators includes:
 -- | Local declaration
 --   disj x1; x2 : X ++ Y
 --   y1 : Y 
-data IDecl =
-   IDecl {
-      -- | is disjunct
-      _isDisj :: Bool,    
-      -- | a list of local names 
-      _decls :: [CName],  
-      -- | set to which local names refer to
-      _body :: PExp        
-    }
-  deriving (Eq,Ord,Show,Data,Typeable)
+data IDecl 
+  = IDecl 
+    { _declMUID :: !MUID    -- ^ module-unique identifier
+    , _isDisj   :: Bool     -- ^ is disjoint
+    , _decls    :: [(CName, MUID)]  -- ^ a list of local names, we need MUIDs to distinguish between ones with same names
+    , _body     :: PExp     -- ^ set to which local names refer to
+    } deriving (Eq,Ord,Show,Data,Typeable)
 
 -- | quantifier
-data IQuant =
- -- | does not exist
-   INo    
- -- | less than one
- | ILone  
- -- | exactly one
- | IOne   
- -- | at least one (i.e., exists)
- | ISome  
- -- | for all
- | IAll   
+data IQuant
+  -- | does not exist
+  = INo    
+  -- | less than one
+  | ILone  
+  -- | exactly one
+  | IOne   
+  -- | at least one (i.e., exists)
+  | ISome  
+  -- | for all
+  | IAll   
   deriving (Eq,Ord,Show,Data,Typeable)
 
 type LineNo = Integer
 type ColNo  = Integer
 
-
-{-Ir Traverse Functions-}
--------------------------
-
--- | map over IR
-mapIR :: (Ir -> Ir) -> IModule -> IModule -- fmap/map for IModule
-mapIR f (IModule name decls') = 
-  unWrapIModule $ f $ IRIModule $ IModule name $ map (unWrapIElement . iMap f . IRIElement) decls'
-
--- | foldMap over IR
-foldMapIR :: (Monoid m) => (Ir -> m) -> IModule -> m -- foldMap for IModule
-foldMapIR f i@(IModule _ decls') = 
-  (f $ IRIModule i) `mappend` foldMap (iFoldMap f . IRIElement) decls'
-
--- | fold the IR
-foldIR :: (Ir -> a -> a) -> a -> IModule -> a -- a basic fold for IModule
-foldIR f e m = appEndo (foldMapIR (Endo . f) m) e
-
-{-
-Note: even though the above functions take an IModule, 
-the functions they use take an Ir (wrapped version see top of module). 
-Also the bellow functions are just helpers for the above, you may use
-them if you wish to start from somewhere other than IModule.
--}
-
-iMap :: (Ir -> Ir) -> Ir -> Ir 
-iMap f (IRIElement (IEClafer c)) = 
-  f $ IRIElement $ IEClafer $ unWrapIClafer $ iMap f $ IRClafer c
-iMap f (IRIElement (IEConstraint h pexp)) =
-  f $ IRIElement $ IEConstraint h $ unWrapPExp $ iMap f $ IRPExp pexp
-iMap f (IRIElement (IEGoal m pexp)) =
-  f $ IRIElement $ IEGoal m $ unWrapPExp $ iMap f $ IRPExp pexp 
-iMap f (IRClafer (IClafer p a (Just grc) i u s c goc elems)) =
-  f $ IRClafer $ IClafer p a (Just $ unWrapIGCard $ iMap f $ IRIGCard grc) i u (unWrapISuper $ iMap f $ IRISuper s) c goc $ map (unWrapIElement . iMap f . IRIElement) elems
-iMap f (IRClafer (IClafer p a Nothing i u s c goc elems)) =
-  f $ IRClafer $ IClafer p a Nothing i u (unWrapISuper $ iMap f $ IRISuper s) c goc $ map (unWrapIElement . iMap f . IRIElement) elems
-iMap f (IRIExp (IDeclPExp q decs p)) =
-  f $ IRIExp $ IDeclPExp (unWrapIQuant $ iMap f $ IRIQuant q) (map (unWrapIDecl . iMap f . IRIDecl) decs) $ unWrapPExp $ iMap f $ IRPExp p
-iMap f (IRIExp (IFunExp o pexps)) = 
-  f $ IRIExp $ IFunExp o $ map (unWrapPExp . iMap f . IRPExp) pexps
-iMap f (IRPExp (PExp (Just iType') pID p iExp)) =
-  f $ IRPExp $ PExp (Just $ unWrapIType $ iMap f $ IRIType iType') pID p $ unWrapIExp $ iMap f $ IRIExp iExp
-iMap f (IRPExp (PExp Nothing pID p iExp)) =
-  f $ IRPExp $ PExp Nothing pID p $ unWrapIExp $ iMap f $ IRIExp iExp
-iMap f (IRISuper (ISuper o pexps)) =
-  f $ IRISuper $ ISuper o $ map (unWrapPExp . iMap f . IRPExp) pexps
-iMap f (IRIDecl (IDecl i d body')) = 
-  f $ IRIDecl $ IDecl i d $ unWrapPExp $ iMap f $ IRPExp body'
-iMap f i = f i
-
-iFoldMap :: (Monoid m) => (Ir -> m) -> Ir -> m
-iFoldMap f i@(IRIElement (IEConstraint _ pexp)) =
-  f i `mappend` (iFoldMap f $ IRPExp pexp)
-iFoldMap f i@(IRIElement (IEGoal _ pexp)) =
-  f i `mappend` (iFoldMap f $ IRPExp pexp)
-iFoldMap f i@(IRClafer (IClafer _ _ Nothing _ _ s _ _ elems)) =
-  f i `mappend` (iFoldMap f $ IRISuper s) `mappend` foldMap (iFoldMap f . IRIElement) elems
-iFoldMap f i@(IRClafer (IClafer _ _ (Just grc) _ _ s _ _ elems)) =
-  f i `mappend` (iFoldMap f $ IRISuper s) `mappend` (iFoldMap f $ IRIGCard grc) `mappend` foldMap (iFoldMap f . IRIElement) elems
-iFoldMap f i@(IRIExp (IDeclPExp q decs p)) =
-  f i `mappend` (iFoldMap f $ IRIQuant q) `mappend` (iFoldMap f $ IRPExp p) `mappend` foldMap (iFoldMap f . IRIDecl) decs
-iFoldMap f i@(IRIExp (IFunExp _ pexps)) = 
-  f i `mappend` foldMap (iFoldMap f . IRPExp) pexps
-iFoldMap f i@(IRPExp (PExp (Just iType') _ _ iExp)) =
-  f i `mappend` (iFoldMap f $ IRIType iType') `mappend` (iFoldMap f $ IRIExp iExp)
-iFoldMap f i@(IRPExp (PExp Nothing _ _ iExp)) =
-  f i `mappend` (iFoldMap f $ IRIExp iExp)
-iFoldMap f i@(IRISuper (ISuper _ pexps)) =
-  f i `mappend` foldMap (iFoldMap f . IRPExp) pexps
-iFoldMap f i@(IRIDecl (IDecl _ _ body')) = 
-  f i `mappend` (iFoldMap f $ IRPExp body')
-iFoldMap f (IRIElement (IEClafer c)) = iFoldMap f $ IRClafer c
-iFoldMap f i = f i
-
-iFold :: (Ir -> a -> a) -> a -> Ir -> a
-iFold f e m = appEndo (iFoldMap (Endo . f) m) e
-
-
-unWrapIModule :: Ir -> IModule
-unWrapIModule (IRIModule x) = x
-unWrapIModule x = error $ "Can't call unWarpIModule on " ++ show x
-unWrapIElement :: Ir -> IElement
-unWrapIElement (IRIElement x) = x
-unWrapIElement x = error $ "Can't call unWarpIElement on " ++ show x
-unWrapIType :: Ir -> IType
-unWrapIType (IRIType x) = x
-unWrapIType x = error $ "Can't call unWarpIType on " ++ show x
-unWrapIClafer :: Ir -> IClafer
-unWrapIClafer (IRClafer x) = x
-unWrapIClafer x = error $ "Can't call unWarpIClafer on " ++ show x
-unWrapIExp :: Ir -> IExp
-unWrapIExp (IRIExp x) = x
-unWrapIExp x = error $ "Can't call unWarpIExp on " ++ show x
-unWrapPExp :: Ir -> PExp
-unWrapPExp (IRPExp x) = x
-unWrapPExp x = error $ "Can't call unWarpPExp on " ++ show x
-unWrapISuper :: Ir -> ISuper
-unWrapISuper (IRISuper x) = x
-unWrapISuper x = error $ "Can't call unWarpISuper on " ++ show x
-unWrapIQuant :: Ir -> IQuant
-unWrapIQuant (IRIQuant x) = x
-unWrapIQuant x = error $ "Can't call unWarpIQuant on " ++ show x
-unWrapIDecl :: Ir -> IDecl
-unWrapIDecl (IRIDecl x) = x
-unWrapIDecl x = error $ "Can't call unWarpIDecl on " ++ show x
-unWrapIGCard :: Ir -> IGCard
-unWrapIGCard (IRIGCard x) = x
-unWrapIGCard x = error $ "Can't call unWarpIGcard on " ++ show x
-
+unwrapIModule :: Ir -> IModule
+unwrapIModule (IRIModule x) = x
+unwrapIModule x = error $ "Can't call unwrapIModule on " ++ show x
+unwrapIClafer :: Ir -> IClafer
+unwrapIClafer (IRIClafer x) = x
+unwrapIClafer x = error $ "Can't call unwrapIClafer on " ++ show x
+unwrapIConstraint :: Ir -> IConstraint
+unwrapIConstraint (IRIConstraint x) = x
+unwrapIConstraint x = error $ "Can't call unwrapIClafer on " ++ show x
+unwrapIGoal :: Ir -> IGoal
+unwrapIGoal (IRIGoal x) = x
+unwrapIGoal x = error $ "Can't call unwrapIClafer on " ++ show x
+unwrapPExp :: Ir -> PExp
+unwrapPExp (IRPExp x) = x
+unwrapPExp x = error $ "Can't call unwrapPExp on " ++ show x
+unwrapIDecl :: Ir -> IDecl
+unwrapIDecl (IRIDecl x) = x
+unwrapIDecl x = error $ "Can't call unwrapIDecl on " ++ show x
+unwrapILocId :: Ir -> CName
+unwrapILocId (IRILocId x) = x
+unwrapILocId x = error $ "Can't call unwrapILocId on " ++ show x
 
 instance Plated IClafer
 instance Plated PExp
@@ -371,6 +319,10 @@ instance Plated IExp
 makeLenses ''IModule
 
 makeLenses ''IClafer
+
+makeLenses ''IConstraint
+
+makeLenses ''IGoal
 
 makeLenses ''IElement
 

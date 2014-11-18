@@ -1,4 +1,3 @@
-{-# LANGUAGE RankNTypes, KindSignatures ,FlexibleContexts #-}
 {-
  Copyright (C) 2012-2014 Kacper Bak, Jimmy Liang, Luke Brown <http://gsd.uwaterloo.ca>
 
@@ -31,7 +30,7 @@ import Language.Clafer.Intermediate.Intclafer
 -- | Convert all strings into ints for analysis
 -- | Return an inverse map from ints back to strings
 astrModule :: IModule -> (IModule, Map.Map Int String)
-astrModule imodule = (imodule{_mDecls = decls''}, flipMap strMap')
+astrModule    imodule = (imodule{_mDecls = decls''}, flipMap strMap')
   where
     decls' = _mDecls imodule
     (decls'', strMap') = runState (mapM astrElement decls') Map.empty
@@ -39,29 +38,31 @@ astrModule imodule = (imodule{_mDecls = decls''}, flipMap strMap')
     flipMap :: Map.Map String Int -> Map.Map Int String
     flipMap = Map.fromList . map swap . Map.toList
 
-
-astrClafer :: MonadState (Map.Map String Int) m => IClafer -> m IClafer
-astrClafer (IClafer s isAbs gcrd ident' uid' super' crd gCard es) =
-    IClafer s isAbs gcrd ident' uid' super' crd gCard `liftM` mapM astrElement es
-
+astrClafer :: IClafer -> State (Map.Map String Int) IClafer
+astrClafer (IClafer muid s isAbs gcrd ident' super' crd gCard es) =
+    IClafer muid s isAbs gcrd ident' super' crd gCard `liftM` mapM astrElement es
 
 -- astrs single subclafer
-astrElement :: MonadState (Map.Map String Int) m => IElement -> m IElement
+astrElement :: IElement -> State (Map.Map String Int) IElement
 astrElement x = case x of
-  IEClafer clafer -> IEClafer `liftM` astrClafer clafer
-  IEConstraint isHard' pexp -> IEConstraint isHard' `liftM` astrPExp pexp
-  IEGoal isMaximize' pexp -> IEGoal isMaximize' `liftM` astrPExp pexp
+  IEClafer clafer         -> IEClafer `liftM` astrClafer clafer
+  IEConstraint constraint -> IEConstraint `liftM` astrConstraint constraint
+  IEGoal goal             -> IEGoal `liftM` astrGoal goal
 
-astrPExp :: MonadState (Map.Map String Int) m => PExp -> m PExp
-astrPExp (PExp (Just TString) pid' pos' exp') =
-    PExp (Just TInteger) pid' pos' `liftM` astrIExp exp'
-astrPExp (PExp t pid' pos' (IFunExp op' exps')) = PExp t pid' pos' `liftM`
+astrConstraint :: IConstraint -> State (Map.Map String Int) IConstraint
+astrConstraint (IConstraint muid isHard' pexp) = IConstraint muid isHard' `liftM` astrPExp pexp
+
+astrGoal :: IGoal -> State (Map.Map String Int) IGoal
+astrGoal (IGoal muid isMaximize' pexp) = IGoal muid isMaximize' `liftM` astrPExp pexp
+
+astrPExp :: PExp -> State (Map.Map String Int) PExp
+astrPExp (PExp muid iType' pos' (IFunExp op' exps')) = PExp muid iType' pos' `liftM`
                               (IFunExp op' `liftM` mapM astrPExp exps')
-astrPExp (PExp t pid' pos' (IDeclPExp quant' oDecls' bpexp')) = PExp t pid' pos' `liftM`
+astrPExp (PExp muid iType' pos' (IDeclPExp quant' oDecls' bpexp')) = PExp muid iType' pos' `liftM`
                               (IDeclPExp quant' oDecls' `liftM` (astrPExp bpexp'))
 astrPExp x = return x
 
-astrIExp :: MonadState (Map.Map String Int) m => IExp -> m IExp
+astrIExp :: IExp -> State (Map.Map String Int) IExp
 astrIExp x = case x of
   IFunExp op' exps' -> IFunExp op' `liftM` mapM astrPExp exps'
   IStr str -> do

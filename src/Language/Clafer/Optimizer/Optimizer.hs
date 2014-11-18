@@ -46,8 +46,8 @@ optimizeModule args (imodule, genv) =
 optimizeElement :: Interval -> IElement -> IElement
 optimizeElement interval' x = case x of
   IEClafer c  -> IEClafer $ optimizeClafer interval' c
-  IEConstraint _ _  -> x
-  IEGoal _ _ -> x
+  IEConstraint _ -> x
+  IEGoal _ -> x
 
 optimizeClafer :: Interval -> IClafer -> IClafer
 optimizeClafer interval' c = c {_glCard = glCard',
@@ -120,11 +120,11 @@ expSuper x = case x of
 expElement :: MonadState GEnv m => IElement -> m IElement
 expElement x = case x of
   IEClafer claf  -> IEClafer `liftM` expClafer claf
-  IEConstraint isHard' constraint  -> IEConstraint isHard' `liftM` expPExp constraint
-  IEGoal isMaximize' goal -> IEGoal isMaximize' `liftM` expPExp goal
+  IEConstraint (IConstraint muid isHard' constraint)  -> IEConstraint `liftM` IConstraint muid isHard' `liftM` expPExp constraint
+  IEGoal (IGoal muid isMaximize' goal) -> IEGoal `liftM` IGoal muid isMaximize' `liftM` expPExp goal
 
 expPExp :: MonadState GEnv m => PExp -> m PExp
-expPExp (PExp t pid' pos' exp') = PExp t pid' pos' `liftM` expIExp exp'
+expPExp (PExp muid t pid' exp') = PExp muid t pid' `liftM` expIExp exp'
 
 expIExp :: MonadState GEnv m => IExp -> m IExp
 expIExp x = case x of
@@ -134,18 +134,18 @@ expIExp x = case x of
     return $ IDeclPExp quant' decls'' pexp'
   IFunExp op' exps' -> if op' == iJoin
                      then expNav x else IFunExp op' `liftM` mapM expPExp exps'
-  IClaferId _ _ _ -> expNav x
+  IClaferId _ _ _ _ -> expNav x
   _ -> return x
 
 expDecl :: MonadState GEnv m => IDecl -> m IDecl
 expDecl x = case x of
-  IDecl disj locids pexp -> IDecl disj locids `liftM` expPExp pexp
+  IDecl muid disj locids pexp -> IDecl muid disj locids `liftM` expPExp pexp
 
 expNav :: MonadState GEnv m => IExp -> m IExp
 expNav x = do
   xs <- split' x return
   xs' <- mapM (expNav' "") xs
-  return $ mkIFunExp iUnion $ map fst xs'
+  return $ mkIFunExp (pseudoMUID-18) iUnion $ map fst xs'
 
 expNav' :: MonadState GEnv m => String -> IExp -> m (IExp, String)
 expNav' context (IFunExp _ (p0:p:_)) = do    
@@ -153,7 +153,7 @@ expNav' context (IFunExp _ (p0:p:_)) = do
   (exp', context'') <- expNav' context' $ _exp p
   return (IFunExp iJoin [ p0 {_exp = exp0'}
                         , p  {_exp = exp'}], context'')
-expNav' context x@(IClaferId modName' id' isTop') = do
+expNav' context x@(IClaferId modName' id' muid' isTop') = do
   st <- gets stable
   if Map.member id' st
     then do
@@ -161,7 +161,7 @@ expNav' context x@(IClaferId modName' id' isTop') = do
       let (impls', context') = maybe (impls, "")
            (\y -> ([[head y]], head y)) $
            find (\z -> context == (head.tail) z) impls
-      return (mkIFunExp iUnion $ map (\u -> IClaferId modName' u isTop') $
+      return (mkIFunExp (pseudoMUID-19) iUnion $ map (\u -> IClaferId modName' u muid' isTop') $
               map head impls', context')
     else do
       return (x, id')
@@ -171,9 +171,9 @@ split' :: MonadState GEnv m => IExp -> (IExp -> m IExp) -> m [IExp]
 split'(IFunExp _ (p:pexp:_)) f =
     split' (_exp p) (\s -> f $ IFunExp iJoin
       [p {_exp = s}, pexp])
-split' (IClaferId modName' id' isTop') f = do
+split' (IClaferId modName' id' muid' isTop') f = do
     st <- gets stable
-    mapM f $ map (\y -> IClaferId modName' y isTop') $ maybe [id'] (map head) $ Map.lookup id' st
+    mapM f $ map (\y -> IClaferId modName' y muid' isTop') $ maybe [id'] (map head) $ Map.lookup id' st
 split' _ _ = error "Function split' from Optimizer expects an argument of type ClaferId or IFunExp but was given another IExp"
 
 -- -----------------------------------------------------------------------------
@@ -196,14 +196,14 @@ allUniqueClafer claf =
 allUniqueElement :: IElement -> (Bool, [String])
 allUniqueElement x = case x of
   IEClafer claf -> allUniqueClafer claf
-  IEConstraint _ _ -> (True, [])
-  IEGoal _ _ -> (True, [])
+  IEConstraint _ -> (True, [])
+  IEGoal _ -> (True, [])
 
 checkConstraintElement :: [String] -> IElement -> Bool
 checkConstraintElement idents x = case x of
   IEClafer claf -> and $ map (checkConstraintElement idents) $ _elements claf
-  IEConstraint _ pexp -> checkConstraintPExp idents pexp 
-  IEGoal _ _ ->  True
+  IEConstraint (IConstraint _ _ pexp) -> checkConstraintPExp idents pexp 
+  IEGoal _ ->  True
 
 checkConstraintPExp :: [String] -> PExp -> Bool
 checkConstraintPExp idents pexp = checkConstraintIExp idents $ _exp pexp
@@ -212,13 +212,13 @@ checkConstraintIExp :: [String] -> IExp -> Bool
 checkConstraintIExp idents x = case x of
    IDeclPExp _ oDecls' pexp ->
      checkConstraintPExp ((oDecls' >>= (checkConstraintIDecl idents)) ++ idents) pexp
-   IClaferId _ ident' _ -> if ident' `elem` (specialNames ++ idents) then True
+   IClaferId _ ident' _ _ -> if ident' `elem` (specialNames ++ idents) then True
                           else error $ "optimizer: " ++ ident' ++ " not found"
    _ -> True
 
 checkConstraintIDecl :: [String] -> IDecl -> [String]
-checkConstraintIDecl idents (IDecl _ decls' pexp)
-  | checkConstraintPExp idents pexp = decls'
+checkConstraintIDecl idents (IDecl _ _ decls' pexp)
+  | checkConstraintPExp idents pexp = map fst decls'
   | otherwise                       = []
 
 -- -----------------------------------------------------------------------------
@@ -240,7 +240,8 @@ findDupModule args iModule = if check_duplicates args && (not $ null dups)
 
 markTopModule :: [IElement] -> [IElement]
 markTopModule decls' = map (markTopElement (
-      [this, parent, children, strType, intType, integerType] ++
+      specialNames ++
+      primitiveTypes ++
       (map _uid $ toClafers decls'))) decls'
 
 
@@ -257,8 +258,8 @@ markTopSuper clafers x = x{_supers = map (markTopPExp clafers) $ _supers x}
 markTopElement :: [String] -> IElement -> IElement
 markTopElement clafers x = case x of
   IEClafer c  -> IEClafer $ markTopClafer clafers c
-  IEConstraint isHard' pexp  -> IEConstraint isHard' $ markTopPExp clafers pexp
-  IEGoal isMaximize' pexp -> IEGoal isMaximize' $ markTopPExp clafers pexp
+  IEConstraint (IConstraint muid isHard' pexp ) -> IEConstraint $ IConstraint muid isHard' $ markTopPExp clafers pexp
+  IEGoal (IGoal muid isMaximize' pexp) -> IEGoal $ IGoal muid isMaximize' $ markTopPExp clafers pexp
 
 markTopPExp :: [String] -> PExp -> PExp
 markTopPExp clafers pexp =
@@ -267,14 +268,14 @@ markTopPExp clafers pexp =
 
 markTopIExp :: [String] -> IExp -> IExp
 markTopIExp clafers x = case x of
-  IDeclPExp quant' decl pexp -> IDeclPExp quant' (map (markTopDecl clafers) decl)
-                                (markTopPExp ((decl >>= _decls) ++ clafers) pexp)
+  IDeclPExp quant' odecls' pexp -> IDeclPExp quant' (map (markTopDecl clafers) odecls')
+                                (markTopPExp (map fst (odecls' >>= _decls) ++ clafers) pexp)
   IFunExp op' exps' -> IFunExp op' $ map (markTopPExp clafers) exps'
-  IClaferId modName' sident' _ ->
-    IClaferId modName' sident' $ sident' `elem` clafers
+  IClaferId modName' sident' muid' _ ->
+    IClaferId modName' sident' muid' $ sident' `elem` clafers
   _ -> x
 
 
 markTopDecl :: [String] -> IDecl -> IDecl
 markTopDecl clafers x = case x of
-  IDecl disj locids pexp -> IDecl disj locids $ markTopPExp clafers pexp
+  IDecl muid disj locids pexp -> IDecl muid disj locids $ markTopPExp clafers pexp

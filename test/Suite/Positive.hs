@@ -60,24 +60,6 @@ case_reference_Unused_Abstract_Clafer = do
 	(andMap (compiledCheck . snd) compiledClafers 
 		@? "reference_Unused_Abstract_Clafer (i235) failed, error for referencing unused abstract clafer")
 
-case_nonempty_cards :: Assertion
-case_nonempty_cards = do
-	claferModels <- positiveClaferModels
-	let compiledClafeIrs = foldMap getIR $ map (\(file', model) -> (file', compileOneFragment defaultClaferArgs model)) claferModels
-	forM_ compiledClafeIrs (\(file', ir') ->
-		let emptys = foldMapIR isEmptyCard ir'
-		in when (emptys /= []) $ putStrLn (file' ++ " Error: Contains empty cardinalities after analysis at\n" ++ emptys))
-	(andMap ((==[]) . foldMapIR isEmptyCard . snd) compiledClafeIrs
-		@? "nonempty card test failed. Files contain empty cardinalities after fully compiling")
-	where
-		getIR (file', (Right (resultMap))) = 
-			case Map.lookup Alloy resultMap of
-				Just CompilerResult{claferEnv = ClaferEnv{cIr = Just (iMod, _, _)}} -> [(file', iMod)]
-				_ -> []
-		getIR (_, _) = []
-		isEmptyCard (IRClafer (IClafer{_cinPos=(Span (Pos l c) _), _card = Nothing})) = "Line " ++ show l ++ " column " ++ show c ++ "\n"
-		isEmptyCard	_ = ""
-
 case_stringEqual :: Assertion
 case_stringEqual = do
 	let strMap = stringMap $ fromJust $ Map.lookup Alloy $ fromRight $ compileOneFragment defaultClaferArgs "A\n    text1 : string = \"some text\"\n    text2 : string = \"some text\""

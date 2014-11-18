@@ -6,6 +6,8 @@ module Language.Clafer.Front.Absclafer where
 
 
 import Data.Data (Data,Typeable)
+import Data.Map (Map)
+import qualified Data.Map as Map
 import GHC.Generics (Generic)
 data Pos = Pos Integer Integer  deriving (Eq,Ord,Show,Read,Data,Typeable,Generic)
 noPos :: Pos
@@ -369,3 +371,36 @@ instance Spannable PosIdent where
       c' = toInteger c
       l' = toInteger l
 
+data Ast 
+  = AstModule Module
+  | AstDeclaration Declaration
+  | AstClafer Clafer
+  | AstConstraint Constraint
+  | AstSoftConstraint SoftConstraint
+  | AstGoal Goal
+  | AstAbstract Abstract
+  | AstElements Elements
+  | AstElement Element
+  | AstSuper Super
+  | AstSuperHow SuperHow
+  | AstInit Init
+  | AstInitHow InitHow
+  | AstGCard GCard
+  | AstCard Card
+  | AstNCard NCard
+  | AstExInteger ExInteger
+  | AstName Name
+  | AstExp Exp
+  | AstSetExp SetExp
+  | AstDecl Decl
+  | AstQuant Quant
+  | AstEnumId EnumId
+  | AstModId ModId
+  | AstLocId LocId
+  | AstNothing  -- ^ used when Ir elements are created without the corresponding Ast nodes (e.g., by name resolver)
+  deriving (Eq, Show)
+
+type AstModuleMap = Map Span [Ast]
+
+newAstModuleMap :: AstModuleMap
+newAstModuleMap = Map.empty

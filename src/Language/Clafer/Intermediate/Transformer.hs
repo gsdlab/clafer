@@ -33,14 +33,14 @@ transModule = mDecls . traversed %~ transElement
 
 transElement :: IElement -> IElement
 transElement (IEClafer clafer)           = IEClafer $ transClafer clafer
-transElement (IEConstraint isHard' pexp) = IEConstraint isHard' $ transPExp False pexp
-transElement (IEGoal isMaximize' pexp)   = IEGoal isMaximize' $ transPExp False pexp  
+transElement (IEConstraint (IConstraint muid' isHard' pexp')) = IEConstraint $ IConstraint muid' isHard' $ transPExp False pexp'
+transElement (IEGoal (IGoal muid' isMaximize' pexp'))   = IEGoal $ IGoal muid' isMaximize' $ transPExp False pexp'  
 
 transClafer :: IClafer -> IClafer
 transClafer = I.elements . traversed %~ transElement 
 
 transPExp :: Bool -> PExp -> PExp
-transPExp True  pexp'@(PExp iType' _ _ _) = desugarPath $ I.exp %~ transIExp (fromJust $ iType') $ pexp'
+transPExp True  pexp'@(PExp _ iType' _ _) = desugarPath $ I.exp %~ transIExp (fromJust $ iType') $ pexp'
 transPExp False pexp'                     = pexp'
 
 transIExp :: IType -> IExp -> IExp

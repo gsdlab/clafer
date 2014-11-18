@@ -62,11 +62,11 @@ simpleScopeAnalysis IModule{_mDecls = decls'} =
     
     supersAnalysis = foldl (analyzeSupers clafers) Map.empty decls'
     supersAndRefsAnalysis = foldl (analyzeRefs clafers) supersAnalysis decls'
-    constraintAnalysis = analyzeConstraints constraints upperCards
+    constraintAnalysis = analyzeConstraints allConstraints upperCards
     (subclaferMap, parentMap) = analyzeHierarchy clafers
     connectedComponents = analyzeDependencies clafers
     clafers = concatMap findClafers decls'
-    constraints = concatMap findConstraints decls'
+    allConstraints = concatMap findConstraints decls'
     findClafer uid' = fromJust $ find (isEqClaferId uid') clafers
     
     lowerOrUpperFixedCard analysis' clafer =
@@ -142,8 +142,8 @@ analyzeRefs clafers analysis (IEClafer clafer) =
 analyzeRefs _ analysis _ = analysis
 
 analyzeConstraints :: [PExp] -> (String -> Integer) -> Map String Integer
-analyzeConstraints constraints upperCards =
-    foldr analyzeConstraint Map.empty $ filter isOneOrSomeConstraint constraints
+analyzeConstraints constraints' upperCards =
+    foldr analyzeConstraint Map.empty $ filter isOneOrSomeConstraint constraints'
     where
     isOneOrSomeConstraint PExp{_exp = IDeclPExp{_quant = quant'}} =
         -- Only these two quantifiers requires an increase in scope to satisfy.
@@ -282,7 +282,7 @@ findClafers _ = []
 
 -- Find all constraints
 findConstraints :: IElement -> [PExp]
-findConstraints IEConstraint{_cpexp = c} = [c]
+findConstraints (IEConstraint (IConstraint {_cpexp = c})) = [c]
 findConstraints (IEClafer clafer) = concatMap findConstraints (_elements clafer)
 findConstraints _ = []
 
@@ -298,8 +298,8 @@ unfoldJoins :: PExp -> [String]
 unfoldJoins pexp =
     fromMaybe [] $ unfoldJoins' pexp
     where
-    unfoldJoins' PExp{_exp = (IFunExp "." args)} =
-        return $ args >>= unfoldJoins
+    unfoldJoins' PExp{_exp = (IFunExp "." args')} =
+        return $ args' >>= unfoldJoins
     unfoldJoins' PExp{_exp = IClaferId{_sident = sident'}} =
         return $ [sident']
     unfoldJoins' _ =

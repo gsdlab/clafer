@@ -26,8 +26,6 @@ module Language.Clafer.Generator.Html (genHtml,
                                        printModule,
                                        printDeclaration,
                                        printDecl,
-                                       traceAstModule,
-                                       traceIrModule,
                                        cleanOutput,
                                        revertLayout,
                                        printComment,
@@ -39,9 +37,9 @@ module Language.Clafer.Generator.Html (genHtml,
 import Language.ClaferT
 import Language.Clafer.Front.Absclafer
 import Language.Clafer.Front.LayoutResolver(revertLayout)
-import Language.Clafer.Intermediate.Tracing
 import Language.Clafer.Intermediate.Intclafer
 import Data.List (intersperse,genericSplitAt)
+import Data.Map (Map)
 import qualified Data.Map as Map
 import Data.Maybe
 import Data.Char (isSpace)
@@ -81,12 +79,12 @@ printInlineComment :: String -> String
 printInlineComment comment = "<span class=\"inlinecomment\">" ++ comment ++ "</span>"
 
 -- | Generate the model as HTML document
-genHtml :: Module -> IModule -> String
-genHtml x ir = cleanOutput $ revertLayout $ printModule x (traceIrModule ir) True
+genHtml :: Module -> Map Span [Ir] -> String
+genHtml x irModuleTrace' = cleanOutput $ revertLayout $ printModule x irModuleTrace' True
 -- | Generate the model as plain text 
 -- | This is used by the graph generator for tooltips
-genText :: Module -> IModule -> String
-genText x ir = cleanOutput $ revertLayout $ printModule x (traceIrModule ir) False
+genText :: Module -> Map Span [Ir] -> String
+genText x irModuleTrace' = cleanOutput $ revertLayout $ printModule x irModuleTrace' False
 genTooltip :: Module -> Map.Map Span [Ir] -> String
 genTooltip m ir = unlines $ filter (\x -> trim x /= []) $ lines $ cleanOutput $ revertLayout $ printModule m ir False
 
@@ -379,7 +377,7 @@ getUid posIdent@(PosIdent (_, id')) irMap =
       findUid id' $ getIdentPExp pexp
       where {getIdentPExp (PExp _ _ _ exp') = getIdentIExp exp';
              getIdentIExp (IFunExp _ exps') = concatMap getIdentPExp exps';
-             getIdentIExp (IClaferId _ id'' _) = [id''];
+             getIdentIExp (IClaferId _ id'' _ _) = [id''];
              getIdentIExp (IDeclPExp _ _ pexp) = getIdentPExp pexp;
              getIdentIExp _ = [];
              findUid name (x:xs) = if name == dropUid x then x else findUid name xs;
@@ -388,7 +386,7 @@ getUid posIdent@(PosIdent (_, id')) irMap =
 getDivId :: Span -> Map.Map Span [Ir] -> String
 getDivId s irMap = if Map.lookup s irMap == Nothing
                       then "Uid not Found"
-                      else let IRClafer iClaf = head $ fromJust $ Map.lookup s irMap in
+                      else let IRIClafer iClaf = head $ fromJust $ Map.lookup s irMap in
                         _uid iClaf
 
 {-getSuperId span irMap = if Map.lookup span irMap == Nothing
@@ -399,7 +397,7 @@ getDivId s irMap = if Map.lookup s irMap == Nothing
 getUseId :: Span -> Map.Map Span [Ir] -> (String, String)
 getUseId s irMap = if Map.lookup s irMap == Nothing
                       then ("Uid not Found", "Uid not Found")
-                      else let IRClafer iClaf = head $ fromJust $ Map.lookup s irMap in
+                      else let IRIClafer iClaf = head $ fromJust $ Map.lookup s irMap in
                         (_uid iClaf, _sident $ _exp $ head $ _supers $ _super iClaf)
 
 while :: Bool -> String -> String

@@ -67,30 +67,30 @@ model = unlines
 			]
 
 expectedScopesSet :: M.Map UID Integer
-expectedScopesSet = M.fromList $ [ ("c0_a", 0) 
-							--	 , ("c0_b", 1)	-- uses global scope
-							--	 , ("c0_c", 1)	-- uses global scope
-							--	 , ("c0_d", 1) 	-- uses global scope
-							--	 , ("c0_e", 1)	-- uses global scope
-								 , ("c0_f", 4)
-								 , ("c0_g", 3)
-								 , ("c0_gs", 2)
-								 , ("c0_H", 22)
-								 , ("c0_i", 22)
-								 , ("c0_j", 22)
-								 , ("c0_k", 44)
-								 , ("c0_Hs", 16)  -- not sure where the 16 comes from
-								 , ("c0_H1", 2)
-								 , ("c0_H12", 4)
-								 , ("c0_H2", 4)
-								 , ("c0_H3", 2)
-								 , ("c0_H4", 5)
-								 , ("c0_Hs2", 16)  -- not sure where the 16 comes from
-								 , ("c0_Hs3", 8)
-								 , ("c0_l", 8)
-								 , ("c0_F", 5)
-								 , ("c0_f1", 5)
-								 , ("c0_m", 0)
+expectedScopesSet = M.fromList $ [ ("c1_a", 0) 
+							--	 , ("c2_b", 1)	-- uses global scope
+							--	 , ("c3_c", 1)	-- uses global scope
+							--	 , ("c4_d", 1) 	-- uses global scope
+							--	 , ("c5_e", 1)	-- uses global scope
+								 , ("c11_f", 4)
+								 , ("c13_g", 3)
+								 , ("c15_gs", 2)
+								 , ("c31_H", 22)
+								 , ("c32_i", 22)
+								 , ("c34_j", 22)
+								 , ("c36_k", 44)
+								 , ("c39_Hs", 16)  -- not sure where the 16 comes from
+								 , ("c55_H1", 2)
+								 , ("c56_H12", 4)
+								 , ("c61_H2", 4)
+								 , ("c64_H3", 2)
+								 , ("c67_H4", 5)
+								 , ("c70_Hs2", 16)  -- not sure where the 16 comes from
+								 , ("c86_Hs3", 8)
+								 , ("c87_l", 8)
+								 , ("c104_F", 5)
+								 , ("c107_f1", 5)
+								 , ("c108_m", 0)
 								 ]
 
 

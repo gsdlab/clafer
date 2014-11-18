@@ -36,8 +36,7 @@ import Language.Clafer.Intermediate.Intclafer
 type Result = String
 
 transIdent :: PosIdent -> Result
-transIdent x = case x of
-  PosIdent str  -> snd str
+transIdent (PosIdent (_, str)) = str
 
 mkIdent :: String -> PosIdent
 mkIdent str = PosIdent ((0, 0), str)
@@ -45,57 +44,44 @@ mkIdent str = PosIdent ((0, 0), str)
 mkInteger :: Read a => PosInteger -> a
 mkInteger (PosInteger (_, n)) = read n
 
-type Ident = PosIdent
-
 getSuper :: IClafer -> String
 getSuper = getSuperId._supers._super
 
 getSuperNoArr :: IClafer -> String
 
 getSuperNoArr clafer
-  | _isOverlapping $ _super clafer = "clafer"
+  | _isOverlapping $ _super clafer = baseClafer
   | otherwise                    = getSuper clafer
 
 getSuperId :: [PExp] -> String
-getSuperId = _sident . Language.Clafer.Intermediate.Intclafer._exp . head
+getSuperId = _sident . _exp . head
 
 isEqClaferId :: String -> IClafer -> Bool
 isEqClaferId = flip $ (==)._uid
 
-idToPExp :: String -> Span -> String -> String -> Bool -> PExp
-idToPExp pid' pos modids id' isTop' = PExp (Just $ TClafer [id']) pid' pos (IClaferId modids id' isTop')
+idToPExp :: MUID -> Span -> String -> UID -> MUID -> Bool  -> PExp
+idToPExp    muid    pos     modids    id'    muid'   isTop' = PExp muid (Just $ TClafer [muid']) pos (IClaferId modids id' muid' isTop')
 
-mkLClaferId :: String -> Bool -> IExp
+mkLClaferId :: UID -> MUID -> Bool -> IExp
 mkLClaferId = IClaferId ""
 
-mkPLClaferId :: String -> Bool -> PExp
-mkPLClaferId id' isTop' = pExpDefPidPos $ mkLClaferId id' isTop'
+mkPLClaferId :: UID -> MUID -> Bool  -> PExp
+mkPLClaferId    id'    muid'   isTop' = pExpDefPidPos pseudoMUID $ mkLClaferId id' muid' isTop'
 
-pExpDefPidPos :: IExp -> PExp
-pExpDefPidPos = pExpDefPid noSpan
+pExpDefPidPos :: MUID -> IExp -> PExp
+pExpDefPidPos muid' = pExpDefPid muid' noSpan
 
-pExpDefPid :: Span -> IExp -> PExp
-pExpDefPid = pExpDef ""
-
-pExpDef :: String -> Span -> IExp -> PExp
-pExpDef = PExp Nothing
+pExpDefPid :: MUID -> Span -> IExp -> PExp
+pExpDefPid muid' pos' iExp = PExp muid' Nothing pos' iExp
 
 isParent :: PExp -> Bool
-isParent (PExp _ _ _ (IClaferId _ id' _)) = id' == parent
+isParent (PExp _ _ _ (IClaferId _ id' _ _)) = id' == parentIdent
 isParent _ = False
 
 isClaferName :: PExp -> Bool
-isClaferName (PExp _ _ _ (IClaferId _ id' _)) =
-  id' `notElem` ([this, parent, children, ref] ++ primitiveTypes)
+isClaferName (PExp _ _ _ (IClaferId _ id' _ _)) =
+  id' `notElem` (specialNames ++ primitiveTypes)
 isClaferName _ = False
-
-isClaferName' :: PExp -> Bool
-isClaferName' (PExp _ _ _ (IClaferId _ _ _)) = True
-isClaferName' _ = False
-
-getClaferName :: PExp -> String
-getClaferName (PExp _ _ _ (IClaferId _ id' _)) = id'
-getClaferName _ = ""
 
 -- -----------------------------------------------------------------------------
 -- conversions
@@ -124,7 +110,7 @@ findHierarchy :: (IClafer -> String)
                             -> IClafer
                             -> [IClafer]
 findHierarchy sFun clafers clafer
-  | sFun clafer == "clafer"      = [clafer]
+  | sFun clafer == baseClafer    = [clafer]
   | otherwise                    = if clafer `elem` superClafers
                                    then error $ "Inheritance hierarchy contains a cycle: line " ++ (show $ _cinPos clafer)
                                    else clafer : superClafers
@@ -164,10 +150,6 @@ snd3 :: forall t t1 t2. (t, t1, t2) -> t1
 snd3 (_, b, _) = b
 trd3 :: forall t t1 t2. (t, t1, t2) -> t2
 trd3 (_, _, c) = c
-
-
-toTriple :: forall t t1 t2. t -> (t1, t2) -> (t, t1, t2)
-toTriple a (b,c) = (a, b, c)
 
 toMTriple :: forall t t1 t2. t -> (t1, t2) -> Maybe (t, t1, t2)
 toMTriple a (b,c) = Just (a, b, c)
@@ -290,11 +272,11 @@ binOps = logBinOps ++ relBinOps ++ arithBinOps ++ setBinOps
 
 -- ternary operators
 iIfThenElse :: String
-iIfThenElse   = "=>else"
+iIfThenElse   = "ifthenelse"
 
-mkIFunExp :: String -> [IExp] -> IExp
-mkIFunExp _ (x:[]) = x
-mkIFunExp op' xs = foldl1 (\x y -> IFunExp op' $ map (PExp (Just $ TClafer []) "" noSpan) [x,y]) xs
+mkIFunExp :: MUID -> String -> [IExp] -> IExp
+mkIFunExp    _       _         (x:[]) = x
+mkIFunExp    muid    op'       xs = foldl1' (\x y -> IFunExp op' $ map (PExp muid (Just $ TClafer []) noSpan) [x,y]) xs
 
 toLowerS :: String -> String
 toLowerS "" = ""
@@ -303,53 +285,120 @@ toLowerS (s:ss) = toLower s : ss
 -- -----------------------------------------------------------------------------
 -- Constants
 
-this :: String
-this = "this"
+rootIdent :: String
+rootIdent = "root"
 
-parent :: String
-parent = "parent"
+rootMUID :: MUID
+rootMUID = -1
 
-children :: String
-children = "children"
+thisIdent :: String
+thisIdent = "this"
 
-ref :: String
-ref = "ref"
+thisMUID :: MUID
+thisMUID = -7
+
+parentIdent :: String
+parentIdent = "parent"
+
+parentMUID :: MUID
+parentMUID = -8
+
+refIdent :: String
+refIdent = "ref"
+
+refMUID :: MUID
+refMUID = -9
+
+childrenIdent :: String
+childrenIdent = "children"
+
+childrenMUID :: MUID
+childrenMUID = -10
 
 specialNames :: [String]
-specialNames = [this, parent, children, ref]
+specialNames = [thisIdent, parentIdent, refIdent, rootIdent, childrenIdent]
 
-strType :: String
-strType = "string"
+isSpecial :: String -> Bool
+isSpecial = flip elem specialNames
 
-intType :: String
-intType = "int"
+getSpecialMUID :: String -> MUID
+getSpecialMUID    i
+  | i == rootIdent = rootMUID
+  | i == thisIdent = thisMUID
+  | i == parentIdent = parentMUID
+  | i == refIdent = refMUID
+  | i == childrenIdent = childrenMUID
+  | otherwise = error "getSpecialMUID: requested MUID for a non-special identifier"
+
+baseClafer :: String
+baseClafer = "clafer"
+
+baseClaferMUID :: MUID
+baseClaferMUID = (-2)
 
 integerType :: String
 integerType = "integer"
 
+integerMUID :: MUID
+integerMUID = (-3)
+
+stringType :: String
+stringType = "string"
+
+stringMUID :: MUID
+stringMUID = (-4)
+
+intType :: String
+intType = "int"  -- synonym only
+
 realType :: String
 realType = "real"
 
-baseClafer :: String
-baseClafer = "clafer"
+realMUID :: MUID
+realMUID = (-5)
+
+booleanType :: String
+booleanType = "boolean"
+
+booleanMUID :: MUID
+booleanMUID = (-6)
+
+unresolvedMUID :: MUID
+unresolvedMUID = (-99)  -- MUID used in desugared IClaferIds to indicate that they are unresolved yet
+
+pseudoMUID :: MUID  -- pseudo MUID used for derived elements when cannot generate a real MUID
+pseudoMUID = (-100)
 
 modSep :: String
 modSep = "\\"
 
 primitiveTypes :: [String]
-primitiveTypes = [strType, intType, integerType, realType]
+primitiveTypes = [stringType, intType, integerType, realType]
 
 isPrimitive :: String -> Bool
 isPrimitive = flip elem primitiveTypes
 
-data GEnv = GEnv {
-  identCountMap :: Map.Map String Int,
-  expCount :: Int,
-  stable :: Map.Map UID [[UID]], -- super clafer names of a given clafer
-  sClafers ::[IClafer] -- all clafers (no going through references)
-  } deriving (Eq, Show)
+getPrimitiveMUID :: String -> MUID
+getPrimitiveMUID    i
+  | i == stringType = stringMUID
+  | i == intType = integerMUID
+  | i == integerType = integerMUID
+  | i == realType = realMUID
+  | otherwise = error "getPrimitiveMUID: requested MUID for a non-primitive type identifier"
 
-voidf :: Monad m => m t -> m ()
-voidf f = do
-  _ <- f
-  return ()
+-- | reserved keywords which cannot be used as clafer identifiers
+keywordIdents :: [String]
+keywordIdents = 
+  specialNames ++ 
+  primitiveTypes ++ 
+  [ iGMax, iGMin, iSumSet ] ++                      -- unary operators
+  [ iXor, iIn ] ++                                  -- binary operators
+  [ "if", "then", "else" ] ++                       -- ternary operators
+  [ "no", "not", "some", "one", "all", "disj" ] ++  -- quantifiers
+  [ "opt", "mux", "or", "lone" ] ++                 -- group cardinalities
+  [ "abstract", "enum" ]                            -- keywords
+
+data GEnv = GEnv 
+  { stable :: Map.Map UID [[UID]]  -- super clafer names of a given clafer
+  , sClafers ::[IClafer]           -- all clafers (no going through references)
+  } deriving (Eq, Show)

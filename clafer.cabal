@@ -1,7 +1,7 @@
 Name:               clafer
 Version:            0.3.7
 Synopsis:           clafer compiles Clafer models to other formats, such as Alloy, XML, HTML, Dot.
-Description:        Clafer is a general purpose, lightweight, structural modeling language developed at GSD Lab, University of Waterloo. Lightweight modeling aims at improving the understanding of the problem domain in the early stages of software development and determining the requirements with fewer defects. Clafer's goal is to make modeling more accessible to a wider range of users and domains. The tool provides a reference language implementation. It translates models to other formats (e.g. Alloy, XML) to allow for reasoning with existing tools.
+Description:        Clafer is a general purpose, lightweight, structural modeling language developed at GSD Lab, University of Waterloo and MODELS group, IT University of Copenhagen. Lightweight modeling aims at improving the understanding of the problem domain in the early stages of software development and determining the requirements with fewer defects. Clafer's goal is to make modeling more accessible to a wider range of users and domains. The tool provides a reference language implementation. It translates models to other formats (e.g. Alloy, XML) to allow for reasoning with existing tools.
 Homepage:           http://clafer.org
 License:            MIT
 License-file:       LICENSE
@@ -76,7 +76,8 @@ library
                     glpk-hs >= 0.3.4,
                     MaybeT >= 0.1.2,
                     split >= 0.2.2, 
-                    text >= 0.11.3.1
+                    text >= 0.11.3.1,
+                    vector >= 0.10.9.1
 
     if os(windows)
         build-depends: HaXml == 1.24
@@ -106,7 +107,6 @@ library
                      Language.Clafer.Generator.Html,
                      Language.Clafer.Generator.Python,
                      Language.Clafer.Generator.Schema,
-                     Language.Clafer.Generator.Stats,
                      Language.Clafer.Generator.Xml,
                      Language.Clafer.Intermediate.Analysis,                     
                      Language.Clafer.Intermediate.Desugarer,
@@ -117,9 +117,8 @@ library
                      Language.Clafer.Intermediate.ResolverType,
                      Language.Clafer.Intermediate.ScopeAnalysis,
                      Language.Clafer.Intermediate.SimpleScopeAnalyzer,
-                     Language.Clafer.Intermediate.GLPKScopeAnalyzer,
+                     -- Language.Clafer.Intermediate.GLPKScopeAnalyzer,  -- disable temporarily
                      Language.Clafer.Intermediate.StringAnalyzer,
-                     Language.Clafer.Intermediate.Tracing,
                      Language.Clafer.Intermediate.Transformer,
                      Language.Clafer.Optimizer.Optimizer,
                      Language.Clafer.SplitJoin

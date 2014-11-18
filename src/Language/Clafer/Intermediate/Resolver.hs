@@ -23,7 +23,6 @@
 module Language.Clafer.Intermediate.Resolver where
 
 import Control.Monad
-import Control.Monad.State
 import qualified Data.Map as Map
 
 import Language.Clafer.Common
@@ -35,53 +34,13 @@ import Language.Clafer.Intermediate.ResolverInheritance
 
 -- | Run the various resolvers
 resolveModule :: ClaferArgs -> IModule -> Resolve (IModule, GEnv)
-resolveModule args' declarations =
+resolveModule    args'         iModule  =
   do
-    r <- resolveNModule $ nameModule (skip_resolver args') declarations
+    r <- resolveNModule (iModule, GEnv Map.empty [])
     resolveNamesModule args' =<< (rom' $ rem' r)
   where
   rem' = if flatten_inheritance args' then resolveEModule else id
   rom' = if skip_resolver args' then return . id else resolveOModule
-
-
--- | Name resolver
-nameModule :: Bool -> IModule -> (IModule, GEnv)
-nameModule skipResolver imodule = (imodule{_mDecls = decls'}, genv')
-  where
-  (decls', genv') = runState (mapM (nameElement skipResolver) $ _mDecls imodule) $ GEnv Map.empty 0 Map.empty []
-
-nameElement :: MonadState GEnv m => Bool -> IElement -> m IElement
-nameElement skipResolver x = case x of
-  IEClafer claf -> IEClafer `liftM` (nameClafer skipResolver claf)
-  IEConstraint isHard' pexp -> IEConstraint isHard' `liftM` (namePExp pexp)
-  IEGoal isMaximize' pexp -> IEGoal isMaximize' `liftM` (namePExp pexp)
-
-
-nameClafer :: MonadState GEnv m => Bool -> IClafer -> m IClafer
-nameClafer skipResolver claf = do
-  claf' <- if skipResolver then return claf{_uid = _ident claf} else (renameClafer (not skipResolver)) claf
-  elements' <- mapM (nameElement skipResolver) $ _elements claf
-  return $ claf' {_elements = elements'}
-
-
-namePExp :: MonadState GEnv m => PExp -> m PExp
-namePExp pexp@(PExp _ _ _ exp') = do
-  n <- gets expCount
-  modify (\e -> e {expCount = 1 + n})
-  exp'' <- nameIExp exp'
-  return $ pexp {_pid = concat [ "e", show n, "_"], Language.Clafer.Intermediate.Intclafer._exp = exp''}
-
-nameIExp :: MonadState GEnv m => IExp -> m IExp
-nameIExp x = case x of
-  IDeclPExp quant' decls' pexp -> do
-    decls'' <- mapM nameIDecl decls'
-    pexp'  <- namePExp pexp
-    return $ IDeclPExp quant' decls'' pexp'
-  IFunExp op' pexps -> IFunExp op' `liftM` (mapM namePExp pexps)
-  _ -> return x
-
-nameIDecl :: MonadState GEnv m => IDecl -> m IDecl
-nameIDecl (IDecl isDisj' dels body') = IDecl isDisj' dels `liftM` (namePExp body')
 
 -- -----------------------------------------------------------------------------
 resolveNamesModule :: ClaferArgs -> (IModule, GEnv) -> Resolve (IModule, GEnv)

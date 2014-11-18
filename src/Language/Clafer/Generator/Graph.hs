@@ -20,26 +20,26 @@
  SOFTWARE.
 -}
 -- | Generates simple graph and CVL graph representation for a Clafer model in GraphViz DOT.
-module Language.Clafer.Generator.Graph (genSimpleGraph, genCVLGraph, traceAstModule, traceIrModule) where
+module Language.Clafer.Generator.Graph (genSimpleGraph, genCVLGraph) where
 
 import Language.Clafer.Common(fst3,snd3,trd3)
 import Language.Clafer.Front.Absclafer
-import Language.Clafer.Intermediate.Tracing
 import Language.Clafer.Intermediate.Intclafer
 import Language.Clafer.Generator.Html(genTooltip)
+import Data.Map (Map)
 import qualified Data.Map as Map
 import Data.Maybe
 import Prelude hiding (exp)
 
 -- | Generate a graph in the simplified notation
-genSimpleGraph :: Module -> IModule -> String -> Bool -> String
-genSimpleGraph m ir name showRefs = cleanOutput $ "digraph \"" ++ name ++ "\"\n{\n\nrankdir=BT;\nranksep=0.3;\nnodesep=0.1;\ngraph [fontname=Sans fontsize=11];\nnode [shape=box color=lightgray fontname=Sans fontsize=11 margin=\"0.02,0.02\" height=0.2 ];\nedge [fontname=Sans fontsize=11];\n" ++ b ++ "}"
-                           where b = graphSimpleModule m (traceIrModule ir) showRefs
+genSimpleGraph :: Module -> Map Span [Ir] -> String -> Bool -> String
+genSimpleGraph m irModuleTrace' name showRefs = cleanOutput $ "digraph \"" ++ name ++ "\"\n{\n\nrankdir=BT;\nranksep=0.3;\nnodesep=0.1;\ngraph [fontname=Sans fontsize=11];\nnode [shape=box color=lightgray fontname=Sans fontsize=11 margin=\"0.02,0.02\" height=0.2 ];\nedge [fontname=Sans fontsize=11];\n" ++ b ++ "}"
+                           where b = graphSimpleModule m irModuleTrace' showRefs
 
 -- | Generate a graph in CVL variability abstraction notation
-genCVLGraph :: Module -> IModule -> String -> String                          
-genCVLGraph m ir name = cleanOutput $ "digraph \"" ++ name ++ "\"\n{\nrankdir=BT;\nranksep=0.1;\nnodesep=0.1;\nnode [shape=box margin=\"0.025,0.025\"];\nedge [arrowhead=none];\n" ++ b ++ "}"
-                       where b = graphCVLModule m $ traceIrModule ir
+genCVLGraph :: Module -> Map Span [Ir] ->  String -> String                          
+genCVLGraph m irModuleTrace' name = cleanOutput $ "digraph \"" ++ name ++ "\"\n{\nrankdir=BT;\nranksep=0.1;\nnodesep=0.1;\nnode [shape=box margin=\"0.025,0.025\"];\nedge [arrowhead=none];\n" ++ b ++ "}"
+                       where b = graphCVLModule m irModuleTrace'
 
 -- Simplified Notation Printer --
 --toplevel: (Top_level (Boolean), Maybe Topmost parent, Maybe immediate parent)         
@@ -289,7 +289,7 @@ getUid (PosIdent (pos, id')) irMap = if Map.lookup (getSpan (PosIdent (pos, id')
                           findUid id' $ getIdentPExp pexp
                           where {getIdentPExp (PExp _ _ _ exp') = getIdentIExp exp';
                                  getIdentIExp (IFunExp _ exps') = concatMap getIdentPExp exps';
-                                 getIdentIExp (IClaferId _ id'' _) = [id''];
+                                 getIdentIExp (IClaferId _ id'' _ _) = [id''];
                                  getIdentIExp (IDeclPExp _ _ pexp) = getIdentPExp pexp;
                                  getIdentIExp _ = [];
                                  findUid name (x:xs) = if name == dropUid x then x else findUid name xs;
@@ -298,7 +298,7 @@ getUid (PosIdent (pos, id')) irMap = if Map.lookup (getSpan (PosIdent (pos, id')
 getDivId :: Span -> Map.Map Span [Ir] -> String                  
 getDivId s irMap = if Map.lookup s irMap == Nothing
                       then "Uid not Found"
-                      else let IRClafer iClaf = head $ fromJust $ Map.lookup s irMap in
+                      else let IRIClafer iClaf = head $ fromJust $ Map.lookup s irMap in
                         _uid iClaf
 
 {-getSuperId :: Span -> Map.Map Span [Ir] -> String
@@ -310,7 +310,7 @@ getSuperId s irMap = if Map.lookup s irMap == Nothing
 getUseId :: Span -> Map.Map Span [Ir] -> String
 getUseId s irMap = if Map.lookup s irMap == Nothing
                       then "Uid not Found"
-                      else let IRClafer iClaf = head $ fromJust $ Map.lookup s irMap in
+                      else let IRIClafer iClaf = head $ fromJust $ Map.lookup s irMap in
                         _sident $ _exp $ head $ _supers $ _super iClaf
 
 getExpId :: Span -> Map.Map Span [Ir] -> String

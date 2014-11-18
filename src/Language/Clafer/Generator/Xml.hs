@@ -71,12 +71,12 @@ genXmlModule imodule = concat
 
 genXmlClafer :: IClafer -> Result
 genXmlClafer x = case x of
-  IClafer pos abstract gcrd id' uid' super' crd glcard es  ->
+  claf @ (IClafer _ pos abstract gcrd id' super' crd glcard es)  ->
     concat [ tag "Position" $ genXmlPosition pos
            , genXmlAbstract abstract
            , optTag gcrd genXmlGCard
            , genXmlId id'
-           , genXmlUid uid'
+           , genXmlUid $ _uid claf
            , genXmlSuper super'
            , optTag crd genXmlCard
            , genXmlGlCard glcard
@@ -116,10 +116,10 @@ genXmlGlCard interval' = tag "GlobalCard" $ genXmlInterval interval'
 genXmlElement :: IElement -> String
 genXmlElement x = case x of
   IEClafer clafer  -> tagType "Declaration" "IClafer" $ genXmlClafer clafer
-  IEConstraint isHard' pexp  -> tagType "Declaration" "IConstraint" $ concat
+  IEConstraint (IConstraint _ isHard' pexp)  -> tagType "Declaration" "IConstraint" $ concat
                          [ genXmlBoolean "IsHard" isHard'
                          , genXmlPExp "ParentExp" pexp]
-  IEGoal isMaximize' pexp -> tagType "Declaration" "IGoal" $ concat 
+  IEGoal (IGoal _ isMaximize' pexp) -> tagType "Declaration" "IGoal" $ concat 
                          [ genXmlBoolean "IsMaximize" isMaximize'
                          , genXmlPExp "ParentExp" pexp]
                          
@@ -128,12 +128,14 @@ genXmlAnyOp :: (a -> String) -> (a -> String) -> [(String, a)] -> String
 genXmlAnyOp ft f xs = concatMap
   (\(tname, texp) -> tagType tname (ft texp) $ f texp) xs
 
-genXmlPExp :: String -> PExp -> String
-genXmlPExp tagName (PExp iType' pid' pos' iexp) = tag tagName $ concat
+genXmlPExp :: String -> PExp                          -> String
+genXmlPExp    tagName  (pexp'@(PExp _ iType' pos' iexp')) = tag tagName $ concat
   [ optTag iType' genXmlIType
   , tag "ParentId" pid'
   , tag "Position" $ genXmlPosition pos'
-  , tagType "Exp" (genXmlIExpType iexp) $ genXmlIExp iexp]
+  , tagType "Exp" (genXmlIExpType iexp') $ genXmlIExp iexp']
+  where 
+    pid' = _pid pexp'
 
 genXmlPosition :: Span -> String
 genXmlPosition (Span (Pos s1 s2) (Pos e1 e2)) = concat
@@ -147,7 +149,7 @@ genXmlIExpType x = case x of
   IInt _ -> "IIntExp"
   IDouble _ -> "IDoubleExp"
   IStr _ -> "IStringExp"
-  IClaferId _ _ _ -> "IClaferId"
+  IClaferId _ _ _ _ -> "IClaferId"
 
 genXmlIExp :: IExp -> String
 genXmlIExp x = case x of
@@ -168,15 +170,15 @@ genXmlIExp x = case x of
   IInt n -> genXmlInteger n
   IDouble n -> tag "DoubleLiteral" $ show n
   IStr str -> genXmlString str  
-  IClaferId modName' sident' isTop' -> concat
+  IClaferId modName' sident' _ isTop' -> concat
     [ tag "ModuleName" modName'
     , tag "Id" sident'
     , genXmlBoolean "IsTop" isTop']
 
 genXmlDecl :: IDecl -> String
-genXmlDecl (IDecl disj locids pexp) = tag "Declaration" $ concat
+genXmlDecl (IDecl _ disj locids pexp) = tag "Declaration" $ concat
   [ genXmlBoolean "IsDisjunct" disj
-  , concatMap (tag "LocalDeclaration") locids
+  , concatMap (tag "LocalDeclaration") $ map fst locids
   , genXmlPExp "Body" pexp]
 
 genXmlQuantType :: IQuant -> String

@@ -25,33 +25,35 @@
 This is in a separate module from the module "Language.Clafer" so that other modules that require
 ClaferEnv can just import this module without all the parsing/compiline/generating functionality.
  -}
-module Language.ClaferT (
-                         ClaferEnv(..), 
-                         makeEnv, 
-                         getAst, 
-                         getIr, 
-                         ClaferM, 
-                         ClaferT, 
-                         CErr(..), 
-                         CErrs(..), 
-                         ClaferErr, 
-                         ClaferErrs, 
-                         ClaferSErr, 
-                         ClaferSErrs, 
-                         ErrPos(..), 
-                         PartialErrPos(..), 
-                         throwErrs, 
-                         throwErr, 
-                         catchErrs, 
-                         getEnv, 
-                         getsEnv, 
-                         modifyEnv, 
-                         putEnv, 
-                         runClafer, 
-                         runClaferT, 
-                         Throwable(..), 
-                         Span(..), 
-                         Pos(..)
+module Language.ClaferT 
+  ( ClaferEnv(..)
+  , makeEnv
+  , getAst
+  , getIr
+  , ClaferM
+  , ClaferT
+  , CErr(..)
+  , CErrs(..)
+  , ClaferErr
+  , ClaferErrs
+  , ClaferSErr
+  , ClaferSErrs
+  , ErrPos(..)
+  , PartialErrPos(..)
+  , throwErrs
+  , throwErr
+  , catchErrs
+  , getEnv
+  , getsEnv
+  , modifyEnv
+  , putEnv
+  , runClafer
+  , runClaferT
+  , Throwable(..)
+  , Span(..)
+  , Pos(..)
+  , irModuleTrace
+  , getIRModuleTrace
 ) where
 
 import Control.Monad.Error
@@ -63,7 +65,6 @@ import qualified Data.Map as Map
 
 import Language.Clafer.Common
 import Language.Clafer.Front.Absclafer
-import Language.Clafer.Intermediate.Tracing
 import Language.Clafer.Intermediate.Intclafer
 import Language.Clafer.ClaferArgs
 
@@ -95,15 +96,38 @@ import Language.Clafer.ClaferArgs
  -
  -}
 
-data ClaferEnv = ClaferEnv {
-                            args :: ClaferArgs,
-                            modelFrags :: [String], -- original text of the model fragments
-                            cAst :: Maybe Module,
-                            cIr :: Maybe (IModule, GEnv, Bool),
-                            frags :: [Pos],    -- line numbers of fragment markers
-                            irModuleTrace :: Map Span [Ir],
-                            astModuleTrace :: Map Span [Ast]
-                            } deriving Show
+data ClaferEnv = ClaferEnv 
+  { args :: ClaferArgs
+  , modelFrags :: [String]            -- ^ original text of the model fragments
+  , cAst :: Maybe Module
+  , cIr :: Maybe (IModule, GEnv, Bool)
+  , frags :: [Pos]                    -- ^ line numbers of fragment markers
+  , astModuleTrace :: Map Span [Ast]
+  , irModuleMap :: IRModuleMap
+  , irParentMap :: IRParentMap
+  , muidSpanMap :: MUIDSpanMap
+  , nAbstractClafers :: Int            -- ^ number of abstract clafers
+  , nReferenceClafers :: Int           -- ^ number of reference clafers
+  , nConcreteClafers :: Int            -- ^ number of concrete clafers 
+  , nConstraints :: Int                -- ^ number of constraints
+  , nGoals :: Int                      -- ^ number of goals (objectives)
+  , globalCard :: Interval            -- ^ global cardinality
+  } deriving Show
+
+irModuleTrace :: ClaferEnv -> Map.Map Span [Ir] 
+irModuleTrace    env        = 
+  let 
+    irModuleMap' = irModuleMap env
+    muidSpanMap' = muidSpanMap env
+    largestMUID = getLargestMUID irModuleMap'
+    addToMap :: Map.Map Span [Ir] -> Int -> Map.Map Span [Ir]
+    addToMap    spanIrMap            i    = Map.insert (getSpanForMUID muidSpanMap' i) [(getIRElement irModuleMap' i)] spanIrMap
+  in 
+    foldl' addToMap Map.empty [0..largestMUID] 
+
+getIRModuleTrace :: (Monad m) => ClaferT m (Map.Map Span [Ir])
+getIRModuleTrace = irModuleTrace `liftM` getEnv
+
 
 getAst :: (Monad m) => ClaferT m Module
 getAst = do
@@ -120,19 +144,29 @@ getIr = do
     _ -> throwErr (ClaferErr "No IR. Did you forget to compile?" :: CErr Span) -- Indicates a bug in the Clafer translator.
 
 makeEnv :: ClaferArgs -> ClaferEnv                                                                            
-makeEnv args' = ClaferEnv { args = args'',
-                           modelFrags = [],
-                           cAst = Nothing,
-                           cIr = Nothing,
-                           frags = [],
-                           irModuleTrace = Map.empty,
-                           astModuleTrace = Map.empty}
-               where 
-                  args'' = if (CVLGraph `elem` (mode args') ||
-                               Html `elem` (mode args') ||
-                               Graph `elem` (mode args'))
-                            then args'{keep_unused=True}
-                            else args'
+makeEnv args' = ClaferEnv 
+  { args = args''
+  , modelFrags = []
+  , cAst = Nothing
+  , cIr = Nothing
+  , frags = []
+  , astModuleTrace = Map.empty
+  , irModuleMap = newEmptyIRModuleMap
+  , irParentMap = newEmptyIRParentMap
+  , muidSpanMap = newEmptyMUIDSpanMap
+  , nAbstractClafers = 0
+  , nReferenceClafers = 0
+  , nConcreteClafers = 0
+  , nConstraints = 0
+  , nGoals = 0
+  , globalCard = (1, 1)
+  }
+  where 
+    args'' = if (CVLGraph `elem` (mode args') ||
+                 Html `elem` (mode args') ||
+                 Graph `elem` (mode args'))
+              then args'{keep_unused=True}
+              else args'
 
 -- | Monad for using Clafer.
 type ClaferM = ClaferT Identity

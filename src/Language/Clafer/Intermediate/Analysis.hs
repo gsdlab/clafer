@@ -27,6 +27,7 @@
  -}
 module Language.Clafer.Intermediate.Analysis where
 
+import Language.Clafer.Common
 import Language.Clafer.Front.Absclafer hiding (Path)
 import qualified Language.Clafer.Intermediate.Intclafer as I
 import Language.Clafer.Intermediate.Desugarer
@@ -93,15 +94,15 @@ isConcrete :: SClafer -> Bool
 isConcrete = not . isAbstract
 
 isBase :: SClafer -> Bool
-isBase = (`elem` ["clafer", "string", "real", "int", "integer", "boolean"]) . uid
+isBase sClafer = uid sClafer < 0
 
 isDerived :: SClafer -> Bool
 isDerived = not . isBase
  
 
-data SSuper = Ref String | Colon String deriving Show
+data SSuper = Ref I.MUID | Colon I.MUID deriving Show
 -- | Easier to work with. IClafers have links from parents to children. SClafers have links from children to parent.
-data SClafer = SClafer {uid::String, origUid::String, isAbstract::Bool, low::Integer, high::Integer, groupLow::Integer, groupHigh::Integer, parent::Maybe String, super::Maybe SSuper, constraints::[I.PExp]} deriving Show
+data SClafer = SClafer {uid::I.MUID, origUid::I.MUID, isAbstract::Bool, low::Integer, high::Integer, groupLow::Integer, groupHigh::Integer, parent::Maybe I.MUID, super::Maybe SSuper, constraints::[I.PExp]} deriving Show
   
 data Info = Info{sclafers :: [SClafer]} deriving Show 
 
@@ -111,15 +112,15 @@ runAnalysis r info = runIdentity $ runAnalysisT r info
 runAnalysisT :: AnalysisT m a -> Info -> m a
 runAnalysisT (AnalysisT r) info = runReaderT r info
 
-claferWithUid :: MonadAnalysis m => String -> m SClafer
-claferWithUid u =
+claferWithUid :: MonadAnalysis m => String -> I.MUID -> m SClafer
+claferWithUid context u =
   do
     c <- clafers
     case find ((==) u . uid) c of
       Just c' -> return c'
-      Nothing -> error $ "claferWithUid: Unknown uid " ++ u
+      Nothing -> error $ "claferWithUid (" ++ context ++ "): Unknown uid " ++ show u
       
-parentUid :: Monad m => SClafer -> m String
+parentUid :: Monad m => SClafer -> m I.MUID
 parentUid clafer =
   case parent clafer of
     Just p  -> return p
@@ -156,10 +157,10 @@ topNonRootAncestor :: (Uidable c, MonadAnalysis m) => c -> m c
 topNonRootAncestor clafer =
   do
     uid' <- toUid clafer
-    when (uid' == rootUid) $ error "Root does not have a non root ancestor."
+    when (uid' == rootMUID) $ error "Root does not have a non root ancestor."
     (head . tail . reverse) <$> ancestorsOf clafer
 
-refUid :: Monad m => SClafer -> m String
+refUid :: Monad m => SClafer -> m I.MUID
 refUid clafer =
   case super clafer of
     Just (Ref u)  -> return u
@@ -176,7 +177,7 @@ refsOf clafer =
          Just r' -> (r' :) <$> refsOf r'
          Nothing -> return []
 
-colonUid :: (Uidable c, MonadAnalysis m) => c -> m String
+colonUid :: (Uidable c, MonadAnalysis m) => c -> m I.MUID
 colonUid c =
   do
     clafer <- toClafer c
@@ -229,7 +230,7 @@ isIndirectChild c p =
     child <- toClafer c
     parent <- toClafer p
     s <- colonOf parent
-    when (uid s == "clafer") mzero
+    when (uid s == baseClaferMUID) mzero
     isChild child s
 
 isChild :: (Uidable c, MonadAnalysis m) => c -> c -> m Bool
@@ -239,17 +240,17 @@ isChild child parent =
 class Matchable c => Uidable c where
   toClafer :: MonadAnalysis m => c -> m SClafer
   fromClafer :: MonadAnalysis m => SClafer -> m c
-  toUid :: MonadAnalysis m => c -> m String
-  fromUid :: MonadAnalysis m => String -> m c
+  toUid :: MonadAnalysis m => c -> m I.MUID
+  fromUid :: MonadAnalysis m => I.MUID -> m c
   
 instance Uidable SClafer where
   toClafer = return
   fromClafer = return
   toUid = return . uid
-  fromUid = claferWithUid
+  fromUid = claferWithUid "fromUid"
   
-instance Uidable String where
-  toClafer = claferWithUid
+instance Uidable I.MUID where
+  toClafer = claferWithUid "toClafer"
   fromClafer = return . uid
   toUid = return
   fromUid = return
@@ -259,7 +260,7 @@ data Anything = Anything
 class Matchable u where
   matches :: u -> SClafer -> Bool
   
-instance Matchable String where
+instance Matchable I.MUID where
   matches s c = s == uid c
   
 instance Matchable Anything where
@@ -307,17 +308,13 @@ constraintsUnder under =
     return [(clafer, constraint) | clafer <- clafers', constraint <- constraints clafer]
 
 
-rootUid :: String
-rootUid = "_root"
-
-
 -- Converts IClafer to SClafer
 convertClafer :: I.IClafer -> [SClafer]
 convertClafer = 
   convertClafer' Nothing
   where
   convertElement' parent (I.IEClafer clafer) = Just $ Left $ convertClafer' parent clafer
-  convertElement' _ (I.IEConstraint _ pexp)   = Just $ Right $ pexp
+  convertElement' _ (I.IEConstraint (I.IConstraint _ _ pexp))   = Just $ Right $ pexp
   convertElement' _ _ = Nothing
   
   convertClafer' parent clafer =
@@ -325,9 +322,9 @@ convertClafer =
     where
     sclafer
       | maybe 1 groupLow parent == 0 && maybe 1 groupHigh parent /= -1 =
-          SClafer (I._uid clafer) (I._uid clafer) (I._isAbstract clafer) 1   high gLow gHigh (uid <$> parent) super constraints
+          SClafer (I._claferMUID clafer) (I._claferMUID clafer) (I._isAbstract clafer) 1   high gLow gHigh (uid <$> parent) super constraints
       | otherwise =
-          SClafer (I._uid clafer) (I._uid clafer) (I._isAbstract clafer) low high gLow gHigh (uid <$> parent) super constraints
+          SClafer (I._claferMUID clafer) (I._claferMUID clafer) (I._isAbstract clafer) low high gLow gHigh (uid <$> parent) super constraints
     (children, constraints) = partitionEithers $ mapMaybe (convertElement' $ Just $ sclafer) (I._elements clafer)
     
     Just (low, high) = I._card clafer
@@ -339,25 +336,25 @@ convertClafer =
         Just (I.IGCard _ i)    -> i
     super =
       case I._super clafer of
-        I.ISuper True [I.PExp{I._exp = I.IClaferId{I._sident = superUid}}]  -> Just $ Ref superUid
-        I.ISuper False [I.PExp{I._exp = I.IClaferId{I._sident = superUid}}] ->
-          if superUid `elem` ["string", "real", "int", "integer", "boolean"]
-            then Just $ Ref superUid
-            else Just $ Colon superUid
+        I.ISuper True [I.PExp{I._exp = I.IClaferId{I._sMUID}}]  -> Just $ Ref _sMUID
+        I.ISuper False [I.PExp{I._exp = I.IClaferId{I._sident, I._sMUID}}] ->
+          if isPrimitive _sident
+            then Just $ Ref _sMUID
+            else Just $ Colon _sMUID
         _ -> Nothing
 
 gatherInfo :: I.IModule -> Info
 gatherInfo imodule =
-  Info $ sClafer : sInteger : sInt : sReal : sString : sBoolean : convertClafer root
+  Info $ sClafer : sInteger : sReal : sString : sBoolean : convertClafer root
   where
-  sClafer = SClafer "clafer" "clafer" False 0 (-1) 0 (-1) Nothing Nothing []
-  sInteger = SClafer "integer" "integer" False 0 (-1) 0 (-1) Nothing Nothing []
-  sInt     = SClafer "int" "int" False 0 (-1) 0 (-1) Nothing Nothing []
-  sReal    = SClafer "real" "real" False 0 (-1) 0 (-1) Nothing Nothing []
-  sString  = SClafer "string" "string" False 0 (-1) 0 (-1) Nothing Nothing []
-  sBoolean = SClafer "boolean" "boolean" False 0 (-1) 0 (-1) Nothing Nothing []
+  sClafer = SClafer baseClaferMUID baseClaferMUID False 0 (-1) 0 (-1) Nothing Nothing []   -- "clafer"
+  sInteger = SClafer integerMUID integerMUID False 0 (-1) 0 (-1) Nothing Nothing []  -- "integer"
+  -- sInt     = SClafer integerMUID integerMUID False 0 (-1) 0 (-1) Nothing Nothing []  -- "int"
+  sString  = SClafer stringMUID stringMUID False 0 (-1) 0 (-1) Nothing Nothing []  -- "string"
+  sReal    = SClafer realMUID realMUID False 0 (-1) 0 (-1) Nothing Nothing []  -- "real"
+  sBoolean = SClafer booleanMUID booleanMUID False 0 (-1) 0 (-1) Nothing Nothing []  -- "boolean"
   
-  root = I.IClafer noSpan False Nothing rootUid rootUid (I.ISuper False [I.PExp Nothing "" noSpan $ I.IClaferId "clafer" "clafer" True]) (Just (1, 1)) (0, 0) $ I._mDecls imodule
+  root = I.IClafer rootMUID noSpan False Nothing rootIdent (I.ISuper False [I.PExp (-1) Nothing noSpan $ I.IClaferId "" baseClafer baseClaferMUID True]) (Just (1, 1)) (0, 0) $ I._mDecls imodule
 
 
 

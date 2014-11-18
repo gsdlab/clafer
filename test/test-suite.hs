@@ -44,19 +44,19 @@ main :: IO ()
 main = defaultMain $ testGroup "Tests" [tg_Main_Test_Suite, tg_Test_Suite_Positive, tg_Test_Suite_Negative, tg_Test_Suite_SimpleScopeAnalyser]
 
 {-
-a            // ::a -> c0_a
-    b        // ::a::b -> c0_b
-b            // ::b -> c1_b
-c            // ::c -> c0_c
-    d        // ::c::d -> c0_d
-         b   // ::c::d::b -> c2_b
-d            // ::d -> c1_d
-    b        // ::d::b -> c3_b
+a            // ::a -> c1_a
+    b        // ::a::b -> c2_b
+b            // ::b -> c5_b
+c            // ::c -> c7_c
+    d        // ::c::d -> c8_d
+         b   // ::c::d::b -> c9_b
+d            // ::d -> c13_d
+    b        // ::d::b -> c14_b
 
-"b" -> "c0_b", "c1_b", "c2_b", "c3_b"
-"d::b" -> "c2_b", "c3_b"
-"c::d" -> "c0_d"
-"d" -> "c0_d", "c1_d"
+"b" -> "c2_b", "c5_b", "c9_b", "c14_b"
+"d::b" -> "c9_b", "c14_b"
+"c::d" -> "c8_d"
+"d" -> "c8_d", "c13_d"
 "x" -> []
 
 a\n    b\nb\nc\n    d\n         b\nd\n    b
@@ -69,18 +69,18 @@ case_FQMapLookup = do
 	let
 		(Just (iModule, _, _)) = cIr $ claferEnv $ fromJust $ Map.lookup Alloy $ fromRight $ compileOneFragment defaultClaferArgs model
 		qNameMaps = deriveQNameMaps iModule
-	[ "c0_a" ] == getUIDs qNameMaps "::a"  @? "UID for `::a` different from `c0_a`"
-	[ "c0_b" ] == getUIDs qNameMaps "::a::b"  @? "UID for `::a::b` different from `c0_b`"
-	[ "c1_b" ] == getUIDs qNameMaps "::b"  @? "UID for `::b` different from `c1_b`"
-	[ "c0_c" ] == getUIDs qNameMaps "::c"  @? "UID for `::c` different from `c0_c`"
-	[ "c0_d" ] == getUIDs qNameMaps "::c::d"  @? "UID for `::c::d` different from `c0_d`"
-	[ "c0_d" ] == getUIDs qNameMaps "c::d"  @? "UID for `c::d` different from `c0_d`"
-	[ "c2_b" ] == getUIDs qNameMaps "::c::d::b"  @? "UID for `::c::d::b` different from `c2_b`"
-	[ "c1_d" ] == getUIDs qNameMaps "::d"  @? "UID for `::d` different from `c1_d`"
-	[ "c3_b" ] == getUIDs qNameMaps "::d::b"  @? "UID for `::d::b` different from `c3_d`"
-	null ([ "c0_b", "c1_b", "c2_b", "c3_b" ] \\ (getUIDs qNameMaps "b" )) @? "UIDs for `b` different from `c0_b`, `c1_b`, `c2_b`, `c3_b` "
-	null ([ "c2_b", "c3_b" ] \\ (getUIDs qNameMaps "d::b" )) @? "UIDs for `d::b` different from `c2_b`, `c3_b` "
-	null ([ "c0_d", "c1_d" ] \\ (getUIDs qNameMaps "d" )) @? "UIDs for `d` different from `c0_d`, `c1_d` "	
+	[ "c1_a" ] == getUIDs qNameMaps "::a"  @? "UID for `::a` different from `c1_a`"
+	[ "c2_b" ] == getUIDs qNameMaps "::a::b"  @? "UID for `::a::b` different from `c2_b`"
+	[ "c5_b" ] == getUIDs qNameMaps "::b"  @? "UID for `::b` different from `c5_b`"
+	[ "c7_c" ] == getUIDs qNameMaps "::c"  @? "UID for `::c` different from `c7_c`"
+	[ "c8_d" ] == getUIDs qNameMaps "::c::d"  @? "UID for `::c::d` different from `c8_d`"
+	[ "c8_d" ] == getUIDs qNameMaps "c::d"  @? "UID for `c::d` different from `c8_d`"
+	[ "c9_b" ] == getUIDs qNameMaps "::c::d::b"  @? "UID for `::c::d::b` different from `c9_b`"
+	[ "c13_d" ] == getUIDs qNameMaps "::d"  @? "UID for `::d` different from `c13_d`"
+	[ "c14_b" ] == getUIDs qNameMaps "::d::b"  @? "UID for `::d::b` different from `c14_b`"
+	null ([ "c2_b", "c5_b", "c9_b", "c14_b" ] \\ (getUIDs qNameMaps "b" )) @? "UIDs for `b` different from 'c2_b', 'c3_b', 'c6_b', 'c14_b' "
+	null ([ "c9_b", "c14_b" ] \\ (getUIDs qNameMaps "d::b" )) @? "UIDs for `d::b` different from `c6_b`, `c14_b` "
+	null ([ "c8_d", "c13_d" ] \\ (getUIDs qNameMaps "d" )) @? "UIDs for `d` different from `c8_d`, `c7_d` "	
 	null (getUIDs qNameMaps "x") @? "UID for `x` different from []"
 	null (getUIDs qNameMaps "::x") @? "UID for `::x` different from []"
 
@@ -91,4 +91,4 @@ case_AllClafersGenerics = do
 		allClafers :: [ IClafer ]
 		allClafers = universeOn biplate iModule
 		allClafersUids = map _uid allClafers
-	allClafersUids == [ "c0_a", "c0_b", "c1_b", "c0_c", "c0_d", "c2_b", "c1_d", "c3_b"] @? "All clafers\n" ++ show allClafersUids
+	allClafersUids == [ "c1_a", "c2_b", "c5_b", "c7_c", "c8_d", "c9_b", "c13_d", "c14_b"] @? "All clafers\n" ++ show allClafersUids

@@ -82,7 +82,6 @@ module Language.Clafer (addModuleFragment,
                         Module,
                         GEnv,
                         IModule,
-                        voidf,
                         ClaferEnv(..),
                         getIr,
                         getAst,
@@ -115,7 +114,6 @@ import Language.Clafer.Front.Parclafer
 import Language.Clafer.Front.Printclafer
 import Language.Clafer.Front.Absclafer 
 import Language.Clafer.Front.LayoutResolver
-import Language.Clafer.Intermediate.Tracing
 import Language.Clafer.Intermediate.Intclafer
 import Language.Clafer.Intermediate.Desugarer
 import Language.Clafer.Intermediate.Resolver
@@ -128,7 +126,6 @@ import Language.Clafer.Generator.Choco
 import Language.Clafer.Generator.Xml
 import Language.Clafer.Generator.Python
 import Language.Clafer.Generator.Schema
-import Language.Clafer.Generator.Stats
 import Language.Clafer.Generator.Html
 import Language.Clafer.Generator.Graph
 
@@ -219,7 +216,7 @@ parse =
         completeAst <- (parseFrag $ args env) completeModel
         liftParseErr completeAst
 
-    let env' = env{ cAst = Just ast, astModuleTrace = traceAstModule ast }
+    let env' = env{ cAst = Just ast }
     putEnv env'
   where
   parseFrag :: (Monad m) => ClaferArgs -> String -> ClaferT m (Err Module)
@@ -244,24 +241,17 @@ parse =
 compile :: Monad m => ClaferT m ()
 compile =
   do
-    env <- getEnv
     ast' <- getAst
-    let desugaredMod = desugar ast'
-    let clafersWithKeyWords = foldMapIR isKeyWord desugaredMod
-    when (""/=clafersWithKeyWords) $ throwErr (ClaferErr $ ("The model contains clafers with keywords as names in the following places:\n"++) $ clafersWithKeyWords :: CErr Span)
-    ir <- analyze (args env) desugaredMod
-    let (imodule, _, _) = ir
+    (desugaredMod, clafersWithKeyWords, multipleClafers) <- desugar ast'
+    
+    env <- getEnv   -- need to read env because desugarer has updated it
+    when (not $ null clafersWithKeyWords) $ 
+      throwErr (ClaferErr $ ("The model contains clafers with keywords as names in the following places:\n"++) $ (concat clafersWithKeyWords) :: CErr Span)
+    when ((afm $ args env) && (not $ null multipleClafers) ) $ 
+      throwErr (ClaferErr $ ("The model is not an attributed feature model.\nThe following places contain cardinality larger than 1:\n"++) $ (concat multipleClafers) :: CErr Span)    
 
-    let spanList = foldMapIR gt1 imodule
-    when ((afm $ args env) && spanList/="") $ throwErr (ClaferErr $ ("The model is not an attributed feature model.\nThe following places contain cardinality larger than 1:\n"++) $ spanList :: CErr Span)
-    putEnv $ env{ cIr = Just ir, irModuleTrace = traceIrModule imodule }
-    where
-      isKeyWord :: Ir -> String
-      isKeyWord (IRClafer IClafer{_cinPos = (Span (Pos l c) _) ,_ident=i}) = if (i `elem` keyWords) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
-      isKeyWord _ = ""
-      gt1 :: Ir -> String
-      gt1 (IRClafer (IClafer (Span (Pos l c) _) False _ _ _ _ (Just (_, m)) _ _)) = if (m > 1 || m < 0) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
-      gt1 _ = ""
+    ir <- analyze (args env) desugaredMod
+    putEnv $ env{ cIr = Just ir }
 
 -- | Splits the IR into their fragments, and generates the output for each fragment.
 -- | Might not generate the entire output (for example, Alloy scope and run commands) because
@@ -278,8 +268,8 @@ generateFragments =
     return $ map (generateFragment $ args env) fragElems
   where
   rnge (IEClafer IClafer{_cinPos = p}) = p
-  rnge IEConstraint{_cpexp = PExp{_inPos = p}} = p
-  rnge IEGoal{_cpexp = PExp{_inPos = p}} = p
+  rnge (IEConstraint (IConstraint {_cpexp = PExp{_inPos = p}})) = p
+  rnge (IEGoal (IGoal{_gpexp = PExp{_inPos = p}})) = p
   
   -- Groups IElements by their fragments.
   --   elems must be sorted by range.
@@ -345,10 +335,13 @@ generate =
     ast' <- getAst
     (iModule, genv, au) <- getIr
     let 
+      irParentMap' = irParentMap env
+      irModuleMap' = irModuleMap env
+      irModuleTrace' = irModuleTrace env
       hasNoReals = noReals iModule
       cargs = args env
       modes = mode cargs
-      stats = showStats au $ statsModule iModule
+      stats = showStats au env
       scopes = getScopeStrategy (scope_strategy cargs) iModule
 
     return $ Map.fromList ( 
@@ -453,7 +446,7 @@ generate =
           then [ (Graph,
                   CompilerResult { 
                      extension = "dot", 
-                     outputCode = genSimpleGraph ast' iModule (takeBaseName $ file cargs) (show_references cargs), 
+                     outputCode = genSimpleGraph ast' irModuleTrace' (takeBaseName $ file cargs) (show_references cargs), 
                      statistics = stats,
                      claferEnv  = env,
                      mappingToAlloy = [],
@@ -466,7 +459,7 @@ generate =
           then [ (CVLGraph,
                   CompilerResult { 
                        extension = "cvl.dot", 
-                       outputCode = genCVLGraph ast' iModule (takeBaseName $ file cargs), 
+                       outputCode = genCVLGraph ast' irModuleTrace' (takeBaseName $ file cargs), 
                        statistics = stats,
                        claferEnv  = env,
                        mappingToAlloy = [],
@@ -497,7 +490,7 @@ generate =
                   [ (Choco, 
                      CompilerResult { 
                          extension = "js", 
-                         outputCode = genCModule cargs (imod, genv) scopes, 
+                         outputCode = genCModule (imod, genv) scopes irParentMap' irModuleMap', 
                          statistics = stats,
                          claferEnv  = env,
                          mappingToAlloy = [],
@@ -527,9 +520,6 @@ data CompilerResult = CompilerResult {
                             reason :: String
                       } deriving Show
 
-desugar :: Module -> IModule  
-desugar iModule = desugarModule iModule
-
 liftError :: (Monad m, Language.ClaferT.Throwable t) => Either t a -> ClaferT m a
 liftError = either throwErr return
 
@@ -546,8 +536,8 @@ analyze args' iModule = do
 addStats :: String -> String -> String
 addStats code stats = "/*\n" ++ stats ++ "*/\n" ++ code
 
-showStats :: Bool -> Stats -> String
-showStats au (Stats na nr nc nconst ngoals sgl) =
+showStats :: Bool -> ClaferEnv -> String
+showStats au ClaferEnv { nAbstractClafers=na, nReferenceClafers=nr, nConcreteClafers=nc, nConstraints=nconst, nGoals=ngoals, globalCard=sgl} =
   unlines [ "All clafers: " ++ (show (na + nr + nc)) ++ " | Abstract: " ++ (show na) ++ " | Concrete: " ++ (show nc) ++ " | References: " ++ (show nr)
           , "Constraints: " ++ show nconst
           , "Goals: " ++ show ngoals  
@@ -561,7 +551,3 @@ showInterval (n, m) = show n ++ ".." ++ show m
 -- | The XML Schema of the IR
 claferIRXSD :: String
 claferIRXSD = Language.Clafer.Generator.Schema.xsd
-
--- | reserved keywords
-keyWords :: [String]
-keyWords = ["ref","parent","abstract", "else", "in", "no", "opt", "xor", "all", "enum", "lone", "not", "or", "disj", "extends", "mux", "one", "some"]

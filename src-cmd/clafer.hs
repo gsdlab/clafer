@@ -103,20 +103,22 @@ run _ args' input =
 save :: MonadIO m => ClaferArgs -> ClaferT m [ String ]
 save args'=
   do
-    resultsMap <- generate
+    resultsMap <- generate 
     let results = snd $ List.unzip $ Map.toList resultsMap
     -- print stats only once
     when (not $ no_stats args') $ liftIO $ printStats results
     -- save the outputs
     (iModule, _, _) <- getIr
     forM results $ saveResult iModule resultsMap
+
   where
-    -- saveResult :: MonadIO m => CompilerResult -> IModule -> (Map.Map ClaferMode CompilerResult) -> ClaferT m String
+    saveResult :: MonadIO m => IModule -> (Map.Map ClaferMode CompilerResult) -> CompilerResult -> ClaferT m String
     saveResult iModule' resultsMap' result@CompilerResult { extension } = do
       result' <- if (add_graph args') && (Html `elem` (mode args') && ("dot" `List.isSuffixOf` (extension))) 
             then do
                    ast' <- getAst
-                   (_, graph, _) <- liftIO $ readProcessWithExitCode "dot"  ["-Tsvg"] $ genSimpleGraph ast' iModule' (takeBaseName $ file args') (show_references args')
+                   irModuleTrace' <- getIRModuleTrace
+                   (_, graph, _) <- liftIO $ readProcessWithExitCode "dot"  ["-Tsvg"] $ genSimpleGraph ast' irModuleTrace' (takeBaseName $ file args') (show_references args')
                    return $ summary graph result
             else return result
       let f = dropExtension $ file args'
@@ -187,6 +189,11 @@ runValidate args' fo = do
     voidf $ system $ validateAlloy path "4.2" ++ fo
   when (Clafer `elem` modes && "des.cfr" `List.isSuffixOf` fo) $ do  
     voidf $ system $ "../dist/build/clafer/clafer -s -m=clafer " ++ fo
+
+voidf :: Monad m => m t -> m ()
+voidf f = do
+  _ <- f
+  return ()
 
 validateAlloy :: String -> String -> String
 validateAlloy path version = "java -cp " ++ path ++ "alloy" ++ version ++ ".jar edu.mit.csail.sdg.alloy4whole.ExampleUsingTheCompiler "

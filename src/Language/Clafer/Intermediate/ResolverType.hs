@@ -27,7 +27,7 @@ import Prelude hiding (exp)
 import Language.ClaferT
 import Language.Clafer.Common
 import Language.Clafer.Intermediate.Analysis
-import Language.Clafer.Intermediate.Intclafer hiding (uid)
+import Language.Clafer.Intermediate.Intclafer
 import qualified Language.Clafer.Intermediate.Intclafer as I
 
 import Control.Applicative
@@ -39,14 +39,14 @@ import Data.Either
 import Data.List
 import Data.Maybe
 
-type TypeDecls = [(String, IType)]
+type TypeDecls = [(MUID, IType)]
 data TypeInfo = TypeInfo {iTypeDecls::TypeDecls, iInfo::Info, iCurThis::SClafer, iCurPath::Maybe IType}
 
 newtype TypeAnalysis a = TypeAnalysis (ReaderT TypeInfo (Either ClaferSErr) a)
   deriving (MonadError ClaferSErr, Monad, Functor, MonadReader TypeInfo, Applicative)
   
-typeOfUid :: MonadTypeAnalysis m => String -> m IType
-typeOfUid uid = (fromMaybe (TClafer [uid]) . lookup uid) <$> typeDecls
+typeOfUid :: MonadTypeAnalysis m => MUID -> m IType
+typeOfUid muid = (fromMaybe (TClafer [muid]) . lookup muid) <$> typeDecls
 
 class MonadAnalysis m => MonadTypeAnalysis m where
   -- What "this" refers to
@@ -108,28 +108,28 @@ instance MonadAnalysis TypeAnalysis where
 runTypeAnalysis :: TypeAnalysis a -> IModule -> Either ClaferSErr a
 runTypeAnalysis (TypeAnalysis tc) imodule = runReaderT tc $ TypeInfo [] (gatherInfo imodule) undefined Nothing
 
-unionType :: IType -> [String]
-unionType TString  = ["string"]
-unionType TReal    = ["real"]
-unionType TInteger = ["integer"]
-unionType TBoolean = ["boolean"]
+unionType :: IType -> [MUID]
+unionType TString  = [stringMUID]
+unionType TReal    = [realMUID]
+unionType TInteger = [integerMUID]
+unionType TBoolean = [booleanMUID]
 unionType (TClafer u) = u
 
 (+++) :: IType -> IType -> IType
 t1 +++ t2 = fromJust $ fromUnionType $ unionType t1 ++ unionType t2
 
-fromUnionType :: [String] -> Maybe IType
+fromUnionType :: [MUID] -> Maybe IType
 fromUnionType u =
     case sort $ nub $ u of
-        ["string"]  -> return TString
-        ["real"]    -> return TReal
-        ["integer"] -> return TInteger
-        ["int"]     -> return TInteger
-        ["boolean"] -> return TBoolean
+        [(-4)]  -> return TString
+        [(-5)]    -> return TReal
+        [(-3)] -> return TInteger
+        --[int]     -> return TInteger
+        [(-6)] -> return TBoolean
         []          -> Nothing
         u'          -> return $ TClafer u'
 
-closure :: MonadAnalysis m => [String] -> m [String]
+closure :: MonadAnalysis m => [MUID] -> m [MUID]
 closure ut = concat <$> mapM hierarchy ut
 
 intersection :: MonadAnalysis m => IType -> IType -> m (Maybe IType)
@@ -160,8 +160,8 @@ coerce x y = error $ "Not numeric: " ++ show x ++ ", " ++ show y
 str :: IType -> String
 str t =
   case unionType t of
-    [t'] -> t'
-    ts   -> "[" ++ intercalate "," ts ++ "]"
+    [t'] -> show t'
+    ts   -> "[" ++ intercalate "," (map show ts) ++ "]"
 
 getIfThenElseType :: MonadAnalysis m => IType -> IType -> m (Maybe IType)
 -- the function is similar to 'intersection', but takes into account more ancestors to be able to combine
@@ -190,7 +190,7 @@ getIfThenElseType t1 t2 =
       else accumulator
   commonHierarchy' _ _ _ = error "Function commonHierarchy' from ResolverType expects two non empty lists but was given at least one empty list!" -- Should never happen    
   filterClafer value = 
-    if (value == Just "clafer") then Nothing else value
+    if (value == Just baseClaferMUID) then Nothing else value
 
 resolveTModule :: (IModule, GEnv) -> Either ClaferSErr IModule
 resolveTModule (imodule, _) =
@@ -198,28 +198,28 @@ resolveTModule (imodule, _) =
     Right mDecls' -> return imodule{_mDecls = mDecls'}
     Left err      -> throwError err
   where
-  analysis decls1 = mapM (resolveTElement $ rootUid) decls1
+  analysis decls1 = mapM (resolveTElement rootMUID) decls1
 
-resolveTElement :: String -> IElement -> TypeAnalysis IElement
-resolveTElement _ (IEClafer iclafer) =
+resolveTElement :: MUID -> IElement -> TypeAnalysis IElement
+resolveTElement    _ (IEClafer iclafer) =
   do
-    elements' <- mapM (resolveTElement $ I._uid iclafer) (_elements iclafer)
+    elements' <- mapM (resolveTElement $ I._claferMUID iclafer) (_elements iclafer)
     return $ IEClafer iclafer{_elements = elements'}
-resolveTElement parent' (IEConstraint _isHard _pexp) =
-  IEConstraint _isHard <$> (testBoolean =<< resolveTConstraint parent' _pexp)
+resolveTElement parent' (IEConstraint (IConstraint _constraintMUID _isHard _pexp)) =
+  IEConstraint <$> IConstraint _constraintMUID _isHard <$> (testBoolean =<< resolveTConstraint parent' _pexp)
   where
   testBoolean pexp' =
     do
       unless (typeOf pexp' == TBoolean) $
         throwError $ SemanticErr (_inPos pexp') ("Cannot construct constraint on type '" ++ str (typeOf pexp') ++ "'")
       return pexp'
-resolveTElement parent' (IEGoal isMaximize' pexp') =
-  IEGoal isMaximize' <$> resolveTConstraint parent' pexp'
+resolveTElement parent' (IEGoal (IGoal muid' isMaximize' pexp')) =
+  IEGoal <$> IGoal muid' isMaximize' <$> resolveTConstraint parent' pexp'
 
-resolveTConstraint :: String -> PExp -> TypeAnalysis PExp
-resolveTConstraint curThis' constraint = 
+resolveTConstraint :: MUID -> PExp      -> TypeAnalysis PExp
+resolveTConstraint    curThis'  constraint = 
   do
-    curThis'' <- claferWithUid curThis'
+    curThis'' <- claferWithUid "resolveTConstraint" curThis' 
     head <$> (localCurThis curThis'' $ (resolveTPExp constraint :: TypeAnalysis [PExp]))
     
 
@@ -258,14 +258,14 @@ resolveTPExp' p@PExp{_inPos, _exp = IClaferId{_sident = "parent"}} =
           addRef result -- Case 2: Dereference the sident 1..* times
       Nothing -> throwError $ SemanticErr _inPos "Cannot parent at the start of a path"
 resolveTPExp' p@PExp{_exp = IClaferId{_sident = "integer"}} = runListT $ runErrorT $ return $ p `withType` TInteger
-resolveTPExp' p@PExp{_inPos, _exp = IClaferId{_sident}} = 
+resolveTPExp' p@PExp{_inPos, _exp = IClaferId{_sident, _sMUID}} = 
   runListT $ runErrorT $ do
     curPath' <- curPath
-    sident' <- if _sident == "this" then uid <$> curThis else return _sident
+    sMUID' <- if _sident == thisIdent then uid <$> curThis else return _sMUID
     when (isJust curPath') $ do
-      c <- mapM (isChild sident') $ unionType $ fromJust curPath'
-      unless (or c) $ throwError $ SemanticErr _inPos ("'" ++ sident' ++ "' is not a child of type '" ++ str (fromJust curPath') ++ "'")
-    result <- (p `withType`) <$> typeOfUid sident'
+      c <- mapM (isChild sMUID') $ unionType $ fromJust curPath'
+      unless (or c) $ throwError $ SemanticErr _inPos ("'" ++ show sMUID' ++ "' is not a child of type '" ++ str (fromJust curPath') ++ "'")
+    result <- (p `withType`) <$> typeOfUid sMUID'
     return result -- Case 1: Use the sident
       <++>
       addRef result -- Case 2: Dereference the sident 1..* times
@@ -346,7 +346,7 @@ resolveTPExp' p@PExp{_inPos, _exp} =
       result' <- result
       return (result', e{_exps = [arg1', arg2']})
 
-  resolveTExp e@(IFunExp "=>else" [arg1, arg2, arg3]) =
+  resolveTExp e@(IFunExp "ifthenelse" [arg1, arg2, arg3]) =
     runListT $ runErrorT $ do
       arg1' <- lift $ ListT $ resolveTPExp arg1
       arg2' <- lift $ ListT $ resolveTPExp arg2
@@ -358,19 +358,19 @@ resolveTPExp' p@PExp{_inPos, _exp} =
 --        throwError $ SemanticErr inPos ("The types are: '" ++ str t2 ++ "' and '" ++ str t3 ++ "'")
 
       unless (t1 == TBoolean) $
-        throwError $ SemanticErr _inPos ("Function 'if/else' cannot be performed on 'if' " ++ str t1 ++ " 'then' " ++ str t2 ++ " 'else' " ++ str t3)
+        throwError $ SemanticErr _inPos ("Function 'if then else' cannot be performed on 'if' " ++ str t1 ++ " 'then' " ++ str t2 ++ " 'else' " ++ str t3)
 
       it <- getIfThenElseType t2 t3
       t <- case it of
         Just it' -> return it'
-        Nothing  -> throwError $ SemanticErr _inPos ("Function '=>else' cannot be performed on if '" ++ str t1 ++ "' then '" ++ str t2 ++ "' else '" ++ str t3 ++ "'")
+        Nothing  -> throwError $ SemanticErr _inPos ("Function 'if then else' cannot be performed on if '" ++ str t1 ++ "' then '" ++ str t2 ++ "' else '" ++ str t3 ++ "'")
 
       return (t, e{_exps = [arg1', arg2', arg3']})
       
   resolveTExp e@IDeclPExp{_oDecls, _bpexp} =
     runListT $ runErrorT $ do
       oDecls' <- mapM resolveTDecl _oDecls
-      let extraDecls = [(decl, typeOf $ _body oDecl) | oDecl <- oDecls', decl <- _decls oDecl]
+      let extraDecls = [(declMUID', typeOf $ _body oDecl) | oDecl <- oDecls', declMUID' <- map snd $ _decls oDecl]
       localDecls extraDecls $ do
         bpexp' <- liftError $ lift $ ListT $ resolveTPExp _bpexp
         return $ (TBoolean, e{_oDecls = oDecls', _bpexp = bpexp'})
@@ -387,11 +387,11 @@ addRef :: PExp -> ErrorT ClaferSErr (ListT TypeAnalysis) PExp
 addRef pexp =
   do
     localCurPath (typeOf pexp) $ do
-      deref <- (ErrorT $ ListT $ resolveTPExp' $ newPExp $ IClaferId "" "ref" False) `catchError` const (lift mzero)
+      deref <- (ErrorT $ ListT $ resolveTPExp' $ newPExp $ IClaferId "" "ref" refMUID False) `catchError` const (lift mzero)
       let result = (newPExp $ IFunExp "." [pexp, deref]) `withType` typeOf deref
       return result <++> addRef result
   where
-  newPExp = PExp Nothing "" $ _inPos pexp
+  newPExp = PExp (_pexpMUID pexp) Nothing $ _inPos pexp
   
 typeOf :: PExp -> IType
 typeOf pexp = fromMaybe (error "No type") $ _iType pexp
