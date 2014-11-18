@@ -148,11 +148,12 @@ data Exp =
  | DeclQuantDisj Span Quant Decl Exp
  | DeclQuant Span Quant Decl Exp
  | LetExp Span VarBinding Exp
- | TmpPatJustScope Span Exp PatternScope
- | TmpPatBeforeNoScope Span Exp Exp
- | TmpPatAfterNoScope Span Exp Exp
- | TmpPatBefore Span Exp Exp PatternScope
- | TmpPatAfter Span Exp Exp PatternScope
+ | TmpPatNever Span Exp PatternScope
+ | TmpPatSometime Span Exp PatternScope
+ | TmpPatOnce Span Exp PatternScope
+ | TmpPatAlways Span Exp PatternScope
+ | TmpPatPrecede Span Exp Exp PatternScope
+ | TmpPatFollow Span Exp Exp PatternScope
  | TmpInitially Span Exp
  | TmpFinally Span Exp
  | EGMax Span Exp
@@ -210,8 +211,11 @@ data TransArrow =
   deriving (Eq,Ord,Show,Read,Data,Typeable,Generic)
 
 data PatternScope =
-   PatScopeBetween Span Exp Exp
- | PatScopeUntil Span Exp Exp
+   PatScopeBefore Span Exp
+ | PatScopeAfter Span Exp
+ | PatScopeBetweenAnd Span Exp Exp
+ | PatScopeAfterUntil Span Exp Exp
+ | PatScopeEmpty Span
   deriving (Eq,Ord,Show,Read,Data,Typeable,Generic)
 
 data SetExp =
@@ -346,11 +350,12 @@ instance Spannable Exp where
   getSpan ( DeclQuantDisj s _ _ _ ) = s
   getSpan ( DeclQuant s _ _ _ ) = s
   getSpan ( LetExp s _ _ ) = s
-  getSpan ( TmpPatJustScope s _ _ ) = s
-  getSpan ( TmpPatBeforeNoScope s _ _ ) = s
-  getSpan ( TmpPatAfterNoScope s _ _ ) = s
-  getSpan ( TmpPatBefore s _ _ _ ) = s
-  getSpan ( TmpPatAfter s _ _ _ ) = s
+  getSpan ( TmpPatNever s _ _ ) = s
+  getSpan ( TmpPatSometime s _ _ ) = s
+  getSpan ( TmpPatOnce s _ _ ) = s
+  getSpan ( TmpPatAlways s _ _ ) = s
+  getSpan ( TmpPatPrecede s _ _ _ ) = s
+  getSpan ( TmpPatFollow s _ _ _ ) = s
   getSpan ( TmpInitially s _ ) = s
   getSpan ( TmpFinally s _ ) = s
   getSpan ( EGMax s _ ) = s
@@ -405,8 +410,11 @@ instance Spannable TransArrow where
   getSpan ( GuardedNextTransArrow s _ ) = s
 
 instance Spannable PatternScope where
-  getSpan ( PatScopeBetween s _ _ ) = s
-  getSpan ( PatScopeUntil s _ _ ) = s
+  getSpan ( PatScopeBefore s _ ) = s
+  getSpan ( PatScopeAfter s _ ) = s
+  getSpan ( PatScopeBetweenAnd s _ _ ) = s
+  getSpan ( PatScopeAfterUntil s _ _ ) = s
+  getSpan ( PatScopeEmpty s ) = s
 
 instance Spannable SetExp where
   getSpan ( Union s _ _ ) = s

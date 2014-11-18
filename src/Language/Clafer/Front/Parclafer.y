@@ -69,8 +69,8 @@ import Language.Clafer.Front.ErrM
  'abstract' { PT _ (TS _ 52) }
  'after' { PT _ (TS _ 53) }
  'all' { PT _ (TS _ 54) }
- 'and' { PT _ (TS _ 55) }
- 'before' { PT _ (TS _ 56) }
+ 'always' { PT _ (TS _ 55) }
+ 'and' { PT _ (TS _ 56) }
  'between' { PT _ (TS _ 57) }
  'disj' { PT _ (TS _ 58) }
  'else' { PT _ (TS _ 59) }
@@ -78,32 +78,38 @@ import Language.Clafer.Front.ErrM
  'eventually' { PT _ (TS _ 61) }
  'final' { PT _ (TS _ 62) }
  'finally' { PT _ (TS _ 63) }
- 'globally' { PT _ (TS _ 64) }
- 'if' { PT _ (TS _ 65) }
- 'in' { PT _ (TS _ 66) }
- 'initial' { PT _ (TS _ 67) }
- 'initially' { PT _ (TS _ 68) }
- 'let' { PT _ (TS _ 69) }
- 'lone' { PT _ (TS _ 70) }
- 'max' { PT _ (TS _ 71) }
- 'min' { PT _ (TS _ 72) }
- 'mux' { PT _ (TS _ 73) }
- 'next' { PT _ (TS _ 74) }
- 'no' { PT _ (TS _ 75) }
- 'not' { PT _ (TS _ 76) }
- 'one' { PT _ (TS _ 77) }
- 'opt' { PT _ (TS _ 78) }
- 'or' { PT _ (TS _ 79) }
- 'some' { PT _ (TS _ 80) }
- 'sum' { PT _ (TS _ 81) }
- 'then' { PT _ (TS _ 82) }
- 'until' { PT _ (TS _ 83) }
- 'weakuntil' { PT _ (TS _ 84) }
- 'xor' { PT _ (TS _ 85) }
- '{' { PT _ (TS _ 86) }
- '|' { PT _ (TS _ 87) }
- '||' { PT _ (TS _ 88) }
- '}' { PT _ (TS _ 89) }
+ 'follow' { PT _ (TS _ 64) }
+ 'globally' { PT _ (TS _ 65) }
+ 'if' { PT _ (TS _ 66) }
+ 'in' { PT _ (TS _ 67) }
+ 'initial' { PT _ (TS _ 68) }
+ 'initially' { PT _ (TS _ 69) }
+ 'let' { PT _ (TS _ 70) }
+ 'lone' { PT _ (TS _ 71) }
+ 'max' { PT _ (TS _ 72) }
+ 'min' { PT _ (TS _ 73) }
+ 'must' { PT _ (TS _ 74) }
+ 'mux' { PT _ (TS _ 75) }
+ 'never' { PT _ (TS _ 76) }
+ 'next' { PT _ (TS _ 77) }
+ 'no' { PT _ (TS _ 78) }
+ 'not' { PT _ (TS _ 79) }
+ 'once' { PT _ (TS _ 80) }
+ 'one' { PT _ (TS _ 81) }
+ 'opt' { PT _ (TS _ 82) }
+ 'or' { PT _ (TS _ 83) }
+ 'precede' { PT _ (TS _ 84) }
+ 'some' { PT _ (TS _ 85) }
+ 'sometime' { PT _ (TS _ 86) }
+ 'sum' { PT _ (TS _ 87) }
+ 'then' { PT _ (TS _ 88) }
+ 'until' { PT _ (TS _ 89) }
+ 'weakuntil' { PT _ (TS _ 90) }
+ 'xor' { PT _ (TS _ 91) }
+ '{' { PT _ (TS _ 92) }
+ '|' { PT _ (TS _ 93) }
+ '||' { PT _ (TS _ 94) }
+ '}' { PT _ (TS _ 95) }
 
 L_PosInteger { PT _ (T_PosInteger _) }
 L_PosDouble { PT _ (T_PosDouble _) }
@@ -240,11 +246,12 @@ Exp1 : 'all' 'disj' Decl '|' Exp1 { DeclAllDisj ((mkTokenSpan $1) >- (mkTokenSpa
 
 
 Exp2 :: { Exp }
-Exp2 : Exp3 PatternScope { TmpPatJustScope ((mkCatSpan $1) >- (mkCatSpan $2)) $1 $2 } 
-  | Exp3 'before' Exp3 { TmpPatBeforeNoScope ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
-  | Exp3 'after' Exp3 { TmpPatAfterNoScope ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
-  | Exp3 'before' Exp3 PatternScope { TmpPatBefore ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3) >- (mkCatSpan $4)) $1 $3 $4 }
-  | Exp3 'after' Exp3 PatternScope { TmpPatAfter ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3) >- (mkCatSpan $4)) $1 $3 $4 }
+Exp2 : 'never' Exp3 PatternScope { TmpPatNever ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkCatSpan $3)) $2 $3 } 
+  | 'sometime' Exp3 PatternScope { TmpPatSometime ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkCatSpan $3)) $2 $3 }
+  | 'once' Exp3 PatternScope { TmpPatOnce ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkCatSpan $3)) $2 $3 }
+  | 'always' Exp3 PatternScope { TmpPatAlways ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkCatSpan $3)) $2 $3 }
+  | Exp3 'must' 'precede' Exp3 PatternScope { TmpPatPrecede ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkTokenSpan $3) >- (mkCatSpan $4) >- (mkCatSpan $5)) $1 $4 $5 }
+  | Exp3 'must' 'follow' Exp3 PatternScope { TmpPatFollow ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkTokenSpan $3) >- (mkCatSpan $4) >- (mkCatSpan $5)) $1 $4 $5 }
   | 'initially' Exp3 { TmpInitially ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
   | 'finally' Exp3 { TmpFinally ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
   | Exp3 {  $1 }
@@ -363,8 +370,11 @@ TransArrow : '-->' { AsyncTransArrow ((mkTokenSpan $1)) }
 
 
 PatternScope :: { PatternScope }
-PatternScope : 'between' Exp 'and' Exp { PatScopeBetween ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkTokenSpan $3) >- (mkCatSpan $4)) $2 $4 } 
-  | 'after' Exp 'until' Exp { PatScopeUntil ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkTokenSpan $3) >- (mkCatSpan $4)) $2 $4 }
+PatternScope : 'between' Exp { PatScopeBefore ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 } 
+  | 'after' Exp { PatScopeAfter ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
+  | 'between' Exp 'and' Exp { PatScopeBetweenAnd ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkTokenSpan $3) >- (mkCatSpan $4)) $2 $4 }
+  | 'after' Exp 'until' Exp { PatScopeAfterUntil ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkTokenSpan $3) >- (mkCatSpan $4)) $2 $4 }
+  | {- empty -} { PatScopeEmpty noSpan }
 
 
 SetExp :: { SetExp }

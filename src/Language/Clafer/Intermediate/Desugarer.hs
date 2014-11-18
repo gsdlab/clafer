@@ -326,45 +326,48 @@ desugarExp x = pExpDefPid (getSpan x) $ desugarExp' x
 
 translateTmpPatterns :: Exp -> Exp
 translateTmpPatterns e = case e of
-  TmpPatJustScope span p scope -> case scope of
-    -- []((Q & !R & <>R) -> (P U R))
-    PatScopeBetween _ q r ->
-      let anti = EAnd span (EAnd span q (ENeg span r)) $ LtlF span r
-          cons = LtlU span p r
-      in LtlG span $ EImplies span anti cons
-    -- [](Q & !R -> (P W R))
-    PatScopeUntil _ q r ->
-      let anti = EAnd span q (ENeg span r)
-          cons = LtlW span p r
-      in LtlG span $ EImplies span anti cons
-      -- Before is same as PRECEDENCE pattern group
-  TmpPatBeforeNoScope span s p -> LtlW span (ENeg span p) s
-  TmpPatBefore span s p scope -> case scope of
-    --[]((Q & !R & <>R) -> (!P U (S | R)))
-    PatScopeBetween _ q r ->
-      let anti = EAnd span (EAnd span q (ENeg span r)) $ LtlF span r
-          cons = LtlU span (ENeg span p) (EOr span s r)
-      in LtlG span $ EImplies span anti cons
-    --[](Q & !R -> (!P W (S | R)))
-    PatScopeUntil _ q r ->
-      let anti = EAnd span q (ENeg span r)
-          cons = LtlW span (ENeg span p) (EOr span s r)
-      in LtlG span $ EImplies span anti cons
-      -- After is equavalent to RESPONSE pattern group
-  TmpPatAfterNoScope span s p -> LtlG span $ EImplies span p (LtlF span s)
-  TmpPatAfter span s p scope -> case scope of
-    --[]((Q & !R & <>R) -> (P -> (!R U (S & !R))) U R)
-    PatScopeBetween _ q r ->
-      let anti = EAnd span (EAnd span q (ENeg span r)) $ LtlF span r
-          intImpl = EImplies span p $ LtlU span (ENeg span r) (EAnd span s (ENeg span r))
-          cons = LtlU span intImpl r
-      in LtlG span $ EImplies span anti cons
-    --[](Q & !R -> ((P -> (!R U (S & !R))) W R))
-    PatScopeUntil _ q r ->
-      let anti = EAnd span q (ENeg span r)
-          intImpl = EImplies span p $ LtlU span (ENeg span r) (EAnd span s (ENeg span r))
-          cons = LtlW span intImpl r
-      in LtlG span $ EImplies span anti cons
+  TmpPatNever _ p scope -> case scope of
+    PatScopeEmpty _ ->            g $ not p-- LtlG span $ ENeg span p
+    PatScopeBefore _ r ->         f r ==> (not p `u` r) -- EImplies span (LtlF span r) (LtlU span (ENeg span p) r)
+    PatScopeAfter _ q ->          g(q ==> g (not p)) -- LtlG span (EImplies span q (LtlG span $ ENeg span p))
+    PatScopeBetweenAnd _ q r ->   g ((q & not r & f r) ==> (not p `u` r))
+      {-let anti = EAnd span (EAnd span q (ENeg span r)) $ LtlF span r-}
+          {-cons = LtlU span (ENeg span p) r-}
+      {-in LtlG span $ EImplies span anti cons-}
+    PatScopeAfterUntil _ q r ->   g((q & not r) ==> (not p `w` r))
+      {-let anti = EAnd span q (ENeg span r)-}
+          {-cons = LtlW span (ENeg span p) r-}
+      {-in LtlG span $ EImplies span anti cons-}
+  TmpPatSometime _ p scope -> case scope of
+    PatScopeEmpty _ ->            f p
+    PatScopeBefore _ r ->         not r `w` (p & not r) -- LtlW span (ENeg span r) (EAnd span p $ ENeg span r)
+    PatScopeAfter _ q ->          (g $ not q) || f (q & f p)
+    PatScopeBetweenAnd _ q r ->   g ( (q & not r) ==> (not r `w` (p & not r)) )
+    PatScopeAfterUntil _ q r ->   g ( (q & not r) ==> (not r `u` (p & not r)) )
+  TmpPatOnce _ p scope -> case scope of -- TODO encodings do not match semantics
+    PatScopeEmpty _ -> f $ not p
+    PatScopeBefore _ r ->f $ not p
+    PatScopeAfter _ q -> f $ not p
+    PatScopeBetweenAnd _ q r ->f $ not p
+    PatScopeAfterUntil _ q r ->f $ not p
+  TmpPatAlways _ p scope -> case scope of
+    PatScopeEmpty _ ->            g p
+    PatScopeBefore _ r ->         f r ==> (p `u` r)
+    PatScopeAfter _ q ->          g (q ==> g p)
+    PatScopeBetweenAnd _ q r ->   g ((q & not r & f r ) ==> (p `u` r))
+    PatScopeAfterUntil _ q r ->   g((q & not r) ==> (p `w` r))
+  TmpPatPrecede _ s p scope -> case scope of
+    PatScopeEmpty _ ->            not p `w` s
+    PatScopeBefore _ r ->         f r ==> (not p `u` (s || r))
+    PatScopeAfter _ q ->          g (not q) || f (q & (not p `w` s))
+    PatScopeBetweenAnd _ q r ->   g ((q & not r & f r) ==> (not p `u` (s || r)))
+    PatScopeAfterUntil _ q r ->   g ((q & not r) ==> (not p `w` (s || r)))
+  TmpPatFollow _ s p scope -> case scope of
+    PatScopeEmpty _ ->            g(p ==> f s)
+    PatScopeBefore _ r ->         f r ==> ((p ==> (not r `u` (s & not r))) `u` r)
+    PatScopeAfter _ q ->          g(q ==> g(p ==> f s))
+    PatScopeBetweenAnd _ q r ->   g((q & not r & f r) ==> (p ==> (((not r `u` (s & not r))) `u` r)))
+    PatScopeAfterUntil _ q r ->   g((q & not r) ==> ((p==> (not r `u` (s & not r))) `w` r))
   TmpInitially s exp ->
     let oper1 =  ENeg s $ mkClaferIdExp s "this"
         oper2 = LtlX s $ mkClaferIdExp s "this"
@@ -380,7 +383,27 @@ translateTmpPatterns e = case e of
   TmpNext s exp -> LtlX s exp
   TransitionExp s exp0 arrow exp1 -> desugarTrans' s exp0 arrow exp1
   _ -> e
-
+  where
+    infixr 4 `u`
+    infixr 4 `w`
+    infixl 3 &
+    infixl 2 ||
+    infixr 1 ==>
+    w = LtlW span
+    u = LtlU span
+    (==>) e1 e2 = EImplies span e1 e2
+    e1 & e2 = EAnd span e1 e2
+    e1 || e2 = EOr span e1 e2
+    f = LtlF span
+    g = LtlG span
+    not = ENeg span
+    span = case e of
+      TmpPatNever s _ _ -> s
+      TmpPatSometime s _ _ -> s
+      TmpPatOnce s _ _ -> s
+      TmpPatAlways s _ _ -> s
+      TmpPatPrecede s _ _ _ -> s
+      TmpPatFollow s _ _ _ -> s
 
 
 desugarExp' :: Exp -> IExp
