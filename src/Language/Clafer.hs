@@ -130,6 +130,7 @@ import Language.Clafer.Intermediate.ScopeAnalysis
 import Language.Clafer.Optimizer.Optimizer
 import Language.Clafer.Generator.Alloy
 import Language.Clafer.Generator.Choco
+import Language.Clafer.Generator.Concat
 import Language.Clafer.Generator.Xml
 import Language.Clafer.Generator.Python
 import Language.Clafer.Generator.Schema
