@@ -32,7 +32,7 @@ ElementsList.   Elements ::= "{" [Element] "}" ;
 Subclafer.      Element ::= Clafer ;
 ClaferUse.      Element ::= "`" Name Card Elements ;
 Subconstraint.  Element ::= Constraint ;
-Subgoal. 		Element ::= Goal; 
+Subgoal.        Element ::= Goal; 
 Subsoftconstraint. Element ::= SoftConstraint;
 
 SuperEmpty.     Super ::=  ;

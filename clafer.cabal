@@ -128,6 +128,7 @@ library
                      Language.Clafer.SplitJoin
     other-modules: Paths_clafer,
                    GetURL
+
 Test-Suite test-suite
     build-tools:    ghc >= 7.6.3
     default-language: 

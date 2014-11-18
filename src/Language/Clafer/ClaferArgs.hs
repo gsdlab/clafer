@@ -152,7 +152,6 @@ retrieveModelFromURL    url     = do
     ('f':'t':'p':':':'/':'/':_)     -> getURL url
     n                               -> readFile n  -- this is the pre-module system behavior
 
-
 argsWithOPTIONS :: ClaferArgs -> String -> ClaferArgs
 argsWithOPTIONS    args'         model   =
   let 
