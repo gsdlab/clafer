@@ -1,6 +1,6 @@
 {-# LANGUAGE RankNTypes #-}
 {-
- Copyright (C) 2012 Kacper Bak, Jimmy Liang <http://gsd.uwaterloo.ca>
+ Copyright (C) 2012 Kacper Bak, Jimmy Liang, Michal Antkiewicz <http://gsd.uwaterloo.ca>
 
  Permission is hereby granted, free of charge, to any person obtaining a copy of
  this software and associated documentation files (the "Software"), to deal in
@@ -26,14 +26,15 @@ into Intermediate representation (IR) from "Language.Clafer.Intermediate.Intclaf
 module Language.Clafer.Intermediate.Desugarer where
 
 import Language.Clafer.Common
+import Data.Maybe (fromMaybe)
 import Language.Clafer.Front.Absclafer
 import Language.Clafer.Intermediate.Intclafer
 
 -- | Transform the AST into the intermediate representation (IR)
-desugarModule :: Module -> IModule
-desugarModule (Module _ declarations) = IModule "" $
-      declarations >>= desugarEnums >>= desugarDeclaration
---      [ImoduleFragment $ declarations >>= desugarEnums >>= desugarDeclaration]
+desugarModule :: Maybe String -> Module -> IModule
+desugarModule mURL (Module _ declarations) = IModule
+  (fromMaybe "" mURL)
+  (declarations >>= desugarEnums >>= desugarDeclaration)
 
 sugarModule :: IModule -> Module
 sugarModule x = Module noSpan $ map sugarDeclaration $ _mDecls x -- (fragments x >>= mDecls)
