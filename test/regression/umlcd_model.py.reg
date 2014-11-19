@@ -1387,13 +1387,13 @@ def getModule():
 	stack[-1].addElement(constraint)
 	stack.pop()
 ##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(92),IntegerLiteral.IntegerLiteral(1)), (IntegerLiteral.IntegerLiteral(92),IntegerLiteral.IntegerLiteral(30)))
+	pos=((IntegerLiteral.IntegerLiteral(92),IntegerLiteral.IntegerLiteral(1)), (IntegerLiteral.IntegerLiteral(92),IntegerLiteral.IntegerLiteral(20)))
 	isAbstract=True
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
 	id="VisibilityKind"
 	uid="c0_VisibilityKind"
 	my_supers = Supers.Supers(isOverlapping=False, elements=[
-		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(92),IntegerLiteral.IntegerLiteral(1)), (IntegerLiteral.IntegerLiteral(92),IntegerLiteral.IntegerLiteral(30))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="clafer", isTop=False)])])
+		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(92),IntegerLiteral.IntegerLiteral(1)), (IntegerLiteral.IntegerLiteral(92),IntegerLiteral.IntegerLiteral(20))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="clafer", isTop=False)])])
 	card=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1))
 	globalCard=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1))
 	currClafer = Clafer.Clafer(pos=pos, isAbstract=isAbstract, gcard=groupCard, ident=id, uid=uid, my_supers=my_supers, card=card, glCard=globalCard)
@@ -1401,13 +1401,13 @@ def getModule():
 	stack.append(currClafer)
 	stack.pop()
 ##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(92),IntegerLiteral.IntegerLiteral(1)), (IntegerLiteral.IntegerLiteral(92),IntegerLiteral.IntegerLiteral(30)))
+	pos=((IntegerLiteral.IntegerLiteral(92),IntegerLiteral.IntegerLiteral(23)), (IntegerLiteral.IntegerLiteral(92),IntegerLiteral.IntegerLiteral(30)))
 	isAbstract=False
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
 	id="package"
 	uid="c0_package"
 	my_supers = Supers.Supers(isOverlapping=False, elements=[
-		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(92),IntegerLiteral.IntegerLiteral(1)), (IntegerLiteral.IntegerLiteral(92),IntegerLiteral.IntegerLiteral(30))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_VisibilityKind", isTop=True)])])
+		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(92),IntegerLiteral.IntegerLiteral(23)), (IntegerLiteral.IntegerLiteral(92),IntegerLiteral.IntegerLiteral(30))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_VisibilityKind", isTop=True)])])
 	card=(IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(1))
 	globalCard=(IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(1))
 	currClafer = Clafer.Clafer(pos=pos, isAbstract=isAbstract, gcard=groupCard, ident=id, uid=uid, my_supers=my_supers, card=card, glCard=globalCard)
@@ -1415,13 +1415,13 @@ def getModule():
 	stack.append(currClafer)
 	stack.pop()
 ##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(92),IntegerLiteral.IntegerLiteral(1)), (IntegerLiteral.IntegerLiteral(92),IntegerLiteral.IntegerLiteral(30)))
+	pos=((IntegerLiteral.IntegerLiteral(92),IntegerLiteral.IntegerLiteral(33)), (IntegerLiteral.IntegerLiteral(92),IntegerLiteral.IntegerLiteral(40)))
 	isAbstract=False
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
 	id="private"
 	uid="c0_private"
 	my_supers = Supers.Supers(isOverlapping=False, elements=[
-		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(92),IntegerLiteral.IntegerLiteral(1)), (IntegerLiteral.IntegerLiteral(92),IntegerLiteral.IntegerLiteral(30))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_VisibilityKind", isTop=True)])])
+		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(92),IntegerLiteral.IntegerLiteral(33)), (IntegerLiteral.IntegerLiteral(92),IntegerLiteral.IntegerLiteral(40))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_VisibilityKind", isTop=True)])])
 	card=(IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(1))
 	globalCard=(IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(1))
 	currClafer = Clafer.Clafer(pos=pos, isAbstract=isAbstract, gcard=groupCard, ident=id, uid=uid, my_supers=my_supers, card=card, glCard=globalCard)
@@ -1429,13 +1429,13 @@ def getModule():
 	stack.append(currClafer)
 	stack.pop()
 ##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(92),IntegerLiteral.IntegerLiteral(1)), (IntegerLiteral.IntegerLiteral(92),IntegerLiteral.IntegerLiteral(30)))
+	pos=((IntegerLiteral.IntegerLiteral(92),IntegerLiteral.IntegerLiteral(43)), (IntegerLiteral.IntegerLiteral(92),IntegerLiteral.IntegerLiteral(52)))
 	isAbstract=False
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
 	id="protected"
 	uid="c0_protected"
 	my_supers = Supers.Supers(isOverlapping=False, elements=[
-		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(92),IntegerLiteral.IntegerLiteral(1)), (IntegerLiteral.IntegerLiteral(92),IntegerLiteral.IntegerLiteral(30))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_VisibilityKind", isTop=True)])])
+		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(92),IntegerLiteral.IntegerLiteral(43)), (IntegerLiteral.IntegerLiteral(92),IntegerLiteral.IntegerLiteral(52))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_VisibilityKind", isTop=True)])])
 	card=(IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(1))
 	globalCard=(IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(1))
 	currClafer = Clafer.Clafer(pos=pos, isAbstract=isAbstract, gcard=groupCard, ident=id, uid=uid, my_supers=my_supers, card=card, glCard=globalCard)
@@ -1443,13 +1443,13 @@ def getModule():
 	stack.append(currClafer)
 	stack.pop()
 ##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(92),IntegerLiteral.IntegerLiteral(1)), (IntegerLiteral.IntegerLiteral(92),IntegerLiteral.IntegerLiteral(30)))
+	pos=((IntegerLiteral.IntegerLiteral(92),IntegerLiteral.IntegerLiteral(55)), (IntegerLiteral.IntegerLiteral(92),IntegerLiteral.IntegerLiteral(61)))
 	isAbstract=False
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
 	id="public"
 	uid="c0_public"
 	my_supers = Supers.Supers(isOverlapping=False, elements=[
-		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(92),IntegerLiteral.IntegerLiteral(1)), (IntegerLiteral.IntegerLiteral(92),IntegerLiteral.IntegerLiteral(30))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_VisibilityKind", isTop=True)])])
+		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(92),IntegerLiteral.IntegerLiteral(55)), (IntegerLiteral.IntegerLiteral(92),IntegerLiteral.IntegerLiteral(61))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_VisibilityKind", isTop=True)])])
 	card=(IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(1))
 	globalCard=(IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(1))
 	currClafer = Clafer.Clafer(pos=pos, isAbstract=isAbstract, gcard=groupCard, ident=id, uid=uid, my_supers=my_supers, card=card, glCard=globalCard)
@@ -2274,13 +2274,13 @@ def getModule():
 	stack.append(currClafer)
 	stack.pop()
 ##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(155),IntegerLiteral.IntegerLiteral(1)), (IntegerLiteral.IntegerLiteral(155),IntegerLiteral.IntegerLiteral(33)))
+	pos=((IntegerLiteral.IntegerLiteral(155),IntegerLiteral.IntegerLiteral(1)), (IntegerLiteral.IntegerLiteral(155),IntegerLiteral.IntegerLiteral(21)))
 	isAbstract=True
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
 	id="AggregationKind"
 	uid="c0_AggregationKind"
 	my_supers = Supers.Supers(isOverlapping=False, elements=[
-		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(155),IntegerLiteral.IntegerLiteral(1)), (IntegerLiteral.IntegerLiteral(155),IntegerLiteral.IntegerLiteral(33))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="clafer", isTop=False)])])
+		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(155),IntegerLiteral.IntegerLiteral(1)), (IntegerLiteral.IntegerLiteral(155),IntegerLiteral.IntegerLiteral(21))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="clafer", isTop=False)])])
 	card=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1))
 	globalCard=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1))
 	currClafer = Clafer.Clafer(pos=pos, isAbstract=isAbstract, gcard=groupCard, ident=id, uid=uid, my_supers=my_supers, card=card, glCard=globalCard)
@@ -2288,13 +2288,13 @@ def getModule():
 	stack.append(currClafer)
 	stack.pop()
 ##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(155),IntegerLiteral.IntegerLiteral(1)), (IntegerLiteral.IntegerLiteral(155),IntegerLiteral.IntegerLiteral(33)))
+	pos=((IntegerLiteral.IntegerLiteral(155),IntegerLiteral.IntegerLiteral(24)), (IntegerLiteral.IntegerLiteral(155),IntegerLiteral.IntegerLiteral(33)))
 	isAbstract=False
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
 	id="composite"
 	uid="c0_composite"
 	my_supers = Supers.Supers(isOverlapping=False, elements=[
-		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(155),IntegerLiteral.IntegerLiteral(1)), (IntegerLiteral.IntegerLiteral(155),IntegerLiteral.IntegerLiteral(33))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_AggregationKind", isTop=True)])])
+		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(155),IntegerLiteral.IntegerLiteral(24)), (IntegerLiteral.IntegerLiteral(155),IntegerLiteral.IntegerLiteral(33))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_AggregationKind", isTop=True)])])
 	card=(IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(1))
 	globalCard=(IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(1))
 	currClafer = Clafer.Clafer(pos=pos, isAbstract=isAbstract, gcard=groupCard, ident=id, uid=uid, my_supers=my_supers, card=card, glCard=globalCard)
@@ -2302,13 +2302,13 @@ def getModule():
 	stack.append(currClafer)
 	stack.pop()
 ##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(155),IntegerLiteral.IntegerLiteral(1)), (IntegerLiteral.IntegerLiteral(155),IntegerLiteral.IntegerLiteral(33)))
+	pos=((IntegerLiteral.IntegerLiteral(155),IntegerLiteral.IntegerLiteral(36)), (IntegerLiteral.IntegerLiteral(155),IntegerLiteral.IntegerLiteral(40)))
 	isAbstract=False
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
 	id="none"
 	uid="c0_none"
 	my_supers = Supers.Supers(isOverlapping=False, elements=[
-		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(155),IntegerLiteral.IntegerLiteral(1)), (IntegerLiteral.IntegerLiteral(155),IntegerLiteral.IntegerLiteral(33))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_AggregationKind", isTop=True)])])
+		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(155),IntegerLiteral.IntegerLiteral(36)), (IntegerLiteral.IntegerLiteral(155),IntegerLiteral.IntegerLiteral(40))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_AggregationKind", isTop=True)])])
 	card=(IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(1))
 	globalCard=(IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(1))
 	currClafer = Clafer.Clafer(pos=pos, isAbstract=isAbstract, gcard=groupCard, ident=id, uid=uid, my_supers=my_supers, card=card, glCard=globalCard)
@@ -2316,13 +2316,13 @@ def getModule():
 	stack.append(currClafer)
 	stack.pop()
 ##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(155),IntegerLiteral.IntegerLiteral(1)), (IntegerLiteral.IntegerLiteral(155),IntegerLiteral.IntegerLiteral(33)))
+	pos=((IntegerLiteral.IntegerLiteral(155),IntegerLiteral.IntegerLiteral(43)), (IntegerLiteral.IntegerLiteral(155),IntegerLiteral.IntegerLiteral(49)))
 	isAbstract=False
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
 	id="shared"
 	uid="c0_shared"
 	my_supers = Supers.Supers(isOverlapping=False, elements=[
-		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(155),IntegerLiteral.IntegerLiteral(1)), (IntegerLiteral.IntegerLiteral(155),IntegerLiteral.IntegerLiteral(33))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_AggregationKind", isTop=True)])])
+		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(155),IntegerLiteral.IntegerLiteral(43)), (IntegerLiteral.IntegerLiteral(155),IntegerLiteral.IntegerLiteral(49))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_AggregationKind", isTop=True)])])
 	card=(IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(1))
 	globalCard=(IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(1))
 	currClafer = Clafer.Clafer(pos=pos, isAbstract=isAbstract, gcard=groupCard, ident=id, uid=uid, my_supers=my_supers, card=card, glCard=globalCard)

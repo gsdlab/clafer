@@ -72,7 +72,7 @@
 
 
 <div>
-<span class="keyword">enum</span> <span class="claferDecl" id="Lookup failed">Month</span> = <span class="claferDecl" id="Lookup failed">June</span> | <span class="claferDecl" id="Lookup failed">July</span></div>
+<span class="keyword">enum</span> <span class="claferDecl" id="Lookup failed">Month</span> = <span class="claferDecl" id="c0_June">June</span> | <span class="claferDecl" id="c0_July">July</span></div>
 
 
 <div>

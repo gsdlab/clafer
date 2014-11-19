@@ -31,10 +31,10 @@
 <!-- # FRAGMENT /-->
 
 <div>
-<span class="keyword">enum</span> <span class="claferDecl" id="Lookup failed">Effect</span> = <span class="claferDecl" id="Lookup failed">Permit</span> | <span class="claferDecl" id="Lookup failed">Deny</span> | <span class="claferDecl" id="Lookup failed">NotApplicable</span> | <span class="claferDecl" id="Lookup failed">Indeterminate</span></div>
+<span class="keyword">enum</span> <span class="claferDecl" id="Lookup failed">Effect</span> = <span class="claferDecl" id="c0_Permit">Permit</span> | <span class="claferDecl" id="c0_Deny">Deny</span> | <span class="claferDecl" id="c0_NotApplicable">NotApplicable</span> | <span class="claferDecl" id="c0_Indeterminate">Indeterminate</span></div>
 
 <!-- # FRAGMENT /-->
 
 <div>
-<span class="keyword">enum</span> <span class="claferDecl" id="Lookup failed">CombiningAlgo</span> = <span class="claferDecl" id="Lookup failed">PermitOverrides</span> | <span class="claferDecl" id="Lookup failed">DenyOverrides</span> | <span class="claferDecl" id="Lookup failed">OnlyOneApplicable</span></div>
+<span class="keyword">enum</span> <span class="claferDecl" id="Lookup failed">CombiningAlgo</span> = <span class="claferDecl" id="c0_PermitOverrides">PermitOverrides</span> | <span class="claferDecl" id="c0_DenyOverrides">DenyOverrides</span> | <span class="claferDecl" id="c0_OnlyOneApplicable">OnlyOneApplicable</span></div>
 

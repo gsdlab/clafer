@@ -32,7 +32,7 @@
 <!-- # FRAGMENT /-->
 
 <div>
-<span class="keyword">enum</span> <span class="claferDecl" id="Lookup failed">Representation</span> = <span class="claferDecl" id="Lookup failed">text</span> | <span class="claferDecl" id="Lookup failed">tokens</span> | <span class="claferDecl" id="Lookup failed">ast</span> | <span class="claferDecl" id="Lookup failed">ir</span></div>
+<span class="keyword">enum</span> <span class="claferDecl" id="Lookup failed">Representation</span> = <span class="claferDecl" id="c0_text">text</span> | <span class="claferDecl" id="c0_tokens">tokens</span> | <span class="claferDecl" id="c0_ast">ast</span> | <span class="claferDecl" id="c0_ir">ir</span></div>
 
 <!-- # FRAGMENT /-->
 

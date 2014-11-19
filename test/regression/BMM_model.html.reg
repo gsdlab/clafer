@@ -441,7 +441,7 @@
 <!-- # FRAGMENT /-->
 
 <div>
-<span class="keyword">enum</span> <span class="claferDecl" id="Lookup failed">Currency</span> = <span class="claferDecl" id="Lookup failed">USD</span> | <span class="claferDecl" id="Lookup failed">EUR</span> | <span class="claferDecl" id="Lookup failed">CAD</span></div>
+<span class="keyword">enum</span> <span class="claferDecl" id="Lookup failed">Currency</span> = <span class="claferDecl" id="c0_USD">USD</span> | <span class="claferDecl" id="c0_EUR">EUR</span> | <span class="claferDecl" id="c0_CAD">CAD</span></div>
 
 <!-- # FRAGMENT /-->
 
