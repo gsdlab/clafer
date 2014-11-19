@@ -424,9 +424,9 @@ optimizeAllConstraints curThis constraints =
         where
         renameIExp (I.IFunExp op exps) = I.IFunExp op $ map (rename f) exps
         renameIExp (I.IDeclPExp quant oDecls bpexp) = I.IDeclPExp quant (map renameDecl oDecls) $ rename f bpexp
-        renameIExp (I.IClaferId modName sident isTop)
-            | f == sident = I.IClaferId modName "this" isTop
-            | otherwise   = I.IClaferId modName sident isTop
+        renameIExp (I.IClaferId modName sident isTop bind)
+            | f == sident = I.IClaferId modName "this" isTop bind
+            | otherwise   = I.IClaferId modName sident isTop bind
         renameIExp i = i
         renameDecl (I.IDecl isDisj decls body)
             | f `elem` decls = I.IDecl isDisj decls body -- Not a free variable

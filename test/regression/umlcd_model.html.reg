@@ -192,7 +192,7 @@
 
 
 <div>
-<span class="keyword">enum</span> <span class="claferDecl" id="Lookup failed">VisibilityKind</span> = <span class="claferDecl" id="Lookup failed">package</span> | <span class="claferDecl" id="Lookup failed">private</span> | <span class="claferDecl" id="Lookup failed">protected</span> | <span class="claferDecl" id="Lookup failed">public</span></div>
+<span class="keyword">enum</span> <span class="claferDecl" id="Lookup failed">VisibilityKind</span> = <span class="claferDecl" id="c0_package">package</span> | <span class="claferDecl" id="c0_private">private</span> | <span class="claferDecl" id="c0_protected">protected</span> | <span class="claferDecl" id="c0_public">public</span></div>
 
 
 <div>
@@ -328,7 +328,7 @@
 
 
 <div>
-<span class="keyword">enum</span> <span class="claferDecl" id="Lookup failed">AggregationKind</span> = <span class="claferDecl" id="Lookup failed">composite</span> | <span class="claferDecl" id="Lookup failed">none</span> | <span class="claferDecl" id="Lookup failed">shared</span></div>
+<span class="keyword">enum</span> <span class="claferDecl" id="Lookup failed">AggregationKind</span> = <span class="claferDecl" id="c0_composite">composite</span> | <span class="claferDecl" id="c0_none">none</span> | <span class="claferDecl" id="c0_shared">shared</span></div>
 
 
 <div>

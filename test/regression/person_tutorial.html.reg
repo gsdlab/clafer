@@ -4,7 +4,7 @@
 
 
 <div>
-<span class="keyword">enum</span> <span class="claferDecl" id="Lookup failed">NorthAmericanCountry</span> = <span class="claferDecl" id="Lookup failed">Canada</span> | <span class="claferDecl" id="Lookup failed">USA</span></div>
+<span class="keyword">enum</span> <span class="claferDecl" id="Lookup failed">NorthAmericanCountry</span> = <span class="claferDecl" id="c0_Canada">Canada</span> | <span class="claferDecl" id="c0_USA">USA</span></div>
 
 
 <div>

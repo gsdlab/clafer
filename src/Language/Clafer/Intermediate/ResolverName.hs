@@ -162,7 +162,7 @@ resolveIExp pos' env x = case x of
   IInt _ -> return x
   IDouble _ -> return x
   IStr _ -> return x
-  IClaferId _ _ _ -> resNav
+  IClaferId _ _ _ _ -> resNav
   where
   res = resolvePExp env
   resNav = fst <$> resolveNav pos' env x True
@@ -184,7 +184,7 @@ resolveNav pos' env x isFirst = case x of
     (exp', path') <- resolveNav (_inPos pexp) env {context = listToMaybe path, resPath = path}
                      (I._exp pexp) False
     return (IFunExp iJoin [pexp0{I._exp=exp0'}, pexp{I._exp=exp'}], path')
-  IClaferId modName' id' _ -> out
+  IClaferId modName' id' _ _-> out
     where
     out
       | isFirst   = mkPath env <$> resolveName pos' env id'
@@ -194,34 +194,43 @@ resolveNav pos' env x isFirst = case x of
 -- depending on how resolved construct a path
 mkPath :: SEnv -> (HowResolved, String, [IClafer]) -> (IExp, [IClafer])
 mkPath env (howResolved, id', path) = case howResolved of
-  Binding -> (mkLClaferId id' True, path)
+  Binding -> (mkLClaferId id' True Nothing, path)
   Special -> (specIExp, path)
-  TypeSpecial -> (mkLClaferId id' True, path)
-  Subclafers -> (toNav $ tail $ reverse $ map _uid path, path)
-  Ancestor -> (toNav' $ adjustAncestor (reverse $ map _uid $ resPath env)
-                                       (reverse $ map _uid path), path)
-  _ -> (toNav' $ reverse $ map _uid path, path)
+  TypeSpecial -> (mkLClaferId id' True Nothing, path)
+  Subclafers -> (toNav $ tail $ reverse $ map toTuple path, path)
+  Ancestor -> (toNav' $ adjustAncestor (fromJust $ context env)
+                                       (reverse $ map toTuple $ resPath env)
+                                       (reverse $ map toTuple path), path)
+  _ -> (toNav' $ reverse $ map toTuple path, path)
   where
-  toNav = foldl
-          (\exp' id'' -> IFunExp iJoin [pExpDefPidPos exp', mkPLClaferId id'' False])
-          (mkLClaferId this True)
-  specIExp = if id' /= this then toNav [id'] else mkLClaferId id' True
+  toNav = foldl'
+          (\exp' (id'', c) -> IFunExp iJoin [pExpDefPidPos exp', mkPLClaferId id'' False $ _uid <$> c])
+          (mkLClaferId this True (_uid <$> context env))
+  specIExp = if id' /= this then toNav [(id', Just $ head path)] else mkLClaferId id' True (_uid <$> context env)
 
-toNav' :: [String] -> IExp
-toNav' p = (mkIFunExp iJoin $ map (\c -> mkLClaferId c False) p) :: IExp
+toTuple :: IClafer->(String, Maybe IClafer)
+toTuple c = (_uid c, Just c)
+
+toNav' :: [(String, Maybe IClafer)] -> IExp
+toNav' p = (mkIFunExp iJoin $ map (\(id', cbind) -> mkLClaferId id' False (_uid <$> cbind)) p) :: IExp
 
 
-adjustAncestor :: [String] -> [String] -> [String]
-adjustAncestor cPath rPath = this : parents ++ (fromJust $ stripPrefix prefix rPath)
+adjustAncestor :: IClafer -> [(String, Maybe IClafer)] -> [(String, Maybe IClafer)] -> [(String, Maybe IClafer)]
+adjustAncestor ctx cPath rPath = (this, Just ctx) : parents ++ (fromJust $ stripPrefix prefix rPath)
   where
-  parents = replicate (length $ fromJust $ stripPrefix prefix cPath) parent
-  prefix  = fst $ unzip $ takeWhile (uncurry (==)) $ zip cPath rPath
+  parents = replicate (length $ fromJust $ stripPrefix prefix cPath) (parent, Nothing)
+  prefix = fst $ unzip $ takeWhile (uncurry eqIds) $ zip cPath rPath
+  eqIds a b = (fst a) == (fst b)
 
 
 mkPath' :: String -> (HowResolved, String, [IClafer]) -> (IExp, [IClafer])
 mkPath' modName' (howResolved, id', path) = case howResolved of
-  Reference  -> (toNav' ["ref", id'], path)
-  _ -> (IClaferId modName' id' False, path)
+  Reference -> (toNav' (zip ["ref", id'] (map Just path)), path)
+  _ -> (IClaferId modName' id' False (_uid <$> bind), path)
+  where
+  bind = case path of
+    [] -> Nothing
+    c:_ -> Just c
 
 -- -----------------------------------------------------------------------------
 

@@ -130,6 +130,7 @@ import Language.Clafer.Intermediate.ScopeAnalysis
 import Language.Clafer.Optimizer.Optimizer
 import Language.Clafer.Generator.Alloy
 import Language.Clafer.Generator.Choco
+import Language.Clafer.Generator.Concat
 import Language.Clafer.Generator.Xml
 import Language.Clafer.Generator.Python
 import Language.Clafer.Generator.Schema
@@ -418,7 +419,7 @@ compile desugaredMod = do
 
     let spanList = foldMapIR gt1 imodule
     when ((afm $ args env) && spanList/="") $ throwErr (ClaferErr $ ("The model is not an attributed feature model.\nThe following places contain cardinality larger than 1:\n"++) $ spanList :: CErr Span)
-    putEnv $ env{ cIr = Just ir, irModuleTrace = traceIrModule imodule }
+    putEnv $ env{ cIr = Just ir }
     where
       isKeyWord :: Ir -> String
       isKeyWord (IRClafer IClafer{_cinPos = (Span (Pos l c) _) ,_ident=i}) = if (i `elem` keyWords) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""

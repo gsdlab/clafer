@@ -1,6 +1,6 @@
 {-# LANGUAGE RankNTypes #-}
 {-
- Copyright (C) 2012 Kacper Bak, Jimmy Liang, Michal Antkiewicz <http://gsd.uwaterloo.ca>
+ Copyright (C) 2012-2014 Kacper Bak, Jimmy Liang, Michal Antkiewicz, Paulius Juodisius <http://gsd.uwaterloo.ca>
 
  Permission is hereby granted, free of charge, to any person obtaining a copy of
  this software and associated documentation files (the "Software"), to deal in
@@ -25,8 +25,6 @@ into Intermediate representation (IR) from "Language.Clafer.Intermediate.Intclaf
 -}
 module Language.Clafer.Intermediate.Desugarer where
 
-import qualified Data.Map as Map
-
 import Language.Clafer.Common
 import Data.Maybe (fromMaybe)
 import Language.Clafer.Front.Absclafer
@@ -44,13 +42,24 @@ sugarModule (IModule _ imports declarations) = Module noSpan (map sugarImport im
 
 -- | desugars enumeration to abstract and global singleton features
 desugarEnums :: Declaration -> [Declaration]
-desugarEnums (EnumDecl s id' enumids) = (absEnum s) : map (mkEnum s) enumids
+desugarEnums (EnumDecl (Span p1 p2) id' enumids) = absEnum : map mkEnum enumids
     where
-    oneToOne = (CardInterval noSpan $ NCard noSpan (PosInteger ((0,0), "1")) (ExIntegerNum noSpan $ PosInteger ((0,0), "1")))
-    absEnum s1 = ElementDecl s1 $ Subclafer s1 $ Clafer s1 (Abstract s1) (GCardEmpty s1) id' (SuperEmpty s1) (CardEmpty s1) (InitEmpty s1) (ElementsList s1 [])
-    mkEnum s2 (EnumIdIdent _ eId) = ElementDecl s2 $ 
-                                   Subclafer s2 $ 
-                                   Clafer s2 (AbstractEmpty s2) (GCardEmpty s2) eId ((SuperSome s2) (SuperColon s2) (ClaferId s2 $ Path s2 [ModIdIdent s2 id'])) oneToOne (InitEmpty s2) (ElementsList s2 [])
+    p2' = case enumids of
+      -- the abstract enum clafer should end before the first literal begins
+      ((EnumIdIdent (Span (Pos y' x') _) _):_) -> Pos y' (x'-3) -- cutting the ' = '
+      [] -> p2 -- should never happen - cannot have enum without any literals. Return the original end pos.
+    oneToOne pos' = (CardInterval noSpan $
+                  NCard noSpan (PosInteger (pos', "1")) (ExIntegerNum noSpan $ PosInteger (pos', "1")))
+    absEnum = let
+        s1 = Span p1 p2'
+      in
+        ElementDecl s1 $
+          Subclafer s1 $
+            Clafer s1 (Abstract s1) (GCardEmpty s1) id' (SuperEmpty s1) (CardEmpty s1) (InitEmpty s1) (ElementsList s1 [])
+    mkEnum (EnumIdIdent s2 eId) = -- each concrete clafer must fit within the original span of the literal
+      ElementDecl s2 $
+        Subclafer s2 $
+          Clafer s2 (AbstractEmpty s2) (GCardEmpty s2) eId ((SuperSome s2) (SuperColon s2) (ClaferId s2 $ Path s2 [ModIdIdent s2 id'])) (oneToOne (0, 0)) (InitEmpty s2) (ElementsList s2 [])
 desugarEnums x = [x]
 
 desugarImport :: Import                    -> URL
@@ -87,7 +96,7 @@ sugarClafer (IClafer s abstract gcard' _ uid' super' crd _ es) =
 
 desugarSuper :: Super -> ISuper
 desugarSuper (SuperEmpty s) =
-      ISuper False [PExp (Just $ TClafer []) "" s $ mkLClaferId baseClafer True]
+      ISuper False [PExp (Just $ TClafer []) "" s $ mkLClaferId baseClafer True Nothing]
 desugarSuper (SuperSome _ superhow setexp) =
       ISuper (desugarSuperHow superhow) [desugarSetExp setexp]
 
@@ -102,7 +111,7 @@ desugarInit _ (InitEmpty _) = []
 desugarInit id' (InitSome s inithow exp') = [ IEConstraint (desugarInitHow inithow) (pExpDefPid s implIExp) ]
   where 
     cId :: PExp
-    cId = mkPLClaferId (snd $ getIdent id') False
+    cId = mkPLClaferId (snd $ getIdent id') False Nothing
     -- <id> = <exp'>
     assignIExp :: IExp
     assignIExp = (IFunExp "=" [cId, desugarExp exp'])
@@ -119,7 +128,7 @@ desugarInitHow (InitHow_2 _ )= False
 desugarName :: Name -> IExp
 desugarName (Path _ path) =
       IClaferId (concatMap ((++ modSep).desugarModId) (init path))
-                (desugarModId $ last path) True
+                (desugarModId $ last path) True Nothing
 
 desugarModId :: ModId -> Result
 desugarModId (ModIdIdent _ id') = transIdent id'
@@ -372,7 +381,7 @@ sugarExp' x = case x of
   IInt n -> EInt noSpan $ PosInteger ((0, 0), show n)
   IDouble n -> EDouble noSpan $ PosDouble ((0, 0), show n)
   IStr str -> EStr noSpan $ PosString ((0, 0), str)
-  IClaferId _ _ _ -> ESetExp noSpan $ sugarSetExp' x
+  IClaferId _ _ _ _ -> ESetExp noSpan $ sugarSetExp' x
   _ -> error "Function sugarExp' from Desugarer was given an invalid argument" -- This should never happen
   where
   sugarUnOp op''
@@ -423,8 +432,8 @@ sugarSetExp' (IFunExp op' exps') = (sugarOp op') (exps''!!0) (exps''!!1)
       | op'' == iRange         = Range noSpan 
       | op'' == iJoin          = Join noSpan 
       | otherwise              = error "Invalid argument given to function sygarSetExp' in Desugarer"
-sugarSetExp' (IClaferId "" id' _) = ClaferId noSpan $ Path noSpan [ModIdIdent noSpan $ mkIdent id']
-sugarSetExp' (IClaferId modName' id' _) = ClaferId noSpan $ Path noSpan $ (sugarModId modName') : [sugarModId id']
+sugarSetExp' (IClaferId "" id' _ _) = ClaferId noSpan $ Path noSpan [ModIdIdent noSpan $ mkIdent id']
+sugarSetExp' (IClaferId modName' id' _ _) = ClaferId noSpan $ Path noSpan $ (sugarModId modName') : [sugarModId id']
 sugarSetExp' _ = error "IDecelPexp, IInt, IDobule, and IStr can not be sugared into a setExp!" --This should never happen
 
 desugarPath :: PExp -> PExp
@@ -439,7 +448,7 @@ desugarPath (PExp iType' pid' pos' x) = reducePExp $ PExp iType' pid' pos' resul
 
 
 isSet :: IExp -> Bool
-isSet (IClaferId _ _ _)  = True
+isSet (IClaferId _ _ _ _)  = True
 isSet (IFunExp op' _) = op' `elem` setBinOps
 isSet _ = False
 

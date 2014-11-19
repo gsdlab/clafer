@@ -387,7 +387,7 @@ addRef :: PExp -> ErrorT ClaferSErr (ListT TypeAnalysis) PExp
 addRef pexp =
   do
     localCurPath (typeOf pexp) $ do
-      deref <- (ErrorT $ ListT $ resolveTPExp' $ newPExp $ IClaferId "" "ref" False) `catchError` const (lift mzero)
+      deref <- (ErrorT $ ListT $ resolveTPExp' $ newPExp $ IClaferId "" "ref" False Nothing) `catchError` const (lift mzero)
       let result = (newPExp $ IFunExp "." [pexp, deref]) `withType` typeOf deref
       return result <++> addRef result
   where
