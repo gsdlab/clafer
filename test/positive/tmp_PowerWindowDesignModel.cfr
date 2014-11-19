@@ -1,6 +1,6 @@
-enum PWLReq = stop | up | upX | down | downX
+enum PWLReq = stopR | upR | upXR | downR | downXR
 
-enum PWLCmd = stop | up | down
+enum PWLCmd = stopC | upC | downC
 
 enum Boolean = true | false
 
@@ -12,47 +12,47 @@ abstract PWLStateAndRequestHandler
 
      xor winStates
           initial xor stopped
-               [ cmd = stop ]
+               [ cmd = stopC ]
                initial unknownPosition
-                    [this #[req=down]#> movingDown]
-                    [this #[req=downX]#> movingDownX]
-                    [this #[req=up]#> movingUp]
-                    [this #[req=upX]#> movingUpX]
+                    [this #[req=downR]#> movingDown]
+                    [this #[req=downXR]#> movingDownX]
+                    [this #[req=upR]#> movingUp]
+                    [this #[req=upXR]#> movingUpX]
                fullyClosed
-                    [this #[req=down]#> movingDown]
-                    [this #[req=downX]#> movingDownX]
+                    [this #[req=downR]#> movingDown]
+                    [this #[req=downXR]#> movingDownX]
                partiallyOpen
-                    [this #[req=down]#> movingDown]
-                    [this #[req=downX]#> movingDownX]
-                    [this #[req=up]#> movingUp]
-                    [this #[req=upX]#> movingUpX] 
+                    [this #[req=downR]#> movingDown]
+                    [this #[req=downXR]#> movingDownX]
+                    [this #[req=upR]#> movingUp]
+                    [this #[req=upXR]#> movingUpX] 
                fullyOpen
-                    [this #[req=up]#> movingUp]
-                    [this #[req=upX]#> movingUpX] 
+                    [this #[req=upR]#> movingUp]
+                    [this #[req=upXR]#> movingUpX] 
           xor movingDown
-               [ cmd = down ]
+               [ cmd = downC ]
                [this #[end=yes]#> fullyOpen]
-               [this #[req=up]#> movingUpBsc]
-               [this #[req=upX]#> movingUpX]
+               [this #[req=upR]#> movingUpBsc]
+               [this #[req=upXR]#> movingUpX]
                movingDownBsc
                     [this #[stop=yes]#> partiallyOpen]
-                    [this #[req=downX]#> movingDownX]
+                    [this #[req=downXR]#> movingDownX]
                movingDownX
           xor movingUp
-               [ cmd = up]
+               [ cmd = upC]
                [this #[end=yes]#> fullyClosed]
-               [this #[req=down]#> movingDownBsc]
-               [this #[req=downX]#> movingDownX]
+               [this #[req=downR]#> movingDownBsc]
+               [this #[req=downXR]#> movingDownX]
                movingUpBsc
                     [this #[stop=yes]#> partiallyOpen]
-                    [this #[req=upX]#> movingUpX ]
+                    [this #[req=upXR]#> movingUpX ]
                xor movingUpX
                    initial  movingUpXwithPinchProtectOverride #[req!=upX]#> movingUpXwithPinchProtect
                     movingUpXwithPinchProtect
                          [this #[object=yes]#> retracting ]
-                         [this #[req=upX]#> movingUpXwithPinchProtectOverride]
+                         [this #[req=upXR]#> movingUpXwithPinchProtectOverride]
           retracting 
-               [ cmd = down ]
+               [ cmd = downC ]
                // <- add transition here to retract for some distance or time
                [this #[end=yes]#> fullyOpen]
 

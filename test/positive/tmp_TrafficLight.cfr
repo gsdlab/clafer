@@ -38,7 +38,7 @@ final feature_model
 	EU?
 
 // Direct modeling
-abstract xor TrafficLight_1
+abstract xor TrafficLight_2
 	initial xor on --> off
 		initial xor normal --> flashing
 			initial green --> yellow
@@ -77,7 +77,7 @@ mux events
 	e_after_0_5:event
 
 // we are using guards to react to events
-abstract xor TrafficLight_2
+abstract xor TrafficLight_3
 	initial xor on =[ e_on_off ]=> off
 // desugars to
 //		[ e_on_off => this U off  ]
@@ -98,7 +98,7 @@ abstract xor TrafficLight_2
 
 
 // HISTORY
-
+abstract xor TrafficLight_H
 	xor on --> off
 		xor normal --> flashing // remembers history
 			initial green --> yellow
@@ -111,7 +111,7 @@ abstract xor TrafficLight_2
 
 // For normal and flashing machine it would look like that:
 
-xor TrafficLight 1
+xor TrafficLight_4 1
   xor on 
     normal
     flashing
@@ -138,13 +138,13 @@ xor TrafficLight 1
 // work, which is currently not possible in clafer
 // [ on && (X !on) => let history : (on.normal ++ on.flashing) in X (!on W ) ]
 
-// Syntactic sugar for history
+// Syntactic sugar for history (keyword)
 
-xor TrafficLight 1
-  history xor on 
+xor TrafficLight_5 1
+  /*history*/ xor on 
     normal
     flashing
-  history off
+  /*history*/ off
 
 // SUMMARY OF PROPOSALS
 
