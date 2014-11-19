@@ -155,7 +155,7 @@ data PExp = PExp {
   deriving (Eq,Ord,Show,Data,Typeable)
 
 -- | Embedes reference to a resolved Clafer
-type ClaferBinding = Maybe IClafer
+type ClaferBinding = Maybe UID
 
 {-UnknownBinding-}
   {- |  ClaferBinding { -}

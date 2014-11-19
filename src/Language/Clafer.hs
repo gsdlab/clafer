@@ -576,7 +576,7 @@ generate =
         (if (AlloyLtl `elem` modes)
           then let
                   (imod,strMap) = astrModule iModule
-                  alloyCode = genAlloyLtlModule cargs{mode = [AlloyLtl]} (imod, genv) scopes
+                  alloyCode = genAlloyLtlModule cargs{mode = [AlloyLtl]} (imod, genv) scopes $ uidIClaferMap env
                   addCommentStats = if no_stats cargs then const else addStats
                in
                   [ (AlloyLtl,

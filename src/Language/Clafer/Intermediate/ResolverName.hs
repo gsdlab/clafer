@@ -205,18 +205,18 @@ mkPath env (howResolved, id', path) = case howResolved of
   where
 
   toNav = foldl
-          (\exp' (id'', c) -> IFunExp iJoin [pExpDefPidPos exp', mkPLClaferId id'' False c])
-          (mkLClaferId this True (context env))
-  specIExp = if id' /= this then toNav [(id', Just (head path))] else mkLClaferId id' True (context env)
+          (\exp' (id'', c) -> IFunExp iJoin [pExpDefPidPos exp', mkPLClaferId id'' False $ _uid <$> c])
+          (mkLClaferId this True (_uid <$> context env))
+  specIExp = if id' /= this then toNav [(id', Just $ head path)] else mkLClaferId id' True (_uid <$> context env)
 
-toTuple :: IClafer->(String, ClaferBinding)
+toTuple :: IClafer->(String, Maybe IClafer)
 toTuple c = (_uid c, Just c)
 
-toNav' :: [(String, ClaferBinding)] -> IExp
-toNav' p = (mkIFunExp iJoin $ map (\(id, cbind) -> mkLClaferId id False cbind) p) :: IExp
+toNav' :: [(String, Maybe IClafer)] -> IExp
+toNav' p = (mkIFunExp iJoin $ map (\(id', cbind) -> mkLClaferId id' False (_uid <$> cbind)) p) :: IExp
 
 
-adjustAncestor :: IClafer -> [(String, ClaferBinding)] -> [(String, ClaferBinding)] -> [(String, ClaferBinding)]
+adjustAncestor :: IClafer -> [(String, Maybe IClafer)] -> [(String, Maybe IClafer)] -> [(String, Maybe IClafer)]
 adjustAncestor ctx cPath rPath = (this, Just ctx) : parents ++ (fromJust $ stripPrefix prefix rPath)
   where
   parents = replicate (length $ fromJust $ stripPrefix prefix cPath) (parent, Nothing)
@@ -227,11 +227,11 @@ adjustAncestor ctx cPath rPath = (this, Just ctx) : parents ++ (fromJust $ strip
 mkPath' :: String -> (HowResolved, String, [IClafer]) -> (IExp, [IClafer])
 mkPath' modName' (howResolved, id', path) = case howResolved of
   Reference  -> (toNav' (zip ["ref", id'] (map Just path)), path)
-  _ -> (IClaferId modName' id' False binding, path)
+  _ -> (IClaferId modName' id' False (_uid <$> bind), path)
   where
-  binding = case path of
+  bind = case path of
     [] -> Nothing
-    c:xs -> Just c
+    c:_ -> Just c
 
 -- -----------------------------------------------------------------------------
 
