@@ -28,6 +28,7 @@ ClaferEnv can just import this module without all the parsing/compiline/generati
 module Language.ClaferT 
   ( ClaferEnv(..)
   , irModuleTrace
+  , uidIClaferMap
   , makeEnv
   , getAst
   , getIr
@@ -58,6 +59,8 @@ module Language.ClaferT
 import Control.Monad.Error
 import Control.Monad.State
 import Control.Monad.Identity
+import Data.Data.Lens (biplate)
+import Control.Lens (universeOn)
 import Data.List
 import Data.Map (Map)
 import qualified Data.Map as Map
@@ -112,6 +115,17 @@ irModuleTrace env = traceIrModule $ getIModule $ cIr env
   where
     getIModule (Just (imodule, _, _)) = imodule
     getIModule Nothing                = error "BUG: irModuleTrace: cannot request IR map before desugaring."
+
+-- | This simulates a field in the ClaferEnv that will always recompute the map, 
+--   since the IR always changes and the map becomes obsolete
+uidIClaferMap :: ClaferEnv -> Map UID IClafer
+uidIClaferMap env = foldl' (\accumMap' claf -> Map.insert (_uid claf) claf accumMap') Map.empty allClafers
+  where
+    getIModule (Just (iModule, _, _)) = iModule
+    getIModule Nothing                = error "BUG: irIClaferMap: cannot request IClafer map before desugaring."
+
+    allClafers :: [ IClafer ]
+    allClafers = universeOn biplate $ getIModule $ cIr env
 
 getAst :: (Monad m) => ClaferT m Module
 getAst = do
