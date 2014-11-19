@@ -29,6 +29,7 @@ module Language.ClaferT
   ( ClaferEnv(..)
   , irModuleTrace
   , uidIClaferMap
+  , parentIClaferMap
   , makeEnv
   , getAst
   , getIr
@@ -60,10 +61,12 @@ import Control.Monad.Error
 import Control.Monad.State
 import Control.Monad.Identity
 import Data.Data.Lens (biplate)
-import Control.Lens (universeOn)
+import Control.Lens ((^..), traversed, universeOn)
 import Data.List
-import Data.Map (Map)
+import           Data.Map (Map)
 import qualified Data.Map as Map
+import           Data.StringMap (StringMap)
+import qualified Data.StringMap as SMap
 
 import Language.Clafer.Common
 import Language.Clafer.Front.Absclafer
@@ -105,12 +108,12 @@ data ClaferEnv = ClaferEnv {
                             cAst :: Maybe Module,
                             cIr :: Maybe (IModule, GEnv, Bool),
                             frags :: [Pos],    -- line numbers of fragment markers
-                            astModuleTrace :: Map Span [Ast]  -- can keep the Ast map since it never changes
+                            astModuleTrace :: Map.Map Span [Ast]  -- can keep the Ast map since it never changes
                             } deriving Show
 
 -- | This simulates a field in the ClaferEnv that will always recompute the map, 
 --   since the IR always changes and the map becomes obsolete
-irModuleTrace :: ClaferEnv -> Map Span [Ir]
+irModuleTrace :: ClaferEnv -> Map.Map Span [Ir]
 irModuleTrace env = traceIrModule $ getIModule $ cIr env
   where
     getIModule (Just (imodule, _, _)) = imodule
@@ -118,14 +121,33 @@ irModuleTrace env = traceIrModule $ getIModule $ cIr env
 
 -- | This simulates a field in the ClaferEnv that will always recompute the map, 
 --   since the IR always changes and the map becomes obsolete
-uidIClaferMap :: ClaferEnv -> Map UID IClafer
-uidIClaferMap env = foldl' (\accumMap' claf -> Map.insert (_uid claf) claf accumMap') Map.empty allClafers
+--   maps from a UID to an IClafer with the given UID
+uidIClaferMap :: ClaferEnv -> StringMap IClafer
+uidIClaferMap env = foldl' (\accumMap' claf -> SMap.insert (_uid claf) claf accumMap') SMap.empty allClafers
   where
     getIModule (Just (iModule, _, _)) = iModule
-    getIModule Nothing                = error "BUG: irIClaferMap: cannot request IClafer map before desugaring."
+    getIModule Nothing                = error "BUG: uidIClaferMap: cannot request IClafer map before desugaring."
 
     allClafers :: [ IClafer ]
     allClafers = universeOn biplate $ getIModule $ cIr env
+
+-- | This simulates a field in the ClaferEnv that will always recompute the map, 
+--   since the IR always changes and the map becomes obsolete
+--   maps to an IClafer which is the parent of the clafer with the given UID
+parentIClaferMap :: ClaferEnv -> StringMap IClafer
+parentIClaferMap env = foldl' (\accumMap' claf -> (addChildren accumMap' claf)) SMap.empty allClafers
+  where
+    getIModule (Just (iModule, _, _)) = iModule
+    getIModule Nothing                = error "BUG: parentIClaferMap: cannot request IClafer map before desugaring."
+
+    allClafers :: [ IClafer ]
+    allClafers = universeOn biplate $ getIModule $ cIr env
+
+    addChildren :: StringMap IClafer -> IClafer     -> StringMap IClafer
+    addChildren    accumMap''               parentClafer = 
+      -- insert the parentClafer as a value for the uid of each child
+      foldl' (\accumMap''' uid' -> SMap.insert uid' parentClafer accumMap''') accumMap'' (parentClafer ^.. elements.traversed.iClafer.uid)
+
 
 getAst :: (Monad m) => ClaferT m Module
 getAst = do
