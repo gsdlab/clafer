@@ -22,10 +22,12 @@
 -- | Generates Python representation of IR for the <https://github.com/gsdlab/ClaferZ3 ClaferZ3>.
 module Language.Clafer.Generator.Python where
 
+import Data.Char
+import Data.Maybe (fromMaybe)
+
 import Language.Clafer.Common
 import Language.Clafer.Front.Absclafer
 import Language.Clafer.Intermediate.Intclafer
-import Data.Char
 
 tag:: String -> String -> String
 tag name exp' = concat ["<", name, ">", exp', "</", name, ">\n"]
@@ -93,7 +95,7 @@ genPythonModule imodule = concat
 
 genPythonClafer :: IClafer -> Result
 genPythonClafer x = case x of
-  IClafer pos' abstract' gcard' id' uid' super' card' glcard' mut elements'  ->
+  IClafer pos' abstract' gcard' id' uid' super' card' glcard' _ elements'  ->
     concat [ "\t", genPythonPosition pos', "\n"
            , "\t", genPythonAbstract abstract', "\n"
            , "\t", maybe "" genPythonGCard gcard', "\n"
@@ -201,11 +203,12 @@ genPythonIExp x = case x of
     escape x    = [x] -}
   IInt n -> genPythonInteger n
   IDouble n ->  concat [ "DoubleLiteral.DoubleLiteral(", show n, ")"] --DoubleLiteral
-  IStr str -> genPythonString str
-  IClaferId modName' sident' isTop' _ -> concat
+  IStr str -> genPythonString str  
+  IClaferId modName' sident' isTop' bind' -> concat
     [ "ClaferId.ClaferId(moduleName=\"", modName' , "\", "
     , "my_id=\"", sident' , "\", "
-    , genPythonBoolean "isTop" isTop', ")"]
+    , genPythonBoolean "isTop" isTop'
+    , "my_bind=\"", fromMaybe "" bind' , "\", ", ")"]
 
 
 genPythonDecl :: IDecl -> String

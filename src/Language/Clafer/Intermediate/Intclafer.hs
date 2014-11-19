@@ -157,13 +157,7 @@ data PExp = PExp {
 -- | Embedes reference to a resolved Clafer
 type ClaferBinding = Maybe UID
 
-{-UnknownBinding-}
-  {- |  ClaferBinding { -}
-      {-_clafer :: IClafer-}
-    {-}-}
-  {-deriving (Eq,Ord,Show,Data,Typeable)-}
-
-data IExp =
+data IExp = 
    -- | quantified expression with declarations
    --   e.g., [ all x1; x2 : X | x1.ref != x2.ref ]
    IDeclPExp {
@@ -192,17 +186,12 @@ data IExp =
       _istr :: String
     }
  -- | a reference to a clafer name
- | IClaferId {
-      -- | module name - currently not used and empty since we have no module system
-      _modName :: String,
-      -- | name of the clafer being referred to
-      _sident :: CName,
-      -- | identifier refers to a top-level definition
-      _isTop :: Bool,
-      -- | binding to clafer
-      _binding :: ClaferBinding
-    }
-  deriving (Eq,Ord,Show,Data,Typeable)
+ | IClaferId 
+   { _modName :: String         -- ^ module name - currently not used and empty since we have no module system
+   , _sident :: CName           -- ^ name of the clafer being referred to
+   , _isTop :: Bool             -- ^ identifier refers to a top-level definition
+   , _binding :: ClaferBinding  -- ^ the UID of the bound IClafer, if resolved
+  } deriving (Eq,Ord,Show,Data,Typeable)
 
 {- |
 For IFunExp standard set of operators includes:

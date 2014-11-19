@@ -29,6 +29,8 @@ import Data.List
 import Data.Maybe
 import Data.Map (Map)
 import qualified Data.Map as Map
+import Data.StringMap (StringMap)
+import qualified Data.StringMap as SMap
 
 import Language.Clafer.Common
 import Language.Clafer.ClaferArgs
@@ -46,7 +48,7 @@ data GenCtx = GenCtx {
 
 data GenEnv = GenEnv 
   { claferargs :: ClaferArgs
-  , uidIClaferMap :: Map UID IClafer
+  , uidIClaferMap :: StringMap IClafer
   }  deriving (Show)
 timeSig = "Time"
 
@@ -57,8 +59,8 @@ bOrFoldl1 xs = foldl1 (\res val -> res || val) xs
 -- Alloy code generation
 -- 07th Mayo 2012 Rafael Olaechea
 --      Added Logic to print a goal block in case there is at least one goal.
-genAlloyLtlModule :: ClaferArgs -> (IModule, GEnv) -> [(UID, Integer)] -> Map UID IClafer -> (Result, [(Span, IrTrace)])
-genAlloyLtlModule    claferargs'    (imodule, _)       scopes              uidIClaferMap'   = (flatten output, filter ((/= NoTrace) . snd) $ mapLineCol output)
+genAlloyLtlModule :: ClaferArgs -> (IModule, GEnv) -> [(UID, Integer)] -> StringMap IClafer -> (Result, [(Span, IrTrace)])
+genAlloyLtlModule    claferargs'    (imodule, _)       scopes             uidIClaferMap'   = (flatten output, filter ((/= NoTrace) . snd) $ mapLineCol output)
   where
   genEnv = GenEnv claferargs' uidIClaferMap'
   rootClafer = IEClafer $ IClafer noSpan False (Just $ IGCard False (0, -1)) "root" "root" (ISuper False []) (Just (1,1)) (1, 1) False (_mDecls imodule)
@@ -251,7 +253,7 @@ containsTimedRel    genEnv     pexp@(PExp iType _ _ exp) =  case exp of
   IFunExp _ exps -> bOrFoldl1 $ map (containsTimedRel genEnv) exps
   IClaferId _ sident _ (Just bind) -> timedIClaferId
     where
-    boundIClafer = fromJust $ Map.lookup bind (uidIClaferMap genEnv)
+    boundIClafer = fromJust $ SMap.lookup bind (uidIClaferMap genEnv)
     mutable = _mutable boundIClafer
     timedIClaferId
       | sident == "ref" = mutable
@@ -436,7 +438,7 @@ genPExp'    genEnv    ctx     (PExp iType' pid' pos exp') = case exp' of
     optBar _  = " | "
   IClaferId _ "ref" _  (Just bind) -> CString $ "@ref" ++ timeJoin
     where
-    boundIClafer = Map.lookup bind (uidIClaferMap genEnv)
+    boundIClafer = SMap.lookup bind (uidIClaferMap genEnv)
     timeJoin = case boundIClafer of
       Just c -> case (_mutable c, time ctx) of
         (True, Just t) -> "." ++ t
@@ -450,7 +452,7 @@ genPExp'    genEnv    ctx     (PExp iType' pid' pos exp') = case exp' of
     TString -> vsident
     _ -> sid'
     where
-    boundIClafer = Map.lookup bind (uidIClaferMap genEnv)
+    boundIClafer = SMap.lookup bind (uidIClaferMap genEnv)
     sid' = (if istop then "" else '@' : genRelName "") ++ sid ++ timeJoin
     timeJoin = if sid == "this" then "" else case (boundIClafer, time ctx) of
       (Just IClafer {_mutable=true}, Just t) -> "." ++ t
@@ -533,7 +535,7 @@ containsMutable :: GenEnv -> PExp -> Bool
 containsMutable    genEnv    pexp@(PExp _ _ _ exp) = case exp of
   (IFunExp _ exps) -> bOrFoldl1 $ map (containsMutable genEnv) exps
   (IClaferId _ _ _ (Just bind)) -> let 
-      boundIClafer = fromJust $ Map.lookup bind (uidIClaferMap genEnv)
+      boundIClafer = fromJust $ SMap.lookup bind (uidIClaferMap genEnv)
     in 
       _mutable boundIClafer
   (IDeclPExp _ decls e) -> bOrFoldl1 (map (containsMut genEnv) decls) || containsMutable genEnv e

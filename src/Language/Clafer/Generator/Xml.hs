@@ -24,6 +24,8 @@ module Language.Clafer.Generator.Xml where
 
 -- import Text.XML.HaXml.XmlContent.Haskell hiding (Result)
 
+import Data.Maybe (fromMaybe)
+
 import Language.Clafer.Common
 import Language.Clafer.Front.Absclafer
 import Language.Clafer.Intermediate.Intclafer
@@ -167,11 +169,12 @@ genXmlIExp x = case x of
     escape y    = [y]
   IInt n -> genXmlInteger n
   IDouble n -> tag "DoubleLiteral" $ show n
-  IStr str -> genXmlString str
-  IClaferId modName' sident' isTop' _ -> concat
+  IStr str -> genXmlString str  
+  IClaferId modName' sident' isTop' bind' -> concat
     [ tag "ModuleName" modName'
     , tag "Id" sident'
-    , genXmlBoolean "IsTop" isTop']
+    , genXmlBoolean "IsTop" isTop'
+    , tag "Bind" $ fromMaybe "" bind' ]
 
 genXmlDecl :: IDecl -> String
 genXmlDecl (IDecl disj locids pexp) = tag "Declaration" $ concat

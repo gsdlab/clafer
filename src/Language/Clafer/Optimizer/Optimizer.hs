@@ -153,7 +153,7 @@ expNav' context (IFunExp _ (p0:p:_)) = do
   (exp', context'') <- expNav' context' $ _exp p
   return (IFunExp iJoin [ p0 {_exp = exp0'}
                         , p  {_exp = exp'}], context'')
-expNav' context x@(IClaferId modName' id' isTop' binding) = do
+expNav' context x@(IClaferId modName' id' isTop' bind' ) = do
   st <- gets stable
   if Map.member id' st
     then do
@@ -161,7 +161,7 @@ expNav' context x@(IClaferId modName' id' isTop' binding) = do
       let (impls', context') = maybe (impls, "")
            (\y -> ([[head y]], head y)) $
            find (\z -> context == (head.tail) z) impls
-      return (mkIFunExp iUnion $ map (\u -> IClaferId modName' u isTop' binding) $
+      return (mkIFunExp iUnion $ map (\u -> IClaferId modName' u isTop' bind') $
               map head impls', context')
     else do
       return (x, id')
@@ -171,9 +171,9 @@ split' :: MonadState GEnv m => IExp -> (IExp -> m IExp) -> m [IExp]
 split'(IFunExp _ (p:pexp:_)) f =
     split' (_exp p) (\s -> f $ IFunExp iJoin
       [p {_exp = s}, pexp])
-split' (IClaferId modName' id' isTop' binding) f = do
+split' (IClaferId modName' id' isTop' bind') f = do
     st <- gets stable
-    mapM f $ map (\y -> IClaferId modName' y isTop' binding) $ maybe [id'] (map head) $ Map.lookup id' st
+    mapM f $ map (\y -> IClaferId modName' y isTop' bind') $ maybe [id'] (map head) $ Map.lookup id' st
 split' _ _ = error "Function split' from Optimizer expects an argument of type ClaferId or IFunExp but was given another IExp"
 
 -- -----------------------------------------------------------------------------
@@ -270,8 +270,8 @@ markTopIExp clafers x = case x of
   IDeclPExp quant' decl pexp -> IDeclPExp quant' (map (markTopDecl clafers) decl)
                                 (markTopPExp ((decl >>= _decls) ++ clafers) pexp)
   IFunExp op' exps' -> IFunExp op' $ map (markTopPExp clafers) exps'
-  IClaferId modName' sident' _  bind ->
-    IClaferId modName' sident' (sident' `elem` clafers) bind
+  IClaferId modName' sident' _ bind'->
+    IClaferId modName' sident' (sident' `elem` clafers) bind'
   _ -> x
 
 
