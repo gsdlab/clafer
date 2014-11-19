@@ -1,6 +1,6 @@
 {-# LANGUAGE RankNTypes #-}
 {-
- Copyright (C) 2012 Kacper Bak, Jimmy Liang, Michal Antkiewicz <http://gsd.uwaterloo.ca>
+ Copyright (C) 2012-2014 Kacper Bak, Jimmy Liang, Michal Antkiewicz, Paulius Juodisius <http://gsd.uwaterloo.ca>
 
  Permission is hereby granted, free of charge, to any person obtaining a copy of
  this software and associated documentation files (the "Software"), to deal in
@@ -44,13 +44,24 @@ sugarModule x = Module noSpan $ map sugarDeclaration $ _mDecls x -- (fragments x
 
 -- | desugars enumeration to abstract and global singleton features
 desugarEnums :: Declaration -> [Declaration]
-desugarEnums (EnumDecl s id' enumids) = (absEnum s) : map (mkEnum s) enumids
+desugarEnums (EnumDecl (Span p1 p2) id' enumids) = absEnum : map mkEnum enumids
     where
-    oneToOne = (CardInterval noSpan $ NCard noSpan (PosInteger ((0,0), "1")) (ExIntegerNum noSpan $ PosInteger ((0,0), "1")))
-    absEnum s1 = ElementDecl s1 $ Subclafer s1 $ Clafer s1 (Abstract s1) [] (GCardEmpty s1) id' (SuperEmpty s1) (CardEmpty s1) (InitEmpty s1) (TransitionEmpty s1) (ElementsList s1 [])
-    mkEnum s2 (EnumIdIdent _ eId) = ElementDecl s2 $
-                                   Subclafer s2 $
-                                   Clafer s2 (AbstractEmpty s2) [] (GCardEmpty s2) eId ((SuperSome s2) (SuperColon s2) (ClaferId s2 $ Path s2 [ModIdIdent s2 id'])) oneToOne (InitEmpty s2) (TransitionEmpty s2) (ElementsList s2 [])
+    p2' = case enumids of
+      -- the abstract enum clafer should end before the first literal begins
+      ((EnumIdIdent (Span (Pos y' x') _) _):_) -> Pos y' (x'-3) -- cutting the ' = '
+      [] -> p2 -- should never happen - cannot have enum without any literals. Return the original end pos.
+    oneToOne pos' = (CardInterval noSpan $
+                  NCard noSpan (PosInteger (pos', "1")) (ExIntegerNum noSpan $ PosInteger (pos', "1")))
+    absEnum = let
+        s1 = Span p1 p2'
+      in
+        ElementDecl s1 $
+          Subclafer s1 $
+            Clafer s1 (Abstract s1) [] (GCardEmpty s1) id' (SuperEmpty s1) (CardEmpty s1) (InitEmpty s1) (TransitionEmpty s1) (ElementsList s1 [])
+    mkEnum (EnumIdIdent s2 eId) = -- each concrete clafer must fit within the original span of the literal
+      ElementDecl s2 $
+        Subclafer s2 $
+          Clafer s2 (AbstractEmpty s2) [] (GCardEmpty s2) eId ((SuperSome s2) (SuperColon s2) (ClaferId s2 $ Path s2 [ModIdIdent s2 id'])) (oneToOne (0, 0)) (InitEmpty s2) (TransitionEmpty s2) (ElementsList s2 [])
 desugarEnums x = [x]
 
 

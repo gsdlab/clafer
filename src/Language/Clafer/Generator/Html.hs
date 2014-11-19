@@ -375,9 +375,11 @@ getUid :: PosIdent -> Map.Map Span [Ir] -> String
 getUid posIdent@(PosIdent (_, id')) irMap =
     if Map.lookup (getSpan posIdent) irMap == Nothing
     then "Lookup failed"
-    else let IRPExp pexp = head $ fromJust $ Map.lookup (getSpan posIdent) irMap in
-      findUid id' $ getIdentPExp pexp
-      where {getIdentPExp (PExp _ _ _ exp') = getIdentIExp exp';
+    else let wrappedResult = head $ fromJust $ Map.lookup (getSpan posIdent) irMap in
+      findUid id' $ unwrap wrappedResult
+      where {unwrap (IRPExp pexp')       = getIdentPExp pexp';
+             unwrap (IRClafer iClafer') = [ _uid iClafer' ];
+             getIdentPExp (PExp _ _ _ exp') = getIdentIExp exp';
              getIdentIExp (IFunExp _ exps') = concatMap getIdentPExp exps';
              getIdentIExp (IClaferId _ id'' _ _) = [id''];
              getIdentIExp (IDeclPExp _ _ pexp) = getIdentPExp pexp;

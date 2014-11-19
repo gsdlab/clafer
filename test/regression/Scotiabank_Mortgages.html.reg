@@ -74,5 +74,5 @@
 <!-- # FRAGMENT /-->
 
 <div>
-<span class="keyword">enum</span> <span class="claferDecl" id="Lookup failed">MortgageTerm</span> = <span class="claferDecl" id="Lookup failed">sixMonths</span> | <span class="claferDecl" id="Lookup failed">oneYear</span></div>
+<span class="keyword">enum</span> <span class="claferDecl" id="Lookup failed">MortgageTerm</span> = <span class="claferDecl" id="c0_sixMonths">sixMonths</span> | <span class="claferDecl" id="c0_oneYear">oneYear</span></div>
 
