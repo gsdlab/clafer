@@ -25,34 +25,35 @@
 This is in a separate module from the module "Language.Clafer" so that other modules that require
 ClaferEnv can just import this module without all the parsing/compiline/generating functionality.
  -}
-module Language.ClaferT (
-                         ClaferEnv(..), 
-                         makeEnv, 
-                         getAst, 
-                         getIr, 
-                         ClaferM, 
-                         ClaferT, 
-                         CErr(..), 
-                         CErrs(..), 
-                         ClaferErr, 
-                         ClaferErrs, 
-                         ClaferSErr, 
-                         ClaferSErrs, 
-                         ErrPos(..), 
-                         PartialErrPos(..), 
-                         throwErrs, 
-                         throwErr, 
-                         catchErrs, 
-                         getEnv, 
-                         getsEnv, 
-                         modifyEnv, 
-                         putEnv, 
-                         runClafer, 
-                         runClaferT, 
-                         Throwable(..), 
-                         Span(..), 
-                         Pos(..)
-) where
+module Language.ClaferT 
+  ( ClaferEnv(..)
+  , irModuleTrace
+  , makeEnv
+  , getAst
+  , getIr
+  , ClaferM
+  , ClaferT
+  , CErr(..)
+  , CErrs(..)
+  , ClaferErr
+  , ClaferErrs
+  , ClaferSErr
+  , ClaferSErrs
+  , ErrPos(..)
+  , PartialErrPos(..)
+  , throwErrs
+  , throwErr
+  , catchErrs
+  , getEnv
+  , getsEnv
+  , modifyEnv
+  , putEnv
+  , runClafer
+  , runClaferT
+  , Throwable(..)
+  , Span(..)
+  , Pos(..)
+  ) where
 
 import Control.Monad.Error
 import Control.Monad.State
@@ -101,9 +102,16 @@ data ClaferEnv = ClaferEnv {
                             cAst :: Maybe Module,
                             cIr :: Maybe (IModule, GEnv, Bool),
                             frags :: [Pos],    -- line numbers of fragment markers
-                            irModuleTrace :: Map Span [Ir],
-                            astModuleTrace :: Map Span [Ast]
+                            astModuleTrace :: Map Span [Ast]  -- can keep the Ast map since it never changes
                             } deriving Show
+
+-- | This simulates a field in the ClaferEnv that will always recompute the map, 
+--   since the IR always changes and the map becomes obsolete
+irModuleTrace :: ClaferEnv -> Map Span [Ir]
+irModuleTrace env = traceIrModule $ getIModule $ cIr env
+  where
+    getIModule (Just (imodule, _, _)) = imodule
+    getIModule Nothing                = error "BUG: irModuleTrace: cannot request IR map before desugaring."
 
 getAst :: (Monad m) => ClaferT m Module
 getAst = do
@@ -125,7 +133,6 @@ makeEnv args' = ClaferEnv { args = args'',
                            cAst = Nothing,
                            cIr = Nothing,
                            frags = [],
-                           irModuleTrace = Map.empty,
                            astModuleTrace = Map.empty}
                where 
                   args'' = if (CVLGraph `elem` (mode args') ||
