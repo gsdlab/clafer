@@ -109,10 +109,10 @@ runTypeAnalysis :: TypeAnalysis a -> IModule -> Either ClaferSErr a
 runTypeAnalysis (TypeAnalysis tc) imodule = runReaderT tc $ TypeInfo [] (gatherInfo imodule) undefined Nothing
 
 unionType :: IType -> [String]
-unionType TString  = ["string"]
-unionType TReal    = ["real"]
-unionType TInteger = ["integer"]
-unionType TBoolean = ["boolean"]
+unionType TString  = [stringType]
+unionType TReal    = [realType]
+unionType TInteger = [integerType]
+unionType TBoolean = [booleanType]
 unionType (TClafer u) = u
 
 (+++) :: IType -> IType -> IType
@@ -198,7 +198,7 @@ resolveTModule (imodule, _) =
     Right mDecls' -> return imodule{_mDecls = mDecls'}
     Left err      -> throwError err
   where
-  analysis decls1 = mapM (resolveTElement $ rootUid) decls1
+  analysis decls1 = mapM (resolveTElement rootIdent) decls1
 
 resolveTElement :: String -> IElement -> TypeAnalysis IElement
 resolveTElement _ (IEClafer iclafer) =
@@ -346,7 +346,7 @@ resolveTPExp' p@PExp{_inPos, _exp} =
       result' <- result
       return (result', e{_exps = [arg1', arg2']})
 
-  resolveTExp e@(IFunExp "=>else" [arg1, arg2, arg3]) =
+  resolveTExp e@(IFunExp "ifthenelse" [arg1, arg2, arg3]) =
     runListT $ runErrorT $ do
       arg1' <- lift $ ListT $ resolveTPExp arg1
       arg2' <- lift $ ListT $ resolveTPExp arg2

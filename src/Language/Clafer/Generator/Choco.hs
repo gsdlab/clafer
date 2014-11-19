@@ -30,7 +30,7 @@ genCModule _ (imodule@IModule{_mDecls}, _) scopes =
     ++ (genGoal =<< _mDecls)
     where
     root :: IClafer
-    root = IClafer noSpan False Nothing "root" "root" (ISuper False [PExp Nothing "" noSpan $ IClaferId "clafer" "clafer" True $ Just "clafer"]) (Just (1, 1)) (0, 0) _mDecls
+    root = IClafer noSpan False Nothing rootIdent rootIdent (ISuper False [PExp Nothing "" noSpan $ IClaferId "" baseClafer True Nothing ]) (Just (1, 1)) (0, 0) _mDecls
     
     toplevelClafers = mapMaybe iclafer _mDecls
     -- The sort is so that we encounter sub clafers before super clafers when abstract clafers extend other abstract clafers
@@ -42,8 +42,6 @@ genCModule _ (imodule@IModule{_mDecls}, _) scopes =
 --    minusRoot = filter ((/= "root") . uid)
     
     claferWithUid u = fromMaybe (error $ "claferWithUid: \"" ++ u ++ "\" is not a clafer") $ find ((== u) . _uid) clafers
-    
-    prims = ["int", "integer", "string", "real"]
     
     -- All abstract clafers u inherits
     supersOf :: String -> [String]
@@ -57,9 +55,9 @@ genCModule _ (imodule@IModule{_mDecls}, _) scopes =
     superOf u =
         case _super $ claferWithUid u of
             ISuper False [PExp{_exp = IClaferId{_sident}}]
-                | _sident == "clafer"  -> Nothing
-                | _sident `elem` prims -> Nothing
-                | otherwise           -> Just _sident
+                | _sident == baseClafer -> Nothing
+                | isPrimitive _sident   -> Nothing
+                | otherwise             -> Just _sident
             _ -> Nothing
 
 {-    superWithRef u =
@@ -71,8 +69,8 @@ genCModule _ (imodule@IModule{_mDecls}, _) scopes =
         case _super $ claferWithUid u of
             ISuper True [PExp{_exp = IClaferId{_sident}}] -> Just _sident
             ISuper False [PExp{_exp = IClaferId{_sident}}]
-                | _sident == "int"     -> Just "integer"
-                | _sident `elem` prims -> Just _sident
+                | _sident == "int"    -> Just "integer"
+                | isPrimitive _sident -> Just _sident
                 | otherwise           -> Nothing
             _ -> Nothing
             
@@ -298,7 +296,7 @@ genCModule _ (imodule@IModule{_mDecls}, _) scopes =
     mapFunc "++" = "union"
     mapFunc "--" = "diff"
     mapFunc "&" = "inter"
-    mapFunc "=>else" = "ifThenElse"
+    mapFunc "ifthenelse" = "ifThenElse"
     mapFunc op' = error $ "Choco: Unknown op: " ++ op'
     
 {-    sidentOf u = ident $ claferWithUid u

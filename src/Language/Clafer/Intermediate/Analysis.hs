@@ -31,6 +31,8 @@ import Language.Clafer.Front.Absclafer hiding (Path)
 import qualified Language.Clafer.Intermediate.Intclafer as I
 import Language.Clafer.Intermediate.Desugarer
 import Language.Clafer.Front.Printclafer
+import Language.Clafer.Common
+
 import Control.Applicative
 import Control.Monad.LPMonad.Supply
 import Control.Monad.Error
@@ -93,7 +95,7 @@ isConcrete :: SClafer -> Bool
 isConcrete = not . isAbstract
 
 isBase :: SClafer -> Bool
-isBase = (`elem` ["clafer", "string", "real", "int", "integer", "boolean"]) . uid
+isBase = (`elem` (baseClafer : primitiveTypes)) . uid
 
 isDerived :: SClafer -> Bool
 isDerived = not . isBase
@@ -156,7 +158,7 @@ topNonRootAncestor :: (Uidable c, MonadAnalysis m) => c -> m c
 topNonRootAncestor clafer =
   do
     uid' <- toUid clafer
-    when (uid' == rootUid) $ error "Root does not have a non root ancestor."
+    when (uid' == rootIdent) $ error "Root does not have a non root ancestor."
     (head . tail . reverse) <$> ancestorsOf clafer
 
 refUid :: Monad m => SClafer -> m String
@@ -306,11 +308,6 @@ constraintsUnder under =
     clafers' <- filter (matches under) <$> clafers
     return [(clafer, constraint) | clafer <- clafers', constraint <- constraints clafer]
 
-
-rootUid :: String
-rootUid = "_root"
-
-
 -- Converts IClafer to SClafer
 convertClafer :: I.IClafer -> [SClafer]
 convertClafer = 
@@ -341,7 +338,7 @@ convertClafer =
       case I._super clafer of
         I.ISuper True [I.PExp{I._exp = I.IClaferId{I._sident = superUid}}]  -> Just $ Ref superUid
         I.ISuper False [I.PExp{I._exp = I.IClaferId{I._sident = superUid}}] ->
-          if superUid `elem` ["string", "real", "int", "integer", "boolean"]
+          if isPrimitive superUid
             then Just $ Ref superUid
             else Just $ Colon superUid
         _ -> Nothing
@@ -350,14 +347,14 @@ gatherInfo :: I.IModule -> Info
 gatherInfo imodule =
   Info $ sClafer : sInteger : sInt : sReal : sString : sBoolean : convertClafer root
   where
-  sClafer = SClafer "clafer" "clafer" False 0 (-1) 0 (-1) Nothing Nothing []
-  sInteger = SClafer "integer" "integer" False 0 (-1) 0 (-1) Nothing Nothing []
+  sClafer = SClafer baseClafer baseClafer False 0 (-1) 0 (-1) Nothing Nothing []
+  sInteger = SClafer integerType integerType False 0 (-1) 0 (-1) Nothing Nothing []
   sInt     = SClafer "int" "int" False 0 (-1) 0 (-1) Nothing Nothing []
-  sReal    = SClafer "real" "real" False 0 (-1) 0 (-1) Nothing Nothing []
-  sString  = SClafer "string" "string" False 0 (-1) 0 (-1) Nothing Nothing []
-  sBoolean = SClafer "boolean" "boolean" False 0 (-1) 0 (-1) Nothing Nothing []
+  sReal    = SClafer realType realType False 0 (-1) 0 (-1) Nothing Nothing []
+  sString  = SClafer stringType stringType False 0 (-1) 0 (-1) Nothing Nothing []
+  sBoolean = SClafer booleanType booleanType False 0 (-1) 0 (-1) Nothing Nothing []
   
-  root = I.IClafer noSpan False Nothing rootUid rootUid (I.ISuper False [I.PExp Nothing "" noSpan $ I.IClaferId "clafer" "clafer" True $ Just "clafer"]) (Just (1, 1)) (0, 0) $ I._mDecls imodule
+  root = I.IClafer noSpan False Nothing rootIdent rootIdent (I.ISuper False [I.PExp Nothing "" noSpan $ I.IClaferId "" baseClafer True Nothing ]) (Just (1, 1)) (0, 0) $ I._mDecls imodule
 
 
 

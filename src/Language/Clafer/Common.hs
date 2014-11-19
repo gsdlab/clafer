@@ -35,9 +35,8 @@ import Language.Clafer.Intermediate.Intclafer
 -- basic functions shared by desugarer, analyzer and code generator
 type Result = String
 
-transIdent :: PosIdent -> Result
-transIdent x = case x of
-  PosIdent str  -> snd str
+transIdent :: PosIdent -> String
+transIdent (PosIdent (_, str)) = str
 
 mkIdent :: String -> PosIdent
 mkIdent str = PosIdent ((0, 0), str)
@@ -81,12 +80,12 @@ pExpDef :: String -> Span -> IExp -> PExp
 pExpDef = PExp Nothing
 
 isParent :: PExp -> Bool
-isParent (PExp _ _ _ (IClaferId _ id' _ _)) = id' == parent
+isParent (PExp _ _ _ (IClaferId _ id' _ _)) = id' == parentIdent
 isParent _ = False
 
 isClaferName :: PExp -> Bool
 isClaferName (PExp _ _ _ (IClaferId _ id' _ _)) =
-  id' `notElem` ([this, parent, children, ref] ++ primitiveTypes)
+  id' `notElem` (specialNames ++ primitiveTypes)
 isClaferName _ = False
 
 isClaferName' :: PExp -> Bool
@@ -290,7 +289,7 @@ binOps = logBinOps ++ relBinOps ++ arithBinOps ++ setBinOps
 
 -- ternary operators
 iIfThenElse :: String
-iIfThenElse   = "=>else"
+iIfThenElse   = "ifthenelse"
 
 mkIFunExp :: String -> [IExp] -> IExp
 mkIFunExp _ (x:[]) = x
@@ -303,23 +302,29 @@ toLowerS (s:ss) = toLower s : ss
 -- -----------------------------------------------------------------------------
 -- Constants
 
-this :: String
-this = "this"
+rootIdent :: String
+rootIdent = "root"
 
-parent :: String
-parent = "parent"
+thisIdent :: String
+thisIdent = "this"
 
-children :: String
-children = "children"
+parentIdent :: String
+parentIdent = "parent"
 
-ref :: String
-ref = "ref"
+refIdent :: String
+refIdent = "ref"
+
+childrenIdent :: String
+childrenIdent = "children"
 
 specialNames :: [String]
-specialNames = [this, parent, children, ref]
+specialNames = [thisIdent, parentIdent, refIdent, rootIdent, childrenIdent]
 
-strType :: String
-strType = "string"
+isSpecial :: String -> Bool
+isSpecial = flip elem specialNames
+
+stringType :: String
+stringType = "string"
 
 intType :: String
 intType = "int"
@@ -330,6 +335,9 @@ integerType = "integer"
 realType :: String
 realType = "real"
 
+booleanType :: String
+booleanType = "boolean"
+
 baseClafer :: String
 baseClafer = "clafer"
 
@@ -337,10 +345,22 @@ modSep :: String
 modSep = "\\"
 
 primitiveTypes :: [String]
-primitiveTypes = [strType, intType, integerType, realType]
+primitiveTypes = [stringType, intType, integerType, realType]
 
 isPrimitive :: String -> Bool
 isPrimitive = flip elem primitiveTypes
+
+-- | reserved keywords which cannot be used as clafer identifiers
+keywordIdents :: [String]
+keywordIdents =
+  specialNames ++
+  primitiveTypes ++
+  [ iGMax, iGMin, iSumSet ] ++ -- unary operators
+  [ iXor, iIn ] ++ -- binary operators
+  [ "if", "then", "else" ] ++ -- ternary operators
+  [ "no", "not", "some", "one", "all", "disj" ] ++ -- quantifiers
+  [ "opt", "mux", "or", "lone" ] ++ -- group cardinalities
+  [ "abstract", "enum" ] -- keywords
 
 data GEnv = GEnv {
   identCountMap :: Map.Map String Int,

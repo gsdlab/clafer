@@ -64,7 +64,7 @@ desugarEnums x = [x]
 
 desugarDeclaration :: Declaration -> [IElement]
 desugarDeclaration (ElementDecl _ element) = desugarElement element
-desugarDeclaration _ = error "desugared"
+desugarDeclaration _ = error "Desugarer.desugarDeclaration: enum declarations should have already been converted to clafers. BUG."
 
 
 sugarDeclaration :: IElement -> Declaration
@@ -93,12 +93,15 @@ desugarSuper :: Super -> ISuper
 desugarSuper (SuperEmpty s) =
       ISuper False [PExp (Just $ TClafer []) "" s $ mkLClaferId baseClafer True Nothing]
 desugarSuper (SuperSome _ superhow setexp) =
-      ISuper (desugarSuperHow superhow) [desugarSetExp setexp]
+      ISuper (desugarSuperHow superhow $ isPrim setexp) [desugarSetExp setexp]
+      where
+        isPrim (ClaferId _ (Path _ [(ModIdIdent _ (PosIdent (_,ident')))])) = isPrimitive ident'
+        isPrim _ = False 
 
 
-desugarSuperHow :: SuperHow -> Bool
-desugarSuperHow (SuperColon _) = False
-desugarSuperHow _  = True
+desugarSuperHow :: SuperHow -> Bool -> Bool
+desugarSuperHow (SuperColon _) isPrimitive = if isPrimitive then True else False -- need to have reference for primitive
+desugarSuperHow _ _ = True -- otherwise reference
 
 
 desugarInit :: PosIdent -> Init -> [IElement]
@@ -352,7 +355,7 @@ desugarSetExp' x = case x of
 
 
 sugarExp :: PExp -> Exp
-sugarExp x = sugarExp' $ Language.Clafer.Intermediate.Intclafer._exp x
+sugarExp x = sugarExp' $ _exp x
 
 
 sugarExp' :: IExp -> Exp
@@ -436,7 +439,7 @@ desugarPath (PExp iType' pid' pos' x) = reducePExp $ PExp iType' pid' pos' resul
   where
   result
     | isSet x     = IDeclPExp ISome [] (pExpDefPid pos' x)
-    | isNegSome x = IDeclPExp INo   [] $ _bpexp $ Language.Clafer.Intermediate.Intclafer._exp $ head $ _exps x
+    | isNegSome x = IDeclPExp INo   [] $ _bpexp $ _exp $ head $ _exps x
     | otherwise   =  x
   isNegSome (IFunExp op' [PExp _ _ _ (IDeclPExp ISome [] _)]) = op' == iNot
   isNegSome _ = False
@@ -462,8 +465,8 @@ reduceIExp x = x
 reduceNav :: IExp -> IExp
 reduceNav x@(IFunExp op' exps'@((PExp _ _ _ iexp@(IFunExp _ (pexp0:pexp:_))):pPexp:_)) = 
   if op' == iJoin && isParent pPexp && isClaferName pexp
-  then reduceNav $ Language.Clafer.Intermediate.Intclafer._exp pexp0
-  else x{_exps = (head exps'){Language.Clafer.Intermediate.Intclafer._exp = reduceIExp iexp} :
+  then reduceNav $ _exp pexp0
+  else x{_exps = (head exps'){_exp = reduceIExp iexp} :
                 tail exps'}
 reduceNav x = x
 
