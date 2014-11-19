@@ -22,10 +22,12 @@
 -- | Generates Python representation of IR for the <https://github.com/gsdlab/ClaferZ3 ClaferZ3>.
 module Language.Clafer.Generator.Python where
 
+import Data.Char
+import Data.Maybe (fromMaybe)
+
 import Language.Clafer.Common
 import Language.Clafer.Front.Absclafer
 import Language.Clafer.Intermediate.Intclafer
-import Data.Char
 
 tag:: String -> String -> String
 tag name exp' = concat ["<", name, ">", exp', "</", name, ">\n"]
@@ -176,7 +178,7 @@ genPythonIExpType x = case x of
   IInt _ -> "IIntExp"
   IDouble _ -> "IDoubleExp"
   IStr _ -> "IStringExp"
-  IClaferId _ _ _ -> "IClaferId"
+  IClaferId _ _ _ _ -> "IClaferId"
 
 
 declHelper :: [IDecl] -> String
@@ -202,10 +204,11 @@ genPythonIExp x = case x of
   IInt n -> genPythonInteger n
   IDouble n ->  concat [ "DoubleLiteral.DoubleLiteral(", show n, ")"] --DoubleLiteral
   IStr str -> genPythonString str  
-  IClaferId modName' sident' isTop' -> concat
+  IClaferId modName' sident' isTop' bind' -> concat
     [ "ClaferId.ClaferId(moduleName=\"", modName' , "\", "
     , "my_id=\"", sident' , "\", "
-    , genPythonBoolean "isTop" isTop', ")"]
+    , genPythonBoolean "isTop" isTop'
+    , "my_bind=\"", fromMaybe "" bind' , "\", ", ")"]
 
 
 genPythonDecl :: IDecl -> String

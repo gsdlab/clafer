@@ -91,7 +91,7 @@ sugarClafer (IClafer s abstract gcard' _ uid' super' crd _ es) =
 
 desugarSuper :: Super -> ISuper
 desugarSuper (SuperEmpty s) =
-      ISuper False [PExp (Just $ TClafer []) "" s $ mkLClaferId baseClafer True]
+      ISuper False [PExp (Just $ TClafer []) "" s $ mkLClaferId baseClafer True Nothing]
 desugarSuper (SuperSome _ superhow setexp) =
       ISuper (desugarSuperHow superhow) [desugarSetExp setexp]
 
@@ -106,7 +106,7 @@ desugarInit _ (InitEmpty _) = []
 desugarInit id' (InitSome s inithow exp') = [ IEConstraint (desugarInitHow inithow) (pExpDefPid s implIExp) ]
   where 
     cId :: PExp
-    cId = mkPLClaferId (snd $ getIdent id') False
+    cId = mkPLClaferId (snd $ getIdent id') False Nothing
     -- <id> = <exp'>
     assignIExp :: IExp
     assignIExp = (IFunExp "=" [cId, desugarExp exp'])
@@ -123,7 +123,7 @@ desugarInitHow (InitHow_2 _ )= False
 desugarName :: Name -> IExp
 desugarName (Path _ path) =
       IClaferId (concatMap ((++ modSep).desugarModId) (init path))
-                (desugarModId $ last path) True
+                (desugarModId $ last path) True Nothing
 
 desugarModId :: ModId -> Result
 desugarModId (ModIdIdent _ id') = transIdent id'
@@ -376,7 +376,7 @@ sugarExp' x = case x of
   IInt n -> EInt noSpan $ PosInteger ((0, 0), show n)
   IDouble n -> EDouble noSpan $ PosDouble ((0, 0), show n)
   IStr str -> EStr noSpan $ PosString ((0, 0), str)
-  IClaferId _ _ _ -> ESetExp noSpan $ sugarSetExp' x
+  IClaferId _ _ _ _ -> ESetExp noSpan $ sugarSetExp' x
   _ -> error "Function sugarExp' from Desugarer was given an invalid argument" -- This should never happen
   where
   sugarUnOp op''
@@ -427,8 +427,8 @@ sugarSetExp' (IFunExp op' exps') = (sugarOp op') (exps''!!0) (exps''!!1)
       | op'' == iRange         = Range noSpan 
       | op'' == iJoin          = Join noSpan 
       | otherwise              = error "Invalid argument given to function sygarSetExp' in Desugarer"
-sugarSetExp' (IClaferId "" id' _) = ClaferId noSpan $ Path noSpan [ModIdIdent noSpan $ mkIdent id']
-sugarSetExp' (IClaferId modName' id' _) = ClaferId noSpan $ Path noSpan $ (sugarModId modName') : [sugarModId id']
+sugarSetExp' (IClaferId "" id' _ _) = ClaferId noSpan $ Path noSpan [ModIdIdent noSpan $ mkIdent id']
+sugarSetExp' (IClaferId modName' id' _ _) = ClaferId noSpan $ Path noSpan $ (sugarModId modName') : [sugarModId id']
 sugarSetExp' _ = error "IDecelPexp, IInt, IDobule, and IStr can not be sugared into a setExp!" --This should never happen
 
 desugarPath :: PExp -> PExp
@@ -443,7 +443,7 @@ desugarPath (PExp iType' pid' pos' x) = reducePExp $ PExp iType' pid' pos' resul
 
 
 isSet :: IExp -> Bool
-isSet (IClaferId _ _ _)  = True
+isSet (IClaferId _ _ _ _)  = True
 isSet (IFunExp op' _) = op' `elem` setBinOps
 isSet _ = False
 

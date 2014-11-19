@@ -30,7 +30,7 @@ genCModule _ (imodule@IModule{_mDecls}, _) scopes =
     ++ (genGoal =<< _mDecls)
     where
     root :: IClafer
-    root = IClafer noSpan False Nothing "root" "root" (ISuper False [PExp Nothing "" noSpan $ IClaferId "clafer" "clafer" True]) (Just (1, 1)) (0, 0) _mDecls
+    root = IClafer noSpan False Nothing "root" "root" (ISuper False [PExp Nothing "" noSpan $ IClaferId "clafer" "clafer" True $ Just "clafer"]) (Just (1, 1)) (0, 0) _mDecls
     
     toplevelClafers = mapMaybe iclafer _mDecls
     -- The sort is so that we encounter sub clafers before super clafers when abstract clafers extend other abstract clafers

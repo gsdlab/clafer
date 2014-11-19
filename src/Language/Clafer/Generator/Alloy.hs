@@ -133,7 +133,7 @@ genClafer claferargs resPath oClafer = (cunlines $ filterNull
 transPrimitive :: IClafer -> IClafer
 transPrimitive = super %~ toOverlapping
   where
-    toOverlapping x@(ISuper _ [PExp _ _ _ (IClaferId _ id' _)])
+    toOverlapping x@(ISuper _ [PExp _ _ _ (IClaferId _ id' _ _)])
       | isPrimitive id' = x{_isOverlapping = True}
       | otherwise      = x
     toOverlapping x = x
@@ -144,8 +144,8 @@ claferDecl    c     rest    = cconcat [genOptCard c,
   Concat NoTrace [CString $ _uid c, genExtends $ _super c, CString "\n", rest]]
   where
   genAbstract isAbs = if isAbs then "abstract " else ""
-  genExtends (ISuper False [PExp _ _ _ (IClaferId _ "clafer" _)]) = CString ""
-  genExtends (ISuper False [PExp _ _ _ (IClaferId _ i _)]) = CString " " +++ Concat NoTrace [CString $ "extends " ++ i]
+  genExtends (ISuper False [PExp _ _ _ (IClaferId _ "clafer" _ _)]) = CString ""
+  genExtends (ISuper False [PExp _ _ _ (IClaferId _ i _ _)]) = CString " " +++ Concat NoTrace [CString $ "extends " ++ i]
   -- todo: handle multiple inheritance
   genExtends _ = CString ""
 
@@ -195,7 +195,7 @@ getTarget    x     = case x of
   _ -> x
 
 genType :: ClaferArgs -> PExp                              -> Concat
-genType    claferargs    x@(PExp _ _ _ y@(IClaferId _ _ _)) = genPExp claferargs []
+genType    claferargs    x@(PExp _ _ _ y@(IClaferId _ _ _ _)) = genPExp claferargs []
   x{_exp = y{_isTop = True}}
 genType m x = genPExp m [] x
 
@@ -267,7 +267,7 @@ isRefPath c = (c ^. super . isOverlapping) &&
   s = _supers $ _super c
 
 isSimplePath :: [PExp] -> Bool
-isSimplePath    [PExp _ _ _ (IClaferId _ _ _)] = True
+isSimplePath    [PExp _ _ _ (IClaferId _ _ _ _)] = True
 isSimplePath    [PExp _ _ _ (IFunExp op' _)] = op' == iUnion
 isSimplePath    _ = False
 
@@ -343,8 +343,8 @@ genPExp'    claferargs    resPath     (PExp iType' pid' pos exp') = case exp' of
     where
     optBar [] = ""
     optBar _  = " | "
-  IClaferId _ "ref" _ -> CString "@ref"
-  IClaferId _ sid istop -> CString $
+  IClaferId _ "ref" _ _ -> CString "@ref"
+  IClaferId _ sid istop _ -> CString $
       if head sid == '~' then sid else
       if isNothing iType' then sid' else case fromJust $ iType' of
     TInteger -> vsident
@@ -402,7 +402,7 @@ optBrArg :: ClaferArgs -> [String] -> PExp -> Concat
 optBrArg    claferargs    resPath     x     = brFun (genPExp' claferargs resPath) x
   where
   brFun = case x of
-    PExp _ _ _ (IClaferId _ _ _) -> ($)
+    PExp _ _ _ (IClaferId _ _ _ _) -> ($)
     PExp _ _ _ (IInt _) -> ($)
     _  -> brArg
     
@@ -449,7 +449,7 @@ adjustIExp resPath x = case x of
     where
     (adjNav, adjExps) = if op' == iJoin then (aNav, id)
                         else (id, adjustPExp resPath)
-  IClaferId _ _ _ -> aNav x
+  IClaferId _ _ _ _ -> aNav x
   _  -> x
   where
   aNav = fst.(adjustNav resPath)
@@ -463,7 +463,7 @@ adjustNav resPath x@(IFunExp op' (pexp0:pexp:_))
   where
   (iexp0, path) = adjustNav resPath (_exp pexp0)
   (iexp, path') = adjustNav path    (_exp pexp)
-adjustNav resPath x@(IClaferId _ id' _)
+adjustNav resPath x@(IClaferId _ id' _ _)
   | id' == parent = (x{_sident = "~@" ++ (genRelName $ head resPath)}, tail resPath)
   | otherwise    = (x, resPath)
 adjustNav _ _ = error "Function adjustNav Expect a IFunExp or IClaferID as one of it's argument but it was given a differnt IExp" --This should never happen
@@ -551,7 +551,7 @@ firstLine :: LineNo
 firstLine = 1 :: LineNo
 
 removeright :: PExp -> PExp
-removeright (PExp _ _ _ (IFunExp _ (x : (PExp _ _ _ (IClaferId _ _ _)) : _))) = x
+removeright (PExp _ _ _ (IFunExp _ (x : (PExp _ _ _ (IClaferId _ _ _ _)) : _))) = x
 removeright (PExp t id' pos (IFunExp o (x1:x2:xs))) = (PExp t id' pos (IFunExp o (x1:(removeright x2):xs)))
 removeright (PExp _ _ _ _) = error "Function removeright from the AlloyGenerator expects a PExp with a IFunExp inside, was given something else" --This should never happen
 
