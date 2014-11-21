@@ -273,6 +273,7 @@
           modName :: String,         - module name
           sident :: String,          - name
           isTop :: Bool              - identifier refers to a top-level definition
+          binding :: ClaferBinding   
         }
    -->
   <xs:complexType name="IExp" abstract="true"/>
@@ -338,6 +339,7 @@
                   <xs:element name="ModuleName" type="xs:string" minOccurs="0" maxOccurs="1"/>
                   <xs:element name="Id"         type="xs:string" />
                   <xs:element name="IsTop"      type="xs:boolean"/>
+                  <xs:element name="Bind"       type="xs:string" />
               </xs:sequence>
           </xs:extension>
       </xs:complexContent>

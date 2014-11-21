@@ -23,11 +23,12 @@
 
   <!-- . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
   <!--
-    data IType = TBoolean
-                 | TString
-                 | TInteger
-                 | TReal
-                 | TClafer
+data IType
+  = TBoolean
+  | TString
+  | TInteger
+  | TReal
+  | TClafer [UID]
   -->
   <xs:complexType name="IType" abstract="true"/>
   <xs:element name="Type" type="cl:IType"/>
@@ -49,7 +50,7 @@
           <xs:extension base="cl:IType"/>
       </xs:complexContent>
   </xs:complexType>
-  
+
   <xs:complexType name="IReal">
       <xs:complexContent>
           <xs:extension base="cl:IType"/>
@@ -63,9 +64,11 @@
   </xs:complexType>
 
   <!-- . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
-  <!-- data IModule = IModule {
-      mName :: String,
-      mDecls :: [IElement]
+  <!--
+data IModule
+  = IModule
+    { _mName :: String
+    , _mDecls :: [IElement]
     }
   -->
 
@@ -79,17 +82,19 @@
   <xs:element name="Module" type="cl:IModule"/>
 
   <!-- . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
-  <!-- data IClafer =
-       IClafer {
-          isAbstract :: Bool,     - determines whether it's abstract
-          gcard :: Maybe IGCard,  - group cardinality
-          ident :: String,        - name
-          uid :: String,          - (o) unique identifier
-          super:: ISuper,         - superclafers
-          card :: Maybe Interval, - cardinality
-          glCard :: Interval,     - (o) global cardinality
-          elements :: [IElement]  - subclafers or constraints specified in the context of given clafer
-        }
+  <!--
+data IClafer
+  = IClafer
+    { _cinPos :: Span
+    , _isAbstract :: Bool
+    , _gcard :: Maybe IGCard
+    , _ident :: CName
+    , _uid :: UID
+    , _super:: ISuper
+    , _card :: Maybe Interval
+    , _glCard :: Interval
+    , _elements :: [IElement]
+    }
   -->
   <xs:complexType name="IClafer">
       <xs:complexContent>
@@ -129,16 +134,20 @@
   </xs:complexType>
 
   <!-- . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
-  <!-- data IElement =
-       IEClafer IClafer
-     | IEConstraint {
-          isHard :: Bool,
-          cpexp :: PExp
-        }
-     | IEGoal {
-       isMaximize :: Bool,
-       cpexp :: PExp
-       }
+  <!--
+data IElement
+  = IEClafer
+    { _iClafer :: IClafer
+    }
+  | IEConstraint
+    { _isHard :: Bool
+    , _cpexp :: PExp
+    }
+  -- | Goal (optimization objective)
+  | IEGoal
+    { _isMaximize :: Bool
+    , _cpexp :: PExp
+    }
    -->
 
   <xs:complexType name="IElement" abstract="true"/>
@@ -173,11 +182,12 @@
   </xs:complexType>
 
   <!-- . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
-  <!-- data ISuper =
-       ISuper {
-          isOverlapping :: Bool,
-          supers :: [PExp]
-        }
+  <!--
+data ISuper
+  = ISuper
+    { _isOverlapping :: Bool
+    , _supers :: [PExp]
+    }
   -->
   <xs:complexType name="ISuper">
     <xs:sequence>
@@ -187,11 +197,12 @@
   </xs:complexType>
 
   <!-- . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
-  <!-- data IGCard =
-      IGCard {
-          isKeyword :: Bool,
-          interval :: Interval
-        }
+  <!--
+data IGCard
+  = IGCard
+    { _isKeyword :: Bool
+    , _interval :: Interval
+    }
   -->
 
   <xs:complexType name="IGroupCard">
@@ -224,10 +235,13 @@
   </xs:complexType>
 
   <!-- . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
-  <!-- data PExp = PExp {
-      iType :: Maybe IType,
-      pid :: String,
-      exp :: IExp
+  <!--
+data PExp
+  = PExp
+    { _iType :: Maybe IType
+    , _pid :: String
+    , _inPos :: Span
+    , _exp :: IExp
     }
   -->
 
@@ -262,18 +276,31 @@
 
   <!-- ......................................................................-->
   <!--
-    data IExp =
-       - quantified expression  declarations
-       IDeclPExp {quant :: IQuant, oDecls :: [IDecl], bpexp :: PExp}
-     | IFunExp {op :: String, exps :: [PExp]}
-     | IInt Integer                  - integer number
-     | IDouble Double                - real number
-     | IStr String                   - string
-     | IClaferId {                   - clafer name
-          modName :: String,         - module name
-          sident :: String,          - name
-          isTop :: Bool              - identifier refers to a top-level definition
-        }
+data IExp
+  = IDeclPExp
+    { _quant :: IQuant
+    , _oDecls :: [IDecl]
+    , _bpexp :: PExp
+    }
+  | IFunExp
+    { _op :: String
+    , _exps :: [PExp]
+    }
+  | IInt
+    { _iint :: Integer
+    }
+  | IDouble
+    { _idouble :: Double
+    }
+  | IStr
+    { _istr :: String
+    }
+  | IClaferId
+    { _modName :: String
+    , _sident :: CName
+    , _isTop :: Bool
+    , _binding :: ClaferBinding
+    }
    -->
   <xs:complexType name="IExp" abstract="true"/>
 
@@ -338,18 +365,20 @@
                   <xs:element name="ModuleName" type="xs:string" minOccurs="0" maxOccurs="1"/>
                   <xs:element name="Id"         type="xs:string" />
                   <xs:element name="IsTop"      type="xs:boolean"/>
+                  <xs:element name="Bind"       type="xs:string" />
               </xs:sequence>
           </xs:extension>
       </xs:complexContent>
   </xs:complexType>
 
   <!-- ......................................................................-->
-  <!-- data IDecl =
-       IDecl {
-          isDisj :: Bool,     - is disjunct
-          decls :: [String],  - a list of local names
-          body :: PExp        - set to which local names refer to
-        }
+  <!--
+data IDecl
+  = IDecl
+    { _isDisj :: Bool    -- ^ is disjunct
+    , _decls :: [CName]  -- ^ a list of local names
+    , _body :: PExp      -- ^ set to which local names refer to
+    }
     -->
 
    <xs:complexType name="IDeclaration">
@@ -361,12 +390,13 @@
    </xs:complexType>
 
   <!-- ......................................................................-->
-  <!-- data IQuant =
-        INo
-        | ILone
-        | IOne
-        | ISome
-        | IAll
+  <!--
+data IQuant
+  = INo
+  | ILone
+  | IOne
+  | ISome
+  | IAll
    -->
 
    <xs:complexType name="IQuantifier" abstract="true"/>
