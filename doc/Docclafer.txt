@@ -34,24 +34,25 @@ PosIdent literals are recognized by the regular expression
 The set of reserved words is the set of terminals appearing in the grammar. Those reserved words that consist of non-letter characters are called symbols, and they are treated in a different way from those that are similar to identifiers. The lexer follows rules familiar from languages like Haskell, C, and Java, including longest match and spacing conventions.
 
 The reserved words used in clafer are the following:
-  | ``abstract`` | ``all`` | ``disj`` | ``else``
-  | ``enum`` | ``if`` | ``in`` | ``lone``
-  | ``max`` | ``min`` | ``mux`` | ``no``
-  | ``not`` | ``one`` | ``opt`` | ``or``
-  | ``some`` | ``sum`` | ``then`` | ``xor``
+  | ``abstract`` | ``all`` | ``assert`` | ``disj``
+  | ``else`` | ``enum`` | ``if`` | ``in``
+  | ``lone`` | ``max`` | ``min`` | ``mux``
+  | ``no`` | ``not`` | ``one`` | ``opt``
+  | ``or`` | ``some`` | ``sum`` | ``then``
+  | ``xor`` |  |  | 
 
 The symbols used in clafer are the following:
-  | = | [ | ] | (
-  | ) | << | >> | {
-  | } | ` | : | ->
-  | ->> | := | ? | +
-  | * | .. | | | <=>
-  | => | || | && | !
-  | < | > | <= | >=
-  | != | - | / | #
-  | ++ | , | -- | &
-  | <: | :> | . | ;
-  | \ |  |  | 
+  | = | [ | ] | <<
+  | >> | { | } | `
+  | : | -> | ->> | :=
+  | ? | + | * | ..
+  | | | <=> | => | ||
+  | && | ! | < | >
+  | <= | >= | != | -
+  | / | # | ++ | ,
+  | -- | & | <: | :>
+  | . | ; | \ | (
+  | ) |  |  | 
 
 ===Comments===
 Single-line comments begin with //.Multiple-line comments are  enclosed with /* and */.
@@ -67,7 +68,7 @@ All other symbols are terminals.
   |  |  **|**  | //Element// 
   | //Clafer// | -> | //Abstract// //GCard// //PosIdent// //Super// //Card// //Init// //Elements// 
   | //Constraint// | -> | ``[`` //[Exp]// ``]`` 
-  | //SoftConstraint// | -> | ``(`` //[Exp]// ``)`` 
+  | //SoftConstraint// | -> | ``assert`` ``[`` //[Exp]// ``]`` 
   | //Goal// | -> | ``<<`` //[Exp]// ``>>`` 
   | //Abstract// | -> | **eps**
   |  |  **|**  | ``abstract`` 

@@ -17,7 +17,7 @@ ElementDecl.    Declaration ::= Element ;
 
 Clafer.         Clafer ::= Abstract GCard PosIdent Super Card Init Elements ;
 Constraint.     Constraint ::= "[" [Exp] "]" ;
-SoftConstraint. SoftConstraint ::= "(" [Exp] ")";
+SoftConstraint. SoftConstraint ::= "assert" "[" [Exp] "]";
 Goal.           Goal ::= "<<" [Exp] ">>" ;
 
 

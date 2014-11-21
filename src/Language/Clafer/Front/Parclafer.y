@@ -9,6 +9,10 @@ import Language.Clafer.Front.ErrM
 }
 
 %name pModule Module
+%name pClafer Clafer
+%name pConstraint Constraint
+%name pSoftConstraint SoftConstraint
+%name pGoal Goal
 
 -- no lexer declaration
 %monad { Err } { thenM } { returnM }
@@ -54,28 +58,29 @@ import Language.Clafer.Front.ErrM
  '`' { PT _ (TS _ 37) }
  'abstract' { PT _ (TS _ 38) }
  'all' { PT _ (TS _ 39) }
- 'disj' { PT _ (TS _ 40) }
- 'else' { PT _ (TS _ 41) }
- 'enum' { PT _ (TS _ 42) }
- 'if' { PT _ (TS _ 43) }
- 'in' { PT _ (TS _ 44) }
- 'lone' { PT _ (TS _ 45) }
- 'max' { PT _ (TS _ 46) }
- 'min' { PT _ (TS _ 47) }
- 'mux' { PT _ (TS _ 48) }
- 'no' { PT _ (TS _ 49) }
- 'not' { PT _ (TS _ 50) }
- 'one' { PT _ (TS _ 51) }
- 'opt' { PT _ (TS _ 52) }
- 'or' { PT _ (TS _ 53) }
- 'some' { PT _ (TS _ 54) }
- 'sum' { PT _ (TS _ 55) }
- 'then' { PT _ (TS _ 56) }
- 'xor' { PT _ (TS _ 57) }
- '{' { PT _ (TS _ 58) }
- '|' { PT _ (TS _ 59) }
- '||' { PT _ (TS _ 60) }
- '}' { PT _ (TS _ 61) }
+ 'assert' { PT _ (TS _ 40) }
+ 'disj' { PT _ (TS _ 41) }
+ 'else' { PT _ (TS _ 42) }
+ 'enum' { PT _ (TS _ 43) }
+ 'if' { PT _ (TS _ 44) }
+ 'in' { PT _ (TS _ 45) }
+ 'lone' { PT _ (TS _ 46) }
+ 'max' { PT _ (TS _ 47) }
+ 'min' { PT _ (TS _ 48) }
+ 'mux' { PT _ (TS _ 49) }
+ 'no' { PT _ (TS _ 50) }
+ 'not' { PT _ (TS _ 51) }
+ 'one' { PT _ (TS _ 52) }
+ 'opt' { PT _ (TS _ 53) }
+ 'or' { PT _ (TS _ 54) }
+ 'some' { PT _ (TS _ 55) }
+ 'sum' { PT _ (TS _ 56) }
+ 'then' { PT _ (TS _ 57) }
+ 'xor' { PT _ (TS _ 58) }
+ '{' { PT _ (TS _ 59) }
+ '|' { PT _ (TS _ 60) }
+ '||' { PT _ (TS _ 61) }
+ '}' { PT _ (TS _ 62) }
 
 L_PosInteger { PT _ (T_PosInteger _) }
 L_PosDouble { PT _ (T_PosDouble _) }
@@ -109,7 +114,7 @@ Constraint : '[' ListExp ']' { Constraint ((mkTokenSpan $1) >- (mkCatSpan $2) >-
 
 
 SoftConstraint :: { SoftConstraint }
-SoftConstraint : '(' ListExp ')' { SoftConstraint ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkTokenSpan $3)) (reverse $2) } 
+SoftConstraint : 'assert' '[' ListExp ']' { SoftConstraint ((mkTokenSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3) >- (mkTokenSpan $4)) (reverse $3) } 
 
 
 Goal :: { Goal }

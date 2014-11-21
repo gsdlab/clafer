@@ -101,7 +101,7 @@ eitherResIdent tv s = treeFind resWords
                               | s > a  = treeFind right
                               | s == a = t
 
-resWords = b ">=" 31 (b "." 16 (b "*" 8 (b "&" 4 (b "!=" 2 (b "!" 1 N N) (b "#" 3 N N)) (b "(" 6 (b "&&" 5 N N) (b ")" 7 N N))) (b "-" 12 (b "++" 10 (b "+" 9 N N) (b "," 11 N N)) (b "->" 14 (b "--" 13 N N) (b "->>" 15 N N)))) (b "<:" 24 (b ":=" 20 (b "/" 18 (b ".." 17 N N) (b ":" 19 N N)) (b ";" 22 (b ":>" 21 N N) (b "<" 23 N N))) (b "=" 28 (b "<=" 26 (b "<<" 25 N N) (b "<=>" 27 N N)) (b ">" 30 (b "=>" 29 N N) N)))) (b "min" 47 (b "all" 39 (b "\\" 35 (b "?" 33 (b ">>" 32 N N) (b "[" 34 N N)) (b "`" 37 (b "]" 36 N N) (b "abstract" 38 N N))) (b "if" 43 (b "else" 41 (b "disj" 40 N N) (b "enum" 42 N N)) (b "lone" 45 (b "in" 44 N N) (b "max" 46 N N)))) (b "sum" 55 (b "one" 51 (b "no" 49 (b "mux" 48 N N) (b "not" 50 N N)) (b "or" 53 (b "opt" 52 N N) (b "some" 54 N N))) (b "|" 59 (b "xor" 57 (b "then" 56 N N) (b "{" 58 N N)) (b "}" 61 (b "||" 60 N N) N))))
+resWords = b ">>" 32 (b "." 16 (b "*" 8 (b "&" 4 (b "!=" 2 (b "!" 1 N N) (b "#" 3 N N)) (b "(" 6 (b "&&" 5 N N) (b ")" 7 N N))) (b "-" 12 (b "++" 10 (b "+" 9 N N) (b "," 11 N N)) (b "->" 14 (b "--" 13 N N) (b "->>" 15 N N)))) (b "<:" 24 (b ":=" 20 (b "/" 18 (b ".." 17 N N) (b ":" 19 N N)) (b ";" 22 (b ":>" 21 N N) (b "<" 23 N N))) (b "=" 28 (b "<=" 26 (b "<<" 25 N N) (b "<=>" 27 N N)) (b ">" 30 (b "=>" 29 N N) (b ">=" 31 N N))))) (b "min" 48 (b "assert" 40 (b "]" 36 (b "[" 34 (b "?" 33 N N) (b "\\" 35 N N)) (b "abstract" 38 (b "`" 37 N N) (b "all" 39 N N))) (b "if" 44 (b "else" 42 (b "disj" 41 N N) (b "enum" 43 N N)) (b "lone" 46 (b "in" 45 N N) (b "max" 47 N N)))) (b "sum" 56 (b "one" 52 (b "no" 50 (b "mux" 49 N N) (b "not" 51 N N)) (b "or" 54 (b "opt" 53 N N) (b "some" 55 N N))) (b "|" 60 (b "xor" 58 (b "then" 57 N N) (b "{" 59 N N)) (b "}" 62 (b "||" 61 N N) N))))
    where b s n = let bs = id s
                   in B bs (TS bs n)
 
@@ -203,13 +203,25 @@ alex_action_8 =  tok (\p s -> PT p (eitherResIdent (TV . share) s))
 -- -----------------------------------------------------------------------------
 -- INTERNALS and main scanner engine
 
-{-# LINE 35 "templates\\GenericTemplate.hs" #-}
+{-# LINE 21 "templates\\GenericTemplate.hs" #-}
 
-{-# LINE 45 "templates\\GenericTemplate.hs" #-}
+
+
+
+
+-- Do not remove this comment. Required to fix CPP parsing when using GCC and a clang-compiled alex.
+#if __GLASGOW_HASKELL__ > 706
+#define GTE(n,m) (tagToEnum# (n >=# m))
+#define EQ(n,m) (tagToEnum# (n ==# m))
+#else
+#define GTE(n,m) (n >=# m)
+#define EQ(n,m) (n ==# m)
+#endif
+{-# LINE 51 "templates\\GenericTemplate.hs" #-}
 
 
 data AlexAddr = AlexA# Addr#
-
+-- Do not remove this comment. Required to fix CPP parsing when using GCC and a clang-compiled alex.
 #if __GLASGOW_HASKELL__ < 503
 uncheckedShiftL# = shiftL#
 #endif
@@ -247,6 +259,7 @@ alexIndexInt32OffAddr (AlexA# arr) off =
 #else
   indexInt32OffAddr# arr off
 #endif
+
 
 
 
@@ -324,7 +337,7 @@ alex_scan_tkn user orig_input len input s last_acc =
                 offset = (base +# ord_c)
                 check  = alexIndexInt16OffAddr alex_check offset
 		
-                new_s = if (offset >=# 0#) && (check ==# ord_c)
+                new_s = if GTE(offset,0#) && EQ(check,ord_c)
 			  then alexIndexInt16OffAddr alex_table offset
 			  else alexIndexInt16OffAddr alex_deflt s
 	in
@@ -340,7 +353,7 @@ alex_scan_tkn user orig_input len input s last_acc =
 	check_accs (AlexAccNone) = last_acc
 	check_accs (AlexAcc a  ) = AlexLastAcc a input (I# (len))
 	check_accs (AlexAccSkip) = AlexLastSkip  input (I# (len))
-{-# LINE 191 "templates\\GenericTemplate.hs" #-}
+{-# LINE 198 "templates\\GenericTemplate.hs" #-}
 
 data AlexLastAcc a
   = AlexNone
@@ -356,7 +369,7 @@ data AlexAcc a user
   = AlexAccNone
   | AlexAcc a
   | AlexAccSkip
-{-# LINE 235 "templates\\GenericTemplate.hs" #-}
+{-# LINE 242 "templates\\GenericTemplate.hs" #-}
 
 -- used by wrappers
 iUnbox (I# (i)) = i
