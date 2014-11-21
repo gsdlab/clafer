@@ -240,7 +240,7 @@ findDupModule args iModule = if check_duplicates args && (not $ null dups)
 
 markTopModule :: [IElement] -> [IElement]
 markTopModule decls' = map (markTopElement (
-      [this, parent, children, strType, intType, integerType] ++
+      specialNames ++ primitiveTypes ++
       (map _uid $ toClafers decls'))) decls'
 
 

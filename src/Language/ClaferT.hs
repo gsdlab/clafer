@@ -63,7 +63,6 @@ import Control.Monad.Identity
 import Data.Data.Lens (biplate)
 import Control.Lens ((^..), traversed, universeOn)
 import Data.List
-import           Data.Map (Map)
 import qualified Data.Map as Map
 import           Data.StringMap (StringMap)
 import qualified Data.StringMap as SMap

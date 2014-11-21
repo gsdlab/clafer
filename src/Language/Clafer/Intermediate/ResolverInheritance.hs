@@ -61,7 +61,7 @@ resolveNClafer declarations clafer =
 resolveNSuper :: [IElement] -> ISuper -> Resolve ISuper
 resolveNSuper declarations x = case x of
   ISuper False [PExp _ pid' pos' (IClaferId _ id' isTop' _)] ->
-    if isPrimitive id' || id' == "clafer"
+    if isPrimitive id' || id' == baseClafer
       then return x
       else do
         r <- resolveN pos' declarations id'
@@ -185,7 +185,7 @@ unrollabeDeclaration x = case x of
 unrollableClafer :: IClafer -> [String]
 unrollableClafer clafer
   | _isOverlapping $ _super clafer = []
-  | getSuper clafer == "clafer"  = deps
+  | getSuper clafer == baseClafer  = deps
   | otherwise                    = getSuper clafer : deps
   where
   deps = (toClafers $ _elements clafer) >>= unrollableClafer

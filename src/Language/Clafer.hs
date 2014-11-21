@@ -420,7 +420,7 @@ compile desugaredMod = do
     putEnv $ env{ cIr = Just ir }
     where
       isKeyWord :: Ir -> String
-      isKeyWord (IRClafer IClafer{_cinPos = (Span (Pos l c) _) ,_ident=i}) = if (i `elem` keyWords) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
+      isKeyWord (IRClafer IClafer{_cinPos = (Span (Pos l c) _) ,_ident=i}) = if (i `elem` keywordIdents) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
       isKeyWord _ = ""
       gt1 :: Ir -> String
       gt1 (IRClafer (IClafer (Span (Pos l c) _) False _ _ _ _ (Just (_, m)) _ _ _)) = if (m > 1 || m < 0) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
@@ -743,7 +743,3 @@ showInterval (n, m) = show n ++ ".." ++ show m
 -- | The XML Schema of the IR
 claferIRXSD :: String
 claferIRXSD = Language.Clafer.Generator.Schema.xsd
-
--- | reserved keywords
-keyWords :: [String]
-keyWords = ["ref", "parent", "children", "abstract", "else", "import", "in", "no", "opt", "xor", "all", "enum", "lone", "not", "or", "disj", "extends", "mux", "one", "some"]

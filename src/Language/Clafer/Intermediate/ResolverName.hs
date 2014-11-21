@@ -51,23 +51,15 @@ data SEnv = SEnv {
   } deriving Show
 
 -- | How a given name was resolved
-data HowResolved =
-  -- | "this", "parent", "children"
-    Special
-  -- | primitive type: integer, string
-  | TypeSpecial
-  -- | local variable (in constraints)
-  | Binding
-  -- | clafer's descendant
-  | Subclafers
-  -- | resolved by a reference
-  | Reference
-  -- | clafer's ancestor
-  | Ancestor
-  -- | abstract clafer
-  | AbsClafer
-  -- | non-abstract top-level clafer
-  | TopClafer
+data HowResolved
+  = Special     -- ^ "this", "parent", "children"
+  | TypeSpecial -- ^ primitive type: integer, string
+  | Binding     -- ^ local variable (in constraints)
+  | Subclafers  -- ^ clafer's descendant
+  | Reference   -- ^ resolved by a reference
+  | Ancestor    -- ^ clafer's ancestor
+  | AbsClafer   -- ^ abstract clafer
+  | TopClafer   -- ^ non-abstract top-level clafer
   deriving (Eq, Show)
 
 type Resolve = Either ClaferSErr
@@ -205,8 +197,8 @@ mkPath env (howResolved, id', path) = case howResolved of
   where
   toNav = foldl'
           (\exp' (id'', c) -> IFunExp iJoin [pExpDefPidPos exp', mkPLClaferId id'' False $ _uid <$> c])
-          (mkLClaferId this True (_uid <$> context env))
-  specIExp = if id' /= this then toNav [(id', Just $ head path)] else mkLClaferId id' True (_uid <$> context env)
+          (mkLClaferId thisIdent True (_uid <$> context env))
+  specIExp = if id' /= thisIdent then toNav [(id', Just $ head path)] else mkLClaferId id' True (_uid <$> context env)
 
 toTuple :: IClafer->(String, Maybe IClafer)
 toTuple c = (_uid c, Just c)
@@ -215,9 +207,9 @@ toNav' :: [(String, Maybe IClafer)] -> IExp
 toNav' p = (mkIFunExp iJoin $ map (\(id', cbind) -> mkLClaferId id' False (_uid <$> cbind)) p) :: IExp
 
 adjustAncestor :: IClafer -> [(String, Maybe IClafer)] -> [(String, Maybe IClafer)] -> [(String, Maybe IClafer)]
-adjustAncestor ctx cPath rPath = (this, Just ctx) : parents ++ (fromJust $ stripPrefix prefix rPath)
+adjustAncestor ctx cPath rPath = (thisIdent, Just ctx) : parents ++ (fromJust $ stripPrefix prefix rPath)
   where
-  parents = replicate (length $ fromJust $ stripPrefix prefix cPath) (parent, Nothing)
+  parents = replicate (length $ fromJust $ stripPrefix prefix cPath) (parentIdent, Nothing)
   prefix = fst $ unzip $ takeWhile (uncurry eqIds) $ zip cPath rPath
   eqIds a b = (fst a) == (fst b)
 
@@ -258,11 +250,10 @@ resolveNone pos' env id' =
 -- checks if ident is one of special identifiers
 resolveSpecial :: SEnv -> String -> Resolve (Maybe (HowResolved, String, [IClafer]))
 resolveSpecial env id'
-  | id' `elem` [this, children, ref] =
-      return $ Just (Special, id', resPath env)
-  | id' == parent   = return $ Just (Special, id', tail $ resPath env)
-  | isPrimitive id' = return $ Just (TypeSpecial, id', [])
-  | otherwise      = return Nothing
+  | id' == parentIdent = return $ Just (Special, id', tail $ resPath env)
+  | isSpecial id'      = return $ Just (Special, id', resPath env)
+  | isPrimitive id'    = return $ Just (TypeSpecial, id', [])
+  | otherwise          = return Nothing 
 
 
 -- checks if ident is bound locally

@@ -1,6 +1,6 @@
 {-# LANGUAGE TemplateHaskell, DeriveDataTypeable #-}
 {-
- Copyright (C) 2012-2014 Kacper Bak, Jimmy Liang, Luke Michael Brown <http://gsd.uwaterloo.ca>
+ Copyright (C) 2012-2014 Kacper Bak, Jimmy Liang, Michal Antkiewicz, Luke Michael Brown <http://gsd.uwaterloo.ca>
 
  Permission is hereby granted, free of charge, to any person obtaining a copy of
  this software and associated documentation files (the "Software"), to deal in
@@ -37,103 +37,90 @@ type CName = String
 type URL = String  
 
 -- | A "supertype" of all IR types
-data Ir =
-  IRIModule IModule |
-  IRIElement IElement |
-  IRIType IType |
-  IRClafer IClafer |
-  IRIExp IExp |
-  IRPExp PExp |
-  IRISuper ISuper |
-  IRIQuant IQuant |
-  IRIDecl IDecl |
-  IRIGCard IGCard
+data Ir
+  = IRIModule IModule
+  | IRIElement IElement
+  | IRIType IType
+  | IRClafer IClafer
+  | IRIExp IExp
+  | IRPExp PExp
+  | IRISuper ISuper
+  | IRIQuant IQuant
+  | IRIDecl IDecl
+  | IRIGCard IGCard
   deriving (Eq, Show)
 
-data IType = TBoolean
-           | TString
-           | TInteger
-           | TReal
-           | TClafer [String]
+data IType
+  = TBoolean
+  | TString
+  | TInteger
+  | TReal
+  -- | the type is an intersection of the listed clafers
+  -- supports having paths in the inheritance hierarchy
+  -- supports multiple inheritance
+  | TClafer [UID]
   deriving (Eq,Ord,Show,Data,Typeable)
 
 -- | each file contains exactly one mode. A module is a list of declarations
-data IModule = IModule {
-      -- | always empty for now because we don't have syntax for declaring modules
-      _mName :: String,
-      -- | List of top-level elements
-      _mDecls :: [IElement]
-    }
+data IModule
+  = IModule
+    { _mName :: String -- ^ always empty (no syntax for declaring modules)
+    , _mDecls :: [IElement] -- ^ List of top-level elements
+    } 
   deriving (Eq,Ord,Show,Data,Typeable)
 
 -- | Clafer has a list of fields that specify its properties. Some fields, marked as (o) are for generating optimized code
-data IClafer =
-   IClafer {
-      -- | the position of the syntax in source code
-      _cinPos :: Span,
-      -- | whether abstract or not (i.e., concrete)
-      _isAbstract :: Bool,
-      -- | group cardinality
-      _gcard :: Maybe IGCard,
-      -- | name declared in the model
-      _ident :: CName,
-      -- | a unique identifier
-      _uid :: UID,
-      -- | superclafers
-      _super:: ISuper,
-      -- | clafer cardinality
-      _card :: Maybe Interval,
-       -- | (o) global cardinality
-      _glCard :: Interval,
-       -- | clafer mutability information
-      _mutable :: Mutability,
-      -- | nested elements
-      _elements :: [IElement]
-    }
+data IClafer 
+  = IClafer 
+    { _cinPos :: Span         -- ^ the position of the syntax in source code
+    , _isAbstract :: Bool     -- ^ whether abstract or not (i.e., concrete)
+    , _gcard :: Maybe IGCard  -- ^ group cardinality
+    , _ident :: CName         -- ^ name declared in the model
+    , _uid :: UID             -- ^ a unique identifier
+    , _super:: ISuper         -- ^ superclafers
+    , _card :: Maybe Interval -- ^ clafer cardinality
+    , _glCard :: Interval     -- ^ (o) global cardinality 
+    , _mutable :: Mutability  -- ^ clafer mutability information
+    , _elements :: [IElement] -- ^ nested elements
+    } 
   deriving (Eq,Ord,Show,Data,Typeable)
 
 -- | Clafer's subelement is either a clafer, a constraint, or a goal (objective)
 --   This is a wrapper type needed to have polymorphic lists of elements
-data IElement =
-   IEClafer {
-      -- | the actual clafer
-      _iClafer :: IClafer
+data IElement 
+  = IEClafer 
+    { _iClafer :: IClafer  -- ^ the actual clafer 
     }
- | IEConstraint {
-      -- | whether hard or not (soft)
-      _isHard :: Bool,
-      -- | the container of the actual expression
-      _cpexp :: PExp
+  | IEConstraint 
+    { _isHard :: Bool      -- ^ whether hard or not (soft)
+    , _cpexp :: PExp       -- ^ the container of the actual expression
     }
   -- | Goal (optimization objective)
- | IEGoal {
-   -- | whether maximize or minimize
-   _isMaximize :: Bool,
-   -- | the expression
-   _cpexp :: PExp
-   }
+  | IEGoal 
+    { _isMaximize :: Bool     -- ^ whether maximize or minimize
+    , _cpexp :: PExp          -- ^ the expression
+    } 
   deriving (Eq,Ord,Show,Data,Typeable)
 
 -- | A list of superclafers.
 --   ->    overlaping unique (set)
 --   ->>   overlapping non-unique (bag)
 --   :     non overlapping (disjoint)
-data ISuper =
-   ISuper {
-      _isOverlapping :: Bool,  -- whether overlapping or disjoint with other clafers extending given list of superclafers
-      _supers :: [PExp]
-    }
+data ISuper 
+  = ISuper 
+    { _isOverlapping :: Bool -- ^ whether overlapping or disjoint with other clafers extending given list of superclafers
+    , _supers :: [PExp]
+    } 
   deriving (Eq,Ord,Show,Data,Typeable)
 
 -- | Group cardinality is specified as an interval. It may also be given by a keyword.
 --   xor    1..1 isKeyword = True
 --   1..1   1..1 isKeyword = False
-data IGCard =
-  IGCard {
-      _isKeyword :: Bool,    -- whether given by keyword: or, xor, mux
-      _interval :: Interval
-    }
-  deriving (Eq,Ord,Show,Data,Typeable)
+data IGCard
+  = IGCard 
+    { _isKeyword :: Bool    -- ^ whether given by keyword: or, xor, mux
+    , _interval :: Interval
+    } deriving (Eq,Ord,Show,Data,Typeable)
 
 -- | (Min, Max) integer interval. -1 denotes *
 type Interval = (Integer, Integer)
@@ -142,56 +129,54 @@ type Mutability = Bool
 
 -- | This is expression container (parent).
 --   It has meta information about an actual expression 'exp'
-data PExp = PExp {
-      -- | the inferred type
-      _iType :: Maybe IType,
-      -- | non-empty unique id for expressions with span, \"\" for noSpan
-      _pid :: String,
-      -- | position in the input Clafer file
-      _inPos :: Span,
-      -- | the actual expression
-      _exp :: IExp
-    }
+data PExp 
+  = PExp 
+    { _iType :: Maybe IType   -- ^ the inferred type
+    , _pid :: String          -- ^ non-empty unique id for expressions with span, \"\" for noSpan
+    , _inPos :: Span          -- ^ position in the input Clafer file
+    , _exp :: IExp            -- ^ the actual expression
+    } 
   deriving (Eq,Ord,Show,Data,Typeable)
 
 -- | Embedes reference to a resolved Clafer
 type ClaferBinding = Maybe UID
 
-data IExp = 
-   -- | quantified expression with declarations
-   --   e.g., [ all x1; x2 : X | x1.ref != x2.ref ]
-   IDeclPExp {
-      _quant :: IQuant,
-      _oDecls :: [IDecl],
-      _bpexp :: PExp
+data IExp 
+    -- | quantified expression with declarations
+    --   e.g., [ all x1; x2 : X | x1.ref != x2.ref ]
+  = IDeclPExp
+    { _quant :: IQuant
+    , _oDecls :: [IDecl] 
+    , _bpexp :: PExp
     }
-   -- | expression with a
-   --   unary function, e.g., -1
-   --   binary function, e.g., 2 + 3
-   --   ternary function, e.g., if x then 4 else 5
- | IFunExp {
-      _op :: String,
-      _exps :: [PExp]
+    -- | expression with a
+    --   unary function, e.g., -1
+    --   binary function, e.g., 2 + 3
+    --   ternary function, e.g., if x then 4 else 5
+  | IFunExp
+    { _op :: String
+    , _exps :: [PExp]
     }
- -- | integer number
- | IInt {
-      _iint :: Integer
+    -- | integer number
+  | IInt 
+    { _iint :: Integer
     }
- -- | real number
- | IDouble {
-      _idouble :: Double
+    -- | real number
+  | IDouble 
+    { _idouble :: Double
     }
- -- | string
- | IStr {
-      _istr :: String
+    -- | string
+  | IStr 
+    { _istr :: String
     }
- -- | a reference to a clafer name
- | IClaferId 
-   { _modName :: String         -- ^ module name - currently not used and empty since we have no module system
-   , _sident :: CName           -- ^ name of the clafer being referred to
-   , _isTop :: Bool             -- ^ identifier refers to a top-level definition
-   , _binding :: ClaferBinding  -- ^ the UID of the bound IClafer, if resolved
-  } deriving (Eq,Ord,Show,Data,Typeable)
+    -- | a reference to a clafer name
+  | IClaferId 
+    { _modName :: String         -- ^ module name - currently not used and empty since we have no module system
+    , _sident :: CName           -- ^ name of the clafer being referred to
+    , _isTop :: Bool             -- ^ identifier refers to a top-level definition
+    , _binding :: ClaferBinding  -- ^ the UID of the bound IClafer, if resolved
+    } 
+  deriving (Eq,Ord,Show,Data,Typeable)
 
 {- |
 For IFunExp standard set of operators includes:
@@ -231,30 +216,21 @@ For IFunExp standard set of operators includes:
 
 -- | Local declaration
 --   disj x1; x2 : X ++ Y
---   y1 : Y
-data IDecl =
-   IDecl {
-      -- | is disjunct
-      _isDisj :: Bool,
-      -- | a list of local names
-      _decls :: [CName],
-      -- | set to which local names refer to
-      _body :: PExp
+--   y1 : Y 
+data IDecl 
+  = IDecl 
+    { _isDisj :: Bool    -- ^ is disjunct
+    , _decls :: [CName]  -- ^ a list of local names 
+    , _body :: PExp      -- ^ set to which local names refer to
     }
   deriving (Eq,Ord,Show,Data,Typeable)
 
--- | quantifier
-data IQuant =
- -- | does not exist
-   INo
- -- | less than one
- | ILone
- -- | exactly one
- | IOne
- -- | at least one (i.e., exists)
- | ISome
- -- | for all
- | IAll
+data IQuant 
+  = INo    -- | does not exist
+  | ILone  -- | less than one
+  | IOne   -- | exactly one
+  | ISome  -- | at least one (i.e., exists)
+  | IAll   -- | for all
   deriving (Eq,Ord,Show,Data,Typeable)
 
 type LineNo = Integer

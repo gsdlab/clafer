@@ -481,7 +481,7 @@ transformExp (IFunExp op' (e1:_))
 transformExp    x@(IFunExp op' exps'@(e1:e2:_))
   | op' == iXor = IFunExp iNot [PExp (Just TBoolean) "" noSpan (IFunExp iIff exps')]
   | op' == iJoin && isClaferName' e1 && isClaferName' e2 &&
-    getClaferName e1 == this && head (getClaferName e2) == '~' =
+    getClaferName e1 == thisIdent && head (getClaferName e2) == '~' =
         IFunExp op' [e1{_iType = Just $ TClafer []}, e2]
   | otherwise  = x
 transformExp x = x
@@ -610,7 +610,7 @@ adjustNav resPath x@(IFunExp op' (pexp0:pexp:_))
   (iexp0, path) = adjustNav resPath (_exp pexp0)
   (iexp, path') = adjustNav path    (_exp pexp)
 adjustNav resPath x@(IClaferId _ id' _ _)
-  | id' == parent = (x{_sident = "~@" ++ (genRelName $ head resPath)}, tail resPath)
+  | id' == parentIdent = (x{_sident = "~@" ++ (genRelName $ head resPath)}, tail resPath)
   | otherwise    = (x, resPath)
 adjustNav _ _ = error "Function adjustNav Expect a IFunExp or IClaferID as one of it's argument but it was given a differnt IExp" --This should never happen
 

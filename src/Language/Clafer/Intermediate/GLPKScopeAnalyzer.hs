@@ -27,6 +27,7 @@ import Language.Clafer.Front.Absclafer hiding (Path)
 import qualified Language.Clafer.Intermediate.Intclafer as I
 import Language.Clafer.Intermediate.Analysis
 import Language.Clafer.Intermediate.ResolverType
+import Language.Clafer.Common
 
 import Control.Applicative (Applicative(..), (<$>))
 import Control.Monad
@@ -84,7 +85,7 @@ glpkScopeAnalysis imodule =
   -- Any scope that is 0 will take the global scope of 1 instead.
   removeZeroes = filter ((/= 0) . snd)
   -- The root is implied and not and not part of the actual solution.
-  removeRoot = filter ((/= rootUid) . fst)
+  removeRoot = filter ((/= rootIdent) . fst)
   -- Auxilary variables are only part of the computation, not the solution.
   removeAux = filter (not . (uniqNameSpace `isPrefixOf`) . fst)
   -- The scope for abstract clafers are removed. Alloy doesn't need it. Makes
@@ -153,7 +154,7 @@ mult a b = a * b
 simpleAnalysis :: ScopeAnalysis [(String, Between)]
 simpleAnalysis =
     do
-        root <- claferWithUid rootUid
+        root <- claferWithUid rootIdent
         analysis <- simpleAnalysis' root (Between 1 1)
         --moreAnalysis <- simpleConstraintAnalysis analysis
         return analysis
@@ -209,7 +210,7 @@ setConstraints =
         parentConstraints
         constraintConstraints
 
-    (var rootUid) `equalTo` 1
+    (var rootIdent) `equalTo` 1
 
 
 optFormula :: ScopeAnalysis ()
@@ -603,7 +604,7 @@ constraintConstraints =
   nonTopAncestors child =
     do
       parent <- parentOf child
-      if uid parent == rootUid
+      if uid parent == rootIdent
         then return []
         else (++ [child]) `fmap` nonTopAncestors parent
  -}
@@ -761,7 +762,7 @@ parsePath start pexp =
 parsePath2 :: MonadScope m => SClafer -> I.PExp -> m Expr
 parsePath2 start pexp =
   do
-    root <- claferWithUid rootUid
+    root <- claferWithUid rootIdent
     case unfoldJoins pexp of
         Just unfold -> do
             match <- patternMatch parsePath' (ParseState root []) unfold
