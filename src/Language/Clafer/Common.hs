@@ -49,14 +49,15 @@ type Ident = PosIdent
 getSuper :: IClafer -> String
 getSuper = getSuperId._supers._super
 
-getSuperNoArr :: IClafer -> String
-
-getSuperNoArr clafer
-  | _isOverlapping $ _super clafer = "clafer"
-  | otherwise                    = getSuper clafer
+getSuperNoArr :: IClafer          -> String
+getSuperNoArr    clafer
+  | _isOverlapping $ _super clafer = baseClafer
+  | otherwise                      = getSuper clafer
 
 getSuperId :: [PExp] -> String
-getSuperId = _sident . Language.Clafer.Intermediate.Intclafer._exp . head
+getSuperId [] = error "Bug: getSuperId called not on '[PExp (IClaferId)]' but instead on '[]'"
+getSuperId [PExp _ _ _ (IClaferId{ _sident = s})] = s
+getSuperId [pexp'] = error $ "Bug: getSuperId called not on '[PExp (IClaferId)]' but instead on '" ++ show pexp' ++ "'"
 
 isEqClaferId :: String -> IClafer -> Bool
 isEqClaferId = flip $ (==)._uid
@@ -304,6 +305,9 @@ toLowerS (s:ss) = toLower s : ss
 
 rootIdent :: String
 rootIdent = "root"
+
+rootUID :: String
+rootUID = "root"
 
 thisIdent :: String
 thisIdent = "this"
