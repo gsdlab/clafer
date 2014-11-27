@@ -1,6 +1,6 @@
 abstract Person
-  Name : string
-  Surname : string
+  Name -> string
+  Surname -> string
   DateOfBirth  : date
   or Gender
     Male
@@ -10,13 +10,13 @@ abstract Person
     Married
     Divorced
   Address
-    Street : string
-      UnitNo : string ?
-    City : string
-    Country : string
-    PostalCode : string
+    Street -> string
+      UnitNo -> string ?
+    City -> string
+    Country -> string
+    PostalCode -> string
 //# FRAGMENT
-abstract date : string
+abstract date -> string
 // here should go format regular expression
 //# FRAGMENT
 JohnDoe : Person
@@ -32,9 +32,9 @@ JohnDoe : Person
 
 //# FRAGMENT
 abstract Student : Person
-  StudentId : string
+  StudentId -> string
 //# FRAGMENT
-abstract  WaitingLine 
+abstract  WaitingLine
   participants -> Person *
 //# FRAGMENT
 MaryJane  :  Student

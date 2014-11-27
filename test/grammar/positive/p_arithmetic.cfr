@@ -10,14 +10,14 @@
 // Current Output:
 //   Alloy crashes on unary minus.
 //
-// Expected Output: 
+// Expected Output:
 //   A
 //     x = -7
-//     y = -7 
+//     y = -7
 
- 
-A 
-  x : integer
-  y : integer
+
+A
+  x -> integer
+  y -> integer
   [ x = -((6 + (5 - 4)) * 3) / (2 + 1) ]
-  [ this.y = x ]  
+  [ this.y = x ]

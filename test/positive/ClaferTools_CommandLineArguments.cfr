@@ -29,7 +29,7 @@ abstract xor ClaferArgs
       keep_unused : Argument ?
       flatten_inheritance : Argument ?
       console_output : Argument ?
-      timeout_analysis : IntegerArgument ?
+      timeout_analysis -> integerArgument ?
       mux layout ?
          no_layout : Argument
          new_layout : Argument
@@ -40,7 +40,7 @@ abstract xor ClaferArgs
          [ no html ]
          [ no graph ]
          [ no cvlGraph ]
-         tooldir : StringArgument
+         tooldir -> stringArgument
    schema : Argument
    help : Argument
    version : Argument

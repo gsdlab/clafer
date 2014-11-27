@@ -8,7 +8,7 @@ claferMOO : claferLib
 abstract claferLib
     common
     front : Front
-    intermediate : Intermediate
+    intermediate -> intermediate
     optimizer
     generator : Generator
 //# FRAGMENT

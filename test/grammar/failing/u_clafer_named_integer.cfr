@@ -8,5 +8,5 @@
 // Current Output:
 //   A = 7
 
-abstract integer : integer
-A : integer
+abstract integer -> integer
+A -> integer

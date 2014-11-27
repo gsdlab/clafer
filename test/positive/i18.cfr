@@ -1,5 +1,5 @@
 abstract A
-  s : string ?
+  s -> string ?
 
 A1 : A
   [ s = "text value" ]

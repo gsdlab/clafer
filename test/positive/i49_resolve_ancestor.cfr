@@ -3,7 +3,7 @@
 person
   haha
     lala
-      age : int
+      age -> int
   ble
     married ?
       [age >= 18]
