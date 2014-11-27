@@ -46,6 +46,7 @@ data Ir
   | IRIExp IExp
   | IRPExp PExp
   | IRISuper ISuper
+  | IRIReference IReference
   | IRIQuant IQuant
   | IRIDecl IDecl
   | IRIGCard (Maybe IGCard)
@@ -80,6 +81,7 @@ data IClafer
     , _uid :: UID             -- ^ a unique identifier
     , _parentUID :: UID       -- ^ "root" if concrete top-level, "clafer" if abstract top-level, "" if unresolved or for root clafer, otherwise UID of the parent clafer
     , _super:: ISuper         -- ^ superclafers
+    , _reference:: IReference -- ^ superclafers
     , _card :: Maybe Interval -- ^ clafer cardinality
     , _glCard :: Interval     -- ^ (o) global cardinality
     , _elements :: [IElement] -- ^ nested elements
@@ -104,13 +106,24 @@ data IElement
   deriving (Eq,Ord,Show,Data,Typeable)
 
 -- | A list of superclafers.
---   ->    overlaping unique (set)
---   ->>   overlapping non-unique (bag)
 --   :     non overlapping (disjoint)
 data ISuper
   = ISuper
-    { _isOverlapping :: Bool -- ^ whether overlapping or disjoint with other clafers extending given list of superclafers
+    { _superKind :: Maybe SuperKind  -- ^ kind is super resolved in inheritance resolver
     , _supers :: [PExp]
+    }
+  deriving (Eq,Ord,Show,Data,Typeable)
+
+data SuperKind = TopLevel | Nested | Redefinition
+
+-- | A list of superclafers.
+--   :     non overlapping (disjoint)
+data IReference
+  = ISetReference
+    { _references :: [PExp]
+    }
+  | IBagReference
+    { _references :: [PExp]
     }
   deriving (Eq,Ord,Show,Data,Typeable)
 

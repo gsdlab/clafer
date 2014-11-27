@@ -11,7 +11,7 @@ import Language.Clafer.Front.ErrM
 %name pModule Module
 %name pClafer Clafer
 %name pConstraint Constraint
-%name pSoftConstraint SoftConstraint
+%name pAssertion Assertion
 %name pGoal Goal
 
 -- no lexer declaration
@@ -22,11 +22,11 @@ import Language.Clafer.Front.ErrM
  '!' { PT _ (TS _ 1) }
  '!=' { PT _ (TS _ 2) }
  '#' { PT _ (TS _ 3) }
- '&' { PT _ (TS _ 4) }
- '&&' { PT _ (TS _ 5) }
- '(' { PT _ (TS _ 6) }
- ')' { PT _ (TS _ 7) }
- '*' { PT _ (TS _ 8) }
+ '&&' { PT _ (TS _ 4) }
+ '(' { PT _ (TS _ 5) }
+ ')' { PT _ (TS _ 6) }
+ '*' { PT _ (TS _ 7) }
+ '**' { PT _ (TS _ 8) }
  '+' { PT _ (TS _ 9) }
  '++' { PT _ (TS _ 10) }
  ',' { PT _ (TS _ 11) }
@@ -106,15 +106,15 @@ Declaration : 'enum' PosIdent '=' ListEnumId { EnumDecl ((mkTokenSpan $1) >- (mk
 
 
 Clafer :: { Clafer }
-Clafer : Abstract GCard PosIdent Super Card Init Elements { Clafer ((mkCatSpan $1) >- (mkCatSpan $2) >- (mkCatSpan $3) >- (mkCatSpan $4) >- (mkCatSpan $5) >- (mkCatSpan $6) >- (mkCatSpan $7)) $1 $2 $3 $4 $5 $6 $7 } 
+Clafer : Abstract GCard PosIdent Super Reference Card Init Elements { Clafer ((mkCatSpan $1) >- (mkCatSpan $2) >- (mkCatSpan $3) >- (mkCatSpan $4) >- (mkCatSpan $5) >- (mkCatSpan $6) >- (mkCatSpan $7) >- (mkCatSpan $8)) $1 $2 $3 $4 $5 $6 $7 $8 } 
 
 
 Constraint :: { Constraint }
 Constraint : '[' ListExp ']' { Constraint ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkTokenSpan $3)) (reverse $2) } 
 
 
-SoftConstraint :: { SoftConstraint }
-SoftConstraint : 'assert' '[' ListExp ']' { SoftConstraint ((mkTokenSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3) >- (mkTokenSpan $4)) (reverse $3) } 
+Assertion :: { Assertion }
+Assertion : 'assert' '[' ListExp ']' { Assertion ((mkTokenSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3) >- (mkTokenSpan $4)) (reverse $3) } 
 
 
 Goal :: { Goal }
@@ -136,28 +136,24 @@ Element : Clafer { Subclafer ((mkCatSpan $1)) $1 }
   | '`' Name Card Elements { ClaferUse ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkCatSpan $3) >- (mkCatSpan $4)) $2 $3 $4 }
   | Constraint { Subconstraint ((mkCatSpan $1)) $1 }
   | Goal { Subgoal ((mkCatSpan $1)) $1 }
-  | SoftConstraint { Subsoftconstraint ((mkCatSpan $1)) $1 }
+  | Assertion { Subassertion ((mkCatSpan $1)) $1 }
 
 
 Super :: { Super }
 Super : {- empty -} { SuperEmpty noSpan } 
-  | SuperHow SetExp { SuperSome ((mkCatSpan $1) >- (mkCatSpan $2)) $1 $2 }
+  | ':' SetExp { SuperSome ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
 
 
-SuperHow :: { SuperHow }
-SuperHow : ':' { SuperColon ((mkTokenSpan $1)) } 
-  | '->' { SuperArrow ((mkTokenSpan $1)) }
-  | '->>' { SuperMArrow ((mkTokenSpan $1)) }
+Reference :: { Reference }
+Reference : {- empty -} { ReferenceEmpty noSpan } 
+  | '->' SetExp { ReferenceSet ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
+  | '->>' SetExp { ReferenceBag ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
 
 
 Init :: { Init }
 Init : {- empty -} { InitEmpty noSpan } 
-  | InitHow Exp { InitSome ((mkCatSpan $1) >- (mkCatSpan $2)) $1 $2 }
-
-
-InitHow :: { InitHow }
-InitHow : '=' { InitHow_1 ((mkTokenSpan $1)) } 
-  | ':=' { InitHow_2 ((mkTokenSpan $1)) }
+  | '=' Exp { InitConstant ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
+  | ':=' Exp { InitDefault ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
 
 
 GCard :: { GCard }
@@ -292,7 +288,7 @@ SetExp1 : SetExp1 '--' SetExp2 { Difference ((mkCatSpan $1) >- (mkTokenSpan $2) 
 
 
 SetExp2 :: { SetExp }
-SetExp2 : SetExp2 '&' SetExp3 { Intersection ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 } 
+SetExp2 : SetExp2 '**' SetExp3 { Intersection ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 } 
   | SetExp3 {  $1 }
 
 
