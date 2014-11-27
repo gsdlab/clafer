@@ -12,7 +12,7 @@ edge [fontname=Sans fontsize=11];
 "c0_claferIG" -> "c0_claferLib" [arrowhead=onormal constraint=true weight=100];
 "c0_claferMOO" [label="claferMOO : claferLib" URL="#c0_claferMOO" tooltip="claferMOO : claferLib&#10;  moo&#10;"];
 "c0_claferMOO" -> "c0_claferLib" [arrowhead=onormal constraint=true weight=100];
-"c0_claferLib" [label="abstract claferLib" URL="#c0_claferLib" tooltip="abstract claferLib&#10;  common&#10;  front : Front&#10;  intermediate : Intermediate&#10;  optimizer&#10;  generator : Generator&#10;"];
+"c0_claferLib" [label="abstract claferLib" URL="#c0_claferLib" tooltip="abstract claferLib&#10;  common&#10;  front : Front&#10;  intermediate -> intermediate&#10;  optimizer&#10;  generator : Generator&#10;"];
 "c0_claferLib" -> "c0_Front" [arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];
 "c0_claferLib" -> "c0_Intermediate" [arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];
 "c0_claferLib" -> "c0_Generator" [arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];

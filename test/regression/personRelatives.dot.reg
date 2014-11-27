@@ -6,7 +6,7 @@ nodesep=0.1;
 graph [fontname=Sans fontsize=11];
 node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
 edge [fontname=Sans fontsize=11];
-"c0_Person" [label="abstract Person" URL="#c0_Person" tooltip="abstract Person&#10;  age : integer&#10;    [ this >= 0 ]&#10;  xor maritalStatus&#10;    neverMarried&#10;    married&#10;      spouse -> Person&#10;        [ this.maritalStatus.married.spouse = Person ]&#10;      [ spouse != Person ]&#10;    divorced&#10;    [ married || divorced => age >= 5 ]&#10;  childs -> Person *&#10;    [ Person in this.parents ]&#10;    [ spouse in this.parents ]&#10;    [ this.age < age ]&#10;  parents -> Person 0..2&#10;    [ Person in this.childs ]&#10;"];
+"c0_Person" [label="abstract Person" URL="#c0_Person" tooltip="abstract Person&#10;  age -> integer&#10;    [ this >= 0 ]&#10;  xor maritalStatus&#10;    neverMarried&#10;    married&#10;      spouse -> Person&#10;        [ this.maritalStatus.married.spouse = Person ]&#10;      [ spouse != Person ]&#10;    divorced&#10;    [ married || divorced => age >= 5 ]&#10;  childs -> Person *&#10;    [ Person in this.parents ]&#10;    [ spouse in this.parents ]&#10;    [ this.age < age ]&#10;  parents -> Person 0..2&#10;    [ Person in this.childs ]&#10;"];
 "c0_Person" -> "c0_Person" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=spouse];
 "c0_Person" -> "c0_Person" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=childs];
 "c0_Person" -> "c0_Person" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=parents];

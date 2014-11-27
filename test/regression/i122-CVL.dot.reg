@@ -6,6 +6,6 @@ nodesep=0.1;
 graph [fontname=Sans fontsize=11];
 node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
 edge [fontname=Sans fontsize=11];
-"c0_Office" [label="Office" URL="#c0_Office" tooltip="Office&#10;  Printer ?&#10;    resolution : integer&#10;    Cartridge 1..4&#10;      inkVolume : integer&#10;      or Speed&#10;        High&#10;        Low&#10;      Turbo ?&#10;    xor Type&#10;      Color&#10;      BW&#10;  Scanner ?&#10;    GreenMode ?&#10;    Head 1..2&#10;"];
+"c0_Office" [label="Office" URL="#c0_Office" tooltip="Office&#10;  Printer ?&#10;    resolution -> integer&#10;    Cartridge 1..4&#10;      inkVolume -> integer&#10;      or Speed&#10;        High&#10;        Low&#10;      Turbo ?&#10;    xor Type&#10;      Color&#10;      BW&#10;  Scanner ?&#10;    GreenMode ?&#10;    Head 1..2&#10;"];
 "c0_PrinterPool" [label="PrinterPool" URL="#c0_PrinterPool" tooltip="PrinterPool&#10;  fax ?&#10;  printer ?&#10;  copier ?&#10;  scan ?&#10;  [ fax => printer ]&#10;"];
 }

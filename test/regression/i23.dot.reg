@@ -6,7 +6,7 @@ nodesep=0.1;
 graph [fontname=Sans fontsize=11];
 node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
 edge [fontname=Sans fontsize=11];
-"c0_Person" [label="abstract Person" URL="#c0_Person" tooltip="abstract Person&#10;  Age : integer&#10;"];
+"c0_Person" [label="abstract Person" URL="#c0_Person" tooltip="abstract Person&#10;  Age -> integer&#10;"];
 "c0_Team" [label="Team" URL="#c0_Team" tooltip="Team&#10;  Contractor : Person&#10;    since -> integer&#10;  Member -> Person 2..*&#10;"];
 "c0_Team" -> "c0_Person" [arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];
 "c0_Team" -> "c0_Person" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=Member];
