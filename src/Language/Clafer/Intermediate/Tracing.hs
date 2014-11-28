@@ -48,15 +48,14 @@ traceAstModule x =
   i (AstDeclaration a) = getSpan a
   i (AstClafer a) = getSpan a
   i (AstConstraint a) = getSpan a
-  i (AstSoftConstraint a) = getSpan a
+  i (AstAssertion a) = getSpan a
   i (AstGoal a) = getSpan a
   i (AstAbstract a) = getSpan a
   i (AstElements a) = getSpan a
   i (AstElement a) = getSpan a
   i (AstSuper a) = getSpan a
-  i (AstSuperHow a) = getSpan a
+  i (AstReference a) = getSpan a
   i (AstInit a) = getSpan a
-  i (AstInitHow a) = getSpan a
   i (AstGCard a) = getSpan a
   i (AstCard a) = getSpan a
   i (AstNCard a) = getSpan a
@@ -81,13 +80,13 @@ traverseDeclaration x =
     ElementDecl _ e -> traverseElement e
 
 traverseClafer :: Clafer -> [Ast]
-traverseClafer x@(Clafer _ a b _ d e f g) = AstClafer x : (traverseAbstract a ++ traverseGCard b ++ traverseSuper d ++ traverseCard e ++ traverseInit f ++ traverseElements g)
+traverseClafer x@(Clafer _ a b _ d e f g h) = AstClafer x : (traverseAbstract a ++ traverseGCard b ++ traverseSuper d ++ traverseReference e ++ traverseCard f ++ traverseInit g ++ traverseElements h)
 
 traverseConstraint :: Constraint -> [Ast]
 traverseConstraint x@(Constraint _ e) = AstConstraint x : concatMap traverseExp e
 
-traverseSoftConstraint :: SoftConstraint -> [Ast]
-traverseSoftConstraint x@(SoftConstraint _ e) = AstSoftConstraint x : concatMap traverseExp e
+traverseAssertion :: Assertion -> [Ast]
+traverseAssertion x@(Assertion _ e) = AstAssertion x : concatMap traverseExp e
 
 traverseGoal :: Goal -> [Ast]
 traverseGoal x@(Goal _ e) = AstGoal x : concatMap traverseExp e
@@ -111,29 +110,30 @@ traverseElement x =
     ClaferUse _ n c e -> traverseName n ++ traverseCard c ++ traverseElements e
     Subconstraint _ c -> traverseConstraint c
     Subgoal _ g -> traverseGoal g
-    Subsoftconstraint _ c -> traverseSoftConstraint c
+    Subassertion _ c -> traverseAssertion c
 
 traverseSuper :: Super -> [Ast]
 traverseSuper x =
   AstSuper x :
     case x of
     SuperEmpty _ -> []
-    SuperSome _ sh se -> traverseSuperHow sh ++ traverseSetExp se
+    SuperSome _ se -> traverseSetExp se
 
-traverseSuperHow :: SuperHow -> [Ast]
-traverseSuperHow x =
-  AstSuperHow x : [{- no other children -}]
+traverseReference :: Reference -> [Ast]
+traverseReference x =
+  AstReference x :
+    case x of
+    ReferenceEmpty _ -> []
+    ReferenceSet _ se -> traverseSetExp se
+    ReferenceBag _ se -> traverseSetExp se
 
 traverseInit :: Init -> [Ast]
 traverseInit x =
   AstInit x :
     case x of
     InitEmpty _ -> []
-    InitSome _ ih e -> traverseInitHow ih ++ traverseExp e
-
-traverseInitHow :: InitHow -> [Ast]
-traverseInitHow x =
-  AstInitHow x : [{- no other children -}]
+    InitConstant _ e -> traverseExp e
+    InitDefault _ e -> traverseExp e
 
 traverseGCard :: GCard -> [Ast]
 traverseGCard x =
@@ -240,15 +240,14 @@ data Ast =
   AstDeclaration Declaration |
   AstClafer Clafer |
   AstConstraint Constraint |
-  AstSoftConstraint SoftConstraint |
+  AstAssertion Assertion |
   AstGoal Goal |
   AstAbstract Abstract |
   AstElements Elements |
   AstElement Element |
   AstSuper Super |
-  AstSuperHow SuperHow |
+  AstReference Reference |
   AstInit Init |
-  AstInitHow InitHow |
   AstGCard GCard |
   AstCard Card |
   AstNCard NCard |
