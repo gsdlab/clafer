@@ -82,7 +82,7 @@
   ;; modify the keymap
 ;;   (define-key clafer-mode-map [remap comment-dwim] 'clafer-comment-dwim)
 
-  ;; perl style comment: “# ...” 
+  ;; perl style comment: “# ...”
 ;;   (modify-syntax-entry ?- "< b" clafer-mode-syntax-table)
 ;;   (modify-syntax-entry ?\n "> b" clafer-mode-syntax-table)
 ;; )

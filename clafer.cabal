@@ -24,7 +24,7 @@ source-repository head
     location:       git://github.com/gsdlab/clafer.git
 Executable clafer
     build-tools:    ghc >= 7.6.3
-    default-language: 
+    default-language:
                     Haskell2010
     default-extensions:
                     DeriveDataTypeable,
@@ -37,8 +37,8 @@ Executable clafer
                     process >= 1.1.0.2,
 
                     mtl >= 2.1.2,
-                    cmdargs >= 0.10.7, 
-                    split >= 0.2.2, 
+                    cmdargs >= 0.10.7,
+                    split >= 0.2.2,
 
                     clafer == 0.3.7
     if os(windows)
@@ -48,10 +48,10 @@ Executable clafer
 
     other-modules: Paths_clafer
 
-library 
+library
     build-tools:    ghc >= 7.6.3
-    default-language: 
-                    Haskell2010    
+    default-language:
+                    Haskell2010
     default-extensions:
                     DeriveDataTypeable,
                     RankNTypes
@@ -74,11 +74,11 @@ library
                     json-builder >= 0.3,
                     lens >= 4.1.1 && < 4.4,
                     string-conversions >= 0.3.0.2,
-                    cmdargs >= 0.10.7, 
-                    executable-path >= 0.0.3, 
+                    cmdargs >= 0.10.7,
+                    executable-path >= 0.0.3,
                     glpk-hs >= 0.3.4,
                     MaybeT >= 0.1.2,
-                    split >= 0.2.2, 
+                    split >= 0.2.2,
                     text >= 0.11.3.1
 
     if os(windows)
@@ -88,7 +88,7 @@ library
 
     hs-source-dirs:  src
     ghc-options:     -Wall -fno-warn-unused-do-bind -fno-warn-orphans
-    exposed-modules: 
+    exposed-modules:
                      Language.Clafer,
                      Language.ClaferT,
                      Language.Clafer.ClaferArgs,
@@ -112,7 +112,7 @@ library
                      Language.Clafer.Generator.Schema,
                      Language.Clafer.Generator.Stats,
                      Language.Clafer.Generator.Xml,
-                     Language.Clafer.Intermediate.Analysis,                     
+                     Language.Clafer.Intermediate.Analysis,
                      Language.Clafer.Intermediate.Desugarer,
                      Language.Clafer.Intermediate.Intclafer,
                      Language.Clafer.Intermediate.Resolver,
@@ -132,12 +132,12 @@ library
 
 Test-Suite test-suite
     build-tools:    ghc >= 7.6.3
-    default-language: 
-                    Haskell2010    
-    type:           exitcode-stdio-1.0  
+    default-language:
+                    Haskell2010
+    type:           exitcode-stdio-1.0
     main-is:        test-suite.hs
     hs-source-dirs: test
-    build-depends:  
+    build-depends:
                     base >= 4.6.0.1 && < 5,
                     containers >= 0.5.0.0,
                     directory >= 1.2.0.1,
@@ -145,7 +145,7 @@ Test-Suite test-suite
 
                     HUnit >= 1.2.5.2,
                     mtl >= 2.1.2,
-                    QuickCheck >= 2.6, 
+                    QuickCheck >= 2.6,
 
                     lens >= 4.1.1 && < 4.4,
                     tasty >= 0.10,
@@ -163,7 +163,6 @@ Test-Suite test-suite
 
     other-modules:  Paths_clafer,
                     Functions,
-                    Suite.Example,
                     Suite.Positive,
                     Suite.Negative,
                     Suite.SimpleScopeAnalyser

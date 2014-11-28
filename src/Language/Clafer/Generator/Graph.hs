@@ -37,12 +37,12 @@ genSimpleGraph m ir name showRefs = cleanOutput $ "digraph \"" ++ name ++ "\"\n{
                            where b = graphSimpleModule m (traceIrModule ir) showRefs
 
 -- | Generate a graph in CVL variability abstraction notation
-genCVLGraph :: Module -> IModule -> String -> String                          
+genCVLGraph :: Module -> IModule -> String -> String
 genCVLGraph m ir name = cleanOutput $ "digraph \"" ++ name ++ "\"\n{\nrankdir=BT;\nranksep=0.1;\nnodesep=0.1;\nnode [shape=box margin=\"0.025,0.025\"];\nedge [arrowhead=none];\n" ++ b ++ "}"
                        where b = graphCVLModule m $ traceIrModule ir
 
 -- Simplified Notation Printer --
---toplevel: (Top_level (Boolean), Maybe Topmost parent, Maybe immediate parent)         
+--toplevel: (Top_level (Boolean), Maybe Topmost parent, Maybe immediate parent)
 graphSimpleModule :: Module -> Map.Map Span [Ir] -> Bool -> String
 graphSimpleModule (Module _ [])                _     _        = ""
 graphSimpleModule (Module s (x:xs))            irMap showRefs = graphSimpleDeclaration x (True, Nothing, Nothing) irMap showRefs ++ graphSimpleModule (Module s xs) irMap showRefs
@@ -76,7 +76,7 @@ graphSimpleClafer :: Clafer
                       -> (Bool, Maybe String, Maybe String)
                       -> Map.Map Span [Ir]
                       -> Bool
-                      -> String 
+                      -> String
 graphSimpleClafer (Clafer s abstract gCard id' super' crd init' es) topLevel irMap showRefs
   | fst3 topLevel == True = let {tooltip = genTooltip (Module s [ElementDecl s (Subclafer s (Clafer s abstract gCard id' super' crd init' es))]) irMap;
                                uid' = getDivId s irMap} in
@@ -98,14 +98,14 @@ graphSimpleSuper (SuperSome _ superHow setExp) topLevel irMap showRefs = let {pa
                                                             if super' == "error" then "" else "\"" ++ fromJust (snd3 topLevel) ++ "\" -> \"" ++ parent (graphSimpleSetExp setExp topLevel irMap) ++ "\"" ++ graphSimpleSuperHow superHow topLevel irMap showRefs
 
 graphSimpleSuperHow :: SuperHow -> (Bool, Maybe String, Maybe String) -> Map.Map Span [Ir] -> Bool -> String
-graphSimpleSuperHow (SuperColon _) topLevel _ _ = " [" ++ if fst3 topLevel == True 
-                                                                 then "arrowhead=onormal constraint=true weight=100];\n" 
+graphSimpleSuperHow (SuperColon _) topLevel _ _ = " [" ++ if fst3 topLevel == True
+                                                                 then "arrowhead=onormal constraint=true weight=100];\n"
                                                                  else "arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];\n"
 graphSimpleSuperHow (SuperArrow _) topLevel _ showRefs = " [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=" ++ refColour showRefs ++ " fontcolor=" ++ refColour showRefs ++ (if fst3 topLevel == True then "" else " label=" ++ (fromJust $ trd3 topLevel)) ++ "];\n"
 graphSimpleSuperHow (SuperMArrow _) topLevel _ showRefs = " [arrowhead=veevee arrowsize=0.6 minlen=1.5 penwidth=0.5 constraint=true weight=10 color=" ++ refColour showRefs ++ " fontcolor=" ++ refColour showRefs ++ (if fst3 topLevel == True then "" else " label=" ++ (fromJust $ trd3 topLevel)) ++ "];\n"
 
-refColour :: Bool -> String 
-refColour True = "lightgray" 
+refColour :: Bool -> String
+refColour True = "lightgray"
 refColour False = "transparent"
 
 graphSimpleName :: Name -> (Bool, Maybe String, Maybe String) -> Map.Map Span [Ir] -> String
@@ -213,7 +213,7 @@ graphCVLGoal :: Goal -> Maybe String -> Map.Map Span [Ir] -> String
 graphCVLGoal (Goal s exps') parent irMap = let body' = htmlNewlines $ genTooltip (Module s [ElementDecl s (Subgoal s (Goal s exps'))]) irMap;
                                                                        uid' = "\"" ++ getExpId s irMap ++ "\""
                                                                     in uid' ++ " [label=\"" ++ body' ++ "\" shape=parallelogram];\n" ++
-                                                                      if parent == Nothing then "" else uid' ++ " -> \"" ++ fromJust parent ++ "\";\n"                                                                      
+                                                                      if parent == Nothing then "" else uid' ++ " -> \"" ++ fromJust parent ++ "\";\n"
 
 graphCVLCard :: Card -> Maybe String -> Map.Map Span [Ir] -> String
 graphCVLCard  (CardEmpty _) _ _ = "1..1"
@@ -223,7 +223,7 @@ graphCVLCard  (CardAny _) _ _ =    "0..*"
 graphCVLCard  (CardNum _ (PosInteger (_, n))) _ _ = n ++ ".." ++ n
 graphCVLCard  (CardInterval _ ncard) parent irMap = graphCVLNCard ncard parent irMap
 
-graphCVLNCard :: NCard -> Maybe String -> Map.Map Span [Ir] -> String 
+graphCVLNCard :: NCard -> Maybe String -> Map.Map Span [Ir] -> String
 graphCVLNCard (NCard _ (PosInteger (_, num)) exInteger) parent irMap = num ++ ".." ++ graphCVLExInteger exInteger parent irMap
 
 graphCVLExInteger :: ExInteger -> Maybe String -> Map.Map Span [Ir] -> String
@@ -295,7 +295,7 @@ getUid (PosIdent (pos, id')) irMap = if Map.lookup (getSpan (PosIdent (pos, id')
                                  findUid name (x:xs) = if name == dropUid x then x else findUid name xs;
                                  findUid name []     = name}
 
-getDivId :: Span -> Map.Map Span [Ir] -> String                  
+getDivId :: Span -> Map.Map Span [Ir] -> String
 getDivId s irMap = if Map.lookup s irMap == Nothing
                       then "Uid not Found"
                       else let IRClafer iClaf = head $ fromJust $ Map.lookup s irMap in

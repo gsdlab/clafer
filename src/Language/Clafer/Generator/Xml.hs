@@ -121,12 +121,12 @@ genXmlElement x = case x of
   IEConstraint isHard' pexp  -> tagType "Declaration" "IConstraint" $ concat
                          [ genXmlBoolean "IsHard" isHard'
                          , genXmlPExp "ParentExp" pexp]
-  IEGoal isMaximize' pexp -> tagType "Declaration" "IGoal" $ concat 
+  IEGoal isMaximize' pexp -> tagType "Declaration" "IGoal" $ concat
                          [ genXmlBoolean "IsMaximize" isMaximize'
                          , genXmlPExp "ParentExp" pexp]
-                         
 
-genXmlAnyOp :: (a -> String) -> (a -> String) -> [(String, a)] -> String                                                    
+
+genXmlAnyOp :: (a -> String) -> (a -> String) -> [(String, a)] -> String
 genXmlAnyOp ft f xs = concatMap
   (\(tname, texp) -> tagType tname (ft texp) $ f texp) xs
 
@@ -169,7 +169,7 @@ genXmlIExp x = case x of
     escape y    = [y]
   IInt n -> genXmlInteger n
   IDouble n -> tag "DoubleLiteral" $ show n
-  IStr str -> genXmlString str  
+  IStr str -> genXmlString str
   IClaferId modName' sident' isTop' bind' -> concat
     [ tag "ModuleName" modName'
     , tag "Id" sident'

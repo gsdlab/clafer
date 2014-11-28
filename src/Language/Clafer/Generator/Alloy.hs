@@ -36,31 +36,31 @@ import Language.Clafer.Intermediate.Intclafer hiding (exp)
 -- import qualified Language.Clafer.Intermediate.Intclafer as I (exp)
 
 -- | Alloy code generation
--- 07th Mayo 2012 Rafael Olaechea 
+-- 07th Mayo 2012 Rafael Olaechea
 --      Added Logic to print a goal block in case there is at least one goal.
 genModule :: ClaferArgs -> (IModule, GEnv) -> [(UID, Integer)] -> (Result, [(Span, IrTrace)])
 genModule    claferargs    (imodule, _)       scopes           = (flatten output, filter ((/= NoTrace) . snd) $ mapLineCol output)
   where
-  output = header claferargs scopes +++ (cconcat $ map (genDeclaration claferargs) (_mDecls imodule)) +++ 
-       if ((not $ skip_goals claferargs) && length goals_list > 0) then 
-                CString "objectives o_global {\n" +++   (cintercalate (CString ",\n") goals_list) +++   CString "\n}" 
-       else  
-                CString "" 
-       where 
+  output = header claferargs scopes +++ (cconcat $ map (genDeclaration claferargs) (_mDecls imodule)) +++
+       if ((not $ skip_goals claferargs) && length goals_list > 0) then
+                CString "objectives o_global {\n" +++   (cintercalate (CString ",\n") goals_list) +++   CString "\n}"
+       else
+                CString ""
+       where
                 goals_list = filterNull (map (genDeclarationGoalsOnly claferargs) (_mDecls imodule))
 
 header :: ClaferArgs -> [(UID, Integer)] -> Concat
 header    args          scopes       = CString $ unlines
     [ "open util/integer"
     , "pred show {}"
-    , if (validate args) ||  (noalloyruncommand args)  
-      then "" 
+    , if (validate args) ||  (noalloyruncommand args)
+      then ""
       else "run show for 1" ++ genScopes scopes
     , ""]
     where
     genScopes [] = ""
     genScopes scopes' = " but " ++ intercalate ", " (map genScope scopes')
-    
+
 genScope :: (UID, Integer) -> String
 genScope    (uid', scope)       = show scope ++ " " ++ uid'
 
@@ -71,23 +71,23 @@ genDeclarationGoalsOnly :: ClaferArgs -> IElement -> Concat
 genDeclarationGoalsOnly    claferargs    x         = case x of
   IEClafer _  -> CString ""
   IEConstraint _ _  -> CString ""
-  IEGoal _ (PExp _ _ _ innerexp) -> case innerexp of 
-        IFunExp op'  exps' ->  if  op' == iGMax || op' == iGMin then  
-                        mkMetric op' $ genPExp claferargs [] (head exps') 
-                else 
+  IEGoal _ (PExp _ _ _ innerexp) -> case innerexp of
+        IFunExp op'  exps' ->  if  op' == iGMax || op' == iGMin then
+                        mkMetric op' $ genPExp claferargs [] (head exps')
+                else
                         error "unary operator  distinct from (min/max) at the topmost level of a goal element"
         _ ->  error "no unary operator (min/max) at the topmost level of a goal element."
 
 -- 07th Mayo 2012 Rafael Olaechea
--- Removed goal from this function as they will now  all be collected into a single block.       
+-- Removed goal from this function as they will now  all be collected into a single block.
 genDeclaration :: ClaferArgs -> IElement -> Concat
 genDeclaration claferargs x = case x of
   IEClafer clafer'  -> genClafer claferargs [] clafer'
   IEConstraint _ pexp  -> mkFact $ genPExp claferargs [] pexp
-  IEGoal _ (PExp _ _ _ innerexp) -> case innerexp of 
-        IFunExp op'  _ ->  if  op' == iGMax || op' == iGMin then  
+  IEGoal _ (PExp _ _ _ innerexp) -> case innerexp of
+        IFunExp op'  _ ->  if  op' == iGMax || op' == iGMin then
                        CString ""
-                else 
+                else
                         error "unary operator  distinct from (min/max) at the topmost level of a goal element"
         _ ->  error "no unary operator (min/max) at the topmost level of a goal element."
 
@@ -97,7 +97,7 @@ mkFact  xs = cconcat [CString "fact ", mkSet xs, CString "\n"]
 mkMetric :: String -> Concat -> Concat
 mkMetric goalopname xs = cconcat [ if goalopname == iGMax then CString "maximize" else  CString "minimize", CString " ", xs, CString " "]
 
-mkSet :: Concat -> Concat                                               
+mkSet :: Concat -> Concat
 mkSet xs = cconcat [CString "{ ", xs, CString " }"]
 
 showSet :: Concat -> [Concat] -> Concat
@@ -155,7 +155,7 @@ genOptCard    c
   | otherwise                              = CString ""
   where
   glCard' = genIntervalCrude $ _glCard c
-    
+
 
 -- -----------------------------------------------------------------------------
 -- overlapping inheritance is a new clafer with val (unlike only relation)
@@ -165,12 +165,12 @@ genOptCard    c
 genRelations :: ClaferArgs -> IClafer -> [Concat]
 genRelations claferargs c = maybeToList r ++ (map mkRel $ getSubclafers $ _elements c)
   where
-  r = if _isOverlapping $ _super c 
+  r = if _isOverlapping $ _super c
                 then
                         Just $ Concat NoTrace [CString $ genRel (if (noalloyruncommand claferargs) then  (_uid c ++ "_ref") else "ref")
-                         c {_card = Just (1, 1)} $ 
-                         flatten $ refType claferargs c] 
-                else 
+                         c {_card = Just (1, 1)} $
+                         flatten $ refType claferargs c]
+                else
                         Nothing
   mkRel c' = Concat NoTrace [CString $ genRel (genRelName $ _uid c') c' $ _uid c']
 
@@ -206,7 +206,7 @@ genType m x = genPExp m [] x
 -- a = NUMBER do all x : a | x = NUMBER (otherwise alloy sums a set)
 genConstraints :: ClaferArgs -> [String]      -> IClafer -> [Concat]
 genConstraints    cargs    resPath c = (genParentConst resPath c) :
-  (genGroupConst c) : genPathConst cargs  (if (noalloyruncommand cargs) then  (_uid c ++ "_ref") else "ref") resPath c : constraints 
+  (genGroupConst c) : genPathConst cargs  (if (noalloyruncommand cargs) then  (_uid c ++ "_ref") else "ref") resPath c : constraints
   where
   constraints = map genConst $ _elements c
   genConst x = case x of
@@ -354,7 +354,7 @@ genPExp'    claferargs    resPath     (PExp iType' pid' pos exp') = case exp' of
     where
     sid' = (if istop then "" else '@' : genRelName "") ++ sid
     -- 29/March/2012  Rafael Olaechea: ref is now prepended with clafer name to be able to refer to it from partial instances.
-    -- 30/March/2012 Rafael Olaechea added referredClaferUniqeuid to fix problems when having this.x > number  (e.g test/positive/i10.cfr )     
+    -- 30/March/2012 Rafael Olaechea added referredClaferUniqeuid to fix problems when having this.x > number  (e.g test/positive/i10.cfr )
     vsident = if (noalloyruncommand claferargs) then sid' ++  ".@"  ++ referredClaferUniqeuid ++ "_ref"  else  sid'  ++ ".@ref"
         where referredClaferUniqeuid = if sid == "this" then (head resPath) else sid
   IFunExp _ _ -> case exp'' of
@@ -383,10 +383,10 @@ transformExp    x@(IFunExp op' exps'@(e1:e2:_))
 transformExp x = x
 
 genIFunExp :: String -> ClaferArgs -> [String] -> IExp             -> Concat
-genIFunExp    pid'       claferargs    resPath     (IFunExp op' exps') = 
-  if (op' == iSumSet) 
-    then genIFunExp pid' claferargs resPath (IFunExp iSumSet' [(removeright (head exps')), (getRight $ head exps')]) 
-    else if (op' == iSumSet') 
+genIFunExp    pid'       claferargs    resPath     (IFunExp op' exps') =
+  if (op' == iSumSet)
+    then genIFunExp pid' claferargs resPath (IFunExp iSumSet' [(removeright (head exps')), (getRight $ head exps')])
+    else if (op' == iSumSet')
       then Concat (IrPExp pid') $ intl exps'' (map CString $ genOp (Alloy42 `elem` (mode claferargs)) iSumSet)
       else Concat (IrPExp pid') $ intl exps'' (map CString $ genOp (Alloy42 `elem` (mode claferargs)) op')
   where
@@ -405,14 +405,14 @@ optBrArg    claferargs    resPath     x     = brFun (genPExp' claferargs resPath
     PExp _ _ _ (IClaferId _ _ _ _) -> ($)
     PExp _ _ _ (IInt _) -> ($)
     _  -> brArg
-    
+
 interleave :: [Concat] -> [Concat] -> [Concat]
 interleave [] [] = []
 interleave (x:xs) [] = x:xs
 interleave [] (x:xs) = x:xs
 interleave (x:xs) ys = x : interleave ys xs
 
-brArg :: (a -> Concat) -> a -> Concat 
+brArg :: (a -> Concat) -> a -> Concat
 brArg f arg = cconcat [CString "(", f arg, CString ")"]
 
 --     isAlloy42
@@ -442,7 +442,7 @@ genOp _ _ = error "This should never happen"
 adjustPExp :: [String] -> PExp -> PExp
 adjustPExp resPath (PExp t pid' pos x) = PExp t pid' pos $ adjustIExp resPath x
 
-adjustIExp :: [String] -> IExp -> IExp 
+adjustIExp :: [String] -> IExp -> IExp
 adjustIExp resPath x = case x of
   IDeclPExp q d pexp -> IDeclPExp q d $ adjustPExp resPath pexp
   IFunExp op' exps' -> adjNav $ IFunExp op' $ map adjExps exps'
@@ -454,7 +454,7 @@ adjustIExp resPath x = case x of
   where
   aNav = fst.(adjustNav resPath)
 
-adjustNav :: [String] -> IExp -> (IExp, [String]) 
+adjustNav :: [String] -> IExp -> (IExp, [String])
 adjustNav resPath x@(IFunExp op' (pexp0:pexp:_))
   | op' == iJoin = (IFunExp iJoin
                    [pexp0{_exp = iexp0},
@@ -498,7 +498,7 @@ data AlloyEnv = AlloyEnv {
 mapLineCol :: Concat -> [(Span, IrTrace)]
 mapLineCol code = mapping $ execState (mapLineCol' code) (AlloyEnv (firstLine, firstCol) [])
 
-addCode :: MonadState AlloyEnv m => String -> m () 
+addCode :: MonadState AlloyEnv m => String -> m ()
 addCode str = modify (\s -> s {lineCol = lineno (lineCol s) str})
 
 mapLineCol' :: MonadState AlloyEnv m => Concat -> m ()
@@ -519,7 +519,7 @@ mapLineCol' c@(Concat srcPos' n) = do
    -    (((#((this.@r_c2_Finger).@r_c3_Pinky)).add[(#((this.@r_c2_Finger).@r_c4_Index))]).add[(#((this.@r_c2_Finger).@r_c5_Middle))]) = 0
    - But the actual constraint in the API is
    -    #((this.@r_c2_Finger).@r_c3_Pinky)).add[(#((this.@r_c2_Finger).@r_c4_Index))]).add[(#((this.@r_c2_Finger).@r_c5_Middle))]) = 0
-   - 
+   -
    - Seems unintuitive since the brackets are now unbalanced but that's how they work in Alloy. The next
    - few lines of code is counting the beginning and ending parenthesis's and subtracting them from the
    - positions in the map file.

@@ -17,12 +17,12 @@ init:
 	cabal sandbox init --sandbox=../.clafertools-cabal-sandbox
 	cabal install --only-dependencies $(GPLK_LIBS_INCLUDES) $(MAC_USR_LIB) --enable-tests
 
-build: 
+build:
 	$(MAKE) -C $(TOOL_DIR)
 	cabal configure
 	cabal build
 
-install:  
+install:
 	mkdir -p $(to)
 	mkdir -p $(to)/tools
 	cp -f README.md $(to)/clafer-README.md
@@ -40,7 +40,7 @@ cleanEnv:
 	make clean
 	ghc-pkg unregister clafer --package-db=../.clafertools-cabal-sandbox/x86_64-windows-ghc-7.8.3
 	rm `which clafer`
-	make 
+	make
 
 # regenerate grammar, call after clafer.cf changed
 grammar:
@@ -66,7 +66,7 @@ prof:
 .PHONY : test
 
 test:
-	cabal test	
+	cabal test
 	$(MAKE) -C $(TEST_DIR) test
 
 generateAlloyJSPythonXMLXHTMLDot:

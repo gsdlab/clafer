@@ -63,7 +63,7 @@ data Tok =
 
  deriving (Eq,Show,Ord)
 
-data Token = 
+data Token =
    PT  Posn Tok
  | Err Posn
   deriving (Eq,Show,Ord)
@@ -183,12 +183,12 @@ utf8Encode = map fromIntegral . go . ord
                         , 0x80 + oc Data.Bits..&. 0x3f
                         ]
 
-alex_action_3 =  tok (\p s -> PT p (eitherResIdent (TV . share) s)) 
-alex_action_4 =  tok (\p s -> PT p (eitherResIdent (T_PosInteger . share) s)) 
-alex_action_5 =  tok (\p s -> PT p (eitherResIdent (T_PosDouble . share) s)) 
-alex_action_6 =  tok (\p s -> PT p (eitherResIdent (T_PosString . share) s)) 
-alex_action_7 =  tok (\p s -> PT p (eitherResIdent (T_PosIdent . share) s)) 
-alex_action_8 =  tok (\p s -> PT p (eitherResIdent (TV . share) s)) 
+alex_action_3 =  tok (\p s -> PT p (eitherResIdent (TV . share) s))
+alex_action_4 =  tok (\p s -> PT p (eitherResIdent (T_PosInteger . share) s))
+alex_action_5 =  tok (\p s -> PT p (eitherResIdent (T_PosDouble . share) s))
+alex_action_6 =  tok (\p s -> PT p (eitherResIdent (T_PosString . share) s))
+alex_action_7 =  tok (\p s -> PT p (eitherResIdent (T_PosIdent . share) s))
+alex_action_8 =  tok (\p s -> PT p (eitherResIdent (TV . share) s))
 {-# LINE 1 "templates\GenericTemplate.hs" #-}
 {-# LINE 1 "templates\\GenericTemplate.hs" #-}
 {-# LINE 1 "<built-in>" #-}
@@ -244,7 +244,7 @@ alexIndexInt16OffAddr (AlexA# arr) off =
 
 
 {-# INLINE alexIndexInt32OffAddr #-}
-alexIndexInt32OffAddr (AlexA# arr) off = 
+alexIndexInt32OffAddr (AlexA# arr) off =
 #ifdef WORDS_BIGENDIAN
   narrow32Int# i
   where
@@ -292,7 +292,7 @@ alexScanUser user input (I# (sc))
   = case alex_scan_tkn user input 0# input sc AlexNone of
 	(AlexNone, input') ->
 		case alexGetByte input of
-			Nothing -> 
+			Nothing ->
 
 
 
@@ -321,13 +321,13 @@ alexScanUser user input (I# (sc))
 
 alex_scan_tkn user orig_input len input s last_acc =
   input `seq` -- strict in the input
-  let 
+  let
 	new_acc = (check_accs (alex_accept `quickIndex` (I# (s))))
   in
   new_acc `seq`
   case alexGetByte input of
      Nothing -> (new_acc, input)
-     Just (c, new_input) -> 
+     Just (c, new_input) ->
 
 
 
@@ -336,7 +336,7 @@ alex_scan_tkn user orig_input len input s last_acc =
                 base   = alexIndexInt32OffAddr alex_base s
                 offset = (base +# ord_c)
                 check  = alexIndexInt16OffAddr alex_check offset
-		
+
                 new_s = if GTE(offset,0#) && EQ(check,ord_c)
 			  then alexIndexInt16OffAddr alex_table offset
 			  else alexIndexInt16OffAddr alex_deflt s

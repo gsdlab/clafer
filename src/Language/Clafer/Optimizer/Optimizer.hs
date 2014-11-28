@@ -71,7 +71,7 @@ makeZeroUnusedAbs decls' = map (\x -> if (x `elem` unusedAbs) then IEClafer (get
   where
   unusedAbs = map IEClafer $ findUnusedAbs clafers $ map _uid $
               filter (not._isAbstract) clafers
-  clafers   = toClafers decls' 
+  clafers   = toClafers decls'
   getIClafer (IEClafer c) = c
   getIClafer _ = error "Function makeZeroUnusedAbs from Optimizer expected paramter of type IClafer got a differnt IElement" --This should never happen
 
@@ -148,7 +148,7 @@ expNav x = do
   return $ mkIFunExp iUnion $ map fst xs'
 
 expNav' :: MonadState GEnv m => String -> IExp -> m (IExp, String)
-expNav' context (IFunExp _ (p0:p:_)) = do    
+expNav' context (IFunExp _ (p0:p:_)) = do
   (exp0', context') <- expNav' context  $ _exp p0
   (exp', context'') <- expNav' context' $ _exp p
   return (IFunExp iJoin [ p0 {_exp = exp0'}
@@ -167,7 +167,7 @@ expNav' context x@(IClaferId modName' id' isTop' bind' ) = do
       return (x, id')
 expNav' _ _ = error "Function expNav' from Optimizer expects an argument of type ClaferId or IFunExp but was given another IExp"
 
-split' :: MonadState GEnv m => IExp -> (IExp -> m IExp) -> m [IExp] 
+split' :: MonadState GEnv m => IExp -> (IExp -> m IExp) -> m [IExp]
 split'(IFunExp _ (p:pexp:_)) f =
     split' (_exp p) (\s -> f $ IFunExp iJoin
       [p {_exp = s}, pexp])
@@ -202,7 +202,7 @@ allUniqueElement x = case x of
 checkConstraintElement :: [String] -> IElement -> Bool
 checkConstraintElement idents x = case x of
   IEClafer claf -> and $ map (checkConstraintElement idents) $ _elements claf
-  IEConstraint _ pexp -> checkConstraintPExp idents pexp 
+  IEConstraint _ pexp -> checkConstraintPExp idents pexp
   IEGoal _ _ ->  True
 
 checkConstraintPExp :: [String] -> PExp -> Bool
@@ -226,7 +226,7 @@ findDupModule :: ClaferArgs -> IModule -> Either ClaferErr IModule
 findDupModule args iModule = if check_duplicates args && (not $ null dups)
   then Left $ ClaferErr $ "--check-duplicates: Duplicate clafer names: " ++ (intercalate ", " dups)
   else Right iModule
-  where 
+  where
     allClafers :: [ IClafer ]
     allClafers = universeOn biplate iModule
     dups = findDuplicates allClafers
@@ -246,7 +246,7 @@ markTopModule decls' = map (markTopElement (
 
 markTopClafer :: [String] -> IClafer -> IClafer
 markTopClafer clafers c =
-  c {_super = markTopSuper clafers $ _super c, 
+  c {_super = markTopSuper clafers $ _super c,
      _elements = map (markTopElement clafers) $ _elements c}
 
 

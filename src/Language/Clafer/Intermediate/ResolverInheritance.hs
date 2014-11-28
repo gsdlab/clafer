@@ -46,7 +46,7 @@ resolveNModule (imodule, genv') =
     let decls' = _mDecls imodule
     decls'' <- mapM (resolveNElement decls') decls'
     return (imodule{_mDecls = decls''}, genv' {sClafers = bfs toNodeShallow $ toClafers decls''})
-    
+
 
 
 resolveNClafer :: [IElement] -> IClafer -> Resolve IClafer
@@ -114,7 +114,7 @@ resolveOElement env x = case x of
   IEClafer clafer  -> IEClafer <$> resolveOClafer env clafer
   IEConstraint _ _ -> return x
   IEGoal _ _ -> return x
-  
+
 
 -- | Resolve inherited and default cardinalities
 analyzeModule :: (IModule, GEnv) -> IModule
@@ -148,8 +148,8 @@ analyzeCard env clafer = _card clafer `mplus` Just card'
   where
   card'
     | _isAbstract clafer = (0, -1)
-    | (isJust $ context env) && pGcard == (0, -1) 
-      || (isTopLevel $ _cinPos clafer) = (1, 1) 
+    | (isJust $ context env) && pGcard == (0, -1)
+      || (isTopLevel $ _cinPos clafer) = (1, 1)
     | otherwise = (0, 1)
   pGcard = _interval $ fromJust $ _gcard $ fromJust $ context env
   isTopLevel (Span (Pos _ c) _) = c==1
@@ -223,7 +223,7 @@ renameClafer True  clafer = renameClafer' clafer
 
 renameClafer' :: MonadState GEnv m => IClafer -> m IClafer
 renameClafer' clafer = do
-  let claferIdent = _ident clafer 
+  let claferIdent = _ident clafer
   identCountMap' <- gets identCountMap
   let count = Map.findWithDefault 0 claferIdent identCountMap'
   modify (\e -> e { identCountMap = Map.alter (\_ -> Just (count+1)) claferIdent identCountMap' } )
