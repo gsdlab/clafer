@@ -98,7 +98,7 @@ getExtended :: IClafer -> [String]
 getExtended c =
   sName ++ ((getSubclafers $ _elements c) >>= getExtended)
   where
-  sName = if not $ _isOverlapping $ _super c then [getSuper c] else []
+  sName = if not (c ^. super . superKind == Just BaseClafer) then [getSuper c] else []
 
 -- -----------------------------------------------------------------------------
 -- inheritance  expansions
@@ -109,13 +109,16 @@ expModule (decls', genv) = evalState (mapM expElement decls') genv
 expClafer :: MonadState GEnv m => IClafer -> m IClafer
 expClafer claf = do
   super' <- expSuper $ _super claf
+  reference' <- expReference $ _reference claf
   elements' <- mapM expElement $ _elements claf
-  return $ claf {_super = super', _elements = elements'}
+  return $ claf {_super = super', _reference = reference', _elements = elements'}
 
 expSuper :: MonadState GEnv m => ISuper -> m ISuper
-expSuper x = case x of
-  ISuper False _ -> return x
-  ISuper True pexps -> ISuper True `liftM` mapM expPExp pexps
+expSuper (ISuper sk pexps) = ISuper sk `liftM` mapM expPExp pexps
+
+expReference :: MonadState GEnv m => Maybe IReference -> m (Maybe IReference)
+expReference (Just (IReference sk pexps)) = Just `liftM` IReference sk `liftM` mapM expPExp pexps
+expReference Nothing                      = return Nothing
 
 expElement :: MonadState GEnv m => IElement -> m IElement
 expElement x = case x of

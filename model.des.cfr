@@ -1,0 +1,27 @@
+abstract 0 .. * c0_Command : clafer 0 .. * {
+  }
+0 .. * c0_Up : c0_Command 1 .. 1 {
+  }
+0 .. * c0_Down : c0_Command 1 .. 1 {
+  }
+0 .. * c0_Stop : c0_Command 1 .. 1 {
+  }
+abstract 0 .. * c0_Component : clafer 0 .. 0 {
+  abstract 0 .. * c0_Port : clafer 0 .. * {
+    }
+  }
+abstract 0 .. * c0_WinController : c0_Component 0 .. 0 {
+  0 .. * c0_cmd : c0_Port -> c0_Command 1 .. 1 {
+    }
+  1 .. 1 c0_states : clafer 1 .. 1 {
+    0 .. * c0_goingUp : clafer 0 .. 1 {
+      [this . parent . parent . (c0_cmd . ref)= c0_Up]
+    }
+    0 .. * c0_goingDown : clafer 0 .. 1 {
+      [this . parent . parent . (c0_cmd . ref)= c0_Down]
+    }
+    0 .. * c0_stopped : clafer 0 .. 1 {
+      [this . parent . parent . (c0_cmd . ref)= c0_Stop]
+    }
+    }
+  }

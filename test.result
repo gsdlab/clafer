@@ -1,0 +1,72 @@
+Building clafer-0.3.7...
+Preprocessing library clafer-0.3.7...
+In-place registering clafer-0.3.7...
+Preprocessing executable 'clafer' for clafer-0.3.7...
+Preprocessing test suite 'test-suite' for clafer-0.3.7...
+Running 1 test suites...
+Test suite test-suite: RUNNING...
+Tests
+  Main
+    FQMapLookup:     u m l c d _ m o d e l . c f r   E rrOoKr:
+ [ S e m aAnltliCclEarfre r{spGoesn e=r iEcrsr:P o s   { f r a g I d   =   0 , OfKra
+gP o sS u=i tPeo.sP o1s6i t2i1v,e 
+mo d e l Pcoosm p=i lPeoTse s1t6:  2 1 } ,   m s g   =   " N a m e   r e s o lver: 'c0_Element' not found within path '\n' in context of '\"ownedElement\"'"}]
+Tutorial_Intro.cfr Error: [SemanticErr {pos = ErrPos {fragId = 0, fragPos = Pos 38 19, modelPos = Pos 38 19}, msg = "Name resolver: 'c0_Person' not found within path '\n' in context of '\"participants\"'"}]
+top_level_constraints_with_relational_joins.cfr Error: [SemanticErr {pos = ErrPos {fragId = 0, fragPos = Pos 4 24, modelPos = Pos 4 24}, msg = "Name resolver: 'c0_TA' not found within path '\n' in context of '\"assistants\"'"}]
+Telematics_PLA.cfr Error: [SemanticErr {pos = ErrPos {fragId = 0, fragPos = Pos 42 15, modelPos = Pos 42 15}, msg = "No referenced clafer found: 'ECU1'"}]
+telematics.cfr Error: [SemanticErr {pos = ErrPos {fragId = 0, fragPos = Pos 38 15, modelPos = Pos 38 15}, msg = "No referenced clafer found: 'ECU1'"}]
+Scotiabank_Mortgages.cfr Error: [SemanticErr {pos = ErrPos {fragId = 0, fragPos = Pos 8 13, modelPos = Pos 8 13}, msg = "Name resolver: 'c0_MortgageTerm' not found within path '\n' in context of '\"term\"'"}]
+scopes.cfr Error: [SemanticErr {pos = ErrPos {fragId = 0, fragPos = Pos 8 7, modelPos = Pos 8 7}, msg = "No referenced clafer found: 'g'"}]
+person_tutorial.cfr Error: [SemanticErr {pos = ErrPos {fragId = 0, fragPos = Pos 23 20, modelPos = Pos 23 20}, msg = "Name resolver: 'c0_NorthAmericanCountry' not found within path '\n' in context of '\"Country\"'"}]
+personRelatives.cfr Error: [SemanticErr {pos = ErrPos {fragId = 0, fragPos = Pos 7 35, modelPos = Pos 7 35}, msg = "Name resolver: 'c0_Person' not found within path '\n' in context of '\"spouse\"'"}]
+paths.cfr Error: [SemanticErr {pos = ErrPos {fragId = 0, fragPos = Pos 6 35, modelPos = Pos 6 35}, msg = "Name resolver: 'c0_Person' not found within path '\n' in context of '\"spouse\"'"}]
+oclBench_b3.cfr Error: [SemanticErr {pos = ErrPos {fragId = 0, fragPos = Pos 16 17, modelPos = Pos 16 17}, msg = "Name resolver: 'c0_Person' not found within path '\n' in context of '\"recorder\"'"}]
+oclBench_b1.cfr Error: [SemanticErr {pos = ErrPos {fragId = 0, fragPos = Pos 89 18, modelPos = Pos 89 18}, msg = "No referenced clafer found: 'personPair'"}]
+noAndNot.cfr Error: [SemanticErr {pos = ErrPos {fragId = 0, fragPos = Pos 3 18, modelPos = Pos 3 18}, msg = "Name resolver: 'c0_Person' not found within path '\n' in context of '\"child\"'"}]
+i98_top-level-references.cfr Error: [SemanticErr {pos = ErrPos {fragId = 0, fragPos = Pos 9 21, modelPos = Pos 9 21}, msg = "Name resolver: 'c0_Person' not found within path '\n' in context of '\"NewBorn\"'"}]
+i95-subclafers-not-visible-via-reference-reference.cfr Error: [SemanticErr {pos = ErrPos {fragId = 0, fragPos = Pos 12 9, modelPos = Pos 12 9}, msg = "No referenced clafer found: 'ref1'"}]
+i89-references-should-be-unique.cfr Error: [SemanticErr {pos = ErrPos {fragId = 0, fragPos = Pos 5 14, modelPos = Pos 5 14}, msg = "Name resolver: 'c0_A' not found within path '\n' in context of '\"setRefToA\"'"}]
+i84-references-pointing-to-the-same-object.cfr Error: [SemanticErr {pos = ErrPos {fragId = 0, fragPos = Pos 4 19, modelPos = Pos 4 19}, msg = "Name resolver: 'c0_DimensionLevel' not found within path '\n' in context of '\"levels\"'"}]
+i78_transitive-closure.cfr Error: [SemanticErr {pos = ErrPos {fragId = 0, fragPos = Pos 4 21, modelPos = Pos 4 21}, msg = "Name resolver: 'c0_TimeLevel' not found within path '\n' in context of '\"aggregatesTo\"'"}]
+i72-shared-reference.cfr Error: [SemanticErr {pos = ErrPos {fragId = 0, fragPos = Pos 8 21, modelPos = Pos 8 21}, msg = "Name resolver: 'c0_Person' not found within path '\n' in context of '\"participants\"'"}]
+i71.cfr Error: [SemanticErr {pos = ErrPos {fragId = 0, fragPos = Pos 6 21, modelPos = Pos 6 21}, msg = "Name resolver: 'c0_Teacher' not found within path '\n' in context of '\"taughtBy\"'"}]
+i70.cfr Error: [SemanticErr {pos = ErrPos {fragId = 0, fragPos = Pos 9 16, modelPos = Pos 9 16}, msg = "No referenced clafer found: 'Clafer1'"}]
+i50_stop_following_references.cfr Error: [SemanticErr {pos = ErrPos {fragId = 0, fragPos = Pos 12 10, modelPos = Pos 12 10}, msg = "Name resolver: 'c0_A' not found within path '\n' in context of '\"a\"'"}]
+i50.cfr Error: [SemanticErr {pos = ErrPos {fragId = 0, fragPos = Pos 10 10, modelPos = Pos 10 10}, msg = "Name resolver: 'c0_A' not found within path '\n' in context of '\"a\"'"}]
+i40_integers_strings_assignment.cfr Error: [SemanticErr {pos = ErrPos {fragId = 0, fragPos = Pos 15 16, modelPos = Pos 15 16}, msg = "Name resolver: 'c0_Entity' not found within path '\n' in context of '\"E1TEntities\"'"}]
+i235.cfr Error: [SemanticErr {pos = ErrPos {fragId = 0, fragPos = Pos 3 9, modelPos = Pos 3 9}, msg = "Name resolver: 'c0_A' not found within path '\n' in context of '\"aRef\"'"}]
+i23.cfr Error: [SemanticErr {pos = ErrPos {fragId = 0, fragPos = Pos 9 15, modelPos = Pos 9 15}, msg = "Name resolver: 'c0_Person' not found within path '\n' in context of '\"Member\"'"}]
+i228-this-and-parent-types.cfr Error: [SemanticErr {pos = ErrPos {fragId = 0, fragPos = Pos 4 15, modelPos = Pos 4 15}, msg = "No referenced clafer found: 'A'"}]
+i205-ref-disambiguation-II.cfr Error: [SemanticErr {pos = ErrPos {fragId = 0, fragPos = Pos 6 13, modelPos = Pos 6 13}, msg = "No referenced clafer found: 'Person'"}]
+i150-or-groups.des.cfr Error: [SemanticErr {pos = ErrPos {fragId = 0, fragPos = Pos 1 15, modelPos = Pos 1 15}, msg = "No super clafer found: 'clafer'"}]
+i121-comments.cfr Error: [SemanticErr {pos = ErrPos {fragId = 0, fragPos = Pos 17 6, modelPos = Pos 17 6}, msg = "No referenced clafer found: 'A'"}]
+ESC_FMCSA571.126-model.cfr Error: [SemanticErr {pos = ErrPos {fragId = 0, fragPos = Pos 9 27, modelPos = Pos 9 27}, msg = "Name resolver: 'c0_degree' not found within path '\n' in context of '\"AckermanSteerAngle\"'"}]
+enforcingInverseReferences.cfr Error: [SemanticErr {pos = ErrPos {fragId = 0, fragPos = Pos 2 19, modelPos = Pos 2 19}, msg = "Name resolver: 'c0_Author' not found within path '\n' in context of '\"author\"'"}]
+EDM_Intro.cfr Error: [SemanticErr {pos = ErrPos {fragId = 0, fragPos = Pos 2 14, modelPos = Pos 2 14}, msg = "Name resolver: 'c0_Month' not found within path '\n' in context of '\"month\"'"}]
+ClaferWiki-Specific_Help.cfr Error: [SemanticErr {pos = ErrPos {fragId = 0, fragPos = Pos 2 8, modelPos = Pos 2 8}, msg = "Name resolver: 'c0_C' not found within path '\n' in context of '\"c\"'"}]
+ClaferTools_ToolingArchitecture.cfr Error: [SemanticErr {pos = ErrPos {fragId = 0, fragPos = Pos 11 21, modelPos = Pos 11 21}, msg = "No referenced clafer found: 'intermediate'"}]
+ClaferTools_CommandLineArguments.cfr Error: [SemanticErr {pos = ErrPos {fragId = 0, fragPos = Pos 32 27, modelPos = Pos 32 27}, msg = "No referenced clafer found: 'integerArgument'"}]
+books_tutorial.cfr Error: [SemanticErr {pos = ErrPos {fragId = 0, fragPos = Pos 20 16, modelPos = Pos 20 16}, msg = "Name resolver: 'c0_Author' not found within path '\n' in context of '\"authors\"'"}]
+BMM_model.cfr Error: [SemanticErr {pos = ErrPos {fragId = 0, fragPos = Pos 17 20, modelPos = Pos 17 20}, msg = "Name resolver: 'c0_Goal' not found within path '\n' in context of '\"amplifiedBy\"'"}]
+accesscontrol_Intro.cfr Error: [SemanticErr {pos = ErrPos {fragId = 0, fragPos = Pos 4 14, modelPos = Pos 4 14}, msg = "Name resolver: 'c0_Value' not found within path '\n' in context of '\"value\"'"}]
+FAILi2 3(50..c2f4rs )fa
+il e d   f o rt esscto/ppeo_ssittriavtee gfya i=l :N oTnhee
+ aib2o3v5e. ccflra ffeariMloedde lfso rd isdc onpoet_ sctormaptielgey. 
+=  S i m prleef
+erence Unused Abstract Clafer: FAIL
+      reference_Unused_Abstract_Clafer (i235) failed, error for referencing unused abstract clafer
+    nonempty cards:                   OK (0.18s)
+    stringEqual:                      FAIL
+      Exception: Function fromLeft expects argument of the form 'Right b'
+  Suite.Negative
+    failTest:                         OK
+  Suite.SimpleScopeAnalyser
+    ScopeTest:                        FAIL
+      Exception: test\Suite\SimpleScopeAnalyser.hs:117:17-86: Irrefutable pattern failed for pattern (Data.Either.Right compilerResultMap)
+    ReadScopesJSON:                   FAIL
+      Exception: test\Suite\SimpleScopeAnalyser.hs:132:17-86: Irrefutable pattern failed for pattern (Data.Either.Right compilerResultMap)
+
+5 out of 9 tests failed (0.43s)
+Test suite test-suite: FAIL
+Test suite logged to: dist\test\clafer-0.3.7-test-suite.log
+0 of 1 test suites (0 of 1 test cases) passed.

@@ -34,8 +34,9 @@ import Language.Clafer.Intermediate.Intclafer
 import Prelude hiding (exp)
 
 
-isReference :: IClafer -> Bool
-isReference = _isOverlapping . _super
+isReference :: IClafer                -> Bool
+isReference IClafer{_reference=Just _} = True
+isReference _                          = False
 isConcrete :: IClafer -> Bool
 isConcrete = not . isReference
 isSuperest :: [IClafer] -> IClafer -> Bool
