@@ -19,8 +19,8 @@ abstract Element
     [all x : this.owner | this in x.ownedElement]
 
 abstract NamedElement : Element
-    name -> string ?
-    qualifiedName -> string ?
+    name -> String ?
+    qualifiedName -> String ?
     visibility -> VisibilityKind ?
 
 abstract ValueSpecification : NamedElement
@@ -36,7 +36,7 @@ abstract Class : Classifier
     nestedClassifier : Classifier *
 
 abstract Property : StructuralFeature
-    default -> string ?
+    default -> String ?
     isComposite ?
     isDerived ?
     isDerivedUnion ?
@@ -97,12 +97,12 @@ abstract LiteralBoolean : LiteralSpecification
 abstract LiteralSpecification : ValueSpecification
 
 abstract LiteralString : LiteralSpecification
-    value -> string ?
+    value -> String ?
 
 abstract LiteralNull : LiteralSpecification
 
 abstract LiteralInteger : LiteralSpecification
-    value -> integer ?
+    value -> Integer ?
 
 abstract LiteralUnlimitedNatural : LiteralSpecification
     value : UnlimitedNatural ?
@@ -111,7 +111,7 @@ abstract StructuralFeature : Feature
     isReadOnly ?
     isOrdered ?
     isUnique ?
-    lower -> integer ?
+    lower -> Integer ?
     upper : UnlimitedNatural ?
     upperValue : ValueSpecification ?
     lowerValue : ValueSpecification ?
