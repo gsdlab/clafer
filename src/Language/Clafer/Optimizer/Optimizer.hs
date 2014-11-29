@@ -98,7 +98,7 @@ getExtended :: IClafer -> [String]
 getExtended c =
   sName ++ ((getSubclafers $ _elements c) >>= getExtended)
   where
-  sName = if not (c ^. super . superKind == Just BaseClafer) then [getSuper c] else []
+  sName = if isJust $ c ^. super then [getSuper c] else []
 
 -- -----------------------------------------------------------------------------
 -- inheritance  expansions
@@ -113,11 +113,12 @@ expClafer claf = do
   elements' <- mapM expElement $ _elements claf
   return $ claf {_super = super', _reference = reference', _elements = elements'}
 
-expSuper :: MonadState GEnv m => ISuper -> m ISuper
-expSuper (ISuper sk pexps) = ISuper sk `liftM` mapM expPExp pexps
+expSuper :: MonadState GEnv m => Maybe ISuper -> m (Maybe ISuper)
+expSuper (Just (ISuper sk pexp)) = Just `liftM` ISuper sk `liftM` expPExp pexp
+expSuper Nothing                  = return Nothing
 
 expReference :: MonadState GEnv m => Maybe IReference -> m (Maybe IReference)
-expReference (Just (IReference sk pexps)) = Just `liftM` IReference sk `liftM` mapM expPExp pexps
+expReference (Just (IReference sk pexp)) = Just `liftM` IReference sk `liftM` expPExp pexp
 expReference Nothing                      = return Nothing
 
 expElement :: MonadState GEnv m => IElement -> m IElement
@@ -253,8 +254,9 @@ markTopClafer clafers c =
      _elements = map (markTopElement clafers) $ _elements c}
 
 
-markTopSuper :: [String] -> ISuper -> ISuper
-markTopSuper clafers x = x{_supers = map (markTopPExp clafers) $ _supers x}
+markTopSuper :: [String] -> Maybe ISuper -> Maybe ISuper
+markTopSuper clafers (Just x) = Just $ x{_sClaferId = markTopPExp clafers $ _sClaferId x}
+markTopSuper _       Nothing  = Nothing
 
 
 markTopElement :: [String] -> IElement -> IElement

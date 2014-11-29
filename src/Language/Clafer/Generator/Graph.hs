@@ -22,7 +22,7 @@
 -- | Generates simple graph and CVL graph representation for a Clafer model in GraphViz DOT.
 module Language.Clafer.Generator.Graph (genSimpleGraph, genCVLGraph, traceAstModule, traceIrModule) where
 
-import Language.Clafer.Common(fst3,snd3,trd3)
+import Language.Clafer.Common(fst3,snd3,trd3,getSuper)
 import Language.Clafer.Front.Absclafer
 import Language.Clafer.Intermediate.Tracing
 import Language.Clafer.Intermediate.Intclafer
@@ -311,7 +311,7 @@ getUseId :: Span -> Map.Map Span [Ir] -> String
 getUseId s irMap = if Map.lookup s irMap == Nothing
                       then "Uid not Found"
                       else let IRClafer iClaf = head $ fromJust $ Map.lookup s irMap in
-                        _sident $ _exp $ head $ _supers $ _super iClaf
+                        getSuper iClaf
 
 getExpId :: Span -> Map.Map Span [Ir] -> String
 getExpId s irMap = if Map.lookup s irMap == Nothing

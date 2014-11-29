@@ -22,6 +22,7 @@
 -}
 module Language.Clafer.Common where
 
+import Control.Applicative ((<$>))
 import Data.Tree
 import Data.Maybe
 import Data.Char
@@ -47,18 +48,13 @@ mkInteger (PosInteger (_, n)) = read n
 type Ident = PosIdent
 
 getSuper :: IClafer -> String
-getSuper = getSuperId._supers._super
+getSuper c = fromMaybe baseClafer $ getSuperId <$> _sClaferId <$> _super c
 
 getReference :: IClafer -> String
-getReference = supId . _reference
-  where
-    supId :: Maybe IReference -> String
-    supId Nothing = ""
-    supId (Just ir) = getSuperId $ _references ir
+getReference c = fromMaybe "" $ getSuperId <$> _rClaferId <$> _reference c
 
-getSuperId :: [PExp]                                -> String
-getSuperId    []                                     = baseClafer
-getSuperId    [PExp _ _ _ (IClaferId{ _sident = s})] = s
+getSuperId :: PExp                                  -> String
+getSuperId    (PExp _ _ _ (IClaferId{ _sident = s})) = s
 getSuperId    x = error $ "Bug: getSuperId called not on '[PExp (IClaferId)]' but instead on '" ++ show x ++ "'"
 
 isEqClaferId :: String -> IClafer -> Bool
