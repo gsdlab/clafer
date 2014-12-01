@@ -150,7 +150,7 @@ data Exp =
  | LetExp Span VarBinding Exp
  | TmpPatNever Span Exp PatternScope
  | TmpPatSometime Span Exp PatternScope
- | TmpPatOnce Span Exp PatternScope
+ | TmpPatLessOrOnce Span Exp PatternScope
  | TmpPatAlways Span Exp PatternScope
  | TmpPatPrecede Span Exp Exp PatternScope
  | TmpPatFollow Span Exp Exp PatternScope
@@ -352,7 +352,7 @@ instance Spannable Exp where
   getSpan ( LetExp s _ _ ) = s
   getSpan ( TmpPatNever s _ _ ) = s
   getSpan ( TmpPatSometime s _ _ ) = s
-  getSpan ( TmpPatOnce s _ _ ) = s
+  getSpan ( TmpPatLessOrOnce s _ _ ) = s
   getSpan ( TmpPatAlways s _ _ ) = s
   getSpan ( TmpPatPrecede s _ _ _ ) = s
   getSpan ( TmpPatFollow s _ _ _ ) = s

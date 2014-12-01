@@ -241,7 +241,7 @@ instance Print Exp where
    LetExp _ varbinding exp -> prPrec i 1 (concatD [doc (showString "let") , prt 0 varbinding , doc (showString "in") , prt 1 exp])
    TmpPatNever _ exp patternscope -> prPrec i 2 (concatD [doc (showString "never") , prt 3 exp , prt 0 patternscope])
    TmpPatSometime _ exp patternscope -> prPrec i 2 (concatD [doc (showString "sometime") , prt 3 exp , prt 0 patternscope])
-   TmpPatOnce _ exp patternscope -> prPrec i 2 (concatD [doc (showString "once") , prt 3 exp , prt 0 patternscope])
+   TmpPatLessOrOnce _ exp patternscope -> prPrec i 2 (concatD [doc (showString "lonce") , prt 3 exp , prt 0 patternscope])
    TmpPatAlways _ exp patternscope -> prPrec i 2 (concatD [doc (showString "always") , prt 3 exp , prt 0 patternscope])
    TmpPatPrecede _ exp0 exp patternscope -> prPrec i 2 (concatD [prt 3 exp0 , doc (showString "must") , doc (showString "precede") , prt 3 exp , prt 0 patternscope])
    TmpPatFollow _ exp0 exp patternscope -> prPrec i 2 (concatD [prt 3 exp0 , doc (showString "must") , doc (showString "follow") , prt 3 exp , prt 0 patternscope])

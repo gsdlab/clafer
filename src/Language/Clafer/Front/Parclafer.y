@@ -90,16 +90,16 @@ import Language.Clafer.Front.ErrM
  'initial' { PT _ (TS _ 69) }
  'initially' { PT _ (TS _ 70) }
  'let' { PT _ (TS _ 71) }
- 'lone' { PT _ (TS _ 72) }
- 'max' { PT _ (TS _ 73) }
- 'min' { PT _ (TS _ 74) }
- 'must' { PT _ (TS _ 75) }
- 'mux' { PT _ (TS _ 76) }
- 'never' { PT _ (TS _ 77) }
- 'next' { PT _ (TS _ 78) }
- 'no' { PT _ (TS _ 79) }
- 'not' { PT _ (TS _ 80) }
- 'once' { PT _ (TS _ 81) }
+ 'lonce' { PT _ (TS _ 72) }
+ 'lone' { PT _ (TS _ 73) }
+ 'max' { PT _ (TS _ 74) }
+ 'min' { PT _ (TS _ 75) }
+ 'must' { PT _ (TS _ 76) }
+ 'mux' { PT _ (TS _ 77) }
+ 'never' { PT _ (TS _ 78) }
+ 'next' { PT _ (TS _ 79) }
+ 'no' { PT _ (TS _ 80) }
+ 'not' { PT _ (TS _ 81) }
  'one' { PT _ (TS _ 82) }
  'opt' { PT _ (TS _ 83) }
  'or' { PT _ (TS _ 84) }
@@ -253,7 +253,7 @@ Exp1 : 'all' 'disj' Decl '|' Exp1 { DeclAllDisj ((mkTokenSpan $1) >- (mkTokenSpa
 Exp2 :: { Exp }
 Exp2 : 'never' Exp3 PatternScope { TmpPatNever ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkCatSpan $3)) $2 $3 } 
   | 'sometime' Exp3 PatternScope { TmpPatSometime ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkCatSpan $3)) $2 $3 }
-  | 'once' Exp3 PatternScope { TmpPatOnce ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkCatSpan $3)) $2 $3 }
+  | 'lonce' Exp3 PatternScope { TmpPatLessOrOnce ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkCatSpan $3)) $2 $3 }
   | 'always' Exp3 PatternScope { TmpPatAlways ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkCatSpan $3)) $2 $3 }
   | Exp3 'must' 'precede' Exp3 PatternScope { TmpPatPrecede ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkTokenSpan $3) >- (mkCatSpan $4) >- (mkCatSpan $5)) $1 $4 $5 }
   | Exp3 'must' 'follow' Exp3 PatternScope { TmpPatFollow ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkTokenSpan $3) >- (mkCatSpan $4) >- (mkCatSpan $5)) $1 $4 $5 }

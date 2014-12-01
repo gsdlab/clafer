@@ -340,29 +340,28 @@ desugarExp x = pExpDefPid (getSpan x) $ desugarExp' x
 translateTmpPatterns :: Exp -> Exp
 translateTmpPatterns e = case e of
   TmpPatNever _ p scope -> case scope of
-    PatScopeEmpty _ ->            g $ not p-- LtlG span $ ENeg span p
-    PatScopeBefore _ r ->         f r ==> (not p `u` r) -- EImplies span (LtlF span r) (LtlU span (ENeg span p) r)
-    PatScopeAfter _ q ->          g(q ==> g (not p)) -- LtlG span (EImplies span q (LtlG span $ ENeg span p))
+    PatScopeEmpty _ ->            g $ not p
+    PatScopeBefore _ r ->         f r ==> (not p `u` r)
+    PatScopeAfter _ q ->          g(q ==> g (not p))
     PatScopeBetweenAnd _ q r ->   g ((q & not r & f r) ==> (not p `u` r))
-      {-let anti = EAnd span (EAnd span q (ENeg span r)) $ LtlF span r-}
-          {-cons = LtlU span (ENeg span p) r-}
-      {-in LtlG span $ EImplies span anti cons-}
     PatScopeAfterUntil _ q r ->   g((q & not r) ==> (not p `w` r))
-      {-let anti = EAnd span q (ENeg span r)-}
-          {-cons = LtlW span (ENeg span p) r-}
-      {-in LtlG span $ EImplies span anti cons-}
   TmpPatSometime _ p scope -> case scope of
     PatScopeEmpty _ ->            f p
-    PatScopeBefore _ r ->         not r `w` (p & not r) -- LtlW span (ENeg span r) (EAnd span p $ ENeg span r)
+    PatScopeBefore _ r ->         not r `w` (p & not r)
     PatScopeAfter _ q ->          (g $ not q) || f (q & f p)
     PatScopeBetweenAnd _ q r ->   g ( (q & not r) ==> (not r `w` (p & not r)) )
     PatScopeAfterUntil _ q r ->   g ( (q & not r) ==> (not r `u` (p & not r)) )
-  TmpPatOnce _ p scope -> case scope of -- TODO encodings do not match semantics
-    PatScopeEmpty _ -> f $ not p
-    PatScopeBefore _ r ->f $ not p
-    PatScopeAfter _ q -> f $ not p
-    PatScopeBetweenAnd _ q r ->f $ not p
-    PatScopeAfterUntil _ q r ->f $ not p
+  TmpPatLessOrOnce _ p scope -> case scope of
+                                  -- (!P W (P W []!P))
+    PatScopeEmpty _ ->            not p `w` (p `w` g (not p))
+                                  -- <> R -> ((!P & !R) U ((R | (P & !R)) U ( R | (!P U R))))
+    PatScopeBefore _ r ->         f r ==> ((not p & not r) `u` ((r || (p & not r)) `u` (r || (not p `u` r)))) 
+                                  -- <>Q -> (!Q U (Q & (!P W (P W []!P))))
+    PatScopeAfter _ q ->          f q ==> ((not q) `u` (q & (not p `w` (p `w` g (not p))) ))
+                                  -- []((Q & <>R) -> ((!P & !R) U (R | ((P & !R) U (R | (!P U R))))))
+    PatScopeBetweenAnd _ q r ->   g((q & f r) ==> ((not p & not r) `u` (r || ((p & not r) `u` (r || (not p `u` r))))))
+                                  -- [](Q -> ((!P & !R) U (R | ((P & !R) U (R | (!P W R) | []P)))))
+    PatScopeAfterUntil _ q r ->   g(q ==> ((not p & not r) `u` (r || ((p & not r) `u` (r || (not p `w` r) || g p)))))
   TmpPatAlways _ p scope -> case scope of
     PatScopeEmpty _ ->            g p
     PatScopeBefore _ r ->         f r ==> (p `u` r)
@@ -413,7 +412,7 @@ translateTmpPatterns e = case e of
     span = case e of
       TmpPatNever s _ _ -> s
       TmpPatSometime s _ _ -> s
-      TmpPatOnce s _ _ -> s
+      TmpPatLessOrOnce s _ _ -> s
       TmpPatAlways s _ _ -> s
       TmpPatPrecede s _ _ _ -> s
       TmpPatFollow s _ _ _ -> s

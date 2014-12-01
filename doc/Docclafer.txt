@@ -40,9 +40,9 @@ The reserved words used in clafer are the following:
   | ``disj`` | ``else`` | ``enum`` | ``eventually``
   | ``final`` | ``finally`` | ``follow`` | ``globally``
   | ``if`` | ``in`` | ``initial`` | ``initially``
-  | ``let`` | ``lone`` | ``max`` | ``min``
-  | ``must`` | ``mux`` | ``never`` | ``next``
-  | ``no`` | ``not`` | ``once`` | ``one``
+  | ``let`` | ``lonce`` | ``lone`` | ``max``
+  | ``min`` | ``must`` | ``mux`` | ``never``
+  | ``next`` | ``no`` | ``not`` | ``one``
   | ``opt`` | ``or`` | ``precede`` | ``some``
   | ``sometime`` | ``sum`` | ``then`` | ``until``
   | ``weakuntil`` | ``xor`` |  | 
@@ -127,7 +127,7 @@ All other symbols are terminals.
   |  |  **|**  | //Exp2// 
   | //Exp2// | -> | ``never`` //Exp3// //PatternScope// 
   |  |  **|**  | ``sometime`` //Exp3// //PatternScope// 
-  |  |  **|**  | ``once`` //Exp3// //PatternScope// 
+  |  |  **|**  | ``lonce`` //Exp3// //PatternScope// 
   |  |  **|**  | ``always`` //Exp3// //PatternScope// 
   |  |  **|**  | //Exp3// ``must`` ``precede`` //Exp3// //PatternScope// 
   |  |  **|**  | //Exp3// ``must`` ``follow`` //Exp3// //PatternScope// 
