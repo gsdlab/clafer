@@ -30,7 +30,7 @@ import Data.Monoid
 import Data.Foldable (foldMap)
 
 -- | unique identifier of a clafer
-type UID = String
+type UID = String    
 -- | clafer name as declared in the source model
 type CName = String
 -- | file:// ftp:// or http:// prefixed URL
@@ -102,7 +102,7 @@ data IElement
     } 
   deriving (Eq,Ord,Show,Data,Typeable)
 
--- | A list of superclafers.
+-- | A list of superclafers.  
 --   ->    overlaping unique (set)
 --   ->>   overlapping non-unique (bag)
 --   :     non overlapping (disjoint)
@@ -127,7 +127,7 @@ type Interval = (Integer, Integer)
 
 type Mutability = Bool
 
--- | This is expression container (parent).
+-- | This is expression container (parent). 
 --   It has meta information about an actual expression 'exp'
 data PExp 
   = PExp 
@@ -225,12 +225,13 @@ data IDecl
     }
   deriving (Eq,Ord,Show,Data,Typeable)
 
+-- | quantifier
 data IQuant 
-  = INo    -- | does not exist
-  | ILone  -- | less than one
-  | IOne   -- | exactly one
-  | ISome  -- | at least one (i.e., exists)
-  | IAll   -- | for all
+  = INo    -- ^ does not exist
+  | ILone  -- ^ less than one
+  | IOne   -- ^ exactly one
+  | ISome  -- ^ at least one (i.e., exists)
+  | IAll   -- ^ for all
   deriving (Eq,Ord,Show,Data,Typeable)
 
 type LineNo = Integer
@@ -242,12 +243,12 @@ type ColNo  = Integer
 
 -- | map over IR
 mapIR :: (Ir -> Ir) -> IModule -> IModule -- fmap/map for IModule
-mapIR f (IModule name decls') =
+mapIR f (IModule name decls') = 
   unWrapIModule $ f $ IRIModule $ IModule name $ map (unWrapIElement . iMap f . IRIElement) decls'
 
 -- | foldMap over IR
 foldMapIR :: (Monoid m) => (Ir -> m) -> IModule -> m -- foldMap for IModule
-foldMapIR f i@(IModule _ decls') =
+foldMapIR f i@(IModule _ decls') = 
   (f $ IRIModule i) `mappend` foldMap (iFoldMap f . IRIElement) decls'
 
 -- | fold the IR
@@ -255,26 +256,26 @@ foldIR :: (Ir -> a -> a) -> a -> IModule -> a -- a basic fold for IModule
 foldIR f e m = appEndo (foldMapIR (Endo . f) m) e
 
 {-
-Note: even though the above functions take an IModule,
-the functions they use take an Ir (wrapped version see top of module).
+Note: even though the above functions take an IModule, 
+the functions they use take an Ir (wrapped version see top of module). 
 Also the bellow functions are just helpers for the above, you may use
 them if you wish to start from somewhere other than IModule.
 -}
 
-iMap :: (Ir -> Ir) -> Ir -> Ir
-iMap f (IRIElement (IEClafer c)) =
+iMap :: (Ir -> Ir) -> Ir -> Ir 
+iMap f (IRIElement (IEClafer c)) = 
   f $ IRIElement $ IEClafer $ unWrapIClafer $ iMap f $ IRClafer c
 iMap f (IRIElement (IEConstraint h pexp)) =
   f $ IRIElement $ IEConstraint h $ unWrapPExp $ iMap f $ IRPExp pexp
 iMap f (IRIElement (IEGoal m pexp)) =
-  f $ IRIElement $ IEGoal m $ unWrapPExp $ iMap f $ IRPExp pexp
+  f $ IRIElement $ IEGoal m $ unWrapPExp $ iMap f $ IRPExp pexp 
 iMap f (IRClafer (IClafer p a (Just grc) i u s c goc mut elems)) =
   f $ IRClafer $ IClafer p a (Just $ unWrapIGCard $ iMap f $ IRIGCard grc) i u (unWrapISuper $ iMap f $ IRISuper s) c goc mut $ map (unWrapIElement . iMap f . IRIElement) elems
 iMap f (IRClafer (IClafer p a Nothing i u s c goc mut elems)) =
   f $ IRClafer $ IClafer p a Nothing i u (unWrapISuper $ iMap f $ IRISuper s) c goc mut $ map (unWrapIElement . iMap f . IRIElement) elems
 iMap f (IRIExp (IDeclPExp q decs p)) =
   f $ IRIExp $ IDeclPExp (unWrapIQuant $ iMap f $ IRIQuant q) (map (unWrapIDecl . iMap f . IRIDecl) decs) $ unWrapPExp $ iMap f $ IRPExp p
-iMap f (IRIExp (IFunExp o pexps)) =
+iMap f (IRIExp (IFunExp o pexps)) = 
   f $ IRIExp $ IFunExp o $ map (unWrapPExp . iMap f . IRPExp) pexps
 iMap f (IRPExp (PExp (Just iType') pID p iExp)) =
   f $ IRPExp $ PExp (Just $ unWrapIType $ iMap f $ IRIType iType') pID p $ unWrapIExp $ iMap f $ IRIExp iExp
@@ -282,7 +283,7 @@ iMap f (IRPExp (PExp Nothing pID p iExp)) =
   f $ IRPExp $ PExp Nothing pID p $ unWrapIExp $ iMap f $ IRIExp iExp
 iMap f (IRISuper (ISuper o pexps)) =
   f $ IRISuper $ ISuper o $ map (unWrapPExp . iMap f . IRPExp) pexps
-iMap f (IRIDecl (IDecl i d body')) =
+iMap f (IRIDecl (IDecl i d body')) = 
   f $ IRIDecl $ IDecl i d $ unWrapPExp $ iMap f $ IRPExp body'
 iMap f i = f i
 
@@ -297,7 +298,7 @@ iFoldMap f i@(IRClafer (IClafer _ _ (Just grc) _ _ s _ _ _ elems)) =
   f i `mappend` (iFoldMap f $ IRISuper s) `mappend` (iFoldMap f $ IRIGCard grc) `mappend` foldMap (iFoldMap f . IRIElement) elems
 iFoldMap f i@(IRIExp (IDeclPExp q decs p)) =
   f i `mappend` (iFoldMap f $ IRIQuant q) `mappend` (iFoldMap f $ IRPExp p) `mappend` foldMap (iFoldMap f . IRIDecl) decs
-iFoldMap f i@(IRIExp (IFunExp _ pexps)) =
+iFoldMap f i@(IRIExp (IFunExp _ pexps)) = 
   f i `mappend` foldMap (iFoldMap f . IRPExp) pexps
 iFoldMap f i@(IRPExp (PExp (Just iType') _ _ iExp)) =
   f i `mappend` (iFoldMap f $ IRIType iType') `mappend` (iFoldMap f $ IRIExp iExp)
@@ -305,7 +306,7 @@ iFoldMap f i@(IRPExp (PExp Nothing _ _ iExp)) =
   f i `mappend` (iFoldMap f $ IRIExp iExp)
 iFoldMap f i@(IRISuper (ISuper _ pexps)) =
   f i `mappend` foldMap (iFoldMap f . IRPExp) pexps
-iFoldMap f i@(IRIDecl (IDecl _ _ body')) =
+iFoldMap f i@(IRIDecl (IDecl _ _ body')) = 
   f i `mappend` (iFoldMap f $ IRPExp body')
 iFoldMap f (IRIElement (IEClafer c)) = iFoldMap f $ IRClafer c
 iFoldMap f i = f i

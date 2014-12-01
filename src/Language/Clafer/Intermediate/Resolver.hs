@@ -59,7 +59,7 @@ nameElement skipResolver x = case x of
 
 nameClafer :: MonadState GEnv m => Bool -> IClafer -> m IClafer
 nameClafer skipResolver claf = do
-  claf' <- if skipResolver then return claf{_uid = _ident claf} else (renameClafer (not skipResolver)) claf
+  claf' <- if skipResolver then return claf{_uid = _ident claf} else renameClafer True claf
   elements' <- mapM (nameElement skipResolver) $ _elements claf
   return $ claf' {_elements = elements'}
 
@@ -69,7 +69,7 @@ namePExp pexp@(PExp _ _ _ exp') = do
   n <- gets expCount
   modify (\e -> e {expCount = 1 + n})
   exp'' <- nameIExp exp'
-  return $ pexp {_pid = concat [ "e", show n, "_"], Language.Clafer.Intermediate.Intclafer._exp = exp''}
+  return $ pexp {_pid = concat [ "e", show n, "_"], _exp = exp''}
 
 nameIExp :: MonadState GEnv m => IExp -> m IExp
 nameIExp x = case x of

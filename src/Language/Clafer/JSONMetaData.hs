@@ -28,7 +28,7 @@ module Language.Clafer.JSONMetaData (
   writeCfrScopeFile,
   readCfrScopeFile
 )
-        
+
 where
 
 import Control.Lens hiding (element)
@@ -46,16 +46,16 @@ import Language.Clafer.QNameUID
 -- | Generate a JSON list of triples containing a fully-qualified-, least-partially-qualified name, and unique id.
 -- | Both the FQNames and UIDs are brittle. LPQNames are the least brittle.
 generateJSONnameUIDMap :: QNameMaps -> String
-generateJSONnameUIDMap    qNameMaps     = 
-    prettyPrintJSON $ convertString $ toJsonBS $ foldl generateQNameUIDArrayEntry mempty sortedTriples 
+generateJSONnameUIDMap    qNameMaps     =
+    prettyPrintJSON $ convertString $ toJsonBS $ foldl generateQNameUIDArrayEntry mempty sortedTriples
     where
       sortedTriples :: [(FQName, PQName, UID)]
       sortedTriples = List.sortBy (\(fqName1, _, _) (fqName2, _, _) -> compare fqName1 fqName2) $ getQNameUIDTriples qNameMaps
 
 generateQNameUIDArrayEntry :: Array -> (FQName, PQName, UID) -> Array
-generateQNameUIDArrayEntry    array    (fqName, lpqName, uid) = 
-    mappend array $ element $ mconcat [ 
-        row ("fqName" :: String) fqName, 
+generateQNameUIDArrayEntry    array    (fqName, lpqName, uid) =
+    mappend array $ element $ mconcat [
+        row ("fqName" :: String) fqName,
         row ("lpqName" :: String) lpqName,
         row ("uid" :: String) uid ]
 
@@ -70,8 +70,8 @@ generateJSONScopes    qNameMaps    scopes       =
 
 
 generateLpqNameScopeArrayEntry :: Array -> (PQName, Integer)   -> Array
-generateLpqNameScopeArrayEntry    array    (lpqName, scope) = 
-    mappend array $ element $ mconcat [ 
+generateLpqNameScopeArrayEntry    array    (lpqName, scope) =
+    mappend array $ element $ mconcat [
         row ("lpqName" :: String) lpqName,
         row ("scope" :: String) scope ]
 
@@ -87,21 +87,21 @@ prettyPrintJSON ('}':line) = '\n':'}':(prettyPrintJSON line)
 prettyPrintJSON (c:line) =  c:(prettyPrintJSON line)
 prettyPrintJSON ""         = ""
 
--- | given the QNameMaps, parse the JSON scopes and return list of scopes 
+-- | given the QNameMaps, parse the JSON scopes and return list of scopes
 parseJSONScopes :: QNameMaps -> String    -> [ (UID, Integer) ]
-parseJSONScopes    qNameMaps    scopesJSON = 
+parseJSONScopes    qNameMaps    scopesJSON =
     foldl (\uidScopes qScope -> (qNameToUIDs qScope) ++ uidScopes) [] decodedScopes
     where
-      --                  QName 
+      --                  QName
       decodedScopes :: [ (T.Text, Integer) ]
-      decodedScopes = scopesJSON ^.. _Array . traverse 
+      decodedScopes = scopesJSON ^.. _Array . traverse
                                        . to (\o -> ( o ^?! key "lpqName" . _String
                                                    , o ^?! key "scope"  . _Integer)
                                             )
       -- a QName may resolve to potentially multiple UIDs
       qNameToUIDs :: (T.Text, Integer) -> [ (UID, Integer) ]
       qNameToUIDs   (qName, scope)  = if T.null qName
-                                       then [ ("", scope) ] 
+                                       then [ ("", scope) ]
                                        else [ (uid, scope) | uid <- getUIDs qNameMaps $ convertString qName]
 
 -- | Write a .cfr-scope file
@@ -117,7 +117,7 @@ readCfrScopeFile    qNameMaps    modelName = do
     let
         cfrScopeFileName = replaceExtension modelName ".cfr-scope"
     exists <- doesFileExist cfrScopeFileName
-    if exists 
+    if exists
     then do
         scopesInJSON <- readFile cfrScopeFileName
         return $ Just $ parseJSONScopes qNameMaps scopesInJSON

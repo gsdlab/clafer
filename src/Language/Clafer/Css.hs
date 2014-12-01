@@ -25,7 +25,7 @@ header :: String
 header = "<!DOCTYPE html>\n<html>\n<head>\n<meta http-equiv=\"X-UA-Compatible\" content=\"IE=9\">\n"
 
 css :: String
-css = unlines [ 
+css = unlines [
   ".identifier{}",
   ".keyword{font-weight:bold}",
   ".reference{}",

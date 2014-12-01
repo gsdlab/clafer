@@ -37,9 +37,9 @@ import Test.Tasty.TH
 
 tg_Test_Suite_SimpleScopeAnalyser :: TestTree
 tg_Test_Suite_SimpleScopeAnalyser = $(testGroupGenerator)
- 
+
 model :: String
-model = unlines 
+model = unlines
 			[ "a 0..0"
 			, "b ?"
 			, "c"
@@ -67,7 +67,7 @@ model = unlines
 			]
 
 expectedScopesSet :: M.Map UID Integer
-expectedScopesSet = M.fromList $ [ ("c0_a", 0) 
+expectedScopesSet = M.fromList $ [ ("c0_a", 0)
 							--	 , ("c0_b", 1)	-- uses global scope
 							--	 , ("c0_c", 1)	-- uses global scope
 							--	 , ("c0_d", 1) 	-- uses global scope
@@ -96,7 +96,7 @@ expectedScopesSet = M.fromList $ [ ("c0_a", 0)
 
 -- aggregates a difference
 aggregateDifference :: UID -> Integer -> Integer -> Maybe String
-aggregateDifference k computedV expectedV = 
+aggregateDifference k computedV expectedV =
 	if computedV == expectedV
 	then Nothing
 	else Just $ k ++ " | computed: " ++ show computedV ++ " | expected: " ++ show expectedV ++ " |"
@@ -104,37 +104,37 @@ aggregateDifference k computedV expectedV =
 -- prints only computed scopes missing in expected
 onlyComputed :: M.Map UID Integer -> M.Map UID String
 onlyComputed = M.mapWithKey (\k v -> k ++ " | computed: " ++ show v ++ " | no expected |")
-	
+
 
 -- prints only expected scopes missing in computed
 onlyExpected :: M.Map UID Integer -> M.Map UID String
 onlyExpected = M.mapWithKey (\k v -> k ++ " | no computed | expected: " ++ show v ++ " |")
 
 case_ScopeTest :: Assertion
-case_ScopeTest = do 
-	let 
-		-- use simple scope inference 
+case_ScopeTest = do
+	let
+		-- use simple scope inference
 		(Right compilerResultMap) = compileOneFragment defaultClaferArgs model
 		(Just compilerResult) = M.lookup Alloy compilerResultMap
 		computedScopesSet :: M.Map UID Integer
 		computedScopesSet = M.fromList $ scopesList compilerResult
 
-		differences = M.mergeWithKey aggregateDifference onlyComputed onlyExpected computedScopesSet expectedScopesSet  
+		differences = M.mergeWithKey aggregateDifference onlyComputed onlyExpected computedScopesSet expectedScopesSet
 
-	(M.size differences) == 0 @? 
+	(M.size differences) == 0 @?
 		"Computed scopes different from expected:\n" ++ (unlines $ M.foldl (\acc v -> v:acc) [] differences)
 
 
 case_ReadScopesJSON :: Assertion
 case_ReadScopesJSON = do
 	let
-		-- use simple scope inference 
+		-- use simple scope inference
 		(Right compilerResultMap) = compileOneFragment defaultClaferArgs model
 		(Just compilerResult) = M.lookup Alloy compilerResultMap
 		Just (iModule, _, _) = cIr $ claferEnv compilerResult
-		
+
 		qNameMaps = deriveQNameMaps iModule
-		
+
 		computedScopes :: [ (UID, Integer) ]
 		computedScopes = scopesList compilerResult
 
@@ -143,5 +143,5 @@ case_ReadScopesJSON = do
 
 		differences = M.mergeWithKey aggregateDifference onlyComputed onlyExpected (M.fromList computedScopes) (M.fromList decodedScopes)
 
-	(M.size differences) == 0 @? 
+	(M.size differences) == 0 @?
 		"Parsed scopes different from original:\n" ++ (unlines $ M.foldl (\acc v -> v:acc) [] differences)

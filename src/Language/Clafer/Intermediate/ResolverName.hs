@@ -243,8 +243,14 @@ resolve env id' fs = fromJust <$> (runMaybeT $ msum $ map (\x -> MaybeT $ x env 
 -- reports error if clafer not found
 resolveNone :: Span -> SEnv -> String -> Resolve t
 resolveNone pos' env id' =
-  throwError $ SemanticErr pos' $ "resolver: " ++ id' ++ " not found" ++
-  " within " ++ (showPath $ map _uid $ resPath env)
+  throwError $ SemanticErr pos' $ concat
+    [ "Name resolver: '"
+    , id'
+    , "' not found within '"
+    , showPath $ map _uid $ resPath env
+    , "' in context of '"
+    , show (_ident <$> context env)
+    , "'" ]
 
 
 -- checks if ident is one of special identifiers
@@ -253,7 +259,7 @@ resolveSpecial env id'
   | id' == parentIdent = return $ Just (Special, id', tail $ resPath env)
   | isSpecial id'      = return $ Just (Special, id', resPath env)
   | isPrimitive id'    = return $ Just (TypeSpecial, id', [])
-  | otherwise          = return Nothing 
+  | otherwise          = return Nothing
 
 
 -- checks if ident is bound locally

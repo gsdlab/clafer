@@ -169,7 +169,7 @@ genXmlIExp x = case x of
     escape y    = [y]
   IInt n -> genXmlInteger n
   IDouble n -> tag "DoubleLiteral" $ show n
-  IStr str -> genXmlString str  
+  IStr str -> genXmlString str
   IClaferId modName' sident' isTop' bind' -> concat
     [ tag "ModuleName" modName'
     , tag "Id" sident'

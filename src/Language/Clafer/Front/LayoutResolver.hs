@@ -234,7 +234,7 @@ addToken p@(Pn z x y) s ts = do
     t = tokenLookup s
 
 resLayout :: String -> String
-resLayout input' = 
+resLayout input' =
   reverse $ output $ execState resolveLayout' $ LayEnv 0 [] input'' [] 0
   where
   input'' = unlines $ filter (/= "") $ lines input'
@@ -293,7 +293,7 @@ eatSpaces = do
 
 emitIndent :: MonadState LayEnv m => Int -> m ()
 emitIndent n = do
-  lev <- gets level  
+  lev <- gets level
   when (n > lev) $ do
     ctr <- gets brCtr
     when (ctr < 1) $ do
@@ -322,7 +322,7 @@ getc = do
   return c
 
 revertLayout :: String -> String
-revertLayout input' = unlines $ revertLayout' (lines input') 0 
+revertLayout input' = unlines $ revertLayout' (lines input') 0
 
 revertLayout' :: [String] -> Int -> [String]
 revertLayout' []             _ = []

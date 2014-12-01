@@ -17,7 +17,7 @@ ElementDecl.    Declaration ::= Element ;
 
 Clafer.         Clafer ::= Abstract [TempModifier] GCard PosIdent Super Card Init Transition Elements ;
 FinalConstraint. Constraint ::= "[" "final" "]" ;
-Constraint.      Constraint ::= "[" [Exp] "]" ;
+Constraint.     Constraint ::= "[" [Exp] "]" ;
 SoftConstraint. SoftConstraint ::= "assert" "[" [Exp] "]";
 Goal.           Goal ::= "<<" [Exp] ">>" ;
 
@@ -159,7 +159,7 @@ Decl.           Decl ::= [LocId] ":" SetExp ;
 VarBinding.     VarBinding ::= LocId "=" Name ;
 
 QuantNo.        Quant ::= "no" ;
-QuantNot.        Quant ::= "not" ;
+QuantNot.		Quant ::= "not" ;
 QuantLone.      Quant ::= "lone" ;
 QuantOne.       Quant ::= "one" ;
 QuantSome.      Quant ::= "some" ;

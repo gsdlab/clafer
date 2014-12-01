@@ -20,19 +20,18 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
 -}
-{- | Transforms an Abstract Syntax Tree (AST) from "Language.Clafer.Front.Absclafer"
+{- | Transforms an Abstract Syntax Tree (AST) from "Language.Clafer.Front.Absclafer" 
 into Intermediate representation (IR) from "Language.Clafer.Intermediate.Intclafer" of a Clafer model.
 -}
 module Language.Clafer.Intermediate.Desugarer where
 
-import Data.List
+import Data.List (find)
+import Data.Maybe (fromMaybe)
 
 import Language.Clafer.Common
-import Data.Maybe (fromMaybe)
 import Language.Clafer.Front.Absclafer
 import Language.Clafer.Intermediate.Intclafer
 
-import Debug.Trace
 -- | Transform the AST into the intermediate representation (IR)
 desugarModule :: Maybe String -> Module -> IModule
 desugarModule mURL (Module _ declarations) = IModule
@@ -71,7 +70,7 @@ desugarDeclaration _ = error "Desugarer.desugarDeclaration: enum declarations sh
 
 
 sugarDeclaration :: IElement -> Declaration
-sugarDeclaration  (IEClafer clafer) = ElementDecl (_cinPos clafer) $ Subclafer (_cinPos clafer) $ sugarClafer clafer
+sugarDeclaration (IEClafer clafer) = ElementDecl (_cinPos clafer) $ Subclafer (_cinPos clafer) $ sugarClafer clafer
 sugarDeclaration (IEConstraint True constraint) =
       ElementDecl (_inPos constraint) $ Subconstraint (_inPos constraint) $ sugarConstraint constraint
 sugarDeclaration  (IEConstraint False softconstraint) =
@@ -127,7 +126,7 @@ desugarSuperHow _ _ = True -- otherwise reference
 desugarInit :: PosIdent -> Init -> [IElement]
 desugarInit _ (InitEmpty _) = []
 desugarInit id' (InitSome s inithow exp') = [ IEConstraint (desugarInitHow inithow) (pExpDefPid s implIExp) ]
-  where
+  where 
     cId :: PExp
     cId = mkPLClaferId (snd $ getIdent id') False Nothing
     -- <id> = <exp'>
@@ -244,7 +243,6 @@ sugarElements mut x = ElementsList noSpan $ mutConstraint ++ (map sugarElement x
       False -> []
 
 
-      {-(let desugared = desugarClafer claf  in trace ("desugarClafer; desugared:\n" ++ show desugared ++"\nsugared:\n"++show claf) desugared) ++-}
 desugarElement :: Element -> [IElement]
 desugarElement x = case x of
   Subclafer _ claf  -> desugarClafer claf ++
@@ -458,9 +456,9 @@ desugarExp' x = let x' =  translateTmpPatterns x in case x' of
   EDiv _ exp0 exp'  -> dop iDiv [exp0, exp']
   ECSetExp _ exp'   -> dop iCSet [exp']
   ESumSetExp _ exp' -> dop iSumSet [exp']
-  EMinExp _ exp'    -> dop iMin [exp']
+  EMinExp _ exp'    -> dop iMin [exp']  
   EGMax _ exp' -> dop iGMax [exp']
-  EGMin _ exp' -> dop iGMin [exp']
+  EGMin _ exp' -> dop iGMin [exp']  
   EInt _ n  -> IInt $ mkInteger n
   EDouble _ (PosDouble n) -> IDouble $ read $ snd n
   EStr _ (PosString str)  -> IStr $ snd str
@@ -471,7 +469,7 @@ desugarExp' x = let x' =  translateTmpPatterns x in case x' of
   dpe = desugarPath.desugarExp
 
 desugarOp :: (a -> PExp) -> String -> [a] -> IExp
-desugarOp f op' exps' =
+desugarOp f op' exps' = 
     if (op' == iIfThenElse)
       then IFunExp op' $ (desugarPath $ head mappedList) : (map reducePExp $ tail mappedList)
       else IFunExp op' $ map (trans.f) exps'
@@ -574,12 +572,12 @@ sugarSetExp' (IFunExp op' exps') = (sugarOp op') (exps''!!0) (exps''!!1)
     where
     exps'' = map sugarSetExp exps'
     sugarOp op''
-      | op'' == iUnion         = Union noSpan
-      | op'' == iDifference    = Difference noSpan
-      | op'' == iIntersection  = Intersection noSpan
-      | op'' == iDomain        = Domain noSpan
-      | op'' == iRange         = Range noSpan
-      | op'' == iJoin          = Join noSpan
+      | op'' == iUnion         = Union noSpan 
+      | op'' == iDifference    = Difference noSpan 
+      | op'' == iIntersection  = Intersection noSpan 
+      | op'' == iDomain        = Domain noSpan 
+      | op'' == iRange         = Range noSpan 
+      | op'' == iJoin          = Join noSpan 
       | otherwise              = error "Invalid argument given to function sygarSetExp' in Desugarer"
 sugarSetExp' (IClaferId "" id' _ _) = ClaferId noSpan $ Path noSpan [ModIdIdent noSpan $ mkIdent id']
 sugarSetExp' (IClaferId modName' id' _ _) = ClaferId noSpan $ Path noSpan $ (sugarModId modName') : [sugarModId id']
@@ -610,11 +608,11 @@ reduceIExp :: IExp -> IExp
 reduceIExp (IDeclPExp quant' decls' pexp) = IDeclPExp quant' decls' $ reducePExp pexp
 reduceIExp (IFunExp op' exps') = redNav $ IFunExp op' $ map redExps exps'
     where
-    (redNav, redExps) = if op' == iJoin then (reduceNav, id) else (id, reducePExp)
+    (redNav, redExps) = if op' == iJoin then (reduceNav, id) else (id, reducePExp) 
 reduceIExp x = x
 
 reduceNav :: IExp -> IExp
-reduceNav x@(IFunExp op' exps'@((PExp _ _ _ iexp@(IFunExp _ (pexp0:pexp:_))):pPexp:_)) =
+reduceNav x@(IFunExp op' exps'@((PExp _ _ _ iexp@(IFunExp _ (pexp0:pexp:_))):pPexp:_)) = 
   if op' == iJoin && isParent pPexp && isClaferName pexp
   then reduceNav $ _exp pexp0
   else x{_exps = (head exps'){_exp = reduceIExp iexp} :

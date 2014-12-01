@@ -9,6 +9,10 @@ import Language.Clafer.Front.ErrM
 }
 
 %name pModule Module
+%name pClafer Clafer
+%name pConstraint Constraint
+%name pSoftConstraint SoftConstraint
+%name pGoal Goal
 
 -- no lexer declaration
 %monad { Err } { thenM } { returnM }
@@ -71,45 +75,46 @@ import Language.Clafer.Front.ErrM
  'all' { PT _ (TS _ 54) }
  'always' { PT _ (TS _ 55) }
  'and' { PT _ (TS _ 56) }
- 'between' { PT _ (TS _ 57) }
- 'disj' { PT _ (TS _ 58) }
- 'else' { PT _ (TS _ 59) }
- 'enum' { PT _ (TS _ 60) }
- 'eventually' { PT _ (TS _ 61) }
- 'final' { PT _ (TS _ 62) }
- 'finally' { PT _ (TS _ 63) }
- 'follow' { PT _ (TS _ 64) }
- 'globally' { PT _ (TS _ 65) }
- 'if' { PT _ (TS _ 66) }
- 'in' { PT _ (TS _ 67) }
- 'initial' { PT _ (TS _ 68) }
- 'initially' { PT _ (TS _ 69) }
- 'let' { PT _ (TS _ 70) }
- 'lone' { PT _ (TS _ 71) }
- 'max' { PT _ (TS _ 72) }
- 'min' { PT _ (TS _ 73) }
- 'must' { PT _ (TS _ 74) }
- 'mux' { PT _ (TS _ 75) }
- 'never' { PT _ (TS _ 76) }
- 'next' { PT _ (TS _ 77) }
- 'no' { PT _ (TS _ 78) }
- 'not' { PT _ (TS _ 79) }
- 'once' { PT _ (TS _ 80) }
- 'one' { PT _ (TS _ 81) }
- 'opt' { PT _ (TS _ 82) }
- 'or' { PT _ (TS _ 83) }
- 'precede' { PT _ (TS _ 84) }
- 'some' { PT _ (TS _ 85) }
- 'sometime' { PT _ (TS _ 86) }
- 'sum' { PT _ (TS _ 87) }
- 'then' { PT _ (TS _ 88) }
- 'until' { PT _ (TS _ 89) }
- 'weakuntil' { PT _ (TS _ 90) }
- 'xor' { PT _ (TS _ 91) }
- '{' { PT _ (TS _ 92) }
- '|' { PT _ (TS _ 93) }
- '||' { PT _ (TS _ 94) }
- '}' { PT _ (TS _ 95) }
+ 'assert' { PT _ (TS _ 57) }
+ 'between' { PT _ (TS _ 58) }
+ 'disj' { PT _ (TS _ 59) }
+ 'else' { PT _ (TS _ 60) }
+ 'enum' { PT _ (TS _ 61) }
+ 'eventually' { PT _ (TS _ 62) }
+ 'final' { PT _ (TS _ 63) }
+ 'finally' { PT _ (TS _ 64) }
+ 'follow' { PT _ (TS _ 65) }
+ 'globally' { PT _ (TS _ 66) }
+ 'if' { PT _ (TS _ 67) }
+ 'in' { PT _ (TS _ 68) }
+ 'initial' { PT _ (TS _ 69) }
+ 'initially' { PT _ (TS _ 70) }
+ 'let' { PT _ (TS _ 71) }
+ 'lone' { PT _ (TS _ 72) }
+ 'max' { PT _ (TS _ 73) }
+ 'min' { PT _ (TS _ 74) }
+ 'must' { PT _ (TS _ 75) }
+ 'mux' { PT _ (TS _ 76) }
+ 'never' { PT _ (TS _ 77) }
+ 'next' { PT _ (TS _ 78) }
+ 'no' { PT _ (TS _ 79) }
+ 'not' { PT _ (TS _ 80) }
+ 'once' { PT _ (TS _ 81) }
+ 'one' { PT _ (TS _ 82) }
+ 'opt' { PT _ (TS _ 83) }
+ 'or' { PT _ (TS _ 84) }
+ 'precede' { PT _ (TS _ 85) }
+ 'some' { PT _ (TS _ 86) }
+ 'sometime' { PT _ (TS _ 87) }
+ 'sum' { PT _ (TS _ 88) }
+ 'then' { PT _ (TS _ 89) }
+ 'until' { PT _ (TS _ 90) }
+ 'weakuntil' { PT _ (TS _ 91) }
+ 'xor' { PT _ (TS _ 92) }
+ '{' { PT _ (TS _ 93) }
+ '|' { PT _ (TS _ 94) }
+ '||' { PT _ (TS _ 95) }
+ '}' { PT _ (TS _ 96) }
 
 L_PosInteger { PT _ (T_PosInteger _) }
 L_PosDouble { PT _ (T_PosDouble _) }
@@ -144,7 +149,7 @@ Constraint : '[' 'final' ']' { FinalConstraint ((mkTokenSpan $1) >- (mkTokenSpan
 
 
 SoftConstraint :: { SoftConstraint }
-SoftConstraint : '(' ListExp ')' { SoftConstraint ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkTokenSpan $3)) (reverse $2) } 
+SoftConstraint : 'assert' '[' ListExp ']' { SoftConstraint ((mkTokenSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3) >- (mkTokenSpan $4)) (reverse $3) } 
 
 
 Goal :: { Goal }
