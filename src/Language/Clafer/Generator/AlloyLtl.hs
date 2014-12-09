@@ -50,6 +50,8 @@ data GenEnv = GenEnv
   { claferargs :: ClaferArgs
   , uidIClaferMap :: StringMap IClafer
   }  deriving (Show)
+
+timeSig :: String
 timeSig = "Time"
 
 bOrFoldl1 :: [Bool] -> Bool
@@ -87,7 +89,7 @@ header    args          scopes       = CString $ unlines
     where
       mkScope = if AlloyLtl `elem` (mode args)
       then
-        "run show for " ++ show (fixed_scope args)
+        "run show for 10" -- ++ show (fixed_scope args)
       else
         "run show for 1" ++ genScopes scopes
       genScopes [] = ""
@@ -288,14 +290,20 @@ genConstraints    genEnv    ctx       c = (genParentConst (resPath ctx) c) :
 -- generates time variable binding declaration which appears as a first expression in mutable constraints
 -- it references all time moments when context clafer instance is active
 -- typical binding form is: this.(ParentSig.ContextClaferRelation)
+{- OLD: genTimeDecl tvar ctx c = CString ("all " ++ tvar ++ " : (this.(" ++ head (resPath ctx)  ++ ".@" ++ genRelName (_uid c) ++ ")) | " )-}
+-- Sample template
+-- let local_next = (this.(c0_a.@r_c0_b)) <: next | one t : Time | one t <: local_next and no local_next :> t
 genTimeDecl :: String -> GenCtx -> IClafer -> Concat
-genTimeDecl tvar ctx c = CString ("all " ++ tvar ++ " : (this.(" ++ head (resPath ctx)  ++ ".@" ++ genRelName (_uid c) ++ ")) | " )
--- genTimeDecl tvar = CString ("all " ++ tvar ++ " : (" ++ timeSig ++ " <: first) " ++ " | " )
+genTimeDecl tvar ctx c = CString $  localNextDecl ++ firstDecl ++ " and "
+  where
+  localNextDecl = "let local_next = (this.(" ++ head (resPath ctx)  ++ ".@" ++ genRelName (_uid c) ++ ")) <: next "
+  firstDecl = " | one " ++ tvar ++ " : " ++ timeSig ++ firstConstr
+  firstConstr = " | one " ++ tvar ++ " <: local_next and no local_next :> " ++ tvar
 
 -- generates cardinality constraints for mutable subclafers
 -- typically all t: Time | lone r_field.t
 genMutSubClafersConst :: GenEnv -> IClafer -> Concat
-genMutSubClafersConst    genEnv c = genTimeDecl allSubExp +++ (cintercalate (CString " && ") allSubExp)
+genMutSubClafersConst    genEnv c = genTimeQuant allSubExp +++ (cintercalate (CString " && ") allSubExp)
   where
   allSubExp = map genMutCardConst mutClafers ++ refCardConst
   refCardConst
@@ -304,36 +312,42 @@ genMutSubClafersConst    genEnv c = genTimeDecl allSubExp +++ (cintercalate (CSt
   isMutableNonRef c = (not._isOverlapping $ _super c) && (_mutable c)
   mutClafers = filter isMutableNonRef $ getSubclafers $ _elements c
   cardStr c = genCardCrude $ _card c
-  genTimeDecl [] = CString ""
-  genTimeDecl _ = CString $ "all t : " ++ timeSig ++ " | "
+  genTimeQuant [] = CString ""
+  genTimeQuant _ = genTimeAllQuant "t"
   genMutCardConst c =  CString $ (cardStr c) ++ " " ++ (genRelName $ _uid c) ++ ".t"
   refRelName c = (if (noalloyruncommand (claferargs genEnv)) then  (_uid c ++ "_ref") else "ref")
 
 -- optimization: if only boolean features then the parent is unique
 genParentConst :: [String] -> IClafer -> Concat
 genParentConst [] _     = CString ""
-genParentConst _ c =  genOptParentConst c
+genParentConst _ c = genOptParentConst c
 
 genOptParentConst :: IClafer -> Concat
 genOptParentConst    c
-  | glCard' == "one"  = CString ""
-  | glCard' == "lone" = Concat NoTrace [CString $ "one " ++ rel]
-  | otherwise         = Concat NoTrace [CString $ "one @" ++ rel ++ ".this"]
+  | glCard' == "one"         = CString ""
+  | glCard' == "lone" && mut = Concat NoTrace [genTimeAllQuant "t", CString $ "one " ++ rel ++ ".t"]
+  | glCard' == "lone"        = Concat NoTrace [CString $ "one " ++ rel]
+  | mut                      = Concat NoTrace [genTimeAllQuant "t", CString $ "one @" ++ rel ++ ".t.this"]
+  | otherwise                = Concat NoTrace [CString $ "one @" ++ rel ++ ".this"]
   -- eliminating problems with cyclic containment;
   -- should be added to cases when cyclic containment occurs
   --                    , " && no iden & @", rel, " && no ~@", rel, " & @", rel]
   where
+  mut = _mutable c
   rel = genRelName $ _uid c
   glCard' = genIntervalCrude $ _glCard c
 
 genGroupConst :: IClafer -> Concat
 genGroupConst    clafer'
   | null children' || flatten card' == "" = CString ""
-  | otherwise = cconcat [CString "let children = ", brArg id $ CString children', CString" | ", card']
+  | otherwise = cconcat [genTimeQuant, CString "let children = ", brArg id $ CString children', CString " | ", card']
   where
-  children' = intercalate " + " $ map (genRelName._uid) $
-             getSubclafers $ _elements clafer'
+  subclafers = getSubclafers $ _elements clafer'
+  children' = intercalate " + " $ map childRel subclafers
+  childRel :: IClafer -> String
+  childRel subc = (genRelName._uid) subc ++ (if _mutable subc then ".t" else "")
   card'     = mkCard (_uid clafer') True "children" $ _interval $ fromJust $ _gcard $ clafer'
+  genTimeQuant = if any _mutable subclafers then genTimeAllQuant "t" else CString ""
 
 mkCard :: String -> Bool -> String -> (Integer, Integer) -> Concat
 mkCard constraintName group' element' crd
@@ -704,3 +718,6 @@ removeright (PExp _ _ _ _) = error "Function removeright from the AlloyGenerator
 getRight :: PExp -> PExp
 getRight (PExp _ _ _ (IFunExp _ (_:x:_))) = getRight x
 getRight p = p
+
+genTimeAllQuant :: String -> Concat
+genTimeAllQuant tvar = CString $ "all " ++ tvar ++ " : " ++ timeSig ++ " | "
