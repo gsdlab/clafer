@@ -65,11 +65,8 @@ isEqClaferId = flip $ (==)._uid
 idToPExp :: String -> Span -> String -> String -> Bool -> PExp
 idToPExp pid' pos modids id' isTop' = PExp (Just $ TClafer [id']) pid' pos (IClaferId modids id' isTop' Nothing)
 
-mkLClaferId :: CName -> Bool -> ClaferBinding -> IExp
-mkLClaferId = IClaferId ""
-
 mkPLClaferId :: CName -> Bool -> ClaferBinding -> PExp
-mkPLClaferId id' isTop' bind' = pExpDefPidPos $ mkLClaferId id' isTop' bind'
+mkPLClaferId id' isTop' bind' = pExpDefPidPos $ IClaferId "" id' isTop' bind'
 
 pExpDefPidPos :: IExp -> PExp
 pExpDefPidPos = pExpDefPid noSpan
