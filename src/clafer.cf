@@ -21,7 +21,6 @@ Constraint.     Constraint ::= "[" [Exp] "]" ;
 SoftConstraint. SoftConstraint ::= "assert" "[" [Exp] "]";
 Goal.           Goal ::= "<<" [Exp] ">>" ;
 
--- NoTempModifier. TempModifier ::= ; 
 Initial.        TempModifier ::= "initial";
 Final.          TempModifier ::= "final";
 
@@ -38,7 +37,7 @@ ElementsList.   Elements ::= "{" [Element] "}" ;
 Subclafer.      Element ::= Clafer ;
 ClaferUse.      Element ::= "`" Name Card Elements ;
 Subconstraint.  Element ::= Constraint ;
-Subgoal.        Element ::= Goal; 
+Subgoal.        Element ::= Goal;
 Subsoftconstraint. Element ::= SoftConstraint;
 
 SuperEmpty.     Super ::=  ;
@@ -132,12 +131,10 @@ ESetExp.        Exp21 ::= SetExp ;
 
 TransGuard.      TransGuard ::= Exp1;
 
-AsyncTransArrow.           TransArrow ::= "-->";
-GuardedAsyncTransArrow.    TransArrow ::= "-[" TransGuard "]->";
-SyncTransArrow.            TransArrow ::= "==>";
-GuardedSyncTransArrow.     TransArrow ::= "=[" TransGuard "]=>";
-NextTransArrow.            TransArrow ::= "##>";
-GuardedNextTransArrow.     TransArrow ::= "#[" TransGuard "]#>";
+SyncTransArrow.            TransArrow ::= "-->>";
+GuardedSyncTransArrow.     TransArrow ::= "-[" TransGuard "]->>";
+NextTransArrow.            TransArrow ::= "-->";
+GuardedNextTransArrow.     TransArrow ::= "-[" TransGuard "]->";
 
 PatScopeBefore.  PatternScope ::= "between" Exp ;
 PatScopeAfter.  PatternScope ::= "after" Exp ;

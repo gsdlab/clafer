@@ -202,9 +202,7 @@ data TransGuard =
   deriving (Eq,Ord,Show,Read,Data,Typeable,Generic)
 
 data TransArrow =
-   AsyncTransArrow Span
- | GuardedAsyncTransArrow Span TransGuard
- | SyncTransArrow Span
+   SyncTransArrow Span
  | GuardedSyncTransArrow Span TransGuard
  | NextTransArrow Span
  | GuardedNextTransArrow Span TransGuard
@@ -402,8 +400,6 @@ instance Spannable TransGuard where
   getSpan ( TransGuard s _ ) = s
 
 instance Spannable TransArrow where
-  getSpan ( AsyncTransArrow s ) = s
-  getSpan ( GuardedAsyncTransArrow s _ ) = s
   getSpan ( SyncTransArrow s ) = s
   getSpan ( GuardedSyncTransArrow s _ ) = s
   getSpan ( NextTransArrow s ) = s

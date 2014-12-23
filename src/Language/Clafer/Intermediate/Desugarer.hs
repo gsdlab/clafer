@@ -153,10 +153,8 @@ desugarTrans s e1 arrow e2 = desugarExp $ desugarTrans' s e1 arrow e2
 
 desugarTrans' :: Span -> Exp -> TransArrow -> Exp -> Exp
 desugarTrans' s e1 arrow e2 =  case arrow of
-      AsyncTransArrow _ -> LtlW s e1 e2
-      GuardedAsyncTransArrow _ (TransGuard _ guardExp) -> EImplies s guardExp (LtlW s e1 e2)
       SyncTransArrow _ -> LtlU s e1 e2
-      GuardedSyncTransArrow _ (TransGuard _ guardExp) -> EImplies s guardExp (LtlW s e1 e2)
+      GuardedSyncTransArrow _ (TransGuard _ guardExp) -> EImplies s guardExp (LtlU s e1 e2)
       NextTransArrow _ -> EAnd s e1 (LtlX s e2)
       GuardedNextTransArrow _ (TransGuard _ guardExp) -> EImplies s guardExp (EAnd s e1 (LtlX s e2))
 

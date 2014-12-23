@@ -22,99 +22,95 @@ import Language.Clafer.Front.ErrM
  '!' { PT _ (TS _ 1) }
  '!=' { PT _ (TS _ 2) }
  '#' { PT _ (TS _ 3) }
- '##>' { PT _ (TS _ 4) }
- '#[' { PT _ (TS _ 5) }
- '&&' { PT _ (TS _ 6) }
- '(' { PT _ (TS _ 7) }
- ')' { PT _ (TS _ 8) }
- '*' { PT _ (TS _ 9) }
- '**' { PT _ (TS _ 10) }
- '+' { PT _ (TS _ 11) }
- '++' { PT _ (TS _ 12) }
- ',' { PT _ (TS _ 13) }
- '-' { PT _ (TS _ 14) }
- '--' { PT _ (TS _ 15) }
- '-->' { PT _ (TS _ 16) }
- '->' { PT _ (TS _ 17) }
- '->>' { PT _ (TS _ 18) }
- '-[' { PT _ (TS _ 19) }
- '.' { PT _ (TS _ 20) }
- '..' { PT _ (TS _ 21) }
- '/' { PT _ (TS _ 22) }
- ':' { PT _ (TS _ 23) }
- ':=' { PT _ (TS _ 24) }
- ':>' { PT _ (TS _ 25) }
- ';' { PT _ (TS _ 26) }
- '<' { PT _ (TS _ 27) }
- '<:' { PT _ (TS _ 28) }
- '<<' { PT _ (TS _ 29) }
- '<=' { PT _ (TS _ 30) }
- '<=>' { PT _ (TS _ 31) }
- '=' { PT _ (TS _ 32) }
- '==>' { PT _ (TS _ 33) }
- '=>' { PT _ (TS _ 34) }
- '=[' { PT _ (TS _ 35) }
- '>' { PT _ (TS _ 36) }
- '>=' { PT _ (TS _ 37) }
- '>>' { PT _ (TS _ 38) }
- '?' { PT _ (TS _ 39) }
- 'F' { PT _ (TS _ 40) }
- 'G' { PT _ (TS _ 41) }
- 'U' { PT _ (TS _ 42) }
- 'W' { PT _ (TS _ 43) }
- 'X' { PT _ (TS _ 44) }
- '[' { PT _ (TS _ 45) }
- '\\' { PT _ (TS _ 46) }
- ']' { PT _ (TS _ 47) }
- ']#>' { PT _ (TS _ 48) }
- ']->' { PT _ (TS _ 49) }
- ']=>' { PT _ (TS _ 50) }
- '`' { PT _ (TS _ 51) }
- 'abstract' { PT _ (TS _ 52) }
- 'after' { PT _ (TS _ 53) }
- 'all' { PT _ (TS _ 54) }
- 'always' { PT _ (TS _ 55) }
- 'and' { PT _ (TS _ 56) }
- 'assert' { PT _ (TS _ 57) }
- 'between' { PT _ (TS _ 58) }
- 'disj' { PT _ (TS _ 59) }
- 'else' { PT _ (TS _ 60) }
- 'enum' { PT _ (TS _ 61) }
- 'eventually' { PT _ (TS _ 62) }
- 'final' { PT _ (TS _ 63) }
- 'finally' { PT _ (TS _ 64) }
- 'follow' { PT _ (TS _ 65) }
- 'globally' { PT _ (TS _ 66) }
- 'if' { PT _ (TS _ 67) }
- 'in' { PT _ (TS _ 68) }
- 'initial' { PT _ (TS _ 69) }
- 'initially' { PT _ (TS _ 70) }
- 'let' { PT _ (TS _ 71) }
- 'lonce' { PT _ (TS _ 72) }
- 'lone' { PT _ (TS _ 73) }
- 'max' { PT _ (TS _ 74) }
- 'min' { PT _ (TS _ 75) }
- 'must' { PT _ (TS _ 76) }
- 'mux' { PT _ (TS _ 77) }
- 'never' { PT _ (TS _ 78) }
- 'next' { PT _ (TS _ 79) }
- 'no' { PT _ (TS _ 80) }
- 'not' { PT _ (TS _ 81) }
- 'one' { PT _ (TS _ 82) }
- 'opt' { PT _ (TS _ 83) }
- 'or' { PT _ (TS _ 84) }
- 'precede' { PT _ (TS _ 85) }
- 'some' { PT _ (TS _ 86) }
- 'sometime' { PT _ (TS _ 87) }
- 'sum' { PT _ (TS _ 88) }
- 'then' { PT _ (TS _ 89) }
- 'until' { PT _ (TS _ 90) }
- 'weakuntil' { PT _ (TS _ 91) }
- 'xor' { PT _ (TS _ 92) }
- '{' { PT _ (TS _ 93) }
- '|' { PT _ (TS _ 94) }
- '||' { PT _ (TS _ 95) }
- '}' { PT _ (TS _ 96) }
+ '&&' { PT _ (TS _ 4) }
+ '(' { PT _ (TS _ 5) }
+ ')' { PT _ (TS _ 6) }
+ '*' { PT _ (TS _ 7) }
+ '**' { PT _ (TS _ 8) }
+ '+' { PT _ (TS _ 9) }
+ '++' { PT _ (TS _ 10) }
+ ',' { PT _ (TS _ 11) }
+ '-' { PT _ (TS _ 12) }
+ '--' { PT _ (TS _ 13) }
+ '-->' { PT _ (TS _ 14) }
+ '-->>' { PT _ (TS _ 15) }
+ '->' { PT _ (TS _ 16) }
+ '->>' { PT _ (TS _ 17) }
+ '-[' { PT _ (TS _ 18) }
+ '.' { PT _ (TS _ 19) }
+ '..' { PT _ (TS _ 20) }
+ '/' { PT _ (TS _ 21) }
+ ':' { PT _ (TS _ 22) }
+ ':=' { PT _ (TS _ 23) }
+ ':>' { PT _ (TS _ 24) }
+ ';' { PT _ (TS _ 25) }
+ '<' { PT _ (TS _ 26) }
+ '<:' { PT _ (TS _ 27) }
+ '<<' { PT _ (TS _ 28) }
+ '<=' { PT _ (TS _ 29) }
+ '<=>' { PT _ (TS _ 30) }
+ '=' { PT _ (TS _ 31) }
+ '=>' { PT _ (TS _ 32) }
+ '>' { PT _ (TS _ 33) }
+ '>=' { PT _ (TS _ 34) }
+ '>>' { PT _ (TS _ 35) }
+ '?' { PT _ (TS _ 36) }
+ 'F' { PT _ (TS _ 37) }
+ 'G' { PT _ (TS _ 38) }
+ 'U' { PT _ (TS _ 39) }
+ 'W' { PT _ (TS _ 40) }
+ 'X' { PT _ (TS _ 41) }
+ '[' { PT _ (TS _ 42) }
+ '\\' { PT _ (TS _ 43) }
+ ']' { PT _ (TS _ 44) }
+ ']->' { PT _ (TS _ 45) }
+ ']->>' { PT _ (TS _ 46) }
+ '`' { PT _ (TS _ 47) }
+ 'abstract' { PT _ (TS _ 48) }
+ 'after' { PT _ (TS _ 49) }
+ 'all' { PT _ (TS _ 50) }
+ 'always' { PT _ (TS _ 51) }
+ 'and' { PT _ (TS _ 52) }
+ 'assert' { PT _ (TS _ 53) }
+ 'between' { PT _ (TS _ 54) }
+ 'disj' { PT _ (TS _ 55) }
+ 'else' { PT _ (TS _ 56) }
+ 'enum' { PT _ (TS _ 57) }
+ 'eventually' { PT _ (TS _ 58) }
+ 'final' { PT _ (TS _ 59) }
+ 'finally' { PT _ (TS _ 60) }
+ 'follow' { PT _ (TS _ 61) }
+ 'globally' { PT _ (TS _ 62) }
+ 'if' { PT _ (TS _ 63) }
+ 'in' { PT _ (TS _ 64) }
+ 'initial' { PT _ (TS _ 65) }
+ 'initially' { PT _ (TS _ 66) }
+ 'let' { PT _ (TS _ 67) }
+ 'lonce' { PT _ (TS _ 68) }
+ 'lone' { PT _ (TS _ 69) }
+ 'max' { PT _ (TS _ 70) }
+ 'min' { PT _ (TS _ 71) }
+ 'must' { PT _ (TS _ 72) }
+ 'mux' { PT _ (TS _ 73) }
+ 'never' { PT _ (TS _ 74) }
+ 'next' { PT _ (TS _ 75) }
+ 'no' { PT _ (TS _ 76) }
+ 'not' { PT _ (TS _ 77) }
+ 'one' { PT _ (TS _ 78) }
+ 'opt' { PT _ (TS _ 79) }
+ 'or' { PT _ (TS _ 80) }
+ 'precede' { PT _ (TS _ 81) }
+ 'some' { PT _ (TS _ 82) }
+ 'sometime' { PT _ (TS _ 83) }
+ 'sum' { PT _ (TS _ 84) }
+ 'then' { PT _ (TS _ 85) }
+ 'until' { PT _ (TS _ 86) }
+ 'weakuntil' { PT _ (TS _ 87) }
+ 'xor' { PT _ (TS _ 88) }
+ '{' { PT _ (TS _ 89) }
+ '|' { PT _ (TS _ 90) }
+ '||' { PT _ (TS _ 91) }
+ '}' { PT _ (TS _ 92) }
 
 L_PosInteger { PT _ (T_PosInteger _) }
 L_PosDouble { PT _ (T_PosDouble _) }
@@ -366,12 +362,10 @@ TransGuard : Exp1 { TransGuard ((mkCatSpan $1)) $1 }
 
 
 TransArrow :: { TransArrow }
-TransArrow : '-->' { AsyncTransArrow ((mkTokenSpan $1)) } 
-  | '-[' TransGuard ']->' { GuardedAsyncTransArrow ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkTokenSpan $3)) $2 }
-  | '==>' { SyncTransArrow ((mkTokenSpan $1)) }
-  | '=[' TransGuard ']=>' { GuardedSyncTransArrow ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkTokenSpan $3)) $2 }
-  | '##>' { NextTransArrow ((mkTokenSpan $1)) }
-  | '#[' TransGuard ']#>' { GuardedNextTransArrow ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkTokenSpan $3)) $2 }
+TransArrow : '-->>' { SyncTransArrow ((mkTokenSpan $1)) } 
+  | '-[' TransGuard ']->>' { GuardedSyncTransArrow ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkTokenSpan $3)) $2 }
+  | '-->' { NextTransArrow ((mkTokenSpan $1)) }
+  | '-[' TransGuard ']->' { GuardedNextTransArrow ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkTokenSpan $3)) $2 }
 
 
 PatternScope :: { PatternScope }

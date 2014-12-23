@@ -298,12 +298,10 @@ instance Print TransGuard where
 
 instance Print TransArrow where
   prt i e = case e of
-   AsyncTransArrow _  -> prPrec i 0 (concatD [doc (showString "-->")])
-   GuardedAsyncTransArrow _ transguard -> prPrec i 0 (concatD [doc (showString "-[") , prt 0 transguard , doc (showString "]->")])
-   SyncTransArrow _  -> prPrec i 0 (concatD [doc (showString "==>")])
-   GuardedSyncTransArrow _ transguard -> prPrec i 0 (concatD [doc (showString "=[") , prt 0 transguard , doc (showString "]=>")])
-   NextTransArrow _  -> prPrec i 0 (concatD [doc (showString "##>")])
-   GuardedNextTransArrow _ transguard -> prPrec i 0 (concatD [doc (showString "#[") , prt 0 transguard , doc (showString "]#>")])
+   SyncTransArrow _  -> prPrec i 0 (concatD [doc (showString "-->>")])
+   GuardedSyncTransArrow _ transguard -> prPrec i 0 (concatD [doc (showString "-[") , prt 0 transguard , doc (showString "]->>")])
+   NextTransArrow _  -> prPrec i 0 (concatD [doc (showString "-->")])
+   GuardedNextTransArrow _ transguard -> prPrec i 0 (concatD [doc (showString "-[") , prt 0 transguard , doc (showString "]->")])
 
 
 instance Print PatternScope where
