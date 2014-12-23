@@ -58,7 +58,7 @@ The symbols used in clafer are the following:
   | / | # | --> | -[
   | ]-> | ==> | =[ | ]=>
   | ##> | #[ | ]#> | ++
-  | , | -- | & | <:
+  | , | -- | ** | <:
   | :> | . | ; | \
   | ( | ) |  | 
 
@@ -205,7 +205,7 @@ All other symbols are terminals.
   |  |  **|**  | //SetExp1// 
   | //SetExp1// | -> | //SetExp1// ``--`` //SetExp2// 
   |  |  **|**  | //SetExp2// 
-  | //SetExp2// | -> | //SetExp2// ``&`` //SetExp3// 
+  | //SetExp2// | -> | //SetExp2// ``**`` //SetExp3// 
   |  |  **|**  | //SetExp3// 
   | //SetExp3// | -> | //SetExp3// ``<:`` //SetExp4// 
   |  |  **|**  | //SetExp4// 

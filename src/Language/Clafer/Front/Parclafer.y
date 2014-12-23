@@ -24,11 +24,11 @@ import Language.Clafer.Front.ErrM
  '#' { PT _ (TS _ 3) }
  '##>' { PT _ (TS _ 4) }
  '#[' { PT _ (TS _ 5) }
- '&' { PT _ (TS _ 6) }
- '&&' { PT _ (TS _ 7) }
- '(' { PT _ (TS _ 8) }
- ')' { PT _ (TS _ 9) }
- '*' { PT _ (TS _ 10) }
+ '&&' { PT _ (TS _ 6) }
+ '(' { PT _ (TS _ 7) }
+ ')' { PT _ (TS _ 8) }
+ '*' { PT _ (TS _ 9) }
+ '**' { PT _ (TS _ 10) }
  '+' { PT _ (TS _ 11) }
  '++' { PT _ (TS _ 12) }
  ',' { PT _ (TS _ 13) }
@@ -394,7 +394,7 @@ SetExp1 : SetExp1 '--' SetExp2 { Difference ((mkCatSpan $1) >- (mkTokenSpan $2) 
 
 
 SetExp2 :: { SetExp }
-SetExp2 : SetExp2 '&' SetExp3 { Intersection ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 } 
+SetExp2 : SetExp2 '**' SetExp3 { Intersection ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 } 
   | SetExp3 {  $1 }
 
 
