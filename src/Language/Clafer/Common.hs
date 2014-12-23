@@ -65,11 +65,8 @@ isEqClaferId = flip $ (==)._uid
 idToPExp :: String -> Span -> String -> String -> Bool -> PExp
 idToPExp pid' pos modids id' isTop' = PExp (Just $ TClafer [id']) pid' pos (IClaferId modids id' isTop' Nothing)
 
-mkLClaferId :: CName -> Bool -> ClaferBinding -> IExp
-mkLClaferId = IClaferId ""
-
 mkPLClaferId :: CName -> Bool -> ClaferBinding -> PExp
-mkPLClaferId id' isTop' bind' = pExpDefPidPos $ mkLClaferId id' isTop' bind'
+mkPLClaferId id' isTop' bind' = pExpDefPidPos $ IClaferId "" id' isTop' bind'
 
 pExpDefPidPos :: IExp -> PExp
 pExpDefPidPos = pExpDefPid noSpan
@@ -381,6 +378,7 @@ isPrimitive = flip elem primitiveTypes
 -- | reserved keywords which cannot be used as clafer identifiers
 keywordIdents :: [String]
 keywordIdents =
+  baseClafer :
   specialNames ++
   primitiveTypes ++
   [ iGMax, iGMin, iSumSet ] ++ -- unary operators
@@ -401,3 +399,7 @@ voidf :: Monad m => m t -> m ()
 voidf f = do
   _ <- f
   return ()
+
+safeTail :: [a] -> [a]
+safeTail [] = []
+safeTail (_:xs) = xs

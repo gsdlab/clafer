@@ -22,10 +22,7 @@
 module Language.Clafer.Generator.Concat where
 
 import Data.List
-import Data.Maybe
 import Language.Clafer.Common
-import Language.Clafer.ClaferArgs
-import Language.Clafer.Front.Absclafer
 import Language.Clafer.Intermediate.Intclafer hiding (exp)
 
 -- | representation of strings in chunks (for line/column numbering)

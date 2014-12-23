@@ -46,7 +46,7 @@ data GenCtx = GenCtx {
     time :: Maybe String
   } deriving (Show)
 
-data GenEnv = GenEnv 
+data GenEnv = GenEnv
   { claferargs :: ClaferArgs
   , uidIClaferMap :: StringMap IClafer
   }  deriving (Show)
@@ -65,7 +65,7 @@ genAlloyLtlModule :: ClaferArgs -> (IModule, GEnv) -> [(UID, Integer)] -> String
 genAlloyLtlModule    claferargs'    (imodule, _)       scopes             uidIClaferMap'   = (flatten output, filter ((/= NoTrace) . snd) $ mapLineCol output)
   where
   genEnv = GenEnv claferargs' uidIClaferMap'
-  rootClafer = IEClafer $ IClafer noSpan False (Just $ IGCard False (0, -1)) "root" "root" (ISuper False []) (Just (1,1)) (1, 1) False (_mDecls imodule)
+  rootClafer = IEClafer $ IClafer noSpan False (Just $ IGCard False (0, -1)) "root" "root" "" (ISuper False []) (Just (1,1)) (1, 1) False (_mDecls imodule)
   -- output = header claferargs scopes +++ (cconcat $ map (genDeclaration genEnv) (_mDecls imodule)) +++
   output = header claferargs' scopes +++ (genDeclaration genEnv rootClafer) +++
        if ((not $ skip_goals claferargs') && length goals_list > 0) then
@@ -548,9 +548,9 @@ genLtlExp    genEnv    ctx       op        exps = {- trace ("call in genLtlExp; 
 containsMutable :: GenEnv -> PExp -> Bool
 containsMutable    genEnv    pexp@(PExp _ _ _ exp) = case exp of
   (IFunExp _ exps) -> bOrFoldl1 $ map (containsMutable genEnv) exps
-  (IClaferId _ _ _ (Just bind)) -> let 
+  (IClaferId _ _ _ (Just bind)) -> let
       boundIClafer = fromJust $ SMap.lookup bind (uidIClaferMap genEnv)
-    in 
+    in
       _mutable boundIClafer
   (IDeclPExp _ decls e) -> bOrFoldl1 (map (containsMut genEnv) decls) || containsMutable genEnv e
   _ -> False

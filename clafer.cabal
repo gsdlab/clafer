@@ -160,7 +160,7 @@ Test-Suite test-suite
     else
         build-depends: HaXml >= 1.24
 
-    ghc-options:    -Wall -fno-warn-unused-do-bind -fno-warn-orphans -threaded
+    ghc-options:    -Wall -fno-warn-unused-do-bind -fno-warn-orphans
 
     other-modules:  Paths_clafer,
                     Functions,

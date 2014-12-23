@@ -148,7 +148,7 @@ PatScopeEmpty.    PatternScope ::= ;
 Union.          SetExp  ::= SetExp  "++" SetExp1 ;
 UnionCom.       SetExp  ::= SetExp  ","  SetExp1 ;
 Difference.     SetExp1 ::= SetExp1 "--" SetExp2 ;
-Intersection.   SetExp2 ::= SetExp2 "&"  SetExp3 ;
+Intersection.   SetExp2 ::= SetExp2 "**"  SetExp3 ;
 Domain.         SetExp3 ::= SetExp3 "<:" SetExp4 ;
 Range.          SetExp4 ::= SetExp4 ":>" SetExp5 ;
 Join.           SetExp5 ::= SetExp5 "."  SetExp6 ;
@@ -159,7 +159,7 @@ Decl.           Decl ::= [LocId] ":" SetExp ;
 VarBinding.     VarBinding ::= LocId "=" Name ;
 
 QuantNo.        Quant ::= "no" ;
-QuantNot.		Quant ::= "not" ;
+QuantNot.       Quant ::= "not" ;
 QuantLone.      Quant ::= "lone" ;
 QuantOne.       Quant ::= "one" ;
 QuantSome.      Quant ::= "some" ;

@@ -73,12 +73,13 @@ genXmlModule imodule = concat
 
 genXmlClafer :: IClafer -> Result
 genXmlClafer x = case x of
-  IClafer pos abstract gcrd id' uid' super' crd glcard mut es  ->
+  IClafer pos abstract gcrd id' uid' puid' super' crd glcard mut es  ->
     concat [ tag "Position" $ genXmlPosition pos
            , genXmlAbstract abstract
            , optTag gcrd genXmlGCard
            , genXmlId id'
            , genXmlUid uid'
+           , genXmlParentUid puid'
            , genXmlSuper super'
            , optTag crd genXmlCard
            , genXmlGlCard glcard -- TODO serialize mutability details
@@ -102,6 +103,9 @@ genXmlId ident' = tag "Id" ident'
 
 genXmlUid :: String -> String
 genXmlUid uid' = tag "UniqueId" uid'
+
+genXmlParentUid :: String -> String
+genXmlParentUid uid' = tag "ParentUniqueId" uid'
 
 genXmlSuper :: ISuper -> String
 genXmlSuper x = case x of

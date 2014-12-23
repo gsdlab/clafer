@@ -59,15 +59,16 @@ resolveNClafer declarations clafer =
 
 resolveNSuper :: [IElement] -> ISuper -> Resolve (ISuper, Mutability)
 resolveNSuper declarations x = case x of
-  ISuper False [PExp _ pid' pos' (IClaferId _ id' isTop' _)] ->
+  ISuper False [PExp _ pid' pos' (IClaferId _ id' _ _)] ->
     if isPrimitive id' || id' == baseClafer
       then return (x, True)
       else do
         r <- resolveN pos' declarations id'
-        (id'', [superclafer'']) <- case r of
+        (id'', [superClafer']) <- case r of
           Nothing -> throwError $ SemanticErr pos' $ "No superclafer found: " ++ id'
           Just m  -> return m
-        return (ISuper False [idToPExp pid' pos' "" id'' isTop'], _mutable superclafer'' )
+        let isTop' = "root" == (_parentUID superClafer')
+        return (ISuper False [idToPExp pid' pos' "" id'' isTop'], _mutable superClafer')
   _ -> return (x, True)
 
 
@@ -202,7 +203,7 @@ getDirUnrollables dependencies = (filter isUnrollable $ map (map v2n) $
 resolveEClafer :: MonadState GEnv m => [String] -> [String] -> Bool -> [IElement] -> IClafer -> m IClafer
 resolveEClafer predecessors unrollables absAncestor declarations clafer = do
   sClafers' <- gets sClafers
-  clafer' <- renameClafer absAncestor clafer
+  clafer' <- renameClafer absAncestor (_parentUID clafer) clafer
   let predecessors' = _uid clafer' : predecessors
   (sElements, super', superList) <-
       resolveEInheritance predecessors' unrollables absAncestor declarations
@@ -216,17 +217,17 @@ resolveEClafer predecessors unrollables absAncestor declarations clafer = do
             $ _elements clafer
   return $ clafer' {_super = super', _elements = elements' ++ sElements}
 
-renameClafer :: MonadState GEnv m => Bool -> IClafer -> m IClafer
-renameClafer False clafer = return clafer
-renameClafer True  clafer = renameClafer' clafer
+renameClafer :: MonadState GEnv m => Bool -> UID -> IClafer -> m IClafer
+renameClafer False _ clafer = return clafer
+renameClafer True  puid clafer = renameClafer' puid clafer
 
-renameClafer' :: MonadState GEnv m => IClafer -> m IClafer
-renameClafer' clafer = do
+renameClafer' :: MonadState GEnv m => UID -> IClafer -> m IClafer
+renameClafer' puid clafer = do
   let claferIdent = _ident clafer
   identCountMap' <- gets identCountMap
   let count = Map.findWithDefault 0 claferIdent identCountMap'
   modify (\e -> e { identCountMap = Map.alter (\_ -> Just (count+1)) claferIdent identCountMap' } )
-  return $ clafer { _uid = genId claferIdent count }
+  return $ clafer { _uid = genId claferIdent count, _parentUID = puid }
 
 genId :: String -> Int -> String
 genId id' count = concat ["c", show count, "_",  id']
