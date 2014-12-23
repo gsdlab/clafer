@@ -357,6 +357,7 @@ isPrimitive = flip elem primitiveTypes
 -- | reserved keywords which cannot be used as clafer identifiers
 keywordIdents :: [String]
 keywordIdents =
+  baseClafer :
   specialNames ++
   primitiveTypes ++
   [ iGMax, iGMin, iSumSet ] ++ -- unary operators
@@ -377,3 +378,7 @@ voidf :: Monad m => m t -> m ()
 voidf f = do
   _ <- f
   return ()
+
+safeTail :: [a] -> [a]
+safeTail [] = []
+safeTail (_:xs) = xs

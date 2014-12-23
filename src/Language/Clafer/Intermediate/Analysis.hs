@@ -354,7 +354,7 @@ gatherInfo imodule =
   sString  = SClafer stringType stringType False 0 (-1) 0 (-1) Nothing Nothing []
   sBoolean = SClafer booleanType booleanType False 0 (-1) 0 (-1) Nothing Nothing []
 
-  root = I.IClafer noSpan False Nothing rootIdent rootIdent (I.ISuper False [I.PExp Nothing "" noSpan $ I.IClaferId "" baseClafer True Nothing ]) (Just (1, 1)) (0, 0) $ I._mDecls imodule
+  root = I.IClafer noSpan False Nothing rootIdent rootIdent "" (I.ISuper False [I.PExp Nothing "" noSpan $ I.IClaferId "" baseClafer True Nothing ]) (Just (1, 1)) (0, 0) $ I._mDecls imodule
 
 
 

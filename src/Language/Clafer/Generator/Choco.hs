@@ -30,7 +30,7 @@ genCModule _ (imodule@IModule{_mDecls}, _) scopes =
     ++ (genGoal =<< _mDecls)
     where
     root :: IClafer
-    root = IClafer noSpan False Nothing rootIdent rootIdent (ISuper False [PExp Nothing "" noSpan $ IClaferId "" baseClafer True Nothing ]) (Just (1, 1)) (0, 0) _mDecls
+    root = IClafer noSpan False Nothing rootIdent rootIdent "" (ISuper False [PExp Nothing "" noSpan $ IClaferId "" baseClafer True Nothing ]) (Just (1, 1)) (0, 0) _mDecls
 
     toplevelClafers = mapMaybe iclafer _mDecls
     -- The sort is so that we encounter sub clafers before super clafers when abstract clafers extend other abstract clafers
@@ -136,8 +136,8 @@ genCModule _ (imodule@IModule{_mDecls}, _) scopes =
                 case parentOf _uid of
                      "root" -> "Clafer"
                      puid   -> puid ++ ".addChild"
-    genConcreteClafer (IClafer _ _ Nothing _ _ _ _ _ _) = error "Choco.getConcreteClafer undefined"
-    genConcreteClafer (IClafer _ _ (Just (IGCard _ _)) _ _ _ Nothing _ _) = error "Choco.getConcreteClafer undefined"
+    genConcreteClafer (IClafer _ _ Nothing _ _ _ _ _ _ _) = error "Choco.getConcreteClafer undefined"
+    genConcreteClafer (IClafer _ _ (Just (IGCard _ _)) _ _ _ _ Nothing _ _) = error "Choco.getConcreteClafer undefined"
 
     prop name value =
         case value of

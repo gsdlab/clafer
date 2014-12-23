@@ -77,16 +77,16 @@ sugarDeclaration  (IEGoal _ goal) = ElementDecl (_inPos goal) $ Subgoal (_inPos 
 
 
 desugarClafer :: Clafer -> [IElement]
-desugarClafer (Clafer s abstract gcrd id' super' crd init' es)  =
-    (IEClafer $ IClafer s (desugarAbstract abstract) (desugarGCard gcrd) (transIdent id')
-            "" (desugarSuper super') (desugarCard crd) (0, -1)
-            (desugarElements es)) : (desugarInit id' init')
+desugarClafer (Clafer s abstract gcrd' id' super' crd' init' elements')  =
+    (IEClafer $ IClafer s (desugarAbstract abstract) (desugarGCard gcrd') (transIdent id')
+            "" "" (desugarSuper super') (desugarCard crd') (0, -1)
+            (desugarElements elements')) : (desugarInit id' init')
 
 
 sugarClafer :: IClafer -> Clafer
-sugarClafer (IClafer s abstract gcard' _ uid' super' crd _ es) =
+sugarClafer (IClafer s abstract gcard' _ uid' _ super' crd' _ elements') =
     Clafer s (sugarAbstract abstract) (sugarGCard gcard') (mkIdent uid')
-      (sugarSuper super') (sugarCard crd) (InitEmpty s) (sugarElements es)
+      (sugarSuper super') (sugarCard crd') (InitEmpty s) (sugarElements elements')
 
 
 desugarSuper :: Super -> ISuper
@@ -100,7 +100,7 @@ desugarSuper (SuperSome _ superhow setexp) =
 
 
 desugarSuperHow :: SuperHow -> Bool -> Bool
-desugarSuperHow (SuperColon _) isPrimitive = if isPrimitive then True else False -- need to have reference for primitive
+desugarSuperHow (SuperColon _) isPrimitive' = if isPrimitive' then True else False -- need to have reference for primitive
 desugarSuperHow _ _ = True -- otherwise reference
 
 
@@ -438,17 +438,17 @@ desugarPath :: PExp -> PExp
 desugarPath (PExp iType' pid' pos' x) = reducePExp $ PExp iType' pid' pos' result
   where
   result
-    | isSet x     = IDeclPExp ISome [] (pExpDefPid pos' x)
+    | isSetExp x     = IDeclPExp ISome [] (pExpDefPid pos' x)
     | isNegSome x = IDeclPExp INo   [] $ _bpexp $ _exp $ head $ _exps x
     | otherwise   =  x
   isNegSome (IFunExp op' [PExp _ _ _ (IDeclPExp ISome [] _)]) = op' == iNot
   isNegSome _ = False
 
 
-isSet :: IExp -> Bool
-isSet (IClaferId _ _ _ _)  = True
-isSet (IFunExp op' _) = op' `elem` setBinOps
-isSet _ = False
+isSetExp :: IExp -> Bool
+isSetExp (IClaferId _ _ _ _)  = True
+isSetExp (IFunExp op' _) = op' `elem` setBinOps
+isSetExp _ = False
 
 
 -- reduce parent

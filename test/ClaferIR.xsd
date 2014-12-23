@@ -90,6 +90,7 @@ data IClafer
     , _gcard :: Maybe IGCard
     , _ident :: CName
     , _uid :: UID
+    , _parentUID :: UID
     , _super:: ISuper
     , _card :: Maybe Interval
     , _glCard :: Interval
@@ -124,6 +125,7 @@ data IClafer
                 <xs:element name="GroupCard"  type="cl:IGroupCard" minOccurs="0" maxOccurs="1"/>
                 <xs:element name="Id"         type="xs:string"/>
                 <xs:element name="UniqueId"   type="xs:string"/>
+                <xs:element name="ParentUniqueId" type="xs:string"/>
                 <xs:element name="Supers"     type="cl:ISuper"/>
                 <xs:element name="Card"       type="cl:IInterval" minOccurs="0" maxOccurs="1"/>
                 <xs:element name="GlobalCard" type="cl:IInterval"/>

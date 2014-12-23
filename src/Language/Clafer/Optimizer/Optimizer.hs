@@ -212,7 +212,7 @@ checkConstraintIExp :: [String] -> IExp -> Bool
 checkConstraintIExp idents x = case x of
    IDeclPExp _ oDecls' pexp ->
      checkConstraintPExp ((oDecls' >>= (checkConstraintIDecl idents)) ++ idents) pexp
-   IClaferId _ ident' _ _ -> if ident' `elem` (specialNames ++ idents) then True
+   IClaferId _ ident' _ _ -> if ident' `elem` (specialNames ++ (rootIdent : idents)) then True
                           else error $ "optimizer: " ++ ident' ++ " not found"
    _ -> True
 

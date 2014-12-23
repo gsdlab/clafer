@@ -95,12 +95,13 @@ genPythonModule imodule = concat
 
 genPythonClafer :: IClafer -> Result
 genPythonClafer x = case x of
-  IClafer pos' abstract' gcard' id' uid' super' card' glcard' elements'  ->
+  IClafer pos' abstract' gcard' id' uid' puid' super' card' glcard' elements'  ->
     concat [ "\t", genPythonPosition pos', "\n"
            , "\t", genPythonAbstract abstract', "\n"
            , "\t", maybe "" genPythonGCard gcard', "\n"
            , "\t", genPythonId id', "\n"
            , "\t", genPythonUid uid', "\n"
+           , "\t", genPythonParentUid puid', "\n"
            , "\t", genPythonSuper super', "\n"
            , "\t", maybe "" genPythonCard card', "\n"
            , "\t", genPythonGlCard glcard', "\n"
@@ -129,6 +130,9 @@ genPythonId ident' = concat[ "id=\"", ident', "\""]
 
 genPythonUid :: String -> String
 genPythonUid uid' = concat [ "uid=\"", uid', "\""]
+
+genPythonParentUid :: String -> String
+genPythonParentUid uid' = concat [ "parentUid=\"", uid', "\""]
 
 genPythonSuper :: ISuper -> String
 genPythonSuper x = case x of

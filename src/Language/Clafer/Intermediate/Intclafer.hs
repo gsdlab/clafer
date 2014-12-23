@@ -24,6 +24,7 @@
 module Language.Clafer.Intermediate.Intclafer where
 
 import Language.Clafer.Front.Absclafer
+
 import Control.Lens
 import Data.Data
 import Data.Monoid
@@ -47,7 +48,7 @@ data Ir
   | IRISuper ISuper
   | IRIQuant IQuant
   | IRIDecl IDecl
-  | IRIGCard IGCard
+  | IRIGCard (Maybe IGCard)
   deriving (Eq, Show)
 
 data IType
@@ -77,6 +78,7 @@ data IClafer
     , _gcard :: Maybe IGCard  -- ^ group cardinality
     , _ident :: CName         -- ^ name declared in the model
     , _uid :: UID             -- ^ a unique identifier
+    , _parentUID :: UID       -- ^ "root" if concrete top-level, "clafer" if abstract top-level, "" if unresolved or for root clafer, otherwise UID of the parent clafer
     , _super:: ISuper         -- ^ superclafers
     , _card :: Maybe Interval -- ^ clafer cardinality
     , _glCard :: Interval     -- ^ (o) global cardinality
@@ -91,7 +93,7 @@ data IElement
     { _iClafer :: IClafer  -- ^ the actual clafer
     }
   | IEConstraint
-    { _isHard :: Bool      -- ^ whether hard or not (soft)
+    { _isHard :: Bool      -- ^ whether hard constraint or assertion
     , _cpexp :: PExp       -- ^ the container of the actual expression
     }
   -- | Goal (optimization objective)
@@ -266,10 +268,8 @@ iMap f (IRIElement (IEConstraint h pexp)) =
   f $ IRIElement $ IEConstraint h $ unWrapPExp $ iMap f $ IRPExp pexp
 iMap f (IRIElement (IEGoal m pexp)) =
   f $ IRIElement $ IEGoal m $ unWrapPExp $ iMap f $ IRPExp pexp
-iMap f (IRClafer (IClafer p a (Just grc) i u s c goc elems)) =
-  f $ IRClafer $ IClafer p a (Just $ unWrapIGCard $ iMap f $ IRIGCard grc) i u (unWrapISuper $ iMap f $ IRISuper s) c goc $ map (unWrapIElement . iMap f . IRIElement) elems
-iMap f (IRClafer (IClafer p a Nothing i u s c goc elems)) =
-  f $ IRClafer $ IClafer p a Nothing i u (unWrapISuper $ iMap f $ IRISuper s) c goc $ map (unWrapIElement . iMap f . IRIElement) elems
+iMap f (IRClafer (IClafer p a grc i u pu s c goc elems)) =
+  f $ IRClafer $ IClafer p a (unWrapIGCard $ iMap f $ IRIGCard grc) i u pu  (unWrapISuper $ iMap f $ IRISuper s) c goc $ map (unWrapIElement . iMap f . IRIElement) elems
 iMap f (IRIExp (IDeclPExp q decs p)) =
   f $ IRIExp $ IDeclPExp (unWrapIQuant $ iMap f $ IRIQuant q) (map (unWrapIDecl . iMap f . IRIDecl) decs) $ unWrapPExp $ iMap f $ IRPExp p
 iMap f (IRIExp (IFunExp o pexps)) =
@@ -289,9 +289,7 @@ iFoldMap f i@(IRIElement (IEConstraint _ pexp)) =
   f i `mappend` (iFoldMap f $ IRPExp pexp)
 iFoldMap f i@(IRIElement (IEGoal _ pexp)) =
   f i `mappend` (iFoldMap f $ IRPExp pexp)
-iFoldMap f i@(IRClafer (IClafer _ _ Nothing _ _ s _ _ elems)) =
-  f i `mappend` (iFoldMap f $ IRISuper s) `mappend` foldMap (iFoldMap f . IRIElement) elems
-iFoldMap f i@(IRClafer (IClafer _ _ (Just grc) _ _ s _ _ elems)) =
+iFoldMap f i@(IRClafer (IClafer _ _ grc _ _ _ s _ _ elems)) =
   f i `mappend` (iFoldMap f $ IRISuper s) `mappend` (iFoldMap f $ IRIGCard grc) `mappend` foldMap (iFoldMap f . IRIElement) elems
 iFoldMap f i@(IRIExp (IDeclPExp q decs p)) =
   f i `mappend` (iFoldMap f $ IRIQuant q) `mappend` (iFoldMap f $ IRPExp p) `mappend` foldMap (iFoldMap f . IRIDecl) decs
@@ -339,7 +337,7 @@ unWrapIQuant x = error $ "Can't call unWarpIQuant on " ++ show x
 unWrapIDecl :: Ir -> IDecl
 unWrapIDecl (IRIDecl x) = x
 unWrapIDecl x = error $ "Can't call unWarpIDecl on " ++ show x
-unWrapIGCard :: Ir -> IGCard
+unWrapIGCard :: Ir -> Maybe IGCard
 unWrapIGCard (IRIGCard x) = x
 unWrapIGCard x = error $ "Can't call unWarpIGcard on " ++ show x
 
