@@ -52,24 +52,23 @@ resolveNModule (imodule, genv') =
 resolveNClafer :: [IElement] -> IClafer -> Resolve IClafer
 resolveNClafer declarations clafer =
   do
-    super'    <- resolveNSuper declarations $ _super clafer
+    (super', mutable')    <- resolveNSuper declarations $ _super clafer
     elements' <- mapM (resolveNElement declarations) $ _elements clafer
-    return $ clafer {_super = super',
-            _elements = elements'}
+    return $ clafer {_super = super', _mutable = mutable', _elements = elements'}
 
 
-resolveNSuper :: [IElement] -> ISuper -> Resolve ISuper
+resolveNSuper :: [IElement] -> ISuper -> Resolve (ISuper, Mutability)
 resolveNSuper declarations x = case x of
   ISuper False [PExp _ pid' pos' (IClaferId _ id' isTop' _)] ->
     if isPrimitive id' || id' == baseClafer
-      then return x
+      then return (x, True)
       else do
         r <- resolveN pos' declarations id'
-        id'' <- case r of
+        (id'', [superclafer'']) <- case r of
           Nothing -> throwError $ SemanticErr pos' $ "No superclafer found: " ++ id'
-          Just m  -> return $ fst m
-        return $ ISuper False [idToPExp pid' pos' "" id'' isTop']
-  _ -> return x
+          Just m  -> return m
+        return (ISuper False [idToPExp pid' pos' "" id'' isTop'], _mutable superclafer'' )
+  _ -> return (x, True)
 
 
 resolveNElement :: [IElement] -> IElement -> Resolve IElement
