@@ -260,7 +260,7 @@ instance Print SetExp where
    Union _ setexp0 setexp -> prPrec i 0 (concatD [prt 0 setexp0 , doc (showString "++") , prt 1 setexp])
    UnionCom _ setexp0 setexp -> prPrec i 0 (concatD [prt 0 setexp0 , doc (showString ",") , prt 1 setexp])
    Difference _ setexp0 setexp -> prPrec i 1 (concatD [prt 1 setexp0 , doc (showString "--") , prt 2 setexp])
-   Intersection _ setexp0 setexp -> prPrec i 2 (concatD [prt 2 setexp0 , doc (showString "&") , prt 3 setexp])
+   Intersection _ setexp0 setexp -> prPrec i 2 (concatD [prt 2 setexp0 , doc (showString "**") , prt 3 setexp])
    Domain _ setexp0 setexp -> prPrec i 3 (concatD [prt 3 setexp0 , doc (showString "<:") , prt 4 setexp])
    Range _ setexp0 setexp -> prPrec i 4 (concatD [prt 4 setexp0 , doc (showString ":>") , prt 5 setexp])
    Join _ setexp0 setexp -> prPrec i 5 (concatD [prt 5 setexp0 , doc (showString ".") , prt 6 setexp])

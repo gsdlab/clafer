@@ -91,7 +91,7 @@ sugarClafer (IClafer s abstract gcard' _ uid' _ super' crd' _ elements') =
 
 desugarSuper :: Super -> ISuper
 desugarSuper (SuperEmpty s) =
-      ISuper False [PExp (Just $ TClafer []) "" s $ mkLClaferId baseClafer True Nothing]
+      ISuper False [PExp (Just $ TClafer []) "" s $ IClaferId "" baseClafer True Nothing]
 desugarSuper (SuperSome _ superhow setexp) =
       ISuper (desugarSuperHow superhow $ isPrim setexp) [desugarSetExp setexp]
       where
