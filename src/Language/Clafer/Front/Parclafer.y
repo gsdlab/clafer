@@ -140,8 +140,7 @@ Clafer : Abstract ListTempModifier GCard PosIdent Super Card Init Transition Ele
 
 
 Constraint :: { Constraint }
-Constraint : '[' 'final' ']' { FinalConstraint ((mkTokenSpan $1) >- (mkTokenSpan $2) >- (mkTokenSpan $3)) } 
-  | '[' ListExp ']' { Constraint ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkTokenSpan $3)) (reverse $2) }
+Constraint : '[' ListExp ']' { Constraint ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkTokenSpan $3)) (reverse $2) } 
 
 
 SoftConstraint :: { SoftConstraint }

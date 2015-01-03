@@ -23,12 +23,10 @@
 -- | Generates Alloy4.1 or 4.2 code for a Clafer model
 module Language.Clafer.Generator.AlloyLtl (genAlloyLtlModule) where
 
-import Control.Lens hiding (elements, mapping)
+import Control.Lens hiding (elements, mapping, op)
 import Control.Monad.State
 import Data.List
 import Data.Maybe
-import Data.Map (Map)
-import qualified Data.Map as Map
 import Data.StringMap (StringMap)
 import qualified Data.StringMap as SMap
 
@@ -65,7 +63,7 @@ genAlloyLtlModule :: ClaferArgs -> (IModule, GEnv) -> [(UID, Integer)] -> String
 genAlloyLtlModule    claferargs'    (imodule, _)       scopes             uidIClaferMap'   = (flatten output, filter ((/= NoTrace) . snd) $ mapLineCol output)
   where
   genEnv = GenEnv claferargs' uidIClaferMap'
-  rootClafer = IEClafer $ IClafer noSpan False (Just $ IGCard False (0, -1)) "root" "root" "" (ISuper False []) (Just (1,1)) (1, 1) False (_mDecls imodule)
+  rootClafer = IEClafer $ IClafer noSpan (IClaferModifiers False True True) (Just $ IGCard False (0, -1)) "root" "root" "" (ISuper False []) (Just (1,1)) (1, 1) False (_mDecls imodule)
   -- output = header claferargs scopes +++ (cconcat $ map (genDeclaration genEnv) (_mDecls imodule)) +++
   output = header claferargs' scopes +++ (genDeclaration genEnv rootClafer) +++
        if ((not $ skip_goals claferargs') && length goals_list > 0) then
@@ -150,18 +148,18 @@ optShowSet xs = CString "\n" +++ showSet (CString "\n  ") xs
 -- optimization: top level cardinalities
 -- optimization: if only boolean parents, then set card is known
 genClafer :: GenEnv -> [String] -> IClafer -> Concat
-genClafer genEnv resPath oClafer = (cunlines $ filterNull
+genClafer genEnv resPath' oClafer = (cunlines $ filterNull
   [ cardFact +++ claferDecl clafer'
         ((showSet (CString "\n, ") $ genRelations genEnv clafer') +++
-        (optShowSet $ filterNull $ genConstraints genEnv (GenCtx resPath Nothing) clafer'))
+        (optShowSet $ filterNull $ genConstraints genEnv (GenCtx resPath' Nothing) clafer'))
   ]) +++ CString "\n" +++ children'
   where
   clafer' = transPrimitive oClafer
   children' = cconcat $ filterNull $ map
-             (genClafer genEnv ((_uid clafer') : resPath)) $
+             (genClafer genEnv ((_uid clafer') : resPath')) $
              getSubclafers $ _elements clafer'
   cardFact
-    | null resPath && (null $ flatten $ genOptCard clafer') =
+    | null resPath' && (null $ flatten $ genOptCard clafer') =
         case genCard (_uid clafer') $ _card clafer' of
           CString "set" -> CString ""
           c -> mkFact c
@@ -469,7 +467,7 @@ genPExp'    genEnv    ctx     (PExp iType' pid' pos exp') = case exp' of
     boundIClafer = SMap.lookup bind (uidIClaferMap genEnv)
     sid' = (if istop then "" else '@' : genRelName "") ++ sid ++ timeJoin
     timeJoin = if sid == "this" then "" else case (boundIClafer, time ctx) of
-      (Just IClafer {_mutable=true}, Just t) -> "." ++ t
+      (Just IClafer {_mutable=True}, Just t) -> "." ++ t
       _ -> ""
     -- 29/March/2012  Rafael Olaechea: ref is now prepended with clafer name to be able to refer to it from partial instances.
     -- 30/March/2012 Rafael Olaechea added referredClaferUniqeuid to fix problems when having this.x > number  (e.g test/positive/i10.cfr )

@@ -74,7 +74,7 @@ data IModule
 data IClafer
   = IClafer
     { _cinPos :: Span         -- ^ the position of the syntax in source code
-    , _isAbstract :: Bool     -- ^ whether abstract or not (i.e., concrete)
+    , _modifiers :: IClaferModifiers -- ^ abstract, initial, final
     , _gcard :: Maybe IGCard  -- ^ group cardinality
     , _ident :: CName         -- ^ name declared in the model
     , _uid :: UID             -- ^ a unique identifier
@@ -82,10 +82,26 @@ data IClafer
     , _super:: ISuper         -- ^ superclafers
     , _card :: Maybe Interval -- ^ clafer cardinality
     , _glCard :: Interval     -- ^ (o) global cardinality
-    , _mutable :: Mutability  -- ^ clafer mutability information
+    , _mutable :: Mutability  -- ^ clafer mutability information: not mutable = final + parent not mutable
     , _elements :: [IElement] -- ^ nested elements
     }
   deriving (Eq,Ord,Show,Data,Typeable)
+
+data IClaferModifiers
+  = IClaferModifiers
+  { _abstract :: Bool -- ^ keyword "abstract"
+  , _initial :: Bool  -- ^ keyword "initial"
+  , _final :: Bool    -- ^ keyword "final"
+  } deriving (Eq,Ord,Show,Data,Typeable)
+
+_isAbstract :: IClafer -> Bool     -- ^ whether abstract or not (i.e., concrete)
+_isAbstract = _abstract . _modifiers
+
+_isFinal :: IClafer -> Bool     -- ^ whether declared final or not
+_isFinal = _final . _modifiers
+
+_isInitial :: IClafer -> Bool     -- ^ whether declared Initial or not
+_isInitial = _initial . _modifiers
 
 -- | Clafer's subelement is either a clafer, a constraint, or a goal (objective)
 --   This is a wrapper type needed to have polymorphic lists of elements
@@ -354,6 +370,8 @@ makeLenses ''IModule
 makeLenses ''IClafer
 
 makeLenses ''IElement
+
+makeLenses ''IClaferModifiers
 
 makeLenses ''ISuper
 

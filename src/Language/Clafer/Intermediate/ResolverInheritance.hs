@@ -52,24 +52,32 @@ resolveNModule (imodule, genv') =
 resolveNClafer :: [IElement] -> IClafer -> Resolve IClafer
 resolveNClafer declarations clafer =
   do
-    (super', mutable')    <- resolveNSuper declarations $ _super clafer
+    (super', superIClafer')    <- resolveNSuper declarations $ _super clafer
+
     elements' <- mapM (resolveNElement declarations) $ _elements clafer
-    return $ clafer {_super = super', _mutable = mutable', _elements = elements'}
+    return $ clafer
+      { _super = super'
+      , _modifiers = IClaferModifiers
+          (_isAbstract clafer)
+          (_isFinal clafer || (fromMaybe False $ _isFinal <$> superIClafer'))      -- the clafer is declared as final or inherits it
+          (_isInitial clafer || (fromMaybe False $ _isInitial <$> superIClafer'))  -- the clafer is declared as initial or inherits it
+      , _elements = elements'
+      }
 
 
-resolveNSuper :: [IElement] -> ISuper -> Resolve (ISuper, Mutability)
+resolveNSuper :: [IElement] -> ISuper -> Resolve (ISuper, Maybe IClafer)
 resolveNSuper declarations x = case x of
   ISuper False [PExp _ pid' pos' (IClaferId _ id' _ _)] ->
     if isPrimitive id' || id' == baseClafer
-      then return (x, True)
+      then return (x, Nothing)
       else do
         r <- resolveN pos' declarations id'
         (id'', [superClafer']) <- case r of
           Nothing -> throwError $ SemanticErr pos' $ "No superclafer found: " ++ id'
           Just m  -> return m
         let isTop' = "root" == (_parentUID superClafer')
-        return (ISuper False [idToPExp pid' pos' "" id'' isTop'], _mutable superClafer')
-  _ -> return (x, True)
+        return (ISuper False [idToPExp pid' pos' "" id'' isTop'], Just superClafer')
+  _ -> return (x, Nothing)
 
 
 resolveNElement :: [IElement] -> IElement -> Resolve IElement

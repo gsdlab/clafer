@@ -79,34 +79,44 @@ sugarDeclaration  (IEGoal _ goal) = ElementDecl (_inPos goal) $ Subgoal (_inPos 
 
 
 desugarClafer :: Clafer -> [IElement]
-desugarClafer clafer@(Clafer s abstract tmods gcrd' id' super' crd' init' trans elements')  =
-   preElements ++ [IEClafer $ IClafer s (desugarAbstract abstract) (desugarGCard gcrd') (transIdent id')
-            "" "" (desugarSuper super') (desugarCard crd') (0, -1) (desugarMutability tmods elements')
+desugarClafer clafer@(Clafer s abstract' tmods gcrd' id' super' crd' init' _ elements')  =
+   preElements ++ [IEClafer $ IClafer s iClaferModifiers (desugarGCard gcrd') (transIdent id')
+            "" "" (desugarSuper super') (desugarCard crd') (0, -1) (desugarMutability tmods)
             elements''] ++ (desugarInit id' init')
   where
-    preElements = desugarInitiallyModifier tmods (transIdent id')
+    iClaferModifiers = desugarModifiers abstract' tmods
+    preElements =
+      if (not $ _abstract iClaferModifiers)   -- should only generate for concrete clafers
+        then desugarInitiallyModifier tmods (transIdent id')
+        else []
     elements'' = (desugarClaferTrans clafer) ++ (desugarElements elements')
 
+desugarModifiers :: Abstract -> [TempModifier] -> IClaferModifiers
+desugarModifiers    abstract'    tmods           =
+  IClaferModifiers (desugarAbstract abstract') (desugarInitiality tmods) (desugarFinality tmods)
+
 sugarClafer :: IClafer -> Clafer
-sugarClafer cl@(IClafer s abstract gcard' _ uid' _ super' crd' _ mut elements') =
-    Clafer s (sugarAbstract abstract) (sugarModifier cl) (sugarGCard gcard') (mkIdent uid')
-      (sugarSuper super') (sugarCard crd') (InitEmpty s) (TransitionEmpty s) (sugarElements mut elements')
+sugarClafer (IClafer s modifiers' gcard' _ uid' _ super' crd' _ _ elements') =
+    Clafer s (sugarAbstract $ _abstract modifiers') (sugarModifier modifiers') (sugarGCard gcard') (mkIdent uid')
+      (sugarSuper super') (sugarCard crd') (InitEmpty s) (TransitionEmpty s) (sugarElements elements')
 
 
 desugarInitiallyModifier :: [TempModifier] -> String -> [IElement]
 desugarInitiallyModifier [] _ = []
 desugarInitiallyModifier mods ident' = case (find isInitial mods) of
   Just (Initial s) -> [IEConstraint True $ desugarConstraint $ mkExp s ]
+  Just _ -> error "Impossible: this should never happen."
   Nothing -> []
   where
     isInitial (Initial _) = True
     isInitial _ = False
     mkExp s = Constraint s [TmpInitially s $ mkClaferIdExp s ident']
 
-sugarModifier :: IClafer -> [TempModifier]
-sugarModifier cl = case _mutable cl of
-  True -> [] -- In sugared version final is expressed as constraint, but it can be changed -- [Final noSpan]
-  False -> []
+sugarModifier :: IClaferModifiers -> [TempModifier]
+sugarModifier modifiers' =
+  (if _initial modifiers' then [Initial noSpan] else [])
+  ++
+  (if _final modifiers' then [Final noSpan] else [])
 
 desugarSuper :: Super -> ISuper
 desugarSuper (SuperEmpty s) =
@@ -143,7 +153,7 @@ desugarInitHow (InitHow_2 _ )= False
 
 
 desugarClaferTrans :: Clafer -> [IElement]
-desugarClaferTrans (Clafer _ _ _ _ name _ _ _ trans es) =
+desugarClaferTrans (Clafer _ _ _ _ name _ _ _ trans _) =
   case trans of
       TransitionEmpty _ -> []
       Transition s arrow e -> [IEConstraint True (desugarTrans s (mkClaferIdExp s $ transIdent name) arrow e)]
@@ -159,17 +169,26 @@ desugarTrans' s e1 arrow e2 =  case arrow of
       GuardedNextTransArrow _ (TransGuard _ guardExp) -> EImplies s guardExp (EAnd s e1 (LtlX s e2))
 
 
-desugarMutability :: [TempModifier] -> Elements -> Mutability
-desugarMutability mods es = not ( containsFinal || (containsFinalConstr es) )
+desugarMutability :: [TempModifier] -> Mutability
+desugarMutability mods = not containsFinal  -- this is incorrect - final is context sensitive,
+  where                                     -- so a clafer can only be immutable if it's parent
+    containsFinal = any isFinalMod mods     -- is immutable. Also, final modifier can be inherited
+    isFinalMod (Final _) = True             -- which is why processing is added to inheritance resolver.
+    isFinalMod _ = False
+
+
+desugarFinality :: [TempModifier] -> Bool
+desugarFinality mods = any isFinalMod mods
   where
-    containsFinal = any isFinalMod mods
-    containsFinalConstr (ElementsEmpty _) = False
-    containsFinalConstr (ElementsList _ es') = any isFinalEl es'
-    isFinalEl :: Element -> Bool
-    isFinalEl (Subconstraint _ (FinalConstraint _ )) = True
-    isFinalEl _ = False
     isFinalMod (Final _) = True
     isFinalMod _ = False
+
+desugarInitiality :: [TempModifier] -> Bool
+desugarInitiality mods = any isInitialMod mods
+  where
+    isInitialMod (Initial _) = True
+    isInitialMod _ = False
+
 
 desugarName :: Name -> IExp
 desugarName (Path _ path) =
@@ -233,12 +252,8 @@ desugarElements (ElementsEmpty _) = []
 desugarElements (ElementsList _ es)  = es >>= desugarElement
 
 
-sugarElements :: Mutability -> [IElement] -> Elements
-sugarElements mut x = ElementsList noSpan $ mutConstraint ++ (map sugarElement x)
-  where
-    mutConstraint = case mut of
-      True -> [Subconstraint noSpan $ FinalConstraint noSpan]
-      False -> []
+sugarElements :: [IElement] -> Elements
+sugarElements x = ElementsList noSpan $ map sugarElement x
 
 
 desugarElement :: Element -> [IElement]
@@ -249,9 +264,7 @@ desugarElement x = case x of
       (AbstractEmpty s) [] (GCardEmpty s) (mkIdent $ _sident $ desugarName name)
       ((SuperSome s) (SuperColon s) (ClaferId s name)) crd (InitEmpty s) (TransitionEmpty s) es
   Subconstraint _ constraint  ->
-      case constraint of
-          FinalConstraint _ -> []
-          Constraint _ _ -> [IEConstraint True $ desugarConstraint constraint]
+      [IEConstraint True $ desugarConstraint constraint]
   Subsoftconstraint _ softconstraint ->
       [IEConstraint False $ desugarSoftConstraint softconstraint]
   Subgoal _ goal -> [IEGoal True $ desugarGoal goal]
@@ -407,13 +420,7 @@ translateTmpPatterns e = case e of
     f = LtlF span
     g = LtlG span
     not = ENeg span
-    span = case e of
-      TmpPatNever s _ _ -> s
-      TmpPatSometime s _ _ -> s
-      TmpPatLessOrOnce s _ _ -> s
-      TmpPatAlways s _ _ -> s
-      TmpPatPrecede s _ _ _ -> s
-      TmpPatFollow s _ _ _ -> s
+    span = getSpan e
 
 
 desugarExp' :: Exp -> IExp

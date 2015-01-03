@@ -117,7 +117,6 @@ instance Print Clafer where
 
 instance Print Constraint where
   prt i e = case e of
-   FinalConstraint _  -> prPrec i 0 (concatD [doc (showString "[") , doc (showString "final") , doc (showString "]")])
    Constraint _ exps -> prPrec i 0 (concatD [doc (showString "[") , prt 0 exps , doc (showString "]")])
 
 

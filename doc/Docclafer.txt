@@ -74,8 +74,7 @@ All other symbols are terminals.
   | //Declaration// | -> | ``enum`` //PosIdent// ``=`` //[EnumId]// 
   |  |  **|**  | //Element// 
   | //Clafer// | -> | //Abstract// //[TempModifier]// //GCard// //PosIdent// //Super// //Card// //Init// //Transition// //Elements// 
-  | //Constraint// | -> | ``[`` ``final`` ``]`` 
-  |  |  **|**  | ``[`` //[Exp]// ``]`` 
+  | //Constraint// | -> | ``[`` //[Exp]// ``]`` 
   | //SoftConstraint// | -> | ``assert`` ``[`` //[Exp]// ``]`` 
   | //Goal// | -> | ``<<`` //[Exp]// ``>>`` 
   | //TempModifier// | -> | ``initial`` 

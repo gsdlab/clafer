@@ -95,9 +95,9 @@ genPythonModule imodule = concat
 
 genPythonClafer :: IClafer -> Result
 genPythonClafer x = case x of
-  IClafer pos' abstract' gcard' id' uid' puid' super' card' glcard' _ elements'  ->
+  IClafer pos' modifiers' gcard' id' uid' puid' super' card' glcard' _ elements'  ->
     concat [ "\t", genPythonPosition pos', "\n"
-           , "\t", genPythonAbstract abstract', "\n"
+           , "\t", genPythonAbstract $ _abstract modifiers', "\n"
            , "\t", maybe "" genPythonGCard gcard', "\n"
            , "\t", genPythonId id', "\n"
            , "\t", genPythonUid uid', "\n"
