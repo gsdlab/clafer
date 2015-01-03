@@ -89,9 +89,9 @@ data IClafer
 
 data IClaferModifiers
   = IClaferModifiers
-  { _abstract :: Bool -- ^ keyword "abstract"
-  , _initial :: Bool  -- ^ keyword "initial"
-  , _final :: Bool    -- ^ keyword "final"
+  { _abstract :: Bool -- ^ declared as "abstract"
+  , _initial :: Bool  -- ^ declared as "initial"
+  , _final :: Bool    -- ^ declared as "final"
   } deriving (Eq,Ord,Show,Data,Typeable)
 
 _isAbstract :: IClafer -> Bool     -- ^ whether abstract or not (i.e., concrete)
@@ -100,7 +100,7 @@ _isAbstract = _abstract . _modifiers
 _isFinal :: IClafer -> Bool     -- ^ whether declared final or not
 _isFinal = _final . _modifiers
 
-_isInitial :: IClafer -> Bool     -- ^ whether declared Initial or not
+_isInitial :: IClafer -> Bool     -- ^ whether declared initial or not
 _isInitial = _initial . _modifiers
 
 -- | Clafer's subelement is either a clafer, a constraint, or a goal (objective)

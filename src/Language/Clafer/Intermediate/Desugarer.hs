@@ -101,6 +101,8 @@ sugarClafer (IClafer s modifiers' gcard' _ uid' _ super' crd' _ _ elements') =
       (sugarSuper super') (sugarCard crd') (InitEmpty s) (TransitionEmpty s) (sugarElements elements')
 
 
+-- This is incorrect: initiality is inherited, which is resolved later on
+-- Currently, this is only generated when explicitly declared as initial
 desugarInitiallyModifier :: [TempModifier] -> String -> [IElement]
 desugarInitiallyModifier [] _ = []
 desugarInitiallyModifier mods ident' = case (find isInitial mods) of

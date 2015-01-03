@@ -59,8 +59,8 @@ resolveNClafer declarations clafer =
       { _super = super'
       , _modifiers = IClaferModifiers
           (_isAbstract clafer)
-          (_isFinal clafer || (fromMaybe False $ _isFinal <$> superIClafer'))      -- the clafer is declared as final or inherits it
           (_isInitial clafer || (fromMaybe False $ _isInitial <$> superIClafer'))  -- the clafer is declared as initial or inherits it
+          (_isFinal clafer || (fromMaybe False $ _isFinal <$> superIClafer'))      -- the clafer is declared as final or inherits it
       , _elements = elements'
       }
 
@@ -75,7 +75,7 @@ resolveNSuper declarations x = case x of
         (id'', [superClafer']) <- case r of
           Nothing -> throwError $ SemanticErr pos' $ "No superclafer found: " ++ id'
           Just m  -> return m
-        let isTop' = "root" == (_parentUID superClafer')
+        let isTop' = rootIdent == (_parentUID superClafer') || baseClafer == (_parentUID superClafer')
         return (ISuper False [idToPExp pid' pos' "" id'' isTop'], Just superClafer')
   _ -> return (x, Nothing)
 
