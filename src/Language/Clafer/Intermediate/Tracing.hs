@@ -81,11 +81,10 @@ traverseDeclaration x =
     ElementDecl _ e -> traverseElement e
 
 traverseClafer :: Clafer -> [Ast]
-traverseClafer x@(Clafer _ a tm gc _ s c i t e) = AstClafer x : (traverseAbstract a ++ traverseGCard gc ++ traverseSuper s ++ traverseCard c ++ traverseInit i ++ traverseElements e)
+traverseClafer x@(Clafer _ a _ gc _ s c i _ e) = AstClafer x : (traverseAbstract a ++ traverseGCard gc ++ traverseSuper s ++ traverseCard c ++ traverseInit i ++ traverseElements e)
 
 traverseConstraint :: Constraint -> [Ast]
 traverseConstraint x@(Constraint _ e) = AstConstraint x : concatMap traverseExp e
-traverseConstraint x@(FinalConstraint _) = [AstConstraint x]
 
 traverseSoftConstraint :: SoftConstraint -> [Ast]
 traverseSoftConstraint x@(SoftConstraint _ e) = AstSoftConstraint x : concatMap traverseExp e

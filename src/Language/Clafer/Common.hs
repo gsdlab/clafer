@@ -58,6 +58,7 @@ getSuperId :: [PExp] -> String
 getSuperId [] = error "Bug: getSuperId called not on '[PExp (IClaferId)]' but instead on '[]'"
 getSuperId [PExp _ _ _ (IClaferId{ _sident = s})] = s
 getSuperId [pexp'] = error $ "Bug: getSuperId called not on '[PExp (IClaferId)]' but instead on '" ++ show pexp' ++ "'"
+getSuperId x = error $ "Bug: getSuperId called not on '[PExp (IClaferId)]' but instead on '" ++ show x ++ "'"
 
 isEqClaferId :: String -> IClafer -> Bool
 isEqClaferId = flip $ (==)._uid
