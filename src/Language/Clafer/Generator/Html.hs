@@ -36,6 +36,7 @@ module Language.Clafer.Generator.Html (genHtml,
                                        printInlineComment,
                                        highlightErrors) where
 
+import Language.Clafer.Common
 import Language.ClaferT
 import Language.Clafer.Front.Absclafer
 import Language.Clafer.Front.LayoutResolver(revertLayout)
@@ -332,13 +333,13 @@ printExp (EStr _ (PosString (_, str))) _ _ _ _ = str
 
 printSetExp :: SetExp -> Int -> Map.Map Span [Ir] -> Bool -> [(Span, String)] -> String
 printSetExp (ClaferId _ name) indent irMap html comments = printName name indent irMap html comments
-printSetExp (Union _ set1 set2) indent irMap html comments = (printSetExp set1 indent irMap html comments) ++ "++" ++ (printSetExp set2 indent irMap html comments)
+printSetExp (Union _ set1 set2) indent irMap html comments = (printSetExp set1 indent irMap html comments) ++ iUnion ++ (printSetExp set2 indent irMap html comments)
 printSetExp (UnionCom _ set1 set2) indent irMap html comments = (printSetExp set1 indent irMap html comments) ++ ", " ++ (printSetExp set2 indent irMap html comments)
-printSetExp (Difference _ set1 set2) indent irMap html comments = (printSetExp set1 indent irMap html comments) ++ "--" ++ (printSetExp set2 indent irMap html comments)
-printSetExp (Intersection _ set1 set2) indent irMap html comments = (printSetExp set1 indent irMap html comments) ++ "&" ++ (printSetExp set2 indent irMap html comments)
-printSetExp (Domain _ set1 set2) indent irMap html comments = (printSetExp set1 indent irMap html comments) ++ "<:" ++ (printSetExp set2 indent irMap html comments)
-printSetExp (Range _ set1 set2) indent irMap html comments = (printSetExp set1 indent irMap html comments) ++ ":>" ++ (printSetExp set2 indent irMap html comments)
-printSetExp (Join _ set1 set2) indent irMap html comments = (printSetExp set1 indent irMap html comments) ++ "." ++ (printSetExp set2 indent irMap html comments)
+printSetExp (Difference _ set1 set2) indent irMap html comments = (printSetExp set1 indent irMap html comments) ++ iDifference ++ (printSetExp set2 indent irMap html comments)
+printSetExp (Intersection _ set1 set2) indent irMap html comments = (printSetExp set1 indent irMap html comments) ++ iIntersection ++ (printSetExp set2 indent irMap html comments)
+printSetExp (Domain _ set1 set2) indent irMap html comments = (printSetExp set1 indent irMap html comments) ++ iDomain ++ (printSetExp set2 indent irMap html comments)
+printSetExp (Range _ set1 set2) indent irMap html comments = (printSetExp set1 indent irMap html comments) ++ iRange ++ (printSetExp set2 indent irMap html comments)
+printSetExp (Join _ set1 set2) indent irMap html comments = (printSetExp set1 indent irMap html comments) ++ iJoin ++ (printSetExp set2 indent irMap html comments)
 
 printQuant :: Quant -> Bool -> String
 printQuant quant' html = case quant' of

@@ -293,7 +293,7 @@ iDifference :: String
 iDifference   = "--"
 
 iIntersection :: String
-iIntersection = "&"
+iIntersection = "**"
 
 iDomain :: String
 iDomain       = "<:"

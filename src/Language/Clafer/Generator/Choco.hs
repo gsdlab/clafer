@@ -294,7 +294,7 @@ genCModule _ (imodule@IModule{_mDecls}, _) scopes =
     mapFunc "/" = "div"
     mapFunc "++" = "union"
     mapFunc "--" = "diff"
-    mapFunc "&" = "inter"
+    mapFunc "**" = "inter"
     mapFunc "ifthenelse" = "ifThenElse"
     mapFunc op' = error $ "Choco: Unknown op: " ++ op'
 
