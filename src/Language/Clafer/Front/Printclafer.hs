@@ -305,7 +305,7 @@ instance Print TransArrow where
 
 instance Print PatternScope where
   prt i e = case e of
-   PatScopeBefore _ exp -> prPrec i 0 (concatD [doc (showString "between") , prt 0 exp])
+   PatScopeBefore _ exp -> prPrec i 0 (concatD [doc (showString "before") , prt 0 exp])
    PatScopeAfter _ exp -> prPrec i 0 (concatD [doc (showString "after") , prt 0 exp])
    PatScopeBetweenAnd _ exp0 exp -> prPrec i 0 (concatD [doc (showString "between") , prt 0 exp0 , doc (showString "and") , prt 0 exp])
    PatScopeAfterUntil _ exp0 exp -> prPrec i 0 (concatD [doc (showString "after") , prt 0 exp0 , doc (showString "until") , prt 0 exp])

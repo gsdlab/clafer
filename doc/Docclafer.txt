@@ -36,16 +36,16 @@ The set of reserved words is the set of terminals appearing in the grammar. Thos
 The reserved words used in clafer are the following:
   | ``F`` | ``G`` | ``U`` | ``W``
   | ``X`` | ``abstract`` | ``after`` | ``all``
-  | ``always`` | ``and`` | ``assert`` | ``between``
-  | ``disj`` | ``else`` | ``enum`` | ``eventually``
-  | ``final`` | ``finally`` | ``follow`` | ``globally``
-  | ``if`` | ``in`` | ``initial`` | ``initially``
-  | ``let`` | ``lonce`` | ``lone`` | ``max``
-  | ``min`` | ``must`` | ``mux`` | ``never``
-  | ``next`` | ``no`` | ``not`` | ``one``
-  | ``opt`` | ``or`` | ``precede`` | ``some``
-  | ``sometime`` | ``sum`` | ``then`` | ``until``
-  | ``weakuntil`` | ``xor`` |  | 
+  | ``always`` | ``and`` | ``assert`` | ``before``
+  | ``between`` | ``disj`` | ``else`` | ``enum``
+  | ``eventually`` | ``final`` | ``finally`` | ``follow``
+  | ``globally`` | ``if`` | ``in`` | ``initial``
+  | ``initially`` | ``let`` | ``lonce`` | ``lone``
+  | ``max`` | ``min`` | ``must`` | ``mux``
+  | ``never`` | ``next`` | ``no`` | ``not``
+  | ``one`` | ``opt`` | ``or`` | ``precede``
+  | ``some`` | ``sometime`` | ``sum`` | ``then``
+  | ``until`` | ``weakuntil`` | ``xor`` | 
 
 The symbols used in clafer are the following:
   | = | [ | ] | <<
@@ -191,7 +191,7 @@ All other symbols are terminals.
   |  |  **|**  | ``-[`` //TransGuard// ``]->>`` 
   |  |  **|**  | ``-->`` 
   |  |  **|**  | ``-[`` //TransGuard// ``]->`` 
-  | //PatternScope// | -> | ``between`` //Exp// 
+  | //PatternScope// | -> | ``before`` //Exp// 
   |  |  **|**  | ``after`` //Exp// 
   |  |  **|**  | ``between`` //Exp// ``and`` //Exp// 
   |  |  **|**  | ``after`` //Exp// ``until`` //Exp// 

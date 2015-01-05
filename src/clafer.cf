@@ -82,7 +82,7 @@ DeclQuant.      Exp1   ::= Quant        Decl "|" Exp1 ;
 LetExp.         Exp1 ::= "let" VarBinding "in" Exp1;
 TmpPatNever.    Exp2 ::= "never" Exp3 PatternScope;
 TmpPatSometime. Exp2 ::= "sometime" Exp3 PatternScope;
-TmpPatLessOrOnce.     Exp2 ::= "lonce" Exp3 PatternScope;
+TmpPatLessOrOnce. Exp2 ::= "lonce" Exp3 PatternScope;
 TmpPatAlways.   Exp2 ::= "always" Exp3 PatternScope;
 TmpPatPrecede.  Exp2 ::= Exp3 "must" "precede" Exp3 PatternScope;
 TmpPatFollow.   Exp2 ::= Exp3 "must" "follow" Exp3 PatternScope;
@@ -135,11 +135,11 @@ GuardedSyncTransArrow.     TransArrow ::= "-[" TransGuard "]->>";
 NextTransArrow.            TransArrow ::= "-->";
 GuardedNextTransArrow.     TransArrow ::= "-[" TransGuard "]->";
 
-PatScopeBefore.  PatternScope ::= "between" Exp ;
-PatScopeAfter.  PatternScope ::= "after" Exp ;
-PatScopeBetweenAnd.  PatternScope ::= "between" Exp "and" Exp ;
-PatScopeAfterUntil.    PatternScope ::= "after" Exp "until" Exp ;
-PatScopeEmpty.    PatternScope ::= ;
+PatScopeBefore.     PatternScope ::= "before" Exp ;
+PatScopeAfter.      PatternScope ::= "after" Exp ;
+PatScopeBetweenAnd. PatternScope ::= "between" Exp "and" Exp ;
+PatScopeAfterUntil. PatternScope ::= "after" Exp "until" Exp ;
+PatScopeEmpty.      PatternScope ::= ;
 
 Union.          SetExp  ::= SetExp  "++" SetExp1 ;
 UnionCom.       SetExp  ::= SetExp  ","  SetExp1 ;

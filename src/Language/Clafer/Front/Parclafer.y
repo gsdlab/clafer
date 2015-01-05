@@ -72,45 +72,46 @@ import Language.Clafer.Front.ErrM
  'always' { PT _ (TS _ 51) }
  'and' { PT _ (TS _ 52) }
  'assert' { PT _ (TS _ 53) }
- 'between' { PT _ (TS _ 54) }
- 'disj' { PT _ (TS _ 55) }
- 'else' { PT _ (TS _ 56) }
- 'enum' { PT _ (TS _ 57) }
- 'eventually' { PT _ (TS _ 58) }
- 'final' { PT _ (TS _ 59) }
- 'finally' { PT _ (TS _ 60) }
- 'follow' { PT _ (TS _ 61) }
- 'globally' { PT _ (TS _ 62) }
- 'if' { PT _ (TS _ 63) }
- 'in' { PT _ (TS _ 64) }
- 'initial' { PT _ (TS _ 65) }
- 'initially' { PT _ (TS _ 66) }
- 'let' { PT _ (TS _ 67) }
- 'lonce' { PT _ (TS _ 68) }
- 'lone' { PT _ (TS _ 69) }
- 'max' { PT _ (TS _ 70) }
- 'min' { PT _ (TS _ 71) }
- 'must' { PT _ (TS _ 72) }
- 'mux' { PT _ (TS _ 73) }
- 'never' { PT _ (TS _ 74) }
- 'next' { PT _ (TS _ 75) }
- 'no' { PT _ (TS _ 76) }
- 'not' { PT _ (TS _ 77) }
- 'one' { PT _ (TS _ 78) }
- 'opt' { PT _ (TS _ 79) }
- 'or' { PT _ (TS _ 80) }
- 'precede' { PT _ (TS _ 81) }
- 'some' { PT _ (TS _ 82) }
- 'sometime' { PT _ (TS _ 83) }
- 'sum' { PT _ (TS _ 84) }
- 'then' { PT _ (TS _ 85) }
- 'until' { PT _ (TS _ 86) }
- 'weakuntil' { PT _ (TS _ 87) }
- 'xor' { PT _ (TS _ 88) }
- '{' { PT _ (TS _ 89) }
- '|' { PT _ (TS _ 90) }
- '||' { PT _ (TS _ 91) }
- '}' { PT _ (TS _ 92) }
+ 'before' { PT _ (TS _ 54) }
+ 'between' { PT _ (TS _ 55) }
+ 'disj' { PT _ (TS _ 56) }
+ 'else' { PT _ (TS _ 57) }
+ 'enum' { PT _ (TS _ 58) }
+ 'eventually' { PT _ (TS _ 59) }
+ 'final' { PT _ (TS _ 60) }
+ 'finally' { PT _ (TS _ 61) }
+ 'follow' { PT _ (TS _ 62) }
+ 'globally' { PT _ (TS _ 63) }
+ 'if' { PT _ (TS _ 64) }
+ 'in' { PT _ (TS _ 65) }
+ 'initial' { PT _ (TS _ 66) }
+ 'initially' { PT _ (TS _ 67) }
+ 'let' { PT _ (TS _ 68) }
+ 'lonce' { PT _ (TS _ 69) }
+ 'lone' { PT _ (TS _ 70) }
+ 'max' { PT _ (TS _ 71) }
+ 'min' { PT _ (TS _ 72) }
+ 'must' { PT _ (TS _ 73) }
+ 'mux' { PT _ (TS _ 74) }
+ 'never' { PT _ (TS _ 75) }
+ 'next' { PT _ (TS _ 76) }
+ 'no' { PT _ (TS _ 77) }
+ 'not' { PT _ (TS _ 78) }
+ 'one' { PT _ (TS _ 79) }
+ 'opt' { PT _ (TS _ 80) }
+ 'or' { PT _ (TS _ 81) }
+ 'precede' { PT _ (TS _ 82) }
+ 'some' { PT _ (TS _ 83) }
+ 'sometime' { PT _ (TS _ 84) }
+ 'sum' { PT _ (TS _ 85) }
+ 'then' { PT _ (TS _ 86) }
+ 'until' { PT _ (TS _ 87) }
+ 'weakuntil' { PT _ (TS _ 88) }
+ 'xor' { PT _ (TS _ 89) }
+ '{' { PT _ (TS _ 90) }
+ '|' { PT _ (TS _ 91) }
+ '||' { PT _ (TS _ 92) }
+ '}' { PT _ (TS _ 93) }
 
 L_PosInteger { PT _ (T_PosInteger _) }
 L_PosDouble { PT _ (T_PosDouble _) }
@@ -368,7 +369,7 @@ TransArrow : '-->>' { SyncTransArrow ((mkTokenSpan $1)) }
 
 
 PatternScope :: { PatternScope }
-PatternScope : 'between' Exp { PatScopeBefore ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 } 
+PatternScope : 'before' Exp { PatScopeBefore ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 } 
   | 'after' Exp { PatScopeAfter ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
   | 'between' Exp 'and' Exp { PatScopeBetweenAnd ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkTokenSpan $3) >- (mkCatSpan $4)) $2 $4 }
   | 'after' Exp 'until' Exp { PatScopeAfterUntil ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkTokenSpan $3) >- (mkCatSpan $4)) $2 $4 }
