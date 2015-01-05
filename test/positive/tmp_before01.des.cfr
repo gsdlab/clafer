@@ -1,9 +1,0 @@
-0 .. * c0_a : clafer 1 .. 1 {
-  0 .. * c0_b : clafer 0 .. 1 {
-    0 .. * c0_c : clafer 0 .. 1 {
-      }
-    0 .. * c0_d : clafer 0 .. 1 {
-      }
-    [F some this . c0_d => (no this . c0_c && no this . c0_d)U ((some this . c0_d || some this . c0_c && no this . c0_d)U (some this . c0_d || no this . c0_c U some this . c0_d))]
-  }
-  }

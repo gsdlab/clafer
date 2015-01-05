@@ -4,9 +4,3 @@ a
  b ?
   c ?
   [next next c]
-
-
-// Rao: 2014-08-04: Failed to parse   
-// message: Parse failed at line 9 column 9... before next b ] }
-// It is fine to have next next
-

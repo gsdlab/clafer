@@ -3,45 +3,7 @@
 a
  b ?
   initial c ?
+  /* desugars to
+  [no this && X some this => X some this . c0_c]
+  */
   d ?
-  e ?
-
-/*
- Rao 2014-08-08: Ofcourse it parses perfectly with initial c ?
- But if I cahnge (initial c)  to  (initiaaal c), then also it parses correctly
- which need to be checked with Paulius.
- Here is the output.
-[Linearized tree]
-
-a {
-  b ? {
-    initiaaal c ? d ? e ? 
-  }
-  }
-*/
-
-/*
-Rao: 20140811: As per Andrzej's notes on Traffic Light, the above clafer code should desugars to 
-
-a {
-  b ? {
-    c ? {
-      [initially c]
-    }
-    d ? e ? 
-  }
-  }
-
-But the result is 
-
-a {
-  b ? {
-    initial c ? d ? e ? 
-  }
-  }
-
-
-
-*/
-
-

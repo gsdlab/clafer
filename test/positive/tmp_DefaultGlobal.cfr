@@ -1,6 +1,9 @@
 // behavioral clafer test for default globally or G
 
 a
- b ?
-  c ?
- [c]
+  b ?
+    c ?
+  [c]
+  /* incorrectly desugars to
+  [some this . c0_b . c0_c]
+  /*

@@ -10,109 +10,109 @@
 // no events, no time
 
 abstract xor TrafficLight_1
-	initial xor on --> off
-		initial xor normal --> flashing
-			initial green --> yellow
-			yellow --> red 
-			red --> green 
-		xor flashing --> normal
-			initial yellow_on ==> yellow_off
-			yellow_off ==> yellow_on
-	off --> on
+    initial xor on --> off
+        initial xor normal --> flashing
+            initial green --> yellow
+            yellow --> red
+            red --> green
+        xor flashing --> normal
+            initial yellow_on -->> yellow_off
+            yellow_off -->> yellow_on
+    off --> on
 
 // scenarios
 t1 :TrafficLight_1
-	[ on ==> flashing ==> yellow_on ==> yellow_off ==> yellow_on]
-	// desugars to:
-	[ on U (flashing U (yellow_on U (yellow_off U yellow_on)))]
+    [ on -->> flashing -->> yellow_on -->> yellow_off -->> yellow_on]
+    // desugars to:
+    [ on U (flashing U (yellow_on U (yellow_off U yellow_on)))]
 t2 :TrafficLight_1
-	[ on ##> flashing ##> yellow_on ##> yellow_off ##> yellow_on]
-	// desugars to
-	[ on && X flashing && X yellow_on && X yellow_off && X yellow_on]  
+    [ on --> flashing --> yellow_on --> yellow_off --> yellow_on]
+    // desugars to
+    [ on && X flashing && X yellow_on && X yellow_off && X yellow_on]
 t3 :TrafficLight_1
-	[ on ==> yellow_off ##> yellow_on ##> yellow_off ]
+    [ on -->> yellow_off --> yellow_on --> yellow_off ]
 
 // example with variability (behaviour depends on feature EU)
 
 final feature_model
-	EU?
+    EU?
 
 // Direct modeling
 abstract xor TrafficLight_2
-	initial xor on --> off
-		initial xor normal --> flashing
-			initial green --> yellow
-			yellow --> red || (EU && green)
-			red --> green || (EU && yellow)
-		xor flashing --> normal
-			initial yellow_on ==> yellow_off
-			yellow_off ==> yellow_on
-	off --> on
+    initial xor on --> off
+        initial xor normal --> flashing
+            initial green --> yellow
+            yellow --> red || (EU && green)
+            red --> green || (EU && yellow)
+        xor flashing --> normal
+            initial yellow_on -->> yellow_off
+            yellow_off -->> yellow_on
+    off --> on
 
 // but we suggest to add syntactic sugar fo guards explicitly
 
-// [ red =[EU]=> green || yellow ]
-// [ red =[no EU]=> green        ]
+// [ red -[EU]->> green || yellow ]
+// [ red -[no EU]->> green        ]
 
 // desugars to
 
-// [ EU => (red ==> green || yellow) ]
-// [ no EU => (red ==> green) ]
+// [ EU => (red -->> green || yellow) ]
+// [ no EU => (red -->> green) ]
 
 // (and similarly for other arrows)
 
 
 
-// EVENTS 
+// EVENTS
 
 abstract event
-	[X !event]  // optional, depending whether you want to make
-					// consumption of events explicit
+    [X no this]  // optional, depending whether you want to make
+                 // consumption of events explicit
 
 mux events
-	e_on_off   :event
-	e_police   :event
-	e_after_5  :event
-	e_after_7  :event
-	e_after_0_5:event
+    e_on_off   :event
+    e_police   :event
+    e_after_5  :event
+    e_after_7  :event
+    e_after_0_5:event
 
 // we are using guards to react to events
 abstract xor TrafficLight_3
-	initial xor on =[ e_on_off ]=> off
+    initial xor on -[ e_on_off ]->> off
 // desugars to
-//		[ e_on_off => this U off  ]
-		
-		initial xor normal =[ e_police ]=> flashing
-			initial green --> yellow
-			red --> green
-			yellow --> red
+//      [ e_on_off => this U off  ]
 
-		xor flashing --> normal
-			initial yellow_on #[e_after_0_5]#> yellow_off
-			// desugars to
-			//							[ e_after_0_5 => X yellow_off ]
-			yellow_off #[ e_after_0_5 ]#> yellow_on
-			
-	off --> on
+        initial xor normal -[ e_police ]->> flashing
+            initial green --> yellow
+            red --> green
+            yellow --> red
+
+        xor flashing --> normal
+            initial yellow_on -[e_after_0_5]->> yellow_off
+            // desugars to
+            //                          [ e_after_0_5 => X yellow_off ]
+            yellow_off -[ e_after_0_5 ]->> yellow_on
+
+    off --> on
 
 
 
 // HISTORY
 abstract xor TrafficLight_H
-	xor on --> off
-		xor normal --> flashing // remembers history
-			initial green --> yellow
-			red --> green
-			yellow --> red
-		xor flashing --> normal
-			initial yellow_on ==> yellow_off
-			yellow_off ==> yellow_on
-	off --> on
+    xor on --> off
+        xor normal --> flashing // remembers history
+            initial green --> yellow
+            red --> green
+            yellow --> red
+        xor flashing --> normal
+            initial yellow_on -->> yellow_off
+            yellow_off -->> yellow_on
+    off --> on
 
 // For normal and flashing machine it would look like that:
 
 xor TrafficLight_4 1
-  xor on 
+  xor on
     normal
     flashing
   off
@@ -129,7 +129,7 @@ xor TrafficLight_4 1
 
 // I am not entirely sure how this will work for clafers of higher
 // cardinality (so if on was non-singleton, and if normal/flashing were
-// cardinality higher than 1).  This is quite mind boggling.  
+// cardinality higher than 1).  This is quite mind boggling.
 
 // (*)  aggregating these two into a single constraint requires using a
 // reference to store the history. But using a reference requires
@@ -141,7 +141,7 @@ xor TrafficLight_4 1
 // Syntactic sugar for history (keyword)
 
 xor TrafficLight_5 1
-  /*history*/ xor on 
+  /*history*/ xor on
     normal
     flashing
   /*history*/ off
@@ -149,97 +149,97 @@ xor TrafficLight_5 1
 // SUMMARY OF PROPOSALS
 
 // 1. add final and initial as possible modifiers for clafers
-// 
-// final x 
-// 
-// desugars to 
-// 
+//
+// final x
+//
+// desugars to
+//
 // x
-// 	[final]
-// 
-// inital x 
-// 
-// desugars to 
-// 
+//  [final]
+//
+// inital x
+//
+// desugars to
+//
 // [initially x]
 // x
-// 
-// 
-// 
+//
+//
+//
 // 2. Transition constraints (are notation used within constraints for
 // writing transitions)
-// 
-// 	x 
-// 		[ expX --> expY ] // weak asynchronous transition
-// 	
-// 	desugars  to
-// 
-// 	x
-// 		[ (expX) W (expY) ] // strong asynchronous transition
-// 
+//
+//  x
+//      [ expX --> expY ] // weak asynchronous transition
+//
+//  desugars  to
+//
+//  x
+//      [ (expX) W (expY) ] // strong asynchronous transition
+//
 //    Note that in constraints an arbitrary consition can be used as
 //    both target and source.
 //
 //    Further
 //
-//		x 
-//			[ expA ==> expB ]  // synchronous transition
-// 
-//	 	desugars to
+//      x
+//          [ expA -->> expB ]  // synchronous transition
 //
-//		x
-//			[ expA U expB ]
+//      desugars to
 //
-//		and finally
+//      x
+//          [ expA U expB ]
 //
-//		x
-//			[ expA ##> expB ]
-//	
-//		desugars to
+//      and finally
 //
-//		x
-//			[ expA && X expB ]
+//      x
+//          [ expA --> expB ]
+//
+//      desugars to
+//
+//      x
+//          [ expA && X expB ]
 //
 // 3. Clafer transitions (are notation used outside constraints for
 // writing transitions)
-// 
-// 	x
-// 		c --> expY
-// 
-// 	desugars to
-// 
-// 	x
-// 		c
-// 			[this W expY]
-// 
-//		Note that in clafer transitions (unlike in transition constraints)
-//		the source must be a single clafer.
+//
+//  x
+//      c --> expY
+//
+//  desugars to
+//
+//  x
+//      c
+//          [this W expY]
+//
+//      Note that in clafer transitions (unlike in transition constraints)
+//      the source must be a single clafer.
 //    Nesting in desugaring is essential, so transition constraints are
 //    in effect for every instance of c (should there by higher
 //    cardinalities)
-// 	
-//		x
-//			c ==> expY
-// 	
-// 	desugars to
 //
-//		x
-//			c 
-//				[this U expY]
+//      x
+//          c -->> expY
+//
+//  desugars to
+//
+//      x
+//          c
+//              [this U expY]
 //
 //
-//		and finally for next:
+//      and finally for next:
 //
-//		x
-//			c ##> expY
-//			
-//		desugars to
-//		
-//		x
-//			c
-//				[ X expY ]
+//      x
+//          c --> expY
+//
+//      desugars to
+//
+//      x
+//          c
+//              [ X expY ]
 
-// 5. In constraint transitions arrow operators: --> and ==> are right
+// 5. In constraint transitions arrow operators: --> and -->> are right
 // associative (in constraints only; outside constraints they can't be
 // composed)
 //
@@ -272,12 +272,12 @@ xor TrafficLight_5 1
 // Notice that both the guard (expB) and the target expression (expC)
 // can be any clafer constraints.
 
-// The desugaring is analogous for strong asynchronous arrow (=[ ]=>)
-// except that we use strong asyncrhonous arrow (==>) in the expansion.
+// The desugaring is analogous for strong asynchronous arrow (-[ ]->>)
+// except that we use strong asyncrhonous arrow (-->>) in the expansion.
 //
 // x
-//   claferA #[ expB ]#> expC
-// 
+//   claferA -[ expB ]->> expC
+//
 // desugars to
 //
 // x
@@ -287,33 +287,33 @@ xor TrafficLight_5 1
 //
 // 8. Guards in transition constraints
 //
-// x 
+// x
 //  [ expA -[ expB ]-> expC ]
-// 
+//
 // desugars to
-// 
+//
 // x
 //   [ expB => (expA --> expC)]
 //
-// Analogously for strong asynchronous transition (=[ ]=>)
+// Analogously for strong asynchronous transition (-[ ]->>)
 // All three arguments of the operator can be any clafer constraints
 //
 // Finally for stynchronous transition constraints:
 //
 // x
-//   [ expA #[ expB ]#> expC ]
+//   [ expA -[ expB ]->> expC ]
 //
 // desugars to
 //
 // x
-//   [ expB => ( expA ##> expC ) ]
+//   [ expB => ( expA --> expC ) ]
 //
 // (so analogous again )
 //
 // 9 History
 //
 // xor TrafficLight 1
-//  history xor on 
+//  history xor on
 //    initial normal
 //    flashing
 //  initial off
@@ -325,7 +325,7 @@ xor TrafficLight_5 1
 //     initial normal
 //     flashing
 //   initial off
-//   [G (on.normal && X !on) => X(!on W on.normal)] 
+//   [G (on.normal && X !on) => X(!on W on.normal)]
 //   [G (on.flashing && X !on) => X(!on W on.flashing)]
 
 // so a constraint is generated for each subclafer of a history clafer,

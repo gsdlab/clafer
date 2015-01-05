@@ -1,23 +1,7 @@
-// Test for transition constraint
+// Test for next transition constraint
 
-a
-xor b 
-      c 
-      d 
-      e 
-      [c --> d]   
-
-
-/*
-Rao: 20140811: Shouldn't this be translated to 
-
-a {
-  xor b ? {
-    c  d  e  [c weakuntil d]
-  }
-  }
- 
-
-
-
-*/
+xor b
+  c
+  d
+  e
+  [c --> d]

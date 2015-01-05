@@ -61,8 +61,8 @@ model = unlines
 			, "Hs2 -> H 0..*"
 			, "Hs3 -> H 5..8"
 			, "    l ?"
-			, "abstract F : H"
-			, "f1 : F 2..5"
+			, "abstract FF : H"
+			, "f1 : FF 2..5"
 			, "    m 0"
 			]
 
@@ -88,7 +88,7 @@ expectedScopesSet = M.fromList $ [ ("c0_a", 0)
 								 , ("c0_Hs2", 16)  -- not sure where the 16 comes from
 								 , ("c0_Hs3", 8)
 								 , ("c0_l", 8)
-								 , ("c0_F", 5)
+								 , ("c0_FF", 5)
 								 , ("c0_f1", 5)
 								 , ("c0_m", 0)
 								 ]

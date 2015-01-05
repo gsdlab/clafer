@@ -5,10 +5,3 @@ a
   c ?
   [X !b]
   [X X b]
-
-
-// Rao: 2014-08-04: Failed to parse at second X 
-// Parse failed at line 7 column 6... before X b ] }
-// It is fine to have [X X b] as I would like to say that b should 
-// appear in alternating states. 
-
