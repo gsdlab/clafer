@@ -14,7 +14,7 @@ edge [fontname=Sans fontsize=11];
 "c0_display" -> "c0_comp" [arrowhead=onormal constraint=true weight=100];
 "c0_display" -> "c0_ECU" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=server];
 "c0_display" -> "c0_options" [arrowhead=vee arrowtail=diamond dir=both style=solid constraint=true weight=5 minlen=2 arrowsize=0.6 penwidth=0.5 ];
-"c0_plaECU" [label="abstract plaECU : ECU" URL="#c0_plaECU" tooltip="abstract plaECU : ECU&#10;  `display 1..2&#10;    [ server = parent ][  ! options.cache ]&#10;"];
+"c0_plaECU" [label="abstract plaECU : ECU" URL="#c0_plaECU" tooltip="abstract plaECU : ECU&#10;  `display 1..2&#10;    [ server = parent ][ ! options.cache ]&#10;"];
 "c0_plaECU" -> "c0_ECU" [arrowhead=onormal constraint=true weight=100];
 "c0_plaECU" -> "c0_display" [arrowhead=vee arrowtail=diamond dir=both style=solid constraint=true weight=5 minlen=2 arrowsize=0.6 penwidth=0.5 ];
 "c0_ECU1" [label="ECU1 : plaECU" URL="#c0_ECU1" tooltip="ECU1 : plaECU&#10;"];
@@ -22,5 +22,5 @@ edge [fontname=Sans fontsize=11];
 "c0_ECU2" [label="ECU2 : plaECU ?" URL="#c0_ECU2" tooltip="ECU2 : plaECU ?&#10;  master -> ECU1&#10;"];
 "c0_ECU2" -> "c0_plaECU" [arrowhead=onormal constraint=true weight=100];
 "c0_ECU2" -> "c0_ECU1" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=master];
-"c0_telematicsSystem" [label="telematicsSystem" URL="#c0_telematicsSystem" tooltip="telematicsSystem&#10;  xor channel&#10;    single&#10;    dual&#10;  extraDisplay ?&#10;  xor size&#10;    small&#10;    large&#10;  [ dual <=> ECU2 ][ extraDisplay <=> # ECU1.display = 2 ][ extraDisplay <=> ECU2 => # ECU2.display = 2 ][ large <=>  ! plaECU.display.options.size.small ][ small <=>  ! plaECU.display.options.size.large ]&#10;"];
+"c0_telematicsSystem" [label="telematicsSystem" URL="#c0_telematicsSystem" tooltip="telematicsSystem&#10;  xor channel&#10;    single&#10;    dual&#10;  extraDisplay ?&#10;  xor size&#10;    small&#10;    large&#10;  [ dual <=> ECU2 ][ extraDisplay <=> # ECU1.display = 2 ][ extraDisplay <=> ECU2 => # ECU2.display = 2 ][ large <=> ! plaECU.display.options.size.small ][ small <=> ! plaECU.display.options.size.large ]&#10;"];
 }

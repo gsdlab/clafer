@@ -49,7 +49,7 @@ edge [fontname=Sans fontsize=11];
 "c0_Directive" -> "c0_CourseOfAction" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=sourceOf];
 "c0_Directive" -> "c0_DesiredResult" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=supportsTheAchievementOf];
 "c0_Directive" -> "c0_Regulation" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=actsAs];
-"c0_BusinessPolicy" [label="abstract BusinessPolicy : Directive" URL="#c0_BusinessPolicy" tooltip="abstract BusinessPolicy : Directive&#10;  providesBasisFor -> BusinessRule +&#10;  governs -> CourseOfAction *&#10;    control&#10;    guide&#10;    shape&#10;  [ lessStructured ]&#10;  [ lessDiscreteAndComposite ]&#10;  [  ! actionable ]&#10;  [  ! automatable ]&#10;  includes -> BusinessPolicy *&#10;"];
+"c0_BusinessPolicy" [label="abstract BusinessPolicy : Directive" URL="#c0_BusinessPolicy" tooltip="abstract BusinessPolicy : Directive&#10;  providesBasisFor -> BusinessRule +&#10;  governs -> CourseOfAction *&#10;    control&#10;    guide&#10;    shape&#10;  [ lessStructured ]&#10;  [ lessDiscreteAndComposite ]&#10;  [ ! actionable ]&#10;  [ ! automatable ]&#10;  includes -> BusinessPolicy *&#10;"];
 "c0_BusinessPolicy" -> "c0_Directive" [arrowhead=onormal constraint=true weight=100];
 "c0_BusinessPolicy" -> "c0_BusinessRule" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=providesBasisFor];
 "c0_BusinessPolicy" -> "c0_CourseOfAction" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=governs];

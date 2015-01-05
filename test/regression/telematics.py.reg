@@ -24,8 +24,9 @@ def getModule():
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
 	id="options"
 	uid="c0_options"
+	parentUid="root"
 	my_supers = Supers.Supers(isOverlapping=False, elements=[
-		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="clafer", isTop=False)])])
+		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="clafer", isTop=Falsemy_bind="", )])])
 	card=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1))
 	globalCard=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1))
 	currClafer = Clafer.Clafer(pos=pos, isAbstract=isAbstract, gcard=groupCard, ident=id, uid=uid, my_supers=my_supers, card=card, glCard=globalCard)
@@ -37,8 +38,9 @@ def getModule():
 	groupCard = GCard.GCard(isKeyword=True, interval=(IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(1)))
 	id="size"
 	uid="c0_size"
+	parentUid="c0_options"
 	my_supers = Supers.Supers(isOverlapping=False, elements=[
-		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="clafer", isTop=False)])])
+		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="clafer", isTop=Falsemy_bind="", )])])
 	card=(IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(1))
 	globalCard=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1))
 	currClafer = Clafer.Clafer(pos=pos, isAbstract=isAbstract, gcard=groupCard, ident=id, uid=uid, my_supers=my_supers, card=card, glCard=globalCard)
@@ -50,8 +52,9 @@ def getModule():
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
 	id="small"
 	uid="c0_small"
+	parentUid="c0_size"
 	my_supers = Supers.Supers(isOverlapping=False, elements=[
-		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="clafer", isTop=False)])])
+		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="clafer", isTop=Falsemy_bind="", )])])
 	card=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(1))
 	globalCard=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1))
 	currClafer = Clafer.Clafer(pos=pos, isAbstract=isAbstract, gcard=groupCard, ident=id, uid=uid, my_supers=my_supers, card=card, glCard=globalCard)
@@ -64,8 +67,9 @@ def getModule():
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
 	id="large"
 	uid="c0_large"
+	parentUid="c0_size"
 	my_supers = Supers.Supers(isOverlapping=False, elements=[
-		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="clafer", isTop=False)])])
+		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="clafer", isTop=Falsemy_bind="", )])])
 	card=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(1))
 	globalCard=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1))
 	currClafer = Clafer.Clafer(pos=pos, isAbstract=isAbstract, gcard=groupCard, ident=id, uid=uid, my_supers=my_supers, card=card, glCard=globalCard)
@@ -79,8 +83,9 @@ def getModule():
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
 	id="cache"
 	uid="c0_cache"
+	parentUid="c0_options"
 	my_supers = Supers.Supers(isOverlapping=False, elements=[
-		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="clafer", isTop=False)])])
+		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="clafer", isTop=Falsemy_bind="", )])])
 	card=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(1))
 	globalCard=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1))
 	currClafer = Clafer.Clafer(pos=pos, isAbstract=isAbstract, gcard=groupCard, ident=id, uid=uid, my_supers=my_supers, card=card, glCard=globalCard)
@@ -92,8 +97,9 @@ def getModule():
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
 	id="size"
 	uid="c1_size"
+	parentUid="c0_cache"
 	my_supers = Supers.Supers(isOverlapping=False, elements=[
-		Exp.Exp(expType="Super", exptype="", parentId="", pos=((IntegerLiteral.IntegerLiteral(10),IntegerLiteral.IntegerLiteral(16)), (IntegerLiteral.IntegerLiteral(10),IntegerLiteral.IntegerLiteral(23))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="integer", isTop=True)])])
+		Exp.Exp(expType="Super", exptype="", parentId="", pos=((IntegerLiteral.IntegerLiteral(10),IntegerLiteral.IntegerLiteral(16)), (IntegerLiteral.IntegerLiteral(10),IntegerLiteral.IntegerLiteral(23))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="integer", isTop=Truemy_bind="", )])])
 	card=(IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(1))
 	globalCard=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1))
 	currClafer = Clafer.Clafer(pos=pos, isAbstract=isAbstract, gcard=groupCard, ident=id, uid=uid, my_supers=my_supers, card=card, glCard=globalCard)
@@ -105,8 +111,9 @@ def getModule():
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
 	id="fixed"
 	uid="c0_fixed"
+	parentUid="c1_size"
 	my_supers = Supers.Supers(isOverlapping=False, elements=[
-		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="clafer", isTop=False)])])
+		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="clafer", isTop=Falsemy_bind="", )])])
 	card=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(1))
 	globalCard=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1))
 	currClafer = Clafer.Clafer(pos=pos, isAbstract=isAbstract, gcard=groupCard, ident=id, uid=uid, my_supers=my_supers, card=card, glCard=globalCard)
@@ -122,21 +129,21 @@ def getModule():
 		Exp.Exp(expType="Argument", exptype="Boolean", parentId="e2_", pos=((IntegerLiteral.IntegerLiteral(12),IntegerLiteral.IntegerLiteral(6)), (IntegerLiteral.IntegerLiteral(12),IntegerLiteral.IntegerLiteral(11))), iExpType="IDeclarationParentExp", iExp=[DeclPExp.DeclPExp(quantifier="Some", declaration=None, bodyParentExp=
 		Exp.Exp(expType="BodyParentExp", exptype="Set", parentId="e3_", pos=((IntegerLiteral.IntegerLiteral(12),IntegerLiteral.IntegerLiteral(6)), (IntegerLiteral.IntegerLiteral(12),IntegerLiteral.IntegerLiteral(11))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation=".", elements=[
 		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation=".", elements=[
-		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="this", isTop=True)]),
-		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_size", isTop=False)])])]),
-		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_small", isTop=False)])])]))]),
+		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="this", isTop=Truemy_bind="c0_options", )]),
+		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_size", isTop=Falsemy_bind="c0_size", )])])]),
+		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_small", isTop=Falsemy_bind="c0_small", )])])]))]),
 		Exp.Exp(expType="Argument", exptype="Boolean", parentId="e4_", pos=((IntegerLiteral.IntegerLiteral(12),IntegerLiteral.IntegerLiteral(15)), (IntegerLiteral.IntegerLiteral(12),IntegerLiteral.IntegerLiteral(20))), iExpType="IDeclarationParentExp", iExp=[DeclPExp.DeclPExp(quantifier="Some", declaration=None, bodyParentExp=
 		Exp.Exp(expType="BodyParentExp", exptype="Set", parentId="e5_", pos=((IntegerLiteral.IntegerLiteral(12),IntegerLiteral.IntegerLiteral(15)), (IntegerLiteral.IntegerLiteral(12),IntegerLiteral.IntegerLiteral(20))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation=".", elements=[
-		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="this", isTop=True)]),
-		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_cache", isTop=False)])])]))])])]),
+		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="this", isTop=Truemy_bind="c0_options", )]),
+		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_cache", isTop=Falsemy_bind="c0_cache", )])])]))])])]),
 		Exp.Exp(expType="Argument", exptype="Boolean", parentId="e6_", pos=((IntegerLiteral.IntegerLiteral(12),IntegerLiteral.IntegerLiteral(24)), (IntegerLiteral.IntegerLiteral(12),IntegerLiteral.IntegerLiteral(29))), iExpType="IDeclarationParentExp", iExp=[DeclPExp.DeclPExp(quantifier="Some", declaration=None, bodyParentExp=
 		Exp.Exp(expType="BodyParentExp", exptype="Set", parentId="e7_", pos=((IntegerLiteral.IntegerLiteral(12),IntegerLiteral.IntegerLiteral(24)), (IntegerLiteral.IntegerLiteral(12),IntegerLiteral.IntegerLiteral(29))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation=".", elements=[
 		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation=".", elements=[
 		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation=".", elements=[
-		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="this", isTop=True)]),
-		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_cache", isTop=False)])])]),
-		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c1_size", isTop=False)])])]),
-		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_fixed", isTop=False)])])]))])])]))
+		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="this", isTop=Truemy_bind="c0_options", )]),
+		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_cache", isTop=Falsemy_bind="c0_cache", )])])]),
+		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c1_size", isTop=Falsemy_bind="c1_size", )])])]),
+		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_fixed", isTop=Falsemy_bind="c0_fixed", )])])]))])])]))
 	stack[-1].addElement(constraint)
 	stack.pop()
 ##### clafer #####
@@ -145,8 +152,9 @@ def getModule():
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
 	id="comp"
 	uid="c0_comp"
+	parentUid="root"
 	my_supers = Supers.Supers(isOverlapping=False, elements=[
-		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="clafer", isTop=False)])])
+		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="clafer", isTop=Falsemy_bind="", )])])
 	card=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1))
 	globalCard=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1))
 	currClafer = Clafer.Clafer(pos=pos, isAbstract=isAbstract, gcard=groupCard, ident=id, uid=uid, my_supers=my_supers, card=card, glCard=globalCard)
@@ -158,8 +166,9 @@ def getModule():
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
 	id="version"
 	uid="c0_version"
+	parentUid="c0_comp"
 	my_supers = Supers.Supers(isOverlapping=False, elements=[
-		Exp.Exp(expType="Super", exptype="", parentId="", pos=((IntegerLiteral.IntegerLiteral(15),IntegerLiteral.IntegerLiteral(15)), (IntegerLiteral.IntegerLiteral(15),IntegerLiteral.IntegerLiteral(22))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="integer", isTop=True)])])
+		Exp.Exp(expType="Super", exptype="", parentId="", pos=((IntegerLiteral.IntegerLiteral(15),IntegerLiteral.IntegerLiteral(15)), (IntegerLiteral.IntegerLiteral(15),IntegerLiteral.IntegerLiteral(22))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="integer", isTop=Truemy_bind="", )])])
 	card=(IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(1))
 	globalCard=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1))
 	currClafer = Clafer.Clafer(pos=pos, isAbstract=isAbstract, gcard=groupCard, ident=id, uid=uid, my_supers=my_supers, card=card, glCard=globalCard)
@@ -171,14 +180,14 @@ def getModule():
 		Exp.Exp(expType="ParentExp", exptype="Boolean", parentId="e8_", pos=((IntegerLiteral.IntegerLiteral(15),IntegerLiteral.IntegerLiteral(23)), (IntegerLiteral.IntegerLiteral(15),IntegerLiteral.IntegerLiteral(30))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation="=>", elements=[
 		Exp.Exp(expType="Argument", exptype="Boolean", parentId="e9_", pos=((IntegerLiteral.IntegerLiteral(15),IntegerLiteral.IntegerLiteral(23)), (IntegerLiteral.IntegerLiteral(15),IntegerLiteral.IntegerLiteral(30))), iExpType="IDeclarationParentExp", iExp=[DeclPExp.DeclPExp(quantifier="Some", declaration=None, bodyParentExp=
 		Exp.Exp(expType="BodyParentExp", exptype="Set", parentId="e10_", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation=".", elements=[
-		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="this", isTop=True)]),
-		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_version", isTop=False)])])]))]),
+		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="this", isTop=Truemy_bind="c0_comp", )]),
+		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_version", isTop=Falsemy_bind="c0_version", )])])]))]),
 		Exp.Exp(expType="Argument", exptype="Boolean", parentId="e11_", pos=((IntegerLiteral.IntegerLiteral(15),IntegerLiteral.IntegerLiteral(23)), (IntegerLiteral.IntegerLiteral(15),IntegerLiteral.IntegerLiteral(30))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation="=", elements=[
 		Exp.Exp(expType="Argument", exptype="Integer", parentId="e12_", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation=".", elements=[
-		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="this", isTop=True)]),
+		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="this", isTop=Truemy_bind="c0_comp", )]),
 		Exp.Exp(expType="Argument", exptype="Integer", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation=".", elements=[
-		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_version", isTop=False)]),
-		Exp.Exp(expType="Argument", exptype="Integer", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="ref", isTop=False)])])])])]),
+		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_version", isTop=Falsemy_bind="c0_version", )]),
+		Exp.Exp(expType="Argument", exptype="Integer", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="ref", isTop=Truemy_bind="", )])])])])]),
 		Exp.Exp(expType="Argument", exptype="Integer", parentId="e13_", pos=((IntegerLiteral.IntegerLiteral(15),IntegerLiteral.IntegerLiteral(25)), (IntegerLiteral.IntegerLiteral(15),IntegerLiteral.IntegerLiteral(30))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation="+", elements=[
 		Exp.Exp(expType="Argument", exptype="Integer", parentId="e14_", pos=((IntegerLiteral.IntegerLiteral(15),IntegerLiteral.IntegerLiteral(25)), (IntegerLiteral.IntegerLiteral(15),IntegerLiteral.IntegerLiteral(26))), iExpType="IIntExp", iExp=[IntegerLiteral.IntegerLiteral(1)]),
 		Exp.Exp(expType="Argument", exptype="Integer", parentId="e15_", pos=((IntegerLiteral.IntegerLiteral(15),IntegerLiteral.IntegerLiteral(29)), (IntegerLiteral.IntegerLiteral(15),IntegerLiteral.IntegerLiteral(30))), iExpType="IIntExp", iExp=[IntegerLiteral.IntegerLiteral(2)])])])])])])]))
@@ -190,8 +199,9 @@ def getModule():
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
 	id="ECU"
 	uid="c0_ECU"
+	parentUid="root"
 	my_supers = Supers.Supers(isOverlapping=False, elements=[
-		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(17),IntegerLiteral.IntegerLiteral(16)), (IntegerLiteral.IntegerLiteral(17),IntegerLiteral.IntegerLiteral(20))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_comp", isTop=True)])])
+		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(17),IntegerLiteral.IntegerLiteral(16)), (IntegerLiteral.IntegerLiteral(17),IntegerLiteral.IntegerLiteral(20))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_comp", isTop=Truemy_bind="", )])])
 	card=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1))
 	globalCard=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1))
 	currClafer = Clafer.Clafer(pos=pos, isAbstract=isAbstract, gcard=groupCard, ident=id, uid=uid, my_supers=my_supers, card=card, glCard=globalCard)
@@ -204,8 +214,9 @@ def getModule():
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
 	id="display"
 	uid="c0_display"
+	parentUid="root"
 	my_supers = Supers.Supers(isOverlapping=False, elements=[
-		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(19),IntegerLiteral.IntegerLiteral(20)), (IntegerLiteral.IntegerLiteral(19),IntegerLiteral.IntegerLiteral(24))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_comp", isTop=True)])])
+		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(19),IntegerLiteral.IntegerLiteral(20)), (IntegerLiteral.IntegerLiteral(19),IntegerLiteral.IntegerLiteral(24))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_comp", isTop=Truemy_bind="", )])])
 	card=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1))
 	globalCard=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1))
 	currClafer = Clafer.Clafer(pos=pos, isAbstract=isAbstract, gcard=groupCard, ident=id, uid=uid, my_supers=my_supers, card=card, glCard=globalCard)
@@ -217,8 +228,9 @@ def getModule():
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
 	id="server"
 	uid="c0_server"
+	parentUid="c0_display"
 	my_supers = Supers.Supers(isOverlapping=True, elements=[
-		Exp.Exp(expType="Super", exptype="", parentId="", pos=((IntegerLiteral.IntegerLiteral(20),IntegerLiteral.IntegerLiteral(15)), (IntegerLiteral.IntegerLiteral(20),IntegerLiteral.IntegerLiteral(18))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_ECU", isTop=True)])])
+		Exp.Exp(expType="Super", exptype="", parentId="", pos=((IntegerLiteral.IntegerLiteral(20),IntegerLiteral.IntegerLiteral(15)), (IntegerLiteral.IntegerLiteral(20),IntegerLiteral.IntegerLiteral(18))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_ECU", isTop=Truemy_bind="c0_ECU", )])])
 	card=(IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(1))
 	globalCard=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1))
 	currClafer = Clafer.Clafer(pos=pos, isAbstract=isAbstract, gcard=groupCard, ident=id, uid=uid, my_supers=my_supers, card=card, glCard=globalCard)
@@ -230,15 +242,15 @@ def getModule():
 		Exp.Exp(expType="ParentExp", exptype="Boolean", parentId="e16_", pos=((IntegerLiteral.IntegerLiteral(20),IntegerLiteral.IntegerLiteral(5)), (IntegerLiteral.IntegerLiteral(20),IntegerLiteral.IntegerLiteral(18))), iExpType="IDeclarationParentExp", iExp=[DeclPExp.DeclPExp(quantifier="All", declaration=
 		Declaration.Declaration(isDisjunct=True, localDeclarations=[LocalDeclaration.LocalDeclaration("x"), LocalDeclaration.LocalDeclaration("y")],  body=
 		Exp.Exp(expType="Body", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation=".", elements=[
-		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="this", isTop=True)]),
-		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_server", isTop=False)])])])),bodyParentExp=
+		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="this", isTop=Truemy_bind="c0_display", )]),
+		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_server", isTop=Falsemy_bind="c0_server", )])])])),bodyParentExp=
 		Exp.Exp(expType="BodyParentExp", exptype="Boolean", parentId="e18_", pos=((IntegerLiteral.IntegerLiteral(20),IntegerLiteral.IntegerLiteral(5)), (IntegerLiteral.IntegerLiteral(20),IntegerLiteral.IntegerLiteral(18))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation="!=", elements=[
 		Exp.Exp(expType="Argument", exptype="Set", parentId="e19_", pos=((IntegerLiteral.IntegerLiteral(20),IntegerLiteral.IntegerLiteral(5)), (IntegerLiteral.IntegerLiteral(20),IntegerLiteral.IntegerLiteral(18))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation=".", elements=[
-		Exp.Exp(expType="Argument", exptype="Set", parentId="e20_", pos=((IntegerLiteral.IntegerLiteral(20),IntegerLiteral.IntegerLiteral(5)), (IntegerLiteral.IntegerLiteral(20),IntegerLiteral.IntegerLiteral(18))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="x", isTop=True)]),
-		Exp.Exp(expType="Argument", exptype="Set", parentId="e21_", pos=((IntegerLiteral.IntegerLiteral(20),IntegerLiteral.IntegerLiteral(5)), (IntegerLiteral.IntegerLiteral(20),IntegerLiteral.IntegerLiteral(18))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="ref", isTop=False)])])]),
+		Exp.Exp(expType="Argument", exptype="Set", parentId="e20_", pos=((IntegerLiteral.IntegerLiteral(20),IntegerLiteral.IntegerLiteral(5)), (IntegerLiteral.IntegerLiteral(20),IntegerLiteral.IntegerLiteral(18))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="x", isTop=Truemy_bind="", )]),
+		Exp.Exp(expType="Argument", exptype="Set", parentId="e21_", pos=((IntegerLiteral.IntegerLiteral(20),IntegerLiteral.IntegerLiteral(5)), (IntegerLiteral.IntegerLiteral(20),IntegerLiteral.IntegerLiteral(18))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="ref", isTop=Truemy_bind="c0_server", )])])]),
 		Exp.Exp(expType="Argument", exptype="Set", parentId="e22_", pos=((IntegerLiteral.IntegerLiteral(20),IntegerLiteral.IntegerLiteral(5)), (IntegerLiteral.IntegerLiteral(20),IntegerLiteral.IntegerLiteral(18))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation=".", elements=[
-		Exp.Exp(expType="Argument", exptype="Set", parentId="e23_", pos=((IntegerLiteral.IntegerLiteral(20),IntegerLiteral.IntegerLiteral(5)), (IntegerLiteral.IntegerLiteral(20),IntegerLiteral.IntegerLiteral(18))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="y", isTop=True)]),
-		Exp.Exp(expType="Argument", exptype="Set", parentId="e24_", pos=((IntegerLiteral.IntegerLiteral(20),IntegerLiteral.IntegerLiteral(5)), (IntegerLiteral.IntegerLiteral(20),IntegerLiteral.IntegerLiteral(18))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="ref", isTop=False)])])])])]))]))
+		Exp.Exp(expType="Argument", exptype="Set", parentId="e23_", pos=((IntegerLiteral.IntegerLiteral(20),IntegerLiteral.IntegerLiteral(5)), (IntegerLiteral.IntegerLiteral(20),IntegerLiteral.IntegerLiteral(18))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="y", isTop=Truemy_bind="", )]),
+		Exp.Exp(expType="Argument", exptype="Set", parentId="e24_", pos=((IntegerLiteral.IntegerLiteral(20),IntegerLiteral.IntegerLiteral(5)), (IntegerLiteral.IntegerLiteral(20),IntegerLiteral.IntegerLiteral(18))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="ref", isTop=Truemy_bind="c0_server", )])])])])]))]))
 	stack[-1].addElement(constraint)
 ##### clafer #####
 	pos=((IntegerLiteral.IntegerLiteral(21),IntegerLiteral.IntegerLiteral(5)), (IntegerLiteral.IntegerLiteral(21),IntegerLiteral.IntegerLiteral(13)))
@@ -246,8 +258,9 @@ def getModule():
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
 	id="options"
 	uid="c1_options"
+	parentUid="c0_display"
 	my_supers = Supers.Supers(isOverlapping=False, elements=[
-		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(21),IntegerLiteral.IntegerLiteral(5)), (IntegerLiteral.IntegerLiteral(21),IntegerLiteral.IntegerLiteral(13))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_options", isTop=True)])])
+		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(21),IntegerLiteral.IntegerLiteral(5)), (IntegerLiteral.IntegerLiteral(21),IntegerLiteral.IntegerLiteral(13))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_options", isTop=Truemy_bind="", )])])
 	card=(IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(1))
 	globalCard=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1))
 	currClafer = Clafer.Clafer(pos=pos, isAbstract=isAbstract, gcard=groupCard, ident=id, uid=uid, my_supers=my_supers, card=card, glCard=globalCard)
@@ -258,19 +271,19 @@ def getModule():
 	constraint = IRConstraint.IRConstraint(isHard=True , exp=
 		Exp.Exp(expType="ParentExp", exptype="Boolean", parentId="e25_", pos=((IntegerLiteral.IntegerLiteral(22),IntegerLiteral.IntegerLiteral(6)), (IntegerLiteral.IntegerLiteral(22),IntegerLiteral.IntegerLiteral(36))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation=">=", elements=[
 		Exp.Exp(expType="Argument", exptype="Integer", parentId="e26_", pos=((IntegerLiteral.IntegerLiteral(22),IntegerLiteral.IntegerLiteral(6)), (IntegerLiteral.IntegerLiteral(22),IntegerLiteral.IntegerLiteral(18))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation=".", elements=[
-		Exp.Exp(expType="Argument", exptype="Set", parentId="e27_", pos=((IntegerLiteral.IntegerLiteral(22),IntegerLiteral.IntegerLiteral(6)), (IntegerLiteral.IntegerLiteral(22),IntegerLiteral.IntegerLiteral(10))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="this", isTop=True)]),
+		Exp.Exp(expType="Argument", exptype="Set", parentId="e27_", pos=((IntegerLiteral.IntegerLiteral(22),IntegerLiteral.IntegerLiteral(6)), (IntegerLiteral.IntegerLiteral(22),IntegerLiteral.IntegerLiteral(10))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="this", isTop=Truemy_bind="c0_display", )]),
 		Exp.Exp(expType="Argument", exptype="Integer", parentId="", pos=((IntegerLiteral.IntegerLiteral(22),IntegerLiteral.IntegerLiteral(11)), (IntegerLiteral.IntegerLiteral(22),IntegerLiteral.IntegerLiteral(18))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation=".", elements=[
-		Exp.Exp(expType="Argument", exptype="Set", parentId="e28_", pos=((IntegerLiteral.IntegerLiteral(22),IntegerLiteral.IntegerLiteral(11)), (IntegerLiteral.IntegerLiteral(22),IntegerLiteral.IntegerLiteral(18))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_version", isTop=False)]),
-		Exp.Exp(expType="Argument", exptype="Integer", parentId="", pos=((IntegerLiteral.IntegerLiteral(22),IntegerLiteral.IntegerLiteral(11)), (IntegerLiteral.IntegerLiteral(22),IntegerLiteral.IntegerLiteral(18))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="ref", isTop=False)])])])])]),
+		Exp.Exp(expType="Argument", exptype="Set", parentId="e28_", pos=((IntegerLiteral.IntegerLiteral(22),IntegerLiteral.IntegerLiteral(11)), (IntegerLiteral.IntegerLiteral(22),IntegerLiteral.IntegerLiteral(18))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_version", isTop=Falsemy_bind="c0_version", )]),
+		Exp.Exp(expType="Argument", exptype="Integer", parentId="", pos=((IntegerLiteral.IntegerLiteral(22),IntegerLiteral.IntegerLiteral(11)), (IntegerLiteral.IntegerLiteral(22),IntegerLiteral.IntegerLiteral(18))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="ref", isTop=Truemy_bind="", )])])])])]),
 		Exp.Exp(expType="Argument", exptype="Integer", parentId="e29_", pos=((IntegerLiteral.IntegerLiteral(22),IntegerLiteral.IntegerLiteral(22)), (IntegerLiteral.IntegerLiteral(22),IntegerLiteral.IntegerLiteral(36))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation=".", elements=[
 		Exp.Exp(expType="Argument", exptype="Set", parentId="e30_", pos=((IntegerLiteral.IntegerLiteral(22),IntegerLiteral.IntegerLiteral(22)), (IntegerLiteral.IntegerLiteral(22),IntegerLiteral.IntegerLiteral(28))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation=".", elements=[
-		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="this", isTop=True)]),
-		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_server", isTop=False)])])]),
+		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="this", isTop=Truemy_bind="c0_display", )]),
+		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_server", isTop=Falsemy_bind="c0_server", )])])]),
 		Exp.Exp(expType="Argument", exptype="Integer", parentId="e31_", pos=((IntegerLiteral.IntegerLiteral(22),IntegerLiteral.IntegerLiteral(29)), (IntegerLiteral.IntegerLiteral(22),IntegerLiteral.IntegerLiteral(36))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation=".", elements=[
-		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="ref", isTop=False)]),
+		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="ref", isTop=Truemy_bind="c0_version", )]),
 		Exp.Exp(expType="Argument", exptype="Integer", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation=".", elements=[
-		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_version", isTop=False)]),
-		Exp.Exp(expType="Argument", exptype="Integer", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="ref", isTop=False)])])])])])])])])]))
+		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_version", isTop=Falsemy_bind="c0_server", )]),
+		Exp.Exp(expType="Argument", exptype="Integer", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="ref", isTop=Truemy_bind="", )])])])])])])])])]))
 	stack[-1].addElement(constraint)
 	stack.pop()
 ##### clafer #####
@@ -279,8 +292,9 @@ def getModule():
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
 	id="plaECU"
 	uid="c0_plaECU"
+	parentUid="root"
 	my_supers = Supers.Supers(isOverlapping=False, elements=[
-		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(30),IntegerLiteral.IntegerLiteral(19)), (IntegerLiteral.IntegerLiteral(30),IntegerLiteral.IntegerLiteral(22))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_ECU", isTop=True)])])
+		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(30),IntegerLiteral.IntegerLiteral(19)), (IntegerLiteral.IntegerLiteral(30),IntegerLiteral.IntegerLiteral(22))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_ECU", isTop=Truemy_bind="", )])])
 	card=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1))
 	globalCard=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1))
 	currClafer = Clafer.Clafer(pos=pos, isAbstract=isAbstract, gcard=groupCard, ident=id, uid=uid, my_supers=my_supers, card=card, glCard=globalCard)
@@ -292,8 +306,9 @@ def getModule():
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
 	id="display"
 	uid="c1_display"
+	parentUid="c0_plaECU"
 	my_supers = Supers.Supers(isOverlapping=False, elements=[
-		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(31),IntegerLiteral.IntegerLiteral(5)), (IntegerLiteral.IntegerLiteral(33),IntegerLiteral.IntegerLiteral(27))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_display", isTop=True)])])
+		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(31),IntegerLiteral.IntegerLiteral(5)), (IntegerLiteral.IntegerLiteral(33),IntegerLiteral.IntegerLiteral(27))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_display", isTop=Truemy_bind="", )])])
 	card=(IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(2))
 	globalCard=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1))
 	currClafer = Clafer.Clafer(pos=pos, isAbstract=isAbstract, gcard=groupCard, ident=id, uid=uid, my_supers=my_supers, card=card, glCard=globalCard)
@@ -304,19 +319,19 @@ def getModule():
 		Exp.Exp(expType="ParentExp", exptype="Boolean", parentId="e32_", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation="&&", elements=[
 		Exp.Exp(expType="Argument", exptype="Boolean", parentId="e33_", pos=((IntegerLiteral.IntegerLiteral(32),IntegerLiteral.IntegerLiteral(10)), (IntegerLiteral.IntegerLiteral(32),IntegerLiteral.IntegerLiteral(25))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation="=", elements=[
 		Exp.Exp(expType="Argument", exptype="Set", parentId="e34_", pos=((IntegerLiteral.IntegerLiteral(32),IntegerLiteral.IntegerLiteral(10)), (IntegerLiteral.IntegerLiteral(32),IntegerLiteral.IntegerLiteral(16))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation=".", elements=[
-		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="this", isTop=True)]),
+		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="this", isTop=Truemy_bind="c1_display", )]),
 		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation=".", elements=[
-		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_server", isTop=False)]),
-		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="ref", isTop=False)])])])])]),
+		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_server", isTop=Falsemy_bind="c0_server", )]),
+		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="ref", isTop=Truemy_bind="", )])])])])]),
 		Exp.Exp(expType="Argument", exptype="Set", parentId="e35_", pos=((IntegerLiteral.IntegerLiteral(32),IntegerLiteral.IntegerLiteral(19)), (IntegerLiteral.IntegerLiteral(32),IntegerLiteral.IntegerLiteral(25))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation=".", elements=[
-		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="this", isTop=True)]),
-		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="parent", isTop=True)])])])])]),
+		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="this", isTop=Truemy_bind="c1_display", )]),
+		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="parent", isTop=Truemy_bind="c0_plaECU", )])])])])]),
 		Exp.Exp(expType="Argument", exptype="Boolean", parentId="e36_", pos=((IntegerLiteral.IntegerLiteral(33),IntegerLiteral.IntegerLiteral(10)), (IntegerLiteral.IntegerLiteral(33),IntegerLiteral.IntegerLiteral(24))), iExpType="IDeclarationParentExp", iExp=[DeclPExp.DeclPExp(quantifier="No", declaration=None, bodyParentExp=
 		Exp.Exp(expType="BodyParentExp", exptype="Set", parentId="e37_", pos=((IntegerLiteral.IntegerLiteral(33),IntegerLiteral.IntegerLiteral(11)), (IntegerLiteral.IntegerLiteral(33),IntegerLiteral.IntegerLiteral(24))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation=".", elements=[
 		Exp.Exp(expType="Argument", exptype="Set", parentId="e38_", pos=((IntegerLiteral.IntegerLiteral(33),IntegerLiteral.IntegerLiteral(11)), (IntegerLiteral.IntegerLiteral(33),IntegerLiteral.IntegerLiteral(18))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation=".", elements=[
-		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="this", isTop=True)]),
-		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c1_options", isTop=False)])])]),
-		Exp.Exp(expType="Argument", exptype="Set", parentId="e39_", pos=((IntegerLiteral.IntegerLiteral(33),IntegerLiteral.IntegerLiteral(19)), (IntegerLiteral.IntegerLiteral(33),IntegerLiteral.IntegerLiteral(24))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_cache", isTop=False)])])]))])])]))
+		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="this", isTop=Truemy_bind="c1_display", )]),
+		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c1_options", isTop=Falsemy_bind="c1_options", )])])]),
+		Exp.Exp(expType="Argument", exptype="Set", parentId="e39_", pos=((IntegerLiteral.IntegerLiteral(33),IntegerLiteral.IntegerLiteral(19)), (IntegerLiteral.IntegerLiteral(33),IntegerLiteral.IntegerLiteral(24))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_cache", isTop=Falsemy_bind="c0_cache", )])])]))])])]))
 	stack[-1].addElement(constraint)
 	stack.pop()
 	stack.pop()
@@ -326,8 +341,9 @@ def getModule():
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
 	id="ECU1"
 	uid="c0_ECU1"
+	parentUid="root"
 	my_supers = Supers.Supers(isOverlapping=False, elements=[
-		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(35),IntegerLiteral.IntegerLiteral(8)), (IntegerLiteral.IntegerLiteral(35),IntegerLiteral.IntegerLiteral(14))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_plaECU", isTop=True)])])
+		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(35),IntegerLiteral.IntegerLiteral(8)), (IntegerLiteral.IntegerLiteral(35),IntegerLiteral.IntegerLiteral(14))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_plaECU", isTop=Truemy_bind="", )])])
 	card=(IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(1))
 	globalCard=(IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(1))
 	currClafer = Clafer.Clafer(pos=pos, isAbstract=isAbstract, gcard=groupCard, ident=id, uid=uid, my_supers=my_supers, card=card, glCard=globalCard)
@@ -340,8 +356,9 @@ def getModule():
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
 	id="ECU2"
 	uid="c0_ECU2"
+	parentUid="root"
 	my_supers = Supers.Supers(isOverlapping=False, elements=[
-		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(37),IntegerLiteral.IntegerLiteral(8)), (IntegerLiteral.IntegerLiteral(37),IntegerLiteral.IntegerLiteral(14))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_plaECU", isTop=True)])])
+		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(37),IntegerLiteral.IntegerLiteral(8)), (IntegerLiteral.IntegerLiteral(37),IntegerLiteral.IntegerLiteral(14))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_plaECU", isTop=Truemy_bind="", )])])
 	card=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(1))
 	globalCard=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(1))
 	currClafer = Clafer.Clafer(pos=pos, isAbstract=isAbstract, gcard=groupCard, ident=id, uid=uid, my_supers=my_supers, card=card, glCard=globalCard)
@@ -353,8 +370,9 @@ def getModule():
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
 	id="master"
 	uid="c0_master"
+	parentUid="c0_ECU2"
 	my_supers = Supers.Supers(isOverlapping=True, elements=[
-		Exp.Exp(expType="Super", exptype="", parentId="", pos=((IntegerLiteral.IntegerLiteral(38),IntegerLiteral.IntegerLiteral(15)), (IntegerLiteral.IntegerLiteral(38),IntegerLiteral.IntegerLiteral(19))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_ECU1", isTop=True)])])
+		Exp.Exp(expType="Super", exptype="", parentId="", pos=((IntegerLiteral.IntegerLiteral(38),IntegerLiteral.IntegerLiteral(15)), (IntegerLiteral.IntegerLiteral(38),IntegerLiteral.IntegerLiteral(19))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_ECU1", isTop=Truemy_bind="c0_ECU1", )])])
 	card=(IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(1))
 	globalCard=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(1))
 	currClafer = Clafer.Clafer(pos=pos, isAbstract=isAbstract, gcard=groupCard, ident=id, uid=uid, my_supers=my_supers, card=card, glCard=globalCard)
@@ -366,15 +384,15 @@ def getModule():
 		Exp.Exp(expType="ParentExp", exptype="Boolean", parentId="e40_", pos=((IntegerLiteral.IntegerLiteral(38),IntegerLiteral.IntegerLiteral(5)), (IntegerLiteral.IntegerLiteral(38),IntegerLiteral.IntegerLiteral(19))), iExpType="IDeclarationParentExp", iExp=[DeclPExp.DeclPExp(quantifier="All", declaration=
 		Declaration.Declaration(isDisjunct=True, localDeclarations=[LocalDeclaration.LocalDeclaration("x"), LocalDeclaration.LocalDeclaration("y")],  body=
 		Exp.Exp(expType="Body", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation=".", elements=[
-		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="this", isTop=True)]),
-		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_master", isTop=False)])])])),bodyParentExp=
+		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="this", isTop=Truemy_bind="c0_ECU2", )]),
+		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_master", isTop=Falsemy_bind="c0_master", )])])])),bodyParentExp=
 		Exp.Exp(expType="BodyParentExp", exptype="Boolean", parentId="e42_", pos=((IntegerLiteral.IntegerLiteral(38),IntegerLiteral.IntegerLiteral(5)), (IntegerLiteral.IntegerLiteral(38),IntegerLiteral.IntegerLiteral(19))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation="!=", elements=[
 		Exp.Exp(expType="Argument", exptype="Set", parentId="e43_", pos=((IntegerLiteral.IntegerLiteral(38),IntegerLiteral.IntegerLiteral(5)), (IntegerLiteral.IntegerLiteral(38),IntegerLiteral.IntegerLiteral(19))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation=".", elements=[
-		Exp.Exp(expType="Argument", exptype="Set", parentId="e44_", pos=((IntegerLiteral.IntegerLiteral(38),IntegerLiteral.IntegerLiteral(5)), (IntegerLiteral.IntegerLiteral(38),IntegerLiteral.IntegerLiteral(19))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="x", isTop=True)]),
-		Exp.Exp(expType="Argument", exptype="Set", parentId="e45_", pos=((IntegerLiteral.IntegerLiteral(38),IntegerLiteral.IntegerLiteral(5)), (IntegerLiteral.IntegerLiteral(38),IntegerLiteral.IntegerLiteral(19))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="ref", isTop=False)])])]),
+		Exp.Exp(expType="Argument", exptype="Set", parentId="e44_", pos=((IntegerLiteral.IntegerLiteral(38),IntegerLiteral.IntegerLiteral(5)), (IntegerLiteral.IntegerLiteral(38),IntegerLiteral.IntegerLiteral(19))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="x", isTop=Truemy_bind="", )]),
+		Exp.Exp(expType="Argument", exptype="Set", parentId="e45_", pos=((IntegerLiteral.IntegerLiteral(38),IntegerLiteral.IntegerLiteral(5)), (IntegerLiteral.IntegerLiteral(38),IntegerLiteral.IntegerLiteral(19))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="ref", isTop=Truemy_bind="c0_master", )])])]),
 		Exp.Exp(expType="Argument", exptype="Set", parentId="e46_", pos=((IntegerLiteral.IntegerLiteral(38),IntegerLiteral.IntegerLiteral(5)), (IntegerLiteral.IntegerLiteral(38),IntegerLiteral.IntegerLiteral(19))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation=".", elements=[
-		Exp.Exp(expType="Argument", exptype="Set", parentId="e47_", pos=((IntegerLiteral.IntegerLiteral(38),IntegerLiteral.IntegerLiteral(5)), (IntegerLiteral.IntegerLiteral(38),IntegerLiteral.IntegerLiteral(19))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="y", isTop=True)]),
-		Exp.Exp(expType="Argument", exptype="Set", parentId="e48_", pos=((IntegerLiteral.IntegerLiteral(38),IntegerLiteral.IntegerLiteral(5)), (IntegerLiteral.IntegerLiteral(38),IntegerLiteral.IntegerLiteral(19))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="ref", isTop=False)])])])])]))]))
+		Exp.Exp(expType="Argument", exptype="Set", parentId="e47_", pos=((IntegerLiteral.IntegerLiteral(38),IntegerLiteral.IntegerLiteral(5)), (IntegerLiteral.IntegerLiteral(38),IntegerLiteral.IntegerLiteral(19))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="y", isTop=Truemy_bind="", )]),
+		Exp.Exp(expType="Argument", exptype="Set", parentId="e48_", pos=((IntegerLiteral.IntegerLiteral(38),IntegerLiteral.IntegerLiteral(5)), (IntegerLiteral.IntegerLiteral(38),IntegerLiteral.IntegerLiteral(19))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="ref", isTop=Truemy_bind="c0_master", )])])])])]))]))
 	stack[-1].addElement(constraint)
 	stack.pop()
 ##### clafer #####
@@ -383,8 +401,9 @@ def getModule():
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
 	id="telematicsSystem"
 	uid="c0_telematicsSystem"
+	parentUid="root"
 	my_supers = Supers.Supers(isOverlapping=False, elements=[
-		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="clafer", isTop=False)])])
+		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="clafer", isTop=Falsemy_bind="", )])])
 	card=(IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(1))
 	globalCard=(IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(1))
 	currClafer = Clafer.Clafer(pos=pos, isAbstract=isAbstract, gcard=groupCard, ident=id, uid=uid, my_supers=my_supers, card=card, glCard=globalCard)
@@ -396,8 +415,9 @@ def getModule():
 	groupCard = GCard.GCard(isKeyword=True, interval=(IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(1)))
 	id="channel"
 	uid="c0_channel"
+	parentUid="c0_telematicsSystem"
 	my_supers = Supers.Supers(isOverlapping=False, elements=[
-		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="clafer", isTop=False)])])
+		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="clafer", isTop=Falsemy_bind="", )])])
 	card=(IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(1))
 	globalCard=(IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(1))
 	currClafer = Clafer.Clafer(pos=pos, isAbstract=isAbstract, gcard=groupCard, ident=id, uid=uid, my_supers=my_supers, card=card, glCard=globalCard)
@@ -409,8 +429,9 @@ def getModule():
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
 	id="single"
 	uid="c0_single"
+	parentUid="c0_channel"
 	my_supers = Supers.Supers(isOverlapping=False, elements=[
-		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="clafer", isTop=False)])])
+		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="clafer", isTop=Falsemy_bind="", )])])
 	card=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(1))
 	globalCard=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(1))
 	currClafer = Clafer.Clafer(pos=pos, isAbstract=isAbstract, gcard=groupCard, ident=id, uid=uid, my_supers=my_supers, card=card, glCard=globalCard)
@@ -423,8 +444,9 @@ def getModule():
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
 	id="dual"
 	uid="c0_dual"
+	parentUid="c0_channel"
 	my_supers = Supers.Supers(isOverlapping=False, elements=[
-		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="clafer", isTop=False)])])
+		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="clafer", isTop=Falsemy_bind="", )])])
 	card=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(1))
 	globalCard=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(1))
 	currClafer = Clafer.Clafer(pos=pos, isAbstract=isAbstract, gcard=groupCard, ident=id, uid=uid, my_supers=my_supers, card=card, glCard=globalCard)
@@ -438,8 +460,9 @@ def getModule():
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
 	id="extraDisplay"
 	uid="c0_extraDisplay"
+	parentUid="c0_telematicsSystem"
 	my_supers = Supers.Supers(isOverlapping=False, elements=[
-		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="clafer", isTop=False)])])
+		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="clafer", isTop=Falsemy_bind="", )])])
 	card=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(1))
 	globalCard=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(1))
 	currClafer = Clafer.Clafer(pos=pos, isAbstract=isAbstract, gcard=groupCard, ident=id, uid=uid, my_supers=my_supers, card=card, glCard=globalCard)
@@ -452,8 +475,9 @@ def getModule():
 	groupCard = GCard.GCard(isKeyword=True, interval=(IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(1)))
 	id="size"
 	uid="c2_size"
+	parentUid="c0_telematicsSystem"
 	my_supers = Supers.Supers(isOverlapping=False, elements=[
-		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="clafer", isTop=False)])])
+		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="clafer", isTop=Falsemy_bind="", )])])
 	card=(IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(1))
 	globalCard=(IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(1))
 	currClafer = Clafer.Clafer(pos=pos, isAbstract=isAbstract, gcard=groupCard, ident=id, uid=uid, my_supers=my_supers, card=card, glCard=globalCard)
@@ -465,8 +489,9 @@ def getModule():
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
 	id="small"
 	uid="c1_small"
+	parentUid="c2_size"
 	my_supers = Supers.Supers(isOverlapping=False, elements=[
-		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="clafer", isTop=False)])])
+		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="clafer", isTop=Falsemy_bind="", )])])
 	card=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(1))
 	globalCard=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(1))
 	currClafer = Clafer.Clafer(pos=pos, isAbstract=isAbstract, gcard=groupCard, ident=id, uid=uid, my_supers=my_supers, card=card, glCard=globalCard)
@@ -479,8 +504,9 @@ def getModule():
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
 	id="large"
 	uid="c1_large"
+	parentUid="c2_size"
 	my_supers = Supers.Supers(isOverlapping=False, elements=[
-		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="clafer", isTop=False)])])
+		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="clafer", isTop=Falsemy_bind="", )])])
 	card=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(1))
 	globalCard=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(1))
 	currClafer = Clafer.Clafer(pos=pos, isAbstract=isAbstract, gcard=groupCard, ident=id, uid=uid, my_supers=my_supers, card=card, glCard=globalCard)
@@ -498,70 +524,70 @@ def getModule():
 		Exp.Exp(expType="Argument", exptype="Boolean", parentId="e54_", pos=((IntegerLiteral.IntegerLiteral(53),IntegerLiteral.IntegerLiteral(6)), (IntegerLiteral.IntegerLiteral(53),IntegerLiteral.IntegerLiteral(10))), iExpType="IDeclarationParentExp", iExp=[DeclPExp.DeclPExp(quantifier="Some", declaration=None, bodyParentExp=
 		Exp.Exp(expType="BodyParentExp", exptype="Set", parentId="e55_", pos=((IntegerLiteral.IntegerLiteral(53),IntegerLiteral.IntegerLiteral(6)), (IntegerLiteral.IntegerLiteral(53),IntegerLiteral.IntegerLiteral(10))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation=".", elements=[
 		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation=".", elements=[
-		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="this", isTop=True)]),
-		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_channel", isTop=False)])])]),
-		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_dual", isTop=False)])])]))]),
+		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="this", isTop=Truemy_bind="c0_telematicsSystem", )]),
+		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_channel", isTop=Falsemy_bind="c0_channel", )])])]),
+		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_dual", isTop=Falsemy_bind="c0_dual", )])])]))]),
 		Exp.Exp(expType="Argument", exptype="Boolean", parentId="e56_", pos=((IntegerLiteral.IntegerLiteral(53),IntegerLiteral.IntegerLiteral(15)), (IntegerLiteral.IntegerLiteral(53),IntegerLiteral.IntegerLiteral(19))), iExpType="IDeclarationParentExp", iExp=[DeclPExp.DeclPExp(quantifier="Some", declaration=None, bodyParentExp=
-		Exp.Exp(expType="BodyParentExp", exptype="Set", parentId="e57_", pos=((IntegerLiteral.IntegerLiteral(53),IntegerLiteral.IntegerLiteral(15)), (IntegerLiteral.IntegerLiteral(53),IntegerLiteral.IntegerLiteral(19))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_ECU2", isTop=True)]))])])]),
+		Exp.Exp(expType="BodyParentExp", exptype="Set", parentId="e57_", pos=((IntegerLiteral.IntegerLiteral(53),IntegerLiteral.IntegerLiteral(15)), (IntegerLiteral.IntegerLiteral(53),IntegerLiteral.IntegerLiteral(19))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_ECU2", isTop=Truemy_bind="c0_ECU2", )]))])])]),
 		Exp.Exp(expType="Argument", exptype="Boolean", parentId="e58_", pos=((IntegerLiteral.IntegerLiteral(54),IntegerLiteral.IntegerLiteral(6)), (IntegerLiteral.IntegerLiteral(54),IntegerLiteral.IntegerLiteral(40))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation="<=>", elements=[
 		Exp.Exp(expType="Argument", exptype="Boolean", parentId="e59_", pos=((IntegerLiteral.IntegerLiteral(54),IntegerLiteral.IntegerLiteral(6)), (IntegerLiteral.IntegerLiteral(54),IntegerLiteral.IntegerLiteral(18))), iExpType="IDeclarationParentExp", iExp=[DeclPExp.DeclPExp(quantifier="Some", declaration=None, bodyParentExp=
 		Exp.Exp(expType="BodyParentExp", exptype="Set", parentId="e60_", pos=((IntegerLiteral.IntegerLiteral(54),IntegerLiteral.IntegerLiteral(6)), (IntegerLiteral.IntegerLiteral(54),IntegerLiteral.IntegerLiteral(18))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation=".", elements=[
-		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="this", isTop=True)]),
-		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_extraDisplay", isTop=False)])])]))]),
+		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="this", isTop=Truemy_bind="c0_telematicsSystem", )]),
+		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_extraDisplay", isTop=Falsemy_bind="c0_extraDisplay", )])])]))]),
 		Exp.Exp(expType="Argument", exptype="Boolean", parentId="e61_", pos=((IntegerLiteral.IntegerLiteral(54),IntegerLiteral.IntegerLiteral(23)), (IntegerLiteral.IntegerLiteral(54),IntegerLiteral.IntegerLiteral(40))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation="=", elements=[
 		Exp.Exp(expType="Argument", exptype="Integer", parentId="e62_", pos=((IntegerLiteral.IntegerLiteral(54),IntegerLiteral.IntegerLiteral(23)), (IntegerLiteral.IntegerLiteral(54),IntegerLiteral.IntegerLiteral(36))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation="#", elements=[
 		Exp.Exp(expType="Argument", exptype="Set", parentId="e63_", pos=((IntegerLiteral.IntegerLiteral(54),IntegerLiteral.IntegerLiteral(24)), (IntegerLiteral.IntegerLiteral(54),IntegerLiteral.IntegerLiteral(36))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation=".", elements=[
-		Exp.Exp(expType="Argument", exptype="Set", parentId="e64_", pos=((IntegerLiteral.IntegerLiteral(54),IntegerLiteral.IntegerLiteral(24)), (IntegerLiteral.IntegerLiteral(54),IntegerLiteral.IntegerLiteral(28))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_ECU1", isTop=True)]),
-		Exp.Exp(expType="Argument", exptype="Set", parentId="e65_", pos=((IntegerLiteral.IntegerLiteral(54),IntegerLiteral.IntegerLiteral(29)), (IntegerLiteral.IntegerLiteral(54),IntegerLiteral.IntegerLiteral(36))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c1_display", isTop=False)])])])])]),
+		Exp.Exp(expType="Argument", exptype="Set", parentId="e64_", pos=((IntegerLiteral.IntegerLiteral(54),IntegerLiteral.IntegerLiteral(24)), (IntegerLiteral.IntegerLiteral(54),IntegerLiteral.IntegerLiteral(28))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_ECU1", isTop=Truemy_bind="c0_ECU1", )]),
+		Exp.Exp(expType="Argument", exptype="Set", parentId="e65_", pos=((IntegerLiteral.IntegerLiteral(54),IntegerLiteral.IntegerLiteral(29)), (IntegerLiteral.IntegerLiteral(54),IntegerLiteral.IntegerLiteral(36))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c1_display", isTop=Falsemy_bind="c1_display", )])])])])]),
 		Exp.Exp(expType="Argument", exptype="Integer", parentId="e66_", pos=((IntegerLiteral.IntegerLiteral(54),IntegerLiteral.IntegerLiteral(39)), (IntegerLiteral.IntegerLiteral(54),IntegerLiteral.IntegerLiteral(40))), iExpType="IIntExp", iExp=[IntegerLiteral.IntegerLiteral(2)])])])])])])]),
 		Exp.Exp(expType="Argument", exptype="Boolean", parentId="e67_", pos=((IntegerLiteral.IntegerLiteral(55),IntegerLiteral.IntegerLiteral(6)), (IntegerLiteral.IntegerLiteral(55),IntegerLiteral.IntegerLiteral(49))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation="<=>", elements=[
 		Exp.Exp(expType="Argument", exptype="Boolean", parentId="e68_", pos=((IntegerLiteral.IntegerLiteral(55),IntegerLiteral.IntegerLiteral(6)), (IntegerLiteral.IntegerLiteral(55),IntegerLiteral.IntegerLiteral(18))), iExpType="IDeclarationParentExp", iExp=[DeclPExp.DeclPExp(quantifier="Some", declaration=None, bodyParentExp=
 		Exp.Exp(expType="BodyParentExp", exptype="Set", parentId="e69_", pos=((IntegerLiteral.IntegerLiteral(55),IntegerLiteral.IntegerLiteral(6)), (IntegerLiteral.IntegerLiteral(55),IntegerLiteral.IntegerLiteral(18))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation=".", elements=[
-		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="this", isTop=True)]),
-		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_extraDisplay", isTop=False)])])]))]),
+		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="this", isTop=Truemy_bind="c0_telematicsSystem", )]),
+		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_extraDisplay", isTop=Falsemy_bind="c0_extraDisplay", )])])]))]),
 		Exp.Exp(expType="Argument", exptype="Boolean", parentId="e70_", pos=((IntegerLiteral.IntegerLiteral(55),IntegerLiteral.IntegerLiteral(24)), (IntegerLiteral.IntegerLiteral(55),IntegerLiteral.IntegerLiteral(49))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation="=>", elements=[
 		Exp.Exp(expType="Argument", exptype="Boolean", parentId="e71_", pos=((IntegerLiteral.IntegerLiteral(55),IntegerLiteral.IntegerLiteral(24)), (IntegerLiteral.IntegerLiteral(55),IntegerLiteral.IntegerLiteral(28))), iExpType="IDeclarationParentExp", iExp=[DeclPExp.DeclPExp(quantifier="Some", declaration=None, bodyParentExp=
-		Exp.Exp(expType="BodyParentExp", exptype="Set", parentId="e72_", pos=((IntegerLiteral.IntegerLiteral(55),IntegerLiteral.IntegerLiteral(24)), (IntegerLiteral.IntegerLiteral(55),IntegerLiteral.IntegerLiteral(28))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_ECU2", isTop=True)]))]),
+		Exp.Exp(expType="BodyParentExp", exptype="Set", parentId="e72_", pos=((IntegerLiteral.IntegerLiteral(55),IntegerLiteral.IntegerLiteral(24)), (IntegerLiteral.IntegerLiteral(55),IntegerLiteral.IntegerLiteral(28))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_ECU2", isTop=Truemy_bind="c0_ECU2", )]))]),
 		Exp.Exp(expType="Argument", exptype="Boolean", parentId="e73_", pos=((IntegerLiteral.IntegerLiteral(55),IntegerLiteral.IntegerLiteral(32)), (IntegerLiteral.IntegerLiteral(55),IntegerLiteral.IntegerLiteral(49))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation="=", elements=[
 		Exp.Exp(expType="Argument", exptype="Integer", parentId="e74_", pos=((IntegerLiteral.IntegerLiteral(55),IntegerLiteral.IntegerLiteral(32)), (IntegerLiteral.IntegerLiteral(55),IntegerLiteral.IntegerLiteral(45))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation="#", elements=[
 		Exp.Exp(expType="Argument", exptype="Set", parentId="e75_", pos=((IntegerLiteral.IntegerLiteral(55),IntegerLiteral.IntegerLiteral(33)), (IntegerLiteral.IntegerLiteral(55),IntegerLiteral.IntegerLiteral(45))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation=".", elements=[
-		Exp.Exp(expType="Argument", exptype="Set", parentId="e76_", pos=((IntegerLiteral.IntegerLiteral(55),IntegerLiteral.IntegerLiteral(33)), (IntegerLiteral.IntegerLiteral(55),IntegerLiteral.IntegerLiteral(37))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_ECU2", isTop=True)]),
-		Exp.Exp(expType="Argument", exptype="Set", parentId="e77_", pos=((IntegerLiteral.IntegerLiteral(55),IntegerLiteral.IntegerLiteral(38)), (IntegerLiteral.IntegerLiteral(55),IntegerLiteral.IntegerLiteral(45))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c1_display", isTop=False)])])])])]),
+		Exp.Exp(expType="Argument", exptype="Set", parentId="e76_", pos=((IntegerLiteral.IntegerLiteral(55),IntegerLiteral.IntegerLiteral(33)), (IntegerLiteral.IntegerLiteral(55),IntegerLiteral.IntegerLiteral(37))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_ECU2", isTop=Truemy_bind="c0_ECU2", )]),
+		Exp.Exp(expType="Argument", exptype="Set", parentId="e77_", pos=((IntegerLiteral.IntegerLiteral(55),IntegerLiteral.IntegerLiteral(38)), (IntegerLiteral.IntegerLiteral(55),IntegerLiteral.IntegerLiteral(45))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c1_display", isTop=Falsemy_bind="c1_display", )])])])])]),
 		Exp.Exp(expType="Argument", exptype="Integer", parentId="e78_", pos=((IntegerLiteral.IntegerLiteral(55),IntegerLiteral.IntegerLiteral(48)), (IntegerLiteral.IntegerLiteral(55),IntegerLiteral.IntegerLiteral(49))), iExpType="IIntExp", iExp=[IntegerLiteral.IntegerLiteral(2)])])])])])])])])]),
 		Exp.Exp(expType="Argument", exptype="Boolean", parentId="e79_", pos=((IntegerLiteral.IntegerLiteral(56),IntegerLiteral.IntegerLiteral(6)), (IntegerLiteral.IntegerLiteral(56),IntegerLiteral.IntegerLiteral(50))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation="<=>", elements=[
 		Exp.Exp(expType="Argument", exptype="Boolean", parentId="e80_", pos=((IntegerLiteral.IntegerLiteral(56),IntegerLiteral.IntegerLiteral(6)), (IntegerLiteral.IntegerLiteral(56),IntegerLiteral.IntegerLiteral(11))), iExpType="IDeclarationParentExp", iExp=[DeclPExp.DeclPExp(quantifier="Some", declaration=None, bodyParentExp=
 		Exp.Exp(expType="BodyParentExp", exptype="Set", parentId="e81_", pos=((IntegerLiteral.IntegerLiteral(56),IntegerLiteral.IntegerLiteral(6)), (IntegerLiteral.IntegerLiteral(56),IntegerLiteral.IntegerLiteral(11))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation=".", elements=[
 		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation=".", elements=[
-		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="this", isTop=True)]),
-		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c2_size", isTop=False)])])]),
-		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c1_large", isTop=False)])])]))]),
+		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="this", isTop=Truemy_bind="c0_telematicsSystem", )]),
+		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c2_size", isTop=Falsemy_bind="c2_size", )])])]),
+		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c1_large", isTop=Falsemy_bind="c1_large", )])])]))]),
 		Exp.Exp(expType="Argument", exptype="Boolean", parentId="e82_", pos=((IntegerLiteral.IntegerLiteral(56),IntegerLiteral.IntegerLiteral(16)), (IntegerLiteral.IntegerLiteral(56),IntegerLiteral.IntegerLiteral(50))), iExpType="IDeclarationParentExp", iExp=[DeclPExp.DeclPExp(quantifier="No", declaration=None, bodyParentExp=
 		Exp.Exp(expType="BodyParentExp", exptype="Set", parentId="e83_", pos=((IntegerLiteral.IntegerLiteral(56),IntegerLiteral.IntegerLiteral(17)), (IntegerLiteral.IntegerLiteral(56),IntegerLiteral.IntegerLiteral(50))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation=".", elements=[
 		Exp.Exp(expType="Argument", exptype="Set", parentId="e84_", pos=((IntegerLiteral.IntegerLiteral(56),IntegerLiteral.IntegerLiteral(17)), (IntegerLiteral.IntegerLiteral(56),IntegerLiteral.IntegerLiteral(44))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation=".", elements=[
 		Exp.Exp(expType="Argument", exptype="Set", parentId="e85_", pos=((IntegerLiteral.IntegerLiteral(56),IntegerLiteral.IntegerLiteral(17)), (IntegerLiteral.IntegerLiteral(56),IntegerLiteral.IntegerLiteral(39))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation=".", elements=[
 		Exp.Exp(expType="Argument", exptype="Set", parentId="e86_", pos=((IntegerLiteral.IntegerLiteral(56),IntegerLiteral.IntegerLiteral(17)), (IntegerLiteral.IntegerLiteral(56),IntegerLiteral.IntegerLiteral(31))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation=".", elements=[
-		Exp.Exp(expType="Argument", exptype="Set", parentId="e87_", pos=((IntegerLiteral.IntegerLiteral(56),IntegerLiteral.IntegerLiteral(17)), (IntegerLiteral.IntegerLiteral(56),IntegerLiteral.IntegerLiteral(23))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_plaECU", isTop=True)]),
-		Exp.Exp(expType="Argument", exptype="Set", parentId="e88_", pos=((IntegerLiteral.IntegerLiteral(56),IntegerLiteral.IntegerLiteral(24)), (IntegerLiteral.IntegerLiteral(56),IntegerLiteral.IntegerLiteral(31))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c1_display", isTop=False)])])]),
-		Exp.Exp(expType="Argument", exptype="Set", parentId="e89_", pos=((IntegerLiteral.IntegerLiteral(56),IntegerLiteral.IntegerLiteral(32)), (IntegerLiteral.IntegerLiteral(56),IntegerLiteral.IntegerLiteral(39))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c1_options", isTop=False)])])]),
-		Exp.Exp(expType="Argument", exptype="Set", parentId="e90_", pos=((IntegerLiteral.IntegerLiteral(56),IntegerLiteral.IntegerLiteral(40)), (IntegerLiteral.IntegerLiteral(56),IntegerLiteral.IntegerLiteral(44))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_size", isTop=False)])])]),
-		Exp.Exp(expType="Argument", exptype="Set", parentId="e91_", pos=((IntegerLiteral.IntegerLiteral(56),IntegerLiteral.IntegerLiteral(45)), (IntegerLiteral.IntegerLiteral(56),IntegerLiteral.IntegerLiteral(50))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_small", isTop=False)])])]))])])])])]),
+		Exp.Exp(expType="Argument", exptype="Set", parentId="e87_", pos=((IntegerLiteral.IntegerLiteral(56),IntegerLiteral.IntegerLiteral(17)), (IntegerLiteral.IntegerLiteral(56),IntegerLiteral.IntegerLiteral(23))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_plaECU", isTop=Truemy_bind="c0_plaECU", )]),
+		Exp.Exp(expType="Argument", exptype="Set", parentId="e88_", pos=((IntegerLiteral.IntegerLiteral(56),IntegerLiteral.IntegerLiteral(24)), (IntegerLiteral.IntegerLiteral(56),IntegerLiteral.IntegerLiteral(31))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c1_display", isTop=Falsemy_bind="c1_display", )])])]),
+		Exp.Exp(expType="Argument", exptype="Set", parentId="e89_", pos=((IntegerLiteral.IntegerLiteral(56),IntegerLiteral.IntegerLiteral(32)), (IntegerLiteral.IntegerLiteral(56),IntegerLiteral.IntegerLiteral(39))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c1_options", isTop=Falsemy_bind="c1_options", )])])]),
+		Exp.Exp(expType="Argument", exptype="Set", parentId="e90_", pos=((IntegerLiteral.IntegerLiteral(56),IntegerLiteral.IntegerLiteral(40)), (IntegerLiteral.IntegerLiteral(56),IntegerLiteral.IntegerLiteral(44))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_size", isTop=Falsemy_bind="c0_size", )])])]),
+		Exp.Exp(expType="Argument", exptype="Set", parentId="e91_", pos=((IntegerLiteral.IntegerLiteral(56),IntegerLiteral.IntegerLiteral(45)), (IntegerLiteral.IntegerLiteral(56),IntegerLiteral.IntegerLiteral(50))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_small", isTop=Falsemy_bind="c0_small", )])])]))])])])])]),
 		Exp.Exp(expType="Argument", exptype="Boolean", parentId="e92_", pos=((IntegerLiteral.IntegerLiteral(57),IntegerLiteral.IntegerLiteral(6)), (IntegerLiteral.IntegerLiteral(57),IntegerLiteral.IntegerLiteral(50))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation="<=>", elements=[
 		Exp.Exp(expType="Argument", exptype="Boolean", parentId="e93_", pos=((IntegerLiteral.IntegerLiteral(57),IntegerLiteral.IntegerLiteral(6)), (IntegerLiteral.IntegerLiteral(57),IntegerLiteral.IntegerLiteral(11))), iExpType="IDeclarationParentExp", iExp=[DeclPExp.DeclPExp(quantifier="Some", declaration=None, bodyParentExp=
 		Exp.Exp(expType="BodyParentExp", exptype="Set", parentId="e94_", pos=((IntegerLiteral.IntegerLiteral(57),IntegerLiteral.IntegerLiteral(6)), (IntegerLiteral.IntegerLiteral(57),IntegerLiteral.IntegerLiteral(11))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation=".", elements=[
 		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation=".", elements=[
-		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="this", isTop=True)]),
-		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c2_size", isTop=False)])])]),
-		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c1_small", isTop=False)])])]))]),
+		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="this", isTop=Truemy_bind="c0_telematicsSystem", )]),
+		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c2_size", isTop=Falsemy_bind="c2_size", )])])]),
+		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c1_small", isTop=Falsemy_bind="c1_small", )])])]))]),
 		Exp.Exp(expType="Argument", exptype="Boolean", parentId="e95_", pos=((IntegerLiteral.IntegerLiteral(57),IntegerLiteral.IntegerLiteral(16)), (IntegerLiteral.IntegerLiteral(57),IntegerLiteral.IntegerLiteral(50))), iExpType="IDeclarationParentExp", iExp=[DeclPExp.DeclPExp(quantifier="No", declaration=None, bodyParentExp=
 		Exp.Exp(expType="BodyParentExp", exptype="Set", parentId="e96_", pos=((IntegerLiteral.IntegerLiteral(57),IntegerLiteral.IntegerLiteral(17)), (IntegerLiteral.IntegerLiteral(57),IntegerLiteral.IntegerLiteral(50))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation=".", elements=[
 		Exp.Exp(expType="Argument", exptype="Set", parentId="e97_", pos=((IntegerLiteral.IntegerLiteral(57),IntegerLiteral.IntegerLiteral(17)), (IntegerLiteral.IntegerLiteral(57),IntegerLiteral.IntegerLiteral(44))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation=".", elements=[
 		Exp.Exp(expType="Argument", exptype="Set", parentId="e98_", pos=((IntegerLiteral.IntegerLiteral(57),IntegerLiteral.IntegerLiteral(17)), (IntegerLiteral.IntegerLiteral(57),IntegerLiteral.IntegerLiteral(39))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation=".", elements=[
 		Exp.Exp(expType="Argument", exptype="Set", parentId="e99_", pos=((IntegerLiteral.IntegerLiteral(57),IntegerLiteral.IntegerLiteral(17)), (IntegerLiteral.IntegerLiteral(57),IntegerLiteral.IntegerLiteral(31))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation=".", elements=[
-		Exp.Exp(expType="Argument", exptype="Set", parentId="e100_", pos=((IntegerLiteral.IntegerLiteral(57),IntegerLiteral.IntegerLiteral(17)), (IntegerLiteral.IntegerLiteral(57),IntegerLiteral.IntegerLiteral(23))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_plaECU", isTop=True)]),
-		Exp.Exp(expType="Argument", exptype="Set", parentId="e101_", pos=((IntegerLiteral.IntegerLiteral(57),IntegerLiteral.IntegerLiteral(24)), (IntegerLiteral.IntegerLiteral(57),IntegerLiteral.IntegerLiteral(31))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c1_display", isTop=False)])])]),
-		Exp.Exp(expType="Argument", exptype="Set", parentId="e102_", pos=((IntegerLiteral.IntegerLiteral(57),IntegerLiteral.IntegerLiteral(32)), (IntegerLiteral.IntegerLiteral(57),IntegerLiteral.IntegerLiteral(39))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c1_options", isTop=False)])])]),
-		Exp.Exp(expType="Argument", exptype="Set", parentId="e103_", pos=((IntegerLiteral.IntegerLiteral(57),IntegerLiteral.IntegerLiteral(40)), (IntegerLiteral.IntegerLiteral(57),IntegerLiteral.IntegerLiteral(44))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_size", isTop=False)])])]),
-		Exp.Exp(expType="Argument", exptype="Set", parentId="e104_", pos=((IntegerLiteral.IntegerLiteral(57),IntegerLiteral.IntegerLiteral(45)), (IntegerLiteral.IntegerLiteral(57),IntegerLiteral.IntegerLiteral(50))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_large", isTop=False)])])]))])])])])]))
+		Exp.Exp(expType="Argument", exptype="Set", parentId="e100_", pos=((IntegerLiteral.IntegerLiteral(57),IntegerLiteral.IntegerLiteral(17)), (IntegerLiteral.IntegerLiteral(57),IntegerLiteral.IntegerLiteral(23))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_plaECU", isTop=Truemy_bind="c0_plaECU", )]),
+		Exp.Exp(expType="Argument", exptype="Set", parentId="e101_", pos=((IntegerLiteral.IntegerLiteral(57),IntegerLiteral.IntegerLiteral(24)), (IntegerLiteral.IntegerLiteral(57),IntegerLiteral.IntegerLiteral(31))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c1_display", isTop=Falsemy_bind="c1_display", )])])]),
+		Exp.Exp(expType="Argument", exptype="Set", parentId="e102_", pos=((IntegerLiteral.IntegerLiteral(57),IntegerLiteral.IntegerLiteral(32)), (IntegerLiteral.IntegerLiteral(57),IntegerLiteral.IntegerLiteral(39))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c1_options", isTop=Falsemy_bind="c1_options", )])])]),
+		Exp.Exp(expType="Argument", exptype="Set", parentId="e103_", pos=((IntegerLiteral.IntegerLiteral(57),IntegerLiteral.IntegerLiteral(40)), (IntegerLiteral.IntegerLiteral(57),IntegerLiteral.IntegerLiteral(44))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_size", isTop=Falsemy_bind="c0_size", )])])]),
+		Exp.Exp(expType="Argument", exptype="Set", parentId="e104_", pos=((IntegerLiteral.IntegerLiteral(57),IntegerLiteral.IntegerLiteral(45)), (IntegerLiteral.IntegerLiteral(57),IntegerLiteral.IntegerLiteral(50))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_large", isTop=Falsemy_bind="c0_large", )])])]))])])])])]))
 	stack[-1].addElement(constraint)
 	stack.pop()
 ##### constraint #####
@@ -571,18 +597,18 @@ def getModule():
 		Exp.Exp(expType="Argument", exptype="Boolean", parentId="e107_", pos=((IntegerLiteral.IntegerLiteral(60),IntegerLiteral.IntegerLiteral(2)), (IntegerLiteral.IntegerLiteral(60),IntegerLiteral.IntegerLiteral(6))), iExpType="IDeclarationParentExp", iExp=[DeclPExp.DeclPExp(quantifier="Some", declaration=None, bodyParentExp=
 		Exp.Exp(expType="BodyParentExp", exptype="Set", parentId="e108_", pos=((IntegerLiteral.IntegerLiteral(60),IntegerLiteral.IntegerLiteral(2)), (IntegerLiteral.IntegerLiteral(60),IntegerLiteral.IntegerLiteral(6))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation=".", elements=[
 		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation=".", elements=[
-		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_telematicsSystem", isTop=True)]),
-		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_channel", isTop=False)])])]),
-		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_dual", isTop=False)])])]))]),
+		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_telematicsSystem", isTop=Truemy_bind="c0_telematicsSystem", )]),
+		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_channel", isTop=Falsemy_bind="c0_channel", )])])]),
+		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_dual", isTop=Falsemy_bind="c0_dual", )])])]))]),
 		Exp.Exp(expType="Argument", exptype="Boolean", parentId="e109_", pos=((IntegerLiteral.IntegerLiteral(61),IntegerLiteral.IntegerLiteral(2)), (IntegerLiteral.IntegerLiteral(61),IntegerLiteral.IntegerLiteral(14))), iExpType="IDeclarationParentExp", iExp=[DeclPExp.DeclPExp(quantifier="Some", declaration=None, bodyParentExp=
 		Exp.Exp(expType="BodyParentExp", exptype="Set", parentId="e110_", pos=((IntegerLiteral.IntegerLiteral(61),IntegerLiteral.IntegerLiteral(2)), (IntegerLiteral.IntegerLiteral(61),IntegerLiteral.IntegerLiteral(14))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation=".", elements=[
-		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_telematicsSystem", isTop=True)]),
-		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_extraDisplay", isTop=False)])])]))])])]),
+		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_telematicsSystem", isTop=Truemy_bind="c0_telematicsSystem", )]),
+		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_extraDisplay", isTop=Falsemy_bind="c0_extraDisplay", )])])]))])])]),
 		Exp.Exp(expType="Argument", exptype="Boolean", parentId="e111_", pos=((IntegerLiteral.IntegerLiteral(62),IntegerLiteral.IntegerLiteral(2)), (IntegerLiteral.IntegerLiteral(62),IntegerLiteral.IntegerLiteral(29))), iExpType="IDeclarationParentExp", iExp=[DeclPExp.DeclPExp(quantifier="Some", declaration=None, bodyParentExp=
 		Exp.Exp(expType="BodyParentExp", exptype="Set", parentId="e112_", pos=((IntegerLiteral.IntegerLiteral(62),IntegerLiteral.IntegerLiteral(2)), (IntegerLiteral.IntegerLiteral(62),IntegerLiteral.IntegerLiteral(29))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation=".", elements=[
 		Exp.Exp(expType="Argument", exptype="Set", parentId="e113_", pos=((IntegerLiteral.IntegerLiteral(62),IntegerLiteral.IntegerLiteral(2)), (IntegerLiteral.IntegerLiteral(62),IntegerLiteral.IntegerLiteral(23))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation=".", elements=[
-		Exp.Exp(expType="Argument", exptype="Set", parentId="e114_", pos=((IntegerLiteral.IntegerLiteral(62),IntegerLiteral.IntegerLiteral(2)), (IntegerLiteral.IntegerLiteral(62),IntegerLiteral.IntegerLiteral(18))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_telematicsSystem", isTop=True)]),
-		Exp.Exp(expType="Argument", exptype="Set", parentId="e115_", pos=((IntegerLiteral.IntegerLiteral(62),IntegerLiteral.IntegerLiteral(19)), (IntegerLiteral.IntegerLiteral(62),IntegerLiteral.IntegerLiteral(23))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c2_size", isTop=False)])])]),
-		Exp.Exp(expType="Argument", exptype="Set", parentId="e116_", pos=((IntegerLiteral.IntegerLiteral(62),IntegerLiteral.IntegerLiteral(24)), (IntegerLiteral.IntegerLiteral(62),IntegerLiteral.IntegerLiteral(29))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c1_large", isTop=False)])])]))])])]))
+		Exp.Exp(expType="Argument", exptype="Set", parentId="e114_", pos=((IntegerLiteral.IntegerLiteral(62),IntegerLiteral.IntegerLiteral(2)), (IntegerLiteral.IntegerLiteral(62),IntegerLiteral.IntegerLiteral(18))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_telematicsSystem", isTop=Truemy_bind="c0_telematicsSystem", )]),
+		Exp.Exp(expType="Argument", exptype="Set", parentId="e115_", pos=((IntegerLiteral.IntegerLiteral(62),IntegerLiteral.IntegerLiteral(19)), (IntegerLiteral.IntegerLiteral(62),IntegerLiteral.IntegerLiteral(23))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c2_size", isTop=Falsemy_bind="c2_size", )])])]),
+		Exp.Exp(expType="Argument", exptype="Set", parentId="e116_", pos=((IntegerLiteral.IntegerLiteral(62),IntegerLiteral.IntegerLiteral(24)), (IntegerLiteral.IntegerLiteral(62),IntegerLiteral.IntegerLiteral(29))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c1_large", isTop=Falsemy_bind="c1_large", )])])]))])])]))
 	stack[-1].addElement(constraint)
 	return module

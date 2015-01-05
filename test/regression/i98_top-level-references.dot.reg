@@ -7,6 +7,6 @@ graph [fontname=Sans fontsize=11];
 node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
 edge [fontname=Sans fontsize=11];
 "c0_Person" [label="abstract Person" URL="#c0_Person" tooltip="abstract Person&#10;  age -> integer&#10;  married ?&#10;"];
-"c0_NewBorn" [label="abstract NewBorn -> Person" URL="#c0_NewBorn" tooltip="abstract NewBorn -> Person&#10;  [ age = 0 ][  ! married ]&#10;"];
+"c0_NewBorn" [label="abstract NewBorn -> Person" URL="#c0_NewBorn" tooltip="abstract NewBorn -> Person&#10;  [ age = 0 ][ ! married ]&#10;"];
 "c0_NewBorn" -> "c0_Person" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent];
 }

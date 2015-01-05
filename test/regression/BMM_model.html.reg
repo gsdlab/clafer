@@ -239,9 +239,9 @@
   <div class="indent">
   <span class="keyword">[</span> <a href="#c0_lessDiscreteAndComposite"><span class="reference">lessDiscreteAndComposite</span></a> <span class="keyword">]</span></div>
   <div class="indent">
-  <span class="keyword">[</span>  ! <a href="#c0_actionable"><span class="reference">actionable</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> ! <a href="#c0_actionable"><span class="reference">actionable</span></a> <span class="keyword">]</span></div>
   <div class="indent">
-  <span class="keyword">[</span>  ! <a href="#c0_automatable"><span class="reference">automatable</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> ! <a href="#c0_automatable"><span class="reference">automatable</span></a> <span class="keyword">]</span></div>
   <div class="indent">
   <span class="claferDecl" id="c1_includes">includes</span><span class="keyword"> -></span> <a href="#c0_BusinessPolicy"><span class="reference">BusinessPolicy</span></a> *</div>
 </div>
