@@ -9,7 +9,7 @@ abstract DescribedElement
 
 abstract Domain
 
-abstract Feature 
+abstract Feature
 	xor mode
 		inactive
 		active
@@ -46,14 +46,14 @@ abstract SingleWindowSys
 
 	NormalOperationOpen :Feature
 		xor mode
-			active 
+			active
 				R1_1 :Requirement
-					descr = "If pressedDown, window is going down until fullyOpen"
+					[ descr = "If pressedDown, window is going down until fullyOpen" ]
 					[ pressedDown => goingDown U (fullyOpen || no pressedDown) ]
 				R1_2 :Requirement
-					descr = "If neutral, window stops"
+					[ descr = "If neutral, window stops" ]
 					[ neutral => stopped ]
-			failed 
+			failed
 				[stopped]
 			inactive
 				[stopped]
@@ -62,18 +62,18 @@ abstract SingleWindowSys
 		xor mode
 			active
 				R2_1 :Requirement
-					descr = "If pressedUp, window is going up until fullyClosed"
+					[ descr = "If pressedUp, window is going up until fullyClosed" ]
 					[ pressedUp => goingUp U (fullyClosed || no pressedUp) ]
 				R2_2 :Requirement
-					descr = "If neutral, window stops"
+					[ descr = "If neutral, window stops" ]
 					[ neutral => stopped ]
 			failed
 				[stopped]
 			inactive
 				[stopped]
 
-	NormalOpenClose :FeatureInteraction 
-		[NormalOperationClose.failed <=> NormalOperationOpen.failed]
+	NormalOpenClose :FeatureInteraction
+		[NormalOperationClose.mode.failed <=> NormalOperationOpen.mode.failed]
 
 
 
@@ -83,16 +83,16 @@ abstract PowerWindowSystem
 
 	DriverWindowSys :SingleWindowSys
 		RearWindowLockSubsystem ?
-			RearWindowLockButton :Domain 
+			RearWindowLockButton :Domain
 				xor state
-					locked 
+					locked
 					unlocked
 
-			RearWindowLock :Feature 
+			RearWindowLock :Feature
 				xor mode
 					active
 						R3_1 :Requirement
-						descr = "Rear windows can't be moved as long as the rear window is locked"
+						[ descr = "Rear windows can't be moved as long as the rear window is locked" ]
 						[ locked => RearWindowSys.state.stopped ]
 					inactive // would be useful to drop this here. Possible?
 					fail // TODO
@@ -103,30 +103,28 @@ abstract PowerWindowSystem
 
 			DriverOperationOpen :Feature
 				xor mode
-					active 
+					active
 						R4_1 :Requirement
-							descr = "If driver button pressedDown, rear 
-									   window is going down until fullyOpen"
-							[ RearWindowControlButton.pressedDown 
+							[ descr = "If driver button pressedDown, rear window is going down until fullyOpen" ]
+							[ RearWindowControlButton.pressedDown
 								=> goingDown U (fullyOpen || no pressedDown) ]
 						R4_2 :Requirement
-							descr = "If driver button neutral, window stops"
+							[ descr = "If driver button neutral, window stops" ]
 							[ RearWindowControlButton.neutral => stopped ]
-					failed 
+					failed
 						[stopped]
 					inactive
 						[stopped]
-		
+
 			DriverOperationClose :Feature
 				xor mode
 					active
 						R5_1 :Requirement
-							descr = "If driver button pressedUp, 
-										window is going up until fullyClosed"
-							[ RearWindowControlButton.pressedUp 
+							[ descr = "If driver button pressedUp, window is going up until fullyClosed" ]
+							[ RearWindowControlButton.pressedUp
 								=> goingUp U (fullyClosed || no pressedUp) ]
 						R5_2 :Requirement
-							descr = "If driver button neutral, window stops"
+							[ descr = "If driver button neutral, window stops" ]
 							[ neutral => stopped ]
 					failed
 						[stopped]
@@ -134,13 +132,13 @@ abstract PowerWindowSystem
 						[stopped]
 
 			BothPressed : FeatureInteraction
-				
-					descr = "if both buttons are pressed then movement features are deactivated"
-					[ no RearWindowControlButton.neutral && no Button.neutral 
+
+					[ descr = "if both buttons are pressed then movement features are deactivated" ]
+					[ no RearWindowControlButton.neutral && no Button.neutral
 					=> DriverOperationOpen.inactive && DriverOperationClose.inactive &&
 						NormalOperationClose.inactive && NormalOperationOpen.inactive]
-				
-					descr = "otherwise you allow activation again"
+
+					[ descr = "otherwise you allow activation again" ]
 
 			// there is a choice between an arbiter of the two buttons
 			// or modeling activation criteria for features
@@ -148,17 +146,17 @@ abstract PowerWindowSystem
 			// does not have to be inactive)
 
 			// TODO: refactor to introduce more reuse
-				
-				
+
+
 
 
 
 
 
 	LockInteraction :FeatureInteraction 1
-		descr = "normal operations are not active in locked mode, and active otherwise"
+		[ descr = "normal operations are not active in locked mode, and active otherwise" ]
 		[ locked <=> no NormalOperationClose.active ]
-		[ locked <=> no NormalOperationOpen.active  ] 
+		[ locked <=> no NormalOperationOpen.active  ]
 
 
 // show me some short scenarios [ scenario minimization would be useful ]

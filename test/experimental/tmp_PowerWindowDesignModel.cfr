@@ -1,0 +1,70 @@
+enum PWLReq = stopR | upR | upXR | downR | downXR
+
+enum PWLCmd = stopC | upC | downC
+
+enum Boolean = true | false
+
+abstract PWLStateAndRequestHandler
+     req  -> PWLReq     //input
+     end -> Boolean      //input
+     object -> Boolean   //input
+     cmd -> PWLCmd  //output
+
+     xor winStates
+          initial xor stopped
+               [ cmd = stopC ]
+               initial unknownPosition
+                    [this -[req=downR]-> movingDown]
+                    [this -[req=downXR]-> movingDownX]
+                    [this -[req=upR]-> movingUp]
+                    [this -[req=upXR]-> movingUpX]
+               fullyClosed
+                    [this -[req=downR]-> movingDown]
+                    [this -[req=downXR]-> movingDownX]
+               partiallyOpen
+                    [this -[req=downR]-> movingDown]
+                    [this -[req=downXR]-> movingDownX]
+                    [this -[req=upR]-> movingUp]
+                    [this -[req=upXR]-> movingUpX]
+               fullyOpen
+                    [this -[req=upR]-> movingUp]
+                    [this -[req=upXR]-> movingUpX]
+          xor movingDown
+               [ cmd = downC ]
+               [this -[end=true]-> fullyOpen]
+               [this -[req=upR]-> movingUpBsc]
+               [this -[req=upXR]-> movingUpX]
+               movingDownBsc
+                    [this -[req=stopC]-> partiallyOpen]
+                    [this -[req=downXR]-> movingDownX]
+               movingDownX
+          xor movingUp
+               [ cmd = upC]
+               [this -[end=true]-> fullyClosed]
+               [this -[req=downR]-> movingDownBsc]
+               [this -[req=downXR]-> movingDownX]
+               movingUpBsc
+                    [this -[req=stopC]-> partiallyOpen]
+                    [this -[req=upXR]-> movingUpX ]
+               xor movingUpX
+                   initial  movingUpXwithPinchProtectOverride -[req!=upX]-> movingUpXwithPinchProtect
+                    movingUpXwithPinchProtect
+                         [this -[object=true]-> retracting ]
+                         [this -[req=upXR]-> movingUpXwithPinchProtectOverride]
+          retracting
+               [ cmd = downC ]
+               // <- add transition here to retract for some distance or time
+               [this -[end=true]-> fullyOpen]
+
+
+// need simple check flag parent state if direct transition into present and no initial state marked
+// allow initially instead of initial
+
+// Rao: 2014-08-11: This file got failed to parse with error message
+/*
+Parse failed at line 5 column 22...
+before no abstract PWLStateAndRequestHandler {
+ Reason: 'no' is already defined in bclafer as a keyword or operator, so Boolean true = no | enum, fails.
+
+*/
+
