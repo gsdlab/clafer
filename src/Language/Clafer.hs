@@ -279,6 +279,7 @@ summary' graph stats ("<!-- # CVLGRAPH /-->":xs) = graph:summary' graph stats xs
 summary' graph stats (x:xs) = x:summary' graph stats xs
 
 runValidate :: ClaferArgs -> String -> IO ()
+runValidate _     "" = return ()   -- when NoCompilerResult, the filename is empty
 runValidate args' fo = do
   let path = (tooldir args') ++ "/"
   liftIO $ putStrLn ("Validating '" ++ fo ++"'")
