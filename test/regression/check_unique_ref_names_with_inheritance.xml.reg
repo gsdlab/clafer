@@ -16,6 +16,7 @@
 </GroupCard>
 <Id>date</Id>
 <UniqueId>c0_date</UniqueId>
+<ParentUniqueId>root</ParentUniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
 <Super><ParentId></ParentId>
 <Position><Start><IntLiteral>4</IntLiteral>
@@ -28,6 +29,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>string</Id>
 <IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Super>
 </Supers>
 <Card><Min><IntLiteral>0</IntLiteral>
@@ -57,6 +59,7 @@
 </GroupCard>
 <Id>Person</Id>
 <UniqueId>c0_Person</UniqueId>
+<ParentUniqueId>root</ParentUniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
 <Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -69,6 +72,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>clafer</Id>
 <IsTop>false</IsTop>
+<Bind></Bind>
 </Exp></Super>
 </Supers>
 <Card><Min><IntLiteral>0</IntLiteral>
@@ -98,6 +102,7 @@
 </GroupCard>
 <Id>Name</Id>
 <UniqueId>c0_Name</UniqueId>
+<ParentUniqueId>c0_Person</ParentUniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
 <Super><ParentId></ParentId>
 <Position><Start><IntLiteral>7</IntLiteral>
@@ -110,6 +115,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>string</Id>
 <IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Super>
 </Supers>
 <Card><Min><IntLiteral>1</IntLiteral>
@@ -139,6 +145,7 @@
 </GroupCard>
 <Id>DateOfBirth</Id>
 <UniqueId>c0_DateOfBirth</UniqueId>
+<ParentUniqueId>c0_Person</ParentUniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
 <Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>8</IntLiteral>
@@ -151,6 +158,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_date</Id>
 <IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Super>
 </Supers>
 <Card><Min><IntLiteral>1</IntLiteral>
@@ -180,6 +188,7 @@
 </GroupCard>
 <Id>JohnDoe</Id>
 <UniqueId>c0_JohnDoe</UniqueId>
+<ParentUniqueId>root</ParentUniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
 <Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>10</IntLiteral>
@@ -192,6 +201,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Person</Id>
 <IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Super>
 </Supers>
 <Card><Min><IntLiteral>1</IntLiteral>
@@ -243,6 +253,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_JohnDoe</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IString" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -264,6 +275,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Name</Id>
 <IsTop>false</IsTop>
+<Bind>c0_Name</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IString" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -275,7 +287,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
@@ -319,6 +332,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_JohnDoe</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IString" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -340,6 +354,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_DateOfBirth</Id>
 <IsTop>false</IsTop>
+<Bind>c0_DateOfBirth</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IString" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -351,7 +366,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>

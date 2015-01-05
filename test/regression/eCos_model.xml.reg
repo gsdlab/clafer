@@ -16,6 +16,7 @@
 </GroupCard>
 <Id>MISC_FILESYSTEMS</Id>
 <UniqueId>c0_MISC_FILESYSTEMS</UniqueId>
+<ParentUniqueId>root</ParentUniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
 <Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -28,6 +29,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>clafer</Id>
 <IsTop>false</IsTop>
+<Bind></Bind>
 </Exp></Super>
 </Supers>
 <Card><Min><IntLiteral>0</IntLiteral>
@@ -57,6 +59,7 @@
 </GroupCard>
 <Id>display</Id>
 <UniqueId>c0_display</UniqueId>
+<ParentUniqueId>c0_MISC_FILESYSTEMS</ParentUniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
 <Super><ParentId></ParentId>
 <Position><Start><IntLiteral>2</IntLiteral>
@@ -69,6 +72,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>string</Id>
 <IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Super>
 </Supers>
 <Card><Min><IntLiteral>1</IntLiteral>
@@ -119,6 +123,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_MISC_FILESYSTEMS</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -131,6 +136,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_display</Id>
 <IsTop>false</IsTop>
+<Bind>c0_display</Bind>
 </Exp></Argument>
 </Exp></BodyParentExp>
 </Exp></Argument>
@@ -163,6 +169,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_MISC_FILESYSTEMS</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IString" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -184,6 +191,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_display</Id>
 <IsTop>false</IsTop>
+<Bind>c0_display</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IString" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -195,7 +203,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
@@ -243,6 +252,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_MISC_FILESYSTEMS</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -255,6 +265,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_display</Id>
 <IsTop>false</IsTop>
+<Bind>c0_display</Bind>
 </Exp></Argument>
 </Exp></Body>
 </Declaration>
@@ -287,6 +298,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>x</Id>
 <IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IString" /><ParentId>e11_</ParentId>
 <Position><Start><IntLiteral>2</IntLiteral>
@@ -298,7 +310,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind>c0_display</Bind>
 </Exp></Argument>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IString" /><ParentId>e12_</ParentId>
@@ -321,6 +334,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>y</Id>
 <IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IString" /><ParentId>e14_</ParentId>
 <Position><Start><IntLiteral>2</IntLiteral>
@@ -332,7 +346,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind>c0_display</Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></BodyParentExp>
@@ -354,6 +369,7 @@
 </GroupCard>
 <Id>CYGPKG_FS_JFFS2</Id>
 <UniqueId>c0_CYGPKG_FS_JFFS2</UniqueId>
+<ParentUniqueId>c0_MISC_FILESYSTEMS</ParentUniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
 <Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -366,6 +382,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>clafer</Id>
 <IsTop>false</IsTop>
+<Bind></Bind>
 </Exp></Super>
 </Supers>
 <Card><Min><IntLiteral>0</IntLiteral>
@@ -395,6 +412,7 @@
 </GroupCard>
 <Id>display</Id>
 <UniqueId>c1_display</UniqueId>
+<ParentUniqueId>c0_CYGPKG_FS_JFFS2</ParentUniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
 <Super><ParentId></ParentId>
 <Position><Start><IntLiteral>4</IntLiteral>
@@ -407,6 +425,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>string</Id>
 <IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Super>
 </Supers>
 <Card><Min><IntLiteral>1</IntLiteral>
@@ -457,6 +476,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_CYGPKG_FS_JFFS2</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -469,6 +489,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c1_display</Id>
 <IsTop>false</IsTop>
+<Bind>c1_display</Bind>
 </Exp></Argument>
 </Exp></BodyParentExp>
 </Exp></Argument>
@@ -501,6 +522,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_CYGPKG_FS_JFFS2</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IString" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -522,6 +544,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c1_display</Id>
 <IsTop>false</IsTop>
+<Bind>c1_display</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IString" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -533,7 +556,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
@@ -581,6 +605,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_CYGPKG_FS_JFFS2</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -593,6 +618,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c1_display</Id>
 <IsTop>false</IsTop>
+<Bind>c1_display</Bind>
 </Exp></Argument>
 </Exp></Body>
 </Declaration>
@@ -625,6 +651,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>x</Id>
 <IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IString" /><ParentId>e26_</ParentId>
 <Position><Start><IntLiteral>4</IntLiteral>
@@ -636,7 +663,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind>c1_display</Bind>
 </Exp></Argument>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IString" /><ParentId>e27_</ParentId>
@@ -659,6 +687,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>y</Id>
 <IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IString" /><ParentId>e29_</ParentId>
 <Position><Start><IntLiteral>4</IntLiteral>
@@ -670,7 +699,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind>c1_display</Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></BodyParentExp>
@@ -695,6 +725,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_CYGPKG_CRC</Id>
 <IsTop>true</IsTop>
+<Bind>c0_CYGPKG_CRC</Bind>
 </Exp></BodyParentExp>
 </Exp></ParentExp>
 </Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
@@ -717,6 +748,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_MTD</Id>
 <IsTop>true</IsTop>
+<Bind>c0_MTD</Bind>
 </Exp></BodyParentExp>
 </Exp></ParentExp>
 </Declaration><Declaration xsi:type="cl:IClafer"><Position><Start><IntLiteral>8</IntLiteral>
@@ -736,6 +768,7 @@
 </GroupCard>
 <Id>CYGOPT_FS_JFFS2_DEBUG</Id>
 <UniqueId>c0_CYGOPT_FS_JFFS2_DEBUG</UniqueId>
+<ParentUniqueId>c0_CYGPKG_FS_JFFS2</ParentUniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
 <Super><ParentId></ParentId>
 <Position><Start><IntLiteral>8</IntLiteral>
@@ -748,6 +781,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>int</Id>
 <IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Super>
 </Supers>
 <Card><Min><IntLiteral>1</IntLiteral>
@@ -763,53 +797,55 @@
 <Declaration xsi:type="cl:IConstraint"><IsHard>false</IsHard>
 <ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e34_</ParentId>
 <Position><Start><IntLiteral>9</IntLiteral>
-<IntLiteral>14</IntLiteral>
+<IntLiteral>21</IntLiteral>
 </Start>
 <End><IntLiteral>9</IntLiteral>
-<IntLiteral>22</IntLiteral>
+<IntLiteral>29</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>9</IntLiteral>
-<IntLiteral>14</IntLiteral>
+<IntLiteral>21</IntLiteral>
 </Start>
 <End><IntLiteral>9</IntLiteral>
-<IntLiteral>18</IntLiteral>
+<IntLiteral>25</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
 <Argument><Type xsi:type="cl:ISet" /><ParentId>e35_</ParentId>
 <Position><Start><IntLiteral>9</IntLiteral>
-<IntLiteral>14</IntLiteral>
+<IntLiteral>21</IntLiteral>
 </Start>
 <End><IntLiteral>9</IntLiteral>
-<IntLiteral>18</IntLiteral>
+<IntLiteral>25</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_CYGOPT_FS_JFFS2_DEBUG</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
-<Position><Start><IntLiteral>9</IntLiteral>
-<IntLiteral>14</IntLiteral>
-</Start>
-<End><IntLiteral>9</IntLiteral>
-<IntLiteral>18</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>ref</Id>
-<IsTop>false</IsTop>
-</Exp></Argument>
-</Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e36_</ParentId>
 <Position><Start><IntLiteral>9</IntLiteral>
 <IntLiteral>21</IntLiteral>
 </Start>
 <End><IntLiteral>9</IntLiteral>
-<IntLiteral>22</IntLiteral>
+<IntLiteral>25</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>ref</Id>
+<IsTop>true</IsTop>
+<Bind></Bind>
+</Exp></Argument>
+</Exp></Argument>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e36_</ParentId>
+<Position><Start><IntLiteral>9</IntLiteral>
+<IntLiteral>28</IntLiteral>
+</Start>
+<End><IntLiteral>9</IntLiteral>
+<IntLiteral>29</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IIntExp"><IntLiteral>0</IntLiteral>
@@ -832,6 +868,7 @@
 </GroupCard>
 <Id>display</Id>
 <UniqueId>c2_display</UniqueId>
+<ParentUniqueId>c0_CYGOPT_FS_JFFS2_DEBUG</ParentUniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
 <Super><ParentId></ParentId>
 <Position><Start><IntLiteral>10</IntLiteral>
@@ -844,6 +881,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>string</Id>
 <IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Super>
 </Supers>
 <Card><Min><IntLiteral>1</IntLiteral>
@@ -894,6 +932,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_CYGOPT_FS_JFFS2_DEBUG</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -906,6 +945,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c2_display</Id>
 <IsTop>false</IsTop>
+<Bind>c2_display</Bind>
 </Exp></Argument>
 </Exp></BodyParentExp>
 </Exp></Argument>
@@ -938,6 +978,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_CYGOPT_FS_JFFS2_DEBUG</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IString" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -959,6 +1000,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c2_display</Id>
 <IsTop>false</IsTop>
+<Bind>c2_display</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IString" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -970,7 +1012,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
@@ -1018,6 +1061,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_CYGOPT_FS_JFFS2_DEBUG</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -1030,6 +1074,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c2_display</Id>
 <IsTop>false</IsTop>
+<Bind>c2_display</Bind>
 </Exp></Argument>
 </Exp></Body>
 </Declaration>
@@ -1062,6 +1107,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>x</Id>
 <IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IString" /><ParentId>e48_</ParentId>
 <Position><Start><IntLiteral>10</IntLiteral>
@@ -1073,7 +1119,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind>c2_display</Bind>
 </Exp></Argument>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IString" /><ParentId>e49_</ParentId>
@@ -1096,6 +1143,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>y</Id>
 <IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IString" /><ParentId>e51_</ParentId>
 <Position><Start><IntLiteral>10</IntLiteral>
@@ -1107,7 +1155,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind>c2_display</Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></BodyParentExp>
@@ -1161,6 +1210,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_CYGOPT_FS_JFFS2_DEBUG</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>11</IntLiteral>
@@ -1172,7 +1222,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
@@ -1205,6 +1256,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_CYGOPT_FS_JFFS2_DEBUG</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>11</IntLiteral>
@@ -1216,7 +1268,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId>e58_</ParentId>
@@ -1248,6 +1301,7 @@
 </GroupCard>
 <Id>description</Id>
 <UniqueId>c0_description</UniqueId>
+<ParentUniqueId>c0_CYGOPT_FS_JFFS2_DEBUG</ParentUniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
 <Super><ParentId></ParentId>
 <Position><Start><IntLiteral>12</IntLiteral>
@@ -1260,6 +1314,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>string</Id>
 <IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Super>
 </Supers>
 <Card><Min><IntLiteral>1</IntLiteral>
@@ -1310,6 +1365,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_CYGOPT_FS_JFFS2_DEBUG</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -1322,6 +1378,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_description</Id>
 <IsTop>false</IsTop>
+<Bind>c0_description</Bind>
 </Exp></Argument>
 </Exp></BodyParentExp>
 </Exp></Argument>
@@ -1354,6 +1411,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_CYGOPT_FS_JFFS2_DEBUG</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IString" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -1375,6 +1433,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_description</Id>
 <IsTop>false</IsTop>
+<Bind>c0_description</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IString" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -1386,7 +1445,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
@@ -1434,6 +1494,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_CYGOPT_FS_JFFS2_DEBUG</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -1446,6 +1507,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_description</Id>
 <IsTop>false</IsTop>
+<Bind>c0_description</Bind>
 </Exp></Argument>
 </Exp></Body>
 </Declaration>
@@ -1478,6 +1540,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>x</Id>
 <IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IString" /><ParentId>e70_</ParentId>
 <Position><Start><IntLiteral>12</IntLiteral>
@@ -1489,7 +1552,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind>c0_description</Bind>
 </Exp></Argument>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IString" /><ParentId>e71_</ParentId>
@@ -1512,6 +1576,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>y</Id>
 <IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IString" /><ParentId>e73_</ParentId>
 <Position><Start><IntLiteral>12</IntLiteral>
@@ -1523,7 +1588,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind>c0_description</Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></BodyParentExp>
@@ -1560,6 +1626,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_CYGPKG_FS_JFFS2</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -1572,6 +1639,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_CYGOPT_FS_JFFS2_DEBUG</Id>
 <IsTop>false</IsTop>
+<Bind>c0_CYGOPT_FS_JFFS2_DEBUG</Bind>
 </Exp></Argument>
 </Exp></Body>
 </Declaration>
@@ -1604,6 +1672,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>x</Id>
 <IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId>e79_</ParentId>
 <Position><Start><IntLiteral>8</IntLiteral>
@@ -1615,7 +1684,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind>c0_CYGOPT_FS_JFFS2_DEBUG</Bind>
 </Exp></Argument>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId>e80_</ParentId>
@@ -1638,6 +1708,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>y</Id>
 <IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId>e82_</ParentId>
 <Position><Start><IntLiteral>8</IntLiteral>
@@ -1649,7 +1720,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind>c0_CYGOPT_FS_JFFS2_DEBUG</Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></BodyParentExp>
@@ -1671,6 +1743,7 @@
 </GroupCard>
 <Id>CYGOPT_FS_JFFS2_NAND</Id>
 <UniqueId>c0_CYGOPT_FS_JFFS2_NAND</UniqueId>
+<ParentUniqueId>c0_CYGPKG_FS_JFFS2</ParentUniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
 <Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -1683,6 +1756,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>clafer</Id>
 <IsTop>false</IsTop>
+<Bind></Bind>
 </Exp></Super>
 </Supers>
 <Card><Min><IntLiteral>0</IntLiteral>
@@ -1733,6 +1807,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_CYGPKG_FS_JFFS2</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -1745,6 +1820,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_CYGOPT_FS_JFFS2_NAND</Id>
 <IsTop>false</IsTop>
+<Bind>c0_CYGOPT_FS_JFFS2_NAND</Bind>
 </Exp></Argument>
 </Exp></BodyParentExp>
 </Exp></Argument>
@@ -1767,24 +1843,25 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_HAS_IOMEM</Id>
 <IsTop>true</IsTop>
+<Bind>c0_HAS_IOMEM</Bind>
 </Exp></BodyParentExp>
 </Exp></Argument>
 </Exp></ParentExp>
 </Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>false</IsHard>
 <ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e88_</ParentId>
 <Position><Start><IntLiteral>17</IntLiteral>
-<IntLiteral>10</IntLiteral>
+<IntLiteral>17</IntLiteral>
 </Start>
 <End><IntLiteral>17</IntLiteral>
-<IntLiteral>34</IntLiteral>
+<IntLiteral>41</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>e89_</ParentId>
 <Position><Start><IntLiteral>17</IntLiteral>
-<IntLiteral>10</IntLiteral>
+<IntLiteral>17</IntLiteral>
 </Start>
 <End><IntLiteral>17</IntLiteral>
-<IntLiteral>34</IntLiteral>
+<IntLiteral>41</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
@@ -1799,6 +1876,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_CYGPKG_FS_JFFS2</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -1811,6 +1889,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_CYGOPT_FS_JFFS2_COMPRESS</Id>
 <IsTop>false</IsTop>
+<Bind>c0_CYGOPT_FS_JFFS2_COMPRESS</Bind>
 </Exp></Argument>
 </Exp></BodyParentExp>
 </Exp></ParentExp>
@@ -1831,6 +1910,7 @@
 </GroupCard>
 <Id>CYGOPT_FS_JFFS2_COMPRESS</Id>
 <UniqueId>c0_CYGOPT_FS_JFFS2_COMPRESS</UniqueId>
+<ParentUniqueId>c0_CYGPKG_FS_JFFS2</ParentUniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
 <Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -1843,6 +1923,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>clafer</Id>
 <IsTop>false</IsTop>
+<Bind></Bind>
 </Exp></Super>
 </Supers>
 <Card><Min><IntLiteral>0</IntLiteral>
@@ -1872,6 +1953,7 @@
 </GroupCard>
 <Id>display</Id>
 <UniqueId>c3_display</UniqueId>
+<ParentUniqueId>c0_CYGOPT_FS_JFFS2_COMPRESS</ParentUniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
 <Super><ParentId></ParentId>
 <Position><Start><IntLiteral>19</IntLiteral>
@@ -1884,6 +1966,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>string</Id>
 <IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Super>
 </Supers>
 <Card><Min><IntLiteral>1</IntLiteral>
@@ -1934,6 +2017,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_CYGOPT_FS_JFFS2_COMPRESS</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -1946,6 +2030,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c3_display</Id>
 <IsTop>false</IsTop>
+<Bind>c3_display</Bind>
 </Exp></Argument>
 </Exp></BodyParentExp>
 </Exp></Argument>
@@ -1978,6 +2063,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_CYGOPT_FS_JFFS2_COMPRESS</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IString" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -1999,6 +2085,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c3_display</Id>
 <IsTop>false</IsTop>
+<Bind>c3_display</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IString" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -2010,7 +2097,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
@@ -2058,6 +2146,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_CYGOPT_FS_JFFS2_COMPRESS</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -2070,6 +2159,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c3_display</Id>
 <IsTop>false</IsTop>
+<Bind>c3_display</Bind>
 </Exp></Argument>
 </Exp></Body>
 </Declaration>
@@ -2102,6 +2192,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>x</Id>
 <IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IString" /><ParentId>e101_</ParentId>
 <Position><Start><IntLiteral>19</IntLiteral>
@@ -2113,7 +2204,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind>c3_display</Bind>
 </Exp></Argument>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IString" /><ParentId>e102_</ParentId>
@@ -2136,6 +2228,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>y</Id>
 <IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IString" /><ParentId>e104_</ParentId>
 <Position><Start><IntLiteral>19</IntLiteral>
@@ -2147,7 +2240,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind>c3_display</Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></BodyParentExp>
@@ -2155,18 +2249,18 @@
 </Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>false</IsHard>
 <ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e105_</ParentId>
 <Position><Start><IntLiteral>21</IntLiteral>
-<IntLiteral>14</IntLiteral>
+<IntLiteral>21</IntLiteral>
 </Start>
 <End><IntLiteral>21</IntLiteral>
-<IntLiteral>43</IntLiteral>
+<IntLiteral>50</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>e106_</ParentId>
 <Position><Start><IntLiteral>21</IntLiteral>
-<IntLiteral>14</IntLiteral>
+<IntLiteral>21</IntLiteral>
 </Start>
 <End><IntLiteral>21</IntLiteral>
-<IntLiteral>43</IntLiteral>
+<IntLiteral>50</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
@@ -2181,6 +2275,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_CYGOPT_FS_JFFS2_COMPRESS</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -2193,6 +2288,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_CYGOPT_FS_JFFS2_COMPRESS_ZLIB</Id>
 <IsTop>false</IsTop>
+<Bind>c0_CYGOPT_FS_JFFS2_COMPRESS_ZLIB</Bind>
 </Exp></Argument>
 </Exp></BodyParentExp>
 </Exp></ParentExp>
@@ -2213,6 +2309,7 @@
 </GroupCard>
 <Id>CYGOPT_FS_JFFS2_COMPRESS_ZLIB</Id>
 <UniqueId>c0_CYGOPT_FS_JFFS2_COMPRESS_ZLIB</UniqueId>
+<ParentUniqueId>c0_CYGOPT_FS_JFFS2_COMPRESS</ParentUniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
 <Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -2225,6 +2322,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>clafer</Id>
 <IsTop>false</IsTop>
+<Bind></Bind>
 </Exp></Super>
 </Supers>
 <Card><Min><IntLiteral>0</IntLiteral>
@@ -2254,6 +2352,7 @@
 </GroupCard>
 <Id>display</Id>
 <UniqueId>c4_display</UniqueId>
+<ParentUniqueId>c0_CYGOPT_FS_JFFS2_COMPRESS_ZLIB</ParentUniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
 <Super><ParentId></ParentId>
 <Position><Start><IntLiteral>23</IntLiteral>
@@ -2266,6 +2365,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>string</Id>
 <IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Super>
 </Supers>
 <Card><Min><IntLiteral>1</IntLiteral>
@@ -2316,6 +2416,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_CYGOPT_FS_JFFS2_COMPRESS_ZLIB</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -2328,6 +2429,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c4_display</Id>
 <IsTop>false</IsTop>
+<Bind>c4_display</Bind>
 </Exp></Argument>
 </Exp></BodyParentExp>
 </Exp></Argument>
@@ -2360,6 +2462,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_CYGOPT_FS_JFFS2_COMPRESS_ZLIB</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IString" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -2381,6 +2484,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c4_display</Id>
 <IsTop>false</IsTop>
+<Bind>c4_display</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IString" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -2392,7 +2496,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
@@ -2440,6 +2545,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_CYGOPT_FS_JFFS2_COMPRESS_ZLIB</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -2452,6 +2558,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c4_display</Id>
 <IsTop>false</IsTop>
+<Bind>c4_display</Bind>
 </Exp></Argument>
 </Exp></Body>
 </Declaration>
@@ -2484,6 +2591,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>x</Id>
 <IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IString" /><ParentId>e118_</ParentId>
 <Position><Start><IntLiteral>23</IntLiteral>
@@ -2495,7 +2603,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind>c4_display</Bind>
 </Exp></Argument>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IString" /><ParentId>e119_</ParentId>
@@ -2518,6 +2627,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>y</Id>
 <IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IString" /><ParentId>e121_</ParentId>
 <Position><Start><IntLiteral>23</IntLiteral>
@@ -2529,7 +2639,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind>c4_display</Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></BodyParentExp>
@@ -2554,6 +2665,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_CYGPKG_COMPRESS_ZLIB</Id>
 <IsTop>true</IsTop>
+<Bind>c0_CYGPKG_COMPRESS_ZLIB</Bind>
 </Exp></BodyParentExp>
 </Exp></ParentExp>
 </Declaration></Declaration><Declaration xsi:type="cl:IClafer"><Position><Start><IntLiteral>26</IntLiteral>
@@ -2573,6 +2685,7 @@
 </GroupCard>
 <Id>CYGOPT_FS_JFFS2_COMPRESS_CMODE</Id>
 <UniqueId>c0_CYGOPT_FS_JFFS2_COMPRESS_CMODE</UniqueId>
+<ParentUniqueId>c0_CYGOPT_FS_JFFS2_COMPRESS</ParentUniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
 <Super><ParentId></ParentId>
 <Position><Start><IntLiteral>26</IntLiteral>
@@ -2585,6 +2698,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>string</Id>
 <IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Super>
 </Supers>
 <Card><Min><IntLiteral>1</IntLiteral>
@@ -2600,53 +2714,55 @@
 <Declaration xsi:type="cl:IConstraint"><IsHard>false</IsHard>
 <ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e124_</ParentId>
 <Position><Start><IntLiteral>27</IntLiteral>
-<IntLiteral>18</IntLiteral>
+<IntLiteral>25</IntLiteral>
 </Start>
 <End><IntLiteral>27</IntLiteral>
-<IntLiteral>35</IntLiteral>
+<IntLiteral>42</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
 <Argument><Type xsi:type="cl:IString" /><ParentId></ParentId>
 <Position><Start><IntLiteral>27</IntLiteral>
-<IntLiteral>18</IntLiteral>
+<IntLiteral>25</IntLiteral>
 </Start>
 <End><IntLiteral>27</IntLiteral>
-<IntLiteral>22</IntLiteral>
+<IntLiteral>29</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
 <Argument><Type xsi:type="cl:ISet" /><ParentId>e125_</ParentId>
 <Position><Start><IntLiteral>27</IntLiteral>
-<IntLiteral>18</IntLiteral>
+<IntLiteral>25</IntLiteral>
 </Start>
 <End><IntLiteral>27</IntLiteral>
-<IntLiteral>22</IntLiteral>
+<IntLiteral>29</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_CYGOPT_FS_JFFS2_COMPRESS_CMODE</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IString" /><ParentId></ParentId>
-<Position><Start><IntLiteral>27</IntLiteral>
-<IntLiteral>18</IntLiteral>
-</Start>
-<End><IntLiteral>27</IntLiteral>
-<IntLiteral>22</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>ref</Id>
-<IsTop>false</IsTop>
-</Exp></Argument>
-</Exp></Argument>
-<Argument><Type xsi:type="cl:IString" /><ParentId>e126_</ParentId>
 <Position><Start><IntLiteral>27</IntLiteral>
 <IntLiteral>25</IntLiteral>
 </Start>
 <End><IntLiteral>27</IntLiteral>
-<IntLiteral>35</IntLiteral>
+<IntLiteral>29</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>ref</Id>
+<IsTop>true</IsTop>
+<Bind></Bind>
+</Exp></Argument>
+</Exp></Argument>
+<Argument><Type xsi:type="cl:IString" /><ParentId>e126_</ParentId>
+<Position><Start><IntLiteral>27</IntLiteral>
+<IntLiteral>32</IntLiteral>
+</Start>
+<End><IntLiteral>27</IntLiteral>
+<IntLiteral>42</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IStringExp"><StringLiteral>"PRIORITY"</StringLiteral>
@@ -2669,6 +2785,7 @@
 </GroupCard>
 <Id>display</Id>
 <UniqueId>c5_display</UniqueId>
+<ParentUniqueId>c0_CYGOPT_FS_JFFS2_COMPRESS_CMODE</ParentUniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
 <Super><ParentId></ParentId>
 <Position><Start><IntLiteral>28</IntLiteral>
@@ -2681,6 +2798,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>string</Id>
 <IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Super>
 </Supers>
 <Card><Min><IntLiteral>1</IntLiteral>
@@ -2731,6 +2849,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_CYGOPT_FS_JFFS2_COMPRESS_CMODE</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -2743,6 +2862,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c5_display</Id>
 <IsTop>false</IsTop>
+<Bind>c5_display</Bind>
 </Exp></Argument>
 </Exp></BodyParentExp>
 </Exp></Argument>
@@ -2775,6 +2895,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_CYGOPT_FS_JFFS2_COMPRESS_CMODE</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IString" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -2796,6 +2917,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c5_display</Id>
 <IsTop>false</IsTop>
+<Bind>c5_display</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IString" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -2807,7 +2929,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
@@ -2855,6 +2978,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_CYGOPT_FS_JFFS2_COMPRESS_CMODE</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -2867,6 +2991,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c5_display</Id>
 <IsTop>false</IsTop>
+<Bind>c5_display</Bind>
 </Exp></Argument>
 </Exp></Body>
 </Declaration>
@@ -2899,6 +3024,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>x</Id>
 <IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IString" /><ParentId>e138_</ParentId>
 <Position><Start><IntLiteral>28</IntLiteral>
@@ -2910,7 +3036,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind>c5_display</Bind>
 </Exp></Argument>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IString" /><ParentId>e139_</ParentId>
@@ -2933,6 +3060,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>y</Id>
 <IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IString" /><ParentId>e141_</ParentId>
 <Position><Start><IntLiteral>28</IntLiteral>
@@ -2944,7 +3072,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind>c5_display</Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></BodyParentExp>
@@ -2997,6 +3126,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_CYGOPT_FS_JFFS2_COMPRESS_CMODE</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IString" /><ParentId></ParentId>
 <Position><Start><IntLiteral>29</IntLiteral>
@@ -3008,7 +3138,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IString" /><ParentId>e146_</ParentId>
@@ -3051,6 +3182,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_CYGOPT_FS_JFFS2_COMPRESS_CMODE</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IString" /><ParentId></ParentId>
 <Position><Start><IntLiteral>29</IntLiteral>
@@ -3062,7 +3194,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IString" /><ParentId>e149_</ParentId>
@@ -3106,6 +3239,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_CYGOPT_FS_JFFS2_COMPRESS_CMODE</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IString" /><ParentId></ParentId>
 <Position><Start><IntLiteral>29</IntLiteral>
@@ -3117,7 +3251,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IString" /><ParentId>e152_</ParentId>
@@ -3164,6 +3299,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_CYGOPT_FS_JFFS2_COMPRESS</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -3176,6 +3312,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_CYGOPT_FS_JFFS2_COMPRESS_CMODE</Id>
 <IsTop>false</IsTop>
+<Bind>c0_CYGOPT_FS_JFFS2_COMPRESS_CMODE</Bind>
 </Exp></Argument>
 </Exp></Body>
 </Declaration>
@@ -3208,6 +3345,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>x</Id>
 <IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IString" /><ParentId>e158_</ParentId>
 <Position><Start><IntLiteral>26</IntLiteral>
@@ -3219,7 +3357,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind>c0_CYGOPT_FS_JFFS2_COMPRESS_CMODE</Bind>
 </Exp></Argument>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IString" /><ParentId>e159_</ParentId>
@@ -3242,6 +3381,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>y</Id>
 <IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IString" /><ParentId>e161_</ParentId>
 <Position><Start><IntLiteral>26</IntLiteral>
@@ -3253,7 +3393,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind>c0_CYGOPT_FS_JFFS2_COMPRESS_CMODE</Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></BodyParentExp>
@@ -3275,6 +3416,7 @@
 </GroupCard>
 <Id>CYGPKG_CRC</Id>
 <UniqueId>c0_CYGPKG_CRC</UniqueId>
+<ParentUniqueId>root</ParentUniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
 <Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -3287,6 +3429,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>clafer</Id>
 <IsTop>false</IsTop>
+<Bind></Bind>
 </Exp></Super>
 </Supers>
 <Card><Min><IntLiteral>1</IntLiteral>
@@ -3316,6 +3459,7 @@
 </GroupCard>
 <Id>MTD</Id>
 <UniqueId>c0_MTD</UniqueId>
+<ParentUniqueId>root</ParentUniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
 <Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -3328,6 +3472,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>clafer</Id>
 <IsTop>false</IsTop>
+<Bind></Bind>
 </Exp></Super>
 </Supers>
 <Card><Min><IntLiteral>1</IntLiteral>
@@ -3357,6 +3502,7 @@
 </GroupCard>
 <Id>CYGPKG_COMPRESS_ZLIB</Id>
 <UniqueId>c0_CYGPKG_COMPRESS_ZLIB</UniqueId>
+<ParentUniqueId>root</ParentUniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
 <Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -3369,6 +3515,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>clafer</Id>
 <IsTop>false</IsTop>
+<Bind></Bind>
 </Exp></Super>
 </Supers>
 <Card><Min><IntLiteral>1</IntLiteral>
@@ -3398,6 +3545,7 @@
 </GroupCard>
 <Id>HAS_IOMEM</Id>
 <UniqueId>c0_HAS_IOMEM</UniqueId>
+<ParentUniqueId>root</ParentUniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
 <Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -3410,6 +3558,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>clafer</Id>
 <IsTop>false</IsTop>
+<Bind></Bind>
 </Exp></Super>
 </Supers>
 <Card><Min><IntLiteral>1</IntLiteral>

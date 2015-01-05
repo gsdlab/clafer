@@ -16,6 +16,7 @@
 </GroupCard>
 <Id>rate</Id>
 <UniqueId>c0_rate</UniqueId>
+<ParentUniqueId>root</ParentUniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
 <Super><ParentId></ParentId>
 <Position><Start><IntLiteral>1</IntLiteral>
@@ -27,7 +28,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>real</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Super>
 </Supers>
 <Card><Min><IntLiteral>1</IntLiteral>
@@ -63,6 +65,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_rate</Id>
 <IsTop>true</IsTop>
+<Bind>c0_rate</Bind>
 </Exp></Body>
 </Declaration>
 <BodyParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e2_</ParentId>
@@ -94,6 +97,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>x</Id>
 <IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IReal" /><ParentId>e5_</ParentId>
 <Position><Start><IntLiteral>1</IntLiteral>
@@ -105,7 +109,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind>c0_rate</Bind>
 </Exp></Argument>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IReal" /><ParentId>e6_</ParentId>
@@ -128,6 +133,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>y</Id>
 <IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IReal" /><ParentId>e8_</ParentId>
 <Position><Start><IntLiteral>1</IntLiteral>
@@ -139,7 +145,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind>c0_rate</Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></BodyParentExp>
@@ -174,6 +181,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_rate</Id>
 <IsTop>true</IsTop>
+<Bind>c0_rate</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IReal" /><ParentId></ParentId>
 <Position><Start><IntLiteral>2</IntLiteral>
@@ -185,7 +193,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IReal" /><ParentId>e11_</ParentId>
@@ -216,6 +225,7 @@
 </GroupCard>
 <Id>interest</Id>
 <UniqueId>c0_interest</UniqueId>
+<ParentUniqueId>root</ParentUniqueId>
 <Supers><IsOverlapping>false</IsOverlapping>
 <Super><ParentId></ParentId>
 <Position><Start><IntLiteral>4</IntLiteral>
@@ -227,7 +237,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>real</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Super>
 </Supers>
 <Card><Min><IntLiteral>1</IntLiteral>
@@ -269,6 +280,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_interest</Id>
 <IsTop>true</IsTop>
+<Bind>c0_interest</Bind>
 </Exp></BodyParentExp>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IBoolean" /><ParentId>e15_</ParentId>
@@ -300,6 +312,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_interest</Id>
 <IsTop>true</IsTop>
+<Bind>c0_interest</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IReal" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -311,7 +324,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IReal" /><ParentId>e17_</ParentId>
@@ -353,6 +367,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_rate</Id>
 <IsTop>true</IsTop>
+<Bind>c0_rate</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IReal" /><ParentId></ParentId>
 <Position><Start><IntLiteral>4</IntLiteral>
@@ -364,7 +379,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
@@ -393,6 +409,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_interest</Id>
 <IsTop>true</IsTop>
+<Bind>c0_interest</Bind>
 </Exp></Body>
 </Declaration>
 <BodyParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e22_</ParentId>
@@ -424,6 +441,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>x</Id>
 <IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IReal" /><ParentId>e25_</ParentId>
 <Position><Start><IntLiteral>4</IntLiteral>
@@ -435,7 +453,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind>c0_interest</Bind>
 </Exp></Argument>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IReal" /><ParentId>e26_</ParentId>
@@ -458,6 +477,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>y</Id>
 <IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IReal" /><ParentId>e28_</ParentId>
 <Position><Start><IntLiteral>4</IntLiteral>
@@ -469,7 +489,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind>c0_interest</Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></BodyParentExp>
