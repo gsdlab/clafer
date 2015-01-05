@@ -310,6 +310,23 @@ setBinOps = [iUnion, iDifference, iIntersection, iDomain, iRange, iJoin]
 binOps :: [String]
 binOps = logBinOps ++ relBinOps ++ arithBinOps ++ setBinOps
 
+-- temporal keywords and property patterns
+
+temporalModifiers :: [String]
+temporalModifiers = [ "final", "initial" ]
+
+iLet :: String
+iLet = "let"
+
+propertyKeywords :: [String]
+propertyKeywords =
+  [ "never", "sometime", "lonce", "always"
+  , "must", "precede", "follow"
+  , "initially", "finally"
+  , "until", "weakuntil", "eventually", "globally", "next"
+  , "before", "after", "between", "and", "after"
+  ]
+
 -- ternary operators
 iIfThenElse :: String
 iIfThenElse   = "ifthenelse"
@@ -387,7 +404,11 @@ keywordIdents =
   [ "if", "then", "else" ] ++ -- ternary operators
   [ "no", "not", "some", "one", "all", "disj" ] ++ -- quantifiers
   [ "opt", "mux", "or", "lone" ] ++ -- group cardinalities
-  [ "abstract", "enum" ] -- keywords
+  [ "abstract", "enum" ] ++ -- keywords
+  temporalModifiers ++ -- temporal
+  ltlOps ++ -- LTL
+  propertyKeywords ++ -- temp patterns
+  [ iLet ]
 
 data GEnv = GEnv {
   identCountMap :: Map.Map String Int,
