@@ -491,14 +491,25 @@ generateHtml env =
     printComments [] = []
     printComments ((s, comment):cs) = (snd (printComment s [(s, comment)]) ++ "<br>\n"):printComments cs
 
-noReals :: IModule -> Bool
-noReals iModule = reals == []
+iExpBasedChecks :: IModule -> (Bool, Bool)
+iExpBasedChecks iModule = (null reals, null tempOperators)
   where
     iexps :: [ IExp ]
     iexps = universeOn biplate iModule
     reals = filter isIDouble iexps
+    tempOperators = filter isTempOperator iexps
     isIDouble (IDouble _) = True
     isIDouble _           = False
+    isTempOperator (IFunExp op' _) = op' `elem` (iLet : propertyKeywords ++ ltlOps)
+    isTempOperator _               = False
+
+iClaferBasedChecks :: IModule -> Bool
+iClaferBasedChecks iModule = null $ filter hasTempModifier iClafers
+  where
+    iClafers :: [ IClafer ]
+    iClafers = universeOn biplate iModule
+    hasTempModifier (IClafer _ (IClaferModifiers _ isInitial' isFinal') _ _ _ _ _ _ _ _ _) = isInitial' || isFinal'
+    hasTempModifier _               = False
 
 -- | Generates outputs for the given IR.
 generate :: Monad m => ClaferT m (Map.Map ClaferMode CompilerResult)
@@ -508,7 +519,9 @@ generate =
     ast' <- getAst
     (iModule, genv, au) <- getIr
     let
-      hasNoReals = noReals iModule
+      (hasNoReals, hasNoTempOperators) = iExpBasedChecks iModule
+      hasNoTempModifiers = iClaferBasedChecks iModule
+      staticClaferSubset = hasNoTempOperators && hasNoTempModifiers
       cargs = args env
       modes = mode cargs
       stats = showStats au $ statsModule iModule
@@ -516,25 +529,44 @@ generate =
 
     return $ Map.fromList (
         -- result for Alloy
-        (if (Alloy `elem` modes)
+        (if (Alloy `elem` modes || AlloyLtl `elem` modes)
           then if (hasNoReals)
                 then
-                  let
-                    (imod,strMap) = astrModule iModule
-                    alloyCode = genModule cargs{mode = [Alloy]} (imod, genv) scopes
-                    addCommentStats = if no_stats cargs then const else addStats
-                  in
-                    [ (Alloy,
-                      CompilerResult {
-                       extension = "als41",
-                       outputCode = addCommentStats (fst alloyCode) stats,
-                       statistics = stats,
-                       claferEnv  = env,
-                       mappingToAlloy = fromMaybe [] (Just $ snd alloyCode),
-                       stringMap = strMap,
-                       scopesList = scopes
-                      })
-                    ]
+                  if (staticClaferSubset)
+                  then
+                    let
+                      (imod,strMap) = astrModule iModule
+                      alloyCode = genModule cargs{mode = [Alloy]} (imod, genv) scopes
+                      addCommentStats = if no_stats cargs then const else addStats
+                    in
+                      [ (Alloy,
+                        CompilerResult {
+                         extension = "als41",
+                         outputCode = addCommentStats (fst alloyCode) stats,
+                         statistics = stats,
+                         claferEnv  = env,
+                         mappingToAlloy = fromMaybe [] (Just $ snd alloyCode),
+                         stringMap = strMap,
+                         scopesList = scopes
+                        })
+                      ]
+                  else  -- behavioral Clafer
+                    let
+                      (imod,strMap) = astrModule iModule
+                      alloyCode = genAlloyLtlModule cargs{mode = [AlloyLtl]} (imod, genv) scopes $ uidIClaferMap env
+                      addCommentStats = if no_stats cargs then const else addStats
+                    in
+                      [ (AlloyLtl,
+                        CompilerResult {
+                         extension = "als41",
+                         outputCode = addCommentStats (fst alloyCode) stats,
+                         statistics = stats,
+                         claferEnv  = env,
+                         mappingToAlloy = fromMaybe [] (Just $ snd alloyCode),
+                         stringMap = strMap,
+                         scopesList = scopes
+                            })
+                         ]
                 else [ (Alloy,
                         NoCompilerResult {
                          reason = "Alloy output unavailable because the model contains real numbers."
@@ -544,15 +576,34 @@ generate =
         )
         ++
         -- result for Alloy42
-        (if (Alloy42 `elem` modes)
+        (if (Alloy42 `elem` modes || AlloyLtl `elem` modes)
           then if (hasNoReals)
                 then
-                   let
+                  if (staticClaferSubset)
+                  then
+                     let
+                        (imod,strMap) = astrModule iModule
+                        alloyCode = genModule cargs{mode = [Alloy42]} (imod, genv) scopes
+                        addCommentStats = if no_stats cargs then const else addStats
+                     in
+                        [ (Alloy42,
+                          CompilerResult {
+                           extension = "als",
+                           outputCode = addCommentStats (fst alloyCode) stats,
+                           statistics = stats,
+                           claferEnv  = env,
+                           mappingToAlloy = fromMaybe [] (Just $ snd alloyCode),
+                           stringMap = strMap,
+                           scopesList = scopes
+                          })
+                        ]
+                  else  -- behavioral Clafer
+                    let
                       (imod,strMap) = astrModule iModule
-                      alloyCode = genModule cargs{mode = [Alloy42]} (imod, genv) scopes
+                      alloyCode = genAlloyLtlModule cargs{mode = [AlloyLtl]} (imod, genv) scopes $ uidIClaferMap env
                       addCommentStats = if no_stats cargs then const else addStats
-                   in
-                      [ (Alloy42,
+                    in
+                      [ (AlloyLtl,
                         CompilerResult {
                          extension = "als",
                          outputCode = addCommentStats (fst alloyCode) stats,
@@ -561,34 +612,13 @@ generate =
                          mappingToAlloy = fromMaybe [] (Just $ snd alloyCode),
                          stringMap = strMap,
                          scopesList = scopes
-                        })
-                      ]
+                            })
+                         ]
                 else [ (Alloy,
                         NoCompilerResult {
                          reason = "Alloy output unavailable because the model contains real numbers."
                     })
                   ]
-          else []
-        )
-        ++
-        -- result for AlloyLtl
-        (if (AlloyLtl `elem` modes)
-          then let
-                  (imod,strMap) = astrModule iModule
-                  alloyCode = genAlloyLtlModule cargs{mode = [AlloyLtl]} (imod, genv) scopes $ uidIClaferMap env
-                  addCommentStats = if no_stats cargs then const else addStats
-               in
-                  [ (AlloyLtl,
-                    CompilerResult {
-                     extension = "alsltl",
-                     outputCode = addCommentStats (fst alloyCode) stats,
-                     statistics = stats,
-                     claferEnv  = env,
-                     mappingToAlloy = fromMaybe [] (Just $ snd alloyCode),
-                     stringMap = strMap,
-                     scopesList = scopes
-                        })
-                     ]
           else []
         )
         -- result for XML
@@ -661,7 +691,10 @@ generate =
         )
         -- result for Python
         ++ (if (Python `elem` modes)
-          then [ (Python,
+          then
+            if (staticClaferSubset)
+              then
+                [ (Python,
                   CompilerResult {
                    extension = "py",
                    outputCode = genPythonModule iModule,
@@ -671,23 +704,36 @@ generate =
                    stringMap = Map.empty,
                    scopesList = scopes
                   }) ]
+              else [ (Python,
+                        NoCompilerResult {
+                         reason = "Python output unavailable because the model contains temporal operators."
+                    })
+                   ]
           else []
         )
         -- result for Choco
         ++ (if (Choco `elem` modes)
-          then let
-                  imod = iModule
-               in
-                  [ (Choco,
-                     CompilerResult {
-                         extension = "js",
-                         outputCode = genCModule cargs (imod, genv) scopes,
-                         statistics = stats,
-                         claferEnv  = env,
-                         mappingToAlloy = [],
-                         stringMap = Map.empty,
-                         scopesList = scopes
-                      }) ]
+          then
+            if (staticClaferSubset)
+              then
+                 let
+                    imod = iModule
+                 in
+                    [ (Choco,
+                       CompilerResult {
+                           extension = "js",
+                           outputCode = genCModule cargs (imod, genv) scopes,
+                           statistics = stats,
+                           claferEnv  = env,
+                           mappingToAlloy = [],
+                           stringMap = Map.empty,
+                           scopesList = scopes
+                        }) ]
+              else [ (Choco,
+                        NoCompilerResult {
+                         reason = "Choco output unavailable because the model contains temporal operators."
+                    })
+                  ]
           else []
         ))
 
