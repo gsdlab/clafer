@@ -8,9 +8,11 @@ abstract sig c0_Argument
 abstract sig c0_IntegerArgument
 { ref : one Int }
 
+fact { all disj x, y : c0_IntegerArgument | (x.@ref) != (y.@ref) }
 abstract sig c0_StringArgument
 { ref : one Int }
 
+fact { all disj x, y : c0_StringArgument | (x.@ref) != (y.@ref) }
 abstract sig c0_Value
 {}
 
@@ -39,12 +41,12 @@ sig c0_functional
 
 sig c0_mode extends c0_Argument
 { r_c0_alloy : lone c0_alloy
-, r_c0_clafer : lone c0_clafer
+, r_c0_desclafer : lone c0_desclafer
 , r_c0_html : lone c0_html
 , r_c0_graph : lone c0_graph
 , r_c0_cvlGraph : lone c0_cvlGraph }
 { one @r_c0_mode.this
-  let children = (r_c0_alloy + r_c0_clafer + r_c0_html + r_c0_graph + r_c0_cvlGraph) | one children }
+  let children = (r_c0_alloy + r_c0_desclafer + r_c0_html + r_c0_graph + r_c0_cvlGraph) | one children }
 
 sig c0_alloy extends c0_DefaultValue
 { r_c0_alloy42 : lone c0_alloy42
@@ -64,9 +66,9 @@ sig c0_alloy_mapping extends c0_Argument
 {}
 { one @r_c0_alloy_mapping.this }
 
-sig c0_clafer extends c0_Value
+sig c0_desclafer extends c0_Value
 {}
-{ one @r_c0_clafer.this }
+{ one @r_c0_desclafer.this }
 
 sig c0_html extends c0_Value
 { r_c0_self_contained : lone c0_self_contained

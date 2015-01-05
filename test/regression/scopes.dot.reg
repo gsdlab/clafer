@@ -31,8 +31,8 @@ edge [fontname=Sans fontsize=11];
 "c0_Hs2" -> "c0_H" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent];
 "c0_Hs3" [label="Hs3 -> H 5..8" URL="#c0_Hs3" tooltip="Hs3 -> H 5..8&#10;  l ?&#10;"];
 "c0_Hs3" -> "c0_H" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent];
-"c0_F" [label="abstract F : H" URL="#c0_F" tooltip="abstract F : H&#10;"];
-"c0_F" -> "c0_H" [arrowhead=onormal constraint=true weight=100];
-"c0_f1" [label="f1 : F 2..5" URL="#c0_f1" tooltip="f1 : F 2..5&#10;  m 0&#10;"];
-"c0_f1" -> "c0_F" [arrowhead=onormal constraint=true weight=100];
+"c0_FF" [label="abstract FF : H" URL="#c0_FF" tooltip="abstract FF : H&#10;"];
+"c0_FF" -> "c0_H" [arrowhead=onormal constraint=true weight=100];
+"c0_f1" [label="f1 : FF 2..5" URL="#c0_f1" tooltip="f1 : FF 2..5&#10;  m 0&#10;"];
+"c0_f1" -> "c0_FF" [arrowhead=onormal constraint=true weight=100];
 }
