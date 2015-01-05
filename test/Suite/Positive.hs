@@ -71,7 +71,7 @@ case_nonempty_cards = do
 		@? "nonempty card test failed. Files contain empty cardinalities after fully compiling")
 	where
 		getIR (file', (Right (resultMap))) =
-			case Map.lookup Alloy resultMap of
+			case Map.lookup Alloy42 resultMap of
 				Just CompilerResult{claferEnv = ClaferEnv{cIr = Just (iMod, _, _)}} -> [(file', iMod)]
 				_ -> []
 		getIR (_, _) = []
@@ -80,5 +80,5 @@ case_nonempty_cards = do
 
 case_stringEqual :: Assertion
 case_stringEqual = do
-	let strMap = stringMap $ fromJust $ Map.lookup Alloy $ fromRight $ compileOneFragment defaultClaferArgs "A\n    text1 : string = \"some text\"\n    text2 : string = \"some text\""
+	let strMap = stringMap $ fromJust $ Map.lookup Alloy42 $ fromRight $ compileOneFragment defaultClaferArgs "A\n    text1 : string = \"some text\"\n    text2 : string = \"some text\""
 	(Map.size strMap) == 1 @? "Error: same string assigned to differnet numbers!"

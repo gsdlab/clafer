@@ -481,7 +481,7 @@ genPExp'    genEnv    ctx     (PExp iType' pid' pos exp') = case exp' of
   IInt n -> CString $ show n
   IDouble _ -> error "no real numbers allowed"
   IStr _ -> error "no strings allowed"
-
+  x -> error $ "AlloyLtl.genPExp': No pattern match for " ++ show x
 
 
 -- 3-May-2012 Rafael Olaechea.
