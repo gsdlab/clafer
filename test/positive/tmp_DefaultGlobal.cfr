@@ -6,4 +6,4 @@ a
   [c]
   /* incorrectly desugars to
   [some this . c0_b . c0_c]
-  /*
+  */
