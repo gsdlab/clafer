@@ -2,32 +2,32 @@
 
 
 abstract SQLite
-	 Parameters  
-	 	xor DEFAULT_AUTOVACUUM 
-		    OFF 
+	 Parameters
+	 	xor DEFAULT_AUTOVACUUM
+		    OFF
 		    FULL
 		    INCREMENTAL
-		DEFAULT_CACHE_SIZE : integer
+		DEFAULT_CACHE_SIZE -> integer
 		    [DEFAULT_CACHE_SIZE > 0]
-		DEFAULT_FILE_FORMAT : integer
-		    [DEFAULT_FILE_FORMAT => 1 & DEFAULT_FILE_FORMAT <= 4]		
+		DEFAULT_FILE_FORMAT -> integer
+		    [DEFAULT_FILE_FORMAT => 1 & DEFAULT_FILE_FORMAT <= 4]
 		xor DEFAULT_FOREIGN_KEYS_ENFORCEMENT
 			ENABLED
-			DISABLED    	
-					
-		DEFAULT_JOURNAL_SIZE_LIMIT : integer
-		
+			DISABLED
+
+		DEFAULT_JOURNAL_SIZE_LIMIT -> integer
+
 		xor DEFAULT_MEMSTATUS
 			ENABLED
 			DISABLED
-		DEFAULT_PRAGMA_SIZE : integer
-		    [ DEFAULT_PRAGMA_SIZE = 512 | DEFAULT_PRAGMA_SIZE = 1024 | DEFAULT_PRAGMA_SIZE = 2048 | DEFAULT_PRAGMA_SIZE = 4096]		  		
-		
-		DEFAULT_TEMP_CACHE_SIZE : integer
+		DEFAULT_PRAGMA_SIZE -> integer
+		    [ DEFAULT_PRAGMA_SIZE = 512 | DEFAULT_PRAGMA_SIZE = 1024 | DEFAULT_PRAGMA_SIZE = 2048 | DEFAULT_PRAGMA_SIZE = 4096]
 
-		DEFAULT_WALL_AUTOCHECKPOINT : integer		
+		DEFAULT_TEMP_CACHE_SIZE -> integer
 
-		MAX_YYSTACKDEPTH : integer
+		DEFAULT_WALL_AUTOCHECKPOINT -> integer
+
+		MAX_YYSTACKDEPTH -> integer
 
 
     mandatory abstract feature EnableFeatures
@@ -58,23 +58,23 @@ abstract SQLite
     {
         //On most systems, the malloc() system call returns a buffer that is aligned to an 8-byte boundary. But on some systems (ex: windows) malloc() returns 4-byte aligned pointer. This compile-time option must be used on systems that return 4-byte aligned pointers from malloc().
         mandatory feature SQLITE_4_BYTE_ALIGNED_MALLOC;
-        
+
 		//This compile-time option changes the default setting of the secure_delete pragma. When this option is not used, secure_delete defaults to off. When this option is present, secure_delete defaults to on.
 		//The secure_delete setting causes deleted content to be overwritten with zeros. There is a small performance penalty for this since additional I/O must occur. On the other hand, secure_delete can prevent sensitive information from lingering in unused parts of the database file after it has allegedly been deleted. See the documentation on the secure_delete pragma for additional information.
         feature SQLITE_SECURE_DELETE;
-        
+
         //The option causes SQLite to omit its built-in operating system interfaces for Unix, Windows, and OS/2. The resulting library will have no default operating system interface. Applications must use sqlite3_vfs_register() to register an appropriate interface before using SQLite. Applications must also supply implementations for the sqlite3_os_init() and sqlite3_os_end() interfaces. The usual practice is for the supplied sqlite3_os_init() to invoke sqlite3_vfs_register(). SQLite will automatically invoke sqlite3_os_init() when it initializes.
 		//This option is typically used when building SQLite for an embedded platform with a custom operating system.
 		//<0 or 1>
 		int SQLITE_OS_OTHER=0;
-        
+
         //If this option is present, then SQLite will use the isnan() function from the system math library. Without this option (the default behavior) SQLite uses its own internal implementation of isnan(). SQLite uses its own internal isnan() implementation by default because of past problems with system isnan() functions.
         feature SQLITE_HAVE_ISNAN;
-        
+
         //If this option is present, then the built-in LIKE operator will be case sensitive. This same effect can be achieved at run-time using the case_sensitive_like pragma.
         feature SQLITE_CASE_SENSITIVE_LIKE;
-             
-        /*   
+
+        /*
 			This option controls whether or not code is included in SQLite to enable it to operate safely in a multithreaded environment. The default is SQLITE_THREADSAFE=1 which is safe for use in a multithreaded environment. When compiled with SQLITE_THREADSAFE=0 all mutexing code is omitted and it is unsafe to use SQLite in a multithreaded program. When compiled with SQLITE_THREADSAFE=2, SQLite can be used in a multithreaded program so long as no two threads attempt to use the same database connection at the same time.
 			To put it another way, SQLITE_THREADSAFE=1 sets the default threading mode to Serialized. SQLITE_THREADSAFE=2 sets the default threading mode to Multi-threaded. And SQLITE_THREADSAFE=0 sets the threading mode to Single-threaded.
 			The value of SQLITE_THREADSAFE can be determined at run-time using the sqlite3_threadsafe() interface.
@@ -98,7 +98,7 @@ abstract SQLite
 			2	Use memory by default but allow the PRAGMA temp_store command to override
 			3	Always use memory
 			The default setting is 1. Additional information can be found in tempfiles.html.
-			
+
 			<0..3>
 		*/
 		int SQLITE_TEMP_STORE=1;

@@ -11,25 +11,25 @@ abstract Car
     ABS : ComfortFeature ?
         [cost = 2]
         [mass = 1]
-        [comfort = 1]        
+        [comfort = 1]
     xor Transmission : Feature
         [cost = 0]
-        [mass = 0]        
+        [mass = 0]
         Automatic : FuelFeature
             [fuel = 2]
-            [mass = 1]            
+            [mass = 1]
             [comfort = 2]
-            [cost = 4]     
+            [cost = 4]
         Manual : FuelFeature
             [fuel = 0]
-            [mass = 1]            
+            [mass = 1]
             [comfort = 1]
             [cost = 3]
     FCA : FuelFeature ?
         [fuel = 2]
-        [mass = 2] 
+        [mass = 2]
         [comfort = 4]
-        [cost = 5]        
+        [cost = 5]
         xor Sensor : Feature
             [cost = 0]
             [mass = 0]
@@ -38,7 +38,7 @@ abstract Car
                 [mass = 1]
             Lidar : Feature
                 [cost = 5]
-                [mass = 1]            
+                [mass = 1]
         xor Alert : Feature ?
             [cost = 0]
             [mass = 0]
@@ -61,19 +61,19 @@ abstract Car
             [comfort = 6]
             [cost = 3]
     [ ACC => FCA]
-    
-    total_cost : integer = sum Feature.cost
-    total_comfort : integer = sum ComfortFeature.cost
-    total_fuel : integer = sum FuelFeature.cost
-    total_mass : integer = sum FuelFeature.mass
+
+    total_cost -> integer = sum Feature.cost
+    total_comfort -> integer = sum ComfortFeature.cost
+    total_fuel -> integer = sum FuelFeature.cost
+    total_mass -> integer = sum FuelFeature.mass
 //# FRAGMENT
 abstract Feature
-    cost: integer
-    mass: integer
+    cost-> integer
+    mass-> integer
 //# FRAGMENT
 abstract ComfortFeature : Feature
-    comfort: integer
+    comfort-> integer
 //# FRAGMENT
 abstract FuelFeature : ComfortFeature
-    fuel: integer
+    fuel-> integer
 //# FRAGMENT

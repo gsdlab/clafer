@@ -6,5 +6,5 @@ nodesep=0.1;
 graph [fontname=Sans fontsize=11];
 node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
 edge [fontname=Sans fontsize=11];
-"c0_A" [label="A" URL="#c0_A" tooltip="A&#10;  B : integer *&#10;    C ?&#10;  [ all b : B | some b.C ]&#10;  [ all b : B | b + 1 = 2 ]&#10;"];
+"c0_A" [label="A" URL="#c0_A" tooltip="A&#10;  B -> integer *&#10;    C ?&#10;  [ all b : B | some b.C ]&#10;  [ all b : B | b + 1 = 2 ]&#10;"];
 }

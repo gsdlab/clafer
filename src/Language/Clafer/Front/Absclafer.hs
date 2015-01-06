@@ -44,15 +44,15 @@ data Declaration =
   deriving (Eq,Ord,Show,Read,Data,Typeable,Generic)
 
 data Clafer =
-   Clafer Span Abstract GCard PosIdent Super Card Init Elements
+   Clafer Span Abstract GCard PosIdent Super Reference Card Init Elements
   deriving (Eq,Ord,Show,Read,Data,Typeable,Generic)
 
 data Constraint =
    Constraint Span [Exp]
   deriving (Eq,Ord,Show,Read,Data,Typeable,Generic)
 
-data SoftConstraint =
-   SoftConstraint Span [Exp]
+data Assertion =
+   Assertion Span [Exp]
   deriving (Eq,Ord,Show,Read,Data,Typeable,Generic)
 
 data Goal =
@@ -74,28 +74,24 @@ data Element =
  | ClaferUse Span Name Card Elements
  | Subconstraint Span Constraint
  | Subgoal Span Goal
- | Subsoftconstraint Span SoftConstraint
+ | Subassertion Span Assertion
   deriving (Eq,Ord,Show,Read,Data,Typeable,Generic)
 
 data Super =
    SuperEmpty Span
- | SuperSome Span SuperHow SetExp
+ | SuperSome Span SetExp
   deriving (Eq,Ord,Show,Read,Data,Typeable,Generic)
 
-data SuperHow =
-   SuperColon Span
- | SuperArrow Span
- | SuperMArrow Span
+data Reference =
+   ReferenceEmpty Span
+ | ReferenceSet Span SetExp
+ | ReferenceBag Span SetExp
   deriving (Eq,Ord,Show,Read,Data,Typeable,Generic)
 
 data Init =
    InitEmpty Span
- | InitSome Span InitHow Exp
-  deriving (Eq,Ord,Show,Read,Data,Typeable,Generic)
-
-data InitHow =
-   InitHow_1 Span
- | InitHow_2 Span
+ | InitConstant Span Exp
+ | InitDefault Span Exp
   deriving (Eq,Ord,Show,Read,Data,Typeable,Generic)
 
 data GCard =
@@ -208,13 +204,13 @@ instance Spannable Declaration where
   getSpan ( ElementDecl s _ ) = s
 
 instance Spannable Clafer where
-  getSpan ( Clafer s _ _ _ _ _ _ _ ) = s
+  getSpan ( Clafer s _ _ _ _ _ _ _ _ ) = s
 
 instance Spannable Constraint where
   getSpan ( Constraint s _ ) = s
 
-instance Spannable SoftConstraint where
-  getSpan ( SoftConstraint s _ ) = s
+instance Spannable Assertion where
+  getSpan ( Assertion s _ ) = s
 
 instance Spannable Goal where
   getSpan ( Goal s _ ) = s
@@ -232,24 +228,21 @@ instance Spannable Element where
   getSpan ( ClaferUse s _ _ _ ) = s
   getSpan ( Subconstraint s _ ) = s
   getSpan ( Subgoal s _ ) = s
-  getSpan ( Subsoftconstraint s _ ) = s
+  getSpan ( Subassertion s _ ) = s
 
 instance Spannable Super where
   getSpan ( SuperEmpty s ) = s
-  getSpan ( SuperSome s _ _ ) = s
+  getSpan ( SuperSome s _ ) = s
 
-instance Spannable SuperHow where
-  getSpan ( SuperColon s ) = s
-  getSpan ( SuperArrow s ) = s
-  getSpan ( SuperMArrow s ) = s
+instance Spannable Reference where
+  getSpan ( ReferenceEmpty s ) = s
+  getSpan ( ReferenceSet s _ ) = s
+  getSpan ( ReferenceBag s _ ) = s
 
 instance Spannable Init where
   getSpan ( InitEmpty s ) = s
-  getSpan ( InitSome s _ _ ) = s
-
-instance Spannable InitHow where
-  getSpan ( InitHow_1 s ) = s
-  getSpan ( InitHow_2 s ) = s
+  getSpan ( InitConstant s _ ) = s
+  getSpan ( InitDefault s _ ) = s
 
 instance Spannable GCard where
   getSpan ( GCardEmpty s ) = s

@@ -1,49 +1,49 @@
 // Example from: http://gsd.uwaterloo.ca/node/310
 // integers reduced to fit in Alloy's default bitwidth
 
-abstract Book			// a template for a book
-    title : string			// a title can hold a text value
-        subtitle : string ?			// subtitle is optional
-    year : integer			// year has a numeric value
-    page 2..*				// at least 2 pages
-    xor format			// a book can be in only one format at a time
+abstract Book     // a template for a book
+    title -> string     // a title can hold a text value
+        subtitle -> string ?      // subtitle is optional
+    year -> integer     // year has a numeric value
+    page 2..*       // at least 2 pages
+    xor format      // a book can be in only one format at a time
         paper
-            hardcover ?			// hardcover is optional and only makes sense when the book is paper
+            hardcover ?     // hardcover is optional and only makes sense when the book is paper
         electronic
-    xor kind				// a book can be of one kind at a time
+    xor kind        // a book can be of one kind at a time
         textbook
-        manual 
-        reference 
-        fiction 
+        manual
+        reference
+        fiction
         nonfiction
-        other : string			// other allows giving a kind in text
-    authors -> Author +		// author points at least one author of the book
-    [ year >= 5 => ISBN ]  
-    ISBN : string ? 			// it is currently not possible to specify in Clafer that ISBN has 10 digits
-        GS1 : string ?
+        other -> string     // other allows giving a kind in text
+    authors -> Author +   // author points at least one author of the book
+    [ year >= 5 => ISBN ]
+    ISBN -> string ?      // it is currently not possible to specify in Clafer that ISBN has 10 digits
+        GS1 -> string ?
         [ year >= 6 => GS1 ]
-  
-abstract Person			// a template for a person
-    name : string
-    dob : string ?			// of course the person always has dob but for our application it is possible not to give it 
 
-abstract Author : Person	// author is a special person who has at least one book
-    books -> Book +			// book has to point at at least one concrete book
+abstract Person     // a template for a person
+    name -> string
+    dob -> string ?     // of course the person always has dob but for our application it is possible not to give it
 
-GenerativeProgramming : Book	// a concrete example of a book
+abstract Author : Person  // author is a special person who has at least one book
+    books -> Book +     // book has to point at at least one concrete book
+
+GenerativeProgramming : Book  // a concrete example of a book
     [ title = "name"
        no subtitle
        year = 5
-       #  page = 4			// number (#) of instances of page is 589
-       paper				// because the book is paper it automatically also has a format
-       nonfiction			// because the book is nonfiction it automatically also has a kind
-       authors = Czarnecki, Eisenecker 	// Czarnecki and Eisenecker are the authors
-       ISBN = "name"  			// there's no GS1 prefix, which is ok because the year is < 2007 
+       #  page = 4      // number (#) of instances of page is 589
+       paper        // because the book is paper it automatically also has a format
+       nonfiction     // because the book is nonfiction it automatically also has a kind
+       authors = Czarnecki, Eisenecker  // Czarnecki and Eisenecker are the authors
+       ISBN = "name"        // there's no GS1 prefix, which is ok because the year is < 2007
        no GS1 ]
 
 Czarnecki : Author
     [ name = "name"
-       GenerativeProgramming in books ]	 // GenerativeProgramming is one of Czarnecki's books
+       GenerativeProgramming in books ]  // GenerativeProgramming is one of Czarnecki's books
 
 Eisenecker : Author
     [ name = "name"

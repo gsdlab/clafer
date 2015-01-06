@@ -22,6 +22,7 @@
 -}
 module Language.Clafer.Common where
 
+import Control.Applicative ((<$>))
 import Data.Tree
 import Data.Maybe
 import Data.Char
@@ -47,24 +48,24 @@ mkInteger (PosInteger (_, n)) = read n
 type Ident = PosIdent
 
 getSuper :: IClafer -> String
-getSuper = getSuperId._supers._super
+getSuper c = fromMaybe baseClafer $ getSuperId <$> _sClaferId <$> _super c
 
-getSuperNoArr :: IClafer          -> String
-getSuperNoArr    clafer
-  | _isOverlapping $ _super clafer = baseClafer
-  | otherwise                      = getSuper clafer
+getReference :: IClafer -> String
+getReference c = fromMaybe "" $ getSuperId <$> _rClaferId <$> _reference c
 
-getSuperId :: [PExp] -> String
-getSuperId [] = error "Bug: getSuperId called not on '[PExp (IClaferId)]' but instead on '[]'"
-getSuperId [PExp _ _ _ (IClaferId{ _sident = s})] = s
-getSuperId [pexp'] = error $ "Bug: getSuperId called not on '[PExp (IClaferId)]' but instead on '" ++ show pexp' ++ "'"
+getSuperId :: PExp                                  -> String
+getSuperId    (PExp _ _ _ (IClaferId{ _sident = s})) = s
+getSuperId    x = error $ "Bug: getSuperId called not on '[PExp (IClaferId)]' but instead on '" ++ show x ++ "'"
 
 isEqClaferId :: String -> IClafer -> Bool
 isEqClaferId = flip $ (==)._uid
 
+<<<<<<< HEAD
 idToPExp :: String -> Span -> String -> String -> Bool -> PExp
 idToPExp pid' pos modids id' isTop' = PExp (Just $ TClafer [id']) pid' pos (IClaferId modids id' isTop' Nothing)
 
+=======
+>>>>>>> common: remove idToPExp
 mkPLClaferId :: CName -> Bool -> ClaferBinding -> PExp
 mkPLClaferId id' isTop' bind' = pExpDefPidPos $ IClaferId "" id' isTop' bind'
 
@@ -122,6 +123,7 @@ findHierarchy :: (IClafer -> String)
                             -> [IClafer]
 findHierarchy sFun clafers clafer
   | sFun clafer == "clafer"      = [clafer]
+  | sFun clafer == ""            = []   -- "" is returned by getReference when no reference is present
   | otherwise                    = if clafer `elem` superClafers
                                    then error $ "Inheritance hierarchy contains a cycle: line " ++ (show $ _cinPos clafer)
                                    else clafer : superClafers

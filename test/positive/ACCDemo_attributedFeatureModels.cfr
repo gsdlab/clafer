@@ -1,12 +1,12 @@
 //# OPTIONS --sg
 abstract Feature
-    cost: integer
+    cost-> integer
 
 abstract ComfortFeature : Feature
-    comfort: integer
+    comfort-> integer
 
 abstract FuelFeature : ComfortFeature
-    fuel: integer
+    fuel-> integer
 //# FRAGMENT
 abstract Car
     ABS : Feature ?
@@ -25,7 +25,7 @@ abstract Car
         Automatic : FuelFeature
             [this.fuel = 2]
             [this.comfort = 2]
-            [this.cost = 3]     
+            [this.cost = 3]
         Manual : FuelFeature
             [this.fuel = 0]
             [this.comfort = 1]
@@ -40,19 +40,19 @@ abstract Car
                 [this.cost = 2]
             Lidar : Feature
                 [this.cost = 4]
-                
+
         xor Alert : Feature ?
             [this.cost = 0]
             Haptic : ComfortFeature
                 [this.comfort = 4]
-                [this.cost = 2]                
+                [this.cost = 2]
             Audible : ComfortFeature
                 [this.comfort = 2]
                 [this.cost = 1]
 
-    total_cost : integer = sum Feature.cost
-    total_comfort : integer = sum ComfortFeature.cost
-    total_fuel : integer = sum FuelFeature.cost
+    total_cost -> integer = sum Feature.cost
+    total_comfort -> integer = sum ComfortFeature.cost
+    total_fuel -> integer = sum FuelFeature.cost
 //# FRAGMENT
 aCar : Car
 //# FRAGMENT

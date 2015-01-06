@@ -37,6 +37,7 @@ module Language.Clafer.Generator.Html (genHtml,
                                        highlightErrors) where
 
 import Language.ClaferT
+import Language.Clafer.Common (getSuper)
 import Language.Clafer.Front.Absclafer
 import Language.Clafer.Front.LayoutResolver(revertLayout)
 import Language.Clafer.Intermediate.Tracing
@@ -402,7 +403,7 @@ getUseId :: Span -> Map.Map Span [Ir] -> (String, String)
 getUseId s irMap = if Map.lookup s irMap == Nothing
                       then ("Uid not Found", "Uid not Found")
                       else let IRClafer iClaf = head $ fromJust $ Map.lookup s irMap in
-                        (_uid iClaf, _sident $ _exp $ head $ _supers $ _super iClaf)
+                        (_uid iClaf, getSuper iClaf)
 
 while :: Bool -> String -> String
 while bool exp' = if bool then exp' else ""

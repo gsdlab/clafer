@@ -112,7 +112,7 @@ instance Print Declaration where
 
 instance Print Clafer where
   prt i e = case e of
-   Clafer _ abstract gcard posident super card init elements -> prPrec i 0 (concatD [prt 0 abstract , prt 0 gcard , prt 0 posident , prt 0 super , prt 0 card , prt 0 init , prt 0 elements])
+   Clafer _ abstract gcard posident super reference card init elements -> prPrec i 0 (concatD [prt 0 abstract , prt 0 gcard , prt 0 posident , prt 0 super , prt 0 reference , prt 0 card , prt 0 init , prt 0 elements])
 
 
 instance Print Constraint where
@@ -120,9 +120,9 @@ instance Print Constraint where
    Constraint _ exps -> prPrec i 0 (concatD [doc (showString "[") , prt 0 exps , doc (showString "]")])
 
 
-instance Print SoftConstraint where
+instance Print Assertion where
   prt i e = case e of
-   SoftConstraint _ exps -> prPrec i 0 (concatD [doc (showString "assert") , doc (showString "[") , prt 0 exps , doc (showString "]")])
+   Assertion _ exps -> prPrec i 0 (concatD [doc (showString "assert") , doc (showString "[") , prt 0 exps , doc (showString "]")])
 
 
 instance Print Goal where
@@ -148,7 +148,7 @@ instance Print Element where
    ClaferUse _ name card elements -> prPrec i 0 (concatD [doc (showString "`") , prt 0 name , prt 0 card , prt 0 elements])
    Subconstraint _ constraint -> prPrec i 0 (concatD [prt 0 constraint])
    Subgoal _ goal -> prPrec i 0 (concatD [prt 0 goal])
-   Subsoftconstraint _ softconstraint -> prPrec i 0 (concatD [prt 0 softconstraint])
+   Subassertion _ assertion -> prPrec i 0 (concatD [prt 0 assertion])
 
   prtList es = case es of
    [] -> (concatD [])
@@ -157,26 +157,21 @@ instance Print Element where
 instance Print Super where
   prt i e = case e of
    SuperEmpty _  -> prPrec i 0 (concatD [])
-   SuperSome _ superhow setexp -> prPrec i 0 (concatD [prt 0 superhow , prt 0 setexp])
+   SuperSome _ setexp -> prPrec i 0 (concatD [doc (showString ":") , prt 0 setexp])
 
 
-instance Print SuperHow where
+instance Print Reference where
   prt i e = case e of
-   SuperColon _  -> prPrec i 0 (concatD [doc (showString ":")])
-   SuperArrow _  -> prPrec i 0 (concatD [doc (showString "->")])
-   SuperMArrow _  -> prPrec i 0 (concatD [doc (showString "->>")])
+   ReferenceEmpty _  -> prPrec i 0 (concatD [])
+   ReferenceSet _ setexp -> prPrec i 0 (concatD [doc (showString "->") , prt 0 setexp])
+   ReferenceBag _ setexp -> prPrec i 0 (concatD [doc (showString "->>") , prt 0 setexp])
 
 
 instance Print Init where
   prt i e = case e of
    InitEmpty _  -> prPrec i 0 (concatD [])
-   InitSome _ inithow exp -> prPrec i 0 (concatD [prt 0 inithow , prt 0 exp])
-
-
-instance Print InitHow where
-  prt i e = case e of
-   InitHow_1 _  -> prPrec i 0 (concatD [doc (showString "=")])
-   InitHow_2 _  -> prPrec i 0 (concatD [doc (showString ":=")])
+   InitConstant _ exp -> prPrec i 0 (concatD [doc (showString "=") , prt 0 exp])
+   InitDefault _ exp -> prPrec i 0 (concatD [doc (showString ":=") , prt 0 exp])
 
 
 instance Print GCard where

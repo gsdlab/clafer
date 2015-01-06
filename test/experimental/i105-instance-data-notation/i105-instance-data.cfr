@@ -1,9 +1,9 @@
-abstract A 
+abstract A
     b ?
     c *
     d -> A *
-    f : integer ?
-	
+    f -> integer ?
+
 A1 : A
     [ b ]
     [ no c ]

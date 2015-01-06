@@ -1,76 +1,76 @@
 abstract Person
-	
+
 ada : Person
 
-cyd : Person	
+cyd : Person
 
 eve : Person
-	
+
 bob : Person
-	
+
 dan : Person
-	
+
 abstract Exam
-	date: string
-		[this != ""]
-	recorder -> Person
-	examiner -> Person
-	examinee -> Person
+    date -> string
+        [this != ""]
+    recorder -> Person
+    examiner -> Person
+    examinee -> Person
 
 ada_bob_cyd:Exam
-	[date = "20001023"
-	recorder = cyd
-	examiner = bob
-	examinee = ada]
+    [date = "20001023"
+    recorder = cyd
+    examiner = bob
+    examinee = ada]
 
 dan_bob_ada:Exam
-	[date = "20040817"
-	recorder = ada
-	examiner = bob
-	examinee = dan]
+    [date = "20040817"
+    recorder = ada
+    examiner = bob
+    examinee = dan]
 
 eve_ada_dan:Exam
-	[date = "20080331"
-	recorder = dan
-	examiner = ada
-	examinee = eve]
+    [date = "20080331"
+    recorder = dan
+    examiner = ada
+    examinee = eve]
 
 examineeAda -> Exam *
-	[this.examinee = ada]
+    [this.examinee = ada]
 [all e:Exam|e.examinee = ada => e in examineeAda]
 
 recorderAda -> Exam *
-	[this.recorder = ada]
+    [this.recorder = ada]
 [all e:Exam|e.recorder = ada => e in recorderAda]
 
 examinerAda -> Exam *
-	[this.examiner = ada]
+    [this.examiner = ada]
 [all e:Exam|e.examiner = ada => e in examinerAda]
 
 examineeOfAdaAsExaminer -> Person *
-	[one e:Exam|e.examiner = ada && e.examinee = this]
+    [one e:Exam|e.examiner = ada && e.examinee = this]
 [all e:Exam|e.examiner = ada => e.examinee in examineeOfAdaAsExaminer]
-	
+
 
 examineeOfAdaAsRecorder -> Person *
-	[one e:Exam|e.recorder = ada && e.examinee = this]
+    [one e:Exam|e.recorder = ada && e.examinee = this]
 [all e:Exam|e.recorder = ada => e.examinee in examineeOfAdaAsRecorder]
 
 
 examinerOfAdaAsExaminee -> Person *
-	[one e:Exam|e.examinee = ada && e.examiner = this]
+    [one e:Exam|e.examinee = ada && e.examiner = this]
 [all e:Exam|e.examinee = ada => e.examiner in examinerOfAdaAsExaminee]
 
 examinerOfAdaAsRecorder -> Person *
-	[one e:Exam|e.recorder = ada && e.examiner = this]
+    [one e:Exam|e.recorder = ada && e.examiner = this]
 [all e:Exam|e.recorder = ada => e.examiner in examinerOfAdaAsRecorder]
 
 recorderOfAdaAsExaminee -> Person *
-	[one e:Exam|e.examinee = ada && e.recorder = this]
+    [one e:Exam|e.examinee = ada && e.recorder = this]
 [all e:Exam|e.examinee = ada => e.recorder in recorderOfAdaAsExaminee]
 
 recorderOfAdaAsExaminer -> Person *
-	[one e:Exam|e.examiner = ada && e.recorder = this]
+    [one e:Exam|e.examiner = ada && e.recorder = this]
 [all e:Exam|e.examiner = ada => e.recorder in recorderOfAdaAsExaminer]
 
 //# FRAGMENT

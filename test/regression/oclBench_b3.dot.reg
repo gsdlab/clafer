@@ -17,7 +17,7 @@ edge [fontname=Sans fontsize=11];
 "c0_bob" -> "c0_Person" [arrowhead=onormal constraint=true weight=100];
 "c0_dan" [label="dan : Person" URL="#c0_dan" tooltip="dan : Person&#10;"];
 "c0_dan" -> "c0_Person" [arrowhead=onormal constraint=true weight=100];
-"c0_Exam" [label="abstract Exam" URL="#c0_Exam" tooltip="abstract Exam&#10;  date : string&#10;    [ this != "" ]&#10;  recorder -> Person&#10;  examiner -> Person&#10;  examinee -> Person&#10;"];
+"c0_Exam" [label="abstract Exam" URL="#c0_Exam" tooltip="abstract Exam&#10;  date -> string&#10;    [ this != "" ]&#10;  recorder -> Person&#10;  examiner -> Person&#10;  examinee -> Person&#10;"];
 "c0_Exam" -> "c0_Person" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=recorder];
 "c0_Exam" -> "c0_Person" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=examiner];
 "c0_Exam" -> "c0_Person" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=examinee];
