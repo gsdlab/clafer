@@ -7,9 +7,9 @@ abstract sig c0_Person
 , r_c0_maritalStatus : one c0_maritalStatus
 , r_c0_childs : set c0_childs
 , r_c0_parents : set c0_parents }
-{ all disj x, y : this.@r_c0_childs | (x.@ref) != (y.@ref)
+{ all disj x, y : this.@r_c0_childs | (x.@ref) != (y.@ref) 
   #r_c0_parents <= 2
-  all disj x, y : this.@r_c0_parents | (x.@ref) != (y.@ref) }
+  all disj x, y : this.@r_c0_parents | (x.@ref) != (y.@ref)  }
 
 sig c0_age
 { ref : one Int }
@@ -29,8 +29,7 @@ sig c0_neverMarried
 
 sig c0_married
 { r_c0_spouse : one c0_spouse }
-{ one @r_c0_married.this
-  all disj x, y : this.@r_c0_spouse | (x.@ref) != (y.@ref) }
+{ one @r_c0_married.this }
 
 sig c0_spouse
 { ref : one c0_Person }

@@ -26,16 +26,9 @@ abstract sig c0_Mortgage
 , r_c0_currentPayment : one c0_currentPayment
 , r_c0_paymentFrequency : one c0_paymentFrequency
 , r_c0_financingAvailable : one c0_financingAvailable }
-{ all disj x, y : this.@r_c0_term | (x.@ref) != (y.@ref)
-  all disj x, y : this.@r_c0_principalMortgageAmount | (x.@ref) != (y.@ref)
-  (5000 <= (this.((@r_c0_principalMortgageAmount.@ref).@ref))) && ((this.((@r_c0_principalMortgageAmount.@ref).@ref)) <= 9999999)
-  all disj x, y : this.@r_c0_balance | (x.@ref) != (y.@ref)
+{ (5000 <= (this.((@r_c0_principalMortgageAmount.@ref).@ref))) && ((this.((@r_c0_principalMortgageAmount.@ref).@ref)) <= 9999999)
   (this.((@r_c0_balance.@ref).@ref)) <= (this.((@r_c0_principalMortgageAmount.@ref).@ref))
-  all disj x, y : this.@r_c0_propertyValue | (x.@ref) != (y.@ref)
-  all disj x, y : this.@r_c0_loanToValue | (x.@ref) != (y.@ref)
-  (1 <= (this.(@r_c0_amortization.@ref))) && ((this.(@r_c0_amortization.@ref)) <= 30)
-  all disj x, y : this.@r_c0_currentInterestRate | (x.@ref) != (y.@ref)
-  all disj x, y : this.@r_c0_currentPayment | (x.@ref) != (y.@ref) }
+  (1 <= (this.(@r_c0_amortization.@ref))) && ((this.(@r_c0_amortization.@ref)) <= 30) }
 
 sig c0_valueProposition
 { ref : one Int }

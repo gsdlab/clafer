@@ -152,7 +152,6 @@ one sig c0_Mexico extends c0_NorthAmericanCountry
 
 abstract sig c0_Person2
 { r_c1_Country : one c1_Country }
-{ all disj x, y : this.@r_c1_Country | (x.@ref) != (y.@ref) }
 
 sig c1_Country
 { ref : one c0_NorthAmericanCountry }

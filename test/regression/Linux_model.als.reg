@@ -12,8 +12,7 @@ sig c0_module
 lone sig c0_MISC_FILESYSTEMS
 { r_c0_display : one c0_display
 , r_c0_JFFS2_FS : lone c0_JFFS2_FS }
-{ (some this.@r_c0_display) => ((this.(@r_c0_display.@ref)) = 0)
-  all disj x, y : this.@r_c0_display | (x.@ref) != (y.@ref) }
+{ (some this.@r_c0_display) => ((this.(@r_c0_display.@ref)) = 0) }
 
 lone sig c0_display
 { ref : one Int }
@@ -26,10 +25,8 @@ lone sig c0_JFFS2_FS extends c0_tristate
 , r_c0_JFFS2_COMPRESS : lone c0_JFFS2_COMPRESS }
 { one r_c0_JFFS2_FS
   (some this.@r_c1_display) => ((this.(@r_c1_display.@ref)) = 1)
-  all disj x, y : this.@r_c1_display | (x.@ref) != (y.@ref)
   some c0_MTD
   (some c0_MTD) => (some c0_CRC32)
-  all disj x, y : this.@r_c0_FFS2_FS_DEBUG | (x.@ref) != (y.@ref)
   (some this.@r_c0_JFFS2_FS_WRITEBUFFER) <=> (some c0_HAS_IOMEM) }
 
 lone sig c1_display
@@ -42,7 +39,6 @@ lone sig c0_FFS2_FS_DEBUG
 { one r_c0_FFS2_FS_DEBUG
   (this.@ref) = 0
   (some this.@r_c2_display) => ((this.(@r_c2_display.@ref)) = 2)
-  all disj x, y : this.@r_c2_display | (x.@ref) != (y.@ref)
   (0 <= (this.@ref)) && ((this.@ref) <= 2) }
 
 lone sig c2_display
@@ -59,7 +55,6 @@ lone sig c0_JFFS2_COMPRESS
 , r_c0_CompressionChoice : one c0_CompressionChoice }
 { one r_c0_JFFS2_COMPRESS
   (some this.@r_c3_display) => ((this.(@r_c3_display.@ref)) = 3)
-  all disj x, y : this.@r_c3_display | (x.@ref) != (y.@ref)
   some this.@r_c0_JFFS2_ZLIB }
 
 lone sig c3_display
@@ -70,7 +65,6 @@ lone sig c0_JFFS2_ZLIB
 { r_c4_display : one c4_display }
 { one r_c0_JFFS2_ZLIB
   (some this.@r_c4_display) => ((this.(@r_c4_display.@ref)) = 4)
-  all disj x, y : this.@r_c4_display | (x.@ref) != (y.@ref)
   some c0_ZLIB_INFLATE }
 
 lone sig c4_display
@@ -82,7 +76,6 @@ lone sig c0_CompressionChoice
 , r_c0_choice : one c0_choice }
 { one r_c0_CompressionChoice
   (some this.@r_c5_display) => ((this.(@r_c5_display.@ref)) = 5)
-  all disj x, y : this.@r_c5_display | (x.@ref) != (y.@ref)
   some (this.@r_c0_choice).@r_c0_JFFS2_CMODE_PRIORITY }
 
 lone sig c5_display
@@ -99,8 +92,7 @@ lone sig c0_choice
 lone sig c0_JFFS2_CMODE_NONE
 { r_c6_display : one c6_display }
 { one r_c0_JFFS2_CMODE_NONE
-  (some this.@r_c6_display) => ((this.(@r_c6_display.@ref)) = 6)
-  all disj x, y : this.@r_c6_display | (x.@ref) != (y.@ref) }
+  (some this.@r_c6_display) => ((this.(@r_c6_display.@ref)) = 6) }
 
 lone sig c6_display
 { ref : one Int }
@@ -109,8 +101,7 @@ lone sig c6_display
 lone sig c0_JFFS2_CMODE_PRIORITY
 { r_c7_display : one c7_display }
 { one r_c0_JFFS2_CMODE_PRIORITY
-  (some this.@r_c7_display) => ((this.(@r_c7_display.@ref)) = 7)
-  all disj x, y : this.@r_c7_display | (x.@ref) != (y.@ref) }
+  (some this.@r_c7_display) => ((this.(@r_c7_display.@ref)) = 7) }
 
 lone sig c7_display
 { ref : one Int }
@@ -119,8 +110,7 @@ lone sig c7_display
 lone sig c0_JFFS2_CMODE_SIZE
 { r_c8_display : one c8_display }
 { one r_c0_JFFS2_CMODE_SIZE
-  (some this.@r_c8_display) => ((this.(@r_c8_display.@ref)) = 8)
-  all disj x, y : this.@r_c8_display | (x.@ref) != (y.@ref) }
+  (some this.@r_c8_display) => ((this.(@r_c8_display.@ref)) = 8) }
 
 lone sig c8_display
 { ref : one Int }

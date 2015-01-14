@@ -22,12 +22,7 @@ abstract sig c0_Vehicle
 , r_c0_hasOversteer : lone c0_hasOversteer
 , r_c0_hasUndersteer : lone c0_hasUndersteer
 , r_c0_GVWR : one c0_GVWR }
-{ all disj x, y : this.@r_c0_AckermanSteerAngle | (x.@ref) != (y.@ref)
-  all disj x, y : this.@r_c0_lateralAcceleration | (x.@ref) != (y.@ref)
-  all disj x, y : this.@r_c0_sideSlipAngle | (x.@ref) != (y.@ref)
-  all disj x, y : this.@r_c0_yawRate | (x.@ref) != (y.@ref)
-  all disj x, y : this.@r_c0_normalYawRate | (x.@ref) != (y.@ref)
-  ((this.((@r_c0_yawRate.@ref).@ref)) > (this.((@r_c0_normalYawRate.@ref).@ref))) <=> (some this.@r_c0_hasOversteer)
+{ ((this.((@r_c0_yawRate.@ref).@ref)) > (this.((@r_c0_normalYawRate.@ref).@ref))) <=> (some this.@r_c0_hasOversteer)
   ((this.((@r_c0_yawRate.@ref).@ref)) < (this.((@r_c0_normalYawRate.@ref).@ref))) <=> (some this.@r_c0_hasUndersteer) }
 
 sig c0_DriveConfiguration extends c1_DriveConfiguration
@@ -140,7 +135,6 @@ abstract sig c1_ElectronicStabilityControlSystem
 , r_c0_satisfies : one c0_satisfies
 , r_c0_MalfunctionTelltale : lone c0_MalfunctionTelltale
 , r_c0_SystemControls : one c0_SystemControls }
-{ all disj x, y : this.@r_c0_vehicle | (x.@ref) != (y.@ref) }
 
 sig c0_vehicle
 { ref : one c0_Vehicle }
