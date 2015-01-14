@@ -72,6 +72,7 @@ expectedScopesSet = M.fromList $ [ ("c0_a", 0)
 							--	 , ("c0_c", 1)	-- uses global scope
 							--	 , ("c0_d", 1) 	-- uses global scope
 							--	 , ("c0_e", 1)	-- uses global scope
+							--	 , ("c0_Hs2", 1)  -- uses global scope
 								 , ("c0_f", 4)
 								 , ("c0_g", 3)
 								 , ("c0_gs", 2)
@@ -79,13 +80,12 @@ expectedScopesSet = M.fromList $ [ ("c0_a", 0)
 								 , ("c0_i", 22)
 								 , ("c0_j", 22)
 								 , ("c0_k", 44)
-								 , ("c0_Hs", 16)  -- not sure where the 16 comes from
+								 , ("c0_Hs", 3)
 								 , ("c0_H1", 2)
 								 , ("c0_H12", 4)
 								 , ("c0_H2", 4)
 								 , ("c0_H3", 2)
 								 , ("c0_H4", 5)
-								 , ("c0_Hs2", 16)  -- not sure where the 16 comes from
 								 , ("c0_Hs3", 8)
 								 , ("c0_l", 8)
 								 , ("c0_F", 5)
