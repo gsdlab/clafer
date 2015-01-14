@@ -66,7 +66,7 @@ All other symbols are terminals.
   | //Module// | -> | //[Declaration]// 
   | //Declaration// | -> | ``enum`` //PosIdent// ``=`` //[EnumId]// 
   |  |  **|**  | //Element// 
-  | //Clafer// | -> | //Abstract// //GCard// //PosIdent// //Super// //Card// //Init// //Elements// 
+  | //Clafer// | -> | //Abstract// //GCard// //PosIdent// //Super// //Reference// //Card// //Init// //Elements// 
   | //Constraint// | -> | ``[`` //[Exp]// ``]`` 
   | //SoftConstraint// | -> | ``assert`` ``[`` //[Exp]// ``]`` 
   | //Goal// | -> | ``<<`` //[Exp]// ``>>`` 
@@ -80,10 +80,10 @@ All other symbols are terminals.
   |  |  **|**  | //Goal// 
   |  |  **|**  | //SoftConstraint// 
   | //Super// | -> | **eps**
-  |  |  **|**  | //SuperHow// //SetExp// 
-  | //SuperHow// | -> | ``:`` 
-  |  |  **|**  | ``->`` 
-  |  |  **|**  | ``->>`` 
+  |  |  **|**  | ``:`` //SetExp// 
+  | //Reference// | -> | **eps**
+  |  |  **|**  | ``->`` //SetExp// 
+  |  |  **|**  | ``->>`` //SetExp// 
   | //Init// | -> | **eps**
   |  |  **|**  | //InitHow// //Exp// 
   | //InitHow// | -> | ``=`` 
