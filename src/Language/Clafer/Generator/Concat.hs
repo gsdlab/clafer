@@ -53,6 +53,7 @@ flatten :: Concat -> String
 flatten (CString x)      = x
 flatten (Concat _ nodes') = nodes' >>= flatten
 
+infixr 5 +++
 (+++) :: Concat -> Concat -> Concat
 (+++) (CString x)     (CString y)     = CString $ x ++ y
 (+++) (CString "")    y@Concat{}      = y

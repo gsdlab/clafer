@@ -22,11 +22,16 @@
 -}
 module Language.Clafer.Common where
 
-import Data.Tree
-import Data.Maybe
-import Data.Char
-import Data.List
+import           Control.Applicative ((<$>))
+import           Control.Lens ((^..), traversed, universeOn)
+import           Data.Char
+import           Data.Data.Lens (biplate)
+import           Data.List
 import qualified Data.Map as Map
+import           Data.Maybe
+import           Data.StringMap (StringMap)
+import qualified Data.StringMap as SMap
+import           Data.Tree
 
 import Language.Clafer.Front.Absclafer
 import Language.Clafer.Intermediate.Intclafer
@@ -46,21 +51,29 @@ mkInteger (PosInteger (_, n)) = read n
 
 type Ident = PosIdent
 
-getSuper :: IClafer -> String
-getSuper = getSuperId._supers._super
+-- | Returns only [] or [_]
+getSuper :: IClafer -> [String]
+getSuper claf = case getSuperId <$> _super claf of
+    Nothing       -> []
+    Just "clafer" -> error "Bug: The identifier 'clafer' should never be returned as super type"
+    Just x        -> [x]
 
-getSuperNoArr :: IClafer          -> String
-getSuperNoArr    clafer
-  | _isOverlapping $ _super clafer = baseClafer
-  | otherwise                      = getSuper clafer
+-- | Returns only [] or [_]
+getReference :: IClafer -> [String]
+getReference c = case getSuperId <$> _ref <$> _reference c of
+    Nothing -> []
+    Just x  -> [x]
 
-getSuperId :: [PExp] -> String
-getSuperId [] = error "Bug: getSuperId called not on '[PExp (IClaferId)]' but instead on '[]'"
-getSuperId [PExp _ _ _ (IClaferId{ _sident = s})] = s
-getSuperId [pexp'] = error $ "Bug: getSuperId called not on '[PExp (IClaferId)]' but instead on '" ++ show pexp' ++ "'"
+-- | Returns only [] or [_] or [_, _]
+getSuperAndReference :: IClafer -> [String]
+getSuperAndReference c = (getSuper c) ++ (getReference c)
+
+getSuperId :: PExp -> String
+getSuperId (PExp _ _ _ (IClaferId{ _sident = s})) = s
+getSuperId pexp' = error $ "Bug: getSuperId called not on '[PExp (IClaferId)]' but instead on '" ++ show pexp' ++ "'"
 
 isEqClaferId :: String -> IClafer -> Bool
-isEqClaferId = flip $ (==)._uid
+isEqClaferId    uid'      claf'    = _uid claf' == uid'
 
 idToPExp :: String -> Span -> String -> String -> Bool -> PExp
 idToPExp pid' pos modids id' isTop' = PExp (Just $ TClafer [id']) pid' pos (IClaferId modids id' isTop' Nothing)
@@ -94,6 +107,10 @@ getClaferName :: PExp -> String
 getClaferName (PExp _ _ _ (IClaferId _ id' _ _)) = id'
 getClaferName _ = ""
 
+isTopLevel :: IClafer -> Bool
+isTopLevel IClafer{_parentUID=puid} = puid == rootIdent  -- for concrete clafers
+                                   || puid == baseClafer -- for abstract clafers
+
 -- -----------------------------------------------------------------------------
 -- conversions
 elemToClafer :: IElement -> Maybe IClafer
@@ -107,7 +124,7 @@ toClafers = mapMaybe elemToClafer
 -- -----------------------------------------------------------------------------
 -- finds hierarchy and transforms each element
 mapHierarchy :: (IClafer -> b)
-                -> (IClafer -> String)
+                -> (IClafer -> [String])
                 -> [IClafer]
                 -> IClafer
                 -> [b]
@@ -116,18 +133,30 @@ mapHierarchy f sf = (map f.).(findHierarchy sf)
 
 -- returns inheritance hierarchy of a clafer
 
-findHierarchy :: (IClafer -> String)
+findHierarchy :: (IClafer -> [String])
                             -> [IClafer]
                             -> IClafer
                             -> [IClafer]
-findHierarchy sFun clafers clafer
-  | sFun clafer == "clafer"      = [clafer]
-  | otherwise                    = if clafer `elem` superClafers
-                                   then error $ "Inheritance hierarchy contains a cycle: line " ++ (show $ _cinPos clafer)
-                                   else clafer : superClafers
+findHierarchy sFun clafers clafer = case sFun clafer of
+  []           -> [clafer]  -- no super and no reference
+  supersOrRefs -> let
+                    superOrRefClafers = (concatMap findSuper supersOrRefs)
+                  in
+                    clafer : superOrRefClafers ++ concatMap (findHierarchy sFun clafers) superOrRefClafers
   where
-  superClafers = unfoldr (\c -> find (isEqClaferId $ sFun c) clafers >>=
-                          Just . (apply id)) clafer
+    findSuper superUid = filter (\c -> _uid c == superUid) clafers
+
+-- -----------------------------------------------------------------------------
+-- map construction functions
+
+createUidIClaferMap :: IModule -> StringMap IClafer
+createUidIClaferMap    iModule  = foldl' (\accumMap' claf -> SMap.insert (_uid claf) claf accumMap') SMap.empty allClafers
+  where
+    allClafers :: [ IClafer ]
+    allClafers = universeOn biplate iModule
+
+findIClafer :: UID -> StringMap IClafer -> Maybe IClafer
+findIClafer    uid'   uidIClaferMap      = SMap.lookup uid' uidIClaferMap
 
 -- -----------------------------------------------------------------------------
 -- generic functions

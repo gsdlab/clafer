@@ -95,7 +95,7 @@ genPythonModule imodule = concat
 
 genPythonClafer :: IClafer -> Result
 genPythonClafer x = case x of
-  IClafer pos' abstract' gcard' id' uid' puid' super' card' glcard' elements'  ->
+  IClafer pos' abstract' gcard' id' uid' puid' super' refrence' card' glcard' elements'  ->
     concat [ "\t", genPythonPosition pos', "\n"
            , "\t", genPythonAbstract abstract', "\n"
            , "\t", maybe "" genPythonGCard gcard', "\n"
@@ -103,6 +103,7 @@ genPythonClafer x = case x of
            , "\t", genPythonUid uid', "\n"
            , "\t", genPythonParentUid puid', "\n"
            , "\t", genPythonSuper super', "\n"
+           , "\t", genPythonReference refrence', "\n"
            , "\t", maybe "" genPythonCard card', "\n"
            , "\t", genPythonGlCard glcard', "\n"
            , "\tcurrClafer = Clafer.Clafer(pos=pos, isAbstract=isAbstract, gcard=groupCard, ident=id, uid=uid, my_supers=my_supers, card=card, glCard=globalCard)\n"
@@ -134,11 +135,18 @@ genPythonUid uid' = concat [ "uid=\"", uid', "\""]
 genPythonParentUid :: String -> String
 genPythonParentUid uid' = concat [ "parentUid=\"", uid', "\""]
 
-genPythonSuper :: ISuper -> String
+genPythonSuper :: Maybe PExp -> String
 genPythonSuper x = case x of
-  ISuper isOverlapping' pexps' -> concat
-    [ "my_supers = Supers.Supers(", genPythonBoolean "isOverlapping" isOverlapping', ", elements=["
-    , concatMap (genPythonPExp "Super") pexps' , "])"]
+  Nothing                      -> ""
+  Just pexp' -> genPythonPExp "Super" pexp'
+
+genPythonReference :: Maybe IReference -> String
+genPythonReference x = case x of
+  Nothing                        -> ""
+  Just (IReference isSet' pexp') -> concat
+    [ "my_Reference = Reference.Reference("
+    , genPythonBoolean "isSet" isSet'
+    , genPythonPExp "Ref" pexp' ]
 
 genPythonCard :: (Integer, Integer) -> String
 genPythonCard interval' = concat [ "card=" , genPythonInterval interval']

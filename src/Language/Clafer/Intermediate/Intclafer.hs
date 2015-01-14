@@ -45,7 +45,7 @@ data Ir
   | IRClafer IClafer
   | IRIExp IExp
   | IRPExp PExp
-  | IRISuper ISuper
+  | IRIReference (Maybe IReference)
   | IRIQuant IQuant
   | IRIDecl IDecl
   | IRIGCard (Maybe IGCard)
@@ -78,8 +78,9 @@ data IClafer
     , _gcard :: Maybe IGCard  -- ^ group cardinality
     , _ident :: CName         -- ^ name declared in the model
     , _uid :: UID             -- ^ a unique identifier
-    , _parentUID :: UID       -- ^ "root" if concrete top-level, "clafer" if abstract top-level, "" if unresolved or for root clafer, otherwise UID of the parent clafer
-    , _super:: ISuper         -- ^ superclafers
+    , _parentUID :: UID       -- ^ "root" if top-level, "" if unresolved or for root clafer, otherwise UID of the parent clafer
+    , _super :: Maybe PExp    -- ^ superclafer - only allowed PExp is IClaferId. Nothing = default super "clafer"
+    , _reference :: Maybe IReference -- ^ reference type, bag or set
     , _card :: Maybe Interval -- ^ clafer cardinality
     , _glCard :: Interval     -- ^ (o) global cardinality
     , _elements :: [IElement] -- ^ nested elements
@@ -103,14 +104,13 @@ data IElement
     }
   deriving (Eq,Ord,Show,Data,Typeable)
 
--- | A list of superclafers.
---   ->    overlaping unique (set)
---   ->>   overlapping non-unique (bag)
---   :     non overlapping (disjoint)
-data ISuper
-  = ISuper
-    { _isOverlapping :: Bool -- ^ whether overlapping or disjoint with other clafers extending given list of superclafers
-    , _supers :: [PExp]
+-- | A type of reference.
+--   ->    values unique (set)
+--   ->>   values non-unique (bag)
+data IReference
+  = IReference
+    { _isSet :: Bool -- ^ whether set or bag
+    , _ref :: PExp  -- ^ the only allowed reference expressions are IClafer and set expr. (++, **, --s)
     }
   deriving (Eq,Ord,Show,Data,Typeable)
 
@@ -268,8 +268,10 @@ iMap f (IRIElement (IEConstraint h pexp)) =
   f $ IRIElement $ IEConstraint h $ unWrapPExp $ iMap f $ IRPExp pexp
 iMap f (IRIElement (IEGoal m pexp)) =
   f $ IRIElement $ IEGoal m $ unWrapPExp $ iMap f $ IRPExp pexp
-iMap f (IRClafer (IClafer p a grc i u pu s c goc elems)) =
-  f $ IRClafer $ IClafer p a (unWrapIGCard $ iMap f $ IRIGCard grc) i u pu  (unWrapISuper $ iMap f $ IRISuper s) c goc $ map (unWrapIElement . iMap f . IRIElement) elems
+iMap f (IRClafer (IClafer p a grc i u pu Nothing  r c goc elems)) =
+  f $ IRClafer $ IClafer p a (unWrapIGCard $ iMap f $ IRIGCard grc) i u pu Nothing                            (unWrapIReference $ iMap f $ IRIReference r) c goc $ map (unWrapIElement . iMap f . IRIElement) elems
+iMap f (IRClafer (IClafer p a grc i u pu (Just s) r c goc elems)) =
+  f $ IRClafer $ IClafer p a (unWrapIGCard $ iMap f $ IRIGCard grc) i u pu (Just $ unWrapPExp $ iMap f $ IRPExp s) (unWrapIReference $ iMap f $ IRIReference r) c goc $ map (unWrapIElement . iMap f . IRIElement) elems
 iMap f (IRIExp (IDeclPExp q decs p)) =
   f $ IRIExp $ IDeclPExp (unWrapIQuant $ iMap f $ IRIQuant q) (map (unWrapIDecl . iMap f . IRIDecl) decs) $ unWrapPExp $ iMap f $ IRPExp p
 iMap f (IRIExp (IFunExp o pexps)) =
@@ -278,8 +280,9 @@ iMap f (IRPExp (PExp (Just iType') pID p iExp)) =
   f $ IRPExp $ PExp (Just $ unWrapIType $ iMap f $ IRIType iType') pID p $ unWrapIExp $ iMap f $ IRIExp iExp
 iMap f (IRPExp (PExp Nothing pID p iExp)) =
   f $ IRPExp $ PExp Nothing pID p $ unWrapIExp $ iMap f $ IRIExp iExp
-iMap f (IRISuper (ISuper o pexps)) =
-  f $ IRISuper $ ISuper o $ map (unWrapPExp . iMap f . IRPExp) pexps
+iMap _ x@(IRIReference Nothing) = x
+iMap f (IRIReference (Just (IReference is ref))) =
+ f $ IRIReference $ Just $ IReference is $ (unWrapPExp . iMap f . IRPExp) ref
 iMap f (IRIDecl (IDecl i d body')) =
   f $ IRIDecl $ IDecl i d $ unWrapPExp $ iMap f $ IRPExp body'
 iMap f i = f i
@@ -289,8 +292,10 @@ iFoldMap f i@(IRIElement (IEConstraint _ pexp)) =
   f i `mappend` (iFoldMap f $ IRPExp pexp)
 iFoldMap f i@(IRIElement (IEGoal _ pexp)) =
   f i `mappend` (iFoldMap f $ IRPExp pexp)
-iFoldMap f i@(IRClafer (IClafer _ _ grc _ _ _ s _ _ elems)) =
-  f i `mappend` (iFoldMap f $ IRISuper s) `mappend` (iFoldMap f $ IRIGCard grc) `mappend` foldMap (iFoldMap f . IRIElement) elems
+iFoldMap f i@(IRClafer (IClafer _ _ grc _ _ _ Nothing r _ _ elems)) =
+  f i `mappend` (iFoldMap f $ IRIReference r) `mappend` (iFoldMap f $ IRIGCard grc) `mappend` foldMap (iFoldMap f . IRIElement) elems
+iFoldMap f i@(IRClafer (IClafer _ _ grc _ _ _ (Just s) r _ _ elems)) =
+  f i `mappend` (iFoldMap f $ IRPExp s) `mappend` (iFoldMap f $ IRIReference r) `mappend` (iFoldMap f $ IRIGCard grc) `mappend` foldMap (iFoldMap f . IRIElement) elems
 iFoldMap f i@(IRIExp (IDeclPExp q decs p)) =
   f i `mappend` (iFoldMap f $ IRIQuant q) `mappend` (iFoldMap f $ IRPExp p) `mappend` foldMap (iFoldMap f . IRIDecl) decs
 iFoldMap f i@(IRIExp (IFunExp _ pexps)) =
@@ -299,8 +304,9 @@ iFoldMap f i@(IRPExp (PExp (Just iType') _ _ iExp)) =
   f i `mappend` (iFoldMap f $ IRIType iType') `mappend` (iFoldMap f $ IRIExp iExp)
 iFoldMap f i@(IRPExp (PExp Nothing _ _ iExp)) =
   f i `mappend` (iFoldMap f $ IRIExp iExp)
-iFoldMap f i@(IRISuper (ISuper _ pexps)) =
-  f i `mappend` foldMap (iFoldMap f . IRPExp) pexps
+iFoldMap f i@(IRIReference Nothing) = f i
+iFoldMap f i@(IRIReference (Just (IReference _ ref))) =
+  f i `mappend` (iFoldMap f . IRPExp) ref
 iFoldMap f i@(IRIDecl (IDecl _ _ body')) =
   f i `mappend` (iFoldMap f $ IRPExp body')
 iFoldMap f (IRIElement (IEClafer c)) = iFoldMap f $ IRClafer c
@@ -328,9 +334,9 @@ unWrapIExp x = error $ "Can't call unWarpIExp on " ++ show x
 unWrapPExp :: Ir -> PExp
 unWrapPExp (IRPExp x) = x
 unWrapPExp x = error $ "Can't call unWarpPExp on " ++ show x
-unWrapISuper :: Ir -> ISuper
-unWrapISuper (IRISuper x) = x
-unWrapISuper x = error $ "Can't call unWarpISuper on " ++ show x
+unWrapIReference :: Ir -> Maybe IReference
+unWrapIReference (IRIReference x) = x
+unWrapIReference x = error $ "Can't call unWarpIReference on " ++ show x
 unWrapIQuant :: Ir -> IQuant
 unWrapIQuant (IRIQuant x) = x
 unWrapIQuant x = error $ "Can't call unWarpIQuant on " ++ show x
@@ -352,7 +358,7 @@ makeLenses ''IClafer
 
 makeLenses ''IElement
 
-makeLenses ''ISuper
+makeLenses ''IReference
 
 makeLenses ''IGCard
 

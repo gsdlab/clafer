@@ -27,6 +27,7 @@ import Language.Clafer.Front.Absclafer
 import Language.Clafer.Intermediate.Tracing
 import Language.Clafer.Intermediate.Intclafer
 import Language.Clafer.Generator.Html(genTooltip)
+import Control.Applicative ((<$>))
 import qualified Data.Map as Map
 import Data.Maybe
 import Prelude hiding (exp)
@@ -77,13 +78,30 @@ graphSimpleClafer :: Clafer
                       -> Map.Map Span [Ir]
                       -> Bool
                       -> String
-graphSimpleClafer (Clafer s abstract gCard id' super' crd init' es) topLevel irMap showRefs
-  | fst3 topLevel == True = let {tooltip = genTooltip (Module s [ElementDecl s (Subclafer s (Clafer s abstract gCard id' super' crd init' es))]) irMap;
-                               uid' = getDivId s irMap} in
-                             "\"" ++ uid' ++ "\" [label=\"" ++ (head $ lines tooltip) ++ "\" URL=\"#" ++ uid' ++ "\" tooltip=\"" ++ htmlNewlines tooltip ++ "\"];\n"
-                             ++ graphSimpleSuper super' (True, Just uid', Just uid') irMap showRefs ++ graphSimpleElements es (False, Just uid', Just uid') irMap showRefs
-  | otherwise             = let (PosIdent (_,ident')) = id' in
-                             graphSimpleSuper super' (fst3 topLevel, snd3 topLevel, Just ident') irMap showRefs ++ graphSimpleElements es (fst3 topLevel, snd3 topLevel, Just ident') irMap showRefs
+graphSimpleClafer (Clafer s abstract gCard id' super' reference' crd init' es) (True, _, _) irMap showRefs =
+  let
+    tooltip = genTooltip (Module s [ElementDecl s (Subclafer s (Clafer s abstract gCard id' super' reference' crd init' es))]) irMap
+    uid' = getDivId s irMap
+  in
+     "\"" ++
+      uid' ++
+      "\" [label=\"" ++
+      (head $ lines tooltip) ++
+      "\" URL=\"#" ++
+      uid' ++
+      "\" tooltip=\"" ++
+      htmlNewlines tooltip ++
+      "\"];\n" ++
+      graphSimpleSuper super' (True, Just uid', Just uid') irMap showRefs ++
+      graphSimpleReference reference' (True, Just uid', Just uid') irMap showRefs ++
+      graphSimpleElements es (False, Just uid', Just uid') irMap showRefs
+graphSimpleClafer (Clafer _ _ _ id' super' reference' _ _ es) topLevel irMap showRefs =
+  let
+    (PosIdent (_,ident')) = id'
+  in
+    graphSimpleSuper super' (fst3 topLevel, snd3 topLevel, Just ident') irMap showRefs ++
+    graphSimpleReference reference' (fst3 topLevel, snd3 topLevel, Just ident') irMap showRefs ++
+    graphSimpleElements es (fst3 topLevel, snd3 topLevel, Just ident') irMap showRefs
 
 graphSimpleSuper :: Super
                   -> (Bool, Maybe String, Maybe String)
@@ -91,18 +109,41 @@ graphSimpleSuper :: Super
                   -> Bool
                   -> String
 graphSimpleSuper (SuperEmpty _) _ _ _ = ""
-graphSimpleSuper (SuperSome _ superHow setExp) topLevel irMap showRefs = let {parent [] = "error";
-                                                            parent (uid'@('c':xs):xss) = if '_' `elem` xs then uid' else parent xss;
-                                                            parent (_:xss) = parent xss;
-                                                            super' = parent $ graphSimpleSetExp setExp topLevel irMap} in
-                                                            if super' == "error" then "" else "\"" ++ fromJust (snd3 topLevel) ++ "\" -> \"" ++ parent (graphSimpleSetExp setExp topLevel irMap) ++ "\"" ++ graphSimpleSuperHow superHow topLevel irMap showRefs
+graphSimpleSuper (SuperSome _ setExp) topLevel irMap _ =
+  let
+    parent [] = "error"
+    parent (uid'@('c':xs):xss) = if '_' `elem` xs then uid' else parent xss
+    parent (_:xss) = parent xss
+    super' = parent $ graphSimpleSetExp setExp topLevel irMap
+  in
+    if super' == "error"
+      then ""
+      else "\"" ++
+           fromJust (snd3 topLevel) ++
+           "\" -> \"" ++
+           parent (graphSimpleSetExp setExp topLevel irMap) ++
+           "\"" ++
+           " [" ++ if fst3 topLevel == True
+             then "arrowhead=onormal constraint=true weight=100];\n"
+             else "arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];\n"
 
-graphSimpleSuperHow :: SuperHow -> (Bool, Maybe String, Maybe String) -> Map.Map Span [Ir] -> Bool -> String
-graphSimpleSuperHow (SuperColon _) topLevel _ _ = " [" ++ if fst3 topLevel == True
-                                                                 then "arrowhead=onormal constraint=true weight=100];\n"
-                                                                 else "arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];\n"
-graphSimpleSuperHow (SuperArrow _) topLevel _ showRefs = " [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=" ++ refColour showRefs ++ " fontcolor=" ++ refColour showRefs ++ (if fst3 topLevel == True then "" else " label=" ++ (fromJust $ trd3 topLevel)) ++ "];\n"
-graphSimpleSuperHow (SuperMArrow _) topLevel _ showRefs = " [arrowhead=veevee arrowsize=0.6 minlen=1.5 penwidth=0.5 constraint=true weight=10 color=" ++ refColour showRefs ++ " fontcolor=" ++ refColour showRefs ++ (if fst3 topLevel == True then "" else " label=" ++ (fromJust $ trd3 topLevel)) ++ "];\n"
+graphSimpleReference :: Reference -> (Bool, Maybe String, Maybe String) -> Map.Map Span [Ir] -> Bool -> String
+graphSimpleReference (ReferenceEmpty _) _ _ _ = ""
+graphSimpleReference (ReferenceSet _ _) topLevel _ showRefs =
+    " [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=" ++
+     refColour showRefs ++
+     " fontcolor=" ++
+     refColour showRefs ++
+     (if fst3 topLevel == True then "" else " label=" ++
+     (fromJust $ trd3 topLevel)) ++
+     "];\n"
+graphSimpleReference (ReferenceBag _ _) topLevel _ showRefs =
+    " [arrowhead=veevee arrowsize=0.6 minlen=1.5 penwidth=0.5 constraint=true weight=10 color=" ++
+    refColour showRefs ++
+    " fontcolor=" ++
+    refColour showRefs ++
+    (if fst3 topLevel == True then "" else " label=" ++
+    (fromJust $ trd3 topLevel)) ++ "];\n"
 
 refColour :: Bool -> String
 refColour True = "lightgray"
@@ -168,12 +209,13 @@ graphCVLElements (ElementsEmpty _) _ _ = ""
 graphCVLElements (ElementsList _ es) parent irMap = concatMap (\x -> graphCVLElement x parent irMap  ++ "\n") es
 
 graphCVLClafer :: Clafer -> Maybe String -> Map.Map Span [Ir] -> String
-graphCVLClafer (Clafer s _ gCard _ super' crd _ es) parent irMap
+graphCVLClafer (Clafer s _ gCard _ super' reference' crd _ es) parent irMap
    = let {{-tooltip = genTooltip (Module [ElementDecl (Subclafer (Clafer abstract gCard id' super' crd init' es))]) irMap;-}
           uid' = getDivId s irMap;
           gcrd = graphCVLGCard gCard parent irMap;
-          super'' = graphCVLSuper super' parent irMap} in
-     "\"" ++ uid' ++ "\" [URL=\"#" ++ uid' ++ "\" label=\"" ++ dropUid uid' ++ super'' ++ (if choiceCard crd then "\" style=rounded"  else " [" ++ graphCVLCard crd parent irMap ++ "]\"")
+          super'' = graphCVLSuper super' parent irMap;
+          reference'' = graphCVLReference reference' parent irMap} in
+     "\"" ++ uid' ++ "\" [URL=\"#" ++ uid' ++ "\" label=\"" ++ dropUid uid' ++ super'' ++ reference'' ++ (if choiceCard crd then "\" style=rounded"  else " [" ++ graphCVLCard crd parent irMap ++ "]\"")
      ++ (if super'' == "" then "" else " shape=oval") ++ "];\n"
      ++ (if gcrd == "" then "" else "g" ++ uid' ++ " [label=\"" ++ gcrd ++ "\" fontsize=10 shape=triangle];\ng" ++ uid' ++ " -> " ++ uid' ++ " [weight=10];\n")
      ++ (if parent==Nothing then "" else uid' ++ " -> " ++ fromJust parent ++ (if lowerCard crd == "0" then " [style=dashed]" else "") ++ ";\n")
@@ -181,12 +223,12 @@ graphCVLClafer (Clafer s _ gCard _ super' crd _ es) parent irMap
 
 graphCVLSuper :: Super -> Maybe String -> Map.Map Span [Ir] -> String
 graphCVLSuper (SuperEmpty _) _ _ = ""
-graphCVLSuper (SuperSome _ superHow setExp) parent irMap = graphCVLSuperHow superHow ++ concat (graphCVLSetExp setExp parent irMap)
+graphCVLSuper (SuperSome _ setExp) parent irMap = ":" ++ concat (graphCVLSetExp setExp parent irMap)
 
-graphCVLSuperHow :: SuperHow -> String
-graphCVLSuperHow (SuperColon _)  = ":"
-graphCVLSuperHow (SuperArrow _)  = "->"
-graphCVLSuperHow (SuperMArrow _) = "->>"
+graphCVLReference :: Reference -> Maybe String -> Map.Map Span [Ir] -> String
+graphCVLReference (ReferenceEmpty _) _ _ = ""
+graphCVLReference (ReferenceSet _ setExp) parent irMap = "->" ++ concat (graphCVLSetExp setExp parent irMap)
+graphCVLReference (ReferenceBag _ setExp) parent irMap = "->>" ++ concat (graphCVLSetExp setExp parent irMap)
 
 graphCVLName :: Name -> Maybe String -> Map.Map Span [Ir] -> String
 graphCVLName (Path _ modids) parent irMap = unwords $ map (\x -> graphCVLModId x parent irMap) modids
@@ -310,8 +352,10 @@ getSuperId s irMap = if Map.lookup s irMap == Nothing
 getUseId :: Span -> Map.Map Span [Ir] -> String
 getUseId s irMap = if Map.lookup s irMap == Nothing
                       then "Uid not Found"
-                      else let IRClafer iClaf = head $ fromJust $ Map.lookup s irMap in
-                        _sident $ _exp $ head $ _supers $ _super iClaf
+                      else let
+                            IRClafer iClaf = head $ fromJust $ Map.lookup s irMap
+                           in
+                            fromMaybe "" $ _sident <$> _exp <$> _super iClaf
 
 getExpId :: Span -> Map.Map Span [Ir] -> String
 getExpId s irMap = if Map.lookup s irMap == Nothing

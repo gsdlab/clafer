@@ -41,6 +41,8 @@ import Language.Clafer.Front.Absclafer
 import Language.Clafer.Front.LayoutResolver(revertLayout)
 import Language.Clafer.Intermediate.Tracing
 import Language.Clafer.Intermediate.Intclafer
+
+import Control.Applicative ((<$>))
 import Data.List (intersperse,genericSplitAt)
 import qualified Data.Map as Map
 import Data.Maybe
@@ -174,7 +176,7 @@ printElements (ElementsList _ es) indent irMap html comments = "\n{" ++ mapEleme
           span' (Subsoftconstraint s _) = s
 
 printClafer :: Clafer -> Int -> Map.Map Span [Ir] -> Bool -> [(Span, String)] -> String
-printClafer (Clafer s abstract gCard id' super' crd init' es) indent irMap html comments =
+printClafer (Clafer s abstract gCard id' super' reference' crd init' es) indent irMap html comments =
   preComments ++
   printIndentId indent html ++
   claferDeclaration ++
@@ -190,6 +192,7 @@ printClafer (Clafer s abstract gCard id' super' crd init' es) indent irMap html 
       printGCard gCard html,
       printPosIdent id' (Just uid') html,
       printSuper super' indent irMap html comments,
+      printReference reference' indent irMap html comments,
       printCard crd,
       printInit init' indent irMap html comments]
 
@@ -236,12 +239,13 @@ printPosIdentRef (PosIdent (p, id')) irMap html
 
 printSuper :: Super -> Int -> Map.Map Span [Ir] -> Bool -> [(Span, String)] -> String
 printSuper (SuperEmpty _) _ _ _ _ = ""
-printSuper (SuperSome _ superHow setExp) indent irMap html comments = printSuperHow superHow indent irMap html comments ++ printSetExp setExp indent irMap html comments
+printSuper (SuperSome _ setExp) indent irMap html comments = (while html "<span class=\"keyword\">") ++ " : " ++ (while html "</span>") ++ printSetExp setExp indent irMap html comments
 
-printSuperHow :: SuperHow -> Int -> Map.Map Span [Ir] -> Bool -> [(Span, String)] -> String
-printSuperHow (SuperColon _)  _ _ html _ = (while html "<span class=\"keyword\">") ++ " :" ++ (while html "</span>") ++ " "
-printSuperHow (SuperArrow _) _ _ html _ = (while html "<span class=\"keyword\">") ++ " ->" ++ (while html "</span>") ++ " "
-printSuperHow (SuperMArrow _) _ _ html _ = (while html "<span class=\"keyword\">") ++ " ->>" ++ (while html "</span>") ++ " "
+printReference :: Reference -> Int -> Map.Map Span [Ir] -> Bool -> [(Span, String)] -> String
+printReference (ReferenceEmpty _) _ _ _ _ = ""
+printReference (ReferenceSet _ setExp) indent irMap html comments = (while html "<span class=\"keyword\">") ++ " -> " ++ (while html "</span>") ++ printSetExp setExp indent irMap html comments
+printReference (ReferenceBag _ setExp) indent irMap html comments = (while html "<span class=\"keyword\">") ++ " ->> " ++ (while html "</span>") ++ printSetExp setExp indent irMap html comments
+
 
 printCard :: Card -> String
 printCard (CardEmpty _) = ""
@@ -285,8 +289,8 @@ printInit (InitEmpty _) _ _ _ _ = ""
 printInit (InitSome _ initHow exp') indent irMap html comments = printInitHow initHow  ++ printExp exp' indent irMap html comments
 
 printInitHow :: InitHow -> String
-printInitHow (InitHow_1 _) = " = "
-printInitHow (InitHow_2 _) = " := "
+printInitHow (InitConstant _) = " = "
+printInitHow (InitDefault _) = " := "
 
 printExp :: Exp -> Int -> Map.Map Span [Ir] -> Bool -> [(Span, String)] -> String
 printExp (DeclAllDisj _ decl exp') indent irMap html comments = "all disj " ++ (printDecl decl indent irMap html comments) ++ " | " ++ (printExp exp' indent irMap html comments)
@@ -379,6 +383,7 @@ getUid posIdent@(PosIdent (_, id')) irMap =
       findUid id' $ unwrap wrappedResult
       where {unwrap (IRPExp pexp')       = getIdentPExp pexp';
              unwrap (IRClafer iClafer') = [ _uid iClafer' ];
+             unwrap x = error $ "Html:getUid:unwrap called on: " ++ show x;
              getIdentPExp (PExp _ _ _ exp') = getIdentIExp exp';
              getIdentIExp (IFunExp _ exps') = concatMap getIdentPExp exps';
              getIdentIExp (IClaferId _ id'' _ _) = [id''];
@@ -402,7 +407,7 @@ getUseId :: Span -> Map.Map Span [Ir] -> (String, String)
 getUseId s irMap = if Map.lookup s irMap == Nothing
                       then ("Uid not Found", "Uid not Found")
                       else let IRClafer iClaf = head $ fromJust $ Map.lookup s irMap in
-                        (_uid iClaf, _sident $ _exp $ head $ _supers $ _super iClaf)
+                        (_uid iClaf, fromMaybe "" $ _sident <$> _exp <$> _super iClaf)
 
 while :: Bool -> String -> String
 while bool exp' = if bool then exp' else ""
