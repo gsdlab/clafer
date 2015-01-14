@@ -5,19 +5,19 @@ abstract options
         small
         large
     cache ?
-        size : integer
+        size -> integer
             fixed ?
     [small && cache => fixed]
 
 abstract comp
-    version : integer = 1 + 2
+    version -> integer = 1 + 2
 
 abstract ECU : comp
 
 abstract display : comp
     server -> ECU
     `options
-    price : integer 
+    price -> integer
     [this.version >= server.version]
 
 
@@ -47,7 +47,7 @@ telematicsSystem
         dual
 
     extraDisplay ?
-   
+
     xor size
         small
         large
@@ -71,9 +71,9 @@ telematicsSystem
 
 
 sig telematicsSystem
-sit telemeticsSystemLarge 
+sit telemeticsSystemLarge
 
 
 << min sum ( e: car | ! e.highend).Price >>
 
-numberOfTA : integer = 
+numberOfTA -> integer

@@ -1,5 +1,5 @@
 // https://github.com/gsdlab/clafer/issues/10
 
 A
-	x : integer
+	x -> integer
    		[ this >= 0 ]

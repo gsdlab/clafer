@@ -1,11 +1,11 @@
 abstract Person
-	age : integer
+	age -> integer
 	xor maritalStatus
 		neverMarried
 		married
 			spouse -> Person
 				[ this != Person ]   // cannot marry oneself
-				[ this.maritalStatus.married.spouse = Person ]     // here, the modeler means spouse.maritalStatus.married.spouse 
+				[ this.maritalStatus.married.spouse = Person ]     // here, the modeler means spouse.maritalStatus.married.spouse
 		divorced
 		[ married || divorced => age >= 3 ]
 	childs -> Person *

@@ -2,5 +2,5 @@
 
 
 
-abstract  clafer1 : clafer2 
-abstract  clafer2 : integer
+abstract  clafer1 : clafer2
+abstract  clafer2 -> integer

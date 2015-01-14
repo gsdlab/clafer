@@ -1,6 +1,6 @@
 A
-    B : integer *
+    B -> integer *
          C ?
-        
-    [all b : B | some b.C ]   
-    [all b : B | b + 1 = 2 ]  
+
+    [all b : B | some b.C ]
+    [all b : B | b + 1 = 2 ]

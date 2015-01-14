@@ -1,13 +1,13 @@
 // This is the example used in the tutorial to introduce Clafer
 
-abstract date : string
+abstract date ->> string
   // cannot currently specify that the format of the value should be, for example, "dd/mm/yyyy"
 
 enum NorthAmericanCountry = Canada | USA
 
 abstract Person
-    Name : string
-    Surname : string
+    Name -> string
+    Surname -> string
     DateOfBirth : date
     or Gender
         Male
@@ -17,11 +17,11 @@ abstract Person
         Married
         Divorced
       Address
-        Street : string
-              UnitNo : string ?
-        City : string
+        Street -> string
+              UnitNo -> string ?
+        City -> string
         Country -> NorthAmericanCountry
-        PostalCode : string
+        PostalCode -> string
 
 JohnDoe : Person
     [ Name = "John"
@@ -35,10 +35,10 @@ JohnDoe : Person
       PostalCode = "A1B 2C3" ]
 
 abstract Student  : Person
-    StudentId : string
+    StudentId -> string
 
-abstract WaitingLine 
-    participants -> Person * 
+abstract WaitingLine
+    participants -> Person *
 
 MaryJane : Student
    [ StudentId = "MJ13421354" ]
@@ -54,5 +54,5 @@ abstract TwoPersonLine : WaitingLine
     [ # participants  = 2 ]
 
 abstract OneToTenPersonLine : WaitingLine
-    [ # participants  >= 1 
+    [ # participants  >= 1
       # participants  <= 10 ]

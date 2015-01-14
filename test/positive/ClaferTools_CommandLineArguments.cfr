@@ -1,8 +1,8 @@
 abstract Argument
 
-abstract IntegerArgument -> integer
+abstract IntegerArgument ->> integer
 
-abstract StringArgument -> string
+abstract StringArgument ->> string
 
 abstract Value
 
