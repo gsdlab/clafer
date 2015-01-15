@@ -16,20 +16,7 @@
 </GroupCard>
 <Id>Animal</Id>
 <UniqueId>c0_Animal</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>clafer</Id>
-<IsTop>false</IsTop>
-</Exp></Super>
-</Supers>
+<ParentUniqueId>root</ParentUniqueId>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
 <Max><IntLiteral>-1</IntLiteral>
@@ -57,20 +44,7 @@
 </GroupCard>
 <Id>leg</Id>
 <UniqueId>c0_leg</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>clafer</Id>
-<IsTop>false</IsTop>
-</Exp></Super>
-</Supers>
+<ParentUniqueId>c0_Animal</ParentUniqueId>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
 <Max><IntLiteral>-1</IntLiteral>
@@ -98,20 +72,7 @@
 </GroupCard>
 <Id>Owner</Id>
 <UniqueId>c0_Owner</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>clafer</Id>
-<IsTop>false</IsTop>
-</Exp></Super>
-</Supers>
+<ParentUniqueId>root</ParentUniqueId>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
 <Max><IntLiteral>-1</IntLiteral>
@@ -139,7 +100,7 @@
 </GroupCard>
 <Id>Pet</Id>
 <UniqueId>c0_Pet</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
+<ParentUniqueId>c0_Owner</ParentUniqueId>
 <Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>7</IntLiteral>
 <IntLiteral>9</IntLiteral>
@@ -151,8 +112,8 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Animal</Id>
 <IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Super>
-</Supers>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -180,7 +141,7 @@
 </GroupCard>
 <Id>SnakeOwner</Id>
 <UniqueId>c0_SnakeOwner</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
+<ParentUniqueId>root</ParentUniqueId>
 <Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>9</IntLiteral>
 <IntLiteral>14</IntLiteral>
@@ -192,8 +153,8 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Owner</Id>
 <IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Super>
-</Supers>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>-1</IntLiteral>
@@ -242,6 +203,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_SnakeOwner</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -254,6 +216,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Pet</Id>
 <IsTop>false</IsTop>
+<Bind>c0_Pet</Bind>
 </Exp></Argument>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:ISet" /><ParentId>e3_</ParentId>
@@ -267,6 +230,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_leg</Id>
 <IsTop>false</IsTop>
+<Bind>c0_leg</Bind>
 </Exp></Argument>
 </Exp></BodyParentExp>
 </Exp></ParentExp>
@@ -287,7 +251,7 @@
 </GroupCard>
 <Id>DogOwner</Id>
 <UniqueId>c0_DogOwner</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
+<ParentUniqueId>root</ParentUniqueId>
 <Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>12</IntLiteral>
 <IntLiteral>12</IntLiteral>
@@ -299,8 +263,8 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Owner</Id>
 <IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Super>
-</Supers>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>-1</IntLiteral>
@@ -359,6 +323,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_DogOwner</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -371,6 +336,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Pet</Id>
 <IsTop>false</IsTop>
+<Bind>c0_Pet</Bind>
 </Exp></Argument>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:ISet" /><ParentId>e8_</ParentId>
@@ -384,6 +350,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_leg</Id>
 <IsTop>false</IsTop>
+<Bind>c0_leg</Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>

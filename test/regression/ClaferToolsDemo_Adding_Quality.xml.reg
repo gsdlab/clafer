@@ -3,7 +3,7 @@
 <IntLiteral>1</IntLiteral>
 </Start>
 <End><IntLiteral>7</IntLiteral>
-<IntLiteral>25</IntLiteral>
+<IntLiteral>26</IntLiteral>
 </End>
 </Position>
 <IsAbstract>true</IsAbstract>
@@ -16,20 +16,7 @@
 </GroupCard>
 <Id>Feature</Id>
 <UniqueId>c0_Feature</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>clafer</Id>
-<IsTop>false</IsTop>
-</Exp></Super>
-</Supers>
+<ParentUniqueId>root</ParentUniqueId>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
 <Max><IntLiteral>-1</IntLiteral>
@@ -44,7 +31,7 @@
 <IntLiteral>5</IntLiteral>
 </Start>
 <End><IntLiteral>4</IntLiteral>
-<IntLiteral>27</IntLiteral>
+<IntLiteral>28</IntLiteral>
 </End>
 </Position>
 <IsAbstract>false</IsAbstract>
@@ -57,20 +44,22 @@
 </GroupCard>
 <Id>productivity</Id>
 <UniqueId>c0_productivity</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
-<Super><ParentId></ParentId>
+<ParentUniqueId>c0_Feature</ParentUniqueId>
+<Reference><IsSet>true</IsSet>
+<Ref><ParentId></ParentId>
 <Position><Start><IntLiteral>4</IntLiteral>
-<IntLiteral>20</IntLiteral>
+<IntLiteral>21</IntLiteral>
 </Start>
 <End><IntLiteral>4</IntLiteral>
-<IntLiteral>27</IntLiteral>
+<IntLiteral>28</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>integer</Id>
 <IsTop>true</IsTop>
-</Exp></Super>
-</Supers>
+<Bind>integer</Bind>
+</Exp></Ref>
+</Reference>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -85,7 +74,7 @@
 <IntLiteral>5</IntLiteral>
 </Start>
 <End><IntLiteral>5</IntLiteral>
-<IntLiteral>19</IntLiteral>
+<IntLiteral>20</IntLiteral>
 </End>
 </Position>
 <IsAbstract>false</IsAbstract>
@@ -98,20 +87,22 @@
 </GroupCard>
 <Id>cost</Id>
 <UniqueId>c0_cost</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
-<Super><ParentId></ParentId>
+<ParentUniqueId>c0_Feature</ParentUniqueId>
+<Reference><IsSet>true</IsSet>
+<Ref><ParentId></ParentId>
 <Position><Start><IntLiteral>5</IntLiteral>
-<IntLiteral>12</IntLiteral>
+<IntLiteral>13</IntLiteral>
 </Start>
 <End><IntLiteral>5</IntLiteral>
-<IntLiteral>19</IntLiteral>
+<IntLiteral>20</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>integer</Id>
 <IsTop>true</IsTop>
-</Exp></Super>
-</Supers>
+<Bind>integer</Bind>
+</Exp></Ref>
+</Reference>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -126,7 +117,7 @@
 <IntLiteral>5</IntLiteral>
 </Start>
 <End><IntLiteral>6</IntLiteral>
-<IntLiteral>26</IntLiteral>
+<IntLiteral>27</IntLiteral>
 </End>
 </Position>
 <IsAbstract>false</IsAbstract>
@@ -139,20 +130,22 @@
 </GroupCard>
 <Id>batterylife</Id>
 <UniqueId>c0_batterylife</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
-<Super><ParentId></ParentId>
+<ParentUniqueId>c0_Feature</ParentUniqueId>
+<Reference><IsSet>true</IsSet>
+<Ref><ParentId></ParentId>
 <Position><Start><IntLiteral>6</IntLiteral>
-<IntLiteral>19</IntLiteral>
+<IntLiteral>20</IntLiteral>
 </Start>
 <End><IntLiteral>6</IntLiteral>
-<IntLiteral>26</IntLiteral>
+<IntLiteral>27</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>integer</Id>
 <IsTop>true</IsTop>
-</Exp></Super>
-</Supers>
+<Bind>integer</Bind>
+</Exp></Ref>
+</Reference>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -167,7 +160,7 @@
 <IntLiteral>5</IntLiteral>
 </Start>
 <End><IntLiteral>7</IntLiteral>
-<IntLiteral>23</IntLiteral>
+<IntLiteral>24</IntLiteral>
 </End>
 </Position>
 <IsAbstract>false</IsAbstract>
@@ -180,20 +173,22 @@
 </GroupCard>
 <Id>security</Id>
 <UniqueId>c0_security</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
-<Super><ParentId></ParentId>
+<ParentUniqueId>c0_Feature</ParentUniqueId>
+<Reference><IsSet>true</IsSet>
+<Ref><ParentId></ParentId>
 <Position><Start><IntLiteral>7</IntLiteral>
-<IntLiteral>16</IntLiteral>
+<IntLiteral>17</IntLiteral>
 </Start>
 <End><IntLiteral>7</IntLiteral>
-<IntLiteral>23</IntLiteral>
+<IntLiteral>24</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>integer</Id>
 <IsTop>true</IsTop>
-</Exp></Super>
-</Supers>
+<Bind>integer</Bind>
+</Exp></Ref>
+</Reference>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -208,7 +203,7 @@
 <IntLiteral>1</IntLiteral>
 </Start>
 <End><IntLiteral>73</IntLiteral>
-<IntLiteral>46</IntLiteral>
+<IntLiteral>47</IntLiteral>
 </End>
 </Position>
 <IsAbstract>true</IsAbstract>
@@ -221,20 +216,7 @@
 </GroupCard>
 <Id>MobilePhone</Id>
 <UniqueId>c0_MobilePhone</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>clafer</Id>
-<IsTop>false</IsTop>
-</Exp></Super>
-</Supers>
+<ParentUniqueId>root</ParentUniqueId>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
 <Max><IntLiteral>-1</IntLiteral>
@@ -262,7 +244,7 @@
 </GroupCard>
 <Id>Connectivity</Id>
 <UniqueId>c0_Connectivity</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
+<ParentUniqueId>c0_MobilePhone</ParentUniqueId>
 <Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>9</IntLiteral>
 <IntLiteral>20</IntLiteral>
@@ -274,8 +256,8 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Feature</Id>
 <IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Super>
-</Supers>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -316,6 +298,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_Connectivity</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -337,6 +320,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_batterylife</Id>
 <IsTop>false</IsTop>
+<Bind>c0_batterylife</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -348,7 +332,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
@@ -403,6 +388,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_Connectivity</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -424,6 +410,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_productivity</Id>
 <IsTop>false</IsTop>
+<Bind>c0_productivity</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -435,7 +422,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
@@ -480,6 +468,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_Connectivity</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -501,6 +490,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_security</Id>
 <IsTop>false</IsTop>
+<Bind>c0_security</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -512,7 +502,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
@@ -557,6 +548,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_Connectivity</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -578,6 +570,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_cost</Id>
 <IsTop>false</IsTop>
+<Bind>c0_cost</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -589,7 +582,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
@@ -621,7 +615,7 @@
 </GroupCard>
 <Id>Bluetooth</Id>
 <UniqueId>c0_Bluetooth</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
+<ParentUniqueId>c0_Connectivity</ParentUniqueId>
 <Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>14</IntLiteral>
 <IntLiteral>25</IntLiteral>
@@ -633,8 +627,8 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Feature</Id>
 <IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Super>
-</Supers>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -675,6 +669,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_Bluetooth</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -696,6 +691,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_batterylife</Id>
 <IsTop>false</IsTop>
+<Bind>c0_batterylife</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -707,7 +703,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
@@ -752,6 +749,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_Bluetooth</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -773,6 +771,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_productivity</Id>
 <IsTop>false</IsTop>
+<Bind>c0_productivity</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -784,7 +783,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
@@ -829,6 +829,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_Bluetooth</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -850,6 +851,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_security</Id>
 <IsTop>false</IsTop>
+<Bind>c0_security</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -861,7 +863,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
@@ -906,6 +909,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_Bluetooth</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -927,6 +931,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_cost</Id>
 <IsTop>false</IsTop>
+<Bind>c0_cost</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -938,7 +943,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
@@ -970,7 +976,7 @@
 </GroupCard>
 <Id>Bluetooth20EDR</Id>
 <UniqueId>c0_Bluetooth20EDR</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
+<ParentUniqueId>c0_Bluetooth</ParentUniqueId>
 <Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>19</IntLiteral>
 <IntLiteral>30</IntLiteral>
@@ -982,8 +988,8 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Feature</Id>
 <IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Super>
-</Supers>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -1024,6 +1030,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_Bluetooth20EDR</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -1045,6 +1052,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_batterylife</Id>
 <IsTop>false</IsTop>
+<Bind>c0_batterylife</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -1056,7 +1064,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
@@ -1111,6 +1120,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_Bluetooth20EDR</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -1132,6 +1142,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_productivity</Id>
 <IsTop>false</IsTop>
+<Bind>c0_productivity</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -1143,7 +1154,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
@@ -1188,6 +1200,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_Bluetooth20EDR</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -1209,6 +1222,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_security</Id>
 <IsTop>false</IsTop>
+<Bind>c0_security</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -1220,7 +1234,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
@@ -1275,6 +1290,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_Bluetooth20EDR</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -1296,6 +1312,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_cost</Id>
 <IsTop>false</IsTop>
+<Bind>c0_cost</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -1307,7 +1324,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
@@ -1339,7 +1357,7 @@
 </GroupCard>
 <Id>Bluetooth21EDR</Id>
 <UniqueId>c0_Bluetooth21EDR</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
+<ParentUniqueId>c0_Bluetooth</ParentUniqueId>
 <Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>24</IntLiteral>
 <IntLiteral>30</IntLiteral>
@@ -1351,8 +1369,8 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Feature</Id>
 <IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Super>
-</Supers>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -1393,6 +1411,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_Bluetooth21EDR</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -1414,6 +1433,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_batterylife</Id>
 <IsTop>false</IsTop>
+<Bind>c0_batterylife</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -1425,7 +1445,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
@@ -1480,6 +1501,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_Bluetooth21EDR</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -1501,6 +1523,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_productivity</Id>
 <IsTop>false</IsTop>
+<Bind>c0_productivity</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -1512,7 +1535,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
@@ -1557,6 +1581,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_Bluetooth21EDR</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -1578,6 +1603,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_security</Id>
 <IsTop>false</IsTop>
+<Bind>c0_security</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -1589,7 +1615,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
@@ -1644,6 +1671,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_Bluetooth21EDR</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -1665,6 +1693,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_cost</Id>
 <IsTop>false</IsTop>
+<Bind>c0_cost</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -1676,7 +1705,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
@@ -1708,7 +1738,7 @@
 </GroupCard>
 <Id>Bluetooth40</Id>
 <UniqueId>c0_Bluetooth40</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
+<ParentUniqueId>c0_Bluetooth</ParentUniqueId>
 <Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>29</IntLiteral>
 <IntLiteral>27</IntLiteral>
@@ -1720,8 +1750,8 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Feature</Id>
 <IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Super>
-</Supers>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -1762,6 +1792,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_Bluetooth40</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -1783,6 +1814,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_batterylife</Id>
 <IsTop>false</IsTop>
+<Bind>c0_batterylife</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -1794,7 +1826,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
@@ -1849,6 +1882,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_Bluetooth40</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -1870,6 +1904,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_productivity</Id>
 <IsTop>false</IsTop>
+<Bind>c0_productivity</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -1881,7 +1916,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
@@ -1926,6 +1962,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_Bluetooth40</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -1947,6 +1984,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_security</Id>
 <IsTop>false</IsTop>
+<Bind>c0_security</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -1958,7 +1996,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
@@ -2013,6 +2052,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_Bluetooth40</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -2034,6 +2074,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_cost</Id>
 <IsTop>false</IsTop>
+<Bind>c0_cost</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -2045,7 +2086,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
@@ -2077,7 +2119,7 @@
 </GroupCard>
 <Id>GSM</Id>
 <UniqueId>c0_GSM</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
+<ParentUniqueId>c0_Connectivity</ParentUniqueId>
 <Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>34</IntLiteral>
 <IntLiteral>15</IntLiteral>
@@ -2089,8 +2131,8 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Feature</Id>
 <IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Super>
-</Supers>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -2131,6 +2173,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_GSM</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -2152,6 +2195,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_batterylife</Id>
 <IsTop>false</IsTop>
+<Bind>c0_batterylife</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -2163,7 +2207,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
@@ -2218,6 +2263,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_GSM</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -2239,6 +2285,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_productivity</Id>
 <IsTop>false</IsTop>
+<Bind>c0_productivity</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -2250,7 +2297,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
@@ -2295,6 +2343,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_GSM</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -2316,6 +2365,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_security</Id>
 <IsTop>false</IsTop>
+<Bind>c0_security</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -2327,7 +2377,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
@@ -2382,6 +2433,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_GSM</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -2403,6 +2455,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_cost</Id>
 <IsTop>false</IsTop>
+<Bind>c0_cost</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -2414,7 +2467,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
@@ -2446,7 +2500,7 @@
 </GroupCard>
 <Id>LTE</Id>
 <UniqueId>c0_LTE</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
+<ParentUniqueId>c0_Connectivity</ParentUniqueId>
 <Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>39</IntLiteral>
 <IntLiteral>15</IntLiteral>
@@ -2458,8 +2512,8 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Feature</Id>
 <IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Super>
-</Supers>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -2500,6 +2554,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_LTE</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -2521,6 +2576,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_batterylife</Id>
 <IsTop>false</IsTop>
+<Bind>c0_batterylife</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -2532,7 +2588,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
@@ -2587,6 +2644,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_LTE</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -2608,6 +2666,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_productivity</Id>
 <IsTop>false</IsTop>
+<Bind>c0_productivity</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -2619,7 +2678,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
@@ -2664,6 +2724,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_LTE</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -2685,6 +2746,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_security</Id>
 <IsTop>false</IsTop>
+<Bind>c0_security</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -2696,7 +2758,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
@@ -2751,6 +2814,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_LTE</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -2772,6 +2836,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_cost</Id>
 <IsTop>false</IsTop>
+<Bind>c0_cost</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -2783,7 +2848,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
@@ -2815,7 +2881,7 @@
 </GroupCard>
 <Id>WiFi</Id>
 <UniqueId>c0_WiFi</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
+<ParentUniqueId>c0_Connectivity</ParentUniqueId>
 <Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>44</IntLiteral>
 <IntLiteral>15</IntLiteral>
@@ -2827,8 +2893,8 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Feature</Id>
 <IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Super>
-</Supers>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -2869,6 +2935,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_WiFi</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -2890,6 +2957,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_batterylife</Id>
 <IsTop>false</IsTop>
+<Bind>c0_batterylife</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -2901,7 +2969,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
@@ -2956,6 +3025,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_WiFi</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -2977,6 +3047,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_productivity</Id>
 <IsTop>false</IsTop>
+<Bind>c0_productivity</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -2988,7 +3059,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
@@ -3033,6 +3105,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_WiFi</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -3054,6 +3127,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_security</Id>
 <IsTop>false</IsTop>
+<Bind>c0_security</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -3065,7 +3139,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
@@ -3120,6 +3195,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_WiFi</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -3141,6 +3217,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_cost</Id>
 <IsTop>false</IsTop>
+<Bind>c0_cost</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -3152,7 +3229,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
@@ -3184,7 +3262,7 @@
 </GroupCard>
 <Id>USB</Id>
 <UniqueId>c0_USB</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
+<ParentUniqueId>c0_Connectivity</ParentUniqueId>
 <Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>49</IntLiteral>
 <IntLiteral>15</IntLiteral>
@@ -3196,8 +3274,8 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Feature</Id>
 <IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Super>
-</Supers>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -3238,6 +3316,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_USB</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -3259,6 +3338,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_batterylife</Id>
 <IsTop>false</IsTop>
+<Bind>c0_batterylife</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -3270,7 +3350,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
@@ -3315,6 +3396,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_USB</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -3336,6 +3418,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_productivity</Id>
 <IsTop>false</IsTop>
+<Bind>c0_productivity</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -3347,7 +3430,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
@@ -3392,6 +3476,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_USB</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -3413,6 +3498,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_security</Id>
 <IsTop>false</IsTop>
+<Bind>c0_security</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -3424,7 +3510,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
@@ -3469,6 +3556,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_USB</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -3490,6 +3578,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_cost</Id>
 <IsTop>false</IsTop>
+<Bind>c0_cost</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -3501,7 +3590,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
@@ -3533,7 +3623,7 @@
 </GroupCard>
 <Id>Battery</Id>
 <UniqueId>c0_Battery</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
+<ParentUniqueId>c0_MobilePhone</ParentUniqueId>
 <Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>54</IntLiteral>
 <IntLiteral>19</IntLiteral>
@@ -3545,8 +3635,8 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Feature</Id>
 <IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Super>
-</Supers>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -3587,6 +3677,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_Battery</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -3608,6 +3699,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_batterylife</Id>
 <IsTop>false</IsTop>
+<Bind>c0_batterylife</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -3619,7 +3711,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
@@ -3664,6 +3757,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_Battery</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -3685,6 +3779,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_productivity</Id>
 <IsTop>false</IsTop>
+<Bind>c0_productivity</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -3696,7 +3791,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
@@ -3741,6 +3837,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_Battery</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -3762,6 +3859,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_security</Id>
 <IsTop>false</IsTop>
+<Bind>c0_security</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -3773,7 +3871,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
@@ -3818,6 +3917,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_Battery</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -3839,6 +3939,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_cost</Id>
 <IsTop>false</IsTop>
+<Bind>c0_cost</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -3850,7 +3951,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
@@ -3882,7 +3984,7 @@
 </GroupCard>
 <Id>LiBattery1150</Id>
 <UniqueId>c0_LiBattery1150</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
+<ParentUniqueId>c0_Battery</ParentUniqueId>
 <Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>59</IntLiteral>
 <IntLiteral>25</IntLiteral>
@@ -3894,8 +3996,8 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Feature</Id>
 <IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Super>
-</Supers>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -3936,6 +4038,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_LiBattery1150</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -3957,6 +4060,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_batterylife</Id>
 <IsTop>false</IsTop>
+<Bind>c0_batterylife</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -3968,7 +4072,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
@@ -4013,6 +4118,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_LiBattery1150</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -4034,6 +4140,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_productivity</Id>
 <IsTop>false</IsTop>
+<Bind>c0_productivity</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -4045,7 +4152,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
@@ -4090,6 +4198,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_LiBattery1150</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -4111,6 +4220,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_security</Id>
 <IsTop>false</IsTop>
+<Bind>c0_security</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -4122,7 +4232,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
@@ -4167,6 +4278,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_LiBattery1150</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -4188,6 +4300,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_cost</Id>
 <IsTop>false</IsTop>
+<Bind>c0_cost</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -4199,7 +4312,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
@@ -4231,7 +4345,7 @@
 </GroupCard>
 <Id>LiBattery1400</Id>
 <UniqueId>c0_LiBattery1400</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
+<ParentUniqueId>c0_Battery</ParentUniqueId>
 <Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>64</IntLiteral>
 <IntLiteral>25</IntLiteral>
@@ -4243,8 +4357,8 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Feature</Id>
 <IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Super>
-</Supers>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -4285,6 +4399,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_LiBattery1400</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -4306,6 +4421,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_batterylife</Id>
 <IsTop>false</IsTop>
+<Bind>c0_batterylife</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -4317,7 +4433,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
@@ -4362,6 +4479,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_LiBattery1400</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -4383,6 +4501,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_productivity</Id>
 <IsTop>false</IsTop>
+<Bind>c0_productivity</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -4394,7 +4513,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
@@ -4439,6 +4559,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_LiBattery1400</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -4460,6 +4581,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_security</Id>
 <IsTop>false</IsTop>
+<Bind>c0_security</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -4471,7 +4593,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
@@ -4516,6 +4639,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_LiBattery1400</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -4537,6 +4661,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_cost</Id>
 <IsTop>false</IsTop>
+<Bind>c0_cost</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -4548,7 +4673,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
@@ -4567,7 +4693,7 @@
 <IntLiteral>5</IntLiteral>
 </Start>
 <End><IntLiteral>70</IntLiteral>
-<IntLiteral>60</IntLiteral>
+<IntLiteral>61</IntLiteral>
 </End>
 </Position>
 <IsAbstract>false</IsAbstract>
@@ -4580,20 +4706,22 @@
 </GroupCard>
 <Id>total_productivity</Id>
 <UniqueId>c0_total_productivity</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
-<Super><ParentId></ParentId>
+<ParentUniqueId>c0_MobilePhone</ParentUniqueId>
+<Reference><IsSet>true</IsSet>
+<Ref><ParentId></ParentId>
 <Position><Start><IntLiteral>70</IntLiteral>
-<IntLiteral>26</IntLiteral>
+<IntLiteral>27</IntLiteral>
 </Start>
 <End><IntLiteral>70</IntLiteral>
-<IntLiteral>33</IntLiteral>
+<IntLiteral>34</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>integer</Id>
 <IsTop>true</IsTop>
-</Exp></Super>
-</Supers>
+<Bind>integer</Bind>
+</Exp></Ref>
+</Reference>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -4607,19 +4735,19 @@
 </Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
 <ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e157_</ParentId>
 <Position><Start><IntLiteral>70</IntLiteral>
-<IntLiteral>34</IntLiteral>
+<IntLiteral>35</IntLiteral>
 </Start>
 <End><IntLiteral>70</IntLiteral>
-<IntLiteral>60</IntLiteral>
+<IntLiteral>61</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=&gt;</Operation>
 <Argument><Type xsi:type="cl:IBoolean" /><ParentId>e158_</ParentId>
 <Position><Start><IntLiteral>70</IntLiteral>
-<IntLiteral>34</IntLiteral>
+<IntLiteral>35</IntLiteral>
 </Start>
 <End><IntLiteral>70</IntLiteral>
-<IntLiteral>60</IntLiteral>
+<IntLiteral>61</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>e159_</ParentId>
@@ -4642,6 +4770,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_MobilePhone</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -4654,15 +4783,16 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_total_productivity</Id>
 <IsTop>false</IsTop>
+<Bind>c0_total_productivity</Bind>
 </Exp></Argument>
 </Exp></BodyParentExp>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IBoolean" /><ParentId>e160_</ParentId>
 <Position><Start><IntLiteral>70</IntLiteral>
-<IntLiteral>34</IntLiteral>
+<IntLiteral>35</IntLiteral>
 </Start>
 <End><IntLiteral>70</IntLiteral>
-<IntLiteral>60</IntLiteral>
+<IntLiteral>61</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
@@ -4686,6 +4816,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_MobilePhone</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -4707,6 +4838,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_total_productivity</Id>
 <IsTop>false</IsTop>
+<Bind>c0_total_productivity</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -4718,72 +4850,76 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId>e162_</ParentId>
 <Position><Start><IntLiteral>70</IntLiteral>
-<IntLiteral>36</IntLiteral>
+<IntLiteral>37</IntLiteral>
 </Start>
 <End><IntLiteral>70</IntLiteral>
-<IntLiteral>60</IntLiteral>
+<IntLiteral>61</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>sum</Operation>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId>e163_</ParentId>
 <Position><Start><IntLiteral>70</IntLiteral>
-<IntLiteral>40</IntLiteral>
+<IntLiteral>41</IntLiteral>
 </Start>
 <End><IntLiteral>70</IntLiteral>
-<IntLiteral>60</IntLiteral>
+<IntLiteral>61</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
 <Argument><Type xsi:type="cl:ISet" /><ParentId>e164_</ParentId>
 <Position><Start><IntLiteral>70</IntLiteral>
-<IntLiteral>40</IntLiteral>
+<IntLiteral>41</IntLiteral>
 </Start>
 <End><IntLiteral>70</IntLiteral>
-<IntLiteral>47</IntLiteral>
+<IntLiteral>48</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Feature</Id>
 <IsTop>true</IsTop>
+<Bind>c0_Feature</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>70</IntLiteral>
-<IntLiteral>48</IntLiteral>
+<IntLiteral>49</IntLiteral>
 </Start>
 <End><IntLiteral>70</IntLiteral>
-<IntLiteral>60</IntLiteral>
+<IntLiteral>61</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
 <Argument><Type xsi:type="cl:ISet" /><ParentId>e165_</ParentId>
 <Position><Start><IntLiteral>70</IntLiteral>
-<IntLiteral>48</IntLiteral>
+<IntLiteral>49</IntLiteral>
 </Start>
 <End><IntLiteral>70</IntLiteral>
-<IntLiteral>60</IntLiteral>
+<IntLiteral>61</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_productivity</Id>
 <IsTop>false</IsTop>
+<Bind>c0_productivity</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>70</IntLiteral>
-<IntLiteral>48</IntLiteral>
+<IntLiteral>49</IntLiteral>
 </Start>
 <End><IntLiteral>70</IntLiteral>
-<IntLiteral>60</IntLiteral>
+<IntLiteral>61</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
@@ -4794,7 +4930,7 @@
 <IntLiteral>5</IntLiteral>
 </Start>
 <End><IntLiteral>71</IntLiteral>
-<IntLiteral>58</IntLiteral>
+<IntLiteral>59</IntLiteral>
 </End>
 </Position>
 <IsAbstract>false</IsAbstract>
@@ -4807,20 +4943,22 @@
 </GroupCard>
 <Id>total_batterylife</Id>
 <UniqueId>c0_total_batterylife</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
-<Super><ParentId></ParentId>
+<ParentUniqueId>c0_MobilePhone</ParentUniqueId>
+<Reference><IsSet>true</IsSet>
+<Ref><ParentId></ParentId>
 <Position><Start><IntLiteral>71</IntLiteral>
-<IntLiteral>25</IntLiteral>
+<IntLiteral>26</IntLiteral>
 </Start>
 <End><IntLiteral>71</IntLiteral>
-<IntLiteral>32</IntLiteral>
+<IntLiteral>33</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>integer</Id>
 <IsTop>true</IsTop>
-</Exp></Super>
-</Supers>
+<Bind>integer</Bind>
+</Exp></Ref>
+</Reference>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -4834,19 +4972,19 @@
 </Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
 <ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e166_</ParentId>
 <Position><Start><IntLiteral>71</IntLiteral>
-<IntLiteral>33</IntLiteral>
+<IntLiteral>34</IntLiteral>
 </Start>
 <End><IntLiteral>71</IntLiteral>
-<IntLiteral>58</IntLiteral>
+<IntLiteral>59</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=&gt;</Operation>
 <Argument><Type xsi:type="cl:IBoolean" /><ParentId>e167_</ParentId>
 <Position><Start><IntLiteral>71</IntLiteral>
-<IntLiteral>33</IntLiteral>
+<IntLiteral>34</IntLiteral>
 </Start>
 <End><IntLiteral>71</IntLiteral>
-<IntLiteral>58</IntLiteral>
+<IntLiteral>59</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>e168_</ParentId>
@@ -4869,6 +5007,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_MobilePhone</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -4881,15 +5020,16 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_total_batterylife</Id>
 <IsTop>false</IsTop>
+<Bind>c0_total_batterylife</Bind>
 </Exp></Argument>
 </Exp></BodyParentExp>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IBoolean" /><ParentId>e169_</ParentId>
 <Position><Start><IntLiteral>71</IntLiteral>
-<IntLiteral>33</IntLiteral>
+<IntLiteral>34</IntLiteral>
 </Start>
 <End><IntLiteral>71</IntLiteral>
-<IntLiteral>58</IntLiteral>
+<IntLiteral>59</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
@@ -4913,6 +5053,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_MobilePhone</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -4934,6 +5075,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_total_batterylife</Id>
 <IsTop>false</IsTop>
+<Bind>c0_total_batterylife</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -4945,72 +5087,76 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId>e171_</ParentId>
 <Position><Start><IntLiteral>71</IntLiteral>
-<IntLiteral>35</IntLiteral>
+<IntLiteral>36</IntLiteral>
 </Start>
 <End><IntLiteral>71</IntLiteral>
-<IntLiteral>58</IntLiteral>
+<IntLiteral>59</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>sum</Operation>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId>e172_</ParentId>
 <Position><Start><IntLiteral>71</IntLiteral>
-<IntLiteral>39</IntLiteral>
+<IntLiteral>40</IntLiteral>
 </Start>
 <End><IntLiteral>71</IntLiteral>
-<IntLiteral>58</IntLiteral>
+<IntLiteral>59</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
 <Argument><Type xsi:type="cl:ISet" /><ParentId>e173_</ParentId>
 <Position><Start><IntLiteral>71</IntLiteral>
-<IntLiteral>39</IntLiteral>
+<IntLiteral>40</IntLiteral>
 </Start>
 <End><IntLiteral>71</IntLiteral>
-<IntLiteral>46</IntLiteral>
+<IntLiteral>47</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Feature</Id>
 <IsTop>true</IsTop>
+<Bind>c0_Feature</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>71</IntLiteral>
-<IntLiteral>47</IntLiteral>
+<IntLiteral>48</IntLiteral>
 </Start>
 <End><IntLiteral>71</IntLiteral>
-<IntLiteral>58</IntLiteral>
+<IntLiteral>59</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
 <Argument><Type xsi:type="cl:ISet" /><ParentId>e174_</ParentId>
 <Position><Start><IntLiteral>71</IntLiteral>
-<IntLiteral>47</IntLiteral>
+<IntLiteral>48</IntLiteral>
 </Start>
 <End><IntLiteral>71</IntLiteral>
-<IntLiteral>58</IntLiteral>
+<IntLiteral>59</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_batterylife</Id>
 <IsTop>false</IsTop>
+<Bind>c0_batterylife</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>71</IntLiteral>
-<IntLiteral>47</IntLiteral>
+<IntLiteral>48</IntLiteral>
 </Start>
 <End><IntLiteral>71</IntLiteral>
-<IntLiteral>58</IntLiteral>
+<IntLiteral>59</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
@@ -5021,7 +5167,7 @@
 <IntLiteral>5</IntLiteral>
 </Start>
 <End><IntLiteral>72</IntLiteral>
-<IntLiteral>52</IntLiteral>
+<IntLiteral>53</IntLiteral>
 </End>
 </Position>
 <IsAbstract>false</IsAbstract>
@@ -5034,20 +5180,22 @@
 </GroupCard>
 <Id>total_security</Id>
 <UniqueId>c0_total_security</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
-<Super><ParentId></ParentId>
+<ParentUniqueId>c0_MobilePhone</ParentUniqueId>
+<Reference><IsSet>true</IsSet>
+<Ref><ParentId></ParentId>
 <Position><Start><IntLiteral>72</IntLiteral>
-<IntLiteral>22</IntLiteral>
+<IntLiteral>23</IntLiteral>
 </Start>
 <End><IntLiteral>72</IntLiteral>
-<IntLiteral>29</IntLiteral>
+<IntLiteral>30</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>integer</Id>
 <IsTop>true</IsTop>
-</Exp></Super>
-</Supers>
+<Bind>integer</Bind>
+</Exp></Ref>
+</Reference>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -5061,19 +5209,19 @@
 </Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
 <ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e175_</ParentId>
 <Position><Start><IntLiteral>72</IntLiteral>
-<IntLiteral>30</IntLiteral>
+<IntLiteral>31</IntLiteral>
 </Start>
 <End><IntLiteral>72</IntLiteral>
-<IntLiteral>52</IntLiteral>
+<IntLiteral>53</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=&gt;</Operation>
 <Argument><Type xsi:type="cl:IBoolean" /><ParentId>e176_</ParentId>
 <Position><Start><IntLiteral>72</IntLiteral>
-<IntLiteral>30</IntLiteral>
+<IntLiteral>31</IntLiteral>
 </Start>
 <End><IntLiteral>72</IntLiteral>
-<IntLiteral>52</IntLiteral>
+<IntLiteral>53</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>e177_</ParentId>
@@ -5096,6 +5244,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_MobilePhone</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -5108,15 +5257,16 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_total_security</Id>
 <IsTop>false</IsTop>
+<Bind>c0_total_security</Bind>
 </Exp></Argument>
 </Exp></BodyParentExp>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IBoolean" /><ParentId>e178_</ParentId>
 <Position><Start><IntLiteral>72</IntLiteral>
-<IntLiteral>30</IntLiteral>
+<IntLiteral>31</IntLiteral>
 </Start>
 <End><IntLiteral>72</IntLiteral>
-<IntLiteral>52</IntLiteral>
+<IntLiteral>53</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
@@ -5140,6 +5290,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_MobilePhone</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -5161,6 +5312,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_total_security</Id>
 <IsTop>false</IsTop>
+<Bind>c0_total_security</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -5172,72 +5324,76 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId>e180_</ParentId>
 <Position><Start><IntLiteral>72</IntLiteral>
-<IntLiteral>32</IntLiteral>
+<IntLiteral>33</IntLiteral>
 </Start>
 <End><IntLiteral>72</IntLiteral>
-<IntLiteral>52</IntLiteral>
+<IntLiteral>53</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>sum</Operation>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId>e181_</ParentId>
 <Position><Start><IntLiteral>72</IntLiteral>
-<IntLiteral>36</IntLiteral>
+<IntLiteral>37</IntLiteral>
 </Start>
 <End><IntLiteral>72</IntLiteral>
-<IntLiteral>52</IntLiteral>
+<IntLiteral>53</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
 <Argument><Type xsi:type="cl:ISet" /><ParentId>e182_</ParentId>
 <Position><Start><IntLiteral>72</IntLiteral>
-<IntLiteral>36</IntLiteral>
+<IntLiteral>37</IntLiteral>
 </Start>
 <End><IntLiteral>72</IntLiteral>
-<IntLiteral>43</IntLiteral>
+<IntLiteral>44</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Feature</Id>
 <IsTop>true</IsTop>
+<Bind>c0_Feature</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>72</IntLiteral>
-<IntLiteral>44</IntLiteral>
+<IntLiteral>45</IntLiteral>
 </Start>
 <End><IntLiteral>72</IntLiteral>
-<IntLiteral>52</IntLiteral>
+<IntLiteral>53</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
 <Argument><Type xsi:type="cl:ISet" /><ParentId>e183_</ParentId>
 <Position><Start><IntLiteral>72</IntLiteral>
-<IntLiteral>44</IntLiteral>
+<IntLiteral>45</IntLiteral>
 </Start>
 <End><IntLiteral>72</IntLiteral>
-<IntLiteral>52</IntLiteral>
+<IntLiteral>53</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_security</Id>
 <IsTop>false</IsTop>
+<Bind>c0_security</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>72</IntLiteral>
-<IntLiteral>44</IntLiteral>
+<IntLiteral>45</IntLiteral>
 </Start>
 <End><IntLiteral>72</IntLiteral>
-<IntLiteral>52</IntLiteral>
+<IntLiteral>53</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
@@ -5248,7 +5404,7 @@
 <IntLiteral>5</IntLiteral>
 </Start>
 <End><IntLiteral>73</IntLiteral>
-<IntLiteral>44</IntLiteral>
+<IntLiteral>45</IntLiteral>
 </End>
 </Position>
 <IsAbstract>false</IsAbstract>
@@ -5261,20 +5417,22 @@
 </GroupCard>
 <Id>total_cost</Id>
 <UniqueId>c0_total_cost</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
-<Super><ParentId></ParentId>
+<ParentUniqueId>c0_MobilePhone</ParentUniqueId>
+<Reference><IsSet>true</IsSet>
+<Ref><ParentId></ParentId>
 <Position><Start><IntLiteral>73</IntLiteral>
-<IntLiteral>18</IntLiteral>
+<IntLiteral>19</IntLiteral>
 </Start>
 <End><IntLiteral>73</IntLiteral>
-<IntLiteral>25</IntLiteral>
+<IntLiteral>26</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>integer</Id>
 <IsTop>true</IsTop>
-</Exp></Super>
-</Supers>
+<Bind>integer</Bind>
+</Exp></Ref>
+</Reference>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -5288,19 +5446,19 @@
 </Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
 <ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e184_</ParentId>
 <Position><Start><IntLiteral>73</IntLiteral>
-<IntLiteral>26</IntLiteral>
+<IntLiteral>27</IntLiteral>
 </Start>
 <End><IntLiteral>73</IntLiteral>
-<IntLiteral>44</IntLiteral>
+<IntLiteral>45</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=&gt;</Operation>
 <Argument><Type xsi:type="cl:IBoolean" /><ParentId>e185_</ParentId>
 <Position><Start><IntLiteral>73</IntLiteral>
-<IntLiteral>26</IntLiteral>
+<IntLiteral>27</IntLiteral>
 </Start>
 <End><IntLiteral>73</IntLiteral>
-<IntLiteral>44</IntLiteral>
+<IntLiteral>45</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>e186_</ParentId>
@@ -5323,6 +5481,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_MobilePhone</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -5335,15 +5494,16 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_total_cost</Id>
 <IsTop>false</IsTop>
+<Bind>c0_total_cost</Bind>
 </Exp></Argument>
 </Exp></BodyParentExp>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IBoolean" /><ParentId>e187_</ParentId>
 <Position><Start><IntLiteral>73</IntLiteral>
-<IntLiteral>26</IntLiteral>
+<IntLiteral>27</IntLiteral>
 </Start>
 <End><IntLiteral>73</IntLiteral>
-<IntLiteral>44</IntLiteral>
+<IntLiteral>45</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
@@ -5367,6 +5527,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_MobilePhone</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -5388,6 +5549,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_total_cost</Id>
 <IsTop>false</IsTop>
+<Bind>c0_total_cost</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -5399,72 +5561,76 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId>e189_</ParentId>
 <Position><Start><IntLiteral>73</IntLiteral>
-<IntLiteral>28</IntLiteral>
+<IntLiteral>29</IntLiteral>
 </Start>
 <End><IntLiteral>73</IntLiteral>
-<IntLiteral>44</IntLiteral>
+<IntLiteral>45</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>sum</Operation>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId>e190_</ParentId>
 <Position><Start><IntLiteral>73</IntLiteral>
-<IntLiteral>32</IntLiteral>
+<IntLiteral>33</IntLiteral>
 </Start>
 <End><IntLiteral>73</IntLiteral>
-<IntLiteral>44</IntLiteral>
+<IntLiteral>45</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
 <Argument><Type xsi:type="cl:ISet" /><ParentId>e191_</ParentId>
 <Position><Start><IntLiteral>73</IntLiteral>
-<IntLiteral>32</IntLiteral>
+<IntLiteral>33</IntLiteral>
 </Start>
 <End><IntLiteral>73</IntLiteral>
-<IntLiteral>39</IntLiteral>
+<IntLiteral>40</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Feature</Id>
 <IsTop>true</IsTop>
+<Bind>c0_Feature</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>73</IntLiteral>
-<IntLiteral>40</IntLiteral>
+<IntLiteral>41</IntLiteral>
 </Start>
 <End><IntLiteral>73</IntLiteral>
-<IntLiteral>44</IntLiteral>
+<IntLiteral>45</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
 <Argument><Type xsi:type="cl:ISet" /><ParentId>e192_</ParentId>
 <Position><Start><IntLiteral>73</IntLiteral>
-<IntLiteral>40</IntLiteral>
+<IntLiteral>41</IntLiteral>
 </Start>
 <End><IntLiteral>73</IntLiteral>
-<IntLiteral>44</IntLiteral>
+<IntLiteral>45</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_cost</Id>
 <IsTop>false</IsTop>
+<Bind>c0_cost</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>73</IntLiteral>
-<IntLiteral>40</IntLiteral>
+<IntLiteral>41</IntLiteral>
 </Start>
 <End><IntLiteral>73</IntLiteral>
-<IntLiteral>44</IntLiteral>
+<IntLiteral>45</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
@@ -5501,6 +5667,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_OptimalPhone</Id>
 <IsTop>true</IsTop>
+<Bind>c0_OptimalPhone</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>74</IntLiteral>
@@ -5522,6 +5689,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_total_batterylife</Id>
 <IsTop>false</IsTop>
+<Bind>c0_total_batterylife</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>74</IntLiteral>
@@ -5533,7 +5701,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
@@ -5568,6 +5737,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_OptimalPhone</Id>
 <IsTop>true</IsTop>
+<Bind>c0_OptimalPhone</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>75</IntLiteral>
@@ -5589,6 +5759,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_total_productivity</Id>
 <IsTop>false</IsTop>
+<Bind>c0_total_productivity</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>75</IntLiteral>
@@ -5600,7 +5771,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
@@ -5635,6 +5807,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_OptimalPhone</Id>
 <IsTop>true</IsTop>
+<Bind>c0_OptimalPhone</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>76</IntLiteral>
@@ -5656,6 +5829,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_total_security</Id>
 <IsTop>false</IsTop>
+<Bind>c0_total_security</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>76</IntLiteral>
@@ -5667,7 +5841,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
@@ -5702,6 +5877,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_OptimalPhone</Id>
 <IsTop>true</IsTop>
+<Bind>c0_OptimalPhone</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>77</IntLiteral>
@@ -5723,6 +5899,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_total_cost</Id>
 <IsTop>false</IsTop>
+<Bind>c0_total_cost</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>77</IntLiteral>
@@ -5734,7 +5911,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
@@ -5756,7 +5934,7 @@
 </GroupCard>
 <Id>OptimalPhone</Id>
 <UniqueId>c0_OptimalPhone</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
+<ParentUniqueId>root</ParentUniqueId>
 <Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>78</IntLiteral>
 <IntLiteral>16</IntLiteral>
@@ -5768,8 +5946,8 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_MobilePhone</Id>
 <IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Super>
-</Supers>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
