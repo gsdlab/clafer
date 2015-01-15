@@ -39,7 +39,6 @@ genCModule _ (imodule@IModule{_mDecls}, _) scopes =
     clafers = snd <$> parentChildMap
     claferUids = _uid <$> clafers
     concreteClafers = filter isNotAbstract clafers
---    minusRoot = filter ((/= "root") . uid)
 
     claferWithUid u = fromMaybe (error $ "claferWithUid: \"" ++ u ++ "\" is not a clafer") $ find ((== u) . _uid) clafers
 
@@ -50,8 +49,6 @@ genCModule _ (imodule@IModule{_mDecls}, _) scopes =
              Just su -> su : supersOf su
              Nothing -> []
 
---    superHierarchyOf u = u : supersOf u
-
     superOf u =
         case _super $ claferWithUid u of
             Just (PExp{_exp = IClaferId{_sident}})
@@ -60,49 +57,16 @@ genCModule _ (imodule@IModule{_mDecls}, _) scopes =
                 | otherwise             -> Just _sident
             _ -> Nothing
 
-{-    superWithRef u =
-        case mapMaybe refOf $ supersOf u of
-             r : _ -> r
-             _      -> u ++ " does not inherit a ref" -}
-
     refOf u =
         case _reference $ claferWithUid u of
-            Nothing -> Nothing
             Just (IReference{_ref=PExp{_exp = IClaferId{_sident}}})
                 | _sident == "int"    -> Just "integer"
                 | isPrimitive _sident -> Just _sident
                 | otherwise           -> Nothing
-
-    -- All clafers that inherit u
-{-    subOf :: String -> [String]
-    subOf u = [uid | IClafer{_uid} <- clafers, Just u == superOf uid]
-    subClaferOf :: String -> [IClafer]
-    subClaferOf = map claferWithUid . subOf
-
-    subOffsets :: [(String, String, Integer)]
-    subOffsets = [(uid, sub, off) | IClafer{_uid} <- clafers, let subs = subOf uid, (sub, off) <- zip subs $ offsets subs]
-
-    subOffsetOf :: String -> Integer
-    subOffsetOf sub = trd3 $ fromMaybe (error $ "subOffsetOf: " ++ sub) $ find ((== sub) . snd3) subOffsets
-
-    offsets :: [String] -> [Integer]
-    offsets = scanl (flip $ (+) . scopeOf) 0
--}
+            _ -> Nothing
 
     parentOf u = fst $ fromMaybe (error $ "parentOf: \"" ++ u ++ "\" is not a clafer") $ find ((== u) . _uid . snd) parentChildMap
-{-    parentClaferOf = claferWithUid . parentOf
-    -- Direct childrens
-    childrenOf = map uid . childrenClaferOf
-    childrenClaferOf u = [c | (p, c) <- parentChildMap, p == u]
 
-    -- Indirect childrens
-    indirectChildrenOf u = childrenOf =<< supersOf u
-    indirectChildrenClaferOf u = childrenClaferOf =<< supersOf u
-
-    isBounded :: Interval -> Bool
-    isBounded (0, -1) = False
-    isBounded _       = True
--}
     genCard :: Interval -> Maybe String
     genCard (0, -1) = Nothing
     genCard (low, -1) = return $ show low
@@ -145,13 +109,16 @@ genCModule _ (imodule@IModule{_mDecls}, _) scopes =
 
 
     genRefClafer :: IClafer -> Result
-    genRefClafer IClafer{_uid} =
-        case (refOf _uid, _uid `elem` uniqueRefs) of
-             (Just target, True)  -> _uid ++ ".refToUnique(" ++ genTarget target ++ ");\n"
-             (Just target, False) -> _uid ++ ".refTo(" ++ genTarget target ++ ");\n"
-             _                    -> ""
+    genRefClafer c@IClafer{_uid, _reference, _card} =
+        case (getReference c, _reference, _card) of
+             ([target], Just (IReference True _), Just (lb, ub))  -> if (lb > 1 || ub > 1 || lb == -1 || ub == -1)
+                then _uid ++ ".refToUnique(" ++ genTarget target ++ ");\n"
+                else _uid ++ ".refTo(" ++ genTarget target ++ ");\n"
+             ([target], Just (IReference _ _), _) -> _uid ++ ".refTo(" ++ genTarget target ++ ");\n"
+             _ -> ""
         where
             genTarget "integer" = "Int"
+            genTarget "int" = "Int"
             genTarget target = target
 
     genAbstractClafer :: IClafer -> Result
@@ -160,35 +127,15 @@ genCModule _ (imodule@IModule{_mDecls}, _) scopes =
     genAbstractClafer IClafer{_uid, _card = Nothing} =
         _uid ++ " = Abstract(\"" ++ _uid ++ "\")" ++ prop "extending" (superOf _uid) ++ ";\n"
 
-    -- Is a uniqueness constraint? If so, return the name of unique clafer
-    isUniqueConstraint :: IExp -> Maybe String
-    isUniqueConstraint (IDeclPExp IAll [IDecl True [x, y] PExp{_exp = IClaferId{_sident}}]
-        PExp{_exp = IFunExp "!=" [
-            PExp{_exp = IFunExp "." [PExp{_exp = IClaferId{_sident = xident}}, PExp{_exp = IClaferId{_sident = "ref"}}]},
-            PExp{_exp = IFunExp "." [PExp{_exp = IClaferId{_sident = yident}}, PExp{_exp = IClaferId{_sident = "ref"}}]}]})
-                | x == xident && y == yident = return _sident
-                | otherwise                  = mzero
-    isUniqueConstraint  (IDeclPExp IAll [IDecl True [x, y] PExp{_exp = IFunExp "." [PExp{_exp = IClaferId{_sident = "this"}}, PExp{_exp = IClaferId{_sident}}]}]
-        PExp{_exp = IFunExp "!=" [
-            PExp{_exp = IFunExp "." [PExp{_exp = IClaferId{_sident = xident}}, PExp{_exp = IClaferId{_sident = "ref"}}]},
-            PExp{_exp = IFunExp "." [PExp{_exp = IClaferId{_sident = yident}}, PExp{_exp = IClaferId{_sident = "ref"}}]}]})
-                | x == xident && y == yident = return _sident
-                | otherwise                  = mzero
-    isUniqueConstraint _ = mzero
-
-    uniqueRefs :: [String]
-    uniqueRefs = mapMaybe isUniqueConstraint $ map _exp $ mapMaybe iconstraint $ _mDecls ++ (clafers >>= _elements)
 
     genTopConstraint :: IElement -> Result
-    genTopConstraint (IEConstraint _ pexp)
-        | isNothing $ isUniqueConstraint $ _exp pexp = "Constraint(" ++ genConstraintPExp pexp ++ ");\n"
-        | otherwise                                 = ""
+    genTopConstraint (IEConstraint _ pexp) = "Constraint(" ++ genConstraintPExp pexp ++ ");\n"
     genTopConstraint _ = ""
 
     genConstraint :: IClafer -> Result
     genConstraint IClafer{_uid, _elements} =
         unlines [_uid ++ ".addConstraint(" ++ genConstraintPExp c ++ ");"
-            | c <- filter (isNothing . isUniqueConstraint . _exp) $ mapMaybe iconstraint _elements]
+            | c <- mapMaybe iconstraint _elements]
 
     genGoal :: IElement -> Result
     genGoal (IEGoal _ PExp{_exp = IFunExp{_op="max", _exps=[expr]}})  = "max(" ++ genConstraintPExp expr ++ ");\n"
@@ -196,22 +143,6 @@ genCModule _ (imodule@IModule{_mDecls}, _) scopes =
     genGoal (IEGoal _ _) = error $ "Unknown objective"
     genGoal _ = ""
 
-{-    nameOfType TInteger = "integer"
-    nameOfType (TClafer [t]) = t
-
-    namesOfType TInteger = ["integer"]
-    namesOfType (TClafer ts) = ts
-
-    getCard uid =
-        case card $ claferWithUid uid of
-                Just (low, -1)   -> (low, scope)
-                Just (low, high) -> (low, high)
-        where
-            scope = scopeOf uid
-
-    (l1, h1) <*> (l2, h2) = (l1 * l2, h1 * h2)
-    scopeCap scope (l, h) = (min scope l, min scope h)
--}
     rewrite :: PExp -> PExp
     -- Rearrange right joins to left joins.
     rewrite p1@PExp{_iType = Just _, _exp = IFunExp "." [p2, p3@PExp{_exp = IFunExp "." _}]} =
@@ -294,7 +225,7 @@ genCModule _ (imodule@IModule{_mDecls}, _) scopes =
     mapFunc "/" = "div"
     mapFunc "++" = "union"
     mapFunc "--" = "diff"
-    mapFunc "&" = "inter"
+    mapFunc "**" = "inter"
     mapFunc "ifthenelse" = "ifThenElse"
     mapFunc op' = error $ "Choco: Unknown op: " ++ op'
 

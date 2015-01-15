@@ -13,7 +13,7 @@ c0_CompilerCourse = Clafer("c0_CompilerCourse").withCard(1, 1).extending(c0_Cour
 c0_MachineLearningCourse = Clafer("c0_MachineLearningCourse").withCard(1, 1).extending(c0_Course);
 c0_numerOfAssistants = Clafer("c0_numerOfAssistants").withCard(1, 1);
 c0_assistants.refToUnique(c0_TA);
-c0_first.refToUnique(c0_Course);
+c0_first.refTo(c0_Course);
 c0_numerOfAssistants.refTo(Int);
 Constraint(equal(joinRef(join(global(c0_CompilerGradStudent), c0_first)), global(c0_CompilerCourse)));
 Constraint(equal(joinRef(join(global(c0_AIGradStudent), c0_first)), global(c0_MachineLearningCourse)));

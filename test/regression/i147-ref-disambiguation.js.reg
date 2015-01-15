@@ -4,5 +4,5 @@ stringLength(16);
 
 c0_a = Clafer("c0_a").withCard(0, 1);
 c0_b = c0_a.addChild("c0_b").withCard(0, 1);
-c0_a.refToUnique(Int);
+c0_a.refTo(Int);
 c0_b.addConstraint(equal(joinRef(joinParent($this())), constant(4)));
