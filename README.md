@@ -6,7 +6,7 @@ v0.4.0
 [Clafer](http://clafer.org) is a general-purpose lightweight structural modeling language developed by 
 [GSD Lab](http://gsd.uwaterloo.ca/), [University of Waterloo](http://uwaterloo.ca), and 
 [MODELS](http://www.itu.dk/research/models/) group at [IT University of Copenhagen](http://www.itu.dk/).
-Clafer can be used for modeling of static hierarchical structures for modeling the change of the structures over time (behavior). 
+Clafer can be used for modeling of static hierarchical structures and for modeling the change of the structures over time (behavior). Clafer allows for naturally expressing variability in both the structure and behavior.
 The main goal of Clafer is to make modeling more accessible to a wider range of users and domains. 
 
 There are many possible applications of Clafer; however, three are prominent:
