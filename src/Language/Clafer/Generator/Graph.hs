@@ -90,7 +90,7 @@ graphSimpleClafer (Clafer s abstract gCard id' super' reference' crd init' es) (
       "\" URL=\"#" ++
       uid' ++
       "\" tooltip=\"" ++
-      htmlNewlines tooltip ++
+      htmlChars tooltip ++
       "\"];\n" ++
       graphSimpleSuper super' (True, Just uid', Just uid') irMap showRefs ++
       graphSimpleReference reference' (True, Just uid', Just uid') irMap showRefs ++
@@ -108,12 +108,14 @@ graphSimpleSuper :: Super
                   -> Map.Map Span [Ir]
                   -> Bool
                   -> String
+
+parent [] = "error"
+parent (uid'@('c':xs):xss) = if '_' `elem` xs then uid' else parent xss
+parent (_:xss) = parent xss
+
 graphSimpleSuper (SuperEmpty _) _ _ _ = ""
 graphSimpleSuper (SuperSome _ setExp) topLevel irMap _ =
   let
-    parent [] = "error"
-    parent (uid'@('c':xs):xss) = if '_' `elem` xs then uid' else parent xss
-    parent (_:xss) = parent xss
     super' = parent $ graphSimpleSetExp setExp topLevel irMap
   in
     if super' == "error"
@@ -129,22 +131,45 @@ graphSimpleSuper (SuperSome _ setExp) topLevel irMap _ =
 
 graphSimpleReference :: Reference -> (Bool, Maybe String, Maybe String) -> Map.Map Span [Ir] -> Bool -> String
 graphSimpleReference (ReferenceEmpty _) _ _ _ = ""
-graphSimpleReference (ReferenceSet _ _) topLevel _ showRefs =
-    " [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=" ++
-     refColour showRefs ++
-     " fontcolor=" ++
-     refColour showRefs ++
-     (if fst3 topLevel == True then "" else " label=" ++
-     (fromJust $ trd3 topLevel)) ++
-     "];\n"
-graphSimpleReference (ReferenceBag _ _) topLevel _ showRefs =
-    " [arrowhead=veevee arrowsize=0.6 minlen=1.5 penwidth=0.5 constraint=true weight=10 color=" ++
-    refColour showRefs ++
-    " fontcolor=" ++
-    refColour showRefs ++
-    (if fst3 topLevel == True then "" else " label=" ++
-    (fromJust $ trd3 topLevel)) ++ "];\n"
-
+graphSimpleReference (ReferenceSet _ setExp) topLevel irMap showRefs =
+  case graphSimpleSetExp setExp topLevel irMap of
+    ["integer"] -> ""
+    ["int"] -> ""
+    ["real"] -> ""
+    ["string"] -> ""
+    [target] ->
+       "\"" ++
+       fromJust (snd3 topLevel) ++
+       "\" -> \"" ++
+       target ++
+       "\"" ++
+       " [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=" ++
+       refColour showRefs ++
+       " fontcolor=" ++
+       refColour showRefs ++
+       (if fst3 topLevel == True then "" else " label=" ++
+       (fromJust $ trd3 topLevel)) ++
+       "];\n"
+    _ -> ""
+graphSimpleReference (ReferenceBag _ setExp) topLevel irMap showRefs =
+  case graphSimpleSetExp setExp topLevel irMap of
+    ["integer"] -> ""
+    ["int"] -> ""
+    ["real"] -> ""
+    ["string"] -> ""
+    [target] ->
+      ("\"" ++
+        fromJust (snd3 topLevel) ++
+        "\" -> \"" ++
+        target ++
+        "\"" ++
+        " [arrowhead=veevee arrowsize=0.6 minlen=1.5 penwidth=0.5 constraint=true weight=10 color=" ++
+        refColour showRefs ++
+        " fontcolor=" ++
+        refColour showRefs ++
+        (if fst3 topLevel == True then "" else " label=" ++
+        (fromJust $ trd3 topLevel)) ++ "];\n")
+    _ -> ""
 refColour :: Bool -> String
 refColour True = "lightgray"
 refColour False = "transparent"
@@ -240,19 +265,19 @@ graphCVLPosIdent :: PosIdent -> Map.Map Span [Ir] -> String
 graphCVLPosIdent (PosIdent (pos, id')) irMap = getUid (PosIdent (pos, id')) irMap
 
 graphCVLConstraint :: Constraint -> Maybe String -> Map.Map Span [Ir] -> String
-graphCVLConstraint (Constraint s exps') parent irMap = let body' = htmlNewlines $ genTooltip (Module s [ElementDecl s (Subconstraint s (Constraint s exps'))]) irMap;
+graphCVLConstraint (Constraint s exps') parent irMap = let body' = htmlChars $ genTooltip (Module s [ElementDecl s (Subconstraint s (Constraint s exps'))]) irMap;
                                                                        uid' = "\"" ++ getExpId s irMap ++ "\""
                                                                     in uid' ++ " [label=\"" ++ body' ++ "\" shape=parallelogram];\n" ++
                                                                       if parent == Nothing then "" else uid' ++ " -> \"" ++ fromJust parent ++ "\";\n"
 
 graphCVLSoftConstraint :: SoftConstraint -> Maybe String -> Map.Map Span [Ir] -> String
-graphCVLSoftConstraint (SoftConstraint s exps') parent irMap = let body' = htmlNewlines $ genTooltip (Module s [ElementDecl s (Subsoftconstraint s (SoftConstraint s exps'))]) irMap;
+graphCVLSoftConstraint (SoftConstraint s exps') parent irMap = let body' = htmlChars $ genTooltip (Module s [ElementDecl s (Subsoftconstraint s (SoftConstraint s exps'))]) irMap;
                                                                        uid' = "\"" ++ getExpId s irMap ++ "\""
                                                                     in uid' ++ " [label=\"" ++ body' ++ "\" shape=parallelogram];\n" ++
                                                                       if parent == Nothing then "" else uid' ++ " -> \"" ++ fromJust parent ++ "\";\n"
 
 graphCVLGoal :: Goal -> Maybe String -> Map.Map Span [Ir] -> String
-graphCVLGoal (Goal s exps') parent irMap = let body' = htmlNewlines $ genTooltip (Module s [ElementDecl s (Subgoal s (Goal s exps'))]) irMap;
+graphCVLGoal (Goal s exps') parent irMap = let body' = htmlChars $ genTooltip (Module s [ElementDecl s (Subgoal s (Goal s exps'))]) irMap;
                                                                        uid' = "\"" ++ getExpId s irMap ++ "\""
                                                                     in uid' ++ " [label=\"" ++ body' ++ "\" shape=parallelogram];\n" ++
                                                                       if parent == Nothing then "" else uid' ++ " -> \"" ++ fromJust parent ++ "\";\n"
@@ -365,10 +390,12 @@ getExpId s irMap = if Map.lookup s irMap == Nothing
 {-while :: Bool -> [IExp] -> [IExp]
 while bool exp' = if bool then exp' else []-}
 
-htmlNewlines :: String -> String
-htmlNewlines "" = ""
-htmlNewlines ('\n':xs) = "&#10;" ++ htmlNewlines xs
-htmlNewlines (x:xs) = x:htmlNewlines xs
+htmlChars :: String -> String
+htmlChars "" = ""
+htmlChars ('\n':xs) = "&#10;" ++ htmlChars xs
+htmlChars ('-':'>':xs) = "-&gt;" ++ htmlChars xs
+htmlChars ('-':'>':'>':xs) = "-&gt;&gt;" ++ htmlChars xs
+htmlChars (x:xs) = x:htmlChars xs
 
 cleanOutput :: String -> String
 cleanOutput "" = ""
