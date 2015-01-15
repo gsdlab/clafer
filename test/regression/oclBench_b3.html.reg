@@ -4,64 +4,64 @@
 
 
 <div>
-<span class="claferDecl" id="c0_ada">ada</span><span class="keyword"> :</span> <a href="#c0_Person"><span class="reference">Person</span></a></div>
+<span class="claferDecl" id="c0_ada">ada</span><span class="keyword"> : </span><a href="#c0_Person"><span class="reference">Person</span></a></div>
 
 
 <div>
-<span class="claferDecl" id="c0_cyd">cyd</span><span class="keyword"> :</span> <a href="#c0_Person"><span class="reference">Person</span></a></div>
+<span class="claferDecl" id="c0_cyd">cyd</span><span class="keyword"> : </span><a href="#c0_Person"><span class="reference">Person</span></a></div>
 
 
 <div>
-<span class="claferDecl" id="c0_eve">eve</span><span class="keyword"> :</span> <a href="#c0_Person"><span class="reference">Person</span></a></div>
+<span class="claferDecl" id="c0_eve">eve</span><span class="keyword"> : </span><a href="#c0_Person"><span class="reference">Person</span></a></div>
 
 
 <div>
-<span class="claferDecl" id="c0_bob">bob</span><span class="keyword"> :</span> <a href="#c0_Person"><span class="reference">Person</span></a></div>
+<span class="claferDecl" id="c0_bob">bob</span><span class="keyword"> : </span><a href="#c0_Person"><span class="reference">Person</span></a></div>
 
 
 <div>
-<span class="claferDecl" id="c0_dan">dan</span><span class="keyword"> :</span> <a href="#c0_Person"><span class="reference">Person</span></a></div>
+<span class="claferDecl" id="c0_dan">dan</span><span class="keyword"> : </span><a href="#c0_Person"><span class="reference">Person</span></a></div>
 
 
 <div>
 <span class="keyword">abstract</span> <span class="claferDecl" id="c0_Exam">Exam</span>
   <div class="indent">
-  <span class="claferDecl" id="c0_date">date</span><span class="keyword"> :</span> <a href="#string"><span class="reference">string</span></a>
+  <span class="claferDecl" id="c0_date">date</span><span class="keyword"> -> </span><a href="#string"><span class="reference">string</span></a>
     <div class="indent">
     <span class="keyword">[</span> <a href="#this"><span class="reference">this</span></a> != "" <span class="keyword">]</span></div>
   </div>
   <div class="indent">
-  <span class="claferDecl" id="c0_recorder">recorder</span><span class="keyword"> -></span> <a href="#c0_Person"><span class="reference">Person</span></a></div>
+  <span class="claferDecl" id="c0_recorder">recorder</span><span class="keyword"> -> </span><a href="#c0_Person"><span class="reference">Person</span></a></div>
   <div class="indent">
-  <span class="claferDecl" id="c0_examiner">examiner</span><span class="keyword"> -></span> <a href="#c0_Person"><span class="reference">Person</span></a></div>
+  <span class="claferDecl" id="c0_examiner">examiner</span><span class="keyword"> -> </span><a href="#c0_Person"><span class="reference">Person</span></a></div>
   <div class="indent">
-  <span class="claferDecl" id="c0_examinee">examinee</span><span class="keyword"> -></span> <a href="#c0_Person"><span class="reference">Person</span></a></div>
+  <span class="claferDecl" id="c0_examinee">examinee</span><span class="keyword"> -> </span><a href="#c0_Person"><span class="reference">Person</span></a></div>
 </div>
 
 
 <div>
-<span class="claferDecl" id="c0_ada_bob_cyd">ada_bob_cyd</span><span class="keyword"> :</span> <a href="#c0_Exam"><span class="reference">Exam</span></a>
+<span class="claferDecl" id="c0_ada_bob_cyd">ada_bob_cyd</span><span class="keyword"> : </span><a href="#c0_Exam"><span class="reference">Exam</span></a>
   <div class="indent">
   <span class="keyword">[</span> <a href="#c0_date"><span class="reference">date</span></a> = "20001023" <span class="keyword">]</span><span class="keyword">[</span> <a href="#c0_recorder"><span class="reference">recorder</span></a> = <a href="#c0_cyd"><span class="reference">cyd</span></a> <span class="keyword">]</span><span class="keyword">[</span> <a href="#c0_examiner"><span class="reference">examiner</span></a> = <a href="#c0_bob"><span class="reference">bob</span></a> <span class="keyword">]</span><span class="keyword">[</span> <a href="#c0_examinee"><span class="reference">examinee</span></a> = <a href="#c0_ada"><span class="reference">ada</span></a> <span class="keyword">]</span></div>
 </div>
 
 
 <div>
-<span class="claferDecl" id="c0_dan_bob_ada">dan_bob_ada</span><span class="keyword"> :</span> <a href="#c0_Exam"><span class="reference">Exam</span></a>
+<span class="claferDecl" id="c0_dan_bob_ada">dan_bob_ada</span><span class="keyword"> : </span><a href="#c0_Exam"><span class="reference">Exam</span></a>
   <div class="indent">
   <span class="keyword">[</span> <a href="#c0_date"><span class="reference">date</span></a> = "20040817" <span class="keyword">]</span><span class="keyword">[</span> <a href="#c0_recorder"><span class="reference">recorder</span></a> = <a href="#c0_ada"><span class="reference">ada</span></a> <span class="keyword">]</span><span class="keyword">[</span> <a href="#c0_examiner"><span class="reference">examiner</span></a> = <a href="#c0_bob"><span class="reference">bob</span></a> <span class="keyword">]</span><span class="keyword">[</span> <a href="#c0_examinee"><span class="reference">examinee</span></a> = <a href="#c0_dan"><span class="reference">dan</span></a> <span class="keyword">]</span></div>
 </div>
 
 
 <div>
-<span class="claferDecl" id="c0_eve_ada_dan">eve_ada_dan</span><span class="keyword"> :</span> <a href="#c0_Exam"><span class="reference">Exam</span></a>
+<span class="claferDecl" id="c0_eve_ada_dan">eve_ada_dan</span><span class="keyword"> : </span><a href="#c0_Exam"><span class="reference">Exam</span></a>
   <div class="indent">
   <span class="keyword">[</span> <a href="#c0_date"><span class="reference">date</span></a> = "20080331" <span class="keyword">]</span><span class="keyword">[</span> <a href="#c0_recorder"><span class="reference">recorder</span></a> = <a href="#c0_dan"><span class="reference">dan</span></a> <span class="keyword">]</span><span class="keyword">[</span> <a href="#c0_examiner"><span class="reference">examiner</span></a> = <a href="#c0_ada"><span class="reference">ada</span></a> <span class="keyword">]</span><span class="keyword">[</span> <a href="#c0_examinee"><span class="reference">examinee</span></a> = <a href="#c0_eve"><span class="reference">eve</span></a> <span class="keyword">]</span></div>
 </div>
 
 
 <div>
-<span class="claferDecl" id="c0_examineeAda">examineeAda</span><span class="keyword"> -></span> <a href="#c0_Exam"><span class="reference">Exam</span></a> *
+<span class="claferDecl" id="c0_examineeAda">examineeAda</span><span class="keyword"> -> </span><a href="#c0_Exam"><span class="reference">Exam</span></a> *
   <div class="indent">
   <span class="keyword">[</span> <a href="#this"><span class="reference">this</span></a>.<a href="#c0_examinee"><span class="reference">examinee</span></a> = <a href="#c0_ada"><span class="reference">ada</span></a> <span class="keyword">]</span></div>
 </div>
@@ -72,7 +72,7 @@
 
 
 <div>
-<span class="claferDecl" id="c0_recorderAda">recorderAda</span><span class="keyword"> -></span> <a href="#c0_Exam"><span class="reference">Exam</span></a> *
+<span class="claferDecl" id="c0_recorderAda">recorderAda</span><span class="keyword"> -> </span><a href="#c0_Exam"><span class="reference">Exam</span></a> *
   <div class="indent">
   <span class="keyword">[</span> <a href="#this"><span class="reference">this</span></a>.<a href="#c0_recorder"><span class="reference">recorder</span></a> = <a href="#c0_ada"><span class="reference">ada</span></a> <span class="keyword">]</span></div>
 </div>
@@ -83,7 +83,7 @@
 
 
 <div>
-<span class="claferDecl" id="c0_examinerAda">examinerAda</span><span class="keyword"> -></span> <a href="#c0_Exam"><span class="reference">Exam</span></a> *
+<span class="claferDecl" id="c0_examinerAda">examinerAda</span><span class="keyword"> -> </span><a href="#c0_Exam"><span class="reference">Exam</span></a> *
   <div class="indent">
   <span class="keyword">[</span> <a href="#this"><span class="reference">this</span></a>.<a href="#c0_examiner"><span class="reference">examiner</span></a> = <a href="#c0_ada"><span class="reference">ada</span></a> <span class="keyword">]</span></div>
 </div>
@@ -94,7 +94,7 @@
 
 
 <div>
-<span class="claferDecl" id="c0_examineeOfAdaAsExaminer">examineeOfAdaAsExaminer</span><span class="keyword"> -></span> <a href="#c0_Person"><span class="reference">Person</span></a> *
+<span class="claferDecl" id="c0_examineeOfAdaAsExaminer">examineeOfAdaAsExaminer</span><span class="keyword"> -> </span><a href="#c0_Person"><span class="reference">Person</span></a> *
   <div class="indent">
   <span class="keyword">[</span> <span class="keyword">one</span> e<span class="keyword"> : </span><a href="#Lookup failed"><span class="reference">Exam</span></a> | <a href="#e"><span class="reference">e</span></a>.<a href="#c0_examiner"><span class="reference">examiner</span></a> = <a href="#c0_ada"><span class="reference">ada</span></a> && <a href="#e"><span class="reference">e</span></a>.<a href="#c0_examinee"><span class="reference">examinee</span></a> = <a href="#this"><span class="reference">this</span></a> <span class="keyword">]</span></div>
 </div>
@@ -105,7 +105,7 @@
 
 
 <div>
-<span class="claferDecl" id="c0_examineeOfAdaAsRecorder">examineeOfAdaAsRecorder</span><span class="keyword"> -></span> <a href="#c0_Person"><span class="reference">Person</span></a> *
+<span class="claferDecl" id="c0_examineeOfAdaAsRecorder">examineeOfAdaAsRecorder</span><span class="keyword"> -> </span><a href="#c0_Person"><span class="reference">Person</span></a> *
   <div class="indent">
   <span class="keyword">[</span> <span class="keyword">one</span> e<span class="keyword"> : </span><a href="#Lookup failed"><span class="reference">Exam</span></a> | <a href="#e"><span class="reference">e</span></a>.<a href="#c0_recorder"><span class="reference">recorder</span></a> = <a href="#c0_ada"><span class="reference">ada</span></a> && <a href="#e"><span class="reference">e</span></a>.<a href="#c0_examinee"><span class="reference">examinee</span></a> = <a href="#this"><span class="reference">this</span></a> <span class="keyword">]</span></div>
 </div>
@@ -116,7 +116,7 @@
 
 
 <div>
-<span class="claferDecl" id="c0_examinerOfAdaAsExaminee">examinerOfAdaAsExaminee</span><span class="keyword"> -></span> <a href="#c0_Person"><span class="reference">Person</span></a> *
+<span class="claferDecl" id="c0_examinerOfAdaAsExaminee">examinerOfAdaAsExaminee</span><span class="keyword"> -> </span><a href="#c0_Person"><span class="reference">Person</span></a> *
   <div class="indent">
   <span class="keyword">[</span> <span class="keyword">one</span> e<span class="keyword"> : </span><a href="#Lookup failed"><span class="reference">Exam</span></a> | <a href="#e"><span class="reference">e</span></a>.<a href="#c0_examinee"><span class="reference">examinee</span></a> = <a href="#c0_ada"><span class="reference">ada</span></a> && <a href="#e"><span class="reference">e</span></a>.<a href="#c0_examiner"><span class="reference">examiner</span></a> = <a href="#this"><span class="reference">this</span></a> <span class="keyword">]</span></div>
 </div>
@@ -127,7 +127,7 @@
 
 
 <div>
-<span class="claferDecl" id="c0_examinerOfAdaAsRecorder">examinerOfAdaAsRecorder</span><span class="keyword"> -></span> <a href="#c0_Person"><span class="reference">Person</span></a> *
+<span class="claferDecl" id="c0_examinerOfAdaAsRecorder">examinerOfAdaAsRecorder</span><span class="keyword"> -> </span><a href="#c0_Person"><span class="reference">Person</span></a> *
   <div class="indent">
   <span class="keyword">[</span> <span class="keyword">one</span> e<span class="keyword"> : </span><a href="#Lookup failed"><span class="reference">Exam</span></a> | <a href="#e"><span class="reference">e</span></a>.<a href="#c0_recorder"><span class="reference">recorder</span></a> = <a href="#c0_ada"><span class="reference">ada</span></a> && <a href="#e"><span class="reference">e</span></a>.<a href="#c0_examiner"><span class="reference">examiner</span></a> = <a href="#this"><span class="reference">this</span></a> <span class="keyword">]</span></div>
 </div>
@@ -138,7 +138,7 @@
 
 
 <div>
-<span class="claferDecl" id="c0_recorderOfAdaAsExaminee">recorderOfAdaAsExaminee</span><span class="keyword"> -></span> <a href="#c0_Person"><span class="reference">Person</span></a> *
+<span class="claferDecl" id="c0_recorderOfAdaAsExaminee">recorderOfAdaAsExaminee</span><span class="keyword"> -> </span><a href="#c0_Person"><span class="reference">Person</span></a> *
   <div class="indent">
   <span class="keyword">[</span> <span class="keyword">one</span> e<span class="keyword"> : </span><a href="#Lookup failed"><span class="reference">Exam</span></a> | <a href="#e"><span class="reference">e</span></a>.<a href="#c0_examinee"><span class="reference">examinee</span></a> = <a href="#c0_ada"><span class="reference">ada</span></a> && <a href="#e"><span class="reference">e</span></a>.<a href="#c0_recorder"><span class="reference">recorder</span></a> = <a href="#this"><span class="reference">this</span></a> <span class="keyword">]</span></div>
 </div>
@@ -149,7 +149,7 @@
 
 
 <div>
-<span class="claferDecl" id="c0_recorderOfAdaAsExaminer">recorderOfAdaAsExaminer</span><span class="keyword"> -></span> <a href="#c0_Person"><span class="reference">Person</span></a> *
+<span class="claferDecl" id="c0_recorderOfAdaAsExaminer">recorderOfAdaAsExaminer</span><span class="keyword"> -> </span><a href="#c0_Person"><span class="reference">Person</span></a> *
   <div class="indent">
   <span class="keyword">[</span> <span class="keyword">one</span> e<span class="keyword"> : </span><a href="#Lookup failed"><span class="reference">Exam</span></a> | <a href="#e"><span class="reference">e</span></a>.<a href="#c0_examiner"><span class="reference">examiner</span></a> = <a href="#c0_ada"><span class="reference">ada</span></a> && <a href="#e"><span class="reference">e</span></a>.<a href="#c0_recorder"><span class="reference">recorder</span></a> = <a href="#this"><span class="reference">this</span></a> <span class="keyword">]</span></div>
 </div>

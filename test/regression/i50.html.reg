@@ -11,7 +11,7 @@
   <div class="indent">
   <span class="claferDecl" id="c1_b">b</span> ?</div>
   <div class="indent">
-  <span class="claferDecl" id="c0_a">a</span><span class="keyword"> -></span> <a href="#c0_A"><span class="reference">A</span></a>
+  <span class="claferDecl" id="c0_a">a</span><span class="keyword"> -> </span><a href="#c0_A"><span class="reference">A</span></a>
     <div class="indent">
     <span class="keyword">[</span> <a href="#c2_b"><span class="reference">b</span></a> <span class="keyword">]</span></div>
     <div class="indent">
