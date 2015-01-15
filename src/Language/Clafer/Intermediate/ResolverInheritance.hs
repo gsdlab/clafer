@@ -34,7 +34,6 @@ import qualified Data.Map as Map
 
 import Language.ClaferT
 import Language.Clafer.Common
-import Language.Clafer.Front.Absclafer
 import Language.Clafer.Intermediate.Intclafer
 import Language.Clafer.Intermediate.ResolverName
 
@@ -58,19 +57,18 @@ resolveNClafer declarations clafer =
             _elements = elements'}
 
 
-resolveNSuper :: [IElement] -> ISuper -> Resolve ISuper
-resolveNSuper declarations x = case x of
-  ISuper False [PExp _ pid' pos' (IClaferId _ id' _ _)] ->
-    if isPrimitive id' || id' == baseClafer
-      then return x
+resolveNSuper :: [IElement] -> Maybe PExp -> Resolve (Maybe PExp)
+resolveNSuper _ Nothing = return Nothing
+resolveNSuper declarations (Just (PExp _ pid' pos' (IClaferId _ id' _ _))) =
+    if isPrimitive id'
+      then throwError $ SemanticErr pos' $ "Primitive types are not allowed as super types: " ++ id'
       else do
         r <- resolveN pos' declarations id'
         (id'', [superClafer']) <- case r of
           Nothing -> throwError $ SemanticErr pos' $ "No superclafer found: " ++ id'
           Just m  -> return m
-        let isTop' = "root" == (_parentUID superClafer')
-        return $ ISuper False [idToPExp pid' pos' "" id'' isTop']
-  _ -> return x
+        return $ Just $ idToPExp pid' pos' "" id'' $ isTopLevel superClafer'
+resolveNSuper _ x = return x
 
 
 resolveNElement :: [IElement] -> IElement -> Resolve IElement
@@ -96,18 +94,14 @@ resolveOModule (imodule, genv') =
 resolveOClafer :: SEnv -> IClafer -> Resolve IClafer
 resolveOClafer env clafer =
   do
-    super' <- resolveOSuper env {context = Just clafer} $ _super clafer
+    reference' <- resolveOReference env {context = Just clafer} $ _reference clafer
     elements' <- mapM (resolveOElement env {context = Just clafer}) $ _elements clafer
-    return $ clafer {_super = super', _elements = elements'}
+    return $ clafer {_reference = reference', _elements = elements'}
 
 
-resolveOSuper :: SEnv -> ISuper -> Resolve ISuper
-resolveOSuper env x = case x of
-  ISuper True exps' -> do
-    exps''     <- mapM (resolvePExp env) exps'
-    let isOverlap = not (length exps'' == 1 && isPrimitive (getSuperId exps''))
-    return $ ISuper isOverlap  exps''
-  _ -> return x
+resolveOReference :: SEnv -> Maybe IReference -> Resolve (Maybe IReference)
+resolveOReference _   Nothing                      = return Nothing
+resolveOReference env (Just (IReference is' exp')) = Just <$> IReference is' <$> resolvePExp env exp'
 
 
 resolveOElement :: SEnv -> IElement -> Resolve IElement
@@ -139,9 +133,8 @@ analyzeGCard :: SEnv -> IClafer -> Maybe IGCard
 analyzeGCard env clafer = gcard' `mplus` (Just $ IGCard False (0, -1))
   where
   gcard'
-    | _isOverlapping $ _super clafer = _gcard clafer
-    | otherwise                    = listToMaybe $ mapMaybe _gcard $
-                                     findHierarchy getSuper (clafers env) clafer
+    | isNothing $ _super clafer = _gcard clafer
+    | otherwise                 = listToMaybe $ mapMaybe _gcard $ findHierarchy getSuper (clafers env) clafer
 
 
 analyzeCard :: SEnv -> IClafer -> Maybe Interval
@@ -150,10 +143,9 @@ analyzeCard env clafer = _card clafer `mplus` Just card'
   card'
     | _isAbstract clafer = (0, -1)
     | (isJust $ context env) && pGcard == (0, -1)
-      || (isTopLevel $ _cinPos clafer) = (1, 1)
+      || (isTopLevel clafer) = (1, 1)
     | otherwise = (0, 1)
   pGcard = _interval $ fromJust $ _gcard $ fromJust $ context env
-  isTopLevel (Span (Pos _ c) _) = c==1
 
 analyzeElement :: SEnv -> IElement -> IElement
 analyzeElement env x = case x of
@@ -184,10 +176,7 @@ unrollabeDeclaration x = case x of
   IEGoal _ _ -> Nothing
 
 unrollableClafer :: IClafer -> [String]
-unrollableClafer clafer
-  | _isOverlapping $ _super clafer = []
-  | getSuper clafer == baseClafer  = deps
-  | otherwise                    = getSuper clafer : deps
+unrollableClafer clafer = (getSuper clafer) ++ deps
   where
   deps = (toClafers $ _elements clafer) >>= unrollableClafer
 
@@ -233,18 +222,17 @@ renameClafer' puid clafer = do
 genId :: String -> Int -> String
 genId id' count = concat ["c", show count, "_",  id']
 
-resolveEInheritance :: MonadState GEnv m => [String] -> [String] -> Bool -> [IElement] -> [IClafer]  -> m ([IElement], ISuper, [IClafer])
-resolveEInheritance predecessors unrollables absAncestor declarations allSuper
-  | _isOverlapping $ _super clafer = return ([], _super clafer, [clafer])
-  | otherwise = do
+resolveEInheritance :: MonadState GEnv m => [String] -> [String] -> Bool -> [IElement] -> [IClafer]  -> m ([IElement], Maybe PExp, [IClafer])
+resolveEInheritance predecessors unrollables absAncestor declarations allSuper = do
     let superList = (if absAncestor then id else tail) allSuper
     let unrollSuper = filter (\s -> _uid s `notElem` unrollables) $ tail allSuper
     elements' <-
         mapM (resolveEElement predecessors unrollables True declarations) $
              unrollSuper >>= _elements
-    let super' = if (getSuper clafer `elem` unrollables)
-                 then _super clafer
-                 else ISuper False [idToPExp "" noSpan "" "clafer" False]
+
+    let super' = case (`elem` unrollables) <$> getSuper clafer of
+                    [True] -> _super clafer
+                    _      ->  Nothing
     return (elements', super', superList)
   where
   clafer = head allSuper

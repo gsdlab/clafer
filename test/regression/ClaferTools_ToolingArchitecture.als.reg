@@ -59,8 +59,6 @@ one sig c0_ir extends c0_Representation
 abstract sig c0_io
 { r_c0_input : one c0_input
 , r_c0_output : one c0_output }
-{ all disj x, y : this.@r_c0_input | (x.@ref) != (y.@ref)
-  all disj x, y : this.@r_c0_output | (x.@ref) != (y.@ref) }
 
 sig c0_input
 { ref : one c0_Representation }

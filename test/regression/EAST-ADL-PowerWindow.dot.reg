@@ -1,0 +1,28 @@
+digraph "EAST-ADL-PowerWindow"
+{
+rankdir=BT;
+ranksep=0.3;
+nodesep=0.1;
+graph [fontname=Sans fontsize=11];
+node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
+edge [fontname=Sans fontsize=11];
+"c0_Feature" [label="abstract Feature" URL="#c0_Feature" tooltip="abstract Feature&#10;"];
+"c0_express" [label="express : Feature ?" URL="#c0_express" tooltip="express : Feature ?&#10;"];
+"c0_express" -> "c0_Feature" [arrowhead=onormal constraint=true weight=100];
+"c0_Component" [label="abstract Component" URL="#c0_Component" tooltip="abstract Component&#10;  abstract xor Port&#10;    input&#10;    output&#10;"];
+"c0_Request" [label="abstract Request" URL="#c0_Request" tooltip="abstract Request&#10;"];
+"c0_up" [label="up : Request" URL="#c0_up" tooltip="up : Request&#10;"];
+"c0_up" -> "c0_Request" [arrowhead=onormal constraint=true weight=100];
+"c0_down" [label="down : Request" URL="#c0_down" tooltip="down : Request&#10;"];
+"c0_down" -> "c0_Request" [arrowhead=onormal constraint=true weight=100];
+"c0_downX" [label="downX : Request ?" URL="#c0_downX" tooltip="downX : Request ?&#10;"];
+"c0_downX" -> "c0_Request" [arrowhead=onormal constraint=true weight=100];
+"c0_stop" [label="stop : Request" URL="#c0_stop" tooltip="stop : Request&#10;"];
+"c0_stop" -> "c0_Request" [arrowhead=onormal constraint=true weight=100];
+"c0_WinCtrl" [label="WinCtrl : Component" URL="#c0_WinCtrl" tooltip="WinCtrl : Component&#10;  cmd : Port -&gt; Command&#10;    [ output ]&#10;  req : Port -&gt; Request&#10;    [ input ]&#10;"];
+"c0_WinCtrl" -> "c0_Component" [arrowhead=onormal constraint=true weight=100];
+"c0_WinCtrl" -> "c0_Port" [arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];
+"c0_WinCtrl" -> "c0_Command" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=cmd];
+"c0_WinCtrl" -> "c0_Port" [arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];
+"c0_WinCtrl" -> "c0_Request" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=req];
+}

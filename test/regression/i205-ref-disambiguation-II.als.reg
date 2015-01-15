@@ -6,7 +6,6 @@ fact { all disj c1, c2 : c0_Car | ((c1.@r_c0_owner).@ref) != ((c2.@r_c0_owner).@
 fact { 4 <= #c0_Car and #c0_Car <= 4 }
 sig c0_Car
 { r_c0_owner : one c0_owner }
-{ all disj x, y : this.@r_c0_owner | (x.@ref) != (y.@ref) }
 
 sig c0_owner
 { ref : one c0_Person }

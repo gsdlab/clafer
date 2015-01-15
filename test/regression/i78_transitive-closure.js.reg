@@ -12,7 +12,7 @@ c0_Year2012 = Clafer("c0_Year2012").withCard(1, 1).extending(c0_YearLevel);
 c0_Jan2012 = Clafer("c0_Jan2012").withCard(1, 1).extending(c0_MonthLevel);
 c0_Week1 = Clafer("c0_Week1").withCard(1, 1).extending(c0_WeekLevel);
 c0_Week1AggregatesTo = Clafer("c0_Week1AggregatesTo");
-c0_aggregatesTo.refToUnique(c0_TimeLevel);
+c0_aggregatesTo.refTo(c0_TimeLevel);
 c0_Week1AggregatesTo.refToUnique(c0_TimeLevel);
 Constraint($in(joinRef(join(global(c0_Week1), c0_aggregatesTo)), joinRef(global(c0_Week1AggregatesTo))));
 Constraint($in(joinRef(join(joinRef(join(global(c0_Week1), c0_aggregatesTo)), c0_aggregatesTo)), joinRef(global(c0_Week1AggregatesTo))));

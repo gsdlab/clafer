@@ -7,5 +7,5 @@ graph [fontname=Sans fontsize=11];
 node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
 edge [fontname=Sans fontsize=11];
 "c0_Kernel" [label="abstract Kernel" URL="#c0_Kernel" tooltip="abstract Kernel&#10;  memory ?&#10;"];
-"c0_Phone" [label="Phone" URL="#c0_Phone" tooltip="Phone&#10;  name : string&#10;  [ Kernel.memory ]&#10;"];
+"c0_Phone" [label="Phone" URL="#c0_Phone" tooltip="Phone&#10;  name -&gt; string&#10;  [ Kernel.memory ]&#10;"];
 }

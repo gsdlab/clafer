@@ -2,12 +2,12 @@
 <!--
 A1 : A
     b1 : b
-    f1 : integer = 5
+    f1 -> integer = 5
 
 A2 : A
     c1 : c
     c2 : c
-    f2 : integer = 7
+    f2 -> integer = 7
 
 A3 : A
     b2 : b
@@ -30,8 +30,8 @@ xsi:schemaLocation="http://clafer.org/data i105-instance-data.xsd">
   </A2>
   <A3 id="A3">
     <b id="b2"/>
-    <c id="c3"/>	
-	<d id="d1"><ref>A1</ref></d>	
-	<d id="d2"><ref>A2</ref></d>		
+    <c id="c3"/>
+	<d id="d1"><ref>A1</ref></d>
+	<d id="d2"><ref>A2</ref></d>
   </A3>
 </data>

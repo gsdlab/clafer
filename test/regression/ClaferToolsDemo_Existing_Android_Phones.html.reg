@@ -83,7 +83,7 @@
 <!-- # FRAGMENT /-->
 
 <div>
-<span class="claferDecl" id="c0_LowEndPhones">LowEndPhones</span><span class="keyword"> :</span> <a href="#c0_MobilePhone"><span class="reference">MobilePhone</span></a>
+<span class="claferDecl" id="c0_LowEndPhones">LowEndPhones</span><span class="keyword"> : </span><a href="#c0_MobilePhone"><span class="reference">MobilePhone</span></a>
   <div class="indent">
   <span class="keyword">[</span> <span class="keyword">no</span> <a href="#c1_WiFi"><span class="reference">WiFi</span></a> <span class="keyword">]</span></div>
 </div>
@@ -91,7 +91,7 @@
 <!-- # FRAGMENT /-->
 
 <div>
-<span class="claferDecl" id="c0_HighEndPhones">HighEndPhones</span><span class="keyword"> :</span> <a href="#c0_MobilePhone"><span class="reference">MobilePhone</span></a>
+<span class="claferDecl" id="c0_HighEndPhones">HighEndPhones</span><span class="keyword"> : </span><a href="#c0_MobilePhone"><span class="reference">MobilePhone</span></a>
   <div class="indent">
   <span class="keyword">[</span> <a href="#c2_USB"><span class="reference">USB</span></a> && <a href="#c1_WiFi"><span class="reference">WiFi</span></a> <span class="keyword">]</span></div>
   <div class="indent">

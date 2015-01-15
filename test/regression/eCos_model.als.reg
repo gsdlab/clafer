@@ -5,8 +5,7 @@ pred show {}
 lone sig c0_MISC_FILESYSTEMS
 { r_c0_display : one c0_display
 , r_c0_CYGPKG_FS_JFFS2 : lone c0_CYGPKG_FS_JFFS2 }
-{ (some this.@r_c0_display) => ((this.(@r_c0_display.@ref)) = 0)
-  all disj x, y : this.@r_c0_display | (x.@ref) != (y.@ref) }
+{ (some this.@r_c0_display) => ((this.(@r_c0_display.@ref)) = 0) }
 
 lone sig c0_display
 { ref : one Int }
@@ -19,10 +18,8 @@ lone sig c0_CYGPKG_FS_JFFS2
 , r_c0_CYGOPT_FS_JFFS2_COMPRESS : lone c0_CYGOPT_FS_JFFS2_COMPRESS }
 { one r_c0_CYGPKG_FS_JFFS2
   (some this.@r_c1_display) => ((this.(@r_c1_display.@ref)) = 1)
-  all disj x, y : this.@r_c1_display | (x.@ref) != (y.@ref)
   some c0_CYGPKG_CRC
   some c0_MTD
-  all disj x, y : this.@r_c0_CYGOPT_FS_JFFS2_DEBUG | (x.@ref) != (y.@ref)
   (some this.@r_c0_CYGOPT_FS_JFFS2_NAND) <=> (some c0_HAS_IOMEM)
   some this.@r_c0_CYGOPT_FS_JFFS2_COMPRESS }
 
@@ -37,10 +34,8 @@ lone sig c0_CYGOPT_FS_JFFS2_DEBUG
 { one r_c0_CYGOPT_FS_JFFS2_DEBUG
   (this.@ref) = 0
   (some this.@r_c2_display) => ((this.(@r_c2_display.@ref)) = 2)
-  all disj x, y : this.@r_c2_display | (x.@ref) != (y.@ref)
   (0 <= (this.@ref)) && ((this.@ref) <= 2)
-  (some this.@r_c0_description) => ((this.(@r_c0_description.@ref)) = 3)
-  all disj x, y : this.@r_c0_description | (x.@ref) != (y.@ref) }
+  (some this.@r_c0_description) => ((this.(@r_c0_description.@ref)) = 3) }
 
 lone sig c2_display
 { ref : one Int }
@@ -60,9 +55,7 @@ lone sig c0_CYGOPT_FS_JFFS2_COMPRESS
 , r_c0_CYGOPT_FS_JFFS2_COMPRESS_CMODE : one c0_CYGOPT_FS_JFFS2_COMPRESS_CMODE }
 { one r_c0_CYGOPT_FS_JFFS2_COMPRESS
   (some this.@r_c3_display) => ((this.(@r_c3_display.@ref)) = 4)
-  all disj x, y : this.@r_c3_display | (x.@ref) != (y.@ref)
-  some this.@r_c0_CYGOPT_FS_JFFS2_COMPRESS_ZLIB
-  all disj x, y : this.@r_c0_CYGOPT_FS_JFFS2_COMPRESS_CMODE | (x.@ref) != (y.@ref) }
+  some this.@r_c0_CYGOPT_FS_JFFS2_COMPRESS_ZLIB }
 
 lone sig c3_display
 { ref : one Int }
@@ -72,7 +65,6 @@ lone sig c0_CYGOPT_FS_JFFS2_COMPRESS_ZLIB
 { r_c4_display : one c4_display }
 { one r_c0_CYGOPT_FS_JFFS2_COMPRESS_ZLIB
   (some this.@r_c4_display) => ((this.(@r_c4_display.@ref)) = 5)
-  all disj x, y : this.@r_c4_display | (x.@ref) != (y.@ref)
   some c0_CYGPKG_COMPRESS_ZLIB }
 
 lone sig c4_display
@@ -85,7 +77,6 @@ lone sig c0_CYGOPT_FS_JFFS2_COMPRESS_CMODE
 { one r_c0_CYGOPT_FS_JFFS2_COMPRESS_CMODE
   (this.@ref) = 6
   (some this.@r_c5_display) => ((this.(@r_c5_display.@ref)) = 7)
-  all disj x, y : this.@r_c5_display | (x.@ref) != (y.@ref)
   (((this.@ref) = 8) || ((this.@ref) = 6)) || ((this.@ref) = 9) }
 
 lone sig c5_display

@@ -122,13 +122,10 @@ irModuleTrace env = traceIrModule $ getIModule $ cIr env
 --   since the IR always changes and the map becomes obsolete
 --   maps from a UID to an IClafer with the given UID
 uidIClaferMap :: ClaferEnv -> StringMap IClafer
-uidIClaferMap env = foldl' (\accumMap' claf -> SMap.insert (_uid claf) claf accumMap') SMap.empty allClafers
+uidIClaferMap env = createUidIClaferMap $ getIModule $ cIr env
   where
     getIModule (Just (iModule, _, _)) = iModule
     getIModule Nothing                = error "BUG: uidIClaferMap: cannot request IClafer map before desugaring."
-
-    allClafers :: [ IClafer ]
-    allClafers = universeOn biplate $ getIModule $ cIr env
 
 -- | This simulates a field in the ClaferEnv that will always recompute the map,
 --   since the IR always changes and the map becomes obsolete

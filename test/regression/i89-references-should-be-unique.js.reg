@@ -1,4 +1,4 @@
-scope({c0_A:3, c0_multisetRefToA:3, c0_setRefToA:3});
+scope({c0_multisetRefToA:3, c0_setRefToA:3});
 defaultScope(1);
 intRange(-8, 7);
 stringLength(16);

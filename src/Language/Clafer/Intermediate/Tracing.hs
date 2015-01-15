@@ -54,7 +54,7 @@ traceAstModule x =
   i (AstElements a) = getSpan a
   i (AstElement a) = getSpan a
   i (AstSuper a) = getSpan a
-  i (AstSuperHow a) = getSpan a
+  i (AstReference a) = getSpan a
   i (AstInit a) = getSpan a
   i (AstInitHow a) = getSpan a
   i (AstGCard a) = getSpan a
@@ -81,7 +81,7 @@ traverseDeclaration x =
     ElementDecl _ e -> traverseElement e
 
 traverseClafer :: Clafer -> [Ast]
-traverseClafer x@(Clafer _ a b _ d e f g) = AstClafer x : (traverseAbstract a ++ traverseGCard b ++ traverseSuper d ++ traverseCard e ++ traverseInit f ++ traverseElements g)
+traverseClafer x@(Clafer _ a b _ d r e f g) = AstClafer x : (traverseAbstract a ++ traverseGCard b ++ traverseSuper d ++ traverseReference r ++ traverseCard e ++ traverseInit f ++ traverseElements g)
 
 traverseConstraint :: Constraint -> [Ast]
 traverseConstraint x@(Constraint _ e) = AstConstraint x : concatMap traverseExp e
@@ -118,11 +118,15 @@ traverseSuper x =
   AstSuper x :
     case x of
     SuperEmpty _ -> []
-    SuperSome _ sh se -> traverseSuperHow sh ++ traverseSetExp se
+    SuperSome _ se -> traverseSetExp se
 
-traverseSuperHow :: SuperHow -> [Ast]
-traverseSuperHow x =
-  AstSuperHow x : [{- no other children -}]
+traverseReference :: Reference -> [Ast]
+traverseReference x =
+  AstReference x :
+    case x of
+    ReferenceEmpty _ -> []
+    ReferenceSet _ se -> traverseSetExp se
+    ReferenceBag _ se -> traverseSetExp se
 
 traverseInit :: Init -> [Ast]
 traverseInit x =
@@ -246,7 +250,7 @@ data Ast =
   AstElements Elements |
   AstElement Element |
   AstSuper Super |
-  AstSuperHow SuperHow |
+  AstReference Reference |
   AstInit Init |
   AstInitHow InitHow |
   AstGCard GCard |

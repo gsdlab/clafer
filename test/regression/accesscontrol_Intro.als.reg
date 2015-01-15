@@ -9,7 +9,6 @@ abstract sig c0_Value
 fact { #c0_Attribute = 0 }
 abstract sig c0_Attribute
 { r_c0_value : one c0_value }
-{ all disj x, y : this.@r_c0_value | (x.@ref) != (y.@ref) }
 
 sig c0_value
 { ref : one c0_Value }

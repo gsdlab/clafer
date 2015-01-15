@@ -4,6 +4,6 @@ X
   [x]
 
 Z
-  z : int
+  z -> int
     y
   [z > 0]

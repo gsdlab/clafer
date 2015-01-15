@@ -55,8 +55,7 @@ abstract sig c0_ECU extends c0_comp
 abstract sig c0_display extends c0_comp
 { r_c0_server : one c0_server
 , r_c0_options : one c0_options }
-{ all disj x, y : this.@r_c0_server | (x.@ref) != (y.@ref)
-  (this.(@r_c0_version.@ref)) >= ((this.@r_c0_server).(@ref.(@r_c0_version.@ref))) }
+{ (this.(@r_c0_version.@ref)) >= ((this.@r_c0_server).(@ref.(@r_c0_version.@ref))) }
 
 sig c0_server
 { ref : one c0_ECU }
@@ -113,7 +112,6 @@ one sig c0_ECU1 extends c0_plaECU
 
 lone sig c0_ECU2 extends c0_plaECU
 { r_c0_master : one c0_master }
-{ all disj x, y : this.@r_c0_master | (x.@ref) != (y.@ref) }
 
 lone sig c0_master
 { ref : one c0_ECU1 }

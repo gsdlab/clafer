@@ -14,7 +14,7 @@ abstract AndroidPhone
 
 abstract Hardware
 	Screen
-		price : integer 
+		price -> integer
 		  [ price >= 10 && price <= 30 ]
 		xor material
 			basicScreen
@@ -23,7 +23,7 @@ abstract Hardware
 		xor resolution
 			R_320_by_480
 			R_480_by_560
-			R_480_by_800	
+			R_480_by_800
 		xor screenType
 			Screen1
 				[ colorScreen && R_480_by_560 ]
@@ -39,31 +39,31 @@ abstract Hardware
 		xor Capability
 			C_1450mah
 			C_1730mah
-	CPU	
+	CPU
 		xor Cores
 			one_nonkeyword
 			two_nonkeyword
 				[ AndroidPhone.energyConsumption.increased
 				  AndroidPhone.performance.improved ]
-		xor Frequency	
+		xor Frequency
 			F_800MHz
 				[ AndroidPhone.energyConsumption.reduced
-				  AndroidPhone.performance.reduced 
+				  AndroidPhone.performance.reduced
 				]
 			F_1_point_1GHz
 			F_1_point_5GHz
-				[ AndroidPhone.energyConsumption.increased 
+				[ AndroidPhone.energyConsumption.increased
 				  AndroidPhone.performance.improved
 				]
 		overclocking?
-			[ AndroidPhone.energyConsumption.increased 
+			[ AndroidPhone.energyConsumption.increased
 			  AndroidPhone.performance.improved
 			]
 	RAM
-		Capability : integer 
-			   [RAM.Capability >=  1000 && RAM.Capability <= 2000]		
+		Capability -> integer
+			   [RAM.Capability >=  1000 && RAM.Capability <= 2000]
 	HW_ROM
-		Capability : integer
+		Capability -> integer
 			   [HW_ROM.Capability >=  1000 && HW_ROM.Capability <= 2000]
 	or Position	// Michal: actually should be"mux" because you may have none as well
 		GPS
@@ -72,8 +72,8 @@ abstract Hardware
 		xor Pixel
 			P_800M
 			P_500M
-	
+
 APP2SD : Feature
-        [ 
+        [
 	AndroidPhone.performance.reduced
 ]

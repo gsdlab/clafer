@@ -16,7 +16,7 @@ c0_Alice = Clafer("c0_Alice").withCard(1, 1).extending(c0_Person);
 c0_Bob = Clafer("c0_Bob").withCard(1, 1).extending(c0_Person);
 c0_Carol = Clafer("c0_Carol").withCard(1, 1).extending(c0_Person);
 c0_age.refTo(Int);
-c0_spouse.refToUnique(c0_Person);
+c0_spouse.refTo(c0_Person);
 c0_childs.refToUnique(c0_Person);
 c0_parents.refToUnique(c0_Person);
 c0_maritalStatus.addConstraint(implies(or(some(join($this(), c0_married)), some(join($this(), c0_divorced))), greaterThanEqual(joinRef(join(joinParent($this()), c0_age)), constant(3))));

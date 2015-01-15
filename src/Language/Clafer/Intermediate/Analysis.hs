@@ -101,9 +101,8 @@ isDerived :: SClafer -> Bool
 isDerived = not . isBase
 
 
-data SSuper = Ref String | Colon String deriving Show
 -- | Easier to work with. IClafers have links from parents to children. SClafers have links from children to parent.
-data SClafer = SClafer {uid::String, origUid::String, isAbstract::Bool, low::Integer, high::Integer, groupLow::Integer, groupHigh::Integer, parent::Maybe String, super::Maybe SSuper, constraints::[I.PExp]} deriving Show
+data SClafer = SClafer {uid::String, origUid::String, isAbstract::Bool, low::Integer, high::Integer, groupLow::Integer, groupHigh::Integer, parent::Maybe String, super::Maybe String, reference::Maybe String, constraints::[I.PExp]} deriving Show
 
 data Info = Info{sclafers :: [SClafer]} deriving Show
 
@@ -163,9 +162,9 @@ topNonRootAncestor clafer =
 
 refUid :: Monad m => SClafer -> m String
 refUid clafer =
-  case super clafer of
-    Just (Ref u)  -> return u
-    _             -> fail $ "No ref uid for " ++ show clafer
+  case reference clafer of
+    Just u  -> return u
+    _       -> fail $ "No ref uid for " ++ show clafer
 
 refOf :: (Uidable c, MonadAnalysis m) => c -> m c
 refOf clafer = fromUid =<< refUid =<< toClafer clafer
@@ -183,8 +182,8 @@ colonUid c =
   do
     clafer <- toClafer c
     case super clafer of
-      Just (Colon u)  -> return u
-      _               -> fail $ "No colon uid for " ++ show clafer
+      Just u -> return u
+      _      -> fail $ "No colon uid for " ++ show clafer
 
 colonOf :: (Uidable c, MonadAnalysis m) => c -> m c
 colonOf clafer = fromUid =<< colonUid =<< toClafer clafer
@@ -322,9 +321,9 @@ convertClafer =
     where
     sclafer
       | maybe 1 groupLow parent == 0 && maybe 1 groupHigh parent /= -1 =
-          SClafer (I._uid clafer) (I._uid clafer) (I._isAbstract clafer) 1   high gLow gHigh (uid <$> parent) super constraints
+          SClafer (I._uid clafer) (I._uid clafer) (I._isAbstract clafer) 1   high gLow gHigh (uid <$> parent) super reference constraints
       | otherwise =
-          SClafer (I._uid clafer) (I._uid clafer) (I._isAbstract clafer) low high gLow gHigh (uid <$> parent) super constraints
+          SClafer (I._uid clafer) (I._uid clafer) (I._isAbstract clafer) low high gLow gHigh (uid <$> parent) super reference constraints
     (children, constraints) = partitionEithers $ mapMaybe (convertElement' $ Just $ sclafer) (I._elements clafer)
 
     Just (low, high) = I._card clafer
@@ -336,25 +335,25 @@ convertClafer =
         Just (I.IGCard _ i)    -> i
     super =
       case I._super clafer of
-        I.ISuper True [I.PExp{I._exp = I.IClaferId{I._sident = superUid}}]  -> Just $ Ref superUid
-        I.ISuper False [I.PExp{I._exp = I.IClaferId{I._sident = superUid}}] ->
-          if isPrimitive superUid
-            then Just $ Ref superUid
-            else Just $ Colon superUid
+        Just (I.PExp{I._exp = I.IClaferId{I._sident = superUid}})  -> Just superUid
+        _ -> Nothing
+    reference =
+      case I._reference clafer of
+        Just (I.IReference _ I.PExp{I._exp = I.IClaferId{I._sident = refUid'}})  -> Just refUid'
         _ -> Nothing
 
 gatherInfo :: I.IModule -> Info
 gatherInfo imodule =
   Info $ sClafer : sInteger : sInt : sReal : sString : sBoolean : convertClafer root
   where
-  sClafer = SClafer baseClafer baseClafer False 0 (-1) 0 (-1) Nothing Nothing []
-  sInteger = SClafer integerType integerType False 0 (-1) 0 (-1) Nothing Nothing []
-  sInt     = SClafer "int" "int" False 0 (-1) 0 (-1) Nothing Nothing []
-  sReal    = SClafer realType realType False 0 (-1) 0 (-1) Nothing Nothing []
-  sString  = SClafer stringType stringType False 0 (-1) 0 (-1) Nothing Nothing []
-  sBoolean = SClafer booleanType booleanType False 0 (-1) 0 (-1) Nothing Nothing []
+  sClafer = SClafer baseClafer baseClafer False 0 (-1) 0 (-1) Nothing Nothing Nothing []
+  sInteger = SClafer integerType integerType False 0 (-1) 0 (-1) Nothing Nothing Nothing []
+  sInt     = SClafer "int" "int" False 0 (-1) 0 (-1) Nothing Nothing Nothing []
+  sReal    = SClafer realType realType False 0 (-1) 0 (-1) Nothing Nothing Nothing []
+  sString  = SClafer stringType stringType False 0 (-1) 0 (-1) Nothing Nothing Nothing []
+  sBoolean = SClafer booleanType booleanType False 0 (-1) 0 (-1) Nothing Nothing Nothing []
 
-  root = I.IClafer noSpan False Nothing rootIdent rootIdent "" (I.ISuper False [I.PExp Nothing "" noSpan $ I.IClaferId "" baseClafer True Nothing ]) (Just (1, 1)) (0, 0) $ I._mDecls imodule
+  root = I.IClafer noSpan False Nothing rootIdent rootIdent "" Nothing Nothing (Just (1, 1)) (0, 0) $ I._mDecls imodule
 
 
 

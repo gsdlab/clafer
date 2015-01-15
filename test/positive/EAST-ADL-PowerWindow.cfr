@@ -1,0 +1,24 @@
+abstract Feature
+
+express : Feature ?
+
+[ express <=> downX ]
+
+abstract Component
+    abstract xor Port
+        input
+        output
+
+enum Command = motorUp | motorDown | motorStop
+
+abstract Request
+up : Request
+down : Request
+downX : Request ?
+stop : Request
+
+WinCtrl : Component
+    cmd : Port -> Command
+        [ output ]
+    req : Port -> Request
+        [ input ]

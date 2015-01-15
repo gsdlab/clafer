@@ -1,7 +1,7 @@
 {-# LANGUAGE FlexibleContexts #-}
 
 {-
- Copyright (C) 2012 Kacper Bak, Jimmy Liang <http://gsd.uwaterloo.ca>
+ Copyright (C) 2012 Kacper Bak, Jimmy Liang, Michal Antkiewicz <http://gsd.uwaterloo.ca>
 
  Permission is hereby granted, free of charge, to any person obtaining a copy of
  this software and associated documentation files (the "Software"), to deal in
@@ -151,13 +151,12 @@ resolveIExp pos' env x = case x of
     let (decls'', env') = runState (runErrorT $ (mapM (ErrorT . processDecl) decls')) env
     IDeclPExp quant' <$> decls'' <*> resolvePExp env' pexp
 
-  IFunExp op' exps' -> if op' == iJoin then resNav else IFunExp op' <$> mapM res exps'
+  IFunExp op' exps' -> if op' == iJoin then resNav else IFunExp op' <$> mapM (resolvePExp env) exps'
   IInt _ -> return x
   IDouble _ -> return x
   IStr _ -> return x
   IClaferId _ _ _ _ -> resNav
   where
-  res = resolvePExp env
   resNav = fst <$> resolveNav pos' env x True
 
 liftError :: Monad m => Either e a -> ErrorT e m a
@@ -189,7 +188,7 @@ mkPath :: SEnv -> (HowResolved, String, [IClafer]) -> (IExp, [IClafer])
 mkPath env (howResolved, id', path) = case howResolved of
   Binding -> (IClaferId "" id' True Nothing, path)
   Special -> (specIExp, path)
-  TypeSpecial -> (IClaferId "" id' True Nothing, path)
+  TypeSpecial -> (IClaferId "" id' True (Just id'), path)
   Subclafers -> (toNav $ tail $ reverse $ map toTuple path, path)
   Ancestor -> (toNav' $ adjustAncestor (fromJust $ context env)
                                        (reverse $ map toTuple $ resPath env)
@@ -289,10 +288,10 @@ resolveReference :: Span -> SEnv -> String -> Resolve (Maybe (HowResolved, Strin
 resolveReference pos' env id' = resolveChildren' pos' env id' allChildren Reference
 
 resolveChildren' :: Span -> SEnv -> String -> (SEnv -> [IClafer]) -> HowResolved -> Either ClaferSErr (Maybe (HowResolved, String, [IClafer]))
-resolveChildren' pos' env id' f label =
+resolveChildren' pos' env id' getChildrenF label =
   runMaybeT $ do
     liftMaybe $ context env
-    u <- MaybeT $ findUnique pos' id' $ map (\x -> (x, [x,fromJust $ context env])) $ f env
+    u <- MaybeT $ findUnique pos' id' $ map (\x -> (x, [x,fromJust $ context env])) $ getChildrenF env
     liftMaybe $ toMTriple label u
 
 liftMaybe :: Maybe a -> MaybeT (Either ClaferSErr) a
@@ -327,13 +326,13 @@ toNodeDeep env
 
 -- return children and inherited children but no children of reference targets
 allInhChildren :: SEnv -> [IClafer]
-allInhChildren = selectChildren getSuperNoArr
+allInhChildren = selectChildren getSuper
 
 -- return all children including inherited children children of reference targets
 allChildren :: SEnv -> [IClafer]
-allChildren = selectChildren getSuper
+allChildren = selectChildren getSuperAndReference
 
-selectChildren :: (IClafer -> String) -> SEnv -> [IClafer]
+selectChildren :: (IClafer -> [String]) -> SEnv -> [IClafer]
 selectChildren f env = getSubclafers $ concat $
                        mapHierarchy _elements f (sClafers $ genv env)
                        (fromJust $ context env)

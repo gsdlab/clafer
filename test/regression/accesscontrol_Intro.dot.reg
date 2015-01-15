@@ -7,7 +7,7 @@ graph [fontname=Sans fontsize=11];
 node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
 edge [fontname=Sans fontsize=11];
 "c0_Value" [label="abstract Value" URL="#c0_Value" tooltip="abstract Value&#10;"];
-"c0_Attribute" [label="abstract Attribute" URL="#c0_Attribute" tooltip="abstract Attribute&#10;  value -> Value&#10;"];
+"c0_Attribute" [label="abstract Attribute" URL="#c0_Attribute" tooltip="abstract Attribute&#10;  value -&gt; Value&#10;"];
 "c0_Attribute" -> "c0_Value" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=value];
 "c0_ActionName" [label="abstract ActionName : Attribute" URL="#c0_ActionName" tooltip="abstract ActionName : Attribute&#10;"];
 "c0_ActionName" -> "c0_Attribute" [arrowhead=onormal constraint=true weight=100];

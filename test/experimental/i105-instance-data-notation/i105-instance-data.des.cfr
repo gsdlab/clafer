@@ -7,7 +7,7 @@ abstract 0 .. * c1_A : clafer 0 .. * {
     }
   [all disj x ;
   y : this . c4_d | x . ref != y . ref]
-  0 .. * c14_f : integer 0 .. 1 {
+  0 .. * c14_f -> integer 0 .. 1 {
     }
   }
 0 .. * c15_A1 : c1_A 1 .. 1 {

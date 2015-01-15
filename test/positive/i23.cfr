@@ -1,7 +1,7 @@
 // http://gsd.uwaterloo.ca:8888/question/109/references-to-integer-missing-parent-child
 
 abstract Person
-    Age : integer
+    Age -> integer
 
 Team
     Contractor : Person
