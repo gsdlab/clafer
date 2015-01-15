@@ -146,7 +146,9 @@ genPythonReference x = case x of
   Just (IReference isSet' pexp') -> concat
     [ "my_Reference = Reference.Reference("
     , genPythonBoolean "isSet" isSet'
-    , genPythonPExp "Ref" pexp' ]
+    , ", "
+    , genPythonPExp "Ref" pexp'
+    , ")" ]
 
 genPythonCard :: (Integer, Integer) -> String
 genPythonCard interval' = concat [ "card=" , genPythonInterval interval']
@@ -219,8 +221,8 @@ genPythonIExp x = case x of
   IClaferId modName' sident' isTop' bind' -> concat
     [ "ClaferId.ClaferId(moduleName=\"", modName' , "\", "
     , "my_id=\"", sident' , "\", "
-    , genPythonBoolean "isTop" isTop'
-    , "my_bind=\"", fromMaybe "" bind' , "\", ", ")"]
+    , genPythonBoolean "isTop" isTop' , ", "
+    , "my_bind=\"", fromMaybe "" bind' , "\")"]
 
 
 genPythonDecl :: IDecl -> String
