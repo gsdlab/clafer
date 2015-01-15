@@ -1,24 +1,25 @@
 Clafer
 ======
 
-v0.3.7
+v0.4.0
 
 [Clafer](http://clafer.org) is a general-purpose lightweight structural modeling language developed by 
 [GSD Lab](http://gsd.uwaterloo.ca/), [University of Waterloo](http://uwaterloo.ca), and 
 [MODELS](http://www.itu.dk/research/models/) group at [IT University of Copenhagen](http://www.itu.dk/).
-Clafer can be used for modeling of static hierarchical structures but has no support for modeling the change of the structures over time (behavior). 
+Clafer can be used for modeling of static hierarchical structures for modeling the change of the structures over time (behavior). 
 The main goal of Clafer is to make modeling more accessible to a wider range of users and domains. 
 
 There are many possible applications of Clafer; however, three are prominent:
 
 1. *Product-Line Modeling* - aims at representing and managing commonality and variability of assets in product lines and creating and verifying product configurations. 
-Clafer naturally supports multi-staged configuration. 
+Clafer naturally supports multi-staged configuration.
+By applying modeling patterns, Clafer can be used for feature modeling, architecture modeling (e.g., by applying EAST-ADL), and behavior modeling (e.g., hierarchical state transition systems). All these aspects naturally include variability.
 
 2. *Multi-Objective Product Optimization* - aims at finding a set of products in a given product line that are optimal with respect to a set of objectives. 
 Clafer multi-objective optimizer generates a Pareto front of optimal product configurations.
 
 3. *Domain Modeling* - aims at improving the understanding of the problem domain in the early stages of software development and determining the requirements with fewer defects. 
-This is also known as *Concept Modeling* or *Ontology Modeling*.
+This is also known as *Concept Modeling* or *Ontology Modeling*. As of version 0.4.0, Clafer also allows for modeling how the concepts evolve over time.
 
 Clafer Compiler
 ===============
@@ -44,9 +45,9 @@ Contributors
 * [Kacper Bak](http://gsd.uwaterloo.ca/kbak), Original developer.
 * [Jimmy Liang](http://gsd.uwaterloo.ca/jliang), Main developer.
 * [Michał Antkiewicz](http://gsd.uwaterloo.ca/mantkiew), Requirements, development, architecture, testing, technology transfer.
+* Paulius Juodisius, behavioral Clafer extension, [customized BNFC generator](https://github.com/juodaspaulius/bnfc) and layout resolver.
 * [Ed Zulkoski](http://gsd.uwaterloo.ca/ezulkosk), Python IR Generator.
 * Luke Michael Brown, co-op student May-Aug 2013. Many improvements.
-* Paulius Juodisius, [customized BNFC generator](https://github.com/juodaspaulius/bnfc) and layout resolver.
 * [Rafael Olaechea](http://gsd.uwaterloo.ca/rolaechea), Multi-Objective Optimization extensions.
 
 Getting the Clafer Compiler
@@ -95,7 +96,7 @@ On Mac
 
 ### Installation from binaries
 
-Binary distributions of the release 0.3.7 of Clafer Tools for Windows, Mac, and Linux, 
+Binary distributions of the release 0.4.0 of Clafer Tools for Windows, Mac, and Linux, 
 can be downloaded from 
 [Clafer Tools - Binary Distributions](http://http://gsd.uwaterloo.ca/clafer-tools-binary-distributions). 
 
@@ -109,11 +110,11 @@ Dependencies
 * [The Haskell Platform](http://hackage.haskell.org/platform/) v2014.2.0.0 64bit
   * on Windows, use 32bit
 
-Clafer is now available on [Hackage](http://hackage.haskell.org/package/clafer-0.3.7/) and it can be installed using
+Clafer is now available on [Hackage](http://hackage.haskell.org/package/clafer-0.4.0/) and it can be installed using
 
 1. `cabal update`
 2. `cabal install clafer`
-3. `cd <cabal's lib or share folder>`  (`C:\Users\<user>\AppData\Roaming\cabal\x86_64-windows-ghc-7.8.3\clafer-0.3.7` on Windows or `.cabal/share/x86_64-linux-ghc-7.8.3/clafer-0.3.7/` on Linux)
+3. `cd <cabal's lib or share folder>`  (`C:\Users\<user>\AppData\Roaming\cabal\x86_64-windows-ghc-7.8.3\clafer-0.4.0` on Windows or `.cabal/share/x86_64-linux-ghc-7.8.3/clafer-0.4.0/` on Linux)
 4. to automatically download Alloy jars
   * execute `make` in `tools` 
 
@@ -191,7 +192,7 @@ Clafer Compiler
 (As printed by `clafer --help`)
 
 ```
-Clafer 0.3.7
+Clafer 0.4.0
 
 clafer [OPTIONS] [FILE]
 
