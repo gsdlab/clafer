@@ -1,0 +1,27 @@
+scope({c0_Command:3, c0_Port:2, c0_Request:4, c0_input:2, c0_output:2});
+defaultScope(1);
+intRange(-8, 7);
+stringLength(16);
+
+c0_Feature = Abstract("c0_Feature");
+c0_Component = Abstract("c0_Component");
+c0_Command = Abstract("c0_Command");
+c0_Request = Abstract("c0_Request");
+c0_express = Clafer("c0_express").withCard(0, 1).extending(c0_Feature);
+c0_input = c0_Port.addChild("c0_input").withCard(0, 1);
+c0_output = c0_Port.addChild("c0_output").withCard(0, 1);
+c0_motorUp = Clafer("c0_motorUp").withCard(1, 1).extending(c0_Command);
+c0_motorDown = Clafer("c0_motorDown").withCard(1, 1).extending(c0_Command);
+c0_motorStop = Clafer("c0_motorStop").withCard(1, 1).extending(c0_Command);
+c0_up = Clafer("c0_up").withCard(1, 1).extending(c0_Request);
+c0_down = Clafer("c0_down").withCard(1, 1).extending(c0_Request);
+c0_downX = Clafer("c0_downX").withCard(0, 1).extending(c0_Request);
+c0_stop = Clafer("c0_stop").withCard(1, 1).extending(c0_Request);
+c0_WinCtrl = Clafer("c0_WinCtrl").withCard(1, 1).extending(c0_Component);
+c0_cmd = c0_WinCtrl.addChild("c0_cmd").withCard(1, 1).extending(c0_Port);
+c0_req = c0_WinCtrl.addChild("c0_req").withCard(1, 1).extending(c0_Port);
+c0_cmd.refTo(c0_Command);
+c0_req.refTo(c0_Request);
+Constraint(ifOnlyIf(some(global(c0_express)), some(global(c0_downX))));
+c0_cmd.addConstraint(some(join($this(), c0_output)));
+c0_req.addConstraint(some(join($this(), c0_input)));
