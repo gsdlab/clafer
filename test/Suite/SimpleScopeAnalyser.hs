@@ -64,6 +64,14 @@ model = unlines
 			, "abstract F : H"
 			, "f1 : F 2..5"
 			, "    m 0"
+			, "i1 -> integer 2..4"
+			, "i2 ->> integer ?"
+			, "i3 -> integer *"
+			, "i4 ->> integer *"
+			, "s1 -> string 2..*"
+			, "s2 ->> string"
+			, "s3 -> string +"
+			, "s4 ->> string +"
 			]
 
 expectedScopesSet :: M.Map UID Integer
@@ -72,7 +80,6 @@ expectedScopesSet = M.fromList $ [ ("c0_a", 0)
 							--	 , ("c0_c", 1)	-- uses global scope
 							--	 , ("c0_d", 1) 	-- uses global scope
 							--	 , ("c0_e", 1)	-- uses global scope
-							--	 , ("c0_Hs2", 1)  -- uses global scope
 								 , ("c0_f", 4)
 								 , ("c0_g", 3)
 								 , ("c0_gs", 2)
@@ -80,17 +87,26 @@ expectedScopesSet = M.fromList $ [ ("c0_a", 0)
 								 , ("c0_i", 22)
 								 , ("c0_j", 22)
 								 , ("c0_k", 44)
-								 , ("c0_Hs", 3)
+								 , ("c0_Hs", 16)
 								 , ("c0_H1", 2)
 								 , ("c0_H12", 4)
 								 , ("c0_H2", 4)
 								 , ("c0_H3", 2)
 								 , ("c0_H4", 5)
+								 , ("c0_Hs2", 16)
 								 , ("c0_Hs3", 8)
 								 , ("c0_l", 8)
 								 , ("c0_F", 5)
 								 , ("c0_f1", 5)
 								 , ("c0_m", 0)
+								 , ("c0_i1", 4)
+							--	 , ("c0_i2", 1)	-- uses global scope
+							--	 , ("c0_i3", 1)	-- uses global scope
+							--	 , ("c0_i4", 1)	-- uses global scope
+								 , ("c0_s1", 2)
+							--	 , ("c0_s2", 1)	-- uses global scope
+							--	 , ("c0_s3", 1)	-- uses global scope
+							--	 , ("c0_s4", 1)	-- uses global scope
 								 ]
 
 

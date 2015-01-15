@@ -155,8 +155,8 @@ createUidIClaferMap    iModule  = foldl' (\accumMap' claf -> SMap.insert (_uid c
     allClafers :: [ IClafer ]
     allClafers = universeOn biplate iModule
 
-findIClafer :: UID -> StringMap IClafer -> Maybe IClafer
-findIClafer    uid'   uidIClaferMap      = SMap.lookup uid' uidIClaferMap
+findIClafer :: StringMap IClafer -> UID -> Maybe IClafer
+findIClafer    uidIClaferMap        uid' = SMap.lookup uid' uidIClaferMap
 
 -- -----------------------------------------------------------------------------
 -- generic functions

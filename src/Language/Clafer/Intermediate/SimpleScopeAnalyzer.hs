@@ -21,7 +21,7 @@
 -}
 module Language.Clafer.Intermediate.SimpleScopeAnalyzer (simpleScopeAnalysis) where
 
-import Language.Clafer.Common
+import Control.Applicative ((<$>))
 import Control.Lens hiding (elements, assign)
 import Data.Graph
 import Data.List
@@ -30,9 +30,10 @@ import qualified Data.Map as Map
 import Data.Maybe
 import Data.Ord
 import Data.Ratio
-import Language.Clafer.Intermediate.Intclafer
 import Prelude hiding (exp)
 
+import Language.Clafer.Common
+import Language.Clafer.Intermediate.Intclafer
 
 -- | Collects the global cardinality and hierarchy information into proper, not necessarily lower, bounds.
 simpleScopeAnalysis :: IModule -> [(String, Integer)]
@@ -41,7 +42,7 @@ simpleScopeAnalysis iModule@IModule{_mDecls = decls'} =
     where
     uidClaferMap = createUidIClaferMap iModule
     findClafer :: UID -> IClafer
-    findClafer uid' = fromJust $ findIClafer uid' uidClaferMap
+    findClafer uid' = fromJust $ findIClafer uidClaferMap uid'
 
     finalAnalysis = Map.toList $ foldl analyzeComponent supersAndRefsAnalysis connectedComponents
 
@@ -63,9 +64,9 @@ simpleScopeAnalysis iModule@IModule{_mDecls = decls'} =
         Just (cardLb, cardUb) = _card clafer
         oneForStar = if (cardLb == 0 && cardUb == -1) then 1 else 0
         targetScopeForStar = if ((isJust $ _reference clafer) && cardUb == -1)
-            then case (directSuper clafers clafer) of
-                    (Just targetClafer) -> Map.findWithDefault 0 (_uid targetClafer) analysis'
-                    Nothing -> 0
+            then case getReference clafer of
+                [ref'] -> Map.findWithDefault 1 (fromMaybe "unknown" $ _uid <$> findIClafer uidClaferMap ref' ) analysis'
+                _      -> 0
             else 0
         lowFromConstraints = Map.findWithDefault 0 (_uid clafer) constraintAnalysis
 
