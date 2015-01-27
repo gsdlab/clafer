@@ -5,6 +5,7 @@ module Language.Clafer.Front.Printclafer where
 
 import Language.Clafer.Front.Absclafer
 import Data.Char
+import Prelude hiding (exp, init)
 
 
 -- the top-level printing method

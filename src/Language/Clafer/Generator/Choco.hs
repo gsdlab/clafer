@@ -57,14 +57,14 @@ genCModule _ (imodule@IModule{_mDecls}, _) scopes =
                 | otherwise             -> Just _sident
             _ -> Nothing
 
-    refOf u =
+{-    refOf u =
         case _reference $ claferWithUid u of
             Just (IReference{_ref=PExp{_exp = IClaferId{_sident}}})
                 | _sident == "int"    -> Just "integer"
                 | isPrimitive _sident -> Just _sident
                 | otherwise           -> Nothing
             _ -> Nothing
-
+-}
     parentOf u = fst $ fromMaybe (error $ "parentOf: \"" ++ u ++ "\" is not a clafer") $ find ((== u) . _uid . snd) parentChildMap
 
     genCard :: Interval -> Maybe String
@@ -77,9 +77,11 @@ genCModule _ (imodule@IModule{_mDecls}, _) scopes =
     genScopes =
         (if null scopeMap then "" else "scope({" ++ intercalate ", " scopeMap ++ "});\n")
         ++ "defaultScope(1);\n"
-        ++ "intRange(-" ++ show (2 ^ (bitwidth - 1)) ++ ", " ++ show (2 ^ (bitwidth - 1) - 1) ++ ");\n"
+        ++ "intRange(-" ++ show largestPositiveInt ++ ", " ++ show (largestPositiveInt - 1) ++ ");\n"
         ++ "stringLength(" ++ show longestString ++ ");\n"
         where
+            largestPositiveInt :: Integer
+            largestPositiveInt = 2 ^ (bitwidth - 1)
             scopeMap = [uid' ++ ":" ++ show scope | (uid', scope) <- scopes, uid' /= "int"]
     exprs :: [IExp]
     exprs = universeOn biplate imodule

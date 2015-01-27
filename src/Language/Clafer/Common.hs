@@ -23,7 +23,7 @@
 module Language.Clafer.Common where
 
 import           Control.Applicative ((<$>))
-import           Control.Lens ((^..), traversed, universeOn)
+import           Control.Lens (universeOn)
 import           Data.Char
 import           Data.Data.Lens (biplate)
 import           Data.List
