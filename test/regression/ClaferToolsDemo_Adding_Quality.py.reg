@@ -118,7 +118,7 @@ def getModule():
 	id="Connectivity"
 	uid="c0_Connectivity"
 	parentUid="c0_MobilePhone"
-	
+	my_Super = 
 		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(9),IntegerLiteral.IntegerLiteral(20)), (IntegerLiteral.IntegerLiteral(9),IntegerLiteral.IntegerLiteral(27))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_Feature", isTop=True, my_bind="")])
 	
 	card=(IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(1))
@@ -174,7 +174,7 @@ def getModule():
 	id="Bluetooth"
 	uid="c0_Bluetooth"
 	parentUid="c0_Connectivity"
-	
+	my_Super = 
 		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(14),IntegerLiteral.IntegerLiteral(25)), (IntegerLiteral.IntegerLiteral(14),IntegerLiteral.IntegerLiteral(32))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_Feature", isTop=True, my_bind="")])
 	
 	card=(IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(1))
@@ -229,7 +229,7 @@ def getModule():
 	id="Bluetooth20EDR"
 	uid="c0_Bluetooth20EDR"
 	parentUid="c0_Bluetooth"
-	
+	my_Super = 
 		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(19),IntegerLiteral.IntegerLiteral(30)), (IntegerLiteral.IntegerLiteral(19),IntegerLiteral.IntegerLiteral(37))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_Feature", isTop=True, my_bind="")])
 	
 	card=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(1))
@@ -287,7 +287,7 @@ def getModule():
 	id="Bluetooth21EDR"
 	uid="c0_Bluetooth21EDR"
 	parentUid="c0_Bluetooth"
-	
+	my_Super = 
 		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(24),IntegerLiteral.IntegerLiteral(30)), (IntegerLiteral.IntegerLiteral(24),IntegerLiteral.IntegerLiteral(37))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_Feature", isTop=True, my_bind="")])
 	
 	card=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(1))
@@ -345,7 +345,7 @@ def getModule():
 	id="Bluetooth40"
 	uid="c0_Bluetooth40"
 	parentUid="c0_Bluetooth"
-	
+	my_Super = 
 		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(29),IntegerLiteral.IntegerLiteral(27)), (IntegerLiteral.IntegerLiteral(29),IntegerLiteral.IntegerLiteral(34))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_Feature", isTop=True, my_bind="")])
 	
 	card=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(1))
@@ -404,7 +404,7 @@ def getModule():
 	id="GSM"
 	uid="c0_GSM"
 	parentUid="c0_Connectivity"
-	
+	my_Super = 
 		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(34),IntegerLiteral.IntegerLiteral(15)), (IntegerLiteral.IntegerLiteral(34),IntegerLiteral.IntegerLiteral(22))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_Feature", isTop=True, my_bind="")])
 	
 	card=(IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(1))
@@ -462,7 +462,7 @@ def getModule():
 	id="LTE"
 	uid="c0_LTE"
 	parentUid="c0_Connectivity"
-	
+	my_Super = 
 		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(39),IntegerLiteral.IntegerLiteral(15)), (IntegerLiteral.IntegerLiteral(39),IntegerLiteral.IntegerLiteral(22))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_Feature", isTop=True, my_bind="")])
 	
 	card=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(1))
@@ -520,7 +520,7 @@ def getModule():
 	id="WiFi"
 	uid="c0_WiFi"
 	parentUid="c0_Connectivity"
-	
+	my_Super = 
 		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(44),IntegerLiteral.IntegerLiteral(15)), (IntegerLiteral.IntegerLiteral(44),IntegerLiteral.IntegerLiteral(22))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_Feature", isTop=True, my_bind="")])
 	
 	card=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(1))
@@ -578,7 +578,7 @@ def getModule():
 	id="USB"
 	uid="c0_USB"
 	parentUid="c0_Connectivity"
-	
+	my_Super = 
 		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(49),IntegerLiteral.IntegerLiteral(15)), (IntegerLiteral.IntegerLiteral(49),IntegerLiteral.IntegerLiteral(22))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_Feature", isTop=True, my_bind="")])
 	
 	card=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(1))
@@ -635,7 +635,7 @@ def getModule():
 	id="Battery"
 	uid="c0_Battery"
 	parentUid="c0_MobilePhone"
-	
+	my_Super = 
 		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(54),IntegerLiteral.IntegerLiteral(19)), (IntegerLiteral.IntegerLiteral(54),IntegerLiteral.IntegerLiteral(26))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_Feature", isTop=True, my_bind="")])
 	
 	card=(IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(1))
@@ -690,7 +690,7 @@ def getModule():
 	id="LiBattery1150"
 	uid="c0_LiBattery1150"
 	parentUid="c0_Battery"
-	
+	my_Super = 
 		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(59),IntegerLiteral.IntegerLiteral(25)), (IntegerLiteral.IntegerLiteral(59),IntegerLiteral.IntegerLiteral(32))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_Feature", isTop=True, my_bind="")])
 	
 	card=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(1))
@@ -746,7 +746,7 @@ def getModule():
 	id="LiBattery1400"
 	uid="c0_LiBattery1400"
 	parentUid="c0_Battery"
-	
+	my_Super = 
 		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(64),IntegerLiteral.IntegerLiteral(25)), (IntegerLiteral.IntegerLiteral(64),IntegerLiteral.IntegerLiteral(32))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_Feature", isTop=True, my_bind="")])
 	
 	card=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(1))
@@ -984,7 +984,7 @@ def getModule():
 	id="OptimalPhone"
 	uid="c0_OptimalPhone"
 	parentUid="root"
-	
+	my_Super = 
 		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(78),IntegerLiteral.IntegerLiteral(16)), (IntegerLiteral.IntegerLiteral(78),IntegerLiteral.IntegerLiteral(27))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_MobilePhone", isTop=True, my_bind="")])
 	
 	card=(IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(1))

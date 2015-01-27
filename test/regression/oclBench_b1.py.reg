@@ -253,7 +253,7 @@ def getModule():
 	id="ada"
 	uid="c0_ada"
 	parentUid="root"
-	
+	my_Super = 
 		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(15),IntegerLiteral.IntegerLiteral(7)), (IntegerLiteral.IntegerLiteral(15),IntegerLiteral.IntegerLiteral(13))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_Person", isTop=True, my_bind="")])
 	
 	card=(IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(1))
@@ -310,7 +310,7 @@ def getModule():
 	id="cyd"
 	uid="c0_cyd"
 	parentUid="root"
-	
+	my_Super = 
 		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(24),IntegerLiteral.IntegerLiteral(7)), (IntegerLiteral.IntegerLiteral(24),IntegerLiteral.IntegerLiteral(13))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_Person", isTop=True, my_bind="")])
 	
 	card=(IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(1))
@@ -367,7 +367,7 @@ def getModule():
 	id="eve"
 	uid="c0_eve"
 	parentUid="root"
-	
+	my_Super = 
 		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(33),IntegerLiteral.IntegerLiteral(7)), (IntegerLiteral.IntegerLiteral(33),IntegerLiteral.IntegerLiteral(13))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_Person", isTop=True, my_bind="")])
 	
 	card=(IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(1))
@@ -427,7 +427,7 @@ def getModule():
 	id="bob"
 	uid="c0_bob"
 	parentUid="root"
-	
+	my_Super = 
 		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(42),IntegerLiteral.IntegerLiteral(7)), (IntegerLiteral.IntegerLiteral(42),IntegerLiteral.IntegerLiteral(13))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_Person", isTop=True, my_bind="")])
 	
 	card=(IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(1))
@@ -484,7 +484,7 @@ def getModule():
 	id="dan"
 	uid="c0_dan"
 	parentUid="root"
-	
+	my_Super = 
 		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(50),IntegerLiteral.IntegerLiteral(7)), (IntegerLiteral.IntegerLiteral(50),IntegerLiteral.IntegerLiteral(13))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_Person", isTop=True, my_bind="")])
 	
 	card=(IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(1))

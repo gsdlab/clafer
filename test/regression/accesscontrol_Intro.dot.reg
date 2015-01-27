@@ -16,5 +16,6 @@ edge [fontname=Sans fontsize=11];
 "c0_ResourceName" [label="abstract ResourceName : Attribute" URL="#c0_ResourceName" tooltip="abstract ResourceName : Attribute&#10;"];
 "c0_ResourceName" -> "c0_Attribute" [arrowhead=onormal constraint=true weight=100];
 "c0_Element" [label="abstract Element" URL="#c0_Element" tooltip="abstract Element&#10;  abstract attributes : Attribute *&#10;"];
-"c0_Element" -> "c0_Attribute" [arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];
+"c0_attributes" [label="abstract attributes : Attribute *" URL="#c0_attributes" tooltip="abstract attributes : Attribute *&#10;"];
+"c0_attributes" -> "c0_Attribute" [arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];
 }

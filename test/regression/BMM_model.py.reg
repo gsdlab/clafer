@@ -40,7 +40,7 @@ def getModule():
 	id="End"
 	uid="c0_End"
 	parentUid="root"
-	
+	my_Super = 
 		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(2),IntegerLiteral.IntegerLiteral(16)), (IntegerLiteral.IntegerLiteral(2),IntegerLiteral.IntegerLiteral(23))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_Element", isTop=True, my_bind="")])
 	
 	card=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))
@@ -161,7 +161,7 @@ def getModule():
 	id="Mean"
 	uid="c0_Mean"
 	parentUid="root"
-	
+	my_Super = 
 		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(10),IntegerLiteral.IntegerLiteral(17)), (IntegerLiteral.IntegerLiteral(10),IntegerLiteral.IntegerLiteral(24))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_Element", isTop=True, my_bind="")])
 	
 	card=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))
@@ -177,7 +177,7 @@ def getModule():
 	id="Vision"
 	uid="c0_Vision"
 	parentUid="root"
-	
+	my_Super = 
 		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(11),IntegerLiteral.IntegerLiteral(19)), (IntegerLiteral.IntegerLiteral(11),IntegerLiteral.IntegerLiteral(22))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_End", isTop=True, my_bind="")])
 	
 	card=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))
@@ -243,7 +243,7 @@ def getModule():
 	id="DesiredResult"
 	uid="c0_DesiredResult"
 	parentUid="root"
-	
+	my_Super = 
 		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(16),IntegerLiteral.IntegerLiteral(26)), (IntegerLiteral.IntegerLiteral(16),IntegerLiteral.IntegerLiteral(29))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_End", isTop=True, my_bind="")])
 	
 	card=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))
@@ -320,7 +320,7 @@ def getModule():
 	id="Goal"
 	uid="c0_Goal"
 	parentUid="root"
-	
+	my_Super = 
 		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(21),IntegerLiteral.IntegerLiteral(17)), (IntegerLiteral.IntegerLiteral(21),IntegerLiteral.IntegerLiteral(30))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_DesiredResult", isTop=True, my_bind="")])
 	
 	card=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))
@@ -416,7 +416,7 @@ def getModule():
 	id="Objective"
 	uid="c0_Objective"
 	parentUid="root"
-	
+	my_Super = 
 		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(30),IntegerLiteral.IntegerLiteral(22)), (IntegerLiteral.IntegerLiteral(30),IntegerLiteral.IntegerLiteral(35))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_DesiredResult", isTop=True, my_bind="")])
 	
 	card=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))
@@ -574,7 +574,7 @@ def getModule():
 	id="CourseOfAction"
 	uid="c0_CourseOfAction"
 	parentUid="root"
-	
+	my_Super = 
 		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(43),IntegerLiteral.IntegerLiteral(27)), (IntegerLiteral.IntegerLiteral(43),IntegerLiteral.IntegerLiteral(31))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_Mean", isTop=True, my_bind="")])
 	
 	card=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))
@@ -790,7 +790,7 @@ def getModule():
 	id="Strategy"
 	uid="c0_Strategy"
 	parentUid="root"
-	
+	my_Super = 
 		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(57),IntegerLiteral.IntegerLiteral(21)), (IntegerLiteral.IntegerLiteral(57),IntegerLiteral.IntegerLiteral(35))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_CourseOfAction", isTop=True, my_bind="")])
 	
 	card=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))
@@ -853,7 +853,7 @@ def getModule():
 	id="Tactic"
 	uid="c0_Tactic"
 	parentUid="root"
-	
+	my_Super = 
 		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(68),IntegerLiteral.IntegerLiteral(19)), (IntegerLiteral.IntegerLiteral(68),IntegerLiteral.IntegerLiteral(33))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_CourseOfAction", isTop=True, my_bind="")])
 	
 	card=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))
@@ -901,7 +901,7 @@ def getModule():
 	id="Mission"
 	uid="c0_Mission"
 	parentUid="root"
-	
+	my_Super = 
 		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(76),IntegerLiteral.IntegerLiteral(20)), (IntegerLiteral.IntegerLiteral(76),IntegerLiteral.IntegerLiteral(24))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_Mean", isTop=True, my_bind="")])
 	
 	card=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))
@@ -949,7 +949,7 @@ def getModule():
 	id="Directive"
 	uid="c0_Directive"
 	parentUid="root"
-	
+	my_Super = 
 		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(79),IntegerLiteral.IntegerLiteral(22)), (IntegerLiteral.IntegerLiteral(79),IntegerLiteral.IntegerLiteral(26))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_Mean", isTop=True, my_bind="")])
 	
 	card=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))
@@ -1254,7 +1254,7 @@ def getModule():
 	id="BusinessPolicy"
 	uid="c0_BusinessPolicy"
 	parentUid="root"
-	
+	my_Super = 
 		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(100),IntegerLiteral.IntegerLiteral(27)), (IntegerLiteral.IntegerLiteral(100),IntegerLiteral.IntegerLiteral(36))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_Directive", isTop=True, my_bind="")])
 	
 	card=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))
@@ -1395,7 +1395,7 @@ def getModule():
 	id="BusinessRule"
 	uid="c0_BusinessRule"
 	parentUid="root"
-	
+	my_Super = 
 		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(113),IntegerLiteral.IntegerLiteral(25)), (IntegerLiteral.IntegerLiteral(113),IntegerLiteral.IntegerLiteral(34))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_Directive", isTop=True, my_bind="")])
 	
 	card=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))
@@ -1585,7 +1585,7 @@ def getModule():
 	id="Regulation"
 	uid="c0_Regulation"
 	parentUid="root"
-	
+	my_Super = 
 		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(128),IntegerLiteral.IntegerLiteral(23)), (IntegerLiteral.IntegerLiteral(128),IntegerLiteral.IntegerLiteral(30))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_Element", isTop=True, my_bind="")])
 	
 	card=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))
@@ -1617,7 +1617,7 @@ def getModule():
 	id="Influencer"
 	uid="c0_Influencer"
 	parentUid="root"
-	
+	my_Super = 
 		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(130),IntegerLiteral.IntegerLiteral(26)), (IntegerLiteral.IntegerLiteral(130),IntegerLiteral.IntegerLiteral(33))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_Element", isTop=True, my_bind="")])
 	
 	card=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))
@@ -2068,7 +2068,7 @@ def getModule():
 	id="Assessment"
 	uid="c0_Assessment"
 	parentUid="root"
-	
+	my_Super = 
 		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(160),IntegerLiteral.IntegerLiteral(23)), (IntegerLiteral.IntegerLiteral(160),IntegerLiteral.IntegerLiteral(30))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_Element", isTop=True, my_bind="")])
 	
 	card=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))
@@ -2270,7 +2270,7 @@ def getModule():
 	id="PotentialImpact"
 	uid="c0_PotentialImpact"
 	parentUid="root"
-	
+	my_Super = 
 		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(173),IntegerLiteral.IntegerLiteral(28)), (IntegerLiteral.IntegerLiteral(173),IntegerLiteral.IntegerLiteral(35))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_Element", isTop=True, my_bind="")])
 	
 	card=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))
@@ -2459,7 +2459,7 @@ def getModule():
 	id="Metric"
 	uid="c0_Metric"
 	parentUid="root"
-	
+	my_Super = 
 		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(185),IntegerLiteral.IntegerLiteral(19)), (IntegerLiteral.IntegerLiteral(185),IntegerLiteral.IntegerLiteral(26))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_Element", isTop=True, my_bind="")])
 	
 	card=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))
@@ -2475,7 +2475,7 @@ def getModule():
 	id="KeyPerformanceIndicator"
 	uid="c0_KeyPerformanceIndicator"
 	parentUid="root"
-	
+	my_Super = 
 		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(186),IntegerLiteral.IntegerLiteral(36)), (IntegerLiteral.IntegerLiteral(186),IntegerLiteral.IntegerLiteral(42))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_Metric", isTop=True, my_bind="")])
 	
 	card=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))
@@ -2491,7 +2491,7 @@ def getModule():
 	id="CriticalSuccessFactor"
 	uid="c0_CriticalSuccessFactor"
 	parentUid="root"
-	
+	my_Super = 
 		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(187),IntegerLiteral.IntegerLiteral(34)), (IntegerLiteral.IntegerLiteral(187),IntegerLiteral.IntegerLiteral(40))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_Metric", isTop=True, my_bind="")])
 	
 	card=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))
@@ -2522,7 +2522,7 @@ def getModule():
 	id="USD"
 	uid="c0_USD"
 	parentUid="root"
-	
+	my_Super = 
 		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(188),IntegerLiteral.IntegerLiteral(17)), (IntegerLiteral.IntegerLiteral(188),IntegerLiteral.IntegerLiteral(20))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_Currency", isTop=True, my_bind="")])
 	
 	card=(IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(1))
@@ -2538,7 +2538,7 @@ def getModule():
 	id="EUR"
 	uid="c0_EUR"
 	parentUid="root"
-	
+	my_Super = 
 		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(188),IntegerLiteral.IntegerLiteral(23)), (IntegerLiteral.IntegerLiteral(188),IntegerLiteral.IntegerLiteral(26))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_Currency", isTop=True, my_bind="")])
 	
 	card=(IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(1))
@@ -2554,7 +2554,7 @@ def getModule():
 	id="CAD"
 	uid="c0_CAD"
 	parentUid="root"
-	
+	my_Super = 
 		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(188),IntegerLiteral.IntegerLiteral(29)), (IntegerLiteral.IntegerLiteral(188),IntegerLiteral.IntegerLiteral(32))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_Currency", isTop=True, my_bind="")])
 	
 	card=(IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(1))

@@ -115,7 +115,7 @@ def getModule():
 	id="B"
 	uid="c0_B"
 	parentUid="root"
-	
+	my_Super = 
 		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(9),IntegerLiteral.IntegerLiteral(5)), (IntegerLiteral.IntegerLiteral(9),IntegerLiteral.IntegerLiteral(9))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_Book", isTop=True, my_bind="")])
 	
 	card=(IntegerLiteral.IntegerLiteral(5),IntegerLiteral.IntegerLiteral(5))
@@ -131,7 +131,7 @@ def getModule():
 	id="A"
 	uid="c0_A"
 	parentUid="root"
-	
+	my_Super = 
 		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(10),IntegerLiteral.IntegerLiteral(5)), (IntegerLiteral.IntegerLiteral(10),IntegerLiteral.IntegerLiteral(11))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_Author", isTop=True, my_bind="")])
 	
 	card=(IntegerLiteral.IntegerLiteral(6),IntegerLiteral.IntegerLiteral(6))

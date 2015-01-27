@@ -127,7 +127,7 @@ def getModule():
 	id="course"
 	uid="c0_course"
 	parentUid="root"
-	
+	my_Super = 
 		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(14),IntegerLiteral.IntegerLiteral(10)), (IntegerLiteral.IntegerLiteral(14),IntegerLiteral.IntegerLiteral(16))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_Course", isTop=True, my_bind="")])
 	
 	card=(IntegerLiteral.IntegerLiteral(5),IntegerLiteral.IntegerLiteral(5))
@@ -143,7 +143,7 @@ def getModule():
 	id="teacher"
 	uid="c0_teacher"
 	parentUid="root"
-	
+	my_Super = 
 		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(16),IntegerLiteral.IntegerLiteral(11)), (IntegerLiteral.IntegerLiteral(16),IntegerLiteral.IntegerLiteral(18))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_Teacher", isTop=True, my_bind="")])
 	
 	card=(IntegerLiteral.IntegerLiteral(3),IntegerLiteral.IntegerLiteral(3))

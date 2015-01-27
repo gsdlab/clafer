@@ -222,7 +222,7 @@ def getModule():
 	id="H1"
 	uid="c0_H1"
 	parentUid="root"
-	
+	my_Super = 
 		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(14),IntegerLiteral.IntegerLiteral(6)), (IntegerLiteral.IntegerLiteral(14),IntegerLiteral.IntegerLiteral(7))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_H", isTop=True, my_bind="")])
 	
 	card=(IntegerLiteral.IntegerLiteral(2),IntegerLiteral.IntegerLiteral(2))
@@ -237,7 +237,7 @@ def getModule():
 	id="H12"
 	uid="c0_H12"
 	parentUid="c0_H1"
-	
+	my_Super = 
 		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(15),IntegerLiteral.IntegerLiteral(11)), (IntegerLiteral.IntegerLiteral(15),IntegerLiteral.IntegerLiteral(12))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_H", isTop=True, my_bind="")])
 	
 	card=(IntegerLiteral.IntegerLiteral(2),IntegerLiteral.IntegerLiteral(2))
@@ -254,7 +254,7 @@ def getModule():
 	id="H2"
 	uid="c0_H2"
 	parentUid="root"
-	
+	my_Super = 
 		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(16),IntegerLiteral.IntegerLiteral(6)), (IntegerLiteral.IntegerLiteral(16),IntegerLiteral.IntegerLiteral(7))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_H", isTop=True, my_bind="")])
 	
 	card=(IntegerLiteral.IntegerLiteral(4),IntegerLiteral.IntegerLiteral(4))
@@ -270,7 +270,7 @@ def getModule():
 	id="H3"
 	uid="c0_H3"
 	parentUid="root"
-	
+	my_Super = 
 		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(17),IntegerLiteral.IntegerLiteral(6)), (IntegerLiteral.IntegerLiteral(17),IntegerLiteral.IntegerLiteral(7))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_H", isTop=True, my_bind="")])
 	
 	card=(IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(2))
@@ -286,7 +286,7 @@ def getModule():
 	id="H4"
 	uid="c0_H4"
 	parentUid="root"
-	
+	my_Super = 
 		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(18),IntegerLiteral.IntegerLiteral(6)), (IntegerLiteral.IntegerLiteral(18),IntegerLiteral.IntegerLiteral(7))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_H", isTop=True, my_bind="")])
 	
 	card=(IntegerLiteral.IntegerLiteral(5),IntegerLiteral.IntegerLiteral(-1))
@@ -349,7 +349,7 @@ def getModule():
 	id="F"
 	uid="c0_F"
 	parentUid="root"
-	
+	my_Super = 
 		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(22),IntegerLiteral.IntegerLiteral(14)), (IntegerLiteral.IntegerLiteral(22),IntegerLiteral.IntegerLiteral(15))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_H", isTop=True, my_bind="")])
 	
 	card=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1))
@@ -365,7 +365,7 @@ def getModule():
 	id="f1"
 	uid="c0_f1"
 	parentUid="root"
-	
+	my_Super = 
 		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(23),IntegerLiteral.IntegerLiteral(6)), (IntegerLiteral.IntegerLiteral(23),IntegerLiteral.IntegerLiteral(7))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_F", isTop=True, my_bind="")])
 	
 	card=(IntegerLiteral.IntegerLiteral(2),IntegerLiteral.IntegerLiteral(5))

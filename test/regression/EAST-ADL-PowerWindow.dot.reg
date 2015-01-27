@@ -10,6 +10,7 @@ edge [fontname=Sans fontsize=11];
 "c0_express" [label="express : Feature ?" URL="#c0_express" tooltip="express : Feature ?&#10;"];
 "c0_express" -> "c0_Feature" [arrowhead=onormal constraint=true weight=100];
 "c0_Component" [label="abstract Component" URL="#c0_Component" tooltip="abstract Component&#10;  abstract xor Port&#10;    input&#10;    output&#10;"];
+"c0_Port" [label="abstract xor Port" URL="#c0_Port" tooltip="abstract xor Port&#10;  input&#10;  output&#10;"];
 "c0_Request" [label="abstract Request" URL="#c0_Request" tooltip="abstract Request&#10;"];
 "c0_up" [label="up : Request" URL="#c0_up" tooltip="up : Request&#10;"];
 "c0_up" -> "c0_Request" [arrowhead=onormal constraint=true weight=100];

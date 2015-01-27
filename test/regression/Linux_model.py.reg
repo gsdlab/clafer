@@ -100,7 +100,7 @@ def getModule():
 	id="JFFS2_FS"
 	uid="c0_JFFS2_FS"
 	parentUid="c0_MISC_FILESYSTEMS"
-	
+	my_Super = 
 		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(7),IntegerLiteral.IntegerLiteral(16)), (IntegerLiteral.IntegerLiteral(7),IntegerLiteral.IntegerLiteral(24))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_tristate", isTop=True, my_bind="")])
 	
 	card=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(1))

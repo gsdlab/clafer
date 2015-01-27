@@ -6,7 +6,7 @@ nodesep=0.1;
 graph [fontname=Sans fontsize=11];
 node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
 edge [fontname=Sans fontsize=11];
-"c0_date" [label="abstract date ->> string" URL="#c0_date" tooltip="abstract date -&gt;> string&#10;"];
+"c0_date" [label="abstract date ->> string" URL="#c0_date" tooltip="abstract date -&gt;&gt; string&#10;"];
 "c0_Person" [label="abstract Person" URL="#c0_Person" tooltip="abstract Person&#10;  Name -&gt; string&#10;  DateOfBirth : date&#10;"];
 "c0_Person" -> "c0_date" [arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];
 "c0_JohnDoe" [label="JohnDoe : Person" URL="#c0_JohnDoe" tooltip="JohnDoe : Person&#10;  [ Name = "John" ][ DateOfBirth = "01/02/1985" ]&#10;"];

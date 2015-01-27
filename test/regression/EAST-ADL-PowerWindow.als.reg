@@ -1,6 +1,6 @@
 open util/integer
 pred show {}
-run show for 1 but 3 c0_Command, 2 c0_Port, 4 c0_Request, 2 c0_input, 2 c0_output
+
 
 abstract sig c0_Feature
 {}
