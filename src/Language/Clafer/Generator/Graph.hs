@@ -78,6 +78,7 @@ graphSimpleClafer :: Clafer
                       -> Map.Map Span [Ir]
                       -> Bool
                       -> String
+-- top-level abstract and concrete
 graphSimpleClafer (Clafer s abstract gCard id' super' reference' crd init' es) (True, _, _) irMap showRefs =
   let
     tooltip = genTooltip (Module s [ElementDecl s (Subclafer s (Clafer s abstract gCard id' super' reference' crd init' es))]) irMap
@@ -95,6 +96,25 @@ graphSimpleClafer (Clafer s abstract gCard id' super' reference' crd init' es) (
       graphSimpleSuper super' (True, Just uid', Just uid') irMap showRefs ++
       graphSimpleReference reference' (True, Just uid', Just uid') irMap showRefs ++
       graphSimpleElements es (False, Just uid', Just uid') irMap showRefs
+-- nested abstract
+graphSimpleClafer (Clafer s abstract@(Abstract _) gCard id' super' reference' crd init' es) (False, _, _) irMap showRefs =
+  let
+    tooltip = genTooltip (Module s [ElementDecl s (Subclafer s (Clafer s abstract gCard id' super' reference' crd init' es))]) irMap
+    uid' = getDivId s irMap
+  in
+     "\"" ++
+      uid' ++
+      "\" [label=\"" ++
+      (head $ lines tooltip) ++
+      "\" URL=\"#" ++
+      uid' ++
+      "\" tooltip=\"" ++
+      htmlChars tooltip ++
+      "\"];\n" ++
+      graphSimpleSuper super' (False, Just uid', Just uid') irMap showRefs ++
+      graphSimpleReference reference' (False, Just uid', Just uid') irMap showRefs ++
+      graphSimpleElements es (False, Just uid', Just uid') irMap showRefs
+-- nested concrete
 graphSimpleClafer (Clafer _ _ _ id' super' reference' _ _ es) topLevel irMap showRefs =
   let
     (PosIdent (_,ident')) = id'
