@@ -138,7 +138,10 @@ genPythonParentUid uid' = concat [ "parentUid=\"", uid', "\""]
 genPythonSuper :: Maybe PExp -> String
 genPythonSuper x = case x of
   Nothing                      -> ""
-  Just pexp' -> genPythonPExp "Super" pexp'
+  Just pexp' -> concat
+    [ "my_Super = "
+    , genPythonPExp "Super" pexp'
+    ]
 
 genPythonReference :: Maybe IReference -> String
 genPythonReference x = case x of
