@@ -35,6 +35,8 @@ import Language.Clafer.SplitJoin
 import Paths_clafer (version)
 import Data.Version (showVersion)
 
+import GetURL
+
 -- | Type of output to be generated at the end of compilation
 data ClaferMode = Alloy42 | Alloy | Xml | Clafer | Html | Graph | CVLGraph | Python | Choco
   deriving (Eq, Show, Ord, Data, Typeable)
@@ -105,24 +107,24 @@ clafer = ClaferArgs {
  } &= summary ("Clafer " ++ showVersion Paths_clafer.version) &= program "clafer"
 
 mergeArgs :: ClaferArgs -> ClaferArgs -> ClaferArgs
-mergeArgs a1 a2  = ClaferArgs (mode a1) (coMergeArg) 
-  (mergeArg flatten_inheritance) (mergeArg timeout_analysis) 
-  (mergeArg no_layout) (mergeArg new_layout) 
-  (mergeArg check_duplicates) (mergeArg skip_resolver) 
+mergeArgs a1 a2  = ClaferArgs (mode a1) (coMergeArg)
+  (mergeArg flatten_inheritance) (mergeArg timeout_analysis)
+  (mergeArg no_layout) (mergeArg new_layout)
+  (mergeArg check_duplicates) (mergeArg skip_resolver)
   (mergeArg keep_unused) (mergeArg no_stats) (mergeArg schema)
-  (mergeArg validate) (mergeArg noalloyruncommand) (toolMergeArg) 
-  (mergeArg alloy_mapping) (mergeArg self_contained) 
-  (mergeArg add_graph) (mergeArg show_references) 
-  (mergeArg add_comments) (mergeArg ecore2clafer) 
-  (mergeArg scope_strategy) (mergeArg afm) (mergeArg skip_goals) 
+  (mergeArg validate) (mergeArg noalloyruncommand) (toolMergeArg)
+  (mergeArg alloy_mapping) (mergeArg self_contained)
+  (mergeArg add_graph) (mergeArg show_references)
+  (mergeArg add_comments) (mergeArg ecore2clafer)
+  (mergeArg scope_strategy) (mergeArg afm) (mergeArg skip_goals)
   (mergeArg meta_data) (mergeArg file)
   where
     coMergeArg :: Bool
-    coMergeArg = if (r1 /= False) then r1 else 
+    coMergeArg = if (r1 /= False) then r1 else
       if (r2 /= False) then r2 else (null $ file a1)
          where r1 = console_output a1;r2 = console_output a2
     toolMergeArg :: String
-    toolMergeArg = if (r1 /= "") then r1 else 
+    toolMergeArg = if (r1 /= "") then r1 else
       if (r2 /= "") then r2 else "/tools"
       where r1 = tooldir a1;r2 = tooldir a2
     mergeArg :: (Default a, Eq a) => (ClaferArgs -> a) -> a
@@ -130,22 +132,29 @@ mergeArgs a1 a2  = ClaferArgs (mode a1) (coMergeArg)
 
 mainArgs :: IO (ClaferArgs, String)
 mainArgs = do
-  args' <- cmdArgs clafer 
-  model <- case file args' of
-             "" -> hGetContents stdin
-             f  -> readFile f
+  args' <- cmdArgs clafer
+  model <- retrieveModelFromURL $ file args'
   let args'' = argsWithOPTIONS args' model
   -- Alloy42 should be the default mode but only if nothing else was specified
-  -- cannot use [ Alloy42 ] as the default in the definition of `clafer :: ClaferArgs` since 
+  -- cannot use [ Alloy42 ] as the default in the definition of `clafer :: ClaferArgs` since
   -- Alloy42 will always be a mode in addition to the other specified modes (it will become mandatory)
   let args''' = if null $ mode args''
                 then args''{mode = [ Alloy42 ]}
                 else args''
   return $ (args''', model)
 
+retrieveModelFromURL :: String -> IO String
+retrieveModelFromURL url = do
+  case url of
+    "" -> hGetContents stdin -- this is the pre-module system behavior
+    ('f':'i':'l':'e':':':'/':'/':n) -> readFile n
+    ('h':'t':'t':'p':':':'/':'/':_) -> getURL url
+    ('f':'t':'p':':':'/':'/':_) -> getURL url
+    n -> readFile n -- this is the pre-module system behavior
+
 argsWithOPTIONS :: ClaferArgs -> String -> ClaferArgs
 argsWithOPTIONS    args'         model   =
-  let 
+  let
     firstLine = case lines model of
                  [] -> ""
                  (s:_) -> s

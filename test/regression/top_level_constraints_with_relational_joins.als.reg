@@ -4,7 +4,7 @@ pred show {}
 
 abstract sig c0_Course
 { r_c0_assistants : set c0_assistants }
-{ all disj x, y : this.@r_c0_assistants | (x.@ref) != (y.@ref) }
+{ all disj x, y : this.@r_c0_assistants | (x.@ref) != (y.@ref)  }
 
 sig c0_assistants
 { ref : one c0_TA }
@@ -12,7 +12,6 @@ sig c0_assistants
 
 abstract sig c0_TA
 { r_c0_first : lone c0_first }
-{ all disj x, y : this.@r_c0_first | (x.@ref) != (y.@ref) }
 
 sig c0_first
 { ref : one c0_Course }

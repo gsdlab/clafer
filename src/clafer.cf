@@ -1,4 +1,4 @@
-entrypoints Module ;
+entrypoints Module, Clafer, Constraint, SoftConstraint, Goal ;
 
 
 -- To regenerate grammar (see src/Makefile, the goal 'grammar'):
@@ -15,37 +15,36 @@ Module.         Module ::= [Declaration] ;
 EnumDecl.       Declaration ::= "enum" PosIdent "=" [EnumId] ;
 ElementDecl.    Declaration ::= Element ;
 
-Clafer.         Clafer ::= Abstract GCard PosIdent Super Card Init Elements ;
+Clafer.         Clafer ::= Abstract GCard PosIdent Super Reference Card Init Elements ;
 Constraint.     Constraint ::= "[" [Exp] "]" ;
-SoftConstraint. SoftConstraint ::= "(" [Exp] ")";
-Goal.   		Goal ::= "<<" [Exp] ">>" ;
+SoftConstraint. SoftConstraint ::= "assert" "[" [Exp] "]";
+Goal.           Goal ::= "<<" [Exp] ">>" ;
 
 
 AbstractEmpty.  Abstract ::= ;
 Abstract.       Abstract ::= "abstract" ;
 
--- ElementsEmpty causes parsing problems
 ElementsEmpty.  Elements ::= ;
 ElementsList.   Elements ::= "{" [Element] "}" ;
 
 Subclafer.      Element ::= Clafer ;
 ClaferUse.      Element ::= "`" Name Card Elements ;
 Subconstraint.  Element ::= Constraint ;
-Subgoal. 		Element ::= Goal; 
+Subgoal.        Element ::= Goal;
 Subsoftconstraint. Element ::= SoftConstraint;
 
-SuperEmpty.     Super ::=  ;
-SuperSome.      Super ::= SuperHow SetExp ;
+SuperEmpty.     Super ::= ;
+SuperSome.      Super ::= ":" SetExp ;
 
-SuperColon.     SuperHow ::= ":" ;
-SuperArrow.     SuperHow ::= "->" ;
-SuperMArrow.    SuperHow ::= "->>" ;
+ReferenceEmpty. Reference ::= ;
+ReferenceSet.   Reference ::= "->" SetExp ;
+ReferenceBag.   Reference ::= "->>" SetExp ;
 
 InitEmpty.      Init ::= ;
 InitSome.       Init ::= InitHow Exp ;
 
-InitHow_1.      InitHow ::= "=" ;
-InitHow_2.      InitHow ::= ":=" ;
+InitConstant.   InitHow ::= "=" ;
+InitDefault.    InitHow ::= ":=" ;
 
 GCardEmpty.     GCard ::= ;
 GCardXor.       GCard ::= "xor" ;
@@ -105,7 +104,7 @@ ESetExp.        Exp13 ::= SetExp ;
 Union.          SetExp  ::= SetExp  "++" SetExp1 ;
 UnionCom.       SetExp  ::= SetExp  ","  SetExp1 ;
 Difference.     SetExp1 ::= SetExp1 "--" SetExp2 ;
-Intersection.   SetExp2 ::= SetExp2 "&"  SetExp3 ;
+Intersection.   SetExp2 ::= SetExp2 "**"  SetExp3 ;
 Domain.         SetExp3 ::= SetExp3 "<:" SetExp4 ;
 Range.          SetExp4 ::= SetExp4 ":>" SetExp5 ;
 Join.           SetExp5 ::= SetExp5 "."  SetExp6 ;
@@ -114,7 +113,7 @@ ClaferId.       SetExp6 ::= Name ;
 Decl.           Decl ::= [LocId] ":" SetExp ;
 
 QuantNo.        Quant ::= "no" ;
-QuantNot.		Quant ::= "not" ;
+QuantNot.       Quant ::= "not" ;
 QuantLone.      Quant ::= "lone" ;
 QuantOne.       Quant ::= "one" ;
 QuantSome.      Quant ::= "some" ;

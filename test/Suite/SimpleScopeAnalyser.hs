@@ -37,9 +37,9 @@ import Test.Tasty.TH
 
 tg_Test_Suite_SimpleScopeAnalyser :: TestTree
 tg_Test_Suite_SimpleScopeAnalyser = $(testGroupGenerator)
- 
+
 model :: String
-model = unlines 
+model = unlines
 			[ "a 0..0"
 			, "b ?"
 			, "c"
@@ -64,10 +64,18 @@ model = unlines
 			, "abstract F : H"
 			, "f1 : F 2..5"
 			, "    m 0"
+			, "i1 -> integer 2..4"
+			, "i2 ->> integer ?"
+			, "i3 -> integer *"
+			, "i4 ->> integer *"
+			, "s1 -> string 2..*"
+			, "s2 ->> string"
+			, "s3 -> string +"
+			, "s4 ->> string +"
 			]
 
 expectedScopesSet :: M.Map UID Integer
-expectedScopesSet = M.fromList $ [ ("c0_a", 0) 
+expectedScopesSet = M.fromList $ [ ("c0_a", 0)
 							--	 , ("c0_b", 1)	-- uses global scope
 							--	 , ("c0_c", 1)	-- uses global scope
 							--	 , ("c0_d", 1) 	-- uses global scope
@@ -79,24 +87,32 @@ expectedScopesSet = M.fromList $ [ ("c0_a", 0)
 								 , ("c0_i", 22)
 								 , ("c0_j", 22)
 								 , ("c0_k", 44)
-								 , ("c0_Hs", 16)  -- not sure where the 16 comes from
+								 , ("c0_Hs", 16)
 								 , ("c0_H1", 2)
 								 , ("c0_H12", 4)
 								 , ("c0_H2", 4)
 								 , ("c0_H3", 2)
 								 , ("c0_H4", 5)
-								 , ("c0_Hs2", 16)  -- not sure where the 16 comes from
+								 , ("c0_Hs2", 16)
 								 , ("c0_Hs3", 8)
 								 , ("c0_l", 8)
 								 , ("c0_F", 5)
 								 , ("c0_f1", 5)
 								 , ("c0_m", 0)
+								 , ("c0_i1", 4)
+							--	 , ("c0_i2", 1)	-- uses global scope
+							--	 , ("c0_i3", 1)	-- uses global scope
+							--	 , ("c0_i4", 1)	-- uses global scope
+								 , ("c0_s1", 2)
+							--	 , ("c0_s2", 1)	-- uses global scope
+							--	 , ("c0_s3", 1)	-- uses global scope
+							--	 , ("c0_s4", 1)	-- uses global scope
 								 ]
 
 
 -- aggregates a difference
 aggregateDifference :: UID -> Integer -> Integer -> Maybe String
-aggregateDifference k computedV expectedV = 
+aggregateDifference k computedV expectedV =
 	if computedV == expectedV
 	then Nothing
 	else Just $ k ++ " | computed: " ++ show computedV ++ " | expected: " ++ show expectedV ++ " |"
@@ -104,37 +120,37 @@ aggregateDifference k computedV expectedV =
 -- prints only computed scopes missing in expected
 onlyComputed :: M.Map UID Integer -> M.Map UID String
 onlyComputed = M.mapWithKey (\k v -> k ++ " | computed: " ++ show v ++ " | no expected |")
-	
+
 
 -- prints only expected scopes missing in computed
 onlyExpected :: M.Map UID Integer -> M.Map UID String
 onlyExpected = M.mapWithKey (\k v -> k ++ " | no computed | expected: " ++ show v ++ " |")
 
 case_ScopeTest :: Assertion
-case_ScopeTest = do 
-	let 
-		-- use simple scope inference 
+case_ScopeTest = do
+	let
+		-- use simple scope inference
 		(Right compilerResultMap) = compileOneFragment defaultClaferArgs model
 		(Just compilerResult) = M.lookup Alloy compilerResultMap
 		computedScopesSet :: M.Map UID Integer
 		computedScopesSet = M.fromList $ scopesList compilerResult
 
-		differences = M.mergeWithKey aggregateDifference onlyComputed onlyExpected computedScopesSet expectedScopesSet  
+		differences = M.mergeWithKey aggregateDifference onlyComputed onlyExpected computedScopesSet expectedScopesSet
 
-	(M.size differences) == 0 @? 
+	(M.size differences) == 0 @?
 		"Computed scopes different from expected:\n" ++ (unlines $ M.foldl (\acc v -> v:acc) [] differences)
 
 
 case_ReadScopesJSON :: Assertion
 case_ReadScopesJSON = do
 	let
-		-- use simple scope inference 
+		-- use simple scope inference
 		(Right compilerResultMap) = compileOneFragment defaultClaferArgs model
 		(Just compilerResult) = M.lookup Alloy compilerResultMap
 		Just (iModule, _, _) = cIr $ claferEnv compilerResult
-		
+
 		qNameMaps = deriveQNameMaps iModule
-		
+
 		computedScopes :: [ (UID, Integer) ]
 		computedScopes = scopesList compilerResult
 
@@ -143,5 +159,5 @@ case_ReadScopesJSON = do
 
 		differences = M.mergeWithKey aggregateDifference onlyComputed onlyExpected (M.fromList computedScopes) (M.fromList decodedScopes)
 
-	(M.size differences) == 0 @? 
+	(M.size differences) == 0 @?
 		"Parsed scopes different from original:\n" ++ (unlines $ M.foldl (\acc v -> v:acc) [] differences)

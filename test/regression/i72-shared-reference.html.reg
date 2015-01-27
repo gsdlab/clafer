@@ -4,29 +4,29 @@
 
 
 <div>
-<span class="claferDecl" id="c0_JohnDoe">JohnDoe</span><span class="keyword"> :</span> <a href="#c0_Person"><span class="reference">Person</span></a></div>
+<span class="claferDecl" id="c0_JohnDoe">JohnDoe</span><span class="keyword"> : </span><a href="#c0_Person"><span class="reference">Person</span></a></div>
 
 
 <div>
-<span class="claferDecl" id="c0_MaryJane">MaryJane</span><span class="keyword"> :</span> <a href="#c0_Person"><span class="reference">Person</span></a></div>
+<span class="claferDecl" id="c0_MaryJane">MaryJane</span><span class="keyword"> : </span><a href="#c0_Person"><span class="reference">Person</span></a></div>
 
 
 <div>
 <span class="keyword">abstract</span> <span class="claferDecl" id="c0_WaitingLine">WaitingLine</span>
   <div class="indent">
-  <span class="claferDecl" id="c0_participants">participants</span><span class="keyword"> -></span> <a href="#c0_Person"><span class="reference">Person</span></a> *</div>
+  <span class="claferDecl" id="c0_participants">participants</span><span class="keyword"> -> </span><a href="#c0_Person"><span class="reference">Person</span></a> *</div>
 </div>
 
 
 <div>
-<span class="claferDecl" id="c0_BusLine">BusLine</span><span class="keyword"> :</span> <a href="#c0_WaitingLine"><span class="reference">WaitingLine</span></a>
+<span class="claferDecl" id="c0_BusLine">BusLine</span><span class="keyword"> : </span><a href="#c0_WaitingLine"><span class="reference">WaitingLine</span></a>
   <div class="indent">
   <span class="keyword">[</span> <a href="#c0_JohnDoe"><span class="reference">JohnDoe</span></a> in <a href="#c0_participants"><span class="reference">participants</span></a> <span class="keyword">]</span><span class="keyword">[</span> <a href="#c0_MaryJane"><span class="reference">MaryJane</span></a> in <a href="#c0_participants"><span class="reference">participants</span></a> <span class="keyword">]</span></div>
 </div>
 
 
 <div>
-<span class="claferDecl" id="c0_JohnAndMaryLine">JohnAndMaryLine</span><span class="keyword"> :</span> <a href="#c0_WaitingLine"><span class="reference">WaitingLine</span></a>
+<span class="claferDecl" id="c0_JohnAndMaryLine">JohnAndMaryLine</span><span class="keyword"> : </span><a href="#c0_WaitingLine"><span class="reference">WaitingLine</span></a>
   <div class="indent">
   <span class="keyword">[</span> <a href="#c0_participants"><span class="reference">participants</span></a> = <a href="#c0_JohnDoe"><span class="reference">JohnDoe</span></a>, <a href="#c0_MaryJane"><span class="reference">MaryJane</span></a> <span class="keyword">]</span></div>
 </div>

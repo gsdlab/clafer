@@ -2,7 +2,7 @@
 
 D
     b ?
-    c : integer ?
+    c -> integer ?
     [c = 5 ]
     [c = 5 ]
     [ b ]

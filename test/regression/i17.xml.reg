@@ -16,20 +16,7 @@
 </GroupCard>
 <Id>A</Id>
 <UniqueId>c0_A</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>clafer</Id>
-<IsTop>false</IsTop>
-</Exp></Super>
-</Supers>
+<ParentUniqueId>root</ParentUniqueId>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
 <Max><IntLiteral>0</IntLiteral>
@@ -57,20 +44,7 @@
 </GroupCard>
 <Id>b</Id>
 <UniqueId>c0_b</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>clafer</Id>
-<IsTop>false</IsTop>
-</Exp></Super>
-</Supers>
+<ParentUniqueId>c0_A</ParentUniqueId>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
 <Max><IntLiteral>-1</IntLiteral>
@@ -98,20 +72,7 @@
 </GroupCard>
 <Id>c</Id>
 <UniqueId>c0_c</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>clafer</Id>
-<IsTop>false</IsTop>
-</Exp></Super>
-</Supers>
+<ParentUniqueId>c0_b</ParentUniqueId>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -153,6 +114,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_A</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -165,6 +127,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_b</Id>
 <IsTop>false</IsTop>
+<Bind>c0_b</Bind>
 </Exp></Argument>
 </Exp></Body>
 </Declaration>
@@ -196,6 +159,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>b1</Id>
 <IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:ISet" /><ParentId>e5_</ParentId>
 <Position><Start><IntLiteral>6</IntLiteral>
@@ -208,6 +172,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_c</Id>
 <IsTop>false</IsTop>
+<Bind>c0_c</Bind>
 </Exp></Argument>
 </Exp></BodyParentExp>
 </Exp></BodyParentExp>

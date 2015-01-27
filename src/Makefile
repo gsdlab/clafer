@@ -18,12 +18,12 @@ grammarDoc:
 
 Schema.hs:
 	./Language/Clafer/Generator/quote-xsd.sh Language/Clafer/ClaferIR.xsd > ./Language/Clafer/Generator/Schema.hs
-	
+
 Css.hs:
 	./Language/Clafer/Generator/quote-css.sh Language/Clafer/clafer.css > ./Language/Clafer/Css.hs
 
 clean:
-	rm -rf dist 
+	rm -rf dist
 	find . -type f -name '*.o' -print0 | xargs -0 rm -f
 	find . -type f -name '*.hi' -print0 | xargs -0 rm -f
 	find . -type f -name '*.bak' -print0 | xargs -0 rm -f

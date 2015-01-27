@@ -9,6 +9,10 @@ import Language.Clafer.Front.ErrM
 }
 
 %name pModule Module
+%name pClafer Clafer
+%name pConstraint Constraint
+%name pSoftConstraint SoftConstraint
+%name pGoal Goal
 
 -- no lexer declaration
 %monad { Err } { thenM } { returnM }
@@ -18,11 +22,11 @@ import Language.Clafer.Front.ErrM
  '!' { PT _ (TS _ 1) }
  '!=' { PT _ (TS _ 2) }
  '#' { PT _ (TS _ 3) }
- '&' { PT _ (TS _ 4) }
- '&&' { PT _ (TS _ 5) }
- '(' { PT _ (TS _ 6) }
- ')' { PT _ (TS _ 7) }
- '*' { PT _ (TS _ 8) }
+ '&&' { PT _ (TS _ 4) }
+ '(' { PT _ (TS _ 5) }
+ ')' { PT _ (TS _ 6) }
+ '*' { PT _ (TS _ 7) }
+ '**' { PT _ (TS _ 8) }
  '+' { PT _ (TS _ 9) }
  '++' { PT _ (TS _ 10) }
  ',' { PT _ (TS _ 11) }
@@ -54,28 +58,29 @@ import Language.Clafer.Front.ErrM
  '`' { PT _ (TS _ 37) }
  'abstract' { PT _ (TS _ 38) }
  'all' { PT _ (TS _ 39) }
- 'disj' { PT _ (TS _ 40) }
- 'else' { PT _ (TS _ 41) }
- 'enum' { PT _ (TS _ 42) }
- 'if' { PT _ (TS _ 43) }
- 'in' { PT _ (TS _ 44) }
- 'lone' { PT _ (TS _ 45) }
- 'max' { PT _ (TS _ 46) }
- 'min' { PT _ (TS _ 47) }
- 'mux' { PT _ (TS _ 48) }
- 'no' { PT _ (TS _ 49) }
- 'not' { PT _ (TS _ 50) }
- 'one' { PT _ (TS _ 51) }
- 'opt' { PT _ (TS _ 52) }
- 'or' { PT _ (TS _ 53) }
- 'some' { PT _ (TS _ 54) }
- 'sum' { PT _ (TS _ 55) }
- 'then' { PT _ (TS _ 56) }
- 'xor' { PT _ (TS _ 57) }
- '{' { PT _ (TS _ 58) }
- '|' { PT _ (TS _ 59) }
- '||' { PT _ (TS _ 60) }
- '}' { PT _ (TS _ 61) }
+ 'assert' { PT _ (TS _ 40) }
+ 'disj' { PT _ (TS _ 41) }
+ 'else' { PT _ (TS _ 42) }
+ 'enum' { PT _ (TS _ 43) }
+ 'if' { PT _ (TS _ 44) }
+ 'in' { PT _ (TS _ 45) }
+ 'lone' { PT _ (TS _ 46) }
+ 'max' { PT _ (TS _ 47) }
+ 'min' { PT _ (TS _ 48) }
+ 'mux' { PT _ (TS _ 49) }
+ 'no' { PT _ (TS _ 50) }
+ 'not' { PT _ (TS _ 51) }
+ 'one' { PT _ (TS _ 52) }
+ 'opt' { PT _ (TS _ 53) }
+ 'or' { PT _ (TS _ 54) }
+ 'some' { PT _ (TS _ 55) }
+ 'sum' { PT _ (TS _ 56) }
+ 'then' { PT _ (TS _ 57) }
+ 'xor' { PT _ (TS _ 58) }
+ '{' { PT _ (TS _ 59) }
+ '|' { PT _ (TS _ 60) }
+ '||' { PT _ (TS _ 61) }
+ '}' { PT _ (TS _ 62) }
 
 L_PosInteger { PT _ (T_PosInteger _) }
 L_PosDouble { PT _ (T_PosDouble _) }
@@ -101,7 +106,7 @@ Declaration : 'enum' PosIdent '=' ListEnumId { EnumDecl ((mkTokenSpan $1) >- (mk
 
 
 Clafer :: { Clafer }
-Clafer : Abstract GCard PosIdent Super Card Init Elements { Clafer ((mkCatSpan $1) >- (mkCatSpan $2) >- (mkCatSpan $3) >- (mkCatSpan $4) >- (mkCatSpan $5) >- (mkCatSpan $6) >- (mkCatSpan $7)) $1 $2 $3 $4 $5 $6 $7 } 
+Clafer : Abstract GCard PosIdent Super Reference Card Init Elements { Clafer ((mkCatSpan $1) >- (mkCatSpan $2) >- (mkCatSpan $3) >- (mkCatSpan $4) >- (mkCatSpan $5) >- (mkCatSpan $6) >- (mkCatSpan $7) >- (mkCatSpan $8)) $1 $2 $3 $4 $5 $6 $7 $8 } 
 
 
 Constraint :: { Constraint }
@@ -109,7 +114,7 @@ Constraint : '[' ListExp ']' { Constraint ((mkTokenSpan $1) >- (mkCatSpan $2) >-
 
 
 SoftConstraint :: { SoftConstraint }
-SoftConstraint : '(' ListExp ')' { SoftConstraint ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkTokenSpan $3)) (reverse $2) } 
+SoftConstraint : 'assert' '[' ListExp ']' { SoftConstraint ((mkTokenSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3) >- (mkTokenSpan $4)) (reverse $3) } 
 
 
 Goal :: { Goal }
@@ -136,13 +141,13 @@ Element : Clafer { Subclafer ((mkCatSpan $1)) $1 }
 
 Super :: { Super }
 Super : {- empty -} { SuperEmpty noSpan } 
-  | SuperHow SetExp { SuperSome ((mkCatSpan $1) >- (mkCatSpan $2)) $1 $2 }
+  | ':' SetExp { SuperSome ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
 
 
-SuperHow :: { SuperHow }
-SuperHow : ':' { SuperColon ((mkTokenSpan $1)) } 
-  | '->' { SuperArrow ((mkTokenSpan $1)) }
-  | '->>' { SuperMArrow ((mkTokenSpan $1)) }
+Reference :: { Reference }
+Reference : {- empty -} { ReferenceEmpty noSpan } 
+  | '->' SetExp { ReferenceSet ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
+  | '->>' SetExp { ReferenceBag ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
 
 
 Init :: { Init }
@@ -151,8 +156,8 @@ Init : {- empty -} { InitEmpty noSpan }
 
 
 InitHow :: { InitHow }
-InitHow : '=' { InitHow_1 ((mkTokenSpan $1)) } 
-  | ':=' { InitHow_2 ((mkTokenSpan $1)) }
+InitHow : '=' { InitConstant ((mkTokenSpan $1)) } 
+  | ':=' { InitDefault ((mkTokenSpan $1)) }
 
 
 GCard :: { GCard }
@@ -287,7 +292,7 @@ SetExp1 : SetExp1 '--' SetExp2 { Difference ((mkCatSpan $1) >- (mkTokenSpan $2) 
 
 
 SetExp2 :: { SetExp }
-SetExp2 : SetExp2 '&' SetExp3 { Intersection ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 } 
+SetExp2 : SetExp2 '**' SetExp3 { Intersection ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 } 
   | SetExp3 {  $1 }
 
 

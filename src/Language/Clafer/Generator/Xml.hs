@@ -24,6 +24,8 @@ module Language.Clafer.Generator.Xml where
 
 -- import Text.XML.HaXml.XmlContent.Haskell hiding (Result)
 
+import Data.Maybe (fromMaybe)
+
 import Language.Clafer.Common
 import Language.Clafer.Front.Absclafer
 import Language.Clafer.Intermediate.Intclafer
@@ -71,13 +73,15 @@ genXmlModule imodule = concat
 
 genXmlClafer :: IClafer -> Result
 genXmlClafer x = case x of
-  IClafer pos abstract gcrd id' uid' super' crd glcard es  ->
+  IClafer pos abstract gcrd id' uid' puid' super' reference' crd glcard es  ->
     concat [ tag "Position" $ genXmlPosition pos
            , genXmlAbstract abstract
            , optTag gcrd genXmlGCard
            , genXmlId id'
            , genXmlUid uid'
+           , genXmlParentUid puid'
            , genXmlSuper super'
+           , genXmlReference reference'
            , optTag crd genXmlCard
            , genXmlGlCard glcard
            , concatMap genXmlElement es]
@@ -101,11 +105,20 @@ genXmlId ident' = tag "Id" ident'
 genXmlUid :: String -> String
 genXmlUid uid' = tag "UniqueId" uid'
 
-genXmlSuper :: ISuper -> String
+genXmlParentUid :: String -> String
+genXmlParentUid uid' = tag "ParentUniqueId" uid'
+
+genXmlSuper :: Maybe PExp -> String
 genXmlSuper x = case x of
-  ISuper isOverlapping' pexps -> tag "Supers" $ concat
-    [ genXmlBoolean "IsOverlapping" isOverlapping'
-    , concatMap (genXmlPExp "Super") pexps]
+  Nothing                 -> ""
+  Just pexp' -> genXmlPExp "Super" pexp'
+
+genXmlReference :: Maybe IReference -> String
+genXmlReference x = case x of
+  Nothing                 -> ""
+  Just (IReference isSet' pexp') -> tag "Reference" $ concat
+    [ genXmlBoolean "IsSet" isSet'
+    , genXmlPExp "Ref" pexp']
 
 genXmlCard :: (Integer, Integer) -> String
 genXmlCard interval' = tag "Card" $ genXmlInterval interval'
@@ -119,12 +132,12 @@ genXmlElement x = case x of
   IEConstraint isHard' pexp  -> tagType "Declaration" "IConstraint" $ concat
                          [ genXmlBoolean "IsHard" isHard'
                          , genXmlPExp "ParentExp" pexp]
-  IEGoal isMaximize' pexp -> tagType "Declaration" "IGoal" $ concat 
+  IEGoal isMaximize' pexp -> tagType "Declaration" "IGoal" $ concat
                          [ genXmlBoolean "IsMaximize" isMaximize'
                          , genXmlPExp "ParentExp" pexp]
-                         
 
-genXmlAnyOp :: (a -> String) -> (a -> String) -> [(String, a)] -> String                                                    
+
+genXmlAnyOp :: (a -> String) -> (a -> String) -> [(String, a)] -> String
 genXmlAnyOp ft f xs = concatMap
   (\(tname, texp) -> tagType tname (ft texp) $ f texp) xs
 
@@ -147,7 +160,7 @@ genXmlIExpType x = case x of
   IInt _ -> "IIntExp"
   IDouble _ -> "IDoubleExp"
   IStr _ -> "IStringExp"
-  IClaferId _ _ _ -> "IClaferId"
+  IClaferId _ _ _ _ -> "IClaferId"
 
 genXmlIExp :: IExp -> String
 genXmlIExp x = case x of
@@ -167,11 +180,12 @@ genXmlIExp x = case x of
     escape y    = [y]
   IInt n -> genXmlInteger n
   IDouble n -> tag "DoubleLiteral" $ show n
-  IStr str -> genXmlString str  
-  IClaferId modName' sident' isTop' -> concat
+  IStr str -> genXmlString str
+  IClaferId modName' sident' isTop' bind' -> concat
     [ tag "ModuleName" modName'
     , tag "Id" sident'
-    , genXmlBoolean "IsTop" isTop']
+    , genXmlBoolean "IsTop" isTop'
+    , tag "Bind" $ fromMaybe "" bind' ]
 
 genXmlDecl :: IDecl -> String
 genXmlDecl (IDecl disj locids pexp) = tag "Declaration" $ concat

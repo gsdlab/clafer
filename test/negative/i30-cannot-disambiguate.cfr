@@ -1,6 +1,6 @@
 abstract A
-    a : string
+    a -> string
 
 A1 : A
-    a : integer
+    a -> integer
     [ A1.a = 10 ]

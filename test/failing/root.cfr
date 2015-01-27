@@ -1,0 +1,7 @@
+// a href="https://github.com/gsdlab/clafer/issues/57">https://github.com/gsdlab/clafer/issues/57</a>
+
+a
+    b ?
+b ?
+[ some a.b ]
+[ some root.b ]

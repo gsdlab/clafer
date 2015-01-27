@@ -1,7 +1,7 @@
 Clafer
 ======
 
-v0.3.7
+v0.3.8
 
 [Clafer](http://clafer.org) is a general-purpose lightweight structural modeling language developed by 
 [GSD Lab](http://gsd.uwaterloo.ca/), [University of Waterloo](http://uwaterloo.ca), and 
@@ -95,7 +95,7 @@ On Mac
 
 ### Installation from binaries
 
-Binary distributions of the release 0.3.7 of Clafer Tools for Windows, Mac, and Linux, 
+Binary distributions of the release 0.3.8 of Clafer Tools for Windows, Mac, and Linux, 
 can be downloaded from 
 [Clafer Tools - Binary Distributions](http://http://gsd.uwaterloo.ca/clafer-tools-binary-distributions). 
 
@@ -109,11 +109,11 @@ Dependencies
 * [The Haskell Platform](http://hackage.haskell.org/platform/) v2014.2.0.0 64bit
   * on Windows, use 32bit
 
-Clafer is now available on [Hackage](http://hackage.haskell.org/package/clafer-0.3.7/) and it can be installed using
+Clafer is now available on [Hackage](http://hackage.haskell.org/package/clafer-0.3.8/) and it can be installed using
 
 1. `cabal update`
 2. `cabal install clafer`
-3. `cd <cabal's lib or share folder>`  (`C:\Users\<user>\AppData\Roaming\cabal\x86_64-windows-ghc-7.8.3\clafer-0.3.7` on Windows or `.cabal/share/x86_64-linux-ghc-7.8.3/clafer-0.3.7/` on Linux)
+3. `cd <cabal's lib or share folder>`  (`C:\Users\<user>\AppData\Roaming\cabal\x86_64-windows-ghc-7.8.3\clafer-0.3.8` on Windows or `.cabal/share/x86_64-linux-ghc-7.8.3/clafer-0.3.8/` on Linux)
 4. to automatically download Alloy jars
   * execute `make` in `tools` 
 
@@ -191,15 +191,15 @@ Clafer Compiler
 (As printed by `clafer --help`)
 
 ```
-Clafer 0.3.7
+Clafer 0.3.8
 
 clafer [OPTIONS] [FILE]
 
 Common flags:
   -m --mode=CLAFERMODE                    Generated output type. Available
                                           CLAFERMODEs are: 'alloy' (Alloy 4.1);
-                                          'alloy42' (default, Alloy 4.2);
-                                          'xml' (intermediate representation of
+                                          'alloy42' (default, Alloy 4.2); 'xml'
+                                          (intermediate representation of
                                           Clafer model); 'clafer' (analyzed and
                                           desugared clafer model); 'html'
                                           (original model in HTML); 'graph'
@@ -273,6 +273,7 @@ Common flags:
                                           ('.cfr-scope').
   -? --help                               Display help message
   -V --version                            Print version information
+     --numeric-version                    Print just the version number
 ```
 
 The dependencies among the command line arguments are described on the [model wiki](http://t3-necsis.cs.uwaterloo.ca:8091/ClaferTools/CommandLineArguments).

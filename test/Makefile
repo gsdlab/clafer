@@ -6,12 +6,12 @@ CLAFER = ../dist/build/clafer/clafer -s -v -k --tooldir=$(TOOL_DIR)
 UNAME := $(shell uname | tr "A-Z" "a-z")
 
 ifeq ($(UNAME), darwin)
-    FIND_ALS_COMMAND :=  find $(SUITE_DIR)  -type f \( -iname "*.als" \)   | sed s/$(SUITE_DIR)\\///  
-    FIND_JS_COMMAND :=  find $(SUITE_DIR)  -type f \( -iname "*.js" \)   | sed s/$(SUITE_DIR)\\///  
-    FIND_PY_COMMAND :=  find $(SUITE_DIR)  -type f \( -iname "*.py" \)   | sed s/$(SUITE_DIR)\\///  
-    FIND_XML_COMMAND :=  find $(SUITE_DIR)  -type f \( -iname "*.xml" \)   | sed s/$(SUITE_DIR)\\///  
-    FIND_HTML_COMMAND :=  find $(SUITE_DIR)  -type f \( -iname "*.html" \)   | sed s/$(SUITE_DIR)\\///  
-    FIND_DOT_COMMAND :=  find $(SUITE_DIR)  -type f \( -iname "*.dot" \)   | sed s/$(SUITE_DIR)\\///  
+    FIND_ALS_COMMAND :=  find $(SUITE_DIR)  -type f \( -iname "*.als" \)   | sed s/$(SUITE_DIR)\\///
+    FIND_JS_COMMAND :=  find $(SUITE_DIR)  -type f \( -iname "*.js" \)   | sed s/$(SUITE_DIR)\\///
+    FIND_PY_COMMAND :=  find $(SUITE_DIR)  -type f \( -iname "*.py" \)   | sed s/$(SUITE_DIR)\\///
+    FIND_XML_COMMAND :=  find $(SUITE_DIR)  -type f \( -iname "*.xml" \)   | sed s/$(SUITE_DIR)\\///
+    FIND_HTML_COMMAND :=  find $(SUITE_DIR)  -type f \( -iname "*.html" \)   | sed s/$(SUITE_DIR)\\///
+    FIND_DOT_COMMAND :=  find $(SUITE_DIR)  -type f \( -iname "*.dot" \)   | sed s/$(SUITE_DIR)\\///
     XARGS_DIFF_COMMAND := xargs  -t -I % -L1 diff -w -B  $(SUITE_DIR)/% $(REG_DIR)/%.reg
 else
     FIND_ALS_COMMAND :=  find $(SUITE_DIR)  -type f \( -iname "*.als" \) -printf "%f\n"
@@ -25,7 +25,7 @@ endif
 
 
 ifeq ($(UNAME), darwin)
-    XARGS_CP_REGS :=  xargs  -t -I % -L1 cp  $(SUITE_DIR)/% $(REG_DIR)/%.reg 
+    XARGS_CP_REGS :=  xargs  -t -I % -L1 cp  $(SUITE_DIR)/% $(REG_DIR)/%.reg
 else
     XARGS_CP_REGS := xargs  -t -i cp $(SUITE_DIR)/{} $(REG_DIR)/{}.reg
 endif
@@ -65,12 +65,12 @@ diffRegressions:
 	@echo "---------------------"
 	@echo "| Alloy regressions |"
 	@echo "---------------------"
-	@$(FIND_ALS_COMMAND) | $(XARGS_DIFF_COMMAND) ; true 
+	@$(FIND_ALS_COMMAND) | $(XARGS_DIFF_COMMAND) ; true
 
 	@echo "---------------------"
 	@echo "| Choco regressions |"
 	@echo "---------------------"
-	@$(FIND_JS_COMMAND) | $(XARGS_DIFF_COMMAND) ; true 
+	@$(FIND_JS_COMMAND) | $(XARGS_DIFF_COMMAND) ; true
 
 	@echo "----------------------"
 	@echo "| Python regressions |"
@@ -80,17 +80,17 @@ diffRegressions:
 	@echo "-------------------"
 	@echo "| XML regressions |"
 	@echo "-------------------"
-	@$(FIND_XML_COMMAND) | $(XARGS_DIFF_COMMAND) ; true 
+	@$(FIND_XML_COMMAND) | $(XARGS_DIFF_COMMAND) ; true
 
 	@echo "--------------------"
 	@echo "| HTML regressions |"
 	@echo "--------------------"
-	@$(FIND_HTML_COMMAND) | $(XARGS_DIFF_COMMAND) ; true 
+	@$(FIND_HTML_COMMAND) | $(XARGS_DIFF_COMMAND) ; true
 
 	@echo "---------------------"
 	@echo "| Graph regressions |"
 	@echo "---------------------"
-	@$(FIND_DOT_COMMAND) | $(XARGS_DIFF_COMMAND) ; true 
+	@$(FIND_DOT_COMMAND) | $(XARGS_DIFF_COMMAND) ; true
 
 reg:
 	@echo "============================"
@@ -98,7 +98,7 @@ reg:
 	@echo "============================"
 	@rm $(REG_DIR)/*.reg
 	$(MAKE) newReg
-	
+
 newReg:
 	@echo "---------------------"
 	@echo "| Alloy regressions |"

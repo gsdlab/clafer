@@ -7,5 +7,5 @@ graph [fontname=Sans fontsize=11];
 node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
 edge [fontname=Sans fontsize=11];
 "c0_X" [label="X" URL="#c0_X" tooltip="X&#10;  x&#10;    y&#10;  [ x ]&#10;"];
-"c0_Z" [label="Z" URL="#c0_Z" tooltip="Z&#10;  z : int&#10;    y&#10;  [ z > 0 ]&#10;"];
+"c0_Z" [label="Z" URL="#c0_Z" tooltip="Z&#10;  z -&gt; int&#10;    y&#10;  [ z > 0 ]&#10;"];
 }

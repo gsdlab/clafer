@@ -36,28 +36,28 @@ import qualified Data.Map as Map
 
 tg_Test_Suite_Positive :: TestTree
 tg_Test_Suite_Positive = $(testGroupGenerator)
- 
+
 positiveClaferModels :: IO [(String, String)]
 positiveClaferModels = getClafers "test/positive"
 
 case_compileTest :: Assertion
-case_compileTest = do 
+case_compileTest = do
 	claferModels <- positiveClaferModels
-	let compiledClafers = map (\(file', model) -> 
+	let compiledClafers = map (\(file', model) ->
 		(file', compileOneFragment defaultClaferArgs model)) claferModels
-	forM_ compiledClafers (\(file', compiled) -> 
+	forM_ compiledClafers (\(file', compiled) ->
 		when (not $ compiledCheck compiled) $ putStrLn (file' ++ " Error: " ++ (show $ fromLeft compiled)))
-	(andMap (compiledCheck . snd) compiledClafers 
+	(andMap (compiledCheck . snd) compiledClafers
 		@? "test/positive fail: The above claferModels did not compile.")
 
 case_reference_Unused_Abstract_Clafer :: Assertion
 case_reference_Unused_Abstract_Clafer = do
 	model <- readFile "test/positive/i235.cfr"
-	let compiledClafers = 
+	let compiledClafers =
 		[("None", compileOneFragment defaultClaferArgs{scope_strategy = None} model), ("Simple", compileOneFragment defaultClaferArgs{scope_strategy = Simple} model)]
-	forM_ compiledClafers (\(ss, compiled) -> 
+	forM_ compiledClafers (\(ss, compiled) ->
 		when (not $ compiledCheck compiled) $ putStrLn ("i235.cfr failed for scope_strategy = " ++ ss))
-	(andMap (compiledCheck . snd) compiledClafers 
+	(andMap (compiledCheck . snd) compiledClafers
 		@? "reference_Unused_Abstract_Clafer (i235) failed, error for referencing unused abstract clafer")
 
 case_nonempty_cards :: Assertion
@@ -70,7 +70,7 @@ case_nonempty_cards = do
 	(andMap ((==[]) . foldMapIR isEmptyCard . snd) compiledClafeIrs
 		@? "nonempty card test failed. Files contain empty cardinalities after fully compiling")
 	where
-		getIR (file', (Right (resultMap))) = 
+		getIR (file', (Right (resultMap))) =
 			case Map.lookup Alloy resultMap of
 				Just CompilerResult{claferEnv = ClaferEnv{cIr = Just (iMod, _, _)}} -> [(file', iMod)]
 				_ -> []
@@ -80,5 +80,5 @@ case_nonempty_cards = do
 
 case_stringEqual :: Assertion
 case_stringEqual = do
-	let strMap = stringMap $ fromJust $ Map.lookup Alloy $ fromRight $ compileOneFragment defaultClaferArgs "A\n    text1 : string = \"some text\"\n    text2 : string = \"some text\""
+	let strMap = stringMap $ fromJust $ Map.lookup Alloy $ fromRight $ compileOneFragment defaultClaferArgs "A\n    text1 -> string = \"some text\"\n    text2 -> string = \"some text\""
 	(Map.size strMap) == 1 @? "Error: same string assigned to differnet numbers!"

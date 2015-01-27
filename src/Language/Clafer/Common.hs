@@ -22,11 +22,16 @@
 -}
 module Language.Clafer.Common where
 
-import Data.Tree
-import Data.Maybe
-import Data.Char
-import Data.List
+import           Control.Applicative ((<$>))
+import           Control.Lens (universeOn)
+import           Data.Char
+import           Data.Data.Lens (biplate)
+import           Data.List
 import qualified Data.Map as Map
+import           Data.Maybe
+import           Data.StringMap (StringMap)
+import qualified Data.StringMap as SMap
+import           Data.Tree
 
 import Language.Clafer.Front.Absclafer
 import Language.Clafer.Intermediate.Intclafer
@@ -35,9 +40,8 @@ import Language.Clafer.Intermediate.Intclafer
 -- basic functions shared by desugarer, analyzer and code generator
 type Result = String
 
-transIdent :: PosIdent -> Result
-transIdent x = case x of
-  PosIdent str  -> snd str
+transIdent :: PosIdent -> String
+transIdent (PosIdent (_, str)) = str
 
 mkIdent :: String -> PosIdent
 mkIdent str = PosIdent ((0, 0), str)
@@ -47,29 +51,35 @@ mkInteger (PosInteger (_, n)) = read n
 
 type Ident = PosIdent
 
-getSuper :: IClafer -> String
-getSuper = getSuperId._supers._super
+-- | Returns only [] or [_]
+getSuper :: IClafer -> [String]
+getSuper claf = case getSuperId <$> _super claf of
+    Nothing       -> []
+    Just "clafer" -> error "Bug: The identifier 'clafer' should never be returned as super type"
+    Just x        -> [x]
 
-getSuperNoArr :: IClafer -> String
+-- | Returns only [] or [_]
+getReference :: IClafer -> [String]
+getReference c = case getSuperId <$> _ref <$> _reference c of
+    Nothing -> []
+    Just x  -> [x]
 
-getSuperNoArr clafer
-  | _isOverlapping $ _super clafer = "clafer"
-  | otherwise                    = getSuper clafer
+-- | Returns only [] or [_] or [_, _]
+getSuperAndReference :: IClafer -> [String]
+getSuperAndReference c = (getSuper c) ++ (getReference c)
 
-getSuperId :: [PExp] -> String
-getSuperId = _sident . Language.Clafer.Intermediate.Intclafer._exp . head
+getSuperId :: PExp -> String
+getSuperId (PExp _ _ _ (IClaferId{ _sident = s})) = s
+getSuperId pexp' = error $ "Bug: getSuperId called not on '[PExp (IClaferId)]' but instead on '" ++ show pexp' ++ "'"
 
 isEqClaferId :: String -> IClafer -> Bool
-isEqClaferId = flip $ (==)._uid
+isEqClaferId    uid'      claf'    = _uid claf' == uid'
 
 idToPExp :: String -> Span -> String -> String -> Bool -> PExp
-idToPExp pid' pos modids id' isTop' = PExp (Just $ TClafer [id']) pid' pos (IClaferId modids id' isTop')
+idToPExp pid' pos modids id' isTop' = PExp (Just $ TClafer [id']) pid' pos (IClaferId modids id' isTop' Nothing)
 
-mkLClaferId :: String -> Bool -> IExp
-mkLClaferId = IClaferId ""
-
-mkPLClaferId :: String -> Bool -> PExp
-mkPLClaferId id' isTop' = pExpDefPidPos $ mkLClaferId id' isTop'
+mkPLClaferId :: CName -> Bool -> ClaferBinding -> PExp
+mkPLClaferId id' isTop' bind' = pExpDefPidPos $ IClaferId "" id' isTop' bind'
 
 pExpDefPidPos :: IExp -> PExp
 pExpDefPidPos = pExpDefPid noSpan
@@ -81,21 +91,25 @@ pExpDef :: String -> Span -> IExp -> PExp
 pExpDef = PExp Nothing
 
 isParent :: PExp -> Bool
-isParent (PExp _ _ _ (IClaferId _ id' _)) = id' == parent
+isParent (PExp _ _ _ (IClaferId _ id' _ _)) = id' == parentIdent
 isParent _ = False
 
 isClaferName :: PExp -> Bool
-isClaferName (PExp _ _ _ (IClaferId _ id' _)) =
-  id' `notElem` ([this, parent, children, ref] ++ primitiveTypes)
+isClaferName (PExp _ _ _ (IClaferId _ id' _ _)) =
+  id' `notElem` (specialNames ++ primitiveTypes)
 isClaferName _ = False
 
 isClaferName' :: PExp -> Bool
-isClaferName' (PExp _ _ _ (IClaferId _ _ _)) = True
+isClaferName' (PExp _ _ _ (IClaferId _ _ _ _)) = True
 isClaferName' _ = False
 
 getClaferName :: PExp -> String
-getClaferName (PExp _ _ _ (IClaferId _ id' _)) = id'
+getClaferName (PExp _ _ _ (IClaferId _ id' _ _)) = id'
 getClaferName _ = ""
+
+isTopLevel :: IClafer -> Bool
+isTopLevel IClafer{_parentUID=puid} = puid == rootIdent  -- for concrete clafers
+                                   || puid == baseClafer -- for abstract clafers
 
 -- -----------------------------------------------------------------------------
 -- conversions
@@ -110,7 +124,7 @@ toClafers = mapMaybe elemToClafer
 -- -----------------------------------------------------------------------------
 -- finds hierarchy and transforms each element
 mapHierarchy :: (IClafer -> b)
-                -> (IClafer -> String)
+                -> (IClafer -> [String])
                 -> [IClafer]
                 -> IClafer
                 -> [b]
@@ -119,18 +133,30 @@ mapHierarchy f sf = (map f.).(findHierarchy sf)
 
 -- returns inheritance hierarchy of a clafer
 
-findHierarchy :: (IClafer -> String)
+findHierarchy :: (IClafer -> [String])
                             -> [IClafer]
                             -> IClafer
                             -> [IClafer]
-findHierarchy sFun clafers clafer
-  | sFun clafer == "clafer"      = [clafer]
-  | otherwise                    = if clafer `elem` superClafers
-                                   then error $ "Inheritance hierarchy contains a cycle: line " ++ (show $ _cinPos clafer)
-                                   else clafer : superClafers
+findHierarchy sFun clafers clafer = case sFun clafer of
+  []           -> [clafer]  -- no super and no reference
+  supersOrRefs -> let
+                    superOrRefClafers = (concatMap findSuper supersOrRefs)
+                  in
+                    clafer : superOrRefClafers ++ concatMap (findHierarchy sFun clafers) superOrRefClafers
   where
-  superClafers = unfoldr (\c -> find (isEqClaferId $ sFun c) clafers >>=
-                          Just . (apply id)) clafer
+    findSuper superUid = filter (\c -> _uid c == superUid) clafers
+
+-- -----------------------------------------------------------------------------
+-- map construction functions
+
+createUidIClaferMap :: IModule -> StringMap IClafer
+createUidIClaferMap    iModule  = foldl' (\accumMap' claf -> SMap.insert (_uid claf) claf accumMap') SMap.empty allClafers
+  where
+    allClafers :: [ IClafer ]
+    allClafers = universeOn biplate iModule
+
+findIClafer :: StringMap IClafer -> UID -> Maybe IClafer
+findIClafer    uidIClaferMap        uid' = SMap.lookup uid' uidIClaferMap
 
 -- -----------------------------------------------------------------------------
 -- generic functions
@@ -290,7 +316,7 @@ binOps = logBinOps ++ relBinOps ++ arithBinOps ++ setBinOps
 
 -- ternary operators
 iIfThenElse :: String
-iIfThenElse   = "=>else"
+iIfThenElse   = "ifthenelse"
 
 mkIFunExp :: String -> [IExp] -> IExp
 mkIFunExp _ (x:[]) = x
@@ -303,23 +329,32 @@ toLowerS (s:ss) = toLower s : ss
 -- -----------------------------------------------------------------------------
 -- Constants
 
-this :: String
-this = "this"
+rootIdent :: String
+rootIdent = "root"
 
-parent :: String
-parent = "parent"
+rootUID :: String
+rootUID = "root"
 
-children :: String
-children = "children"
+thisIdent :: String
+thisIdent = "this"
 
-ref :: String
-ref = "ref"
+parentIdent :: String
+parentIdent = "parent"
+
+refIdent :: String
+refIdent = "ref"
+
+childrenIdent :: String
+childrenIdent = "children"
 
 specialNames :: [String]
-specialNames = [this, parent, children, ref]
+specialNames = [thisIdent, parentIdent, refIdent, rootIdent, childrenIdent]
 
-strType :: String
-strType = "string"
+isSpecial :: String -> Bool
+isSpecial = flip elem specialNames
+
+stringType :: String
+stringType = "string"
 
 intType :: String
 intType = "int"
@@ -330,6 +365,9 @@ integerType = "integer"
 realType :: String
 realType = "real"
 
+booleanType :: String
+booleanType = "boolean"
+
 baseClafer :: String
 baseClafer = "clafer"
 
@@ -337,10 +375,23 @@ modSep :: String
 modSep = "\\"
 
 primitiveTypes :: [String]
-primitiveTypes = [strType, intType, integerType, realType]
+primitiveTypes = [stringType, intType, integerType, realType]
 
 isPrimitive :: String -> Bool
 isPrimitive = flip elem primitiveTypes
+
+-- | reserved keywords which cannot be used as clafer identifiers
+keywordIdents :: [String]
+keywordIdents =
+  baseClafer :
+  specialNames ++
+  primitiveTypes ++
+  [ iGMax, iGMin, iSumSet ] ++ -- unary operators
+  [ iXor, iIn ] ++ -- binary operators
+  [ "if", "then", "else" ] ++ -- ternary operators
+  [ "no", "not", "some", "one", "all", "disj" ] ++ -- quantifiers
+  [ "opt", "mux", "or", "lone" ] ++ -- group cardinalities
+  [ "abstract", "enum" ] -- keywords
 
 data GEnv = GEnv {
   identCountMap :: Map.Map String Int,
@@ -353,3 +404,7 @@ voidf :: Monad m => m t -> m ()
 voidf f = do
   _ <- f
   return ()
+
+safeTail :: [a] -> [a]
+safeTail [] = []
+safeTail (_:xs) = xs

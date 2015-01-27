@@ -1,12 +1,12 @@
 
 <div>
-<span class="claferDecl" id="c0_x">x</span><span class="keyword"> ->></span> <a href="#integer"><span class="reference">integer</span></a> *</div>
+<span class="claferDecl" id="c0_x">x</span><span class="keyword"> ->> </span><a href="#integer"><span class="reference">integer</span></a> *</div>
 
 
 <div>
-<span class="claferDecl" id="c0_y">y</span><span class="keyword"> ->></span> <a href="#integer"><span class="reference">integer</span></a> *</div>
+<span class="claferDecl" id="c0_y">y</span><span class="keyword"> ->> </span><a href="#integer"><span class="reference">integer</span></a> *</div>
 
 
 <div>
-<span class="claferDecl" id="c0_z">z</span><span class="keyword"> -></span> <a href="#integer"><span class="reference">integer</span></a> = sum <a href="#c0_x"><span class="reference">x</span></a>++<a href="#c0_y"><span class="reference">y</span></a></div>
+<span class="claferDecl" id="c0_z">z</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a> = sum <a href="#c0_x"><span class="reference">x</span></a>++<a href="#c0_y"><span class="reference">y</span></a></div>
 

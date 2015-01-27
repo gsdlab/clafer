@@ -9,3 +9,6 @@ abstract Person
 abstract NewBorn -> Person
     [ age = 0
       ! married ]
+
+Alice : Person
+baby : NewBorn

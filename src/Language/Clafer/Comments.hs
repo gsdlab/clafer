@@ -70,14 +70,14 @@ getComments' (_:xs)       row col  = getComments' xs row $ col + 1
 
 readLine :: String -> Pos -> [(Span, String)]
 readLine    [] _                   = []
-readLine    xs start@(Pos row col) = let comment = takeWhile (/= '\n') xs in 
+readLine    xs start@(Pos row col) = let comment = takeWhile (/= '\n') xs in
                                                    ((Span start (Pos row (col + toInteger (length comment)))),
                                                     comment): getComments' (drop (length comment + 1) xs) (row + 1) 1
 
 
-readBlock :: String -> Pos -> [(Span, String)]  
+readBlock :: String -> Pos -> [(Span, String)]
 readBlock   xs start@(Pos row col) = let (end@(Pos row' col'), comment, rest) = readBlock' xs row col id in
-                                      ((Span start end), comment):getComments' rest row' col'                                    
+                                      ((Span start end), comment):getComments' rest row' col'
 readBlock' :: String -> Integer
               -> Integer -> (String -> String)
               -> (Pos, String,String)

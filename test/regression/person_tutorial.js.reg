@@ -40,7 +40,7 @@ c0_Surname.refTo(string);
 c0_Street.refTo(string);
 c0_UnitNo.refTo(string);
 c0_City.refTo(string);
-c0_Country.refToUnique(c0_NorthAmericanCountry);
+c0_Country.refTo(c0_NorthAmericanCountry);
 c0_PostalCode.refTo(string);
 c0_StudentId.refTo(string);
 c0_participants.refToUnique(c0_Person);

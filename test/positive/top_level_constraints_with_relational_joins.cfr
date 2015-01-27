@@ -6,20 +6,20 @@ abstract Course
 abstract TA
 	 first -> Course ?
 		[parent in this.assistants ]
-	
+
 CompilerGradStudent : TA
 
-AIGradStudent : TA 
-	
+AIGradStudent : TA
+
 CompilerCourse : Course
 
 MachineLearningCourse : Course
-	
+
 [CompilerGradStudent.first = CompilerCourse]
 
 [AIGradStudent.first = MachineLearningCourse]
-	
-//tas_with_first_choice : int  = #( ::first & ~ ::assistants)] 
+
+//tas_with_first_choice : int  = #( ::first & ~ ::assistants)]
 // cannot access relations and no support for inverse relations for now
-	
-numerOfAssistants : integer = # Course.assistants
+
+numerOfAssistants -> integer = # Course.assistants

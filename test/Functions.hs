@@ -38,14 +38,15 @@ checkClaferExt "des.cfr" = True
 checkClaferExt file' = if ((eman == "")) then False else (txe == "rfc") && (takeWhile (/='.') (tail eman) /= "esd")
 	where (txe, eman) = span (/='.') (reverse file')
 
-				
+
 compileOneFragment :: ClaferArgs -> InputModel -> Either [ClaferErr] (Map.Map ClaferMode CompilerResult)
 compileOneFragment args' model =
- 	runClafer (argsWithOPTIONS args' model) $  
+ 	runClafer (argsWithOPTIONS args' model) $
 		do
 			addModuleFragment model
 			parse
-			compile
+			iModule <- desugar Nothing
+			compile iModule
 			generate
 
 compiledCheck :: Either a b -> Bool

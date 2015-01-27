@@ -114,7 +114,7 @@
 <!-- # FRAGMENT /-->
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_AndroidPhone">AndroidPhone</span><span class="keyword"> :</span> <a href="#c0_AndroidDevice"><span class="reference">AndroidDevice</span></a>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_AndroidPhone">AndroidPhone</span><span class="keyword"> : </span><a href="#c0_AndroidDevice"><span class="reference">AndroidDevice</span></a>
   <div class="indent">
   <span class="keyword">[</span> <a href="#c4_GSM"><span class="reference">GSM</span></a> <span class="keyword">]</span></div>
   <div class="indent">
@@ -155,7 +155,7 @@
 <!-- # FRAGMENT /-->
 
 <div>
-<span class="claferDecl" id="c0_AndroidPhone4">AndroidPhone4</span><span class="keyword"> :</span> <a href="#c0_AndroidPhone"><span class="reference">AndroidPhone</span></a>
+<span class="claferDecl" id="c0_AndroidPhone4">AndroidPhone4</span><span class="keyword"> : </span><a href="#c0_AndroidPhone"><span class="reference">AndroidPhone</span></a>
   <div class="indent">
   <span class="claferDecl" id="c7_display">display</span>
     <div class="indent">

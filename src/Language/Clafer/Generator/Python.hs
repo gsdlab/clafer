@@ -22,10 +22,12 @@
 -- | Generates Python representation of IR for the <https://github.com/gsdlab/ClaferZ3 ClaferZ3>.
 module Language.Clafer.Generator.Python where
 
+import Data.Char
+import Data.Maybe (fromMaybe)
+
 import Language.Clafer.Common
 import Language.Clafer.Front.Absclafer
 import Language.Clafer.Intermediate.Intclafer
-import Data.Char
 
 tag:: String -> String -> String
 tag name exp' = concat ["<", name, ">", exp', "</", name, ">\n"]
@@ -60,7 +62,7 @@ genPythonString str = concat [ "StringLiteral.StringLiteral(", show str, ")"] --
 
 genPythonIntPair :: (Integer, Integer) -> String
 genPythonIntPair (x, y) = concat
-  [ "(", genPythonInteger x 
+  [ "(", genPythonInteger x
   , ","
   , genPythonInteger y, ")"]
 
@@ -93,13 +95,15 @@ genPythonModule imodule = concat
 
 genPythonClafer :: IClafer -> Result
 genPythonClafer x = case x of
-  IClafer pos' abstract' gcard' id' uid' super' card' glcard' elements'  ->
-    concat [ "\t", genPythonPosition pos', "\n" 
+  IClafer pos' abstract' gcard' id' uid' puid' super' refrence' card' glcard' elements'  ->
+    concat [ "\t", genPythonPosition pos', "\n"
            , "\t", genPythonAbstract abstract', "\n"
            , "\t", maybe "" genPythonGCard gcard', "\n"
            , "\t", genPythonId id', "\n"
            , "\t", genPythonUid uid', "\n"
+           , "\t", genPythonParentUid puid', "\n"
            , "\t", genPythonSuper super', "\n"
+           , "\t", genPythonReference refrence', "\n"
            , "\t", maybe "" genPythonCard card', "\n"
            , "\t", genPythonGlCard glcard', "\n"
            , "\tcurrClafer = Clafer.Clafer(pos=pos, isAbstract=isAbstract, gcard=groupCard, ident=id, uid=uid, my_supers=my_supers, card=card, glCard=globalCard)\n"
@@ -107,18 +111,18 @@ genPythonClafer x = case x of
            , "\tstack.append(currClafer)\n"
            , concatMap genPythonElement elements'
            , "\tstack.pop()\n"]
-  
+
 genPythonAbstract :: Bool -> String
 genPythonAbstract isAbstract' = concat [ genPythonBoolean "isAbstract" isAbstract']
 
 genPythonGCard :: IGCard -> String
-genPythonGCard (IGCard isKeyword' interval') = concat 
-		[ "groupCard = GCard.GCard(", genPythonBoolean "isKeyword" isKeyword', ", " 
+genPythonGCard (IGCard isKeyword' interval') = concat
+		[ "groupCard = GCard.GCard(", genPythonBoolean "isKeyword" isKeyword', ", "
     	, "interval=" , genPythonInterval interval' , ")"]
 
 genPythonInterval :: (Integer, Integer) -> String
 genPythonInterval (nMin, nMax) = concat
-  [ "(", genPythonInteger nMin 
+  [ "(", genPythonInteger nMin
   , ",", genPythonInteger nMax
   , ")"]
 
@@ -128,11 +132,26 @@ genPythonId ident' = concat[ "id=\"", ident', "\""]
 genPythonUid :: String -> String
 genPythonUid uid' = concat [ "uid=\"", uid', "\""]
 
-genPythonSuper :: ISuper -> String
+genPythonParentUid :: String -> String
+genPythonParentUid uid' = concat [ "parentUid=\"", uid', "\""]
+
+genPythonSuper :: Maybe PExp -> String
 genPythonSuper x = case x of
-  ISuper isOverlapping' pexps' -> concat
-    [ "my_supers = Supers.Supers(", genPythonBoolean "isOverlapping" isOverlapping', ", elements=["
-    , concatMap (genPythonPExp "Super") pexps' , "])"]
+  Nothing                      -> ""
+  Just pexp' -> concat
+    [ "my_Super = "
+    , genPythonPExp "Super" pexp'
+    ]
+
+genPythonReference :: Maybe IReference -> String
+genPythonReference x = case x of
+  Nothing                        -> ""
+  Just (IReference isSet' pexp') -> concat
+    [ "my_Reference = Reference.Reference("
+    , genPythonBoolean "isSet" isSet'
+    , ", "
+    , genPythonPExp "Ref" pexp'
+    , ")" ]
 
 genPythonCard :: (Integer, Integer) -> String
 genPythonCard interval' = concat [ "card=" , genPythonInterval interval']
@@ -147,12 +166,12 @@ genPythonElement x = case x of
                          [ "##### constraint #####\n", "\tconstraint = IRConstraint.IRConstraint(" , genPythonBoolean "isHard" isHard' , " ,"
                          , " exp=", genPythonPExp "ParentExp" pexp' , ")\n"
                          , "\tstack[-1].addElement(constraint)\n"]
-  IEGoal isMaximize' pexp' -> concat 
+  IEGoal isMaximize' pexp' -> concat
                          [ "##### goal #####\n" ,"\tgoal = Goal.Goal(" , genPythonBoolean "isMaximize" isMaximize'
                          , ", exp=", genPythonPExp "ParentExp" pexp' , ")\n"
                          , "\tstack[-1].addElement(goal)\n"]
-                         
-                                                         
+
+
 {-genPythonAnyOp ft f xs = concatMap
   (\(tname, texp) -> tagType tname (ft texp) $ f texp) xs -}
 
@@ -162,9 +181,9 @@ genPythonPExp tagName (PExp iType' pid' pos' iexp') = concat
   [ "\n\t\tExp.Exp","(expType=\"", tagName, "\", ", maybe "exptype=\"\"" genPythonIType iType'
   , ", parentId=\"", pid', "\""
   , ", " , genPythonPosition pos'
-  , ", iExpType=\"" , genPythonIExpType iexp' , "\"" 
+  , ", iExpType=\"" , genPythonIExpType iexp' , "\""
   , ", iExp=[" , genPythonIExp iexp' ,"])"]
-  
+
 genPythonPosition :: Span -> String
 genPythonPosition (Span (Pos s1 s2) (Pos e1 e2)) = concat
   [ "pos=(", genPythonIntPair (s1, s2), ", ", genPythonIntPair (e1, e2), ")"]
@@ -176,7 +195,7 @@ genPythonIExpType x = case x of
   IInt _ -> "IIntExp"
   IDouble _ -> "IDoubleExp"
   IStr _ -> "IStringExp"
-  IClaferId _ _ _ -> "IClaferId"
+  IClaferId _ _ _ _ -> "IClaferId"
 
 
 declHelper :: [IDecl] -> String
@@ -201,11 +220,12 @@ genPythonIExp x = case x of
     escape x    = [x] -}
   IInt n -> genPythonInteger n
   IDouble n ->  concat [ "DoubleLiteral.DoubleLiteral(", show n, ")"] --DoubleLiteral
-  IStr str -> genPythonString str  
-  IClaferId modName' sident' isTop' -> concat
+  IStr str -> genPythonString str
+  IClaferId modName' sident' isTop' bind' -> concat
     [ "ClaferId.ClaferId(moduleName=\"", modName' , "\", "
     , "my_id=\"", sident' , "\", "
-    , genPythonBoolean "isTop" isTop', ")"]
+    , genPythonBoolean "isTop" isTop' , ", "
+    , "my_bind=\"", fromMaybe "" bind' , "\")"]
 
 
 genPythonDecl :: IDecl -> String

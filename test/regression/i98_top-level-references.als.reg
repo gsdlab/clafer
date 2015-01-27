@@ -2,11 +2,9 @@ open util/integer
 pred show {}
 
 
-fact { #c0_Person = 0 }
 abstract sig c0_Person
 { r_c0_age : one c0_age
 , r_c0_married : lone c0_married }
-{ all disj x, y : this.@r_c0_age | (x.@ref) != (y.@ref) }
 
 sig c0_age
 { ref : one Int }
@@ -16,9 +14,14 @@ sig c0_married
 {}
 { one @r_c0_married.this }
 
-fact { #c0_NewBorn = 0 }
 abstract sig c0_NewBorn
 { ref : one c0_Person }
 { ((c0_Person.(@r_c0_age.@ref)) = 0) && (no c0_Person.@r_c0_married) }
 
-fact { all disj x, y : c0_NewBorn | (x.@ref) != (y.@ref) }
+fact {  all disj x, y : c0_NewBorn | (x.@ref) != (y.@ref)  }
+one sig c0_Alice extends c0_Person
+{}
+
+one sig c0_baby extends c0_NewBorn
+{}
+

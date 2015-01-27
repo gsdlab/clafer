@@ -1,18 +1,18 @@
 //# OPTIONS --sg
 
 abstract Feature
-    productivity : integer
-    cost : integer
-    batterylife : integer
-    security : integer
+    productivity -> integer
+    cost -> integer
+    batterylife -> integer
+    security -> integer
 //# FRAGMENT
 abstract MobilePhone
     Connectivity : Feature
         [ batterylife = -12]
         [ productivity = 14]
         [ security = 43]
-        [ cost = 101]        
-        xor Bluetooth : Feature        
+        [ cost = 101]
+        xor Bluetooth : Feature
             [ batterylife = 0]
             [ productivity = 0]
             [ security = 0]
@@ -68,10 +68,10 @@ abstract MobilePhone
             [ security = 0]
             [ cost = 15]
 
-    total_productivity : integer = sum Feature.productivity
-    total_batterylife : integer = sum Feature.batterylife
-    total_security : integer = sum Feature.security
-    total_cost : integer = sum Feature.cost
+    total_productivity -> integer = sum Feature.productivity
+    total_batterylife -> integer = sum Feature.batterylife
+    total_security -> integer = sum Feature.security
+    total_cost -> integer = sum Feature.cost
 //# FRAGMENT
 << max OptimalPhone.total_batterylife >>
 << max OptimalPhone.total_productivity >>

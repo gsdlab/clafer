@@ -3,7 +3,7 @@
 <IntLiteral>1</IntLiteral>
 </Start>
 <End><IntLiteral>1</IntLiteral>
-<IntLiteral>28</IntLiteral>
+<IntLiteral>29</IntLiteral>
 </End>
 </Position>
 <IsAbstract>true</IsAbstract>
@@ -16,20 +16,22 @@
 </GroupCard>
 <Id>Currency</Id>
 <UniqueId>c0_Currency</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
-<Super><ParentId></ParentId>
+<ParentUniqueId>root</ParentUniqueId>
+<Reference><IsSet>true</IsSet>
+<Ref><ParentId></ParentId>
 <Position><Start><IntLiteral>1</IntLiteral>
-<IntLiteral>21</IntLiteral>
+<IntLiteral>22</IntLiteral>
 </Start>
 <End><IntLiteral>1</IntLiteral>
-<IntLiteral>28</IntLiteral>
+<IntLiteral>29</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>integer</Id>
 <IsTop>true</IsTop>
-</Exp></Super>
-</Supers>
+<Bind>integer</Bind>
+</Exp></Ref>
+</Reference>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
 <Max><IntLiteral>0</IntLiteral>
@@ -57,20 +59,22 @@
 </GroupCard>
 <Id>Percentage</Id>
 <UniqueId>c0_Percentage</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
-<Super><ParentId></ParentId>
+<ParentUniqueId>root</ParentUniqueId>
+<Reference><IsSet>true</IsSet>
+<Ref><ParentId></ParentId>
 <Position><Start><IntLiteral>3</IntLiteral>
-<IntLiteral>23</IntLiteral>
+<IntLiteral>24</IntLiteral>
 </Start>
 <End><IntLiteral>3</IntLiteral>
-<IntLiteral>30</IntLiteral>
+<IntLiteral>31</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>integer</Id>
 <IsTop>true</IsTop>
-</Exp></Super>
-</Supers>
+<Bind>integer</Bind>
+</Exp></Ref>
+</Reference>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
 <Max><IntLiteral>0</IntLiteral>
@@ -120,6 +124,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_Percentage</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>4</IntLiteral>
@@ -131,7 +136,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId>e3_</ParentId>
@@ -174,6 +180,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_Percentage</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>4</IntLiteral>
@@ -185,7 +192,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId>e6_</ParentId>
@@ -217,20 +225,7 @@
 </GroupCard>
 <Id>Mortgage</Id>
 <UniqueId>c0_Mortgage</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>clafer</Id>
-<IsTop>false</IsTop>
-</Exp></Super>
-</Supers>
+<ParentUniqueId>root</ParentUniqueId>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
 <Max><IntLiteral>0</IntLiteral>
@@ -245,7 +240,7 @@
 <IntLiteral>5</IntLiteral>
 </Start>
 <End><IntLiteral>6</IntLiteral>
-<IntLiteral>30</IntLiteral>
+<IntLiteral>31</IntLiteral>
 </End>
 </Position>
 <IsAbstract>false</IsAbstract>
@@ -258,20 +253,22 @@
 </GroupCard>
 <Id>valueProposition</Id>
 <UniqueId>c0_valueProposition</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
-<Super><ParentId></ParentId>
+<ParentUniqueId>c0_Mortgage</ParentUniqueId>
+<Reference><IsSet>true</IsSet>
+<Ref><ParentId></ParentId>
 <Position><Start><IntLiteral>6</IntLiteral>
-<IntLiteral>24</IntLiteral>
+<IntLiteral>25</IntLiteral>
 </Start>
 <End><IntLiteral>6</IntLiteral>
-<IntLiteral>30</IntLiteral>
+<IntLiteral>31</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>string</Id>
 <IsTop>true</IsTop>
-</Exp></Super>
-</Supers>
+<Bind>string</Bind>
+</Exp></Ref>
+</Reference>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -299,8 +296,9 @@
 </GroupCard>
 <Id>term</Id>
 <UniqueId>c0_term</UniqueId>
-<Supers><IsOverlapping>true</IsOverlapping>
-<Super><ParentId></ParentId>
+<ParentUniqueId>c0_Mortgage</ParentUniqueId>
+<Reference><IsSet>true</IsSet>
+<Ref><ParentId></ParentId>
 <Position><Start><IntLiteral>7</IntLiteral>
 <IntLiteral>13</IntLiteral>
 </Start>
@@ -310,9 +308,10 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_MortgageTerm</Id>
-<IsTop>true</IsTop>
-</Exp></Super>
-</Supers>
+<IsTop>false</IsTop>
+<Bind>c0_MortgageTerm</Bind>
+</Exp></Ref>
+</Reference>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -323,132 +322,6 @@
 <Max><IntLiteral>-1</IntLiteral>
 </Max>
 </GlobalCard>
-</Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e7_</ParentId>
-<Position><Start><IntLiteral>7</IntLiteral>
-<IntLiteral>5</IntLiteral>
-</Start>
-<End><IntLiteral>7</IntLiteral>
-<IntLiteral>25</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:IAll" /><Declaration><IsDisjunct>true</IsDisjunct>
-<LocalDeclaration>x</LocalDeclaration>
-<LocalDeclaration>y</LocalDeclaration>
-<Body><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>this</Id>
-<IsTop>true</IsTop>
-</Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>c0_term</Id>
-<IsTop>false</IsTop>
-</Exp></Argument>
-</Exp></Body>
-</Declaration>
-<BodyParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e9_</ParentId>
-<Position><Start><IntLiteral>7</IntLiteral>
-<IntLiteral>5</IntLiteral>
-</Start>
-<End><IntLiteral>7</IntLiteral>
-<IntLiteral>25</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IFunctionExp"><Operation>!=</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e10_</ParentId>
-<Position><Start><IntLiteral>7</IntLiteral>
-<IntLiteral>5</IntLiteral>
-</Start>
-<End><IntLiteral>7</IntLiteral>
-<IntLiteral>25</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e11_</ParentId>
-<Position><Start><IntLiteral>7</IntLiteral>
-<IntLiteral>5</IntLiteral>
-</Start>
-<End><IntLiteral>7</IntLiteral>
-<IntLiteral>25</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>x</Id>
-<IsTop>true</IsTop>
-</Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e12_</ParentId>
-<Position><Start><IntLiteral>7</IntLiteral>
-<IntLiteral>5</IntLiteral>
-</Start>
-<End><IntLiteral>7</IntLiteral>
-<IntLiteral>25</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>ref</Id>
-<IsTop>false</IsTop>
-</Exp></Argument>
-</Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e13_</ParentId>
-<Position><Start><IntLiteral>7</IntLiteral>
-<IntLiteral>5</IntLiteral>
-</Start>
-<End><IntLiteral>7</IntLiteral>
-<IntLiteral>25</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e14_</ParentId>
-<Position><Start><IntLiteral>7</IntLiteral>
-<IntLiteral>5</IntLiteral>
-</Start>
-<End><IntLiteral>7</IntLiteral>
-<IntLiteral>25</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>y</Id>
-<IsTop>true</IsTop>
-</Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e15_</ParentId>
-<Position><Start><IntLiteral>7</IntLiteral>
-<IntLiteral>5</IntLiteral>
-</Start>
-<End><IntLiteral>7</IntLiteral>
-<IntLiteral>25</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>ref</Id>
-<IsTop>false</IsTop>
-</Exp></Argument>
-</Exp></Argument>
-</Exp></BodyParentExp>
-</Exp></ParentExp>
 </Declaration><Declaration xsi:type="cl:IClafer"><Position><Start><IntLiteral>8</IntLiteral>
 <IntLiteral>5</IntLiteral>
 </Start>
@@ -466,20 +339,7 @@
 </GroupCard>
 <Id>kind</Id>
 <UniqueId>c0_kind</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>clafer</Id>
-<IsTop>false</IsTop>
-</Exp></Super>
-</Supers>
+<ParentUniqueId>c0_Mortgage</ParentUniqueId>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -507,20 +367,7 @@
 </GroupCard>
 <Id>open</Id>
 <UniqueId>c0_open</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>clafer</Id>
-<IsTop>false</IsTop>
-</Exp></Super>
-</Supers>
+<ParentUniqueId>c0_kind</ParentUniqueId>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -548,20 +395,7 @@
 </GroupCard>
 <Id>closed</Id>
 <UniqueId>c0_closed</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>clafer</Id>
-<IsTop>false</IsTop>
-</Exp></Super>
-</Supers>
+<ParentUniqueId>c0_kind</ParentUniqueId>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -589,8 +423,9 @@
 </GroupCard>
 <Id>principalMortgageAmount</Id>
 <UniqueId>c0_principalMortgageAmount</UniqueId>
-<Supers><IsOverlapping>true</IsOverlapping>
-<Super><ParentId></ParentId>
+<ParentUniqueId>c0_Mortgage</ParentUniqueId>
+<Reference><IsSet>true</IsSet>
+<Ref><ParentId></ParentId>
 <Position><Start><IntLiteral>11</IntLiteral>
 <IntLiteral>32</IntLiteral>
 </Start>
@@ -600,9 +435,10 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Currency</Id>
-<IsTop>true</IsTop>
-</Exp></Super>
-</Supers>
+<IsTop>false</IsTop>
+<Bind>c0_Currency</Bind>
+</Exp></Ref>
+</Reference>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -614,133 +450,7 @@
 </Max>
 </GlobalCard>
 </Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e16_</ParentId>
-<Position><Start><IntLiteral>11</IntLiteral>
-<IntLiteral>5</IntLiteral>
-</Start>
-<End><IntLiteral>11</IntLiteral>
-<IntLiteral>40</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:IAll" /><Declaration><IsDisjunct>true</IsDisjunct>
-<LocalDeclaration>x</LocalDeclaration>
-<LocalDeclaration>y</LocalDeclaration>
-<Body><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>this</Id>
-<IsTop>true</IsTop>
-</Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>c0_principalMortgageAmount</Id>
-<IsTop>false</IsTop>
-</Exp></Argument>
-</Exp></Body>
-</Declaration>
-<BodyParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e18_</ParentId>
-<Position><Start><IntLiteral>11</IntLiteral>
-<IntLiteral>5</IntLiteral>
-</Start>
-<End><IntLiteral>11</IntLiteral>
-<IntLiteral>40</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IFunctionExp"><Operation>!=</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e19_</ParentId>
-<Position><Start><IntLiteral>11</IntLiteral>
-<IntLiteral>5</IntLiteral>
-</Start>
-<End><IntLiteral>11</IntLiteral>
-<IntLiteral>40</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e20_</ParentId>
-<Position><Start><IntLiteral>11</IntLiteral>
-<IntLiteral>5</IntLiteral>
-</Start>
-<End><IntLiteral>11</IntLiteral>
-<IntLiteral>40</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>x</Id>
-<IsTop>true</IsTop>
-</Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e21_</ParentId>
-<Position><Start><IntLiteral>11</IntLiteral>
-<IntLiteral>5</IntLiteral>
-</Start>
-<End><IntLiteral>11</IntLiteral>
-<IntLiteral>40</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>ref</Id>
-<IsTop>false</IsTop>
-</Exp></Argument>
-</Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e22_</ParentId>
-<Position><Start><IntLiteral>11</IntLiteral>
-<IntLiteral>5</IntLiteral>
-</Start>
-<End><IntLiteral>11</IntLiteral>
-<IntLiteral>40</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e23_</ParentId>
-<Position><Start><IntLiteral>11</IntLiteral>
-<IntLiteral>5</IntLiteral>
-</Start>
-<End><IntLiteral>11</IntLiteral>
-<IntLiteral>40</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>y</Id>
-<IsTop>true</IsTop>
-</Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e24_</ParentId>
-<Position><Start><IntLiteral>11</IntLiteral>
-<IntLiteral>5</IntLiteral>
-</Start>
-<End><IntLiteral>11</IntLiteral>
-<IntLiteral>40</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>ref</Id>
-<IsTop>false</IsTop>
-</Exp></Argument>
-</Exp></Argument>
-</Exp></BodyParentExp>
-</Exp></ParentExp>
-</Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e25_</ParentId>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e7_</ParentId>
 <Position><Start><IntLiteral>12</IntLiteral>
 <IntLiteral>7</IntLiteral>
 </Start>
@@ -749,7 +459,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>&amp;&amp;</Operation>
-<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e26_</ParentId>
+<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e8_</ParentId>
 <Position><Start><IntLiteral>12</IntLiteral>
 <IntLiteral>7</IntLiteral>
 </Start>
@@ -758,7 +468,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>&lt;=</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e27_</ParentId>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e9_</ParentId>
 <Position><Start><IntLiteral>12</IntLiteral>
 <IntLiteral>7</IntLiteral>
 </Start>
@@ -768,7 +478,7 @@
 </Position>
 <Exp xsi:type="cl:IIntExp"><IntLiteral>5000</IntLiteral>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e28_</ParentId>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e10_</ParentId>
 <Position><Start><IntLiteral>12</IntLiteral>
 <IntLiteral>15</IntLiteral>
 </Start>
@@ -788,6 +498,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_Mortgage</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -818,6 +529,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_principalMortgageAmount</Id>
 <IsTop>false</IsTop>
+<Bind>c0_principalMortgageAmount</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -829,7 +541,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
@@ -842,12 +555,13 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e29_</ParentId>
+<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e11_</ParentId>
 <Position><Start><IntLiteral>12</IntLiteral>
 <IntLiteral>42</IntLiteral>
 </Start>
@@ -856,7 +570,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>&lt;=</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e30_</ParentId>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e12_</ParentId>
 <Position><Start><IntLiteral>12</IntLiteral>
 <IntLiteral>42</IntLiteral>
 </Start>
@@ -876,6 +590,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_Mortgage</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -906,6 +621,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_principalMortgageAmount</Id>
 <IsTop>false</IsTop>
+<Bind>c0_principalMortgageAmount</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -917,7 +633,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
@@ -930,11 +647,12 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e31_</ParentId>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e13_</ParentId>
 <Position><Start><IntLiteral>12</IntLiteral>
 <IntLiteral>69</IntLiteral>
 </Start>
@@ -963,8 +681,9 @@
 </GroupCard>
 <Id>balance</Id>
 <UniqueId>c0_balance</UniqueId>
-<Supers><IsOverlapping>true</IsOverlapping>
-<Super><ParentId></ParentId>
+<ParentUniqueId>c0_Mortgage</ParentUniqueId>
+<Reference><IsSet>true</IsSet>
+<Ref><ParentId></ParentId>
 <Position><Start><IntLiteral>13</IntLiteral>
 <IntLiteral>16</IntLiteral>
 </Start>
@@ -974,9 +693,10 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Currency</Id>
-<IsTop>true</IsTop>
-</Exp></Super>
-</Supers>
+<IsTop>false</IsTop>
+<Bind>c0_Currency</Bind>
+</Exp></Ref>
+</Reference>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -988,133 +708,7 @@
 </Max>
 </GlobalCard>
 </Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e32_</ParentId>
-<Position><Start><IntLiteral>13</IntLiteral>
-<IntLiteral>5</IntLiteral>
-</Start>
-<End><IntLiteral>13</IntLiteral>
-<IntLiteral>24</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:IAll" /><Declaration><IsDisjunct>true</IsDisjunct>
-<LocalDeclaration>x</LocalDeclaration>
-<LocalDeclaration>y</LocalDeclaration>
-<Body><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>this</Id>
-<IsTop>true</IsTop>
-</Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>c0_balance</Id>
-<IsTop>false</IsTop>
-</Exp></Argument>
-</Exp></Body>
-</Declaration>
-<BodyParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e34_</ParentId>
-<Position><Start><IntLiteral>13</IntLiteral>
-<IntLiteral>5</IntLiteral>
-</Start>
-<End><IntLiteral>13</IntLiteral>
-<IntLiteral>24</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IFunctionExp"><Operation>!=</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e35_</ParentId>
-<Position><Start><IntLiteral>13</IntLiteral>
-<IntLiteral>5</IntLiteral>
-</Start>
-<End><IntLiteral>13</IntLiteral>
-<IntLiteral>24</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e36_</ParentId>
-<Position><Start><IntLiteral>13</IntLiteral>
-<IntLiteral>5</IntLiteral>
-</Start>
-<End><IntLiteral>13</IntLiteral>
-<IntLiteral>24</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>x</Id>
-<IsTop>true</IsTop>
-</Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e37_</ParentId>
-<Position><Start><IntLiteral>13</IntLiteral>
-<IntLiteral>5</IntLiteral>
-</Start>
-<End><IntLiteral>13</IntLiteral>
-<IntLiteral>24</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>ref</Id>
-<IsTop>false</IsTop>
-</Exp></Argument>
-</Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e38_</ParentId>
-<Position><Start><IntLiteral>13</IntLiteral>
-<IntLiteral>5</IntLiteral>
-</Start>
-<End><IntLiteral>13</IntLiteral>
-<IntLiteral>24</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e39_</ParentId>
-<Position><Start><IntLiteral>13</IntLiteral>
-<IntLiteral>5</IntLiteral>
-</Start>
-<End><IntLiteral>13</IntLiteral>
-<IntLiteral>24</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>y</Id>
-<IsTop>true</IsTop>
-</Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e40_</ParentId>
-<Position><Start><IntLiteral>13</IntLiteral>
-<IntLiteral>5</IntLiteral>
-</Start>
-<End><IntLiteral>13</IntLiteral>
-<IntLiteral>24</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>ref</Id>
-<IsTop>false</IsTop>
-</Exp></Argument>
-</Exp></Argument>
-</Exp></BodyParentExp>
-</Exp></ParentExp>
-</Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e41_</ParentId>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e14_</ParentId>
 <Position><Start><IntLiteral>14</IntLiteral>
 <IntLiteral>7</IntLiteral>
 </Start>
@@ -1123,7 +717,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>&lt;=</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e42_</ParentId>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e15_</ParentId>
 <Position><Start><IntLiteral>14</IntLiteral>
 <IntLiteral>7</IntLiteral>
 </Start>
@@ -1143,6 +737,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_Mortgage</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -1173,6 +768,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_balance</Id>
 <IsTop>false</IsTop>
+<Bind>c0_balance</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -1184,7 +780,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
@@ -1197,11 +794,12 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e43_</ParentId>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e16_</ParentId>
 <Position><Start><IntLiteral>14</IntLiteral>
 <IntLiteral>18</IntLiteral>
 </Start>
@@ -1221,6 +819,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_Mortgage</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -1251,6 +850,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_principalMortgageAmount</Id>
 <IsTop>false</IsTop>
+<Bind>c0_principalMortgageAmount</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -1262,7 +862,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
@@ -1275,7 +876,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
@@ -1297,8 +899,9 @@
 </GroupCard>
 <Id>propertyValue</Id>
 <UniqueId>c0_propertyValue</UniqueId>
-<Supers><IsOverlapping>true</IsOverlapping>
-<Super><ParentId></ParentId>
+<ParentUniqueId>c0_Mortgage</ParentUniqueId>
+<Reference><IsSet>true</IsSet>
+<Ref><ParentId></ParentId>
 <Position><Start><IntLiteral>15</IntLiteral>
 <IntLiteral>22</IntLiteral>
 </Start>
@@ -1308,9 +911,10 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Currency</Id>
-<IsTop>true</IsTop>
-</Exp></Super>
-</Supers>
+<IsTop>false</IsTop>
+<Bind>c0_Currency</Bind>
+</Exp></Ref>
+</Reference>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -1321,132 +925,6 @@
 <Max><IntLiteral>-1</IntLiteral>
 </Max>
 </GlobalCard>
-</Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e44_</ParentId>
-<Position><Start><IntLiteral>15</IntLiteral>
-<IntLiteral>5</IntLiteral>
-</Start>
-<End><IntLiteral>15</IntLiteral>
-<IntLiteral>30</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:IAll" /><Declaration><IsDisjunct>true</IsDisjunct>
-<LocalDeclaration>x</LocalDeclaration>
-<LocalDeclaration>y</LocalDeclaration>
-<Body><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>this</Id>
-<IsTop>true</IsTop>
-</Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>c0_propertyValue</Id>
-<IsTop>false</IsTop>
-</Exp></Argument>
-</Exp></Body>
-</Declaration>
-<BodyParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e46_</ParentId>
-<Position><Start><IntLiteral>15</IntLiteral>
-<IntLiteral>5</IntLiteral>
-</Start>
-<End><IntLiteral>15</IntLiteral>
-<IntLiteral>30</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IFunctionExp"><Operation>!=</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e47_</ParentId>
-<Position><Start><IntLiteral>15</IntLiteral>
-<IntLiteral>5</IntLiteral>
-</Start>
-<End><IntLiteral>15</IntLiteral>
-<IntLiteral>30</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e48_</ParentId>
-<Position><Start><IntLiteral>15</IntLiteral>
-<IntLiteral>5</IntLiteral>
-</Start>
-<End><IntLiteral>15</IntLiteral>
-<IntLiteral>30</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>x</Id>
-<IsTop>true</IsTop>
-</Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e49_</ParentId>
-<Position><Start><IntLiteral>15</IntLiteral>
-<IntLiteral>5</IntLiteral>
-</Start>
-<End><IntLiteral>15</IntLiteral>
-<IntLiteral>30</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>ref</Id>
-<IsTop>false</IsTop>
-</Exp></Argument>
-</Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e50_</ParentId>
-<Position><Start><IntLiteral>15</IntLiteral>
-<IntLiteral>5</IntLiteral>
-</Start>
-<End><IntLiteral>15</IntLiteral>
-<IntLiteral>30</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e51_</ParentId>
-<Position><Start><IntLiteral>15</IntLiteral>
-<IntLiteral>5</IntLiteral>
-</Start>
-<End><IntLiteral>15</IntLiteral>
-<IntLiteral>30</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>y</Id>
-<IsTop>true</IsTop>
-</Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e52_</ParentId>
-<Position><Start><IntLiteral>15</IntLiteral>
-<IntLiteral>5</IntLiteral>
-</Start>
-<End><IntLiteral>15</IntLiteral>
-<IntLiteral>30</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>ref</Id>
-<IsTop>false</IsTop>
-</Exp></Argument>
-</Exp></Argument>
-</Exp></BodyParentExp>
-</Exp></ParentExp>
 </Declaration><Declaration xsi:type="cl:IClafer"><Position><Start><IntLiteral>16</IntLiteral>
 <IntLiteral>5</IntLiteral>
 </Start>
@@ -1464,8 +942,9 @@
 </GroupCard>
 <Id>loanToValue</Id>
 <UniqueId>c0_loanToValue</UniqueId>
-<Supers><IsOverlapping>true</IsOverlapping>
-<Super><ParentId></ParentId>
+<ParentUniqueId>c0_Mortgage</ParentUniqueId>
+<Reference><IsSet>true</IsSet>
+<Ref><ParentId></ParentId>
 <Position><Start><IntLiteral>16</IntLiteral>
 <IntLiteral>20</IntLiteral>
 </Start>
@@ -1475,9 +954,10 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Percentage</Id>
-<IsTop>true</IsTop>
-</Exp></Super>
-</Supers>
+<IsTop>false</IsTop>
+<Bind>c0_Percentage</Bind>
+</Exp></Ref>
+</Reference>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -1488,137 +968,11 @@
 <Max><IntLiteral>-1</IntLiteral>
 </Max>
 </GlobalCard>
-</Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e53_</ParentId>
-<Position><Start><IntLiteral>16</IntLiteral>
-<IntLiteral>5</IntLiteral>
-</Start>
-<End><IntLiteral>16</IntLiteral>
-<IntLiteral>30</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:IAll" /><Declaration><IsDisjunct>true</IsDisjunct>
-<LocalDeclaration>x</LocalDeclaration>
-<LocalDeclaration>y</LocalDeclaration>
-<Body><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>this</Id>
-<IsTop>true</IsTop>
-</Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>c0_loanToValue</Id>
-<IsTop>false</IsTop>
-</Exp></Argument>
-</Exp></Body>
-</Declaration>
-<BodyParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e55_</ParentId>
-<Position><Start><IntLiteral>16</IntLiteral>
-<IntLiteral>5</IntLiteral>
-</Start>
-<End><IntLiteral>16</IntLiteral>
-<IntLiteral>30</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IFunctionExp"><Operation>!=</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e56_</ParentId>
-<Position><Start><IntLiteral>16</IntLiteral>
-<IntLiteral>5</IntLiteral>
-</Start>
-<End><IntLiteral>16</IntLiteral>
-<IntLiteral>30</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e57_</ParentId>
-<Position><Start><IntLiteral>16</IntLiteral>
-<IntLiteral>5</IntLiteral>
-</Start>
-<End><IntLiteral>16</IntLiteral>
-<IntLiteral>30</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>x</Id>
-<IsTop>true</IsTop>
-</Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e58_</ParentId>
-<Position><Start><IntLiteral>16</IntLiteral>
-<IntLiteral>5</IntLiteral>
-</Start>
-<End><IntLiteral>16</IntLiteral>
-<IntLiteral>30</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>ref</Id>
-<IsTop>false</IsTop>
-</Exp></Argument>
-</Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e59_</ParentId>
-<Position><Start><IntLiteral>16</IntLiteral>
-<IntLiteral>5</IntLiteral>
-</Start>
-<End><IntLiteral>16</IntLiteral>
-<IntLiteral>30</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e60_</ParentId>
-<Position><Start><IntLiteral>16</IntLiteral>
-<IntLiteral>5</IntLiteral>
-</Start>
-<End><IntLiteral>16</IntLiteral>
-<IntLiteral>30</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>y</Id>
-<IsTop>true</IsTop>
-</Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e61_</ParentId>
-<Position><Start><IntLiteral>16</IntLiteral>
-<IntLiteral>5</IntLiteral>
-</Start>
-<End><IntLiteral>16</IntLiteral>
-<IntLiteral>30</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>ref</Id>
-<IsTop>false</IsTop>
-</Exp></Argument>
-</Exp></Argument>
-</Exp></BodyParentExp>
-</Exp></ParentExp>
 </Declaration><Declaration xsi:type="cl:IClafer"><Position><Start><IntLiteral>18</IntLiteral>
 <IntLiteral>5</IntLiteral>
 </Start>
 <End><IntLiteral>18</IntLiteral>
-<IntLiteral>27</IntLiteral>
+<IntLiteral>28</IntLiteral>
 </End>
 </Position>
 <IsAbstract>false</IsAbstract>
@@ -1631,20 +985,22 @@
 </GroupCard>
 <Id>amortization</Id>
 <UniqueId>c0_amortization</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
-<Super><ParentId></ParentId>
+<ParentUniqueId>c0_Mortgage</ParentUniqueId>
+<Reference><IsSet>true</IsSet>
+<Ref><ParentId></ParentId>
 <Position><Start><IntLiteral>18</IntLiteral>
-<IntLiteral>20</IntLiteral>
+<IntLiteral>21</IntLiteral>
 </Start>
 <End><IntLiteral>18</IntLiteral>
-<IntLiteral>27</IntLiteral>
+<IntLiteral>28</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>integer</Id>
 <IsTop>true</IsTop>
-</Exp></Super>
-</Supers>
+<Bind>integer</Bind>
+</Exp></Ref>
+</Reference>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -1656,7 +1012,7 @@
 </Max>
 </GlobalCard>
 </Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e62_</ParentId>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e17_</ParentId>
 <Position><Start><IntLiteral>19</IntLiteral>
 <IntLiteral>7</IntLiteral>
 </Start>
@@ -1665,7 +1021,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>&amp;&amp;</Operation>
-<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e63_</ParentId>
+<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e18_</ParentId>
 <Position><Start><IntLiteral>19</IntLiteral>
 <IntLiteral>7</IntLiteral>
 </Start>
@@ -1674,7 +1030,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>&lt;=</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e64_</ParentId>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e19_</ParentId>
 <Position><Start><IntLiteral>19</IntLiteral>
 <IntLiteral>7</IntLiteral>
 </Start>
@@ -1684,7 +1040,7 @@
 </Position>
 <Exp xsi:type="cl:IIntExp"><IntLiteral>1</IntLiteral>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e65_</ParentId>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e20_</ParentId>
 <Position><Start><IntLiteral>19</IntLiteral>
 <IntLiteral>12</IntLiteral>
 </Start>
@@ -1704,6 +1060,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_Mortgage</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -1725,6 +1082,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_amortization</Id>
 <IsTop>false</IsTop>
+<Bind>c0_amortization</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -1736,12 +1094,13 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e66_</ParentId>
+<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e21_</ParentId>
 <Position><Start><IntLiteral>19</IntLiteral>
 <IntLiteral>28</IntLiteral>
 </Start>
@@ -1750,7 +1109,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>&lt;=</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e67_</ParentId>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e22_</ParentId>
 <Position><Start><IntLiteral>19</IntLiteral>
 <IntLiteral>28</IntLiteral>
 </Start>
@@ -1770,6 +1129,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_Mortgage</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -1791,6 +1151,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_amortization</Id>
 <IsTop>false</IsTop>
+<Bind>c0_amortization</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -1802,11 +1163,12 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e68_</ParentId>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e23_</ParentId>
 <Position><Start><IntLiteral>19</IntLiteral>
 <IntLiteral>44</IntLiteral>
 </Start>
@@ -1835,20 +1197,7 @@
 </GroupCard>
 <Id>interestRate</Id>
 <UniqueId>c0_interestRate</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>clafer</Id>
-<IsTop>false</IsTop>
-</Exp></Super>
-</Supers>
+<ParentUniqueId>c0_Mortgage</ParentUniqueId>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -1876,20 +1225,7 @@
 </GroupCard>
 <Id>fixedForTheFullTerm</Id>
 <UniqueId>c0_fixedForTheFullTerm</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>clafer</Id>
-<IsTop>false</IsTop>
-</Exp></Super>
-</Supers>
+<ParentUniqueId>c0_interestRate</ParentUniqueId>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -1917,20 +1253,7 @@
 </GroupCard>
 <Id>resetTogetherWithPaymentAmountEachTimeScotiabankPrimeRateChanges</Id>
 <UniqueId>c0_resetTogetherWithPaymentAmountEachTimeScotiabankPrimeRateChanges</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>clafer</Id>
-<IsTop>false</IsTop>
-</Exp></Super>
-</Supers>
+<ParentUniqueId>c0_interestRate</ParentUniqueId>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -1958,8 +1281,9 @@
 </GroupCard>
 <Id>currentInterestRate</Id>
 <UniqueId>c0_currentInterestRate</UniqueId>
-<Supers><IsOverlapping>true</IsOverlapping>
-<Super><ParentId></ParentId>
+<ParentUniqueId>c0_Mortgage</ParentUniqueId>
+<Reference><IsSet>true</IsSet>
+<Ref><ParentId></ParentId>
 <Position><Start><IntLiteral>23</IntLiteral>
 <IntLiteral>28</IntLiteral>
 </Start>
@@ -1969,9 +1293,10 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Percentage</Id>
-<IsTop>true</IsTop>
-</Exp></Super>
-</Supers>
+<IsTop>false</IsTop>
+<Bind>c0_Percentage</Bind>
+</Exp></Ref>
+</Reference>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -1982,132 +1307,6 @@
 <Max><IntLiteral>-1</IntLiteral>
 </Max>
 </GlobalCard>
-</Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e69_</ParentId>
-<Position><Start><IntLiteral>23</IntLiteral>
-<IntLiteral>5</IntLiteral>
-</Start>
-<End><IntLiteral>23</IntLiteral>
-<IntLiteral>38</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:IAll" /><Declaration><IsDisjunct>true</IsDisjunct>
-<LocalDeclaration>x</LocalDeclaration>
-<LocalDeclaration>y</LocalDeclaration>
-<Body><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>this</Id>
-<IsTop>true</IsTop>
-</Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>c0_currentInterestRate</Id>
-<IsTop>false</IsTop>
-</Exp></Argument>
-</Exp></Body>
-</Declaration>
-<BodyParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e71_</ParentId>
-<Position><Start><IntLiteral>23</IntLiteral>
-<IntLiteral>5</IntLiteral>
-</Start>
-<End><IntLiteral>23</IntLiteral>
-<IntLiteral>38</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IFunctionExp"><Operation>!=</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e72_</ParentId>
-<Position><Start><IntLiteral>23</IntLiteral>
-<IntLiteral>5</IntLiteral>
-</Start>
-<End><IntLiteral>23</IntLiteral>
-<IntLiteral>38</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e73_</ParentId>
-<Position><Start><IntLiteral>23</IntLiteral>
-<IntLiteral>5</IntLiteral>
-</Start>
-<End><IntLiteral>23</IntLiteral>
-<IntLiteral>38</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>x</Id>
-<IsTop>true</IsTop>
-</Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e74_</ParentId>
-<Position><Start><IntLiteral>23</IntLiteral>
-<IntLiteral>5</IntLiteral>
-</Start>
-<End><IntLiteral>23</IntLiteral>
-<IntLiteral>38</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>ref</Id>
-<IsTop>false</IsTop>
-</Exp></Argument>
-</Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e75_</ParentId>
-<Position><Start><IntLiteral>23</IntLiteral>
-<IntLiteral>5</IntLiteral>
-</Start>
-<End><IntLiteral>23</IntLiteral>
-<IntLiteral>38</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e76_</ParentId>
-<Position><Start><IntLiteral>23</IntLiteral>
-<IntLiteral>5</IntLiteral>
-</Start>
-<End><IntLiteral>23</IntLiteral>
-<IntLiteral>38</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>y</Id>
-<IsTop>true</IsTop>
-</Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e77_</ParentId>
-<Position><Start><IntLiteral>23</IntLiteral>
-<IntLiteral>5</IntLiteral>
-</Start>
-<End><IntLiteral>23</IntLiteral>
-<IntLiteral>38</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>ref</Id>
-<IsTop>false</IsTop>
-</Exp></Argument>
-</Exp></Argument>
-</Exp></BodyParentExp>
-</Exp></ParentExp>
 </Declaration><Declaration xsi:type="cl:IClafer"><Position><Start><IntLiteral>25</IntLiteral>
 <IntLiteral>5</IntLiteral>
 </Start>
@@ -2125,8 +1324,9 @@
 </GroupCard>
 <Id>currentPayment</Id>
 <UniqueId>c0_currentPayment</UniqueId>
-<Supers><IsOverlapping>true</IsOverlapping>
-<Super><ParentId></ParentId>
+<ParentUniqueId>c0_Mortgage</ParentUniqueId>
+<Reference><IsSet>true</IsSet>
+<Ref><ParentId></ParentId>
 <Position><Start><IntLiteral>25</IntLiteral>
 <IntLiteral>23</IntLiteral>
 </Start>
@@ -2136,9 +1336,10 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Currency</Id>
-<IsTop>true</IsTop>
-</Exp></Super>
-</Supers>
+<IsTop>false</IsTop>
+<Bind>c0_Currency</Bind>
+</Exp></Ref>
+</Reference>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -2149,132 +1350,6 @@
 <Max><IntLiteral>-1</IntLiteral>
 </Max>
 </GlobalCard>
-</Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e78_</ParentId>
-<Position><Start><IntLiteral>25</IntLiteral>
-<IntLiteral>5</IntLiteral>
-</Start>
-<End><IntLiteral>25</IntLiteral>
-<IntLiteral>31</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:IAll" /><Declaration><IsDisjunct>true</IsDisjunct>
-<LocalDeclaration>x</LocalDeclaration>
-<LocalDeclaration>y</LocalDeclaration>
-<Body><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>this</Id>
-<IsTop>true</IsTop>
-</Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>c0_currentPayment</Id>
-<IsTop>false</IsTop>
-</Exp></Argument>
-</Exp></Body>
-</Declaration>
-<BodyParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e80_</ParentId>
-<Position><Start><IntLiteral>25</IntLiteral>
-<IntLiteral>5</IntLiteral>
-</Start>
-<End><IntLiteral>25</IntLiteral>
-<IntLiteral>31</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IFunctionExp"><Operation>!=</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e81_</ParentId>
-<Position><Start><IntLiteral>25</IntLiteral>
-<IntLiteral>5</IntLiteral>
-</Start>
-<End><IntLiteral>25</IntLiteral>
-<IntLiteral>31</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e82_</ParentId>
-<Position><Start><IntLiteral>25</IntLiteral>
-<IntLiteral>5</IntLiteral>
-</Start>
-<End><IntLiteral>25</IntLiteral>
-<IntLiteral>31</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>x</Id>
-<IsTop>true</IsTop>
-</Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e83_</ParentId>
-<Position><Start><IntLiteral>25</IntLiteral>
-<IntLiteral>5</IntLiteral>
-</Start>
-<End><IntLiteral>25</IntLiteral>
-<IntLiteral>31</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>ref</Id>
-<IsTop>false</IsTop>
-</Exp></Argument>
-</Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e84_</ParentId>
-<Position><Start><IntLiteral>25</IntLiteral>
-<IntLiteral>5</IntLiteral>
-</Start>
-<End><IntLiteral>25</IntLiteral>
-<IntLiteral>31</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e85_</ParentId>
-<Position><Start><IntLiteral>25</IntLiteral>
-<IntLiteral>5</IntLiteral>
-</Start>
-<End><IntLiteral>25</IntLiteral>
-<IntLiteral>31</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>y</Id>
-<IsTop>true</IsTop>
-</Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e86_</ParentId>
-<Position><Start><IntLiteral>25</IntLiteral>
-<IntLiteral>5</IntLiteral>
-</Start>
-<End><IntLiteral>25</IntLiteral>
-<IntLiteral>31</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>ref</Id>
-<IsTop>false</IsTop>
-</Exp></Argument>
-</Exp></Argument>
-</Exp></BodyParentExp>
-</Exp></ParentExp>
 </Declaration><Declaration xsi:type="cl:IClafer"><Position><Start><IntLiteral>26</IntLiteral>
 <IntLiteral>5</IntLiteral>
 </Start>
@@ -2292,20 +1367,7 @@
 </GroupCard>
 <Id>paymentFrequency</Id>
 <UniqueId>c0_paymentFrequency</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>clafer</Id>
-<IsTop>false</IsTop>
-</Exp></Super>
-</Supers>
+<ParentUniqueId>c0_Mortgage</ParentUniqueId>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -2333,20 +1395,7 @@
 </GroupCard>
 <Id>weekly</Id>
 <UniqueId>c0_weekly</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>clafer</Id>
-<IsTop>false</IsTop>
-</Exp></Super>
-</Supers>
+<ParentUniqueId>c0_paymentFrequency</ParentUniqueId>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -2374,20 +1423,7 @@
 </GroupCard>
 <Id>biweekly</Id>
 <UniqueId>c0_biweekly</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>clafer</Id>
-<IsTop>false</IsTop>
-</Exp></Super>
-</Supers>
+<ParentUniqueId>c0_paymentFrequency</ParentUniqueId>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -2415,20 +1451,7 @@
 </GroupCard>
 <Id>semiMonthly</Id>
 <UniqueId>c0_semiMonthly</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>clafer</Id>
-<IsTop>false</IsTop>
-</Exp></Super>
-</Supers>
+<ParentUniqueId>c0_paymentFrequency</ParentUniqueId>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -2456,20 +1479,7 @@
 </GroupCard>
 <Id>monthly</Id>
 <UniqueId>c0_monthly</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>clafer</Id>
-<IsTop>false</IsTop>
-</Exp></Super>
-</Supers>
+<ParentUniqueId>c0_paymentFrequency</ParentUniqueId>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -2497,20 +1507,7 @@
 </GroupCard>
 <Id>financingAvailable</Id>
 <UniqueId>c0_financingAvailable</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>clafer</Id>
-<IsTop>false</IsTop>
-</Exp></Super>
-</Supers>
+<ParentUniqueId>c0_Mortgage</ParentUniqueId>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -2538,20 +1535,7 @@
 </GroupCard>
 <Id>conventional</Id>
 <UniqueId>c0_conventional</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>clafer</Id>
-<IsTop>false</IsTop>
-</Exp></Super>
-</Supers>
+<ParentUniqueId>c0_financingAvailable</ParentUniqueId>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -2579,20 +1563,7 @@
 </GroupCard>
 <Id>insured</Id>
 <UniqueId>c0_insured</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>clafer</Id>
-<IsTop>false</IsTop>
-</Exp></Super>
-</Supers>
+<ParentUniqueId>c0_financingAvailable</ParentUniqueId>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -2607,7 +1578,7 @@
 <IntLiteral>1</IntLiteral>
 </Start>
 <End><IntLiteral>34</IntLiteral>
-<IntLiteral>30</IntLiteral>
+<IntLiteral>18</IntLiteral>
 </End>
 </Position>
 <IsAbstract>true</IsAbstract>
@@ -2620,20 +1591,7 @@
 </GroupCard>
 <Id>MortgageTerm</Id>
 <UniqueId>c0_MortgageTerm</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>34</IntLiteral>
-<IntLiteral>1</IntLiteral>
-</Start>
-<End><IntLiteral>34</IntLiteral>
-<IntLiteral>30</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>clafer</Id>
-<IsTop>false</IsTop>
-</Exp></Super>
-</Supers>
+<ParentUniqueId>root</ParentUniqueId>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
 <Max><IntLiteral>-1</IntLiteral>
@@ -2645,7 +1603,7 @@
 </Max>
 </GlobalCard>
 </Declaration><Declaration xsi:type="cl:IClafer"><Position><Start><IntLiteral>34</IntLiteral>
-<IntLiteral>1</IntLiteral>
+<IntLiteral>21</IntLiteral>
 </Start>
 <End><IntLiteral>34</IntLiteral>
 <IntLiteral>30</IntLiteral>
@@ -2661,10 +1619,10 @@
 </GroupCard>
 <Id>sixMonths</Id>
 <UniqueId>c0_sixMonths</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
+<ParentUniqueId>root</ParentUniqueId>
 <Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>34</IntLiteral>
-<IntLiteral>1</IntLiteral>
+<IntLiteral>21</IntLiteral>
 </Start>
 <End><IntLiteral>34</IntLiteral>
 <IntLiteral>30</IntLiteral>
@@ -2673,8 +1631,8 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_MortgageTerm</Id>
 <IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Super>
-</Supers>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -2686,10 +1644,10 @@
 </Max>
 </GlobalCard>
 </Declaration><Declaration xsi:type="cl:IClafer"><Position><Start><IntLiteral>34</IntLiteral>
-<IntLiteral>1</IntLiteral>
+<IntLiteral>33</IntLiteral>
 </Start>
 <End><IntLiteral>34</IntLiteral>
-<IntLiteral>30</IntLiteral>
+<IntLiteral>40</IntLiteral>
 </End>
 </Position>
 <IsAbstract>false</IsAbstract>
@@ -2702,20 +1660,20 @@
 </GroupCard>
 <Id>oneYear</Id>
 <UniqueId>c0_oneYear</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
+<ParentUniqueId>root</ParentUniqueId>
 <Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>34</IntLiteral>
-<IntLiteral>1</IntLiteral>
+<IntLiteral>33</IntLiteral>
 </Start>
 <End><IntLiteral>34</IntLiteral>
-<IntLiteral>30</IntLiteral>
+<IntLiteral>40</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_MortgageTerm</Id>
 <IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Super>
-</Supers>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
