@@ -77,11 +77,27 @@ sugarDeclaration  (IEGoal _ goal) = ElementDecl (_inPos goal) $ Subgoal (_inPos 
 
 
 desugarClafer :: Clafer -> [IElement]
-desugarClafer (Clafer s abstract gcrd' id' super' reference' crd' init' elements')  =
-    (IEClafer $ IClafer s (desugarAbstract abstract) (desugarGCard gcrd') (transIdent id')
+desugarClafer claf@(Clafer s abstract gcrd' id' super' reference' crd' init' elements') =
+  case (super', reference') of
+    (SuperSome ss setExp, ReferenceEmpty _) -> if isPrimitive $ getPExpClaferIdent setExp
+      then desugarClafer (Clafer s abstract gcrd' id' (SuperEmpty s) (ReferenceSet ss setExp) crd' init' elements')
+      else desugarClafer' claf
+    (SuperSome _ setExp, ReferenceSet _ _) -> if isPrimitive $ getPExpClaferIdent setExp
+      then error "Desugarer: cannot rewrite : with primitive type into -> because a reference is also present. Using : with primitive types is discouraged."
+      else desugarClafer' claf
+    (SuperSome _ setExp, ReferenceBag _ _) -> if isPrimitive $ getPExpClaferIdent setExp
+      then error "Desugarer: cannot rewrite : with primitive type into -> because a reference is also present. Using : with primitive types is discouraged."
+      else desugarClafer' claf
+    _ -> desugarClafer' claf
+    where
+      desugarClafer' claf@(Clafer s abstract gcrd' id' super' reference' crd' init' elements') =
+        (IEClafer $ IClafer s (desugarAbstract abstract) (desugarGCard gcrd') (transIdent id')
             "" "" (desugarSuper super') (desugarReference reference') (desugarCard crd') (0, -1)
             (desugarElements elements')) : (desugarInit id' init')
 
+getPExpClaferIdent :: SetExp -> String
+getPExpClaferIdent (ClaferId _ (Path _ [ (ModIdIdent _ (PosIdent (_, ident'))) ] )) = ident'
+getPExpClaferIdent _ = error "Desugarer:getPExpClaferIdent not given a ClaferId PExp"
 
 sugarClafer :: IClafer -> Clafer
 sugarClafer (IClafer s abstract gcard' _ uid' _ super' reference' crd' _ elements') =
