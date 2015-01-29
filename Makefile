@@ -15,7 +15,11 @@ all: build
 
 init:
 	cabal sandbox init --sandbox=../.clafertools-cabal-sandbox
-	cabal install --only-dependencies $(GPLK_LIBS_INCLUDES) $(MAC_USR_LIB) --enable-tests
+	# Uncomment to use Haskell LTS in the sandbox
+	# wget http://www.stackage.org/snapshot/lts-1.4/cabal.config
+	# mv cabal.config ../.clafertools-cabal-sandbox
+	# the constraint is there to prevent installing utf8-string-1 which conflicts with gitit, which requires utf8-string <= 0.3.8.
+	cabal install --only-dependencies $(GPLK_LIBS_INCLUDES) $(MAC_USR_LIB) --enable-tests --constraint="utf8-string==0.3.8"
 
 build:
 	$(MAKE) -C $(TOOL_DIR)
