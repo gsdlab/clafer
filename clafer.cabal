@@ -61,8 +61,8 @@ library
                     directory >= 1.2.0.1,
                     filepath >= 1.3.0.1,
                     process >= 1.1.0.2,
-                    network,
-                    network-uri,
+                    network >= 2.6,
+                    network-uri >= 2.6,
                     HTTP,
                     bytestring,
 
