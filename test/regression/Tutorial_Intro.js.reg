@@ -48,7 +48,7 @@ c0_PostalCode.refTo(string);
 c0_date.refTo(string);
 c0_StudentId.refTo(string);
 c0_participants.refToUnique(c0_Person);
-c1_Country.refToUnique(c0_NorthAmericanCountry);
+c1_Country.refTo(c0_NorthAmericanCountry);
 c0_JohnDoe.addConstraint(equal(joinRef(join($this(), c0_Name)), constant("\"John\"")));
 c0_JohnDoe.addConstraint(equal(joinRef(join($this(), c0_Surname)), constant("\"Doe\"")));
 c0_JohnDoe.addConstraint(equal(joinRef(join($this(), c0_DateOfBirth)), constant("\"01/02/1985\"")));

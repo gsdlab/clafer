@@ -19,7 +19,7 @@ MachineLearningCourse : Course
 
 [AIGradStudent.first = MachineLearningCourse]
 
-//tas_with_first_choice : int  = #( ::first ** ~ ::assistants)]
+//tas_with_first_choice : int  = #( ::first & ~ ::assistants)]
 // cannot access relations and no support for inverse relations for now
 
-numerOfAssistants : integer = # Course.assistants
+numerOfAssistants -> integer = # Course.assistants

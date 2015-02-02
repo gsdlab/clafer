@@ -1,4 +1,4 @@
-scope({c0_ActionName:0, c0_Attribute:4, c0_CombiningAlgo:3, c0_Effect:4, c0_Element:0, c0_ResourceName:0, c0_Role:0, c0_attributes:0, c0_value:4});
+scope({c0_ActionName:0, c0_Attribute:4, c0_CombiningAlgo:3, c0_Effect:4, c0_Element:0, c0_ResourceName:0, c0_Role:0, c0_Value:0, c0_attributes:0, c0_value:4});
 defaultScope(1);
 intRange(-8, 7);
 stringLength(16);
@@ -19,4 +19,4 @@ c0_Indeterminate = Clafer("c0_Indeterminate").withCard(1, 1).extending(c0_Effect
 c0_PermitOverrides = Clafer("c0_PermitOverrides").withCard(1, 1).extending(c0_CombiningAlgo);
 c0_DenyOverrides = Clafer("c0_DenyOverrides").withCard(1, 1).extending(c0_CombiningAlgo);
 c0_OnlyOneApplicable = Clafer("c0_OnlyOneApplicable").withCard(1, 1).extending(c0_CombiningAlgo);
-c0_value.refToUnique(c0_Value);
+c0_value.refTo(c0_Value);

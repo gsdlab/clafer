@@ -7,7 +7,7 @@
   *   Author: Leonardo Passos <lpassos@gsd.uwaterloo.ca>                      *
   *   Contributors: Jimmy Liang <jliang@gsd.uwaterloo.ca>                     *
   *   Date: October 19th, 2011                                                *
-  *   Last update: April 16th, 2012                                           *
+  *   Last update: Jan 15th, 2014                                             *
   *                                                                           *
   *   Generate scala classes with:                                            *
   *   scalaxb -p gsd.clafer.ir ClaferIR.xsd                                   *

@@ -11,4 +11,3 @@ lone sig c0_b
 { one r_c0_b
   (this.(~@r_c0_b.@ref)) = 4 }
 
-fact { all disj x, y : c0_a | (x.@ref) != (y.@ref) }

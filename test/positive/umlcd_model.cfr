@@ -18,7 +18,7 @@ abstract Element
     owner -> Element ?
     [all x : this.owner | this in x.ownedElement]
 
-abstract NamedElement : Element 
+abstract NamedElement : Element
     name : String ?
     qualifiedName : String ?
     visibility -> VisibilityKind ?
@@ -30,7 +30,7 @@ abstract DirectedRelationship
     source -> Element +
     target -> Element +
 
-abstract Class : Classifier 
+abstract Class : Classifier
     isActive ?
     superClass -> Class *
     nestedClassifier : Classifier *
@@ -57,21 +57,21 @@ abstract Property : StructuralFeature
     associationEnd -> Property ?
     [all x : this.associationEnd | this in x.qualifier]
 
-abstract Enumeration : DataType 
+abstract Enumeration : DataType
     ownedLiteral : EnumerationLiteral *
         [parent in enumeration]
 
-abstract DataType : Classifier 
+abstract DataType : Classifier
     ownedAttribute : Property *
         [parent in datatype]
 
-abstract EnumerationLiteral : InstanceSpecification 
+abstract EnumerationLiteral : InstanceSpecification
     enumeration -> Enumeration ?
     [all x : this.enumeration | this in x.ownedLiteral]
 
-abstract PrimitiveType : DataType 
+abstract PrimitiveType : DataType
 
-abstract Classifier : NamedElement 
+abstract Classifier : NamedElement
     isAbstract ?
     feature -> Feature *
     [all x : this.feature | this in x.featuringClassifier]
@@ -84,34 +84,34 @@ abstract Classifier : NamedElement
     powertypeExtent -> GeneralizationSet *
     [all x : this.powertypeExtent | this in x.powertype]
 
-abstract Feature : NamedElement 
+abstract Feature : NamedElement
     isStatic ?
     featuringClassifier -> Classifier *
     [all x : this.featuringClassifier | this in x.feature]
 
 enum VisibilityKind = package | private | protected | public
 
-abstract LiteralBoolean : LiteralSpecification 
+abstract LiteralBoolean : LiteralSpecification
     value ?
 
-abstract LiteralSpecification : ValueSpecification 
+abstract LiteralSpecification : ValueSpecification
 
-abstract LiteralString : LiteralSpecification 
+abstract LiteralString : LiteralSpecification
     value : String ?
 
-abstract LiteralNull : LiteralSpecification 
+abstract LiteralNull : LiteralSpecification
 
-abstract LiteralInteger : LiteralSpecification 
-    value : Integer ?
+abstract LiteralInteger : LiteralSpecification
+    value -> Integer ?
 
-abstract LiteralUnlimitedNatural : LiteralSpecification 
+abstract LiteralUnlimitedNatural : LiteralSpecification
     value : UnlimitedNatural ?
 
 abstract StructuralFeature : Feature
     isReadOnly ?
     isOrdered ?
     isUnique ?
-    lower : Integer ?
+    lower -> Integer ?
     upper : UnlimitedNatural ?
     upperValue : ValueSpecification ?
     lowerValue : ValueSpecification ?
@@ -122,20 +122,20 @@ abstract InstanceSpecification : NamedElement
     classifier -> Classifier *
     specification : ValueSpecification ?
 
-abstract Slot : Element 
-    owningInstance -> InstanceSpecification 
+abstract Slot : Element
+    owningInstance -> InstanceSpecification
     [all x : this.owningInstance | this in x.slot]
     value : ValueSpecification *
-    definingFeature -> StructuralFeature 
+    definingFeature -> StructuralFeature
 
-abstract InstanceValue : ValueSpecification 
-    instance -> InstanceSpecification 
+abstract InstanceValue : ValueSpecification
+    instance -> InstanceSpecification
 
-abstract Generalization : DirectedRelationship 
+abstract Generalization : DirectedRelationship
     isSubstitutable ?
-    specific -> Classifier 
+    specific -> Classifier
     [all x : this.specific | this in x.generalization]
-    general -> Classifier 
+    general -> Classifier
     generalizationSet -> GeneralizationSet *
     [all x : this.generalizationSet | this in x.generalization]
 
@@ -150,11 +150,11 @@ abstract Association : Classifier
     // extra constraints <br />
     [#memberEnd > 2 => memberEnd in ownedEnd]
 
-abstract ExtensionEnd : Property 
+abstract ExtensionEnd : Property
 
 enum AggregationKind = composite | none | shared
 
-abstract GeneralizationSet : NamedElement 
+abstract GeneralizationSet : NamedElement
     isCovering ?
     isDisjoint ?
     powertype -> Classifier ?

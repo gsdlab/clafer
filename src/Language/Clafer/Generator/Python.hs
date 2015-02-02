@@ -95,7 +95,7 @@ genPythonModule imodule = concat
 
 genPythonClafer :: IClafer -> Result
 genPythonClafer x = case x of
-  IClafer pos' modifiers' gcard' id' uid' puid' super' card' glcard' _ elements'  ->
+  IClafer pos' modifiers' gcard' id' uid' puid' super' refrence' card' glcard' _ elements'  ->
     concat [ "\t", genPythonPosition pos', "\n"
            , "\t", genPythonAbstract $ _abstract modifiers', "\n"
            , "\t", maybe "" genPythonGCard gcard', "\n"
@@ -103,6 +103,7 @@ genPythonClafer x = case x of
            , "\t", genPythonUid uid', "\n"
            , "\t", genPythonParentUid puid', "\n"
            , "\t", genPythonSuper super', "\n"
+           , "\t", genPythonReference refrence', "\n"
            , "\t", maybe "" genPythonCard card', "\n"
            , "\t", genPythonGlCard glcard', "\n"
            , "\tcurrClafer = Clafer.Clafer(pos=pos, isAbstract=isAbstract, gcard=groupCard, ident=id, uid=uid, my_supers=my_supers, card=card, glCard=globalCard)\n"
@@ -134,11 +135,23 @@ genPythonUid uid' = concat [ "uid=\"", uid', "\""]
 genPythonParentUid :: String -> String
 genPythonParentUid uid' = concat [ "parentUid=\"", uid', "\""]
 
-genPythonSuper :: ISuper -> String
+genPythonSuper :: Maybe PExp -> String
 genPythonSuper x = case x of
-  ISuper isOverlapping' pexps' -> concat
-    [ "my_supers = Supers.Supers(", genPythonBoolean "isOverlapping" isOverlapping', ", elements=["
-    , concatMap (genPythonPExp "Super") pexps' , "])"]
+  Nothing                      -> ""
+  Just pexp' -> concat
+    [ "my_Super = "
+    , genPythonPExp "Super" pexp'
+    ]
+
+genPythonReference :: Maybe IReference -> String
+genPythonReference x = case x of
+  Nothing                        -> ""
+  Just (IReference isSet' pexp') -> concat
+    [ "my_Reference = Reference.Reference("
+    , genPythonBoolean "isSet" isSet'
+    , ", "
+    , genPythonPExp "Ref" pexp'
+    , ")" ]
 
 genPythonCard :: (Integer, Integer) -> String
 genPythonCard interval' = concat [ "card=" , genPythonInterval interval']
@@ -211,8 +224,8 @@ genPythonIExp x = case x of
   IClaferId modName' sident' isTop' bind' -> concat
     [ "ClaferId.ClaferId(moduleName=\"", modName' , "\", "
     , "my_id=\"", sident' , "\", "
-    , genPythonBoolean "isTop" isTop'
-    , "my_bind=\"", fromMaybe "" bind' , "\", ", ")"]
+    , genPythonBoolean "isTop" isTop' , ", "
+    , "my_bind=\"", fromMaybe "" bind' , "\")"]
 
 
 genPythonDecl :: IDecl -> String

@@ -1,5 +1,5 @@
 abstract Measurable
-	 performance : integer
+	 performance -> integer
 
 D: Measurable
 

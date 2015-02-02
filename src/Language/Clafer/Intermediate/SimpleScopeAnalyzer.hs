@@ -21,7 +21,7 @@
 -}
 module Language.Clafer.Intermediate.SimpleScopeAnalyzer (simpleScopeAnalysis) where
 
-import Language.Clafer.Common
+import Control.Applicative ((<$>))
 import Control.Lens hiding (elements, assign)
 import Data.Graph
 import Data.List
@@ -30,31 +30,21 @@ import qualified Data.Map as Map
 import Data.Maybe
 import Data.Ord
 import Data.Ratio
-import Language.Clafer.Intermediate.Intclafer
 import Prelude hiding (exp)
 
-
-isReference :: IClafer -> Bool
-isReference = _isOverlapping . _super
-isConcrete :: IClafer -> Bool
-isConcrete = not . isReference
-isSuperest :: [IClafer] -> IClafer -> Bool
-isSuperest clafers clafer = isNothing $ directSuper clafers clafer
-
+import Language.Clafer.Common
+import Language.Clafer.Intermediate.Intclafer
 
 -- | Collects the global cardinality and hierarchy information into proper, not necessarily lower, bounds.
 simpleScopeAnalysis :: IModule -> [(String, Integer)]
-simpleScopeAnalysis IModule{_mDecls = decls'} =
-    [(a, b) | (a, b) <- finalAnalysis, isReferenceOrSuper a, b /= 1]
+simpleScopeAnalysis iModule@IModule{_mDecls = decls'} =
+    [(a, b) | (a, b) <- finalAnalysis, b /= 1]
     where
+    uidClaferMap = createUidIClaferMap iModule
+    findClafer :: UID -> IClafer
+    findClafer uid' = fromJust $ findIClafer uidClaferMap uid'
+
     finalAnalysis = Map.toList $ foldl analyzeComponent supersAndRefsAnalysis connectedComponents
-
-    isReferenceOrSuper uid' =
-        isConcrete clafer || isReference clafer || isSuperest clafers clafer
-        where
-        clafer = findClafer uid'
-
-    isConcrete' uid' = isConcrete $ findClafer uid'
 
     upperCards u =
         Map.findWithDefault (error $ "No upper cardinality for clafer named \"" ++ u ++ "\".") u upperCardsMap
@@ -67,17 +57,16 @@ simpleScopeAnalysis IModule{_mDecls = decls'} =
     connectedComponents = analyzeDependencies clafers
     clafers = concatMap findClafers decls'
     constraints = concatMap findConstraints decls'
-    findClafer uid' = fromJust $ find (isEqClaferId uid') clafers
 
     lowerOrUpperFixedCard analysis' clafer =
         maximum [cardLb, cardUb, lowFromConstraints, oneForStar, targetScopeForStar ]
         where
         Just (cardLb, cardUb) = _card clafer
         oneForStar = if (cardLb == 0 && cardUb == -1) then 1 else 0
-        targetScopeForStar = if (isReference clafer && cardUb == -1)
-            then case (directSuper clafers clafer) of
-                    (Just targetClafer) -> Map.findWithDefault 0 (_uid targetClafer) analysis'
-                    Nothing -> 0
+        targetScopeForStar = if ((isJust $ _reference clafer) && cardUb == -1)
+            then case getReference clafer of
+                [ref'] -> Map.findWithDefault 1 (fromMaybe "unknown" $ _uid <$> findIClafer uidClaferMap ref' ) analysis'
+                _      -> 0
             else 0
         lowFromConstraints = Map.findWithDefault 0 (_uid clafer) constraintAnalysis
 
@@ -101,7 +90,7 @@ simpleScopeAnalysis IModule{_mDecls = decls'} =
             | _isAbstract clafer  = sum subclaferScopes
             | otherwise          = parentScope * (lowerOrUpperFixedCard analysis' clafer)
 
-        subclaferScopes = map (findOrError " subclafer scope not found" analysis') $ filter isConcrete' subclafers
+        subclaferScopes = map (findOrError " subclafer scope not found" analysis') subclafers
         parentScope  =
             case parentMaybe of
                 Just parent'' -> findOrError " parent scope not found" analysis' parent''
@@ -117,7 +106,7 @@ analyzeSupers clafers analysis (IEClafer clafer) =
     where
     (Just (cardLb, cardUb)) = _card clafer
     lowerOrFixedUpperBound = maximum [1, cardLb, cardUb ]
-    analysis' = if (isReference clafer)
+    analysis' = if (isJust $ _reference clafer)
                 then analysis
                 else case (directSuper clafers clafer) of
                   (Just c) -> Map.alter (incLB lowerOrFixedUpperBound) (_uid c) analysis
@@ -132,7 +121,7 @@ analyzeRefs clafers analysis (IEClafer clafer) =
     where
     (Just (cardLb, cardUb)) = _card clafer
     lowerOrFixedUpperBound = maximum [1, cardLb, cardUb]
-    analysis' = if (isReference clafer)
+    analysis' = if (isJust $ _reference clafer)
                 then case (directSuper clafers clafer) of
                     (Just c) -> Map.alter (maxLB lowerOrFixedUpperBound) (_uid c) analysis
                     Nothing -> analysis
@@ -242,7 +231,7 @@ dependency clafers clafer =
      -- clafers with no dependencies will not appear in the result.
     selfDependency = (_uid clafer, _uid clafer)
     superDependency
-        | isReference clafer = Nothing
+        | isNothing $ _super clafer = Nothing
         | otherwise =
             do
                 super' <- directSuper clafers clafer

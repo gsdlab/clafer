@@ -1,11 +1,11 @@
 <?xml version="1.0"?>
 <!--
-abstract A 
+abstract A
     b ?
     c *
     d -> A *
-    f : integer ?
-	
+    f -> integer ?
+
 A1 : A
     [ b ]
     [ no c ]
@@ -28,7 +28,7 @@ A3 : A
   targetNamespace="http://clafer.org/data"
   xmlns="http://clafer.org/data"
   elementFormDefault="qualified">
-  
+
 <xs:complexType name="A" id="c1_A" abstract="true">
   <xs:sequence>
     <xs:element name="b" type="b" minOccurs="0" />
@@ -41,24 +41,24 @@ A3 : A
 
 <xs:complexType name="b" id="c2_b">
   <xs:attribute name="id" type="xs:string"/>
-</xs:complexType> 
+</xs:complexType>
 
 <xs:complexType name="c" id="c3_c">
   <xs:attribute name="id" type="xs:string"/>
-</xs:complexType> 
+</xs:complexType>
 
 <xs:complexType name="d" id="c4_d">
   <xs:sequence>
     <xs:element name="ref" type="xs:string"/>
   </xs:sequence>
   <xs:attribute name="id" type="xs:string"/>
-</xs:complexType> 
+</xs:complexType>
 
 <xs:complexType name="f" id="c14_f">
   <xs:simpleContent>
     <xs:extension base="xs:integer">
       <xs:attribute name="id" type="xs:string"/>
-	</xs:extension>  
+	</xs:extension>
   </xs:simpleContent>
 </xs:complexType>
 
@@ -66,27 +66,27 @@ A3 : A
   <xs:complexContent>
     <xs:extension base="A" />
   </xs:complexContent>
-</xs:complexType> 
+</xs:complexType>
 
 <xs:complexType name="A2" id="c25_A2">
   <xs:complexContent>
     <xs:extension base="A" />
   </xs:complexContent>
-</xs:complexType> 
+</xs:complexType>
 
 <xs:complexType name="A3" id="c36_A3">
   <xs:complexContent>
     <xs:extension base="A" />
   </xs:complexContent>
-</xs:complexType> 
-  
+</xs:complexType>
+
 <xs:element name="data">
   <xs:complexType>
     <xs:sequence>
       <xs:element name="A1" type="A1"/>
-      <xs:element name="A2" type="A2"/>	  
+      <xs:element name="A2" type="A2"/>
 	  <xs:element name="A3" type="A3"/>
     </xs:sequence>
   </xs:complexType>
 </xs:element>
-</xs:schema> 
+</xs:schema>

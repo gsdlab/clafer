@@ -24,6 +24,7 @@ module Language.Clafer.Optimizer.Optimizer where
 
 import Data.Maybe
 import Data.List
+import Control.Applicative ((<$>))
 import Control.Lens hiding (elements, children, un)
 import Control.Monad.State
 import Data.Data.Lens (biplate)
@@ -98,7 +99,7 @@ getExtended :: IClafer -> [String]
 getExtended c =
   sName ++ ((getSubclafers $ _elements c) >>= getExtended)
   where
-  sName = if not $ _isOverlapping $ _super c then [getSuper c] else []
+  sName = getSuper c
 
 -- -----------------------------------------------------------------------------
 -- inheritance  expansions
@@ -108,14 +109,11 @@ expModule (decls', genv) = evalState (mapM expElement decls') genv
 
 expClafer :: MonadState GEnv m => IClafer -> m IClafer
 expClafer claf = do
-  super' <- expSuper $ _super claf
+  super' <- case _super claf of
+    Nothing      -> return Nothing
+    (Just pexp') -> Just `liftM` expPExp pexp'
   elements' <- mapM expElement $ _elements claf
   return $ claf {_super = super', _elements = elements'}
-
-expSuper :: MonadState GEnv m => ISuper -> m ISuper
-expSuper x = case x of
-  ISuper False _ -> return x
-  ISuper True pexps -> ISuper True `liftM` mapM expPExp pexps
 
 expElement :: MonadState GEnv m => IElement -> m IElement
 expElement x = case x of
@@ -180,24 +178,16 @@ split' _ _ = error "Function split' from Optimizer expects an argument of type C
 -- checking if all clafers have unique names and don't extend other clafers
 
 allUnique :: IModule -> Bool
-allUnique imodule = and un && (null $
-  filter (\xs -> 1 < length xs) $ group $ sort $ concat idents) && identsOk
+allUnique iModule = dontExtend && identsUnique
   where
-  (un, idents) = unzip $ map allUniqueElement $ _mDecls imodule
-  identsOk     = and $ map (checkConstraintElement (concat idents)) $ _mDecls imodule
+    allClafers :: [ IClafer ]
+    allClafers = universeOn biplate iModule
 
-allUniqueClafer :: IClafer -> (Bool, [String])
-allUniqueClafer claf =
-  (getSuper claf `elem` "clafer" : primitiveTypes  && and un,
-   _ident claf : concat idents)
-  where
-  (un, idents) = unzip $ map allUniqueElement $ _elements claf
-
-allUniqueElement :: IElement -> (Bool, [String])
-allUniqueElement x = case x of
-  IEClafer claf -> allUniqueClafer claf
-  IEConstraint _ _ -> (True, [])
-  IEGoal _ _ -> (True, [])
+    -- True when getSuper always returns Nothing and therefore concatMap returned []
+    dontExtend = null $ concatMap getSuper allClafers
+    allIdents = map _ident allClafers
+    -- all idents are unique when nub cannot remove any duplicates
+    identsUnique = (length allIdents) == (length $ nub allIdents)
 
 checkConstraintElement :: [String] -> IElement -> Bool
 checkConstraintElement idents x = case x of
@@ -246,12 +236,8 @@ markTopModule decls' = map (markTopElement (
 
 markTopClafer :: [String] -> IClafer -> IClafer
 markTopClafer clafers c =
-  c {_super = markTopSuper clafers $ _super c,
+  c {_super = markTopPExp clafers <$> _super c,
      _elements = map (markTopElement clafers) $ _elements c}
-
-
-markTopSuper :: [String] -> ISuper -> ISuper
-markTopSuper clafers x = x{_supers = map (markTopPExp clafers) $ _supers x}
 
 
 markTopElement :: [String] -> IElement -> IElement

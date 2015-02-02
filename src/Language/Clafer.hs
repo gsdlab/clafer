@@ -424,7 +424,7 @@ compile desugaredMod = do
       isKeyWord (IRClafer IClafer{_cinPos = (Span (Pos l c) _) ,_ident=i}) = if (i `elem` keywordIdents) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
       isKeyWord _ = ""
       gt1 :: Ir -> String
-      gt1 (IRClafer (IClafer (Span (Pos l c) _) (IClaferModifiers False _ _) _ _ _ _ _ (Just (_, m)) _ _ _)) = if (m > 1 || m < 0) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
+      gt1 (IRClafer (IClafer (Span (Pos l c) _) (IClaferModifiers False _ _) _ _ _ _ _ _ (Just (_, m)) _ _ _)) = if (m > 1 || m < 0) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
       gt1 _ = ""
 
 -- | Splits the IR into their fragments, and generates the output for each fragment.
@@ -509,7 +509,7 @@ iClaferBasedChecks iModule = null $ filter hasTempModifier iClafers
   where
     iClafers :: [ IClafer ]
     iClafers = universeOn biplate iModule
-    hasTempModifier (IClafer _ (IClaferModifiers _ isInitial' isFinal') _ _ _ _ _ _ _ _ _) = isInitial' || isFinal'
+    hasTempModifier (IClafer _ (IClaferModifiers _ isInitial' isFinal') _ _ _ _ _ _ _ _ _ _) = isInitial' || isFinal'
     hasTempModifier _               = False
 
 -- | Generates outputs for the given IR.
@@ -776,7 +776,7 @@ addStats code stats = "/*\n" ++ stats ++ "*/\n" ++ code
 
 showStats :: Bool -> Stats -> String
 showStats au (Stats na nr nc nconst ngoals sgl) =
-  unlines [ "All clafers: " ++ (show (na + nr + nc)) ++ " | Abstract: " ++ (show na) ++ " | Concrete: " ++ (show nc) ++ " | References: " ++ (show nr)
+  unlines [ "All clafers: " ++ (show (na + nc)) ++ " | Abstract: " ++ (show na) ++ " | Concrete: " ++ (show nc) ++ " | References: " ++ (show nr)
           , "Constraints: " ++ show nconst
           , "Goals: " ++ show ngoals
           , "Global scope: " ++ showInterval sgl

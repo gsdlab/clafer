@@ -11,7 +11,7 @@ abstract sig c0_Book
 , r_c0_authors : some c0_authors
 , r_c0_ISBN : lone c0_ISBN }
 { 2 <= #r_c0_page
-  all disj x, y : this.@r_c0_authors | (x.@ref) != (y.@ref)
+  all disj x, y : this.@r_c0_authors | (x.@ref) != (y.@ref) 
   ((this.(@r_c0_year.@ref)) >= 5) => (some this.@r_c0_ISBN) }
 
 sig c0_title
@@ -111,7 +111,7 @@ sig c0_dob
 
 abstract sig c0_Author extends c0_Person
 { r_c0_books : some c0_books }
-{ all disj x, y : this.@r_c0_books | (x.@ref) != (y.@ref) }
+{ all disj x, y : this.@r_c0_books | (x.@ref) != (y.@ref)  }
 
 sig c0_books
 { ref : one c0_Book }

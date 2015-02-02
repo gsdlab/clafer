@@ -199,8 +199,8 @@ clafer [OPTIONS] [FILE]
 Common flags:
   -m --mode=CLAFERMODE                    Generated output type. Available
                                           CLAFERMODEs are: 'alloy' (Alloy 4.1);
-                                          'alloy42' (default, Alloy 4.2);
-                                          'xml' (intermediate representation of
+                                          'alloy42' (default, Alloy 4.2); 'xml'
+                                          (intermediate representation of
                                           Clafer model); 'clafer' (analyzed and
                                           desugared clafer model); 'html'
                                           (original model in HTML); 'graph'
@@ -274,6 +274,7 @@ Common flags:
                                           ('.cfr-scope').
   -? --help                               Display help message
   -V --version                            Print version information
+     --numeric-version                    Print just the version number
 ```
 
 The dependencies among the command line arguments are described on the [model wiki](http://t3-necsis.cs.uwaterloo.ca:8091/ClaferTools/CommandLineArguments).

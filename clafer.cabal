@@ -1,7 +1,7 @@
 Name:               clafer
 Version:            0.4.0
 Synopsis:           Compiler of the Clafer language: compiles Clafer models to other formats, such as Alloy, XML, HTML, Dot.
-Description:        Clafer is a general-purpose lightweight modeling language developed at GSD Lab, University of Waterloo and MODELS group at IT University of Copenhagen. Lightweight modeling aims at improving the understanding of the problem domain in the early stages of software development and determining the requirements with fewer defects. Clafer's goal is to make modeling more accessible to a wider range of users and domains. 
+Description:        Clafer is a general-purpose lightweight modeling language developed at GSD Lab, University of Waterloo and MODELS group at IT University of Copenhagen. Lightweight modeling aims at improving the understanding of the problem domain in the early stages of software development and determining the requirements with fewer defects. Clafer's goal is to make modeling more accessible to a wider range of users and domains.
 Homepage:           http://clafer.org
 License:            MIT
 License-file:       LICENSE
@@ -73,7 +73,8 @@ library
                     data-stringmap >= 1.0.1.1,
                     aeson >= 0.7.0.6,
                     json-builder >= 0.3,
-                    lens >= 4.1.1 && < 4.4,
+                    lens >= 4.4,
+                    lens-aeson,
                     string-conversions >= 0.3.0.2,
                     cmdargs >= 0.10.7,
                     executable-path >= 0.0.3,
@@ -149,7 +150,8 @@ Test-Suite test-suite
                     mtl >= 2.1.2,
                     QuickCheck >= 2.6,
 
-                    lens >= 4.1.1 && < 4.4,
+                    lens >= 4.4,
+                    lens-aeson,
                     tasty >= 0.10,
                     tasty-hunit >= 0.9,
                     tasty-th >= 0.1.2,

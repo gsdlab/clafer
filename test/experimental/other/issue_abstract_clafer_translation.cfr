@@ -2,5 +2,5 @@ abstract Kernel
 	 memory ?
 
 Phone
-	name : string
-	[Kernel.memory] 
+	name -> string
+	[Kernel.memory]

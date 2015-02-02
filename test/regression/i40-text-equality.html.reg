@@ -1,14 +1,14 @@
 
 <div>
-<span class="claferDecl" id="c0_text">text</span><span class="keyword"> :</span> <a href="#string"><span class="reference">string</span></a> = "some text"</div>
+<span class="claferDecl" id="c0_text">text</span><span class="keyword"> -> </span><a href="#string"><span class="reference">string</span></a> = "some text"</div>
 
 
 <div>
-<span class="claferDecl" id="c0_text1">text1</span><span class="keyword"> :</span> <a href="#string"><span class="reference">string</span></a> = "some text"</div>
+<span class="claferDecl" id="c0_text1">text1</span><span class="keyword"> -> </span><a href="#string"><span class="reference">string</span></a> = "some text"</div>
 
 
 <div>
-<span class="claferDecl" id="c0_text2">text2</span><span class="keyword"> :</span> <a href="#string"><span class="reference">string</span></a> = "some text"</div>
+<span class="claferDecl" id="c0_text2">text2</span><span class="keyword"> -> </span><a href="#string"><span class="reference">string</span></a> = "some text"</div>
 
 
 <div>

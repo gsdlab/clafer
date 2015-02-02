@@ -1,10 +1,10 @@
 
 <div>
-<span class="claferDecl" id="c0_AliceAge">AliceAge</span><span class="keyword"> -></span> <a href="#int"><span class="reference">int</span></a></div>
+<span class="claferDecl" id="c0_AliceAge">AliceAge</span><span class="keyword"> -> </span><a href="#int"><span class="reference">int</span></a></div>
 
 
 <div>
-<span class="claferDecl" id="c0_BobAge">BobAge</span><span class="keyword"> -></span> <a href="#int"><span class="reference">int</span></a></div>
+<span class="claferDecl" id="c0_BobAge">BobAge</span><span class="keyword"> -> </span><a href="#int"><span class="reference">int</span></a></div>
 
 
 <div>

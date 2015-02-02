@@ -9,4 +9,3 @@ abstract sig c0_A
 one sig c0_aRef
 { ref : one c0_A }
 
-fact { all disj x, y : c0_aRef | (x.@ref) != (y.@ref) }

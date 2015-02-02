@@ -73,7 +73,7 @@ genXmlModule imodule = concat
 
 genXmlClafer :: IClafer -> Result
 genXmlClafer x = case x of
-  IClafer pos modifiers' gcrd id' uid' puid' super' crd glcard _ es  ->
+  IClafer pos modifiers' gcrd id' uid' puid' super' reference' crd glcard _ es  ->
     concat [ tag "Position" $ genXmlPosition pos
            , genXmlAbstract $ _abstract modifiers'
            , optTag gcrd genXmlGCard
@@ -81,6 +81,7 @@ genXmlClafer x = case x of
            , genXmlUid uid'
            , genXmlParentUid puid'
            , genXmlSuper super'
+           , genXmlReference reference'
            , optTag crd genXmlCard
            , genXmlGlCard glcard -- TODO serialize mutability details
            , concatMap genXmlElement es]
@@ -107,11 +108,17 @@ genXmlUid uid' = tag "UniqueId" uid'
 genXmlParentUid :: String -> String
 genXmlParentUid uid' = tag "ParentUniqueId" uid'
 
-genXmlSuper :: ISuper -> String
+genXmlSuper :: Maybe PExp -> String
 genXmlSuper x = case x of
-  ISuper isOverlapping' pexps -> tag "Supers" $ concat
-    [ genXmlBoolean "IsOverlapping" isOverlapping'
-    , concatMap (genXmlPExp "Super") pexps]
+  Nothing                 -> ""
+  Just pexp' -> genXmlPExp "Super" pexp'
+
+genXmlReference :: Maybe IReference -> String
+genXmlReference x = case x of
+  Nothing                 -> ""
+  Just (IReference isSet' pexp') -> tag "Reference" $ concat
+    [ genXmlBoolean "IsSet" isSet'
+    , genXmlPExp "Ref" pexp']
 
 genXmlCard :: (Integer, Integer) -> String
 genXmlCard interval' = tag "Card" $ genXmlInterval interval'

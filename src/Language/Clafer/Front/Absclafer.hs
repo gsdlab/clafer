@@ -44,7 +44,7 @@ data Declaration =
   deriving (Eq,Ord,Show,Read,Data,Typeable,Generic)
 
 data Clafer =
-   Clafer Span Abstract [TempModifier] GCard PosIdent Super Card Init Transition Elements
+   Clafer Span Abstract [TempModifier] GCard PosIdent Super Reference Card Init Transition Elements
   deriving (Eq,Ord,Show,Read,Data,Typeable,Generic)
 
 data Constraint =
@@ -89,13 +89,13 @@ data Element =
 
 data Super =
    SuperEmpty Span
- | SuperSome Span SuperHow SetExp
+ | SuperSome Span SetExp
   deriving (Eq,Ord,Show,Read,Data,Typeable,Generic)
 
-data SuperHow =
-   SuperColon Span
- | SuperArrow Span
- | SuperMArrow Span
+data Reference =
+   ReferenceEmpty Span
+ | ReferenceSet Span SetExp
+ | ReferenceBag Span SetExp
   deriving (Eq,Ord,Show,Read,Data,Typeable,Generic)
 
 data Init =
@@ -104,8 +104,8 @@ data Init =
   deriving (Eq,Ord,Show,Read,Data,Typeable,Generic)
 
 data InitHow =
-   InitHow_1 Span
- | InitHow_2 Span
+   InitConstant Span
+ | InitDefault Span
   deriving (Eq,Ord,Show,Read,Data,Typeable,Generic)
 
 data GCard =
@@ -261,7 +261,7 @@ instance Spannable Declaration where
   getSpan ( ElementDecl s _ ) = s
 
 instance Spannable Clafer where
-  getSpan ( Clafer s _ _ _ _ _ _ _ _ _ ) = s
+  getSpan ( Clafer s _ _ _ _ _ _ _ _ _ _ ) = s
 
 instance Spannable Constraint where
   getSpan ( Constraint s _ ) = s
@@ -297,20 +297,20 @@ instance Spannable Element where
 
 instance Spannable Super where
   getSpan ( SuperEmpty s ) = s
-  getSpan ( SuperSome s _ _ ) = s
+  getSpan ( SuperSome s _ ) = s
 
-instance Spannable SuperHow where
-  getSpan ( SuperColon s ) = s
-  getSpan ( SuperArrow s ) = s
-  getSpan ( SuperMArrow s ) = s
+instance Spannable Reference where
+  getSpan ( ReferenceEmpty s ) = s
+  getSpan ( ReferenceSet s _ ) = s
+  getSpan ( ReferenceBag s _ ) = s
 
 instance Spannable Init where
   getSpan ( InitEmpty s ) = s
   getSpan ( InitSome s _ _ ) = s
 
 instance Spannable InitHow where
-  getSpan ( InitHow_1 s ) = s
-  getSpan ( InitHow_2 s ) = s
+  getSpan ( InitConstant s ) = s
+  getSpan ( InitDefault s ) = s
 
 instance Spannable GCard where
   getSpan ( GCardEmpty s ) = s

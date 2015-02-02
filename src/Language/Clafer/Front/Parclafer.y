@@ -137,7 +137,7 @@ Declaration : 'enum' PosIdent '=' ListEnumId { EnumDecl ((mkTokenSpan $1) >- (mk
 
 
 Clafer :: { Clafer }
-Clafer : Abstract ListTempModifier GCard PosIdent Super Card Init Transition Elements { Clafer ((mkCatSpan $1) >- (mkCatSpan $2) >- (mkCatSpan $3) >- (mkCatSpan $4) >- (mkCatSpan $5) >- (mkCatSpan $6) >- (mkCatSpan $7) >- (mkCatSpan $8) >- (mkCatSpan $9)) $1 (reverse $2) $3 $4 $5 $6 $7 $8 $9 } 
+Clafer : Abstract ListTempModifier GCard PosIdent Super Reference Card Init Transition Elements { Clafer ((mkCatSpan $1) >- (mkCatSpan $2) >- (mkCatSpan $3) >- (mkCatSpan $4) >- (mkCatSpan $5) >- (mkCatSpan $6) >- (mkCatSpan $7) >- (mkCatSpan $8) >- (mkCatSpan $9) >- (mkCatSpan $10)) $1 (reverse $2) $3 $4 $5 $6 $7 $8 $9 $10 } 
 
 
 Constraint :: { Constraint }
@@ -182,13 +182,13 @@ Element : Clafer { Subclafer ((mkCatSpan $1)) $1 }
 
 Super :: { Super }
 Super : {- empty -} { SuperEmpty noSpan } 
-  | SuperHow SetExp { SuperSome ((mkCatSpan $1) >- (mkCatSpan $2)) $1 $2 }
+  | ':' SetExp { SuperSome ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
 
 
-SuperHow :: { SuperHow }
-SuperHow : ':' { SuperColon ((mkTokenSpan $1)) } 
-  | '->' { SuperArrow ((mkTokenSpan $1)) }
-  | '->>' { SuperMArrow ((mkTokenSpan $1)) }
+Reference :: { Reference }
+Reference : {- empty -} { ReferenceEmpty noSpan } 
+  | '->' SetExp { ReferenceSet ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
+  | '->>' SetExp { ReferenceBag ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
 
 
 Init :: { Init }
@@ -197,8 +197,8 @@ Init : {- empty -} { InitEmpty noSpan }
 
 
 InitHow :: { InitHow }
-InitHow : '=' { InitHow_1 ((mkTokenSpan $1)) } 
-  | ':=' { InitHow_2 ((mkTokenSpan $1)) }
+InitHow : '=' { InitConstant ((mkTokenSpan $1)) } 
+  | ':=' { InitDefault ((mkTokenSpan $1)) }
 
 
 GCard :: { GCard }

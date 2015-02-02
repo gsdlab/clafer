@@ -41,8 +41,8 @@ astrModule imodule = (imodule{_mDecls = decls''}, flipMap strMap')
 
 
 astrClafer :: MonadState (Map.Map String Int) m => IClafer -> m IClafer
-astrClafer (IClafer s isAbs gcrd' ident' uid' puid' super' crd' gCard mut es) =
-    IClafer s isAbs gcrd' ident' uid' puid' super' crd' gCard mut `liftM` mapM astrElement es
+astrClafer (IClafer s isAbs gcrd' ident' uid' puid' super' reference' crd' gCard mut es) =
+    IClafer s isAbs gcrd' ident' uid' puid' super' reference' crd' gCard mut `liftM` mapM astrElement es
 
 
 -- astrs single subclafer

@@ -1,8 +1,8 @@
 Office
    Printer ?
-      resolution : integer
+      resolution -> integer
       Cartridge 1..4
-         inkVolume : integer
+         inkVolume -> integer
          or Speed
             High
             Low

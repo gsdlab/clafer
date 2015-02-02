@@ -15,7 +15,7 @@ Module.         Module ::= [Declaration] ;
 EnumDecl.       Declaration ::= "enum" PosIdent "=" [EnumId] ;
 ElementDecl.    Declaration ::= Element ;
 
-Clafer.         Clafer ::= Abstract [TempModifier] GCard PosIdent Super Card Init Transition Elements ;
+Clafer.         Clafer ::= Abstract [TempModifier] GCard PosIdent Super Reference Card Init Transition Elements ;
 Constraint.     Constraint ::= "[" [Exp] "]" ;
 SoftConstraint. SoftConstraint ::= "assert" "[" [Exp] "]";
 Goal.           Goal ::= "<<" [Exp] ">>" ;
@@ -29,7 +29,6 @@ Transition.                Transition ::= TransArrow Exp;
 AbstractEmpty.  Abstract ::= ;
 Abstract.       Abstract ::= "abstract" ;
 
--- ElementsEmpty causes parsing problems
 ElementsEmpty.  Elements ::= ;
 ElementsList.   Elements ::= "{" [Element] "}" ;
 
@@ -39,18 +38,18 @@ Subconstraint.  Element ::= Constraint ;
 Subgoal.        Element ::= Goal;
 Subsoftconstraint. Element ::= SoftConstraint;
 
-SuperEmpty.     Super ::=  ;
-SuperSome.      Super ::= SuperHow SetExp ;
+SuperEmpty.     Super ::= ;
+SuperSome.      Super ::= ":" SetExp ;
 
-SuperColon.     SuperHow ::= ":" ;
-SuperArrow.     SuperHow ::= "->" ;
-SuperMArrow.    SuperHow ::= "->>" ;
+ReferenceEmpty. Reference ::= ;
+ReferenceSet.   Reference ::= "->" SetExp ;
+ReferenceBag.   Reference ::= "->>" SetExp ;
 
 InitEmpty.      Init ::= ;
 InitSome.       Init ::= InitHow Exp ;
 
-InitHow_1.      InitHow ::= "=" ;
-InitHow_2.      InitHow ::= ":=" ;
+InitConstant.   InitHow ::= "=" ;
+InitDefault.    InitHow ::= ":=" ;
 
 GCardEmpty.     GCard ::= ;
 GCardXor.       GCard ::= "xor" ;

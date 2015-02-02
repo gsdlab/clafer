@@ -4,10 +4,10 @@ Company
    employs => Person
 
 //# FRAGMENT
-   
+
 abstract - Person
-   age : integer
-   
+   age -> integer
+
 //# FRAGMENT
 
 Adults -> Person in Company

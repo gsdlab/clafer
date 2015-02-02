@@ -25,5 +25,5 @@ sig c0_E1TEntities
 { ref : one c0_Entity }
 { (c0_Entity.(@r_c0_type.@ref)) = 0 }
 
-fact { all disj x, y : c0_E1TEntities | (x.@ref) != (y.@ref) }
+fact {  all disj x, y : c0_E1TEntities | (x.@ref) != (y.@ref)  }
 fact { (#c0_E1TEntities) = 3 }

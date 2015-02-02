@@ -4,7 +4,7 @@ pred show {}
 
 abstract sig c0_A
 { r_c0_c : set c0_c }
-{ all disj x, y : this.@r_c0_c | (x.@ref) != (y.@ref) }
+{ all disj x, y : this.@r_c0_c | (x.@ref) != (y.@ref)  }
 
 sig c0_c
 { ref : one c0_C }

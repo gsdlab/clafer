@@ -1,6 +1,6 @@
 
 <div>
-<span class="claferDecl" id="c0_a">a</span><span class="keyword"> -></span> <a href="#integer"><span class="reference">integer</span></a> ?
+<span class="claferDecl" id="c0_a">a</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a> ?
   <div class="indent">
   <span class="claferDecl" id="c0_b">b</span> ?
     <div class="indent">

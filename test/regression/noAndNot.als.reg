@@ -5,7 +5,7 @@ pred show {}
 abstract sig c0_Person
 { r_c0_married : lone c0_married
 , r_c0_child : set c0_child }
-{ all disj x, y : this.@r_c0_child | (x.@ref) != (y.@ref) }
+{ all disj x, y : this.@r_c0_child | (x.@ref) != (y.@ref)  }
 
 sig c0_married
 {}

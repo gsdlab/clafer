@@ -112,7 +112,7 @@ instance Print Declaration where
 
 instance Print Clafer where
   prt i e = case e of
-   Clafer _ abstract tempmodifiers gcard posident super card init transition elements -> prPrec i 0 (concatD [prt 0 abstract , prt 0 tempmodifiers , prt 0 gcard , prt 0 posident , prt 0 super , prt 0 card , prt 0 init , prt 0 transition , prt 0 elements])
+   Clafer _ abstract tempmodifiers gcard posident super reference card init transition elements -> prPrec i 0 (concatD [prt 0 abstract , prt 0 tempmodifiers , prt 0 gcard , prt 0 posident , prt 0 super , prt 0 reference , prt 0 card , prt 0 init , prt 0 transition , prt 0 elements])
 
 
 instance Print Constraint where
@@ -172,14 +172,14 @@ instance Print Element where
 instance Print Super where
   prt i e = case e of
    SuperEmpty _  -> prPrec i 0 (concatD [])
-   SuperSome _ superhow setexp -> prPrec i 0 (concatD [prt 0 superhow , prt 0 setexp])
+   SuperSome _ setexp -> prPrec i 0 (concatD [doc (showString ":") , prt 0 setexp])
 
 
-instance Print SuperHow where
+instance Print Reference where
   prt i e = case e of
-   SuperColon _  -> prPrec i 0 (concatD [doc (showString ":")])
-   SuperArrow _  -> prPrec i 0 (concatD [doc (showString "->")])
-   SuperMArrow _  -> prPrec i 0 (concatD [doc (showString "->>")])
+   ReferenceEmpty _  -> prPrec i 0 (concatD [])
+   ReferenceSet _ setexp -> prPrec i 0 (concatD [doc (showString "->") , prt 0 setexp])
+   ReferenceBag _ setexp -> prPrec i 0 (concatD [doc (showString "->>") , prt 0 setexp])
 
 
 instance Print Init where
@@ -190,8 +190,8 @@ instance Print Init where
 
 instance Print InitHow where
   prt i e = case e of
-   InitHow_1 _  -> prPrec i 0 (concatD [doc (showString "=")])
-   InitHow_2 _  -> prPrec i 0 (concatD [doc (showString ":=")])
+   InitConstant _  -> prPrec i 0 (concatD [doc (showString "=")])
+   InitDefault _  -> prPrec i 0 (concatD [doc (showString ":=")])
 
 
 instance Print GCard where

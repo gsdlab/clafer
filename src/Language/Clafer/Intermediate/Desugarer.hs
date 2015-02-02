@@ -25,6 +25,7 @@ into Intermediate representation (IR) from "Language.Clafer.Intermediate.Intclaf
 -}
 module Language.Clafer.Intermediate.Desugarer where
 
+import Prelude hiding ((||))
 import Data.List (find)
 import Data.Maybe (fromMaybe)
 
@@ -56,11 +57,11 @@ desugarEnums (EnumDecl (Span p1 p2) id' enumids) = absEnum : map mkEnum enumids
       in
         ElementDecl s1 $
           Subclafer s1 $
-            Clafer s1 (Abstract s1) [] (GCardEmpty s1) id' (SuperEmpty s1) (CardEmpty s1) (InitEmpty s1) (TransitionEmpty s1) (ElementsList s1 [])
+            Clafer s1 (Abstract s1) [] (GCardEmpty s1) id' (SuperEmpty s1) (ReferenceEmpty s1) (CardEmpty s1) (InitEmpty s1) (TransitionEmpty s1) (ElementsList s1 [])
     mkEnum (EnumIdIdent s2 eId) = -- each concrete clafer must fit within the original span of the literal
       ElementDecl s2 $
         Subclafer s2 $
-          Clafer s2 (AbstractEmpty s2) [] (GCardEmpty s2) eId ((SuperSome s2) (SuperColon s2) (ClaferId s2 $ Path s2 [ModIdIdent s2 id'])) (oneToOne (0, 0)) (InitEmpty s2) (TransitionEmpty s2) (ElementsList s2 [])
+          Clafer s2 (AbstractEmpty s2) [] (GCardEmpty s2) eId ((SuperSome s2) (ClaferId s2 $ Path s2 [ModIdIdent s2 id'])) (ReferenceEmpty s2) (oneToOne (0, 0)) (InitEmpty s2) (TransitionEmpty s2) (ElementsList s2 [])
 desugarEnums x = [x]
 
 
@@ -79,27 +80,43 @@ sugarDeclaration  (IEGoal _ goal) = ElementDecl (_inPos goal) $ Subgoal (_inPos 
 
 
 desugarClafer :: Clafer -> [IElement]
-desugarClafer clafer@(Clafer s abstract' tmods gcrd' id' super' crd' init' _ elements')  =
-   preElements ++ [IEClafer $ IClafer s iClaferModifiers (desugarGCard gcrd') (transIdent id')
-            "" "" (desugarSuper super') (desugarCard crd') (0, -1) (desugarMutability tmods)
-            elements''] ++ (desugarInit id' init')
+desugarClafer claf@(Clafer s abstract' tmods gcrd' id' super' reference' crd' init' trans' elements') =
+  case (super', reference') of
+    (SuperSome ss setExp, ReferenceEmpty _) -> if isPrimitive $ getPExpClaferIdent setExp
+      then desugarClafer' (Clafer s abstract' tmods gcrd' id' (SuperEmpty s) (ReferenceSet ss setExp) crd' init' trans' elements')
+      else desugarClafer' claf
+    (SuperSome _ setExp, ReferenceSet _ _) -> if isPrimitive $ getPExpClaferIdent setExp
+      then error "Desugarer: cannot rewrite : with primitive type into -> because a reference is also present. Using : with primitive types is discouraged."
+      else desugarClafer' claf
+    (SuperSome _ setExp, ReferenceBag _ _) -> if isPrimitive $ getPExpClaferIdent setExp
+      then error "Desugarer: cannot rewrite : with primitive type into -> because a reference is also present. Using : with primitive types is discouraged."
+      else desugarClafer' claf
+    _ -> desugarClafer' claf
+
+desugarClafer' :: Clafer -> [IElement]
+desugarClafer' claf'@(Clafer s' abstract' tmods' gcrd' id' super' reference' crd' init' _ elements')
+  =  preElements
+  ++ [(IEClafer $ IClafer s' iClaferModifiers (desugarGCard gcrd') (transIdent id')
+                          "" "" (desugarSuper super') (desugarReference reference')
+                          (desugarCard crd') (0, -1) (desugarMutability tmods')
+                          elements'')]
+  ++ (desugarInit id' init')
   where
-    iClaferModifiers = desugarModifiers abstract' tmods
+    iClaferModifiers = desugarModifiers abstract' tmods'
     preElements =
       if (not $ _abstract iClaferModifiers)   -- should only generate for concrete clafers
-        then desugarInitiallyModifier tmods (transIdent id')
+        then desugarInitiallyModifier tmods' (transIdent id')
         else []
-    elements'' = (desugarClaferTrans clafer) ++ (desugarElements elements')
+    elements'' = (desugarClaferTrans claf') ++ (desugarElements elements')
 
 desugarModifiers :: Abstract -> [TempModifier] -> IClaferModifiers
 desugarModifiers    abstract'    tmods           =
   IClaferModifiers (desugarAbstract abstract') (desugarInitiality tmods) (desugarFinality tmods)
 
 sugarClafer :: IClafer -> Clafer
-sugarClafer (IClafer s modifiers' gcard' _ uid' _ super' crd' _ _ elements') =
+sugarClafer (IClafer s modifiers' gcard' _ uid' _ super' reference' crd' _ _ elements') =
     Clafer s (sugarAbstract $ _abstract modifiers') (sugarModifier modifiers') (sugarGCard gcard') (mkIdent uid')
-      (sugarSuper super') (sugarCard crd') (InitEmpty s) (TransitionEmpty s) (sugarElements elements')
-
+      (sugarSuper super') (sugarReference reference') (sugarCard crd') (InitEmpty s) (TransitionEmpty s) (sugarElements elements')
 
 -- This is incorrect: initiality is inherited, which is resolved later on
 -- Currently, this is only generated when explicitly declared as initial
@@ -120,20 +137,21 @@ sugarModifier modifiers' =
   ++
   (if _final modifiers' then [Final noSpan] else [])
 
-desugarSuper :: Super -> ISuper
-desugarSuper (SuperEmpty s) =
-      ISuper False [PExp (Just $ TClafer []) "" s $ IClaferId "" baseClafer True Nothing]
-desugarSuper (SuperSome _ superhow setexp) =
-      ISuper (desugarSuperHow superhow $ isPrim setexp) [desugarSetExp setexp]
-      where
-        isPrim (ClaferId _ (Path _ [(ModIdIdent _ (PosIdent (_,ident')))])) = isPrimitive ident'
-        isPrim _ = False
+
+getPExpClaferIdent :: SetExp -> String
+getPExpClaferIdent (ClaferId _ (Path _ [ (ModIdIdent _ (PosIdent (_, ident'))) ] )) = ident'
+getPExpClaferIdent _ = error "Desugarer:getPExpClaferIdent not given a ClaferId PExp"
 
 
-desugarSuperHow :: SuperHow -> Bool -> Bool
-desugarSuperHow (SuperColon _) isPrimitive' = if isPrimitive' then True else False -- need to have reference for primitive
-desugarSuperHow _ _ = True -- otherwise reference
+desugarSuper :: Super -> Maybe PExp
+desugarSuper (SuperEmpty _) = Nothing
+desugarSuper (SuperSome _ (ClaferId _ (Path _ [ (ModIdIdent _ (PosIdent (_, "clafer"))) ] ))) = Nothing
+desugarSuper (SuperSome _ setexp) = Just $ desugarSetExp setexp
 
+desugarReference :: Reference -> Maybe IReference
+desugarReference (ReferenceEmpty _) = Nothing
+desugarReference (ReferenceSet _ setexp) = Just $ IReference True $ desugarSetExp setexp
+desugarReference (ReferenceBag _ setexp) = Just $ IReference False $ desugarSetExp setexp
 
 desugarInit :: PosIdent -> Init -> [IElement]
 desugarInit _ (InitEmpty _) = []
@@ -150,12 +168,12 @@ desugarInit id' (InitSome s inithow exp') = [ IEConstraint (desugarInitHow inith
     getIdent (PosIdent y) = y
 
 desugarInitHow :: InitHow -> Bool
-desugarInitHow (InitHow_1 _) = True
-desugarInitHow (InitHow_2 _ )= False
+desugarInitHow (InitConstant _) = True
+desugarInitHow (InitDefault _ )= False
 
 
 desugarClaferTrans :: Clafer -> [IElement]
-desugarClaferTrans (Clafer _ _ _ _ name _ _ _ trans _) =
+desugarClaferTrans (Clafer _ _ _ _ name _ _ _ _ trans _) =
   case trans of
       TransitionEmpty _ -> []
       Transition s arrow e -> [IEConstraint True (desugarTrans s (mkClaferIdExp s $ transIdent name) arrow e)]
@@ -203,19 +221,21 @@ desugarModId (ModIdIdent _ id') = transIdent id'
 sugarModId :: String -> ModId
 sugarModId modid = ModIdIdent noSpan $ mkIdent modid
 
-sugarSuper :: ISuper -> Super
-sugarSuper (ISuper _ []) = SuperEmpty noSpan
-sugarSuper (ISuper isOverlapping' [pexp]) = SuperSome noSpan (sugarSuperHow isOverlapping') (sugarSetExp pexp)
-sugarSuper _ = error "Function sugarSuper from Desugarer expects an ISuper with a list of length one, but it was given one with a list larger than one" -- Should never happen
+sugarSuper :: Maybe PExp -> Super
+sugarSuper Nothing = SuperEmpty noSpan
+sugarSuper (Just pexp'@(PExp _ _ _ (IClaferId _ _ _ _))) = SuperSome noSpan (sugarSetExp pexp')
+sugarSuper (Just pexp') = error $ "Function sugarSuper from Desugarer expects a PExp (IClaferId) but instead was given: " ++ show pexp' -- Should never happen
 
-sugarSuperHow :: Bool -> SuperHow
-sugarSuperHow False = SuperColon noSpan
-sugarSuperHow True  = SuperMArrow noSpan
+sugarReference :: Maybe IReference -> Reference
+sugarReference Nothing = ReferenceEmpty noSpan
+sugarReference (Just (IReference True (pexp'@(PExp _ _ _ (IClaferId _ _ _ _))))) = ReferenceSet noSpan (sugarSetExp pexp')
+sugarReference (Just (IReference False (pexp'@(PExp _ _ _ (IClaferId _ _ _ _))))) = ReferenceBag noSpan (sugarSetExp pexp')
+sugarReference (Just (IReference _ pexp')) = error $ "Function sugarReference from Desugarer expects a IReference (PExp (IClaferId)) but instead was given: " ++ show pexp' -- Should never happen
 
 
 sugarInitHow :: Bool -> InitHow
-sugarInitHow True  = InitHow_1 noSpan
-sugarInitHow False = InitHow_2 noSpan
+sugarInitHow True  = InitConstant noSpan
+sugarInitHow False = InitDefault noSpan
 
 
 desugarConstraint :: Constraint -> PExp
@@ -260,16 +280,16 @@ sugarElements x = ElementsList noSpan $ map sugarElement x
 
 desugarElement :: Element -> [IElement]
 desugarElement x = case x of
-  Subclafer _ claf  -> desugarClafer claf ++
-      (mkArrowConstraint claf >>= desugarElement)
+  Subclafer _ claf  -> (desugarClafer claf)
   ClaferUse s name crd es  -> desugarClafer $ Clafer s
       (AbstractEmpty s) [] (GCardEmpty s) (mkIdent $ _sident $ desugarName name)
-      ((SuperSome s) (SuperColon s) (ClaferId s name)) crd (InitEmpty s) (TransitionEmpty s) es
+      (SuperSome s (ClaferId s name)) (ReferenceEmpty s) crd (InitEmpty s) (TransitionEmpty s) es
   Subconstraint _ constraint  ->
       [IEConstraint True $ desugarConstraint constraint]
   Subsoftconstraint _ softconstraint ->
       [IEConstraint False $ desugarSoftConstraint softconstraint]
   Subgoal _ goal -> [IEGoal True $ desugarGoal goal]
+
 
 sugarElement :: IElement -> Element
 sugarElement x = case x of
@@ -278,25 +298,6 @@ sugarElement x = case x of
   IEConstraint False softconstraint -> Subsoftconstraint noSpan $ sugarSoftConstraint softconstraint
   IEGoal _ goal -> Subgoal noSpan $ sugarGoal goal
 
-mkArrowConstraint :: Clafer -> [Element]
-mkArrowConstraint (Clafer s _ _ _ ident' super' _ _ _ _) =
-  if isSuperSomeArrow super' then  [Subconstraint s $
-       Constraint s [DeclAllDisj s
-       (Decl s [LocIdIdent s $ mkIdent "x", LocIdIdent s $ mkIdent "y"]
-             (ClaferId s $ Path s [ModIdIdent s ident']))
-       (ENeq s (ESetExp s $ Join s (ClaferId s $ Path s [ModIdIdent s $ mkIdent "x"])
-                             (ClaferId s $ Path s [ModIdIdent s $ mkIdent "ref"]))
-             (ESetExp s $ Join s (ClaferId s $ Path s [ModIdIdent s $ mkIdent "y"])
-                             (ClaferId s $ Path s [ModIdIdent s $ mkIdent "ref"])))]]
-  else []
-
-isSuperSomeArrow :: Super -> Bool
-isSuperSomeArrow (SuperSome _ arrow _) = isSuperArrow arrow
-isSuperSomeArrow _ = False
-
-isSuperArrow :: SuperHow -> Bool
-isSuperArrow (SuperArrow _) = True
-isSuperArrow _ = False
 
 desugarGCard :: GCard -> Maybe IGCard
 desugarGCard x = case x of
@@ -414,15 +415,15 @@ translateTmpPatterns e = case e of
     infixl 3 &
     infixl 2 ||
     infixr 1 ==>
-    w = LtlW span
-    u = LtlU span
-    (==>) e1 e2 = EImplies span e1 e2
-    e1 & e2 = EAnd span e1 e2
-    e1 || e2 = EOr span e1 e2
-    f = LtlF span
-    g = LtlG span
-    not = ENeg span
-    span = getSpan e
+    w = LtlW span'
+    u = LtlU span'
+    (==>) e1 e2 = EImplies span' e1 e2
+    e1 & e2 = EAnd span' e1 e2
+    e1 || e2 = EOr span' e1 e2
+    f = LtlF span'
+    g = LtlG span'
+    not = ENeg span'
+    span' = getSpan e
 
 
 desugarExp' :: Exp -> IExp

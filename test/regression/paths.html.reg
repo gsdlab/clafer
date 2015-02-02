@@ -2,7 +2,7 @@
 <div>
 <span class="keyword">abstract</span> <span class="claferDecl" id="c0_Person">Person</span>
   <div class="indent">
-  <span class="claferDecl" id="c0_age">age</span><span class="keyword"> :</span> <a href="#integer"><span class="reference">integer</span></a></div>
+  <span class="claferDecl" id="c0_age">age</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a></div>
   <div class="indent">
   <span class="keyword">xor</span> <span class="claferDecl" id="c0_maritalStatus">maritalStatus</span>
     <div class="indent">
@@ -10,7 +10,7 @@
     <div class="indent">
     <span class="claferDecl" id="c0_married">married</span>
       <div class="indent">
-      <span class="claferDecl" id="c0_spouse">spouse</span><span class="keyword"> -></span> <a href="#c0_Person"><span class="reference">Person</span></a>
+      <span class="claferDecl" id="c0_spouse">spouse</span><span class="keyword"> -> </span><a href="#c0_Person"><span class="reference">Person</span></a>
         <div class="indent">
         <span class="keyword">[</span> <a href="#this"><span class="reference">this</span></a> != <a href="#Uid not found"><span class="reference">Person</span></a> <span class="keyword">]</span></div>
         <div class="indent">
@@ -23,7 +23,7 @@
     <span class="keyword">[</span> <a href="#c0_married"><span class="reference">married</span></a> || <a href="#c0_divorced"><span class="reference">divorced</span></a> => <a href="#c0_age"><span class="reference">age</span></a> >= 3 <span class="keyword">]</span></div>
   </div>
   <div class="indent">
-  <span class="claferDecl" id="c0_childs">childs</span><span class="keyword"> -></span> <a href="#c0_Person"><span class="reference">Person</span></a> *
+  <span class="claferDecl" id="c0_childs">childs</span><span class="keyword"> -> </span><a href="#c0_Person"><span class="reference">Person</span></a> *
     <div class="indent">
     <span class="keyword">[</span> <a href="#Uid not found"><span class="reference">Person</span></a> in <a href="#this"><span class="reference">this</span></a>.<a href="#c0_parents"><span class="reference">parents</span></a> <span class="keyword">]</span></div>
     <div class="indent">
@@ -32,7 +32,7 @@
     <span class="keyword">[</span> <a href="#this"><span class="reference">this</span></a>.<a href="#c0_age"><span class="reference">age</span></a> &lt; <a href="#c0_age"><span class="reference">age</span></a> <span class="keyword">]</span></div>
   </div>
   <div class="indent">
-  <span class="claferDecl" id="c0_parents">parents</span><span class="keyword"> -></span> <a href="#c0_Person"><span class="reference">Person</span></a> 0..2
+  <span class="claferDecl" id="c0_parents">parents</span><span class="keyword"> -> </span><a href="#c0_Person"><span class="reference">Person</span></a> 0..2
     <div class="indent">
     <span class="keyword">[</span> <a href="#Uid not found"><span class="reference">Person</span></a> in <a href="#this"><span class="reference">this</span></a>.<a href="#c0_childs"><span class="reference">childs</span></a> <span class="keyword">]</span></div>
   </div>
@@ -40,7 +40,7 @@
 
 
 <div>
-<span class="claferDecl" id="c0_Alice">Alice</span><span class="keyword"> :</span> <a href="#c0_Person"><span class="reference">Person</span></a>
+<span class="claferDecl" id="c0_Alice">Alice</span><span class="keyword"> : </span><a href="#c0_Person"><span class="reference">Person</span></a>
   <div class="indent">
   <span class="keyword">[</span> <a href="#c0_age"><span class="reference">age</span></a> = 4 <span class="keyword">]</span></div>
   <div class="indent">
@@ -49,14 +49,14 @@
 
 
 <div>
-<span class="claferDecl" id="c0_Bob">Bob</span><span class="keyword"> :</span> <a href="#c0_Person"><span class="reference">Person</span></a>
+<span class="claferDecl" id="c0_Bob">Bob</span><span class="keyword"> : </span><a href="#c0_Person"><span class="reference">Person</span></a>
   <div class="indent">
   <span class="keyword">[</span> <a href="#c0_age"><span class="reference">age</span></a> = 5 <span class="keyword">]</span></div>
 </div>
 
 
 <div>
-<span class="claferDecl" id="c0_Carol">Carol</span><span class="keyword"> :</span> <a href="#c0_Person"><span class="reference">Person</span></a>
+<span class="claferDecl" id="c0_Carol">Carol</span><span class="keyword"> : </span><a href="#c0_Person"><span class="reference">Person</span></a>
   <div class="indent">
   <span class="keyword">[</span> <a href="#c0_age"><span class="reference">age</span></a> = 1 <span class="keyword">]</span></div>
 </div>
