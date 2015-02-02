@@ -533,7 +533,7 @@ generate =
         (if (Alloy `elem` modes || AlloyLtl `elem` modes)
           then if (hasNoReals)
                 then
-                  if (staticClaferSubset)
+                  if (staticClaferSubset && (not $ AlloyLtl `elem` modes))  -- can force Ltl despite static subset
                   then
                     let
                       (imod,strMap) = astrModule iModule
@@ -551,10 +551,10 @@ generate =
                          scopesList = scopes
                         })
                       ]
-                  else  -- behavioral Clafer
+                  else  -- behavioral Clafer - use both modes
                     let
                       (imod,strMap) = astrModule iModule
-                      alloyCode = genAlloyLtlModule cargs{mode = [AlloyLtl]} (imod, genv) scopes $ uidIClaferMap env
+                      alloyCode = genAlloyLtlModule cargs{mode = [Alloy, AlloyLtl]} (imod, genv) scopes $ uidIClaferMap env
                       addCommentStats = if no_stats cargs then const else addStats
                     in
                       [ (AlloyLtl,
@@ -580,7 +580,7 @@ generate =
         (if (Alloy42 `elem` modes || AlloyLtl `elem` modes)
           then if (hasNoReals)
                 then
-                  if (staticClaferSubset)
+                  if (staticClaferSubset && (not $ AlloyLtl `elem` modes))  -- can force Ltl despite static subset
                   then
                      let
                         (imod,strMap) = astrModule iModule
@@ -598,10 +598,10 @@ generate =
                            scopesList = scopes
                           })
                         ]
-                  else  -- behavioral Clafer
+                  else  -- behavioral Clafer - use both modes
                     let
                       (imod,strMap) = astrModule iModule
-                      alloyCode = genAlloyLtlModule cargs{mode = [AlloyLtl]} (imod, genv) scopes $ uidIClaferMap env
+                      alloyCode = genAlloyLtlModule cargs{mode = [Alloy42, AlloyLtl]} (imod, genv) scopes $ uidIClaferMap env
                       addCommentStats = if no_stats cargs then const else addStats
                     in
                       [ (AlloyLtl,
