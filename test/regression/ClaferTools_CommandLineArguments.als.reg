@@ -8,11 +8,9 @@ abstract sig c0_Argument
 abstract sig c0_IntegerArgument
 { ref : one Int }
 
-fact { all disj x, y : c0_IntegerArgument | (x.@ref) != (y.@ref) }
 abstract sig c0_StringArgument
 { ref : one Int }
 
-fact { all disj x, y : c0_StringArgument | (x.@ref) != (y.@ref) }
 abstract sig c0_Value
 {}
 

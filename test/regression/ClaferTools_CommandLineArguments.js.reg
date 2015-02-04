@@ -43,8 +43,8 @@ c0_ca3 = Clafer("c0_ca3").withCard(1, 1).withGroupCard(1, 1).extending(c0_Clafer
 c0_ca4 = Clafer("c0_ca4").withCard(1, 1).withGroupCard(1, 1).extending(c0_ClaferArgs);
 c0_ca5 = Clafer("c0_ca5").withCard(1, 1).withGroupCard(1, 1).extending(c0_ClaferArgs);
 c0_ca6 = Clafer("c0_ca6").withCard(1, 1).withGroupCard(1, 1).extending(c0_ClaferArgs);
-c0_IntegerArgument.refToUnique(Int);
-c0_StringArgument.refToUnique(string);
+c0_IntegerArgument.refTo(Int);
+c0_StringArgument.refTo(string);
 c0_html.addConstraint(some(join(joinParent(joinParent($this())), c0_keep_unused)));
 c0_graph.addConstraint(some(join(joinParent(joinParent($this())), c0_keep_unused)));
 c0_cvlGraph.addConstraint(some(join(joinParent(joinParent($this())), c0_flatten_inheritance)));
