@@ -1,6 +1,6 @@
 open util/integer
 pred show {}
-run show for 1
+
 
 lone sig c0_MISC_FILESYSTEMS
 { r_c0_display : one c0_display
