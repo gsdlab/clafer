@@ -198,16 +198,15 @@ genOptCard    c
 -- adds parent relation
 -- 29/March/2012  Rafael Olaechea: ref is now prepended with clafer name to be able to refer to it from partial instances.
 genRelations :: GenEnv -> IClafer -> [Concat]
-genRelations    genEnv    c        = maybeToList r ++ (map mkRel $ getSubclafers $ _elements c)
+genRelations    genEnv    c        = ownRef ++ (map mkRel $ getSubclafers $ _elements c)
   where
-  r = if isJust $ _reference c
-                then
-                        Just $ Concat NoTrace [CString $ genRel (if (noalloyruncommand (claferargs genEnv)) then  (_uid c ++ "_ref") else "ref")
-                         c {_card = Just (1, 1)} $
-                         flatten $ refType genEnv c]
-                else
-                        Nothing
-  mkRel c' = Concat NoTrace [CString $ genRel (genRelName $ _uid c') c' $ _uid c']
+    ownRef = if isJust $ _reference c
+             then [ CString $ genRel (if (noalloyruncommand (claferargs genEnv)) then  (_uid c ++ "_ref") else "ref")
+                    c {_card = Just (1, 1)} $
+                    flatten $ refType genEnv c
+                  ]
+             else []
+    mkRel c' = Concat NoTrace [CString $ genRel (genRelName $ _uid c') c' $ _uid c']
 
 genRelName :: String -> String
 genRelName name = "r_" ++ name
@@ -485,12 +484,15 @@ genPExp'    genEnv    ctx       (PExp iType' pid' pos exp') = case exp' of
         _ -> ""
       _ -> ""
   IClaferId _ sid _ (Just bind) -> CString $
-      if head sid == '~' then sid else
-      if isNothing iType' then sid' else case fromJust $ iType' of
-    TInteger -> vsident
-    TReal -> vsident
-    TString -> vsident
-    _ -> sid'
+      if head sid == '~'
+      then sid
+      else if isNothing iType'
+           then sid'
+           else case fromJust $ iType' of
+                  TInteger -> vsident
+                  TReal -> vsident
+                  TString -> vsident
+                  _ -> sid'
     where
     boundIClafer = SMap.lookup bind (uidIClaferMap genEnv)
     {-sid' = (if istop then "" else '@' : genRelName "") ++ sid ++ timeJoin-}
@@ -500,19 +502,22 @@ genPExp'    genEnv    ctx       (PExp iType' pid' pos exp') = case exp' of
       _ -> ""
     -- 29/March/2012  Rafael Olaechea: ref is now prepended with clafer name to be able to refer to it from partial instances.
     -- 30/March/2012 Rafael Olaechea added referredClaferUniqeuid to fix problems when having this.x > number  (e.g test/positive/i10.cfr )
-    vsident = if (noalloyruncommand $ claferargs genEnv) then sid' ++  ".@"  ++ referredClaferUniqeuid ++ "_ref"  else  sid'  ++ ".@ref"
-        where referredClaferUniqeuid = if sid == "this" then topPath else sid
-              topPath = case resPath ctx of
-                             x:_ -> x
-                             [] -> error "'AlloyLtl.genPExp': resPath is empty"
+    vsident = if (noalloyruncommand $ claferargs genEnv)
+              then sid' ++  ".@"  ++ referredClaferUniqeuid ++ "_ref"
+              else  sid'  ++ ".@ref"
+      where
+        referredClaferUniqeuid = if sid == "this" then topPath else sid
+        topPath = case resPath ctx of
+                    x:_ -> x
+                    [] -> error "'AlloyLtl.genPExp': resPath is empty"
   IFunExp _ _ -> case exp'' of
     IFunExp _ _ -> genIFunExp genEnv pid' ctx exp''
     _ -> genPExp' genEnv ctx $ PExp iType' pid' pos exp''
     where
     exp'' = transformExp exp'
   IInt n -> CString $ show n
-  IDouble _ -> error "no real numbers allowed"
-  IStr _ -> error "no strings allowed"
+  IDouble _ -> error "AlloyLtl.genPExp': No real numbers allowed"
+  IStr _ -> error "AlloyLtl.genPExp': No strings allowed"
   x -> error $ "AlloyLtl.genPExp': No pattern match for " ++ show x
 
 
