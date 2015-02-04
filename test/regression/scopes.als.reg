@@ -1,6 +1,6 @@
 open util/integer
 pred show {}
-run show for 1 but 5 c0_FF, 22 c0_H, 2 c0_H1, 4 c0_H12, 4 c0_H2, 2 c0_H3, 5 c0_H4, 16 c0_Hs, 16 c0_Hs2, 8 c0_Hs3, 0 c0_a, 4 c0_f, 5 c0_f1, 3 c0_g, 2 c0_gs, 22 c0_i, 22 c0_j, 44 c0_k, 8 c0_l, 0 c0_m
+
 
 fact { #c0_a = 0 }
 sig c0_a

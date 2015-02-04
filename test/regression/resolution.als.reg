@@ -1,6 +1,6 @@
 open util/integer
 pred show {}
-run show for 1
+
 
 one sig c0_XX
 { r_c0_x : one c0_x }
