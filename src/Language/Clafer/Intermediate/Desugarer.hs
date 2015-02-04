@@ -90,10 +90,10 @@ desugarClafer claf@(Clafer s abstract gcrd' id' super' reference' crd' init' ele
       else desugarClafer' claf
     _ -> desugarClafer' claf
     where
-      desugarClafer' claf@(Clafer s abstract gcrd' id' super' reference' crd' init' elements') =
-        (IEClafer $ IClafer s (desugarAbstract abstract) (desugarGCard gcrd') (transIdent id')
-            "" "" (desugarSuper super') (desugarReference reference') (desugarCard crd') (0, -1)
-            (desugarElements elements')) : (desugarInit id' init')
+      desugarClafer' (Clafer s'' abstract'' gcrd'' id'' super'' reference'' crd'' init'' elements'') =
+        (IEClafer $ IClafer s'' (desugarAbstract abstract'') (desugarGCard gcrd'') (transIdent id'')
+            "" "" (desugarSuper super'') (desugarReference reference'') (desugarCard crd'') (0, -1)
+            (desugarElements elements'')) : (desugarInit id'' init'')
 
 getPExpClaferIdent :: SetExp -> String
 getPExpClaferIdent (ClaferId _ (Path _ [ (ModIdIdent _ (PosIdent (_, ident'))) ] )) = ident'
