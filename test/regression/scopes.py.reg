@@ -343,14 +343,14 @@ def getModule():
 	stack.pop()
 	stack.pop()
 ##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(22),IntegerLiteral.IntegerLiteral(1)), (IntegerLiteral.IntegerLiteral(22),IntegerLiteral.IntegerLiteral(15)))
+	pos=((IntegerLiteral.IntegerLiteral(22),IntegerLiteral.IntegerLiteral(1)), (IntegerLiteral.IntegerLiteral(22),IntegerLiteral.IntegerLiteral(16)))
 	isAbstract=True
 	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
-	id="F"
-	uid="c0_F"
+	id="FF"
+	uid="c0_FF"
 	parentUid="root"
 	my_Super = 
-		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(22),IntegerLiteral.IntegerLiteral(14)), (IntegerLiteral.IntegerLiteral(22),IntegerLiteral.IntegerLiteral(15))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_H", isTop=True, my_bind="")])
+		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(22),IntegerLiteral.IntegerLiteral(15)), (IntegerLiteral.IntegerLiteral(22),IntegerLiteral.IntegerLiteral(16))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_H", isTop=True, my_bind="")])
 	
 	card=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1))
 	globalCard=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1))
@@ -366,7 +366,7 @@ def getModule():
 	uid="c0_f1"
 	parentUid="root"
 	my_Super = 
-		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(23),IntegerLiteral.IntegerLiteral(6)), (IntegerLiteral.IntegerLiteral(23),IntegerLiteral.IntegerLiteral(7))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_F", isTop=True, my_bind="")])
+		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(23),IntegerLiteral.IntegerLiteral(6)), (IntegerLiteral.IntegerLiteral(23),IntegerLiteral.IntegerLiteral(8))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_FF", isTop=True, my_bind="")])
 	
 	card=(IntegerLiteral.IntegerLiteral(2),IntegerLiteral.IntegerLiteral(5))
 	globalCard=(IntegerLiteral.IntegerLiteral(2),IntegerLiteral.IntegerLiteral(5))
