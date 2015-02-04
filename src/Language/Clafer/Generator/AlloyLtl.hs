@@ -211,7 +211,7 @@ genRelations    genEnv    c        = ownRef ++ (map mkRel $ getSubclafers $ _ele
 genRelName :: String -> String
 genRelName name = "r_" ++ name
 
--- trace ("----- genRel ----\n" ++ show c) $
+
 genRel :: String -> IClafer -> String -> String
 genRel name c rType = if _mutable c
   then genMutAlloyRel name rType'
@@ -483,7 +483,7 @@ genPExp'    genEnv    ctx       (PExp iType' pid' pos exp') = case exp' of
         (True, Just t) -> "." ++ t
         _ -> ""
       _ -> ""
-  IClaferId _ sid _ (Just bind) -> CString $
+  IClaferId _ sid istop (Just bind) -> CString $
       if head sid == '~'
       then sid
       else if isNothing iType'
@@ -495,8 +495,8 @@ genPExp'    genEnv    ctx       (PExp iType' pid' pos exp') = case exp' of
                   _ -> sid'
     where
     boundIClafer = SMap.lookup bind (uidIClaferMap genEnv)
-    {-sid' = (if istop then "" else '@' : genRelName "") ++ sid ++ timeJoin-}
-    sid' = ('@' : genRelName "") ++ sid ++ timeJoin
+    sid' = (if istop then "" else '@' : genRelName "") ++ sid ++ timeJoin
+    {-sid' = ('@' : genRelName "") ++ sid ++ timeJoin -}
     timeJoin = if sid == "this" then "" else case (boundIClafer, time ctx) of
       (Just IClafer {_mutable=True}, Just t) -> "." ++ t
       _ -> ""
