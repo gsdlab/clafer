@@ -134,12 +134,12 @@ def getModule():
 	stack[-1].addElement(currClafer)
 	stack.append(currClafer)
 ##### constraint #####
-	constraint = IRConstraint.IRConstraint(isHard=False , exp=
-		Exp.Exp(expType="ParentExp", exptype="Boolean", parentId="e16_", pos=((IntegerLiteral.IntegerLiteral(9),IntegerLiteral.IntegerLiteral(21)), (IntegerLiteral.IntegerLiteral(9),IntegerLiteral.IntegerLiteral(29))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation="=", elements=[
-		Exp.Exp(expType="Argument", exptype="Integer", parentId="", pos=((IntegerLiteral.IntegerLiteral(9),IntegerLiteral.IntegerLiteral(21)), (IntegerLiteral.IntegerLiteral(9),IntegerLiteral.IntegerLiteral(25))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation=".", elements=[
-		Exp.Exp(expType="Argument", exptype="Set", parentId="e17_", pos=((IntegerLiteral.IntegerLiteral(9),IntegerLiteral.IntegerLiteral(21)), (IntegerLiteral.IntegerLiteral(9),IntegerLiteral.IntegerLiteral(25))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="this", isTop=True, my_bind="c0_CYGOPT_FS_JFFS2_DEBUG")]),
-		Exp.Exp(expType="Argument", exptype="Integer", parentId="", pos=((IntegerLiteral.IntegerLiteral(9),IntegerLiteral.IntegerLiteral(21)), (IntegerLiteral.IntegerLiteral(9),IntegerLiteral.IntegerLiteral(25))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="ref", isTop=True, my_bind="")])])]),
-		Exp.Exp(expType="Argument", exptype="Integer", parentId="e18_", pos=((IntegerLiteral.IntegerLiteral(9),IntegerLiteral.IntegerLiteral(28)), (IntegerLiteral.IntegerLiteral(9),IntegerLiteral.IntegerLiteral(29))), iExpType="IIntExp", iExp=[IntegerLiteral.IntegerLiteral(0)])])]))
+	constraint = IRConstraint.IRConstraint(isHard=True , exp=
+		Exp.Exp(expType="ParentExp", exptype="Boolean", parentId="e16_", pos=((IntegerLiteral.IntegerLiteral(9),IntegerLiteral.IntegerLiteral(15)), (IntegerLiteral.IntegerLiteral(9),IntegerLiteral.IntegerLiteral(23))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation="=", elements=[
+		Exp.Exp(expType="Argument", exptype="Integer", parentId="", pos=((IntegerLiteral.IntegerLiteral(9),IntegerLiteral.IntegerLiteral(15)), (IntegerLiteral.IntegerLiteral(9),IntegerLiteral.IntegerLiteral(19))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation=".", elements=[
+		Exp.Exp(expType="Argument", exptype="Set", parentId="e17_", pos=((IntegerLiteral.IntegerLiteral(9),IntegerLiteral.IntegerLiteral(15)), (IntegerLiteral.IntegerLiteral(9),IntegerLiteral.IntegerLiteral(19))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="this", isTop=True, my_bind="c0_CYGOPT_FS_JFFS2_DEBUG")]),
+		Exp.Exp(expType="Argument", exptype="Integer", parentId="", pos=((IntegerLiteral.IntegerLiteral(9),IntegerLiteral.IntegerLiteral(15)), (IntegerLiteral.IntegerLiteral(9),IntegerLiteral.IntegerLiteral(19))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="ref", isTop=True, my_bind="")])])]),
+		Exp.Exp(expType="Argument", exptype="Integer", parentId="e18_", pos=((IntegerLiteral.IntegerLiteral(9),IntegerLiteral.IntegerLiteral(22)), (IntegerLiteral.IntegerLiteral(9),IntegerLiteral.IntegerLiteral(23))), iExpType="IIntExp", iExp=[IntegerLiteral.IntegerLiteral(0)])])]))
 	stack[-1].addElement(constraint)
 ##### clafer #####
 	pos=((IntegerLiteral.IntegerLiteral(10),IntegerLiteral.IntegerLiteral(13)), (IntegerLiteral.IntegerLiteral(10),IntegerLiteral.IntegerLiteral(46)))
@@ -244,9 +244,9 @@ def getModule():
 		Exp.Exp(expType="BodyParentExp", exptype="Set", parentId="e42_", pos=((IntegerLiteral.IntegerLiteral(15),IntegerLiteral.IntegerLiteral(35)), (IntegerLiteral.IntegerLiteral(15),IntegerLiteral.IntegerLiteral(44))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_HAS_IOMEM", isTop=True, my_bind="c0_HAS_IOMEM")]))])])]))
 	stack[-1].addElement(constraint)
 ##### constraint #####
-	constraint = IRConstraint.IRConstraint(isHard=False , exp=
-		Exp.Exp(expType="ParentExp", exptype="Boolean", parentId="e43_", pos=((IntegerLiteral.IntegerLiteral(17),IntegerLiteral.IntegerLiteral(17)), (IntegerLiteral.IntegerLiteral(17),IntegerLiteral.IntegerLiteral(41))), iExpType="IDeclarationParentExp", iExp=[DeclPExp.DeclPExp(quantifier="Some", declaration=None, bodyParentExp=
-		Exp.Exp(expType="BodyParentExp", exptype="Set", parentId="e44_", pos=((IntegerLiteral.IntegerLiteral(17),IntegerLiteral.IntegerLiteral(17)), (IntegerLiteral.IntegerLiteral(17),IntegerLiteral.IntegerLiteral(41))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation=".", elements=[
+	constraint = IRConstraint.IRConstraint(isHard=True , exp=
+		Exp.Exp(expType="ParentExp", exptype="Boolean", parentId="e43_", pos=((IntegerLiteral.IntegerLiteral(17),IntegerLiteral.IntegerLiteral(10)), (IntegerLiteral.IntegerLiteral(17),IntegerLiteral.IntegerLiteral(34))), iExpType="IDeclarationParentExp", iExp=[DeclPExp.DeclPExp(quantifier="Some", declaration=None, bodyParentExp=
+		Exp.Exp(expType="BodyParentExp", exptype="Set", parentId="e44_", pos=((IntegerLiteral.IntegerLiteral(17),IntegerLiteral.IntegerLiteral(10)), (IntegerLiteral.IntegerLiteral(17),IntegerLiteral.IntegerLiteral(34))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation=".", elements=[
 		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="this", isTop=True, my_bind="c0_CYGPKG_FS_JFFS2")]),
 		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_CYGOPT_FS_JFFS2_COMPRESS", isTop=False, my_bind="c0_CYGOPT_FS_JFFS2_COMPRESS")])])]))]))
 	stack[-1].addElement(constraint)
@@ -296,9 +296,9 @@ def getModule():
 		Exp.Exp(expType="Argument", exptype="String", parentId="e50_", pos=((IntegerLiteral.IntegerLiteral(19),IntegerLiteral.IntegerLiteral(33)), (IntegerLiteral.IntegerLiteral(19),IntegerLiteral.IntegerLiteral(48))), iExpType="IStringExp", iExp=[StringLiteral.StringLiteral("\"Compress data\"")])])])])]))
 	stack[-1].addElement(constraint)
 ##### constraint #####
-	constraint = IRConstraint.IRConstraint(isHard=False , exp=
-		Exp.Exp(expType="ParentExp", exptype="Boolean", parentId="e51_", pos=((IntegerLiteral.IntegerLiteral(21),IntegerLiteral.IntegerLiteral(21)), (IntegerLiteral.IntegerLiteral(21),IntegerLiteral.IntegerLiteral(50))), iExpType="IDeclarationParentExp", iExp=[DeclPExp.DeclPExp(quantifier="Some", declaration=None, bodyParentExp=
-		Exp.Exp(expType="BodyParentExp", exptype="Set", parentId="e52_", pos=((IntegerLiteral.IntegerLiteral(21),IntegerLiteral.IntegerLiteral(21)), (IntegerLiteral.IntegerLiteral(21),IntegerLiteral.IntegerLiteral(50))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation=".", elements=[
+	constraint = IRConstraint.IRConstraint(isHard=True , exp=
+		Exp.Exp(expType="ParentExp", exptype="Boolean", parentId="e51_", pos=((IntegerLiteral.IntegerLiteral(21),IntegerLiteral.IntegerLiteral(14)), (IntegerLiteral.IntegerLiteral(21),IntegerLiteral.IntegerLiteral(43))), iExpType="IDeclarationParentExp", iExp=[DeclPExp.DeclPExp(quantifier="Some", declaration=None, bodyParentExp=
+		Exp.Exp(expType="BodyParentExp", exptype="Set", parentId="e52_", pos=((IntegerLiteral.IntegerLiteral(21),IntegerLiteral.IntegerLiteral(14)), (IntegerLiteral.IntegerLiteral(21),IntegerLiteral.IntegerLiteral(43))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation=".", elements=[
 		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="this", isTop=True, my_bind="c0_CYGOPT_FS_JFFS2_COMPRESS")]),
 		Exp.Exp(expType="Argument", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_CYGOPT_FS_JFFS2_COMPRESS_ZLIB", isTop=False, my_bind="c0_CYGOPT_FS_JFFS2_COMPRESS_ZLIB")])])]))]))
 	stack[-1].addElement(constraint)
@@ -369,12 +369,12 @@ def getModule():
 	stack[-1].addElement(currClafer)
 	stack.append(currClafer)
 ##### constraint #####
-	constraint = IRConstraint.IRConstraint(isHard=False , exp=
-		Exp.Exp(expType="ParentExp", exptype="Boolean", parentId="e61_", pos=((IntegerLiteral.IntegerLiteral(27),IntegerLiteral.IntegerLiteral(25)), (IntegerLiteral.IntegerLiteral(27),IntegerLiteral.IntegerLiteral(42))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation="=", elements=[
-		Exp.Exp(expType="Argument", exptype="String", parentId="", pos=((IntegerLiteral.IntegerLiteral(27),IntegerLiteral.IntegerLiteral(25)), (IntegerLiteral.IntegerLiteral(27),IntegerLiteral.IntegerLiteral(29))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation=".", elements=[
-		Exp.Exp(expType="Argument", exptype="Set", parentId="e62_", pos=((IntegerLiteral.IntegerLiteral(27),IntegerLiteral.IntegerLiteral(25)), (IntegerLiteral.IntegerLiteral(27),IntegerLiteral.IntegerLiteral(29))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="this", isTop=True, my_bind="c0_CYGOPT_FS_JFFS2_COMPRESS_CMODE")]),
-		Exp.Exp(expType="Argument", exptype="String", parentId="", pos=((IntegerLiteral.IntegerLiteral(27),IntegerLiteral.IntegerLiteral(25)), (IntegerLiteral.IntegerLiteral(27),IntegerLiteral.IntegerLiteral(29))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="ref", isTop=True, my_bind="")])])]),
-		Exp.Exp(expType="Argument", exptype="String", parentId="e63_", pos=((IntegerLiteral.IntegerLiteral(27),IntegerLiteral.IntegerLiteral(32)), (IntegerLiteral.IntegerLiteral(27),IntegerLiteral.IntegerLiteral(42))), iExpType="IStringExp", iExp=[StringLiteral.StringLiteral("\"PRIORITY\"")])])]))
+	constraint = IRConstraint.IRConstraint(isHard=True , exp=
+		Exp.Exp(expType="ParentExp", exptype="Boolean", parentId="e61_", pos=((IntegerLiteral.IntegerLiteral(27),IntegerLiteral.IntegerLiteral(18)), (IntegerLiteral.IntegerLiteral(27),IntegerLiteral.IntegerLiteral(35))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation="=", elements=[
+		Exp.Exp(expType="Argument", exptype="String", parentId="", pos=((IntegerLiteral.IntegerLiteral(27),IntegerLiteral.IntegerLiteral(18)), (IntegerLiteral.IntegerLiteral(27),IntegerLiteral.IntegerLiteral(22))), iExpType="IFunctionExp", iExp=[FunExp.FunExp(operation=".", elements=[
+		Exp.Exp(expType="Argument", exptype="Set", parentId="e62_", pos=((IntegerLiteral.IntegerLiteral(27),IntegerLiteral.IntegerLiteral(18)), (IntegerLiteral.IntegerLiteral(27),IntegerLiteral.IntegerLiteral(22))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="this", isTop=True, my_bind="c0_CYGOPT_FS_JFFS2_COMPRESS_CMODE")]),
+		Exp.Exp(expType="Argument", exptype="String", parentId="", pos=((IntegerLiteral.IntegerLiteral(27),IntegerLiteral.IntegerLiteral(18)), (IntegerLiteral.IntegerLiteral(27),IntegerLiteral.IntegerLiteral(22))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="ref", isTop=True, my_bind="")])])]),
+		Exp.Exp(expType="Argument", exptype="String", parentId="e63_", pos=((IntegerLiteral.IntegerLiteral(27),IntegerLiteral.IntegerLiteral(25)), (IntegerLiteral.IntegerLiteral(27),IntegerLiteral.IntegerLiteral(35))), iExpType="IStringExp", iExp=[StringLiteral.StringLiteral("\"PRIORITY\"")])])]))
 	stack[-1].addElement(constraint)
 ##### clafer #####
 	pos=((IntegerLiteral.IntegerLiteral(28),IntegerLiteral.IntegerLiteral(17)), (IntegerLiteral.IntegerLiteral(28),IntegerLiteral.IntegerLiteral(71)))

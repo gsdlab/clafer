@@ -6,7 +6,7 @@ MISC_FILESYSTEMS ?
         [MTD]
 
         CYGOPT_FS_JFFS2_DEBUG -> int
-            assert [this = 0]
+            [ this = 0 ] // default
             display -> string = "Debug level"
             [0 <= this && this <= 2]
             description -> string = "Debug verbosity of...."
@@ -14,17 +14,17 @@ MISC_FILESYSTEMS ?
         CYGOPT_FS_JFFS2_NAND ?
         [CYGOPT_FS_JFFS2_NAND <=> HAS_IOMEM]
 
-        assert [CYGOPT_FS_JFFS2_COMPRESS]
+        [CYGOPT_FS_JFFS2_COMPRESS] // default
         CYGOPT_FS_JFFS2_COMPRESS ?
             display -> string = "Compress data"
 
-            assert [CYGOPT_FS_JFFS2_COMPRESS_ZLIB]
+            [CYGOPT_FS_JFFS2_COMPRESS_ZLIB] // default
             CYGOPT_FS_JFFS2_COMPRESS_ZLIB ?
                 display -> string = "Compress data using zlib"
                 [CYGPKG_COMPRESS_ZLIB]
 
             CYGOPT_FS_JFFS2_COMPRESS_CMODE -> string
-                assert [this = "PRIORITY"]
+                [this = "PRIORITY"] // default
                 display -> string = "Set the default compression mode"
                 [this = "NONE" || this = "PRIORITY" || this = "SIZE"]
 //# FRAGMENT

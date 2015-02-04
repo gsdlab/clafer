@@ -601,31 +601,31 @@
 <Max><IntLiteral>1</IntLiteral>
 </Max>
 </GlobalCard>
-<Declaration xsi:type="cl:IConstraint"><IsHard>false</IsHard>
+<Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
 <ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e19_</ParentId>
 <Position><Start><IntLiteral>13</IntLiteral>
-<IntLiteral>21</IntLiteral>
+<IntLiteral>15</IntLiteral>
 </Start>
 <End><IntLiteral>13</IntLiteral>
-<IntLiteral>29</IntLiteral>
+<IntLiteral>23</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>13</IntLiteral>
-<IntLiteral>21</IntLiteral>
+<IntLiteral>15</IntLiteral>
 </Start>
 <End><IntLiteral>13</IntLiteral>
-<IntLiteral>25</IntLiteral>
+<IntLiteral>19</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
 <Argument><Type xsi:type="cl:ISet" /><ParentId>e20_</ParentId>
 <Position><Start><IntLiteral>13</IntLiteral>
-<IntLiteral>21</IntLiteral>
+<IntLiteral>15</IntLiteral>
 </Start>
 <End><IntLiteral>13</IntLiteral>
-<IntLiteral>25</IntLiteral>
+<IntLiteral>19</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
@@ -635,10 +635,10 @@
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>13</IntLiteral>
-<IntLiteral>21</IntLiteral>
+<IntLiteral>15</IntLiteral>
 </Start>
 <End><IntLiteral>13</IntLiteral>
-<IntLiteral>25</IntLiteral>
+<IntLiteral>19</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
@@ -649,10 +649,10 @@
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId>e21_</ParentId>
 <Position><Start><IntLiteral>13</IntLiteral>
-<IntLiteral>28</IntLiteral>
+<IntLiteral>22</IntLiteral>
 </Start>
 <End><IntLiteral>13</IntLiteral>
-<IntLiteral>29</IntLiteral>
+<IntLiteral>23</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IIntExp"><IntLiteral>0</IntLiteral>
@@ -987,30 +987,30 @@
 <Max><IntLiteral>1</IntLiteral>
 </Max>
 </GlobalCard>
-</Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>false</IsHard>
+</Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
 <ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e35_</ParentId>
 <Position><Start><IntLiteral>18</IntLiteral>
-<IntLiteral>17</IntLiteral>
+<IntLiteral>10</IntLiteral>
 </Start>
 <End><IntLiteral>18</IntLiteral>
-<IntLiteral>51</IntLiteral>
+<IntLiteral>44</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>&lt;=&gt;</Operation>
 <Argument><Type xsi:type="cl:IBoolean" /><ParentId>e36_</ParentId>
 <Position><Start><IntLiteral>18</IntLiteral>
-<IntLiteral>17</IntLiteral>
+<IntLiteral>10</IntLiteral>
 </Start>
 <End><IntLiteral>18</IntLiteral>
-<IntLiteral>37</IntLiteral>
+<IntLiteral>30</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>e37_</ParentId>
 <Position><Start><IntLiteral>18</IntLiteral>
-<IntLiteral>17</IntLiteral>
+<IntLiteral>10</IntLiteral>
 </Start>
 <End><IntLiteral>18</IntLiteral>
-<IntLiteral>37</IntLiteral>
+<IntLiteral>30</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
@@ -1044,18 +1044,18 @@
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IBoolean" /><ParentId>e38_</ParentId>
 <Position><Start><IntLiteral>18</IntLiteral>
-<IntLiteral>42</IntLiteral>
+<IntLiteral>35</IntLiteral>
 </Start>
 <End><IntLiteral>18</IntLiteral>
-<IntLiteral>51</IntLiteral>
+<IntLiteral>44</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>e39_</ParentId>
 <Position><Start><IntLiteral>18</IntLiteral>
-<IntLiteral>42</IntLiteral>
+<IntLiteral>35</IntLiteral>
 </Start>
 <End><IntLiteral>18</IntLiteral>
-<IntLiteral>51</IntLiteral>
+<IntLiteral>44</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
@@ -1271,21 +1271,21 @@
 </Exp></Argument>
 </Exp></Argument>
 </Exp></ParentExp>
-</Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>false</IsHard>
+</Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
 <ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e46_</ParentId>
 <Position><Start><IntLiteral>23</IntLiteral>
-<IntLiteral>21</IntLiteral>
+<IntLiteral>14</IntLiteral>
 </Start>
 <End><IntLiteral>23</IntLiteral>
-<IntLiteral>31</IntLiteral>
+<IntLiteral>24</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>e47_</ParentId>
 <Position><Start><IntLiteral>23</IntLiteral>
-<IntLiteral>21</IntLiteral>
+<IntLiteral>14</IntLiteral>
 </Start>
 <End><IntLiteral>23</IntLiteral>
-<IntLiteral>31</IntLiteral>
+<IntLiteral>24</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
@@ -1752,21 +1752,21 @@
 </Exp></Argument>
 </Exp></Argument>
 </Exp></ParentExp>
-</Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>false</IsHard>
+</Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
 <ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e62_</ParentId>
 <Position><Start><IntLiteral>30</IntLiteral>
-<IntLiteral>25</IntLiteral>
+<IntLiteral>18</IntLiteral>
 </Start>
 <End><IntLiteral>30</IntLiteral>
-<IntLiteral>45</IntLiteral>
+<IntLiteral>38</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>e63_</ParentId>
 <Position><Start><IntLiteral>30</IntLiteral>
-<IntLiteral>25</IntLiteral>
+<IntLiteral>18</IntLiteral>
 </Start>
 <End><IntLiteral>30</IntLiteral>
-<IntLiteral>45</IntLiteral>
+<IntLiteral>38</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
