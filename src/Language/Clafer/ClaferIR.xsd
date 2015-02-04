@@ -3,15 +3,12 @@
   *   http://clafer.org                                                       *
   *                                                                           *
   *   File description: XML schema of Clafer intermediate representation (IR) *
-  *   Depends on: Haskell IR data types defined for clafer                    *
+  *   Depends on: Haskell IR data types defined for clafer (Intclafer.hs)     *
   *   Author: Leonardo Passos <lpassos@gsd.uwaterloo.ca>                      *
   *   Contributors: Jimmy Liang <jliang@gsd.uwaterloo.ca>                     *
+  *                 Michal Antkiewicz <mantkiew@gsd.uwaterloo.ca>             *
   *   Date: October 19th, 2011                                                *
-  *   Last update: April 16th, 2012                                           *
-  *                                                                           *
-  *   Generate scala classes with:                                            *
-  *   scalaxb -p gsd.clafer.ir ClaferIR.xsd                                   *
-  *           - -protocol-file ClaferIR_XmlProtocol.scala                     *
+  *   Last update: February 4th, 2015                                         *
   * ......................................................................... *
   */
 -->
@@ -91,7 +88,8 @@ data IClafer
     , _ident :: CName
     , _uid :: UID
     , _parentUID :: UID
-    , _super:: ISuper
+    , _super :: Maybe PExp
+    , _reference :: Maybe IReference
     , _card :: Maybe Interval
     , _glCard :: Interval
     , _elements :: [IElement]
@@ -126,7 +124,8 @@ data IClafer
                 <xs:element name="Id"         type="xs:string"/>
                 <xs:element name="UniqueId"   type="xs:string"/>
                 <xs:element name="ParentUniqueId" type="xs:string"/>
-                <xs:element name="Supers"     type="cl:ISuper"/>
+                <xs:element name="Super"      type="cl:IParentExp" minOccurs="0" maxOccurs="1"/>
+                <xs:element name="Reference"  type="cl:IReference" minOccurs="0" maxOccurs="1"/>
                 <xs:element name="Card"       type="cl:IInterval" minOccurs="0" maxOccurs="1"/>
                 <xs:element name="GlobalCard" type="cl:IInterval"/>
                 <xs:element ref="Declaration" minOccurs="0" maxOccurs="unbounded"/>
@@ -145,7 +144,6 @@ data IElement
     { _isHard :: Bool
     , _cpexp :: PExp
     }
-  -- | Goal (optimization objective)
   | IEGoal
     { _isMaximize :: Bool
     , _cpexp :: PExp
@@ -175,8 +173,8 @@ data IElement
     <xs:complexContent>
       <xs:extension base="cl:IElement">
           <xs:sequence>
-              <xs:element name="IsMaximize"    type="xs:boolean"/>
-              <xs:element name="ParentExp" type="cl:IParentExp"/>
+              <xs:element name="IsMaximize" type="xs:boolean"/>
+              <xs:element name="ParentExp"  type="cl:IParentExp"/>
           </xs:sequence>
       </xs:extension>
 
@@ -185,16 +183,16 @@ data IElement
 
   <!-- . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
   <!--
-data ISuper
-  = ISuper
-    { _isOverlapping :: Bool
-    , _supers :: [PExp]
+data IReference
+  = IReference
+    { _isSet :: Bool
+    , _ref :: PExp
     }
   -->
-  <xs:complexType name="ISuper">
+  <xs:complexType name="IReference">
     <xs:sequence>
-        <xs:element name="IsOverlapping" type="xs:boolean"/>
-        <xs:element name="Super"         type="cl:IParentExp" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element name="IsSet" type="xs:boolean"/>
+        <xs:element name="Ref"   type="cl:IParentExp"/>
     </xs:sequence>
   </xs:complexType>
 
@@ -367,7 +365,7 @@ data IExp
                   <xs:element name="ModuleName" type="xs:string" minOccurs="0" maxOccurs="1"/>
                   <xs:element name="Id"         type="xs:string" />
                   <xs:element name="IsTop"      type="xs:boolean"/>
-                  <xs:element name="Bind"       type="xs:string" />
+                  <xs:element name="Bind"    type="xs:string" />
               </xs:sequence>
           </xs:extension>
       </xs:complexContent>
@@ -377,9 +375,9 @@ data IExp
   <!--
 data IDecl
   = IDecl
-    { _isDisj :: Bool    -- ^ is disjunct
-    , _decls :: [CName]  -- ^ a list of local names
-    , _body :: PExp      -- ^ set to which local names refer to
+    { _isDisj :: Bool
+    , _decls :: [CName]
+    , _body :: PExp
     }
     -->
 

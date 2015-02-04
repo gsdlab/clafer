@@ -224,7 +224,7 @@ For IFunExp standard set of operators includes:
         /          - division
         ++         - set union
         \-\-         - set difference
-        &          - set intersection
+        **          - set intersection
         \<:         - domain restriction
         :\>         - range restriction
         .          - relational join

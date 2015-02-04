@@ -21,7 +21,7 @@
     <div class="indent">
     <span class="claferDecl" id="c0_FFS2_FS_DEBUG">FFS2_FS_DEBUG</span><span class="keyword"> -> </span><a href="#int"><span class="reference">int</span></a>
       <div class="indent">
-      <span class="keyword">assert [</span> <a href="#this"><span class="reference">this</span></a> = 0 <span class="keyword">]</span></div>
+      <span class="keyword">[</span> <a href="#this"><span class="reference">this</span></a> = 0 <span class="keyword">]</span></div>
       <div class="indent">
       <span class="claferDecl" id="c2_display">display</span><span class="keyword"> -> </span><a href="#string"><span class="reference">string</span></a> = "JFFS2 Debug level (0=quiet, 2=noisy)"</div>
       <div class="indent">
@@ -30,13 +30,13 @@
     <div class="indent">
     <span class="claferDecl" id="c0_JFFS2_FS_WRITEBUFFER">JFFS2_FS_WRITEBUFFER</span> ?</div>
     <div class="indent">
-    <span class="keyword">assert [</span> <a href="#c0_JFFS2_FS_WRITEBUFFER"><span class="reference">JFFS2_FS_WRITEBUFFER</span></a> &lt;=&gt; <a href="#c0_HAS_IOMEM"><span class="reference">HAS_IOMEM</span></a> <span class="keyword">]</span></div>
+    <span class="keyword">[</span> <a href="#c0_JFFS2_FS_WRITEBUFFER"><span class="reference">JFFS2_FS_WRITEBUFFER</span></a> &lt;=&gt; <a href="#c0_HAS_IOMEM"><span class="reference">HAS_IOMEM</span></a> <span class="keyword">]</span></div>
     <div class="indent">
     <span class="claferDecl" id="c0_JFFS2_COMPRESS">JFFS2_COMPRESS</span> ?
       <div class="indent">
       <span class="claferDecl" id="c3_display">display</span><span class="keyword"> -> </span><a href="#string"><span class="reference">string</span></a> = "Advanced compression options for JFFS2"</div>
       <div class="indent">
-      <span class="keyword">assert [</span> <a href="#c0_JFFS2_ZLIB"><span class="reference">JFFS2_ZLIB</span></a> <span class="keyword">]</span></div>
+      <span class="keyword">[</span> <a href="#c0_JFFS2_ZLIB"><span class="reference">JFFS2_ZLIB</span></a> <span class="keyword">]</span></div>
       <div class="indent">
       <span class="claferDecl" id="c0_JFFS2_ZLIB">JFFS2_ZLIB</span> ?
         <div class="indent">
@@ -49,7 +49,7 @@
         <div class="indent">
         <span class="claferDecl" id="c5_display">display</span><span class="keyword"> -> </span><a href="#string"><span class="reference">string</span></a> = "Default compression"</div>
         <div class="indent">
-        <span class="keyword">assert [</span> <a href="#c0_JFFS2_CMODE_PRIORITY"><span class="reference">JFFS2_CMODE_PRIORITY</span></a> <span class="keyword">]</span></div>
+        <span class="keyword">[</span> <a href="#c0_JFFS2_CMODE_PRIORITY"><span class="reference">JFFS2_CMODE_PRIORITY</span></a> <span class="keyword">]</span></div>
         <div class="indent">
         <span class="keyword">xor</span> <span class="claferDecl" id="c0_choice">choice</span>
           <div class="indent">

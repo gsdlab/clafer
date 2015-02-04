@@ -1,6 +1,6 @@
 open util/integer
 pred show {}
-
+run show for 1
 
 abstract sig c0_tristate
 { r_c0_module : lone c0_module }

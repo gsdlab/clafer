@@ -1,6 +1,6 @@
 
 <div>
-<span class="claferDecl" id="c0_X">X</span>
+<span class="claferDecl" id="c0_XX">XX</span>
   <div class="indent">
   <span class="claferDecl" id="c0_x">x</span>
     <div class="indent">
@@ -12,7 +12,7 @@
 
 
 <div>
-<span class="claferDecl" id="c0_Z">Z</span>
+<span class="claferDecl" id="c0_ZZ">ZZ</span>
   <div class="indent">
   <span class="claferDecl" id="c0_z">z</span><span class="keyword"> -> </span><a href="#int"><span class="reference">int</span></a>
     <div class="indent">
