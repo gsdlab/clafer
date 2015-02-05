@@ -5,7 +5,6 @@ module Language.Clafer.Front.Printclafer where
 
 import Language.Clafer.Front.Absclafer
 import Data.Char
-import Prelude hiding (exp, init)
 
 
 -- the top-level printing method
@@ -244,6 +243,7 @@ instance Print Exp where
    EMul _ exp0 exp -> prPrec i 10 (concatD [prt 10 exp0 , doc (showString "*") , prt 11 exp])
    EDiv _ exp0 exp -> prPrec i 10 (concatD [prt 10 exp0 , doc (showString "/") , prt 11 exp])
    ESumSetExp _ exp -> prPrec i 11 (concatD [doc (showString "sum") , prt 12 exp])
+   EProdSetExp _ exp -> prPrec i 11 (concatD [doc (showString "product") , prt 12 exp])
    ECSetExp _ exp -> prPrec i 11 (concatD [doc (showString "#") , prt 12 exp])
    EMinExp _ exp -> prPrec i 11 (concatD [doc (showString "-") , prt 12 exp])
    EImpliesElse _ exp0 exp1 exp -> prPrec i 12 (concatD [doc (showString "if") , prt 12 exp0 , doc (showString "then") , prt 12 exp1 , doc (showString "else") , prt 13 exp])

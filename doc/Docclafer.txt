@@ -38,8 +38,8 @@ The reserved words used in clafer are the following:
   | ``else`` | ``enum`` | ``if`` | ``in``
   | ``lone`` | ``max`` | ``min`` | ``mux``
   | ``no`` | ``not`` | ``one`` | ``opt``
-  | ``or`` | ``some`` | ``sum`` | ``then``
-  | ``xor`` |  |  | 
+  | ``or`` | ``product`` | ``some`` | ``sum``
+  | ``then`` | ``xor`` |  | 
 
 The symbols used in clafer are the following:
   | = | [ | ] | <<
@@ -141,6 +141,7 @@ All other symbols are terminals.
   |  |  **|**  | //Exp10// ``/`` //Exp11// 
   |  |  **|**  | //Exp11// 
   | //Exp11// | -> | ``sum`` //Exp12// 
+  |  |  **|**  | ``product`` //Exp12// 
   |  |  **|**  | ``#`` //Exp12// 
   |  |  **|**  | ``-`` //Exp12// 
   |  |  **|**  | //Exp12// 

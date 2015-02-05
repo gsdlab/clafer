@@ -156,6 +156,7 @@ data Exp =
  | EMul Span Exp Exp
  | EDiv Span Exp Exp
  | ESumSetExp Span Exp
+ | EProdSetExp Span Exp
  | ECSetExp Span Exp
  | EMinExp Span Exp
  | EImpliesElse Span Exp Exp Exp
@@ -304,6 +305,7 @@ instance Spannable Exp where
   getSpan ( EMul s _ _ ) = s
   getSpan ( EDiv s _ _ ) = s
   getSpan ( ESumSetExp s _ ) = s
+  getSpan ( EProdSetExp s _ ) = s
   getSpan ( ECSetExp s _ ) = s
   getSpan ( EMinExp s _ ) = s
   getSpan ( EImpliesElse s _ _ _ ) = s

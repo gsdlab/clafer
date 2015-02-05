@@ -448,6 +448,7 @@ genOp    True       op'
   | otherwise   = genOp False op'
 genOp    _             op'
   | op' == iSumSet = ["sum temp : "," | temp."]
+  | op' == iProdSet = ["prod temp : "," | temp."]
   | op' `elem` unOps  = [op']
   | op' == iPlus = [".add[", "]"]
   | op' == iSub  = [".sub[", "]"]

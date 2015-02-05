@@ -10,6 +10,7 @@ grammar:
 	alex -g $(FRONT_DIR)/Lexclafer.x
 	rm $(FRONT_DIR)/Skelclafer.hs
 	rm $(FRONT_DIR)/Testclafer.hs
+	rm $(FRONT_DIR)/*.bak
 	mv $(FRONT_DIR)/Docclafer.txt ../doc
 
 grammarDoc:

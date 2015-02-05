@@ -73,14 +73,15 @@ import Language.Clafer.Front.ErrM
  'one' { PT _ (TS _ 52) }
  'opt' { PT _ (TS _ 53) }
  'or' { PT _ (TS _ 54) }
- 'some' { PT _ (TS _ 55) }
- 'sum' { PT _ (TS _ 56) }
- 'then' { PT _ (TS _ 57) }
- 'xor' { PT _ (TS _ 58) }
- '{' { PT _ (TS _ 59) }
- '|' { PT _ (TS _ 60) }
- '||' { PT _ (TS _ 61) }
- '}' { PT _ (TS _ 62) }
+ 'product' { PT _ (TS _ 55) }
+ 'some' { PT _ (TS _ 56) }
+ 'sum' { PT _ (TS _ 57) }
+ 'then' { PT _ (TS _ 58) }
+ 'xor' { PT _ (TS _ 59) }
+ '{' { PT _ (TS _ 60) }
+ '|' { PT _ (TS _ 61) }
+ '||' { PT _ (TS _ 62) }
+ '}' { PT _ (TS _ 63) }
 
 L_PosInteger { PT _ (T_PosInteger _) }
 L_PosDouble { PT _ (T_PosDouble _) }
@@ -262,6 +263,7 @@ Exp10 : Exp10 '*' Exp11 { EMul ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan
 
 Exp11 :: { Exp }
 Exp11 : 'sum' Exp12 { ESumSetExp ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 } 
+  | 'product' Exp12 { EProdSetExp ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
   | '#' Exp12 { ECSetExp ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
   | '-' Exp12 { EMinExp ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
   | Exp12 {  $1 }

@@ -217,8 +217,11 @@ iGMin         = "min"
 iSumSet :: String
 iSumSet       = "sum"
 
+iProdSet :: String
+iProdSet      = "product"
+
 unOps :: [String]
-unOps = [iNot, iCSet, iMin, iGMax, iGMin, iSumSet]
+unOps = [iNot, iCSet, iMin, iGMax, iGMin, iSumSet, iProdSet]
 
 -- binary operators
 iIff :: String
@@ -386,7 +389,7 @@ keywordIdents =
   baseClafer :
   specialNames ++
   primitiveTypes ++
-  [ iGMax, iGMin, iSumSet ] ++ -- unary operators
+  [ iGMax, iGMin, iSumSet, iProdSet ] ++ -- unary operators
   [ iXor, iIn ] ++ -- binary operators
   [ "if", "then", "else" ] ++ -- ternary operators
   [ "no", "not", "some", "one", "all", "disj" ] ++ -- quantifiers

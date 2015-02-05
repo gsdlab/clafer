@@ -305,6 +305,7 @@ desugarExp' x = case x of
   EDiv _ exp0 exp'  -> dop iDiv [exp0, exp']
   ECSetExp _ exp'   -> dop iCSet [exp']
   ESumSetExp _ exp' -> dop iSumSet [exp']
+  EProdSetExp _ exp' -> dop iProdSet [exp']
   EMinExp _ exp'    -> dop iMin [exp']
   EGMax _ exp' -> dop iGMax [exp']
   EGMin _ exp' -> dop iGMin [exp']
@@ -381,7 +382,8 @@ sugarExp' x = case x of
     | op'' == iGMax          = EGMax noSpan
     | op'' == iGMin          = EGMin noSpan
     | op'' == iSumSet        = ESumSetExp noSpan
-    | otherwise            = error $ show op'' ++ "is not an op"
+    | op'' == iProdSet       = EProdSetExp noSpan
+    | otherwise              = error $ show op'' ++ "is not an op"
   sugarOp op''
     | op'' == iIff           = EIff noSpan
     | op'' == iImpl          = EImplies noSpan
