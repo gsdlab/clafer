@@ -83,7 +83,8 @@ genDeclarationGoalsOnly    claferargs    x         = case x of
 genDeclaration :: ClaferArgs -> IElement -> Concat
 genDeclaration claferargs x = case x of
   IEClafer clafer'  -> (genClafer claferargs [] clafer') +++ (mkFact $ cconcat $ genSetUniquenessConstraint clafer')
-  IEConstraint _ pexp  -> mkFact $ genPExp claferargs [] pexp
+  IEConstraint True pexp  -> mkFact $ genPExp claferargs [] pexp
+  IEConstraint False pexp  -> mkAssert (genAssertName pexp) $ genPExp claferargs [] pexp
   IEGoal _ (PExp _ _ _ innerexp) -> case innerexp of
         IFunExp op'  _ ->  if  op' == iGMax || op' == iGMin then
                        CString ""
@@ -94,6 +95,18 @@ genDeclaration claferargs x = case x of
 mkFact :: Concat -> Concat
 mkFact x@(CString "") = x
 mkFact xs = cconcat [CString "fact ", mkSet xs, CString "\n"]
+
+genAssertName :: PExp -> Concat
+genAssertName    PExp{_inPos=(Span _ (Pos line _))} = CString $ "assertOnLine_" ++ show line
+
+mkAssert :: Concat -> Concat        -> Concat
+mkAssert    name      x@(CString "") = x
+mkAssert    name      xs = cconcat
+  [ CString "assert ", name, CString " "
+  , mkSet xs
+  , CString "\n"
+  , CString "check ", name, CString "\n\n"
+  ]
 
 mkMetric :: String -> Concat -> Concat
 mkMetric goalopname xs = cconcat [ if goalopname == iGMax then CString "maximize" else  CString "minimize", CString " ", xs, CString " "]
