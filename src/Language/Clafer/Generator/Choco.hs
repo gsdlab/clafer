@@ -14,7 +14,7 @@ import Data.Ord
 import Prelude hiding (exp)
 import Language.Clafer.ClaferArgs
 import Language.Clafer.Common
-import Language.Clafer.Front.Absclafer
+import Language.Clafer.Front.AbsClafer
 import Language.Clafer.Intermediate.Intclafer
 
 -- | Choco 3 code generation

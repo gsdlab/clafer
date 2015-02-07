@@ -26,7 +26,7 @@ import Data.Char
 import Data.Maybe (fromMaybe)
 
 import Language.Clafer.Common
-import Language.Clafer.Front.Absclafer
+import Language.Clafer.Front.AbsClafer
 import Language.Clafer.Intermediate.Intclafer
 
 tag:: String -> String -> String

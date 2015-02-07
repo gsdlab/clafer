@@ -29,7 +29,7 @@ import Data.Functor.Identity (Identity)
 import Language.Clafer.Common
 import Language.ClaferT
 
-import Language.Clafer.Front.Lexclafer
+import Language.Clafer.Front.LexClafer
 import Data.Maybe
 
 data LayEnv = LayEnv {
@@ -193,9 +193,9 @@ addNewLines' n (t0:t1:ts)
   | isLayoutOpen t1  || isBracketOpen t1 =
     addNewLines' (n + 1) (t1:ts) >>= (return . (ExToken t0:))
   | isLayoutClose t1 || isBracketClose t1 =
-    addNewLines' (n - 1) (t1:ts) >>= (return . (ExToken t0:)) 
-  | isNewLine t0 t1  = addNewLines' n (t1:ts) >>= (return . (ExToken t0:) . (NewLine (column t1, n):)) 
-  | otherwise        = addNewLines' n (t1:ts) >>= (return . (ExToken t0:)) 
+    addNewLines' (n - 1) (t1:ts) >>= (return . (ExToken t0:))
+  | isNewLine t0 t1  = addNewLines' n (t1:ts) >>= (return . (ExToken t0:) . (NewLine (column t1, n):))
+  | otherwise        = addNewLines' n (t1:ts) >>= (return . (ExToken t0:))
 addNewLines' _ _ = throwErr (ClaferErr "Function addNewLines' from LayoutResolver was given invalid arguments" :: CErr Span) -- This should never happen!
 
 
@@ -211,8 +211,8 @@ updToken (t0:t1:ts)
   where
   sym = if isLayoutOpen t1 then "{" else "}"
   -- | Get the position immediately to the right of the given token.
-  nextPos :: Token -> Position 
-  nextPos t = Pn (g + s) l (c + s + 1) 
+  nextPos :: Token -> Position
+  nextPos t = Pn (g + s) l (c + s + 1)
     where Pn g l c = position t
           s = tokenLength t
 updToken [] = return []

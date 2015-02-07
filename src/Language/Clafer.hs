@@ -115,10 +115,10 @@ import Language.Clafer.ClaferArgs hiding (Clafer)
 import qualified Language.Clafer.ClaferArgs as Mode (ClaferMode (Clafer))
 import Language.Clafer.Comments
 import qualified Language.Clafer.Css as Css
-import Language.Clafer.Front.Lexclafer
-import Language.Clafer.Front.Parclafer
-import Language.Clafer.Front.Printclafer
-import Language.Clafer.Front.Absclafer
+import Language.Clafer.Front.LexClafer
+import Language.Clafer.Front.ParClafer
+import Language.Clafer.Front.PrintClafer
+import Language.Clafer.Front.AbsClafer
 import Language.Clafer.Front.LayoutResolver
 import Language.Clafer.Intermediate.Tracing
 import Language.Clafer.Intermediate.Intclafer
