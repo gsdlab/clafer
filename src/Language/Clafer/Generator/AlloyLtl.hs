@@ -59,12 +59,25 @@ bOrFoldl1 xs = foldl1 (\res val -> res || val) xs
 -- 07th Mayo 2012 Rafael Olaechea
 --      Added Logic to print a goal block in case there is at least one goal.
 genAlloyLtlModule :: ClaferArgs -> (IModule, GEnv) -> [(UID, Integer)] -> StringMap IClafer -> (Result, [(Span, IrTrace)])
-genAlloyLtlModule    claferargs'    (imodule, _)       scopes             uidIClaferMap'   = (flatten output, filter ((/= NoTrace) . snd) $ mapLineCol output)
+genAlloyLtlModule    claferargs'   (imodule, _)       scopes              uidIClaferMap'     = (flatten output, filter ((/= NoTrace) . snd) $ mapLineCol output)
   where
+  tl = trace_len claferargs'
+
+  -- multiply the scope by trace length for mutable clafers
+  adjustScope :: (UID, Integer) -> (UID, Integer)
+  adjustScope s@(uid', scope')   = case findIClafer uidIClaferMap' uid' of
+    Just claf -> if _mutable claf then (uid', tl * scope') else s
+    Nothing   -> s
+
+  genScopes :: [(UID, Integer)] -> String
+  genScopes [] = ""
+  genScopes scopes' = " but " ++ intercalate ", " (map (\ (uid', scope)  -> show scope ++ " " ++ uid') scopes')
+
+  forScopes' = "for " ++ show tl ++ (genScopes $ map adjustScope scopes)
   genEnv = GenEnv claferargs' uidIClaferMap'
   rootClafer = IEClafer $ fromJust $ findIClafer uidIClaferMap' rootIdent
   -- output = header claferargs scopes +++ (cconcat $ map (genDeclaration genEnv) (_mDecls imodule)) +++
-  output = header claferargs' scopes +++ (genDeclaration genEnv rootClafer) +++
+  output = header claferargs' forScopes' +++ (genDeclaration genEnv rootClafer) +++
        if ((not $ skip_goals claferargs') && length goals_list > 0) then
                 CString "objectives o_global {\n" +++   (cintercalate (CString ",\n") goals_list) +++   CString "\n}"
        else
@@ -72,31 +85,21 @@ genAlloyLtlModule    claferargs'    (imodule, _)       scopes             uidICl
        where
                 goals_list = filterNull (map (genDeclarationGoalsOnly genEnv) (_mDecls imodule))
 
-header :: ClaferArgs -> [(UID, Integer)] -> Concat
-header    args          scopes       = CString $ unlines
+header :: ClaferArgs -> String -> Concat
+header    args          forScopes       = CString $ unlines
     [ if Alloy42 `elem` (mode args) then "" else "open util/integer"
     , if AlloyLtl `elem` (mode args) then "open util/ordering[Time]" else ""
     , "pred show {}"
     , if (validate args) ||  (noalloyruncommand args)
       then ""
-      else mkScope
+      else "run show " ++ forScopes
     , ""
     , behavioralSigs
     ]
     where
-      mkScope = if AlloyLtl `elem` (mode args)
-      then
-        "run show for 10" -- ++ show (fixed_scope args)
-      else
-        "run show for 1" ++ genScopes scopes
-      genScopes [] = ""
-      genScopes scopes' = " but " ++ intercalate ", " (map genScope scopes')
       behavioralSigs = unlines [
         "sig Time {loop: lone Time}",
         "fact Loop {loop in last->Time}"]
-
-genScope :: (UID, Integer) -> String
-genScope    (uid', scope)       = show scope ++ " " ++ uid'
 
 
 -- 07th Mayo 2012 Rafael Olaechea

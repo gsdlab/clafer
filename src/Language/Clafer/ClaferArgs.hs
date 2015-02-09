@@ -70,7 +70,7 @@ data ClaferArgs = ClaferArgs {
       show_references :: Bool,
       add_comments :: Bool,
       ecore2clafer :: Bool,
-      fixed_scope :: Int,
+      trace_len :: Integer,
       scope_strategy :: ScopeStrategy,
       afm :: Bool,
       skip_goals :: Bool,
@@ -100,7 +100,7 @@ clafer = ClaferArgs {
   show_references     = def &= help "Whether the links for references should be rendered. ('html' and 'graph' modes only)." &= name "sr",
   add_comments        = def &= help "Include comments from the source file in the html output ('html' mode only).",
   ecore2clafer        = def &= help "Translate an ECore model into Clafer.",
-  fixed_scope         = def &= help "Define fixed scope if desired." &= name "fs",
+  trace_len           = def &= help "Define the maximum trace length." &= name "tl",
   scope_strategy      = def &= help "Use scope computation strategy: none, simple (default), or full." &= name "ss",
   afm                 = def &= help "Throws an error if the cardinality of any of the clafers is above 1." &= name "check-afm",
   skip_goals          = def &= help "Skip generation of Alloy code for goals. Useful for all tools working with standard Alloy." &= name "sg",
@@ -118,7 +118,7 @@ mergeArgs a1 a2  = ClaferArgs (mode a1) (coMergeArg)
   (mergeArg alloy_mapping) (mergeArg self_contained)
   (mergeArg add_graph) (mergeArg show_references)
   (mergeArg add_comments) (mergeArg ecore2clafer)
-  (mergeArg fixed_scope)
+  (mergeArg trace_len)
   (mergeArg scope_strategy) (mergeArg afm) (mergeArg skip_goals)
   (mergeArg meta_data) (mergeArg file)
   where
