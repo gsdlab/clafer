@@ -4,13 +4,13 @@
   <div class="indent">
   <span class="claferDecl" id="c0_b">b</span> 3
     <div class="indent">
-    <span class="claferDecl" id="c0_c">c</span> ?</div>
+    <span class="claferDecl" id="c0_c">c</span> 0</div>
   </div>
 </div>
 
 
 <div>
-<span class="keyword">assert [</span> <span class="keyword">some</span> <a href="#c0_c"><span class="reference">c</span></a> <span class="keyword">]</span></div>
+<span class="keyword">assert [</span> <span class="keyword">some</span> <a href="#c0_b"><span class="reference">b</span></a> <span class="keyword">]</span></div>
 
 
 <div>

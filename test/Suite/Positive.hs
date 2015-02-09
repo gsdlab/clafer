@@ -80,5 +80,5 @@ case_nonempty_cards = do
 
 case_stringEqual :: Assertion
 case_stringEqual = do
-	let strMap = stringMap $ fromJust $ Map.lookup Alloy42 $ fromRight $ compileOneFragment defaultClaferArgs "A\n    text1 : string = \"some text\"\n    text2 : string = \"some text\""
+	let strMap = stringMap $ fromJust $ Map.lookup Alloy42 $ fromRight $ compileOneFragment defaultClaferArgs "A\n    text1 -> string = \"some text\"\n    text2 -> string = \"some text\""
 	(Map.size strMap) == 1 @? "Error: same string assigned to differnet numbers!"

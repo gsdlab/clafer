@@ -11,6 +11,7 @@ grammar:
 	rm $(FRONT_DIR)/SkelClafer.hs
 	rm $(FRONT_DIR)/TestClafer.hs
 	mv $(FRONT_DIR)/DocClafer.txt ../doc
+	rm $(FRONT_DIR)/*.bak
 
 grammarDoc:
 	bnfc --latex clafer.cf

@@ -2335,14 +2335,14 @@ mkCatSpan = getSpan
 
 mkTokenSpan :: Token -> Span
 mkTokenSpan = gp
-{-# LINE 1 "templates/GenericTemplate.hs" #-}
-{-# LINE 1 "templates/GenericTemplate.hs" #-}
+{-# LINE 1 "templates\GenericTemplate.hs" #-}
+{-# LINE 1 "templates\\GenericTemplate.hs" #-}
 {-# LINE 1 "<built-in>" #-}
 {-# LINE 1 "<command-line>" #-}
-{-# LINE 1 "templates/GenericTemplate.hs" #-}
+{-# LINE 1 "templates\\GenericTemplate.hs" #-}
 -- Id: GenericTemplate.hs,v 1.26 2005/01/14 14:47:22 simonmar Exp 
 
-{-# LINE 13 "templates/GenericTemplate.hs" #-}
+{-# LINE 13 "templates\\GenericTemplate.hs" #-}
 
 
 
@@ -2358,7 +2358,7 @@ mkTokenSpan = gp
 #define GTE(n,m) (n Happy_GHC_Exts.>=# m)
 #define EQ(n,m) (n Happy_GHC_Exts.==# m)
 #endif
-{-# LINE 46 "templates/GenericTemplate.hs" #-}
+{-# LINE 46 "templates\\GenericTemplate.hs" #-}
 
 
 data Happy_IntList = HappyCons Happy_GHC_Exts.Int# Happy_IntList
@@ -2367,11 +2367,11 @@ data Happy_IntList = HappyCons Happy_GHC_Exts.Int# Happy_IntList
 
 
 
-{-# LINE 67 "templates/GenericTemplate.hs" #-}
+{-# LINE 67 "templates\\GenericTemplate.hs" #-}
 
-{-# LINE 77 "templates/GenericTemplate.hs" #-}
+{-# LINE 77 "templates\\GenericTemplate.hs" #-}
 
-{-# LINE 86 "templates/GenericTemplate.hs" #-}
+{-# LINE 86 "templates\\GenericTemplate.hs" #-}
 
 infixr 9 `HappyStk`
 data HappyStk a = HappyStk a (HappyStk a)
@@ -2445,7 +2445,7 @@ data HappyAddr = HappyA# Happy_GHC_Exts.Addr#
 -----------------------------------------------------------------------------
 -- HappyState data type (not arrays)
 
-{-# LINE 170 "templates/GenericTemplate.hs" #-}
+{-# LINE 170 "templates\\GenericTemplate.hs" #-}
 
 -----------------------------------------------------------------------------
 -- Shifting a token

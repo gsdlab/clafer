@@ -1,8 +1,8 @@
 a 2
    b 3
-      c ?
+      c 0
 
-assert [ some c ]
+assert [ some b ]
 
 assert [ no c ]
 
