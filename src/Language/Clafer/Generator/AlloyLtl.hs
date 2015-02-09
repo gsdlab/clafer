@@ -62,7 +62,7 @@ genAlloyLtlModule :: ClaferArgs -> (IModule, GEnv) -> [(UID, Integer)] -> String
 genAlloyLtlModule    claferargs'    (imodule, _)       scopes             uidIClaferMap'   = (flatten output, filter ((/= NoTrace) . snd) $ mapLineCol output)
   where
   genEnv = GenEnv claferargs' uidIClaferMap'
-  rootClafer = IEClafer $ IClafer noSpan (IClaferModifiers False True True) (Just $ IGCard False (0, -1)) "root" "root" "" Nothing Nothing (Just (1,1)) (1, 1) False (_mDecls imodule)
+  rootClafer = IEClafer $ fromJust $ findIClafer uidIClaferMap' rootIdent
   -- output = header claferargs scopes +++ (cconcat $ map (genDeclaration genEnv) (_mDecls imodule)) +++
   output = header claferargs' scopes +++ (genDeclaration genEnv rootClafer) +++
        if ((not $ skip_goals claferargs') && length goals_list > 0) then
