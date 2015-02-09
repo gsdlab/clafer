@@ -37,7 +37,7 @@ module Language.Clafer.Generator.Html (genHtml,
                                        highlightErrors) where
 
 import Language.ClaferT
-import Language.Clafer.Front.Absclafer
+import Language.Clafer.Front.AbsClafer
 import Language.Clafer.Front.LayoutResolver(revertLayout)
 import Language.Clafer.Intermediate.Tracing
 import Language.Clafer.Intermediate.Intclafer

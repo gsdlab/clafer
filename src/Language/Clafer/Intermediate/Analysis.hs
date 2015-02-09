@@ -27,10 +27,10 @@
  -}
 module Language.Clafer.Intermediate.Analysis where
 
-import Language.Clafer.Front.Absclafer hiding (Path)
+import Language.Clafer.Front.AbsClafer hiding (Path)
 import qualified Language.Clafer.Intermediate.Intclafer as I
 import Language.Clafer.Intermediate.Desugarer
-import Language.Clafer.Front.Printclafer
+import Language.Clafer.Front.PrintClafer
 import Language.Clafer.Common
 
 import Control.Applicative

@@ -33,7 +33,7 @@ import           Data.StringMap (StringMap)
 import qualified Data.StringMap as SMap
 import           Data.Tree
 
-import Language.Clafer.Front.Absclafer
+import Language.Clafer.Front.AbsClafer
 import Language.Clafer.Intermediate.Intclafer
 
 -- -----------------------------------------------------------------------------
