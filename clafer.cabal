@@ -149,6 +149,7 @@ Test-Suite test-suite
                     mtl >= 2.1.2,
                     QuickCheck >= 2.6,
 
+                    data-stringmap >= 1.0.1.1,
                     lens >= 4.4,
                     lens-aeson,
                     tasty >= 0.10,
