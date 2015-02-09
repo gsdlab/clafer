@@ -41,7 +41,7 @@ import GetURL
 data ClaferMode = Alloy42 | Alloy | Xml | Clafer | Html | Graph | CVLGraph | Python | Choco
   deriving (Eq, Show, Ord, Data, Typeable)
 instance Default ClaferMode where
-  def = Alloy
+  def = Alloy42
 
 -- | Scope inference strategy
 data ScopeStrategy = None | Simple | Full
