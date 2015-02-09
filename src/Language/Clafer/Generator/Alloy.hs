@@ -41,6 +41,7 @@ import Language.Clafer.Intermediate.Intclafer hiding (exp)
 data GenEnv = GenEnv
   { claferargs :: ClaferArgs
   , uidIClaferMap :: StringMap IClafer
+  , forScopes :: String
   }  deriving (Show)
 
 
@@ -50,8 +51,13 @@ data GenEnv = GenEnv
 genModule :: ClaferArgs -> (IModule, GEnv) -> [(UID, Integer)] -> StringMap IClafer -> (Result, [(Span, IrTrace)])
 genModule    claferargs'    (imodule, _)       scopes              uidIClaferMap'     = (flatten output, filter ((/= NoTrace) . snd) $ mapLineCol output)
   where
-  genEnv = GenEnv claferargs' uidIClaferMap'
-  output = header claferargs' scopes +++ (cconcat $ map (genDeclaration genEnv) (_mDecls imodule)) +++
+  genScopes :: [(UID, Integer)] -> String
+  genScopes    []                = ""
+  genScopes    scopes'           = " but " ++ intercalate ", " (map genScope scopes')
+
+  forScopes' = "for 1" ++ genScopes scopes
+  genEnv = GenEnv claferargs' uidIClaferMap' forScopes'
+  output = header genEnv +++ (cconcat $ map (genDeclaration genEnv) (_mDecls imodule)) +++
        if ((not $ skip_goals claferargs') && length goals_list > 0) then
                 CString "objectives o_global {\n" +++   (cintercalate (CString ",\n") goals_list) +++   CString "\n}"
        else
@@ -59,17 +65,14 @@ genModule    claferargs'    (imodule, _)       scopes              uidIClaferMap
        where
                 goals_list = filterNull (map (genDeclarationGoalsOnly genEnv) (_mDecls imodule))
 
-header :: ClaferArgs -> [(UID, Integer)] -> Concat
-header    args          scopes       = CString $ unlines
+header :: GenEnv -> Concat
+header    genEnv  = CString $ unlines
     [ "open util/integer"
     , "pred show {}"
-    , if (validate args) ||  (noalloyruncommand args)
+    , if (validate $ claferargs genEnv) ||  (noalloyruncommand $ claferargs genEnv)
       then ""
-      else "run show for 1" ++ genScopes scopes
+      else "run show " ++ forScopes genEnv
     , ""]
-    where
-    genScopes [] = ""
-    genScopes scopes' = " but " ++ intercalate ", " (map genScope scopes')
 
 genScope :: (UID, Integer) -> String
 genScope    (uid', scope)   = show scope ++ " " ++ uid'
@@ -94,7 +97,7 @@ genDeclaration :: GenEnv -> IElement -> Concat
 genDeclaration genEnv x = case x of
   IEClafer clafer'  -> (genClafer genEnv [] clafer') +++ (mkFact $ cconcat $ genSetUniquenessConstraint clafer')
   IEConstraint True pexp  -> mkFact $ genPExp genEnv [] pexp
-  IEConstraint False pexp  -> mkAssert (genAssertName pexp) $ genPExp genEnv [] pexp
+  IEConstraint False pexp  -> mkAssert genEnv (genAssertName pexp) $ genPExp genEnv [] pexp
   IEGoal _ (PExp _ _ _ innerexp) -> case innerexp of
         IFunExp op'  _ ->  if  op' == iGMax || op' == iGMin then
                        CString ""
@@ -109,13 +112,15 @@ mkFact xs = cconcat [CString "fact ", mkSet xs, CString "\n"]
 genAssertName :: PExp -> Concat
 genAssertName    PExp{_inPos=(Span _ (Pos line _))} = CString $ "assertOnLine_" ++ show line
 
-mkAssert :: Concat -> Concat        -> Concat
-mkAssert    _         x@(CString "") = x
-mkAssert    name      xs = cconcat
+mkAssert :: GenEnv -> Concat -> Concat        -> Concat
+mkAssert    _         _         x@(CString "") = x
+mkAssert    genEnv    name      xs = cconcat
   [ CString "assert ", name, CString " "
   , mkSet xs
   , CString "\n"
-  , CString "check ", name, CString "\n\n"
+  , CString "check ", name, CString " "
+  , CString $ forScopes genEnv
+  , CString "\n\n"
   ]
 
 mkMetric :: String -> Concat -> Concat
