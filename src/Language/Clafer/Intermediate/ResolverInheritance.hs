@@ -51,14 +51,14 @@ resolveNModule (imodule, genv') =
 resolveNClafer :: [IElement] -> IClafer -> Resolve IClafer
 resolveNClafer declarations clafer =
   do
-    super'    <- resolveNSuper declarations $ _super clafer
+    (super', superIClafer')    <- resolveNSuper declarations $ _super clafer
     elements' <- mapM (resolveNElement declarations) $ _elements clafer
     return $ clafer {_super = super',
             _elements = elements'}
 
 
-resolveNSuper :: [IElement] -> Maybe PExp -> Resolve (Maybe PExp)
-resolveNSuper _ Nothing = return Nothing
+resolveNSuper :: [IElement] -> Maybe PExp -> Resolve (Maybe PExp, Maybe IClafer)
+resolveNSuper _ Nothing = return (Nothing, Nothing)
 resolveNSuper declarations (Just (PExp _ pid' pos' (IClaferId _ id' _ _))) =
     if isPrimitive id'
       then throwError $ SemanticErr pos' $ "Primitive types are not allowed as super types: " ++ id'
@@ -67,8 +67,8 @@ resolveNSuper declarations (Just (PExp _ pid' pos' (IClaferId _ id' _ _))) =
         (id'', [superClafer']) <- case r of
           Nothing -> throwError $ SemanticErr pos' $ "No superclafer found: " ++ id'
           Just m  -> return m
-        return $ Just $ idToPExp pid' pos' "" id'' $ isTopLevel superClafer'
-resolveNSuper _ x = return x
+        return $ (Just $ idToPExp pid' pos' "" id'' $ isTopLevel superClafer', Just superClafer')
+resolveNSuper _ x = return (x, Nothing)
 
 
 resolveNElement :: [IElement] -> IElement -> Resolve IElement

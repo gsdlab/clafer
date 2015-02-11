@@ -36,10 +36,10 @@ public class XsdCheck {
 
             validator.validate(source);
         } catch (SAXParseException e) {
-            System.out.println("Validation error on line " + e.getLineNumber() + ", column " + e.getColumnNumber());
+            System.out.println("XML Validation error on line " + e.getLineNumber() + ", column " + e.getColumnNumber());
             System.out.println(e.getMessage());
         } catch (SAXException e) {
-            System.out.println("Validation error.");
+            System.out.println("XML Validation error.");
             System.out.println(e.getMessage());
         }
     }

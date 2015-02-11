@@ -153,7 +153,7 @@ createUidIClaferMap    iModule  = foldl' (\accumMap' claf -> SMap.insert (_uid c
   where
     allClafers :: [ IClafer ]
     allClafers = universeOn biplate iModule
-    rootClafer = IClafer noSpan False Nothing rootIdent rootIdent "" Nothing Nothing (Just (1, 1)) (1, 1) []
+    rootClafer = IClafer noSpan False (Just $ IGCard False (0, -1)) rootIdent rootIdent "" Nothing Nothing (Just (1,1)) (1, 1) (_mDecls iModule)
 
 findIClafer :: StringMap IClafer -> UID -> Maybe IClafer
 findIClafer    uidIClaferMap        uid' = SMap.lookup uid' uidIClaferMap
@@ -425,7 +425,7 @@ iDifference :: String
 iDifference   = "--"
 
 iIntersection :: String
-iIntersection = "&"
+iIntersection = "**"
 
 iDomain :: String
 iDomain       = "<:"

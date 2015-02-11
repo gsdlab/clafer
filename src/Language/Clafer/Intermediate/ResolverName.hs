@@ -176,7 +176,7 @@ resolveNav pos' env x isFirst = case x of
     (exp', path') <- resolveNav (_inPos pexp) env {context = listToMaybe path, resPath = path}
                      (I._exp pexp) False
     return (IFunExp iJoin [pexp0{I._exp=exp0'}, pexp{I._exp=exp'}], path')
-  IClaferId modName' id' _ _-> out
+  IClaferId modName' id' _ _ -> out
     where
     out
       | isFirst   = mkPath env <$> resolveName pos' env id'
@@ -209,7 +209,6 @@ toTuple c = (_uid c, Just c)
 
 toNav' :: [(String, Maybe IClafer)] -> IExp
 toNav' p = (mkIFunExp iJoin $ map (\(id', cbind) -> IClaferId "" id' False (_uid <$> cbind)) p) :: IExp
-
 
 adjustAncestor :: IClafer -> [(String, Maybe IClafer)] -> [(String, Maybe IClafer)] -> [(String, Maybe IClafer)]
 adjustAncestor ctx cPath rPath = (thisIdent, Just ctx) : parents ++ (fromJust $ stripPrefix prefix rPath)
