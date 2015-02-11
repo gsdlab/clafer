@@ -200,11 +200,11 @@ alex_action_5 =  tok (\p s -> PT p (eitherResIdent (T_PosDouble . share) s))
 alex_action_6 =  tok (\p s -> PT p (eitherResIdent (T_PosString . share) s)) 
 alex_action_7 =  tok (\p s -> PT p (eitherResIdent (T_PosIdent . share) s)) 
 alex_action_8 =  tok (\p s -> PT p (eitherResIdent (TV . share) s)) 
-{-# LINE 1 "templates\GenericTemplate.hs" #-}
-{-# LINE 1 "templates\\GenericTemplate.hs" #-}
+{-# LINE 1 "templates/GenericTemplate.hs" #-}
+{-# LINE 1 "templates/GenericTemplate.hs" #-}
 {-# LINE 1 "<built-in>" #-}
 {-# LINE 1 "<command-line>" #-}
-{-# LINE 1 "templates\\GenericTemplate.hs" #-}
+{-# LINE 1 "templates/GenericTemplate.hs" #-}
 -- -----------------------------------------------------------------------------
 -- ALEX TEMPLATE
 --
@@ -214,7 +214,7 @@ alex_action_8 =  tok (\p s -> PT p (eitherResIdent (TV . share) s))
 -- -----------------------------------------------------------------------------
 -- INTERNALS and main scanner engine
 
-{-# LINE 21 "templates\\GenericTemplate.hs" #-}
+{-# LINE 21 "templates/GenericTemplate.hs" #-}
 
 
 
@@ -228,7 +228,7 @@ alex_action_8 =  tok (\p s -> PT p (eitherResIdent (TV . share) s))
 #define GTE(n,m) (n >=# m)
 #define EQ(n,m) (n ==# m)
 #endif
-{-# LINE 51 "templates\\GenericTemplate.hs" #-}
+{-# LINE 51 "templates/GenericTemplate.hs" #-}
 
 
 data AlexAddr = AlexA# Addr#
@@ -364,7 +364,7 @@ alex_scan_tkn user orig_input len input s last_acc =
 	check_accs (AlexAccNone) = last_acc
 	check_accs (AlexAcc a  ) = AlexLastAcc a input (I# (len))
 	check_accs (AlexAccSkip) = AlexLastSkip  input (I# (len))
-{-# LINE 198 "templates\\GenericTemplate.hs" #-}
+{-# LINE 198 "templates/GenericTemplate.hs" #-}
 
 data AlexLastAcc a
   = AlexNone
@@ -380,7 +380,7 @@ data AlexAcc a user
   = AlexAccNone
   | AlexAcc a
   | AlexAccSkip
-{-# LINE 242 "templates\\GenericTemplate.hs" #-}
+{-# LINE 242 "templates/GenericTemplate.hs" #-}
 
 -- used by wrappers
 iUnbox (I# (i)) = i

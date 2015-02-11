@@ -156,8 +156,9 @@ All other symbols are terminals.
   |  |  **|**  | ``globally`` //Exp10// 
   |  |  **|**  | ``X`` //Exp10// 
   |  |  **|**  | ``next`` //Exp10// 
-  |  |  **|**  | ``!`` //Exp10// 
   |  |  **|**  | //Exp11// 
+  | //Exp11// | -> | ``!`` //Exp11// 
+  |  |  **|**  | //Exp12// 
   | //Exp15// | -> | //Exp15// ``<`` //Exp16// 
   |  |  **|**  | //Exp15// ``>`` //Exp16// 
   |  |  **|**  | //Exp15// ``=`` //Exp16// 
@@ -192,10 +193,10 @@ All other symbols are terminals.
   |  |  **|**  | ``-[`` //TransGuard// ``]->>`` 
   |  |  **|**  | ``-->`` 
   |  |  **|**  | ``-[`` //TransGuard// ``]->`` 
-  | //PatternScope// | -> | ``before`` //Exp// 
-  |  |  **|**  | ``after`` //Exp// 
-  |  |  **|**  | ``between`` //Exp// ``and`` //Exp// 
-  |  |  **|**  | ``after`` //Exp// ``until`` //Exp// 
+  | //PatternScope// | -> | ``before`` //Exp11// 
+  |  |  **|**  | ``after`` //Exp11// 
+  |  |  **|**  | ``between`` //Exp11// ``and`` //Exp11// 
+  |  |  **|**  | ``after`` //Exp11// ``until`` //Exp11// 
   |  |  **|**  | **eps**
   | //SetExp// | -> | //SetExp// ``++`` //SetExp1// 
   |  |  **|**  | //SetExp// ``,`` //SetExp1// 
@@ -236,7 +237,6 @@ All other symbols are terminals.
   |  |  **|**  | //LocId// ``;`` //[LocId]// 
   | //[ModId]// | -> | //ModId// 
   |  |  **|**  | //ModId// ``\`` //[ModId]// 
-  | //Exp11// | -> | //Exp12// 
   | //Exp12// | -> | //Exp13// 
   | //Exp13// | -> | //Exp14// 
   | //Exp14// | -> | //Exp15// 

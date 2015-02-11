@@ -104,7 +104,7 @@ LtlG.           Exp10  ::= "G"  Exp10 ;
 TmpGlobally.    Exp10  ::= "globally"  Exp10 ;
 LtlX.           Exp10  ::= "X"  Exp10 ;
 TmpNext.        Exp10  ::= "next"  Exp10 ;
-ENeg.           Exp10  ::= "!" Exp10 ;
+ENeg.           Exp11  ::= "!" Exp11 ;
 ELt.            Exp15  ::= Exp15 "<"  Exp16 ;
 EGt.            Exp15  ::= Exp15 ">"  Exp16 ;
 EEq.            Exp15  ::= Exp15 "="  Exp16 ;
@@ -135,10 +135,10 @@ GuardedSyncTransArrow.     TransArrow ::= "-[" TransGuard "]->>";
 NextTransArrow.            TransArrow ::= "-->";
 GuardedNextTransArrow.     TransArrow ::= "-[" TransGuard "]->";
 
-PatScopeBefore.     PatternScope ::= "before" Exp ;
-PatScopeAfter.      PatternScope ::= "after" Exp ;
-PatScopeBetweenAnd. PatternScope ::= "between" Exp "and" Exp ;
-PatScopeAfterUntil. PatternScope ::= "after" Exp "until" Exp ;
+PatScopeBefore.     PatternScope ::= "before" Exp11 ;
+PatScopeAfter.      PatternScope ::= "after" Exp11 ;
+PatScopeBetweenAnd. PatternScope ::= "between" Exp11 "and" Exp11 ;
+PatScopeAfterUntil. PatternScope ::= "after" Exp11 "until" Exp11 ;
 PatScopeEmpty.      PatternScope ::= ;
 
 Union.          SetExp  ::= SetExp  "++" SetExp1 ;

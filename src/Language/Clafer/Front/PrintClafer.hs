@@ -243,7 +243,7 @@ instance Print Exp where
     TmpGlobally _ exp10 -> prPrec i 10 (concatD [doc (showString "globally"), prt 10 exp10])
     LtlX _ exp10 -> prPrec i 10 (concatD [doc (showString "X"), prt 10 exp10])
     TmpNext _ exp10 -> prPrec i 10 (concatD [doc (showString "next"), prt 10 exp10])
-    ENeg _ exp10 -> prPrec i 10 (concatD [doc (showString "!"), prt 10 exp10])
+    ENeg _ exp11 -> prPrec i 11 (concatD [doc (showString "!"), prt 11 exp11])
     ELt _ exp15 exp16 -> prPrec i 15 (concatD [prt 15 exp15, doc (showString "<"), prt 16 exp16])
     EGt _ exp15 exp16 -> prPrec i 15 (concatD [prt 15 exp15, doc (showString ">"), prt 16 exp16])
     EEq _ exp15 exp16 -> prPrec i 15 (concatD [prt 15 exp15, doc (showString "="), prt 16 exp16])
@@ -283,10 +283,10 @@ instance Print TransArrow where
 
 instance Print PatternScope where
   prt i e = case e of
-    PatScopeBefore _ exp -> prPrec i 0 (concatD [doc (showString "before"), prt 0 exp])
-    PatScopeAfter _ exp -> prPrec i 0 (concatD [doc (showString "after"), prt 0 exp])
-    PatScopeBetweenAnd _ exp0 exp -> prPrec i 0 (concatD [doc (showString "between"), prt 0 exp0, doc (showString "and"), prt 0 exp])
-    PatScopeAfterUntil _ exp0 exp -> prPrec i 0 (concatD [doc (showString "after"), prt 0 exp0, doc (showString "until"), prt 0 exp])
+    PatScopeBefore _ exp11 -> prPrec i 0 (concatD [doc (showString "before"), prt 11 exp11])
+    PatScopeAfter _ exp11 -> prPrec i 0 (concatD [doc (showString "after"), prt 11 exp11])
+    PatScopeBetweenAnd _ exp110 exp11 -> prPrec i 0 (concatD [doc (showString "between"), prt 11 exp110, doc (showString "and"), prt 11 exp11])
+    PatScopeAfterUntil _ exp110 exp11 -> prPrec i 0 (concatD [doc (showString "after"), prt 11 exp110, doc (showString "until"), prt 11 exp11])
     PatScopeEmpty _ -> prPrec i 0 (concatD [])
 
 instance Print SetExp where

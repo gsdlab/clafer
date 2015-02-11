@@ -242,8 +242,10 @@ Exp10 : 'F' Exp10 { LtlF ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
       | 'globally' Exp10 { TmpGlobally ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
       | 'X' Exp10 { LtlX ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
       | 'next' Exp10 { TmpNext ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
-      | '!' Exp10 { ENeg ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
       | Exp11 {  $1 }
+Exp11 :: { Exp }
+Exp11 : '!' Exp11 { ENeg ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
+      | Exp12 {  $1 }
 Exp15 :: { Exp }
 Exp15 : Exp15 '<' Exp16 { ELt ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
       | Exp15 '>' Exp16 { EGt ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
@@ -288,10 +290,10 @@ TransArrow : '-->>' { SyncTransArrow ((mkTokenSpan $1)) }
            | '-->' { NextTransArrow ((mkTokenSpan $1)) }
            | '-[' TransGuard ']->' { GuardedNextTransArrow ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkTokenSpan $3)) $2 }
 PatternScope :: { PatternScope }
-PatternScope : 'before' Exp { PatScopeBefore ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
-             | 'after' Exp { PatScopeAfter ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
-             | 'between' Exp 'and' Exp { PatScopeBetweenAnd ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkTokenSpan $3) >- (mkCatSpan $4)) $2 $4 }
-             | 'after' Exp 'until' Exp { PatScopeAfterUntil ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkTokenSpan $3) >- (mkCatSpan $4)) $2 $4 }
+PatternScope : 'before' Exp11 { PatScopeBefore ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
+             | 'after' Exp11 { PatScopeAfter ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
+             | 'between' Exp11 'and' Exp11 { PatScopeBetweenAnd ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkTokenSpan $3) >- (mkCatSpan $4)) $2 $4 }
+             | 'after' Exp11 'until' Exp11 { PatScopeAfterUntil ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkTokenSpan $3) >- (mkCatSpan $4)) $2 $4 }
              | {- empty -} { PatScopeEmpty noSpan }
 SetExp :: { SetExp }
 SetExp : SetExp '++' SetExp1 { Union ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
@@ -351,8 +353,6 @@ ListLocId : LocId { (:[])  $1 }
 ListModId :: { [ModId] }
 ListModId : ModId { (:[])  $1 }
           | ModId '\\' ListModId { (:)  $1 $3 }
-Exp11 :: { Exp }
-Exp11 : Exp12 {  $1 }
 Exp12 :: { Exp }
 Exp12 : Exp13 {  $1 }
 Exp13 :: { Exp }
