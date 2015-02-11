@@ -225,6 +225,7 @@ instance Print Exp where
     EMul _ exp10 exp11 -> prPrec i 10 (concatD [prt 10 exp10, doc (showString "*"), prt 11 exp11])
     EDiv _ exp10 exp11 -> prPrec i 10 (concatD [prt 10 exp10, doc (showString "/"), prt 11 exp11])
     ESumSetExp _ exp12 -> prPrec i 11 (concatD [doc (showString "sum"), prt 12 exp12])
+    EProdSetExp _ exp12 -> prPrec i 11 (concatD [doc (showString "product"), prt 12 exp12])
     ECSetExp _ exp12 -> prPrec i 11 (concatD [doc (showString "#"), prt 12 exp12])
     EMinExp _ exp12 -> prPrec i 11 (concatD [doc (showString "-"), prt 12 exp12])
     EImpliesElse _ exp120 exp12 exp13 -> prPrec i 12 (concatD [doc (showString "if"), prt 12 exp120, doc (showString "then"), prt 12 exp12, doc (showString "else"), prt 13 exp13])

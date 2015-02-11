@@ -453,14 +453,25 @@ generateHtml env =
     printComments [] = []
     printComments ((s, comment):cs) = (snd (printComment s [(s, comment)]) ++ "<br>\n"):printComments cs
 
-noReals :: IModule -> Bool
-noReals iModule = reals == []
+iExpBasedChecks :: IModule -> (Bool, Bool)
+iExpBasedChecks iModule = (null realLiterals, null productOperators)
   where
     iexps :: [ IExp ]
     iexps = universeOn biplate iModule
-    reals = filter isIDouble iexps
+    realLiterals = filter isIDouble iexps
+    productOperators = filter isProductOperator iexps
     isIDouble (IDouble _) = True
     isIDouble _           = False
+    isProductOperator (IFunExp op' _) = op' == iProdSet
+    isProductOperator _               = False
+
+iClaferBasedChecks :: IModule -> Bool
+iClaferBasedChecks iModule = null $ filter hasReferenceToReal iClafers
+  where
+    iClafers :: [ IClafer ]
+    iClafers = universeOn biplate iModule
+    hasReferenceToReal (IClafer{_reference=(Just IReference{_ref=pexp'})}) = (getSuperId pexp') == "real"
+    hasReferenceToReal _               = False
 
 -- | Generates outputs for the given IR.
 generate :: Monad m => ClaferT m (Map.Map ClaferMode CompilerResult)
@@ -470,7 +481,8 @@ generate =
     ast' <- getAst
     (iModule, genv, au) <- getIr
     let
-      hasNoReals = noReals iModule
+      (hasNoRealLiterals, hasNoProductOperator) = iExpBasedChecks iModule
+      hasNoReferenceToReal = iClaferBasedChecks iModule
       cargs = args env
       modes = mode cargs
       stats = showStats au $ statsModule iModule
@@ -480,7 +492,7 @@ generate =
     return $ Map.fromList (
         -- result for Alloy
         (if (Alloy `elem` modes)
-          then if (hasNoReals)
+          then if (hasNoRealLiterals && hasNoReferenceToReal && hasNoProductOperator)
                 then
                   let
                     (imod,strMap) = astrModule iModule
@@ -500,7 +512,11 @@ generate =
                     ]
                 else [ (Alloy,
                         NoCompilerResult {
-                         reason = "Alloy output unavailable because the model contains real numbers."
+                         reason = "Alloy output unavailable because the model contains: "
+                                ++ (if hasNoRealLiterals then "" else " | a real number literal")
+                                ++ (if hasNoReferenceToReal then "" else " | a reference to a real")
+                                ++ (if hasNoProductOperator then "" else " | the product operator")
+                                ++ "."
                         })
                      ]
           else []
@@ -508,7 +524,7 @@ generate =
         ++
         -- result for Alloy42
         (if (Alloy42 `elem` modes)
-          then if (hasNoReals)
+          then if (hasNoRealLiterals && hasNoReferenceToReal && hasNoProductOperator)
                 then
                    let
                       (imod,strMap) = astrModule iModule
@@ -528,7 +544,11 @@ generate =
                       ]
                 else [ (Alloy,
                         NoCompilerResult {
-                         reason = "Alloy output unavailable because the model contains real numbers."
+                         reason = "Alloy output unavailable because the model contains: "
+                                ++ (if hasNoRealLiterals then "" else " | a real number literal")
+                                ++ (if hasNoReferenceToReal then "" else " | a reference to a real")
+                                ++ (if hasNoProductOperator then "" else " | the product operator")
+                                ++ "."
                         })
                      ]
           else []

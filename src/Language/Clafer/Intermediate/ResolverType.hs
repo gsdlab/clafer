@@ -292,6 +292,7 @@ resolveTPExp' p@PExp{_inPos, _exp} =
             | _op == iNot = test (t == TBoolean) >> return TBoolean
             | _op == iCSet = return TInteger
             | _op == iSumSet = test (t == TInteger) >> return TInteger
+            | _op == iProdSet = test (t == TInteger) >> return TInteger
             | _op `elem` [iMin, iGMin, iGMax] = test (numeric t) >> return t
             | otherwise = assert False $ error $ "Unknown op '" ++ _op ++ "'"
       result' <- result
