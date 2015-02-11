@@ -27,10 +27,10 @@
  -}
 module Language.Clafer.Intermediate.Analysis where
 
-import Language.Clafer.Front.Absclafer hiding (Path)
+import Language.Clafer.Front.AbsClafer hiding (Path)
 import qualified Language.Clafer.Intermediate.Intclafer as I
 import Language.Clafer.Intermediate.Desugarer
-import Language.Clafer.Front.Printclafer
+import Language.Clafer.Front.PrintClafer
 import Language.Clafer.Common
 
 import Control.Applicative
@@ -38,7 +38,7 @@ import Control.Monad.LPMonad.Supply
 import Control.Monad.Error
 import Control.Monad.Identity
 import Control.Monad.List
-import Control.Monad.Maybe
+import Control.Monad.Trans.Maybe
 import Control.Monad.Reader
 import Control.Monad.State
 import Control.Monad.Writer
@@ -405,9 +405,6 @@ unlessM a b = a >>= (`unless` b)
 
 fromMaybeT :: Monad m => a -> MaybeT m a -> m a
 fromMaybeT def m = fromMaybe def `liftM` runMaybeT m
-
-mapMaybeT :: (m1 (Maybe a1) -> m (Maybe a)) -> MaybeT m1 a1 -> MaybeT m a
-mapMaybeT f = MaybeT . f . runMaybeT
 
 mapVSupplyT :: (Monad m, Monad m1) => (m1 a1 -> m a) -> VSupplyT m1 a1 -> VSupplyT m a
 mapVSupplyT f = lift . f . runVSupplyT

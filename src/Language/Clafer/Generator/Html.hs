@@ -37,7 +37,7 @@ module Language.Clafer.Generator.Html (genHtml,
                                        highlightErrors) where
 
 import Language.ClaferT
-import Language.Clafer.Front.Absclafer
+import Language.Clafer.Front.AbsClafer
 import Language.Clafer.Front.LayoutResolver(revertLayout)
 import Language.Clafer.Intermediate.Tracing
 import Language.Clafer.Intermediate.Intclafer
@@ -154,7 +154,7 @@ printElement (Subconstraint s constraint) indent irMap html comments =
 printElement (Subsoftconstraint s constraint) indent irMap html comments =
     preComments ++
     printIndent indent html ++
-    printSoftConstraint constraint indent irMap html comments'' ++
+    printAssertion constraint indent irMap html comments'' ++
     comment ++
     printIndentEnd html
   where
@@ -266,15 +266,15 @@ printConstraint' exp' indent irMap html comments =
     " " ++
     while html "<span class=\"keyword\">" ++ "]" ++ while html "</span>"
 
-printSoftConstraint :: SoftConstraint -> Int -> Map.Map Span [Ir] -> Bool -> [(Span, String)] -> String
-printSoftConstraint (SoftConstraint _ exps') indent irMap html comments = concatMap (\x -> printSoftConstraint' x indent irMap html comments) exps'
-printSoftConstraint' :: Exp -> Int -> Map.Map Span [Ir] -> Bool -> [(Span, String)] -> String
-printSoftConstraint' exp' indent' irMap html comments =
-    while html "<span class=\"keyword\">" ++ "(" ++ while html "</span>" ++
+printAssertion :: SoftConstraint -> Int -> Map.Map Span [Ir] -> Bool -> [(Span, String)] -> String
+printAssertion (SoftConstraint _ exps') indent irMap html comments = concatMap (\x -> printAssertion' x indent irMap html comments) exps'
+printAssertion' :: Exp -> Int -> Map.Map Span [Ir] -> Bool -> [(Span, String)] -> String
+printAssertion' exp' indent' irMap html comments =
+    while html "<span class=\"keyword\">" ++ "assert [" ++ while html "</span>" ++
     " " ++
     printExp exp' indent' irMap html comments ++
     " " ++
-    while html "<span class=\"keyword\">" ++ ")" ++ while html "</span>"
+    while html "<span class=\"keyword\">" ++ "]" ++ while html "</span>"
 
 printDecl :: Decl-> Int -> Map.Map Span [Ir] -> Bool -> [(Span, String)] -> String
 printDecl (Decl _ locids setExp) indent irMap html comments =

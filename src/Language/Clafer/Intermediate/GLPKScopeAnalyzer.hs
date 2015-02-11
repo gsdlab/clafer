@@ -23,7 +23,7 @@
 -}
 module Language.Clafer.Intermediate.GLPKScopeAnalyzer (glpkScopeAnalysis) where
 
-import Language.Clafer.Front.Absclafer hiding (Path)
+import Language.Clafer.Front.AbsClafer hiding (Path)
 import qualified Language.Clafer.Intermediate.Intclafer as I
 import Language.Clafer.Intermediate.Analysis
 import Language.Clafer.Intermediate.ResolverType
@@ -33,7 +33,7 @@ import Control.Applicative (Applicative(..), (<$>))
 import Control.Monad
 import Control.Monad.List
 import Control.Monad.LPMonad
-import Control.Monad.Maybe
+import Control.Monad.Trans.Maybe
 import Control.Monad.Reader
 import Control.Monad.State
 import Data.Either

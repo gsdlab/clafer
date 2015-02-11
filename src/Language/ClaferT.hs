@@ -68,7 +68,7 @@ import           Data.StringMap (StringMap)
 import qualified Data.StringMap as SMap
 
 import Language.Clafer.Common
-import Language.Clafer.Front.Absclafer
+import Language.Clafer.Front.AbsClafer
 import Language.Clafer.Intermediate.Tracing
 import Language.Clafer.Intermediate.Intclafer
 import Language.Clafer.ClaferArgs

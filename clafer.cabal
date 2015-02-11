@@ -79,7 +79,6 @@ library
                     cmdargs >= 0.10.7,
                     executable-path >= 0.0.3,
                     glpk-hs >= 0.3.4,
-                    MaybeT >= 0.1.2,
                     split >= 0.2.2,
                     text >= 0.11.3.1
 
@@ -99,12 +98,12 @@ library
                      Language.Clafer.Css,
                      Language.Clafer.JSONMetaData,
                      Language.Clafer.QNameUID,
-                     Language.Clafer.Front.Absclafer,
+                     Language.Clafer.Front.AbsClafer,
                      Language.Clafer.Front.ErrM,
                      Language.Clafer.Front.LayoutResolver,
-                     Language.Clafer.Front.Lexclafer,
-                     Language.Clafer.Front.Parclafer,
-                     Language.Clafer.Front.Printclafer,
+                     Language.Clafer.Front.LexClafer,
+                     Language.Clafer.Front.ParClafer,
+                     Language.Clafer.Front.PrintClafer,
                      Language.Clafer.Generator.Alloy,
                      Language.Clafer.Generator.Choco,
                      Language.Clafer.Generator.Concat,
@@ -149,6 +148,7 @@ Test-Suite test-suite
                     mtl >= 2.1.2,
                     QuickCheck >= 2.6,
 
+                    data-stringmap >= 1.0.1.1,
                     lens >= 4.4,
                     lens-aeson,
                     tasty >= 0.10,

@@ -24,7 +24,7 @@ module Language.Clafer.Comments(getOptions, getFragments, getStats, getGraph, ge
 
 import Data.Maybe (fromMaybe)
 import Data.List (stripPrefix)
-import Language.Clafer.Front.Absclafer
+import Language.Clafer.Front.AbsClafer
 
 type InputModel = String
 

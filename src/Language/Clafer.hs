@@ -32,7 +32,7 @@ Normal usage:
 >       addModuleFragment b
 >       parse
 >       compile
->       generateFragments
+>       generate
 
 Example of compiling a model consisting of one fragment:
 
@@ -45,8 +45,6 @@ Example of compiling a model consisting of one fragment:
 >       compile
 >       generate
 
-Use "generateFragments" instead to generate output based on their fragments.
-
 > compileTwoFragments :: ClaferArgs -> InputModel -> InputModel -> Either ClaferErr [String]
 > compileTwoFragments args frag1 frag2 =
 >   runClafer args $
@@ -55,7 +53,7 @@ Use "generateFragments" instead to generate output based on their fragments.
 >      addModuleFragment frag2
 >      parse
 >      compile
->      generateFragments
+>      generate
 
 Use "throwErr" to halt execution:
 
@@ -71,7 +69,6 @@ module Language.Clafer (runCompiler,
                         desugar,
                         generate,
                         generateHtml,
-                        generateFragments,
                         runClaferT,
                         runClafer,
                         ClaferErr,
@@ -115,10 +112,10 @@ import Language.Clafer.ClaferArgs hiding (Clafer)
 import qualified Language.Clafer.ClaferArgs as Mode (ClaferMode (Clafer))
 import Language.Clafer.Comments
 import qualified Language.Clafer.Css as Css
-import Language.Clafer.Front.Lexclafer
-import Language.Clafer.Front.Parclafer
-import Language.Clafer.Front.Printclafer
-import Language.Clafer.Front.Absclafer
+import Language.Clafer.Front.LexClafer
+import Language.Clafer.Front.ParClafer
+import Language.Clafer.Front.PrintClafer
+import Language.Clafer.Front.AbsClafer
 import Language.Clafer.Front.LayoutResolver
 import Language.Clafer.Intermediate.Tracing
 import Language.Clafer.Intermediate.Intclafer
@@ -425,40 +422,6 @@ compile desugaredMod = do
       gt1 (IRClafer (IClafer (Span (Pos l c) _) False _ _ _ _ _ _ (Just (_, m)) _ _)) = if (m > 1 || m < 0) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
       gt1 _ = ""
 
--- | Splits the IR into their fragments, and generates the output for each fragment.
--- | Might not generate the entire output (for example, Alloy scope and run commands) because
--- | they do not belong in fragments.
-generateFragments :: Monad m => ClaferT m [String]
-generateFragments =
-  do
-    env <- getEnv
-    (iModule, _, _) <- getIr
-    fragElems <- fragment (sortBy (comparing rnge) $ _mDecls iModule) (frags env)
-
-    -- Assumes output mode is Alloy for now
-
-    return $ map (generateFragment $ args env) fragElems
-  where
-  rnge (IEClafer IClafer{_cinPos = p}) = p
-  rnge IEConstraint{_cpexp = PExp{_inPos = p}} = p
-  rnge IEGoal{_cpexp = PExp{_inPos = p}} = p
-
-  -- Groups IElements by their fragments.
-  --   elems must be sorted by range.
-  fragment :: (Monad m) => [IElement] -> [Pos] -> ClaferT m [[IElement]]
-  fragment [] [] = return []
-  fragment elems (frag : rest) =
-    fragment restFrags rest >>= return . (curFrag:)
-    where
-    (curFrag, restFrags) = span (`beforePos` frag) elems
-  fragment _ [] = throwErr $ (ClaferErr $ "Unexpected fragment." :: CErr Span) -- Should not happen. Bug.
-
-  beforePos ele p =
-    case rnge ele of
-      Span _ e -> e <= p
-  generateFragment :: ClaferArgs -> [IElement] -> String
-  generateFragment args' frag =
-    flatten $ cconcat $ map (genDeclaration args') frag
 
 -- | Splits the AST into their fragments, and generates the output for each fragment.
 generateHtml :: ClaferEnv -> String
@@ -516,6 +479,7 @@ generate =
       modes = mode cargs
       stats = showStats au $ statsModule iModule
       scopes = getScopeStrategy (scope_strategy cargs) iModule
+      uidIClaferMap' = uidIClaferMap env
 
     return $ Map.fromList (
         -- result for Alloy
@@ -524,7 +488,7 @@ generate =
                 then
                   let
                     (imod,strMap) = astrModule iModule
-                    alloyCode = genModule cargs{mode = [Alloy]} (imod, genv) scopes
+                    alloyCode = genModule cargs{mode = [Alloy]} (imod, genv) scopes uidIClaferMap'
                     addCommentStats = if no_stats cargs then const else addStats
                   in
                     [ (Alloy,
@@ -555,7 +519,7 @@ generate =
                 then
                    let
                       (imod,strMap) = astrModule iModule
-                      alloyCode = genModule cargs{mode = [Alloy42]} (imod, genv) scopes
+                      alloyCode = genModule cargs{mode = [Alloy42]} (imod, genv) scopes uidIClaferMap'
                       addCommentStats = if no_stats cargs then const else addStats
                    in
                       [ (Alloy42,

@@ -20,14 +20,14 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
 -}
-{- | Transforms an Abstract Syntax Tree (AST) from "Language.Clafer.Front.Absclafer"
+{- | Transforms an Abstract Syntax Tree (AST) from "Language.Clafer.Front.AbsClafer"
 into Intermediate representation (IR) from "Language.Clafer.Intermediate.Intclafer" of a Clafer model.
 -}
 module Language.Clafer.Intermediate.Desugarer where
 
 import Language.Clafer.Common
 import Data.Maybe (fromMaybe)
-import Language.Clafer.Front.Absclafer
+import Language.Clafer.Front.AbsClafer
 import Language.Clafer.Intermediate.Intclafer
 
 -- | Transform the AST into the intermediate representation (IR)

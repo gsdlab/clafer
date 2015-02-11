@@ -29,7 +29,7 @@ import Data.Functor.Identity (Identity)
 import Language.Clafer.Common
 import Language.ClaferT
 
-import Language.Clafer.Front.Lexclafer
+import Language.Clafer.Front.LexClafer
 import Data.Maybe
 
 data LayEnv = LayEnv {

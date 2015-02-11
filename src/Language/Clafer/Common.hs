@@ -33,7 +33,7 @@ import           Data.StringMap (StringMap)
 import qualified Data.StringMap as SMap
 import           Data.Tree
 
-import Language.Clafer.Front.Absclafer
+import Language.Clafer.Front.AbsClafer
 import Language.Clafer.Intermediate.Intclafer
 
 -- -----------------------------------------------------------------------------
@@ -122,7 +122,7 @@ toClafers :: [IElement] -> [IClafer]
 toClafers = mapMaybe elemToClafer
 
 -- -----------------------------------------------------------------------------
--- finds hierarchy and transforms each element
+-- | Finds hierarchy and transforms each element
 mapHierarchy :: (IClafer -> b)
                 -> (IClafer -> [String])
                 -> [IClafer]
@@ -131,8 +131,7 @@ mapHierarchy :: (IClafer -> b)
 mapHierarchy f sf = (map f.).(findHierarchy sf)
 
 
--- returns inheritance hierarchy of a clafer
-
+-- | Returns inheritance hierarchy of a clafer
 findHierarchy :: (IClafer -> [String])
                             -> [IClafer]
                             -> IClafer
@@ -147,16 +146,142 @@ findHierarchy sFun clafers clafer = case sFun clafer of
     findSuper superUid = filter (\c -> _uid c == superUid) clafers
 
 -- -----------------------------------------------------------------------------
--- map construction functions
+-- UID -> IClafer map construction functions
 
 createUidIClaferMap :: IModule -> StringMap IClafer
-createUidIClaferMap    iModule  = foldl' (\accumMap' claf -> SMap.insert (_uid claf) claf accumMap') SMap.empty allClafers
+createUidIClaferMap    iModule  = foldl' (\accumMap' claf -> SMap.insert (_uid claf) claf accumMap') (SMap.singleton rootIdent rootClafer) allClafers
   where
     allClafers :: [ IClafer ]
     allClafers = universeOn biplate iModule
+    rootClafer = IClafer noSpan False Nothing rootIdent rootIdent "" Nothing Nothing (Just (1, 1)) (1, 1) []
 
 findIClafer :: StringMap IClafer -> UID -> Maybe IClafer
 findIClafer    uidIClaferMap        uid' = SMap.lookup uid' uidIClaferMap
+
+-- -----------------------------------------------------------------------------
+-- functions using the UID -> IClafer map
+
+-- | traverse the inheritance hierarchy upwards to find a clafer with the given uidToFind
+findUIDinSupers :: StringMap IClafer -> UID    -> IClafer      -> Maybe IClafer
+findUIDinSupers    uidIClaferMap        uidToFind currentClafer =
+  if uidToFind == _uid currentClafer
+  then return currentClafer
+  else do
+    superClaferUID <- getSuperId <$> _super currentClafer
+    superClafer <- findIClafer uidIClaferMap superClaferUID
+    findUIDinSupers uidIClaferMap uidToFind superClafer
+
+data NestedInheritanceMatch
+  = NestedInheritanceMatch
+  { _headClafer :: IClafer               -- ^ the clafer for which the match is computed
+  , _parentClafer :: IClafer             -- ^ parent of the head clafer
+  , _parentsSuperClafer :: Maybe IClafer -- ^ parent of the super of the head clafer
+  , _targetClafer :: Maybe IClafer       -- ^ target of the head clafer
+  , _targetsSuperClafer :: Maybe IClafer -- ^ super of the target of the head clafer
+  , _superClafer :: IClafer              -- ^ super of the head clafer (must exist, otherwise no match)
+  , _superClafersParent :: IClafer       -- ^ parent of the super of the head clafer
+  , _superClafersTarget :: Maybe IClafer -- ^ target of the super of the head clafer
+  } deriving Show
+
+-- | This represents a match of this shape
+--
+--    superClafersParent
+--         /\           <>
+--        ?1|             \*
+-- parentsSuperClafer      \
+--         /\    [=]   superClafer --*-> superClafersTarget
+--         *|              /\                     /\
+--    parentClafer          |                      |?2
+--               <>        *|       [=]   targetsSuperClafer
+--                *\        |                     /\
+--                  \       |                     *|
+--                   headClafer -----*-----> targetClafer
+--
+-- The clafers are obtained by navigating from the headClafer
+-- by following the links marked by *
+-- The link marked by ?1 is checked for correctness of nesting (isProperNesting):
+-- - _uid parentsSuperClafer == _parentUID superClafer
+-- The link marked by ?2 is checked for correctness of redefinition (isProperRefinement):
+-- - proper subtyping, bag to set, proper cardinality restriction
+-- Redefinition occurs when the name of headClafer is the same as the name of superClafer (isProperRedefinition):
+-- - isProperNesting && isProperRefinement && (_ident headClafer) == (_ident superClafer)
+
+isProperNesting :: StringMap IClafer -> Maybe NestedInheritanceMatch -> Bool
+isProperNesting _ Nothing  = False
+isProperNesting uidIClaferMap (Just m) = case (_parentsSuperClafer m) of
+  Nothing                 -> (_uid $ _parentClafer m) == (_uid $ _superClafersParent m)
+  Just parentsSuperClafer -> isJust $  findUIDinSupers uidIClaferMap (_parentUID $ _superClafer m) parentsSuperClafer
+
+-- ^ assumes that isProperNesting m == True
+isProperRefinement :: StringMap IClafer -> Maybe NestedInheritanceMatch
+  -> (Bool,  Bool,  Bool)
+isProperRefinement    _                    Nothing
+  = ( False
+    , False
+    , False )
+isProperRefinement    uidIClaferMap        (Just m)
+  = ( properCardinalityRefinement m
+    , properBagToSetRefinement m
+    , properTargetSubtyping m )
+  where
+    properCardinalityRefinement NestedInheritanceMatch{_headClafer=hc, _superClafer=hcs}
+      = case (_card hc, _card hcs) of
+          (Just (hcl, hcu), Just (hcsl, hcsu)) -> hcl >= hcsl && (hcu <= hcsu || hcsu == -1)
+          _ -> False
+    properBagToSetRefinement NestedInheritanceMatch{_headClafer=hc, _superClafer=hcs}
+      = case (_reference hc, _reference hcs) of
+          (Just IReference{_isSet=headIsSet}, Just IReference{_isSet=superIsSet}) -> superIsSet <= headIsSet  -- set (True) implies set (True), bag (False) allows bag (False) or set (True)
+          _ -> True -- covers 1) only one of them has a ref, and 2) none of them has a ref
+    properTargetSubtyping NestedInheritanceMatch{_targetClafer=(Just targetClafer), _superClafersTarget=(Just superClafersTarget)}
+      = isJust $ findUIDinSupers uidIClaferMap (_uid superClafersTarget) targetClafer
+    properTargetSubtyping _
+      = True -- covers 1) only one of the target clafers exists, and 2) none of the target clafers exist
+
+-- ^ assumes that isProperNesting m == True and isProperRefinement m == True
+isProperRedefinition :: Maybe NestedInheritanceMatch -> Bool -- ^ whether the name of headClafer is the same as superClafer
+isProperRedefinition Nothing = False
+isProperRedefinition (Just NestedInheritanceMatch{_headClafer=hc, _superClafer=hs})
+  =  (_ident hc) == (_ident hs)
+
+
+
+-- ^ try to match the nested inheritance pattern
+-- ^ only available after the parentUIDs were computed
+matchNestedInheritance :: StringMap IClafer -> IClafer
+  -> Maybe NestedInheritanceMatch
+matchNestedInheritance    _                    IClafer{_super=Nothing}    = Nothing
+matchNestedInheritance    uidIClaferMap        headClafer                 = do
+--  traceM $ "matching nested inheritance for " ++ _uid headClafer
+  parentClafer       <- findIClafer uidIClaferMap $ _parentUID headClafer
+--  traceM $ "matched parentClafer " ++ _uid parentClafer
+  superClafer        <- (findIClafer uidIClaferMap) =<< (getSuperId <$> _super headClafer)
+--  traceM $ "matched superClafer " ++ _uid superClafer
+  superClafersParent <- findIClafer uidIClaferMap $ _parentUID superClafer
+--  traceM $ "matched superClafersParent " ++ _uid superClafersParent
+  let
+    parentsSuperClafer :: Maybe IClafer
+    parentsSuperClafer = findIClafer uidIClaferMap =<< getSuperId <$> _super parentClafer  -- safe to use fromJust becuase _super is not isNothing
+    targetClafer :: Maybe IClafer
+    targetClafer = findIClafer uidIClaferMap =<< getSuperId <$> _ref <$> _reference headClafer
+    targetsSuperClafer :: Maybe IClafer
+    targetsSuperClafer = findIClafer uidIClaferMap =<< getSuperId <$> (_super =<< targetClafer)
+    superClafersTarget :: Maybe IClafer
+    superClafersTarget = findIClafer uidIClaferMap =<< getSuperId <$> _ref <$> _reference superClafer
+--  traceM $ "matched parentsSuperClafer " ++ show (_uid <$> parentsSuperClafer)
+--  traceM $ "matched targetClafer " ++ show (_uid <$> targetClafer)
+--  traceM $ "matched targetsSuperClafer " ++ show (_uid <$> targetsSuperClafer)
+--  traceM $ "matched superClafersTarget " ++ show (_uid <$> superClafersTarget)
+  return $ NestedInheritanceMatch
+    { _headClafer = headClafer
+    , _parentClafer = parentClafer
+    , _parentsSuperClafer = parentsSuperClafer
+    , _superClafer = superClafer
+    , _superClafersParent = superClafersParent
+    , _targetClafer = targetClafer
+    , _targetsSuperClafer = targetsSuperClafer
+    , _superClafersTarget = superClafersTarget
+    }
+
 
 -- -----------------------------------------------------------------------------
 -- generic functions
