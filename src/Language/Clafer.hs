@@ -490,14 +490,18 @@ generateHtml env =
     printComments [] = []
     printComments ((s, comment):cs) = (snd (printComment s [(s, comment)]) ++ "<br>\n"):printComments cs
 
-noReals :: IModule -> Bool
-noReals iModule = reals == []
+iExpBasedChecks :: IModule -> (Bool, Bool)
+iExpBasedChecks iModule = (null realLiterals, null productOperators)
   where
     iexps :: [ IExp ]
     iexps = universeOn biplate iModule
-    reals = filter isIDouble iexps
+    realLiterals = filter isIDouble iexps
+    productOperators = filter isProductOperator iexps
     isIDouble (IDouble _) = True
     isIDouble _           = False
+    isProductOperator (IFunExp op' _) = op' == iProdSet
+    isProductOperator _               = False
+
 
 -- | Generates outputs for the given IR.
 generate :: Monad m => ClaferT m (Map.Map ClaferMode CompilerResult)
@@ -507,7 +511,7 @@ generate =
     ast' <- getAst
     (iModule, genv, au) <- getIr
     let
-      hasNoReals = noReals iModule
+      (hasNoRealLiterals, hasNoProductOperator) = iExpBasedChecks iModule
       cargs = args env
       modes = mode cargs
       stats = showStats au $ statsModule iModule
@@ -516,7 +520,7 @@ generate =
     return $ Map.fromList (
         -- result for Alloy
         (if (Alloy `elem` modes)
-          then if (hasNoReals)
+          then if (hasNoRealLiterals && hasNoProductOperator)
                 then
                   let
                     (imod,strMap) = astrModule iModule
@@ -536,7 +540,10 @@ generate =
                     ]
                 else [ (Alloy,
                         NoCompilerResult {
-                         reason = "Alloy output unavailable because the model contains real numbers."
+                         reason = "Alloy output unavailable because the model contains"
+                                ++ if hasNoRealLiterals then "" else " real number literal"
+                                ++ if hasNoProductOperator then "" else " product operator"
+                                ++ "."
                         })
                      ]
           else []
@@ -544,7 +551,7 @@ generate =
         ++
         -- result for Alloy42
         (if (Alloy42 `elem` modes)
-          then if (hasNoReals)
+          then if (hasNoRealLiterals && hasNoProductOperator)
                 then
                    let
                       (imod,strMap) = astrModule iModule
@@ -564,7 +571,10 @@ generate =
                       ]
                 else [ (Alloy,
                         NoCompilerResult {
-                         reason = "Alloy output unavailable because the model contains real numbers."
+                         reason = "Alloy output unavailable because the model contains"
+                                ++ if hasNoRealLiterals then "" else " real number literal"
+                                ++ if hasNoProductOperator then "" else " product operator"
+                                ++ "."
                         })
                      ]
           else []
