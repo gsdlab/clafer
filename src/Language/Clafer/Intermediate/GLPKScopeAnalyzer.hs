@@ -33,7 +33,7 @@ import Control.Applicative (Applicative(..), (<$>))
 import Control.Monad
 import Control.Monad.List
 import Control.Monad.LPMonad
-import Control.Monad.Maybe
+import Control.Monad.Trans.Maybe
 import Control.Monad.Reader
 import Control.Monad.State
 import Data.Either

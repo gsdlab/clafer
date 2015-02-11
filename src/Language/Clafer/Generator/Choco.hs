@@ -187,6 +187,10 @@ genCModule _ (imodule@IModule{_mDecls}, _) scopes =
         | [arg] <- args', PExp{_exp = IFunExp{_exps = [a, PExp{_exp = IClaferId{_sident = "ref"}}]}} <- rewrite arg =
             "sum(" ++ genConstraintPExp a ++ ")"
         | otherwise = error "Choco: Unexpected sum argument."
+    genConstraintExp (IFunExp "product" args')
+        | [arg] <- args', PExp{_exp = IFunExp{_exps = [a, PExp{_exp = IClaferId{_sident = "ref"}}]}} <- rewrite arg =
+            "product(" ++ genConstraintPExp a ++ ")"
+        | otherwise = error "Choco: Unexpected product argument."
     genConstraintExp (IFunExp "+" args') =
 	(if _iType (head args') == Just TString then "concat" else "add") ++
             "(" ++ intercalate ", " (map genConstraintPExp args') ++ ")"

@@ -463,6 +463,7 @@ desugarExp' x = let x' =  translateTmpPatterns x in case x' of
   EDiv _ exp0 exp'  -> dop iDiv [exp0, exp']
   ECSetExp _ exp'   -> dop iCSet [exp']
   ESumSetExp _ exp' -> dop iSumSet [exp']
+  EProdSetExp _ exp' -> dop iProdSet [exp']
   EMinExp _ exp'    -> dop iMin [exp']
   EGMax _ exp' -> dop iGMax [exp']
   EGMin _ exp' -> dop iGMin [exp']
@@ -540,10 +541,11 @@ sugarExp' x = case x of
     | op'' == iGMax          = EGMax noSpan
     | op'' == iGMin          = EGMin noSpan
     | op'' == iSumSet        = ESumSetExp noSpan
+    | op'' == iProdSet       = EProdSetExp noSpan
     | op'' == iF             = LtlF noSpan
     | op'' == iG             = LtlG noSpan
     | op'' == iX             = LtlX noSpan
-    | otherwise            = error $ show op'' ++ "is not an op"
+    | otherwise              = error $ show op'' ++ "is not an op"
   sugarOp op''
     | op'' == iIff           = EIff noSpan
     | op'' == iImpl          = EImplies noSpan

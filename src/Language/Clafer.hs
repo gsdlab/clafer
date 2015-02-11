@@ -455,23 +455,30 @@ generateHtml env =
     printComments [] = []
     printComments ((s, comment):cs) = (snd (printComment s [(s, comment)]) ++ "<br>\n"):printComments cs
 
-iExpBasedChecks :: IModule -> (Bool, Bool)
-iExpBasedChecks iModule = (null reals, null tempOperators)
+iExpBasedChecks :: IModule -> (Bool, Bool, Bool)
+iExpBasedChecks iModule = (null realLiterals, null productOperators, null tempOperators)
   where
     iexps :: [ IExp ]
     iexps = universeOn biplate iModule
-    reals = filter isIDouble iexps
+    realLiterals = filter isIDouble iexps
+    productOperators = filter isProductOperator iexps
     tempOperators = filter isTempOperator iexps
     isIDouble (IDouble _) = True
     isIDouble _           = False
+    isProductOperator (IFunExp op' _) = op' == iProdSet
+    isProductOperator _               = False
     isTempOperator (IFunExp op' _) = op' `elem` (iLet : propertyKeywords ++ ltlOps)
     isTempOperator _               = False
 
-iClaferBasedChecks :: IModule -> Bool
-iClaferBasedChecks iModule = null $ filter hasTempModifier iClafers
+iClaferBasedChecks :: IModule -> (Bool, Bool)
+iClaferBasedChecks iModule = (null referencesToReal, null tempModifiers)
   where
     iClafers :: [ IClafer ]
     iClafers = universeOn biplate iModule
+    referencesToReal = filter hasReferenceToReal iClafers
+    tempModifiers = filter hasTempModifier iClafers
+    hasReferenceToReal (IClafer{_reference=(Just IReference{_ref=pexp'})}) = (getSuperId pexp') == "real"
+    hasReferenceToReal _               = False
     hasTempModifier (IClafer _ (IClaferModifiers _ isInitial' isFinal') _ _ _ _ _ _ _ _ _ _) = isInitial' || isFinal'
     hasTempModifier _               = False
 
@@ -483,8 +490,8 @@ generate =
     ast' <- getAst
     (iModule, genv, au) <- getIr
     let
-      (hasNoReals, hasNoTempOperators) = iExpBasedChecks iModule
-      hasNoTempModifiers = iClaferBasedChecks iModule
+      (hasNoRealLiterals, hasNoProductOperator, hasNoTempOperators) = iExpBasedChecks iModule
+      (hasNoReferenceToReal, hasNoTempModifiers) = iClaferBasedChecks iModule
       staticClaferSubset = hasNoTempOperators && hasNoTempModifiers
       cargs = args env
       modes = mode cargs
@@ -495,7 +502,7 @@ generate =
     return $ Map.fromList (
         -- result for Alloy
         (if (Alloy `elem` modes || AlloyLtl `elem` modes)
-          then if (hasNoReals)
+          then if (hasNoRealLiterals && hasNoReferenceToReal && hasNoProductOperator)
                 then
                   if (staticClaferSubset && (not $ AlloyLtl `elem` modes))  -- can force Ltl despite static subset
                   then
@@ -534,7 +541,11 @@ generate =
                          ]
                 else [ (Alloy,
                         NoCompilerResult {
-                         reason = "Alloy output unavailable because the model contains real numbers."
+                         reason = "Alloy output unavailable because the model contains: "
+                                ++ (if hasNoRealLiterals then "" else " | a real number literal")
+                                ++ (if hasNoReferenceToReal then "" else " | a reference to a real")
+                                ++ (if hasNoProductOperator then "" else " | the product operator")
+                                ++ "."
                         })
                      ]
           else []
@@ -542,7 +553,7 @@ generate =
         ++
         -- result for Alloy42
         (if (Alloy42 `elem` modes || AlloyLtl `elem` modes)
-          then if (hasNoReals)
+          then if (hasNoRealLiterals && hasNoReferenceToReal && hasNoProductOperator)
                 then
                   if (staticClaferSubset && (not $ AlloyLtl `elem` modes))  -- can force Ltl despite static subset
                   then
@@ -581,9 +592,13 @@ generate =
                          ]
                 else [ (Alloy,
                         NoCompilerResult {
-                         reason = "Alloy output unavailable because the model contains real numbers."
-                    })
-                  ]
+                         reason = "Alloy output unavailable because the model contains: "
+                                ++ (if hasNoRealLiterals then "" else " | a real number literal")
+                                ++ (if hasNoReferenceToReal then "" else " | a reference to a real")
+                                ++ (if hasNoProductOperator then "" else " | the product operator")
+                                ++ "."
+                        })
+                     ]
           else []
         )
         -- result for XML

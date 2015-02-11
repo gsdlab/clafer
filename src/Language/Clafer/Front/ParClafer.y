@@ -99,17 +99,18 @@ import Language.Clafer.Front.ErrM
   'opt' { PT _ (TS _ 80) }
   'or' { PT _ (TS _ 81) }
   'precede' { PT _ (TS _ 82) }
-  'some' { PT _ (TS _ 83) }
-  'sometime' { PT _ (TS _ 84) }
-  'sum' { PT _ (TS _ 85) }
-  'then' { PT _ (TS _ 86) }
-  'until' { PT _ (TS _ 87) }
-  'weakuntil' { PT _ (TS _ 88) }
-  'xor' { PT _ (TS _ 89) }
-  '{' { PT _ (TS _ 90) }
-  '|' { PT _ (TS _ 91) }
-  '||' { PT _ (TS _ 92) }
-  '}' { PT _ (TS _ 93) }
+  'product' { PT _ (TS _ 83) }
+  'some' { PT _ (TS _ 84) }
+  'sometime' { PT _ (TS _ 85) }
+  'sum' { PT _ (TS _ 86) }
+  'then' { PT _ (TS _ 87) }
+  'until' { PT _ (TS _ 88) }
+  'weakuntil' { PT _ (TS _ 89) }
+  'xor' { PT _ (TS _ 90) }
+  '{' { PT _ (TS _ 91) }
+  '|' { PT _ (TS _ 92) }
+  '||' { PT _ (TS _ 93) }
+  '}' { PT _ (TS _ 94) }
 
 L_PosInteger { PT _ (T_PosInteger _) }
 L_PosDouble { PT _ (T_PosDouble _) }
@@ -266,6 +267,7 @@ Exp18 : Exp18 '*' Exp19 { EMul ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan
       | Exp19 {  $1 }
 Exp19 :: { Exp }
 Exp19 : 'sum' Exp20 { ESumSetExp ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
+      | 'product' Exp20 { EProdSetExp ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
       | '#' Exp20 { ECSetExp ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
       | '-' Exp20 { EMinExp ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
       | Exp20 {  $1 }

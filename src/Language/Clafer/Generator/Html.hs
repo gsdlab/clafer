@@ -368,6 +368,7 @@ printExp (ESub _ exp1 exp2)       indent irMap html comments = (printExp exp1 in
 printExp (EMul _ exp1 exp2)       indent irMap html comments = (printExp exp1 indent irMap html comments) ++ " * " ++ printExp exp2 indent irMap html comments
 printExp (EDiv _ exp1 exp2)       indent irMap html comments = (printExp exp1 indent irMap html comments) ++ " / " ++ printExp exp2 indent irMap html comments
 printExp (ESumSetExp _ exp') indent irMap html comments = "sum " ++ printExp exp' indent irMap html comments
+printExp (EProdSetExp _ exp')       indent irMap html comments = "product " ++ printExp exp' indent irMap html comments
 printExp (ECSetExp _ exp')        indent irMap html comments = "# " ++ printExp exp' indent irMap html comments
 printExp (EMinExp _ exp')         indent irMap html comments = "-" ++ printExp exp' indent irMap html comments
 printExp (EImpliesElse _ exp1 exp2 exp3) indent irMap html comments = "if " ++ (printExp exp1 indent irMap html comments) ++ " then " ++ (printExp exp2 indent irMap html comments) ++ " else " ++ (printExp exp3 indent irMap html comments)
