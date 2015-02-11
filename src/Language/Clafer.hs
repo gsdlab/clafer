@@ -465,6 +465,13 @@ iExpBasedChecks iModule = (null realLiterals, null productOperators)
     isProductOperator (IFunExp op' _) = op' == iProdSet
     isProductOperator _               = False
 
+iClaferBasedChecks :: IModule -> Bool
+iClaferBasedChecks iModule = null $ filter hasReferenceToReal iClafers
+  where
+    iClafers :: [ IClafer ]
+    iClafers = universeOn biplate iModule
+    hasReferenceToReal (IClafer{_reference=(Just IReference{_ref=pexp'})}) = getSuperId pexp' == "real"
+    hasReferenceToReal _               = False
 
 -- | Generates outputs for the given IR.
 generate :: Monad m => ClaferT m (Map.Map ClaferMode CompilerResult)
@@ -475,6 +482,7 @@ generate =
     (iModule, genv, au) <- getIr
     let
       (hasNoRealLiterals, hasNoProductOperator) = iExpBasedChecks iModule
+      hasNoReferenceToReal = iClaferBasedChecks iModule
       cargs = args env
       modes = mode cargs
       stats = showStats au $ statsModule iModule
@@ -484,7 +492,7 @@ generate =
     return $ Map.fromList (
         -- result for Alloy
         (if (Alloy `elem` modes)
-          then if (hasNoRealLiterals && hasNoProductOperator)
+          then if (hasNoRealLiterals && hasNoReferenceToReal && hasNoProductOperator)
                 then
                   let
                     (imod,strMap) = astrModule iModule
@@ -506,6 +514,7 @@ generate =
                         NoCompilerResult {
                          reason = "Alloy output unavailable because the model contains"
                                 ++ if hasNoRealLiterals then "" else " real number literal"
+                                ++ if hasNoReferenceToReal then "" else " reference to a real"
                                 ++ if hasNoProductOperator then "" else " product operator"
                                 ++ "."
                         })
@@ -515,7 +524,7 @@ generate =
         ++
         -- result for Alloy42
         (if (Alloy42 `elem` modes)
-          then if (hasNoRealLiterals && hasNoProductOperator)
+          then if (hasNoRealLiterals && hasNoReferenceToReal && hasNoProductOperator)
                 then
                    let
                       (imod,strMap) = astrModule iModule
@@ -537,6 +546,7 @@ generate =
                         NoCompilerResult {
                          reason = "Alloy output unavailable because the model contains"
                                 ++ if hasNoRealLiterals then "" else " real number literal"
+                                ++ if hasNoReferenceToReal then "" else " reference to a real"
                                 ++ if hasNoProductOperator then "" else " product operator"
                                 ++ "."
                         })
