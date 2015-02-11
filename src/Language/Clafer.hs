@@ -470,7 +470,7 @@ iClaferBasedChecks iModule = null $ filter hasReferenceToReal iClafers
   where
     iClafers :: [ IClafer ]
     iClafers = universeOn biplate iModule
-    hasReferenceToReal (IClafer{_reference=(Just IReference{_ref=pexp'})}) = getSuperId pexp' == "real"
+    hasReferenceToReal (IClafer{_reference=(Just IReference{_ref=pexp'})}) = (getSuperId pexp') == "real"
     hasReferenceToReal _               = False
 
 -- | Generates outputs for the given IR.
@@ -512,10 +512,10 @@ generate =
                     ]
                 else [ (Alloy,
                         NoCompilerResult {
-                         reason = "Alloy output unavailable because the model contains"
-                                ++ if hasNoRealLiterals then "" else " real number literal"
-                                ++ if hasNoReferenceToReal then "" else " reference to a real"
-                                ++ if hasNoProductOperator then "" else " product operator"
+                         reason = "Alloy output unavailable because the model contains: "
+                                ++ (if hasNoRealLiterals then "" else " | a real number literal")
+                                ++ (if hasNoReferenceToReal then "" else " | a reference to a real")
+                                ++ (if hasNoProductOperator then "" else " | the product operator")
                                 ++ "."
                         })
                      ]
@@ -544,10 +544,10 @@ generate =
                       ]
                 else [ (Alloy,
                         NoCompilerResult {
-                         reason = "Alloy output unavailable because the model contains"
-                                ++ if hasNoRealLiterals then "" else " real number literal"
-                                ++ if hasNoReferenceToReal then "" else " reference to a real"
-                                ++ if hasNoProductOperator then "" else " product operator"
+                         reason = "Alloy output unavailable because the model contains: "
+                                ++ (if hasNoRealLiterals then "" else " | a real number literal")
+                                ++ (if hasNoReferenceToReal then "" else " | a reference to a real")
+                                ++ (if hasNoProductOperator then "" else " | the product operator")
                                 ++ "."
                         })
                      ]
