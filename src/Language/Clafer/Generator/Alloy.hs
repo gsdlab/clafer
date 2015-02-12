@@ -53,7 +53,7 @@ genModule    claferargs'    (imodule, _)       scopes              uidIClaferMap
   where
   genScopes :: [(UID, Integer)] -> String
   genScopes    []                = ""
-  genScopes    scopes'           = " but " ++ intercalate ", " (map genScope scopes')
+  genScopes    scopes'           = " but " ++ intercalate ", " (map (\ (uid', scope)  -> show scope ++ " " ++ uid') scopes')
 
   forScopes' = "for 1" ++ genScopes scopes
   genEnv = GenEnv claferargs' uidIClaferMap' forScopes'
@@ -73,9 +73,6 @@ header    genEnv  = CString $ unlines
       then ""
       else "run show " ++ forScopes genEnv
     , ""]
-
-genScope :: (UID, Integer) -> String
-genScope    (uid', scope)   = show scope ++ " " ++ uid'
 
 
 -- 07th Mayo 2012 Rafael Olaechea
@@ -242,7 +239,8 @@ genConstraints    genEnv    resPath c
   where
   constraints = concat $ map genConst $ _elements c
   genConst x = case x of
-    IEConstraint _ pexp  -> [ genPExp genEnv ((_uid c) : resPath) pexp ]
+    IEConstraint True pexp  -> [ genPExp genEnv ((_uid c) : resPath) pexp ]
+    IEConstraint False pexp  -> [ CString "// Assertion " +++ (genAssertName pexp) +++ CString " ignored since nested assertions are not supported in Alloy.\n"]
     IEClafer c' ->
         (if genCardCrude (_card c') `elem` ["one", "lone", "some"]
          then CString ""
