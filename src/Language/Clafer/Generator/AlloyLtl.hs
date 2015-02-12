@@ -46,6 +46,7 @@ data GenCtx = GenCtx {
 data GenEnv = GenEnv
   { claferargs :: ClaferArgs
   , uidIClaferMap :: StringMap IClafer
+  , forScopes :: String
   }  deriving (Show)
 
 timeSig :: String
@@ -74,10 +75,10 @@ genAlloyLtlModule    claferargs'   (imodule, _)       scopes              uidICl
   genScopes scopes' = " but " ++ intercalate ", " (map (\ (uid', scope)  -> show scope ++ " " ++ uid') scopes')
 
   forScopes' = "for " ++ show tl ++ (genScopes $ map adjustScope scopes)
-  genEnv = GenEnv claferargs' uidIClaferMap'
+  genEnv = GenEnv claferargs' uidIClaferMap' forScopes'
   rootClafer = IEClafer $ fromJust $ findIClafer uidIClaferMap' rootIdent
   -- output = header claferargs scopes +++ (cconcat $ map (genDeclaration genEnv) (_mDecls imodule)) +++
-  output = header claferargs' forScopes' +++ (genDeclaration genEnv rootClafer) +++
+  output = header genEnv +++ (genDeclaration genEnv rootClafer) +++
        if ((not $ skip_goals claferargs') && length goals_list > 0) then
                 CString "objectives o_global {\n" +++   (cintercalate (CString ",\n") goals_list) +++   CString "\n}"
        else
@@ -85,18 +86,19 @@ genAlloyLtlModule    claferargs'   (imodule, _)       scopes              uidICl
        where
                 goals_list = filterNull (map (genDeclarationGoalsOnly genEnv) (_mDecls imodule))
 
-header :: ClaferArgs -> String -> Concat
-header    args          forScopes       = CString $ unlines
+header :: GenEnv -> Concat
+header    genEnv  = CString $ unlines
     [ if Alloy42 `elem` (mode args) then "" else "open util/integer"
     , if AlloyLtl `elem` (mode args) then "open util/ordering[Time]" else ""
     , "pred show {}"
     , if (validate args) ||  (noalloyruncommand args)
       then ""
-      else "run show " ++ forScopes
+      else "run show " ++ forScopes genEnv
     , ""
     , behavioralSigs
     ]
     where
+      args = claferargs genEnv
       behavioralSigs = unlines [
         "sig Time {loop: lone Time}",
         "fact Loop {loop in last->Time}"]
@@ -120,7 +122,8 @@ genDeclarationGoalsOnly    genEnv    x         = case x of
 genDeclaration :: GenEnv -> IElement -> Concat
 genDeclaration genEnv x = case x of
   IEClafer clafer'  -> genClafer genEnv [] clafer'
-  IEConstraint _ pexp  -> mkFact $ genPExp genEnv (GenCtx [] Nothing) pexp
+  IEConstraint True pexp  -> mkFact $ genPExp genEnv (GenCtx [] Nothing) pexp
+  IEConstraint False pexp  -> mkAssert genEnv (genAssertName pexp) $ genPExp genEnv (GenCtx [] Nothing) pexp
   IEGoal _ (PExp _ _ _ innerexp) -> case innerexp of
         IFunExp op'  _ ->  if  op' == iGMax || op' == iGMin then
                        CString ""
@@ -129,7 +132,22 @@ genDeclaration genEnv x = case x of
         _ ->  error "no unary operator (min/max) at the topmost level of a goal element."
 
 mkFact :: Concat -> Concat
-mkFact  xs = cconcat [CString "fact ", mkSet xs, CString "\n"]
+mkFact x@(CString "") = x
+mkFact xs = cconcat [CString "fact ", mkSet xs, CString "\n"]
+
+genAssertName :: PExp -> Concat
+genAssertName    PExp{_inPos=(Span _ (Pos line _))} = CString $ "assertOnLine_" ++ show line
+
+mkAssert :: GenEnv -> Concat -> Concat        -> Concat
+mkAssert    _         _         x@(CString "") = x
+mkAssert    genEnv    name      xs = cconcat
+  [ CString "assert ", name, CString " "
+  , mkSet xs
+  , CString "\n"
+  , CString "check ", name, CString " "
+  , CString $ forScopes genEnv
+  , CString "\n\n"
+  ]
 
 mkMetric :: String -> Concat -> Concat
 mkMetric goalopname xs = cconcat [ if goalopname == iGMax then CString "maximize" else  CString "minimize", CString " ", xs, CString " "]
