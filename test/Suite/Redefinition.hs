@@ -53,13 +53,9 @@ model = unlines
     , "    abstract req : InPort -> Request ?"  -- bag to set and cardinality refinement
     , "    down : Request"
     , "WinController : Controller"
-    , "    req : req -> stop"             -- redefinition
+    , "    req : req -> stop"             -- redefinition and cardinality refinement
     , "    cmd : OutPort -> MotorCommand" -- nested inheritance which requires inheritance hierarchy traversal
-    , "abstract Person -> Person 2"
-    , "Alice : Person ->> Bob 3"          -- improper refinement (cardinality, bag to set, type)
-    , "Bob : Person 2"                    -- proper refinement (cardinality, no ref)
     ]
-
 
 case_NestedInheritanceMatchTest :: Assertion
 case_NestedInheritanceMatchTest = case compileOneFragment defaultClaferArgs model of
@@ -83,10 +79,10 @@ case_NestedInheritanceMatchTest = case compileOneFragment defaultClaferArgs mode
                 c0_WinController_match = matchNestedInheritance uidIClaferMap' c0_WinController
                 c0_down = fromJust $ findIClafer uidIClaferMap' "c0_down"
                 c0_down_match = matchNestedInheritance uidIClaferMap' c0_down
-                c0_Alice = fromJust $ findIClafer uidIClaferMap' "c0_Alice"
+                {-c0_Alice = fromJust $ findIClafer uidIClaferMap' "c0_Alice"
                 c0_Alice_match = matchNestedInheritance uidIClaferMap' c0_Alice
                 c0_Bob = fromJust $ findIClafer uidIClaferMap' "c0_Bob"
-                c0_Bob_match = matchNestedInheritance uidIClaferMap' c0_Bob
+                c0_Bob_match = matchNestedInheritance uidIClaferMap' c0_Bob-}
             in do
                 isJust c0_req_match @? ("NestedInheritanceMatch not found for " ++ show c0_req)
                 isProperNesting uidIClaferMap' (c0_req_match) @? ("Improper nesting for " ++ show c0_req)
@@ -109,11 +105,11 @@ case_NestedInheritanceMatchTest = case compileOneFragment defaultClaferArgs mode
                 isJust c0_WinController_match @? ("NestedInheritanceMatch not found for" ++ show c0_WinController)
 
                 isJust c0_down_match @? ("NestedInheritanceMatch not found for" ++ show c0_down)
-                (not $ isProperNesting uidIClaferMap' (c0_down_match)) @? ("Improper nesting for " ++ show c0_down)
+                (isProperNesting uidIClaferMap' (c0_down_match)) @? ("Improper nesting for " ++ show c0_down)
                 (True, True, True) == (isProperRefinement uidIClaferMap' (c0_down_match)) @? ("Improper refinement for " ++ show c0_down)
                 (not $ isProperRedefinition (c0_down_match)) @? ("Improper redefinition for " ++ show c0_down)
 
-                isJust c0_Alice_match @? ("NestedInheritanceMatch not found for " ++ show c0_Alice)
+               {- isJust c0_Alice_match @? ("NestedInheritanceMatch not found for " ++ show c0_Alice)
                 isProperNesting uidIClaferMap' (c0_Alice_match) @? ("Improper nesting for " ++ show c0_Alice)
                 (False, False, True) == (isProperRefinement uidIClaferMap' (c0_Alice_match)) @? ("Improper refinement for " ++ show c0_Alice)
                 (not $ isProperRedefinition (c0_Alice_match)) @? ("Improper redefinition for " ++ show c0_Alice)
@@ -121,4 +117,20 @@ case_NestedInheritanceMatchTest = case compileOneFragment defaultClaferArgs mode
                 isJust c0_Bob_match @? ("NestedInheritanceMatch not found for " ++ show c0_Bob)
                 isProperNesting uidIClaferMap' (c0_Bob_match) @? ("Improper nesting for " ++ show c0_Bob)
                 (True, True, True) == (isProperRefinement uidIClaferMap' (c0_Bob_match)) @? ("Improper refinement for " ++ show c0_Bob)
-                (not $ isProperRedefinition (c0_Bob_match)) @? ("Improper redefinition for " ++ show c0_Bob)
+                (not $ isProperRedefinition (c0_Bob_match)) @? ("Improper redefinition for " ++ show c0_Bob)-}
+
+model2 :: String
+model2 = unlines
+    [ "abstract Person -> Bob 0..2"
+    , "Alice : Person -> Bob 3"    -- Improper cardinality refinement for clafer 'Alice' on line 2 column 1
+    , "Bob : Person ->> Person"    -- Improper bag to set refinement for clafer 'Bob' on line 3 column 1
+    , "Carol : Person -> Person 2" -- Improper target subtyping for clafer 'Carol' on line 4 column 1
+    ]
+
+
+case_NestedInheritanceFailTest :: Assertion
+case_NestedInheritanceFailTest = case compileOneFragment defaultClaferArgs model2 of
+    Left errors -> (show errors) == correctErrMsg @? "Incorrect error message:\nGot:" ++ show errors ++ "\nExpected:\n" ++ correctErrMsg
+    Right _ -> assertFailure "The model not expected to compile."
+    where
+        correctErrMsg = "[SemanticErr {pos = ErrPos {fragId = 1, fragPos = Pos 0 0, modelPos = Pos 0 0}, msg = \"Refinement errors in the following places:\\nImproper cardinality refinement for clafer 'Alice' on line 2 column 1\\nImproper bag to set refinement for clafer 'Bob' on line 3 column 1\\nImproper target subtyping for clafer 'Carol' on line 4 column 1\\n\"}]"
