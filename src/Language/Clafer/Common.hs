@@ -207,18 +207,20 @@ data NestedInheritanceMatch
 -- - isProperNesting && isProperRefinement && (_ident headClafer) == (_ident superClafer)
 
 isProperNesting :: StringMap IClafer -> Maybe NestedInheritanceMatch -> Bool
-isProperNesting _ Nothing  = False
-isProperNesting uidIClaferMap (Just m) = case (_parentsSuperClafer m) of
-  Nothing                 -> (_uid $ _parentClafer m) == (_uid $ _superClafersParent m)
-  Just parentsSuperClafer -> isJust $  findUIDinSupers uidIClaferMap (_parentUID $ _superClafer m) parentsSuperClafer
+isProperNesting _ Nothing  = True
+isProperNesting uidIClaferMap (Just m) = if (isTopLevel $ _superClafer m) && (_isAbstract $ _superClafer m)
+  then True
+  else case (_parentsSuperClafer m) of
+    Nothing                 -> (_uid $ _parentClafer m) == (_uid $ _superClafersParent m)
+    Just parentsSuperClafer -> isJust $  findUIDinSupers uidIClaferMap (_parentUID $ _superClafer m) parentsSuperClafer
 
 -- ^ assumes that isProperNesting m == True
 isProperRefinement :: StringMap IClafer -> Maybe NestedInheritanceMatch
   -> (Bool,  Bool,  Bool)
 isProperRefinement    _                    Nothing
-  = ( False
-    , False
-    , False )
+  = ( True
+    , True
+    , True )
 isProperRefinement    uidIClaferMap        (Just m)
   = ( properCardinalityRefinement m
     , properBagToSetRefinement m
@@ -227,7 +229,7 @@ isProperRefinement    uidIClaferMap        (Just m)
     properCardinalityRefinement NestedInheritanceMatch{_headClafer=hc, _superClafer=hcs}
       = case (_card hc, _card hcs) of
           (Just (hcl, hcu), Just (hcsl, hcsu)) -> hcl >= hcsl && (hcu <= hcsu || hcsu == -1)
-          _ -> False
+          _ -> True
     properBagToSetRefinement NestedInheritanceMatch{_headClafer=hc, _superClafer=hcs}
       = case (_reference hc, _reference hcs) of
           (Just IReference{_isSet=headIsSet}, Just IReference{_isSet=superIsSet}) -> superIsSet <= headIsSet  -- set (True) implies set (True), bag (False) allows bag (False) or set (True)
@@ -237,9 +239,9 @@ isProperRefinement    uidIClaferMap        (Just m)
     properTargetSubtyping _
       = True -- covers 1) only one of the target clafers exists, and 2) none of the target clafers exist
 
--- ^ assumes that isProperNesting m == True and isProperRefinement m == True
+-- ^ assumes that isProperNesting m == True and isProperRefinement m == (True, True, True)
 isProperRedefinition :: Maybe NestedInheritanceMatch -> Bool -- ^ whether the name of headClafer is the same as superClafer
-isProperRedefinition Nothing = False
+isProperRedefinition Nothing = True
 isProperRedefinition (Just NestedInheritanceMatch{_headClafer=hc, _superClafer=hs})
   =  (_ident hc) == (_ident hs)
 
@@ -566,11 +568,12 @@ keywordIdents =
   propertyKeywords ++ -- temp patterns
   [ iLet ]
 
-data GEnv = GEnv {
-  identCountMap :: Map.Map String Int,
-  expCount :: Int,
-  stable :: Map.Map UID [[UID]], -- super clafer names of a given clafer
-  sClafers ::[IClafer] -- all clafers (no going through references)
+data GEnv
+  = GEnv
+  { identCountMap :: Map.Map String Int
+  , expCount :: Int
+  , stable :: Map.Map UID [[UID]] -- super clafer names of a given clafer
+  , sClafers ::[IClafer] -- all clafers (no going through references)
   } deriving (Eq, Show)
 
 voidf :: Monad m => m t -> m ()

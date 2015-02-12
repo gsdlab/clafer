@@ -34,6 +34,7 @@ import qualified Data.Map as Map
 
 import Language.ClaferT
 import Language.Clafer.Common
+import Language.Clafer.Front.AbsClafer
 import Language.Clafer.Intermediate.Intclafer
 import Language.Clafer.Intermediate.ResolverName
 
@@ -250,3 +251,33 @@ resolveEElement predecessors unrollables absAncestor declarations x = case x of
     resolveEClafer predecessors unrollables absAncestor declarations clafer
   IEConstraint _ _  -> return x
   IEGoal _ _ -> return x
+
+-- -----------------------------------------------------------------------------
+
+resolveRedefinition :: (IModule, GEnv) -> Resolve IModule
+resolveRedefinition    (iModule, _)  =
+  if (not $ null improperClafers)
+    then throwError $ SemanticErr noSpan ("Refinement errors in the following places:\n" ++  improperClafers)
+    else return iModule
+  where
+    uidIClaferMap' = createUidIClaferMap iModule
+    improperClafers :: String
+    improperClafers = foldMapIR isImproper iModule
+
+    isImproper :: Ir -> String
+    isImproper (IRClafer claf@IClafer{_cinPos = (Span (Pos l c) _) ,_ident=i}) =
+      let
+        match = matchNestedInheritance uidIClaferMap' claf
+      in
+        if (isProperNesting uidIClaferMap' match)
+        then let
+               (properCardinalityRefinement, properBagToSetRefinement, properTargetSubtyping) = isProperRefinement uidIClaferMap' match
+             in if (properCardinalityRefinement)
+             then if (properBagToSetRefinement)
+                  then if (properTargetSubtyping)
+                       then ""
+                       else ("Improper target subtyping for clafer '" ++ i ++ "' on line " ++ show l ++ " column " ++ show c ++ "\n")
+                  else ("Improper bag to set refinement for clafer '" ++ i ++ "' on line " ++ show l ++ " column " ++ show c ++ "\n")
+             else ("Improper cardinality refinement for clafer '" ++ i ++ "' on line " ++ show l ++ " column " ++ show c ++ "\n")
+        else ("Improperly nested clafer '" ++ i ++ "' on line " ++ show l ++ " column " ++ show c ++ "\n")
+    isImproper _ = ""
