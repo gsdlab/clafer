@@ -76,9 +76,12 @@ genAlloyLtlModule    claferargs'   (imodule, _)       scopes              uidICl
 
   forScopes' = "for " ++ show tl ++ (genScopes $ map adjustScope scopes)
   genEnv = GenEnv claferargs' uidIClaferMap' forScopes'
-  rootClafer = IEClafer $ fromJust $ findIClafer uidIClaferMap' rootIdent
+  rootClafer = findIClafer uidIClaferMap' rootIdent
   -- output = header claferargs scopes +++ (cconcat $ map (genDeclaration genEnv) (_mDecls imodule)) +++
-  output = header genEnv +++ (genDeclaration genEnv rootClafer) +++
+  outputBody = case rootClafer of
+                          Just c' -> (genRootClafer genEnv c')
+                          _ -> error "Missing root clafer" -- should never happen
+  output = header genEnv +++ outputBody +++
        if ((not $ skip_goals claferargs') && length goals_list > 0) then
                 CString "objectives o_global {\n" +++   (cintercalate (CString ",\n") goals_list) +++   CString "\n}"
        else
@@ -99,9 +102,11 @@ header    genEnv  = CString $ unlines
     ]
     where
       args = claferargs genEnv
-      behavioralSigs = unlines [
-        "sig Time {loop: lone Time}",
-        "fact Loop {loop in last->Time}"]
+      behavioralSigs = unlines
+        [ "sig Time {loop: lone Time}"
+        , "fact Loop {loop in last->Time}"
+        , "fun timeLoop: Time -> Time { Time <: next + loop }"
+        ]
 
 
 -- 07th Mayo 2012 Rafael Olaechea
@@ -117,11 +122,35 @@ genDeclarationGoalsOnly    genEnv    x         = case x of
                         error "unary operator  distinct from (min/max) at the topmost level of a goal element"
         _ ->  error "no unary operator (min/max) at the topmost level of a goal element."
 
+genRootClafer :: GenEnv -> IClafer -> Concat
+genRootClafer genEnv clafer'
+  = (cunlines $ filterNull
+      [   claferDecl clafer' (
+          (showSet (CString "\n, ") $ genRelations genEnv clafer')
+          +++ (optShowSet $ filterNull $ genConstraints genEnv (GenCtx [] Nothing) clafer')
+        )
+      ]
+    )
+  +++ CString "\n" +++ children'
+  +++ CString "\n" +++ assertions
+  where
+  children' = cconcat $ filterNull $ map
+             (genClafer genEnv [_uid clafer']) $
+             getSubclafers $ _elements clafer'
+  assertions = cconcat $ map mkSingleAssert $ getAssertions clafer'
+  mkSingleAssert pexp = mkAssert genEnv (genAssertName pexp) $
+    genAssertBody genEnv (GenCtx [_uid clafer'] Nothing) pexp clafer'
+
+getAssertions :: IClafer -> [PExp]
+getAssertions clafer' = concat $ map pullAssert $ _elements clafer'
+  where pullAssert (IEConstraint False pexp) = [pexp]
+        pullAssert _ = []
+
 -- 07th Mayo 2012 Rafael Olaechea
 -- Removed goal from this function as they will now  all be collected into a single block.
 genDeclaration :: GenEnv -> IElement -> Concat
 genDeclaration genEnv x = case x of
-  IEClafer clafer'  -> genClafer genEnv [] clafer'
+  IEClafer clafer'  -> genRootClafer genEnv clafer'
   IEConstraint True pexp  -> mkFact $ genPExp genEnv (GenCtx [] Nothing) pexp
   IEConstraint False pexp  -> mkAssert genEnv (genAssertName pexp) $ genPExp genEnv (GenCtx [] Nothing) pexp
   IEGoal _ (PExp _ _ _ innerexp) -> case innerexp of
@@ -137,6 +166,12 @@ mkFact xs = cconcat [CString "fact ", mkSet xs, CString "\n"]
 
 genAssertName :: PExp -> Concat
 genAssertName    PExp{_inPos=(Span _ (Pos line _))} = CString $ "assertOnLine_" ++ show line
+
+genAssertBody :: GenEnv -> GenCtx -> PExp -> IClafer -> Concat
+genAssertBody genEnv ctx pexp clafer' = cconcat $
+    if containsTimedRel genEnv pexp
+    then [genTimeDecl "t" [] clafer', genPExp genEnv ctx {time = Just "t"} pexp]
+    else [genPExp genEnv ctx {time = Nothing} pexp]
 
 mkAssert :: GenEnv -> Concat -> Concat        -> Concat
 mkAssert    _         _         x@(CString "") = x
@@ -173,13 +208,14 @@ genClafer genEnv resPath' clafer'
       [   cardFact
       +++ claferDecl clafer' (
           (showSet (CString "\n, ") $ genRelations genEnv clafer')
-          +++ (optShowSet $ filterNull $ genConstraints genEnv (GenCtx resPath' Nothing) clafer')
+          +++ (optShowSet $ filterNull $ genConstraints genEnv genCtx clafer')
         )
       ]
     )
-  +++ CString "\n"
-  +++ children'
+  +++ CString "\n" +++ children'
+  +++ CString "\n" +++ assertions
   where
+  genCtx = GenCtx resPath' Nothing
   children' = cconcat $ filterNull $ map
              (genClafer genEnv ((_uid clafer') : resPath')) $
              getSubclafers $ _elements clafer'
@@ -189,6 +225,9 @@ genClafer genEnv resPath' clafer'
           CString "set" -> CString ""
           c -> mkFact c
     | otherwise = CString ""
+  assertions = cconcat $ map mkSingleAssert $ getAssertions clafer'
+  mkSingleAssert pexp = mkAssert genEnv (genAssertName pexp) $
+    genAssertBody genEnv genCtx pexp clafer'
 
 claferDecl :: IClafer -> Concat -> Concat
 claferDecl    c     rest    = cconcat
@@ -299,10 +338,11 @@ genConstraints    genEnv    ctx       c
   constraints = concat $ map genConst $ _elements c
   genConst :: IElement -> [ Concat ]
   genConst    x = case x of
-    IEConstraint _ pexp  -> -- genPExp cargs ((_uid c) : resPath) pexp
+    IEConstraint True pexp  -> -- genPExp cargs ((_uid c) : resPath) pexp
         if containsTimedRel genEnv pexp
         then [genTimeDecl "t" (resPath ctx) c, genPExp genEnv ctx { time = Just "t", resPath = ((_uid c) : (resPath ctx))} pexp]
         else [genPExp genEnv ctx { time = Nothing, resPath = ((_uid c) : (resPath ctx))} pexp]
+    IEConstraint False _ -> [] -- assertions are handled at the genClafer level
     IEClafer c' ->
         (if genCardCrude (_card c') `elem` ["one", "lone", "some"]
          then CString ""
@@ -313,8 +353,6 @@ genConstraints    genEnv    ctx       c
 -- generates time variable binding declaration which appears as a first expression in mutable constraints
 -- it references all time moments when context clafer instance is active
 -- typical binding form is: this.(ParentSig.ContextClaferRelation)
-{- OLD: genTimeDecl tvar ctx c = CString ("all " ++ tvar ++ " : (this.(" ++ head (resPath ctx)  ++ ".@" ++ genRelName (_uid c) ++ ")) | " )-}
--- one first <: Time |
 -- Sample template
 -- let local_next = (this.(c0_a.@r_c0_b)) <: next | one t : Time | one t <: local_next and no local_next :> t
 -- if defined under root clafer:
@@ -504,23 +542,22 @@ genPExp'    genEnv    ctx       (PExp iType' pid' pos exp') = case exp' of
         (True, Just t) -> "." ++ t
         _ -> ""
       _ -> ""
-  IClaferId _ sid istop (Just bind) -> CString $
+  IClaferId _ sid _ (Just bind) -> CString $
       if head sid == '~'
       then sid
-      else if isNothing iType'
-           then sid'
-           else case fromJust $ iType' of
-                  TInteger -> vsident
-                  TReal -> vsident
-                  TString -> vsident
-                  _ -> sid'
+      else if isBuiltInExpr then vsident else sid'
     where
+    isBuiltInExpr = isPrimitive sid ||
+      case iType' of
+           Just TInteger -> True
+           Just TReal -> True
+           Just TString -> True
+           _ -> False
     boundIClafer = SMap.lookup bind (uidIClaferMap genEnv)
-    sid' = (if istop then "" else '@' : genRelName "") ++ sid ++ timeJoin
-    {-sid' = ('@' : genRelName "") ++ sid ++ timeJoin -}
-    timeJoin = if sid == "this" then "" else case (boundIClafer, time ctx) of
-      (Just IClafer {_mutable=True}, Just t) -> "." ++ t
-      _ -> ""
+    sid' = if isBuiltInExpr || sid == "this" then sid else ('@' : genRelName "" ++ sid ++ timeJoin)
+    timeJoin = case (boundIClafer, time ctx) of
+                    (Just IClafer {_mutable=True}, Just t) -> "." ++ t
+                    _ -> ""
     -- 29/March/2012  Rafael Olaechea: ref is now prepended with clafer name to be able to refer to it from partial instances.
     -- 30/March/2012 Rafael Olaechea added referredClaferUniqeuid to fix problems when having this.x > number  (e.g test/positive/i10.cfr )
     vsident = if (noalloyruncommand $ claferargs genEnv)
@@ -608,7 +645,7 @@ genLtlExp    genEnv    ctx       op'        exps' = {- trace ("call in genLtlExp
   genU (e1:e2:_) = mapToCStr ["some ", nextT, ":", currT, ".*", nextNLoop, " | "] ++ [genPExp' genEnv (ctx {time = Just nextT}) e2] ++
     mapToCStr [" and ( all ", nextT', ":", currT, ".*", nextNLoop, " & ^", nextNLoop, ".", nextT, "|"] ++ [genPExp' genEnv (ctx {time = Just nextT'}) e1, CString ")"]
   genU _ = error "AlloyLtl.genLtlExp: U modality requires two arguments" -- should never happen
-  nextNLoop = "(" ++ timeSig ++ " <: next + loop)"
+  nextNLoop = "timeLoop" -- "(" ++ timeSig ++ " <: next + loop)"
   currT = maybe "t" id $ time ctx
   nextT = currT ++ "'"
   nextT' = nextT ++ "'"
