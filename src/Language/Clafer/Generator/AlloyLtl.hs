@@ -527,11 +527,16 @@ genPExp'    genEnv    ctx       (PExp iType' pid' pos exp') = case exp' of
 -- 3-May-2012 Rafael Olaechea.
 -- Removed transfromation from x = -2 to x = (0-2) as this creates problem with  partial instances.
 -- See http://gsd.uwaterloo.ca:8888/question/461/new-translation-of-negative-number-x-into-0-x-is.
+-- Encoding of Weak Until expression is done by translating to equivalent Until expression
+-- a W b === G a || a U b
 transformExp :: IExp -> IExp
 transformExp (IFunExp op' (e1:_))
   | op' == iMin = IFunExp iMul [PExp (_iType e1) "" noSpan $ IInt (-1), e1]
 transformExp    x@(IFunExp op' exps'@(e1:e2:_))
   | op' == iXor = IFunExp iNot [PExp (Just TBoolean) "" noSpan (IFunExp iIff exps')]
+  | op' == iW = let p1 = PExp (Just TBoolean) "" noSpan $ IFunExp iG [e1] -- G e1
+                    p2 = PExp (Just TBoolean) "" noSpan x{_op=iU} -- e1 U e2
+                in IFunExp iOr [p1, p2] -- G e1 || e1 U e2
   | op' == iJoin && isClaferName' e1 && isClaferName' e2 &&
     getClaferName e1 == thisIdent && head (getClaferName e2) == '~' =
         IFunExp op' [e1{_iType = Just $ TClafer []}, e2]
@@ -568,18 +573,23 @@ genLtlExp    genEnv    ctx       op'        exps' = {- trace ("call in genLtlExp
     | op' == iX = genX
     | op' == iG = genG
     | op' == iU = genU
-    | otherwise = (\_ -> [])
+    | op' == iW = error $ "AlloyLtl.genLtlExp: W should have been translated in transformExp"
+    | otherwise = error $ "AlloyLtl.genLtlExp: unsupported temporal operator: " ++ op' -- should never happen
   genF [e1]
     | containsMutable genEnv e1 = mapToCStr ["some ", nextT, ":", currT, ".*", nextNLoop, " | "] ++ [genPExp' genEnv (ctx {time = Just nextT}) e1]
     | otherwise = [genPExp' genEnv (ctx {time = Just nextT}) e1]
+  genF _ = error "AlloyLtl.genLtlExp: F modality requires one argument" -- should never happen
   genX [e1]
     | containsMutable genEnv e1 = mapToCStr ["let ", nextT, "=", currT, ".", nextNLoop, " | some ", nextT, " and "] ++ [genPExp' genEnv (ctx {time = Just nextT}) e1]
     | otherwise = [genPExp' genEnv (ctx {time = Just nextT}) e1]
+  genX _ = error "AlloyLtl.genLtlExp: X modality requires one argument" -- should never happen
   genG [e1]
     | containsMutable genEnv e1 = mapToCStr ["some loop and all ", nextT, ":", currT, ".*", nextNLoop, " | "] ++ [genPExp' genEnv (ctx {time = Just nextT}) e1]
     | otherwise = [genPExp' genEnv (ctx {time = Just nextT}) e1]
+  genG _ = error "AlloyLtl.genLtlExp: G modality requires one argument" -- should never happen
   genU (e1:e2:_) = mapToCStr ["some ", nextT, ":", currT, ".*", nextNLoop, " | "] ++ [genPExp' genEnv (ctx {time = Just nextT}) e2] ++
     mapToCStr [" and ( all ", nextT', ":", currT, ".*", nextNLoop, " & ^", nextNLoop, ".", nextT, "|"] ++ [genPExp' genEnv (ctx {time = Just nextT'}) e1, CString ")"]
+  genU _ = error "AlloyLtl.genLtlExp: U modality requires two arguments" -- should never happen
   nextNLoop = "(" ++ timeSig ++ " <: next + loop)"
   currT = maybe "t" id $ time ctx
   nextT = currT ++ "'"
