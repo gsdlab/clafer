@@ -626,7 +626,8 @@ generate =
           then [ (Python,
                   CompilerResult {
                    extension = "py",
-                   outputCode = genPythonModule iModule,
+                   -- outputCode = genPythonModule iModule,
+		   outputCode = genPythonModule cargs (iModule, genv) scopes,
                    statistics = stats,
                    claferEnv  = env,
                    mappingToAlloy = [],

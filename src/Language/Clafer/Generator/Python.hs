@@ -1,258 +1,262 @@
-{-
- Copyright (C) 2012 Kacper Bak, Jimmy Liang <http://gsd.uwaterloo.ca>
+{-# LANGUAGE NamedFieldPuns #-}
+{-# LANGUAGE ViewPatterns #-}
 
- Permission is hereby granted, free of charge, to any person obtaining a copy of
- this software and associated documentation files (the "Software"), to deal in
- the Software without restriction, including without limitation the rights to
- use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
- of the Software, and to permit persons to whom the Software is furnished to do
- so, subject to the following conditions:
+-- | Generates JS representation of IR for the <https://github.com/gsdlab/chocosolver Chocosolver>.
+module Language.Clafer.Generator.Python (genPythonModule) where
 
- The above copyright notice and this permission notice shall be included in all
- copies or substantial portions of the Software.
-
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- SOFTWARE.
--}
--- | Generates Python representation of IR for the <https://github.com/gsdlab/ClaferZ3 ClaferZ3>.
-module Language.Clafer.Generator.Python where
-
-import Data.Char
-import Data.Maybe (fromMaybe)
-
+import Control.Applicative
+import Control.Lens.Plated hiding (rewrite)
+import Control.Monad
+import Data.Data.Lens
+import Data.List
+import Data.Maybe
+import Data.Ord
+import Prelude hiding (exp)
+import Language.Clafer.ClaferArgs
 import Language.Clafer.Common
 import Language.Clafer.Front.AbsClafer
 import Language.Clafer.Intermediate.Intclafer
 
-tag:: String -> String -> String
-tag name exp' = concat ["<", name, ">", exp', "</", name, ">\n"]
+-- | Choco 3 code generation
+genPythonModule :: ClaferArgs -> (IModule, GEnv) -> [(UID, Integer)] -> Result
+genPythonModule _ (imodule@IModule{_mDecls}, _) scopes = 
+    genImports
+    ++ "\n"
+    ++ (genAbstractClafer =<< abstractClafers)
+    ++ (genConcreteClafer =<< concreteClafers)
+    ++ (genRefClafer =<< clafers)
+    ++ (genTopConstraint =<< _mDecls)
+    ++ (genConstraint =<< clafers)
+    ++ (genGoal =<< _mDecls)
+    ++ genScopes
+    where
+    root :: IClafer
+    root = IClafer noSpan False Nothing rootIdent rootIdent "" Nothing Nothing (Just (1, 1)) (0, 0) _mDecls
 
---Maybe a -> (a -> [Char]) -> [Char]
---optTag elem f = maybe "" f elem
+    toplevelClafers = mapMaybe iclafer _mDecls
+    -- The sort is so that we encounter sub clafers before super clafers when abstract clafers extend other abstract clafers
+    abstractClafers = sortBy (comparing $ length . supersOf . _uid) $ filter _isAbstract toplevelClafers
+    parentChildMap = childClafers root
+    clafers = snd <$> parentChildMap
+    claferUids = _uid <$> clafers
+    concreteClafers = filter isNotAbstract clafers
 
-tagType :: String -> String -> String -> String
-tagType name typename exp' = opening ++ rest
-  where
-  opening = concat ["<", name, " xsi:type=\"cl:", typename, "\""]
-  rest
-    | null exp' =" />"
-    | otherwise = concat [">", exp', "</", name, ">"]
+    claferWithUid u = fromMaybe (error $ "claferWithUid: \"" ++ u ++ "\" is not a clafer") $ find ((== u) . _uid) clafers
 
-genPythonInteger :: Integer -> String
-genPythonInteger n = concat ["IntegerLiteral.IntegerLiteral(", show n, ")" ] -- might need to include IntegerLiteral
+    -- All abstract clafers u inherits
+    supersOf :: String -> [String]
+    supersOf u =
+        case superOf u of
+             Just su -> su : supersOf su
+             Nothing -> []
 
-isNull :: String -> String
-isNull [] = "\"\""
-isNull x = x
+    superOf u =
+        case _super $ claferWithUid u of
+            Just (PExp{_exp = IClaferId{_sident}})
+                | _sident == baseClafer -> Nothing
+                | isPrimitive _sident   -> Nothing
+                | otherwise             -> Just _sident
+            _ -> Nothing
 
-boolHelper:: String -> String
-boolHelper (x:xs) = toUpper x : xs
-boolHelper [] = []
+{-    refOf u =
+        case _reference $ claferWithUid u of
+            Just (IReference{_ref=PExp{_exp = IClaferId{_sident}}})
+                | _sident == "int"    -> Just "integer"
+                | isPrimitive _sident -> Just _sident
+                | otherwise           -> Nothing
+            _ -> Nothing
+-}
+    parentOf u = fst $ fromMaybe (error $ "parentOf: \"" ++ u ++ "\" is not a clafer") $ find ((== u) . _uid . snd) parentChildMap
 
-genPythonBoolean :: String -> Bool -> String
-genPythonBoolean label b = concat [label, "=", boolHelper $ toLowerS $ show b]
+    genCard :: Interval -> Maybe String
+    genCard (0, -1) = Nothing
+    genCard (low, -1) = return $ show low
+    genCard (low, high) = return $ show low ++ ", " ++ show high
 
-genPythonString :: String -> String
-genPythonString str = concat [ "StringLiteral.StringLiteral(", show str, ")"] -- might need to include StringLiteral
+    genImports = concat
+      [ "from jsir.IR import *\n"
+  
+      ]
 
-genPythonIntPair :: (Integer, Integer) -> String
-genPythonIntPair (x, y) = concat
-  [ "(", genPythonInteger x
-  , ","
-  , genPythonInteger y, ")"]
+    genScopes :: Result
+    genScopes =
+        (if null scopeMap then "" else "scope({" ++ intercalate ", " scopeMap ++ "});\n")
+        ++ "defaultScope(1);\n"
+        ++ "stringLength(" ++ show longestString ++ ");\n"
+        where
+            largestPositiveInt :: Integer
+            largestPositiveInt = 2 ^ (bitwidth - 1)
+            scopeMap = [uid' ++ ":" ++ show scope | (uid', scope) <- scopes, uid' /= "int"]
+    exprs :: [IExp]
+    exprs = universeOn biplate imodule
 
--- | Generate an API for the IR in Python
-genPythonModule :: IModule -> Result
-genPythonModule imodule = concat
-  [ "from ast import Module\n"
-  , "from ast import GCard\n"
-  , "from ast import Supers\n"
-  , "from ast import Clafer\n"
-  , "from ast import Exp\n"
-  , "from ast import Declaration\n"
-  , "from ast import LocalDeclaration\n"
-  , "from ast import IRConstraint\n"
-  , "from ast import FunExp\n"
-  , "from ast import ClaferId\n"
-  , "from ast import DeclPExp\n"
-  , "from ast import Goal\n\n"
-  , "from ast import IntegerLiteral\n"
-  , "from ast import DoubleLiteral\n"
-  , "from ast import StringLiteral\n"
-  , "def getModule():\n"
-  , "\tstack = []\n"
-  , "\tmodule = Module.Module(\"\")\n"
-  , "\tstack.append(module)\n"
-  , concatMap genPythonElement $ _mDecls imodule
-  , "\treturn module"
-  ]
+    stringLength :: IExp -> Maybe Int
+    stringLength (IStr string) = Just $ length string
+    stringLength _ = Nothing
 
+    longestString :: Int
+    longestString = maximum $ 16 : mapMaybe stringLength exprs
 
-genPythonClafer :: IClafer -> Result
-genPythonClafer x = case x of
-  IClafer pos' abstract' gcard' id' uid' puid' super' refrence' card' glcard' elements'  ->
-    concat [ "\t", genPythonPosition pos', "\n"
-           , "\t", genPythonAbstract abstract', "\n"
-           , "\t", maybe "" genPythonGCard gcard', "\n"
-           , "\t", genPythonId id', "\n"
-           , "\t", genPythonUid uid', "\n"
-           , "\t", genPythonParentUid puid', "\n"
-           , "\t", genPythonSuper super', "\n"
-           , "\t", genPythonReference refrence', "\n"
-           , "\t", maybe "" genPythonCard card', "\n"
-           , "\t", genPythonGlCard glcard', "\n"
-           , "\tcurrClafer = Clafer.Clafer(pos=pos, isAbstract=isAbstract, gcard=groupCard, ident=id, uid=uid, my_supers=my_supers, card=card, glCard=globalCard)\n"
-           , "\tstack[-1].addElement(currClafer)\n"
-           , "\tstack.append(currClafer)\n"
-           , concatMap genPythonElement elements'
-           , "\tstack.pop()\n"]
+    genConcreteClafer :: IClafer -> Result
+    genConcreteClafer IClafer{_uid, _card = Just _card, _gcard = Just (IGCard _ _gcard)} =
+            _uid ++ " = " ++ constructor ++ "(\"" ++ _uid ++ "\")" ++ prop "withCard" (genCard _card) ++ prop "withGroupCard" (genCard _gcard) ++ prop "extending" (superOf _uid) ++ ";\n"
+        where
+            constructor =
+                case parentOf _uid of
+                     "root" -> "Clafer"
+                     puid   -> puid ++ ".addChild"
+    genConcreteClafer (IClafer _ _ Nothing _ _ _ _ _ _ _ _) = error "Choco.getConcreteClafer undefined"
+    genConcreteClafer (IClafer _ _ (Just (IGCard _ _)) _ _ _ _ _ Nothing _ _) = error "Choco.getConcreteClafer undefined"
 
-genPythonAbstract :: Bool -> String
-genPythonAbstract isAbstract' = concat [ genPythonBoolean "isAbstract" isAbstract']
-
-genPythonGCard :: IGCard -> String
-genPythonGCard (IGCard isKeyword' interval') = concat
-		[ "groupCard = GCard.GCard(", genPythonBoolean "isKeyword" isKeyword', ", "
-    	, "interval=" , genPythonInterval interval' , ")"]
-
-genPythonInterval :: (Integer, Integer) -> String
-genPythonInterval (nMin, nMax) = concat
-  [ "(", genPythonInteger nMin
-  , ",", genPythonInteger nMax
-  , ")"]
-
-genPythonId :: String -> String
-genPythonId ident' = concat[ "id=\"", ident', "\""]
-
-genPythonUid :: String -> String
-genPythonUid uid' = concat [ "uid=\"", uid', "\""]
-
-genPythonParentUid :: String -> String
-genPythonParentUid uid' = concat [ "parentUid=\"", uid', "\""]
-
-genPythonSuper :: Maybe PExp -> String
-genPythonSuper x = case x of
-  Nothing                      -> ""
-  Just pexp' -> concat
-    [ "my_Super = "
-    , genPythonPExp "Super" pexp'
-    ]
-
-genPythonReference :: Maybe IReference -> String
-genPythonReference x = case x of
-  Nothing                        -> ""
-  Just (IReference isSet' pexp') -> concat
-    [ "my_Reference = Reference.Reference("
-    , genPythonBoolean "isSet" isSet'
-    , ", "
-    , genPythonPExp "Ref" pexp'
-    , ")" ]
-
-genPythonCard :: (Integer, Integer) -> String
-genPythonCard interval' = concat [ "card=" , genPythonInterval interval']
-
-genPythonGlCard :: (Integer, Integer) -> String
-genPythonGlCard interval' = concat ["globalCard=", genPythonInterval interval']
-
-genPythonElement :: IElement -> String
-genPythonElement x = case x of
-  IEClafer clafer'  -> concat ["##### clafer #####\n" ,genPythonClafer clafer']
-  IEConstraint isHard' pexp'  -> concat
-                         [ "##### constraint #####\n", "\tconstraint = IRConstraint.IRConstraint(" , genPythonBoolean "isHard" isHard' , " ,"
-                         , " exp=", genPythonPExp "ParentExp" pexp' , ")\n"
-                         , "\tstack[-1].addElement(constraint)\n"]
-  IEGoal isMaximize' pexp' -> concat
-                         [ "##### goal #####\n" ,"\tgoal = Goal.Goal(" , genPythonBoolean "isMaximize" isMaximize'
-                         , ", exp=", genPythonPExp "ParentExp" pexp' , ")\n"
-                         , "\tstack[-1].addElement(goal)\n"]
+    prop name value =
+        case value of
+                Just value' -> "." ++ name ++ "(" ++ value' ++ ")"
+                Nothing     -> ""
 
 
-{-genPythonAnyOp ft f xs = concatMap
-  (\(tname, texp) -> tagType tname (ft texp) $ f texp) xs -}
+    genRefClafer :: IClafer -> Result
+    genRefClafer c@IClafer{_uid, _reference, _card} =
+        case (getReference c, _reference, _card) of
+             ([target], Just (IReference True _), Just (lb, ub))  -> if (lb > 1 || ub > 1 || lb == -1 || ub == -1)
+                then _uid ++ ".refToUnique(" ++ genTarget target ++ ");\n"
+                else _uid ++ ".refTo(" ++ genTarget target ++ ");\n"
+             ([target], Just (IReference _ _), _) -> _uid ++ ".refTo(" ++ genTarget target ++ ");\n"
+             _ -> ""
+        where
+            genTarget "integer" = "\"int\""
+            genTarget "int" = "\"int\""
+            genTarget target = target
 
+    genAbstractClafer :: IClafer -> Result
+    genAbstractClafer IClafer{_uid, _card = Just _} =
+        _uid ++ " = Abstract(\"" ++ _uid ++ "\")" ++ prop "extending" (superOf _uid) ++ ";\n"
+    genAbstractClafer IClafer{_uid, _card = Nothing} =
+        _uid ++ " = Abstract(\"" ++ _uid ++ "\")" ++ prop "extending" (superOf _uid) ++ ";\n"
+	
 
-genPythonPExp :: String -> PExp -> String
-genPythonPExp tagName (PExp iType' pid' pos' iexp') = concat
-  [ "\n\t\tExp.Exp","(expType=\"", tagName, "\", ", maybe "exptype=\"\"" genPythonIType iType'
-  , ", parentId=\"", pid', "\""
-  , ", " , genPythonPosition pos'
-  , ", iExpType=\"" , genPythonIExpType iexp' , "\""
-  , ", iExp=[" , genPythonIExp iexp' ,"])"]
+    genTopConstraint :: IElement -> Result
+    genTopConstraint (IEConstraint _ pexp) = "Constraint(" ++ genConstraintPExp pexp ++ ");\n"
+    genTopConstraint _ = ""
 
-genPythonPosition :: Span -> String
-genPythonPosition (Span (Pos s1 s2) (Pos e1 e2)) = concat
-  [ "pos=(", genPythonIntPair (s1, s2), ", ", genPythonIntPair (e1, e2), ")"]
+    genConstraint :: IClafer -> Result
+    genConstraint IClafer{_uid, _elements} =
+        unlines [_uid ++ ".addConstraint(" ++ genConstraintPExp c ++ ");"
+            | c <- mapMaybe iconstraint _elements]
 
-genPythonIExpType :: IExp -> String
-genPythonIExpType x = case x of
-  IDeclPExp _ _ _ -> "IDeclarationParentExp"
-  IFunExp _ _ -> "IFunctionExp"
-  IInt _ -> "IIntExp"
-  IDouble _ -> "IDoubleExp"
-  IStr _ -> "IStringExp"
-  IClaferId _ _ _ _ -> "IClaferId"
+    genGoal :: IElement -> Result
+    genGoal (IEGoal _ PExp{_exp = IFunExp{_op="max", _exps=[expr]}})  = "max(" ++ genConstraintPExp expr ++ ");\n"
+    genGoal (IEGoal _ PExp{_exp = IFunExp{_op="min", _exps=[expr]}})  = "min(" ++ genConstraintPExp expr ++ ");\n"
+    genGoal (IEGoal _ _) = error $ "Unknown objective"
+    genGoal _ = ""
 
+    rewrite :: PExp -> PExp
+    -- Rearrange right joins to left joins.
+    rewrite p1@PExp{_iType = Just _, _exp = IFunExp "." [p2, p3@PExp{_exp = IFunExp "." _}]} =
+        p1{_exp = IFunExp "." [p3{_iType = _iType p4, _exp = IFunExp "." [p2, p4]}, p5]}
+        where
+            PExp{_exp = IFunExp "." [p4, p5]} = rewrite p3
+    rewrite p1@PExp{_exp = IFunExp{_op = "-", _exps = [PExp{_exp = IInt i}]}} =
+        -- This is so that the output looks cleaner, no other purpose since the Choco optimizer
+        -- in the backend will treat the pre-rewritten expression the same.
+        p1{_exp = IInt (-i)}
+    rewrite p = p
 
-declHelper :: [IDecl] -> String
-declHelper [] = "None, "
-declHelper x = concatMap genPythonDecl x
+    genConstraintPExp :: PExp -> String
+    genConstraintPExp = genConstraintExp . _exp . rewrite
 
-genPythonIExp :: IExp -> String
-genPythonIExp x = case x of
-  IDeclPExp quant' decls' pexp' -> concat
-    [ "DeclPExp.DeclPExp(" , "quantifier=\"", (genPythonQuantType quant'), "\", "
-    , "declaration=", declHelper decls'
-    , "bodyParentExp=" , genPythonPExp "BodyParentExp" pexp', ")"]
-  IFunExp op' exps' -> concat
-    [ "FunExp.FunExp(operation=\"" , (if op' == "-" && length exps' == 1 then "UNARY_MINUS" else op') , "\", elements="
-    , "[", concatMap (\y -> genPythonPExp "Argument" y ++",") (init exps') , genPythonPExp "Argument" (last exps') ,"])" ]
-{-    where
-    escape '\"'="&quot;"
-    escape '\''="&apos;"
-    escape '<' ="&lt;"
-    escape '>' ="&gt;"
-    escape '&' ="&amp;"
-    escape x    = [x] -}
-  IInt n -> genPythonInteger n
-  IDouble n ->  concat [ "DoubleLiteral.DoubleLiteral(", show n, ")"] --DoubleLiteral
-  IStr str -> genPythonString str
-  IClaferId modName' sident' isTop' bind' -> concat
-    [ "ClaferId.ClaferId(moduleName=\"", modName' , "\", "
-    , "my_id=\"", sident' , "\", "
-    , genPythonBoolean "isTop" isTop' , ", "
-    , "my_bind=\"", fromMaybe "" bind' , "\")"]
+    genConstraintExp :: IExp -> String
+    genConstraintExp (IDeclPExp quant' [] body') =
+        mapQuant quant' ++ "(" ++ genConstraintPExp body' ++ ")"
+    genConstraintExp (IDeclPExp quant' decls' body') =
+        mapQuant quant' ++ "([" ++ intercalate ", " (map genDecl decls') ++ "], " ++ genConstraintPExp body' ++ ")"
+        where
+            genDecl (IDecl isDisj' locals body'') =
+                (if isDisj' then "disjDecl" else "decl") ++ "([" ++ intercalate ", " (map genLocal locals) ++ "], " ++ genConstraintPExp body'' ++ ")"
+            genLocal local =
+                local ++ " = local(\"" ++ local ++ "\")"
 
+    genConstraintExp (IFunExp "." [e1, PExp{_exp = IClaferId{_sident = "ref"}}]) =
+        "joinRef(" ++ genConstraintPExp e1 ++ ")"
+    genConstraintExp (IFunExp "." [e1, PExp{_exp = IClaferId{_sident = "parent"}}]) =
+        "joinParent(" ++ genConstraintPExp e1 ++ ")"
+    genConstraintExp (IFunExp "." [e1, PExp{_exp = IClaferId{_sident}}]) =
+        "join(" ++ genConstraintPExp e1 ++ ", " ++ _sident ++ ")"
+    genConstraintExp (IFunExp "." [_, _]) =
+        error $ "Did not rewrite all joins to left joins."
+    genConstraintExp (IFunExp "-" [arg]) =
+        "minus(" ++ genConstraintPExp arg ++ ")"
+    genConstraintExp (IFunExp "-" [arg1, arg2]) =
+        "sub(" ++ genConstraintPExp arg1 ++ ", " ++ genConstraintPExp arg2 ++ ")"
+    genConstraintExp (IFunExp "sum" args')
+        | [arg] <- args', PExp{_exp = IFunExp{_exps = [a, PExp{_exp = IClaferId{_sident = "ref"}}]}} <- rewrite arg =
+            "sum(" ++ genConstraintPExp a ++ ")"
+        | otherwise = error "Choco: Unexpected sum argument."
+    genConstraintExp (IFunExp "+" args') =
+	(if _iType (head args') == Just TString then "concat" else "add") ++
+            "(" ++ intercalate ", " (map genConstraintPExp args') ++ ")"
+    genConstraintExp (IFunExp op' args') =
+        mapFunc op' ++ "(" ++ intercalate ", " (map genConstraintPExp args') ++ ")"
+    -- this is a keyword in Javascript so use "$this" instead
+    genConstraintExp IClaferId{_sident = "this"} = "$this()"
+    genConstraintExp IClaferId{_sident}
+        | _sident `elem` claferUids = "glob(" ++ _sident ++ ")"
+        | otherwise                = _sident
+    genConstraintExp (IInt val) = "constant(" ++ show val ++ ")"
+    genConstraintExp (IStr val) = "constant(" ++ show val ++ ")"
+    genConstraintExp (IDouble val) = "constant(" ++ show val ++ ")"
 
-genPythonDecl :: IDecl -> String
-genPythonDecl (IDecl disj locids pexp) = concat
-  [ "\n\t\tDeclaration.Declaration(" , genPythonBoolean "isDisjunct" disj, ", localDeclarations=["
-  , concatMap (\x -> "LocalDeclaration.LocalDeclaration(\"" ++ x ++ "\"), ") (init locids), "LocalDeclaration.LocalDeclaration(\"" , (last locids), "\")], "
-  , " body=", genPythonPExp "Body" pexp , "),"]
+    mapQuant INo = "none"
+    mapQuant ISome = "some"
+    mapQuant IAll = "all"
+    mapQuant IOne = "one"
+    mapQuant ILone = "lone"
 
+    mapFunc "!" = "not"
+    mapFunc "#" = "card"
+    mapFunc "<=>" = "ifOnlyIf"
+    mapFunc "=>" = "implies"
+    mapFunc "||" = "or"
+    mapFunc "xor" = "xor"
+    mapFunc "&&" = "and"
+    mapFunc "<" = "lessThan"
+    mapFunc ">" = "greaterThan"
+    mapFunc "=" = "equal"
+    mapFunc "<=" = "lessThanEqual"
+    mapFunc ">=" = "greaterThanEqual"
+    mapFunc "!=" = "notEqual"
+    mapFunc "in" = "set_in"
+    mapFunc "not in" = "set_nin"
+    mapFunc "+" = "add"
+    mapFunc "*" = "mul"
+    mapFunc "/" = "div"
+    mapFunc "++" = "set_union"
+    mapFunc "--" = "set_diff"
+    mapFunc "**" = "set_inter"
+    mapFunc "ifthenelse" = "ifThenElse"
+    mapFunc op' = error $ "Choco: Unknown op: " ++ op'
 
-genPythonQuantType :: IQuant -> String
-genPythonQuantType x = case x of
-  INo   -> "No"
-  ILone -> "Lone"
-  IOne  -> "One"
-  ISome -> "Some"
-  IAll  -> "All"
+{-    sidentOf u = ident $ claferWithUid u
+    scopeOf "integer" = undefined
+    scopeOf "int" = undefined
+    scopeOf i = fromMaybe 1 $ lookup i scopes -}
+    bitwidth = fromMaybe 4 $ lookup "int" scopes :: Integer
 
-genPythonITypeType :: IType -> String
-genPythonITypeType x = case x of
-  TBoolean -> "Boolean"
-  TString -> "String"
-  TInteger -> "Integer"
-  TReal -> "Real"
-  TClafer _-> "Set"
-  -- In the future, TRef might be needed in the Python IR.
-  -- For now, keep it simple.
-  --TRef t -> genPythonITypeType t
+-- isQuant PExp{_exp = IDeclPExp{}} = True
+-- isQuant _ = False
 
-genPythonIType :: IType -> String
-genPythonIType x = concat [ "exptype=\"", (genPythonITypeType x), "\"" ]
+isNotAbstract :: IClafer -> Bool
+isNotAbstract = not . _isAbstract
+
+iclafer :: IElement -> Maybe IClafer
+iclafer (IEClafer c) = Just c
+iclafer _ = Nothing
+
+iconstraint :: IElement -> Maybe PExp
+iconstraint (IEConstraint _ pexp) = Just pexp
+iconstraint _ = Nothing
+
+childClafers :: IClafer -> [(String, IClafer)]
+childClafers IClafer{_uid, _elements} =
+    childClafers' _uid =<< mapMaybe iclafer _elements
+    where
+    childClafers' parent' c@IClafer{_uid, _elements} = (parent', c) : (childClafers' _uid  =<< mapMaybe iclafer _elements)
