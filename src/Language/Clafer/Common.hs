@@ -108,8 +108,8 @@ getClaferName (PExp _ _ _ (IClaferId _ id' _ _)) = id'
 getClaferName _ = ""
 
 isTopLevel :: IClafer -> Bool
-isTopLevel IClafer{_parentUID=puid} = puid == rootIdent  -- for concrete clafers
-                                   || puid == baseClafer -- for abstract clafers
+isTopLevel IClafer{_parentUID="root"} = True
+isTopLevel _                          = False
 
 -- -----------------------------------------------------------------------------
 -- conversions
