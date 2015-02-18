@@ -1,6 +1,6 @@
 open util/integer
 pred show {}
-run show for 1 but 5 c0_Connection, 2 c0_System, 10 c0_connections
+
 
 abstract sig c0_System
 { r_c0_Connection : set c0_Connection

@@ -5,6 +5,8 @@
   <span class="claferDecl" id="c0_b">b</span> 3
     <div class="indent">
     <span class="claferDecl" id="c0_c">c</span> 0</div>
+    <div class="indent">
+    <span class="keyword">assert [</span> <span class="keyword">no</span> <a href="#c0_c"><span class="reference">c</span></a> <span class="keyword">]</span></div>
   </div>
 </div>
 
