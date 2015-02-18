@@ -4,6 +4,7 @@ abstract Component
 abstract Signal
 abstract Command : Signal
 abstract MotorCommand : Command
+motorDown : MotorCommand
 abstract Request : Signal
 stop : Request
 abstract Controller : Component
