@@ -1,0 +1,53 @@
+open util/integer
+pred show {}
+run show for 1 but 5 c0_Connection, 2 c0_System, 10 c0_connections
+
+abstract sig c0_System
+{ r_c0_Connection : set c0_Connection
+, r_c0_connections : set c0_connections }
+{ all disj x, y : this.@r_c0_connections | (x.@ref) != (y.@ref) 
+  (this.(@r_c0_connections.@ref)) = (this.@r_c0_Connection) }
+
+abstract sig c0_Connection
+{}
+{ one @r_c0_Connection.this }
+
+sig c0_connections
+{ ref : one c0_Connection }
+{ one @r_c0_connections.this }
+
+one sig c0_SystemX extends c0_System
+{ r_c0_con1 : one c0_con1
+, r_c0_con2 : one c0_con2 }
+{ r_c0_con1 in r_c0_Connection
+  r_c0_con2 in r_c0_Connection }
+
+one sig c0_con1 extends c0_Connection
+{}
+
+one sig c0_con2 extends c0_Connection
+{}
+
+assert assertOnLine_10 { (c0_SystemX.(@r_c0_connections.@ref)) = ((c0_SystemX.@r_c0_con1) + (c0_SystemX.@r_c0_con2)) }
+check assertOnLine_10 for 1 but 5 c0_Connection, 2 c0_System, 10 c0_connections
+
+one sig c0_SystemY extends c0_System
+{ r_c0_con3 : one c0_con3
+, r_c0_con4 : one c0_con4
+, r_c0_con5 : one c0_con5 }
+{ r_c0_con3 in r_c0_Connection
+  r_c0_con4 in r_c0_Connection
+  r_c0_con5 in r_c0_Connection }
+
+one sig c0_con3 extends c0_Connection
+{}
+
+one sig c0_con4 extends c0_Connection
+{}
+
+one sig c0_con5 extends c0_Connection
+{}
+
+assert assertOnLine_17 { (c0_SystemY.(@r_c0_connections.@ref)) = (((c0_SystemY.@r_c0_con3) + (c0_SystemY.@r_c0_con4)) + (c0_SystemY.@r_c0_con5)) }
+check assertOnLine_17 for 1 but 5 c0_Connection, 2 c0_System, 10 c0_connections
+

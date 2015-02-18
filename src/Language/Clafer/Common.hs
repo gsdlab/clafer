@@ -70,6 +70,7 @@ getSuperAndReference c = (getSuper c) ++ (getReference c)
 
 getSuperId :: PExp -> String
 getSuperId (PExp _ _ _ (IClaferId{ _sident = s})) = s
+getSuperId (PExp _ _ _ (IFunExp{_op=".", _exps = [_, rightExp]})) = getSuperId rightExp
 getSuperId pexp' = error $ "Bug: getSuperId called not on '[PExp (IClaferId)]' but instead on '" ++ show pexp' ++ "'"
 
 isEqClaferId :: String -> IClafer -> Bool

@@ -234,7 +234,22 @@ genConstraints :: GenEnv -> [String]      -> IClafer -> [Concat]
 genConstraints    genEnv    resPath c
   = (genParentConst resPath c)
   : (genGroupConst c)
+{- genPathConst produces incorrect code for top-level clafers
+
+abstract System
+    abstract Connection
+    connections -> Connection *
+
+sig c0_connections
+{ ref : one c0_Connection }
+{ one @r_c0_connections.this
+  ref = (@r_c0_System.@r_c0_Connection) }
+
+r_c0_System does not exist because System is top-level. The constraint is useless anyway, since all instances
+of Connection are nested under all Systems anyway.
+  disabled code:
   : genPathConst genEnv  (if (noalloyruncommand $ claferargs genEnv) then  (_uid c ++ "_ref") else "ref") resPath c
+-}
   : constraints
   where
   constraints = concat $ map genConst $ _elements c
@@ -245,7 +260,9 @@ genConstraints    genEnv    resPath c
         (if genCardCrude (_card c') `elem` ["one", "lone", "some"]
          then CString ""
          else mkCard ({- do not use the genRelName as the constraint name -} _uid c') False (genRelName $ _uid c') $ fromJust (_card c')
-        ) : genSetUniquenessConstraint c'
+        )
+        : (genParentSubrelationConstriant (uidIClaferMap genEnv) c')
+        : (genSetUniquenessConstraint c')
     IEGoal _ _ -> error "getConst function from Alloy generator was given a Goal, this function should only be given a Constrain or Clafer" -- This should never happen
 
 
@@ -266,6 +283,21 @@ genSetUniquenessConstraint c =
       _ -> []
     )
 
+genParentSubrelationConstriant :: StringMap IClafer -> IClafer   -> Concat
+genParentSubrelationConstriant    uidIClaferMap'        headClafer =
+  case match of
+    Nothing -> CString ""
+    Just NestedInheritanceMatch {
+           _superClafer = superClafer
+         }  -> if (isProperNesting uidIClaferMap' match) && (not $ isTopLevel superClafer)
+               then CString $ concat
+                [ genRelName $ _uid headClafer
+                , " in "
+                , genRelName $ _uid superClafer
+                ]
+               else CString ""
+  where
+    match = matchNestedInheritance uidIClaferMap' headClafer
 
 -- optimization: if only boolean features then the parent is unique
 genParentConst :: [String] -> IClafer -> Concat

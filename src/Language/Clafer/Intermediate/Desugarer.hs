@@ -152,10 +152,8 @@ sugarSuper (Just pexp') = error $ "Function sugarSuper from Desugarer expects a 
 
 sugarReference :: Maybe IReference -> Reference
 sugarReference Nothing = ReferenceEmpty noSpan
-sugarReference (Just (IReference True (pexp'@(PExp _ _ _ (IClaferId _ _ _ _))))) = ReferenceSet noSpan (sugarSetExp pexp')
-sugarReference (Just (IReference False (pexp'@(PExp _ _ _ (IClaferId _ _ _ _))))) = ReferenceBag noSpan (sugarSetExp pexp')
-sugarReference (Just (IReference _ pexp')) = error $ "Function sugarReference from Desugarer expects a IReference (PExp (IClaferId)) but instead was given: " ++ show pexp' -- Should never happen
-
+sugarReference (Just (IReference True  pexp')) = ReferenceSet noSpan (sugarSetExp pexp')
+sugarReference (Just (IReference False pexp')) = ReferenceBag noSpan (sugarSetExp pexp')
 
 sugarInitHow :: Bool -> InitHow
 sugarInitHow True  = InitConstant noSpan
