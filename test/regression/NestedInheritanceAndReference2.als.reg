@@ -1,6 +1,7 @@
 open util/integer
 pred show {}
 
+
 abstract sig c0_Component
 { r_c0_Port : set c0_Port
 , r_c0_TemperaturePort : set c0_TemperaturePort }
