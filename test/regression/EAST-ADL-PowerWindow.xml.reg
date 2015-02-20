@@ -56,7 +56,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Feature</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Feature</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
@@ -292,7 +292,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Command</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Command</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
@@ -333,7 +333,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Command</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Command</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
@@ -374,7 +374,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Command</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Command</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
@@ -443,7 +443,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Request</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Request</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
@@ -484,7 +484,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Request</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Request</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
@@ -525,7 +525,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Request</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Request</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
@@ -566,7 +566,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Request</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Request</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
@@ -607,7 +607,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Component</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Component</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
@@ -648,7 +648,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Port</Id>
 <IsTop>false</IsTop>
-<Bind></Bind>
+<Bind>c0_Port</Bind>
 </Exp></Super>
 <Reference><IsSet>true</IsSet>
 <Ref><ParentId></ParentId>
@@ -750,7 +750,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Port</Id>
 <IsTop>false</IsTop>
-<Bind></Bind>
+<Bind>c0_Port</Bind>
 </Exp></Super>
 <Reference><IsSet>true</IsSet>
 <Ref><ParentId></ParentId>

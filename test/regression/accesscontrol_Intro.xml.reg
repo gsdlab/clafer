@@ -127,7 +127,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Attribute</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Attribute</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
@@ -168,7 +168,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Attribute</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Attribute</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
@@ -209,7 +209,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Attribute</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Attribute</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
@@ -278,7 +278,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Attribute</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Attribute</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
@@ -347,7 +347,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Effect</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Effect</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
@@ -388,7 +388,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Effect</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Effect</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
@@ -429,7 +429,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Effect</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Effect</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
@@ -470,7 +470,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Effect</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Effect</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
@@ -539,7 +539,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_CombiningAlgo</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_CombiningAlgo</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
@@ -580,7 +580,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_CombiningAlgo</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_CombiningAlgo</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
@@ -621,7 +621,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_CombiningAlgo</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_CombiningAlgo</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>

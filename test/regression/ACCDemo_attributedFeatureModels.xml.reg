@@ -99,7 +99,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Feature</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Feature</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
@@ -183,7 +183,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_ComfortFeature</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_ComfortFeature</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
@@ -295,7 +295,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Feature</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Feature</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
@@ -416,7 +416,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_FuelFeature</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_FuelFeature</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
@@ -697,7 +697,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_FuelFeature</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_FuelFeature</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
@@ -1070,7 +1070,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Feature</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Feature</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
@@ -1191,7 +1191,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_FuelFeature</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_FuelFeature</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
@@ -1472,7 +1472,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_FuelFeature</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_FuelFeature</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
@@ -1753,7 +1753,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_FuelFeature</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_FuelFeature</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
@@ -2034,7 +2034,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Feature</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Feature</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
@@ -2155,7 +2155,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Feature</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Feature</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
@@ -2276,7 +2276,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Feature</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Feature</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
@@ -2397,7 +2397,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Feature</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Feature</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
@@ -2518,7 +2518,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_ComfortFeature</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_ComfortFeature</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
@@ -2719,7 +2719,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_ComfortFeature</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_ComfortFeature</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
@@ -3631,7 +3631,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Car</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Car</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>

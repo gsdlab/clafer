@@ -68,7 +68,8 @@ resolveNSuper declarations (Just (PExp _ pid' pos' (IClaferId _ id' _ _))) =
         (id'', [superClafer']) <- case r of
           Nothing -> throwError $ SemanticErr pos' $ "No superclafer found: " ++ id'
           Just m  -> return m
-        return $ (Just $ idToPExp pid' pos' "" id'' $ isTopLevel superClafer', Just superClafer')
+        return $ (Just $ PExp (Just $ TClafer (Just $ _parentUID superClafer') [id'']) pid' pos' (IClaferId "" id'' (isTopLevel superClafer') (Just $ id''))
+                 , Just superClafer')
 resolveNSuper _ x = return (x, Nothing)
 
 

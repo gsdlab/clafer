@@ -76,9 +76,6 @@ getSuperId pexp' = error $ "Bug: getSuperId called not on '[PExp (IClaferId)]' b
 isEqClaferId :: String -> IClafer -> Bool
 isEqClaferId    uid'      claf'    = _uid claf' == uid'
 
-idToPExp :: String -> Span -> String -> String -> Bool -> PExp
-idToPExp pid' pos modids id' isTop' = PExp (Just $ TClafer [id']) pid' pos (IClaferId modids id' isTop' Nothing)
-
 mkPLClaferId :: CName -> Bool -> ClaferBinding -> PExp
 mkPLClaferId id' isTop' bind' = pExpDefPidPos $ IClaferId "" id' isTop' bind'
 
@@ -158,6 +155,17 @@ createUidIClaferMap    iModule  = foldl' (\accumMap' claf -> SMap.insert (_uid c
 
 findIClafer :: StringMap IClafer -> UID -> Maybe IClafer
 findIClafer    uidIClaferMap        uid' = SMap.lookup uid' uidIClaferMap
+
+-- | efficient version of findHierarchy
+findHierarchyWithMap :: (IClafer -> [String]) -> StringMap IClafer -> IClafer -> [IClafer]
+findHierarchyWithMap    sFun                     uidIClaferMap        clafer   = case sFun clafer of
+  []           -> [clafer]  -- no super and no reference
+  supersOrRefs -> let
+                    superOrRefClafers = mapMaybe (findIClafer uidIClaferMap) supersOrRefs
+                  in
+                    clafer
+                    : superOrRefClafers
+                    ++ concatMap (findHierarchyWithMap sFun uidIClaferMap) superOrRefClafers
 
 -- -----------------------------------------------------------------------------
 -- functions using the UID -> IClafer map
@@ -451,7 +459,7 @@ iIfThenElse   = "ifthenelse"
 
 mkIFunExp :: String -> [IExp] -> IExp
 mkIFunExp _ (x:[]) = x
-mkIFunExp op' xs = foldl1 (\x y -> IFunExp op' $ map (PExp (Just $ TClafer []) "" noSpan) [x,y]) xs
+mkIFunExp op' xs = foldl1 (\x y -> IFunExp op' $ map (PExp Nothing "" noSpan) [x,y]) xs
 
 toLowerS :: String -> String
 toLowerS "" = ""

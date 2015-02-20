@@ -99,7 +99,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_TimeLevel</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_TimeLevel</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
@@ -186,7 +186,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_TimeLevel</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_TimeLevel</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
@@ -310,7 +310,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_TimeLevel</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_TimeLevel</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
@@ -434,7 +434,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_YearLevel</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_YearLevel</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
@@ -475,7 +475,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_MonthLevel</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_MonthLevel</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
@@ -599,7 +599,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_WeekLevel</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_WeekLevel</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>

@@ -616,7 +616,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Bluetooth</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Bluetooth</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
@@ -968,7 +968,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_MobilePhone</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_MobilePhone</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
@@ -1078,7 +1078,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_MobilePhone</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_MobilePhone</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>

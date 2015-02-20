@@ -512,7 +512,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Car</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Car</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
