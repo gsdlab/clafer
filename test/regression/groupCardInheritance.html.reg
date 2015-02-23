@@ -23,3 +23,19 @@
   <span class="keyword">[</span> <a href="#c0_flow"><span class="reference">flow</span></a> <span class="keyword">]</span></div>
 </div>
 
+
+<div>
+<span class="keyword">assert [</span> <span class="keyword">no</span> <a href="#c0_req"><span class="reference">req</span></a>.<a href="#c0_input"><span class="reference">input</span></a> <span class="keyword">]</span></div>
+
+
+<div>
+<span class="keyword">assert [</span> <span class="keyword">no</span> <a href="#c0_req"><span class="reference">req</span></a>.<a href="#c0_output"><span class="reference">output</span></a> <span class="keyword">]</span></div>
+
+
+<div>
+<span class="keyword">assert [</span> <span class="keyword">no</span> <a href="#c0_req"><span class="reference">req</span></a>.<a href="#c0_relay"><span class="reference">relay</span></a> <span class="keyword">]</span></div>
+
+
+<div>
+<span class="keyword">assert [</span> <span class="keyword">one</span> <a href="#c0_req"><span class="reference">req</span></a>.<a href="#c0_flow"><span class="reference">flow</span></a> <span class="keyword">]</span></div>
+

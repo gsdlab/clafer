@@ -231,7 +231,7 @@ genType m x = genPExp m [] x
 genConstraints :: GenEnv -> [String]      -> IClafer -> [Concat]
 genConstraints    genEnv    resPath c
   = (genParentConst resPath c)
-  : (genGroupConst c)
+  : (genGroupConst genEnv c)
 {- genPathConst produces incorrect code for top-level clafers
 
 abstract System
@@ -314,13 +314,15 @@ genOptParentConst    c
   rel = genRelName $ _uid c
   glCard' = genIntervalCrude $ _glCard c
 
-genGroupConst :: IClafer -> Concat
-genGroupConst    clafer'
-  | null children' || flatten card' == "" = CString ""
+genGroupConst :: GenEnv -> IClafer -> Concat
+genGroupConst    genEnv    clafer'
+  | _isAbstract clafer' || null children' || flatten card' == "" = CString ""
   | otherwise = cconcat [CString "let children = ", brArg id $ CString children', CString" | ", card']
   where
+  superHierarchy :: [IClafer]
+  superHierarchy = findHierarchyWithMap getSuper (uidIClaferMap genEnv) clafer'
   children' = intercalate " + " $ map (genRelName._uid) $
-             getSubclafers $ _elements clafer'
+             getSubclafers $ concatMap _elements superHierarchy
   card'     = mkCard (_uid clafer') True "children" $ _interval $ fromJust $ _gcard $ clafer'
 
 mkCard :: String -> Bool -> String -> (Integer, Integer) -> Concat

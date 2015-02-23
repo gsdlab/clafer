@@ -166,8 +166,7 @@ findHierarchyWithMap    sFun                     uidIClaferMap    clafer   = cas
                     superOrRefClafers = mapMaybe (findIClafer uidIClaferMap) supersOrRefs
                   in
                     clafer
-                    : superOrRefClafers
-                    ++ concatMap (findHierarchyWithMap sFun uidIClaferMap) superOrRefClafers
+                    : concatMap (findHierarchyWithMap sFun uidIClaferMap) superOrRefClafers
 
 -- -----------------------------------------------------------------------------
 -- functions using the UID -> IClafer map
