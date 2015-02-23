@@ -20,8 +20,7 @@ abstract Car
             [this.comfort = 6]
             [this.cost = 3]
             [FCA]
-    xor Transmission : Feature
-        [this.cost = 0]
+    xor Transmission
         Automatic : FuelFeature
             [this.fuel = 2]
             [this.comfort = 2]
@@ -34,15 +33,13 @@ abstract Car
         [this.fuel = 2]
         [this.comfort = 4]
         [this.cost = 5]
-        xor Sensor : Feature
-            [this.cost = 0]
+        xor Sensor
             Radar : Feature
                 [this.cost = 2]
             Lidar : Feature
                 [this.cost = 4]
 
-        xor Alert : Feature ?
-            [this.cost = 0]
+        xor Alert
             Haptic : ComfortFeature
                 [this.comfort = 4]
                 [this.cost = 2]

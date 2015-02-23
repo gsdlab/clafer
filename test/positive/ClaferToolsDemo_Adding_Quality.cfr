@@ -12,11 +12,7 @@ abstract MobilePhone
         [ productivity = 14]
         [ security = 43]
         [ cost = 101]
-        xor Bluetooth : Feature
-            [ batterylife = 0]
-            [ productivity = 0]
-            [ security = 0]
-            [ cost = 0]
+        xor Bluetooth
             Bluetooth20EDR : Feature
                 [ batterylife = -4]
                 [ productivity = 1]
@@ -52,11 +48,7 @@ abstract MobilePhone
             [ productivity = 20]
             [ security = 0]
             [ cost = 3]
-    xor Battery : Feature
-        [ batterylife = 0]
-        [ productivity = 0]
-        [ security = 0]
-        [ cost = 0]
+    xor Battery
         LiBattery1150 : Feature
             [ batterylife = 60]
             [ productivity = 0]

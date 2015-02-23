@@ -15,8 +15,7 @@ abstract sig c0_Component
 abstract sig c0_Port
 { r_c0_input : lone c0_input
 , r_c0_output : lone c0_output }
-{ one @r_c0_Port.this
-  let children = (r_c0_input + r_c0_output) | one children }
+{ one @r_c0_Port.this }
 
 sig c0_input
 {}
