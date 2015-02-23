@@ -28,8 +28,6 @@ import Control.Lens hiding (elements, mapping)
 import Control.Monad.State
 import Data.List
 import Data.Maybe
-import Data.StringMap (StringMap)
-import qualified Data.StringMap as SMap
 
 import Language.Clafer.Common
 import Language.Clafer.ClaferArgs
@@ -40,7 +38,7 @@ import Language.Clafer.Intermediate.Intclafer hiding (exp)
 
 data GenEnv = GenEnv
   { claferargs :: ClaferArgs
-  , uidIClaferMap :: StringMap IClafer
+  , uidIClaferMap :: UIDIClaferMap
   , forScopes :: String
   }  deriving (Show)
 
@@ -48,8 +46,8 @@ data GenEnv = GenEnv
 -- | Alloy code generation
 -- 07th Mayo 2012 Rafael Olaechea
 --      Added Logic to print a goal block in case there is at least one goal.
-genModule :: ClaferArgs -> (IModule, GEnv) -> [(UID, Integer)] -> StringMap IClafer -> (Result, [(Span, IrTrace)])
-genModule    claferargs'    (imodule, _)       scopes              uidIClaferMap'     = (flatten output, filter ((/= NoTrace) . snd) $ mapLineCol output)
+genModule :: ClaferArgs -> (IModule, GEnv) -> [(UID, Integer)] -> UIDIClaferMap -> (Result, [(Span, IrTrace)])
+genModule    claferargs'   (imodule, _)       scopes              uidIClaferMap' = (flatten output, filter ((/= NoTrace) . snd) $ mapLineCol output)
   where
   genScopes :: [(UID, Integer)] -> String
   genScopes    []                = ""
@@ -283,7 +281,7 @@ genSetUniquenessConstraint c =
       _ -> []
     )
 
-genParentSubrelationConstriant :: StringMap IClafer -> IClafer   -> Concat
+genParentSubrelationConstriant :: UIDIClaferMap -> IClafer   -> Concat
 genParentSubrelationConstriant    uidIClaferMap'        headClafer =
   case match of
     Nothing -> CString ""

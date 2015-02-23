@@ -1,7 +1,7 @@
 Name:               clafer
-Version:            0.3.8
+Version:            0.3.9
 Synopsis:           clafer compiles Clafer models to other formats, such as Alloy, XML, HTML, Dot.
-Description:        Clafer is a general purpose, lightweight, structural modeling language developed at GSD Lab, University of Waterloo. Lightweight modeling aims at improving the understanding of the problem domain in the early stages of software development and determining the requirements with fewer defects. Clafer's goal is to make modeling more accessible to a wider range of users and domains. The tool provides a reference language implementation. It translates models to other formats (e.g. Alloy, XML) to allow for reasoning with existing tools.
+Description:        Clafer is a general purpose, lightweight, structural modeling language developed at GSD Lab, University of Waterloo, and MODELS group at IT University of Copenhagen. Lightweight modeling aims at improving the understanding of the problem domain in the early stages of software development and determining the requirements with fewer defects. Clafer's goal is to make modeling more accessible to a wider range of users and domains. The tool provides a reference language implementation. It translates models to other formats (e.g. Alloy, XML) to allow for reasoning with existing tools.
 Homepage:           http://clafer.org
 License:            MIT
 License-file:       LICENSE
@@ -23,7 +23,7 @@ source-repository head
     type:           git
     location:       git://github.com/gsdlab/clafer.git
 Executable clafer
-    build-tools:    ghc >= 7.6.3
+    build-tools:    ghc >= 7.8.3
     default-language:
                     Haskell2010
     default-extensions:
@@ -40,7 +40,7 @@ Executable clafer
                     cmdargs >= 0.10.7,
                     split >= 0.2.2,
 
-                    clafer == 0.3.8
+                    clafer == 0.3.9
     if os(windows)
         build-depends: HaXml == 1.24
     else
@@ -49,7 +49,7 @@ Executable clafer
     other-modules: Paths_clafer
 
 library
-    build-tools:    ghc >= 7.6.3
+    build-tools:    ghc >= 7.8.3
     default-language:
                     Haskell2010
     default-extensions:
@@ -132,7 +132,7 @@ library
                    GetURL
 
 Test-Suite test-suite
-    build-tools:    ghc >= 7.6.3
+    build-tools:    ghc >= 7.8.3
     default-language:
                     Haskell2010
     type:           exitcode-stdio-1.0
@@ -155,17 +155,18 @@ Test-Suite test-suite
                     tasty-hunit >= 0.9,
                     tasty-th >= 0.1.2,
 
-                    clafer == 0.3.8
+                    clafer == 0.3.9
 
     if os(windows)
         build-depends: HaXml == 1.24
     else
         build-depends: HaXml >= 1.24
 
-    ghc-options:    -Wall -fno-warn-unused-do-bind -fno-warn-orphans
+    ghc-options: -Wall -fno-warn-unused-do-bind -fno-warn-orphans
 
-    other-modules:  Paths_clafer,
-                    Functions,
-                    Suite.Positive,
-                    Suite.Negative,
-                    Suite.SimpleScopeAnalyser
+    other-modules: Paths_clafer
+                 , Functions
+                 , Suite.Positive
+                 , Suite.Negative
+                 , Suite.SimpleScopeAnalyser
+                 , Suite.Redefinition
