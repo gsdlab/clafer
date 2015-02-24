@@ -28,8 +28,6 @@ import Control.Lens hiding (elements, mapping)
 import Control.Monad.State
 import Data.List
 import Data.Maybe
-import Data.StringMap (StringMap)
-import qualified Data.StringMap as SMap
 
 import Language.Clafer.Common
 import Language.Clafer.ClaferArgs
@@ -40,7 +38,7 @@ import Language.Clafer.Intermediate.Intclafer hiding (exp)
 
 data GenEnv = GenEnv
   { claferargs :: ClaferArgs
-  , uidIClaferMap :: StringMap IClafer
+  , uidIClaferMap :: UIDIClaferMap
   , forScopes :: String
   }  deriving (Show)
 
@@ -48,12 +46,12 @@ data GenEnv = GenEnv
 -- | Alloy code generation
 -- 07th Mayo 2012 Rafael Olaechea
 --      Added Logic to print a goal block in case there is at least one goal.
-genModule :: ClaferArgs -> (IModule, GEnv) -> [(UID, Integer)] -> StringMap IClafer -> (Result, [(Span, IrTrace)])
-genModule    claferargs'    (imodule, _)       scopes              uidIClaferMap'     = (flatten output, filter ((/= NoTrace) . snd) $ mapLineCol output)
+genModule :: ClaferArgs -> (IModule, GEnv) -> [(UID, Integer)] -> UIDIClaferMap -> (Result, [(Span, IrTrace)])
+genModule    claferargs'   (imodule, _)       scopes              uidIClaferMap' = (flatten output, filter ((/= NoTrace) . snd) $ mapLineCol output)
   where
   genScopes :: [(UID, Integer)] -> String
   genScopes    []                = ""
-  genScopes    scopes'           = " but " ++ intercalate ", " (map genScope scopes')
+  genScopes    scopes'           = " but " ++ intercalate ", " (map (\ (uid', scope)  -> show scope ++ " " ++ uid') scopes')
 
   forScopes' = "for 1" ++ genScopes scopes
   genEnv = GenEnv claferargs' uidIClaferMap' forScopes'
@@ -73,9 +71,6 @@ header    genEnv  = CString $ unlines
       then ""
       else "run show " ++ forScopes genEnv
     , ""]
-
-genScope :: (UID, Integer) -> String
-genScope    (uid', scope)   = show scope ++ " " ++ uid'
 
 
 -- 07th Mayo 2012 Rafael Olaechea
@@ -236,18 +231,36 @@ genType m x = genPExp m [] x
 genConstraints :: GenEnv -> [String]      -> IClafer -> [Concat]
 genConstraints    genEnv    resPath c
   = (genParentConst resPath c)
-  : (genGroupConst c)
+  : (genGroupConst genEnv c)
+{- genPathConst produces incorrect code for top-level clafers
+
+abstract System
+    abstract Connection
+    connections -> Connection *
+
+sig c0_connections
+{ ref : one c0_Connection }
+{ one @r_c0_connections.this
+  ref = (@r_c0_System.@r_c0_Connection) }
+
+r_c0_System does not exist because System is top-level. The constraint is useless anyway, since all instances
+of Connection are nested under all Systems anyway.
+  disabled code:
   : genPathConst genEnv  (if (noalloyruncommand $ claferargs genEnv) then  (_uid c ++ "_ref") else "ref") resPath c
+-}
   : constraints
   where
   constraints = concat $ map genConst $ _elements c
   genConst x = case x of
-    IEConstraint _ pexp  -> [ genPExp genEnv ((_uid c) : resPath) pexp ]
+    IEConstraint True pexp  -> [ genPExp genEnv ((_uid c) : resPath) pexp ]
+    IEConstraint False pexp  -> [ CString "// Assertion " +++ (genAssertName pexp) +++ CString " ignored since nested assertions are not supported in Alloy.\n"]
     IEClafer c' ->
         (if genCardCrude (_card c') `elem` ["one", "lone", "some"]
          then CString ""
          else mkCard ({- do not use the genRelName as the constraint name -} _uid c') False (genRelName $ _uid c') $ fromJust (_card c')
-        ) : genSetUniquenessConstraint c'
+        )
+        : (genParentSubrelationConstriant (uidIClaferMap genEnv) c')
+        : (genSetUniquenessConstraint c')
     IEGoal _ _ -> error "getConst function from Alloy generator was given a Goal, this function should only be given a Constrain or Clafer" -- This should never happen
 
 
@@ -268,6 +281,21 @@ genSetUniquenessConstraint c =
       _ -> []
     )
 
+genParentSubrelationConstriant :: UIDIClaferMap -> IClafer   -> Concat
+genParentSubrelationConstriant    uidIClaferMap'        headClafer =
+  case match of
+    Nothing -> CString ""
+    Just NestedInheritanceMatch {
+           _superClafer = superClafer
+         }  -> if (isProperNesting uidIClaferMap' match) && (not $ isTopLevel superClafer)
+               then CString $ concat
+                [ genRelName $ _uid headClafer
+                , " in "
+                , genRelName $ _uid superClafer
+                ]
+               else CString ""
+  where
+    match = matchNestedInheritance uidIClaferMap' headClafer
 
 -- optimization: if only boolean features then the parent is unique
 genParentConst :: [String] -> IClafer -> Concat
@@ -286,13 +314,15 @@ genOptParentConst    c
   rel = genRelName $ _uid c
   glCard' = genIntervalCrude $ _glCard c
 
-genGroupConst :: IClafer -> Concat
-genGroupConst    clafer'
-  | null children' || flatten card' == "" = CString ""
+genGroupConst :: GenEnv -> IClafer -> Concat
+genGroupConst    genEnv    clafer'
+  | _isAbstract clafer' || null children' || flatten card' == "" = CString ""
   | otherwise = cconcat [CString "let children = ", brArg id $ CString children', CString" | ", card']
   where
+  superHierarchy :: [IClafer]
+  superHierarchy = findHierarchyWithMap getSuper (uidIClaferMap genEnv) clafer'
   children' = intercalate " + " $ map (genRelName._uid) $
-             getSubclafers $ _elements clafer'
+             getSubclafers $ concatMap _elements superHierarchy
   card'     = mkCard (_uid clafer') True "children" $ _interval $ fromJust $ _gcard $ clafer'
 
 mkCard :: String -> Bool -> String -> (Integer, Integer) -> Concat

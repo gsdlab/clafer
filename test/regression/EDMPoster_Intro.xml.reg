@@ -1263,7 +1263,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_AndroidDevice</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_AndroidDevice</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
@@ -1840,7 +1840,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_AndroidPhone</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_AndroidPhone</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>

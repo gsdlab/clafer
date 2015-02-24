@@ -1072,7 +1072,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Person</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Person</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
@@ -1156,7 +1156,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Book</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Book</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
@@ -1958,7 +1958,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Author</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Author</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
@@ -2171,7 +2171,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Author</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Author</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>

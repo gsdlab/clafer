@@ -299,7 +299,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_TA</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_TA</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
@@ -340,7 +340,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_TA</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_TA</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
@@ -381,7 +381,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Course</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Course</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
@@ -422,7 +422,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Course</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Course</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>

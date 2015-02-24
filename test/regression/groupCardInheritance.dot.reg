@@ -1,0 +1,14 @@
+digraph "groupCardInheritance"
+{
+rankdir=BT;
+ranksep=0.3;
+nodesep=0.1;
+graph [fontname=Sans fontsize=11];
+node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
+edge [fontname=Sans fontsize=11];
+"c0_Port" [label="abstract or Port" URL="#c0_Port" tooltip="abstract or Port&#10;  input&#10;  output&#10;"];
+"c0_RelayPort" [label="abstract xor RelayPort : Port" URL="#c0_RelayPort" tooltip="abstract xor RelayPort : Port&#10;  relay&#10;"];
+"c0_RelayPort" -> "c0_Port" [arrowhead=onormal constraint=true weight=100];
+"c0_req" [label="req : RelayPort" URL="#c0_req" tooltip="req : RelayPort&#10;  flow&#10;  [ flow ]&#10;"];
+"c0_req" -> "c0_RelayPort" [arrowhead=onormal constraint=true weight=100];
+}

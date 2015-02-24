@@ -194,7 +194,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_percent</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_percent</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
@@ -324,7 +324,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_percent</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_percent</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
@@ -543,7 +543,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_date</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_date</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
@@ -1255,7 +1255,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_time</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_time</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>

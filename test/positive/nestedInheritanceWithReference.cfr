@@ -1,0 +1,17 @@
+abstract System
+    abstract Connection
+    connections -> Connection *
+    [ connections = this.Connection ]
+
+SystemX : System
+    con1 : Connection
+    con2 : Connection
+
+assert [ SystemX.connections = con1, con2 ]
+
+SystemY : System
+    con3 : Connection
+    con4 : Connection
+    con5 : Connection
+
+assert [ SystemY.connections = con3, con4, con5 ]

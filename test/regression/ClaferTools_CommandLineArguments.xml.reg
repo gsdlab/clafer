@@ -254,7 +254,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Argument</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Argument</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
@@ -295,7 +295,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_DefaultValue</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_DefaultValue</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
@@ -336,7 +336,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Value</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Value</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
@@ -377,7 +377,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Argument</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Argument</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
@@ -418,7 +418,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Argument</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Argument</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
@@ -459,7 +459,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Value</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Value</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
@@ -500,7 +500,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Value</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Value</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
@@ -633,7 +633,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Argument</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Argument</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
@@ -674,7 +674,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Argument</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Argument</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
@@ -715,7 +715,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Argument</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Argument</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
@@ -756,7 +756,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Value</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Value</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
@@ -889,7 +889,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Value</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Value</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
@@ -1114,7 +1114,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Argument</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Argument</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
@@ -1155,7 +1155,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Argument</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Argument</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
@@ -1196,7 +1196,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Argument</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Argument</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
@@ -1237,7 +1237,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_IntegerArgument</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_IntegerArgument</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
@@ -1306,7 +1306,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Argument</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Argument</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
@@ -1347,7 +1347,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Argument</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Argument</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
@@ -1388,7 +1388,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Argument</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Argument</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
@@ -1429,7 +1429,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Argument</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Argument</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
@@ -1470,7 +1470,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Argument</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Argument</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
@@ -1511,7 +1511,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Argument</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Argument</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
@@ -1828,7 +1828,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_StringArgument</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_StringArgument</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
@@ -1869,7 +1869,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Argument</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Argument</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
@@ -1910,7 +1910,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Argument</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Argument</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
@@ -1951,7 +1951,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Argument</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Argument</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
@@ -1992,7 +1992,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_ClaferArgs</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_ClaferArgs</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
@@ -2125,7 +2125,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_ClaferArgs</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_ClaferArgs</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
@@ -2453,7 +2453,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_ClaferArgs</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_ClaferArgs</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
@@ -2747,7 +2747,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_ClaferArgs</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_ClaferArgs</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
@@ -2880,7 +2880,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_ClaferArgs</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_ClaferArgs</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
@@ -3358,7 +3358,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_ClaferArgs</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_ClaferArgs</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>

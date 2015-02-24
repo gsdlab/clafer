@@ -70,13 +70,11 @@ getSuperAndReference c = (getSuper c) ++ (getReference c)
 
 getSuperId :: PExp -> String
 getSuperId (PExp _ _ _ (IClaferId{ _sident = s})) = s
+getSuperId (PExp _ _ _ (IFunExp{_op=".", _exps = [_, rightExp]})) = getSuperId rightExp
 getSuperId pexp' = error $ "Bug: getSuperId called not on '[PExp (IClaferId)]' but instead on '" ++ show pexp' ++ "'"
 
 isEqClaferId :: String -> IClafer -> Bool
 isEqClaferId    uid'      claf'    = _uid claf' == uid'
-
-idToPExp :: String -> Span -> String -> String -> Bool -> PExp
-idToPExp pid' pos modids id' isTop' = PExp (Just $ TClafer [id']) pid' pos (IClaferId modids id' isTop' Nothing)
 
 mkPLClaferId :: CName -> Bool -> ClaferBinding -> PExp
 mkPLClaferId id' isTop' bind' = pExpDefPidPos $ IClaferId "" id' isTop' bind'
@@ -108,8 +106,8 @@ getClaferName (PExp _ _ _ (IClaferId _ id' _ _)) = id'
 getClaferName _ = ""
 
 isTopLevel :: IClafer -> Bool
-isTopLevel IClafer{_parentUID=puid} = puid == rootIdent  -- for concrete clafers
-                                   || puid == baseClafer -- for abstract clafers
+isTopLevel IClafer{_parentUID="root"} = True
+isTopLevel _                          = False
 
 -- -----------------------------------------------------------------------------
 -- conversions
@@ -148,22 +146,34 @@ findHierarchy sFun clafers clafer = case sFun clafer of
 -- -----------------------------------------------------------------------------
 -- UID -> IClafer map construction functions
 
-createUidIClaferMap :: IModule -> StringMap IClafer
+type UIDIClaferMap = StringMap IClafer
+
+createUidIClaferMap :: IModule -> UIDIClaferMap
 createUidIClaferMap    iModule  = foldl' (\accumMap' claf -> SMap.insert (_uid claf) claf accumMap') (SMap.singleton rootIdent rootClafer) allClafers
   where
     allClafers :: [ IClafer ]
     allClafers = universeOn biplate iModule
     rootClafer = IClafer noSpan (IClaferModifiers False True True) (Just $ IGCard False (0, -1)) rootIdent rootIdent "" Nothing Nothing (Just (1,1)) (1, 1) False (_mDecls iModule)
 
-findIClafer :: StringMap IClafer -> UID -> Maybe IClafer
-findIClafer    uidIClaferMap        uid' = SMap.lookup uid' uidIClaferMap
+findIClafer :: UIDIClaferMap -> UID -> Maybe IClafer
+findIClafer    uidIClaferMap    uid' = SMap.lookup uid' uidIClaferMap
+
+-- | efficient version of findHierarchy
+findHierarchyWithMap :: (IClafer -> [String]) -> UIDIClaferMap -> IClafer -> [IClafer]
+findHierarchyWithMap    sFun                     uidIClaferMap    clafer   = case sFun clafer of
+  []           -> [clafer]  -- no super and no reference
+  supersOrRefs -> let
+                    superOrRefClafers = mapMaybe (findIClafer uidIClaferMap) supersOrRefs
+                  in
+                    clafer
+                    : concatMap (findHierarchyWithMap sFun uidIClaferMap) superOrRefClafers
 
 -- -----------------------------------------------------------------------------
 -- functions using the UID -> IClafer map
 
 -- | traverse the inheritance hierarchy upwards to find a clafer with the given uidToFind
-findUIDinSupers :: StringMap IClafer -> UID    -> IClafer      -> Maybe IClafer
-findUIDinSupers    uidIClaferMap        uidToFind currentClafer =
+findUIDinSupers :: UIDIClaferMap -> UID    -> IClafer      -> Maybe IClafer
+findUIDinSupers    uidIClaferMap    uidToFind currentClafer =
   if uidToFind == _uid currentClafer
   then return currentClafer
   else do
@@ -206,7 +216,7 @@ data NestedInheritanceMatch
 -- Redefinition occurs when the name of headClafer is the same as the name of superClafer (isProperRedefinition):
 -- - isProperNesting && isProperRefinement && (_ident headClafer) == (_ident superClafer)
 
-isProperNesting :: StringMap IClafer -> Maybe NestedInheritanceMatch -> Bool
+isProperNesting :: UIDIClaferMap -> Maybe NestedInheritanceMatch -> Bool
 isProperNesting _ Nothing  = True
 isProperNesting uidIClaferMap (Just m) = if (isTopLevel $ _superClafer m) && (_isAbstract $ _superClafer m)
   then True
@@ -215,13 +225,13 @@ isProperNesting uidIClaferMap (Just m) = if (isTopLevel $ _superClafer m) && (_i
     Just parentsSuperClafer -> isJust $  findUIDinSupers uidIClaferMap (_parentUID $ _superClafer m) parentsSuperClafer
 
 -- ^ assumes that isProperNesting m == True
-isProperRefinement :: StringMap IClafer -> Maybe NestedInheritanceMatch
+isProperRefinement :: UIDIClaferMap -> Maybe NestedInheritanceMatch
   -> (Bool,  Bool,  Bool)
-isProperRefinement    _                    Nothing
+isProperRefinement    _                Nothing
   = ( True
     , True
     , True )
-isProperRefinement    uidIClaferMap        (Just m)
+isProperRefinement    uidIClaferMap    (Just m)
   = ( properCardinalityRefinement m
     , properBagToSetRefinement m
     , properTargetSubtyping m )
@@ -240,16 +250,16 @@ isProperRefinement    uidIClaferMap        (Just m)
       = True -- covers 1) only one of the target clafers exists, and 2) none of the target clafers exist
 
 -- ^ assumes that isProperNesting m == True and isProperRefinement m == (True, True, True)
-isProperRedefinition :: Maybe NestedInheritanceMatch -> Bool -- ^ whether the name of headClafer is the same as superClafer
-isProperRedefinition Nothing = True
-isProperRedefinition (Just NestedInheritanceMatch{_headClafer=hc, _superClafer=hs})
+isRedefinition :: Maybe NestedInheritanceMatch -> Bool -- ^ whether the name of headClafer is the same as superClafer
+isRedefinition Nothing = True
+isRedefinition (Just NestedInheritanceMatch{_headClafer=hc, _superClafer=hs})
   =  (_ident hc) == (_ident hs)
 
 
 
 -- ^ try to match the nested inheritance pattern
 -- ^ only available after the parentUIDs were computed
-matchNestedInheritance :: StringMap IClafer -> IClafer
+matchNestedInheritance :: UIDIClaferMap -> IClafer
   -> Maybe NestedInheritanceMatch
 matchNestedInheritance    _                    IClafer{_super=Nothing}    = Nothing
 matchNestedInheritance    uidIClaferMap        headClafer                 = do
@@ -491,7 +501,7 @@ iIfThenElse   = "ifthenelse"
 
 mkIFunExp :: String -> [IExp] -> IExp
 mkIFunExp _ (x:[]) = x
-mkIFunExp op' xs = foldl1 (\x y -> IFunExp op' $ map (PExp (Just $ TClafer []) "" noSpan) [x,y]) xs
+mkIFunExp op' xs = foldl1 (\x y -> IFunExp op' $ map (PExp Nothing "" noSpan) [x,y]) xs
 
 toLowerS :: String -> String
 toLowerS "" = ""

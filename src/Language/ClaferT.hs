@@ -121,7 +121,7 @@ irModuleTrace env = traceIrModule $ getIModule $ cIr env
 -- | This simulates a field in the ClaferEnv that will always recompute the map,
 --   since the IR always changes and the map becomes obsolete
 --   maps from a UID to an IClafer with the given UID
-uidIClaferMap :: ClaferEnv -> StringMap IClafer
+uidIClaferMap :: ClaferEnv -> UIDIClaferMap
 uidIClaferMap env = createUidIClaferMap $ getIModule $ cIr env
   where
     getIModule (Just (iModule, _, _)) = iModule
@@ -130,7 +130,7 @@ uidIClaferMap env = createUidIClaferMap $ getIModule $ cIr env
 -- | This simulates a field in the ClaferEnv that will always recompute the map,
 --   since the IR always changes and the map becomes obsolete
 --   maps to an IClafer which is the parent of the clafer with the given UID
-parentIClaferMap :: ClaferEnv -> StringMap IClafer
+parentIClaferMap :: ClaferEnv -> UIDIClaferMap
 parentIClaferMap env = foldl' (\accumMap' claf -> (addChildren accumMap' claf)) SMap.empty allClafers
   where
     getIModule (Just (iModule, _, _)) = iModule
@@ -139,8 +139,8 @@ parentIClaferMap env = foldl' (\accumMap' claf -> (addChildren accumMap' claf)) 
     allClafers :: [ IClafer ]
     allClafers = universeOn biplate $ getIModule $ cIr env
 
-    addChildren :: StringMap IClafer -> IClafer     -> StringMap IClafer
-    addChildren    accumMap''               parentClafer =
+    addChildren :: UIDIClaferMap -> IClafer     -> UIDIClaferMap
+    addChildren    accumMap''       parentClafer =
       -- insert the parentClafer as a value for the uid of each child
       foldl' (\accumMap''' uid' -> SMap.insert uid' parentClafer accumMap''') accumMap'' (parentClafer ^.. elements.traversed.iClafer.uid)
 

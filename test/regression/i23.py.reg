@@ -1,147 +1,16 @@
-from ast import Module
-from ast import GCard
-from ast import Supers
-from ast import Clafer
-from ast import Exp
-from ast import Declaration
-from ast import LocalDeclaration
-from ast import IRConstraint
-from ast import FunExp
-from ast import ClaferId
-from ast import DeclPExp
-from ast import Goal
+from jsir.IR import *
 
-from ast import IntegerLiteral
-from ast import DoubleLiteral
-from ast import StringLiteral
-def getModule():
-	stack = []
-	module = Module.Module("")
-	stack.append(module)
-##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(3),IntegerLiteral.IntegerLiteral(1)), (IntegerLiteral.IntegerLiteral(4),IntegerLiteral.IntegerLiteral(21)))
-	isAbstract=True
-	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
-	id="Person"
-	uid="c0_Person"
-	parentUid="root"
-	
-	
-	card=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1))
-	globalCard=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1))
-	currClafer = Clafer.Clafer(pos=pos, isAbstract=isAbstract, gcard=groupCard, ident=id, uid=uid, my_supers=my_supers, card=card, glCard=globalCard)
-	stack[-1].addElement(currClafer)
-	stack.append(currClafer)
-##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(4),IntegerLiteral.IntegerLiteral(5)), (IntegerLiteral.IntegerLiteral(4),IntegerLiteral.IntegerLiteral(19)))
-	isAbstract=False
-	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
-	id="Age"
-	uid="c0_Age"
-	parentUid="c0_Person"
-	
-	my_Reference = Reference.Reference(isSet=True, 
-		Exp.Exp(expType="Ref", exptype="", parentId="", pos=((IntegerLiteral.IntegerLiteral(4),IntegerLiteral.IntegerLiteral(12)), (IntegerLiteral.IntegerLiteral(4),IntegerLiteral.IntegerLiteral(19))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="integer", isTop=True, my_bind="integer")]))
-	card=(IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(1))
-	globalCard=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1))
-	currClafer = Clafer.Clafer(pos=pos, isAbstract=isAbstract, gcard=groupCard, ident=id, uid=uid, my_supers=my_supers, card=card, glCard=globalCard)
-	stack[-1].addElement(currClafer)
-	stack.append(currClafer)
-	stack.pop()
-	stack.pop()
-##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(6),IntegerLiteral.IntegerLiteral(1)), (IntegerLiteral.IntegerLiteral(9),IntegerLiteral.IntegerLiteral(28)))
-	isAbstract=False
-	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
-	id="Team"
-	uid="c0_Team"
-	parentUid="root"
-	
-	
-	card=(IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(1))
-	globalCard=(IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(1))
-	currClafer = Clafer.Clafer(pos=pos, isAbstract=isAbstract, gcard=groupCard, ident=id, uid=uid, my_supers=my_supers, card=card, glCard=globalCard)
-	stack[-1].addElement(currClafer)
-	stack.append(currClafer)
-##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(7),IntegerLiteral.IntegerLiteral(5)), (IntegerLiteral.IntegerLiteral(8),IntegerLiteral.IntegerLiteral(27)))
-	isAbstract=False
-	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
-	id="Contractor"
-	uid="c0_Contractor"
-	parentUid="c0_Team"
-	my_Super = 
-		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(7),IntegerLiteral.IntegerLiteral(18)), (IntegerLiteral.IntegerLiteral(7),IntegerLiteral.IntegerLiteral(24))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_Person", isTop=True, my_bind="")])
-	
-	card=(IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(1))
-	globalCard=(IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(1))
-	currClafer = Clafer.Clafer(pos=pos, isAbstract=isAbstract, gcard=groupCard, ident=id, uid=uid, my_supers=my_supers, card=card, glCard=globalCard)
-	stack[-1].addElement(currClafer)
-	stack.append(currClafer)
-##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(8),IntegerLiteral.IntegerLiteral(9)), (IntegerLiteral.IntegerLiteral(8),IntegerLiteral.IntegerLiteral(25)))
-	isAbstract=False
-	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
-	id="since"
-	uid="c0_since"
-	parentUid="c0_Contractor"
-	
-	my_Reference = Reference.Reference(isSet=True, 
-		Exp.Exp(expType="Ref", exptype="", parentId="", pos=((IntegerLiteral.IntegerLiteral(8),IntegerLiteral.IntegerLiteral(18)), (IntegerLiteral.IntegerLiteral(8),IntegerLiteral.IntegerLiteral(25))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="integer", isTop=True, my_bind="integer")]))
-	card=(IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(1))
-	globalCard=(IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(1))
-	currClafer = Clafer.Clafer(pos=pos, isAbstract=isAbstract, gcard=groupCard, ident=id, uid=uid, my_supers=my_supers, card=card, glCard=globalCard)
-	stack[-1].addElement(currClafer)
-	stack.append(currClafer)
-	stack.pop()
-	stack.pop()
-##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(9),IntegerLiteral.IntegerLiteral(5)), (IntegerLiteral.IntegerLiteral(9),IntegerLiteral.IntegerLiteral(26)))
-	isAbstract=False
-	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
-	id="Member"
-	uid="c0_Member"
-	parentUid="c0_Team"
-	
-	my_Reference = Reference.Reference(isSet=True, 
-		Exp.Exp(expType="Ref", exptype="", parentId="", pos=((IntegerLiteral.IntegerLiteral(9),IntegerLiteral.IntegerLiteral(15)), (IntegerLiteral.IntegerLiteral(9),IntegerLiteral.IntegerLiteral(21))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_Person", isTop=False, my_bind="c0_Person")]))
-	card=(IntegerLiteral.IntegerLiteral(2),IntegerLiteral.IntegerLiteral(-1))
-	globalCard=(IntegerLiteral.IntegerLiteral(2),IntegerLiteral.IntegerLiteral(-1))
-	currClafer = Clafer.Clafer(pos=pos, isAbstract=isAbstract, gcard=groupCard, ident=id, uid=uid, my_supers=my_supers, card=card, glCard=globalCard)
-	stack[-1].addElement(currClafer)
-	stack.append(currClafer)
-	stack.pop()
-	stack.pop()
-##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(11),IntegerLiteral.IntegerLiteral(1)), (IntegerLiteral.IntegerLiteral(11),IntegerLiteral.IntegerLiteral(15)))
-	isAbstract=False
-	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
-	id="Alice"
-	uid="c0_Alice"
-	parentUid="root"
-	my_Super = 
-		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(11),IntegerLiteral.IntegerLiteral(9)), (IntegerLiteral.IntegerLiteral(11),IntegerLiteral.IntegerLiteral(15))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_Person", isTop=True, my_bind="")])
-	
-	card=(IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(1))
-	globalCard=(IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(1))
-	currClafer = Clafer.Clafer(pos=pos, isAbstract=isAbstract, gcard=groupCard, ident=id, uid=uid, my_supers=my_supers, card=card, glCard=globalCard)
-	stack[-1].addElement(currClafer)
-	stack.append(currClafer)
-	stack.pop()
-##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(12),IntegerLiteral.IntegerLiteral(1)), (IntegerLiteral.IntegerLiteral(12),IntegerLiteral.IntegerLiteral(13)))
-	isAbstract=False
-	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
-	id="Bob"
-	uid="c0_Bob"
-	parentUid="root"
-	my_Super = 
-		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(12),IntegerLiteral.IntegerLiteral(7)), (IntegerLiteral.IntegerLiteral(12),IntegerLiteral.IntegerLiteral(13))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="c0_Person", isTop=True, my_bind="")])
-	
-	card=(IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(1))
-	globalCard=(IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(1))
-	currClafer = Clafer.Clafer(pos=pos, isAbstract=isAbstract, gcard=groupCard, ident=id, uid=uid, my_supers=my_supers, card=card, glCard=globalCard)
-	stack[-1].addElement(currClafer)
-	stack.append(currClafer)
-	stack.pop()
-	return module
+c0_Person = Abstract("c0_Person");
+c0_Age = c0_Person.addChild("c0_Age").withCard(1, 1);
+c0_Team = Clafer("c0_Team").withCard(1, 1);
+c0_Contractor = c0_Team.addChild("c0_Contractor").withCard(1, 1).extending(c0_Person);
+c0_since = c0_Contractor.addChild("c0_since").withCard(1, 1);
+c0_Member = c0_Team.addChild("c0_Member").withCard(2);
+c0_Alice = Clafer("c0_Alice").withCard(1, 1).extending(c0_Person);
+c0_Bob = Clafer("c0_Bob").withCard(1, 1).extending(c0_Person);
+c0_Age.refTo("int");
+c0_since.refTo("int");
+c0_Member.refToUnique(c0_Person);
+scope({c0_Age:3, c0_Member:3, c0_Person:3});
+defaultScope(1);
+stringLength(16);

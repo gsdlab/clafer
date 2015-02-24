@@ -87,17 +87,17 @@ case_NestedInheritanceMatchTest = case compileOneFragment defaultClaferArgs mode
                 isJust c0_req_match @? ("NestedInheritanceMatch not found for " ++ show c0_req)
                 isProperNesting uidIClaferMap' (c0_req_match) @? ("Improper nesting for " ++ show c0_req)
                 (True, True, True) == isProperRefinement uidIClaferMap' (c0_req_match) @? ("Improper refinement for " ++ show c0_req)
-                (not $ isProperRedefinition (c0_req_match)) @? ("Improper redefinition for " ++ show c0_req)
+                (not $ isRedefinition (c0_req_match)) @? ("Improper redefinition for " ++ show c0_req)
 
                 isJust c1_req_match @? ("NestedInheritanceMatch not found for " ++ show c1_req)
                 isProperNesting uidIClaferMap' (c1_req_match) @? ("Improper nesting for " ++ show c1_req)
                 (True, True, True) == isProperRefinement uidIClaferMap' (c1_req_match) @? ("Improper refinement for " ++ show c1_req)
-                isProperRedefinition (c1_req_match) @? ("Improper redefinition for " ++ show c1_req)
+                isRedefinition (c1_req_match) @? ("Improper redefinition for " ++ show c1_req)
 
                 isJust c0_cmd_match @? ("NestedInheritanceMatch not found for " ++ show c0_cmd)
                 isProperNesting uidIClaferMap' (c0_cmd_match) @? ("Improper nesting for " ++ show c0_cmd)
                 (True, True, True) == isProperRefinement uidIClaferMap' (c0_cmd_match) @? ("Improper refinement for " ++ show c0_cmd)
-                (not $ isProperRedefinition (c0_cmd_match)) @? ("Improper redefinition for " ++ show c0_cmd)
+                (not $ isRedefinition (c0_cmd_match)) @? ("Improper redefinition for " ++ show c0_cmd)
 
                 isNothing c0_Component_match @? ("Non-existing match found for " ++ show c0_Component)
                 isNothing c0_InPort_match @? ("Non-existing match found for " ++ show c0_InPort)
@@ -107,17 +107,17 @@ case_NestedInheritanceMatchTest = case compileOneFragment defaultClaferArgs mode
                 isJust c0_down_match @? ("NestedInheritanceMatch not found for" ++ show c0_down)
                 (isProperNesting uidIClaferMap' (c0_down_match)) @? ("Improper nesting for " ++ show c0_down)
                 (True, True, True) == (isProperRefinement uidIClaferMap' (c0_down_match)) @? ("Improper refinement for " ++ show c0_down)
-                (not $ isProperRedefinition (c0_down_match)) @? ("Improper redefinition for " ++ show c0_down)
+                (not $ isRedefinition (c0_down_match)) @? ("Improper redefinition for " ++ show c0_down)
 
                {- isJust c0_Alice_match @? ("NestedInheritanceMatch not found for " ++ show c0_Alice)
                 isProperNesting uidIClaferMap' (c0_Alice_match) @? ("Improper nesting for " ++ show c0_Alice)
                 (False, False, True) == (isProperRefinement uidIClaferMap' (c0_Alice_match)) @? ("Improper refinement for " ++ show c0_Alice)
-                (not $ isProperRedefinition (c0_Alice_match)) @? ("Improper redefinition for " ++ show c0_Alice)
+                (not $ isRedefinition (c0_Alice_match)) @? ("Improper redefinition for " ++ show c0_Alice)
 
                 isJust c0_Bob_match @? ("NestedInheritanceMatch not found for " ++ show c0_Bob)
                 isProperNesting uidIClaferMap' (c0_Bob_match) @? ("Improper nesting for " ++ show c0_Bob)
                 (True, True, True) == (isProperRefinement uidIClaferMap' (c0_Bob_match)) @? ("Improper refinement for " ++ show c0_Bob)
-                (not $ isProperRedefinition (c0_Bob_match)) @? ("Improper redefinition for " ++ show c0_Bob)-}
+                (not $ isRedefinition (c0_Bob_match)) @? ("Improper redefinition for " ++ show c0_Bob)-}
 
 model2 :: String
 model2 = unlines

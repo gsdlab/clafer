@@ -15,8 +15,7 @@ abstract sig c0_Component
 abstract sig c0_Port
 { r_c0_input : lone c0_input
 , r_c0_output : lone c0_output }
-{ one @r_c0_Port.this
-  let children = (r_c0_input + r_c0_output) | one children }
+{ one @r_c0_Port.this }
 
 sig c0_input
 {}
@@ -56,6 +55,8 @@ one sig c0_stop extends c0_Request
 one sig c0_WinCtrl extends c0_Component
 { r_c0_cmd : one c0_cmd
 , r_c0_req : one c0_req }
+{ r_c0_cmd in r_c0_Port
+  r_c0_req in r_c0_Port }
 
 one sig c0_cmd extends c0_Port
 { ref : one c0_Command }

@@ -31,7 +31,7 @@ sig c0_Transmission extends c0_Feature
 { r_c0_Automatic : lone c0_Automatic
 , r_c0_Manual : lone c0_Manual }
 { one @r_c0_Transmission.this
-  let children = (r_c0_Automatic + r_c0_Manual) | one children
+  let children = (r_c0_Automatic + r_c0_Manual + r_c0_cost + r_c0_mass) | one children
   (this.(@r_c0_cost.@ref)) = 0
   (this.(@r_c0_mass.@ref)) = 0 }
 
@@ -64,7 +64,7 @@ sig c0_Sensor extends c0_Feature
 { r_c0_Radar : lone c0_Radar
 , r_c0_Lidar : lone c0_Lidar }
 { one @r_c0_Sensor.this
-  let children = (r_c0_Radar + r_c0_Lidar) | one children
+  let children = (r_c0_Radar + r_c0_Lidar + r_c0_cost + r_c0_mass) | one children
   (this.(@r_c0_cost.@ref)) = 0
   (this.(@r_c0_mass.@ref)) = 0 }
 
@@ -84,7 +84,7 @@ sig c0_Alert extends c0_Feature
 { r_c0_Haptic : lone c0_Haptic
 , r_c0_Audible : lone c0_Audible }
 { one @r_c0_Alert.this
-  let children = (r_c0_Haptic + r_c0_Audible) | one children
+  let children = (r_c0_Haptic + r_c0_Audible + r_c0_cost + r_c0_mass) | one children
   (this.(@r_c0_cost.@ref)) = 0
   (this.(@r_c0_mass.@ref)) = 0 }
 

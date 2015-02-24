@@ -222,7 +222,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c1_DriveConfiguration</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c1_DriveConfiguration</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
@@ -263,7 +263,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c1_ElectronicStabilityControlSystem</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c1_ElectronicStabilityControlSystem</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
@@ -304,7 +304,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c1_AntiLockBreakSystem</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c1_AntiLockBreakSystem</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
@@ -345,7 +345,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c1_TractionControlSystem</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c1_TractionControlSystem</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>

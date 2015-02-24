@@ -28,7 +28,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Meeting</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Meeting</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
@@ -658,7 +658,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Member</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Member</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
@@ -699,7 +699,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Room</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Room</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
@@ -796,7 +796,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Meeting</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Meeting</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
@@ -1245,7 +1245,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Member</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Member</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
@@ -1286,7 +1286,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Room</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Room</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
@@ -2170,7 +2170,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Month</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Month</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
@@ -2211,7 +2211,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Month</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Month</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
@@ -2519,7 +2519,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Member</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Member</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>5</IntLiteral>
 </Min>
@@ -2560,7 +2560,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Agenda</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Agenda</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
@@ -2963,7 +2963,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Meeting</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Meeting</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
@@ -3004,7 +3004,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Meeting</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Meeting</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>

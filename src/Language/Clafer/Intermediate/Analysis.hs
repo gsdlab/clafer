@@ -334,13 +334,13 @@ convertClafer =
         Just (I.IGCard True _) -> (0, 1)
         Just (I.IGCard _ i)    -> i
     super =
-      case I._super clafer of
-        Just (I.PExp{I._exp = I.IClaferId{I._sident = superUid}})  -> Just superUid
-        _ -> Nothing
+      case getSuper clafer of
+        [superUid'] -> Just superUid'
+        _          -> Nothing
     reference =
-      case I._reference clafer of
-        Just (I.IReference _ I.PExp{I._exp = I.IClaferId{I._sident = refUid'}})  -> Just refUid'
-        _ -> Nothing
+      case getReference clafer of
+        [refUid'] -> Just refUid'
+        _         -> Nothing
 
 gatherInfo :: I.IModule -> Info
 gatherInfo imodule =
