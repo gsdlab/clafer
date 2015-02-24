@@ -28,8 +28,6 @@ import Control.Lens hiding (elements, mapping, op)
 import Control.Monad.State
 import Data.List
 import Data.Maybe
-import Data.StringMap (StringMap)
-import qualified Data.StringMap as SMap
 
 import Language.Clafer.Common
 import Language.Clafer.ClaferArgs
@@ -59,8 +57,8 @@ bOrFoldl1 xs = foldl1 (\res val -> res || val) xs
 -- Alloy code generation
 -- 07th Mayo 2012 Rafael Olaechea
 --      Added Logic to print a goal block in case there is at least one goal.
-genAlloyLtlModule :: ClaferArgs -> (IModule, GEnv) -> [(UID, Integer)] -> StringMap IClafer -> (Result, [(Span, IrTrace)])
-genAlloyLtlModule    claferargs'   (imodule, _)       scopes              uidIClaferMap'     = (flatten output, filter ((/= NoTrace) . snd) $ mapLineCol output)
+genAlloyLtlModule :: ClaferArgs -> (IModule, GEnv) -> [(UID, Integer)] -> UIDIClaferMap -> (Result, [(Span, IrTrace)])
+genAlloyLtlModule    claferargs'   (imodule, _)       scopes              uidIClaferMap' = (flatten output, filter ((/= NoTrace) . snd) $ mapLineCol output)
   where
   tl = trace_len claferargs'
 
@@ -311,7 +309,7 @@ containsTimedRel    genEnv     (PExp iType' _ _ exp') =  case exp' of
   IFunExp _ exps' -> bOrFoldl1 $ map (containsTimedRel genEnv) exps'
   IClaferId _ sident' _ (Just bind) -> timedIClaferId
     where
-    boundIClafer = fromJust $ SMap.lookup bind (uidIClaferMap genEnv)
+    boundIClafer = fromJust $ findIClafer (uidIClaferMap genEnv) bind
     mutable' = _mutable boundIClafer
     timedIClaferId
       | sident' == "ref" = mutable'
@@ -342,7 +340,10 @@ genConstraints    genEnv    ctx       c
         if containsTimedRel genEnv pexp
         then [genTimeDecl "t" (resPath ctx) c, genPExp genEnv ctx { time = Just "t", resPath = ((_uid c) : (resPath ctx))} pexp]
         else [genPExp genEnv ctx { time = Nothing, resPath = ((_uid c) : (resPath ctx))} pexp]
-    IEConstraint False pexp -> [ CString "// Assertion " +++ (genAssertName pexp) +++ CString " ignored since nested assertions are not supported in Alloy.\n"]
+    IEConstraint False pexp ->
+        if _ident c == rootIdent
+        then []  -- has already been generated in genRootClafer
+        else [ CString "// Assertion " +++ (genAssertName pexp) +++ CString " ignored since nested assertions are not supported in Alloy.\n" ]
     IEClafer c' ->
         (if genCardCrude (_card c') `elem` ["one", "lone", "some"]
          then CString ""
@@ -556,7 +557,7 @@ genPExp'    genEnv    ctx       (PExp iType' pid' pos exp') = case exp' of
     optBar _  = " | "
   IClaferId _ "ref" _  (Just bind) -> CString $ "@ref" ++ timeJoin
     where
-    boundIClafer = SMap.lookup bind (uidIClaferMap genEnv)
+    boundIClafer = findIClafer (uidIClaferMap genEnv) bind
     timeJoin = case boundIClafer of
       Just c -> case (_mutable c, time ctx) of
         (True, Just t) -> "." ++ t
@@ -573,7 +574,7 @@ genPExp'    genEnv    ctx       (PExp iType' pid' pos exp') = case exp' of
            Just TReal -> True
            Just TString -> True
            _ -> False
-    boundIClafer = SMap.lookup bind (uidIClaferMap genEnv)
+    boundIClafer = findIClafer (uidIClaferMap genEnv) bind
     sid' = if isBuiltInExpr || sid == "this" then sid else ('@' : genRelName "" ++ sid ++ timeJoin)
     timeJoin = case (boundIClafer, time ctx) of
                     (Just IClafer {_mutable=True}, Just t) -> "." ++ t
@@ -588,6 +589,7 @@ genPExp'    genEnv    ctx       (PExp iType' pid' pos exp') = case exp' of
         topPath = case resPath ctx of
                     x:_ -> x
                     [] -> error "'AlloyLtl.genPExp': resPath is empty"
+  IClaferId _ sid _ Nothing -> CString sid  -- this is the case for local declarations in quantifiers
   IFunExp _ _ -> case exp'' of
     IFunExp _ _ -> genIFunExp genEnv pid' ctx exp''
     _ -> genPExp' genEnv ctx $ PExp iType' pid' pos exp''
@@ -675,7 +677,7 @@ containsMutable :: GenEnv -> PExp -> Bool
 containsMutable    genEnv    (PExp _ _ _ exp') = case exp' of
   (IFunExp _ exps') -> bOrFoldl1 $ map (containsMutable genEnv) exps'
   (IClaferId _ _ _ (Just bind)) -> let
-      boundIClafer = fromJust $ SMap.lookup bind (uidIClaferMap genEnv)
+      boundIClafer = fromJust $ findIClafer (uidIClaferMap genEnv) bind
     in
       _mutable boundIClafer
   (IDeclPExp _ decls' e) -> bOrFoldl1 (map (containsMut genEnv) decls') || containsMutable genEnv e

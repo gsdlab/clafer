@@ -29,7 +29,6 @@ module Language.ClaferT
   ( ClaferEnv(..)
   , irModuleTrace
   , uidIClaferMap
-  , parentIClaferMap
   , makeEnv
   , getAst
   , getIr
@@ -64,8 +63,6 @@ import Data.Data.Lens (biplate)
 import Control.Lens ((^..), traversed, universeOn)
 import Data.List
 import qualified Data.Map as Map
-import           Data.StringMap (StringMap)
-import qualified Data.StringMap as SMap
 
 import Language.Clafer.Common
 import Language.Clafer.Front.AbsClafer
@@ -126,24 +123,6 @@ uidIClaferMap env = createUidIClaferMap $ getIModule $ cIr env
   where
     getIModule (Just (iModule, _, _)) = iModule
     getIModule Nothing                = error "BUG: uidIClaferMap: cannot request IClafer map before desugaring."
-
--- | This simulates a field in the ClaferEnv that will always recompute the map,
---   since the IR always changes and the map becomes obsolete
---   maps to an IClafer which is the parent of the clafer with the given UID
-parentIClaferMap :: ClaferEnv -> UIDIClaferMap
-parentIClaferMap env = foldl' (\accumMap' claf -> (addChildren accumMap' claf)) SMap.empty allClafers
-  where
-    getIModule (Just (iModule, _, _)) = iModule
-    getIModule Nothing                = error "BUG: parentIClaferMap: cannot request IClafer map before desugaring."
-
-    allClafers :: [ IClafer ]
-    allClafers = universeOn biplate $ getIModule $ cIr env
-
-    addChildren :: UIDIClaferMap -> IClafer     -> UIDIClaferMap
-    addChildren    accumMap''       parentClafer =
-      -- insert the parentClafer as a value for the uid of each child
-      foldl' (\accumMap''' uid' -> SMap.insert uid' parentClafer accumMap''') accumMap'' (parentClafer ^.. elements.traversed.iClafer.uid)
-
 
 getAst :: (Monad m) => ClaferT m Module
 getAst = do

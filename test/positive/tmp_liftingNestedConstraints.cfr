@@ -1,0 +1,9 @@
+A *
+    B *
+        C *
+            D ?
+        [ globally one D ]
+    [ G (all c : B.C | one c.D) ]
+[ G (all c : A.B.C | one c.D) ]
+
+assert [ G (all c : A.B.C | some c.D) ]
