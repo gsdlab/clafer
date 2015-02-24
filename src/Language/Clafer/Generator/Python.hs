@@ -19,7 +19,7 @@ import Language.Clafer.Intermediate.Intclafer
 
 -- | Choco 3 code generation
 genPythonModule :: ClaferArgs -> (IModule, GEnv) -> [(UID, Integer)] -> Result
-genPythonModule _ (imodule@IModule{_mDecls}, _) scopes = 
+genPythonModule _ (imodule@IModule{_mDecls}, _) scopes =
     genImports
     ++ "\n"
     ++ (genAbstractClafer =<< abstractClafers)
@@ -31,7 +31,7 @@ genPythonModule _ (imodule@IModule{_mDecls}, _) scopes =
     ++ genScopes
     where
     root :: IClafer
-    root = IClafer noSpan False Nothing rootIdent rootIdent "" Nothing Nothing (Just (1, 1)) (0, 0) _mDecls
+    root = IClafer noSpan (IClaferModifiers False True True) Nothing rootIdent rootIdent "" Nothing Nothing (Just (1, 1)) (0, 0) True _mDecls
 
     toplevelClafers = mapMaybe iclafer _mDecls
     -- The sort is so that we encounter sub clafers before super clafers when abstract clafers extend other abstract clafers
@@ -75,7 +75,7 @@ genPythonModule _ (imodule@IModule{_mDecls}, _) scopes =
 
     genImports = concat
       [ "from jsir.IR import *\n"
-  
+
       ]
 
     genScopes :: Result
@@ -105,8 +105,8 @@ genPythonModule _ (imodule@IModule{_mDecls}, _) scopes =
                 case parentOf _uid of
                      "root" -> "Clafer"
                      puid   -> puid ++ ".addChild"
-    genConcreteClafer (IClafer _ _ Nothing _ _ _ _ _ _ _ _) = error "Choco.getConcreteClafer undefined"
-    genConcreteClafer (IClafer _ _ (Just (IGCard _ _)) _ _ _ _ _ Nothing _ _) = error "Choco.getConcreteClafer undefined"
+    genConcreteClafer (IClafer _ _ Nothing _ _ _ _ _ _ _ _ _) = error "Choco.getConcreteClafer undefined"
+    genConcreteClafer (IClafer _ _ (Just (IGCard _ _)) _ _ _ _ _ Nothing _ _ _) = error "Choco.getConcreteClafer undefined"
 
     prop name value =
         case value of
@@ -132,7 +132,7 @@ genPythonModule _ (imodule@IModule{_mDecls}, _) scopes =
         _uid ++ " = Abstract(\"" ++ _uid ++ "\")" ++ prop "extending" (superOf _uid) ++ ";\n"
     genAbstractClafer IClafer{_uid, _card = Nothing} =
         _uid ++ " = Abstract(\"" ++ _uid ++ "\")" ++ prop "extending" (superOf _uid) ++ ";\n"
-	
+
 
     genTopConstraint :: IElement -> Result
     genTopConstraint (IEConstraint _ pexp) = "Constraint(" ++ genConstraintPExp pexp ++ ");\n"
