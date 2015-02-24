@@ -45,7 +45,7 @@ data GenCtx = GenCtx {
 
 data GenEnv = GenEnv
   { claferargs :: ClaferArgs
-  , uidIClaferMap :: StringMap IClafer
+  , uidIClaferMap :: UIDIClaferMap
   , forScopes :: String
   }  deriving (Show)
 
@@ -331,7 +331,7 @@ genConstraints :: GenEnv -> GenCtx -> IClafer -> [Concat]
 genConstraints    genEnv    ctx       c
   = (genParentConst (resPath ctx) c)
   : (genMutSubClafersConst genEnv c)
-  : (genGroupConst c)
+  : (genGroupConst genEnv c)
   : (genPathConst genEnv ctx  (if (noalloyruncommand (claferargs genEnv)) then  (_uid c ++ "_ref") else "ref") c)
   : constraints
   where
@@ -342,12 +342,14 @@ genConstraints    genEnv    ctx       c
         if containsTimedRel genEnv pexp
         then [genTimeDecl "t" (resPath ctx) c, genPExp genEnv ctx { time = Just "t", resPath = ((_uid c) : (resPath ctx))} pexp]
         else [genPExp genEnv ctx { time = Nothing, resPath = ((_uid c) : (resPath ctx))} pexp]
-    IEConstraint False _ -> [] -- assertions are handled at the genClafer level
+    IEConstraint False pexp -> [ CString "// Assertion " +++ (genAssertName pexp) +++ CString " ignored since nested assertions are not supported in Alloy.\n"]
     IEClafer c' ->
         (if genCardCrude (_card c') `elem` ["one", "lone", "some"]
          then CString ""
          else mkCard ({- do not use the genRelName as the constraint name -} _uid c') False (genRelName $ _uid c') $ fromJust (_card c')
-        ) : genSetUniquenessConstraint c'
+        )
+        : (genParentSubrelationConstriant (uidIClaferMap genEnv) c')
+        : (genSetUniquenessConstraint c')
     IEGoal _ _ -> error "getConst function from Alloy generator was given a Goal, this function should only be given a Constrain or Clafer" -- This should never happen
 
 -- generates time variable binding declaration which appears as a first expression in mutable constraints
@@ -402,6 +404,22 @@ genSetUniquenessConstraint c =
       _ -> []
     )
 
+-- TODO: need to include time stamps
+genParentSubrelationConstriant :: UIDIClaferMap -> IClafer   -> Concat
+genParentSubrelationConstriant    uidIClaferMap'   headClafer =
+  case match of
+    Nothing -> CString ""
+    Just NestedInheritanceMatch {
+           _superClafer = superClafer
+         }  -> if (isProperNesting uidIClaferMap' match) && (not $ isTopLevel superClafer)
+               then CString $ concat
+                [ genRelName $ _uid headClafer
+                , " in "
+                , genRelName $ _uid superClafer
+                ]
+               else CString ""
+  where
+    match = matchNestedInheritance uidIClaferMap' headClafer
 
 -- optimization: if only boolean features then the parent is unique
 genParentConst :: [String] -> IClafer -> Concat
@@ -423,12 +441,14 @@ genOptParentConst    c
   rel = genRelName $ _uid c
   glCard' = genIntervalCrude $ _glCard c
 
-genGroupConst :: IClafer -> Concat
-genGroupConst    clafer'
-  | null children' || flatten card' == "" = CString ""
+genGroupConst :: GenEnv -> IClafer -> Concat
+genGroupConst    genEnv    clafer'
+  | _isAbstract clafer' || null children' || flatten card' == "" = CString ""
   | otherwise = cconcat [genTimeQuant, CString "let children = ", brArg id $ CString children', CString " | ", card']
   where
-  subclafers = getSubclafers $ _elements clafer'
+  superHierarchy :: [IClafer]
+  superHierarchy = findHierarchyWithMap getSuper (uidIClaferMap genEnv) clafer'
+  subclafers = getSubclafers $ concatMap _elements superHierarchy
   children' = intercalate " + " $ map childRel subclafers
   childRel :: IClafer -> String
   childRel subc = (genRelName._uid) subc ++ (if _mutable subc then ".t" else "")
