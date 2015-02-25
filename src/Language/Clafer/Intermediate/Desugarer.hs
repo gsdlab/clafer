@@ -367,7 +367,7 @@ translateTmpPatterns e = case e of
                                   -- (!P W (P W []!P))
     PatScopeEmpty _ ->            not p `w` (p `w` g (not p))
                                   -- <> R -> ((!P & !R) U ((R | (P & !R)) U ( R | (!P U R))))
-    PatScopeBefore _ r ->         f r ==> ((not p & not r) `u` ((r || (p & not r)) `u` (r || (not p `u` r))))
+    PatScopeBefore _ r ->         f r ==> ((not p & not r) `u` (r || ((p & not r) `u` (r || (not p `u` r)))))
                                   -- <>Q -> (!Q U (Q & (!P W (P W []!P))))
     PatScopeAfter _ q ->          f q ==> ((not q) `u` (q & (not p `w` (p `w` g (not p))) ))
                                   -- []((Q & <>R) -> ((!P & !R) U (R | ((P & !R) U (R | (!P U R))))))
