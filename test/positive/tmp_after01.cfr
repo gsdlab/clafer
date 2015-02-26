@@ -1,7 +1,10 @@
 // Test for after scope
-
-a
- b ?
+a ?
+ xor b 1
   c ?
   d ?
   [never d after c ]
+assert [all a1 : a | all b1 : a1.b | never b1.d after b1.c]
+
+//assert [never a.b.c after a.b.d ]
+//assert [never a.b.d after a.b.c ]

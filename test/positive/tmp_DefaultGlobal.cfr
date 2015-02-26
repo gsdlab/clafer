@@ -1,9 +1,11 @@
 // behavioral clafer test for default globally or G
+// incorrectly desugars to [some this . c0_b . c0_c]
+// correct desugaring:[globally (this . c0_b => this . c0_b . c0_c) ].
+
 
 a
   b ?
     c ?
   [c]
-  /* incorrectly desugars to
-  [some this . c0_b . c0_c]
-  */
+
+assert[never (a.b && not a.b.c) ]

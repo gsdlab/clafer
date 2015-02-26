@@ -1,6 +1,8 @@
 // Test for eventually combined constraint
 
-a
- b ?
-  c ?
-  [next eventually c]
+xor a
+	b 
+	c 
+	[b => eventually c]
+
+assert[always (a.b => eventually a.c)]

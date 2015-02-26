@@ -1,6 +1,5 @@
-// Test for eventually combined pattern
-
+// Test for eventually constraint
 a
- b ?
-  c ?
- [eventually next c]
+	b ?
+	[eventually X b]
+assert[never a.b]

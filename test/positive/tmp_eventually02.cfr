@@ -1,6 +1,13 @@
 // Test for eventually constraint
 
+/*
 a
- b ?
-  c ?
- [F c]
+ final b ?
+  	c ?
+ 	[F c]
+assert[never c]
+*/
+final a
+	b
+	[F b]
+assert[never a.b]

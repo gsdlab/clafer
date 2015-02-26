@@ -1,8 +1,7 @@
-// Test for combined : globally, eventually, next constraint
 
-a
- b ?
-  c ?
-  [F G X c]
-  [X G F  c]
-  [eventually X globally c]
+final xor a
+	initial b 
+  	c 
+  	[eventually c ]
+
+//assert[a.c after a.b]

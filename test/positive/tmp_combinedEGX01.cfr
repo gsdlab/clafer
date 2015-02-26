@@ -1,8 +1,6 @@
-// Test for combined : globally, eventually, next constraint
 
-a
- b ?
-  c ?
-  [eventually  globally next c]
-  [next globally eventually  c]
-  [eventually next globally c]
+ xor a
+	b 
+  	c 
+  	[eventually c ]
+  	[initially b]

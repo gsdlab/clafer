@@ -1,7 +1,9 @@
 // Test for next step transition
 
 a
- b ?
-  c ? --> d
-  d ?
-  e ?
+	xor b 
+		c --> d
+		d
+		
+
+assert[always a.b.c => a.b.d]
