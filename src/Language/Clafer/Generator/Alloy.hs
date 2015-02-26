@@ -46,15 +46,16 @@ data GenEnv = GenEnv
 -- | Alloy code generation
 -- 07th Mayo 2012 Rafael Olaechea
 --      Added Logic to print a goal block in case there is at least one goal.
-genModule :: ClaferArgs -> (IModule, GEnv) -> [(UID, Integer)] -> UIDIClaferMap -> (Result, [(Span, IrTrace)])
-genModule    claferargs'   (imodule, _)       scopes              uidIClaferMap' = (flatten output, filter ((/= NoTrace) . snd) $ mapLineCol output)
+genModule :: ClaferArgs -> (IModule, GEnv) -> [(UID, Integer)] -> (Result, [(Span, IrTrace)])
+genModule    claferargs'   (imodule, genv)    scopes            = (flatten output, filter ((/= NoTrace) . snd) $ mapLineCol output)
   where
+
   genScopes :: [(UID, Integer)] -> String
   genScopes    []                = ""
   genScopes    scopes'           = " but " ++ intercalate ", " (map (\ (uid', scope)  -> show scope ++ " " ++ uid') scopes')
 
   forScopes' = "for 1" ++ genScopes scopes
-  genEnv = GenEnv claferargs' uidIClaferMap' forScopes'
+  genEnv = GenEnv claferargs' (uidClaferMap genv) forScopes'
   output = header genEnv +++ (cconcat $ map (genDeclaration genEnv) (_mDecls imodule)) +++
        if ((not $ skip_goals claferargs') && length goals_list > 0) then
                 CString "objectives o_global {\n" +++   (cintercalate (CString ",\n") goals_list) +++   CString "\n}"

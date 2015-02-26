@@ -97,7 +97,6 @@ import Data.Either
 import Data.List
 import Data.Maybe
 import qualified Data.Map as Map
-import Data.Ord
 import Control.Monad
 import Control.Monad.State
 import Control.Lens.Plated
@@ -487,7 +486,6 @@ generate =
       modes = mode cargs
       stats = showStats au $ statsModule iModule
       scopes = getScopeStrategy (scope_strategy cargs) iModule
-      uidIClaferMap' = uidIClaferMap env
 
     return $ Map.fromList (
         -- result for Alloy
@@ -496,7 +494,7 @@ generate =
                 then
                   let
                     (imod,strMap) = astrModule iModule
-                    alloyCode = genModule cargs{mode = [Alloy]} (imod, genv) scopes uidIClaferMap'
+                    alloyCode = genModule cargs{mode = [Alloy]} (imod, genv) scopes
                     addCommentStats = if no_stats cargs then const else addStats
                   in
                     [ (Alloy,
@@ -528,7 +526,7 @@ generate =
                 then
                    let
                       (imod,strMap) = astrModule iModule
-                      alloyCode = genModule cargs{mode = [Alloy42]} (imod, genv) scopes uidIClaferMap'
+                      alloyCode = genModule cargs{mode = [Alloy42]} (imod, genv) scopes
                       addCommentStats = if no_stats cargs then const else addStats
                    in
                       [ (Alloy42,
@@ -627,7 +625,7 @@ generate =
                   CompilerResult {
                    extension = "py",
                    -- outputCode = genPythonModule iModule,
-		   outputCode = genPythonModule cargs (iModule, genv) scopes,
+                   outputCode = genPythonModule cargs (iModule, genv) scopes,
                    statistics = stats,
                    claferEnv  = env,
                    mappingToAlloy = [],
