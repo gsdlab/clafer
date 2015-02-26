@@ -57,10 +57,11 @@ bOrFoldl1 xs = foldl1 (\res val -> res || val) xs
 -- Alloy code generation
 -- 07th Mayo 2012 Rafael Olaechea
 --      Added Logic to print a goal block in case there is at least one goal.
-genAlloyLtlModule :: ClaferArgs -> (IModule, GEnv) -> [(UID, Integer)] -> UIDIClaferMap -> (Result, [(Span, IrTrace)])
-genAlloyLtlModule    claferargs'   (imodule, _)       scopes              uidIClaferMap' = (flatten output, filter ((/= NoTrace) . snd) $ mapLineCol output)
+genAlloyLtlModule :: ClaferArgs -> (IModule, GEnv) -> [(UID, Integer)] -> (Result, [(Span, IrTrace)])
+genAlloyLtlModule    claferargs'   (imodule, genv)    scopes            = (flatten output, filter ((/= NoTrace) . snd) $ mapLineCol output)
   where
   tl = trace_len claferargs'
+  uidIClaferMap' = uidClaferMap genv
 
   -- multiply the scope by trace length for mutable clafers
   adjustScope :: (UID, Integer) -> (UID, Integer)
@@ -448,7 +449,7 @@ genGroupConst    genEnv    clafer'
   | otherwise = cconcat [genTimeQuant, CString "let children = ", brArg id $ CString children', CString " | ", card']
   where
   superHierarchy :: [IClafer]
-  superHierarchy = findHierarchyWithMap getSuper (uidIClaferMap genEnv) clafer'
+  superHierarchy = findHierarchy getSuper (uidIClaferMap genEnv) clafer'
   subclafers = getSubclafers $ concatMap _elements superHierarchy
   children' = intercalate " + " $ map childRel subclafers
   childRel :: IClafer -> String

@@ -119,8 +119,8 @@
 </End>
 </Position>
 <IsAbstract>true</IsAbstract>
-<GroupCard><IsKeyword>false</IsKeyword>
-<Interval><Min><IntLiteral>0</IntLiteral>
+<GroupCard><IsKeyword>true</IsKeyword>
+<Interval><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>-1</IntLiteral>
 </Max>
@@ -689,8 +689,8 @@
 </End>
 </Position>
 <IsAbstract>false</IsAbstract>
-<GroupCard><IsKeyword>false</IsKeyword>
-<Interval><Min><IntLiteral>0</IntLiteral>
+<GroupCard><IsKeyword>true</IsKeyword>
+<Interval><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>-1</IntLiteral>
 </Max>
@@ -817,8 +817,8 @@
 </End>
 </Position>
 <IsAbstract>false</IsAbstract>
-<GroupCard><IsKeyword>false</IsKeyword>
-<Interval><Min><IntLiteral>0</IntLiteral>
+<GroupCard><IsKeyword>true</IsKeyword>
+<Interval><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>-1</IntLiteral>
 </Max>

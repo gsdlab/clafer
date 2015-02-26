@@ -25,6 +25,7 @@ module Language.Clafer.Intermediate.Resolver where
 import Control.Monad
 import Control.Monad.State
 import qualified Data.Map as Map
+import qualified Data.StringMap as SMap
 
 import Language.Clafer.Common
 import Language.Clafer.ClaferArgs
@@ -46,9 +47,12 @@ resolveModule    args'         imodule =
 
 -- | Name resolver
 nameModule :: Bool -> IModule -> (IModule, GEnv)
-nameModule skipResolver imodule = (imodule{_mDecls = decls'}, genv')
+nameModule skipResolver imodule = (imodule', genv'')
   where
-  (decls', genv') = runState (mapM (nameElement skipResolver "root") $ _mDecls imodule) $ GEnv Map.empty 0 Map.empty []
+    (decls', genv') = runState (mapM (nameElement skipResolver "root") $ _mDecls imodule) $ GEnv Map.empty 0 Map.empty [] SMap.empty
+    imodule' = imodule{_mDecls = decls'}
+    genv'' = genv'{uidClaferMap = createUidIClaferMap imodule'}
+
 
 nameElement :: MonadState GEnv m => Bool -> UID -> IElement -> m IElement
 nameElement skipResolver puid x = case x of
@@ -87,8 +91,8 @@ nameIDecl (IDecl isDisj' dels body') = IDecl isDisj' dels `liftM` (namePExp body
 resolveNamesModule :: ClaferArgs -> (IModule, GEnv) -> Resolve (IModule, GEnv)
 resolveNamesModule args' (imodule, genv') =
   do
-    res <- foldM (flip ($)) imodule $ map (\f -> flip (curry f) genv') funs
-    return (res, genv')
+    imodule' <- foldM (flip ($)) imodule $ map (\f -> flip (curry f) genv') funs
+    return (imodule', genv'{uidClaferMap = createUidIClaferMap imodule'})
   where
   funs :: [(IModule, GEnv) -> Resolve IModule]
   funs
