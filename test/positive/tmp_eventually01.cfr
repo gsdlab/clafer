@@ -4,5 +4,5 @@ final a
 	b ?
 		c ?
  		[eventually c]
- 	//[eventually c]
+ 	[eventually c]
 assert [never a.b.c]
