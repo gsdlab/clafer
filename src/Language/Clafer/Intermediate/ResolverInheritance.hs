@@ -45,7 +45,10 @@ resolveNModule (imodule, genv') =
   do
     let decls' = _mDecls imodule
     decls'' <- mapM (resolveNElement decls') decls'
-    return (imodule{_mDecls = decls''}, genv' {sClafers = bfs toNodeShallow $ toClafers decls''})
+    let imodule' = imodule{_mDecls = decls''}
+    return
+      ( imodule'
+      , genv'{sClafers = bfs toNodeShallow $ toClafers decls'', uidClaferMap = createUidIClaferMap imodule'})
 
 
 
@@ -97,7 +100,9 @@ resolveOModule (imodule, genv') =
   do
     let decls' = _mDecls imodule
     decls'' <- mapM (resolveOElement (defSEnv genv' decls')) decls'
-    return (imodule {_mDecls = decls''}, genv' {sClafers = bfs toNodeShallow $ toClafers decls''})
+    let imodule' = imodule{_mDecls = decls''}
+    return ( imodule'
+           , genv'{sClafers = bfs toNodeShallow $ toClafers decls'', uidClaferMap = createUidIClaferMap imodule'})
 
 
 resolveOClafer :: SEnv -> IClafer -> Resolve IClafer
@@ -143,7 +148,7 @@ analyzeGCard env clafer = gcard' `mplus` (Just $ IGCard False (0, -1))
   where
   gcard'
     | isNothing $ _super clafer = _gcard clafer
-    | otherwise                 = listToMaybe $ mapMaybe _gcard $ findHierarchy getSuper (clafers env) clafer
+    | otherwise                 = listToMaybe $ mapMaybe _gcard $ findHierarchy getSuper (uidClaferMap $ genv env) clafer
 
 
 analyzeCard :: SEnv -> IClafer -> Maybe Interval
@@ -164,9 +169,11 @@ analyzeElement env x = case x of
 
 -- | Expand inheritance
 resolveEModule :: (IModule, GEnv) -> (IModule, GEnv)
-resolveEModule (imodule, genv') = (imodule{_mDecls = decls''}, genv'')
+resolveEModule (imodule, genv') = (imodule', newGenv)
   where
   decls' = _mDecls imodule
+  imodule' = imodule{_mDecls = decls''}
+  newGenv = genv''{uidClaferMap = createUidIClaferMap imodule'}
   (decls'', genv'') = runState (mapM (resolveEElement []
                                     (unrollableModule imodule)
                                     False decls') decls') genv'
@@ -201,12 +208,12 @@ getDirUnrollables dependencies = (filter isUnrollable $ map (map v2n) $
 -- -----------------------------------------------------------------------------
 resolveEClafer :: MonadState GEnv m => [String] -> [String] -> Bool -> [IElement] -> IClafer -> m IClafer
 resolveEClafer predecessors unrollables absAncestor declarations clafer = do
-  sClafers' <- gets sClafers
+  uidClaferMap' <- gets uidClaferMap
   clafer' <- renameClafer absAncestor (_parentUID clafer) clafer
   let predecessors' = _uid clafer' : predecessors
   (sElements, super', superList) <-
       resolveEInheritance predecessors' unrollables absAncestor declarations
-        (findHierarchy getSuper sClafers' clafer)
+        (findHierarchy getSuper uidClaferMap' clafer)
   let sClafer = Map.fromList $ zip (map _uid superList) $ repeat [predecessors']
   modify (\e -> e {stable = Map.delete "clafer" $
                             Map.unionWith ((nub.).(++)) sClafer $

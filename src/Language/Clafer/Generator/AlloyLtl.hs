@@ -62,6 +62,7 @@ genAlloyLtlModule    claferargs'   (imodule, genv)       scopes         = (flatt
   where
   tl = trace_len claferargs'
   uidIClaferMap' = uidClaferMap genv
+
   -- multiply the scope by trace length for mutable clafers
   adjustScope :: (UID, Integer) -> (UID, Integer)
   adjustScope s@(uid', scope')   = case findIClafer uidIClaferMap' uid' of

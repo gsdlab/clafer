@@ -5,3 +5,5 @@ a
     c -->> d
     d
     e
+
+assert[a.b.c => F a.b.d]

@@ -627,10 +627,10 @@
 </End>
 </Position>
 <IsAbstract>false</IsAbstract>
-<GroupCard><IsKeyword>false</IsKeyword>
-<Interval><Min><IntLiteral>0</IntLiteral>
+<GroupCard><IsKeyword>true</IsKeyword>
+<Interval><Min><IntLiteral>1</IntLiteral>
 </Min>
-<Max><IntLiteral>-1</IntLiteral>
+<Max><IntLiteral>1</IntLiteral>
 </Max>
 </Interval>
 </GroupCard>
@@ -729,10 +729,10 @@
 </End>
 </Position>
 <IsAbstract>false</IsAbstract>
-<GroupCard><IsKeyword>false</IsKeyword>
-<Interval><Min><IntLiteral>0</IntLiteral>
+<GroupCard><IsKeyword>true</IsKeyword>
+<Interval><Min><IntLiteral>1</IntLiteral>
 </Min>
-<Max><IntLiteral>-1</IntLiteral>
+<Max><IntLiteral>1</IntLiteral>
 </Max>
 </Interval>
 </GroupCard>
