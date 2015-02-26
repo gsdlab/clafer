@@ -34,7 +34,6 @@ import Language.Clafer.Front.PrintClafer
 import Language.Clafer.Common
 
 import Control.Applicative
-import Control.Monad.LPMonad.Supply
 import Control.Monad.Error
 import Control.Monad.Identity
 import Control.Monad.List
@@ -86,10 +85,6 @@ instance MonadAnalysis m => MonadAnalysis (ReaderT r m) where
 instance (Monoid w, MonadAnalysis m) => MonadAnalysis (WriterT w m) where
   clafers = lift clafers
   withClafers = mapWriterT . withClafers
-
-instance MonadAnalysis m => MonadAnalysis (VSupplyT m) where
-  clafers = lift clafers
-  withClafers = mapVSupplyT . withClafers
 
 isConcrete :: SClafer -> Bool
 isConcrete = not . isAbstract
@@ -405,9 +400,6 @@ unlessM a b = a >>= (`unless` b)
 
 fromMaybeT :: Monad m => a -> MaybeT m a -> m a
 fromMaybeT def m = fromMaybe def `liftM` runMaybeT m
-
-mapVSupplyT :: (Monad m, Monad m1) => (m1 a1 -> m a) -> VSupplyT m1 a1 -> VSupplyT m a
-mapVSupplyT f = lift . f . runVSupplyT
 
 mapLeft :: (t -> a) -> Either t b -> Either a b
 mapLeft f (Left l)  = Left $ f l

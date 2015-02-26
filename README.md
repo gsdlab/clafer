@@ -58,11 +58,6 @@ Clafer can be installed from a binary distribution (preferred), from Hackage, an
 
 Regardless of the installation method, the following are 
 
-Required:
-
-* [GNU Linear Programming Kit](http://www.gnu.org/software/glpk/) v4.55
-  * On Windows, [WinGLPK](http://winglpk.sourceforge.net/)
-
 Optional:
 
 * [Java Platform (JDK)](http://www.oracle.com/technetwork/java/javase/downloads/index.html) v7+, 32bit
@@ -71,27 +66,6 @@ Optional:
   * needed only for Alloy output validation
 * [GraphViz](http://graphviz.org/)
   * the program `dot` is needed only in the `html` mode for SVG graph generation
-
-### Installation of GLPK
-
-On Linux
-
-1. [libglpk-dev](http://www.gnu.org/software/glpk/) v4.55
-  * execute `sudo apt-get install libglpk-dev` on Ubuntu
-2. [libgmp-dev](http://gmplib.org/)
-  * execute `sudo apt-get install libgmp-dev` on Ubuntu
-
-On Windows
-
-1. The binary distribution already includes the GNU Linear Programming Kit DLL `glpk_4_55.dll`.
-2. Install [WinGLPK](http://winglpk.sourceforge.net/) v4.55
-  * inside the `w64` folder, copy `glpk_4_55.dll` to `glpk.dll` so that it can be found when building Haskell package `glpk-hs`
-  * from `w64` folder, copy `glpk_4_55.dll` to `<user>\AppData\Roaming\cabal\bin`
-
-On Mac
-
-1. install GPLK 4.55 from [MacPorts](http://www.macports.org/)
-  * execute `sudo port install glpk +universal`
 
 ### Installation from binaries
 
@@ -116,10 +90,6 @@ Clafer is now available on [Hackage](http://hackage.haskell.org/package/clafer-0
 3. `cd <cabal's lib or share folder>`  (`C:\Users\<user>\AppData\Roaming\cabal\x86_64-windows-ghc-7.8.3\clafer-0.3.9` on Windows or `.cabal/share/x86_64-linux-ghc-7.8.3/clafer-0.3.9/` on Linux)
 4. to automatically download Alloy jars
   * execute `make` in `tools` 
-
-On Windows 
-
-* copy GLPK's dll `glpk_4_55.dll` to the `C:\Users\<user>\AppData\Roaming\cabal\bin` folder or any other folder on the system `PATH`
 
 ### Installation from the source code
 
@@ -156,18 +126,14 @@ Development versions from branches `develop` should work well together but this 
   * `git clone git://github.com/gsdlab/clafer.git`
 4. in `<source directory>/clafer`, execute
   * `cabal update`
-5. On Linux and Mac execute 
+5. On execute 
   * `make init`
   * `make`
-6. On Windows (in MSYS2 console), execute 
-  * `make glpk=/c/<your WinGLPK install dir>`
 
 ### Installation
 
-1. On Linux and Mac execute 
+1. Execute 
   * `make install to=<target directory>` 
-2. On Windows (in MSYS2 console), execute 
-  * `make glpk=/c/<your WinGLPK instal dir> to=/c/Users/<your user name>/AppData/Roaming/cabal/bin`
 
 #### Note: 
 > On Windows, use `/` with the `make` command instead of `\`.
@@ -259,7 +225,7 @@ Common flags:
   -e --ecore2clafer                       Translate an ECore model into
                                           Clafer.
      --ss=SCOPESTRATEGY --scope-strategy  Use scope computation strategy:
-                                          none, simple (default), or full.
+                                          none or simple (default).
      --check-afm --afm                    Throws an error if the cardinality
                                           of any of the clafers is above 1.
      --sg --skip-goals                    Skip generation of Alloy code for
