@@ -57,11 +57,11 @@ bOrFoldl1 xs = foldl1 (\res val -> res || val) xs
 -- Alloy code generation
 -- 07th Mayo 2012 Rafael Olaechea
 --      Added Logic to print a goal block in case there is at least one goal.
-genAlloyLtlModule :: ClaferArgs -> (IModule, GEnv) -> [(UID, Integer)] -> UIDIClaferMap -> (Result, [(Span, IrTrace)])
-genAlloyLtlModule    claferargs'   (imodule, _)       scopes              uidIClaferMap' = (flatten output, filter ((/= NoTrace) . snd) $ mapLineCol output)
+genAlloyLtlModule :: ClaferArgs -> (IModule, GEnv) -> [(UID, Integer)] -> (Result, [(Span, IrTrace)])
+genAlloyLtlModule    claferargs'   (imodule, genv)       scopes         = (flatten output, filter ((/= NoTrace) . snd) $ mapLineCol output)
   where
   tl = trace_len claferargs'
-
+  uidIClaferMap' = uidClaferMap genv
   -- multiply the scope by trace length for mutable clafers
   adjustScope :: (UID, Integer) -> (UID, Integer)
   adjustScope s@(uid', scope')   = case findIClafer uidIClaferMap' uid' of
@@ -369,24 +369,43 @@ genTimeDecl tvar rPath c = CString $  case rPath of
   firstDecl = " | one " ++ tvar ++ " : " ++ timeSig ++ firstConstr
   firstConstr = " | one " ++ tvar ++ " <: local_next and no local_next :> " ++ tvar
 
--- generates cardinality constraints for mutable subclafers
--- typically all t: Time | lone r_field.t
+-- generates cardinality and parent dependency constraints for mutable subclafers
+-- typically all t: Time | lone r_field.t && lone r_field2.t &&
+--                         no (parent_rel.t.this) => (no r_field[this].t && no r_field2[this].t)
 -- Michal: TODO: revise because now a clafer can have both super and reference at the same time
 genMutSubClafersConst :: GenEnv -> IClafer -> Concat
-genMutSubClafersConst    genEnv c = genTimeQuant allSubExp +++ (cintercalate (CString " && ") allSubExp)
+genMutSubClafersConst    genEnv c = genTimeQuant allSubExp +++ (cintercalate (CString " && \n\t") allSubExp)
   where
-  allSubExp = map genMutCardConst mutClafers ++ refCardConst
+  allSubExp = map genCardConstBody mutClafers ++ refCardConst ++ (genReqParentConstBody "t" c mutClafers)
   refCardConst
-    | (_mutable c) && (isJust $ _reference c) = [CString $ "one this.@" ++ (refRelName c) ++ ".t"]
+    | (_mutable c) && (isJust $ _reference c) = [CString $ "one this.@" ++ (genRefRelName genEnv c) ++ ".t"]
     | otherwise = []
   mutClafers = filter isMutableNonRef $ getSubclafers $ _elements c
   isMutableNonRef c' = (_mutable c') && (cardStr c' /= "set")  -- Michal: does not matter whether a ref or not or whether has super or not
   cardStr c' = genCardCrude $ _card c'
   genTimeQuant [] = CString ""
   genTimeQuant _ = genTimeAllQuant "t"
-  genMutCardConst c' = CString $ (cardStr c') ++ " " ++ (genRelName $ _uid c') ++ ".t"
-  refRelName c' = (if (noalloyruncommand (claferargs genEnv)) then  (_uid c' ++ "_ref") else "ref")
+  genCardConstBody c' = CString $ (cardStr c') ++ " " ++ (genRelName $ _uid c') ++ ".t"
 
+genRefRelName :: GenEnv -> IClafer -> String
+genRefRelName genEnv c' = (if (noalloyruncommand (claferargs genEnv)) then  (_uid c' ++ "_ref") else "ref")
+
+-- Generates constraints that prevents instance subgraphs that are not connected to the root
+-- Constraints says that if at some time moment t there is no connection to the parent then that clafer can not have any subchildren
+-- Typically:
+-- all t:Time | no rel_parent.t.this => no rel_child[this].t && no rel_child2
+-- Func does not generate "all t:Time |" part.
+-- TODO needs to be tested
+genReqParentConstBody :: String -> IClafer -> [IClafer] -> [Concat]
+genReqParentConstBody time' c mutSubClafers =
+  if not (_mutable c) then []
+                      else case mutSubClafers of
+                                [] -> []
+                                _  -> [CString ("(" ++ genAnticedent ++ " => " ++ intercalate " && " genConsequent ++ ")")]
+  where
+    genAnticedent = "no " ++ genRelName (_uid c) ++ "." ++ time' ++ ".this"
+    genConsequent = map genSubClaferConst mutSubClafers
+    genSubClaferConst subC = "no " ++ genRelName (_uid subC) ++ "." ++ time'
 
 genSetUniquenessConstraint :: IClafer -> [Concat]
 genSetUniquenessConstraint c =
@@ -448,7 +467,7 @@ genGroupConst    genEnv    clafer'
   | otherwise = cconcat [genTimeQuant, CString "let children = ", brArg id $ CString children', CString " | ", card']
   where
   superHierarchy :: [IClafer]
-  superHierarchy = findHierarchyWithMap getSuper (uidIClaferMap genEnv) clafer'
+  superHierarchy = findHierarchy getSuper (uidIClaferMap genEnv) clafer'
   subclafers = getSubclafers $ concatMap _elements superHierarchy
   children' = intercalate " + " $ map childRel subclafers
   childRel :: IClafer -> String
