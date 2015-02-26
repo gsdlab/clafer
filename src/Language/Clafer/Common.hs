@@ -123,25 +123,10 @@ toClafers = mapMaybe elemToClafer
 -- | Finds hierarchy and transforms each element
 mapHierarchy :: (IClafer -> b)
                 -> (IClafer -> [String])
-                -> [IClafer]
+                -> UIDIClaferMap
                 -> IClafer
                 -> [b]
 mapHierarchy f sf = (map f.).(findHierarchy sf)
-
-
--- | Returns inheritance hierarchy of a clafer
-findHierarchy :: (IClafer -> [String])
-                            -> [IClafer]
-                            -> IClafer
-                            -> [IClafer]
-findHierarchy sFun clafers clafer = case sFun clafer of
-  []           -> [clafer]  -- no super and no reference
-  supersOrRefs -> let
-                    superOrRefClafers = (concatMap findSuper supersOrRefs)
-                  in
-                    clafer : superOrRefClafers ++ concatMap (findHierarchy sFun clafers) superOrRefClafers
-  where
-    findSuper superUid = filter (\c -> _uid c == superUid) clafers
 
 -- -----------------------------------------------------------------------------
 -- UID -> IClafer map construction functions
@@ -159,14 +144,14 @@ findIClafer :: UIDIClaferMap -> UID -> Maybe IClafer
 findIClafer    uidIClaferMap    uid' = SMap.lookup uid' uidIClaferMap
 
 -- | efficient version of findHierarchy
-findHierarchyWithMap :: (IClafer -> [String]) -> UIDIClaferMap -> IClafer -> [IClafer]
-findHierarchyWithMap    sFun                     uidIClaferMap    clafer   = case sFun clafer of
+findHierarchy :: (IClafer -> [String]) -> UIDIClaferMap -> IClafer -> [IClafer]
+findHierarchy    sFun                     uidIClaferMap    clafer   = case sFun clafer of
   []           -> [clafer]  -- no super and no reference
   supersOrRefs -> let
                     superOrRefClafers = mapMaybe (findIClafer uidIClaferMap) supersOrRefs
                   in
                     clafer
-                    : concatMap (findHierarchyWithMap sFun uidIClaferMap) superOrRefClafers
+                    : concatMap (findHierarchy sFun uidIClaferMap) superOrRefClafers
 
 -- -----------------------------------------------------------------------------
 -- functions using the UID -> IClafer map
@@ -538,7 +523,8 @@ data GEnv
   { identCountMap :: Map.Map String Int
   , expCount :: Int
   , stable :: Map.Map UID [[UID]] -- super clafer names of a given clafer
-  , sClafers ::[IClafer] -- all clafers (no going through references)
+  , sClafers ::[IClafer]          -- all clafers (no going through references)
+  , uidClaferMap :: UIDIClaferMap -- the map needs to be re-created everytime IModule is rewritten
   } deriving (Eq, Show)
 
 voidf :: Monad m => m t -> m ()

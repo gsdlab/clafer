@@ -38,16 +38,17 @@ import Language.Clafer.Intermediate.Intclafer
 import qualified Language.Clafer.Intermediate.Intclafer as I
 
 -- | this environment is created for each clafer
-data SEnv = SEnv {
-  clafers :: [IClafer],                 -- (constant) top level clafers
-  context :: Maybe IClafer,             -- context of a constraint
-  subClafers :: [(IClafer, [IClafer])], -- descendans (BFS)
-  ancClafers :: [(IClafer, [IClafer])], -- ancesors (BFS)
-  bindings :: [([String], [IClafer])],  -- local names
-  resPath :: [IClafer],                 -- path to the current clafer
-  genv :: GEnv,                         -- (constant)
-  aClafers :: [(IClafer, [IClafer])],   -- (constant) abstract clafers (BFS)
-  cClafers :: [(IClafer, [IClafer])]    -- (constant) all concrete clafers (BFS)
+data SEnv
+  = SEnv
+  { clafers :: [IClafer]                 -- (constant) top level clafers
+  , context :: Maybe IClafer             -- context of a constraint
+  , subClafers :: [(IClafer, [IClafer])] -- descendans (BFS)
+  , ancClafers :: [(IClafer, [IClafer])] -- ancesors (BFS)
+  , bindings :: [([String], [IClafer])]  -- local names
+  , resPath :: [IClafer]                 -- path to the current clafer
+  , genv :: GEnv                         -- (constant)
+  , aClafers :: [(IClafer, [IClafer])]   -- (constant) abstract clafers (BFS)
+  , cClafers :: [(IClafer, [IClafer])]   -- (constant) all concrete clafers (BFS)
   } deriving Show
 
 -- | How a given name was resolved
@@ -333,7 +334,7 @@ allChildren = selectChildren getSuperAndReference
 
 selectChildren :: (IClafer -> [String]) -> SEnv -> [IClafer]
 selectChildren f env = getSubclafers $ concat $
-                       mapHierarchy _elements f (sClafers $ genv env)
+                       mapHierarchy _elements f (uidClaferMap $ genv env)
                        (fromJust $ context env)
 
 findUnique :: Span -> String -> [(IClafer, [IClafer])] -> Resolve (Maybe (String, [IClafer]))

@@ -46,7 +46,8 @@ one sig c0_sensor extends c0_Component
 
 one sig c0_temperature extends c0_TemperaturePort
 {}
-{ some this.@r_c0_output }
+{ let children = (r_c0_input + r_c0_output) | some children
+  some this.@r_c0_output }
 
 one sig c0_controller extends c0_Component
 { r_c1_temperature : one c1_temperature }
@@ -54,7 +55,8 @@ one sig c0_controller extends c0_Component
 
 one sig c1_temperature extends c0_TemperaturePort
 {}
-{ some this.@r_c0_input }
+{ let children = (r_c0_input + r_c0_output) | some children
+  some this.@r_c0_input }
 
 one sig c0_con1 extends c0_TemperatureConnector
 {}

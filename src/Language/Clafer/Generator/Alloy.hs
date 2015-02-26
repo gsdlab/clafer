@@ -320,7 +320,7 @@ genGroupConst    genEnv    clafer'
   | otherwise = cconcat [CString "let children = ", brArg id $ CString children', CString" | ", card']
   where
   superHierarchy :: [IClafer]
-  superHierarchy = findHierarchyWithMap getSuper (uidIClaferMap genEnv) clafer'
+  superHierarchy = findHierarchy getSuper (uidIClaferMap genEnv) clafer'
   children' = intercalate " + " $ map (genRelName._uid) $
              getSubclafers $ concatMap _elements superHierarchy
   card'     = mkCard (_uid clafer') True "children" $ _interval $ fromJust $ _gcard $ clafer'
