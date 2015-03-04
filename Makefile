@@ -19,7 +19,7 @@ init:
 	# wget http://www.stackage.org/snapshot/lts-1.4/cabal.config
 	# mv cabal.config ../.clafertools-cabal-sandbox
 	# the constraint is there to prevent installing utf8-string-1 which conflicts with gitit, which requires utf8-string <= 0.3.8.
-	cabal install --only-dependencies $(MAC_USR_LIB) --enable-tests --constraint="utf8-string==0.3.8"
+	cabal install --only-dependencies $(MAC_USR_LIB) --enable-tests
 
 build:
 	$(MAKE) -C $(TOOL_DIR)
@@ -56,14 +56,15 @@ Schema.hs:
 Css.hs:
 	$(MAKE) -C $(SRC_DIR) Css.hs
 
-# enable profiler
-# first remove `cabal` and `ghc` folders (on win: `<User>\AppData\Roaming\cabal` and `<User>\AppData\Roaming\ghc`)
+# Just like "init" but with enabled profiler
 # this will reinstall everything with profiling support, build clafer, and copy it to .
 prof:
-	cabal update
-	cabal install --only-dependencies -p --enable-executable-profiling $(MAC_USR_LIB)
-	cabal configure -p --enable-executable-profiling
-	cabal build --ghc-options="-prof -auto-all -rtsopts"
+	rm -rf ../.clafertools-cabal-sandbox
+	cabal sandbox init --sandbox=../.clafertools-cabal-sandbox
+	cabal install --only-dependencies $(MAC_USR_LIB) --enable-tests -p --enable-executable-profiling --enable-library-profiling
+	$(MAKE) -C $(TOOL_DIR)
+	cabal configure -p --enable-executable-profiling --enable-library-profiling
+	cabal build --ghc-options="-prof -fprof-auto -auto-all -caf-all -rtsopts -osuf p_o"
 
 .PHONY : test
 

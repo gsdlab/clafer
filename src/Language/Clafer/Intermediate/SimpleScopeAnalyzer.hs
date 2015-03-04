@@ -222,11 +222,11 @@ analyzeDependencies :: UIDIClaferMap -> [IClafer] -> [SCC String]
 analyzeDependencies uidClaferMap' clafers = connComponents
     where
     connComponents  = stronglyConnComp [(key, key, depends) | (key, depends) <- dependencyGraph]
-    dependencies    = concatMap (dependency uidClaferMap' clafers) clafers
+    dependencies    = concatMap (dependency uidClaferMap') clafers
     dependencyGraph = Map.toList $ Map.fromListWith (++) [(a, [b]) | (a, b) <- dependencies]
 
-dependency :: UIDIClaferMap -> [IClafer] -> IClafer -> [(String, String)]
-dependency uidClaferMap' clafers clafer =
+dependency :: UIDIClaferMap -> IClafer -> [(String, String)]
+dependency uidClaferMap' clafer =
     selfDependency : (maybeToList superDependency ++ childDependencies)
     where
      -- This is to make the "stronglyConnComp" from Data.Graph play nice. Otherwise,
