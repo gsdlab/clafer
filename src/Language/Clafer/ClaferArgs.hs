@@ -44,7 +44,7 @@ instance Default ClaferMode where
   def = Alloy42
 
 -- | Scope inference strategy
-data ScopeStrategy = None | Simple {- | Full -}
+data ScopeStrategy = None | Simple
   deriving (Eq, Show, Data, Typeable)
 instance Default ScopeStrategy where
   def = Simple

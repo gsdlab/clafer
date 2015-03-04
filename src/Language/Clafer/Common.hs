@@ -126,7 +126,7 @@ toClafers = mapMaybe elemToClafer
 type UIDIClaferMap = StringMap IClafer
 
 createUidIClaferMap :: IModule -> UIDIClaferMap
-createUidIClaferMap    iModule  =   foldl'
+createUidIClaferMap    iModule  = foldl'
     (\accumMap' claf -> SMap.insert (_uid claf) claf accumMap')
     (SMap.singleton rootIdent rootClafer)
     (integerClafer : intClafer : stringClafer : realClafer : booleanClafer : clafer : allClafers)
