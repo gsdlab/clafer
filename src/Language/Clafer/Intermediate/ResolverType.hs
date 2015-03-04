@@ -1,6 +1,6 @@
 {-# LANGUAGE NamedFieldPuns, FlexibleInstances, GeneralizedNewtypeDeriving #-}
 {-
- Copyright (C) 2012-2013 Jimmy Liang, Kacper Bak, Michal Antkiewicz <http://gsd.uwaterloo.ca>
+ Copyright (C) 2012-2015 Jimmy Liang, Kacper Bak, Michal Antkiewicz <http://gsd.uwaterloo.ca>
 
  Permission is hereby granted, free of charge, to any person obtaining a copy of
  this software and associated documentation files (the "Software"), to deal in
@@ -151,7 +151,7 @@ hierarchy uidIClaferMap' c = (case findIClafer uidIClaferMap' c of
 isIndirectChild :: (Monad m) => UIDIClaferMap -> UID -> UID -> m Bool
 isIndirectChild uidIClaferMap' child parent = do
   (_:allSupers) <- hierarchy uidIClaferMap' parent
-  childOfSupers <- mapM ((isChild uidIClaferMap' child)._uid) $ filter (\c -> (_uid c) /= baseClafer) allSupers
+  childOfSupers <- mapM ((isChild uidIClaferMap' child)._uid) $ allSupers
   return $ or childOfSupers
 
 isChild :: (Monad m) => UIDIClaferMap -> UID -> UID -> m Bool
@@ -212,17 +212,17 @@ getIfThenElseType uidIClaferMap' t1 t2 = do
   let ut = catMaybes [commonHierarchy u1 u2 | u1 <- (fmap.fmap) _uid h1, u2 <- (fmap.fmap) _uid h2]
   return $ fromUnionType ut
   where
-    commonHierarchy h1 h2 = filterClafer $ commonHierarchy' (reverse h1) (reverse h2) Nothing
-    commonHierarchy' (x:xs) (y:ys) accumulator =
-      if (x == y)
-        then
-          if (null xs || null ys)
-            then Just x
-            else commonHierarchy' xs ys $ Just x
-        else accumulator
-    commonHierarchy' _ _ _ = error "ResolverType.commonHierarchy' expects two non empty lists but was given at least one empty list!" -- Should never happen
-    filterClafer value =
-      if (value == Just "clafer") then Nothing else value
+  commonHierarchy h1 h2 = filterClafer $ commonHierarchy' (reverse h1) (reverse h2) Nothing
+  commonHierarchy' (x:xs) (y:ys) accumulator =
+    if (x == y)
+      then
+        if (null xs || null ys)
+          then Just x
+          else commonHierarchy' xs ys $ Just x
+      else accumulator
+  commonHierarchy' _ _ _ = error "ResolverType.commonHierarchy' expects two non empty lists but was given at least one empty list!" -- Should never happen
+  filterClafer value =
+    if (value == Just "clafer") then Nothing else value
 
 resolveTModule :: (IModule, GEnv) -> Either ClaferSErr IModule
 resolveTModule (imodule, _) =
