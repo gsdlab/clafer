@@ -1,4 +1,4 @@
-abstract degree -> integer
+abstract degree ->> integer
     [ this > 0 && this <= 360 ]
 //# FRAGMENT
 abstract Vehicle
