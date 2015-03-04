@@ -176,8 +176,8 @@ findUIDinSupers    uidIClaferMap    uidToFind currentClafer =
     findUIDinSupers uidIClaferMap uidToFind superClafer
 
 -- | traverse the containment hierarchy upwards to find a clafer with the given uidToFind
-findUIDinParents :: UIDIClaferMap -> UID -> IClafer -> Maybe IClafer
-findUIDinParents uidIClaferMap uidToFind currentClafer =
+findUIDinParents :: UIDIClaferMap -> UID    -> IClafer      -> Maybe IClafer
+findUIDinParents    uidIClaferMap    uidToFind currentClafer =
   if uidToFind == _uid currentClafer
   then return currentClafer
   else do
