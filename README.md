@@ -60,7 +60,7 @@ Regardless of the installation method, the following are
 
 Optional:
 
-* [Java Platform (JDK)](http://www.oracle.com/technetwork/java/javase/downloads/index.html) v7+, 32bit
+* [Java Platform (JDK)](http://www.oracle.com/technetwork/java/javase/downloads/index.html) v8+, 32bit
   * needed only for running XML output validation
 * [Alloy4.1 and/or Alloy4.2](http://alloy.mit.edu/alloy/download.html)
   * needed only for Alloy output validation
@@ -126,7 +126,6 @@ Development versions from branches `develop` should work well together but this 
   * `git clone git://github.com/gsdlab/clafer.git`
 4. in `<source directory>/clafer`, execute
   * `cabal update`
-5. On execute 
   * `make init`
   * `make`
 
@@ -279,3 +278,8 @@ The following directives are markers of locations in the input files for differe
 * `//# STATS` - marks the insertion point for module statistics. The statistics can be omitted using the argument `--no-stats`. 
 * `//# SUMMARY` - shorthand for `//# GRAPH` and `//# STATS`
 * `//# QUALITY_ATTRIBUTE` - is used by ClaferMooVisualizer and ClaferConfigurator to distinguish quality attributes, which should be filtered out, from other clafers.
+
+Need help?
+==========
+* Visit [language's website](http://clafer.org).
+* Report issues to [issue tracker](https://github.com/gsdlab/clafer/issues)

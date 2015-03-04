@@ -1,169 +1,165 @@
-Name:               clafer
-Version:            0.3.9
-Synopsis:           clafer compiles Clafer models to other formats, such as Alloy, XML, HTML, Dot.
-Description:        Clafer is a general purpose, lightweight, structural modeling language developed at GSD Lab, University of Waterloo, and MODELS group at IT University of Copenhagen. Lightweight modeling aims at improving the understanding of the problem domain in the early stages of software development and determining the requirements with fewer defects. Clafer's goal is to make modeling more accessible to a wider range of users and domains. The tool provides a reference language implementation. It translates models to other formats (e.g. Alloy, XML) to allow for reasoning with existing tools.
-Homepage:           http://clafer.org
-License:            MIT
-License-file:       LICENSE
-Author:             Kacper Bak, Jimmy Liang, Michal Antkiewicz, Ed Zulkoski, Luke Michael Brown, Paulius Juodisius, Rafael Olaechea
-Maintainer:         Michal Antkiewicz <mantkiew@gsd.uwaterloo.ca>
-Stability:          Experimental
-Category:           Model
-Build-type:         Simple
-Cabal-version:      >= 1.18
-data-files:         README.md,
-                    CHANGES.md,
-                    logo.pdf,
-                    Makefile,
-                    tools/XsdCheck.java,
-                    tools/XsdCheck.class,
-                    tools/ecore2clafer.jar,
-                    tools/Makefile
+Name:                   clafer
+Version:                0.3.9
+Synopsis:               clafer compiles Clafer models to other formats, such as Alloy, XML, HTML, Dot.
+Description:            Clafer is a general purpose, lightweight, structural modeling language developed at GSD Lab, University of Waterloo, and MODELS group at IT University of Copenhagen. Lightweight modeling aims at improving the understanding of the problem domain in the early stages of software development and determining the requirements with fewer defects. Clafer's goal is to make modeling more accessible to a wider range of users and domains. The tool provides a reference language implementation. It translates models to other formats (e.g. Alloy, XML) to allow for reasoning with existing tools.
+Homepage:               http://clafer.org
+License:                MIT
+License-file:           LICENSE
+Author:                 Kacper Bak, Jimmy Liang, Michal Antkiewicz, Ed Zulkoski, Luke Michael Brown, Paulius Juodisius, Rafael Olaechea
+Maintainer:             Michal Antkiewicz <mantkiew@gsd.uwaterloo.ca>
+Stability:              Experimental
+Category:               Model
+Build-type:             Simple
+Cabal-version:          >= 1.18
+data-files:             README.md
+                        , CHANGES.md
+                        , logo.pdf
+                        , Makefile
+                        , tools/XsdCheck.java
+                        , tools/XsdCheck.class
+                        , tools/ecore2clafer.jar
+                        , tools/Makefile
 source-repository head
-    type:           git
-    location:       git://github.com/gsdlab/clafer.git
+    type:               git
+    location:           git://github.com/gsdlab/clafer.git
 Executable clafer
-    build-tools:    ghc >= 7.8.3
+    build-tools:        ghc >= 7.8.3
     default-language:
-                    Haskell2010
-    default-extensions:
-                    DeriveDataTypeable,
-                    RankNTypes
-    main-is:        clafer.hs
-    hs-source-dirs: src-cmd
-    build-depends:  base >= 4.6.0.1 && < 5,
-                    containers >= 0.5.0.0,
-                    filepath >= 1.3.0.1,
-                    process >= 1.1.0.2,
+                        Haskell2010
+    default-extensions: DeriveDataTypeable
+                      , RankNTypes
+    main-is:            clafer.hs
+    hs-source-dirs:     src-cmd
+    build-depends:      base >= 4.7.0.1 && < 5
+                      , containers >= 0.5.5.1
+                      , filepath >= 1.3.0.2
+                      , process >= 1.1.0.2
 
-                    mtl >= 2.1.2,
-                    cmdargs >= 0.10.7,
-                    split >= 0.2.2,
+                      , mtl >= 2.1.3.1
 
-                    clafer == 0.3.9
+                      , cmdargs >= 0.10.7
+                      , split >= 0.2.2
+
+                      , clafer == 0.3.9
     if os(windows)
-        build-depends: HaXml == 1.24
+        build-depends:  HaXml == 1.24
     else
-        build-depends: HaXml >= 1.24
+        build-depends:  HaXml >= 1.24
 
-    other-modules: Paths_clafer
+    other-modules:      Paths_clafer
 
 library
-    build-tools:    ghc >= 7.8.3
-    default-language:
-                    Haskell2010
-    default-extensions:
-                    DeriveDataTypeable,
-                    RankNTypes
-    build-depends:  array >= 0.4.0.1,
-                    base >= 4.6.0.1 && < 5,
-                    containers >= 0.5.0.0,
-                    directory >= 1.2.0.1,
-                    filepath >= 1.3.0.1,
-                    process >= 1.1.0.2,
-                    network >= 2.6,
-                    network-uri >= 2.6,
-                    HTTP,
-                    bytestring,
+    build-tools:        ghc >= 7.8.3
+    default-language:   Haskell2010
+    default-extensions: DeriveDataTypeable
+                      , RankNTypes
+    build-depends:      array >= 0.4.0.1
+                      , base >= 4.7.0.1 && < 5
+                      , bytestring
+                      , containers >= 0.5.5.1
+                      , directory >= 1.2.1.0
+                      , filepath >= 1.3.0.2
+                      , process >= 1.1.0.2
+                      , transformers >= 0.3.0.0
 
-                    mtl >= 2.1.2,
-                    parsec >= 3.1.3,
-                    transformers >= 0.3.0.0,
+                      , HTTP
+                      , mtl >= 2.1.3.1
+                      , network >= 2.6
+                      , parsec >= 3.1.3
+                      , text >= 1.1.0.0
 
-                    data-stringmap >= 1.0.1.1,
-                    aeson >= 0.7.0.6,
-                    json-builder >= 0.3,
-                    lens >= 4.4,
-                    lens-aeson,
-                    string-conversions >= 0.3.0.2,
-                    cmdargs >= 0.10.7,
-                    executable-path >= 0.0.3,
-                    split >= 0.2.2,
-                    text >= 0.11.3.1
+
+                      , aeson >= 0.7.0.6
+                      , cmdargs >= 0.10.7
+                      , data-stringmap >= 1.0.1.1
+                      , executable-path >= 0.0.3
+                      , json-builder >= 0.3
+                      , lens >= 4.7
+                      , lens-aeson >= 1.0.0.3
+                      , network-uri >= 2.6
+                      , string-conversions >= 0.3.0.2
+                      , split >= 0.2.2
 
     if os(windows)
-        build-depends: HaXml == 1.24
+        build-depends:  HaXml == 1.24
     else
-        build-depends: HaXml >= 1.24
+        build-depends:  HaXml >= 1.24
 
-    hs-source-dirs:  src
-    ghc-options:     -Wall -fno-warn-unused-do-bind -fno-warn-orphans
-    exposed-modules:
-                     Language.Clafer,
-                     Language.ClaferT,
-                     Language.Clafer.ClaferArgs,
-                     Language.Clafer.Comments,
-                     Language.Clafer.Common,
-                     Language.Clafer.Css,
-                     Language.Clafer.JSONMetaData,
-                     Language.Clafer.QNameUID,
-                     Language.Clafer.Front.AbsClafer,
-                     Language.Clafer.Front.ErrM,
-                     Language.Clafer.Front.LayoutResolver,
-                     Language.Clafer.Front.LexClafer,
-                     Language.Clafer.Front.ParClafer,
-                     Language.Clafer.Front.PrintClafer,
-                     Language.Clafer.Generator.Alloy,
-                     Language.Clafer.Generator.Choco,
-                     Language.Clafer.Generator.Concat,
-                     Language.Clafer.Generator.Graph,
-                     Language.Clafer.Generator.Html,
-                     Language.Clafer.Generator.Python,
-                     Language.Clafer.Generator.Schema,
-                     Language.Clafer.Generator.Stats,
-                     Language.Clafer.Generator.Xml,
-                     Language.Clafer.Intermediate.Desugarer,
-                     Language.Clafer.Intermediate.Intclafer,
-                     Language.Clafer.Intermediate.Resolver,
-                     Language.Clafer.Intermediate.ResolverInheritance,
-                     Language.Clafer.Intermediate.ResolverName,
-                     Language.Clafer.Intermediate.ResolverType,
-                     Language.Clafer.Intermediate.ScopeAnalysis,
-                     Language.Clafer.Intermediate.SimpleScopeAnalyzer,
-                     Language.Clafer.Intermediate.StringAnalyzer,
-                     Language.Clafer.Intermediate.Tracing,
-                     Language.Clafer.Intermediate.Transformer,
-                     Language.Clafer.Optimizer.Optimizer,
-                     Language.Clafer.SplitJoin
-    other-modules: Paths_clafer,
-                   GetURL
+    hs-source-dirs:     src
+    ghc-options:        -Wall -fno-warn-unused-do-bind -fno-warn-orphans
+    exposed-modules:    Language.Clafer
+                      , Language.ClaferT
+                      , Language.Clafer.ClaferArgs
+                      , Language.Clafer.Comments
+                      , Language.Clafer.Common
+                      , Language.Clafer.Css
+                      , Language.Clafer.JSONMetaData
+                      , Language.Clafer.QNameUID
+                      , Language.Clafer.Front.AbsClafer
+                      , Language.Clafer.Front.ErrM
+                      , Language.Clafer.Front.LayoutResolver
+                      , Language.Clafer.Front.LexClafer
+                      , Language.Clafer.Front.ParClafer
+                      , Language.Clafer.Front.PrintClafer
+                      , Language.Clafer.Generator.Alloy
+                      , Language.Clafer.Generator.Choco
+                      , Language.Clafer.Generator.Concat
+                      , Language.Clafer.Generator.Graph
+                      , Language.Clafer.Generator.Html
+                      , Language.Clafer.Generator.Python
+                      , Language.Clafer.Generator.Schema
+                      , Language.Clafer.Generator.Stats
+                      , Language.Clafer.Generator.Xml
+                      , Language.Clafer.Intermediate.Desugarer
+                      , Language.Clafer.Intermediate.Intclafer
+                      , Language.Clafer.Intermediate.Resolver
+                      , Language.Clafer.Intermediate.ResolverInheritance
+                      , Language.Clafer.Intermediate.ResolverName
+                      , Language.Clafer.Intermediate.ResolverType
+                      , Language.Clafer.Intermediate.ScopeAnalysis
+                      , Language.Clafer.Intermediate.SimpleScopeAnalyzer
+                      , Language.Clafer.Intermediate.StringAnalyzer
+                      , Language.Clafer.Intermediate.Tracing
+                      , Language.Clafer.Intermediate.Transformer
+                      , Language.Clafer.Optimizer.Optimizer
+                      , Language.Clafer.SplitJoin
+    other-modules:      Paths_clafer
+                      , GetURL
 
 Test-Suite test-suite
-    build-tools:    ghc >= 7.8.3
-    default-language:
-                    Haskell2010
-    type:           exitcode-stdio-1.0
-    main-is:        test-suite.hs
-    hs-source-dirs: test
-    build-depends:
-                    base >= 4.6.0.1 && < 5,
-                    containers >= 0.5.0.0,
-                    directory >= 1.2.0.1,
-                    filepath >= 1.3.0.1,
+    build-tools:        ghc >= 7.8.3
+    default-language:   Haskell2010
+    type:               exitcode-stdio-1.0
+    main-is:            test-suite.hs
+    hs-source-dirs:     test
+    build-depends:      base >= 4.7.0.1 && < 5
+                      , containers >= 0.5.5.1
+                      , directory >= 1.2.1.0
+                      , filepath >= 1.3.0.2
 
-                    HUnit >= 1.2.5.2,
-                    mtl >= 2.1.2,
-                    QuickCheck >= 2.6,
+                      , HUnit >= 1.2.5.2
+                      , mtl >= 2.1.3.1
+                      , QuickCheck >= 2.6
 
-                    data-stringmap >= 1.0.1.1,
-                    lens >= 4.4,
-                    lens-aeson,
-                    tasty >= 0.10,
-                    tasty-hunit >= 0.9,
-                    tasty-th >= 0.1.2,
+                      , data-stringmap >= 1.0.1.1
+                      , lens >= 4.7
+                      , lens-aeson >= 1.0.0.3
+                      , tasty >= 0.10
+                      , tasty-hunit >= 0.9
+                      , tasty-th >= 0.1.2
 
-                    clafer == 0.3.9
+                      , clafer == 0.3.9
 
     if os(windows)
-        build-depends: HaXml == 1.24
+        build-depends:  HaXml == 1.24
     else
-        build-depends: HaXml >= 1.24
+        build-depends:  HaXml >= 1.24
 
-    ghc-options: -Wall -fno-warn-unused-do-bind -fno-warn-orphans
+    ghc-options:        -Wall -fno-warn-unused-do-bind -fno-warn-orphans
 
-    other-modules: Paths_clafer
-                 , Functions
-                 , Suite.Positive
-                 , Suite.Negative
-                 , Suite.SimpleScopeAnalyser
-                 , Suite.Redefinition
+    other-modules:      Paths_clafer
+                      , Functions
+                      , Suite.Positive
+                      , Suite.Negative
+                      , Suite.SimpleScopeAnalyser
+                      , Suite.Redefinition
