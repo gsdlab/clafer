@@ -3,7 +3,7 @@ TEST_DIR := test
 TOOL_DIR := tools
 
 ifeq ($(OS),Windows_NT)
-	GPLK_LIBS_INCLUDES := --extra-include-dirs=$(glpk)/src --extra-include-dirs=$(glpk)/src/amd --extra-include-dirs=$(glpk)/src/colamd --extra-include-dirs=$(glpk)/src/minisat --extra-include-dirs=$(glpk)/src/zlib --extra-lib-dirs=$(glpk)/w32
+
 else
 	UNAME_S := $(shell uname -s)
 	ifeq ($(UNAME_S),Darwin)
@@ -19,7 +19,7 @@ init:
 	# wget http://www.stackage.org/snapshot/lts-1.4/cabal.config
 	# mv cabal.config ../.clafertools-cabal-sandbox
 	# the constraint is there to prevent installing utf8-string-1 which conflicts with gitit, which requires utf8-string <= 0.3.8.
-	cabal install --only-dependencies $(GPLK_LIBS_INCLUDES) $(MAC_USR_LIB) --enable-tests --constraint="utf8-string==0.3.8"
+	cabal install --only-dependencies $(MAC_USR_LIB) --enable-tests --constraint="utf8-string==0.3.8"
 
 build:
 	$(MAKE) -C $(TOOL_DIR)
@@ -35,8 +35,7 @@ install:
 	cp -f tools/alloy4.2.jar $(to)/tools
 	cp -f tools/XsdCheck.class $(to)/tools
 	cp -f tools/ecore2clafer.jar $(to)/tools
-	if test "$(glpk)" ; then cp -f $(glpk)/w32/glpk_4_55.dll $(to); fi
-	cabal install --bindir=$(to) $(GPLK_LIBS_INCLUDES) $(MAC_USR_LIB) --ghc-option="-O"
+	cabal install --bindir=$(to) $(GPLK_LIBS_INCLUDES) $(MAC_USR_LIB) --ghc-option="-O2"
 
 # Removes current build and makes a clean new one (Don't use if starting from scratch!)
 cleanEnv:
@@ -57,14 +56,15 @@ Schema.hs:
 Css.hs:
 	$(MAKE) -C $(SRC_DIR) Css.hs
 
-# enable profiler
-# first remove `cabal` and `ghc` folders (on win: `<User>\AppData\Roaming\cabal` and `<User>\AppData\Roaming\ghc`)
+# Just like "init" but with enabled profiler
 # this will reinstall everything with profiling support, build clafer, and copy it to .
 prof:
-	cabal update
-	cabal install --only-dependencies -p --enable-executable-profiling $(GPLK_LIBS_INCLUDES) $(MAC_USR_LIB)
-	cabal configure -p --enable-executable-profiling
-	cabal build --ghc-options="-prof -auto-all -rtsopts"
+	rm -rf ../.clafertools-cabal-sandbox
+	cabal sandbox init --sandbox=../.clafertools-cabal-sandbox
+	cabal install --only-dependencies $(MAC_USR_LIB) --enable-tests -p --enable-executable-profiling --enable-library-profiling
+	$(MAKE) -C $(TOOL_DIR)
+	cabal configure -p --enable-executable-profiling --enable-library-profiling
+	cabal build --ghc-options="-prof -fprof-auto -auto-all -caf-all -rtsopts -osuf p_o"
 
 .PHONY : test
 
@@ -90,3 +90,6 @@ clean:
 
 cleanTest:
 	$(MAKE) -C $(TEST_DIR) clean
+
+tags:
+	hasktags --ctags --extendedctag .

@@ -59,8 +59,6 @@ module Language.ClaferT
 import Control.Monad.Error
 import Control.Monad.State
 import Control.Monad.Identity
-import Data.Data.Lens (biplate)
-import Control.Lens ((^..), traversed, universeOn)
 import Data.List
 import qualified Data.Map as Map
 
