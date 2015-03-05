@@ -58,40 +58,14 @@ Clafer can be installed from a binary distribution (preferred), from Hackage, an
 
 Regardless of the installation method, the following are 
 
-Required:
-
-* [GNU Linear Programming Kit](http://www.gnu.org/software/glpk/) v4.55
-  * On Windows, [WinGLPK](http://winglpk.sourceforge.net/)
-
 Optional:
 
-* [Java Platform (JDK)](http://www.oracle.com/technetwork/java/javase/downloads/index.html) v7+, 32bit
+* [Java Platform (JDK)](http://www.oracle.com/technetwork/java/javase/downloads/index.html) v8+, 32bit
   * needed only for running XML output validation
 * [Alloy4.1 and/or Alloy4.2](http://alloy.mit.edu/alloy/download.html)
   * needed only for Alloy output validation
 * [GraphViz](http://graphviz.org/)
   * the program `dot` is needed only in the `html` mode for SVG graph generation
-
-### Installation of GLPK
-
-On Linux
-
-1. [libglpk-dev](http://www.gnu.org/software/glpk/) v4.55
-  * execute `sudo apt-get install libglpk-dev` on Ubuntu
-2. [libgmp-dev](http://gmplib.org/)
-  * execute `sudo apt-get install libgmp-dev` on Ubuntu
-
-On Windows
-
-1. The binary distribution already includes the GNU Linear Programming Kit DLL `glpk_4_55.dll`.
-2. Install [WinGLPK](http://winglpk.sourceforge.net/) v4.55
-  * inside the `w64` folder, copy `glpk_4_55.dll` to `glpk.dll` so that it can be found when building Haskell package `glpk-hs`
-  * from `w64` folder, copy `glpk_4_55.dll` to `<user>\AppData\Roaming\cabal\bin`
-
-On Mac
-
-1. install GPLK 4.55 from [MacPorts](http://www.macports.org/)
-  * execute `sudo port install glpk +universal`
 
 ### Installation from binaries
 
@@ -106,8 +80,8 @@ can be downloaded from
 
 Dependencies
 
-* [The Haskell Platform](http://hackage.haskell.org/platform/) v2014.2.0.0 64bit
-  * on Windows, use 32bit
+* [The Haskell Platform](http://hackage.haskell.org/platform/) v2014.2.0.0 
+  * Alternatively GHC >= 7.8.3 and Cabal >= 1.18
 
 Clafer is now available on [Hackage](http://hackage.haskell.org/package/clafer-0.3.9/) and it can be installed using
 
@@ -117,17 +91,12 @@ Clafer is now available on [Hackage](http://hackage.haskell.org/package/clafer-0
 4. to automatically download Alloy jars
   * execute `make` in `tools` 
 
-On Windows 
-
-* copy GLPK's dll `glpk_4_55.dll` to the `C:\Users\<user>\AppData\Roaming\cabal\bin` folder or any other folder on the system `PATH`
-
 ### Installation from the source code
 
 Dependencies
 
-* [The Haskell Platform](http://hackage.haskell.org/platform/) v2014.2.0.0 64bit
-  * on Windows, use 32bit
-  * Cabal >= 1.18
+* [The Haskell Platform](http://hackage.haskell.org/platform/) v2014.2.0.0 
+  * Alternatively GHC >= 7.8.3 and Cabal >= 1.18
 * [Alloy4.1 and/or Alloy4.2](http://alloy.mit.edu/alloy/download.html)
   * downloaded automatically during the build
 * [Git](http://git-scm.com/)
@@ -156,18 +125,13 @@ Development versions from branches `develop` should work well together but this 
   * `git clone git://github.com/gsdlab/clafer.git`
 4. in `<source directory>/clafer`, execute
   * `cabal update`
-5. On Linux and Mac execute 
   * `make init`
   * `make`
-6. On Windows (in MSYS2 console), execute 
-  * `make glpk=/c/<your WinGLPK install dir>`
 
 ### Installation
 
-1. On Linux and Mac execute 
+1. Execute 
   * `make install to=<target directory>` 
-2. On Windows (in MSYS2 console), execute 
-  * `make glpk=/c/<your WinGLPK instal dir> to=/c/Users/<your user name>/AppData/Roaming/cabal/bin`
 
 #### Note: 
 > On Windows, use `/` with the `make` command instead of `\`.
@@ -259,7 +223,7 @@ Common flags:
   -e --ecore2clafer                       Translate an ECore model into
                                           Clafer.
      --ss=SCOPESTRATEGY --scope-strategy  Use scope computation strategy:
-                                          none, simple (default), or full.
+                                          none or simple (default).
      --check-afm --afm                    Throws an error if the cardinality
                                           of any of the clafers is above 1.
      --sg --skip-goals                    Skip generation of Alloy code for
@@ -313,3 +277,8 @@ The following directives are markers of locations in the input files for differe
 * `//# STATS` - marks the insertion point for module statistics. The statistics can be omitted using the argument `--no-stats`. 
 * `//# SUMMARY` - shorthand for `//# GRAPH` and `//# STATS`
 * `//# QUALITY_ATTRIBUTE` - is used by ClaferMooVisualizer and ClaferConfigurator to distinguish quality attributes, which should be filtered out, from other clafers.
+
+Need help?
+==========
+* Visit [language's website](http://clafer.org).
+* Report issues to [issue tracker](https://github.com/gsdlab/clafer/issues)
