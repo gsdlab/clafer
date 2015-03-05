@@ -45,7 +45,9 @@ start args' model = if schema args'
   then putStrLn claferIRXSD
   else if ecore2clafer args'
     then runEcore2Clafer (file args') $ (tooldir args')
-    else runCompiler Nothing args' model
+    else do
+           _ <- runCompiler Nothing args' model
+           return ()
 
 runEcore2Clafer :: FilePath -> FilePath -> IO ()
 runEcore2Clafer    ecoreFile toolPath

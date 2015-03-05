@@ -141,7 +141,7 @@ type InputModel = String
 -- | Run the Clafer compiler.
 -- mURL = Nothing means compile the top-level module
 -- mURL = Just url means compile an imported module from the given url
-runCompiler :: Maybe URL -> ClaferArgs -> InputModel -> IO ()
+runCompiler :: Maybe URL -> ClaferArgs -> InputModel -> IO (Either [ClaferErr] (Map.Map ClaferMode CompilerResult))
 runCompiler    mURL         args'         inputModel =
   do
     result <- runClaferT args' $
@@ -150,18 +150,22 @@ runCompiler    mURL         args'         inputModel =
         parse
         iModule <- desugar mURL
         -- need to runCompiler on imports
-        liftIO $ do
-          forM_ (_mModules iModule) $ \url -> do
+        importedResultMaps <- liftIO $ do
+          forM (_mModules iModule) $ \url -> do
             -- use the same args just change the file name
             importedModel <- retrieveModelFromURL url
             runCompiler (Just url) (args' { file = getFileName url }) importedModel
+        // TODO: add ClaferEnvs from importedResultMaps to this ClaferEnv
         compile iModule
-        fs <- save args'
+        resultsMap <- generate
+        fs <- save args' resultsMap
         when (validate args') $ forM_ fs (liftIO . runValidate args' )
-    if Html `elem` (mode args')
+        return resultsMap
+    _ <- if Html `elem` (mode args')
       then htmlCatch result args' inputModel
       else return ()
     result `cth` handleErrs
+    return result
   where
   getFileName :: URL                         -> FilePath
   getFileName ('f':'i':'l':'e':':':'/':'/':n) = takeFileName n
@@ -169,13 +173,13 @@ runCompiler    mURL         args'         inputModel =
   getFileName ('f':'t':'p':':':'/':'/':n)     = takeFileName n
   getFileName n                               = n
   cth (Left err) f = f err
-  cth (Right r)  _ = return r
+  cth (Right r)  _ = return ()
   fragments model = map unlines $ fragments' $ lines model
   fragments' []                  = []
   fragments' ("//# FRAGMENT":xs) = fragments' xs
   fragments' model               = takeWhile (/= "//# FRAGMENT") model : fragments' (dropWhile (/= "//# FRAGMENT") model)
 --  htmlCatch :: Either ClaferErr CompilerResult -> ClaferArgs -> String -> IO(CompilerResult)
-  htmlCatch (Right r) _ _ = return r
+  htmlCatch (Right r) _ _ = return ()
   htmlCatch (Left err) args'' model =
     do let f = (dropExtension $ file args'') ++ ".html"
        let result = (if (self_contained args'')
@@ -207,10 +211,9 @@ runCompiler    mURL         args'         inputModel =
       putStrLn mesg
       exitFailure
 
-save :: MonadIO m => ClaferArgs -> ClaferT m [ String ]
-save args'=
+save :: MonadIO m => ClaferArgs -> (Map.Map ClaferMode CompilerResult) -> ClaferT m [ String ]
+save args' resultsMap =
   do
-    resultsMap <- generate
     let results = snd $ unzip $ Map.toList resultsMap
     -- print stats only once
     when (not $ no_stats args') $ liftIO $ printStats results
