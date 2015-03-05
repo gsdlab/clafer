@@ -686,11 +686,11 @@ addStats code stats = "/*\n" ++ stats ++ "*/\n" ++ code
 
 showStats :: Bool -> Stats -> String
 showStats au (Stats na nr nc nconst ngoals sgl) =
-  unlines [ "All clafers: " ++ (show (na + nc)) ++ " | Abstract: " ++ (show na) ++ " | Concrete: " ++ (show nc) ++ " | References: " ++ (show nr)
+  unlines [ "All clafers: " ++ (show (na + nc)) ++ " | Abstract: " ++ (show na) ++ " | Concrete: " ++ (show nc) ++ " | Reference: " ++ (show nr)
           , "Constraints: " ++ show nconst
           , "Goals: " ++ show ngoals
           , "Global scope: " ++ showInterval sgl
-          , "Can skip resolver: " ++ if au then "yes" else "no" ]
+          , "Can skip name resolver: " ++ if au then "yes" else "no" ]
 
 showInterval :: (Integer, Integer) -> String
 showInterval (n, -1) = show n ++ "..*"

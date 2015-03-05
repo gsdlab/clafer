@@ -141,6 +141,11 @@ hierarchy uidIClaferMap' c = (case findIClafer uidIClaferMap' c of
       Nothing -> fail $ "Analysis.hierarchy: clafer " ++ c ++ "not found!"
       Just clafer -> return $ findHierarchy getSuper uidIClaferMap' clafer)
 
+hierarchyMap :: (Monad m) => UIDIClaferMap -> (IClafer -> a) -> UID -> m [a]
+hierarchyMap uidIClaferMap' f c = (case findIClafer uidIClaferMap' c of
+      Nothing -> fail $ "Analysis.hierarchyMap: clafer " ++ c ++ "not found!"
+      Just clafer -> return $ mapHierarchy f getSuper uidIClaferMap' clafer)
+
 {-
  - C is an direct child of B.
  -
@@ -166,15 +171,13 @@ isChild uidIClaferMap' child parent =
 
 
 closure :: Monad m => UIDIClaferMap -> [String] -> m [String]
-closure uidIClaferMap' ut = do
-  cl <- concat `liftM` mapM (hierarchy uidIClaferMap') ut
-  return $ _uid `liftM` cl
+closure uidIClaferMap' ut = concat `liftM` mapM (hierarchyMap uidIClaferMap' _uid) ut
 
 intersection :: Monad m => UIDIClaferMap -> IType -> IType -> m (Maybe IType)
 intersection uidIClaferMap' t1 t2 = do
-  h1 <- (mapM (hierarchy uidIClaferMap') $ unionType t1)
-  h2 <- (mapM (hierarchy uidIClaferMap') $ unionType t2)
-  return $ fromUnionType $ catMaybes [contains (head u1) u2 `mplus` contains (head u2) u1 | u1 <- (fmap.fmap) _uid h1, u2 <- (fmap.fmap) _uid h2 ]
+  h1 <- (mapM (hierarchyMap uidIClaferMap' _uid) $ unionType t1)
+  h2 <- (mapM (hierarchyMap uidIClaferMap' _uid) $ unionType t2)
+  return $ fromUnionType $ catMaybes [contains (head u1) u2 `mplus` contains (head u2) u1 | u1 <- h1, u2 <- h2 ]
   where
   contains i is = if i `elem` is then Just i else Nothing
 
@@ -207,9 +210,9 @@ str t =
 -- the resulting type is: A, and the type combination is valid
 getIfThenElseType :: Monad m => UIDIClaferMap -> IType -> IType -> m (Maybe IType)
 getIfThenElseType uidIClaferMap' t1 t2 = do
-  h1 <- mapM (hierarchy uidIClaferMap') $ unionType t1
-  h2 <- mapM (hierarchy uidIClaferMap') $ unionType t2
-  let ut = catMaybes [commonHierarchy u1 u2 | u1 <- (fmap.fmap) _uid h1, u2 <- (fmap.fmap) _uid h2]
+  h1 <- mapM (hierarchyMap uidIClaferMap' _uid) $ unionType t1
+  h2 <- mapM (hierarchyMap uidIClaferMap' _uid) $ unionType t2
+  let ut = catMaybes [commonHierarchy u1 u2 | u1 <- h1, u2 <- h2]
   return $ fromUnionType ut
   where
   commonHierarchy h1 h2 = filterClafer $ commonHierarchy' (reverse h1) (reverse h2) Nothing
@@ -402,7 +405,7 @@ resolveTPExp' p@PExp{_inPos, _exp} =
       it <- getIfThenElseType uidIClaferMap' t2 t3
       t <- case it of
         Just it' -> return it'
-        Nothing  -> throwError $ SemanticErr _inPos ("Function '=>else' cannot be performed on if '" ++ str t1 ++ "' then '" ++ str t2 ++ "' else '" ++ str t3 ++ "'")
+        Nothing  -> throwError $ SemanticErr _inPos ("Function 'if/else' cannot be performed on if '" ++ str t1 ++ "' then '" ++ str t2 ++ "' else '" ++ str t3 ++ "'")
 
       return (t, e{_exps = [arg1', arg2', arg3']})
 

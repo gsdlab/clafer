@@ -80,8 +80,8 @@ can be downloaded from
 
 Dependencies
 
-* [The Haskell Platform](http://hackage.haskell.org/platform/) v2014.2.0.0 64bit
-  * on Windows, use 32bit
+* [The Haskell Platform](http://hackage.haskell.org/platform/) v2014.2.0.0 
+  * Alternatively GHC >= 7.8.3 and Cabal >= 1.18
 
 Clafer is now available on [Hackage](http://hackage.haskell.org/package/clafer-0.3.9/) and it can be installed using
 
@@ -95,9 +95,8 @@ Clafer is now available on [Hackage](http://hackage.haskell.org/package/clafer-0
 
 Dependencies
 
-* [The Haskell Platform](http://hackage.haskell.org/platform/) v2014.2.0.0 64bit
-  * on Windows, use 32bit
-  * Cabal >= 1.18
+* [The Haskell Platform](http://hackage.haskell.org/platform/) v2014.2.0.0 
+  * Alternatively GHC >= 7.8.3 and Cabal >= 1.18
 * [Alloy4.1 and/or Alloy4.2](http://alloy.mit.edu/alloy/download.html)
   * downloaded automatically during the build
 * [Git](http://git-scm.com/)
