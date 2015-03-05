@@ -38,13 +38,13 @@
   <div class="indent">
   <span class="claferDecl" id="c0_authors">authors</span><span class="keyword"> -> </span><a href="#c0_Author"><span class="reference">Author</span></a> +</div>
   <div class="indent">
-  <span class="keyword">[</span> <a href="#c0_year"><span class="reference">year</span></a> >= 5 => <a href="#c0_ISBN"><span class="reference">ISBN</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <a href="#c0_year"><span class="reference">year</span></a> &gt;= 5 =&gt; <a href="#c0_ISBN"><span class="reference">ISBN</span></a> <span class="keyword">]</span></div>
   <div class="indent">
   <span class="claferDecl" id="c0_ISBN">ISBN</span><span class="keyword"> -> </span><a href="#string"><span class="reference">string</span></a> ?
     <div class="indent">
     <span class="claferDecl" id="c0_GS1">GS1</span><span class="keyword"> -> </span><a href="#string"><span class="reference">string</span></a> ?</div>
     <div class="indent">
-    <span class="keyword">[</span> <a href="#c0_year"><span class="reference">year</span></a> >= 6 => <a href="#c0_GS1"><span class="reference">GS1</span></a> <span class="keyword">]</span></div>
+    <span class="keyword">[</span> <a href="#c0_year"><span class="reference">year</span></a> &gt;= 6 =&gt; <a href="#c0_GS1"><span class="reference">GS1</span></a> <span class="keyword">]</span></div>
   </div>
 </div>
 

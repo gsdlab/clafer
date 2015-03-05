@@ -64,10 +64,10 @@
   <div class="indent">
   <span class="claferDecl" id="c2_room">room</span><span class="keyword"> -> </span><a href="#c0_Room"><span class="reference">Room</span></a>
     <div class="indent">
-    <span class="keyword">[</span> <a href="#this"><span class="reference">this</span></a>.<a href="#c0_capacity"><span class="reference">capacity</span></a> >= # <a href="#c0_participant"><span class="reference">participant</span></a> + 1 <span class="keyword">]</span></div>
+    <span class="keyword">[</span> <a href="#this"><span class="reference">this</span></a>.<a href="#c0_capacity"><span class="reference">capacity</span></a> &gt;= # <a href="#c0_participant"><span class="reference">participant</span></a> + 1 <span class="keyword">]</span></div>
   </div>
   <div class="indent">
-  <span class="keyword">[</span> <span class="keyword">some</span> <a href="#c0_onlineParticipant"><span class="reference">onlineParticipant</span></a> => <a href="#c2_room"><span class="reference">room</span></a>.<a href="#c1_audioConferencing"><span class="reference">audioConferencing</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <span class="keyword">some</span> <a href="#c0_onlineParticipant"><span class="reference">onlineParticipant</span></a> =&gt; <a href="#c2_room"><span class="reference">room</span></a>.<a href="#c1_audioConferencing"><span class="reference">audioConferencing</span></a> <span class="keyword">]</span></div>
 </div>
 
 

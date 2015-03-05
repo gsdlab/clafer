@@ -22,7 +22,7 @@
   <div class="indent">
   <span class="keyword">[</span> <a href="#c0_extraDisplay"><span class="reference">extraDisplay</span></a> &lt;=&gt; # <a href="#c0_ECU1"><span class="reference">ECU1</span></a>.<a href="#c1_display"><span class="reference">display</span></a> = 2 <span class="keyword">]</span></div>
   <div class="indent">
-  <span class="keyword">[</span> <a href="#c0_extraDisplay"><span class="reference">extraDisplay</span></a> &lt;=&gt; <a href="#c0_ECU2"><span class="reference">ECU2</span></a> => # <a href="#c0_ECU2"><span class="reference">ECU2</span></a>.<a href="#c1_display"><span class="reference">display</span></a> = 2 <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <a href="#c0_extraDisplay"><span class="reference">extraDisplay</span></a> &lt;=&gt; <a href="#c0_ECU2"><span class="reference">ECU2</span></a> =&gt; # <a href="#c0_ECU2"><span class="reference">ECU2</span></a>.<a href="#c1_display"><span class="reference">display</span></a> = 2 <span class="keyword">]</span></div>
   <div class="indent">
   <span class="keyword">[</span> <a href="#c0_large"><span class="reference">large</span></a> &lt;=&gt;  ! <a href="#c0_plaECU"><span class="reference">plaECU</span></a>.<a href="#c1_display"><span class="reference">display</span></a>.<a href="#c0_options"><span class="reference">options</span></a>.<a href="#c1_size"><span class="reference">size</span></a>.<a href="#c1_small"><span class="reference">small</span></a> <span class="keyword">]</span></div>
   <div class="indent">
@@ -50,7 +50,7 @@
   <div class="indent">
   `<a href="#c1_options"><span class="reference">options</span></a></div>
   <div class="indent">
-  <span class="keyword">[</span> <a href="#this"><span class="reference">this</span></a>.<a href="#c0_version"><span class="reference">version</span></a> >= <a href="#c0_server"><span class="reference">server</span></a>.<a href="#c0_version"><span class="reference">version</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <a href="#this"><span class="reference">this</span></a>.<a href="#c0_version"><span class="reference">version</span></a> &gt;= <a href="#c0_server"><span class="reference">server</span></a>.<a href="#c0_version"><span class="reference">version</span></a> <span class="keyword">]</span></div>
 </div>
 
 <!-- # FRAGMENT /-->
@@ -73,7 +73,7 @@
     </div>
   </div>
   <div class="indent">
-  <span class="keyword">[</span> <a href="#c1_small"><span class="reference">small</span></a> && <a href="#c0_cache"><span class="reference">cache</span></a> => <a href="#c0_fixed"><span class="reference">fixed</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <a href="#c1_small"><span class="reference">small</span></a> &amp;&amp; <a href="#c0_cache"><span class="reference">cache</span></a> =&gt; <a href="#c0_fixed"><span class="reference">fixed</span></a> <span class="keyword">]</span></div>
 </div>
 
 <!-- # FRAGMENT /-->

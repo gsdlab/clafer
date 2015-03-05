@@ -3,7 +3,7 @@
 <IntLiteral>1</IntLiteral>
 </Start>
 <End><IntLiteral>1</IntLiteral>
-<IntLiteral>29</IntLiteral>
+<IntLiteral>30</IntLiteral>
 </End>
 </Position>
 <IsAbstract>true</IsAbstract>
@@ -17,13 +17,13 @@
 <Id>Currency</Id>
 <UniqueId>c0_Currency</UniqueId>
 <ParentUniqueId>root</ParentUniqueId>
-<Reference><IsSet>true</IsSet>
+<Reference><IsSet>false</IsSet>
 <Ref><ParentId></ParentId>
 <Position><Start><IntLiteral>1</IntLiteral>
-<IntLiteral>22</IntLiteral>
+<IntLiteral>23</IntLiteral>
 </Start>
 <End><IntLiteral>1</IntLiteral>
-<IntLiteral>29</IntLiteral>
+<IntLiteral>30</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
@@ -60,13 +60,13 @@
 <Id>Percentage</Id>
 <UniqueId>c0_Percentage</UniqueId>
 <ParentUniqueId>root</ParentUniqueId>
-<Reference><IsSet>true</IsSet>
+<Reference><IsSet>false</IsSet>
 <Ref><ParentId></ParentId>
 <Position><Start><IntLiteral>3</IntLiteral>
-<IntLiteral>24</IntLiteral>
+<IntLiteral>25</IntLiteral>
 </Start>
 <End><IntLiteral>3</IntLiteral>
-<IntLiteral>31</IntLiteral>
+<IntLiteral>32</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>

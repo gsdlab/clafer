@@ -1,8 +1,8 @@
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_degree">degree</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_degree">degree</span><span class="keyword"> ->> </span><a href="#integer"><span class="reference">integer</span></a>
   <div class="indent">
-  <span class="keyword">[</span> <a href="#this"><span class="reference">this</span></a> > 0 && <a href="#this"><span class="reference">this</span></a> &lt;= 360 <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <a href="#this"><span class="reference">this</span></a> &gt; 0 &amp;&amp; <a href="#this"><span class="reference">this</span></a> &lt;= 360 <span class="keyword">]</span></div>
 </div>
 
 <!-- # FRAGMENT /-->
@@ -35,7 +35,7 @@
   <div class="indent">
   <span class="claferDecl" id="c0_hasOversteer">hasOversteer</span> ?</div>
   <div class="indent">
-  <span class="keyword">[</span> <a href="#c0_yawRate"><span class="reference">yawRate</span></a> > <a href="#c0_normalYawRate"><span class="reference">normalYawRate</span></a> &lt;=&gt; <a href="#c0_hasOversteer"><span class="reference">hasOversteer</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <a href="#c0_yawRate"><span class="reference">yawRate</span></a> &gt; <a href="#c0_normalYawRate"><span class="reference">normalYawRate</span></a> &lt;=&gt; <a href="#c0_hasOversteer"><span class="reference">hasOversteer</span></a> <span class="keyword">]</span></div>
   <div class="indent">
   <span class="claferDecl" id="c0_hasUndersteer">hasUndersteer</span> ?</div>
   <div class="indent">
@@ -106,7 +106,7 @@
   <div class="indent">
   <span class="claferDecl" id="c0_isOperational">isOperational</span> ?
     <div class="indent">
-    <span class="keyword">[</span> <a href="#c0_vehicle"><span class="reference">vehicle</span></a>.<a href="#c0_speed"><span class="reference">speed</span></a> > 20 <span class="keyword">]</span></div>
+    <span class="keyword">[</span> <a href="#c0_vehicle"><span class="reference">vehicle</span></a>.<a href="#c0_speed"><span class="reference">speed</span></a> &gt; 20 <span class="keyword">]</span></div>
     <div class="indent">
     <span class="claferDecl" id="c0_duringAllPhasesOfDriving">duringAllPhasesOfDriving</span>
       <div class="indent">

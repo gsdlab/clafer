@@ -18,7 +18,7 @@
       <div class="indent">
       <span class="claferDecl" id="c2_display">display</span><span class="keyword"> -> </span><a href="#string"><span class="reference">string</span></a> = "Debug level"</div>
       <div class="indent">
-      <span class="keyword">[</span> 0 &lt;= <a href="#this"><span class="reference">this</span></a> && <a href="#this"><span class="reference">this</span></a> &lt;= 2 <span class="keyword">]</span></div>
+      <span class="keyword">[</span> 0 &lt;= <a href="#this"><span class="reference">this</span></a> &amp;&amp; <a href="#this"><span class="reference">this</span></a> &lt;= 2 <span class="keyword">]</span></div>
       <div class="indent">
       <span class="claferDecl" id="c0_description">description</span><span class="keyword"> -> </span><a href="#string"><span class="reference">string</span></a> = "Debug verbosity of...."</div>
     </div>
@@ -48,7 +48,7 @@
         <div class="indent">
         <span class="claferDecl" id="c5_display">display</span><span class="keyword"> -> </span><a href="#string"><span class="reference">string</span></a> = "Set the default compression mode"</div>
         <div class="indent">
-        <span class="keyword">[</span> <a href="#this"><span class="reference">this</span></a> = "NONE" || <a href="#this"><span class="reference">this</span></a> = "PRIORITY" || <a href="#this"><span class="reference">this</span></a> = "SIZE" <span class="keyword">]</span></div>
+        <span class="keyword">[</span> <a href="#this"><span class="reference">this</span></a> = "NONE" &#124;&#124; <a href="#this"><span class="reference">this</span></a> = "PRIORITY" &#124;&#124; <a href="#this"><span class="reference">this</span></a> = "SIZE" <span class="keyword">]</span></div>
       </div>
     </div>
   </div>
