@@ -1,6 +1,6 @@
 
 <div>
-<span class="claferDecl" id="c0_BumbleBee">BumbleBee</span><span class="keyword"> :</span> <a href="#c0_Camaro"><span class="reference">Camaro</span></a>
+<span class="claferDecl" id="c0_BumbleBee">BumbleBee</span><span class="keyword"> : </span><a href="#c0_Camaro"><span class="reference">Camaro</span></a>
   <div class="indent">
   <span class="keyword">[</span> <a href="#c0_transformer"><span class="reference">transformer</span></a> <span class="keyword">]</span></div>
 </div>
@@ -8,7 +8,7 @@
 <!-- # FRAGMENT /-->
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Camaro">Camaro</span><span class="keyword"> :</span> <a href="#c0_Car"><span class="reference">Car</span></a>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Camaro">Camaro</span><span class="keyword"> : </span><a href="#c0_Car"><span class="reference">Car</span></a>
   <div class="indent">
   <span class="keyword">[</span> <a href="#c0_ACC"><span class="reference">ACC</span></a> <span class="keyword">]</span></div>
   <div class="indent">

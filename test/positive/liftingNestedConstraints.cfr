@@ -1,0 +1,9 @@
+a *
+    b *
+        c *
+            d ?
+        [ one d ]
+    [ all x : b.c | one x.d ]
+[ all x : a.b.c | one x.d ]
+
+assert [ all x : a.b.c | some x.d ]

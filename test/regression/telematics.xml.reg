@@ -16,20 +16,7 @@
 </GroupCard>
 <Id>options</Id>
 <UniqueId>c0_options</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>clafer</Id>
-<IsTop>false</IsTop>
-</Exp></Super>
-</Supers>
+<ParentUniqueId>root</ParentUniqueId>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
 <Max><IntLiteral>-1</IntLiteral>
@@ -57,20 +44,7 @@
 </GroupCard>
 <Id>size</Id>
 <UniqueId>c0_size</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>clafer</Id>
-<IsTop>false</IsTop>
-</Exp></Super>
-</Supers>
+<ParentUniqueId>c0_options</ParentUniqueId>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -98,20 +72,7 @@
 </GroupCard>
 <Id>small</Id>
 <UniqueId>c0_small</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>clafer</Id>
-<IsTop>false</IsTop>
-</Exp></Super>
-</Supers>
+<ParentUniqueId>c0_size</ParentUniqueId>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -139,20 +100,7 @@
 </GroupCard>
 <Id>large</Id>
 <UniqueId>c0_large</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>clafer</Id>
-<IsTop>false</IsTop>
-</Exp></Super>
-</Supers>
+<ParentUniqueId>c0_size</ParentUniqueId>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -180,20 +128,7 @@
 </GroupCard>
 <Id>cache</Id>
 <UniqueId>c0_cache</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>clafer</Id>
-<IsTop>false</IsTop>
-</Exp></Super>
-</Supers>
+<ParentUniqueId>c0_options</ParentUniqueId>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -221,20 +156,22 @@
 </GroupCard>
 <Id>size</Id>
 <UniqueId>c1_size</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
-<Super><ParentId></ParentId>
+<ParentUniqueId>c0_cache</ParentUniqueId>
+<Reference><IsSet>true</IsSet>
+<Ref><ParentId></ParentId>
 <Position><Start><IntLiteral>10</IntLiteral>
-<IntLiteral>16</IntLiteral>
+<IntLiteral>17</IntLiteral>
 </Start>
 <End><IntLiteral>10</IntLiteral>
-<IntLiteral>23</IntLiteral>
+<IntLiteral>24</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>integer</Id>
 <IsTop>true</IsTop>
-</Exp></Super>
-</Supers>
+<Bind>integer</Bind>
+</Exp></Ref>
+</Reference>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -262,20 +199,7 @@
 </GroupCard>
 <Id>fixed</Id>
 <UniqueId>c0_fixed</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>clafer</Id>
-<IsTop>false</IsTop>
-</Exp></Super>
-</Supers>
+<ParentUniqueId>c1_size</ParentUniqueId>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -342,6 +266,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_options</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -354,6 +279,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_size</Id>
 <IsTop>false</IsTop>
+<Bind>c0_size</Bind>
 </Exp></Argument>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
@@ -367,6 +293,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_small</Id>
 <IsTop>false</IsTop>
+<Bind>c0_small</Bind>
 </Exp></Argument>
 </Exp></BodyParentExp>
 </Exp></Argument>
@@ -398,6 +325,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_options</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -410,6 +338,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_cache</Id>
 <IsTop>false</IsTop>
+<Bind>c0_cache</Bind>
 </Exp></Argument>
 </Exp></BodyParentExp>
 </Exp></Argument>
@@ -460,6 +389,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_options</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -472,6 +402,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_cache</Id>
 <IsTop>false</IsTop>
+<Bind>c0_cache</Bind>
 </Exp></Argument>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
@@ -485,6 +416,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c1_size</Id>
 <IsTop>false</IsTop>
+<Bind>c1_size</Bind>
 </Exp></Argument>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
@@ -498,6 +430,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_fixed</Id>
 <IsTop>false</IsTop>
+<Bind>c0_fixed</Bind>
 </Exp></Argument>
 </Exp></BodyParentExp>
 </Exp></Argument>
@@ -506,7 +439,7 @@
 <IntLiteral>1</IntLiteral>
 </Start>
 <End><IntLiteral>15</IntLiteral>
-<IntLiteral>32</IntLiteral>
+<IntLiteral>33</IntLiteral>
 </End>
 </Position>
 <IsAbstract>true</IsAbstract>
@@ -519,20 +452,7 @@
 </GroupCard>
 <Id>comp</Id>
 <UniqueId>c0_comp</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>clafer</Id>
-<IsTop>false</IsTop>
-</Exp></Super>
-</Supers>
+<ParentUniqueId>root</ParentUniqueId>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
 <Max><IntLiteral>-1</IntLiteral>
@@ -547,7 +467,7 @@
 <IntLiteral>5</IntLiteral>
 </Start>
 <End><IntLiteral>15</IntLiteral>
-<IntLiteral>30</IntLiteral>
+<IntLiteral>31</IntLiteral>
 </End>
 </Position>
 <IsAbstract>false</IsAbstract>
@@ -560,20 +480,22 @@
 </GroupCard>
 <Id>version</Id>
 <UniqueId>c0_version</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
-<Super><ParentId></ParentId>
+<ParentUniqueId>c0_comp</ParentUniqueId>
+<Reference><IsSet>true</IsSet>
+<Ref><ParentId></ParentId>
 <Position><Start><IntLiteral>15</IntLiteral>
-<IntLiteral>15</IntLiteral>
+<IntLiteral>16</IntLiteral>
 </Start>
 <End><IntLiteral>15</IntLiteral>
-<IntLiteral>22</IntLiteral>
+<IntLiteral>23</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>integer</Id>
 <IsTop>true</IsTop>
-</Exp></Super>
-</Supers>
+<Bind>integer</Bind>
+</Exp></Ref>
+</Reference>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -587,19 +509,19 @@
 </Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
 <ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e8_</ParentId>
 <Position><Start><IntLiteral>15</IntLiteral>
-<IntLiteral>23</IntLiteral>
+<IntLiteral>24</IntLiteral>
 </Start>
 <End><IntLiteral>15</IntLiteral>
-<IntLiteral>30</IntLiteral>
+<IntLiteral>31</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=&gt;</Operation>
 <Argument><Type xsi:type="cl:IBoolean" /><ParentId>e9_</ParentId>
 <Position><Start><IntLiteral>15</IntLiteral>
-<IntLiteral>23</IntLiteral>
+<IntLiteral>24</IntLiteral>
 </Start>
 <End><IntLiteral>15</IntLiteral>
-<IntLiteral>30</IntLiteral>
+<IntLiteral>31</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>e10_</ParentId>
@@ -622,6 +544,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_comp</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -634,15 +557,16 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_version</Id>
 <IsTop>false</IsTop>
+<Bind>c0_version</Bind>
 </Exp></Argument>
 </Exp></BodyParentExp>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IBoolean" /><ParentId>e11_</ParentId>
 <Position><Start><IntLiteral>15</IntLiteral>
-<IntLiteral>23</IntLiteral>
+<IntLiteral>24</IntLiteral>
 </Start>
 <End><IntLiteral>15</IntLiteral>
-<IntLiteral>30</IntLiteral>
+<IntLiteral>31</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
@@ -666,6 +590,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_comp</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -687,6 +612,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_version</Id>
 <IsTop>false</IsTop>
+<Bind>c0_version</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -698,35 +624,36 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId>e13_</ParentId>
 <Position><Start><IntLiteral>15</IntLiteral>
-<IntLiteral>25</IntLiteral>
+<IntLiteral>26</IntLiteral>
 </Start>
 <End><IntLiteral>15</IntLiteral>
-<IntLiteral>30</IntLiteral>
+<IntLiteral>31</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>+</Operation>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId>e14_</ParentId>
 <Position><Start><IntLiteral>15</IntLiteral>
-<IntLiteral>25</IntLiteral>
+<IntLiteral>26</IntLiteral>
 </Start>
 <End><IntLiteral>15</IntLiteral>
-<IntLiteral>26</IntLiteral>
+<IntLiteral>27</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IIntExp"><IntLiteral>1</IntLiteral>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId>e15_</ParentId>
 <Position><Start><IntLiteral>15</IntLiteral>
-<IntLiteral>29</IntLiteral>
+<IntLiteral>30</IntLiteral>
 </Start>
 <End><IntLiteral>15</IntLiteral>
-<IntLiteral>30</IntLiteral>
+<IntLiteral>31</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IIntExp"><IntLiteral>2</IntLiteral>
@@ -751,7 +678,7 @@
 </GroupCard>
 <Id>ECU</Id>
 <UniqueId>c0_ECU</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
+<ParentUniqueId>root</ParentUniqueId>
 <Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>17</IntLiteral>
 <IntLiteral>16</IntLiteral>
@@ -763,8 +690,8 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_comp</Id>
 <IsTop>true</IsTop>
+<Bind>c0_comp</Bind>
 </Exp></Super>
-</Supers>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
 <Max><IntLiteral>-1</IntLiteral>
@@ -792,7 +719,7 @@
 </GroupCard>
 <Id>display</Id>
 <UniqueId>c0_display</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
+<ParentUniqueId>root</ParentUniqueId>
 <Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>19</IntLiteral>
 <IntLiteral>20</IntLiteral>
@@ -804,8 +731,8 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_comp</Id>
 <IsTop>true</IsTop>
+<Bind>c0_comp</Bind>
 </Exp></Super>
-</Supers>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
 <Max><IntLiteral>-1</IntLiteral>
@@ -833,8 +760,9 @@
 </GroupCard>
 <Id>server</Id>
 <UniqueId>c0_server</UniqueId>
-<Supers><IsOverlapping>true</IsOverlapping>
-<Super><ParentId></ParentId>
+<ParentUniqueId>c0_display</ParentUniqueId>
+<Reference><IsSet>true</IsSet>
+<Ref><ParentId></ParentId>
 <Position><Start><IntLiteral>20</IntLiteral>
 <IntLiteral>15</IntLiteral>
 </Start>
@@ -844,9 +772,10 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_ECU</Id>
-<IsTop>true</IsTop>
-</Exp></Super>
-</Supers>
+<IsTop>false</IsTop>
+<Bind>c0_ECU</Bind>
+</Exp></Ref>
+</Reference>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -857,132 +786,6 @@
 <Max><IntLiteral>-1</IntLiteral>
 </Max>
 </GlobalCard>
-</Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e16_</ParentId>
-<Position><Start><IntLiteral>20</IntLiteral>
-<IntLiteral>5</IntLiteral>
-</Start>
-<End><IntLiteral>20</IntLiteral>
-<IntLiteral>18</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:IAll" /><Declaration><IsDisjunct>true</IsDisjunct>
-<LocalDeclaration>x</LocalDeclaration>
-<LocalDeclaration>y</LocalDeclaration>
-<Body><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>this</Id>
-<IsTop>true</IsTop>
-</Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>c0_server</Id>
-<IsTop>false</IsTop>
-</Exp></Argument>
-</Exp></Body>
-</Declaration>
-<BodyParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e18_</ParentId>
-<Position><Start><IntLiteral>20</IntLiteral>
-<IntLiteral>5</IntLiteral>
-</Start>
-<End><IntLiteral>20</IntLiteral>
-<IntLiteral>18</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IFunctionExp"><Operation>!=</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e19_</ParentId>
-<Position><Start><IntLiteral>20</IntLiteral>
-<IntLiteral>5</IntLiteral>
-</Start>
-<End><IntLiteral>20</IntLiteral>
-<IntLiteral>18</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e20_</ParentId>
-<Position><Start><IntLiteral>20</IntLiteral>
-<IntLiteral>5</IntLiteral>
-</Start>
-<End><IntLiteral>20</IntLiteral>
-<IntLiteral>18</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>x</Id>
-<IsTop>true</IsTop>
-</Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e21_</ParentId>
-<Position><Start><IntLiteral>20</IntLiteral>
-<IntLiteral>5</IntLiteral>
-</Start>
-<End><IntLiteral>20</IntLiteral>
-<IntLiteral>18</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>ref</Id>
-<IsTop>false</IsTop>
-</Exp></Argument>
-</Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e22_</ParentId>
-<Position><Start><IntLiteral>20</IntLiteral>
-<IntLiteral>5</IntLiteral>
-</Start>
-<End><IntLiteral>20</IntLiteral>
-<IntLiteral>18</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e23_</ParentId>
-<Position><Start><IntLiteral>20</IntLiteral>
-<IntLiteral>5</IntLiteral>
-</Start>
-<End><IntLiteral>20</IntLiteral>
-<IntLiteral>18</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>y</Id>
-<IsTop>true</IsTop>
-</Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e24_</ParentId>
-<Position><Start><IntLiteral>20</IntLiteral>
-<IntLiteral>5</IntLiteral>
-</Start>
-<End><IntLiteral>20</IntLiteral>
-<IntLiteral>18</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>ref</Id>
-<IsTop>false</IsTop>
-</Exp></Argument>
-</Exp></Argument>
-</Exp></BodyParentExp>
-</Exp></ParentExp>
 </Declaration><Declaration xsi:type="cl:IClafer"><Position><Start><IntLiteral>21</IntLiteral>
 <IntLiteral>5</IntLiteral>
 </Start>
@@ -1000,7 +803,7 @@
 </GroupCard>
 <Id>options</Id>
 <UniqueId>c1_options</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
+<ParentUniqueId>c0_display</ParentUniqueId>
 <Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>21</IntLiteral>
 <IntLiteral>5</IntLiteral>
@@ -1012,8 +815,8 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_options</Id>
 <IsTop>true</IsTop>
+<Bind>c0_options</Bind>
 </Exp></Super>
-</Supers>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -1025,7 +828,7 @@
 </Max>
 </GlobalCard>
 </Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e25_</ParentId>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e16_</ParentId>
 <Position><Start><IntLiteral>22</IntLiteral>
 <IntLiteral>6</IntLiteral>
 </Start>
@@ -1034,7 +837,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>&gt;=</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e26_</ParentId>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e17_</ParentId>
 <Position><Start><IntLiteral>22</IntLiteral>
 <IntLiteral>6</IntLiteral>
 </Start>
@@ -1043,7 +846,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e27_</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e18_</ParentId>
 <Position><Start><IntLiteral>22</IntLiteral>
 <IntLiteral>6</IntLiteral>
 </Start>
@@ -1054,6 +857,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_display</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>22</IntLiteral>
@@ -1064,7 +868,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e28_</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e19_</ParentId>
 <Position><Start><IntLiteral>22</IntLiteral>
 <IntLiteral>11</IntLiteral>
 </Start>
@@ -1075,6 +879,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_version</Id>
 <IsTop>false</IsTop>
+<Bind>c0_version</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>22</IntLiteral>
@@ -1086,11 +891,12 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e29_</ParentId>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e20_</ParentId>
 <Position><Start><IntLiteral>22</IntLiteral>
 <IntLiteral>22</IntLiteral>
 </Start>
@@ -1099,7 +905,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e30_</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e21_</ParentId>
 <Position><Start><IntLiteral>22</IntLiteral>
 <IntLiteral>22</IntLiteral>
 </Start>
@@ -1119,6 +925,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_display</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -1131,9 +938,10 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_server</Id>
 <IsTop>false</IsTop>
+<Bind>c0_server</Bind>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e31_</ParentId>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e22_</ParentId>
 <Position><Start><IntLiteral>22</IntLiteral>
 <IntLiteral>29</IntLiteral>
 </Start>
@@ -1152,7 +960,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind>c0_version</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -1174,6 +983,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_version</Id>
 <IsTop>false</IsTop>
+<Bind>c0_server</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -1185,7 +995,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
@@ -1208,7 +1019,7 @@
 </GroupCard>
 <Id>plaECU</Id>
 <UniqueId>c0_plaECU</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
+<ParentUniqueId>root</ParentUniqueId>
 <Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>30</IntLiteral>
 <IntLiteral>19</IntLiteral>
@@ -1220,8 +1031,8 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_ECU</Id>
 <IsTop>true</IsTop>
+<Bind>c0_ECU</Bind>
 </Exp></Super>
-</Supers>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
 <Max><IntLiteral>-1</IntLiteral>
@@ -1249,7 +1060,7 @@
 </GroupCard>
 <Id>display</Id>
 <UniqueId>c1_display</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
+<ParentUniqueId>c0_plaECU</ParentUniqueId>
 <Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>31</IntLiteral>
 <IntLiteral>5</IntLiteral>
@@ -1261,8 +1072,8 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_display</Id>
 <IsTop>true</IsTop>
+<Bind>c0_display</Bind>
 </Exp></Super>
-</Supers>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>2</IntLiteral>
@@ -1274,7 +1085,7 @@
 </Max>
 </GlobalCard>
 <Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e32_</ParentId>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e23_</ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
 <IntLiteral>0</IntLiteral>
 </Start>
@@ -1283,7 +1094,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>&amp;&amp;</Operation>
-<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e33_</ParentId>
+<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e24_</ParentId>
 <Position><Start><IntLiteral>32</IntLiteral>
 <IntLiteral>10</IntLiteral>
 </Start>
@@ -1292,7 +1103,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e34_</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e25_</ParentId>
 <Position><Start><IntLiteral>32</IntLiteral>
 <IntLiteral>10</IntLiteral>
 </Start>
@@ -1312,6 +1123,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c1_display</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -1333,6 +1145,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_server</Id>
 <IsTop>false</IsTop>
+<Bind>c0_server</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -1344,11 +1157,12 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e35_</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e26_</ParentId>
 <Position><Start><IntLiteral>32</IntLiteral>
 <IntLiteral>19</IntLiteral>
 </Start>
@@ -1368,6 +1182,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c1_display</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -1380,10 +1195,11 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>parent</Id>
 <IsTop>true</IsTop>
+<Bind>c0_plaECU</Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e36_</ParentId>
+<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e27_</ParentId>
 <Position><Start><IntLiteral>33</IntLiteral>
 <IntLiteral>10</IntLiteral>
 </Start>
@@ -1391,7 +1207,7 @@
 <IntLiteral>24</IntLiteral>
 </End>
 </Position>
-<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:INo" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>e37_</ParentId>
+<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:INo" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>e28_</ParentId>
 <Position><Start><IntLiteral>33</IntLiteral>
 <IntLiteral>11</IntLiteral>
 </Start>
@@ -1400,7 +1216,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e38_</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e29_</ParentId>
 <Position><Start><IntLiteral>33</IntLiteral>
 <IntLiteral>11</IntLiteral>
 </Start>
@@ -1420,6 +1236,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c1_display</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -1432,9 +1249,10 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c1_options</Id>
 <IsTop>false</IsTop>
+<Bind>c1_options</Bind>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e39_</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e30_</ParentId>
 <Position><Start><IntLiteral>33</IntLiteral>
 <IntLiteral>19</IntLiteral>
 </Start>
@@ -1445,6 +1263,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_cache</Id>
 <IsTop>false</IsTop>
+<Bind>c0_cache</Bind>
 </Exp></Argument>
 </Exp></BodyParentExp>
 </Exp></Argument>
@@ -1466,7 +1285,7 @@
 </GroupCard>
 <Id>ECU1</Id>
 <UniqueId>c0_ECU1</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
+<ParentUniqueId>root</ParentUniqueId>
 <Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>35</IntLiteral>
 <IntLiteral>8</IntLiteral>
@@ -1478,8 +1297,8 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_plaECU</Id>
 <IsTop>true</IsTop>
+<Bind>c0_plaECU</Bind>
 </Exp></Super>
-</Supers>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -1507,7 +1326,7 @@
 </GroupCard>
 <Id>ECU2</Id>
 <UniqueId>c0_ECU2</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
+<ParentUniqueId>root</ParentUniqueId>
 <Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>37</IntLiteral>
 <IntLiteral>8</IntLiteral>
@@ -1519,8 +1338,8 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_plaECU</Id>
 <IsTop>true</IsTop>
+<Bind>c0_plaECU</Bind>
 </Exp></Super>
-</Supers>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -1548,8 +1367,9 @@
 </GroupCard>
 <Id>master</Id>
 <UniqueId>c0_master</UniqueId>
-<Supers><IsOverlapping>true</IsOverlapping>
-<Super><ParentId></ParentId>
+<ParentUniqueId>c0_ECU2</ParentUniqueId>
+<Reference><IsSet>true</IsSet>
+<Ref><ParentId></ParentId>
 <Position><Start><IntLiteral>38</IntLiteral>
 <IntLiteral>15</IntLiteral>
 </Start>
@@ -1559,9 +1379,10 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_ECU1</Id>
-<IsTop>true</IsTop>
-</Exp></Super>
-</Supers>
+<IsTop>false</IsTop>
+<Bind>c0_ECU1</Bind>
+</Exp></Ref>
+</Reference>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -1572,132 +1393,6 @@
 <Max><IntLiteral>1</IntLiteral>
 </Max>
 </GlobalCard>
-</Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e40_</ParentId>
-<Position><Start><IntLiteral>38</IntLiteral>
-<IntLiteral>5</IntLiteral>
-</Start>
-<End><IntLiteral>38</IntLiteral>
-<IntLiteral>19</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:IAll" /><Declaration><IsDisjunct>true</IsDisjunct>
-<LocalDeclaration>x</LocalDeclaration>
-<LocalDeclaration>y</LocalDeclaration>
-<Body><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>this</Id>
-<IsTop>true</IsTop>
-</Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>c0_master</Id>
-<IsTop>false</IsTop>
-</Exp></Argument>
-</Exp></Body>
-</Declaration>
-<BodyParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e42_</ParentId>
-<Position><Start><IntLiteral>38</IntLiteral>
-<IntLiteral>5</IntLiteral>
-</Start>
-<End><IntLiteral>38</IntLiteral>
-<IntLiteral>19</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IFunctionExp"><Operation>!=</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e43_</ParentId>
-<Position><Start><IntLiteral>38</IntLiteral>
-<IntLiteral>5</IntLiteral>
-</Start>
-<End><IntLiteral>38</IntLiteral>
-<IntLiteral>19</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e44_</ParentId>
-<Position><Start><IntLiteral>38</IntLiteral>
-<IntLiteral>5</IntLiteral>
-</Start>
-<End><IntLiteral>38</IntLiteral>
-<IntLiteral>19</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>x</Id>
-<IsTop>true</IsTop>
-</Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e45_</ParentId>
-<Position><Start><IntLiteral>38</IntLiteral>
-<IntLiteral>5</IntLiteral>
-</Start>
-<End><IntLiteral>38</IntLiteral>
-<IntLiteral>19</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>ref</Id>
-<IsTop>false</IsTop>
-</Exp></Argument>
-</Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e46_</ParentId>
-<Position><Start><IntLiteral>38</IntLiteral>
-<IntLiteral>5</IntLiteral>
-</Start>
-<End><IntLiteral>38</IntLiteral>
-<IntLiteral>19</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e47_</ParentId>
-<Position><Start><IntLiteral>38</IntLiteral>
-<IntLiteral>5</IntLiteral>
-</Start>
-<End><IntLiteral>38</IntLiteral>
-<IntLiteral>19</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>y</Id>
-<IsTop>true</IsTop>
-</Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e48_</ParentId>
-<Position><Start><IntLiteral>38</IntLiteral>
-<IntLiteral>5</IntLiteral>
-</Start>
-<End><IntLiteral>38</IntLiteral>
-<IntLiteral>19</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>ref</Id>
-<IsTop>false</IsTop>
-</Exp></Argument>
-</Exp></Argument>
-</Exp></BodyParentExp>
-</Exp></ParentExp>
 </Declaration></Declaration><Declaration xsi:type="cl:IClafer"><Position><Start><IntLiteral>42</IntLiteral>
 <IntLiteral>1</IntLiteral>
 </Start>
@@ -1715,20 +1410,7 @@
 </GroupCard>
 <Id>telematicsSystem</Id>
 <UniqueId>c0_telematicsSystem</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>clafer</Id>
-<IsTop>false</IsTop>
-</Exp></Super>
-</Supers>
+<ParentUniqueId>root</ParentUniqueId>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -1756,20 +1438,7 @@
 </GroupCard>
 <Id>channel</Id>
 <UniqueId>c0_channel</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>clafer</Id>
-<IsTop>false</IsTop>
-</Exp></Super>
-</Supers>
+<ParentUniqueId>c0_telematicsSystem</ParentUniqueId>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -1797,20 +1466,7 @@
 </GroupCard>
 <Id>single</Id>
 <UniqueId>c0_single</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>clafer</Id>
-<IsTop>false</IsTop>
-</Exp></Super>
-</Supers>
+<ParentUniqueId>c0_channel</ParentUniqueId>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -1838,20 +1494,7 @@
 </GroupCard>
 <Id>dual</Id>
 <UniqueId>c0_dual</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>clafer</Id>
-<IsTop>false</IsTop>
-</Exp></Super>
-</Supers>
+<ParentUniqueId>c0_channel</ParentUniqueId>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -1879,20 +1522,7 @@
 </GroupCard>
 <Id>extraDisplay</Id>
 <UniqueId>c0_extraDisplay</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>clafer</Id>
-<IsTop>false</IsTop>
-</Exp></Super>
-</Supers>
+<ParentUniqueId>c0_telematicsSystem</ParentUniqueId>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -1920,20 +1550,7 @@
 </GroupCard>
 <Id>size</Id>
 <UniqueId>c2_size</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>clafer</Id>
-<IsTop>false</IsTop>
-</Exp></Super>
-</Supers>
+<ParentUniqueId>c0_telematicsSystem</ParentUniqueId>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -1961,20 +1578,7 @@
 </GroupCard>
 <Id>small</Id>
 <UniqueId>c1_small</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>clafer</Id>
-<IsTop>false</IsTop>
-</Exp></Super>
-</Supers>
+<ParentUniqueId>c2_size</ParentUniqueId>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -2002,20 +1606,7 @@
 </GroupCard>
 <Id>large</Id>
 <UniqueId>c1_large</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>clafer</Id>
-<IsTop>false</IsTop>
-</Exp></Super>
-</Supers>
+<ParentUniqueId>c2_size</ParentUniqueId>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -2027,7 +1618,7 @@
 </Max>
 </GlobalCard>
 </Declaration></Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e49_</ParentId>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e31_</ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
 <IntLiteral>0</IntLiteral>
 </Start>
@@ -2036,7 +1627,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>&amp;&amp;</Operation>
-<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e50_</ParentId>
+<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e32_</ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
 <IntLiteral>0</IntLiteral>
 </Start>
@@ -2045,7 +1636,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>&amp;&amp;</Operation>
-<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e51_</ParentId>
+<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e33_</ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
 <IntLiteral>0</IntLiteral>
 </Start>
@@ -2054,7 +1645,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>&amp;&amp;</Operation>
-<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e52_</ParentId>
+<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e34_</ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
 <IntLiteral>0</IntLiteral>
 </Start>
@@ -2063,7 +1654,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>&amp;&amp;</Operation>
-<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e53_</ParentId>
+<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e35_</ParentId>
 <Position><Start><IntLiteral>53</IntLiteral>
 <IntLiteral>6</IntLiteral>
 </Start>
@@ -2072,7 +1663,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>&lt;=&gt;</Operation>
-<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e54_</ParentId>
+<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e36_</ParentId>
 <Position><Start><IntLiteral>53</IntLiteral>
 <IntLiteral>6</IntLiteral>
 </Start>
@@ -2080,7 +1671,7 @@
 <IntLiteral>10</IntLiteral>
 </End>
 </Position>
-<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>e55_</ParentId>
+<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>e37_</ParentId>
 <Position><Start><IntLiteral>53</IntLiteral>
 <IntLiteral>6</IntLiteral>
 </Start>
@@ -2109,6 +1700,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_telematicsSystem</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -2121,6 +1713,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_channel</Id>
 <IsTop>false</IsTop>
+<Bind>c0_channel</Bind>
 </Exp></Argument>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
@@ -2134,10 +1727,11 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_dual</Id>
 <IsTop>false</IsTop>
+<Bind>c0_dual</Bind>
 </Exp></Argument>
 </Exp></BodyParentExp>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e56_</ParentId>
+<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e38_</ParentId>
 <Position><Start><IntLiteral>53</IntLiteral>
 <IntLiteral>15</IntLiteral>
 </Start>
@@ -2145,7 +1739,7 @@
 <IntLiteral>19</IntLiteral>
 </End>
 </Position>
-<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>e57_</ParentId>
+<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>e39_</ParentId>
 <Position><Start><IntLiteral>53</IntLiteral>
 <IntLiteral>15</IntLiteral>
 </Start>
@@ -2156,10 +1750,11 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_ECU2</Id>
 <IsTop>true</IsTop>
+<Bind>c0_ECU2</Bind>
 </Exp></BodyParentExp>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e58_</ParentId>
+<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e40_</ParentId>
 <Position><Start><IntLiteral>54</IntLiteral>
 <IntLiteral>6</IntLiteral>
 </Start>
@@ -2168,7 +1763,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>&lt;=&gt;</Operation>
-<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e59_</ParentId>
+<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e41_</ParentId>
 <Position><Start><IntLiteral>54</IntLiteral>
 <IntLiteral>6</IntLiteral>
 </Start>
@@ -2176,7 +1771,7 @@
 <IntLiteral>18</IntLiteral>
 </End>
 </Position>
-<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>e60_</ParentId>
+<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>e42_</ParentId>
 <Position><Start><IntLiteral>54</IntLiteral>
 <IntLiteral>6</IntLiteral>
 </Start>
@@ -2196,6 +1791,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_telematicsSystem</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -2208,10 +1804,11 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_extraDisplay</Id>
 <IsTop>false</IsTop>
+<Bind>c0_extraDisplay</Bind>
 </Exp></Argument>
 </Exp></BodyParentExp>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e61_</ParentId>
+<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e43_</ParentId>
 <Position><Start><IntLiteral>54</IntLiteral>
 <IntLiteral>23</IntLiteral>
 </Start>
@@ -2220,7 +1817,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e62_</ParentId>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e44_</ParentId>
 <Position><Start><IntLiteral>54</IntLiteral>
 <IntLiteral>23</IntLiteral>
 </Start>
@@ -2229,7 +1826,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>#</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e63_</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e45_</ParentId>
 <Position><Start><IntLiteral>54</IntLiteral>
 <IntLiteral>24</IntLiteral>
 </Start>
@@ -2238,7 +1835,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e64_</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e46_</ParentId>
 <Position><Start><IntLiteral>54</IntLiteral>
 <IntLiteral>24</IntLiteral>
 </Start>
@@ -2249,8 +1846,9 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_ECU1</Id>
 <IsTop>true</IsTop>
+<Bind>c0_ECU1</Bind>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e65_</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e47_</ParentId>
 <Position><Start><IntLiteral>54</IntLiteral>
 <IntLiteral>29</IntLiteral>
 </Start>
@@ -2261,10 +1859,11 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c1_display</Id>
 <IsTop>false</IsTop>
+<Bind>c1_display</Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e66_</ParentId>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e48_</ParentId>
 <Position><Start><IntLiteral>54</IntLiteral>
 <IntLiteral>39</IntLiteral>
 </Start>
@@ -2277,7 +1876,7 @@
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e67_</ParentId>
+<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e49_</ParentId>
 <Position><Start><IntLiteral>55</IntLiteral>
 <IntLiteral>6</IntLiteral>
 </Start>
@@ -2286,7 +1885,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>&lt;=&gt;</Operation>
-<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e68_</ParentId>
+<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e50_</ParentId>
 <Position><Start><IntLiteral>55</IntLiteral>
 <IntLiteral>6</IntLiteral>
 </Start>
@@ -2294,7 +1893,7 @@
 <IntLiteral>18</IntLiteral>
 </End>
 </Position>
-<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>e69_</ParentId>
+<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>e51_</ParentId>
 <Position><Start><IntLiteral>55</IntLiteral>
 <IntLiteral>6</IntLiteral>
 </Start>
@@ -2314,6 +1913,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_telematicsSystem</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -2326,10 +1926,11 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_extraDisplay</Id>
 <IsTop>false</IsTop>
+<Bind>c0_extraDisplay</Bind>
 </Exp></Argument>
 </Exp></BodyParentExp>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e70_</ParentId>
+<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e52_</ParentId>
 <Position><Start><IntLiteral>55</IntLiteral>
 <IntLiteral>24</IntLiteral>
 </Start>
@@ -2338,7 +1939,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=&gt;</Operation>
-<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e71_</ParentId>
+<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e53_</ParentId>
 <Position><Start><IntLiteral>55</IntLiteral>
 <IntLiteral>24</IntLiteral>
 </Start>
@@ -2346,7 +1947,7 @@
 <IntLiteral>28</IntLiteral>
 </End>
 </Position>
-<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>e72_</ParentId>
+<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>e54_</ParentId>
 <Position><Start><IntLiteral>55</IntLiteral>
 <IntLiteral>24</IntLiteral>
 </Start>
@@ -2357,9 +1958,10 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_ECU2</Id>
 <IsTop>true</IsTop>
+<Bind>c0_ECU2</Bind>
 </Exp></BodyParentExp>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e73_</ParentId>
+<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e55_</ParentId>
 <Position><Start><IntLiteral>55</IntLiteral>
 <IntLiteral>32</IntLiteral>
 </Start>
@@ -2368,7 +1970,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e74_</ParentId>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e56_</ParentId>
 <Position><Start><IntLiteral>55</IntLiteral>
 <IntLiteral>32</IntLiteral>
 </Start>
@@ -2377,7 +1979,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>#</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e75_</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e57_</ParentId>
 <Position><Start><IntLiteral>55</IntLiteral>
 <IntLiteral>33</IntLiteral>
 </Start>
@@ -2386,7 +1988,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e76_</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e58_</ParentId>
 <Position><Start><IntLiteral>55</IntLiteral>
 <IntLiteral>33</IntLiteral>
 </Start>
@@ -2397,8 +1999,9 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_ECU2</Id>
 <IsTop>true</IsTop>
+<Bind>c0_ECU2</Bind>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e77_</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e59_</ParentId>
 <Position><Start><IntLiteral>55</IntLiteral>
 <IntLiteral>38</IntLiteral>
 </Start>
@@ -2409,10 +2012,11 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c1_display</Id>
 <IsTop>false</IsTop>
+<Bind>c1_display</Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e78_</ParentId>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e60_</ParentId>
 <Position><Start><IntLiteral>55</IntLiteral>
 <IntLiteral>48</IntLiteral>
 </Start>
@@ -2426,7 +2030,7 @@
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e79_</ParentId>
+<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e61_</ParentId>
 <Position><Start><IntLiteral>56</IntLiteral>
 <IntLiteral>6</IntLiteral>
 </Start>
@@ -2435,7 +2039,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>&lt;=&gt;</Operation>
-<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e80_</ParentId>
+<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e62_</ParentId>
 <Position><Start><IntLiteral>56</IntLiteral>
 <IntLiteral>6</IntLiteral>
 </Start>
@@ -2443,7 +2047,7 @@
 <IntLiteral>11</IntLiteral>
 </End>
 </Position>
-<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>e81_</ParentId>
+<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>e63_</ParentId>
 <Position><Start><IntLiteral>56</IntLiteral>
 <IntLiteral>6</IntLiteral>
 </Start>
@@ -2472,6 +2076,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_telematicsSystem</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -2484,6 +2089,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c2_size</Id>
 <IsTop>false</IsTop>
+<Bind>c2_size</Bind>
 </Exp></Argument>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
@@ -2497,10 +2103,11 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c1_large</Id>
 <IsTop>false</IsTop>
+<Bind>c1_large</Bind>
 </Exp></Argument>
 </Exp></BodyParentExp>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e82_</ParentId>
+<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e64_</ParentId>
 <Position><Start><IntLiteral>56</IntLiteral>
 <IntLiteral>16</IntLiteral>
 </Start>
@@ -2508,7 +2115,7 @@
 <IntLiteral>50</IntLiteral>
 </End>
 </Position>
-<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:INo" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>e83_</ParentId>
+<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:INo" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>e65_</ParentId>
 <Position><Start><IntLiteral>56</IntLiteral>
 <IntLiteral>17</IntLiteral>
 </Start>
@@ -2517,7 +2124,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e84_</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e66_</ParentId>
 <Position><Start><IntLiteral>56</IntLiteral>
 <IntLiteral>17</IntLiteral>
 </Start>
@@ -2526,7 +2133,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e85_</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e67_</ParentId>
 <Position><Start><IntLiteral>56</IntLiteral>
 <IntLiteral>17</IntLiteral>
 </Start>
@@ -2535,7 +2142,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e86_</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e68_</ParentId>
 <Position><Start><IntLiteral>56</IntLiteral>
 <IntLiteral>17</IntLiteral>
 </Start>
@@ -2544,7 +2151,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e87_</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e69_</ParentId>
 <Position><Start><IntLiteral>56</IntLiteral>
 <IntLiteral>17</IntLiteral>
 </Start>
@@ -2555,8 +2162,9 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_plaECU</Id>
 <IsTop>true</IsTop>
+<Bind>c0_plaECU</Bind>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e88_</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e70_</ParentId>
 <Position><Start><IntLiteral>56</IntLiteral>
 <IntLiteral>24</IntLiteral>
 </Start>
@@ -2567,9 +2175,10 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c1_display</Id>
 <IsTop>false</IsTop>
+<Bind>c1_display</Bind>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e89_</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e71_</ParentId>
 <Position><Start><IntLiteral>56</IntLiteral>
 <IntLiteral>32</IntLiteral>
 </Start>
@@ -2580,9 +2189,10 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c1_options</Id>
 <IsTop>false</IsTop>
+<Bind>c1_options</Bind>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e90_</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e72_</ParentId>
 <Position><Start><IntLiteral>56</IntLiteral>
 <IntLiteral>40</IntLiteral>
 </Start>
@@ -2593,9 +2203,10 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_size</Id>
 <IsTop>false</IsTop>
+<Bind>c0_size</Bind>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e91_</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e73_</ParentId>
 <Position><Start><IntLiteral>56</IntLiteral>
 <IntLiteral>45</IntLiteral>
 </Start>
@@ -2606,12 +2217,13 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_small</Id>
 <IsTop>false</IsTop>
+<Bind>c0_small</Bind>
 </Exp></Argument>
 </Exp></BodyParentExp>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e92_</ParentId>
+<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e74_</ParentId>
 <Position><Start><IntLiteral>57</IntLiteral>
 <IntLiteral>6</IntLiteral>
 </Start>
@@ -2620,7 +2232,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>&lt;=&gt;</Operation>
-<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e93_</ParentId>
+<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e75_</ParentId>
 <Position><Start><IntLiteral>57</IntLiteral>
 <IntLiteral>6</IntLiteral>
 </Start>
@@ -2628,7 +2240,7 @@
 <IntLiteral>11</IntLiteral>
 </End>
 </Position>
-<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>e94_</ParentId>
+<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>e76_</ParentId>
 <Position><Start><IntLiteral>57</IntLiteral>
 <IntLiteral>6</IntLiteral>
 </Start>
@@ -2657,6 +2269,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_telematicsSystem</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -2669,6 +2282,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c2_size</Id>
 <IsTop>false</IsTop>
+<Bind>c2_size</Bind>
 </Exp></Argument>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
@@ -2682,10 +2296,11 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c1_small</Id>
 <IsTop>false</IsTop>
+<Bind>c1_small</Bind>
 </Exp></Argument>
 </Exp></BodyParentExp>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e95_</ParentId>
+<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e77_</ParentId>
 <Position><Start><IntLiteral>57</IntLiteral>
 <IntLiteral>16</IntLiteral>
 </Start>
@@ -2693,7 +2308,7 @@
 <IntLiteral>50</IntLiteral>
 </End>
 </Position>
-<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:INo" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>e96_</ParentId>
+<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:INo" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>e78_</ParentId>
 <Position><Start><IntLiteral>57</IntLiteral>
 <IntLiteral>17</IntLiteral>
 </Start>
@@ -2702,7 +2317,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e97_</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e79_</ParentId>
 <Position><Start><IntLiteral>57</IntLiteral>
 <IntLiteral>17</IntLiteral>
 </Start>
@@ -2711,7 +2326,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e98_</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e80_</ParentId>
 <Position><Start><IntLiteral>57</IntLiteral>
 <IntLiteral>17</IntLiteral>
 </Start>
@@ -2720,7 +2335,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e99_</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e81_</ParentId>
 <Position><Start><IntLiteral>57</IntLiteral>
 <IntLiteral>17</IntLiteral>
 </Start>
@@ -2729,7 +2344,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e100_</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e82_</ParentId>
 <Position><Start><IntLiteral>57</IntLiteral>
 <IntLiteral>17</IntLiteral>
 </Start>
@@ -2740,8 +2355,9 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_plaECU</Id>
 <IsTop>true</IsTop>
+<Bind>c0_plaECU</Bind>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e101_</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e83_</ParentId>
 <Position><Start><IntLiteral>57</IntLiteral>
 <IntLiteral>24</IntLiteral>
 </Start>
@@ -2752,9 +2368,10 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c1_display</Id>
 <IsTop>false</IsTop>
+<Bind>c1_display</Bind>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e102_</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e84_</ParentId>
 <Position><Start><IntLiteral>57</IntLiteral>
 <IntLiteral>32</IntLiteral>
 </Start>
@@ -2765,9 +2382,10 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c1_options</Id>
 <IsTop>false</IsTop>
+<Bind>c1_options</Bind>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e103_</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e85_</ParentId>
 <Position><Start><IntLiteral>57</IntLiteral>
 <IntLiteral>40</IntLiteral>
 </Start>
@@ -2778,9 +2396,10 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_size</Id>
 <IsTop>false</IsTop>
+<Bind>c0_size</Bind>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e104_</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e86_</ParentId>
 <Position><Start><IntLiteral>57</IntLiteral>
 <IntLiteral>45</IntLiteral>
 </Start>
@@ -2791,13 +2410,14 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_large</Id>
 <IsTop>false</IsTop>
+<Bind>c0_large</Bind>
 </Exp></Argument>
 </Exp></BodyParentExp>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></ParentExp>
 </Declaration></Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e105_</ParentId>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e87_</ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
 <IntLiteral>0</IntLiteral>
 </Start>
@@ -2806,7 +2426,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>&amp;&amp;</Operation>
-<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e106_</ParentId>
+<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e88_</ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
 <IntLiteral>0</IntLiteral>
 </Start>
@@ -2815,7 +2435,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>&amp;&amp;</Operation>
-<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e107_</ParentId>
+<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e89_</ParentId>
 <Position><Start><IntLiteral>60</IntLiteral>
 <IntLiteral>2</IntLiteral>
 </Start>
@@ -2823,7 +2443,7 @@
 <IntLiteral>6</IntLiteral>
 </End>
 </Position>
-<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>e108_</ParentId>
+<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>e90_</ParentId>
 <Position><Start><IntLiteral>60</IntLiteral>
 <IntLiteral>2</IntLiteral>
 </Start>
@@ -2852,6 +2472,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_telematicsSystem</Id>
 <IsTop>true</IsTop>
+<Bind>c0_telematicsSystem</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -2864,6 +2485,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_channel</Id>
 <IsTop>false</IsTop>
+<Bind>c0_channel</Bind>
 </Exp></Argument>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
@@ -2877,10 +2499,11 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_dual</Id>
 <IsTop>false</IsTop>
+<Bind>c0_dual</Bind>
 </Exp></Argument>
 </Exp></BodyParentExp>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e109_</ParentId>
+<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e91_</ParentId>
 <Position><Start><IntLiteral>61</IntLiteral>
 <IntLiteral>2</IntLiteral>
 </Start>
@@ -2888,7 +2511,7 @@
 <IntLiteral>14</IntLiteral>
 </End>
 </Position>
-<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>e110_</ParentId>
+<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>e92_</ParentId>
 <Position><Start><IntLiteral>61</IntLiteral>
 <IntLiteral>2</IntLiteral>
 </Start>
@@ -2908,6 +2531,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_telematicsSystem</Id>
 <IsTop>true</IsTop>
+<Bind>c0_telematicsSystem</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -2920,11 +2544,12 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_extraDisplay</Id>
 <IsTop>false</IsTop>
+<Bind>c0_extraDisplay</Bind>
 </Exp></Argument>
 </Exp></BodyParentExp>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e111_</ParentId>
+<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e93_</ParentId>
 <Position><Start><IntLiteral>62</IntLiteral>
 <IntLiteral>2</IntLiteral>
 </Start>
@@ -2932,7 +2557,7 @@
 <IntLiteral>29</IntLiteral>
 </End>
 </Position>
-<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>e112_</ParentId>
+<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>e94_</ParentId>
 <Position><Start><IntLiteral>62</IntLiteral>
 <IntLiteral>2</IntLiteral>
 </Start>
@@ -2941,7 +2566,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e113_</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e95_</ParentId>
 <Position><Start><IntLiteral>62</IntLiteral>
 <IntLiteral>2</IntLiteral>
 </Start>
@@ -2950,7 +2575,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e114_</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e96_</ParentId>
 <Position><Start><IntLiteral>62</IntLiteral>
 <IntLiteral>2</IntLiteral>
 </Start>
@@ -2961,8 +2586,9 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_telematicsSystem</Id>
 <IsTop>true</IsTop>
+<Bind>c0_telematicsSystem</Bind>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e115_</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e97_</ParentId>
 <Position><Start><IntLiteral>62</IntLiteral>
 <IntLiteral>19</IntLiteral>
 </Start>
@@ -2973,9 +2599,10 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c2_size</Id>
 <IsTop>false</IsTop>
+<Bind>c2_size</Bind>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e116_</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e98_</ParentId>
 <Position><Start><IntLiteral>62</IntLiteral>
 <IntLiteral>24</IntLiteral>
 </Start>
@@ -2986,6 +2613,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c1_large</Id>
 <IsTop>false</IsTop>
+<Bind>c1_large</Bind>
 </Exp></Argument>
 </Exp></BodyParentExp>
 </Exp></Argument>

@@ -23,11 +23,11 @@ module Language.Clafer.Intermediate.Tracing (traceIrModule, traceAstModule, Ast(
 
 import Data.Map (Map)
 import qualified Data.Map as Map
-import Language.Clafer.Front.Absclafer
+import Language.Clafer.Front.AbsClafer
 import Language.Clafer.Intermediate.Intclafer
 
 traceIrModule :: IModule -> Map Span [Ir] --Map Span [Union (IRClafer IClafer) (IRPExp PExp)]
-traceIrModule = foldMapIR getMap 
+traceIrModule = foldMapIR getMap
   where
     insert :: Span -> Ir -> Map Span [Ir] -> Map Span [Ir]
     insert k a = Map.insertWith (++) k [a]
@@ -54,8 +54,8 @@ traceAstModule x =
   i (AstElements a) = getSpan a
   i (AstElement a) = getSpan a
   i (AstSuper a) = getSpan a
-  i (AstSuperHow a) = getSpan a
   i (AstImport a) = getSpan a
+  i (AstReference a) = getSpan a
   i (AstInit a) = getSpan a
   i (AstInitHow a) = getSpan a
   i (AstGCard a) = getSpan a
@@ -72,17 +72,21 @@ traceAstModule x =
   i (AstLocId a) = getSpan a
 
 traverseModule :: Module -> [Ast]
+<<<<<<< HEAD
 traverseModule x@(Module _ i d) = AstModule x : (map AstImport i ++ concatMap traverseDeclaration d)
+=======
+traverseModule x@(Module _ d) = AstModule x : concatMap traverseDeclaration d
+>>>>>>> develop
 
 traverseDeclaration :: Declaration -> [Ast]
 traverseDeclaration x =
   AstDeclaration x :
     case x of
-    EnumDecl _ _ e -> concatMap traverseEnumId e  
-    ElementDecl _ e -> traverseElement e          
+    EnumDecl _ _ e -> concatMap traverseEnumId e
+    ElementDecl _ e -> traverseElement e
 
 traverseClafer :: Clafer -> [Ast]
-traverseClafer x@(Clafer _ a b _ d e f g) = AstClafer x : (traverseAbstract a ++ traverseGCard b ++ traverseSuper d ++ traverseCard e ++ traverseInit f ++ traverseElements g)
+traverseClafer x@(Clafer _ a b _ d r e f g) = AstClafer x : (traverseAbstract a ++ traverseGCard b ++ traverseSuper d ++ traverseReference r ++ traverseCard e ++ traverseInit f ++ traverseElements g)
 
 traverseConstraint :: Constraint -> [Ast]
 traverseConstraint x@(Constraint _ e) = AstConstraint x : concatMap traverseExp e
@@ -119,11 +123,15 @@ traverseSuper x =
   AstSuper x :
     case x of
     SuperEmpty _ -> []
-    SuperSome _ sh se -> traverseSuperHow sh ++ traverseSetExp se
+    SuperSome _ se -> traverseSetExp se
 
-traverseSuperHow :: SuperHow -> [Ast]
-traverseSuperHow x =
-  AstSuperHow x : [{- no other children -}]
+traverseReference :: Reference -> [Ast]
+traverseReference x =
+  AstReference x :
+    case x of
+    ReferenceEmpty _ -> []
+    ReferenceSet _ se -> traverseSetExp se
+    ReferenceBag _ se -> traverseSetExp se
 
 traverseInit :: Init -> [Ast]
 traverseInit x =
@@ -204,7 +212,7 @@ traverseExp x =
     EDouble _ _ -> []
     EStr _ _ -> []
     ESetExp _ s -> traverseSetExp s
-    _ -> error "Invalid argument given to function traverseExp from Tracing" 
+    _ -> error "Invalid argument given to function traverseExp from Tracing"
 
 traverseSetExp :: SetExp -> [Ast]
 traverseSetExp x =
@@ -218,7 +226,7 @@ traverseSetExp x =
     Range _ s1 s2 -> traverseSetExp s1 ++ traverseSetExp s2
     Join _ s1 s2 -> traverseSetExp s1 ++ traverseSetExp s2
     ClaferId _ n -> traverseName n
-    
+
 traverseDecl :: Decl -> [Ast]
 traverseDecl x@(Decl _ l s) =
   AstDecl x : (concatMap traverseLocId l ++ traverseSetExp s)
@@ -235,7 +243,7 @@ traverseModId _ = []
 
 traverseLocId :: LocId -> [Ast]
 traverseLocId _ = []
-  
+
 data Ast =
   AstModule Module |
   AstDeclaration Declaration |
@@ -247,8 +255,8 @@ data Ast =
   AstElements Elements |
   AstElement Element |
   AstSuper Super |
-  AstSuperHow SuperHow |
   AstImport Import |
+  AstReference Reference |
   AstInit Init |
   AstInitHow InitHow |
   AstGCard GCard |

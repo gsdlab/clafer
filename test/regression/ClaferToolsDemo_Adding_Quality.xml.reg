@@ -3,7 +3,7 @@
 <IntLiteral>1</IntLiteral>
 </Start>
 <End><IntLiteral>7</IntLiteral>
-<IntLiteral>25</IntLiteral>
+<IntLiteral>26</IntLiteral>
 </End>
 </Position>
 <IsAbstract>true</IsAbstract>
@@ -16,20 +16,7 @@
 </GroupCard>
 <Id>Feature</Id>
 <UniqueId>c0_Feature</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>clafer</Id>
-<IsTop>false</IsTop>
-</Exp></Super>
-</Supers>
+<ParentUniqueId>root</ParentUniqueId>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
 <Max><IntLiteral>-1</IntLiteral>
@@ -44,7 +31,7 @@
 <IntLiteral>5</IntLiteral>
 </Start>
 <End><IntLiteral>4</IntLiteral>
-<IntLiteral>27</IntLiteral>
+<IntLiteral>28</IntLiteral>
 </End>
 </Position>
 <IsAbstract>false</IsAbstract>
@@ -57,20 +44,22 @@
 </GroupCard>
 <Id>productivity</Id>
 <UniqueId>c0_productivity</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
-<Super><ParentId></ParentId>
+<ParentUniqueId>c0_Feature</ParentUniqueId>
+<Reference><IsSet>true</IsSet>
+<Ref><ParentId></ParentId>
 <Position><Start><IntLiteral>4</IntLiteral>
-<IntLiteral>20</IntLiteral>
+<IntLiteral>21</IntLiteral>
 </Start>
 <End><IntLiteral>4</IntLiteral>
-<IntLiteral>27</IntLiteral>
+<IntLiteral>28</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>integer</Id>
 <IsTop>true</IsTop>
-</Exp></Super>
-</Supers>
+<Bind>integer</Bind>
+</Exp></Ref>
+</Reference>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -85,7 +74,7 @@
 <IntLiteral>5</IntLiteral>
 </Start>
 <End><IntLiteral>5</IntLiteral>
-<IntLiteral>19</IntLiteral>
+<IntLiteral>20</IntLiteral>
 </End>
 </Position>
 <IsAbstract>false</IsAbstract>
@@ -98,20 +87,22 @@
 </GroupCard>
 <Id>cost</Id>
 <UniqueId>c0_cost</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
-<Super><ParentId></ParentId>
+<ParentUniqueId>c0_Feature</ParentUniqueId>
+<Reference><IsSet>true</IsSet>
+<Ref><ParentId></ParentId>
 <Position><Start><IntLiteral>5</IntLiteral>
-<IntLiteral>12</IntLiteral>
+<IntLiteral>13</IntLiteral>
 </Start>
 <End><IntLiteral>5</IntLiteral>
-<IntLiteral>19</IntLiteral>
+<IntLiteral>20</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>integer</Id>
 <IsTop>true</IsTop>
-</Exp></Super>
-</Supers>
+<Bind>integer</Bind>
+</Exp></Ref>
+</Reference>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -126,7 +117,7 @@
 <IntLiteral>5</IntLiteral>
 </Start>
 <End><IntLiteral>6</IntLiteral>
-<IntLiteral>26</IntLiteral>
+<IntLiteral>27</IntLiteral>
 </End>
 </Position>
 <IsAbstract>false</IsAbstract>
@@ -139,20 +130,22 @@
 </GroupCard>
 <Id>batterylife</Id>
 <UniqueId>c0_batterylife</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
-<Super><ParentId></ParentId>
+<ParentUniqueId>c0_Feature</ParentUniqueId>
+<Reference><IsSet>true</IsSet>
+<Ref><ParentId></ParentId>
 <Position><Start><IntLiteral>6</IntLiteral>
-<IntLiteral>19</IntLiteral>
+<IntLiteral>20</IntLiteral>
 </Start>
 <End><IntLiteral>6</IntLiteral>
-<IntLiteral>26</IntLiteral>
+<IntLiteral>27</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>integer</Id>
 <IsTop>true</IsTop>
-</Exp></Super>
-</Supers>
+<Bind>integer</Bind>
+</Exp></Ref>
+</Reference>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -167,7 +160,7 @@
 <IntLiteral>5</IntLiteral>
 </Start>
 <End><IntLiteral>7</IntLiteral>
-<IntLiteral>23</IntLiteral>
+<IntLiteral>24</IntLiteral>
 </End>
 </Position>
 <IsAbstract>false</IsAbstract>
@@ -180,20 +173,22 @@
 </GroupCard>
 <Id>security</Id>
 <UniqueId>c0_security</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
-<Super><ParentId></ParentId>
+<ParentUniqueId>c0_Feature</ParentUniqueId>
+<Reference><IsSet>true</IsSet>
+<Ref><ParentId></ParentId>
 <Position><Start><IntLiteral>7</IntLiteral>
-<IntLiteral>16</IntLiteral>
+<IntLiteral>17</IntLiteral>
 </Start>
 <End><IntLiteral>7</IntLiteral>
-<IntLiteral>23</IntLiteral>
+<IntLiteral>24</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>integer</Id>
 <IsTop>true</IsTop>
-</Exp></Super>
-</Supers>
+<Bind>integer</Bind>
+</Exp></Ref>
+</Reference>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -207,8 +202,8 @@
 </Declaration></Declaration><Declaration xsi:type="cl:IClafer"><Position><Start><IntLiteral>8</IntLiteral>
 <IntLiteral>1</IntLiteral>
 </Start>
-<End><IntLiteral>73</IntLiteral>
-<IntLiteral>46</IntLiteral>
+<End><IntLiteral>65</IntLiteral>
+<IntLiteral>47</IntLiteral>
 </End>
 </Position>
 <IsAbstract>true</IsAbstract>
@@ -221,20 +216,7 @@
 </GroupCard>
 <Id>MobilePhone</Id>
 <UniqueId>c0_MobilePhone</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>clafer</Id>
-<IsTop>false</IsTop>
-</Exp></Super>
-</Supers>
+<ParentUniqueId>root</ParentUniqueId>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
 <Max><IntLiteral>-1</IntLiteral>
@@ -248,7 +230,7 @@
 <Declaration xsi:type="cl:IClafer"><Position><Start><IntLiteral>9</IntLiteral>
 <IntLiteral>5</IntLiteral>
 </Start>
-<End><IntLiteral>53</IntLiteral>
+<End><IntLiteral>49</IntLiteral>
 <IntLiteral>28</IntLiteral>
 </End>
 </Position>
@@ -262,7 +244,7 @@
 </GroupCard>
 <Id>Connectivity</Id>
 <UniqueId>c0_Connectivity</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
+<ParentUniqueId>c0_MobilePhone</ParentUniqueId>
 <Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>9</IntLiteral>
 <IntLiteral>20</IntLiteral>
@@ -274,8 +256,8 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Feature</Id>
 <IsTop>true</IsTop>
+<Bind>c0_Feature</Bind>
 </Exp></Super>
-</Supers>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -316,6 +298,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_Connectivity</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -337,6 +320,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_batterylife</Id>
 <IsTop>false</IsTop>
+<Bind>c0_batterylife</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -348,7 +332,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
@@ -403,6 +388,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_Connectivity</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -424,6 +410,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_productivity</Id>
 <IsTop>false</IsTop>
+<Bind>c0_productivity</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -435,7 +422,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
@@ -480,6 +468,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_Connectivity</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -501,6 +490,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_security</Id>
 <IsTop>false</IsTop>
+<Bind>c0_security</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -512,7 +502,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
@@ -557,6 +548,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_Connectivity</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -578,6 +570,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_cost</Id>
 <IsTop>false</IsTop>
+<Bind>c0_cost</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -589,7 +582,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
@@ -607,7 +601,7 @@
 </Declaration><Declaration xsi:type="cl:IClafer"><Position><Start><IntLiteral>14</IntLiteral>
 <IntLiteral>9</IntLiteral>
 </Start>
-<End><IntLiteral>33</IntLiteral>
+<End><IntLiteral>29</IntLiteral>
 <IntLiteral>32</IntLiteral>
 </End>
 </Position>
@@ -621,20 +615,7 @@
 </GroupCard>
 <Id>Bluetooth</Id>
 <UniqueId>c0_Bluetooth</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>14</IntLiteral>
-<IntLiteral>25</IntLiteral>
-</Start>
-<End><IntLiteral>14</IntLiteral>
-<IntLiteral>32</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>c0_Feature</Id>
-<IsTop>true</IsTop>
-</Exp></Super>
-</Supers>
+<ParentUniqueId>c0_Connectivity</ParentUniqueId>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -645,318 +626,10 @@
 <Max><IntLiteral>-1</IntLiteral>
 </Max>
 </GlobalCard>
-<Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e13_</ParentId>
-<Position><Start><IntLiteral>15</IntLiteral>
-<IntLiteral>15</IntLiteral>
-</Start>
-<End><IntLiteral>15</IntLiteral>
-<IntLiteral>30</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e14_</ParentId>
-<Position><Start><IntLiteral>15</IntLiteral>
-<IntLiteral>15</IntLiteral>
-</Start>
-<End><IntLiteral>15</IntLiteral>
-<IntLiteral>26</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>this</Id>
-<IsTop>true</IsTop>
-</Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>c0_batterylife</Id>
-<IsTop>false</IsTop>
-</Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>ref</Id>
-<IsTop>false</IsTop>
-</Exp></Argument>
-</Exp></Argument>
-</Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e15_</ParentId>
-<Position><Start><IntLiteral>15</IntLiteral>
-<IntLiteral>29</IntLiteral>
-</Start>
-<End><IntLiteral>15</IntLiteral>
-<IntLiteral>30</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IIntExp"><IntLiteral>0</IntLiteral>
-</Exp></Argument>
-</Exp></ParentExp>
-</Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e16_</ParentId>
-<Position><Start><IntLiteral>16</IntLiteral>
-<IntLiteral>15</IntLiteral>
-</Start>
-<End><IntLiteral>16</IntLiteral>
-<IntLiteral>31</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e17_</ParentId>
-<Position><Start><IntLiteral>16</IntLiteral>
-<IntLiteral>15</IntLiteral>
-</Start>
-<End><IntLiteral>16</IntLiteral>
-<IntLiteral>27</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>this</Id>
-<IsTop>true</IsTop>
-</Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>c0_productivity</Id>
-<IsTop>false</IsTop>
-</Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>ref</Id>
-<IsTop>false</IsTop>
-</Exp></Argument>
-</Exp></Argument>
-</Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e18_</ParentId>
-<Position><Start><IntLiteral>16</IntLiteral>
-<IntLiteral>30</IntLiteral>
-</Start>
-<End><IntLiteral>16</IntLiteral>
-<IntLiteral>31</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IIntExp"><IntLiteral>0</IntLiteral>
-</Exp></Argument>
-</Exp></ParentExp>
-</Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e19_</ParentId>
-<Position><Start><IntLiteral>17</IntLiteral>
-<IntLiteral>15</IntLiteral>
-</Start>
-<End><IntLiteral>17</IntLiteral>
-<IntLiteral>27</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e20_</ParentId>
-<Position><Start><IntLiteral>17</IntLiteral>
-<IntLiteral>15</IntLiteral>
-</Start>
-<End><IntLiteral>17</IntLiteral>
-<IntLiteral>23</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>this</Id>
-<IsTop>true</IsTop>
-</Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>c0_security</Id>
-<IsTop>false</IsTop>
-</Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>ref</Id>
-<IsTop>false</IsTop>
-</Exp></Argument>
-</Exp></Argument>
-</Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e21_</ParentId>
-<Position><Start><IntLiteral>17</IntLiteral>
-<IntLiteral>26</IntLiteral>
-</Start>
-<End><IntLiteral>17</IntLiteral>
-<IntLiteral>27</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IIntExp"><IntLiteral>0</IntLiteral>
-</Exp></Argument>
-</Exp></ParentExp>
-</Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e22_</ParentId>
-<Position><Start><IntLiteral>18</IntLiteral>
-<IntLiteral>15</IntLiteral>
-</Start>
-<End><IntLiteral>18</IntLiteral>
-<IntLiteral>23</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e23_</ParentId>
-<Position><Start><IntLiteral>18</IntLiteral>
-<IntLiteral>15</IntLiteral>
-</Start>
-<End><IntLiteral>18</IntLiteral>
-<IntLiteral>19</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>this</Id>
-<IsTop>true</IsTop>
-</Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>c0_cost</Id>
-<IsTop>false</IsTop>
-</Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>ref</Id>
-<IsTop>false</IsTop>
-</Exp></Argument>
-</Exp></Argument>
-</Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e24_</ParentId>
-<Position><Start><IntLiteral>18</IntLiteral>
-<IntLiteral>22</IntLiteral>
-</Start>
-<End><IntLiteral>18</IntLiteral>
-<IntLiteral>23</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IIntExp"><IntLiteral>0</IntLiteral>
-</Exp></Argument>
-</Exp></ParentExp>
-</Declaration><Declaration xsi:type="cl:IClafer"><Position><Start><IntLiteral>19</IntLiteral>
+<Declaration xsi:type="cl:IClafer"><Position><Start><IntLiteral>15</IntLiteral>
 <IntLiteral>13</IntLiteral>
 </Start>
-<End><IntLiteral>23</IntLiteral>
+<End><IntLiteral>19</IntLiteral>
 <IntLiteral>30</IntLiteral>
 </End>
 </Position>
@@ -970,20 +643,20 @@
 </GroupCard>
 <Id>Bluetooth20EDR</Id>
 <UniqueId>c0_Bluetooth20EDR</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
+<ParentUniqueId>c0_Bluetooth</ParentUniqueId>
 <Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>19</IntLiteral>
+<Position><Start><IntLiteral>15</IntLiteral>
 <IntLiteral>30</IntLiteral>
 </Start>
-<End><IntLiteral>19</IntLiteral>
+<End><IntLiteral>15</IntLiteral>
 <IntLiteral>37</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Feature</Id>
 <IsTop>true</IsTop>
+<Bind>c0_Feature</Bind>
 </Exp></Super>
-</Supers>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -995,20 +668,20 @@
 </Max>
 </GlobalCard>
 <Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e25_</ParentId>
-<Position><Start><IntLiteral>20</IntLiteral>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e13_</ParentId>
+<Position><Start><IntLiteral>16</IntLiteral>
 <IntLiteral>19</IntLiteral>
 </Start>
-<End><IntLiteral>20</IntLiteral>
+<End><IntLiteral>16</IntLiteral>
 <IntLiteral>35</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e26_</ParentId>
-<Position><Start><IntLiteral>20</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e14_</ParentId>
+<Position><Start><IntLiteral>16</IntLiteral>
 <IntLiteral>19</IntLiteral>
 </Start>
-<End><IntLiteral>20</IntLiteral>
+<End><IntLiteral>16</IntLiteral>
 <IntLiteral>30</IntLiteral>
 </End>
 </Position>
@@ -1024,6 +697,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_Bluetooth20EDR</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -1045,6 +719,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_batterylife</Id>
 <IsTop>false</IsTop>
+<Bind>c0_batterylife</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -1056,24 +731,25 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e27_</ParentId>
-<Position><Start><IntLiteral>20</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e15_</ParentId>
+<Position><Start><IntLiteral>16</IntLiteral>
 <IntLiteral>33</IntLiteral>
 </Start>
-<End><IntLiteral>20</IntLiteral>
+<End><IntLiteral>16</IntLiteral>
 <IntLiteral>35</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>-</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e28_</ParentId>
-<Position><Start><IntLiteral>20</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e16_</ParentId>
+<Position><Start><IntLiteral>16</IntLiteral>
 <IntLiteral>34</IntLiteral>
 </Start>
-<End><IntLiteral>20</IntLiteral>
+<End><IntLiteral>16</IntLiteral>
 <IntLiteral>35</IntLiteral>
 </End>
 </Position>
@@ -1082,20 +758,20 @@
 </Exp></Argument>
 </Exp></ParentExp>
 </Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e29_</ParentId>
-<Position><Start><IntLiteral>21</IntLiteral>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e17_</ParentId>
+<Position><Start><IntLiteral>17</IntLiteral>
 <IntLiteral>19</IntLiteral>
 </Start>
-<End><IntLiteral>21</IntLiteral>
+<End><IntLiteral>17</IntLiteral>
 <IntLiteral>35</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e30_</ParentId>
-<Position><Start><IntLiteral>21</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e18_</ParentId>
+<Position><Start><IntLiteral>17</IntLiteral>
 <IntLiteral>19</IntLiteral>
 </Start>
-<End><IntLiteral>21</IntLiteral>
+<End><IntLiteral>17</IntLiteral>
 <IntLiteral>31</IntLiteral>
 </End>
 </Position>
@@ -1111,6 +787,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_Bluetooth20EDR</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -1132,6 +809,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_productivity</Id>
 <IsTop>false</IsTop>
+<Bind>c0_productivity</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -1143,15 +821,16 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e31_</ParentId>
-<Position><Start><IntLiteral>21</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e19_</ParentId>
+<Position><Start><IntLiteral>17</IntLiteral>
 <IntLiteral>34</IntLiteral>
 </Start>
-<End><IntLiteral>21</IntLiteral>
+<End><IntLiteral>17</IntLiteral>
 <IntLiteral>35</IntLiteral>
 </End>
 </Position>
@@ -1159,20 +838,20 @@
 </Exp></Argument>
 </Exp></ParentExp>
 </Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e32_</ParentId>
-<Position><Start><IntLiteral>22</IntLiteral>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e20_</ParentId>
+<Position><Start><IntLiteral>18</IntLiteral>
 <IntLiteral>19</IntLiteral>
 </Start>
-<End><IntLiteral>22</IntLiteral>
+<End><IntLiteral>18</IntLiteral>
 <IntLiteral>33</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e33_</ParentId>
-<Position><Start><IntLiteral>22</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e21_</ParentId>
+<Position><Start><IntLiteral>18</IntLiteral>
 <IntLiteral>19</IntLiteral>
 </Start>
-<End><IntLiteral>22</IntLiteral>
+<End><IntLiteral>18</IntLiteral>
 <IntLiteral>27</IntLiteral>
 </End>
 </Position>
@@ -1188,6 +867,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_Bluetooth20EDR</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -1209,6 +889,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_security</Id>
 <IsTop>false</IsTop>
+<Bind>c0_security</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -1220,24 +901,25 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e34_</ParentId>
-<Position><Start><IntLiteral>22</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e22_</ParentId>
+<Position><Start><IntLiteral>18</IntLiteral>
 <IntLiteral>30</IntLiteral>
 </Start>
-<End><IntLiteral>22</IntLiteral>
+<End><IntLiteral>18</IntLiteral>
 <IntLiteral>33</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>-</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e35_</ParentId>
-<Position><Start><IntLiteral>22</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e23_</ParentId>
+<Position><Start><IntLiteral>18</IntLiteral>
 <IntLiteral>31</IntLiteral>
 </Start>
-<End><IntLiteral>22</IntLiteral>
+<End><IntLiteral>18</IntLiteral>
 <IntLiteral>33</IntLiteral>
 </End>
 </Position>
@@ -1246,20 +928,20 @@
 </Exp></Argument>
 </Exp></ParentExp>
 </Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e36_</ParentId>
-<Position><Start><IntLiteral>23</IntLiteral>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e24_</ParentId>
+<Position><Start><IntLiteral>19</IntLiteral>
 <IntLiteral>19</IntLiteral>
 </Start>
-<End><IntLiteral>23</IntLiteral>
+<End><IntLiteral>19</IntLiteral>
 <IntLiteral>27</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e37_</ParentId>
-<Position><Start><IntLiteral>23</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e25_</ParentId>
+<Position><Start><IntLiteral>19</IntLiteral>
 <IntLiteral>19</IntLiteral>
 </Start>
-<End><IntLiteral>23</IntLiteral>
+<End><IntLiteral>19</IntLiteral>
 <IntLiteral>23</IntLiteral>
 </End>
 </Position>
@@ -1275,6 +957,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_Bluetooth20EDR</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -1296,6 +979,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_cost</Id>
 <IsTop>false</IsTop>
+<Bind>c0_cost</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -1307,25 +991,26 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e38_</ParentId>
-<Position><Start><IntLiteral>23</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e26_</ParentId>
+<Position><Start><IntLiteral>19</IntLiteral>
 <IntLiteral>26</IntLiteral>
 </Start>
-<End><IntLiteral>23</IntLiteral>
+<End><IntLiteral>19</IntLiteral>
 <IntLiteral>27</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IIntExp"><IntLiteral>1</IntLiteral>
 </Exp></Argument>
 </Exp></ParentExp>
-</Declaration></Declaration><Declaration xsi:type="cl:IClafer"><Position><Start><IntLiteral>24</IntLiteral>
+</Declaration></Declaration><Declaration xsi:type="cl:IClafer"><Position><Start><IntLiteral>20</IntLiteral>
 <IntLiteral>13</IntLiteral>
 </Start>
-<End><IntLiteral>28</IntLiteral>
+<End><IntLiteral>24</IntLiteral>
 <IntLiteral>30</IntLiteral>
 </End>
 </Position>
@@ -1339,20 +1024,20 @@
 </GroupCard>
 <Id>Bluetooth21EDR</Id>
 <UniqueId>c0_Bluetooth21EDR</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
+<ParentUniqueId>c0_Bluetooth</ParentUniqueId>
 <Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>24</IntLiteral>
+<Position><Start><IntLiteral>20</IntLiteral>
 <IntLiteral>30</IntLiteral>
 </Start>
-<End><IntLiteral>24</IntLiteral>
+<End><IntLiteral>20</IntLiteral>
 <IntLiteral>37</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Feature</Id>
 <IsTop>true</IsTop>
+<Bind>c0_Feature</Bind>
 </Exp></Super>
-</Supers>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -1364,20 +1049,20 @@
 </Max>
 </GlobalCard>
 <Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e39_</ParentId>
-<Position><Start><IntLiteral>25</IntLiteral>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e27_</ParentId>
+<Position><Start><IntLiteral>21</IntLiteral>
 <IntLiteral>19</IntLiteral>
 </Start>
-<End><IntLiteral>25</IntLiteral>
+<End><IntLiteral>21</IntLiteral>
 <IntLiteral>35</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e40_</ParentId>
-<Position><Start><IntLiteral>25</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e28_</ParentId>
+<Position><Start><IntLiteral>21</IntLiteral>
 <IntLiteral>19</IntLiteral>
 </Start>
-<End><IntLiteral>25</IntLiteral>
+<End><IntLiteral>21</IntLiteral>
 <IntLiteral>30</IntLiteral>
 </End>
 </Position>
@@ -1393,6 +1078,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_Bluetooth21EDR</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -1414,6 +1100,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_batterylife</Id>
 <IsTop>false</IsTop>
+<Bind>c0_batterylife</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -1425,24 +1112,25 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e41_</ParentId>
-<Position><Start><IntLiteral>25</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e29_</ParentId>
+<Position><Start><IntLiteral>21</IntLiteral>
 <IntLiteral>33</IntLiteral>
 </Start>
-<End><IntLiteral>25</IntLiteral>
+<End><IntLiteral>21</IntLiteral>
 <IntLiteral>35</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>-</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e42_</ParentId>
-<Position><Start><IntLiteral>25</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e30_</ParentId>
+<Position><Start><IntLiteral>21</IntLiteral>
 <IntLiteral>34</IntLiteral>
 </Start>
-<End><IntLiteral>25</IntLiteral>
+<End><IntLiteral>21</IntLiteral>
 <IntLiteral>35</IntLiteral>
 </End>
 </Position>
@@ -1451,20 +1139,20 @@
 </Exp></Argument>
 </Exp></ParentExp>
 </Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e43_</ParentId>
-<Position><Start><IntLiteral>26</IntLiteral>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e31_</ParentId>
+<Position><Start><IntLiteral>22</IntLiteral>
 <IntLiteral>19</IntLiteral>
 </Start>
-<End><IntLiteral>26</IntLiteral>
+<End><IntLiteral>22</IntLiteral>
 <IntLiteral>35</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e44_</ParentId>
-<Position><Start><IntLiteral>26</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e32_</ParentId>
+<Position><Start><IntLiteral>22</IntLiteral>
 <IntLiteral>19</IntLiteral>
 </Start>
-<End><IntLiteral>26</IntLiteral>
+<End><IntLiteral>22</IntLiteral>
 <IntLiteral>31</IntLiteral>
 </End>
 </Position>
@@ -1480,6 +1168,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_Bluetooth21EDR</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -1501,6 +1190,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_productivity</Id>
 <IsTop>false</IsTop>
+<Bind>c0_productivity</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -1512,15 +1202,16 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e45_</ParentId>
-<Position><Start><IntLiteral>26</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e33_</ParentId>
+<Position><Start><IntLiteral>22</IntLiteral>
 <IntLiteral>34</IntLiteral>
 </Start>
-<End><IntLiteral>26</IntLiteral>
+<End><IntLiteral>22</IntLiteral>
 <IntLiteral>35</IntLiteral>
 </End>
 </Position>
@@ -1528,20 +1219,20 @@
 </Exp></Argument>
 </Exp></ParentExp>
 </Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e46_</ParentId>
-<Position><Start><IntLiteral>27</IntLiteral>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e34_</ParentId>
+<Position><Start><IntLiteral>23</IntLiteral>
 <IntLiteral>19</IntLiteral>
 </Start>
-<End><IntLiteral>27</IntLiteral>
+<End><IntLiteral>23</IntLiteral>
 <IntLiteral>33</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e47_</ParentId>
-<Position><Start><IntLiteral>27</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e35_</ParentId>
+<Position><Start><IntLiteral>23</IntLiteral>
 <IntLiteral>19</IntLiteral>
 </Start>
-<End><IntLiteral>27</IntLiteral>
+<End><IntLiteral>23</IntLiteral>
 <IntLiteral>27</IntLiteral>
 </End>
 </Position>
@@ -1557,6 +1248,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_Bluetooth21EDR</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -1578,6 +1270,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_security</Id>
 <IsTop>false</IsTop>
+<Bind>c0_security</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -1589,24 +1282,25 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e48_</ParentId>
-<Position><Start><IntLiteral>27</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e36_</ParentId>
+<Position><Start><IntLiteral>23</IntLiteral>
 <IntLiteral>30</IntLiteral>
 </Start>
-<End><IntLiteral>27</IntLiteral>
+<End><IntLiteral>23</IntLiteral>
 <IntLiteral>33</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>-</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e49_</ParentId>
-<Position><Start><IntLiteral>27</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e37_</ParentId>
+<Position><Start><IntLiteral>23</IntLiteral>
 <IntLiteral>31</IntLiteral>
 </Start>
-<End><IntLiteral>27</IntLiteral>
+<End><IntLiteral>23</IntLiteral>
 <IntLiteral>33</IntLiteral>
 </End>
 </Position>
@@ -1615,20 +1309,20 @@
 </Exp></Argument>
 </Exp></ParentExp>
 </Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e50_</ParentId>
-<Position><Start><IntLiteral>28</IntLiteral>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e38_</ParentId>
+<Position><Start><IntLiteral>24</IntLiteral>
 <IntLiteral>19</IntLiteral>
 </Start>
-<End><IntLiteral>28</IntLiteral>
+<End><IntLiteral>24</IntLiteral>
 <IntLiteral>27</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e51_</ParentId>
-<Position><Start><IntLiteral>28</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e39_</ParentId>
+<Position><Start><IntLiteral>24</IntLiteral>
 <IntLiteral>19</IntLiteral>
 </Start>
-<End><IntLiteral>28</IntLiteral>
+<End><IntLiteral>24</IntLiteral>
 <IntLiteral>23</IntLiteral>
 </End>
 </Position>
@@ -1644,6 +1338,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_Bluetooth21EDR</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -1665,6 +1360,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_cost</Id>
 <IsTop>false</IsTop>
+<Bind>c0_cost</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -1676,25 +1372,26 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e52_</ParentId>
-<Position><Start><IntLiteral>28</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e40_</ParentId>
+<Position><Start><IntLiteral>24</IntLiteral>
 <IntLiteral>26</IntLiteral>
 </Start>
-<End><IntLiteral>28</IntLiteral>
+<End><IntLiteral>24</IntLiteral>
 <IntLiteral>27</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IIntExp"><IntLiteral>1</IntLiteral>
 </Exp></Argument>
 </Exp></ParentExp>
-</Declaration></Declaration><Declaration xsi:type="cl:IClafer"><Position><Start><IntLiteral>29</IntLiteral>
+</Declaration></Declaration><Declaration xsi:type="cl:IClafer"><Position><Start><IntLiteral>25</IntLiteral>
 <IntLiteral>13</IntLiteral>
 </Start>
-<End><IntLiteral>33</IntLiteral>
+<End><IntLiteral>29</IntLiteral>
 <IntLiteral>30</IntLiteral>
 </End>
 </Position>
@@ -1708,20 +1405,20 @@
 </GroupCard>
 <Id>Bluetooth40</Id>
 <UniqueId>c0_Bluetooth40</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
+<ParentUniqueId>c0_Bluetooth</ParentUniqueId>
 <Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>29</IntLiteral>
+<Position><Start><IntLiteral>25</IntLiteral>
 <IntLiteral>27</IntLiteral>
 </Start>
-<End><IntLiteral>29</IntLiteral>
+<End><IntLiteral>25</IntLiteral>
 <IntLiteral>34</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Feature</Id>
 <IsTop>true</IsTop>
+<Bind>c0_Feature</Bind>
 </Exp></Super>
-</Supers>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -1733,20 +1430,20 @@
 </Max>
 </GlobalCard>
 <Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e53_</ParentId>
-<Position><Start><IntLiteral>30</IntLiteral>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e41_</ParentId>
+<Position><Start><IntLiteral>26</IntLiteral>
 <IntLiteral>19</IntLiteral>
 </Start>
-<End><IntLiteral>30</IntLiteral>
+<End><IntLiteral>26</IntLiteral>
 <IntLiteral>35</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e54_</ParentId>
-<Position><Start><IntLiteral>30</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e42_</ParentId>
+<Position><Start><IntLiteral>26</IntLiteral>
 <IntLiteral>19</IntLiteral>
 </Start>
-<End><IntLiteral>30</IntLiteral>
+<End><IntLiteral>26</IntLiteral>
 <IntLiteral>30</IntLiteral>
 </End>
 </Position>
@@ -1762,6 +1459,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_Bluetooth40</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -1783,6 +1481,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_batterylife</Id>
 <IsTop>false</IsTop>
+<Bind>c0_batterylife</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -1794,24 +1493,25 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e55_</ParentId>
-<Position><Start><IntLiteral>30</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e43_</ParentId>
+<Position><Start><IntLiteral>26</IntLiteral>
 <IntLiteral>33</IntLiteral>
 </Start>
-<End><IntLiteral>30</IntLiteral>
+<End><IntLiteral>26</IntLiteral>
 <IntLiteral>35</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>-</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e56_</ParentId>
-<Position><Start><IntLiteral>30</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e44_</ParentId>
+<Position><Start><IntLiteral>26</IntLiteral>
 <IntLiteral>34</IntLiteral>
 </Start>
-<End><IntLiteral>30</IntLiteral>
+<End><IntLiteral>26</IntLiteral>
 <IntLiteral>35</IntLiteral>
 </End>
 </Position>
@@ -1820,20 +1520,20 @@
 </Exp></Argument>
 </Exp></ParentExp>
 </Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e57_</ParentId>
-<Position><Start><IntLiteral>31</IntLiteral>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e45_</ParentId>
+<Position><Start><IntLiteral>27</IntLiteral>
 <IntLiteral>19</IntLiteral>
 </Start>
-<End><IntLiteral>31</IntLiteral>
+<End><IntLiteral>27</IntLiteral>
 <IntLiteral>36</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e58_</ParentId>
-<Position><Start><IntLiteral>31</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e46_</ParentId>
+<Position><Start><IntLiteral>27</IntLiteral>
 <IntLiteral>19</IntLiteral>
 </Start>
-<End><IntLiteral>31</IntLiteral>
+<End><IntLiteral>27</IntLiteral>
 <IntLiteral>31</IntLiteral>
 </End>
 </Position>
@@ -1849,6 +1549,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_Bluetooth40</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -1870,6 +1571,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_productivity</Id>
 <IsTop>false</IsTop>
+<Bind>c0_productivity</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -1881,15 +1583,16 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e59_</ParentId>
-<Position><Start><IntLiteral>31</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e47_</ParentId>
+<Position><Start><IntLiteral>27</IntLiteral>
 <IntLiteral>34</IntLiteral>
 </Start>
-<End><IntLiteral>31</IntLiteral>
+<End><IntLiteral>27</IntLiteral>
 <IntLiteral>36</IntLiteral>
 </End>
 </Position>
@@ -1897,20 +1600,20 @@
 </Exp></Argument>
 </Exp></ParentExp>
 </Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e60_</ParentId>
-<Position><Start><IntLiteral>32</IntLiteral>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e48_</ParentId>
+<Position><Start><IntLiteral>28</IntLiteral>
 <IntLiteral>19</IntLiteral>
 </Start>
-<End><IntLiteral>32</IntLiteral>
+<End><IntLiteral>28</IntLiteral>
 <IntLiteral>32</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e61_</ParentId>
-<Position><Start><IntLiteral>32</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e49_</ParentId>
+<Position><Start><IntLiteral>28</IntLiteral>
 <IntLiteral>19</IntLiteral>
 </Start>
-<End><IntLiteral>32</IntLiteral>
+<End><IntLiteral>28</IntLiteral>
 <IntLiteral>27</IntLiteral>
 </End>
 </Position>
@@ -1926,6 +1629,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_Bluetooth40</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -1947,6 +1651,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_security</Id>
 <IsTop>false</IsTop>
+<Bind>c0_security</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -1958,24 +1663,25 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e62_</ParentId>
-<Position><Start><IntLiteral>32</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e50_</ParentId>
+<Position><Start><IntLiteral>28</IntLiteral>
 <IntLiteral>30</IntLiteral>
 </Start>
-<End><IntLiteral>32</IntLiteral>
+<End><IntLiteral>28</IntLiteral>
 <IntLiteral>32</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>-</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e63_</ParentId>
-<Position><Start><IntLiteral>32</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e51_</ParentId>
+<Position><Start><IntLiteral>28</IntLiteral>
 <IntLiteral>31</IntLiteral>
 </Start>
-<End><IntLiteral>32</IntLiteral>
+<End><IntLiteral>28</IntLiteral>
 <IntLiteral>32</IntLiteral>
 </End>
 </Position>
@@ -1984,20 +1690,20 @@
 </Exp></Argument>
 </Exp></ParentExp>
 </Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e64_</ParentId>
-<Position><Start><IntLiteral>33</IntLiteral>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e52_</ParentId>
+<Position><Start><IntLiteral>29</IntLiteral>
 <IntLiteral>19</IntLiteral>
 </Start>
-<End><IntLiteral>33</IntLiteral>
+<End><IntLiteral>29</IntLiteral>
 <IntLiteral>27</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e65_</ParentId>
-<Position><Start><IntLiteral>33</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e53_</ParentId>
+<Position><Start><IntLiteral>29</IntLiteral>
 <IntLiteral>19</IntLiteral>
 </Start>
-<End><IntLiteral>33</IntLiteral>
+<End><IntLiteral>29</IntLiteral>
 <IntLiteral>23</IntLiteral>
 </End>
 </Position>
@@ -2013,6 +1719,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_Bluetooth40</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -2034,6 +1741,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_cost</Id>
 <IsTop>false</IsTop>
+<Bind>c0_cost</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -2045,25 +1753,26 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e66_</ParentId>
-<Position><Start><IntLiteral>33</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e54_</ParentId>
+<Position><Start><IntLiteral>29</IntLiteral>
 <IntLiteral>26</IntLiteral>
 </Start>
-<End><IntLiteral>33</IntLiteral>
+<End><IntLiteral>29</IntLiteral>
 <IntLiteral>27</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IIntExp"><IntLiteral>2</IntLiteral>
 </Exp></Argument>
 </Exp></ParentExp>
-</Declaration></Declaration></Declaration><Declaration xsi:type="cl:IClafer"><Position><Start><IntLiteral>34</IntLiteral>
+</Declaration></Declaration></Declaration><Declaration xsi:type="cl:IClafer"><Position><Start><IntLiteral>30</IntLiteral>
 <IntLiteral>9</IntLiteral>
 </Start>
-<End><IntLiteral>38</IntLiteral>
+<End><IntLiteral>34</IntLiteral>
 <IntLiteral>26</IntLiteral>
 </End>
 </Position>
@@ -2077,20 +1786,20 @@
 </GroupCard>
 <Id>GSM</Id>
 <UniqueId>c0_GSM</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
+<ParentUniqueId>c0_Connectivity</ParentUniqueId>
 <Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>34</IntLiteral>
+<Position><Start><IntLiteral>30</IntLiteral>
 <IntLiteral>15</IntLiteral>
 </Start>
-<End><IntLiteral>34</IntLiteral>
+<End><IntLiteral>30</IntLiteral>
 <IntLiteral>22</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Feature</Id>
 <IsTop>true</IsTop>
+<Bind>c0_Feature</Bind>
 </Exp></Super>
-</Supers>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -2102,20 +1811,20 @@
 </Max>
 </GlobalCard>
 <Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e67_</ParentId>
-<Position><Start><IntLiteral>35</IntLiteral>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e55_</ParentId>
+<Position><Start><IntLiteral>31</IntLiteral>
 <IntLiteral>15</IntLiteral>
 </Start>
-<End><IntLiteral>35</IntLiteral>
+<End><IntLiteral>31</IntLiteral>
 <IntLiteral>31</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e68_</ParentId>
-<Position><Start><IntLiteral>35</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e56_</ParentId>
+<Position><Start><IntLiteral>31</IntLiteral>
 <IntLiteral>15</IntLiteral>
 </Start>
-<End><IntLiteral>35</IntLiteral>
+<End><IntLiteral>31</IntLiteral>
 <IntLiteral>26</IntLiteral>
 </End>
 </Position>
@@ -2131,6 +1840,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_GSM</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -2152,6 +1862,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_batterylife</Id>
 <IsTop>false</IsTop>
+<Bind>c0_batterylife</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -2163,24 +1874,25 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e69_</ParentId>
-<Position><Start><IntLiteral>35</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e57_</ParentId>
+<Position><Start><IntLiteral>31</IntLiteral>
 <IntLiteral>29</IntLiteral>
 </Start>
-<End><IntLiteral>35</IntLiteral>
+<End><IntLiteral>31</IntLiteral>
 <IntLiteral>31</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>-</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e70_</ParentId>
-<Position><Start><IntLiteral>35</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e58_</ParentId>
+<Position><Start><IntLiteral>31</IntLiteral>
 <IntLiteral>30</IntLiteral>
 </Start>
-<End><IntLiteral>35</IntLiteral>
+<End><IntLiteral>31</IntLiteral>
 <IntLiteral>31</IntLiteral>
 </End>
 </Position>
@@ -2189,20 +1901,20 @@
 </Exp></Argument>
 </Exp></ParentExp>
 </Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e71_</ParentId>
-<Position><Start><IntLiteral>36</IntLiteral>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e59_</ParentId>
+<Position><Start><IntLiteral>32</IntLiteral>
 <IntLiteral>15</IntLiteral>
 </Start>
-<End><IntLiteral>36</IntLiteral>
+<End><IntLiteral>32</IntLiteral>
 <IntLiteral>31</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e72_</ParentId>
-<Position><Start><IntLiteral>36</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e60_</ParentId>
+<Position><Start><IntLiteral>32</IntLiteral>
 <IntLiteral>15</IntLiteral>
 </Start>
-<End><IntLiteral>36</IntLiteral>
+<End><IntLiteral>32</IntLiteral>
 <IntLiteral>27</IntLiteral>
 </End>
 </Position>
@@ -2218,6 +1930,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_GSM</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -2239,6 +1952,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_productivity</Id>
 <IsTop>false</IsTop>
+<Bind>c0_productivity</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -2250,15 +1964,16 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e73_</ParentId>
-<Position><Start><IntLiteral>36</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e61_</ParentId>
+<Position><Start><IntLiteral>32</IntLiteral>
 <IntLiteral>30</IntLiteral>
 </Start>
-<End><IntLiteral>36</IntLiteral>
+<End><IntLiteral>32</IntLiteral>
 <IntLiteral>31</IntLiteral>
 </End>
 </Position>
@@ -2266,20 +1981,20 @@
 </Exp></Argument>
 </Exp></ParentExp>
 </Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e74_</ParentId>
-<Position><Start><IntLiteral>37</IntLiteral>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e62_</ParentId>
+<Position><Start><IntLiteral>33</IntLiteral>
 <IntLiteral>15</IntLiteral>
 </Start>
-<End><IntLiteral>37</IntLiteral>
+<End><IntLiteral>33</IntLiteral>
 <IntLiteral>29</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e75_</ParentId>
-<Position><Start><IntLiteral>37</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e63_</ParentId>
+<Position><Start><IntLiteral>33</IntLiteral>
 <IntLiteral>15</IntLiteral>
 </Start>
-<End><IntLiteral>37</IntLiteral>
+<End><IntLiteral>33</IntLiteral>
 <IntLiteral>23</IntLiteral>
 </End>
 </Position>
@@ -2295,6 +2010,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_GSM</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -2316,6 +2032,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_security</Id>
 <IsTop>false</IsTop>
+<Bind>c0_security</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -2327,24 +2044,25 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e76_</ParentId>
-<Position><Start><IntLiteral>37</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e64_</ParentId>
+<Position><Start><IntLiteral>33</IntLiteral>
 <IntLiteral>26</IntLiteral>
 </Start>
-<End><IntLiteral>37</IntLiteral>
+<End><IntLiteral>33</IntLiteral>
 <IntLiteral>29</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>-</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e77_</ParentId>
-<Position><Start><IntLiteral>37</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e65_</ParentId>
+<Position><Start><IntLiteral>33</IntLiteral>
 <IntLiteral>27</IntLiteral>
 </Start>
-<End><IntLiteral>37</IntLiteral>
+<End><IntLiteral>33</IntLiteral>
 <IntLiteral>29</IntLiteral>
 </End>
 </Position>
@@ -2353,20 +2071,20 @@
 </Exp></Argument>
 </Exp></ParentExp>
 </Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e78_</ParentId>
-<Position><Start><IntLiteral>38</IntLiteral>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e66_</ParentId>
+<Position><Start><IntLiteral>34</IntLiteral>
 <IntLiteral>15</IntLiteral>
 </Start>
-<End><IntLiteral>38</IntLiteral>
+<End><IntLiteral>34</IntLiteral>
 <IntLiteral>23</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e79_</ParentId>
-<Position><Start><IntLiteral>38</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e67_</ParentId>
+<Position><Start><IntLiteral>34</IntLiteral>
 <IntLiteral>15</IntLiteral>
 </Start>
-<End><IntLiteral>38</IntLiteral>
+<End><IntLiteral>34</IntLiteral>
 <IntLiteral>19</IntLiteral>
 </End>
 </Position>
@@ -2382,6 +2100,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_GSM</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -2403,6 +2122,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_cost</Id>
 <IsTop>false</IsTop>
+<Bind>c0_cost</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -2414,25 +2134,26 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e80_</ParentId>
-<Position><Start><IntLiteral>38</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e68_</ParentId>
+<Position><Start><IntLiteral>34</IntLiteral>
 <IntLiteral>22</IntLiteral>
 </Start>
-<End><IntLiteral>38</IntLiteral>
+<End><IntLiteral>34</IntLiteral>
 <IntLiteral>23</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IIntExp"><IntLiteral>1</IntLiteral>
 </Exp></Argument>
 </Exp></ParentExp>
-</Declaration></Declaration><Declaration xsi:type="cl:IClafer"><Position><Start><IntLiteral>39</IntLiteral>
+</Declaration></Declaration><Declaration xsi:type="cl:IClafer"><Position><Start><IntLiteral>35</IntLiteral>
 <IntLiteral>9</IntLiteral>
 </Start>
-<End><IntLiteral>43</IntLiteral>
+<End><IntLiteral>39</IntLiteral>
 <IntLiteral>26</IntLiteral>
 </End>
 </Position>
@@ -2446,20 +2167,20 @@
 </GroupCard>
 <Id>LTE</Id>
 <UniqueId>c0_LTE</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
+<ParentUniqueId>c0_Connectivity</ParentUniqueId>
 <Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>39</IntLiteral>
+<Position><Start><IntLiteral>35</IntLiteral>
 <IntLiteral>15</IntLiteral>
 </Start>
-<End><IntLiteral>39</IntLiteral>
+<End><IntLiteral>35</IntLiteral>
 <IntLiteral>22</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Feature</Id>
 <IsTop>true</IsTop>
+<Bind>c0_Feature</Bind>
 </Exp></Super>
-</Supers>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -2471,20 +2192,20 @@
 </Max>
 </GlobalCard>
 <Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e81_</ParentId>
-<Position><Start><IntLiteral>40</IntLiteral>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e69_</ParentId>
+<Position><Start><IntLiteral>36</IntLiteral>
 <IntLiteral>15</IntLiteral>
 </Start>
-<End><IntLiteral>40</IntLiteral>
+<End><IntLiteral>36</IntLiteral>
 <IntLiteral>31</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e82_</ParentId>
-<Position><Start><IntLiteral>40</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e70_</ParentId>
+<Position><Start><IntLiteral>36</IntLiteral>
 <IntLiteral>15</IntLiteral>
 </Start>
-<End><IntLiteral>40</IntLiteral>
+<End><IntLiteral>36</IntLiteral>
 <IntLiteral>26</IntLiteral>
 </End>
 </Position>
@@ -2500,6 +2221,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_LTE</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -2521,6 +2243,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_batterylife</Id>
 <IsTop>false</IsTop>
+<Bind>c0_batterylife</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -2532,24 +2255,25 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e83_</ParentId>
-<Position><Start><IntLiteral>40</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e71_</ParentId>
+<Position><Start><IntLiteral>36</IntLiteral>
 <IntLiteral>29</IntLiteral>
 </Start>
-<End><IntLiteral>40</IntLiteral>
+<End><IntLiteral>36</IntLiteral>
 <IntLiteral>31</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>-</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e84_</ParentId>
-<Position><Start><IntLiteral>40</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e72_</ParentId>
+<Position><Start><IntLiteral>36</IntLiteral>
 <IntLiteral>30</IntLiteral>
 </Start>
-<End><IntLiteral>40</IntLiteral>
+<End><IntLiteral>36</IntLiteral>
 <IntLiteral>31</IntLiteral>
 </End>
 </Position>
@@ -2558,20 +2282,20 @@
 </Exp></Argument>
 </Exp></ParentExp>
 </Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e85_</ParentId>
-<Position><Start><IntLiteral>41</IntLiteral>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e73_</ParentId>
+<Position><Start><IntLiteral>37</IntLiteral>
 <IntLiteral>15</IntLiteral>
 </Start>
-<End><IntLiteral>41</IntLiteral>
+<End><IntLiteral>37</IntLiteral>
 <IntLiteral>32</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e86_</ParentId>
-<Position><Start><IntLiteral>41</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e74_</ParentId>
+<Position><Start><IntLiteral>37</IntLiteral>
 <IntLiteral>15</IntLiteral>
 </Start>
-<End><IntLiteral>41</IntLiteral>
+<End><IntLiteral>37</IntLiteral>
 <IntLiteral>27</IntLiteral>
 </End>
 </Position>
@@ -2587,6 +2311,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_LTE</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -2608,6 +2333,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_productivity</Id>
 <IsTop>false</IsTop>
+<Bind>c0_productivity</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -2619,15 +2345,16 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e87_</ParentId>
-<Position><Start><IntLiteral>41</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e75_</ParentId>
+<Position><Start><IntLiteral>37</IntLiteral>
 <IntLiteral>30</IntLiteral>
 </Start>
-<End><IntLiteral>41</IntLiteral>
+<End><IntLiteral>37</IntLiteral>
 <IntLiteral>32</IntLiteral>
 </End>
 </Position>
@@ -2635,20 +2362,20 @@
 </Exp></Argument>
 </Exp></ParentExp>
 </Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e88_</ParentId>
-<Position><Start><IntLiteral>42</IntLiteral>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e76_</ParentId>
+<Position><Start><IntLiteral>38</IntLiteral>
 <IntLiteral>15</IntLiteral>
 </Start>
-<End><IntLiteral>42</IntLiteral>
+<End><IntLiteral>38</IntLiteral>
 <IntLiteral>28</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e89_</ParentId>
-<Position><Start><IntLiteral>42</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e77_</ParentId>
+<Position><Start><IntLiteral>38</IntLiteral>
 <IntLiteral>15</IntLiteral>
 </Start>
-<End><IntLiteral>42</IntLiteral>
+<End><IntLiteral>38</IntLiteral>
 <IntLiteral>23</IntLiteral>
 </End>
 </Position>
@@ -2664,6 +2391,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_LTE</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -2685,6 +2413,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_security</Id>
 <IsTop>false</IsTop>
+<Bind>c0_security</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -2696,24 +2425,25 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e90_</ParentId>
-<Position><Start><IntLiteral>42</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e78_</ParentId>
+<Position><Start><IntLiteral>38</IntLiteral>
 <IntLiteral>26</IntLiteral>
 </Start>
-<End><IntLiteral>42</IntLiteral>
+<End><IntLiteral>38</IntLiteral>
 <IntLiteral>28</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>-</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e91_</ParentId>
-<Position><Start><IntLiteral>42</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e79_</ParentId>
+<Position><Start><IntLiteral>38</IntLiteral>
 <IntLiteral>27</IntLiteral>
 </Start>
-<End><IntLiteral>42</IntLiteral>
+<End><IntLiteral>38</IntLiteral>
 <IntLiteral>28</IntLiteral>
 </End>
 </Position>
@@ -2722,20 +2452,20 @@
 </Exp></Argument>
 </Exp></ParentExp>
 </Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e92_</ParentId>
-<Position><Start><IntLiteral>43</IntLiteral>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e80_</ParentId>
+<Position><Start><IntLiteral>39</IntLiteral>
 <IntLiteral>15</IntLiteral>
 </Start>
-<End><IntLiteral>43</IntLiteral>
+<End><IntLiteral>39</IntLiteral>
 <IntLiteral>23</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e93_</ParentId>
-<Position><Start><IntLiteral>43</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e81_</ParentId>
+<Position><Start><IntLiteral>39</IntLiteral>
 <IntLiteral>15</IntLiteral>
 </Start>
-<End><IntLiteral>43</IntLiteral>
+<End><IntLiteral>39</IntLiteral>
 <IntLiteral>19</IntLiteral>
 </End>
 </Position>
@@ -2751,6 +2481,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_LTE</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -2772,6 +2503,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_cost</Id>
 <IsTop>false</IsTop>
+<Bind>c0_cost</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -2783,25 +2515,26 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e94_</ParentId>
-<Position><Start><IntLiteral>43</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e82_</ParentId>
+<Position><Start><IntLiteral>39</IntLiteral>
 <IntLiteral>22</IntLiteral>
 </Start>
-<End><IntLiteral>43</IntLiteral>
+<End><IntLiteral>39</IntLiteral>
 <IntLiteral>23</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IIntExp"><IntLiteral>3</IntLiteral>
 </Exp></Argument>
 </Exp></ParentExp>
-</Declaration></Declaration><Declaration xsi:type="cl:IClafer"><Position><Start><IntLiteral>44</IntLiteral>
+</Declaration></Declaration><Declaration xsi:type="cl:IClafer"><Position><Start><IntLiteral>40</IntLiteral>
 <IntLiteral>9</IntLiteral>
 </Start>
-<End><IntLiteral>48</IntLiteral>
+<End><IntLiteral>44</IntLiteral>
 <IntLiteral>27</IntLiteral>
 </End>
 </Position>
@@ -2815,20 +2548,20 @@
 </GroupCard>
 <Id>WiFi</Id>
 <UniqueId>c0_WiFi</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
+<ParentUniqueId>c0_Connectivity</ParentUniqueId>
 <Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>44</IntLiteral>
+<Position><Start><IntLiteral>40</IntLiteral>
 <IntLiteral>15</IntLiteral>
 </Start>
-<End><IntLiteral>44</IntLiteral>
+<End><IntLiteral>40</IntLiteral>
 <IntLiteral>22</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Feature</Id>
 <IsTop>true</IsTop>
+<Bind>c0_Feature</Bind>
 </Exp></Super>
-</Supers>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -2840,20 +2573,20 @@
 </Max>
 </GlobalCard>
 <Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e95_</ParentId>
-<Position><Start><IntLiteral>45</IntLiteral>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e83_</ParentId>
+<Position><Start><IntLiteral>41</IntLiteral>
 <IntLiteral>15</IntLiteral>
 </Start>
-<End><IntLiteral>45</IntLiteral>
+<End><IntLiteral>41</IntLiteral>
 <IntLiteral>32</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e96_</ParentId>
-<Position><Start><IntLiteral>45</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e84_</ParentId>
+<Position><Start><IntLiteral>41</IntLiteral>
 <IntLiteral>15</IntLiteral>
 </Start>
-<End><IntLiteral>45</IntLiteral>
+<End><IntLiteral>41</IntLiteral>
 <IntLiteral>26</IntLiteral>
 </End>
 </Position>
@@ -2869,6 +2602,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_WiFi</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -2890,6 +2624,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_batterylife</Id>
 <IsTop>false</IsTop>
+<Bind>c0_batterylife</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -2901,24 +2636,25 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e97_</ParentId>
-<Position><Start><IntLiteral>45</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e85_</ParentId>
+<Position><Start><IntLiteral>41</IntLiteral>
 <IntLiteral>29</IntLiteral>
 </Start>
-<End><IntLiteral>45</IntLiteral>
+<End><IntLiteral>41</IntLiteral>
 <IntLiteral>32</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>-</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e98_</ParentId>
-<Position><Start><IntLiteral>45</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e86_</ParentId>
+<Position><Start><IntLiteral>41</IntLiteral>
 <IntLiteral>30</IntLiteral>
 </Start>
-<End><IntLiteral>45</IntLiteral>
+<End><IntLiteral>41</IntLiteral>
 <IntLiteral>32</IntLiteral>
 </End>
 </Position>
@@ -2927,20 +2663,20 @@
 </Exp></Argument>
 </Exp></ParentExp>
 </Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e99_</ParentId>
-<Position><Start><IntLiteral>46</IntLiteral>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e87_</ParentId>
+<Position><Start><IntLiteral>42</IntLiteral>
 <IntLiteral>15</IntLiteral>
 </Start>
-<End><IntLiteral>46</IntLiteral>
+<End><IntLiteral>42</IntLiteral>
 <IntLiteral>32</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e100_</ParentId>
-<Position><Start><IntLiteral>46</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e88_</ParentId>
+<Position><Start><IntLiteral>42</IntLiteral>
 <IntLiteral>15</IntLiteral>
 </Start>
-<End><IntLiteral>46</IntLiteral>
+<End><IntLiteral>42</IntLiteral>
 <IntLiteral>27</IntLiteral>
 </End>
 </Position>
@@ -2956,6 +2692,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_WiFi</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -2977,6 +2714,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_productivity</Id>
 <IsTop>false</IsTop>
+<Bind>c0_productivity</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -2988,15 +2726,16 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e101_</ParentId>
-<Position><Start><IntLiteral>46</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e89_</ParentId>
+<Position><Start><IntLiteral>42</IntLiteral>
 <IntLiteral>30</IntLiteral>
 </Start>
-<End><IntLiteral>46</IntLiteral>
+<End><IntLiteral>42</IntLiteral>
 <IntLiteral>32</IntLiteral>
 </End>
 </Position>
@@ -3004,20 +2743,20 @@
 </Exp></Argument>
 </Exp></ParentExp>
 </Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e102_</ParentId>
-<Position><Start><IntLiteral>47</IntLiteral>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e90_</ParentId>
+<Position><Start><IntLiteral>43</IntLiteral>
 <IntLiteral>15</IntLiteral>
 </Start>
-<End><IntLiteral>47</IntLiteral>
+<End><IntLiteral>43</IntLiteral>
 <IntLiteral>29</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e103_</ParentId>
-<Position><Start><IntLiteral>47</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e91_</ParentId>
+<Position><Start><IntLiteral>43</IntLiteral>
 <IntLiteral>15</IntLiteral>
 </Start>
-<End><IntLiteral>47</IntLiteral>
+<End><IntLiteral>43</IntLiteral>
 <IntLiteral>23</IntLiteral>
 </End>
 </Position>
@@ -3033,6 +2772,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_WiFi</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -3054,6 +2794,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_security</Id>
 <IsTop>false</IsTop>
+<Bind>c0_security</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -3065,24 +2806,25 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e104_</ParentId>
-<Position><Start><IntLiteral>47</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e92_</ParentId>
+<Position><Start><IntLiteral>43</IntLiteral>
 <IntLiteral>26</IntLiteral>
 </Start>
-<End><IntLiteral>47</IntLiteral>
+<End><IntLiteral>43</IntLiteral>
 <IntLiteral>29</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>-</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e105_</ParentId>
-<Position><Start><IntLiteral>47</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e93_</ParentId>
+<Position><Start><IntLiteral>43</IntLiteral>
 <IntLiteral>27</IntLiteral>
 </Start>
-<End><IntLiteral>47</IntLiteral>
+<End><IntLiteral>43</IntLiteral>
 <IntLiteral>29</IntLiteral>
 </End>
 </Position>
@@ -3091,20 +2833,20 @@
 </Exp></Argument>
 </Exp></ParentExp>
 </Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e106_</ParentId>
-<Position><Start><IntLiteral>48</IntLiteral>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e94_</ParentId>
+<Position><Start><IntLiteral>44</IntLiteral>
 <IntLiteral>15</IntLiteral>
 </Start>
-<End><IntLiteral>48</IntLiteral>
+<End><IntLiteral>44</IntLiteral>
 <IntLiteral>24</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e107_</ParentId>
-<Position><Start><IntLiteral>48</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e95_</ParentId>
+<Position><Start><IntLiteral>44</IntLiteral>
 <IntLiteral>15</IntLiteral>
 </Start>
-<End><IntLiteral>48</IntLiteral>
+<End><IntLiteral>44</IntLiteral>
 <IntLiteral>19</IntLiteral>
 </End>
 </Position>
@@ -3120,6 +2862,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_WiFi</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -3141,6 +2884,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_cost</Id>
 <IsTop>false</IsTop>
+<Bind>c0_cost</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -3152,25 +2896,26 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e108_</ParentId>
-<Position><Start><IntLiteral>48</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e96_</ParentId>
+<Position><Start><IntLiteral>44</IntLiteral>
 <IntLiteral>22</IntLiteral>
 </Start>
-<End><IntLiteral>48</IntLiteral>
+<End><IntLiteral>44</IntLiteral>
 <IntLiteral>24</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IIntExp"><IntLiteral>20</IntLiteral>
 </Exp></Argument>
 </Exp></ParentExp>
-</Declaration></Declaration><Declaration xsi:type="cl:IClafer"><Position><Start><IntLiteral>49</IntLiteral>
+</Declaration></Declaration><Declaration xsi:type="cl:IClafer"><Position><Start><IntLiteral>45</IntLiteral>
 <IntLiteral>9</IntLiteral>
 </Start>
-<End><IntLiteral>53</IntLiteral>
+<End><IntLiteral>49</IntLiteral>
 <IntLiteral>26</IntLiteral>
 </End>
 </Position>
@@ -3184,20 +2929,20 @@
 </GroupCard>
 <Id>USB</Id>
 <UniqueId>c0_USB</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
+<ParentUniqueId>c0_Connectivity</ParentUniqueId>
 <Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>49</IntLiteral>
+<Position><Start><IntLiteral>45</IntLiteral>
 <IntLiteral>15</IntLiteral>
 </Start>
-<End><IntLiteral>49</IntLiteral>
+<End><IntLiteral>45</IntLiteral>
 <IntLiteral>22</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Feature</Id>
 <IsTop>true</IsTop>
+<Bind>c0_Feature</Bind>
 </Exp></Super>
-</Supers>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -3209,20 +2954,20 @@
 </Max>
 </GlobalCard>
 <Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e109_</ParentId>
-<Position><Start><IntLiteral>50</IntLiteral>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e97_</ParentId>
+<Position><Start><IntLiteral>46</IntLiteral>
 <IntLiteral>15</IntLiteral>
 </Start>
-<End><IntLiteral>50</IntLiteral>
+<End><IntLiteral>46</IntLiteral>
 <IntLiteral>31</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e110_</ParentId>
-<Position><Start><IntLiteral>50</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e98_</ParentId>
+<Position><Start><IntLiteral>46</IntLiteral>
 <IntLiteral>15</IntLiteral>
 </Start>
-<End><IntLiteral>50</IntLiteral>
+<End><IntLiteral>46</IntLiteral>
 <IntLiteral>26</IntLiteral>
 </End>
 </Position>
@@ -3238,6 +2983,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_USB</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -3259,6 +3005,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_batterylife</Id>
 <IsTop>false</IsTop>
+<Bind>c0_batterylife</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -3270,15 +3017,16 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e111_</ParentId>
-<Position><Start><IntLiteral>50</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e99_</ParentId>
+<Position><Start><IntLiteral>46</IntLiteral>
 <IntLiteral>29</IntLiteral>
 </Start>
-<End><IntLiteral>50</IntLiteral>
+<End><IntLiteral>46</IntLiteral>
 <IntLiteral>31</IntLiteral>
 </End>
 </Position>
@@ -3286,20 +3034,20 @@
 </Exp></Argument>
 </Exp></ParentExp>
 </Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e112_</ParentId>
-<Position><Start><IntLiteral>51</IntLiteral>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e100_</ParentId>
+<Position><Start><IntLiteral>47</IntLiteral>
 <IntLiteral>15</IntLiteral>
 </Start>
-<End><IntLiteral>51</IntLiteral>
+<End><IntLiteral>47</IntLiteral>
 <IntLiteral>32</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e113_</ParentId>
-<Position><Start><IntLiteral>51</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e101_</ParentId>
+<Position><Start><IntLiteral>47</IntLiteral>
 <IntLiteral>15</IntLiteral>
 </Start>
-<End><IntLiteral>51</IntLiteral>
+<End><IntLiteral>47</IntLiteral>
 <IntLiteral>27</IntLiteral>
 </End>
 </Position>
@@ -3315,6 +3063,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_USB</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -3336,6 +3085,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_productivity</Id>
 <IsTop>false</IsTop>
+<Bind>c0_productivity</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -3347,15 +3097,16 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e114_</ParentId>
-<Position><Start><IntLiteral>51</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e102_</ParentId>
+<Position><Start><IntLiteral>47</IntLiteral>
 <IntLiteral>30</IntLiteral>
 </Start>
-<End><IntLiteral>51</IntLiteral>
+<End><IntLiteral>47</IntLiteral>
 <IntLiteral>32</IntLiteral>
 </End>
 </Position>
@@ -3363,20 +3114,20 @@
 </Exp></Argument>
 </Exp></ParentExp>
 </Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e115_</ParentId>
-<Position><Start><IntLiteral>52</IntLiteral>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e103_</ParentId>
+<Position><Start><IntLiteral>48</IntLiteral>
 <IntLiteral>15</IntLiteral>
 </Start>
-<End><IntLiteral>52</IntLiteral>
+<End><IntLiteral>48</IntLiteral>
 <IntLiteral>27</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e116_</ParentId>
-<Position><Start><IntLiteral>52</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e104_</ParentId>
+<Position><Start><IntLiteral>48</IntLiteral>
 <IntLiteral>15</IntLiteral>
 </Start>
-<End><IntLiteral>52</IntLiteral>
+<End><IntLiteral>48</IntLiteral>
 <IntLiteral>23</IntLiteral>
 </End>
 </Position>
@@ -3392,6 +3143,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_USB</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -3413,6 +3165,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_security</Id>
 <IsTop>false</IsTop>
+<Bind>c0_security</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -3424,15 +3177,16 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e117_</ParentId>
-<Position><Start><IntLiteral>52</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e105_</ParentId>
+<Position><Start><IntLiteral>48</IntLiteral>
 <IntLiteral>26</IntLiteral>
 </Start>
-<End><IntLiteral>52</IntLiteral>
+<End><IntLiteral>48</IntLiteral>
 <IntLiteral>27</IntLiteral>
 </End>
 </Position>
@@ -3440,20 +3194,20 @@
 </Exp></Argument>
 </Exp></ParentExp>
 </Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e118_</ParentId>
-<Position><Start><IntLiteral>53</IntLiteral>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e106_</ParentId>
+<Position><Start><IntLiteral>49</IntLiteral>
 <IntLiteral>15</IntLiteral>
 </Start>
-<End><IntLiteral>53</IntLiteral>
+<End><IntLiteral>49</IntLiteral>
 <IntLiteral>23</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e119_</ParentId>
-<Position><Start><IntLiteral>53</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e107_</ParentId>
+<Position><Start><IntLiteral>49</IntLiteral>
 <IntLiteral>15</IntLiteral>
 </Start>
-<End><IntLiteral>53</IntLiteral>
+<End><IntLiteral>49</IntLiteral>
 <IntLiteral>19</IntLiteral>
 </End>
 </Position>
@@ -3469,6 +3223,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_USB</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -3490,6 +3245,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_cost</Id>
 <IsTop>false</IsTop>
+<Bind>c0_cost</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -3501,25 +3257,26 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e120_</ParentId>
-<Position><Start><IntLiteral>53</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e108_</ParentId>
+<Position><Start><IntLiteral>49</IntLiteral>
 <IntLiteral>22</IntLiteral>
 </Start>
-<End><IntLiteral>53</IntLiteral>
+<End><IntLiteral>49</IntLiteral>
 <IntLiteral>23</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IIntExp"><IntLiteral>3</IntLiteral>
 </Exp></Argument>
 </Exp></ParentExp>
-</Declaration></Declaration></Declaration><Declaration xsi:type="cl:IClafer"><Position><Start><IntLiteral>54</IntLiteral>
+</Declaration></Declaration></Declaration><Declaration xsi:type="cl:IClafer"><Position><Start><IntLiteral>50</IntLiteral>
 <IntLiteral>5</IntLiteral>
 </Start>
-<End><IntLiteral>68</IntLiteral>
+<End><IntLiteral>60</IntLiteral>
 <IntLiteral>29</IntLiteral>
 </End>
 </Position>
@@ -3533,20 +3290,7 @@
 </GroupCard>
 <Id>Battery</Id>
 <UniqueId>c0_Battery</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>54</IntLiteral>
-<IntLiteral>19</IntLiteral>
-</Start>
-<End><IntLiteral>54</IntLiteral>
-<IntLiteral>26</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>c0_Feature</Id>
-<IsTop>true</IsTop>
-</Exp></Super>
-</Supers>
+<ParentUniqueId>c0_MobilePhone</ParentUniqueId>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -3557,318 +3301,10 @@
 <Max><IntLiteral>-1</IntLiteral>
 </Max>
 </GlobalCard>
-<Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e121_</ParentId>
-<Position><Start><IntLiteral>55</IntLiteral>
-<IntLiteral>11</IntLiteral>
-</Start>
-<End><IntLiteral>55</IntLiteral>
-<IntLiteral>26</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e122_</ParentId>
-<Position><Start><IntLiteral>55</IntLiteral>
-<IntLiteral>11</IntLiteral>
-</Start>
-<End><IntLiteral>55</IntLiteral>
-<IntLiteral>22</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>this</Id>
-<IsTop>true</IsTop>
-</Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>c0_batterylife</Id>
-<IsTop>false</IsTop>
-</Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>ref</Id>
-<IsTop>false</IsTop>
-</Exp></Argument>
-</Exp></Argument>
-</Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e123_</ParentId>
-<Position><Start><IntLiteral>55</IntLiteral>
-<IntLiteral>25</IntLiteral>
-</Start>
-<End><IntLiteral>55</IntLiteral>
-<IntLiteral>26</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IIntExp"><IntLiteral>0</IntLiteral>
-</Exp></Argument>
-</Exp></ParentExp>
-</Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e124_</ParentId>
-<Position><Start><IntLiteral>56</IntLiteral>
-<IntLiteral>11</IntLiteral>
-</Start>
-<End><IntLiteral>56</IntLiteral>
-<IntLiteral>27</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e125_</ParentId>
-<Position><Start><IntLiteral>56</IntLiteral>
-<IntLiteral>11</IntLiteral>
-</Start>
-<End><IntLiteral>56</IntLiteral>
-<IntLiteral>23</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>this</Id>
-<IsTop>true</IsTop>
-</Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>c0_productivity</Id>
-<IsTop>false</IsTop>
-</Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>ref</Id>
-<IsTop>false</IsTop>
-</Exp></Argument>
-</Exp></Argument>
-</Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e126_</ParentId>
-<Position><Start><IntLiteral>56</IntLiteral>
-<IntLiteral>26</IntLiteral>
-</Start>
-<End><IntLiteral>56</IntLiteral>
-<IntLiteral>27</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IIntExp"><IntLiteral>0</IntLiteral>
-</Exp></Argument>
-</Exp></ParentExp>
-</Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e127_</ParentId>
-<Position><Start><IntLiteral>57</IntLiteral>
-<IntLiteral>11</IntLiteral>
-</Start>
-<End><IntLiteral>57</IntLiteral>
-<IntLiteral>23</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e128_</ParentId>
-<Position><Start><IntLiteral>57</IntLiteral>
-<IntLiteral>11</IntLiteral>
-</Start>
-<End><IntLiteral>57</IntLiteral>
-<IntLiteral>19</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>this</Id>
-<IsTop>true</IsTop>
-</Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>c0_security</Id>
-<IsTop>false</IsTop>
-</Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>ref</Id>
-<IsTop>false</IsTop>
-</Exp></Argument>
-</Exp></Argument>
-</Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e129_</ParentId>
-<Position><Start><IntLiteral>57</IntLiteral>
-<IntLiteral>22</IntLiteral>
-</Start>
-<End><IntLiteral>57</IntLiteral>
-<IntLiteral>23</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IIntExp"><IntLiteral>0</IntLiteral>
-</Exp></Argument>
-</Exp></ParentExp>
-</Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e130_</ParentId>
-<Position><Start><IntLiteral>58</IntLiteral>
-<IntLiteral>11</IntLiteral>
-</Start>
-<End><IntLiteral>58</IntLiteral>
-<IntLiteral>19</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e131_</ParentId>
-<Position><Start><IntLiteral>58</IntLiteral>
-<IntLiteral>11</IntLiteral>
-</Start>
-<End><IntLiteral>58</IntLiteral>
-<IntLiteral>15</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>this</Id>
-<IsTop>true</IsTop>
-</Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>c0_cost</Id>
-<IsTop>false</IsTop>
-</Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>ref</Id>
-<IsTop>false</IsTop>
-</Exp></Argument>
-</Exp></Argument>
-</Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e132_</ParentId>
-<Position><Start><IntLiteral>58</IntLiteral>
-<IntLiteral>18</IntLiteral>
-</Start>
-<End><IntLiteral>58</IntLiteral>
-<IntLiteral>19</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IIntExp"><IntLiteral>0</IntLiteral>
-</Exp></Argument>
-</Exp></ParentExp>
-</Declaration><Declaration xsi:type="cl:IClafer"><Position><Start><IntLiteral>59</IntLiteral>
+<Declaration xsi:type="cl:IClafer"><Position><Start><IntLiteral>51</IntLiteral>
 <IntLiteral>9</IntLiteral>
 </Start>
-<End><IntLiteral>63</IntLiteral>
+<End><IntLiteral>55</IntLiteral>
 <IntLiteral>27</IntLiteral>
 </End>
 </Position>
@@ -3882,20 +3318,20 @@
 </GroupCard>
 <Id>LiBattery1150</Id>
 <UniqueId>c0_LiBattery1150</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
+<ParentUniqueId>c0_Battery</ParentUniqueId>
 <Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>59</IntLiteral>
+<Position><Start><IntLiteral>51</IntLiteral>
 <IntLiteral>25</IntLiteral>
 </Start>
-<End><IntLiteral>59</IntLiteral>
+<End><IntLiteral>51</IntLiteral>
 <IntLiteral>32</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Feature</Id>
 <IsTop>true</IsTop>
+<Bind>c0_Feature</Bind>
 </Exp></Super>
-</Supers>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -3907,20 +3343,20 @@
 </Max>
 </GlobalCard>
 <Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e133_</ParentId>
-<Position><Start><IntLiteral>60</IntLiteral>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e109_</ParentId>
+<Position><Start><IntLiteral>52</IntLiteral>
 <IntLiteral>15</IntLiteral>
 </Start>
-<End><IntLiteral>60</IntLiteral>
+<End><IntLiteral>52</IntLiteral>
 <IntLiteral>31</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e134_</ParentId>
-<Position><Start><IntLiteral>60</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e110_</ParentId>
+<Position><Start><IntLiteral>52</IntLiteral>
 <IntLiteral>15</IntLiteral>
 </Start>
-<End><IntLiteral>60</IntLiteral>
+<End><IntLiteral>52</IntLiteral>
 <IntLiteral>26</IntLiteral>
 </End>
 </Position>
@@ -3936,6 +3372,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_LiBattery1150</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -3957,6 +3394,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_batterylife</Id>
 <IsTop>false</IsTop>
+<Bind>c0_batterylife</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -3968,15 +3406,16 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e135_</ParentId>
-<Position><Start><IntLiteral>60</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e111_</ParentId>
+<Position><Start><IntLiteral>52</IntLiteral>
 <IntLiteral>29</IntLiteral>
 </Start>
-<End><IntLiteral>60</IntLiteral>
+<End><IntLiteral>52</IntLiteral>
 <IntLiteral>31</IntLiteral>
 </End>
 </Position>
@@ -3984,20 +3423,20 @@
 </Exp></Argument>
 </Exp></ParentExp>
 </Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e136_</ParentId>
-<Position><Start><IntLiteral>61</IntLiteral>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e112_</ParentId>
+<Position><Start><IntLiteral>53</IntLiteral>
 <IntLiteral>15</IntLiteral>
 </Start>
-<End><IntLiteral>61</IntLiteral>
+<End><IntLiteral>53</IntLiteral>
 <IntLiteral>31</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e137_</ParentId>
-<Position><Start><IntLiteral>61</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e113_</ParentId>
+<Position><Start><IntLiteral>53</IntLiteral>
 <IntLiteral>15</IntLiteral>
 </Start>
-<End><IntLiteral>61</IntLiteral>
+<End><IntLiteral>53</IntLiteral>
 <IntLiteral>27</IntLiteral>
 </End>
 </Position>
@@ -4013,6 +3452,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_LiBattery1150</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -4034,6 +3474,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_productivity</Id>
 <IsTop>false</IsTop>
+<Bind>c0_productivity</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -4045,15 +3486,16 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e138_</ParentId>
-<Position><Start><IntLiteral>61</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e114_</ParentId>
+<Position><Start><IntLiteral>53</IntLiteral>
 <IntLiteral>30</IntLiteral>
 </Start>
-<End><IntLiteral>61</IntLiteral>
+<End><IntLiteral>53</IntLiteral>
 <IntLiteral>31</IntLiteral>
 </End>
 </Position>
@@ -4061,20 +3503,20 @@
 </Exp></Argument>
 </Exp></ParentExp>
 </Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e139_</ParentId>
-<Position><Start><IntLiteral>62</IntLiteral>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e115_</ParentId>
+<Position><Start><IntLiteral>54</IntLiteral>
 <IntLiteral>15</IntLiteral>
 </Start>
-<End><IntLiteral>62</IntLiteral>
+<End><IntLiteral>54</IntLiteral>
 <IntLiteral>27</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e140_</ParentId>
-<Position><Start><IntLiteral>62</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e116_</ParentId>
+<Position><Start><IntLiteral>54</IntLiteral>
 <IntLiteral>15</IntLiteral>
 </Start>
-<End><IntLiteral>62</IntLiteral>
+<End><IntLiteral>54</IntLiteral>
 <IntLiteral>23</IntLiteral>
 </End>
 </Position>
@@ -4090,6 +3532,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_LiBattery1150</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -4111,6 +3554,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_security</Id>
 <IsTop>false</IsTop>
+<Bind>c0_security</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -4122,15 +3566,16 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e141_</ParentId>
-<Position><Start><IntLiteral>62</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e117_</ParentId>
+<Position><Start><IntLiteral>54</IntLiteral>
 <IntLiteral>26</IntLiteral>
 </Start>
-<End><IntLiteral>62</IntLiteral>
+<End><IntLiteral>54</IntLiteral>
 <IntLiteral>27</IntLiteral>
 </End>
 </Position>
@@ -4138,20 +3583,20 @@
 </Exp></Argument>
 </Exp></ParentExp>
 </Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e142_</ParentId>
-<Position><Start><IntLiteral>63</IntLiteral>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e118_</ParentId>
+<Position><Start><IntLiteral>55</IntLiteral>
 <IntLiteral>15</IntLiteral>
 </Start>
-<End><IntLiteral>63</IntLiteral>
+<End><IntLiteral>55</IntLiteral>
 <IntLiteral>24</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e143_</ParentId>
-<Position><Start><IntLiteral>63</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e119_</ParentId>
+<Position><Start><IntLiteral>55</IntLiteral>
 <IntLiteral>15</IntLiteral>
 </Start>
-<End><IntLiteral>63</IntLiteral>
+<End><IntLiteral>55</IntLiteral>
 <IntLiteral>19</IntLiteral>
 </End>
 </Position>
@@ -4167,6 +3612,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_LiBattery1150</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -4188,6 +3634,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_cost</Id>
 <IsTop>false</IsTop>
+<Bind>c0_cost</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -4199,25 +3646,26 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e144_</ParentId>
-<Position><Start><IntLiteral>63</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e120_</ParentId>
+<Position><Start><IntLiteral>55</IntLiteral>
 <IntLiteral>22</IntLiteral>
 </Start>
-<End><IntLiteral>63</IntLiteral>
+<End><IntLiteral>55</IntLiteral>
 <IntLiteral>24</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IIntExp"><IntLiteral>10</IntLiteral>
 </Exp></Argument>
 </Exp></ParentExp>
-</Declaration></Declaration><Declaration xsi:type="cl:IClafer"><Position><Start><IntLiteral>64</IntLiteral>
+</Declaration></Declaration><Declaration xsi:type="cl:IClafer"><Position><Start><IntLiteral>56</IntLiteral>
 <IntLiteral>9</IntLiteral>
 </Start>
-<End><IntLiteral>68</IntLiteral>
+<End><IntLiteral>60</IntLiteral>
 <IntLiteral>27</IntLiteral>
 </End>
 </Position>
@@ -4231,20 +3679,20 @@
 </GroupCard>
 <Id>LiBattery1400</Id>
 <UniqueId>c0_LiBattery1400</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
+<ParentUniqueId>c0_Battery</ParentUniqueId>
 <Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>64</IntLiteral>
+<Position><Start><IntLiteral>56</IntLiteral>
 <IntLiteral>25</IntLiteral>
 </Start>
-<End><IntLiteral>64</IntLiteral>
+<End><IntLiteral>56</IntLiteral>
 <IntLiteral>32</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Feature</Id>
 <IsTop>true</IsTop>
+<Bind>c0_Feature</Bind>
 </Exp></Super>
-</Supers>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -4256,20 +3704,20 @@
 </Max>
 </GlobalCard>
 <Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e145_</ParentId>
-<Position><Start><IntLiteral>65</IntLiteral>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e121_</ParentId>
+<Position><Start><IntLiteral>57</IntLiteral>
 <IntLiteral>15</IntLiteral>
 </Start>
-<End><IntLiteral>65</IntLiteral>
+<End><IntLiteral>57</IntLiteral>
 <IntLiteral>31</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e146_</ParentId>
-<Position><Start><IntLiteral>65</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e122_</ParentId>
+<Position><Start><IntLiteral>57</IntLiteral>
 <IntLiteral>15</IntLiteral>
 </Start>
-<End><IntLiteral>65</IntLiteral>
+<End><IntLiteral>57</IntLiteral>
 <IntLiteral>26</IntLiteral>
 </End>
 </Position>
@@ -4285,6 +3733,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_LiBattery1400</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -4306,6 +3755,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_batterylife</Id>
 <IsTop>false</IsTop>
+<Bind>c0_batterylife</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -4317,15 +3767,16 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e147_</ParentId>
-<Position><Start><IntLiteral>65</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e123_</ParentId>
+<Position><Start><IntLiteral>57</IntLiteral>
 <IntLiteral>29</IntLiteral>
 </Start>
-<End><IntLiteral>65</IntLiteral>
+<End><IntLiteral>57</IntLiteral>
 <IntLiteral>31</IntLiteral>
 </End>
 </Position>
@@ -4333,20 +3784,20 @@
 </Exp></Argument>
 </Exp></ParentExp>
 </Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e148_</ParentId>
-<Position><Start><IntLiteral>66</IntLiteral>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e124_</ParentId>
+<Position><Start><IntLiteral>58</IntLiteral>
 <IntLiteral>15</IntLiteral>
 </Start>
-<End><IntLiteral>66</IntLiteral>
+<End><IntLiteral>58</IntLiteral>
 <IntLiteral>31</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e149_</ParentId>
-<Position><Start><IntLiteral>66</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e125_</ParentId>
+<Position><Start><IntLiteral>58</IntLiteral>
 <IntLiteral>15</IntLiteral>
 </Start>
-<End><IntLiteral>66</IntLiteral>
+<End><IntLiteral>58</IntLiteral>
 <IntLiteral>27</IntLiteral>
 </End>
 </Position>
@@ -4362,6 +3813,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_LiBattery1400</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -4383,6 +3835,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_productivity</Id>
 <IsTop>false</IsTop>
+<Bind>c0_productivity</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -4394,15 +3847,16 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e150_</ParentId>
-<Position><Start><IntLiteral>66</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e126_</ParentId>
+<Position><Start><IntLiteral>58</IntLiteral>
 <IntLiteral>30</IntLiteral>
 </Start>
-<End><IntLiteral>66</IntLiteral>
+<End><IntLiteral>58</IntLiteral>
 <IntLiteral>31</IntLiteral>
 </End>
 </Position>
@@ -4410,20 +3864,20 @@
 </Exp></Argument>
 </Exp></ParentExp>
 </Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e151_</ParentId>
-<Position><Start><IntLiteral>67</IntLiteral>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e127_</ParentId>
+<Position><Start><IntLiteral>59</IntLiteral>
 <IntLiteral>15</IntLiteral>
 </Start>
-<End><IntLiteral>67</IntLiteral>
+<End><IntLiteral>59</IntLiteral>
 <IntLiteral>27</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e152_</ParentId>
-<Position><Start><IntLiteral>67</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e128_</ParentId>
+<Position><Start><IntLiteral>59</IntLiteral>
 <IntLiteral>15</IntLiteral>
 </Start>
-<End><IntLiteral>67</IntLiteral>
+<End><IntLiteral>59</IntLiteral>
 <IntLiteral>23</IntLiteral>
 </End>
 </Position>
@@ -4439,6 +3893,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_LiBattery1400</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -4460,6 +3915,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_security</Id>
 <IsTop>false</IsTop>
+<Bind>c0_security</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -4471,15 +3927,16 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e153_</ParentId>
-<Position><Start><IntLiteral>67</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e129_</ParentId>
+<Position><Start><IntLiteral>59</IntLiteral>
 <IntLiteral>26</IntLiteral>
 </Start>
-<End><IntLiteral>67</IntLiteral>
+<End><IntLiteral>59</IntLiteral>
 <IntLiteral>27</IntLiteral>
 </End>
 </Position>
@@ -4487,20 +3944,20 @@
 </Exp></Argument>
 </Exp></ParentExp>
 </Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e154_</ParentId>
-<Position><Start><IntLiteral>68</IntLiteral>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e130_</ParentId>
+<Position><Start><IntLiteral>60</IntLiteral>
 <IntLiteral>15</IntLiteral>
 </Start>
-<End><IntLiteral>68</IntLiteral>
+<End><IntLiteral>60</IntLiteral>
 <IntLiteral>24</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e155_</ParentId>
-<Position><Start><IntLiteral>68</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e131_</ParentId>
+<Position><Start><IntLiteral>60</IntLiteral>
 <IntLiteral>15</IntLiteral>
 </Start>
-<End><IntLiteral>68</IntLiteral>
+<End><IntLiteral>60</IntLiteral>
 <IntLiteral>19</IntLiteral>
 </End>
 </Position>
@@ -4516,6 +3973,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_LiBattery1400</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -4537,6 +3995,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_cost</Id>
 <IsTop>false</IsTop>
+<Bind>c0_cost</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -4548,26 +4007,27 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e156_</ParentId>
-<Position><Start><IntLiteral>68</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e132_</ParentId>
+<Position><Start><IntLiteral>60</IntLiteral>
 <IntLiteral>22</IntLiteral>
 </Start>
-<End><IntLiteral>68</IntLiteral>
+<End><IntLiteral>60</IntLiteral>
 <IntLiteral>24</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IIntExp"><IntLiteral>15</IntLiteral>
 </Exp></Argument>
 </Exp></ParentExp>
-</Declaration></Declaration></Declaration><Declaration xsi:type="cl:IClafer"><Position><Start><IntLiteral>70</IntLiteral>
+</Declaration></Declaration></Declaration><Declaration xsi:type="cl:IClafer"><Position><Start><IntLiteral>62</IntLiteral>
 <IntLiteral>5</IntLiteral>
 </Start>
-<End><IntLiteral>70</IntLiteral>
-<IntLiteral>60</IntLiteral>
+<End><IntLiteral>62</IntLiteral>
+<IntLiteral>61</IntLiteral>
 </End>
 </Position>
 <IsAbstract>false</IsAbstract>
@@ -4580,20 +4040,22 @@
 </GroupCard>
 <Id>total_productivity</Id>
 <UniqueId>c0_total_productivity</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
-<Super><ParentId></ParentId>
-<Position><Start><IntLiteral>70</IntLiteral>
-<IntLiteral>26</IntLiteral>
+<ParentUniqueId>c0_MobilePhone</ParentUniqueId>
+<Reference><IsSet>true</IsSet>
+<Ref><ParentId></ParentId>
+<Position><Start><IntLiteral>62</IntLiteral>
+<IntLiteral>27</IntLiteral>
 </Start>
-<End><IntLiteral>70</IntLiteral>
-<IntLiteral>33</IntLiteral>
+<End><IntLiteral>62</IntLiteral>
+<IntLiteral>34</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>integer</Id>
 <IsTop>true</IsTop>
-</Exp></Super>
-</Supers>
+<Bind>integer</Bind>
+</Exp></Ref>
+</Reference>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -4605,24 +4067,24 @@
 </Max>
 </GlobalCard>
 </Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e157_</ParentId>
-<Position><Start><IntLiteral>70</IntLiteral>
-<IntLiteral>34</IntLiteral>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e133_</ParentId>
+<Position><Start><IntLiteral>62</IntLiteral>
+<IntLiteral>35</IntLiteral>
 </Start>
-<End><IntLiteral>70</IntLiteral>
-<IntLiteral>60</IntLiteral>
+<End><IntLiteral>62</IntLiteral>
+<IntLiteral>61</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=&gt;</Operation>
-<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e158_</ParentId>
-<Position><Start><IntLiteral>70</IntLiteral>
-<IntLiteral>34</IntLiteral>
+<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e134_</ParentId>
+<Position><Start><IntLiteral>62</IntLiteral>
+<IntLiteral>35</IntLiteral>
 </Start>
-<End><IntLiteral>70</IntLiteral>
-<IntLiteral>60</IntLiteral>
+<End><IntLiteral>62</IntLiteral>
+<IntLiteral>61</IntLiteral>
 </End>
 </Position>
-<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>e159_</ParentId>
+<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>e135_</ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
 <IntLiteral>0</IntLiteral>
 </Start>
@@ -4642,6 +4104,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_MobilePhone</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -4654,19 +4117,20 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_total_productivity</Id>
 <IsTop>false</IsTop>
+<Bind>c0_total_productivity</Bind>
 </Exp></Argument>
 </Exp></BodyParentExp>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e160_</ParentId>
-<Position><Start><IntLiteral>70</IntLiteral>
-<IntLiteral>34</IntLiteral>
+<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e136_</ParentId>
+<Position><Start><IntLiteral>62</IntLiteral>
+<IntLiteral>35</IntLiteral>
 </Start>
-<End><IntLiteral>70</IntLiteral>
-<IntLiteral>60</IntLiteral>
+<End><IntLiteral>62</IntLiteral>
+<IntLiteral>61</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e161_</ParentId>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e137_</ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
 <IntLiteral>0</IntLiteral>
 </Start>
@@ -4686,6 +4150,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_MobilePhone</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -4707,6 +4172,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_total_productivity</Id>
 <IsTop>false</IsTop>
+<Bind>c0_total_productivity</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -4718,83 +4184,87 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e162_</ParentId>
-<Position><Start><IntLiteral>70</IntLiteral>
-<IntLiteral>36</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e138_</ParentId>
+<Position><Start><IntLiteral>62</IntLiteral>
+<IntLiteral>37</IntLiteral>
 </Start>
-<End><IntLiteral>70</IntLiteral>
-<IntLiteral>60</IntLiteral>
+<End><IntLiteral>62</IntLiteral>
+<IntLiteral>61</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>sum</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e163_</ParentId>
-<Position><Start><IntLiteral>70</IntLiteral>
-<IntLiteral>40</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e139_</ParentId>
+<Position><Start><IntLiteral>62</IntLiteral>
+<IntLiteral>41</IntLiteral>
 </Start>
-<End><IntLiteral>70</IntLiteral>
-<IntLiteral>60</IntLiteral>
+<End><IntLiteral>62</IntLiteral>
+<IntLiteral>61</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e164_</ParentId>
-<Position><Start><IntLiteral>70</IntLiteral>
-<IntLiteral>40</IntLiteral>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e140_</ParentId>
+<Position><Start><IntLiteral>62</IntLiteral>
+<IntLiteral>41</IntLiteral>
 </Start>
-<End><IntLiteral>70</IntLiteral>
-<IntLiteral>47</IntLiteral>
+<End><IntLiteral>62</IntLiteral>
+<IntLiteral>48</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Feature</Id>
 <IsTop>true</IsTop>
+<Bind>c0_Feature</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
-<Position><Start><IntLiteral>70</IntLiteral>
-<IntLiteral>48</IntLiteral>
+<Position><Start><IntLiteral>62</IntLiteral>
+<IntLiteral>49</IntLiteral>
 </Start>
-<End><IntLiteral>70</IntLiteral>
-<IntLiteral>60</IntLiteral>
+<End><IntLiteral>62</IntLiteral>
+<IntLiteral>61</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e165_</ParentId>
-<Position><Start><IntLiteral>70</IntLiteral>
-<IntLiteral>48</IntLiteral>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e141_</ParentId>
+<Position><Start><IntLiteral>62</IntLiteral>
+<IntLiteral>49</IntLiteral>
 </Start>
-<End><IntLiteral>70</IntLiteral>
-<IntLiteral>60</IntLiteral>
+<End><IntLiteral>62</IntLiteral>
+<IntLiteral>61</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_productivity</Id>
 <IsTop>false</IsTop>
+<Bind>c0_productivity</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
-<Position><Start><IntLiteral>70</IntLiteral>
-<IntLiteral>48</IntLiteral>
+<Position><Start><IntLiteral>62</IntLiteral>
+<IntLiteral>49</IntLiteral>
 </Start>
-<End><IntLiteral>70</IntLiteral>
-<IntLiteral>60</IntLiteral>
+<End><IntLiteral>62</IntLiteral>
+<IntLiteral>61</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></ParentExp>
-</Declaration><Declaration xsi:type="cl:IClafer"><Position><Start><IntLiteral>71</IntLiteral>
+</Declaration><Declaration xsi:type="cl:IClafer"><Position><Start><IntLiteral>63</IntLiteral>
 <IntLiteral>5</IntLiteral>
 </Start>
-<End><IntLiteral>71</IntLiteral>
-<IntLiteral>58</IntLiteral>
+<End><IntLiteral>63</IntLiteral>
+<IntLiteral>59</IntLiteral>
 </End>
 </Position>
 <IsAbstract>false</IsAbstract>
@@ -4807,20 +4277,22 @@
 </GroupCard>
 <Id>total_batterylife</Id>
 <UniqueId>c0_total_batterylife</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
-<Super><ParentId></ParentId>
-<Position><Start><IntLiteral>71</IntLiteral>
-<IntLiteral>25</IntLiteral>
+<ParentUniqueId>c0_MobilePhone</ParentUniqueId>
+<Reference><IsSet>true</IsSet>
+<Ref><ParentId></ParentId>
+<Position><Start><IntLiteral>63</IntLiteral>
+<IntLiteral>26</IntLiteral>
 </Start>
-<End><IntLiteral>71</IntLiteral>
-<IntLiteral>32</IntLiteral>
+<End><IntLiteral>63</IntLiteral>
+<IntLiteral>33</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>integer</Id>
 <IsTop>true</IsTop>
-</Exp></Super>
-</Supers>
+<Bind>integer</Bind>
+</Exp></Ref>
+</Reference>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -4832,24 +4304,24 @@
 </Max>
 </GlobalCard>
 </Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e166_</ParentId>
-<Position><Start><IntLiteral>71</IntLiteral>
-<IntLiteral>33</IntLiteral>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e142_</ParentId>
+<Position><Start><IntLiteral>63</IntLiteral>
+<IntLiteral>34</IntLiteral>
 </Start>
-<End><IntLiteral>71</IntLiteral>
-<IntLiteral>58</IntLiteral>
+<End><IntLiteral>63</IntLiteral>
+<IntLiteral>59</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=&gt;</Operation>
-<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e167_</ParentId>
-<Position><Start><IntLiteral>71</IntLiteral>
-<IntLiteral>33</IntLiteral>
+<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e143_</ParentId>
+<Position><Start><IntLiteral>63</IntLiteral>
+<IntLiteral>34</IntLiteral>
 </Start>
-<End><IntLiteral>71</IntLiteral>
-<IntLiteral>58</IntLiteral>
+<End><IntLiteral>63</IntLiteral>
+<IntLiteral>59</IntLiteral>
 </End>
 </Position>
-<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>e168_</ParentId>
+<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>e144_</ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
 <IntLiteral>0</IntLiteral>
 </Start>
@@ -4869,6 +4341,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_MobilePhone</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -4881,19 +4354,20 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_total_batterylife</Id>
 <IsTop>false</IsTop>
+<Bind>c0_total_batterylife</Bind>
 </Exp></Argument>
 </Exp></BodyParentExp>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e169_</ParentId>
-<Position><Start><IntLiteral>71</IntLiteral>
-<IntLiteral>33</IntLiteral>
+<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e145_</ParentId>
+<Position><Start><IntLiteral>63</IntLiteral>
+<IntLiteral>34</IntLiteral>
 </Start>
-<End><IntLiteral>71</IntLiteral>
-<IntLiteral>58</IntLiteral>
+<End><IntLiteral>63</IntLiteral>
+<IntLiteral>59</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e170_</ParentId>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e146_</ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
 <IntLiteral>0</IntLiteral>
 </Start>
@@ -4913,6 +4387,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_MobilePhone</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -4934,6 +4409,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_total_batterylife</Id>
 <IsTop>false</IsTop>
+<Bind>c0_total_batterylife</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -4945,83 +4421,87 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e171_</ParentId>
-<Position><Start><IntLiteral>71</IntLiteral>
-<IntLiteral>35</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e147_</ParentId>
+<Position><Start><IntLiteral>63</IntLiteral>
+<IntLiteral>36</IntLiteral>
 </Start>
-<End><IntLiteral>71</IntLiteral>
-<IntLiteral>58</IntLiteral>
+<End><IntLiteral>63</IntLiteral>
+<IntLiteral>59</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>sum</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e172_</ParentId>
-<Position><Start><IntLiteral>71</IntLiteral>
-<IntLiteral>39</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e148_</ParentId>
+<Position><Start><IntLiteral>63</IntLiteral>
+<IntLiteral>40</IntLiteral>
 </Start>
-<End><IntLiteral>71</IntLiteral>
-<IntLiteral>58</IntLiteral>
+<End><IntLiteral>63</IntLiteral>
+<IntLiteral>59</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e173_</ParentId>
-<Position><Start><IntLiteral>71</IntLiteral>
-<IntLiteral>39</IntLiteral>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e149_</ParentId>
+<Position><Start><IntLiteral>63</IntLiteral>
+<IntLiteral>40</IntLiteral>
 </Start>
-<End><IntLiteral>71</IntLiteral>
-<IntLiteral>46</IntLiteral>
+<End><IntLiteral>63</IntLiteral>
+<IntLiteral>47</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Feature</Id>
 <IsTop>true</IsTop>
+<Bind>c0_Feature</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
-<Position><Start><IntLiteral>71</IntLiteral>
-<IntLiteral>47</IntLiteral>
+<Position><Start><IntLiteral>63</IntLiteral>
+<IntLiteral>48</IntLiteral>
 </Start>
-<End><IntLiteral>71</IntLiteral>
-<IntLiteral>58</IntLiteral>
+<End><IntLiteral>63</IntLiteral>
+<IntLiteral>59</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e174_</ParentId>
-<Position><Start><IntLiteral>71</IntLiteral>
-<IntLiteral>47</IntLiteral>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e150_</ParentId>
+<Position><Start><IntLiteral>63</IntLiteral>
+<IntLiteral>48</IntLiteral>
 </Start>
-<End><IntLiteral>71</IntLiteral>
-<IntLiteral>58</IntLiteral>
+<End><IntLiteral>63</IntLiteral>
+<IntLiteral>59</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_batterylife</Id>
 <IsTop>false</IsTop>
+<Bind>c0_batterylife</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
-<Position><Start><IntLiteral>71</IntLiteral>
-<IntLiteral>47</IntLiteral>
+<Position><Start><IntLiteral>63</IntLiteral>
+<IntLiteral>48</IntLiteral>
 </Start>
-<End><IntLiteral>71</IntLiteral>
-<IntLiteral>58</IntLiteral>
+<End><IntLiteral>63</IntLiteral>
+<IntLiteral>59</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></ParentExp>
-</Declaration><Declaration xsi:type="cl:IClafer"><Position><Start><IntLiteral>72</IntLiteral>
+</Declaration><Declaration xsi:type="cl:IClafer"><Position><Start><IntLiteral>64</IntLiteral>
 <IntLiteral>5</IntLiteral>
 </Start>
-<End><IntLiteral>72</IntLiteral>
-<IntLiteral>52</IntLiteral>
+<End><IntLiteral>64</IntLiteral>
+<IntLiteral>53</IntLiteral>
 </End>
 </Position>
 <IsAbstract>false</IsAbstract>
@@ -5034,20 +4514,22 @@
 </GroupCard>
 <Id>total_security</Id>
 <UniqueId>c0_total_security</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
-<Super><ParentId></ParentId>
-<Position><Start><IntLiteral>72</IntLiteral>
-<IntLiteral>22</IntLiteral>
+<ParentUniqueId>c0_MobilePhone</ParentUniqueId>
+<Reference><IsSet>true</IsSet>
+<Ref><ParentId></ParentId>
+<Position><Start><IntLiteral>64</IntLiteral>
+<IntLiteral>23</IntLiteral>
 </Start>
-<End><IntLiteral>72</IntLiteral>
-<IntLiteral>29</IntLiteral>
+<End><IntLiteral>64</IntLiteral>
+<IntLiteral>30</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>integer</Id>
 <IsTop>true</IsTop>
-</Exp></Super>
-</Supers>
+<Bind>integer</Bind>
+</Exp></Ref>
+</Reference>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -5059,24 +4541,24 @@
 </Max>
 </GlobalCard>
 </Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e175_</ParentId>
-<Position><Start><IntLiteral>72</IntLiteral>
-<IntLiteral>30</IntLiteral>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e151_</ParentId>
+<Position><Start><IntLiteral>64</IntLiteral>
+<IntLiteral>31</IntLiteral>
 </Start>
-<End><IntLiteral>72</IntLiteral>
-<IntLiteral>52</IntLiteral>
+<End><IntLiteral>64</IntLiteral>
+<IntLiteral>53</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=&gt;</Operation>
-<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e176_</ParentId>
-<Position><Start><IntLiteral>72</IntLiteral>
-<IntLiteral>30</IntLiteral>
+<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e152_</ParentId>
+<Position><Start><IntLiteral>64</IntLiteral>
+<IntLiteral>31</IntLiteral>
 </Start>
-<End><IntLiteral>72</IntLiteral>
-<IntLiteral>52</IntLiteral>
+<End><IntLiteral>64</IntLiteral>
+<IntLiteral>53</IntLiteral>
 </End>
 </Position>
-<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>e177_</ParentId>
+<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>e153_</ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
 <IntLiteral>0</IntLiteral>
 </Start>
@@ -5096,6 +4578,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_MobilePhone</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -5108,19 +4591,20 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_total_security</Id>
 <IsTop>false</IsTop>
+<Bind>c0_total_security</Bind>
 </Exp></Argument>
 </Exp></BodyParentExp>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e178_</ParentId>
-<Position><Start><IntLiteral>72</IntLiteral>
-<IntLiteral>30</IntLiteral>
+<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e154_</ParentId>
+<Position><Start><IntLiteral>64</IntLiteral>
+<IntLiteral>31</IntLiteral>
 </Start>
-<End><IntLiteral>72</IntLiteral>
-<IntLiteral>52</IntLiteral>
+<End><IntLiteral>64</IntLiteral>
+<IntLiteral>53</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e179_</ParentId>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e155_</ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
 <IntLiteral>0</IntLiteral>
 </Start>
@@ -5140,6 +4624,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_MobilePhone</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -5161,6 +4646,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_total_security</Id>
 <IsTop>false</IsTop>
+<Bind>c0_total_security</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -5172,83 +4658,87 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e180_</ParentId>
-<Position><Start><IntLiteral>72</IntLiteral>
-<IntLiteral>32</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e156_</ParentId>
+<Position><Start><IntLiteral>64</IntLiteral>
+<IntLiteral>33</IntLiteral>
 </Start>
-<End><IntLiteral>72</IntLiteral>
-<IntLiteral>52</IntLiteral>
+<End><IntLiteral>64</IntLiteral>
+<IntLiteral>53</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>sum</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e181_</ParentId>
-<Position><Start><IntLiteral>72</IntLiteral>
-<IntLiteral>36</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e157_</ParentId>
+<Position><Start><IntLiteral>64</IntLiteral>
+<IntLiteral>37</IntLiteral>
 </Start>
-<End><IntLiteral>72</IntLiteral>
-<IntLiteral>52</IntLiteral>
+<End><IntLiteral>64</IntLiteral>
+<IntLiteral>53</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e182_</ParentId>
-<Position><Start><IntLiteral>72</IntLiteral>
-<IntLiteral>36</IntLiteral>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e158_</ParentId>
+<Position><Start><IntLiteral>64</IntLiteral>
+<IntLiteral>37</IntLiteral>
 </Start>
-<End><IntLiteral>72</IntLiteral>
-<IntLiteral>43</IntLiteral>
+<End><IntLiteral>64</IntLiteral>
+<IntLiteral>44</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Feature</Id>
 <IsTop>true</IsTop>
+<Bind>c0_Feature</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
-<Position><Start><IntLiteral>72</IntLiteral>
-<IntLiteral>44</IntLiteral>
+<Position><Start><IntLiteral>64</IntLiteral>
+<IntLiteral>45</IntLiteral>
 </Start>
-<End><IntLiteral>72</IntLiteral>
-<IntLiteral>52</IntLiteral>
+<End><IntLiteral>64</IntLiteral>
+<IntLiteral>53</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e183_</ParentId>
-<Position><Start><IntLiteral>72</IntLiteral>
-<IntLiteral>44</IntLiteral>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e159_</ParentId>
+<Position><Start><IntLiteral>64</IntLiteral>
+<IntLiteral>45</IntLiteral>
 </Start>
-<End><IntLiteral>72</IntLiteral>
-<IntLiteral>52</IntLiteral>
+<End><IntLiteral>64</IntLiteral>
+<IntLiteral>53</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_security</Id>
 <IsTop>false</IsTop>
+<Bind>c0_security</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
-<Position><Start><IntLiteral>72</IntLiteral>
-<IntLiteral>44</IntLiteral>
+<Position><Start><IntLiteral>64</IntLiteral>
+<IntLiteral>45</IntLiteral>
 </Start>
-<End><IntLiteral>72</IntLiteral>
-<IntLiteral>52</IntLiteral>
+<End><IntLiteral>64</IntLiteral>
+<IntLiteral>53</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></ParentExp>
-</Declaration><Declaration xsi:type="cl:IClafer"><Position><Start><IntLiteral>73</IntLiteral>
+</Declaration><Declaration xsi:type="cl:IClafer"><Position><Start><IntLiteral>65</IntLiteral>
 <IntLiteral>5</IntLiteral>
 </Start>
-<End><IntLiteral>73</IntLiteral>
-<IntLiteral>44</IntLiteral>
+<End><IntLiteral>65</IntLiteral>
+<IntLiteral>45</IntLiteral>
 </End>
 </Position>
 <IsAbstract>false</IsAbstract>
@@ -5261,20 +4751,22 @@
 </GroupCard>
 <Id>total_cost</Id>
 <UniqueId>c0_total_cost</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
-<Super><ParentId></ParentId>
-<Position><Start><IntLiteral>73</IntLiteral>
-<IntLiteral>18</IntLiteral>
+<ParentUniqueId>c0_MobilePhone</ParentUniqueId>
+<Reference><IsSet>true</IsSet>
+<Ref><ParentId></ParentId>
+<Position><Start><IntLiteral>65</IntLiteral>
+<IntLiteral>19</IntLiteral>
 </Start>
-<End><IntLiteral>73</IntLiteral>
-<IntLiteral>25</IntLiteral>
+<End><IntLiteral>65</IntLiteral>
+<IntLiteral>26</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>integer</Id>
 <IsTop>true</IsTop>
-</Exp></Super>
-</Supers>
+<Bind>integer</Bind>
+</Exp></Ref>
+</Reference>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -5286,24 +4778,24 @@
 </Max>
 </GlobalCard>
 </Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e184_</ParentId>
-<Position><Start><IntLiteral>73</IntLiteral>
-<IntLiteral>26</IntLiteral>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e160_</ParentId>
+<Position><Start><IntLiteral>65</IntLiteral>
+<IntLiteral>27</IntLiteral>
 </Start>
-<End><IntLiteral>73</IntLiteral>
-<IntLiteral>44</IntLiteral>
+<End><IntLiteral>65</IntLiteral>
+<IntLiteral>45</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=&gt;</Operation>
-<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e185_</ParentId>
-<Position><Start><IntLiteral>73</IntLiteral>
-<IntLiteral>26</IntLiteral>
+<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e161_</ParentId>
+<Position><Start><IntLiteral>65</IntLiteral>
+<IntLiteral>27</IntLiteral>
 </Start>
-<End><IntLiteral>73</IntLiteral>
-<IntLiteral>44</IntLiteral>
+<End><IntLiteral>65</IntLiteral>
+<IntLiteral>45</IntLiteral>
 </End>
 </Position>
-<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>e186_</ParentId>
+<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>e162_</ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
 <IntLiteral>0</IntLiteral>
 </Start>
@@ -5323,6 +4815,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_MobilePhone</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -5335,19 +4828,20 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_total_cost</Id>
 <IsTop>false</IsTop>
+<Bind>c0_total_cost</Bind>
 </Exp></Argument>
 </Exp></BodyParentExp>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e187_</ParentId>
-<Position><Start><IntLiteral>73</IntLiteral>
-<IntLiteral>26</IntLiteral>
+<Argument><Type xsi:type="cl:IBoolean" /><ParentId>e163_</ParentId>
+<Position><Start><IntLiteral>65</IntLiteral>
+<IntLiteral>27</IntLiteral>
 </Start>
-<End><IntLiteral>73</IntLiteral>
-<IntLiteral>44</IntLiteral>
+<End><IntLiteral>65</IntLiteral>
+<IntLiteral>45</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e188_</ParentId>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e164_</ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
 <IntLiteral>0</IntLiteral>
 </Start>
@@ -5367,6 +4861,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_MobilePhone</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -5388,6 +4883,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_total_cost</Id>
 <IsTop>false</IsTop>
+<Bind>c0_total_cost</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -5399,72 +4895,76 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e189_</ParentId>
-<Position><Start><IntLiteral>73</IntLiteral>
-<IntLiteral>28</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e165_</ParentId>
+<Position><Start><IntLiteral>65</IntLiteral>
+<IntLiteral>29</IntLiteral>
 </Start>
-<End><IntLiteral>73</IntLiteral>
-<IntLiteral>44</IntLiteral>
+<End><IntLiteral>65</IntLiteral>
+<IntLiteral>45</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>sum</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e190_</ParentId>
-<Position><Start><IntLiteral>73</IntLiteral>
-<IntLiteral>32</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e166_</ParentId>
+<Position><Start><IntLiteral>65</IntLiteral>
+<IntLiteral>33</IntLiteral>
 </Start>
-<End><IntLiteral>73</IntLiteral>
-<IntLiteral>44</IntLiteral>
+<End><IntLiteral>65</IntLiteral>
+<IntLiteral>45</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e191_</ParentId>
-<Position><Start><IntLiteral>73</IntLiteral>
-<IntLiteral>32</IntLiteral>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e167_</ParentId>
+<Position><Start><IntLiteral>65</IntLiteral>
+<IntLiteral>33</IntLiteral>
 </Start>
-<End><IntLiteral>73</IntLiteral>
-<IntLiteral>39</IntLiteral>
+<End><IntLiteral>65</IntLiteral>
+<IntLiteral>40</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Feature</Id>
 <IsTop>true</IsTop>
+<Bind>c0_Feature</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
-<Position><Start><IntLiteral>73</IntLiteral>
-<IntLiteral>40</IntLiteral>
+<Position><Start><IntLiteral>65</IntLiteral>
+<IntLiteral>41</IntLiteral>
 </Start>
-<End><IntLiteral>73</IntLiteral>
-<IntLiteral>44</IntLiteral>
+<End><IntLiteral>65</IntLiteral>
+<IntLiteral>45</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e192_</ParentId>
-<Position><Start><IntLiteral>73</IntLiteral>
-<IntLiteral>40</IntLiteral>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e168_</ParentId>
+<Position><Start><IntLiteral>65</IntLiteral>
+<IntLiteral>41</IntLiteral>
 </Start>
-<End><IntLiteral>73</IntLiteral>
-<IntLiteral>44</IntLiteral>
+<End><IntLiteral>65</IntLiteral>
+<IntLiteral>45</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_cost</Id>
 <IsTop>false</IsTop>
+<Bind>c0_cost</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
-<Position><Start><IntLiteral>73</IntLiteral>
-<IntLiteral>40</IntLiteral>
+<Position><Start><IntLiteral>65</IntLiteral>
+<IntLiteral>41</IntLiteral>
 </Start>
-<End><IntLiteral>73</IntLiteral>
-<IntLiteral>44</IntLiteral>
+<End><IntLiteral>65</IntLiteral>
+<IntLiteral>45</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
@@ -5472,277 +4972,289 @@
 </Exp></Argument>
 </Exp></ParentExp>
 </Declaration></Declaration><Declaration xsi:type="cl:IGoal"><IsMaximize>true</IsMaximize>
-<ParentExp><Type xsi:type="cl:IInteger" /><ParentId>e193_</ParentId>
-<Position><Start><IntLiteral>74</IntLiteral>
+<ParentExp><Type xsi:type="cl:IInteger" /><ParentId>e169_</ParentId>
+<Position><Start><IntLiteral>66</IntLiteral>
 <IntLiteral>4</IntLiteral>
 </Start>
-<End><IntLiteral>74</IntLiteral>
+<End><IntLiteral>66</IntLiteral>
 <IntLiteral>38</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>max</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e194_</ParentId>
-<Position><Start><IntLiteral>74</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e170_</ParentId>
+<Position><Start><IntLiteral>66</IntLiteral>
 <IntLiteral>8</IntLiteral>
 </Start>
-<End><IntLiteral>74</IntLiteral>
+<End><IntLiteral>66</IntLiteral>
 <IntLiteral>38</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e195_</ParentId>
-<Position><Start><IntLiteral>74</IntLiteral>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e171_</ParentId>
+<Position><Start><IntLiteral>66</IntLiteral>
 <IntLiteral>8</IntLiteral>
 </Start>
-<End><IntLiteral>74</IntLiteral>
+<End><IntLiteral>66</IntLiteral>
 <IntLiteral>20</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_OptimalPhone</Id>
 <IsTop>true</IsTop>
+<Bind>c0_OptimalPhone</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
-<Position><Start><IntLiteral>74</IntLiteral>
+<Position><Start><IntLiteral>66</IntLiteral>
 <IntLiteral>21</IntLiteral>
 </Start>
-<End><IntLiteral>74</IntLiteral>
+<End><IntLiteral>66</IntLiteral>
 <IntLiteral>38</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e196_</ParentId>
-<Position><Start><IntLiteral>74</IntLiteral>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e172_</ParentId>
+<Position><Start><IntLiteral>66</IntLiteral>
 <IntLiteral>21</IntLiteral>
 </Start>
-<End><IntLiteral>74</IntLiteral>
+<End><IntLiteral>66</IntLiteral>
 <IntLiteral>38</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_total_batterylife</Id>
 <IsTop>false</IsTop>
+<Bind>c0_total_batterylife</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
-<Position><Start><IntLiteral>74</IntLiteral>
+<Position><Start><IntLiteral>66</IntLiteral>
 <IntLiteral>21</IntLiteral>
 </Start>
-<End><IntLiteral>74</IntLiteral>
+<End><IntLiteral>66</IntLiteral>
 <IntLiteral>38</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></ParentExp>
 </Declaration><Declaration xsi:type="cl:IGoal"><IsMaximize>true</IsMaximize>
-<ParentExp><Type xsi:type="cl:IInteger" /><ParentId>e197_</ParentId>
-<Position><Start><IntLiteral>75</IntLiteral>
+<ParentExp><Type xsi:type="cl:IInteger" /><ParentId>e173_</ParentId>
+<Position><Start><IntLiteral>67</IntLiteral>
 <IntLiteral>4</IntLiteral>
 </Start>
-<End><IntLiteral>75</IntLiteral>
+<End><IntLiteral>67</IntLiteral>
 <IntLiteral>39</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>max</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e198_</ParentId>
-<Position><Start><IntLiteral>75</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e174_</ParentId>
+<Position><Start><IntLiteral>67</IntLiteral>
 <IntLiteral>8</IntLiteral>
 </Start>
-<End><IntLiteral>75</IntLiteral>
+<End><IntLiteral>67</IntLiteral>
 <IntLiteral>39</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e199_</ParentId>
-<Position><Start><IntLiteral>75</IntLiteral>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e175_</ParentId>
+<Position><Start><IntLiteral>67</IntLiteral>
 <IntLiteral>8</IntLiteral>
 </Start>
-<End><IntLiteral>75</IntLiteral>
+<End><IntLiteral>67</IntLiteral>
 <IntLiteral>20</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_OptimalPhone</Id>
 <IsTop>true</IsTop>
+<Bind>c0_OptimalPhone</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
-<Position><Start><IntLiteral>75</IntLiteral>
+<Position><Start><IntLiteral>67</IntLiteral>
 <IntLiteral>21</IntLiteral>
 </Start>
-<End><IntLiteral>75</IntLiteral>
+<End><IntLiteral>67</IntLiteral>
 <IntLiteral>39</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e200_</ParentId>
-<Position><Start><IntLiteral>75</IntLiteral>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e176_</ParentId>
+<Position><Start><IntLiteral>67</IntLiteral>
 <IntLiteral>21</IntLiteral>
 </Start>
-<End><IntLiteral>75</IntLiteral>
+<End><IntLiteral>67</IntLiteral>
 <IntLiteral>39</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_total_productivity</Id>
 <IsTop>false</IsTop>
+<Bind>c0_total_productivity</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
-<Position><Start><IntLiteral>75</IntLiteral>
+<Position><Start><IntLiteral>67</IntLiteral>
 <IntLiteral>21</IntLiteral>
 </Start>
-<End><IntLiteral>75</IntLiteral>
+<End><IntLiteral>67</IntLiteral>
 <IntLiteral>39</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></ParentExp>
 </Declaration><Declaration xsi:type="cl:IGoal"><IsMaximize>true</IsMaximize>
-<ParentExp><Type xsi:type="cl:IInteger" /><ParentId>e201_</ParentId>
-<Position><Start><IntLiteral>76</IntLiteral>
+<ParentExp><Type xsi:type="cl:IInteger" /><ParentId>e177_</ParentId>
+<Position><Start><IntLiteral>68</IntLiteral>
 <IntLiteral>4</IntLiteral>
 </Start>
-<End><IntLiteral>76</IntLiteral>
+<End><IntLiteral>68</IntLiteral>
 <IntLiteral>35</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>max</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e202_</ParentId>
-<Position><Start><IntLiteral>76</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e178_</ParentId>
+<Position><Start><IntLiteral>68</IntLiteral>
 <IntLiteral>8</IntLiteral>
 </Start>
-<End><IntLiteral>76</IntLiteral>
+<End><IntLiteral>68</IntLiteral>
 <IntLiteral>35</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e203_</ParentId>
-<Position><Start><IntLiteral>76</IntLiteral>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e179_</ParentId>
+<Position><Start><IntLiteral>68</IntLiteral>
 <IntLiteral>8</IntLiteral>
 </Start>
-<End><IntLiteral>76</IntLiteral>
+<End><IntLiteral>68</IntLiteral>
 <IntLiteral>20</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_OptimalPhone</Id>
 <IsTop>true</IsTop>
+<Bind>c0_OptimalPhone</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
-<Position><Start><IntLiteral>76</IntLiteral>
+<Position><Start><IntLiteral>68</IntLiteral>
 <IntLiteral>21</IntLiteral>
 </Start>
-<End><IntLiteral>76</IntLiteral>
+<End><IntLiteral>68</IntLiteral>
 <IntLiteral>35</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e204_</ParentId>
-<Position><Start><IntLiteral>76</IntLiteral>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e180_</ParentId>
+<Position><Start><IntLiteral>68</IntLiteral>
 <IntLiteral>21</IntLiteral>
 </Start>
-<End><IntLiteral>76</IntLiteral>
+<End><IntLiteral>68</IntLiteral>
 <IntLiteral>35</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_total_security</Id>
 <IsTop>false</IsTop>
+<Bind>c0_total_security</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
-<Position><Start><IntLiteral>76</IntLiteral>
+<Position><Start><IntLiteral>68</IntLiteral>
 <IntLiteral>21</IntLiteral>
 </Start>
-<End><IntLiteral>76</IntLiteral>
+<End><IntLiteral>68</IntLiteral>
 <IntLiteral>35</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></ParentExp>
 </Declaration><Declaration xsi:type="cl:IGoal"><IsMaximize>true</IsMaximize>
-<ParentExp><Type xsi:type="cl:IInteger" /><ParentId>e205_</ParentId>
-<Position><Start><IntLiteral>77</IntLiteral>
+<ParentExp><Type xsi:type="cl:IInteger" /><ParentId>e181_</ParentId>
+<Position><Start><IntLiteral>69</IntLiteral>
 <IntLiteral>4</IntLiteral>
 </Start>
-<End><IntLiteral>77</IntLiteral>
+<End><IntLiteral>69</IntLiteral>
 <IntLiteral>31</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>min</Operation>
-<Argument><Type xsi:type="cl:IInteger" /><ParentId>e206_</ParentId>
-<Position><Start><IntLiteral>77</IntLiteral>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e182_</ParentId>
+<Position><Start><IntLiteral>69</IntLiteral>
 <IntLiteral>8</IntLiteral>
 </Start>
-<End><IntLiteral>77</IntLiteral>
+<End><IntLiteral>69</IntLiteral>
 <IntLiteral>31</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e207_</ParentId>
-<Position><Start><IntLiteral>77</IntLiteral>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e183_</ParentId>
+<Position><Start><IntLiteral>69</IntLiteral>
 <IntLiteral>8</IntLiteral>
 </Start>
-<End><IntLiteral>77</IntLiteral>
+<End><IntLiteral>69</IntLiteral>
 <IntLiteral>20</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_OptimalPhone</Id>
 <IsTop>true</IsTop>
+<Bind>c0_OptimalPhone</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
-<Position><Start><IntLiteral>77</IntLiteral>
+<Position><Start><IntLiteral>69</IntLiteral>
 <IntLiteral>21</IntLiteral>
 </Start>
-<End><IntLiteral>77</IntLiteral>
+<End><IntLiteral>69</IntLiteral>
 <IntLiteral>31</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e208_</ParentId>
-<Position><Start><IntLiteral>77</IntLiteral>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e184_</ParentId>
+<Position><Start><IntLiteral>69</IntLiteral>
 <IntLiteral>21</IntLiteral>
 </Start>
-<End><IntLiteral>77</IntLiteral>
+<End><IntLiteral>69</IntLiteral>
 <IntLiteral>31</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_total_cost</Id>
 <IsTop>false</IsTop>
+<Bind>c0_total_cost</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
-<Position><Start><IntLiteral>77</IntLiteral>
+<Position><Start><IntLiteral>69</IntLiteral>
 <IntLiteral>21</IntLiteral>
 </Start>
-<End><IntLiteral>77</IntLiteral>
+<End><IntLiteral>69</IntLiteral>
 <IntLiteral>31</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></ParentExp>
-</Declaration><Declaration xsi:type="cl:IClafer"><Position><Start><IntLiteral>78</IntLiteral>
+</Declaration><Declaration xsi:type="cl:IClafer"><Position><Start><IntLiteral>70</IntLiteral>
 <IntLiteral>1</IntLiteral>
 </Start>
-<End><IntLiteral>78</IntLiteral>
+<End><IntLiteral>70</IntLiteral>
 <IntLiteral>27</IntLiteral>
 </End>
 </Position>
@@ -5756,20 +5268,20 @@
 </GroupCard>
 <Id>OptimalPhone</Id>
 <UniqueId>c0_OptimalPhone</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
+<ParentUniqueId>root</ParentUniqueId>
 <Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>78</IntLiteral>
+<Position><Start><IntLiteral>70</IntLiteral>
 <IntLiteral>16</IntLiteral>
 </Start>
-<End><IntLiteral>78</IntLiteral>
+<End><IntLiteral>70</IntLiteral>
 <IntLiteral>27</IntLiteral>
 </End>
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_MobilePhone</Id>
 <IsTop>true</IsTop>
+<Bind>c0_MobilePhone</Bind>
 </Exp></Super>
-</Supers>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>

@@ -1,7 +1,7 @@
 Clafer
 ======
 
-v0.3.7
+v0.3.9
 
 [Clafer](http://clafer.org) is a general-purpose lightweight structural modeling language developed by 
 [GSD Lab](http://gsd.uwaterloo.ca/), [University of Waterloo](http://uwaterloo.ca), and 
@@ -95,7 +95,7 @@ On Mac
 
 ### Installation from binaries
 
-Binary distributions of the release 0.3.7 of Clafer Tools for Windows, Mac, and Linux, 
+Binary distributions of the release 0.3.9 of Clafer Tools for Windows, Mac, and Linux, 
 can be downloaded from 
 [Clafer Tools - Binary Distributions](http://http://gsd.uwaterloo.ca/clafer-tools-binary-distributions). 
 
@@ -109,11 +109,11 @@ Dependencies
 * [The Haskell Platform](http://hackage.haskell.org/platform/) v2014.2.0.0 64bit
   * on Windows, use 32bit
 
-Clafer is now available on [Hackage](http://hackage.haskell.org/package/clafer-0.3.7/) and it can be installed using
+Clafer is now available on [Hackage](http://hackage.haskell.org/package/clafer-0.3.9/) and it can be installed using
 
 1. `cabal update`
 2. `cabal install clafer`
-3. `cd <cabal's lib or share folder>`  (`C:\Users\<user>\AppData\Roaming\cabal\x86_64-windows-ghc-7.8.3\clafer-0.3.7` on Windows or `.cabal/share/x86_64-linux-ghc-7.8.3/clafer-0.3.7/` on Linux)
+3. `cd <cabal's lib or share folder>`  (`C:\Users\<user>\AppData\Roaming\cabal\x86_64-windows-ghc-7.8.3\clafer-0.3.9` on Windows or `.cabal/share/x86_64-linux-ghc-7.8.3/clafer-0.3.9/` on Linux)
 4. to automatically download Alloy jars
   * execute `make` in `tools` 
 
@@ -191,15 +191,15 @@ Clafer Compiler
 (As printed by `clafer --help`)
 
 ```
-Clafer 0.3.7
+Clafer 0.3.9
 
 clafer [OPTIONS] [FILE]
 
 Common flags:
   -m --mode=CLAFERMODE                    Generated output type. Available
                                           CLAFERMODEs are: 'alloy' (Alloy 4.1);
-                                          'alloy42' (default, Alloy 4.2);
-                                          'xml' (intermediate representation of
+                                          'alloy42' (default, Alloy 4.2); 'xml'
+                                          (intermediate representation of
                                           Clafer model); 'clafer' (analyzed and
                                           desugared clafer model); 'html'
                                           (original model in HTML); 'graph'
@@ -273,6 +273,7 @@ Common flags:
                                           ('.cfr-scope').
   -? --help                               Display help message
   -V --version                            Print version information
+     --numeric-version                    Print just the version number
 ```
 
 The dependencies among the command line arguments are described on the [model wiki](http://t3-necsis.cs.uwaterloo.ca:8091/ClaferTools/CommandLineArguments).
@@ -281,7 +282,7 @@ Multiple modes can be used at the same time. For example,
 
 `clafer model.cfr -m alloy -m xml -m html -m graph --self-contained --show-references --no-stats`
 
-The mode `-m alloy42` is only a default mode if no other modes are given. When other modes are given, the mode `-m alloy42` must be added explicitly if needed.
+The mode `-m alloy42` is only the default mode if no other modes are given. When other modes are given, the mode `-m alloy42` must be added explicitly if needed.
 
 Additionally, `[OPTIONS]` can also be specified directly in the model file by inserting the following compiler directive as the first line of the file:
 
@@ -312,15 +313,3 @@ The following directives are markers of locations in the input files for differe
 * `//# STATS` - marks the insertion point for module statistics. The statistics can be omitted using the argument `--no-stats`. 
 * `//# SUMMARY` - shorthand for `//# GRAPH` and `//# STATS`
 * `//# QUALITY_ATTRIBUTE` - is used by ClaferMooVisualizer and ClaferConfigurator to distinguish quality attributes, which should be filtered out, from other clafers.
-
-Need help?
-==========
-* See [language's website](http://clafer.org) for news, technical reports and more
-  * Check out a [Learning Clafer section](http://t3-necsis.cs.uwaterloo.ca:8091/#Learning Clafer)
-  * Try a live instance of [ClaferWiki](http://t3-necsis.cs.uwaterloo.ca:8091) which contains a repository of models for various applications
-  * Try a live instance of [ClaferIDE](http://t3-necsis.cs.uwaterloo.ca:8094)
-  * Try a live instance of [ClaferConfigurator](http://t3-necsis.cs.uwaterloo.ca:8093)
-  * Try a live instance of [ClaferMooVisualizer](http://t3-necsis.cs.uwaterloo.ca:8092)
-* Take a look at (incomplete) [Clafer by examples wiki](https://github.com/gsdlab/clafer/wiki)
-* Browse example models in the [test suite](https://github.com/gsdlab/clafer/tree/master/test/positive) and [MOO examples](https://github.com/gsdlab/clafer/tree/master/spl_configurator/dataset)
-* Post questions, report bugs, suggest improvements [GSD Lab Bug Tracker](http://gsd.uwaterloo.ca:8888/questions/). Tag your entries with `clafer` (so that we know what they are related to) and with `jimmy-liang` or `michal` (so that Jimmy or Michał gets a notification).

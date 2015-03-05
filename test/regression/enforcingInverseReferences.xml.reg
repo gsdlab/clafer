@@ -16,20 +16,7 @@
 </GroupCard>
 <Id>Book</Id>
 <UniqueId>c0_Book</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>clafer</Id>
-<IsTop>false</IsTop>
-</Exp></Super>
-</Supers>
+<ParentUniqueId>root</ParentUniqueId>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
 <Max><IntLiteral>-1</IntLiteral>
@@ -57,8 +44,9 @@
 </GroupCard>
 <Id>author</Id>
 <UniqueId>c0_author</UniqueId>
-<Supers><IsOverlapping>true</IsOverlapping>
-<Super><ParentId></ParentId>
+<ParentUniqueId>c0_Book</ParentUniqueId>
+<Reference><IsSet>true</IsSet>
+<Ref><ParentId></ParentId>
 <Position><Start><IntLiteral>2</IntLiteral>
 <IntLiteral>19</IntLiteral>
 </Start>
@@ -68,9 +56,10 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Author</Id>
-<IsTop>true</IsTop>
-</Exp></Super>
-</Supers>
+<IsTop>false</IsTop>
+<Bind>c0_Author</Bind>
+</Exp></Ref>
+</Reference>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>-1</IntLiteral>
@@ -111,6 +100,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_author</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -123,6 +113,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>parent</Id>
 <IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:ISet" /><ParentId>e2_</ParentId>
@@ -145,6 +136,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_author</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:ISet" /><ParentId>e4_</ParentId>
 <Position><Start><IntLiteral>3</IntLiteral>
@@ -165,7 +157,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind>c0_book</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -187,6 +180,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_book</Id>
 <IsTop>false</IsTop>
+<Bind>c0_author</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -198,139 +192,14 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></ParentExp>
-</Declaration></Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e5_</ParentId>
-<Position><Start><IntLiteral>2</IntLiteral>
-<IntLiteral>9</IntLiteral>
-</Start>
-<End><IntLiteral>3</IntLiteral>
-<IntLiteral>40</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:IAll" /><Declaration><IsDisjunct>true</IsDisjunct>
-<LocalDeclaration>x</LocalDeclaration>
-<LocalDeclaration>y</LocalDeclaration>
-<Body><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>this</Id>
-<IsTop>true</IsTop>
-</Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>c0_author</Id>
-<IsTop>false</IsTop>
-</Exp></Argument>
-</Exp></Body>
-</Declaration>
-<BodyParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e7_</ParentId>
-<Position><Start><IntLiteral>2</IntLiteral>
-<IntLiteral>9</IntLiteral>
-</Start>
-<End><IntLiteral>3</IntLiteral>
-<IntLiteral>40</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IFunctionExp"><Operation>!=</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e8_</ParentId>
-<Position><Start><IntLiteral>2</IntLiteral>
-<IntLiteral>9</IntLiteral>
-</Start>
-<End><IntLiteral>3</IntLiteral>
-<IntLiteral>40</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e9_</ParentId>
-<Position><Start><IntLiteral>2</IntLiteral>
-<IntLiteral>9</IntLiteral>
-</Start>
-<End><IntLiteral>3</IntLiteral>
-<IntLiteral>40</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>x</Id>
-<IsTop>true</IsTop>
-</Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e10_</ParentId>
-<Position><Start><IntLiteral>2</IntLiteral>
-<IntLiteral>9</IntLiteral>
-</Start>
-<End><IntLiteral>3</IntLiteral>
-<IntLiteral>40</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>ref</Id>
-<IsTop>false</IsTop>
-</Exp></Argument>
-</Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e11_</ParentId>
-<Position><Start><IntLiteral>2</IntLiteral>
-<IntLiteral>9</IntLiteral>
-</Start>
-<End><IntLiteral>3</IntLiteral>
-<IntLiteral>40</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e12_</ParentId>
-<Position><Start><IntLiteral>2</IntLiteral>
-<IntLiteral>9</IntLiteral>
-</Start>
-<End><IntLiteral>3</IntLiteral>
-<IntLiteral>40</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>y</Id>
-<IsTop>true</IsTop>
-</Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e13_</ParentId>
-<Position><Start><IntLiteral>2</IntLiteral>
-<IntLiteral>9</IntLiteral>
-</Start>
-<End><IntLiteral>3</IntLiteral>
-<IntLiteral>40</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>ref</Id>
-<IsTop>false</IsTop>
-</Exp></Argument>
-</Exp></Argument>
-</Exp></BodyParentExp>
-</Exp></ParentExp>
-</Declaration></Declaration><Declaration xsi:type="cl:IClafer"><Position><Start><IntLiteral>5</IntLiteral>
+</Declaration></Declaration></Declaration><Declaration xsi:type="cl:IClafer"><Position><Start><IntLiteral>5</IntLiteral>
 <IntLiteral>1</IntLiteral>
 </Start>
 <End><IntLiteral>7</IntLiteral>
@@ -347,20 +216,7 @@
 </GroupCard>
 <Id>Author</Id>
 <UniqueId>c0_Author</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
-<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>clafer</Id>
-<IsTop>false</IsTop>
-</Exp></Super>
-</Supers>
+<ParentUniqueId>root</ParentUniqueId>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
 <Max><IntLiteral>-1</IntLiteral>
@@ -388,8 +244,9 @@
 </GroupCard>
 <Id>book</Id>
 <UniqueId>c0_book</UniqueId>
-<Supers><IsOverlapping>true</IsOverlapping>
-<Super><ParentId></ParentId>
+<ParentUniqueId>c0_Author</ParentUniqueId>
+<Reference><IsSet>true</IsSet>
+<Ref><ParentId></ParentId>
 <Position><Start><IntLiteral>6</IntLiteral>
 <IntLiteral>17</IntLiteral>
 </Start>
@@ -399,9 +256,10 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Book</Id>
-<IsTop>true</IsTop>
-</Exp></Super>
-</Supers>
+<IsTop>false</IsTop>
+<Bind>c0_Book</Bind>
+</Exp></Ref>
+</Reference>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>-1</IntLiteral>
@@ -413,7 +271,7 @@
 </Max>
 </GlobalCard>
 <Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e14_</ParentId>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e5_</ParentId>
 <Position><Start><IntLiteral>7</IntLiteral>
 <IntLiteral>19</IntLiteral>
 </Start>
@@ -422,7 +280,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>in</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e15_</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e6_</ParentId>
 <Position><Start><IntLiteral>7</IntLiteral>
 <IntLiteral>19</IntLiteral>
 </Start>
@@ -442,6 +300,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_book</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -454,9 +313,10 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>parent</Id>
 <IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e16_</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e7_</ParentId>
 <Position><Start><IntLiteral>7</IntLiteral>
 <IntLiteral>29</IntLiteral>
 </Start>
@@ -465,7 +325,7 @@
 </End>
 </Position>
 <Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e17_</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e8_</ParentId>
 <Position><Start><IntLiteral>7</IntLiteral>
 <IntLiteral>29</IntLiteral>
 </Start>
@@ -476,8 +336,9 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
+<Bind>c0_book</Bind>
 </Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e18_</ParentId>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e9_</ParentId>
 <Position><Start><IntLiteral>7</IntLiteral>
 <IntLiteral>34</IntLiteral>
 </Start>
@@ -496,7 +357,8 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind>c0_author</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -518,6 +380,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_author</Id>
 <IsTop>false</IsTop>
+<Bind>c0_book</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -529,139 +392,14 @@
 </Position>
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>ref</Id>
-<IsTop>false</IsTop>
+<IsTop>true</IsTop>
+<Bind></Bind>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></Argument>
 </Exp></ParentExp>
-</Declaration></Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
-<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e19_</ParentId>
-<Position><Start><IntLiteral>6</IntLiteral>
-<IntLiteral>9</IntLiteral>
-</Start>
-<End><IntLiteral>7</IntLiteral>
-<IntLiteral>44</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:IAll" /><Declaration><IsDisjunct>true</IsDisjunct>
-<LocalDeclaration>x</LocalDeclaration>
-<LocalDeclaration>y</LocalDeclaration>
-<Body><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>this</Id>
-<IsTop>true</IsTop>
-</Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
-<Position><Start><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</Start>
-<End><IntLiteral>0</IntLiteral>
-<IntLiteral>0</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>c0_book</Id>
-<IsTop>false</IsTop>
-</Exp></Argument>
-</Exp></Body>
-</Declaration>
-<BodyParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e21_</ParentId>
-<Position><Start><IntLiteral>6</IntLiteral>
-<IntLiteral>9</IntLiteral>
-</Start>
-<End><IntLiteral>7</IntLiteral>
-<IntLiteral>44</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IFunctionExp"><Operation>!=</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e22_</ParentId>
-<Position><Start><IntLiteral>6</IntLiteral>
-<IntLiteral>9</IntLiteral>
-</Start>
-<End><IntLiteral>7</IntLiteral>
-<IntLiteral>44</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e23_</ParentId>
-<Position><Start><IntLiteral>6</IntLiteral>
-<IntLiteral>9</IntLiteral>
-</Start>
-<End><IntLiteral>7</IntLiteral>
-<IntLiteral>44</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>x</Id>
-<IsTop>true</IsTop>
-</Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e24_</ParentId>
-<Position><Start><IntLiteral>6</IntLiteral>
-<IntLiteral>9</IntLiteral>
-</Start>
-<End><IntLiteral>7</IntLiteral>
-<IntLiteral>44</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>ref</Id>
-<IsTop>false</IsTop>
-</Exp></Argument>
-</Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e25_</ParentId>
-<Position><Start><IntLiteral>6</IntLiteral>
-<IntLiteral>9</IntLiteral>
-</Start>
-<End><IntLiteral>7</IntLiteral>
-<IntLiteral>44</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e26_</ParentId>
-<Position><Start><IntLiteral>6</IntLiteral>
-<IntLiteral>9</IntLiteral>
-</Start>
-<End><IntLiteral>7</IntLiteral>
-<IntLiteral>44</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>y</Id>
-<IsTop>true</IsTop>
-</Exp></Argument>
-<Argument><Type xsi:type="cl:ISet" /><ParentId>e27_</ParentId>
-<Position><Start><IntLiteral>6</IntLiteral>
-<IntLiteral>9</IntLiteral>
-</Start>
-<End><IntLiteral>7</IntLiteral>
-<IntLiteral>44</IntLiteral>
-</End>
-</Position>
-<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
-<Id>ref</Id>
-<IsTop>false</IsTop>
-</Exp></Argument>
-</Exp></Argument>
-</Exp></BodyParentExp>
-</Exp></ParentExp>
-</Declaration></Declaration><Declaration xsi:type="cl:IClafer"><Position><Start><IntLiteral>9</IntLiteral>
+</Declaration></Declaration></Declaration><Declaration xsi:type="cl:IClafer"><Position><Start><IntLiteral>9</IntLiteral>
 <IntLiteral>1</IntLiteral>
 </Start>
 <End><IntLiteral>9</IntLiteral>
@@ -678,7 +416,7 @@
 </GroupCard>
 <Id>B</Id>
 <UniqueId>c0_B</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
+<ParentUniqueId>root</ParentUniqueId>
 <Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>9</IntLiteral>
 <IntLiteral>5</IntLiteral>
@@ -690,8 +428,8 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Book</Id>
 <IsTop>true</IsTop>
+<Bind>c0_Book</Bind>
 </Exp></Super>
-</Supers>
 <Card><Min><IntLiteral>5</IntLiteral>
 </Min>
 <Max><IntLiteral>5</IntLiteral>
@@ -719,7 +457,7 @@
 </GroupCard>
 <Id>A</Id>
 <UniqueId>c0_A</UniqueId>
-<Supers><IsOverlapping>false</IsOverlapping>
+<ParentUniqueId>root</ParentUniqueId>
 <Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>10</IntLiteral>
 <IntLiteral>5</IntLiteral>
@@ -731,8 +469,8 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Author</Id>
 <IsTop>true</IsTop>
+<Bind>c0_Author</Bind>
 </Exp></Super>
-</Supers>
 <Card><Min><IntLiteral>6</IntLiteral>
 </Min>
 <Max><IntLiteral>6</IntLiteral>

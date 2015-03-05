@@ -1,4 +1,4 @@
-scope({c0_Feature:12, c0_batterylife:12, c0_cost:12, c0_productivity:12, c0_security:12});
+scope({c0_Feature:10, c0_batterylife:10, c0_cost:10, c0_productivity:10, c0_security:10});
 defaultScope(1);
 intRange(-8, 7);
 stringLength(16);
@@ -10,7 +10,7 @@ c0_cost = c0_Feature.addChild("c0_cost").withCard(1, 1);
 c0_batterylife = c0_Feature.addChild("c0_batterylife").withCard(1, 1);
 c0_security = c0_Feature.addChild("c0_security").withCard(1, 1);
 c0_Connectivity = c0_MobilePhone.addChild("c0_Connectivity").withCard(1, 1).extending(c0_Feature);
-c0_Bluetooth = c0_Connectivity.addChild("c0_Bluetooth").withCard(1, 1).withGroupCard(1, 1).extending(c0_Feature);
+c0_Bluetooth = c0_Connectivity.addChild("c0_Bluetooth").withCard(1, 1).withGroupCard(1, 1);
 c0_Bluetooth20EDR = c0_Bluetooth.addChild("c0_Bluetooth20EDR").withCard(0, 1).extending(c0_Feature);
 c0_Bluetooth21EDR = c0_Bluetooth.addChild("c0_Bluetooth21EDR").withCard(0, 1).extending(c0_Feature);
 c0_Bluetooth40 = c0_Bluetooth.addChild("c0_Bluetooth40").withCard(0, 1).extending(c0_Feature);
@@ -18,7 +18,7 @@ c0_GSM = c0_Connectivity.addChild("c0_GSM").withCard(1, 1).extending(c0_Feature)
 c0_LTE = c0_Connectivity.addChild("c0_LTE").withCard(0, 1).extending(c0_Feature);
 c0_WiFi = c0_Connectivity.addChild("c0_WiFi").withCard(0, 1).extending(c0_Feature);
 c0_USB = c0_Connectivity.addChild("c0_USB").withCard(0, 1).extending(c0_Feature);
-c0_Battery = c0_MobilePhone.addChild("c0_Battery").withCard(1, 1).withGroupCard(1, 1).extending(c0_Feature);
+c0_Battery = c0_MobilePhone.addChild("c0_Battery").withCard(1, 1).withGroupCard(1, 1);
 c0_LiBattery1150 = c0_Battery.addChild("c0_LiBattery1150").withCard(0, 1).extending(c0_Feature);
 c0_LiBattery1400 = c0_Battery.addChild("c0_LiBattery1400").withCard(0, 1).extending(c0_Feature);
 c0_total_productivity = c0_MobilePhone.addChild("c0_total_productivity").withCard(1, 1);
@@ -42,10 +42,6 @@ c0_Connectivity.addConstraint(equal(joinRef(join($this(), c0_batterylife)), cons
 c0_Connectivity.addConstraint(equal(joinRef(join($this(), c0_productivity)), constant(14)));
 c0_Connectivity.addConstraint(equal(joinRef(join($this(), c0_security)), constant(43)));
 c0_Connectivity.addConstraint(equal(joinRef(join($this(), c0_cost)), constant(101)));
-c0_Bluetooth.addConstraint(equal(joinRef(join($this(), c0_batterylife)), constant(0)));
-c0_Bluetooth.addConstraint(equal(joinRef(join($this(), c0_productivity)), constant(0)));
-c0_Bluetooth.addConstraint(equal(joinRef(join($this(), c0_security)), constant(0)));
-c0_Bluetooth.addConstraint(equal(joinRef(join($this(), c0_cost)), constant(0)));
 c0_Bluetooth20EDR.addConstraint(equal(joinRef(join($this(), c0_batterylife)), constant(-4)));
 c0_Bluetooth20EDR.addConstraint(equal(joinRef(join($this(), c0_productivity)), constant(1)));
 c0_Bluetooth20EDR.addConstraint(equal(joinRef(join($this(), c0_security)), constant(-15)));
@@ -74,10 +70,6 @@ c0_USB.addConstraint(equal(joinRef(join($this(), c0_batterylife)), constant(10))
 c0_USB.addConstraint(equal(joinRef(join($this(), c0_productivity)), constant(20)));
 c0_USB.addConstraint(equal(joinRef(join($this(), c0_security)), constant(0)));
 c0_USB.addConstraint(equal(joinRef(join($this(), c0_cost)), constant(3)));
-c0_Battery.addConstraint(equal(joinRef(join($this(), c0_batterylife)), constant(0)));
-c0_Battery.addConstraint(equal(joinRef(join($this(), c0_productivity)), constant(0)));
-c0_Battery.addConstraint(equal(joinRef(join($this(), c0_security)), constant(0)));
-c0_Battery.addConstraint(equal(joinRef(join($this(), c0_cost)), constant(0)));
 c0_LiBattery1150.addConstraint(equal(joinRef(join($this(), c0_batterylife)), constant(60)));
 c0_LiBattery1150.addConstraint(equal(joinRef(join($this(), c0_productivity)), constant(0)));
 c0_LiBattery1150.addConstraint(equal(joinRef(join($this(), c0_security)), constant(0)));

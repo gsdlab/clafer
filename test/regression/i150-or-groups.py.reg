@@ -1,63 +1,7 @@
-from ast import Module
-from ast import GCard
-from ast import Supers
-from ast import Clafer
-from ast import Exp
-from ast import Declaration
-from ast import LocalDeclaration
-from ast import IRConstraint
-from ast import FunExp
-from ast import ClaferId
-from ast import DeclPExp
-from ast import Goal
+from jsir.IR import *
 
-from ast import IntegerLiteral
-from ast import DoubleLiteral
-from ast import StringLiteral
-def getModule():
-	stack = []
-	module = Module.Module("")
-	stack.append(module)
-##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(3),IntegerLiteral.IntegerLiteral(1)), (IntegerLiteral.IntegerLiteral(5),IntegerLiteral.IntegerLiteral(8)))
-	isAbstract=False
-	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(-1)))
-	id="A"
-	uid="c0_A"
-	my_supers = Supers.Supers(isOverlapping=False, elements=[
-		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="clafer", isTop=False)])])
-	card=(IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(1))
-	globalCard=(IntegerLiteral.IntegerLiteral(1),IntegerLiteral.IntegerLiteral(1))
-	currClafer = Clafer.Clafer(pos=pos, isAbstract=isAbstract, gcard=groupCard, ident=id, uid=uid, my_supers=my_supers, card=card, glCard=globalCard)
-	stack[-1].addElement(currClafer)
-	stack.append(currClafer)
-##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(4),IntegerLiteral.IntegerLiteral(5)), (IntegerLiteral.IntegerLiteral(4),IntegerLiteral.IntegerLiteral(6)))
-	isAbstract=False
-	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
-	id="B"
-	uid="c0_B"
-	my_supers = Supers.Supers(isOverlapping=False, elements=[
-		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="clafer", isTop=False)])])
-	card=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(1))
-	globalCard=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(1))
-	currClafer = Clafer.Clafer(pos=pos, isAbstract=isAbstract, gcard=groupCard, ident=id, uid=uid, my_supers=my_supers, card=card, glCard=globalCard)
-	stack[-1].addElement(currClafer)
-	stack.append(currClafer)
-	stack.pop()
-##### clafer #####
-	pos=((IntegerLiteral.IntegerLiteral(5),IntegerLiteral.IntegerLiteral(5)), (IntegerLiteral.IntegerLiteral(5),IntegerLiteral.IntegerLiteral(6)))
-	isAbstract=False
-	groupCard = GCard.GCard(isKeyword=False, interval=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(-1)))
-	id="C"
-	uid="c0_C"
-	my_supers = Supers.Supers(isOverlapping=False, elements=[
-		Exp.Exp(expType="Super", exptype="Set", parentId="", pos=((IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0)), (IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(0))), iExpType="IClaferId", iExp=[ClaferId.ClaferId(moduleName="", my_id="clafer", isTop=False)])])
-	card=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(1))
-	globalCard=(IntegerLiteral.IntegerLiteral(0),IntegerLiteral.IntegerLiteral(1))
-	currClafer = Clafer.Clafer(pos=pos, isAbstract=isAbstract, gcard=groupCard, ident=id, uid=uid, my_supers=my_supers, card=card, glCard=globalCard)
-	stack[-1].addElement(currClafer)
-	stack.append(currClafer)
-	stack.pop()
-	stack.pop()
-	return module
+c0_A = Clafer("c0_A").withCard(1, 1).withGroupCard(1);
+c0_B = c0_A.addChild("c0_B").withCard(0, 1);
+c0_C = c0_A.addChild("c0_C").withCard(0, 1);
+defaultScope(1);
+stringLength(16);

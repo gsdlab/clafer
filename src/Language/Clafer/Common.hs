@@ -22,22 +22,26 @@
 -}
 module Language.Clafer.Common where
 
-import Data.Tree
-import Data.Maybe
-import Data.Char
-import Data.List
+import           Control.Applicative ((<$>))
+import           Control.Lens (universeOn)
+import           Data.Char
+import           Data.Data.Lens (biplate)
+import           Data.List
 import qualified Data.Map as Map
+import           Data.Maybe
+import           Data.StringMap (StringMap)
+import qualified Data.StringMap as SMap
+import           Data.Tree
 
-import Language.Clafer.Front.Absclafer
+import Language.Clafer.Front.AbsClafer
 import Language.Clafer.Intermediate.Intclafer
 
 -- -----------------------------------------------------------------------------
 -- basic functions shared by desugarer, analyzer and code generator
 type Result = String
 
-transIdent :: PosIdent -> Result
-transIdent x = case x of
-  PosIdent str  -> snd str
+transIdent :: PosIdent -> String
+transIdent (PosIdent (_, str)) = str
 
 mkIdent :: String -> PosIdent
 mkIdent str = PosIdent ((0, 0), str)
@@ -47,29 +51,33 @@ mkInteger (PosInteger (_, n)) = read n
 
 type Ident = PosIdent
 
-getSuper :: IClafer -> String
-getSuper = getSuperId._supers._super
+-- | Returns only [] or [_]
+getSuper :: IClafer -> [String]
+getSuper claf = case getSuperId <$> _super claf of
+    Nothing       -> []
+    Just "clafer" -> error "Bug: The identifier 'clafer' should never be returned as super type"
+    Just x        -> [x]
 
-getSuperNoArr :: IClafer -> String
+-- | Returns only [] or [_]
+getReference :: IClafer -> [String]
+getReference c = case getSuperId <$> _ref <$> _reference c of
+    Nothing -> []
+    Just x  -> [x]
 
-getSuperNoArr clafer
-  | _isOverlapping $ _super clafer = "clafer"
-  | otherwise                    = getSuper clafer
+-- | Returns only [] or [_] or [_, _]
+getSuperAndReference :: IClafer -> [String]
+getSuperAndReference c = (getSuper c) ++ (getReference c)
 
-getSuperId :: [PExp] -> String
-getSuperId = _sident . Language.Clafer.Intermediate.Intclafer._exp . head
+getSuperId :: PExp -> String
+getSuperId (PExp _ _ _ (IClaferId{ _sident = s})) = s
+getSuperId (PExp _ _ _ (IFunExp{_op=".", _exps = [_, rightExp]})) = getSuperId rightExp
+getSuperId pexp' = error $ "Bug: getSuperId called not on '[PExp (IClaferId)]' but instead on '" ++ show pexp' ++ "'"
 
 isEqClaferId :: String -> IClafer -> Bool
-isEqClaferId = flip $ (==)._uid
-
-idToPExp :: String -> Span -> String -> String -> Bool -> PExp
-idToPExp pid' pos modids id' isTop' = PExp (Just $ TClafer [id']) pid' pos (IClaferId modids id' isTop' Nothing)
-
-mkLClaferId :: CName -> Bool -> ClaferBinding -> IExp
-mkLClaferId = IClaferId ""
+isEqClaferId    uid'      claf'    = _uid claf' == uid'
 
 mkPLClaferId :: CName -> Bool -> ClaferBinding -> PExp
-mkPLClaferId id' isTop' bind' = pExpDefPidPos $ mkLClaferId id' isTop' bind'
+mkPLClaferId id' isTop' bind' = pExpDefPidPos $ IClaferId "" id' isTop' bind'
 
 pExpDefPidPos :: IExp -> PExp
 pExpDefPidPos = pExpDefPid noSpan
@@ -81,12 +89,12 @@ pExpDef :: String -> Span -> IExp -> PExp
 pExpDef = PExp Nothing
 
 isParent :: PExp -> Bool
-isParent (PExp _ _ _ (IClaferId _ id' _ _)) = id' == parent
+isParent (PExp _ _ _ (IClaferId _ id' _ _)) = id' == parentIdent
 isParent _ = False
 
 isClaferName :: PExp -> Bool
 isClaferName (PExp _ _ _ (IClaferId _ id' _ _)) =
-  id' `notElem` ([this, parent, children, ref] ++ primitiveTypes)
+  id' `notElem` (specialNames ++ primitiveTypes)
 isClaferName _ = False
 
 isClaferName' :: PExp -> Bool
@@ -96,6 +104,10 @@ isClaferName' _ = False
 getClaferName :: PExp -> String
 getClaferName (PExp _ _ _ (IClaferId _ id' _ _)) = id'
 getClaferName _ = ""
+
+isTopLevel :: IClafer -> Bool
+isTopLevel IClafer{_parentUID="root"} = True
+isTopLevel _                          = False
 
 -- -----------------------------------------------------------------------------
 -- conversions
@@ -108,29 +120,174 @@ toClafers :: [IElement] -> [IClafer]
 toClafers = mapMaybe elemToClafer
 
 -- -----------------------------------------------------------------------------
--- finds hierarchy and transforms each element
+-- | Finds hierarchy and transforms each element
 mapHierarchy :: (IClafer -> b)
-                -> (IClafer -> String)
-                -> [IClafer]
+                -> (IClafer -> [String])
+                -> UIDIClaferMap
                 -> IClafer
                 -> [b]
 mapHierarchy f sf = (map f.).(findHierarchy sf)
 
+-- -----------------------------------------------------------------------------
+-- UID -> IClafer map construction functions
 
--- returns inheritance hierarchy of a clafer
+type UIDIClaferMap = StringMap IClafer
 
-findHierarchy :: (IClafer -> String)
-                            -> [IClafer]
-                            -> IClafer
-                            -> [IClafer]
-findHierarchy sFun clafers clafer
-  | sFun clafer == "clafer"      = [clafer]
-  | otherwise                    = if clafer `elem` superClafers
-                                   then error $ "Inheritance hierarchy contains a cycle: line " ++ (show $ _cinPos clafer)
-                                   else clafer : superClafers
+createUidIClaferMap :: IModule -> UIDIClaferMap
+createUidIClaferMap    iModule  = foldl' (\accumMap' claf -> SMap.insert (_uid claf) claf accumMap') (SMap.singleton rootIdent rootClafer) allClafers
   where
-  superClafers = unfoldr (\c -> find (isEqClaferId $ sFun c) clafers >>=
-                          Just . (apply id)) clafer
+    allClafers :: [ IClafer ]
+    allClafers = universeOn biplate iModule
+    rootClafer = IClafer noSpan False (Just $ IGCard False (0, -1)) rootIdent rootIdent "" Nothing Nothing (Just (1,1)) (1, 1) (_mDecls iModule)
+
+findIClafer :: UIDIClaferMap -> UID -> Maybe IClafer
+findIClafer    uidIClaferMap    uid' = SMap.lookup uid' uidIClaferMap
+
+-- | efficient version of findHierarchy
+findHierarchy :: (IClafer -> [String]) -> UIDIClaferMap -> IClafer -> [IClafer]
+findHierarchy    sFun                     uidIClaferMap    clafer   = case sFun clafer of
+  []           -> [clafer]  -- no super and no reference
+  supersOrRefs -> let
+                    superOrRefClafers = mapMaybe (findIClafer uidIClaferMap) supersOrRefs
+                  in
+                    clafer
+                    : concatMap (findHierarchy sFun uidIClaferMap) superOrRefClafers
+
+-- -----------------------------------------------------------------------------
+-- functions using the UID -> IClafer map
+
+-- | traverse the inheritance hierarchy upwards to find a clafer with the given uidToFind
+findUIDinSupers :: UIDIClaferMap -> UID    -> IClafer      -> Maybe IClafer
+findUIDinSupers    uidIClaferMap    uidToFind currentClafer =
+  if uidToFind == _uid currentClafer
+  then return currentClafer
+  else do
+    superClaferUID <- getSuperId <$> _super currentClafer
+    superClafer <- findIClafer uidIClaferMap superClaferUID
+    findUIDinSupers uidIClaferMap uidToFind superClafer
+
+-- | traverse the containment hierarchy upwards to find a clafer with the given uidToFind
+findUIDinParents :: UIDIClaferMap -> UID    -> IClafer      -> Maybe IClafer
+findUIDinParents    uidIClaferMap    uidToFind currentClafer =
+  if uidToFind == _uid currentClafer
+  then return currentClafer
+  else do
+    parentClafer <- findIClafer uidIClaferMap $ _parentUID currentClafer
+    findUIDinParents uidIClaferMap uidToFind parentClafer
+
+data NestedInheritanceMatch
+  = NestedInheritanceMatch
+  { _headClafer :: IClafer               -- ^ the clafer for which the match is computed
+  , _parentClafer :: IClafer             -- ^ parent of the head clafer
+  , _parentsSuperClafer :: Maybe IClafer -- ^ parent of the super of the head clafer
+  , _targetClafer :: Maybe IClafer       -- ^ target of the head clafer
+  , _targetsSuperClafer :: Maybe IClafer -- ^ super of the target of the head clafer
+  , _superClafer :: IClafer              -- ^ super of the head clafer (must exist, otherwise no match)
+  , _superClafersParent :: IClafer       -- ^ parent of the super of the head clafer
+  , _superClafersTarget :: Maybe IClafer -- ^ target of the super of the head clafer
+  } deriving Show
+
+-- | This represents a match of this shape
+--
+--    superClafersParent
+--         /\           <>
+--        ?1|             \*
+-- parentsSuperClafer      \
+--         /\    [=]   superClafer --*-> superClafersTarget
+--         *|              /\                     /\
+--    parentClafer          |                      |?2
+--               <>        *|       [=]   targetsSuperClafer
+--                *\        |                     /\
+--                  \       |                     *|
+--                   headClafer -----*-----> targetClafer
+--
+-- The clafers are obtained by navigating from the headClafer
+-- by following the links marked by *
+-- The link marked by ?1 is checked for correctness of nesting (isProperNesting):
+-- - _uid parentsSuperClafer == _parentUID superClafer
+-- The link marked by ?2 is checked for correctness of redefinition (isProperRefinement):
+-- - proper subtyping, bag to set, proper cardinality restriction
+-- Redefinition occurs when the name of headClafer is the same as the name of superClafer (isProperRedefinition):
+-- - isProperNesting && isProperRefinement && (_ident headClafer) == (_ident superClafer)
+
+isProperNesting :: UIDIClaferMap -> Maybe NestedInheritanceMatch -> Bool
+isProperNesting _ Nothing  = True
+isProperNesting uidIClaferMap (Just m) = if (isTopLevel $ _superClafer m) && (_isAbstract $ _superClafer m)
+  then True
+  else case (_parentsSuperClafer m) of
+    Nothing                 -> (_uid $ _parentClafer m) == (_uid $ _superClafersParent m)
+    Just parentsSuperClafer -> isJust $  findUIDinSupers uidIClaferMap (_parentUID $ _superClafer m) parentsSuperClafer
+
+-- ^ assumes that isProperNesting m == True
+isProperRefinement :: UIDIClaferMap -> Maybe NestedInheritanceMatch
+  -> (Bool,  Bool,  Bool)
+isProperRefinement    _                Nothing
+  = ( True
+    , True
+    , True )
+isProperRefinement    uidIClaferMap    (Just m)
+  = ( properCardinalityRefinement m
+    , properBagToSetRefinement m
+    , properTargetSubtyping m )
+  where
+    properCardinalityRefinement NestedInheritanceMatch{_headClafer=hc, _superClafer=hcs}
+      = case (_card hc, _card hcs) of
+          (Just (hcl, hcu), Just (hcsl, hcsu)) -> hcl >= hcsl && (hcu <= hcsu || hcsu == -1)
+          _ -> True
+    properBagToSetRefinement NestedInheritanceMatch{_headClafer=hc, _superClafer=hcs}
+      = case (_reference hc, _reference hcs) of
+          (Just IReference{_isSet=headIsSet}, Just IReference{_isSet=superIsSet}) -> superIsSet <= headIsSet  -- set (True) implies set (True), bag (False) allows bag (False) or set (True)
+          _ -> True -- covers 1) only one of them has a ref, and 2) none of them has a ref
+    properTargetSubtyping NestedInheritanceMatch{_targetClafer=(Just targetClafer), _superClafersTarget=(Just superClafersTarget)}
+      = isJust $ findUIDinSupers uidIClaferMap (_uid superClafersTarget) targetClafer
+    properTargetSubtyping _
+      = True -- covers 1) only one of the target clafers exists, and 2) none of the target clafers exist
+
+-- ^ assumes that isProperNesting m == True and isProperRefinement m == (True, True, True)
+isRedefinition :: Maybe NestedInheritanceMatch -> Bool -- ^ whether the name of headClafer is the same as superClafer
+isRedefinition Nothing = True
+isRedefinition (Just NestedInheritanceMatch{_headClafer=hc, _superClafer=hs})
+  =  (_ident hc) == (_ident hs)
+
+
+
+-- ^ try to match the nested inheritance pattern
+-- ^ only available after the parentUIDs were computed
+matchNestedInheritance :: UIDIClaferMap -> IClafer
+  -> Maybe NestedInheritanceMatch
+matchNestedInheritance    _                    IClafer{_super=Nothing}    = Nothing
+matchNestedInheritance    uidIClaferMap        headClafer                 = do
+--  traceM $ "matching nested inheritance for " ++ _uid headClafer
+  parentClafer       <- findIClafer uidIClaferMap $ _parentUID headClafer
+--  traceM $ "matched parentClafer " ++ _uid parentClafer
+  superClafer        <- (findIClafer uidIClaferMap) =<< (getSuperId <$> _super headClafer)
+--  traceM $ "matched superClafer " ++ _uid superClafer
+  superClafersParent <- findIClafer uidIClaferMap $ _parentUID superClafer
+--  traceM $ "matched superClafersParent " ++ _uid superClafersParent
+  let
+    parentsSuperClafer :: Maybe IClafer
+    parentsSuperClafer = findIClafer uidIClaferMap =<< getSuperId <$> _super parentClafer  -- safe to use fromJust becuase _super is not isNothing
+    targetClafer :: Maybe IClafer
+    targetClafer = findIClafer uidIClaferMap =<< getSuperId <$> _ref <$> _reference headClafer
+    targetsSuperClafer :: Maybe IClafer
+    targetsSuperClafer = findIClafer uidIClaferMap =<< getSuperId <$> (_super =<< targetClafer)
+    superClafersTarget :: Maybe IClafer
+    superClafersTarget = findIClafer uidIClaferMap =<< getSuperId <$> _ref <$> _reference superClafer
+--  traceM $ "matched parentsSuperClafer " ++ show (_uid <$> parentsSuperClafer)
+--  traceM $ "matched targetClafer " ++ show (_uid <$> targetClafer)
+--  traceM $ "matched targetsSuperClafer " ++ show (_uid <$> targetsSuperClafer)
+--  traceM $ "matched superClafersTarget " ++ show (_uid <$> superClafersTarget)
+  return $ NestedInheritanceMatch
+    { _headClafer = headClafer
+    , _parentClafer = parentClafer
+    , _parentsSuperClafer = parentsSuperClafer
+    , _superClafer = superClafer
+    , _superClafersParent = superClafersParent
+    , _targetClafer = targetClafer
+    , _targetsSuperClafer = targetsSuperClafer
+    , _superClafersTarget = superClafersTarget
+    }
+
 
 -- -----------------------------------------------------------------------------
 -- generic functions
@@ -191,8 +348,11 @@ iGMin         = "min"
 iSumSet :: String
 iSumSet       = "sum"
 
+iProdSet :: String
+iProdSet      = "product"
+
 unOps :: [String]
-unOps = [iNot, iCSet, iMin, iGMax, iGMin, iSumSet]
+unOps = [iNot, iCSet, iMin, iGMax, iGMin, iSumSet, iProdSet]
 
 -- binary operators
 iIff :: String
@@ -271,7 +431,7 @@ iDifference :: String
 iDifference   = "--"
 
 iIntersection :: String
-iIntersection = "&"
+iIntersection = "**"
 
 iDomain :: String
 iDomain       = "<:"
@@ -290,11 +450,11 @@ binOps = logBinOps ++ relBinOps ++ arithBinOps ++ setBinOps
 
 -- ternary operators
 iIfThenElse :: String
-iIfThenElse   = "=>else"
+iIfThenElse   = "ifthenelse"
 
 mkIFunExp :: String -> [IExp] -> IExp
 mkIFunExp _ (x:[]) = x
-mkIFunExp op' xs = foldl1 (\x y -> IFunExp op' $ map (PExp (Just $ TClafer []) "" noSpan) [x,y]) xs
+mkIFunExp op' xs = foldl1 (\x y -> IFunExp op' $ map (PExp Nothing "" noSpan) [x,y]) xs
 
 toLowerS :: String -> String
 toLowerS "" = ""
@@ -303,23 +463,32 @@ toLowerS (s:ss) = toLower s : ss
 -- -----------------------------------------------------------------------------
 -- Constants
 
-this :: String
-this = "this"
+rootIdent :: String
+rootIdent = "root"
 
-parent :: String
-parent = "parent"
+rootUID :: String
+rootUID = "root"
 
-children :: String
-children = "children"
+thisIdent :: String
+thisIdent = "this"
 
-ref :: String
-ref = "ref"
+parentIdent :: String
+parentIdent = "parent"
+
+refIdent :: String
+refIdent = "ref"
+
+childrenIdent :: String
+childrenIdent = "children"
 
 specialNames :: [String]
-specialNames = [this, parent, children, ref]
+specialNames = [thisIdent, parentIdent, refIdent, rootIdent, childrenIdent]
 
-strType :: String
-strType = "string"
+isSpecial :: String -> Bool
+isSpecial = flip elem specialNames
+
+stringType :: String
+stringType = "string"
 
 intType :: String
 intType = "int"
@@ -330,6 +499,9 @@ integerType = "integer"
 realType :: String
 realType = "real"
 
+booleanType :: String
+booleanType = "boolean"
+
 baseClafer :: String
 baseClafer = "clafer"
 
@@ -337,19 +509,38 @@ modSep :: String
 modSep = "\\"
 
 primitiveTypes :: [String]
-primitiveTypes = [strType, intType, integerType, realType]
+primitiveTypes = [stringType, intType, integerType, realType]
 
 isPrimitive :: String -> Bool
 isPrimitive = flip elem primitiveTypes
 
-data GEnv = GEnv {
-  identCountMap :: Map.Map String Int,
-  expCount :: Int,
-  stable :: Map.Map UID [[UID]], -- super clafer names of a given clafer
-  sClafers ::[IClafer] -- all clafers (no going through references)
+-- | reserved keywords which cannot be used as clafer identifiers
+keywordIdents :: [String]
+keywordIdents =
+  baseClafer :
+  specialNames ++
+  primitiveTypes ++
+  [ iGMax, iGMin, iSumSet, iProdSet ] ++ -- unary operators
+  [ iXor, iIn ] ++ -- binary operators
+  [ "if", "then", "else" ] ++ -- ternary operators
+  [ "no", "not", "some", "one", "all", "disj" ] ++ -- quantifiers
+  [ "opt", "mux", "or", "lone" ] ++ -- group cardinalities
+  [ "abstract", "enum" ] -- keywords
+
+data GEnv
+  = GEnv
+  { identCountMap :: Map.Map String Int
+  , expCount :: Int
+  , stable :: Map.Map UID [[UID]] -- super clafer names of a given clafer
+  , sClafers ::[IClafer]          -- all clafers (no going through references)
+  , uidClaferMap :: UIDIClaferMap -- the map needs to be re-created everytime IModule is rewritten
   } deriving (Eq, Show)
 
 voidf :: Monad m => m t -> m ()
 voidf f = do
   _ <- f
   return ()
+
+safeTail :: [a] -> [a]
+safeTail [] = []
+safeTail (_:xs) = xs

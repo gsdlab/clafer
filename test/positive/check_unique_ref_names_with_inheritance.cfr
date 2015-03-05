@@ -1,13 +1,13 @@
 // This is an example to test if replacing "ref" with "clafer_name_ref" creates problems with ref that exist only in the ancestor of a clafer.
 // This changes was introduced to claferMoo branch to to be able to refer to ref from partial instances in alloy.
 
-abstract date : string
+abstract date ->> string
 
 abstract Person
-    Name : string
+    Name -> string
     DateOfBirth : date
 
 JohnDoe : Person
     [ Name = "John"
-      DateOfBirth = "01/02/1985" 
+      DateOfBirth = "01/02/1985"
     ]

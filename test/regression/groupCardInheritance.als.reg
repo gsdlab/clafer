@@ -1,0 +1,44 @@
+open util/integer
+pred show {}
+
+
+abstract sig c0_Port
+{ r_c0_input : lone c0_input
+, r_c0_output : lone c0_output }
+
+sig c0_input
+{}
+{ one @r_c0_input.this }
+
+sig c0_output
+{}
+{ one @r_c0_output.this }
+
+abstract sig c0_RelayPort extends c0_Port
+{ r_c0_relay : lone c0_relay }
+
+sig c0_relay
+{}
+{ one @r_c0_relay.this }
+
+one sig c0_req extends c0_RelayPort
+{ r_c0_flow : lone c0_flow }
+{ let children = (r_c0_flow + r_c0_relay + r_c0_input + r_c0_output) | one children
+  some this.@r_c0_flow }
+
+lone sig c0_flow
+{}
+{ one r_c0_flow }
+
+assert assertOnLine_16 { no c0_req.@r_c0_input }
+check assertOnLine_16 for 1
+
+assert assertOnLine_17 { no c0_req.@r_c0_output }
+check assertOnLine_17 for 1
+
+assert assertOnLine_18 { no c0_req.@r_c0_relay }
+check assertOnLine_18 for 1
+
+assert assertOnLine_19 { one c0_req.@r_c0_flow }
+check assertOnLine_19 for 1
+

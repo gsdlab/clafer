@@ -19,6 +19,6 @@ H4 : H 5..*
 Hs2 -> H 0..*
 Hs3 -> H 5..8
     l ?
-abstract F : H
-f1 : F 2..5
+abstract FF : H
+f1 : FF 2..5
     m 0

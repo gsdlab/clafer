@@ -25,6 +25,7 @@ module Language.Clafer.Intermediate.Resolver where
 import Control.Monad
 import Control.Monad.State
 import qualified Data.Map as Map
+import qualified Data.StringMap as SMap
 
 import Language.Clafer.Common
 import Language.Clafer.ClaferArgs
@@ -35,9 +36,9 @@ import Language.Clafer.Intermediate.ResolverInheritance
 
 -- | Run the various resolvers
 resolveModule :: ClaferArgs -> IModule -> Resolve (IModule, GEnv)
-resolveModule args' declarations =
+resolveModule    args'         imodule =
   do
-    r <- resolveNModule $ nameModule (skip_resolver args') declarations
+    r <- resolveNModule $ nameModule (skip_resolver args') imodule
     resolveNamesModule args' =<< (rom' $ rem' r)
   where
   rem' = if flatten_inheritance args' then resolveEModule else id
@@ -46,21 +47,24 @@ resolveModule args' declarations =
 
 -- | Name resolver
 nameModule :: Bool -> IModule -> (IModule, GEnv)
-nameModule skipResolver imodule = (imodule{_mDecls = decls'}, genv')
+nameModule skipResolver imodule = (imodule', genv'')
   where
-  (decls', genv') = runState (mapM (nameElement skipResolver) $ _mDecls imodule) $ GEnv Map.empty 0 Map.empty []
+    (decls', genv') = runState (mapM (nameElement skipResolver "root") $ _mDecls imodule) $ GEnv Map.empty 0 Map.empty [] SMap.empty
+    imodule' = imodule{_mDecls = decls'}
+    genv'' = genv'{uidClaferMap = createUidIClaferMap imodule'}
 
-nameElement :: MonadState GEnv m => Bool -> IElement -> m IElement
-nameElement skipResolver x = case x of
-  IEClafer claf -> IEClafer `liftM` (nameClafer skipResolver claf)
+
+nameElement :: MonadState GEnv m => Bool -> UID -> IElement -> m IElement
+nameElement skipResolver puid x = case x of
+  IEClafer claf -> IEClafer `liftM` (nameClafer skipResolver puid claf)
   IEConstraint isHard' pexp -> IEConstraint isHard' `liftM` (namePExp pexp)
   IEGoal isMaximize' pexp -> IEGoal isMaximize' `liftM` (namePExp pexp)
 
 
-nameClafer :: MonadState GEnv m => Bool -> IClafer -> m IClafer
-nameClafer skipResolver claf = do
-  claf' <- if skipResolver then return claf{_uid = _ident claf} else (renameClafer (not skipResolver)) claf
-  elements' <- mapM (nameElement skipResolver) $ _elements claf
+nameClafer :: MonadState GEnv m => Bool -> UID -> IClafer -> m IClafer
+nameClafer skipResolver puid claf = do
+  claf' <- if skipResolver then return claf{_uid = _ident claf, _parentUID = puid} else renameClafer True puid claf
+  elements' <- mapM (nameElement skipResolver (_uid claf')) $ _elements claf
   return $ claf' {_elements = elements'}
 
 
@@ -69,7 +73,7 @@ namePExp pexp@(PExp _ _ _ exp') = do
   n <- gets expCount
   modify (\e -> e {expCount = 1 + n})
   exp'' <- nameIExp exp'
-  return $ pexp {_pid = concat [ "e", show n, "_"], Language.Clafer.Intermediate.Intclafer._exp = exp''}
+  return $ pexp {_pid = concat [ "e", show n, "_"], _exp = exp''}
 
 nameIExp :: MonadState GEnv m => IExp -> m IExp
 nameIExp x = case x of
@@ -85,12 +89,12 @@ nameIDecl (IDecl isDisj' dels body') = IDecl isDisj' dels `liftM` (namePExp body
 
 -- -----------------------------------------------------------------------------
 resolveNamesModule :: ClaferArgs -> (IModule, GEnv) -> Resolve (IModule, GEnv)
-resolveNamesModule args' (declarations, genv') =
+resolveNamesModule args' (imodule, genv') =
   do
-    res <- foldM (flip ($)) declarations $ map (\f -> flip (curry f) genv') funs
-    return (res, genv')
+    imodule' <- foldM (flip ($)) imodule $ map (\f -> flip (curry f) genv') funs
+    return (imodule', genv'{uidClaferMap = createUidIClaferMap imodule'})
   where
   funs :: [(IModule, GEnv) -> Resolve IModule]
   funs
-    | skip_resolver args' = [return . analyzeModule, resolveTModule]
-    | otherwise = [ return . analyzeModule, resolveModuleNames, resolveTModule]
+    | skip_resolver args' = [return . analyzeModule, resolveRedefinition, resolveTModule]
+    | otherwise = [ return . analyzeModule, resolveModuleNames, resolveRedefinition, resolveTModule]

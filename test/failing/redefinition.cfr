@@ -1,0 +1,15 @@
+abstract Component
+    abstract InPort ->> Signal
+    abstract OutPort ->> Signal
+abstract Signal
+abstract Command : Signal
+abstract MotorCommand : Command
+motorDown : MotorCommand
+abstract Request : Signal
+stop : Request
+abstract Controller : Component
+    abstract req : InPort -> Request ?
+    down : Request
+WinController : Controller
+    req : req -> stop
+    cmd : OutPort -> MotorCommand

@@ -1,4 +1,4 @@
-abstract degree : integer
+abstract degree -> integer
     [ this > 0 && this <= 360 ]
 //# FRAGMENT
 abstract Vehicle
@@ -7,7 +7,7 @@ abstract Vehicle
     `AntiLockBreakSystem
     `TractionControlSystem
     AckermanSteerAngle -> degree
-    speed : integer
+    speed -> integer
     lateralAcceleration -> integer
     sideSlipAngle -> degree
     yawRate -> degree
@@ -17,7 +17,7 @@ abstract Vehicle
     [yawRate > normalYawRate <=> hasOversteer ]
     hasUndersteer ?
     [yawRate < normalYawRate <=> hasUndersteer ]
-    GVWR : integer
+    GVWR -> integer
 //# FRAGMENT
 abstract xor DriveConfiguration
     twoWheelDrive
@@ -38,9 +38,9 @@ abstract ElectronicStabilityControlSystem
        oversteer
     estimates
         YawRate
-        sideSlip 
+        sideSlip
             derivativeWithRespectToTime
-    monitors 
+    monitors
         driverSteeringInputs
         modifiesEngineTorque
     isOperational ?

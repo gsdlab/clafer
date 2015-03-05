@@ -1,7 +1,8 @@
+scope({c0_A:0});
 defaultScope(1);
 intRange(-8, 7);
 stringLength(16);
 
 c0_A = Abstract("c0_A");
 c0_aRef = Clafer("c0_aRef").withCard(1, 1);
-c0_aRef.refToUnique(c0_A);
+c0_aRef.refTo(c0_A);

@@ -9,7 +9,8 @@ module Language.Clafer.Front.ErrM where
 import Control.Monad (MonadPlus(..), liftM)
 import Control.Applicative (Applicative(..), Alternative(..))
 
-import Language.Clafer.Front.Absclafer
+import Language.Clafer.Front.AbsClafer
+
 data Err a = Ok a | Bad Pos String
   deriving (Read, Show, Eq, Ord)
 

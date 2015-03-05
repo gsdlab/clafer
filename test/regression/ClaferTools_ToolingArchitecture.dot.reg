@@ -16,7 +16,7 @@ edge [fontname=Sans fontsize=11];
 "c0_claferLib" -> "c0_Front" [arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];
 "c0_claferLib" -> "c0_Intermediate" [arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];
 "c0_claferLib" -> "c0_Generator" [arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];
-"c0_io" [label="abstract io" URL="#c0_io" tooltip="abstract io&#10;  input -> Representation&#10;  output -> Representation&#10;"];
+"c0_io" [label="abstract io" URL="#c0_io" tooltip="abstract io&#10;  input -&gt; Representation&#10;  output -&gt; Representation&#10;"];
 "c0_io" -> "c0_Representation" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=input];
 "c0_io" -> "c0_Representation" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=output];
 "c0_text2tokens" [label="abstract text2tokens : io" URL="#c0_text2tokens" tooltip="abstract text2tokens : io&#10;  [ input = text && output = tokens ]&#10;"];

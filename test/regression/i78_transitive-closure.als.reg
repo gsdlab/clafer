@@ -4,7 +4,6 @@ pred show {}
 
 abstract sig c0_TimeLevel
 { r_c0_aggregatesTo : lone c0_aggregatesTo }
-{ all disj x, y : this.@r_c0_aggregatesTo | (x.@ref) != (y.@ref) }
 
 sig c0_aggregatesTo
 { ref : one c0_TimeLevel }
@@ -36,7 +35,7 @@ one sig c0_Week1 extends c0_WeekLevel
 sig c0_Week1AggregatesTo
 { ref : one c0_TimeLevel }
 
-fact { all disj x, y : c0_Week1AggregatesTo | (x.@ref) != (y.@ref) }
+fact {  all disj x, y : c0_Week1AggregatesTo | (x.@ref) != (y.@ref)  }
 fact { (c0_Week1.(@r_c0_aggregatesTo.@ref)) in (c0_Week1AggregatesTo.@ref) }
 fact { ((c0_Week1.@r_c0_aggregatesTo).(@ref.(@r_c0_aggregatesTo.@ref))) in (c0_Week1AggregatesTo.@ref) }
 fact { (c0_Week1AggregatesTo.@ref) = (c0_Jan2012 + c0_Year2012) }

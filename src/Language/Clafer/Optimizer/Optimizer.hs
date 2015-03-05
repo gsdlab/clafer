@@ -24,6 +24,7 @@ module Language.Clafer.Optimizer.Optimizer where
 
 import Data.Maybe
 import Data.List
+import Control.Applicative ((<$>))
 import Control.Lens hiding (elements, children, un)
 import Control.Monad.State
 import Data.Data.Lens (biplate)
@@ -71,7 +72,7 @@ makeZeroUnusedAbs decls' = map (\x -> if (x `elem` unusedAbs) then IEClafer (get
   where
   unusedAbs = map IEClafer $ findUnusedAbs clafers $ map _uid $
               filter (not._isAbstract) clafers
-  clafers   = toClafers decls' 
+  clafers   = toClafers decls'
   getIClafer (IEClafer c) = c
   getIClafer _ = error "Function makeZeroUnusedAbs from Optimizer expected paramter of type IClafer got a differnt IElement" --This should never happen
 
@@ -98,7 +99,7 @@ getExtended :: IClafer -> [String]
 getExtended c =
   sName ++ ((getSubclafers $ _elements c) >>= getExtended)
   where
-  sName = if not $ _isOverlapping $ _super c then [getSuper c] else []
+  sName = getSuper c
 
 -- -----------------------------------------------------------------------------
 -- inheritance  expansions
@@ -108,14 +109,11 @@ expModule (decls', genv) = evalState (mapM expElement decls') genv
 
 expClafer :: MonadState GEnv m => IClafer -> m IClafer
 expClafer claf = do
-  super' <- expSuper $ _super claf
+  super' <- case _super claf of
+    Nothing      -> return Nothing
+    (Just pexp') -> Just `liftM` expPExp pexp'
   elements' <- mapM expElement $ _elements claf
   return $ claf {_super = super', _elements = elements'}
-
-expSuper :: MonadState GEnv m => ISuper -> m ISuper
-expSuper x = case x of
-  ISuper False _ -> return x
-  ISuper True pexps -> ISuper True `liftM` mapM expPExp pexps
 
 expElement :: MonadState GEnv m => IElement -> m IElement
 expElement x = case x of
@@ -148,7 +146,7 @@ expNav x = do
   return $ mkIFunExp iUnion $ map fst xs'
 
 expNav' :: MonadState GEnv m => String -> IExp -> m (IExp, String)
-expNav' context (IFunExp _ (p0:p:_)) = do    
+expNav' context (IFunExp _ (p0:p:_)) = do
   (exp0', context') <- expNav' context  $ _exp p0
   (exp', context'') <- expNav' context' $ _exp p
   return (IFunExp iJoin [ p0 {_exp = exp0'}
@@ -167,7 +165,7 @@ expNav' context x@(IClaferId modName' id' isTop' bind' ) = do
       return (x, id')
 expNav' _ _ = error "Function expNav' from Optimizer expects an argument of type ClaferId or IFunExp but was given another IExp"
 
-split' :: MonadState GEnv m => IExp -> (IExp -> m IExp) -> m [IExp] 
+split' :: MonadState GEnv m => IExp -> (IExp -> m IExp) -> m [IExp]
 split'(IFunExp _ (p:pexp:_)) f =
     split' (_exp p) (\s -> f $ IFunExp iJoin
       [p {_exp = s}, pexp])
@@ -180,29 +178,21 @@ split' _ _ = error "Function split' from Optimizer expects an argument of type C
 -- checking if all clafers have unique names and don't extend other clafers
 
 allUnique :: IModule -> Bool
-allUnique imodule = and un && (null $
-  filter (\xs -> 1 < length xs) $ group $ sort $ concat idents) && identsOk
+allUnique iModule = dontExtend && identsUnique
   where
-  (un, idents) = unzip $ map allUniqueElement $ _mDecls imodule
-  identsOk     = and $ map (checkConstraintElement (concat idents)) $ _mDecls imodule
+    allClafers :: [ IClafer ]
+    allClafers = universeOn biplate iModule
 
-allUniqueClafer :: IClafer -> (Bool, [String])
-allUniqueClafer claf =
-  (getSuper claf `elem` "clafer" : primitiveTypes  && and un,
-   _ident claf : concat idents)
-  where
-  (un, idents) = unzip $ map allUniqueElement $ _elements claf
-
-allUniqueElement :: IElement -> (Bool, [String])
-allUniqueElement x = case x of
-  IEClafer claf -> allUniqueClafer claf
-  IEConstraint _ _ -> (True, [])
-  IEGoal _ _ -> (True, [])
+    -- True when getSuper always returns Nothing and therefore concatMap returned []
+    dontExtend = null $ concatMap getSuper allClafers
+    allIdents = map _ident allClafers
+    -- all idents are unique when nub cannot remove any duplicates
+    identsUnique = (length allIdents) == (length $ nub allIdents)
 
 checkConstraintElement :: [String] -> IElement -> Bool
 checkConstraintElement idents x = case x of
   IEClafer claf -> and $ map (checkConstraintElement idents) $ _elements claf
-  IEConstraint _ pexp -> checkConstraintPExp idents pexp 
+  IEConstraint _ pexp -> checkConstraintPExp idents pexp
   IEGoal _ _ ->  True
 
 checkConstraintPExp :: [String] -> PExp -> Bool
@@ -212,7 +202,7 @@ checkConstraintIExp :: [String] -> IExp -> Bool
 checkConstraintIExp idents x = case x of
    IDeclPExp _ oDecls' pexp ->
      checkConstraintPExp ((oDecls' >>= (checkConstraintIDecl idents)) ++ idents) pexp
-   IClaferId _ ident' _ _ -> if ident' `elem` (specialNames ++ idents) then True
+   IClaferId _ ident' _ _ -> if ident' `elem` (specialNames ++ (rootIdent : idents)) then True
                           else error $ "optimizer: " ++ ident' ++ " not found"
    _ -> True
 
@@ -226,7 +216,7 @@ findDupModule :: ClaferArgs -> IModule -> Either ClaferErr IModule
 findDupModule args iModule = if check_duplicates args && (not $ null dups)
   then Left $ ClaferErr $ "--check-duplicates: Duplicate clafer names: " ++ (intercalate ", " dups)
   else Right iModule
-  where 
+  where
     allClafers :: [ IClafer ]
     allClafers = universeOn biplate iModule
     dups = findDuplicates allClafers
@@ -240,18 +230,14 @@ findDupModule args iModule = if check_duplicates args && (not $ null dups)
 
 markTopModule :: [IElement] -> [IElement]
 markTopModule decls' = map (markTopElement (
-      [this, parent, children, strType, intType, integerType] ++
+      specialNames ++ primitiveTypes ++
       (map _uid $ toClafers decls'))) decls'
 
 
 markTopClafer :: [String] -> IClafer -> IClafer
 markTopClafer clafers c =
-  c {_super = markTopSuper clafers $ _super c, 
+  c {_super = markTopPExp clafers <$> _super c,
      _elements = map (markTopElement clafers) $ _elements c}
-
-
-markTopSuper :: [String] -> ISuper -> ISuper
-markTopSuper clafers x = x{_supers = map (markTopPExp clafers) $ _supers x}
 
 
 markTopElement :: [String] -> IElement -> IElement

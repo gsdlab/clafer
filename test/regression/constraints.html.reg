@@ -32,28 +32,28 @@
 
 
 <div>
-<span class="claferDecl" id="c0_PhoneWithGps">PhoneWithGps</span><span class="keyword"> :</span> <a href="#c0_Phone"><span class="reference">Phone</span></a>
+<span class="claferDecl" id="c0_PhoneWithGps">PhoneWithGps</span><span class="keyword"> : </span><a href="#c0_Phone"><span class="reference">Phone</span></a>
   <div class="indent">
   <span class="keyword">[</span> <a href="#c0_gps"><span class="reference">gps</span></a> <span class="keyword">]</span></div>
 </div>
 
 
 <div>
-<span class="claferDecl" id="c0_PhoneWithWifi">PhoneWithWifi</span><span class="keyword"> :</span> <a href="#c0_Phone"><span class="reference">Phone</span></a>
+<span class="claferDecl" id="c0_PhoneWithWifi">PhoneWithWifi</span><span class="keyword"> : </span><a href="#c0_Phone"><span class="reference">Phone</span></a>
   <div class="indent">
   <span class="keyword">[</span> <a href="#c0_networking"><span class="reference">networking</span></a>.<a href="#c0_wifi"><span class="reference">wifi</span></a>.<a href="#c0_typeN"><span class="reference">typeN</span></a> <span class="keyword">]</span></div>
 </div>
 
 
 <div>
-<span class="claferDecl" id="c0_PhonewithWifiAndGpsNoBluetoothOrNfc">PhonewithWifiAndGpsNoBluetoothOrNfc</span><span class="keyword"> :</span> <a href="#c0_Phone"><span class="reference">Phone</span></a>
+<span class="claferDecl" id="c0_PhonewithWifiAndGpsNoBluetoothOrNfc">PhonewithWifiAndGpsNoBluetoothOrNfc</span><span class="keyword"> : </span><a href="#c0_Phone"><span class="reference">Phone</span></a>
   <div class="indent">
   <span class="keyword">[</span> <a href="#c0_wifi"><span class="reference">wifi</span></a> && <a href="#c0_gps"><span class="reference">gps</span></a> &&  ! <a href="#c0_bluetooth"><span class="reference">bluetooth</span></a> || <a href="#c0_nfc"><span class="reference">nfc</span></a> <span class="keyword">]</span></div>
 </div>
 
 
 <div>
-<span class="claferDecl" id="c0_PhoneWithGpu">PhoneWithGpu</span><span class="keyword"> :</span> <a href="#c0_Phone"><span class="reference">Phone</span></a>
+<span class="claferDecl" id="c0_PhoneWithGpu">PhoneWithGpu</span><span class="keyword"> : </span><a href="#c0_Phone"><span class="reference">Phone</span></a>
   <div class="indent">
   <span class="keyword">[</span> <span class="keyword">some</span> <a href="#c0_gpu"><span class="reference">gpu</span></a> <span class="keyword">]</span></div>
 </div>

@@ -22,7 +22,6 @@ abstract sig c0_ClaferArgs
 , r_c0_schema : lone c0_schema
 , r_c0_help : lone c0_help
 , r_c0_version : lone c0_version }
-{ let children = (r_c0_functional + r_c0_schema + r_c0_help + r_c0_version) | one children }
 
 sig c0_functional
 { r_c0_mode : one c0_mode
@@ -39,12 +38,12 @@ sig c0_functional
 
 sig c0_mode extends c0_Argument
 { r_c0_alloy : lone c0_alloy
-, r_c0_clafer : lone c0_clafer
+, r_c0_desclafer : lone c0_desclafer
 , r_c0_html : lone c0_html
 , r_c0_graph : lone c0_graph
 , r_c0_cvlGraph : lone c0_cvlGraph }
 { one @r_c0_mode.this
-  let children = (r_c0_alloy + r_c0_clafer + r_c0_html + r_c0_graph + r_c0_cvlGraph) | one children }
+  let children = (r_c0_alloy + r_c0_desclafer + r_c0_html + r_c0_graph + r_c0_cvlGraph) | one children }
 
 sig c0_alloy extends c0_DefaultValue
 { r_c0_alloy42 : lone c0_alloy42
@@ -64,9 +63,9 @@ sig c0_alloy_mapping extends c0_Argument
 {}
 { one @r_c0_alloy_mapping.this }
 
-sig c0_clafer extends c0_Value
+sig c0_desclafer extends c0_Value
 {}
-{ one @r_c0_clafer.this }
+{ one @r_c0_desclafer.this }
 
 sig c0_html extends c0_Value
 { r_c0_self_contained : lone c0_self_contained
@@ -165,32 +164,38 @@ sig c0_version extends c0_Argument
 
 one sig c0_ca1 extends c0_ClaferArgs
 {}
-{ some ((this.@r_c0_functional).@r_c0_mode).@r_c0_alloy }
+{ let children = (r_c0_functional + r_c0_schema + r_c0_help + r_c0_version) | one children
+  some ((this.@r_c0_functional).@r_c0_mode).@r_c0_alloy }
 
 one sig c0_ca2 extends c0_ClaferArgs
 {}
-{ some ((this.@r_c0_functional).@r_c0_mode).@r_c0_alloy
+{ let children = (r_c0_functional + r_c0_schema + r_c0_help + r_c0_version) | one children
+  some ((this.@r_c0_functional).@r_c0_mode).@r_c0_alloy
   some (this.@r_c0_functional).@r_c0_validate
   (((this.@r_c0_functional).@r_c0_validate).(@r_c0_tooldir.@ref)) = 0 }
 
 one sig c0_ca3 extends c0_ClaferArgs
 {}
-{ some (((this.@r_c0_functional).@r_c0_mode).@r_c0_alloy).@r_c0_alloy42
+{ let children = (r_c0_functional + r_c0_schema + r_c0_help + r_c0_version) | one children
+  some (((this.@r_c0_functional).@r_c0_mode).@r_c0_alloy).@r_c0_alloy42
   some (this.@r_c0_functional).@r_c0_keep_unused
   some (this.@r_c0_functional).@r_c0_flatten_inheritance }
 
 one sig c0_ca4 extends c0_ClaferArgs
 {}
-{ some ((this.@r_c0_functional).@r_c0_mode).@r_c0_html }
+{ let children = (r_c0_functional + r_c0_schema + r_c0_help + r_c0_version) | one children
+  some ((this.@r_c0_functional).@r_c0_mode).@r_c0_html }
 
 one sig c0_ca5 extends c0_ClaferArgs
 {}
-{ some ((this.@r_c0_functional).@r_c0_mode).@r_c0_html
+{ let children = (r_c0_functional + r_c0_schema + r_c0_help + r_c0_version) | one children
+  some ((this.@r_c0_functional).@r_c0_mode).@r_c0_html
   some (((this.@r_c0_functional).@r_c0_mode).@r_c0_html).@r_c0_self_contained
   some (((this.@r_c0_functional).@r_c0_mode).@r_c0_html).@r_c0_add_graph
   some (((this.@r_c0_functional).@r_c0_mode).@r_c0_html).@r_c0_add_comments }
 
 one sig c0_ca6 extends c0_ClaferArgs
 {}
-{ some ((this.@r_c0_functional).@r_c0_mode).@r_c0_cvlGraph }
+{ let children = (r_c0_functional + r_c0_schema + r_c0_help + r_c0_version) | one children
+  some ((this.@r_c0_functional).@r_c0_mode).@r_c0_cvlGraph }
 

@@ -2,13 +2,13 @@
 <div>
 <span class="keyword">abstract</span> <span class="claferDecl" id="c0_Feature">Feature</span>
   <div class="indent">
-  <span class="claferDecl" id="c0_productivity">productivity</span><span class="keyword"> :</span> <a href="#integer"><span class="reference">integer</span></a></div>
+  <span class="claferDecl" id="c0_productivity">productivity</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a></div>
   <div class="indent">
-  <span class="claferDecl" id="c0_cost">cost</span><span class="keyword"> :</span> <a href="#integer"><span class="reference">integer</span></a></div>
+  <span class="claferDecl" id="c0_cost">cost</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a></div>
   <div class="indent">
-  <span class="claferDecl" id="c0_batterylife">batterylife</span><span class="keyword"> :</span> <a href="#integer"><span class="reference">integer</span></a></div>
+  <span class="claferDecl" id="c0_batterylife">batterylife</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a></div>
   <div class="indent">
-  <span class="claferDecl" id="c0_security">security</span><span class="keyword"> :</span> <a href="#integer"><span class="reference">integer</span></a></div>
+  <span class="claferDecl" id="c0_security">security</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a></div>
 </div>
 
 <!-- # FRAGMENT /-->
@@ -16,7 +16,7 @@
 <div>
 <span class="keyword">abstract</span> <span class="claferDecl" id="c0_MobilePhone">MobilePhone</span>
   <div class="indent">
-  <span class="claferDecl" id="c0_Connectivity">Connectivity</span><span class="keyword"> :</span> <a href="#c0_Feature"><span class="reference">Feature</span></a>
+  <span class="claferDecl" id="c0_Connectivity">Connectivity</span><span class="keyword"> : </span><a href="#c0_Feature"><span class="reference">Feature</span></a>
     <div class="indent">
     <span class="keyword">[</span> <a href="#c0_batterylife"><span class="reference">batterylife</span></a> = -12 <span class="keyword">]</span></div>
     <div class="indent">
@@ -26,17 +26,9 @@
     <div class="indent">
     <span class="keyword">[</span> <a href="#c0_cost"><span class="reference">cost</span></a> = 101 <span class="keyword">]</span></div>
     <div class="indent">
-    <span class="keyword">xor</span> <span class="claferDecl" id="c0_Bluetooth">Bluetooth</span><span class="keyword"> :</span> <a href="#c0_Feature"><span class="reference">Feature</span></a>
+    <span class="keyword">xor</span> <span class="claferDecl" id="c0_Bluetooth">Bluetooth</span>
       <div class="indent">
-      <span class="keyword">[</span> <a href="#c0_batterylife"><span class="reference">batterylife</span></a> = 0 <span class="keyword">]</span></div>
-      <div class="indent">
-      <span class="keyword">[</span> <a href="#c0_productivity"><span class="reference">productivity</span></a> = 0 <span class="keyword">]</span></div>
-      <div class="indent">
-      <span class="keyword">[</span> <a href="#c0_security"><span class="reference">security</span></a> = 0 <span class="keyword">]</span></div>
-      <div class="indent">
-      <span class="keyword">[</span> <a href="#c0_cost"><span class="reference">cost</span></a> = 0 <span class="keyword">]</span></div>
-      <div class="indent">
-      <span class="claferDecl" id="c0_Bluetooth20EDR">Bluetooth20EDR</span><span class="keyword"> :</span> <a href="#c0_Feature"><span class="reference">Feature</span></a>
+      <span class="claferDecl" id="c0_Bluetooth20EDR">Bluetooth20EDR</span><span class="keyword"> : </span><a href="#c0_Feature"><span class="reference">Feature</span></a>
         <div class="indent">
         <span class="keyword">[</span> <a href="#c0_batterylife"><span class="reference">batterylife</span></a> = -4 <span class="keyword">]</span></div>
         <div class="indent">
@@ -47,7 +39,7 @@
         <span class="keyword">[</span> <a href="#c0_cost"><span class="reference">cost</span></a> = 1 <span class="keyword">]</span></div>
       </div>
       <div class="indent">
-      <span class="claferDecl" id="c0_Bluetooth21EDR">Bluetooth21EDR</span><span class="keyword"> :</span> <a href="#c0_Feature"><span class="reference">Feature</span></a>
+      <span class="claferDecl" id="c0_Bluetooth21EDR">Bluetooth21EDR</span><span class="keyword"> : </span><a href="#c0_Feature"><span class="reference">Feature</span></a>
         <div class="indent">
         <span class="keyword">[</span> <a href="#c0_batterylife"><span class="reference">batterylife</span></a> = -2 <span class="keyword">]</span></div>
         <div class="indent">
@@ -58,7 +50,7 @@
         <span class="keyword">[</span> <a href="#c0_cost"><span class="reference">cost</span></a> = 1 <span class="keyword">]</span></div>
       </div>
       <div class="indent">
-      <span class="claferDecl" id="c0_Bluetooth40">Bluetooth40</span><span class="keyword"> :</span> <a href="#c0_Feature"><span class="reference">Feature</span></a>
+      <span class="claferDecl" id="c0_Bluetooth40">Bluetooth40</span><span class="keyword"> : </span><a href="#c0_Feature"><span class="reference">Feature</span></a>
         <div class="indent">
         <span class="keyword">[</span> <a href="#c0_batterylife"><span class="reference">batterylife</span></a> = -1 <span class="keyword">]</span></div>
         <div class="indent">
@@ -70,7 +62,7 @@
       </div>
     </div>
     <div class="indent">
-    <span class="claferDecl" id="c0_GSM">GSM</span><span class="keyword"> :</span> <a href="#c0_Feature"><span class="reference">Feature</span></a>
+    <span class="claferDecl" id="c0_GSM">GSM</span><span class="keyword"> : </span><a href="#c0_Feature"><span class="reference">Feature</span></a>
       <div class="indent">
       <span class="keyword">[</span> <a href="#c0_batterylife"><span class="reference">batterylife</span></a> = -2 <span class="keyword">]</span></div>
       <div class="indent">
@@ -81,7 +73,7 @@
       <span class="keyword">[</span> <a href="#c0_cost"><span class="reference">cost</span></a> = 1 <span class="keyword">]</span></div>
     </div>
     <div class="indent">
-    <span class="claferDecl" id="c0_LTE">LTE</span><span class="keyword"> :</span> <a href="#c0_Feature"><span class="reference">Feature</span></a> ?
+    <span class="claferDecl" id="c0_LTE">LTE</span><span class="keyword"> : </span><a href="#c0_Feature"><span class="reference">Feature</span></a> ?
       <div class="indent">
       <span class="keyword">[</span> <a href="#c0_batterylife"><span class="reference">batterylife</span></a> = -1 <span class="keyword">]</span></div>
       <div class="indent">
@@ -92,7 +84,7 @@
       <span class="keyword">[</span> <a href="#c0_cost"><span class="reference">cost</span></a> = 3 <span class="keyword">]</span></div>
     </div>
     <div class="indent">
-    <span class="claferDecl" id="c0_WiFi">WiFi</span><span class="keyword"> :</span> <a href="#c0_Feature"><span class="reference">Feature</span></a> ?
+    <span class="claferDecl" id="c0_WiFi">WiFi</span><span class="keyword"> : </span><a href="#c0_Feature"><span class="reference">Feature</span></a> ?
       <div class="indent">
       <span class="keyword">[</span> <a href="#c0_batterylife"><span class="reference">batterylife</span></a> = -10 <span class="keyword">]</span></div>
       <div class="indent">
@@ -103,7 +95,7 @@
       <span class="keyword">[</span> <a href="#c0_cost"><span class="reference">cost</span></a> = 20 <span class="keyword">]</span></div>
     </div>
     <div class="indent">
-    <span class="claferDecl" id="c0_USB">USB</span><span class="keyword"> :</span> <a href="#c0_Feature"><span class="reference">Feature</span></a> ?
+    <span class="claferDecl" id="c0_USB">USB</span><span class="keyword"> : </span><a href="#c0_Feature"><span class="reference">Feature</span></a> ?
       <div class="indent">
       <span class="keyword">[</span> <a href="#c0_batterylife"><span class="reference">batterylife</span></a> = 10 <span class="keyword">]</span></div>
       <div class="indent">
@@ -115,17 +107,9 @@
     </div>
   </div>
   <div class="indent">
-  <span class="keyword">xor</span> <span class="claferDecl" id="c0_Battery">Battery</span><span class="keyword"> :</span> <a href="#c0_Feature"><span class="reference">Feature</span></a>
+  <span class="keyword">xor</span> <span class="claferDecl" id="c0_Battery">Battery</span>
     <div class="indent">
-    <span class="keyword">[</span> <a href="#c0_batterylife"><span class="reference">batterylife</span></a> = 0 <span class="keyword">]</span></div>
-    <div class="indent">
-    <span class="keyword">[</span> <a href="#c0_productivity"><span class="reference">productivity</span></a> = 0 <span class="keyword">]</span></div>
-    <div class="indent">
-    <span class="keyword">[</span> <a href="#c0_security"><span class="reference">security</span></a> = 0 <span class="keyword">]</span></div>
-    <div class="indent">
-    <span class="keyword">[</span> <a href="#c0_cost"><span class="reference">cost</span></a> = 0 <span class="keyword">]</span></div>
-    <div class="indent">
-    <span class="claferDecl" id="c0_LiBattery1150">LiBattery1150</span><span class="keyword"> :</span> <a href="#c0_Feature"><span class="reference">Feature</span></a>
+    <span class="claferDecl" id="c0_LiBattery1150">LiBattery1150</span><span class="keyword"> : </span><a href="#c0_Feature"><span class="reference">Feature</span></a>
       <div class="indent">
       <span class="keyword">[</span> <a href="#c0_batterylife"><span class="reference">batterylife</span></a> = 60 <span class="keyword">]</span></div>
       <div class="indent">
@@ -136,7 +120,7 @@
       <span class="keyword">[</span> <a href="#c0_cost"><span class="reference">cost</span></a> = 10 <span class="keyword">]</span></div>
     </div>
     <div class="indent">
-    <span class="claferDecl" id="c0_LiBattery1400">LiBattery1400</span><span class="keyword"> :</span> <a href="#c0_Feature"><span class="reference">Feature</span></a>
+    <span class="claferDecl" id="c0_LiBattery1400">LiBattery1400</span><span class="keyword"> : </span><a href="#c0_Feature"><span class="reference">Feature</span></a>
       <div class="indent">
       <span class="keyword">[</span> <a href="#c0_batterylife"><span class="reference">batterylife</span></a> = 70 <span class="keyword">]</span></div>
       <div class="indent">
@@ -148,13 +132,13 @@
     </div>
   </div>
   <div class="indent">
-  <span class="claferDecl" id="c0_total_productivity">total_productivity</span><span class="keyword"> :</span> <a href="#integer"><span class="reference">integer</span></a> = sum <a href="#c0_Feature"><span class="reference">Feature</span></a>.<a href="#c0_productivity"><span class="reference">productivity</span></a></div>
+  <span class="claferDecl" id="c0_total_productivity">total_productivity</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a> = sum <a href="#c0_Feature"><span class="reference">Feature</span></a>.<a href="#c0_productivity"><span class="reference">productivity</span></a></div>
   <div class="indent">
-  <span class="claferDecl" id="c0_total_batterylife">total_batterylife</span><span class="keyword"> :</span> <a href="#integer"><span class="reference">integer</span></a> = sum <a href="#c0_Feature"><span class="reference">Feature</span></a>.<a href="#c0_batterylife"><span class="reference">batterylife</span></a></div>
+  <span class="claferDecl" id="c0_total_batterylife">total_batterylife</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a> = sum <a href="#c0_Feature"><span class="reference">Feature</span></a>.<a href="#c0_batterylife"><span class="reference">batterylife</span></a></div>
   <div class="indent">
-  <span class="claferDecl" id="c0_total_security">total_security</span><span class="keyword"> :</span> <a href="#integer"><span class="reference">integer</span></a> = sum <a href="#c0_Feature"><span class="reference">Feature</span></a>.<a href="#c0_security"><span class="reference">security</span></a></div>
+  <span class="claferDecl" id="c0_total_security">total_security</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a> = sum <a href="#c0_Feature"><span class="reference">Feature</span></a>.<a href="#c0_security"><span class="reference">security</span></a></div>
   <div class="indent">
-  <span class="claferDecl" id="c0_total_cost">total_cost</span><span class="keyword"> :</span> <a href="#integer"><span class="reference">integer</span></a> = sum <a href="#c0_Feature"><span class="reference">Feature</span></a>.<a href="#c0_cost"><span class="reference">cost</span></a></div>
+  <span class="claferDecl" id="c0_total_cost">total_cost</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a> = sum <a href="#c0_Feature"><span class="reference">Feature</span></a>.<a href="#c0_cost"><span class="reference">cost</span></a></div>
 </div>
 
 <!-- # FRAGMENT /-->
@@ -177,5 +161,5 @@
 <!-- # FRAGMENT /-->
 
 <div>
-<span class="claferDecl" id="c0_OptimalPhone">OptimalPhone</span><span class="keyword"> :</span> <a href="#c0_MobilePhone"><span class="reference">MobilePhone</span></a></div>
+<span class="claferDecl" id="c0_OptimalPhone">OptimalPhone</span><span class="keyword"> : </span><a href="#c0_MobilePhone"><span class="reference">MobilePhone</span></a></div>
 

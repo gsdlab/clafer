@@ -44,7 +44,7 @@ data TypeInfo = TypeInfo {iTypeDecls::TypeDecls, iInfo::Info, iCurThis::SClafer,
 
 newtype TypeAnalysis a = TypeAnalysis (ReaderT TypeInfo (Either ClaferSErr) a)
   deriving (MonadError ClaferSErr, Monad, Functor, MonadReader TypeInfo, Applicative)
-  
+
 typeOfUid :: MonadTypeAnalysis m => String -> m IType
 typeOfUid uid = (fromMaybe (TClafer [uid]) . lookup uid) <$> typeDecls
 
@@ -52,11 +52,11 @@ class MonadAnalysis m => MonadTypeAnalysis m where
   -- What "this" refers to
   curThis :: m SClafer
   localCurThis :: SClafer -> m a -> m a
-  
+
   -- The next path is a child of curPath (or Nothing)
   curPath :: m (Maybe IType)
   localCurPath :: IType -> m a -> m a
-  
+
   -- Extra declarations
   typeDecls :: m TypeDecls
   localDecls :: TypeDecls -> m a -> m a
@@ -67,19 +67,19 @@ instance MonadTypeAnalysis TypeAnalysis where
     TypeAnalysis $ local setCurThis d
     where
     setCurThis t = t{iCurThis = newThis}
-    
+
   curPath = TypeAnalysis $ asks iCurPath
   localCurPath newPath (TypeAnalysis d) =
     TypeAnalysis $ local setCurPath d
     where
     setCurPath t = t{iCurPath = Just newPath}
-    
+
   typeDecls = TypeAnalysis $ asks iTypeDecls
   localDecls extra (TypeAnalysis d) =
     TypeAnalysis $ local addTypeDecls d
     where
     addTypeDecls t@TypeInfo{iTypeDecls = c} = t{iTypeDecls = extra ++ c}
-    
+
 instance MonadTypeAnalysis m => MonadTypeAnalysis (ListT m) where
   curThis = lift $ curThis
   localCurThis = mapListT . localCurThis
@@ -87,7 +87,7 @@ instance MonadTypeAnalysis m => MonadTypeAnalysis (ListT m) where
   localCurPath = mapListT . localCurPath
   typeDecls = lift typeDecls
   localDecls = mapListT . localDecls
-  
+
 instance MonadTypeAnalysis m => MonadTypeAnalysis (ErrorT ClaferSErr m) where
   curThis = lift $ curThis
   localCurThis = mapErrorT . localCurThis
@@ -95,7 +95,7 @@ instance MonadTypeAnalysis m => MonadTypeAnalysis (ErrorT ClaferSErr m) where
   localCurPath = mapErrorT . localCurPath
   typeDecls = lift typeDecls
   localDecls = mapErrorT . localDecls
-      
+
 
 instance MonadAnalysis TypeAnalysis where
   clafers = asks (sclafers . iInfo)
@@ -109,10 +109,10 @@ runTypeAnalysis :: TypeAnalysis a -> IModule -> Either ClaferSErr a
 runTypeAnalysis (TypeAnalysis tc) imodule = runReaderT tc $ TypeInfo [] (gatherInfo imodule) undefined Nothing
 
 unionType :: IType -> [String]
-unionType TString  = ["string"]
-unionType TReal    = ["real"]
-unionType TInteger = ["integer"]
-unionType TBoolean = ["boolean"]
+unionType TString  = [stringType]
+unionType TReal    = [realType]
+unionType TInteger = [integerType]
+unionType TBoolean = [booleanType]
 unionType (TClafer u) = u
 
 (+++) :: IType -> IType -> IType
@@ -133,7 +133,7 @@ closure :: MonadAnalysis m => [String] -> m [String]
 closure ut = concat <$> mapM hierarchy ut
 
 intersection :: MonadAnalysis m => IType -> IType -> m (Maybe IType)
-intersection t1 t2 = 
+intersection t1 t2 =
   do
     h1 <- mapM hierarchy $ unionType t1
     h2 <- mapM hierarchy $ unionType t2
@@ -173,7 +173,7 @@ getIfThenElseType :: MonadAnalysis m => IType -> IType -> m (Maybe IType)
 -- C : A
 -- Outputs:
 -- the resulting type is: A, and the type combination is valid
-getIfThenElseType t1 t2 = 
+getIfThenElseType t1 t2 =
   do
     h1 <- mapM hierarchy $ unionType t1
     h2 <- mapM hierarchy $ unionType t2
@@ -181,15 +181,15 @@ getIfThenElseType t1 t2 =
     return $ fromUnionType ut
   where
   commonHierarchy h1 h2 = filterClafer $ commonHierarchy' (reverse h1) (reverse h2) Nothing
-  commonHierarchy' (x:xs) (y:ys) accumulator = 
-    if (x == y) 
-      then 
-        if (null xs || null ys) 
+  commonHierarchy' (x:xs) (y:ys) accumulator =
+    if (x == y)
+      then
+        if (null xs || null ys)
           then Just x
-          else commonHierarchy' xs ys $ Just x 
+          else commonHierarchy' xs ys $ Just x
       else accumulator
-  commonHierarchy' _ _ _ = error "Function commonHierarchy' from ResolverType expects two non empty lists but was given at least one empty list!" -- Should never happen    
-  filterClafer value = 
+  commonHierarchy' _ _ _ = error "Function commonHierarchy' from ResolverType expects two non empty lists but was given at least one empty list!" -- Should never happen
+  filterClafer value =
     if (value == Just "clafer") then Nothing else value
 
 resolveTModule :: (IModule, GEnv) -> Either ClaferSErr IModule
@@ -198,7 +198,7 @@ resolveTModule (imodule, _) =
     Right mDecls' -> return imodule{_mDecls = mDecls'}
     Left err      -> throwError err
   where
-  analysis decls1 = mapM (resolveTElement $ rootUid) decls1
+  analysis decls1 = mapM (resolveTElement rootIdent) decls1
 
 resolveTElement :: String -> IElement -> TypeAnalysis IElement
 resolveTElement _ (IEClafer iclafer) =
@@ -217,14 +217,14 @@ resolveTElement parent' (IEGoal isMaximize' pexp') =
   IEGoal isMaximize' <$> resolveTConstraint parent' pexp'
 
 resolveTConstraint :: String -> PExp -> TypeAnalysis PExp
-resolveTConstraint curThis' constraint = 
+resolveTConstraint curThis' constraint =
   do
     curThis'' <- claferWithUid curThis'
     head <$> (localCurThis curThis'' $ (resolveTPExp constraint :: TypeAnalysis [PExp]))
-    
+
 
 resolveTPExp :: PExp -> TypeAnalysis [PExp]
-resolveTPExp p = 
+resolveTPExp p =
   do
     x <- resolveTPExp' p
     case partitionEithers x of
@@ -258,7 +258,7 @@ resolveTPExp' p@PExp{_inPos, _exp = IClaferId{_sident = "parent"}} =
           addRef result -- Case 2: Dereference the sident 1..* times
       Nothing -> throwError $ SemanticErr _inPos "Cannot parent at the start of a path"
 resolveTPExp' p@PExp{_exp = IClaferId{_sident = "integer"}} = runListT $ runErrorT $ return $ p `withType` TInteger
-resolveTPExp' p@PExp{_inPos, _exp = IClaferId{_sident}} = 
+resolveTPExp' p@PExp{_inPos, _exp = IClaferId{_sident}} =
   runListT $ runErrorT $ do
     curPath' <- curPath
     sident' <- if _sident == "this" then uid <$> curThis else return _sident
@@ -269,8 +269,8 @@ resolveTPExp' p@PExp{_inPos, _exp = IClaferId{_sident}} =
     return result -- Case 1: Use the sident
       <++>
       addRef result -- Case 2: Dereference the sident 1..* times
-  
-  
+
+
 resolveTPExp' p@PExp{_inPos, _exp} =
   runListT $ runErrorT $ do
     (iType', exp') <- ErrorT $ ListT $ resolveTExp _exp
@@ -292,6 +292,7 @@ resolveTPExp' p@PExp{_inPos, _exp} =
             | _op == iNot = test (t == TBoolean) >> return TBoolean
             | _op == iCSet = return TInteger
             | _op == iSumSet = test (t == TInteger) >> return TInteger
+            | _op == iProdSet = test (t == TInteger) >> return TInteger
             | _op `elem` [iMin, iGMin, iGMax] = test (numeric t) >> return t
             | otherwise = assert False $ error $ "Unknown op '" ++ _op ++ "'"
       result' <- result
@@ -304,7 +305,7 @@ resolveTPExp' p@PExp{_inPos, _exp} =
         localCurPath (typeOf arg1') $ do
             arg2' <- liftError $ lift $ ListT $ resolveTPExp arg2
             return (fromJust $ _iType arg2', e{_exps = [arg1', arg2']})
-      
+
   resolveTExp e@IFunExp {_op = "++", _exps = [arg1, arg2]} =
     do
       arg1s' <- resolveTPExp arg1
@@ -346,7 +347,7 @@ resolveTPExp' p@PExp{_inPos, _exp} =
       result' <- result
       return (result', e{_exps = [arg1', arg2']})
 
-  resolveTExp e@(IFunExp "=>else" [arg1, arg2, arg3]) =
+  resolveTExp e@(IFunExp "ifthenelse" [arg1, arg2, arg3]) =
     runListT $ runErrorT $ do
       arg1' <- lift $ ListT $ resolveTPExp arg1
       arg2' <- lift $ ListT $ resolveTPExp arg2
@@ -366,7 +367,7 @@ resolveTPExp' p@PExp{_inPos, _exp} =
         Nothing  -> throwError $ SemanticErr _inPos ("Function '=>else' cannot be performed on if '" ++ str t1 ++ "' then '" ++ str t2 ++ "' else '" ++ str t3 ++ "'")
 
       return (t, e{_exps = [arg1', arg2', arg3']})
-      
+
   resolveTExp e@IDeclPExp{_oDecls, _bpexp} =
     runListT $ runErrorT $ do
       oDecls' <- mapM resolveTDecl _oDecls
@@ -379,7 +380,7 @@ resolveTPExp' p@PExp{_inPos, _exp} =
       do
         body' <- lift $ ListT $ resolveTPExp _body
         return $ d{_body = body'}
-        
+
   resolveTExp e = error $ "Unknown iexp: " ++ show e
 
 -- Adds "refs" at the end, effectively dereferencing Clafers when needed.
@@ -392,7 +393,7 @@ addRef pexp =
       return result <++> addRef result
   where
   newPExp = PExp Nothing "" $ _inPos pexp
-  
+
 typeOf :: PExp -> IType
 typeOf pexp = fromMaybe (error "No type") $ _iType pexp
 

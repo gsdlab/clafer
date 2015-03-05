@@ -28,6 +28,7 @@ echo " OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 echo " SOFTWARE."
 echo "-}"
 echo "module Language.Clafer.Generator.Schema where"
+echo "xsd :: String"
 echo "xsd = concat [ \"\""
 # Remove all Windows style carriage returns
 #Set the internal field separator to empty string to preserve leading white space

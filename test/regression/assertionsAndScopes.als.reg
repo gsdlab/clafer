@@ -1,0 +1,29 @@
+open util/integer
+pred show {}
+
+
+fact { 2 <= #c0_a and #c0_a <= 2 }
+sig c0_a
+{ r_c0_b : set c0_b }
+{ 3 <= #r_c0_b and #r_c0_b <= 3 }
+
+sig c0_b
+{ r_c0_c : set c0_c }
+{ one @r_c0_b.this
+  #r_c0_c = 0
+  // Assertion assertOnLine_4 ignored since nested assertions are not supported in Alloy.
+ }
+
+sig c0_c
+{}
+{ one @r_c0_c.this }
+
+assert assertOnLine_6 { some c0_a.@r_c0_b }
+check assertOnLine_6 for 1 but 2 c0_a, 6 c0_b, 0 c0_c
+
+assert assertOnLine_8 { no (c0_a.@r_c0_b).@r_c0_c }
+check assertOnLine_8 for 1 but 2 c0_a, 6 c0_b, 0 c0_c
+
+assert assertOnLine_10 { (#(c0_a.@r_c0_b)) = 6 }
+check assertOnLine_10 for 1 but 2 c0_a, 6 c0_b, 0 c0_c
+

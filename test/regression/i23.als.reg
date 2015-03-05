@@ -13,11 +13,10 @@ one sig c0_Team
 { r_c0_Contractor : one c0_Contractor
 , r_c0_Member : set c0_Member }
 { 2 <= #r_c0_Member
-  all disj x, y : this.@r_c0_Member | (x.@ref) != (y.@ref) }
+  all disj x, y : this.@r_c0_Member | (x.@ref) != (y.@ref)  }
 
 one sig c0_Contractor extends c0_Person
 { r_c0_since : one c0_since }
-{ all disj x, y : this.@r_c0_since | (x.@ref) != (y.@ref) }
 
 one sig c0_since
 { ref : one Int }

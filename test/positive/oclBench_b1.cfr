@@ -1,16 +1,16 @@
 abstract Person
-	name : string
-	civstat : string
-	gender : string
+	name -> string
+	civstat -> string
+	gender -> string
 	alive ?
 	husband -> Person ?
 		[parent in this.wife]
 	wife -> Person ?
 		[parent in this.husband]
-	[civstat = "single" || civstat ="married"|| civstat ="divorced"|| civstat = "widowed"]	
+	[civstat = "single" || civstat ="married"|| civstat ="divorced"|| civstat = "widowed"]
 	[gender = "female"|| gender ="male"]
 	[all p:Person|this != p =>  this.name.ref!=p.name.ref]
-	[one p:Person|p.name.ref = this.name.ref]	
+	[one p:Person|p.name.ref = this.name.ref]
 
 ada : Person
 	[name = "Ada"
@@ -85,12 +85,12 @@ emptyPersonSet2 -> Person *
 personPair *
 	first -> Person
 	second -> Person
-	
+
 possiblePairs -> personPair *
 	[this.first.gender = "female" && this.first.alive && this.first.civstat!="married"
 	this.second.gender = "male" && this.second.alive && this.second.civstat!="married"]
 [all p;q:Person|(p.gender = "female" && p.alive && p.civstat!="married" && q.gender = "male" && q.alive && q.civstat!="married") => (one pair:personPair|pair.first = p && pair.second = q && pair in possiblePairs)]
-	
+
 
 stringSet1 -> string 3
 	[this="Ada" || this="Bob"||this="Cyd"]

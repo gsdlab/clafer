@@ -6,6 +6,6 @@ nodesep=0.1;
 graph [fontname=Sans fontsize=11];
 node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
 edge [fontname=Sans fontsize=11];
-"c0_A" [label="A" URL="#c0_A" tooltip="A&#10;  b ->> A ?&#10;    [ parent ]&#10;  [ this ]&#10;"];
+"c0_A" [label="A" URL="#c0_A" tooltip="A&#10;  b -&gt;&gt; A ?&#10;    [ parent ]&#10;  [ this ]&#10;"];
 "c0_A" -> "c0_A" [arrowhead=veevee arrowsize=0.6 minlen=1.5 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=b];
 }

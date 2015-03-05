@@ -2,7 +2,7 @@
 <div>
 <span class="keyword">abstract</span> <span class="claferDecl" id="c0_Book">Book</span>
   <div class="indent">
-  <span class="claferDecl" id="c0_author">author</span><span class="keyword"> -></span> <a href="#c0_Author"><span class="reference">Author</span></a> +
+  <span class="claferDecl" id="c0_author">author</span><span class="keyword"> -> </span><a href="#c0_Author"><span class="reference">Author</span></a> +
     <div class="indent">
     <span class="keyword">[</span> <a href="#Uid not found"><span class="reference">Book</span></a> in <a href="#this"><span class="reference">this</span></a>.<a href="#c0_book"><span class="reference">book</span></a> <span class="keyword">]</span></div>
   </div>
@@ -12,7 +12,7 @@
 <div>
 <span class="keyword">abstract</span> <span class="claferDecl" id="c0_Author">Author</span>
   <div class="indent">
-  <span class="claferDecl" id="c0_book">book</span><span class="keyword"> -></span> <a href="#c0_Book"><span class="reference">Book</span></a> +
+  <span class="claferDecl" id="c0_book">book</span><span class="keyword"> -> </span><a href="#c0_Book"><span class="reference">Book</span></a> +
     <div class="indent">
     <span class="keyword">[</span> <a href="#Uid not found"><span class="reference">Author</span></a> in <a href="#this"><span class="reference">this</span></a>.<a href="#c0_author"><span class="reference">author</span></a> <span class="keyword">]</span></div>
   </div>
@@ -20,9 +20,9 @@
 
 
 <div>
-<span class="claferDecl" id="c0_B">B</span><span class="keyword"> :</span> <a href="#c0_Book"><span class="reference">Book</span></a> 5</div>
+<span class="claferDecl" id="c0_B">B</span><span class="keyword"> : </span><a href="#c0_Book"><span class="reference">Book</span></a> 5</div>
 
 
 <div>
-<span class="claferDecl" id="c0_A">A</span><span class="keyword"> :</span> <a href="#c0_Author"><span class="reference">Author</span></a> 6</div>
+<span class="claferDecl" id="c0_A">A</span><span class="keyword"> : </span><a href="#c0_Author"><span class="reference">Author</span></a> 6</div>
 

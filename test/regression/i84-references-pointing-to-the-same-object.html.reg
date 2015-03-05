@@ -2,7 +2,7 @@
 <div>
 <span class="keyword">abstract</span> <span class="claferDecl" id="c0_Dimension">Dimension</span>
   <div class="indent">
-  <span class="claferDecl" id="c0_levels">levels</span><span class="keyword"> -></span> <a href="#c0_DimensionLevel"><span class="reference">DimensionLevel</span></a> *</div>
+  <span class="claferDecl" id="c0_levels">levels</span><span class="keyword"> -> </span><a href="#c0_DimensionLevel"><span class="reference">DimensionLevel</span></a> *</div>
   <div class="indent">
   <span class="keyword">[</span> all dl<span class="keyword"> : </span><a href="#this"><span class="reference">this</span></a>.<a href="#c0_levels"><span class="reference">levels</span></a> | <a href="#dl"><span class="reference">dl</span></a>.<a href="#c0_belongsTo"><span class="reference">belongsTo</span></a>.<a href="#ref"><span class="reference">ref</span></a> = <a href="#this"><span class="reference">this</span></a> <span class="keyword">]</span></div>
 </div>
@@ -11,24 +11,24 @@
 <div>
 <span class="keyword">abstract</span> <span class="claferDecl" id="c0_DimensionLevel">DimensionLevel</span>
   <div class="indent">
-  <span class="claferDecl" id="c0_belongsTo">belongsTo</span><span class="keyword"> -></span> <a href="#c0_Dimension"><span class="reference">Dimension</span></a></div>
+  <span class="claferDecl" id="c0_belongsTo">belongsTo</span><span class="keyword"> -> </span><a href="#c0_Dimension"><span class="reference">Dimension</span></a></div>
 </div>
 
 
 <div>
-<span class="claferDecl" id="c0_dim1">dim1</span><span class="keyword"> :</span> <a href="#c0_Dimension"><span class="reference">Dimension</span></a></div>
+<span class="claferDecl" id="c0_dim1">dim1</span><span class="keyword"> : </span><a href="#c0_Dimension"><span class="reference">Dimension</span></a></div>
 
 
 <div>
-<span class="claferDecl" id="c0_dim2">dim2</span><span class="keyword"> :</span> <a href="#c0_Dimension"><span class="reference">Dimension</span></a></div>
+<span class="claferDecl" id="c0_dim2">dim2</span><span class="keyword"> : </span><a href="#c0_Dimension"><span class="reference">Dimension</span></a></div>
 
 
 <div>
-<span class="claferDecl" id="c0_dimLevel1">dimLevel1</span><span class="keyword"> :</span> <a href="#c0_DimensionLevel"><span class="reference">DimensionLevel</span></a></div>
+<span class="claferDecl" id="c0_dimLevel1">dimLevel1</span><span class="keyword"> : </span><a href="#c0_DimensionLevel"><span class="reference">DimensionLevel</span></a></div>
 
 
 <div>
-<span class="claferDecl" id="c0_dimLevel2">dimLevel2</span><span class="keyword"> :</span> <a href="#c0_DimensionLevel"><span class="reference">DimensionLevel</span></a></div>
+<span class="claferDecl" id="c0_dimLevel2">dimLevel2</span><span class="keyword"> : </span><a href="#c0_DimensionLevel"><span class="reference">DimensionLevel</span></a></div>
 
 
 <div>

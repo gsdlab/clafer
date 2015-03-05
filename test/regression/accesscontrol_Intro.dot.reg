@@ -7,7 +7,7 @@ graph [fontname=Sans fontsize=11];
 node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
 edge [fontname=Sans fontsize=11];
 "c0_Value" [label="abstract Value" URL="#c0_Value" tooltip="abstract Value&#10;"];
-"c0_Attribute" [label="abstract Attribute" URL="#c0_Attribute" tooltip="abstract Attribute&#10;  value -> Value&#10;"];
+"c0_Attribute" [label="abstract Attribute" URL="#c0_Attribute" tooltip="abstract Attribute&#10;  value -&gt; Value&#10;"];
 "c0_Attribute" -> "c0_Value" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=value];
 "c0_ActionName" [label="abstract ActionName : Attribute" URL="#c0_ActionName" tooltip="abstract ActionName : Attribute&#10;"];
 "c0_ActionName" -> "c0_Attribute" [arrowhead=onormal constraint=true weight=100];
@@ -16,5 +16,6 @@ edge [fontname=Sans fontsize=11];
 "c0_ResourceName" [label="abstract ResourceName : Attribute" URL="#c0_ResourceName" tooltip="abstract ResourceName : Attribute&#10;"];
 "c0_ResourceName" -> "c0_Attribute" [arrowhead=onormal constraint=true weight=100];
 "c0_Element" [label="abstract Element" URL="#c0_Element" tooltip="abstract Element&#10;  abstract attributes : Attribute *&#10;"];
-"c0_Element" -> "c0_Attribute" [arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];
+"c0_attributes" [label="abstract attributes : Attribute *" URL="#c0_attributes" tooltip="abstract attributes : Attribute *&#10;"];
+"c0_attributes" -> "c0_Attribute" [arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];
 }

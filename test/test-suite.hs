@@ -32,6 +32,7 @@ import Language.Clafer.Intermediate.Intclafer
 import Suite.Positive
 import Suite.Negative
 import Suite.SimpleScopeAnalyser
+import Suite.Redefinition
 import Functions
 import Test.Tasty
 import Test.Tasty.HUnit
@@ -41,7 +42,13 @@ tg_Main_Test_Suite :: TestTree
 tg_Main_Test_Suite = $(testGroupGenerator)
 
 main :: IO ()
-main = defaultMain $ testGroup "Tests" [tg_Main_Test_Suite, tg_Test_Suite_Positive, tg_Test_Suite_Negative, tg_Test_Suite_SimpleScopeAnalyser]
+main = defaultMain $ testGroup "Tests"
+    [ tg_Test_Suite_Redefinition
+    , tg_Main_Test_Suite
+    , tg_Test_Suite_Positive
+    , tg_Test_Suite_Negative
+    , tg_Test_Suite_SimpleScopeAnalyser
+    ]
 
 {-
 a            // ::a -> c0_a
@@ -66,29 +73,29 @@ model = "a\n    b\nb\nc\n    d\n         b\nd\n    b"
 
 case_FQMapLookup :: Assertion
 case_FQMapLookup = do
-	let
-		(Just (iModule, _, _)) = cIr $ claferEnv $ fromJust $ Map.lookup Alloy $ fromRight $ compileOneFragment defaultClaferArgs model
-		qNameMaps = deriveQNameMaps iModule
-	[ "c0_a" ] == getUIDs qNameMaps "::a"  @? "UID for `::a` different from `c0_a`"
-	[ "c0_b" ] == getUIDs qNameMaps "::a::b"  @? "UID for `::a::b` different from `c0_b`"
-	[ "c1_b" ] == getUIDs qNameMaps "::b"  @? "UID for `::b` different from `c1_b`"
-	[ "c0_c" ] == getUIDs qNameMaps "::c"  @? "UID for `::c` different from `c0_c`"
-	[ "c0_d" ] == getUIDs qNameMaps "::c::d"  @? "UID for `::c::d` different from `c0_d`"
-	[ "c0_d" ] == getUIDs qNameMaps "c::d"  @? "UID for `c::d` different from `c0_d`"
-	[ "c2_b" ] == getUIDs qNameMaps "::c::d::b"  @? "UID for `::c::d::b` different from `c2_b`"
-	[ "c1_d" ] == getUIDs qNameMaps "::d"  @? "UID for `::d` different from `c1_d`"
-	[ "c3_b" ] == getUIDs qNameMaps "::d::b"  @? "UID for `::d::b` different from `c3_d`"
-	null ([ "c0_b", "c1_b", "c2_b", "c3_b" ] \\ (getUIDs qNameMaps "b" )) @? "UIDs for `b` different from `c0_b`, `c1_b`, `c2_b`, `c3_b` "
-	null ([ "c2_b", "c3_b" ] \\ (getUIDs qNameMaps "d::b" )) @? "UIDs for `d::b` different from `c2_b`, `c3_b` "
-	null ([ "c0_d", "c1_d" ] \\ (getUIDs qNameMaps "d" )) @? "UIDs for `d` different from `c0_d`, `c1_d` "	
-	null (getUIDs qNameMaps "x") @? "UID for `x` different from []"
-	null (getUIDs qNameMaps "::x") @? "UID for `::x` different from []"
+    let
+        (Just (iModule, _, _)) = cIr $ claferEnv $ fromJust $ Map.lookup Alloy42 $ fromRight $ compileOneFragment defaultClaferArgs model
+        qNameMaps = deriveQNameMaps iModule
+    [ "c0_a" ] == getUIDs qNameMaps "::a"  @? "UID for `::a` different from `c0_a`"
+    [ "c0_b" ] == getUIDs qNameMaps "::a::b"  @? "UID for `::a::b` different from `c0_b`"
+    [ "c1_b" ] == getUIDs qNameMaps "::b"  @? "UID for `::b` different from `c1_b`"
+    [ "c0_c" ] == getUIDs qNameMaps "::c"  @? "UID for `::c` different from `c0_c`"
+    [ "c0_d" ] == getUIDs qNameMaps "::c::d"  @? "UID for `::c::d` different from `c0_d`"
+    [ "c0_d" ] == getUIDs qNameMaps "c::d"  @? "UID for `c::d` different from `c0_d`"
+    [ "c2_b" ] == getUIDs qNameMaps "::c::d::b"  @? "UID for `::c::d::b` different from `c2_b`"
+    [ "c1_d" ] == getUIDs qNameMaps "::d"  @? "UID for `::d` different from `c1_d`"
+    [ "c3_b" ] == getUIDs qNameMaps "::d::b"  @? "UID for `::d::b` different from `c3_d`"
+    null ([ "c0_b", "c1_b", "c2_b", "c3_b" ] \\ (getUIDs qNameMaps "b" )) @? "UIDs for `b` different from `c0_b`, `c1_b`, `c2_b`, `c3_b` "
+    null ([ "c2_b", "c3_b" ] \\ (getUIDs qNameMaps "d::b" )) @? "UIDs for `d::b` different from `c2_b`, `c3_b` "
+    null ([ "c0_d", "c1_d" ] \\ (getUIDs qNameMaps "d" )) @? "UIDs for `d` different from `c0_d`, `c1_d` "
+    null (getUIDs qNameMaps "x") @? "UID for `x` different from []"
+    null (getUIDs qNameMaps "::x") @? "UID for `::x` different from []"
 
 case_AllClafersGenerics :: Assertion
 case_AllClafersGenerics = do
-	let
-		(Just (iModule, _, _)) = cIr $ claferEnv $ fromJust $ Map.lookup Alloy $ fromRight $ compileOneFragment defaultClaferArgs model
-		allClafers :: [ IClafer ]
-		allClafers = universeOn biplate iModule
-		allClafersUids = map _uid allClafers
-	allClafersUids == [ "c0_a", "c0_b", "c1_b", "c0_c", "c0_d", "c2_b", "c1_d", "c3_b"] @? "All clafers\n" ++ show allClafersUids
+    let
+        (Just (iModule, _, _)) = cIr $ claferEnv $ fromJust $ Map.lookup Alloy42 $ fromRight $ compileOneFragment defaultClaferArgs model
+        allClafers :: [ IClafer ]
+        allClafers = universeOn biplate iModule
+        allClafersUids = map _uid allClafers
+    allClafersUids == [ "c0_a", "c0_b", "c1_b", "c0_c", "c0_d", "c2_b", "c1_d", "c3_b"] @? "All clafers\n" ++ show allClafersUids

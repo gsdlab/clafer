@@ -23,16 +23,16 @@
 module Language.Clafer.QNameUID (
         QName,
         FQName,
-        PQName, 
+        PQName,
         QNameMaps,
         UID,
         deriveQNameMaps,
         getUIDs,
         getFQName,
         getLPQName,
-        getQNameUIDTriples 
+        getQNameUIDTriples
 )
-        
+
 where
 
 import Data.Maybe
@@ -54,7 +54,7 @@ type FQKey = String
 
 -- | partially-qualified name, must not begin with ::
 -- | e.g., `Person::name`, `chair`
-type PQName = String    
+type PQName = String
 
 -- a map from reversed FQName (FQKey) to UID
 type FQNameUIDMap = SMap.StringMap UID
@@ -71,19 +71,19 @@ getUIDs    (QNameMaps fqNameUIDMap _ _) qName = findUIDsByFQName fqNameUIDMap qN
 
 -- | get the fully-qualified name of a clafer given its UID
 getFQName :: QNameMaps                 -> UID -> Maybe FQName
-getFQName    (QNameMaps _ uidFqNameMap _) uid' = Map.lookup uid' uidFqNameMap 
+getFQName    (QNameMaps _ uidFqNameMap _) uid' = Map.lookup uid' uidFqNameMap
 
 -- | get the least-partially-qualified name of a clafer given its UID
 getLPQName :: QNameMaps                 -> UID -> Maybe PQName
-getLPQName    (QNameMaps _ _ uidLpqNameMap) uid' = Map.lookup uid' uidLpqNameMap 
+getLPQName    (QNameMaps _ _ uidLpqNameMap) uid' = Map.lookup uid' uidLpqNameMap
 
 -- | derive maps between fully-, partially-qualified names, and UIDs
 deriveQNameMaps :: IModule -> QNameMaps
-deriveQNameMaps    iModule = 
+deriveQNameMaps    iModule =
     let
         (fqNameUIDMap, uidFqNameMap) = deriveFQNameUIDMaps iModule
         uidLpqNameMap = deriveUidLpqNameMap fqNameUIDMap
-    in 
+    in
         QNameMaps fqNameUIDMap uidFqNameMap uidLpqNameMap
 
 deriveFQNameUIDMaps :: IModule -> (FQNameUIDMap, UIDFqNameMap)
@@ -93,22 +93,22 @@ addElements :: [String] -> [IElement] -> (FQNameUIDMap, UIDFqNameMap) -> (FQName
 addElements    path        elems         maps                         = foldl (addClafer path) maps elems
 
 addClafer :: [String] -> (FQNameUIDMap, UIDFqNameMap) -> IElement          -> (FQNameUIDMap, UIDFqNameMap)
-addClafer    path        (fqNameUIDMap, uidFqNameMap)    (IEClafer iClaf) = 
-    let 
-        newPath = (_ident iClaf) : path 
+addClafer    path        (fqNameUIDMap, uidFqNameMap)    (IEClafer iClaf) =
+    let
+        newPath = (_ident iClaf) : path
         fqKey :: FQKey
         fqKey = concat newPath
         fqName :: FQName
         fqName = getQNameFromKey fqKey
         fqNameUIDMap' = SMap.insert fqKey (_uid iClaf) fqNameUIDMap
         uidFqNameMap' = Map.insert (_uid iClaf) fqName uidFqNameMap
-    in 
+    in
         addElements ("::" : newPath) (_elements iClaf) (fqNameUIDMap', uidFqNameMap')
 addClafer    _           maps                            _                  = maps
 
 findUIDsByFQName :: FQNameUIDMap -> FQName            -> [ UID ]
 findUIDsByFQName    fqNameUIDMap    fqName@(':':':':_) = SMap.lookup (getFQKey fqName) fqNameUIDMap
-findUIDsByFQName    fqNameUIDMap    fqName             = SMap.prefixFind (getFQKey fqName) fqNameUIDMap 
+findUIDsByFQName    fqNameUIDMap    fqName             = SMap.prefixFind (getFQKey fqName) fqNameUIDMap
 
 reverseOnQualifier :: FQName -> FQName
 reverseOnQualifier fqName = concat $ reverse $ split (onSublist "::") fqName
@@ -120,11 +120,11 @@ getQNameFromKey :: FQKey -> QName
 getQNameFromKey = reverseOnQualifier
 
 deriveUidLpqNameMap :: FQNameUIDMap ->  UIDLpqNameMap
-deriveUidLpqNameMap    fqNameUIDMap = 
+deriveUidLpqNameMap    fqNameUIDMap =
     SMap.foldrWithKey (generateUIDLpqMapEntry fqNameUIDMap) Map.empty fqNameUIDMap
 
 generateUIDLpqMapEntry :: FQNameUIDMap ->  SMap.Key -> UID -> UIDLpqNameMap -> UIDLpqNameMap
-generateUIDLpqMapEntry    fqNameUIDMap     fqKey       uid'   uidLpqNameMap = 
+generateUIDLpqMapEntry    fqNameUIDMap     fqKey       uid'   uidLpqNameMap =
     Map.insert uid' lpqName uidLpqNameMap
     where
       -- need to reverse the key to get a fully qualified name
@@ -145,12 +145,12 @@ generateUIDLpqMapEntry    fqNameUIDMap     fqKey       uid'   uidLpqNameMap =
       -- handle partially qualified name case
       findLeastQualifiedName pqName fqNameUIDMap' =
          let
-            -- remove one segment of qualification 
+            -- remove one segment of qualification
             lessQName =  concat $ drop 2 $ split (onSublist "::") pqName
-         in 
+         in
             if (length (findUIDsByFQName fqNameUIDMap' lessQName) > 1)
               then pqName
-              else findLeastQualifiedName lessQName fqNameUIDMap'      
+              else findLeastQualifiedName lessQName fqNameUIDMap'
 
 getQNameUIDTriples :: QNameMaps -> [(FQName, PQName, UID)]
 getQNameUIDTriples qNameMaps@(QNameMaps _ uidFqNameMap _) =
