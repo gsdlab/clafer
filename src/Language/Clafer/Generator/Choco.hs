@@ -228,6 +228,7 @@ genCModule (imodule@IModule{_mDecls}, genv') scopes =
     mapFunc "+" = "add"
     mapFunc "*" = "mul"
     mapFunc "/" = "div"
+    mapFunc "%" = "mod"
     mapFunc "++" = "union"
     mapFunc "--" = "diff"
     mapFunc "**" = "inter"

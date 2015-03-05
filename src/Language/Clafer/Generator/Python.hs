@@ -187,7 +187,7 @@ genPythonModule (imodule@IModule{_mDecls}, genv') scopes =
     genConstraintExp (IFunExp "sum" args')
         | [arg] <- args', PExp{_exp = IFunExp{_exps = [a, PExp{_exp = IClaferId{_sident = "ref"}}]}} <- rewrite arg =
             "sum(" ++ genConstraintPExp a ++ ")"
-        | otherwise = error "Choco: Unexpected sum argument."
+        | otherwise = error "Python: Unexpected sum argument."
     genConstraintExp (IFunExp "+" args') =
 	(if _iType (head args') == Just TString then "concat" else "add") ++
             "(" ++ intercalate ", " (map genConstraintPExp args') ++ ")"
@@ -226,11 +226,12 @@ genPythonModule (imodule@IModule{_mDecls}, genv') scopes =
     mapFunc "+" = "add"
     mapFunc "*" = "mul"
     mapFunc "/" = "div"
+    mapFunc "%" = "mod"
     mapFunc "++" = "set_union"
     mapFunc "--" = "set_diff"
     mapFunc "**" = "set_inter"
     mapFunc "ifthenelse" = "ifThenElse"
-    mapFunc op' = error $ "Choco: Unknown op: " ++ op'
+    mapFunc op' = error $ "Python: Unknown op: " ++ op'
 
 {-    sidentOf u = ident $ claferWithUid u
     scopeOf "integer" = undefined

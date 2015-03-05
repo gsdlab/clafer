@@ -378,7 +378,7 @@ resolveTPExp' p@PExp{_inPos, _exp} =
             | _op == iIntersection = testNotSame arg1' arg2' >> testIntersect t1 t2
             | _op `elem` [iDomain, iRange] = testIntersect t1 t2
             | _op `elem` relSetBinOps = testIntersect t1 t2 >> return TBoolean
-            | _op `elem` [iSub, iMul, iDiv] = test (numeric t1 && numeric t2) >> return (coerce t1 t2)
+            | _op `elem` [iSub, iMul, iDiv, iRem] = test (numeric t1 && numeric t2) >> return (coerce t1 t2)
             | _op == iPlus =
                 (test (t1 == TString && t2 == TString) >> return TString) -- Case 1: String concatenation
                 `catchError`

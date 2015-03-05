@@ -427,11 +427,14 @@ iMul          = "*"
 iDiv :: String
 iDiv          = "/"
 
+iRem :: String
+iRem          = "%"
+
 iSumSet' :: String
 iSumSet'      = "sum'"
 
 arithBinOps :: [String]
-arithBinOps = [iPlus, iSub, iMul, iDiv, iSumSet']
+arithBinOps = [iPlus, iSub, iMul, iDiv, iRem, iSumSet']
 
 iUnion :: String
 iUnion        = "++"

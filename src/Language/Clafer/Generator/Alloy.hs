@@ -513,6 +513,7 @@ genOp    _             op'
   | op' == iSub  = [".sub[", "]"]
   | op' == iMul = [".mul[", "]"]
   | op' == iDiv = [".div[", "]"]
+  | op' == iRem = [".rem[", "]"]
   | op' `elem` logBinOps ++ relBinOps ++ arithBinOps = [" " ++ op' ++ " "]
   | op' == iUnion = [" + "]
   | op' == iDifference = [" - "]

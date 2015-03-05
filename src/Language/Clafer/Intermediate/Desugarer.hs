@@ -301,6 +301,7 @@ desugarExp' x = case x of
   ESub _ exp0 exp'  -> dop iSub [exp0, exp']
   EMul _ exp0 exp'  -> dop iMul [exp0, exp']
   EDiv _ exp0 exp'  -> dop iDiv [exp0, exp']
+  ERem _ exp0 exp'  -> dop iRem [exp0, exp']
   ECSetExp _ exp'   -> dop iCSet [exp']
   ESumSetExp _ exp' -> dop iSumSet [exp']
   EProdSetExp _ exp' -> dop iProdSet [exp']
@@ -400,6 +401,7 @@ sugarExp' x = case x of
     | op'' == iSub           = ESub noSpan
     | op'' == iMul           = EMul noSpan
     | op'' == iDiv           = EDiv noSpan
+    | op'' == iRem           = ERem noSpan
     | otherwise            = error $ show op'' ++ "is not an op"
   sugarTerOp op''
     | op'' == iIfThenElse    = EImpliesElse noSpan
