@@ -147,6 +147,7 @@ makeEnv args' = ClaferEnv { args = args'',
                            frags = [],
                            astModuleTrace = Map.empty,
                            cImports = []}
+    where
                   args'' = if (CVLGraph `elem` (mode args') ||
                                Html `elem` (mode args') ||
                                Graph `elem` (mode args'))

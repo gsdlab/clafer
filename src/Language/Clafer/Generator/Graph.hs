@@ -99,7 +99,7 @@ graphSimpleClafer (Clafer s abstract gCard id' super' reference' crd init' es) (
 -- nested abstract
 graphSimpleClafer (Clafer s abstract@(Abstract _) gCard id' super' reference' crd init' es) (False, _, _) irMap showRefs =
   let
-    tooltip = genTooltip (Module s [ElementDecl s (Subclafer s (Clafer s abstract gCard id' super' reference' crd init' es))]) irMap
+    tooltip = genTooltip (Module s [] [ElementDecl s (Subclafer s (Clafer s abstract gCard id' super' reference' crd init' es))]) irMap
     uid' = getDivId s irMap
   in
      "\"" ++

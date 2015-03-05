@@ -72,11 +72,7 @@ traceAstModule x =
   i (AstLocId a) = getSpan a
 
 traverseModule :: Module -> [Ast]
-<<<<<<< HEAD
 traverseModule x@(Module _ i d) = AstModule x : (map AstImport i ++ concatMap traverseDeclaration d)
-=======
-traverseModule x@(Module _ d) = AstModule x : concatMap traverseDeclaration d
->>>>>>> develop
 
 traverseDeclaration :: Declaration -> [Ast]
 traverseDeclaration x =
