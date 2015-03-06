@@ -140,7 +140,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c1_fca</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c1_fca</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
@@ -181,7 +181,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c1_cc</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c1_cc</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
@@ -570,7 +570,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_car</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_car</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
@@ -869,7 +869,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_camaro</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_camaro</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>

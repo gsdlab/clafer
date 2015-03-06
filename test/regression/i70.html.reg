@@ -23,8 +23,8 @@
     <span class="claferDecl" id="c1_Type2">Type2</span></div>
   </div>
   <div class="indent">
-  <span class="keyword">[</span> <a href="#c1_type"><span class="reference">type</span></a>.<a href="#c1_Type1"><span class="reference">Type1</span></a> => <a href="#c0_clafer1"><span class="reference">clafer1</span></a>.<a href="#c0_type"><span class="reference">type</span></a>.<a href="#c0_Type2"><span class="reference">Type2</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <a href="#c1_type"><span class="reference">type</span></a>.<a href="#c1_Type1"><span class="reference">Type1</span></a> =&gt; <a href="#c0_clafer1"><span class="reference">clafer1</span></a>.<a href="#c0_type"><span class="reference">type</span></a>.<a href="#c0_Type2"><span class="reference">Type2</span></a> <span class="keyword">]</span></div>
   <div class="indent">
-  <span class="keyword">[</span> <a href="#this"><span class="reference">this</span></a>.<a href="#c1_type"><span class="reference">type</span></a>.<a href="#c1_Type1"><span class="reference">Type1</span></a> => <a href="#c0_clafer1"><span class="reference">clafer1</span></a>.<a href="#c0_type"><span class="reference">type</span></a>.<a href="#c0_Type2"><span class="reference">Type2</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <a href="#this"><span class="reference">this</span></a>.<a href="#c1_type"><span class="reference">type</span></a>.<a href="#c1_Type1"><span class="reference">Type1</span></a> =&gt; <a href="#c0_clafer1"><span class="reference">clafer1</span></a>.<a href="#c0_type"><span class="reference">type</span></a>.<a href="#c0_Type2"><span class="reference">Type2</span></a> <span class="keyword">]</span></div>
 </div>
 

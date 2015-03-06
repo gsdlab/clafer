@@ -77,11 +77,11 @@
 
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_F">F</span><span class="keyword"> : </span><a href="#c0_H"><span class="reference">H</span></a></div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_FF">FF</span><span class="keyword"> : </span><a href="#c0_H"><span class="reference">H</span></a></div>
 
 
 <div>
-<span class="claferDecl" id="c0_f1">f1</span><span class="keyword"> : </span><a href="#c0_F"><span class="reference">F</span></a> 2..5
+<span class="claferDecl" id="c0_f1">f1</span><span class="keyword"> : </span><a href="#c0_FF"><span class="reference">FF</span></a> 2..5
   <div class="indent">
   <span class="claferDecl" id="c0_m">m</span> 0</div>
 </div>

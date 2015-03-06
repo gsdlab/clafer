@@ -99,7 +99,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Entity</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Entity</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
@@ -220,7 +220,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Entity</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Entity</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
@@ -341,7 +341,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Entity</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Entity</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>

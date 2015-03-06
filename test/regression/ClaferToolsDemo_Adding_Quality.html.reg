@@ -26,15 +26,7 @@
     <div class="indent">
     <span class="keyword">[</span> <a href="#c0_cost"><span class="reference">cost</span></a> = 101 <span class="keyword">]</span></div>
     <div class="indent">
-    <span class="keyword">xor</span> <span class="claferDecl" id="c0_Bluetooth">Bluetooth</span><span class="keyword"> : </span><a href="#c0_Feature"><span class="reference">Feature</span></a>
-      <div class="indent">
-      <span class="keyword">[</span> <a href="#c0_batterylife"><span class="reference">batterylife</span></a> = 0 <span class="keyword">]</span></div>
-      <div class="indent">
-      <span class="keyword">[</span> <a href="#c0_productivity"><span class="reference">productivity</span></a> = 0 <span class="keyword">]</span></div>
-      <div class="indent">
-      <span class="keyword">[</span> <a href="#c0_security"><span class="reference">security</span></a> = 0 <span class="keyword">]</span></div>
-      <div class="indent">
-      <span class="keyword">[</span> <a href="#c0_cost"><span class="reference">cost</span></a> = 0 <span class="keyword">]</span></div>
+    <span class="keyword">xor</span> <span class="claferDecl" id="c0_Bluetooth">Bluetooth</span>
       <div class="indent">
       <span class="claferDecl" id="c0_Bluetooth20EDR">Bluetooth20EDR</span><span class="keyword"> : </span><a href="#c0_Feature"><span class="reference">Feature</span></a>
         <div class="indent">
@@ -115,15 +107,7 @@
     </div>
   </div>
   <div class="indent">
-  <span class="keyword">xor</span> <span class="claferDecl" id="c0_Battery">Battery</span><span class="keyword"> : </span><a href="#c0_Feature"><span class="reference">Feature</span></a>
-    <div class="indent">
-    <span class="keyword">[</span> <a href="#c0_batterylife"><span class="reference">batterylife</span></a> = 0 <span class="keyword">]</span></div>
-    <div class="indent">
-    <span class="keyword">[</span> <a href="#c0_productivity"><span class="reference">productivity</span></a> = 0 <span class="keyword">]</span></div>
-    <div class="indent">
-    <span class="keyword">[</span> <a href="#c0_security"><span class="reference">security</span></a> = 0 <span class="keyword">]</span></div>
-    <div class="indent">
-    <span class="keyword">[</span> <a href="#c0_cost"><span class="reference">cost</span></a> = 0 <span class="keyword">]</span></div>
+  <span class="keyword">xor</span> <span class="claferDecl" id="c0_Battery">Battery</span>
     <div class="indent">
     <span class="claferDecl" id="c0_LiBattery1150">LiBattery1150</span><span class="keyword"> : </span><a href="#c0_Feature"><span class="reference">Feature</span></a>
       <div class="indent">

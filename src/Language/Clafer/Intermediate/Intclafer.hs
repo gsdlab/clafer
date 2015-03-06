@@ -23,7 +23,7 @@
 -- | Intermediate representation (IR) of a Clafer model
 module Language.Clafer.Intermediate.Intclafer where
 
-import Language.Clafer.Front.Absclafer
+import Language.Clafer.Front.AbsClafer
 
 import Control.Lens
 import Data.Data
@@ -205,7 +205,7 @@ For IFunExp standard set of operators includes:
         /          - division
         ++         - set union
         \-\-         - set difference
-        &          - set intersection
+        **          - set intersection
         \<:         - domain restriction
         :\>         - range restriction
         .          - relational join

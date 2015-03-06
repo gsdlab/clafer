@@ -100,6 +100,6 @@
 <div>
 <span class="keyword">abstract</span> <span class="claferDecl" id="c0_OneToTenPersonLine">OneToTenPersonLine</span><span class="keyword"> : </span><a href="#c0_WaitingLine"><span class="reference">WaitingLine</span></a>
   <div class="indent">
-  <span class="keyword">[</span> # <a href="#c0_participants"><span class="reference">participants</span></a> >= 1 <span class="keyword">]</span><span class="keyword">[</span> # <a href="#c0_participants"><span class="reference">participants</span></a> &lt;= 10 <span class="keyword">]</span></div>
+  <span class="keyword">[</span> # <a href="#c0_participants"><span class="reference">participants</span></a> &gt;= 1 <span class="keyword">]</span><span class="keyword">[</span> # <a href="#c0_participants"><span class="reference">participants</span></a> &lt;= 10 <span class="keyword">]</span></div>
 </div>
 

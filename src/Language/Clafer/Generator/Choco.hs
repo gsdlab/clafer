@@ -12,14 +12,12 @@ import Data.List
 import Data.Maybe
 import Data.Ord
 import Prelude hiding (exp)
-import Language.Clafer.ClaferArgs
 import Language.Clafer.Common
-import Language.Clafer.Front.Absclafer
 import Language.Clafer.Intermediate.Intclafer
 
 -- | Choco 3 code generation
-genCModule :: ClaferArgs -> (IModule, GEnv) -> [(UID, Integer)] -> Result
-genCModule _ (imodule@IModule{_mDecls}, _) scopes =
+genCModule :: (IModule, GEnv) -> [(UID, Integer)] -> Result
+genCModule (imodule@IModule{_mDecls}, genv') scopes =
     genScopes
     ++ "\n"
     ++ (genAbstractClafer =<< abstractClafers)
@@ -29,8 +27,9 @@ genCModule _ (imodule@IModule{_mDecls}, _) scopes =
     ++ (genConstraint =<< clafers)
     ++ (genGoal =<< _mDecls)
     where
+    uidIClaferMap' = uidClaferMap genv'
     root :: IClafer
-    root = IClafer noSpan False Nothing rootIdent rootIdent "" Nothing Nothing (Just (1, 1)) (0, 0) _mDecls
+    root = fromJust $ findIClafer uidIClaferMap' rootIdent
 
     toplevelClafers = mapMaybe iclafer _mDecls
     -- The sort is so that we encounter sub clafers before super clafers when abstract clafers extend other abstract clafers
@@ -40,7 +39,7 @@ genCModule _ (imodule@IModule{_mDecls}, _) scopes =
     claferUids = _uid <$> clafers
     concreteClafers = filter isNotAbstract clafers
 
-    claferWithUid u = fromMaybe (error $ "claferWithUid: \"" ++ u ++ "\" is not a clafer") $ find ((== u) . _uid) clafers
+    claferWithUid u = fromMaybe (error $ "claferWithUid: \"" ++ u ++ "\" is not a clafer") $ findIClafer uidIClaferMap' u
 
     -- All abstract clafers u inherits
     supersOf :: String -> [String]
@@ -187,6 +186,10 @@ genCModule _ (imodule@IModule{_mDecls}, _) scopes =
         | [arg] <- args', PExp{_exp = IFunExp{_exps = [a, PExp{_exp = IClaferId{_sident = "ref"}}]}} <- rewrite arg =
             "sum(" ++ genConstraintPExp a ++ ")"
         | otherwise = error "Choco: Unexpected sum argument."
+    genConstraintExp (IFunExp "product" args')
+        | [arg] <- args', PExp{_exp = IFunExp{_exps = [a, PExp{_exp = IClaferId{_sident = "ref"}}]}} <- rewrite arg =
+            "product(" ++ genConstraintPExp a ++ ")"
+        | otherwise = error "Choco: Unexpected product argument."
     genConstraintExp (IFunExp "+" args') =
 	(if _iType (head args') == Just TString then "concat" else "add") ++
             "(" ++ intercalate ", " (map genConstraintPExp args') ++ ")"
@@ -225,6 +228,7 @@ genCModule _ (imodule@IModule{_mDecls}, _) scopes =
     mapFunc "+" = "add"
     mapFunc "*" = "mul"
     mapFunc "/" = "div"
+    mapFunc "%" = "mod"
     mapFunc "++" = "union"
     mapFunc "--" = "diff"
     mapFunc "**" = "inter"

@@ -1,0 +1,1281 @@
+<?xml version="1.0"?><Module xmlns="http://clafer.org/ir" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cl="http://clafer.org/ir" xsi:schemaLocation="http://clafer.org/ir https://github.com/gsdlab/clafer/blob/master/src/ClaferIR.xsd"><Name></Name>
+<Declaration xsi:type="cl:IClafer"><Position><Start><IntLiteral>1</IntLiteral>
+<IntLiteral>1</IntLiteral>
+</Start>
+<End><IntLiteral>5</IntLiteral>
+<IntLiteral>49</IntLiteral>
+</End>
+</Position>
+<IsAbstract>true</IsAbstract>
+<GroupCard><IsKeyword>false</IsKeyword>
+<Interval><Min><IntLiteral>0</IntLiteral>
+</Min>
+<Max><IntLiteral>-1</IntLiteral>
+</Max>
+</Interval>
+</GroupCard>
+<Id>Component</Id>
+<UniqueId>c0_Component</UniqueId>
+<ParentUniqueId>root</ParentUniqueId>
+<Card><Min><IntLiteral>0</IntLiteral>
+</Min>
+<Max><IntLiteral>-1</IntLiteral>
+</Max>
+</Card>
+<GlobalCard><Min><IntLiteral>0</IntLiteral>
+</Min>
+<Max><IntLiteral>-1</IntLiteral>
+</Max>
+</GlobalCard>
+<Declaration xsi:type="cl:IClafer"><Position><Start><IntLiteral>2</IntLiteral>
+<IntLiteral>5</IntLiteral>
+</Start>
+<End><IntLiteral>4</IntLiteral>
+<IntLiteral>16</IntLiteral>
+</End>
+</Position>
+<IsAbstract>true</IsAbstract>
+<GroupCard><IsKeyword>true</IsKeyword>
+<Interval><Min><IntLiteral>1</IntLiteral>
+</Min>
+<Max><IntLiteral>-1</IntLiteral>
+</Max>
+</Interval>
+</GroupCard>
+<Id>Port</Id>
+<UniqueId>c0_Port</UniqueId>
+<ParentUniqueId>c0_Component</ParentUniqueId>
+<Card><Min><IntLiteral>0</IntLiteral>
+</Min>
+<Max><IntLiteral>-1</IntLiteral>
+</Max>
+</Card>
+<GlobalCard><Min><IntLiteral>0</IntLiteral>
+</Min>
+<Max><IntLiteral>-1</IntLiteral>
+</Max>
+</GlobalCard>
+<Declaration xsi:type="cl:IClafer"><Position><Start><IntLiteral>3</IntLiteral>
+<IntLiteral>8</IntLiteral>
+</Start>
+<End><IntLiteral>3</IntLiteral>
+<IntLiteral>13</IntLiteral>
+</End>
+</Position>
+<IsAbstract>false</IsAbstract>
+<GroupCard><IsKeyword>false</IsKeyword>
+<Interval><Min><IntLiteral>0</IntLiteral>
+</Min>
+<Max><IntLiteral>-1</IntLiteral>
+</Max>
+</Interval>
+</GroupCard>
+<Id>input</Id>
+<UniqueId>c0_input</UniqueId>
+<ParentUniqueId>c0_Port</ParentUniqueId>
+<Card><Min><IntLiteral>0</IntLiteral>
+</Min>
+<Max><IntLiteral>1</IntLiteral>
+</Max>
+</Card>
+<GlobalCard><Min><IntLiteral>0</IntLiteral>
+</Min>
+<Max><IntLiteral>-1</IntLiteral>
+</Max>
+</GlobalCard>
+</Declaration><Declaration xsi:type="cl:IClafer"><Position><Start><IntLiteral>4</IntLiteral>
+<IntLiteral>8</IntLiteral>
+</Start>
+<End><IntLiteral>4</IntLiteral>
+<IntLiteral>14</IntLiteral>
+</End>
+</Position>
+<IsAbstract>false</IsAbstract>
+<GroupCard><IsKeyword>false</IsKeyword>
+<Interval><Min><IntLiteral>0</IntLiteral>
+</Min>
+<Max><IntLiteral>-1</IntLiteral>
+</Max>
+</Interval>
+</GroupCard>
+<Id>output</Id>
+<UniqueId>c0_output</UniqueId>
+<ParentUniqueId>c0_Port</ParentUniqueId>
+<Card><Min><IntLiteral>0</IntLiteral>
+</Min>
+<Max><IntLiteral>1</IntLiteral>
+</Max>
+</Card>
+<GlobalCard><Min><IntLiteral>0</IntLiteral>
+</Min>
+<Max><IntLiteral>-1</IntLiteral>
+</Max>
+</GlobalCard>
+</Declaration></Declaration><Declaration xsi:type="cl:IClafer"><Position><Start><IntLiteral>5</IntLiteral>
+<IntLiteral>5</IntLiteral>
+</Start>
+<End><IntLiteral>5</IntLiteral>
+<IntLiteral>47</IntLiteral>
+</End>
+</Position>
+<IsAbstract>true</IsAbstract>
+<GroupCard><IsKeyword>true</IsKeyword>
+<Interval><Min><IntLiteral>1</IntLiteral>
+</Min>
+<Max><IntLiteral>-1</IntLiteral>
+</Max>
+</Interval>
+</GroupCard>
+<Id>TemperaturePort</Id>
+<UniqueId>c0_TemperaturePort</UniqueId>
+<ParentUniqueId>c0_Component</ParentUniqueId>
+<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Position><Start><IntLiteral>5</IntLiteral>
+<IntLiteral>32</IntLiteral>
+</Start>
+<End><IntLiteral>5</IntLiteral>
+<IntLiteral>36</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>c0_Port</Id>
+<IsTop>false</IsTop>
+<Bind>c0_Port</Bind>
+</Exp></Super>
+<Reference><IsSet>true</IsSet>
+<Ref><ParentId></ParentId>
+<Position><Start><IntLiteral>5</IntLiteral>
+<IntLiteral>40</IntLiteral>
+</Start>
+<End><IntLiteral>5</IntLiteral>
+<IntLiteral>47</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>integer</Id>
+<IsTop>true</IsTop>
+<Bind>integer</Bind>
+</Exp></Ref>
+</Reference>
+<Card><Min><IntLiteral>0</IntLiteral>
+</Min>
+<Max><IntLiteral>-1</IntLiteral>
+</Max>
+</Card>
+<GlobalCard><Min><IntLiteral>0</IntLiteral>
+</Min>
+<Max><IntLiteral>-1</IntLiteral>
+</Max>
+</GlobalCard>
+</Declaration></Declaration><Declaration xsi:type="cl:IClafer"><Position><Start><IntLiteral>8</IntLiteral>
+<IntLiteral>1</IntLiteral>
+</Start>
+<End><IntLiteral>13</IntLiteral>
+<IntLiteral>36</IntLiteral>
+</End>
+</Position>
+<IsAbstract>true</IsAbstract>
+<GroupCard><IsKeyword>false</IsKeyword>
+<Interval><Min><IntLiteral>0</IntLiteral>
+</Min>
+<Max><IntLiteral>-1</IntLiteral>
+</Max>
+</Interval>
+</GroupCard>
+<Id>TemperatureConnector</Id>
+<UniqueId>c0_TemperatureConnector</UniqueId>
+<ParentUniqueId>root</ParentUniqueId>
+<Card><Min><IntLiteral>0</IntLiteral>
+</Min>
+<Max><IntLiteral>-1</IntLiteral>
+</Max>
+</Card>
+<GlobalCard><Min><IntLiteral>0</IntLiteral>
+</Min>
+<Max><IntLiteral>-1</IntLiteral>
+</Max>
+</GlobalCard>
+<Declaration xsi:type="cl:IClafer"><Position><Start><IntLiteral>9</IntLiteral>
+<IntLiteral>5</IntLiteral>
+</Start>
+<End><IntLiteral>10</IntLiteral>
+<IntLiteral>26</IntLiteral>
+</End>
+</Position>
+<IsAbstract>false</IsAbstract>
+<GroupCard><IsKeyword>false</IsKeyword>
+<Interval><Min><IntLiteral>0</IntLiteral>
+</Min>
+<Max><IntLiteral>-1</IntLiteral>
+</Max>
+</Interval>
+</GroupCard>
+<Id>from</Id>
+<UniqueId>c0_from</UniqueId>
+<ParentUniqueId>c0_TemperatureConnector</ParentUniqueId>
+<Reference><IsSet>true</IsSet>
+<Ref><ParentId></ParentId>
+<Position><Start><IntLiteral>9</IntLiteral>
+<IntLiteral>13</IntLiteral>
+</Start>
+<End><IntLiteral>9</IntLiteral>
+<IntLiteral>28</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
+<Argument><ParentId></ParentId>
+<Position><Start><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</Start>
+<End><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>c0_Component</Id>
+<IsTop>false</IsTop>
+<Bind>c0_Component</Bind>
+</Exp></Argument>
+<Argument><ParentId></ParentId>
+<Position><Start><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</Start>
+<End><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>c0_TemperaturePort</Id>
+<IsTop>false</IsTop>
+<Bind>c0_TemperaturePort</Bind>
+</Exp></Argument>
+</Exp></Ref>
+</Reference>
+<Card><Min><IntLiteral>1</IntLiteral>
+</Min>
+<Max><IntLiteral>1</IntLiteral>
+</Max>
+</Card>
+<GlobalCard><Min><IntLiteral>0</IntLiteral>
+</Min>
+<Max><IntLiteral>-1</IntLiteral>
+</Max>
+</GlobalCard>
+<Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e0_</ParentId>
+<Position><Start><IntLiteral>10</IntLiteral>
+<IntLiteral>11</IntLiteral>
+</Start>
+<End><IntLiteral>10</IntLiteral>
+<IntLiteral>22</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>e1_</ParentId>
+<Position><Start><IntLiteral>10</IntLiteral>
+<IntLiteral>11</IntLiteral>
+</Start>
+<End><IntLiteral>10</IntLiteral>
+<IntLiteral>22</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e2_</ParentId>
+<Position><Start><IntLiteral>10</IntLiteral>
+<IntLiteral>11</IntLiteral>
+</Start>
+<End><IntLiteral>10</IntLiteral>
+<IntLiteral>15</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>this</Id>
+<IsTop>true</IsTop>
+<Bind>c0_from</Bind>
+</Exp></Argument>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e3_</ParentId>
+<Position><Start><IntLiteral>10</IntLiteral>
+<IntLiteral>16</IntLiteral>
+</Start>
+<End><IntLiteral>10</IntLiteral>
+<IntLiteral>22</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
+<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Position><Start><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</Start>
+<End><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>ref</Id>
+<IsTop>true</IsTop>
+<Bind>c0_output</Bind>
+</Exp></Argument>
+<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Position><Start><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</Start>
+<End><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>c0_output</Id>
+<IsTop>false</IsTop>
+<Bind>c0_from</Bind>
+</Exp></Argument>
+</Exp></Argument>
+</Exp></BodyParentExp>
+</Exp></ParentExp>
+</Declaration></Declaration><Declaration xsi:type="cl:IClafer"><Position><Start><IntLiteral>11</IntLiteral>
+<IntLiteral>5</IntLiteral>
+</Start>
+<End><IntLiteral>12</IntLiteral>
+<IntLiteral>25</IntLiteral>
+</End>
+</Position>
+<IsAbstract>false</IsAbstract>
+<GroupCard><IsKeyword>false</IsKeyword>
+<Interval><Min><IntLiteral>0</IntLiteral>
+</Min>
+<Max><IntLiteral>-1</IntLiteral>
+</Max>
+</Interval>
+</GroupCard>
+<Id>to</Id>
+<UniqueId>c0_to</UniqueId>
+<ParentUniqueId>c0_TemperatureConnector</ParentUniqueId>
+<Reference><IsSet>true</IsSet>
+<Ref><ParentId></ParentId>
+<Position><Start><IntLiteral>11</IntLiteral>
+<IntLiteral>11</IntLiteral>
+</Start>
+<End><IntLiteral>11</IntLiteral>
+<IntLiteral>26</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
+<Argument><ParentId></ParentId>
+<Position><Start><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</Start>
+<End><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>c0_Component</Id>
+<IsTop>false</IsTop>
+<Bind>c0_Component</Bind>
+</Exp></Argument>
+<Argument><ParentId></ParentId>
+<Position><Start><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</Start>
+<End><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>c0_TemperaturePort</Id>
+<IsTop>false</IsTop>
+<Bind>c0_TemperaturePort</Bind>
+</Exp></Argument>
+</Exp></Ref>
+</Reference>
+<Card><Min><IntLiteral>1</IntLiteral>
+</Min>
+<Max><IntLiteral>1</IntLiteral>
+</Max>
+</Card>
+<GlobalCard><Min><IntLiteral>0</IntLiteral>
+</Min>
+<Max><IntLiteral>-1</IntLiteral>
+</Max>
+</GlobalCard>
+<Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e4_</ParentId>
+<Position><Start><IntLiteral>12</IntLiteral>
+<IntLiteral>11</IntLiteral>
+</Start>
+<End><IntLiteral>12</IntLiteral>
+<IntLiteral>21</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>e5_</ParentId>
+<Position><Start><IntLiteral>12</IntLiteral>
+<IntLiteral>11</IntLiteral>
+</Start>
+<End><IntLiteral>12</IntLiteral>
+<IntLiteral>21</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e6_</ParentId>
+<Position><Start><IntLiteral>12</IntLiteral>
+<IntLiteral>11</IntLiteral>
+</Start>
+<End><IntLiteral>12</IntLiteral>
+<IntLiteral>15</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>this</Id>
+<IsTop>true</IsTop>
+<Bind>c0_to</Bind>
+</Exp></Argument>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e7_</ParentId>
+<Position><Start><IntLiteral>12</IntLiteral>
+<IntLiteral>16</IntLiteral>
+</Start>
+<End><IntLiteral>12</IntLiteral>
+<IntLiteral>21</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
+<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Position><Start><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</Start>
+<End><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>ref</Id>
+<IsTop>true</IsTop>
+<Bind>c0_input</Bind>
+</Exp></Argument>
+<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Position><Start><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</Start>
+<End><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>c0_input</Id>
+<IsTop>false</IsTop>
+<Bind>c0_to</Bind>
+</Exp></Argument>
+</Exp></Argument>
+</Exp></BodyParentExp>
+</Exp></ParentExp>
+</Declaration></Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e8_</ParentId>
+<Position><Start><IntLiteral>13</IntLiteral>
+<IntLiteral>7</IntLiteral>
+</Start>
+<End><IntLiteral>13</IntLiteral>
+<IntLiteral>32</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e9_</ParentId>
+<Position><Start><IntLiteral>13</IntLiteral>
+<IntLiteral>7</IntLiteral>
+</Start>
+<End><IntLiteral>13</IntLiteral>
+<IntLiteral>17</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e10_</ParentId>
+<Position><Start><IntLiteral>13</IntLiteral>
+<IntLiteral>7</IntLiteral>
+</Start>
+<End><IntLiteral>13</IntLiteral>
+<IntLiteral>13</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e11_</ParentId>
+<Position><Start><IntLiteral>13</IntLiteral>
+<IntLiteral>7</IntLiteral>
+</Start>
+<End><IntLiteral>13</IntLiteral>
+<IntLiteral>9</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
+<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Position><Start><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</Start>
+<End><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>this</Id>
+<IsTop>true</IsTop>
+<Bind>c0_TemperatureConnector</Bind>
+</Exp></Argument>
+<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Position><Start><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</Start>
+<End><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>c0_to</Id>
+<IsTop>false</IsTop>
+<Bind>c0_to</Bind>
+</Exp></Argument>
+</Exp></Argument>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e12_</ParentId>
+<Position><Start><IntLiteral>13</IntLiteral>
+<IntLiteral>10</IntLiteral>
+</Start>
+<End><IntLiteral>13</IntLiteral>
+<IntLiteral>13</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>ref</Id>
+<IsTop>true</IsTop>
+<Bind>c0_to</Bind>
+</Exp></Argument>
+</Exp></Argument>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e13_</ParentId>
+<Position><Start><IntLiteral>13</IntLiteral>
+<IntLiteral>14</IntLiteral>
+</Start>
+<End><IntLiteral>13</IntLiteral>
+<IntLiteral>17</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>ref</Id>
+<IsTop>true</IsTop>
+<Bind>c0_to</Bind>
+</Exp></Argument>
+</Exp></Argument>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e14_</ParentId>
+<Position><Start><IntLiteral>13</IntLiteral>
+<IntLiteral>20</IntLiteral>
+</Start>
+<End><IntLiteral>13</IntLiteral>
+<IntLiteral>32</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e15_</ParentId>
+<Position><Start><IntLiteral>13</IntLiteral>
+<IntLiteral>20</IntLiteral>
+</Start>
+<End><IntLiteral>13</IntLiteral>
+<IntLiteral>28</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e16_</ParentId>
+<Position><Start><IntLiteral>13</IntLiteral>
+<IntLiteral>20</IntLiteral>
+</Start>
+<End><IntLiteral>13</IntLiteral>
+<IntLiteral>24</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
+<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Position><Start><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</Start>
+<End><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>this</Id>
+<IsTop>true</IsTop>
+<Bind>c0_TemperatureConnector</Bind>
+</Exp></Argument>
+<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Position><Start><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</Start>
+<End><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>c0_from</Id>
+<IsTop>false</IsTop>
+<Bind>c0_from</Bind>
+</Exp></Argument>
+</Exp></Argument>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e17_</ParentId>
+<Position><Start><IntLiteral>13</IntLiteral>
+<IntLiteral>25</IntLiteral>
+</Start>
+<End><IntLiteral>13</IntLiteral>
+<IntLiteral>28</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>ref</Id>
+<IsTop>true</IsTop>
+<Bind>c0_from</Bind>
+</Exp></Argument>
+</Exp></Argument>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e18_</ParentId>
+<Position><Start><IntLiteral>13</IntLiteral>
+<IntLiteral>29</IntLiteral>
+</Start>
+<End><IntLiteral>13</IntLiteral>
+<IntLiteral>32</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>ref</Id>
+<IsTop>true</IsTop>
+<Bind>c0_from</Bind>
+</Exp></Argument>
+</Exp></Argument>
+</Exp></ParentExp>
+</Declaration></Declaration><Declaration xsi:type="cl:IClafer"><Position><Start><IntLiteral>15</IntLiteral>
+<IntLiteral>1</IntLiteral>
+</Start>
+<End><IntLiteral>17</IntLiteral>
+<IntLiteral>23</IntLiteral>
+</End>
+</Position>
+<IsAbstract>false</IsAbstract>
+<GroupCard><IsKeyword>false</IsKeyword>
+<Interval><Min><IntLiteral>0</IntLiteral>
+</Min>
+<Max><IntLiteral>-1</IntLiteral>
+</Max>
+</Interval>
+</GroupCard>
+<Id>sensor</Id>
+<UniqueId>c0_sensor</UniqueId>
+<ParentUniqueId>root</ParentUniqueId>
+<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Position><Start><IntLiteral>15</IntLiteral>
+<IntLiteral>10</IntLiteral>
+</Start>
+<End><IntLiteral>15</IntLiteral>
+<IntLiteral>19</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>c0_Component</Id>
+<IsTop>true</IsTop>
+<Bind>c0_Component</Bind>
+</Exp></Super>
+<Card><Min><IntLiteral>1</IntLiteral>
+</Min>
+<Max><IntLiteral>1</IntLiteral>
+</Max>
+</Card>
+<GlobalCard><Min><IntLiteral>1</IntLiteral>
+</Min>
+<Max><IntLiteral>1</IntLiteral>
+</Max>
+</GlobalCard>
+<Declaration xsi:type="cl:IClafer"><Position><Start><IntLiteral>16</IntLiteral>
+<IntLiteral>5</IntLiteral>
+</Start>
+<End><IntLiteral>17</IntLiteral>
+<IntLiteral>21</IntLiteral>
+</End>
+</Position>
+<IsAbstract>false</IsAbstract>
+<GroupCard><IsKeyword>true</IsKeyword>
+<Interval><Min><IntLiteral>1</IntLiteral>
+</Min>
+<Max><IntLiteral>-1</IntLiteral>
+</Max>
+</Interval>
+</GroupCard>
+<Id>temperature</Id>
+<UniqueId>c0_temperature</UniqueId>
+<ParentUniqueId>c0_sensor</ParentUniqueId>
+<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Position><Start><IntLiteral>16</IntLiteral>
+<IntLiteral>19</IntLiteral>
+</Start>
+<End><IntLiteral>16</IntLiteral>
+<IntLiteral>34</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>c0_TemperaturePort</Id>
+<IsTop>false</IsTop>
+<Bind>c0_TemperaturePort</Bind>
+</Exp></Super>
+<Card><Min><IntLiteral>1</IntLiteral>
+</Min>
+<Max><IntLiteral>1</IntLiteral>
+</Max>
+</Card>
+<GlobalCard><Min><IntLiteral>1</IntLiteral>
+</Min>
+<Max><IntLiteral>1</IntLiteral>
+</Max>
+</GlobalCard>
+<Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e19_</ParentId>
+<Position><Start><IntLiteral>17</IntLiteral>
+<IntLiteral>11</IntLiteral>
+</Start>
+<End><IntLiteral>17</IntLiteral>
+<IntLiteral>17</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>e20_</ParentId>
+<Position><Start><IntLiteral>17</IntLiteral>
+<IntLiteral>11</IntLiteral>
+</Start>
+<End><IntLiteral>17</IntLiteral>
+<IntLiteral>17</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
+<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Position><Start><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</Start>
+<End><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>this</Id>
+<IsTop>true</IsTop>
+<Bind>c0_temperature</Bind>
+</Exp></Argument>
+<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Position><Start><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</Start>
+<End><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>c0_output</Id>
+<IsTop>false</IsTop>
+<Bind>c0_output</Bind>
+</Exp></Argument>
+</Exp></BodyParentExp>
+</Exp></ParentExp>
+</Declaration></Declaration></Declaration><Declaration xsi:type="cl:IClafer"><Position><Start><IntLiteral>19</IntLiteral>
+<IntLiteral>1</IntLiteral>
+</Start>
+<End><IntLiteral>21</IntLiteral>
+<IntLiteral>22</IntLiteral>
+</End>
+</Position>
+<IsAbstract>false</IsAbstract>
+<GroupCard><IsKeyword>false</IsKeyword>
+<Interval><Min><IntLiteral>0</IntLiteral>
+</Min>
+<Max><IntLiteral>-1</IntLiteral>
+</Max>
+</Interval>
+</GroupCard>
+<Id>controller</Id>
+<UniqueId>c0_controller</UniqueId>
+<ParentUniqueId>root</ParentUniqueId>
+<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Position><Start><IntLiteral>19</IntLiteral>
+<IntLiteral>14</IntLiteral>
+</Start>
+<End><IntLiteral>19</IntLiteral>
+<IntLiteral>23</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>c0_Component</Id>
+<IsTop>true</IsTop>
+<Bind>c0_Component</Bind>
+</Exp></Super>
+<Card><Min><IntLiteral>1</IntLiteral>
+</Min>
+<Max><IntLiteral>1</IntLiteral>
+</Max>
+</Card>
+<GlobalCard><Min><IntLiteral>1</IntLiteral>
+</Min>
+<Max><IntLiteral>1</IntLiteral>
+</Max>
+</GlobalCard>
+<Declaration xsi:type="cl:IClafer"><Position><Start><IntLiteral>20</IntLiteral>
+<IntLiteral>5</IntLiteral>
+</Start>
+<End><IntLiteral>21</IntLiteral>
+<IntLiteral>20</IntLiteral>
+</End>
+</Position>
+<IsAbstract>false</IsAbstract>
+<GroupCard><IsKeyword>true</IsKeyword>
+<Interval><Min><IntLiteral>1</IntLiteral>
+</Min>
+<Max><IntLiteral>-1</IntLiteral>
+</Max>
+</Interval>
+</GroupCard>
+<Id>temperature</Id>
+<UniqueId>c1_temperature</UniqueId>
+<ParentUniqueId>c0_controller</ParentUniqueId>
+<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Position><Start><IntLiteral>20</IntLiteral>
+<IntLiteral>19</IntLiteral>
+</Start>
+<End><IntLiteral>20</IntLiteral>
+<IntLiteral>34</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>c0_TemperaturePort</Id>
+<IsTop>false</IsTop>
+<Bind>c0_TemperaturePort</Bind>
+</Exp></Super>
+<Card><Min><IntLiteral>1</IntLiteral>
+</Min>
+<Max><IntLiteral>1</IntLiteral>
+</Max>
+</Card>
+<GlobalCard><Min><IntLiteral>1</IntLiteral>
+</Min>
+<Max><IntLiteral>1</IntLiteral>
+</Max>
+</GlobalCard>
+<Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e21_</ParentId>
+<Position><Start><IntLiteral>21</IntLiteral>
+<IntLiteral>11</IntLiteral>
+</Start>
+<End><IntLiteral>21</IntLiteral>
+<IntLiteral>16</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IDeclarationParentExp"><Quantifier xsi:type="cl:ISome" /><BodyParentExp><Type xsi:type="cl:ISet" /><ParentId>e22_</ParentId>
+<Position><Start><IntLiteral>21</IntLiteral>
+<IntLiteral>11</IntLiteral>
+</Start>
+<End><IntLiteral>21</IntLiteral>
+<IntLiteral>16</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
+<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Position><Start><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</Start>
+<End><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>this</Id>
+<IsTop>true</IsTop>
+<Bind>c1_temperature</Bind>
+</Exp></Argument>
+<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Position><Start><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</Start>
+<End><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>c0_input</Id>
+<IsTop>false</IsTop>
+<Bind>c0_input</Bind>
+</Exp></Argument>
+</Exp></BodyParentExp>
+</Exp></ParentExp>
+</Declaration></Declaration></Declaration><Declaration xsi:type="cl:IClafer"><Position><Start><IntLiteral>23</IntLiteral>
+<IntLiteral>1</IntLiteral>
+</Start>
+<End><IntLiteral>25</IntLiteral>
+<IntLiteral>38</IntLiteral>
+</End>
+</Position>
+<IsAbstract>false</IsAbstract>
+<GroupCard><IsKeyword>false</IsKeyword>
+<Interval><Min><IntLiteral>0</IntLiteral>
+</Min>
+<Max><IntLiteral>-1</IntLiteral>
+</Max>
+</Interval>
+</GroupCard>
+<Id>con1</Id>
+<UniqueId>c0_con1</UniqueId>
+<ParentUniqueId>root</ParentUniqueId>
+<Super><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Position><Start><IntLiteral>23</IntLiteral>
+<IntLiteral>8</IntLiteral>
+</Start>
+<End><IntLiteral>23</IntLiteral>
+<IntLiteral>28</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>c0_TemperatureConnector</Id>
+<IsTop>true</IsTop>
+<Bind>c0_TemperatureConnector</Bind>
+</Exp></Super>
+<Card><Min><IntLiteral>1</IntLiteral>
+</Min>
+<Max><IntLiteral>1</IntLiteral>
+</Max>
+</Card>
+<GlobalCard><Min><IntLiteral>1</IntLiteral>
+</Min>
+<Max><IntLiteral>1</IntLiteral>
+</Max>
+</GlobalCard>
+<Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e23_</ParentId>
+<Position><Start><IntLiteral>24</IntLiteral>
+<IntLiteral>7</IntLiteral>
+</Start>
+<End><IntLiteral>24</IntLiteral>
+<IntLiteral>32</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e24_</ParentId>
+<Position><Start><IntLiteral>24</IntLiteral>
+<IntLiteral>7</IntLiteral>
+</Start>
+<End><IntLiteral>24</IntLiteral>
+<IntLiteral>11</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
+<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Position><Start><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</Start>
+<End><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>this</Id>
+<IsTop>true</IsTop>
+<Bind>c0_con1</Bind>
+</Exp></Argument>
+<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Position><Start><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</Start>
+<End><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
+<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Position><Start><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</Start>
+<End><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>c0_from</Id>
+<IsTop>false</IsTop>
+<Bind>c0_from</Bind>
+</Exp></Argument>
+<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Position><Start><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</Start>
+<End><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>ref</Id>
+<IsTop>true</IsTop>
+<Bind></Bind>
+</Exp></Argument>
+</Exp></Argument>
+</Exp></Argument>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e25_</ParentId>
+<Position><Start><IntLiteral>24</IntLiteral>
+<IntLiteral>14</IntLiteral>
+</Start>
+<End><IntLiteral>24</IntLiteral>
+<IntLiteral>32</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e26_</ParentId>
+<Position><Start><IntLiteral>24</IntLiteral>
+<IntLiteral>14</IntLiteral>
+</Start>
+<End><IntLiteral>24</IntLiteral>
+<IntLiteral>20</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>c0_sensor</Id>
+<IsTop>true</IsTop>
+<Bind>c0_sensor</Bind>
+</Exp></Argument>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e27_</ParentId>
+<Position><Start><IntLiteral>24</IntLiteral>
+<IntLiteral>21</IntLiteral>
+</Start>
+<End><IntLiteral>24</IntLiteral>
+<IntLiteral>32</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>c0_temperature</Id>
+<IsTop>false</IsTop>
+<Bind>c0_temperature</Bind>
+</Exp></Argument>
+</Exp></Argument>
+</Exp></ParentExp>
+</Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>true</IsHard>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e28_</ParentId>
+<Position><Start><IntLiteral>25</IntLiteral>
+<IntLiteral>7</IntLiteral>
+</Start>
+<End><IntLiteral>25</IntLiteral>
+<IntLiteral>34</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e29_</ParentId>
+<Position><Start><IntLiteral>25</IntLiteral>
+<IntLiteral>7</IntLiteral>
+</Start>
+<End><IntLiteral>25</IntLiteral>
+<IntLiteral>9</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
+<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Position><Start><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</Start>
+<End><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>this</Id>
+<IsTop>true</IsTop>
+<Bind>c0_con1</Bind>
+</Exp></Argument>
+<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Position><Start><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</Start>
+<End><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
+<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Position><Start><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</Start>
+<End><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>c0_to</Id>
+<IsTop>false</IsTop>
+<Bind>c0_to</Bind>
+</Exp></Argument>
+<Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
+<Position><Start><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</Start>
+<End><IntLiteral>0</IntLiteral>
+<IntLiteral>0</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>ref</Id>
+<IsTop>true</IsTop>
+<Bind></Bind>
+</Exp></Argument>
+</Exp></Argument>
+</Exp></Argument>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e30_</ParentId>
+<Position><Start><IntLiteral>25</IntLiteral>
+<IntLiteral>12</IntLiteral>
+</Start>
+<End><IntLiteral>25</IntLiteral>
+<IntLiteral>34</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e31_</ParentId>
+<Position><Start><IntLiteral>25</IntLiteral>
+<IntLiteral>12</IntLiteral>
+</Start>
+<End><IntLiteral>25</IntLiteral>
+<IntLiteral>22</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>c0_controller</Id>
+<IsTop>true</IsTop>
+<Bind>c0_controller</Bind>
+</Exp></Argument>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e32_</ParentId>
+<Position><Start><IntLiteral>25</IntLiteral>
+<IntLiteral>23</IntLiteral>
+</Start>
+<End><IntLiteral>25</IntLiteral>
+<IntLiteral>34</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>c1_temperature</Id>
+<IsTop>false</IsTop>
+<Bind>c1_temperature</Bind>
+</Exp></Argument>
+</Exp></Argument>
+</Exp></ParentExp>
+</Declaration></Declaration><Declaration xsi:type="cl:IConstraint"><IsHard>false</IsHard>
+<ParentExp><Type xsi:type="cl:IBoolean" /><ParentId>e33_</ParentId>
+<Position><Start><IntLiteral>27</IntLiteral>
+<IntLiteral>10</IntLiteral>
+</Start>
+<End><IntLiteral>27</IntLiteral>
+<IntLiteral>61</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IFunctionExp"><Operation>=</Operation>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e34_</ParentId>
+<Position><Start><IntLiteral>27</IntLiteral>
+<IntLiteral>10</IntLiteral>
+</Start>
+<End><IntLiteral>27</IntLiteral>
+<IntLiteral>36</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e35_</ParentId>
+<Position><Start><IntLiteral>27</IntLiteral>
+<IntLiteral>10</IntLiteral>
+</Start>
+<End><IntLiteral>27</IntLiteral>
+<IntLiteral>32</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e36_</ParentId>
+<Position><Start><IntLiteral>27</IntLiteral>
+<IntLiteral>10</IntLiteral>
+</Start>
+<End><IntLiteral>27</IntLiteral>
+<IntLiteral>20</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>c0_controller</Id>
+<IsTop>true</IsTop>
+<Bind>c0_controller</Bind>
+</Exp></Argument>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e37_</ParentId>
+<Position><Start><IntLiteral>27</IntLiteral>
+<IntLiteral>21</IntLiteral>
+</Start>
+<End><IntLiteral>27</IntLiteral>
+<IntLiteral>32</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>c1_temperature</Id>
+<IsTop>false</IsTop>
+<Bind>c1_temperature</Bind>
+</Exp></Argument>
+</Exp></Argument>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e38_</ParentId>
+<Position><Start><IntLiteral>27</IntLiteral>
+<IntLiteral>33</IntLiteral>
+</Start>
+<End><IntLiteral>27</IntLiteral>
+<IntLiteral>36</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>ref</Id>
+<IsTop>true</IsTop>
+<Bind>c1_temperature</Bind>
+</Exp></Argument>
+</Exp></Argument>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e39_</ParentId>
+<Position><Start><IntLiteral>27</IntLiteral>
+<IntLiteral>39</IntLiteral>
+</Start>
+<End><IntLiteral>27</IntLiteral>
+<IntLiteral>61</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e40_</ParentId>
+<Position><Start><IntLiteral>27</IntLiteral>
+<IntLiteral>39</IntLiteral>
+</Start>
+<End><IntLiteral>27</IntLiteral>
+<IntLiteral>57</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IFunctionExp"><Operation>.</Operation>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e41_</ParentId>
+<Position><Start><IntLiteral>27</IntLiteral>
+<IntLiteral>39</IntLiteral>
+</Start>
+<End><IntLiteral>27</IntLiteral>
+<IntLiteral>45</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>c0_sensor</Id>
+<IsTop>true</IsTop>
+<Bind>c0_sensor</Bind>
+</Exp></Argument>
+<Argument><Type xsi:type="cl:ISet" /><ParentId>e42_</ParentId>
+<Position><Start><IntLiteral>27</IntLiteral>
+<IntLiteral>46</IntLiteral>
+</Start>
+<End><IntLiteral>27</IntLiteral>
+<IntLiteral>57</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>c0_temperature</Id>
+<IsTop>false</IsTop>
+<Bind>c0_temperature</Bind>
+</Exp></Argument>
+</Exp></Argument>
+<Argument><Type xsi:type="cl:IInteger" /><ParentId>e43_</ParentId>
+<Position><Start><IntLiteral>27</IntLiteral>
+<IntLiteral>58</IntLiteral>
+</Start>
+<End><IntLiteral>27</IntLiteral>
+<IntLiteral>61</IntLiteral>
+</End>
+</Position>
+<Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
+<Id>ref</Id>
+<IsTop>true</IsTop>
+<Bind>c0_temperature</Bind>
+</Exp></Argument>
+</Exp></Argument>
+</Exp></ParentExp>
+</Declaration></Module>

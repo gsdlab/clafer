@@ -5,16 +5,17 @@ define apPatch
 endef
 
 grammar:
-	bnfc -p "Language.Clafer.Front" --ghc clafer.cf
-	happy -gca $(FRONT_DIR)/Parclafer.y
-	alex -g $(FRONT_DIR)/Lexclafer.x
-	rm $(FRONT_DIR)/Skelclafer.hs
-	rm $(FRONT_DIR)/Testclafer.hs
-	mv $(FRONT_DIR)/Docclafer.txt ../doc
+	bnfc -p "Language.Clafer.Front" --ghc --pos clafer.cf
+	happy -gca $(FRONT_DIR)/ParClafer.y
+	alex -g $(FRONT_DIR)/LexClafer.x
+	rm $(FRONT_DIR)/SkelClafer.hs
+	rm $(FRONT_DIR)/TestClafer.hs
+	mv $(FRONT_DIR)/DocClafer.txt ../doc
+	rm $(FRONT_DIR)/*.bak
 
 grammarDoc:
 	bnfc --latex clafer.cf
-	pdflatex $(FRONT_DIR)/Docclafer.tex
+	pdflatex $(FRONT_DIR)/DocClafer.tex
 
 Schema.hs:
 	./Language/Clafer/Generator/quote-xsd.sh Language/Clafer/ClaferIR.xsd > ./Language/Clafer/Generator/Schema.hs

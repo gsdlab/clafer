@@ -319,7 +319,7 @@
   <div class="indent">
   <span class="keyword">[</span> all x<span class="keyword"> : </span><a href="#this"><span class="reference">this</span></a>.<a href="#c0_memberEnd"><span class="reference">memberEnd</span></a> | <a href="#this"><span class="reference">this</span></a> in <a href="#x"><span class="reference">x</span></a>.<a href="#c0_association"><span class="reference">association</span></a> <span class="keyword">]</span></div>
   <div class="indent">
-  <span class="keyword">[</span> # <a href="#c0_memberEnd"><span class="reference">memberEnd</span></a> > 2 => <a href="#c0_memberEnd"><span class="reference">memberEnd</span></a> in <a href="#c0_ownedEnd"><span class="reference">ownedEnd</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> # <a href="#c0_memberEnd"><span class="reference">memberEnd</span></a> &gt; 2 =&gt; <a href="#c0_memberEnd"><span class="reference">memberEnd</span></a> in <a href="#c0_ownedEnd"><span class="reference">ownedEnd</span></a> <span class="keyword">]</span></div>
 </div>
 
 

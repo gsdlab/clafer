@@ -89,11 +89,11 @@ sig c0_l
 { one @r_c0_l.this }
 
 fact {  all disj x, y : c0_Hs3 | (x.@ref) != (y.@ref)  }
-abstract sig c0_F extends c0_H
+abstract sig c0_FF extends c0_H
 {}
 
 fact { 2 <= #c0_f1 and #c0_f1 <= 5 }
-sig c0_f1 extends c0_F
+sig c0_f1 extends c0_FF
 { r_c0_m : set c0_m }
 { #r_c0_m = 0 }
 

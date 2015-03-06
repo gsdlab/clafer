@@ -49,56 +49,56 @@
 <div>
 <span class="keyword">abstract</span> <span class="claferDecl" id="c0_text2tokens">text2tokens</span><span class="keyword"> : </span><a href="#c0_io"><span class="reference">io</span></a>
   <div class="indent">
-  <span class="keyword">[</span> <a href="#c0_input"><span class="reference">input</span></a> = <a href="#c0_text"><span class="reference">text</span></a> && <a href="#c0_output"><span class="reference">output</span></a> = <a href="#c0_tokens"><span class="reference">tokens</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <a href="#c0_input"><span class="reference">input</span></a> = <a href="#c0_text"><span class="reference">text</span></a> &amp;&amp; <a href="#c0_output"><span class="reference">output</span></a> = <a href="#c0_tokens"><span class="reference">tokens</span></a> <span class="keyword">]</span></div>
 </div>
 
 
 <div>
 <span class="keyword">abstract</span> <span class="claferDecl" id="c0_tokens2tokens">tokens2tokens</span><span class="keyword"> : </span><a href="#c0_io"><span class="reference">io</span></a>
   <div class="indent">
-  <span class="keyword">[</span> <a href="#c0_input"><span class="reference">input</span></a> = <a href="#c0_tokens"><span class="reference">tokens</span></a> && <a href="#c0_output"><span class="reference">output</span></a> = <a href="#c0_tokens"><span class="reference">tokens</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <a href="#c0_input"><span class="reference">input</span></a> = <a href="#c0_tokens"><span class="reference">tokens</span></a> &amp;&amp; <a href="#c0_output"><span class="reference">output</span></a> = <a href="#c0_tokens"><span class="reference">tokens</span></a> <span class="keyword">]</span></div>
 </div>
 
 
 <div>
 <span class="keyword">abstract</span> <span class="claferDecl" id="c0_tokens2ast">tokens2ast</span><span class="keyword"> : </span><a href="#c0_io"><span class="reference">io</span></a>
   <div class="indent">
-  <span class="keyword">[</span> <a href="#c0_input"><span class="reference">input</span></a> = <a href="#c0_tokens"><span class="reference">tokens</span></a> && <a href="#c0_output"><span class="reference">output</span></a> = <a href="#c0_ast"><span class="reference">ast</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <a href="#c0_input"><span class="reference">input</span></a> = <a href="#c0_tokens"><span class="reference">tokens</span></a> &amp;&amp; <a href="#c0_output"><span class="reference">output</span></a> = <a href="#c0_ast"><span class="reference">ast</span></a> <span class="keyword">]</span></div>
 </div>
 
 
 <div>
 <span class="keyword">abstract</span> <span class="claferDecl" id="c0_ast2ast">ast2ast</span><span class="keyword"> : </span><a href="#c0_io"><span class="reference">io</span></a>
   <div class="indent">
-  <span class="keyword">[</span> <a href="#c0_input"><span class="reference">input</span></a> = <a href="#c0_ast"><span class="reference">ast</span></a> && <a href="#c0_output"><span class="reference">output</span></a> = <a href="#c0_ast"><span class="reference">ast</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <a href="#c0_input"><span class="reference">input</span></a> = <a href="#c0_ast"><span class="reference">ast</span></a> &amp;&amp; <a href="#c0_output"><span class="reference">output</span></a> = <a href="#c0_ast"><span class="reference">ast</span></a> <span class="keyword">]</span></div>
 </div>
 
 
 <div>
 <span class="keyword">abstract</span> <span class="claferDecl" id="c0_ast2text">ast2text</span><span class="keyword"> : </span><a href="#c0_io"><span class="reference">io</span></a>
   <div class="indent">
-  <span class="keyword">[</span> <a href="#c0_input"><span class="reference">input</span></a> = <a href="#c0_ast"><span class="reference">ast</span></a> && <a href="#c0_output"><span class="reference">output</span></a> = <a href="#c0_text"><span class="reference">text</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <a href="#c0_input"><span class="reference">input</span></a> = <a href="#c0_ast"><span class="reference">ast</span></a> &amp;&amp; <a href="#c0_output"><span class="reference">output</span></a> = <a href="#c0_text"><span class="reference">text</span></a> <span class="keyword">]</span></div>
 </div>
 
 
 <div>
 <span class="keyword">abstract</span> <span class="claferDecl" id="c0_ast2ir">ast2ir</span><span class="keyword"> : </span><a href="#c0_io"><span class="reference">io</span></a>
   <div class="indent">
-  <span class="keyword">[</span> <a href="#c0_input"><span class="reference">input</span></a> = <a href="#c0_ast"><span class="reference">ast</span></a> && <a href="#c0_output"><span class="reference">output</span></a> = <a href="#c0_ir"><span class="reference">ir</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <a href="#c0_input"><span class="reference">input</span></a> = <a href="#c0_ast"><span class="reference">ast</span></a> &amp;&amp; <a href="#c0_output"><span class="reference">output</span></a> = <a href="#c0_ir"><span class="reference">ir</span></a> <span class="keyword">]</span></div>
 </div>
 
 
 <div>
 <span class="keyword">abstract</span> <span class="claferDecl" id="c0_ir2ir">ir2ir</span><span class="keyword"> : </span><a href="#c0_io"><span class="reference">io</span></a>
   <div class="indent">
-  <span class="keyword">[</span> <a href="#c0_input"><span class="reference">input</span></a> = <a href="#c0_ir"><span class="reference">ir</span></a> && <a href="#c0_output"><span class="reference">output</span></a> = <a href="#c0_ir"><span class="reference">ir</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <a href="#c0_input"><span class="reference">input</span></a> = <a href="#c0_ir"><span class="reference">ir</span></a> &amp;&amp; <a href="#c0_output"><span class="reference">output</span></a> = <a href="#c0_ir"><span class="reference">ir</span></a> <span class="keyword">]</span></div>
 </div>
 
 
 <div>
 <span class="keyword">abstract</span> <span class="claferDecl" id="c0_ir2text">ir2text</span><span class="keyword"> : </span><a href="#c0_io"><span class="reference">io</span></a>
   <div class="indent">
-  <span class="keyword">[</span> <a href="#c0_input"><span class="reference">input</span></a> = <a href="#c0_ir"><span class="reference">ir</span></a> && <a href="#c0_output"><span class="reference">output</span></a> = <a href="#c0_text"><span class="reference">text</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <a href="#c0_input"><span class="reference">input</span></a> = <a href="#c0_ir"><span class="reference">ir</span></a> &amp;&amp; <a href="#c0_output"><span class="reference">output</span></a> = <a href="#c0_text"><span class="reference">text</span></a> <span class="keyword">]</span></div>
 </div>
 
 <!-- # FRAGMENT /-->
@@ -164,7 +164,7 @@
   <div class="indent">
   <span class="claferDecl" id="c0_alloy">alloy</span>
     <div class="indent">
-    <span class="keyword">[</span> <a href="#c0_Intermediate"><span class="reference">Intermediate</span></a>.<a href="#c0_stringAnalyzer"><span class="reference">stringAnalyzer</span></a> && <a href="#c0_Intermediate"><span class="reference">Intermediate</span></a>.<a href="#c0_scopeAnalysis"><span class="reference">scopeAnalysis</span></a> <span class="keyword">]</span></div>
+    <span class="keyword">[</span> <a href="#c0_Intermediate"><span class="reference">Intermediate</span></a>.<a href="#c0_stringAnalyzer"><span class="reference">stringAnalyzer</span></a> &amp;&amp; <a href="#c0_Intermediate"><span class="reference">Intermediate</span></a>.<a href="#c0_scopeAnalysis"><span class="reference">scopeAnalysis</span></a> <span class="keyword">]</span></div>
   </div>
   <div class="indent">
   <span class="claferDecl" id="c0_stats">stats</span></div>

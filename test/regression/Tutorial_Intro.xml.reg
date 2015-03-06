@@ -142,7 +142,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_date</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_date</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
@@ -665,7 +665,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Person</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Person</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
@@ -1496,7 +1496,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Person</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Person</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
@@ -1651,7 +1651,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Student</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Student</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
@@ -1852,7 +1852,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_WaitingLine</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_WaitingLine</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
@@ -2059,7 +2059,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_WaitingLine</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_WaitingLine</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
@@ -2206,7 +2206,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_WaitingLine</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_WaitingLine</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
@@ -2314,7 +2314,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_WaitingLine</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_WaitingLine</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
@@ -2517,7 +2517,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_NorthAmericanCountry</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_NorthAmericanCountry</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
@@ -2558,7 +2558,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_NorthAmericanCountry</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_NorthAmericanCountry</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
@@ -2599,7 +2599,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_NorthAmericanCountry</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_NorthAmericanCountry</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
@@ -2711,7 +2711,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Person2</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Person2</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>

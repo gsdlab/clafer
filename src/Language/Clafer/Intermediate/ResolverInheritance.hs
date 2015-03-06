@@ -34,6 +34,7 @@ import qualified Data.Map as Map
 
 import Language.ClaferT
 import Language.Clafer.Common
+import Language.Clafer.Front.AbsClafer
 import Language.Clafer.Intermediate.Intclafer
 import Language.Clafer.Intermediate.ResolverName
 
@@ -44,21 +45,24 @@ resolveNModule (imodule, genv') =
   do
     let decls' = _mDecls imodule
     decls'' <- mapM (resolveNElement decls') decls'
-    return (imodule{_mDecls = decls''}, genv' {sClafers = bfs toNodeShallow $ toClafers decls''})
+    let imodule' = imodule{_mDecls = decls''}
+    return
+      ( imodule'
+      , genv'{sClafers = bfs toNodeShallow $ toClafers decls'', uidClaferMap = createUidIClaferMap imodule'})
 
 
 
 resolveNClafer :: [IElement] -> IClafer -> Resolve IClafer
 resolveNClafer declarations clafer =
   do
-    super'    <- resolveNSuper declarations $ _super clafer
+    (super', superIClafer')    <- resolveNSuper declarations $ _super clafer
     elements' <- mapM (resolveNElement declarations) $ _elements clafer
     return $ clafer {_super = super',
             _elements = elements'}
 
 
-resolveNSuper :: [IElement] -> Maybe PExp -> Resolve (Maybe PExp)
-resolveNSuper _ Nothing = return Nothing
+resolveNSuper :: [IElement] -> Maybe PExp -> Resolve (Maybe PExp, Maybe IClafer)
+resolveNSuper _ Nothing = return (Nothing, Nothing)
 resolveNSuper declarations (Just (PExp _ pid' pos' (IClaferId _ id' _ _))) =
     if isPrimitive id'
       then throwError $ SemanticErr pos' $ "Primitive types are not allowed as super types: " ++ id'
@@ -67,8 +71,9 @@ resolveNSuper declarations (Just (PExp _ pid' pos' (IClaferId _ id' _ _))) =
         (id'', [superClafer']) <- case r of
           Nothing -> throwError $ SemanticErr pos' $ "No superclafer found: " ++ id'
           Just m  -> return m
-        return $ Just $ idToPExp pid' pos' "" id'' $ isTopLevel superClafer'
-resolveNSuper _ x = return x
+        return $ (Just $ PExp (Just $ TClafer [id'']) pid' pos' (IClaferId "" id'' (isTopLevel superClafer') (Just $ id''))
+                 , Just superClafer')
+resolveNSuper _ x = return (x, Nothing)
 
 
 resolveNElement :: [IElement] -> IElement -> Resolve IElement
@@ -88,7 +93,9 @@ resolveOModule (imodule, genv') =
   do
     let decls' = _mDecls imodule
     decls'' <- mapM (resolveOElement (defSEnv genv' decls')) decls'
-    return (imodule {_mDecls = decls''}, genv' {sClafers = bfs toNodeShallow $ toClafers decls''})
+    let imodule' = imodule{_mDecls = decls''}
+    return ( imodule'
+           , genv'{sClafers = bfs toNodeShallow $ toClafers decls'', uidClaferMap = createUidIClaferMap imodule'})
 
 
 resolveOClafer :: SEnv -> IClafer -> Resolve IClafer
@@ -134,7 +141,7 @@ analyzeGCard env clafer = gcard' `mplus` (Just $ IGCard False (0, -1))
   where
   gcard'
     | isNothing $ _super clafer = _gcard clafer
-    | otherwise                 = listToMaybe $ mapMaybe _gcard $ findHierarchy getSuper (clafers env) clafer
+    | otherwise                 = listToMaybe $ mapMaybe _gcard $ findHierarchy getSuper (uidClaferMap $ genv env) clafer
 
 
 analyzeCard :: SEnv -> IClafer -> Maybe Interval
@@ -155,9 +162,11 @@ analyzeElement env x = case x of
 
 -- | Expand inheritance
 resolveEModule :: (IModule, GEnv) -> (IModule, GEnv)
-resolveEModule (imodule, genv') = (imodule{_mDecls = decls''}, genv'')
+resolveEModule (imodule, genv') = (imodule', newGenv)
   where
   decls' = _mDecls imodule
+  imodule' = imodule{_mDecls = decls''}
+  newGenv = genv''{uidClaferMap = createUidIClaferMap imodule'}
   (decls'', genv'') = runState (mapM (resolveEElement []
                                     (unrollableModule imodule)
                                     False decls') decls') genv'
@@ -192,12 +201,12 @@ getDirUnrollables dependencies = (filter isUnrollable $ map (map v2n) $
 -- -----------------------------------------------------------------------------
 resolveEClafer :: MonadState GEnv m => [String] -> [String] -> Bool -> [IElement] -> IClafer -> m IClafer
 resolveEClafer predecessors unrollables absAncestor declarations clafer = do
-  sClafers' <- gets sClafers
+  uidClaferMap' <- gets uidClaferMap
   clafer' <- renameClafer absAncestor (_parentUID clafer) clafer
   let predecessors' = _uid clafer' : predecessors
   (sElements, super', superList) <-
       resolveEInheritance predecessors' unrollables absAncestor declarations
-        (findHierarchy getSuper sClafers' clafer)
+        (findHierarchy getSuper uidClaferMap' clafer)
   let sClafer = Map.fromList $ zip (map _uid superList) $ repeat [predecessors']
   modify (\e -> e {stable = Map.delete "clafer" $
                             Map.unionWith ((nub.).(++)) sClafer $
@@ -243,3 +252,33 @@ resolveEElement predecessors unrollables absAncestor declarations x = case x of
     resolveEClafer predecessors unrollables absAncestor declarations clafer
   IEConstraint _ _  -> return x
   IEGoal _ _ -> return x
+
+-- -----------------------------------------------------------------------------
+
+resolveRedefinition :: (IModule, GEnv) -> Resolve IModule
+resolveRedefinition    (iModule, _)  =
+  if (not $ null improperClafers)
+    then throwError $ SemanticErr noSpan ("Refinement errors in the following places:\n" ++  improperClafers)
+    else return iModule
+  where
+    uidIClaferMap' = createUidIClaferMap iModule
+    improperClafers :: String
+    improperClafers = foldMapIR isImproper iModule
+
+    isImproper :: Ir -> String
+    isImproper (IRClafer claf@IClafer{_cinPos = (Span (Pos l c) _) ,_ident=i}) =
+      let
+        match = matchNestedInheritance uidIClaferMap' claf
+      in
+        if (isProperNesting uidIClaferMap' match)
+        then let
+               (properCardinalityRefinement, properBagToSetRefinement, properTargetSubtyping) = isProperRefinement uidIClaferMap' match
+             in if (properCardinalityRefinement)
+             then if (properBagToSetRefinement)
+                  then if (properTargetSubtyping)
+                       then ""
+                       else ("Improper target subtyping for clafer '" ++ i ++ "' on line " ++ show l ++ " column " ++ show c ++ "\n")
+                  else ("Improper bag to set refinement for clafer '" ++ i ++ "' on line " ++ show l ++ " column " ++ show c ++ "\n")
+             else ("Improper cardinality refinement for clafer '" ++ i ++ "' on line " ++ show l ++ " column " ++ show c ++ "\n")
+        else ("Improperly nested clafer '" ++ i ++ "' on line " ++ show l ++ " column " ++ show c ++ "\n")
+    isImproper _ = ""

@@ -1,7 +1,7 @@
 abstract Prof
 	 prefer -> TA *
 	 reject -> TA *
-	 [no ( this.prefer & this.reject)]
+	 [no ( this.prefer ** this.reject)]
 
 abstract Course
 	 lecturer -> Prof
@@ -9,7 +9,7 @@ abstract Course
 	    [parent in (this.first, this.second, this.third) ]
 	 allocation -> integer
 	 [all ta : this.assistants |  this in (ta.first, ta.second, ta.third) ]// fact respectTAWishes
-	 [no (this.assistants & this.lecturer.reject)] // fact respectProfWishes
+	 [no (this.assistants ** this.lecturer.reject)] // fact respectProfWishes
 
 abstract TA
 	 first -> Course ?

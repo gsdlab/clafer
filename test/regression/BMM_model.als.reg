@@ -458,7 +458,6 @@ fact { #c0_Influencer = 0 }
 abstract sig c0_Influencer extends c0_Element
 { r_c0_externalInfluencer : lone c0_externalInfluencer
 , r_c0_internalInfluencer : lone c0_internalInfluencer }
-{ let children = (r_c0_externalInfluencer + r_c0_internalInfluencer) | some children }
 
 sig c0_externalInfluencer
 { r_c0_environment : lone c0_environment

@@ -1,12 +1,12 @@
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Currency">Currency</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a></div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Currency">Currency</span><span class="keyword"> ->> </span><a href="#integer"><span class="reference">integer</span></a></div>
 
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Percentage">Percentage</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Percentage">Percentage</span><span class="keyword"> ->> </span><a href="#integer"><span class="reference">integer</span></a>
   <div class="indent">
-  <span class="keyword">[</span> <a href="#this"><span class="reference">this</span></a> >= 0 && <a href="#this"><span class="reference">this</span></a> &lt;= 100 <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <a href="#this"><span class="reference">this</span></a> &gt;= 0 &amp;&amp; <a href="#this"><span class="reference">this</span></a> &lt;= 100 <span class="keyword">]</span></div>
 </div>
 
 <!-- # FRAGMENT /-->
@@ -27,7 +27,7 @@
   <div class="indent">
   <span class="claferDecl" id="c0_principalMortgageAmount">principalMortgageAmount</span><span class="keyword"> -> </span><a href="#c0_Currency"><span class="reference">Currency</span></a></div>
   <div class="indent">
-  <span class="keyword">[</span> 5000 &lt;= <a href="#c0_principalMortgageAmount"><span class="reference">principalMortgageAmount</span></a> && <a href="#c0_principalMortgageAmount"><span class="reference">principalMortgageAmount</span></a> &lt;= 9999999 <span class="keyword">]</span></div>
+  <span class="keyword">[</span> 5000 &lt;= <a href="#c0_principalMortgageAmount"><span class="reference">principalMortgageAmount</span></a> &amp;&amp; <a href="#c0_principalMortgageAmount"><span class="reference">principalMortgageAmount</span></a> &lt;= 9999999 <span class="keyword">]</span></div>
   <div class="indent">
   <span class="claferDecl" id="c0_balance">balance</span><span class="keyword"> -> </span><a href="#c0_Currency"><span class="reference">Currency</span></a></div>
   <div class="indent">
@@ -39,7 +39,7 @@
   <div class="indent">
   <span class="claferDecl" id="c0_amortization">amortization</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a></div>
   <div class="indent">
-  <span class="keyword">[</span> 1 &lt;= <a href="#c0_amortization"><span class="reference">amortization</span></a> && <a href="#c0_amortization"><span class="reference">amortization</span></a> &lt;= 30 <span class="keyword">]</span></div>
+  <span class="keyword">[</span> 1 &lt;= <a href="#c0_amortization"><span class="reference">amortization</span></a> &amp;&amp; <a href="#c0_amortization"><span class="reference">amortization</span></a> &lt;= 30 <span class="keyword">]</span></div>
   <div class="indent">
   <span class="keyword">xor</span> <span class="claferDecl" id="c0_interestRate">interestRate</span>
     <div class="indent">

@@ -48,16 +48,12 @@ sig c0_Connectivity extends c0_Feature
   (this.(@r_c0_security.@ref)) = 43
   (this.(@r_c0_cost.@ref)) = 101 }
 
-sig c0_Bluetooth extends c0_Feature
+sig c0_Bluetooth
 { r_c0_Bluetooth20EDR : lone c0_Bluetooth20EDR
 , r_c0_Bluetooth21EDR : lone c0_Bluetooth21EDR
 , r_c0_Bluetooth40 : lone c0_Bluetooth40 }
 { one @r_c0_Bluetooth.this
-  let children = (r_c0_Bluetooth20EDR + r_c0_Bluetooth21EDR + r_c0_Bluetooth40) | one children
-  (this.(@r_c0_batterylife.@ref)) = 0
-  (this.(@r_c0_productivity.@ref)) = 0
-  (this.(@r_c0_security.@ref)) = 0
-  (this.(@r_c0_cost.@ref)) = 0 }
+  let children = (r_c0_Bluetooth20EDR + r_c0_Bluetooth21EDR + r_c0_Bluetooth40) | one children }
 
 sig c0_Bluetooth20EDR extends c0_Feature
 {}
@@ -115,15 +111,11 @@ sig c0_USB extends c0_Feature
   (this.(@r_c0_security.@ref)) = 0
   (this.(@r_c0_cost.@ref)) = 3 }
 
-sig c0_Battery extends c0_Feature
+sig c0_Battery
 { r_c0_LiBattery1150 : lone c0_LiBattery1150
 , r_c0_LiBattery1400 : lone c0_LiBattery1400 }
 { one @r_c0_Battery.this
-  let children = (r_c0_LiBattery1150 + r_c0_LiBattery1400) | one children
-  (this.(@r_c0_batterylife.@ref)) = 0
-  (this.(@r_c0_productivity.@ref)) = 0
-  (this.(@r_c0_security.@ref)) = 0
-  (this.(@r_c0_cost.@ref)) = 0 }
+  let children = (r_c0_LiBattery1150 + r_c0_LiBattery1400) | one children }
 
 sig c0_LiBattery1150 extends c0_Feature
 {}

@@ -26,7 +26,7 @@ module Language.Clafer.Intermediate.ResolverName where
 import Control.Applicative
 import Control.Monad
 import Control.Monad.Error
-import Control.Monad.Maybe
+import Control.Monad.Trans.Maybe
 import Control.Monad.State
 import Data.Maybe
 import Data.Function
@@ -38,16 +38,17 @@ import Language.Clafer.Intermediate.Intclafer
 import qualified Language.Clafer.Intermediate.Intclafer as I
 
 -- | this environment is created for each clafer
-data SEnv = SEnv {
-  clafers :: [IClafer],                 -- (constant) top level clafers
-  context :: Maybe IClafer,             -- context of a constraint
-  subClafers :: [(IClafer, [IClafer])], -- descendans (BFS)
-  ancClafers :: [(IClafer, [IClafer])], -- ancesors (BFS)
-  bindings :: [([String], [IClafer])],  -- local names
-  resPath :: [IClafer],                 -- path to the current clafer
-  genv :: GEnv,                         -- (constant)
-  aClafers :: [(IClafer, [IClafer])],   -- (constant) abstract clafers (BFS)
-  cClafers :: [(IClafer, [IClafer])]    -- (constant) all concrete clafers (BFS)
+data SEnv
+  = SEnv
+  { clafers :: [IClafer]                 -- (constant) top level clafers
+  , context :: Maybe IClafer             -- context of a constraint
+  , subClafers :: [(IClafer, [IClafer])] -- descendans (BFS)
+  , ancClafers :: [(IClafer, [IClafer])] -- ancesors (BFS)
+  , bindings :: [([String], [IClafer])]  -- local names
+  , resPath :: [IClafer]                 -- path to the current clafer
+  , genv :: GEnv                         -- (constant)
+  , aClafers :: [(IClafer, [IClafer])]   -- (constant) abstract clafers (BFS)
+  , cClafers :: [(IClafer, [IClafer])]   -- (constant) all concrete clafers (BFS)
   } deriving Show
 
 -- | How a given name was resolved
@@ -176,7 +177,7 @@ resolveNav pos' env x isFirst = case x of
     (exp', path') <- resolveNav (_inPos pexp) env {context = listToMaybe path, resPath = path}
                      (I._exp pexp) False
     return (IFunExp iJoin [pexp0{I._exp=exp0'}, pexp{I._exp=exp'}], path')
-  IClaferId modName' id' _ _-> out
+  IClaferId modName' id' _ _ -> out
     where
     out
       | isFirst   = mkPath env <$> resolveName pos' env id'
@@ -209,7 +210,6 @@ toTuple c = (_uid c, Just c)
 
 toNav' :: [(String, Maybe IClafer)] -> IExp
 toNav' p = (mkIFunExp iJoin $ map (\(id', cbind) -> IClaferId "" id' False (_uid <$> cbind)) p) :: IExp
-
 
 adjustAncestor :: IClafer -> [(String, Maybe IClafer)] -> [(String, Maybe IClafer)] -> [(String, Maybe IClafer)]
 adjustAncestor ctx cPath rPath = (thisIdent, Just ctx) : parents ++ (fromJust $ stripPrefix prefix rPath)
@@ -334,7 +334,7 @@ allChildren = selectChildren getSuperAndReference
 
 selectChildren :: (IClafer -> [String]) -> SEnv -> [IClafer]
 selectChildren f env = getSubclafers $ concat $
-                       mapHierarchy _elements f (sClafers $ genv env)
+                       mapHierarchy _elements f (uidClaferMap $ genv env)
                        (fromJust $ context env)
 
 findUnique :: Span -> String -> [(IClafer, [IClafer])] -> Resolve (Maybe (String, [IClafer]))

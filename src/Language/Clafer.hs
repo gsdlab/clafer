@@ -32,7 +32,7 @@ Normal usage:
 >       addModuleFragment b
 >       parse
 >       compile
->       generateFragments
+>       generate
 
 Example of compiling a model consisting of one fragment:
 
@@ -45,8 +45,6 @@ Example of compiling a model consisting of one fragment:
 >       compile
 >       generate
 
-Use "generateFragments" instead to generate output based on their fragments.
-
 > compileTwoFragments :: ClaferArgs -> InputModel -> InputModel -> Either ClaferErr [String]
 > compileTwoFragments args frag1 frag2 =
 >   runClafer args $
@@ -55,7 +53,7 @@ Use "generateFragments" instead to generate output based on their fragments.
 >      addModuleFragment frag2
 >      parse
 >      compile
->      generateFragments
+>      generate
 
 Use "throwErr" to halt execution:
 
@@ -71,7 +69,6 @@ module Language.Clafer (runCompiler,
                         desugar,
                         generate,
                         generateHtml,
-                        generateFragments,
                         runClaferT,
                         runClafer,
                         ClaferErr,
@@ -100,7 +97,6 @@ import Data.Either
 import Data.List
 import Data.Maybe
 import qualified Data.Map as Map
-import Data.Ord
 import Control.Monad
 import Control.Monad.State
 import Control.Lens.Plated
@@ -115,10 +111,10 @@ import Language.Clafer.ClaferArgs hiding (Clafer)
 import qualified Language.Clafer.ClaferArgs as Mode (ClaferMode (Clafer))
 import Language.Clafer.Comments
 import qualified Language.Clafer.Css as Css
-import Language.Clafer.Front.Lexclafer
-import Language.Clafer.Front.Parclafer
-import Language.Clafer.Front.Printclafer
-import Language.Clafer.Front.Absclafer
+import Language.Clafer.Front.LexClafer
+import Language.Clafer.Front.ParClafer
+import Language.Clafer.Front.PrintClafer
+import Language.Clafer.Front.AbsClafer
 import Language.Clafer.Front.LayoutResolver
 import Language.Clafer.Intermediate.Tracing
 import Language.Clafer.Intermediate.Intclafer
@@ -425,40 +421,6 @@ compile desugaredMod = do
       gt1 (IRClafer (IClafer (Span (Pos l c) _) False _ _ _ _ _ _ (Just (_, m)) _ _)) = if (m > 1 || m < 0) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
       gt1 _ = ""
 
--- | Splits the IR into their fragments, and generates the output for each fragment.
--- | Might not generate the entire output (for example, Alloy scope and run commands) because
--- | they do not belong in fragments.
-generateFragments :: Monad m => ClaferT m [String]
-generateFragments =
-  do
-    env <- getEnv
-    (iModule, _, _) <- getIr
-    fragElems <- fragment (sortBy (comparing rnge) $ _mDecls iModule) (frags env)
-
-    -- Assumes output mode is Alloy for now
-
-    return $ map (generateFragment $ args env) fragElems
-  where
-  rnge (IEClafer IClafer{_cinPos = p}) = p
-  rnge IEConstraint{_cpexp = PExp{_inPos = p}} = p
-  rnge IEGoal{_cpexp = PExp{_inPos = p}} = p
-
-  -- Groups IElements by their fragments.
-  --   elems must be sorted by range.
-  fragment :: (Monad m) => [IElement] -> [Pos] -> ClaferT m [[IElement]]
-  fragment [] [] = return []
-  fragment elems (frag : rest) =
-    fragment restFrags rest >>= return . (curFrag:)
-    where
-    (curFrag, restFrags) = span (`beforePos` frag) elems
-  fragment _ [] = throwErr $ (ClaferErr $ "Unexpected fragment." :: CErr Span) -- Should not happen. Bug.
-
-  beforePos ele p =
-    case rnge ele of
-      Span _ e -> e <= p
-  generateFragment :: ClaferArgs -> [IElement] -> String
-  generateFragment args' frag =
-    flatten $ cconcat $ map (genDeclaration args') frag
 
 -- | Splits the AST into their fragments, and generates the output for each fragment.
 generateHtml :: ClaferEnv -> String
@@ -490,14 +452,25 @@ generateHtml env =
     printComments [] = []
     printComments ((s, comment):cs) = (snd (printComment s [(s, comment)]) ++ "<br>\n"):printComments cs
 
-noReals :: IModule -> Bool
-noReals iModule = reals == []
+iExpBasedChecks :: IModule -> (Bool, Bool)
+iExpBasedChecks iModule = (null realLiterals, null productOperators)
   where
     iexps :: [ IExp ]
     iexps = universeOn biplate iModule
-    reals = filter isIDouble iexps
+    realLiterals = filter isIDouble iexps
+    productOperators = filter isProductOperator iexps
     isIDouble (IDouble _) = True
     isIDouble _           = False
+    isProductOperator (IFunExp op' _) = op' == iProdSet
+    isProductOperator _               = False
+
+iClaferBasedChecks :: IModule -> Bool
+iClaferBasedChecks iModule = null $ filter hasReferenceToReal iClafers
+  where
+    iClafers :: [ IClafer ]
+    iClafers = universeOn biplate iModule
+    hasReferenceToReal (IClafer{_reference=(Just IReference{_ref=pexp'})}) = (getSuperId pexp') == "real"
+    hasReferenceToReal _               = False
 
 -- | Generates outputs for the given IR.
 generate :: Monad m => ClaferT m (Map.Map ClaferMode CompilerResult)
@@ -507,7 +480,8 @@ generate =
     ast' <- getAst
     (iModule, genv, au) <- getIr
     let
-      hasNoReals = noReals iModule
+      (hasNoRealLiterals, hasNoProductOperator) = iExpBasedChecks iModule
+      hasNoReferenceToReal = iClaferBasedChecks iModule
       cargs = args env
       modes = mode cargs
       stats = showStats au $ statsModule iModule
@@ -516,7 +490,7 @@ generate =
     return $ Map.fromList (
         -- result for Alloy
         (if (Alloy `elem` modes)
-          then if (hasNoReals)
+          then if (hasNoRealLiterals && hasNoReferenceToReal && hasNoProductOperator)
                 then
                   let
                     (imod,strMap) = astrModule iModule
@@ -536,7 +510,11 @@ generate =
                     ]
                 else [ (Alloy,
                         NoCompilerResult {
-                         reason = "Alloy output unavailable because the model contains real numbers."
+                         reason = "Alloy output unavailable because the model contains: "
+                                ++ (if hasNoRealLiterals then "" else " | a real number literal")
+                                ++ (if hasNoReferenceToReal then "" else " | a reference to a real")
+                                ++ (if hasNoProductOperator then "" else " | the product operator")
+                                ++ "."
                         })
                      ]
           else []
@@ -544,7 +522,7 @@ generate =
         ++
         -- result for Alloy42
         (if (Alloy42 `elem` modes)
-          then if (hasNoReals)
+          then if (hasNoRealLiterals && hasNoReferenceToReal && hasNoProductOperator)
                 then
                    let
                       (imod,strMap) = astrModule iModule
@@ -564,7 +542,11 @@ generate =
                       ]
                 else [ (Alloy,
                         NoCompilerResult {
-                         reason = "Alloy output unavailable because the model contains real numbers."
+                         reason = "Alloy output unavailable because the model contains: "
+                                ++ (if hasNoRealLiterals then "" else " | a real number literal")
+                                ++ (if hasNoReferenceToReal then "" else " | a reference to a real")
+                                ++ (if hasNoProductOperator then "" else " | the product operator")
+                                ++ "."
                         })
                      ]
           else []
@@ -641,31 +623,28 @@ generate =
         ++ (if (Python `elem` modes)
           then [ (Python,
                   CompilerResult {
-                   extension = "py",
-                   outputCode = genPythonModule iModule,
-                   statistics = stats,
-                   claferEnv  = env,
-                   mappingToAlloy = [],
-                   stringMap = Map.empty,
-                   scopesList = scopes
+                    extension = "py",
+                    outputCode = genPythonModule (iModule, genv) scopes,
+                    statistics = stats,
+                    claferEnv  = env,
+                    mappingToAlloy = [],
+                    stringMap = Map.empty,
+                    scopesList = scopes
                   }) ]
           else []
         )
         -- result for Choco
         ++ (if (Choco `elem` modes)
-          then let
-                  imod = iModule
-               in
-                  [ (Choco,
-                     CompilerResult {
-                         extension = "js",
-                         outputCode = genCModule cargs (imod, genv) scopes,
-                         statistics = stats,
-                         claferEnv  = env,
-                         mappingToAlloy = [],
-                         stringMap = Map.empty,
-                         scopesList = scopes
-                      }) ]
+          then [ (Choco,
+                  CompilerResult {
+                    extension = "js",
+                    outputCode = genCModule (iModule, genv) scopes,
+                    statistics = stats,
+                    claferEnv  = env,
+                    mappingToAlloy = [],
+                    stringMap = Map.empty,
+                    scopesList = scopes
+                   }) ]
           else []
         ))
 
@@ -707,11 +686,11 @@ addStats code stats = "/*\n" ++ stats ++ "*/\n" ++ code
 
 showStats :: Bool -> Stats -> String
 showStats au (Stats na nr nc nconst ngoals sgl) =
-  unlines [ "All clafers: " ++ (show (na + nc)) ++ " | Abstract: " ++ (show na) ++ " | Concrete: " ++ (show nc) ++ " | References: " ++ (show nr)
+  unlines [ "All clafers: " ++ (show (na + nc)) ++ " | Abstract: " ++ (show na) ++ " | Concrete: " ++ (show nc) ++ " | Reference: " ++ (show nr)
           , "Constraints: " ++ show nconst
           , "Goals: " ++ show ngoals
           , "Global scope: " ++ showInterval sgl
-          , "Can skip resolver: " ++ if au then "yes" else "no" ]
+          , "Can skip name resolver: " ++ if au then "yes" else "no" ]
 
 showInterval :: (Integer, Integer) -> String
 showInterval (n, -1) = show n ++ "..*"

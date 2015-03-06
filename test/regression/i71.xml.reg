@@ -432,7 +432,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Course</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Course</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>5</IntLiteral>
 </Min>
@@ -473,7 +473,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Teacher</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Teacher</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>3</IntLiteral>
 </Min>

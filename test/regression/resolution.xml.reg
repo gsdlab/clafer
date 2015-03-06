@@ -14,8 +14,8 @@
 </Max>
 </Interval>
 </GroupCard>
-<Id>X</Id>
-<UniqueId>c0_X</UniqueId>
+<Id>XX</Id>
+<UniqueId>c0_XX</UniqueId>
 <ParentUniqueId>root</ParentUniqueId>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
@@ -44,7 +44,7 @@
 </GroupCard>
 <Id>x</Id>
 <UniqueId>c0_x</UniqueId>
-<ParentUniqueId>c0_X</ParentUniqueId>
+<ParentUniqueId>c0_XX</ParentUniqueId>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
 <Max><IntLiteral>1</IntLiteral>
@@ -112,7 +112,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
-<Bind>c0_X</Bind>
+<Bind>c0_XX</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:ISet" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>
@@ -144,8 +144,8 @@
 </Max>
 </Interval>
 </GroupCard>
-<Id>Z</Id>
-<UniqueId>c0_Z</UniqueId>
+<Id>ZZ</Id>
+<UniqueId>c0_ZZ</UniqueId>
 <ParentUniqueId>root</ParentUniqueId>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
@@ -174,7 +174,7 @@
 </GroupCard>
 <Id>z</Id>
 <UniqueId>c0_z</UniqueId>
-<ParentUniqueId>c0_Z</ParentUniqueId>
+<ParentUniqueId>c0_ZZ</ParentUniqueId>
 <Reference><IsSet>true</IsSet>
 <Ref><ParentId></ParentId>
 <Position><Start><IntLiteral>7</IntLiteral>
@@ -258,7 +258,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>this</Id>
 <IsTop>true</IsTop>
-<Bind>c0_Z</Bind>
+<Bind>c0_ZZ</Bind>
 </Exp></Argument>
 <Argument><Type xsi:type="cl:IInteger" /><ParentId></ParentId>
 <Position><Start><IntLiteral>0</IntLiteral>

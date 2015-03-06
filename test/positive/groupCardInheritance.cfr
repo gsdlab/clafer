@@ -1,0 +1,19 @@
+abstract or Port
+    input
+    output
+
+// refine 'or' to 'xor'
+// extend the group
+abstract xor RelayPort : Port
+    relay
+
+// inherit group cardinality
+// extend the group
+req : RelayPort
+    flow
+    [ flow ]
+
+assert [ no req.input ]
+assert [ no req.output ]
+assert [ no req.relay ]
+assert [ one req.flow ]

@@ -1,6 +1,6 @@
-abstract Currency -> integer
+abstract Currency ->> integer
 
-abstract Percentage -> integer
+abstract Percentage ->> integer
     [ this >= 0 && this <= 100 ]
 //# FRAGMENT
 abstract Mortgage

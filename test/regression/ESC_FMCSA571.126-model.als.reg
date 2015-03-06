@@ -27,7 +27,8 @@ abstract sig c0_Vehicle
 
 sig c0_DriveConfiguration extends c1_DriveConfiguration
 {}
-{ one @r_c0_DriveConfiguration.this }
+{ one @r_c0_DriveConfiguration.this
+  let children = (r_c0_twoWheelDrive + r_c0_frontWheelDrive + r_c0_rearWheelDrive + r_c0_allWheelDrive + r_c0_fourWheelDrive) | one children }
 
 sig c0_ElectronicStabilityControlSystem extends c1_ElectronicStabilityControlSystem
 {}
@@ -89,7 +90,6 @@ abstract sig c1_DriveConfiguration
 , r_c0_rearWheelDrive : lone c0_rearWheelDrive
 , r_c0_allWheelDrive : lone c0_allWheelDrive
 , r_c0_fourWheelDrive : lone c0_fourWheelDrive }
-{ let children = (r_c0_twoWheelDrive + r_c0_frontWheelDrive + r_c0_rearWheelDrive + r_c0_allWheelDrive + r_c0_fourWheelDrive) | one children }
 
 sig c0_twoWheelDrive
 {}

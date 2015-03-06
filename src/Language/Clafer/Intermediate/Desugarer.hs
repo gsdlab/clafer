@@ -20,14 +20,14 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
 -}
-{- | Transforms an Abstract Syntax Tree (AST) from "Language.Clafer.Front.Absclafer"
+{- | Transforms an Abstract Syntax Tree (AST) from "Language.Clafer.Front.AbsClafer"
 into Intermediate representation (IR) from "Language.Clafer.Intermediate.Intclafer" of a Clafer model.
 -}
 module Language.Clafer.Intermediate.Desugarer where
 
 import Language.Clafer.Common
 import Data.Maybe (fromMaybe)
-import Language.Clafer.Front.Absclafer
+import Language.Clafer.Front.AbsClafer
 import Language.Clafer.Intermediate.Intclafer
 
 -- | Transform the AST into the intermediate representation (IR)
@@ -90,10 +90,10 @@ desugarClafer claf@(Clafer s abstract gcrd' id' super' reference' crd' init' ele
       else desugarClafer' claf
     _ -> desugarClafer' claf
     where
-      desugarClafer' claf@(Clafer s abstract gcrd' id' super' reference' crd' init' elements') =
-        (IEClafer $ IClafer s (desugarAbstract abstract) (desugarGCard gcrd') (transIdent id')
-            "" "" (desugarSuper super') (desugarReference reference') (desugarCard crd') (0, -1)
-            (desugarElements elements')) : (desugarInit id' init')
+      desugarClafer' (Clafer s'' abstract'' gcrd'' id'' super'' reference'' crd'' init'' elements'') =
+        (IEClafer $ IClafer s'' (desugarAbstract abstract'') (desugarGCard gcrd'') (transIdent id'')
+            "" "" (desugarSuper super'') (desugarReference reference'') (desugarCard crd'') (0, -1)
+            (desugarElements elements'')) : (desugarInit id'' init'')
 
 getPExpClaferIdent :: SetExp -> String
 getPExpClaferIdent (ClaferId _ (Path _ [ (ModIdIdent _ (PosIdent (_, ident'))) ] )) = ident'
@@ -152,10 +152,8 @@ sugarSuper (Just pexp') = error $ "Function sugarSuper from Desugarer expects a 
 
 sugarReference :: Maybe IReference -> Reference
 sugarReference Nothing = ReferenceEmpty noSpan
-sugarReference (Just (IReference True (pexp'@(PExp _ _ _ (IClaferId _ _ _ _))))) = ReferenceSet noSpan (sugarSetExp pexp')
-sugarReference (Just (IReference False (pexp'@(PExp _ _ _ (IClaferId _ _ _ _))))) = ReferenceBag noSpan (sugarSetExp pexp')
-sugarReference (Just (IReference _ pexp')) = error $ "Function sugarReference from Desugarer expects a IReference (PExp (IClaferId)) but instead was given: " ++ show pexp' -- Should never happen
-
+sugarReference (Just (IReference True  pexp')) = ReferenceSet noSpan (sugarSetExp pexp')
+sugarReference (Just (IReference False pexp')) = ReferenceBag noSpan (sugarSetExp pexp')
 
 sugarInitHow :: Bool -> InitHow
 sugarInitHow True  = InitConstant noSpan
@@ -303,8 +301,10 @@ desugarExp' x = case x of
   ESub _ exp0 exp'  -> dop iSub [exp0, exp']
   EMul _ exp0 exp'  -> dop iMul [exp0, exp']
   EDiv _ exp0 exp'  -> dop iDiv [exp0, exp']
+  ERem _ exp0 exp'  -> dop iRem [exp0, exp']
   ECSetExp _ exp'   -> dop iCSet [exp']
   ESumSetExp _ exp' -> dop iSumSet [exp']
+  EProdSetExp _ exp' -> dop iProdSet [exp']
   EMinExp _ exp'    -> dop iMin [exp']
   EGMax _ exp' -> dop iGMax [exp']
   EGMin _ exp' -> dop iGMin [exp']
@@ -381,7 +381,8 @@ sugarExp' x = case x of
     | op'' == iGMax          = EGMax noSpan
     | op'' == iGMin          = EGMin noSpan
     | op'' == iSumSet        = ESumSetExp noSpan
-    | otherwise            = error $ show op'' ++ "is not an op"
+    | op'' == iProdSet       = EProdSetExp noSpan
+    | otherwise              = error $ show op'' ++ "is not an op"
   sugarOp op''
     | op'' == iIff           = EIff noSpan
     | op'' == iImpl          = EImplies noSpan
@@ -400,6 +401,7 @@ sugarExp' x = case x of
     | op'' == iSub           = ESub noSpan
     | op'' == iMul           = EMul noSpan
     | op'' == iDiv           = EDiv noSpan
+    | op'' == iRem           = ERem noSpan
     | otherwise            = error $ show op'' ++ "is not an op"
   sugarTerOp op''
     | op'' == iIfThenElse    = EImpliesElse noSpan

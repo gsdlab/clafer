@@ -1086,7 +1086,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_comp</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_comp</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
@@ -1127,7 +1127,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_comp</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_comp</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
@@ -1211,7 +1211,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c1_options</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c1_options</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
@@ -1863,7 +1863,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_ECU</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_ECU</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>
@@ -1904,7 +1904,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_display</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_display</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
@@ -2120,7 +2120,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_plaECU</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_plaECU</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
@@ -2161,7 +2161,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_plaECU</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_plaECU</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>0</IntLiteral>
 </Min>

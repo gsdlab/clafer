@@ -324,7 +324,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Dimension</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Dimension</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
@@ -365,7 +365,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_Dimension</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_Dimension</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
@@ -406,7 +406,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_DimensionLevel</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_DimensionLevel</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>
@@ -447,7 +447,7 @@
 <Exp xsi:type="cl:IClaferId"><ModuleName></ModuleName>
 <Id>c0_DimensionLevel</Id>
 <IsTop>true</IsTop>
-<Bind></Bind>
+<Bind>c0_DimensionLevel</Bind>
 </Exp></Super>
 <Card><Min><IntLiteral>1</IntLiteral>
 </Min>

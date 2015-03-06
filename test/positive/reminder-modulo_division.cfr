@@ -1,0 +1,8 @@
+a -> integer = 6 % 4
+assert [ a = 2 ]
+
+b -> integer = 0 % 4
+assert [ b = 0 ]
+
+c -> integer = 4 % 2
+assert [ c = 0 ]

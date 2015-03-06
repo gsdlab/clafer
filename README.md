@@ -1,7 +1,7 @@
 Clafer
 ======
 
-v0.3.8
+v0.3.9
 
 [Clafer](http://clafer.org) is a general-purpose lightweight structural modeling language developed by 
 [GSD Lab](http://gsd.uwaterloo.ca/), [University of Waterloo](http://uwaterloo.ca), and 
@@ -58,44 +58,18 @@ Clafer can be installed from a binary distribution (preferred), from Hackage, an
 
 Regardless of the installation method, the following are 
 
-Required:
-
-* [GNU Linear Programming Kit](http://www.gnu.org/software/glpk/) v4.55
-  * On Windows, [WinGLPK](http://winglpk.sourceforge.net/)
-
 Optional:
 
-* [Java Platform (JDK)](http://www.oracle.com/technetwork/java/javase/downloads/index.html) v7+, 32bit
+* [Java Platform (JDK)](http://www.oracle.com/technetwork/java/javase/downloads/index.html) v8+, 32bit
   * needed only for running XML output validation
 * [Alloy4.1 and/or Alloy4.2](http://alloy.mit.edu/alloy/download.html)
   * needed only for Alloy output validation
 * [GraphViz](http://graphviz.org/)
   * the program `dot` is needed only in the `html` mode for SVG graph generation
 
-### Installation of GLPK
-
-On Linux
-
-1. [libglpk-dev](http://www.gnu.org/software/glpk/) v4.55
-  * execute `sudo apt-get install libglpk-dev` on Ubuntu
-2. [libgmp-dev](http://gmplib.org/)
-  * execute `sudo apt-get install libgmp-dev` on Ubuntu
-
-On Windows
-
-1. The binary distribution already includes the GNU Linear Programming Kit DLL `glpk_4_55.dll`.
-2. Install [WinGLPK](http://winglpk.sourceforge.net/) v4.55
-  * inside the `w64` folder, copy `glpk_4_55.dll` to `glpk.dll` so that it can be found when building Haskell package `glpk-hs`
-  * from `w64` folder, copy `glpk_4_55.dll` to `<user>\AppData\Roaming\cabal\bin`
-
-On Mac
-
-1. install GPLK 4.55 from [MacPorts](http://www.macports.org/)
-  * execute `sudo port install glpk +universal`
-
 ### Installation from binaries
 
-Binary distributions of the release 0.3.8 of Clafer Tools for Windows, Mac, and Linux, 
+Binary distributions of the release 0.3.9 of Clafer Tools for Windows, Mac, and Linux, 
 can be downloaded from 
 [Clafer Tools - Binary Distributions](http://http://gsd.uwaterloo.ca/clafer-tools-binary-distributions). 
 
@@ -106,28 +80,23 @@ can be downloaded from
 
 Dependencies
 
-* [The Haskell Platform](http://hackage.haskell.org/platform/) v2014.2.0.0 64bit
-  * on Windows, use 32bit
+* [The Haskell Platform](http://hackage.haskell.org/platform/) v2014.2.0.0 
+  * Alternatively GHC >= 7.8.3 and Cabal >= 1.18
 
-Clafer is now available on [Hackage](http://hackage.haskell.org/package/clafer-0.3.8/) and it can be installed using
+Clafer is now available on [Hackage](http://hackage.haskell.org/package/clafer-0.3.9/) and it can be installed using
 
 1. `cabal update`
 2. `cabal install clafer`
-3. `cd <cabal's lib or share folder>`  (`C:\Users\<user>\AppData\Roaming\cabal\x86_64-windows-ghc-7.8.3\clafer-0.3.8` on Windows or `.cabal/share/x86_64-linux-ghc-7.8.3/clafer-0.3.8/` on Linux)
+3. `cd <cabal's lib or share folder>`  (`C:\Users\<user>\AppData\Roaming\cabal\x86_64-windows-ghc-7.8.3\clafer-0.3.9` on Windows or `.cabal/share/x86_64-linux-ghc-7.8.3/clafer-0.3.9/` on Linux)
 4. to automatically download Alloy jars
   * execute `make` in `tools` 
-
-On Windows 
-
-* copy GLPK's dll `glpk_4_55.dll` to the `C:\Users\<user>\AppData\Roaming\cabal\bin` folder or any other folder on the system `PATH`
 
 ### Installation from the source code
 
 Dependencies
 
-* [The Haskell Platform](http://hackage.haskell.org/platform/) v2014.2.0.0 64bit
-  * on Windows, use 32bit
-  * Cabal >= 1.18
+* [The Haskell Platform](http://hackage.haskell.org/platform/) v2014.2.0.0 
+  * Alternatively GHC >= 7.8.3 and Cabal >= 1.18
 * [Alloy4.1 and/or Alloy4.2](http://alloy.mit.edu/alloy/download.html)
   * downloaded automatically during the build
 * [Git](http://git-scm.com/)
@@ -156,18 +125,13 @@ Development versions from branches `develop` should work well together but this 
   * `git clone git://github.com/gsdlab/clafer.git`
 4. in `<source directory>/clafer`, execute
   * `cabal update`
-5. On Linux and Mac execute 
   * `make init`
   * `make`
-6. On Windows (in MSYS2 console), execute 
-  * `make glpk=/c/<your WinGLPK install dir>`
 
 ### Installation
 
-1. On Linux and Mac execute 
+1. Execute 
   * `make install to=<target directory>` 
-2. On Windows (in MSYS2 console), execute 
-  * `make glpk=/c/<your WinGLPK instal dir> to=/c/Users/<your user name>/AppData/Roaming/cabal/bin`
 
 #### Note: 
 > On Windows, use `/` with the `make` command instead of `\`.
@@ -191,7 +155,7 @@ Clafer Compiler
 (As printed by `clafer --help`)
 
 ```
-Clafer 0.3.8
+Clafer 0.3.9
 
 clafer [OPTIONS] [FILE]
 
@@ -259,7 +223,7 @@ Common flags:
   -e --ecore2clafer                       Translate an ECore model into
                                           Clafer.
      --ss=SCOPESTRATEGY --scope-strategy  Use scope computation strategy:
-                                          none, simple (default), or full.
+                                          none or simple (default).
      --check-afm --afm                    Throws an error if the cardinality
                                           of any of the clafers is above 1.
      --sg --skip-goals                    Skip generation of Alloy code for
@@ -282,7 +246,7 @@ Multiple modes can be used at the same time. For example,
 
 `clafer model.cfr -m alloy -m xml -m html -m graph --self-contained --show-references --no-stats`
 
-The mode `-m alloy42` is only a default mode if no other modes are given. When other modes are given, the mode `-m alloy42` must be added explicitly if needed.
+The mode `-m alloy42` is only the default mode if no other modes are given. When other modes are given, the mode `-m alloy42` must be added explicitly if needed.
 
 Additionally, `[OPTIONS]` can also be specified directly in the model file by inserting the following compiler directive as the first line of the file:
 
@@ -316,12 +280,5 @@ The following directives are markers of locations in the input files for differe
 
 Need help?
 ==========
-* See [language's website](http://clafer.org) for news, technical reports and more
-  * Check out a [Learning Clafer section](http://t3-necsis.cs.uwaterloo.ca:8091/#Learning Clafer)
-  * Try a live instance of [ClaferWiki](http://t3-necsis.cs.uwaterloo.ca:8091) which contains a repository of models for various applications
-  * Try a live instance of [ClaferIDE](http://t3-necsis.cs.uwaterloo.ca:8094)
-  * Try a live instance of [ClaferConfigurator](http://t3-necsis.cs.uwaterloo.ca:8093)
-  * Try a live instance of [ClaferMooVisualizer](http://t3-necsis.cs.uwaterloo.ca:8092)
-* Take a look at (incomplete) [Clafer by examples wiki](https://github.com/gsdlab/clafer/wiki)
-* Browse example models in the [test suite](https://github.com/gsdlab/clafer/tree/master/test/positive) and [MOO examples](https://github.com/gsdlab/clafer/tree/master/spl_configurator/dataset)
-* Post questions, report bugs, suggest improvements [GSD Lab Bug Tracker](http://gsd.uwaterloo.ca:8888/questions/). Tag your entries with `clafer` (so that we know what they are related to) and with `jimmy-liang` or `michal` (so that Jimmy or Michał gets a notification).
+* Visit [language's website](http://clafer.org).
+* Report issues to [issue tracker](https://github.com/gsdlab/clafer/issues)

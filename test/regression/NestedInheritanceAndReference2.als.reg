@@ -1,0 +1,68 @@
+open util/integer
+pred show {}
+
+
+abstract sig c0_Component
+{ r_c0_Port : set c0_Port
+, r_c0_TemperaturePort : set c0_TemperaturePort }
+{ r_c0_TemperaturePort in r_c0_Port
+  all disj x, y : this.@r_c0_TemperaturePort | (x.@ref) != (y.@ref)  }
+
+abstract sig c0_Port
+{ r_c0_input : lone c0_input
+, r_c0_output : lone c0_output }
+{ one @r_c0_Port.this }
+
+sig c0_input
+{}
+{ one @r_c0_input.this }
+
+sig c0_output
+{}
+{ one @r_c0_output.this }
+
+abstract sig c0_TemperaturePort extends c0_Port
+{ ref : one Int }
+{ one @r_c0_TemperaturePort.this }
+
+abstract sig c0_TemperatureConnector
+{ r_c0_from : one c0_from
+, r_c0_to : one c0_to }
+{ (((this.@r_c0_to).@ref).@ref) = (((this.@r_c0_from).@ref).@ref) }
+
+sig c0_from
+{ ref : one c0_TemperaturePort }
+{ one @r_c0_from.this
+  some this.(@ref.@r_c0_output) }
+
+sig c0_to
+{ ref : one c0_TemperaturePort }
+{ one @r_c0_to.this
+  some this.(@ref.@r_c0_input) }
+
+one sig c0_sensor extends c0_Component
+{ r_c0_temperature : one c0_temperature }
+{ r_c0_temperature in r_c0_TemperaturePort }
+
+one sig c0_temperature extends c0_TemperaturePort
+{}
+{ let children = (r_c0_input + r_c0_output) | some children
+  some this.@r_c0_output }
+
+one sig c0_controller extends c0_Component
+{ r_c1_temperature : one c1_temperature }
+{ r_c1_temperature in r_c0_TemperaturePort }
+
+one sig c1_temperature extends c0_TemperaturePort
+{}
+{ let children = (r_c0_input + r_c0_output) | some children
+  some this.@r_c0_input }
+
+one sig c0_con1 extends c0_TemperatureConnector
+{}
+{ (this.(@r_c0_from.@ref)) = (c0_sensor.@r_c0_temperature)
+  (this.(@r_c0_to.@ref)) = (c0_controller.@r_c1_temperature) }
+
+assert assertOnLine_27 { ((c0_controller.@r_c1_temperature).@ref) = ((c0_sensor.@r_c0_temperature).@ref) }
+check assertOnLine_27 for 1 but 2 c0_Component, 2 c0_Port, 2 c0_TemperaturePort, 2 c0_input, 2 c0_output
+

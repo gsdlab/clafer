@@ -1,0 +1,21 @@
+digraph "product"
+{
+rankdir=BT;
+ranksep=0.3;
+nodesep=0.1;
+graph [fontname=Sans fontsize=11];
+node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
+edge [fontname=Sans fontsize=11];
+"c0_N" [label="abstract N ->> integer" URL="#c0_N" tooltip="abstract N -&gt;&gt; integer&#10;"];
+"c0_n1" [label="n1 : N = 1" URL="#c0_n1" tooltip="n1 : N = 1&#10;"];
+"c0_n1" -> "c0_N" [arrowhead=onormal constraint=true weight=100];
+"c0_n2" [label="n2 : N = 2" URL="#c0_n2" tooltip="n2 : N = 2&#10;"];
+"c0_n2" -> "c0_N" [arrowhead=onormal constraint=true weight=100];
+"c0_n3" [label="n3 : N = 3" URL="#c0_n3" tooltip="n3 : N = 3&#10;"];
+"c0_n3" -> "c0_N" [arrowhead=onormal constraint=true weight=100];
+"c0_n4" [label="n4 : N = 2" URL="#c0_n4" tooltip="n4 : N = 2&#10;"];
+"c0_n4" -> "c0_N" [arrowhead=onormal constraint=true weight=100];
+"c0_n5" [label="n5 : N = 3" URL="#c0_n5" tooltip="n5 : N = 3&#10;"];
+"c0_n5" -> "c0_N" [arrowhead=onormal constraint=true weight=100];
+"c0_p" [label="p -> integer = product N" URL="#c0_p" tooltip="p -&gt; integer = product N&#10;"];
+}

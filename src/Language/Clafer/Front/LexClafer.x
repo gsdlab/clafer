@@ -3,7 +3,7 @@
 {
 {-# OPTIONS -fno-warn-incomplete-patterns #-}
 {-# OPTIONS_GHC -w #-}
-module Language.Clafer.Front.Lexclafer where
+module Language.Clafer.Front.LexClafer where
 
 
 
@@ -20,11 +20,11 @@ $i = [$l $d _ ']          -- identifier character
 $u = [\0-\255]          -- universal: any character
 
 @rsyms =    -- symbols and non-identifier-like reserved words
-   \= | \[ | \] | \< \< | \> \> | \{ | \} | \` | \: | \- \> | \- \> \> | \: \= | \? | \+ | \* | \. \. | \| | \< \= \> | \= \> | \| \| | \& \& | \! | \< | \> | \< \= | \> \= | \! \= | \- | \/ | \# | \+ \+ | \, | \- \- | \* \* | \< \: | \: \> | \. | \; | \\ | \( | \)
+   \= | \[ | \] | \< \< | \> \> | \{ | \} | \` | \: | \- \> | \- \> \> | \: \= | \? | \+ | \* | \. \. | \| | \< \= \> | \= \> | \| \| | \& \& | \! | \< | \> | \< \= | \> \= | \! \= | \- | \/ | \% | \# | \+ \+ | \, | \- \- | \* \* | \< \: | \: \> | \. | \; | \\ | \( | \)
 
 :-
 "//" [.]* ; -- Toss single line comments
-"/*" ([$u # \*] | \* [$u # \/])* ("*")+ "/" ; 
+"/*" ([$u # \*] | \*+ [$u # [\* \/]])* ("*")+ "/" ;
 
 $white+ ;
 @rsyms { tok (\p s -> PT p (eitherResIdent (TV . share) s)) }
@@ -41,6 +41,7 @@ $l $i*   { tok (\p s -> PT p (eitherResIdent (TV . share) s)) }
 
 {
 
+tok :: (Posn -> String -> Token) -> (Posn -> String -> Token)
 tok f p s = f p s
 
 share :: String -> String
@@ -60,24 +61,33 @@ data Tok =
 
  deriving (Eq,Show,Ord)
 
-data Token = 
+data Token =
    PT  Posn Tok
  | Err Posn
   deriving (Eq,Show,Ord)
 
+tokenPos :: [Token] -> String
 tokenPos (PT (Pn _ l _) _ :_) = "line " ++ show l
 tokenPos (Err (Pn _ l _) :_) = "line " ++ show l
 tokenPos _ = "end of file"
 
+tokenPosn :: Token -> Posn
 tokenPosn (PT p _) = p
 tokenPosn (Err p) = p
+
+tokenLineCol :: Token -> (Int, Int)
 tokenLineCol = posLineCol . tokenPosn
+
+posLineCol :: Posn -> (Int, Int)
 posLineCol (Pn _ l c) = (l,c)
+
+mkPosToken :: Token -> ((Int, Int), String)
 mkPosToken t@(PT p _) = (posLineCol p, prToken t)
 
+prToken :: Token -> String
 prToken t = case t of
   PT _ (TS s _) -> s
-  PT _ (TL s)   -> s
+  PT _ (TL s)   -> show s
   PT _ (TI s)   -> s
   PT _ (TV s)   -> s
   PT _ (TD s)   -> s
@@ -98,7 +108,8 @@ eitherResIdent tv s = treeFind resWords
                               | s > a  = treeFind right
                               | s == a = t
 
-resWords = b ">>" 32 (b "." 16 (b "**" 8 (b "&&" 4 (b "!=" 2 (b "!" 1 N N) (b "#" 3 N N)) (b ")" 6 (b "(" 5 N N) (b "*" 7 N N))) (b "-" 12 (b "++" 10 (b "+" 9 N N) (b "," 11 N N)) (b "->" 14 (b "--" 13 N N) (b "->>" 15 N N)))) (b "<:" 24 (b ":=" 20 (b "/" 18 (b ".." 17 N N) (b ":" 19 N N)) (b ";" 22 (b ":>" 21 N N) (b "<" 23 N N))) (b "=" 28 (b "<=" 26 (b "<<" 25 N N) (b "<=>" 27 N N)) (b ">" 30 (b "=>" 29 N N) (b ">=" 31 N N))))) (b "min" 48 (b "assert" 40 (b "]" 36 (b "[" 34 (b "?" 33 N N) (b "\\" 35 N N)) (b "abstract" 38 (b "`" 37 N N) (b "all" 39 N N))) (b "if" 44 (b "else" 42 (b "disj" 41 N N) (b "enum" 43 N N)) (b "lone" 46 (b "in" 45 N N) (b "max" 47 N N)))) (b "sum" 56 (b "one" 52 (b "no" 50 (b "mux" 49 N N) (b "not" 51 N N)) (b "or" 54 (b "opt" 53 N N) (b "some" 55 N N))) (b "|" 60 (b "xor" 58 (b "then" 57 N N) (b "{" 59 N N)) (b "}" 62 (b "||" 61 N N) N))))
+resWords :: BTree
+resWords = b ">>" 33 (b "." 17 (b "**" 9 (b "&&" 5 (b "#" 3 (b "!=" 2 (b "!" 1 N N) N) (b "%" 4 N N)) (b ")" 7 (b "(" 6 N N) (b "*" 8 N N))) (b "-" 13 (b "++" 11 (b "+" 10 N N) (b "," 12 N N)) (b "->" 15 (b "--" 14 N N) (b "->>" 16 N N)))) (b "<:" 25 (b ":=" 21 (b "/" 19 (b ".." 18 N N) (b ":" 20 N N)) (b ";" 23 (b ":>" 22 N N) (b "<" 24 N N))) (b "=" 29 (b "<=" 27 (b "<<" 26 N N) (b "<=>" 28 N N)) (b ">" 31 (b "=>" 30 N N) (b ">=" 32 N N))))) (b "min" 49 (b "assert" 41 (b "]" 37 (b "[" 35 (b "?" 34 N N) (b "\\" 36 N N)) (b "abstract" 39 (b "`" 38 N N) (b "all" 40 N N))) (b "if" 45 (b "else" 43 (b "disj" 42 N N) (b "enum" 44 N N)) (b "lone" 47 (b "in" 46 N N) (b "max" 48 N N)))) (b "some" 57 (b "one" 53 (b "no" 51 (b "mux" 50 N N) (b "not" 52 N N)) (b "or" 55 (b "opt" 54 N N) (b "product" 56 N N))) (b "{" 61 (b "then" 59 (b "sum" 58 N N) (b "xor" 60 N N)) (b "||" 63 (b "|" 62 N N) (b "}" 64 N N)))))
    where b s n = let bs = id s
                   in B bs (TS bs n)
 
@@ -159,7 +170,7 @@ alexGetByte (p, _, [], s) =
 alexInputPrevChar :: AlexInput -> Char
 alexInputPrevChar (p, c, bs, s) = c
 
-  -- | Encode a Haskell String to a list of Word8 values, in UTF8 format.
+-- | Encode a Haskell String to a list of Word8 values, in UTF8 format.
 utf8Encode :: Char -> [Word8]
 utf8Encode = map fromIntegral . go . ord
  where
