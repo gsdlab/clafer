@@ -128,7 +128,7 @@
     </div>
   </div>
   <div class="indent">
-  <span class="keyword">[</span> <a href="#c0_ACC"><span class="reference">ACC</span></a> => <a href="#c0_FCA"><span class="reference">FCA</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <a href="#c0_ACC"><span class="reference">ACC</span></a> =&gt; <a href="#c0_FCA"><span class="reference">FCA</span></a> <span class="keyword">]</span></div>
   <div class="indent">
   <span class="claferDecl" id="c0_total_cost">total_cost</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a> = sum <a href="#c0_Feature"><span class="reference">Feature</span></a>.<a href="#c0_cost"><span class="reference">cost</span></a></div>
   <div class="indent">

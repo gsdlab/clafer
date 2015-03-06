@@ -12,14 +12,12 @@ import Data.List
 import Data.Maybe
 import Data.Ord
 import Prelude hiding (exp)
-import Language.Clafer.ClaferArgs
 import Language.Clafer.Common
-import Language.Clafer.Front.AbsClafer
 import Language.Clafer.Intermediate.Intclafer
 
 -- | Choco 3 code generation
-genPythonModule :: ClaferArgs -> (IModule, GEnv) -> [(UID, Integer)] -> Result
-genPythonModule _ (imodule@IModule{_mDecls}, _) scopes =
+genPythonModule :: (IModule, GEnv) -> [(UID, Integer)] -> Result
+genPythonModule (imodule@IModule{_mDecls}, genv') scopes =
     genImports
     ++ "\n"
     ++ (genAbstractClafer =<< abstractClafers)
@@ -30,8 +28,9 @@ genPythonModule _ (imodule@IModule{_mDecls}, _) scopes =
     ++ (genGoal =<< _mDecls)
     ++ genScopes
     where
+    uidIClaferMap' = uidClaferMap genv'
     root :: IClafer
-    root = IClafer noSpan (IClaferModifiers False True True) Nothing rootIdent rootIdent "" Nothing Nothing (Just (1, 1)) (0, 0) True _mDecls
+    root = fromJust $ findIClafer uidIClaferMap' rootIdent
 
     toplevelClafers = mapMaybe iclafer _mDecls
     -- The sort is so that we encounter sub clafers before super clafers when abstract clafers extend other abstract clafers
@@ -41,7 +40,7 @@ genPythonModule _ (imodule@IModule{_mDecls}, _) scopes =
     claferUids = _uid <$> clafers
     concreteClafers = filter isNotAbstract clafers
 
-    claferWithUid u = fromMaybe (error $ "claferWithUid: \"" ++ u ++ "\" is not a clafer") $ find ((== u) . _uid) clafers
+    claferWithUid u = fromMaybe (error $ "claferWithUid: \"" ++ u ++ "\" is not a clafer") $ findIClafer uidIClaferMap' u
 
     -- All abstract clafers u inherits
     supersOf :: String -> [String]
@@ -84,8 +83,6 @@ genPythonModule _ (imodule@IModule{_mDecls}, _) scopes =
         ++ "defaultScope(1);\n"
         ++ "stringLength(" ++ show longestString ++ ");\n"
         where
-            largestPositiveInt :: Integer
-            largestPositiveInt = 2 ^ (bitwidth - 1)
             scopeMap = [uid' ++ ":" ++ show scope | (uid', scope) <- scopes, uid' /= "int"]
     exprs :: [IExp]
     exprs = universeOn biplate imodule
@@ -190,7 +187,7 @@ genPythonModule _ (imodule@IModule{_mDecls}, _) scopes =
     genConstraintExp (IFunExp "sum" args')
         | [arg] <- args', PExp{_exp = IFunExp{_exps = [a, PExp{_exp = IClaferId{_sident = "ref"}}]}} <- rewrite arg =
             "sum(" ++ genConstraintPExp a ++ ")"
-        | otherwise = error "Choco: Unexpected sum argument."
+        | otherwise = error "Python: Unexpected sum argument."
     genConstraintExp (IFunExp "+" args') =
 	(if _iType (head args') == Just TString then "concat" else "add") ++
             "(" ++ intercalate ", " (map genConstraintPExp args') ++ ")"
@@ -229,11 +226,12 @@ genPythonModule _ (imodule@IModule{_mDecls}, _) scopes =
     mapFunc "+" = "add"
     mapFunc "*" = "mul"
     mapFunc "/" = "div"
+    mapFunc "%" = "mod"
     mapFunc "++" = "set_union"
     mapFunc "--" = "set_diff"
     mapFunc "**" = "set_inter"
     mapFunc "ifthenelse" = "ifThenElse"
-    mapFunc op' = error $ "Choco: Unknown op: " ++ op'
+    mapFunc op' = error $ "Python: Unknown op: " ++ op'
 
 {-    sidentOf u = ident $ claferWithUid u
     scopeOf "integer" = undefined

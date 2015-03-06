@@ -20,7 +20,7 @@
     <div class="indent">
     <span class="claferDecl" id="c0_divorced">divorced</span></div>
     <div class="indent">
-    <span class="keyword">[</span> <a href="#c0_married"><span class="reference">married</span></a> || <a href="#c0_divorced"><span class="reference">divorced</span></a> => <a href="#c0_age"><span class="reference">age</span></a> >= 3 <span class="keyword">]</span></div>
+    <span class="keyword">[</span> <a href="#c0_married"><span class="reference">married</span></a> &#124;&#124; <a href="#c0_divorced"><span class="reference">divorced</span></a> =&gt; <a href="#c0_age"><span class="reference">age</span></a> &gt;= 3 <span class="keyword">]</span></div>
   </div>
   <div class="indent">
   <span class="claferDecl" id="c0_childs">childs</span><span class="keyword"> -> </span><a href="#c0_Person"><span class="reference">Person</span></a> *

@@ -118,6 +118,7 @@ EAdd.           Exp17  ::= Exp17  "+" Exp18 ;
 ESub.           Exp17  ::= Exp17  "-" Exp18 ;
 EMul.           Exp18 ::= Exp18 "*" Exp19 ;
 EDiv.           Exp18 ::= Exp18 "/" Exp19 ;
+ERem.           Exp10 ::= Exp10 "%" Exp11 ;
 ESumSetExp.     Exp19 ::= "sum" Exp20;
 EProdSetExp.    Exp19 ::= "product" Exp20;
 ECSetExp.       Exp19 ::= "#" Exp20 ;

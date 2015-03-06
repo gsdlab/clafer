@@ -119,14 +119,6 @@ elemToClafer x = case x of
 toClafers :: [IElement] -> [IClafer]
 toClafers = mapMaybe elemToClafer
 
--- -----------------------------------------------------------------------------
--- | Finds hierarchy and transforms each element
-mapHierarchy :: (IClafer -> b)
-                -> (IClafer -> [String])
-                -> UIDIClaferMap
-                -> IClafer
-                -> [b]
-mapHierarchy f sf = (map f.).(findHierarchy sf)
 
 -- -----------------------------------------------------------------------------
 -- UID -> IClafer map construction functions
@@ -134,16 +126,28 @@ mapHierarchy f sf = (map f.).(findHierarchy sf)
 type UIDIClaferMap = StringMap IClafer
 
 createUidIClaferMap :: IModule -> UIDIClaferMap
-createUidIClaferMap    iModule  = foldl' (\accumMap' claf -> SMap.insert (_uid claf) claf accumMap') (SMap.singleton rootIdent rootClafer) allClafers
+createUidIClaferMap    iModule  = foldl'
+    (\accumMap' claf -> SMap.insert (_uid claf) claf accumMap')
+    (SMap.singleton rootIdent rootClafer)
+    (integerClafer : intClafer : stringClafer : realClafer : booleanClafer : clafer : allClafers)
   where
     allClafers :: [ IClafer ]
     allClafers = universeOn biplate iModule
     rootClafer = IClafer noSpan (IClaferModifiers False True True) (Just $ IGCard False (0, -1)) rootIdent rootIdent "" Nothing Nothing (Just (1,1)) (1, 1) False (_mDecls iModule)
+    integerClafer = IClafer noSpan (IClaferModifiers False True True) (Just $ IGCard False (0, -1)) integerType integerType "" Nothing Nothing (Just (1,1)) (1, 1) False []
+    intClafer = IClafer noSpan (IClaferModifiers False True True) (Just $ IGCard False (0, -1)) "int" "int" "" Nothing Nothing (Just (1,1)) (1, 1) False []
+    stringClafer = IClafer noSpan (IClaferModifiers False True True) (Just $ IGCard False (0, -1)) stringType stringType "" Nothing Nothing (Just (1,1)) (1, 1) False []
+    realClafer = IClafer noSpan (IClaferModifiers False True True) (Just $ IGCard False (0, -1)) realType realType "" Nothing Nothing (Just (1,1)) (1, 1) False []
+    booleanClafer = IClafer noSpan (IClaferModifiers False True True) (Just $ IGCard False (0, -1)) booleanType booleanType "" Nothing Nothing (Just (1,1)) (1, 1) False []
+    clafer = IClafer noSpan (IClaferModifiers False True True) (Just $ IGCard False (0, -1)) baseClafer baseClafer "" Nothing Nothing (Just (1,1)) (1, 1) False []
+
+-- -----------------------------------------------------------------------------
+-- functions using the UID -> IClafer map
 
 findIClafer :: UIDIClaferMap -> UID -> Maybe IClafer
 findIClafer    uidIClaferMap    uid' = SMap.lookup uid' uidIClaferMap
 
--- | efficient version of findHierarchy
+-- | Finds all super clafers according to sFun
 findHierarchy :: (IClafer -> [String]) -> UIDIClaferMap -> IClafer -> [IClafer]
 findHierarchy    sFun                     uidIClaferMap    clafer   = case sFun clafer of
   []           -> [clafer]  -- no super and no reference
@@ -153,8 +157,13 @@ findHierarchy    sFun                     uidIClaferMap    clafer   = case sFun 
                     clafer
                     : concatMap (findHierarchy sFun uidIClaferMap) superOrRefClafers
 
--- -----------------------------------------------------------------------------
--- functions using the UID -> IClafer map
+-- | Finds hierarchy and transforms each element
+mapHierarchy :: (IClafer -> b)
+                -> (IClafer -> [String])
+                -> UIDIClaferMap
+                -> IClafer
+                -> [b]
+mapHierarchy f sf = (map f.).(findHierarchy sf)
 
 -- | traverse the inheritance hierarchy upwards to find a clafer with the given uidToFind
 findUIDinSupers :: UIDIClaferMap -> UID    -> IClafer      -> Maybe IClafer
@@ -442,11 +451,14 @@ iMul          = "*"
 iDiv :: String
 iDiv          = "/"
 
+iRem :: String
+iRem          = "%"
+
 iSumSet' :: String
 iSumSet'      = "sum'"
 
 arithBinOps :: [String]
-arithBinOps = [iPlus, iSub, iMul, iDiv, iSumSet']
+arithBinOps = [iPlus, iSub, iMul, iDiv, iRem, iSumSet']
 
 iUnion :: String
 iUnion        = "++"

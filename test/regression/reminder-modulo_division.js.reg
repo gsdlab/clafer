@@ -1,0 +1,16 @@
+defaultScope(1);
+intRange(-8, 7);
+stringLength(16);
+
+c0_a = Clafer("c0_a").withCard(1, 1);
+c0_b = Clafer("c0_b").withCard(1, 1);
+c0_c = Clafer("c0_c").withCard(1, 1);
+c0_a.refTo(Int);
+c0_b.refTo(Int);
+c0_c.refTo(Int);
+Constraint(implies(some(global(c0_a)), equal(joinRef(global(c0_a)), mod(constant(6), constant(4)))));
+Constraint(equal(joinRef(global(c0_a)), constant(2)));
+Constraint(implies(some(global(c0_b)), equal(joinRef(global(c0_b)), mod(constant(0), constant(4)))));
+Constraint(equal(joinRef(global(c0_b)), constant(0)));
+Constraint(implies(some(global(c0_c)), equal(joinRef(global(c0_c)), mod(constant(4), constant(2)))));
+Constraint(equal(joinRef(global(c0_c)), constant(0)));

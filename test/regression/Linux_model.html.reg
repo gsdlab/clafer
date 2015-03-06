@@ -17,7 +17,7 @@
     <div class="indent">
     <span class="keyword">[</span> <a href="#c0_MTD"><span class="reference">MTD</span></a> <span class="keyword">]</span></div>
     <div class="indent">
-    <span class="keyword">[</span> <a href="#c0_MTD"><span class="reference">MTD</span></a> => <a href="#c0_CRC32"><span class="reference">CRC32</span></a> <span class="keyword">]</span></div>
+    <span class="keyword">[</span> <a href="#c0_MTD"><span class="reference">MTD</span></a> =&gt; <a href="#c0_CRC32"><span class="reference">CRC32</span></a> <span class="keyword">]</span></div>
     <div class="indent">
     <span class="claferDecl" id="c0_FFS2_FS_DEBUG">FFS2_FS_DEBUG</span><span class="keyword"> -> </span><a href="#int"><span class="reference">int</span></a>
       <div class="indent">
@@ -25,7 +25,7 @@
       <div class="indent">
       <span class="claferDecl" id="c2_display">display</span><span class="keyword"> -> </span><a href="#string"><span class="reference">string</span></a> = "JFFS2 Debug level (0=quiet, 2=noisy)"</div>
       <div class="indent">
-      <span class="keyword">[</span> 0 &lt;= <a href="#this"><span class="reference">this</span></a> && <a href="#this"><span class="reference">this</span></a> &lt;= 2 <span class="keyword">]</span></div>
+      <span class="keyword">[</span> 0 &lt;= <a href="#this"><span class="reference">this</span></a> &amp;&amp; <a href="#this"><span class="reference">this</span></a> &lt;= 2 <span class="keyword">]</span></div>
     </div>
     <div class="indent">
     <span class="claferDecl" id="c0_JFFS2_FS_WRITEBUFFER">JFFS2_FS_WRITEBUFFER</span> ?</div>

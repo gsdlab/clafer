@@ -44,7 +44,7 @@ instance Default ClaferMode where
   def = Alloy42
 
 -- | Scope inference strategy
-data ScopeStrategy = None | Simple | Full
+data ScopeStrategy = None | Simple
   deriving (Eq, Show, Data, Typeable)
 instance Default ScopeStrategy where
   def = Simple
@@ -101,7 +101,7 @@ clafer = ClaferArgs {
   add_comments        = def &= help "Include comments from the source file in the html output ('html' mode only).",
   ecore2clafer        = def &= help "Translate an ECore model into Clafer.",
   trace_len           = 10 &= help "Define the maximum trace length." &= name "tl",
-  scope_strategy      = def &= help "Use scope computation strategy: none, simple (default), or full." &= name "ss",
+  scope_strategy      = def &= help "Use scope computation strategy: none or simple (default)." &= name "ss",
   afm                 = def &= help "Throws an error if the cardinality of any of the clafers is above 1." &= name "check-afm",
   skip_goals          = def &= help "Skip generation of Alloy code for goals. Useful for all tools working with standard Alloy." &= name "sg",
   meta_data           = def &= help "Generate a 'fully qualified name'-'least-partially-qualified name'-'unique ID' map ('.cfr-map'). In Alloy, Alloy42, and Choco modes, generate the scopes map ('.cfr-scope').",

@@ -133,7 +133,7 @@
     <span class="claferDecl" id="c1_long">long</span></div>
   </div>
   <div class="indent">
-  <span class="keyword">[</span> <a href="#c0_broad"><span class="reference">broad</span></a> && <a href="#c1_long"><span class="reference">long</span></a> || <a href="#c0_narrow"><span class="reference">narrow</span></a> && <a href="#c1_short"><span class="reference">short</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <a href="#c0_broad"><span class="reference">broad</span></a> &amp;&amp; <a href="#c1_long"><span class="reference">long</span></a> &#124;&#124; <a href="#c0_narrow"><span class="reference">narrow</span></a> &amp;&amp; <a href="#c1_short"><span class="reference">short</span></a> <span class="keyword">]</span></div>
   <div class="indent">
   <span class="claferDecl" id="c0_includes">includes</span><span class="keyword"> -> </span><a href="#c0_CourseOfAction"><span class="reference">CourseOfAction</span></a> *</div>
   <div class="indent">

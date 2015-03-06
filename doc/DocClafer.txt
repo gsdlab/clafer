@@ -55,11 +55,11 @@ The symbols used in clafer are the following:
   | | | <=> | => | ||
   | && | ! | < | >
   | <= | >= | != | -
-  | / | # | -->> | -[
-  | ]->> | --> | ]-> | ++
-  | , | -- | ** | <:
-  | :> | . | ; | \
-  | ( | ) |  | 
+  | / | % | # | -->>
+  | -[ | ]->> | --> | ]->
+  | ++ | , | -- | **
+  | <: | :> | . | ;
+  | \ | ( | ) | 
 
 ===Comments===
 Single-line comments begin with //.Multiple-line comments are  enclosed with /* and */.
@@ -156,6 +156,7 @@ All other symbols are terminals.
   |  |  **|**  | ``globally`` //Exp10// 
   |  |  **|**  | ``X`` //Exp10// 
   |  |  **|**  | ``next`` //Exp10// 
+  |  |  **|**  | //Exp10// ``%`` //Exp11// 
   |  |  **|**  | //Exp11// 
   | //Exp11// | -> | ``!`` //Exp11// 
   |  |  **|**  | //Exp12// 
