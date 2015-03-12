@@ -105,6 +105,9 @@ header    genEnv  = CString $ unlines
         [ "sig Time {loop: lone Time}"
         , "fact Loop {loop in last->Time}"
         , "fun timeLoop: Time -> Time { Time <: next + loop }"
+        , "fun local_first [rel: univ->univ->Time, parentSet: univ, child: univ] : Time {"
+        , "  {t: Time | t in (child.(parentSet.rel)) and no ((child.(parentSet.rel)) <: next) :> t }"
+        , "}"
         ]
 
 
@@ -329,6 +332,7 @@ containsTimedRel    genEnv     (PExp iType' _ _ exp') =  case exp' of
 genConstraints :: GenEnv -> GenCtx -> IClafer -> [Concat]
 genConstraints    genEnv    ctx       c
   = (genParentConst (resPath ctx) c)
+  : (genMutClaferConst ctx c)
   : (genMutSubClafersConst genEnv c)
   : (genGroupConst genEnv c)
   : (genPathConst genEnv ctx  (if (noalloyruncommand (claferargs genEnv)) then  (_uid c ++ "_ref") else "ref") c)
@@ -354,21 +358,37 @@ genConstraints    genEnv    ctx       c
         : (genSetUniquenessConstraint c')
     IEGoal _ _ -> error "getConst function from Alloy generator was given a Goal, this function should only be given a Constrain or Clafer" -- This should never happen
 
+
 -- generates time variable binding declaration which appears as a first expression in mutable constraints
 -- it references all time moments when context clafer instance is active
 -- typical binding form is: this.(ParentSig.ContextClaferRelation)
--- Sample template
+-- Template uses local_first function:
+-- let t = local_first[rel, parentSig, this]
+-- Old Sample template:
 -- let local_next = (this.(c0_a.@r_c0_b)) <: next | one t : Time | one t <: local_next and no local_next :> t
 -- if defined under root clafer:
 -- one t: first <: Time |
 genTimeDecl :: String -> [String] -> IClafer -> Concat
-genTimeDecl tvar rPath c = CString $  case rPath of
-                                           x:_ -> localNextDecl x ++ firstDecl ++ " and "
+genTimeDecl tvar rPath c | _mutable c = CString $  case rPath of
+                                           x:_ -> "one " ++ tvar ++ " : local_first[" ++
+                                             genRelName (_uid c) ++
+                                             "," ++ x ++
+                                             ", this] | "
                                            [] -> "one " ++ tvar ++ " : first <: " ++ timeSig ++ " | " -- For top level constraint
-  where
-  localNextDecl ctxSig = "let local_next = (this.(" ++ ctxSig ++ ".@" ++ genRelName (_uid c) ++ ")) <: next "
-  firstDecl = " | one " ++ tvar ++ " : " ++ timeSig ++ firstConstr
-  firstConstr = " | one " ++ tvar ++ " <: local_next and no local_next :> " ++ tvar
+                         | otherwise = CString $ "one t: " ++ timeSig ++ " <: first | "
+
+-- if clafer is mutable, generates fact that prevents instance from disapearing for one or more snapshot
+-- and then reapearing and says that only subclafer may only have one parent.
+-- typically:
+-- lone local_first [rel, parent_sig, this] && lone r_c0_a.Time.this
+genMutClaferConst :: GenCtx -> IClafer -> Concat
+genMutClaferConst ctx c | _mutable c = let parentSig = head (resPath ctx) in
+                                           CString $ "lone local_first[" ++ genRelName (_uid c) ++
+                                            ", " ++ parentSig ++
+                                            ", this] && " ++
+                                            "lone " ++ genRelName (_uid c) ++ "." ++ timeSig ++ ".this"
+                        | otherwise = CString ""
+
 
 -- generates cardinality and parent dependency constraints for mutable subclafers
 -- typically all t: Time | lone r_field.t && lone r_field2.t &&
