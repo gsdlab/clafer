@@ -56,7 +56,7 @@ module Language.ClaferT
   , Pos(..)
   ) where
 
-import Control.Monad.Error
+import Control.Monad.Except
 import Control.Monad.State
 import Control.Monad.Identity
 import Data.List
@@ -154,7 +154,7 @@ makeEnv args' = ClaferEnv { args = args'',
 type ClaferM = ClaferT Identity
 
 -- | Monad Transformer for using Clafer.
-type ClaferT m = ErrorT ClaferErrs (StateT ClaferEnv m)
+type ClaferT m = ExceptT ClaferErrs (StateT ClaferEnv m)
 
 type ClaferErr = CErr ErrPos
 type ClaferErrs = CErrs ErrPos
@@ -186,12 +186,6 @@ data CErr p =
 data CErrs p =
   ClaferErrs {errs :: [CErr p]}
   deriving Show
-
-instance Error (CErr p) where
-  strMsg = ClaferErr
-
-instance Error (CErrs p) where
-  strMsg m = ClaferErrs [strMsg m]
 
 data ErrPos =
   ErrPos {
@@ -325,7 +319,7 @@ putEnv = put
 -- |   Right is for success (with the result)
 runClaferT :: Monad m => ClaferArgs -> ClaferT m a -> m (Either [ClaferErr] a)
 runClaferT args' exec =
-  mapLeft errs `liftM` evalStateT (runErrorT exec) (makeEnv args')
+  mapLeft errs `liftM` evalStateT (runExceptT exec) (makeEnv args')
   where
   mapLeft :: (a -> c) -> Either a b -> Either c b
   mapLeft f (Left l) = Left (f l)

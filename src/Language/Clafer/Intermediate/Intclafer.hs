@@ -28,7 +28,8 @@ import Language.Clafer.Front.AbsClafer
 import Control.Lens
 import Data.Data
 import Data.Monoid
-import Data.Foldable (foldMap)
+import Data.Foldable
+import Prelude
 
 -- | unique identifier of a clafer
 type UID = String

@@ -24,11 +24,12 @@ module Language.Clafer.Optimizer.Optimizer where
 
 import Data.Maybe
 import Data.List
-import Control.Applicative ((<$>))
+import Control.Applicative
 import Control.Lens hiding (elements, children, un)
 import Control.Monad.State
 import Data.Data.Lens (biplate)
 import qualified Data.Map as Map
+import Prelude
 
 import Language.Clafer.Common
 import Language.Clafer.ClaferArgs

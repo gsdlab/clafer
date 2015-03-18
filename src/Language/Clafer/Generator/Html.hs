@@ -42,7 +42,7 @@ import Language.Clafer.Front.LayoutResolver(revertLayout)
 import Language.Clafer.Intermediate.Tracing
 import Language.Clafer.Intermediate.Intclafer
 
-import Control.Applicative ((<$>))
+import Control.Applicative
 import Data.List (intersperse,genericSplitAt)
 import qualified Data.Map as Map
 import Data.Maybe
@@ -426,10 +426,10 @@ trim = let f = reverse . dropWhile isSpace in f . f
 
 highlightErrors :: String -> [ClaferErr] -> String
 highlightErrors model errors = "<pre>\n" ++ unlines (replace "<!-- # FRAGMENT /-->" "</pre>\n<!-- # FRAGMENT /-->\n<pre>" --assumes the fragments have been concatenated
-													  (highlightErrors' (replace "//# FRAGMENT" "<!-- # FRAGMENT /-->" (lines model)) errors)) ++ "</pre>"
-	where
-		replace _ _ []     = []
-		replace x y (z:zs) = (if x == z then y else z):replace x y zs
+                            (highlightErrors' (replace "//# FRAGMENT" "<!-- # FRAGMENT /-->" (lines model)) errors)) ++ "</pre>"
+  where
+    replace _ _ []     = []
+    replace x y (z:zs) = (if x == z then y else z):replace x y zs
 
 highlightErrors' :: [String] -> [ClaferErr] -> [String]
 highlightErrors' model' [] = model'
@@ -437,10 +437,10 @@ highlightErrors' model' ((ClaferErr _):es) = highlightErrors' model' es
 highlightErrors' model' ((ParseErr ErrPos{modelPos = Pos l c, fragId = n} msg'):es) =
   let (ls, lss) = genericSplitAt (l + toInteger n) model'
       newLine = fst (genericSplitAt (c - 1) $ last ls) ++ "<span class=\"error\" title=\"Parsing failed at line " ++ show l ++ " column " ++ show c ++
-				   "...\n" ++ msg' ++ "\">" ++ (if snd (genericSplitAt (c - 1) $ last ls) == "" then "&nbsp;" else snd (genericSplitAt (c - 1) $ last ls)) ++ "</span>"
+           "...\n" ++ msg' ++ "\">" ++ (if snd (genericSplitAt (c - 1) $ last ls) == "" then "&nbsp;" else snd (genericSplitAt (c - 1) $ last ls)) ++ "</span>"
   in highlightErrors' (init ls ++ [newLine] ++ lss) es
 highlightErrors' model' ((SemanticErr ErrPos{modelPos = Pos l c, fragId = n} msg'):es) =
   let (ls, lss) = genericSplitAt (l + toInteger n) model'
       newLine = fst (genericSplitAt (c - 1) $ last ls) ++ "<span class=\"error\" title=\"Compiling failed at line " ++ show l ++ " column " ++ show c ++
-				   "...\n" ++ msg' ++ "\">" ++ (if snd (genericSplitAt (c - 1) $ last ls) == "" then "&nbsp;" else snd (genericSplitAt (c - 1) $ last ls)) ++ "</span>"
+           "...\n" ++ msg' ++ "\">" ++ (if snd (genericSplitAt (c - 1) $ last ls) == "" then "&nbsp;" else snd (genericSplitAt (c - 1) $ last ls)) ++ "</span>"
   in highlightErrors' (init ls ++ [newLine] ++ lss) es

@@ -189,7 +189,7 @@ genPythonModule (imodule@IModule{_mDecls}, genv') scopes =
             "sum(" ++ genConstraintPExp a ++ ")"
         | otherwise = error "Python: Unexpected sum argument."
     genConstraintExp (IFunExp "+" args') =
-	(if _iType (head args') == Just TString then "concat" else "add") ++
+        (if _iType (head args') == Just TString then "concat" else "add") ++
             "(" ++ intercalate ", " (map genConstraintPExp args') ++ ")"
     genConstraintExp (IFunExp op' args') =
         mapFunc op' ++ "(" ++ intercalate ", " (map genConstraintPExp args') ++ ")"
@@ -236,8 +236,8 @@ genPythonModule (imodule@IModule{_mDecls}, genv') scopes =
 {-    sidentOf u = ident $ claferWithUid u
     scopeOf "integer" = undefined
     scopeOf "int" = undefined
-    scopeOf i = fromMaybe 1 $ lookup i scopes -}
-    bitwidth = fromMaybe 4 $ lookup "int" scopes :: Integer
+    scopeOf i = fromMaybe 1 $ lookup i scopes
+    bitwidth = fromMaybe 4 $ lookup "int" scopes :: Integer  -}
 
 -- isQuant PExp{_exp = IDeclPExp{}} = True
 -- isQuant _ = False

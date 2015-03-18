@@ -23,11 +23,11 @@
 -- | Generates Alloy4.1 or 4.2 code for a Clafer model
 module Language.Clafer.Generator.Alloy (genModule) where
 
-import Control.Applicative ((<$>))
-import Control.Lens hiding (elements, mapping)
+import Control.Applicative
 import Control.Monad.State
 import Data.List
 import Data.Maybe
+import Prelude
 
 import Language.Clafer.Common
 import Language.Clafer.ClaferArgs
@@ -335,6 +335,7 @@ mkCard constraintName group' element' crd
   interval' = genInterval constraintName group' element' crd
   crd'  = flatten $ interval'
 
+{-
 -- generates expression for references that point to expressions (not single clafers)
 genPathConst :: GenEnv -> String -> [String] -> IClafer -> Concat
 genPathConst    genEnv    name      resPath     c
@@ -352,7 +353,7 @@ isSimplePath :: PExp -> Bool
 isSimplePath    (PExp _ _ _ (IClaferId _ _ _ _)) = True
 isSimplePath    (PExp _ _ _ (IFunExp op' _)) = op'  == iUnion
 isSimplePath    _ = False
-
+-}
 -- -----------------------------------------------------------------------------
 -- Not used?
 -- genGCard element gcard = genInterval element  $ interval $ fromJust gcard

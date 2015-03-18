@@ -24,13 +24,14 @@ module Language.Clafer.Intermediate.ResolverInheritance where
 
 import Control.Applicative
 import Control.Monad
-import Control.Monad.Error
+import Control.Monad.Except
 import Control.Monad.State
 import Data.Maybe
 import Data.Graph
 import Data.Tree
 import Data.List
 import qualified Data.Map as Map
+import Prelude
 
 import Language.ClaferT
 import Language.Clafer.Common
