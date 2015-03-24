@@ -92,11 +92,13 @@ module Language.Clafer (runCompiler,
                         module Language.Clafer.Front.ErrM)
 where
 
+import Data.Aeson
 import Data.Data.Lens
 import Data.Either
 import Data.List
 import Data.Maybe
 import qualified Data.Map as Map
+import Data.String.Conversions
 import Control.Monad
 import Control.Monad.State
 import Control.Lens.Plated
@@ -557,6 +559,20 @@ generate =
                   CompilerResult {
                    extension = "xml",
                    outputCode = genXmlModule iModule,
+                   statistics = stats,
+                   claferEnv  = env,
+                   mappingToAlloy = [],
+                   stringMap = Map.empty,
+                   scopesList = []
+                  }) ]
+          else []
+        )
+        -- result for JSON
+        ++ (if (JSON `elem` modes)
+          then [ (JSON,
+                  CompilerResult {
+                   extension = "json",
+                   outputCode = convertString $ encode $ toJSON iModule,
                    statistics = stats,
                    claferEnv  = env,
                    mappingToAlloy = [],

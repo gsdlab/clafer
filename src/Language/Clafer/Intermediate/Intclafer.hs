@@ -26,6 +26,8 @@ module Language.Clafer.Intermediate.Intclafer where
 import Language.Clafer.Front.AbsClafer
 
 import Control.Lens
+import Data.Aeson
+import Data.Aeson.TH
 import Data.Data
 import Data.Monoid
 import Data.Foldable
@@ -348,10 +350,12 @@ unWrapIGCard :: Ir -> Maybe IGCard
 unWrapIGCard (IRIGCard x) = x
 unWrapIGCard x = error $ "Can't call unWarpIGcard on " ++ show x
 
-
+instance Plated IModule
 instance Plated IClafer
 instance Plated PExp
 instance Plated IExp
+
+makeLenses ''IType
 
 makeLenses ''IModule
 
@@ -368,3 +372,29 @@ makeLenses ''PExp
 makeLenses ''IExp
 
 makeLenses ''IDecl
+
+$(deriveToJSON defaultOptions{omitNothingFields=True} ''IType)
+
+$(deriveToJSON defaultOptions{omitNothingFields=True} ''IModule)
+
+$(deriveToJSON defaultOptions{omitNothingFields=True} ''IClafer)
+
+$(deriveToJSON defaultOptions{omitNothingFields=True} ''IElement)
+
+$(deriveToJSON defaultOptions{omitNothingFields=True} ''IReference)
+
+$(deriveToJSON defaultOptions{omitNothingFields=True} ''IGCard)
+
+$(deriveToJSON defaultOptions{omitNothingFields=True} ''PExp)
+
+$(deriveToJSON defaultOptions{omitNothingFields=True} ''IExp)
+
+$(deriveToJSON defaultOptions{omitNothingFields=True} ''IDecl)
+
+$(deriveToJSON defaultOptions{omitNothingFields=True} ''IQuant)
+
+instance ToJSON Span where
+  toJSON _ = Null
+
+instance ToJSON Pos where
+  toJSON _ = Null
