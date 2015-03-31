@@ -34,10 +34,10 @@ tg_Test_Suite_Negative = $(testGroupGenerator)
 
 negativeClaferModels :: IO [([Char], String)]
 negativeClaferModels = do
-	claferModels <- getClafers "test/negative"
-	return $ filter ((`notElem` crashModels) . fst ) claferModels
-	where
-		crashModels = ["i127-loop.cfr", "i141-constraints.cfr"]
+    claferModels <- getClafers "test/negative"
+    return $ filter ((`notElem` crashModels) . fst ) claferModels
+    where
+        crashModels = ["i127-loop.cfr", "i141-constraints.cfr"]
 {-Put models in the list above that completly crash
   the compiler, this will avoid crashing the test suite
   Note: If the model is giving an unexpected error it
@@ -45,10 +45,9 @@ negativeClaferModels = do
 
 case_failTest :: Assertion
 case_failTest = do
-	claferModels <- negativeClaferModels
-	let compiledClafers = map (\(file', model) ->
-		(file', compileOneFragment defaultClaferArgs model)) claferModels
-	forM_ compiledClafers (\(file', compiled) ->
-		when (compiledCheck compiled) $ putStrLn (file' ++ " compiled when it should not have."))
-	(andMap (not . compiledCheck . snd) compiledClafers
-		@? "test/negative fail: The above clafer models compiled.")
+    claferModels <- negativeClaferModels
+    let compiledClafers = map (\(file', model) -> (file', compileOneFragment defaultClaferArgs model)) claferModels
+    forM_ compiledClafers (\(file', compiled) ->
+        when (compiledCheck compiled) $ putStrLn (file' ++ " compiled when it should not have."))
+    (andMap (not . compiledCheck . snd) compiledClafers
+        @? "test/negative fail: The above clafer models compiled.")

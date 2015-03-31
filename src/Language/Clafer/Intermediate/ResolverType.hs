@@ -243,7 +243,6 @@ resolveTElement _ (IEClafer iclafer) =
 resolveTElement parent' (IEConstraint _isHard _pexp) =
   IEConstraint _isHard <$> (testBoolean =<< resolveTConstraint parent' _pexp)
   where
-  --testBoolean :: (Monad m, MonadError (CErr Span) m) => PExp -> m PExp
   testBoolean pexp' =
     do
       unless (typeOf pexp' == TBoolean) $
@@ -266,7 +265,7 @@ resolveTPExp p =
     x <- resolveTPExp' p
     case partitionEithers x of
       (f:_, []) -> throwError f                       -- Case 1: Only fails. Complain about the first one.
-      ([], [])  -> assert False $ error "No results but no errors."  -- Case 2: No success and no error message. Bug.
+      ([], [])  -> throwError $ SemanticErr (_inPos p) ("No results but no errors for " ++ show p) -- Case 2: No success and no error message. Bug.
       (_,   xs) -> return xs                          -- Case 3: At least one success.
 
 resolveTPExp' :: PExp -> TypeAnalysis [Either ClaferSErr PExp]
@@ -325,7 +324,8 @@ resolveTPExp' p@PExp{_inPos, _exp} =
     runListT $ runExceptT $ do
       arg' <- lift $ ListT $ resolveTPExp arg
       let t = typeOf arg'
-      let test c =
+      let
+          test c =
             unless c $
               throwError $ SemanticErr _inPos ("Function '" ++ _op ++ "' cannot be performed on " ++ _op ++ " '" ++ str t ++ "'")
       let result

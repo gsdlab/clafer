@@ -291,7 +291,7 @@ resolveReference pos' env id' = resolveChildren' pos' env id' allChildren Refere
 resolveChildren' :: Span -> SEnv -> String -> (SEnv -> [IClafer]) -> HowResolved -> Either ClaferSErr (Maybe (HowResolved, String, [IClafer]))
 resolveChildren' pos' env id' getChildrenF label =
   runMaybeT $ do
-    liftMaybe $ context env
+    _ <- liftMaybe $ context env
     u <- MaybeT $ findUnique pos' id' $ map (\x -> (x, [x,fromJust $ context env])) $ getChildrenF env
     liftMaybe $ toMTriple label u
 
@@ -301,7 +301,7 @@ liftMaybe = MaybeT . return
 resolveAncestor :: Span -> SEnv -> String -> Resolve (Maybe (HowResolved, String, [IClafer]))
 resolveAncestor pos' env id' =
   runMaybeT $ do
-    liftMaybe $ context env
+    _ <- liftMaybe $ context env
     u <- MaybeT $ findUnique pos' id' $ ancClafers env
     liftMaybe $ toMTriple Ancestor u
 

@@ -452,7 +452,7 @@ generateHtml env =
     afterDecl :: Declaration -> [(Span, String)] -> [(Span, String)]
     afterDecl decl comments = let (Span _ (Pos line' _)) = getSpan decl in dropWhile (\(x, _) -> let (Span _ (Pos line'' _)) = x in line'' <= line') comments
     printComments [] = []
-    printComments ((s, comment):cs) = (snd (printComment s [(s, comment)]) ++ "<br>\n"):printComments cs
+    printComments ((s, comment):cs') = (snd (printComment s [(s, comment)]) ++ "<br>\n"):printComments cs'
 
 iExpBasedChecks :: IModule -> (Bool, Bool)
 iExpBasedChecks iModule = (null realLiterals, null productOperators)
@@ -689,7 +689,7 @@ liftError = either throwErr return
 
 analyze :: Monad m => ClaferArgs -> IModule -> ClaferT m (IModule, GEnv, Bool)
 analyze args' iModule = do
-  liftError $ findDupModule args' iModule
+  _ <-liftError $ findDupModule args' iModule
   let
     au = allUnique iModule
   let args'' = args'{skip_resolver = au && (skip_resolver args')}
