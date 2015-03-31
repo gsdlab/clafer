@@ -188,6 +188,10 @@ genPythonModule (imodule@IModule{_mDecls}, genv') scopes =
         | [arg] <- args', PExp{_exp = IFunExp{_exps = [a, PExp{_exp = IClaferId{_sident = "ref"}}]}} <- rewrite arg =
             "sum(" ++ genConstraintPExp a ++ ")"
         | otherwise = error "Python: Unexpected sum argument."
+    genConstraintExp (IFunExp "product" args')
+        | [arg] <- args', PExp{_exp = IFunExp{_exps = [a, PExp{_exp = IClaferId{_sident = "ref"}}]}} <- rewrite arg =
+            "product(" ++ genConstraintPExp a ++ ")"
+        | otherwise = error "Python: Unexpected product argument."
     genConstraintExp (IFunExp "+" args') =
         (if _iType (head args') == Just TString then "concat" else "add") ++
             "(" ++ intercalate ", " (map genConstraintPExp args') ++ ")"
