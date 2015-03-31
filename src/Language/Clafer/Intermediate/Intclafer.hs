@@ -373,25 +373,25 @@ makeLenses ''IExp
 
 makeLenses ''IDecl
 
-$(deriveToJSON defaultOptions{omitNothingFields=True} ''IType)
+$(deriveToJSON defaultOptions{fieldLabelModifier = tail, omitNothingFields=True} ''IType)
 
-$(deriveToJSON defaultOptions{omitNothingFields=True} ''IModule)
+$(deriveToJSON defaultOptions{fieldLabelModifier = tail, omitNothingFields=True} ''IModule)
 
-$(deriveToJSON defaultOptions{omitNothingFields=True} ''IClafer)
+$(deriveToJSON defaultOptions{fieldLabelModifier = tail, omitNothingFields=True} ''IClafer)
 
-$(deriveToJSON defaultOptions{omitNothingFields=True} ''IElement)
+$(deriveToJSON defaultOptions{fieldLabelModifier = tail, omitNothingFields=True} ''IElement)
 
-$(deriveToJSON defaultOptions{omitNothingFields=True} ''IReference)
+$(deriveToJSON defaultOptions{fieldLabelModifier = tail, omitNothingFields=True} ''IReference)
 
-$(deriveToJSON defaultOptions{omitNothingFields=True} ''IGCard)
+$(deriveToJSON defaultOptions{fieldLabelModifier = tail, omitNothingFields=True} ''IGCard)
 
-$(deriveToJSON defaultOptions{omitNothingFields=True} ''PExp)
+$(deriveToJSON defaultOptions{fieldLabelModifier = tail, omitNothingFields=True} ''PExp)
 
-$(deriveToJSON defaultOptions{omitNothingFields=True} ''IExp)
+$(deriveToJSON defaultOptions{fieldLabelModifier = tail, omitNothingFields=True} ''IExp)
 
-$(deriveToJSON defaultOptions{omitNothingFields=True} ''IDecl)
+$(deriveToJSON defaultOptions{fieldLabelModifier = tail, omitNothingFields=True} ''IDecl)
 
-$(deriveToJSON defaultOptions{omitNothingFields=True} ''IQuant)
+$(deriveToJSON defaultOptions{fieldLabelModifier = tail, omitNothingFields=True} ''IQuant)
 
 instance ToJSON Span where
   toJSON _ = Null
