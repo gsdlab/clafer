@@ -463,22 +463,22 @@ genParentSubrelationConstriant    uidIClaferMap'   headClafer =
     match = matchNestedInheritance uidIClaferMap' headClafer
 
 -- optimization: if only boolean features then the parent is unique
+-- if child type is mutable then parenting constraints are expressed through genMutSubClafersConst
 genParentConst :: [String] -> IClafer -> Concat
 genParentConst [] _     = CString ""
-genParentConst _ c = genOptParentConst c
+genParentConst _ c
+  | _mutable c = CString ""
+  | otherwise  = genOptParentConst c
 
 genOptParentConst :: IClafer -> Concat
 genOptParentConst    c
   | glCard' == "one"         = CString ""
-  | glCard' == "lone" && mut = Concat NoTrace [genTimeAllQuant "t", CString $ "one " ++ rel ++ ".t"]
   | glCard' == "lone"        = Concat NoTrace [CString $ "one " ++ rel]
-  | mut                      = Concat NoTrace [genTimeAllQuant "t", CString $ "one @" ++ rel ++ ".t.this"]
   | otherwise                = Concat NoTrace [CString $ "one @" ++ rel ++ ".this"]
   -- eliminating problems with cyclic containment;
   -- should be added to cases when cyclic containment occurs
   --                    , " && no iden & @", rel, " && no ~@", rel, " & @", rel]
   where
-  mut = _mutable c
   rel = genRelName $ _uid c
   glCard' = genIntervalCrude $ _glCard c
 
