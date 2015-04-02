@@ -1,6 +1,6 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-
- Copyright (C) 2012 Kacper Bak <http://gsd.uwaterloo.ca>
+ Copyright (C) 2012-2015 Kacper Bak, Michal Antkiewicz <http://gsd.uwaterloo.ca>
 
  Permission is hereby granted, free of charge, to any person obtaining a copy of
  this software and associated documentation files (the "Software"), to deal in
@@ -23,6 +23,7 @@
 module Language.Clafer.Intermediate.ResolverInheritance where
 
 import Control.Applicative
+import Control.Lens  ((%~), mapped)
 import Control.Monad
 import Control.Monad.Except
 import Control.Monad.State
@@ -44,31 +45,36 @@ import Language.Clafer.Intermediate.ResolverName
 resolveNModule :: (IModule, GEnv) -> Resolve (IModule, GEnv)
 resolveNModule (imodule, genv') =
   do
-    let decls' = _mDecls imodule
-    decls'' <- mapM (resolveNElement decls') decls'
-    let imodule' = imodule{_mDecls = decls''}
+    let
+      unresolvedDecls = _mDecls imodule
+      abstractClafers = filter _isAbstract $ bfsClafers $ toClafers unresolvedDecls
+    resolvedDecls <- mapM (resolveNElement abstractClafers) unresolvedDecls
+    let
+      uidClaferMap' = createUidIClaferMap imodule{_mDecls = resolvedDecls}
+      resolvedHierarchyDecls = map (resolveHierarchy uidClaferMap') resolvedDecls
+      resolvedHierarchiesIModule = imodule{_mDecls = resolvedHierarchyDecls}
     return
-      ( imodule'
-      , genv'{sClafers = bfs toNodeShallow $ toClafers decls'', uidClaferMap = createUidIClaferMap imodule'})
+      ( resolvedHierarchiesIModule
+      , genv'{ sClafers = bfs toNodeShallow $ toClafers resolvedHierarchyDecls
+             , uidClaferMap = createUidIClaferMap resolvedHierarchiesIModule}
+      )
 
-
-
-resolveNClafer :: [IElement] -> IClafer -> Resolve IClafer
-resolveNClafer declarations clafer =
+resolveNClafer :: [IClafer] -> IClafer -> Resolve IClafer
+resolveNClafer abstractClafers clafer =
   do
-    (super', superIClafer')    <- resolveNSuper declarations $ _super clafer
-    elements' <- mapM (resolveNElement declarations) $ _elements clafer
+    (super', superIClafer')    <- resolveNSuper abstractClafers $ _super clafer
+    elements' <- mapM (resolveNElement abstractClafers) $ _elements clafer
     return $ clafer {_super = super',
             _elements = elements'}
 
 
-resolveNSuper :: [IElement] -> Maybe PExp -> Resolve (Maybe PExp, Maybe IClafer)
+resolveNSuper :: [IClafer] -> Maybe PExp -> Resolve (Maybe PExp, Maybe IClafer)
 resolveNSuper _ Nothing = return (Nothing, Nothing)
-resolveNSuper declarations (Just (PExp _ pid' pos' (IClaferId _ id' _ _))) =
+resolveNSuper abstractClafers (Just (PExp _ pid' pos' (IClaferId _ id' _ _))) =
     if isPrimitive id'
       then throwError $ SemanticErr pos' $ "Primitive types are not allowed as super types: " ++ id'
       else do
-        r <- resolveN pos' declarations id'
+        r <- resolveN pos' abstractClafers id'
         (id'', [superClafer']) <- case r of
           Nothing -> throwError $ SemanticErr pos' $ "No superclafer found: " ++ id'
           Just m  -> return m
@@ -77,16 +83,25 @@ resolveNSuper declarations (Just (PExp _ pid' pos' (IClaferId _ id' _ _))) =
 resolveNSuper _ x = return (x, Nothing)
 
 
-resolveNElement :: [IElement] -> IElement -> Resolve IElement
-resolveNElement declarations x = case x of
-  IEClafer clafer  -> IEClafer <$> resolveNClafer declarations clafer
+resolveNElement :: [IClafer] -> IElement -> Resolve IElement
+resolveNElement abstractClafers x = case x of
+  IEClafer clafer  -> IEClafer <$> resolveNClafer abstractClafers clafer
   IEConstraint _ _  -> return x
   IEGoal _ _ -> return x
 
-resolveN :: Span -> [IElement] -> String -> Resolve (Maybe (String, [IClafer]))
-resolveN pos' declarations id' =
-  findUnique pos' id' $ map (\x -> (x, [x])) $ filter _isAbstract $ bfsClafers $
-    toClafers declarations
+resolveN :: Span -> [IClafer] -> String -> Resolve (Maybe (String, [IClafer]))
+resolveN pos' abstractClafers id' =
+  findUnique pos' id' $ map (\x -> (x, [x])) abstractClafers
+
+
+resolveHierarchy :: UIDIClaferMap -> IElement           -> IElement
+resolveHierarchy    uidClaferMap'    (IEClafer iClafer') = IEClafer $ super.mapped.iType.mapped %~ addHierarchy $ iClafer'
+  where
+    addHierarchy :: IType      -> IType
+    addHierarchy    (TClafer _) = TClafer $ tail $ mapHierarchy _uid getSuper uidClaferMap' iClafer'
+    addHierarchy    x           = x
+resolveHierarchy    _                x                   = x
+
 
 -- | Resolve overlapping inheritance
 resolveOModule :: (IModule, GEnv) -> Resolve (IModule, GEnv)
