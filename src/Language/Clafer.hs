@@ -92,11 +92,13 @@ module Language.Clafer (runCompiler,
                         module Language.Clafer.Front.ErrM)
 where
 
+import Data.Aeson
 import Data.Data.Lens
 import Data.Either
 import Data.List
 import Data.Maybe
 import qualified Data.Map as Map
+import Data.String.Conversions
 import Control.Monad
 import Control.Monad.State
 import Control.Lens.Plated
@@ -452,7 +454,7 @@ generateHtml env =
     afterDecl :: Declaration -> [(Span, String)] -> [(Span, String)]
     afterDecl decl comments = let (Span _ (Pos line' _)) = getSpan decl in dropWhile (\(x, _) -> let (Span _ (Pos line'' _)) = x in line'' <= line') comments
     printComments [] = []
-    printComments ((s, comment):cs) = (snd (printComment s [(s, comment)]) ++ "<br>\n"):printComments cs
+    printComments ((s, comment):cs') = (snd (printComment s [(s, comment)]) ++ "<br>\n"):printComments cs'
 
 iExpBasedChecks :: IModule -> (Bool, Bool, Bool)
 iExpBasedChecks iModule = (null realLiterals, null productOperators, null tempOperators)
@@ -613,6 +615,20 @@ generate =
                   }) ]
           else []
         )
+        -- result for JSON
+        ++ (if (JSON `elem` modes)
+          then [ (JSON,
+                  CompilerResult {
+                   extension = "json",
+                   outputCode = convertString $ encode $ toJSON iModule,
+                   statistics = stats,
+                   claferEnv  = env,
+                   mappingToAlloy = [],
+                   stringMap = Map.empty,
+                   scopesList = []
+                  }) ]
+          else []
+        )
         -- result for Clafer
         ++ (if (Mode.Clafer `elem` modes)
           then [ (Mode.Clafer,
@@ -736,7 +752,7 @@ liftError = either throwErr return
 
 analyze :: Monad m => ClaferArgs -> IModule -> ClaferT m (IModule, GEnv, Bool)
 analyze args' iModule = do
-  liftError $ findDupModule args' iModule
+  _ <-liftError $ findDupModule args' iModule
   let
     au = allUnique iModule
   let args'' = args'{skip_resolver = au && (skip_resolver args')}

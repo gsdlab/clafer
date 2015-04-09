@@ -24,7 +24,7 @@ module Suite.Positive (tg_Test_Suite_Positive) where
 
 import Functions
 import Language.Clafer.Intermediate.Intclafer
-import Data.Foldable (foldMap)
+import Data.Foldable
 import Data.Maybe
 import Control.Monad
 import Language.Clafer
@@ -33,6 +33,7 @@ import Test.Tasty
 import Test.Tasty.HUnit
 import Test.Tasty.TH
 import qualified Data.Map as Map
+import Prelude
 
 tg_Test_Suite_Positive :: TestTree
 tg_Test_Suite_Positive = $(testGroupGenerator)
@@ -42,43 +43,41 @@ positiveClaferModels = getClafers "test/positive"
 
 case_compileTest :: Assertion
 case_compileTest = do
-	claferModels <- positiveClaferModels
-	let compiledClafers = map (\(file', model) ->
-		(file', compileOneFragment defaultClaferArgs model)) claferModels
-	forM_ compiledClafers (\(file', compiled) ->
-		when (not $ compiledCheck compiled) $ putStrLn (file' ++ " Error: " ++ (show $ fromLeft compiled)))
-	(andMap (compiledCheck . snd) compiledClafers
-		@? "test/positive fail: The above claferModels did not compile.")
+    claferModels <- positiveClaferModels
+    let compiledClafers = map (\(file', model) -> (file', compileOneFragment defaultClaferArgs{keep_unused = True} model)) claferModels
+    forM_ compiledClafers (\(file', compiled) ->
+        when (not $ compiledCheck compiled) $ putStrLn (file' ++ " Error: " ++ (show $ fromLeft compiled)))
+    (andMap (compiledCheck . snd) compiledClafers
+        @? "test/positive fail: The above claferModels did not compile.")
 
 case_reference_Unused_Abstract_Clafer :: Assertion
 case_reference_Unused_Abstract_Clafer = do
-	model <- readFile "test/positive/i235.cfr"
-	let compiledClafers =
-		[("None", compileOneFragment defaultClaferArgs{scope_strategy = None} model), ("Simple", compileOneFragment defaultClaferArgs{scope_strategy = Simple} model)]
-	forM_ compiledClafers (\(ss, compiled) ->
-		when (not $ compiledCheck compiled) $ putStrLn ("i235.cfr failed for scope_strategy = " ++ ss))
-	(andMap (compiledCheck . snd) compiledClafers
-		@? "reference_Unused_Abstract_Clafer (i235) failed, error for referencing unused abstract clafer")
+    model <- readFile "test/positive/i235.cfr"
+    let compiledClafers = [("None", compileOneFragment defaultClaferArgs{scope_strategy = None} model), ("Simple", compileOneFragment defaultClaferArgs{scope_strategy = Simple} model)]
+    forM_ compiledClafers (\(ss, compiled) ->
+        when (not $ compiledCheck compiled) $ putStrLn ("i235.cfr failed for scope_strategy = " ++ ss))
+    (andMap (compiledCheck . snd) compiledClafers
+        @? "reference_Unused_Abstract_Clafer (i235) failed, error for referencing unused abstract clafer")
 
 case_nonempty_cards :: Assertion
 case_nonempty_cards = do
-	claferModels <- positiveClaferModels
-	let compiledClafeIrs = foldMap getIR $ map (\(file', model) -> (file', compileOneFragment defaultClaferArgs model)) claferModels
-	forM_ compiledClafeIrs (\(file', ir') ->
-		let emptys = foldMapIR isEmptyCard ir'
-		in when (emptys /= []) $ putStrLn (file' ++ " Error: Contains empty cardinalities after analysis at\n" ++ emptys))
-	(andMap ((==[]) . foldMapIR isEmptyCard . snd) compiledClafeIrs
-		@? "nonempty card test failed. Files contain empty cardinalities after fully compiling")
-	where
-		getIR (file', (Right (resultMap))) =
-			case Map.lookup Alloy42 resultMap of
-				Just CompilerResult{claferEnv = ClaferEnv{cIr = Just (iMod, _, _)}} -> [(file', iMod)]
-				_ -> []
-		getIR (_, _) = []
-		isEmptyCard (IRClafer (IClafer{_cinPos=(Span (Pos l c) _), _card = Nothing})) = "Line " ++ show l ++ " column " ++ show c ++ "\n"
-		isEmptyCard	_ = ""
+    claferModels <- positiveClaferModels
+    let compiledClafeIrs = foldMap getIR $ map (\(file', model) -> (file', compileOneFragment defaultClaferArgs{keep_unused = True} model)) claferModels
+    forM_ compiledClafeIrs (\(file', ir') ->
+        let emptys = foldMapIR isEmptyCard ir'
+        in when (emptys /= []) $ putStrLn (file' ++ " Error: Contains empty cardinalities after analysis at\n" ++ emptys))
+    (andMap ((==[]) . foldMapIR isEmptyCard . snd) compiledClafeIrs
+        @? "nonempty card test failed. Files contain empty cardinalities after fully compiling")
+    where
+        getIR (file', (Right (resultMap))) =
+            case Map.lookup Alloy42 resultMap of
+                Just CompilerResult{claferEnv = ClaferEnv{cIr = Just (iMod, _, _)}} -> [(file', iMod)]
+                _ -> []
+        getIR (_, _) = []
+        isEmptyCard (IRClafer (IClafer{_cinPos=(Span (Pos l c) _), _card = Nothing})) = "Line " ++ show l ++ " column " ++ show c ++ "\n"
+        isEmptyCard _ = ""
 
 case_stringEqual :: Assertion
 case_stringEqual = do
-	let strMap = stringMap $ fromJust $ Map.lookup Alloy42 $ fromRight $ compileOneFragment defaultClaferArgs "A\n    text1 -> string = \"some text\"\n    text2 -> string = \"some text\""
-	(Map.size strMap) == 1 @? "Error: same string assigned to differnet numbers!"
+    let strMap = stringMap $ fromJust $ Map.lookup Alloy42 $ fromRight $ compileOneFragment defaultClaferArgs "A\n    text1 -> string = \"some text\"\n    text2 -> string = \"some text\""
+    (Map.size strMap) == 1 @? "Error: same string assigned to differnet numbers!"

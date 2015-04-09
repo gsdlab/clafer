@@ -6,8 +6,9 @@ module Language.Clafer.Front.ErrM where
 
 -- the Error monad: like Maybe type with error msgs
 
-import Control.Monad (MonadPlus(..), liftM)
-import Control.Applicative (Applicative(..), Alternative(..))
+import Control.Monad
+import Control.Applicative
+import Prelude
 
 import Language.Clafer.Front.AbsClafer
 

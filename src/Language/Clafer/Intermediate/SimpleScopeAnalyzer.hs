@@ -21,7 +21,7 @@
 -}
 module Language.Clafer.Intermediate.SimpleScopeAnalyzer (simpleScopeAnalysis) where
 
-import Control.Applicative ((<$>))
+import Control.Applicative
 import Control.Lens hiding (elements, assign)
 import Data.Graph
 import Data.List

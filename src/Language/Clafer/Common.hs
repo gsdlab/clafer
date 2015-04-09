@@ -22,7 +22,7 @@
 -}
 module Language.Clafer.Common where
 
-import           Control.Applicative ((<$>))
+import           Control.Applicative
 import           Control.Lens (universeOn)
 import           Data.Char
 import           Data.Data.Lens (biplate)
@@ -32,6 +32,7 @@ import           Data.Maybe
 import           Data.StringMap (StringMap)
 import qualified Data.StringMap as SMap
 import           Data.Tree
+import           Prelude
 
 import Language.Clafer.Front.AbsClafer
 import Language.Clafer.Intermediate.Intclafer

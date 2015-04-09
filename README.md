@@ -165,14 +165,16 @@ Common flags:
                                           CLAFERMODEs are: 'alloy' (Alloy 4.1);
                                           'alloy42' (default, Alloy 4.2); 'xml'
                                           (intermediate representation of
-                                          Clafer model); 'clafer' (analyzed and
-                                          desugared clafer model); 'html'
-                                          (original model in HTML); 'graph'
-                                          (graphical representation written in
-                                          DOT language); 'cvlgraph' (cvl
-                                          notation representation written in
-                                          DOT language); 'python' (generates IR
-                                          in python); 'choco' (Choco constraint
+                                          Clafer model); 'json' (intermediate
+                                          representation of Clafer model);
+                                          'clafer' (analyzed and desugared
+                                          clafer model); 'html' (original model
+                                          in HTML); 'graph' (graphical
+                                          representation written in DOT
+                                          language); 'cvlgraph' (cvl notation
+                                          representation written in DOT
+                                          language); 'python' (generates IR in
+                                          python); 'choco' (Choco constraint
                                           programming solver). Multiple modes
                                           can be specified at the same time,
                                           e.g., '-m alloy -m html'.

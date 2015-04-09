@@ -26,9 +26,12 @@ module Language.Clafer.Intermediate.Intclafer where
 import Language.Clafer.Front.AbsClafer
 
 import Control.Lens
+import Data.Aeson
+import Data.Aeson.TH
 import Data.Data
 import Data.Monoid
-import Data.Foldable (foldMap)
+import Data.Foldable
+import Prelude
 
 -- | unique identifier of a clafer
 type UID = String
@@ -366,10 +369,12 @@ unWrapIGCard :: Ir -> Maybe IGCard
 unWrapIGCard (IRIGCard x) = x
 unWrapIGCard x = error $ "Can't call unWarpIGcard on " ++ show x
 
-
+instance Plated IModule
 instance Plated IClafer
 instance Plated PExp
 instance Plated IExp
+
+makeLenses ''IType
 
 makeLenses ''IModule
 
@@ -388,3 +393,31 @@ makeLenses ''PExp
 makeLenses ''IExp
 
 makeLenses ''IDecl
+
+$(deriveToJSON defaultOptions{fieldLabelModifier = tail, omitNothingFields=True} ''IType)
+
+$(deriveToJSON defaultOptions{fieldLabelModifier = tail, omitNothingFields=True} ''IModule)
+
+$(deriveToJSON defaultOptions{fieldLabelModifier = tail, omitNothingFields=True} ''IClaferModifiers)
+
+$(deriveToJSON defaultOptions{fieldLabelModifier = tail, omitNothingFields=True} ''IClafer)
+
+$(deriveToJSON defaultOptions{fieldLabelModifier = tail, omitNothingFields=True} ''IElement)
+
+$(deriveToJSON defaultOptions{fieldLabelModifier = tail, omitNothingFields=True} ''IReference)
+
+$(deriveToJSON defaultOptions{fieldLabelModifier = tail, omitNothingFields=True} ''IGCard)
+
+$(deriveToJSON defaultOptions{fieldLabelModifier = tail, omitNothingFields=True} ''PExp)
+
+$(deriveToJSON defaultOptions{fieldLabelModifier = tail, omitNothingFields=True} ''IExp)
+
+$(deriveToJSON defaultOptions{fieldLabelModifier = tail, omitNothingFields=True} ''IDecl)
+
+$(deriveToJSON defaultOptions{fieldLabelModifier = tail, omitNothingFields=True} ''IQuant)
+
+instance ToJSON Span where
+  toJSON _ = Null
+
+instance ToJSON Pos where
+  toJSON _ = Null

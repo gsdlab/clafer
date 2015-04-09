@@ -191,7 +191,7 @@ genCModule (imodule@IModule{_mDecls}, genv') scopes =
             "product(" ++ genConstraintPExp a ++ ")"
         | otherwise = error "Choco: Unexpected product argument."
     genConstraintExp (IFunExp "+" args') =
-	(if _iType (head args') == Just TString then "concat" else "add") ++
+        (if _iType (head args') == Just TString then "concat" else "add") ++
             "(" ++ intercalate ", " (map genConstraintPExp args') ++ ")"
     genConstraintExp (IFunExp op' args') =
         mapFunc op' ++ "(" ++ intercalate ", " (map genConstraintPExp args') ++ ")"

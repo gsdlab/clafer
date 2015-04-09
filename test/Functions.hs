@@ -28,26 +28,26 @@ import System.Directory
 
 getClafers :: FilePath -> IO [(String, String)]
 getClafers dir = do
-					files <- getDirectoryContents dir
-					let claferFiles = List.filter checkClaferExt files
-					claferModels <- mapM (\x -> readFile (dir++"/"++x)) claferFiles
-					return $ zip claferFiles claferModels
+                    files <- getDirectoryContents dir
+                    let claferFiles = List.filter checkClaferExt files
+                    claferModels <- mapM (\x -> readFile (dir++"/"++x)) claferFiles
+                    return $ zip claferFiles claferModels
 
 checkClaferExt :: String -> Bool
 checkClaferExt "des.cfr" = True
 checkClaferExt file' = if ((eman == "")) then False else (txe == "rfc") && (takeWhile (/='.') (tail eman) /= "esd")
-	where (txe, eman) = span (/='.') (reverse file')
+    where (txe, eman) = span (/='.') (reverse file')
 
 
 compileOneFragment :: ClaferArgs -> InputModel -> Either [ClaferErr] (Map.Map ClaferMode CompilerResult)
 compileOneFragment args' model =
- 	runClafer (argsWithOPTIONS args' model) $
-		do
-			addModuleFragment model
-			parse
-			iModule <- desugar Nothing
-			compile iModule
-			generate
+    runClafer (argsWithOPTIONS args' model) $
+        do
+            addModuleFragment model
+            parse
+            iModule <- desugar Nothing
+            compile iModule
+            generate
 
 compiledCheck :: Either a b -> Bool
 compiledCheck (Left _) = False
