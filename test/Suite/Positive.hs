@@ -24,7 +24,7 @@ module Suite.Positive (tg_Test_Suite_Positive) where
 
 import Functions
 import Language.Clafer.Intermediate.Intclafer
-import Data.Foldable
+import Data.Foldable hiding (forM_)
 import Data.Maybe
 import Control.Monad
 import Language.Clafer
