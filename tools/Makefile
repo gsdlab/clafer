@@ -13,8 +13,8 @@ endif
 all:
 	@if test ! -f "alloy4.2.jar"; then \
 		echo "[WARNING] Missing alloy4.2.jar. Downloading...";  \
-		$(WGET_COMMAND) http://alloy.mit.edu/alloy/downloads/alloy4.2_2014-05-16.jar; \
-		mv alloy4.2_2014-05-16.jar alloy4.2.jar; \
+		$(WGET_COMMAND) http://alloy.mit.edu/alloy/downloads/alloy4.2_2015-02-22.jar; \
+		mv alloy4.2_2015-02-22.jar alloy4.2.jar; \
 	fi
 
 	javac  XsdCheck.java
