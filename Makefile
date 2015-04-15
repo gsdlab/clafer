@@ -19,8 +19,7 @@ init:
 	# wget http://www.stackage.org/snapshot/lts-1.4/cabal.config
 	# mv cabal.config ../.clafertools-cabal-sandbox
 	# the constraint is there to prevent installing utf8-string-1 which conflicts with gitit, which requires utf8-string <= 0.3.8.
-	# cabal install --only-dependencies $(MAC_USR_LIB) --enable-tests --constraint="utf8-string==0.3.8"
-	cabal install --only-dependencies $(MAC_USR_LIB) --enable-tests
+	cabal install --only-dependencies $(MAC_USR_LIB) --enable-tests --constraint="utf8-string==0.3.8"
 
 build:
 	$(MAKE) -C $(TOOL_DIR)
