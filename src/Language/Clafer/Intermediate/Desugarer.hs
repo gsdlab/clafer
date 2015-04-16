@@ -392,10 +392,10 @@ translateTmpPatterns e = case e of
     PatScopeAfter _ q ->          g(q ==> g(p ==> f s))
     PatScopeBetweenAnd _ q r ->   g((q & not r & f r) ==> (p ==> (((not r `u` (s & not r))) `u` r)))
     PatScopeAfterUntil _ q r ->   g((q & not r) ==> ((p==> (not r `u` (s & not r))) `w` r))
-  TmpInitially s exp' ->
-    let oper1 =  ENeg s $ mkClaferIdExp s "this"
-        oper2 = LtlX s $ mkClaferIdExp s "this"
-    in EImplies s (EAnd s oper1 oper2) $ LtlX s exp'
+  {-TmpInitially s exp' -> -}
+    {-let oper1 =  ENeg s $ mkClaferIdExp s "this"-}
+        {-oper2 = LtlX s $ mkClaferIdExp s "this"-}
+    {-in EImplies s (EAnd s oper1 oper2) $ LtlX s exp'-}
   TmpFinally s exp' ->
     let oper1 =  mkClaferIdExp s "this"
         oper2 = LtlX s $ ENeg s $ mkClaferIdExp s "this"
@@ -445,6 +445,7 @@ desugarExp' x = let x' =  translateTmpPatterns x in case x' of
   LtlF  _ exp'  -> dop iF  [exp']
   LtlG  _ exp'  -> dop iG  [exp']
   LtlX  _ exp'  -> dop iX  [exp']
+  TmpInitially _ exp' -> dop iInitially [exp']
   QuantExp _ quant' exp' ->
       IDeclPExp (desugarQuant quant') [] (desugarExp exp')
   ELt  _ exp0 exp'  -> dop iLt  [exp0, exp']
@@ -544,6 +545,7 @@ sugarExp' x = case x of
     | op'' == iF             = LtlF noSpan
     | op'' == iG             = LtlG noSpan
     | op'' == iX             = LtlX noSpan
+    | op'' == iInitially     = TmpInitially noSpan
     | otherwise              = error $ show op'' ++ "is not an op"
   sugarOp op''
     | op'' == iIff           = EIff noSpan

@@ -37,6 +37,7 @@ import Language.Clafer.Intermediate.Intclafer hiding (exp)
 --import Debug.Trace
 
 data GenCtx = GenCtx {
+    ctxClafer :: IClafer,
     resPath::[String],
     time :: Maybe String
   } deriving (Show)
@@ -62,6 +63,12 @@ genAlloyLtlModule    claferargs'   (imodule, genv)       scopes         = (flatt
   where
   tl = trace_len claferargs'
   uidIClaferMap' = uidClaferMap genv
+  genEnv = GenEnv claferargs' uidIClaferMap' forScopes'
+  rootClafer = findIClafer uidIClaferMap' rootIdent
+  clafer' = case rootClafer of
+                          Just c' -> c'
+                          _ -> error "Missing root clafer" -- should never happen
+
 
   -- multiply the scope by trace length for mutable clafers
   adjustScope :: (UID, Integer) -> (UID, Integer)
@@ -74,19 +81,15 @@ genAlloyLtlModule    claferargs'   (imodule, genv)       scopes         = (flatt
   genScopes scopes' = " but " ++ intercalate ", " (map (\ (uid', scope)  -> show scope ++ " " ++ uid') scopes')
 
   forScopes' = "for " ++ show tl ++ (genScopes $ map adjustScope scopes)
-  genEnv = GenEnv claferargs' uidIClaferMap' forScopes'
-  rootClafer = findIClafer uidIClaferMap' rootIdent
   -- output = header claferargs scopes +++ (cconcat $ map (genDeclaration genEnv) (_mDecls imodule)) +++
-  outputBody = case rootClafer of
-                          Just c' -> (genRootClafer genEnv c')
-                          _ -> error "Missing root clafer" -- should never happen
+  outputBody = genRootClafer genEnv clafer'
   output = header genEnv +++ outputBody +++
        if ((not $ skip_goals claferargs') && length goals_list > 0) then
                 CString "objectives o_global {\n" +++   (cintercalate (CString ",\n") goals_list) +++   CString "\n}"
        else
                 CString ""
        where
-                goals_list = filterNull (map (genDeclarationGoalsOnly genEnv) (_mDecls imodule))
+                goals_list = filterNull (map (genDeclarationGoalsOnly genEnv clafer') (_mDecls imodule) )
 
 header :: GenEnv -> Concat
 header    genEnv  = CString $ unlines
@@ -103,7 +106,7 @@ header    genEnv  = CString $ unlines
       args = claferargs genEnv
       behavioralSigs = unlines
         [ "sig Time {loop: lone Time}"
-        , "fact Loop {loop in last->Time}"
+        , "fact Loop { #loop > 0 && loop in last->Time}"
         , "fun timeLoop: Time -> Time { Time <: next + loop }"
         , "fun local_first [rel: univ->univ->Time, parentSet: univ, child: univ] : Time {"
         , "  {t: Time | t in (child.(parentSet.rel)) and no ((child.(parentSet.rel)) <: next) :> t }"
@@ -113,35 +116,36 @@ header    genEnv  = CString $ unlines
 
 -- 07th Mayo 2012 Rafael Olaechea
 -- Modified so that we can collect all goals into a single block as required per the way goals are handled in modified alloy.
-genDeclarationGoalsOnly :: GenEnv -> IElement -> Concat
-genDeclarationGoalsOnly    genEnv    x         = case x of
+genDeclarationGoalsOnly :: GenEnv -> IClafer -> IElement ->  Concat
+genDeclarationGoalsOnly    genEnv    c          x        = case x of
   IEClafer _  -> CString ""
   IEConstraint _ _  -> CString ""
   IEGoal _ (PExp _ _ _ innerexp) -> case innerexp of
         IFunExp op' (e:_) ->  if  op' == iGMax || op' == iGMin then
-                        mkMetric op' $ genPExp genEnv (GenCtx [] Nothing) e
+                        mkMetric op' $ genPExp genEnv (GenCtx c [] Nothing) e
                 else
                         error "unary operator  distinct from (min/max) at the topmost level of a goal element"
         _ ->  error "no unary operator (min/max) at the topmost level of a goal element."
 
 genRootClafer :: GenEnv -> IClafer -> Concat
 genRootClafer genEnv clafer'
-  = (cunlines $ filterNull
-      [   claferDecl clafer' (
-          (showSet (CString "\n, ") $ genRelations genEnv clafer')
-          +++ (optShowSet $ filterNull $ genConstraints genEnv (GenCtx [] Nothing) clafer')
+  = let ctx = GenCtx clafer' [] Nothing in
+        (cunlines $ filterNull
+          [   claferDecl clafer' (
+              (showSet (CString "\n, ") $ genRelations genEnv ctx)
+              +++ (optShowSet $ filterNull $ genConstraints genEnv ctx)
+            )
+          ]
         )
-      ]
-    )
-  +++ CString "\n" +++ children'
-  +++ CString "\n" +++ assertions
+      +++ CString "\n" +++ children'
+      +++ CString "\n" +++ assertions
   where
   children' = cconcat $ filterNull $ map
              (genClafer genEnv [_uid clafer']) $
              getSubclafers $ _elements clafer'
   assertions = cconcat $ map mkSingleAssert $ getAssertions clafer'
   mkSingleAssert pexp = mkAssert genEnv (genAssertName pexp) $
-    genAssertBody genEnv (GenCtx [_uid clafer'] Nothing) pexp clafer'
+    genAssertBody genEnv (GenCtx clafer' [_uid clafer'] Nothing) pexp clafer'
 
 getAssertions :: IClafer -> [PExp]
 getAssertions clafer' = concat $ map pullAssert $ _elements clafer'
@@ -150,6 +154,7 @@ getAssertions clafer' = concat $ map pullAssert $ _elements clafer'
 
 -- 07th Mayo 2012 Rafael Olaechea
 -- Removed goal from this function as they will now  all be collected into a single block.
+{- Unused since the introduction of root Clafer
 genDeclaration :: GenEnv -> IElement -> Concat
 genDeclaration genEnv x = case x of
   IEClafer clafer'  -> genRootClafer genEnv clafer'
@@ -161,6 +166,7 @@ genDeclaration genEnv x = case x of
                 else
                         error "unary operator  distinct from (min/max) at the topmost level of a goal element"
         _ ->  error "no unary operator (min/max) at the topmost level of a goal element."
+-}
 
 mkFact :: Concat -> Concat
 mkFact x@(CString "") = x
@@ -209,15 +215,15 @@ genClafer genEnv resPath' clafer'
   = (cunlines $ filterNull
       [   cardFact
       +++ claferDecl clafer' (
-          (showSet (CString "\n, ") $ genRelations genEnv clafer')
-          +++ (optShowSet $ filterNull $ genConstraints genEnv genCtx clafer')
+          (showSet (CString "\n, ") $ genRelations genEnv ctx)
+          +++ (optShowSet $ filterNull $ genConstraints genEnv ctx)
         )
       ]
     )
   +++ CString "\n" +++ children'
   +++ CString "\n" +++ assertions
   where
-  genCtx = GenCtx resPath' Nothing
+  ctx = GenCtx clafer' resPath' Nothing
   children' = cconcat $ filterNull $ map
              (genClafer genEnv ((_uid clafer') : resPath')) $
              getSubclafers $ _elements clafer'
@@ -229,7 +235,7 @@ genClafer genEnv resPath' clafer'
     | otherwise = CString ""
   assertions = cconcat $ map mkSingleAssert $ getAssertions clafer'
   mkSingleAssert pexp = mkAssert genEnv (genAssertName pexp) $
-    genAssertBody genEnv genCtx pexp clafer'
+    genAssertBody genEnv ctx pexp clafer'
 
 claferDecl :: IClafer -> Concat -> Concat
 claferDecl    c     rest    = cconcat
@@ -259,13 +265,14 @@ genOptCard    c
 -- relations: overlapping inheritance (val rel), children
 -- adds parent relation
 -- 29/March/2012  Rafael Olaechea: ref is now prepended with clafer name to be able to refer to it from partial instances.
-genRelations :: GenEnv -> IClafer -> [Concat]
-genRelations    genEnv    c        = ownRef ++ (map mkRel $ getSubclafers $ _elements c)
+genRelations :: GenEnv -> GenCtx -> [Concat]
+genRelations    genEnv    ctx        = ownRef ++ (map mkRel $ getSubclafers $ _elements c)
   where
+    c = ctxClafer ctx
     ownRef = if isJust $ _reference c
              then [ CString $ genRel (if (noalloyruncommand (claferargs genEnv)) then  (_uid c ++ "_ref") else "ref")
                     c {_card = Just (1, 1)} $
-                    flatten $ refType genEnv c
+                    flatten $ refType genEnv ctx
                   ]
              else []
     mkRel c' = Concat NoTrace [CString $ genRel (genRelName $ _uid c') c' $ _uid c']
@@ -288,8 +295,8 @@ genAlloyRel name card' rType = concat [name, " : ", card', " ", rType]
 genMutAlloyRel :: String -> String -> String
 genMutAlloyRel name rType = concat [name, " : ", rType, " -> ", timeSig]
 
-refType :: GenEnv -> IClafer -> Concat
-refType    genEnv c = fromMaybe (CString "") $ fmap ((genType genEnv).getTarget) $ _ref <$> _reference c
+refType :: GenEnv -> GenCtx -> Concat
+refType    genEnv    ctx = fromMaybe (CString "") $ fmap ((genType genEnv ctx).getTarget) $ _ref <$> _reference (ctxClafer ctx)
 
 
 getTarget :: PExp -> PExp
@@ -297,10 +304,9 @@ getTarget    x     = case x of
   PExp _ _ _ (IFunExp op' (_:pexp:_))  -> if op' == iJoin then pexp else x
   _ -> x
 
-genType :: GenEnv -> PExp                              -> Concat
-genType    genEnv    x@(PExp _ _ _ y@(IClaferId _ _ _ _)) = genPExp genEnv (GenCtx [] Nothing)
-  x{_exp = y{_isTop = True}}
-genType    genEnv    x = genPExp genEnv (GenCtx [] Nothing) x
+genType :: GenEnv -> GenCtx -> PExp                                -> Concat
+genType    genEnv    ctx       x@(PExp _ _ _ y@(IClaferId _ _ _ _)) = genPExp genEnv ctx x{_exp = y{_isTop = True}}
+genType    genEnv    ctx       x                                    = genPExp genEnv ctx x
 
 
 -- -----------------------------------------------------------------------------
@@ -329,8 +335,8 @@ containsTimedRel    genEnv     (PExp iType' _ _ exp') =  case exp' of
   where
   containsMut genEnv' (IDecl _ _ body') = containsTimedRel genEnv' body'
 
-genConstraints :: GenEnv -> GenCtx -> IClafer -> [Concat]
-genConstraints    genEnv    ctx       c
+genConstraints :: GenEnv -> GenCtx -> [Concat]
+genConstraints    genEnv    ctx
   = (genParentConst (resPath ctx) c)
   : (genMutClaferConst ctx c)
   : (genMutSubClafersConst genEnv c)
@@ -338,6 +344,7 @@ genConstraints    genEnv    ctx       c
   : (genPathConst genEnv ctx  (if (noalloyruncommand (claferargs genEnv)) then  (_uid c ++ "_ref") else "ref") c)
   : constraints
   where
+  c = ctxClafer ctx
   constraints = concat $ map genConst $ _elements c
   genConst :: IElement -> [ Concat ]
   genConst    x = case x of
@@ -634,7 +641,7 @@ genPExp'    genEnv    ctx       (PExp iType' pid' pos exp') = case exp' of
     IFunExp _ _ -> genIFunExp genEnv pid' ctx exp''
     _ -> genPExp' genEnv ctx $ PExp iType' pid' pos exp''
     where
-    exp'' = transformExp exp'
+    exp'' = transformExp exp' $ ctxClafer ctx
   IInt n -> CString $ show n
   IDouble _ -> error "AlloyLtl.genPExp': No real numbers allowed"
   IStr _ -> error "AlloyLtl.genPExp': No strings allowed"
@@ -646,10 +653,18 @@ genPExp'    genEnv    ctx       (PExp iType' pid' pos exp') = case exp' of
 -- See http://gsd.uwaterloo.ca:8888/question/461/new-translation-of-negative-number-x-into-0-x-is.
 -- Encoding of Weak Until expression is done by translating to equivalent Until expression
 -- a W b === G a || a U b
-transformExp :: IExp -> IExp
-transformExp (IFunExp op' (e1:_))
+transformExp :: IExp -> IClafer -> IExp
+transformExp x@(IFunExp op' (e1:_)) c'
   | op' == iMin = IFunExp iMul [PExp (_iType e1) "" noSpan $ IInt (-1), e1]
-transformExp    x@(IFunExp op' exps'@(e1:e2:_))
+  | op' == iInitially && _mutable c' = -- transforms to: (no this && X this) => X e1
+        let thisExpr = PExp (Just TBoolean) "" noSpan (IClaferId "" "this" False (Just (_uid c')))
+            oper1 =  PExp (Just TBoolean) "" noSpan (IFunExp iNot [ thisExpr ])
+            oper2 = PExp (Just TBoolean) "" noSpan (IFunExp iX [thisExpr])
+            and = PExp (Just TBoolean) "" noSpan (IFunExp iAnd [oper1, oper2] )
+            xExpr = PExp (Just TBoolean) "" noSpan (IFunExp iX [e1])
+        in  IFunExp iImpl [and, xExpr]
+  | op' == iInitially  = _exp e1
+transformExp    x@(IFunExp op' exps'@(e1:e2:_)) _
   | op' == iXor = IFunExp iNot [PExp (Just TBoolean) "" noSpan (IFunExp iIff exps')]
   | op' == iW = let p1 = PExp (Just TBoolean) "" noSpan $ IFunExp iG [e1] -- G e1
                     p2 = PExp (Just TBoolean) "" noSpan x{_op=iU} -- e1 U e2
@@ -658,7 +673,7 @@ transformExp    x@(IFunExp op' exps'@(e1:e2:_))
     getClaferName e1 == thisIdent && head (getClaferName e2) == '~' =
         IFunExp op' [e1{_iType = Just $ TClafer []}, e2]
   | otherwise  = x
-transformExp x = x
+transformExp x _ = x
 
 genIFunExp :: GenEnv -> String -> GenCtx -> IExp             -> Concat
 genIFunExp    genEnv    pid'      ctx       (IFunExp op' exps') =
@@ -690,6 +705,7 @@ genLtlExp    genEnv    ctx       op'        exps' = {- trace ("call in genLtlExp
     | op' == iX = genX
     | op' == iG = genG
     | op' == iU = genU
+    | op' == iInitially = error $ "AlloyLtl.genLtlExp: Initially should have been translated in transformExp"
     | op' == iW = error $ "AlloyLtl.genLtlExp: W should have been translated in transformExp"
     | otherwise = error $ "AlloyLtl.genLtlExp: unsupported temporal operator: " ++ op' -- should never happen
   genF [e1]

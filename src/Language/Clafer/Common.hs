@@ -352,6 +352,9 @@ iF          = "F"
 iX :: String
 iX          = "X"
 
+iInitially :: String
+iInitially    = "Initially"
+
 iCSet :: String
 iCSet         = "#"
 
@@ -371,7 +374,7 @@ iProdSet :: String
 iProdSet      = "product"
 
 unOps :: [String]
-unOps = [iNot, iCSet, iMin, iGMax, iGMin, iSumSet, iProdSet, iX, iF, iG]
+unOps = [iNot, iCSet, iMin, iGMax, iGMin, iSumSet, iProdSet, iX, iF, iG, iInitially]
 
 -- binary operators
 iIff :: String
@@ -423,13 +426,13 @@ iNin :: String
 iNin          = "not in"
 
 ltlOps :: [String]
-ltlOps = [iW, iU, iX, iG, iF]
+ltlOps = [iW, iU, iX, iG, iF, iInitially]
 
 ltlBinOps :: [String]
 ltlBinOps = [iW, iU]
 
 ltlUnOps :: [String]
-ltlUnOps = [iX, iG, iF]
+ltlUnOps = [iX, iG, iF, iInitially]
 
 relGenBinOps :: [String]
 relGenBinOps = [iLt, iGt, iEq, iLte, iGte, iNeq]
