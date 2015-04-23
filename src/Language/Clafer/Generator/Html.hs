@@ -49,8 +49,6 @@ import Data.Maybe
 import Data.Char (isSpace)
 import Prelude hiding (exp)
 
-import Debug.Trace
-
 printPreComment :: Span -> [(Span, String)] -> ([(Span, String)], String)
 printPreComment _ [] = ([], [])
 printPreComment (Span (Pos r _) _) (c@((Span (Pos r' _) _), _):cs)
