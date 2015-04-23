@@ -96,14 +96,15 @@ import Language.Clafer.ClaferArgs
  -
  -}
 
-data ClaferEnv = ClaferEnv {
-                            args :: ClaferArgs,
-                            modelFrags :: [String], -- original text of the model fragments
-                            cAst :: Maybe Module,
-                            cIr :: Maybe (IModule, GEnv, Bool),
-                            frags :: [Pos],    -- line numbers of fragment markers
-                            astModuleTrace :: Map.Map Span [Ast]  -- can keep the Ast map since it never changes
-                            } deriving Show
+data ClaferEnv
+  = ClaferEnv
+    { args :: ClaferArgs
+    , modelFrags :: [String] -- original text of the model fragments
+    , cAst :: Maybe Module
+    , cIr :: Maybe (IModule, GEnv, Bool)
+    , frags :: [Pos]    -- line numbers of fragment markers
+    , astModuleTrace :: Map.Map Span [Ast]  -- can keep the Ast map since it never changes
+    } deriving Show
 
 -- | This simulates a field in the ClaferEnv that will always recompute the map,
 --   since the IR always changes and the map becomes obsolete
