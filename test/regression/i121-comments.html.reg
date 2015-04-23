@@ -17,6 +17,7 @@ a[href$='Ambiguous name'] {color: yellow}
 
 </style></head>
 <body>
+<!-- # FRAGMENT /-->
 <!-- # OPTIONS --self-contained --add-graph --add-comments /-->
 <!-- # STATS /-->
 <div class="standalonecomment">/*<br>
@@ -24,30 +25,44 @@ a[href$='Ambiguous name'] {color: yellow}
 7| <code>B</code> and<br>
 8| optionally <b>C</b><br>
 */</div>
-<!-- # FRAGMENT /-->
-<div class="standalonecomment">// 11| pre-A inline comment</div>
+
 <div>
 <span class="claferDecl" id="c0_A">A</span><span class="inlinecomment">// 12| A is A!</span>
   <div class="indent">
-  <span class="claferDecl" id="c0_B">B</span></div>
-  <div class="indent">
-  <span class="claferDecl" id="c0_C">C</span> ?<span class="inlinecomment">// 14| C is important!</span>
+  <span class="claferDecl" id="c0_B">B</span>
   </div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_C">C</span> ?</div><span class="inlinecomment">// 14| C is important!</span>
 </div>
 <div class="standalonecomment">// 15| after-A inline comment</div>
+
 <!-- # FRAGMENT /-->
+
 <div>
 <span class="claferDecl" id="c0_D">D</span><span class="keyword"> -> </span><a href="#c0_A"><span class="reference">A</span></a><span class="inlinecomment">// 18| D points to some A</span></div>
+
 <!-- # FRAGMENT /-->
+
 <div class="standalonecomment">/*<br>
 23| E is a nice concept!<br>
 */</div>
 <div>
-<span class="claferDecl" id="c0_E">E</span> ?<span class="inlinecomment">// 25| what about E?</span></div>
+<span class="claferDecl" id="c0_E">E</span> ?<span class="inlinecomment">// 25| what about E?</span>
+</div>
+
+<br>
+
 <!-- # SUMMARY /-->
+<br>
+
 <div class="standalonecomment">// 29| and now the graph</div>
+<br>
+
 <!-- # GRAPH /-->
+<br>
+
 <div class="standalonecomment">// 33| that's all folks!</div>
-<!-- # FRAGMENT /-->
+<br>
+
 </body>
 </html>

@@ -16,3 +16,6 @@ lone sig c0_C
 one sig c0_D
 { ref : one c0_A }
 
+lone sig c0_E
+{}
+
