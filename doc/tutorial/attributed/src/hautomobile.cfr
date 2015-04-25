@@ -1,5 +1,5 @@
 abstract Vehicle
-    serialNo : int
+    serialNo -> integer
 
 Automobile : Vehicle
     xor Engine
@@ -11,5 +11,4 @@ Automobile : Vehicle
 
 [Electric => Radio]
 
-numOfAutomobiles : int
-[numOfAutomobiles = #Vehicle]
+numOfAutomobiles -> integer = #Vehicle

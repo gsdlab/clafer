@@ -27,7 +27,7 @@ import Language.Clafer.Front.AbsClafer
 import Language.Clafer.Intermediate.Tracing
 import Language.Clafer.Intermediate.Intclafer
 import Language.Clafer.Generator.Html(genTooltip)
-import Control.Applicative ((<$>))
+import Control.Applicative
 import qualified Data.Map as Map
 import Data.Maybe
 import Prelude hiding (exp)

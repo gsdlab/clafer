@@ -25,12 +25,13 @@ module Language.Clafer.Intermediate.ResolverName where
 
 import Control.Applicative
 import Control.Monad
-import Control.Monad.Error
+import Control.Monad.Except
 import Control.Monad.Trans.Maybe
 import Control.Monad.State
 import Data.Maybe
 import Data.Function
 import Data.List
+import Prelude
 
 import Language.ClaferT
 import Language.Clafer.Common
@@ -149,7 +150,7 @@ resolvePExp env pexp =
 resolveIExp :: Span -> SEnv -> IExp -> Resolve IExp
 resolveIExp pos' env x = case x of
   IDeclPExp quant' decls' pexp -> do
-    let (decls'', env') = runState (runErrorT $ (mapM (ErrorT . processDecl) decls')) env
+    let (decls'', env') = runState (runExceptT $ (mapM (ExceptT . processDecl) decls')) env
     IDeclPExp quant' <$> decls'' <*> resolvePExp env' pexp
 
   IFunExp op' exps' -> if op' == iJoin then resNav else IFunExp op' <$> mapM (resolvePExp env) exps'
@@ -160,11 +161,11 @@ resolveIExp pos' env x = case x of
   where
   resNav = fst <$> resolveNav pos' env x True
 
-liftError :: Monad m => Either e a -> ErrorT e m a
-liftError = ErrorT . return
+liftError :: Monad m => Either e a -> ExceptT e m a
+liftError = ExceptT . return
 
 processDecl :: MonadState SEnv m => IDecl -> m (Resolve IDecl)
-processDecl decl = runErrorT $ do
+processDecl decl = runExceptT $ do
   env <- lift $ get
   (body', path) <- liftError $ resolveNav (_inPos $ _body decl) env (I._exp $ _body decl) True
   lift $ modify (\e -> e { bindings = (_decls decl, path) : bindings e })
@@ -290,7 +291,7 @@ resolveReference pos' env id' = resolveChildren' pos' env id' allChildren Refere
 resolveChildren' :: Span -> SEnv -> String -> (SEnv -> [IClafer]) -> HowResolved -> Either ClaferSErr (Maybe (HowResolved, String, [IClafer]))
 resolveChildren' pos' env id' getChildrenF label =
   runMaybeT $ do
-    liftMaybe $ context env
+    _ <- liftMaybe $ context env
     u <- MaybeT $ findUnique pos' id' $ map (\x -> (x, [x,fromJust $ context env])) $ getChildrenF env
     liftMaybe $ toMTriple label u
 
@@ -300,7 +301,7 @@ liftMaybe = MaybeT . return
 resolveAncestor :: Span -> SEnv -> String -> Resolve (Maybe (HowResolved, String, [IClafer]))
 resolveAncestor pos' env id' =
   runMaybeT $ do
-    liftMaybe $ context env
+    _ <- liftMaybe $ context env
     u <- MaybeT $ findUnique pos' id' $ ancClafers env
     liftMaybe $ toMTriple Ancestor u
 

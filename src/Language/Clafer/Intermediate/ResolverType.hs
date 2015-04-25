@@ -1,4 +1,4 @@
-{-# LANGUAGE NamedFieldPuns, FlexibleInstances, GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE NamedFieldPuns, FlexibleInstances, FlexibleContexts, GeneralizedNewtypeDeriving #-}
 {-
  Copyright (C) 2012-2015 Jimmy Liang, Kacper Bak, Michal Antkiewicz <http://gsd.uwaterloo.ca>
 
@@ -22,7 +22,6 @@
 -}
 module Language.Clafer.Intermediate.ResolverType (resolveTModule)  where
 
-import Prelude hiding (exp)
 import Language.ClaferT
 import Language.Clafer.Common
 import Language.Clafer.Intermediate.Intclafer hiding (uid)
@@ -31,12 +30,13 @@ import Language.Clafer.Front.PrintClafer
 
 import Control.Applicative
 import Control.Exception (assert)
-import Control.Monad.Error
+import Control.Monad.Except
 import Control.Monad.List
 import Control.Monad.Reader
 import Data.Either
 import Data.List
 import Data.Maybe
+import Prelude hiding (exp)
 
 type TypeDecls = [(String, IType)]
 data TypeInfo = TypeInfo {iTypeDecls::TypeDecls, iUIDIClaferMap::UIDIClaferMap, iCurThis::IClafer, iCurPath::Maybe IType}
@@ -87,13 +87,13 @@ instance MonadTypeAnalysis m => MonadTypeAnalysis (ListT m) where
   typeDecls = lift typeDecls
   localDecls = mapListT . localDecls
 
-instance MonadTypeAnalysis m => MonadTypeAnalysis (ErrorT ClaferSErr m) where
+instance MonadTypeAnalysis m => MonadTypeAnalysis (ExceptT ClaferSErr m) where
   curThis = lift $ curThis
-  localCurThis = mapErrorT . localCurThis
+  localCurThis = mapExceptT . localCurThis
   curPath = lift $ curPath
-  localCurPath = mapErrorT . localCurPath
+  localCurPath = mapExceptT . localCurPath
   typeDecls = lift typeDecls
-  localDecls = mapErrorT . localDecls
+  localDecls = mapExceptT . localDecls
 
 -- | Type inference and checking
 runTypeAnalysis :: TypeAnalysis a -> IModule -> Either ClaferSErr a
@@ -265,13 +265,13 @@ resolveTPExp p =
     x <- resolveTPExp' p
     case partitionEithers x of
       (f:_, []) -> throwError f                       -- Case 1: Only fails. Complain about the first one.
-      ([], [])  -> assert False $ error "No results but no errors."  -- Case 2: No success and no error message. Bug.
+      ([], [])  -> throwError $ SemanticErr (_inPos p) ("No results but no errors for " ++ show p) -- Case 2: No success and no error message. Bug.
       (_,   xs) -> return xs                          -- Case 3: At least one success.
 
 resolveTPExp' :: PExp -> TypeAnalysis [Either ClaferSErr PExp]
 resolveTPExp' p@PExp{_inPos, _exp = IClaferId{_sident = "ref"}} = do
   uidIClaferMap' <- asks iUIDIClaferMap
-  runListT $ runErrorT $ do
+  runListT $ runExceptT $ do
     curPath' <- curPath
     case curPath' of
       Just curPath'' -> do
@@ -283,7 +283,7 @@ resolveTPExp' p@PExp{_inPos, _exp = IClaferId{_sident = "ref"}} = do
       Nothing -> throwError $ SemanticErr _inPos ("Cannot ref at the start of a path")
 resolveTPExp' p@PExp{_inPos, _exp = IClaferId{_sident = "parent"}} = do
   uidIClaferMap' <- asks iUIDIClaferMap
-  runListT $ runErrorT $ do
+  runListT $ runExceptT $ do
     curPath' <- curPath
     case curPath' of
       Just curPath'' -> do
@@ -295,10 +295,10 @@ resolveTPExp' p@PExp{_inPos, _exp = IClaferId{_sident = "parent"}} = do
           <++>
           addRef result -- Case 2: Dereference the sident 1..* times
       Nothing -> throwError $ SemanticErr _inPos "Cannot parent at the start of a path"
-resolveTPExp' p@PExp{_exp = IClaferId{_sident = "integer"}} = runListT $ runErrorT $ return $ p `withType` TInteger
+resolveTPExp' p@PExp{_exp = IClaferId{_sident = "integer"}} = runListT $ runExceptT $ return $ p `withType` TInteger
 resolveTPExp' p@PExp{_inPos, _exp = IClaferId{_sident}} = do
   uidIClaferMap' <- asks iUIDIClaferMap
-  runListT $ runErrorT $ do
+  runListT $ runExceptT $ do
     curPath' <- curPath
     sident' <- if _sident == "this" then _uid <$> curThis else return _sident
     when (isJust curPath') $ do
@@ -311,20 +311,21 @@ resolveTPExp' p@PExp{_inPos, _exp = IClaferId{_sident}} = do
 
 
 resolveTPExp' p@PExp{_inPos, _exp} =
-  runListT $ runErrorT $ do
-    (iType', exp') <- ErrorT $ ListT $ resolveTExp _exp
+  runListT $ runExceptT $ do
+    (iType', exp') <- ExceptT $ ListT $ resolveTExp _exp
     return p{_iType = Just iType', _exp = exp'}
   where
   resolveTExp :: IExp -> TypeAnalysis [Either ClaferSErr (IType, IExp)]
-  resolveTExp e@(IInt _)    = runListT $ runErrorT $ return (TInteger, e)
-  resolveTExp e@(IDouble _) = runListT $ runErrorT $ return (TReal, e)
-  resolveTExp e@(IStr _)    = runListT $ runErrorT $ return (TString, e)
+  resolveTExp e@(IInt _)    = runListT $ runExceptT $ return (TInteger, e)
+  resolveTExp e@(IDouble _) = runListT $ runExceptT $ return (TReal, e)
+  resolveTExp e@(IStr _)    = runListT $ runExceptT $ return (TString, e)
 
   resolveTExp e@IFunExp {_op, _exps = [arg]} =
-    runListT $ runErrorT $ do
+    runListT $ runExceptT $ do
       arg' <- lift $ ListT $ resolveTPExp arg
       let t = typeOf arg'
-      let test c =
+      let
+          test c =
             unless c $
               throwError $ SemanticErr _inPos ("Function '" ++ _op ++ "' cannot be performed on " ++ _op ++ " '" ++ str t ++ "'")
       let result
@@ -339,7 +340,7 @@ resolveTPExp' p@PExp{_inPos, _exp} =
 
   resolveTExp e@IFunExp {_op = ".", _exps = [arg1, arg2]} =
     do
-      runListT $ runErrorT $ do
+      runListT $ runExceptT $ do
         arg1' <- lift $ ListT $ resolveTPExp arg1
         localCurPath (typeOf arg1') $ do
             arg2' <- liftError $ lift $ ListT $ resolveTPExp arg2
@@ -353,7 +354,7 @@ resolveTPExp' p@PExp{_inPos, _exp} =
       return $ [return (union' arg1' arg2', e{_exps = [arg1', arg2']}) | (arg1', arg2') <- sortBy (comparing $ length . unionType . uncurry union') $ liftM2 (,) arg1s' arg2s']
   resolveTExp e@IFunExp {_op, _exps = [arg1, arg2]} = do
     uidIClaferMap' <- asks iUIDIClaferMap
-    runListT $ runErrorT $ do
+    runListT $ runExceptT $ do
       arg1' <- lift $ ListT $ resolveTPExp arg1
       arg2' <- lift $ ListT $ resolveTPExp arg2
       let t1 = typeOf arg1'
@@ -389,7 +390,7 @@ resolveTPExp' p@PExp{_inPos, _exp} =
 
   resolveTExp e@(IFunExp "ifthenelse" [arg1, arg2, arg3]) = do
     uidIClaferMap' <- asks iUIDIClaferMap
-    runListT $ runErrorT $ do
+    runListT $ runExceptT $ do
       arg1' <- lift $ ListT $ resolveTPExp arg1
       arg2' <- lift $ ListT $ resolveTPExp arg2
       arg3' <- lift $ ListT $ resolveTPExp arg3
@@ -410,7 +411,7 @@ resolveTPExp' p@PExp{_inPos, _exp} =
       return (t, e{_exps = [arg1', arg2', arg3']})
 
   resolveTExp e@IDeclPExp{_oDecls, _bpexp} =
-    runListT $ runErrorT $ do
+    runListT $ runExceptT $ do
       oDecls' <- mapM resolveTDecl _oDecls
       let extraDecls = [(decl, typeOf $ _body oDecl) | oDecl <- oDecls', decl <- _decls oDecl]
       localDecls extraDecls $ do
@@ -425,11 +426,11 @@ resolveTPExp' p@PExp{_inPos, _exp} =
   resolveTExp e = error $ "Unknown iexp: " ++ show e
 
 -- Adds "refs" at the end, effectively dereferencing Clafers when needed.
-addRef :: PExp -> ErrorT ClaferSErr (ListT TypeAnalysis) PExp
+addRef :: PExp -> ExceptT ClaferSErr (ListT TypeAnalysis) PExp
 addRef pexp =
   do
     localCurPath (typeOf pexp) $ do
-      deref <- (ErrorT $ ListT $ resolveTPExp' $ newPExp $ IClaferId "" "ref" False Nothing) `catchError` const (lift mzero)
+      deref <- (ExceptT $ ListT $ resolveTPExp' $ newPExp $ IClaferId "" "ref" False Nothing) `catchError` const (lift mzero)
       let result = (newPExp $ IFunExp "." [pexp, deref]) `withType` typeOf deref
       return result <++> addRef result
   where
@@ -441,14 +442,14 @@ typeOf pexp = fromMaybe (error "No type") $ _iType pexp
 withType :: PExp -> IType -> PExp
 withType p t = p{_iType = Just t}
 
-(<++>) :: (Error e, MonadPlus m) => ErrorT e m a -> ErrorT e m a -> ErrorT e m a
-(ErrorT a) <++> (ErrorT b) = ErrorT $ a `mplus` b
+(<++>) :: MonadPlus m => ExceptT e m a -> ExceptT e m a -> ExceptT e m a
+(ExceptT a) <++> (ExceptT b) = ExceptT $ a `mplus` b
 
-liftError :: (MonadError e m, Error e) => ErrorT e m a -> ErrorT e m a
+liftError :: MonadError e m => ExceptT e m a -> ExceptT e m a
 liftError e =
   liftCatch catchError e throwError
   where
-  liftCatch catchError' m h = ErrorT $ runErrorT m `catchError'` (runErrorT . h)
+  liftCatch catchError' m h = ExceptT $ runExceptT m `catchError'` (runExceptT . h)
 
 {-
  -

@@ -188,8 +188,12 @@ genPythonModule (imodule@IModule{_mDecls}, genv') scopes =
         | [arg] <- args', PExp{_exp = IFunExp{_exps = [a, PExp{_exp = IClaferId{_sident = "ref"}}]}} <- rewrite arg =
             "sum(" ++ genConstraintPExp a ++ ")"
         | otherwise = error "Python: Unexpected sum argument."
+    genConstraintExp (IFunExp "product" args')
+        | [arg] <- args', PExp{_exp = IFunExp{_exps = [a, PExp{_exp = IClaferId{_sident = "ref"}}]}} <- rewrite arg =
+            "product(" ++ genConstraintPExp a ++ ")"
+        | otherwise = error "Python: Unexpected product argument."
     genConstraintExp (IFunExp "+" args') =
-	(if _iType (head args') == Just TString then "concat" else "add") ++
+        (if _iType (head args') == Just TString then "concat" else "add") ++
             "(" ++ intercalate ", " (map genConstraintPExp args') ++ ")"
     genConstraintExp (IFunExp op' args') =
         mapFunc op' ++ "(" ++ intercalate ", " (map genConstraintPExp args') ++ ")"
@@ -236,8 +240,8 @@ genPythonModule (imodule@IModule{_mDecls}, genv') scopes =
 {-    sidentOf u = ident $ claferWithUid u
     scopeOf "integer" = undefined
     scopeOf "int" = undefined
-    scopeOf i = fromMaybe 1 $ lookup i scopes -}
-    bitwidth = fromMaybe 4 $ lookup "int" scopes :: Integer
+    scopeOf i = fromMaybe 1 $ lookup i scopes
+    bitwidth = fromMaybe 4 $ lookup "int" scopes :: Integer  -}
 
 -- isQuant PExp{_exp = IDeclPExp{}} = True
 -- isQuant _ = False

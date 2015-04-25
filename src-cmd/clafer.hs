@@ -29,7 +29,6 @@ import System.Timeout
 import System.Process (system)
 
 import Language.Clafer
-import Language.Clafer.ClaferArgs
 
 main :: IO ()
 main = do
