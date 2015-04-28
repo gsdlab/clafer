@@ -23,10 +23,10 @@
 -- | Generates Alloy4.1 or 4.2 code for a Clafer model
 module Language.Clafer.Generator.AlloyLtl (genAlloyLtlModule) where
 
-import Control.Applicative ((<$>))
+import Control.Applicative
 import Control.Lens hiding (elements, mapping, op)
 import Control.Monad.State
-import Data.List
+import Data.List hiding (and)
 import Data.Maybe
 
 import Language.Clafer.Common
@@ -34,7 +34,7 @@ import Language.Clafer.ClaferArgs
 import Language.Clafer.Front.AbsClafer
 import Language.Clafer.Generator.Concat
 import Language.Clafer.Intermediate.Intclafer hiding (exp)
---import Debug.Trace
+import Prelude
 
 data GenCtx = GenCtx {
     ctxClafer :: IClafer,

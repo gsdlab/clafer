@@ -25,13 +25,13 @@ into Intermediate representation (IR) from "Language.Clafer.Intermediate.Intclaf
 -}
 module Language.Clafer.Intermediate.Desugarer where
 
-import Prelude hiding ((||))
 import Data.List (find)
 import Data.Maybe (fromMaybe)
 
 import Language.Clafer.Common
 import Language.Clafer.Front.AbsClafer
 import Language.Clafer.Intermediate.Intclafer
+import Prelude hiding ((||))
 
 -- | Transform the AST into the intermediate representation (IR)
 desugarModule :: Maybe String -> Module -> IModule

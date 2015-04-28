@@ -123,6 +123,7 @@ import           Language.Clafer.Front.LexClafer
 import           Language.Clafer.Front.ParClafer
 import           Language.Clafer.Front.PrintClafer
 import           Language.Clafer.Generator.Alloy
+import           Language.Clafer.Generator.AlloyLtl
 import           Language.Clafer.Generator.Choco
 import           Language.Clafer.Generator.Concat
 import           Language.Clafer.Generator.Graph
@@ -136,7 +137,6 @@ import           Language.Clafer.Intermediate.Intclafer
 import           Language.Clafer.Intermediate.Resolver
 import           Language.Clafer.Intermediate.ScopeAnalysis
 import           Language.Clafer.Intermediate.StringAnalyzer
-import           Language.Clafer.Intermediate.Tracing
 import           Language.Clafer.Intermediate.Transformer
 import           Language.Clafer.JSONMetaData
 import           Language.Clafer.Optimizer.Optimizer
