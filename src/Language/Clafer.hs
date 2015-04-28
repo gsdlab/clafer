@@ -1,4 +1,5 @@
-{-# LANGUAGE DeriveDataTypeable, NamedFieldPuns #-}
+{-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE NamedFieldPuns     #-}
 {-
  Copyright (C) 2012-2014 Kacper Bak, Jimmy Liang, Michal Antkiewicz <http://gsd.uwaterloo.ca>
 
@@ -31,7 +32,8 @@ Normal usage:
 >       addModuleFragment a
 >       addModuleFragment b
 >       parse
->       compile
+>       iModule <- desugar ""
+>       compile iModule
 >       generate
 
 Example of compiling a model consisting of one fragment:
@@ -42,7 +44,8 @@ Example of compiling a model consisting of one fragment:
 >     do
 >       addModuleFragment model
 >       parse
->       compile
+>       iModule <- desugar "http://mydomain.org/mymodel.cfr"
+>       compile iModule
 >       generate
 
 > compileTwoFragments :: ClaferArgs -> InputModel -> InputModel -> Either ClaferErr [String]
@@ -52,7 +55,8 @@ Example of compiling a model consisting of one fragment:
 >      addModuleFragment frag1
 >      addModuleFragment frag2
 >      parse
->      compile
+>      iModule <- desugar ""
+>      compile iModule
 >      generate
 
 Use "throwErr" to halt execution:
@@ -62,82 +66,82 @@ Use "throwErr" to halt execution:
 
 Use "catchErrs" to catch the errors.
 -}
-module Language.Clafer (runCompiler,
-                        addModuleFragment,
-                        compile,
-                        parse,
-                        desugar,
-                        generate,
-                        generateHtml,
-                        runClaferT,
-                        runClafer,
-                        ClaferErr,
-                        getEnv,
-                        putEnv,
-                        CompilerResult(..),
-                        claferIRXSD,
-                        InputModel,
-                        Token,
-                        Module,
-                        GEnv,
-                        IModule,
-                        voidf,
-                        ClaferEnv(..),
-                        getIr,
-                        getAst,
-                        makeEnv,
-                        Pos(..),
-                        IrTrace(..),
-                        module Language.Clafer.ClaferArgs,
-                        module Language.Clafer.Front.ErrM)
-where
+module Language.Clafer
+  ( runCompiler
+  , addModuleFragment
+  , compile
+  , parse
+  , desugar
+  , generate
+  , generateHtml
+  , runClaferT
+  , runClafer
+  , ClaferErr
+  , getEnv
+  , putEnv
+  , CompilerResult(..)
+  , claferIRXSD
+  , InputModel
+  , Token
+  , Module
+  , GEnv
+  , IModule
+  , voidf
+  , ClaferEnv(..)
+  , getIr
+  , getAst
+  , makeEnv
+  , Pos(..)
+  , IrTrace(..)
+  , module Language.Clafer.ClaferArgs
+  , module Language.Clafer.Front.ErrM
+  ) where
 
-import Data.Aeson
-import Data.Data.Lens
-import Data.Either
-import Data.List
-import Data.Maybe
+import           Control.Lens.Plated
+import           Control.Monad
+import           Control.Monad.State
+import           Data.Aeson
+import           Data.Data.Lens
+import           Data.Either
+import           Data.List
 import qualified Data.Map as Map
-import Data.String.Conversions
-import Control.Monad
-import Control.Monad.State
-import Control.Lens.Plated
-import System.Exit
-import System.FilePath (dropExtension,takeBaseName)
-import System.Process (readProcessWithExitCode, system)
+import           Data.Maybe
+import           Data.String.Conversions
+import           System.Exit
+import           System.FilePath (dropExtension, takeBaseName)
+import           System.Process (readProcessWithExitCode, system)
 
-import Language.ClaferT
-import Language.Clafer.Common
-import Language.Clafer.Front.ErrM
-import Language.Clafer.ClaferArgs hiding (Clafer)
-import qualified Language.Clafer.ClaferArgs as Mode (ClaferMode (Clafer))
-import Language.Clafer.Comments
+import           Language.Clafer.ClaferArgs hiding (Clafer)
+import qualified Language.Clafer.ClaferArgs  as Mode (ClaferMode (Clafer))
+import           Language.Clafer.Comments
+import           Language.Clafer.Common
 import qualified Language.Clafer.Css as Css
-import Language.Clafer.Front.LexClafer
-import Language.Clafer.Front.ParClafer
-import Language.Clafer.Front.PrintClafer
-import Language.Clafer.Front.AbsClafer
-import Language.Clafer.Front.LayoutResolver
-import Language.Clafer.Intermediate.Tracing
-import Language.Clafer.Intermediate.Intclafer
-import Language.Clafer.Intermediate.Desugarer
-import Language.Clafer.Intermediate.Resolver
-import Language.Clafer.Intermediate.StringAnalyzer
-import Language.Clafer.Intermediate.Transformer
-import Language.Clafer.Intermediate.ScopeAnalysis
-import Language.Clafer.Optimizer.Optimizer
-import Language.Clafer.Generator.Alloy
-import Language.Clafer.Generator.AlloyLtl
-import Language.Clafer.Generator.Choco
-import Language.Clafer.Generator.Concat
-import Language.Clafer.Generator.Xml
-import Language.Clafer.Generator.Python
-import Language.Clafer.Generator.Schema
-import Language.Clafer.Generator.Stats
-import Language.Clafer.Generator.Html
-import Language.Clafer.Generator.Graph
-import Language.Clafer.JSONMetaData
-import Language.Clafer.QNameUID
+import           Language.Clafer.Front.AbsClafer
+import           Language.Clafer.Front.ErrM
+import           Language.Clafer.Front.LayoutResolver
+import           Language.Clafer.Front.LexClafer
+import           Language.Clafer.Front.ParClafer
+import           Language.Clafer.Front.PrintClafer
+import           Language.Clafer.Generator.Alloy
+import           Language.Clafer.Generator.Choco
+import           Language.Clafer.Generator.Concat
+import           Language.Clafer.Generator.Graph
+import           Language.Clafer.Generator.Html
+import           Language.Clafer.Generator.Python
+import           Language.Clafer.Generator.Schema
+import           Language.Clafer.Generator.Stats
+import           Language.Clafer.Generator.Xml
+import           Language.Clafer.Intermediate.Desugarer
+import           Language.Clafer.Intermediate.Intclafer
+import           Language.Clafer.Intermediate.Resolver
+import           Language.Clafer.Intermediate.ScopeAnalysis
+import           Language.Clafer.Intermediate.StringAnalyzer
+import           Language.Clafer.Intermediate.Tracing
+import           Language.Clafer.Intermediate.Transformer
+import           Language.Clafer.JSONMetaData
+import           Language.Clafer.Optimizer.Optimizer
+import           Language.Clafer.QNameUID
+import           Language.ClaferT
 
 type InputModel = String
 
@@ -728,24 +732,20 @@ generate =
         ))
 
 -- | Result of generation for a given mode
-data CompilerResult = CompilerResult {
-                            -- | output file extension
-                            extension :: String,
-                            -- | output text
-                            outputCode :: String,
-                            statistics :: String,
-                            -- | the final environment of the compiler
-                            claferEnv :: ClaferEnv,
-                            -- | Maps source constraint spans in Alloy to the spans in the IR
-                            mappingToAlloy :: [(Span, IrTrace)],
-                            -- | Map back from Ints used to represent Strings
-                            stringMap :: (Map.Map Int String),
-                            -- | scopes generated by scope inference
-                            scopesList :: [(UID, Integer)]
-                            }
-                      | NoCompilerResult {
-                            reason :: String
-                      } deriving Show
+data CompilerResult
+  = CompilerResult
+    { extension      :: String                -- ^ output file extension
+    , outputCode     :: String                -- ^ output text
+    , statistics     :: String                -- ^ the final environment of the compiler
+    , claferEnv      :: ClaferEnv             -- ^ Maps source constraint spans in Alloy to the spans in the IR
+    , mappingToAlloy :: [(Span, IrTrace)]     -- ^ Map back from Ints used to represent Strings
+    , stringMap      :: (Map.Map Int String)  -- ^ scopes generated by scope inference
+    , scopesList     :: [(UID, Integer)]
+    }
+  | NoCompilerResult
+    { reason :: String
+    }
+  deriving Show
 
 liftError :: (Monad m, Language.ClaferT.Throwable t) => Either t a -> ClaferT m a
 liftError = either throwErr return

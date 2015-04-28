@@ -2,7 +2,7 @@ Automobile
     xor Engine
         Gasoline
         Electric
-            [this => Radio]
+            [Radio]
     or Radio ?
         CDPlayer
         Tape

@@ -1,25 +1,33 @@
 //# OPTIONS --self-contained --add-graph --add-comments
 
-//# STATS 
+//# STATS
 
-/* 
-so, A has <br>
-<code>B</code> and <br>
-optionally <b>C</b>
+/*
+6| so, A has
+7| <code>B</code> and
+8| optionally <b>C</b>
 */
-
-A
+//# FRAGMENT
+// 11| pre-A inline comment
+A  // 12| A is A!
    B
-   C ?    // C is important!
-   
+   C ?    // 14| C is important!
+// 15| after-A inline comment
 //# FRAGMENT
 
-D -> A
+D -> A  // 18| D points to some A
+
+//# FRAGMENT
+
+/*
+23| E is a nice concept!
+*/
+E ?    // 25| what about E?
 
 //# SUMMARY
 
-// and now the graph
+// 29| and now the graph
 
 //# GRAPH
 
-// that's all folks!
+// 33| that's all folks!

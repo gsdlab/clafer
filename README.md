@@ -3,40 +3,40 @@ Clafer
 
 v0.4.0
 
-[Clafer](http://clafer.org) is a general-purpose lightweight structural modeling language developed by 
-[GSD Lab](http://gsd.uwaterloo.ca/), [University of Waterloo](http://uwaterloo.ca), and 
+[Clafer](http://clafer.org) is a general-purpose lightweight structural modeling language developed by
+[GSD Lab](http://gsd.uwaterloo.ca/), [University of Waterloo](http://uwaterloo.ca), and
 [MODELS](http://www.itu.dk/research/models/) group at [IT University of Copenhagen](http://www.itu.dk/).
 Clafer can be used for modeling of static hierarchical structures and for modeling the change of the structures over time (behavior). Clafer allows for naturally expressing variability in both the structure and behavior.
-The main goal of Clafer is to make modeling more accessible to a wider range of users and domains. 
+The main goal of Clafer is to make modeling more accessible to a wider range of users and domains.
 
 There are many possible applications of Clafer; however, three are prominent:
 
-1. *Product-Line Modeling* - aims at representing and managing commonality and variability of assets in product lines and creating and verifying product configurations. 
+1. *Product-Line Modeling* - aims at representing and managing commonality and variability of assets in product lines and creating and verifying product configurations.
 Clafer naturally supports multi-staged configuration.
 By applying modeling patterns, Clafer can be used for feature modeling, architecture modeling (e.g., by applying EAST-ADL), and behavior modeling (e.g., hierarchical state transition systems). All these aspects naturally include variability.
 
-2. *Multi-Objective Product Optimization* - aims at finding a set of products in a given product line that are optimal with respect to a set of objectives. 
+2. *Multi-Objective Product Optimization* - aims at finding a set of products in a given product line that are optimal with respect to a set of objectives.
 Clafer multi-objective optimizer generates a Pareto front of optimal product configurations.
 
-3. *Domain Modeling* - aims at improving the understanding of the problem domain in the early stages of software development and determining the requirements with fewer defects. 
+3. *Domain Modeling* - aims at improving the understanding of the problem domain in the early stages of software development and determining the requirements with fewer defects.
 This is also known as *Concept Modeling* or *Ontology Modeling*. As of version 0.4.0, Clafer also allows for modeling how the concepts evolve over time.
 
 Clafer Compiler
 ===============
 
-Clafer compiler provides a reference language implementation. 
+Clafer compiler provides a reference language implementation.
 It translates models in Clafer to other formats (e.g., Alloy, XML, Python, JS, HTML, DOT) to allow for reasoning and processing with existing tools (Alloy Analyzer, Choco3, and Z3 SMT solver).
 
-Currently, the compiler is used by 
+Currently, the compiler is used by
 
 * Backends
-  * Alloy-based Instance Generator ([ClaferIG](https://github.com/gsdlab/claferIG)), 
+  * Alloy-based Instance Generator ([ClaferIG](https://github.com/gsdlab/claferIG)),
   * Choco3-based Instance Generator and Multi-Objective Optimizer ([chocosolver](https://github.com/gsdlab/chocosolver), [ClaferChocoIG](https://github.com/gsdlab/ClaferChocoIG)), and
-  * Z3-based Instance Generator and Multi-Objective Optimizer ([ClaferSMT](https://github.com/gsdlab/claferSMT)), 
+  * Z3-based Instance Generator and Multi-Objective Optimizer ([ClaferSMT](https://github.com/gsdlab/claferSMT)),
 * Web Frontends
   * Clafer Integrated Development Environment ([ClaferIDE](https://github.com/gsdlab/claferIDE)),
-  * Clafer Configurator ([ClaferConfigurator](https://github.com/gsdlab/ClaferConfigurator)), 
-  * Multi-Objective [Visualizer and Explorer](https://github.com/gsdlab/ClaferMooVisualizer), and 
+  * Clafer Configurator ([ClaferConfigurator](https://github.com/gsdlab/ClaferConfigurator)),
+  * Multi-Objective [Visualizer and Explorer](https://github.com/gsdlab/ClaferMooVisualizer), and
   * Clafer Wiki ([ClaferWiki](https://github.com/gsdlab/claferwiki)).
 
 Contributors
@@ -57,7 +57,7 @@ Clafer can be installed from a binary distribution (preferred), from Hackage, an
 
 ### Dependencies for running
 
-Regardless of the installation method, the following are 
+Regardless of the installation method, the following are
 
 Optional:
 
@@ -70,9 +70,9 @@ Optional:
 
 ### Installation from binaries
 
-Binary distributions of the release 0.4.0 of Clafer Tools for Windows, Mac, and Linux, 
-can be downloaded from 
-[Clafer Tools - Binary Distributions](http://http://gsd.uwaterloo.ca/clafer-tools-binary-distributions). 
+Binary distributions of the release 0.4.0 of Clafer Tools for Windows, Mac, and Linux,
+can be downloaded from
+[Clafer Tools - Binary Distributions](http://http://gsd.uwaterloo.ca/clafer-tools-binary-distributions).
 
 1. download the binaries and unpack `<target directory>` of your choice
 2. add the `<target directory>` to your system path so that the executables can be found
@@ -81,7 +81,7 @@ can be downloaded from
 
 Dependencies
 
-* [The Haskell Platform](http://hackage.haskell.org/platform/) v2014.2.0.0 
+* [The Haskell Platform](http://hackage.haskell.org/platform/) v2014.2.0.0
   * Alternatively GHC >= 7.8.3 and Cabal >= 1.18
 
 Clafer is now available on [Hackage](http://hackage.haskell.org/package/clafer-0.4.0/) and it can be installed using
@@ -90,30 +90,30 @@ Clafer is now available on [Hackage](http://hackage.haskell.org/package/clafer-0
 2. `cabal install clafer`
 3. `cd <cabal's lib or share folder>`  (`C:\Users\<user>\AppData\Roaming\cabal\x86_64-windows-ghc-7.8.3\clafer-0.4.0` on Windows or `.cabal/share/x86_64-linux-ghc-7.8.3/clafer-0.4.0/` on Linux)
 4. to automatically download Alloy jars
-  * execute `make` in `tools` 
+  * execute `make` in `tools`
 
 ### Installation from the source code
 
 Dependencies
 
-* [The Haskell Platform](http://hackage.haskell.org/platform/) v2014.2.0.0 
+* [The Haskell Platform](http://hackage.haskell.org/platform/) v2014.2.0.0
   * Alternatively GHC >= 7.8.3 and Cabal >= 1.18
 * [Alloy4.1 and/or Alloy4.2](http://alloy.mit.edu/alloy/download.html)
   * downloaded automatically during the build
 * [Git](http://git-scm.com/)
 
-On Windows 
+On Windows
 
-* [MSYS2](http://msys2.sourceforge.net/) 
+* [MSYS2](http://msys2.sourceforge.net/)
   * download MSYS2 installer
   * in MSYS2 console, execute
-     * `pacman -Syu` 
+     * `pacman -Syu`
      * `pacman -S make wget unzip diffutils`
 
 #### Important: Branches must correspond
 
-All related projects are following the *simultaneous release model*. 
-The branch `master` contains releases, whereas the branch `develop` contains code under development. 
+All related projects are following the *simultaneous release model*.
+The branch `master` contains releases, whereas the branch `develop` contains code under development.
 When building the tools, the branches should match.
 Releases from branches 'master` are guaranteed to work well together.
 Development versions from branches `develop` should work well together but this might not always be the case.
@@ -122,7 +122,7 @@ Development versions from branches `develop` should work well together but this 
 
 1. install the dependencies
 2. open the command line terminal. On Windows, open MSYS2 terminal.
-3. in some `<source directory>` of your choice, execute 
+3. in some `<source directory>` of your choice, execute
   * `git clone git://github.com/gsdlab/clafer.git`
 4. in `<source directory>/clafer`, execute
   * `cabal update`
@@ -131,10 +131,10 @@ Development versions from branches `develop` should work well together but this 
 
 ### Installation
 
-1. Execute 
-  * `make install to=<target directory>` 
+1. Execute
+  * `make install to=<target directory>`
 
-#### Note: 
+#### Note:
 > On Windows, use `/` with the `make` command instead of `\`.
 
 Integration with Sublime Text 2/3
@@ -245,7 +245,7 @@ Common flags:
 
 The dependencies among the command line arguments are described on the [model wiki](http://t3-necsis.cs.uwaterloo.ca:8091/ClaferTools/CommandLineArguments).
 
-Multiple modes can be used at the same time. For example, 
+Multiple modes can be used at the same time. For example,
 
 `clafer model.cfr -m alloy -m xml -m html -m graph --self-contained --show-references --no-stats`
 
@@ -277,7 +277,7 @@ The following directives are markers of locations in the input files for differe
 
 * `//# FRAGMENT` - marks the beginning of the new [module fragment](http://gsd.uwaterloo.ca:8888/question/463/multi-fragment-modules).
 * `//# GRAPH` - marks the insertion point for a graph rendering. The graph is only produced in HTML mode with the argument `--add-graph`.
-* `//# STATS` - marks the insertion point for module statistics. The statistics can be omitted using the argument `--no-stats`. 
+* `//# STATS` - marks the insertion point for module statistics. The statistics can be omitted using the argument `--no-stats`.
 * `//# SUMMARY` - shorthand for `//# GRAPH` and `//# STATS`
 * `//# QUALITY_ATTRIBUTE` - is used by ClaferMooVisualizer and ClaferConfigurator to distinguish quality attributes, which should be filtered out, from other clafers.
 

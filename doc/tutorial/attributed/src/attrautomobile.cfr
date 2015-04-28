@@ -5,8 +5,8 @@ Automobile
     or Radio ?
         CDPlayer
         Tape
-    MaxSpeed : integer
-    Model : string
+    MaxSpeed -> integer
+    Model -> string
         [this = "Supercar"]
 
 [Electric => Radio]

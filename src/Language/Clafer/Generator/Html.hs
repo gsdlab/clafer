@@ -50,7 +50,6 @@ import Data.Maybe
 import Data.Char (isSpace)
 import Prelude hiding (exp)
 
-
 printPreComment :: Span -> [(Span, String)] -> ([(Span, String)], String)
 printPreComment _ [] = ([], [])
 printPreComment (Span (Pos r _) _) (c@((Span (Pos r' _) _), _):cs)
@@ -79,7 +78,14 @@ printComment (Span (Pos row _) _) (c@(Span (Pos row' col') _, comment):cs)
   | otherwise = (c:cs, "")
   where trim' = let f = reverse. dropWhile isSpace in f . f
 printStandaloneComment :: String -> String
-printStandaloneComment comment = "<div class=\"standalonecomment\">" ++ comment ++ "</div>"
+printStandaloneComment comment = "<div class=\"standalonecomment\">" ++ replaceNLwithBR comment ++ "</div>"
+  where
+    replaceNLwithBR :: String   -> String
+    replaceNLwithBR    ""        = ""
+    replaceNLwithBR    ('\n':cs) = "<br>\n" ++ replaceNLwithBR cs
+    replaceNLwithBR    (c:cs)    = c : replaceNLwithBR cs
+
+
 printInlineComment :: String -> String
 printInlineComment comment = "<span class=\"inlinecomment\">" ++ comment ++ "</span>"
 
