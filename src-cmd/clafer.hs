@@ -40,11 +40,9 @@ main = do
   return ()
 
 start :: ClaferArgs -> InputModel-> IO ()
-start args' model = if schema args'
-  then putStrLn claferIRXSD
-  else if ecore2clafer args'
-    then runEcore2Clafer (file args') $ (tooldir args')
-    else runCompiler Nothing args' model
+start args' model = if ecore2clafer args'
+  then runEcore2Clafer (file args') $ (tooldir args')
+  else runCompiler Nothing args' model
 
 runEcore2Clafer :: FilePath -> FilePath -> IO ()
 runEcore2Clafer    ecoreFile toolPath

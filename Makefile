@@ -19,7 +19,7 @@ init:
 	# wget http://www.stackage.org/snapshot/lts-1.4/cabal.config
 	# mv cabal.config ../.clafertools-cabal-sandbox
 	# the constraint is there to prevent installing utf8-string-1 which conflicts with gitit, which requires utf8-string <= 0.3.8.
-	cabal install --only-dependencies $(MAC_USR_LIB) --enable-tests --constraint="utf8-string==0.3.8"
+	cabal install --only-dependencies $(MAC_USR_LIB) --enable-tests
 
 build:
 	$(MAKE) -C $(TOOL_DIR)
@@ -33,7 +33,6 @@ install:
 	cp -f LICENSE $(to)/
 	cp -f CHANGES.md $(to)/clafer-CHANGES.md
 	cp -f tools/alloy4.2.jar $(to)/tools
-	cp -f tools/XsdCheck.class $(to)/tools
 	cp -f tools/ecore2clafer.jar $(to)/tools
 	cabal install --bindir=$(to) $(GPLK_LIBS_INCLUDES) $(MAC_USR_LIB) --ghc-option="-O2"
 
@@ -47,10 +46,6 @@ cleanEnv:
 # regenerate grammar, call after clafer.cf changed
 grammar:
 	$(MAKE) -C $(SRC_DIR) grammar
-
-# build Schema.hs from ClaferIG.xsd, call after .xsd changed
-Schema.hs:
-	$(MAKE) -C $(SRC_DIR) Schema.hs
 
 # build Css.hs from clafer.css, call after .css changed
 Css.hs:
@@ -72,8 +67,8 @@ test:
 	cabal test
 	$(MAKE) -C $(TEST_DIR) test
 
-generateAlloyJSPythonXMLXHTMLDot:
-	$(MAKE) -C $(TEST_DIR) generateAlloyJSPythonXMLXHTMLDot
+generateAlloyJSPythonHTMLDot:
+	$(MAKE) -C $(TEST_DIR) generateAlloyJSPythonHTMLDot
 
 diffRegressions:
 	$(MAKE) -C $(TEST_DIR) diffRegressions

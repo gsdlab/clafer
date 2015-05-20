@@ -24,7 +24,7 @@ This is also known as *Concept Modeling* or *Ontology Modeling*.
 
 
 Clafer compiler provides a reference language implementation.
-It translates models in Clafer to other formats (e.g., Alloy, XML, Python, JS, HTML, DOT) to allow for reasoning and processing with existing tools (Alloy Analyzer, Choco3, and Z3 SMT solver).
+It translates models in Clafer to other formats (e.g., Alloy, JSON, Python, JS, HTML, DOT) to allow for reasoning and processing with existing tools (Alloy Analyzer, Choco3, and Z3 SMT solver).
 
 Currently, the compiler is used by
 
@@ -59,7 +59,7 @@ Regardless of the installation method, the following are
 Optional:
 
 * [Java Platform (JDK)](http://www.oracle.com/technetwork/java/javase/downloads/index.html) v8+, 32bit
-  * needed only for running XML output validation
+  * needed only for running Alloy validation
 * [Alloy4.1 and/or Alloy4.2](http://alloy.mit.edu/alloy/download.html)
   * needed only for Alloy output validation
 * [GraphViz](http://graphviz.org/)
@@ -157,11 +157,9 @@ clafer [OPTIONS] [FILE]
 Common flags:
   -m --mode=CLAFERMODE                    Generated output type. Available
                                           CLAFERMODEs are: 'alloy' (Alloy 4.1);
-                                          'alloy42' (default, Alloy 4.2); 'xml'
-                                          (intermediate representation of
-                                          Clafer model); 'json' (intermediate
-                                          representation of Clafer model);
-                                          'clafer' (analyzed and desugared
+                                          'alloy42' (default, Alloy 4.2); 'json'
+                                          (intermediate representation of Clafer
+                                          model); 'clafer' (analyzed and desugared
                                           clafer model); 'html' (original model
                                           in HTML); 'graph' (graphical
                                           representation written in DOT
@@ -185,10 +183,7 @@ Common flags:
   -k --keep-unused                        Keep uninstantated abstract clafers
                                           ('alloy' and 'alloy42' modes only).
   -s --no-stats                           Don't print statistics.
-     --schema                             Show Clafer IR (intermediate
-                                          representation) XML schema.
   -v --validate                           Validate outputs of all modes. Uses
-                                          'tools/XsdCheck.class' for XML,
                                           'tools/alloy4.jar' and
                                           'tools/alloy4.2.jar' for Alloy
                                           models, and Clafer translator for
@@ -241,7 +236,7 @@ The dependencies among the command line arguments are described on the [model wi
 
 Multiple modes can be used at the same time. For example,
 
-`clafer model.cfr -m alloy -m xml -m html -m graph --self-contained --show-references --no-stats`
+`clafer model.cfr -m alloy -m json -m html -m graph --self-contained --show-references --no-stats`
 
 The mode `-m alloy42` is only the default mode if no other modes are given. When other modes are given, the mode `-m alloy42` must be added explicitly if needed.
 

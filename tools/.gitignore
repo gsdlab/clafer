@@ -1,4 +1,3 @@
 *.jar
 !ecore2clafer.jar
 *.class
-!XsdCheck.class

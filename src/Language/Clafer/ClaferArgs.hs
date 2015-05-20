@@ -38,7 +38,7 @@ import Data.Version (showVersion)
 import GetURL
 
 -- | Type of output to be generated at the end of compilation
-data ClaferMode = Alloy42 | Alloy | Xml | JSON | Clafer | Html | Graph | CVLGraph | Python | Choco
+data ClaferMode = Alloy42 | Alloy | JSON | Clafer | Html | Graph | CVLGraph | Python | Choco
   deriving (Eq, Show, Ord, Data, Typeable)
 instance Default ClaferMode where
   def = Alloy42
@@ -60,7 +60,6 @@ data ClaferArgs = ClaferArgs {
       skip_resolver :: Bool,
       keep_unused :: Bool,
       no_stats :: Bool,
-      schema :: Bool,
       validate :: Bool,
       noalloyruncommand :: Bool,
       tooldir :: FilePath,
@@ -79,7 +78,7 @@ data ClaferArgs = ClaferArgs {
 
 clafer :: ClaferArgs
 clafer = ClaferArgs {
-  mode                = [] &= help "Generated output type. Available CLAFERMODEs are: 'alloy' (Alloy 4.1); 'alloy42' (default, Alloy 4.2); 'xml' (intermediate representation of Clafer model); 'json' (intermediate representation of Clafer model); 'clafer' (analyzed and desugared clafer model); 'html' (original model in HTML); 'graph' (graphical representation written in DOT language); 'cvlgraph' (cvl notation representation written in DOT language); 'python' (generates IR in python); 'choco' (Choco constraint programming solver). Multiple modes can be specified at the same time, e.g., '-m alloy -m html'." &= name "m",
+  mode                = [] &= help "Generated output type. Available CLAFERMODEs are: 'alloy' (Alloy 4.1); 'alloy42' (default, Alloy 4.2); 'json' (intermediate representation of Clafer model); 'clafer' (analyzed and desugared clafer model); 'html' (original model in HTML); 'graph' (graphical representation written in DOT language); 'cvlgraph' (cvl notation representation written in DOT language); 'python' (generates IR in python); 'choco' (Choco constraint programming solver). Multiple modes can be specified at the same time, e.g., '-m alloy -m html'." &= name "m",
   console_output      = def &= help "Output code on console." &= name "o",
   flatten_inheritance = def &= help "Flatten inheritance ('alloy' and 'alloy42' modes only)." &= name "i",
   timeout_analysis    = def &= help "Timeout for analysis.",
@@ -89,8 +88,7 @@ clafer = ClaferArgs {
   skip_resolver       = def &= help "Skip name resolution." &= name "f",
   keep_unused         = def &= help "Keep uninstantated abstract clafers ('alloy' and 'alloy42' modes only)." &= name "k",
   no_stats            = def &= help "Don't print statistics." &= name "s",
-  schema              = def &= help "Show Clafer IR (intermediate representation) XML schema.",
-  validate            = def &= help "Validate outputs of all modes. Uses 'tools/XsdCheck.class' for XML,  'tools/alloy4.jar' and 'tools/alloy4.2.jar' for Alloy models, and Clafer translator for desugared Clafer models. Use '--tooldir' to override the default location of these tools." &= name "v",
+  validate            = def &= help "Validate outputs of all modes. Uses  'tools/alloy4.jar' and 'tools/alloy4.2.jar' for Alloy models, and Clafer translator for desugared Clafer models. Use '--tooldir' to override the default location of these tools." &= name "v",
   noalloyruncommand   = def &= help "For usage with partial instances: Don't generate the alloy 'run show for ... ' command, and rename @.ref with unique names  ('alloy' and 'alloy42' modes only)." &= name "nr",
   tooldir             = def &= typDir &= help "Specify the tools directory ('validate' only). Default: 'tools/'.",
   alloy_mapping       = def &= help "Generate mapping to Alloy source code ('alloy' and 'alloy42' modes only)." &= name "a",
@@ -111,7 +109,7 @@ mergeArgs a1 a2  = ClaferArgs (mode a1) (coMergeArg)
   (mergeArg flatten_inheritance) (mergeArg timeout_analysis)
   (mergeArg no_layout) (mergeArg new_layout)
   (mergeArg check_duplicates) (mergeArg skip_resolver)
-  (mergeArg keep_unused) (mergeArg no_stats) (mergeArg schema)
+  (mergeArg keep_unused) (mergeArg no_stats) 
   (mergeArg validate) (mergeArg noalloyruncommand) (toolMergeArg)
   (mergeArg alloy_mapping) (mergeArg self_contained)
   (mergeArg add_graph) (mergeArg show_references)
@@ -164,4 +162,4 @@ argsWithOPTIONS    args'         model   =
                process (cmdArgsMode clafer) $ Language.Clafer.SplitJoin.splitArgs options
 
 defaultClaferArgs :: ClaferArgs
-defaultClaferArgs = ClaferArgs [ def ] True False 0 False False False False False False False False False "tools/" False False False False False False Simple False False False ""
+defaultClaferArgs = ClaferArgs [ def ] True False 0 False False False False False False False False "tools/" False False False False False False Simple False False False ""

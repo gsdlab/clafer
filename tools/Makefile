@@ -17,6 +17,5 @@ all:
 		mv alloy4.2_2015-02-22.jar alloy4.2.jar; \
 	fi
 
-	javac  XsdCheck.java
 clean:
 	find . -type f -name '*.class' -print0 | xargs -0 rm -f

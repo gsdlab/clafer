@@ -80,7 +80,6 @@ module Language.Clafer
   , getEnv
   , putEnv
   , CompilerResult(..)
-  , claferIRXSD
   , InputModel
   , Token
   , Module
@@ -128,15 +127,12 @@ import           Language.Clafer.Generator.Concat
 import           Language.Clafer.Generator.Graph
 import           Language.Clafer.Generator.Html
 import           Language.Clafer.Generator.Python
-import           Language.Clafer.Generator.Schema
 import           Language.Clafer.Generator.Stats
-import           Language.Clafer.Generator.Xml
 import           Language.Clafer.Intermediate.Desugarer
 import           Language.Clafer.Intermediate.Intclafer
 import           Language.Clafer.Intermediate.Resolver
 import           Language.Clafer.Intermediate.ScopeAnalysis
 import           Language.Clafer.Intermediate.StringAnalyzer
-import           Language.Clafer.Intermediate.Tracing
 import           Language.Clafer.Intermediate.Transformer
 import           Language.Clafer.JSONMetaData
 import           Language.Clafer.Optimizer.Optimizer
@@ -285,9 +281,6 @@ runValidate args' fo = do
   let path = (tooldir args') ++ "/"
   liftIO $ putStrLn ("Validating '" ++ fo ++"'")
   let modes = mode args'
-  when (Xml `elem` modes && "xml" `isSuffixOf` fo) $ do
-      writeFile "ClaferIR.xsd" claferIRXSD
-      voidf $ system $ "java -classpath " ++ path ++ " XsdCheck ClaferIR.xsd " ++ fo
   when (Alloy `elem` modes && "als41" `isSuffixOf` fo) $ do
     voidf $ system $ validateAlloy path "4" ++ fo
   when (Alloy42 `elem` modes && "als" `isSuffixOf` fo) $ do
@@ -558,20 +551,6 @@ generate =
                      ]
           else []
         )
-        -- result for XML
-        ++ (if (Xml `elem` modes)
-          then [ (Xml,
-                  CompilerResult {
-                   extension = "xml",
-                   outputCode = genXmlModule iModule,
-                   statistics = stats,
-                   claferEnv  = env,
-                   mappingToAlloy = [],
-                   stringMap = Map.empty,
-                   scopesList = []
-                  }) ]
-          else []
-        )
         -- result for JSON
         ++ (if (JSON `elem` modes)
           then [ (JSON,
@@ -712,7 +691,3 @@ showStats au (Stats na nr nc nconst ngoals sgl) =
 showInterval :: (Integer, Integer) -> String
 showInterval (n, -1) = show n ++ "..*"
 showInterval (n, m) = show n ++ ".." ++ show m
-
--- | The XML Schema of the IR
-claferIRXSD :: String
-claferIRXSD = Language.Clafer.Generator.Schema.xsd
