@@ -1,7 +1,7 @@
-Clafer
-======
+# Clafer
 
-v0.3.10
+
+v0.4.0
 
 [Clafer](http://clafer.org) is a general-purpose lightweight structural modeling language developed by
 [GSD Lab](http://gsd.uwaterloo.ca/), [University of Waterloo](http://uwaterloo.ca), and
@@ -20,8 +20,8 @@ Clafer multi-objective optimizer generates a Pareto front of optimal product con
 3. *Domain Modeling* - aims at improving the understanding of the problem domain in the early stages of software development and determining the requirements with fewer defects.
 This is also known as *Concept Modeling* or *Ontology Modeling*.
 
-Clafer Compiler
-===============
+# Clafer Compiler
+
 
 Clafer compiler provides a reference language implementation.
 It translates models in Clafer to other formats (e.g., Alloy, XML, Python, JS, HTML, DOT) to allow for reasoning and processing with existing tools (Alloy Analyzer, Choco3, and Z3 SMT solver).
@@ -38,8 +38,7 @@ Currently, the compiler is used by
   * Multi-Objective [Visualizer and Explorer](https://github.com/gsdlab/ClaferMooVisualizer), and
   * Clafer Wiki ([ClaferWiki](https://github.com/gsdlab/claferwiki)).
 
-Contributors
-------------
+## Contributors
 
 * [Kacper Bak](http://gsd.uwaterloo.ca/kbak), Original developer.
 * [Jimmy Liang](http://gsd.uwaterloo.ca/jliang), Main developer.
@@ -49,8 +48,7 @@ Contributors
 * Paulius Juodisius, [customized BNFC generator](https://github.com/juodaspaulius/bnfc) and layout resolver.
 * [Rafael Olaechea](http://gsd.uwaterloo.ca/rolaechea), Multi-Objective Optimization extensions.
 
-Getting the Clafer Compiler
----------------------------
+## Getting the Clafer Compiler
 
 Clafer can be installed from a binary distribution (preferred), from Hackage, and from the source code.
 
@@ -69,7 +67,7 @@ Optional:
 
 ### Installation from binaries
 
-Binary distributions of the release 0.3.10 of Clafer Tools for Windows, Mac, and Linux,
+Binary distributions of the release 0.4.0 of Clafer Tools for Windows, Mac, and Linux,
 can be downloaded from
 [Clafer Tools - Binary Distributions](http://gsd.uwaterloo.ca/clafer-tools-binary-distributions).
 
@@ -83,11 +81,11 @@ Dependencies
 * [The Haskell Platform](http://hackage.haskell.org/platform/) v2014.2.0.0
   * Alternatively GHC >= 7.8.3 and Cabal >= 1.18
 
-Clafer is now available on [Hackage](http://hackage.haskell.org/package/clafer-0.3.10/) and it can be installed using
+Clafer is now available on [Hackage](http://hackage.haskell.org/package/clafer-0.4.0/) and it can be installed using
 
 1. `cabal update`
 2. `cabal install clafer`
-3. `cd <cabal's lib or share folder>`  (`C:\Users\<user>\AppData\Roaming\cabal\x86_64-windows-ghc-7.8.3\clafer-0.3.10` on Windows or `.cabal/share/x86_64-linux-ghc-7.8.3/clafer-0.3.10/` on Linux)
+3. `cd <cabal's lib or share folder>`  (`C:\Users\<user>\AppData\Roaming\cabal\x86_64-windows-ghc-7.8.3\clafer-0.4.0` on Windows or `.cabal/share/x86_64-linux-ghc-7.8.3/clafer-0.4.0/` on Linux)
 4. to automatically download Alloy jars
   * execute `make` in `tools`
 
@@ -136,26 +134,23 @@ Development versions from branches `develop` should work well together but this 
 #### Note:
 > On Windows, use `/` with the `make` command instead of `\`.
 
-Integration with Sublime Text 2/3
----------------------------------
+## Integration with Sublime Text 2/3
 
 See [ClaferToolsST](https://github.com/gsdlab/ClaferToolsST)
 
-Integration with VIM
---------------------
+## Integration with VIM
 
 See [clafer-vim](https://github.com/wasowski/clafer-vim)
 
 Usage
 =====
 
-Clafer Compiler
----------------
+## Clafer Compiler
 
 (As printed by `clafer --help`)
 
 ```
-Clafer 0.3.10
+Clafer 0.4.0
 
 clafer [OPTIONS] [FILE]
 
@@ -280,7 +275,7 @@ The following directives are markers of locations in the input files for differe
 * `//# SUMMARY` - shorthand for `//# GRAPH` and `//# STATS`
 * `//# QUALITY_ATTRIBUTE` - is used by ClaferMooVisualizer and ClaferConfigurator to distinguish quality attributes, which should be filtered out, from other clafers.
 
-Need help?
-==========
+# Need help?
+
 * Visit [language's website](http://clafer.org).
 * Report issues to [issue tracker](https://github.com/gsdlab/clafer/issues)
