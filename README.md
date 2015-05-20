@@ -270,6 +270,61 @@ The following directives are markers of locations in the input files for differe
 * `//# SUMMARY` - shorthand for `//# GRAPH` and `//# STATS`
 * `//# QUALITY_ATTRIBUTE` - is used by ClaferMooVisualizer and ClaferConfigurator to distinguish quality attributes, which should be filtered out, from other clafers.
 
+
+He is some information about the development of the clafer compiler.
+
+## Branching
+
+We are following the simplified version of the [successful Git branching model](http://nvie.com/posts/a-successful-git-branching-model/).
+The branch `master` is for releases and hot fixes only.
+The branch `develop` is for minor development and for integration of features from feature branches.
+For any substantial work, branch off from `develop` and create a pull request back into `develop` after the work is completed.
+We do testing and code review before merging into develop.
+If the `develop` is ahead, merge it into the feature branch and perform integration testing there.
+To make a release, we create a pull request from `develop` into `master`.
+We tag `master` with version numbers after each release merge.
+
+## Testing
+
+We have both automated tests and regression tests.
+
+To run the automated tests, execute
+
+```
+cabal test
+```
+
+To run the automated tests and the regression tests, execute
+
+```
+make test
+```
+
+We do test-driven development in the following way:
+
+1. create a test case Clafer model in either `test/positive` or `test/negative` depending on whether a test case should compile successfully or return an error. For example, see a positive test case [test/positive/redefinition.cfr](https://github.com/gsdlab/clafer/blob/namedDrefs/test/positive/redefinition.cfr).
+2. produce the intended compiler output automatically if possible and manually fix the output. Save the intended output as a regression test case. For example, see [test/regression/redefinition.cfr.reg](https://github.com/gsdlab/clafer/blob/namedDrefs/test/regression/redefinition.als.reg).
+3. implement the feature to reproduce the intended output: compiler the test case and execute
+
+```
+cd test
+make diffRegressions
+```
+
+this will show you how the current output diverges from the intended output.
+
+
+## Modifying the grammar
+
+We are using a [customized version of BNCF](https://github.com/juodaspaulius/bnfc).
+Clone the repository and install a binary of `bnfc` so that it's visible in your `PATH`.
+After changing the grammar, execute
+
+```
+make grammar
+```
+
+
 # Need help?
 
 * Visit [language's website](http://clafer.org).
