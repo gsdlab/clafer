@@ -8,4 +8,5 @@ dist
 *.lkshw
 *.sublime*
 cabal.sandbox.config
+cabal.config
 tags

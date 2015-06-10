@@ -14,16 +14,14 @@ endif
 all: build
 
 init:
-	cabal sandbox init --sandbox=../.clafertools-cabal-sandbox
-	# Uncomment to use Haskell LTS in the sandbox
-	# wget http://www.stackage.org/snapshot/lts-1.4/cabal.config
-	# mv cabal.config ../.clafertools-cabal-sandbox
-	# the constraint is there to prevent installing utf8-string-1 which conflicts with gitit, which requires utf8-string <= 0.3.8.
-	cabal install --only-dependencies $(MAC_USR_LIB) --enable-tests
+	stk sandbox init nightly
+	cabal install --only-dependencies $(MAC_USR_LIB) --enable-tests --enable-optimization=2
+	# turn off optimization for development - cuts 50% `cabal build` time
+	echo "optimization: False" > cabal.config
 
 build:
 	$(MAKE) -C $(TOOL_DIR)
-	cabal configure
+	cabal configure --enable-tests --disable-optimization
 	cabal build
 
 install:
@@ -34,12 +32,12 @@ install:
 	cp -f CHANGES.md $(to)/clafer-CHANGES.md
 	cp -f tools/alloy4.2.jar $(to)/tools
 	cp -f tools/ecore2clafer.jar $(to)/tools
-	cabal install --bindir=$(to) $(GPLK_LIBS_INCLUDES) $(MAC_USR_LIB) --ghc-option="-O2"
+	cabal install --bindir=$(to) $(GPLK_LIBS_INCLUDES) $(MAC_USR_LIB) --enable-optimization=2
 
 # Removes current build and makes a clean new one (Don't use if starting from scratch!)
 cleanEnv:
 	make clean
-	ghc-pkg unregister clafer --package-db=../.clafertools-cabal-sandbox/x86_64-windows-ghc-7.8.3
+	ghc-pkg unregister clafer
 	rm `which clafer`
 	make
 
