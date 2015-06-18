@@ -24,6 +24,7 @@
 module Language.Clafer.Generator.AlloyLtl (genAlloyLtlModule) where
 
 import Control.Applicative
+import Control.Conditional
 import Control.Lens hiding (elements, mapping, op)
 import Control.Monad.State
 import Data.List hiding (and)
@@ -91,27 +92,33 @@ genAlloyLtlModule    claferargs'   (imodule, genv)       scopes         = (flatt
                 goals_list = filterNull (map (genDeclarationGoalsOnly genEnv clafer') (_mDecls imodule) )
 
 header :: GenEnv -> Concat
-header    genEnv  = CString $ unlines
-    [ if Alloy42 `elem` (mode args) then "" else "open util/integer"
-    , if AlloyLtl `elem` (mode args) then "open util/ordering[Time]" else ""
-    , "pred show {}"
-    , if (validate args) ||  (noalloyruncommand args)
-      then ""
-      else "run show " ++ forScopes genEnv
-    , ""
-    , behavioralSigs
+header    genEnv  = CString $ unlines $ catMaybes 
+    [ (Alloy42  `notElem` (mode args)) ?<> Just "open util/integer"
+    , (AlloyLtl `elem` (mode args))    ?<> Just "open util/ordering[Time]\n" 
+    , (not (validate args || noalloyruncommand args)) ?<> 
+      Just ("run show " ++ forScopes genEnv)
+    , Just "pred show {}"
+    , Just ""
+    , Just "/* Definition of timed traces (input independent) */"
+    , Just ""
+    , Just "sig Time {"
+    , Just "  loop: lone Time"
+    , Just "}"
+    , Just ""
+    , Just "fact Loop { #loop > 0 && loop in last->Time}"
+    , Just ""
+    , Just "/* Define an unbounded time lasso */"
+    , Just "fun timeLoop: Time -> Time { next + loop }"
+    , Just ""
+    , Just "fun localFirst [rel: univ->univ->Time, parentSet: univ, child: univ] : Time {"
+    , Just "  let lifetime = child.(parentSet.rel) | lifetime - (lifetime.next)"
+    , Just "}"
+    , Just ""
+    , Just ""
+    , Just "/* Clafer specifications (input dependent) */"
+    , Just ""
     ]
-    where
-      args = claferargs genEnv
-      behavioralSigs = unlines
-        [ "sig Time {loop: lone Time}"
-        , "fact Loop { #loop > 0 && loop in last->Time}"
-        , "fun timeLoop: Time -> Time { Time <: next + loop }"
-        , "fun local_first [rel: univ->univ->Time, parentSet: univ, child: univ] : Time {"
-        , "  {t: Time | t in (child.(parentSet.rel)) and no ((child.(parentSet.rel)) <: next) :> t }"
-        , "}"
-        ]
-
+    where args = claferargs genEnv
 
 -- 07th Mayo 2012 Rafael Olaechea
 -- Modified so that we can collect all goals into a single block as required per the way goals are handled in modified alloy.
@@ -368,15 +375,15 @@ genConstraints    genEnv    ctx
 -- generates time variable binding declaration which appears as a first expression in mutable constraints
 -- it references all time moments when context clafer instance is active
 -- typical binding form is: this.(ParentSig.ContextClaferRelation)
--- Template uses local_first function:
--- let t = local_first[rel, parentSig, this]
+-- Template uses localFirst function:
+-- let t = localFirst[rel, parentSig, this]
 -- Old Sample template:
 -- let local_next = (this.(c0_a.@r_c0_b)) <: next | one t : Time | one t <: local_next and no local_next :> t
 -- if defined under root clafer:
 -- one t: first <: Time |
 genTimeDecl :: String -> [String] -> IClafer -> Concat
 genTimeDecl tvar rPath c | _mutable c = CString $  case rPath of
-                                           x:_ -> "one " ++ tvar ++ " : local_first[" ++
+                                           x:_ -> "one " ++ tvar ++ " : localFirst[" ++
                                              genRelName (_uid c) ++
                                              "," ++ x ++
                                              ", this] | "
@@ -384,12 +391,12 @@ genTimeDecl tvar rPath c | _mutable c = CString $  case rPath of
                          | otherwise = CString $ "one t: " ++ timeSig ++ " <: first | "
 
 -- if clafer is mutable, generates fact that prevents instance from disapearing for one or more snapshot
--- and then reapearing and says that only subclafer may only have one parent.
+-- and then reapearing and says that  only subclafer may only have one parent.
 -- typically:
--- lone local_first [rel, parent_sig, this] && lone r_c0_a.Time.this
+-- lone localFirst [rel, parent_sig, this] && lone r_c0_a.Time.this
 genMutClaferConst :: GenCtx -> IClafer -> Concat
 genMutClaferConst ctx c | _mutable c = let parentSig = head (resPath ctx) in
-                                           CString $ "lone local_first[" ++ genRelName (_uid c) ++
+                                           CString $ "lone localFirst[" ++ genRelName (_uid c) ++
                                             ", " ++ parentSig ++
                                             ", this] && " ++
                                             "lone " ++ genRelName (_uid c) ++ "." ++ timeSig ++ ".this"
@@ -908,3 +915,5 @@ getRight p = p
 
 genTimeAllQuant :: String -> Concat
 genTimeAllQuant tvar = CString $ "all " ++ tvar ++ " : " ++ timeSig ++ " | "
+
+-- :vim:expandtabs

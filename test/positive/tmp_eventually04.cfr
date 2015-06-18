@@ -1,8 +1,8 @@
 // Test for eventually combined constraint
 
 xor a
-	b 
-	c 
+	b
+	c
 	[b => eventually c]
 
 assert[always (a.b => eventually a.c)]
