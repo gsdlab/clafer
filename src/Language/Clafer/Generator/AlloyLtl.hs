@@ -51,9 +51,8 @@ data GenEnv = GenEnv
 timeSig :: String
 timeSig = "Time"
 
-bOrFoldl1 :: [Bool] -> Bool
-bOrFoldl1 [] = False
-bOrFoldl1 xs = foldl1 (\res val -> res || val) xs
+anyTrue :: [Bool] -> Bool
+anyTrue = any (\x -> x) 
 
 -- Alloy code generation
 -- 07th Mayo 2012 Rafael Olaechea
@@ -316,7 +315,7 @@ genType    genEnv    ctx       x                                    = genPExp ge
 
 containsTimedRel :: GenEnv ->  PExp -> Bool
 containsTimedRel    genEnv     (PExp iType' _ _ exp') =  case exp' of
-  IFunExp _ exps' -> bOrFoldl1 $ map (containsTimedRel genEnv) exps'
+  IFunExp _ exps' -> anyTrue $ map (containsTimedRel genEnv) exps'
   IClaferId _ sident' _ (Just bind) -> timedIClaferId
     where
     boundIClafer = fromJust $ findIClafer (uidIClaferMap genEnv) bind
@@ -330,7 +329,7 @@ containsTimedRel    genEnv     (PExp iType' _ _ exp') =  case exp' of
         TReal -> False
         TString -> False
         _ -> mutable'
-  IDeclPExp _ decls' e -> bOrFoldl1 (map (containsMut genEnv) decls') || containsTimedRel genEnv e
+  IDeclPExp _ decls' e -> anyTrue (map (containsMut genEnv) decls') || containsTimedRel genEnv e
   _ -> False
   where
   containsMut genEnv' (IDecl _ _ body') = containsTimedRel genEnv' body'
@@ -731,12 +730,12 @@ genLtlExp    genEnv    ctx       op'        exps' = {- trace ("call in genLtlExp
 
 containsMutable :: GenEnv -> PExp -> Bool
 containsMutable    genEnv    (PExp _ _ _ exp') = case exp' of
-  (IFunExp _ exps') -> bOrFoldl1 $ map (containsMutable genEnv) exps'
+  (IFunExp _ exps') -> anyTrue $ map (containsMutable genEnv) exps'
   (IClaferId _ _ _ (Just bind)) -> let
       boundIClafer = fromJust $ findIClafer (uidIClaferMap genEnv) bind
     in
       _mutable boundIClafer
-  (IDeclPExp _ decls' e) -> bOrFoldl1 (map (containsMut genEnv) decls') || containsMutable genEnv e
+  (IDeclPExp _ decls' e) -> anyTrue (map (containsMut genEnv) decls') || containsMutable genEnv e
   _ -> False
   where
   containsMut genEnv' (IDecl _ _ body') = containsMutable genEnv' body'
