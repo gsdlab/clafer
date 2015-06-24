@@ -29,6 +29,7 @@ import Control.Lens hiding (elements, mapping, op)
 import Control.Monad.State
 import Data.List hiding (and)
 import Data.Maybe
+import Text.Printf
 
 import Language.Clafer.Common
 import Language.Clafer.ClaferArgs
@@ -49,11 +50,11 @@ data GenEnv = GenEnv
   , forScopes :: String
   }  deriving (Show)
 
-timeSig :: String
-timeSig = "Time"
+stateSig :: String
+stateSig = "State"
 
 anyTrue :: [Bool] -> Bool
-anyTrue = any (\x -> x) 
+anyTrue = any (\x -> x)
 
 -- Alloy code generation
 -- 07th Mayo 2012 Rafael Olaechea
@@ -92,33 +93,62 @@ genAlloyLtlModule    claferargs'   (imodule, genv)       scopes         = (flatt
                 goals_list = filterNull (map (genDeclarationGoalsOnly genEnv clafer') (_mDecls imodule) )
 
 header :: GenEnv -> Concat
-header    genEnv  = CString $ unlines $ catMaybes 
+header    genEnv  = CString $ unlines $ catMaybes
     [ (Alloy42  `notElem` (mode args)) ?<> Just "open util/integer"
-    , (AlloyLtl `elem` (mode args))    ?<> Just "open util/ordering[Time]\n" 
-    , (not (validate args || noalloyruncommand args)) ?<> 
+    , (AlloyLtl `elem` (mode args))    ?<> Just traceModuleSource
+    , (not (validate args || noalloyruncommand args)) ?<>
       Just ("run show " ++ forScopes genEnv)
     , Just "pred show {}"
-    , Just ""
-    , Just "/* Definition of timed traces (input independent) */"
-    , Just ""
-    , Just "sig Time {"
-    , Just "  loop: lone Time"
-    , Just "}"
-    , Just ""
-    , Just "fact Loop { #loop > 0 && loop in last->Time}"
-    , Just ""
-    , Just "/* Define an unbounded time lasso */"
-    , Just "fun timeLoop: Time -> Time { next + loop }"
-    , Just ""
-    , Just "fun localFirst [rel: univ->univ->Time, parentSet: univ, child: univ] : Time {"
-    , Just "  let lifetime = child.(parentSet.rel) | lifetime - (lifetime.next)"
-    , Just "}"
-    , Just ""
     , Just ""
     , Just "/* Clafer specifications (input dependent) */"
     , Just ""
     ]
     where args = claferargs genEnv
+
+traceModuleSource = "/* Definition of timed traces (input independent) */ \n\
+  \ \n\
+  \ \n\
+  \sig State {} \n\
+  \  \n\
+  \private one sig Ord {\n\
+  \   First: set State,\n\
+  \   Next: State -> State,\n\
+  \   Loop: State -> State\n\
+  \} {\n\
+  \   pred/totalOrder[State,First,Next]\n\
+  \}\n\
+  \ \n\
+  \fact {\n\
+  \  Ord.Loop in last -> lone State\n\
+  \}\n\
+  \ \n\
+  \fun first: one State { Ord.First }\n\
+  \ \n\
+  \fun last: one State { State - ((Ord.Next).State) }\n\
+  \ \n\
+  \fun next : State->State { Ord.Next + Ord.Loop }\n\
+  \ \n\
+  \fun prev : State->State { ~this/next }\n\
+  \ \n\
+  \fun past : State->State { ^(~this/next) }\n\
+  \ \n\
+  \fun future : State -> State { State <: *this/next }\n\
+  \ \n\
+  \fun upto[s,s' : State] : set State {\n\
+  \   (s' in s.*(Ord.Next) or finite) implies s.future & ^(Ord.Next).s' else s.*(Ord.Next) + (^(Ord.Next).s' & last.(Ord.Loop).*(Ord.Next))\n\
+  \}\n\
+  \ \n\
+  \pred finite {\n\
+  \   no Loop\n\
+  \}\n\
+  \ \n\
+  \pred infinite {\n\
+  \   some Loop\n\
+  \}\n\
+  \ \n\
+  \fun localFirst [rel: univ->univ->State, parentSet: univ, child: univ] : State {\n\
+  \    let lifetime = child.(parentSet.rel) | lifetime - (lifetime.next)\n\
+  \}"
 
 -- 07th Mayo 2012 Rafael Olaechea
 -- Modified so that we can collect all goals into a single block as required per the way goals are handled in modified alloy.
@@ -299,7 +329,7 @@ genAlloyRel :: String -> String -> String -> String
 genAlloyRel name card' rType = concat [name, " : ", card', " ", rType]
 
 genMutAlloyRel :: String -> String -> String
-genMutAlloyRel name rType = concat [name, " : ", rType, " -> ", timeSig]
+genMutAlloyRel name rType = concat [name, " : ", rType, " -> ", stateSig]
 
 refType :: GenEnv -> GenCtx -> Concat
 refType    genEnv    ctx = fromMaybe (CString "") $ fmap ((genType genEnv ctx).getTarget) $ _ref <$> _reference (ctxClafer ctx)
@@ -387,8 +417,8 @@ genTimeDecl tvar rPath c | _mutable c = CString $  case rPath of
                                              genRelName (_uid c) ++
                                              "," ++ x ++
                                              ", this] | "
-                                           [] -> "one " ++ tvar ++ " : first <: " ++ timeSig ++ " | " -- For top level constraint
-                         | otherwise = CString $ "one t: " ++ timeSig ++ " <: first | "
+                                           [] -> "one " ++ tvar ++ " : first <: " ++ stateSig ++ " | " -- For top level constraint
+                         | otherwise = CString $ "one t: " ++ stateSig ++ " <: first | "
 
 -- if clafer is mutable, generates fact that prevents instance from disapearing for one or more snapshot
 -- and then reapearing and says that  only subclafer may only have one parent.
@@ -399,7 +429,7 @@ genMutClaferConst ctx c | _mutable c = let parentSig = head (resPath ctx) in
                                            CString $ "lone localFirst[" ++ genRelName (_uid c) ++
                                             ", " ++ parentSig ++
                                             ", this] && " ++
-                                            "lone " ++ genRelName (_uid c) ++ "." ++ timeSig ++ ".this"
+                                            "lone " ++ genRelName (_uid c) ++ "." ++ stateSig ++ ".this"
                         | otherwise = CString ""
 
 
@@ -715,24 +745,24 @@ genLtlExp    genEnv    ctx       op'        exps' = {- trace ("call in genLtlExp
     | op' == iW = error $ "AlloyLtl.genLtlExp: W should have been translated in transformExp"
     | otherwise = error $ "AlloyLtl.genLtlExp: unsupported temporal operator: " ++ op' -- should never happen
   genF [e1]
-    | containsMutable genEnv e1 = mapToCStr ["some ", nextT, ":", currT, ".*", nextNLoop, " | "] ++ [genPExp' genEnv (ctx {time = Just nextT}) e1]
-    | otherwise = [genPExp' genEnv (ctx {time = Just nextT}) e1]
+    | containsMutable genEnv e1 = mapToCStr ["some ", t', ":", t, ".*next | "] ++ [genPExp' genEnv (ctx {time = Just t'}) e1]
+    | otherwise = [genPExp' genEnv (ctx {time = Just t'}) e1]
   genF _ = error "AlloyLtl.genLtlExp: F modality requires one argument" -- should never happen
   genX [e1]
-    | containsMutable genEnv e1 = mapToCStr ["let ", nextT, "=", currT, ".", nextNLoop, " | some ", nextT, " and "] ++ [genPExp' genEnv (ctx {time = Just nextT}) e1]
-    | otherwise = [genPExp' genEnv (ctx {time = Just nextT}) e1]
+    | containsMutable genEnv e1 = mapToCStr ["some ", t, ".next and "] ++ [genPExp' genEnv (ctx {time = Just t'}) e1]
+    | otherwise = [genPExp' genEnv (ctx {time = Just t'}) e1]
   genX _ = error "AlloyLtl.genLtlExp: X modality requires one argument" -- should never happen
   genG [e1]
-    | containsMutable genEnv e1 = mapToCStr ["some loop and all ", nextT, ":", currT, ".*", nextNLoop, " | "] ++ [genPExp' genEnv (ctx {time = Just nextT}) e1]
-    | otherwise = [genPExp' genEnv (ctx {time = Just nextT}) e1]
+    | containsMutable genEnv e1 = mapToCStr ["infinite and all ", t', ":", t, ".*next | "] ++ [genPExp' genEnv (ctx {time = Just t'}) e1]
+    | otherwise = [genPExp' genEnv (ctx {time = Just t'}) e1]
   genG _ = error "AlloyLtl.genLtlExp: G modality requires one argument" -- should never happen
-  genU (e1:e2:_) = mapToCStr ["some ", nextT, ":", currT, ".*", nextNLoop, " | "] ++ [genPExp' genEnv (ctx {time = Just nextT}) e2] ++
-    mapToCStr [" and ( all ", nextT', ":", currT, ".*", nextNLoop, " & ^", nextNLoop, ".", nextT, "|"] ++ [genPExp' genEnv (ctx {time = Just nextT'}) e1, CString ")"]
+  genU (e1:e2:_) = mapToCStr ["some ", t', ":", t, ".future | "] ++ [genPExp' genEnv (ctx {time = Just t'}) e2] ++
+    mapToCStr [" and ( all ", t'', ": upto[", t, ", ", t', "] | "] ++ [genPExp' genEnv (ctx {time = Just t''}) e1, CString ")"]
   genU _ = error "AlloyLtl.genLtlExp: U modality requires two arguments" -- should never happen
-  nextNLoop = "timeLoop" -- "(" ++ timeSig ++ " <: next + loop)"
-  currT = maybe "t" id $ time ctx
-  nextT = currT ++ "'"
-  nextT' = nextT ++ "'"
+  nextNLoop = "timeLoop" -- "(" ++ stateSig ++ " <: next + loop)"
+  t = maybe "t" id $ time ctx
+  t' = t ++ "'"
+  t'' = t' ++ "'"
 
 
 containsMutable :: GenEnv -> PExp -> Bool
@@ -914,6 +944,6 @@ getRight (PExp _ _ _ (IFunExp _ (_:x:_))) = getRight x
 getRight p = p
 
 genTimeAllQuant :: String -> Concat
-genTimeAllQuant tvar = CString $ "all " ++ tvar ++ " : " ++ timeSig ++ " | "
+genTimeAllQuant tvar = CString $ "all " ++ tvar ++ " : " ++ stateSig ++ " | "
 
 -- :vim:expandtabs

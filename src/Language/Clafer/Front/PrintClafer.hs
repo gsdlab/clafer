@@ -5,7 +5,6 @@ module Language.Clafer.Front.PrintClafer where
 
 import Language.Clafer.Front.AbsClafer
 import Data.Char
-import Prelude hiding (exp, init)
 
 
 -- the top-level printing method
@@ -49,15 +48,15 @@ replicateS n f = concatS (replicate n f)
 -- the printer class does the job
 class Print a where
   prt :: Int -> a -> Doc
-  prtList :: [a] -> Doc
-  prtList = concatD . map (prt 0)
+  prtList :: Int -> [a] -> Doc
+  prtList i = concatD . map (prt i)
 
 instance Print a => Print [a] where
-  prt _ = prtList
+  prt = prtList
 
 instance Print Char where
   prt _ s = doc (showChar '\'' . mkEsc '\'' s . showChar '\'')
-  prtList s = doc (showChar '"' . concatS (map (mkEsc '"') s) . showChar '"')
+  prtList _ s = doc (showChar '"' . concatS (map (mkEsc '"') s) . showChar '"')
 
 mkEsc :: Char -> Char -> ShowS
 mkEsc q s = case s of
@@ -105,10 +104,8 @@ instance Print Declaration where
   prt i e = case e of
     EnumDecl _ posident enumids -> prPrec i 0 (concatD [doc (showString "enum"), prt 0 posident, doc (showString "="), prt 0 enumids])
     ElementDecl _ element -> prPrec i 0 (concatD [prt 0 element])
-  prtList es = case es of
-   [] -> (concatD [])
-   x:xs -> (concatD [prt 0 x, prt 0 xs])
-
+  prtList _ [] = (concatD [])
+  prtList _ (x:xs) = (concatD [prt 0 x, prt 0 xs])
 instance Print Clafer where
   prt i e = case e of
     Clafer _ abstract tempmodifiers gcard posident super reference card init transition elements -> prPrec i 0 (concatD [prt 0 abstract, prt 0 tempmodifiers, prt 0 gcard, prt 0 posident, prt 0 super, prt 0 reference, prt 0 card, prt 0 init, prt 0 transition, prt 0 elements])
@@ -129,10 +126,8 @@ instance Print TempModifier where
   prt i e = case e of
     Initial _ -> prPrec i 0 (concatD [doc (showString "initial")])
     Final _ -> prPrec i 0 (concatD [doc (showString "final")])
-  prtList es = case es of
-   [] -> (concatD [])
-   x:xs -> (concatD [prt 0 x, prt 0 xs])
-
+  prtList _ [] = (concatD [])
+  prtList _ (x:xs) = (concatD [prt 0 x, prt 0 xs])
 instance Print Transition where
   prt i e = case e of
     TransitionEmpty _ -> prPrec i 0 (concatD [])
@@ -155,10 +150,8 @@ instance Print Element where
     Subconstraint _ constraint -> prPrec i 0 (concatD [prt 0 constraint])
     Subgoal _ goal -> prPrec i 0 (concatD [prt 0 goal])
     Subsoftconstraint _ softconstraint -> prPrec i 0 (concatD [prt 0 softconstraint])
-  prtList es = case es of
-   [] -> (concatD [])
-   x:xs -> (concatD [prt 0 x, prt 0 xs])
-
+  prtList _ [] = (concatD [])
+  prtList _ (x:xs) = (concatD [prt 0 x, prt 0 xs])
 instance Print Super where
   prt i e = case e of
     SuperEmpty _ -> prPrec i 0 (concatD [])
@@ -213,68 +206,66 @@ instance Print Name where
 
 instance Print Exp where
   prt i e = case e of
-    TransitionExp _ exp1 transarrow exp -> prPrec i 0 (concatD [prt 1 exp1, prt 0 transarrow, prt 0 exp])
-    DeclAllDisj _ decl exp1 -> prPrec i 1 (concatD [doc (showString "all"), doc (showString "disj"), prt 0 decl, doc (showString "|"), prt 1 exp1])
-    DeclAll _ decl exp1 -> prPrec i 1 (concatD [doc (showString "all"), prt 0 decl, doc (showString "|"), prt 1 exp1])
-    DeclQuantDisj _ quant decl exp1 -> prPrec i 1 (concatD [prt 0 quant, doc (showString "disj"), prt 0 decl, doc (showString "|"), prt 1 exp1])
-    DeclQuant _ quant decl exp1 -> prPrec i 1 (concatD [prt 0 quant, prt 0 decl, doc (showString "|"), prt 1 exp1])
-    LetExp _ varbinding exp1 -> prPrec i 1 (concatD [doc (showString "let"), prt 0 varbinding, doc (showString "in"), prt 1 exp1])
-    TmpPatNever _ exp3 patternscope -> prPrec i 2 (concatD [doc (showString "never"), prt 3 exp3, prt 0 patternscope])
-    TmpPatSometime _ exp3 patternscope -> prPrec i 2 (concatD [doc (showString "sometime"), prt 3 exp3, prt 0 patternscope])
-    TmpPatLessOrOnce _ exp3 patternscope -> prPrec i 2 (concatD [doc (showString "lonce"), prt 3 exp3, prt 0 patternscope])
-    TmpPatAlways _ exp3 patternscope -> prPrec i 2 (concatD [doc (showString "always"), prt 3 exp3, prt 0 patternscope])
-    TmpPatPrecede _ exp30 exp3 patternscope -> prPrec i 2 (concatD [prt 3 exp30, doc (showString "must"), doc (showString "precede"), prt 3 exp3, prt 0 patternscope])
-    TmpPatFollow _ exp30 exp3 patternscope -> prPrec i 2 (concatD [prt 3 exp30, doc (showString "must"), doc (showString "follow"), prt 3 exp3, prt 0 patternscope])
-    TmpInitially _ exp3 -> prPrec i 2 (concatD [doc (showString "initially"), prt 3 exp3])
-    TmpFinally _ exp3 -> prPrec i 2 (concatD [doc (showString "finally"), prt 3 exp3])
-    EGMax _ exp4 -> prPrec i 3 (concatD [doc (showString "max"), prt 4 exp4])
-    EGMin _ exp4 -> prPrec i 3 (concatD [doc (showString "min"), prt 4 exp4])
-    EIff _ exp3 exp4 -> prPrec i 3 (concatD [prt 3 exp3, doc (showString "<=>"), prt 4 exp4])
-    EImplies _ exp4 exp5 -> prPrec i 4 (concatD [prt 4 exp4, doc (showString "=>"), prt 5 exp5])
-    EOr _ exp5 exp6 -> prPrec i 5 (concatD [prt 5 exp5, doc (showString "||"), prt 6 exp6])
-    EXor _ exp6 exp7 -> prPrec i 6 (concatD [prt 6 exp6, doc (showString "xor"), prt 7 exp7])
-    EAnd _ exp7 exp8 -> prPrec i 7 (concatD [prt 7 exp7, doc (showString "&&"), prt 8 exp8])
-    LtlU _ exp8 exp9 -> prPrec i 8 (concatD [prt 8 exp8, doc (showString "U"), prt 9 exp9])
-    TmpUntil _ exp8 exp9 -> prPrec i 8 (concatD [prt 8 exp8, doc (showString "until"), prt 9 exp9])
-    LtlW _ exp9 exp10 -> prPrec i 9 (concatD [prt 9 exp9, doc (showString "W"), prt 10 exp10])
-    TmpWUntil _ exp9 exp10 -> prPrec i 9 (concatD [prt 9 exp9, doc (showString "weakuntil"), prt 10 exp10])
-    LtlF _ exp10 -> prPrec i 10 (concatD [doc (showString "F"), prt 10 exp10])
-    TmpEventually _ exp10 -> prPrec i 10 (concatD [doc (showString "eventually"), prt 10 exp10])
-    LtlG _ exp10 -> prPrec i 10 (concatD [doc (showString "G"), prt 10 exp10])
-    TmpGlobally _ exp10 -> prPrec i 10 (concatD [doc (showString "globally"), prt 10 exp10])
-    LtlX _ exp10 -> prPrec i 10 (concatD [doc (showString "X"), prt 10 exp10])
-    TmpNext _ exp10 -> prPrec i 10 (concatD [doc (showString "next"), prt 10 exp10])
-    ENeg _ exp11 -> prPrec i 11 (concatD [doc (showString "!"), prt 11 exp11])
-    ELt _ exp15 exp16 -> prPrec i 15 (concatD [prt 15 exp15, doc (showString "<"), prt 16 exp16])
-    EGt _ exp15 exp16 -> prPrec i 15 (concatD [prt 15 exp15, doc (showString ">"), prt 16 exp16])
-    EEq _ exp15 exp16 -> prPrec i 15 (concatD [prt 15 exp15, doc (showString "="), prt 16 exp16])
-    ELte _ exp15 exp16 -> prPrec i 15 (concatD [prt 15 exp15, doc (showString "<="), prt 16 exp16])
-    EGte _ exp15 exp16 -> prPrec i 15 (concatD [prt 15 exp15, doc (showString ">="), prt 16 exp16])
-    ENeq _ exp15 exp16 -> prPrec i 15 (concatD [prt 15 exp15, doc (showString "!="), prt 16 exp16])
-    EIn _ exp15 exp16 -> prPrec i 15 (concatD [prt 15 exp15, doc (showString "in"), prt 16 exp16])
-    ENin _ exp15 exp16 -> prPrec i 15 (concatD [prt 15 exp15, doc (showString "not"), doc (showString "in"), prt 16 exp16])
-    QuantExp _ quant exp20 -> prPrec i 16 (concatD [prt 0 quant, prt 20 exp20])
-    EAdd _ exp17 exp18 -> prPrec i 17 (concatD [prt 17 exp17, doc (showString "+"), prt 18 exp18])
-    ESub _ exp17 exp18 -> prPrec i 17 (concatD [prt 17 exp17, doc (showString "-"), prt 18 exp18])
-    EMul _ exp18 exp19 -> prPrec i 18 (concatD [prt 18 exp18, doc (showString "*"), prt 19 exp19])
-    EDiv _ exp18 exp19 -> prPrec i 18 (concatD [prt 18 exp18, doc (showString "/"), prt 19 exp19])
-    ERem _ exp10 exp11 -> prPrec i 10 (concatD [prt 10 exp10, doc (showString "%"), prt 11 exp11])
-    ESumSetExp _ exp20 -> prPrec i 19 (concatD [doc (showString "sum"), prt 20 exp20])
-    EProdSetExp _ exp20 -> prPrec i 19 (concatD [doc (showString "product"), prt 20 exp20])
-    ECSetExp _ exp20 -> prPrec i 19 (concatD [doc (showString "#"), prt 20 exp20])
-    EMinExp _ exp20 -> prPrec i 19 (concatD [doc (showString "-"), prt 20 exp20])
-    EImpliesElse _ exp200 exp20 exp21 -> prPrec i 20 (concatD [doc (showString "if"), prt 20 exp200, doc (showString "then"), prt 20 exp20, doc (showString "else"), prt 21 exp21])
+    TransitionExp _ exp1 transarrow exp2 -> prPrec i 0 (concatD [prt 1 exp1, prt 0 transarrow, prt 0 exp2])
+    DeclAllDisj _ decl exp -> prPrec i 1 (concatD [doc (showString "all"), doc (showString "disj"), prt 0 decl, doc (showString "|"), prt 1 exp])
+    DeclAll _ decl exp -> prPrec i 1 (concatD [doc (showString "all"), prt 0 decl, doc (showString "|"), prt 1 exp])
+    DeclQuantDisj _ quant decl exp -> prPrec i 1 (concatD [prt 0 quant, doc (showString "disj"), prt 0 decl, doc (showString "|"), prt 1 exp])
+    DeclQuant _ quant decl exp -> prPrec i 1 (concatD [prt 0 quant, prt 0 decl, doc (showString "|"), prt 1 exp])
+    LetExp _ varbinding exp -> prPrec i 1 (concatD [doc (showString "let"), prt 0 varbinding, doc (showString "in"), prt 1 exp])
+    TmpPatNever _ exp patternscope -> prPrec i 2 (concatD [doc (showString "never"), prt 3 exp, prt 0 patternscope])
+    TmpPatSometime _ exp patternscope -> prPrec i 2 (concatD [doc (showString "sometime"), prt 3 exp, prt 0 patternscope])
+    TmpPatLessOrOnce _ exp patternscope -> prPrec i 2 (concatD [doc (showString "lonce"), prt 3 exp, prt 0 patternscope])
+    TmpPatAlways _ exp patternscope -> prPrec i 2 (concatD [doc (showString "always"), prt 3 exp, prt 0 patternscope])
+    TmpPatPrecede _ exp1 exp2 patternscope -> prPrec i 2 (concatD [prt 3 exp1, doc (showString "must"), doc (showString "precede"), prt 3 exp2, prt 0 patternscope])
+    TmpPatFollow _ exp1 exp2 patternscope -> prPrec i 2 (concatD [prt 3 exp1, doc (showString "must"), doc (showString "follow"), prt 3 exp2, prt 0 patternscope])
+    TmpInitially _ exp -> prPrec i 2 (concatD [doc (showString "initially"), prt 3 exp])
+    TmpFinally _ exp -> prPrec i 2 (concatD [doc (showString "finally"), prt 3 exp])
+    EGMax _ exp -> prPrec i 3 (concatD [doc (showString "max"), prt 4 exp])
+    EGMin _ exp -> prPrec i 3 (concatD [doc (showString "min"), prt 4 exp])
+    EIff _ exp1 exp2 -> prPrec i 3 (concatD [prt 3 exp1, doc (showString "<=>"), prt 4 exp2])
+    EImplies _ exp1 exp2 -> prPrec i 4 (concatD [prt 4 exp1, doc (showString "=>"), prt 5 exp2])
+    EOr _ exp1 exp2 -> prPrec i 5 (concatD [prt 5 exp1, doc (showString "||"), prt 6 exp2])
+    EXor _ exp1 exp2 -> prPrec i 6 (concatD [prt 6 exp1, doc (showString "xor"), prt 7 exp2])
+    EAnd _ exp1 exp2 -> prPrec i 7 (concatD [prt 7 exp1, doc (showString "&&"), prt 8 exp2])
+    LtlU _ exp1 exp2 -> prPrec i 8 (concatD [prt 8 exp1, doc (showString "U"), prt 9 exp2])
+    TmpUntil _ exp1 exp2 -> prPrec i 8 (concatD [prt 8 exp1, doc (showString "until"), prt 9 exp2])
+    LtlW _ exp1 exp2 -> prPrec i 9 (concatD [prt 9 exp1, doc (showString "W"), prt 10 exp2])
+    TmpWUntil _ exp1 exp2 -> prPrec i 9 (concatD [prt 9 exp1, doc (showString "weakuntil"), prt 10 exp2])
+    LtlF _ exp -> prPrec i 10 (concatD [doc (showString "F"), prt 10 exp])
+    TmpEventually _ exp -> prPrec i 10 (concatD [doc (showString "eventually"), prt 10 exp])
+    LtlG _ exp -> prPrec i 10 (concatD [doc (showString "G"), prt 10 exp])
+    TmpGlobally _ exp -> prPrec i 10 (concatD [doc (showString "globally"), prt 10 exp])
+    LtlX _ exp -> prPrec i 10 (concatD [doc (showString "X"), prt 10 exp])
+    TmpNext _ exp -> prPrec i 10 (concatD [doc (showString "next"), prt 10 exp])
+    ENeg _ exp -> prPrec i 11 (concatD [doc (showString "!"), prt 11 exp])
+    ELt _ exp1 exp2 -> prPrec i 15 (concatD [prt 15 exp1, doc (showString "<"), prt 16 exp2])
+    EGt _ exp1 exp2 -> prPrec i 15 (concatD [prt 15 exp1, doc (showString ">"), prt 16 exp2])
+    EEq _ exp1 exp2 -> prPrec i 15 (concatD [prt 15 exp1, doc (showString "="), prt 16 exp2])
+    ELte _ exp1 exp2 -> prPrec i 15 (concatD [prt 15 exp1, doc (showString "<="), prt 16 exp2])
+    EGte _ exp1 exp2 -> prPrec i 15 (concatD [prt 15 exp1, doc (showString ">="), prt 16 exp2])
+    ENeq _ exp1 exp2 -> prPrec i 15 (concatD [prt 15 exp1, doc (showString "!="), prt 16 exp2])
+    EIn _ exp1 exp2 -> prPrec i 15 (concatD [prt 15 exp1, doc (showString "in"), prt 16 exp2])
+    ENin _ exp1 exp2 -> prPrec i 15 (concatD [prt 15 exp1, doc (showString "not"), doc (showString "in"), prt 16 exp2])
+    QuantExp _ quant exp -> prPrec i 16 (concatD [prt 0 quant, prt 20 exp])
+    EAdd _ exp1 exp2 -> prPrec i 17 (concatD [prt 17 exp1, doc (showString "+"), prt 18 exp2])
+    ESub _ exp1 exp2 -> prPrec i 17 (concatD [prt 17 exp1, doc (showString "-"), prt 18 exp2])
+    EMul _ exp1 exp2 -> prPrec i 18 (concatD [prt 18 exp1, doc (showString "*"), prt 19 exp2])
+    EDiv _ exp1 exp2 -> prPrec i 18 (concatD [prt 18 exp1, doc (showString "/"), prt 19 exp2])
+    ERem _ exp1 exp2 -> prPrec i 10 (concatD [prt 10 exp1, doc (showString "%"), prt 11 exp2])
+    ESumSetExp _ exp -> prPrec i 19 (concatD [doc (showString "sum"), prt 20 exp])
+    EProdSetExp _ exp -> prPrec i 19 (concatD [doc (showString "product"), prt 20 exp])
+    ECSetExp _ exp -> prPrec i 19 (concatD [doc (showString "#"), prt 20 exp])
+    EMinExp _ exp -> prPrec i 19 (concatD [doc (showString "-"), prt 20 exp])
+    EImpliesElse _ exp1 exp2 exp3 -> prPrec i 20 (concatD [doc (showString "if"), prt 20 exp1, doc (showString "then"), prt 20 exp2, doc (showString "else"), prt 21 exp3])
     EInt _ posinteger -> prPrec i 21 (concatD [prt 0 posinteger])
     EDouble _ posdouble -> prPrec i 21 (concatD [prt 0 posdouble])
     EStr _ posstring -> prPrec i 21 (concatD [prt 0 posstring])
     ESetExp _ setexp -> prPrec i 21 (concatD [prt 0 setexp])
-  prtList es = case es of
-   [] -> (concatD [])
-   x:xs -> (concatD [prt 0 x, prt 0 xs])
-
+  prtList _ [] = (concatD [])
+  prtList _ (x:xs) = (concatD [prt 0 x, prt 0 xs])
 instance Print TransGuard where
   prt i e = case e of
-    TransGuard _ exp1 -> prPrec i 0 (concatD [prt 1 exp1])
+    TransGuard _ exp -> prPrec i 0 (concatD [prt 1 exp])
 
 instance Print TransArrow where
   prt i e = case e of
@@ -285,21 +276,21 @@ instance Print TransArrow where
 
 instance Print PatternScope where
   prt i e = case e of
-    PatScopeBefore _ exp11 -> prPrec i 0 (concatD [doc (showString "before"), prt 11 exp11])
-    PatScopeAfter _ exp11 -> prPrec i 0 (concatD [doc (showString "after"), prt 11 exp11])
-    PatScopeBetweenAnd _ exp110 exp11 -> prPrec i 0 (concatD [doc (showString "between"), prt 11 exp110, doc (showString "and"), prt 11 exp11])
-    PatScopeAfterUntil _ exp110 exp11 -> prPrec i 0 (concatD [doc (showString "after"), prt 11 exp110, doc (showString "until"), prt 11 exp11])
+    PatScopeBefore _ exp -> prPrec i 0 (concatD [doc (showString "before"), prt 11 exp])
+    PatScopeAfter _ exp -> prPrec i 0 (concatD [doc (showString "after"), prt 11 exp])
+    PatScopeBetweenAnd _ exp1 exp2 -> prPrec i 0 (concatD [doc (showString "between"), prt 11 exp1, doc (showString "and"), prt 11 exp2])
+    PatScopeAfterUntil _ exp1 exp2 -> prPrec i 0 (concatD [doc (showString "after"), prt 11 exp1, doc (showString "until"), prt 11 exp2])
     PatScopeEmpty _ -> prPrec i 0 (concatD [])
 
 instance Print SetExp where
   prt i e = case e of
-    Union _ setexp setexp1 -> prPrec i 0 (concatD [prt 0 setexp, doc (showString "++"), prt 1 setexp1])
-    UnionCom _ setexp setexp1 -> prPrec i 0 (concatD [prt 0 setexp, doc (showString ","), prt 1 setexp1])
+    Union _ setexp1 setexp2 -> prPrec i 0 (concatD [prt 0 setexp1, doc (showString "++"), prt 1 setexp2])
+    UnionCom _ setexp1 setexp2 -> prPrec i 0 (concatD [prt 0 setexp1, doc (showString ","), prt 1 setexp2])
     Difference _ setexp1 setexp2 -> prPrec i 1 (concatD [prt 1 setexp1, doc (showString "--"), prt 2 setexp2])
-    Intersection _ setexp2 setexp3 -> prPrec i 2 (concatD [prt 2 setexp2, doc (showString "**"), prt 3 setexp3])
-    Domain _ setexp3 setexp4 -> prPrec i 3 (concatD [prt 3 setexp3, doc (showString "<:"), prt 4 setexp4])
-    Range _ setexp4 setexp5 -> prPrec i 4 (concatD [prt 4 setexp4, doc (showString ":>"), prt 5 setexp5])
-    Join _ setexp5 setexp6 -> prPrec i 5 (concatD [prt 5 setexp5, doc (showString "."), prt 6 setexp6])
+    Intersection _ setexp1 setexp2 -> prPrec i 2 (concatD [prt 2 setexp1, doc (showString "**"), prt 3 setexp2])
+    Domain _ setexp1 setexp2 -> prPrec i 3 (concatD [prt 3 setexp1, doc (showString "<:"), prt 4 setexp2])
+    Range _ setexp1 setexp2 -> prPrec i 4 (concatD [prt 4 setexp1, doc (showString ":>"), prt 5 setexp2])
+    Join _ setexp1 setexp2 -> prPrec i 5 (concatD [prt 5 setexp1, doc (showString "."), prt 6 setexp2])
     ClaferId _ name -> prPrec i 6 (concatD [prt 0 name])
 
 instance Print Decl where
@@ -321,22 +312,16 @@ instance Print Quant where
 instance Print EnumId where
   prt i e = case e of
     EnumIdIdent _ posident -> prPrec i 0 (concatD [prt 0 posident])
-  prtList es = case es of
-   [x] -> (concatD [prt 0 x])
-   x:xs -> (concatD [prt 0 x, doc (showString "|"), prt 0 xs])
-
+  prtList _ [x] = (concatD [prt 0 x])
+  prtList _ (x:xs) = (concatD [prt 0 x, doc (showString "|"), prt 0 xs])
 instance Print ModId where
   prt i e = case e of
     ModIdIdent _ posident -> prPrec i 0 (concatD [prt 0 posident])
-  prtList es = case es of
-   [x] -> (concatD [prt 0 x])
-   x:xs -> (concatD [prt 0 x, doc (showString "\\"), prt 0 xs])
-
+  prtList _ [x] = (concatD [prt 0 x])
+  prtList _ (x:xs) = (concatD [prt 0 x, doc (showString "\\"), prt 0 xs])
 instance Print LocId where
   prt i e = case e of
     LocIdIdent _ posident -> prPrec i 0 (concatD [prt 0 posident])
-  prtList es = case es of
-   [x] -> (concatD [prt 0 x])
-   x:xs -> (concatD [prt 0 x, doc (showString ";"), prt 0 xs])
-
+  prtList _ [x] = (concatD [prt 0 x])
+  prtList _ (x:xs) = (concatD [prt 0 x, doc (showString ";"), prt 0 xs])
 

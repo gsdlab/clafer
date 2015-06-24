@@ -127,214 +127,214 @@ PosString    :: { PosString} : L_PosString { PosString (mkPosToken $1)}
 PosIdent    :: { PosIdent} : L_PosIdent { PosIdent (mkPosToken $1)}
 
 Module :: { Module }
-Module : ListDeclaration { Module ((mkCatSpan $1)) (reverse $1) }
+Module : ListDeclaration { Language.Clafer.Front.AbsClafer.Module ((mkCatSpan $1)) (reverse $1) }
 Declaration :: { Declaration }
-Declaration : 'enum' PosIdent '=' ListEnumId { EnumDecl ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkTokenSpan $3) >- (mkCatSpan $4)) $2 $4 }
-            | Element { ElementDecl ((mkCatSpan $1)) $1 }
+Declaration : 'enum' PosIdent '=' ListEnumId { Language.Clafer.Front.AbsClafer.EnumDecl ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkTokenSpan $3) >- (mkCatSpan $4)) $2 $4 }
+            | Element { Language.Clafer.Front.AbsClafer.ElementDecl ((mkCatSpan $1)) $1 }
 Clafer :: { Clafer }
-Clafer : Abstract ListTempModifier GCard PosIdent Super Reference Card Init Transition Elements { Clafer ((mkCatSpan $1) >- (mkCatSpan $2) >- (mkCatSpan $3) >- (mkCatSpan $4) >- (mkCatSpan $5) >- (mkCatSpan $6) >- (mkCatSpan $7) >- (mkCatSpan $8) >- (mkCatSpan $9) >- (mkCatSpan $10)) $1 (reverse $2) $3 $4 $5 $6 $7 $8 $9 $10 }
+Clafer : Abstract ListTempModifier GCard PosIdent Super Reference Card Init Transition Elements { Language.Clafer.Front.AbsClafer.Clafer ((mkCatSpan $1) >- (mkCatSpan $2) >- (mkCatSpan $3) >- (mkCatSpan $4) >- (mkCatSpan $5) >- (mkCatSpan $6) >- (mkCatSpan $7) >- (mkCatSpan $8) >- (mkCatSpan $9) >- (mkCatSpan $10)) $1 (reverse $2) $3 $4 $5 $6 $7 $8 $9 $10 }
 Constraint :: { Constraint }
-Constraint : '[' ListExp ']' { Constraint ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkTokenSpan $3)) (reverse $2) }
+Constraint : '[' ListExp ']' { Language.Clafer.Front.AbsClafer.Constraint ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkTokenSpan $3)) (reverse $2) }
 SoftConstraint :: { SoftConstraint }
-SoftConstraint : 'assert' '[' ListExp ']' { SoftConstraint ((mkTokenSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3) >- (mkTokenSpan $4)) (reverse $3) }
+SoftConstraint : 'assert' '[' ListExp ']' { Language.Clafer.Front.AbsClafer.SoftConstraint ((mkTokenSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3) >- (mkTokenSpan $4)) (reverse $3) }
 Goal :: { Goal }
-Goal : '<<' ListExp '>>' { Goal ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkTokenSpan $3)) (reverse $2) }
+Goal : '<<' ListExp '>>' { Language.Clafer.Front.AbsClafer.Goal ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkTokenSpan $3)) (reverse $2) }
 TempModifier :: { TempModifier }
-TempModifier : 'initial' { Initial ((mkTokenSpan $1)) }
-             | 'final' { Final ((mkTokenSpan $1)) }
+TempModifier : 'initial' { Language.Clafer.Front.AbsClafer.Initial ((mkTokenSpan $1)) }
+             | 'final' { Language.Clafer.Front.AbsClafer.Final ((mkTokenSpan $1)) }
 Transition :: { Transition }
-Transition : {- empty -} { TransitionEmpty noSpan }
-           | TransArrow Exp { Transition ((mkCatSpan $1) >- (mkCatSpan $2)) $1 $2 }
+Transition : {- empty -} { Language.Clafer.Front.AbsClafer.TransitionEmpty noSpan }
+           | TransArrow Exp { Language.Clafer.Front.AbsClafer.Transition ((mkCatSpan $1) >- (mkCatSpan $2)) $1 $2 }
 Abstract :: { Abstract }
-Abstract : {- empty -} { AbstractEmpty noSpan }
-         | 'abstract' { Abstract ((mkTokenSpan $1)) }
+Abstract : {- empty -} { Language.Clafer.Front.AbsClafer.AbstractEmpty noSpan }
+         | 'abstract' { Language.Clafer.Front.AbsClafer.Abstract ((mkTokenSpan $1)) }
 Elements :: { Elements }
-Elements : {- empty -} { ElementsEmpty noSpan }
-         | '{' ListElement '}' { ElementsList ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkTokenSpan $3)) (reverse $2) }
+Elements : {- empty -} { Language.Clafer.Front.AbsClafer.ElementsEmpty noSpan }
+         | '{' ListElement '}' { Language.Clafer.Front.AbsClafer.ElementsList ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkTokenSpan $3)) (reverse $2) }
 Element :: { Element }
-Element : Clafer { Subclafer ((mkCatSpan $1)) $1 }
-        | '`' Name Card Elements { ClaferUse ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkCatSpan $3) >- (mkCatSpan $4)) $2 $3 $4 }
-        | Constraint { Subconstraint ((mkCatSpan $1)) $1 }
-        | Goal { Subgoal ((mkCatSpan $1)) $1 }
-        | SoftConstraint { Subsoftconstraint ((mkCatSpan $1)) $1 }
+Element : Clafer { Language.Clafer.Front.AbsClafer.Subclafer ((mkCatSpan $1)) $1 }
+        | '`' Name Card Elements { Language.Clafer.Front.AbsClafer.ClaferUse ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkCatSpan $3) >- (mkCatSpan $4)) $2 $3 $4 }
+        | Constraint { Language.Clafer.Front.AbsClafer.Subconstraint ((mkCatSpan $1)) $1 }
+        | Goal { Language.Clafer.Front.AbsClafer.Subgoal ((mkCatSpan $1)) $1 }
+        | SoftConstraint { Language.Clafer.Front.AbsClafer.Subsoftconstraint ((mkCatSpan $1)) $1 }
 Super :: { Super }
-Super : {- empty -} { SuperEmpty noSpan }
-      | ':' SetExp { SuperSome ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
+Super : {- empty -} { Language.Clafer.Front.AbsClafer.SuperEmpty noSpan }
+      | ':' SetExp { Language.Clafer.Front.AbsClafer.SuperSome ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
 Reference :: { Reference }
-Reference : {- empty -} { ReferenceEmpty noSpan }
-          | '->' SetExp { ReferenceSet ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
-          | '->>' SetExp { ReferenceBag ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
+Reference : {- empty -} { Language.Clafer.Front.AbsClafer.ReferenceEmpty noSpan }
+          | '->' SetExp { Language.Clafer.Front.AbsClafer.ReferenceSet ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
+          | '->>' SetExp { Language.Clafer.Front.AbsClafer.ReferenceBag ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
 Init :: { Init }
-Init : {- empty -} { InitEmpty noSpan }
-     | InitHow Exp { InitSome ((mkCatSpan $1) >- (mkCatSpan $2)) $1 $2 }
+Init : {- empty -} { Language.Clafer.Front.AbsClafer.InitEmpty noSpan }
+     | InitHow Exp { Language.Clafer.Front.AbsClafer.InitSome ((mkCatSpan $1) >- (mkCatSpan $2)) $1 $2 }
 InitHow :: { InitHow }
-InitHow : '=' { InitConstant ((mkTokenSpan $1)) }
-        | ':=' { InitDefault ((mkTokenSpan $1)) }
+InitHow : '=' { Language.Clafer.Front.AbsClafer.InitConstant ((mkTokenSpan $1)) }
+        | ':=' { Language.Clafer.Front.AbsClafer.InitDefault ((mkTokenSpan $1)) }
 GCard :: { GCard }
-GCard : {- empty -} { GCardEmpty noSpan }
-      | 'xor' { GCardXor ((mkTokenSpan $1)) }
-      | 'or' { GCardOr ((mkTokenSpan $1)) }
-      | 'mux' { GCardMux ((mkTokenSpan $1)) }
-      | 'opt' { GCardOpt ((mkTokenSpan $1)) }
-      | NCard { GCardInterval ((mkCatSpan $1)) $1 }
+GCard : {- empty -} { Language.Clafer.Front.AbsClafer.GCardEmpty noSpan }
+      | 'xor' { Language.Clafer.Front.AbsClafer.GCardXor ((mkTokenSpan $1)) }
+      | 'or' { Language.Clafer.Front.AbsClafer.GCardOr ((mkTokenSpan $1)) }
+      | 'mux' { Language.Clafer.Front.AbsClafer.GCardMux ((mkTokenSpan $1)) }
+      | 'opt' { Language.Clafer.Front.AbsClafer.GCardOpt ((mkTokenSpan $1)) }
+      | NCard { Language.Clafer.Front.AbsClafer.GCardInterval ((mkCatSpan $1)) $1 }
 Card :: { Card }
-Card : {- empty -} { CardEmpty noSpan }
-     | '?' { CardLone ((mkTokenSpan $1)) }
-     | '+' { CardSome ((mkTokenSpan $1)) }
-     | '*' { CardAny ((mkTokenSpan $1)) }
-     | PosInteger { CardNum ((mkCatSpan $1)) $1 }
-     | NCard { CardInterval ((mkCatSpan $1)) $1 }
+Card : {- empty -} { Language.Clafer.Front.AbsClafer.CardEmpty noSpan }
+     | '?' { Language.Clafer.Front.AbsClafer.CardLone ((mkTokenSpan $1)) }
+     | '+' { Language.Clafer.Front.AbsClafer.CardSome ((mkTokenSpan $1)) }
+     | '*' { Language.Clafer.Front.AbsClafer.CardAny ((mkTokenSpan $1)) }
+     | PosInteger { Language.Clafer.Front.AbsClafer.CardNum ((mkCatSpan $1)) $1 }
+     | NCard { Language.Clafer.Front.AbsClafer.CardInterval ((mkCatSpan $1)) $1 }
 NCard :: { NCard }
-NCard : PosInteger '..' ExInteger { NCard ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
+NCard : PosInteger '..' ExInteger { Language.Clafer.Front.AbsClafer.NCard ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
 ExInteger :: { ExInteger }
-ExInteger : '*' { ExIntegerAst ((mkTokenSpan $1)) }
-          | PosInteger { ExIntegerNum ((mkCatSpan $1)) $1 }
+ExInteger : '*' { Language.Clafer.Front.AbsClafer.ExIntegerAst ((mkTokenSpan $1)) }
+          | PosInteger { Language.Clafer.Front.AbsClafer.ExIntegerNum ((mkCatSpan $1)) $1 }
 Name :: { Name }
-Name : ListModId { Path ((mkCatSpan $1)) $1 }
+Name : ListModId { Language.Clafer.Front.AbsClafer.Path ((mkCatSpan $1)) $1 }
 Exp :: { Exp }
-Exp : Exp1 TransArrow Exp { TransitionExp ((mkCatSpan $1) >- (mkCatSpan $2) >- (mkCatSpan $3)) $1 $2 $3 }
+Exp : Exp1 TransArrow Exp { Language.Clafer.Front.AbsClafer.TransitionExp ((mkCatSpan $1) >- (mkCatSpan $2) >- (mkCatSpan $3)) $1 $2 $3 }
     | Exp1 {  $1 }
 Exp1 :: { Exp }
-Exp1 : 'all' 'disj' Decl '|' Exp1 { DeclAllDisj ((mkTokenSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3) >- (mkTokenSpan $4) >- (mkCatSpan $5)) $3 $5 }
-     | 'all' Decl '|' Exp1 { DeclAll ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkTokenSpan $3) >- (mkCatSpan $4)) $2 $4 }
-     | Quant 'disj' Decl '|' Exp1 { DeclQuantDisj ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3) >- (mkTokenSpan $4) >- (mkCatSpan $5)) $1 $3 $5 }
-     | Quant Decl '|' Exp1 { DeclQuant ((mkCatSpan $1) >- (mkCatSpan $2) >- (mkTokenSpan $3) >- (mkCatSpan $4)) $1 $2 $4 }
-     | 'let' VarBinding 'in' Exp1 { LetExp ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkTokenSpan $3) >- (mkCatSpan $4)) $2 $4 }
+Exp1 : 'all' 'disj' Decl '|' Exp1 { Language.Clafer.Front.AbsClafer.DeclAllDisj ((mkTokenSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3) >- (mkTokenSpan $4) >- (mkCatSpan $5)) $3 $5 }
+     | 'all' Decl '|' Exp1 { Language.Clafer.Front.AbsClafer.DeclAll ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkTokenSpan $3) >- (mkCatSpan $4)) $2 $4 }
+     | Quant 'disj' Decl '|' Exp1 { Language.Clafer.Front.AbsClafer.DeclQuantDisj ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3) >- (mkTokenSpan $4) >- (mkCatSpan $5)) $1 $3 $5 }
+     | Quant Decl '|' Exp1 { Language.Clafer.Front.AbsClafer.DeclQuant ((mkCatSpan $1) >- (mkCatSpan $2) >- (mkTokenSpan $3) >- (mkCatSpan $4)) $1 $2 $4 }
+     | 'let' VarBinding 'in' Exp1 { Language.Clafer.Front.AbsClafer.LetExp ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkTokenSpan $3) >- (mkCatSpan $4)) $2 $4 }
      | Exp2 {  $1 }
 Exp2 :: { Exp }
-Exp2 : 'never' Exp3 PatternScope { TmpPatNever ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkCatSpan $3)) $2 $3 }
-     | 'sometime' Exp3 PatternScope { TmpPatSometime ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkCatSpan $3)) $2 $3 }
-     | 'lonce' Exp3 PatternScope { TmpPatLessOrOnce ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkCatSpan $3)) $2 $3 }
-     | 'always' Exp3 PatternScope { TmpPatAlways ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkCatSpan $3)) $2 $3 }
-     | Exp3 'must' 'precede' Exp3 PatternScope { TmpPatPrecede ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkTokenSpan $3) >- (mkCatSpan $4) >- (mkCatSpan $5)) $1 $4 $5 }
-     | Exp3 'must' 'follow' Exp3 PatternScope { TmpPatFollow ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkTokenSpan $3) >- (mkCatSpan $4) >- (mkCatSpan $5)) $1 $4 $5 }
-     | 'initially' Exp3 { TmpInitially ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
-     | 'finally' Exp3 { TmpFinally ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
+Exp2 : 'never' Exp3 PatternScope { Language.Clafer.Front.AbsClafer.TmpPatNever ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkCatSpan $3)) $2 $3 }
+     | 'sometime' Exp3 PatternScope { Language.Clafer.Front.AbsClafer.TmpPatSometime ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkCatSpan $3)) $2 $3 }
+     | 'lonce' Exp3 PatternScope { Language.Clafer.Front.AbsClafer.TmpPatLessOrOnce ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkCatSpan $3)) $2 $3 }
+     | 'always' Exp3 PatternScope { Language.Clafer.Front.AbsClafer.TmpPatAlways ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkCatSpan $3)) $2 $3 }
+     | Exp3 'must' 'precede' Exp3 PatternScope { Language.Clafer.Front.AbsClafer.TmpPatPrecede ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkTokenSpan $3) >- (mkCatSpan $4) >- (mkCatSpan $5)) $1 $4 $5 }
+     | Exp3 'must' 'follow' Exp3 PatternScope { Language.Clafer.Front.AbsClafer.TmpPatFollow ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkTokenSpan $3) >- (mkCatSpan $4) >- (mkCatSpan $5)) $1 $4 $5 }
+     | 'initially' Exp3 { Language.Clafer.Front.AbsClafer.TmpInitially ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
+     | 'finally' Exp3 { Language.Clafer.Front.AbsClafer.TmpFinally ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
      | Exp3 {  $1 }
 Exp3 :: { Exp }
-Exp3 : 'max' Exp4 { EGMax ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
-     | 'min' Exp4 { EGMin ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
-     | Exp3 '<=>' Exp4 { EIff ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
+Exp3 : 'max' Exp4 { Language.Clafer.Front.AbsClafer.EGMax ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
+     | 'min' Exp4 { Language.Clafer.Front.AbsClafer.EGMin ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
+     | Exp3 '<=>' Exp4 { Language.Clafer.Front.AbsClafer.EIff ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
      | Exp4 {  $1 }
 Exp4 :: { Exp }
-Exp4 : Exp4 '=>' Exp5 { EImplies ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
+Exp4 : Exp4 '=>' Exp5 { Language.Clafer.Front.AbsClafer.EImplies ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
      | Exp5 {  $1 }
 Exp5 :: { Exp }
-Exp5 : Exp5 '||' Exp6 { EOr ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
+Exp5 : Exp5 '||' Exp6 { Language.Clafer.Front.AbsClafer.EOr ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
      | Exp6 {  $1 }
 Exp6 :: { Exp }
-Exp6 : Exp6 'xor' Exp7 { EXor ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
+Exp6 : Exp6 'xor' Exp7 { Language.Clafer.Front.AbsClafer.EXor ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
      | Exp7 {  $1 }
 Exp7 :: { Exp }
-Exp7 : Exp7 '&&' Exp8 { EAnd ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
+Exp7 : Exp7 '&&' Exp8 { Language.Clafer.Front.AbsClafer.EAnd ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
      | Exp8 {  $1 }
 Exp8 :: { Exp }
-Exp8 : Exp8 'U' Exp9 { LtlU ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
-     | Exp8 'until' Exp9 { TmpUntil ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
+Exp8 : Exp8 'U' Exp9 { Language.Clafer.Front.AbsClafer.LtlU ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
+     | Exp8 'until' Exp9 { Language.Clafer.Front.AbsClafer.TmpUntil ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
      | Exp9 {  $1 }
 Exp9 :: { Exp }
-Exp9 : Exp9 'W' Exp10 { LtlW ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
-     | Exp9 'weakuntil' Exp10 { TmpWUntil ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
+Exp9 : Exp9 'W' Exp10 { Language.Clafer.Front.AbsClafer.LtlW ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
+     | Exp9 'weakuntil' Exp10 { Language.Clafer.Front.AbsClafer.TmpWUntil ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
      | Exp10 {  $1 }
 Exp10 :: { Exp }
-Exp10 : 'F' Exp10 { LtlF ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
-      | 'eventually' Exp10 { TmpEventually ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
-      | 'G' Exp10 { LtlG ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
-      | 'globally' Exp10 { TmpGlobally ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
-      | 'X' Exp10 { LtlX ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
-      | 'next' Exp10 { TmpNext ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
-      | Exp10 '%' Exp11 { ERem ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
+Exp10 : 'F' Exp10 { Language.Clafer.Front.AbsClafer.LtlF ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
+      | 'eventually' Exp10 { Language.Clafer.Front.AbsClafer.TmpEventually ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
+      | 'G' Exp10 { Language.Clafer.Front.AbsClafer.LtlG ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
+      | 'globally' Exp10 { Language.Clafer.Front.AbsClafer.TmpGlobally ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
+      | 'X' Exp10 { Language.Clafer.Front.AbsClafer.LtlX ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
+      | 'next' Exp10 { Language.Clafer.Front.AbsClafer.TmpNext ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
+      | Exp10 '%' Exp11 { Language.Clafer.Front.AbsClafer.ERem ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
       | Exp11 {  $1 }
 Exp11 :: { Exp }
-Exp11 : '!' Exp11 { ENeg ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
+Exp11 : '!' Exp11 { Language.Clafer.Front.AbsClafer.ENeg ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
       | Exp12 {  $1 }
 Exp15 :: { Exp }
-Exp15 : Exp15 '<' Exp16 { ELt ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
-      | Exp15 '>' Exp16 { EGt ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
-      | Exp15 '=' Exp16 { EEq ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
-      | Exp15 '<=' Exp16 { ELte ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
-      | Exp15 '>=' Exp16 { EGte ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
-      | Exp15 '!=' Exp16 { ENeq ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
-      | Exp15 'in' Exp16 { EIn ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
-      | Exp15 'not' 'in' Exp16 { ENin ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkTokenSpan $3) >- (mkCatSpan $4)) $1 $4 }
+Exp15 : Exp15 '<' Exp16 { Language.Clafer.Front.AbsClafer.ELt ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
+      | Exp15 '>' Exp16 { Language.Clafer.Front.AbsClafer.EGt ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
+      | Exp15 '=' Exp16 { Language.Clafer.Front.AbsClafer.EEq ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
+      | Exp15 '<=' Exp16 { Language.Clafer.Front.AbsClafer.ELte ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
+      | Exp15 '>=' Exp16 { Language.Clafer.Front.AbsClafer.EGte ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
+      | Exp15 '!=' Exp16 { Language.Clafer.Front.AbsClafer.ENeq ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
+      | Exp15 'in' Exp16 { Language.Clafer.Front.AbsClafer.EIn ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
+      | Exp15 'not' 'in' Exp16 { Language.Clafer.Front.AbsClafer.ENin ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkTokenSpan $3) >- (mkCatSpan $4)) $1 $4 }
       | Exp16 {  $1 }
 Exp16 :: { Exp }
-Exp16 : Quant Exp20 { QuantExp ((mkCatSpan $1) >- (mkCatSpan $2)) $1 $2 }
+Exp16 : Quant Exp20 { Language.Clafer.Front.AbsClafer.QuantExp ((mkCatSpan $1) >- (mkCatSpan $2)) $1 $2 }
       | Exp17 {  $1 }
 Exp17 :: { Exp }
-Exp17 : Exp17 '+' Exp18 { EAdd ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
-      | Exp17 '-' Exp18 { ESub ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
+Exp17 : Exp17 '+' Exp18 { Language.Clafer.Front.AbsClafer.EAdd ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
+      | Exp17 '-' Exp18 { Language.Clafer.Front.AbsClafer.ESub ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
       | Exp18 {  $1 }
 Exp18 :: { Exp }
-Exp18 : Exp18 '*' Exp19 { EMul ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
-      | Exp18 '/' Exp19 { EDiv ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
+Exp18 : Exp18 '*' Exp19 { Language.Clafer.Front.AbsClafer.EMul ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
+      | Exp18 '/' Exp19 { Language.Clafer.Front.AbsClafer.EDiv ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
       | Exp19 {  $1 }
 Exp19 :: { Exp }
-Exp19 : 'sum' Exp20 { ESumSetExp ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
-      | 'product' Exp20 { EProdSetExp ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
-      | '#' Exp20 { ECSetExp ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
-      | '-' Exp20 { EMinExp ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
+Exp19 : 'sum' Exp20 { Language.Clafer.Front.AbsClafer.ESumSetExp ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
+      | 'product' Exp20 { Language.Clafer.Front.AbsClafer.EProdSetExp ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
+      | '#' Exp20 { Language.Clafer.Front.AbsClafer.ECSetExp ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
+      | '-' Exp20 { Language.Clafer.Front.AbsClafer.EMinExp ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
       | Exp20 {  $1 }
 Exp20 :: { Exp }
-Exp20 : 'if' Exp20 'then' Exp20 'else' Exp21 { EImpliesElse ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkTokenSpan $3) >- (mkCatSpan $4) >- (mkTokenSpan $5) >- (mkCatSpan $6)) $2 $4 $6 }
+Exp20 : 'if' Exp20 'then' Exp20 'else' Exp21 { Language.Clafer.Front.AbsClafer.EImpliesElse ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkTokenSpan $3) >- (mkCatSpan $4) >- (mkTokenSpan $5) >- (mkCatSpan $6)) $2 $4 $6 }
       | Exp21 {  $1 }
 Exp21 :: { Exp }
-Exp21 : PosInteger { EInt ((mkCatSpan $1)) $1 }
-      | PosDouble { EDouble ((mkCatSpan $1)) $1 }
-      | PosString { EStr ((mkCatSpan $1)) $1 }
-      | SetExp { ESetExp ((mkCatSpan $1)) $1 }
+Exp21 : PosInteger { Language.Clafer.Front.AbsClafer.EInt ((mkCatSpan $1)) $1 }
+      | PosDouble { Language.Clafer.Front.AbsClafer.EDouble ((mkCatSpan $1)) $1 }
+      | PosString { Language.Clafer.Front.AbsClafer.EStr ((mkCatSpan $1)) $1 }
+      | SetExp { Language.Clafer.Front.AbsClafer.ESetExp ((mkCatSpan $1)) $1 }
       | '(' Exp ')' {  $2 }
 TransGuard :: { TransGuard }
-TransGuard : Exp1 { TransGuard ((mkCatSpan $1)) $1 }
+TransGuard : Exp1 { Language.Clafer.Front.AbsClafer.TransGuard ((mkCatSpan $1)) $1 }
 TransArrow :: { TransArrow }
-TransArrow : '-->>' { SyncTransArrow ((mkTokenSpan $1)) }
-           | '-[' TransGuard ']->>' { GuardedSyncTransArrow ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkTokenSpan $3)) $2 }
-           | '-->' { NextTransArrow ((mkTokenSpan $1)) }
-           | '-[' TransGuard ']->' { GuardedNextTransArrow ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkTokenSpan $3)) $2 }
+TransArrow : '-->>' { Language.Clafer.Front.AbsClafer.SyncTransArrow ((mkTokenSpan $1)) }
+           | '-[' TransGuard ']->>' { Language.Clafer.Front.AbsClafer.GuardedSyncTransArrow ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkTokenSpan $3)) $2 }
+           | '-->' { Language.Clafer.Front.AbsClafer.NextTransArrow ((mkTokenSpan $1)) }
+           | '-[' TransGuard ']->' { Language.Clafer.Front.AbsClafer.GuardedNextTransArrow ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkTokenSpan $3)) $2 }
 PatternScope :: { PatternScope }
-PatternScope : 'before' Exp11 { PatScopeBefore ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
-             | 'after' Exp11 { PatScopeAfter ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
-             | 'between' Exp11 'and' Exp11 { PatScopeBetweenAnd ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkTokenSpan $3) >- (mkCatSpan $4)) $2 $4 }
-             | 'after' Exp11 'until' Exp11 { PatScopeAfterUntil ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkTokenSpan $3) >- (mkCatSpan $4)) $2 $4 }
-             | {- empty -} { PatScopeEmpty noSpan }
+PatternScope : 'before' Exp11 { Language.Clafer.Front.AbsClafer.PatScopeBefore ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
+             | 'after' Exp11 { Language.Clafer.Front.AbsClafer.PatScopeAfter ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
+             | 'between' Exp11 'and' Exp11 { Language.Clafer.Front.AbsClafer.PatScopeBetweenAnd ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkTokenSpan $3) >- (mkCatSpan $4)) $2 $4 }
+             | 'after' Exp11 'until' Exp11 { Language.Clafer.Front.AbsClafer.PatScopeAfterUntil ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkTokenSpan $3) >- (mkCatSpan $4)) $2 $4 }
+             | {- empty -} { Language.Clafer.Front.AbsClafer.PatScopeEmpty noSpan }
 SetExp :: { SetExp }
-SetExp : SetExp '++' SetExp1 { Union ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
-       | SetExp ',' SetExp1 { UnionCom ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
+SetExp : SetExp '++' SetExp1 { Language.Clafer.Front.AbsClafer.Union ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
+       | SetExp ',' SetExp1 { Language.Clafer.Front.AbsClafer.UnionCom ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
        | SetExp1 {  $1 }
 SetExp1 :: { SetExp }
-SetExp1 : SetExp1 '--' SetExp2 { Difference ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
+SetExp1 : SetExp1 '--' SetExp2 { Language.Clafer.Front.AbsClafer.Difference ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
         | SetExp2 {  $1 }
 SetExp2 :: { SetExp }
-SetExp2 : SetExp2 '**' SetExp3 { Intersection ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
+SetExp2 : SetExp2 '**' SetExp3 { Language.Clafer.Front.AbsClafer.Intersection ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
         | SetExp3 {  $1 }
 SetExp3 :: { SetExp }
-SetExp3 : SetExp3 '<:' SetExp4 { Domain ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
+SetExp3 : SetExp3 '<:' SetExp4 { Language.Clafer.Front.AbsClafer.Domain ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
         | SetExp4 {  $1 }
 SetExp4 :: { SetExp }
-SetExp4 : SetExp4 ':>' SetExp5 { Range ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
+SetExp4 : SetExp4 ':>' SetExp5 { Language.Clafer.Front.AbsClafer.Range ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
         | SetExp5 {  $1 }
 SetExp5 :: { SetExp }
-SetExp5 : SetExp5 '.' SetExp6 { Join ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
+SetExp5 : SetExp5 '.' SetExp6 { Language.Clafer.Front.AbsClafer.Join ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
         | SetExp6 {  $1 }
 SetExp6 :: { SetExp }
-SetExp6 : Name { ClaferId ((mkCatSpan $1)) $1 }
+SetExp6 : Name { Language.Clafer.Front.AbsClafer.ClaferId ((mkCatSpan $1)) $1 }
         | '(' SetExp ')' {  $2 }
 Decl :: { Decl }
-Decl : ListLocId ':' SetExp { Decl ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
+Decl : ListLocId ':' SetExp { Language.Clafer.Front.AbsClafer.Decl ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
 VarBinding :: { VarBinding }
-VarBinding : LocId '=' Name { VarBinding ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
+VarBinding : LocId '=' Name { Language.Clafer.Front.AbsClafer.VarBinding ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
 Quant :: { Quant }
-Quant : 'no' { QuantNo ((mkTokenSpan $1)) }
-      | 'not' { QuantNot ((mkTokenSpan $1)) }
-      | 'lone' { QuantLone ((mkTokenSpan $1)) }
-      | 'one' { QuantOne ((mkTokenSpan $1)) }
-      | 'some' { QuantSome ((mkTokenSpan $1)) }
+Quant : 'no' { Language.Clafer.Front.AbsClafer.QuantNo ((mkTokenSpan $1)) }
+      | 'not' { Language.Clafer.Front.AbsClafer.QuantNot ((mkTokenSpan $1)) }
+      | 'lone' { Language.Clafer.Front.AbsClafer.QuantLone ((mkTokenSpan $1)) }
+      | 'one' { Language.Clafer.Front.AbsClafer.QuantOne ((mkTokenSpan $1)) }
+      | 'some' { Language.Clafer.Front.AbsClafer.QuantSome ((mkTokenSpan $1)) }
 EnumId :: { EnumId }
-EnumId : PosIdent { EnumIdIdent ((mkCatSpan $1)) $1 }
+EnumId : PosIdent { Language.Clafer.Front.AbsClafer.EnumIdIdent ((mkCatSpan $1)) $1 }
 ModId :: { ModId }
-ModId : PosIdent { ModIdIdent ((mkCatSpan $1)) $1 }
+ModId : PosIdent { Language.Clafer.Front.AbsClafer.ModIdIdent ((mkCatSpan $1)) $1 }
 LocId :: { LocId }
-LocId : PosIdent { LocIdIdent ((mkCatSpan $1)) $1 }
+LocId : PosIdent { Language.Clafer.Front.AbsClafer.LocIdIdent ((mkCatSpan $1)) $1 }
 ListDeclaration :: { [Declaration] }
 ListDeclaration : {- empty -} { []  }
                 | ListDeclaration Declaration { flip (:)  $1 $2 }

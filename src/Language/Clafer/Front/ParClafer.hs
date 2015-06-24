@@ -667,7 +667,7 @@ happyReduce_9 = happySpecReduce_1  4# happyReduction_9
 happyReduction_9 happy_x_1
 	 =  case happyOut67 happy_x_1 of { happy_var_1 -> 
 	happyIn12
-		 (Module ((mkCatSpan happy_var_1)) (reverse happy_var_1)
+		 (Language.Clafer.Front.AbsClafer.Module ((mkCatSpan happy_var_1)) (reverse happy_var_1)
 	)}
 
 happyReduce_10 = happyReduce 4# 5# happyReduction_10
@@ -681,14 +681,14 @@ happyReduction_10 (happy_x_4 `HappyStk`
 	case happyOutTok happy_x_3 of { happy_var_3 -> 
 	case happyOut68 happy_x_4 of { happy_var_4 -> 
 	happyIn13
-		 (EnumDecl ((mkTokenSpan happy_var_1) >- (mkCatSpan happy_var_2) >- (mkTokenSpan happy_var_3) >- (mkCatSpan happy_var_4)) happy_var_2 happy_var_4
+		 (Language.Clafer.Front.AbsClafer.EnumDecl ((mkTokenSpan happy_var_1) >- (mkCatSpan happy_var_2) >- (mkTokenSpan happy_var_3) >- (mkCatSpan happy_var_4)) happy_var_2 happy_var_4
 	) `HappyStk` happyRest}}}}
 
 happyReduce_11 = happySpecReduce_1  5# happyReduction_11
 happyReduction_11 happy_x_1
 	 =  case happyOut22 happy_x_1 of { happy_var_1 -> 
 	happyIn13
-		 (ElementDecl ((mkCatSpan happy_var_1)) happy_var_1
+		 (Language.Clafer.Front.AbsClafer.ElementDecl ((mkCatSpan happy_var_1)) happy_var_1
 	)}
 
 happyReduce_12 = happyReduce 10# 6# happyReduction_12
@@ -714,7 +714,7 @@ happyReduction_12 (happy_x_10 `HappyStk`
 	case happyOut19 happy_x_9 of { happy_var_9 -> 
 	case happyOut21 happy_x_10 of { happy_var_10 -> 
 	happyIn14
-		 (Clafer ((mkCatSpan happy_var_1) >- (mkCatSpan happy_var_2) >- (mkCatSpan happy_var_3) >- (mkCatSpan happy_var_4) >- (mkCatSpan happy_var_5) >- (mkCatSpan happy_var_6) >- (mkCatSpan happy_var_7) >- (mkCatSpan happy_var_8) >- (mkCatSpan happy_var_9) >- (mkCatSpan happy_var_10)) happy_var_1 (reverse happy_var_2) happy_var_3 happy_var_4 happy_var_5 happy_var_6 happy_var_7 happy_var_8 happy_var_9 happy_var_10
+		 (Language.Clafer.Front.AbsClafer.Clafer ((mkCatSpan happy_var_1) >- (mkCatSpan happy_var_2) >- (mkCatSpan happy_var_3) >- (mkCatSpan happy_var_4) >- (mkCatSpan happy_var_5) >- (mkCatSpan happy_var_6) >- (mkCatSpan happy_var_7) >- (mkCatSpan happy_var_8) >- (mkCatSpan happy_var_9) >- (mkCatSpan happy_var_10)) happy_var_1 (reverse happy_var_2) happy_var_3 happy_var_4 happy_var_5 happy_var_6 happy_var_7 happy_var_8 happy_var_9 happy_var_10
 	) `HappyStk` happyRest}}}}}}}}}}
 
 happyReduce_13 = happySpecReduce_3  7# happyReduction_13
@@ -725,7 +725,7 @@ happyReduction_13 happy_x_3
 	case happyOut70 happy_x_2 of { happy_var_2 -> 
 	case happyOutTok happy_x_3 of { happy_var_3 -> 
 	happyIn15
-		 (Constraint ((mkTokenSpan happy_var_1) >- (mkCatSpan happy_var_2) >- (mkTokenSpan happy_var_3)) (reverse happy_var_2)
+		 (Language.Clafer.Front.AbsClafer.Constraint ((mkTokenSpan happy_var_1) >- (mkCatSpan happy_var_2) >- (mkTokenSpan happy_var_3)) (reverse happy_var_2)
 	)}}}
 
 happyReduce_14 = happyReduce 4# 8# happyReduction_14
@@ -739,7 +739,7 @@ happyReduction_14 (happy_x_4 `HappyStk`
 	case happyOut70 happy_x_3 of { happy_var_3 -> 
 	case happyOutTok happy_x_4 of { happy_var_4 -> 
 	happyIn16
-		 (SoftConstraint ((mkTokenSpan happy_var_1) >- (mkTokenSpan happy_var_2) >- (mkCatSpan happy_var_3) >- (mkTokenSpan happy_var_4)) (reverse happy_var_3)
+		 (Language.Clafer.Front.AbsClafer.SoftConstraint ((mkTokenSpan happy_var_1) >- (mkTokenSpan happy_var_2) >- (mkCatSpan happy_var_3) >- (mkTokenSpan happy_var_4)) (reverse happy_var_3)
 	) `HappyStk` happyRest}}}}
 
 happyReduce_15 = happySpecReduce_3  9# happyReduction_15
@@ -750,26 +750,26 @@ happyReduction_15 happy_x_3
 	case happyOut70 happy_x_2 of { happy_var_2 -> 
 	case happyOutTok happy_x_3 of { happy_var_3 -> 
 	happyIn17
-		 (Goal ((mkTokenSpan happy_var_1) >- (mkCatSpan happy_var_2) >- (mkTokenSpan happy_var_3)) (reverse happy_var_2)
+		 (Language.Clafer.Front.AbsClafer.Goal ((mkTokenSpan happy_var_1) >- (mkCatSpan happy_var_2) >- (mkTokenSpan happy_var_3)) (reverse happy_var_2)
 	)}}}
 
 happyReduce_16 = happySpecReduce_1  10# happyReduction_16
 happyReduction_16 happy_x_1
 	 =  case happyOutTok happy_x_1 of { happy_var_1 -> 
 	happyIn18
-		 (Initial ((mkTokenSpan happy_var_1))
+		 (Language.Clafer.Front.AbsClafer.Initial ((mkTokenSpan happy_var_1))
 	)}
 
 happyReduce_17 = happySpecReduce_1  10# happyReduction_17
 happyReduction_17 happy_x_1
 	 =  case happyOutTok happy_x_1 of { happy_var_1 -> 
 	happyIn18
-		 (Final ((mkTokenSpan happy_var_1))
+		 (Language.Clafer.Front.AbsClafer.Final ((mkTokenSpan happy_var_1))
 	)}
 
 happyReduce_18 = happySpecReduce_0  11# happyReduction_18
 happyReduction_18  =  happyIn19
-		 (TransitionEmpty noSpan
+		 (Language.Clafer.Front.AbsClafer.TransitionEmpty noSpan
 	)
 
 happyReduce_19 = happySpecReduce_2  11# happyReduction_19
@@ -778,24 +778,24 @@ happyReduction_19 happy_x_2
 	 =  case happyOut52 happy_x_1 of { happy_var_1 -> 
 	case happyOut32 happy_x_2 of { happy_var_2 -> 
 	happyIn19
-		 (Transition ((mkCatSpan happy_var_1) >- (mkCatSpan happy_var_2)) happy_var_1 happy_var_2
+		 (Language.Clafer.Front.AbsClafer.Transition ((mkCatSpan happy_var_1) >- (mkCatSpan happy_var_2)) happy_var_1 happy_var_2
 	)}}
 
 happyReduce_20 = happySpecReduce_0  12# happyReduction_20
 happyReduction_20  =  happyIn20
-		 (AbstractEmpty noSpan
+		 (Language.Clafer.Front.AbsClafer.AbstractEmpty noSpan
 	)
 
 happyReduce_21 = happySpecReduce_1  12# happyReduction_21
 happyReduction_21 happy_x_1
 	 =  case happyOutTok happy_x_1 of { happy_var_1 -> 
 	happyIn20
-		 (Abstract ((mkTokenSpan happy_var_1))
+		 (Language.Clafer.Front.AbsClafer.Abstract ((mkTokenSpan happy_var_1))
 	)}
 
 happyReduce_22 = happySpecReduce_0  13# happyReduction_22
 happyReduction_22  =  happyIn21
-		 (ElementsEmpty noSpan
+		 (Language.Clafer.Front.AbsClafer.ElementsEmpty noSpan
 	)
 
 happyReduce_23 = happySpecReduce_3  13# happyReduction_23
@@ -806,14 +806,14 @@ happyReduction_23 happy_x_3
 	case happyOut69 happy_x_2 of { happy_var_2 -> 
 	case happyOutTok happy_x_3 of { happy_var_3 -> 
 	happyIn21
-		 (ElementsList ((mkTokenSpan happy_var_1) >- (mkCatSpan happy_var_2) >- (mkTokenSpan happy_var_3)) (reverse happy_var_2)
+		 (Language.Clafer.Front.AbsClafer.ElementsList ((mkTokenSpan happy_var_1) >- (mkCatSpan happy_var_2) >- (mkTokenSpan happy_var_3)) (reverse happy_var_2)
 	)}}}
 
 happyReduce_24 = happySpecReduce_1  14# happyReduction_24
 happyReduction_24 happy_x_1
 	 =  case happyOut14 happy_x_1 of { happy_var_1 -> 
 	happyIn22
-		 (Subclafer ((mkCatSpan happy_var_1)) happy_var_1
+		 (Language.Clafer.Front.AbsClafer.Subclafer ((mkCatSpan happy_var_1)) happy_var_1
 	)}
 
 happyReduce_25 = happyReduce 4# 14# happyReduction_25
@@ -827,33 +827,33 @@ happyReduction_25 (happy_x_4 `HappyStk`
 	case happyOut28 happy_x_3 of { happy_var_3 -> 
 	case happyOut21 happy_x_4 of { happy_var_4 -> 
 	happyIn22
-		 (ClaferUse ((mkTokenSpan happy_var_1) >- (mkCatSpan happy_var_2) >- (mkCatSpan happy_var_3) >- (mkCatSpan happy_var_4)) happy_var_2 happy_var_3 happy_var_4
+		 (Language.Clafer.Front.AbsClafer.ClaferUse ((mkTokenSpan happy_var_1) >- (mkCatSpan happy_var_2) >- (mkCatSpan happy_var_3) >- (mkCatSpan happy_var_4)) happy_var_2 happy_var_3 happy_var_4
 	) `HappyStk` happyRest}}}}
 
 happyReduce_26 = happySpecReduce_1  14# happyReduction_26
 happyReduction_26 happy_x_1
 	 =  case happyOut15 happy_x_1 of { happy_var_1 -> 
 	happyIn22
-		 (Subconstraint ((mkCatSpan happy_var_1)) happy_var_1
+		 (Language.Clafer.Front.AbsClafer.Subconstraint ((mkCatSpan happy_var_1)) happy_var_1
 	)}
 
 happyReduce_27 = happySpecReduce_1  14# happyReduction_27
 happyReduction_27 happy_x_1
 	 =  case happyOut17 happy_x_1 of { happy_var_1 -> 
 	happyIn22
-		 (Subgoal ((mkCatSpan happy_var_1)) happy_var_1
+		 (Language.Clafer.Front.AbsClafer.Subgoal ((mkCatSpan happy_var_1)) happy_var_1
 	)}
 
 happyReduce_28 = happySpecReduce_1  14# happyReduction_28
 happyReduction_28 happy_x_1
 	 =  case happyOut16 happy_x_1 of { happy_var_1 -> 
 	happyIn22
-		 (Subsoftconstraint ((mkCatSpan happy_var_1)) happy_var_1
+		 (Language.Clafer.Front.AbsClafer.Subsoftconstraint ((mkCatSpan happy_var_1)) happy_var_1
 	)}
 
 happyReduce_29 = happySpecReduce_0  15# happyReduction_29
 happyReduction_29  =  happyIn23
-		 (SuperEmpty noSpan
+		 (Language.Clafer.Front.AbsClafer.SuperEmpty noSpan
 	)
 
 happyReduce_30 = happySpecReduce_2  15# happyReduction_30
@@ -862,12 +862,12 @@ happyReduction_30 happy_x_2
 	 =  case happyOutTok happy_x_1 of { happy_var_1 -> 
 	case happyOut54 happy_x_2 of { happy_var_2 -> 
 	happyIn23
-		 (SuperSome ((mkTokenSpan happy_var_1) >- (mkCatSpan happy_var_2)) happy_var_2
+		 (Language.Clafer.Front.AbsClafer.SuperSome ((mkTokenSpan happy_var_1) >- (mkCatSpan happy_var_2)) happy_var_2
 	)}}
 
 happyReduce_31 = happySpecReduce_0  16# happyReduction_31
 happyReduction_31  =  happyIn24
-		 (ReferenceEmpty noSpan
+		 (Language.Clafer.Front.AbsClafer.ReferenceEmpty noSpan
 	)
 
 happyReduce_32 = happySpecReduce_2  16# happyReduction_32
@@ -876,7 +876,7 @@ happyReduction_32 happy_x_2
 	 =  case happyOutTok happy_x_1 of { happy_var_1 -> 
 	case happyOut54 happy_x_2 of { happy_var_2 -> 
 	happyIn24
-		 (ReferenceSet ((mkTokenSpan happy_var_1) >- (mkCatSpan happy_var_2)) happy_var_2
+		 (Language.Clafer.Front.AbsClafer.ReferenceSet ((mkTokenSpan happy_var_1) >- (mkCatSpan happy_var_2)) happy_var_2
 	)}}
 
 happyReduce_33 = happySpecReduce_2  16# happyReduction_33
@@ -885,12 +885,12 @@ happyReduction_33 happy_x_2
 	 =  case happyOutTok happy_x_1 of { happy_var_1 -> 
 	case happyOut54 happy_x_2 of { happy_var_2 -> 
 	happyIn24
-		 (ReferenceBag ((mkTokenSpan happy_var_1) >- (mkCatSpan happy_var_2)) happy_var_2
+		 (Language.Clafer.Front.AbsClafer.ReferenceBag ((mkTokenSpan happy_var_1) >- (mkCatSpan happy_var_2)) happy_var_2
 	)}}
 
 happyReduce_34 = happySpecReduce_0  17# happyReduction_34
 happyReduction_34  =  happyIn25
-		 (InitEmpty noSpan
+		 (Language.Clafer.Front.AbsClafer.InitEmpty noSpan
 	)
 
 happyReduce_35 = happySpecReduce_2  17# happyReduction_35
@@ -899,101 +899,101 @@ happyReduction_35 happy_x_2
 	 =  case happyOut26 happy_x_1 of { happy_var_1 -> 
 	case happyOut32 happy_x_2 of { happy_var_2 -> 
 	happyIn25
-		 (InitSome ((mkCatSpan happy_var_1) >- (mkCatSpan happy_var_2)) happy_var_1 happy_var_2
+		 (Language.Clafer.Front.AbsClafer.InitSome ((mkCatSpan happy_var_1) >- (mkCatSpan happy_var_2)) happy_var_1 happy_var_2
 	)}}
 
 happyReduce_36 = happySpecReduce_1  18# happyReduction_36
 happyReduction_36 happy_x_1
 	 =  case happyOutTok happy_x_1 of { happy_var_1 -> 
 	happyIn26
-		 (InitConstant ((mkTokenSpan happy_var_1))
+		 (Language.Clafer.Front.AbsClafer.InitConstant ((mkTokenSpan happy_var_1))
 	)}
 
 happyReduce_37 = happySpecReduce_1  18# happyReduction_37
 happyReduction_37 happy_x_1
 	 =  case happyOutTok happy_x_1 of { happy_var_1 -> 
 	happyIn26
-		 (InitDefault ((mkTokenSpan happy_var_1))
+		 (Language.Clafer.Front.AbsClafer.InitDefault ((mkTokenSpan happy_var_1))
 	)}
 
 happyReduce_38 = happySpecReduce_0  19# happyReduction_38
 happyReduction_38  =  happyIn27
-		 (GCardEmpty noSpan
+		 (Language.Clafer.Front.AbsClafer.GCardEmpty noSpan
 	)
 
 happyReduce_39 = happySpecReduce_1  19# happyReduction_39
 happyReduction_39 happy_x_1
 	 =  case happyOutTok happy_x_1 of { happy_var_1 -> 
 	happyIn27
-		 (GCardXor ((mkTokenSpan happy_var_1))
+		 (Language.Clafer.Front.AbsClafer.GCardXor ((mkTokenSpan happy_var_1))
 	)}
 
 happyReduce_40 = happySpecReduce_1  19# happyReduction_40
 happyReduction_40 happy_x_1
 	 =  case happyOutTok happy_x_1 of { happy_var_1 -> 
 	happyIn27
-		 (GCardOr ((mkTokenSpan happy_var_1))
+		 (Language.Clafer.Front.AbsClafer.GCardOr ((mkTokenSpan happy_var_1))
 	)}
 
 happyReduce_41 = happySpecReduce_1  19# happyReduction_41
 happyReduction_41 happy_x_1
 	 =  case happyOutTok happy_x_1 of { happy_var_1 -> 
 	happyIn27
-		 (GCardMux ((mkTokenSpan happy_var_1))
+		 (Language.Clafer.Front.AbsClafer.GCardMux ((mkTokenSpan happy_var_1))
 	)}
 
 happyReduce_42 = happySpecReduce_1  19# happyReduction_42
 happyReduction_42 happy_x_1
 	 =  case happyOutTok happy_x_1 of { happy_var_1 -> 
 	happyIn27
-		 (GCardOpt ((mkTokenSpan happy_var_1))
+		 (Language.Clafer.Front.AbsClafer.GCardOpt ((mkTokenSpan happy_var_1))
 	)}
 
 happyReduce_43 = happySpecReduce_1  19# happyReduction_43
 happyReduction_43 happy_x_1
 	 =  case happyOut29 happy_x_1 of { happy_var_1 -> 
 	happyIn27
-		 (GCardInterval ((mkCatSpan happy_var_1)) happy_var_1
+		 (Language.Clafer.Front.AbsClafer.GCardInterval ((mkCatSpan happy_var_1)) happy_var_1
 	)}
 
 happyReduce_44 = happySpecReduce_0  20# happyReduction_44
 happyReduction_44  =  happyIn28
-		 (CardEmpty noSpan
+		 (Language.Clafer.Front.AbsClafer.CardEmpty noSpan
 	)
 
 happyReduce_45 = happySpecReduce_1  20# happyReduction_45
 happyReduction_45 happy_x_1
 	 =  case happyOutTok happy_x_1 of { happy_var_1 -> 
 	happyIn28
-		 (CardLone ((mkTokenSpan happy_var_1))
+		 (Language.Clafer.Front.AbsClafer.CardLone ((mkTokenSpan happy_var_1))
 	)}
 
 happyReduce_46 = happySpecReduce_1  20# happyReduction_46
 happyReduction_46 happy_x_1
 	 =  case happyOutTok happy_x_1 of { happy_var_1 -> 
 	happyIn28
-		 (CardSome ((mkTokenSpan happy_var_1))
+		 (Language.Clafer.Front.AbsClafer.CardSome ((mkTokenSpan happy_var_1))
 	)}
 
 happyReduce_47 = happySpecReduce_1  20# happyReduction_47
 happyReduction_47 happy_x_1
 	 =  case happyOutTok happy_x_1 of { happy_var_1 -> 
 	happyIn28
-		 (CardAny ((mkTokenSpan happy_var_1))
+		 (Language.Clafer.Front.AbsClafer.CardAny ((mkTokenSpan happy_var_1))
 	)}
 
 happyReduce_48 = happySpecReduce_1  20# happyReduction_48
 happyReduction_48 happy_x_1
 	 =  case happyOut8 happy_x_1 of { happy_var_1 -> 
 	happyIn28
-		 (CardNum ((mkCatSpan happy_var_1)) happy_var_1
+		 (Language.Clafer.Front.AbsClafer.CardNum ((mkCatSpan happy_var_1)) happy_var_1
 	)}
 
 happyReduce_49 = happySpecReduce_1  20# happyReduction_49
 happyReduction_49 happy_x_1
 	 =  case happyOut29 happy_x_1 of { happy_var_1 -> 
 	happyIn28
-		 (CardInterval ((mkCatSpan happy_var_1)) happy_var_1
+		 (Language.Clafer.Front.AbsClafer.CardInterval ((mkCatSpan happy_var_1)) happy_var_1
 	)}
 
 happyReduce_50 = happySpecReduce_3  21# happyReduction_50
@@ -1004,28 +1004,28 @@ happyReduction_50 happy_x_3
 	case happyOutTok happy_x_2 of { happy_var_2 -> 
 	case happyOut30 happy_x_3 of { happy_var_3 -> 
 	happyIn29
-		 (NCard ((mkCatSpan happy_var_1) >- (mkTokenSpan happy_var_2) >- (mkCatSpan happy_var_3)) happy_var_1 happy_var_3
+		 (Language.Clafer.Front.AbsClafer.NCard ((mkCatSpan happy_var_1) >- (mkTokenSpan happy_var_2) >- (mkCatSpan happy_var_3)) happy_var_1 happy_var_3
 	)}}}
 
 happyReduce_51 = happySpecReduce_1  22# happyReduction_51
 happyReduction_51 happy_x_1
 	 =  case happyOutTok happy_x_1 of { happy_var_1 -> 
 	happyIn30
-		 (ExIntegerAst ((mkTokenSpan happy_var_1))
+		 (Language.Clafer.Front.AbsClafer.ExIntegerAst ((mkTokenSpan happy_var_1))
 	)}
 
 happyReduce_52 = happySpecReduce_1  22# happyReduction_52
 happyReduction_52 happy_x_1
 	 =  case happyOut8 happy_x_1 of { happy_var_1 -> 
 	happyIn30
-		 (ExIntegerNum ((mkCatSpan happy_var_1)) happy_var_1
+		 (Language.Clafer.Front.AbsClafer.ExIntegerNum ((mkCatSpan happy_var_1)) happy_var_1
 	)}
 
 happyReduce_53 = happySpecReduce_1  23# happyReduction_53
 happyReduction_53 happy_x_1
 	 =  case happyOut73 happy_x_1 of { happy_var_1 -> 
 	happyIn31
-		 (Path ((mkCatSpan happy_var_1)) happy_var_1
+		 (Language.Clafer.Front.AbsClafer.Path ((mkCatSpan happy_var_1)) happy_var_1
 	)}
 
 happyReduce_54 = happySpecReduce_3  24# happyReduction_54
@@ -1036,7 +1036,7 @@ happyReduction_54 happy_x_3
 	case happyOut52 happy_x_2 of { happy_var_2 -> 
 	case happyOut32 happy_x_3 of { happy_var_3 -> 
 	happyIn32
-		 (TransitionExp ((mkCatSpan happy_var_1) >- (mkCatSpan happy_var_2) >- (mkCatSpan happy_var_3)) happy_var_1 happy_var_2 happy_var_3
+		 (Language.Clafer.Front.AbsClafer.TransitionExp ((mkCatSpan happy_var_1) >- (mkCatSpan happy_var_2) >- (mkCatSpan happy_var_3)) happy_var_1 happy_var_2 happy_var_3
 	)}}}
 
 happyReduce_55 = happySpecReduce_1  24# happyReduction_55
@@ -1059,7 +1059,7 @@ happyReduction_56 (happy_x_5 `HappyStk`
 	case happyOutTok happy_x_4 of { happy_var_4 -> 
 	case happyOut33 happy_x_5 of { happy_var_5 -> 
 	happyIn33
-		 (DeclAllDisj ((mkTokenSpan happy_var_1) >- (mkTokenSpan happy_var_2) >- (mkCatSpan happy_var_3) >- (mkTokenSpan happy_var_4) >- (mkCatSpan happy_var_5)) happy_var_3 happy_var_5
+		 (Language.Clafer.Front.AbsClafer.DeclAllDisj ((mkTokenSpan happy_var_1) >- (mkTokenSpan happy_var_2) >- (mkCatSpan happy_var_3) >- (mkTokenSpan happy_var_4) >- (mkCatSpan happy_var_5)) happy_var_3 happy_var_5
 	) `HappyStk` happyRest}}}}}
 
 happyReduce_57 = happyReduce 4# 25# happyReduction_57
@@ -1073,7 +1073,7 @@ happyReduction_57 (happy_x_4 `HappyStk`
 	case happyOutTok happy_x_3 of { happy_var_3 -> 
 	case happyOut33 happy_x_4 of { happy_var_4 -> 
 	happyIn33
-		 (DeclAll ((mkTokenSpan happy_var_1) >- (mkCatSpan happy_var_2) >- (mkTokenSpan happy_var_3) >- (mkCatSpan happy_var_4)) happy_var_2 happy_var_4
+		 (Language.Clafer.Front.AbsClafer.DeclAll ((mkTokenSpan happy_var_1) >- (mkCatSpan happy_var_2) >- (mkTokenSpan happy_var_3) >- (mkCatSpan happy_var_4)) happy_var_2 happy_var_4
 	) `HappyStk` happyRest}}}}
 
 happyReduce_58 = happyReduce 5# 25# happyReduction_58
@@ -1089,7 +1089,7 @@ happyReduction_58 (happy_x_5 `HappyStk`
 	case happyOutTok happy_x_4 of { happy_var_4 -> 
 	case happyOut33 happy_x_5 of { happy_var_5 -> 
 	happyIn33
-		 (DeclQuantDisj ((mkCatSpan happy_var_1) >- (mkTokenSpan happy_var_2) >- (mkCatSpan happy_var_3) >- (mkTokenSpan happy_var_4) >- (mkCatSpan happy_var_5)) happy_var_1 happy_var_3 happy_var_5
+		 (Language.Clafer.Front.AbsClafer.DeclQuantDisj ((mkCatSpan happy_var_1) >- (mkTokenSpan happy_var_2) >- (mkCatSpan happy_var_3) >- (mkTokenSpan happy_var_4) >- (mkCatSpan happy_var_5)) happy_var_1 happy_var_3 happy_var_5
 	) `HappyStk` happyRest}}}}}
 
 happyReduce_59 = happyReduce 4# 25# happyReduction_59
@@ -1103,7 +1103,7 @@ happyReduction_59 (happy_x_4 `HappyStk`
 	case happyOutTok happy_x_3 of { happy_var_3 -> 
 	case happyOut33 happy_x_4 of { happy_var_4 -> 
 	happyIn33
-		 (DeclQuant ((mkCatSpan happy_var_1) >- (mkCatSpan happy_var_2) >- (mkTokenSpan happy_var_3) >- (mkCatSpan happy_var_4)) happy_var_1 happy_var_2 happy_var_4
+		 (Language.Clafer.Front.AbsClafer.DeclQuant ((mkCatSpan happy_var_1) >- (mkCatSpan happy_var_2) >- (mkTokenSpan happy_var_3) >- (mkCatSpan happy_var_4)) happy_var_1 happy_var_2 happy_var_4
 	) `HappyStk` happyRest}}}}
 
 happyReduce_60 = happyReduce 4# 25# happyReduction_60
@@ -1117,7 +1117,7 @@ happyReduction_60 (happy_x_4 `HappyStk`
 	case happyOutTok happy_x_3 of { happy_var_3 -> 
 	case happyOut33 happy_x_4 of { happy_var_4 -> 
 	happyIn33
-		 (LetExp ((mkTokenSpan happy_var_1) >- (mkCatSpan happy_var_2) >- (mkTokenSpan happy_var_3) >- (mkCatSpan happy_var_4)) happy_var_2 happy_var_4
+		 (Language.Clafer.Front.AbsClafer.LetExp ((mkTokenSpan happy_var_1) >- (mkCatSpan happy_var_2) >- (mkTokenSpan happy_var_3) >- (mkCatSpan happy_var_4)) happy_var_2 happy_var_4
 	) `HappyStk` happyRest}}}}
 
 happyReduce_61 = happySpecReduce_1  25# happyReduction_61
@@ -1135,7 +1135,7 @@ happyReduction_62 happy_x_3
 	case happyOut35 happy_x_2 of { happy_var_2 -> 
 	case happyOut53 happy_x_3 of { happy_var_3 -> 
 	happyIn34
-		 (TmpPatNever ((mkTokenSpan happy_var_1) >- (mkCatSpan happy_var_2) >- (mkCatSpan happy_var_3)) happy_var_2 happy_var_3
+		 (Language.Clafer.Front.AbsClafer.TmpPatNever ((mkTokenSpan happy_var_1) >- (mkCatSpan happy_var_2) >- (mkCatSpan happy_var_3)) happy_var_2 happy_var_3
 	)}}}
 
 happyReduce_63 = happySpecReduce_3  26# happyReduction_63
@@ -1146,7 +1146,7 @@ happyReduction_63 happy_x_3
 	case happyOut35 happy_x_2 of { happy_var_2 -> 
 	case happyOut53 happy_x_3 of { happy_var_3 -> 
 	happyIn34
-		 (TmpPatSometime ((mkTokenSpan happy_var_1) >- (mkCatSpan happy_var_2) >- (mkCatSpan happy_var_3)) happy_var_2 happy_var_3
+		 (Language.Clafer.Front.AbsClafer.TmpPatSometime ((mkTokenSpan happy_var_1) >- (mkCatSpan happy_var_2) >- (mkCatSpan happy_var_3)) happy_var_2 happy_var_3
 	)}}}
 
 happyReduce_64 = happySpecReduce_3  26# happyReduction_64
@@ -1157,7 +1157,7 @@ happyReduction_64 happy_x_3
 	case happyOut35 happy_x_2 of { happy_var_2 -> 
 	case happyOut53 happy_x_3 of { happy_var_3 -> 
 	happyIn34
-		 (TmpPatLessOrOnce ((mkTokenSpan happy_var_1) >- (mkCatSpan happy_var_2) >- (mkCatSpan happy_var_3)) happy_var_2 happy_var_3
+		 (Language.Clafer.Front.AbsClafer.TmpPatLessOrOnce ((mkTokenSpan happy_var_1) >- (mkCatSpan happy_var_2) >- (mkCatSpan happy_var_3)) happy_var_2 happy_var_3
 	)}}}
 
 happyReduce_65 = happySpecReduce_3  26# happyReduction_65
@@ -1168,7 +1168,7 @@ happyReduction_65 happy_x_3
 	case happyOut35 happy_x_2 of { happy_var_2 -> 
 	case happyOut53 happy_x_3 of { happy_var_3 -> 
 	happyIn34
-		 (TmpPatAlways ((mkTokenSpan happy_var_1) >- (mkCatSpan happy_var_2) >- (mkCatSpan happy_var_3)) happy_var_2 happy_var_3
+		 (Language.Clafer.Front.AbsClafer.TmpPatAlways ((mkTokenSpan happy_var_1) >- (mkCatSpan happy_var_2) >- (mkCatSpan happy_var_3)) happy_var_2 happy_var_3
 	)}}}
 
 happyReduce_66 = happyReduce 5# 26# happyReduction_66
@@ -1184,7 +1184,7 @@ happyReduction_66 (happy_x_5 `HappyStk`
 	case happyOut35 happy_x_4 of { happy_var_4 -> 
 	case happyOut53 happy_x_5 of { happy_var_5 -> 
 	happyIn34
-		 (TmpPatPrecede ((mkCatSpan happy_var_1) >- (mkTokenSpan happy_var_2) >- (mkTokenSpan happy_var_3) >- (mkCatSpan happy_var_4) >- (mkCatSpan happy_var_5)) happy_var_1 happy_var_4 happy_var_5
+		 (Language.Clafer.Front.AbsClafer.TmpPatPrecede ((mkCatSpan happy_var_1) >- (mkTokenSpan happy_var_2) >- (mkTokenSpan happy_var_3) >- (mkCatSpan happy_var_4) >- (mkCatSpan happy_var_5)) happy_var_1 happy_var_4 happy_var_5
 	) `HappyStk` happyRest}}}}}
 
 happyReduce_67 = happyReduce 5# 26# happyReduction_67
@@ -1200,7 +1200,7 @@ happyReduction_67 (happy_x_5 `HappyStk`
 	case happyOut35 happy_x_4 of { happy_var_4 -> 
 	case happyOut53 happy_x_5 of { happy_var_5 -> 
 	happyIn34
-		 (TmpPatFollow ((mkCatSpan happy_var_1) >- (mkTokenSpan happy_var_2) >- (mkTokenSpan happy_var_3) >- (mkCatSpan happy_var_4) >- (mkCatSpan happy_var_5)) happy_var_1 happy_var_4 happy_var_5
+		 (Language.Clafer.Front.AbsClafer.TmpPatFollow ((mkCatSpan happy_var_1) >- (mkTokenSpan happy_var_2) >- (mkTokenSpan happy_var_3) >- (mkCatSpan happy_var_4) >- (mkCatSpan happy_var_5)) happy_var_1 happy_var_4 happy_var_5
 	) `HappyStk` happyRest}}}}}
 
 happyReduce_68 = happySpecReduce_2  26# happyReduction_68
@@ -1209,7 +1209,7 @@ happyReduction_68 happy_x_2
 	 =  case happyOutTok happy_x_1 of { happy_var_1 -> 
 	case happyOut35 happy_x_2 of { happy_var_2 -> 
 	happyIn34
-		 (TmpInitially ((mkTokenSpan happy_var_1) >- (mkCatSpan happy_var_2)) happy_var_2
+		 (Language.Clafer.Front.AbsClafer.TmpInitially ((mkTokenSpan happy_var_1) >- (mkCatSpan happy_var_2)) happy_var_2
 	)}}
 
 happyReduce_69 = happySpecReduce_2  26# happyReduction_69
@@ -1218,7 +1218,7 @@ happyReduction_69 happy_x_2
 	 =  case happyOutTok happy_x_1 of { happy_var_1 -> 
 	case happyOut35 happy_x_2 of { happy_var_2 -> 
 	happyIn34
-		 (TmpFinally ((mkTokenSpan happy_var_1) >- (mkCatSpan happy_var_2)) happy_var_2
+		 (Language.Clafer.Front.AbsClafer.TmpFinally ((mkTokenSpan happy_var_1) >- (mkCatSpan happy_var_2)) happy_var_2
 	)}}
 
 happyReduce_70 = happySpecReduce_1  26# happyReduction_70
@@ -1234,7 +1234,7 @@ happyReduction_71 happy_x_2
 	 =  case happyOutTok happy_x_1 of { happy_var_1 -> 
 	case happyOut36 happy_x_2 of { happy_var_2 -> 
 	happyIn35
-		 (EGMax ((mkTokenSpan happy_var_1) >- (mkCatSpan happy_var_2)) happy_var_2
+		 (Language.Clafer.Front.AbsClafer.EGMax ((mkTokenSpan happy_var_1) >- (mkCatSpan happy_var_2)) happy_var_2
 	)}}
 
 happyReduce_72 = happySpecReduce_2  27# happyReduction_72
@@ -1243,7 +1243,7 @@ happyReduction_72 happy_x_2
 	 =  case happyOutTok happy_x_1 of { happy_var_1 -> 
 	case happyOut36 happy_x_2 of { happy_var_2 -> 
 	happyIn35
-		 (EGMin ((mkTokenSpan happy_var_1) >- (mkCatSpan happy_var_2)) happy_var_2
+		 (Language.Clafer.Front.AbsClafer.EGMin ((mkTokenSpan happy_var_1) >- (mkCatSpan happy_var_2)) happy_var_2
 	)}}
 
 happyReduce_73 = happySpecReduce_3  27# happyReduction_73
@@ -1254,7 +1254,7 @@ happyReduction_73 happy_x_3
 	case happyOutTok happy_x_2 of { happy_var_2 -> 
 	case happyOut36 happy_x_3 of { happy_var_3 -> 
 	happyIn35
-		 (EIff ((mkCatSpan happy_var_1) >- (mkTokenSpan happy_var_2) >- (mkCatSpan happy_var_3)) happy_var_1 happy_var_3
+		 (Language.Clafer.Front.AbsClafer.EIff ((mkCatSpan happy_var_1) >- (mkTokenSpan happy_var_2) >- (mkCatSpan happy_var_3)) happy_var_1 happy_var_3
 	)}}}
 
 happyReduce_74 = happySpecReduce_1  27# happyReduction_74
@@ -1272,7 +1272,7 @@ happyReduction_75 happy_x_3
 	case happyOutTok happy_x_2 of { happy_var_2 -> 
 	case happyOut37 happy_x_3 of { happy_var_3 -> 
 	happyIn36
-		 (EImplies ((mkCatSpan happy_var_1) >- (mkTokenSpan happy_var_2) >- (mkCatSpan happy_var_3)) happy_var_1 happy_var_3
+		 (Language.Clafer.Front.AbsClafer.EImplies ((mkCatSpan happy_var_1) >- (mkTokenSpan happy_var_2) >- (mkCatSpan happy_var_3)) happy_var_1 happy_var_3
 	)}}}
 
 happyReduce_76 = happySpecReduce_1  28# happyReduction_76
@@ -1290,7 +1290,7 @@ happyReduction_77 happy_x_3
 	case happyOutTok happy_x_2 of { happy_var_2 -> 
 	case happyOut38 happy_x_3 of { happy_var_3 -> 
 	happyIn37
-		 (EOr ((mkCatSpan happy_var_1) >- (mkTokenSpan happy_var_2) >- (mkCatSpan happy_var_3)) happy_var_1 happy_var_3
+		 (Language.Clafer.Front.AbsClafer.EOr ((mkCatSpan happy_var_1) >- (mkTokenSpan happy_var_2) >- (mkCatSpan happy_var_3)) happy_var_1 happy_var_3
 	)}}}
 
 happyReduce_78 = happySpecReduce_1  29# happyReduction_78
@@ -1308,7 +1308,7 @@ happyReduction_79 happy_x_3
 	case happyOutTok happy_x_2 of { happy_var_2 -> 
 	case happyOut39 happy_x_3 of { happy_var_3 -> 
 	happyIn38
-		 (EXor ((mkCatSpan happy_var_1) >- (mkTokenSpan happy_var_2) >- (mkCatSpan happy_var_3)) happy_var_1 happy_var_3
+		 (Language.Clafer.Front.AbsClafer.EXor ((mkCatSpan happy_var_1) >- (mkTokenSpan happy_var_2) >- (mkCatSpan happy_var_3)) happy_var_1 happy_var_3
 	)}}}
 
 happyReduce_80 = happySpecReduce_1  30# happyReduction_80
@@ -1326,7 +1326,7 @@ happyReduction_81 happy_x_3
 	case happyOutTok happy_x_2 of { happy_var_2 -> 
 	case happyOut40 happy_x_3 of { happy_var_3 -> 
 	happyIn39
-		 (EAnd ((mkCatSpan happy_var_1) >- (mkTokenSpan happy_var_2) >- (mkCatSpan happy_var_3)) happy_var_1 happy_var_3
+		 (Language.Clafer.Front.AbsClafer.EAnd ((mkCatSpan happy_var_1) >- (mkTokenSpan happy_var_2) >- (mkCatSpan happy_var_3)) happy_var_1 happy_var_3
 	)}}}
 
 happyReduce_82 = happySpecReduce_1  31# happyReduction_82
@@ -1344,7 +1344,7 @@ happyReduction_83 happy_x_3
 	case happyOutTok happy_x_2 of { happy_var_2 -> 
 	case happyOut41 happy_x_3 of { happy_var_3 -> 
 	happyIn40
-		 (LtlU ((mkCatSpan happy_var_1) >- (mkTokenSpan happy_var_2) >- (mkCatSpan happy_var_3)) happy_var_1 happy_var_3
+		 (Language.Clafer.Front.AbsClafer.LtlU ((mkCatSpan happy_var_1) >- (mkTokenSpan happy_var_2) >- (mkCatSpan happy_var_3)) happy_var_1 happy_var_3
 	)}}}
 
 happyReduce_84 = happySpecReduce_3  32# happyReduction_84
@@ -1355,7 +1355,7 @@ happyReduction_84 happy_x_3
 	case happyOutTok happy_x_2 of { happy_var_2 -> 
 	case happyOut41 happy_x_3 of { happy_var_3 -> 
 	happyIn40
-		 (TmpUntil ((mkCatSpan happy_var_1) >- (mkTokenSpan happy_var_2) >- (mkCatSpan happy_var_3)) happy_var_1 happy_var_3
+		 (Language.Clafer.Front.AbsClafer.TmpUntil ((mkCatSpan happy_var_1) >- (mkTokenSpan happy_var_2) >- (mkCatSpan happy_var_3)) happy_var_1 happy_var_3
 	)}}}
 
 happyReduce_85 = happySpecReduce_1  32# happyReduction_85
@@ -1373,7 +1373,7 @@ happyReduction_86 happy_x_3
 	case happyOutTok happy_x_2 of { happy_var_2 -> 
 	case happyOut42 happy_x_3 of { happy_var_3 -> 
 	happyIn41
-		 (LtlW ((mkCatSpan happy_var_1) >- (mkTokenSpan happy_var_2) >- (mkCatSpan happy_var_3)) happy_var_1 happy_var_3
+		 (Language.Clafer.Front.AbsClafer.LtlW ((mkCatSpan happy_var_1) >- (mkTokenSpan happy_var_2) >- (mkCatSpan happy_var_3)) happy_var_1 happy_var_3
 	)}}}
 
 happyReduce_87 = happySpecReduce_3  33# happyReduction_87
@@ -1384,7 +1384,7 @@ happyReduction_87 happy_x_3
 	case happyOutTok happy_x_2 of { happy_var_2 -> 
 	case happyOut42 happy_x_3 of { happy_var_3 -> 
 	happyIn41
-		 (TmpWUntil ((mkCatSpan happy_var_1) >- (mkTokenSpan happy_var_2) >- (mkCatSpan happy_var_3)) happy_var_1 happy_var_3
+		 (Language.Clafer.Front.AbsClafer.TmpWUntil ((mkCatSpan happy_var_1) >- (mkTokenSpan happy_var_2) >- (mkCatSpan happy_var_3)) happy_var_1 happy_var_3
 	)}}}
 
 happyReduce_88 = happySpecReduce_1  33# happyReduction_88
@@ -1400,7 +1400,7 @@ happyReduction_89 happy_x_2
 	 =  case happyOutTok happy_x_1 of { happy_var_1 -> 
 	case happyOut42 happy_x_2 of { happy_var_2 -> 
 	happyIn42
-		 (LtlF ((mkTokenSpan happy_var_1) >- (mkCatSpan happy_var_2)) happy_var_2
+		 (Language.Clafer.Front.AbsClafer.LtlF ((mkTokenSpan happy_var_1) >- (mkCatSpan happy_var_2)) happy_var_2
 	)}}
 
 happyReduce_90 = happySpecReduce_2  34# happyReduction_90
@@ -1409,7 +1409,7 @@ happyReduction_90 happy_x_2
 	 =  case happyOutTok happy_x_1 of { happy_var_1 -> 
 	case happyOut42 happy_x_2 of { happy_var_2 -> 
 	happyIn42
-		 (TmpEventually ((mkTokenSpan happy_var_1) >- (mkCatSpan happy_var_2)) happy_var_2
+		 (Language.Clafer.Front.AbsClafer.TmpEventually ((mkTokenSpan happy_var_1) >- (mkCatSpan happy_var_2)) happy_var_2
 	)}}
 
 happyReduce_91 = happySpecReduce_2  34# happyReduction_91
@@ -1418,7 +1418,7 @@ happyReduction_91 happy_x_2
 	 =  case happyOutTok happy_x_1 of { happy_var_1 -> 
 	case happyOut42 happy_x_2 of { happy_var_2 -> 
 	happyIn42
-		 (LtlG ((mkTokenSpan happy_var_1) >- (mkCatSpan happy_var_2)) happy_var_2
+		 (Language.Clafer.Front.AbsClafer.LtlG ((mkTokenSpan happy_var_1) >- (mkCatSpan happy_var_2)) happy_var_2
 	)}}
 
 happyReduce_92 = happySpecReduce_2  34# happyReduction_92
@@ -1427,7 +1427,7 @@ happyReduction_92 happy_x_2
 	 =  case happyOutTok happy_x_1 of { happy_var_1 -> 
 	case happyOut42 happy_x_2 of { happy_var_2 -> 
 	happyIn42
-		 (TmpGlobally ((mkTokenSpan happy_var_1) >- (mkCatSpan happy_var_2)) happy_var_2
+		 (Language.Clafer.Front.AbsClafer.TmpGlobally ((mkTokenSpan happy_var_1) >- (mkCatSpan happy_var_2)) happy_var_2
 	)}}
 
 happyReduce_93 = happySpecReduce_2  34# happyReduction_93
@@ -1436,7 +1436,7 @@ happyReduction_93 happy_x_2
 	 =  case happyOutTok happy_x_1 of { happy_var_1 -> 
 	case happyOut42 happy_x_2 of { happy_var_2 -> 
 	happyIn42
-		 (LtlX ((mkTokenSpan happy_var_1) >- (mkCatSpan happy_var_2)) happy_var_2
+		 (Language.Clafer.Front.AbsClafer.LtlX ((mkTokenSpan happy_var_1) >- (mkCatSpan happy_var_2)) happy_var_2
 	)}}
 
 happyReduce_94 = happySpecReduce_2  34# happyReduction_94
@@ -1445,7 +1445,7 @@ happyReduction_94 happy_x_2
 	 =  case happyOutTok happy_x_1 of { happy_var_1 -> 
 	case happyOut42 happy_x_2 of { happy_var_2 -> 
 	happyIn42
-		 (TmpNext ((mkTokenSpan happy_var_1) >- (mkCatSpan happy_var_2)) happy_var_2
+		 (Language.Clafer.Front.AbsClafer.TmpNext ((mkTokenSpan happy_var_1) >- (mkCatSpan happy_var_2)) happy_var_2
 	)}}
 
 happyReduce_95 = happySpecReduce_3  34# happyReduction_95
@@ -1456,7 +1456,7 @@ happyReduction_95 happy_x_3
 	case happyOutTok happy_x_2 of { happy_var_2 -> 
 	case happyOut43 happy_x_3 of { happy_var_3 -> 
 	happyIn42
-		 (ERem ((mkCatSpan happy_var_1) >- (mkTokenSpan happy_var_2) >- (mkCatSpan happy_var_3)) happy_var_1 happy_var_3
+		 (Language.Clafer.Front.AbsClafer.ERem ((mkCatSpan happy_var_1) >- (mkTokenSpan happy_var_2) >- (mkCatSpan happy_var_3)) happy_var_1 happy_var_3
 	)}}}
 
 happyReduce_96 = happySpecReduce_1  34# happyReduction_96
@@ -1472,7 +1472,7 @@ happyReduction_97 happy_x_2
 	 =  case happyOutTok happy_x_1 of { happy_var_1 -> 
 	case happyOut43 happy_x_2 of { happy_var_2 -> 
 	happyIn43
-		 (ENeg ((mkTokenSpan happy_var_1) >- (mkCatSpan happy_var_2)) happy_var_2
+		 (Language.Clafer.Front.AbsClafer.ENeg ((mkTokenSpan happy_var_1) >- (mkCatSpan happy_var_2)) happy_var_2
 	)}}
 
 happyReduce_98 = happySpecReduce_1  35# happyReduction_98
@@ -1490,7 +1490,7 @@ happyReduction_99 happy_x_3
 	case happyOutTok happy_x_2 of { happy_var_2 -> 
 	case happyOut45 happy_x_3 of { happy_var_3 -> 
 	happyIn44
-		 (ELt ((mkCatSpan happy_var_1) >- (mkTokenSpan happy_var_2) >- (mkCatSpan happy_var_3)) happy_var_1 happy_var_3
+		 (Language.Clafer.Front.AbsClafer.ELt ((mkCatSpan happy_var_1) >- (mkTokenSpan happy_var_2) >- (mkCatSpan happy_var_3)) happy_var_1 happy_var_3
 	)}}}
 
 happyReduce_100 = happySpecReduce_3  36# happyReduction_100
@@ -1501,7 +1501,7 @@ happyReduction_100 happy_x_3
 	case happyOutTok happy_x_2 of { happy_var_2 -> 
 	case happyOut45 happy_x_3 of { happy_var_3 -> 
 	happyIn44
-		 (EGt ((mkCatSpan happy_var_1) >- (mkTokenSpan happy_var_2) >- (mkCatSpan happy_var_3)) happy_var_1 happy_var_3
+		 (Language.Clafer.Front.AbsClafer.EGt ((mkCatSpan happy_var_1) >- (mkTokenSpan happy_var_2) >- (mkCatSpan happy_var_3)) happy_var_1 happy_var_3
 	)}}}
 
 happyReduce_101 = happySpecReduce_3  36# happyReduction_101
@@ -1512,7 +1512,7 @@ happyReduction_101 happy_x_3
 	case happyOutTok happy_x_2 of { happy_var_2 -> 
 	case happyOut45 happy_x_3 of { happy_var_3 -> 
 	happyIn44
-		 (EEq ((mkCatSpan happy_var_1) >- (mkTokenSpan happy_var_2) >- (mkCatSpan happy_var_3)) happy_var_1 happy_var_3
+		 (Language.Clafer.Front.AbsClafer.EEq ((mkCatSpan happy_var_1) >- (mkTokenSpan happy_var_2) >- (mkCatSpan happy_var_3)) happy_var_1 happy_var_3
 	)}}}
 
 happyReduce_102 = happySpecReduce_3  36# happyReduction_102
@@ -1523,7 +1523,7 @@ happyReduction_102 happy_x_3
 	case happyOutTok happy_x_2 of { happy_var_2 -> 
 	case happyOut45 happy_x_3 of { happy_var_3 -> 
 	happyIn44
-		 (ELte ((mkCatSpan happy_var_1) >- (mkTokenSpan happy_var_2) >- (mkCatSpan happy_var_3)) happy_var_1 happy_var_3
+		 (Language.Clafer.Front.AbsClafer.ELte ((mkCatSpan happy_var_1) >- (mkTokenSpan happy_var_2) >- (mkCatSpan happy_var_3)) happy_var_1 happy_var_3
 	)}}}
 
 happyReduce_103 = happySpecReduce_3  36# happyReduction_103
@@ -1534,7 +1534,7 @@ happyReduction_103 happy_x_3
 	case happyOutTok happy_x_2 of { happy_var_2 -> 
 	case happyOut45 happy_x_3 of { happy_var_3 -> 
 	happyIn44
-		 (EGte ((mkCatSpan happy_var_1) >- (mkTokenSpan happy_var_2) >- (mkCatSpan happy_var_3)) happy_var_1 happy_var_3
+		 (Language.Clafer.Front.AbsClafer.EGte ((mkCatSpan happy_var_1) >- (mkTokenSpan happy_var_2) >- (mkCatSpan happy_var_3)) happy_var_1 happy_var_3
 	)}}}
 
 happyReduce_104 = happySpecReduce_3  36# happyReduction_104
@@ -1545,7 +1545,7 @@ happyReduction_104 happy_x_3
 	case happyOutTok happy_x_2 of { happy_var_2 -> 
 	case happyOut45 happy_x_3 of { happy_var_3 -> 
 	happyIn44
-		 (ENeq ((mkCatSpan happy_var_1) >- (mkTokenSpan happy_var_2) >- (mkCatSpan happy_var_3)) happy_var_1 happy_var_3
+		 (Language.Clafer.Front.AbsClafer.ENeq ((mkCatSpan happy_var_1) >- (mkTokenSpan happy_var_2) >- (mkCatSpan happy_var_3)) happy_var_1 happy_var_3
 	)}}}
 
 happyReduce_105 = happySpecReduce_3  36# happyReduction_105
@@ -1556,7 +1556,7 @@ happyReduction_105 happy_x_3
 	case happyOutTok happy_x_2 of { happy_var_2 -> 
 	case happyOut45 happy_x_3 of { happy_var_3 -> 
 	happyIn44
-		 (EIn ((mkCatSpan happy_var_1) >- (mkTokenSpan happy_var_2) >- (mkCatSpan happy_var_3)) happy_var_1 happy_var_3
+		 (Language.Clafer.Front.AbsClafer.EIn ((mkCatSpan happy_var_1) >- (mkTokenSpan happy_var_2) >- (mkCatSpan happy_var_3)) happy_var_1 happy_var_3
 	)}}}
 
 happyReduce_106 = happyReduce 4# 36# happyReduction_106
@@ -1570,7 +1570,7 @@ happyReduction_106 (happy_x_4 `HappyStk`
 	case happyOutTok happy_x_3 of { happy_var_3 -> 
 	case happyOut45 happy_x_4 of { happy_var_4 -> 
 	happyIn44
-		 (ENin ((mkCatSpan happy_var_1) >- (mkTokenSpan happy_var_2) >- (mkTokenSpan happy_var_3) >- (mkCatSpan happy_var_4)) happy_var_1 happy_var_4
+		 (Language.Clafer.Front.AbsClafer.ENin ((mkCatSpan happy_var_1) >- (mkTokenSpan happy_var_2) >- (mkTokenSpan happy_var_3) >- (mkCatSpan happy_var_4)) happy_var_1 happy_var_4
 	) `HappyStk` happyRest}}}}
 
 happyReduce_107 = happySpecReduce_1  36# happyReduction_107
@@ -1586,7 +1586,7 @@ happyReduction_108 happy_x_2
 	 =  case happyOut63 happy_x_1 of { happy_var_1 -> 
 	case happyOut49 happy_x_2 of { happy_var_2 -> 
 	happyIn45
-		 (QuantExp ((mkCatSpan happy_var_1) >- (mkCatSpan happy_var_2)) happy_var_1 happy_var_2
+		 (Language.Clafer.Front.AbsClafer.QuantExp ((mkCatSpan happy_var_1) >- (mkCatSpan happy_var_2)) happy_var_1 happy_var_2
 	)}}
 
 happyReduce_109 = happySpecReduce_1  37# happyReduction_109
@@ -1604,7 +1604,7 @@ happyReduction_110 happy_x_3
 	case happyOutTok happy_x_2 of { happy_var_2 -> 
 	case happyOut47 happy_x_3 of { happy_var_3 -> 
 	happyIn46
-		 (EAdd ((mkCatSpan happy_var_1) >- (mkTokenSpan happy_var_2) >- (mkCatSpan happy_var_3)) happy_var_1 happy_var_3
+		 (Language.Clafer.Front.AbsClafer.EAdd ((mkCatSpan happy_var_1) >- (mkTokenSpan happy_var_2) >- (mkCatSpan happy_var_3)) happy_var_1 happy_var_3
 	)}}}
 
 happyReduce_111 = happySpecReduce_3  38# happyReduction_111
@@ -1615,7 +1615,7 @@ happyReduction_111 happy_x_3
 	case happyOutTok happy_x_2 of { happy_var_2 -> 
 	case happyOut47 happy_x_3 of { happy_var_3 -> 
 	happyIn46
-		 (ESub ((mkCatSpan happy_var_1) >- (mkTokenSpan happy_var_2) >- (mkCatSpan happy_var_3)) happy_var_1 happy_var_3
+		 (Language.Clafer.Front.AbsClafer.ESub ((mkCatSpan happy_var_1) >- (mkTokenSpan happy_var_2) >- (mkCatSpan happy_var_3)) happy_var_1 happy_var_3
 	)}}}
 
 happyReduce_112 = happySpecReduce_1  38# happyReduction_112
@@ -1633,7 +1633,7 @@ happyReduction_113 happy_x_3
 	case happyOutTok happy_x_2 of { happy_var_2 -> 
 	case happyOut48 happy_x_3 of { happy_var_3 -> 
 	happyIn47
-		 (EMul ((mkCatSpan happy_var_1) >- (mkTokenSpan happy_var_2) >- (mkCatSpan happy_var_3)) happy_var_1 happy_var_3
+		 (Language.Clafer.Front.AbsClafer.EMul ((mkCatSpan happy_var_1) >- (mkTokenSpan happy_var_2) >- (mkCatSpan happy_var_3)) happy_var_1 happy_var_3
 	)}}}
 
 happyReduce_114 = happySpecReduce_3  39# happyReduction_114
@@ -1644,7 +1644,7 @@ happyReduction_114 happy_x_3
 	case happyOutTok happy_x_2 of { happy_var_2 -> 
 	case happyOut48 happy_x_3 of { happy_var_3 -> 
 	happyIn47
-		 (EDiv ((mkCatSpan happy_var_1) >- (mkTokenSpan happy_var_2) >- (mkCatSpan happy_var_3)) happy_var_1 happy_var_3
+		 (Language.Clafer.Front.AbsClafer.EDiv ((mkCatSpan happy_var_1) >- (mkTokenSpan happy_var_2) >- (mkCatSpan happy_var_3)) happy_var_1 happy_var_3
 	)}}}
 
 happyReduce_115 = happySpecReduce_1  39# happyReduction_115
@@ -1660,7 +1660,7 @@ happyReduction_116 happy_x_2
 	 =  case happyOutTok happy_x_1 of { happy_var_1 -> 
 	case happyOut49 happy_x_2 of { happy_var_2 -> 
 	happyIn48
-		 (ESumSetExp ((mkTokenSpan happy_var_1) >- (mkCatSpan happy_var_2)) happy_var_2
+		 (Language.Clafer.Front.AbsClafer.ESumSetExp ((mkTokenSpan happy_var_1) >- (mkCatSpan happy_var_2)) happy_var_2
 	)}}
 
 happyReduce_117 = happySpecReduce_2  40# happyReduction_117
@@ -1669,7 +1669,7 @@ happyReduction_117 happy_x_2
 	 =  case happyOutTok happy_x_1 of { happy_var_1 -> 
 	case happyOut49 happy_x_2 of { happy_var_2 -> 
 	happyIn48
-		 (EProdSetExp ((mkTokenSpan happy_var_1) >- (mkCatSpan happy_var_2)) happy_var_2
+		 (Language.Clafer.Front.AbsClafer.EProdSetExp ((mkTokenSpan happy_var_1) >- (mkCatSpan happy_var_2)) happy_var_2
 	)}}
 
 happyReduce_118 = happySpecReduce_2  40# happyReduction_118
@@ -1678,7 +1678,7 @@ happyReduction_118 happy_x_2
 	 =  case happyOutTok happy_x_1 of { happy_var_1 -> 
 	case happyOut49 happy_x_2 of { happy_var_2 -> 
 	happyIn48
-		 (ECSetExp ((mkTokenSpan happy_var_1) >- (mkCatSpan happy_var_2)) happy_var_2
+		 (Language.Clafer.Front.AbsClafer.ECSetExp ((mkTokenSpan happy_var_1) >- (mkCatSpan happy_var_2)) happy_var_2
 	)}}
 
 happyReduce_119 = happySpecReduce_2  40# happyReduction_119
@@ -1687,7 +1687,7 @@ happyReduction_119 happy_x_2
 	 =  case happyOutTok happy_x_1 of { happy_var_1 -> 
 	case happyOut49 happy_x_2 of { happy_var_2 -> 
 	happyIn48
-		 (EMinExp ((mkTokenSpan happy_var_1) >- (mkCatSpan happy_var_2)) happy_var_2
+		 (Language.Clafer.Front.AbsClafer.EMinExp ((mkTokenSpan happy_var_1) >- (mkCatSpan happy_var_2)) happy_var_2
 	)}}
 
 happyReduce_120 = happySpecReduce_1  40# happyReduction_120
@@ -1712,7 +1712,7 @@ happyReduction_121 (happy_x_6 `HappyStk`
 	case happyOutTok happy_x_5 of { happy_var_5 -> 
 	case happyOut50 happy_x_6 of { happy_var_6 -> 
 	happyIn49
-		 (EImpliesElse ((mkTokenSpan happy_var_1) >- (mkCatSpan happy_var_2) >- (mkTokenSpan happy_var_3) >- (mkCatSpan happy_var_4) >- (mkTokenSpan happy_var_5) >- (mkCatSpan happy_var_6)) happy_var_2 happy_var_4 happy_var_6
+		 (Language.Clafer.Front.AbsClafer.EImpliesElse ((mkTokenSpan happy_var_1) >- (mkCatSpan happy_var_2) >- (mkTokenSpan happy_var_3) >- (mkCatSpan happy_var_4) >- (mkTokenSpan happy_var_5) >- (mkCatSpan happy_var_6)) happy_var_2 happy_var_4 happy_var_6
 	) `HappyStk` happyRest}}}}}}
 
 happyReduce_122 = happySpecReduce_1  41# happyReduction_122
@@ -1726,28 +1726,28 @@ happyReduce_123 = happySpecReduce_1  42# happyReduction_123
 happyReduction_123 happy_x_1
 	 =  case happyOut8 happy_x_1 of { happy_var_1 -> 
 	happyIn50
-		 (EInt ((mkCatSpan happy_var_1)) happy_var_1
+		 (Language.Clafer.Front.AbsClafer.EInt ((mkCatSpan happy_var_1)) happy_var_1
 	)}
 
 happyReduce_124 = happySpecReduce_1  42# happyReduction_124
 happyReduction_124 happy_x_1
 	 =  case happyOut9 happy_x_1 of { happy_var_1 -> 
 	happyIn50
-		 (EDouble ((mkCatSpan happy_var_1)) happy_var_1
+		 (Language.Clafer.Front.AbsClafer.EDouble ((mkCatSpan happy_var_1)) happy_var_1
 	)}
 
 happyReduce_125 = happySpecReduce_1  42# happyReduction_125
 happyReduction_125 happy_x_1
 	 =  case happyOut10 happy_x_1 of { happy_var_1 -> 
 	happyIn50
-		 (EStr ((mkCatSpan happy_var_1)) happy_var_1
+		 (Language.Clafer.Front.AbsClafer.EStr ((mkCatSpan happy_var_1)) happy_var_1
 	)}
 
 happyReduce_126 = happySpecReduce_1  42# happyReduction_126
 happyReduction_126 happy_x_1
 	 =  case happyOut54 happy_x_1 of { happy_var_1 -> 
 	happyIn50
-		 (ESetExp ((mkCatSpan happy_var_1)) happy_var_1
+		 (Language.Clafer.Front.AbsClafer.ESetExp ((mkCatSpan happy_var_1)) happy_var_1
 	)}
 
 happyReduce_127 = happySpecReduce_3  42# happyReduction_127
@@ -1763,14 +1763,14 @@ happyReduce_128 = happySpecReduce_1  43# happyReduction_128
 happyReduction_128 happy_x_1
 	 =  case happyOut33 happy_x_1 of { happy_var_1 -> 
 	happyIn51
-		 (TransGuard ((mkCatSpan happy_var_1)) happy_var_1
+		 (Language.Clafer.Front.AbsClafer.TransGuard ((mkCatSpan happy_var_1)) happy_var_1
 	)}
 
 happyReduce_129 = happySpecReduce_1  44# happyReduction_129
 happyReduction_129 happy_x_1
 	 =  case happyOutTok happy_x_1 of { happy_var_1 -> 
 	happyIn52
-		 (SyncTransArrow ((mkTokenSpan happy_var_1))
+		 (Language.Clafer.Front.AbsClafer.SyncTransArrow ((mkTokenSpan happy_var_1))
 	)}
 
 happyReduce_130 = happySpecReduce_3  44# happyReduction_130
@@ -1781,14 +1781,14 @@ happyReduction_130 happy_x_3
 	case happyOut51 happy_x_2 of { happy_var_2 -> 
 	case happyOutTok happy_x_3 of { happy_var_3 -> 
 	happyIn52
-		 (GuardedSyncTransArrow ((mkTokenSpan happy_var_1) >- (mkCatSpan happy_var_2) >- (mkTokenSpan happy_var_3)) happy_var_2
+		 (Language.Clafer.Front.AbsClafer.GuardedSyncTransArrow ((mkTokenSpan happy_var_1) >- (mkCatSpan happy_var_2) >- (mkTokenSpan happy_var_3)) happy_var_2
 	)}}}
 
 happyReduce_131 = happySpecReduce_1  44# happyReduction_131
 happyReduction_131 happy_x_1
 	 =  case happyOutTok happy_x_1 of { happy_var_1 -> 
 	happyIn52
-		 (NextTransArrow ((mkTokenSpan happy_var_1))
+		 (Language.Clafer.Front.AbsClafer.NextTransArrow ((mkTokenSpan happy_var_1))
 	)}
 
 happyReduce_132 = happySpecReduce_3  44# happyReduction_132
@@ -1799,7 +1799,7 @@ happyReduction_132 happy_x_3
 	case happyOut51 happy_x_2 of { happy_var_2 -> 
 	case happyOutTok happy_x_3 of { happy_var_3 -> 
 	happyIn52
-		 (GuardedNextTransArrow ((mkTokenSpan happy_var_1) >- (mkCatSpan happy_var_2) >- (mkTokenSpan happy_var_3)) happy_var_2
+		 (Language.Clafer.Front.AbsClafer.GuardedNextTransArrow ((mkTokenSpan happy_var_1) >- (mkCatSpan happy_var_2) >- (mkTokenSpan happy_var_3)) happy_var_2
 	)}}}
 
 happyReduce_133 = happySpecReduce_2  45# happyReduction_133
@@ -1808,7 +1808,7 @@ happyReduction_133 happy_x_2
 	 =  case happyOutTok happy_x_1 of { happy_var_1 -> 
 	case happyOut43 happy_x_2 of { happy_var_2 -> 
 	happyIn53
-		 (PatScopeBefore ((mkTokenSpan happy_var_1) >- (mkCatSpan happy_var_2)) happy_var_2
+		 (Language.Clafer.Front.AbsClafer.PatScopeBefore ((mkTokenSpan happy_var_1) >- (mkCatSpan happy_var_2)) happy_var_2
 	)}}
 
 happyReduce_134 = happySpecReduce_2  45# happyReduction_134
@@ -1817,7 +1817,7 @@ happyReduction_134 happy_x_2
 	 =  case happyOutTok happy_x_1 of { happy_var_1 -> 
 	case happyOut43 happy_x_2 of { happy_var_2 -> 
 	happyIn53
-		 (PatScopeAfter ((mkTokenSpan happy_var_1) >- (mkCatSpan happy_var_2)) happy_var_2
+		 (Language.Clafer.Front.AbsClafer.PatScopeAfter ((mkTokenSpan happy_var_1) >- (mkCatSpan happy_var_2)) happy_var_2
 	)}}
 
 happyReduce_135 = happyReduce 4# 45# happyReduction_135
@@ -1831,7 +1831,7 @@ happyReduction_135 (happy_x_4 `HappyStk`
 	case happyOutTok happy_x_3 of { happy_var_3 -> 
 	case happyOut43 happy_x_4 of { happy_var_4 -> 
 	happyIn53
-		 (PatScopeBetweenAnd ((mkTokenSpan happy_var_1) >- (mkCatSpan happy_var_2) >- (mkTokenSpan happy_var_3) >- (mkCatSpan happy_var_4)) happy_var_2 happy_var_4
+		 (Language.Clafer.Front.AbsClafer.PatScopeBetweenAnd ((mkTokenSpan happy_var_1) >- (mkCatSpan happy_var_2) >- (mkTokenSpan happy_var_3) >- (mkCatSpan happy_var_4)) happy_var_2 happy_var_4
 	) `HappyStk` happyRest}}}}
 
 happyReduce_136 = happyReduce 4# 45# happyReduction_136
@@ -1845,12 +1845,12 @@ happyReduction_136 (happy_x_4 `HappyStk`
 	case happyOutTok happy_x_3 of { happy_var_3 -> 
 	case happyOut43 happy_x_4 of { happy_var_4 -> 
 	happyIn53
-		 (PatScopeAfterUntil ((mkTokenSpan happy_var_1) >- (mkCatSpan happy_var_2) >- (mkTokenSpan happy_var_3) >- (mkCatSpan happy_var_4)) happy_var_2 happy_var_4
+		 (Language.Clafer.Front.AbsClafer.PatScopeAfterUntil ((mkTokenSpan happy_var_1) >- (mkCatSpan happy_var_2) >- (mkTokenSpan happy_var_3) >- (mkCatSpan happy_var_4)) happy_var_2 happy_var_4
 	) `HappyStk` happyRest}}}}
 
 happyReduce_137 = happySpecReduce_0  45# happyReduction_137
 happyReduction_137  =  happyIn53
-		 (PatScopeEmpty noSpan
+		 (Language.Clafer.Front.AbsClafer.PatScopeEmpty noSpan
 	)
 
 happyReduce_138 = happySpecReduce_3  46# happyReduction_138
@@ -1861,7 +1861,7 @@ happyReduction_138 happy_x_3
 	case happyOutTok happy_x_2 of { happy_var_2 -> 
 	case happyOut55 happy_x_3 of { happy_var_3 -> 
 	happyIn54
-		 (Union ((mkCatSpan happy_var_1) >- (mkTokenSpan happy_var_2) >- (mkCatSpan happy_var_3)) happy_var_1 happy_var_3
+		 (Language.Clafer.Front.AbsClafer.Union ((mkCatSpan happy_var_1) >- (mkTokenSpan happy_var_2) >- (mkCatSpan happy_var_3)) happy_var_1 happy_var_3
 	)}}}
 
 happyReduce_139 = happySpecReduce_3  46# happyReduction_139
@@ -1872,7 +1872,7 @@ happyReduction_139 happy_x_3
 	case happyOutTok happy_x_2 of { happy_var_2 -> 
 	case happyOut55 happy_x_3 of { happy_var_3 -> 
 	happyIn54
-		 (UnionCom ((mkCatSpan happy_var_1) >- (mkTokenSpan happy_var_2) >- (mkCatSpan happy_var_3)) happy_var_1 happy_var_3
+		 (Language.Clafer.Front.AbsClafer.UnionCom ((mkCatSpan happy_var_1) >- (mkTokenSpan happy_var_2) >- (mkCatSpan happy_var_3)) happy_var_1 happy_var_3
 	)}}}
 
 happyReduce_140 = happySpecReduce_1  46# happyReduction_140
@@ -1890,7 +1890,7 @@ happyReduction_141 happy_x_3
 	case happyOutTok happy_x_2 of { happy_var_2 -> 
 	case happyOut56 happy_x_3 of { happy_var_3 -> 
 	happyIn55
-		 (Difference ((mkCatSpan happy_var_1) >- (mkTokenSpan happy_var_2) >- (mkCatSpan happy_var_3)) happy_var_1 happy_var_3
+		 (Language.Clafer.Front.AbsClafer.Difference ((mkCatSpan happy_var_1) >- (mkTokenSpan happy_var_2) >- (mkCatSpan happy_var_3)) happy_var_1 happy_var_3
 	)}}}
 
 happyReduce_142 = happySpecReduce_1  47# happyReduction_142
@@ -1908,7 +1908,7 @@ happyReduction_143 happy_x_3
 	case happyOutTok happy_x_2 of { happy_var_2 -> 
 	case happyOut57 happy_x_3 of { happy_var_3 -> 
 	happyIn56
-		 (Intersection ((mkCatSpan happy_var_1) >- (mkTokenSpan happy_var_2) >- (mkCatSpan happy_var_3)) happy_var_1 happy_var_3
+		 (Language.Clafer.Front.AbsClafer.Intersection ((mkCatSpan happy_var_1) >- (mkTokenSpan happy_var_2) >- (mkCatSpan happy_var_3)) happy_var_1 happy_var_3
 	)}}}
 
 happyReduce_144 = happySpecReduce_1  48# happyReduction_144
@@ -1926,7 +1926,7 @@ happyReduction_145 happy_x_3
 	case happyOutTok happy_x_2 of { happy_var_2 -> 
 	case happyOut58 happy_x_3 of { happy_var_3 -> 
 	happyIn57
-		 (Domain ((mkCatSpan happy_var_1) >- (mkTokenSpan happy_var_2) >- (mkCatSpan happy_var_3)) happy_var_1 happy_var_3
+		 (Language.Clafer.Front.AbsClafer.Domain ((mkCatSpan happy_var_1) >- (mkTokenSpan happy_var_2) >- (mkCatSpan happy_var_3)) happy_var_1 happy_var_3
 	)}}}
 
 happyReduce_146 = happySpecReduce_1  49# happyReduction_146
@@ -1944,7 +1944,7 @@ happyReduction_147 happy_x_3
 	case happyOutTok happy_x_2 of { happy_var_2 -> 
 	case happyOut59 happy_x_3 of { happy_var_3 -> 
 	happyIn58
-		 (Range ((mkCatSpan happy_var_1) >- (mkTokenSpan happy_var_2) >- (mkCatSpan happy_var_3)) happy_var_1 happy_var_3
+		 (Language.Clafer.Front.AbsClafer.Range ((mkCatSpan happy_var_1) >- (mkTokenSpan happy_var_2) >- (mkCatSpan happy_var_3)) happy_var_1 happy_var_3
 	)}}}
 
 happyReduce_148 = happySpecReduce_1  50# happyReduction_148
@@ -1962,7 +1962,7 @@ happyReduction_149 happy_x_3
 	case happyOutTok happy_x_2 of { happy_var_2 -> 
 	case happyOut60 happy_x_3 of { happy_var_3 -> 
 	happyIn59
-		 (Join ((mkCatSpan happy_var_1) >- (mkTokenSpan happy_var_2) >- (mkCatSpan happy_var_3)) happy_var_1 happy_var_3
+		 (Language.Clafer.Front.AbsClafer.Join ((mkCatSpan happy_var_1) >- (mkTokenSpan happy_var_2) >- (mkCatSpan happy_var_3)) happy_var_1 happy_var_3
 	)}}}
 
 happyReduce_150 = happySpecReduce_1  51# happyReduction_150
@@ -1976,7 +1976,7 @@ happyReduce_151 = happySpecReduce_1  52# happyReduction_151
 happyReduction_151 happy_x_1
 	 =  case happyOut31 happy_x_1 of { happy_var_1 -> 
 	happyIn60
-		 (ClaferId ((mkCatSpan happy_var_1)) happy_var_1
+		 (Language.Clafer.Front.AbsClafer.ClaferId ((mkCatSpan happy_var_1)) happy_var_1
 	)}
 
 happyReduce_152 = happySpecReduce_3  52# happyReduction_152
@@ -1996,7 +1996,7 @@ happyReduction_153 happy_x_3
 	case happyOutTok happy_x_2 of { happy_var_2 -> 
 	case happyOut54 happy_x_3 of { happy_var_3 -> 
 	happyIn61
-		 (Decl ((mkCatSpan happy_var_1) >- (mkTokenSpan happy_var_2) >- (mkCatSpan happy_var_3)) happy_var_1 happy_var_3
+		 (Language.Clafer.Front.AbsClafer.Decl ((mkCatSpan happy_var_1) >- (mkTokenSpan happy_var_2) >- (mkCatSpan happy_var_3)) happy_var_1 happy_var_3
 	)}}}
 
 happyReduce_154 = happySpecReduce_3  54# happyReduction_154
@@ -2007,63 +2007,63 @@ happyReduction_154 happy_x_3
 	case happyOutTok happy_x_2 of { happy_var_2 -> 
 	case happyOut31 happy_x_3 of { happy_var_3 -> 
 	happyIn62
-		 (VarBinding ((mkCatSpan happy_var_1) >- (mkTokenSpan happy_var_2) >- (mkCatSpan happy_var_3)) happy_var_1 happy_var_3
+		 (Language.Clafer.Front.AbsClafer.VarBinding ((mkCatSpan happy_var_1) >- (mkTokenSpan happy_var_2) >- (mkCatSpan happy_var_3)) happy_var_1 happy_var_3
 	)}}}
 
 happyReduce_155 = happySpecReduce_1  55# happyReduction_155
 happyReduction_155 happy_x_1
 	 =  case happyOutTok happy_x_1 of { happy_var_1 -> 
 	happyIn63
-		 (QuantNo ((mkTokenSpan happy_var_1))
+		 (Language.Clafer.Front.AbsClafer.QuantNo ((mkTokenSpan happy_var_1))
 	)}
 
 happyReduce_156 = happySpecReduce_1  55# happyReduction_156
 happyReduction_156 happy_x_1
 	 =  case happyOutTok happy_x_1 of { happy_var_1 -> 
 	happyIn63
-		 (QuantNot ((mkTokenSpan happy_var_1))
+		 (Language.Clafer.Front.AbsClafer.QuantNot ((mkTokenSpan happy_var_1))
 	)}
 
 happyReduce_157 = happySpecReduce_1  55# happyReduction_157
 happyReduction_157 happy_x_1
 	 =  case happyOutTok happy_x_1 of { happy_var_1 -> 
 	happyIn63
-		 (QuantLone ((mkTokenSpan happy_var_1))
+		 (Language.Clafer.Front.AbsClafer.QuantLone ((mkTokenSpan happy_var_1))
 	)}
 
 happyReduce_158 = happySpecReduce_1  55# happyReduction_158
 happyReduction_158 happy_x_1
 	 =  case happyOutTok happy_x_1 of { happy_var_1 -> 
 	happyIn63
-		 (QuantOne ((mkTokenSpan happy_var_1))
+		 (Language.Clafer.Front.AbsClafer.QuantOne ((mkTokenSpan happy_var_1))
 	)}
 
 happyReduce_159 = happySpecReduce_1  55# happyReduction_159
 happyReduction_159 happy_x_1
 	 =  case happyOutTok happy_x_1 of { happy_var_1 -> 
 	happyIn63
-		 (QuantSome ((mkTokenSpan happy_var_1))
+		 (Language.Clafer.Front.AbsClafer.QuantSome ((mkTokenSpan happy_var_1))
 	)}
 
 happyReduce_160 = happySpecReduce_1  56# happyReduction_160
 happyReduction_160 happy_x_1
 	 =  case happyOut11 happy_x_1 of { happy_var_1 -> 
 	happyIn64
-		 (EnumIdIdent ((mkCatSpan happy_var_1)) happy_var_1
+		 (Language.Clafer.Front.AbsClafer.EnumIdIdent ((mkCatSpan happy_var_1)) happy_var_1
 	)}
 
 happyReduce_161 = happySpecReduce_1  57# happyReduction_161
 happyReduction_161 happy_x_1
 	 =  case happyOut11 happy_x_1 of { happy_var_1 -> 
 	happyIn65
-		 (ModIdIdent ((mkCatSpan happy_var_1)) happy_var_1
+		 (Language.Clafer.Front.AbsClafer.ModIdIdent ((mkCatSpan happy_var_1)) happy_var_1
 	)}
 
 happyReduce_162 = happySpecReduce_1  58# happyReduction_162
 happyReduction_162 happy_x_1
 	 =  case happyOut11 happy_x_1 of { happy_var_1 -> 
 	happyIn66
-		 (LocIdIdent ((mkCatSpan happy_var_1)) happy_var_1
+		 (Language.Clafer.Front.AbsClafer.LocIdIdent ((mkCatSpan happy_var_1)) happy_var_1
 	)}
 
 happyReduce_163 = happySpecReduce_0  59# happyReduction_163
@@ -2359,14 +2359,14 @@ mkCatSpan = getSpan
 
 mkTokenSpan :: Token -> Span
 mkTokenSpan = gp
-{-# LINE 1 "templates\GenericTemplate.hs" #-}
-{-# LINE 1 "templates\\GenericTemplate.hs" #-}
+{-# LINE 1 "templates/GenericTemplate.hs" #-}
+{-# LINE 1 "templates/GenericTemplate.hs" #-}
 {-# LINE 1 "<built-in>" #-}
 {-# LINE 1 "<command-line>" #-}
-{-# LINE 1 "templates\\GenericTemplate.hs" #-}
+{-# LINE 1 "templates/GenericTemplate.hs" #-}
 -- Id: GenericTemplate.hs,v 1.26 2005/01/14 14:47:22 simonmar Exp 
 
-{-# LINE 13 "templates\\GenericTemplate.hs" #-}
+{-# LINE 13 "templates/GenericTemplate.hs" #-}
 
 
 
@@ -2382,7 +2382,7 @@ mkTokenSpan = gp
 #define GTE(n,m) (n Happy_GHC_Exts.>=# m)
 #define EQ(n,m) (n Happy_GHC_Exts.==# m)
 #endif
-{-# LINE 46 "templates\\GenericTemplate.hs" #-}
+{-# LINE 46 "templates/GenericTemplate.hs" #-}
 
 
 data Happy_IntList = HappyCons Happy_GHC_Exts.Int# Happy_IntList
@@ -2391,11 +2391,11 @@ data Happy_IntList = HappyCons Happy_GHC_Exts.Int# Happy_IntList
 
 
 
-{-# LINE 67 "templates\\GenericTemplate.hs" #-}
+{-# LINE 67 "templates/GenericTemplate.hs" #-}
 
-{-# LINE 77 "templates\\GenericTemplate.hs" #-}
+{-# LINE 77 "templates/GenericTemplate.hs" #-}
 
-{-# LINE 86 "templates\\GenericTemplate.hs" #-}
+{-# LINE 86 "templates/GenericTemplate.hs" #-}
 
 infixr 9 `HappyStk`
 data HappyStk a = HappyStk a (HappyStk a)
@@ -2469,7 +2469,7 @@ data HappyAddr = HappyA# Happy_GHC_Exts.Addr#
 -----------------------------------------------------------------------------
 -- HappyState data type (not arrays)
 
-{-# LINE 170 "templates\\GenericTemplate.hs" #-}
+{-# LINE 170 "templates/GenericTemplate.hs" #-}
 
 -----------------------------------------------------------------------------
 -- Shifting a token
