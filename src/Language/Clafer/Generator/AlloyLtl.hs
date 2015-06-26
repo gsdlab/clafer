@@ -30,6 +30,7 @@ import Control.Monad.State
 import Data.List hiding (and)
 import Data.Maybe
 import Text.Printf
+import Debug.Trace
 
 import Language.Clafer.Common
 import Language.Clafer.ClaferArgs
@@ -106,49 +107,53 @@ header    genEnv  = CString $ unlines $ catMaybes
     where args = claferargs genEnv
 
 traceModuleSource = "/* Definition of timed traces (input independent) */ \n\
-  \ \n\
-  \ \n\
-  \sig State {} \n\
-  \  \n\
-  \private one sig Ord {\n\
-  \   First: set State,\n\
-  \   Next: State -> State,\n\
-  \   Loop: State -> State\n\
-  \} {\n\
-  \   pred/totalOrder[State,First,Next]\n\
-  \}\n\
-  \ \n\
-  \fact {\n\
-  \  Ord.Loop in last -> lone State\n\
-  \}\n\
-  \ \n\
-  \fun first: one State { Ord.First }\n\
-  \ \n\
-  \fun last: one State { State - ((Ord.Next).State) }\n\
-  \ \n\
-  \fun next : State->State { Ord.Next + Ord.Loop }\n\
-  \ \n\
-  \fun prev : State->State { ~this/next }\n\
-  \ \n\
-  \fun past : State->State { ^(~this/next) }\n\
-  \ \n\
-  \fun future : State -> State { State <: *this/next }\n\
-  \ \n\
-  \fun upto[s,s' : State] : set State {\n\
-  \   (s' in s.*(Ord.Next) or finite) implies s.future & ^(Ord.Next).s' else s.*(Ord.Next) + (^(Ord.Next).s' & last.(Ord.Loop).*(Ord.Next))\n\
-  \}\n\
-  \ \n\
-  \pred finite {\n\
-  \   no Loop\n\
-  \}\n\
-  \ \n\
-  \pred infinite {\n\
-  \   some Loop\n\
-  \}\n\
-  \ \n\
-  \fun localFirst [rel: univ->univ->State, parentSet: univ, child: univ] : State {\n\
-  \    let lifetime = child.(parentSet.rel) | lifetime - (lifetime.next)\n\
-  \}"
+    \sig State {}\n\
+    \\n\
+    \private one sig Ord {\n\
+    \   First: set State,\n\
+    \   Next: State -> State\n\
+    \} {\n\
+    \   pred/totalOrder[State,First,Next]\n\
+    \}\n\
+    \\n\
+    \lone sig back in State {}\n\
+    \\n\
+    \fun loop : State -> State {\n\
+    \  last -> back\n\
+    \}\n\
+    \\n\
+    \fun first: one State { Ord.First }\n\
+    \\n\
+    \fun last: one State { State - ((Ord.Next).State) }\n\
+    \\n\
+    \fun next : State->State { Ord.Next + loop }\n\
+    \\n\
+    \fun prev : State->State { ~this/next }\n\
+    \\n\
+    \fun past : State->State { ^(~this/next) }\n\
+    \\n\
+    \fun future : State -> State { State <: *this/next }\n\
+    \\n\
+    \fun upto[s,s' : State] : set State {\n\
+    \  (s' in s.*(Ord.Next) or finite) implies s.future & ^(Ord.Next).s' else s.*(Ord.Next) + (^(Ord.Next).s' & back.*(Ord.Next))\n\
+    \}\n\
+    \\n\
+    \\n\
+    \pred finite {\n\
+    \  no loop\n\
+    \}\n\
+    \\n\
+    \pred infinite {\n\
+    \  some loop\n\
+    \}\n\
+    \\n\
+    \check total {\n\
+    \  finite implies pred/totalOrder[State,first,next]\n\
+    \}\n\
+    \\n\
+    \fun localFirst [rel: univ->univ->State, parentSet: univ, child: univ] : State {\n\
+    \    let lifetime = child.(parentSet.rel) | lifetime - (lifetime.next)\n\
+    \}"
 
 -- 07th Mayo 2012 Rafael Olaechea
 -- Modified so that we can collect all goals into a single block as required per the way goals are handled in modified alloy.
@@ -625,6 +630,13 @@ genExInteger    element'  (y,z) x  =
 
 -- -----------------------------------------------------------------------------
 -- Generate code for logical expressions
+genClaferIdSuffix :: GenEnv -> GenCtx -> ClaferBinding -> String
+genClaferIdSuffix genEnv ctx (Just bindId) =
+  let boundIClafer = findIClafer (uidIClaferMap genEnv) bindId
+  in case (boundIClafer, time ctx) of
+          (Just IClafer {_mutable=True}, Just t) -> "." ++ t
+          _ -> ""
+genClaferIdSuffix _ _ _ = ""
 
 genPExp :: GenEnv -> GenCtx -> PExp -> Concat
 genPExp    genEnv    ctx       x     = genPExp' genEnv ctx $ adjustPExp ctx x
@@ -638,17 +650,10 @@ genPExp'    genEnv    ctx       (PExp iType' pid' pos exp') = case exp' of
     where
     optBar [] = ""
     optBar _  = " | "
-  IClaferId _ "ref" _  (Just bind) -> CString $ "@ref" ++ timeJoin
-    where
-    boundIClafer = findIClafer (uidIClaferMap genEnv) bind
-    timeJoin = case boundIClafer of
-      Just c -> case (_mutable c, time ctx) of
-        (True, Just t) -> "." ++ t
-        _ -> ""
-      _ -> ""
-  IClaferId _ sid _ (Just bind) -> CString $
+  IClaferId _ "ref" _  bind -> CString $ "@ref" ++ genClaferIdSuffix genEnv ctx bind
+  IClaferId _ sid _ bind -> CString $
       if head sid == '~'
-      then sid
+      then "~(" ++ tail sid ++ genClaferIdSuffix genEnv ctx bind ++ ")"
       else if isBuiltInExpr then vsident else sid'
     where
     isBuiltInExpr = isPrimitive sid ||
@@ -657,11 +662,7 @@ genPExp'    genEnv    ctx       (PExp iType' pid' pos exp') = case exp' of
            Just TReal -> True
            Just TString -> True
            _ -> False
-    boundIClafer = findIClafer (uidIClaferMap genEnv) bind
-    sid' = if isBuiltInExpr || sid == "this" then sid else ('@' : genRelName "" ++ sid ++ timeJoin)
-    timeJoin = case (boundIClafer, time ctx) of
-                    (Just IClafer {_mutable=True}, Just t) -> "." ++ t
-                    _ -> ""
+    sid' = if isBuiltInExpr || sid == "this" then sid else ('@' : genRelName "" ++ sid ++ genClaferIdSuffix genEnv ctx bind)
     -- 29/March/2012  Rafael Olaechea: ref is now prepended with clafer name to be able to refer to it from partial instances.
     -- 30/March/2012 Rafael Olaechea added referredClaferUniqeuid to fix problems when having this.x > number  (e.g test/positive/i10.cfr )
     vsident = if (noalloyruncommand $ claferargs genEnv)
@@ -749,7 +750,7 @@ genLtlExp    genEnv    ctx       op'        exps' = {- trace ("call in genLtlExp
     | otherwise = [genPExp' genEnv (ctx {time = Just t'}) e1]
   genF _ = error "AlloyLtl.genLtlExp: F modality requires one argument" -- should never happen
   genX [e1]
-    | containsMutable genEnv e1 = mapToCStr ["some ", t, ".next and "] ++ [genPExp' genEnv (ctx {time = Just t'}) e1]
+    | containsMutable genEnv e1 = mapToCStr ["some ", t, ".next and let ", t', " = ", t, ".next | "] ++ [genPExp' genEnv (ctx {time = Just t'}) e1]
     | otherwise = [genPExp' genEnv (ctx {time = Just t'}) e1]
   genX _ = error "AlloyLtl.genLtlExp: X modality requires one argument" -- should never happen
   genG [e1]
@@ -843,7 +844,7 @@ adjustNav resPath' x@(IFunExp op' (pexp0:pexp:_))
   where
   (iexp0, path) = adjustNav resPath' (_exp pexp0)
   (iexp, path') = adjustNav path    (_exp pexp)
-adjustNav resPath' x@(IClaferId _ id' _ _)
+adjustNav resPath' x@(IClaferId _ id' _ bind)
   | id' == parentIdent = (x{_sident = "~@" ++ (genRelName topPath)}, tail resPath')
   | otherwise    = (x, resPath')
     where

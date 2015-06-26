@@ -215,7 +215,10 @@ toNav' p = (mkIFunExp iJoin $ map (\(id', cbind) -> IClaferId "" id' False (_uid
 adjustAncestor :: IClafer -> [(String, Maybe IClafer)] -> [(String, Maybe IClafer)] -> [(String, Maybe IClafer)]
 adjustAncestor ctx cPath rPath = (thisIdent, Just ctx) : parents ++ (fromJust $ stripPrefix prefix rPath)
   where
-  parents = replicate (length $ fromJust $ stripPrefix prefix cPath) (parentIdent, Nothing)
+  {-parents = replicate (length $ fromJust $ stripPrefix prefix cPath) (parentIdent, Nothing)-}
+  parents = map createParent $ fromJust $ stripPrefix prefix cPath
+  createParent :: (String, Maybe IClafer) -> (String, Maybe IClafer)
+  createParent (cname, clafer) = (parentIdent, clafer)
   prefix = fst $ unzip $ takeWhile (uncurry eqIds) $ zip cPath rPath
   eqIds a b = (fst a) == (fst b)
 
