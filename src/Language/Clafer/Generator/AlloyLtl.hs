@@ -147,10 +147,6 @@ traceModuleSource = "/* Definition of timed traces (input independent) */ \n\
     \  some loop\n\
     \}\n\
     \\n\
-    \check total {\n\
-    \  finite implies pred/totalOrder[State,first,next]\n\
-    \}\n\
-    \\n\
     \fun localFirst [rel: univ->univ->State, parentSet: univ, child: univ] : State {\n\
     \    let lifetime = child.(parentSet.rel) | lifetime - (lifetime.next)\n\
     \}"
@@ -653,9 +649,18 @@ genPExp'    genEnv    ctx       (PExp iType' pid' pos exp') = case exp' of
   IClaferId _ "ref" _  bind -> CString $ "@ref" ++ genClaferIdSuffix genEnv ctx bind
   IClaferId _ sid _ bind -> CString $
       if head sid == '~'
-      then "~(" ++ tail sid ++ genClaferIdSuffix genEnv ctx bind ++ ")"
+      then if bound
+           then "~(" ++ tail sid ++ (if _mutable boundClafer then ".t" else "") ++ ")"
+           else error "AlloyLtl.genPExp' Unbounded parent expression" -- should never happen
+      {-else if head sid == '~' then "~(" ++ tail sid ++ genClaferIdSuffix genEnv ctx bind ++ ")"-}
       else if isBuiltInExpr then vsident else sid'
     where
+    (bound, boundClafer) = case bind of
+                Just claferId -> let c = findIClafer (uidIClaferMap genEnv) claferId
+                                  in case c of
+                                          Just clafer -> (True, clafer)
+                                          _ -> (False, undefined)
+                _ -> (False, undefined)
     isBuiltInExpr = isPrimitive sid ||
       case iType' of
            Just TInteger -> True
@@ -833,8 +838,11 @@ adjustIExp ctx x = case x of
   IClaferId _ _ _  _-> aNav x
   _  -> x
   where
+  {-aNav e0 = let e' = fst (adjustNav (resPath ctx) e0) in trace ( "before adjust :\n"  ++ show e0 ++ "\nAfter adjust:\n" ++ show e' ) e'-}
   aNav = fst.(adjustNav $ resPath ctx)
 
+-- Essentially replaces IClaferId "parent" with appropriate relation name
+-- Example "this.parent" becomes "this.~@r_parent"
 adjustNav :: [String] -> IExp -> (IExp, [String])
 adjustNav resPath' x@(IFunExp op' (pexp0:pexp:_))
   | op' == iJoin = (IFunExp iJoin
