@@ -185,7 +185,7 @@ genCModule (imodule@IModule{_mDecls}, genv') scopes =
     genConstraintExp (IFunExp "sum" args')
         | [arg] <- args', PExp{_exp = IFunExp{_exps = [a, PExp{_exp = IClaferId{_sident = "ref"}}]}} <- rewrite arg =
             "sum(" ++ genConstraintPExp a ++ ")"
-        | otherwise = error "Choco: Unexpected sum argument."
+        | otherwise = error $ "[bug] Choco.genConstraintExp: Unexpected sum argument: " ++ show args'
     genConstraintExp (IFunExp "product" args')
         | [arg] <- args', PExp{_exp = IFunExp{_exps = [a, PExp{_exp = IClaferId{_sident = "ref"}}]}} <- rewrite arg =
             "product(" ++ genConstraintPExp a ++ ")"

@@ -308,9 +308,6 @@ desugarExp' x = case x of
   EMinExp _ exp'    -> dop iMin [exp']
   EGMax _ exp' -> dop iGMax [exp']
   EGMin _ exp' -> dop iGMin [exp']
-  EInt _ n  -> IInt $ mkInteger n
-  EDouble _ (PosDouble n) -> IDouble $ read $ snd n
-  EStr _ (PosString str)  -> IStr $ snd str
   ESetExp _ sexp -> desugarSetExp' sexp
   where
   dop = desugarOp desugarExp
@@ -341,6 +338,9 @@ desugarSetExp' x = case x of
   Range _ exp0 exp'        -> dop iRange        [exp0, exp']
   Join _ exp0 exp'         -> dop iJoin         [exp0, exp']
   ClaferId _ name  -> desugarName name
+  EInt _ n  -> IInt $ mkInteger n
+  EDouble _ (PosDouble n) -> IDouble $ read $ snd n
+  EStr _ (PosString str)  -> IStr $ snd str
 
   where
   dop = desugarOp desugarSetExp
@@ -368,11 +368,11 @@ sugarExp' x = case x of
     else (sugarTerOp op') (exps''!!0) (exps''!!1) (exps''!!2)
     where
     exps'' = map sugarExp exps'
-  IInt n -> EInt noSpan $ PosInteger ((0, 0), show n)
-  IDouble n -> EDouble noSpan $ PosDouble ((0, 0), show n)
-  IStr str -> EStr noSpan $ PosString ((0, 0), str)
   IClaferId _ _ _ _ -> ESetExp noSpan $ sugarSetExp' x
-  _ -> error "Function sugarExp' from Desugarer was given an invalid argument" -- This should never happen
+  IInt _ -> ESetExp noSpan $ sugarSetExp' x
+  IDouble _ -> ESetExp noSpan $ sugarSetExp' x
+  IStr _ -> ESetExp noSpan $ sugarSetExp' x
+  x' -> error $ "Desugarer.sugarExp': invalid argument: " ++ show x' -- This should never happen
   where
   sugarUnOp op''
     | op'' == iNot           = ENeg noSpan
@@ -426,7 +426,10 @@ sugarSetExp' (IFunExp op' exps') = (sugarOp op') (exps''!!0) (exps''!!1)
       | otherwise              = error "Invalid argument given to function sygarSetExp' in Desugarer"
 sugarSetExp' (IClaferId "" id' _ _) = ClaferId noSpan $ Path noSpan [ModIdIdent noSpan $ mkIdent id']
 sugarSetExp' (IClaferId modName' id' _ _) = ClaferId noSpan $ Path noSpan $ (sugarModId modName') : [sugarModId id']
-sugarSetExp' _ = error "IDecelPexp, IInt, IDobule, and IStr can not be sugared into a setExp!" --This should never happen
+sugarSetExp' (IInt n) = EInt noSpan $ PosInteger ((0, 0), show n)
+sugarSetExp' (IDouble n) = EDouble noSpan $ PosDouble ((0, 0), show n)
+sugarSetExp' (IStr str) = EStr noSpan $ PosString ((0, 0), str)
+sugarSetExp' _ = error "IDecelPexp can not be sugared into a setExp!" -- This should never happen
 
 desugarPath :: PExp -> PExp
 desugarPath (PExp iType' pid' pos' x) = reducePExp $ PExp iType' pid' pos' result

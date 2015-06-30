@@ -204,6 +204,26 @@ alex_action_8 =  tok (\p s -> PT p (eitherResIdent (TV . share) s))
 {-# LINE 1 "templates\\GenericTemplate.hs" #-}
 {-# LINE 1 "<built-in>" #-}
 {-# LINE 1 "<command-line>" #-}
+{-# LINE 8 "<command-line>" #-}
+{-# LINE 1 "C:\\dev\\MinGHC-7.10.1\\ghc-7.10.1\\lib/include\\ghcversion.h" #-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{-# LINE 8 "<command-line>" #-}
 {-# LINE 1 "templates\\GenericTemplate.hs" #-}
 -- -----------------------------------------------------------------------------
 -- ALEX TEMPLATE

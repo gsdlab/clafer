@@ -212,10 +212,7 @@ Exp12 :: { Exp }
 Exp12 : 'if' Exp12 'then' Exp12 'else' Exp13 { EImpliesElse ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkTokenSpan $3) >- (mkCatSpan $4) >- (mkTokenSpan $5) >- (mkCatSpan $6)) $2 $4 $6 }
       | Exp13 {  $1 }
 Exp13 :: { Exp }
-Exp13 : PosInteger { EInt ((mkCatSpan $1)) $1 }
-      | PosDouble { EDouble ((mkCatSpan $1)) $1 }
-      | PosString { EStr ((mkCatSpan $1)) $1 }
-      | SetExp { ESetExp ((mkCatSpan $1)) $1 }
+Exp13 : SetExp { ESetExp ((mkCatSpan $1)) $1 }
       | '(' Exp ')' {  $2 }
 SetExp :: { SetExp }
 SetExp : SetExp '++' SetExp1 { Union ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
@@ -238,6 +235,9 @@ SetExp5 : SetExp5 '.' SetExp6 { Join ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkC
         | SetExp6 {  $1 }
 SetExp6 :: { SetExp }
 SetExp6 : Name { ClaferId ((mkCatSpan $1)) $1 }
+        | PosInteger { EInt ((mkCatSpan $1)) $1 }
+        | PosDouble { EDouble ((mkCatSpan $1)) $1 }
+        | PosString { EStr ((mkCatSpan $1)) $1 }
         | '(' SetExp ')' {  $2 }
 Decl :: { Decl }
 Decl : ListLocId ':' SetExp { Decl ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }

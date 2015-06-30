@@ -227,6 +227,9 @@ graphSimpleSetExp (Intersection _ set1 set2) topLevel irMap = graphSimpleSetExp 
 graphSimpleSetExp (Domain _ set1 set2) topLevel irMap = graphSimpleSetExp set1 topLevel irMap ++ graphSimpleSetExp set2 topLevel irMap
 graphSimpleSetExp (Range _ set1 set2) topLevel irMap = graphSimpleSetExp set1 topLevel irMap ++ graphSimpleSetExp set2 topLevel irMap
 graphSimpleSetExp (Join _ set1 set2) topLevel irMap = graphSimpleSetExp set1 topLevel irMap ++ graphSimpleSetExp set2 topLevel irMap
+graphSimpleSetExp (EInt _ _) _ _ = []
+graphSimpleSetExp (EDouble _ _) _ _ = []
+graphSimpleSetExp (EStr _ _) _ _ = []
 
 {-graphSimpleEnumId :: EnumId -> (Bool, Maybe String, Maybe String) -> Map.Map Span [Ir] -> String
 graphSimpleEnumId (EnumIdIdent posident) _ irMap = graphSimplePosIdent posident irMap
@@ -345,6 +348,9 @@ graphCVLSetExp (Intersection _ set1 set2) parent' irMap = graphCVLSetExp set1 pa
 graphCVLSetExp (Domain _ set1 set2) parent' irMap = graphCVLSetExp set1 parent' irMap ++ graphCVLSetExp set2 parent' irMap
 graphCVLSetExp (Range _ set1 set2) parent' irMap = graphCVLSetExp set1 parent' irMap ++ graphCVLSetExp set2 parent' irMap
 graphCVLSetExp (Join _ set1 set2) parent' irMap = graphCVLSetExp set1 parent' irMap ++ graphCVLSetExp set2 parent' irMap
+graphCVLSetExp (EInt _ _) _ _ = []
+graphCVLSetExp (EDouble _ _) _ _ = []
+graphCVLSetExp (EStr _ _) _ _ = []
 
 {-graphCVLEnumId (EnumIdIdent posident) _ irMap = graphCVLPosIdent posident irMap
 graphCVLEnumId (PosEnumIdIdent _ posident) parent irMap = graphCVLEnumId (EnumIdIdent posident) parent irMap-}

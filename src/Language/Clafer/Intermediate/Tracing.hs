@@ -203,9 +203,6 @@ traverseExp x =
     ECSetExp _ e -> traverseExp e
     EMinExp _ e -> traverseExp e
     EImpliesElse _ e1 e2 e3 -> traverseExp e1 ++ traverseExp e2 ++ traverseExp e3
-    EInt _ _ -> []
-    EDouble _ _ -> []
-    EStr _ _ -> []
     ESetExp _ s -> traverseSetExp s
     _ -> error "Invalid argument given to function traverseExp from Tracing"
 
@@ -221,6 +218,9 @@ traverseSetExp x =
     Range _ s1 s2 -> traverseSetExp s1 ++ traverseSetExp s2
     Join _ s1 s2 -> traverseSetExp s1 ++ traverseSetExp s2
     ClaferId _ n -> traverseName n
+    EInt _ _ -> []
+    EDouble _ _ -> []
+    EStr _ _ -> []
 
 traverseDecl :: Decl -> [Ast]
 traverseDecl x@(Decl _ l s) =

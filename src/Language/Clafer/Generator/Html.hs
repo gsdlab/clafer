@@ -331,9 +331,6 @@ printExp (EProdSetExp _ exp')       indent irMap html comments = "product " ++ p
 printExp (ECSetExp _ exp')         indent irMap html comments = "# " ++ printExp exp' indent irMap html comments
 printExp (EMinExp _ exp')          indent irMap html comments = "-" ++ printExp exp' indent irMap html comments
 printExp (EImpliesElse _ exp'1 exp'2 exp'3) indent irMap html comments = "if " ++ (printExp exp'1 indent irMap html comments) ++ " then " ++ (printExp exp'2 indent irMap html comments) ++ " else " ++ (printExp exp'3 indent irMap html comments)
-printExp (EInt _ (PosInteger (_, num))) _ _ _ _ = num
-printExp (EDouble _ (PosDouble (_, num))) _ _ _ _ = num
-printExp (EStr _ (PosString (_, str))) _ _ _ _ = str
 
 printSetExp :: SetExp -> Int -> Map.Map Span [Ir] -> Bool -> [(Span, String)] -> String
 printSetExp (ClaferId _ name) indent irMap html comments = printName name indent irMap html comments
@@ -344,6 +341,9 @@ printSetExp (Intersection _ set1 set2) indent irMap html comments = (printSetExp
 printSetExp (Domain _ set1 set2) indent irMap html comments = (printSetExp set1 indent irMap html comments) ++ "<:" ++ (printSetExp set2 indent irMap html comments)
 printSetExp (Range _ set1 set2) indent irMap html comments = (printSetExp set1 indent irMap html comments) ++ ":>" ++ (printSetExp set2 indent irMap html comments)
 printSetExp (Join _ set1 set2) indent irMap html comments = (printSetExp set1 indent irMap html comments) ++ "." ++ (printSetExp set2 indent irMap html comments)
+printSetExp (EInt _ (PosInteger (_, num))) _ _ _ _ = num
+printSetExp (EDouble _ (PosDouble (_, num))) _ _ _ _ = num
+printSetExp (EStr _ (PosString (_, str))) _ _ _ _ = str
 
 printQuant :: Quant -> Bool -> String
 printQuant quant' html = case quant' of

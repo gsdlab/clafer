@@ -1,6 +1,7 @@
 *.sublime-project
 *.sublime-workspace
 dist
+dist-stack
 .dist-buildwrapper
 .project
 *.exe
@@ -10,3 +11,5 @@ dist
 cabal.sandbox.config
 cabal.config
 tags
+.cabal-sandbox
+.stack-work

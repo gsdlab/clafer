@@ -480,7 +480,7 @@ genIFunExp    pid'      genEnv    resPath     (IFunExp op' exps') =
     | op' `elem` arithBinOps && length exps' == 2 = interleave
     | otherwise = \xs ys -> reverse $ interleave (reverse xs) (reverse ys)
   exps'' = map (optBrArg genEnv resPath) exps'
-genIFunExp _ _ _ _ = error "Function genIFunExp from Alloy Generator expected a IFunExp as an argument but was given something else" --This should never happen
+genIFunExp _ _ _ x = error $ "[bug] Alloy.genIFunExp: expecting a IFunExp, instead got: " ++ show x--This should never happen
 
 
 optBrArg :: GenEnv -> [String] -> PExp -> Concat
@@ -639,8 +639,11 @@ firstLine = 1 :: LineNo
 
 removeright :: PExp -> PExp
 removeright (PExp _ _ _ (IFunExp _ (x : (PExp _ _ _ (IClaferId _ _ _ _)) : _))) = x
+removeright (PExp _ _ _ (IFunExp _ (x : (PExp _ _ _ (IInt _ )) : _))) = x
+removeright (PExp _ _ _ (IFunExp _ (x : (PExp _ _ _ (IStr _ )) : _))) = x
+removeright (PExp _ _ _ (IFunExp _ (x : (PExp _ _ _ (IDouble _ )) : _))) = x
 removeright (PExp t id' pos (IFunExp o (x1:x2:xs))) = (PExp t id' pos (IFunExp o (x1:(removeright x2):xs)))
-removeright (PExp _ _ _ _) = error "Function removeright from the AlloyGenerator expects a PExp with a IFunExp inside, was given something else" --This should never happen
+removeright x@(PExp _ _ _ _) = error $ "[bug] AlloyGenerator.removeright: expects a PExp with a IFunExp inside but was given: " ++ show x --This should never happen
 
 getRight :: PExp -> PExp
 getRight (PExp _ _ _ (IFunExp _ (_:x:_))) = getRight x

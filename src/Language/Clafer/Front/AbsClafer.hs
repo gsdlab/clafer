@@ -227,9 +227,6 @@ data Exp
     | ECSetExp Span Exp
     | EMinExp Span Exp
     | EImpliesElse Span Exp Exp Exp
-    | EInt Span PosInteger
-    | EDouble Span PosDouble
-    | EStr Span PosString
     | ESetExp Span SetExp
   deriving (Eq, Ord, Show, Read, Data, Typeable, Generic)
 
@@ -265,9 +262,6 @@ instance Spannable Exp where
     getSpan (ECSetExp s _ ) = s
     getSpan (EMinExp s _ ) = s
     getSpan (EImpliesElse s _ _ _ ) = s
-    getSpan (EInt s _ ) = s
-    getSpan (EDouble s _ ) = s
-    getSpan (EStr s _ ) = s
     getSpan (ESetExp s _ ) = s
 data SetExp
     = Union Span SetExp SetExp
@@ -278,6 +272,9 @@ data SetExp
     | Range Span SetExp SetExp
     | Join Span SetExp SetExp
     | ClaferId Span Name
+    | EInt Span PosInteger
+    | EDouble Span PosDouble
+    | EStr Span PosString
   deriving (Eq, Ord, Show, Read, Data, Typeable, Generic)
 
 instance Spannable SetExp where
@@ -289,6 +286,9 @@ instance Spannable SetExp where
     getSpan (Range s _ _ ) = s
     getSpan (Join s _ _ ) = s
     getSpan (ClaferId s _ ) = s
+    getSpan (EInt s _ ) = s
+    getSpan (EDouble s _ ) = s
+    getSpan (EStr s _ ) = s
 data Decl = Decl Span [LocId] SetExp
   deriving (Eq, Ord, Show, Read, Data, Typeable, Generic)
 

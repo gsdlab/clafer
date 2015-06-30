@@ -231,9 +231,6 @@ instance Print Exp where
     ECSetExp _ exp12 -> prPrec i 11 (concatD [doc (showString "#"), prt 12 exp12])
     EMinExp _ exp12 -> prPrec i 11 (concatD [doc (showString "-"), prt 12 exp12])
     EImpliesElse _ exp120 exp12 exp13 -> prPrec i 12 (concatD [doc (showString "if"), prt 12 exp120, doc (showString "then"), prt 12 exp12, doc (showString "else"), prt 13 exp13])
-    EInt _ posinteger -> prPrec i 13 (concatD [prt 0 posinteger])
-    EDouble _ posdouble -> prPrec i 13 (concatD [prt 0 posdouble])
-    EStr _ posstring -> prPrec i 13 (concatD [prt 0 posstring])
     ESetExp _ setexp -> prPrec i 13 (concatD [prt 0 setexp])
   prtList es = case es of
    [] -> (concatD [])
@@ -249,6 +246,9 @@ instance Print SetExp where
     Range _ setexp4 setexp5 -> prPrec i 4 (concatD [prt 4 setexp4, doc (showString ":>"), prt 5 setexp5])
     Join _ setexp5 setexp6 -> prPrec i 5 (concatD [prt 5 setexp5, doc (showString "."), prt 6 setexp6])
     ClaferId _ name -> prPrec i 6 (concatD [prt 0 name])
+    EInt _ posinteger -> prPrec i 6 (concatD [prt 0 posinteger])
+    EDouble _ posdouble -> prPrec i 6 (concatD [prt 0 posdouble])
+    EStr _ posstring -> prPrec i 6 (concatD [prt 0 posstring])
 
 instance Print Decl where
   prt i e = case e of
@@ -282,5 +282,3 @@ instance Print LocId where
   prtList es = case es of
    [x] -> (concatD [prt 0 x])
    x:xs -> (concatD [prt 0 x, doc (showString ";"), prt 0 xs])
-
-

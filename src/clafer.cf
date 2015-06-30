@@ -98,9 +98,6 @@ EProdSetExp.    Exp11 ::= "product" Exp12;
 ECSetExp.       Exp11 ::= "#" Exp12 ;
 EMinExp.        Exp11 ::= "-" Exp12 ;
 EImpliesElse.   Exp12 ::= "if" Exp12 "then" Exp12 "else" Exp13 ;
-EInt.           Exp13 ::= PosInteger ;
-EDouble.        Exp13 ::= PosDouble ;
-EStr.           Exp13 ::= PosString ;
 ESetExp.        Exp13 ::= SetExp ;
 
 Union.          SetExp  ::= SetExp  "++" SetExp1 ;
@@ -111,6 +108,9 @@ Domain.         SetExp3 ::= SetExp3 "<:" SetExp4 ;
 Range.          SetExp4 ::= SetExp4 ":>" SetExp5 ;
 Join.           SetExp5 ::= SetExp5 "."  SetExp6 ;
 ClaferId.       SetExp6 ::= Name ;
+EInt.           SetExp6 ::= PosInteger ;
+EDouble.        SetExp6 ::= PosDouble ;
+EStr.           SetExp6 ::= PosString ;
 
 Decl.           Decl ::= [LocId] ":" SetExp ;
 
