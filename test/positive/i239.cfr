@@ -1,8 +1,3 @@
-w -> integer = sum (1 ++ 2)
-v -> integer = 1 + 2
 x ->> integer *
 y ->> integer *
 z -> integer = sum (x ++ y)
-
-assert [ w = 3 ]
-assert [ v = 3 ]
