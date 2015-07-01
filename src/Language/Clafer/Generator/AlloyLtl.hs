@@ -442,7 +442,7 @@ genMutClaferConst ctx c | _mutable c = let parentSig = head (resPath ctx) in
 genMutSubClafersConst :: GenEnv -> IClafer -> Concat
 genMutSubClafersConst    genEnv c = genTimeQuant allSubExp +++ (cintercalate (CString " && \n\t") allSubExp)
   where
-  allSubExp = cardConsts ++ refCardConst ++ (genReqParentConstBody "t" c $ trace (show mutClafers) mutClafers)
+  allSubExp = cardConsts ++ refCardConst ++ (genReqParentConstBody "t" c mutClafers)
   cardConsts = map genCardConstBody $ filter (\c' -> cardStr c' /= "set") mutClafers
   refCardConst
     | (_mutable c) && (isJust $ _reference c) = [CString $ "one this.@" ++ (genRefRelName genEnv c) ++ ".t"]
