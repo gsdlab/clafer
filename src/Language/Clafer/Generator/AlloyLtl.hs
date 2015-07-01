@@ -29,7 +29,6 @@ import Control.Lens hiding (elements, mapping, op)
 import Control.Monad.State
 import Data.List hiding (and)
 import Data.Maybe
-import Text.Printf
 import Debug.Trace
 
 import Language.Clafer.Common
@@ -106,6 +105,7 @@ header    genEnv  = CString $ unlines $ catMaybes
     ]
     where args = claferargs genEnv
 
+traceModuleSource :: String
 traceModuleSource = "/* Definition of timed traces (input independent) */ \n\
     \sig State {}\n\
     \\n\
@@ -354,9 +354,9 @@ genType    genEnv    ctx       x                                    = genPExp ge
 containsTimedRel :: GenEnv ->  PExp -> Bool
 containsTimedRel    genEnv     (PExp iType' _ _ exp') =  case exp' of
   IFunExp _ exps' -> anyTrue $ map (containsTimedRel genEnv) exps'
-  IClaferId _ sident' _ (Just bind) -> timedIClaferId
+  IClaferId _ sident' _ (GlobalBind claferUid) -> timedIClaferId
     where
-    boundIClafer = fromJust $ findIClafer (uidIClaferMap genEnv) bind
+    boundIClafer = fromJust $ findIClafer (uidIClaferMap genEnv) claferUid
     mutable' = _mutable boundIClafer
     timedIClaferId
       | sident' == "ref" = mutable'
@@ -438,14 +438,16 @@ genMutClaferConst ctx c | _mutable c = let parentSig = head (resPath ctx) in
 -- typically all t: Time | lone r_field.t && lone r_field2.t &&
 --                         no (parent_rel.t.this) => (no r_field[this].t && no r_field2[this].t)
 -- Michal: TODO: revise because now a clafer can have both super and reference at the same time
+-- Paulius: TODO: check if cardinality constraints are correct
 genMutSubClafersConst :: GenEnv -> IClafer -> Concat
 genMutSubClafersConst    genEnv c = genTimeQuant allSubExp +++ (cintercalate (CString " && \n\t") allSubExp)
   where
-  allSubExp = map genCardConstBody mutClafers ++ refCardConst ++ (genReqParentConstBody "t" c mutClafers)
+  allSubExp = cardConsts ++ refCardConst ++ (genReqParentConstBody "t" c $ trace (show mutClafers) mutClafers)
+  cardConsts = map genCardConstBody $ filter (\c' -> cardStr c' /= "set") mutClafers
   refCardConst
     | (_mutable c) && (isJust $ _reference c) = [CString $ "one this.@" ++ (genRefRelName genEnv c) ++ ".t"]
     | otherwise = []
-  mutClafers = filter isMutableNonRef $ getSubclafers $ _elements c
+  mutClafers = filter _mutable $ getSubclafers $ _elements c
   isMutableNonRef c' = (_mutable c') && (cardStr c' /= "set")  -- Michal: does not matter whether a ref or not or whether has super or not
   cardStr c' = genCardCrude $ _card c'
   genTimeQuant [] = CString ""
@@ -627,8 +629,8 @@ genExInteger    element'  (y,z) x  =
 -- -----------------------------------------------------------------------------
 -- Generate code for logical expressions
 genClaferIdSuffix :: GenEnv -> GenCtx -> ClaferBinding -> String
-genClaferIdSuffix genEnv ctx (Just bindId) =
-  let boundIClafer = findIClafer (uidIClaferMap genEnv) bindId
+genClaferIdSuffix genEnv ctx (GlobalBind claferUid) =
+  let boundIClafer = findIClafer (uidIClaferMap genEnv) claferUid
   in case (boundIClafer, time ctx) of
           (Just IClafer {_mutable=True}, Just t) -> "." ++ t
           _ -> ""
@@ -647,7 +649,7 @@ genPExp'    genEnv    ctx       (PExp iType' pid' pos exp') = case exp' of
     optBar [] = ""
     optBar _  = " | "
   IClaferId _ "ref" _  bind -> CString $ "@ref" ++ genClaferIdSuffix genEnv ctx bind
-  IClaferId _ sid _ bind -> CString $
+  IClaferId _ sid _ bind@(GlobalBind claferUid) -> CString $
       if head sid == '~'
       then if bound
            then "~(" ++ tail sid ++ (if _mutable boundClafer then ".t" else "") ++ ")"
@@ -655,12 +657,10 @@ genPExp'    genEnv    ctx       (PExp iType' pid' pos exp') = case exp' of
       {-else if head sid == '~' then "~(" ++ tail sid ++ genClaferIdSuffix genEnv ctx bind ++ ")"-}
       else if isBuiltInExpr then vsident else sid'
     where
-    (bound, boundClafer) = case bind of
-                Just claferId -> let c = findIClafer (uidIClaferMap genEnv) claferId
-                                  in case c of
-                                          Just clafer -> (True, clafer)
+    (bound, boundClafer) = let finding = findIClafer (uidIClaferMap genEnv) claferUid
+                                  in case finding of
+                                          Just c' -> (True, c')
                                           _ -> (False, undefined)
-                _ -> (False, undefined)
     isBuiltInExpr = isPrimitive sid ||
       case iType' of
            Just TInteger -> True
@@ -678,7 +678,8 @@ genPExp'    genEnv    ctx       (PExp iType' pid' pos exp') = case exp' of
         topPath = case resPath ctx of
                     x:_ -> x
                     [] -> error "'AlloyLtl.genPExp': resPath is empty"
-  IClaferId _ sid _ Nothing -> CString sid  -- this is the case for local declarations in quantifiers
+  IClaferId _ sid _ (LocalBind _) -> CString sid  -- this is the case for local declarations in quantifiers
+  IClaferId _ sid _ NoBind -> CString sid  -- this is the case for local declarations in quantifiers
   IFunExp _ _ -> case exp'' of
     IFunExp _ _ -> genIFunExp genEnv pid' ctx exp''
     _ -> genPExp' genEnv ctx $ PExp iType' pid' pos exp''
@@ -696,15 +697,15 @@ genPExp'    genEnv    ctx       (PExp iType' pid' pos exp') = case exp' of
 -- Encoding of Weak Until expression is done by translating to equivalent Until expression
 -- a W b === G a || a U b
 transformExp :: IExp -> IClafer -> IExp
-transformExp x@(IFunExp op' (e1:_)) c'
+transformExp (IFunExp op' (e1:_)) c'
   | op' == iMin = IFunExp iMul [PExp (_iType e1) "" noSpan $ IInt (-1), e1]
   | op' == iInitially && _mutable c' = -- transforms to: (no this && X this) => X e1
-        let thisExpr = PExp (Just TBoolean) "" noSpan (IClaferId "" "this" False (Just (_uid c')))
+        let thisExpr = PExp (Just TBoolean) "" noSpan (IClaferId "" "this" False (GlobalBind (_uid c')))
             oper1 =  PExp (Just TBoolean) "" noSpan (IFunExp iNot [ thisExpr ])
             oper2 = PExp (Just TBoolean) "" noSpan (IFunExp iX [thisExpr])
-            and = PExp (Just TBoolean) "" noSpan (IFunExp iAnd [oper1, oper2] )
+            and' = PExp (Just TBoolean) "" noSpan (IFunExp iAnd [oper1, oper2] )
             xExpr = PExp (Just TBoolean) "" noSpan (IFunExp iX [e1])
-        in  IFunExp iImpl [and, xExpr]
+        in  IFunExp iImpl [and', xExpr]
   | op' == iInitially  = _exp e1
 transformExp    x@(IFunExp op' exps'@(e1:e2:_)) _
   | op' == iXor = IFunExp iNot [PExp (Just TBoolean) "" noSpan (IFunExp iIff exps')]
@@ -765,7 +766,6 @@ genLtlExp    genEnv    ctx       op'        exps' = {- trace ("call in genLtlExp
   genU (e1:e2:_) = mapToCStr ["some ", t', ":", t, ".future | "] ++ [genPExp' genEnv (ctx {time = Just t'}) e2] ++
     mapToCStr [" and ( all ", t'', ": upto[", t, ", ", t', "] | "] ++ [genPExp' genEnv (ctx {time = Just t''}) e1, CString ")"]
   genU _ = error "AlloyLtl.genLtlExp: U modality requires two arguments" -- should never happen
-  nextNLoop = "timeLoop" -- "(" ++ stateSig ++ " <: next + loop)"
   t = maybe "t" id $ time ctx
   t' = t ++ "'"
   t'' = t' ++ "'"
@@ -774,7 +774,7 @@ genLtlExp    genEnv    ctx       op'        exps' = {- trace ("call in genLtlExp
 containsMutable :: GenEnv -> PExp -> Bool
 containsMutable    genEnv    (PExp _ _ _ exp') = case exp' of
   (IFunExp _ exps') -> anyTrue $ map (containsMutable genEnv) exps'
-  (IClaferId _ _ _ (Just bind)) -> let
+  (IClaferId _ _ _ (GlobalBind bind)) -> let
       boundIClafer = fromJust $ findIClafer (uidIClaferMap genEnv) bind
     in
       _mutable boundIClafer
@@ -852,7 +852,7 @@ adjustNav resPath' x@(IFunExp op' (pexp0:pexp:_))
   where
   (iexp0, path) = adjustNav resPath' (_exp pexp0)
   (iexp, path') = adjustNav path    (_exp pexp)
-adjustNav resPath' x@(IClaferId _ id' _ bind)
+adjustNav resPath' x@(IClaferId _ id' _ _)
   | id' == parentIdent = (x{_sident = "~@" ++ (genRelName topPath)}, tail resPath')
   | otherwise    = (x, resPath')
     where

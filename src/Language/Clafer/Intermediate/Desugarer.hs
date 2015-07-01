@@ -158,7 +158,7 @@ desugarInit _ (InitEmpty _) = []
 desugarInit id' (InitSome s inithow exp') = [ IEConstraint (desugarInitHow inithow) (pExpDefPid s implIExp) ]
   where
     cId :: PExp
-    cId = mkPLClaferId (snd $ getIdent id') False Nothing
+    cId = mkPLClaferId (snd $ getIdent id') False NoBind
     -- <id> = <exp'>
     assignIExp :: IExp
     assignIExp = (IFunExp "=" [cId, desugarExp exp'])
@@ -213,7 +213,7 @@ desugarInitiality mods = any isInitialMod mods
 desugarName :: Name -> IExp
 desugarName (Path _ path) =
       IClaferId (concatMap ((++ modSep).desugarModId) (init path))
-                (desugarModId $ last path) True Nothing
+                (desugarModId $ last path) True NoBind
 
 desugarModId :: ModId -> Result
 desugarModId (ModIdIdent _ id') = transIdent id'

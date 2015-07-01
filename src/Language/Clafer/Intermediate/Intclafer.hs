@@ -160,7 +160,11 @@ data PExp
   deriving (Eq,Ord,Show,Data,Typeable)
 
 -- | Embedes reference to a resolved Clafer
-type ClaferBinding = Maybe UID
+{-type ClaferBinding = Maybe UID-}
+data ClaferBinding = GlobalBind UID
+  | LocalBind CName
+  | NoBind
+  deriving (Eq,Ord,Show,Data,Typeable)
 
 data IExp
     -- | quantified expression with declarations
@@ -401,6 +405,8 @@ $(deriveToJSON defaultOptions{fieldLabelModifier = tail, omitNothingFields=True}
 $(deriveToJSON defaultOptions{fieldLabelModifier = tail, omitNothingFields=True} ''IClaferModifiers)
 
 $(deriveToJSON defaultOptions{fieldLabelModifier = tail, omitNothingFields=True} ''IClafer)
+
+$(deriveToJSON defaultOptions{fieldLabelModifier = tail, omitNothingFields=True} ''ClaferBinding)
 
 $(deriveToJSON defaultOptions{fieldLabelModifier = tail, omitNothingFields=True} ''IElement)
 

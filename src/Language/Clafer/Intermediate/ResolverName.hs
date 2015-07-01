@@ -188,9 +188,9 @@ resolveNav pos' env x isFirst = case x of
 -- depending on how resolved construct a path
 mkPath :: SEnv -> (HowResolved, String, [IClafer]) -> (IExp, [IClafer])
 mkPath env (howResolved, id', path) = case howResolved of
-  Binding -> (IClaferId "" id' True Nothing, path)
+  Binding -> (IClaferId "" id' True (LocalBind id'), path)
   Special -> (specIExp, path)
-  TypeSpecial -> (IClaferId "" id' True (Just id'), path)
+  TypeSpecial -> (IClaferId "" id' True (GlobalBind id'), path)
   Subclafers -> (toNav $ tail $ reverse $ map toTuple path, path)
   Ancestor -> (toNav' $ adjustAncestor (fromJust $ context env)
                                        (reverse $ map toTuple $ resPath env)
@@ -198,19 +198,23 @@ mkPath env (howResolved, id', path) = case howResolved of
   _ -> (toNav' $ reverse $ map toTuple path, path)
   where
   toNav = foldl'
-          (\exp' (id'', c) -> IFunExp iJoin [pExpDefPidPos exp', mkPLClaferId id'' False $ _uid <$> c])
-          (IClaferId "" thisIdent True (_uid <$> context env))
+          (\exp' (id'', c) -> IFunExp iJoin [pExpDefPidPos exp', mkPLClaferId id'' False $ createBind c])
+          (IClaferId "" thisIdent True (createBind $ context env))
   specIExp = if id' /= thisIdent && id' /= rootIdent
               then toNav [(id', Just $ head path)]
               else if id' == thisIdent
-                then IClaferId "" thisIdent True (_uid <$> context env)
-                else IClaferId "" rootIdent True (Just rootIdent)
+                then IClaferId "" thisIdent True (createBind $ context env)
+                else IClaferId "" rootIdent True (GlobalBind rootIdent)
 
 toTuple :: IClafer->(String, Maybe IClafer)
 toTuple c = (_uid c, Just c)
 
 toNav' :: [(String, Maybe IClafer)] -> IExp
-toNav' p = (mkIFunExp iJoin $ map (\(id', cbind) -> IClaferId "" id' False (_uid <$> cbind)) p) :: IExp
+toNav' p = (mkIFunExp iJoin $ map (\(id', cbind) -> IClaferId "" id' False (createBind cbind)) p) :: IExp
+
+createBind :: Maybe IClafer -> ClaferBinding
+createBind (Just c) = GlobalBind $ _uid c
+createBind _ = NoBind
 
 adjustAncestor :: IClafer -> [(String, Maybe IClafer)] -> [(String, Maybe IClafer)] -> [(String, Maybe IClafer)]
 adjustAncestor ctx cPath rPath = (thisIdent, Just ctx) : parents ++ (fromJust $ stripPrefix prefix rPath)
@@ -226,11 +230,11 @@ adjustAncestor ctx cPath rPath = (thisIdent, Just ctx) : parents ++ (fromJust $ 
 mkPath' :: String -> (HowResolved, String, [IClafer]) -> (IExp, [IClafer])
 mkPath' modName' (howResolved, id', path) = case howResolved of
   Reference -> (toNav' (zip ["ref", id'] (map Just path)), path)
-  _ -> (IClaferId modName' id' False (_uid <$> bind), path)
+  _ -> (IClaferId modName' id' False bind, path)
   where
   bind = case path of
-    [] -> Nothing
-    c:_ -> Just c
+    [] -> NoBind
+    c:_ -> GlobalBind $ _uid c
 
 -- -----------------------------------------------------------------------------
 

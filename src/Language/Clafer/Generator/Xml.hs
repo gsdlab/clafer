@@ -24,8 +24,6 @@ module Language.Clafer.Generator.Xml where
 
 -- import Text.XML.HaXml.XmlContent.Haskell hiding (Result)
 
-import Data.Maybe (fromMaybe)
-
 import Language.Clafer.Common
 import Language.Clafer.Front.AbsClafer
 import Language.Clafer.Intermediate.Intclafer
@@ -185,7 +183,12 @@ genXmlIExp x = case x of
     [ tag "ModuleName" modName'
     , tag "Id" sident'
     , genXmlBoolean "IsTop" isTop'
-    , tag "Bind" $ fromMaybe "" bind' ]
+    , tag "Bind" $ getClaferBindString bind']
+
+getClaferBindString :: ClaferBinding -> String
+getClaferBindString bind' = case bind' of
+                                 (GlobalBind uid') -> uid'
+                                 _ -> ""
 
 genXmlDecl :: IDecl -> String
 genXmlDecl (IDecl disj locids pexp) = tag "Declaration" $ concat
