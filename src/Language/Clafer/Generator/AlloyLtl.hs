@@ -408,18 +408,19 @@ genConstraints    genEnv    ctx
 -- typical binding form is: this.(ParentSig.ContextClaferRelation)
 -- Template uses localFirst function:
 -- let t = localFirst[rel, parentSig, this]
--- Old Sample template:
--- let local_next = (this.(c0_a.@r_c0_b)) <: next | one t : Time | one t <: local_next and no local_next :> t
 -- if defined under root clafer:
--- one t: first <: Time |
+-- let t = first |
 genTimeDecl :: String -> [String] -> IClafer -> Concat
 genTimeDecl tvar rPath c | _mutable c = CString $  case rPath of
                                            x:_ -> "one " ++ tvar ++ " : localFirst[" ++
                                              genRelName (_uid c) ++
                                              "," ++ x ++
                                              ", this] | "
-                                           [] -> "one " ++ tvar ++ " : first <: " ++ stateSig ++ " | " -- For top level constraint
-                         | otherwise = CString $ "one t: " ++ stateSig ++ " <: first | "
+                                           [] -> globalFirstDecl -- For top level constraint
+                         | otherwise = CString globalFirstDecl
+  where
+    globalFirstDecl = "let " ++ tvar ++ " = first | "
+
 
 -- if clafer is mutable, generates fact that prevents instance from disapearing for one or more snapshot
 -- and then reapearing and says that  only subclafer may only have one parent.
