@@ -119,7 +119,7 @@ instance Spannable Element where
     getSpan (Subconstraint s _ ) = s
     getSpan (Subgoal s _ ) = s
     getSpan (Subsoftconstraint s _ ) = s
-data Super = SuperEmpty Span | SuperSome Span SetExp
+data Super = SuperEmpty Span | SuperSome Span Exp
   deriving (Eq, Ord, Show, Read, Data, Typeable, Generic)
 
 instance Spannable Super where
@@ -127,8 +127,8 @@ instance Spannable Super where
     getSpan (SuperSome s _ ) = s
 data Reference
     = ReferenceEmpty Span
-    | ReferenceSet Span SetExp
-    | ReferenceBag Span SetExp
+    | ReferenceSet Span Exp
+    | ReferenceBag Span Exp
   deriving (Eq, Ord, Show, Read, Data, Typeable, Generic)
 
 instance Spannable Reference where
@@ -196,10 +196,10 @@ data Name = Path Span [ModId]
 instance Spannable Name where
     getSpan (Path s _ ) = s
 data Exp
-    = DeclAllDisj Span Decl Exp
-    | DeclAll Span Decl Exp
-    | DeclQuantDisj Span Quant Decl Exp
-    | DeclQuant Span Quant Decl Exp
+    = EDeclAllDisj Span Decl Exp
+    | EDeclAll Span Decl Exp
+    | EDeclQuantDisj Span Quant Decl Exp
+    | EDeclQuant Span Quant Decl Exp
     | EGMax Span Exp
     | EGMin Span Exp
     | EIff Span Exp Exp
@@ -216,25 +216,35 @@ data Exp
     | ENeq Span Exp Exp
     | EIn Span Exp Exp
     | ENin Span Exp Exp
-    | QuantExp Span Quant Exp
+    | EQuantExp Span Quant Exp
     | EAdd Span Exp Exp
     | ESub Span Exp Exp
     | EMul Span Exp Exp
     | EDiv Span Exp Exp
     | ERem Span Exp Exp
-    | ESumSetExp Span Exp
-    | EProdSetExp Span Exp
-    | ECSetExp Span Exp
+    | ESum Span Exp
+    | EProd Span Exp
+    | ECard Span Exp
     | EMinExp Span Exp
     | EImpliesElse Span Exp Exp Exp
-    | ESetExp Span SetExp
+    | EInt Span PosInteger
+    | EDouble Span PosDouble
+    | EStr Span PosString
+    | EUnion Span Exp Exp
+    | EUnionCom Span Exp Exp
+    | EDifference Span Exp Exp
+    | EIntersection Span Exp Exp
+    | EDomain Span Exp Exp
+    | ERange Span Exp Exp
+    | EJoin Span Exp Exp
+    | ClaferId Span Name
   deriving (Eq, Ord, Show, Read, Data, Typeable, Generic)
 
 instance Spannable Exp where
-    getSpan (DeclAllDisj s _ _ ) = s
-    getSpan (DeclAll s _ _ ) = s
-    getSpan (DeclQuantDisj s _ _ _ ) = s
-    getSpan (DeclQuant s _ _ _ ) = s
+    getSpan (EDeclAllDisj s _ _ ) = s
+    getSpan (EDeclAll s _ _ ) = s
+    getSpan (EDeclQuantDisj s _ _ _ ) = s
+    getSpan (EDeclQuant s _ _ _ ) = s
     getSpan (EGMax s _ ) = s
     getSpan (EGMin s _ ) = s
     getSpan (EIff s _ _ ) = s
@@ -251,45 +261,29 @@ instance Spannable Exp where
     getSpan (ENeq s _ _ ) = s
     getSpan (EIn s _ _ ) = s
     getSpan (ENin s _ _ ) = s
-    getSpan (QuantExp s _ _ ) = s
+    getSpan (EQuantExp s _ _ ) = s
     getSpan (EAdd s _ _ ) = s
     getSpan (ESub s _ _ ) = s
     getSpan (EMul s _ _ ) = s
     getSpan (EDiv s _ _ ) = s
     getSpan (ERem s _ _ ) = s
-    getSpan (ESumSetExp s _ ) = s
-    getSpan (EProdSetExp s _ ) = s
-    getSpan (ECSetExp s _ ) = s
+    getSpan (ESum s _ ) = s
+    getSpan (EProd s _ ) = s
+    getSpan (ECard s _ ) = s
     getSpan (EMinExp s _ ) = s
     getSpan (EImpliesElse s _ _ _ ) = s
-    getSpan (ESetExp s _ ) = s
-data SetExp
-    = Union Span SetExp SetExp
-    | UnionCom Span SetExp SetExp
-    | Difference Span SetExp SetExp
-    | Intersection Span SetExp SetExp
-    | Domain Span SetExp SetExp
-    | Range Span SetExp SetExp
-    | Join Span SetExp SetExp
-    | ClaferId Span Name
-    | EInt Span PosInteger
-    | EDouble Span PosDouble
-    | EStr Span PosString
-  deriving (Eq, Ord, Show, Read, Data, Typeable, Generic)
-
-instance Spannable SetExp where
-    getSpan (Union s _ _ ) = s
-    getSpan (UnionCom s _ _ ) = s
-    getSpan (Difference s _ _ ) = s
-    getSpan (Intersection s _ _ ) = s
-    getSpan (Domain s _ _ ) = s
-    getSpan (Range s _ _ ) = s
-    getSpan (Join s _ _ ) = s
-    getSpan (ClaferId s _ ) = s
     getSpan (EInt s _ ) = s
     getSpan (EDouble s _ ) = s
     getSpan (EStr s _ ) = s
-data Decl = Decl Span [LocId] SetExp
+    getSpan (EUnion s _ _ ) = s
+    getSpan (EUnionCom s _ _ ) = s
+    getSpan (EDifference s _ _ ) = s
+    getSpan (EIntersection s _ _ ) = s
+    getSpan (EDomain s _ _ ) = s
+    getSpan (ERange s _ _ ) = s
+    getSpan (EJoin s _ _ ) = s
+    getSpan (ClaferId s _ ) = s
+data Decl = Decl Span [LocId] Exp
   deriving (Eq, Ord, Show, Read, Data, Typeable, Generic)
 
 instance Spannable Decl where

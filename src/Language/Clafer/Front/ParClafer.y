@@ -122,11 +122,11 @@ Element : Clafer { Subclafer ((mkCatSpan $1)) $1 }
         | SoftConstraint { Subsoftconstraint ((mkCatSpan $1)) $1 }
 Super :: { Super }
 Super : {- empty -} { SuperEmpty noSpan }
-      | ':' SetExp { SuperSome ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
+      | ':' Exp19 { SuperSome ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
 Reference :: { Reference }
 Reference : {- empty -} { ReferenceEmpty noSpan }
-          | '->' SetExp { ReferenceSet ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
-          | '->>' SetExp { ReferenceBag ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
+          | '->' Exp12 { ReferenceSet ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
+          | '->>' Exp12 { ReferenceBag ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
 Init :: { Init }
 Init : {- empty -} { InitEmpty noSpan }
      | InitHow Exp { InitSome ((mkCatSpan $1) >- (mkCatSpan $2)) $1 $2 }
@@ -155,10 +155,10 @@ ExInteger : '*' { ExIntegerAst ((mkTokenSpan $1)) }
 Name :: { Name }
 Name : ListModId { Path ((mkCatSpan $1)) $1 }
 Exp :: { Exp }
-Exp : 'all' 'disj' Decl '|' Exp { DeclAllDisj ((mkTokenSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3) >- (mkTokenSpan $4) >- (mkCatSpan $5)) $3 $5 }
-    | 'all' Decl '|' Exp { DeclAll ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkTokenSpan $3) >- (mkCatSpan $4)) $2 $4 }
-    | Quant 'disj' Decl '|' Exp { DeclQuantDisj ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3) >- (mkTokenSpan $4) >- (mkCatSpan $5)) $1 $3 $5 }
-    | Quant Decl '|' Exp { DeclQuant ((mkCatSpan $1) >- (mkCatSpan $2) >- (mkTokenSpan $3) >- (mkCatSpan $4)) $1 $2 $4 }
+Exp : 'all' 'disj' Decl '|' Exp { EDeclAllDisj ((mkTokenSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3) >- (mkTokenSpan $4) >- (mkCatSpan $5)) $3 $5 }
+    | 'all' Decl '|' Exp { EDeclAll ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkTokenSpan $3) >- (mkCatSpan $4)) $2 $4 }
+    | Quant 'disj' Decl '|' Exp { EDeclQuantDisj ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3) >- (mkTokenSpan $4) >- (mkCatSpan $5)) $1 $3 $5 }
+    | Quant Decl '|' Exp { EDeclQuant ((mkCatSpan $1) >- (mkCatSpan $2) >- (mkTokenSpan $3) >- (mkCatSpan $4)) $1 $2 $4 }
     | Exp1 {  $1 }
 Exp1 :: { Exp }
 Exp1 : 'max' Exp2 { EGMax ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
@@ -191,7 +191,7 @@ Exp7 : Exp7 '<' Exp8 { ELt ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)
      | Exp7 'not' 'in' Exp8 { ENin ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkTokenSpan $3) >- (mkCatSpan $4)) $1 $4 }
      | Exp8 {  $1 }
 Exp8 :: { Exp }
-Exp8 : Quant Exp12 { QuantExp ((mkCatSpan $1) >- (mkCatSpan $2)) $1 $2 }
+Exp8 : Quant Exp12 { EQuantExp ((mkCatSpan $1) >- (mkCatSpan $2)) $1 $2 }
      | Exp9 {  $1 }
 Exp9 :: { Exp }
 Exp9 : Exp9 '+' Exp10 { EAdd ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
@@ -203,44 +203,40 @@ Exp10 : Exp10 '*' Exp11 { EMul ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan
       | Exp10 '%' Exp11 { ERem ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
       | Exp11 {  $1 }
 Exp11 :: { Exp }
-Exp11 : 'sum' Exp12 { ESumSetExp ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
-      | 'product' Exp12 { EProdSetExp ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
-      | '#' Exp12 { ECSetExp ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
+Exp11 : 'sum' Exp12 { ESum ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
+      | 'product' Exp12 { EProd ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
+      | '#' Exp12 { ECard ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
       | '-' Exp12 { EMinExp ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
       | Exp12 {  $1 }
 Exp12 :: { Exp }
 Exp12 : 'if' Exp12 'then' Exp12 'else' Exp13 { EImpliesElse ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkTokenSpan $3) >- (mkCatSpan $4) >- (mkTokenSpan $5) >- (mkCatSpan $6)) $2 $4 $6 }
+      | PosInteger { EInt ((mkCatSpan $1)) $1 }
+      | PosDouble { EDouble ((mkCatSpan $1)) $1 }
+      | PosString { EStr ((mkCatSpan $1)) $1 }
       | Exp13 {  $1 }
 Exp13 :: { Exp }
-Exp13 : SetExp { ESetExp ((mkCatSpan $1)) $1 }
-      | '(' Exp ')' {  $2 }
-SetExp :: { SetExp }
-SetExp : SetExp '++' SetExp1 { Union ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
-       | SetExp ',' SetExp1 { UnionCom ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
-       | SetExp1 {  $1 }
-SetExp1 :: { SetExp }
-SetExp1 : SetExp1 '--' SetExp2 { Difference ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
-        | SetExp2 {  $1 }
-SetExp2 :: { SetExp }
-SetExp2 : SetExp2 '**' SetExp3 { Intersection ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
-        | SetExp3 {  $1 }
-SetExp3 :: { SetExp }
-SetExp3 : SetExp3 '<:' SetExp4 { Domain ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
-        | SetExp4 {  $1 }
-SetExp4 :: { SetExp }
-SetExp4 : SetExp4 ':>' SetExp5 { Range ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
-        | SetExp5 {  $1 }
-SetExp5 :: { SetExp }
-SetExp5 : SetExp5 '.' SetExp6 { Join ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
-        | SetExp6 {  $1 }
-SetExp6 :: { SetExp }
-SetExp6 : Name { ClaferId ((mkCatSpan $1)) $1 }
-        | PosInteger { EInt ((mkCatSpan $1)) $1 }
-        | PosDouble { EDouble ((mkCatSpan $1)) $1 }
-        | PosString { EStr ((mkCatSpan $1)) $1 }
-        | '(' SetExp ')' {  $2 }
+Exp13 : Exp13 '++' Exp14 { EUnion ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
+      | Exp13 ',' Exp14 { EUnionCom ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
+      | Exp14 {  $1 }
+Exp14 :: { Exp }
+Exp14 : Exp14 '--' Exp15 { EDifference ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
+      | Exp15 {  $1 }
+Exp15 :: { Exp }
+Exp15 : Exp15 '**' Exp16 { EIntersection ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
+      | Exp16 {  $1 }
+Exp16 :: { Exp }
+Exp16 : Exp16 '<:' Exp17 { EDomain ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
+      | Exp17 {  $1 }
+Exp17 :: { Exp }
+Exp17 : Exp17 ':>' Exp18 { ERange ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
+      | Exp18 {  $1 }
+Exp18 :: { Exp }
+Exp18 : Exp18 '.' Exp19 { EJoin ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
+      | Exp19 {  $1 }
+Exp19 :: { Exp }
+Exp19 : Name { ClaferId ((mkCatSpan $1)) $1 } | '(' Exp ')' {  $2 }
 Decl :: { Decl }
-Decl : ListLocId ':' SetExp { Decl ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
+Decl : ListLocId ':' Exp13 { Decl ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
 Quant :: { Quant }
 Quant : 'no' { QuantNo ((mkTokenSpan $1)) }
       | 'not' { QuantNot ((mkTokenSpan $1)) }

@@ -63,7 +63,6 @@ traceAstModule x =
   i (AstExInteger a) = getSpan a
   i (AstName a) = getSpan a
   i (AstExp a) = getSpan a
-  i (AstSetExp a) = getSpan a
   i (AstDecl a) = getSpan a
   i (AstQuant a) = getSpan a
   i (AstEnumId a) = getSpan a
@@ -118,15 +117,15 @@ traverseSuper x =
   AstSuper x :
     case x of
     SuperEmpty _ -> []
-    SuperSome _ se -> traverseSetExp se
+    SuperSome _ se -> traverseExp se
 
 traverseReference :: Reference -> [Ast]
 traverseReference x =
   AstReference x :
     case x of
     ReferenceEmpty _ -> []
-    ReferenceSet _ se -> traverseSetExp se
-    ReferenceBag _ se -> traverseSetExp se
+    ReferenceSet _ se -> traverseExp se
+    ReferenceBag _ se -> traverseExp se
 
 traverseInit :: Init -> [Ast]
 traverseInit x =
@@ -175,10 +174,10 @@ traverseExp :: Exp -> [Ast]
 traverseExp x =
   AstExp x :
     case x of
-    DeclAllDisj _ d e -> traverseDecl d ++ traverseExp e
-    DeclAll _ d e -> traverseDecl d ++ traverseExp e
-    DeclQuantDisj _ q d e -> traverseQuant q ++ traverseDecl d ++ traverseExp e
-    DeclQuant _ q d e -> traverseQuant q ++ traverseDecl d ++ traverseExp e
+    EDeclAllDisj _ d e -> traverseDecl d ++ traverseExp e
+    EDeclAll _ d e -> traverseDecl d ++ traverseExp e
+    EDeclQuantDisj _ q d e -> traverseQuant q ++ traverseDecl d ++ traverseExp e
+    EDeclQuant _ q d e -> traverseQuant q ++ traverseDecl d ++ traverseExp e
     EGMax _ e -> traverseExp e
     EGMin _ e -> traverseExp e
     EIff _ e1 e2 -> traverseExp e1 ++ traverseExp e2
@@ -195,36 +194,31 @@ traverseExp x =
     ENeq _ e1 e2 -> traverseExp e1 ++ traverseExp e2
     EIn _ e1 e2 -> traverseExp e1 ++ traverseExp e2
     ENin _ e1 e2 -> traverseExp e1 ++ traverseExp e2
-    QuantExp _ q e -> traverseQuant q ++ traverseExp e
+    EQuantExp _ q e -> traverseQuant q ++ traverseExp e
     EAdd _ e1 e2 -> traverseExp e1 ++ traverseExp e2
     ESub _ e1 e2 -> traverseExp e1 ++ traverseExp e2
     EMul _ e1 e2 -> traverseExp e1 ++ traverseExp e2
     EDiv _ e1 e2 -> traverseExp e1 ++ traverseExp e2
-    ECSetExp _ e -> traverseExp e
+    ECard _ e -> traverseExp e
     EMinExp _ e -> traverseExp e
     EImpliesElse _ e1 e2 e3 -> traverseExp e1 ++ traverseExp e2 ++ traverseExp e3
-    ESetExp _ s -> traverseSetExp s
-    _ -> error "Invalid argument given to function traverseExp from Tracing"
-
-traverseSetExp :: SetExp -> [Ast]
-traverseSetExp x =
-  AstSetExp x :
-    case x of
-    Union _ s1 s2 -> traverseSetExp s1 ++ traverseSetExp s2
-    UnionCom _ s1 s2 -> traverseSetExp s1 ++ traverseSetExp s2
-    Difference _ s1 s2 -> traverseSetExp s1 ++ traverseSetExp s2
-    Intersection _ s1 s2 -> traverseSetExp s1 ++ traverseSetExp s2
-    Domain _ s1 s2 -> traverseSetExp s1 ++ traverseSetExp s2
-    Range _ s1 s2 -> traverseSetExp s1 ++ traverseSetExp s2
-    Join _ s1 s2 -> traverseSetExp s1 ++ traverseSetExp s2
-    ClaferId _ n -> traverseName n
     EInt _ _ -> []
     EDouble _ _ -> []
     EStr _ _ -> []
+    EUnion _ s1 s2 -> traverseExp s1 ++ traverseExp s2
+    EUnionCom _ s1 s2 -> traverseExp s1 ++ traverseExp s2
+    EDifference _ s1 s2 -> traverseExp s1 ++ traverseExp s2
+    EIntersection _ s1 s2 -> traverseExp s1 ++ traverseExp s2
+    EDomain _ s1 s2 -> traverseExp s1 ++ traverseExp s2
+    ERange _ s1 s2 -> traverseExp s1 ++ traverseExp s2
+    EJoin _ s1 s2 -> traverseExp s1 ++ traverseExp s2
+    ClaferId _ n -> traverseName n
+    _ -> error "Invalid argument given to function traverseExp from Tracing"
+
 
 traverseDecl :: Decl -> [Ast]
 traverseDecl x@(Decl _ l s) =
-  AstDecl x : (concatMap traverseLocId l ++ traverseSetExp s)
+  AstDecl x : (concatMap traverseLocId l ++ traverseExp s)
 
 traverseQuant :: Quant -> [Ast]
 traverseQuant x =
@@ -259,7 +253,6 @@ data Ast =
   AstExInteger ExInteger |
   AstName Name |
   AstExp Exp |
-  AstSetExp SetExp |
   AstDecl Decl |
   AstQuant Quant |
   AstEnumId EnumId |

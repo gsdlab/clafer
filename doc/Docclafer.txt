@@ -80,10 +80,10 @@ All other symbols are terminals.
   |  |  **|**  | //Goal// 
   |  |  **|**  | //SoftConstraint// 
   | //Super// | -> | **eps**
-  |  |  **|**  | ``:`` //SetExp// 
+  |  |  **|**  | ``:`` //Exp19// 
   | //Reference// | -> | **eps**
-  |  |  **|**  | ``->`` //SetExp// 
-  |  |  **|**  | ``->>`` //SetExp// 
+  |  |  **|**  | ``->`` //Exp12// 
+  |  |  **|**  | ``->>`` //Exp12// 
   | //Init// | -> | **eps**
   |  |  **|**  | //InitHow// //Exp// 
   | //InitHow// | -> | ``=`` 
@@ -147,28 +147,26 @@ All other symbols are terminals.
   |  |  **|**  | ``-`` //Exp12// 
   |  |  **|**  | //Exp12// 
   | //Exp12// | -> | ``if`` //Exp12// ``then`` //Exp12// ``else`` //Exp13// 
-  |  |  **|**  | //Exp13// 
-  | //Exp13// | -> | //SetExp// 
-  |  |  **|**  | ``(`` //Exp// ``)`` 
-  | //SetExp// | -> | //SetExp// ``++`` //SetExp1// 
-  |  |  **|**  | //SetExp// ``,`` //SetExp1// 
-  |  |  **|**  | //SetExp1// 
-  | //SetExp1// | -> | //SetExp1// ``--`` //SetExp2// 
-  |  |  **|**  | //SetExp2// 
-  | //SetExp2// | -> | //SetExp2// ``**`` //SetExp3// 
-  |  |  **|**  | //SetExp3// 
-  | //SetExp3// | -> | //SetExp3// ``<:`` //SetExp4// 
-  |  |  **|**  | //SetExp4// 
-  | //SetExp4// | -> | //SetExp4// ``:>`` //SetExp5// 
-  |  |  **|**  | //SetExp5// 
-  | //SetExp5// | -> | //SetExp5// ``.`` //SetExp6// 
-  |  |  **|**  | //SetExp6// 
-  | //SetExp6// | -> | //Name// 
   |  |  **|**  | //PosInteger// 
   |  |  **|**  | //PosDouble// 
   |  |  **|**  | //PosString// 
-  |  |  **|**  | ``(`` //SetExp// ``)`` 
-  | //Decl// | -> | //[LocId]// ``:`` //SetExp// 
+  |  |  **|**  | //Exp13// 
+  | //Exp13// | -> | //Exp13// ``++`` //Exp14// 
+  |  |  **|**  | //Exp13// ``,`` //Exp14// 
+  |  |  **|**  | //Exp14// 
+  | //Exp14// | -> | //Exp14// ``--`` //Exp15// 
+  |  |  **|**  | //Exp15// 
+  | //Exp15// | -> | //Exp15// ``**`` //Exp16// 
+  |  |  **|**  | //Exp16// 
+  | //Exp16// | -> | //Exp16// ``<:`` //Exp17// 
+  |  |  **|**  | //Exp17// 
+  | //Exp17// | -> | //Exp17// ``:>`` //Exp18// 
+  |  |  **|**  | //Exp18// 
+  | //Exp18// | -> | //Exp18// ``.`` //Exp19// 
+  |  |  **|**  | //Exp19// 
+  | //Exp19// | -> | //Name// 
+  |  |  **|**  | ``(`` //Exp// ``)`` 
+  | //Decl// | -> | //[LocId]// ``:`` //Exp13// 
   | //Quant// | -> | ``no`` 
   |  |  **|**  | ``not`` 
   |  |  **|**  | ``lone`` 
