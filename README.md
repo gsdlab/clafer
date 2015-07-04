@@ -1,7 +1,7 @@
 # Clafer
 
 
-v0.4.0
+v0.3.11
 
 [Clafer](http://clafer.org) is a general-purpose lightweight structural modeling language developed by
 [GSD Lab](http://gsd.uwaterloo.ca/), [University of Waterloo](http://uwaterloo.ca), and
@@ -67,7 +67,7 @@ Optional:
 
 ### Installation from binaries
 
-Binary distributions of the release 0.4.0 of Clafer Tools for Windows, Mac, and Linux,
+Binary distributions of the release 0.3.11 of Clafer Tools for Windows, Mac, and Linux,
 can be downloaded from
 [Clafer Tools - Binary Distributions](http://gsd.uwaterloo.ca/clafer-tools-binary-distributions).
 
@@ -81,11 +81,11 @@ Dependencies
 * [The Haskell Platform](http://hackage.haskell.org/platform/) v2014.2.0.0
   * Alternatively GHC >= 7.8.3 and Cabal >= 1.18
 
-Clafer is now available on [Hackage](http://hackage.haskell.org/package/clafer-0.4.0/) and it can be installed using
+Clafer is now available on [Hackage](http://hackage.haskell.org/package/clafer-0.3.11/) and it can be installed using
 
 1. `cabal update`
 2. `cabal install clafer`
-3. `cd <cabal's lib or share folder>`  (`C:\Users\<user>\AppData\Roaming\cabal\x86_64-windows-ghc-7.8.3\clafer-0.4.0` on Windows or `.cabal/share/x86_64-linux-ghc-7.8.3/clafer-0.4.0/` on Linux)
+3. `cd <cabal's lib or share folder>`  (`C:\Users\<user>\AppData\Roaming\cabal\x86_64-windows-ghc-7.10.1\clafer-0.3.11` on Windows or `.cabal/share/x86_64-linux-ghc-7.10.1/clafer-0.3.11/` on Linux)
 4. to automatically download Alloy jars
   * execute `make` in `tools`
 
@@ -150,23 +150,23 @@ Usage
 (As printed by `clafer --help`)
 
 ```
-Clafer 0.4.0
+Clafer 0.3.11
 
 clafer [OPTIONS] [FILE]
 
 Common flags:
   -m --mode=CLAFERMODE                    Generated output type. Available
                                           CLAFERMODEs are: 'alloy' (Alloy 4.1);
-                                          'alloy42' (default, Alloy 4.2); 'json'
-                                          (intermediate representation of Clafer
-                                          model); 'clafer' (analyzed and desugared
-                                          clafer model); 'html' (original model
-                                          in HTML); 'graph' (graphical
-                                          representation written in DOT
-                                          language); 'cvlgraph' (cvl notation
-                                          representation written in DOT
-                                          language); 'python' (generates IR in
-                                          python); 'choco' (Choco constraint
+                                          'alloy42' (default, Alloy 4.2);
+                                          'json' (intermediate representation
+                                          of Clafer model); 'clafer' (analyzed
+                                          and desugared clafer model); 'html'
+                                          (original model in HTML); 'graph'
+                                          (graphical representation written in
+                                          DOT language); 'cvlgraph' (cvl
+                                          notation representation written in
+                                          DOT language); 'python' (generates IR
+                                          in python); 'choco' (Choco constraint
                                           programming solver). Multiple modes
                                           can be specified at the same time,
                                           e.g., '-m alloy -m html'.

@@ -14,7 +14,7 @@ endif
 all: build
 
 init:
-	stk sandbox init nightly
+	cabal sandbox init --sandbox=../.clafertools-cabal-sandbox
 	cabal install --only-dependencies $(MAC_USR_LIB) --enable-tests --enable-optimization=2
 	# turn off optimization for development - cuts 50% `cabal build` time
 	echo "optimization: False" > cabal.config
@@ -37,7 +37,7 @@ install:
 # Removes current build and makes a clean new one (Don't use if starting from scratch!)
 cleanEnv:
 	make clean
-	ghc-pkg unregister clafer
+	cabal sandbox hc-pkg unregister clafer
 	rm `which clafer`
 	make
 
