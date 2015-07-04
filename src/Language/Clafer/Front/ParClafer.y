@@ -122,7 +122,7 @@ Element : Clafer { Subclafer ((mkCatSpan $1)) $1 }
         | SoftConstraint { Subsoftconstraint ((mkCatSpan $1)) $1 }
 Super :: { Super }
 Super : {- empty -} { SuperEmpty noSpan }
-      | ':' Exp19 { SuperSome ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
+      | ':' Exp18 { SuperSome ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
 Reference :: { Reference }
 Reference : {- empty -} { ReferenceEmpty noSpan }
           | '->' Exp12 { ReferenceSet ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }

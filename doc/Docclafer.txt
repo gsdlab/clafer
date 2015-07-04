@@ -80,7 +80,7 @@ All other symbols are terminals.
   |  |  **|**  | //Goal// 
   |  |  **|**  | //SoftConstraint// 
   | //Super// | -> | **eps**
-  |  |  **|**  | ``:`` //Exp19// 
+  |  |  **|**  | ``:`` //Exp18// 
   | //Reference// | -> | **eps**
   |  |  **|**  | ``->`` //Exp12// 
   |  |  **|**  | ``->>`` //Exp12// 

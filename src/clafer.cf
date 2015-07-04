@@ -34,7 +34,7 @@ Subgoal.        Element ::= Goal;
 Subsoftconstraint. Element ::= SoftConstraint;
 
 SuperEmpty.     Super ::= ;
-SuperSome.      Super ::= ":" Exp19 ;
+SuperSome.      Super ::= ":" Exp18 ;
 
 ReferenceEmpty. Reference ::= ;
 ReferenceSet.   Reference ::= "->" Exp12 ;

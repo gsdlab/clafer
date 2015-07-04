@@ -148,7 +148,7 @@ instance Print Element where
 instance Print Super where
   prt i e = case e of
     SuperEmpty _ -> prPrec i 0 (concatD [])
-    SuperSome _ exp19 -> prPrec i 0 (concatD [doc (showString ":"), prt 19 exp19])
+    SuperSome _ exp18 -> prPrec i 0 (concatD [doc (showString ":"), prt 18 exp18])
 
 instance Print Reference where
   prt i e = case e of

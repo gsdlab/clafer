@@ -1,0 +1,33 @@
+// lines that parse now are commented out because they result in type errors
+
+// now primitive types can be used as types of references, which may be useful for redefinition
+anyNumber -> integer
+// number : anyNumber -> 1
+// str -> "Alice"
+// dbl -> 3.1415
+
+abstract Person
+Alice : Person
+Ella : Person
+
+// but primitive types cannot be used as super types (triggers parse error)
+// n : 1
+// s : "Alice"
+// d : 3.1415
+
+// however, now we can use . as super type expressions
+abstract Team
+  abstract Member
+
+team1 : Team
+  Bob : Team.Member
+
+spouse -> Alice
+
+// the `if` expression is now allowed as reference target
+// spouseIf -> if (1 > 0) then Alice else Ella
+
+// but the `if` expression is not allowed as a super type (triggers parse error)
+// AliceOrElla : if (1 > 0) then Alice else Ella
+
+// spouseUnion -> Alice ++ Ella
