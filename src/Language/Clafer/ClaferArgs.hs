@@ -30,7 +30,6 @@ import System.IO ( stdin, hGetContents )
 import System.Console.CmdArgs
 import System.Console.CmdArgs.Explicit hiding (mode)
 import Data.List
-import Data.Maybe
 import Language.Clafer.SplitJoin
 import Paths_clafer (version)
 import Data.Version (showVersion)
@@ -74,7 +73,7 @@ data ClaferArgs = ClaferArgs {
       skip_goals :: Bool,
       meta_data :: Bool,
       file :: FilePath
-    } deriving (Show, Data, Typeable)
+    } deriving (Eq, Show, Data, Typeable)
 
 clafer :: ClaferArgs
 clafer = ClaferArgs {
@@ -109,7 +108,7 @@ mergeArgs a1 a2  = ClaferArgs (mode a1) (coMergeArg)
   (mergeArg flatten_inheritance) (mergeArg timeout_analysis)
   (mergeArg no_layout) (mergeArg new_layout)
   (mergeArg check_duplicates) (mergeArg skip_resolver)
-  (mergeArg keep_unused) (mergeArg no_stats) 
+  (mergeArg keep_unused) (mergeArg no_stats)
   (mergeArg validate) (mergeArg noalloyruncommand) (toolMergeArg)
   (mergeArg alloy_mapping) (mergeArg self_contained)
   (mergeArg add_graph) (mergeArg show_references)
@@ -130,16 +129,16 @@ mergeArgs a1 a2  = ClaferArgs (mode a1) (coMergeArg)
 
 mainArgs :: IO (ClaferArgs, String)
 mainArgs = do
-  args' <- cmdArgs clafer
-  model <- retrieveModelFromURL $ file args'
-  let args'' = argsWithOPTIONS args' model
+  argsFromCmd <- cmdArgs clafer
+  model <- retrieveModelFromURL $ file argsFromCmd
+  let argsWithOpts = argsWithOPTIONS argsFromCmd model
   -- Alloy42 should be the default mode but only if nothing else was specified
   -- cannot use [ Alloy42 ] as the default in the definition of `clafer :: ClaferArgs` since
   -- Alloy42 will always be a mode in addition to the other specified modes (it will become mandatory)
-  let args''' = if null $ mode args''
-                then args''{mode = [ Alloy42 ]}
-                else args''
-  return $ (args''', model)
+  let argsWithDef = if null $ mode argsWithOpts
+                then argsWithOpts{mode = [ Alloy42 ]}
+                else argsWithOpts
+  return $ (argsWithDef, model)
 
 retrieveModelFromURL :: String -> IO String
 retrieveModelFromURL url = do
@@ -152,14 +151,38 @@ retrieveModelFromURL url = do
 
 argsWithOPTIONS :: ClaferArgs -> String -> ClaferArgs
 argsWithOPTIONS    args'         model   =
-  let
-    firstLine = case lines model of
-                 [] -> ""
-                 (s:_) -> s
-    options = fromMaybe "" $ stripPrefix "//# OPTIONS " firstLine
-  in
-    either (const args') (mergeArgs args' . cmdArgsValue) $
-               process (cmdArgsMode clafer) $ Language.Clafer.SplitJoin.splitArgs options
+  if "//# OPTIONS " `isPrefixOf` model
+  then either (const args') (mergeArgs args' . cmdArgsValue) $ -- merge wth command line arguments, which take precedence
+          process (cmdArgsMode clafer) $          -- instantiate ClaferArgs record
+            Language.Clafer.SplitJoin.splitArgs $ -- extract individual arguments
+              drop 12 $                           -- strip "//# OPTIONS "
+                takeWhile (/= '\n') model         -- get first line
+  else args'
 
 defaultClaferArgs :: ClaferArgs
-defaultClaferArgs = ClaferArgs [ def ] True False 0 False False False False False False False False "tools/" False False False False False False Simple False False False ""
+defaultClaferArgs = ClaferArgs
+  { mode = [ def ]
+  , console_output = True
+  , flatten_inheritance = False
+  , timeout_analysis = 0
+  , no_layout = False
+  , new_layout = False
+  , check_duplicates = False
+  , skip_resolver = False
+  , keep_unused = False
+  , no_stats = False
+  , validate = False
+  , noalloyruncommand = False
+  , tooldir = "tools/"
+  , alloy_mapping = False
+  , self_contained = False
+  , add_graph = False
+  , show_references = False
+  , add_comments = False
+  , ecore2clafer = False
+  , scope_strategy = Simple
+  , afm = False
+  , skip_goals = False
+  , meta_data = False
+  , file = ""
+  }
