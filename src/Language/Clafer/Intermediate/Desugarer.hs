@@ -97,6 +97,7 @@ desugarClafer claf@(Clafer s abstract gcrd' id' super' reference' crd' init' ele
 
 getPExpClaferIdent :: Exp -> String
 getPExpClaferIdent (ClaferId _ (Path _ [ (ModIdIdent _ (PosIdent (_, ident'))) ] )) = ident'
+getPExpClaferIdent (EJoin _ _ e2) = getPExpClaferIdent e2
 getPExpClaferIdent _ = error "Desugarer:getPExpClaferIdent not given a ClaferId PExp"
 
 sugarClafer :: IClafer -> Clafer
