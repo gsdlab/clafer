@@ -100,9 +100,6 @@ instance MonadTypeAnalysis m => MonadTypeAnalysis (ExceptT ClaferSErr m) where
 runTypeAnalysis :: TypeAnalysis a -> IModule -> Either ClaferSErr a
 runTypeAnalysis (TypeAnalysis tc) imodule = runReaderT tc $ TypeInfo [] (createUidIClaferMap imodule) undefined Nothing
 
--- (+++) :: IType -> IType -> IType
--- t1 +++ t2 = fromJust $ fromUnionType $ unionType t1 ++ unionType t2
-
 claferWithUid :: (Monad m) => UIDIClaferMap -> String -> m IClafer
 claferWithUid uidIClaferMap' u = case findIClafer uidIClaferMap' u of
   Just c -> return c
@@ -351,12 +348,12 @@ resolveTPExp' p@PExp{_inPos, _exp} =
 --        throwError $ SemanticErr inPos ("The types are: '" ++ str t2 ++ "' and '" ++ str t3 ++ "'")
 
       unless (t1 == TBoolean) $
-        throwError $ SemanticErr _inPos ("Function 'if/else' cannot be performed on 'if' " ++ str t1 ++ " 'then' " ++ str t2 ++ " 'else' " ++ str t3)
+        throwError $ SemanticErr _inPos ("The type of condition in 'if/then/else' must be 'TBoolean', insted it is " ++ str t1)
 
       it <- getIfThenElseType uidIClaferMap' t2 t3
       t <- case it of
         Just it' -> return it'
-        Nothing  -> throwError $ SemanticErr _inPos ("Function 'if/else' cannot be performed on if '" ++ str t1 ++ "' then '" ++ str t2 ++ "' else '" ++ str t3 ++ "'")
+        Nothing  -> throwError $ SemanticErr _inPos ("Function 'if/then/else' cannot be performed on if '" ++ str t1 ++ "' then '" ++ str t2 ++ "' else '" ++ str t3 ++ "'")
 
       return (t, e{_exps = [arg1', arg2', arg3']})
 

@@ -62,8 +62,8 @@ case_TypeSystemTest = case compileOneFragment defaultClaferArgs{keep_unused=True
                 c0_A_TClafer = getTClaferByUID uidIClaferMap' "c0_A"
                 c0_A_TClaferR = Just $ TClafer [ "c0_A" ]
                 c0_A_TMap = getTMapByUID uidIClaferMap' "c0_A"
-                -- c0_as_TMap = getTMapByUID uidIClaferMap' "c0_A"
-                -- c0_as_TMapR = Just $ TMap (TClafer [ "c0_as" ]) (TClafer [ "c0_A" ])
+                c0_as_TMap = getTMapByUID uidIClaferMap' "c0_as"
+                c0_as_TMapR = Just $ TMap (TClafer [ "c0_A" ]) (TClafer [ "c0_as" ])
                 --c0_B_TClafer = getTClaferByUID uidIClaferMap' "c0_B"
                 --c0_B_TClaferR = Just $ TClafer False False $ TClafer [ "c0_B", "c0_A" ]
             in do
@@ -72,5 +72,5 @@ case_TypeSystemTest = case compileOneFragment defaultClaferArgs{keep_unused=True
                 clafer_TClafer == Just claferTClafer @? ("TypeSystemTest: incorrect class type for 'clafer'. Got '" ++ show clafer_TClafer ++ "' instead of '" ++ show claferTClafer ++ "'")
                 c0_A_TClafer == c0_A_TClaferR @? ("TypeSystemTest: incorrect class type for 'c0_A'. Got '" ++ show c0_A_TClafer ++ "' instead of '" ++ show c0_A_TClaferR ++ "'")
                 c0_A_TMap == Nothing @? ("TypeSystemTest: incorrect map type for 'c0_A'. Got '" ++ show c0_A_TMap ++ "'' but it is not a reference.")
-                -- c0_as_TMap == c0_as_TMapR @? ("TypeSystemTest: incorrect map type for 'c0_as'. Got '" ++ show c0_as_TMap ++ "' instead of '" ++ show c0_as_TMapR ++ "'")
+                c0_as_TMap == c0_as_TMapR @? ("TypeSystemTest: incorrect map type for 'c0_as'. Got '" ++ show c0_as_TMap ++ "' instead of '" ++ show c0_as_TMapR ++ "'")
                 -- c0_B_TClafer == c0_B_TClaferR @? ("TypeSystemTest: incorrect type for 'c0_B'. Got '" ++ show c0_B_TClafer ++ "' instead of '" ++ show c0_B_TClaferR ++ "'")

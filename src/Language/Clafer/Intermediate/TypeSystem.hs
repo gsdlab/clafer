@@ -68,10 +68,10 @@ getTClaferByUID    uidIClaferMap'   uid' = case uid' of
 -- can only be called after inheritance resolver
 getTClaferFromIExp :: UIDIClaferMap -> IExp -> Maybe IType
 getTClaferFromIExp    uidIClaferMap'   (IClaferId _ uid' _ _) = getTClaferByUID uidIClaferMap' uid'
-getTClaferFromIExp    _                (IInt _)               = Just $ TInteger
-getTClaferFromIExp    _                (IReal _)              = Just $ TReal
-getTClaferFromIExp    _                (IDouble _)            = Just $ TDouble
-getTClaferFromIExp    _                (IStr _)               = Just $ TString
+getTClaferFromIExp    _                (IInt _)               = Just TInteger
+getTClaferFromIExp    _                (IReal _)              = Just TReal
+getTClaferFromIExp    _                (IDouble _)            = Just TDouble
+getTClaferFromIExp    _                (IStr _)               = Just TString
 getTClaferFromIExp    _                _                      = Nothing
 
 -- | Get TMap for a given reference Clafer. Nothing for non-reference clafers.
@@ -80,9 +80,7 @@ getTMap :: IClafer -> Maybe IType
 getTMap    iClafer' = case _uid iClafer' of
   "root"   -> Nothing
   "clafer" -> Nothing
-  _        -> do
-    ref' <- _ref <$> _reference iClafer'
-    _iType ref'
+  _        -> _iType =<< _ref <$> _reference iClafer'
 
 -- | Get TClafer for a given Clafer by its UID
 -- can only be called after inheritance resolver
@@ -90,9 +88,7 @@ getTMapByUID :: UIDIClaferMap -> UID -> Maybe IType
 getTMapByUID    uidIClaferMap'   uid' = case uid' of
   "root"   -> Nothing
   "clafer" -> Nothing
-  _        -> do
-    iClafer' <- findIClafer uidIClaferMap' uid'
-    getTMap iClafer'
+  _        -> getTMap =<< findIClafer uidIClaferMap' uid'
 
 
 hierarchy :: (Monad m) => UIDIClaferMap -> UID -> m [IClafer]
@@ -147,6 +143,9 @@ t1             +++ t2              = {-trace ("TypeSystem.(+++): cannot union in
                                 ++ show t2
                                 ++ "'") -}
                               TUnion [t1, t2]
+-- original version
+-- (+++) :: IType -> IType -> IType
+-- t1 +++ t2 = fromJust $ fromUnionType $ unionType t1 ++ unionType t2
 
 intersection :: Monad m => UIDIClaferMap -> IType -> IType -> m (Maybe IType)
 intersection _              TBoolean        TBoolean      = return $ Just TBoolean
@@ -192,9 +191,16 @@ intersection _              _               _               = do
 
 -- | Compute the type of sequential composition of two types
 composition :: Monad m => UIDIClaferMap -> IType -> IType -> m (Maybe IType)
-composition uidIClaferMap' (TMap _ ta1) (TMap so2 _) = intersection uidIClaferMap' ta1 so2
-composition uidIClaferMap' ot1          (TMap so2 _) = intersection uidIClaferMap' ot1 so2
-composition uidIClaferMap' (TMap _ ta1) ot2          = intersection uidIClaferMap' ta1 ot2
+composition uidIClaferMap' (TMap so1 ta1) (TMap so2 ta2) = do
+    -- check whether we can compose?
+    _ <- intersection uidIClaferMap' ta1 so2
+    return $ Just $ TMap so1 ta2
+composition uidIClaferMap' ot1          (TMap so2 ta2) = do
+    ot1' <- intersection uidIClaferMap' ot1 so2
+    return $ TMap <$> ot1' <*> Just ta2
+composition uidIClaferMap' (TMap so1 ta1) ot2          = do
+    ot2' <- intersection uidIClaferMap' ta1 ot2
+    return $ TMap so1 <$> ot2'
 composition _              _            _            = do
   -- traceM $ "(DEBUG) ResolverType.composition: cannot compose incompatible types: '"
   --      ++ show t1
