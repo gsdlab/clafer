@@ -156,6 +156,7 @@ resolveIExp pos' env x = case x of
   IFunExp op' exps' -> if op' == iJoin then resNav else IFunExp op' <$> mapM (resolvePExp env) exps'
   IInt _ -> return x
   IDouble _ -> return x
+  IReal _ -> return x
   IStr _ -> return x
   IClaferId _ _ _ _ -> resNav
   where

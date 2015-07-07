@@ -87,6 +87,10 @@ instance Print PosDouble where
   prt _ (PosDouble (_,i)) = doc (showString ( i))
 
 
+instance Print PosReal where
+  prt _ (PosReal (_,i)) = doc (showString ( i))
+
+
 instance Print PosString where
   prt _ (PosString (_,i)) = doc (showString ( i))
 
@@ -116,9 +120,9 @@ instance Print Constraint where
   prt i e = case e of
     Constraint _ exps -> prPrec i 0 (concatD [doc (showString "["), prt 0 exps, doc (showString "]")])
 
-instance Print SoftConstraint where
+instance Print Assertion where
   prt i e = case e of
-    SoftConstraint _ exps -> prPrec i 0 (concatD [doc (showString "assert"), doc (showString "["), prt 0 exps, doc (showString "]")])
+    Assertion _ exps -> prPrec i 0 (concatD [doc (showString "assert"), doc (showString "["), prt 0 exps, doc (showString "]")])
 
 instance Print Goal where
   prt i e = case e of
@@ -140,7 +144,7 @@ instance Print Element where
     ClaferUse _ name card elements -> prPrec i 0 (concatD [doc (showString "`"), prt 0 name, prt 0 card, prt 0 elements])
     Subconstraint _ constraint -> prPrec i 0 (concatD [prt 0 constraint])
     Subgoal _ goal -> prPrec i 0 (concatD [prt 0 goal])
-    Subsoftconstraint _ softconstraint -> prPrec i 0 (concatD [prt 0 softconstraint])
+    SubAssertion _ assertion -> prPrec i 0 (concatD [prt 0 assertion])
   prtList es = case es of
    [] -> (concatD [])
    x:xs -> (concatD [prt 0 x, prt 0 xs])
@@ -232,6 +236,7 @@ instance Print Exp where
     EImpliesElse _ exp120 exp12 exp13 -> prPrec i 12 (concatD [doc (showString "if"), prt 12 exp120, doc (showString "then"), prt 12 exp12, doc (showString "else"), prt 13 exp13])
     EInt _ posinteger -> prPrec i 12 (concatD [prt 0 posinteger])
     EDouble _ posdouble -> prPrec i 12 (concatD [prt 0 posdouble])
+    EReal _ posreal -> prPrec i 12 (concatD [prt 0 posreal])
     EStr _ posstring -> prPrec i 12 (concatD [prt 0 posstring])
     EUnion _ exp13 exp14 -> prPrec i 13 (concatD [prt 13 exp13, doc (showString "++"), prt 14 exp14])
     EUnionCom _ exp13 exp14 -> prPrec i 13 (concatD [prt 13 exp13, doc (showString ","), prt 14 exp14])

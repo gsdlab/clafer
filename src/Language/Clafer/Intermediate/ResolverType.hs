@@ -26,6 +26,7 @@ import Language.ClaferT
 import Language.Clafer.Common
 import Language.Clafer.Intermediate.Intclafer hiding (uid)
 import Language.Clafer.Intermediate.Desugarer
+import Language.Clafer.Intermediate.TypeSystem
 import Language.Clafer.Front.PrintClafer
 
 import Control.Applicative
@@ -99,26 +100,8 @@ instance MonadTypeAnalysis m => MonadTypeAnalysis (ExceptT ClaferSErr m) where
 runTypeAnalysis :: TypeAnalysis a -> IModule -> Either ClaferSErr a
 runTypeAnalysis (TypeAnalysis tc) imodule = runReaderT tc $ TypeInfo [] (createUidIClaferMap imodule) undefined Nothing
 
-unionType :: IType -> [String]
-unionType TString  = [stringType]
-unionType TReal    = [realType]
-unionType TInteger = [integerType]
-unionType TBoolean = [booleanType]
-unionType (TClafer u) = u
-
-(+++) :: IType -> IType -> IType
-t1 +++ t2 = fromJust $ fromUnionType $ unionType t1 ++ unionType t2
-
-fromUnionType :: [String] -> Maybe IType
-fromUnionType u =
-    case sort $ nub $ u of
-        ["string"]  -> return TString
-        ["real"]    -> return TReal
-        ["integer"] -> return TInteger
-        ["int"]     -> return TInteger
-        ["boolean"] -> return TBoolean
-        []          -> Nothing
-        u'          -> return $ TClafer u'
+-- (+++) :: IType -> IType -> IType
+-- t1 +++ t2 = fromJust $ fromUnionType $ unionType t1 ++ unionType t2
 
 claferWithUid :: (Monad m) => UIDIClaferMap -> String -> m IClafer
 claferWithUid uidIClaferMap' u = case findIClafer uidIClaferMap' u of
@@ -135,16 +118,6 @@ refOf uidIClaferMap' c = do
   case getReference <$> findIClafer uidIClaferMap' c of
     Just [r] -> return r
     _        -> fail $ "Analysis.refOf: No ref uid for " ++ show c
-
-hierarchy :: (Monad m) => UIDIClaferMap -> UID -> m [IClafer]
-hierarchy uidIClaferMap' c = (case findIClafer uidIClaferMap' c of
-      Nothing -> fail $ "Analysis.hierarchy: clafer " ++ c ++ "not found!"
-      Just clafer -> return $ findHierarchy getSuper uidIClaferMap' clafer)
-
-hierarchyMap :: (Monad m) => UIDIClaferMap -> (IClafer -> a) -> UID -> m [a]
-hierarchyMap uidIClaferMap' f c = (case findIClafer uidIClaferMap' c of
-      Nothing -> fail $ "Analysis.hierarchyMap: clafer " ++ c ++ "not found!"
-      Just clafer -> return $ mapHierarchy f getSuper uidIClaferMap' clafer)
 
 {-
  - C is an direct child of B.
@@ -168,30 +141,6 @@ isChild uidIClaferMap' child parent =
                 indirectChild <- isIndirectChild uidIClaferMap' child parent
                 return $ directChild || indirectChild
             )
-
-
-closure :: Monad m => UIDIClaferMap -> [String] -> m [String]
-closure uidIClaferMap' ut = concat `liftM` mapM (hierarchyMap uidIClaferMap' _uid) ut
-
-intersection :: Monad m => UIDIClaferMap -> IType -> IType -> m (Maybe IType)
-intersection uidIClaferMap' t1 t2 = do
-  h1 <- (mapM (hierarchyMap uidIClaferMap' _uid) $ unionType t1)
-  h2 <- (mapM (hierarchyMap uidIClaferMap' _uid) $ unionType t2)
-  return $ fromUnionType $ catMaybes [contains (head u1) u2 `mplus` contains (head u2) u1 | u1 <- h1, u2 <- h2 ]
-  where
-  contains i is = if i `elem` is then Just i else Nothing
-
-numeric :: IType -> Bool
-numeric TReal    = True
-numeric TInteger = True
-numeric _        = False
-
-coerce :: IType -> IType -> IType
-coerce TReal TReal       = TReal
-coerce TReal TInteger    = TReal
-coerce TInteger TReal    = TReal
-coerce TInteger TInteger = TInteger
-coerce x y = error $ "Not numeric: " ++ show x ++ ", " ++ show y
 
 str :: IType -> String
 str t =
@@ -317,7 +266,8 @@ resolveTPExp' p@PExp{_inPos, _exp} =
   where
   resolveTExp :: IExp -> TypeAnalysis [Either ClaferSErr (IType, IExp)]
   resolveTExp e@(IInt _)    = runListT $ runExceptT $ return (TInteger, e)
-  resolveTExp e@(IDouble _) = runListT $ runExceptT $ return (TReal, e)
+  resolveTExp e@(IDouble _) = runListT $ runExceptT $ return (TDouble, e)
+  resolveTExp e@(IReal _) = runListT $ runExceptT $ return (TReal, e)
   resolveTExp e@(IStr _)    = runListT $ runExceptT $ return (TString, e)
 
   resolveTExp e@IFunExp {_op, _exps = [arg]} =

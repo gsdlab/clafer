@@ -11,7 +11,7 @@ import Language.Clafer.Front.ErrM
 %name pModule Module
 %name pClafer Clafer
 %name pConstraint Constraint
-%name pSoftConstraint SoftConstraint
+%name pAssertion Assertion
 %name pGoal Goal
 -- no lexer declaration
 %monad { Err } { thenM } { returnM }
@@ -84,6 +84,7 @@ import Language.Clafer.Front.ErrM
 
 L_PosInteger { PT _ (T_PosInteger _) }
 L_PosDouble { PT _ (T_PosDouble _) }
+L_PosReal { PT _ (T_PosReal _) }
 L_PosString { PT _ (T_PosString _) }
 L_PosIdent { PT _ (T_PosIdent _) }
 
@@ -92,6 +93,7 @@ L_PosIdent { PT _ (T_PosIdent _) }
 
 PosInteger    :: { PosInteger} : L_PosInteger { PosInteger (mkPosToken $1)}
 PosDouble    :: { PosDouble} : L_PosDouble { PosDouble (mkPosToken $1)}
+PosReal    :: { PosReal} : L_PosReal { PosReal (mkPosToken $1)}
 PosString    :: { PosString} : L_PosString { PosString (mkPosToken $1)}
 PosIdent    :: { PosIdent} : L_PosIdent { PosIdent (mkPosToken $1)}
 
@@ -104,8 +106,8 @@ Clafer :: { Clafer }
 Clafer : Abstract GCard PosIdent Super Reference Card Init Elements { Clafer ((mkCatSpan $1) >- (mkCatSpan $2) >- (mkCatSpan $3) >- (mkCatSpan $4) >- (mkCatSpan $5) >- (mkCatSpan $6) >- (mkCatSpan $7) >- (mkCatSpan $8)) $1 $2 $3 $4 $5 $6 $7 $8 }
 Constraint :: { Constraint }
 Constraint : '[' ListExp ']' { Constraint ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkTokenSpan $3)) (reverse $2) }
-SoftConstraint :: { SoftConstraint }
-SoftConstraint : 'assert' '[' ListExp ']' { SoftConstraint ((mkTokenSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3) >- (mkTokenSpan $4)) (reverse $3) }
+Assertion :: { Assertion }
+Assertion : 'assert' '[' ListExp ']' { Assertion ((mkTokenSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3) >- (mkTokenSpan $4)) (reverse $3) }
 Goal :: { Goal }
 Goal : '<<' ListExp '>>' { Goal ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkTokenSpan $3)) (reverse $2) }
 Abstract :: { Abstract }
@@ -119,7 +121,7 @@ Element : Clafer { Subclafer ((mkCatSpan $1)) $1 }
         | '`' Name Card Elements { ClaferUse ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkCatSpan $3) >- (mkCatSpan $4)) $2 $3 $4 }
         | Constraint { Subconstraint ((mkCatSpan $1)) $1 }
         | Goal { Subgoal ((mkCatSpan $1)) $1 }
-        | SoftConstraint { Subsoftconstraint ((mkCatSpan $1)) $1 }
+        | Assertion { SubAssertion ((mkCatSpan $1)) $1 }
 Super :: { Super }
 Super : {- empty -} { SuperEmpty noSpan }
       | ':' Exp18 { SuperSome ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
@@ -212,6 +214,7 @@ Exp12 :: { Exp }
 Exp12 : 'if' Exp12 'then' Exp12 'else' Exp13 { EImpliesElse ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkTokenSpan $3) >- (mkCatSpan $4) >- (mkTokenSpan $5) >- (mkCatSpan $6)) $2 $4 $6 }
       | PosInteger { EInt ((mkCatSpan $1)) $1 }
       | PosDouble { EDouble ((mkCatSpan $1)) $1 }
+      | PosReal { EReal ((mkCatSpan $1)) $1 }
       | PosString { EStr ((mkCatSpan $1)) $1 }
       | Exp13 {  $1 }
 Exp13 :: { Exp }

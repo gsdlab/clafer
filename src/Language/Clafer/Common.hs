@@ -130,7 +130,7 @@ createUidIClaferMap :: IModule -> UIDIClaferMap
 createUidIClaferMap    iModule  = foldl'
     (\accumMap' claf -> SMap.insert (_uid claf) claf accumMap')
     (SMap.singleton rootIdent rootClafer)
-    (integerClafer : intClafer : stringClafer : realClafer : booleanClafer : clafer : allClafers)
+    (integerClafer : intClafer : stringClafer : doubleClafer : realClafer : booleanClafer : clafer : allClafers)
   where
     allClafers :: [ IClafer ]
     allClafers = universeOn biplate iModule
@@ -138,6 +138,7 @@ createUidIClaferMap    iModule  = foldl'
     integerClafer = IClafer noSpan False (Just $ IGCard False (0, -1)) integerType integerType "" Nothing Nothing (Just (1,1)) (1, 1) []
     intClafer = IClafer noSpan False (Just $ IGCard False (0, -1)) "int" "int" "" Nothing Nothing (Just (1,1)) (1, 1) []
     stringClafer = IClafer noSpan False (Just $ IGCard False (0, -1)) stringType stringType "" Nothing Nothing (Just (1,1)) (1, 1) []
+    doubleClafer = IClafer noSpan False (Just $ IGCard False (0, -1)) doubleType realType "" Nothing Nothing (Just (1,1)) (1, 1) []
     realClafer = IClafer noSpan False (Just $ IGCard False (0, -1)) realType realType "" Nothing Nothing (Just (1,1)) (1, 1) []
     booleanClafer = IClafer noSpan False (Just $ IGCard False (0, -1)) booleanType booleanType "" Nothing Nothing (Just (1,1)) (1, 1) []
     clafer = IClafer noSpan False (Just $ IGCard False (0, -1)) baseClafer baseClafer "" Nothing Nothing (Just (1,1)) (1, 1) []
@@ -512,6 +513,9 @@ integerType = "integer"
 realType :: String
 realType = "real"
 
+doubleType :: String
+doubleType = "double"
+
 booleanType :: String
 booleanType = "boolean"
 
@@ -522,7 +526,7 @@ modSep :: String
 modSep = "\\"
 
 primitiveTypes :: [String]
-primitiveTypes = [stringType, intType, integerType, realType]
+primitiveTypes = [stringType, intType, integerType, doubleType, realType]
 
 isPrimitive :: String -> Bool
 isPrimitive = flip elem primitiveTypes

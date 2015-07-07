@@ -433,6 +433,7 @@ genPExp'    genEnv    resPath     (PExp iType' pid' pos exp') = case exp' of
       if head sid == '~' then sid else
       if isNothing iType' then sid' else case fromJust $ iType' of
     TInteger -> vsident
+    TDouble -> vsident
     TReal -> vsident
     TString -> vsident
     _ -> sid'
@@ -448,7 +449,8 @@ genPExp'    genEnv    resPath     (PExp iType' pid' pos exp') = case exp' of
     where
     exp'' = transformExp exp'
   IInt n -> CString $ show n
-  IDouble _ -> error "no real numbers allowed"
+  IDouble _ -> error "no double numbers allowed"
+  IReal _ -> error "no real numbers allowed"
   IStr _ -> error "no strings allowed"
 
 

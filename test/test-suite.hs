@@ -33,6 +33,7 @@ import Suite.Positive
 import Suite.Negative
 import Suite.SimpleScopeAnalyser
 import Suite.Redefinition
+import Suite.TypeSystem
 import Functions
 import Test.Tasty
 import Test.Tasty.HUnit
@@ -43,7 +44,8 @@ tg_Main_Test_Suite = $(testGroupGenerator)
 
 main :: IO ()
 main = defaultMain $ testGroup "Tests"
-    [ tg_Test_Suite_Redefinition
+    [ tg_Test_Suite_TypeSystem
+    , tg_Test_Suite_Redefinition
     , tg_Main_Test_Suite
     , tg_Test_Suite_Positive
     , tg_Test_Suite_Negative

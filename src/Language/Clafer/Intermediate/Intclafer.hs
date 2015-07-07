@@ -58,11 +58,19 @@ data IType
   = TBoolean
   | TString
   | TInteger
+  | TDouble
   | TReal
-  -- | the type is an intersection of the listed clafers
-  -- supports having paths in the inheritance hierarchy
-  -- supports multiple inheritance
-  | TClafer [UID]
+  | TClafer
+    { _hier :: [UID]          -- ^ [UID] represents an inheritance hierarchy obtained using @Common.findHierarchy
+    }
+  | TMap                      --  Represents a map from the src class to the target class
+    { _so :: IType            -- ^ must only be a TClass
+    , _ta :: IType            -- ^ must only be a TClass
+    }
+  | TUnion
+    { _un :: [IType]          -- ^ [IType] is a list of basic types (not union types)
+    }
+
   deriving (Eq,Ord,Show,Data,Typeable)
 
 -- | each file contains exactly one mode. A module is a list of declarations
@@ -164,6 +172,10 @@ data IExp
     { _iint :: Integer
     }
     -- | real number
+  | IReal
+    { _ireal :: Double
+    }
+    -- | double-precision floating point number
   | IDouble
     { _idouble :: Double
     }

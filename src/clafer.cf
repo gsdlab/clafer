@@ -1,4 +1,4 @@
-entrypoints Module, Clafer, Constraint, SoftConstraint, Goal ;
+entrypoints Module, Clafer, Constraint, Assertion, Goal ;
 
 
 -- To regenerate grammar (see src/Makefile, the goal 'grammar'):
@@ -17,7 +17,7 @@ ElementDecl.    Declaration ::= Element ;
 
 Clafer.         Clafer ::= Abstract GCard PosIdent Super Reference Card Init Elements ;
 Constraint.     Constraint ::= "[" [Exp] "]" ;
-SoftConstraint. SoftConstraint ::= "assert" "[" [Exp] "]";
+Assertion.      Assertion ::= "assert" "[" [Exp] "]";
 Goal.           Goal ::= "<<" [Exp] ">>" ;
 
 
@@ -31,7 +31,7 @@ Subclafer.      Element ::= Clafer ;
 ClaferUse.      Element ::= "`" Name Card Elements ;
 Subconstraint.  Element ::= Constraint ;
 Subgoal.        Element ::= Goal;
-Subsoftconstraint. Element ::= SoftConstraint;
+SubAssertion. Element ::= Assertion;
 
 SuperEmpty.     Super ::= ;
 SuperSome.      Super ::= ":" Exp18 ;
@@ -100,6 +100,7 @@ EMinExp.        Exp11 ::= "-" Exp12 ;
 EImpliesElse.   Exp12 ::= "if" Exp12 "then" Exp12 "else" Exp13 ;
 EInt.           Exp12 ::= PosInteger ;
 EDouble.        Exp12 ::= PosDouble ;
+EReal.          Exp12 ::= PosReal ;
 EStr.           Exp12 ::= PosString ;
 EUnion.         Exp13 ::= Exp13 "++" Exp14 ;
 EUnionCom.      Exp13 ::= Exp13 ","  Exp14 ;
@@ -132,6 +133,7 @@ separator  nonempty ModId       "\\" ;
 coercions Exp 19 ;
 
 position token PosInteger (digit+) ;
-position token PosDouble (digit+ '.' digit+ ('e' '-'? digit+)?) ;
+position token PosDouble (digit+ '.' digit+ 'e' '-'? digit+) ;
+position token PosReal (digit+ '.' digit+) ;
 position token PosString '"' ((char - ["\"\\"]) | ('\\' ["\"\\nt"]))* '"' ;
 position token PosIdent (letter (letter|digit|'_'|'\'')*) ;

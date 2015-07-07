@@ -460,6 +460,7 @@ iExpBasedChecks iModule = (null realLiterals, null productOperators)
     realLiterals = filter isIDouble iexps
     productOperators = filter isProductOperator iexps
     isIDouble (IDouble _) = True
+    isIDouble (IReal _) = True
     isIDouble _           = False
     isProductOperator (IFunExp op' _) = op' == iProdSet
     isProductOperator _               = False
@@ -469,7 +470,7 @@ iClaferBasedChecks iModule = null $ filter hasReferenceToReal iClafers
   where
     iClafers :: [ IClafer ]
     iClafers = universeOn biplate iModule
-    hasReferenceToReal (IClafer{_reference=(Just IReference{_ref=pexp'})}) = (getSuperId pexp') == "real"
+    hasReferenceToReal (IClafer{_reference=(Just IReference{_ref=pexp'})}) = (getSuperId pexp') `elem` [ "real", "double" ]
     hasReferenceToReal _               = False
 
 -- | Generates outputs for the given IR.

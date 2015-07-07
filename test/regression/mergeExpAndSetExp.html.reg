@@ -1,0 +1,34 @@
+
+<div>
+<span class="claferDecl" id="c0_anyNumber">anyNumber</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a></div>
+
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Person">Person</span></div>
+
+
+<div>
+<span class="claferDecl" id="c0_Alice">Alice</span><span class="keyword"> : </span><a href="#c0_Person"><span class="reference">Person</span></a></div>
+
+
+<div>
+<span class="claferDecl" id="c0_Ella">Ella</span><span class="keyword"> : </span><a href="#c0_Person"><span class="reference">Person</span></a></div>
+
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Team">Team</span>
+  <div class="indent">
+  <span class="keyword">abstract</span> <span class="claferDecl" id="c0_Member">Member</span></div>
+</div>
+
+
+<div>
+<span class="claferDecl" id="c0_team1">team1</span><span class="keyword"> : </span><a href="#c0_Team"><span class="reference">Team</span></a>
+  <div class="indent">
+  <span class="claferDecl" id="c0_Bob">Bob</span><span class="keyword"> : </span><a href="#Team"><span class="reference">Team</span></a>.<a href="#Member"><span class="reference">Member</span></a></div>
+</div>
+
+
+<div>
+<span class="claferDecl" id="c0_spouse">spouse</span><span class="keyword"> -> </span><a href="#c0_Alice"><span class="reference">Alice</span></a></div>
+

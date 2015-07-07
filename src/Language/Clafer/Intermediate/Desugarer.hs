@@ -71,8 +71,8 @@ sugarDeclaration :: IElement -> Declaration
 sugarDeclaration (IEClafer clafer) = ElementDecl (_cinPos clafer) $ Subclafer (_cinPos clafer) $ sugarClafer clafer
 sugarDeclaration (IEConstraint True constraint) =
       ElementDecl (_inPos constraint) $ Subconstraint (_inPos constraint) $ sugarConstraint constraint
-sugarDeclaration  (IEConstraint False softconstraint) =
-      ElementDecl (_inPos softconstraint) $ Subsoftconstraint (_inPos softconstraint) $ sugarSoftConstraint softconstraint
+sugarDeclaration  (IEConstraint False assertion) =
+      ElementDecl (_inPos assertion) $ SubAssertion (_inPos assertion) $ sugarAssertion assertion
 sugarDeclaration  (IEGoal _ goal) = ElementDecl (_inPos goal) $ Subgoal (_inPos goal) $ sugarGoal goal
 
 
@@ -165,8 +165,8 @@ desugarConstraint :: Constraint -> PExp
 desugarConstraint (Constraint _ exps') = desugarPath $ desugarExp $
     (if length exps' > 1 then foldl1 (EAnd noSpan) else head) exps'
 
-desugarSoftConstraint :: SoftConstraint -> PExp
-desugarSoftConstraint (SoftConstraint _ exps') = desugarPath $ desugarExp $
+desugarAssertion :: Assertion -> PExp
+desugarAssertion (Assertion _ exps') = desugarPath $ desugarExp $
     (if length exps' > 1 then foldl1 (EAnd noSpan) else head) exps'
 
 desugarGoal :: Goal -> PExp
@@ -176,8 +176,8 @@ desugarGoal (Goal s exps') = desugarPath $ desugarExp $
 sugarConstraint :: PExp -> Constraint
 sugarConstraint pexp = Constraint (_inPos pexp)  $ map sugarExp [pexp]
 
-sugarSoftConstraint :: PExp -> SoftConstraint
-sugarSoftConstraint pexp = SoftConstraint (_inPos pexp) $ map sugarExp [pexp]
+sugarAssertion :: PExp -> Assertion
+sugarAssertion pexp = Assertion (_inPos pexp) $ map sugarExp [pexp]
 
 sugarGoal :: PExp -> Goal
 sugarGoal pexp = Goal (_inPos pexp) $ map sugarExp [pexp]
@@ -209,8 +209,8 @@ desugarElement x = case x of
       (SuperSome s (ClaferId s name)) (ReferenceEmpty s) crd (InitEmpty s) es
   Subconstraint _ constraint  ->
       [IEConstraint True $ desugarConstraint constraint]
-  Subsoftconstraint _ softconstraint ->
-      [IEConstraint False $ desugarSoftConstraint softconstraint]
+  SubAssertion _ assertion ->
+      [IEConstraint False $ desugarAssertion assertion]
   Subgoal _ goal -> [IEGoal True $ desugarGoal goal]
 
 
@@ -218,7 +218,7 @@ sugarElement :: IElement -> Element
 sugarElement x = case x of
   IEClafer claf  -> Subclafer noSpan $ sugarClafer claf
   IEConstraint True constraint -> Subconstraint noSpan $ sugarConstraint constraint
-  IEConstraint False softconstraint -> Subsoftconstraint noSpan $ sugarSoftConstraint softconstraint
+  IEConstraint False assertion -> SubAssertion noSpan $ sugarAssertion assertion
   IEGoal _ goal -> Subgoal noSpan $ sugarGoal goal
 
 desugarGCard :: GCard -> Maybe IGCard
@@ -311,6 +311,7 @@ desugarExp' x = case x of
   EGMin _ exp' -> dop iGMin [exp']
   EInt _ n  -> IInt $ mkInteger n
   EDouble _ (PosDouble n) -> IDouble $ read $ snd n
+  EReal _ (PosReal n) -> IReal $ read $ snd n
   EStr _ (PosString str)  -> IStr $ snd str
   EUnion _ exp0 exp'        -> dop iUnion        [exp0, exp']
   EUnionCom _ exp0 exp'     -> dop iUnion        [exp0, exp']
@@ -353,6 +354,7 @@ sugarExp' x = case x of
   IClaferId modName' id' _ _ -> ClaferId noSpan $ Path noSpan $ (sugarModId modName') : [sugarModId id']
   IInt n -> EInt noSpan $ PosInteger ((0, 0), show n)
   IDouble n -> EDouble noSpan $ PosDouble ((0, 0), show n)
+  IReal n -> EReal noSpan $ PosReal ((0, 0), show n)
   IStr str -> EStr noSpan $ PosString ((0, 0), str)
   IFunExp op' exps' ->
     if op' `elem` unOps then (sugarUnOp op') (exps''!!0)

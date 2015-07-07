@@ -1,0 +1,15 @@
+from jsir.IR import *
+
+c0_Person = Abstract("c0_Person");
+c0_Team = Abstract("c0_Team");
+c0_anyNumber = Clafer("c0_anyNumber").withCard(1, 1);
+c0_Alice = Clafer("c0_Alice").withCard(1, 1).extending(c0_Person);
+c0_Ella = Clafer("c0_Ella").withCard(1, 1).extending(c0_Person);
+c0_team1 = Clafer("c0_team1").withCard(1, 1).extending(c0_Team);
+c0_Bob = c0_team1.addChild("c0_Bob").withCard(1, 1);
+c0_spouse = Clafer("c0_spouse").withCard(1, 1);
+c0_anyNumber.refTo("int");
+c0_spouse.refTo(c0_Alice);
+scope({c0_Member:0, c0_Person:2});
+defaultScope(1);
+stringLength(16);

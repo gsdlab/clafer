@@ -157,7 +157,7 @@ printElement (Subconstraint s constraint) indent irMap html comments =
     (comments', preComments) = printPreComment s comments;
     (comments'', comment) = printComment s comments'
 
-printElement (Subsoftconstraint s constraint) indent irMap html comments =
+printElement (SubAssertion s constraint) indent irMap html comments =
     preComments ++
     printIndent indent html ++
     printAssertion constraint indent irMap html comments'' ++
@@ -179,7 +179,7 @@ printElements (ElementsList _ es) indent irMap html comments = "\n{" ++ mapEleme
           span' (Subconstraint s _) = s
           span' (ClaferUse s _ _ _) = s
           span' (Subgoal s _) = s
-          span' (Subsoftconstraint s _) = s
+          span' (SubAssertion s _) = s
 
 printClafer :: Clafer -> Int -> Map.Map Span [Ir] -> Bool -> [(Span, String)] -> String
 printClafer (Clafer s abstract gCard id' super' reference' crd init' es) indent irMap html comments =
@@ -272,8 +272,8 @@ printConstraint' exp' indent irMap html comments =
     " " ++
     while html "<span class=\"keyword\">" ++ "]" ++ while html "</span>"
 
-printAssertion :: SoftConstraint -> Int -> Map.Map Span [Ir] -> Bool -> [(Span, String)] -> String
-printAssertion (SoftConstraint _ exps') indent irMap html comments = concatMap (\x -> printAssertion' x indent irMap html comments) exps'
+printAssertion :: Assertion -> Int -> Map.Map Span [Ir] -> Bool -> [(Span, String)] -> String
+printAssertion (Assertion _ exps') indent irMap html comments = concatMap (\x -> printAssertion' x indent irMap html comments) exps'
 printAssertion' :: Exp -> Int -> Map.Map Span [Ir] -> Bool -> [(Span, String)] -> String
 printAssertion' exp' indent' irMap html comments =
     while html "<span class=\"keyword\">" ++ "assert [" ++ while html "</span>" ++
@@ -340,6 +340,7 @@ printExp (ERange _ set1 set2) indent irMap html comments = (printExp set1 indent
 printExp (EJoin _ set1 set2) indent irMap html comments = (printExp set1 indent irMap html comments) ++ "." ++ (printExp set2 indent irMap html comments)
 printExp (EInt _ (PosInteger (_, num))) _ _ _ _ = num
 printExp (EDouble _ (PosDouble (_, num))) _ _ _ _ = num
+printExp (EReal _ (PosReal (_, num))) _ _ _ _ = num
 printExp (EStr _ (PosString (_, str))) _ _ _ _ = str
 
 printQuant :: Quant -> Bool -> String

@@ -62,7 +62,10 @@ prof:
 .PHONY : test
 
 test:
+	cabal clean
+	cabal configure --enable-tests --enable-optimization=2
 	cabal test
+	cabal build
 	$(MAKE) -C $(TEST_DIR) test
 
 generateAlloyJSPythonHTMLDot:

@@ -101,6 +101,7 @@ library
                       , Language.Clafer.Intermediate.StringAnalyzer
                       , Language.Clafer.Intermediate.Tracing
                       , Language.Clafer.Intermediate.Transformer
+                      , Language.Clafer.Intermediate.TypeSystem
                       , Language.Clafer.Optimizer.Optimizer
                       , Language.Clafer.SplitJoin
     other-modules:      Paths_clafer
@@ -138,3 +139,4 @@ Test-Suite test-suite
                       , Suite.Negative
                       , Suite.SimpleScopeAnalyser
                       , Suite.Redefinition
+                      , Suite.TypeSystem

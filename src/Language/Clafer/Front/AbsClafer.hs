@@ -32,6 +32,8 @@ newtype PosInteger = PosInteger ((Int,Int),String)
   deriving (Eq, Ord, Show, Read, Data, Typeable, Generic)
 newtype PosDouble = PosDouble ((Int,Int),String)
   deriving (Eq, Ord, Show, Read, Data, Typeable, Generic)
+newtype PosReal = PosReal ((Int,Int),String)
+  deriving (Eq, Ord, Show, Read, Data, Typeable, Generic)
 newtype PosString = PosString ((Int,Int),String)
   deriving (Eq, Ord, Show, Read, Data, Typeable, Generic)
 newtype PosIdent = PosIdent ((Int,Int),String)
@@ -44,6 +46,12 @@ instance Spannable PosInteger where
       l' = toInteger l
 instance Spannable PosDouble where
   getSpan (PosDouble ((c, l), lex')) = 
+    Span (Pos c' l') (Pos c' $ l' + len lex')
+    where
+      c' = toInteger c
+      l' = toInteger l
+instance Spannable PosReal where
+  getSpan (PosReal ((c, l), lex')) = 
     Span (Pos c' l') (Pos c' $ l' + len lex')
     where
       c' = toInteger c
@@ -83,11 +91,11 @@ data Constraint = Constraint Span [Exp]
 
 instance Spannable Constraint where
     getSpan (Constraint s _ ) = s
-data SoftConstraint = SoftConstraint Span [Exp]
+data Assertion = Assertion Span [Exp]
   deriving (Eq, Ord, Show, Read, Data, Typeable, Generic)
 
-instance Spannable SoftConstraint where
-    getSpan (SoftConstraint s _ ) = s
+instance Spannable Assertion where
+    getSpan (Assertion s _ ) = s
 data Goal = Goal Span [Exp]
   deriving (Eq, Ord, Show, Read, Data, Typeable, Generic)
 
@@ -110,7 +118,7 @@ data Element
     | ClaferUse Span Name Card Elements
     | Subconstraint Span Constraint
     | Subgoal Span Goal
-    | Subsoftconstraint Span SoftConstraint
+    | SubAssertion Span Assertion
   deriving (Eq, Ord, Show, Read, Data, Typeable, Generic)
 
 instance Spannable Element where
@@ -118,7 +126,7 @@ instance Spannable Element where
     getSpan (ClaferUse s _ _ _ ) = s
     getSpan (Subconstraint s _ ) = s
     getSpan (Subgoal s _ ) = s
-    getSpan (Subsoftconstraint s _ ) = s
+    getSpan (SubAssertion s _ ) = s
 data Super = SuperEmpty Span | SuperSome Span Exp
   deriving (Eq, Ord, Show, Read, Data, Typeable, Generic)
 
@@ -229,6 +237,7 @@ data Exp
     | EImpliesElse Span Exp Exp Exp
     | EInt Span PosInteger
     | EDouble Span PosDouble
+    | EReal Span PosReal
     | EStr Span PosString
     | EUnion Span Exp Exp
     | EUnionCom Span Exp Exp
@@ -274,6 +283,7 @@ instance Spannable Exp where
     getSpan (EImpliesElse s _ _ _ ) = s
     getSpan (EInt s _ ) = s
     getSpan (EDouble s _ ) = s
+    getSpan (EReal s _ ) = s
     getSpan (EStr s _ ) = s
     getSpan (EUnion s _ _ ) = s
     getSpan (EUnionCom s _ _ ) = s

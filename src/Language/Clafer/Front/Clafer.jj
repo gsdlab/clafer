@@ -148,7 +148,7 @@ void Constraint():
    <LSB> (Exp())* <RSB>
 }
 
-void SoftConstraint():
+void Assertion():
 {}
 {
    <LPAREN> (Exp())* <RPAREN>
@@ -179,7 +179,7 @@ void Element():
    <BACKTICK> Name() Card() Elements() |
    Constraint() |
    Goal() |
-   SoftConstraint()  
+   Assertion()  
 }
 
 void Super():
