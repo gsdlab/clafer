@@ -127,6 +127,15 @@ fromUnionType u =
         []          -> Nothing
         u'          -> return $ TClafer u'
 
+-- | Union the two given types
+-- >>> TString +++ TString
+-- TString
+-- >>> TUnion [TString] +++ TString
+-- TUnion {_un = [TString]}
+-- >>> TUnion [TString] +++ TInteger
+-- TUnion {_un = [TInteger,TString]}
+-- >>> TUnion [TString] +++ TUnion[TInteger]
+-- TUnion {_un = [TString,TInteger]}
 (+++) :: IType -> IType -> IType
 TString        +++ TString        = TString
 TReal          +++ TReal          = TReal
