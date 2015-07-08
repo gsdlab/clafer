@@ -32,6 +32,45 @@ import Prelude hiding (exp)
 
 --import Debug.Trace
 
+{- | Example Clafer model used in the various test cases.
+
+abstract Person
+    DOB -> integer
+
+abstract Student : Person
+    StudentID -> string
+
+abstract Employee : Person
+    EmplID -> integer
+
+Alice : Student
+    [ this.age = 20 ]
+    [ this.studentID.ref = "123Alice" ]
+
+Bob : Employee
+    [ emplID = 345 ]
+-}
+
+{- $setup
+>>> let tClaferPerson = TClafer [ "Person" ]
+>>> let tClaferDOB = TClafer [ "DOB" ]
+>>> let tClaferStudent = TClafer [ "Student", "Person" ]
+>>> let tClaferStudentID = TClafer [ "StudentID" ]
+>>> let tClaferEmployee = TClafer [ "Employee", "Person" ]
+>>> let tClaferEmplID = TClafer [ "EmplID" ]
+>>> let tClaferAlice = TClafer [ "Alice", "Student", "Person" ]
+>>> let tClaferBob = TClafer [ "Bob", "Employee", "Person" ]
+>>> let tMapDOB = TMap tClaferPerson tClaferDOB
+>>> let tDrefMapDOB = TMap tClaferDOB TInteger
+>>> let tMapStudentID = TMap tClaferStudent tClaferStudentID
+>>> let tDrefMapStudentID = TMap tClaferStudentID TString
+>>> let tMapEmplID = TMap tClaferEmplID tClaferEmplID
+>>> let tDrefMapEmplID = TMap tClaferEmplID TInteger
+>>> let t20 = TInteger
+>>> let t123Alice = TString
+>>> let t345 = TInteger
+-}
+
 -- | Sing
 rootTClafer :: IType
 rootTClafer = TClafer ["root"]
@@ -76,19 +115,19 @@ getTClaferFromIExp    _                _                      = Nothing
 
 -- | Get TMap for a given reference Clafer. Nothing for non-reference clafers.
 -- can only be called after inheritance resolver
-getTMap :: IClafer -> Maybe IType
-getTMap    iClafer' = case _uid iClafer' of
+getDrefTMap :: IClafer -> Maybe IType
+getDrefTMap    iClafer' = case _uid iClafer' of
   "root"   -> Nothing
   "clafer" -> Nothing
   _        -> _iType =<< _ref <$> _reference iClafer'
 
--- | Get TClafer for a given Clafer by its UID
+-- | Get TMap for a given Clafer by its UID. Nothing for non-reference clafers.
 -- can only be called after inheritance resolver
-getTMapByUID :: UIDIClaferMap -> UID -> Maybe IType
-getTMapByUID    uidIClaferMap'   uid' = case uid' of
+getDrefTMapByUID :: UIDIClaferMap -> UID -> Maybe IType
+getDrefTMapByUID    uidIClaferMap'   uid' = case uid' of
   "root"   -> Nothing
   "clafer" -> Nothing
-  _        -> getTMap =<< findIClafer uidIClaferMap' uid'
+  _        -> getDrefTMap =<< findIClafer uidIClaferMap' uid'
 
 
 hierarchy :: (Monad m) => UIDIClaferMap -> UID -> m [IClafer]
@@ -114,7 +153,7 @@ unionType TInteger = [integerType]
 unionType (TClafer u) = u
 unionType (TUnion types) = concatMap unionType types
 unionType TBoolean = error $ "TypeSystem.unionType: cannot union TBoolean"
-unionType tm@(TMap _ _) = error $ "TypeSystem.unionType: cannot union TMap: '" ++ show tm ++ "'"
+unionType tm@(TMap _ _) = error $ "TypeSystem.unionType: cannot union a TMap: '" ++ show tm ++ "'"
 
 fromUnionType :: [String] -> Maybe IType
 fromUnionType u =
@@ -127,26 +166,34 @@ fromUnionType u =
         []          -> Nothing
         u'          -> return $ TClafer u'
 
--- | Union the two given types
--- >>> TString +++ TString
--- TString
--- >>> TUnion [TString] +++ TString
--- TUnion {_un = [TString]}
--- >>> TUnion [TString] +++ TInteger
--- TUnion {_un = [TInteger,TString]}
--- >>> TUnion [TString] +++ TUnion[TInteger]
--- TUnion {_un = [TString,TInteger]}
+{- | Union the two given types
+>>> TString +++ TString
+TString
+
+>>> TUnion [TString] +++ TString
+TUnion {_un = [TString]}
+
+>>> TUnion [TString] +++ TInteger
+TUnion {_un = [TInteger,TString]}
+
+>>> TUnion [TString] +++ TUnion[TInteger]
+TUnion {_un = [TString,TInteger]}
+
+>>> tClaferAlice +++ tClaferBob
+TUnion {_un = [TClafer {_hier = ["Alice","Student","Person"]},TClafer {_hier = ["Bob","Employee","Person"]}]}
+-}
+
 (+++) :: IType -> IType -> IType
-TString        +++ TString        = TString
-TReal          +++ TReal          = TReal
-TDouble        +++ TDouble        = TDouble
-TInteger       +++ TInteger       = TInteger
-(TClafer u1)   +++ (TClafer u2)   = (TClafer $ nub $ u1 ++ u2)
-(TMap so1 ta1) +++ (TMap so2 ta2) = (TMap (so1 +++ so2) (ta1 +++ ta2))
-(TUnion un1)   +++ (TUnion un2)   = (TUnion $ nub $ un1 ++ un2)
-(TUnion un1)   +++ t2             = (TUnion $ nub $ t2:un1)
-t1             +++ (TUnion un2)   = (TUnion $ nub $ t1:un2)
-t1             +++ t2              = {-trace ("TypeSystem.(+++): cannot union incompatible types: '"
+TString         +++ TString         = TString
+TReal           +++ TReal           = TReal
+TDouble         +++ TDouble         = TDouble
+TInteger        +++ TInteger        = TInteger
+c1@(TClafer u1) +++ c2@(TClafer u2) = (TClafer $ nub $ u1 ++ u2)  -- should be if c1 == c2 then c1 else TUnion [c1,c2]
+(TMap so1 ta1)  +++ (TMap so2 ta2)  = (TMap (so1 +++ so2) (ta1 +++ ta2))
+(TUnion un1)    +++ (TUnion un2)    = (TUnion $ nub $ un1 ++ un2)
+(TUnion un1)    +++ t2              = (TUnion $ nub $ t2:un1)
+t1              +++ (TUnion un2)    = (TUnion $ nub $ t1:un2)
+t1              +++ t2              = {-trace ("TypeSystem.(+++): cannot union incompatible types: '"
                                 ++ show t1
                                 ++ "'' and '"
                                 ++ show t2

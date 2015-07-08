@@ -61,8 +61,8 @@ case_TypeSystemTest = case compileOneFragment defaultClaferArgs{keep_unused=True
                 clafer_TClafer = getTClaferByUID uidIClaferMap' "clafer"
                 c0_A_TClafer = getTClaferByUID uidIClaferMap' "c0_A"
                 c0_A_TClaferR = Just $ TClafer [ "c0_A" ]
-                c0_A_TMap = getTMapByUID uidIClaferMap' "c0_A"
-                c0_as_TMap = getTMapByUID uidIClaferMap' "c0_as"
+                c0_A_TMap = getDrefTMapByUID uidIClaferMap' "c0_A"
+                c0_as_TMap = getDrefTMapByUID uidIClaferMap' "c0_as"
                 c0_as_TMapR = Just $ TMap (TClafer [ "c0_A" ]) (TClafer [ "c0_as" ])
                 --c0_B_TClafer = getTClaferByUID uidIClaferMap' "c0_B"
                 --c0_B_TClaferR = Just $ TClafer False False $ TClafer [ "c0_B", "c0_A" ]
