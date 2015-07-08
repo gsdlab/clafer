@@ -44,14 +44,20 @@ abstract Employee : Person
     EmplID -> integer
 
 Alice : Student
-    [ this.age = 20 ]
-    [ this.studentID.ref = "123Alice" ]
+    [ this.DOB.ref = 1990 ]
+    [ this.StudentID.ref = "123Alice" ]
 
 Bob : Employee
-    [ emplID = 345 ]
+    [ EmplID.ref = 345 ]
+
+AliceAndBob -> Person
+[ AliceAndBob.ref =  Alice, Bob ]
+
+AliceAndBob2 -> Alice ++ Bob
 -}
 
 {- $setup
+TClafer
 >>> let tClaferPerson = TClafer [ "Person" ]
 >>> let tClaferDOB = TClafer [ "DOB" ]
 >>> let tClaferStudent = TClafer [ "Student", "Person" ]
@@ -60,12 +66,23 @@ Bob : Employee
 >>> let tClaferEmplID = TClafer [ "EmplID" ]
 >>> let tClaferAlice = TClafer [ "Alice", "Student", "Person" ]
 >>> let tClaferBob = TClafer [ "Bob", "Employee", "Person" ]
+>>> let tClaferAliceAndBob = TClafer [ "AliceAndBob" ]
+>>> let tClaferAliceAndBob2 = TClafer [ "AliceAndBob2" ]
+
+TUnion
+>>> let tUnionAliceBob = TUnion [ tClaferAlice, tClaferBob ]
+
+TMap
 >>> let tMapDOB = TMap tClaferPerson tClaferDOB
 >>> let tDrefMapDOB = TMap tClaferDOB TInteger
 >>> let tMapStudentID = TMap tClaferStudent tClaferStudentID
 >>> let tDrefMapStudentID = TMap tClaferStudentID TString
 >>> let tMapEmplID = TMap tClaferEmplID tClaferEmplID
 >>> let tDrefMapEmplID = TMap tClaferEmplID TInteger
+>>> let tDrefMapAliceAndBob = TMap tClaferAliceAndBob tClaferPerson
+>>> let tDrefMapAliceAndBob2 = TMap tClaferAliceAndBob tUnionAliceBob
+
+constants
 >>> let t20 = TInteger
 >>> let t123Alice = TString
 >>> let t345 = TInteger
