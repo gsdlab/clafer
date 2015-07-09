@@ -25,6 +25,7 @@ module Language.Clafer.Intermediate.TypeSystem where
 import Language.Clafer.Common
 import Language.Clafer.Intermediate.Intclafer hiding (uid)
 
+import Control.Lens ((&), (<&>))
 import Control.Monad (mplus, liftM)
 import Data.List (nub)
 import Data.Maybe
@@ -118,7 +119,7 @@ getTClaferByUID :: UIDIClaferMap -> UID -> Maybe IType
 getTClaferByUID    uidIClaferMap'   uid' = case uid' of
   "root"   -> Just $ rootTClafer
   "clafer" -> Just $ claferTClafer
-  _        -> getTClafer <$> findIClafer uidIClaferMap' uid'
+  _        -> findIClafer uidIClaferMap' uid' <&> getTClafer
 
 -- | Get TClafer for a given Clafer by its UID
 -- can only be called after inheritance resolver
@@ -136,7 +137,7 @@ getDrefTMap :: IClafer -> Maybe IType
 getDrefTMap    iClafer' = case _uid iClafer' of
   "root"   -> Nothing
   "clafer" -> Nothing
-  _        -> _iType =<< _ref <$> _reference iClafer'
+  _        -> iClafer' & _reference <&> _ref >>= _iType
 
 -- | Get TMap for a given Clafer by its UID. Nothing for non-reference clafers.
 -- can only be called after inheritance resolver
@@ -144,7 +145,7 @@ getDrefTMapByUID :: UIDIClaferMap -> UID -> Maybe IType
 getDrefTMapByUID    uidIClaferMap'   uid' = case uid' of
   "root"   -> Nothing
   "clafer" -> Nothing
-  _        -> getDrefTMap =<< findIClafer uidIClaferMap' uid'
+  _        -> findIClafer uidIClaferMap' uid' >>= getDrefTMap
 
 
 hierarchy :: (Monad m) => UIDIClaferMap -> UID -> m [IClafer]

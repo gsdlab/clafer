@@ -31,6 +31,7 @@ import Language.Clafer.Front.PrintClafer
 
 import Control.Applicative
 import Control.Exception (assert)
+import Control.Lens ((&), (<&>), (%~), mapped)
 import Control.Monad.Except
 import Control.Monad.List
 import Control.Monad.Reader
@@ -184,8 +185,15 @@ resolveTModule (imodule, _) =
 resolveTElement :: String -> IElement -> TypeAnalysis IElement
 resolveTElement _ (IEClafer iclafer) =
   do
+    reference' <- case _reference iclafer of
+      Nothing -> return Nothing
+      Just originalReference -> do
+        refs' <- resolveTPExp $ _ref originalReference
+        case refs' of
+          [ref'] -> return $ Just $ originalReference{_ref=ref'}
+          _      -> return Nothing
     elements' <- mapM (resolveTElement $ _uid iclafer) (_elements iclafer)
-    return $ IEClafer iclafer{_elements = elements'}
+    return $ IEClafer iclafer{_elements = elements', _reference=reference'}
 resolveTElement parent' (IEConstraint _isHard _pexp) =
   IEConstraint _isHard <$> (testBoolean =<< resolveTConstraint parent' _pexp)
   where
