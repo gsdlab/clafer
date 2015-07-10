@@ -31,7 +31,6 @@ import Language.Clafer.Front.PrintClafer
 
 import Control.Applicative
 import Control.Exception (assert)
-import Control.Lens ((&), (<&>), (%~), mapped)
 import Control.Monad.Except
 import Control.Monad.List
 import Control.Monad.Reader
@@ -250,6 +249,10 @@ resolveTPExp' p@PExp{_inPos, _exp = IClaferId{_sident = "parent"}} = do
           addRef result -- Case 2: Dereference the sident 1..* times
       Nothing -> throwError $ SemanticErr _inPos "Cannot parent at the start of a path"
 resolveTPExp' p@PExp{_exp = IClaferId{_sident = "integer"}} = runListT $ runExceptT $ return $ p `withType` TInteger
+resolveTPExp' p@PExp{_exp = IClaferId{_sident = "int"}} = runListT $ runExceptT $ return $ p `withType` TInteger
+resolveTPExp' p@PExp{_exp = IClaferId{_sident = "string"}} = runListT $ runExceptT $ return $ p `withType` TString
+resolveTPExp' p@PExp{_exp = IClaferId{_sident = "double"}} = runListT $ runExceptT $ return $ p `withType` TDouble
+resolveTPExp' p@PExp{_exp = IClaferId{_sident = "real"}} = runListT $ runExceptT $ return $ p `withType` TReal
 resolveTPExp' p@PExp{_inPos, _exp = IClaferId{_sident}} = do
   uidIClaferMap' <- asks iUIDIClaferMap
   runListT $ runExceptT $ do

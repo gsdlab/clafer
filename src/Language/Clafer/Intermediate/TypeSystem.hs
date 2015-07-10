@@ -25,7 +25,7 @@ module Language.Clafer.Intermediate.TypeSystem where
 import Language.Clafer.Common
 import Language.Clafer.Intermediate.Intclafer hiding (uid)
 
-import Control.Lens ((&), (<&>))
+import Control.Lens ((&), (<&>), (%~))
 import Control.Monad (mplus, liftM)
 import Data.List (nub)
 import Data.Maybe
@@ -84,7 +84,7 @@ TMap
 >>> let tDrefMapAliceAndBob2 = TMap tClaferAliceAndBob tUnionAliceBob
 
 constants
->>> let t20 = TInteger
+>>> let t1990 = TInteger
 >>> let t123Alice = TString
 >>> let t345 = TInteger
 -}
@@ -111,7 +111,7 @@ getTClafer    iClafer' = case _uid iClafer' of
   "clafer" -> claferTClafer
   _        -> case _super iClafer' of
     Nothing     -> TClafer [ _uid iClafer']
-    Just super' -> fromJust $ _iType super'
+    Just super' -> (fromJust $ _iType super') & hier %~ ((:) (_uid iClafer'))
 
 -- | Get TClafer for a given Clafer by its UID
 -- can only be called after inheritance resolver
@@ -137,7 +137,7 @@ getDrefTMap :: IClafer -> Maybe IType
 getDrefTMap    iClafer' = case _uid iClafer' of
   "root"   -> Nothing
   "clafer" -> Nothing
-  _        -> iClafer' & _reference <&> _ref >>= _iType
+  _        -> TMap <$> (Just $ getTClafer iClafer') <*> (iClafer' & _reference <&> _ref >>= _iType)
 
 -- | Get TMap for a given Clafer by its UID. Nothing for non-reference clafers.
 -- can only be called after inheritance resolver
@@ -187,6 +187,9 @@ fromUnionType u =
 {- | Union the two given types
 >>> TString +++ TString
 TString
+
+>>> TString +++ TInteger
+TUnion {_un = [TString,TInteger]}
 
 >>> TUnion [TString] +++ TString
 TUnion {_un = [TString]}

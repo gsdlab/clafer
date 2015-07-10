@@ -50,27 +50,34 @@ model = unlines
 
 case_TypeSystemTest :: Assertion
 case_TypeSystemTest = case compileOneFragment defaultClaferArgs{keep_unused=True} model of
-    Left errors -> assertFailure $ show errors
-    Right compilerResultMap -> case M.lookup Alloy42 compilerResultMap of
-        Nothing -> assertFailure "No Alloy42 result in the result map"
-        Just compilerResult -> let
-                uidIClaferMap' :: StringMap IClafer
-                uidIClaferMap' = uidIClaferMap $ claferEnv compilerResult
+  Left errors -> assertFailure $ show errors
+  Right compilerResultMap -> case M.lookup Alloy42 compilerResultMap of
+    Nothing -> assertFailure "No Alloy42 result in the result map"
+    Just compilerResult ->
+      let
+        um' :: StringMap IClafer
+        um' = uidIClaferMap $ claferEnv compilerResult
 
-                root_TClafer = getTClaferByUID uidIClaferMap' "root"
-                clafer_TClafer = getTClaferByUID uidIClaferMap' "clafer"
-                c0_A_TClafer = getTClaferByUID uidIClaferMap' "c0_A"
-                c0_A_TClaferR = Just $ TClafer [ "c0_A" ]
-                c0_A_TMap = getDrefTMapByUID uidIClaferMap' "c0_A"
-                c0_as_TMap = getDrefTMapByUID uidIClaferMap' "c0_as"
-                c0_as_TMapR = Just $ TMap (TClafer [ "c0_A" ]) (TClafer [ "c0_as" ])
-                --c0_B_TClafer = getTClaferByUID uidIClaferMap' "c0_B"
-                --c0_B_TClaferR = Just $ TClafer False False $ TClafer [ "c0_B", "c0_A" ]
-            in do
-                (isJust $ findIClafer uidIClaferMap' "c0_A") @? ("TypeSystemTest: clafer c0_A not found" ++ show uidIClaferMap')
-                root_TClafer == Just rootTClafer @? ("TypeSystemTest: incorrect class type for 'root'. Got '" ++ show root_TClafer ++ "' instead of '" ++ show rootTClafer ++ "'")
-                clafer_TClafer == Just claferTClafer @? ("TypeSystemTest: incorrect class type for 'clafer'. Got '" ++ show clafer_TClafer ++ "' instead of '" ++ show claferTClafer ++ "'")
-                c0_A_TClafer == c0_A_TClaferR @? ("TypeSystemTest: incorrect class type for 'c0_A'. Got '" ++ show c0_A_TClafer ++ "' instead of '" ++ show c0_A_TClaferR ++ "'")
-                c0_A_TMap == Nothing @? ("TypeSystemTest: incorrect map type for 'c0_A'. Got '" ++ show c0_A_TMap ++ "'' but it is not a reference.")
-                c0_as_TMap == c0_as_TMapR @? ("TypeSystemTest: incorrect map type for 'c0_as'. Got '" ++ show c0_as_TMap ++ "' instead of '" ++ show c0_as_TMapR ++ "'")
-                -- c0_B_TClafer == c0_B_TClaferR @? ("TypeSystemTest: incorrect type for 'c0_B'. Got '" ++ show c0_B_TClafer ++ "' instead of '" ++ show c0_B_TClaferR ++ "'")
+        root_TClafer = getTClaferByUID um' "root"
+        clafer_TClafer = getTClaferByUID um' "clafer"
+        c0_A_TClafer = getTClaferByUID um' "c0_A"
+        c0_A_TClaferR = Just $ TClafer [ "c0_A" ]
+        c0_A_TMap = getDrefTMapByUID um' "c0_A"
+        c0_as_TMap = getDrefTMapByUID um' "c0_as"
+        c0_as_TMapR = Just (TMap {_so = TClafer {_hier = ["c0_as"]}, _ta = TClafer {_hier = ["c0_A"]}})
+        c0_B_TClafer = getTClaferByUID um' "c0_B"
+        c0_B_TClaferR = Just $ TClafer [ "c0_B", "c0_A" ]
+        c1_as_TClafer = getTClaferByUID um' "c1_as"
+        c1_as_TClaferR = Just $ TClafer [ "c1_as", "c0_as" ]
+        c1_as_TMap = getDrefTMapByUID um' "c1_as"
+        c1_as_TMapR = Just (TMap {_so = TClafer {_hier = ["c1_as","c0_as"]}, _ta = TClafer {_hier = [ "c0_B", "c0_A" ]}})
+      in do
+        (isJust $ findIClafer um' "c0_A")    @? ("Clafer c0_A not found" ++ show um')
+        root_TClafer == Just rootTClafer     @? ("Incorrect class type for 'root':\ngot        '" ++ show root_TClafer ++ "'\ninstead of '" ++ show rootTClafer ++ "'")
+        clafer_TClafer == Just claferTClafer @? ("Incorrect class type for 'clafer':\ngot        '" ++ show clafer_TClafer ++ "'\ninstead of '" ++ show claferTClafer ++ "'")
+        c0_A_TClafer == c0_A_TClaferR        @? ("Incorrect class type for 'c0_A':\ngot        '" ++ show c0_A_TClafer ++ "'\ninstead of '" ++ show c0_A_TClaferR ++ "'")
+        c0_A_TMap == Nothing                 @? ("Incorrect map type for 'c0_A':\ngot        '" ++ show c0_A_TMap ++ "'\nbut it is \nt a reference.")
+        c0_as_TMap == c0_as_TMapR            @? ("Incorrect map type for 'c0_as':\ngot        '" ++ show c0_as_TMap ++ "'\ninstead of '" ++ show c0_as_TMapR ++ "'")
+        c0_B_TClafer == c0_B_TClaferR        @? ("Incorrect class type for 'c0_B':\ngot        '" ++ show c0_B_TClafer ++ "'\ninstead of '" ++ show c0_B_TClaferR ++ "'")
+        c1_as_TClafer == c1_as_TClaferR      @? ("Incorrect class type for 'c1_as':\ngot        '" ++ show c1_as_TClafer ++ "'\ninstead of '" ++ show c1_as_TClaferR ++ "'")
+        c1_as_TMap == c1_as_TMapR            @? ("Incorrect map type for 'c1_as':\ngot        '" ++ show c1_as_TMap ++ "'\ninstead of '" ++ show c1_as_TMapR ++ "'")
