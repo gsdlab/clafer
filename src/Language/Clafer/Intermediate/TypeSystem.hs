@@ -59,6 +59,7 @@ AliceAndBob2 -> Alice ++ Bob
 
 {- $setup
 TClafer
+>>> :m + Control.Monad.List
 >>> let tClaferPerson = TClafer [ "Person" ]
 >>> let tClaferDOB = TClafer [ "DOB" ]
 >>> let tClaferStudent = TClafer [ "Student", "Person" ]
@@ -224,6 +225,25 @@ t1              +++ t2              = {-trace ("TypeSystem.(+++): cannot union i
 -- (+++) :: IType -> IType -> IType
 -- t1 +++ t2 = fromJust $ fromUnionType $ unionType t1 ++ unionType t2
 
+{- | Intersection of two types.
+>>> runListT $ intersection undefined TString TString
+[Just TString]
+
+>>> runListT $ intersection undefined TInteger TString
+[Nothing]
+
+>>> runListT $ intersection undefined TInteger TReal
+[Just TReal]
+
+>>> runListT $ intersection undefined tDrefMapDOB TInteger
+[Just TInteger]
+
+Now it returns Just TReal because of the coersion but it's wrong becuase a TReal cannot be assigned to a TInteger map!
+>>> runListT $ intersection undefined tDrefMapDOB TReal
+[Nothing]
+
+-}
+
 intersection :: Monad m => UIDIClaferMap -> IType -> IType -> m (Maybe IType)
 intersection _              TBoolean        TBoolean      = return $ Just TBoolean
 intersection _              TString         TString       = return $ Just TString
@@ -244,10 +264,10 @@ intersection uidIClaferMap' t@(TClafer ut1) (TClafer ut2) = if ut1 == ut2
     return $ fromUnionType $ catMaybes [contains (head u1) u2 `mplus` contains (head u2) u1 | u1 <- h1, u2 <- h2 ]
   where
   contains i is = if i `elem` is then Just i else Nothing
-intersection uidIClaferMap' ot1@(TClafer _) (TMap _ ta2)    = intersection uidIClaferMap' ot1 ta2
-intersection uidIClaferMap' (TMap _ ta1)    ot2@(TClafer _) = intersection uidIClaferMap' ta1 ot2
-intersection uidIClaferMap' (TMap _ ta1)    (TMap _ ta2)    = composition uidIClaferMap' ta1 ta2
-intersection _              _               _               = do
+intersection uidIClaferMap' (TMap _ ta1) (TMap _ ta2) = composition uidIClaferMap' ta1 ta2
+intersection uidIClaferMap' (TMap _ ta1) ot2          = intersection uidIClaferMap' ta1 ot2
+intersection uidIClaferMap' ot1          (TMap _ ta2) = intersection uidIClaferMap' ot1 ta2
+intersection _              _            _            = do
   -- traceM $ "(DEBUG) TypeSystem.intersection: cannot intersect incompatible types: '"
   --      ++ show t1
   --      ++ "'' and '"
