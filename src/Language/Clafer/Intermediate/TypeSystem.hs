@@ -243,8 +243,12 @@ collapseUnion t           = t
 >>> runListT $ intersection undefined tDrefMapDOB TInteger
 [Just TInteger]
 
-Now it returns Just TReal because of the coersion but it's wrong becuase a TReal cannot be assigned to a TInteger map!
+Cannot assign a TReal to a map to TInteger
 >>> runListT $ intersection undefined tDrefMapDOB TReal
+[Nothing]
+
+Cannot assign a TReal to a map to TInteger
+>>> runListT $ intersection undefined TReal tDrefMapDOB
 [Nothing]
 
 -}
@@ -270,8 +274,14 @@ intersection uidIClaferMap' t@(TClafer ut1) (TClafer ut2) = if ut1 == ut2
   where
   contains i is = if i `elem` is then Just i else Nothing
 intersection uidIClaferMap' (TMap _ ta1) (TMap _ ta2) = composition uidIClaferMap' ta1 ta2
-intersection uidIClaferMap' (TMap _ ta1) ot2          = intersection uidIClaferMap' ta1 ot2
-intersection uidIClaferMap' ot1          (TMap _ ta2) = intersection uidIClaferMap' ot1 ta2
+intersection uidIClaferMap' (TMap _ ta1) ot2          = do
+  coercedType <- intersection uidIClaferMap' ta1 ot2
+  -- that means ot2 was coerced to ta1, so it's safe
+  return $ if (Just ta1) == coercedType then coercedType else Nothing
+intersection uidIClaferMap' ot1          (TMap _ ta2) = do
+  coercedType <- intersection uidIClaferMap' ot1 ta2
+  -- that means ot2 was coerced to ta1, so it's safe
+  return $ if (Just ta2) == coercedType then coercedType else Nothing
 intersection _              _            _            = do
   -- traceM $ "(DEBUG) TypeSystem.intersection: cannot intersect incompatible types: '"
   --      ++ show t1
