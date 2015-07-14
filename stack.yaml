@@ -1,4 +1,4 @@
-extra-deps: [ data-stringmap-1.0.1.1 ]
+extra-deps: [ data-stringmap-1.0.1.1, doctest-0.10.1 ]
 resolver: nightly-2015-07-06
 flags: {}
 packages:

@@ -380,6 +380,33 @@ coerce (TMap s1 t1) t2           = TMap s1 $ coerce t1 t2
 coerce t1           (TMap s2 t2) = TMap s2 $ coerce t1 t2
 coerce x y = error $ "TypeSystem.coerce: Cannot coerce not numeric: " ++ show x ++ " and " ++ show y
 
+
+{- | Return the type if it's possible to coerce the right type
+
+coerceRight TString TInteger
+Nothing
+
+>>> coerceRight TInteger TInteger
+Just TInteger
+
+>>> coerceRight TDouble TInteger
+Just TDouble
+
+>>> coerceRight TReal TDouble
+Just TReal
+
+>>> coerceRight TInteger TDouble
+Nothing
+
+>>> coerceRight TDouble TReal
+Nothing
+-}
+coerceRight :: IType -> IType -> Maybe IType
+coerceRight    lt       rt     = let
+    coercedRType = coerce lt rt
+  in
+    if lt == coercedRType then Just lt else Nothing
+
 {- Note about intersections and unions
 
 Refinement Intersections
