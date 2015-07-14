@@ -49,17 +49,18 @@ Alice : Student
     [ this.StudentID.ref = "123Alice" ]
 
 Bob : Employee
-    [ EmplID.ref = 345 ]
+    [ this.EmplID.ref = 345 ]
 
 AliceAndBob -> Person
-[ AliceAndBob.ref =  Alice, Bob ]
+[ root.AliceAndBob.ref = Alice, Bob ]
 
 AliceAndBob2 -> Alice ++ Bob
 -}
 
 {- $setup
-TClafer
 >>> :m + Control.Monad.List
+
+TClafer
 >>> let tClaferPerson = TClafer [ "Person" ]
 >>> let tClaferDOB = TClafer [ "DOB" ]
 >>> let tClaferStudent = TClafer [ "Student", "Person" ]
@@ -112,7 +113,7 @@ getTClafer    iClafer' = case _uid iClafer' of
   "clafer" -> claferTClafer
   _        -> case _super iClafer' of
     Nothing     -> TClafer [ _uid iClafer']
-    Just super' -> (fromJust $ _iType super') & hier %~ ((:) (_uid iClafer'))
+    Just super' -> (fromJust $ _iType super') & hi %~ ((:) (_uid iClafer'))
 
 -- | Get TClafer for a given Clafer by its UID
 -- can only be called after inheritance resolver
@@ -189,11 +190,15 @@ fromUnionType u =
 >>> TString +++ TString
 TString
 
+Unions with only one type should be collapsed.
+>>> TUnion [TString] +++ TString
+TString
+
 >>> TString +++ TInteger
 TUnion {_un = [TString,TInteger]}
 
->>> TUnion [TString] +++ TString
-TUnion {_un = [TString]}
+>>> TString +++ TUnion [TInteger]
+TUnion {_un = [TString,TInteger]}
 
 >>> TUnion [TString] +++ TInteger
 TUnion {_un = [TInteger,TString]}
@@ -202,7 +207,7 @@ TUnion {_un = [TInteger,TString]}
 TUnion {_un = [TString,TInteger]}
 
 >>> tClaferAlice +++ tClaferBob
-TUnion {_un = [TClafer {_hier = ["Alice","Student","Person"]},TClafer {_hier = ["Bob","Employee","Person"]}]}
+TUnion {_un = [TClafer {_hi = ["Alice","Student","Person"]},TClafer {_hi = ["Bob","Employee","Person"]}]}
 -}
 
 (+++) :: IType -> IType -> IType
@@ -212,15 +217,15 @@ TDouble         +++ TDouble         = TDouble
 TInteger        +++ TInteger        = TInteger
 c1@(TClafer u1) +++ c2@(TClafer u2) = (TClafer $ nub $ u1 ++ u2)  -- should be if c1 == c2 then c1 else TUnion [c1,c2]
 (TMap so1 ta1)  +++ (TMap so2 ta2)  = (TMap (so1 +++ so2) (ta1 +++ ta2))
-(TUnion un1)    +++ (TUnion un2)    = (TUnion $ nub $ un1 ++ un2)
-(TUnion un1)    +++ t2              = (TUnion $ nub $ t2:un1)
-t1              +++ (TUnion un2)    = (TUnion $ nub $ t1:un2)
-t1              +++ t2              = {-trace ("TypeSystem.(+++): cannot union incompatible types: '"
-                                ++ show t1
-                                ++ "'' and '"
-                                ++ show t2
-                                ++ "'") -}
-                              TUnion [t1, t2]
+(TUnion un1)    +++ (TUnion un2)    = collapseUnion (TUnion $ nub $ un1 ++ un2)
+(TUnion un1)    +++ t2              = collapseUnion (TUnion $ nub $ t2:un1)
+t1              +++ (TUnion un2)    = collapseUnion (TUnion $ nub $ t1:un2)
+t1              +++ t2              = TUnion [t1, t2]
+
+collapseUnion :: IType -> IType
+collapseUnion (TUnion [t]) = t
+collapseUnion t           = t
+
 -- original version
 -- (+++) :: IType -> IType -> IType
 -- t1 +++ t2 = fromJust $ fromUnionType $ unionType t1 ++ unionType t2

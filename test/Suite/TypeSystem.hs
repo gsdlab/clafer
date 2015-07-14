@@ -64,13 +64,13 @@ case_TypeSystemTest = case compileOneFragment defaultClaferArgs{keep_unused=True
         c0_A_TClaferR = Just $ TClafer [ "c0_A" ]
         c0_A_TMap = getDrefTMapByUID um' "c0_A"
         c0_as_TMap = getDrefTMapByUID um' "c0_as"
-        c0_as_TMapR = Just (TMap {_so = TClafer {_hier = ["c0_as"]}, _ta = TClafer {_hier = ["c0_A"]}})
+        c0_as_TMapR = Just (TMap {_so = TClafer {_hi = ["c0_as"]}, _ta = TClafer {_hi = ["c0_A"]}})
         c0_B_TClafer = getTClaferByUID um' "c0_B"
         c0_B_TClaferR = Just $ TClafer [ "c0_B", "c0_A" ]
         c1_as_TClafer = getTClaferByUID um' "c1_as"
         c1_as_TClaferR = Just $ TClafer [ "c1_as", "c0_as" ]
         c1_as_TMap = getDrefTMapByUID um' "c1_as"
-        c1_as_TMapR = Just (TMap {_so = TClafer {_hier = ["c1_as","c0_as"]}, _ta = TClafer {_hier = [ "c0_B", "c0_A" ]}})
+        c1_as_TMapR = Just (TMap {_so = TClafer {_hi = ["c1_as","c0_as"]}, _ta = TClafer {_hi = [ "c0_B", "c0_A" ]}})
       in do
         (isJust $ findIClafer um' "c0_A")    @? ("Clafer c0_A not found" ++ show um')
         root_TClafer == Just rootTClafer     @? ("Incorrect class type for 'root':\ngot        '" ++ show root_TClafer ++ "'\ninstead of '" ++ show rootTClafer ++ "'")

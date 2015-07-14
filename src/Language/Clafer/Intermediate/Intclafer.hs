@@ -61,7 +61,7 @@ data IType
   | TDouble
   | TReal
   | TClafer
-    { _hier :: [UID]          -- ^ [UID] represents an inheritance hierarchy obtained using @Common.findHierarchy
+    { _hi :: [UID]          -- ^ [UID] represents an inheritance hierarchy obtained using @Common.findHierarchy
     }
   | TMap                      --  Represents a map from the src class to the target class
     { _so :: IType            -- ^ must only be a TClass
