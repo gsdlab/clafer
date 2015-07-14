@@ -201,30 +201,40 @@ TUnion {_un = [TString,TInteger]}
 TUnion {_un = [TString,TInteger]}
 
 >>> TUnion [TString] +++ TInteger
-TUnion {_un = [TInteger,TString]}
+TUnion {_un = [TString,TInteger]}
 
 >>> TUnion [TString] +++ TUnion[TInteger]
 TUnion {_un = [TString,TInteger]}
 
->>> tClaferAlice +++ tClaferBob
-TUnion {_un = [TClafer {_hi = ["Alice","Student","Person"]},TClafer {_hi = ["Bob","Employee","Person"]}]}
--}
+>>> TUnion [TString] +++ TUnion[TInteger] +++ TInteger +++ TString
+TUnion {_un = [TString,TInteger]}
 
+Should return TUnion {_un = [TClafer {_hi = ["Alice","Student","Person"]},TClafer {_hi = ["Bob","Employee","Person"]}]}
+>>> tClaferAlice +++ tClaferBob
+TClafer {_hi = ["Alice","Student","Person","Bob","Employee"]}
+
+>>> tClaferAlice +++ tClaferAlice
+TClafer {_hi = ["Alice","Student","Person"]}
+-}
 (+++) :: IType -> IType -> IType
 TString         +++ TString         = TString
 TReal           +++ TReal           = TReal
 TDouble         +++ TDouble         = TDouble
 TInteger        +++ TInteger        = TInteger
-c1@(TClafer u1) +++ c2@(TClafer u2) = (TClafer $ nub $ u1 ++ u2)  -- should be if c1 == c2 then c1 else TUnion [c1,c2]
+t1@(TClafer u1) +++ t2@(TClafer u2) = if t1 == t2
+                                      then t1
+                                      else (TClafer $ nub $ u1 ++ u2)  -- should be TUnion [t1,t2]
 (TMap so1 ta1)  +++ (TMap so2 ta2)  = (TMap (so1 +++ so2) (ta1 +++ ta2))
 (TUnion un1)    +++ (TUnion un2)    = collapseUnion (TUnion $ nub $ un1 ++ un2)
-(TUnion un1)    +++ t2              = collapseUnion (TUnion $ nub $ t2:un1)
+(TUnion un1)    +++ t2              = collapseUnion (TUnion $ nub $ un1 ++ [t2])
 t1              +++ (TUnion un2)    = collapseUnion (TUnion $ nub $ t1:un2)
-t1              +++ t2              = TUnion [t1, t2]
+t1              +++ t2              = if t1 == t2
+                                      then t1
+                                      else TUnion [t1, t2]
 
-collapseUnion :: IType -> IType
+collapseUnion :: IType    -> IType
 collapseUnion (TUnion [t]) = t
-collapseUnion t           = t
+collapseUnion t            = t
 
 -- original version
 -- (+++) :: IType -> IType -> IType
@@ -273,7 +283,7 @@ intersection uidIClaferMap' t@(TClafer ut1) (TClafer ut2) = if ut1 == ut2
     return $ fromUnionType $ catMaybes [contains (head u1) u2 `mplus` contains (head u2) u1 | u1 <- h1, u2 <- h2 ]
   where
   contains i is = if i `elem` is then Just i else Nothing
-intersection uidIClaferMap' (TMap _ ta1) (TMap _ ta2) = composition uidIClaferMap' ta1 ta2
+intersection uidIClaferMap' (TMap _ ta1) (TMap _ ta2) = intersection uidIClaferMap' ta1 ta2
 intersection uidIClaferMap' (TMap _ ta1) ot2          = do
   coercedType <- intersection uidIClaferMap' ta1 ot2
   -- that means ot2 was coerced to ta1, so it's safe
@@ -301,7 +311,33 @@ intersection _              _            _            = do
 
 
 
--- | Compute the type of sequential composition of two types
+{- | Compute the type of sequential composition of two types
+>>> runListT $ composition undefined TString TString
+[Nothing]
+
+>>> runListT $ composition undefined TInteger TString
+[Nothing]
+
+>>> runListT $ composition undefined TInteger TReal
+[Nothing]
+
+>>> runListT $ composition undefined tDrefMapDOB TInteger
+[Just (TMap {_so = TClafer {_hi = ["DOB"]}, _ta = TInteger})]
+
+Cannot assign a TReal to a map to TInteger, should return [Nothing]
+>>> runListT $ composition undefined tDrefMapDOB TReal
+[Just (TMap {_so = TClafer {_hi = ["DOB"]}, _ta = TReal})]
+
+
+Cannot assign a TInteger to a map to TInteger
+>>> runListT $ composition undefined TInteger tDrefMapDOB
+[Nothing]
+
+Cannot assign a TReal to a map to TInteger
+>>> runListT $ composition undefined TReal tDrefMapDOB
+[Nothing]
+
+-}
 composition :: Monad m => UIDIClaferMap -> IType -> IType -> m (Maybe IType)
 composition uidIClaferMap' (TMap so1 ta1) (TMap so2 ta2) = do
     -- check whether we can compose?
