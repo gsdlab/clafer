@@ -1,5 +1,6 @@
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE NamedFieldPuns     #-}
+{-# LANGUAGE TemplateHaskell    #-}
 {-
  Copyright (C) 2012-2015 Kacper Bak, Jimmy Liang, Michal Antkiewicz <http://gsd.uwaterloo.ca>
 
@@ -100,6 +101,7 @@ import           Control.Lens.Plated
 import           Control.Monad
 import           Control.Monad.State
 import           Data.Aeson
+import           Data.Aeson.TH
 import           Data.Data.Lens
 import           Data.Either
 import           Data.List
@@ -133,6 +135,7 @@ import           Language.Clafer.Intermediate.Intclafer
 import           Language.Clafer.Intermediate.Resolver
 import           Language.Clafer.Intermediate.ScopeAnalysis
 import           Language.Clafer.Intermediate.StringAnalyzer
+import           Language.Clafer.Intermediate.Tracing
 import           Language.Clafer.Intermediate.Transformer
 import           Language.Clafer.JSONMetaData
 import           Language.Clafer.Optimizer.Optimizer
@@ -556,7 +559,15 @@ generate =
           then [ (JSON,
                   CompilerResult {
                    extension = "json",
-                   outputCode = convertString $ encode $ toJSON iModule,
+                   outputCode = concat
+                     [ "{"
+                     , (case gatherObjectivesAndAttributes iModule $ astModuleTrace env of
+                        Nothing         -> ""
+                        Just objectives -> "\"objectives\":" ++ (convertString $ encode $ toJSON objectives) ++ ",")
+                     , "\"iModule\":"
+                     , convertString $ encode $ toJSON iModule
+                     , "}"
+                     ],
                    statistics = stats,
                    claferEnv  = env,
                    mappingToAlloy = [],
@@ -691,3 +702,33 @@ showStats au (Stats na nr nc nconst ngoals sgl) =
 showInterval :: (Integer, Integer) -> String
 showInterval (n, -1) = show n ++ "..*"
 showInterval (n, m) = show n ++ ".." ++ show m
+
+gatherObjectivesAndAttributes :: IModule -> Map.Map Span [Ast] -> Maybe ObjectivesAndAttributes
+gatherObjectivesAndAttributes    iModule    astModuleTrace'      = let
+    objectives = (foldl' gatherObjectives [] $ _mDecls iModule)
+  in if null objectives
+     then Nothing
+     else Just $ ObjectivesAndAttributes objectives (map _uid $ filter isIntClafer iClafers)
+  where
+    gatherObjectives :: [String] -> IElement         -> [String]
+    gatherObjectives    objs        (IEGoal _ cpexp') = printCPexp (Map.lookup (_inPos cpexp') astModuleTrace'):objs
+    gatherObjectives    objs        _                 = objs
+
+    printCPexp :: Maybe [Ast] -> String
+    printCPexp (Just [e]) = printAstNode e
+    printCPexp _          = "[BUG]: expression not found!"
+
+    iClafers :: [ IClafer ]
+    iClafers = universeOn biplate iModule
+
+    isIntClafer (IClafer{_reference=(Just IReference{_ref=pexp'})}) = (getSuperId pexp') == "integer"
+    isIntClafer _                                                   = False
+
+-- | Datatype used for JSON output. See Language.Clafer.gatherObjectivesAndAttributes
+data ObjectivesAndAttributes
+  = ObjectivesAndAttributes
+    { _qualities :: [String]
+    , _attributes :: [String]
+    }
+
+$(deriveToJSON defaultOptions{fieldLabelModifier = tail} ''ObjectivesAndAttributes)

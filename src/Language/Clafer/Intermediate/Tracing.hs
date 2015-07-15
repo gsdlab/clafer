@@ -19,11 +19,12 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
 -}
-module Language.Clafer.Intermediate.Tracing (traceIrModule, traceAstModule, Ast(..)) where
+module Language.Clafer.Intermediate.Tracing (traceIrModule, traceAstModule, Ast(..), printAstNode) where
 
 import Data.Map (Map)
 import qualified Data.Map as Map
 import Language.Clafer.Front.AbsClafer
+import Language.Clafer.Front.PrintClafer (printTree)
 import Language.Clafer.Intermediate.Intclafer
 
 traceIrModule :: IModule -> Map Span [Ir] --Map Span [Union (IRClafer IClafer) (IRPExp PExp)]
@@ -199,6 +200,9 @@ traverseExp x =
     ESub _ e1 e2 -> traverseExp e1 ++ traverseExp e2
     EMul _ e1 e2 -> traverseExp e1 ++ traverseExp e2
     EDiv _ e1 e2 -> traverseExp e1 ++ traverseExp e2
+    ERem _ e1 e2 -> traverseExp e1 ++ traverseExp e2
+    ESum _ e -> traverseExp e
+    EProd _ e -> traverseExp e
     ECard _ e -> traverseExp e
     EMinExp _ e -> traverseExp e
     EImpliesElse _ e1 e2 e3 -> traverseExp e1 ++ traverseExp e2 ++ traverseExp e3
@@ -213,8 +217,6 @@ traverseExp x =
     ERange _ s1 s2 -> traverseExp s1 ++ traverseExp s2
     EJoin _ s1 s2 -> traverseExp s1 ++ traverseExp s2
     ClaferId _ n -> traverseName n
-    _ -> error "Invalid argument given to function traverseExp from Tracing"
-
 
 traverseDecl :: Decl -> [Ast]
 traverseDecl x@(Decl _ l s) =
@@ -259,3 +261,29 @@ data Ast =
   AstModId ModId |
   AstLocId LocId
   deriving (Eq, Show)
+
+printAstNode :: Ast -> String
+printAstNode (AstModule x) = printTree x
+printAstNode (AstDeclaration x) = printTree x
+printAstNode (AstClafer x) = printTree x
+printAstNode (AstConstraint x) = printTree x
+printAstNode (AstSoftConstraint x) = printTree x
+printAstNode (AstGoal x) = printTree x
+printAstNode (AstAbstract x) = printTree x
+printAstNode (AstElements x) = printTree x
+printAstNode (AstElement x) = printTree x
+printAstNode (AstSuper x) = printTree x
+printAstNode (AstReference x) = printTree x
+printAstNode (AstInit x) = printTree x
+printAstNode (AstInitHow x) = printTree x
+printAstNode (AstGCard x) = printTree x
+printAstNode (AstCard x) = printTree x
+printAstNode (AstNCard x) = printTree x
+printAstNode (AstExInteger x) = printTree x
+printAstNode (AstName x) = printTree x
+printAstNode (AstExp x) = printTree x
+printAstNode (AstDecl x) = printTree x
+printAstNode (AstQuant x) = printTree x
+printAstNode (AstEnumId x) = printTree x
+printAstNode (AstModId x) = printTree x
+printAstNode (AstLocId x) = printTree x
