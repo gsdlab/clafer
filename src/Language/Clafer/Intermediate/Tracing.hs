@@ -208,6 +208,7 @@ traverseExp x =
     EImpliesElse _ e1 e2 e3 -> traverseExp e1 ++ traverseExp e2 ++ traverseExp e3
     EInt _ _ -> []
     EDouble _ _ -> []
+    EReal _ _ -> []
     EStr _ _ -> []
     EUnion _ s1 s2 -> traverseExp s1 ++ traverseExp s2
     EUnionCom _ s1 s2 -> traverseExp s1 ++ traverseExp s2
@@ -267,7 +268,7 @@ printAstNode (AstModule x) = printTree x
 printAstNode (AstDeclaration x) = printTree x
 printAstNode (AstClafer x) = printTree x
 printAstNode (AstConstraint x) = printTree x
-printAstNode (AstSoftConstraint x) = printTree x
+printAstNode (AstAssertion x) = printTree x
 printAstNode (AstGoal x) = printTree x
 printAstNode (AstAbstract x) = printTree x
 printAstNode (AstElements x) = printTree x
