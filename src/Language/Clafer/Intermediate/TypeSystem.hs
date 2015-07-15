@@ -328,13 +328,18 @@ Cannot assign a TReal to a map to TInteger, should return [Nothing]
 >>> runListT $ composition undefined tDrefMapDOB TReal
 [Just (TMap {_so = TClafer {_hi = ["DOB"]}, _ta = TReal})]
 
-
 Cannot assign a TInteger to a map to TInteger
 >>> runListT $ composition undefined TInteger tDrefMapDOB
 [Nothing]
 
 Cannot assign a TReal to a map to TInteger
 >>> runListT $ composition undefined TReal tDrefMapDOB
+[Nothing]
+
+>>> runListT $ composition undefined tDrefMapDOB (TMap TReal TString)
+[Just (TMap {_so = TClafer {_hi = ["DOB"]}, _ta = TString})]
+
+>>> runListT $ composition undefined (TMap TString TReal) (TMap TInteger TString)
 [Nothing]
 
 -}
