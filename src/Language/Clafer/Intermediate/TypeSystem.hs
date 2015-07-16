@@ -339,9 +339,9 @@ Cannot assign a TReal to a map to TInteger
 >>> runListT $ composition undefined tDrefMapDOB (TMap TReal TString)
 [Just (TMap {_so = TClafer {_hi = ["DOB"]}, _ta = TString})]
 
+The following should return [Nothing]
 >>> runListT $ composition undefined (TMap TString TReal) (TMap TInteger TString)
-[Nothing]
-
+[Just (TMap {_so = TString, _ta = TString})]
 -}
 composition :: Monad m => UIDIClaferMap -> IType -> IType -> m (Maybe IType)
 composition uidIClaferMap' (TMap so1 ta1) (TMap so2 ta2) = do
@@ -362,9 +362,23 @@ composition _              _            _            = do
   --      ++ "'"
   return Nothing
 
+addHierarchy :: UIDIClaferMap -> IType           -> IType
+addHierarchy    uidIClaferMap'   (TClafer [uid']) = TClafer $ mapHierarchy _uid getSuper uidIClaferMap' $ fromJust $ findIClafer uidIClaferMap' uid'
+addHierarchy    uidIClaferMap'   (TMap so' ta')   = TMap (addHierarchy uidIClaferMap' so') (addHierarchy uidIClaferMap' ta')
+addHierarchy    uidIClaferMap'   (TUnion un')     = TUnion $ map (addHierarchy uidIClaferMap') un'
+addHierarchy    _                x                = x
 
 closure :: Monad m => UIDIClaferMap -> [String] -> m [String]
 closure uidIClaferMap' ut = concat `liftM` mapM (hierarchyMap uidIClaferMap' _uid) ut
+
+getRefTypes :: UIDIClaferMap -> IType        -> [IType]
+getRefTypes uidIClaferMap'      (TClafer hi') = map _ta $ catMaybes $ map (getDrefTMapByUID uidIClaferMap') hi'
+
+getRefTypes uidIClaferMap'      (TMap _ ta')  = getRefTypes uidIClaferMap' ta'
+
+--getRefTypes uidIClaferMap'      (TUnion un')  = TUnion $ catMaybes $ map (getRefTypes uidIClaferMap') un'
+-- primitive types have no references
+getRefTypes _                   _             = []
 
 
 {- Coersions -}

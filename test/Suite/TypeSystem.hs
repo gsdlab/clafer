@@ -46,6 +46,9 @@ model = unlines
     , "    abstract as -> A *" -- c0_as
     , "abstract B : A"         -- c0_B
     , "    as : as -> B *"     -- c1_as
+    , "b : B"                  -- c0_b
+    , "    [ as = b ]"
+    , "    [ as.ref = b ]"
     ]
 
 case_TypeSystemTest :: Assertion
@@ -71,6 +74,8 @@ case_TypeSystemTest = case compileOneFragment defaultClaferArgs{keep_unused=True
         c1_as_TClaferR = Just $ TClafer [ "c1_as", "c0_as" ]
         c1_as_TMap = getDrefTMapByUID um' "c1_as"
         c1_as_TMapR = Just (TMap {_so = TClafer {_hi = ["c1_as","c0_as"]}, _ta = TClafer {_hi = [ "c0_B", "c0_A" ]}})
+        c0_b_TClafer = getTClaferByUID um' "c0_b"
+        c0_b_TClaferR = Just $ TClafer [ "c0_b", "c0_B", "c0_A" ]
       in do
         (isJust $ findIClafer um' "c0_A")    @? ("Clafer c0_A not found" ++ show um')
         root_TClafer == Just rootTClafer     @? ("Incorrect class type for 'root':\ngot        '" ++ show root_TClafer ++ "'\ninstead of '" ++ show rootTClafer ++ "'")
@@ -81,3 +86,4 @@ case_TypeSystemTest = case compileOneFragment defaultClaferArgs{keep_unused=True
         c0_B_TClafer == c0_B_TClaferR        @? ("Incorrect class type for 'c0_B':\ngot        '" ++ show c0_B_TClafer ++ "'\ninstead of '" ++ show c0_B_TClaferR ++ "'")
         c1_as_TClafer == c1_as_TClaferR      @? ("Incorrect class type for 'c1_as':\ngot        '" ++ show c1_as_TClafer ++ "'\ninstead of '" ++ show c1_as_TClaferR ++ "'")
         c1_as_TMap == c1_as_TMapR            @? ("Incorrect map type for 'c1_as':\ngot        '" ++ show c1_as_TMap ++ "'\ninstead of '" ++ show c1_as_TMapR ++ "'")
+        c0_b_TClafer == c0_b_TClaferR        @? ("Incorrect class type for 'c0_b':\ngot        '" ++ show c0_b_TClafer ++ "'\ninstead of '" ++ show c0_b_TClaferR ++ "'")

@@ -31,6 +31,7 @@ import Language.Clafer.Front.PrintClafer
 
 import Control.Applicative
 import Control.Exception (assert)
+import Control.Lens ((&), (%~), traversed)
 import Control.Monad.Except
 import Control.Monad.List
 import Control.Monad.Reader
@@ -161,7 +162,8 @@ getIfThenElseType uidIClaferMap' t1 t2 = do
   let ut = catMaybes [commonHierarchy u1 u2 | u1 <- h1, u2 <- h2]
   return $ fromUnionType ut
   where
-  commonHierarchy h1 h2 = filterClafer $ commonHierarchy' (reverse h1) (reverse h2) Nothing
+  commonHierarchy :: [UID] -> [UID] -> Maybe UID
+  commonHierarchy h1 h2 = commonHierarchy' (reverse h1) (reverse h2) Nothing
   commonHierarchy' (x:xs) (y:ys) accumulator =
     if (x == y)
       then
@@ -170,8 +172,6 @@ getIfThenElseType uidIClaferMap' t1 t2 = do
           else commonHierarchy' xs ys $ Just x
       else accumulator
   commonHierarchy' _ _ _ = error "ResolverType.commonHierarchy' expects two non empty lists but was given at least one empty list!" -- Should never happen
-  filterClafer value =
-    if (value == Just "clafer") then Nothing else value
 
 resolveTModule :: (IModule, GEnv) -> Either ClaferSErr IModule
 resolveTModule (imodule, _) =
@@ -181,17 +181,19 @@ resolveTModule (imodule, _) =
   where
   analysis decls1 = mapM (resolveTElement rootIdent) decls1
 
-resolveTElement :: String -> IElement -> TypeAnalysis IElement
-resolveTElement _ (IEClafer iclafer) =
+resolveTElement :: String -> IElement          -> TypeAnalysis IElement
+resolveTElement    _         (IEClafer iclafer) =
   do
+    uidIClaferMap' <- asks iUIDIClaferMap
     reference' <- case _reference iclafer of
       Nothing -> return Nothing
       Just originalReference -> do
         refs' <- resolveTPExp $ _ref originalReference
         case refs' of
-          [ref'] -> return $ Just $ originalReference{_ref=ref'}
-          _      -> return Nothing
-    elements' <- mapM (resolveTElement $ _uid iclafer) (_elements iclafer)
+          []     -> return Nothing
+          [ref'] -> return $ Just $ originalReference{_ref=(ref' & iType.traversed %~ (addHierarchy uidIClaferMap'))}
+          (ref':_) -> return $ Just $ originalReference{_ref=(ref' & iType.traversed %~ (addHierarchy uidIClaferMap'))}
+    elements' <- mapM (resolveTElement (_uid iclafer)) (_elements iclafer)
     return $ IEClafer iclafer{_elements = elements', _reference=reference'}
 resolveTElement parent' (IEConstraint _isHard _pexp) =
   IEConstraint _isHard <$> (testBoolean =<< resolveTConstraint parent' _pexp)
