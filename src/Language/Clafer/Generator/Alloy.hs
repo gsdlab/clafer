@@ -211,7 +211,7 @@ genAlloyRel :: String -> String -> String -> String
 genAlloyRel name card' rType = concat [name, " : ", card', " ", rType]
 
 refType :: GenEnv -> IClafer -> Concat
-refType    genEnv c = fromMaybe (CString "") $ fmap ((genType genEnv).getTarget) $ _ref <$> _reference c
+refType    genEnv c = fromMaybe (CString "") $ (((genType genEnv).getTarget) <$> (_ref <$> _reference c))
 
 
 getTarget :: PExp -> PExp
@@ -428,15 +428,19 @@ genPExp'    genEnv    resPath     (PExp iType' pid' pos exp') = case exp' of
     where
     optBar [] = ""
     optBar _  = " | "
+  IClaferId _ "integer" _ _ -> CString "Int"
+  IClaferId _ "int" _ _ -> CString "Int"
+  IClaferId _ "string" _ _ -> CString "Int"
   IClaferId _ "ref" _ _ -> CString "@ref"
   IClaferId _ sid istop _ -> CString $
-      if head sid == '~' then sid else
-      if isNothing iType' then sid' else case fromJust $ iType' of
-    TInteger -> vsident
-    TDouble -> vsident
-    TReal -> vsident
-    TString -> vsident
-    _ -> sid'
+      if head sid == '~'
+        then sid
+        else case iType' of
+          Just TInteger -> vsident
+          Just TDouble -> vsident
+          Just TReal -> vsident
+          Just TString -> vsident
+          _ -> sid'
     where
     sid' = (if istop then "" else '@' : genRelName "") ++ sid
     -- 29/March/2012  Rafael Olaechea: ref is now prepended with clafer name to be able to refer to it from partial instances.
