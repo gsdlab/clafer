@@ -212,10 +212,6 @@ Exp11 : 'sum' Exp12 { ESum ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
       | Exp12 {  $1 }
 Exp12 :: { Exp }
 Exp12 : 'if' Exp12 'then' Exp12 'else' Exp13 { EImpliesElse ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkTokenSpan $3) >- (mkCatSpan $4) >- (mkTokenSpan $5) >- (mkCatSpan $6)) $2 $4 $6 }
-      | PosInteger { EInt ((mkCatSpan $1)) $1 }
-      | PosDouble { EDouble ((mkCatSpan $1)) $1 }
-      | PosReal { EReal ((mkCatSpan $1)) $1 }
-      | PosString { EStr ((mkCatSpan $1)) $1 }
       | Exp13 {  $1 }
 Exp13 :: { Exp }
 Exp13 : Exp13 '++' Exp14 { EUnion ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
@@ -237,7 +233,12 @@ Exp18 :: { Exp }
 Exp18 : Exp18 '.' Exp19 { EJoin ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
       | Exp19 {  $1 }
 Exp19 :: { Exp }
-Exp19 : Name { ClaferId ((mkCatSpan $1)) $1 } | '(' Exp ')' {  $2 }
+Exp19 : Name { ClaferId ((mkCatSpan $1)) $1 }
+      | PosInteger { EInt ((mkCatSpan $1)) $1 }
+      | PosDouble { EDouble ((mkCatSpan $1)) $1 }
+      | PosReal { EReal ((mkCatSpan $1)) $1 }
+      | PosString { EStr ((mkCatSpan $1)) $1 }
+      | '(' Exp ')' {  $2 }
 Decl :: { Decl }
 Decl : ListLocId ':' Exp13 { Decl ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
 Quant :: { Quant }

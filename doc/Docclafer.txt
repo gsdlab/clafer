@@ -151,10 +151,6 @@ All other symbols are terminals.
   |  |  **|**  | ``-`` //Exp12// 
   |  |  **|**  | //Exp12// 
   | //Exp12// | -> | ``if`` //Exp12// ``then`` //Exp12// ``else`` //Exp13// 
-  |  |  **|**  | //PosInteger// 
-  |  |  **|**  | //PosDouble// 
-  |  |  **|**  | //PosReal// 
-  |  |  **|**  | //PosString// 
   |  |  **|**  | //Exp13// 
   | //Exp13// | -> | //Exp13// ``++`` //Exp14// 
   |  |  **|**  | //Exp13// ``,`` //Exp14// 
@@ -170,6 +166,10 @@ All other symbols are terminals.
   | //Exp18// | -> | //Exp18// ``.`` //Exp19// 
   |  |  **|**  | //Exp19// 
   | //Exp19// | -> | //Name// 
+  |  |  **|**  | //PosInteger// 
+  |  |  **|**  | //PosDouble// 
+  |  |  **|**  | //PosReal// 
+  |  |  **|**  | //PosString// 
   |  |  **|**  | ``(`` //Exp// ``)`` 
   | //Decl// | -> | //[LocId]// ``:`` //Exp13// 
   | //Quant// | -> | ``no`` 

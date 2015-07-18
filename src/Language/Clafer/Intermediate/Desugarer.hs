@@ -148,8 +148,7 @@ sugarModId modid = ModIdIdent noSpan $ mkIdent modid
 
 sugarSuper :: Maybe PExp -> Super
 sugarSuper Nothing = SuperEmpty noSpan
-sugarSuper (Just pexp'@(PExp _ _ _ (IClaferId _ _ _ _))) = SuperSome noSpan (sugarExp pexp')
-sugarSuper (Just pexp') = error $ "Function sugarSuper from Desugarer expects a PExp (IClaferId) but instead was given: " ++ show pexp' -- Should never happen
+sugarSuper (Just pexp') = SuperSome noSpan (sugarExp pexp')
 
 sugarReference :: Maybe IReference -> Reference
 sugarReference Nothing = ReferenceEmpty noSpan

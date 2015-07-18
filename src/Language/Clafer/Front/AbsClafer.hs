@@ -235,10 +235,6 @@ data Exp
     | ECard Span Exp
     | EMinExp Span Exp
     | EImpliesElse Span Exp Exp Exp
-    | EInt Span PosInteger
-    | EDouble Span PosDouble
-    | EReal Span PosReal
-    | EStr Span PosString
     | EUnion Span Exp Exp
     | EUnionCom Span Exp Exp
     | EDifference Span Exp Exp
@@ -247,6 +243,10 @@ data Exp
     | ERange Span Exp Exp
     | EJoin Span Exp Exp
     | ClaferId Span Name
+    | EInt Span PosInteger
+    | EDouble Span PosDouble
+    | EReal Span PosReal
+    | EStr Span PosString
   deriving (Eq, Ord, Show, Read, Data, Typeable, Generic)
 
 instance Spannable Exp where
@@ -281,10 +281,6 @@ instance Spannable Exp where
     getSpan (ECard s _ ) = s
     getSpan (EMinExp s _ ) = s
     getSpan (EImpliesElse s _ _ _ ) = s
-    getSpan (EInt s _ ) = s
-    getSpan (EDouble s _ ) = s
-    getSpan (EReal s _ ) = s
-    getSpan (EStr s _ ) = s
     getSpan (EUnion s _ _ ) = s
     getSpan (EUnionCom s _ _ ) = s
     getSpan (EDifference s _ _ ) = s
@@ -293,6 +289,10 @@ instance Spannable Exp where
     getSpan (ERange s _ _ ) = s
     getSpan (EJoin s _ _ ) = s
     getSpan (ClaferId s _ ) = s
+    getSpan (EInt s _ ) = s
+    getSpan (EDouble s _ ) = s
+    getSpan (EReal s _ ) = s
+    getSpan (EStr s _ ) = s
 data Decl = Decl Span [LocId] Exp
   deriving (Eq, Ord, Show, Read, Data, Typeable, Generic)
 

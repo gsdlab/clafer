@@ -393,12 +393,6 @@ getDivId s irMap = if Map.lookup s irMap == Nothing
                       else let IRClafer iClaf = head $ fromJust $ Map.lookup s irMap in
                         _uid iClaf
 
-{-getSuperId :: Span -> Map.Map Span [Ir] -> String
-getSuperId s irMap = if Map.lookup s irMap == Nothing
-                        then "Uid not Found"
-                        else let IRPExp pexp = head $ fromJust $ Map.lookup s irMap in
-                          sident $ exp pexp-}
-
 getUseId :: Span -> Map.Map Span [Ir] -> String
 getUseId s irMap = if Map.lookup s irMap == Nothing
                       then "Uid not Found"
