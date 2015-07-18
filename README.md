@@ -288,13 +288,20 @@ We tag `master` with version numbers after each release merge.
 
 We have both automated tests and regression tests.
 
-To run the automated tests, execute
+To run the automated tests (including both unit tests and [doctests](https://github.com/sol/doctest#readme)), execute
 
 ```
 cabal test
 ```
 
-To run the automated tests and the regression tests, execute
+
+To only run unit tests, execute `cabal test test-suite`.
+
+To only run doctests, execute `cabal test doctests`.
+
+For instructions for adding new modules to the doctest suite, see [cabal integration](https://github.com/sol/doctest#cabal-integration).
+
+To run all the automated tests and the regression tests, execute
 
 ```
 make test
