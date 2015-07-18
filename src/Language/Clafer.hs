@@ -1,6 +1,5 @@
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE NamedFieldPuns     #-}
-{-# LANGUAGE TemplateHaskell    #-}
 {-
  Copyright (C) 2012-2015 Kacper Bak, Jimmy Liang, Michal Antkiewicz <http://gsd.uwaterloo.ca>
 
@@ -101,7 +100,6 @@ import           Control.Lens.Plated
 import           Control.Monad
 import           Control.Monad.State
 import           Data.Aeson
-import           Data.Aeson.TH
 import           Data.Data.Lens
 import           Data.Either
 import           Data.List
@@ -724,12 +722,3 @@ gatherObjectivesAndAttributes    iModule    astModuleTrace'      = let
 
     isIntClafer (IClafer{_reference=(Just IReference{_ref=pexp'})}) = any (`elem` ["integer", "int"]) $ getRefIds pexp'
     isIntClafer _                                                   = False
-
--- | Datatype used for JSON output. See Language.Clafer.gatherObjectivesAndAttributes
-data ObjectivesAndAttributes
-  = ObjectivesAndAttributes
-    { _qualities :: [String]
-    , _attributes :: [String]
-    }
-
-$(deriveToJSON defaultOptions{fieldLabelModifier = tail} ''ObjectivesAndAttributes)

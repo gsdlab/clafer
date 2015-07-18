@@ -410,3 +410,12 @@ instance ToJSON Span where
 
 instance ToJSON Pos where
   toJSON _ = Null
+
+-- | Datatype used for JSON output. See Language.Clafer.gatherObjectivesAndAttributes
+data ObjectivesAndAttributes
+  = ObjectivesAndAttributes
+    { _qualities :: [String]
+    , _attributes :: [String]
+    }
+
+$(deriveToJSON defaultOptions{fieldLabelModifier = tail} ''ObjectivesAndAttributes)
