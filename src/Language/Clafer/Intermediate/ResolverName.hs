@@ -199,7 +199,7 @@ mkPath env (howResolved, id', path) = case howResolved of
   _ -> (toNav' $ reverse $ map toTuple path, path)
   where
   toNav = foldl'
-          (\exp' (id'', c) -> IFunExp iJoin [pExpDefPidPos exp', mkPLClaferId id'' False $ _uid <$> c])
+          (\exp' (id'', cbind) -> IFunExp iJoin [pExpDefPidPos exp', mkPLClaferId id'' (fromMaybe False $ isTopLevel <$> cbind) $ _uid <$> cbind])
           (IClaferId "" thisIdent True (_uid <$> context env))
   specIExp = if id' /= thisIdent && id' /= rootIdent
               then toNav [(id', Just $ head path)]
@@ -211,7 +211,7 @@ toTuple :: IClafer->(String, Maybe IClafer)
 toTuple c = (_uid c, Just c)
 
 toNav' :: [(String, Maybe IClafer)] -> IExp
-toNav' p = (mkIFunExp iJoin $ map (\(id', cbind) -> IClaferId "" id' False (_uid <$> cbind)) p) :: IExp
+toNav' p = (mkIFunExp iJoin $ map (\(id', cbind) -> IClaferId "" id' (fromMaybe False $ isTopLevel <$> cbind) (_uid <$> cbind)) p) :: IExp
 
 adjustAncestor :: IClafer -> [(String, Maybe IClafer)] -> [(String, Maybe IClafer)] -> [(String, Maybe IClafer)]
 adjustAncestor ctx cPath rPath = (thisIdent, Just ctx) : parents ++ (fromJust $ stripPrefix prefix rPath)
