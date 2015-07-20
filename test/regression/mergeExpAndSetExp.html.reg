@@ -60,74 +60,48 @@
 
 
 <div>
+<span class="claferDecl" id="c0_nonZero">nonZero</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a>--0</div>
+
+
+<div>
 <span class="keyword">abstract</span> <span class="claferDecl" id="c0_Person">Person</span>
   <div class="indent">
-  <span class="claferDecl" id="c0_spouse">spouse</span><span class="keyword"> -> </span><a href="#c0_Person"><span class="reference">Person</span></a> ?</div>
-  <div class="indent">
   <span class="keyword">abstract</span> <span class="claferDecl" id="c0_Head">Head</span></div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_likes">likes</span><span class="keyword"> -> </span><a href="#c0_Person"><span class="reference">Person</span></a> ?</div>
 </div>
 
 
 <div>
 <span class="claferDecl" id="c0_Alice">Alice</span><span class="keyword"> : </span><a href="#c0_Person"><span class="reference">Person</span></a>
   <div class="indent">
-  <span class="claferDecl" id="c0_h">h</span><span class="keyword"> : </span><a href="#c0_Head"><span class="reference">Head</span></a></div>
+  `<a href="#c0_Head"><span class="reference">Head</span></a></div>
+  <div class="indent">
+  <span class="keyword">[</span> <a href="#c0_likes"><span class="reference">likes</span></a> = <a href="#c0_Ella"><span class="reference">Ella</span></a> <span class="keyword">]</span></div>
 </div>
 
 
 <div>
 <span class="claferDecl" id="c0_Ella">Ella</span><span class="keyword"> : </span><a href="#c0_Person"><span class="reference">Person</span></a>
   <div class="indent">
-  <span class="claferDecl" id="c1_h">h</span><span class="keyword"> : </span><a href="#c0_Head"><span class="reference">Head</span></a></div>
-</div>
-
-
-<div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Team">Team</span>
+  <span class="claferDecl" id="c0_h">h</span><span class="keyword"> : </span><a href="#Person"><span class="reference">Person</span></a>.<a href="#Head"><span class="reference">Head</span></a></div>
   <div class="indent">
-  <span class="keyword">abstract</span> <span class="claferDecl" id="c0_Member">Member</span></div>
+  <span class="keyword">[</span> <span class="keyword">no</span> <a href="#c0_likes"><span class="reference">likes</span></a> <span class="keyword">]</span></div>
 </div>
-
-
-<div>
-<span class="claferDecl" id="c0_team1">team1</span><span class="keyword"> : </span><a href="#c0_Team"><span class="reference">Team</span></a>
-  <div class="indent">
-  <span class="claferDecl" id="c0_Bob">Bob</span><span class="keyword"> : </span><a href="#Team"><span class="reference">Team</span></a>.<a href="#Member"><span class="reference">Member</span></a></div>
-</div>
-
-
-<div>
-<span class="claferDecl" id="c1_spouse">spouse</span><span class="keyword"> -> </span><a href="#c0_Alice"><span class="reference">Alice</span></a></div>
-
-
-<div>
-<span class="claferDecl" id="c0_spouseIf">spouseIf</span><span class="keyword"> -> </span>if 1 &gt; 0 then <a href="#c0_Alice"><span class="reference">Alice</span></a> else <a href="#c0_Ella"><span class="reference">Ella</span></a> *</div>
-
-
-<div>
-<span class="claferDecl" id="c0_spouseUnion">spouseUnion</span><span class="keyword"> -> </span><a href="#c0_Alice"><span class="reference">Alice</span></a>++<a href="#c0_Ella"><span class="reference">Ella</span></a> *</div>
-
-
-<div>
-<span class="claferDecl" id="c0_spouseIntersection">spouseIntersection</span><span class="keyword"> -> </span><a href="#c0_Alice"><span class="reference">Alice</span></a>&<a href="#c0_Person"><span class="reference">Person</span></a> *</div>
-
-
-<div>
-<span class="claferDecl" id="c0_spouseDifference">spouseDifference</span><span class="keyword"> -> </span><a href="#c0_Person"><span class="reference">Person</span></a>--<a href="#c0_Ella"><span class="reference">Ella</span></a> *</div>
-
-
-<div>
-<span class="claferDecl" id="c0_spouseDomain">spouseDomain</span><span class="keyword"> -> </span><a href="#c0_Alice"><span class="reference">Alice</span></a><:<a href="#c0_spouse"><span class="reference">spouse</span></a> *</div>
-
-
-<div>
-<span class="claferDecl" id="c0_spouseRange">spouseRange</span><span class="keyword"> -> </span><a href="#c0_spouse"><span class="reference">spouse</span></a>:><a href="#c0_Ella"><span class="reference">Ella</span></a> *</div>
-
-
-<div>
-<span class="claferDecl" id="c0_spouseJoin">spouseJoin</span><span class="keyword"> -> </span><a href="#c0_Person"><span class="reference">Person</span></a>.<a href="#c0_spouse"><span class="reference">spouse</span></a> *</div>
 
 
 <div>
 <span class="claferDecl" id="c0_heads">heads</span><span class="keyword"> -> </span><a href="#c0_Person"><span class="reference">Person</span></a>.<a href="#c0_Head"><span class="reference">Head</span></a> *</div>
+
+
+<div>
+<span class="claferDecl" id="c0_friend">friend</span><span class="keyword"> -> </span><a href="#c0_Alice"><span class="reference">Alice</span></a>++<a href="#c0_Ella"><span class="reference">Ella</span></a> *</div>
+
+
+<div>
+<span class="claferDecl" id="c0_onlyAlice">onlyAlice</span><span class="keyword"> -> </span><a href="#c0_Alice"><span class="reference">Alice</span></a>&<a href="#c0_Person"><span class="reference">Person</span></a></div>
+
+
+<div>
+<span class="claferDecl" id="c0_exceptElla">exceptElla</span><span class="keyword"> -> </span><a href="#c0_Person"><span class="reference">Person</span></a>--<a href="#c0_Ella"><span class="reference">Ella</span></a> *</div>
 
