@@ -127,8 +127,8 @@ Super : {- empty -} { SuperEmpty noSpan }
       | ':' Exp18 { SuperSome ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
 Reference :: { Reference }
 Reference : {- empty -} { ReferenceEmpty noSpan }
-          | '->' Exp12 { ReferenceSet ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
-          | '->>' Exp12 { ReferenceBag ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
+          | '->' Exp15 { ReferenceSet ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
+          | '->>' Exp15 { ReferenceBag ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
 Init :: { Init }
 Init : {- empty -} { InitEmpty noSpan }
      | InitHow Exp { InitSome ((mkCatSpan $1) >- (mkCatSpan $2)) $1 $2 }
@@ -214,20 +214,20 @@ Exp12 :: { Exp }
 Exp12 : 'if' Exp12 'then' Exp12 'else' Exp13 { EImpliesElse ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkTokenSpan $3) >- (mkCatSpan $4) >- (mkTokenSpan $5) >- (mkCatSpan $6)) $2 $4 $6 }
       | Exp13 {  $1 }
 Exp13 :: { Exp }
-Exp13 : Exp13 '++' Exp14 { EUnion ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
-      | Exp13 ',' Exp14 { EUnionCom ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
+Exp13 : Exp13 '<:' Exp14 { EDomain ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
       | Exp14 {  $1 }
 Exp14 :: { Exp }
-Exp14 : Exp14 '--' Exp15 { EDifference ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
+Exp14 : Exp14 ':>' Exp15 { ERange ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
       | Exp15 {  $1 }
 Exp15 :: { Exp }
-Exp15 : Exp15 '**' Exp16 { EIntersection ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
+Exp15 : Exp15 '++' Exp16 { EUnion ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
+      | Exp15 ',' Exp16 { EUnionCom ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
       | Exp16 {  $1 }
 Exp16 :: { Exp }
-Exp16 : Exp16 '<:' Exp17 { EDomain ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
+Exp16 : Exp16 '--' Exp17 { EDifference ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
       | Exp17 {  $1 }
 Exp17 :: { Exp }
-Exp17 : Exp17 ':>' Exp18 { ERange ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
+Exp17 : Exp17 '**' Exp18 { EIntersection ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
       | Exp18 {  $1 }
 Exp18 :: { Exp }
 Exp18 : Exp18 '.' Exp19 { EJoin ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }

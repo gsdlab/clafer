@@ -157,8 +157,8 @@ instance Print Super where
 instance Print Reference where
   prt i e = case e of
     ReferenceEmpty _ -> prPrec i 0 (concatD [])
-    ReferenceSet _ exp12 -> prPrec i 0 (concatD [doc (showString "->"), prt 12 exp12])
-    ReferenceBag _ exp12 -> prPrec i 0 (concatD [doc (showString "->>"), prt 12 exp12])
+    ReferenceSet _ exp15 -> prPrec i 0 (concatD [doc (showString "->"), prt 15 exp15])
+    ReferenceBag _ exp15 -> prPrec i 0 (concatD [doc (showString "->>"), prt 15 exp15])
 
 instance Print Init where
   prt i e = case e of
@@ -234,12 +234,12 @@ instance Print Exp where
     ECard _ exp12 -> prPrec i 11 (concatD [doc (showString "#"), prt 12 exp12])
     EMinExp _ exp12 -> prPrec i 11 (concatD [doc (showString "-"), prt 12 exp12])
     EImpliesElse _ exp120 exp12 exp13 -> prPrec i 12 (concatD [doc (showString "if"), prt 12 exp120, doc (showString "then"), prt 12 exp12, doc (showString "else"), prt 13 exp13])
-    EUnion _ exp13 exp14 -> prPrec i 13 (concatD [prt 13 exp13, doc (showString "++"), prt 14 exp14])
-    EUnionCom _ exp13 exp14 -> prPrec i 13 (concatD [prt 13 exp13, doc (showString ","), prt 14 exp14])
-    EDifference _ exp14 exp15 -> prPrec i 14 (concatD [prt 14 exp14, doc (showString "--"), prt 15 exp15])
-    EIntersection _ exp15 exp16 -> prPrec i 15 (concatD [prt 15 exp15, doc (showString "**"), prt 16 exp16])
-    EDomain _ exp16 exp17 -> prPrec i 16 (concatD [prt 16 exp16, doc (showString "<:"), prt 17 exp17])
-    ERange _ exp17 exp18 -> prPrec i 17 (concatD [prt 17 exp17, doc (showString ":>"), prt 18 exp18])
+    EDomain _ exp13 exp14 -> prPrec i 13 (concatD [prt 13 exp13, doc (showString "<:"), prt 14 exp14])
+    ERange _ exp14 exp15 -> prPrec i 14 (concatD [prt 14 exp14, doc (showString ":>"), prt 15 exp15])
+    EUnion _ exp15 exp16 -> prPrec i 15 (concatD [prt 15 exp15, doc (showString "++"), prt 16 exp16])
+    EUnionCom _ exp15 exp16 -> prPrec i 15 (concatD [prt 15 exp15, doc (showString ","), prt 16 exp16])
+    EDifference _ exp16 exp17 -> prPrec i 16 (concatD [prt 16 exp16, doc (showString "--"), prt 17 exp17])
+    EIntersection _ exp17 exp18 -> prPrec i 17 (concatD [prt 17 exp17, doc (showString "**"), prt 18 exp18])
     EJoin _ exp18 exp19 -> prPrec i 18 (concatD [prt 18 exp18, doc (showString "."), prt 19 exp19])
     ClaferId _ name -> prPrec i 19 (concatD [prt 0 name])
     EInt _ posinteger -> prPrec i 19 (concatD [prt 0 posinteger])

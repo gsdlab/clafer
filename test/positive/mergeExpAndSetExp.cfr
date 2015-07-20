@@ -1,17 +1,17 @@
 // now primitive types can be used as types of references, which may be useful for redefinition
 abstract intNumber -> integer
 
-// this is a proper type refinement
+// this is a proper type refinement of 'integer'
 numberOne : intNumber -> 1
 
 abstract name -> string
 
-// this is a proper type refinement
+// this is a proper type refinement of 'string'
 alice : name -> "Alice"
 
 abstract realNumber -> real
 
-// these are proper type refinements
+// these are proper type refinements of 'real'
 pi : realNumber -> 3.1415
 piDouble : realNumber -> 3.14e0
 piInt : realNumber -> 3
@@ -22,51 +22,41 @@ numberTwentyFive : doubleNumber -> 2.5e1
 abstract intNumber2 : realNumber -> integer
 numberThree : intNumber2 -> 3
 
+// this is a proper type refinements of 'double'
 abstract intNumber3 : doubleNumber -> integer
 numberFour : intNumber2 -> 4
 
+// enumerated type from integers
 likertScaleVal -> 1, 2, 3, 4, 5
 
-abstract Person
-    spouse -> Person ?
-    abstract Head
+// non-zero integer
+nonZero -> integer -- 0
 
-Alice : Person
-    h : Head
-
-Ella : Person
-    h : Head
-
-// but primitive types cannot be used as super types (triggers parse error)
+// but primitive types cannot be used as super types (they trigger parse error)
 // n : 1
 // s : "Alice"
 // d : 3.1415
 
+abstract Person
+    abstract Head
+    likes -> Person ?
+
+Alice : Person
+    `Head
+    [ likes = Ella ]
+
 // however, now we can use . as super type expressions
-abstract Team
-  abstract Member
-
-team1 : Team
-  Bob : Team.Member
-
-spouse -> Alice
+Ella : Person
+    h : Person.Head
+    [ no likes ]
 
 // expressions now allowed as reference target
-spouseIf -> if (1 > 0) then Alice else Ella  *
-
-spouseUnion -> Alice ++ Ella *
-
-spouseIntersection -> Alice ** Person *
-
-spouseDifference -> Person -- Ella *
-
-spouseDomain -> Alice <: spouse *
-
-spouseRange -> spouse :> Ella *
-
-spouseJoin -> Person.spouse *
-
 heads -> Person.Head *
 
-// but these expressions are not allowed as a super type (triggers parse error)
-// AliceOrElla : if (1 > 0) then Alice else Ella
+friend -> Alice ++ Ella *
+
+onlyAlice -> Alice ** Person
+
+exceptElla -> Person -- Ella *
+
+// but above expressions are not allowed as a super type (they trigger a parse error)

@@ -123,8 +123,9 @@ getClaferName (PExp _ _ _ (IClaferId _ id' _ _)) = id'
 getClaferName _ = ""
 
 isTopLevel :: IClafer -> Bool
-isTopLevel IClafer{_parentUID="root"} = True
-isTopLevel _                          = False
+isTopLevel IClafer{_parentUID="root"}   = True
+isTopLevel IClafer{_parentUID="clafer"} = True
+isTopLevel _                            = False
 
 -- -----------------------------------------------------------------------------
 -- conversions
@@ -164,6 +165,9 @@ createUidIClaferMap    iModule  = foldl'
 
 findIClafer :: UIDIClaferMap -> UID -> Maybe IClafer
 findIClafer    uidIClaferMap    uid' = SMap.lookup uid' uidIClaferMap
+
+isTopLevelByUID :: UIDIClaferMap -> UID -> Maybe Bool
+isTopLevelByUID    uidIClaferMap    uid' = isTopLevel <$> (findIClafer uidIClaferMap uid')
 
 -- | Finds all super clafers according to sFun
 findHierarchy :: (IClafer -> [String]) -> UIDIClaferMap -> IClafer -> [IClafer]

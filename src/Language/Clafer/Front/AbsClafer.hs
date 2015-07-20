@@ -235,12 +235,12 @@ data Exp
     | ECard Span Exp
     | EMinExp Span Exp
     | EImpliesElse Span Exp Exp Exp
+    | EDomain Span Exp Exp
+    | ERange Span Exp Exp
     | EUnion Span Exp Exp
     | EUnionCom Span Exp Exp
     | EDifference Span Exp Exp
     | EIntersection Span Exp Exp
-    | EDomain Span Exp Exp
-    | ERange Span Exp Exp
     | EJoin Span Exp Exp
     | ClaferId Span Name
     | EInt Span PosInteger
@@ -281,12 +281,12 @@ instance Spannable Exp where
     getSpan (ECard s _ ) = s
     getSpan (EMinExp s _ ) = s
     getSpan (EImpliesElse s _ _ _ ) = s
+    getSpan (EDomain s _ _ ) = s
+    getSpan (ERange s _ _ ) = s
     getSpan (EUnion s _ _ ) = s
     getSpan (EUnionCom s _ _ ) = s
     getSpan (EDifference s _ _ ) = s
     getSpan (EIntersection s _ _ ) = s
-    getSpan (EDomain s _ _ ) = s
-    getSpan (ERange s _ _ ) = s
     getSpan (EJoin s _ _ ) = s
     getSpan (ClaferId s _ ) = s
     getSpan (EInt s _ ) = s
