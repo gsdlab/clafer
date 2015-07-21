@@ -70,7 +70,6 @@ data ClaferArgs = ClaferArgs {
       ecore2clafer :: Bool,
       scope_strategy :: ScopeStrategy,
       afm :: Bool,
-      skip_goals :: Bool,
       meta_data :: Bool,
       file :: FilePath
     } deriving (Eq, Show, Data, Typeable)
@@ -98,7 +97,6 @@ clafer = ClaferArgs {
   ecore2clafer        = def &= help "Translate an ECore model into Clafer.",
   scope_strategy      = def &= help "Use scope computation strategy: none or simple (default)." &= name "ss",
   afm                 = def &= help "Throws an error if the cardinality of any of the clafers is above 1." &= name "check-afm",
-  skip_goals          = def &= help "Skip generation of Alloy code for goals. Useful for all tools working with standard Alloy." &= name "sg",
   meta_data           = def &= help "Generate a 'fully qualified name'-'least-partially-qualified name'-'unique ID' map ('.cfr-map'). In Alloy and Choco modes, generate the scopes map ('.cfr-scope').",
   file                = def &= args   &= typ "FILE"
  } &= summary ("Clafer " ++ showVersion Paths_clafer.version) &= program "clafer"
@@ -113,7 +111,7 @@ mergeArgs a1 a2  = ClaferArgs (mode a1) (coMergeArg)
   (mergeArg alloy_mapping) (mergeArg self_contained)
   (mergeArg add_graph) (mergeArg show_references)
   (mergeArg add_comments) (mergeArg ecore2clafer)
-  (mergeArg scope_strategy) (mergeArg afm) (mergeArg skip_goals)
+  (mergeArg scope_strategy) (mergeArg afm)
   (mergeArg meta_data) (mergeArg file)
   where
     coMergeArg :: Bool
@@ -182,7 +180,6 @@ defaultClaferArgs = ClaferArgs
   , ecore2clafer = False
   , scope_strategy = Simple
   , afm = False
-  , skip_goals = False
   , meta_data = False
   , file = ""
   }

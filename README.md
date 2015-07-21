@@ -216,9 +216,6 @@ Common flags:
                                           none or simple (default).
      --check-afm --afm                    Throws an error if the cardinality
                                           of any of the clafers is above 1.
-     --sg --skip-goals                    Skip generation of Alloy code for
-                                          goals. Useful for all tools working
-                                          with standard Alloy.
      --meta-data                          Generate a 'fully qualified
                                           name'-'least-partially-qualified
                                           name'-'unique ID' map ('.cfr-map').

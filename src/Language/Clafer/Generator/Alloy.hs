@@ -44,8 +44,6 @@ data GenEnv = GenEnv
 
 
 -- | Alloy code generation
--- 07th Mayo 2012 Rafael Olaechea
---      Added Logic to print a goal block in case there is at least one goal.
 genModule :: ClaferArgs -> (IModule, GEnv) -> [(UID, Integer)] -> (Result, [(Span, IrTrace)])
 genModule    claferargs'   (imodule, genv)    scopes            = (flatten output, filter ((/= NoTrace) . snd) $ mapLineCol output)
   where
@@ -56,13 +54,7 @@ genModule    claferargs'   (imodule, genv)    scopes            = (flatten outpu
 
   forScopes' = "for 1" ++ genScopes scopes
   genEnv = GenEnv claferargs' (uidClaferMap genv) forScopes'
-  output = header genEnv +++ (cconcat $ map (genDeclaration genEnv) (_mDecls imodule)) +++
-       if ((not $ skip_goals claferargs') && length goals_list > 0) then
-                CString "objectives o_global {\n" +++   (cintercalate (CString ",\n") goals_list) +++   CString "\n}"
-       else
-                CString ""
-       where
-                goals_list = filterNull (map (genDeclarationGoalsOnly genEnv) (_mDecls imodule))
+  output = header genEnv +++ (cconcat $ map (genDeclaration genEnv) (_mDecls imodule))
 
 header :: GenEnv -> Concat
 header    genEnv  = CString $ unlines
@@ -73,33 +65,13 @@ header    genEnv  = CString $ unlines
       else "run show " ++ forScopes genEnv
     , ""]
 
-
 -- 07th Mayo 2012 Rafael Olaechea
--- Modified so that we can collect all goals into a single block as required per the way goals are handled in modified alloy.
-genDeclarationGoalsOnly :: GenEnv -> IElement -> Concat
-genDeclarationGoalsOnly    genEnv    x         = case x of
-  IEClafer _  -> CString ""
-  IEConstraint _ _  -> CString ""
-  IEGoal _ (PExp _ _ _ innerexp) -> case innerexp of
-        IFunExp op'  exps' ->  if  op' == iGMax || op' == iGMin then
-                        mkMetric op' $ genPExp genEnv [] (head exps')
-                else
-                        error "unary operator  distinct from (min/max) at the topmost level of a goal element"
-        _ ->  error "no unary operator (min/max) at the topmost level of a goal element."
-
--- 07th Mayo 2012 Rafael Olaechea
--- Removed goal from this function as they will now  all be collected into a single block.
 genDeclaration :: GenEnv -> IElement -> Concat
 genDeclaration genEnv x = case x of
   IEClafer clafer'  -> (genClafer genEnv [] clafer') +++ (mkFact $ cconcat $ genSetUniquenessConstraint clafer')
   IEConstraint True pexp  -> mkFact $ genPExp genEnv [] pexp
   IEConstraint False pexp  -> mkAssert genEnv (genAssertName pexp) $ genPExp genEnv [] pexp
-  IEGoal _ (PExp _ _ _ innerexp) -> case innerexp of
-        IFunExp op'  _ ->  if  op' == iGMax || op' == iGMin then
-                       CString ""
-                else
-                        error "unary operator  distinct from (min/max) at the topmost level of a goal element"
-        _ ->  error "no unary operator (min/max) at the topmost level of a goal element."
+  IEGoal _ _ -> CString ""
 
 mkFact :: Concat -> Concat
 mkFact x@(CString "") = x
