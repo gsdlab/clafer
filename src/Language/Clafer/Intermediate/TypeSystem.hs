@@ -31,8 +31,6 @@ import Data.List (nub)
 import Data.Maybe
 import Prelude hiding (exp)
 
---import Debug.Trace
-
 {- | Example Clafer model used in the various test cases.
 
 abstract Person
@@ -178,13 +176,13 @@ unionType tm@(TMap _ _) = error $ "TypeSystem.unionType: cannot union a TMap: '"
 fromUnionType :: [String] -> Maybe IType
 fromUnionType u =
     case nub $ u of
-        ["string"]  -> return TString
-        ["integer"] -> return TInteger
-        ["int"]     -> return TInteger
-        ["double"]  -> return TDouble
-        ["real"]    -> return TReal
+        ["string"]  -> Just TString
+        ["integer"] -> Just TInteger
+        ["int"]     -> Just TInteger
+        ["double"]  -> Just TDouble
+        ["real"]    -> Just TReal
         []          -> Nothing
-        u'          -> return $ TClafer u'
+        u'          -> Just $ TClafer u'
 
 {- | Union the two given types
 >>> TString +++ TString
@@ -275,6 +273,18 @@ intersection _              TDouble         TDouble       = return $ Just TDoubl
 intersection _              TDouble         TInteger      = return $ Just TDouble
 intersection _              TInteger        TDouble       = return $ Just TDouble
 intersection _              TInteger        TInteger      = return $ Just TInteger
+intersection uidIClaferMap' (TUnion t1s)    t2@(TClafer _) = do
+  t1s' <- mapM (intersection uidIClaferMap' t2) t1s
+  return $ case catMaybes t1s' of
+    [] -> Nothing
+    [t] -> Just t
+    t1s'' -> Just $ TUnion t1s''
+intersection uidIClaferMap' t1@(TClafer _)  (TUnion t2s) = do
+  t2s' <- mapM (intersection uidIClaferMap' t1) t2s
+  return $ case catMaybes t2s' of
+    [] -> Nothing
+    [t] -> Just t
+    t2s'' -> Just $ TUnion t2s''
 intersection uidIClaferMap' t@(TClafer ut1) (TClafer ut2) = if ut1 == ut2
   then return $ Just t
   else do
