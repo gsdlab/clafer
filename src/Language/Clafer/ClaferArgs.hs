@@ -26,7 +26,6 @@ See also <http://t3-necsis.cs.uwaterloo.ca:8091/ClaferTools/CommandLineArguments
 -}
 module Language.Clafer.ClaferArgs where
 
-import System.IO ( stdin, hGetContents )
 import System.Console.CmdArgs
 import System.Console.CmdArgs.Explicit hiding (mode)
 import Data.List
@@ -102,12 +101,12 @@ clafer = ClaferArgs {
  } &= summary ("Clafer " ++ showVersion Paths_clafer.version) &= program "clafer"
 
 mergeArgs :: ClaferArgs -> ClaferArgs -> ClaferArgs
-mergeArgs a1 a2  = ClaferArgs (mode a1) (coMergeArg)
+mergeArgs a1 a2  = ClaferArgs (mode a1) coMergeArg
   (mergeArg flatten_inheritance) (mergeArg timeout_analysis)
   (mergeArg no_layout) (mergeArg new_layout)
   (mergeArg check_duplicates) (mergeArg skip_resolver)
   (mergeArg keep_unused) (mergeArg no_stats)
-  (mergeArg validate) (mergeArg noalloyruncommand) (toolMergeArg)
+  (mergeArg validate) (mergeArg noalloyruncommand) toolMergeArg
   (mergeArg alloy_mapping) (mergeArg self_contained)
   (mergeArg add_graph) (mergeArg show_references)
   (mergeArg add_comments) (mergeArg ecore2clafer)
@@ -115,15 +114,15 @@ mergeArgs a1 a2  = ClaferArgs (mode a1) (coMergeArg)
   (mergeArg meta_data) (mergeArg file)
   where
     coMergeArg :: Bool
-    coMergeArg = if (r1 /= False) then r1 else
-      if (r2 /= False) then r2 else (null $ file a1)
+    coMergeArg = if r1 then r1 else
+      if r2 then r2 else (null $ file a1)
          where r1 = console_output a1;r2 = console_output a2
     toolMergeArg :: String
-    toolMergeArg = if (r1 /= "") then r1 else
-      if (r2 /= "") then r2 else "/tools"
+    toolMergeArg = if r1 /= "" then r1 else
+      if r2 /= "" then r2 else "/tools"
       where r1 = tooldir a1;r2 = tooldir a2
     mergeArg :: (Default a, Eq a) => (ClaferArgs -> a) -> a
-    mergeArg f = (\r -> if (r /= def) then r else f a2) $ f a1
+    mergeArg f = (\r -> if r /= def then r else f a2) $ f a1
 
 mainArgs :: IO (ClaferArgs, String)
 mainArgs = do
@@ -136,12 +135,12 @@ mainArgs = do
   let argsWithDef = if null $ mode argsWithOpts
                 then argsWithOpts{mode = [ Alloy ]}
                 else argsWithOpts
-  return $ (argsWithDef, model)
+  return (argsWithDef, model)
 
 retrieveModelFromURL :: String -> IO String
-retrieveModelFromURL url = do
+retrieveModelFromURL url =
   case url of
-    "" -> hGetContents stdin -- this is the pre-module system behavior
+    "" -> getContents -- this is the pre-module system behavior
     ('f':'i':'l':'e':':':'/':'/':n) -> readFile n
     ('h':'t':'t':'p':':':'/':'/':_) -> getURL url
     ('f':'t':'p':':':'/':'/':_) -> getURL url

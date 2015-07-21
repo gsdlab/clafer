@@ -91,9 +91,6 @@ mkAssert    genEnv    name      xs = cconcat
   , CString "\n\n"
   ]
 
-mkMetric :: String -> Concat -> Concat
-mkMetric goalopname xs = cconcat [ if goalopname == iGMax then CString "maximize" else  CString "minimize", CString " ", xs, CString " "]
-
 mkSet :: Concat -> Concat
 mkSet xs = cconcat [CString "{ ", xs, CString " }"]
 
@@ -183,7 +180,7 @@ genAlloyRel :: String -> String -> String -> String
 genAlloyRel name card' rType = concat [name, " : ", card', " ", rType]
 
 refType :: GenEnv -> IClafer -> Concat
-refType    genEnv c = fromMaybe (CString "") $ (((genType genEnv).getTarget) <$> (_ref <$> _reference c))
+refType    genEnv c = fromMaybe (CString "") (((genType genEnv).getTarget) <$> (_ref <$> _reference c))
 
 
 getTarget :: PExp -> PExp
@@ -223,7 +220,7 @@ of Connection are nested under all Systems anyway.
 -}
   : constraints
   where
-  constraints = concat $ map genConst $ _elements c
+  constraints = concatMap genConst $ _elements c
   genConst x = case x of
     IEConstraint True pexp  -> [ genPExp genEnv ((_uid c) : resPath) pexp ]
     IEConstraint False pexp  -> [ CString "// Assertion " +++ (genAssertName pexp) +++ CString " ignored since nested assertions are not supported in Alloy.\n"]
@@ -395,7 +392,7 @@ genPExp' :: GenEnv -> [String] -> PExp                      -> Concat
 genPExp'    genEnv    resPath     (PExp iType' pid' pos exp') = case exp' of
   IDeclPExp q d pexp -> Concat (IrPExp pid') $
     [ CString $ genQuant q, CString " "
-    , cintercalate (CString ", ") $ map ((genDecl genEnv resPath)) d
+    , cintercalate (CString ", ") $ map (genDecl genEnv resPath) d
     , CString $ optBar d, genPExp' genEnv resPath pexp]
     where
     optBar [] = ""
@@ -454,7 +451,7 @@ genIFunExp    pid'      genEnv    resPath     (IFunExp op' exps') =
       else Concat (IrPExp pid') $ intl exps'' (map CString $ genOp op')
   where
   intl
-    | op' == iSumSet' = flip $ interleave
+    | op' == iSumSet' = flip interleave
     | op' `elem` arithBinOps && length exps' == 2 = interleave
     | otherwise = \xs ys -> reverse $ interleave (reverse xs) (reverse ys)
   exps'' = map (optBrArg genEnv resPath) exps'
@@ -465,7 +462,7 @@ optBrArg :: GenEnv -> [String] -> PExp -> Concat
 optBrArg    genEnv    resPath     x     = brFun (genPExp' genEnv resPath) x
   where
   brFun = case x of
-    PExp _ _ _ (IClaferId _ _ _ _) -> ($)
+    PExp _ _ _ IClaferId{} -> ($)
     PExp _ _ _ (IInt _) -> ($)
     _  -> brArg
 
@@ -511,7 +508,7 @@ adjustIExp resPath x = case x of
     where
     (adjNav, adjExps) = if op' == iJoin then (aNav, id)
                         else (id, adjustPExp resPath)
-  IClaferId _ _ _ _ -> aNav x
+  IClaferId{} -> aNav x
   _  -> x
   where
   aNav = fst.(adjustNav resPath)
@@ -546,9 +543,8 @@ genDecl    genEnv    resPath     x      = case x of
 
 
 genDisj :: Bool -> String
-genDisj    x     = case x of
-  False -> ""
-  True  -> "disj"
+genDisj    True  = "disj"
+genDisj    False = ""
 
 -- mapping line/columns between Clafer and Alloy code
 
@@ -613,12 +609,12 @@ firstLine :: LineNo
 firstLine = 1 :: LineNo
 
 removeright :: PExp -> PExp
-removeright (PExp _ _ _ (IFunExp _ (x : (PExp _ _ _ (IClaferId _ _ _ _)) : _))) = x
+removeright (PExp _ _ _ (IFunExp _ (x : (PExp _ _ _ IClaferId{}) : _))) = x
 removeright (PExp _ _ _ (IFunExp _ (x : (PExp _ _ _ (IInt _ )) : _))) = x
 removeright (PExp _ _ _ (IFunExp _ (x : (PExp _ _ _ (IStr _ )) : _))) = x
 removeright (PExp _ _ _ (IFunExp _ (x : (PExp _ _ _ (IDouble _ )) : _))) = x
-removeright (PExp t id' pos (IFunExp o (x1:x2:xs))) = (PExp t id' pos (IFunExp o (x1:(removeright x2):xs)))
-removeright x@(PExp _ _ _ _) = error $ "[bug] AlloyGenerator.removeright: expects a PExp with a IFunExp inside but was given: " ++ show x --This should never happen
+removeright (PExp t id' pos (IFunExp o (x1:x2:xs))) = PExp t id' pos (IFunExp o (x1:(removeright x2):xs))
+removeright x@PExp{} = error $ "[bug] AlloyGenerator.removeright: expects a PExp with a IFunExp inside but was given: " ++ show x --This should never happen
 
 getRight :: PExp -> PExp
 getRight (PExp _ _ _ (IFunExp _ (_:x:_))) = getRight x

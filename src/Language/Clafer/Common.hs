@@ -50,8 +50,6 @@ mkIdent str = PosIdent ((0, 0), str)
 mkInteger :: Read a => PosInteger -> a
 mkInteger (PosInteger (_, n)) = read n
 
-type Ident = PosIdent
-
 -- | Returns only [] or [_]
 getSuper :: IClafer -> [String]
 getSuper claf = case getSuperId <$> _super claf of
