@@ -20,7 +20,7 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
 -}
--- | Generates Alloy4.1 or 4.2 code for a Clafer model
+-- | Generates Alloy4.2 code for a Clafer model
 module Language.Clafer.Generator.Alloy (genModule) where
 
 import Control.Applicative
@@ -478,8 +478,8 @@ genIFunExp    pid'      genEnv    resPath     (IFunExp op' exps') =
   if (op' == iSumSet)
     then genIFunExp pid' genEnv resPath (IFunExp iSumSet' [(removeright (head exps')), (getRight $ head exps')])
     else if (op' == iSumSet')
-      then Concat (IrPExp pid') $ intl exps'' (map CString $ genOp (Alloy42 `elem` (mode $ claferargs genEnv)) iSumSet)
-      else Concat (IrPExp pid') $ intl exps'' (map CString $ genOp (Alloy42 `elem` (mode $ claferargs genEnv)) op')
+      then Concat (IrPExp pid') $ intl exps'' (map CString $ genOp iSumSet)
+      else Concat (IrPExp pid') $ intl exps'' (map CString $ genOp op')
   where
   intl
     | op' == iSumSet' = flip $ interleave
@@ -506,13 +506,10 @@ interleave (x:xs) ys = x : interleave ys xs
 brArg :: (a -> Concat) -> a -> Concat
 brArg f arg = cconcat [CString "(", f arg, CString ")"]
 
---     isAlloy42
-genOp :: Bool -> String -> [String]
-genOp    True       op'
+genOp :: String -> [String]
+genOp    op'
   | op' == iPlus = [".plus[", "]"]
   | op' == iSub  = [".minus[", "]"]
-  | otherwise   = genOp False op'
-genOp    _             op'
   | op' == iSumSet = ["sum temp : "," | temp."]
   | op' == iProdSet = ["prod temp : "," | temp."]
   | op' `elem` unOps  = [op']
@@ -529,7 +526,7 @@ genOp    _             op'
   | op' == iRange = [" :> "]
   | op' == iJoin = ["."]
   | op' == iIfThenElse = [" => ", " else "]
-genOp _ _ = error "This should never happen"
+genOp op' = error $ "[bug] Alloy.genOp: Unmatched operator: " ++ op'
 
 -- adjust parent
 adjustPExp :: [String] -> PExp -> PExp

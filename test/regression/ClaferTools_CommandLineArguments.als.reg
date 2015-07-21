@@ -46,14 +46,9 @@ sig c0_mode extends c0_Argument
   let children = (r_c0_alloy + r_c0_desclafer + r_c0_html + r_c0_graph + r_c0_cvlGraph) | one children }
 
 sig c0_alloy extends c0_DefaultValue
-{ r_c0_alloy42 : lone c0_alloy42
-, r_c0_noalloyruncommand : lone c0_noalloyruncommand
+{ r_c0_noalloyruncommand : lone c0_noalloyruncommand
 , r_c0_alloy_mapping : lone c0_alloy_mapping }
 { one @r_c0_alloy.this }
-
-sig c0_alloy42 extends c0_Value
-{}
-{ one @r_c0_alloy42.this }
 
 sig c0_noalloyruncommand extends c0_Argument
 {}
@@ -177,7 +172,7 @@ one sig c0_ca2 extends c0_ClaferArgs
 one sig c0_ca3 extends c0_ClaferArgs
 {}
 { let children = (r_c0_functional + r_c0_schema + r_c0_help + r_c0_version) | one children
-  some (((this.@r_c0_functional).@r_c0_mode).@r_c0_alloy).@r_c0_alloy42
+  some ((this.@r_c0_functional).@r_c0_mode).@r_c0_alloy
   some (this.@r_c0_functional).@r_c0_keep_unused
   some (this.@r_c0_functional).@r_c0_flatten_inheritance }
 

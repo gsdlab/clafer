@@ -54,8 +54,8 @@ model = unlines
 case_TypeSystemTest :: Assertion
 case_TypeSystemTest = case compileOneFragment defaultClaferArgs{keep_unused=True} model of
   Left errors -> assertFailure $ show errors
-  Right compilerResultMap -> case M.lookup Alloy42 compilerResultMap of
-    Nothing -> assertFailure "No Alloy42 result in the result map"
+  Right compilerResultMap -> case M.lookup Alloy compilerResultMap of
+    Nothing -> assertFailure "No Alloy result in the result map"
     Just compilerResult ->
       let
         um' :: StringMap IClafer

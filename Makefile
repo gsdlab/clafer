@@ -15,13 +15,11 @@ all: build
 
 init:
 	cabal sandbox init --sandbox=../.clafertools-cabal-sandbox
-	cabal install --only-dependencies $(MAC_USR_LIB) --enable-tests --enable-optimization=2
-	# turn off optimization for development - cuts 50% `cabal build` time
-	echo "optimization: False" > cabal.config
+	cabal install --only-dependencies $(MAC_USR_LIB) --enable-tests
 
 build:
 	$(MAKE) -C $(TOOL_DIR)
-	cabal configure --enable-tests --disable-optimization
+	cabal configure --enable-tests
 	cabal build
 
 install:
@@ -62,10 +60,7 @@ prof:
 .PHONY : test
 
 test:
-	cabal clean
-	cabal configure --enable-tests --enable-optimization=2
 	cabal test
-	cabal build
 	$(MAKE) -C $(TEST_DIR) test
 
 generateAlloyJSPythonHTMLDot:

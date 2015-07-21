@@ -52,8 +52,8 @@ compileOneFragment args' model =
 getCompilerResult :: InputModel -> CompilerResult
 getCompilerResult    model = case compileOneFragment defaultClaferArgs{keep_unused=True} model of
   Left errors -> error $ show errors
-  Right compilerResultMap -> case Map.lookup Alloy42 compilerResultMap of
-    Nothing -> error "No Alloy42 result in the result map"
+  Right compilerResultMap -> case Map.lookup Alloy compilerResultMap of
+    Nothing -> error "No Alloy result in the result map"
     Just compilerResult -> compilerResult
 
 compiledCheck :: Either a b -> Bool
