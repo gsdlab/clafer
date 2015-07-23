@@ -59,7 +59,6 @@ data ClaferArgs = ClaferArgs {
       keep_unused :: Bool,
       no_stats :: Bool,
       validate :: Bool,
-      noalloyruncommand :: Bool,
       tooldir :: FilePath,
       alloy_mapping :: Bool,
       self_contained :: Bool,
@@ -86,7 +85,6 @@ clafer = ClaferArgs {
   keep_unused         = def &= help "Keep uninstantated abstract clafers ('alloy' mode only)." &= name "k",
   no_stats            = def &= help "Don't print statistics." &= name "s",
   validate            = def &= help "Validate outputs of all modes. Uses 'tools/alloy4.2.jar' for Alloy models, and Clafer translator for desugared Clafer models. Use '--tooldir' to override the default location of these tools." &= name "v",
-  noalloyruncommand   = def &= help "For usage with partial instances: Don't generate the alloy 'run show for ... ' command, and rename @.ref with unique names  ('alloy' mode only)." &= name "nr",
   tooldir             = def &= typDir &= help "Specify the tools directory ('validate' only). Default: 'tools/'.",
   alloy_mapping       = def &= help "Generate mapping to Alloy source code ('alloy' mode only)." &= name "a",
   self_contained      = def &= help "Generate a self-contained html document ('html' mode only).",
@@ -106,7 +104,7 @@ mergeArgs a1 a2  = ClaferArgs (mode a1) coMergeArg
   (mergeArg no_layout) (mergeArg new_layout)
   (mergeArg check_duplicates) (mergeArg skip_resolver)
   (mergeArg keep_unused) (mergeArg no_stats)
-  (mergeArg validate) (mergeArg noalloyruncommand) toolMergeArg
+  (mergeArg validate) toolMergeArg
   (mergeArg alloy_mapping) (mergeArg self_contained)
   (mergeArg add_graph) (mergeArg show_references)
   (mergeArg add_comments) (mergeArg ecore2clafer)
@@ -169,7 +167,6 @@ defaultClaferArgs = ClaferArgs
   , keep_unused = False
   , no_stats = False
   , validate = False
-  , noalloyruncommand = False
   , tooldir = "tools/"
   , alloy_mapping = False
   , self_contained = False
