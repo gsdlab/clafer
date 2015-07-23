@@ -1,4 +1,4 @@
-# Clafer Version 0.3.11 released on ??? ??, 2015
+# Clafer Version 0.3.11 released on Jul 23, 2015
 
 [Release](https://github.com/gsdlab/clafer/pull/68)
 
