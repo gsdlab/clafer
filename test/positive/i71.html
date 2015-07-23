@@ -1,0 +1,29 @@
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Course">Course</span>
+  <div class="indent">
+  <span class="claferDecl" id="c0_taughtBy">taughtBy</span><span class="keyword"> -> </span><a href="#c0_Teacher"><span class="reference">Teacher</span></a> *
+    <div class="indent">
+    <span class="claferDecl" id="c0_x">x</span> ?</div>
+  </div>
+</div>
+
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Teacher">Teacher</span>
+  <div class="indent">
+  <span class="claferDecl" id="c0_teaches">teaches</span><span class="keyword"> -> </span><a href="#c0_Course"><span class="reference">Course</span></a> *</div>
+</div>
+
+
+<div>
+<span class="keyword">[</span> all c<span class="keyword"> : </span><a href="#Lookup failed"><span class="reference">Course</span></a> | all t<span class="keyword"> : </span><a href="#c"><span class="reference">c</span></a>.<a href="#c0_taughtBy"><span class="reference">taughtBy</span></a> | <a href="#t"><span class="reference">t</span></a>.<a href="#c0_x"><span class="reference">x</span></a> &amp;&amp; <a href="#c"><span class="reference">c</span></a> in <a href="#t"><span class="reference">t</span></a>.<a href="#c0_teaches"><span class="reference">teaches</span></a> <span class="keyword">]</span></div>
+
+
+<div>
+<span class="claferDecl" id="c0_course">course</span><span class="keyword"> : </span><a href="#c0_Course"><span class="reference">Course</span></a> 5</div>
+
+
+<div>
+<span class="claferDecl" id="c0_teacher">teacher</span><span class="keyword"> : </span><a href="#c0_Teacher"><span class="reference">Teacher</span></a> 3</div>
+

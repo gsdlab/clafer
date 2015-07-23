@@ -1,0 +1,42 @@
+open util/integer
+pred show {}
+
+
+one sig c0_Clafer1
+{ r_c0_type : one c0_type }
+
+one sig c0_type
+{ r_c0_Type1 : lone c0_Type1
+, r_c0_Type2 : lone c0_Type2 }
+{ let children = (r_c0_Type1 + r_c0_Type2) | one children }
+
+lone sig c0_Type1
+{}
+{ one r_c0_Type1 }
+
+lone sig c0_Type2
+{}
+{ one r_c0_Type2 }
+
+one sig c0_Clafer2
+{ r_c0_clafer1 : one c0_clafer1
+, r_c1_type : one c1_type }
+{ (some (this.@r_c1_type).@r_c1_Type1) => (some ((this.@r_c0_clafer1).(@ref.@r_c0_type)).@r_c0_Type2)
+  (some (this.@r_c1_type).@r_c1_Type1) => (some ((this.@r_c0_clafer1).(@ref.@r_c0_type)).@r_c0_Type2) }
+
+one sig c0_clafer1
+{ ref : one c0_Clafer1 }
+
+one sig c1_type
+{ r_c1_Type1 : lone c1_Type1
+, r_c1_Type2 : lone c1_Type2 }
+{ let children = (r_c1_Type1 + r_c1_Type2) | one children }
+
+lone sig c1_Type1
+{}
+{ one r_c1_Type1 }
+
+lone sig c1_Type2
+{}
+{ one r_c1_Type2 }
+

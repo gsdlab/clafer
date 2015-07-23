@@ -1,0 +1,10 @@
+digraph "i49_resolve_ancestor"
+{
+rankdir=BT;
+ranksep=0.3;
+nodesep=0.1;
+graph [fontname=Sans fontsize=11];
+node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
+edge [fontname=Sans fontsize=11];
+"c0_person" [label="person" URL="#c0_person" tooltip="person&#10;  haha&#10;    lala&#10;      age -&gt; int&#10;  ble&#10;    married ?&#10;      [ age >= 18 ]&#10;"];
+}

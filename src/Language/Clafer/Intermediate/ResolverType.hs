@@ -40,6 +40,7 @@ import Data.List
 import Data.Maybe
 import Prelude hiding (exp)
 
+
 type TypeDecls = [(String, IType)]
 data TypeInfo = TypeInfo {iTypeDecls::TypeDecls, iUIDIClaferMap::UIDIClaferMap, iCurThis::IClafer, iCurPath::Maybe IType}
 
@@ -110,12 +111,6 @@ parentOf :: (Monad m) => UIDIClaferMap -> UID -> m UID
 parentOf uidIClaferMap' c = case _parentUID <$> findIClafer uidIClaferMap' c of
   Just u -> return u
   Nothing -> fail $ "Analysis.parentOf: " ++ c ++ " not found!"
-
-refOf :: (Monad m) => UIDIClaferMap -> UID -> m UID
-refOf uidIClaferMap' c = do
-  case getReference <$> findIClafer uidIClaferMap' c of
-    Just [r] -> return r
-    _        -> fail $ "Analysis.refOf: No ref uid for " ++ show c
 
 {-
  - C is an direct child of B.
@@ -246,12 +241,11 @@ resolveTPExp' p@PExp{_inPos, _exp = IClaferId{_sident = "ref"}} = do
     curPath' <- curPath
     case curPath' of
       Just curPath'' -> do
-        ut <- closure uidIClaferMap' $ unionType curPath''
-        t <- runListT $ refOf uidIClaferMap' =<< foreachM ut
-        case fromUnionType t of
-          Just t' -> return $ p `withType` t'
-          Nothing -> throwError $ SemanticErr _inPos ("Cannot ref from type '" ++ str curPath'' ++ "'")
-      Nothing -> throwError $ SemanticErr _inPos ("Cannot ref at the start of a path")
+        case concatMap (getTMaps uidIClaferMap') $ getTClafers uidIClaferMap' curPath'' of
+          [t'] -> return $ p `withType` t'
+          (t':_) -> return $ p `withType` t'
+          [] -> throwError $ SemanticErr _inPos ("Cannot deref from type '" ++ str curPath'' ++ "'")
+      Nothing -> throwError $ SemanticErr _inPos ("Cannot deref at the start of a path")
 resolveTPExp' p@PExp{_inPos, _exp = IClaferId{_sident = "parent"}} = do
   uidIClaferMap' <- asks iUIDIClaferMap
   runListT $ runExceptT $ do
@@ -307,8 +301,8 @@ resolveTPExp' p@PExp{_inPos, _exp} =
       let result
             | _op == iNot = test (t == TBoolean) >> return TBoolean
             | _op == iCSet = return TInteger
-            | _op == iSumSet = test (t == TInteger) >> return TInteger
-            | _op == iProdSet = test (t == TInteger) >> return TInteger
+            | _op == iSumSet = test (isTInteger t) >> return TInteger
+            | _op == iProdSet = test (isTInteger t) >> return TInteger
             | _op `elem` [iMin, iGMin, iGMax] = test (numeric t) >> return t
             | otherwise = assert False $ error $ "Unknown op '" ++ _op ++ "'"
       result' <- result
@@ -357,7 +351,7 @@ resolveTPExp' p@PExp{_inPos, _exp} =
             | _op `elem` relSetBinOps = testIntersect t1 t2 >> return TBoolean
             | _op `elem` [iSub, iMul, iDiv, iRem] = test (numeric t1 && numeric t2) >> return (coerce t1 t2)
             | _op == iPlus =
-                (test (t1 == TString && t2 == TString) >> return TString) -- Case 1: String concatenation
+                (test (isTString t1 && isTString t2) >> return TString) -- Case 1: String concatenation
                 `catchError`
                 const (test (numeric t1 && numeric t2) >> return (coerce t1 t2)) -- Case 2: Addition
             | otherwise = error $ "ResolverType: Unknown op: " ++ show e
@@ -435,9 +429,6 @@ liftError e =
 
 liftList :: Monad m => [a] -> ListT m a
 liftList = ListT . return
-
-foreachM :: Monad m => [a] -> ListT m a
-foreachM = ListT . return
 
 comparing :: Ord b => (a -> b) -> a -> a -> Ordering
 comparing f a b = f a `compare` f b

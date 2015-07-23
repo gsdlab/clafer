@@ -109,7 +109,13 @@ isTInteger :: IType    -> Bool
 isTInteger TInteger     = True
 isTInteger (TMap _ ta') = isTInteger ta'
 isTInteger (TUnion un') = any isTInteger un'
-isTInteger _            = False   
+isTInteger _            = False
+
+isTString :: IType    -> Bool
+isTString TString      = True
+isTString (TMap _ ta') = isTString ta'
+isTString (TUnion un') = any isTString un'
+isTString _            = False
 
 
 -- | Get TClafer for a given Clafer
@@ -390,11 +396,17 @@ addHierarchy    _                x                = x
 closure :: Monad m => UIDIClaferMap -> [String] -> m [String]
 closure uidIClaferMap' ut = concat `liftM` mapM (hierarchyMap uidIClaferMap' _uid) ut
 
-getRefTypes :: UIDIClaferMap -> IType        -> [IType]
-getRefTypes uidIClaferMap'      (TClafer hi') = catMaybes $ map (getDrefTMapByUID uidIClaferMap') hi'
-getRefTypes uidIClaferMap'      (TMap _ ta')  = getRefTypes uidIClaferMap' ta'
-getRefTypes uidIClaferMap'      (TUnion un')  = concatMap (getRefTypes uidIClaferMap') un'
-getRefTypes _                   _             = []
+getTMaps :: UIDIClaferMap -> IType        -> [IType]
+getTMaps    uidIClaferMap'   (TClafer hi') = catMaybes $ map (getDrefTMapByUID uidIClaferMap') hi'
+getTMaps    uidIClaferMap'   (TMap _ ta')  = getTMaps uidIClaferMap' ta'
+getTMaps    uidIClaferMap'   (TUnion un')  = concatMap (getTMaps uidIClaferMap') un'
+getTMaps    _                _             = []
+
+getTClafers :: UIDIClaferMap -> IType          -> [IType]
+getTClafers    uidIClaferMap'   (TClafer hi')   = catMaybes $ map (getTClaferByUID uidIClaferMap') hi'
+getTClafers    uidIClaferMap'   (TMap _ ta')    = getTClafers uidIClaferMap' ta'
+getTClafers    uidIClaferMap'   (TUnion un')    = concatMap (getTClafers uidIClaferMap') un'
+getTClafers    _                _               = []
 
 
 {- Coersions -}

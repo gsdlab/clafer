@@ -1,0 +1,22 @@
+open util/integer
+pred show {}
+
+
+abstract sig c0_A
+{ r_c0_x : lone c0_x }
+
+sig c0_x
+{}
+{ one @r_c0_x.this }
+
+fact { 2 <= #c0_a and #c0_a <= 2 }
+sig c0_a extends c0_A
+{}
+
+one sig c0_ref1
+{ ref : one c0_A }
+
+one sig c0_ref2
+{ ref : one c0_ref1 }
+{ some (this.@ref).(@ref.@r_c0_x) }
+

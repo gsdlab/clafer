@@ -1,0 +1,13 @@
+scope({c0_A:2, c0_a:2, c0_x:2});
+defaultScope(1);
+intRange(-8, 7);
+stringLength(16);
+
+c0_A = Abstract("c0_A");
+c0_x = c0_A.addChild("c0_x").withCard(0, 1);
+c0_a = Clafer("c0_a").withCard(2, 2).extending(c0_A);
+c0_ref1 = Clafer("c0_ref1").withCard(1, 1);
+c0_ref2 = Clafer("c0_ref2").withCard(1, 1);
+c0_ref1.refTo(c0_A);
+c0_ref2.refTo(c0_ref1);
+c0_ref2.addConstraint(some(join(joinRef(joinRef($this())), c0_x)));

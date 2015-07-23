@@ -1,0 +1,14 @@
+digraph "i50_stop_following_references"
+{
+rankdir=BT;
+ranksep=0.3;
+nodesep=0.1;
+graph [fontname=Sans fontsize=11];
+node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
+edge [fontname=Sans fontsize=11];
+"c0_A" [label="abstract A" URL="#c0_A" tooltip="abstract A&#10;  b ?&#10;"];
+"c0_A1" [label="A1 : A" URL="#c0_A1" tooltip="A1 : A&#10;  [  ! b ]&#10;"];
+"c0_A1" -> "c0_A" [arrowhead=onormal constraint=true weight=100];
+"c0_C" [label="C" URL="#c0_C" tooltip="C&#10;  b ?&#10;  [ C.b ]&#10;  a -&gt; A&#10;    [ b ]&#10;    d&#10;      b ?&#10;"];
+"c0_C" -> "c0_A" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=a];
+}

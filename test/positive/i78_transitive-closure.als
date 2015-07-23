@@ -1,0 +1,41 @@
+open util/integer
+pred show {}
+
+
+abstract sig c0_TimeLevel
+{ r_c0_aggregatesTo : lone c0_aggregatesTo }
+
+sig c0_aggregatesTo
+{ ref : one c0_TimeLevel }
+{ one @r_c0_aggregatesTo.this }
+
+abstract sig c0_YearLevel extends c0_TimeLevel
+{}
+{ no this.@r_c0_aggregatesTo }
+
+abstract sig c0_MonthLevel extends c0_TimeLevel
+{}
+{ (this.(@r_c0_aggregatesTo.@ref)) in c0_YearLevel }
+
+abstract sig c0_WeekLevel extends c0_TimeLevel
+{}
+{ (this.(@r_c0_aggregatesTo.@ref)) in c0_MonthLevel }
+
+one sig c0_Year2012 extends c0_YearLevel
+{}
+
+one sig c0_Jan2012 extends c0_MonthLevel
+{}
+{ (this.(@r_c0_aggregatesTo.@ref)) = c0_Year2012 }
+
+one sig c0_Week1 extends c0_WeekLevel
+{}
+{ (this.(@r_c0_aggregatesTo.@ref)) = c0_Jan2012 }
+
+sig c0_Week1AggregatesTo
+{ ref : one c0_TimeLevel }
+
+fact {  all disj x, y : c0_Week1AggregatesTo | (x.@ref) != (y.@ref)  }
+fact { (c0_Week1.(@r_c0_aggregatesTo.@ref)) in (c0_Week1AggregatesTo.@ref) }
+fact { ((c0_Week1.@r_c0_aggregatesTo).(@ref.(@r_c0_aggregatesTo.@ref))) in (c0_Week1AggregatesTo.@ref) }
+fact { (c0_Week1AggregatesTo.@ref) = (c0_Jan2012 + c0_Year2012) }

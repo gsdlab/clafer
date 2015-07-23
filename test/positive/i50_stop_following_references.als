@@ -1,0 +1,36 @@
+open util/integer
+pred show {}
+
+
+abstract sig c0_A
+{ r_c0_b : lone c0_b }
+
+sig c0_b
+{}
+{ one @r_c0_b.this }
+
+one sig c0_A1 extends c0_A
+{}
+{ no this.@r_c0_b }
+
+one sig c0_C
+{ r_c1_b : lone c1_b
+, r_c0_a : one c0_a }
+{ some c0_C.@r_c1_b }
+
+lone sig c1_b
+{}
+{ one r_c1_b }
+
+one sig c0_a
+{ ref : one c0_A
+, r_c0_d : one c0_d }
+{ some (this.@r_c0_d).@r_c2_b }
+
+one sig c0_d
+{ r_c2_b : lone c2_b }
+
+lone sig c2_b
+{}
+{ one r_c2_b }
+
