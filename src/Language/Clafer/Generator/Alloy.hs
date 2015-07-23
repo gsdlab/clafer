@@ -1,6 +1,6 @@
 {-# LANGUAGE RankNTypes, FlexibleContexts #-}
 {-
- Copyright (C) 2012-2015 Kacper Bak, Jimmy Liang, Rafael Olaechea <http://gsd.uwaterloo.ca>
+ Copyright (C) 2012-2015 Kacper Bak, Jimmy Liang, Michal Antkiewicz, Rafael Olaechea <http://gsd.uwaterloo.ca>
 
  Permission is hereby granted, free of charge, to any person obtaining a copy of
  this software and associated documentation files (the "Software"), to deal in
@@ -60,7 +60,7 @@ header :: GenEnv -> Concat
 header    genEnv  = CString $ unlines
     [ "open util/integer"
     , "pred show {}"
-    , if (validate $ claferargs genEnv) ||  (noalloyruncommand $ claferargs genEnv)
+    , if (validate $ claferargs genEnv)
       then ""
       else "run show " ++ forScopes genEnv
     , ""]
@@ -132,12 +132,11 @@ genClafer genEnv resPath clafer'
 claferDecl :: IClafer -> Concat -> Concat
 claferDecl    c     rest    = cconcat
   [ genOptCard c
-  , CString $ genAbstract $ _isAbstract c
+  , CString $ if _isAbstract c then "abstract " else ""
   , CString "sig "
   , Concat NoTrace [CString $ _uid c, genExtends $ _super c, CString "\n", rest]
   ]
   where
-  genAbstract isAbs = if isAbs then "abstract " else ""
   genExtends Nothing = CString ""
   genExtends (Just (PExp _ _ _ (IClaferId _ i _ _))) = CString " " +++ Concat NoTrace [CString $ "extends " ++ i]
   -- todo: handle multiple inheritance
@@ -161,7 +160,7 @@ genRelations genEnv c = maybeToList r ++ (map mkRel $ getSubclafers $ _elements 
   where
   r = if isJust $ _reference c
                 then
-                        Just $ Concat NoTrace [CString $ genRel (if (noalloyruncommand $ claferargs genEnv) then  (_uid c ++ "_ref") else "ref")
+                        Just $ Concat NoTrace [CString $ genRel (genRefName $ _uid c)
                          c {_card = Just (1, 1)} $
                          flatten $ refType genEnv c]
                 else
@@ -170,6 +169,9 @@ genRelations genEnv c = maybeToList r ++ (map mkRel $ getSubclafers $ _elements 
 
 genRelName :: String -> String
 genRelName name = "r_" ++ name
+
+genRefName :: String -> String
+genRefName name = name ++ "_ref"
 
 genRel :: String -> IClafer -> String -> String
 genRel name c rType = genAlloyRel name (genCardCrude $ _card c) rType'
@@ -202,6 +204,7 @@ genConstraints :: GenEnv -> [String]      -> IClafer -> [Concat]
 genConstraints    genEnv    resPath c
   = (genParentConst resPath c)
   : (genGroupConst genEnv c)
+  : (genRefSubrelationConstriant (uidIClaferMap genEnv) c)
 {- genPathConst produces incorrect code for top-level clafers
 
 abstract System
@@ -231,7 +234,7 @@ of Connection are nested under all Systems anyway.
         )
         : (genParentSubrelationConstriant (uidIClaferMap genEnv) c')
         : (genSetUniquenessConstraint c')
-    IEGoal _ _ -> error "getConst function from Alloy generator was given a Goal, this function should only be given a Constrain or Clafer" -- This should never happen
+    IEGoal _ _ -> error "[bug] Alloy.getConst: should not be given a goal." -- This should never happen
 
 
 genSetUniquenessConstraint :: IClafer -> [Concat]
@@ -244,7 +247,7 @@ genSetUniquenessConstraint c =
                         (case isTopLevel c of
                           False -> "all disj x, y : this.@" ++ (genRelName $ _uid c)
                           True  -> " all disj x, y : "       ++ (_uid c)))
-                      ++ " | (x.@ref) != (y.@ref) "
+                      ++ " | (x.@" ++ genRefName (_uid c) ++ ") != (y.@" ++ genRefName (_uid c) ++ ") "
                    ]
               else []
             _ -> [])
@@ -252,7 +255,7 @@ genSetUniquenessConstraint c =
     )
 
 genParentSubrelationConstriant :: UIDIClaferMap -> IClafer   -> Concat
-genParentSubrelationConstriant    uidIClaferMap'        headClafer =
+genParentSubrelationConstriant    uidIClaferMap'   headClafer =
   case match of
     Nothing -> CString ""
     Just NestedInheritanceMatch {
@@ -266,6 +269,28 @@ genParentSubrelationConstriant    uidIClaferMap'        headClafer =
                else CString ""
   where
     match = matchNestedInheritance uidIClaferMap' headClafer
+
+-- See Common.NestedInheritanceMatch
+genRefSubrelationConstriant :: UIDIClaferMap -> IClafer   -> Concat
+genRefSubrelationConstriant    uidIClaferMap'   headClafer =
+  if isJust $ _reference headClafer
+  then
+    case match of
+      Nothing -> CString ""
+      Just NestedInheritanceMatch
+        { _superClafer = superClafer
+        ,  _superClafersTarget = superClafersTarget
+        }  -> case (isProperRefinement uidIClaferMap' match, not $ null superClafersTarget) of
+                 ((True, True, True), True) -> CString $ concat
+                  [ genRefName $ _uid headClafer
+                  , " in "
+                  , genRefName $ _uid superClafer
+                  ]
+                 _ -> CString ""
+  else CString ""
+  where
+    match = matchNestedInheritance uidIClaferMap' headClafer
+
 
 -- optimization: if only boolean features then the parent is unique
 genParentConst :: [String] -> IClafer -> Concat
@@ -400,7 +425,11 @@ genPExp'    genEnv    resPath     (PExp iType' pid' pos exp') = case exp' of
   IClaferId _ "integer" _ _ -> CString "Int"
   IClaferId _ "int" _ _ -> CString "Int"
   IClaferId _ "string" _ _ -> CString "Int"
-  IClaferId _ "ref" _ _ -> CString "@ref"
+  IClaferId _ "ref" _ _ -> CString $ "@"  ++ getTClaferUID iType' ++ "_ref"
+    where
+      getTClaferUID (Just TMap{_so = TClafer{_hi = [u]}}) = u
+      getTClaferUID (Just TMap{_so = TClafer{_hi = (u:_)}}) = u
+      getTClaferUID t = error $ "[bug] Alloy.genPExp'.getTClaferUID: unknown type: " ++ show t
   IClaferId _ sid istop _ -> CString $
       if head sid == '~'
         then sid
@@ -412,10 +441,7 @@ genPExp'    genEnv    resPath     (PExp iType' pid' pos exp') = case exp' of
           _ -> sid'
     where
     sid' = (if istop then "" else '@' : genRelName "") ++ sid
-    -- 29/March/2012  Rafael Olaechea: ref is now prepended with clafer name to be able to refer to it from partial instances.
-    -- 30/March/2012 Rafael Olaechea added referredClaferUniqeuid to fix problems when having this.x > number  (e.g test/positive/i10.cfr )
-    vsident = if (noalloyruncommand $ claferargs genEnv) then sid' ++  ".@"  ++ referredClaferUniqeuid ++ "_ref"  else  sid'  ++ ".@ref"
-        where referredClaferUniqeuid = if sid == "this" then (head resPath) else sid
+    vsident = sid' ++  ".@"  ++ genRefName (if sid == "this" then head resPath else sid)
   IFunExp _ _ -> case exp'' of
     IFunExp _ _ -> genIFunExp pid' genEnv resPath exp''
     _ -> genPExp' genEnv resPath $ PExp iType' pid' pos exp''
