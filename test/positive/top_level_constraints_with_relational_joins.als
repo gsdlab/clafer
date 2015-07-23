@@ -1,0 +1,38 @@
+open util/integer
+pred show {}
+
+
+abstract sig c0_Course
+{ r_c0_assistants : set c0_assistants }
+{ all disj x, y : this.@r_c0_assistants | (x.@ref) != (y.@ref)  }
+
+sig c0_assistants
+{ ref : one c0_TA }
+{ one @r_c0_assistants.this }
+
+abstract sig c0_TA
+{ r_c0_first : lone c0_first }
+
+sig c0_first
+{ ref : one c0_Course }
+{ one @r_c0_first.this
+  (this.~@r_c0_first) in (this.(@ref.(@r_c0_assistants.@ref))) }
+
+one sig c0_CompilerGradStudent extends c0_TA
+{}
+
+one sig c0_AIGradStudent extends c0_TA
+{}
+
+one sig c0_CompilerCourse extends c0_Course
+{}
+
+one sig c0_MachineLearningCourse extends c0_Course
+{}
+
+fact { (c0_CompilerGradStudent.(@r_c0_first.@ref)) = c0_CompilerCourse }
+fact { (c0_AIGradStudent.(@r_c0_first.@ref)) = c0_MachineLearningCourse }
+one sig c0_numerOfAssistants
+{ ref : one Int }
+
+fact { (some c0_numerOfAssistants) => ((c0_numerOfAssistants.@ref) = (#(c0_Course.@r_c0_assistants))) }

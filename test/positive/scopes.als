@@ -1,0 +1,103 @@
+open util/integer
+pred show {}
+
+
+fact { #c0_a = 0 }
+sig c0_a
+{}
+
+lone sig c0_b
+{}
+
+one sig c0_c
+{}
+
+sig c0_d
+{}
+
+some sig c0_e
+{}
+
+fact { 2 <= #c0_f and #c0_f <= 4 }
+sig c0_f
+{}
+
+fact { 3 <= #c0_g }
+sig c0_g
+{}
+
+fact { 2 <= #c0_gs and #c0_gs <= 2 }
+sig c0_gs
+{ ref : one c0_g }
+
+fact {  all disj x, y : c0_gs | (x.@ref) != (y.@ref)  }
+abstract sig c0_H
+{ r_c0_i : lone c0_i
+, r_c0_j : set c0_j
+, r_c0_k : set c0_k }
+{ 2 <= #r_c0_k and #r_c0_k <= 2 }
+
+sig c0_i
+{}
+{ one @r_c0_i.this }
+
+sig c0_j
+{}
+{ one @r_c0_j.this }
+
+sig c0_k
+{}
+{ one @r_c0_k.this }
+
+fact { 3 <= #c0_Hs }
+sig c0_Hs
+{ ref : one c0_H }
+
+fact {  all disj x, y : c0_Hs | (x.@ref) != (y.@ref)  }
+fact { 2 <= #c0_H1 and #c0_H1 <= 2 }
+sig c0_H1 extends c0_H
+{ r_c0_H12 : set c0_H12 }
+{ 2 <= #r_c0_H12 and #r_c0_H12 <= 2 }
+
+sig c0_H12 extends c0_H
+{}
+{ one @r_c0_H12.this }
+
+fact { 4 <= #c0_H2 and #c0_H2 <= 4 }
+sig c0_H2 extends c0_H
+{}
+
+fact { 1 <= #c0_H3 and #c0_H3 <= 2 }
+sig c0_H3 extends c0_H
+{}
+
+fact { 5 <= #c0_H4 }
+sig c0_H4 extends c0_H
+{}
+
+sig c0_Hs2
+{ ref : one c0_H }
+
+fact {  all disj x, y : c0_Hs2 | (x.@ref) != (y.@ref)  }
+fact { 5 <= #c0_Hs3 and #c0_Hs3 <= 8 }
+sig c0_Hs3
+{ ref : one c0_H
+, r_c0_l : lone c0_l }
+
+sig c0_l
+{}
+{ one @r_c0_l.this }
+
+fact {  all disj x, y : c0_Hs3 | (x.@ref) != (y.@ref)  }
+abstract sig c0_FF extends c0_H
+{}
+
+fact { 2 <= #c0_f1 and #c0_f1 <= 5 }
+sig c0_f1 extends c0_FF
+{ r_c0_m : set c0_m }
+{ #r_c0_m = 0 }
+
+sig c0_m
+{}
+{ one @r_c0_m.this }
+

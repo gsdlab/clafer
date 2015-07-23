@@ -1,0 +1,138 @@
+open util/integer
+pred show {}
+
+
+abstract sig c0_date
+{ ref : one Int }
+
+abstract sig c0_NorthAmericanCountry
+{}
+
+one sig c0_Canada extends c0_NorthAmericanCountry
+{}
+
+one sig c0_USA extends c0_NorthAmericanCountry
+{}
+
+abstract sig c0_Person
+{ r_c0_Name : one c0_Name
+, r_c0_Surname : one c0_Surname
+, r_c0_DateOfBirth : one c0_DateOfBirth
+, r_c0_Gender : one c0_Gender
+, r_c0_MaritalStatus : one c0_MaritalStatus
+, r_c0_Address : one c0_Address }
+
+sig c0_Name
+{ ref : one Int }
+{ one @r_c0_Name.this }
+
+sig c0_Surname
+{ ref : one Int }
+{ one @r_c0_Surname.this }
+
+sig c0_DateOfBirth extends c0_date
+{}
+{ one @r_c0_DateOfBirth.this }
+
+sig c0_Gender
+{ r_c0_Male : lone c0_Male
+, r_c0_Female : lone c0_Female }
+{ one @r_c0_Gender.this
+  let children = (r_c0_Male + r_c0_Female) | some children }
+
+sig c0_Male
+{}
+{ one @r_c0_Male.this }
+
+sig c0_Female
+{}
+{ one @r_c0_Female.this }
+
+sig c0_MaritalStatus
+{ r_c0_NeverMarried : lone c0_NeverMarried
+, r_c0_Married : lone c0_Married
+, r_c0_Divorced : lone c0_Divorced }
+{ one @r_c0_MaritalStatus.this
+  let children = (r_c0_NeverMarried + r_c0_Married + r_c0_Divorced) | one children }
+
+sig c0_NeverMarried
+{}
+{ one @r_c0_NeverMarried.this }
+
+sig c0_Married
+{}
+{ one @r_c0_Married.this }
+
+sig c0_Divorced
+{}
+{ one @r_c0_Divorced.this }
+
+sig c0_Address
+{ r_c0_Street : one c0_Street
+, r_c0_City : one c0_City
+, r_c0_Country : one c0_Country
+, r_c0_PostalCode : one c0_PostalCode }
+{ one @r_c0_Address.this }
+
+sig c0_Street
+{ ref : one Int
+, r_c0_UnitNo : lone c0_UnitNo }
+{ one @r_c0_Street.this }
+
+sig c0_UnitNo
+{ ref : one Int }
+{ one @r_c0_UnitNo.this }
+
+sig c0_City
+{ ref : one Int }
+{ one @r_c0_City.this }
+
+sig c0_Country
+{ ref : one c0_NorthAmericanCountry }
+{ one @r_c0_Country.this }
+
+sig c0_PostalCode
+{ ref : one Int }
+{ one @r_c0_PostalCode.this }
+
+one sig c0_JohnDoe extends c0_Person
+{}
+{ (((((((((this.(@r_c0_Name.@ref)) = 0) && ((this.(@r_c0_Surname.@ref)) = 1)) && ((this.(@r_c0_DateOfBirth.@ref)) = 2)) && (some (this.@r_c0_Gender).@r_c0_Male)) && (some (this.@r_c0_MaritalStatus).@r_c0_Married)) && (((this.@r_c0_Address).(@r_c0_Street.@ref)) = 3)) && (((this.@r_c0_Address).(@r_c0_City.@ref)) = 4)) && (((this.@r_c0_Address).(@r_c0_Country.@ref)) = c0_Canada)) && (((this.@r_c0_Address).(@r_c0_PostalCode.@ref)) = 5) }
+
+abstract sig c0_Student extends c0_Person
+{ r_c0_StudentId : one c0_StudentId }
+
+sig c0_StudentId
+{ ref : one Int }
+{ one @r_c0_StudentId.this }
+
+abstract sig c0_WaitingLine
+{ r_c0_participants : set c0_participants }
+{ all disj x, y : this.@r_c0_participants | (x.@ref) != (y.@ref)  }
+
+sig c0_participants
+{ ref : one c0_Person }
+{ one @r_c0_participants.this }
+
+one sig c0_MaryJane extends c0_Student
+{}
+{ (this.(@r_c0_StudentId.@ref)) = 6 }
+
+one sig c0_BusLine extends c0_WaitingLine
+{}
+{ (c0_JohnDoe in (this.(@r_c0_participants.@ref))) && (c0_MaryJane in (this.(@r_c0_participants.@ref))) }
+
+one sig c0_JohnAndMaryLine extends c0_WaitingLine
+{}
+{ (this.(@r_c0_participants.@ref)) = (c0_JohnDoe + c0_MaryJane) }
+
+fact { #c0_TwoPersonLine = 0 }
+abstract sig c0_TwoPersonLine extends c0_WaitingLine
+{}
+{ (#(this.@r_c0_participants)) = 2 }
+
+fact { #c0_OneToTenPersonLine = 0 }
+abstract sig c0_OneToTenPersonLine extends c0_WaitingLine
+{}
+{ ((#(this.@r_c0_participants)) >= 1) && ((#(this.@r_c0_participants)) <= 10) }
+

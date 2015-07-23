@@ -1,0 +1,44 @@
+open util/integer
+pred show {}
+
+
+abstract sig c0_percent
+{ ref : one Int }
+{ ((this.@ref) >= 0) && ((this.@ref) <= 5) }
+
+one sig c0_twoPercent extends c0_percent
+{}
+
+fact { (some c0_twoPercent) => ((c0_twoPercent.@ref) = 2) }
+one sig c0_threePercent extends c0_percent
+{}
+
+fact { (some c0_threePercent) => ((c0_threePercent.@ref) = ((c0_twoPercent.@ref).plus[1])) }
+abstract sig c0_date
+{ ref : one Int }
+
+one sig c0_today extends c0_date
+{}
+
+fact { (some c0_today) => ((c0_today.@ref) = 0) }
+abstract sig c0_time
+{ ref : one Int
+, r_c0_minute : one c0_minute
+, r_c0_hour : one c0_hour }
+
+sig c0_minute
+{ ref : one Int }
+{ one @r_c0_minute.this
+  ((this.@ref) >= 0) && ((this.@ref) <= 5) }
+
+sig c0_hour
+{ ref : one Int }
+{ one @r_c0_hour.this
+  ((this.@ref) >= 0) && ((this.@ref) <= 5) }
+
+fact { (some c0_time) => ((c0_time.@ref) = ((c0_time.(@r_c0_minute.@ref)).plus[(c0_time.(@r_c0_hour.@ref))])) }
+one sig c0_now extends c0_time
+{}
+{ (this.(@r_c0_minute.@ref)) = 3
+  (this.(@r_c0_hour.@ref)) = 1 }
+

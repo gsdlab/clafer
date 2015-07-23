@@ -1,0 +1,25 @@
+open util/integer
+pred show {}
+
+
+one sig c0_XX
+{ r_c0_x : one c0_x }
+{ some this.@r_c0_x }
+
+one sig c0_x
+{ r_c0_y : one c0_y }
+
+one sig c0_y
+{}
+
+one sig c0_ZZ
+{ r_c0_z : one c0_z }
+{ (this.(@r_c0_z.@ref)) > 0 }
+
+one sig c0_z
+{ ref : one Int
+, r_c1_y : one c1_y }
+
+one sig c1_y
+{}
+

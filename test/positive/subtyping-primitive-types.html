@@ -1,0 +1,47 @@
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_percent">percent</span><span class="keyword"> ->> </span><a href="#integer"><span class="reference">integer</span></a>
+  <div class="indent">
+  <span class="keyword">[</span> <a href="#this"><span class="reference">this</span></a> &gt;= 0 &amp;&amp; <a href="#this"><span class="reference">this</span></a> &lt;= 5 <span class="keyword">]</span></div>
+</div>
+
+
+<div>
+<span class="claferDecl" id="c0_twoPercent">twoPercent</span><span class="keyword"> : </span><a href="#c0_percent"><span class="reference">percent</span></a> = 2</div>
+
+
+<div>
+<span class="claferDecl" id="c0_threePercent">threePercent</span><span class="keyword"> : </span><a href="#c0_percent"><span class="reference">percent</span></a> = <a href="#c0_twoPercent"><span class="reference">twoPercent</span></a> + 1</div>
+
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_date">date</span><span class="keyword"> ->> </span><a href="#string"><span class="reference">string</span></a></div>
+
+
+<div>
+<span class="claferDecl" id="c0_today">today</span><span class="keyword"> : </span><a href="#c0_date"><span class="reference">date</span></a> = "Mar 20, 2012"</div>
+
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_time">time</span><span class="keyword"> ->> </span><a href="#integer"><span class="reference">integer</span></a> = <a href="#c0_minute"><span class="reference">minute</span></a> + <a href="#c0_hour"><span class="reference">hour</span></a>
+  <div class="indent">
+  <span class="claferDecl" id="c0_minute">minute</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a>
+    <div class="indent">
+    <span class="keyword">[</span> <a href="#this"><span class="reference">this</span></a> &gt;= 0 &amp;&amp; <a href="#this"><span class="reference">this</span></a> &lt;= 5 <span class="keyword">]</span></div>
+  </div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_hour">hour</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a>
+    <div class="indent">
+    <span class="keyword">[</span> <a href="#this"><span class="reference">this</span></a> &gt;= 0 &amp;&amp; <a href="#this"><span class="reference">this</span></a> &lt;= 5 <span class="keyword">]</span></div>
+  </div>
+</div>
+
+
+<div>
+<span class="claferDecl" id="c0_now">now</span><span class="keyword"> : </span><a href="#c0_time"><span class="reference">time</span></a>
+  <div class="indent">
+  <span class="keyword">[</span> <a href="#c0_minute"><span class="reference">minute</span></a> = 3 <span class="keyword">]</span></div>
+  <div class="indent">
+  <span class="keyword">[</span> <a href="#c0_hour"><span class="reference">hour</span></a> = 1 <span class="keyword">]</span></div>
+</div>
+

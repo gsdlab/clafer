@@ -1,0 +1,32 @@
+from jsir.IR import *
+
+c0_Person = Abstract("c0_Person");
+c0_age = c0_Person.addChild("c0_age").withCard(1, 1);
+c0_maritalStatus = c0_Person.addChild("c0_maritalStatus").withCard(1, 1).withGroupCard(1, 1);
+c0_neverMarried = c0_maritalStatus.addChild("c0_neverMarried").withCard(0, 1);
+c0_married = c0_maritalStatus.addChild("c0_married").withCard(0, 1);
+c0_spouse = c0_married.addChild("c0_spouse").withCard(1, 1);
+c0_divorced = c0_maritalStatus.addChild("c0_divorced").withCard(0, 1);
+c0_childs = c0_Person.addChild("c0_childs");
+c0_parents = c0_Person.addChild("c0_parents").withCard(0, 2);
+c0_Alice = Clafer("c0_Alice").withCard(1, 1).extending(c0_Person);
+c0_Bob = Clafer("c0_Bob").withCard(1, 1).extending(c0_Person);
+c0_Carol = Clafer("c0_Carol").withCard(1, 1).extending(c0_Person);
+c0_age.refTo("int");
+c0_spouse.refTo(c0_Person);
+c0_childs.refToUnique(c0_Person);
+c0_parents.refToUnique(c0_Person);
+c0_age.addConstraint(greaterThanEqual(joinRef($this()), constant(0)));
+c0_maritalStatus.addConstraint(implies(or(some(join($this(), c0_married)), some(join($this(), c0_divorced))), greaterThanEqual(joinRef(join(joinParent($this()), c0_age)), constant(5))));
+c0_married.addConstraint(notEqual(joinRef(join($this(), c0_spouse)), joinParent(joinParent($this()))));
+c0_spouse.addConstraint(equal(joinRef(join(join(join(joinRef($this()), c0_maritalStatus), c0_married), c0_spouse)), joinParent(joinParent(joinParent($this())))));
+c0_childs.addConstraint(set_in(joinParent($this()), joinRef(join(joinRef($this()), c0_parents))));
+c0_childs.addConstraint(set_in(joinRef(join(join(join(joinParent($this()), c0_maritalStatus), c0_married), c0_spouse)), joinRef(join(joinRef($this()), c0_parents))));
+c0_childs.addConstraint(lessThan(joinRef(join(joinRef($this()), c0_age)), joinRef(join(joinParent($this()), c0_age))));
+c0_parents.addConstraint(set_in(joinParent($this()), joinRef(join(joinRef($this()), c0_childs))));
+c0_Alice.addConstraint(equal(joinRef(join($this(), c0_age)), constant(6)));
+c0_Alice.addConstraint(equal(joinRef(join(join(join($this(), c0_maritalStatus), c0_married), c0_spouse)), glob(c0_Bob)));
+c0_Carol.addConstraint(equal(joinRef(join($this(), c0_age)), constant(1)));
+scope({c0_Person:3, c0_age:3, c0_childs:9, c0_divorced:3, c0_maritalStatus:3, c0_married:3, c0_neverMarried:3, c0_parents:6, c0_spouse:3});
+defaultScope(1);
+stringLength(16);

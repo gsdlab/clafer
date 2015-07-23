@@ -1,0 +1,116 @@
+open util/integer
+pred show {}
+
+
+abstract sig c0_options
+{ r_c0_size : one c0_size
+, r_c0_cache : lone c0_cache }
+{ ((some (this.@r_c0_size).@r_c0_small) && (some this.@r_c0_cache)) => (some ((this.@r_c0_cache).@r_c1_size).@r_c0_fixed) }
+
+sig c0_size
+{ r_c0_small : lone c0_small
+, r_c0_large : lone c0_large }
+{ one @r_c0_size.this
+  let children = (r_c0_small + r_c0_large) | one children }
+
+sig c0_small
+{}
+{ one @r_c0_small.this }
+
+sig c0_large
+{}
+{ one @r_c0_large.this }
+
+sig c0_cache
+{ r_c1_size : one c1_size }
+{ one @r_c0_cache.this }
+
+sig c1_size
+{ ref : one Int
+, r_c0_fixed : lone c0_fixed }
+{ one @r_c1_size.this }
+
+sig c0_fixed
+{}
+{ one @r_c0_fixed.this }
+
+abstract sig c0_comp
+{ r_c0_version : one c0_version }
+{ (some this.@r_c0_version) => ((this.(@r_c0_version.@ref)) = (1.plus[2])) }
+
+sig c0_version
+{ ref : one Int }
+{ one @r_c0_version.this }
+
+abstract sig c0_ECU extends c0_comp
+{}
+
+abstract sig c0_display extends c0_comp
+{ r_c0_server : one c0_server
+, r_c1_options : one c1_options }
+{ (this.(@r_c0_version.@ref)) >= ((this.@r_c0_server).(@ref.(@r_c0_version.@ref))) }
+
+sig c0_server
+{ ref : one c0_ECU }
+{ one @r_c0_server.this }
+
+sig c1_options extends c0_options
+{}
+{ one @r_c1_options.this }
+
+abstract sig c0_plaECU extends c0_ECU
+{ r_c1_display : set c1_display }
+{ 1 <= #r_c1_display and #r_c1_display <= 2 }
+
+sig c1_display extends c0_display
+{}
+{ one @r_c1_display.this
+  ((this.(@r_c0_server.@ref)) = (this.~@r_c1_display)) && (no (this.@r_c1_options).@r_c0_cache) }
+
+one sig c0_ECU1 extends c0_plaECU
+{}
+
+lone sig c0_ECU2 extends c0_plaECU
+{ r_c0_master : one c0_master }
+
+lone sig c0_master
+{ ref : one c0_ECU1 }
+{ one r_c0_master }
+
+one sig c0_telematicsSystem
+{ r_c0_channel : one c0_channel
+, r_c0_extraDisplay : lone c0_extraDisplay
+, r_c2_size : one c2_size }
+{ (((((some (this.@r_c0_channel).@r_c0_dual) <=> (some c0_ECU2)) && ((some this.@r_c0_extraDisplay) <=> ((#(c0_ECU1.@r_c1_display)) = 2))) && ((some this.@r_c0_extraDisplay) <=> ((some c0_ECU2) => ((#(c0_ECU2.@r_c1_display)) = 2)))) && ((some (this.@r_c2_size).@r_c1_large) <=> (no (((c0_plaECU.@r_c1_display).@r_c1_options).@r_c0_size).@r_c0_small))) && ((some (this.@r_c2_size).@r_c1_small) <=> (no (((c0_plaECU.@r_c1_display).@r_c1_options).@r_c0_size).@r_c0_large)) }
+
+one sig c0_channel
+{ r_c0_single : lone c0_single
+, r_c0_dual : lone c0_dual }
+{ let children = (r_c0_single + r_c0_dual) | one children }
+
+lone sig c0_single
+{}
+{ one r_c0_single }
+
+lone sig c0_dual
+{}
+{ one r_c0_dual }
+
+lone sig c0_extraDisplay
+{}
+{ one r_c0_extraDisplay }
+
+one sig c2_size
+{ r_c1_small : lone c1_small
+, r_c1_large : lone c1_large }
+{ let children = (r_c1_small + r_c1_large) | one children }
+
+lone sig c1_small
+{}
+{ one r_c1_small }
+
+lone sig c1_large
+{}
+{ one r_c1_large }
+
+fact { ((some (c0_telematicsSystem.@r_c0_channel).@r_c0_dual) && (some c0_telematicsSystem.@r_c0_extraDisplay)) && (some (c0_telematicsSystem.@r_c2_size).@r_c1_large) }

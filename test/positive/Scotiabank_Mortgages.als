@@ -1,0 +1,143 @@
+open util/integer
+pred show {}
+
+
+fact { #c0_Currency = 0 }
+abstract sig c0_Currency
+{ ref : one Int }
+
+fact { #c0_Percentage = 0 }
+abstract sig c0_Percentage
+{ ref : one Int }
+{ ((this.@ref) >= 0) && ((this.@ref) <= 100) }
+
+fact { #c0_Mortgage = 0 }
+abstract sig c0_Mortgage
+{ r_c0_valueProposition : one c0_valueProposition
+, r_c0_term : one c0_term
+, r_c0_kind : one c0_kind
+, r_c0_principalMortgageAmount : one c0_principalMortgageAmount
+, r_c0_balance : one c0_balance
+, r_c0_propertyValue : one c0_propertyValue
+, r_c0_loanToValue : one c0_loanToValue
+, r_c0_amortization : one c0_amortization
+, r_c0_interestRate : one c0_interestRate
+, r_c0_currentInterestRate : one c0_currentInterestRate
+, r_c0_currentPayment : one c0_currentPayment
+, r_c0_paymentFrequency : one c0_paymentFrequency
+, r_c0_financingAvailable : one c0_financingAvailable }
+{ (5000 <= (this.((@r_c0_principalMortgageAmount.@ref).@ref))) && ((this.((@r_c0_principalMortgageAmount.@ref).@ref)) <= 9999999)
+  (this.((@r_c0_balance.@ref).@ref)) <= (this.((@r_c0_principalMortgageAmount.@ref).@ref))
+  (1 <= (this.(@r_c0_amortization.@ref))) && ((this.(@r_c0_amortization.@ref)) <= 30) }
+
+sig c0_valueProposition
+{ ref : one Int }
+{ one @r_c0_valueProposition.this }
+
+sig c0_term
+{ ref : one c0_MortgageTerm }
+{ one @r_c0_term.this }
+
+sig c0_kind
+{ r_c0_open : lone c0_open
+, r_c0_closed : lone c0_closed }
+{ one @r_c0_kind.this
+  let children = (r_c0_open + r_c0_closed) | one children }
+
+sig c0_open
+{}
+{ one @r_c0_open.this }
+
+sig c0_closed
+{}
+{ one @r_c0_closed.this }
+
+sig c0_principalMortgageAmount
+{ ref : one c0_Currency }
+{ one @r_c0_principalMortgageAmount.this }
+
+sig c0_balance
+{ ref : one c0_Currency }
+{ one @r_c0_balance.this }
+
+sig c0_propertyValue
+{ ref : one c0_Currency }
+{ one @r_c0_propertyValue.this }
+
+sig c0_loanToValue
+{ ref : one c0_Percentage }
+{ one @r_c0_loanToValue.this }
+
+sig c0_amortization
+{ ref : one Int }
+{ one @r_c0_amortization.this }
+
+sig c0_interestRate
+{ r_c0_fixedForTheFullTerm : lone c0_fixedForTheFullTerm
+, r_c0_resetTogetherWithPaymentAmountEachTimeScotiabankPrimeRateChanges : lone c0_resetTogetherWithPaymentAmountEachTimeScotiabankPrimeRateChanges }
+{ one @r_c0_interestRate.this
+  let children = (r_c0_fixedForTheFullTerm + r_c0_resetTogetherWithPaymentAmountEachTimeScotiabankPrimeRateChanges) | one children }
+
+sig c0_fixedForTheFullTerm
+{}
+{ one @r_c0_fixedForTheFullTerm.this }
+
+sig c0_resetTogetherWithPaymentAmountEachTimeScotiabankPrimeRateChanges
+{}
+{ one @r_c0_resetTogetherWithPaymentAmountEachTimeScotiabankPrimeRateChanges.this }
+
+sig c0_currentInterestRate
+{ ref : one c0_Percentage }
+{ one @r_c0_currentInterestRate.this }
+
+sig c0_currentPayment
+{ ref : one c0_Currency }
+{ one @r_c0_currentPayment.this }
+
+sig c0_paymentFrequency
+{ r_c0_weekly : lone c0_weekly
+, r_c0_biweekly : lone c0_biweekly
+, r_c0_semiMonthly : lone c0_semiMonthly
+, r_c0_monthly : lone c0_monthly }
+{ one @r_c0_paymentFrequency.this
+  let children = (r_c0_weekly + r_c0_biweekly + r_c0_semiMonthly + r_c0_monthly) | one children }
+
+sig c0_weekly
+{}
+{ one @r_c0_weekly.this }
+
+sig c0_biweekly
+{}
+{ one @r_c0_biweekly.this }
+
+sig c0_semiMonthly
+{}
+{ one @r_c0_semiMonthly.this }
+
+sig c0_monthly
+{}
+{ one @r_c0_monthly.this }
+
+sig c0_financingAvailable
+{ r_c0_conventional : lone c0_conventional
+, r_c0_insured : lone c0_insured }
+{ one @r_c0_financingAvailable.this
+  let children = (r_c0_conventional + r_c0_insured) | one children }
+
+sig c0_conventional
+{}
+{ one @r_c0_conventional.this }
+
+sig c0_insured
+{}
+{ one @r_c0_insured.this }
+
+abstract sig c0_MortgageTerm
+{}
+
+one sig c0_sixMonths extends c0_MortgageTerm
+{}
+
+one sig c0_oneYear extends c0_MortgageTerm
+{}
+
