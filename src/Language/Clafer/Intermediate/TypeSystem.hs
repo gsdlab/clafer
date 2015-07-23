@@ -168,10 +168,10 @@ unionType TString  = [stringType]
 unionType TReal    = [realType]
 unionType TDouble  = [doubleType]
 unionType TInteger = [integerType]
+unionType TBoolean = [booleanType]
 unionType (TClafer u) = u
 unionType (TUnion types) = concatMap unionType types
-unionType TBoolean = error $ "TypeSystem.unionType: cannot union TBoolean"
-unionType tm@(TMap _ _) = error $ "TypeSystem.unionType: cannot union a TMap: '" ++ show tm ++ "'"
+unionType (TMap _ ta') = unionType ta'
 
 fromUnionType :: [String] -> Maybe IType
 fromUnionType u =
@@ -223,16 +223,16 @@ t1@(TClafer u1) +++ t2@(TClafer u2) = if t1 == t2
                                       then t1
                                       else (TClafer $ nub $ u1 ++ u2)  -- should be TUnion [t1,t2]
 (TMap so1 ta1)  +++ (TMap so2 ta2)  = (TMap (so1 +++ so2) (ta1 +++ ta2))
-(TUnion un1)    +++ (TUnion un2)    = collapseUnion (TUnion $ nub $ un1 ++ un2)
-(TUnion un1)    +++ t2              = collapseUnion (TUnion $ nub $ un1 ++ [t2])
-t1              +++ (TUnion un2)    = collapseUnion (TUnion $ nub $ t1:un2)
+(TUnion un1)    +++ (TUnion un2)    = collapseTUnion (TUnion $ nub $ un1 ++ un2)
+(TUnion un1)    +++ t2              = collapseTUnion (TUnion $ nub $ un1 ++ [t2])
+t1              +++ (TUnion un2)    = collapseTUnion (TUnion $ nub $ t1:un2)
 t1              +++ t2              = if t1 == t2
                                       then t1
                                       else TUnion [t1, t2]
 
-collapseUnion :: IType    -> IType
-collapseUnion (TUnion [t]) = t
-collapseUnion t            = t
+collapseTUnion :: IType    -> IType
+collapseTUnion (TUnion [t]) = t
+collapseTUnion t            = t
 
 -- original version
 -- (+++) :: IType -> IType -> IType
@@ -382,12 +382,11 @@ closure :: Monad m => UIDIClaferMap -> [String] -> m [String]
 closure uidIClaferMap' ut = concat `liftM` mapM (hierarchyMap uidIClaferMap' _uid) ut
 
 getRefTypes :: UIDIClaferMap -> IType        -> [IType]
-getRefTypes uidIClaferMap'      (TClafer hi') = map _ta $ catMaybes $ map (getDrefTMapByUID uidIClaferMap') hi'
+getRefTypes uidIClaferMap'      (TClafer hi') = catMaybes $ map (getDrefTMapByUID uidIClaferMap') hi'
 
 getRefTypes uidIClaferMap'      (TMap _ ta')  = getRefTypes uidIClaferMap' ta'
 
---getRefTypes uidIClaferMap'      (TUnion un')  = TUnion $ catMaybes $ map (getRefTypes uidIClaferMap') un'
--- primitive types have no references
+getRefTypes uidIClaferMap'      (TUnion un')  = concatMap (getRefTypes uidIClaferMap') un'
 getRefTypes _                   _             = []
 
 
