@@ -1,33 +1,62 @@
-// lines that parse now are commented out because they result in type errors
-
 // now primitive types can be used as types of references, which may be useful for redefinition
-anyNumber -> integer
-// number : anyNumber -> 1
-// str -> "Alice"
-// dbl -> 3.1415
+abstract intNumber -> integer
 
-abstract Person
-Alice : Person
-Ella : Person
+// this is a proper type refinement of 'integer'
+numberOne : intNumber -> 1
 
-// but primitive types cannot be used as super types (triggers parse error)
+abstract name -> string
+
+// this is a proper type refinement of 'string'
+alice : name -> "Alice"
+
+abstract realNumber -> real
+
+// these are proper type refinements of 'real'
+pi : realNumber -> 3.1415
+piDouble : realNumber -> 3.14e0
+piInt : realNumber -> 3
+
+abstract doubleNumber : realNumber -> double
+numberTwentyFive : doubleNumber -> 2.5e1
+
+abstract intNumber2 : realNumber -> integer
+numberThree : intNumber2 -> 3
+
+// this is a proper type refinements of 'double'
+abstract intNumber3 : doubleNumber -> integer
+numberFour : intNumber2 -> 4
+
+// enumerated type from integers
+likertScaleVal -> 1, 2, 3, 4, 5
+
+// non-zero integer
+nonZero -> integer -- 0
+
+// but primitive types cannot be used as super types (they trigger parse error)
 // n : 1
 // s : "Alice"
 // d : 3.1415
 
+abstract Person
+    abstract Head
+    likes -> Person ?
+
+Alice : Person
+    `Head
+    [ likes = Ella ]
+
 // however, now we can use . as super type expressions
-abstract Team
-  abstract Member
+Ella : Person
+    h : Person.Head
+    [ no likes ]
 
-team1 : Team
-  Bob : Team.Member
+// expressions now allowed as reference target
+heads -> Person.Head *
 
-spouse -> Alice
+friend -> Alice ++ Ella *
 
-// the `if` expression is now allowed as reference target
-// spouseIf -> if (1 > 0) then Alice else Ella
+onlyAlice -> Alice ** Person
 
-// but the `if` expression is not allowed as a super type (triggers parse error)
-// AliceOrElla : if (1 > 0) then Alice else Ella
+exceptElla -> Person -- Ella *
 
-// spouseUnion -> Alice ++ Ella
+// but above expressions are not allowed as a super type (they trigger a parse error)

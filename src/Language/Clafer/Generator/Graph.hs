@@ -156,6 +156,7 @@ graphSimpleReference (ReferenceSet _ setExp) topLevel irMap showRefs =
   case graphSimpleExp setExp topLevel irMap of
     ["integer"] -> ""
     ["int"] -> ""
+    ["double"] -> ""
     ["real"] -> ""
     ["string"] -> ""
     [target] ->
@@ -177,6 +178,7 @@ graphSimpleReference (ReferenceBag _ setExp) topLevel irMap showRefs =
     ["integer"] -> ""
     ["int"] -> ""
     ["real"] -> ""
+    ["double"] -> ""
     ["string"] -> ""
     [target] ->
       ("\"" ++
@@ -212,7 +214,7 @@ graphSimpleInitHow _ _ _ = ""
 graphSimpleExp _ _ _ = ""
 graphSimpleQuant _ _ _ = ""
 graphSimpleGoal _ _ _ = ""
-graphSimpleSoftConstraint _ _ _ = ""
+graphSimpleAssertion _ _ _ = ""
 graphSimpleAbstract _ _ _ = ""
 graphSimpleGCard _ _ _ = ""
 graphSimpleNCard _ _ _ = ""
@@ -249,7 +251,7 @@ graphCVLElement (Subclafer _ clafer)  parent' irMap = graphCVLClafer clafer pare
 graphCVLElement (ClaferUse s _ _ _) parent' irMap = if parent' == Nothing then "" else "?" ++ " -> " ++ getUseId s irMap ++ " [arrowhead = onormal style = dashed constraint = false];\n"
 graphCVLElement (Subconstraint _ constraint) parent' irMap = graphCVLConstraint constraint parent' irMap
 graphCVLElement (Subgoal _ constraint) parent' irMap = graphCVLGoal constraint parent' irMap
-graphCVLElement (Subsoftconstraint _ constraint) parent' irMap = graphCVLSoftConstraint constraint parent' irMap
+graphCVLElement (SubAssertion _ constraint) parent' irMap = graphCVLAssertion constraint parent' irMap
 
 graphCVLElements :: Elements -> Maybe String -> Map.Map Span [Ir] -> String
 graphCVLElements (ElementsEmpty _) _ _ = ""
@@ -292,8 +294,8 @@ graphCVLConstraint (Constraint s exps') parent' irMap = let body' = htmlChars $ 
                                                                     in uid' ++ " [label=\"" ++ body' ++ "\" shape=parallelogram];\n" ++
                                                                       if parent' == Nothing then "" else uid' ++ " -> \"" ++ fromJust parent' ++ "\";\n"
 
-graphCVLSoftConstraint :: SoftConstraint -> Maybe String -> Map.Map Span [Ir] -> String
-graphCVLSoftConstraint (SoftConstraint s exps') parent' irMap = let body' = htmlChars $ genTooltip (Module s [ElementDecl s (Subsoftconstraint s (SoftConstraint s exps'))]) irMap;
+graphCVLAssertion :: Assertion -> Maybe String -> Map.Map Span [Ir] -> String
+graphCVLAssertion (Assertion s exps') parent' irMap = let body' = htmlChars $ genTooltip (Module s [ElementDecl s (SubAssertion s (Assertion s exps'))]) irMap;
                                                                        uid' = "\"" ++ getExpId s irMap ++ "\""
                                                                     in uid' ++ " [label=\"" ++ body' ++ "\" shape=parallelogram];\n" ++
                                                                       if parent' == Nothing then "" else uid' ++ " -> \"" ++ fromJust parent' ++ "\";\n"
@@ -334,7 +336,7 @@ graphCVLInitHow _ _ _ = ""
 graphCVLExp _ _ _ = ""
 graphCVLQuant _ _ _ = ""
 graphCVLGoal _ _ _ = ""
-graphCVLSoftConstraint _ _ _ = ""
+graphCVLAssertion _ _ _ = ""
 graphCVLAbstract _ _ _ = ""-}
 
 graphCVLExp :: Exp -> Maybe String -> Map.Map Span [Ir] -> [String]
@@ -390,12 +392,6 @@ getDivId s irMap = if Map.lookup s irMap == Nothing
                       then "Uid not Found"
                       else let IRClafer iClaf = head $ fromJust $ Map.lookup s irMap in
                         _uid iClaf
-
-{-getSuperId :: Span -> Map.Map Span [Ir] -> String
-getSuperId s irMap = if Map.lookup s irMap == Nothing
-                        then "Uid not Found"
-                        else let IRPExp pexp = head $ fromJust $ Map.lookup s irMap in
-                          sident $ exp pexp-}
 
 getUseId :: Span -> Map.Map Span [Ir] -> String
 getUseId s irMap = if Map.lookup s irMap == Nothing

@@ -15,13 +15,11 @@ all: build
 
 init:
 	cabal sandbox init --sandbox=../.clafertools-cabal-sandbox
-	cabal install --only-dependencies $(MAC_USR_LIB) --enable-tests --enable-optimization=2
-	# turn off optimization for development - cuts 50% `cabal build` time
-	echo "optimization: False" > cabal.config
+	cabal install --only-dependencies $(MAC_USR_LIB) --enable-tests
 
 build:
 	$(MAKE) -C $(TOOL_DIR)
-	cabal configure --enable-tests --disable-optimization
+	cabal configure --enable-tests
 	cabal build
 
 install:
@@ -32,7 +30,7 @@ install:
 	cp -f CHANGES.md $(to)/clafer-CHANGES.md
 	cp -f tools/alloy4.2.jar $(to)/tools
 	cp -f tools/ecore2clafer.jar $(to)/tools
-	cabal install --bindir=$(to) $(GPLK_LIBS_INCLUDES) $(MAC_USR_LIB) --enable-optimization=2
+	cabal install --bindir=$(to) $(GPLK_LIBS_INCLUDES) $(MAC_USR_LIB)
 
 # Removes current build and makes a clean new one (Don't use if starting from scratch!)
 cleanEnv:
@@ -86,3 +84,7 @@ cleanTest:
 
 tags:
 	hasktags --ctags --extendedctag .
+
+codex:
+	codex update
+	mv codex.tags tags

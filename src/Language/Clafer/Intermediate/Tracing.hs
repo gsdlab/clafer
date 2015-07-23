@@ -49,7 +49,7 @@ traceAstModule x =
   i (AstDeclaration a) = getSpan a
   i (AstClafer a) = getSpan a
   i (AstConstraint a) = getSpan a
-  i (AstSoftConstraint a) = getSpan a
+  i (AstAssertion a) = getSpan a
   i (AstGoal a) = getSpan a
   i (AstAbstract a) = getSpan a
   i (AstElements a) = getSpan a
@@ -86,8 +86,8 @@ traverseClafer x@(Clafer _ a b _ d r e f g) = AstClafer x : (traverseAbstract a 
 traverseConstraint :: Constraint -> [Ast]
 traverseConstraint x@(Constraint _ e) = AstConstraint x : concatMap traverseExp e
 
-traverseSoftConstraint :: SoftConstraint -> [Ast]
-traverseSoftConstraint x@(SoftConstraint _ e) = AstSoftConstraint x : concatMap traverseExp e
+traverseAssertion :: Assertion -> [Ast]
+traverseAssertion x@(Assertion _ e) = AstAssertion x : concatMap traverseExp e
 
 traverseGoal :: Goal -> [Ast]
 traverseGoal x@(Goal _ e) = AstGoal x : concatMap traverseExp e
@@ -111,7 +111,7 @@ traverseElement x =
     ClaferUse _ n c e -> traverseName n ++ traverseCard c ++ traverseElements e
     Subconstraint _ c -> traverseConstraint c
     Subgoal _ g -> traverseGoal g
-    Subsoftconstraint _ c -> traverseSoftConstraint c
+    SubAssertion _ c -> traverseAssertion c
 
 traverseSuper :: Super -> [Ast]
 traverseSuper x =
@@ -208,6 +208,7 @@ traverseExp x =
     EImpliesElse _ e1 e2 e3 -> traverseExp e1 ++ traverseExp e2 ++ traverseExp e3
     EInt _ _ -> []
     EDouble _ _ -> []
+    EReal _ _ -> []
     EStr _ _ -> []
     EUnion _ s1 s2 -> traverseExp s1 ++ traverseExp s2
     EUnionCom _ s1 s2 -> traverseExp s1 ++ traverseExp s2
@@ -240,7 +241,7 @@ data Ast =
   AstDeclaration Declaration |
   AstClafer Clafer |
   AstConstraint Constraint |
-  AstSoftConstraint SoftConstraint |
+  AstAssertion Assertion |
   AstGoal Goal |
   AstAbstract Abstract |
   AstElements Elements |
@@ -267,7 +268,7 @@ printAstNode (AstModule x) = printTree x
 printAstNode (AstDeclaration x) = printTree x
 printAstNode (AstClafer x) = printTree x
 printAstNode (AstConstraint x) = printTree x
-printAstNode (AstSoftConstraint x) = printTree x
+printAstNode (AstAssertion x) = printTree x
 printAstNode (AstGoal x) = printTree x
 printAstNode (AstAbstract x) = printTree x
 printAstNode (AstElements x) = printTree x

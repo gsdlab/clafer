@@ -60,7 +60,7 @@ Optional:
 
 * [Java Platform (JDK)](http://www.oracle.com/technetwork/java/javase/downloads/index.html) v8+, 32bit
   * needed only for running Alloy validation
-* [Alloy4.1 and/or Alloy4.2](http://alloy.mit.edu/alloy/download.html)
+* [Alloy4.2](http://alloy.mit.edu/alloy/download.html)
   * needed only for Alloy output validation
 * [GraphViz](http://graphviz.org/)
   * the program `dot` is needed only in the `html` mode for SVG graph generation
@@ -95,7 +95,7 @@ Dependencies
 
 * [The Haskell Platform](http://hackage.haskell.org/platform/) v2014.2.0.0
   * Alternatively GHC >= 7.8.3 and Cabal >= 1.18
-* [Alloy4.1 and/or Alloy4.2](http://alloy.mit.edu/alloy/download.html)
+* [Alloy4.2](http://alloy.mit.edu/alloy/download.html)
   * downloaded automatically during the build
 * [Git](http://git-scm.com/)
 
@@ -156,23 +156,23 @@ clafer [OPTIONS] [FILE]
 
 Common flags:
   -m --mode=CLAFERMODE                    Generated output type. Available
-                                          CLAFERMODEs are: 'alloy' (Alloy 4.1);
-                                          'alloy42' (default, Alloy 4.2);
-                                          'json' (intermediate representation
-                                          of Clafer model); 'clafer' (analyzed
-                                          and desugared clafer model); 'html'
-                                          (original model in HTML); 'graph'
-                                          (graphical representation written in
-                                          DOT language); 'cvlgraph' (cvl
-                                          notation representation written in
-                                          DOT language); 'python' (generates IR
-                                          in python); 'choco' (Choco constraint
+                                          CLAFERMODEs are: 'alloy' (default,
+                                          Alloy 4.2); 'json' (intermediate
+                                          representation of Clafer model);
+                                          'clafer' (analyzed and desugared
+                                          clafer model); 'html' (original model
+                                          in HTML); 'graph' (graphical
+                                          representation written in DOT
+                                          language); 'cvlgraph' (cvl notation
+                                          representation written in DOT
+                                          language); 'python' (generates IR in
+                                          python); 'choco' (Choco constraint
                                           programming solver). Multiple modes
                                           can be specified at the same time,
                                           e.g., '-m alloy -m html'.
   -o --console-output                     Output code on console.
-  -i --flatten-inheritance                Flatten inheritance ('alloy' and
-                                          'alloy42' modes only).
+  -i --flatten-inheritance                Flatten inheritance ('alloy' mode
+                                          only).
      --timeout-analysis=INT               Timeout for analysis.
   -l --no-layout                          Don't resolve off-side rule layout.
      --nl --new-layout                    Use new fast layout resolver
@@ -181,10 +181,9 @@ Common flags:
                                           the entire model.
   -f --skip-resolver                      Skip name resolution.
   -k --keep-unused                        Keep uninstantated abstract clafers
-                                          ('alloy' and 'alloy42' modes only).
+                                          ('alloy' mode only).
   -s --no-stats                           Don't print statistics.
   -v --validate                           Validate outputs of all modes. Uses
-                                          'tools/alloy4.jar' and
                                           'tools/alloy4.2.jar' for Alloy
                                           models, and Clafer translator for
                                           desugared Clafer models. Use
@@ -193,13 +192,12 @@ Common flags:
      --nr --noalloyruncommand             For usage with partial instances:
                                           Don't generate the alloy 'run show
                                           for ... ' command, and rename @.ref
-                                          with unique names  ('alloy' and
-                                          'alloy42' modes only).
+                                          with unique names  ('alloy' mode
+                                          only).
      --tooldir=DIR                        Specify the tools directory
                                           ('validate' only). Default: 'tools/'.
   -a --alloy-mapping                      Generate mapping to Alloy source
-                                          code ('alloy' and 'alloy42' modes
-                                          only).
+                                          code ('alloy' mode only).
      --self-contained                     Generate a self-contained html
                                           document ('html' mode only).
      --add-graph                          Add a graph to the generated html
@@ -218,15 +216,11 @@ Common flags:
                                           none or simple (default).
      --check-afm --afm                    Throws an error if the cardinality
                                           of any of the clafers is above 1.
-     --sg --skip-goals                    Skip generation of Alloy code for
-                                          goals. Useful for all tools working
-                                          with standard Alloy.
      --meta-data                          Generate a 'fully qualified
                                           name'-'least-partially-qualified
                                           name'-'unique ID' map ('.cfr-map').
-                                          In Alloy, Alloy42, and Choco modes,
-                                          generate the scopes map
-                                          ('.cfr-scope').
+                                          In Alloy and Choco modes, generate
+                                          the scopes map ('.cfr-scope').
   -? --help                               Display help message
   -V --version                            Print version information
      --numeric-version                    Print just the version number
@@ -238,7 +232,7 @@ Multiple modes can be used at the same time. For example,
 
 `clafer model.cfr -m alloy -m json -m html -m graph --self-contained --show-references --no-stats`
 
-The mode `-m alloy42` is only the default mode if no other modes are given. When other modes are given, the mode `-m alloy42` must be added explicitly if needed.
+The mode `-m alloy` is only the default mode if no other modes are given. When other modes are given, the mode `-m alloy` must be added explicitly if needed.
 
 Additionally, `[OPTIONS]` can also be specified directly in the model file by inserting the following compiler directive as the first line of the file:
 
@@ -269,6 +263,68 @@ The following directives are markers of locations in the input files for differe
 * `//# STATS` - marks the insertion point for module statistics. The statistics can be omitted using the argument `--no-stats`.
 * `//# SUMMARY` - shorthand for `//# GRAPH` and `//# STATS`
 * `//# QUALITY_ATTRIBUTE` - is used by ClaferMooVisualizer and ClaferConfigurator to distinguish quality attributes, which should be filtered out, from other clafers.
+
+
+He is some information about the development of the clafer compiler.
+
+## Branching
+
+We are following the simplified version of the [successful Git branching model](http://nvie.com/posts/a-successful-git-branching-model/).
+The branch `master` is for releases and hot fixes only.
+The branch `develop` is for minor development and for integration of features from feature branches.
+For any substantial work, branch off from `develop` and create a pull request back into `develop` after the work is completed.
+We do testing and code review before merging into develop.
+If the `develop` is ahead, merge it into the feature branch and perform integration testing there.
+To make a release, we create a pull request from `develop` into `master`.
+We tag `master` with version numbers after each release merge.
+
+## Testing
+
+We have both automated tests and regression tests.
+
+To run the automated tests (including both unit tests and [doctests](https://github.com/sol/doctest#readme)), execute
+
+```
+cabal test
+```
+
+
+To only run unit tests, execute `cabal test test-suite`.
+
+To only run doctests, execute `cabal test doctests`.
+
+For instructions for adding new modules to the doctest suite, see [cabal integration](https://github.com/sol/doctest#cabal-integration).
+
+To run all the automated tests and the regression tests, execute
+
+```
+make test
+```
+
+We do test-driven development in the following way:
+
+1. create a test case Clafer model in either `test/positive` or `test/negative` depending on whether a test case should compile successfully or return an error. For example, see a positive test case [test/positive/redefinition.cfr](https://github.com/gsdlab/clafer/blob/namedDrefs/test/positive/redefinition.cfr).
+2. produce the intended compiler output automatically if possible and manually fix the output. Save the intended output as a regression test case. For example, see [test/regression/redefinition.cfr.reg](https://github.com/gsdlab/clafer/blob/namedDrefs/test/regression/redefinition.als.reg).
+3. implement the feature to reproduce the intended output: compiler the test case and execute
+
+```
+cd test
+make diffRegressions
+```
+
+this will show you how the current output diverges from the intended output.
+
+
+## Modifying the grammar
+
+We are using a [customized version of BNCF](https://github.com/juodaspaulius/bnfc).
+Clone the repository and install a binary of `bnfc` so that it's visible in your `PATH`.
+After changing the grammar, execute
+
+```
+make grammar
+```
+
 
 # Need help?
 

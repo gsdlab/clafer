@@ -1,6 +1,5 @@
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE NamedFieldPuns     #-}
-{-# LANGUAGE TemplateHaskell    #-}
 {-
  Copyright (C) 2012-2015 Kacper Bak, Jimmy Liang, Michal Antkiewicz <http://gsd.uwaterloo.ca>
 
@@ -101,7 +100,6 @@ import           Control.Lens.Plated
 import           Control.Monad
 import           Control.Monad.State
 import           Data.Aeson
-import           Data.Aeson.TH
 import           Data.Data.Lens
 import           Data.Either
 import           Data.List
@@ -250,22 +248,18 @@ save args'=
     inScopeModes :: Bool
     inScopeModes =
       Alloy `elem` mode args' ||
-      Alloy42 `elem` mode args' ||
       Choco `elem` mode args'
 
     getScopesList :: (Map.Map ClaferMode CompilerResult) -> [(UID, Integer)]
     getScopesList    resultsMap =
         let
            alloyResult = Map.lookup Alloy resultsMap
-           alloy42Result = Map.lookup Alloy42 resultsMap
            chocoResult = Map.lookup Choco resultsMap
         in
            if (isNothing alloyResult)
-           then if (isNothing alloy42Result)
-                then if (isNothing chocoResult)
-                     then []
-                     else scopesList $ fromJust chocoResult
-                else scopesList $ fromJust alloy42Result
+           then if (isNothing chocoResult)
+                then []
+                else scopesList $ fromJust chocoResult
            else scopesList $ fromJust alloyResult
 
 summary :: String -> CompilerResult -> CompilerResult
@@ -284,11 +278,9 @@ runValidate args' fo = do
   let path = (tooldir args') ++ "/"
   liftIO $ putStrLn ("Validating '" ++ fo ++"'")
   let modes = mode args'
-  when (Alloy `elem` modes && "als41" `isSuffixOf` fo) $ do
-    voidf $ system $ validateAlloy path "4" ++ fo
-  when (Alloy42 `elem` modes && "als" `isSuffixOf` fo) $ do
+  when (Alloy `elem` modes && ".als" `isSuffixOf` fo) $ do
     voidf $ system $ validateAlloy path "4.2" ++ fo
-  when (Mode.Clafer `elem` modes && "des.cfr" `isSuffixOf` fo) $ do
+  when (Mode.Clafer `elem` modes && ".des.cfr" `isSuffixOf` fo) $ do
     voidf $ system $ "../dist/build/clafer/clafer -s -m=clafer " ++ fo
 
 validateAlloy :: String -> String -> String
@@ -463,6 +455,7 @@ iExpBasedChecks iModule = (null realLiterals, null productOperators)
     realLiterals = filter isIDouble iexps
     productOperators = filter isProductOperator iexps
     isIDouble (IDouble _) = True
+    isIDouble (IReal _) = True
     isIDouble _           = False
     isProductOperator (IFunExp op' _) = op' == iProdSet
     isProductOperator _               = False
@@ -472,8 +465,8 @@ iClaferBasedChecks iModule = null $ filter hasReferenceToReal iClafers
   where
     iClafers :: [ IClafer ]
     iClafers = universeOn biplate iModule
-    hasReferenceToReal (IClafer{_reference=(Just IReference{_ref=pexp'})}) = (getSuperId pexp') == "real"
-    hasReferenceToReal _               = False
+    hasReferenceToReal (IClafer{_reference=(Just IReference{_ref=pexp'})}) = any (`elem` [ "real", "double" ]) $ getRefIds pexp'
+    hasReferenceToReal _                                                   = False
 
 -- | Generates outputs for the given IR.
 generate :: Monad m => ClaferT m (Map.Map ClaferMode CompilerResult)
@@ -495,44 +488,12 @@ generate =
         (if (Alloy `elem` modes)
           then if (hasNoRealLiterals && hasNoReferenceToReal && hasNoProductOperator)
                 then
-                  let
-                    (imod,strMap) = astrModule iModule
-                    alloyCode = genModule cargs{mode = [Alloy]} (imod, genv) scopes
-                    addCommentStats = if no_stats cargs then const else addStats
-                  in
-                    [ (Alloy,
-                      CompilerResult {
-                       extension = "als41",
-                       outputCode = addCommentStats (fst alloyCode) stats,
-                       statistics = stats,
-                       claferEnv  = env,
-                       mappingToAlloy = fromMaybe [] (Just $ snd alloyCode),
-                       stringMap = strMap,
-                       scopesList = scopes
-                      })
-                    ]
-                else [ (Alloy,
-                        NoCompilerResult {
-                         reason = "Alloy output unavailable because the model contains: "
-                                ++ (if hasNoRealLiterals then "" else " | a real number literal")
-                                ++ (if hasNoReferenceToReal then "" else " | a reference to a real")
-                                ++ (if hasNoProductOperator then "" else " | the product operator")
-                                ++ "."
-                        })
-                     ]
-          else []
-        )
-        ++
-        -- result for Alloy42
-        (if (Alloy42 `elem` modes)
-          then if (hasNoRealLiterals && hasNoReferenceToReal && hasNoProductOperator)
-                then
                    let
                       (imod,strMap) = astrModule iModule
-                      alloyCode = genModule cargs{mode = [Alloy42]} (imod, genv) scopes
+                      alloyCode = genModule cargs{mode = [Alloy]} (imod, genv) scopes
                       addCommentStats = if no_stats cargs then const else addStats
                    in
-                      [ (Alloy42,
+                      [ (Alloy,
                         CompilerResult {
                          extension = "als",
                          outputCode = addCommentStats (fst alloyCode) stats,
@@ -721,14 +682,5 @@ gatherObjectivesAndAttributes    iModule    astModuleTrace'      = let
     iClafers :: [ IClafer ]
     iClafers = universeOn biplate iModule
 
-    isIntClafer (IClafer{_reference=(Just IReference{_ref=pexp'})}) = (getSuperId pexp') == "integer"
+    isIntClafer (IClafer{_reference=(Just IReference{_ref=pexp'})}) = any (`elem` ["integer", "int"]) $ getRefIds pexp'
     isIntClafer _                                                   = False
-
--- | Datatype used for JSON output. See Language.Clafer.gatherObjectivesAndAttributes
-data ObjectivesAndAttributes
-  = ObjectivesAndAttributes
-    { _qualities :: [String]
-    , _attributes :: [String]
-    }
-
-$(deriveToJSON defaultOptions{fieldLabelModifier = tail} ''ObjectivesAndAttributes)

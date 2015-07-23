@@ -50,8 +50,6 @@ mkIdent str = PosIdent ((0, 0), str)
 mkInteger :: Read a => PosInteger -> a
 mkInteger (PosInteger (_, n)) = read n
 
-type Ident = PosIdent
-
 -- | Returns only [] or [_]
 getSuper :: IClafer -> [String]
 getSuper claf = case getSuperId <$> _super claf of
@@ -59,20 +57,36 @@ getSuper claf = case getSuperId <$> _super claf of
     Just "clafer" -> error "Bug: The identifier 'clafer' should never be returned as super type"
     Just x        -> [x]
 
--- | Returns only [] or [_]
+-- | Returns a list of any length
 getReference :: IClafer -> [String]
-getReference c = case getSuperId <$> _ref <$> _reference c of
-    Nothing -> []
-    Just x  -> [x]
+getReference c = case _ref <$> _reference c of
+    Nothing   -> []
+    Just ref' -> getRefIds ref'
 
--- | Returns only [] or [_] or [_, _]
+-- | Returns a list of any length
 getSuperAndReference :: IClafer -> [String]
 getSuperAndReference c = (getSuper c) ++ (getReference c)
 
 getSuperId :: PExp -> String
 getSuperId (PExp _ _ _ (IClaferId{ _sident = s})) = s
 getSuperId (PExp _ _ _ (IFunExp{_op=".", _exps = [_, rightExp]})) = getSuperId rightExp
-getSuperId pexp' = error $ "Bug: getSuperId called not on '[PExp (IClaferId)]' but instead on '" ++ show pexp' ++ "'"
+getSuperId pexp' = error $ "[Bug] Commmon.getSuperId called on unexpected argument '" ++ show pexp' ++ "'"
+
+getRefIds :: PExp -> [String]
+getRefIds (PExp _ _ _ (IClaferId{ _sident = s})) = [s]
+getRefIds (PExp _ _ _ (IFunExp{_op=".", _exps = [_, rightExp]})) = getRefIds rightExp
+getRefIds (PExp _ _ _ (IFunExp{_op="ifthenelse", _exps = [_, leftExp, rightExp]})) = getRefIds leftExp ++ getRefIds rightExp
+getRefIds (PExp _ _ _ (IFunExp{_op="++", _exps = [leftExp, rightExp]})) = getRefIds leftExp ++ getRefIds rightExp
+getRefIds (PExp _ _ _ (IFunExp{_op=",",  _exps = [leftExp, rightExp]})) = getRefIds leftExp ++ getRefIds rightExp
+getRefIds (PExp _ _ _ (IFunExp{_op="--", _exps = [leftExp, rightExp]})) = getRefIds leftExp ++ getRefIds rightExp
+getRefIds (PExp _ _ _ (IFunExp{_op="**", _exps = [leftExp, rightExp]})) = getRefIds leftExp ++ getRefIds rightExp
+getRefIds (PExp _ _ _ (IFunExp{_op="<:", _exps = [_, rightExp]})) = getRefIds rightExp
+getRefIds (PExp _ _ _ (IFunExp{_op=":>", _exps = [leftExp, _]})) = getRefIds leftExp
+getRefIds (PExp _ _ _ (IInt _)) = [integerType]
+getRefIds (PExp _ _ _ (IDouble _)) = [doubleType]
+getRefIds (PExp _ _ _ (IReal _)) = [realType]
+getRefIds (PExp _ _ _ (IStr _)) = [stringType]
+getRefIds pexp' = error $ "[Bug] Commmon.getRefIds called on unexpected argument '" ++ show pexp' ++ "'"
 
 isEqClaferId :: String -> IClafer -> Bool
 isEqClaferId    uid'      claf'    = _uid claf' == uid'
@@ -107,8 +121,9 @@ getClaferName (PExp _ _ _ (IClaferId _ id' _ _)) = id'
 getClaferName _ = ""
 
 isTopLevel :: IClafer -> Bool
-isTopLevel IClafer{_parentUID="root"} = True
-isTopLevel _                          = False
+isTopLevel IClafer{_parentUID="root"}   = True
+isTopLevel IClafer{_parentUID="clafer"} = True
+isTopLevel _                            = False
 
 -- -----------------------------------------------------------------------------
 -- conversions
@@ -130,14 +145,15 @@ createUidIClaferMap :: IModule -> UIDIClaferMap
 createUidIClaferMap    iModule  = foldl'
     (\accumMap' claf -> SMap.insert (_uid claf) claf accumMap')
     (SMap.singleton rootIdent rootClafer)
-    (integerClafer : intClafer : stringClafer : realClafer : booleanClafer : clafer : allClafers)
+    (integerClafer : intClafer : stringClafer : doubleClafer : realClafer : booleanClafer : clafer : allClafers)
   where
     allClafers :: [ IClafer ]
     allClafers = universeOn biplate iModule
     rootClafer = IClafer noSpan False (Just $ IGCard False (0, -1)) rootIdent rootIdent "" Nothing Nothing (Just (1,1)) (1, 1) (_mDecls iModule)
-    integerClafer = IClafer noSpan False (Just $ IGCard False (0, -1)) integerType integerType "" Nothing Nothing (Just (1,1)) (1, 1) []
-    intClafer = IClafer noSpan False (Just $ IGCard False (0, -1)) "int" "int" "" Nothing Nothing (Just (1,1)) (1, 1) []
+    integerClafer = IClafer noSpan False (Just $ IGCard False (0, -1)) integerType integerType "" (Just $ pExpDefPidPos $ IClaferId "" doubleType True $ Just doubleType) Nothing (Just (1,1)) (1, 1) []
+    intClafer = IClafer noSpan False (Just $ IGCard False (0, -1)) "int" "int" "" (Just $ pExpDefPidPos $ IClaferId "" doubleType True $ Just doubleType) Nothing (Just (1,1)) (1, 1) []
     stringClafer = IClafer noSpan False (Just $ IGCard False (0, -1)) stringType stringType "" Nothing Nothing (Just (1,1)) (1, 1) []
+    doubleClafer = IClafer noSpan False (Just $ IGCard False (0, -1)) doubleType doubleType "" (Just $ pExpDefPidPos $ IClaferId "" realType True $ Just realType) Nothing (Just (1,1)) (1, 1) []
     realClafer = IClafer noSpan False (Just $ IGCard False (0, -1)) realType realType "" Nothing Nothing (Just (1,1)) (1, 1) []
     booleanClafer = IClafer noSpan False (Just $ IGCard False (0, -1)) booleanType booleanType "" Nothing Nothing (Just (1,1)) (1, 1) []
     clafer = IClafer noSpan False (Just $ IGCard False (0, -1)) baseClafer baseClafer "" Nothing Nothing (Just (1,1)) (1, 1) []
@@ -147,6 +163,9 @@ createUidIClaferMap    iModule  = foldl'
 
 findIClafer :: UIDIClaferMap -> UID -> Maybe IClafer
 findIClafer    uidIClaferMap    uid' = SMap.lookup uid' uidIClaferMap
+
+isTopLevelByUID :: UIDIClaferMap -> UID -> Maybe Bool
+isTopLevelByUID    uidIClaferMap    uid' = isTopLevel <$> (findIClafer uidIClaferMap uid')
 
 -- | Finds all super clafers according to sFun
 findHierarchy :: (IClafer -> [String]) -> UIDIClaferMap -> IClafer -> [IClafer]
@@ -172,9 +191,9 @@ findUIDinSupers    uidIClaferMap    uidToFind currentClafer =
   if uidToFind == _uid currentClafer
   then return currentClafer
   else do
-    superClaferUID <- getSuperId <$> _super currentClafer
-    superClafer <- findIClafer uidIClaferMap superClaferUID
-    findUIDinSupers uidIClaferMap uidToFind superClafer
+      superClaferUID <- getSuperId <$> _super currentClafer
+      superClafer <- findIClafer uidIClaferMap superClaferUID
+      findUIDinSupers uidIClaferMap uidToFind superClafer
 
 -- | traverse the containment hierarchy upwards to find a clafer with the given uidToFind
 findUIDinParents :: UIDIClaferMap -> UID    -> IClafer      -> Maybe IClafer
@@ -190,11 +209,11 @@ data NestedInheritanceMatch
   { _headClafer :: IClafer               -- ^ the clafer for which the match is computed
   , _parentClafer :: IClafer             -- ^ parent of the head clafer
   , _parentsSuperClafer :: Maybe IClafer -- ^ parent of the super of the head clafer
-  , _targetClafer :: Maybe IClafer       -- ^ target of the head clafer
-  , _targetsSuperClafer :: Maybe IClafer -- ^ super of the target of the head clafer
+  , _targetClafer :: [IClafer]           -- ^ targets of the head clafer
+  , _targetsSuperClafer :: [IClafer] -- ^ super of the target of the head clafer
   , _superClafer :: IClafer              -- ^ super of the head clafer (must exist, otherwise no match)
   , _superClafersParent :: IClafer       -- ^ parent of the super of the head clafer
-  , _superClafersTarget :: Maybe IClafer -- ^ target of the super of the head clafer
+  , _superClafersTarget :: [IClafer]     -- ^ targets of the super of the head clafer
   } deriving Show
 
 -- | This represents a match of this shape
@@ -248,7 +267,7 @@ isProperRefinement    uidIClaferMap    (Just m)
       = case (_reference hc, _reference hcs) of
           (Just IReference{_isSet=headIsSet}, Just IReference{_isSet=superIsSet}) -> superIsSet <= headIsSet  -- set (True) implies set (True), bag (False) allows bag (False) or set (True)
           _ -> True -- covers 1) only one of them has a ref, and 2) none of them has a ref
-    properTargetSubtyping NestedInheritanceMatch{_targetClafer=(Just targetClafer), _superClafersTarget=(Just superClafersTarget)}
+    properTargetSubtyping NestedInheritanceMatch{_targetClafer=[targetClafer], _superClafersTarget=[superClafersTarget]}
       = isJust $ findUIDinSupers uidIClaferMap (_uid superClafersTarget) targetClafer
     properTargetSubtyping _
       = True -- covers 1) only one of the target clafers exists, and 2) none of the target clafers exist
@@ -277,12 +296,16 @@ matchNestedInheritance    uidIClaferMap        headClafer                 = do
   let
     parentsSuperClafer :: Maybe IClafer
     parentsSuperClafer = findIClafer uidIClaferMap =<< getSuperId <$> _super parentClafer  -- safe to use fromJust becuase _super is not isNothing
-    targetClafer :: Maybe IClafer
-    targetClafer = findIClafer uidIClaferMap =<< getSuperId <$> _ref <$> _reference headClafer
-    targetsSuperClafer :: Maybe IClafer
-    targetsSuperClafer = findIClafer uidIClaferMap =<< getSuperId <$> (_super =<< targetClafer)
-    superClafersTarget :: Maybe IClafer
-    superClafersTarget = findIClafer uidIClaferMap =<< getSuperId <$> _ref <$> _reference superClafer
+    targetClafer :: [IClafer]
+    targetClafer = case _ref <$> _reference headClafer of
+      Just pexp' -> mapMaybe (findIClafer uidIClaferMap) (getRefIds pexp')
+      Nothing    -> []
+    targetsSuperClafer :: [IClafer]
+    targetsSuperClafer = mapMaybe (findIClafer uidIClaferMap) $ map getSuperId $ catMaybes $ map _super targetClafer
+    superClafersTarget :: [IClafer]
+    superClafersTarget = case _ref <$> _reference superClafer of
+      Just pexp' -> mapMaybe (findIClafer uidIClaferMap) (getRefIds pexp')
+      Nothing    -> []
 --  traceM $ "matched parentsSuperClafer " ++ show (_uid <$> parentsSuperClafer)
 --  traceM $ "matched targetClafer " ++ show (_uid <$> targetClafer)
 --  traceM $ "matched targetsSuperClafer " ++ show (_uid <$> targetsSuperClafer)
@@ -512,6 +535,9 @@ integerType = "integer"
 realType :: String
 realType = "real"
 
+doubleType :: String
+doubleType = "double"
+
 booleanType :: String
 booleanType = "boolean"
 
@@ -522,7 +548,7 @@ modSep :: String
 modSep = "\\"
 
 primitiveTypes :: [String]
-primitiveTypes = [stringType, intType, integerType, realType]
+primitiveTypes = [stringType, intType, integerType, doubleType, realType]
 
 isPrimitive :: String -> Bool
 isPrimitive = flip elem primitiveTypes

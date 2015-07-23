@@ -101,10 +101,11 @@ library
                       , Language.Clafer.Intermediate.StringAnalyzer
                       , Language.Clafer.Intermediate.Tracing
                       , Language.Clafer.Intermediate.Transformer
+                      , Language.Clafer.Intermediate.TypeSystem
                       , Language.Clafer.Optimizer.Optimizer
                       , Language.Clafer.SplitJoin
-    other-modules:      Paths_clafer
-                      , GetURL
+                      , Paths_clafer
+    other-modules:      GetURL
 
 Test-Suite test-suite
     build-tools:        ghc >= 7.8.3
@@ -132,9 +133,19 @@ Test-Suite test-suite
 
     ghc-options:        -Wall
 
-    other-modules:      Paths_clafer
-                      , Functions
+    other-modules:      Functions
                       , Suite.Positive
                       , Suite.Negative
                       , Suite.SimpleScopeAnalyser
                       , Suite.Redefinition
+                      , Suite.TypeSystem
+
+Test-suite doctests
+    build-tools:        ghc >= 7.8.3
+    default-language:   Haskell2010
+    type:               exitcode-stdio-1.0
+    ghc-options:        -threaded -Wall
+    main-is:            doctests.hs
+    hs-source-dirs:     test
+    build-depends:      base
+                      , doctest >= 0.10.1

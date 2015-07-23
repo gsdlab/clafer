@@ -60,8 +60,8 @@ model = unlines
 case_NestedInheritanceMatchTest :: Assertion
 case_NestedInheritanceMatchTest = case compileOneFragment defaultClaferArgs model of
     Left errors -> assertFailure $ show errors
-    Right compilerResultMap -> case M.lookup Alloy42 compilerResultMap of
-        Nothing -> assertFailure "No Alloy42 result in the result map"
+    Right compilerResultMap -> case M.lookup Alloy compilerResultMap of
+        Nothing -> assertFailure "No Alloy result in the result map"
         Just compilerResult -> let
                 uidIClaferMap' :: StringMap IClafer
                 uidIClaferMap' = uidIClaferMap $ claferEnv compilerResult
