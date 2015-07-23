@@ -173,16 +173,24 @@ getIfThenElseType uidIClaferMap' t1 t2 = do
       else accumulator
   commonHierarchy' _ _ _ = error "ResolverType.commonHierarchy' expects two non empty lists but was given at least one empty list!" -- Should never happen
 
+data TAMode
+  = TAReferences    -- | Phase one: only process references
+  | TAExpressions   -- | Phase two: only process constraints and goals
+
 resolveTModule :: (IModule, GEnv) -> Either ClaferSErr IModule
 resolveTModule (imodule, _) =
-  case runTypeAnalysis (analysis $ _mDecls imodule) imodule of
-    Right mDecls' -> return imodule{_mDecls = mDecls'}
+  case runTypeAnalysis (analysisReferences $ _mDecls imodule) imodule of
+    Right mDecls' -> case runTypeAnalysis (analysisExpressions $ mDecls') imodule{_mDecls = mDecls'} of
+      Right mDecls'' -> return imodule{_mDecls = mDecls''}
+      Left err      -> throwError err
     Left err      -> throwError err
   where
-  analysis decls1 = mapM (resolveTElement rootIdent) decls1
+  analysisReferences = mapM (resolveTElement TAReferences rootIdent)
+  analysisExpressions = mapM (resolveTElement TAExpressions rootIdent)
 
-resolveTElement :: String -> IElement          -> TypeAnalysis IElement
-resolveTElement    _         (IEClafer iclafer) =
+-- Phase one: only process references
+resolveTElement :: TAMode     -> String -> IElement          -> TypeAnalysis IElement
+resolveTElement    TAReferences  _         (IEClafer iclafer) =
   do
     uidIClaferMap' <- asks iUIDIClaferMap
     reference' <- case _reference iclafer of
@@ -193,9 +201,17 @@ resolveTElement    _         (IEClafer iclafer) =
           []     -> return Nothing
           [ref'] -> return $ Just $ originalReference{_ref=(ref' & iType.traversed %~ (addHierarchy uidIClaferMap'))}
           (ref':_) -> return $ Just $ originalReference{_ref=(ref' & iType.traversed %~ (addHierarchy uidIClaferMap'))}
-    elements' <- mapM (resolveTElement (_uid iclafer)) (_elements iclafer)
+    elements' <- mapM (resolveTElement TAReferences (_uid iclafer)) (_elements iclafer)
     return $ IEClafer iclafer{_elements = elements', _reference=reference'}
-resolveTElement parent' (IEConstraint _isHard _pexp) =
+resolveTElement    TAReferences  _         iec@(IEConstraint{}) = return iec
+resolveTElement    TAReferences  _         ieg@(IEGoal{}) = return ieg
+
+-- Phase two: only process constraints and goals
+resolveTElement    TAExpressions  _         (IEClafer iclafer) =
+  do
+    elements' <- mapM (resolveTElement TAExpressions (_uid iclafer)) (_elements iclafer)
+    return $ IEClafer iclafer{_elements = elements'}
+resolveTElement    TAExpressions parent'   (IEConstraint _isHard _pexp) =
   IEConstraint _isHard <$> (testBoolean =<< resolveTConstraint parent' _pexp)
   where
   testBoolean pexp' =
@@ -203,7 +219,7 @@ resolveTElement parent' (IEConstraint _isHard _pexp) =
       unless (typeOf pexp' == TBoolean) $
         throwError $ SemanticErr (_inPos pexp') ("Cannot construct constraint on type '" ++ str (typeOf pexp') ++ "'")
       return pexp'
-resolveTElement parent' (IEGoal isMaximize' pexp') =
+resolveTElement    TAExpressions parent' (IEGoal isMaximize' pexp') =
   IEGoal isMaximize' <$> resolveTConstraint parent' pexp'
 
 resolveTConstraint :: String -> PExp -> TypeAnalysis PExp
