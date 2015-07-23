@@ -98,10 +98,12 @@ claferTClafer :: IType
 claferTClafer = TClafer ["clafer"]
 
 numeric :: IType -> Bool
-numeric TInteger = True
-numeric TReal    = True
-numeric TDouble  = True
-numeric _        = False
+numeric TInteger     = True
+numeric TReal        = True
+numeric TDouble      = True
+numeric (TMap _ ta') = numeric ta'
+numeric (TUnion un') = any numeric un'
+numeric _            = False
 
 -- | Get TClafer for a given Clafer
 -- can only be called after inheritance resolver
