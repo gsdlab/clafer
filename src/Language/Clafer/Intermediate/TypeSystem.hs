@@ -168,10 +168,10 @@ unionType TString  = [stringType]
 unionType TReal    = [realType]
 unionType TDouble  = [doubleType]
 unionType TInteger = [integerType]
+unionType TBoolean = [booleanType]
 unionType (TClafer u) = u
 unionType (TUnion types) = concatMap unionType types
-unionType TBoolean = error $ "TypeSystem.unionType: cannot union TBoolean"
-unionType tm@(TMap _ _) = error $ "TypeSystem.unionType: cannot union a TMap: '" ++ show tm ++ "'"
+unionType (TMap _ ta') = unionType ta'
 
 fromUnionType :: [String] -> Maybe IType
 fromUnionType u =
@@ -382,12 +382,9 @@ closure :: Monad m => UIDIClaferMap -> [String] -> m [String]
 closure uidIClaferMap' ut = concat `liftM` mapM (hierarchyMap uidIClaferMap' _uid) ut
 
 getRefTypes :: UIDIClaferMap -> IType        -> [IType]
-getRefTypes uidIClaferMap'      (TClafer hi') = map _ta $ catMaybes $ map (getDrefTMapByUID uidIClaferMap') hi'
-
+getRefTypes uidIClaferMap'      (TClafer hi') = catMaybes $ map (getDrefTMapByUID uidIClaferMap') hi'
 getRefTypes uidIClaferMap'      (TMap _ ta')  = getRefTypes uidIClaferMap' ta'
-
---getRefTypes uidIClaferMap'      (TUnion un')  = TUnion $ catMaybes $ map (getRefTypes uidIClaferMap') un'
--- primitive types have no references
+getRefTypes uidIClaferMap'      (TUnion un')  = concatMap (getRefTypes uidIClaferMap') un'
 getRefTypes _                   _             = []
 
 
