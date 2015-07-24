@@ -1,7 +1,7 @@
 # Clafer
 
 
-v0.3.11
+v0.4.0
 
 [Clafer](http://clafer.org) is a general-purpose lightweight structural modeling language developed by
 [GSD Lab](http://gsd.uwaterloo.ca/), [University of Waterloo](http://uwaterloo.ca), and
@@ -67,7 +67,7 @@ Optional:
 
 ### Installation from binaries
 
-Binary distributions of the release 0.3.11 of Clafer Tools for Windows, Mac, and Linux,
+Binary distributions of the release 0.4.0 of Clafer Tools for Windows, Mac, and Linux,
 can be downloaded from
 [Clafer Tools - Binary Distributions](http://gsd.uwaterloo.ca/clafer-tools-binary-distributions).
 
@@ -79,13 +79,13 @@ can be downloaded from
 Dependencies
 
 * [The Haskell Platform](http://hackage.haskell.org/platform/) v2014.2.0.0
-  * Alternatively GHC >= 7.8.3 and Cabal >= 1.18
+  * Alternatively GHC >= 7.10.1 and Cabal >= 1.18
 
-Clafer is now available on [Hackage](http://hackage.haskell.org/package/clafer-0.3.11/) and it can be installed using
+Clafer is now available on [Hackage](http://hackage.haskell.org/package/clafer-0.4.0/) and it can be installed using
 
 1. `cabal update`
 2. `cabal install clafer`
-3. `cd <cabal's lib or share folder>`  (`C:\Users\<user>\AppData\Roaming\cabal\x86_64-windows-ghc-7.10.1\clafer-0.3.11` on Windows or `.cabal/share/x86_64-linux-ghc-7.10.1/clafer-0.3.11/` on Linux)
+3. `cd <cabal's lib or share folder>`  (`C:\Users\<user>\AppData\Roaming\cabal\x86_64-windows-ghc-7.10.1\clafer-0.4.0` on Windows or `.cabal/share/x86_64-linux-ghc-7.10.1/clafer-0.4.0/` on Linux)
 4. to automatically download Alloy jars
   * execute `make` in `tools`
 
@@ -94,7 +94,7 @@ Clafer is now available on [Hackage](http://hackage.haskell.org/package/clafer-0
 Dependencies
 
 * [The Haskell Platform](http://hackage.haskell.org/platform/) v2014.2.0.0
-  * Alternatively GHC >= 7.8.3 and Cabal >= 1.18
+  * Alternatively GHC >= 7.10.1 and Cabal >= 1.18
 * [Alloy4.2](http://alloy.mit.edu/alloy/download.html)
   * downloaded automatically during the build
 * [Git](http://git-scm.com/)
@@ -150,7 +150,7 @@ Usage
 (As printed by `clafer --help`)
 
 ```
-Clafer 0.3.11
+Clafer 0.4.0
 
 clafer [OPTIONS] [FILE]
 
