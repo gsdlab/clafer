@@ -3,24 +3,24 @@ pred show {}
 
 
 one sig c0_text
-{ ref : one Int }
+{ c0_text_ref : one Int }
 
-fact { (some c0_text) => ((c0_text.@ref) = 0) }
+fact { (some c0_text) => ((c0_text.@c0_text_ref) = 0) }
 one sig c0_text1
-{ ref : one Int }
+{ c0_text1_ref : one Int }
 
-fact { (some c0_text1) => ((c0_text1.@ref) = 0) }
+fact { (some c0_text1) => ((c0_text1.@c0_text1_ref) = 0) }
 one sig c0_text2
-{ ref : one Int }
+{ c0_text2_ref : one Int }
 
-fact { (some c0_text2) => ((c0_text2.@ref) = 0) }
+fact { (some c0_text2) => ((c0_text2.@c0_text2_ref) = 0) }
 lone sig c0_equal1
 {}
-{ (c0_text.@ref) = (c0_text1.@ref) }
+{ (c0_text.@c0_text_ref) = (c0_text1.@c0_text1_ref) }
 
 lone sig c0_equal2
 {}
-{ (c0_text1.@ref) = (c0_text2.@ref) }
+{ (c0_text1.@c0_text1_ref) = (c0_text2.@c0_text2_ref) }
 
 fact { some c0_equal1 }
 fact { some c0_equal2 }

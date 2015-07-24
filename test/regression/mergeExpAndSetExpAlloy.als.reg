@@ -1,10 +1,3 @@
-/*
-All clafers: 15 | Abstract: 2 | Concrete: 13 | Reference: 9
-Constraints: 6
-Goals: 0
-Global scope: 2..*
-Can skip name resolver: no
-*/
 open util/integer
 pred show {}
 

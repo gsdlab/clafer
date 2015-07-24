@@ -14,7 +14,7 @@ lone sig c0_C
 { one r_c0_C }
 
 one sig c0_D
-{ ref : one c0_A }
+{ c0_D_ref : one c0_A }
 
 lone sig c0_E
 {}

@@ -3,11 +3,11 @@ pred show {}
 
 
 lone sig c0_a
-{ ref : one Int
+{ c0_a_ref : one Int
 , r_c0_b : lone c0_b }
 
 lone sig c0_b
 {}
 { one r_c0_b
-  (this.(~@r_c0_b.@ref)) = 4 }
+  (this.(~@r_c0_b.@c0_a_ref)) = 4 }
 

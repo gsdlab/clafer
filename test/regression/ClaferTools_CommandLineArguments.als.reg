@@ -6,10 +6,10 @@ abstract sig c0_Argument
 {}
 
 abstract sig c0_IntegerArgument
-{ ref : one Int }
+{ c0_IntegerArgument_ref : one Int }
 
 abstract sig c0_StringArgument
-{ ref : one Int }
+{ c0_StringArgument_ref : one Int }
 
 abstract sig c0_Value
 {}
@@ -167,7 +167,7 @@ one sig c0_ca2 extends c0_ClaferArgs
 { let children = (r_c0_functional + r_c0_schema + r_c0_help + r_c0_version) | one children
   some ((this.@r_c0_functional).@r_c0_mode).@r_c0_alloy
   some (this.@r_c0_functional).@r_c0_validate
-  (((this.@r_c0_functional).@r_c0_validate).(@r_c0_tooldir.@ref)) = 0 }
+  (((this.@r_c0_functional).@r_c0_validate).(@r_c0_tooldir.@c0_StringArgument_ref)) = 0 }
 
 one sig c0_ca3 extends c0_ClaferArgs
 {}
