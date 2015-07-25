@@ -15,7 +15,7 @@ all: build
 
 init:
 	cabal sandbox init --sandbox=../.clafertools-cabal-sandbox
-	cabal install --only-dependencies $(MAC_USR_LIB) --enable-tests
+	cabal install --only-dependencies $(MAC_USR_LIB) --enable-tests --constraint="vector == 0.10.12.3"
 
 build:
 	$(MAKE) -C $(TOOL_DIR)
