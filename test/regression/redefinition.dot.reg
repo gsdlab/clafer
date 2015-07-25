@@ -1,0 +1,37 @@
+digraph "redefinition"
+{
+rankdir=BT;
+ranksep=0.3;
+nodesep=0.1;
+graph [fontname=Sans fontsize=11];
+node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
+edge [fontname=Sans fontsize=11];
+"c0_Component" [label="abstract Component" URL="#c0_Component" tooltip="abstract Component&#10;  abstract InPort -&gt;&gt; Signal&#10;  abstract OutPort -&gt;&gt; Signal&#10;"];
+"c0_InPort" [label="abstract InPort ->> Signal" URL="#c0_InPort" tooltip="abstract InPort -&gt;&gt; Signal&#10;"];
+"c0_InPort" -> "c0_Signal" [arrowhead=veevee arrowsize=0.6 minlen=1.5 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=c0_InPort];
+"c0_OutPort" [label="abstract OutPort ->> Signal" URL="#c0_OutPort" tooltip="abstract OutPort -&gt;&gt; Signal&#10;"];
+"c0_OutPort" -> "c0_Signal" [arrowhead=veevee arrowsize=0.6 minlen=1.5 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=c0_OutPort];
+"c0_Signal" [label="abstract Signal" URL="#c0_Signal" tooltip="abstract Signal&#10;"];
+"c0_Command" [label="abstract Command : Signal" URL="#c0_Command" tooltip="abstract Command : Signal&#10;"];
+"c0_Command" -> "c0_Signal" [arrowhead=onormal constraint=true weight=100];
+"c0_MotorCommand" [label="abstract MotorCommand : Command" URL="#c0_MotorCommand" tooltip="abstract MotorCommand : Command&#10;"];
+"c0_MotorCommand" -> "c0_Command" [arrowhead=onormal constraint=true weight=100];
+"c0_motorDown" [label="motorDown : MotorCommand" URL="#c0_motorDown" tooltip="motorDown : MotorCommand&#10;"];
+"c0_motorDown" -> "c0_MotorCommand" [arrowhead=onormal constraint=true weight=100];
+"c0_Request" [label="abstract Request : Signal" URL="#c0_Request" tooltip="abstract Request : Signal&#10;"];
+"c0_Request" -> "c0_Signal" [arrowhead=onormal constraint=true weight=100];
+"c0_stop" [label="stop : Request" URL="#c0_stop" tooltip="stop : Request&#10;"];
+"c0_stop" -> "c0_Request" [arrowhead=onormal constraint=true weight=100];
+"c0_Controller" [label="abstract Controller : Component" URL="#c0_Controller" tooltip="abstract Controller : Component&#10;  abstract req : InPort -&gt; Request ?&#10;  down : Request&#10;"];
+"c0_Controller" -> "c0_Component" [arrowhead=onormal constraint=true weight=100];
+"c0_req" [label="abstract req : InPort -> Request ?" URL="#c0_req" tooltip="abstract req : InPort -&gt; Request ?&#10;"];
+"c0_req" -> "c0_InPort" [arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];
+"c0_req" -> "c0_Request" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=c0_req];
+"c0_Controller" -> "c0_Request" [arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];
+"c0_WinController" [label="WinController : Controller" URL="#c0_WinController" tooltip="WinController : Controller&#10;  req : req -&gt; stop&#10;  cmd : OutPort -&gt; MotorCommand&#10;"];
+"c0_WinController" -> "c0_Controller" [arrowhead=onormal constraint=true weight=100];
+"c0_WinController" -> "c0_req" [arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];
+"c0_WinController" -> "c0_stop" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=req];
+"c0_WinController" -> "c0_OutPort" [arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];
+"c0_WinController" -> "c0_MotorCommand" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=cmd];
+}

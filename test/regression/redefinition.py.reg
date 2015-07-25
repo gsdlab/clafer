@@ -1,0 +1,22 @@
+from jsir.IR import *
+
+c0_Component = Abstract("c0_Component");
+c0_Signal = Abstract("c0_Signal");
+c0_Command = Abstract("c0_Command").extending(c0_Signal);
+c0_Request = Abstract("c0_Request").extending(c0_Signal);
+c0_Controller = Abstract("c0_Controller").extending(c0_Component);
+c0_MotorCommand = Abstract("c0_MotorCommand").extending(c0_Command);
+c0_motorDown = Clafer("c0_motorDown").withCard(1, 1).extending(c0_MotorCommand);
+c0_stop = Clafer("c0_stop").withCard(1, 1).extending(c0_Request);
+c0_down = c0_Controller.addChild("c0_down").withCard(1, 1).extending(c0_Request);
+c0_WinController = Clafer("c0_WinController").withCard(1, 1).extending(c0_Controller);
+c1_req = c0_WinController.addChild("c1_req").withCard(1, 1).extending(c0_req);
+c0_cmd = c0_WinController.addChild("c0_cmd").withCard(1, 1).extending(c0_OutPort);
+c0_InPort.refTo(c0_Signal);
+c0_OutPort.refTo(c0_Signal);
+c0_req.refTo(c0_Request);
+c1_req.refTo(c0_stop);
+c0_cmd.refTo(c0_MotorCommand);
+scope({c0_Request:2, c0_Signal:3});
+defaultScope(1);
+stringLength(16);
