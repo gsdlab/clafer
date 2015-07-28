@@ -11,7 +11,7 @@ abstract sig c0_Attribute
 { r_c0_value : one c0_value }
 
 sig c0_value
-{ ref : one c0_Value }
+{ c0_value_ref : one c0_Value }
 { one @r_c0_value.this }
 
 fact { #c0_ActionName = 0 }

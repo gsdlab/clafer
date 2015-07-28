@@ -1,0 +1,11 @@
+from jsir.IR import *
+
+c0_x = Clafer("c0_x");
+c0_y = Clafer("c0_y");
+c0_z = Clafer("c0_z").withCard(1, 1);
+c0_x.refTo("int");
+c0_y.refTo("int");
+c0_z.refTo("int");
+Constraint(implies(some(glob(c0_z)), equal(joinRef(glob(c0_z)), sum(set_union(joinRef(glob(c0_x)), joinRef(glob(c0_y)))))));
+defaultScope(1);
+stringLength(16);

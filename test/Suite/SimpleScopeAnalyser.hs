@@ -131,7 +131,7 @@ case_ScopeTest = do
     let
         -- use simple scope inference
         (Right compilerResultMap) = compileOneFragment defaultClaferArgs model
-        (Just compilerResult) = M.lookup Alloy42 compilerResultMap
+        (Just compilerResult) = M.lookup Alloy compilerResultMap
         computedScopesSet :: M.Map UID Integer
         computedScopesSet = M.fromList $ scopesList compilerResult
 
@@ -146,7 +146,7 @@ case_ReadScopesJSON = do
     let
         -- use simple scope inference
         (Right compilerResultMap) = compileOneFragment defaultClaferArgs model
-        (Just compilerResult) = M.lookup Alloy42 compilerResultMap
+        (Just compilerResult) = M.lookup Alloy compilerResultMap
         Just (iModule, _, _) = cIr $ claferEnv compilerResult
 
         qNameMaps = deriveQNameMaps iModule

@@ -20,7 +20,7 @@ $i = [$l $d _ ']          -- identifier character
 $u = [\0-\255]          -- universal: any character
 
 @rsyms =    -- symbols and non-identifier-like reserved words
-   \= | \[ | \] | \< \< | \> \> | \{ | \} | \` | \: | \- \> | \- \> \> | \: \= | \? | \+ | \* | \. \. | \| | \< \= \> | \= \> | \| \| | \& \& | \! | \< | \> | \< \= | \> \= | \! \= | \- | \/ | \% | \# | \+ \+ | \, | \- \- | \* \* | \< \: | \: \> | \. | \; | \\ | \( | \)
+   \= | \[ | \] | \< \< | \> \> | \{ | \} | \` | \: | \- \> | \- \> \> | \: \= | \? | \+ | \* | \. \. | \| | \< \= \> | \= \> | \| \| | \& \& | \! | \< | \> | \< \= | \> \= | \! \= | \- | \/ | \% | \# | \< \: | \: \> | \+ \+ | \, | \- \- | \* \* | \. | \; | \\ | \( | \)
 
 :-
 "//" [.]* ; -- Toss single line comments
@@ -29,7 +29,8 @@ $u = [\0-\255]          -- universal: any character
 $white+ ;
 @rsyms { tok (\p s -> PT p (eitherResIdent (TV . share) s)) }
 $d + { tok (\p s -> PT p (eitherResIdent (T_PosInteger . share) s)) }
-$d + \. $d + (e \- ? $d +)? { tok (\p s -> PT p (eitherResIdent (T_PosDouble . share) s)) }
+$d + \. $d + e \- ? $d + { tok (\p s -> PT p (eitherResIdent (T_PosDouble . share) s)) }
+$d + \. $d + { tok (\p s -> PT p (eitherResIdent (T_PosReal . share) s)) }
 \" ($u # [\" \\]| \\ [\" \\ n t]) * \" { tok (\p s -> PT p (eitherResIdent (T_PosString . share) s)) }
 $l ($l | $d | \_ | \')* { tok (\p s -> PT p (eitherResIdent (T_PosIdent . share) s)) }
 
@@ -56,6 +57,7 @@ data Tok =
  | TC !String         -- character literals
  | T_PosInteger !String
  | T_PosDouble !String
+ | T_PosReal !String
  | T_PosString !String
  | T_PosIdent !String
 
@@ -94,6 +96,7 @@ prToken t = case t of
   PT _ (TC s)   -> s
   PT _ (T_PosInteger s) -> s
   PT _ (T_PosDouble s) -> s
+  PT _ (T_PosReal s) -> s
   PT _ (T_PosString s) -> s
   PT _ (T_PosIdent s) -> s
 

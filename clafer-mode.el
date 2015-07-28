@@ -4,7 +4,7 @@
   "Clafer keywords.")
 
 (defvar clafer-types
-  '("integer" "string" "real" "int" "clafer")
+  '("integer" "string" "double" "real" "int" "clafer")
   "Clafer types.")
 
 (defvar clafer-operators

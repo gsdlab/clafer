@@ -4,8 +4,8 @@ pred show {}
 
 one sig c0_z
 { r_c0_y : one c0_y }
-{ (this.(@r_c0_y.@ref)) = (-1.mul[1]) }
+{ (this.(@r_c0_y.@c0_y_ref)) = (-1.mul[1]) }
 
 one sig c0_y
-{ ref : one Int }
+{ c0_y_ref : one Int }
 

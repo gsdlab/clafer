@@ -62,44 +62,44 @@ abstract sig c0_io
 , r_c0_output : one c0_output }
 
 sig c0_input
-{ ref : one c0_Representation }
+{ c0_input_ref : one c0_Representation }
 { one @r_c0_input.this }
 
 sig c0_output
-{ ref : one c0_Representation }
+{ c0_output_ref : one c0_Representation }
 { one @r_c0_output.this }
 
 abstract sig c0_text2tokens extends c0_io
 {}
-{ ((this.(@r_c0_input.@ref)) = c0_text) && ((this.(@r_c0_output.@ref)) = c0_tokens) }
+{ ((this.(@r_c0_input.@c0_input_ref)) = c0_text) && ((this.(@r_c0_output.@c0_output_ref)) = c0_tokens) }
 
 abstract sig c0_tokens2tokens extends c0_io
 {}
-{ ((this.(@r_c0_input.@ref)) = c0_tokens) && ((this.(@r_c0_output.@ref)) = c0_tokens) }
+{ ((this.(@r_c0_input.@c0_input_ref)) = c0_tokens) && ((this.(@r_c0_output.@c0_output_ref)) = c0_tokens) }
 
 abstract sig c0_tokens2ast extends c0_io
 {}
-{ ((this.(@r_c0_input.@ref)) = c0_tokens) && ((this.(@r_c0_output.@ref)) = c0_ast) }
+{ ((this.(@r_c0_input.@c0_input_ref)) = c0_tokens) && ((this.(@r_c0_output.@c0_output_ref)) = c0_ast) }
 
 abstract sig c0_ast2ast extends c0_io
 {}
-{ ((this.(@r_c0_input.@ref)) = c0_ast) && ((this.(@r_c0_output.@ref)) = c0_ast) }
+{ ((this.(@r_c0_input.@c0_input_ref)) = c0_ast) && ((this.(@r_c0_output.@c0_output_ref)) = c0_ast) }
 
 abstract sig c0_ast2text extends c0_io
 {}
-{ ((this.(@r_c0_input.@ref)) = c0_ast) && ((this.(@r_c0_output.@ref)) = c0_text) }
+{ ((this.(@r_c0_input.@c0_input_ref)) = c0_ast) && ((this.(@r_c0_output.@c0_output_ref)) = c0_text) }
 
 abstract sig c0_ast2ir extends c0_io
 {}
-{ ((this.(@r_c0_input.@ref)) = c0_ast) && ((this.(@r_c0_output.@ref)) = c0_ir) }
+{ ((this.(@r_c0_input.@c0_input_ref)) = c0_ast) && ((this.(@r_c0_output.@c0_output_ref)) = c0_ir) }
 
 abstract sig c0_ir2ir extends c0_io
 {}
-{ ((this.(@r_c0_input.@ref)) = c0_ir) && ((this.(@r_c0_output.@ref)) = c0_ir) }
+{ ((this.(@r_c0_input.@c0_input_ref)) = c0_ir) && ((this.(@r_c0_output.@c0_output_ref)) = c0_ir) }
 
 abstract sig c0_ir2text extends c0_io
 {}
-{ ((this.(@r_c0_input.@ref)) = c0_ir) && ((this.(@r_c0_output.@ref)) = c0_text) }
+{ ((this.(@r_c0_input.@c0_input_ref)) = c0_ir) && ((this.(@r_c0_output.@c0_output_ref)) = c0_text) }
 
 abstract sig c0_Front
 { r_c0_lexer : one c0_lexer

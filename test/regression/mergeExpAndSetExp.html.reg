@@ -1,0 +1,107 @@
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_intNumber">intNumber</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a></div>
+
+
+<div>
+<span class="claferDecl" id="c0_numberOne">numberOne</span><span class="keyword"> : </span><a href="#c0_intNumber"><span class="reference">intNumber</span></a><span class="keyword"> -> </span>1</div>
+
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_name">name</span><span class="keyword"> -> </span><a href="#string"><span class="reference">string</span></a></div>
+
+
+<div>
+<span class="claferDecl" id="c0_alice">alice</span><span class="keyword"> : </span><a href="#c0_name"><span class="reference">name</span></a><span class="keyword"> -> </span>"Alice"</div>
+
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_realNumber">realNumber</span><span class="keyword"> -> </span><a href="#real"><span class="reference">real</span></a></div>
+
+
+<div>
+<span class="claferDecl" id="c0_pi">pi</span><span class="keyword"> : </span><a href="#c0_realNumber"><span class="reference">realNumber</span></a><span class="keyword"> -> </span>3.1415</div>
+
+
+<div>
+<span class="claferDecl" id="c0_piDouble">piDouble</span><span class="keyword"> : </span><a href="#c0_realNumber"><span class="reference">realNumber</span></a><span class="keyword"> -> </span>3.14e0</div>
+
+
+<div>
+<span class="claferDecl" id="c0_piInt">piInt</span><span class="keyword"> : </span><a href="#c0_realNumber"><span class="reference">realNumber</span></a><span class="keyword"> -> </span>3</div>
+
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_doubleNumber">doubleNumber</span><span class="keyword"> : </span><a href="#c0_realNumber"><span class="reference">realNumber</span></a><span class="keyword"> -> </span><a href="#double"><span class="reference">double</span></a></div>
+
+
+<div>
+<span class="claferDecl" id="c0_numberTwentyFive">numberTwentyFive</span><span class="keyword"> : </span><a href="#c0_doubleNumber"><span class="reference">doubleNumber</span></a><span class="keyword"> -> </span>2.5e1</div>
+
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_intNumber2">intNumber2</span><span class="keyword"> : </span><a href="#c0_realNumber"><span class="reference">realNumber</span></a><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a></div>
+
+
+<div>
+<span class="claferDecl" id="c0_numberThree">numberThree</span><span class="keyword"> : </span><a href="#c0_intNumber2"><span class="reference">intNumber2</span></a><span class="keyword"> -> </span>3</div>
+
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_intNumber3">intNumber3</span><span class="keyword"> : </span><a href="#c0_doubleNumber"><span class="reference">doubleNumber</span></a><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a></div>
+
+
+<div>
+<span class="claferDecl" id="c0_numberFour">numberFour</span><span class="keyword"> : </span><a href="#c0_intNumber2"><span class="reference">intNumber2</span></a><span class="keyword"> -> </span>4</div>
+
+
+<div>
+<span class="claferDecl" id="c0_likertScaleVal">likertScaleVal</span><span class="keyword"> -> </span>1, 2, 3, 4, 5</div>
+
+
+<div>
+<span class="claferDecl" id="c0_nonZero">nonZero</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a>--0</div>
+
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Person">Person</span>
+  <div class="indent">
+  <span class="keyword">abstract</span> <span class="claferDecl" id="c0_Head">Head</span></div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_likes">likes</span><span class="keyword"> -> </span><a href="#c0_Person"><span class="reference">Person</span></a> ?</div>
+</div>
+
+
+<div>
+<span class="claferDecl" id="c0_Alice">Alice</span><span class="keyword"> : </span><a href="#c0_Person"><span class="reference">Person</span></a>
+  <div class="indent">
+  `<a href="#c0_Head"><span class="reference">Head</span></a></div>
+  <div class="indent">
+  <span class="keyword">[</span> <a href="#c0_likes"><span class="reference">likes</span></a> = <a href="#c0_Ella"><span class="reference">Ella</span></a> <span class="keyword">]</span></div>
+</div>
+
+
+<div>
+<span class="claferDecl" id="c0_Ella">Ella</span><span class="keyword"> : </span><a href="#c0_Person"><span class="reference">Person</span></a>
+  <div class="indent">
+  <span class="claferDecl" id="c0_h">h</span><span class="keyword"> : </span><a href="#Person"><span class="reference">Person</span></a>.<a href="#Head"><span class="reference">Head</span></a></div>
+  <div class="indent">
+  <span class="keyword">[</span> <span class="keyword">no</span> <a href="#c0_likes"><span class="reference">likes</span></a> <span class="keyword">]</span></div>
+</div>
+
+
+<div>
+<span class="claferDecl" id="c0_heads">heads</span><span class="keyword"> -> </span><a href="#c0_Person"><span class="reference">Person</span></a>.<a href="#c0_Head"><span class="reference">Head</span></a> *</div>
+
+
+<div>
+<span class="claferDecl" id="c0_friend">friend</span><span class="keyword"> -> </span><a href="#c0_Alice"><span class="reference">Alice</span></a>++<a href="#c0_Ella"><span class="reference">Ella</span></a> *</div>
+
+
+<div>
+<span class="claferDecl" id="c0_onlyAlice">onlyAlice</span><span class="keyword"> -> </span><a href="#c0_Alice"><span class="reference">Alice</span></a>&<a href="#c0_Person"><span class="reference">Person</span></a></div>
+
+
+<div>
+<span class="claferDecl" id="c0_exceptElla">exceptElla</span><span class="keyword"> -> </span><a href="#c0_Person"><span class="reference">Person</span></a>--<a href="#c0_Ella"><span class="reference">Ella</span></a> *</div>
+

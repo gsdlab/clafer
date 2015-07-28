@@ -3,10 +3,10 @@ pred show {}
 
 
 lone sig c0_intVal
-{ ref : one Int }
+{ c0_intVal_ref : one Int }
 
-fact { (some c0_intVal) => ((c0_intVal.@ref) = 1) }
+fact { (some c0_intVal) => ((c0_intVal.@c0_intVal_ref) = 1) }
 lone sig c0_stringVal
-{ ref : one Int }
+{ c0_stringVal_ref : one Int }
 
-fact { (some c0_stringVal) => ((c0_stringVal.@ref) = 0) }
+fact { (some c0_stringVal) => ((c0_stringVal.@c0_stringVal_ref) = 0) }

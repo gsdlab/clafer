@@ -17,9 +17,6 @@ grammarDoc:
 	bnfc --latex clafer.cf
 	pdflatex $(FRONT_DIR)/DocClafer.tex
 
-Schema.hs:
-	./Language/Clafer/Generator/quote-xsd.sh Language/Clafer/ClaferIR.xsd > ./Language/Clafer/Generator/Schema.hs
-
 Css.hs:
 	./Language/Clafer/Generator/quote-css.sh Language/Clafer/clafer.css > ./Language/Clafer/Css.hs
 

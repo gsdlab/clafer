@@ -21,11 +21,11 @@ lone sig c0_Type2
 one sig c0_Clafer2
 { r_c0_clafer1 : one c0_clafer1
 , r_c1_type : one c1_type }
-{ (some (this.@r_c1_type).@r_c1_Type1) => (some ((this.@r_c0_clafer1).(@ref.@r_c0_type)).@r_c0_Type2)
-  (some (this.@r_c1_type).@r_c1_Type1) => (some ((this.@r_c0_clafer1).(@ref.@r_c0_type)).@r_c0_Type2) }
+{ (some (this.@r_c1_type).@r_c1_Type1) => (some ((this.@r_c0_clafer1).(@c0_clafer1_ref.@r_c0_type)).@r_c0_Type2)
+  (some (this.@r_c1_type).@r_c1_Type1) => (some ((this.@r_c0_clafer1).(@c0_clafer1_ref.@r_c0_type)).@r_c0_Type2) }
 
 one sig c0_clafer1
-{ ref : one c0_Clafer1 }
+{ c0_clafer1_ref : one c0_Clafer1 }
 
 one sig c1_type
 { r_c1_Type1 : lone c1_Type1

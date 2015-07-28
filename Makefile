@@ -15,15 +15,11 @@ all: build
 
 init:
 	cabal sandbox init --sandbox=../.clafertools-cabal-sandbox
-	# Uncomment to use Haskell LTS in the sandbox
-	# wget http://www.stackage.org/snapshot/lts-1.4/cabal.config
-	# mv cabal.config ../.clafertools-cabal-sandbox
-	# the constraint is there to prevent installing utf8-string-1 which conflicts with gitit, which requires utf8-string <= 0.3.8.
-	cabal install --only-dependencies $(MAC_USR_LIB) --enable-tests --constraint="utf8-string==0.3.8"
+	cabal install --only-dependencies $(MAC_USR_LIB) --enable-tests --constraint="vector == 0.10.12.3"
 
 build:
 	$(MAKE) -C $(TOOL_DIR)
-	cabal configure
+	cabal configure --enable-tests
 	cabal build
 
 install:
@@ -33,24 +29,19 @@ install:
 	cp -f LICENSE $(to)/
 	cp -f CHANGES.md $(to)/clafer-CHANGES.md
 	cp -f tools/alloy4.2.jar $(to)/tools
-	cp -f tools/XsdCheck.class $(to)/tools
 	cp -f tools/ecore2clafer.jar $(to)/tools
-	cabal install --bindir=$(to) $(GPLK_LIBS_INCLUDES) $(MAC_USR_LIB) --ghc-option="-O2"
+	cabal install --bindir=$(to) $(GPLK_LIBS_INCLUDES) $(MAC_USR_LIB)
 
 # Removes current build and makes a clean new one (Don't use if starting from scratch!)
 cleanEnv:
 	make clean
-	ghc-pkg unregister clafer --package-db=../.clafertools-cabal-sandbox/x86_64-windows-ghc-7.8.3
+	cabal sandbox hc-pkg unregister clafer
 	rm `which clafer`
 	make
 
 # regenerate grammar, call after clafer.cf changed
 grammar:
 	$(MAKE) -C $(SRC_DIR) grammar
-
-# build Schema.hs from ClaferIG.xsd, call after .xsd changed
-Schema.hs:
-	$(MAKE) -C $(SRC_DIR) Schema.hs
 
 # build Css.hs from clafer.css, call after .css changed
 Css.hs:
@@ -72,8 +63,8 @@ test:
 	cabal test
 	$(MAKE) -C $(TEST_DIR) test
 
-generateAlloyJSPythonXMLXHTMLDot:
-	$(MAKE) -C $(TEST_DIR) generateAlloyJSPythonXMLXHTMLDot
+generateAlloyJSPythonHTMLDot:
+	$(MAKE) -C $(TEST_DIR) generateAlloyJSPythonHTMLDot
 
 diffRegressions:
 	$(MAKE) -C $(TEST_DIR) diffRegressions
@@ -93,3 +84,7 @@ cleanTest:
 
 tags:
 	hasktags --ctags --extendedctag .
+
+codex:
+	codex update
+	mv codex.tags tags

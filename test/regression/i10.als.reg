@@ -6,6 +6,6 @@ one sig c0_A
 { r_c0_x : one c0_x }
 
 one sig c0_x
-{ ref : one Int }
-{ (this.@ref) >= 0 }
+{ c0_x_ref : one Int }
+{ (this.@c0_x_ref) >= 0 }
 

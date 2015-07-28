@@ -4,21 +4,21 @@ pred show {}
 
 abstract sig c0_Book
 { r_c0_author : some c0_author }
-{ all disj x, y : this.@r_c0_author | (x.@ref) != (y.@ref)  }
+{ all disj x, y : this.@r_c0_author | (x.@c0_author_ref) != (y.@c0_author_ref)  }
 
 sig c0_author
-{ ref : one c0_Author }
+{ c0_author_ref : one c0_Author }
 { one @r_c0_author.this
-  (this.~@r_c0_author) in (this.(@ref.(@r_c0_book.@ref))) }
+  (this.~@r_c0_author) in (this.(@c0_author_ref.(@r_c0_book.@c0_book_ref))) }
 
 abstract sig c0_Author
 { r_c0_book : some c0_book }
-{ all disj x, y : this.@r_c0_book | (x.@ref) != (y.@ref)  }
+{ all disj x, y : this.@r_c0_book | (x.@c0_book_ref) != (y.@c0_book_ref)  }
 
 sig c0_book
-{ ref : one c0_Book }
+{ c0_book_ref : one c0_Book }
 { one @r_c0_book.this
-  (this.~@r_c0_book) in (this.(@ref.(@r_c0_author.@ref))) }
+  (this.~@r_c0_book) in (this.(@c0_book_ref.(@r_c0_author.@c0_author_ref))) }
 
 fact { 5 <= #c0_B and #c0_B <= 5 }
 sig c0_B extends c0_Book

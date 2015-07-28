@@ -6,10 +6,10 @@ abstract sig c0_A
 { r_c0_s : lone c0_s }
 
 sig c0_s
-{ ref : one Int }
+{ c0_s_ref : one Int }
 { one @r_c0_s.this }
 
 one sig c0_A1 extends c0_A
 {}
-{ (this.(@r_c0_s.@ref)) = 0 }
+{ (this.(@r_c0_s.@c0_s_ref)) = 0 }
 

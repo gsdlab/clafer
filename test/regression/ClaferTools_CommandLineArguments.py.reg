@@ -9,7 +9,6 @@ c0_ClaferArgs = Abstract("c0_ClaferArgs");
 c0_functional = c0_ClaferArgs.addChild("c0_functional").withCard(0, 1);
 c0_mode = c0_functional.addChild("c0_mode").withCard(1, 1).withGroupCard(1, 1).extending(c0_Argument);
 c0_alloy = c0_mode.addChild("c0_alloy").withCard(0, 1).extending(c0_DefaultValue);
-c0_alloy42 = c0_alloy.addChild("c0_alloy42").withCard(0, 1).extending(c0_Value);
 c0_noalloyruncommand = c0_alloy.addChild("c0_noalloyruncommand").withCard(0, 1).extending(c0_Argument);
 c0_alloy_mapping = c0_alloy.addChild("c0_alloy_mapping").withCard(0, 1).extending(c0_Argument);
 c0_desclafer = c0_mode.addChild("c0_desclafer").withCard(0, 1).extending(c0_Value);
@@ -53,7 +52,7 @@ c0_ca1.addConstraint(some(join(join(join($this(), c0_functional), c0_mode), c0_a
 c0_ca2.addConstraint(some(join(join(join($this(), c0_functional), c0_mode), c0_alloy)));
 c0_ca2.addConstraint(some(join(join($this(), c0_functional), c0_validate)));
 c0_ca2.addConstraint(equal(joinRef(join(join(join($this(), c0_functional), c0_validate), c0_tooldir)), constant("\"~/clafer-tools-0.3.1/tools\"")));
-c0_ca3.addConstraint(some(join(join(join(join($this(), c0_functional), c0_mode), c0_alloy), c0_alloy42)));
+c0_ca3.addConstraint(some(join(join(join($this(), c0_functional), c0_mode), c0_alloy)));
 c0_ca3.addConstraint(some(join(join($this(), c0_functional), c0_keep_unused)));
 c0_ca3.addConstraint(some(join(join($this(), c0_functional), c0_flatten_inheritance)));
 c0_ca4.addConstraint(some(join(join(join($this(), c0_functional), c0_mode), c0_html)));
@@ -62,6 +61,6 @@ c0_ca5.addConstraint(some(join(join(join(join($this(), c0_functional), c0_mode),
 c0_ca5.addConstraint(some(join(join(join(join($this(), c0_functional), c0_mode), c0_html), c0_add_graph)));
 c0_ca5.addConstraint(some(join(join(join(join($this(), c0_functional), c0_mode), c0_html), c0_add_comments)));
 c0_ca6.addConstraint(some(join(join(join($this(), c0_functional), c0_mode), c0_cvlGraph)));
-scope({c0_Argument:108, c0_ClaferArgs:6, c0_DefaultValue:6, c0_IntegerArgument:6, c0_StringArgument:6, c0_Value:30, c0_add_comments:6, c0_add_graph:6, c0_alloy:6, c0_alloy42:6, c0_alloy_mapping:6, c0_check_duplicates:6, c0_console_output:6, c0_cvlGraph:6, c0_desclafer:6, c0_flatten_inheritance:6, c0_functional:6, c0_graph:6, c0_help:6, c0_html:6, c0_keep_unused:6, c0_layout:6, c0_mode:6, c0_new_layout:6, c0_no_layout:6, c0_no_stats:6, c0_noalloyruncommand:6, c0_schema:6, c0_self_contained:6, c0_skip_resolver:6, c0_timeout_analysis:6, c0_tooldir:6, c0_validate:6, c0_version:6});
+scope({c0_Argument:108, c0_ClaferArgs:6, c0_DefaultValue:6, c0_IntegerArgument:6, c0_StringArgument:6, c0_Value:24, c0_add_comments:6, c0_add_graph:6, c0_alloy:6, c0_alloy_mapping:6, c0_check_duplicates:6, c0_console_output:6, c0_cvlGraph:6, c0_desclafer:6, c0_flatten_inheritance:6, c0_functional:6, c0_graph:6, c0_help:6, c0_html:6, c0_keep_unused:6, c0_layout:6, c0_mode:6, c0_new_layout:6, c0_no_layout:6, c0_no_stats:6, c0_noalloyruncommand:6, c0_schema:6, c0_self_contained:6, c0_skip_resolver:6, c0_timeout_analysis:6, c0_tooldir:6, c0_validate:6, c0_version:6});
 defaultScope(1);
 stringLength(28);

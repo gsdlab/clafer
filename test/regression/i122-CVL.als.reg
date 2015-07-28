@@ -14,7 +14,7 @@ lone sig c0_Printer
   1 <= #r_c0_Cartridge and #r_c0_Cartridge <= 4 }
 
 lone sig c0_resolution
-{ ref : one Int }
+{ c0_resolution_ref : one Int }
 { one r_c0_resolution }
 
 sig c0_Cartridge
@@ -24,7 +24,7 @@ sig c0_Cartridge
 { one @r_c0_Cartridge.this }
 
 sig c0_inkVolume
-{ ref : one Int }
+{ c0_inkVolume_ref : one Int }
 { one @r_c0_inkVolume.this }
 
 sig c0_Speed

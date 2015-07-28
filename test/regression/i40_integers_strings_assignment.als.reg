@@ -6,24 +6,24 @@ abstract sig c0_Entity
 { r_c0_type : one c0_type }
 
 sig c0_type
-{ ref : one Int }
+{ c0_type_ref : one Int }
 { one @r_c0_type.this }
 
 one sig c0_E1 extends c0_Entity
 {}
-{ (this.(@r_c0_type.@ref)) = 0 }
+{ (this.(@r_c0_type.@c0_type_ref)) = 0 }
 
 one sig c0_E2 extends c0_Entity
 {}
-{ (this.(@r_c0_type.@ref)) = 0 }
+{ (this.(@r_c0_type.@c0_type_ref)) = 0 }
 
 one sig c0_E3 extends c0_Entity
 {}
-{ (this.(@r_c0_type.@ref)) = 0 }
+{ (this.(@r_c0_type.@c0_type_ref)) = 0 }
 
 sig c0_E1TEntities
-{ ref : one c0_Entity }
-{ (c0_Entity.(@r_c0_type.@ref)) = 0 }
+{ c0_E1TEntities_ref : one c0_Entity }
+{ (c0_Entity.(@r_c0_type.@c0_type_ref)) = 0 }
 
-fact {  all disj x, y : c0_E1TEntities | (x.@ref) != (y.@ref)  }
+fact {  all disj x, y : c0_E1TEntities | (x.@c0_E1TEntities_ref) != (y.@c0_E1TEntities_ref)  }
 fact { (#c0_E1TEntities) = 3 }

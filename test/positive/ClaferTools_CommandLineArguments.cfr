@@ -12,7 +12,6 @@ abstract xor ClaferArgs
    functional
       xor mode : Argument
          alloy : DefaultValue
-            alloy42 : Value ?
             noalloyruncommand : Argument ?
             alloy_mapping : Argument ?
          desclafer : Value
@@ -54,7 +53,7 @@ ca2 : ClaferArgs
    [ tooldir = "~/clafer-tools-0.3.1/tools" ]
 //# FRAGMENT
 ca3 : ClaferArgs
-   [ alloy42 ]
+   [ alloy ]
    [ keep_unused ]
    [ flatten_inheritance ]
 //# FRAGMENT
