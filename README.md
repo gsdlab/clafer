@@ -1,5 +1,4 @@
-# Clafer
-
+# Clafer, the Language
 
 v0.4.0
 
@@ -20,18 +19,16 @@ Clafer multi-objective optimizer generates a Pareto front of optimal product con
 3. *Domain Modeling* - aims at improving the understanding of the problem domain in the early stages of software development and determining the requirements with fewer defects.
 This is also known as *Concept Modeling* or *Ontology Modeling*.
 
-# Clafer Compiler
+# Clafer, the Compiler
 
-
-Clafer compiler provides a reference language implementation.
-It translates models in Clafer to other formats (e.g., Alloy, JSON, Python, JS, HTML, DOT) to allow for reasoning and processing with existing tools (Alloy Analyzer, Choco3, and Z3 SMT solver).
+Clafer compiler provides a reference implementation of Clafer, the language.
+It translates models in Clafer to other formats (e.g., Alloy, JSON, Python, JS, HTML, DOT) to allow for reasoning and processing with existing tools (Alloy Analyzer, Choco3, and Z3 SMT solver, GraphViz).
 
 Currently, the compiler is used by
 
 * Backends
   * Alloy-based Instance Generator ([ClaferIG](https://github.com/gsdlab/claferIG)),
-  * Choco3-based Instance Generator and Multi-Objective Optimizer ([chocosolver](https://github.com/gsdlab/chocosolver), [ClaferChocoIG](https://github.com/gsdlab/ClaferChocoIG)), and
-  * Z3-based Instance Generator and Multi-Objective Optimizer ([ClaferSMT](https://github.com/gsdlab/claferSMT)),
+  * Choco3-based Instance Generator and Multi-Objective Optimizer ([chocosolver](https://github.com/gsdlab/chocosolver), [ClaferChocoIG](https://github.com/gsdlab/ClaferChocoIG)).
 * Web Frontends
   * Clafer Integrated Development Environment ([ClaferIDE](https://github.com/gsdlab/claferIDE)),
   * Clafer Configurator ([ClaferConfigurator](https://github.com/gsdlab/ClaferConfigurator)),
@@ -40,9 +37,9 @@ Currently, the compiler is used by
 
 ## Contributors
 
+* [Michał Antkiewicz](http://gsd.uwaterloo.ca/mantkiew), Main developer.
 * [Kacper Bak](http://gsd.uwaterloo.ca/kbak), Original developer.
-* [Jimmy Liang](http://gsd.uwaterloo.ca/jliang), Main developer.
-* [Michał Antkiewicz](http://gsd.uwaterloo.ca/mantkiew), Requirements, development, architecture, testing, technology transfer.
+* [Jimmy Liang](http://gsd.uwaterloo.ca/jliang), Developer.
 * [Ed Zulkoski](http://gsd.uwaterloo.ca/ezulkosk), Python IR Generator.
 * Luke Michael Brown, co-op student May-Aug 2013. Many improvements.
 * Paulius Juodisius, [customized BNFC generator](https://github.com/juodaspaulius/bnfc) and layout resolver.
@@ -58,7 +55,7 @@ Regardless of the installation method, the following are
 
 Optional:
 
-* [Java Platform (JDK)](http://www.oracle.com/technetwork/java/javase/downloads/index.html) v8+, 32bit
+* [Java Platform (JDK)](http://www.oracle.com/technetwork/java/javase/downloads/index.html) v8+, 32bit on Windows, 64bit otherwise
   * needed only for running Alloy validation
 * [Alloy4.2](http://alloy.mit.edu/alloy/download.html)
   * needed only for Alloy output validation
@@ -78,23 +75,23 @@ can be downloaded from
 
 Dependencies
 
-* [The Haskell Platform](http://hackage.haskell.org/platform/) v2014.2.0.0
-  * Alternatively GHC >= 7.10.1 and Cabal >= 1.18
+* [GHC](https://www.haskell.org/downloads) v7.10.*
 
 Clafer is now available on [Hackage](http://hackage.haskell.org/package/clafer-0.4.0/) and it can be installed using
 
 1. `cabal update`
 2. `cabal install clafer`
-3. `cd <cabal's lib or share folder>`  (`C:\Users\<user>\AppData\Roaming\cabal\x86_64-windows-ghc-7.10.1\clafer-0.4.0` on Windows or `.cabal/share/x86_64-linux-ghc-7.10.1/clafer-0.4.0/` on Linux)
-4. to automatically download Alloy jars
-  * execute `make` in `tools`
+3. on Windows `cd C:\Users\<user>\AppData\Roaming\cabal\i386-windows-ghc-7.10.1\clafer-0.4.0`
+4. on Linux `ca ~/.cabal/share/x86_64-linux-ghc-7.10.1/clafer-0.4.0/`
+5. to automatically download Alloy jars, execute
+  * `cd tools`
+  * `make`
 
 ### Installation from the source code
 
 Dependencies
 
-* [The Haskell Platform](http://hackage.haskell.org/platform/) v2014.2.0.0
-  * Alternatively GHC >= 7.10.1 and Cabal >= 1.18
+* [GHC](https://www.haskell.org/downloads) v7.10.*
 * [Alloy4.2](http://alloy.mit.edu/alloy/download.html)
   * downloaded automatically during the build
 * [Git](http://git-scm.com/)
@@ -175,7 +172,7 @@ Common flags:
                                           only).
      --timeout-analysis=INT               Timeout for analysis.
   -l --no-layout                          Don't resolve off-side rule layout.
-     --nl --new-layout                    Use new fast layout resolver
+  -n --nl --new-layout                    Use new fast layout resolver
                                           (experimental).
   -c --check-duplicates                   Check duplicated clafer names in
                                           the entire model.
@@ -189,11 +186,6 @@ Common flags:
                                           desugared Clafer models. Use
                                           '--tooldir' to override the default
                                           location of these tools.
-     --nr --noalloyruncommand             For usage with partial instances:
-                                          Don't generate the alloy 'run show
-                                          for ... ' command, and rename @.ref
-                                          with unique names  ('alloy' mode
-                                          only).
      --tooldir=DIR                        Specify the tools directory
                                           ('validate' only). Default: 'tools/'.
   -a --alloy-mapping                      Generate mapping to Alloy source
@@ -262,8 +254,6 @@ The following directives are markers of locations in the input files for differe
 * `//# GRAPH` - marks the insertion point for a graph rendering. The graph is only produced in HTML mode with the argument `--add-graph`.
 * `//# STATS` - marks the insertion point for module statistics. The statistics can be omitted using the argument `--no-stats`.
 * `//# SUMMARY` - shorthand for `//# GRAPH` and `//# STATS`
-* `//# QUALITY_ATTRIBUTE` - is used by ClaferMooVisualizer and ClaferConfigurator to distinguish quality attributes, which should be filtered out, from other clafers.
-
 
 He is some information about the development of the clafer compiler.
 
