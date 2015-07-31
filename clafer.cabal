@@ -52,7 +52,7 @@ library
 
                       , HTTP >= 4000.2.20
                       , mtl >= 2.2.1
-                      , network >= 2.6.2.1
+                      , network >= 2.6.2.0
                       , parsec >= 3.1.9
                       , text >= 1.2.1.1
 
