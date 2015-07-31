@@ -7,9 +7,6 @@ entrypoints Module, Clafer, Constraint, Assertion, Goal ;
 --         happy -gca Language/Clafer/Front/Parclafer.y
 --         alex -g Language/Clafer/Front/Lexclafer.x
 
-comment "//" ;
-comment "/*" "*/" ;
-
 Module.         Module ::= [Declaration] ;
 
 EnumDecl.       Declaration ::= "enum" PosIdent "=" [EnumId] ;
@@ -19,7 +16,6 @@ Clafer.         Clafer ::= Abstract GCard PosIdent Super Reference Card Init Ele
 Constraint.     Constraint ::= "[" [Exp] "]" ;
 Assertion.      Assertion ::= "assert" "[" [Exp] "]";
 Goal.           Goal ::= "<<" [Exp] ">>" ;
-
 
 AbstractEmpty.  Abstract ::= ;
 Abstract.       Abstract ::= "abstract" ;
@@ -137,3 +133,9 @@ position token PosDouble (digit+ '.' digit+ 'e' '-'? digit+) ;
 position token PosReal (digit+ '.' digit+) ;
 position token PosString '"' ((char - ["\"\\"]) | ('\\' ["\"\\nt"]))* '"' ;
 position token PosIdent (letter (letter|digit|'_'|'\'')*) ;
+
+-- non-parseable tokens
+position token PosLineComment   {"//"} (char-'\n')* ;
+position token PosBlockComment  {"/*"} ( (char-'*') | ('*'+ (char-["*/"]) ) )*  '*'+ '/' ;
+position token PosAlloy         {"[alloy|"} ( char-'|' | ('|'+ (char-']')) )* {"|]"} ;
+position token PosChoco         {"[choco|"} ( char-'|' | ('|'+ (char-']')) )* {"|]"} ;

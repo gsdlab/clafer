@@ -65,6 +65,7 @@ import qualified Data.Map as Map
 import           Language.Clafer.ClaferArgs
 import           Language.Clafer.Common
 import           Language.Clafer.Front.AbsClafer
+import           Language.Clafer.Front.LexClafer
 import           Language.Clafer.Intermediate.Intclafer
 import           Language.Clafer.Intermediate.Tracing
 
@@ -104,6 +105,7 @@ data ClaferEnv
     , cIr            :: Maybe (IModule, GEnv, Bool)
     , frags          :: [Pos]    -- line numbers of fragment markers
     , astModuleTrace :: Map.Map Span [Ast]  -- can keep the Ast map since it never changes
+    , otherTokens    :: [Token]  -- non-parseable tokens: comments and escape blocks
     } deriving Show
 
 -- | This simulates a field in the ClaferEnv that will always recompute the map,
@@ -146,6 +148,7 @@ makeEnv args' =
     , cIr = Nothing
     , frags = []
     , astModuleTrace = Map.empty
+    , otherTokens = []
     }
   where
     args'' = if (CVLGraph `elem` (mode args') ||

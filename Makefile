@@ -83,7 +83,7 @@ cleanTest:
 	$(MAKE) -C $(TEST_DIR) clean
 
 tags:
-	hasktags --ctags --extendedctag .
+	hasktags --ctags --extendedctag --ignore-close-implementation .
 
 codex:
 	codex update

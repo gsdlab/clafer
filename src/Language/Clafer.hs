@@ -172,7 +172,7 @@ runCompiler    mURL         args'         inputModel =
   cth (Right r)  _ = return r
   fragments model = map unlines $ fragments' $ lines model
   fragments' []                  = []
-  fragments' ("//# FRAGMENT":xs) = fragments' xs
+  fragments' ("//# FRAGMENT":xs) = fragments' $ " " : xs
   fragments' model               = takeWhile (/= "//# FRAGMENT") model : fragments' (dropWhile (/= "//# FRAGMENT") model)
 --  htmlCatch :: Either ClaferErr CompilerResult -> ClaferArgs -> String -> IO(CompilerResult)
   htmlCatch (Right r) _ _ = return r
@@ -341,55 +341,26 @@ parse :: Monad m => ClaferT m ()
 parse =
   do
     env <- getEnv
-    astsErr <- mapM (parseFrag $ args env) $ modelFrags env
-    asts <- liftParseErrs astsErr
+    let completeModel = concat $ modelFrags env
 
-    -- We need to somehow combine all the ASTS together into a complete AST
-    -- However, the source positions inside the ASTs are relative to their
-    -- fragments.
-    --
-    -- For example
-    --   Frag1: "A\nB\n"
-    --   Frag2: "C\n"
-    -- The "C" clafer in Frag2 has position (1, 1) because it is at the start of the fragment.
-    -- However, it should have position (3, 1) since that is its position in the complete model.
-    --
-    -- We can
-    --   1. Traverse the model and update the positions so that they are relative to model rather
-    --      than the fragment.
-    --   2. Reparse the model as a complete model rather in fragments.
-    --
-    -- The second one is easier so that's we'll do for now. There shouldn't be any errors since
-    -- each individual fragment already passed.
-    ast <- case asts of
-      -- Special case: if there is only one fragment, then the complete model is contained within it.
-      -- Don't need to reparse. This is the common case.
-      [oneFrag] -> return oneFrag
-      _ -> do
-        -- Combine all the fragment syntaxes
-        let completeModel = concat $ modelFrags env
-        completeAst <- (parseFrag $ args env) completeModel
-        liftParseErr completeAst
+    (astErr, otherTokens') <- (parseFrag $ args env) completeModel
+    ast <- liftParseErr astErr
 
-    putEnv env{ cAst = Just ast, astModuleTrace = traceAstModule ast }
+    putEnv env{ cAst = Just ast, astModuleTrace = traceAstModule ast, otherTokens = otherTokens' }
   where
-  parseFrag :: (Monad m) => ClaferArgs -> String -> ClaferT m (Err Module)
-  parseFrag args' =
-    (>>= (return . pModule)) .
-    (if not
-      ((new_layout args') ||
-      (no_layout args'))
-    then
-       resolveLayout
-    else
-       return)
-    . myLexer .
-    (if (not $ no_layout args') &&
-        (new_layout args')
-     then
-       resLayout
-     else
-       id)
+  parseFrag :: (Monad m) => ClaferArgs -> String    -> ClaferT m (Err Module, [Token])
+  parseFrag                 args'         inputModel = do
+    let model' = if (not $ no_layout args') && (new_layout args') then resLayout inputModel else inputModel
+    let allTokens = myLexer model'
+    let (parseableTokens, otherTokens') = partition isParseable allTokens
+    tokens2 <- if not ((new_layout args') || (no_layout args')) then resolveLayout parseableTokens else return parseableTokens
+    return (pModule tokens2, otherTokens')
+    where
+      isParseable (PT _ (T_PosLineComment _))  = False
+      isParseable (PT _ (T_PosBlockComment _)) = False
+      isParseable (PT _ (T_PosAlloy _))        = False
+      isParseable (PT _ (T_PosChoco _))        = False
+      isParseable _                            = True
 
 desugar :: Monad m => Maybe URL -> ClaferT m IModule
 desugar mURL = do
@@ -435,13 +406,13 @@ generateHtml env =
     genFragments :: [Declaration] -> [Pos] -> Map.Map Span [Ir] -> [(Span, String)] -> [String]
     genFragments []           _            _     comments = printComments comments
     genFragments (decl:decls') []           irMap comments = let (comments', c) = printPreComment (getSpan decl) comments in
-                                                                   [c] ++ (cleanOutput $ revertLayout $ printDeclaration decl 0 irMap True $ inDecl decl comments') : (genFragments decls' [] irMap $ afterDecl decl comments)
+                                                                   [c] ++ (cleanOutput $ revertLayout $ printDeclaration decl 0 irMap True $ inDecl decl comments') : (genFragments decls' [] irMap $ afterDecl decl comments')
     genFragments (decl:decls') (frg:frgs) irMap comments = if lne decl < frg
                                                                  then let (comments', c) = printPreComment (getSpan decl) comments in
-                                                                   [c] ++ (cleanOutput $ revertLayout $ printDeclaration decl 0 irMap True $ inDecl decl comments') : (genFragments decls' (frg:frgs) irMap $ afterDecl decl comments)
+                                                                   [c] ++ (cleanOutput $ revertLayout $ printDeclaration decl 0 irMap True $ inDecl decl comments') : (genFragments decls' (frg:frgs) irMap $ afterDecl decl comments')
                                                                  else "<!-- # FRAGMENT /-->" : genFragments (decl:decls') frgs irMap comments
     inDecl :: Declaration -> [(Span, String)] -> [(Span, String)]
-    inDecl decl comments = let s = getSpan decl in dropWhile (\x -> fst x < s) comments
+    inDecl decl comments = let s = getSpan decl in dropWhile (\x -> fst x <= s) comments
     afterDecl :: Declaration -> [(Span, String)] -> [(Span, String)]
     afterDecl decl comments = let (Span _ (Pos line' _)) = getSpan decl in dropWhile (\(x, _) -> let (Span _ (Pos line'' _)) = x in line'' <= line') comments
     printComments [] = []
@@ -479,6 +450,7 @@ generate =
       (hasNoRealLiterals, hasNoProductOperator) = iExpBasedChecks iModule
       hasNoReferenceToReal = iClaferBasedChecks iModule
       cargs = args env
+      otherTokens' = otherTokens env
       modes = mode cargs
       stats = showStats au $ statsModule iModule
       scopes = getScopeStrategy (scope_strategy cargs) iModule
@@ -490,7 +462,7 @@ generate =
                 then
                    let
                       (imod,strMap) = astrModule iModule
-                      alloyCode = genModule cargs{mode = [Alloy]} (imod, genv) scopes
+                      alloyCode = genModule cargs{mode = [Alloy]} (imod, genv) scopes otherTokens'
                       addCommentStats = if no_stats cargs then const else addStats
                    in
                       [ (Alloy,

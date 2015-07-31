@@ -38,6 +38,14 @@ newtype PosString = PosString ((Int,Int),String)
   deriving (Eq, Ord, Show, Read, Data, Typeable, Generic)
 newtype PosIdent = PosIdent ((Int,Int),String)
   deriving (Eq, Ord, Show, Read, Data, Typeable, Generic)
+newtype PosLineComment = PosLineComment ((Int,Int),String)
+  deriving (Eq, Ord, Show, Read, Data, Typeable, Generic)
+newtype PosBlockComment = PosBlockComment ((Int,Int),String)
+  deriving (Eq, Ord, Show, Read, Data, Typeable, Generic)
+newtype PosAlloy = PosAlloy ((Int,Int),String)
+  deriving (Eq, Ord, Show, Read, Data, Typeable, Generic)
+newtype PosChoco = PosChoco ((Int,Int),String)
+  deriving (Eq, Ord, Show, Read, Data, Typeable, Generic)
 instance Spannable PosInteger where
   getSpan (PosInteger ((c, l), lex')) = 
     Span (Pos c' l') (Pos c' $ l' + len lex')
@@ -64,6 +72,30 @@ instance Spannable PosString where
       l' = toInteger l
 instance Spannable PosIdent where
   getSpan (PosIdent ((c, l), lex')) = 
+    Span (Pos c' l') (Pos c' $ l' + len lex')
+    where
+      c' = toInteger c
+      l' = toInteger l
+instance Spannable PosLineComment where
+  getSpan (PosLineComment ((c, l), lex')) = 
+    Span (Pos c' l') (Pos c' $ l' + len lex')
+    where
+      c' = toInteger c
+      l' = toInteger l
+instance Spannable PosBlockComment where
+  getSpan (PosBlockComment ((c, l), lex')) = 
+    Span (Pos c' l') (Pos c' $ l' + len lex')
+    where
+      c' = toInteger c
+      l' = toInteger l
+instance Spannable PosAlloy where
+  getSpan (PosAlloy ((c, l), lex')) = 
+    Span (Pos c' l') (Pos c' $ l' + len lex')
+    where
+      c' = toInteger c
+      l' = toInteger l
+instance Spannable PosChoco where
+  getSpan (PosChoco ((c, l), lex')) = 
     Span (Pos c' l') (Pos c' $ l' + len lex')
     where
       c' = toInteger c

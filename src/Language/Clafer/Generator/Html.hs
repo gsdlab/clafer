@@ -62,7 +62,7 @@ printPreComment (Span (Pos r _) _) (c@((Span (Pos r' _) _), _):cs)
                                   then findAll row (cs', concat [comments, printStandaloneComment comment ++ "\n"])
                                   else findAll row (cs', concat [comments, printInlineComment comment ++ "\n"])
                 '/':'*':_:[]   -> findAll row (cs', concat [comments, printStandaloneComment comment ++ "\n"])
-                _      -> (cs', "Improper form of comment.")-- Should not happen. Bug.
+                _      -> (cs', "")
             | otherwise  = ((c':cs'), comments)
 printComment :: Span -> [(Span, String)] -> ([(Span, String)], String)
 printComment _ [] = ([],[])
@@ -73,7 +73,7 @@ printComment (Span (Pos row _) _) (c@(Span (Pos row' col') _, comment):cs)
                           then (cs, printStandaloneComment comment ++ "\n")
                           else (cs, printInlineComment comment ++ "\n")
         '/':'*':_:[]   -> (cs, printStandaloneComment comment ++ "\n")
-        _      -> (cs, "Improper form of comment.")-- Should not happen. Bug.
+        _      -> (cs, "")
   | otherwise = (c:cs, "")
   where trim' = let f = reverse. dropWhile isSpace in f . f
 printStandaloneComment :: String -> String

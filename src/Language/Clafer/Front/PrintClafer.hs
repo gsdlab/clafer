@@ -48,15 +48,15 @@ replicateS n f = concatS (replicate n f)
 -- the printer class does the job
 class Print a where
   prt :: Int -> a -> Doc
-  prtList :: [a] -> Doc
-  prtList = concatD . map (prt 0)
+  prtList :: Int -> [a] -> Doc
+  prtList i = concatD . map (prt i)
 
 instance Print a => Print [a] where
-  prt _ = prtList
+  prt = prtList
 
 instance Print Char where
   prt _ s = doc (showChar '\'' . mkEsc '\'' s . showChar '\'')
-  prtList s = doc (showChar '"' . concatS (map (mkEsc '"') s) . showChar '"')
+  prtList _ s = doc (showChar '"' . concatS (map (mkEsc '"') s) . showChar '"')
 
 mkEsc :: Char -> Char -> ShowS
 mkEsc q s = case s of
@@ -99,6 +99,22 @@ instance Print PosIdent where
   prt _ (PosIdent (_,i)) = doc (showString ( i))
 
 
+instance Print PosLineComment where
+  prt _ (PosLineComment (_,i)) = doc (showString ( i))
+
+
+instance Print PosBlockComment where
+  prt _ (PosBlockComment (_,i)) = doc (showString ( i))
+
+
+instance Print PosAlloy where
+  prt _ (PosAlloy (_,i)) = doc (showString ( i))
+
+
+instance Print PosChoco where
+  prt _ (PosChoco (_,i)) = doc (showString ( i))
+
+
 
 instance Print Module where
   prt i e = case e of
@@ -108,10 +124,8 @@ instance Print Declaration where
   prt i e = case e of
     EnumDecl _ posident enumids -> prPrec i 0 (concatD [doc (showString "enum"), prt 0 posident, doc (showString "="), prt 0 enumids])
     ElementDecl _ element -> prPrec i 0 (concatD [prt 0 element])
-  prtList es = case es of
-   [] -> (concatD [])
-   x:xs -> (concatD [prt 0 x, prt 0 xs])
-
+  prtList _ [] = (concatD [])
+  prtList _ (x:xs) = (concatD [prt 0 x, prt 0 xs])
 instance Print Clafer where
   prt i e = case e of
     Clafer _ abstract gcard posident super reference card init elements -> prPrec i 0 (concatD [prt 0 abstract, prt 0 gcard, prt 0 posident, prt 0 super, prt 0 reference, prt 0 card, prt 0 init, prt 0 elements])
@@ -145,20 +159,18 @@ instance Print Element where
     Subconstraint _ constraint -> prPrec i 0 (concatD [prt 0 constraint])
     Subgoal _ goal -> prPrec i 0 (concatD [prt 0 goal])
     SubAssertion _ assertion -> prPrec i 0 (concatD [prt 0 assertion])
-  prtList es = case es of
-   [] -> (concatD [])
-   x:xs -> (concatD [prt 0 x, prt 0 xs])
-
+  prtList _ [] = (concatD [])
+  prtList _ (x:xs) = (concatD [prt 0 x, prt 0 xs])
 instance Print Super where
   prt i e = case e of
     SuperEmpty _ -> prPrec i 0 (concatD [])
-    SuperSome _ exp18 -> prPrec i 0 (concatD [doc (showString ":"), prt 18 exp18])
+    SuperSome _ exp -> prPrec i 0 (concatD [doc (showString ":"), prt 18 exp])
 
 instance Print Reference where
   prt i e = case e of
     ReferenceEmpty _ -> prPrec i 0 (concatD [])
-    ReferenceSet _ exp15 -> prPrec i 0 (concatD [doc (showString "->"), prt 15 exp15])
-    ReferenceBag _ exp15 -> prPrec i 0 (concatD [doc (showString "->>"), prt 15 exp15])
+    ReferenceSet _ exp -> prPrec i 0 (concatD [doc (showString "->"), prt 15 exp])
+    ReferenceBag _ exp -> prPrec i 0 (concatD [doc (showString "->>"), prt 15 exp])
 
 instance Print Init where
   prt i e = case e of
@@ -207,52 +219,50 @@ instance Print Exp where
     EDeclAll _ decl exp -> prPrec i 0 (concatD [doc (showString "all"), prt 0 decl, doc (showString "|"), prt 0 exp])
     EDeclQuantDisj _ quant decl exp -> prPrec i 0 (concatD [prt 0 quant, doc (showString "disj"), prt 0 decl, doc (showString "|"), prt 0 exp])
     EDeclQuant _ quant decl exp -> prPrec i 0 (concatD [prt 0 quant, prt 0 decl, doc (showString "|"), prt 0 exp])
-    EGMax _ exp2 -> prPrec i 1 (concatD [doc (showString "max"), prt 2 exp2])
-    EGMin _ exp2 -> prPrec i 1 (concatD [doc (showString "min"), prt 2 exp2])
+    EGMax _ exp -> prPrec i 1 (concatD [doc (showString "max"), prt 2 exp])
+    EGMin _ exp -> prPrec i 1 (concatD [doc (showString "min"), prt 2 exp])
     EIff _ exp1 exp2 -> prPrec i 1 (concatD [prt 1 exp1, doc (showString "<=>"), prt 2 exp2])
-    EImplies _ exp2 exp3 -> prPrec i 2 (concatD [prt 2 exp2, doc (showString "=>"), prt 3 exp3])
-    EOr _ exp3 exp4 -> prPrec i 3 (concatD [prt 3 exp3, doc (showString "||"), prt 4 exp4])
-    EXor _ exp4 exp5 -> prPrec i 4 (concatD [prt 4 exp4, doc (showString "xor"), prt 5 exp5])
-    EAnd _ exp5 exp6 -> prPrec i 5 (concatD [prt 5 exp5, doc (showString "&&"), prt 6 exp6])
-    ENeg _ exp7 -> prPrec i 6 (concatD [doc (showString "!"), prt 7 exp7])
-    ELt _ exp7 exp8 -> prPrec i 7 (concatD [prt 7 exp7, doc (showString "<"), prt 8 exp8])
-    EGt _ exp7 exp8 -> prPrec i 7 (concatD [prt 7 exp7, doc (showString ">"), prt 8 exp8])
-    EEq _ exp7 exp8 -> prPrec i 7 (concatD [prt 7 exp7, doc (showString "="), prt 8 exp8])
-    ELte _ exp7 exp8 -> prPrec i 7 (concatD [prt 7 exp7, doc (showString "<="), prt 8 exp8])
-    EGte _ exp7 exp8 -> prPrec i 7 (concatD [prt 7 exp7, doc (showString ">="), prt 8 exp8])
-    ENeq _ exp7 exp8 -> prPrec i 7 (concatD [prt 7 exp7, doc (showString "!="), prt 8 exp8])
-    EIn _ exp7 exp8 -> prPrec i 7 (concatD [prt 7 exp7, doc (showString "in"), prt 8 exp8])
-    ENin _ exp7 exp8 -> prPrec i 7 (concatD [prt 7 exp7, doc (showString "not"), doc (showString "in"), prt 8 exp8])
-    EQuantExp _ quant exp12 -> prPrec i 8 (concatD [prt 0 quant, prt 12 exp12])
-    EAdd _ exp9 exp10 -> prPrec i 9 (concatD [prt 9 exp9, doc (showString "+"), prt 10 exp10])
-    ESub _ exp9 exp10 -> prPrec i 9 (concatD [prt 9 exp9, doc (showString "-"), prt 10 exp10])
-    EMul _ exp10 exp11 -> prPrec i 10 (concatD [prt 10 exp10, doc (showString "*"), prt 11 exp11])
-    EDiv _ exp10 exp11 -> prPrec i 10 (concatD [prt 10 exp10, doc (showString "/"), prt 11 exp11])
-    ERem _ exp10 exp11 -> prPrec i 10 (concatD [prt 10 exp10, doc (showString "%"), prt 11 exp11])
-    ESum _ exp12 -> prPrec i 11 (concatD [doc (showString "sum"), prt 12 exp12])
-    EProd _ exp12 -> prPrec i 11 (concatD [doc (showString "product"), prt 12 exp12])
-    ECard _ exp12 -> prPrec i 11 (concatD [doc (showString "#"), prt 12 exp12])
-    EMinExp _ exp12 -> prPrec i 11 (concatD [doc (showString "-"), prt 12 exp12])
-    EImpliesElse _ exp120 exp12 exp13 -> prPrec i 12 (concatD [doc (showString "if"), prt 12 exp120, doc (showString "then"), prt 12 exp12, doc (showString "else"), prt 13 exp13])
-    EDomain _ exp13 exp14 -> prPrec i 13 (concatD [prt 13 exp13, doc (showString "<:"), prt 14 exp14])
-    ERange _ exp14 exp15 -> prPrec i 14 (concatD [prt 14 exp14, doc (showString ":>"), prt 15 exp15])
-    EUnion _ exp15 exp16 -> prPrec i 15 (concatD [prt 15 exp15, doc (showString "++"), prt 16 exp16])
-    EUnionCom _ exp15 exp16 -> prPrec i 15 (concatD [prt 15 exp15, doc (showString ","), prt 16 exp16])
-    EDifference _ exp16 exp17 -> prPrec i 16 (concatD [prt 16 exp16, doc (showString "--"), prt 17 exp17])
-    EIntersection _ exp17 exp18 -> prPrec i 17 (concatD [prt 17 exp17, doc (showString "**"), prt 18 exp18])
-    EJoin _ exp18 exp19 -> prPrec i 18 (concatD [prt 18 exp18, doc (showString "."), prt 19 exp19])
+    EImplies _ exp1 exp2 -> prPrec i 2 (concatD [prt 2 exp1, doc (showString "=>"), prt 3 exp2])
+    EOr _ exp1 exp2 -> prPrec i 3 (concatD [prt 3 exp1, doc (showString "||"), prt 4 exp2])
+    EXor _ exp1 exp2 -> prPrec i 4 (concatD [prt 4 exp1, doc (showString "xor"), prt 5 exp2])
+    EAnd _ exp1 exp2 -> prPrec i 5 (concatD [prt 5 exp1, doc (showString "&&"), prt 6 exp2])
+    ENeg _ exp -> prPrec i 6 (concatD [doc (showString "!"), prt 7 exp])
+    ELt _ exp1 exp2 -> prPrec i 7 (concatD [prt 7 exp1, doc (showString "<"), prt 8 exp2])
+    EGt _ exp1 exp2 -> prPrec i 7 (concatD [prt 7 exp1, doc (showString ">"), prt 8 exp2])
+    EEq _ exp1 exp2 -> prPrec i 7 (concatD [prt 7 exp1, doc (showString "="), prt 8 exp2])
+    ELte _ exp1 exp2 -> prPrec i 7 (concatD [prt 7 exp1, doc (showString "<="), prt 8 exp2])
+    EGte _ exp1 exp2 -> prPrec i 7 (concatD [prt 7 exp1, doc (showString ">="), prt 8 exp2])
+    ENeq _ exp1 exp2 -> prPrec i 7 (concatD [prt 7 exp1, doc (showString "!="), prt 8 exp2])
+    EIn _ exp1 exp2 -> prPrec i 7 (concatD [prt 7 exp1, doc (showString "in"), prt 8 exp2])
+    ENin _ exp1 exp2 -> prPrec i 7 (concatD [prt 7 exp1, doc (showString "not"), doc (showString "in"), prt 8 exp2])
+    EQuantExp _ quant exp -> prPrec i 8 (concatD [prt 0 quant, prt 12 exp])
+    EAdd _ exp1 exp2 -> prPrec i 9 (concatD [prt 9 exp1, doc (showString "+"), prt 10 exp2])
+    ESub _ exp1 exp2 -> prPrec i 9 (concatD [prt 9 exp1, doc (showString "-"), prt 10 exp2])
+    EMul _ exp1 exp2 -> prPrec i 10 (concatD [prt 10 exp1, doc (showString "*"), prt 11 exp2])
+    EDiv _ exp1 exp2 -> prPrec i 10 (concatD [prt 10 exp1, doc (showString "/"), prt 11 exp2])
+    ERem _ exp1 exp2 -> prPrec i 10 (concatD [prt 10 exp1, doc (showString "%"), prt 11 exp2])
+    ESum _ exp -> prPrec i 11 (concatD [doc (showString "sum"), prt 12 exp])
+    EProd _ exp -> prPrec i 11 (concatD [doc (showString "product"), prt 12 exp])
+    ECard _ exp -> prPrec i 11 (concatD [doc (showString "#"), prt 12 exp])
+    EMinExp _ exp -> prPrec i 11 (concatD [doc (showString "-"), prt 12 exp])
+    EImpliesElse _ exp1 exp2 exp3 -> prPrec i 12 (concatD [doc (showString "if"), prt 12 exp1, doc (showString "then"), prt 12 exp2, doc (showString "else"), prt 13 exp3])
+    EDomain _ exp1 exp2 -> prPrec i 13 (concatD [prt 13 exp1, doc (showString "<:"), prt 14 exp2])
+    ERange _ exp1 exp2 -> prPrec i 14 (concatD [prt 14 exp1, doc (showString ":>"), prt 15 exp2])
+    EUnion _ exp1 exp2 -> prPrec i 15 (concatD [prt 15 exp1, doc (showString "++"), prt 16 exp2])
+    EUnionCom _ exp1 exp2 -> prPrec i 15 (concatD [prt 15 exp1, doc (showString ","), prt 16 exp2])
+    EDifference _ exp1 exp2 -> prPrec i 16 (concatD [prt 16 exp1, doc (showString "--"), prt 17 exp2])
+    EIntersection _ exp1 exp2 -> prPrec i 17 (concatD [prt 17 exp1, doc (showString "**"), prt 18 exp2])
+    EJoin _ exp1 exp2 -> prPrec i 18 (concatD [prt 18 exp1, doc (showString "."), prt 19 exp2])
     ClaferId _ name -> prPrec i 19 (concatD [prt 0 name])
     EInt _ posinteger -> prPrec i 19 (concatD [prt 0 posinteger])
     EDouble _ posdouble -> prPrec i 19 (concatD [prt 0 posdouble])
     EReal _ posreal -> prPrec i 19 (concatD [prt 0 posreal])
     EStr _ posstring -> prPrec i 19 (concatD [prt 0 posstring])
-  prtList es = case es of
-   [] -> (concatD [])
-   x:xs -> (concatD [prt 0 x, prt 0 xs])
-
+  prtList _ [] = (concatD [])
+  prtList _ (x:xs) = (concatD [prt 0 x, prt 0 xs])
 instance Print Decl where
   prt i e = case e of
-    Decl _ locids exp13 -> prPrec i 0 (concatD [prt 0 locids, doc (showString ":"), prt 13 exp13])
+    Decl _ locids exp -> prPrec i 0 (concatD [prt 0 locids, doc (showString ":"), prt 13 exp])
 
 instance Print Quant where
   prt i e = case e of
@@ -265,20 +275,15 @@ instance Print Quant where
 instance Print EnumId where
   prt i e = case e of
     EnumIdIdent _ posident -> prPrec i 0 (concatD [prt 0 posident])
-  prtList es = case es of
-   [x] -> (concatD [prt 0 x])
-   x:xs -> (concatD [prt 0 x, doc (showString "|"), prt 0 xs])
-
+  prtList _ [x] = (concatD [prt 0 x])
+  prtList _ (x:xs) = (concatD [prt 0 x, doc (showString "|"), prt 0 xs])
 instance Print ModId where
   prt i e = case e of
     ModIdIdent _ posident -> prPrec i 0 (concatD [prt 0 posident])
-  prtList es = case es of
-   [x] -> (concatD [prt 0 x])
-   x:xs -> (concatD [prt 0 x, doc (showString "\\"), prt 0 xs])
-
+  prtList _ [x] = (concatD [prt 0 x])
+  prtList _ (x:xs) = (concatD [prt 0 x, doc (showString "\\"), prt 0 xs])
 instance Print LocId where
   prt i e = case e of
     LocIdIdent _ posident -> prPrec i 0 (concatD [prt 0 posident])
-  prtList es = case es of
-   [x] -> (concatD [prt 0 x])
-   x:xs -> (concatD [prt 0 x, doc (showString ";"), prt 0 xs])
+  prtList _ [x] = (concatD [prt 0 x])
+  prtList _ (x:xs) = (concatD [prt 0 x, doc (showString ";"), prt 0 xs])
