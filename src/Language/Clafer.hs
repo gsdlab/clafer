@@ -479,9 +479,9 @@ generate =
                 else [ (Alloy,
                         NoCompilerResult {
                          reason = "Alloy output unavailable because the model contains: "
-                                ++ (if hasNoRealLiterals then "" else " | a real number literal")
-                                ++ (if hasNoReferenceToReal then "" else " | a reference to a real")
-                                ++ (if hasNoProductOperator then "" else " | the product operator")
+                                ++ (if hasNoRealLiterals then "" else " * a real number literal")
+                                ++ (if hasNoReferenceToReal then "" else " * a reference to a real")
+                                ++ (if hasNoProductOperator then "" else " * the product operator")
                                 ++ "."
                         })
                      ]
@@ -582,7 +582,7 @@ generate =
           then [ (Choco,
                   CompilerResult {
                     extension = "js",
-                    outputCode = genCModule (iModule, genv) scopes,
+                    outputCode = genCModule (iModule, genv) scopes otherTokens',
                     statistics = stats,
                     claferEnv  = env,
                     mappingToAlloy = [],

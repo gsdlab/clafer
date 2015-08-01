@@ -14,10 +14,12 @@ import Data.Ord
 import Prelude hiding (exp)
 import Language.Clafer.Common
 import Language.Clafer.Intermediate.Intclafer
+import Language.Clafer.Front.LexClafer
+
 
 -- | Choco 3 code generation
-genCModule :: (IModule, GEnv) -> [(UID, Integer)] -> Result
-genCModule (imodule@IModule{_mDecls}, genv') scopes =
+genCModule :: (IModule, GEnv) -> [(UID, Integer)] -> [Token]     -> Result
+genCModule (imodule@IModule{_mDecls}, genv') scopes  otherTokens' =
     genScopes
     ++ "\n"
     ++ (genAbstractClafer =<< abstractClafers)
@@ -26,6 +28,7 @@ genCModule (imodule@IModule{_mDecls}, genv') scopes =
     ++ (genTopConstraint =<< _mDecls)
     ++ (genConstraint =<< clafers)
     ++ (genGoal =<< _mDecls)
+    ++ genChocoEscapes
     where
     uidIClaferMap' = uidClaferMap genv'
     root :: IClafer
@@ -82,6 +85,16 @@ genCModule (imodule@IModule{_mDecls}, genv') scopes =
             largestPositiveInt :: Integer
             largestPositiveInt = 2 ^ (bitwidth - 1)
             scopeMap = [uid' ++ ":" ++ show scope | (uid', scope) <- scopes, uid' /= "int"]
+
+    genChocoEscapes :: String
+    genChocoEscapes = concat $ map printChocoEscape otherTokens'
+        where
+            printChocoEscape (PT _ (T_PosChoco code)) =  let
+                code' = fromJust $ stripPrefix "[choco|" code
+              in
+                take ((length code') - 2) code'
+            printChocoEscape _                        = ""
+
     exprs :: [IExp]
     exprs = universeOn biplate imodule
 
