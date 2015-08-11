@@ -67,7 +67,7 @@ genAlloyLtlModule    claferargs'   (imodule, genv)       scopes         = (flatt
   genEnv = GenEnv claferargs' uidIClaferMap' forScopes'
   rootClafer = findIClafer uidIClaferMap' rootIdent
   clafer' = case rootClafer of
-                          Just c' -> c'
+                          Just c' -> adjustRootClafer c'
                           _ -> error "Missing root clafer" -- should never happen
 
 
@@ -91,6 +91,9 @@ genAlloyLtlModule    claferargs'   (imodule, genv)       scopes         = (flatt
                 CString ""
        where
                 goals_list = filterNull (map (genDeclarationGoalsOnly genEnv clafer') (_mDecls imodule) )
+
+adjustRootClafer :: IClafer -> IClafer
+adjustRootClafer c' = c'
 
 header :: GenEnv -> Concat
 header    genEnv  = CString $ unlines $ catMaybes
@@ -165,9 +168,8 @@ genDeclarationGoalsOnly    genEnv    c          x        = case x of
         _ ->  error "no unary operator (min/max) at the topmost level of a goal element."
 
 genRootClafer :: GenEnv -> IClafer -> Concat
-genRootClafer genEnv clafer'
-  = let ctx = GenCtx clafer' [] Nothing in
-        (cunlines $ filterNull
+genRootClafer genEnv clafer'  =
+  (cunlines $ filterNull
           [   claferDecl clafer' (
               (showSet (CString "\n, ") $ genRelations genEnv ctx)
               +++ (optShowSet $ filterNull $ genConstraints genEnv ctx)
@@ -177,6 +179,7 @@ genRootClafer genEnv clafer'
       +++ CString "\n" +++ children'
       +++ CString "\n" +++ assertions
   where
+  ctx = GenCtx clafer' [] Nothing
   children' = cconcat $ filterNull $ map
              (genClafer genEnv [_uid clafer']) $
              getSubclafers $ _elements clafer'
