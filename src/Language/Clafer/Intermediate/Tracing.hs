@@ -19,11 +19,12 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
 -}
-module Language.Clafer.Intermediate.Tracing (traceIrModule, traceAstModule, Ast(..)) where
+module Language.Clafer.Intermediate.Tracing (traceIrModule, traceAstModule, Ast(..), printAstNode) where
 
 import Data.Map (Map)
 import qualified Data.Map as Map
 import Language.Clafer.Front.AbsClafer
+import Language.Clafer.Front.PrintClafer (printTree)
 import Language.Clafer.Intermediate.Intclafer
 
 traceIrModule :: IModule -> Map Span [Ir] --Map Span [Union (IRClafer IClafer) (IRPExp PExp)]
@@ -48,7 +49,7 @@ traceAstModule x =
   i (AstDeclaration a) = getSpan a
   i (AstClafer a) = getSpan a
   i (AstConstraint a) = getSpan a
-  i (AstSoftConstraint a) = getSpan a
+  i (AstAssertion a) = getSpan a
   i (AstGoal a) = getSpan a
   i (AstAbstract a) = getSpan a
   i (AstElements a) = getSpan a
@@ -63,7 +64,6 @@ traceAstModule x =
   i (AstExInteger a) = getSpan a
   i (AstName a) = getSpan a
   i (AstExp a) = getSpan a
-  i (AstSetExp a) = getSpan a
   i (AstDecl a) = getSpan a
   i (AstQuant a) = getSpan a
   i (AstEnumId a) = getSpan a
@@ -87,8 +87,8 @@ traverseClafer x@(Clafer _ a _ gcard' _ super' ref' card' init' _ g) =
 traverseConstraint :: Constraint -> [Ast]
 traverseConstraint x@(Constraint _ e) = AstConstraint x : concatMap traverseExp e
 
-traverseSoftConstraint :: SoftConstraint -> [Ast]
-traverseSoftConstraint x@(SoftConstraint _ e) = AstSoftConstraint x : concatMap traverseExp e
+traverseAssertion :: Assertion -> [Ast]
+traverseAssertion x@(Assertion _ e) = AstAssertion x : concatMap traverseExp e
 
 traverseGoal :: Goal -> [Ast]
 traverseGoal x@(Goal _ e) = AstGoal x : concatMap traverseExp e
@@ -112,22 +112,22 @@ traverseElement x =
     ClaferUse _ n c e -> traverseName n ++ traverseCard c ++ traverseElements e
     Subconstraint _ c -> traverseConstraint c
     Subgoal _ g -> traverseGoal g
-    Subsoftconstraint _ c -> traverseSoftConstraint c
+    SubAssertion _ c -> traverseAssertion c
 
 traverseSuper :: Super -> [Ast]
 traverseSuper x =
   AstSuper x :
     case x of
     SuperEmpty _ -> []
-    SuperSome _ se -> traverseSetExp se
+    SuperSome _ se -> traverseExp se
 
 traverseReference :: Reference -> [Ast]
 traverseReference x =
   AstReference x :
     case x of
     ReferenceEmpty _ -> []
-    ReferenceSet _ se -> traverseSetExp se
-    ReferenceBag _ se -> traverseSetExp se
+    ReferenceSet _ se -> traverseExp se
+    ReferenceBag _ se -> traverseExp se
 
 traverseInit :: Init -> [Ast]
 traverseInit x =
@@ -176,10 +176,10 @@ traverseExp :: Exp -> [Ast]
 traverseExp x =
   AstExp x :
     case x of
-    DeclAllDisj _ d e -> traverseDecl d ++ traverseExp e
-    DeclAll _ d e -> traverseDecl d ++ traverseExp e
-    DeclQuantDisj _ q d e -> traverseQuant q ++ traverseDecl d ++ traverseExp e
-    DeclQuant _ q d e -> traverseQuant q ++ traverseDecl d ++ traverseExp e
+    EDeclAllDisj _ d e -> traverseDecl d ++ traverseExp e
+    EDeclAll _ d e -> traverseDecl d ++ traverseExp e
+    EDeclQuantDisj _ q d e -> traverseQuant q ++ traverseDecl d ++ traverseExp e
+    EDeclQuant _ q d e -> traverseQuant q ++ traverseDecl d ++ traverseExp e
     EGMax _ e -> traverseExp e
     EGMin _ e -> traverseExp e
     EIff _ e1 e2 -> traverseExp e1 ++ traverseExp e2
@@ -196,36 +196,33 @@ traverseExp x =
     ENeq _ e1 e2 -> traverseExp e1 ++ traverseExp e2
     EIn _ e1 e2 -> traverseExp e1 ++ traverseExp e2
     ENin _ e1 e2 -> traverseExp e1 ++ traverseExp e2
-    QuantExp _ q e -> traverseQuant q ++ traverseExp e
+    EQuantExp _ q e -> traverseQuant q ++ traverseExp e
     EAdd _ e1 e2 -> traverseExp e1 ++ traverseExp e2
     ESub _ e1 e2 -> traverseExp e1 ++ traverseExp e2
     EMul _ e1 e2 -> traverseExp e1 ++ traverseExp e2
     EDiv _ e1 e2 -> traverseExp e1 ++ traverseExp e2
-    ECSetExp _ e -> traverseExp e
+    ERem _ e1 e2 -> traverseExp e1 ++ traverseExp e2
+    ESum _ e -> traverseExp e
+    EProd _ e -> traverseExp e
+    ECard _ e -> traverseExp e
     EMinExp _ e -> traverseExp e
     EImpliesElse _ e1 e2 e3 -> traverseExp e1 ++ traverseExp e2 ++ traverseExp e3
     EInt _ _ -> []
     EDouble _ _ -> []
+    EReal _ _ -> []
     EStr _ _ -> []
-    ESetExp _ s -> traverseSetExp s
-    _ -> error "Invalid argument given to function traverseExp from Tracing"
-
-traverseSetExp :: SetExp -> [Ast]
-traverseSetExp x =
-  AstSetExp x :
-    case x of
-    Union _ s1 s2 -> traverseSetExp s1 ++ traverseSetExp s2
-    UnionCom _ s1 s2 -> traverseSetExp s1 ++ traverseSetExp s2
-    Difference _ s1 s2 -> traverseSetExp s1 ++ traverseSetExp s2
-    Intersection _ s1 s2 -> traverseSetExp s1 ++ traverseSetExp s2
-    Domain _ s1 s2 -> traverseSetExp s1 ++ traverseSetExp s2
-    Range _ s1 s2 -> traverseSetExp s1 ++ traverseSetExp s2
-    Join _ s1 s2 -> traverseSetExp s1 ++ traverseSetExp s2
+    EUnion _ s1 s2 -> traverseExp s1 ++ traverseExp s2
+    EUnionCom _ s1 s2 -> traverseExp s1 ++ traverseExp s2
+    EDifference _ s1 s2 -> traverseExp s1 ++ traverseExp s2
+    EIntersection _ s1 s2 -> traverseExp s1 ++ traverseExp s2
+    EDomain _ s1 s2 -> traverseExp s1 ++ traverseExp s2
+    ERange _ s1 s2 -> traverseExp s1 ++ traverseExp s2
+    EJoin _ s1 s2 -> traverseExp s1 ++ traverseExp s2
     ClaferId _ n -> traverseName n
 
 traverseDecl :: Decl -> [Ast]
 traverseDecl x@(Decl _ l s) =
-  AstDecl x : (concatMap traverseLocId l ++ traverseSetExp s)
+  AstDecl x : (concatMap traverseLocId l ++ traverseExp s)
 
 traverseQuant :: Quant -> [Ast]
 traverseQuant x =
@@ -245,7 +242,7 @@ data Ast =
   AstDeclaration Declaration |
   AstClafer Clafer |
   AstConstraint Constraint |
-  AstSoftConstraint SoftConstraint |
+  AstAssertion Assertion |
   AstGoal Goal |
   AstAbstract Abstract |
   AstElements Elements |
@@ -260,10 +257,35 @@ data Ast =
   AstExInteger ExInteger |
   AstName Name |
   AstExp Exp |
-  AstSetExp SetExp |
   AstDecl Decl |
   AstQuant Quant |
   AstEnumId EnumId |
   AstModId ModId |
   AstLocId LocId
   deriving (Eq, Show)
+
+printAstNode :: Ast -> String
+printAstNode (AstModule x) = printTree x
+printAstNode (AstDeclaration x) = printTree x
+printAstNode (AstClafer x) = printTree x
+printAstNode (AstConstraint x) = printTree x
+printAstNode (AstAssertion x) = printTree x
+printAstNode (AstGoal x) = printTree x
+printAstNode (AstAbstract x) = printTree x
+printAstNode (AstElements x) = printTree x
+printAstNode (AstElement x) = printTree x
+printAstNode (AstSuper x) = printTree x
+printAstNode (AstReference x) = printTree x
+printAstNode (AstInit x) = printTree x
+printAstNode (AstInitHow x) = printTree x
+printAstNode (AstGCard x) = printTree x
+printAstNode (AstCard x) = printTree x
+printAstNode (AstNCard x) = printTree x
+printAstNode (AstExInteger x) = printTree x
+printAstNode (AstName x) = printTree x
+printAstNode (AstExp x) = printTree x
+printAstNode (AstDecl x) = printTree x
+printAstNode (AstQuant x) = printTree x
+printAstNode (AstEnumId x) = printTree x
+printAstNode (AstModId x) = printTree x
+printAstNode (AstLocId x) = printTree x

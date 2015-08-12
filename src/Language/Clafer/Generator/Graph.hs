@@ -137,14 +137,14 @@ parent (_:xss) = parent xss
 graphSimpleSuper (SuperEmpty _) _ _ _ = ""
 graphSimpleSuper (SuperSome _ setExp) topLevel irMap _ =
   let
-    super' = parent $ graphSimpleSetExp setExp topLevel irMap
+    super' = parent $ graphSimpleExp setExp topLevel irMap
   in
     if super' == "error"
       then ""
       else "\"" ++
            fromJust (snd3 topLevel) ++
            "\" -> \"" ++
-           parent (graphSimpleSetExp setExp topLevel irMap) ++
+           parent (graphSimpleExp setExp topLevel irMap) ++
            "\"" ++
            " [" ++ if fst3 topLevel == True
              then "arrowhead=onormal constraint=true weight=100];\n"
@@ -153,9 +153,10 @@ graphSimpleSuper (SuperSome _ setExp) topLevel irMap _ =
 graphSimpleReference :: Reference -> (Bool, Maybe String, Maybe String) -> Map.Map Span [Ir] -> Bool -> String
 graphSimpleReference (ReferenceEmpty _) _ _ _ = ""
 graphSimpleReference (ReferenceSet _ setExp) topLevel irMap showRefs =
-  case graphSimpleSetExp setExp topLevel irMap of
+  case graphSimpleExp setExp topLevel irMap of
     ["integer"] -> ""
     ["int"] -> ""
+    ["double"] -> ""
     ["real"] -> ""
     ["string"] -> ""
     [target] ->
@@ -173,10 +174,11 @@ graphSimpleReference (ReferenceSet _ setExp) topLevel irMap showRefs =
        "];\n"
     _ -> ""
 graphSimpleReference (ReferenceBag _ setExp) topLevel irMap showRefs =
-  case graphSimpleSetExp setExp topLevel irMap of
+  case graphSimpleExp setExp topLevel irMap of
     ["integer"] -> ""
     ["int"] -> ""
     ["real"] -> ""
+    ["double"] -> ""
     ["string"] -> ""
     [target] ->
       ("\"" ++
@@ -212,21 +214,22 @@ graphSimpleInitHow _ _ _ = ""
 graphSimpleExp _ _ _ = ""
 graphSimpleQuant _ _ _ = ""
 graphSimpleGoal _ _ _ = ""
-graphSimpleSoftConstraint _ _ _ = ""
+graphSimpleAssertion _ _ _ = ""
 graphSimpleAbstract _ _ _ = ""
 graphSimpleGCard _ _ _ = ""
 graphSimpleNCard _ _ _ = ""
 graphSimpleExInteger _ _ _ = ""-}
 
-graphSimpleSetExp :: SetExp -> (Bool, Maybe String, Maybe String) -> Map.Map Span [Ir] -> [String]
-graphSimpleSetExp (ClaferId _ name) topLevel irMap = [graphSimpleName name topLevel irMap]
-graphSimpleSetExp (Union _ set1 set2) topLevel irMap = graphSimpleSetExp set1 topLevel irMap ++ graphSimpleSetExp set2 topLevel irMap
-graphSimpleSetExp (UnionCom _ set1 set2) topLevel irMap = graphSimpleSetExp set1 topLevel irMap ++ graphSimpleSetExp set2 topLevel irMap
-graphSimpleSetExp (Difference _ set1 set2) topLevel irMap = graphSimpleSetExp set1 topLevel irMap ++ graphSimpleSetExp set2 topLevel irMap
-graphSimpleSetExp (Intersection _ set1 set2) topLevel irMap = graphSimpleSetExp set1 topLevel irMap ++ graphSimpleSetExp set2 topLevel irMap
-graphSimpleSetExp (Domain _ set1 set2) topLevel irMap = graphSimpleSetExp set1 topLevel irMap ++ graphSimpleSetExp set2 topLevel irMap
-graphSimpleSetExp (Range _ set1 set2) topLevel irMap = graphSimpleSetExp set1 topLevel irMap ++ graphSimpleSetExp set2 topLevel irMap
-graphSimpleSetExp (Join _ set1 set2) topLevel irMap = graphSimpleSetExp set1 topLevel irMap ++ graphSimpleSetExp set2 topLevel irMap
+graphSimpleExp :: Exp -> (Bool, Maybe String, Maybe String) -> Map.Map Span [Ir] -> [String]
+graphSimpleExp (ClaferId _ name) topLevel irMap = [graphSimpleName name topLevel irMap]
+graphSimpleExp (EUnion _ set1 set2) topLevel irMap = graphSimpleExp set1 topLevel irMap ++ graphSimpleExp set2 topLevel irMap
+graphSimpleExp (EUnionCom _ set1 set2) topLevel irMap = graphSimpleExp set1 topLevel irMap ++ graphSimpleExp set2 topLevel irMap
+graphSimpleExp (EDifference _ set1 set2) topLevel irMap = graphSimpleExp set1 topLevel irMap ++ graphSimpleExp set2 topLevel irMap
+graphSimpleExp (EIntersection _ set1 set2) topLevel irMap = graphSimpleExp set1 topLevel irMap ++ graphSimpleExp set2 topLevel irMap
+graphSimpleExp (EDomain _ set1 set2) topLevel irMap = graphSimpleExp set1 topLevel irMap ++ graphSimpleExp set2 topLevel irMap
+graphSimpleExp (ERange _ set1 set2) topLevel irMap = graphSimpleExp set1 topLevel irMap ++ graphSimpleExp set2 topLevel irMap
+graphSimpleExp (EJoin _ set1 set2) topLevel irMap = graphSimpleExp set1 topLevel irMap ++ graphSimpleExp set2 topLevel irMap
+graphSimpleExp _ _ _ = []
 
 {-graphSimpleEnumId :: EnumId -> (Bool, Maybe String, Maybe String) -> Map.Map Span [Ir] -> String
 graphSimpleEnumId (EnumIdIdent posident) _ irMap = graphSimplePosIdent posident irMap
@@ -248,7 +251,7 @@ graphCVLElement (Subclafer _ clafer)  parent' irMap = graphCVLClafer clafer pare
 graphCVLElement (ClaferUse s _ _ _) parent' irMap = if parent' == Nothing then "" else "?" ++ " -> " ++ getUseId s irMap ++ " [arrowhead = onormal style = dashed constraint = false];\n"
 graphCVLElement (Subconstraint _ constraint) parent' irMap = graphCVLConstraint constraint parent' irMap
 graphCVLElement (Subgoal _ constraint) parent' irMap = graphCVLGoal constraint parent' irMap
-graphCVLElement (Subsoftconstraint _ constraint) parent' irMap = graphCVLSoftConstraint constraint parent' irMap
+graphCVLElement (SubAssertion _ constraint) parent' irMap = graphCVLAssertion constraint parent' irMap
 
 graphCVLElements :: Elements -> Maybe String -> Map.Map Span [Ir] -> String
 graphCVLElements (ElementsEmpty _) _ _ = ""
@@ -269,12 +272,12 @@ graphCVLClafer (Clafer s _ _ gCard _ super' reference' crd _ _ es) parent' irMap
 
 graphCVLSuper :: Super -> Maybe String -> Map.Map Span [Ir] -> String
 graphCVLSuper (SuperEmpty _) _ _ = ""
-graphCVLSuper (SuperSome _ setExp) parent' irMap = ":" ++ concat (graphCVLSetExp setExp parent' irMap)
+graphCVLSuper (SuperSome _ setExp) parent' irMap = ":" ++ concat (graphCVLExp setExp parent' irMap)
 
 graphCVLReference :: Reference -> Maybe String -> Map.Map Span [Ir] -> String
 graphCVLReference (ReferenceEmpty _) _ _ = ""
-graphCVLReference (ReferenceSet _ setExp) parent' irMap = "->" ++ concat (graphCVLSetExp setExp parent' irMap)
-graphCVLReference (ReferenceBag _ setExp) parent' irMap = "->>" ++ concat (graphCVLSetExp setExp parent' irMap)
+graphCVLReference (ReferenceSet _ setExp) parent' irMap = "->" ++ concat (graphCVLExp setExp parent' irMap)
+graphCVLReference (ReferenceBag _ setExp) parent' irMap = "->>" ++ concat (graphCVLExp setExp parent' irMap)
 
 graphCVLName :: Name -> Maybe String -> Map.Map Span [Ir] -> String
 graphCVLName (Path _ modids) parent' irMap = unwords $ map (\x -> graphCVLModId x parent' irMap) modids
@@ -291,8 +294,8 @@ graphCVLConstraint (Constraint s exps') parent' irMap = let body' = htmlChars $ 
                                                                     in uid' ++ " [label=\"" ++ body' ++ "\" shape=parallelogram];\n" ++
                                                                       if parent' == Nothing then "" else uid' ++ " -> \"" ++ fromJust parent' ++ "\";\n"
 
-graphCVLSoftConstraint :: SoftConstraint -> Maybe String -> Map.Map Span [Ir] -> String
-graphCVLSoftConstraint (SoftConstraint s exps') parent' irMap = let body' = htmlChars $ genTooltip (Module s [ElementDecl s (Subsoftconstraint s (SoftConstraint s exps'))]) irMap;
+graphCVLAssertion :: Assertion -> Maybe String -> Map.Map Span [Ir] -> String
+graphCVLAssertion (Assertion s exps') parent' irMap = let body' = htmlChars $ genTooltip (Module s [ElementDecl s (SubAssertion s (Assertion s exps'))]) irMap;
                                                                        uid' = "\"" ++ getExpId s irMap ++ "\""
                                                                     in uid' ++ " [label=\"" ++ body' ++ "\" shape=parallelogram];\n" ++
                                                                       if parent' == Nothing then "" else uid' ++ " -> \"" ++ fromJust parent' ++ "\";\n"
@@ -333,18 +336,19 @@ graphCVLInitHow _ _ _ = ""
 graphCVLExp _ _ _ = ""
 graphCVLQuant _ _ _ = ""
 graphCVLGoal _ _ _ = ""
-graphCVLSoftConstraint _ _ _ = ""
+graphCVLAssertion _ _ _ = ""
 graphCVLAbstract _ _ _ = ""-}
 
-graphCVLSetExp :: SetExp -> Maybe String -> Map.Map Span [Ir] -> [String]
-graphCVLSetExp (ClaferId _ name) parent' irMap = [graphCVLName name parent' irMap]
-graphCVLSetExp (Union _ set1 set2) parent' irMap = graphCVLSetExp set1 parent' irMap ++ graphCVLSetExp set2 parent' irMap
-graphCVLSetExp (UnionCom _ set1 set2) parent' irMap = graphCVLSetExp set1 parent' irMap ++ graphCVLSetExp set2 parent' irMap
-graphCVLSetExp (Difference _ set1 set2) parent' irMap = graphCVLSetExp set1 parent' irMap ++ graphCVLSetExp set2 parent' irMap
-graphCVLSetExp (Intersection _ set1 set2) parent' irMap = graphCVLSetExp set1 parent' irMap ++ graphCVLSetExp set2 parent' irMap
-graphCVLSetExp (Domain _ set1 set2) parent' irMap = graphCVLSetExp set1 parent' irMap ++ graphCVLSetExp set2 parent' irMap
-graphCVLSetExp (Range _ set1 set2) parent' irMap = graphCVLSetExp set1 parent' irMap ++ graphCVLSetExp set2 parent' irMap
-graphCVLSetExp (Join _ set1 set2) parent' irMap = graphCVLSetExp set1 parent' irMap ++ graphCVLSetExp set2 parent' irMap
+graphCVLExp :: Exp -> Maybe String -> Map.Map Span [Ir] -> [String]
+graphCVLExp (ClaferId _ name) parent' irMap = [graphCVLName name parent' irMap]
+graphCVLExp (EUnion _ set1 set2) parent' irMap = graphCVLExp set1 parent' irMap ++ graphCVLExp set2 parent' irMap
+graphCVLExp (EUnionCom _ set1 set2) parent' irMap = graphCVLExp set1 parent' irMap ++ graphCVLExp set2 parent' irMap
+graphCVLExp (EDifference _ set1 set2) parent' irMap = graphCVLExp set1 parent' irMap ++ graphCVLExp set2 parent' irMap
+graphCVLExp (EIntersection _ set1 set2) parent' irMap = graphCVLExp set1 parent' irMap ++ graphCVLExp set2 parent' irMap
+graphCVLExp (EDomain _ set1 set2) parent' irMap = graphCVLExp set1 parent' irMap ++ graphCVLExp set2 parent' irMap
+graphCVLExp (ERange _ set1 set2) parent' irMap = graphCVLExp set1 parent' irMap ++ graphCVLExp set2 parent' irMap
+graphCVLExp (EJoin _ set1 set2) parent' irMap = graphCVLExp set1 parent' irMap ++ graphCVLExp set2 parent' irMap
+graphCVLExp _ _ _ = []
 
 {-graphCVLEnumId (EnumIdIdent posident) _ irMap = graphCVLPosIdent posident irMap
 graphCVLEnumId (PosEnumIdIdent _ posident) parent irMap = graphCVLEnumId (EnumIdIdent posident) parent irMap-}
@@ -388,12 +392,6 @@ getDivId s irMap = if Map.lookup s irMap == Nothing
                       then "Uid not Found"
                       else let IRClafer iClaf = head $ fromJust $ Map.lookup s irMap in
                         _uid iClaf
-
-{-getSuperId :: Span -> Map.Map Span [Ir] -> String
-getSuperId s irMap = if Map.lookup s irMap == Nothing
-                        then "Uid not Found"
-                        else let IRPExp pexp = head $ fromJust $ Map.lookup s irMap in
-                          sident $ exp pexp-}
 
 getUseId :: Span -> Map.Map Span [Ir] -> String
 getUseId s irMap = if Map.lookup s irMap == Nothing

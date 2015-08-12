@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE NamedFieldPuns     #-}
 {-
- Copyright (C) 2012-2014 Kacper Bak, Jimmy Liang, Michal Antkiewicz <http://gsd.uwaterloo.ca>
+ Copyright (C) 2012-2015 Kacper Bak, Jimmy Liang, Michal Antkiewicz <http://gsd.uwaterloo.ca>
 
  Permission is hereby granted, free of charge, to any person obtaining a copy of
  this software and associated documentation files (the "Software"), to deal in
@@ -80,7 +80,6 @@ module Language.Clafer
   , getEnv
   , putEnv
   , CompilerResult(..)
-  , claferIRXSD
   , InputModel
   , Token
   , Module
@@ -129,14 +128,13 @@ import           Language.Clafer.Generator.Concat
 import           Language.Clafer.Generator.Graph
 import           Language.Clafer.Generator.Html
 import           Language.Clafer.Generator.Python
-import           Language.Clafer.Generator.Schema
 import           Language.Clafer.Generator.Stats
-import           Language.Clafer.Generator.Xml
 import           Language.Clafer.Intermediate.Desugarer
 import           Language.Clafer.Intermediate.Intclafer
 import           Language.Clafer.Intermediate.Resolver
 import           Language.Clafer.Intermediate.ScopeAnalysis
 import           Language.Clafer.Intermediate.StringAnalyzer
+import           Language.Clafer.Intermediate.Tracing
 import           Language.Clafer.Intermediate.Transformer
 import           Language.Clafer.JSONMetaData
 import           Language.Clafer.Optimizer.Optimizer
@@ -175,7 +173,7 @@ runCompiler    mURL         args'         inputModel =
   cth (Right r)  _ = return r
   fragments model = map unlines $ fragments' $ lines model
   fragments' []                  = []
-  fragments' ("//# FRAGMENT":xs) = fragments' xs
+  fragments' ("//# FRAGMENT":xs) = fragments' $ " " : xs
   fragments' model               = takeWhile (/= "//# FRAGMENT") model : fragments' (dropWhile (/= "//# FRAGMENT") model)
 --  htmlCatch :: Either ClaferErr CompilerResult -> ClaferArgs -> String -> IO(CompilerResult)
   htmlCatch (Right r) _ _ = return r
@@ -251,22 +249,18 @@ save args'=
     inScopeModes :: Bool
     inScopeModes =
       Alloy `elem` mode args' ||
-      Alloy42 `elem` mode args' ||
       Choco `elem` mode args'
 
     getScopesList :: (Map.Map ClaferMode CompilerResult) -> [(UID, Integer)]
     getScopesList    resultsMap =
         let
            alloyResult = Map.lookup Alloy resultsMap
-           alloy42Result = Map.lookup Alloy42 resultsMap
            chocoResult = Map.lookup Choco resultsMap
         in
            if (isNothing alloyResult)
-           then if (isNothing alloy42Result)
-                then if (isNothing chocoResult)
-                     then []
-                     else scopesList $ fromJust chocoResult
-                else scopesList $ fromJust alloy42Result
+           then if (isNothing chocoResult)
+                then []
+                else scopesList $ fromJust chocoResult
            else scopesList $ fromJust alloyResult
 
 summary :: String -> CompilerResult -> CompilerResult
@@ -281,19 +275,13 @@ summary' graph stats ("<!-- # CVLGRAPH /-->":xs) = graph:summary' graph stats xs
 summary' graph stats (x:xs) = x:summary' graph stats xs
 
 runValidate :: ClaferArgs -> String -> IO ()
-runValidate _     "" = return ()   -- when NoCompilerResult, the filename is empty
 runValidate args' fo = do
   let path = (tooldir args') ++ "/"
   liftIO $ putStrLn ("Validating '" ++ fo ++"'")
   let modes = mode args'
-  when (Xml `elem` modes && "xml" `isSuffixOf` fo) $ do
-      writeFile "ClaferIR.xsd" claferIRXSD
-      voidf $ system $ "java -classpath " ++ path ++ " XsdCheck ClaferIR.xsd " ++ fo
-  when (Alloy `elem` modes && "als41" `isSuffixOf` fo) $ do
-    voidf $ system $ validateAlloy path "4" ++ fo
-  when (Alloy42 `elem` modes && "als" `isSuffixOf` fo) $ do
+  when (Alloy `elem` modes && ".als" `isSuffixOf` fo) $ do
     voidf $ system $ validateAlloy path "4.2" ++ fo
-  when (Mode.Clafer `elem` modes && "des.cfr" `isSuffixOf` fo) $ do
+  when (Mode.Clafer `elem` modes && ".des.cfr" `isSuffixOf` fo) $ do
     voidf $ system $ "../dist/build/clafer/clafer -s -m=clafer " ++ fo
 
 validateAlloy :: String -> String -> String
@@ -354,55 +342,26 @@ parse :: Monad m => ClaferT m ()
 parse =
   do
     env <- getEnv
-    astsErr <- mapM (parseFrag $ args env) $ modelFrags env
-    asts <- liftParseErrs astsErr
+    let completeModel = concat $ modelFrags env
 
-    -- We need to somehow combine all the ASTS together into a complete AST
-    -- However, the source positions inside the ASTs are relative to their
-    -- fragments.
-    --
-    -- For example
-    --   Frag1: "A\nB\n"
-    --   Frag2: "C\n"
-    -- The "C" clafer in Frag2 has position (1, 1) because it is at the start of the fragment.
-    -- However, it should have position (3, 1) since that is its position in the complete model.
-    --
-    -- We can
-    --   1. Traverse the model and update the positions so that they are relative to model rather
-    --      than the fragment.
-    --   2. Reparse the model as a complete model rather in fragments.
-    --
-    -- The second one is easier so that's we'll do for now. There shouldn't be any errors since
-    -- each individual fragment already passed.
-    ast <- case asts of
-      -- Special case: if there is only one fragment, then the complete model is contained within it.
-      -- Don't need to reparse. This is the common case.
-      [oneFrag] -> return oneFrag
-      _ -> do
-        -- Combine all the fragment syntaxes
-        let completeModel = concat $ modelFrags env
-        completeAst <- (parseFrag $ args env) completeModel
-        liftParseErr completeAst
+    (astErr, otherTokens') <- (parseFrag $ args env) completeModel
+    ast <- liftParseErr astErr
 
-    putEnv env{ cAst = Just ast, astModuleTrace = traceAstModule ast }
+    putEnv env{ cAst = Just ast, astModuleTrace = traceAstModule ast, otherTokens = otherTokens' }
   where
-  parseFrag :: (Monad m) => ClaferArgs -> String -> ClaferT m (Err Module)
-  parseFrag args' =
-    (>>= (return . pModule)) .
-    (if not
-      ((new_layout args') ||
-      (no_layout args'))
-    then
-       resolveLayout
-    else
-       return)
-    . myLexer .
-    (if (not $ no_layout args') &&
-        (new_layout args')
-     then
-       resLayout
-     else
-       id)
+  parseFrag :: (Monad m) => ClaferArgs -> String    -> ClaferT m (Err Module, [Token])
+  parseFrag                 args'         inputModel = do
+    let model' = if (not $ no_layout args') && (new_layout args') then resLayout inputModel else inputModel
+    let allTokens = myLexer model'
+    let (parseableTokens, otherTokens') = partition isParseable allTokens
+    tokens2 <- if not ((new_layout args') || (no_layout args')) then resolveLayout parseableTokens else return parseableTokens
+    return (pModule tokens2, otherTokens')
+    where
+      isParseable (PT _ (T_PosLineComment _))  = False
+      isParseable (PT _ (T_PosBlockComment _)) = False
+      isParseable (PT _ (T_PosAlloy _))        = False
+      isParseable (PT _ (T_PosChoco _))        = False
+      isParseable _                            = True
 
 desugar :: Monad m => Maybe URL -> ClaferT m IModule
 desugar mURL = do
@@ -426,7 +385,7 @@ compile desugaredMod = do
       isKeyWord (IRClafer IClafer{_cinPos = (Span (Pos l c) _) ,_ident=i}) = if (i `elem` keywordIdents) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
       isKeyWord _ = ""
       gt1 :: Ir -> String
-      gt1 (IRClafer (IClafer (Span (Pos l c) _) (IClaferModifiers False _ _) _ _ _ _ _ _ (Just (_, m)) _ _ _)) = if (m > 1 || m < 0) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
+      gt1 (IRClafer (IClafer (Span (Pos l c) _) (IClaferModifiers False False False) _ _ _ _ _ _ (Just (_, m)) _ _ _)) = if (m > 1 || m < 0) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
       gt1 _ = ""
 
 
@@ -448,13 +407,13 @@ generateHtml env =
     genFragments :: [Declaration] -> [Pos] -> Map.Map Span [Ir] -> [(Span, String)] -> [String]
     genFragments []           _            _     comments = printComments comments
     genFragments (decl:decls') []           irMap comments = let (comments', c) = printPreComment (getSpan decl) comments in
-                                                                   [c] ++ (cleanOutput $ revertLayout $ printDeclaration decl 0 irMap True $ inDecl decl comments') : (genFragments decls' [] irMap $ afterDecl decl comments)
+                                                                   [c] ++ (cleanOutput $ revertLayout $ printDeclaration decl 0 irMap True $ inDecl decl comments') : (genFragments decls' [] irMap $ afterDecl decl comments')
     genFragments (decl:decls') (frg:frgs) irMap comments = if lne decl < frg
                                                                  then let (comments', c) = printPreComment (getSpan decl) comments in
-                                                                   [c] ++ (cleanOutput $ revertLayout $ printDeclaration decl 0 irMap True $ inDecl decl comments') : (genFragments decls' (frg:frgs) irMap $ afterDecl decl comments)
+                                                                   [c] ++ (cleanOutput $ revertLayout $ printDeclaration decl 0 irMap True $ inDecl decl comments') : (genFragments decls' (frg:frgs) irMap $ afterDecl decl comments')
                                                                  else "<!-- # FRAGMENT /-->" : genFragments (decl:decls') frgs irMap comments
     inDecl :: Declaration -> [(Span, String)] -> [(Span, String)]
-    inDecl decl comments = let s = getSpan decl in dropWhile (\x -> fst x < s) comments
+    inDecl decl comments = let s = getSpan decl in dropWhile (\x -> fst x <= s) comments
     afterDecl :: Declaration -> [(Span, String)] -> [(Span, String)]
     afterDecl decl comments = let (Span _ (Pos line' _)) = getSpan decl in dropWhile (\(x, _) -> let (Span _ (Pos line'' _)) = x in line'' <= line') comments
     printComments [] = []
@@ -469,6 +428,7 @@ iExpBasedChecks iModule = (null realLiterals, null productOperators, null tempOp
     productOperators = filter isProductOperator iexps
     tempOperators = filter isTempOperator iexps
     isIDouble (IDouble _) = True
+    isIDouble (IReal _) = True
     isIDouble _           = False
     isProductOperator (IFunExp op' _) = op' == iProdSet
     isProductOperator _               = False
@@ -476,14 +436,13 @@ iExpBasedChecks iModule = (null realLiterals, null productOperators, null tempOp
     isTempOperator _               = False
 
 iClaferBasedChecks :: IModule -> (Bool, Bool)
-iClaferBasedChecks iModule = (null referencesToReal, null tempModifiers)
+iClaferBasedChecks iModule = (null $ filter hasReferenceToReal iClafers, null tempModifiers)
   where
     iClafers :: [ IClafer ]
     iClafers = universeOn biplate iModule
-    referencesToReal = filter hasReferenceToReal iClafers
+    hasReferenceToReal (IClafer{_reference=(Just IReference{_ref=pexp'})}) = any (`elem` [ "real", "double" ]) $ getRefIds pexp'
+    hasReferenceToReal _                                                   = False
     tempModifiers = filter hasTempModifier iClafers
-    hasReferenceToReal (IClafer{_reference=(Just IReference{_ref=pexp'})}) = (getSuperId pexp') == "real"
-    hasReferenceToReal _               = False
     hasTempModifier (IClafer _ (IClaferModifiers _ isInitial' isFinal') _ _ _ _ _ _ _ _ _ _) = isInitial' || isFinal'
     hasTempModifier _               = False
 
@@ -499,91 +458,24 @@ generate =
       (hasNoReferenceToReal, hasNoTempModifiers) = iClaferBasedChecks iModule
       staticClaferSubset = hasNoTempOperators && hasNoTempModifiers
       cargs = args env
+      otherTokens' = otherTokens env
       modes = mode cargs
       stats = showStats au $ statsModule iModule
       scopes = getScopeStrategy (scope_strategy cargs) iModule
 
     return $ Map.fromList (
         -- result for Alloy
-        (if (Alloy `elem` modes || AlloyLtl `elem` modes)
+        (if (Alloy `elem` modes)
           then if (hasNoRealLiterals && hasNoReferenceToReal && hasNoProductOperator)
                 then
-                  if (staticClaferSubset && (not $ AlloyLtl `elem` modes))  -- can force Ltl despite static subset
-                  then
-                    let
+                   let
                       (imod,strMap) = astrModule iModule
-                      alloyCode = genModule cargs{mode = [Alloy]} (imod, genv) scopes
+                      useAlloyLtlGen = staticClaferSubset && (not $ AlloyLtl `elem` modes)
+                      (genAlloyCode, alloyModes) = if useAlloyLtlGen then (genAlloyLtlModule, [Alloy, AlloyLtl]) else (genModule, [Alloy])
+                      alloyCode = genAlloyCode cargs{mode = alloyModes} (imod, genv) scopes otherTokens'
                       addCommentStats = if no_stats cargs then const else addStats
-                    in
+                   in
                       [ (Alloy,
-                        CompilerResult {
-                         extension = "als41",
-                         outputCode = addCommentStats (fst alloyCode) stats,
-                         statistics = stats,
-                         claferEnv  = env,
-                         mappingToAlloy = fromMaybe [] (Just $ snd alloyCode),
-                         stringMap = strMap,
-                         scopesList = scopes
-                        })
-                      ]
-                  else  -- behavioral Clafer - use both modes
-                    let
-                      (imod,strMap) = astrModule iModule
-                      alloyCode = genAlloyLtlModule cargs{mode = [Alloy, AlloyLtl]} (imod, genv) scopes
-                      addCommentStats = if no_stats cargs then const else addStats
-                    in
-                      [ (AlloyLtl,
-                        CompilerResult {
-                         extension = "als41",
-                         outputCode = addCommentStats (fst alloyCode) stats,
-                         statistics = stats,
-                         claferEnv  = env,
-                         mappingToAlloy = fromMaybe [] (Just $ snd alloyCode),
-                         stringMap = strMap,
-                         scopesList = scopes
-                            })
-                         ]
-                else [ (Alloy,
-                        NoCompilerResult {
-                         reason = "Alloy output unavailable because the model contains: "
-                                ++ (if hasNoRealLiterals then "" else " | a real number literal")
-                                ++ (if hasNoReferenceToReal then "" else " | a reference to a real")
-                                ++ (if hasNoProductOperator then "" else " | the product operator")
-                                ++ "."
-                        })
-                     ]
-          else []
-        )
-        ++
-        -- result for Alloy42
-        (if (Alloy42 `elem` modes || AlloyLtl `elem` modes)
-          then if (hasNoRealLiterals && hasNoReferenceToReal && hasNoProductOperator)
-                then
-                  if (staticClaferSubset && (not $ AlloyLtl `elem` modes))  -- can force Ltl despite static subset
-                  then
-                     let
-                        (imod,strMap) = astrModule iModule
-                        alloyCode = genModule cargs{mode = [Alloy42]} (imod, genv) scopes
-                        addCommentStats = if no_stats cargs then const else addStats
-                     in
-                        [ (Alloy42,
-                          CompilerResult {
-                           extension = "als",
-                           outputCode = addCommentStats (fst alloyCode) stats,
-                           statistics = stats,
-                           claferEnv  = env,
-                           mappingToAlloy = fromMaybe [] (Just $ snd alloyCode),
-                           stringMap = strMap,
-                           scopesList = scopes
-                          })
-                        ]
-                  else  -- behavioral Clafer - use both modes
-                    let
-                      (imod,strMap) = astrModule iModule
-                      alloyCode = genAlloyLtlModule cargs{mode = [Alloy42, AlloyLtl]} (imod, genv) scopes
-                      addCommentStats = if no_stats cargs then const else addStats
-                    in
-                      [ (AlloyLtl,
                         CompilerResult {
                          extension = "als",
                          outputCode = addCommentStats (fst alloyCode) stats,
@@ -592,31 +484,17 @@ generate =
                          mappingToAlloy = fromMaybe [] (Just $ snd alloyCode),
                          stringMap = strMap,
                          scopesList = scopes
-                            })
-                         ]
+                        })
+                      ]
                 else [ (Alloy,
                         NoCompilerResult {
                          reason = "Alloy output unavailable because the model contains: "
-                                ++ (if hasNoRealLiterals then "" else " | a real number literal")
-                                ++ (if hasNoReferenceToReal then "" else " | a reference to a real")
-                                ++ (if hasNoProductOperator then "" else " | the product operator")
+                                ++ (if hasNoRealLiterals then "" else " * a real number literal")
+                                ++ (if hasNoReferenceToReal then "" else " * a reference to a real")
+                                ++ (if hasNoProductOperator then "" else " * the product operator")
                                 ++ "."
                         })
                      ]
-          else []
-        )
-        -- result for XML
-        ++ (if (Xml `elem` modes)
-          then [ (Xml,
-                  CompilerResult {
-                   extension = "xml",
-                   outputCode = genXmlModule iModule,
-                   statistics = stats,
-                   claferEnv  = env,
-                   mappingToAlloy = [],
-                   stringMap = Map.empty,
-                   scopesList = []
-                  }) ]
           else []
         )
         -- result for JSON
@@ -624,7 +502,15 @@ generate =
           then [ (JSON,
                   CompilerResult {
                    extension = "json",
-                   outputCode = convertString $ encode $ toJSON iModule,
+                   outputCode = concat
+                     [ "{"
+                     , (case gatherObjectivesAndAttributes iModule $ astModuleTrace env of
+                        Nothing         -> ""
+                        Just objectives -> "\"objectives\":" ++ (convertString $ encode $ toJSON objectives) ++ ",")
+                     , "\"iModule\":"
+                     , convertString $ encode $ toJSON iModule
+                     , "}"
+                     ],
                    statistics = stats,
                    claferEnv  = env,
                    mappingToAlloy = [],
@@ -689,10 +575,7 @@ generate =
         )
         -- result for Python
         ++ (if (Python `elem` modes)
-          then
-            if (staticClaferSubset)
-              then
-                [ (Python,
+          then [ (Python,
                   CompilerResult {
                     extension = "py",
                     outputCode = genPythonModule (iModule, genv) scopes,
@@ -702,32 +585,20 @@ generate =
                     stringMap = Map.empty,
                     scopesList = scopes
                   }) ]
-              else [ (Python,
-                        NoCompilerResult {
-                         reason = "Python output unavailable because the model contains temporal operators."
-                    })
-                   ]
           else []
         )
         -- result for Choco
         ++ (if (Choco `elem` modes)
-          then
-            if (staticClaferSubset)
-              then [ (Choco,
-                      CompilerResult {
-                        extension = "js",
-                        outputCode = genCModule (iModule, genv) scopes,
-                        statistics = stats,
-                        claferEnv  = env,
-                        mappingToAlloy = [],
-                        stringMap = Map.empty,
-                        scopesList = scopes
-                      }) ]
-              else [ (Choco,
-                        NoCompilerResult {
-                         reason = "Choco output unavailable because the model contains temporal operators."
-                    })
-                  ]
+          then [ (Choco,
+                  CompilerResult {
+                    extension = "js",
+                    outputCode = genCModule (iModule, genv) scopes otherTokens',
+                    statistics = stats,
+                    claferEnv  = env,
+                    mappingToAlloy = [],
+                    stringMap = Map.empty,
+                    scopesList = scopes
+                   }) ]
           else []
         ))
 
@@ -775,6 +646,23 @@ showInterval :: (Integer, Integer) -> String
 showInterval (n, -1) = show n ++ "..*"
 showInterval (n, m) = show n ++ ".." ++ show m
 
--- | The XML Schema of the IR
-claferIRXSD :: String
-claferIRXSD = Language.Clafer.Generator.Schema.xsd
+gatherObjectivesAndAttributes :: IModule -> Map.Map Span [Ast] -> Maybe ObjectivesAndAttributes
+gatherObjectivesAndAttributes    iModule    astModuleTrace'      = let
+    objectives = (foldl' gatherObjectives [] $ _mDecls iModule)
+  in if null objectives
+     then Nothing
+     else Just $ ObjectivesAndAttributes objectives (map _uid $ filter isIntClafer iClafers)
+  where
+    gatherObjectives :: [String] -> IElement         -> [String]
+    gatherObjectives    objs        (IEGoal _ cpexp') = printCPexp (Map.lookup (_inPos cpexp') astModuleTrace'):objs
+    gatherObjectives    objs        _                 = objs
+
+    printCPexp :: Maybe [Ast] -> String
+    printCPexp (Just [e]) = printAstNode e
+    printCPexp _          = "[BUG]: expression not found!"
+
+    iClafers :: [ IClafer ]
+    iClafers = universeOn biplate iModule
+
+    isIntClafer (IClafer{_reference=(Just IReference{_ref=pexp'})}) = any (`elem` ["integer", "int"]) $ getRefIds pexp'
+    isIntClafer _                                                   = False

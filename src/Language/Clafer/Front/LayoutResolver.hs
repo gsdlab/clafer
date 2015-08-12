@@ -182,6 +182,7 @@ addNewLines ts@(t:_) = addNewLines' (if isBracketOpen t then 1 else 0) ts
 addNewLines' :: (Monad m) => Int -> [Token] -> ClaferT m [ExToken]
 addNewLines' _ []                     = return []
 addNewLines' 0 (t:[])                 = return [ExToken t]
+addNewLines' 1 (t:[])                 = return [ExToken t]
 addNewLines' _ ((PT (Pn z x y) t):[]) = throwErr $ ParseErr (ErrPos z fPos fPos) $ "']' bracket missing for (" ++ show t ++ ")"
   where
     fPos = (Pos (fromIntegral x) (fromIntegral y))
@@ -196,7 +197,7 @@ addNewLines' n (t0:t1:ts)
     addNewLines' (n - 1) (t1:ts) >>= (return . (ExToken t0:))
   | isNewLine t0 t1  = addNewLines' n (t1:ts) >>= (return . (ExToken t0:) . (NewLine (column t1, n):))
   | otherwise        = addNewLines' n (t1:ts) >>= (return . (ExToken t0:))
-addNewLines' _ _ = throwErr (ClaferErr "Function addNewLines' from LayoutResolver was given invalid arguments" :: CErr Span) -- This should never happen!
+addNewLines' _ tokens' = throwErr (ClaferErr ("[bug] LayoutResolver.addNewLines': invalid argument:" ++ show tokens') :: CErr Span) -- This should never happen!
 
 
 adjust :: (Monad m) => [Token] -> ClaferT m [Token]

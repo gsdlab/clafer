@@ -3,6 +3,6 @@ pred show {}
 
 
 one sig c0_x
-{ ref : one Int }
+{ c0_x_ref : one Int }
 
-fact { (c0_x.@ref) = ((-1.mul[(1.plus[2])]).div[3]) }
+fact { (c0_x.@c0_x_ref) = ((-1.mul[(1.plus[2])]).div[3]) }

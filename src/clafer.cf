@@ -1,4 +1,4 @@
-entrypoints Module, Clafer, Constraint, SoftConstraint, Goal ;
+entrypoints Module, Clafer, Constraint, Assertion, Goal ;
 
 
 -- To regenerate grammar (see src/Makefile, the goal 'grammar'):
@@ -7,9 +7,6 @@ entrypoints Module, Clafer, Constraint, SoftConstraint, Goal ;
 --         happy -gca Language/Clafer/Front/Parclafer.y
 --         alex -g Language/Clafer/Front/Lexclafer.x
 
-comment "//" ;
-comment "/*" "*/" ;
-
 Module.         Module ::= [Declaration] ;
 
 EnumDecl.       Declaration ::= "enum" PosIdent "=" [EnumId] ;
@@ -17,7 +14,7 @@ ElementDecl.    Declaration ::= Element ;
 
 Clafer.         Clafer ::= Abstract [TempModifier] GCard PosIdent Super Reference Card Init Transition Elements ;
 Constraint.     Constraint ::= "[" [Exp] "]" ;
-SoftConstraint. SoftConstraint ::= "assert" "[" [Exp] "]";
+Assertion.      Assertion ::= "assert" "[" [Exp] "]";
 Goal.           Goal ::= "<<" [Exp] ">>" ;
 
 Initial.        TempModifier ::= "initial";
@@ -36,14 +33,14 @@ Subclafer.      Element ::= Clafer ;
 ClaferUse.      Element ::= "`" Name Card Elements ;
 Subconstraint.  Element ::= Constraint ;
 Subgoal.        Element ::= Goal;
-Subsoftconstraint. Element ::= SoftConstraint;
+SubAssertion. Element ::= Assertion;
 
 SuperEmpty.     Super ::= ;
-SuperSome.      Super ::= ":" SetExp ;
+SuperSome.      Super ::= ":" Exp26 ;
 
 ReferenceEmpty. Reference ::= ;
-ReferenceSet.   Reference ::= "->" SetExp ;
-ReferenceBag.   Reference ::= "->>" SetExp ;
+ReferenceSet.   Reference ::= "->" Exp23 ;
+ReferenceBag.   Reference ::= "->>" Exp23 ;
 
 InitEmpty.      Init ::= ;
 InitSome.       Init ::= InitHow Exp ;
@@ -74,10 +71,10 @@ Path.           Name ::= [ModId] ;
 
 -- Transition expressions are right associative and has lowest precedence
 TransitionExp.  Exp ::= Exp1 TransArrow Exp ;
-DeclAllDisj.    Exp1   ::= "all" "disj" Decl "|" Exp1 ;
-DeclAll.        Exp1   ::= "all"        Decl "|" Exp1 ;
-DeclQuantDisj.  Exp1   ::= Quant "disj" Decl "|" Exp1 ;
-DeclQuant.      Exp1   ::= Quant        Decl "|" Exp1 ;
+EDeclAllDisj.   Exp1 ::= "all" "disj" Decl "|" Exp1 ;
+EDeclAll.       Exp1 ::= "all"        Decl "|" Exp1 ;
+EDeclQuantDisj. Exp1 ::= Quant "disj" Decl "|" Exp1 ;
+EDeclQuant.     Exp1 ::= Quant        Decl "|" Exp1 ;
 LetExp.         Exp1 ::= "let" VarBinding "in" Exp1;
 TmpPatNever.    Exp2 ::= "never" Exp3 PatternScope;
 TmpPatSometime. Exp2 ::= "sometime" Exp3 PatternScope;
@@ -113,21 +110,29 @@ EGte.           Exp15  ::= Exp15 ">=" Exp16 ;
 ENeq.           Exp15  ::= Exp15 "!=" Exp16 ;
 EIn.            Exp15  ::= Exp15 "in" Exp16 ;
 ENin.           Exp15  ::= Exp15 "not" "in" Exp16 ;
-QuantExp.       Exp16  ::= Quant Exp20 ;
+EQuantExp.      Exp16  ::= Quant Exp20 ;
 EAdd.           Exp17  ::= Exp17  "+" Exp18 ;
 ESub.           Exp17  ::= Exp17  "-" Exp18 ;
 EMul.           Exp18 ::= Exp18 "*" Exp19 ;
 EDiv.           Exp18 ::= Exp18 "/" Exp19 ;
-ERem.           Exp10 ::= Exp10 "%" Exp11 ;
-ESumSetExp.     Exp19 ::= "sum" Exp20;
-EProdSetExp.    Exp19 ::= "product" Exp20;
-ECSetExp.       Exp19 ::= "#" Exp20 ;
+ERem.           Exp18 ::= Exp18 "%" Exp19 ;
+ESum.           Exp19 ::= "sum" Exp20;
+EProd.          Exp19 ::= "product" Exp20;
+ECard.          Exp19 ::= "#" Exp20 ;
 EMinExp.        Exp19 ::= "-" Exp20 ;
 EImpliesElse.   Exp20 ::= "if" Exp20 "then" Exp20 "else" Exp21 ;
-EInt.           Exp21 ::= PosInteger ;
-EDouble.        Exp21 ::= PosDouble ;
-EStr.           Exp21 ::= PosString ;
-ESetExp.        Exp21 ::= SetExp ;
+EDomain.        Exp21 ::= Exp21 "<:" Exp22 ;
+ERange.         Exp22 ::= Exp22 ":>" Exp23 ;
+EUnion.         Exp23 ::= Exp23 "++" Exp24 ;
+EUnionCom.      Exp23 ::= Exp23 ","  Exp24 ;
+EDifference.    Exp24 ::= Exp24 "--" Exp25 ;
+EIntersection.  Exp25 ::= Exp25 "**"  Exp26 ;
+EJoin.          Exp26 ::= Exp26 "."  Exp27 ;
+ClaferId.       Exp27 ::= Name ;
+EInt.           Exp27 ::= PosInteger ;
+EDouble.        Exp27 ::= PosDouble ;
+EReal.          Exp27 ::= PosReal ;
+EStr.           Exp27 ::= PosString ;
 
 TransGuard.      TransGuard ::= Exp1;
 
@@ -142,16 +147,7 @@ PatScopeBetweenAnd. PatternScope ::= "between" Exp11 "and" Exp11 ;
 PatScopeAfterUntil. PatternScope ::= "after" Exp11 "until" Exp11 ;
 PatScopeEmpty.      PatternScope ::= ;
 
-Union.          SetExp  ::= SetExp  "++" SetExp1 ;
-UnionCom.       SetExp  ::= SetExp  ","  SetExp1 ;
-Difference.     SetExp1 ::= SetExp1 "--" SetExp2 ;
-Intersection.   SetExp2 ::= SetExp2 "**"  SetExp3 ;
-Domain.         SetExp3 ::= SetExp3 "<:" SetExp4 ;
-Range.          SetExp4 ::= SetExp4 ":>" SetExp5 ;
-Join.           SetExp5 ::= SetExp5 "."  SetExp6 ;
-ClaferId.       SetExp6 ::= Name ;
-
-Decl.           Decl ::= [LocId] ":" SetExp ;
+Decl.           Decl ::= [LocId] ":" Exp21 ;
 
 VarBinding.     VarBinding ::= LocId "=" Name ;
 
@@ -173,10 +169,16 @@ separator           TempModifier ""  ;
 separator  nonempty LocId       ";" ;
 separator  nonempty ModId       "\\" ;
 
-coercions Exp 21 ;
-coercions SetExp 6 ;
+coercions Exp 27 ;
 
 position token PosInteger (digit+) ;
-position token PosDouble (digit+ '.' digit+ ('e' '-'? digit+)?) ;
+position token PosDouble (digit+ '.' digit+ 'e' '-'? digit+) ;
+position token PosReal (digit+ '.' digit+) ;
 position token PosString '"' ((char - ["\"\\"]) | ('\\' ["\"\\nt"]))* '"' ;
 position token PosIdent (letter (letter|digit|'_'|'\'')*) ;
+
+-- non-parseable tokens
+position token PosLineComment   {"//"} (char-'\n')* ;
+position token PosBlockComment  {"/*"} ( (char-'*') | ('*'+ (char-["*/"]) ) )*  '*'+ '/' ;
+position token PosAlloy         {"[alloy|"} ( char-'|' | ('|'+ (char-']')) )* {"|]"} ;
+position token PosChoco         {"[choco|"} ( char-'|' | ('|'+ (char-']')) )* {"|]"} ;

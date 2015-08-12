@@ -4,12 +4,12 @@ pred show {}
 
 fact { #c0_Currency = 0 }
 abstract sig c0_Currency
-{ ref : one Int }
+{ c0_Currency_ref : one Int }
 
 fact { #c0_Percentage = 0 }
 abstract sig c0_Percentage
-{ ref : one Int }
-{ ((this.@ref) >= 0) && ((this.@ref) <= 100) }
+{ c0_Percentage_ref : one Int }
+{ ((this.@c0_Percentage_ref) >= 0) && ((this.@c0_Percentage_ref) <= 100) }
 
 fact { #c0_Mortgage = 0 }
 abstract sig c0_Mortgage
@@ -26,16 +26,16 @@ abstract sig c0_Mortgage
 , r_c0_currentPayment : one c0_currentPayment
 , r_c0_paymentFrequency : one c0_paymentFrequency
 , r_c0_financingAvailable : one c0_financingAvailable }
-{ (5000 <= (this.((@r_c0_principalMortgageAmount.@ref).@ref))) && ((this.((@r_c0_principalMortgageAmount.@ref).@ref)) <= 9999999)
-  (this.((@r_c0_balance.@ref).@ref)) <= (this.((@r_c0_principalMortgageAmount.@ref).@ref))
-  (1 <= (this.(@r_c0_amortization.@ref))) && ((this.(@r_c0_amortization.@ref)) <= 30) }
+{ (5000 <= (this.((@r_c0_principalMortgageAmount.@c0_principalMortgageAmount_ref).@c0_Currency_ref))) && ((this.((@r_c0_principalMortgageAmount.@c0_principalMortgageAmount_ref).@c0_Currency_ref)) <= 9999999)
+  (this.((@r_c0_balance.@c0_balance_ref).@c0_Currency_ref)) <= (this.((@r_c0_principalMortgageAmount.@c0_principalMortgageAmount_ref).@c0_Currency_ref))
+  (1 <= (this.(@r_c0_amortization.@c0_amortization_ref))) && ((this.(@r_c0_amortization.@c0_amortization_ref)) <= 30) }
 
 sig c0_valueProposition
-{ ref : one Int }
+{ c0_valueProposition_ref : one Int }
 { one @r_c0_valueProposition.this }
 
 sig c0_term
-{ ref : one c0_MortgageTerm }
+{ c0_term_ref : one c0_MortgageTerm }
 { one @r_c0_term.this }
 
 sig c0_kind
@@ -53,23 +53,23 @@ sig c0_closed
 { one @r_c0_closed.this }
 
 sig c0_principalMortgageAmount
-{ ref : one c0_Currency }
+{ c0_principalMortgageAmount_ref : one c0_Currency }
 { one @r_c0_principalMortgageAmount.this }
 
 sig c0_balance
-{ ref : one c0_Currency }
+{ c0_balance_ref : one c0_Currency }
 { one @r_c0_balance.this }
 
 sig c0_propertyValue
-{ ref : one c0_Currency }
+{ c0_propertyValue_ref : one c0_Currency }
 { one @r_c0_propertyValue.this }
 
 sig c0_loanToValue
-{ ref : one c0_Percentage }
+{ c0_loanToValue_ref : one c0_Percentage }
 { one @r_c0_loanToValue.this }
 
 sig c0_amortization
-{ ref : one Int }
+{ c0_amortization_ref : one Int }
 { one @r_c0_amortization.this }
 
 sig c0_interestRate
@@ -87,11 +87,11 @@ sig c0_resetTogetherWithPaymentAmountEachTimeScotiabankPrimeRateChanges
 { one @r_c0_resetTogetherWithPaymentAmountEachTimeScotiabankPrimeRateChanges.this }
 
 sig c0_currentInterestRate
-{ ref : one c0_Percentage }
+{ c0_currentInterestRate_ref : one c0_Percentage }
 { one @r_c0_currentInterestRate.this }
 
 sig c0_currentPayment
-{ ref : one c0_Currency }
+{ c0_currentPayment_ref : one c0_Currency }
 { one @r_c0_currentPayment.this }
 
 sig c0_paymentFrequency

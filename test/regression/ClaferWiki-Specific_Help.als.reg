@@ -4,10 +4,10 @@ pred show {}
 
 abstract sig c0_A
 { r_c0_c : set c0_c }
-{ all disj x, y : this.@r_c0_c | (x.@ref) != (y.@ref)  }
+{ all disj x, y : this.@r_c0_c | (x.@c0_c_ref) != (y.@c0_c_ref)  }
 
 sig c0_c
-{ ref : one c0_C }
+{ c0_c_ref : one c0_C }
 { one @r_c0_c.this }
 
 one sig c0_A1 extends c0_A

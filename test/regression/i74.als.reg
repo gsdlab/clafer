@@ -15,5 +15,5 @@ one sig c0_Phone
 { some c0_Kernel.@r_c0_memory }
 
 one sig c0_name
-{ ref : one Int }
+{ c0_name_ref : one Int }
 

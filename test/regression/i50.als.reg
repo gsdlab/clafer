@@ -19,7 +19,7 @@ lone sig c1_b
 { one r_c1_b }
 
 one sig c0_a
-{ ref : one c0_A
+{ c0_a_ref : one c0_A
 , r_c0_d : one c0_d }
 { some (this.@r_c0_d).@r_c2_b }
 

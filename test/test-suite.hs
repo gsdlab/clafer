@@ -33,6 +33,7 @@ import Suite.Positive
 import Suite.Negative
 import Suite.SimpleScopeAnalyser
 import Suite.Redefinition
+import Suite.TypeSystem
 import Functions
 import Test.Tasty
 import Test.Tasty.HUnit
@@ -43,7 +44,8 @@ tg_Main_Test_Suite = $(testGroupGenerator)
 
 main :: IO ()
 main = defaultMain $ testGroup "Tests"
-    [ tg_Test_Suite_Redefinition
+    [ tg_Test_Suite_TypeSystem
+    , tg_Test_Suite_Redefinition
     , tg_Main_Test_Suite
     , tg_Test_Suite_Positive
     , tg_Test_Suite_Negative
@@ -74,7 +76,7 @@ model = "a\n    b\nb\nc\n    d\n         b\nd\n    b"
 case_FQMapLookup :: Assertion
 case_FQMapLookup = do
     let
-        (Just (iModule, _, _)) = cIr $ claferEnv $ fromJust $ Map.lookup Alloy42 $ fromRight $ compileOneFragment defaultClaferArgs model
+        (Just (iModule, _, _)) = cIr $ claferEnv $ fromJust $ Map.lookup Alloy $ fromRight $ compileOneFragment defaultClaferArgs model
         qNameMaps = deriveQNameMaps iModule
     [ "c0_a" ] == getUIDs qNameMaps "::a"  @? "UID for `::a` different from `c0_a`"
     [ "c0_b" ] == getUIDs qNameMaps "::a::b"  @? "UID for `::a::b` different from `c0_b`"
@@ -94,7 +96,7 @@ case_FQMapLookup = do
 case_AllClafersGenerics :: Assertion
 case_AllClafersGenerics = do
     let
-        (Just (iModule, _, _)) = cIr $ claferEnv $ fromJust $ Map.lookup Alloy42 $ fromRight $ compileOneFragment defaultClaferArgs model
+        (Just (iModule, _, _)) = cIr $ claferEnv $ fromJust $ Map.lookup Alloy $ fromRight $ compileOneFragment defaultClaferArgs model
         allClafers :: [ IClafer ]
         allClafers = universeOn biplate iModule
         allClafersUids = map _uid allClafers

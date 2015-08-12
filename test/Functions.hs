@@ -1,5 +1,5 @@
 {-
- Copyright (C) 2013 Luke Brown <http://gsd.uwaterloo.ca>
+ Copyright (C) 2013-2015 Luke Brown, Michal Antkiewicz <http://gsd.uwaterloo.ca>
 
  Permission is hereby granted, free of charge, to any person obtaining a copy of
  this software and associated documentation files (the "Software"), to deal in
@@ -48,6 +48,13 @@ compileOneFragment args' model =
             iModule <- desugar Nothing
             compile iModule
             generate
+
+getCompilerResult :: InputModel -> CompilerResult
+getCompilerResult    model = case compileOneFragment defaultClaferArgs{keep_unused=True} model of
+  Left errors -> error $ show errors
+  Right compilerResultMap -> case Map.lookup Alloy compilerResultMap of
+    Nothing -> error "No Alloy result in the result map"
+    Just compilerResult -> compilerResult
 
 compiledCheck :: Either a b -> Bool
 compiledCheck (Left _) = False

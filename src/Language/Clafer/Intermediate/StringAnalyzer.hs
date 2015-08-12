@@ -1,6 +1,6 @@
 {-# LANGUAGE RankNTypes, KindSignatures ,FlexibleContexts #-}
 {-
- Copyright (C) 2012-2014 Kacper Bak, Jimmy Liang, Luke Brown <http://gsd.uwaterloo.ca>
+ Copyright (C) 2012-2015 Kacper Bak, Jimmy Liang, Luke Brown <http://gsd.uwaterloo.ca>
 
  Permission is hereby granted, free of charge, to any person obtaining a copy of
  this software and associated documentation files (the "Software"), to deal in
@@ -41,9 +41,14 @@ astrModule imodule = (imodule{_mDecls = decls''}, flipMap strMap')
 
 
 astrClafer :: MonadState (Map.Map String Int) m => IClafer -> m IClafer
-astrClafer (IClafer s isAbs gcrd' ident' uid' puid' super' reference' crd' gCard mut es) =
-    IClafer s isAbs gcrd' ident' uid' puid' super' reference' crd' gCard mut `liftM` mapM astrElement es
+astrClafer (IClafer s mods gcrd' ident' uid' puid' super' reference' crd' gCard mut elements') = do
+    reference'' <- astrReference reference'
+    elements'' <- astrElement `mapM` elements'
+    return $ IClafer s mods gcrd' ident' uid' puid' super' reference'' crd' gCard mut elements''
 
+astrReference :: MonadState (Map.Map String Int) m => Maybe IReference -> m (Maybe IReference)
+astrReference Nothing = return Nothing
+astrReference (Just (IReference isSet' ref')) = Just <$> IReference isSet' `liftM` astrPExp ref'
 
 -- astrs single subclafer
 astrElement :: MonadState (Map.Map String Int) m => IElement -> m IElement

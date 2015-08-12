@@ -29,8 +29,6 @@
       <div class="indent">
       <span class="claferDecl" id="c0_alloy">alloy</span><span class="keyword"> : </span><a href="#c0_DefaultValue"><span class="reference">DefaultValue</span></a>
         <div class="indent">
-        <span class="claferDecl" id="c0_alloy42">alloy42</span><span class="keyword"> : </span><a href="#c0_Value"><span class="reference">Value</span></a> ?</div>
-        <div class="indent">
         <span class="claferDecl" id="c0_noalloyruncommand">noalloyruncommand</span><span class="keyword"> : </span><a href="#c0_Argument"><span class="reference">Argument</span></a> ?</div>
         <div class="indent">
         <span class="claferDecl" id="c0_alloy_mapping">alloy_mapping</span><span class="keyword"> : </span><a href="#c0_Argument"><span class="reference">Argument</span></a> ?</div>
@@ -127,7 +125,7 @@
 <div>
 <span class="claferDecl" id="c0_ca3">ca3</span><span class="keyword"> : </span><a href="#c0_ClaferArgs"><span class="reference">ClaferArgs</span></a>
   <div class="indent">
-  <span class="keyword">[</span> <a href="#c0_alloy42"><span class="reference">alloy42</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <a href="#c0_alloy"><span class="reference">alloy</span></a> <span class="keyword">]</span></div>
   <div class="indent">
   <span class="keyword">[</span> <a href="#c0_keep_unused"><span class="reference">keep_unused</span></a> <span class="keyword">]</span></div>
   <div class="indent">

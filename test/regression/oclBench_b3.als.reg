@@ -27,85 +27,85 @@ abstract sig c0_Exam
 , r_c0_examinee : one c0_examinee }
 
 sig c0_date
-{ ref : one Int }
+{ c0_date_ref : one Int }
 { one @r_c0_date.this
-  (this.@ref) != 0 }
+  (this.@c0_date_ref) != 0 }
 
 sig c0_recorder
-{ ref : one c0_Person }
+{ c0_recorder_ref : one c0_Person }
 { one @r_c0_recorder.this }
 
 sig c0_examiner
-{ ref : one c0_Person }
+{ c0_examiner_ref : one c0_Person }
 { one @r_c0_examiner.this }
 
 sig c0_examinee
-{ ref : one c0_Person }
+{ c0_examinee_ref : one c0_Person }
 { one @r_c0_examinee.this }
 
 one sig c0_ada_bob_cyd extends c0_Exam
 {}
-{ ((((this.(@r_c0_date.@ref)) = 1) && ((this.(@r_c0_recorder.@ref)) = c0_cyd)) && ((this.(@r_c0_examiner.@ref)) = c0_bob)) && ((this.(@r_c0_examinee.@ref)) = c0_ada) }
+{ ((((this.(@r_c0_date.@c0_date_ref)) = 1) && ((this.(@r_c0_recorder.@c0_recorder_ref)) = c0_cyd)) && ((this.(@r_c0_examiner.@c0_examiner_ref)) = c0_bob)) && ((this.(@r_c0_examinee.@c0_examinee_ref)) = c0_ada) }
 
 one sig c0_dan_bob_ada extends c0_Exam
 {}
-{ ((((this.(@r_c0_date.@ref)) = 2) && ((this.(@r_c0_recorder.@ref)) = c0_ada)) && ((this.(@r_c0_examiner.@ref)) = c0_bob)) && ((this.(@r_c0_examinee.@ref)) = c0_dan) }
+{ ((((this.(@r_c0_date.@c0_date_ref)) = 2) && ((this.(@r_c0_recorder.@c0_recorder_ref)) = c0_ada)) && ((this.(@r_c0_examiner.@c0_examiner_ref)) = c0_bob)) && ((this.(@r_c0_examinee.@c0_examinee_ref)) = c0_dan) }
 
 one sig c0_eve_ada_dan extends c0_Exam
 {}
-{ ((((this.(@r_c0_date.@ref)) = 3) && ((this.(@r_c0_recorder.@ref)) = c0_dan)) && ((this.(@r_c0_examiner.@ref)) = c0_ada)) && ((this.(@r_c0_examinee.@ref)) = c0_eve) }
+{ ((((this.(@r_c0_date.@c0_date_ref)) = 3) && ((this.(@r_c0_recorder.@c0_recorder_ref)) = c0_dan)) && ((this.(@r_c0_examiner.@c0_examiner_ref)) = c0_ada)) && ((this.(@r_c0_examinee.@c0_examinee_ref)) = c0_eve) }
 
 sig c0_examineeAda
-{ ref : one c0_Exam }
-{ (this.(@ref.(@r_c0_examinee.@ref))) = c0_ada }
+{ c0_examineeAda_ref : one c0_Exam }
+{ (this.(@c0_examineeAda_ref.(@r_c0_examinee.@c0_examinee_ref))) = c0_ada }
 
-fact {  all disj x, y : c0_examineeAda | (x.@ref) != (y.@ref)  }
-fact { all  e : c0_Exam | ((e.(@r_c0_examinee.@ref)) = c0_ada) => (e in (c0_examineeAda.@ref)) }
+fact {  all disj x, y : c0_examineeAda | (x.@c0_examineeAda_ref) != (y.@c0_examineeAda_ref)  }
+fact { all  e : c0_Exam | ((e.(@r_c0_examinee.@c0_examinee_ref)) = c0_ada) => (e in (c0_examineeAda.@c0_examineeAda_ref)) }
 sig c0_recorderAda
-{ ref : one c0_Exam }
-{ (this.(@ref.(@r_c0_recorder.@ref))) = c0_ada }
+{ c0_recorderAda_ref : one c0_Exam }
+{ (this.(@c0_recorderAda_ref.(@r_c0_recorder.@c0_recorder_ref))) = c0_ada }
 
-fact {  all disj x, y : c0_recorderAda | (x.@ref) != (y.@ref)  }
-fact { all  e : c0_Exam | ((e.(@r_c0_recorder.@ref)) = c0_ada) => (e in (c0_recorderAda.@ref)) }
+fact {  all disj x, y : c0_recorderAda | (x.@c0_recorderAda_ref) != (y.@c0_recorderAda_ref)  }
+fact { all  e : c0_Exam | ((e.(@r_c0_recorder.@c0_recorder_ref)) = c0_ada) => (e in (c0_recorderAda.@c0_recorderAda_ref)) }
 sig c0_examinerAda
-{ ref : one c0_Exam }
-{ (this.(@ref.(@r_c0_examiner.@ref))) = c0_ada }
+{ c0_examinerAda_ref : one c0_Exam }
+{ (this.(@c0_examinerAda_ref.(@r_c0_examiner.@c0_examiner_ref))) = c0_ada }
 
-fact {  all disj x, y : c0_examinerAda | (x.@ref) != (y.@ref)  }
-fact { all  e : c0_Exam | ((e.(@r_c0_examiner.@ref)) = c0_ada) => (e in (c0_examinerAda.@ref)) }
+fact {  all disj x, y : c0_examinerAda | (x.@c0_examinerAda_ref) != (y.@c0_examinerAda_ref)  }
+fact { all  e : c0_Exam | ((e.(@r_c0_examiner.@c0_examiner_ref)) = c0_ada) => (e in (c0_examinerAda.@c0_examinerAda_ref)) }
 sig c0_examineeOfAdaAsExaminer
-{ ref : one c0_Person }
-{ one  e : c0_Exam | ((e.(@r_c0_examiner.@ref)) = c0_ada) && ((e.(@r_c0_examinee.@ref)) = (this.@ref)) }
+{ c0_examineeOfAdaAsExaminer_ref : one c0_Person }
+{ one  e : c0_Exam | ((e.(@r_c0_examiner.@c0_examiner_ref)) = c0_ada) && ((e.(@r_c0_examinee.@c0_examinee_ref)) = (this.@c0_examineeOfAdaAsExaminer_ref)) }
 
-fact {  all disj x, y : c0_examineeOfAdaAsExaminer | (x.@ref) != (y.@ref)  }
-fact { all  e : c0_Exam | ((e.(@r_c0_examiner.@ref)) = c0_ada) => ((e.(@r_c0_examinee.@ref)) in (c0_examineeOfAdaAsExaminer.@ref)) }
+fact {  all disj x, y : c0_examineeOfAdaAsExaminer | (x.@c0_examineeOfAdaAsExaminer_ref) != (y.@c0_examineeOfAdaAsExaminer_ref)  }
+fact { all  e : c0_Exam | ((e.(@r_c0_examiner.@c0_examiner_ref)) = c0_ada) => ((e.(@r_c0_examinee.@c0_examinee_ref)) in (c0_examineeOfAdaAsExaminer.@c0_examineeOfAdaAsExaminer_ref)) }
 sig c0_examineeOfAdaAsRecorder
-{ ref : one c0_Person }
-{ one  e : c0_Exam | ((e.(@r_c0_recorder.@ref)) = c0_ada) && ((e.(@r_c0_examinee.@ref)) = (this.@ref)) }
+{ c0_examineeOfAdaAsRecorder_ref : one c0_Person }
+{ one  e : c0_Exam | ((e.(@r_c0_recorder.@c0_recorder_ref)) = c0_ada) && ((e.(@r_c0_examinee.@c0_examinee_ref)) = (this.@c0_examineeOfAdaAsRecorder_ref)) }
 
-fact {  all disj x, y : c0_examineeOfAdaAsRecorder | (x.@ref) != (y.@ref)  }
-fact { all  e : c0_Exam | ((e.(@r_c0_recorder.@ref)) = c0_ada) => ((e.(@r_c0_examinee.@ref)) in (c0_examineeOfAdaAsRecorder.@ref)) }
+fact {  all disj x, y : c0_examineeOfAdaAsRecorder | (x.@c0_examineeOfAdaAsRecorder_ref) != (y.@c0_examineeOfAdaAsRecorder_ref)  }
+fact { all  e : c0_Exam | ((e.(@r_c0_recorder.@c0_recorder_ref)) = c0_ada) => ((e.(@r_c0_examinee.@c0_examinee_ref)) in (c0_examineeOfAdaAsRecorder.@c0_examineeOfAdaAsRecorder_ref)) }
 sig c0_examinerOfAdaAsExaminee
-{ ref : one c0_Person }
-{ one  e : c0_Exam | ((e.(@r_c0_examinee.@ref)) = c0_ada) && ((e.(@r_c0_examiner.@ref)) = (this.@ref)) }
+{ c0_examinerOfAdaAsExaminee_ref : one c0_Person }
+{ one  e : c0_Exam | ((e.(@r_c0_examinee.@c0_examinee_ref)) = c0_ada) && ((e.(@r_c0_examiner.@c0_examiner_ref)) = (this.@c0_examinerOfAdaAsExaminee_ref)) }
 
-fact {  all disj x, y : c0_examinerOfAdaAsExaminee | (x.@ref) != (y.@ref)  }
-fact { all  e : c0_Exam | ((e.(@r_c0_examinee.@ref)) = c0_ada) => ((e.(@r_c0_examiner.@ref)) in (c0_examinerOfAdaAsExaminee.@ref)) }
+fact {  all disj x, y : c0_examinerOfAdaAsExaminee | (x.@c0_examinerOfAdaAsExaminee_ref) != (y.@c0_examinerOfAdaAsExaminee_ref)  }
+fact { all  e : c0_Exam | ((e.(@r_c0_examinee.@c0_examinee_ref)) = c0_ada) => ((e.(@r_c0_examiner.@c0_examiner_ref)) in (c0_examinerOfAdaAsExaminee.@c0_examinerOfAdaAsExaminee_ref)) }
 sig c0_examinerOfAdaAsRecorder
-{ ref : one c0_Person }
-{ one  e : c0_Exam | ((e.(@r_c0_recorder.@ref)) = c0_ada) && ((e.(@r_c0_examiner.@ref)) = (this.@ref)) }
+{ c0_examinerOfAdaAsRecorder_ref : one c0_Person }
+{ one  e : c0_Exam | ((e.(@r_c0_recorder.@c0_recorder_ref)) = c0_ada) && ((e.(@r_c0_examiner.@c0_examiner_ref)) = (this.@c0_examinerOfAdaAsRecorder_ref)) }
 
-fact {  all disj x, y : c0_examinerOfAdaAsRecorder | (x.@ref) != (y.@ref)  }
-fact { all  e : c0_Exam | ((e.(@r_c0_recorder.@ref)) = c0_ada) => ((e.(@r_c0_examiner.@ref)) in (c0_examinerOfAdaAsRecorder.@ref)) }
+fact {  all disj x, y : c0_examinerOfAdaAsRecorder | (x.@c0_examinerOfAdaAsRecorder_ref) != (y.@c0_examinerOfAdaAsRecorder_ref)  }
+fact { all  e : c0_Exam | ((e.(@r_c0_recorder.@c0_recorder_ref)) = c0_ada) => ((e.(@r_c0_examiner.@c0_examiner_ref)) in (c0_examinerOfAdaAsRecorder.@c0_examinerOfAdaAsRecorder_ref)) }
 sig c0_recorderOfAdaAsExaminee
-{ ref : one c0_Person }
-{ one  e : c0_Exam | ((e.(@r_c0_examinee.@ref)) = c0_ada) && ((e.(@r_c0_recorder.@ref)) = (this.@ref)) }
+{ c0_recorderOfAdaAsExaminee_ref : one c0_Person }
+{ one  e : c0_Exam | ((e.(@r_c0_examinee.@c0_examinee_ref)) = c0_ada) && ((e.(@r_c0_recorder.@c0_recorder_ref)) = (this.@c0_recorderOfAdaAsExaminee_ref)) }
 
-fact {  all disj x, y : c0_recorderOfAdaAsExaminee | (x.@ref) != (y.@ref)  }
-fact { all  e : c0_Exam | ((e.(@r_c0_examinee.@ref)) = c0_ada) => ((e.(@r_c0_recorder.@ref)) in (c0_recorderOfAdaAsExaminee.@ref)) }
+fact {  all disj x, y : c0_recorderOfAdaAsExaminee | (x.@c0_recorderOfAdaAsExaminee_ref) != (y.@c0_recorderOfAdaAsExaminee_ref)  }
+fact { all  e : c0_Exam | ((e.(@r_c0_examinee.@c0_examinee_ref)) = c0_ada) => ((e.(@r_c0_recorder.@c0_recorder_ref)) in (c0_recorderOfAdaAsExaminee.@c0_recorderOfAdaAsExaminee_ref)) }
 sig c0_recorderOfAdaAsExaminer
-{ ref : one c0_Person }
-{ one  e : c0_Exam | ((e.(@r_c0_examiner.@ref)) = c0_ada) && ((e.(@r_c0_recorder.@ref)) = (this.@ref)) }
+{ c0_recorderOfAdaAsExaminer_ref : one c0_Person }
+{ one  e : c0_Exam | ((e.(@r_c0_examiner.@c0_examiner_ref)) = c0_ada) && ((e.(@r_c0_recorder.@c0_recorder_ref)) = (this.@c0_recorderOfAdaAsExaminer_ref)) }
 
-fact {  all disj x, y : c0_recorderOfAdaAsExaminer | (x.@ref) != (y.@ref)  }
-fact { all  e : c0_Exam | ((e.(@r_c0_examiner.@ref)) = c0_ada) => ((e.(@r_c0_recorder.@ref)) in (c0_recorderOfAdaAsExaminer.@ref)) }
+fact {  all disj x, y : c0_recorderOfAdaAsExaminer | (x.@c0_recorderOfAdaAsExaminer_ref) != (y.@c0_recorderOfAdaAsExaminer_ref)  }
+fact { all  e : c0_Exam | ((e.(@r_c0_examiner.@c0_examiner_ref)) = c0_ada) => ((e.(@r_c0_recorder.@c0_recorder_ref)) in (c0_recorderOfAdaAsExaminer.@c0_recorderOfAdaAsExaminer_ref)) }

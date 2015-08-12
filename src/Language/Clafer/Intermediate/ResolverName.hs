@@ -54,7 +54,7 @@ data SEnv
 
 -- | How a given name was resolved
 data HowResolved
-  = Special     -- ^ "this", "parent", "children", and "root"
+  = Special     -- ^ "this", "parent", "ref", "root", and "children"
   | TypeSpecial -- ^ primitive type: "integer", "string"
   | Binding     -- ^ local variable (in constraints)
   | Subclafers  -- ^ clafer's descendant
@@ -156,6 +156,7 @@ resolveIExp pos' env x = case x of
   IFunExp op' exps' -> if op' == iJoin then resNav else IFunExp op' <$> mapM (resolvePExp env) exps'
   IInt _ -> return x
   IDouble _ -> return x
+  IReal _ -> return x
   IStr _ -> return x
   IClaferId _ _ _ _ -> resNav
   where
@@ -185,26 +186,29 @@ resolveNav pos' env x isFirst = case x of
       | otherwise = mkPath' modName' <$> resolveImmName pos' env id'
   y -> throwError $ SemanticErr pos' $ "Cannot resolve nav of " ++ show y
 
--- depending on how resolved construct a path
+-- | Depending on how resolved construct a navigation path from 'context env'
 mkPath :: SEnv -> (HowResolved, String, [IClafer]) -> (IExp, [IClafer])
 mkPath env (howResolved, id', path) = case howResolved of
   Binding -> (IClaferId "" id' True (LocalBind id'), path)
-  Special -> (specIExp, path)
+  Special -> (specIExp id', path)
   TypeSpecial -> (IClaferId "" id' True (GlobalBind id'), path)
   Subclafers -> (toNav $ tail $ reverse $ map toTuple path, path)
   Ancestor -> (toNav' $ adjustAncestor (fromJust $ context env)
                                        (reverse $ map toTuple $ resPath env)
                                        (reverse $ map toTuple path), path)
-  _ -> (toNav' $ reverse $ map toTuple path, path)
+  Reference -> (toNav' $ reverse $ map toTuple path, path)
+  AbsClafer -> (toNav' $ reverse $ map toTuple path, path)
+  TopClafer -> (toNav' $ reverse $ map toTuple path, path)
   where
   toNav = foldl'
           (\exp' (id'', c) -> IFunExp iJoin [pExpDefPidPos exp', mkPLClaferId id'' False $ createBind c])
           (IClaferId "" thisIdent True (createBind $ context env))
-  specIExp = if id' /= thisIdent && id' /= rootIdent
-              then toNav [(id', Just $ head path)]
-              else if id' == thisIdent
-                then IClaferId "" thisIdent True (createBind $ context env)
-                else IClaferId "" rootIdent True (GlobalBind rootIdent)
+  specIExp "this"     = IClaferId "" thisIdent True (createBind $ context env)
+  specIExp "parent"   = toNav [("parent", Just $ head path)]
+  specIExp "ref"      = toNav [("ref", Just $ head path)]
+  specIExp "root"     = IClaferId "" rootIdent True (GlobalBind rootIdent)
+  specIExp "children" = toNav [(id', Just $ head path)]
+  specIExp i          = error $ "[BUG] ResolverName.specIExp: Unknown special id: " ++ i
 
 toTuple :: IClafer->(String, Maybe IClafer)
 toTuple c = (_uid c, Just c)

@@ -1,0 +1,23 @@
+x -> integer
+  [ this = 1 ]
+  [ this.ref = 1 ]
+[ x = 1 ]
+[ x.ref = 1 ]
+
+y -> x
+  [ this = 1 ]
+  [ this.ref = 1 ]
+  [ this.ref.ref = 1 ]
+[ y = 1 ]
+[ y.ref = 1 ]
+[ y.ref.ref = 1 ]
+
+z -> y
+  [ this = 1 ]
+  [ this.ref = 1 ]
+  [ this.ref.ref = 1 ]
+  [ this.ref.ref.ref = 1 ]
+[ z = 1 ]
+[ z.ref = 1 ]
+[ z.ref.ref = 1 ]
+[ z.ref.ref.ref = 1 ]

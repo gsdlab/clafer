@@ -3,12 +3,12 @@ pred show {}
 
 
 sig c0_x
-{ ref : one Int }
+{ c0_x_ref : one Int }
 
 sig c0_y
-{ ref : one Int }
+{ c0_y_ref : one Int }
 
 one sig c0_z
-{ ref : one Int }
+{ c0_z_ref : one Int }
 
-fact { (some c0_z) => ((c0_z.@ref) = (sum temp : ((c0_x.@ref) + c0_y) | temp.@ref)) }
+fact { (some c0_z) => ((c0_z.@c0_z_ref) = (sum temp : ((c0_x.@c0_x_ref) + c0_y) | temp.@c0_y_ref)) }

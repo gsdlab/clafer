@@ -26,10 +26,12 @@ import Language.ClaferT
 import Language.Clafer.Common
 import Language.Clafer.Intermediate.Intclafer hiding (uid)
 import Language.Clafer.Intermediate.Desugarer
+import Language.Clafer.Intermediate.TypeSystem
 import Language.Clafer.Front.PrintClafer
 
 import Control.Applicative
 import Control.Exception (assert)
+import Control.Lens ((&), (%~), traversed)
 import Control.Monad.Except
 import Control.Monad.List
 import Control.Monad.Reader
@@ -37,6 +39,7 @@ import Data.Either
 import Data.List
 import Data.Maybe
 import Prelude hiding (exp)
+
 
 type TypeDecls = [(String, IType)]
 data TypeInfo = TypeInfo {iTypeDecls::TypeDecls, iUIDIClaferMap::UIDIClaferMap, iCurThis::IClafer, iCurPath::Maybe IType}
@@ -99,27 +102,6 @@ instance MonadTypeAnalysis m => MonadTypeAnalysis (ExceptT ClaferSErr m) where
 runTypeAnalysis :: TypeAnalysis a -> IModule -> Either ClaferSErr a
 runTypeAnalysis (TypeAnalysis tc) imodule = runReaderT tc $ TypeInfo [] (createUidIClaferMap imodule) undefined Nothing
 
-unionType :: IType -> [String]
-unionType TString  = [stringType]
-unionType TReal    = [realType]
-unionType TInteger = [integerType]
-unionType TBoolean = [booleanType]
-unionType (TClafer u) = u
-
-(+++) :: IType -> IType -> IType
-t1 +++ t2 = fromJust $ fromUnionType $ unionType t1 ++ unionType t2
-
-fromUnionType :: [String] -> Maybe IType
-fromUnionType u =
-    case sort $ nub $ u of
-        ["string"]  -> return TString
-        ["real"]    -> return TReal
-        ["integer"] -> return TInteger
-        ["int"]     -> return TInteger
-        ["boolean"] -> return TBoolean
-        []          -> Nothing
-        u'          -> return $ TClafer u'
-
 claferWithUid :: (Monad m) => UIDIClaferMap -> String -> m IClafer
 claferWithUid uidIClaferMap' u = case findIClafer uidIClaferMap' u of
   Just c -> return c
@@ -129,22 +111,6 @@ parentOf :: (Monad m) => UIDIClaferMap -> UID -> m UID
 parentOf uidIClaferMap' c = case _parentUID <$> findIClafer uidIClaferMap' c of
   Just u -> return u
   Nothing -> fail $ "Analysis.parentOf: " ++ c ++ " not found!"
-
-refOf :: (Monad m) => UIDIClaferMap -> UID -> m UID
-refOf uidIClaferMap' c = do
-  case getReference <$> findIClafer uidIClaferMap' c of
-    Just [r] -> return r
-    _        -> fail $ "Analysis.refOf: No ref uid for " ++ show c
-
-hierarchy :: (Monad m) => UIDIClaferMap -> UID -> m [IClafer]
-hierarchy uidIClaferMap' c = (case findIClafer uidIClaferMap' c of
-      Nothing -> fail $ "Analysis.hierarchy: clafer " ++ c ++ "not found!"
-      Just clafer -> return $ findHierarchy getSuper uidIClaferMap' clafer)
-
-hierarchyMap :: (Monad m) => UIDIClaferMap -> (IClafer -> a) -> UID -> m [a]
-hierarchyMap uidIClaferMap' f c = (case findIClafer uidIClaferMap' c of
-      Nothing -> fail $ "Analysis.hierarchyMap: clafer " ++ c ++ "not found!"
-      Just clafer -> return $ mapHierarchy f getSuper uidIClaferMap' clafer)
 
 {-
  - C is an direct child of B.
@@ -169,30 +135,6 @@ isChild uidIClaferMap' child parent =
                 return $ directChild || indirectChild
             )
 
-
-closure :: Monad m => UIDIClaferMap -> [String] -> m [String]
-closure uidIClaferMap' ut = concat `liftM` mapM (hierarchyMap uidIClaferMap' _uid) ut
-
-intersection :: Monad m => UIDIClaferMap -> IType -> IType -> m (Maybe IType)
-intersection uidIClaferMap' t1 t2 = do
-  h1 <- (mapM (hierarchyMap uidIClaferMap' _uid) $ unionType t1)
-  h2 <- (mapM (hierarchyMap uidIClaferMap' _uid) $ unionType t2)
-  return $ fromUnionType $ catMaybes [contains (head u1) u2 `mplus` contains (head u2) u1 | u1 <- h1, u2 <- h2 ]
-  where
-  contains i is = if i `elem` is then Just i else Nothing
-
-numeric :: IType -> Bool
-numeric TReal    = True
-numeric TInteger = True
-numeric _        = False
-
-coerce :: IType -> IType -> IType
-coerce TReal TReal       = TReal
-coerce TReal TInteger    = TReal
-coerce TInteger TReal    = TReal
-coerce TInteger TInteger = TInteger
-coerce x y = error $ "Not numeric: " ++ show x ++ ", " ++ show y
-
 str :: IType -> String
 str t =
   case unionType t of
@@ -215,7 +157,8 @@ getIfThenElseType uidIClaferMap' t1 t2 = do
   let ut = catMaybes [commonHierarchy u1 u2 | u1 <- h1, u2 <- h2]
   return $ fromUnionType ut
   where
-  commonHierarchy h1 h2 = filterClafer $ commonHierarchy' (reverse h1) (reverse h2) Nothing
+  commonHierarchy :: [UID] -> [UID] -> Maybe UID
+  commonHierarchy h1 h2 = commonHierarchy' (reverse h1) (reverse h2) Nothing
   commonHierarchy' (x:xs) (y:ys) accumulator =
     if (x == y)
       then
@@ -224,23 +167,46 @@ getIfThenElseType uidIClaferMap' t1 t2 = do
           else commonHierarchy' xs ys $ Just x
       else accumulator
   commonHierarchy' _ _ _ = error "ResolverType.commonHierarchy' expects two non empty lists but was given at least one empty list!" -- Should never happen
-  filterClafer value =
-    if (value == Just "clafer") then Nothing else value
+
+data TAMode
+  = TAReferences    -- | Phase one: only process references
+  | TAExpressions   -- | Phase two: only process constraints and goals
 
 resolveTModule :: (IModule, GEnv) -> Either ClaferSErr IModule
 resolveTModule (imodule, _) =
-  case runTypeAnalysis (analysis $ _mDecls imodule) imodule of
-    Right mDecls' -> return imodule{_mDecls = mDecls'}
+  case runTypeAnalysis (analysisReferences $ _mDecls imodule) imodule of
+    Right mDecls' -> case runTypeAnalysis (analysisExpressions $ mDecls') imodule{_mDecls = mDecls'} of
+      Right mDecls'' -> return imodule{_mDecls = mDecls''}
+      Left err      -> throwError err
     Left err      -> throwError err
   where
-  analysis decls1 = mapM (resolveTElement rootIdent) decls1
+  analysisReferences = mapM (resolveTElement TAReferences rootIdent)
+  analysisExpressions = mapM (resolveTElement TAExpressions rootIdent)
 
-resolveTElement :: String -> IElement -> TypeAnalysis IElement
-resolveTElement _ (IEClafer iclafer) =
+-- Phase one: only process references
+resolveTElement :: TAMode     -> String -> IElement          -> TypeAnalysis IElement
+resolveTElement    TAReferences  _         (IEClafer iclafer) =
   do
-    elements' <- mapM (resolveTElement $ _uid iclafer) (_elements iclafer)
+    uidIClaferMap' <- asks iUIDIClaferMap
+    reference' <- case _reference iclafer of
+      Nothing -> return Nothing
+      Just originalReference -> do
+        refs' <- resolveTPExp $ _ref originalReference
+        case refs' of
+          []     -> return Nothing
+          [ref'] -> return $ Just $ originalReference{_ref=(ref' & iType.traversed %~ (addHierarchy uidIClaferMap'))}
+          (ref':_) -> return $ Just $ originalReference{_ref=(ref' & iType.traversed %~ (addHierarchy uidIClaferMap'))}
+    elements' <- mapM (resolveTElement TAReferences (_uid iclafer)) (_elements iclafer)
+    return $ IEClafer iclafer{_elements = elements', _reference=reference'}
+resolveTElement    TAReferences  _         iec@(IEConstraint{}) = return iec
+resolveTElement    TAReferences  _         ieg@(IEGoal{}) = return ieg
+
+-- Phase two: only process constraints and goals
+resolveTElement    TAExpressions  _         (IEClafer iclafer) =
+  do
+    elements' <- mapM (resolveTElement TAExpressions (_uid iclafer)) (_elements iclafer)
     return $ IEClafer iclafer{_elements = elements'}
-resolveTElement parent' (IEConstraint _isHard _pexp) =
+resolveTElement    TAExpressions parent'   (IEConstraint _isHard _pexp) =
   IEConstraint _isHard <$> (testBoolean =<< resolveTConstraint parent' _pexp)
   where
   testBoolean pexp' =
@@ -248,7 +214,7 @@ resolveTElement parent' (IEConstraint _isHard _pexp) =
       unless (typeOf pexp' == TBoolean) $
         throwError $ SemanticErr (_inPos pexp') ("Cannot construct constraint on type '" ++ str (typeOf pexp') ++ "'")
       return pexp'
-resolveTElement parent' (IEGoal isMaximize' pexp') =
+resolveTElement    TAExpressions parent' (IEGoal isMaximize' pexp') =
   IEGoal isMaximize' <$> resolveTConstraint parent' pexp'
 
 resolveTConstraint :: String -> PExp -> TypeAnalysis PExp
@@ -275,12 +241,11 @@ resolveTPExp' p@PExp{_inPos, _exp = IClaferId{_sident = "ref"}} = do
     curPath' <- curPath
     case curPath' of
       Just curPath'' -> do
-        ut <- closure uidIClaferMap' $ unionType curPath''
-        t <- runListT $ refOf uidIClaferMap' =<< foreachM ut
-        case fromUnionType t of
-          Just t' -> return $ p `withType` t'
-          Nothing -> throwError $ SemanticErr _inPos ("Cannot ref from type '" ++ str curPath'' ++ "'")
-      Nothing -> throwError $ SemanticErr _inPos ("Cannot ref at the start of a path")
+        case concatMap (getTMaps uidIClaferMap') $ getTClafers uidIClaferMap' curPath'' of
+          [t'] -> return $ p `withType` t'
+          (t':_) -> return $ p `withType` t'
+          [] -> throwError $ SemanticErr _inPos ("Cannot deref from type '" ++ str curPath'' ++ "'")
+      Nothing -> throwError $ SemanticErr _inPos ("Cannot deref at the start of a path")
 resolveTPExp' p@PExp{_inPos, _exp = IClaferId{_sident = "parent"}} = do
   uidIClaferMap' <- asks iUIDIClaferMap
   runListT $ runExceptT $ do
@@ -296,6 +261,10 @@ resolveTPExp' p@PExp{_inPos, _exp = IClaferId{_sident = "parent"}} = do
           addRef result -- Case 2: Dereference the sident 1..* times
       Nothing -> throwError $ SemanticErr _inPos "Cannot parent at the start of a path"
 resolveTPExp' p@PExp{_exp = IClaferId{_sident = "integer"}} = runListT $ runExceptT $ return $ p `withType` TInteger
+resolveTPExp' p@PExp{_exp = IClaferId{_sident = "int"}} = runListT $ runExceptT $ return $ p `withType` TInteger
+resolveTPExp' p@PExp{_exp = IClaferId{_sident = "string"}} = runListT $ runExceptT $ return $ p `withType` TString
+resolveTPExp' p@PExp{_exp = IClaferId{_sident = "double"}} = runListT $ runExceptT $ return $ p `withType` TDouble
+resolveTPExp' p@PExp{_exp = IClaferId{_sident = "real"}} = runListT $ runExceptT $ return $ p `withType` TReal
 resolveTPExp' p@PExp{_inPos, _exp = IClaferId{_sident}} = do
   uidIClaferMap' <- asks iUIDIClaferMap
   runListT $ runExceptT $ do
@@ -317,7 +286,8 @@ resolveTPExp' p@PExp{_inPos, _exp} =
   where
   resolveTExp :: IExp -> TypeAnalysis [Either ClaferSErr (IType, IExp)]
   resolveTExp e@(IInt _)    = runListT $ runExceptT $ return (TInteger, e)
-  resolveTExp e@(IDouble _) = runListT $ runExceptT $ return (TReal, e)
+  resolveTExp e@(IDouble _) = runListT $ runExceptT $ return (TDouble, e)
+  resolveTExp e@(IReal _) = runListT $ runExceptT $ return (TReal, e)
   resolveTExp e@(IStr _)    = runListT $ runExceptT $ return (TString, e)
 
   resolveTExp e@IFunExp {_op, _exps = [arg]} =
@@ -332,8 +302,8 @@ resolveTPExp' p@PExp{_inPos, _exp} =
             | _op == iNot = test (t == TBoolean) >> return TBoolean
             | _op `elem` ltlUnOps = test (t == TBoolean) >> return TBoolean
             | _op == iCSet = return TInteger
-            | _op == iSumSet = test (t == TInteger) >> return TInteger
-            | _op == iProdSet = test (t == TInteger) >> return TInteger
+            | _op == iSumSet = test (isTInteger t) >> return TInteger
+            | _op == iProdSet = test (isTInteger t) >> return TInteger
             | _op `elem` [iMin, iGMin, iGMax] = test (numeric t) >> return t
             | otherwise = assert False $ error $ "Unknown op '" ++ _op ++ "'"
       result' <- result
@@ -383,7 +353,7 @@ resolveTPExp' p@PExp{_inPos, _exp} =
             | _op `elem` relSetBinOps = testIntersect t1 t2 >> return TBoolean
             | _op `elem` [iSub, iMul, iDiv, iRem] = test (numeric t1 && numeric t2) >> return (coerce t1 t2)
             | _op == iPlus =
-                (test (t1 == TString && t2 == TString) >> return TString) -- Case 1: String concatenation
+                (test (isTString t1 && isTString t2) >> return TString) -- Case 1: String concatenation
                 `catchError`
                 const (test (numeric t1 && numeric t2) >> return (coerce t1 t2)) -- Case 2: Addition
             | otherwise = error $ "ResolverType: Unknown op: " ++ show e
@@ -403,12 +373,12 @@ resolveTPExp' p@PExp{_inPos, _exp} =
 --        throwError $ SemanticErr inPos ("The types are: '" ++ str t2 ++ "' and '" ++ str t3 ++ "'")
 
       unless (t1 == TBoolean) $
-        throwError $ SemanticErr _inPos ("Function 'if/else' cannot be performed on 'if' " ++ str t1 ++ " 'then' " ++ str t2 ++ " 'else' " ++ str t3)
+        throwError $ SemanticErr _inPos ("The type of condition in 'if/then/else' must be 'TBoolean', insted it is " ++ str t1)
 
       it <- getIfThenElseType uidIClaferMap' t2 t3
       t <- case it of
         Just it' -> return it'
-        Nothing  -> throwError $ SemanticErr _inPos ("Function 'if/else' cannot be performed on if '" ++ str t1 ++ "' then '" ++ str t2 ++ "' else '" ++ str t3 ++ "'")
+        Nothing  -> throwError $ SemanticErr _inPos ("Function 'if/then/else' cannot be performed on if '" ++ str t1 ++ "' then '" ++ str t2 ++ "' else '" ++ str t3 ++ "'")
 
       return (t, e{_exps = [arg1', arg2', arg3']})
 
@@ -461,9 +431,6 @@ liftError e =
 
 liftList :: Monad m => [a] -> ListT m a
 liftList = ListT . return
-
-foreachM :: Monad m => [a] -> ListT m a
-foreachM = ListT . return
 
 comparing :: Ord b => (a -> b) -> a -> a -> Ordering
 comparing f a b = f a `compare` f b

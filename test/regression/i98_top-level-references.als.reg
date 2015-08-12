@@ -7,7 +7,7 @@ abstract sig c0_Person
 , r_c0_married : lone c0_married }
 
 sig c0_age
-{ ref : one Int }
+{ c0_age_ref : one Int }
 { one @r_c0_age.this }
 
 sig c0_married
@@ -15,10 +15,10 @@ sig c0_married
 { one @r_c0_married.this }
 
 abstract sig c0_NewBorn
-{ ref : one c0_Person }
-{ ((c0_Person.(@r_c0_age.@ref)) = 0) && (no c0_Person.@r_c0_married) }
+{ c0_NewBorn_ref : one c0_Person }
+{ ((c0_Person.(@r_c0_age.@c0_age_ref)) = 0) && (no c0_Person.@r_c0_married) }
 
-fact {  all disj x, y : c0_NewBorn | (x.@ref) != (y.@ref)  }
+fact {  all disj x, y : c0_NewBorn | (x.@c0_NewBorn_ref) != (y.@c0_NewBorn_ref)  }
 one sig c0_Alice extends c0_Person
 {}
 

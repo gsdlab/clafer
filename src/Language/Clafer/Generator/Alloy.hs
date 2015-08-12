@@ -1,6 +1,6 @@
 {-# LANGUAGE RankNTypes, FlexibleContexts #-}
 {-
- Copyright (C) 2012-2013 Kacper Bak, Jimmy Liang, Rafael Olaechea <http://gsd.uwaterloo.ca>
+ Copyright (C) 2012-2015 Kacper Bak, Jimmy Liang, Michal Antkiewicz, Rafael Olaechea <http://gsd.uwaterloo.ca>
 
  Permission is hereby granted, free of charge, to any person obtaining a copy of
  this software and associated documentation files (the "Software"), to deal in
@@ -20,7 +20,7 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
 -}
--- | Generates Alloy4.1 or 4.2 code for a Clafer model
+-- | Generates Alloy4.2 code for a Clafer model
 module Language.Clafer.Generator.Alloy (genModule) where
 
 import Control.Applicative
@@ -32,6 +32,7 @@ import Prelude
 import Language.Clafer.Common
 import Language.Clafer.ClaferArgs
 import Language.Clafer.Front.AbsClafer
+import Language.Clafer.Front.LexClafer
 import Language.Clafer.Generator.Concat
 import Language.Clafer.Intermediate.Intclafer hiding (exp)
 
@@ -44,10 +45,8 @@ data GenEnv = GenEnv
 
 
 -- | Alloy code generation
--- 07th Mayo 2012 Rafael Olaechea
---      Added Logic to print a goal block in case there is at least one goal.
-genModule :: ClaferArgs -> (IModule, GEnv) -> [(UID, Integer)] -> (Result, [(Span, IrTrace)])
-genModule    claferargs'   (imodule, genv)    scopes            = (flatten output, filter ((/= NoTrace) . snd) $ mapLineCol output)
+genModule :: ClaferArgs -> (IModule, GEnv) -> [(UID, Integer)] -> [Token]     -> (Result, [(Span, IrTrace)])
+genModule    claferargs'   (imodule, genv)    scopes              otherTokens' = (flatten output, filter ((/= NoTrace) . snd) $ mapLineCol output)
   where
 
   genScopes :: [(UID, Integer)] -> String
@@ -56,50 +55,35 @@ genModule    claferargs'   (imodule, genv)    scopes            = (flatten outpu
 
   forScopes' = "for 1" ++ genScopes scopes
   genEnv = GenEnv claferargs' (uidClaferMap genv) forScopes'
-  output = header genEnv +++ (cconcat $ map (genDeclaration genEnv) (_mDecls imodule)) +++
-       if ((not $ skip_goals claferargs') && length goals_list > 0) then
-                CString "objectives o_global {\n" +++   (cintercalate (CString ",\n") goals_list) +++   CString "\n}"
-       else
-                CString ""
-       where
-                goals_list = filterNull (map (genDeclarationGoalsOnly genEnv) (_mDecls imodule))
+  output = header genEnv otherTokens' +++ (cconcat $ map (genDeclaration genEnv) (_mDecls imodule))
 
-header :: GenEnv -> Concat
-header    genEnv  = CString $ unlines
+header :: GenEnv -> [Token]     -> Concat
+header    genEnv    otherTokens' = CString $ unlines
     [ "open util/integer"
+    , genAlloyEscapes otherTokens'
     , "pred show {}"
-    , if (validate $ claferargs genEnv) ||  (noalloyruncommand $ claferargs genEnv)
+    , if (validate $ claferargs genEnv)
       then ""
       else "run show " ++ forScopes genEnv
     , ""]
 
+genAlloyEscapes :: [Token]  -> String
+genAlloyEscapes otherTokens' = concat $ map printAlloyEscape otherTokens'
+    where
+      printAlloyEscape (PT _ (T_PosAlloy code)) =  let
+          code' = fromJust $ stripPrefix "[alloy|" code
+        in
+          take ((length code') - 2) code'
+
+      printAlloyEscape _                        = ""
 
 -- 07th Mayo 2012 Rafael Olaechea
--- Modified so that we can collect all goals into a single block as required per the way goals are handled in modified alloy.
-genDeclarationGoalsOnly :: GenEnv -> IElement -> Concat
-genDeclarationGoalsOnly    genEnv    x         = case x of
-  IEClafer _  -> CString ""
-  IEConstraint _ _  -> CString ""
-  IEGoal _ (PExp _ _ _ innerexp) -> case innerexp of
-        IFunExp op'  exps' ->  if  op' == iGMax || op' == iGMin then
-                        mkMetric op' $ genPExp genEnv [] (head exps')
-                else
-                        error "unary operator  distinct from (min/max) at the topmost level of a goal element"
-        _ ->  error "no unary operator (min/max) at the topmost level of a goal element."
-
--- 07th Mayo 2012 Rafael Olaechea
--- Removed goal from this function as they will now  all be collected into a single block.
 genDeclaration :: GenEnv -> IElement -> Concat
 genDeclaration genEnv x = case x of
   IEClafer clafer'  -> (genClafer genEnv [] clafer') +++ (mkFact $ cconcat $ genSetUniquenessConstraint clafer')
   IEConstraint True pexp  -> mkFact $ genPExp genEnv [] pexp
   IEConstraint False pexp  -> mkAssert genEnv (genAssertName pexp) $ genPExp genEnv [] pexp
-  IEGoal _ (PExp _ _ _ innerexp) -> case innerexp of
-        IFunExp op'  _ ->  if  op' == iGMax || op' == iGMin then
-                       CString ""
-                else
-                        error "unary operator  distinct from (min/max) at the topmost level of a goal element"
-        _ ->  error "no unary operator (min/max) at the topmost level of a goal element."
+  IEGoal _ _ -> CString ""
 
 mkFact :: Concat -> Concat
 mkFact x@(CString "") = x
@@ -118,9 +102,6 @@ mkAssert    genEnv    name      xs = cconcat
   , CString $ forScopes genEnv
   , CString "\n\n"
   ]
-
-mkMetric :: String -> Concat -> Concat
-mkMetric goalopname xs = cconcat [ if goalopname == iGMax then CString "maximize" else  CString "minimize", CString " ", xs, CString " "]
 
 mkSet :: Concat -> Concat
 mkSet xs = cconcat [CString "{ ", xs, CString " }"]
@@ -163,12 +144,11 @@ genClafer genEnv resPath clafer'
 claferDecl :: IClafer -> Concat -> Concat
 claferDecl    c     rest    = cconcat
   [ genOptCard c
-  , CString $ genAbstract $ _isAbstract c
+  , CString $ if _isAbstract c then "abstract " else ""
   , CString "sig "
   , Concat NoTrace [CString $ _uid c, genExtends $ _super c, CString "\n", rest]
   ]
   where
-  genAbstract isAbs = if isAbs then "abstract " else ""
   genExtends Nothing = CString ""
   genExtends (Just (PExp _ _ _ (IClaferId _ i _ _))) = CString " " +++ Concat NoTrace [CString $ "extends " ++ i]
   -- todo: handle multiple inheritance
@@ -192,7 +172,7 @@ genRelations genEnv c = maybeToList r ++ (map mkRel $ getSubclafers $ _elements 
   where
   r = if isJust $ _reference c
                 then
-                        Just $ Concat NoTrace [CString $ genRel (if (noalloyruncommand $ claferargs genEnv) then  (_uid c ++ "_ref") else "ref")
+                        Just $ Concat NoTrace [CString $ genRel (genRefName $ _uid c)
                          c {_card = Just (1, 1)} $
                          flatten $ refType genEnv c]
                 else
@@ -201,6 +181,9 @@ genRelations genEnv c = maybeToList r ++ (map mkRel $ getSubclafers $ _elements 
 
 genRelName :: String -> String
 genRelName name = "r_" ++ name
+
+genRefName :: String -> String
+genRefName name = name ++ "_ref"
 
 genRel :: String -> IClafer -> String -> String
 genRel name c rType = genAlloyRel name (genCardCrude $ _card c) rType'
@@ -211,7 +194,7 @@ genAlloyRel :: String -> String -> String -> String
 genAlloyRel name card' rType = concat [name, " : ", card', " ", rType]
 
 refType :: GenEnv -> IClafer -> Concat
-refType    genEnv c = fromMaybe (CString "") $ fmap ((genType genEnv).getTarget) $ _ref <$> _reference c
+refType    genEnv c = fromMaybe (CString "") (((genType genEnv).getTarget) <$> (_ref <$> _reference c))
 
 
 getTarget :: PExp -> PExp
@@ -233,6 +216,7 @@ genConstraints :: GenEnv -> [String]      -> IClafer -> [Concat]
 genConstraints    genEnv    resPath c
   = (genParentConst resPath c)
   : (genGroupConst genEnv c)
+  : (genRefSubrelationConstriant (uidIClaferMap genEnv) c)
 {- genPathConst produces incorrect code for top-level clafers
 
 abstract System
@@ -251,7 +235,7 @@ of Connection are nested under all Systems anyway.
 -}
   : constraints
   where
-  constraints = concat $ map genConst $ _elements c
+  constraints = concatMap genConst $ _elements c
   genConst x = case x of
     IEConstraint True pexp  -> [ genPExp genEnv ((_uid c) : resPath) pexp ]
     IEConstraint False pexp  -> [ CString "// Assertion " +++ (genAssertName pexp) +++ CString " ignored since nested assertions are not supported in Alloy.\n"]
@@ -262,7 +246,7 @@ of Connection are nested under all Systems anyway.
         )
         : (genParentSubrelationConstriant (uidIClaferMap genEnv) c')
         : (genSetUniquenessConstraint c')
-    IEGoal _ _ -> error "getConst function from Alloy generator was given a Goal, this function should only be given a Constrain or Clafer" -- This should never happen
+    IEGoal _ _ -> error "[bug] Alloy.getConst: should not be given a goal." -- This should never happen
 
 
 genSetUniquenessConstraint :: IClafer -> [Concat]
@@ -275,7 +259,7 @@ genSetUniquenessConstraint c =
                         (case isTopLevel c of
                           False -> "all disj x, y : this.@" ++ (genRelName $ _uid c)
                           True  -> " all disj x, y : "       ++ (_uid c)))
-                      ++ " | (x.@ref) != (y.@ref) "
+                      ++ " | (x.@" ++ genRefName (_uid c) ++ ") != (y.@" ++ genRefName (_uid c) ++ ") "
                    ]
               else []
             _ -> [])
@@ -283,7 +267,7 @@ genSetUniquenessConstraint c =
     )
 
 genParentSubrelationConstriant :: UIDIClaferMap -> IClafer   -> Concat
-genParentSubrelationConstriant    uidIClaferMap'        headClafer =
+genParentSubrelationConstriant    uidIClaferMap'   headClafer =
   case match of
     Nothing -> CString ""
     Just NestedInheritanceMatch {
@@ -297,6 +281,28 @@ genParentSubrelationConstriant    uidIClaferMap'        headClafer =
                else CString ""
   where
     match = matchNestedInheritance uidIClaferMap' headClafer
+
+-- See Common.NestedInheritanceMatch
+genRefSubrelationConstriant :: UIDIClaferMap -> IClafer   -> Concat
+genRefSubrelationConstriant    uidIClaferMap'   headClafer =
+  if isJust $ _reference headClafer
+  then
+    case match of
+      Nothing -> CString ""
+      Just NestedInheritanceMatch
+        { _superClafer = superClafer
+        ,  _superClafersTarget = superClafersTarget
+        }  -> case (isProperRefinement uidIClaferMap' match, not $ null superClafersTarget) of
+                 ((True, True, True), True) -> CString $ concat
+                  [ genRefName $ _uid headClafer
+                  , " in "
+                  , genRefName $ _uid superClafer
+                  ]
+                 _ -> CString ""
+  else CString ""
+  where
+    match = matchNestedInheritance uidIClaferMap' headClafer
+
 
 -- optimization: if only boolean features then the parent is unique
 genParentConst :: [String] -> IClafer -> Concat
@@ -423,32 +429,39 @@ genPExp' :: GenEnv -> [String] -> PExp                      -> Concat
 genPExp'    genEnv    resPath     (PExp iType' pid' pos exp') = case exp' of
   IDeclPExp q d pexp -> Concat (IrPExp pid') $
     [ CString $ genQuant q, CString " "
-    , cintercalate (CString ", ") $ map ((genDecl genEnv resPath)) d
+    , cintercalate (CString ", ") $ map (genDecl genEnv resPath) d
     , CString $ optBar d, genPExp' genEnv resPath pexp]
     where
     optBar [] = ""
     optBar _  = " | "
-  IClaferId _ "ref" _ _ -> CString "@ref"
+  IClaferId _ "integer" _ _ -> CString "Int"
+  IClaferId _ "int" _ _ -> CString "Int"
+  IClaferId _ "string" _ _ -> CString "Int"
+  IClaferId _ "ref" _ _ -> CString $ "@"  ++ getTClaferUID iType' ++ "_ref"
+    where
+      getTClaferUID (Just TMap{_so = TClafer{_hi = [u]}}) = u
+      getTClaferUID (Just TMap{_so = TClafer{_hi = (u:_)}}) = u
+      getTClaferUID t = error $ "[bug] Alloy.genPExp'.getTClaferUID: unknown type: " ++ show t
   IClaferId _ sid istop _ -> CString $
-      if head sid == '~' then sid else
-      if isNothing iType' then sid' else case fromJust $ iType' of
-    TInteger -> vsident
-    TReal -> vsident
-    TString -> vsident
-    _ -> sid'
+      if head sid == '~'
+        then sid
+        else case iType' of
+          Just TInteger -> vsident
+          Just TDouble -> vsident
+          Just TReal -> vsident
+          Just TString -> vsident
+          _ -> sid'
     where
     sid' = (if istop then "" else '@' : genRelName "") ++ sid
-    -- 29/March/2012  Rafael Olaechea: ref is now prepended with clafer name to be able to refer to it from partial instances.
-    -- 30/March/2012 Rafael Olaechea added referredClaferUniqeuid to fix problems when having this.x > number  (e.g test/positive/i10.cfr )
-    vsident = if (noalloyruncommand $ claferargs genEnv) then sid' ++  ".@"  ++ referredClaferUniqeuid ++ "_ref"  else  sid'  ++ ".@ref"
-        where referredClaferUniqeuid = if sid == "this" then (head resPath) else sid
+    vsident = sid' ++  ".@"  ++ genRefName (if sid == "this" then head resPath else sid)
   IFunExp _ _ -> case exp'' of
     IFunExp _ _ -> genIFunExp pid' genEnv resPath exp''
     _ -> genPExp' genEnv resPath $ PExp iType' pid' pos exp''
     where
     exp'' = transformExp exp'
   IInt n -> CString $ show n
-  IDouble _ -> error "no real numbers allowed"
+  IDouble _ -> error "no double numbers allowed"
+  IReal _ -> error "no real numbers allowed"
   IStr _ -> error "no strings allowed"
 
 
@@ -472,22 +485,22 @@ genIFunExp    pid'      genEnv    resPath     (IFunExp op' exps') =
   if (op' == iSumSet)
     then genIFunExp pid' genEnv resPath (IFunExp iSumSet' [(removeright (head exps')), (getRight $ head exps')])
     else if (op' == iSumSet')
-      then Concat (IrPExp pid') $ intl exps'' (map CString $ genOp (Alloy42 `elem` (mode $ claferargs genEnv)) iSumSet)
-      else Concat (IrPExp pid') $ intl exps'' (map CString $ genOp (Alloy42 `elem` (mode $ claferargs genEnv)) op')
+      then Concat (IrPExp pid') $ intl exps'' (map CString $ genOp iSumSet)
+      else Concat (IrPExp pid') $ intl exps'' (map CString $ genOp op')
   where
   intl
-    | op' == iSumSet' = flip $ interleave
+    | op' == iSumSet' = flip interleave
     | op' `elem` arithBinOps && length exps' == 2 = interleave
     | otherwise = \xs ys -> reverse $ interleave (reverse xs) (reverse ys)
   exps'' = map (optBrArg genEnv resPath) exps'
-genIFunExp _ _ _ _ = error "Function genIFunExp from Alloy Generator expected a IFunExp as an argument but was given something else" --This should never happen
+genIFunExp _ _ _ x = error $ "[bug] Alloy.genIFunExp: expecting a IFunExp, instead got: " ++ show x--This should never happen
 
 
 optBrArg :: GenEnv -> [String] -> PExp -> Concat
 optBrArg    genEnv    resPath     x     = brFun (genPExp' genEnv resPath) x
   where
   brFun = case x of
-    PExp _ _ _ (IClaferId _ _ _ _) -> ($)
+    PExp _ _ _ IClaferId{} -> ($)
     PExp _ _ _ (IInt _) -> ($)
     _  -> brArg
 
@@ -500,13 +513,10 @@ interleave (x:xs) ys = x : interleave ys xs
 brArg :: (a -> Concat) -> a -> Concat
 brArg f arg = cconcat [CString "(", f arg, CString ")"]
 
---     isAlloy42
-genOp :: Bool -> String -> [String]
-genOp    True       op'
+genOp :: String -> [String]
+genOp    op'
   | op' == iPlus = [".plus[", "]"]
   | op' == iSub  = [".minus[", "]"]
-  | otherwise   = genOp False op'
-genOp    _             op'
   | op' == iSumSet = ["sum temp : "," | temp."]
   | op' == iProdSet = ["prod temp : "," | temp."]
   | op' `elem` unOps  = [op']
@@ -523,7 +533,7 @@ genOp    _             op'
   | op' == iRange = [" :> "]
   | op' == iJoin = ["."]
   | op' == iIfThenElse = [" => ", " else "]
-genOp _ _ = error "This should never happen"
+genOp op' = error $ "[bug] Alloy.genOp: Unmatched operator: " ++ op'
 
 -- adjust parent
 adjustPExp :: [String] -> PExp -> PExp
@@ -536,7 +546,7 @@ adjustIExp resPath x = case x of
     where
     (adjNav, adjExps) = if op' == iJoin then (aNav, id)
                         else (id, adjustPExp resPath)
-  IClaferId _ _ _ _ -> aNav x
+  IClaferId{} -> aNav x
   _  -> x
   where
   aNav = fst.(adjustNav resPath)
@@ -571,9 +581,8 @@ genDecl    genEnv    resPath     x      = case x of
 
 
 genDisj :: Bool -> String
-genDisj    x     = case x of
-  False -> ""
-  True  -> "disj"
+genDisj    True  = "disj"
+genDisj    False = ""
 
 -- mapping line/columns between Clafer and Alloy code
 
@@ -638,9 +647,12 @@ firstLine :: LineNo
 firstLine = 1 :: LineNo
 
 removeright :: PExp -> PExp
-removeright (PExp _ _ _ (IFunExp _ (x : (PExp _ _ _ (IClaferId _ _ _ _)) : _))) = x
-removeright (PExp t id' pos (IFunExp o (x1:x2:xs))) = (PExp t id' pos (IFunExp o (x1:(removeright x2):xs)))
-removeright (PExp _ _ _ _) = error "Function removeright from the AlloyGenerator expects a PExp with a IFunExp inside, was given something else" --This should never happen
+removeright (PExp _ _ _ (IFunExp _ (x : (PExp _ _ _ IClaferId{}) : _))) = x
+removeright (PExp _ _ _ (IFunExp _ (x : (PExp _ _ _ (IInt _ )) : _))) = x
+removeright (PExp _ _ _ (IFunExp _ (x : (PExp _ _ _ (IStr _ )) : _))) = x
+removeright (PExp _ _ _ (IFunExp _ (x : (PExp _ _ _ (IDouble _ )) : _))) = x
+removeright (PExp t id' pos (IFunExp o (x1:x2:xs))) = PExp t id' pos (IFunExp o (x1:(removeright x2):xs))
+removeright x@PExp{} = error $ "[bug] AlloyGenerator.removeright: expects a PExp with a IFunExp inside but was given: " ++ show x --This should never happen
 
 getRight :: PExp -> PExp
 getRight (PExp _ _ _ (IFunExp _ (_:x:_))) = getRight x

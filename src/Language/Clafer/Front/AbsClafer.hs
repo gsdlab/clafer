@@ -32,9 +32,19 @@ newtype PosInteger = PosInteger ((Int,Int),String)
   deriving (Eq, Ord, Show, Read, Data, Typeable, Generic)
 newtype PosDouble = PosDouble ((Int,Int),String)
   deriving (Eq, Ord, Show, Read, Data, Typeable, Generic)
+newtype PosReal = PosReal ((Int,Int),String)
+  deriving (Eq, Ord, Show, Read, Data, Typeable, Generic)
 newtype PosString = PosString ((Int,Int),String)
   deriving (Eq, Ord, Show, Read, Data, Typeable, Generic)
 newtype PosIdent = PosIdent ((Int,Int),String)
+  deriving (Eq, Ord, Show, Read, Data, Typeable, Generic)
+newtype PosLineComment = PosLineComment ((Int,Int),String)
+  deriving (Eq, Ord, Show, Read, Data, Typeable, Generic)
+newtype PosBlockComment = PosBlockComment ((Int,Int),String)
+  deriving (Eq, Ord, Show, Read, Data, Typeable, Generic)
+newtype PosAlloy = PosAlloy ((Int,Int),String)
+  deriving (Eq, Ord, Show, Read, Data, Typeable, Generic)
+newtype PosChoco = PosChoco ((Int,Int),String)
   deriving (Eq, Ord, Show, Read, Data, Typeable, Generic)
 instance Spannable PosInteger where
   getSpan (PosInteger ((c, l), lex')) = 
@@ -48,6 +58,12 @@ instance Spannable PosDouble where
     where
       c' = toInteger c
       l' = toInteger l
+instance Spannable PosReal where
+  getSpan (PosReal ((c, l), lex')) = 
+    Span (Pos c' l') (Pos c' $ l' + len lex')
+    where
+      c' = toInteger c
+      l' = toInteger l
 instance Spannable PosString where
   getSpan (PosString ((c, l), lex')) = 
     Span (Pos c' l') (Pos c' $ l' + len lex')
@@ -56,6 +72,30 @@ instance Spannable PosString where
       l' = toInteger l
 instance Spannable PosIdent where
   getSpan (PosIdent ((c, l), lex')) = 
+    Span (Pos c' l') (Pos c' $ l' + len lex')
+    where
+      c' = toInteger c
+      l' = toInteger l
+instance Spannable PosLineComment where
+  getSpan (PosLineComment ((c, l), lex')) = 
+    Span (Pos c' l') (Pos c' $ l' + len lex')
+    where
+      c' = toInteger c
+      l' = toInteger l
+instance Spannable PosBlockComment where
+  getSpan (PosBlockComment ((c, l), lex')) = 
+    Span (Pos c' l') (Pos c' $ l' + len lex')
+    where
+      c' = toInteger c
+      l' = toInteger l
+instance Spannable PosAlloy where
+  getSpan (PosAlloy ((c, l), lex')) = 
+    Span (Pos c' l') (Pos c' $ l' + len lex')
+    where
+      c' = toInteger c
+      l' = toInteger l
+instance Spannable PosChoco where
+  getSpan (PosChoco ((c, l), lex')) = 
     Span (Pos c' l') (Pos c' $ l' + len lex')
     where
       c' = toInteger c
@@ -83,11 +123,11 @@ data Constraint = Constraint Span [Exp]
 
 instance Spannable Constraint where
     getSpan (Constraint s _ ) = s
-data SoftConstraint = SoftConstraint Span [Exp]
+data Assertion = Assertion Span [Exp]
   deriving (Eq, Ord, Show, Read, Data, Typeable, Generic)
 
-instance Spannable SoftConstraint where
-    getSpan (SoftConstraint s _ ) = s
+instance Spannable Assertion where
+    getSpan (Assertion s _ ) = s
 data Goal = Goal Span [Exp]
   deriving (Eq, Ord, Show, Read, Data, Typeable, Generic)
 
@@ -123,7 +163,7 @@ data Element
     | ClaferUse Span Name Card Elements
     | Subconstraint Span Constraint
     | Subgoal Span Goal
-    | Subsoftconstraint Span SoftConstraint
+    | SubAssertion Span Assertion
   deriving (Eq, Ord, Show, Read, Data, Typeable, Generic)
 
 instance Spannable Element where
@@ -131,8 +171,8 @@ instance Spannable Element where
     getSpan (ClaferUse s _ _ _ ) = s
     getSpan (Subconstraint s _ ) = s
     getSpan (Subgoal s _ ) = s
-    getSpan (Subsoftconstraint s _ ) = s
-data Super = SuperEmpty Span | SuperSome Span SetExp
+    getSpan (SubAssertion s _ ) = s
+data Super = SuperEmpty Span | SuperSome Span Exp
   deriving (Eq, Ord, Show, Read, Data, Typeable, Generic)
 
 instance Spannable Super where
@@ -140,8 +180,8 @@ instance Spannable Super where
     getSpan (SuperSome s _ ) = s
 data Reference
     = ReferenceEmpty Span
-    | ReferenceSet Span SetExp
-    | ReferenceBag Span SetExp
+    | ReferenceSet Span Exp
+    | ReferenceBag Span Exp
   deriving (Eq, Ord, Show, Read, Data, Typeable, Generic)
 
 instance Spannable Reference where
@@ -210,10 +250,10 @@ instance Spannable Name where
     getSpan (Path s _ ) = s
 data Exp
     = TransitionExp Span Exp TransArrow Exp
-    | DeclAllDisj Span Decl Exp
-    | DeclAll Span Decl Exp
-    | DeclQuantDisj Span Quant Decl Exp
-    | DeclQuant Span Quant Decl Exp
+    | EDeclAllDisj Span Decl Exp
+    | EDeclAll Span Decl Exp
+    | EDeclQuantDisj Span Quant Decl Exp
+    | EDeclQuant Span Quant Decl Exp
     | LetExp Span VarBinding Exp
     | TmpPatNever Span Exp PatternScope
     | TmpPatSometime Span Exp PatternScope
@@ -249,29 +289,37 @@ data Exp
     | ENeq Span Exp Exp
     | EIn Span Exp Exp
     | ENin Span Exp Exp
-    | QuantExp Span Quant Exp
+    | EQuantExp Span Quant Exp
     | EAdd Span Exp Exp
     | ESub Span Exp Exp
     | EMul Span Exp Exp
     | EDiv Span Exp Exp
     | ERem Span Exp Exp
-    | ESumSetExp Span Exp
-    | EProdSetExp Span Exp
-    | ECSetExp Span Exp
+    | ESum Span Exp
+    | EProd Span Exp
+    | ECard Span Exp
     | EMinExp Span Exp
     | EImpliesElse Span Exp Exp Exp
+    | EDomain Span Exp Exp
+    | ERange Span Exp Exp
+    | EUnion Span Exp Exp
+    | EUnionCom Span Exp Exp
+    | EDifference Span Exp Exp
+    | EIntersection Span Exp Exp
+    | EJoin Span Exp Exp
+    | ClaferId Span Name
     | EInt Span PosInteger
     | EDouble Span PosDouble
+    | EReal Span PosReal
     | EStr Span PosString
-    | ESetExp Span SetExp
   deriving (Eq, Ord, Show, Read, Data, Typeable, Generic)
 
 instance Spannable Exp where
     getSpan (TransitionExp s _ _ _ ) = s
-    getSpan (DeclAllDisj s _ _ ) = s
-    getSpan (DeclAll s _ _ ) = s
-    getSpan (DeclQuantDisj s _ _ _ ) = s
-    getSpan (DeclQuant s _ _ _ ) = s
+    getSpan (EDeclAllDisj s _ _ ) = s
+    getSpan (EDeclAll s _ _ ) = s
+    getSpan (EDeclQuantDisj s _ _ _ ) = s
+    getSpan (EDeclQuant s _ _ _ ) = s
     getSpan (LetExp s _ _ ) = s
     getSpan (TmpPatNever s _ _ ) = s
     getSpan (TmpPatSometime s _ _ ) = s
@@ -307,21 +355,29 @@ instance Spannable Exp where
     getSpan (ENeq s _ _ ) = s
     getSpan (EIn s _ _ ) = s
     getSpan (ENin s _ _ ) = s
-    getSpan (QuantExp s _ _ ) = s
+    getSpan (EQuantExp s _ _ ) = s
     getSpan (EAdd s _ _ ) = s
     getSpan (ESub s _ _ ) = s
     getSpan (EMul s _ _ ) = s
     getSpan (EDiv s _ _ ) = s
     getSpan (ERem s _ _ ) = s
-    getSpan (ESumSetExp s _ ) = s
-    getSpan (EProdSetExp s _ ) = s
-    getSpan (ECSetExp s _ ) = s
+    getSpan (ESum s _ ) = s
+    getSpan (EProd s _ ) = s
+    getSpan (ECard s _ ) = s
     getSpan (EMinExp s _ ) = s
     getSpan (EImpliesElse s _ _ _ ) = s
+    getSpan (EDomain s _ _ ) = s
+    getSpan (ERange s _ _ ) = s
+    getSpan (EUnion s _ _ ) = s
+    getSpan (EUnionCom s _ _ ) = s
+    getSpan (EDifference s _ _ ) = s
+    getSpan (EIntersection s _ _ ) = s
+    getSpan (EJoin s _ _ ) = s
+    getSpan (ClaferId s _ ) = s
     getSpan (EInt s _ ) = s
     getSpan (EDouble s _ ) = s
+    getSpan (EReal s _ ) = s
     getSpan (EStr s _ ) = s
-    getSpan (ESetExp s _ ) = s
 data TransGuard = TransGuard Span Exp
   deriving (Eq, Ord, Show, Read, Data, Typeable, Generic)
 
@@ -353,27 +409,7 @@ instance Spannable PatternScope where
     getSpan (PatScopeBetweenAnd s _ _ ) = s
     getSpan (PatScopeAfterUntil s _ _ ) = s
     getSpan (PatScopeEmpty s ) = s
-data SetExp
-    = Union Span SetExp SetExp
-    | UnionCom Span SetExp SetExp
-    | Difference Span SetExp SetExp
-    | Intersection Span SetExp SetExp
-    | Domain Span SetExp SetExp
-    | Range Span SetExp SetExp
-    | Join Span SetExp SetExp
-    | ClaferId Span Name
-  deriving (Eq, Ord, Show, Read, Data, Typeable, Generic)
-
-instance Spannable SetExp where
-    getSpan (Union s _ _ ) = s
-    getSpan (UnionCom s _ _ ) = s
-    getSpan (Difference s _ _ ) = s
-    getSpan (Intersection s _ _ ) = s
-    getSpan (Domain s _ _ ) = s
-    getSpan (Range s _ _ ) = s
-    getSpan (Join s _ _ ) = s
-    getSpan (ClaferId s _ ) = s
-data Decl = Decl Span [LocId] SetExp
+data Decl = Decl Span [LocId] Exp
   deriving (Eq, Ord, Show, Read, Data, Typeable, Generic)
 
 instance Spannable Decl where

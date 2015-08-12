@@ -59,12 +59,12 @@ one sig c0_WinCtrl extends c0_Component
   r_c0_req in r_c0_Port }
 
 one sig c0_cmd extends c0_Port
-{ ref : one c0_Command }
+{ c0_cmd_ref : one c0_Command }
 { let children = (r_c0_input + r_c0_output) | one children
   some this.@r_c0_output }
 
 one sig c0_req extends c0_Port
-{ ref : one c0_Request }
+{ c0_req_ref : one c0_Request }
 { let children = (r_c0_input + r_c0_output) | one children
   some this.@r_c0_input }
 

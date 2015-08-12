@@ -1,0 +1,44 @@
+// now primitive types can be used as types of references
+numberOne  -> 1
+
+alice -> "Alice"
+
+// enumerated type from integers
+likertScaleVal -> 1, 2, 3, 4, 5
+
+// non-zero integer
+nonZero -> integer -- 0
+
+// but primitive types cannot be used as super types (they trigger parse error)
+// n : 1
+// s : "Alice"
+// d : 3.1415
+
+abstract Person
+    abstract Head
+    likes -> Person ?
+
+Alice : Person
+    `Head
+    [ likes = Ella ]
+
+// however, now we can use . as super type expressions
+Ella : Person
+    h : Person.Head
+    [ no likes ]
+
+// expressions now allowed as reference target
+heads -> Person.Head *
+
+friend -> Alice ++ Ella 2
+
+onlyAlice -> Alice ** Person
+
+assert [ Alice in onlyAlice.ref ]
+assert [ Ella not in onlyAlice.ref ]
+
+
+exceptElla -> Person -- Ella
+
+assert [ Alice in exceptElla ]
+assert [ Ella not in exceptElla ]

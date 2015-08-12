@@ -1,6 +1,6 @@
 {-# LANGUAGE TemplateHaskell, DeriveDataTypeable #-}
 {-
- Copyright (C) 2012-2014 Kacper Bak, Jimmy Liang, Michal Antkiewicz, Luke Michael Brown <http://gsd.uwaterloo.ca>
+ Copyright (C) 2012-2015 Kacper Bak, Jimmy Liang, Michal Antkiewicz, Luke Michael Brown <http://gsd.uwaterloo.ca>
 
  Permission is hereby granted, free of charge, to any person obtaining a copy of
  this software and associated documentation files (the "Software"), to deal in
@@ -58,11 +58,19 @@ data IType
   = TBoolean
   | TString
   | TInteger
+  | TDouble
   | TReal
-  -- | the type is an intersection of the listed clafers
-  -- supports having paths in the inheritance hierarchy
-  -- supports multiple inheritance
-  | TClafer [UID]
+  | TClafer
+    { _hi :: [UID]          -- ^ [UID] represents an inheritance hierarchy obtained using @Common.findHierarchy
+    }
+  | TMap                      --  Represents a map from the src class to the target class
+    { _so :: IType            -- ^ must only be a TClass
+    , _ta :: IType            -- ^ must only be a TClass
+    }
+  | TUnion
+    { _un :: [IType]          -- ^ [IType] is a list of basic types (not union types)
+    }
+
   deriving (Eq,Ord,Show,Data,Typeable)
 
 -- | each file contains exactly one mode. A module is a list of declarations
@@ -187,6 +195,10 @@ data IExp
     { _iint :: Integer
     }
     -- | real number
+  | IReal
+    { _ireal :: Double
+    }
+    -- | double-precision floating point number
   | IDouble
     { _idouble :: Double
     }
@@ -427,3 +439,12 @@ instance ToJSON Span where
 
 instance ToJSON Pos where
   toJSON _ = Null
+
+-- | Datatype used for JSON output. See Language.Clafer.gatherObjectivesAndAttributes
+data ObjectivesAndAttributes
+  = ObjectivesAndAttributes
+    { _qualities :: [String]
+    , _attributes :: [String]
+    }
+
+$(deriveToJSON defaultOptions{fieldLabelModifier = tail} ''ObjectivesAndAttributes)

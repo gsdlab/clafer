@@ -20,18 +20,21 @@ $i = [$l $d _ ']          -- identifier character
 $u = [\0-\255]          -- universal: any character
 
 @rsyms =    -- symbols and non-identifier-like reserved words
-   \= | \[ | \] | \< \< | \> \> | \{ | \} | \` | \: | \- \> | \- \> \> | \: \= | \? | \+ | \* | \. \. | \| | \< \= \> | \= \> | \| \| | \& \& | \! | \< | \> | \< \= | \> \= | \! \= | \- | \/ | \% | \# | \- \- \> \> | \- \[ | \] \- \> \> | \- \- \> | \] \- \> | \+ \+ | \, | \- \- | \* \* | \< \: | \: \> | \. | \; | \\ | \( | \)
+   \= | \[ | \] | \< \< | \> \> | \{ | \} | \` | \: | \- \> | \- \> \> | \: \= | \? | \+ | \* | \. \. | \| | \< \= \> | \= \> | \| \| | \& \& | \! | \< | \> | \< \= | \> \= | \! \= | \- | \/ | \% | \# | \< \: | \: \> | \+ \+ | \, | \- \- | \* \* | \. | \- \- \> \> | \- \[ | \] \- \> \> | \- \- \> | \] \- \> | \; | \\ | \( | \)
 
 :-
-"//" [.]* ; -- Toss single line comments
-"/*" ([$u # \*] | \*+ [$u # [\* \/]])* ("*")+ "/" ;
 
 $white+ ;
 @rsyms { tok (\p s -> PT p (eitherResIdent (TV . share) s)) }
 $d + { tok (\p s -> PT p (eitherResIdent (T_PosInteger . share) s)) }
-$d + \. $d + (e \- ? $d +)? { tok (\p s -> PT p (eitherResIdent (T_PosDouble . share) s)) }
+$d + \. $d + e \- ? $d + { tok (\p s -> PT p (eitherResIdent (T_PosDouble . share) s)) }
+$d + \. $d + { tok (\p s -> PT p (eitherResIdent (T_PosReal . share) s)) }
 \" ($u # [\" \\]| \\ [\" \\ n t]) * \" { tok (\p s -> PT p (eitherResIdent (T_PosString . share) s)) }
 $l ($l | $d | \_ | \')* { tok (\p s -> PT p (eitherResIdent (T_PosIdent . share) s)) }
+\/ \/ ($u # \n)* { tok (\p s -> PT p (eitherResIdent (T_PosLineComment . share) s)) }
+\/ \* ($u # \* | \* + ($u # [\* \/]))* \* + \/ { tok (\p s -> PT p (eitherResIdent (T_PosBlockComment . share) s)) }
+\[ a l l o y \| ($u # \| | \| + ($u # \])) * (\| \]) { tok (\p s -> PT p (eitherResIdent (T_PosAlloy . share) s)) }
+\[ c h o c o \| ($u # \| | \| + ($u # \])) * (\| \]) { tok (\p s -> PT p (eitherResIdent (T_PosChoco . share) s)) }
 
 $l $i*   { tok (\p s -> PT p (eitherResIdent (TV . share) s)) }
 
@@ -56,8 +59,13 @@ data Tok =
  | TC !String         -- character literals
  | T_PosInteger !String
  | T_PosDouble !String
+ | T_PosReal !String
  | T_PosString !String
  | T_PosIdent !String
+ | T_PosLineComment !String
+ | T_PosBlockComment !String
+ | T_PosAlloy !String
+ | T_PosChoco !String
 
  deriving (Eq,Show,Ord)
 
@@ -94,8 +102,13 @@ prToken t = case t of
   PT _ (TC s)   -> s
   PT _ (T_PosInteger s) -> s
   PT _ (T_PosDouble s) -> s
+  PT _ (T_PosReal s) -> s
   PT _ (T_PosString s) -> s
   PT _ (T_PosIdent s) -> s
+  PT _ (T_PosLineComment s) -> s
+  PT _ (T_PosBlockComment s) -> s
+  PT _ (T_PosAlloy s) -> s
+  PT _ (T_PosChoco s) -> s
 
 
 data BTree = N | B String Tok BTree BTree deriving (Show)

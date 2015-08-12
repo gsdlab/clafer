@@ -11,20 +11,20 @@ abstract sig c0_Book
 , r_c0_authors : some c0_authors
 , r_c0_ISBN : lone c0_ISBN }
 { 2 <= #r_c0_page
-  all disj x, y : this.@r_c0_authors | (x.@ref) != (y.@ref) 
-  ((this.(@r_c0_year.@ref)) >= 5) => (some this.@r_c0_ISBN) }
+  all disj x, y : this.@r_c0_authors | (x.@c0_authors_ref) != (y.@c0_authors_ref) 
+  ((this.(@r_c0_year.@c0_year_ref)) >= 5) => (some this.@r_c0_ISBN) }
 
 sig c0_title
-{ ref : one Int
+{ c0_title_ref : one Int
 , r_c0_subtitle : lone c0_subtitle }
 { one @r_c0_title.this }
 
 sig c0_subtitle
-{ ref : one Int }
+{ c0_subtitle_ref : one Int }
 { one @r_c0_subtitle.this }
 
 sig c0_year
-{ ref : one Int }
+{ c0_year_ref : one Int }
 { one @r_c0_year.this }
 
 sig c0_page
@@ -80,21 +80,21 @@ sig c0_nonfiction
 { one @r_c0_nonfiction.this }
 
 sig c0_other
-{ ref : one Int }
+{ c0_other_ref : one Int }
 { one @r_c0_other.this }
 
 sig c0_authors
-{ ref : one c0_Author }
+{ c0_authors_ref : one c0_Author }
 { one @r_c0_authors.this }
 
 sig c0_ISBN
-{ ref : one Int
+{ c0_ISBN_ref : one Int
 , r_c0_GS1 : lone c0_GS1 }
 { one @r_c0_ISBN.this
-  (((this.~@r_c0_ISBN).(@r_c0_year.@ref)) >= 6) => (some this.@r_c0_GS1) }
+  (((this.~@r_c0_ISBN).(@r_c0_year.@c0_year_ref)) >= 6) => (some this.@r_c0_GS1) }
 
 sig c0_GS1
-{ ref : one Int }
+{ c0_GS1_ref : one Int }
 { one @r_c0_GS1.this }
 
 abstract sig c0_Person
@@ -102,30 +102,30 @@ abstract sig c0_Person
 , r_c0_dob : lone c0_dob }
 
 sig c0_name
-{ ref : one Int }
+{ c0_name_ref : one Int }
 { one @r_c0_name.this }
 
 sig c0_dob
-{ ref : one Int }
+{ c0_dob_ref : one Int }
 { one @r_c0_dob.this }
 
 abstract sig c0_Author extends c0_Person
 { r_c0_books : some c0_books }
-{ all disj x, y : this.@r_c0_books | (x.@ref) != (y.@ref)  }
+{ all disj x, y : this.@r_c0_books | (x.@c0_books_ref) != (y.@c0_books_ref)  }
 
 sig c0_books
-{ ref : one c0_Book }
+{ c0_books_ref : one c0_Book }
 { one @r_c0_books.this }
 
 one sig c0_GenerativeProgramming extends c0_Book
 {}
-{ (((((((((this.(@r_c0_title.@ref)) = 0) && (no (this.@r_c0_title).@r_c0_subtitle)) && ((this.(@r_c0_year.@ref)) = 5)) && ((#(this.@r_c0_page)) = 4)) && (some (this.@r_c0_format).@r_c0_paper)) && (some (this.@r_c0_kind).@r_c0_nonfiction)) && ((this.(@r_c0_authors.@ref)) = (c0_Czarnecki + c0_Eisenecker))) && ((this.(@r_c0_ISBN.@ref)) = 0)) && (no (this.@r_c0_ISBN).@r_c0_GS1) }
+{ (((((((((this.(@r_c0_title.@c0_title_ref)) = 0) && (no (this.@r_c0_title).@r_c0_subtitle)) && ((this.(@r_c0_year.@c0_year_ref)) = 5)) && ((#(this.@r_c0_page)) = 4)) && (some (this.@r_c0_format).@r_c0_paper)) && (some (this.@r_c0_kind).@r_c0_nonfiction)) && ((this.(@r_c0_authors.@c0_authors_ref)) = (c0_Czarnecki + c0_Eisenecker))) && ((this.(@r_c0_ISBN.@c0_ISBN_ref)) = 0)) && (no (this.@r_c0_ISBN).@r_c0_GS1) }
 
 one sig c0_Czarnecki extends c0_Author
 {}
-{ ((this.(@r_c0_name.@ref)) = 0) && (c0_GenerativeProgramming in (this.(@r_c0_books.@ref))) }
+{ ((this.(@r_c0_name.@c0_name_ref)) = 0) && (c0_GenerativeProgramming in (this.(@r_c0_books.@c0_books_ref))) }
 
 one sig c0_Eisenecker extends c0_Author
 {}
-{ ((this.(@r_c0_name.@ref)) = 0) && (c0_GenerativeProgramming in (this.(@r_c0_books.@ref))) }
+{ ((this.(@r_c0_name.@c0_name_ref)) = 0) && (c0_GenerativeProgramming in (this.(@r_c0_books.@c0_books_ref))) }
 

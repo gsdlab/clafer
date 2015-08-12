@@ -7,7 +7,7 @@ one sig c0_A
 { some this }
 
 lone sig c0_b
-{ ref : one c0_A }
+{ c0_b_ref : one c0_A }
 { one r_c0_b
   some this.~@r_c0_b }
 
