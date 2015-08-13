@@ -1,4 +1,4 @@
-{-# LANGUAGE NamedFieldPuns, FlexibleInstances, FlexibleContexts, GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE NamedFieldPuns, FlexibleInstances, FlexibleContexts, GeneralizedNewtypeDeriving, CPP #-}
 {-
  Copyright (C) 2012-2015 Jimmy Liang, Kacper Bak, Michal Antkiewicz <http://gsd.uwaterloo.ca>
 
@@ -32,7 +32,11 @@ import Language.Clafer.Front.PrintClafer
 import Control.Applicative
 import Control.Exception (assert)
 import Control.Lens ((&), (%~), traversed)
+#if MIN_VERSION_mtl(2,2,0)
 import Control.Monad.Except
+#else
+import Control.Monad.Trans.Except
+#endif
 import Control.Monad.List
 import Control.Monad.Reader
 import Data.Either

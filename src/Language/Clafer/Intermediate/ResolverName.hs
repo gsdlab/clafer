@@ -1,4 +1,4 @@
-{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE FlexibleContexts, CPP #-}
 
 {-
  Copyright (C) 2012 Kacper Bak, Jimmy Liang, Michal Antkiewicz <http://gsd.uwaterloo.ca>
@@ -25,7 +25,11 @@ module Language.Clafer.Intermediate.ResolverName where
 
 import Control.Applicative
 import Control.Monad
+#if MIN_VERSION_mtl(2,2,0)
 import Control.Monad.Except
+#else
+import Control.Monad.Trans.Except
+#endif
 import Control.Monad.Trans.Maybe
 import Control.Monad.State
 import Data.Maybe

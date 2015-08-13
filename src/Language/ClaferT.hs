@@ -1,4 +1,4 @@
-{-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE RankNTypes, CPP #-}
 {-
  Copyright (C) 2012-2015 Kacper Bak, Jimmy Liang, Michal Antkiewicz <http://gsd.uwaterloo.ca>
 
@@ -56,7 +56,12 @@ module Language.ClaferT
   , Pos(..)
   ) where
 
+#if MIN_VERSION_mtl(2,2,0)
 import           Control.Monad.Except
+#else
+import           Control.Monad.Trans.Except
+import           Control.Monad.Error.Class
+#endif
 import           Control.Monad.Identity
 import           Control.Monad.State
 import           Data.List

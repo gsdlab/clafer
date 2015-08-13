@@ -25,6 +25,7 @@ module Language.Clafer.Intermediate.TypeSystem where
 import Language.Clafer.Common
 import Language.Clafer.Intermediate.Intclafer hiding (uid)
 
+import Control.Applicative
 import Control.Lens ((&), (<&>), (%~))
 import Control.Monad (mplus, liftM)
 import Data.List (nub)
