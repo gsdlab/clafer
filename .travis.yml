@@ -26,9 +26,6 @@ matrix:
 before_install:
  - unset CC
  - export PATH=/opt/ghc/$GHCVER/bin:/opt/cabal/$CABALVER/bin:$PATH
- - git clone https://github.com/juodaspaulius/bnfc.git -b positional
- - cd bnfc/source
- - cabal install
 
 install:
  - cabal --version
