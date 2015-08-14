@@ -220,7 +220,7 @@ alex_action_11 =  tok (\p s -> PT p (eitherResIdent (TV . share) s))
 {-# LINE 1 "<built-in>" #-}
 {-# LINE 1 "<command-line>" #-}
 {-# LINE 8 "<command-line>" #-}
-{-# LINE 1 "G:\\GitHub\\haskell-platform\\build\\ghc-bindist\\local\\lib/include\\ghcversion.h" #-}
+{-# LINE 1 "C:\\dev\\ghc-7.10.2\\lib/include\\ghcversion.h" #-}
 
 
 

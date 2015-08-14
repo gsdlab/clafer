@@ -107,7 +107,7 @@ EDouble.        Exp19 ::= PosDouble ;
 EReal.          Exp19 ::= PosReal ;
 EStr.           Exp19 ::= PosString ;
 
-Decl.           Decl ::= [LocId] ":" Exp13 ;
+Decl.           Decl ::= [LocId] ":" Exp15 ;
 
 QuantNo.        Quant ::= "no" ;
 QuantNot.       Quant ::= "not" ;

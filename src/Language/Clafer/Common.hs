@@ -1,6 +1,6 @@
 {-# LANGUAGE DeriveDataTypeable, RankNTypes, KindSignatures, FlexibleContexts #-}
 {-
- Copyright (C) 2012-2015 Kacper Bak, Jimmy Liang <http://gsd.uwaterloo.ca>
+ Copyright (C) 2012-2015 Kacper Bak, Jimmy Liang, Michal Antkiewicz <http://gsd.uwaterloo.ca>
 
  Permission is hereby granted, free of charge, to any person obtaining a copy of
  this software and associated documentation files (the "Software"), to deal in
@@ -75,13 +75,10 @@ getSuperId pexp' = error $ "[Bug] Commmon.getSuperId called on unexpected argume
 getRefIds :: PExp -> [String]
 getRefIds (PExp _ _ _ (IClaferId{ _sident = s})) = [s]
 getRefIds (PExp _ _ _ (IFunExp{_op=".", _exps = [_, rightExp]})) = getRefIds rightExp
-getRefIds (PExp _ _ _ (IFunExp{_op="ifthenelse", _exps = [_, leftExp, rightExp]})) = getRefIds leftExp ++ getRefIds rightExp
 getRefIds (PExp _ _ _ (IFunExp{_op="++", _exps = [leftExp, rightExp]})) = getRefIds leftExp ++ getRefIds rightExp
 getRefIds (PExp _ _ _ (IFunExp{_op=",",  _exps = [leftExp, rightExp]})) = getRefIds leftExp ++ getRefIds rightExp
 getRefIds (PExp _ _ _ (IFunExp{_op="--", _exps = [leftExp, rightExp]})) = getRefIds leftExp ++ getRefIds rightExp
 getRefIds (PExp _ _ _ (IFunExp{_op="**", _exps = [leftExp, rightExp]})) = getRefIds leftExp ++ getRefIds rightExp
-getRefIds (PExp _ _ _ (IFunExp{_op="<:", _exps = [_, rightExp]})) = getRefIds rightExp
-getRefIds (PExp _ _ _ (IFunExp{_op=":>", _exps = [leftExp, _]})) = getRefIds leftExp
 getRefIds (PExp _ _ _ (IInt _)) = [integerType]
 getRefIds (PExp _ _ _ (IDouble _)) = [doubleType]
 getRefIds (PExp _ _ _ (IReal _)) = [realType]

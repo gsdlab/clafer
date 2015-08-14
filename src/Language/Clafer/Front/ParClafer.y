@@ -248,7 +248,7 @@ Exp19 : Name { Language.Clafer.Front.AbsClafer.ClaferId ((mkCatSpan $1)) $1 }
       | PosString { Language.Clafer.Front.AbsClafer.EStr ((mkCatSpan $1)) $1 }
       | '(' Exp ')' {  $2 }
 Decl :: { Decl }
-Decl : ListLocId ':' Exp13 { Language.Clafer.Front.AbsClafer.Decl ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
+Decl : ListLocId ':' Exp15 { Language.Clafer.Front.AbsClafer.Decl ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
 Quant :: { Quant }
 Quant : 'no' { Language.Clafer.Front.AbsClafer.QuantNo ((mkTokenSpan $1)) }
       | 'not' { Language.Clafer.Front.AbsClafer.QuantNot ((mkTokenSpan $1)) }

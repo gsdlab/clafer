@@ -262,7 +262,7 @@ instance Print Exp where
   prtList _ (x:xs) = (concatD [prt 0 x, prt 0 xs])
 instance Print Decl where
   prt i e = case e of
-    Decl _ locids exp -> prPrec i 0 (concatD [prt 0 locids, doc (showString ":"), prt 13 exp])
+    Decl _ locids exp -> prPrec i 0 (concatD [prt 0 locids, doc (showString ":"), prt 15 exp])
 
 instance Print Quant where
   prt i e = case e of
