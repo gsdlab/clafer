@@ -1,0 +1,11 @@
+language: haskell
+script:
+    - export PATH=~/.cabal/bin:$PATH
+    - make init
+    - make
+before_install:
+  - cabal update
+  - cabal install alex happy
+  - git clone https://github.com/juodaspaulius/bnfc.git -b positional
+  - cd bnfc/source
+  - cabal install
