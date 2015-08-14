@@ -142,10 +142,9 @@ See [ClaferToolsST](https://github.com/gsdlab/ClaferToolsST)
 
 See [clafer-vim](https://github.com/wasowski/clafer-vim)
 
-Usage
-=====
+## Usage
 
-## Clafer Compiler
+### Clafer Compiler
 
 (As printed by `clafer --help`)
 
@@ -258,7 +257,9 @@ The following directives are markers of locations in the input files for differe
 * `//# STATS` - marks the insertion point for module statistics. The statistics can be omitted using the argument `--no-stats`.
 * `//# SUMMARY` - shorthand for `//# GRAPH` and `//# STATS`
 
-He is some information about the development of the clafer compiler.
+# Developing Clafer
+
+Here is some information about the development of the Clafer compiler.
 
 ## Branching
 
