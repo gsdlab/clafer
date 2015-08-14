@@ -1,3 +1,6 @@
+[![Hackage](https://img.shields.io/hackage/v/clafer.svg)](https://hackage.haskell.org/package/clafer)
+[![Build Status](https://secure.travis-ci.org/gsdlab/clafer.svg)](http://travis-ci.org/gsdlab/clafer)
+
 # Clafer, the Language
 
 v0.4.0

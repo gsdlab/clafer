@@ -10,13 +10,16 @@ Maintainer:             Michal Antkiewicz <mantkiew@gsd.uwaterloo.ca>
 Stability:              Experimental
 Category:               Model
 Build-type:             Simple
+tested-with:            GHC == 7.8.4
+                      , GHC == 7.10.1
+                      , GHC == 7.10.2
 Cabal-version:          >= 1.18
 data-files:             README.md
-                        , CHANGES.md
-                        , logo.pdf
-                        , Makefile
-                        , tools/ecore2clafer.jar
-                        , tools/Makefile
+                      , CHANGES.md
+                      , logo.pdf
+                      , Makefile
+                      , tools/ecore2clafer.jar
+                      , tools/Makefile
 source-repository head
     type:               git
     location:           git://github.com/gsdlab/clafer.git
