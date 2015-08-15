@@ -133,8 +133,8 @@ getTClafer    iClafer' = case _uid iClafer' of
 -- can only be called after inheritance resolver
 getTClaferByUID :: UIDIClaferMap -> UID -> Maybe IType
 getTClaferByUID    uidIClaferMap'   uid' = case uid' of
-  "root"   -> Just $ rootTClafer
-  "clafer" -> Just $ claferTClafer
+  "root"   -> Just rootTClafer
+  "clafer" -> Just claferTClafer
   _        -> findIClafer uidIClaferMap' uid' <&> getTClafer
 
 -- | Get TClafer for a given Clafer by its UID
@@ -165,14 +165,14 @@ getDrefTMapByUID    uidIClaferMap'   uid' = case uid' of
 
 
 hierarchy :: (Monad m) => UIDIClaferMap -> UID -> m [IClafer]
-hierarchy uidIClaferMap' uid' = (case findIClafer uidIClaferMap' uid' of
+hierarchy uidIClaferMap' uid' = case findIClafer uidIClaferMap' uid' of
       Nothing -> fail $ "TypeSystem.hierarchy: clafer " ++ uid' ++ "not found!"
-      Just clafer -> return $ findHierarchy getSuper uidIClaferMap' clafer)
+      Just clafer -> return $ findHierarchy getSuper uidIClaferMap' clafer
 
 hierarchyMap :: (Monad m) => UIDIClaferMap -> (IClafer -> a) -> UID -> m [a]
-hierarchyMap uidIClaferMap' f c = (case findIClafer uidIClaferMap' c of
+hierarchyMap uidIClaferMap' f c = case findIClafer uidIClaferMap' c of
       Nothing -> fail $ "TypeSystem.hierarchyMap: clafer " ++ c ++ "not found!"
-      Just clafer -> return $ mapHierarchy f getSuper uidIClaferMap' clafer)
+      Just clafer -> return $ mapHierarchy f getSuper uidIClaferMap' clafer
 
 
 {- ---------------------------------------
@@ -191,7 +191,7 @@ unionType (TMap _ ta') = unionType ta'
 
 fromUnionType :: [String] -> Maybe IType
 fromUnionType u =
-    case nub $ u of
+    case nub u of
         ["string"]  -> Just TString
         ["integer"] -> Just TInteger
         ["int"]     -> Just TInteger
@@ -238,7 +238,7 @@ TInteger        +++ TInteger        = TInteger
 t1@(TClafer u1) +++ t2@(TClafer u2) = if t1 == t2
                                       then t1
                                       else (TClafer $ nub $ u1 ++ u2)  -- should be TUnion [t1,t2]
-(TMap so1 ta1)  +++ (TMap so2 ta2)  = (TMap (so1 +++ so2) (ta1 +++ ta2))
+(TMap so1 ta1)  +++ (TMap so2 ta2)  = TMap (so1 +++ so2) (ta1 +++ ta2)
 (TUnion un1)    +++ (TUnion un2)    = collapseUnion (TUnion $ nub $ un1 ++ un2)
 (TUnion un1)    +++ t2              = collapseUnion (TUnion $ nub $ un1 ++ [t2])
 t1              +++ (TUnion un2)    = collapseUnion (TUnion $ nub $ t1:un2)
@@ -313,11 +313,11 @@ intersection uidIClaferMap' (TMap _ ta1) (TMap _ ta2) = intersection uidIClaferM
 intersection uidIClaferMap' (TMap _ ta1) ot2          = do
   coercedType <- intersection uidIClaferMap' ta1 ot2
   -- that means ot2 was coerced to ta1, so it's safe
-  return $ if (Just ta1) == coercedType then coercedType else Nothing
+  return $ if Just ta1 == coercedType then coercedType else Nothing
 intersection uidIClaferMap' ot1          (TMap _ ta2) = do
   coercedType <- intersection uidIClaferMap' ot1 ta2
   -- that means ot2 was coerced to ta1, so it's safe
-  return $ if (Just ta2) == coercedType then coercedType else Nothing
+  return $ if Just ta2 == coercedType then coercedType else Nothing
 intersection _              _            _            = do
   -- traceM $ "(DEBUG) TypeSystem.intersection: cannot intersect incompatible types: '"
   --      ++ show t1
@@ -410,7 +410,14 @@ getTClafers    uidIClaferMap'   (TUnion un')    = concatMap (getTClafers uidICla
 getTClafers    _                _               = []
 
 
-{- Coersions -}
+{- Coersions
+>>> coerce tDrefMapDOB tDrefMapDOB
+TInteger
+>>> coerce tDrefMapDOB TInteger
+TInteger
+>>> coerce tDrefMapDOB tDrefMapDOB
+TInteger
+-}
 
 coerce :: IType -> IType -> IType
 -- basic coersions
@@ -424,8 +431,9 @@ coerce TDouble TInteger  = TDouble
 coerce TInteger TDouble  = TDouble
 coerce TInteger TInteger = TInteger
 -- reduce complex types to simple ones
-coerce (TMap s1 t1) t2           = TMap s1 $ coerce t1 t2
-coerce t1           (TMap s2 t2) = TMap s2 $ coerce t1 t2
+coerce (TMap _ t1) (TMap _ t2) = coerce t1 t2
+coerce (TMap _ t1) t2          = coerce t1 t2
+coerce t1          (TMap _ t2) = coerce t1 t2
 coerce x y = error $ "TypeSystem.coerce: Cannot coerce not numeric: " ++ show x ++ " and " ++ show y
 
 

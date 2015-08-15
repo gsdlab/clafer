@@ -146,6 +146,10 @@ str t =
     [t'] -> t'
     ts   -> "[" ++ intercalate "," ts ++ "]"
 
+showType :: PExp                   -> String
+showType    PExp{ _iType=Nothing }  = "unknown type"
+showType    PExp{ _iType=(Just t) } = show t
+
 -- | This function is similar to 'intersection', but takes into account more ancestors to be able to combine
 -- clafers of different types, but with a common ancestor:
 -- Inputs:
@@ -339,13 +343,13 @@ resolveTPExp' p@PExp{_inPos, _exp} =
               it <- intersection uidIClaferMap' e1 e2
               case it of
                 Just it' -> return it'
-                Nothing  -> throwError $ SemanticErr _inPos ("Function '" ++ _op ++ "' cannot be performed on '" ++ str t1 ++ "' " ++ _op ++ " '" ++ str t2 ++ "'")
+                Nothing  -> throwError $ SemanticErr _inPos ("Function '" ++ _op ++ "' cannot be performed on\n" ++ showType arg1' ++ "\n" ++ _op ++ "\n" ++ showType arg2')
       let testNotSame e1 e2 =
             when (e1 `sameAs` e2) $
               throwError $ SemanticErr _inPos ("Function '" ++ _op ++ "' is redundant because the two subexpressions are always equivalent")
       let test c =
             unless c $
-              throwError $ SemanticErr _inPos ("Function '" ++ _op ++ "' cannot be performed on '" ++ str t1 ++ "' " ++ _op ++ " '" ++ str t2 ++ "'")
+              throwError $ SemanticErr _inPos ("Function '" ++ _op ++ "' cannot be performed on\n" ++ showType arg1' ++ "\n" ++ _op ++ "\n" ++ showType arg2')
       let result
             | _op `elem` logBinOps = test (t1 == TBoolean && t2 == TBoolean) >> return TBoolean
             | _op `elem` [iLt, iGt, iLte, iGte] = test (numeric t1 && numeric t2) >> return TBoolean
@@ -373,15 +377,15 @@ resolveTPExp' p@PExp{_inPos, _exp} =
       let t2 = typeOf arg2'
       let t3 = typeOf arg3'
 --      unless (False) $
---        throwError $ SemanticErr inPos ("The types are: '" ++ str t2 ++ "' and '" ++ str t3 ++ "'")
+--        throwError $ SemanticErr inPos ("The types are: '" ++ showType arg2' ++ "' and '" ++ str t3 ++ "'")
 
       unless (t1 == TBoolean) $
-        throwError $ SemanticErr _inPos ("The type of condition in 'if/then/else' must be 'TBoolean', insted it is " ++ str t1)
+        throwError $ SemanticErr _inPos ("The type of condition in 'if/then/else' must be 'TBoolean', insted it is " ++ showType arg1')
 
       it <- getIfThenElseType uidIClaferMap' t2 t3
       t <- case it of
         Just it' -> return it'
-        Nothing  -> throwError $ SemanticErr _inPos ("Function 'if/then/else' cannot be performed on if '" ++ str t1 ++ "' then '" ++ str t2 ++ "' else '" ++ str t3 ++ "'")
+        Nothing  -> throwError $ SemanticErr _inPos ("Function 'if/then/else' cannot be performed on if '" ++ showType arg1' ++ "' then '" ++ showType arg2' ++ "' else '" ++ str t3 ++ "'")
 
       return (t, e{_exps = [arg1', arg2', arg3']})
 
