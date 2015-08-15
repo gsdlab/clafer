@@ -198,14 +198,6 @@ data CErrs p =
   ClaferErrs {errs :: [CErr p]}
   deriving Show
 
-#if !MIN_VERSION_mtl(2,2,0)
-instance Error (CErr p) where
-  strMsg = ClaferErr
-
-instance Error (CErrs p) where
-  strMsg m = ClaferErrs [strMsg m]
-#endif
-
 data ErrPos =
   ErrPos {
     -- | The fragment where the error occurred.
