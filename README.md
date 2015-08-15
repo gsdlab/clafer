@@ -3,7 +3,7 @@
 
 # Clafer, the Language
 
-v0.4.0
+v0.4.1
 
 [Clafer](http://clafer.org) is a general-purpose lightweight structural modeling language developed by
 [GSD Lab](http://gsd.uwaterloo.ca/), [University of Waterloo](http://uwaterloo.ca), and
@@ -67,7 +67,7 @@ Optional:
 
 ### Installation from binaries
 
-Binary distributions of the release 0.4.0 of Clafer Tools for Windows, Mac, and Linux,
+Binary distributions of the release 0.4.1 of Clafer Tools for Windows, Mac, and Linux,
 can be downloaded from
 [Clafer Tools - Binary Distributions](http://gsd.uwaterloo.ca/clafer-tools-binary-distributions).
 
@@ -80,12 +80,12 @@ Dependencies
 
 * [GHC](https://www.haskell.org/downloads) v7.10.*
 
-Clafer is now available on [Hackage](http://hackage.haskell.org/package/clafer-0.4.0/) and it can be installed using
+Clafer is now available on [Hackage](http://hackage.haskell.org/package/clafer-0.4.1/) and it can be installed using
 
 1. `cabal update`
 2. `cabal install clafer`
-3. on Windows `cd C:\Users\<user>\AppData\Roaming\cabal\i386-windows-ghc-7.10.2\clafer-0.4.0`
-4. on Linux `ca ~/.cabal/share/x86_64-linux-ghc-7.10.2/clafer-0.4.0/`
+3. on Windows `cd C:\Users\<user>\AppData\Roaming\cabal\i386-windows-ghc-7.10.2\clafer-0.4.1`
+4. on Linux `ca ~/.cabal/share/x86_64-linux-ghc-7.10.2/clafer-0.4.1/`
 5. to automatically download Alloy jars, execute
   * `cd tools`
   * `make`
@@ -149,7 +149,7 @@ See [clafer-vim](https://github.com/wasowski/clafer-vim)
 (As printed by `clafer --help`)
 
 ```
-Clafer 0.4.0
+Clafer 0.4.1
 
 clafer [OPTIONS] [FILE]
 
