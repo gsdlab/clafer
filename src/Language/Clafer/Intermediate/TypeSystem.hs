@@ -231,6 +231,7 @@ TClafer {_hi = ["Alice","Student","Person","Bob","Employee"]}
 TClafer {_hi = ["Alice","Student","Person"]}
 -}
 (+++) :: IType -> IType -> IType
+TBoolean        +++ TBoolean        = TBoolean
 TString         +++ TString         = TString
 TReal           +++ TReal           = TReal
 TDouble         +++ TDouble         = TDouble
