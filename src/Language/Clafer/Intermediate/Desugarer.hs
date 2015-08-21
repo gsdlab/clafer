@@ -96,7 +96,7 @@ desugarClafer claf@(Clafer s abstract gcrd' id' super' reference' crd' init' ele
             (desugarElements elements'')) : (desugarInit id'' init'')
 
 getPExpClaferIdent :: Exp -> String
-getPExpClaferIdent (ClaferId _ (Path _ [ (ModIdIdent _ (PosIdent (_, ident'))) ] )) = ident'
+getPExpClaferIdent (ClaferId _ (Path _ [ (ModIdIdent _ pident') ] )) = transIdent pident'
 getPExpClaferIdent (EJoin _ _ e2) = getPExpClaferIdent e2
 getPExpClaferIdent _ = error "Desugarer:getPExpClaferIdent not given a ClaferId PExp"
 
@@ -316,6 +316,7 @@ desugarExp' x = case x of
   EUnionCom _ exp0 exp'     -> dop iUnion        [exp0, exp']
   EDifference _ exp0 exp'   -> dop iDifference   [exp0, exp']
   EIntersection _ exp0 exp' -> dop iIntersection [exp0, exp']
+  EIntersectionDeprecated _ exp0 exp' -> dop iIntersection [exp0, exp']
   EDomain _ exp0 exp'       -> dop iDomain       [exp0, exp']
   ERange _ exp0 exp'        -> dop iRange        [exp0, exp']
   EJoin _ exp0 exp'         -> dop iJoin         [exp0, exp']

@@ -59,7 +59,7 @@ data SEnv
 
 -- | How a given name was resolved
 data HowResolved
-  = Special     -- ^ "this", "parent", "ref", "root", and "children"
+  = Special     -- ^ "this", "parent", "dref", "root", and "children"
   | TypeSpecial -- ^ primitive type: "integer", "string"
   | Binding     -- ^ local variable (in constraints)
   | Subclafers  -- ^ clafer's descendant
@@ -211,7 +211,7 @@ mkPath    env     (howResolved, id',    path)       = case howResolved of
           tuplePath
   specIExp "this"     = IClaferId "" thisIdent True (_uid <$> context env)
   specIExp "parent"   = toNav [("parent", Just $ head path)]
-  specIExp "ref"      = toNav [("ref", Just $ head path)]
+  specIExp "dref"      = toNav [("dref", Just $ head path)]
   specIExp "root"     = IClaferId "" rootIdent True (Just rootIdent)
   specIExp "children" = toNav [(id', Just $ head path)]
   specIExp i          = error $ "[BUG] ResolverName.specIExp: Unknown special id: " ++ i
@@ -232,7 +232,7 @@ adjustAncestor ctx cPath rPath = (thisIdent, Just ctx) : parents ++ (fromJust $ 
 
 mkPath' :: String -> (HowResolved, String, [IClafer]) -> (IExp, [IClafer])
 mkPath' modName' (howResolved, id', path) = case howResolved of
-  Reference -> (toNav' (zip ["ref", id'] (map Just path)), path)
+  Reference -> (toNav' (zip ["dref", id'] (map Just path)), path)
   _ -> (IClaferId modName' id' False (_uid <$> bind), path)
   where
   bind = case path of

@@ -273,6 +273,7 @@ data Exp
     | EUnionCom Span Exp Exp
     | EDifference Span Exp Exp
     | EIntersection Span Exp Exp
+    | EIntersectionDeprecated Span Exp Exp
     | EJoin Span Exp Exp
     | ClaferId Span Name
     | EInt Span PosInteger
@@ -319,6 +320,7 @@ instance Spannable Exp where
     getSpan (EUnionCom s _ _ ) = s
     getSpan (EDifference s _ _ ) = s
     getSpan (EIntersection s _ _ ) = s
+    getSpan (EIntersectionDeprecated s _ _ ) = s
     getSpan (EJoin s _ _ ) = s
     getSpan (ClaferId s _ ) = s
     getSpan (EInt s _ ) = s

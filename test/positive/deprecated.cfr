@@ -1,0 +1,8 @@
+abstract Component
+  link -> Component ?
+
+Comp1 : Component
+  [ this.link.dref = Comp1 ]
+  [ this.link.ref = Comp1 ]
+[ some Comp1 ** Component ]
+[ some Comp1 & Component ]

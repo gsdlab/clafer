@@ -88,6 +88,9 @@ printStandaloneComment comment = "<div class=\"standalonecomment\">" ++ replaceN
 printInlineComment :: String -> String
 printInlineComment comment = "<span class=\"inlinecomment\">" ++ comment ++ "</span>"
 
+printDeprecated :: String -> String -> String
+printDeprecated    s         m       = "<span class=\"deprecated\" title=\"" ++ "Deprecated. " ++ m ++ "\">" ++ s ++ "</span>"
+
 -- | Generate the model as HTML document
 genHtml :: Module -> IModule -> String
 genHtml x ir = cleanOutput $ revertLayout $ printModule x (traceIrModule ir) True
@@ -108,13 +111,13 @@ printDeclaration (EnumDecl s posIdent enumIds)  indent irMap html comments =
     printIndentId 0 html ++
     (while html "<span class=\"keyword\">") ++ "enum" ++ (while html "</span>") ++
     " " ++
-    (printPosIdent posIdent (Just uid') html) ++
+    (printPosIdent posIdent mUid' html) ++
     " = " ++
     (concat $ intersperse " | " (map (\x -> printEnumId x indent irMap html comments) enumIds)) ++
     comment ++
     printIndentEnd html
   where
-    uid' = getUid posIdent irMap;
+    mUid' = getUid posIdent irMap;
     (comments', preComments) = printPreComment s comments;
     (_, comment) = printComment s comments'
 printDeclaration (ElementDecl _ element) indent irMap html comments = printElement element indent irMap html comments
@@ -239,9 +242,23 @@ printPosIdent (PosIdent (_, id')) Nothing _ = id'
 printPosIdent (PosIdent (_, id')) (Just uid') html = (while html $ "<span class=\"claferDecl\" id=\"" ++ uid' ++ "\">") ++ id' ++ (while html "</span>")
 
 printPosIdentRef :: PosIdent -> Map.Map Span [Ir] -> Bool -> String
-printPosIdentRef (PosIdent (p, id')) irMap html
-  = (while html ("<a href=\"#" ++ uid' ++ "\"><span class=\"reference\">")) ++ id' ++ (while html "</span></a>")
-      where uid' = getUid (PosIdent (p, id')) irMap
+printPosIdentRef (PosIdent (_, "dref")) _ html
+  = while html "<span class=\"keyword\">dref</span>"
+printPosIdentRef (PosIdent (_, "this")) _ html
+  = while html "<span class=\"keyword\">this</span>"
+printPosIdentRef (PosIdent (_, "parent")) _ html
+  = while html "<span class=\"keyword\">parent</span>"
+printPosIdentRef (PosIdent (_, "root")) _ html
+  = while html "<span class=\"keyword\">root</span>"
+printPosIdentRef (PosIdent (_, "ref")) _ html
+  = while html $ printDeprecated "ref" "Use `dref` instead."
+printPosIdentRef (PosIdent (_, id')) _     False = id'
+printPosIdentRef (PosIdent (p, id')) irMap True
+  = case mUid' of
+      Just uid' -> "<a href=\"#" ++ uid' ++ "\"><span class=\"reference\">" ++ id' ++ "</span></a>"
+      Nothing   -> id'
+  where
+    mUid' = getUid (PosIdent (p, id')) irMap
 
 printSuper :: Super -> Int -> Map.Map Span [Ir] -> Bool -> [(Span, String)] -> String
 printSuper (SuperEmpty _) _ _ _ _ = ""
@@ -334,7 +351,8 @@ printExp (ClaferId _ name) indent irMap html comments = printName name indent ir
 printExp (EUnion _ set1 set2) indent irMap html comments = (printExp set1 indent irMap html comments) ++ "++" ++ (printExp set2 indent irMap html comments)
 printExp (EUnionCom _ set1 set2) indent irMap html comments = (printExp set1 indent irMap html comments) ++ ", " ++ (printExp set2 indent irMap html comments)
 printExp (EDifference _ set1 set2) indent irMap html comments = (printExp set1 indent irMap html comments) ++ "--" ++ (printExp set2 indent irMap html comments)
-printExp (EIntersection _ set1 set2) indent irMap html comments = (printExp set1 indent irMap html comments) ++ "&" ++ (printExp set2 indent irMap html comments)
+printExp (EIntersection _ set1 set2) indent irMap html comments = (printExp set1 indent irMap html comments) ++ "**" ++ (printExp set2 indent irMap html comments)
+printExp (EIntersectionDeprecated _ set1 set2) indent irMap html comments = (printExp set1 indent irMap html comments) ++ printDeprecated "&amp;" "Use `**` instead." ++ (printExp set2 indent irMap html comments)
 printExp (EDomain _ set1 set2) indent irMap html comments = (printExp set1 indent irMap html comments) ++ "<:" ++ (printExp set2 indent irMap html comments)
 printExp (ERange _ set1 set2) indent irMap html comments = (printExp set1 indent irMap html comments) ++ ":>" ++ (printExp set2 indent irMap html comments)
 printExp (EJoin _ set1 set2) indent irMap html comments = (printExp set1 indent irMap html comments) ++ "." ++ (printExp set2 indent irMap html comments)
@@ -352,9 +370,9 @@ printQuant quant' html = case quant' of
   (QuantSome _)     -> (while html "<span class=\"keyword\">") ++ "some" ++ (while html "</span>") ++ " "
 
 printEnumId :: EnumId -> Int -> Map.Map Span [Ir] -> Bool -> [(Span, String)] -> String
-printEnumId (EnumIdIdent _ posident) _ irMap html _ = printPosIdent posident (Just uid') html
+printEnumId (EnumIdIdent _ posident) _ irMap html _ = printPosIdent posident mUid' html
   where
-    uid' = getUid posident irMap
+    mUid' = getUid posident irMap
 
 printIndent :: Int -> Bool -> String
 printIndent 0 html = (while html "<div>") ++ "\n"
@@ -381,10 +399,10 @@ rest :: String -> String
 rest [] = []
 rest (_:xs) = xs
 
-getUid :: PosIdent -> Map.Map Span [Ir] -> String
+getUid :: PosIdent -> Map.Map Span [Ir] -> Maybe String
 getUid posIdent@(PosIdent (_, id')) irMap =
     if Map.lookup (getSpan posIdent) irMap == Nothing
-    then "Lookup failed"
+    then Nothing
     else let wrappedResult = head $ fromJust $ Map.lookup (getSpan posIdent) irMap in
       findUid id' $ unwrap wrappedResult
       where {unwrap (IRPExp pexp')       = getIdentPExp pexp';
@@ -395,8 +413,8 @@ getUid posIdent@(PosIdent (_, id')) irMap =
              getIdentIExp (IClaferId _ id'' _ _) = [id''];
              getIdentIExp (IDeclPExp _ _ pexp) = getIdentPExp pexp;
              getIdentIExp _ = [];
-             findUid name (x:xs) = if name == dropUid x then x else findUid name xs;
-             findUid _ []     = "Uid not found"}
+             findUid name (x:xs) = if name == dropUid x then Just x else findUid name xs;
+             findUid _    []     = Nothing}
 
 getDivId :: Span -> Map.Map Span [Ir] -> String
 getDivId s irMap = if Map.lookup s irMap == Nothing

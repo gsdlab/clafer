@@ -72,8 +72,8 @@ The symbols used in clafer are the following:
   | <= | >= | != | -
   | / | % | # | <:
   | :> | ++ | , | --
-  | ** | . | ; | \
-  | ( | ) |  | 
+  | ** | & | . | ;
+  | \ | ( | ) | 
 
 ===Comments===
 There are no single-line comments in the grammar.There are no multiple-line comments in the grammar.
@@ -179,6 +179,7 @@ All other symbols are terminals.
   | //Exp16// | -> | //Exp16// ``--`` //Exp17// 
   |  |  **|**  | //Exp17// 
   | //Exp17// | -> | //Exp17// ``**`` //Exp18// 
+  |  |  **|**  | //Exp17// ``&`` //Exp18// 
   |  |  **|**  | //Exp18// 
   | //Exp18// | -> | //Exp18// ``.`` //Exp19// 
   |  |  **|**  | //Exp19// 

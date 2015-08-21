@@ -42,6 +42,7 @@ import Language.Clafer.Intermediate.Intclafer
 type Result = String
 
 transIdent :: PosIdent -> String
+transIdent (PosIdent (_, "ref")) = "dref"
 transIdent (PosIdent (_, str)) = str
 
 mkIdent :: String -> PosIdent
@@ -83,6 +84,7 @@ getRefIds (PExp _ _ _ (IInt _)) = [integerType]
 getRefIds (PExp _ _ _ (IDouble _)) = [doubleType]
 getRefIds (PExp _ _ _ (IReal _)) = [realType]
 getRefIds (PExp _ _ _ (IStr _)) = [stringType]
+getRefIds (PExp _ _ _ (IDeclPExp{_quant = ISome})) = []
 getRefIds pexp' = error $ "[Bug] Commmon.getRefIds called on unexpected argument '" ++ show pexp' ++ "'"
 
 isEqClaferId :: String -> IClafer -> Bool
@@ -509,7 +511,7 @@ parentIdent :: String
 parentIdent = "parent"
 
 refIdent :: String
-refIdent = "ref"
+refIdent = "dref"
 
 childrenIdent :: String
 childrenIdent = "children"

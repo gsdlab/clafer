@@ -1,0 +1,5 @@
+A ?
+B ?
+
+// should issue a type error that no cannot be applied to expression Bool
+[ no (A && B) ]

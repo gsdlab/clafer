@@ -49,7 +49,7 @@ generateAlloyJSPythonHTMLDot:
 	fi
 
 	# Compile the positive test suite to Alloy, Choco, Python, HTML, and Graph
-	@find $(SUITE_DIR) -type f \( -iname "*.cfr" ! -iname "*.des.cfr" \) |  xargs -L1 $(CLAFER) -m=alloy -m=choco -m=python -m=html -m=graph ; true ; \
+	@find $(SUITE_DIR) -type f \( -iname "*.cfr" ! -iname "*.des.cfr" \) |  xargs -L1 $(CLAFER) -m=alloy -m=choco -m=python -m=html -m=graph --self-contained; true ; \
 
 diffRegressions:
 	@echo "======================================================="

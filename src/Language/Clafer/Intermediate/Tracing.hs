@@ -214,6 +214,7 @@ traverseExp x =
     EUnionCom _ s1 s2 -> traverseExp s1 ++ traverseExp s2
     EDifference _ s1 s2 -> traverseExp s1 ++ traverseExp s2
     EIntersection _ s1 s2 -> traverseExp s1 ++ traverseExp s2
+    EIntersectionDeprecated _ s1 s2 -> traverseExp s1 ++ traverseExp s2
     EDomain _ s1 s2 -> traverseExp s1 ++ traverseExp s2
     ERange _ s1 s2 -> traverseExp s1 ++ traverseExp s2
     EJoin _ s1 s2 -> traverseExp s1 ++ traverseExp s2
