@@ -510,14 +510,14 @@ thisIdent = "this"
 parentIdent :: String
 parentIdent = "parent"
 
-refIdent :: String
-refIdent = "dref"
+drefIdent :: String
+drefIdent = "dref"
 
 childrenIdent :: String
 childrenIdent = "children"
 
 specialNames :: [String]
-specialNames = [thisIdent, parentIdent, refIdent, rootIdent, childrenIdent]
+specialNames = [thisIdent, parentIdent, drefIdent, rootIdent, childrenIdent]
 
 isSpecial :: String -> Bool
 isSpecial = flip elem specialNames

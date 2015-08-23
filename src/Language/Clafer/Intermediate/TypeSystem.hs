@@ -44,14 +44,14 @@ abstract Employee : Person
     EmplID -> integer
 
 Alice : Student
-    [ this.DOB.ref = 1990 ]
-    [ this.StudentID.ref = "123Alice" ]
+    [ this.DOB.dref = 1990 ]
+    [ this.StudentID.dref = "123Alice" ]
 
 Bob : Employee
-    [ this.EmplID.ref = 345 ]
+    [ this.EmplID.dref = 345 ]
 
 AliceAndBob -> Person
-[ root.AliceAndBob.ref = Alice, Bob ]
+[ root.AliceAndBob.dref = Alice, Bob ]
 
 AliceAndBob2 -> Alice ++ Bob
 -}
@@ -118,6 +118,11 @@ isTString (TMap _ ta') = isTString ta'
 isTString (TUnion un') = any isTString un'
 isTString _            = False
 
+isTBoolean :: IType    -> Bool
+isTBoolean TBoolean      = True
+isTBoolean (TMap _ ta') = isTBoolean ta'
+isTBoolean (TUnion un') = any isTBoolean un'
+isTBoolean _            = False
 
 -- | Get TClafer for a given Clafer
 -- can only be called after inheritance resolver
