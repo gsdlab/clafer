@@ -26,9 +26,9 @@ abstract sig c0_Mortgage
 , r_c0_currentPayment : one c0_currentPayment
 , r_c0_paymentFrequency : one c0_paymentFrequency
 , r_c0_financingAvailable : one c0_financingAvailable }
-{ (5000 <= (this.((@r_c0_principalMortgageAmount.@c0_principalMortgageAmount_ref).@c0_Currency_ref))) && ((this.((@r_c0_principalMortgageAmount.@c0_principalMortgageAmount_ref).@c0_Currency_ref)) <= 9999999)
-  (this.((@r_c0_balance.@c0_balance_ref).@c0_Currency_ref)) <= (this.((@r_c0_principalMortgageAmount.@c0_principalMortgageAmount_ref).@c0_Currency_ref))
-  (1 <= (this.(@r_c0_amortization.@c0_amortization_ref))) && ((this.(@r_c0_amortization.@c0_amortization_ref)) <= 30) }
+{ (5000 <= (((this.@r_c0_principalMortgageAmount).@c0_principalMortgageAmount_ref).@c0_Currency_ref)) && ((((this.@r_c0_principalMortgageAmount).@c0_principalMortgageAmount_ref).@c0_Currency_ref) <= 9999999)
+  (((this.@r_c0_balance).@c0_balance_ref).@c0_Currency_ref) <= (((this.@r_c0_principalMortgageAmount).@c0_principalMortgageAmount_ref).@c0_Currency_ref)
+  (1 <= ((this.@r_c0_amortization).@c0_amortization_ref)) && (((this.@r_c0_amortization).@c0_amortization_ref) <= 30) }
 
 sig c0_valueProposition
 { c0_valueProposition_ref : one Int }

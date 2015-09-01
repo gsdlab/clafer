@@ -1,10 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=9">
+<style>.identifier{}
+.keyword{font-weight:bold}
+.reference{}
+.code { background-color: lightgray; padding: 5px 5px 5px 5px; border: 1px solid darkgray; margin-bottom: 15px; 
+        font-family: Pragmata, Menlo, 'DejaVu LGC Sans Mono', 'DejaVu Sans Mono', Consolas, 'Everson Mono', 'Lucida Console', 'Andale Mono', 'Nimbus Mono L', 'Liberation Mono', FreeMono, 'Osaka Monospaced', Courier, 'New Courier', monospace; }
+.standalonecomment { color: green; font-style:italic }
+.inlinecomment { color: green; padding-left:20px; font-style:italic }
+.error{background-color: yellow; color: red }
+.deprecated{color: orange }
+.indent{padding-left:20px}
+a[href$='Lookup failed'] {color: red}
+a[href$='Uid not found'] {color: red}
+a[href$='Ambiguous name'] {color: yellow}
+
+</style></head>
+<body>
 
 <div>
 <span class="keyword">abstract</span> <span class="claferDecl" id="c0_Book">Book</span>
   <div class="indent">
   <span class="claferDecl" id="c0_author">author</span><span class="keyword"> -> </span><a href="#c0_Author"><span class="reference">Author</span></a> +
     <div class="indent">
-    <span class="keyword">[</span> <a href="#Uid not found"><span class="reference">Book</span></a> in <a href="#this"><span class="reference">this</span></a>.<a href="#c0_book"><span class="reference">book</span></a> <span class="keyword">]</span></div>
+    <span class="keyword">[</span> Book in <span class="keyword">this</span>.<a href="#c0_book"><span class="reference">book</span></a> <span class="keyword">]</span></div>
   </div>
 </div>
 
@@ -14,7 +34,7 @@
   <div class="indent">
   <span class="claferDecl" id="c0_book">book</span><span class="keyword"> -> </span><a href="#c0_Book"><span class="reference">Book</span></a> +
     <div class="indent">
-    <span class="keyword">[</span> <a href="#Uid not found"><span class="reference">Author</span></a> in <a href="#this"><span class="reference">this</span></a>.<a href="#c0_author"><span class="reference">author</span></a> <span class="keyword">]</span></div>
+    <span class="keyword">[</span> Author in <span class="keyword">this</span>.<a href="#c0_author"><span class="reference">author</span></a> <span class="keyword">]</span></div>
   </div>
 </div>
 
@@ -26,3 +46,5 @@
 <div>
 <span class="claferDecl" id="c0_A">A</span><span class="keyword"> : </span><a href="#c0_Author"><span class="reference">Author</span></a> 6</div>
 
+</body>
+</html>

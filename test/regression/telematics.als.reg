@@ -36,7 +36,7 @@ sig c0_fixed
 
 abstract sig c0_comp
 { r_c0_version : one c0_version }
-{ (some this.@r_c0_version) => ((this.(@r_c0_version.@c0_version_ref)) = (1.plus[2])) }
+{ (some this.@r_c0_version) => (((this.@r_c0_version).@c0_version_ref) = (1.plus[2])) }
 
 sig c0_version
 { c0_version_ref : one Int }
@@ -48,7 +48,7 @@ abstract sig c0_ECU extends c0_comp
 abstract sig c0_display extends c0_comp
 { r_c0_server : one c0_server
 , r_c1_options : one c1_options }
-{ (this.(@r_c0_version.@c0_version_ref)) >= ((this.@r_c0_server).(@c0_server_ref.(@r_c0_version.@c0_version_ref))) }
+{ ((this.@r_c0_version).@c0_version_ref) >= (((this.@r_c0_server).(@c0_server_ref.@r_c0_version)).@c0_version_ref) }
 
 sig c0_server
 { c0_server_ref : one c0_ECU }
@@ -65,7 +65,7 @@ abstract sig c0_plaECU extends c0_ECU
 sig c1_display extends c0_display
 {}
 { one @r_c1_display.this
-  ((this.(@r_c0_server.@c0_server_ref)) = (this.~@r_c1_display)) && (no (this.@r_c1_options).@r_c0_cache) }
+  (((this.@r_c0_server).@c0_server_ref) = (this.~@r_c1_display)) && (no (this.@r_c1_options).@r_c0_cache) }
 
 one sig c0_ECU1 extends c0_plaECU
 {}

@@ -88,8 +88,10 @@ printStandaloneComment comment = "<div class=\"standalonecomment\">" ++ replaceN
 printInlineComment :: String -> String
 printInlineComment comment = "<span class=\"inlinecomment\">" ++ comment ++ "</span>"
 
-printDeprecated :: String -> String -> String
-printDeprecated    s         m       = "<span class=\"deprecated\" title=\"" ++ "Deprecated. " ++ m ++ "\">" ++ s ++ "</span>"
+printDeprecated :: String -> String -> Bool -> String
+printDeprecated    s         m         html = (while html $ "<span class=\"deprecated\" title=\"" ++ "Deprecated. " ++ m ++ "\">")
+                                              ++ s
+                                              ++ (while html "</span>")
 
 -- | Generate the model as HTML document
 genHtml :: Module -> IModule -> String
@@ -243,15 +245,15 @@ printPosIdent (PosIdent (_, id')) (Just uid') html = (while html $ "<span class=
 
 printPosIdentRef :: PosIdent -> Map.Map Span [Ir] -> Bool -> String
 printPosIdentRef (PosIdent (_, "dref")) _ html
-  = while html "<span class=\"keyword\">dref</span>"
+  = (while html "<span class=\"keyword\">") ++ "dref" ++ (while html "</span>")
 printPosIdentRef (PosIdent (_, "this")) _ html
-  = while html "<span class=\"keyword\">this</span>"
+  = (while html "<span class=\"keyword\">") ++ "this" ++ (while html "</span>")
 printPosIdentRef (PosIdent (_, "parent")) _ html
-  = while html "<span class=\"keyword\">parent</span>"
+  = (while html "<span class=\"keyword\">") ++ "parent" ++ (while html "</span>")
 printPosIdentRef (PosIdent (_, "root")) _ html
-  = while html "<span class=\"keyword\">root</span>"
+  = (while html "<span class=\"keyword\">") ++ "root" ++ (while html "</span>")
 printPosIdentRef (PosIdent (_, "ref")) _ html
-  = while html $ printDeprecated "ref" "Use `dref` instead."
+  = printDeprecated "ref" "Use `dref` instead." html
 printPosIdentRef (PosIdent (_, id')) _     False = id'
 printPosIdentRef (PosIdent (p, id')) irMap True
   = case mUid' of
@@ -352,7 +354,7 @@ printExp (EUnion _ set1 set2) indent irMap html comments = (printExp set1 indent
 printExp (EUnionCom _ set1 set2) indent irMap html comments = (printExp set1 indent irMap html comments) ++ ", " ++ (printExp set2 indent irMap html comments)
 printExp (EDifference _ set1 set2) indent irMap html comments = (printExp set1 indent irMap html comments) ++ "--" ++ (printExp set2 indent irMap html comments)
 printExp (EIntersection _ set1 set2) indent irMap html comments = (printExp set1 indent irMap html comments) ++ "**" ++ (printExp set2 indent irMap html comments)
-printExp (EIntersectionDeprecated _ set1 set2) indent irMap html comments = (printExp set1 indent irMap html comments) ++ printDeprecated "&amp;" "Use `**` instead." ++ (printExp set2 indent irMap html comments)
+printExp (EIntersectionDeprecated _ set1 set2) indent irMap html comments = (printExp set1 indent irMap html comments) ++ printDeprecated "&amp;" "Use `**` instead." html ++ (printExp set2 indent irMap html comments)
 printExp (EDomain _ set1 set2) indent irMap html comments = (printExp set1 indent irMap html comments) ++ "<:" ++ (printExp set2 indent irMap html comments)
 printExp (ERange _ set1 set2) indent irMap html comments = (printExp set1 indent irMap html comments) ++ ":>" ++ (printExp set2 indent irMap html comments)
 printExp (EJoin _ set1 set2) indent irMap html comments = (printExp set1 indent irMap html comments) ++ "." ++ (printExp set2 indent irMap html comments)

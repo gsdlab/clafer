@@ -21,9 +21,9 @@ sig c0_participants
 
 one sig c0_BusLine extends c0_WaitingLine
 {}
-{ (c0_JohnDoe in (this.(@r_c0_participants.@c0_participants_ref))) && (c0_MaryJane in (this.(@r_c0_participants.@c0_participants_ref))) }
+{ (c0_JohnDoe in ((this.@r_c0_participants).@c0_participants_ref)) && (c0_MaryJane in ((this.@r_c0_participants).@c0_participants_ref)) }
 
 one sig c0_JohnAndMaryLine extends c0_WaitingLine
 {}
-{ (this.(@r_c0_participants.@c0_participants_ref)) = (c0_JohnDoe + c0_MaryJane) }
+{ ((this.@r_c0_participants).@c0_participants_ref) = (c0_JohnDoe + c0_MaryJane) }
 

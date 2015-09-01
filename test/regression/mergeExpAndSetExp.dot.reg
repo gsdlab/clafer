@@ -43,6 +43,6 @@ edge [fontname=Sans fontsize=11];
 "c0_Ella" -> "c0_Person" [arrowhead=onormal constraint=true weight=100];
 "c0_heads" [label="heads -> Person.Head *" URL="#c0_heads" tooltip="heads -&gt; Person.Head *&#10;"];
 "c0_friend" [label="friend -> Alice++Ella *" URL="#c0_friend" tooltip="friend -&gt; Alice++Ella *&#10;"];
-"c0_onlyAlice" [label="onlyAlice -> Alice&Person" URL="#c0_onlyAlice" tooltip="onlyAlice -&gt; Alice&Person&#10;"];
+"c0_onlyAlice" [label="onlyAlice -> Alice**Person" URL="#c0_onlyAlice" tooltip="onlyAlice -&gt; Alice**Person&#10;"];
 "c0_exceptElla" [label="exceptElla -> Person--Ella *" URL="#c0_exceptElla" tooltip="exceptElla -&gt; Person--Ella *&#10;"];
 }

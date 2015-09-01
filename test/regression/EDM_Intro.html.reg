@@ -1,3 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=9">
+<style>.identifier{}
+.keyword{font-weight:bold}
+.reference{}
+.code { background-color: lightgray; padding: 5px 5px 5px 5px; border: 1px solid darkgray; margin-bottom: 15px; 
+        font-family: Pragmata, Menlo, 'DejaVu LGC Sans Mono', 'DejaVu Sans Mono', Consolas, 'Everson Mono', 'Lucida Console', 'Andale Mono', 'Nimbus Mono L', 'Liberation Mono', FreeMono, 'Osaka Monospaced', Courier, 'New Courier', monospace; }
+.standalonecomment { color: green; font-style:italic }
+.inlinecomment { color: green; padding-left:20px; font-style:italic }
+.error{background-color: yellow; color: red }
+.deprecated{color: orange }
+.indent{padding-left:20px}
+a[href$='Lookup failed'] {color: red}
+a[href$='Uid not found'] {color: red}
+a[href$='Ambiguous name'] {color: yellow}
+
+</style></head>
+<body>
 
 <div>
 <span class="claferDecl" id="c0_midYearReview">midYearReview</span><span class="keyword"> : </span><a href="#c0_Meeting"><span class="reference">Meeting</span></a>
@@ -56,15 +76,15 @@
   <div class="indent">
   <span class="claferDecl" id="c0_participant">participant</span><span class="keyword"> -> </span><a href="#c0_Member"><span class="reference">Member</span></a> +</div>
   <div class="indent">
-  <span class="keyword">[</span> <a href="#c2_chair"><span class="reference">chair</span></a>.<a href="#ref"><span class="reference">ref</span></a> not in <a href="#c0_participant"><span class="reference">participant</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <a href="#c2_chair"><span class="reference">chair</span></a>.<span class="deprecated" title="Deprecated. Use `dref` instead.">ref</span> not in <a href="#c0_participant"><span class="reference">participant</span></a> <span class="keyword">]</span></div>
   <div class="indent">
   <span class="claferDecl" id="c0_onlineParticipant">onlineParticipant</span><span class="keyword"> -> </span><a href="#c0_Member"><span class="reference">Member</span></a> *</div>
   <div class="indent">
-  <span class="keyword">[</span> <a href="#c2_chair"><span class="reference">chair</span></a>.<a href="#ref"><span class="reference">ref</span></a> not in <a href="#c0_onlineParticipant"><span class="reference">onlineParticipant</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <a href="#c2_chair"><span class="reference">chair</span></a>.<span class="deprecated" title="Deprecated. Use `dref` instead.">ref</span> not in <a href="#c0_onlineParticipant"><span class="reference">onlineParticipant</span></a> <span class="keyword">]</span></div>
   <div class="indent">
   <span class="claferDecl" id="c2_room">room</span><span class="keyword"> -> </span><a href="#c0_Room"><span class="reference">Room</span></a>
     <div class="indent">
-    <span class="keyword">[</span> <a href="#this"><span class="reference">this</span></a>.<a href="#c0_capacity"><span class="reference">capacity</span></a> &gt;= # <a href="#c0_participant"><span class="reference">participant</span></a> + 1 <span class="keyword">]</span></div>
+    <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_capacity"><span class="reference">capacity</span></a> &gt;= # <a href="#c0_participant"><span class="reference">participant</span></a> + 1 <span class="keyword">]</span></div>
   </div>
   <div class="indent">
   <span class="keyword">[</span> <span class="keyword">some</span> <a href="#c0_onlineParticipant"><span class="reference">onlineParticipant</span></a> =&gt; <a href="#c2_room"><span class="reference">room</span></a>.<a href="#c1_audioConferencing"><span class="reference">audioConferencing</span></a> <span class="keyword">]</span></div>
@@ -72,7 +92,7 @@
 
 
 <div>
-<span class="keyword">enum</span> <span class="claferDecl" id="Lookup failed">Month</span> = <span class="claferDecl" id="c0_June">June</span> | <span class="claferDecl" id="c0_July">July</span></div>
+<span class="keyword">enum</span> Month = <span class="claferDecl" id="c0_June">June</span> | <span class="claferDecl" id="c0_July">July</span></div>
 
 
 <div>
@@ -133,3 +153,5 @@
   <span class="claferDecl" id="c0_mt">mt</span><span class="keyword"> -> </span><a href="#c0_Meeting"><span class="reference">Meeting</span></a> *</div>
 </div>
 
+</body>
+</html>

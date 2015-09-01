@@ -22,7 +22,7 @@ sig c0_maritalStatus
 , r_c0_divorced : lone c0_divorced }
 { one @r_c0_maritalStatus.this
   let children = (r_c0_neverMarried + r_c0_married + r_c0_divorced) | one children
-  ((some this.@r_c0_married) || (some this.@r_c0_divorced)) => (((this.~@r_c0_maritalStatus).(@r_c0_age.@c0_age_ref)) >= 5) }
+  ((some this.@r_c0_married) || (some this.@r_c0_divorced)) => ((((this.~@r_c0_maritalStatus).@r_c0_age).@c0_age_ref) >= 5) }
 
 sig c0_neverMarried
 {}
@@ -31,12 +31,12 @@ sig c0_neverMarried
 sig c0_married
 { r_c0_spouse : one c0_spouse }
 { one @r_c0_married.this
-  (this.(@r_c0_spouse.@c0_spouse_ref)) != ((this.~@r_c0_married).~@r_c0_maritalStatus) }
+  ((this.@r_c0_spouse).@c0_spouse_ref) != ((this.~@r_c0_married).~@r_c0_maritalStatus) }
 
 sig c0_spouse
 { c0_spouse_ref : one c0_Person }
 { one @r_c0_spouse.this
-  (((this.(@c0_spouse_ref.@r_c0_maritalStatus)).@r_c0_married).(@r_c0_spouse.@c0_spouse_ref)) = (((this.~@r_c0_spouse).~@r_c0_married).~@r_c0_maritalStatus) }
+  ((((this.(@c0_spouse_ref.@r_c0_maritalStatus)).@r_c0_married).@r_c0_spouse).@c0_spouse_ref) = (((this.~@r_c0_spouse).~@r_c0_married).~@r_c0_maritalStatus) }
 
 sig c0_divorced
 {}
@@ -45,24 +45,24 @@ sig c0_divorced
 sig c0_childs
 { c0_childs_ref : one c0_Person }
 { one @r_c0_childs.this
-  (this.~@r_c0_childs) in (this.(@c0_childs_ref.(@r_c0_parents.@c0_parents_ref)))
-  ((((this.~@r_c0_childs).@r_c0_maritalStatus).@r_c0_married).(@r_c0_spouse.@c0_spouse_ref)) in (this.(@c0_childs_ref.(@r_c0_parents.@c0_parents_ref)))
-  (this.(@c0_childs_ref.(@r_c0_age.@c0_age_ref))) < ((this.~@r_c0_childs).(@r_c0_age.@c0_age_ref)) }
+  (this.~@r_c0_childs) in ((this.(@c0_childs_ref.@r_c0_parents)).@c0_parents_ref)
+  (((((this.~@r_c0_childs).@r_c0_maritalStatus).@r_c0_married).@r_c0_spouse).@c0_spouse_ref) in ((this.(@c0_childs_ref.@r_c0_parents)).@c0_parents_ref)
+  ((this.(@c0_childs_ref.@r_c0_age)).@c0_age_ref) < (((this.~@r_c0_childs).@r_c0_age).@c0_age_ref) }
 
 sig c0_parents
 { c0_parents_ref : one c0_Person }
 { one @r_c0_parents.this
-  (this.~@r_c0_parents) in (this.(@c0_parents_ref.(@r_c0_childs.@c0_childs_ref))) }
+  (this.~@r_c0_parents) in ((this.(@c0_parents_ref.@r_c0_childs)).@c0_childs_ref) }
 
 one sig c0_Alice extends c0_Person
 {}
-{ (this.(@r_c0_age.@c0_age_ref)) = 6
-  (((this.@r_c0_maritalStatus).@r_c0_married).(@r_c0_spouse.@c0_spouse_ref)) = c0_Bob }
+{ ((this.@r_c0_age).@c0_age_ref) = 6
+  ((((this.@r_c0_maritalStatus).@r_c0_married).@r_c0_spouse).@c0_spouse_ref) = c0_Bob }
 
 one sig c0_Bob extends c0_Person
 {}
 
 one sig c0_Carol extends c0_Person
 {}
-{ (this.(@r_c0_age.@c0_age_ref)) = 1 }
+{ ((this.@r_c0_age).@c0_age_ref) = 1 }
 

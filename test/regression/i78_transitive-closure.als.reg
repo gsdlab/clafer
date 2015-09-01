@@ -15,27 +15,27 @@ abstract sig c0_YearLevel extends c0_TimeLevel
 
 abstract sig c0_MonthLevel extends c0_TimeLevel
 {}
-{ (this.(@r_c0_aggregatesTo.@c0_aggregatesTo_ref)) in c0_YearLevel }
+{ ((this.@r_c0_aggregatesTo).@c0_aggregatesTo_ref) in c0_YearLevel }
 
 abstract sig c0_WeekLevel extends c0_TimeLevel
 {}
-{ (this.(@r_c0_aggregatesTo.@c0_aggregatesTo_ref)) in c0_MonthLevel }
+{ ((this.@r_c0_aggregatesTo).@c0_aggregatesTo_ref) in c0_MonthLevel }
 
 one sig c0_Year2012 extends c0_YearLevel
 {}
 
 one sig c0_Jan2012 extends c0_MonthLevel
 {}
-{ (this.(@r_c0_aggregatesTo.@c0_aggregatesTo_ref)) = c0_Year2012 }
+{ ((this.@r_c0_aggregatesTo).@c0_aggregatesTo_ref) = c0_Year2012 }
 
 one sig c0_Week1 extends c0_WeekLevel
 {}
-{ (this.(@r_c0_aggregatesTo.@c0_aggregatesTo_ref)) = c0_Jan2012 }
+{ ((this.@r_c0_aggregatesTo).@c0_aggregatesTo_ref) = c0_Jan2012 }
 
 sig c0_Week1AggregatesTo
 { c0_Week1AggregatesTo_ref : one c0_TimeLevel }
 
 fact {  all disj x, y : c0_Week1AggregatesTo | (x.@c0_Week1AggregatesTo_ref) != (y.@c0_Week1AggregatesTo_ref)  }
-fact { (c0_Week1.(@r_c0_aggregatesTo.@c0_aggregatesTo_ref)) in (c0_Week1AggregatesTo.@c0_Week1AggregatesTo_ref) }
-fact { ((c0_Week1.@r_c0_aggregatesTo).(@c0_aggregatesTo_ref.(@r_c0_aggregatesTo.@c0_aggregatesTo_ref))) in (c0_Week1AggregatesTo.@c0_Week1AggregatesTo_ref) }
+fact { ((c0_Week1.@r_c0_aggregatesTo).@c0_aggregatesTo_ref) in (c0_Week1AggregatesTo.@c0_Week1AggregatesTo_ref) }
+fact { (((c0_Week1.@r_c0_aggregatesTo).(@c0_aggregatesTo_ref.@r_c0_aggregatesTo)).@c0_aggregatesTo_ref) in (c0_Week1AggregatesTo.@c0_Week1AggregatesTo_ref) }
 fact { (c0_Week1AggregatesTo.@c0_Week1AggregatesTo_ref) = (c0_Jan2012 + c0_Year2012) }
