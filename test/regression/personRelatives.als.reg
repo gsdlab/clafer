@@ -36,7 +36,7 @@ sig c0_married
 sig c0_spouse
 { c0_spouse_ref : one c0_Person }
 { one @r_c0_spouse.this
-  ((((this.(@c0_spouse_ref.@r_c0_maritalStatus)).@r_c0_married).@r_c0_spouse).@c0_spouse_ref) = (((this.~@r_c0_spouse).~@r_c0_married).~@r_c0_maritalStatus) }
+  (((((this.@c0_spouse_ref).@r_c0_maritalStatus).@r_c0_married).@r_c0_spouse).@c0_spouse_ref) = (((this.~@r_c0_spouse).~@r_c0_married).~@r_c0_maritalStatus) }
 
 sig c0_divorced
 {}
@@ -45,14 +45,14 @@ sig c0_divorced
 sig c0_childs
 { c0_childs_ref : one c0_Person }
 { one @r_c0_childs.this
-  (this.~@r_c0_childs) in ((this.(@c0_childs_ref.@r_c0_parents)).@c0_parents_ref)
-  (((((this.~@r_c0_childs).@r_c0_maritalStatus).@r_c0_married).@r_c0_spouse).@c0_spouse_ref) in ((this.(@c0_childs_ref.@r_c0_parents)).@c0_parents_ref)
-  ((this.(@c0_childs_ref.@r_c0_age)).@c0_age_ref) < (((this.~@r_c0_childs).@r_c0_age).@c0_age_ref) }
+  (this.~@r_c0_childs) in (((this.@c0_childs_ref).@r_c0_parents).@c0_parents_ref)
+  (((((this.~@r_c0_childs).@r_c0_maritalStatus).@r_c0_married).@r_c0_spouse).@c0_spouse_ref) in (((this.@c0_childs_ref).@r_c0_parents).@c0_parents_ref)
+  (((this.@c0_childs_ref).@r_c0_age).@c0_age_ref) < (((this.~@r_c0_childs).@r_c0_age).@c0_age_ref) }
 
 sig c0_parents
 { c0_parents_ref : one c0_Person }
 { one @r_c0_parents.this
-  (this.~@r_c0_parents) in ((this.(@c0_parents_ref.@r_c0_childs)).@c0_childs_ref) }
+  (this.~@r_c0_parents) in (((this.@c0_parents_ref).@r_c0_childs).@c0_childs_ref) }
 
 one sig c0_Alice extends c0_Person
 {}

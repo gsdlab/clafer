@@ -16,7 +16,7 @@ abstract sig c0_TA
 sig c0_first
 { c0_first_ref : one c0_Course }
 { one @r_c0_first.this
-  (this.~@r_c0_first) in ((this.(@c0_first_ref.@r_c0_assistants)).@c0_assistants_ref) }
+  (this.~@r_c0_first) in (((this.@c0_first_ref).@r_c0_assistants).@c0_assistants_ref) }
 
 one sig c0_CompilerGradStudent extends c0_TA
 {}

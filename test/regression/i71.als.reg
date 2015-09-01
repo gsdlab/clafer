@@ -23,7 +23,7 @@ sig c0_teaches
 { c0_teaches_ref : one c0_Course }
 { one @r_c0_teaches.this }
 
-fact { all  c : c0_Course | all  t : c.@r_c0_taughtBy | (some t.@r_c0_x) && (c in ((t.(@c0_taughtBy_ref.@r_c0_teaches)).@c0_teaches_ref)) }
+fact { all  c : c0_Course | all  t : c.@r_c0_taughtBy | (some t.@r_c0_x) && (c in (((t.@c0_taughtBy_ref).@r_c0_teaches).@c0_teaches_ref)) }
 fact { 5 <= #c0_course and #c0_course <= 5 }
 sig c0_course extends c0_Course
 {}

@@ -37,5 +37,5 @@ sig c0_Week1AggregatesTo
 
 fact {  all disj x, y : c0_Week1AggregatesTo | (x.@c0_Week1AggregatesTo_ref) != (y.@c0_Week1AggregatesTo_ref)  }
 fact { ((c0_Week1.@r_c0_aggregatesTo).@c0_aggregatesTo_ref) in (c0_Week1AggregatesTo.@c0_Week1AggregatesTo_ref) }
-fact { (((c0_Week1.@r_c0_aggregatesTo).(@c0_aggregatesTo_ref.@r_c0_aggregatesTo)).@c0_aggregatesTo_ref) in (c0_Week1AggregatesTo.@c0_Week1AggregatesTo_ref) }
+fact { ((((c0_Week1.@r_c0_aggregatesTo).@c0_aggregatesTo_ref).@r_c0_aggregatesTo).@c0_aggregatesTo_ref) in (c0_Week1AggregatesTo.@c0_Week1AggregatesTo_ref) }
 fact { (c0_Week1AggregatesTo.@c0_Week1AggregatesTo_ref) = (c0_Jan2012 + c0_Year2012) }

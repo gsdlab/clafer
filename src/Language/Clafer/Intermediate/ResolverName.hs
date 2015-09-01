@@ -172,12 +172,21 @@ processDecl decl = runExceptT $ do
 
 resolveNav :: Span -> SEnv -> IExp -> Bool -> Resolve (IExp, [IClafer])
 resolveNav pos' env x isFirst = case x of
-  IFunExp "." (pexp0:pexp:_) -> do
+  IFunExp "." [pexp0,pexp1] -> do
     (exp0', path) <- resolveNav (_inPos pexp0) env (_exp pexp0) True
-    (exp', path') <- resolveNav (_inPos pexp) env {context = listToMaybe path, resPath = path}
-                     (_exp pexp) False
-    -- if `dref` was added 
-    return (IFunExp iJoin [pexp0{_exp=exp0'}, pexp{_exp=exp'}], path')
+    (exp1', path') <- resolveNav (_inPos pexp1) env {context = listToMaybe path, resPath = path}
+                     (_exp pexp1) False
+    -- if `dref` was added to the RHS we need to left rotate the tree
+    case exp1' of
+      IFunExp "." [pexp1'l, pexp1'r] -> (case pexp1'l of
+        PExp{_exp=IClaferId{_sident="dref"}} ->
+          let -- move the `dref` to the LHS
+            pexp0'' = pexp0{_exp=IFunExp iJoin [pexp0{_exp=exp0'}, pexp1'l]}
+          in -- keep the RHS as is
+            return (IFunExp iJoin [pexp0'', pexp1'r], path')
+        _ -> return (IFunExp iJoin [pexp0{_exp=exp0'}, pexp1{_exp=exp1'}], path')
+        )
+      _ -> return (IFunExp iJoin [pexp0{_exp=exp0'}, pexp1{_exp=exp1'}], path')
   IClaferId modName' id' _ _ -> if isFirst
     then mkPath env <$> resolveName pos' env id'
     else mkPath' modName' <$> resolveImmName pos' env id'

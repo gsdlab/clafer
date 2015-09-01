@@ -33,12 +33,12 @@ abstract sig c0_TemperatureConnector
 sig c0_from
 { c0_from_ref : one c0_TemperaturePort }
 { one @r_c0_from.this
-  some this.(@c0_from_ref.@r_c0_output) }
+  some (this.@c0_from_ref).@r_c0_output }
 
 sig c0_to
 { c0_to_ref : one c0_TemperaturePort }
 { one @r_c0_to.this
-  some this.(@c0_to_ref.@r_c0_input) }
+  some (this.@c0_to_ref).@r_c0_input }
 
 one sig c0_sensor extends c0_Component
 { r_c0_temperature : one c0_temperature }

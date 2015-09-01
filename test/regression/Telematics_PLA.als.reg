@@ -55,7 +55,7 @@ abstract sig c0_ECU extends c0_comp
 abstract sig c0_display extends c0_comp
 { r_c0_server : one c0_server
 , r_c0_options : one c0_options }
-{ ((this.@r_c0_version).@c0_version_ref) >= (((this.@r_c0_server).(@c0_server_ref.@r_c0_version)).@c0_version_ref) }
+{ ((this.@r_c0_version).@c0_version_ref) >= ((((this.@r_c0_server).@c0_server_ref).@r_c0_version).@c0_version_ref) }
 
 sig c0_server
 { c0_server_ref : one c0_ECU }

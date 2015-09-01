@@ -5,24 +5,24 @@ pred show {}
 one sig c0_a
 { r_c0_b : one c0_b
 , r_c0_c : one c0_c }
-{ ((((this.@r_c0_b).(@c0_b_ref.@r_c0_f)).@c0_f_ref).@c0_g_ref) = c0_h
-  ((((this.@r_c0_b).(@c0_b_ref.@r_c0_f)).@c0_f_ref).@c0_g_ref) = c0_h
-  ((((this.@r_c0_b).(@c0_b_ref.@r_c0_f)).@c0_f_ref).@c0_g_ref) = c0_h
-  ((((this.@r_c0_b).(@c0_b_ref.@r_c0_f)).@c0_f_ref).@c0_g_ref) = c0_h }
+{ (((((this.@r_c0_b).@c0_b_ref).@r_c0_f).@c0_f_ref).@c0_g_ref) = c0_h
+  (((((this.@r_c0_b).@c0_b_ref).@r_c0_f).@c0_f_ref).@c0_g_ref) = c0_h
+  (((((this.@r_c0_b).@c0_b_ref).@r_c0_f).@c0_f_ref).@c0_g_ref) = c0_h
+  (((((this.@r_c0_b).@c0_b_ref).@r_c0_f).@c0_f_ref).@c0_g_ref) = c0_h }
 
 one sig c0_b
 { c0_b_ref : one c0_e }
 { (((c0_e.@r_c0_f).@c0_f_ref).@c0_g_ref) = c0_h
-  (((this.(@c0_b_ref.@r_c0_f)).@c0_f_ref).@c0_g_ref) = c0_h
-  (((this.(@c0_b_ref.@r_c0_f)).@c0_f_ref).@c0_g_ref) = c0_h
-  (((this.(@c0_b_ref.@r_c0_f)).@c0_f_ref).@c0_g_ref) = c0_h }
+  ((((this.@c0_b_ref).@r_c0_f).@c0_f_ref).@c0_g_ref) = c0_h
+  ((((this.@c0_b_ref).@r_c0_f).@c0_f_ref).@c0_g_ref) = c0_h
+  ((((this.@c0_b_ref).@r_c0_f).@c0_f_ref).@c0_g_ref) = c0_h }
 
 one sig c0_c
 { r_c0_d : one c0_d }
-{ ((((this.~@r_c0_c).@r_c0_b).(@c0_b_ref.@r_c0_f)).@c0_f_ref) = c0_g
-  ((((this.~@r_c0_c).@r_c0_b).(@c0_b_ref.@r_c0_f)).@c0_f_ref) = c0_g
-  ((((this.~@r_c0_c).@r_c0_b).(@c0_b_ref.@r_c0_f)).@c0_f_ref) = c0_g
-  (((((this.~@r_c0_c).@r_c0_b).(@c0_b_ref.@r_c0_f)).@c0_f_ref).@c0_g_ref) = c0_h }
+{ (((((this.~@r_c0_c).@r_c0_b).@c0_b_ref).@r_c0_f).@c0_f_ref) = c0_g
+  (((((this.~@r_c0_c).@r_c0_b).@c0_b_ref).@r_c0_f).@c0_f_ref) = c0_g
+  (((((this.~@r_c0_c).@r_c0_b).@c0_b_ref).@r_c0_f).@c0_f_ref) = c0_g
+  ((((((this.~@r_c0_c).@r_c0_b).@c0_b_ref).@r_c0_f).@c0_f_ref).@c0_g_ref) = c0_h }
 
 one sig c0_d
 {}

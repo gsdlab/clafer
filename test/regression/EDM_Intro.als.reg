@@ -64,7 +64,7 @@ abstract sig c0_Meeting
   ((this.@r_c2_chair).@c2_chair_ref) not in ((this.@r_c0_participant).@c0_participant_ref)
   all disj x, y : this.@r_c0_onlineParticipant | (x.@c0_onlineParticipant_ref) != (y.@c0_onlineParticipant_ref) 
   ((this.@r_c2_chair).@c2_chair_ref) not in ((this.@r_c0_onlineParticipant).@c0_onlineParticipant_ref)
-  (some this.@r_c0_onlineParticipant) => (some (this.@r_c2_room).(@c2_room_ref.@r_c1_audioConferencing)) }
+  (some this.@r_c0_onlineParticipant) => (some ((this.@r_c2_room).@c2_room_ref).@r_c1_audioConferencing) }
 
 sig c2_chair
 { c2_chair_ref : one c0_Member }
@@ -81,7 +81,7 @@ sig c0_onlineParticipant
 sig c2_room
 { c2_room_ref : one c0_Room }
 { one @r_c2_room.this
-  ((this.(@c2_room_ref.@r_c0_capacity)).@c0_capacity_ref) >= ((#((this.~@r_c2_room).@r_c0_participant)).plus[1]) }
+  (((this.@c2_room_ref).@r_c0_capacity).@c0_capacity_ref) >= ((#((this.~@r_c2_room).@r_c0_participant)).plus[1]) }
 
 abstract sig c0_Month
 {}
