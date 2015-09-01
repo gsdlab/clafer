@@ -37,7 +37,7 @@ a[href$='Ambiguous name'] {color: yellow}
 
 
 <div>
-<span class="keyword">[</span> all c<span class="keyword"> : </span>Course | all t<span class="keyword"> : </span><a href="#c"><span class="reference">c</span></a>.<a href="#c0_taughtBy"><span class="reference">taughtBy</span></a> | <a href="#t"><span class="reference">t</span></a>.<a href="#c0_x"><span class="reference">x</span></a> &amp;&amp; <a href="#c"><span class="reference">c</span></a> in <a href="#t"><span class="reference">t</span></a>.<a href="#c0_teaches"><span class="reference">teaches</span></a> <span class="keyword">]</span></div>
+<span class="keyword">[</span> all c<span class="keyword"> : </span><a href="#c0_Course"><span class="reference">Course</span></a> | all t<span class="keyword"> : </span><a href="#c"><span class="reference">c</span></a>.<a href="#c0_taughtBy"><span class="reference">taughtBy</span></a> | <a href="#t"><span class="reference">t</span></a>.<a href="#c0_x"><span class="reference">x</span></a> &amp;&amp; <a href="#c"><span class="reference">c</span></a> in <a href="#t"><span class="reference">t</span></a>.<a href="#c0_teaches"><span class="reference">teaches</span></a> <span class="keyword">]</span></div>
 
 
 <div>

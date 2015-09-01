@@ -20,7 +20,7 @@ a[href$='Ambiguous name'] {color: yellow}
 <body>
 
 <div>
-<span class="keyword">[</span> all disj c1; c2<span class="keyword"> : </span>Car | <a href="#c1"><span class="reference">c1</span></a>.<a href="#c0_owner"><span class="reference">owner</span></a>.<span class="deprecated" title="Deprecated. Use `dref` instead.">ref</span> != <a href="#c2"><span class="reference">c2</span></a>.<a href="#c0_owner"><span class="reference">owner</span></a>.<span class="deprecated" title="Deprecated. Use `dref` instead.">ref</span> <span class="keyword">]</span></div>
+<span class="keyword">[</span> all disj c1; c2<span class="keyword"> : </span><a href="#c0_Car"><span class="reference">Car</span></a> | <a href="#c1"><span class="reference">c1</span></a>.<a href="#c0_owner"><span class="reference">owner</span></a>.<span class="deprecated" title="Deprecated. Use `dref` instead.">ref</span> != <a href="#c2"><span class="reference">c2</span></a>.<a href="#c0_owner"><span class="reference">owner</span></a>.<span class="deprecated" title="Deprecated. Use `dref` instead.">ref</span> <span class="keyword">]</span></div>
 
 
 <div>

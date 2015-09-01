@@ -80,7 +80,7 @@ a[href$='Ambiguous name'] {color: yellow}
 
 
 <div>
-<span class="keyword">[</span> all p<span class="keyword"> : </span>Phone | <a href="#p"><span class="reference">p</span></a>.<a href="#c0_networking"><span class="reference">networking</span></a>.<a href="#c0_mobile"><span class="reference">mobile</span></a> <span class="keyword">]</span></div>
+<span class="keyword">[</span> all p<span class="keyword"> : </span><a href="#c0_Phone"><span class="reference">Phone</span></a> | <a href="#p"><span class="reference">p</span></a>.<a href="#c0_networking"><span class="reference">networking</span></a>.<a href="#c0_mobile"><span class="reference">mobile</span></a> <span class="keyword">]</span></div>
 
 </body>
 </html>

@@ -76,11 +76,11 @@ a[href$='Ambiguous name'] {color: yellow}
   <div class="indent">
   <span class="claferDecl" id="c0_participant">participant</span><span class="keyword"> -> </span><a href="#c0_Member"><span class="reference">Member</span></a> +</div>
   <div class="indent">
-  <span class="keyword">[</span> <a href="#c2_chair"><span class="reference">chair</span></a>.<span class="deprecated" title="Deprecated. Use `dref` instead.">ref</span> not in <a href="#c0_participant"><span class="reference">participant</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <a href="#c2_chair"><span class="reference">chair</span></a> not in <a href="#c0_participant"><span class="reference">participant</span></a> <span class="keyword">]</span></div>
   <div class="indent">
   <span class="claferDecl" id="c0_onlineParticipant">onlineParticipant</span><span class="keyword"> -> </span><a href="#c0_Member"><span class="reference">Member</span></a> *</div>
   <div class="indent">
-  <span class="keyword">[</span> <a href="#c2_chair"><span class="reference">chair</span></a>.<span class="deprecated" title="Deprecated. Use `dref` instead.">ref</span> not in <a href="#c0_onlineParticipant"><span class="reference">onlineParticipant</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <a href="#c2_chair"><span class="reference">chair</span></a> not in <a href="#c0_onlineParticipant"><span class="reference">onlineParticipant</span></a> <span class="keyword">]</span></div>
   <div class="indent">
   <span class="claferDecl" id="c2_room">room</span><span class="keyword"> -> </span><a href="#c0_Room"><span class="reference">Room</span></a>
     <div class="indent">

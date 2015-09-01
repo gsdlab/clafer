@@ -44,9 +44,9 @@ a[href$='Ambiguous name'] {color: yellow}
   <div class="indent">
   <span class="keyword">[</span> <a href="#c0_gender"><span class="reference">gender</span></a> = "female" &#124;&#124; <a href="#c0_gender"><span class="reference">gender</span></a> = "male" <span class="keyword">]</span></div>
   <div class="indent">
-  <span class="keyword">[</span> all p<span class="keyword"> : </span>Person | <span class="keyword">this</span> != <a href="#p"><span class="reference">p</span></a> =&gt; <span class="keyword">this</span>.<a href="#c0_name"><span class="reference">name</span></a>.<span class="deprecated" title="Deprecated. Use `dref` instead.">ref</span> != <a href="#p"><span class="reference">p</span></a>.<a href="#c0_name"><span class="reference">name</span></a>.<span class="deprecated" title="Deprecated. Use `dref` instead.">ref</span> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> all p<span class="keyword"> : </span><a href="#c0_Person"><span class="reference">Person</span></a> | <span class="keyword">this</span> != <a href="#p"><span class="reference">p</span></a> =&gt; <span class="keyword">this</span>.<a href="#c0_name"><span class="reference">name</span></a>.<span class="deprecated" title="Deprecated. Use `dref` instead.">ref</span> != <a href="#p"><span class="reference">p</span></a>.<a href="#c0_name"><span class="reference">name</span></a>.<span class="deprecated" title="Deprecated. Use `dref` instead.">ref</span> <span class="keyword">]</span></div>
   <div class="indent">
-  <span class="keyword">[</span> <span class="keyword">one</span> p<span class="keyword"> : </span>Person | <a href="#p"><span class="reference">p</span></a>.<a href="#c0_name"><span class="reference">name</span></a>.<span class="deprecated" title="Deprecated. Use `dref` instead.">ref</span> = <span class="keyword">this</span>.<a href="#c0_name"><span class="reference">name</span></a>.<span class="deprecated" title="Deprecated. Use `dref` instead.">ref</span> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <span class="keyword">one</span> p<span class="keyword"> : </span><a href="#c0_Person"><span class="reference">Person</span></a> | <a href="#p"><span class="reference">p</span></a>.<a href="#c0_name"><span class="reference">name</span></a>.<span class="deprecated" title="Deprecated. Use `dref` instead.">ref</span> = <span class="keyword">this</span>.<a href="#c0_name"><span class="reference">name</span></a>.<span class="deprecated" title="Deprecated. Use `dref` instead.">ref</span> <span class="keyword">]</span></div>
 </div>
 
 
@@ -109,7 +109,7 @@ a[href$='Ambiguous name'] {color: yellow}
 
 
 <div>
-<span class="keyword">[</span> all p<span class="keyword"> : </span>Person | <a href="#p"><span class="reference">p</span></a>.<a href="#c0_name"><span class="reference">name</span></a> in <a href="#c0_stringSet1"><span class="reference">stringSet1</span></a> =&gt; <a href="#p"><span class="reference">p</span></a> in <a href="#c0_adaBobCyd"><span class="reference">adaBobCyd</span></a> <span class="keyword">]</span></div>
+<span class="keyword">[</span> all p<span class="keyword"> : </span><a href="#c0_Person"><span class="reference">Person</span></a> | <a href="#p"><span class="reference">p</span></a>.<a href="#c0_name"><span class="reference">name</span></a> in <a href="#c0_stringSet1"><span class="reference">stringSet1</span></a> =&gt; <a href="#p"><span class="reference">p</span></a> in <a href="#c0_adaBobCyd"><span class="reference">adaBobCyd</span></a> <span class="keyword">]</span></div>
 
 
 <div>
@@ -120,7 +120,7 @@ a[href$='Ambiguous name'] {color: yellow}
 
 
 <div>
-<span class="keyword">[</span> all p<span class="keyword"> : </span>Person | <a href="#p"><span class="reference">p</span></a>.<a href="#c0_husband"><span class="reference">husband</span></a> = <a href="#c0_emptyPersonSet1"><span class="reference">emptyPersonSet1</span></a> =&gt; <a href="#p"><span class="reference">p</span></a> in <a href="#c0_personWithUndefinedHusband1"><span class="reference">personWithUndefinedHusband1</span></a> <span class="keyword">]</span></div>
+<span class="keyword">[</span> all p<span class="keyword"> : </span><a href="#c0_Person"><span class="reference">Person</span></a> | <a href="#p"><span class="reference">p</span></a>.<a href="#c0_husband"><span class="reference">husband</span></a> = <a href="#c0_emptyPersonSet1"><span class="reference">emptyPersonSet1</span></a> =&gt; <a href="#p"><span class="reference">p</span></a> in <a href="#c0_personWithUndefinedHusband1"><span class="reference">personWithUndefinedHusband1</span></a> <span class="keyword">]</span></div>
 
 
 <div>
@@ -131,7 +131,7 @@ a[href$='Ambiguous name'] {color: yellow}
 
 
 <div>
-<span class="keyword">[</span> all p<span class="keyword"> : </span>Person | <a href="#p"><span class="reference">p</span></a>.<a href="#c0_husband"><span class="reference">husband</span></a> = <a href="#c0_emptyPersonSet2"><span class="reference">emptyPersonSet2</span></a> =&gt; <a href="#p"><span class="reference">p</span></a> in <a href="#c0_personWithUndefinedHusband2"><span class="reference">personWithUndefinedHusband2</span></a> <span class="keyword">]</span></div>
+<span class="keyword">[</span> all p<span class="keyword"> : </span><a href="#c0_Person"><span class="reference">Person</span></a> | <a href="#p"><span class="reference">p</span></a>.<a href="#c0_husband"><span class="reference">husband</span></a> = <a href="#c0_emptyPersonSet2"><span class="reference">emptyPersonSet2</span></a> =&gt; <a href="#p"><span class="reference">p</span></a> in <a href="#c0_personWithUndefinedHusband2"><span class="reference">personWithUndefinedHusband2</span></a> <span class="keyword">]</span></div>
 
 
 <div>
@@ -142,7 +142,7 @@ a[href$='Ambiguous name'] {color: yellow}
 
 
 <div>
-<span class="keyword">[</span> all p<span class="keyword"> : </span>Person | <span class="keyword">no</span> <a href="#p"><span class="reference">p</span></a>.<a href="#c0_wife"><span class="reference">wife</span></a> =&gt; <a href="#p"><span class="reference">p</span></a> in <a href="#c0_personWithNoWife"><span class="reference">personWithNoWife</span></a> <span class="keyword">]</span></div>
+<span class="keyword">[</span> all p<span class="keyword"> : </span><a href="#c0_Person"><span class="reference">Person</span></a> | <span class="keyword">no</span> <a href="#p"><span class="reference">p</span></a>.<a href="#c0_wife"><span class="reference">wife</span></a> =&gt; <a href="#p"><span class="reference">p</span></a> in <a href="#c0_personWithNoWife"><span class="reference">personWithNoWife</span></a> <span class="keyword">]</span></div>
 
 
 <div>
@@ -177,7 +177,7 @@ a[href$='Ambiguous name'] {color: yellow}
 
 
 <div>
-<span class="keyword">[</span> all p; q<span class="keyword"> : </span>Person | <a href="#p"><span class="reference">p</span></a>.<a href="#c0_gender"><span class="reference">gender</span></a> = "female" &amp;&amp; <a href="#p"><span class="reference">p</span></a>.<a href="#c0_alive"><span class="reference">alive</span></a> &amp;&amp; <a href="#p"><span class="reference">p</span></a>.<a href="#c0_civstat"><span class="reference">civstat</span></a> != "married" &amp;&amp; <a href="#q"><span class="reference">q</span></a>.<a href="#c0_gender"><span class="reference">gender</span></a> = "male" &amp;&amp; <a href="#q"><span class="reference">q</span></a>.<a href="#c0_alive"><span class="reference">alive</span></a> &amp;&amp; <a href="#q"><span class="reference">q</span></a>.<a href="#c0_civstat"><span class="reference">civstat</span></a> != "married" =&gt; <span class="keyword">one</span> pair<span class="keyword"> : </span>personPair | <a href="#pair"><span class="reference">pair</span></a>.<a href="#c0_first"><span class="reference">first</span></a> = <a href="#p"><span class="reference">p</span></a> &amp;&amp; <a href="#pair"><span class="reference">pair</span></a>.<a href="#c0_second"><span class="reference">second</span></a> = <a href="#q"><span class="reference">q</span></a> &amp;&amp; <a href="#pair"><span class="reference">pair</span></a> in <a href="#c0_possiblePairs"><span class="reference">possiblePairs</span></a> <span class="keyword">]</span></div>
+<span class="keyword">[</span> all p; q<span class="keyword"> : </span><a href="#c0_Person"><span class="reference">Person</span></a> | <a href="#p"><span class="reference">p</span></a>.<a href="#c0_gender"><span class="reference">gender</span></a> = "female" &amp;&amp; <a href="#p"><span class="reference">p</span></a>.<a href="#c0_alive"><span class="reference">alive</span></a> &amp;&amp; <a href="#p"><span class="reference">p</span></a>.<a href="#c0_civstat"><span class="reference">civstat</span></a> != "married" &amp;&amp; <a href="#q"><span class="reference">q</span></a>.<a href="#c0_gender"><span class="reference">gender</span></a> = "male" &amp;&amp; <a href="#q"><span class="reference">q</span></a>.<a href="#c0_alive"><span class="reference">alive</span></a> &amp;&amp; <a href="#q"><span class="reference">q</span></a>.<a href="#c0_civstat"><span class="reference">civstat</span></a> != "married" =&gt; <span class="keyword">one</span> pair<span class="keyword"> : </span><a href="#c0_personPair"><span class="reference">personPair</span></a> | <a href="#pair"><span class="reference">pair</span></a>.<a href="#c0_first"><span class="reference">first</span></a> = <a href="#p"><span class="reference">p</span></a> &amp;&amp; <a href="#pair"><span class="reference">pair</span></a>.<a href="#c0_second"><span class="reference">second</span></a> = <a href="#q"><span class="reference">q</span></a> &amp;&amp; <a href="#pair"><span class="reference">pair</span></a> in <a href="#c0_possiblePairs"><span class="reference">possiblePairs</span></a> <span class="keyword">]</span></div>
 
 
 <div>

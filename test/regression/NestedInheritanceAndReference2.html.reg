@@ -80,7 +80,7 @@ a[href$='Ambiguous name'] {color: yellow}
 
 
 <div>
-<span class="keyword">assert [</span> <a href="#c0_controller"><span class="reference">controller</span></a>.<a href="#c1_temperature"><span class="reference">temperature</span></a>.<span class="deprecated" title="Deprecated. Use `dref` instead.">ref</span> = <a href="#c0_sensor"><span class="reference">sensor</span></a>.<a href="#c0_temperature"><span class="reference">temperature</span></a>.<span class="deprecated" title="Deprecated. Use `dref` instead.">ref</span> <span class="keyword">]</span></div>
+<span class="keyword">assert [</span> <a href="#c0_controller"><span class="reference">controller</span></a>.<a href="#c1_temperature"><span class="reference">temperature</span></a> = <a href="#c0_sensor"><span class="reference">sensor</span></a>.<a href="#c0_temperature"><span class="reference">temperature</span></a> <span class="keyword">]</span></div>
 
 </body>
 </html>

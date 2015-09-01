@@ -90,11 +90,8 @@ getRefIds pexp' = error $ "[Bug] Commmon.getRefIds called on unexpected argument
 isEqClaferId :: String -> IClafer -> Bool
 isEqClaferId    uid'      claf'    = _uid claf' == uid'
 
-mkPLClaferId :: CName -> Bool -> ClaferBinding -> PExp
-mkPLClaferId id' isTop' bind' = pExpDefPidPos $ IClaferId "" id' isTop' bind'
-
-pExpDefPidPos :: IExp -> PExp
-pExpDefPidPos = pExpDefPid noSpan
+mkPLClaferId :: Span -> CName -> Bool -> ClaferBinding -> PExp
+mkPLClaferId pos' id' isTop' bind' = pExpDefPid pos' $ IClaferId "" id' isTop' bind'
 
 pExpDefPid :: Span -> IExp -> PExp
 pExpDefPid = pExpDef ""
@@ -149,10 +146,10 @@ createUidIClaferMap    iModule  = foldl'
     allClafers :: [ IClafer ]
     allClafers = universeOn biplate iModule
     rootClafer = IClafer noSpan False (Just $ IGCard False (0, -1)) rootIdent rootIdent "" Nothing Nothing (Just (1,1)) (1, 1) (_mDecls iModule)
-    integerClafer = IClafer noSpan False (Just $ IGCard False (0, -1)) integerType integerType "" (Just $ pExpDefPidPos $ IClaferId "" doubleType True $ Just doubleType) Nothing (Just (1,1)) (1, 1) []
-    intClafer = IClafer noSpan False (Just $ IGCard False (0, -1)) "int" "int" "" (Just $ pExpDefPidPos $ IClaferId "" doubleType True $ Just doubleType) Nothing (Just (1,1)) (1, 1) []
+    integerClafer = IClafer noSpan False (Just $ IGCard False (0, -1)) integerType integerType "" (Just $ pExpDefPid noSpan $ IClaferId "" doubleType True $ Just doubleType) Nothing (Just (1,1)) (1, 1) []
+    intClafer = IClafer noSpan False (Just $ IGCard False (0, -1)) "int" "int" "" (Just $ pExpDefPid noSpan $ IClaferId "" doubleType True $ Just doubleType) Nothing (Just (1,1)) (1, 1) []
     stringClafer = IClafer noSpan False (Just $ IGCard False (0, -1)) stringType stringType "" Nothing Nothing (Just (1,1)) (1, 1) []
-    doubleClafer = IClafer noSpan False (Just $ IGCard False (0, -1)) doubleType doubleType "" (Just $ pExpDefPidPos $ IClaferId "" realType True $ Just realType) Nothing (Just (1,1)) (1, 1) []
+    doubleClafer = IClafer noSpan False (Just $ IGCard False (0, -1)) doubleType doubleType "" (Just $ pExpDefPid noSpan $ IClaferId "" realType True $ Just realType) Nothing (Just (1,1)) (1, 1) []
     realClafer = IClafer noSpan False (Just $ IGCard False (0, -1)) realType realType "" Nothing Nothing (Just (1,1)) (1, 1) []
     booleanClafer = IClafer noSpan False (Just $ IGCard False (0, -1)) booleanType booleanType "" Nothing Nothing (Just (1,1)) (1, 1) []
     clafer = IClafer noSpan False (Just $ IGCard False (0, -1)) baseClafer baseClafer "" Nothing Nothing (Just (1,1)) (1, 1) []
@@ -487,9 +484,9 @@ binOps = logBinOps ++ relBinOps ++ arithBinOps ++ setBinOps
 iIfThenElse :: String
 iIfThenElse   = "ifthenelse"
 
-mkIFunExp :: String -> [IExp] -> IExp
-mkIFunExp _ (x:[]) = x
-mkIFunExp op' xs = foldl1 (\x y -> IFunExp op' $ map (PExp Nothing "" noSpan) [x,y]) xs
+mkIFunExp :: Span -> String -> [IExp] -> IExp
+mkIFunExp _ _ (x:[]) = x
+mkIFunExp pos' op' xs = foldl1 (\x y -> IFunExp op' $ map (PExp Nothing "" pos') [x,y]) xs
 
 toLowerS :: String -> String
 toLowerS "" = ""

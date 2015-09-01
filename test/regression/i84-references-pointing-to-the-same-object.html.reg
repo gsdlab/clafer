@@ -24,7 +24,7 @@ a[href$='Ambiguous name'] {color: yellow}
   <div class="indent">
   <span class="claferDecl" id="c0_levels">levels</span><span class="keyword"> -> </span><a href="#c0_DimensionLevel"><span class="reference">DimensionLevel</span></a> *</div>
   <div class="indent">
-  <span class="keyword">[</span> all dl<span class="keyword"> : </span><span class="keyword">this</span>.<a href="#c0_levels"><span class="reference">levels</span></a> | <a href="#dl"><span class="reference">dl</span></a>.<a href="#c0_belongsTo"><span class="reference">belongsTo</span></a>.<span class="deprecated" title="Deprecated. Use `dref` instead.">ref</span> = <span class="keyword">this</span> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> all dl<span class="keyword"> : </span><span class="keyword">this</span>.<a href="#c0_levels"><span class="reference">levels</span></a> | <a href="#dl"><span class="reference">dl</span></a>.<a href="#c0_belongsTo"><span class="reference">belongsTo</span></a> = <span class="keyword">this</span> <span class="keyword">]</span></div>
 </div>
 
 
@@ -52,7 +52,7 @@ a[href$='Ambiguous name'] {color: yellow}
 
 
 <div>
-<span class="keyword">[</span> <span class="keyword">some</span> disjdl1; dl2<span class="keyword"> : </span>DimensionLevel | <a href="#dl1"><span class="reference">dl1</span></a>.<a href="#c0_belongsTo"><span class="reference">belongsTo</span></a>.<span class="deprecated" title="Deprecated. Use `dref` instead.">ref</span> = <a href="#dl2"><span class="reference">dl2</span></a>.<a href="#c0_belongsTo"><span class="reference">belongsTo</span></a>.<span class="deprecated" title="Deprecated. Use `dref` instead.">ref</span> <span class="keyword">]</span></div>
+<span class="keyword">[</span> <span class="keyword">some</span> disjdl1; dl2<span class="keyword"> : </span><a href="#c0_DimensionLevel"><span class="reference">DimensionLevel</span></a> | <a href="#dl1"><span class="reference">dl1</span></a>.<a href="#c0_belongsTo"><span class="reference">belongsTo</span></a>.<span class="keyword">dref</span> = <a href="#dl2"><span class="reference">dl2</span></a>.<a href="#c0_belongsTo"><span class="reference">belongsTo</span></a>.<span class="keyword">dref</span> <span class="keyword">]</span></div>
 
 </body>
 </html>

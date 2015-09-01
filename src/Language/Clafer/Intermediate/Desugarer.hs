@@ -121,7 +121,7 @@ desugarInit _ (InitEmpty _) = []
 desugarInit id' (InitSome s inithow exp') = [ IEConstraint (desugarInitHow inithow) (pExpDefPid s implIExp) ]
   where
     cId :: PExp
-    cId = mkPLClaferId (snd $ getIdent id') False Nothing
+    cId = mkPLClaferId (getSpan id') (snd $ getIdent id') False Nothing
     -- <id> = <exp'>
     assignIExp :: IExp
     assignIExp = (IFunExp "=" [cId, desugarExp exp'])

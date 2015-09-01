@@ -271,7 +271,7 @@ a[href$='Ambiguous name'] {color: yellow}
 <div>
 <span class="keyword">abstract</span> <span class="claferDecl" id="c0_BusinessRule">BusinessRule</span><span class="keyword"> : </span><a href="#c0_Directive"><span class="reference">Directive</span></a>
   <div class="indent">
-  <span class="keyword">[</span> all o<span class="keyword"> : </span>supportsTheAchievementOf | <a href="#o"><span class="reference">o</span></a>.<span class="deprecated" title="Deprecated. Use `dref` instead.">ref</span> in <a href="#c0_Objective"><span class="reference">Objective</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> all o<span class="keyword"> : </span><a href="#c0_supportsTheAchievementOf"><span class="reference">supportsTheAchievementOf</span></a> | <a href="#o"><span class="reference">o</span></a>.<span class="deprecated" title="Deprecated. Use `dref` instead.">ref</span> in <a href="#c0_Objective"><span class="reference">Objective</span></a> <span class="keyword">]</span></div>
   <div class="indent">
   <span class="keyword">xor</span> <span class="claferDecl" id="c0_enforcementLevel">enforcementLevel</span>
     <div class="indent">

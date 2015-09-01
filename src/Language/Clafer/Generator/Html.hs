@@ -20,21 +20,23 @@
  SOFTWARE.
 -}
 -- | Generates HTML and plain text rendering of a Clafer model.
-module Language.Clafer.Generator.Html (genHtml,
-                                       genText,
-                                       genTooltip,
-                                       printModule,
-                                       printDeclaration,
-                                       printDecl,
-                                       traceAstModule,
-                                       traceIrModule,
-                                       cleanOutput,
-                                       revertLayout,
-                                       printComment,
-                                       printPreComment,
-                                       printStandaloneComment,
-                                       printInlineComment,
-                                       highlightErrors) where
+module Language.Clafer.Generator.Html
+  ( genHtml
+  , genText
+  , genTooltip
+  , printModule
+  , printDeclaration
+  , printDecl
+  , traceAstModule
+  , traceIrModule
+  , cleanOutput
+  , revertLayout
+  , printComment
+  , printPreComment
+  , printStandaloneComment
+  , printInlineComment
+  , highlightErrors
+  ) where
 
 import Language.ClaferT
 import Language.Clafer.Front.AbsClafer
@@ -403,20 +405,20 @@ rest (_:xs) = xs
 
 getUid :: PosIdent -> Map.Map Span [Ir] -> Maybe String
 getUid posIdent@(PosIdent (_, id')) irMap =
-    if Map.lookup (getSpan posIdent) irMap == Nothing
-    then Nothing
-    else let wrappedResult = head $ fromJust $ Map.lookup (getSpan posIdent) irMap in
-      findUid id' $ unwrap wrappedResult
-      where {unwrap (IRPExp pexp')       = getIdentPExp pexp';
-             unwrap (IRClafer iClafer') = [ _uid iClafer' ];
-             unwrap x = error $ "Html:getUid:unwrap called on: " ++ show x;
-             getIdentPExp (PExp _ _ _ exp') = getIdentIExp exp';
-             getIdentIExp (IFunExp _ exps') = concatMap getIdentPExp exps';
-             getIdentIExp (IClaferId _ id'' _ _) = [id''];
-             getIdentIExp (IDeclPExp _ _ pexp) = getIdentPExp pexp;
-             getIdentIExp _ = [];
-             findUid name (x:xs) = if name == dropUid x then Just x else findUid name xs;
-             findUid _    []     = Nothing}
+  case Map.lookup (getSpan posIdent) irMap of
+    Nothing -> Nothing
+    Just wrappedResultList -> listToMaybe $ catMaybes $ map (findUid id') $ map unwrap wrappedResultList 
+  where
+    unwrap (IRPExp pexp')       = getIdentPExp pexp'
+    unwrap (IRClafer iClafer') = [ _uid iClafer' ]
+    unwrap x = error $ "Html:getUid:unwrap called on: " ++ show x
+    getIdentPExp (PExp _ _ _ exp') = getIdentIExp exp'
+    getIdentIExp (IFunExp _ exps') = concatMap getIdentPExp exps'
+    getIdentIExp (IClaferId _ id'' _ _) = [id'']
+    getIdentIExp (IDeclPExp _ _ pexp) = getIdentPExp pexp
+    getIdentIExp _ = []
+    findUid name (x:xs) = if name == dropUid x then Just x else findUid name xs
+    findUid _    []     = Nothing
 
 getDivId :: Span -> Map.Map Span [Ir] -> String
 getDivId s irMap = if Map.lookup s irMap == Nothing
