@@ -22,8 +22,8 @@ abstract sig c0_Vehicle
 , r_c0_hasOversteer : lone c0_hasOversteer
 , r_c0_hasUndersteer : lone c0_hasUndersteer
 , r_c0_GVWR : one c0_GVWR }
-{ ((this.((@r_c0_yawRate.@c0_yawRate_ref).@c0_degree_ref)) > (this.((@r_c0_normalYawRate.@c0_normalYawRate_ref).@c0_degree_ref))) <=> (some this.@r_c0_hasOversteer)
-  ((this.((@r_c0_yawRate.@c0_yawRate_ref).@c0_degree_ref)) < (this.((@r_c0_normalYawRate.@c0_normalYawRate_ref).@c0_degree_ref))) <=> (some this.@r_c0_hasUndersteer) }
+{ ((((this.@r_c0_yawRate).@c0_yawRate_ref).@c0_degree_ref) > (((this.@r_c0_normalYawRate).@c0_normalYawRate_ref).@c0_degree_ref)) <=> (some this.@r_c0_hasOversteer)
+  ((((this.@r_c0_yawRate).@c0_yawRate_ref).@c0_degree_ref) < (((this.@r_c0_normalYawRate).@c0_normalYawRate_ref).@c0_degree_ref)) <=> (some this.@r_c0_hasUndersteer) }
 
 sig c0_DriveConfiguration extends c1_DriveConfiguration
 {}
@@ -200,7 +200,7 @@ sig c0_isOperational
 , r_c0_withAntiLockBrakeSystem : one c0_withAntiLockBrakeSystem
 , r_c0_withTractionControlSystem : one c0_withTractionControlSystem }
 { one @r_c0_isOperational.this
-  (((this.~@r_c0_isOperational).@r_c0_vehicle).(@c0_vehicle_ref.(@r_c0_speed.@c0_speed_ref))) > 20 }
+  (((((this.~@r_c0_isOperational).@r_c0_vehicle).@c0_vehicle_ref).@r_c0_speed).@c0_speed_ref) > 20 }
 
 sig c0_duringAllPhasesOfDriving
 { r_c0_acceleration : one c0_acceleration

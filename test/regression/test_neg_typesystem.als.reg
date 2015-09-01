@@ -15,4 +15,4 @@ one sig c0_D extends c0_Measurable
 one sig c0_C extends c0_Measurable
 {}
 
-fact { (c0_C.(@r_c0_performance.@c0_performance_ref)) = (-1.mul[(c0_D.(@r_c0_performance.@c0_performance_ref))]) }
+fact { ((c0_C.@r_c0_performance).@c0_performance_ref) = (-1.mul[((c0_D.@r_c0_performance).@c0_performance_ref)]) }

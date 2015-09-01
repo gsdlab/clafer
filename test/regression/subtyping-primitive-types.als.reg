@@ -36,9 +36,9 @@ sig c0_hour
 { one @r_c0_hour.this
   ((this.@c0_hour_ref) >= 0) && ((this.@c0_hour_ref) <= 5) }
 
-fact { (some c0_time) => ((c0_time.@c0_time_ref) = ((c0_time.(@r_c0_minute.@c0_minute_ref)).plus[(c0_time.(@r_c0_hour.@c0_hour_ref))])) }
+fact { (some c0_time) => ((c0_time.@c0_time_ref) = (((c0_time.@r_c0_minute).@c0_minute_ref).plus[((c0_time.@r_c0_hour).@c0_hour_ref)])) }
 one sig c0_now extends c0_time
 {}
-{ (this.(@r_c0_minute.@c0_minute_ref)) = 3
-  (this.(@r_c0_hour.@c0_hour_ref)) = 1 }
+{ ((this.@r_c0_minute).@c0_minute_ref) = 3
+  ((this.@r_c0_hour).@c0_hour_ref) = 1 }
 

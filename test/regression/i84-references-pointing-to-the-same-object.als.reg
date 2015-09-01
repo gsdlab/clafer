@@ -5,7 +5,7 @@ pred show {}
 abstract sig c0_Dimension
 { r_c0_levels : set c0_levels }
 { all disj x, y : this.@r_c0_levels | (x.@c0_levels_ref) != (y.@c0_levels_ref) 
-  all  dl : this.@r_c0_levels | ((dl.(@c0_levels_ref.@r_c0_belongsTo)).@c0_belongsTo_ref) = this }
+  all  dl : this.@r_c0_levels | (((dl.@c0_levels_ref).@r_c0_belongsTo).@c0_belongsTo_ref) = this }
 
 sig c0_levels
 { c0_levels_ref : one c0_DimensionLevel }

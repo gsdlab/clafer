@@ -1,0 +1,12 @@
+defaultScope(1);
+intRange(-8, 7);
+stringLength(16);
+
+c0_Component = Abstract("c0_Component");
+c0_link = c0_Component.addChild("c0_link").withCard(0, 1);
+c0_Comp1 = Clafer("c0_Comp1").withCard(1, 1).extending(c0_Component);
+c0_link.refTo(c0_Component);
+Constraint(some(inter(global(c0_Comp1), global(c0_Component))));
+Constraint(some(inter(global(c0_Comp1), global(c0_Component))));
+c0_Comp1.addConstraint(equal(joinRef(join($this(), c0_link)), global(c0_Comp1)));
+c0_Comp1.addConstraint(equal(joinRef(join($this(), c0_link)), global(c0_Comp1)));

@@ -6,9 +6,9 @@ nodesep=0.1;
 graph [fontname=Sans fontsize=11];
 node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
 edge [fontname=Sans fontsize=11];
-"c0_x" [label="x -> integer" URL="#c0_x" tooltip="x -&gt; integer&#10;  [ this = 1 ]&#10;  [ this.ref = 1 ]&#10;"];
-"c0_y" [label="y -> x" URL="#c0_y" tooltip="y -&gt; x&#10;  [ this = 1 ]&#10;  [ this.ref = 1 ]&#10;  [ this.ref.ref = 1 ]&#10;"];
+"c0_x" [label="x -> integer" URL="#c0_x" tooltip="x -&gt; integer&#10;  [ this = 1 ]&#10;  [ this.dref = 1 ]&#10;"];
+"c0_y" [label="y -> x" URL="#c0_y" tooltip="y -&gt; x&#10;  [ this = 1 ]&#10;  [ this.dref = 1 ]&#10;  [ this.dref.dref = 1 ]&#10;"];
 "c0_y" -> "c0_x" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent];
-"c0_z" [label="z -> y" URL="#c0_z" tooltip="z -&gt; y&#10;  [ this = 1 ]&#10;  [ this.ref = 1 ]&#10;  [ this.ref.ref = 1 ]&#10;  [ this.ref.ref.ref = 1 ]&#10;"];
+"c0_z" [label="z -> y" URL="#c0_z" tooltip="z -&gt; y&#10;  [ this = 1 ]&#10;  [ this.dref = 1 ]&#10;  [ this.dref.dref = 1 ]&#10;  [ this.dref.dref.dref = 1 ]&#10;"];
 "c0_z" -> "c0_y" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent];
 }

@@ -32,6 +32,7 @@ import Prelude
 import Language.Clafer.Common
 import Language.Clafer.ClaferArgs
 import Language.Clafer.Front.AbsClafer
+import Language.Clafer.Front.LexClafer
 import Language.Clafer.Generator.Concat
 import Language.Clafer.Intermediate.Intclafer hiding (exp)
 
@@ -44,8 +45,8 @@ data GenEnv = GenEnv
 
 
 -- | Alloy code generation
-genModule :: ClaferArgs -> (IModule, GEnv) -> [(UID, Integer)] -> (Result, [(Span, IrTrace)])
-genModule    claferargs'   (imodule, genv)    scopes            = (flatten output, filter ((/= NoTrace) . snd) $ mapLineCol output)
+genModule :: ClaferArgs -> (IModule, GEnv) -> [(UID, Integer)] -> [Token]     -> (Result, [(Span, IrTrace)])
+genModule    claferargs'   (imodule, genv)    scopes              otherTokens' = (flatten output, filter ((/= NoTrace) . snd) $ mapLineCol output)
   where
 
   genScopes :: [(UID, Integer)] -> String
@@ -54,16 +55,26 @@ genModule    claferargs'   (imodule, genv)    scopes            = (flatten outpu
 
   forScopes' = "for 1" ++ genScopes scopes
   genEnv = GenEnv claferargs' (uidClaferMap genv) forScopes'
-  output = header genEnv +++ (cconcat $ map (genDeclaration genEnv) (_mDecls imodule))
+  output = header genEnv otherTokens' +++ (cconcat $ map (genDeclaration genEnv) (_mDecls imodule))
 
-header :: GenEnv -> Concat
-header    genEnv  = CString $ unlines
+header :: GenEnv -> [Token]     -> Concat
+header    genEnv    otherTokens' = CString $ unlines
     [ "open util/integer"
-    , "pred show {}"
+    , genAlloyEscapes otherTokens' ++ "pred show {}"
     , if (validate $ claferargs genEnv)
       then ""
       else "run show " ++ forScopes genEnv
     , ""]
+
+genAlloyEscapes :: [Token]  -> String
+genAlloyEscapes otherTokens' = concat $ map printAlloyEscape otherTokens'
+    where
+      printAlloyEscape (PT _ (T_PosAlloy code)) =  let
+          code' = fromJust $ stripPrefix "[alloy|" code
+        in
+          (take ((length code') - 2) code') ++ "\n"
+
+      printAlloyEscape _                        = ""
 
 -- 07th Mayo 2012 Rafael Olaechea
 genDeclaration :: GenEnv -> IElement -> Concat
@@ -425,7 +436,7 @@ genPExp'    genEnv    resPath     (PExp iType' pid' pos exp') = case exp' of
   IClaferId _ "integer" _ _ -> CString "Int"
   IClaferId _ "int" _ _ -> CString "Int"
   IClaferId _ "string" _ _ -> CString "Int"
-  IClaferId _ "ref" _ _ -> CString $ "@"  ++ getTClaferUID iType' ++ "_ref"
+  IClaferId _ "dref" _ _ -> CString $ "@"  ++ getTClaferUID iType' ++ "_ref"
     where
       getTClaferUID (Just TMap{_so = TClafer{_hi = [u]}}) = u
       getTClaferUID (Just TMap{_so = TClafer{_hi = (u:_)}}) = u

@@ -1,3 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=9">
+<style>.identifier{}
+.keyword{font-weight:bold}
+.reference{}
+.code { background-color: lightgray; padding: 5px 5px 5px 5px; border: 1px solid darkgray; margin-bottom: 15px; 
+        font-family: Pragmata, Menlo, 'DejaVu LGC Sans Mono', 'DejaVu Sans Mono', Consolas, 'Everson Mono', 'Lucida Console', 'Andale Mono', 'Nimbus Mono L', 'Liberation Mono', FreeMono, 'Osaka Monospaced', Courier, 'New Courier', monospace; }
+.standalonecomment { color: green; font-style:italic }
+.inlinecomment { color: green; padding-left:20px; font-style:italic }
+.error{background-color: yellow; color: red }
+.deprecated{color: orange }
+.indent{padding-left:20px}
+a[href$='Lookup failed'] {color: red}
+a[href$='Uid not found'] {color: red}
+a[href$='Ambiguous name'] {color: yellow}
+
+</style></head>
+<body>
 
 <div>
 <span class="keyword">abstract</span> <span class="claferDecl" id="c0_Value">Value</span></div>
@@ -31,10 +51,12 @@
 <!-- # FRAGMENT /-->
 
 <div>
-<span class="keyword">enum</span> <span class="claferDecl" id="Lookup failed">Effect</span> = <span class="claferDecl" id="c0_Permit">Permit</span> | <span class="claferDecl" id="c0_Deny">Deny</span> | <span class="claferDecl" id="c0_NotApplicable">NotApplicable</span> | <span class="claferDecl" id="c0_Indeterminate">Indeterminate</span></div>
+<span class="keyword">enum</span> Effect = <span class="claferDecl" id="c0_Permit">Permit</span> | <span class="claferDecl" id="c0_Deny">Deny</span> | <span class="claferDecl" id="c0_NotApplicable">NotApplicable</span> | <span class="claferDecl" id="c0_Indeterminate">Indeterminate</span></div>
 
 <!-- # FRAGMENT /-->
 
 <div>
-<span class="keyword">enum</span> <span class="claferDecl" id="Lookup failed">CombiningAlgo</span> = <span class="claferDecl" id="c0_PermitOverrides">PermitOverrides</span> | <span class="claferDecl" id="c0_DenyOverrides">DenyOverrides</span> | <span class="claferDecl" id="c0_OnlyOneApplicable">OnlyOneApplicable</span></div>
+<span class="keyword">enum</span> CombiningAlgo = <span class="claferDecl" id="c0_PermitOverrides">PermitOverrides</span> | <span class="claferDecl" id="c0_DenyOverrides">DenyOverrides</span> | <span class="claferDecl" id="c0_OnlyOneApplicable">OnlyOneApplicable</span></div>
 
+</body>
+</html>

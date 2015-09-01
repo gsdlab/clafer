@@ -1,0 +1,25 @@
+a
+  b -> e
+    [ f = h ]
+    [ this.f = h ]
+    [ this.f.dref = h ]
+    [ this.f.dref.dref = h ]
+  [ b.f = h ]
+  [ this.b.f = h ]
+  [ this.b.f.dref = h ]
+  [ this.b.f.dref.dref = h ]
+  c
+    d
+      [ b = e ]
+      [ parent.parent.b = e ]
+      [ this.parent.parent.b.dref = e ]
+    [ b.f = g ]
+    [ parent.b.f = g ]
+    [ this.parent.b.f.dref = g ]
+    [ this.parent.b.f.dref.dref = h ]
+e
+  f -> g ?
+
+g -> h
+
+h

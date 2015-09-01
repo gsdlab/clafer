@@ -36,7 +36,6 @@ import Prelude
 import Language.ClaferT
 import Language.Clafer.Common
 import Language.Clafer.Intermediate.Intclafer
-import qualified Language.Clafer.Intermediate.Intclafer as I
 
 -- | this environment is created for each clafer
 data SEnv
@@ -54,7 +53,7 @@ data SEnv
 
 -- | How a given name was resolved
 data HowResolved
-  = Special     -- ^ "this", "parent", "ref", "root", and "children"
+  = Special     -- ^ "this", "parent", "dref", "root", and "children"
   | TypeSpecial -- ^ primitive type: "integer", "string"
   | Binding     -- ^ local variable (in constraints)
   | Subclafers  -- ^ clafer's descendant
@@ -140,27 +139,22 @@ resolveElement env x = case x of
   IEConstraint isHard' pexp  -> IEConstraint isHard' <$> resolvePExp env pexp
   IEGoal isMaximize' pexp  -> IEGoal isMaximize' <$> resolvePExp env pexp
 
-
-resolvePExp :: SEnv -> PExp -> Resolve PExp
-resolvePExp env pexp =
-  do
-    exp' <- resolveIExp (_inPos pexp) env $ _exp pexp
-    return $ pexp {_exp = exp'}
-
-resolveIExp :: Span -> SEnv -> IExp -> Resolve IExp
-resolveIExp pos' env x = case x of
-  IDeclPExp quant' decls' pexp -> do
+resolvePExp :: SEnv -> PExp                          -> Resolve PExp
+resolvePExp    env     pexp@PExp{_exp=x} = case x of
+  IDeclPExp quant' decls' pexp2 -> do
     let (decls'', env') = runState (runExceptT $ (mapM (ExceptT . processDecl) decls')) env
-    IDeclPExp quant' <$> decls'' <*> resolvePExp env' pexp
+    exp' <- IDeclPExp quant' <$> decls'' <*> resolvePExp env' pexp2
+    return pexp{_exp=exp'}
 
-  IFunExp op' exps' -> if op' == iJoin then resNav else IFunExp op' <$> mapM (resolvePExp env) exps'
-  IInt _ -> return x
-  IDouble _ -> return x
-  IReal _ -> return x
-  IStr _ -> return x
-  IClaferId _ _ _ _ -> resNav
-  where
-  resNav = fst <$> resolveNav pos' env x True
+  IFunExp "." _ -> fst <$> resolveNav env pexp True
+  IFunExp op' exps' -> do
+                         exp' <- IFunExp op' <$> mapM (resolvePExp env) exps'
+                         return $ pexp {_exp = exp'}
+  IInt _ -> return pexp
+  IDouble _ -> return pexp
+  IReal _ -> return pexp
+  IStr _ -> return pexp
+  IClaferId{} -> fst <$> resolveNav env pexp True
 
 liftError :: Monad m => Either e a -> ExceptT e m a
 liftError = ExceptT . return
@@ -168,45 +162,56 @@ liftError = ExceptT . return
 processDecl :: MonadState SEnv m => IDecl -> m (Resolve IDecl)
 processDecl decl = runExceptT $ do
   env <- lift $ get
-  (body', path) <- liftError $ resolveNav (_inPos $ _body decl) env (I._exp $ _body decl) True
+  (body', path) <- liftError $ resolveNav env (_body decl) True
   lift $ modify (\e -> e { bindings = (_decls decl, path) : bindings e })
-  return $ decl {_body = pExpDefPidPos body'}
+  return $ decl {_body = body'}
 
-resolveNav :: Span -> SEnv -> IExp -> Bool -> Resolve (IExp, [IClafer])
-resolveNav pos' env x isFirst = case x of
-  IFunExp _ (pexp0:pexp:_) -> do
-    (exp0', path) <- resolveNav (_inPos pexp0) env (I._exp pexp0) True
-    (exp', path') <- resolveNav (_inPos pexp) env {context = listToMaybe path, resPath = path}
-                     (I._exp pexp) False
-    return (IFunExp iJoin [pexp0{I._exp=exp0'}, pexp{I._exp=exp'}], path')
-  IClaferId modName' id' _ _ -> out
-    where
-    out
-      | isFirst   = mkPath env <$> resolveName pos' env id'
-      | otherwise = mkPath' modName' <$> resolveImmName pos' env id'
+resolveNav :: SEnv -> PExp                         -> Bool   -> Resolve (PExp, [IClafer])
+resolveNav    env     pexp0@PExp{_inPos=pos', _exp=x} isFirst = case x of
+  IFunExp "." [pexp1,pexp2] -> do
+    (pexp1', path1) <- resolveNav env                                               pexp1 True
+    (pexp2', path2) <- resolveNav env{context = listToMaybe path1, resPath = path1} pexp2 False
+    -- if `dref` was added to the RHS we need to left rotate the tree
+    case pexp2' of
+      PExp{_exp=IFunExp "." [pexp2'l, pexp2'r]} -> (case pexp2'l of
+        PExp{_exp=IClaferId{_sident="dref"}} ->
+          let -- move the `dref` to the LHS
+            pexp0' = pexp0{_exp=IFunExp iJoin [pexp1', pexp2'l]}
+          in -- keep the RHS as is
+            return (pexp2{_exp=IFunExp iJoin [pexp0', pexp2'r]}, path2)
+        _ -> return (pexp0{_exp=IFunExp iJoin [pexp1', pexp2']}, path2)
+        )
+      _ -> return (pexp0{_exp=IFunExp iJoin [pexp1', pexp2']}, path2)
+  IClaferId modName' id' _ _ -> if isFirst
+    then do
+           (exp', path') <- mkPath pos' env <$> resolveName pos' env id'
+           return (pexp0{_exp=exp'}, path')
+    else do
+           (exp', path') <- mkPath' pos' modName' <$> resolveImmName pos' env id'
+           return (pexp0{_exp=exp'}, path')
   y -> throwError $ SemanticErr pos' $ "Cannot resolve nav of " ++ show y
 
 -- | Depending on how resolved construct a navigation path from 'context env'
-mkPath :: SEnv -> (HowResolved, String, [IClafer]) -> (IExp, [IClafer])
-mkPath    env     (howResolved, id',    path)       = case howResolved of
+mkPath :: Span -> SEnv -> (HowResolved, String, [IClafer]) -> (IExp, [IClafer])
+mkPath    pos'    env     (howResolved, id',    path)       = case howResolved of
   Binding -> (IClaferId "" id' True Nothing, path)
   Special -> (specIExp id', path)
   TypeSpecial -> (IClaferId "" id' True (Just id'), path)
   Subclafers -> (toNav $ tail $ reverse $ map toTuple path, path)
-  Ancestor -> (toNav' $ adjustAncestor (fromJust $ context env)
+  Ancestor -> (toNav' pos' $ adjustAncestor (fromJust $ context env)
                                        (reverse $ map toTuple $ resPath env)
                                        (reverse $ map toTuple path), path)
-  Reference -> (toNav' $ reverse $ map toTuple path, path)
-  AbsClafer -> (toNav' $ reverse $ map toTuple path, path)
-  TopClafer -> (toNav' $ reverse $ map toTuple path, path)
+  Reference -> (toNav' pos' $ reverse $ map toTuple path, path)
+  AbsClafer -> (toNav' pos' $ reverse $ map toTuple path, path)
+  TopClafer -> (toNav' pos' $ reverse $ map toTuple path, path)
   where
   toNav tuplePath = foldl'
-          (\exp' (id'', cbind) -> IFunExp iJoin [pExpDefPidPos exp', mkPLClaferId id'' (fromMaybe False $ isTopLevel <$> cbind) $ _uid <$> cbind])
+          (\exp' (id'', cbind) -> IFunExp iJoin [pExpDefPid pos' exp', mkPLClaferId pos' id'' (fromMaybe False $ isTopLevel <$> cbind) $ _uid <$> cbind])
           (IClaferId "" thisIdent True (_uid <$> context env))
           tuplePath
   specIExp "this"     = IClaferId "" thisIdent True (_uid <$> context env)
   specIExp "parent"   = toNav [("parent", Just $ head path)]
-  specIExp "ref"      = toNav [("ref", Just $ head path)]
+  specIExp "dref"     = toNav [("dref", Just $ head path)]
   specIExp "root"     = IClaferId "" rootIdent True (Just rootIdent)
   specIExp "children" = toNav [(id', Just $ head path)]
   specIExp i          = error $ "[BUG] ResolverName.specIExp: Unknown special id: " ++ i
@@ -214,8 +219,9 @@ mkPath    env     (howResolved, id',    path)       = case howResolved of
 toTuple :: IClafer->(String, Maybe IClafer)
 toTuple c = (_uid c, Just c)
 
-toNav' :: [(String, Maybe IClafer)] -> IExp
-toNav' tuplePath = (mkIFunExp iJoin $ map (\(id', cbind) -> IClaferId "" id' (fromMaybe False $ isTopLevel <$> cbind) (_uid <$> cbind)) tuplePath) :: IExp
+toNav' :: Span -> [(String, Maybe IClafer)] -> IExp
+toNav'    pos'    tuplePath                  =
+  (mkIFunExp pos' iJoin $ map (\(id', cbind) -> IClaferId "" id' (fromMaybe False $ isTopLevel <$> cbind) (_uid <$> cbind)) tuplePath) :: IExp
 
 adjustAncestor :: IClafer -> [(String, Maybe IClafer)] -> [(String, Maybe IClafer)] -> [(String, Maybe IClafer)]
 adjustAncestor ctx cPath rPath = (thisIdent, Just ctx) : parents ++ (fromJust $ stripPrefix prefix rPath)
@@ -225,9 +231,9 @@ adjustAncestor ctx cPath rPath = (thisIdent, Just ctx) : parents ++ (fromJust $ 
   eqIds a b = (fst a) == (fst b)
 
 
-mkPath' :: String -> (HowResolved, String, [IClafer]) -> (IExp, [IClafer])
-mkPath' modName' (howResolved, id', path) = case howResolved of
-  Reference -> (toNav' (zip ["ref", id'] (map Just path)), path)
+mkPath' :: Span -> String -> (HowResolved, String, [IClafer]) -> (IExp, [IClafer])
+mkPath'    pos' modName'  (howResolved, id', path)          = case howResolved of
+  Reference -> (toNav' pos' (zip ["dref", id'] (map Just path)), path)
   _ -> (IClaferId modName' id' False (_uid <$> bind), path)
   where
   bind = case path of

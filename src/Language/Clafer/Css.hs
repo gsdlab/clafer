@@ -34,6 +34,7 @@ css = unlines [
   ".standalonecomment { color: green; font-style:italic }",
   ".inlinecomment { color: green; padding-left:20px; font-style:italic }",
   ".error{background-color: yellow; color: red }",
+  ".deprecated{color: orange }",
   ".indent{padding-left:20px}",
   "a[href$='Lookup failed'] {color: red}",
   "a[href$='Uid not found'] {color: red}",

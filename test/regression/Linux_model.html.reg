@@ -1,3 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=9">
+<style>.identifier{}
+.keyword{font-weight:bold}
+.reference{}
+.code { background-color: lightgray; padding: 5px 5px 5px 5px; border: 1px solid darkgray; margin-bottom: 15px; 
+        font-family: Pragmata, Menlo, 'DejaVu LGC Sans Mono', 'DejaVu Sans Mono', Consolas, 'Everson Mono', 'Lucida Console', 'Andale Mono', 'Nimbus Mono L', 'Liberation Mono', FreeMono, 'Osaka Monospaced', Courier, 'New Courier', monospace; }
+.standalonecomment { color: green; font-style:italic }
+.inlinecomment { color: green; padding-left:20px; font-style:italic }
+.error{background-color: yellow; color: red }
+.deprecated{color: orange }
+.indent{padding-left:20px}
+a[href$='Lookup failed'] {color: red}
+a[href$='Uid not found'] {color: red}
+a[href$='Ambiguous name'] {color: yellow}
+
+</style></head>
+<body>
 
 <div>
 <span class="keyword">abstract</span> <span class="claferDecl" id="c0_tristate">tristate</span>
@@ -21,11 +41,11 @@
     <div class="indent">
     <span class="claferDecl" id="c0_FFS2_FS_DEBUG">FFS2_FS_DEBUG</span><span class="keyword"> -> </span><a href="#int"><span class="reference">int</span></a>
       <div class="indent">
-      <span class="keyword">[</span> <a href="#this"><span class="reference">this</span></a> = 0 <span class="keyword">]</span></div>
+      <span class="keyword">[</span> <span class="keyword">this</span> = 0 <span class="keyword">]</span></div>
       <div class="indent">
       <span class="claferDecl" id="c2_display">display</span><span class="keyword"> -> </span><a href="#string"><span class="reference">string</span></a> = "JFFS2 Debug level (0=quiet, 2=noisy)"</div>
       <div class="indent">
-      <span class="keyword">[</span> 0 &lt;= <a href="#this"><span class="reference">this</span></a> &amp;&amp; <a href="#this"><span class="reference">this</span></a> &lt;= 2 <span class="keyword">]</span></div>
+      <span class="keyword">[</span> 0 &lt;= <span class="keyword">this</span> &amp;&amp; <span class="keyword">this</span> &lt;= 2 <span class="keyword">]</span></div>
     </div>
     <div class="indent">
     <span class="claferDecl" id="c0_JFFS2_FS_WRITEBUFFER">JFFS2_FS_WRITEBUFFER</span> ?</div>
@@ -90,3 +110,5 @@
 <div>
 <span class="claferDecl" id="c0_ZLIB_INFLATE">ZLIB_INFLATE</span></div>
 
+</body>
+</html>

@@ -9,7 +9,7 @@ abstract sig c0_Book
 sig c0_author
 { c0_author_ref : one c0_Author }
 { one @r_c0_author.this
-  (this.~@r_c0_author) in (this.(@c0_author_ref.(@r_c0_book.@c0_book_ref))) }
+  (this.~@r_c0_author) in (((this.@c0_author_ref).@r_c0_book).@c0_book_ref) }
 
 abstract sig c0_Author
 { r_c0_book : some c0_book }
@@ -18,7 +18,7 @@ abstract sig c0_Author
 sig c0_book
 { c0_book_ref : one c0_Book }
 { one @r_c0_book.this
-  (this.~@r_c0_book) in (this.(@c0_book_ref.(@r_c0_author.@c0_author_ref))) }
+  (this.~@r_c0_book) in (((this.@c0_book_ref).@r_c0_author).@c0_author_ref) }
 
 fact { 5 <= #c0_B and #c0_B <= 5 }
 sig c0_B extends c0_Book

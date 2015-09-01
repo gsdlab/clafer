@@ -1,6 +1,6 @@
 {-# LANGUAGE DeriveDataTypeable, RankNTypes, KindSignatures, FlexibleContexts #-}
 {-
- Copyright (C) 2012-2015 Kacper Bak, Jimmy Liang <http://gsd.uwaterloo.ca>
+ Copyright (C) 2012-2015 Kacper Bak, Jimmy Liang, Michal Antkiewicz <http://gsd.uwaterloo.ca>
 
  Permission is hereby granted, free of charge, to any person obtaining a copy of
  this software and associated documentation files (the "Software"), to deal in
@@ -42,6 +42,7 @@ import Language.Clafer.Intermediate.Intclafer
 type Result = String
 
 transIdent :: PosIdent -> String
+transIdent (PosIdent (_, "ref")) = "dref"
 transIdent (PosIdent (_, str)) = str
 
 mkIdent :: String -> PosIdent
@@ -75,27 +76,22 @@ getSuperId pexp' = error $ "[Bug] Commmon.getSuperId called on unexpected argume
 getRefIds :: PExp -> [String]
 getRefIds (PExp _ _ _ (IClaferId{ _sident = s})) = [s]
 getRefIds (PExp _ _ _ (IFunExp{_op=".", _exps = [_, rightExp]})) = getRefIds rightExp
-getRefIds (PExp _ _ _ (IFunExp{_op="ifthenelse", _exps = [_, leftExp, rightExp]})) = getRefIds leftExp ++ getRefIds rightExp
 getRefIds (PExp _ _ _ (IFunExp{_op="++", _exps = [leftExp, rightExp]})) = getRefIds leftExp ++ getRefIds rightExp
 getRefIds (PExp _ _ _ (IFunExp{_op=",",  _exps = [leftExp, rightExp]})) = getRefIds leftExp ++ getRefIds rightExp
 getRefIds (PExp _ _ _ (IFunExp{_op="--", _exps = [leftExp, rightExp]})) = getRefIds leftExp ++ getRefIds rightExp
 getRefIds (PExp _ _ _ (IFunExp{_op="**", _exps = [leftExp, rightExp]})) = getRefIds leftExp ++ getRefIds rightExp
-getRefIds (PExp _ _ _ (IFunExp{_op="<:", _exps = [_, rightExp]})) = getRefIds rightExp
-getRefIds (PExp _ _ _ (IFunExp{_op=":>", _exps = [leftExp, _]})) = getRefIds leftExp
 getRefIds (PExp _ _ _ (IInt _)) = [integerType]
 getRefIds (PExp _ _ _ (IDouble _)) = [doubleType]
 getRefIds (PExp _ _ _ (IReal _)) = [realType]
 getRefIds (PExp _ _ _ (IStr _)) = [stringType]
+getRefIds (PExp _ _ _ (IDeclPExp{_quant = ISome})) = []
 getRefIds pexp' = error $ "[Bug] Commmon.getRefIds called on unexpected argument '" ++ show pexp' ++ "'"
 
 isEqClaferId :: String -> IClafer -> Bool
 isEqClaferId    uid'      claf'    = _uid claf' == uid'
 
-mkPLClaferId :: CName -> Bool -> ClaferBinding -> PExp
-mkPLClaferId id' isTop' bind' = pExpDefPidPos $ IClaferId "" id' isTop' bind'
-
-pExpDefPidPos :: IExp -> PExp
-pExpDefPidPos = pExpDefPid noSpan
+mkPLClaferId :: Span -> CName -> Bool -> ClaferBinding -> PExp
+mkPLClaferId pos' id' isTop' bind' = pExpDefPid pos' $ IClaferId "" id' isTop' bind'
 
 pExpDefPid :: Span -> IExp -> PExp
 pExpDefPid = pExpDef ""
@@ -150,10 +146,10 @@ createUidIClaferMap    iModule  = foldl'
     allClafers :: [ IClafer ]
     allClafers = universeOn biplate iModule
     rootClafer = IClafer noSpan False (Just $ IGCard False (0, -1)) rootIdent rootIdent "" Nothing Nothing (Just (1,1)) (1, 1) (_mDecls iModule)
-    integerClafer = IClafer noSpan False (Just $ IGCard False (0, -1)) integerType integerType "" (Just $ pExpDefPidPos $ IClaferId "" doubleType True $ Just doubleType) Nothing (Just (1,1)) (1, 1) []
-    intClafer = IClafer noSpan False (Just $ IGCard False (0, -1)) "int" "int" "" (Just $ pExpDefPidPos $ IClaferId "" doubleType True $ Just doubleType) Nothing (Just (1,1)) (1, 1) []
+    integerClafer = IClafer noSpan False (Just $ IGCard False (0, -1)) integerType integerType "" (Just $ pExpDefPid noSpan $ IClaferId "" doubleType True $ Just doubleType) Nothing (Just (1,1)) (1, 1) []
+    intClafer = IClafer noSpan False (Just $ IGCard False (0, -1)) "int" "int" "" (Just $ pExpDefPid noSpan $ IClaferId "" doubleType True $ Just doubleType) Nothing (Just (1,1)) (1, 1) []
     stringClafer = IClafer noSpan False (Just $ IGCard False (0, -1)) stringType stringType "" Nothing Nothing (Just (1,1)) (1, 1) []
-    doubleClafer = IClafer noSpan False (Just $ IGCard False (0, -1)) doubleType doubleType "" (Just $ pExpDefPidPos $ IClaferId "" realType True $ Just realType) Nothing (Just (1,1)) (1, 1) []
+    doubleClafer = IClafer noSpan False (Just $ IGCard False (0, -1)) doubleType doubleType "" (Just $ pExpDefPid noSpan $ IClaferId "" realType True $ Just realType) Nothing (Just (1,1)) (1, 1) []
     realClafer = IClafer noSpan False (Just $ IGCard False (0, -1)) realType realType "" Nothing Nothing (Just (1,1)) (1, 1) []
     booleanClafer = IClafer noSpan False (Just $ IGCard False (0, -1)) booleanType booleanType "" Nothing Nothing (Just (1,1)) (1, 1) []
     clafer = IClafer noSpan False (Just $ IGCard False (0, -1)) baseClafer baseClafer "" Nothing Nothing (Just (1,1)) (1, 1) []
@@ -488,9 +484,9 @@ binOps = logBinOps ++ relBinOps ++ arithBinOps ++ setBinOps
 iIfThenElse :: String
 iIfThenElse   = "ifthenelse"
 
-mkIFunExp :: String -> [IExp] -> IExp
-mkIFunExp _ (x:[]) = x
-mkIFunExp op' xs = foldl1 (\x y -> IFunExp op' $ map (PExp Nothing "" noSpan) [x,y]) xs
+mkIFunExp :: Span -> String -> [IExp] -> IExp
+mkIFunExp _ _ (x:[]) = x
+mkIFunExp pos' op' xs = foldl1 (\x y -> IFunExp op' $ map (PExp Nothing "" pos') [x,y]) xs
 
 toLowerS :: String -> String
 toLowerS "" = ""
@@ -511,14 +507,14 @@ thisIdent = "this"
 parentIdent :: String
 parentIdent = "parent"
 
-refIdent :: String
-refIdent = "ref"
+drefIdent :: String
+drefIdent = "dref"
 
 childrenIdent :: String
 childrenIdent = "children"
 
 specialNames :: [String]
-specialNames = [thisIdent, parentIdent, refIdent, rootIdent, childrenIdent]
+specialNames = [thisIdent, parentIdent, drefIdent, rootIdent, childrenIdent]
 
 isSpecial :: String -> Bool
 isSpecial = flip elem specialNames

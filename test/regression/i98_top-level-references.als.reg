@@ -16,7 +16,7 @@ sig c0_married
 
 abstract sig c0_NewBorn
 { c0_NewBorn_ref : one c0_Person }
-{ ((c0_Person.(@r_c0_age.@c0_age_ref)) = 0) && (no c0_Person.@r_c0_married) }
+{ (((c0_Person.@r_c0_age).@c0_age_ref) = 0) && (no c0_Person.@r_c0_married) }
 
 fact {  all disj x, y : c0_NewBorn | (x.@c0_NewBorn_ref) != (y.@c0_NewBorn_ref)  }
 one sig c0_Alice extends c0_Person

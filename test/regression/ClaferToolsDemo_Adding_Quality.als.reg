@@ -31,10 +31,10 @@ abstract sig c0_MobilePhone
 , r_c0_total_batterylife : one c0_total_batterylife
 , r_c0_total_security : one c0_total_security
 , r_c0_total_cost : one c0_total_cost }
-{ (some this.@r_c0_total_productivity) => ((this.(@r_c0_total_productivity.@c0_total_productivity_ref)) = (sum temp : (c0_Feature.@r_c0_productivity) | temp.@c0_productivity_ref))
-  (some this.@r_c0_total_batterylife) => ((this.(@r_c0_total_batterylife.@c0_total_batterylife_ref)) = (sum temp : (c0_Feature.@r_c0_batterylife) | temp.@c0_batterylife_ref))
-  (some this.@r_c0_total_security) => ((this.(@r_c0_total_security.@c0_total_security_ref)) = (sum temp : (c0_Feature.@r_c0_security) | temp.@c0_security_ref))
-  (some this.@r_c0_total_cost) => ((this.(@r_c0_total_cost.@c0_total_cost_ref)) = (sum temp : (c0_Feature.@r_c0_cost) | temp.@c0_cost_ref)) }
+{ (some this.@r_c0_total_productivity) => (((this.@r_c0_total_productivity).@c0_total_productivity_ref) = (sum temp : (c0_Feature.@r_c0_productivity) | temp.@c0_productivity_ref))
+  (some this.@r_c0_total_batterylife) => (((this.@r_c0_total_batterylife).@c0_total_batterylife_ref) = (sum temp : (c0_Feature.@r_c0_batterylife) | temp.@c0_batterylife_ref))
+  (some this.@r_c0_total_security) => (((this.@r_c0_total_security).@c0_total_security_ref) = (sum temp : (c0_Feature.@r_c0_security) | temp.@c0_security_ref))
+  (some this.@r_c0_total_cost) => (((this.@r_c0_total_cost).@c0_total_cost_ref) = (sum temp : (c0_Feature.@r_c0_cost) | temp.@c0_cost_ref)) }
 
 sig c0_Connectivity extends c0_Feature
 { r_c0_Bluetooth : one c0_Bluetooth
@@ -43,10 +43,10 @@ sig c0_Connectivity extends c0_Feature
 , r_c0_WiFi : lone c0_WiFi
 , r_c0_USB : lone c0_USB }
 { one @r_c0_Connectivity.this
-  (this.(@r_c0_batterylife.@c0_batterylife_ref)) = (-1.mul[12])
-  (this.(@r_c0_productivity.@c0_productivity_ref)) = 14
-  (this.(@r_c0_security.@c0_security_ref)) = 43
-  (this.(@r_c0_cost.@c0_cost_ref)) = 101 }
+  ((this.@r_c0_batterylife).@c0_batterylife_ref) = (-1.mul[12])
+  ((this.@r_c0_productivity).@c0_productivity_ref) = 14
+  ((this.@r_c0_security).@c0_security_ref) = 43
+  ((this.@r_c0_cost).@c0_cost_ref) = 101 }
 
 sig c0_Bluetooth
 { r_c0_Bluetooth20EDR : lone c0_Bluetooth20EDR
@@ -58,58 +58,58 @@ sig c0_Bluetooth
 sig c0_Bluetooth20EDR extends c0_Feature
 {}
 { one @r_c0_Bluetooth20EDR.this
-  (this.(@r_c0_batterylife.@c0_batterylife_ref)) = (-1.mul[4])
-  (this.(@r_c0_productivity.@c0_productivity_ref)) = 1
-  (this.(@r_c0_security.@c0_security_ref)) = (-1.mul[15])
-  (this.(@r_c0_cost.@c0_cost_ref)) = 1 }
+  ((this.@r_c0_batterylife).@c0_batterylife_ref) = (-1.mul[4])
+  ((this.@r_c0_productivity).@c0_productivity_ref) = 1
+  ((this.@r_c0_security).@c0_security_ref) = (-1.mul[15])
+  ((this.@r_c0_cost).@c0_cost_ref) = 1 }
 
 sig c0_Bluetooth21EDR extends c0_Feature
 {}
 { one @r_c0_Bluetooth21EDR.this
-  (this.(@r_c0_batterylife.@c0_batterylife_ref)) = (-1.mul[2])
-  (this.(@r_c0_productivity.@c0_productivity_ref)) = 4
-  (this.(@r_c0_security.@c0_security_ref)) = (-1.mul[10])
-  (this.(@r_c0_cost.@c0_cost_ref)) = 1 }
+  ((this.@r_c0_batterylife).@c0_batterylife_ref) = (-1.mul[2])
+  ((this.@r_c0_productivity).@c0_productivity_ref) = 4
+  ((this.@r_c0_security).@c0_security_ref) = (-1.mul[10])
+  ((this.@r_c0_cost).@c0_cost_ref) = 1 }
 
 sig c0_Bluetooth40 extends c0_Feature
 {}
 { one @r_c0_Bluetooth40.this
-  (this.(@r_c0_batterylife.@c0_batterylife_ref)) = (-1.mul[1])
-  (this.(@r_c0_productivity.@c0_productivity_ref)) = 16
-  (this.(@r_c0_security.@c0_security_ref)) = (-1.mul[2])
-  (this.(@r_c0_cost.@c0_cost_ref)) = 2 }
+  ((this.@r_c0_batterylife).@c0_batterylife_ref) = (-1.mul[1])
+  ((this.@r_c0_productivity).@c0_productivity_ref) = 16
+  ((this.@r_c0_security).@c0_security_ref) = (-1.mul[2])
+  ((this.@r_c0_cost).@c0_cost_ref) = 2 }
 
 sig c0_GSM extends c0_Feature
 {}
 { one @r_c0_GSM.this
-  (this.(@r_c0_batterylife.@c0_batterylife_ref)) = (-1.mul[2])
-  (this.(@r_c0_productivity.@c0_productivity_ref)) = 2
-  (this.(@r_c0_security.@c0_security_ref)) = (-1.mul[10])
-  (this.(@r_c0_cost.@c0_cost_ref)) = 1 }
+  ((this.@r_c0_batterylife).@c0_batterylife_ref) = (-1.mul[2])
+  ((this.@r_c0_productivity).@c0_productivity_ref) = 2
+  ((this.@r_c0_security).@c0_security_ref) = (-1.mul[10])
+  ((this.@r_c0_cost).@c0_cost_ref) = 1 }
 
 sig c0_LTE extends c0_Feature
 {}
 { one @r_c0_LTE.this
-  (this.(@r_c0_batterylife.@c0_batterylife_ref)) = (-1.mul[1])
-  (this.(@r_c0_productivity.@c0_productivity_ref)) = 16
-  (this.(@r_c0_security.@c0_security_ref)) = (-1.mul[3])
-  (this.(@r_c0_cost.@c0_cost_ref)) = 3 }
+  ((this.@r_c0_batterylife).@c0_batterylife_ref) = (-1.mul[1])
+  ((this.@r_c0_productivity).@c0_productivity_ref) = 16
+  ((this.@r_c0_security).@c0_security_ref) = (-1.mul[3])
+  ((this.@r_c0_cost).@c0_cost_ref) = 3 }
 
 sig c0_WiFi extends c0_Feature
 {}
 { one @r_c0_WiFi.this
-  (this.(@r_c0_batterylife.@c0_batterylife_ref)) = (-1.mul[10])
-  (this.(@r_c0_productivity.@c0_productivity_ref)) = 20
-  (this.(@r_c0_security.@c0_security_ref)) = (-1.mul[15])
-  (this.(@r_c0_cost.@c0_cost_ref)) = 20 }
+  ((this.@r_c0_batterylife).@c0_batterylife_ref) = (-1.mul[10])
+  ((this.@r_c0_productivity).@c0_productivity_ref) = 20
+  ((this.@r_c0_security).@c0_security_ref) = (-1.mul[15])
+  ((this.@r_c0_cost).@c0_cost_ref) = 20 }
 
 sig c0_USB extends c0_Feature
 {}
 { one @r_c0_USB.this
-  (this.(@r_c0_batterylife.@c0_batterylife_ref)) = 10
-  (this.(@r_c0_productivity.@c0_productivity_ref)) = 20
-  (this.(@r_c0_security.@c0_security_ref)) = 0
-  (this.(@r_c0_cost.@c0_cost_ref)) = 3 }
+  ((this.@r_c0_batterylife).@c0_batterylife_ref) = 10
+  ((this.@r_c0_productivity).@c0_productivity_ref) = 20
+  ((this.@r_c0_security).@c0_security_ref) = 0
+  ((this.@r_c0_cost).@c0_cost_ref) = 3 }
 
 sig c0_Battery
 { r_c0_LiBattery1150 : lone c0_LiBattery1150
@@ -120,18 +120,18 @@ sig c0_Battery
 sig c0_LiBattery1150 extends c0_Feature
 {}
 { one @r_c0_LiBattery1150.this
-  (this.(@r_c0_batterylife.@c0_batterylife_ref)) = 60
-  (this.(@r_c0_productivity.@c0_productivity_ref)) = 0
-  (this.(@r_c0_security.@c0_security_ref)) = 0
-  (this.(@r_c0_cost.@c0_cost_ref)) = 10 }
+  ((this.@r_c0_batterylife).@c0_batterylife_ref) = 60
+  ((this.@r_c0_productivity).@c0_productivity_ref) = 0
+  ((this.@r_c0_security).@c0_security_ref) = 0
+  ((this.@r_c0_cost).@c0_cost_ref) = 10 }
 
 sig c0_LiBattery1400 extends c0_Feature
 {}
 { one @r_c0_LiBattery1400.this
-  (this.(@r_c0_batterylife.@c0_batterylife_ref)) = 70
-  (this.(@r_c0_productivity.@c0_productivity_ref)) = 0
-  (this.(@r_c0_security.@c0_security_ref)) = 0
-  (this.(@r_c0_cost.@c0_cost_ref)) = 15 }
+  ((this.@r_c0_batterylife).@c0_batterylife_ref) = 70
+  ((this.@r_c0_productivity).@c0_productivity_ref) = 0
+  ((this.@r_c0_security).@c0_security_ref) = 0
+  ((this.@r_c0_cost).@c0_cost_ref) = 15 }
 
 sig c0_total_productivity
 { c0_total_productivity_ref : one Int }

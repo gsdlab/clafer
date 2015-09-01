@@ -1,0 +1,28 @@
+abstract Person
+    spouse -> Person ?
+
+Alice : Person
+  [ spouse = Bob ]
+
+Bob : Person
+assert [ Bob.spouse = Alice ]
+
+Carol : Person
+  [ no spouse ]
+
+Dave : Person
+assert [ no Dave.spouse ]
+
+[alloy|
+open util/relation
+
+fact {
+symmetric[r_c0_spouse . c0_spouse_ref]
+irreflexive[r_c0_spouse . c0_spouse_ref]
+}
+|]
+
+[choco|
+//symmetric[r_c0_spouse . c0_spouse_ref]
+//irreflexive[r_c0_spouse . c0_spouse_ref]
+|]

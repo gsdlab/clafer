@@ -1,3 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=9">
+<style>.identifier{}
+.keyword{font-weight:bold}
+.reference{}
+.code { background-color: lightgray; padding: 5px 5px 5px 5px; border: 1px solid darkgray; margin-bottom: 15px; 
+        font-family: Pragmata, Menlo, 'DejaVu LGC Sans Mono', 'DejaVu Sans Mono', Consolas, 'Everson Mono', 'Lucida Console', 'Andale Mono', 'Nimbus Mono L', 'Liberation Mono', FreeMono, 'Osaka Monospaced', Courier, 'New Courier', monospace; }
+.standalonecomment { color: green; font-style:italic }
+.inlinecomment { color: green; padding-left:20px; font-style:italic }
+.error{background-color: yellow; color: red }
+.deprecated{color: orange }
+.indent{padding-left:20px}
+a[href$='Lookup failed'] {color: red}
+a[href$='Uid not found'] {color: red}
+a[href$='Ambiguous name'] {color: yellow}
+
+</style></head>
+<body>
 
 <div>
 <span class="keyword">abstract</span> <span class="claferDecl" id="c0_TimeLevel">TimeLevel</span>
@@ -34,14 +54,14 @@
 <div>
 <span class="claferDecl" id="c0_Jan2012">Jan2012</span><span class="keyword"> : </span><a href="#c0_MonthLevel"><span class="reference">MonthLevel</span></a>
   <div class="indent">
-  <span class="keyword">[</span> <a href="#this"><span class="reference">this</span></a>.<a href="#c0_aggregatesTo"><span class="reference">aggregatesTo</span></a> = <a href="#c0_Year2012"><span class="reference">Year2012</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_aggregatesTo"><span class="reference">aggregatesTo</span></a> = <a href="#c0_Year2012"><span class="reference">Year2012</span></a> <span class="keyword">]</span></div>
 </div>
 
 
 <div>
 <span class="claferDecl" id="c0_Week1">Week1</span><span class="keyword"> : </span><a href="#c0_WeekLevel"><span class="reference">WeekLevel</span></a>
   <div class="indent">
-  <span class="keyword">[</span> <a href="#this"><span class="reference">this</span></a>.<a href="#c0_aggregatesTo"><span class="reference">aggregatesTo</span></a> = <a href="#c0_Jan2012"><span class="reference">Jan2012</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_aggregatesTo"><span class="reference">aggregatesTo</span></a> = <a href="#c0_Jan2012"><span class="reference">Jan2012</span></a> <span class="keyword">]</span></div>
 </div>
 
 
@@ -60,3 +80,5 @@
 <div>
 <span class="keyword">[</span> <a href="#c0_Week1AggregatesTo"><span class="reference">Week1AggregatesTo</span></a> = <a href="#c0_Jan2012"><span class="reference">Jan2012</span></a>, <a href="#c0_Year2012"><span class="reference">Year2012</span></a> <span class="keyword">]</span></div>
 
+</body>
+</html>

@@ -11,15 +11,15 @@ sig c0_energy
 
 one sig c0_c1 extends c0_Component
 {}
-{ (this.(@r_c0_energy.@c0_energy_ref)) = 1 }
+{ ((this.@r_c0_energy).@c0_energy_ref) = 1 }
 
 one sig c0_c2 extends c0_Component
 {}
-{ (this.(@r_c0_energy.@c0_energy_ref)) = 1 }
+{ ((this.@r_c0_energy).@c0_energy_ref) = 1 }
 
 one sig c0_c3 extends c0_Component
 {}
-{ (this.(@r_c0_energy.@c0_energy_ref)) = 1 }
+{ ((this.@r_c0_energy).@c0_energy_ref) = 1 }
 
 one sig c0_total
 { c0_total_ref : one Int }

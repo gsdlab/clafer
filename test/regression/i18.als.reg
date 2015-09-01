@@ -11,5 +11,5 @@ sig c0_s
 
 one sig c0_A1 extends c0_A
 {}
-{ (this.(@r_c0_s.@c0_s_ref)) = 0 }
+{ ((this.@r_c0_s).@c0_s_ref) = 0 }
 

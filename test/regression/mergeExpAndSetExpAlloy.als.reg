@@ -29,7 +29,7 @@ sig c0_likes
 one sig c0_Alice extends c0_Person
 { r_c1_Head : one c1_Head }
 { r_c1_Head in r_c0_Head
-  (this.(@r_c0_likes.@c0_likes_ref)) = c0_Ella }
+  ((this.@r_c0_likes).@c0_likes_ref) = c0_Ella }
 
 one sig c1_Head extends c0_Head
 {}

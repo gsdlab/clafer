@@ -1,6 +1,6 @@
 midYearReview : Meeting
     month -> Month = June
-    chair -> Member = Steven 
+    chair -> Member = Steven
     room -> Room = C
     [ some onlineParticipant ]
 
@@ -23,14 +23,14 @@ D : Room
 abstract Meeting
     chair -> Member
     participant -> Member +
-    [ chair.ref not in participant ]
+    [ chair not in participant ]
     onlineParticipant -> Member *
-    [ chair.ref not in onlineParticipant ]
+    [ chair not in onlineParticipant ]
     room -> Room
         [ this.capacity >= # participant + 1 ]
     [ some onlineParticipant => room.audioConferencing ]
 
-enum Month = June | July 
+enum Month = June | July
 
 abstract Member
 //# FRAGMENT

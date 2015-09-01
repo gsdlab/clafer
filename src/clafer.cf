@@ -7,9 +7,6 @@ entrypoints Module, Clafer, Constraint, Assertion, Goal ;
 --         happy -gca Language/Clafer/Front/Parclafer.y
 --         alex -g Language/Clafer/Front/Lexclafer.x
 
-comment "//" ;
-comment "/*" "*/" ;
-
 Module.         Module ::= [Declaration] ;
 
 EnumDecl.       Declaration ::= "enum" PosIdent "=" [EnumId] ;
@@ -19,7 +16,6 @@ Clafer.         Clafer ::= Abstract GCard PosIdent Super Reference Card Init Ele
 Constraint.     Constraint ::= "[" [Exp] "]" ;
 Assertion.      Assertion ::= "assert" "[" [Exp] "]";
 Goal.           Goal ::= "<<" [Exp] ">>" ;
-
 
 AbstractEmpty.  Abstract ::= ;
 Abstract.       Abstract ::= "abstract" ;
@@ -104,6 +100,7 @@ EUnion.         Exp15 ::= Exp15 "++" Exp16 ;
 EUnionCom.      Exp15 ::= Exp15 ","  Exp16 ;
 EDifference.    Exp16 ::= Exp16 "--" Exp17 ;
 EIntersection.  Exp17 ::= Exp17 "**"  Exp18 ;
+EIntersectionDeprecated.  Exp17 ::= Exp17 "&"  Exp18 ;
 EJoin.          Exp18 ::= Exp18 "."  Exp19 ;
 ClaferId.       Exp19 ::= Name ;
 EInt.           Exp19 ::= PosInteger ;
@@ -111,7 +108,7 @@ EDouble.        Exp19 ::= PosDouble ;
 EReal.          Exp19 ::= PosReal ;
 EStr.           Exp19 ::= PosString ;
 
-Decl.           Decl ::= [LocId] ":" Exp13 ;
+Decl.           Decl ::= [LocId] ":" Exp15 ;
 
 QuantNo.        Quant ::= "no" ;
 QuantNot.       Quant ::= "not" ;
@@ -137,3 +134,9 @@ position token PosDouble (digit+ '.' digit+ 'e' '-'? digit+) ;
 position token PosReal (digit+ '.' digit+) ;
 position token PosString '"' ((char - ["\"\\"]) | ('\\' ["\"\\nt"]))* '"' ;
 position token PosIdent (letter (letter|digit|'_'|'\'')*) ;
+
+-- non-parseable tokens
+position token PosLineComment   {"//"} (char-'\n')* ;
+position token PosBlockComment  {"/*"} ( (char-'*') | ('*'+ (char-["*/"]) ) )*  '*'+ '/' ;
+position token PosAlloy         {"[alloy|"} ( char-'|' | ('|'+ (char-']')) )* {"|]"} ;
+position token PosChoco         {"[choco|"} ( char-'|' | ('|'+ (char-']')) )* {"|]"} ;

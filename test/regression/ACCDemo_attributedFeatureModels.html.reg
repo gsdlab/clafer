@@ -1,3 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=9">
+<style>.identifier{}
+.keyword{font-weight:bold}
+.reference{}
+.code { background-color: lightgray; padding: 5px 5px 5px 5px; border: 1px solid darkgray; margin-bottom: 15px; 
+        font-family: Pragmata, Menlo, 'DejaVu LGC Sans Mono', 'DejaVu Sans Mono', Consolas, 'Everson Mono', 'Lucida Console', 'Andale Mono', 'Nimbus Mono L', 'Liberation Mono', FreeMono, 'Osaka Monospaced', Courier, 'New Courier', monospace; }
+.standalonecomment { color: green; font-style:italic }
+.inlinecomment { color: green; padding-left:20px; font-style:italic }
+.error{background-color: yellow; color: red }
+.deprecated{color: orange }
+.indent{padding-left:20px}
+a[href$='Lookup failed'] {color: red}
+a[href$='Uid not found'] {color: red}
+a[href$='Ambiguous name'] {color: yellow}
+
+</style></head>
+<body>
 
 <div>
 <span class="keyword">abstract</span> <span class="claferDecl" id="c0_Feature">Feature</span>
@@ -26,24 +46,24 @@
   <div class="indent">
   <span class="claferDecl" id="c0_ABS">ABS</span><span class="keyword"> : </span><a href="#c0_Feature"><span class="reference">Feature</span></a> ?
     <div class="indent">
-    <span class="keyword">[</span> <a href="#this"><span class="reference">this</span></a>.<a href="#c0_cost"><span class="reference">cost</span></a> = 2 <span class="keyword">]</span></div>
+    <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_cost"><span class="reference">cost</span></a> = 2 <span class="keyword">]</span></div>
   </div>
   <div class="indent">
   <span class="claferDecl" id="c0_CC">CC</span><span class="keyword"> : </span><a href="#c0_FuelFeature"><span class="reference">FuelFeature</span></a> ?
     <div class="indent">
-    <span class="keyword">[</span> <a href="#this"><span class="reference">this</span></a>.<a href="#c0_fuel"><span class="reference">fuel</span></a> = 1 <span class="keyword">]</span></div>
+    <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_fuel"><span class="reference">fuel</span></a> = 1 <span class="keyword">]</span></div>
     <div class="indent">
-    <span class="keyword">[</span> <a href="#this"><span class="reference">this</span></a>.<a href="#c0_comfort"><span class="reference">comfort</span></a> = 3 <span class="keyword">]</span></div>
+    <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_comfort"><span class="reference">comfort</span></a> = 3 <span class="keyword">]</span></div>
     <div class="indent">
-    <span class="keyword">[</span> <a href="#this"><span class="reference">this</span></a>.<a href="#c0_cost"><span class="reference">cost</span></a> = 4 <span class="keyword">]</span></div>
+    <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_cost"><span class="reference">cost</span></a> = 4 <span class="keyword">]</span></div>
     <div class="indent">
     <span class="claferDecl" id="c0_ACC">ACC</span><span class="keyword"> : </span><a href="#c0_FuelFeature"><span class="reference">FuelFeature</span></a> ?
       <div class="indent">
-      <span class="keyword">[</span> <a href="#this"><span class="reference">this</span></a>.<a href="#c0_fuel"><span class="reference">fuel</span></a> = 2 <span class="keyword">]</span></div>
+      <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_fuel"><span class="reference">fuel</span></a> = 2 <span class="keyword">]</span></div>
       <div class="indent">
-      <span class="keyword">[</span> <a href="#this"><span class="reference">this</span></a>.<a href="#c0_comfort"><span class="reference">comfort</span></a> = 6 <span class="keyword">]</span></div>
+      <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_comfort"><span class="reference">comfort</span></a> = 6 <span class="keyword">]</span></div>
       <div class="indent">
-      <span class="keyword">[</span> <a href="#this"><span class="reference">this</span></a>.<a href="#c0_cost"><span class="reference">cost</span></a> = 3 <span class="keyword">]</span></div>
+      <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_cost"><span class="reference">cost</span></a> = 3 <span class="keyword">]</span></div>
       <div class="indent">
       <span class="keyword">[</span> <a href="#c0_FCA"><span class="reference">FCA</span></a> <span class="keyword">]</span></div>
     </div>
@@ -53,41 +73,41 @@
     <div class="indent">
     <span class="claferDecl" id="c0_Automatic">Automatic</span><span class="keyword"> : </span><a href="#c0_FuelFeature"><span class="reference">FuelFeature</span></a>
       <div class="indent">
-      <span class="keyword">[</span> <a href="#this"><span class="reference">this</span></a>.<a href="#c0_fuel"><span class="reference">fuel</span></a> = 2 <span class="keyword">]</span></div>
+      <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_fuel"><span class="reference">fuel</span></a> = 2 <span class="keyword">]</span></div>
       <div class="indent">
-      <span class="keyword">[</span> <a href="#this"><span class="reference">this</span></a>.<a href="#c0_comfort"><span class="reference">comfort</span></a> = 2 <span class="keyword">]</span></div>
+      <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_comfort"><span class="reference">comfort</span></a> = 2 <span class="keyword">]</span></div>
       <div class="indent">
-      <span class="keyword">[</span> <a href="#this"><span class="reference">this</span></a>.<a href="#c0_cost"><span class="reference">cost</span></a> = 3 <span class="keyword">]</span></div>
+      <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_cost"><span class="reference">cost</span></a> = 3 <span class="keyword">]</span></div>
     </div>
     <div class="indent">
     <span class="claferDecl" id="c0_Manual">Manual</span><span class="keyword"> : </span><a href="#c0_FuelFeature"><span class="reference">FuelFeature</span></a>
       <div class="indent">
-      <span class="keyword">[</span> <a href="#this"><span class="reference">this</span></a>.<a href="#c0_fuel"><span class="reference">fuel</span></a> = 0 <span class="keyword">]</span></div>
+      <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_fuel"><span class="reference">fuel</span></a> = 0 <span class="keyword">]</span></div>
       <div class="indent">
-      <span class="keyword">[</span> <a href="#this"><span class="reference">this</span></a>.<a href="#c0_comfort"><span class="reference">comfort</span></a> = 1 <span class="keyword">]</span></div>
+      <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_comfort"><span class="reference">comfort</span></a> = 1 <span class="keyword">]</span></div>
       <div class="indent">
-      <span class="keyword">[</span> <a href="#this"><span class="reference">this</span></a>.<a href="#c0_cost"><span class="reference">cost</span></a> = 2 <span class="keyword">]</span></div>
+      <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_cost"><span class="reference">cost</span></a> = 2 <span class="keyword">]</span></div>
     </div>
   </div>
   <div class="indent">
   <span class="claferDecl" id="c0_FCA">FCA</span><span class="keyword"> : </span><a href="#c0_FuelFeature"><span class="reference">FuelFeature</span></a> ?
     <div class="indent">
-    <span class="keyword">[</span> <a href="#this"><span class="reference">this</span></a>.<a href="#c0_fuel"><span class="reference">fuel</span></a> = 2 <span class="keyword">]</span></div>
+    <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_fuel"><span class="reference">fuel</span></a> = 2 <span class="keyword">]</span></div>
     <div class="indent">
-    <span class="keyword">[</span> <a href="#this"><span class="reference">this</span></a>.<a href="#c0_comfort"><span class="reference">comfort</span></a> = 4 <span class="keyword">]</span></div>
+    <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_comfort"><span class="reference">comfort</span></a> = 4 <span class="keyword">]</span></div>
     <div class="indent">
-    <span class="keyword">[</span> <a href="#this"><span class="reference">this</span></a>.<a href="#c0_cost"><span class="reference">cost</span></a> = 5 <span class="keyword">]</span></div>
+    <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_cost"><span class="reference">cost</span></a> = 5 <span class="keyword">]</span></div>
     <div class="indent">
     <span class="keyword">xor</span> <span class="claferDecl" id="c0_Sensor">Sensor</span>
       <div class="indent">
       <span class="claferDecl" id="c0_Radar">Radar</span><span class="keyword"> : </span><a href="#c0_Feature"><span class="reference">Feature</span></a>
         <div class="indent">
-        <span class="keyword">[</span> <a href="#this"><span class="reference">this</span></a>.<a href="#c0_cost"><span class="reference">cost</span></a> = 2 <span class="keyword">]</span></div>
+        <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_cost"><span class="reference">cost</span></a> = 2 <span class="keyword">]</span></div>
       </div>
       <div class="indent">
       <span class="claferDecl" id="c0_Lidar">Lidar</span><span class="keyword"> : </span><a href="#c0_Feature"><span class="reference">Feature</span></a>
         <div class="indent">
-        <span class="keyword">[</span> <a href="#this"><span class="reference">this</span></a>.<a href="#c0_cost"><span class="reference">cost</span></a> = 4 <span class="keyword">]</span></div>
+        <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_cost"><span class="reference">cost</span></a> = 4 <span class="keyword">]</span></div>
       </div>
     </div>
     <div class="indent">
@@ -95,16 +115,16 @@
       <div class="indent">
       <span class="claferDecl" id="c0_Haptic">Haptic</span><span class="keyword"> : </span><a href="#c0_ComfortFeature"><span class="reference">ComfortFeature</span></a>
         <div class="indent">
-        <span class="keyword">[</span> <a href="#this"><span class="reference">this</span></a>.<a href="#c0_comfort"><span class="reference">comfort</span></a> = 4 <span class="keyword">]</span></div>
+        <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_comfort"><span class="reference">comfort</span></a> = 4 <span class="keyword">]</span></div>
         <div class="indent">
-        <span class="keyword">[</span> <a href="#this"><span class="reference">this</span></a>.<a href="#c0_cost"><span class="reference">cost</span></a> = 2 <span class="keyword">]</span></div>
+        <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_cost"><span class="reference">cost</span></a> = 2 <span class="keyword">]</span></div>
       </div>
       <div class="indent">
       <span class="claferDecl" id="c0_Audible">Audible</span><span class="keyword"> : </span><a href="#c0_ComfortFeature"><span class="reference">ComfortFeature</span></a>
         <div class="indent">
-        <span class="keyword">[</span> <a href="#this"><span class="reference">this</span></a>.<a href="#c0_comfort"><span class="reference">comfort</span></a> = 2 <span class="keyword">]</span></div>
+        <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_comfort"><span class="reference">comfort</span></a> = 2 <span class="keyword">]</span></div>
         <div class="indent">
-        <span class="keyword">[</span> <a href="#this"><span class="reference">this</span></a>.<a href="#c0_cost"><span class="reference">cost</span></a> = 1 <span class="keyword">]</span></div>
+        <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_cost"><span class="reference">cost</span></a> = 1 <span class="keyword">]</span></div>
       </div>
     </div>
   </div>
@@ -134,3 +154,5 @@
 <div>
 &lt;&lt;max <a href="#c0_aCar"><span class="reference">aCar</span></a>.<a href="#c0_total_comfort"><span class="reference">total_comfort</span></a>&gt;&gt;</div>
 
+</body>
+</html>

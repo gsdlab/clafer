@@ -34,8 +34,8 @@ friend -> Alice ++ Ella 2
 
 onlyAlice -> Alice ** Person
 
-assert [ Alice in onlyAlice.ref ]
-assert [ Ella not in onlyAlice.ref ]
+assert [ Alice in onlyAlice ]
+assert [ Ella not in onlyAlice ]
 
 
 exceptElla -> Person -- Ella

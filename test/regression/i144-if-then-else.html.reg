@@ -1,3 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=9">
+<style>.identifier{}
+.keyword{font-weight:bold}
+.reference{}
+.code { background-color: lightgray; padding: 5px 5px 5px 5px; border: 1px solid darkgray; margin-bottom: 15px; 
+        font-family: Pragmata, Menlo, 'DejaVu LGC Sans Mono', 'DejaVu Sans Mono', Consolas, 'Everson Mono', 'Lucida Console', 'Andale Mono', 'Nimbus Mono L', 'Liberation Mono', FreeMono, 'Osaka Monospaced', Courier, 'New Courier', monospace; }
+.standalonecomment { color: green; font-style:italic }
+.inlinecomment { color: green; padding-left:20px; font-style:italic }
+.error{background-color: yellow; color: red }
+.deprecated{color: orange }
+.indent{padding-left:20px}
+a[href$='Lookup failed'] {color: red}
+a[href$='Uid not found'] {color: red}
+a[href$='Ambiguous name'] {color: yellow}
+
+</style></head>
+<body>
 
 <div>
 <span class="claferDecl" id="c0_AliceAge">AliceAge</span><span class="keyword"> -> </span><a href="#int"><span class="reference">int</span></a></div>
@@ -12,5 +32,7 @@
 
 
 <div>
-<span class="keyword">[</span> if <a href="#c0_BobsBirthday"><span class="reference">BobsBirthday</span></a> then <a href="#c0_BobAge"><span class="reference">BobAge</span></a>.<a href="#ref"><span class="reference">ref</span></a> else <a href="#c0_AliceAge"><span class="reference">AliceAge</span></a>.<a href="#ref"><span class="reference">ref</span></a> = 5 <span class="keyword">]</span></div>
+<span class="keyword">[</span> if <a href="#c0_BobsBirthday"><span class="reference">BobsBirthday</span></a> then <a href="#c0_BobAge"><span class="reference">BobAge</span></a>.<span class="keyword">dref</span> else <a href="#c0_AliceAge"><span class="reference">AliceAge</span></a>.<span class="keyword">dref</span> = 5 <span class="keyword">]</span></div>
 
+</body>
+</html>
