@@ -341,6 +341,58 @@ intersection _              _            _            = do
 --   where
 --   contains i is = if i `elem` is then Just i else Nothing
 
+-- | This function is similar to 'intersection', but takes into account more ancestors to be able to combine
+-- clafers of different types, but with a common ancestor:
+-- Inputs:
+-- t1 is of type B
+-- t2 is of type C
+-- B : A
+-- C : A
+-- Outputs:
+-- the resulting type is: A, and the type combination is valid
+getIfThenElseType :: Monad m => UIDIClaferMap -> IType -> IType -> m (Maybe IType)
+getIfThenElseType _              TBoolean        TBoolean      = return $ Just TBoolean
+getIfThenElseType _              TString         TString       = return $ Just TString
+getIfThenElseType _              TReal           TReal         = return $ Just TReal
+getIfThenElseType _              TReal           TDouble       = return $ Just TReal
+getIfThenElseType _              TDouble         TReal         = return $ Just TReal
+getIfThenElseType _              TReal           TInteger      = return $ Just TReal
+getIfThenElseType _              TInteger        TReal         = return $ Just TReal
+getIfThenElseType _              TDouble         TDouble       = return $ Just TDouble
+getIfThenElseType _              TDouble         TInteger      = return $ Just TDouble
+getIfThenElseType _              TInteger        TDouble       = return $ Just TDouble
+getIfThenElseType _              TInteger        TInteger      = return $ Just TInteger
+getIfThenElseType uidIClaferMap' (TUnion t1s)    t2@(TClafer _) = undefined {- o
+  t1s' <- mapM (getIfThenElseType uidIClaferMap' t2) t1s
+  return $ case catMaybes t1s' of
+    [] -> Nothing
+    [t] -> Just t
+    t1s'' -> Just $ TUnion t1s''  -}
+getIfThenElseType uidIClaferMap' t1@(TClafer _)  (TUnion t2s) = undefined {- do
+  t2s' <- mapM (getIfThenElseType uidIClaferMap' t1) t2s
+  return $ case catMaybes t2s' of
+    [] -> Nothing
+    [t] -> Just t
+    t2s'' -> Just $ TUnion t2s''  -}
+getIfThenElseType uidIClaferMap' t@(TClafer ut1) (TClafer ut2) = if ut1 == ut2
+  then return $ Just t
+  else do
+    h1 <- mapM (hierarchyMap uidIClaferMap' _uid) ut1
+    h2 <- mapM (hierarchyMap uidIClaferMap' _uid) ut2
+    let ut = catMaybes [commonHierarchy u1 u2 | u1 <- h1, u2 <- h2]
+    return $ fromUnionType ut
+    where
+    commonHierarchy :: [UID] -> [UID] -> Maybe UID
+    commonHierarchy h1 h2 = commonHierarchy' (reverse h1) (reverse h2) Nothing
+    commonHierarchy' (x:xs) (y:ys) accumulator =
+      if (x == y)
+        then
+          if (null xs || null ys)
+            then Just x
+            else commonHierarchy' xs ys $ Just x
+        else accumulator
+    commonHierarchy' _ _ _ = error "ResolverType.commonHierarchy' expects two non empty lists but was given at least one empty list!" -- Should never happen
+getIfThenElseType _ _ _ = return Nothing
 
 
 {- | Compute the type of sequential composition of two types
