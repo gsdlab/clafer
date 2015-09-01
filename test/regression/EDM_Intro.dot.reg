@@ -23,7 +23,7 @@ edge [fontname=Sans fontsize=11];
 "c0_Joanna" -> "c0_Member" [arrowhead=onormal constraint=true weight=100];
 "c0_D" [label="D : Room" URL="#c0_D" tooltip="D : Room&#10;  whiteboard&#10;"];
 "c0_D" -> "c0_Room" [arrowhead=onormal constraint=true weight=100];
-"c0_Meeting" [label="abstract Meeting" URL="#c0_Meeting" tooltip="abstract Meeting&#10;  chair -&gt; Member&#10;  participant -&gt; Member +&#10;  [ chair.ref not in participant ]&#10;  onlineParticipant -&gt; Member *&#10;  [ chair.ref not in onlineParticipant ]&#10;  room -&gt; Room&#10;    [ this.capacity >= # participant + 1 ]&#10;  [ some onlineParticipant => room.audioConferencing ]&#10;"];
+"c0_Meeting" [label="abstract Meeting" URL="#c0_Meeting" tooltip="abstract Meeting&#10;  chair -&gt; Member&#10;  participant -&gt; Member +&#10;  [ chair not in participant ]&#10;  onlineParticipant -&gt; Member *&#10;  [ chair not in onlineParticipant ]&#10;  room -&gt; Room&#10;    [ this.capacity >= # participant + 1 ]&#10;  [ some onlineParticipant => room.audioConferencing ]&#10;"];
 "c0_Meeting" -> "c0_Member" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=chair];
 "c0_Meeting" -> "c0_Member" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=participant];
 "c0_Meeting" -> "c0_Member" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=onlineParticipant];

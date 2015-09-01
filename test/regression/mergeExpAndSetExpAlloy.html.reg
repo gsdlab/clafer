@@ -75,11 +75,11 @@ a[href$='Ambiguous name'] {color: yellow}
 
 
 <div>
-<span class="keyword">assert [</span> <a href="#c0_Alice"><span class="reference">Alice</span></a> in <a href="#c0_onlyAlice"><span class="reference">onlyAlice</span></a>.<span class="deprecated" title="Deprecated. Use `dref` instead.">ref</span> <span class="keyword">]</span></div>
+<span class="keyword">assert [</span> <a href="#c0_Alice"><span class="reference">Alice</span></a> in <a href="#c0_onlyAlice"><span class="reference">onlyAlice</span></a> <span class="keyword">]</span></div>
 
 
 <div>
-<span class="keyword">assert [</span> <a href="#c0_Ella"><span class="reference">Ella</span></a> not in <a href="#c0_onlyAlice"><span class="reference">onlyAlice</span></a>.<span class="deprecated" title="Deprecated. Use `dref` instead.">ref</span> <span class="keyword">]</span></div>
+<span class="keyword">assert [</span> <a href="#c0_Ella"><span class="reference">Ella</span></a> not in <a href="#c0_onlyAlice"><span class="reference">onlyAlice</span></a> <span class="keyword">]</span></div>
 
 
 <div>
