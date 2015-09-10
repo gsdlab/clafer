@@ -283,6 +283,7 @@ instance Print Exp where
     EUnionCom _ exp1 exp2 -> prPrec i 23 (concatD [prt 23 exp1, doc (showString ","), prt 24 exp2])
     EDifference _ exp1 exp2 -> prPrec i 24 (concatD [prt 24 exp1, doc (showString "--"), prt 25 exp2])
     EIntersection _ exp1 exp2 -> prPrec i 25 (concatD [prt 25 exp1, doc (showString "**"), prt 26 exp2])
+    EIntersectionDeprecated _ exp1 exp2 -> prPrec i 26 (concatD [prt 26 exp1, doc (showString "&"), prt 27 exp2])
     EJoin _ exp1 exp2 -> prPrec i 26 (concatD [prt 26 exp1, doc (showString "."), prt 27 exp2])
     ClaferId _ name -> prPrec i 27 (concatD [prt 0 name])
     EInt _ posinteger -> prPrec i 27 (concatD [prt 0 posinteger])

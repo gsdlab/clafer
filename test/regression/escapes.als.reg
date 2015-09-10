@@ -19,12 +19,12 @@ sig c0_spouse
 
 one sig c0_Alice extends c0_Person
 {}
-{ (this.(@r_c0_spouse.@c0_spouse_ref)) = c0_Bob }
+{ ((this.@r_c0_spouse).@c0_spouse_ref) = c0_Bob }
 
 one sig c0_Bob extends c0_Person
 {}
 
-assert assertOnLine_8 { (c0_Bob.(@r_c0_spouse.@c0_spouse_ref)) = c0_Alice }
+assert assertOnLine_8 { ((c0_Bob.@r_c0_spouse).@c0_spouse_ref) = c0_Alice }
 check assertOnLine_8 for 1 but 4 c0_Person, 4 c0_spouse
 
 one sig c0_Carol extends c0_Person

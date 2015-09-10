@@ -33,6 +33,7 @@ import Prelude
 
 import Language.Clafer.Common
 import Language.Clafer.ClaferArgs
+import Language.Clafer.Front.AbsClafer (Span(..))
 import Language.Clafer.Intermediate.Intclafer
 import Language.ClaferT (ClaferErr, CErr(..))
 
@@ -123,36 +124,36 @@ expElement x = case x of
   IEGoal isMaximize' goal -> IEGoal isMaximize' `liftM` expPExp goal
 
 expPExp :: MonadState GEnv m => PExp -> m PExp
-expPExp (PExp t pid' pos' exp') = PExp t pid' pos' `liftM` expIExp exp'
+expPExp (PExp t pid' pos' exp') = PExp t pid' pos' `liftM` expIExp pos' exp'
 
-expIExp :: MonadState GEnv m => IExp -> m IExp
-expIExp x = case x of
+expIExp :: MonadState GEnv m => Span -> IExp -> m IExp
+expIExp pos' x = case x of
   IDeclPExp quant' decls' pexp -> do
     decls'' <- mapM expDecl decls'
     pexp' <- expPExp pexp
     return $ IDeclPExp quant' decls'' pexp'
   IFunExp op' exps' -> if op' == iJoin
-                     then expNav x else IFunExp op' `liftM` mapM expPExp exps'
-  IClaferId _ _ _ _ -> expNav x
+                     then expNav pos' x else IFunExp op' `liftM` mapM expPExp exps'
+  IClaferId _ _ _ _ -> expNav pos' x
   _ -> return x
 
 expDecl :: MonadState GEnv m => IDecl -> m IDecl
 expDecl x = case x of
   IDecl disj locids pexp -> IDecl disj locids `liftM` expPExp pexp
 
-expNav :: MonadState GEnv m => IExp -> m IExp
-expNav x = do
+expNav :: MonadState GEnv m => Span -> IExp -> m IExp
+expNav pos' x = do
   xs <- split' x return
-  xs' <- mapM (expNav' "") xs
-  return $ mkIFunExp iUnion $ map fst xs'
+  xs' <- mapM (expNav' pos' "") xs
+  return $ mkIFunExp pos' iUnion $ map fst xs'
 
-expNav' :: MonadState GEnv m => String -> IExp -> m (IExp, String)
-expNav' context (IFunExp _ (p0:p:_)) = do
-  (exp0', context') <- expNav' context  $ _exp p0
-  (exp', context'') <- expNav' context' $ _exp p
+expNav' :: MonadState GEnv m => Span -> String -> IExp -> m (IExp, String)
+expNav' pos' context (IFunExp _ (p0:p:_)) = do
+  (exp0', context') <- expNav' pos' context  $ _exp p0
+  (exp', context'') <- expNav' pos' context' $ _exp p
   return (IFunExp iJoin [ p0 {_exp = exp0'}
                         , p  {_exp = exp'}], context'')
-expNav' context x@(IClaferId modName' id' isTop' bind' ) = do
+expNav' pos' context x@(IClaferId modName' id' isTop' bind' ) = do
   st <- gets stable
   if Map.member id' st
     then do
@@ -160,11 +161,11 @@ expNav' context x@(IClaferId modName' id' isTop' bind' ) = do
       let (impls', context') = maybe (impls, "")
            (\y -> ([[head y]], head y)) $
            find (\z -> context == (head.tail) z) impls
-      return (mkIFunExp iUnion $ map (\u -> IClaferId modName' u isTop' bind') $
+      return (mkIFunExp pos' iUnion $ map (\u -> IClaferId modName' u isTop' bind') $
               map head impls', context')
     else do
       return (x, id')
-expNav' _ _ = error "Function expNav' from Optimizer expects an argument of type ClaferId or IFunExp but was given another IExp"
+expNav' pos' _ _ = error $ "Function expNav' from Optimizer expects an argument of type ClaferId or IFunExp but was given another IExp, " ++ show pos'
 
 split' :: MonadState GEnv m => IExp -> (IExp -> m IExp) -> m [IExp]
 split'(IFunExp _ (p:pexp:_)) f =

@@ -1,0 +1,24 @@
+length -> integer = 1
+length2 -> integer
+
+[length2 = length + length + length]
+
+[length2.ref = length.ref + length.ref + length.ref]
+
+[length2.ref = length + length + length.ref]
+
+[length2.ref = length.ref + length.ref + length]
+
+[length2 = length + length]
+
+[length2.ref = length.ref + length.ref]
+
+[length2.ref = length + length.ref]
+
+[length2.ref = length.ref + length]
+
+[length2.ref = 1 + 1 + 1]
+
+[length2 = length + length + 1]
+
+[length2.ref = length.ref + length.ref + 1]

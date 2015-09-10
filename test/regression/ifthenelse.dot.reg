@@ -1,0 +1,13 @@
+digraph "ifthenelse"
+{
+rankdir=BT;
+ranksep=0.3;
+nodesep=0.1;
+graph [fontname=Sans fontsize=11];
+node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
+edge [fontname=Sans fontsize=11];
+"c0_emergencyVehicle" [label="emergencyVehicle ?" URL="#c0_emergencyVehicle" tooltip="emergencyVehicle ?&#10;"];
+"c0_allWayYellow" [label="allWayYellow ?" URL="#c0_allWayYellow" tooltip="allWayYellow ?&#10;"];
+"c0_allYellow" [label="allYellow ?" URL="#c0_allYellow" tooltip="allYellow ?&#10;  flashing ?&#10;"];
+"c0_warning" [label="warning ?" URL="#c0_warning" tooltip="warning ?&#10;  flashing ?&#10;"];
+}

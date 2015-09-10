@@ -172,7 +172,7 @@ genPythonModule (imodule@IModule{_mDecls}, genv') scopes =
             genLocal local =
                 local ++ " = local(\"" ++ local ++ "\")"
 
-    genConstraintExp (IFunExp "." [e1, PExp{_exp = IClaferId{_sident = "ref"}}]) =
+    genConstraintExp (IFunExp "." [e1, PExp{_exp = IClaferId{_sident = "dref"}}]) =
         "joinRef(" ++ genConstraintPExp e1 ++ ")"
     genConstraintExp (IFunExp "." [e1, PExp{_exp = IClaferId{_sident = "parent"}}]) =
         "joinParent(" ++ genConstraintPExp e1 ++ ")"
@@ -185,13 +185,13 @@ genPythonModule (imodule@IModule{_mDecls}, genv') scopes =
     genConstraintExp (IFunExp "-" [arg1, arg2]) =
         "sub(" ++ genConstraintPExp arg1 ++ ", " ++ genConstraintPExp arg2 ++ ")"
     genConstraintExp (IFunExp "sum" args')
-        | [arg] <- args', PExp{_exp = IFunExp{_exps = [a, PExp{_exp = IClaferId{_sident = "ref"}}]}} <- rewrite arg =
+        | [arg] <- args', PExp{_exp = IFunExp{_exps = [a, PExp{_exp = IClaferId{_sident = "dref"}}]}} <- rewrite arg =
             "sum(" ++ genConstraintPExp a ++ ")"
         | [arg] <- args' =
             "sum(" ++ genConstraintPExp arg ++ ")"
         | otherwise = error $ "[bug] Python.genConstraintExp: Unexpected sum argument: " ++ show args'
     genConstraintExp (IFunExp "product" args')
-        | [arg] <- args', PExp{_exp = IFunExp{_exps = [a, PExp{_exp = IClaferId{_sident = "ref"}}]}} <- rewrite arg =
+        | [arg] <- args', PExp{_exp = IFunExp{_exps = [a, PExp{_exp = IClaferId{_sident = "dref"}}]}} <- rewrite arg =
             "product(" ++ genConstraintPExp a ++ ")"
         | otherwise = error "Python: Unexpected product argument."
     genConstraintExp (IFunExp "+" args') =

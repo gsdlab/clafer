@@ -88,15 +88,15 @@ abstract sig c0_date
 
 one sig c0_JohnDoe extends c0_Person
 {}
-{ (this.(@r_c0_Name.@c0_Name_ref)) = 0
-  (this.(@r_c0_Surname.@c0_Surname_ref)) = 1
-  (this.(@r_c0_DateOfBirth.@c0_date_ref)) = 2
+{ ((this.@r_c0_Name).@c0_Name_ref) = 0
+  ((this.@r_c0_Surname).@c0_Surname_ref) = 1
+  ((this.@r_c0_DateOfBirth).@c0_date_ref) = 2
   some (this.@r_c0_Gender).@r_c0_Male
   some (this.@r_c0_MaritalStatus).@r_c0_Married
-  ((this.@r_c0_Address).(@r_c0_Street.@c0_Street_ref)) = 3
-  ((this.@r_c0_Address).(@r_c0_City.@c0_City_ref)) = 4
-  ((this.@r_c0_Address).(@r_c0_Country.@c0_Country_ref)) = 5
-  ((this.@r_c0_Address).(@r_c0_PostalCode.@c0_PostalCode_ref)) = 6 }
+  (((this.@r_c0_Address).@r_c0_Street).@c0_Street_ref) = 3
+  (((this.@r_c0_Address).@r_c0_City).@c0_City_ref) = 4
+  (((this.@r_c0_Address).@r_c0_Country).@c0_Country_ref) = 5
+  (((this.@r_c0_Address).@r_c0_PostalCode).@c0_PostalCode_ref) = 6 }
 
 abstract sig c0_Student extends c0_Person
 { r_c0_StudentId : one c0_StudentId }
@@ -115,17 +115,17 @@ sig c0_participants
 
 one sig c0_MaryJane extends c0_Student
 {}
-{ (this.(@r_c0_Name.@c0_Name_ref)) = 7
-  (this.(@r_c0_StudentId.@c0_StudentId_ref)) = 8 }
+{ ((this.@r_c0_Name).@c0_Name_ref) = 7
+  ((this.@r_c0_StudentId).@c0_StudentId_ref) = 8 }
 
 one sig c0_BusLine extends c0_WaitingLine
 {}
-{ c0_JohnDoe in (this.(@r_c0_participants.@c0_participants_ref))
-  c0_MaryJane in (this.(@r_c0_participants.@c0_participants_ref)) }
+{ c0_JohnDoe in ((this.@r_c0_participants).@c0_participants_ref)
+  c0_MaryJane in ((this.@r_c0_participants).@c0_participants_ref) }
 
 one sig c0_JohnAndMaryLine extends c0_WaitingLine
 {}
-{ (this.(@r_c0_participants.@c0_participants_ref)) = (c0_JohnDoe + c0_MaryJane) }
+{ ((this.@r_c0_participants).@c0_participants_ref) = (c0_JohnDoe + c0_MaryJane) }
 
 fact { #c0_TwoPersonLine = 0 }
 abstract sig c0_TwoPersonLine extends c0_WaitingLine
@@ -159,5 +159,5 @@ sig c1_Country
 
 one sig c0_JohnDoe2 extends c0_Person2
 {}
-{ (this.(@r_c1_Country.@c1_Country_ref)) = c0_Canada }
+{ ((this.@r_c1_Country).@c1_Country_ref) = c0_Canada }
 

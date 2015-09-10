@@ -112,11 +112,6 @@ desugarModifiers :: Abstract -> [TempModifier] -> IClaferModifiers
 desugarModifiers    abstract'    tmods           =
   IClaferModifiers (desugarAbstract abstract') (desugarInitiality tmods) (desugarFinality tmods)
 
-sugarClafer :: IClafer -> Clafer
-sugarClafer (IClafer s modifiers' gcard' _ uid' _ super' reference' crd' _ _ elements') =
-    Clafer s (sugarAbstract $ _abstract modifiers') (sugarModifier modifiers') (sugarGCard gcard') (mkIdent uid')
-      (sugarSuper super') (sugarReference reference') (sugarCard crd') (InitEmpty s) (TransitionEmpty s) (sugarElements elements')
-
 -- This is incorrect: initiality is inherited, which is resolved later on
 -- Currently, this is only generated when explicitly declared as initial
 desugarInitiallyModifier :: [TempModifier] -> String -> [IElement]
@@ -138,10 +133,14 @@ sugarModifier modifiers' =
 
 
 getPExpClaferIdent :: Exp -> String
-getPExpClaferIdent (ClaferId _ (Path _ [ (ModIdIdent _ (PosIdent (_, ident'))) ] )) = ident'
+getPExpClaferIdent (ClaferId _ (Path _ [ (ModIdIdent _ pident') ] )) = transIdent pident'
 getPExpClaferIdent (EJoin _ _ e2) = getPExpClaferIdent e2
 getPExpClaferIdent _ = error "Desugarer:getPExpClaferIdent not given a ClaferId PExp"
 
+sugarClafer :: IClafer -> Clafer
+sugarClafer (IClafer s modifiers' gcard' _ uid' _ super' reference' crd' _ _ elements') =
+    Clafer s (sugarAbstract $ _abstract modifiers') (sugarModifier modifiers') (sugarGCard gcard') (mkIdent uid')
+      (sugarSuper super') (sugarReference reference') (sugarCard crd') (InitEmpty s) (TransitionEmpty s) (sugarElements elements')
 
 desugarSuper :: Super -> Maybe PExp
 desugarSuper (SuperEmpty _) = Nothing
@@ -158,7 +157,7 @@ desugarInit _ (InitEmpty _) = []
 desugarInit id' (InitSome s inithow exp') = [ IEConstraint (desugarInitHow inithow) (pExpDefPid s implIExp) ]
   where
     cId :: PExp
-    cId = mkPLClaferId (snd $ getIdent id') False NoBind
+    cId = mkPLClaferId (getSpan id') (snd $ getIdent id') False NoBind
     -- <id> = <exp'>
     assignIExp :: IExp
     assignIExp = (IFunExp "=" [cId, desugarExp exp'])
@@ -473,6 +472,7 @@ desugarExp' x = let x' =  translateTmpPatterns x in case x' of
   EUnionCom _ exp0 exp'     -> dop iUnion        [exp0, exp']
   EDifference _ exp0 exp'   -> dop iDifference   [exp0, exp']
   EIntersection _ exp0 exp' -> dop iIntersection [exp0, exp']
+  EIntersectionDeprecated _ exp0 exp' -> dop iIntersection [exp0, exp']
   EDomain _ exp0 exp'       -> dop iDomain       [exp0, exp']
   ERange _ exp0 exp'        -> dop iRange        [exp0, exp']
   EJoin _ exp0 exp'         -> dop iJoin         [exp0, exp']
@@ -649,7 +649,5 @@ sugarQuant IOne = QuantOne noSpan
 sugarQuant ISome = QuantSome noSpan
 sugarQuant IAll = error "sugarQaunt was called on IAll, this is not allowed!" --Should never happen
 
-
 mkClaferIdExp :: Span -> String -> Exp
 mkClaferIdExp s name = ClaferId s $ Path s [ModIdIdent s $ mkIdent name]
-

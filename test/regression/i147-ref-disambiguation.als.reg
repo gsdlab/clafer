@@ -9,5 +9,5 @@ lone sig c0_a
 lone sig c0_b
 {}
 { one r_c0_b
-  (this.(~@r_c0_b.@c0_a_ref)) = 4 }
+  ((this.~@r_c0_b).@c0_a_ref) = 4 }
 

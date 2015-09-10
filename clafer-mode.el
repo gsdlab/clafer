@@ -1,6 +1,6 @@
 ;; define several class of keywords
 (defvar clafer-keywords
-  '("this" "parent" "ref" "root" "children" "max" "min" "sum" "product" "xor" "in" "if" "then" "else" "no" "not" "some" "one" "all" "disj" "opt" "mux" "or" "lone" "abstract" "enum" "assert" "final" "initial" "let" "never" "sometime" "lonce" "once" "always" "must" "precede" "follow" "initially" "finally" "U" "until" "W" "weakuntil" "F" "eventually" "G" "globally" "X" "next" "before" "after" "between" "and" "until")
+  '("this" "parent" "dref" "root" "children" "max" "min" "sum" "product" "xor" "in" "if" "then" "else" "no" "not" "some" "one" "all" "disj" "opt" "mux" "or" "lone" "abstract" "enum" "assert" "final" "initial" "let" "never" "sometime" "lonce" "once" "always" "must" "precede" "follow" "initially" "finally" "U" "until" "W" "weakuntil" "F" "eventually" "G" "globally" "X" "next" "before" "after" "between" "and" "until")
   "Clafer keywords.")
 
 (defvar clafer-types

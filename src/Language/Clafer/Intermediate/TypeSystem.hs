@@ -25,6 +25,7 @@ module Language.Clafer.Intermediate.TypeSystem where
 import Language.Clafer.Common
 import Language.Clafer.Intermediate.Intclafer hiding (uid)
 
+import Control.Applicative
 import Control.Lens ((&), (<&>), (%~))
 import Control.Monad (mplus, liftM)
 import Data.List (nub)
@@ -43,14 +44,14 @@ abstract Employee : Person
     EmplID -> integer
 
 Alice : Student
-    [ this.DOB.ref = 1990 ]
-    [ this.StudentID.ref = "123Alice" ]
+    [ this.DOB.dref = 1990 ]
+    [ this.StudentID.dref = "123Alice" ]
 
 Bob : Employee
-    [ this.EmplID.ref = 345 ]
+    [ this.EmplID.dref = 345 ]
 
 AliceAndBob -> Person
-[ root.AliceAndBob.ref = Alice, Bob ]
+[ root.AliceAndBob.dref = Alice, Bob ]
 
 AliceAndBob2 -> Alice ++ Bob
 -}
@@ -117,6 +118,11 @@ isTString (TMap _ ta') = isTString ta'
 isTString (TUnion un') = any isTString un'
 isTString _            = False
 
+isTBoolean :: IType    -> Bool
+isTBoolean TBoolean      = True
+isTBoolean (TMap _ ta') = isTBoolean ta'
+isTBoolean (TUnion un') = any isTBoolean un'
+isTBoolean _            = False
 
 -- | Get TClafer for a given Clafer
 -- can only be called after inheritance resolver
@@ -132,8 +138,8 @@ getTClafer    iClafer' = case _uid iClafer' of
 -- can only be called after inheritance resolver
 getTClaferByUID :: UIDIClaferMap -> UID -> Maybe IType
 getTClaferByUID    uidIClaferMap'   uid' = case uid' of
-  "root"   -> Just $ rootTClafer
-  "clafer" -> Just $ claferTClafer
+  "root"   -> Just rootTClafer
+  "clafer" -> Just claferTClafer
   _        -> findIClafer uidIClaferMap' uid' <&> getTClafer
 
 -- | Get TClafer for a given Clafer by its UID
@@ -164,14 +170,14 @@ getDrefTMapByUID    uidIClaferMap'   uid' = case uid' of
 
 
 hierarchy :: (Monad m) => UIDIClaferMap -> UID -> m [IClafer]
-hierarchy uidIClaferMap' uid' = (case findIClafer uidIClaferMap' uid' of
+hierarchy uidIClaferMap' uid' = case findIClafer uidIClaferMap' uid' of
       Nothing -> fail $ "TypeSystem.hierarchy: clafer " ++ uid' ++ "not found!"
-      Just clafer -> return $ findHierarchy getSuper uidIClaferMap' clafer)
+      Just clafer -> return $ findHierarchy getSuper uidIClaferMap' clafer
 
 hierarchyMap :: (Monad m) => UIDIClaferMap -> (IClafer -> a) -> UID -> m [a]
-hierarchyMap uidIClaferMap' f c = (case findIClafer uidIClaferMap' c of
+hierarchyMap uidIClaferMap' f c = case findIClafer uidIClaferMap' c of
       Nothing -> fail $ "TypeSystem.hierarchyMap: clafer " ++ c ++ "not found!"
-      Just clafer -> return $ mapHierarchy f getSuper uidIClaferMap' clafer)
+      Just clafer -> return $ mapHierarchy f getSuper uidIClaferMap' clafer
 
 
 {- ---------------------------------------
@@ -190,7 +196,7 @@ unionType (TMap _ ta') = unionType ta'
 
 fromUnionType :: [String] -> Maybe IType
 fromUnionType u =
-    case nub $ u of
+    case nub u of
         ["string"]  -> Just TString
         ["integer"] -> Just TInteger
         ["int"]     -> Just TInteger
@@ -230,6 +236,7 @@ TClafer {_hi = ["Alice","Student","Person","Bob","Employee"]}
 TClafer {_hi = ["Alice","Student","Person"]}
 -}
 (+++) :: IType -> IType -> IType
+TBoolean        +++ TBoolean        = TBoolean
 TString         +++ TString         = TString
 TReal           +++ TReal           = TReal
 TDouble         +++ TDouble         = TDouble
@@ -237,7 +244,7 @@ TInteger        +++ TInteger        = TInteger
 t1@(TClafer u1) +++ t2@(TClafer u2) = if t1 == t2
                                       then t1
                                       else (TClafer $ nub $ u1 ++ u2)  -- should be TUnion [t1,t2]
-(TMap so1 ta1)  +++ (TMap so2 ta2)  = (TMap (so1 +++ so2) (ta1 +++ ta2))
+(TMap so1 ta1)  +++ (TMap so2 ta2)  = TMap (so1 +++ so2) (ta1 +++ ta2)
 (TUnion un1)    +++ (TUnion un2)    = collapseUnion (TUnion $ nub $ un1 ++ un2)
 (TUnion un1)    +++ t2              = collapseUnion (TUnion $ nub $ un1 ++ [t2])
 t1              +++ (TUnion un2)    = collapseUnion (TUnion $ nub $ t1:un2)
@@ -312,11 +319,11 @@ intersection uidIClaferMap' (TMap _ ta1) (TMap _ ta2) = intersection uidIClaferM
 intersection uidIClaferMap' (TMap _ ta1) ot2          = do
   coercedType <- intersection uidIClaferMap' ta1 ot2
   -- that means ot2 was coerced to ta1, so it's safe
-  return $ if (Just ta1) == coercedType then coercedType else Nothing
+  return $ if Just ta1 == coercedType then coercedType else Nothing
 intersection uidIClaferMap' ot1          (TMap _ ta2) = do
   coercedType <- intersection uidIClaferMap' ot1 ta2
   -- that means ot2 was coerced to ta1, so it's safe
-  return $ if (Just ta2) == coercedType then coercedType else Nothing
+  return $ if Just ta2 == coercedType then coercedType else Nothing
 intersection _              _            _            = do
   -- traceM $ "(DEBUG) TypeSystem.intersection: cannot intersect incompatible types: '"
   --      ++ show t1
@@ -334,6 +341,58 @@ intersection _              _            _            = do
 --   where
 --   contains i is = if i `elem` is then Just i else Nothing
 
+-- | This function is similar to 'intersection', but takes into account more ancestors to be able to combine
+-- clafers of different types, but with a common ancestor:
+-- Inputs:
+-- t1 is of type B
+-- t2 is of type C
+-- B : A
+-- C : A
+-- Outputs:
+-- the resulting type is: A, and the type combination is valid
+getIfThenElseType :: Monad m => UIDIClaferMap -> IType -> IType -> m (Maybe IType)
+getIfThenElseType _              TBoolean        TBoolean      = return $ Just TBoolean
+getIfThenElseType _              TString         TString       = return $ Just TString
+getIfThenElseType _              TReal           TReal         = return $ Just TReal
+getIfThenElseType _              TReal           TDouble       = return $ Just TReal
+getIfThenElseType _              TDouble         TReal         = return $ Just TReal
+getIfThenElseType _              TReal           TInteger      = return $ Just TReal
+getIfThenElseType _              TInteger        TReal         = return $ Just TReal
+getIfThenElseType _              TDouble         TDouble       = return $ Just TDouble
+getIfThenElseType _              TDouble         TInteger      = return $ Just TDouble
+getIfThenElseType _              TInteger        TDouble       = return $ Just TDouble
+getIfThenElseType _              TInteger        TInteger      = return $ Just TInteger
+getIfThenElseType uidIClaferMap' (TUnion t1s)    t2@(TClafer _) = undefined {- o
+  t1s' <- mapM (getIfThenElseType uidIClaferMap' t2) t1s
+  return $ case catMaybes t1s' of
+    [] -> Nothing
+    [t] -> Just t
+    t1s'' -> Just $ TUnion t1s''  -}
+getIfThenElseType uidIClaferMap' t1@(TClafer _)  (TUnion t2s) = undefined {- do
+  t2s' <- mapM (getIfThenElseType uidIClaferMap' t1) t2s
+  return $ case catMaybes t2s' of
+    [] -> Nothing
+    [t] -> Just t
+    t2s'' -> Just $ TUnion t2s''  -}
+getIfThenElseType uidIClaferMap' t@(TClafer ut1) (TClafer ut2) = if ut1 == ut2
+  then return $ Just t
+  else do
+    h1 <- mapM (hierarchyMap uidIClaferMap' _uid) ut1
+    h2 <- mapM (hierarchyMap uidIClaferMap' _uid) ut2
+    let ut = catMaybes [commonHierarchy u1 u2 | u1 <- h1, u2 <- h2]
+    return $ fromUnionType ut
+    where
+    commonHierarchy :: [UID] -> [UID] -> Maybe UID
+    commonHierarchy h1 h2 = commonHierarchy' (reverse h1) (reverse h2) Nothing
+    commonHierarchy' (x:xs) (y:ys) accumulator =
+      if (x == y)
+        then
+          if (null xs || null ys)
+            then Just x
+            else commonHierarchy' xs ys $ Just x
+        else accumulator
+    commonHierarchy' _ _ _ = error "ResolverType.commonHierarchy' expects two non empty lists but was given at least one empty list!" -- Should never happen
+getIfThenElseType _ _ _ = return Nothing
 
 
 {- | Compute the type of sequential composition of two types
@@ -409,7 +468,14 @@ getTClafers    uidIClaferMap'   (TUnion un')    = concatMap (getTClafers uidICla
 getTClafers    _                _               = []
 
 
-{- Coersions -}
+{- Coersions
+>>> coerce tDrefMapDOB tDrefMapDOB
+TInteger
+>>> coerce tDrefMapDOB TInteger
+TInteger
+>>> coerce tDrefMapDOB tDrefMapDOB
+TInteger
+-}
 
 coerce :: IType -> IType -> IType
 -- basic coersions
@@ -423,8 +489,9 @@ coerce TDouble TInteger  = TDouble
 coerce TInteger TDouble  = TDouble
 coerce TInteger TInteger = TInteger
 -- reduce complex types to simple ones
-coerce (TMap s1 t1) t2           = TMap s1 $ coerce t1 t2
-coerce t1           (TMap s2 t2) = TMap s2 $ coerce t1 t2
+coerce (TMap _ t1) (TMap _ t2) = coerce t1 t2
+coerce (TMap _ t1) t2          = coerce t1 t2
+coerce t1          (TMap _ t2) = coerce t1 t2
 coerce x y = error $ "TypeSystem.coerce: Cannot coerce not numeric: " ++ show x ++ " and " ++ show y
 
 

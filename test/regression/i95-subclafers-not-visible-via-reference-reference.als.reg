@@ -18,5 +18,5 @@ one sig c0_ref1
 
 one sig c0_ref2
 { c0_ref2_ref : one c0_ref1 }
-{ some (this.@c0_ref2_ref).(@c0_ref1_ref.@r_c0_x) }
+{ some ((this.@c0_ref2_ref).@c0_ref1_ref).@r_c0_x }
 

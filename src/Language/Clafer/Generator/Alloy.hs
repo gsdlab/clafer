@@ -60,8 +60,7 @@ genModule    claferargs'   (imodule, genv)    scopes              otherTokens' =
 header :: GenEnv -> [Token]     -> Concat
 header    genEnv    otherTokens' = CString $ unlines
     [ "open util/integer"
-    , genAlloyEscapes otherTokens'
-    , "pred show {}"
+    , genAlloyEscapes otherTokens' ++ "pred show {}"
     , if (validate $ claferargs genEnv)
       then ""
       else "run show " ++ forScopes genEnv
@@ -73,7 +72,7 @@ genAlloyEscapes otherTokens' = concat $ map printAlloyEscape otherTokens'
       printAlloyEscape (PT _ (T_PosAlloy code)) =  let
           code' = fromJust $ stripPrefix "[alloy|" code
         in
-          take ((length code') - 2) code'
+          (take ((length code') - 2) code') ++ "\n"
 
       printAlloyEscape _                        = ""
 
@@ -437,7 +436,7 @@ genPExp'    genEnv    resPath     (PExp iType' pid' pos exp') = case exp' of
   IClaferId _ "integer" _ _ -> CString "Int"
   IClaferId _ "int" _ _ -> CString "Int"
   IClaferId _ "string" _ _ -> CString "Int"
-  IClaferId _ "ref" _ _ -> CString $ "@"  ++ getTClaferUID iType' ++ "_ref"
+  IClaferId _ "dref" _ _ -> CString $ "@"  ++ getTClaferUID iType' ++ "_ref"
     where
       getTClaferUID (Just TMap{_so = TClafer{_hi = [u]}}) = u
       getTClaferUID (Just TMap{_so = TClafer{_hi = (u:_)}}) = u

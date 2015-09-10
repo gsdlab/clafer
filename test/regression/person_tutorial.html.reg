@@ -1,10 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=9">
+<style>.identifier{}
+.keyword{font-weight:bold}
+.reference{}
+.code { background-color: lightgray; padding: 5px 5px 5px 5px; border: 1px solid darkgray; margin-bottom: 15px; 
+        font-family: Pragmata, Menlo, 'DejaVu LGC Sans Mono', 'DejaVu Sans Mono', Consolas, 'Everson Mono', 'Lucida Console', 'Andale Mono', 'Nimbus Mono L', 'Liberation Mono', FreeMono, 'Osaka Monospaced', Courier, 'New Courier', monospace; }
+.standalonecomment { color: green; font-style:italic }
+.inlinecomment { color: green; padding-left:20px; font-style:italic }
+.error{background-color: yellow; color: red }
+.deprecated{color: orange }
+.indent{padding-left:20px}
+a[href$='Lookup failed'] {color: red}
+a[href$='Uid not found'] {color: red}
+a[href$='Ambiguous name'] {color: yellow}
+
+</style></head>
+<body>
 
 <div>
 <span class="keyword">abstract</span> <span class="claferDecl" id="c0_date">date</span><span class="keyword"> ->> </span><a href="#string"><span class="reference">string</span></a></div>
 
 
 <div>
-<span class="keyword">enum</span> <span class="claferDecl" id="Lookup failed">NorthAmericanCountry</span> = <span class="claferDecl" id="c0_Canada">Canada</span> | <span class="claferDecl" id="c0_USA">USA</span></div>
+<span class="keyword">enum</span> NorthAmericanCountry = <span class="claferDecl" id="c0_Canada">Canada</span> | <span class="claferDecl" id="c0_USA">USA</span></div>
 
 
 <div>
@@ -103,3 +123,5 @@
   <span class="keyword">[</span> # <a href="#c0_participants"><span class="reference">participants</span></a> &gt;= 1 <span class="keyword">]</span><span class="keyword">[</span> # <a href="#c0_participants"><span class="reference">participants</span></a> &lt;= 10 <span class="keyword">]</span></div>
 </div>
 
+</body>
+</html>

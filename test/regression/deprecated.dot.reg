@@ -1,0 +1,13 @@
+digraph "deprecated"
+{
+rankdir=BT;
+ranksep=0.3;
+nodesep=0.1;
+graph [fontname=Sans fontsize=11];
+node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
+edge [fontname=Sans fontsize=11];
+"c0_Component" [label="abstract Component" URL="#c0_Component" tooltip="abstract Component&#10;  link -&gt; Component ?&#10;"];
+"c0_Component" -> "c0_Component" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=link];
+"c0_Comp1" [label="Comp1 : Component" URL="#c0_Comp1" tooltip="Comp1 : Component&#10;  [ this.link.dref = Comp1 ]&#10;  [ this.link.ref = Comp1 ]&#10;"];
+"c0_Comp1" -> "c0_Component" [arrowhead=onormal constraint=true weight=100];
+}

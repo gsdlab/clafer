@@ -1,3 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=9">
+<style>.identifier{}
+.keyword{font-weight:bold}
+.reference{}
+.code { background-color: lightgray; padding: 5px 5px 5px 5px; border: 1px solid darkgray; margin-bottom: 15px; 
+        font-family: Pragmata, Menlo, 'DejaVu LGC Sans Mono', 'DejaVu Sans Mono', Consolas, 'Everson Mono', 'Lucida Console', 'Andale Mono', 'Nimbus Mono L', 'Liberation Mono', FreeMono, 'Osaka Monospaced', Courier, 'New Courier', monospace; }
+.standalonecomment { color: green; font-style:italic }
+.inlinecomment { color: green; padding-left:20px; font-style:italic }
+.error{background-color: yellow; color: red }
+.deprecated{color: orange }
+.indent{padding-left:20px}
+a[href$='Lookup failed'] {color: red}
+a[href$='Uid not found'] {color: red}
+a[href$='Ambiguous name'] {color: yellow}
+
+</style></head>
+<body>
 
 <div>
 <span class="keyword">abstract</span> <span class="claferDecl" id="c0_Component">Component</span>
@@ -18,15 +38,15 @@
   <div class="indent">
   <span class="claferDecl" id="c0_from">from</span><span class="keyword"> -> </span><a href="#c0_TemperaturePort"><span class="reference">TemperaturePort</span></a>
     <div class="indent">
-    <span class="keyword">[</span> <a href="#this"><span class="reference">this</span></a>.<a href="#c0_output"><span class="reference">output</span></a> <span class="keyword">]</span></div>
+    <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_output"><span class="reference">output</span></a> <span class="keyword">]</span></div>
   </div>
   <div class="indent">
   <span class="claferDecl" id="c0_to">to</span><span class="keyword"> -> </span><a href="#c0_TemperaturePort"><span class="reference">TemperaturePort</span></a>
     <div class="indent">
-    <span class="keyword">[</span> <a href="#this"><span class="reference">this</span></a>.<a href="#c0_input"><span class="reference">input</span></a> <span class="keyword">]</span></div>
+    <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_input"><span class="reference">input</span></a> <span class="keyword">]</span></div>
   </div>
   <div class="indent">
-  <span class="keyword">[</span> <a href="#c0_to"><span class="reference">to</span></a>.<a href="#ref"><span class="reference">ref</span></a>.<a href="#ref"><span class="reference">ref</span></a> = <a href="#c0_from"><span class="reference">from</span></a>.<a href="#ref"><span class="reference">ref</span></a>.<a href="#ref"><span class="reference">ref</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <a href="#c0_to"><span class="reference">to</span></a>.<span class="deprecated" title="Deprecated. Use `dref` instead.">ref</span>.<span class="deprecated" title="Deprecated. Use `dref` instead.">ref</span> = <a href="#c0_from"><span class="reference">from</span></a>.<span class="deprecated" title="Deprecated. Use `dref` instead.">ref</span>.<span class="deprecated" title="Deprecated. Use `dref` instead.">ref</span> <span class="keyword">]</span></div>
 </div>
 
 
@@ -60,5 +80,7 @@
 
 
 <div>
-<span class="keyword">assert [</span> <a href="#c0_controller"><span class="reference">controller</span></a>.<a href="#c1_temperature"><span class="reference">temperature</span></a>.<a href="#ref"><span class="reference">ref</span></a> = <a href="#c0_sensor"><span class="reference">sensor</span></a>.<a href="#c0_temperature"><span class="reference">temperature</span></a>.<a href="#ref"><span class="reference">ref</span></a> <span class="keyword">]</span></div>
+<span class="keyword">assert [</span> <a href="#c0_controller"><span class="reference">controller</span></a>.<a href="#c1_temperature"><span class="reference">temperature</span></a> = <a href="#c0_sensor"><span class="reference">sensor</span></a>.<a href="#c0_temperature"><span class="reference">temperature</span></a> <span class="keyword">]</span></div>
 
+</body>
+</html>

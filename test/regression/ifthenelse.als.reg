@@ -1,0 +1,26 @@
+open util/integer
+pred show {}
+
+
+lone sig c0_emergencyVehicle
+{}
+
+lone sig c0_allWayYellow
+{}
+
+lone sig c0_allYellow
+{ r_c0_flashing : lone c0_flashing }
+
+lone sig c0_flashing
+{}
+{ one r_c0_flashing }
+
+lone sig c0_warning
+{ r_c1_flashing : lone c1_flashing }
+
+lone sig c1_flashing
+{}
+{ one r_c1_flashing }
+
+fact { (some c0_emergencyVehicle) => ((some c0_allWayYellow) => (some c0_allYellow) else (some c0_warning)) }
+fact { (some c0_emergencyVehicle) => ((some c0_allWayYellow) => (some c0_allYellow) else (some c0_warning)) }

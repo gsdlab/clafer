@@ -33,12 +33,12 @@ abstract sig c0_TemperatureConnector
 sig c0_from
 { c0_from_ref : one c0_TemperaturePort }
 { one @r_c0_from.this
-  some this.(@c0_from_ref.@r_c0_output) }
+  some (this.@c0_from_ref).@r_c0_output }
 
 sig c0_to
 { c0_to_ref : one c0_TemperaturePort }
 { one @r_c0_to.this
-  some this.(@c0_to_ref.@r_c0_input) }
+  some (this.@c0_to_ref).@r_c0_input }
 
 one sig c0_sensor extends c0_Component
 { r_c0_temperature : one c0_temperature }
@@ -60,8 +60,8 @@ one sig c1_temperature extends c0_TemperaturePort
 
 one sig c0_con1 extends c0_TemperatureConnector
 {}
-{ (this.(@r_c0_from.@c0_from_ref)) = (c0_sensor.@r_c0_temperature)
-  (this.(@r_c0_to.@c0_to_ref)) = (c0_controller.@r_c1_temperature) }
+{ ((this.@r_c0_from).@c0_from_ref) = (c0_sensor.@r_c0_temperature)
+  ((this.@r_c0_to).@c0_to_ref) = (c0_controller.@r_c1_temperature) }
 
 assert assertOnLine_27 { ((c0_controller.@r_c1_temperature).@c0_TemperaturePort_ref) = ((c0_sensor.@r_c0_temperature).@c0_TemperaturePort_ref) }
 check assertOnLine_27 for 1 but 2 c0_Component, 2 c0_Port, 2 c0_TemperaturePort, 2 c0_input, 2 c0_output

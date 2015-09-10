@@ -24,4 +24,4 @@ con1 : TemperatureConnector
     [ from = sensor.temperature ]
     [ to = controller.temperature ]
 
-assert [ controller.temperature.ref = sensor.temperature.ref ]
+assert [ controller.temperature = sensor.temperature ]

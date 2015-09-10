@@ -6,9 +6,9 @@ one sig c0_midYearReview extends c0_Meeting
 { r_c0_month : one c0_month
 , r_c0_chair : one c0_chair
 , r_c0_room : one c0_room }
-{ (some this.@r_c0_month) => ((this.(@r_c0_month.@c0_month_ref)) = c0_June)
-  (some this.@r_c0_chair) => ((this.(@r_c0_chair.@c0_chair_ref)) = c0_Steven)
-  (some this.@r_c0_room) => ((this.(@r_c0_room.@c0_room_ref)) = c0_C)
+{ (some this.@r_c0_month) => (((this.@r_c0_month).@c0_month_ref) = c0_June)
+  (some this.@r_c0_chair) => (((this.@r_c0_chair).@c0_chair_ref) = c0_Steven)
+  (some this.@r_c0_room) => (((this.@r_c0_room).@c0_room_ref) = c0_C)
   some this.@r_c0_onlineParticipant }
 
 one sig c0_month
@@ -36,9 +36,9 @@ one sig c0_audioConferencing
 one sig c0_ondemandMeeting extends c0_Meeting
 { r_c1_chair : one c1_chair
 , r_c1_room : one c1_room }
-{ (some this.@r_c1_chair) => ((this.(@r_c1_chair.@c1_chair_ref)) = c0_Joanna)
+{ (some this.@r_c1_chair) => (((this.@r_c1_chair).@c1_chair_ref) = c0_Joanna)
   no this.@r_c0_onlineParticipant
-  (some this.@r_c1_room) => ((this.(@r_c1_room.@c1_room_ref)) = c0_D) }
+  (some this.@r_c1_room) => (((this.@r_c1_room).@c1_room_ref) = c0_D) }
 
 one sig c1_chair
 { c1_chair_ref : one c0_Member }
@@ -61,10 +61,10 @@ abstract sig c0_Meeting
 , r_c0_onlineParticipant : set c0_onlineParticipant
 , r_c2_room : one c2_room }
 { all disj x, y : this.@r_c0_participant | (x.@c0_participant_ref) != (y.@c0_participant_ref) 
-  ((this.@r_c2_chair).@c2_chair_ref) not in (this.(@r_c0_participant.@c0_participant_ref))
+  ((this.@r_c2_chair).@c2_chair_ref) not in ((this.@r_c0_participant).@c0_participant_ref)
   all disj x, y : this.@r_c0_onlineParticipant | (x.@c0_onlineParticipant_ref) != (y.@c0_onlineParticipant_ref) 
-  ((this.@r_c2_chair).@c2_chair_ref) not in (this.(@r_c0_onlineParticipant.@c0_onlineParticipant_ref))
-  (some this.@r_c0_onlineParticipant) => (some (this.@r_c2_room).(@c2_room_ref.@r_c1_audioConferencing)) }
+  ((this.@r_c2_chair).@c2_chair_ref) not in ((this.@r_c0_onlineParticipant).@c0_onlineParticipant_ref)
+  (some this.@r_c0_onlineParticipant) => (some ((this.@r_c2_room).@c2_room_ref).@r_c1_audioConferencing) }
 
 sig c2_chair
 { c2_chair_ref : one c0_Member }
@@ -81,7 +81,7 @@ sig c0_onlineParticipant
 sig c2_room
 { c2_room_ref : one c0_Room }
 { one @r_c2_room.this
-  (this.(@c2_room_ref.(@r_c0_capacity.@c0_capacity_ref))) >= ((#((this.~@r_c2_room).@r_c0_participant)).plus[1]) }
+  (((this.@c2_room_ref).@r_c0_capacity).@c0_capacity_ref) >= ((#((this.~@r_c2_room).@r_c0_participant)).plus[1]) }
 
 abstract sig c0_Month
 {}
@@ -139,8 +139,8 @@ sig c0_M extends c0_Member
 one sig c0_SueAgenda extends c0_Agenda
 { r_c0_m1 : lone c0_m1
 , r_c0_m2 : lone c0_m2 }
-{ (some this.@r_c0_m1) => ((this.(@r_c0_m1.@c0_m1_ref)) = c0_M1)
-  (some this.@r_c0_m2) => ((this.(@r_c0_m2.@c0_m2_ref)) = c0_M2) }
+{ (some this.@r_c0_m1) => (((this.@r_c0_m1).@c0_m1_ref) = c0_M1)
+  (some this.@r_c0_m2) => (((this.@r_c0_m2).@c0_m2_ref) = c0_M2) }
 
 lone sig c0_m1
 { c0_m1_ref : one c0_Meeting }
@@ -155,7 +155,7 @@ lone sig c0_M1 extends c0_Meeting
 
 lone sig c0_M2 extends c0_Meeting
 { r_c0_time : one c0_time }
-{ (some this.@r_c0_time) => ((this.(@r_c0_time.@c0_time_ref)) = 10) }
+{ (some this.@r_c0_time) => (((this.@r_c0_time).@c0_time_ref) = 10) }
 
 lone sig c0_time
 { c0_time_ref : one Int }

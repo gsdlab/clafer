@@ -60,7 +60,7 @@ prof:
 .PHONY : test
 
 test:
-	cabal test
+	cabal test 2>/dev/null || :    # supress error message and exit code if fail
 	$(MAKE) -C $(TEST_DIR) test
 
 generateAlloyJSPythonHTMLDot:

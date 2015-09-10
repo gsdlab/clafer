@@ -127,6 +127,7 @@ EUnion.         Exp23 ::= Exp23 "++" Exp24 ;
 EUnionCom.      Exp23 ::= Exp23 ","  Exp24 ;
 EDifference.    Exp24 ::= Exp24 "--" Exp25 ;
 EIntersection.  Exp25 ::= Exp25 "**"  Exp26 ;
+EIntersectionDeprecated.  Exp26 ::= Exp26 "&"  Exp27 ;
 EJoin.          Exp26 ::= Exp26 "."  Exp27 ;
 ClaferId.       Exp27 ::= Name ;
 EInt.           Exp27 ::= PosInteger ;

@@ -55,7 +55,7 @@ abstract sig c0_ECU extends c0_comp
 abstract sig c0_display extends c0_comp
 { r_c0_server : one c0_server
 , r_c0_options : one c0_options }
-{ (this.(@r_c0_version.@c0_version_ref)) >= ((this.@r_c0_server).(@c0_server_ref.(@r_c0_version.@c0_version_ref))) }
+{ ((this.@r_c0_version).@c0_version_ref) >= ((((this.@r_c0_server).@c0_server_ref).@r_c0_version).@c0_version_ref) }
 
 sig c0_server
 { c0_server_ref : one c0_ECU }
@@ -104,7 +104,7 @@ abstract sig c0_plaECU extends c0_ECU
 sig c1_display extends c0_display
 {}
 { one @r_c1_display.this
-  (this.(@r_c0_server.@c0_server_ref)) = (this.~@r_c1_display)
+  ((this.@r_c0_server).@c0_server_ref) = (this.~@r_c1_display)
   no (this.@r_c0_options).@r_c0_cache }
 
 one sig c0_ECU1 extends c0_plaECU
@@ -120,4 +120,4 @@ lone sig c0_master
 fact { some (c0_telematicsSystem.@r_c0_channel).@r_c0_dual }
 fact { some c0_telematicsSystem.@r_c0_extraDisplay }
 fact { some (c0_telematicsSystem.@r_c0_size).@r_c0_large }
-fact { (c0_comp.(@r_c0_version.@c0_version_ref)) = 1 }
+fact { ((c0_comp.@r_c0_version).@c0_version_ref) = 1 }

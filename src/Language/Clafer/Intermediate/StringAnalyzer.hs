@@ -22,9 +22,11 @@
 -}
 module Language.Clafer.Intermediate.StringAnalyzer where
 
+import Control.Applicative
+import Control.Monad.State
 import Data.Tuple
 import qualified Data.Map as Map
-import Control.Monad.State
+import Prelude
 
 import Language.Clafer.Intermediate.Intclafer
 
@@ -46,18 +48,18 @@ astrClafer (IClafer s mods gcrd' ident' uid' puid' super' reference' crd' gCard 
     elements'' <- astrElement `mapM` elements'
     return $ IClafer s mods gcrd' ident' uid' puid' super' reference'' crd' gCard mut elements''
 
-astrReference :: MonadState (Map.Map String Int) m => Maybe IReference -> m (Maybe IReference)
+astrReference :: Functor m => MonadState (Map.Map String Int) m => Maybe IReference -> m (Maybe IReference)
 astrReference Nothing = return Nothing
 astrReference (Just (IReference isSet' ref')) = Just <$> IReference isSet' `liftM` astrPExp ref'
 
 -- astrs single subclafer
-astrElement :: MonadState (Map.Map String Int) m => IElement -> m IElement
+astrElement :: Functor m => MonadState (Map.Map String Int) m => IElement -> m IElement
 astrElement x = case x of
   IEClafer clafer -> IEClafer `liftM` astrClafer clafer
   IEConstraint isHard' pexp -> IEConstraint isHard' `liftM` astrPExp pexp
   IEGoal isMaximize' pexp -> IEGoal isMaximize' `liftM` astrPExp pexp
 
-astrPExp :: MonadState (Map.Map String Int) m => PExp -> m PExp
+astrPExp :: Functor m => MonadState (Map.Map String Int) m => PExp -> m PExp
 astrPExp (PExp (Just TString) pid' pos' exp') =
     PExp (Just TInteger) pid' pos' `liftM` astrIExp exp'
 astrPExp (PExp t pid' pos' (IFunExp op' exps')) = PExp t pid' pos' `liftM`
@@ -66,7 +68,7 @@ astrPExp (PExp t pid' pos' (IDeclPExp quant' oDecls' bpexp')) = PExp t pid' pos'
                               (IDeclPExp quant' oDecls' `liftM` (astrPExp bpexp'))
 astrPExp x = return x
 
-astrIExp :: MonadState (Map.Map String Int) m => IExp -> m IExp
+astrIExp :: Functor m => MonadState (Map.Map String Int) m => IExp -> m IExp
 astrIExp x = case x of
   IFunExp op' exps' -> IFunExp op' `liftM` mapM astrPExp exps'
   IStr str -> do
