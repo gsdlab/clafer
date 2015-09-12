@@ -64,6 +64,7 @@ library
                       , cmdargs >= 0.10.12
                       , data-stringmap >= 1.0.1.1
                       , executable-path >= 0.0.3
+                      , file-embed >= 0.0.9
                       , json-builder >= 0.3
                       , lens >= 4.6.0.1
                       , lens-aeson >= 1.0.0.3
