@@ -43,10 +43,6 @@ cleanEnv:
 grammar:
 	$(MAKE) -C $(SRC_DIR) grammar
 
-# build Css.hs from clafer.css, call after .css changed
-Css.hs:
-	$(MAKE) -C $(SRC_DIR) Css.hs
-
 # Just like "init" but with enabled profiler
 # this will reinstall everything with profiling support, build clafer, and copy it to .
 prof:

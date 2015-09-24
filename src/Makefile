@@ -17,9 +17,6 @@ grammarDoc:
 	bnfc --latex clafer.cf
 	pdflatex $(FRONT_DIR)/DocClafer.tex
 
-Css.hs:
-	./Language/Clafer/Generator/quote-css.sh Language/Clafer/clafer.css > ./Language/Clafer/Css.hs
-
 clean:
 	rm -rf dist
 	find . -type f -name '*.o' -print0 | xargs -0 rm -f
