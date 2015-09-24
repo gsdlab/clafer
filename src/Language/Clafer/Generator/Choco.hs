@@ -228,6 +228,8 @@ genCModule (imodule@IModule{_mDecls}, genv') scopes  otherTokens' =
 
     mapFunc "!" = "not"
     mapFunc "#" = "card"
+    mapFunc "min" = "min"
+    mapFunc "max" = "max"
     mapFunc "<=>" = "ifOnlyIf"
     mapFunc "=>" = "implies"
     mapFunc "||" = "or"
