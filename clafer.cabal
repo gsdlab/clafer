@@ -21,6 +21,7 @@ data-files:             README.md
                       , Makefile
                       , tools/Makefile
                       , tools/ecore2clafer.jar
+extra-source-files:     src/Language/Clafer/clafer.css
 source-repository head
     type:               git
     location:           git://github.com/gsdlab/clafer.git
