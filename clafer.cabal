@@ -60,7 +60,7 @@ library
                       , parsec >= 3.1.5
                       , text >= 1.1.0.0
 
-                      , aeson >= 0.8.0.2
+                      , aeson >= 0.8.0.2 && < 0.10.0.0
                       , cmdargs >= 0.10.12
                       , data-stringmap >= 1.0.1.1
                       , executable-path >= 0.0.3
