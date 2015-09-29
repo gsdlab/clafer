@@ -301,10 +301,16 @@ graphCVLAssertion (Assertion s exps') parent' irMap = let body' = htmlChars $ ge
                                                                       if parent' == Nothing then "" else uid' ++ " -> \"" ++ fromJust parent' ++ "\";\n"
 
 graphCVLGoal :: Goal -> Maybe String -> Map.Map Span [Ir] -> String
-graphCVLGoal (Goal s exps') parent' irMap = let body' = htmlChars $ genTooltip (Module s [ElementDecl s (Subgoal s (Goal s exps'))]) irMap;
-                                                                       uid' = "\"" ++ getExpId s irMap ++ "\""
-                                                                    in uid' ++ " [label=\"" ++ body' ++ "\" shape=parallelogram];\n" ++
-                                                                      if parent' == Nothing then "" else uid' ++ " -> \"" ++ fromJust parent' ++ "\";\n"
+graphCVLGoal goal parent' irMap = let
+    s = getSpan goal
+    body' = htmlChars $ genTooltip (Module s [ElementDecl s (Subgoal s goal)]) irMap
+    uid' = "\"" ++ getExpId s irMap ++ "\""
+  in
+    uid' ++
+    " [label=\"" ++ body' ++ "\" shape=parallelogram];\n" ++
+    if parent' == Nothing
+    then ""
+    else uid' ++ " -> \"" ++ fromJust parent' ++ "\";\n"
 
 graphCVLCard :: Card -> Maybe String -> Map.Map Span [Ir] -> String
 graphCVLCard  (CardEmpty _) _ _ = "1..1"

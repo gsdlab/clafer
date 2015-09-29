@@ -1,0 +1,12 @@
+digraph "objectivesMinMax"
+{
+rankdir=BT;
+ranksep=0.3;
+nodesep=0.1;
+graph [fontname=Sans fontsize=11];
+node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
+edge [fontname=Sans fontsize=11];
+"c0_X" [label="X -> integer 3" URL="#c0_X" tooltip="X -&gt; integer 3&#10;"];
+"c0_total_X" [label="total_X -> integer = sum X" URL="#c0_total_X" tooltip="total_X -&gt; integer = sum X&#10;"];
+"c0_Y" [label="Y" URL="#c0_Y" tooltip="Y&#10;  total_Y -&gt; integer = sum X&#10;"];
+}

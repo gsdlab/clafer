@@ -140,7 +140,10 @@ instance Print Assertion where
 
 instance Print Goal where
   prt i e = case e of
-    Goal _ exps -> prPrec i 0 (concatD [doc (showString "<<"), prt 0 exps, doc (showString ">>")])
+    GoalMinDeprecated _ exps -> prPrec i 0 (concatD [doc (showString "<<"), doc (showString "min"), prt 0 exps, doc (showString ">>")])
+    GoalMaxDeprecated _ exps -> prPrec i 0 (concatD [doc (showString "<<"), doc (showString "max"), prt 0 exps, doc (showString ">>")])
+    GoalMinimize _ exps -> prPrec i 0 (concatD [doc (showString "<<"), doc (showString "minimize"), prt 0 exps, doc (showString ">>")])
+    GoalMaximize _ exps -> prPrec i 0 (concatD [doc (showString "<<"), doc (showString "maximize"), prt 0 exps, doc (showString ">>")])
 
 instance Print Abstract where
   prt i e = case e of
@@ -219,10 +222,9 @@ instance Print Exp where
     EDeclAll _ decl exp -> prPrec i 0 (concatD [doc (showString "all"), prt 0 decl, doc (showString "|"), prt 0 exp])
     EDeclQuantDisj _ quant decl exp -> prPrec i 0 (concatD [prt 0 quant, doc (showString "disj"), prt 0 decl, doc (showString "|"), prt 0 exp])
     EDeclQuant _ quant decl exp -> prPrec i 0 (concatD [prt 0 quant, prt 0 decl, doc (showString "|"), prt 0 exp])
-    EGMax _ exp -> prPrec i 1 (concatD [doc (showString "max"), prt 2 exp])
-    EGMin _ exp -> prPrec i 1 (concatD [doc (showString "min"), prt 2 exp])
     EIff _ exp1 exp2 -> prPrec i 1 (concatD [prt 1 exp1, doc (showString "<=>"), prt 2 exp2])
     EImplies _ exp1 exp2 -> prPrec i 2 (concatD [prt 2 exp1, doc (showString "=>"), prt 3 exp2])
+    EImpliesElse _ exp1 exp2 exp3 -> prPrec i 3 (concatD [doc (showString "if"), prt 3 exp1, doc (showString "then"), prt 3 exp2, doc (showString "else"), prt 4 exp3])
     EOr _ exp1 exp2 -> prPrec i 3 (concatD [prt 3 exp1, doc (showString "||"), prt 4 exp2])
     EXor _ exp1 exp2 -> prPrec i 4 (concatD [prt 4 exp1, doc (showString "xor"), prt 5 exp2])
     EAnd _ exp1 exp2 -> prPrec i 5 (concatD [prt 5 exp1, doc (showString "&&"), prt 6 exp2])
@@ -241,11 +243,12 @@ instance Print Exp where
     EMul _ exp1 exp2 -> prPrec i 10 (concatD [prt 10 exp1, doc (showString "*"), prt 11 exp2])
     EDiv _ exp1 exp2 -> prPrec i 10 (concatD [prt 10 exp1, doc (showString "/"), prt 11 exp2])
     ERem _ exp1 exp2 -> prPrec i 10 (concatD [prt 10 exp1, doc (showString "%"), prt 11 exp2])
-    ESum _ exp -> prPrec i 11 (concatD [doc (showString "sum"), prt 12 exp])
-    EProd _ exp -> prPrec i 11 (concatD [doc (showString "product"), prt 12 exp])
-    ECard _ exp -> prPrec i 11 (concatD [doc (showString "#"), prt 12 exp])
-    EMinExp _ exp -> prPrec i 11 (concatD [doc (showString "-"), prt 12 exp])
-    EImpliesElse _ exp1 exp2 exp3 -> prPrec i 12 (concatD [doc (showString "if"), prt 12 exp1, doc (showString "then"), prt 12 exp2, doc (showString "else"), prt 13 exp3])
+    EGMax _ exp -> prPrec i 11 (concatD [doc (showString "max"), prt 12 exp])
+    EGMin _ exp -> prPrec i 11 (concatD [doc (showString "min"), prt 12 exp])
+    ESum _ exp -> prPrec i 12 (concatD [doc (showString "sum"), prt 13 exp])
+    EProd _ exp -> prPrec i 12 (concatD [doc (showString "product"), prt 13 exp])
+    ECard _ exp -> prPrec i 12 (concatD [doc (showString "#"), prt 13 exp])
+    EMinExp _ exp -> prPrec i 12 (concatD [doc (showString "-"), prt 13 exp])
     EDomain _ exp1 exp2 -> prPrec i 13 (concatD [prt 13 exp1, doc (showString "<:"), prt 14 exp2])
     ERange _ exp1 exp2 -> prPrec i 14 (concatD [prt 14 exp1, doc (showString ":>"), prt 15 exp2])
     EUnion _ exp1 exp2 -> prPrec i 15 (concatD [prt 15 exp1, doc (showString "++"), prt 16 exp2])

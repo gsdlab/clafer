@@ -128,11 +128,18 @@ data Assertion = Assertion Span [Exp]
 
 instance Spannable Assertion where
     getSpan (Assertion s _ ) = s
-data Goal = Goal Span [Exp]
+data Goal
+    = GoalMinDeprecated Span [Exp]
+    | GoalMaxDeprecated Span [Exp]
+    | GoalMinimize Span [Exp]
+    | GoalMaximize Span [Exp]
   deriving (Eq, Ord, Show, Read, Data, Typeable, Generic)
 
 instance Spannable Goal where
-    getSpan (Goal s _ ) = s
+    getSpan (GoalMinDeprecated s _ ) = s
+    getSpan (GoalMaxDeprecated s _ ) = s
+    getSpan (GoalMinimize s _ ) = s
+    getSpan (GoalMaximize s _ ) = s
 data Abstract = AbstractEmpty Span | Abstract Span
   deriving (Eq, Ord, Show, Read, Data, Typeable, Generic)
 
@@ -240,10 +247,9 @@ data Exp
     | EDeclAll Span Decl Exp
     | EDeclQuantDisj Span Quant Decl Exp
     | EDeclQuant Span Quant Decl Exp
-    | EGMax Span Exp
-    | EGMin Span Exp
     | EIff Span Exp Exp
     | EImplies Span Exp Exp
+    | EImpliesElse Span Exp Exp Exp
     | EOr Span Exp Exp
     | EXor Span Exp Exp
     | EAnd Span Exp Exp
@@ -262,11 +268,12 @@ data Exp
     | EMul Span Exp Exp
     | EDiv Span Exp Exp
     | ERem Span Exp Exp
+    | EGMax Span Exp
+    | EGMin Span Exp
     | ESum Span Exp
     | EProd Span Exp
     | ECard Span Exp
     | EMinExp Span Exp
-    | EImpliesElse Span Exp Exp Exp
     | EDomain Span Exp Exp
     | ERange Span Exp Exp
     | EUnion Span Exp Exp
@@ -287,10 +294,9 @@ instance Spannable Exp where
     getSpan (EDeclAll s _ _ ) = s
     getSpan (EDeclQuantDisj s _ _ _ ) = s
     getSpan (EDeclQuant s _ _ _ ) = s
-    getSpan (EGMax s _ ) = s
-    getSpan (EGMin s _ ) = s
     getSpan (EIff s _ _ ) = s
     getSpan (EImplies s _ _ ) = s
+    getSpan (EImpliesElse s _ _ _ ) = s
     getSpan (EOr s _ _ ) = s
     getSpan (EXor s _ _ ) = s
     getSpan (EAnd s _ _ ) = s
@@ -309,11 +315,12 @@ instance Spannable Exp where
     getSpan (EMul s _ _ ) = s
     getSpan (EDiv s _ _ ) = s
     getSpan (ERem s _ _ ) = s
+    getSpan (EGMax s _ ) = s
+    getSpan (EGMin s _ ) = s
     getSpan (ESum s _ ) = s
     getSpan (EProd s _ ) = s
     getSpan (ECard s _ ) = s
     getSpan (EMinExp s _ ) = s
-    getSpan (EImpliesElse s _ _ _ ) = s
     getSpan (EDomain s _ _ ) = s
     getSpan (ERange s _ _ ) = s
     getSpan (EUnion s _ _ ) = s

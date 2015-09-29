@@ -368,11 +368,17 @@ iCSet         = "#"
 iMin :: String
 iMin          = "-"
 
-iGMax :: String
-iGMax         = "max"
+iMaximum :: String
+iMaximum  = "max"
 
-iGMin :: String
-iGMin         = "min"
+iMinimum :: String
+iMinimum  = "min"
+
+iMaximize :: String
+iMaximize  = "maximize"
+
+iMinimize :: String
+iMinimize  = "minimize"
 
 iSumSet :: String
 iSumSet       = "sum"
@@ -381,7 +387,7 @@ iProdSet :: String
 iProdSet      = "product"
 
 unOps :: [String]
-unOps = [iNot, iCSet, iMin, iGMax, iGMin, iSumSet, iProdSet]
+unOps = [iNot, iCSet, iMin, iMaximum, iMinimum, iMaximize, iMinimize, iSumSet, iProdSet]
 
 -- binary operators
 iIff :: String
@@ -555,7 +561,7 @@ keywordIdents =
   baseClafer :
   specialNames ++
   primitiveTypes ++
-  [ iGMax, iGMin, iSumSet, iProdSet ] ++ -- unary operators
+  [ iMaximum, iMinimum, iMaximize, iMinimize, iSumSet, iProdSet ] ++ -- unary operators
   [ iXor, iIn ] ++ -- binary operators
   [ "if", "then", "else" ] ++ -- ternary operators
   [ "no", "not", "some", "one", "all", "disj" ] ++ -- quantifiers

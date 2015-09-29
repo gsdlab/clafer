@@ -1,0 +1,10 @@
+scope({c0_A:2, c0_B:3});
+defaultScope(1);
+intRange(-8, 7);
+stringLength(16);
+
+c0_A = Clafer("c0_A").withCard(1, 2);
+c0_B = Clafer("c0_B").withCard(2, 3);
+c0_A.refTo(Int);
+c0_B.refToUnique(Int);
+Constraint(equal(minimum(joinRef(global(c0_A))), maximum(joinRef(global(c0_B)))));
