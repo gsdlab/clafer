@@ -175,16 +175,14 @@ Exp : 'all' 'disj' Decl '|' Exp { Language.Clafer.Front.AbsClafer.EDeclAllDisj (
     | 'all' Decl '|' Exp { Language.Clafer.Front.AbsClafer.EDeclAll ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkTokenSpan $3) >- (mkCatSpan $4)) $2 $4 }
     | Quant 'disj' Decl '|' Exp { Language.Clafer.Front.AbsClafer.EDeclQuantDisj ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3) >- (mkTokenSpan $4) >- (mkCatSpan $5)) $1 $3 $5 }
     | Quant Decl '|' Exp { Language.Clafer.Front.AbsClafer.EDeclQuant ((mkCatSpan $1) >- (mkCatSpan $2) >- (mkTokenSpan $3) >- (mkCatSpan $4)) $1 $2 $4 }
+    | 'if' Exp 'then' Exp 'else' Exp { Language.Clafer.Front.AbsClafer.EImpliesElse ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkTokenSpan $3) >- (mkCatSpan $4) >- (mkTokenSpan $5) >- (mkCatSpan $6)) $2 $4 $6 }
+    | Exp '<=>' Exp1 { Language.Clafer.Front.AbsClafer.EIff ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
     | Exp1 {  $1 }
-Exp1 :: { Exp }
-Exp1 : Exp1 '<=>' Exp2 { Language.Clafer.Front.AbsClafer.EIff ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
-     | Exp2 {  $1 }
 Exp2 :: { Exp }
 Exp2 : Exp2 '=>' Exp3 { Language.Clafer.Front.AbsClafer.EImplies ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
      | Exp3 {  $1 }
 Exp3 :: { Exp }
-Exp3 : 'if' Exp3 'then' Exp3 'else' Exp4 { Language.Clafer.Front.AbsClafer.EImpliesElse ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkTokenSpan $3) >- (mkCatSpan $4) >- (mkTokenSpan $5) >- (mkCatSpan $6)) $2 $4 $6 }
-     | Exp3 '||' Exp4 { Language.Clafer.Front.AbsClafer.EOr ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
+Exp3 : Exp3 '||' Exp4 { Language.Clafer.Front.AbsClafer.EOr ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
      | Exp4 {  $1 }
 Exp4 :: { Exp }
 Exp4 : Exp4 'xor' Exp5 { Language.Clafer.Front.AbsClafer.EXor ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
@@ -285,6 +283,8 @@ ListLocId : LocId { (:[])  $1 }
 ListModId :: { [ModId] }
 ListModId : ModId { (:[])  $1 }
           | ModId '\\' ListModId { (:)  $1 $3 }
+Exp1 :: { Exp }
+Exp1 : Exp2 {  $1 }
 {
 
 returnM :: a -> Err a

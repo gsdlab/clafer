@@ -132,13 +132,12 @@ All other symbols are terminals.
   |  |  **|**  | ``all`` //Decl// ``|`` //Exp// 
   |  |  **|**  | //Quant// ``disj`` //Decl// ``|`` //Exp// 
   |  |  **|**  | //Quant// //Decl// ``|`` //Exp// 
+  |  |  **|**  | ``if`` //Exp// ``then`` //Exp// ``else`` //Exp// 
+  |  |  **|**  | //Exp// ``<=>`` //Exp1// 
   |  |  **|**  | //Exp1// 
-  | //Exp1// | -> | //Exp1// ``<=>`` //Exp2// 
-  |  |  **|**  | //Exp2// 
   | //Exp2// | -> | //Exp2// ``=>`` //Exp3// 
   |  |  **|**  | //Exp3// 
-  | //Exp3// | -> | ``if`` //Exp3// ``then`` //Exp3// ``else`` //Exp4// 
-  |  |  **|**  | //Exp3// ``||`` //Exp4// 
+  | //Exp3// | -> | //Exp3// ``||`` //Exp4// 
   |  |  **|**  | //Exp4// 
   | //Exp4// | -> | //Exp4// ``xor`` //Exp5// 
   |  |  **|**  | //Exp5// 
@@ -213,5 +212,6 @@ All other symbols are terminals.
   |  |  **|**  | //LocId// ``;`` //[LocId]// 
   | //[ModId]// | -> | //ModId// 
   |  |  **|**  | //ModId// ``\`` //[ModId]// 
+  | //Exp1// | -> | //Exp2// 
 
 

@@ -1,0 +1,13 @@
+from jsir.IR import *
+
+c0_x = Clafer("c0_x").withCard(0, 1);
+c0_y = Clafer("c0_y").withCard(0, 1);
+c0_z = Clafer("c0_z").withCard(0, 1);
+c0_w = Clafer("c0_w").withCard(0, 1);
+c0_u = Clafer("c0_u").withCard(0, 1);
+c0_o = Clafer("c0_o").withCard(0, 1);
+c0_p = Clafer("c0_p").withCard(0, 1);
+c0_h = Clafer("c0_h").withCard(0, 1);
+Constraint(ifOnlyIf(some(glob(c0_h)), ifThenElse(ifThenElse(some(glob(c0_x)), some(glob(c0_z)), some(glob(c0_y))), implies(some(glob(c0_x)), some(glob(c0_y))), ifThenElse(none(glob(c0_w)), ifThenElse(some(glob(c0_z)), some(glob(c0_u)), some(glob(c0_o))), some(glob(c0_p))))));
+defaultScope(1);
+stringLength(16);

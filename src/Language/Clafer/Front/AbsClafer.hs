@@ -247,9 +247,9 @@ data Exp
     | EDeclAll Span Decl Exp
     | EDeclQuantDisj Span Quant Decl Exp
     | EDeclQuant Span Quant Decl Exp
+    | EImpliesElse Span Exp Exp Exp
     | EIff Span Exp Exp
     | EImplies Span Exp Exp
-    | EImpliesElse Span Exp Exp Exp
     | EOr Span Exp Exp
     | EXor Span Exp Exp
     | EAnd Span Exp Exp
@@ -294,9 +294,9 @@ instance Spannable Exp where
     getSpan (EDeclAll s _ _ ) = s
     getSpan (EDeclQuantDisj s _ _ _ ) = s
     getSpan (EDeclQuant s _ _ _ ) = s
+    getSpan (EImpliesElse s _ _ _ ) = s
     getSpan (EIff s _ _ ) = s
     getSpan (EImplies s _ _ ) = s
-    getSpan (EImpliesElse s _ _ _ ) = s
     getSpan (EOr s _ _ ) = s
     getSpan (EXor s _ _ ) = s
     getSpan (EAnd s _ _ ) = s
