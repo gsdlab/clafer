@@ -1,0 +1,10 @@
+// https://github.com/gsdlab/clafer/issues/67
+
+abstract Person
+    abstract Hand
+
+abstract Hook : Hand
+
+CptHook : Person
+    left : Hook
+    right : Hand

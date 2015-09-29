@@ -1,0 +1,17 @@
+digraph "gi67-extending-nested-abstract"
+{
+rankdir=BT;
+ranksep=0.3;
+nodesep=0.1;
+graph [fontname=Sans fontsize=11];
+node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
+edge [fontname=Sans fontsize=11];
+"c0_Person" [label="abstract Person" URL="#c0_Person" tooltip="abstract Person&#10;  abstract Hand&#10;"];
+"c0_Hand" [label="abstract Hand" URL="#c0_Hand" tooltip="abstract Hand&#10;"];
+"c0_Hook" [label="abstract Hook : Hand" URL="#c0_Hook" tooltip="abstract Hook : Hand&#10;"];
+"c0_Hook" -> "c0_Hand" [arrowhead=onormal constraint=true weight=100];
+"c0_CptHook" [label="CptHook : Person" URL="#c0_CptHook" tooltip="CptHook : Person&#10;  left : Hook&#10;  right : Hand&#10;"];
+"c0_CptHook" -> "c0_Person" [arrowhead=onormal constraint=true weight=100];
+"c0_CptHook" -> "c0_Hook" [arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];
+"c0_CptHook" -> "c0_Hand" [arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];
+}

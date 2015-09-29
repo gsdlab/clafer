@@ -1,0 +1,26 @@
+open util/integer
+pred show {}
+
+
+abstract sig c0_X
+{ c0_X_ref : one Int }
+
+fact {  all disj x, y : c0_X | (x.@c0_X_ref) != (y.@c0_X_ref)  }
+one sig c0_A extends c0_X
+{}
+
+fact { (some c0_A) => ((c0_A.@c0_X_ref) = 1) }
+one sig c0_B extends c0_X
+{}
+
+fact { (some c0_B) => ((c0_B.@c0_X_ref) = 2) }
+one sig c0_C extends c0_X
+{}
+
+fact { (some c0_C) => ((c0_C.@c0_X_ref) = 3) }
+sig c0_xs
+{ c0_xs_ref : one c0_X }
+
+fact { (c0_xs.@c0_xs_ref) = ((c0_A + c0_B) + c0_C) }
+fact { (c0_xs.@c0_xs_ref) = ((c0_A + c0_B) + c0_C) }
+fact { ((c0_xs.@c0_xs_ref).@c0_X_ref) = (((c0_A.@c0_X_ref) + (c0_B.@c0_X_ref)) + (c0_C.@c0_X_ref)) }

@@ -1,0 +1,18 @@
+digraph "gi49-setting-references-with-a-union"
+{
+rankdir=BT;
+ranksep=0.3;
+nodesep=0.1;
+graph [fontname=Sans fontsize=11];
+node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
+edge [fontname=Sans fontsize=11];
+"c0_X" [label="abstract X -> integer" URL="#c0_X" tooltip="abstract X -&gt; integer&#10;"];
+"c0_A" [label="A : X = 1" URL="#c0_A" tooltip="A : X = 1&#10;"];
+"c0_A" -> "c0_X" [arrowhead=onormal constraint=true weight=100];
+"c0_B" [label="B : X = 2" URL="#c0_B" tooltip="B : X = 2&#10;"];
+"c0_B" -> "c0_X" [arrowhead=onormal constraint=true weight=100];
+"c0_C" [label="C : X = 3" URL="#c0_C" tooltip="C : X = 3&#10;"];
+"c0_C" -> "c0_X" [arrowhead=onormal constraint=true weight=100];
+"c0_xs" [label="xs ->> X *" URL="#c0_xs" tooltip="xs -&gt;&gt; X *&#10;"];
+"c0_xs" -> "c0_X" [arrowhead=veevee arrowsize=0.6 minlen=1.5 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent];
+}

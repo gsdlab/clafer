@@ -1,0 +1,10 @@
+from jsir.IR import *
+
+c0_Person = Abstract("c0_Person");
+c0_Hook = Abstract("c0_Hook").extending(c0_Hand);
+c0_CptHook = Clafer("c0_CptHook").withCard(1, 1).extending(c0_Person);
+c0_left = c0_CptHook.addChild("c0_left").withCard(1, 1).extending(c0_Hook);
+c0_right = c0_CptHook.addChild("c0_right").withCard(1, 1).extending(c0_Hand);
+scope({c0_Hand:2});
+defaultScope(1);
+stringLength(16);
