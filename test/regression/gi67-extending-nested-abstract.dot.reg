@@ -10,8 +10,12 @@ edge [fontname=Sans fontsize=11];
 "c0_Hand" [label="abstract Hand" URL="#c0_Hand" tooltip="abstract Hand&#10;"];
 "c0_Hook" [label="abstract Hook : Hand" URL="#c0_Hook" tooltip="abstract Hook : Hand&#10;"];
 "c0_Hook" -> "c0_Hand" [arrowhead=onormal constraint=true weight=100];
-"c0_CptHook" [label="CptHook : Person" URL="#c0_CptHook" tooltip="CptHook : Person&#10;  left : Hook&#10;  right : Hand&#10;"];
-"c0_CptHook" -> "c0_Person" [arrowhead=onormal constraint=true weight=100];
-"c0_CptHook" -> "c0_Hook" [arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];
-"c0_CptHook" -> "c0_Hand" [arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];
+"c0_CptHookHand" [label="CptHookHand : Person" URL="#c0_CptHookHand" tooltip="CptHookHand : Person&#10;  left : Hook&#10;  right : Hand&#10;"];
+"c0_CptHookHand" -> "c0_Person" [arrowhead=onormal constraint=true weight=100];
+"c0_CptHookHand" -> "c0_Hook" [arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];
+"c0_CptHookHand" -> "c0_Hand" [arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];
+"c0_CptHandHook" [label="CptHandHook : Person" URL="#c0_CptHandHook" tooltip="CptHandHook : Person&#10;  left : Hand&#10;  right : Hook&#10;"];
+"c0_CptHandHook" -> "c0_Person" [arrowhead=onormal constraint=true weight=100];
+"c0_CptHandHook" -> "c0_Hand" [arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];
+"c0_CptHandHook" -> "c0_Hook" [arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];
 }

@@ -230,6 +230,7 @@ data NestedInheritanceMatch
 -- by following the links marked by *
 -- The link marked by ?1 is checked for correctness of nesting (isProperNesting):
 -- - _uid parentsSuperClafer == _parentUID superClafer
+-- - top-level abstract clafers which extend nested abstract clafers are made into siblings of their supers (see https://github.com/gsdlab/clafer/issues/67)
 -- The link marked by ?2 is checked for correctness of redefinition (isProperRefinement):
 -- - proper subtyping, bag to set, proper cardinality restriction
 -- Redefinition occurs when the name of headClafer is the same as the name of superClafer (isProperRedefinition):
@@ -237,7 +238,8 @@ data NestedInheritanceMatch
 
 isProperNesting :: UIDIClaferMap -> Maybe NestedInheritanceMatch -> Bool
 isProperNesting _ Nothing  = True
-isProperNesting uidIClaferMap (Just m) = if (isTopLevel $ _superClafer m) && (_isAbstract $ _superClafer m)
+isProperNesting uidIClaferMap (Just m) =
+  if ((isTopLevel $ _superClafer m) && (_isAbstract $ _superClafer m))
   then True
   else case (_parentsSuperClafer m) of
     Nothing                 -> (_uid $ _parentClafer m) == (_uid $ _superClafersParent m)

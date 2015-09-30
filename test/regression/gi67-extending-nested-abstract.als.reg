@@ -1,16 +1,11 @@
-/*
-All clafers: 7 | Abstract: 3 | Concrete: 4 | Reference: 0
-Constraints: 0
-Goals: 0
-Global scope: 1..*
-Can skip name resolver: no
-*/
 open util/integer
 pred show {}
-run show for 1 but 3 c0_Hand, 2 c0_Hook
+
 
 abstract sig c0_Person
-{ r_c0_Hand : set c0_Hand }
+{ r_c0_Hand : set c0_Hand
+, r_c0_Hook : set c0_Hook }
+{ r_c0_Hook in r_c0_Hand }
 
 abstract sig c0_Hand
 {}
@@ -18,11 +13,12 @@ abstract sig c0_Hand
 
 abstract sig c0_Hook extends c0_Hand
 {}
+{ one @r_c0_Hook.this }
 
-one sig c0_CptHook extends c0_Person
+one sig c0_CptHookHand extends c0_Person
 { r_c0_left : one c0_left
 , r_c0_right : one c0_right }
-{ r_c0_left in r_c0_Hand
+{ r_c0_left in r_c0_Hook
   r_c0_right in r_c0_Hand }
 
 one sig c0_left extends c0_Hook
@@ -31,5 +27,15 @@ one sig c0_left extends c0_Hook
 one sig c0_right extends c0_Hand
 {}
 
-one sig c0_severedHook extends c0_Hook
+one sig c0_CptHandHook extends c0_Person
+{ r_c1_left : one c1_left
+, r_c1_right : one c1_right }
+{ r_c1_left in r_c0_Hand
+  r_c1_right in r_c0_Hook }
+
+one sig c1_left extends c0_Hand
 {}
+
+one sig c1_right extends c0_Hook
+{}
+

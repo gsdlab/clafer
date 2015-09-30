@@ -5,6 +5,10 @@ abstract Person
 
 abstract Hook : Hand
 
-CptHook : Person
+CptHookHand : Person
     left : Hook
     right : Hand
+
+CptHandHook : Person
+    left : Hand
+    right : Hook

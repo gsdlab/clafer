@@ -31,11 +31,20 @@ a[href$='Ambiguous name'] {color: yellow}
 
 
 <div>
-<span class="claferDecl" id="c0_CptHook">CptHook</span><span class="keyword"> : </span><a href="#c0_Person"><span class="reference">Person</span></a>
+<span class="claferDecl" id="c0_CptHookHand">CptHookHand</span><span class="keyword"> : </span><a href="#c0_Person"><span class="reference">Person</span></a>
   <div class="indent">
   <span class="claferDecl" id="c0_left">left</span><span class="keyword"> : </span><a href="#c0_Hook"><span class="reference">Hook</span></a></div>
   <div class="indent">
   <span class="claferDecl" id="c0_right">right</span><span class="keyword"> : </span><a href="#c0_Hand"><span class="reference">Hand</span></a></div>
+</div>
+
+
+<div>
+<span class="claferDecl" id="c0_CptHandHook">CptHandHook</span><span class="keyword"> : </span><a href="#c0_Person"><span class="reference">Person</span></a>
+  <div class="indent">
+  <span class="claferDecl" id="c1_left">left</span><span class="keyword"> : </span><a href="#c0_Hand"><span class="reference">Hand</span></a></div>
+  <div class="indent">
+  <span class="claferDecl" id="c1_right">right</span><span class="keyword"> : </span><a href="#c0_Hook"><span class="reference">Hook</span></a></div>
 </div>
 
 </body>

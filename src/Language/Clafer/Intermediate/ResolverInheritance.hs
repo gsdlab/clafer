@@ -1,4 +1,5 @@
 {-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE NamedFieldPuns #-}
 {-
  Copyright (C) 2012-2015 Kacper Bak, Michal Antkiewicz <http://gsd.uwaterloo.ca>
 
@@ -22,23 +23,25 @@
 -}
 module Language.Clafer.Intermediate.ResolverInheritance where
 
-import Control.Applicative
-import Control.Lens  ((%~), mapped)
-import Control.Monad
-import Control.Monad.Except
-import Control.Monad.State
-import Data.Maybe
-import Data.Graph
-import Data.Tree
-import Data.List
+import           Control.Applicative
+import           Control.Lens  ((^.), (&), (%~), (.~), mapped)
+import           Control.Monad
+import           Control.Monad.Except
+import           Control.Monad.State
+import           Data.Maybe
+import           Data.Graph
+import           Data.Tree
+import           Data.List
 import qualified Data.Map as Map
-import Prelude
+import           Data.StringMap (StringMap)
+import qualified Data.StringMap as SMap
+import           Prelude
 
-import Language.ClaferT
-import Language.Clafer.Common
-import Language.Clafer.Front.AbsClafer
-import Language.Clafer.Intermediate.Intclafer
-import Language.Clafer.Intermediate.ResolverName
+import           Language.ClaferT
+import           Language.Clafer.Common
+import           Language.Clafer.Front.AbsClafer
+import           Language.Clafer.Intermediate.Intclafer
+import           Language.Clafer.Intermediate.ResolverName
 
 
 -- | Resolve Non-overlapping inheritance
@@ -50,8 +53,9 @@ resolveNModule (imodule, genv') =
       abstractClafers = filter _isAbstract $ bfsClafers $ toClafers unresolvedDecls
     resolvedDecls <- mapM (resolveNElement abstractClafers) unresolvedDecls
     let
-      uidClaferMap' = createUidIClaferMap imodule{_mDecls = resolvedDecls}
-      resolvedHierarchyDecls = map (resolveHierarchy uidClaferMap') resolvedDecls
+      relocatedDecls = relocateTopLevelAbstractToParents resolvedDecls    -- |> Top-level abstract clafer extending a nested abstract clafer <https://github.com/gsdlab/clafer/issues/67> <|
+      uidClaferMap' = createUidIClaferMap imodule{_mDecls = relocatedDecls}
+      resolvedHierarchyDecls = map (resolveHierarchy uidClaferMap') relocatedDecls
       resolvedHierarchiesIModule = imodule{_mDecls = resolvedHierarchyDecls}
     return
       ( resolvedHierarchiesIModule
@@ -63,9 +67,18 @@ resolveNClafer :: [IClafer] -> IClafer -> Resolve IClafer
 resolveNClafer abstractClafers clafer =
   do
     (super', superIClafer')    <- resolveNSuper abstractClafers $ _super clafer
+    -- |> Top-level abstract clafer extending a nested abstract clafer <https://github.com/gsdlab/clafer/issues/67> |>
+    let
+      parentUID' =
+        case superIClafer' of
+          (Just superIClafer'') ->
+            if _isAbstract clafer && isTopLevel clafer && not (isTopLevel superIClafer'')
+            then _parentUID superIClafer''   -- make clafer a sibling of the superIClafer'
+            else _parentUID clafer
+          Nothing               -> _parentUID clafer
+    -- <| Top-level abstract clafer extending a nested abstract clafer <https://github.com/gsdlab/clafer/issues/67> <|
     elements' <- mapM (resolveNElement abstractClafers) $ _elements clafer
-    return $ clafer {_super = super',
-            _elements = elements'}
+    return $ clafer {_super = super', _parentUID = parentUID', _elements = elements'}
 
 
 resolveNSuper :: [IClafer] -> Maybe PExp -> Resolve (Maybe PExp, Maybe IClafer)
@@ -298,3 +311,35 @@ resolveRedefinition    (iModule, _)  =
              else ("Improper cardinality refinement for clafer '" ++ i ++ "' on line " ++ show l ++ " column " ++ show c ++ "\n")
         else ("Improperly nested clafer '" ++ i ++ "' on line " ++ show l ++ " column " ++ show c ++ "\n")
     isImproper _ = ""
+
+-- |> Top-level abstract clafer extending a nested abstract clafer <https://github.com/gsdlab/clafer/issues/67> |>
+relocateTopLevelAbstractToParents :: [IElement]      -> [IElement]
+relocateTopLevelAbstractToParents    originalElements =
+  let
+    (elementsToBeRelocated, remainingElements) = partition needsRelocation originalElements
+  in
+    case elementsToBeRelocated of
+      [] -> originalElements
+      _  -> map (insertElements $ mkParentUIDIElementMap elementsToBeRelocated) remainingElements
+  where
+    needsRelocation :: IElement -> Bool
+    needsRelocation    IEClafer{_iClafer} = not $ isTopLevel _iClafer
+    needsRelocation    _                  = False
+
+    -- creates a map from parentUID to a list of elements to be added as children of a clafer with that UID
+    mkParentUIDIElementMap :: [IElement] -> StringMap [IElement]
+    mkParentUIDIElementMap    elems       = foldl'
+        (\accumMap' (parentUID', elem') -> SMap.insertWith (++) parentUID' [elem'] accumMap')
+        SMap.empty
+        (map (\e -> (_parentUID $ _iClafer e, e)) elems)
+
+    insertElements :: StringMap [IElement] -> IElement     -> IElement
+    insertElements    parentMap               targetElement = let
+        targetUID = targetElement ^. iClafer . uid
+        newChildren = SMap.findWithDefault [] targetUID parentMap
+        currentElements = targetElement ^. iClafer . elements
+        newElements =  map (insertElements parentMap) currentElements
+                    ++ newChildren
+      in
+        targetElement & iClafer . elements .~ newElements
+-- <| Top-level abstract clafer extending a nested abstract clafer <https://github.com/gsdlab/clafer/issues/67> <|
