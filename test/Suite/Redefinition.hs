@@ -22,19 +22,21 @@
 -}
 module Suite.Redefinition (tg_Test_Suite_Redefinition) where
 
-import Language.Clafer
-import Language.ClaferT
-import Language.Clafer.Common
-import Language.Clafer.Intermediate.Intclafer
+import           Language.Clafer
+import           Language.ClaferT
+import           Language.Clafer.Common
+import           Language.Clafer.Intermediate.Intclafer
 
-import Functions
+import           Functions
 
+import           Control.Applicative
 import qualified Data.Map as M
-import Data.Maybe (isNothing, isJust, fromJust)
-import Data.StringMap
-import Test.Tasty
-import Test.Tasty.HUnit
-import Test.Tasty.TH
+import           Data.Maybe (isNothing, isJust, fromJust)
+import           Data.StringMap
+import           Test.Tasty
+import           Test.Tasty.HUnit
+import           Test.Tasty.TH
+import           Prelude
 
 tg_Test_Suite_Redefinition :: TestTree
 tg_Test_Suite_Redefinition = $(testGroupGenerator)
