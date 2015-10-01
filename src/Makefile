@@ -13,9 +13,21 @@ grammar:
 	mv $(FRONT_DIR)/DocClafer.txt ../doc
 	rm $(FRONT_DIR)/*.bak
 
+# before running grammarDoc it is necessary to manually modify the following rules in clafer.cf
+# ModuleX.         Module ::= [Declaration] ;
+# ClaferX.         Clafer ::= Abstract GCard PosIdent Super Reference Card Init Elements ;
+# ConstraintX.     Constraint ::= "[" [Exp] "]" ;
+# AssertionX.      Assertion ::= "assert" "[" [Exp] "]";
+# AbstractX.       Abstract ::= "abstract" ;
+# NCardX.          NCard  ::= PosInteger ".." ExInteger ;
+# DeclX.           Decl ::= [LocId] ":" Exp15 ;
+# the suffix "X" can be anything, it is needed only to avoid the error from the latex generator
+# the names of the constructors do not appear in the generated LaTeX.
 grammarDoc:
 	bnfc --latex clafer.cf
-	pdflatex $(FRONT_DIR)/DocClafer.tex
+	pdflatex clafer.tex
+	mv clafer.pdf ../doc
+	rm clafer.tex clafer.aux clafer.log
 
 clean:
 	rm -rf dist
