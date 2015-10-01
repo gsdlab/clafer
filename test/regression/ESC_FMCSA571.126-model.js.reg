@@ -5,7 +5,7 @@ stringLength(16);
 
 c0_degree = Abstract("c0_degree");
 c0_Vehicle = Abstract("c0_Vehicle");
-c1_DriveConfiguration = Abstract("c1_DriveConfiguration");
+c1_DriveConfiguration = Abstract("c1_DriveConfiguration").withGroupCard(1, 1);
 c1_ElectronicStabilityControlSystem = Abstract("c1_ElectronicStabilityControlSystem");
 c1_AntiLockBreakSystem = Abstract("c1_AntiLockBreakSystem");
 c1_TractionControlSystem = Abstract("c1_TractionControlSystem");

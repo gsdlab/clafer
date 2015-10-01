@@ -136,9 +136,9 @@ genCModule (imodule@IModule{_mDecls}, genv') scopes  otherTokens' =
             genTarget target = target
 
     genAbstractClafer :: IClafer -> Result
-    genAbstractClafer IClafer{_uid, _card = Just _} =
-        _uid ++ " = Abstract(\"" ++ _uid ++ "\")" ++ prop "extending" (superOf _uid) ++ ";\n"
-    genAbstractClafer IClafer{_uid, _card = Nothing} =
+    genAbstractClafer IClafer{_uid, _gcard = Just (IGCard _ _gcard)} =
+        _uid ++ " = Abstract(\"" ++ _uid ++ "\")" ++ prop "extending" (superOf _uid) ++ prop "withGroupCard" (genCard _gcard) ++ ";\n"
+    genAbstractClafer IClafer{_uid, _gcard = Nothing} =
         _uid ++ " = Abstract(\"" ++ _uid ++ "\")" ++ prop "extending" (superOf _uid) ++ ";\n"
 
 

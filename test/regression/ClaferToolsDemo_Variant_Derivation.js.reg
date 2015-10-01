@@ -3,7 +3,7 @@ defaultScope(1);
 intRange(-8, 7);
 stringLength(16);
 
-c0_Bluetooth = Abstract("c0_Bluetooth");
+c0_Bluetooth = Abstract("c0_Bluetooth").withGroupCard(1, 1);
 c0_MobilePhone = Abstract("c0_MobilePhone");
 c0_LowEndPhone = Abstract("c0_LowEndPhone").extending(c0_MobilePhone);
 c0_HighEndPhone = Abstract("c0_HighEndPhone").extending(c0_MobilePhone);

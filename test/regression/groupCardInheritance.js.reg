@@ -2,8 +2,8 @@ defaultScope(1);
 intRange(-8, 7);
 stringLength(16);
 
-c0_Port = Abstract("c0_Port");
-c0_RelayPort = Abstract("c0_RelayPort").extending(c0_Port);
+c0_Port = Abstract("c0_Port").withGroupCard(1);
+c0_RelayPort = Abstract("c0_RelayPort").extending(c0_Port).withGroupCard(1, 1);
 c0_input = c0_Port.addChild("c0_input").withCard(0, 1);
 c0_output = c0_Port.addChild("c0_output").withCard(0, 1);
 c0_relay = c0_RelayPort.addChild("c0_relay").withCard(0, 1);
