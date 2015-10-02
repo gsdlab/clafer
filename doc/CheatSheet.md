@@ -1,5 +1,8 @@
 # Clafer Cheat Sheet
 
+The cheat sheet is based on the [grammar](https://github.com/gsdlab/clafer/blob/develop/src/clafer.cf) and the [generated syntax documentation](https://github.com/gsdlab/clafer/raw/master/doc/clafer.pdf).
+The cheat sheet additionally provides commentary and type information, while sacrificing formality of the grammar.
+
 ## Predefined sets
 
 ### Sets of primitive values
@@ -26,7 +29,7 @@ clafer
 
 A clafer model consists of clafers, enums, constraints, assertions, optimization objectives, and escapes:
 
-`<element>`
+`<element>`:
 ```
 <clafer>
 <enum>
@@ -41,18 +44,18 @@ A clafer model consists of clafers, enums, constraints, assertions, optimization
 
 A clafer defines a set of its instances.
 Clafer nesting defines the nesting (structure) of instances.
-The only mandatory part of clafer declaration is `<name>`.
+The only mandatory part of clafer declaration is `<name>`:.
 
-`<clafer>`
+`<clafer>`:
 ```
 <abstract?> <group cardinality?> <name> <super?> <reference?> <multiplicity?> <initializer?>
-    <elements?>
+    <elements*>
 ```
 
 An abstract clafer does not have any instances directly, only through concrete clafers extending it.
 By default, clafers are concrete (not abstract).
 
-`<abstract>`
+`<abstract>`:
 ```
 abstract
 ```
@@ -65,18 +68,18 @@ Group cardinality restricts the valid number of children of the clafer:
 or a range `n..m`.
 The default group cardinality is `0..*`.
 
-`<group cardinality>`
+`<group cardinality>`:
 ```
 xor
 or
 mux
 opt
-<lower bound>..<upper bound>
+<int literal>..<int literal>
 ```
 
 A clafer inherits group cardinality, children, and reference of its super clafer.
 
-`<super>`
+`<super>`:
 ```
 : <name>
 ```
@@ -85,7 +88,7 @@ Instances of a reference clafer point to instances from the target set expressio
 When declared using `->` (set), the instances pointed to cannot repeat per each instance of its parent,
 whereas duplicate values are allowed when declared using `->>` (bag).
 
-`<reference>`
+`<reference>`:
 ```
 -> <set expression>
 ->> <set expression>
@@ -99,20 +102,20 @@ Useful shorthands are
 `*` = `0..*`
 `+` = `1..*`
 
-`<multiplicity>`
+`<multiplicity>`:
 ```
 ?
 *
 +
-<number>
-<number>..<number>
-<number>..*
+<int literal>
+<int literal>..<int literal>
+<int literal>..*
 ```
 
 Reference clafers can be given values using an initializer:
 constant using `=` and default using `:=` (no backend currently supports default).
 
-`<initializer>`
+`<initializer>`:
 ```
 = <set expression>
 := <set expression>
@@ -120,25 +123,27 @@ constant using `=` and default using `:=` (no backend currently supports default
 
 #### Examples
 
-We declare two concrete clafers, `B` nested under `A`.
+* We declare two concrete clafers, `B` nested under `A`.
+Both have group cardinality `0..*`, , no super, no reference, no initializer, and multiplicity `1`.
 
 ```
 A
     B
 ```
 
-An abstract clafer `A`, with group cardinality `xor`, which inherits from `B`, whose instances point to instances of type `C` from the set `C2`.
-
-A concrete clafer `D`, which is nested under `A`, with multiplicity `?`, and no group cardinality, no super, no reference, no initializer, and no children.
+* An abstract clafer `A`,
+with group cardinality `xor`,
+which inherits from `B`,
+whose instances can only point to instances from set `C ++ D`,
+whose each instance points to a different instance from set `CD`.
 
 ```
-abstract xor A : B -> C ++ D 1..* = C2
-    D ?
+abstract xor A : B -> C ++ D 1..* = CD
 ```
 
 ### Enum
 
-An enumeration is a syntactic sugar to declare an abstract clafer and concrete clafers inheriting from it to represent its literals.
+An enumeration is syntactic sugar to declare an abstract clafer and concrete clafers inheriting from it to represent its literals.
 
 ```
 enum <name> = <literal> | <...>
@@ -150,6 +155,15 @@ An enumeration `A` with literals `B`, `C`, and `D`.
 
 ```
 enum A = B | C | D
+```
+
+which is desugared to
+
+```
+abstract A
+B : A
+C : A
+D : A
 ```
 
 ### Constraint
@@ -205,12 +219,13 @@ Maximize
 ### Boolean expressions
 
 These expressions produce either true or false.
+There are no true and false literals in the language.
 
 Boolean logic:
 
-`<boolean expression>`
+`<boolean expression>`:
 ```
-if <boolean expression> then <expression> else <expression>
+if <boolean expression> then <boolean expression> else <boolean expression>
 <boolean expression> <=> <boolean expression>
 <boolean expression> => <boolean expression>
 <boolean expression> || <boolean expression>
@@ -223,11 +238,13 @@ Quantified expressions:
 
 Simply quantified:
 
-`some` means at least one instance in the set.
-`not` is a synonym to `no`.
+`lone` means less than one.
+`some` means at least one.
+`not` is a synonym of `no`.
 
-`<boolean expression>`
+`<boolean expression>`:
 ```
+lone <set expression>
 one <set expression>
 some <set expression>
 no <set expression>
@@ -236,7 +253,7 @@ not <set expression>
 
 Quantified with local declarations:
 
-`<boolean expression>`
+`<boolean expression>`:
 ```
 all disj <local declarations> | <boolean expression>
 all <local declarations> | <boolean expression>
@@ -248,14 +265,14 @@ no disj <local declarations> | <boolean expression>
 no <local declarations> | <boolean expression>
 ```
 
-`<local declarations>`
+`<local declarations>`:
 ```
-<name> : <set expression> ; <name> : <set expression> <...>
+<name> : <set expression> ; <...>
 ```
 
 Numeric comparisons:
 
-`<boolean expression>`
+`<boolean expression>`:
 ```
 <numeric expression> < <numeric expression>
 <numeric expression> > <numeric expression>
@@ -265,7 +282,7 @@ Numeric comparisons:
 
 Overloaded comparisons (can be sets of instances or primitive values):
 
-`<boolean expression>`
+`<boolean expression>`:
 ```
 <set expression> = <set expression>
 <set expression> != <set expression>
@@ -275,9 +292,11 @@ Overloaded comparisons (can be sets of instances or primitive values):
 
 ### Numeric expressions
 
-`<numeric expression>`
+`<numeric expression>`:
 ```
-<literal>
+<int literal>
+<double literal>
+<real literal>
 <numeric expression> + <numeric expression>
 <numeric expression> - <numeric expression>
 <numeric expression> * <numeric expression>
@@ -289,12 +308,23 @@ product <numeric expression>
 # <set expression>
 ```
 
+### String expressions
+
+`<string expression>`:
+```
+"<character>*"
+```
+
 ### Set expressions
 
 `,` is a synonym for union `++`.
 
-`<set expression>`
+`<set expression>`:
 ```
+<numeric expression>
+<string expression>
+<name>
+if <boolean expression> then <set expression> else <set expression>
 <set expression> ++ <set expression>
 <set expression> , <set expression>
 <set expression> -- <set expression>
@@ -304,10 +334,14 @@ product <numeric expression>
 
 ### Relational expressions
 
-`<relation expression>`
+`:>` is range restriction.
+`<:` is domain restriction.
+
+`<relation expression>`:
 ```
-<set expression> :> <set expression>
-<set expression> <: <set expression>
+<name>
+<relation expression> :> <set expression>
+<set expression> <: <set relation>
 ```
 
 ## Escapes
@@ -316,7 +350,7 @@ Escapes allow to write fragments of code in the target language of the clafer co
 
 ### Escape to Alloy
 
-`<Alloy escape>`
+`<Alloy escape>`:
 ```
 [alloy|
 <Alloy code>
@@ -325,7 +359,7 @@ Escapes allow to write fragments of code in the target language of the clafer co
 
 ### Escape to ChocoSolver
 
-`<ChocoSolver escape>`
+`<ChocoSolver escape>`:
 ```
 [choco|
 <ChocoSolver code>
