@@ -292,6 +292,8 @@ Overloaded comparisons (can be sets of instances or primitive values):
 
 ### Numeric expressions
 
+`#` computes the set cardinality.
+
 `<numeric expression>`:
 ```
 <int literal>
@@ -323,7 +325,7 @@ product <numeric expression>
 ```
 <numeric expression>
 <string expression>
-<name>
+<identifier>
 if <boolean expression> then <set expression> else <set expression>
 <set expression> ++ <set expression>
 <set expression> , <set expression>
@@ -339,9 +341,24 @@ if <boolean expression> then <set expression> else <set expression>
 
 `<relation expression>`:
 ```
-<name>
+<identifier>
 <relation expression> :> <set expression>
 <set expression> <: <set relation>
+```
+
+### Identifiers
+
+`this` is a singleton set referring to an instance of the context clafer.
+`parent` is a relation from the context clafer to its parent.
+`dref` is a relation from the context reference clafer to its target set.
+
+
+`<identifier>`:
+```
+<name>
+this
+parent
+dref
 ```
 
 ## Escapes

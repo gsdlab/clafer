@@ -22,6 +22,13 @@ Clafer multi-objective optimizer generates a Pareto front of optimal product con
 3. *Domain Modeling* - aims at improving the understanding of the problem domain in the early stages of software development and determining the requirements with fewer defects.
 This is also known as *Concept Modeling* or *Ontology Modeling*.
 
+### Resources
+
+* [Learning Clafer](http://t3-necsis.cs.uwaterloo.ca:8091/#learning-clafer)
+* [Cheat Sheet](doc/CheatSheet.md)
+* [Syntax Documentation](doc/clafer.pdf)
+* [Grammar](src/clafer.cf)
+
 # Clafer, the Compiler
 
 Clafer compiler provides a reference implementation of Clafer, the language.
