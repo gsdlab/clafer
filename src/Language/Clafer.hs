@@ -648,12 +648,19 @@ gatherObjectivesAndAttributes    iModule    astModuleTrace'      = let
      else Just $ ObjectivesAndAttributes objectives (map _uid $ filter isIntClafer iClafers)
   where
     gatherObjectives :: [String] -> IElement         -> [String]
-    gatherObjectives    objs        (IEGoal _ cpexp') = printCPexp (Map.lookup (_inPos cpexp') astModuleTrace'):objs
+    gatherObjectives    objs        (IEGoal _ cpexp') =
+      printCPexp (Map.lookup (_inPos cpexp') astModuleTrace')
+      :objs
     gatherObjectives    objs        _                 = objs
 
     printCPexp :: Maybe [Ast] -> String
-    printCPexp (Just [e]) = printAstNode e
-    printCPexp _          = "[BUG]: expression not found!"
+    printCPexp (Just [_,_,(AstGoal g)]) = case g of
+      GoalMinimize      _ [e] -> "min " ++ (printTree e)
+      GoalMaximize      _ [e] -> "max " ++ (printTree e)
+      GoalMinDeprecated _ [e] -> "min " ++ (printTree e)
+      GoalMaxDeprecated _ [e] -> "max " ++ (printTree e)
+      g -> "[BUG]: unexpected goal found!" ++ show g
+    printCPexp e          = "[BUG]: expression not found!" ++ show e
 
     iClafers :: [ IClafer ]
     iClafers = universeOn biplate iModule
