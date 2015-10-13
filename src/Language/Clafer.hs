@@ -659,7 +659,7 @@ gatherObjectivesAndAttributes    iModule    astModuleTrace'      = let
       GoalMaximize      _ [e] -> "max " ++ (printTree e)
       GoalMinDeprecated _ [e] -> "min " ++ (printTree e)
       GoalMaxDeprecated _ [e] -> "max " ++ (printTree e)
-      g -> "[BUG]: unexpected goal found!" ++ show g
+      g' -> "[BUG]: unexpected goal found!" ++ show g'
     printCPexp e          = "[BUG]: expression not found!" ++ show e
 
     iClafers :: [ IClafer ]

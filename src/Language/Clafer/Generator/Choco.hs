@@ -25,7 +25,7 @@ genCModule (imodule@IModule{_mDecls}, genv') scopes  otherTokens' =
     ++ (genAbstractClafer =<< abstractClafers)
     ++ (genConcreteClafer =<< concreteClafers)
     ++ (genRefClafer =<< clafers)
-    ++ (genTopConstraint =<< _mDecls)
+    ++ (genTopConstraintAssert =<< _mDecls)
     ++ (genConstraint =<< clafers)
     ++ (genGoal =<< _mDecls)
     ++ genChocoEscapes
@@ -142,9 +142,10 @@ genCModule (imodule@IModule{_mDecls}, genv') scopes  otherTokens' =
         _uid ++ " = Abstract(\"" ++ _uid ++ "\")" ++ prop "extending" (superOf _uid) ++ ";\n"
 
 
-    genTopConstraint :: IElement -> Result
-    genTopConstraint (IEConstraint _ pexp) = "Constraint(" ++ genConstraintPExp pexp ++ ");\n"
-    genTopConstraint _ = ""
+    genTopConstraintAssert :: IElement -> Result
+    genTopConstraintAssert (IEConstraint True pexp) = "Constraint(" ++ genConstraintPExp pexp ++ ");\n"
+    genTopConstraintAssert (IEConstraint False pexp) = "assert(" ++ genConstraintPExp pexp ++ ");\n"
+    genTopConstraintAssert _ = ""
 
     genConstraint :: IClafer -> Result
     genConstraint IClafer{_uid, _elements} =

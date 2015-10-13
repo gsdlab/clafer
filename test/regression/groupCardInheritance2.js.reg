@@ -12,4 +12,4 @@ c0_c = c0_C.addChild("c0_c").withCard(0, 1);
 c0_d = c0_D.addChild("c0_d").withCard(0, 1);
 c0_E = Clafer("c0_E").withCard(1, 1).withGroupCard(1, 1).extending(c0_D);
 c0_e = c0_E.addChild("c0_e").withCard(0, 1);
-Constraint(and(and(and(and(one(join(global(c0_E), c0_a)), none(join(global(c0_E), c0_b))), none(join(global(c0_E), c0_c))), none(join(global(c0_E), c0_d))), none(join(global(c0_E), c0_e))));
+assert(and(and(and(and(one(join(global(c0_E), c0_a)), none(join(global(c0_E), c0_b))), none(join(global(c0_E), c0_c))), none(join(global(c0_E), c0_d))), none(join(global(c0_E), c0_e))));
