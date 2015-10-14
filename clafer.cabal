@@ -19,8 +19,7 @@ data-files:             README.md
                       , CHANGES.md
                       , logo.pdf
                       , Makefile
-                      , tools/Makefile
-                      , tools/ecore2clafer.jar
+                      , ecore2clafer.jar
 extra-source-files:     src/Language/Clafer/clafer.css
 source-repository head
     type:               git

@@ -85,7 +85,6 @@ module Language.Clafer
   , Module
   , GEnv
   , IModule
-  , voidf
   , ClaferEnv(..)
   , getIr
   , getAst
@@ -108,6 +107,7 @@ import           Data.Maybe
 import           Data.String.Conversions
 import           System.Exit
 import           System.FilePath (dropExtension, takeBaseName)
+import           System.IO
 import           System.Process (readProcessWithExitCode, system)
 
 import           Language.Clafer.ClaferArgs hiding (Clafer)
@@ -161,8 +161,16 @@ runCompiler    mURL         args'         inputModel =
             runCompiler (Just url) (args' { file = getFileName url }) importedModel
         -}
         compile iModule
+
+        when (validate args') $ liftIO $ do
+          hSetBuffering stdout LineBuffering
+          putStrLn $ "[clafer]              Validating " ++ file args'
+
         fs <- save args'
-        when (validate args') $ forM_ fs (liftIO . runValidate args' )
+
+        when (validate args') $ liftIO $ do
+          forM_ fs (runValidate args')
+          putStrLn "\n"
     if Html `elem` (mode args')
       then htmlCatch result args' inputModel
       else return ()
@@ -276,15 +284,29 @@ summary' graph stats (x:xs) = x:summary' graph stats xs
 runValidate :: ClaferArgs -> String -> IO ()
 runValidate args' fo = do
   let path = (tooldir args') ++ "/"
-  liftIO $ putStrLn ("Validating '" ++ fo ++"'")
   let modes = mode args'
   when (Alloy `elem` modes && ".als" `isSuffixOf` fo) $ do
-    voidf $ system $ validateAlloy path "4.2" ++ fo
+    void $ system $ validateAlloy path ++ fo
+  when (Choco `elem` modes && ".js" `isSuffixOf` fo) $ do
+    void $ system $ validateChoco path ++ fo
+  when (Graph `elem` modes && ".dot" `isSuffixOf` fo) $ do
+    liftIO $ putStrLn ("=========== Parsing+Generating   " ++ fo ++ " =============")
+    void $ system $ validateGraph ++ fo
   when (Mode.Clafer `elem` modes && ".des.cfr" `isSuffixOf` fo) $ do
-    voidf $ system $ "../dist/build/clafer/clafer -s -m=clafer " ++ fo
+    liftIO $ putStrLn ("=========== Parsing+Typechecking " ++ fo ++ " =============")
+    void $ system $  validateClafer path ++ fo
 
-validateAlloy :: String -> String -> String
-validateAlloy path version = "java -cp " ++ path ++ "alloy" ++ version ++ ".jar edu.mit.csail.sdg.alloy4whole.ExampleUsingTheCompiler "
+validateAlloy :: String -> String
+validateAlloy path = "java -cp " ++ path ++ "alloy4.2.jar edu.mit.csail.sdg.alloy4whole.ExampleUsingTheCompiler "
+
+validateChoco :: String -> String
+validateChoco path = "java -jar " ++ path ++ "claferchocoig.jar -v --file "
+
+validateGraph :: String
+validateGraph = "dot -Tsvg -O "
+
+validateClafer :: String -> String
+validateClafer path = path ++ "clafer -s -m=clafer "
 
 
 -- | Add a new fragment to the model. Fragments should be added in order.
@@ -482,11 +504,10 @@ generate =
                 else [ (Alloy,
                         NoCompilerResult {
                          reason = "Alloy output unavailable because the model contains: "
-                                ++ (if hasNoRealLiterals then "" else " * a real number literal")
-                                ++ (if hasNoReferenceToReal then "" else " * a reference to a real")
-                                ++ (if hasNoProductOperator then "" else " * the product operator")
-                                ++ (if hasNoMinMaxOperator then "" else " * the min or max operator")
-                                ++ "."
+                                ++ (if hasNoRealLiterals then "" else "a real number literal, ")
+                                ++ (if hasNoReferenceToReal then "" else "a reference to a real, ")
+                                ++ (if hasNoProductOperator then "" else "the product operator, ")
+                                ++ (if hasNoMinMaxOperator then "" else "the min or max operator, ")
                         })
                      ]
           else []
@@ -583,16 +604,24 @@ generate =
         )
         -- result for Choco
         ++ (if (Choco `elem` modes)
-          then [ (Choco,
-                  CompilerResult {
-                    extension = "js",
-                    outputCode = genCModule (iModule, genv) scopes otherTokens',
-                    statistics = stats,
-                    claferEnv  = env,
-                    mappingToAlloy = [],
-                    stringMap = Map.empty,
-                    scopesList = scopes
-                   }) ]
+          then if (hasNoRealLiterals && hasNoReferenceToReal)
+                then [ (Choco,
+                        CompilerResult {
+                          extension = "js",
+                          outputCode = genCModule (iModule, genv) scopes otherTokens',
+                          statistics = stats,
+                          claferEnv  = env,
+                          mappingToAlloy = [],
+                          stringMap = Map.empty,
+                          scopesList = scopes
+                         }) ]
+                else [ (Choco,
+                         NoCompilerResult {
+                          reason = "Choco output unavailable because the model contains: "
+                                 ++ (if hasNoRealLiterals then "" else "a real number literal, ")
+                                 ++ (if hasNoReferenceToReal then "" else "a reference to a real, ")
+                         })
+                      ]
           else []
         ))
 

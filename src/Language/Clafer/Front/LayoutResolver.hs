@@ -26,7 +26,6 @@ module Language.Clafer.Front.LayoutResolver where
 -- very simple layout resolver
 import Control.Monad.State
 import Data.Functor.Identity (Identity)
-import Language.Clafer.Common
 import Language.ClaferT
 
 import Language.Clafer.Front.LexClafer
@@ -258,7 +257,7 @@ handleIndent c = case c of
     c' <- readC n
     emitIndent n
     emitDedent n
-    when (c' `elem` ['[', ']','{', '}']) $ voidf $ handleIndent c'
+    when (c' `elem` ['[', ']','{', '}']) $ void $ handleIndent c'
     return c'
   '[' -> do
     modify (\e -> e {brCtr = brCtr e + 1})

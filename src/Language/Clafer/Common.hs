@@ -579,11 +579,6 @@ data GEnv
   , uidClaferMap :: UIDIClaferMap -- the map needs to be re-created everytime IModule is rewritten
   } deriving (Eq, Show)
 
-voidf :: Monad m => m t -> m ()
-voidf f = do
-  _ <- f
-  return ()
-
 safeTail :: [a] -> [a]
 safeTail [] = []
 safeTail (_:xs) = xs

@@ -30,7 +30,6 @@ grammarDoc:
 	rm clafer.tex clafer.aux clafer.log
 
 clean:
-	rm -rf dist
 	find . -type f -name '*.o' -print0 | xargs -0 rm -f
 	find . -type f -name '*.hi' -print0 | xargs -0 rm -f
 	find . -type f -name '*.bak' -print0 | xargs -0 rm -f
