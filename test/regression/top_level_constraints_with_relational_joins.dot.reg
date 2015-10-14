@@ -18,5 +18,5 @@ edge [fontname=Sans fontsize=11];
 "c0_CompilerCourse" -> "c0_Course" [arrowhead=onormal constraint=true weight=100];
 "c0_MachineLearningCourse" [label="MachineLearningCourse : Course" URL="#c0_MachineLearningCourse" tooltip="MachineLearningCourse : Course&#10;"];
 "c0_MachineLearningCourse" -> "c0_Course" [arrowhead=onormal constraint=true weight=100];
-"c0_numerOfAssistants" [label="numerOfAssistants -> integer = # Course.assistants" URL="#c0_numerOfAssistants" tooltip="numerOfAssistants -&gt; integer = # Course.assistants&#10;"];
+"c0_numerOfAssistants" [label="numerOfAssistants -&gt; integer = # Course.assistants" URL="#c0_numerOfAssistants" tooltip="numerOfAssistants -&gt; integer = # Course.assistants&#10;"];
 }

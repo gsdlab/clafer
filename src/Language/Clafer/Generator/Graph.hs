@@ -82,16 +82,18 @@ graphSimpleClafer :: Clafer
 graphSimpleClafer (Clafer s abstract gCard id' super' reference' crd init' es) (True, _, _) irMap showRefs =
   let
     tooltip = genTooltip (Module s [ElementDecl s (Subclafer s (Clafer s abstract gCard id' super' reference' crd init' es))]) irMap
+    firstLineQuoted = htmlChars $ head $ lines tooltip
+    tooltipQuoted = htmlChars tooltip
     uid' = getDivId s irMap
   in
      "\"" ++
       uid' ++
       "\" [label=\"" ++
-      (head $ lines tooltip) ++
+      firstLineQuoted ++
       "\" URL=\"#" ++
       uid' ++
       "\" tooltip=\"" ++
-      htmlChars tooltip ++
+      tooltipQuoted ++
       "\"];\n" ++
       graphSimpleSuper super' (True, Just uid', Just uid') irMap showRefs ++
       graphSimpleReference reference' (True, Just uid', Just uid') irMap showRefs ++
@@ -100,16 +102,18 @@ graphSimpleClafer (Clafer s abstract gCard id' super' reference' crd init' es) (
 graphSimpleClafer (Clafer s abstract@(Abstract _) gCard id' super' reference' crd init' es) (False, _, _) irMap showRefs =
   let
     tooltip = genTooltip (Module s [ElementDecl s (Subclafer s (Clafer s abstract gCard id' super' reference' crd init' es))]) irMap
+    firstLineQuoted = htmlChars $ head $ lines tooltip
+    tooltipQuoted = htmlChars tooltip
     uid' = getDivId s irMap
   in
      "\"" ++
       uid' ++
       "\" [label=\"" ++
-      (head $ lines tooltip) ++
+      firstLineQuoted ++
       "\" URL=\"#" ++
       uid' ++
       "\" tooltip=\"" ++
-      htmlChars tooltip ++
+      tooltipQuoted ++
       "\"];\n" ++
       graphSimpleSuper super' (False, Just uid', Just uid') irMap showRefs ++
       graphSimpleReference reference' (False, Just uid', Just uid') irMap showRefs ++
@@ -418,6 +422,10 @@ while bool exp' = if bool then exp' else []-}
 htmlChars :: String -> String
 htmlChars "" = ""
 htmlChars ('\n':xs) = "&#10;" ++ htmlChars xs
+htmlChars ('\"':xs) = "&quot;" ++ htmlChars xs
+htmlChars ('\'':xs) = "&#39;" ++ htmlChars xs
+htmlChars ('&':xs) = "&amp;" ++ htmlChars xs
+htmlChars ('~':xs) = "&tilde;" ++ htmlChars xs
 htmlChars ('-':'>':'>':xs) = "-&gt;&gt;" ++ htmlChars xs
 htmlChars ('-':'>':xs) = "-&gt;" ++ htmlChars xs
 htmlChars (x:xs) = x:htmlChars xs
