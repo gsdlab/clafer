@@ -17,7 +17,7 @@ c0_con1 = Clafer("c0_con1").withCard(1, 1).extending(c0_TemperatureConnector);
 c0_TemperaturePort.refToUnique(Int);
 c0_from.refTo(c0_TemperaturePort);
 c0_to.refTo(c0_TemperaturePort);
-Constraint(equal(joinRef(join(global(c0_controller), c1_temperature)), joinRef(join(global(c0_sensor), c0_temperature))));
+assert(equal(joinRef(join(global(c0_controller), c1_temperature)), joinRef(join(global(c0_sensor), c0_temperature))));
 c0_TemperatureConnector.addConstraint(equal(joinRef(joinRef(join($this(), c0_to))), joinRef(joinRef(join($this(), c0_from)))));
 c0_from.addConstraint(some(join(joinRef($this()), c0_output)));
 c0_to.addConstraint(some(join(joinRef($this()), c0_input)));

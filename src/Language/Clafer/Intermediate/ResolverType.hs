@@ -146,8 +146,8 @@ showType    PExp{ _iType=Nothing }  = "unknown type"
 showType    PExp{ _iType=(Just t) } = show t
 
 data TAMode
-  = TAReferences    -- | Phase one: only process references
-  | TAExpressions   -- | Phase two: only process constraints and goals
+  = TAReferences    -- ^ Phase one: only process references
+  | TAExpressions   -- ^ Phase two: only process constraints and goals
 
 resolveTModule :: (IModule, GEnv) -> Either ClaferSErr IModule
 resolveTModule (imodule, _) =
@@ -197,7 +197,7 @@ resolveTElement    TAExpressions parent'   (IEConstraint _isHard _pexp) =
   testBoolean pexp' =
     do
       unless (isTBoolean $ typeOf pexp') $
-        throwError $ SemanticErr (_inPos pexp') ("Cannot construct constraint on type '" ++ showType pexp' ++ "'")
+        throwError $ SemanticErr (_inPos pexp') ("A constraint requires an expression of type 'TBoolean' but got '" ++ showType pexp' ++ "'")
       return pexp'
 resolveTElement    TAExpressions parent' (IEGoal isMaximize' pexp') =
   IEGoal isMaximize' <$> resolveTConstraint parent' pexp'
@@ -313,7 +313,7 @@ resolveTPExp' p@PExp{_inPos, _exp} =
             | _op == iCSet = return TInteger
             | _op == iSumSet = test (isTInteger t) >> return TInteger
             | _op == iProdSet = test (isTInteger t) >> return TInteger
-            | _op `elem` [iMin, iGMin, iGMax] = test (numeric t) >> return t
+            | _op `elem` [iMin, iMinimum, iMaximum, iMinimize, iMaximize] = test (numeric t) >> return t
             | otherwise = assert False $ error $ "Unknown op '" ++ _op ++ "'"
       result' <- result
       return (result', e{_exps = [arg']})

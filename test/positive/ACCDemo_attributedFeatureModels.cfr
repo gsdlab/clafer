@@ -53,7 +53,7 @@ abstract Car
 //# FRAGMENT
 aCar : Car
 //# FRAGMENT
-<< min aCar.total_cost >>
-<< min aCar.total_fuel >>
-<< max aCar.total_comfort >>
+<< minimize aCar.total_cost >>
+<< minimize aCar.total_fuel >>
+<< maximize aCar.total_comfort >>
 //# FRAGMENT

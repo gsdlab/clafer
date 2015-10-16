@@ -210,9 +210,14 @@ printClafer (Clafer s abstract gCard id' super' reference' crd init' es) indent 
       printInit init' indent irMap html comments]
 
 printGoal :: Goal -> Int -> Map.Map Span [Ir] -> Bool -> [(Span, String)] -> String
-printGoal (Goal _ exps') indent irMap html comments =
+printGoal goal indent irMap html comments =
   (if html then "&lt;&lt;" else "<<") ++
-  concatMap (\x -> printExp x indent irMap html comments) exps' ++
+  (case goal of
+    (GoalMinimize _ exps') -> (while html "<span class=\"keyword\">") ++ "minimize" ++ (while html "</span>") ++ " " ++ concatMap (\x -> printExp x indent irMap html comments) exps'
+    (GoalMaximize _ exps') -> (while html "<span class=\"keyword\">") ++ "maximize" ++ (while html "</span>") ++ " " ++ concatMap (\x -> printExp x indent irMap html comments) exps'
+    (GoalMinDeprecated _ exps') -> printDeprecated "min " "Use `minimize` instead." html ++ concatMap (\x -> printExp x indent irMap html comments) exps'
+    (GoalMaxDeprecated _ exps') -> printDeprecated "max " "Use `maximize` instead." html ++ concatMap (\x -> printExp x indent irMap html comments) exps'
+  ) ++
   if html then "&gt;&gt;" else ">>"
 
 printAbstract :: Abstract -> Bool -> String
@@ -407,7 +412,7 @@ getUid :: PosIdent -> Map.Map Span [Ir] -> Maybe String
 getUid posIdent@(PosIdent (_, id')) irMap =
   case Map.lookup (getSpan posIdent) irMap of
     Nothing -> Nothing
-    Just wrappedResultList -> listToMaybe $ catMaybes $ map (findUid id') $ map unwrap wrappedResultList 
+    Just wrappedResultList -> listToMaybe $ catMaybes $ map (findUid id') $ map unwrap wrappedResultList
   where
     unwrap (IRPExp pexp')       = getIdentPExp pexp'
     unwrap (IRClafer iClafer') = [ _uid iClafer' ]

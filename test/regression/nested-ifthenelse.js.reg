@@ -1,0 +1,13 @@
+defaultScope(1);
+intRange(-8, 7);
+stringLength(16);
+
+c0_x = Clafer("c0_x").withCard(0, 1);
+c0_y = Clafer("c0_y").withCard(0, 1);
+c0_z = Clafer("c0_z").withCard(0, 1);
+c0_w = Clafer("c0_w").withCard(0, 1);
+c0_u = Clafer("c0_u").withCard(0, 1);
+c0_o = Clafer("c0_o").withCard(0, 1);
+c0_p = Clafer("c0_p").withCard(0, 1);
+c0_h = Clafer("c0_h").withCard(0, 1);
+Constraint(ifOnlyIf(some(global(c0_h)), ifThenElse(ifThenElse(some(global(c0_x)), some(global(c0_z)), some(global(c0_y))), implies(some(global(c0_x)), some(global(c0_y))), ifThenElse(none(global(c0_w)), ifThenElse(some(global(c0_z)), some(global(c0_u)), some(global(c0_o))), some(global(c0_p))))));

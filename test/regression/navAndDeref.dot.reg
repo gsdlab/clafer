@@ -10,7 +10,7 @@ edge [fontname=Sans fontsize=11];
 "c0_a" -> "c0_e" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=b];
 "c0_e" [label="e" URL="#c0_e" tooltip="e&#10;  f -&gt; g ?&#10;"];
 "c0_e" -> "c0_g" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=f];
-"c0_g" [label="g -> h" URL="#c0_g" tooltip="g -&gt; h&#10;"];
+"c0_g" [label="g -&gt; h" URL="#c0_g" tooltip="g -&gt; h&#10;"];
 "c0_g" -> "c0_h" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent];
 "c0_h" [label="h" URL="#c0_h" tooltip="h&#10;"];
 }

@@ -90,7 +90,10 @@ traverseAssertion :: Assertion -> [Ast]
 traverseAssertion x@(Assertion _ e) = AstAssertion x : concatMap traverseExp e
 
 traverseGoal :: Goal -> [Ast]
-traverseGoal x@(Goal _ e) = AstGoal x : concatMap traverseExp e
+traverseGoal x@(GoalMinimize _ e) = AstGoal x : concatMap traverseExp e
+traverseGoal x@(GoalMaximize _ e) = AstGoal x : concatMap traverseExp e
+traverseGoal x@(GoalMinDeprecated _ e) = AstGoal x : concatMap traverseExp e
+traverseGoal x@(GoalMaxDeprecated _ e) = AstGoal x : concatMap traverseExp e
 
 traverseAbstract :: Abstract -> [Ast]
 traverseAbstract x =

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=9">
+<style>.identifier{}
+.keyword{font-weight:bold}
+.reference{}
+.code { background-color: lightgray; padding: 5px 5px 5px 5px; border: 1px solid darkgray; margin-bottom: 15px; 
+        font-family: Pragmata, Menlo, 'DejaVu LGC Sans Mono', 'DejaVu Sans Mono', Consolas, 'Everson Mono', 'Lucida Console', 'Andale Mono', 'Nimbus Mono L', 'Liberation Mono', FreeMono, 'Osaka Monospaced', Courier, 'New Courier', monospace; }
+.standalonecomment { color: green; font-style:italic }
+.inlinecomment { color: green; padding-left:20px; font-style:italic }
+.error{background-color: yellow; color: red }
+.deprecated{color: orange }
+.indent{padding-left:20px}
+a[href$='Lookup failed'] {color: red}
+a[href$='Uid not found'] {color: red}
+a[href$='Ambiguous name'] {color: yellow}
+
+</style></head>
+<body>
+
+<div>
+<span class="claferDecl" id="c0_X">X</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a> 3</div>
+
+
+<div>
+<span class="claferDecl" id="c0_total_X">total_X</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a> = sum <a href="#c0_X"><span class="reference">X</span></a></div>
+
+
+<div>
+<span class="claferDecl" id="c0_Y">Y</span>
+  <div class="indent">
+  <span class="claferDecl" id="c0_total_Y">total_Y</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a> = sum <a href="#c0_X"><span class="reference">X</span></a></div>
+</div>
+
+
+<div>
+&lt;&lt;<span class="deprecated" title="Deprecated. Use `minimize` instead.">min </span>max <a href="#c0_X"><span class="reference">X</span></a>&gt;&gt;</div>
+
+
+<div>
+&lt;&lt;<span class="keyword">minimize</span> max <a href="#c0_X"><span class="reference">X</span></a>&gt;&gt;</div>
+
+
+<div>
+&lt;&lt;<span class="deprecated" title="Deprecated. Use `maximize` instead.">max </span>min <a href="#c0_X"><span class="reference">X</span></a>&gt;&gt;</div>
+
+
+<div>
+&lt;&lt;<span class="keyword">maximize</span> min <a href="#c0_X"><span class="reference">X</span></a>&gt;&gt;</div>
+
+
+<div>
+&lt;&lt;<span class="keyword">minimize</span> sum <a href="#c0_X"><span class="reference">X</span></a>&gt;&gt;</div>
+
+
+<div>
+&lt;&lt;<span class="keyword">maximize</span> product <a href="#c0_X"><span class="reference">X</span></a>&gt;&gt;</div>
+
+
+<div>
+&lt;&lt;<span class="keyword">minimize</span> # <a href="#c0_X"><span class="reference">X</span></a>&gt;&gt;</div>
+
+
+<div>
+&lt;&lt;<span class="keyword">minimize</span> <a href="#c0_total_X"><span class="reference">total_X</span></a>&gt;&gt;</div>
+
+
+<div>
+&lt;&lt;<span class="keyword">minimize</span> <a href="#c0_Y"><span class="reference">Y</span></a>.<a href="#c0_total_Y"><span class="reference">total_Y</span></a>&gt;&gt;</div>
+
+</body>
+</html>

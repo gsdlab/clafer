@@ -1,7 +1,6 @@
-TOOL_DIR = ../tools
 SUITE_DIR = positive
 REG_DIR = regression
-CLAFER = ../dist/build/clafer/clafer -s -v -k --tooldir=$(TOOL_DIR)
+CLAFER = ../clafer -s -v -k --tooldir=..
 
 UNAME := $(shell uname | tr "A-Z" "a-z")
 
@@ -44,8 +43,12 @@ generateAlloyJSPythonHTMLDot:
 	@echo "|                          - validating Alloy output                                      |"
 	@echo "==========================================================================================="
 
-	@if test ! -f $(TOOL_DIR)/"alloy4.2.jar"; then \
-		echo "[ERROR] Missing $(TOOL_DIR)/alloy4.2.jar."; false; \
+	@if test ! -f "../alloy4.2.jar"; then \
+		echo "[ERROR] Missing ../alloy4.2.jar."; false; \
+	fi
+
+	@if test ! -f "../claferchocoig.jar"; then \
+		echo "[ERROR] Missing ../claferchocoig.jar."; false; \
 	fi
 
 	# Compile the positive test suite to Alloy, Choco, Python, HTML, and Graph
@@ -129,5 +132,7 @@ clean:
 	@find . -type f -name '*.html' -print0 | xargs -0 rm -f
 	@echo 'Removing *.dot'
 	@find . -type f -name '*.dot' -print0 | xargs -0 rm -f
+	@echo 'Removing *.dot.svg'
+	@find . -type f -name '*.dot.svg' -print0 | xargs -0 rm -f
 	@echo 'Removing *~'
 	@find . -type f -name '*~' -print0 | xargs -0 rm -f

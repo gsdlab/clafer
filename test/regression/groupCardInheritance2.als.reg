@@ -1,0 +1,43 @@
+open util/integer
+pred show {}
+
+
+abstract sig c0_A
+{ r_c0_a : one c0_a }
+
+sig c0_a
+{}
+{ one @r_c0_a.this }
+
+abstract sig c0_B extends c0_A
+{ r_c0_b : lone c0_b }
+
+sig c0_b
+{}
+{ one @r_c0_b.this }
+
+abstract sig c0_C extends c0_B
+{ r_c0_c : lone c0_c }
+
+sig c0_c
+{}
+{ one @r_c0_c.this }
+
+abstract sig c0_D extends c0_C
+{ r_c0_d : lone c0_d }
+
+sig c0_d
+{}
+{ one @r_c0_d.this }
+
+one sig c0_E extends c0_D
+{ r_c0_e : lone c0_e }
+{ let children = (r_c0_e + r_c0_d + r_c0_c + r_c0_b + r_c0_a) | one children }
+
+lone sig c0_e
+{}
+{ one r_c0_e }
+
+assert assertOnLine_19 { ((((one c0_E.@r_c0_a) && (no c0_E.@r_c0_b)) && (no c0_E.@r_c0_c)) && (no c0_E.@r_c0_d)) && (no c0_E.@r_c0_e) }
+check assertOnLine_19 for 1
+

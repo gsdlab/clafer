@@ -1,0 +1,17 @@
+x ?
+y ?
+z ?
+w ?
+u ?
+o ?
+p ?
+h ?
+
+[ h <=> (if
+     if x then z else y
+     then x => y
+     else if no w
+          then if z
+               then u
+               else o
+          else some p) ]

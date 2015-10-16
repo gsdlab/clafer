@@ -7,6 +7,6 @@ graph [fontname=Sans fontsize=11];
 node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
 edge [fontname=Sans fontsize=11];
 "c0_A" [label="abstract A" URL="#c0_A" tooltip="abstract A&#10;  s -&gt; string ?&#10;"];
-"c0_A1" [label="A1 : A" URL="#c0_A1" tooltip="A1 : A&#10;  [ s = "text value" ]&#10;"];
+"c0_A1" [label="A1 : A" URL="#c0_A1" tooltip="A1 : A&#10;  [ s = &quot;text value&quot; ]&#10;"];
 "c0_A1" -> "c0_A" [arrowhead=onormal constraint=true weight=100];
 }

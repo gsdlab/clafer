@@ -66,22 +66,24 @@ import Language.Clafer.Front.ErrM
   'in' { PT _ (TS _ 47) }
   'lone' { PT _ (TS _ 48) }
   'max' { PT _ (TS _ 49) }
-  'min' { PT _ (TS _ 50) }
-  'mux' { PT _ (TS _ 51) }
-  'no' { PT _ (TS _ 52) }
-  'not' { PT _ (TS _ 53) }
-  'one' { PT _ (TS _ 54) }
-  'opt' { PT _ (TS _ 55) }
-  'or' { PT _ (TS _ 56) }
-  'product' { PT _ (TS _ 57) }
-  'some' { PT _ (TS _ 58) }
-  'sum' { PT _ (TS _ 59) }
-  'then' { PT _ (TS _ 60) }
-  'xor' { PT _ (TS _ 61) }
-  '{' { PT _ (TS _ 62) }
-  '|' { PT _ (TS _ 63) }
-  '||' { PT _ (TS _ 64) }
-  '}' { PT _ (TS _ 65) }
+  'maximize' { PT _ (TS _ 50) }
+  'min' { PT _ (TS _ 51) }
+  'minimize' { PT _ (TS _ 52) }
+  'mux' { PT _ (TS _ 53) }
+  'no' { PT _ (TS _ 54) }
+  'not' { PT _ (TS _ 55) }
+  'one' { PT _ (TS _ 56) }
+  'opt' { PT _ (TS _ 57) }
+  'or' { PT _ (TS _ 58) }
+  'product' { PT _ (TS _ 59) }
+  'some' { PT _ (TS _ 60) }
+  'sum' { PT _ (TS _ 61) }
+  'then' { PT _ (TS _ 62) }
+  'xor' { PT _ (TS _ 63) }
+  '{' { PT _ (TS _ 64) }
+  '|' { PT _ (TS _ 65) }
+  '||' { PT _ (TS _ 66) }
+  '}' { PT _ (TS _ 67) }
 
 L_PosInteger { PT _ (T_PosInteger _) }
 L_PosDouble { PT _ (T_PosDouble _) }
@@ -118,7 +120,10 @@ Constraint : '[' ListExp ']' { Language.Clafer.Front.AbsClafer.Constraint ((mkTo
 Assertion :: { Assertion }
 Assertion : 'assert' '[' ListExp ']' { Language.Clafer.Front.AbsClafer.Assertion ((mkTokenSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3) >- (mkTokenSpan $4)) (reverse $3) }
 Goal :: { Goal }
-Goal : '<<' ListExp '>>' { Language.Clafer.Front.AbsClafer.Goal ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkTokenSpan $3)) (reverse $2) }
+Goal : '<<' 'min' ListExp '>>' { Language.Clafer.Front.AbsClafer.GoalMinDeprecated ((mkTokenSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3) >- (mkTokenSpan $4)) (reverse $3) }
+     | '<<' 'max' ListExp '>>' { Language.Clafer.Front.AbsClafer.GoalMaxDeprecated ((mkTokenSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3) >- (mkTokenSpan $4)) (reverse $3) }
+     | '<<' 'minimize' ListExp '>>' { Language.Clafer.Front.AbsClafer.GoalMinimize ((mkTokenSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3) >- (mkTokenSpan $4)) (reverse $3) }
+     | '<<' 'maximize' ListExp '>>' { Language.Clafer.Front.AbsClafer.GoalMaximize ((mkTokenSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3) >- (mkTokenSpan $4)) (reverse $3) }
 Abstract :: { Abstract }
 Abstract : {- empty -} { Language.Clafer.Front.AbsClafer.AbstractEmpty noSpan }
          | 'abstract' { Language.Clafer.Front.AbsClafer.Abstract ((mkTokenSpan $1)) }
@@ -170,12 +175,9 @@ Exp : 'all' 'disj' Decl '|' Exp { Language.Clafer.Front.AbsClafer.EDeclAllDisj (
     | 'all' Decl '|' Exp { Language.Clafer.Front.AbsClafer.EDeclAll ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkTokenSpan $3) >- (mkCatSpan $4)) $2 $4 }
     | Quant 'disj' Decl '|' Exp { Language.Clafer.Front.AbsClafer.EDeclQuantDisj ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3) >- (mkTokenSpan $4) >- (mkCatSpan $5)) $1 $3 $5 }
     | Quant Decl '|' Exp { Language.Clafer.Front.AbsClafer.EDeclQuant ((mkCatSpan $1) >- (mkCatSpan $2) >- (mkTokenSpan $3) >- (mkCatSpan $4)) $1 $2 $4 }
+    | 'if' Exp 'then' Exp 'else' Exp { Language.Clafer.Front.AbsClafer.EImpliesElse ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkTokenSpan $3) >- (mkCatSpan $4) >- (mkTokenSpan $5) >- (mkCatSpan $6)) $2 $4 $6 }
+    | Exp '<=>' Exp1 { Language.Clafer.Front.AbsClafer.EIff ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
     | Exp1 {  $1 }
-Exp1 :: { Exp }
-Exp1 : 'max' Exp2 { Language.Clafer.Front.AbsClafer.EGMax ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
-     | 'min' Exp2 { Language.Clafer.Front.AbsClafer.EGMin ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
-     | Exp1 '<=>' Exp2 { Language.Clafer.Front.AbsClafer.EIff ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
-     | Exp2 {  $1 }
 Exp2 :: { Exp }
 Exp2 : Exp2 '=>' Exp3 { Language.Clafer.Front.AbsClafer.EImplies ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
      | Exp3 {  $1 }
@@ -214,13 +216,14 @@ Exp10 : Exp10 '*' Exp11 { Language.Clafer.Front.AbsClafer.EMul ((mkCatSpan $1) >
       | Exp10 '%' Exp11 { Language.Clafer.Front.AbsClafer.ERem ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
       | Exp11 {  $1 }
 Exp11 :: { Exp }
-Exp11 : 'sum' Exp12 { Language.Clafer.Front.AbsClafer.ESum ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
-      | 'product' Exp12 { Language.Clafer.Front.AbsClafer.EProd ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
-      | '#' Exp12 { Language.Clafer.Front.AbsClafer.ECard ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
-      | '-' Exp12 { Language.Clafer.Front.AbsClafer.EMinExp ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
+Exp11 : 'max' Exp12 { Language.Clafer.Front.AbsClafer.EGMax ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
+      | 'min' Exp12 { Language.Clafer.Front.AbsClafer.EGMin ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
       | Exp12 {  $1 }
 Exp12 :: { Exp }
-Exp12 : 'if' Exp12 'then' Exp12 'else' Exp13 { Language.Clafer.Front.AbsClafer.EImpliesElse ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkTokenSpan $3) >- (mkCatSpan $4) >- (mkTokenSpan $5) >- (mkCatSpan $6)) $2 $4 $6 }
+Exp12 : 'sum' Exp13 { Language.Clafer.Front.AbsClafer.ESum ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
+      | 'product' Exp13 { Language.Clafer.Front.AbsClafer.EProd ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
+      | '#' Exp13 { Language.Clafer.Front.AbsClafer.ECard ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
+      | '-' Exp13 { Language.Clafer.Front.AbsClafer.EMinExp ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
       | Exp13 {  $1 }
 Exp13 :: { Exp }
 Exp13 : Exp13 '<:' Exp14 { Language.Clafer.Front.AbsClafer.EDomain ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
@@ -280,6 +283,8 @@ ListLocId : LocId { (:[])  $1 }
 ListModId :: { [ModId] }
 ListModId : ModId { (:[])  $1 }
           | ModId '\\' ListModId { (:)  $1 $3 }
+Exp1 :: { Exp }
+Exp1 : Exp2 {  $1 }
 {
 
 returnM :: a -> Err a

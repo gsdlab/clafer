@@ -12,10 +12,10 @@ edge [fontname=Sans fontsize=11];
 "c0_Author" [label="abstract Author : Person" URL="#c0_Author" tooltip="abstract Author : Person&#10;  books -&gt; Book +&#10;"];
 "c0_Author" -> "c0_Person" [arrowhead=onormal constraint=true weight=100];
 "c0_Author" -> "c0_Book" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=books];
-"c0_GenerativeProgramming" [label="GenerativeProgramming : Book" URL="#c0_GenerativeProgramming" tooltip="GenerativeProgramming : Book&#10;  [ title = "name" ][ no subtitle ][ year = 5 ][ # page = 4 ][ paper ][ nonfiction ][ authors = Czarnecki, Eisenecker ][ ISBN = "name" ][ no GS1 ]&#10;"];
+"c0_GenerativeProgramming" [label="GenerativeProgramming : Book" URL="#c0_GenerativeProgramming" tooltip="GenerativeProgramming : Book&#10;  [ title = &quot;name&quot; ][ no subtitle ][ year = 5 ][ # page = 4 ][ paper ][ nonfiction ][ authors = Czarnecki, Eisenecker ][ ISBN = &quot;name&quot; ][ no GS1 ]&#10;"];
 "c0_GenerativeProgramming" -> "c0_Book" [arrowhead=onormal constraint=true weight=100];
-"c0_Czarnecki" [label="Czarnecki : Author" URL="#c0_Czarnecki" tooltip="Czarnecki : Author&#10;  [ name = "name" ][ GenerativeProgramming in books ]&#10;"];
+"c0_Czarnecki" [label="Czarnecki : Author" URL="#c0_Czarnecki" tooltip="Czarnecki : Author&#10;  [ name = &quot;name&quot; ][ GenerativeProgramming in books ]&#10;"];
 "c0_Czarnecki" -> "c0_Author" [arrowhead=onormal constraint=true weight=100];
-"c0_Eisenecker" [label="Eisenecker : Author" URL="#c0_Eisenecker" tooltip="Eisenecker : Author&#10;  [ name = "name" ][ GenerativeProgramming in books ]&#10;"];
+"c0_Eisenecker" [label="Eisenecker : Author" URL="#c0_Eisenecker" tooltip="Eisenecker : Author&#10;  [ name = &quot;name&quot; ][ GenerativeProgramming in books ]&#10;"];
 "c0_Eisenecker" -> "c0_Author" [arrowhead=onormal constraint=true weight=100];
 }

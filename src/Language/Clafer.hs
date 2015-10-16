@@ -85,7 +85,6 @@ module Language.Clafer
   , Module
   , GEnv
   , IModule
-  , voidf
   , ClaferEnv(..)
   , getIr
   , getAst
@@ -108,6 +107,7 @@ import           Data.Maybe
 import           Data.String.Conversions
 import           System.Exit
 import           System.FilePath (dropExtension, takeBaseName)
+import           System.IO
 import           System.Process (readProcessWithExitCode, system)
 
 import           Language.Clafer.ClaferArgs hiding (Clafer)
@@ -161,8 +161,16 @@ runCompiler    mURL         args'         inputModel =
             runCompiler (Just url) (args' { file = getFileName url }) importedModel
         -}
         compile iModule
+
+        when (validate args') $ liftIO $ do
+          hSetBuffering stdout LineBuffering
+          putStrLn $ "[clafer]              Validating " ++ file args'
+
         fs <- save args'
-        when (validate args') $ forM_ fs (liftIO . runValidate args' )
+
+        when (validate args') $ liftIO $ do
+          forM_ fs (runValidate args')
+          putStrLn "\n"
     if Html `elem` (mode args')
       then htmlCatch result args' inputModel
       else return ()
@@ -276,15 +284,29 @@ summary' graph stats (x:xs) = x:summary' graph stats xs
 runValidate :: ClaferArgs -> String -> IO ()
 runValidate args' fo = do
   let path = (tooldir args') ++ "/"
-  liftIO $ putStrLn ("Validating '" ++ fo ++"'")
   let modes = mode args'
   when (Alloy `elem` modes && ".als" `isSuffixOf` fo) $ do
-    voidf $ system $ validateAlloy path "4.2" ++ fo
+    void $ system $ validateAlloy path ++ fo
+  when (Choco `elem` modes && ".js" `isSuffixOf` fo) $ do
+    void $ system $ validateChoco path ++ fo
+  when (Graph `elem` modes && ".dot" `isSuffixOf` fo) $ do
+    liftIO $ putStrLn ("=========== Parsing+Generating   " ++ fo ++ " =============")
+    void $ system $ validateGraph ++ fo
   when (Mode.Clafer `elem` modes && ".des.cfr" `isSuffixOf` fo) $ do
-    voidf $ system $ "../dist/build/clafer/clafer -s -m=clafer " ++ fo
+    liftIO $ putStrLn ("=========== Parsing+Typechecking " ++ fo ++ " =============")
+    void $ system $  validateClafer path ++ fo
 
-validateAlloy :: String -> String -> String
-validateAlloy path version = "java -cp " ++ path ++ "alloy" ++ version ++ ".jar edu.mit.csail.sdg.alloy4whole.ExampleUsingTheCompiler "
+validateAlloy :: String -> String
+validateAlloy path = "java -cp " ++ path ++ "alloy4.2.jar edu.mit.csail.sdg.alloy4whole.ExampleUsingTheCompiler "
+
+validateChoco :: String -> String
+validateChoco path = "java -jar " ++ path ++ "claferchocoig.jar -v --file "
+
+validateGraph :: String
+validateGraph = "dot -Tsvg -O "
+
+validateClafer :: String -> String
+validateClafer path = path ++ "clafer -s -m=clafer "
 
 
 -- | Add a new fragment to the model. Fragments should be added in order.
@@ -418,18 +440,21 @@ generateHtml env =
     printComments [] = []
     printComments ((s, comment):cs') = (snd (printComment s [(s, comment)]) ++ "<br>\n"):printComments cs'
 
-iExpBasedChecks :: IModule -> (Bool, Bool)
-iExpBasedChecks iModule = (null realLiterals, null productOperators)
+iExpBasedChecks :: IModule -> (Bool, Bool, Bool)
+iExpBasedChecks iModule = (null realLiterals, null productOperators, null minMaxOperators)
   where
     iexps :: [ IExp ]
     iexps = universeOn biplate iModule
     realLiterals = filter isIDouble iexps
     productOperators = filter isProductOperator iexps
+    minMaxOperators = filter isMinMaxOperator iexps
     isIDouble (IDouble _) = True
     isIDouble (IReal _) = True
     isIDouble _           = False
     isProductOperator (IFunExp op' _) = op' == iProdSet
     isProductOperator _               = False
+    isMinMaxOperator (IFunExp op' _) = op' `elem` [iMinimum, iMaximum]
+    isMinMaxOperator _               = False
 
 iClaferBasedChecks :: IModule -> Bool
 iClaferBasedChecks iModule = null $ filter hasReferenceToReal iClafers
@@ -447,7 +472,7 @@ generate =
     ast' <- getAst
     (iModule, genv, au) <- getIr
     let
-      (hasNoRealLiterals, hasNoProductOperator) = iExpBasedChecks iModule
+      (hasNoRealLiterals, hasNoProductOperator, hasNoMinMaxOperator) = iExpBasedChecks iModule
       hasNoReferenceToReal = iClaferBasedChecks iModule
       cargs = args env
       otherTokens' = otherTokens env
@@ -458,7 +483,7 @@ generate =
     return $ Map.fromList (
         -- result for Alloy
         (if (Alloy `elem` modes)
-          then if (hasNoRealLiterals && hasNoReferenceToReal && hasNoProductOperator)
+          then if (hasNoRealLiterals && hasNoReferenceToReal && hasNoProductOperator && hasNoMinMaxOperator)
                 then
                    let
                       (imod,strMap) = astrModule iModule
@@ -479,10 +504,10 @@ generate =
                 else [ (Alloy,
                         NoCompilerResult {
                          reason = "Alloy output unavailable because the model contains: "
-                                ++ (if hasNoRealLiterals then "" else " * a real number literal")
-                                ++ (if hasNoReferenceToReal then "" else " * a reference to a real")
-                                ++ (if hasNoProductOperator then "" else " * the product operator")
-                                ++ "."
+                                ++ (if hasNoRealLiterals then "" else "a real number literal, ")
+                                ++ (if hasNoReferenceToReal then "" else "a reference to a real, ")
+                                ++ (if hasNoProductOperator then "" else "the product operator, ")
+                                ++ (if hasNoMinMaxOperator then "" else "the min or max operator, ")
                         })
                      ]
           else []
@@ -579,16 +604,24 @@ generate =
         )
         -- result for Choco
         ++ (if (Choco `elem` modes)
-          then [ (Choco,
-                  CompilerResult {
-                    extension = "js",
-                    outputCode = genCModule (iModule, genv) scopes otherTokens',
-                    statistics = stats,
-                    claferEnv  = env,
-                    mappingToAlloy = [],
-                    stringMap = Map.empty,
-                    scopesList = scopes
-                   }) ]
+          then if (hasNoRealLiterals && hasNoReferenceToReal)
+                then [ (Choco,
+                        CompilerResult {
+                          extension = "js",
+                          outputCode = genCModule (iModule, genv) scopes otherTokens',
+                          statistics = stats,
+                          claferEnv  = env,
+                          mappingToAlloy = [],
+                          stringMap = Map.empty,
+                          scopesList = scopes
+                         }) ]
+                else [ (Choco,
+                         NoCompilerResult {
+                          reason = "Choco output unavailable because the model contains: "
+                                 ++ (if hasNoRealLiterals then "" else "a real number literal, ")
+                                 ++ (if hasNoReferenceToReal then "" else "a reference to a real, ")
+                         })
+                      ]
           else []
         ))
 
@@ -644,12 +677,19 @@ gatherObjectivesAndAttributes    iModule    astModuleTrace'      = let
      else Just $ ObjectivesAndAttributes objectives (map _uid $ filter isIntClafer iClafers)
   where
     gatherObjectives :: [String] -> IElement         -> [String]
-    gatherObjectives    objs        (IEGoal _ cpexp') = printCPexp (Map.lookup (_inPos cpexp') astModuleTrace'):objs
+    gatherObjectives    objs        (IEGoal _ cpexp') =
+      printCPexp (Map.lookup (_inPos cpexp') astModuleTrace')
+      :objs
     gatherObjectives    objs        _                 = objs
 
     printCPexp :: Maybe [Ast] -> String
-    printCPexp (Just [e]) = printAstNode e
-    printCPexp _          = "[BUG]: expression not found!"
+    printCPexp (Just [_,_,(AstGoal g)]) = case g of
+      GoalMinimize      _ [e] -> "min " ++ (printTree e)
+      GoalMaximize      _ [e] -> "max " ++ (printTree e)
+      GoalMinDeprecated _ [e] -> "min " ++ (printTree e)
+      GoalMaxDeprecated _ [e] -> "max " ++ (printTree e)
+      g' -> "[BUG]: unexpected goal found!" ++ show g'
+    printCPexp e          = "[BUG]: expression not found!" ++ show e
 
     iClafers :: [ IClafer ]
     iClafers = universeOn biplate iModule
