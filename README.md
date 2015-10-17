@@ -190,13 +190,16 @@ Common flags:
                                           ('alloy' mode only).
   -s --no-stats                           Don't print statistics.
   -v --validate                           Validate outputs of all modes. Uses
-                                          'tools/alloy4.2.jar' for Alloy
-                                          models, and Clafer translator for
-                                          desugared Clafer models. Use
-                                          '--tooldir' to override the default
-                                          location of these tools.
+                                          '<tooldir>/alloy4.2.jar' for Alloy
+                                          models, '<tooldir>/claferchocoig.jar'
+                                          for Alloy models, and Clafer
+                                          translator for desugared Clafer
+                                          models. Use '--tooldir' to override
+                                          the default location ('.') of these
+                                          tools.
      --tooldir=DIR                        Specify the tools directory
-                                          ('validate' only). Default: 'tools/'.
+                                          ('validate' only). Default: '.'
+                                          (current directory).
   -a --alloy-mapping                      Generate mapping to Alloy source
                                           code ('alloy' mode only).
      --self-contained                     Generate a self-contained html
@@ -279,6 +282,11 @@ If the `develop` is ahead, merge it into the feature branch and perform integrat
 To make a release, we create a pull request from `develop` into `master`.
 We tag `master` with version numbers after each release merge.
 
+## Building
+
+We have switched to [Haskell Tool Stack](https://github.com/commercialhaskell/stack#the-haskell-tool-stack).
+Install the tool first.
+
 ## Testing
 
 We have both automated tests and regression tests.
@@ -286,13 +294,14 @@ We have both automated tests and regression tests.
 To run the automated tests (including both unit tests and [doctests](https://github.com/sol/doctest#readme)), execute
 
 ```
-cabal test
+stack test
 ```
 
+To only run unit tests, execute `stack test test-suite`.
 
-To only run unit tests, execute `cabal test test-suite`.
+To only run doctests, execute `stack test doctests`.
 
-To only run doctests, execute `cabal test doctests`.
+> Note: it is still possible to run `cabal test` as previously; however, the `Makefile` uses `stack` by default.
 
 For instructions for adding new modules to the doctest suite, see [cabal integration](https://github.com/sol/doctest#cabal-integration).
 
