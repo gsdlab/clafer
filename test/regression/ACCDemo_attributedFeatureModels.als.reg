@@ -32,8 +32,8 @@ abstract sig c0_Car
 , r_c0_total_comfort : one c0_total_comfort
 , r_c0_total_fuel : one c0_total_fuel }
 { (some this.@r_c0_total_cost) => (((this.@r_c0_total_cost).@c0_total_cost_ref) = (sum temp : (c0_Feature.@r_c0_cost) | temp.@c0_cost_ref))
-  (some this.@r_c0_total_comfort) => (((this.@r_c0_total_comfort).@c0_total_comfort_ref) = (sum temp : (c0_ComfortFeature.@r_c0_cost) | temp.@c0_cost_ref))
-  (some this.@r_c0_total_fuel) => (((this.@r_c0_total_fuel).@c0_total_fuel_ref) = (sum temp : (c0_FuelFeature.@r_c0_cost) | temp.@c0_cost_ref)) }
+  (some this.@r_c0_total_comfort) => (((this.@r_c0_total_comfort).@c0_total_comfort_ref) = (sum temp : (c0_ComfortFeature.@r_c0_comfort) | temp.@c0_comfort_ref))
+  (some this.@r_c0_total_fuel) => (((this.@r_c0_total_fuel).@c0_total_fuel_ref) = (sum temp : (c0_FuelFeature.@r_c0_fuel) | temp.@c0_fuel_ref)) }
 
 sig c0_ABS extends c0_Feature
 {}
