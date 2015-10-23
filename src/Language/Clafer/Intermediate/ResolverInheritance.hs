@@ -53,7 +53,7 @@ resolveNModule (imodule, genv') =
       abstractClafers = filter _isAbstract $ bfsClafers $ toClafers unresolvedDecls
     resolvedDecls <- mapM (resolveNElement abstractClafers) unresolvedDecls
     let
-      relocatedDecls = relocateTopLevelAbstractToParents resolvedDecls    -- |> Top-level abstract clafer extending a nested abstract clafer <https://github.com/gsdlab/clafer/issues/67> <|
+      relocatedDecls = relocateTopLevelAbstractToParents resolvedDecls    -- F> Top-level abstract clafer extending a nested abstract clafer <https://github.com/gsdlab/clafer/issues/67> <F
       uidClaferMap' = createUidIClaferMap imodule{_mDecls = relocatedDecls}
       resolvedHierarchyDecls = map (resolveHierarchy uidClaferMap') relocatedDecls
       resolvedHierarchiesIModule = imodule{_mDecls = resolvedHierarchyDecls}
@@ -67,7 +67,7 @@ resolveNClafer :: [IClafer] -> IClafer -> Resolve IClafer
 resolveNClafer abstractClafers clafer =
   do
     (super', superIClafer')    <- resolveNSuper abstractClafers $ _super clafer
-    -- |> Top-level abstract clafer extending a nested abstract clafer <https://github.com/gsdlab/clafer/issues/67> |>
+    -- F> Top-level abstract clafer extending a nested abstract clafer <https://github.com/gsdlab/clafer/issues/67> F>
     let
       parentUID' =
         case superIClafer' of
@@ -76,7 +76,7 @@ resolveNClafer abstractClafers clafer =
             then _parentUID superIClafer''   -- make clafer a sibling of the superIClafer'
             else _parentUID clafer
           Nothing               -> _parentUID clafer
-    -- <| Top-level abstract clafer extending a nested abstract clafer <https://github.com/gsdlab/clafer/issues/67> <|
+    -- <F Top-level abstract clafer extending a nested abstract clafer <https://github.com/gsdlab/clafer/issues/67> <F
     elements' <- mapM (resolveNElement abstractClafers) $ _elements clafer
     return $ clafer {_super = super', _parentUID = parentUID', _elements = elements'}
 
@@ -312,7 +312,7 @@ resolveRedefinition    (iModule, _)  =
         else ("Improperly nested clafer '" ++ i ++ "' on line " ++ show l ++ " column " ++ show c ++ "\n")
     isImproper _ = ""
 
--- |> Top-level abstract clafer extending a nested abstract clafer <https://github.com/gsdlab/clafer/issues/67> |>
+-- F> Top-level abstract clafer extending a nested abstract clafer <https://github.com/gsdlab/clafer/issues/67> F>
 relocateTopLevelAbstractToParents :: [IElement]      -> [IElement]
 relocateTopLevelAbstractToParents    originalElements =
   let
@@ -342,4 +342,4 @@ relocateTopLevelAbstractToParents    originalElements =
                     ++ newChildren
       in
         targetElement & iClafer . elements .~ newElements
--- <| Top-level abstract clafer extending a nested abstract clafer <https://github.com/gsdlab/clafer/issues/67> <|
+-- <F Top-level abstract clafer extending a nested abstract clafer <https://github.com/gsdlab/clafer/issues/67> <F

@@ -1,4 +1,4 @@
-//# OPTIONS --sg
+
 abstract Feature
     cost -> integer
 
@@ -48,8 +48,8 @@ abstract Car
                 [this.cost = 1]
 
     total_cost -> integer = sum Feature.cost
-    total_comfort -> integer = sum ComfortFeature.cost
-    total_fuel -> integer = sum FuelFeature.cost
+    total_comfort -> integer = sum ComfortFeature.comfort
+    total_fuel -> integer = sum FuelFeature.fuel
 //# FRAGMENT
 aCar : Car
 //# FRAGMENT
