@@ -382,3 +382,81 @@ Escapes allow to write fragments of code in the target language of the clafer co
 <ChocoSolver code>
 |]
 ```
+
+# Backend Compatibility
+
+The following table provides versions in which support for a given feature was added to Alloy-based and Choco-based backend.
+
+<table>
+
+<tr>
+<th>Language Feature</th><th>Alloy</th><th>Choco</th>
+</tr>
+
+<tr>
+<td>Nested abstract clafers</td>
+<td>0.3.9</td>
+<td>&nbsp;&nbsp;&nbsp;-</td>
+</tr>
+
+<tr>
+<td><code>assert [ ... ]</code></td>
+<td>0.3.9</td>
+<td>0.4.2</td>
+</tr>
+
+<tr>
+<td><code>product</code></td>
+<td>&nbsp;&nbsp;&nbsp;-</td>
+<td>0.3.9</td>
+</tr>
+
+<tr>
+<td>Modulo division <code>%</code></td>
+<td>0.3.9</td>
+<td>0.4.2</td>
+</tr>
+
+<tr>
+<td>Group cardinality inheritance</td>
+<td>0.3.9</td>
+<td>0.4.2</td>
+</tr>
+
+<tr>
+<td>Reference refinement and redefinition</td>
+<td>0.4.0</td>
+<td>&nbsp;&nbsp;&nbsp;-</td>
+</tr>
+
+<tr>
+<td>Escapes, <code>dref</code>, and <code>**</code></td>
+<td>0.4.1</td>
+<td>0.4.1</td>
+</tr>
+
+<tr>
+<td><code>min</code> and <code>max</code></td>
+<td>&nbsp;&nbsp;&nbsp;-</td>
+<td>0.4.2</td>
+</tr>
+
+<tr>
+<td><code>&lt;:</code> and <code>:&gt;</code></td>
+<td>0.3.0</td>
+<td>0.4.2</td>
+</tr>
+
+<tr>
+<td><code>double</code>, <code>real</code></td>
+<td>&nbsp;&nbsp;&nbsp;-</td>
+<td>&nbsp;&nbsp;&nbsp;-</td>
+</tr>
+
+<tr>
+<td>Default initializer <code>:=</code></td>
+<td>&nbsp;&nbsp;&nbsp;-</td>
+<td>&nbsp;&nbsp;&nbsp;-</td>
+</tr>
+
+</table>
