@@ -285,22 +285,23 @@ runValidate :: ClaferArgs -> String -> IO ()
 runValidate args' fo = do
   let path = (tooldir args') ++ "/"
   let modes = mode args'
+  let fo' = "\""  ++ fo ++ "\""
   when (Alloy `elem` modes && ".als" `isSuffixOf` fo) $ do
-    void $ system $ validateAlloy path ++ fo
+    void $ system $ validateAlloy path ++ fo'
   when (Choco `elem` modes && ".js" `isSuffixOf` fo) $ do
-    void $ system $ validateChoco path ++ fo
+    void $ system $ validateChoco path ++ fo'
   when (Graph `elem` modes && ".dot" `isSuffixOf` fo) $ do
     liftIO $ putStrLn ("=========== Parsing+Generating   " ++ fo ++ " =============")
-    void $ system $ validateGraph ++ fo
+    void $ system $ validateGraph ++ fo'
   when (Mode.Clafer `elem` modes && ".des.cfr" `isSuffixOf` fo) $ do
     liftIO $ putStrLn ("=========== Parsing+Typechecking " ++ fo ++ " =============")
-    void $ system $  validateClafer path ++ fo
+    void $ system $  validateClafer path ++ fo'
 
 validateAlloy :: String -> String
 validateAlloy path = "java -cp " ++ path ++ "alloy4.2.jar edu.mit.csail.sdg.alloy4whole.ExampleUsingTheCompiler "
 
 validateChoco :: String -> String
-validateChoco path = "java -jar " ++ path ++ "claferchocoig.jar -v --file "
+validateChoco path = "java -jar " ++ path ++ "chocosolver.jar -v --file "
 
 validateGraph :: String
 validateGraph = "dot -Tsvg -O "
