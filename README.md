@@ -209,7 +209,7 @@ Common flags:
   -s --no-stats                           Don't print statistics.
   -v --validate                           Validate outputs of all modes. Uses
                                           '<tooldir>/alloy4.2.jar' for Alloy
-                                          models, '<tooldir>/claferchocoig.jar'
+                                          models, '<tooldir>/chocosolver.jar'
                                           for Alloy models, and Clafer
                                           translator for desugared Clafer
                                           models. Use '--tooldir' to override
