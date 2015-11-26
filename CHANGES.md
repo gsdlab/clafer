@@ -1,3 +1,7 @@
+Clafer Version 0.4.3 released on Dec ??, 2015
+
+* [Release](https://github.com/gsdlab/clafer/pull/75)
+
 Clafer Version 0.4.2.1 released on Oct 19, 2015
 
 * Fixed Haddock build, updated README, fixed a test case.

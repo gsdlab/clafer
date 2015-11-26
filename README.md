@@ -3,7 +3,7 @@
 
 # Clafer, the Language
 
-v0.4.2.1
+v0.4.3
 
 
 [Clafer](http://clafer.org) is a general-purpose lightweight structural modeling language developed by
@@ -75,7 +75,7 @@ Optional:
 
 ### Installation from binaries
 
-Binary distributions of the release 0.4.2.1 of Clafer Tools for Windows, Mac, and Linux,
+Binary distributions of the release 0.4.3 of Clafer Tools for Windows, Mac, and Linux,
 can be downloaded from
 [Clafer Tools - Binary Distributions](http://gsd.uwaterloo.ca/clafer-tools-binary-distributions).
 
@@ -84,7 +84,7 @@ can be downloaded from
 
 ### Installation from Hackage
 
-Clafer is now available on [Hackage](http://hackage.haskell.org/package/clafer-0.4.2.1/) and it can be installed using either [`stack`](https://github.com/commercialhaskell/stack) or [`cabal-install`](https://hackage.haskell.org/package/cabal-install).
+Clafer is now available on [Hackage](http://hackage.haskell.org/package/clafer-0.4.3/) and it can be installed using either [`stack`](https://github.com/commercialhaskell/stack) or [`cabal-install`](https://hackage.haskell.org/package/cabal-install).
 
 #### Installation using `stack`
 
@@ -106,8 +106,8 @@ Dependencies
 2. `cabal update`
 3. `cabal install alex happy`
 4. `cabal install clafer`
-5. on Windows `cd C:\Users\<user>\AppData\Roaming\cabal\i386-windows-ghc-7.10.2\clafer-0.4.2.1`
-6. on Linux `ca ~/.cabal/share/x86_64-linux-ghc-7.10.2/clafer-0.4.2.1/`
+5. on Windows `cd C:\Users\<user>\AppData\Roaming\cabal\i386-windows-ghc-7.10.2\clafer-0.4.3`
+6. on Linux `ca ~/.cabal/share/x86_64-linux-ghc-7.10.2/clafer-0.4.3/`
 7. to automatically download Alloy jars, execute
   * `make alloy4.2.jar`,
   * move `alloy4.2.jar` to the location of the clafer executable.
@@ -174,7 +174,7 @@ See [clafer-vim](https://github.com/wasowski/clafer-vim)
 (As printed by `clafer --help`)
 
 ```
-Clafer 0.4.2.1
+Clafer 0.4.3
 
 clafer [OPTIONS] [FILE]
 
