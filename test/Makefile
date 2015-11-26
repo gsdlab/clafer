@@ -47,8 +47,8 @@ generateAlloyJSPythonHTMLDot:
 		echo "[ERROR] Missing ../alloy4.2.jar."; false; \
 	fi
 
-	@if test ! -f "../claferchocoig.jar"; then \
-		echo "[ERROR] Missing ../claferchocoig.jar."; false; \
+	@if test ! -f "../chocosolver.jar"; then \
+		echo "[ERROR] Missing ../chocosolver.jar."; false; \
 	fi
 
 	# Compile the positive test suite to Alloy, Choco, Python, HTML, and Graph
