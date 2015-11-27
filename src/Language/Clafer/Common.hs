@@ -383,10 +383,10 @@ iMinimize :: String
 iMinimize  = "minimize"
 
 iSumSet :: String
-iSumSet       = "sum"
+iSumSet  = "sum"
 
 iProdSet :: String
-iProdSet      = "product"
+iProdSet  = "product"
 
 unOps :: [String]
 unOps = [iNot, iCSet, iMin, iMaximum, iMinimum, iMaximize, iMinimize, iSumSet, iProdSet]
@@ -458,11 +458,8 @@ iDiv          = "/"
 iRem :: String
 iRem          = "%"
 
-iSumSet' :: String
-iSumSet'      = "sum'"
-
 arithBinOps :: [String]
-arithBinOps = [iPlus, iSub, iMul, iDiv, iRem, iSumSet']
+arithBinOps = [iPlus, iSub, iMul, iDiv, iRem]
 
 iUnion :: String
 iUnion        = "++"

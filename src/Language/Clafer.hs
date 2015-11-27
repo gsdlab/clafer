@@ -441,21 +441,18 @@ generateHtml env =
     printComments [] = []
     printComments ((s, comment):cs') = (snd (printComment s [(s, comment)]) ++ "<br>\n"):printComments cs'
 
-iExpBasedChecks :: IModule -> (Bool, Bool, Bool)
-iExpBasedChecks iModule = (null realLiterals, null productOperators, null minMaxOperators)
+iExpBasedChecks :: IModule -> (Bool, Bool)
+iExpBasedChecks iModule = (null realLiterals, null productOperators)
   where
     iexps :: [ IExp ]
     iexps = universeOn biplate iModule
     realLiterals = filter isIDouble iexps
     productOperators = filter isProductOperator iexps
-    minMaxOperators = filter isMinMaxOperator iexps
     isIDouble (IDouble _) = True
     isIDouble (IReal _) = True
     isIDouble _           = False
     isProductOperator (IFunExp op' _) = op' == iProdSet
     isProductOperator _               = False
-    isMinMaxOperator (IFunExp op' _) = op' `elem` [iMinimum, iMaximum]
-    isMinMaxOperator _               = False
 
 iClaferBasedChecks :: IModule -> Bool
 iClaferBasedChecks iModule = null $ filter hasReferenceToReal iClafers
@@ -473,7 +470,7 @@ generate =
     ast' <- getAst
     (iModule, genv, au) <- getIr
     let
-      (hasNoRealLiterals, hasNoProductOperator, hasNoMinMaxOperator) = iExpBasedChecks iModule
+      (hasNoRealLiterals, hasNoProductOperator) = iExpBasedChecks iModule
       hasNoReferenceToReal = iClaferBasedChecks iModule
       cargs = args env
       otherTokens' = otherTokens env
@@ -484,7 +481,7 @@ generate =
     return $ Map.fromList (
         -- result for Alloy
         (if (Alloy `elem` modes)
-          then if (hasNoRealLiterals && hasNoReferenceToReal && hasNoProductOperator && hasNoMinMaxOperator)
+          then if (hasNoRealLiterals && hasNoReferenceToReal && hasNoProductOperator)
                 then
                    let
                       (imod,strMap) = astrModule iModule
@@ -508,7 +505,6 @@ generate =
                                 ++ (if hasNoRealLiterals then "" else "a real number literal, ")
                                 ++ (if hasNoReferenceToReal then "" else "a reference to a real, ")
                                 ++ (if hasNoProductOperator then "" else "the product operator, ")
-                                ++ (if hasNoMinMaxOperator then "" else "the min or max operator, ")
                         })
                      ]
           else []

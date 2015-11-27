@@ -1,0 +1,14 @@
+open util/integer
+pred show {}
+
+
+fact { 1 <= #c0_A and #c0_A <= 2 }
+sig c0_A
+{ c0_A_ref : one Int }
+
+fact { 2 <= #c0_B and #c0_B <= 3 }
+sig c0_B
+{ c0_B_ref : one Int }
+
+fact {  all disj x, y : c0_B | (x.@c0_B_ref) != (y.@c0_B_ref)  }
+fact { (min[c0_A.@c0_A_ref]) = (max[c0_B.@c0_B_ref]) }
