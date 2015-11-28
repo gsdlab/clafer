@@ -8,4 +8,4 @@ n5 : N = 3
 
 p -> integer = product N
 
-// assert [ p = 36 ]
+assert [ p = 36 ]

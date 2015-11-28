@@ -4,8 +4,8 @@ abstract Person
 JohnDoe : Person
 MaryJane : Person
 
-abstract WaitingLine 
-    participants -> Person * 
+abstract WaitingLine
+    participants -> Person *
 
 BusLine : WaitingLine
     [ JohnDoe in participants
@@ -13,3 +13,5 @@ BusLine : WaitingLine
 
 JohnAndMaryLine : WaitingLine
     [ participants  = JohnDoe, MaryJane ]
+
+assert [ all wl : WaitingLine | wl.participants = JohnDoe, MaryJane ]

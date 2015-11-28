@@ -1,5 +1,5 @@
 abstract Component
-   energy ->> integer 
+   energy ->> integer
 
 c1 : Component
    [ energy = 1 ]
@@ -11,3 +11,5 @@ c3 : Component
    [ energy = 1 ]
 
 total ->> integer = sum Component.energy
+
+assert [ total = 3 ]
