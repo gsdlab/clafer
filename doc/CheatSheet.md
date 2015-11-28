@@ -396,7 +396,7 @@ The following table provides versions in which support for a given feature was a
 <tr>
 <td>Nested abstract clafers</td>
 <td>0.3.9</td>
-<td>&nbsp;&nbsp;&nbsp;-</td>
+<td>0.4.3</td>
 </tr>
 
 <tr>
@@ -437,7 +437,7 @@ The following table provides versions in which support for a given feature was a
 
 <tr>
 <td><code>min</code> and <code>max</code></td>
-<td>&nbsp;&nbsp;&nbsp;-</td>
+<td>0.4.3</td>
 <td>0.4.2</td>
 </tr>
 
