@@ -46,5 +46,9 @@ a[href$='Ambiguous name'] {color: yellow}
 <div>
 <span class="claferDecl" id="c0_p">p</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a> = product <a href="#c0_N"><span class="reference">N</span></a></div>
 
+
+<div>
+<span class="keyword">assert [</span> <a href="#c0_p"><span class="reference">p</span></a> = 36 <span class="keyword">]</span></div>
+
 </body>
 </html>

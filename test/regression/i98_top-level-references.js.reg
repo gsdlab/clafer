@@ -13,3 +13,6 @@ c0_NewBorn.refToUnique(c0_Person);
 c0_NewBorn.addConstraint(and(equal(joinRef(join(global(c0_Person), c0_age)), constant(0)), none(join(global(c0_Person), c0_married))));
 c0_Alice.extending(c0_Person);
 c0_baby.extending(c0_NewBorn);
+assert(equal(joinRef(global(c0_baby)), global(c0_Alice)));
+assert(equal(joinRef(join(global(c0_Alice), c0_age)), constant(0)));
+assert(none(join(global(c0_Alice), c0_married)));

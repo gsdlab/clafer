@@ -15,6 +15,7 @@ Constraint(implies(some(glob(c0_n3)), equal(joinRef(glob(c0_n3)), constant(3))))
 Constraint(implies(some(glob(c0_n4)), equal(joinRef(glob(c0_n4)), constant(2))));
 Constraint(implies(some(glob(c0_n5)), equal(joinRef(glob(c0_n5)), constant(3))));
 Constraint(implies(some(glob(c0_p)), equal(joinRef(glob(c0_p)), product(glob(c0_N)))));
+Constraint(equal(joinRef(glob(c0_p)), constant(36)));
 scope({c0_N:5});
 defaultScope(1);
 stringLength(16);

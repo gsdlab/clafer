@@ -31,3 +31,5 @@ c0_down.extending(c0_Request);
 c0_WinController.extending(c0_Controller);
 c1_req.extending(c0_req).refTo(c0_stop);
 c0_cmd.extending(c0_OutPort).refTo(c0_MotorCommand);
+assert(equal(joinRef(join(global(c0_WinController), c0_cmd)), global(c0_motorDown)));
+assert(equal(joinRef(join(global(c0_Controller), c0_req)), global(c0_stop)));

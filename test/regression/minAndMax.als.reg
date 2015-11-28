@@ -12,3 +12,6 @@ sig c0_B
 
 fact {  all disj x, y : c0_B | (x.@c0_B_ref) != (y.@c0_B_ref)  }
 fact { (min[c0_A.@c0_A_ref]) = (max[c0_B.@c0_B_ref]) }
+assert assertOnLine_8 { (max[c0_A.@c0_A_ref]) >= (min[c0_B.@c0_B_ref]) }
+check assertOnLine_8 for 1 but 2 c0_A, 3 c0_B
+

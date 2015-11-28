@@ -5,6 +5,7 @@ c0_B = Clafer("c0_B").withCard(2, 3);
 c0_A.refTo("int");
 c0_B.refToUnique("int");
 Constraint(equal(minimum(joinRef(glob(c0_A))), maximum(joinRef(glob(c0_B)))));
+Constraint(greaterThanEqual(maximum(joinRef(glob(c0_A))), minimum(joinRef(glob(c0_B)))));
 scope({c0_A:2, c0_B:3});
 defaultScope(1);
 stringLength(16);

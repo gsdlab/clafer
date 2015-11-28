@@ -17,3 +17,6 @@ one sig c0_Phone
 one sig c0_name
 { c0_name_ref : one Int }
 
+assert assertOnLine_7 { no c0_Kernel }
+check assertOnLine_7 for 1 but 0 c0_Kernel, 0 c0_memory
+

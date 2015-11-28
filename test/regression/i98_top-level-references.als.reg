@@ -25,3 +25,12 @@ one sig c0_Alice extends c0_Person
 one sig c0_baby extends c0_NewBorn
 {}
 
+assert assertOnLine_16 { (c0_baby.@c0_NewBorn_ref) = c0_Alice }
+check assertOnLine_16 for 1
+
+assert assertOnLine_17 { ((c0_Alice.@r_c0_age).@c0_age_ref) = 0 }
+check assertOnLine_17 for 1
+
+assert assertOnLine_18 { no c0_Alice.@r_c0_married }
+check assertOnLine_18 for 1
+

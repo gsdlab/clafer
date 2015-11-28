@@ -10,20 +10,21 @@ sig c0_a
 sig c0_b
 { r_c0_c : set c0_c }
 { one @r_c0_b.this
-  #r_c0_c = 0
-  // Assertion assertOnLine_4 ignored since nested assertions are not supported in Alloy.
- }
+  #r_c0_c = 0 }
 
 sig c0_c
 {}
 { one @r_c0_c.this }
 
-assert assertOnLine_6 { some c0_a.@r_c0_b }
-check assertOnLine_6 for 1 but 2 c0_a, 6 c0_b, 0 c0_c
+assert assertOnLine_5 { no (c0_a.@r_c0_b).@r_c0_c }
+check assertOnLine_5 for 1 but 2 c0_a, 6 c0_b, 0 c0_c
 
-assert assertOnLine_8 { no (c0_a.@r_c0_b).@r_c0_c }
-check assertOnLine_8 for 1 but 2 c0_a, 6 c0_b, 0 c0_c
+assert assertOnLine_7 { some c0_a.@r_c0_b }
+check assertOnLine_7 for 1 but 2 c0_a, 6 c0_b, 0 c0_c
 
-assert assertOnLine_10 { (#(c0_a.@r_c0_b)) = 6 }
-check assertOnLine_10 for 1 but 2 c0_a, 6 c0_b, 0 c0_c
+assert assertOnLine_9 { no (c0_a.@r_c0_b).@r_c0_c }
+check assertOnLine_9 for 1 but 2 c0_a, 6 c0_b, 0 c0_c
+
+assert assertOnLine_11 { (#(c0_a.@r_c0_b)) = 6 }
+check assertOnLine_11 for 1 but 2 c0_a, 6 c0_b, 0 c0_c
 

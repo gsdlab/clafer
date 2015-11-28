@@ -18,3 +18,4 @@ c0_c3.extending(c0_Component);
 c0_c3.addConstraint(equal(joinRef(join($this(), c0_energy)), constant(1)));
 c0_total.refTo(Int);
 Constraint(implies(some(global(c0_total)), equal(joinRef(global(c0_total)), sum(join(global(c0_Component), c0_energy)))));
+assert(equal(joinRef(global(c0_total)), constant(3)));

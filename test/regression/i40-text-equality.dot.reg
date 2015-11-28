@@ -9,6 +9,6 @@ edge [fontname=Sans fontsize=11];
 "c0_text" [label="text -&gt; string = &quot;some text&quot;" URL="#c0_text" tooltip="text -&gt; string = &quot;some text&quot;&#10;"];
 "c0_text1" [label="text1 -&gt; string = &quot;some text&quot;" URL="#c0_text1" tooltip="text1 -&gt; string = &quot;some text&quot;&#10;"];
 "c0_text2" [label="text2 -&gt; string = &quot;some text&quot;" URL="#c0_text2" tooltip="text2 -&gt; string = &quot;some text&quot;&#10;"];
-"c0_equal1" [label="equal1 ?" URL="#c0_equal1" tooltip="equal1 ?&#10;  [ text = text1 ]&#10;"];
-"c0_equal2" [label="equal2 ?" URL="#c0_equal2" tooltip="equal2 ?&#10;  [ text1 = text2 ]&#10;"];
+"c0_equal1" [label="equal1 ?" URL="#c0_equal1" tooltip="equal1 ?&#10;"];
+"c0_equal2" [label="equal2 ?" URL="#c0_equal2" tooltip="equal2 ?&#10;"];
 }

@@ -30,6 +30,11 @@ c0_parents.addConstraint($in(joinParent($this()), joinRef(join(joinRef($this()),
 c0_Alice.extending(c0_Person);
 c0_Alice.addConstraint(equal(joinRef(join($this(), c0_age)), constant(6)));
 c0_Alice.addConstraint(equal(joinRef(join(join(join($this(), c0_maritalStatus), c0_married), c0_spouse)), global(c0_Bob)));
+Constraint(equal(joinRef(join(global(c0_Person), c0_childs)), global(c0_Carol)));
 c0_Bob.extending(c0_Person);
+assert(greaterThanEqual(joinRef(join(global(c0_Bob), c0_age)), constant(5)));
+assert(equal(joinRef(join(join(join(global(c0_Bob), c0_maritalStatus), c0_married), c0_spouse)), global(c0_Alice)));
+assert(equal(joinRef(join(global(c0_Bob), c0_childs)), global(c0_Carol)));
 c0_Carol.extending(c0_Person);
 c0_Carol.addConstraint(equal(joinRef(join($this(), c0_age)), constant(1)));
+assert(equal(joinRef(join(global(c0_Carol), c0_parents)), union(global(c0_Alice), global(c0_Bob))));

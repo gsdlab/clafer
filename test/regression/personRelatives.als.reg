@@ -59,10 +59,23 @@ one sig c0_Alice extends c0_Person
 { ((this.@r_c0_age).@c0_age_ref) = 6
   ((((this.@r_c0_maritalStatus).@r_c0_married).@r_c0_spouse).@c0_spouse_ref) = c0_Bob }
 
+fact { ((c0_Person.@r_c0_childs).@c0_childs_ref) = c0_Carol }
 one sig c0_Bob extends c0_Person
 {}
+
+assert assertOnLine_28 { ((c0_Bob.@r_c0_age).@c0_age_ref) >= 5 }
+check assertOnLine_28 for 1 but 3 c0_Person, 3 c0_age, 9 c0_childs, 3 c0_divorced, 3 c0_maritalStatus, 3 c0_married, 3 c0_neverMarried, 6 c0_parents, 3 c0_spouse
+
+assert assertOnLine_29 { ((((c0_Bob.@r_c0_maritalStatus).@r_c0_married).@r_c0_spouse).@c0_spouse_ref) = c0_Alice }
+check assertOnLine_29 for 1 but 3 c0_Person, 3 c0_age, 9 c0_childs, 3 c0_divorced, 3 c0_maritalStatus, 3 c0_married, 3 c0_neverMarried, 6 c0_parents, 3 c0_spouse
+
+assert assertOnLine_30 { ((c0_Bob.@r_c0_childs).@c0_childs_ref) = c0_Carol }
+check assertOnLine_30 for 1 but 3 c0_Person, 3 c0_age, 9 c0_childs, 3 c0_divorced, 3 c0_maritalStatus, 3 c0_married, 3 c0_neverMarried, 6 c0_parents, 3 c0_spouse
 
 one sig c0_Carol extends c0_Person
 {}
 { ((this.@r_c0_age).@c0_age_ref) = 1 }
+
+assert assertOnLine_35 { ((c0_Carol.@r_c0_parents).@c0_parents_ref) = (c0_Alice + c0_Bob) }
+check assertOnLine_35 for 1 but 3 c0_Person, 3 c0_age, 9 c0_childs, 3 c0_divorced, 3 c0_maritalStatus, 3 c0_married, 3 c0_neverMarried, 6 c0_parents, 3 c0_spouse
 

@@ -27,3 +27,6 @@ one sig c0_JohnAndMaryLine extends c0_WaitingLine
 {}
 { ((this.@r_c0_participants).@c0_participants_ref) = (c0_JohnDoe + c0_MaryJane) }
 
+assert assertOnLine_17 { all  wl : c0_WaitingLine | ((wl.@r_c0_participants).@c0_participants_ref) = (c0_JohnDoe + c0_MaryJane) }
+check assertOnLine_17 for 1 but 2 c0_Person, 2 c0_WaitingLine, 4 c0_participants
+

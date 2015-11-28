@@ -42,5 +42,17 @@ a[href$='Ambiguous name'] {color: yellow}
 <div>
 <span class="claferDecl" id="c0_baby">baby</span><span class="keyword"> : </span><a href="#c0_NewBorn"><span class="reference">NewBorn</span></a></div>
 
+
+<div>
+<span class="keyword">assert [</span> <a href="#c0_baby"><span class="reference">baby</span></a> = <a href="#c0_Alice"><span class="reference">Alice</span></a> <span class="keyword">]</span></div>
+
+
+<div>
+<span class="keyword">assert [</span> <a href="#c0_Alice"><span class="reference">Alice</span></a>.<a href="#c0_age"><span class="reference">age</span></a> = 0 <span class="keyword">]</span></div>
+
+
+<div>
+<span class="keyword">assert [</span> <span class="keyword">not</span> <a href="#c0_Alice"><span class="reference">Alice</span></a>.<a href="#c0_married"><span class="reference">married</span></a> <span class="keyword">]</span></div>
+
 </body>
 </html>
