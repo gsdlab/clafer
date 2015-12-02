@@ -24,7 +24,7 @@
 module Language.Clafer.Intermediate.ResolverInheritance where
 
 import           Control.Applicative
-import           Control.Lens  ((^.), (&), (%~), (%%~), (.~), mapped)
+import           Control.Lens  ((^.), (&), (%%~), (.~), traverse)
 import           Control.Monad
 import           Control.Monad.Except
 import           Control.Monad.State
@@ -35,7 +35,7 @@ import           Data.List
 import qualified Data.Map as Map
 import           Data.StringMap (StringMap)
 import qualified Data.StringMap as SMap
-import           Prelude
+import           Prelude hiding (traverse)
 
 import           Language.ClaferT
 import           Language.Clafer.Common
