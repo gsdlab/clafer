@@ -239,12 +239,14 @@ data NestedInheritanceMatch
 isProperNesting :: UIDIClaferMap -> Maybe NestedInheritanceMatch -> Bool
 isProperNesting _ Nothing  = True
 isProperNesting uidIClaferMap (Just m) =
-  if ((isTopLevel $ _superClafer m) && (_isAbstract $ _superClafer m))
-  then True
-  else case (_parentsSuperClafer m) of
-    Nothing                 -> (_uid $ _parentClafer m) == (_uid $ _superClafersParent m)
+  (isTopLevel (_superClafer m) && _isAbstract (_superClafer m))
+  ||
+  (_parentUID (_headClafer m) == _parentUID (_superClafer m))
+  ||
+  (case _parentsSuperClafer m of
+    Nothing                 -> _uid (_parentClafer m) == _uid (_superClafersParent m)
     Just parentsSuperClafer -> isJust $  findUIDinSupers uidIClaferMap (_parentUID $ _superClafer m) parentsSuperClafer
-
+  )
 -- ^ assumes that isProperNesting m == True
 isProperRefinement :: UIDIClaferMap -> Maybe NestedInheritanceMatch
   -> (Bool,  Bool,  Bool)
