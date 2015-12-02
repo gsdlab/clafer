@@ -30,7 +30,7 @@ prof: alloy4.2.jar
 .PHONY: test
 test:
 	cp `stack path --local-install-root`/bin/clafer$(EXE) .
-	cabal test 2>/dev/null || :    # supress error message and exit code if fail
+	stack test 2>/dev/null || :    # supress error message and exit code if fail
 	$(MAKE) -C $(TEST_DIR) test
 
 generateAlloyJSPythonHTMLDot:

@@ -1,4 +1,3 @@
-{-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE NamedFieldPuns     #-}
 {-
  Copyright (C) 2012-2015 Kacper Bak, Jimmy Liang, Michal Antkiewicz <http://gsd.uwaterloo.ca>
@@ -171,9 +170,8 @@ runCompiler    mURL         args'         inputModel =
         when (validate args') $ liftIO $ do
           forM_ fs (runValidate args')
           putStrLn "\n"
-    if Html `elem` (mode args')
-      then htmlCatch result args' inputModel
-      else return ()
+    when (Html `elem` mode args') $
+      htmlCatch result args' inputModel
     result `cth` handleErrs
   where
   cth (Left err) f = f err
@@ -185,7 +183,7 @@ runCompiler    mURL         args'         inputModel =
 --  htmlCatch :: Either ClaferErr CompilerResult -> ClaferArgs -> String -> IO(CompilerResult)
   htmlCatch (Right r) _ _ = return r
   htmlCatch (Left err) args'' model =
-    do let f = (dropExtension $ file args'') ++ ".html"
+    do let f = dropExtension (file args'') ++ ".html"
        let result = (if (self_contained args'')
                      then Css.header ++ "<style>" ++ Css.css ++ "</style>" ++ "</head>\n<body>\n<pre>\n"
                      else "")
@@ -221,7 +219,7 @@ save args'=
     resultsMap <- generate
     let results = snd $ unzip $ Map.toList resultsMap
     -- print stats only once
-    when (not $ no_stats args') $ liftIO $ printStats results
+    unless (no_stats args') $ liftIO $ printStats results
     -- save the outputs
     (iModule, _, _) <- getIr
     forM results $ saveResult iModule resultsMap
@@ -258,7 +256,7 @@ save args'=
       Alloy `elem` mode args' ||
       Choco `elem` mode args'
 
-    getScopesList :: (Map.Map ClaferMode CompilerResult) -> [(UID, Integer)]
+    getScopesList :: Map.Map ClaferMode CompilerResult -> [(UID, Integer)]
     getScopesList    resultsMap =
         let
            alloyResult = Map.lookup Alloy resultsMap

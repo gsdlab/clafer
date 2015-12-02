@@ -24,7 +24,7 @@
 module Language.Clafer.Intermediate.ResolverInheritance where
 
 import           Control.Applicative
-import           Control.Lens  ((^.), (&), (%~), (.~), mapped)
+import           Control.Lens  ((^.), (&), (%~), (%%~), (.~), mapped)
 import           Control.Monad
 import           Control.Monad.Except
 import           Control.Monad.State
@@ -55,8 +55,9 @@ resolveNModule (imodule, genv') =
     let
       relocatedDecls = relocateTopLevelAbstractToParents resolvedDecls    -- F> Top-level abstract clafer extending a nested abstract clafer <https://github.com/gsdlab/clafer/issues/67> <F
       uidClaferMap' = createUidIClaferMap imodule{_mDecls = relocatedDecls}
-      resolvedHierarchyDecls = map (resolveHierarchy uidClaferMap') relocatedDecls
-      resolvedHierarchiesIModule = imodule{_mDecls = resolvedHierarchyDecls}
+    resolvedHierarchyDecls <- mapM (resolveHierarchy uidClaferMap') relocatedDecls
+    let
+        resolvedHierarchiesIModule = imodule{_mDecls = resolvedHierarchyDecls}
     return
       ( resolvedHierarchiesIModule
       , genv'{ sClafers = bfs toNodeShallow $ toClafers resolvedHierarchyDecls
@@ -91,7 +92,7 @@ resolveNSuper abstractClafers (Just (PExp _ pid' pos' (IClaferId _ id' _ _))) =
         (id'', [superClafer']) <- case r of
           Nothing -> throwError $ SemanticErr pos' $ "No superclafer found: " ++ id'
           Just m  -> return m
-        return $ (Just $ PExp (Just $ TClafer [id'']) pid' pos' (IClaferId "" id'' (isTopLevel superClafer') (Just $ id''))
+        return (Just $ PExp (Just $ TClafer [id'']) pid' pos' (IClaferId "" id'' (isTopLevel superClafer') (Just id''))
                  , Just superClafer')
 resolveNSuper _ x = return (x, Nothing)
 
@@ -107,13 +108,17 @@ resolveN pos' abstractClafers id' =
   findUnique pos' id' $ map (\x -> (x, [x])) abstractClafers
 
 
-resolveHierarchy :: UIDIClaferMap -> IElement           -> IElement
-resolveHierarchy    uidClaferMap'    (IEClafer iClafer') = IEClafer $ super.mapped.iType.mapped %~ addHierarchy $ iClafer'
+resolveHierarchy :: UIDIClaferMap -> IElement           -> Resolve IElement
+resolveHierarchy    uidClaferMap'    (IEClafer iClafer') = IEClafer <$> (super.traverse.iType.traverse %%~ addHierarchy $ iClafer')
   where
-    addHierarchy :: IType      -> IType
-    addHierarchy    (TClafer _) = TClafer $ tail $ mapHierarchy _uid getSuper uidClaferMap' iClafer'
-    addHierarchy    x           = x
-resolveHierarchy    _                x                   = x
+    addHierarchy :: IType      -> Resolve IType
+    addHierarchy    (TClafer _) = TClafer <$> checkForLoop (tail $ mapHierarchy _uid getSuper uidClaferMap' iClafer')
+    addHierarchy    x           = return x
+    checkForLoop :: [String] -> Resolve [String]
+    checkForLoop    supers    = case find (_uid iClafer' ==) supers of
+                                  Nothing -> return supers
+                                  Just _ -> throwError $ SemanticErr (_cinPos iClafer') $ "ResolverInheritance: clafer " ++ _uid iClafer' ++ " inherits from itself"
+resolveHierarchy    _                x                   = return x
 
 
 -- | Resolve overlapping inheritance
