@@ -1,6 +1,0 @@
-from jsir.IR import *
-
-c0_A = Abstract("c0_A");
-c0_a = Clafer("c0_a").withCard(1, 1).extending(c0_A);
-defaultScope(1);
-stringLength(16);

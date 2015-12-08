@@ -98,7 +98,6 @@ library
                       , Language.Clafer.Generator.Concat
                       , Language.Clafer.Generator.Graph
                       , Language.Clafer.Generator.Html
-                      , Language.Clafer.Generator.Python
                       , Language.Clafer.Generator.Stats
                       , Language.Clafer.Intermediate.Desugarer
                       , Language.Clafer.Intermediate.Intclafer

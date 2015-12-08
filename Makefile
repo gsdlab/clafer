@@ -33,8 +33,8 @@ test:
 	stack test 2>/dev/null || :    # supress error message and exit code if fail
 	$(MAKE) -C $(TEST_DIR) test
 
-generateAlloyJSPythonHTMLDot:
-	$(MAKE) -C $(TEST_DIR) generateAlloyJSPythonHTMLDot
+generateAlloyJSHTMLDot:
+	$(MAKE) -C $(TEST_DIR) generateAlloyJSHTMLDot
 
 diffRegressions:
 	$(MAKE) -C $(TEST_DIR) diffRegressions

@@ -125,7 +125,6 @@ import           Language.Clafer.Generator.Choco
 import           Language.Clafer.Generator.Concat
 import           Language.Clafer.Generator.Graph
 import           Language.Clafer.Generator.Html
-import           Language.Clafer.Generator.Python
 import           Language.Clafer.Generator.Stats
 import           Language.Clafer.Intermediate.Desugarer
 import           Language.Clafer.Intermediate.Intclafer
@@ -580,20 +579,6 @@ generate =
                        mappingToAlloy = [],
                        stringMap = Map.empty,
                        scopesList = []
-                  }) ]
-          else []
-        )
-        -- result for Python
-        ++ (if (Python `elem` modes)
-          then [ (Python,
-                  CompilerResult {
-                    extension = "py",
-                    outputCode = genPythonModule (iModule, genv) scopes,
-                    statistics = stats,
-                    claferEnv  = env,
-                    mappingToAlloy = [],
-                    stringMap = Map.empty,
-                    scopesList = scopes
                   }) ]
           else []
         )

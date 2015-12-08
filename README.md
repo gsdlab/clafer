@@ -51,7 +51,6 @@ Currently, the compiler is used by
 * [Michał Antkiewicz](http://gsd.uwaterloo.ca/mantkiew), Main developer.
 * [Kacper Bak](http://gsd.uwaterloo.ca/kbak), Original developer.
 * [Jimmy Liang](http://gsd.uwaterloo.ca/jliang), Developer.
-* [Ed Zulkoski](http://gsd.uwaterloo.ca/ezulkosk), Python IR Generator.
 * Luke Michael Brown, co-op student May-Aug 2013. Many improvements.
 * Paulius Juodisius, [customized BNFC generator](https://github.com/juodaspaulius/bnfc) and layout resolver.
 * [Rafael Olaechea](http://gsd.uwaterloo.ca/rolaechea), Multi-Objective Optimization extensions.
@@ -189,8 +188,7 @@ Common flags:
                                           representation written in DOT
                                           language); 'cvlgraph' (cvl notation
                                           representation written in DOT
-                                          language); 'python' (generates IR in
-                                          python); 'choco' (Choco constraint
+                                          language); 'choco' (Choco constraint
                                           programming solver). Multiple modes
                                           can be specified at the same time,
                                           e.g., '-m alloy -m html'.
