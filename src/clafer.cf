@@ -19,6 +19,8 @@ Goal.           Goal ::= "<<" [Exp] ">>" ;
 
 Initial.        TempModifier ::= "initial";
 Final.          TempModifier ::= "final";
+FinalRef.       TempModifier ::= "finalref";
+FinalTarget.    TempModifier ::= "finaltarget";
 
 TransitionEmpty.           Transition ::= ;
 Transition.                Transition ::= TransArrow Exp;

@@ -251,7 +251,7 @@ of Connection are nested under all Systems anyway.
 genSetUniquenessConstraint :: IClafer -> [Concat]
 genSetUniquenessConstraint c =
     (case _reference c of
-      Just (IReference True _) ->
+      Just (IReference True _ _) ->
         (case _card c of
             Just (lb,  ub) -> if (lb > 1 || ub > 1 || ub == -1)
               then [ CString $ (

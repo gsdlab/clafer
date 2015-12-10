@@ -129,7 +129,7 @@ resolveOClafer env clafer =
 
 resolveOReference :: SEnv -> Maybe IReference -> Resolve (Maybe IReference)
 resolveOReference _   Nothing                      = return Nothing
-resolveOReference env (Just (IReference is' exp')) = Just <$> IReference is' <$> resolvePExp env exp'
+resolveOReference env (Just (IReference is' mod exp')) = Just <$> IReference is' mod <$> resolvePExp env exp'
 
 
 resolveOElement :: SEnv -> IElement -> Resolve IElement

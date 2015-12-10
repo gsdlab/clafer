@@ -42,7 +42,7 @@ astrModule imodule = (imodule{_mDecls = decls''}, flipMap strMap')
     flipMap = Map.fromList . map swap . Map.toList
 
 
-astrClafer :: MonadState (Map.Map String Int) m => IClafer -> m IClafer
+astrClafer :: Functor m => MonadState (Map.Map String Int) m => IClafer -> m IClafer
 astrClafer (IClafer s mods gcrd' ident' uid' puid' super' reference' crd' gCard mut elements') = do
     reference'' <- astrReference reference'
     elements'' <- astrElement `mapM` elements'
@@ -50,7 +50,7 @@ astrClafer (IClafer s mods gcrd' ident' uid' puid' super' reference' crd' gCard 
 
 astrReference :: Functor m => MonadState (Map.Map String Int) m => Maybe IReference -> m (Maybe IReference)
 astrReference Nothing = return Nothing
-astrReference (Just (IReference isSet' ref')) = Just <$> IReference isSet' `liftM` astrPExp ref'
+astrReference (Just (IReference isSet' mod ref')) = Just <$> IReference isSet' mod `liftM` astrPExp ref'
 
 -- astrs single subclafer
 astrElement :: Functor m => MonadState (Map.Map String Int) m => IElement -> m IElement

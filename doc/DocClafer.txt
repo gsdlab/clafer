@@ -59,14 +59,15 @@ The reserved words used in clafer are the following:
   | ``X`` | ``abstract`` | ``after`` | ``all``
   | ``always`` | ``and`` | ``assert`` | ``before``
   | ``between`` | ``disj`` | ``else`` | ``enum``
-  | ``eventually`` | ``final`` | ``finally`` | ``follow``
-  | ``globally`` | ``if`` | ``in`` | ``initial``
-  | ``initially`` | ``let`` | ``lonce`` | ``lone``
-  | ``max`` | ``min`` | ``must`` | ``mux``
-  | ``never`` | ``next`` | ``no`` | ``not``
-  | ``one`` | ``opt`` | ``or`` | ``precede``
-  | ``product`` | ``some`` | ``sometime`` | ``sum``
-  | ``then`` | ``until`` | ``weakuntil`` | ``xor``
+  | ``eventually`` | ``final`` | ``finally`` | ``finalref``
+  | ``finaltarget`` | ``follow`` | ``globally`` | ``if``
+  | ``in`` | ``initial`` | ``initially`` | ``let``
+  | ``lonce`` | ``lone`` | ``max`` | ``min``
+  | ``must`` | ``mux`` | ``never`` | ``next``
+  | ``no`` | ``not`` | ``one`` | ``opt``
+  | ``or`` | ``precede`` | ``product`` | ``some``
+  | ``sometime`` | ``sum`` | ``then`` | ``until``
+  | ``weakuntil`` | ``xor`` |  | 
 
 The symbols used in clafer are the following:
   | = | [ | ] | <<
@@ -100,6 +101,8 @@ All other symbols are terminals.
   | //Goal// | -> | ``<<`` //[Exp]// ``>>`` 
   | //TempModifier// | -> | ``initial`` 
   |  |  **|**  | ``final`` 
+  |  |  **|**  | ``finalref`` 
+  |  |  **|**  | ``finaltarget`` 
   | //Transition// | -> | **eps**
   |  |  **|**  | //TransArrow// //Exp// 
   | //Abstract// | -> | **eps**

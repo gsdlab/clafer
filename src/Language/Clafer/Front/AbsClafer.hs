@@ -133,12 +133,15 @@ data Goal = Goal Span [Exp]
 
 instance Spannable Goal where
     getSpan (Goal s _ ) = s
-data TempModifier = Initial Span | Final Span
+data TempModifier
+    = Initial Span | Final Span | FinalRef Span | FinalTarget Span
   deriving (Eq, Ord, Show, Read, Data, Typeable, Generic)
 
 instance Spannable TempModifier where
     getSpan (Initial s ) = s
     getSpan (Final s ) = s
+    getSpan (FinalRef s ) = s
+    getSpan (FinalTarget s ) = s
 data Transition
     = TransitionEmpty Span | Transition Span TransArrow Exp
   deriving (Eq, Ord, Show, Read, Data, Typeable, Generic)

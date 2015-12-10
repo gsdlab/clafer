@@ -171,10 +171,18 @@ resolveTElement    TAReferences  _         (IEClafer iclafer) =
         refs' <- resolveTPExp $ _ref originalReference
         case refs' of
           []     -> return Nothing
-          [ref'] -> return $ Just $ originalReference{_ref=(ref' & iType.traversed %~ (addHierarchy uidIClaferMap'))}
-          (ref':_) -> return $ Just $ originalReference{_ref=(ref' & iType.traversed %~ (addHierarchy uidIClaferMap'))}
+          [ref'] -> return $ refWithNewType uidIClaferMap' originalReference ref'
+          (ref':_) -> return $ refWithNewType uidIClaferMap' originalReference ref'
     elements' <- mapM (resolveTElement TAReferences (_uid iclafer)) (_elements iclafer)
     return $ IEClafer iclafer{_elements = elements', _reference=reference'}
+  where
+    refWithNewType uMap oRef r = let
+        r' = r & iType.traversed %~ (addHierarchy uMap)
+      in case _iType r' of
+        Nothing -> Nothing
+        Just t -> if isTBoolean t
+                  then Nothing
+                  else Just $ oRef{_ref=r'}
 resolveTElement    TAReferences  _         iec@(IEConstraint{}) = return iec
 resolveTElement    TAReferences  _         ieg@(IEGoal{}) = return ieg
 

@@ -470,7 +470,7 @@ generate =
                 then
                    let
                       (imod,strMap) = astrModule iModule
-                      useAlloyLtlGen = staticClaferSubset && (not $ AlloyLtl `elem` modes)
+                      useAlloyLtlGen = not staticClaferSubset && (not $ AlloyLtl `elem` modes)
                       (genAlloyCode, alloyModes) = if useAlloyLtlGen then (genAlloyLtlModule, [Alloy, AlloyLtl]) else (genModule, [Alloy])
                       alloyCode = genAlloyCode cargs{mode = alloyModes} (imod, genv) scopes otherTokens'
                       addCommentStats = if no_stats cargs then const else addStats

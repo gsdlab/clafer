@@ -125,10 +125,10 @@ genCModule (imodule@IModule{_mDecls}, genv') scopes  otherTokens' =
     genRefClafer :: IClafer -> Result
     genRefClafer c@IClafer{_uid, _reference, _card} =
         case (getReference c, _reference, _card) of
-             ([target], Just (IReference True _), Just (lb, ub))  -> if (lb > 1 || ub > 1 || lb == -1 || ub == -1)
+             ([target], Just (IReference True _ _), Just (lb, ub))  -> if (lb > 1 || ub > 1 || lb == -1 || ub == -1)
                 then _uid ++ ".refToUnique(" ++ genTarget target ++ ");\n"
                 else _uid ++ ".refTo(" ++ genTarget target ++ ");\n"
-             ([target], Just (IReference _ _), _) -> _uid ++ ".refTo(" ++ genTarget target ++ ");\n"
+             ([target], Just (IReference _ _ _), _) -> _uid ++ ".refTo(" ++ genTarget target ++ ");\n"
              _ -> ""
         where
             genTarget "integer" = "Int"

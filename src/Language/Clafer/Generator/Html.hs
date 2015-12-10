@@ -39,7 +39,7 @@ module Language.Clafer.Generator.Html
   ) where
 
 import Language.ClaferT
-import Language.Clafer.Front.AbsClafer
+import Language.Clafer.Front.AbsClafer as AbsClafer
 import Language.Clafer.Front.LayoutResolver(revertLayout)
 import Language.Clafer.Intermediate.Tracing
 import Language.Clafer.Intermediate.Intclafer
@@ -224,7 +224,7 @@ printAbstract (AbstractEmpty _) _ = ""
 printModifiers :: [TempModifier] -> Bool -> String
 printModifiers tmods' html = concatMap printTempMod tmods'
   where
-    printTempMod (Final _) = (while html "<span class=\"keyword\">") ++ "final" ++ (while html "</span>") ++ " "
+    printTempMod (AbsClafer.Final _) = (while html "<span class=\"keyword\">") ++ "final" ++ (while html "</span>") ++ " "
     printTempMod (Initial _) = (while html "<span class=\"keyword\">") ++ "initial" ++ (while html "</span>") ++ " "
 
 printGCard :: GCard -> Bool -> String
@@ -461,7 +461,7 @@ getUid :: PosIdent -> Map.Map Span [Ir] -> Maybe String
 getUid posIdent@(PosIdent (_, id')) irMap =
   case Map.lookup (getSpan posIdent) irMap of
     Nothing -> Nothing
-    Just wrappedResultList -> listToMaybe $ catMaybes $ map (findUid id') $ map unwrap wrappedResultList 
+    Just wrappedResultList -> listToMaybe $ catMaybes $ map (findUid id') $ map unwrap wrappedResultList
   where
     unwrap (IRPExp pexp')       = getIdentPExp pexp'
     unwrap (IRClafer iClafer') = [ _uid iClafer' ]

@@ -146,6 +146,8 @@ instance Print TempModifier where
   prt i e = case e of
     Initial _ -> prPrec i 0 (concatD [doc (showString "initial")])
     Final _ -> prPrec i 0 (concatD [doc (showString "final")])
+    FinalRef _ -> prPrec i 0 (concatD [doc (showString "finalref")])
+    FinalTarget _ -> prPrec i 0 (concatD [doc (showString "finaltarget")])
   prtList _ [] = (concatD [])
   prtList _ (x:xs) = (concatD [prt 0 x, prt 0 xs])
 instance Print Transition where

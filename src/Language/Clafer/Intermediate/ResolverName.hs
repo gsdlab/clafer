@@ -211,7 +211,7 @@ mkPath    pos'    env     (howResolved, id',    path)       = case howResolved o
           tuplePath
   specIExp "this"     = IClaferId "" thisIdent True (createBind $ context env)
   specIExp "parent"   = toNav [("parent", Just $ head path)]
-  specIExp "ref"      = toNav [("ref", Just $ head path)]
+  specIExp "dref"     = toNav [("dref", Just $ head path)]
   specIExp "root"     = IClaferId "" rootIdent True (GlobalBind rootIdent)
   specIExp "children" = toNav [(id', Just $ head path)]
   specIExp i          = error $ "[BUG] ResolverName.specIExp: Unknown special id: " ++ i

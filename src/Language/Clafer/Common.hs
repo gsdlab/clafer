@@ -380,6 +380,9 @@ iX          = "X"
 iInitially :: String
 iInitially    = "Initially"
 
+iFinally :: String
+iFinally    = "Finally"
+
 iCSet :: String
 iCSet         = "#"
 

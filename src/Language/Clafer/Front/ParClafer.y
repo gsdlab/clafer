@@ -80,39 +80,41 @@ import Language.Clafer.Front.ErrM
   'eventually' { PT _ (TS _ 61) }
   'final' { PT _ (TS _ 62) }
   'finally' { PT _ (TS _ 63) }
-  'follow' { PT _ (TS _ 64) }
-  'globally' { PT _ (TS _ 65) }
-  'if' { PT _ (TS _ 66) }
-  'in' { PT _ (TS _ 67) }
-  'initial' { PT _ (TS _ 68) }
-  'initially' { PT _ (TS _ 69) }
-  'let' { PT _ (TS _ 70) }
-  'lonce' { PT _ (TS _ 71) }
-  'lone' { PT _ (TS _ 72) }
-  'max' { PT _ (TS _ 73) }
-  'min' { PT _ (TS _ 74) }
-  'must' { PT _ (TS _ 75) }
-  'mux' { PT _ (TS _ 76) }
-  'never' { PT _ (TS _ 77) }
-  'next' { PT _ (TS _ 78) }
-  'no' { PT _ (TS _ 79) }
-  'not' { PT _ (TS _ 80) }
-  'one' { PT _ (TS _ 81) }
-  'opt' { PT _ (TS _ 82) }
-  'or' { PT _ (TS _ 83) }
-  'precede' { PT _ (TS _ 84) }
-  'product' { PT _ (TS _ 85) }
-  'some' { PT _ (TS _ 86) }
-  'sometime' { PT _ (TS _ 87) }
-  'sum' { PT _ (TS _ 88) }
-  'then' { PT _ (TS _ 89) }
-  'until' { PT _ (TS _ 90) }
-  'weakuntil' { PT _ (TS _ 91) }
-  'xor' { PT _ (TS _ 92) }
-  '{' { PT _ (TS _ 93) }
-  '|' { PT _ (TS _ 94) }
-  '||' { PT _ (TS _ 95) }
-  '}' { PT _ (TS _ 96) }
+  'finalref' { PT _ (TS _ 64) }
+  'finaltarget' { PT _ (TS _ 65) }
+  'follow' { PT _ (TS _ 66) }
+  'globally' { PT _ (TS _ 67) }
+  'if' { PT _ (TS _ 68) }
+  'in' { PT _ (TS _ 69) }
+  'initial' { PT _ (TS _ 70) }
+  'initially' { PT _ (TS _ 71) }
+  'let' { PT _ (TS _ 72) }
+  'lonce' { PT _ (TS _ 73) }
+  'lone' { PT _ (TS _ 74) }
+  'max' { PT _ (TS _ 75) }
+  'min' { PT _ (TS _ 76) }
+  'must' { PT _ (TS _ 77) }
+  'mux' { PT _ (TS _ 78) }
+  'never' { PT _ (TS _ 79) }
+  'next' { PT _ (TS _ 80) }
+  'no' { PT _ (TS _ 81) }
+  'not' { PT _ (TS _ 82) }
+  'one' { PT _ (TS _ 83) }
+  'opt' { PT _ (TS _ 84) }
+  'or' { PT _ (TS _ 85) }
+  'precede' { PT _ (TS _ 86) }
+  'product' { PT _ (TS _ 87) }
+  'some' { PT _ (TS _ 88) }
+  'sometime' { PT _ (TS _ 89) }
+  'sum' { PT _ (TS _ 90) }
+  'then' { PT _ (TS _ 91) }
+  'until' { PT _ (TS _ 92) }
+  'weakuntil' { PT _ (TS _ 93) }
+  'xor' { PT _ (TS _ 94) }
+  '{' { PT _ (TS _ 95) }
+  '|' { PT _ (TS _ 96) }
+  '||' { PT _ (TS _ 97) }
+  '}' { PT _ (TS _ 98) }
 
 L_PosInteger { PT _ (T_PosInteger _) }
 L_PosDouble { PT _ (T_PosDouble _) }
@@ -153,6 +155,8 @@ Goal : '<<' ListExp '>>' { Language.Clafer.Front.AbsClafer.Goal ((mkTokenSpan $1
 TempModifier :: { TempModifier }
 TempModifier : 'initial' { Language.Clafer.Front.AbsClafer.Initial ((mkTokenSpan $1)) }
              | 'final' { Language.Clafer.Front.AbsClafer.Final ((mkTokenSpan $1)) }
+             | 'finalref' { Language.Clafer.Front.AbsClafer.FinalRef ((mkTokenSpan $1)) }
+             | 'finaltarget' { Language.Clafer.Front.AbsClafer.FinalTarget ((mkTokenSpan $1)) }
 Transition :: { Transition }
 Transition : {- empty -} { Language.Clafer.Front.AbsClafer.TransitionEmpty noSpan }
            | TransArrow Exp { Language.Clafer.Front.AbsClafer.Transition ((mkCatSpan $1) >- (mkCatSpan $2)) $1 $2 }
