@@ -29,8 +29,8 @@ import Data.List (find)
 import Data.Maybe (fromMaybe)
 
 import Language.Clafer.Common
-import Language.Clafer.Front.AbsClafer
-import Language.Clafer.Intermediate.Intclafer
+import Language.Clafer.Front.AbsClafer as AbsClafer
+import Language.Clafer.Intermediate.Intclafer as IntClafer
 
 -- | Transform the AST into the intermediate representation (IR)
 desugarModule :: Maybe String -> Module -> IModule
@@ -96,7 +96,7 @@ desugarClafer' :: Clafer -> [IElement]
 desugarClafer' claf'@(Clafer s' abstract' tmods' gcrd' id' super' reference' crd' init' _ elements')
   =  preElements
   ++ [(IEClafer $ IClafer s' iClaferModifiers (desugarGCard gcrd') (transIdent id')
-                          "" "" (desugarSuper super') (desugarReference reference')
+                          "" "" (desugarSuper super') (desugarReference tmods' reference')
                           (desugarCard crd') (0, -1) (desugarMutability tmods')
                           elements'')]
   ++ (desugarInit id' init')
@@ -147,10 +147,18 @@ desugarSuper (SuperEmpty _) = Nothing
 desugarSuper (SuperSome _ (ClaferId _ (Path _ [ (ModIdIdent _ (PosIdent (_, "clafer"))) ] ))) = Nothing
 desugarSuper (SuperSome _ setexp) = Just $ desugarExp setexp
 
-desugarReference :: Reference -> Maybe IReference
-desugarReference (ReferenceEmpty _) = Nothing
-desugarReference (ReferenceSet _ setexp) = Just $ IReference True $ desugarExp setexp
-desugarReference (ReferenceBag _ setexp) = Just $ IReference False $ desugarExp setexp
+desugarReference :: [TempModifier] -> Reference -> Maybe IReference
+desugarReference _ (ReferenceEmpty _) = Nothing
+desugarReference mods (ReferenceSet _ setexp) = Just $ IReference True (desugarRefModifier mods) $ desugarExp setexp
+desugarReference mods (ReferenceBag _ setexp) = Just $ IReference False (desugarRefModifier mods) $ desugarExp setexp
+
+desugarRefModifier :: [TempModifier] -> Maybe IReferenceModifier
+desugarRefModifier (mod:_) = case mod of
+                                Final _ -> Just FinalRefTarget
+                                AbsClafer.FinalRef _ -> Just IntClafer.FinalRef
+                                AbsClafer.FinalTarget _ -> Just IntClafer.FinalTarget
+                                _ -> Nothing
+desugarRefModifier _ = Nothing
 
 desugarInit :: PosIdent -> Init -> [IElement]
 desugarInit _ (InitEmpty _) = []
@@ -226,8 +234,8 @@ sugarSuper (Just pexp') = SuperSome noSpan (sugarExp pexp')
 
 sugarReference :: Maybe IReference -> Reference
 sugarReference Nothing = ReferenceEmpty noSpan
-sugarReference (Just (IReference True  pexp')) = ReferenceSet noSpan (sugarExp pexp')
-sugarReference (Just (IReference False pexp')) = ReferenceBag noSpan (sugarExp pexp')
+sugarReference (Just (IReference True  mod pexp')) = ReferenceSet noSpan (sugarExp pexp')
+sugarReference (Just (IReference False mod pexp')) = ReferenceBag noSpan (sugarExp pexp')
 
 sugarInitHow :: Bool -> InitHow
 sugarInitHow True  = InitConstant noSpan

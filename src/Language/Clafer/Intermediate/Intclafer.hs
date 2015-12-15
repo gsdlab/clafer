@@ -138,7 +138,7 @@ data IElement
 data IReference
   = IReference
     { _isSet :: Bool -- ^ whether set or bag
-    , _refModifier :: IReferenceModifier
+    , _refModifier :: Maybe IReferenceModifier
     , _ref :: PExp  -- ^ the only allowed reference expressions are IClafer and set expr. (++, **, --s)
     }
   deriving (Eq,Ord,Show,Data,Typeable)
