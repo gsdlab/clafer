@@ -146,6 +146,7 @@ type InputModel = String
 runCompiler :: Maybe URL -> ClaferArgs -> InputModel -> IO ()
 runCompiler    mURL         args'         inputModel =
   do
+    hSetBuffering stdout LineBuffering
     result <- runClaferT args' $
       do
         forM_ (fragments inputModel) addModuleFragment
@@ -160,11 +161,10 @@ runCompiler    mURL         args'         inputModel =
         -}
         compile iModule
 
-        when (validate args') $ liftIO $ do
-          hSetBuffering stdout LineBuffering
-          putStrLn $ "[clafer]              Validating " ++ file args'
-
         fs <- save args'
+
+        when (validate args') $ liftIO $ do
+            putStrLn $ "[clafer]              Validating " ++ file args'            
 
         when (validate args') $ liftIO $ do
           forM_ fs (runValidate args')
@@ -290,21 +290,22 @@ runValidate args' fo = do
   when (Graph `elem` modes && ".dot" `isSuffixOf` fo) $ do
     liftIO $ putStrLn ("=========== Parsing+Generating   " ++ fo ++ " =============")
     void $ system $ validateGraph ++ fo'
-  when (Mode.Clafer `elem` modes && ".des.cfr" `isSuffixOf` fo) $ do
-    liftIO $ putStrLn ("=========== Parsing+Typechecking " ++ fo ++ " =============")
-    void $ system $  validateClafer path ++ fo'
+  -- when (Mode.Clafer `elem` modes && ".des.cfr" `isSuffixOf` fo) $ do
+  --   liftIO $ putStrLn ("=========== Parsing+Typechecking " ++ fo ++ " =============")
+  --   liftIO $ putStrLn $ validateClafer path ++ fo'
+  --   void $ system $  validateClafer path ++ fo'
 
 validateAlloy :: String -> String
-validateAlloy path = "java -cp " ++ path ++ "alloy4.2.jar edu.mit.csail.sdg.alloy4whole.ExampleUsingTheCompiler "
+validateAlloy path = "java -cp \"" ++ path ++ "alloy4.2.jar\" edu.mit.csail.sdg.alloy4whole.ExampleUsingTheCompiler "
 
 validateChoco :: String -> String
-validateChoco path = "java -jar " ++ path ++ "chocosolver.jar -v --file "
+validateChoco path = "java -jar \"" ++ path ++ "chocosolver.jar\" -v --file "
 
 validateGraph :: String
 validateGraph = "dot -Tsvg -O "
 
-validateClafer :: String -> String
-validateClafer path = path ++ "clafer -s -m=clafer "
+-- validateClafer :: String -> String
+-- validateClafer path = "\""  ++ path ++ "clafer\" -s -k -m=clafer "
 
 
 -- | Add a new fragment to the model. Fragments should be added in order.
