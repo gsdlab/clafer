@@ -1,9 +1,9 @@
 [![Hackage](https://img.shields.io/hackage/v/clafer.svg)](https://hackage.haskell.org/package/clafer)
 [![Build Status](https://secure.travis-ci.org/gsdlab/clafer.svg)](http://travis-ci.org/gsdlab/clafer)
 
-# Clafer, the Language
+# Clafer, the language
 
-v0.4.3
+##### v0.4.3
 
 
 [Clafer](http://clafer.org) is a general-purpose lightweight structural modeling language developed by
@@ -30,7 +30,7 @@ This is also known as *Concept Modeling* or *Ontology Modeling*.
 * [Syntax Documentation](doc/clafer.pdf)
 * [Grammar](src/clafer.cf)
 
-# Clafer, the Compiler
+# Clafer, the compiler
 
 Clafer compiler provides a reference implementation of Clafer, the language.
 It translates models in Clafer to other formats (e.g., Alloy, JSON, JS, HTML, DOT) to allow for reasoning and processing with existing tools (Alloy Analyzer, Choco3, and GraphViz).
@@ -39,7 +39,7 @@ Currently, the compiler is used by
 
 * Backends
   * Alloy-based Instance Generator ([ClaferIG](https://github.com/gsdlab/claferIG)),
-  * Choco3-based Instance Generator and Multi-Objective Optimizer ([chocosolver](https://github.com/gsdlab/chocosolver), [ClaferChocoIG](https://github.com/gsdlab/ClaferChocoIG)).
+  * Choco3-based Instance Generator and Multi-Objective Optimizer ([chocosolver](https://github.com/gsdlab/chocosolver).
 * Web Frontends
   * Clafer Integrated Development Environment ([ClaferIDE](https://github.com/gsdlab/claferIDE)),
   * Clafer Configurator ([ClaferConfigurator](https://github.com/gsdlab/ClaferConfigurator)),
@@ -55,7 +55,7 @@ Currently, the compiler is used by
 * Paulius Juodisius, [customized BNFC generator](https://github.com/juodaspaulius/bnfc) and layout resolver.
 * [Rafael Olaechea](http://gsd.uwaterloo.ca/rolaechea), Multi-Objective Optimization extensions.
 
-## Getting the Clafer Compiler
+## Getting the Clafer compiler
 
 Clafer can be installed from a binary distribution (preferred), from Hackage, and from the source code.
 
@@ -65,7 +65,7 @@ Regardless of the installation method, the following are
 
 Optional:
 
-* [Java Platform (JDK)](http://www.oracle.com/technetwork/java/javase/downloads/index.html) v8+, 32bit on Windows, 64bit otherwise
+* [Java Platform (JDK)](http://www.oracle.com/technetwork/java/javase/downloads/index.html) v8+, 64bit
   * only needed for running Alloy validation
 * [Alloy4.2](http://alloy.mit.edu/alloy/download.html)
   * only needed for Alloy output validation
@@ -121,12 +121,14 @@ Dependencies
 On Windows
 
 * [MSYS2](http://msys2.sourceforge.net/)
-  * it is installed automatically by `stack`
-  * after building clafer, execute
-     * `pacman -Syu`
+  * it is installed automatically by `stack setup`
+  * to open MinGW64 shell, execute `mingw64_shell.bat` in `C:\Users\<user>\AppData\Local\Programs\stack\x86_64-windows\msys2-<date>`, where `<date>` is the release date of your MSYS installation
+  * update MSYS2 packages
+     * follow guide for [III. Updating packages](http://sourceforge.net/p/msys2/wiki/MSYS2%20installation/)
+  * execute
      * `pacman -S make wget unzip diffutils`
 
-#### Important: Branches must correspond
+#### Important: branches must correspond
 
 All related projects are following the *simultaneous release model*.
 The branch `master` contains releases, whereas the branch `develop` contains code under development.
@@ -156,7 +158,7 @@ Development versions from branches `develop` should work well together but this 
   * `make install to=<target directory>`
 
 #### Note:
-> On Windows, use `/` with the `make` command instead of `\`.
+> On Windows, use `/` with the `make` command instead of `\`, e.g., `make install to=/c/clafer-tools-0.4.3/`
 
 ## Integration with Sublime Text 2/3
 
