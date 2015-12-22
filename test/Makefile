@@ -7,14 +7,12 @@ UNAME := $(shell uname | tr "A-Z" "a-z")
 ifeq ($(UNAME), darwin)
     FIND_ALS_COMMAND :=  find $(SUITE_DIR)  -type f \( -iname "*.als" \)   | sed s/$(SUITE_DIR)\\///
     FIND_JS_COMMAND :=  find $(SUITE_DIR)  -type f \( -iname "*.js" \)   | sed s/$(SUITE_DIR)\\///
-    FIND_PY_COMMAND :=  find $(SUITE_DIR)  -type f \( -iname "*.py" \)   | sed s/$(SUITE_DIR)\\///
     FIND_HTML_COMMAND :=  find $(SUITE_DIR)  -type f \( -iname "*.html" \)   | sed s/$(SUITE_DIR)\\///
     FIND_DOT_COMMAND :=  find $(SUITE_DIR)  -type f \( -iname "*.dot" \)   | sed s/$(SUITE_DIR)\\///
     XARGS_DIFF_COMMAND := xargs  -I % -L1 diff -w -B  $(SUITE_DIR)/% $(REG_DIR)/%.reg
 else
     FIND_ALS_COMMAND :=  find $(SUITE_DIR)  -type f \( -iname "*.als" \) -printf "%f\n"
     FIND_JS_COMMAND :=  find $(SUITE_DIR)  -type f \( -iname "*.js" \) -printf "%f\n"
-    FIND_PY_COMMAND :=  find $(SUITE_DIR)  -type f \( -iname "*.py" \) -printf "%f\n"
     FIND_HTML_COMMAND :=  find $(SUITE_DIR)  -type f \( -iname "*.html" \) -printf "%f\n"
     FIND_DOT_COMMAND :=  find $(SUITE_DIR)  -type f \( -iname "*.dot" \) -printf "%f\n"
     XARGS_DIFF_COMMAND := xargs  -i diff -w -B $(REG_DIR)/{}.reg $(SUITE_DIR)/{}
@@ -34,25 +32,25 @@ test:
 	@echo "========================"
 	@$(CLAFER) -V
 	$(MAKE) clean
-	$(MAKE) generateAlloyJSPythonHTMLDot
+	$(MAKE) generateAlloyJSHTMLDot
 	$(MAKE) diffRegressions
 
-generateAlloyJSPythonHTMLDot:
-	@echo "==========================================================================================="
-	@echo "| Testing 'Positive' suite - generating Alloy, JavaScript, Python, HTML, and Graph output |"
-	@echo "|                          - validating Alloy output                                      |"
-	@echo "==========================================================================================="
+generateAlloyJSHTMLDot:
+	@echo "==================================================================================="
+	@echo "| Testing 'Positive' suite - generating Alloy, JavaScript, HTML, and Graph output |"
+	@echo "|                          - validating Alloy output                              |"
+	@echo "==================================================================================="
 
 	@if test ! -f "../alloy4.2.jar"; then \
 		echo "[ERROR] Missing ../alloy4.2.jar."; false; \
 	fi
 
-	@if test ! -f "../claferchocoig.jar"; then \
-		echo "[ERROR] Missing ../claferchocoig.jar."; false; \
+	@if test ! -f "../chocosolver.jar"; then \
+		echo "[ERROR] Missing ../chocosolver.jar."; false; \
 	fi
 
-	# Compile the positive test suite to Alloy, Choco, Python, HTML, and Graph
-	@find $(SUITE_DIR) -type f \( -iname "*.cfr" ! -iname "*.des.cfr" \) |  xargs -L1 $(CLAFER) -m=alloy -m=choco -m=python -m=html -m=graph --self-contained; true ; \
+	# Compile the positive test suite to Alloy, Choco, HTML, and Graph
+	@find $(SUITE_DIR) -type f \( -iname "*.cfr" ! -iname "*.des.cfr" \) |  xargs -L1 $(CLAFER) -m=alloy -m=choco -m=html -m=graph --self-contained; true ; \
 
 diffRegressions:
 	@echo "======================================================="
@@ -68,11 +66,6 @@ diffRegressions:
 	@echo "| Choco regressions |"
 	@echo "---------------------"
 	@$(FIND_JS_COMMAND) | $(XARGS_DIFF_COMMAND) ; true
-
-	@echo "----------------------"
-	@echo "| Python regressions |"
-	@echo "----------------------"
-	@$(FIND_PY_COMMAND) | $(XARGS_DIFF_COMMAND) ; true
 
 	@echo "--------------------"
 	@echo "| HTML regressions |"
@@ -100,10 +93,6 @@ newReg:
 	@echo "| Choco regressions |"
 	@echo "---------------------"
 	@$(FIND_JS_COMMAND) | $(XARGS_CP_REGS)
-	@echo "----------------------"
-	@echo "| Python regressions |"
-	@echo "----------------------"
-	@$(FIND_PY_COMMAND) | $(XARGS_CP_REGS)
 	@echo "---------------------"
 	@echo "| HTML regressions |"
 	@echo "---------------------"
@@ -126,8 +115,6 @@ clean:
 	@find . -type f -name '*.als' -print0 | xargs -0 rm -f
 	@echo 'Removing *.js'
 	@find . -type f -name '*.js' -print0 | xargs -0 rm -f
-	@echo 'Removing *.py'
-	@find . -type f -name '*.py' -print0 | xargs -0 rm -f
 	@echo 'Removing *.html'
 	@find . -type f -name '*.html' -print0 | xargs -0 rm -f
 	@echo 'Removing *.dot'

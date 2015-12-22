@@ -21,13 +21,15 @@ abstract Person
 Alice : Person
 	[ age = 6 ]
 	[ spouse = Bob ]
-//	[ childs = Carol ]   // to be inferred
+    [ childs = Carol ]
 
 Bob : Person
-//	[ age = 6 ]   // to be inferred
-//	[ spouse = Alice ]   // to be inferred
-//	[ childs = Carol ]   // to be inferred
+
+assert [ Bob.age >= 5 ]
+assert [ Bob.maritalStatus.married.spouse = Alice ]
+assert [ Bob.childs = Carol ]
 
 Carol : Person
 	[ age = 1 ]
-//	[ parents = Alice, Bob ]  // to be inferred
+
+assert [ Carol.parents = Alice, Bob ]

@@ -1,7 +1,0 @@
-from jsir.IR import *
-
-c0_x = Clafer("c0_x").withCard(1, 1);
-c0_x.refTo("int");
-Constraint(equal(joinRef(glob(c0_x)), div(minus(add(constant(1), constant(2))), constant(3))));
-defaultScope(1);
-stringLength(16);

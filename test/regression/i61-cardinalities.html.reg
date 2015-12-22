@@ -40,12 +40,28 @@ a[href$='Ambiguous name'] {color: yellow}
 
 
 <div>
+<span class="keyword">assert [</span> <a href="#c0_f"><span class="reference">f</span></a> &#124;&#124; <a href="#c0_g"><span class="reference">g</span></a> <span class="keyword">]</span></div>
+
+
+<div>
+<span class="keyword">assert [</span>  ! <a href="#c0_f"><span class="reference">f</span></a> &amp;&amp; <a href="#c0_g"><span class="reference">g</span></a> <span class="keyword">]</span></div>
+
+
+<div>
 <span class="claferDecl" id="c0_D">D</span>
   <div class="indent">
   <span class="claferDecl" id="c0_Z">Z</span></div>
   <div class="indent">
   <span class="claferDecl" id="c0_K">K</span> ?</div>
 </div>
+
+
+<div>
+<span class="keyword">assert [</span> <span class="keyword">one</span> <a href="#c0_D"><span class="reference">D</span></a> <span class="keyword">]</span></div>
+
+
+<div>
+<span class="keyword">assert [</span> <span class="keyword">one</span> <a href="#c0_Z"><span class="reference">Z</span></a> <span class="keyword">]</span></div>
 
 
 <div>

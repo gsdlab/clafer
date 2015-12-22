@@ -10,12 +10,17 @@
 xor E
    f
    g
-   
+
+assert [ f || g ]
+assert [ ! (f && g) ]
+
 // default "any" group - children mandatory
 D
   Z
   K ?
 
+assert [ one D ]
+assert [ one Z ]
 
 0..* L
   M

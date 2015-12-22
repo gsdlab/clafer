@@ -36,7 +36,7 @@ import Data.Version (showVersion)
 import GetURL
 
 -- | Type of output to be generated at the end of compilation
-data ClaferMode = Alloy | JSON | Clafer | Html | Graph | CVLGraph | Python | Choco
+data ClaferMode = Alloy | JSON | Clafer | Html | Graph | CVLGraph | Choco
   deriving (Eq, Show, Ord, Data, Typeable)
 instance Default ClaferMode where
   def = Alloy
@@ -74,7 +74,7 @@ data ClaferArgs = ClaferArgs {
 
 clafer :: ClaferArgs
 clafer = ClaferArgs {
-  mode                = [] &= help "Generated output type. Available CLAFERMODEs are: 'alloy' (default, Alloy 4.2); 'json' (intermediate representation of Clafer model); 'clafer' (analyzed and desugared clafer model); 'html' (original model in HTML); 'graph' (graphical representation written in DOT language); 'cvlgraph' (cvl notation representation written in DOT language); 'python' (generates IR in python); 'choco' (Choco constraint programming solver). Multiple modes can be specified at the same time, e.g., '-m alloy -m html'." &= name "m",
+  mode                = [] &= help "Generated output type. Available CLAFERMODEs are: 'alloy' (default, Alloy 4.2); 'json' (intermediate representation of Clafer model); 'clafer' (analyzed and desugared clafer model); 'html' (original model in HTML); 'graph' (graphical representation written in DOT language); 'cvlgraph' (cvl notation representation written in DOT language); 'choco' (Choco constraint programming solver). Multiple modes can be specified at the same time, e.g., '-m alloy -m html'." &= name "m",
   console_output      = def &= help "Output code on console." &= name "o",
   flatten_inheritance = def &= help "Flatten inheritance ('alloy' mode only)." &= name "i",
   timeout_analysis    = def &= help "Timeout for analysis.",
@@ -84,7 +84,7 @@ clafer = ClaferArgs {
   skip_resolver       = def &= help "Skip name resolution." &= name "f",
   keep_unused         = def &= help "Keep uninstantated abstract clafers ('alloy' mode only)." &= name "k",
   no_stats            = def &= help "Don't print statistics." &= name "s",
-  validate            = def &= help "Validate outputs of all modes. Uses '<tooldir>/alloy4.2.jar' for Alloy models, '<tooldir>/claferchocoig.jar' for Alloy models, and Clafer translator for desugared Clafer models. Use '--tooldir' to override the default location ('.') of these tools." &= name "v",
+  validate            = def &= help "Validate outputs of all modes. Uses '<tooldir>/alloy4.2.jar' for Alloy models, '<tooldir>/chocosolver.jar' for Alloy models, and Clafer translator for desugared Clafer models. Use '--tooldir' to override the default location ('.') of these tools." &= name "v",
   tooldir             = "." &= typDir &= help "Specify the tools directory ('validate' only). Default: '.' (current directory).",
   alloy_mapping       = def &= help "Generate mapping to Alloy source code ('alloy' mode only)." &= name "a",
   self_contained      = def &= help "Generate a self-contained html document ('html' mode only).",

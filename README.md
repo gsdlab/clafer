@@ -1,9 +1,9 @@
 [![Hackage](https://img.shields.io/hackage/v/clafer.svg)](https://hackage.haskell.org/package/clafer)
 [![Build Status](https://secure.travis-ci.org/gsdlab/clafer.svg)](http://travis-ci.org/gsdlab/clafer)
 
-# Clafer, the Language
+# Clafer, the language
 
-v0.4.2.1
+##### v0.4.3
 
 
 [Clafer](http://clafer.org) is a general-purpose lightweight structural modeling language developed by
@@ -30,7 +30,7 @@ This is also known as *Concept Modeling* or *Ontology Modeling*.
 * [Syntax Documentation](doc/clafer.pdf)
 * [Grammar](src/clafer.cf)
 
-# Clafer, the Compiler
+# Clafer, the compiler
 
 Clafer compiler provides a reference implementation of Clafer, the language.
 It translates models in Clafer to other formats (e.g., Alloy, JSON, JS, HTML, DOT) to allow for reasoning and processing with existing tools (Alloy Analyzer, Choco3, and GraphViz).
@@ -39,7 +39,7 @@ Currently, the compiler is used by
 
 * Backends
   * Alloy-based Instance Generator ([ClaferIG](https://github.com/gsdlab/claferIG)),
-  * Choco3-based Instance Generator and Multi-Objective Optimizer ([chocosolver](https://github.com/gsdlab/chocosolver), [ClaferChocoIG](https://github.com/gsdlab/ClaferChocoIG)).
+  * Choco3-based Instance Generator and Multi-Objective Optimizer ([chocosolver](https://github.com/gsdlab/chocosolver).
 * Web Frontends
   * Clafer Integrated Development Environment ([ClaferIDE](https://github.com/gsdlab/claferIDE)),
   * Clafer Configurator ([ClaferConfigurator](https://github.com/gsdlab/ClaferConfigurator)),
@@ -51,12 +51,11 @@ Currently, the compiler is used by
 * [Michał Antkiewicz](http://gsd.uwaterloo.ca/mantkiew), Main developer.
 * [Kacper Bak](http://gsd.uwaterloo.ca/kbak), Original developer.
 * [Jimmy Liang](http://gsd.uwaterloo.ca/jliang), Developer.
-* [Ed Zulkoski](http://gsd.uwaterloo.ca/ezulkosk), Python IR Generator.
 * Luke Michael Brown, co-op student May-Aug 2013. Many improvements.
 * Paulius Juodisius, [customized BNFC generator](https://github.com/juodaspaulius/bnfc) and layout resolver.
 * [Rafael Olaechea](http://gsd.uwaterloo.ca/rolaechea), Multi-Objective Optimization extensions.
 
-## Getting the Clafer Compiler
+## Getting the Clafer compiler
 
 Clafer can be installed from a binary distribution (preferred), from Hackage, and from the source code.
 
@@ -66,7 +65,7 @@ Regardless of the installation method, the following are
 
 Optional:
 
-* [Java Platform (JDK)](http://www.oracle.com/technetwork/java/javase/downloads/index.html) v8+, 32bit on Windows, 64bit otherwise
+* [Java Platform (JDK)](http://www.oracle.com/technetwork/java/javase/downloads/index.html) v8+, 64bit
   * only needed for running Alloy validation
 * [Alloy4.2](http://alloy.mit.edu/alloy/download.html)
   * only needed for Alloy output validation
@@ -75,7 +74,7 @@ Optional:
 
 ### Installation from binaries
 
-Binary distributions of the release 0.4.2.1 of Clafer Tools for Windows, Mac, and Linux,
+Binary distributions of the release 0.4.3 of Clafer Tools for Windows, Mac, and Linux,
 can be downloaded from
 [Clafer Tools - Binary Distributions](http://gsd.uwaterloo.ca/clafer-tools-binary-distributions).
 
@@ -84,7 +83,7 @@ can be downloaded from
 
 ### Installation from Hackage
 
-Clafer is now available on [Hackage](http://hackage.haskell.org/package/clafer-0.4.2.1/) and it can be installed using either [`stack`](https://github.com/commercialhaskell/stack) or [`cabal-install`](https://hackage.haskell.org/package/cabal-install).
+Clafer is now available on [Hackage](http://hackage.haskell.org/package/clafer-0.4.3/) and it can be installed using either [`stack`](https://github.com/commercialhaskell/stack) or [`cabal-install`](https://hackage.haskell.org/package/cabal-install).
 
 #### Installation using `stack`
 
@@ -106,8 +105,8 @@ Dependencies
 2. `cabal update`
 3. `cabal install alex happy`
 4. `cabal install clafer`
-5. on Windows `cd C:\Users\<user>\AppData\Roaming\cabal\i386-windows-ghc-7.10.2\clafer-0.4.2.1`
-6. on Linux `ca ~/.cabal/share/x86_64-linux-ghc-7.10.2/clafer-0.4.2.1/`
+5. on Windows `cd C:\Users\<user>\AppData\Roaming\cabal\i386-windows-ghc-7.10.2\clafer-0.4.3`
+6. on Linux `ca ~/.cabal/share/x86_64-linux-ghc-7.10.2/clafer-0.4.3/`
 7. to automatically download Alloy jars, execute
   * `make alloy4.2.jar`,
   * move `alloy4.2.jar` to the location of the clafer executable.
@@ -122,12 +121,14 @@ Dependencies
 On Windows
 
 * [MSYS2](http://msys2.sourceforge.net/)
-  * it is installed automatically by `stack`
-  * after building clafer, execute
-     * `pacman -Syu`
+  * it is installed automatically by `stack setup`
+  * to open MinGW64 shell, execute `mingw64_shell.bat` in `C:\Users\<user>\AppData\Local\Programs\stack\x86_64-windows\msys2-<date>`, where `<date>` is the release date of your MSYS installation
+  * update MSYS2 packages
+     * follow guide for [III. Updating packages](http://sourceforge.net/p/msys2/wiki/MSYS2%20installation/)
+  * execute
      * `pacman -S make wget unzip diffutils`
 
-#### Important: Branches must correspond
+#### Important: branches must correspond
 
 All related projects are following the *simultaneous release model*.
 The branch `master` contains releases, whereas the branch `develop` contains code under development.
@@ -157,7 +158,7 @@ Development versions from branches `develop` should work well together but this 
   * `make install to=<target directory>`
 
 #### Note:
-> On Windows, use `/` with the `make` command instead of `\`.
+> On Windows, use `/` with the `make` command instead of `\`, e.g., `make install to=/c/clafer-tools-0.4.3/`
 
 ## Integration with Sublime Text 2/3
 
@@ -174,7 +175,7 @@ See [clafer-vim](https://github.com/wasowski/clafer-vim)
 (As printed by `clafer --help`)
 
 ```
-Clafer 0.4.2.1
+Clafer 0.4.3
 
 clafer [OPTIONS] [FILE]
 
@@ -189,8 +190,7 @@ Common flags:
                                           representation written in DOT
                                           language); 'cvlgraph' (cvl notation
                                           representation written in DOT
-                                          language); 'python' (generates IR in
-                                          python); 'choco' (Choco constraint
+                                          language); 'choco' (Choco constraint
                                           programming solver). Multiple modes
                                           can be specified at the same time,
                                           e.g., '-m alloy -m html'.
@@ -209,7 +209,7 @@ Common flags:
   -s --no-stats                           Don't print statistics.
   -v --validate                           Validate outputs of all modes. Uses
                                           '<tooldir>/alloy4.2.jar' for Alloy
-                                          models, '<tooldir>/claferchocoig.jar'
+                                          models, '<tooldir>/chocosolver.jar'
                                           for Alloy models, and Clafer
                                           translator for desugared Clafer
                                           models. Use '--tooldir' to override

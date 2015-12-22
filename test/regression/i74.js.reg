@@ -9,3 +9,4 @@ c0_Phone = Clafer("c0_Phone").withCard(1, 1);
 c0_name = c0_Phone.addChild("c0_name").withCard(1, 1);
 c0_name.refTo(string);
 c0_Phone.addConstraint(some(join(global(c0_Kernel), c0_memory)));
+assert(none(global(c0_Kernel)));

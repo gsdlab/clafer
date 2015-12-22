@@ -239,12 +239,14 @@ data NestedInheritanceMatch
 isProperNesting :: UIDIClaferMap -> Maybe NestedInheritanceMatch -> Bool
 isProperNesting _ Nothing  = True
 isProperNesting uidIClaferMap (Just m) =
-  if ((isTopLevel $ _superClafer m) && (_isAbstract $ _superClafer m))
-  then True
-  else case (_parentsSuperClafer m) of
-    Nothing                 -> (_uid $ _parentClafer m) == (_uid $ _superClafersParent m)
+  (isTopLevel (_superClafer m) && _isAbstract (_superClafer m))
+  ||
+  (_parentUID (_headClafer m) == _parentUID (_superClafer m))
+  ||
+  (case _parentsSuperClafer m of
+    Nothing                 -> _uid (_parentClafer m) == _uid (_superClafersParent m)
     Just parentsSuperClafer -> isJust $  findUIDinSupers uidIClaferMap (_parentUID $ _superClafer m) parentsSuperClafer
-
+  )
 -- ^ assumes that isProperNesting m == True
 isProperRefinement :: UIDIClaferMap -> Maybe NestedInheritanceMatch
   -> (Bool,  Bool,  Bool)
@@ -383,10 +385,10 @@ iMinimize :: String
 iMinimize  = "minimize"
 
 iSumSet :: String
-iSumSet       = "sum"
+iSumSet  = "sum"
 
 iProdSet :: String
-iProdSet      = "product"
+iProdSet  = "product"
 
 unOps :: [String]
 unOps = [iNot, iCSet, iMin, iMaximum, iMinimum, iMaximize, iMinimize, iSumSet, iProdSet]
@@ -458,11 +460,8 @@ iDiv          = "/"
 iRem :: String
 iRem          = "%"
 
-iSumSet' :: String
-iSumSet'      = "sum'"
-
 arithBinOps :: [String]
-arithBinOps = [iPlus, iSub, iMul, iDiv, iRem, iSumSet']
+arithBinOps = [iPlus, iSub, iMul, iDiv, iRem]
 
 iUnion :: String
 iUnion        = "++"

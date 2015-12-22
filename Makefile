@@ -27,15 +27,14 @@ grammar:
 prof: alloy4.2.jar
 	stack build --executable-profiling --library-profiling --ghc-options="-prof -fprof-auto -auto-all -caf-all -rtsopts -osuf p_o"
 
-.PHONY : test
-
+.PHONY: test
 test:
 	cp `stack path --local-install-root`/bin/clafer$(EXE) .
-	cabal test 2>/dev/null || :    # supress error message and exit code if fail
+	stack test 2>/dev/null || :    # supress error message and exit code if fail
 	$(MAKE) -C $(TEST_DIR) test
 
-generateAlloyJSPythonHTMLDot:
-	$(MAKE) -C $(TEST_DIR) generateAlloyJSPythonHTMLDot
+generateAlloyJSHTMLDot:
+	$(MAKE) -C $(TEST_DIR) generateAlloyJSHTMLDot
 
 diffRegressions:
 	$(MAKE) -C $(TEST_DIR) diffRegressions
@@ -43,21 +42,26 @@ diffRegressions:
 reg:
 	$(MAKE) -C $(TEST_DIR) reg
 
+.PHONY: clean
 clean:
 	stack clean
 	$(MAKE) -C $(SRC_DIR) clean
 	$(MAKE) cleanTools
 	$(MAKE) cleanTest
 
+.PHONY: cleanTest
 cleanTest:
 	$(MAKE) -C $(TEST_DIR) clean
 
+.PHONY: cleanTools
 cleanTools:
 	find . -type f -name '*.class' -print0 | xargs -0 rm -f
 
+.PHONY: tags
 tags:
 	hasktags --ctags --extendedctag --ignore-close-implementation .
 
+.PHONY: codex
 codex:
 	codex update
 	mv codex.tags tags

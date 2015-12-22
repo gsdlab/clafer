@@ -60,3 +60,9 @@ one sig c0_cmd extends c0_OutPort
 { c0_cmd_ref : one c0_MotorCommand }
 { c0_cmd_ref in c0_OutPort_ref }
 
+assert assertOnLine_17 { ((c0_WinController.@r_c0_cmd).@c0_cmd_ref) = c0_motorDown }
+check assertOnLine_17 for 1 but 2 c0_Request, 3 c0_Signal
+
+assert assertOnLine_31 { ((c0_Controller.@r_c0_req).@c0_req_ref) = c0_stop }
+check assertOnLine_31 for 1 but 2 c0_Request, 3 c0_Signal
+

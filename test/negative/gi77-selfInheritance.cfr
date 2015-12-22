@@ -1,0 +1,6 @@
+abstract LogicalBus : LogicalBus
+    xor type
+        CAN
+        LIN
+
+bus1 : LogicalBus

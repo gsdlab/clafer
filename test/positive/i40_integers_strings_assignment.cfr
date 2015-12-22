@@ -15,5 +15,7 @@ E3 : Entity
 E1TEntities -> Entity *
     [ type = "E1T" ]
 
-// assertion
 [ # E1TEntities = 3 ]
+
+// assertion
+// [ E1TEntities = E1, E2, E3 ]

@@ -9,8 +9,8 @@ abstract Person
 		[parent in this.husband]
 	[civstat = "single" || civstat ="married"|| civstat ="divorced"|| civstat = "widowed"]
 	[gender = "female"|| gender ="male"]
-	[all p:Person|this != p =>  this.name.ref!=p.name.ref]
-	[one p:Person|p.name.ref = this.name.ref]
+	[all p:Person|this != p =>  this.name.dref!=p.name.dref]
+	[one p:Person|p.name.dref = this.name.dref]
 
 ada : Person
 	[name = "Ada"

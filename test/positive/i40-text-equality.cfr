@@ -5,11 +5,12 @@ text1 -> string = "some text"
 text2 -> string = "some text"
 
 equal1 ?
-	[ text = text1 ]
+
+[ text = text1 => equal1 ]
 
 equal2 ?
-	[ text1 = text2 ]
 
-// assertion
-[ equal1 ]
-[ equal2 ]
+[ text1 = text2 => equal2]
+
+assert [ equal1 ]
+assert [ equal2 ]
