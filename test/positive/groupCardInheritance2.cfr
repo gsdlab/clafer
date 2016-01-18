@@ -1,0 +1,19 @@
+// https://github.com/gsdlab/clafer/issues/76
+
+abstract A
+    a
+abstract or B : A
+    b
+abstract C : B
+    c
+abstract xor D : C
+    d
+
+E : D
+    e
+
+// there is exactly one instance of the model:
+// E
+//    a
+// because only `a` is mandatory and `E` has an xor group
+assert [ one E.a && no E.b && no E.c && no E.d && no E.e ]

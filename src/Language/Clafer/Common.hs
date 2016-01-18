@@ -51,8 +51,6 @@ mkIdent str = PosIdent ((0, 0), str)
 mkInteger :: Read a => PosInteger -> a
 mkInteger (PosInteger (_, n)) = read n
 
-type Ident = PosIdent
-
 -- | Returns only [] or [_]
 getSuper :: IClafer -> [String]
 getSuper claf = case getSuperId <$> _super claf of
@@ -236,6 +234,7 @@ data NestedInheritanceMatch
 -- by following the links marked by *
 -- The link marked by ?1 is checked for correctness of nesting (isProperNesting):
 -- - _uid parentsSuperClafer == _parentUID superClafer
+-- - top-level abstract clafers which extend nested abstract clafers are made into siblings of their supers (see https://github.com/gsdlab/clafer/issues/67)
 -- The link marked by ?2 is checked for correctness of redefinition (isProperRefinement):
 -- - proper subtyping, bag to set, proper cardinality restriction
 -- Redefinition occurs when the name of headClafer is the same as the name of superClafer (isProperRedefinition):
@@ -243,7 +242,8 @@ data NestedInheritanceMatch
 
 isProperNesting :: UIDIClaferMap -> Maybe NestedInheritanceMatch -> Bool
 isProperNesting _ Nothing  = True
-isProperNesting uidIClaferMap (Just m) = if (isTopLevel $ _superClafer m) && (_isAbstract $ _superClafer m)
+isProperNesting uidIClaferMap (Just m) =
+  if ((isTopLevel $ _superClafer m) && (_isAbstract $ _superClafer m))
   then True
   else case (_parentsSuperClafer m) of
     Nothing                 -> (_uid $ _parentClafer m) == (_uid $ _superClafersParent m)
@@ -389,11 +389,17 @@ iCSet         = "#"
 iMin :: String
 iMin          = "-"
 
-iGMax :: String
-iGMax         = "max"
+iMaximum :: String
+iMaximum  = "max"
 
-iGMin :: String
-iGMin         = "min"
+iMinimum :: String
+iMinimum  = "min"
+
+iMaximize :: String
+iMaximize  = "maximize"
+
+iMinimize :: String
+iMinimize  = "minimize"
 
 iSumSet :: String
 iSumSet       = "sum"
@@ -402,7 +408,7 @@ iProdSet :: String
 iProdSet      = "product"
 
 unOps :: [String]
-unOps = [iNot, iCSet, iMin, iGMax, iGMin, iSumSet, iProdSet, iX, iF, iG, iInitially]
+unOps = [iNot, iCSet, iMin, iMaximum, iMinimum, iMaximize, iMinimize, iSumSet, iProdSet, iX, iF, iG, iInitially]
 
 -- binary operators
 iIff :: String
@@ -608,7 +614,7 @@ keywordIdents =
   baseClafer :
   specialNames ++
   primitiveTypes ++
-  [ iGMax, iGMin, iSumSet, iProdSet ] ++ -- unary operators
+  [ iMaximum, iMinimum, iMaximize, iMinimize, iSumSet, iProdSet ] ++ -- unary operators
   [ iXor, iIn ] ++ -- binary operators
   [ "if", "then", "else" ] ++ -- ternary operators
   [ "no", "not", "some", "one", "all", "disj" ] ++ -- quantifiers
@@ -627,11 +633,6 @@ data GEnv
   , sClafers ::[IClafer]          -- all clafers (no going through references)
   , uidClaferMap :: UIDIClaferMap -- the map needs to be re-created everytime IModule is rewritten
   } deriving (Eq, Show)
-
-voidf :: Monad m => m t -> m ()
-voidf f = do
-  _ <- f
-  return ()
 
 safeTail :: [a] -> [a]
 safeTail [] = []

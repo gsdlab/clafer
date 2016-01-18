@@ -22,19 +22,21 @@
 -}
 module Suite.Redefinition (tg_Test_Suite_Redefinition) where
 
-import Language.Clafer
-import Language.ClaferT
-import Language.Clafer.Common
-import Language.Clafer.Intermediate.Intclafer
+import           Language.Clafer
+import           Language.ClaferT
+import           Language.Clafer.Common
+import           Language.Clafer.Intermediate.Intclafer
 
-import Functions
+import           Functions
 
+import           Control.Applicative
 import qualified Data.Map as M
-import Data.Maybe (isNothing, isJust, fromJust)
-import Data.StringMap
-import Test.Tasty
-import Test.Tasty.HUnit
-import Test.Tasty.TH
+import           Data.Maybe (isNothing, isJust, fromJust)
+import           Data.StringMap
+import           Test.Tasty
+import           Test.Tasty.HUnit
+import           Test.Tasty.TH
+import           Prelude
 
 tg_Test_Suite_Redefinition :: TestTree
 tg_Test_Suite_Redefinition = $(testGroupGenerator)
@@ -55,6 +57,10 @@ model = unlines
     , "WinController : Controller"
     , "    req : req -> stop"             -- redefinition and cardinality refinement
     , "    cmd : OutPort -> MotorCommand" -- nested inheritance which requires inheritance hierarchy traversal
+    -- |> Top-level abstract clafer extending a nested abstract clafer <https://github.com/gsdlab/clafer/issues/67> |>
+    , "    powerDown : Exception"
+    , "abstract Exception : OutPort"
+    -- <| Top-level abstract clafer extending a nested abstract clafer <https://github.com/gsdlab/clafer/issues/67> <|
     ]
 
 case_NestedInheritanceMatchTest :: Assertion
@@ -79,6 +85,10 @@ case_NestedInheritanceMatchTest = case compileOneFragment defaultClaferArgs mode
                 c0_WinController_match = matchNestedInheritance uidIClaferMap' c0_WinController
                 c0_down = fromJust $ findIClafer uidIClaferMap' "c0_down"
                 c0_down_match = matchNestedInheritance uidIClaferMap' c0_down
+                c0_Exception = fromJust $ findIClafer uidIClaferMap' "c0_Exception"
+                c0_Exception_match = matchNestedInheritance uidIClaferMap' c0_Exception
+                c0_powerDown = fromJust $ findIClafer uidIClaferMap' "c0_powerDown"
+                c0_powerDown_match = matchNestedInheritance uidIClaferMap' c0_powerDown
                 {-c0_Alice = fromJust $ findIClafer uidIClaferMap' "c0_Alice"
                 c0_Alice_match = matchNestedInheritance uidIClaferMap' c0_Alice
                 c0_Bob = fromJust $ findIClafer uidIClaferMap' "c0_Bob"
@@ -109,6 +119,12 @@ case_NestedInheritanceMatchTest = case compileOneFragment defaultClaferArgs mode
                 (True, True, True) == (isProperRefinement uidIClaferMap' (c0_down_match)) @? ("Improper refinement for " ++ show c0_down)
                 (not $ isRedefinition (c0_down_match)) @? ("Improper redefinition for " ++ show c0_down)
 
+                isJust c0_powerDown_match @? ("NestedInheritanceMatch not found for" ++ show c0_powerDown)
+                (isProperNesting uidIClaferMap' (c0_powerDown_match)) @? ("Improper nesting for " ++ show c0_powerDown)
+
+                (not $ isTopLevel c0_Exception) @? ("isTopLevel c0_Exception must return False")
+                _parentUID c0_Exception == "c0_Component" @? ("Parent of c0_Exception should be c0_Component but it is " ++ _parentUID c0_Exception)
+                (_uid <$> _parentClafer <$> c0_Exception_match) == (Just "c0_Component") @? ("_parentClafer of c0_Exception should be c0_Component in the match")
                {- isJust c0_Alice_match @? ("NestedInheritanceMatch not found for " ++ show c0_Alice)
                 isProperNesting uidIClaferMap' (c0_Alice_match) @? ("Improper nesting for " ++ show c0_Alice)
                 (False, False, True) == (isProperRefinement uidIClaferMap' (c0_Alice_match)) @? ("Improper refinement for " ++ show c0_Alice)
@@ -130,7 +146,25 @@ model2 = unlines
 
 case_NestedInheritanceFailTest :: Assertion
 case_NestedInheritanceFailTest = case compileOneFragment defaultClaferArgs model2 of
-    Left errors -> (show errors) == correctErrMsg @? "Incorrect error message:\nGot:" ++ show errors ++ "\nExpected:\n" ++ correctErrMsg
-    Right _ -> assertFailure "The model not expected to compile."
+    Left errors -> (show errors) == correctErrMsg @? "Incorrect error message:\nGot:\n" ++ show errors ++ "\nExpected:\n" ++ correctErrMsg
+    Right _ -> assertFailure "The model2 is not expected to compile."
     where
         correctErrMsg = "[SemanticErr {pos = ErrPos {fragId = 1, fragPos = Pos 0 0, modelPos = Pos 0 0}, msg = \"Refinement errors in the following places:\\nImproper cardinality refinement for clafer 'Alice' on line 2 column 1\\nImproper bag to set refinement for clafer 'Bob' on line 3 column 1\\nImproper target subtyping for clafer 'Carol' on line 4 column 1\\n\"}]"
+
+-- |> Top-level abstract clafer extending a nested abstract clafer <https://github.com/gsdlab/clafer/issues/67> |>
+model3 :: String
+model3 = unlines
+    [ "abstract Component"
+    , "    abstract Port"
+    , "abstract Exception : Port"
+    , "powerDown : Exception"       -- Improper nesting
+    ]
+
+
+case_NestedInheritanceFailTest2 :: Assertion
+case_NestedInheritanceFailTest2 = case compileOneFragment defaultClaferArgs model3 of
+    Left errors -> (show errors) == correctErrMsg @? "Incorrect error message:\nGot:\n" ++ show errors ++ "\nExpected:\n" ++ correctErrMsg
+    Right _ -> assertFailure "The model3 is not expected to compile."
+    where
+      correctErrMsg = "[SemanticErr {pos = ErrPos {fragId = 1, fragPos = Pos 0 0, modelPos = Pos 0 0}, msg = \"Refinement errors in the following places:\\nImproperly nested clafer 'powerDown' on line 4 column 1\\n\"}]"
+-- <| Top-level abstract clafer extending a nested abstract clafer <https://github.com/gsdlab/clafer/issues/67> <|

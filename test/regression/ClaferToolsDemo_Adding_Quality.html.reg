@@ -164,19 +164,19 @@ a[href$='Ambiguous name'] {color: yellow}
 <!-- # FRAGMENT /-->
 
 <div>
-&lt;&lt;max <a href="#c0_OptimalPhone"><span class="reference">OptimalPhone</span></a>.<a href="#c0_total_batterylife"><span class="reference">total_batterylife</span></a>&gt;&gt;</div>
+&lt;&lt;<span class="keyword">maximize</span> <a href="#c0_OptimalPhone"><span class="reference">OptimalPhone</span></a>.<a href="#c0_total_batterylife"><span class="reference">total_batterylife</span></a>&gt;&gt;</div>
 
 
 <div>
-&lt;&lt;max <a href="#c0_OptimalPhone"><span class="reference">OptimalPhone</span></a>.<a href="#c0_total_productivity"><span class="reference">total_productivity</span></a>&gt;&gt;</div>
+&lt;&lt;<span class="keyword">maximize</span> <a href="#c0_OptimalPhone"><span class="reference">OptimalPhone</span></a>.<a href="#c0_total_productivity"><span class="reference">total_productivity</span></a>&gt;&gt;</div>
 
 
 <div>
-&lt;&lt;max <a href="#c0_OptimalPhone"><span class="reference">OptimalPhone</span></a>.<a href="#c0_total_security"><span class="reference">total_security</span></a>&gt;&gt;</div>
+&lt;&lt;<span class="keyword">maximize</span> <a href="#c0_OptimalPhone"><span class="reference">OptimalPhone</span></a>.<a href="#c0_total_security"><span class="reference">total_security</span></a>&gt;&gt;</div>
 
 
 <div>
-&lt;&lt;min <a href="#c0_OptimalPhone"><span class="reference">OptimalPhone</span></a>.<a href="#c0_total_cost"><span class="reference">total_cost</span></a>&gt;&gt;</div>
+&lt;&lt;<span class="keyword">minimize</span> <a href="#c0_OptimalPhone"><span class="reference">OptimalPhone</span></a>.<a href="#c0_total_cost"><span class="reference">total_cost</span></a>&gt;&gt;</div>
 
 <!-- # FRAGMENT /-->
 

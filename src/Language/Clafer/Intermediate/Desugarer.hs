@@ -75,7 +75,7 @@ sugarDeclaration (IEConstraint True constraint) =
       ElementDecl (_inPos constraint) $ Subconstraint (_inPos constraint) $ sugarConstraint constraint
 sugarDeclaration  (IEConstraint False assertion) =
       ElementDecl (_inPos assertion) $ SubAssertion (_inPos assertion) $ sugarAssertion assertion
-sugarDeclaration  (IEGoal _ goal) = ElementDecl (_inPos goal) $ Subgoal (_inPos goal) $ sugarGoal goal
+sugarDeclaration  (IEGoal isMaximize' goal) = ElementDecl (_inPos goal) $ Subgoal (_inPos goal) $ sugarGoal goal isMaximize'
 
 
 desugarClafer :: Clafer -> [IElement]
@@ -250,9 +250,16 @@ desugarAssertion :: Assertion -> PExp
 desugarAssertion (Assertion _ exps') = desugarPath $ desugarExp $
     (if length exps' > 1 then foldl1 (EAnd noSpan) else head) exps'
 
-desugarGoal :: Goal -> PExp
-desugarGoal (Goal s exps') = desugarPath $ desugarExp $
-    (if length exps' > 1 then foldl1 (EAnd s) else head) exps'
+desugarGoal :: Goal -> IElement
+desugarGoal (GoalMinimize s [exp'])      = mkMinimizeMaximizePExp False s exp'
+desugarGoal (GoalMinDeprecated s [exp']) = mkMinimizeMaximizePExp False s exp'
+desugarGoal (GoalMaximize s [exp'])      = mkMinimizeMaximizePExp True  s exp'
+desugarGoal (GoalMaxDeprecated s [exp']) = mkMinimizeMaximizePExp True  s exp'
+desugarGoal goal                         = error $ "Desugarer.desugarGoal: malformed objective:\n" ++ show goal
+
+mkMinimizeMaximizePExp :: Bool     -> Span -> Exp -> IElement
+mkMinimizeMaximizePExp    isMaximize' s       exp' =
+  IEGoal isMaximize' $ desugarPath $ PExp Nothing "" s $ IFunExp (if isMaximize' then iMaximize else iMinimize) [desugarExp exp']
 
 sugarConstraint :: PExp -> Constraint
 sugarConstraint pexp = Constraint (_inPos pexp)  $ map sugarExp [pexp]
@@ -260,8 +267,10 @@ sugarConstraint pexp = Constraint (_inPos pexp)  $ map sugarExp [pexp]
 sugarAssertion :: PExp -> Assertion
 sugarAssertion pexp = Assertion (_inPos pexp) $ map sugarExp [pexp]
 
-sugarGoal :: PExp -> Goal
-sugarGoal pexp = Goal (_inPos pexp) $ map sugarExp [pexp]
+sugarGoal :: PExp -> Bool -> Goal
+sugarGoal PExp{_exp=IFunExp _ [pexp]} True  = GoalMaximize (_inPos pexp) $ map sugarExp [pexp]
+sugarGoal PExp{_exp=IFunExp _ [pexp]} False = GoalMinimize (_inPos pexp) $ map sugarExp [pexp]
+sugarGoal goal                        _     = error $ "Desugarer.sugarGoal: malformed objective:\n" ++ show goal
 
 desugarAbstract :: Abstract -> Bool
 desugarAbstract (AbstractEmpty _) = False
@@ -292,7 +301,7 @@ desugarElement x = case x of
       [IEConstraint True $ desugarConstraint constraint]
   SubAssertion _ assertion ->
       [IEConstraint False $ desugarAssertion assertion]
-  Subgoal _ goal -> [IEGoal True $ desugarGoal goal]
+  Subgoal _ goal -> [desugarGoal goal]
 
 
 sugarElement :: IElement -> Element
@@ -300,7 +309,7 @@ sugarElement x = case x of
   IEClafer claf  -> Subclafer noSpan $ sugarClafer claf
   IEConstraint True constraint -> Subconstraint noSpan $ sugarConstraint constraint
   IEConstraint False assertion -> SubAssertion noSpan $ sugarAssertion assertion
-  IEGoal _ goal -> Subgoal noSpan $ sugarGoal goal
+  IEGoal isMaximize' goal -> Subgoal noSpan $ sugarGoal goal isMaximize'
 
 desugarGCard :: GCard -> Maybe IGCard
 desugarGCard x = case x of
@@ -470,8 +479,8 @@ desugarExp' x = let x' =  translateTmpPatterns x in case x' of
   ESum _ exp' -> dop iSumSet [exp']
   EProd _ exp' -> dop iProdSet [exp']
   EMinExp _ exp'    -> dop iMin [exp']
-  EGMax _ exp' -> dop iGMax [exp']
-  EGMin _ exp' -> dop iGMin [exp']
+  EGMax _ exp' -> dop iMaximum [exp']
+  EGMin _ exp' -> dop iMinimum [exp']
   EInt _ n  -> IInt $ mkInteger n
   EDouble _ (PosDouble n) -> IDouble $ read $ snd n
   EReal _ (PosReal n) -> IReal $ read $ snd n
@@ -547,8 +556,8 @@ sugarExp' x = case x of
     | op'' == iNot           = ENeg noSpan
     | op'' == iCSet          = ECard noSpan
     | op'' == iMin           = EMinExp noSpan
-    | op'' == iGMax          = EGMax noSpan
-    | op'' == iGMin          = EGMin noSpan
+    | op'' == iMaximum       = EGMax noSpan
+    | op'' == iMinimum       = EGMin noSpan
     | op'' == iSumSet        = ESum noSpan
     | op'' == iProdSet       = EProd noSpan
     | op'' == iF             = LtlF noSpan

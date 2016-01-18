@@ -35,7 +35,7 @@ Subclafer.      Element ::= Clafer ;
 ClaferUse.      Element ::= "`" Name Card Elements ;
 Subconstraint.  Element ::= Constraint ;
 Subgoal.        Element ::= Goal;
-SubAssertion. Element ::= Assertion;
+SubAssertion.   Element ::= Assertion;
 
 SuperEmpty.     Super ::= ;
 SuperSome.      Super ::= ":" Exp26 ;
@@ -88,6 +88,7 @@ TmpInitially.   Exp2 ::= "initially" Exp3;
 TmpFinally.     Exp2 ::= "finally" Exp3;
 EGMax.          Exp3  ::= "max" Exp4 ;
 EGMin.          Exp3  ::= "min" Exp4 ;
+EImpliesElse.   Exp3   ::= "if" Exp3 "then" Exp3 "else" Exp3 ;
 EIff.           Exp3  ::= Exp3 "<=>" Exp4 ;
 EImplies.       Exp4  ::= Exp4 "=>"  Exp5 ;
 EOr.            Exp5  ::= Exp5 "||"  Exp6 ;

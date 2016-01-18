@@ -1,0 +1,11 @@
+digraph "minAndMax"
+{
+rankdir=BT;
+ranksep=0.3;
+nodesep=0.1;
+graph [fontname=Sans fontsize=11];
+node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
+edge [fontname=Sans fontsize=11];
+"c0_A" [label="A -&gt;&gt; int 1..2" URL="#c0_A" tooltip="A -&gt;&gt; int 1..2&#10;"];
+"c0_B" [label="B -&gt; int 2..3" URL="#c0_B" tooltip="B -&gt; int 2..3&#10;"];
+}

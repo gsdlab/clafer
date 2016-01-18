@@ -6,7 +6,7 @@ nodesep=0.1;
 graph [fontname=Sans fontsize=11];
 node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
 edge [fontname=Sans fontsize=11];
-"c0_options" [label="abstract options" URL="#c0_options" tooltip="abstract options&#10;  xor size&#10;    small&#10;    large&#10;  cache ?&#10;    size -&gt; integer&#10;      fixed ?&#10;  [ small && cache => fixed ]&#10;"];
+"c0_options" [label="abstract options" URL="#c0_options" tooltip="abstract options&#10;  xor size&#10;    small&#10;    large&#10;  cache ?&#10;    size -&gt; integer&#10;      fixed ?&#10;  [ small &amp;&amp; cache => fixed ]&#10;"];
 "c0_comp" [label="abstract comp" URL="#c0_comp" tooltip="abstract comp&#10;  version -&gt; integer = 1 + 2&#10;"];
 "c0_ECU" [label="abstract ECU : comp" URL="#c0_ECU" tooltip="abstract ECU : comp&#10;"];
 "c0_ECU" -> "c0_comp" [arrowhead=onormal constraint=true weight=100];

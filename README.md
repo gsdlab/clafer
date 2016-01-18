@@ -3,7 +3,8 @@
 
 # Clafer, the Language
 
-v0.4.1
+v0.4.2.1
+
 
 [Clafer](http://clafer.org) is a general-purpose lightweight structural modeling language developed by
 [GSD Lab](http://gsd.uwaterloo.ca/), [University of Waterloo](http://uwaterloo.ca), and
@@ -23,10 +24,17 @@ Clafer multi-objective optimizer generates a Pareto front of optimal product con
 3. *Domain Modeling* - aims at improving the understanding of the problem domain in the early stages of software development and determining the requirements with fewer defects.
 This is also known as *Concept Modeling* or *Ontology Modeling*.
 
+### Resources
+
+* [Learning Clafer](http://t3-necsis.cs.uwaterloo.ca:8091/#learning-clafer)
+* [Cheat Sheet](doc/CheatSheet.md)
+* [Syntax Documentation](doc/clafer.pdf)
+* [Grammar](src/clafer.cf)
+
 # Clafer, the Compiler
 
 Clafer compiler provides a reference implementation of Clafer, the language.
-It translates models in Clafer to other formats (e.g., Alloy, JSON, Python, JS, HTML, DOT) to allow for reasoning and processing with existing tools (Alloy Analyzer, Choco3, and Z3 SMT solver, GraphViz).
+It translates models in Clafer to other formats (e.g., Alloy, JSON, JS, HTML, DOT) to allow for reasoning and processing with existing tools (Alloy Analyzer, Choco3, and GraphViz).
 
 Currently, the compiler is used by
 
@@ -60,15 +68,15 @@ Regardless of the installation method, the following are
 Optional:
 
 * [Java Platform (JDK)](http://www.oracle.com/technetwork/java/javase/downloads/index.html) v8+, 32bit on Windows, 64bit otherwise
-  * needed only for running Alloy validation
+  * only needed for running Alloy validation
 * [Alloy4.2](http://alloy.mit.edu/alloy/download.html)
-  * needed only for Alloy output validation
+  * only needed for Alloy output validation
 * [GraphViz](http://graphviz.org/)
   * the program `dot` is needed only in the `html` mode for SVG graph generation
 
 ### Installation from binaries
 
-Binary distributions of the release 0.4.1 of Clafer Tools for Windows, Mac, and Linux,
+Binary distributions of the release 0.4.2.1 of Clafer Tools for Windows, Mac, and Linux,
 can be downloaded from
 [Clafer Tools - Binary Distributions](http://gsd.uwaterloo.ca/clafer-tools-binary-distributions).
 
@@ -77,34 +85,46 @@ can be downloaded from
 
 ### Installation from Hackage
 
+Clafer is now available on [Hackage](http://hackage.haskell.org/package/clafer-0.4.2.1/) and it can be installed using either [`stack`](https://github.com/commercialhaskell/stack) or [`cabal-install`](https://hackage.haskell.org/package/cabal-install).
+
+#### Installation using `stack`
+
+Stack is the only requirement: no other Haskell tooling needs to be installed because stack will automatically install everything that's needed.
+
+1. [install `stack`](https://github.com/commercialhaskell/stack#how-to-install)
+2. execute `stack install clafer`
+
+#### Installation using `cabal-install`
+
 Dependencies
 
-* [GHC](https://www.haskell.org/downloads) v7.10.*
+* [GHC](https://www.haskell.org/downloads) >= 7.8.3. 7.10.2 is recommended,
+* `cabal-install` >= 1.18, should be installed together with a GHC distribution,
+* [alex](https://hackage.haskell.org/package/alex),
+* [happy](https://hackage.haskell.org/package/happy).
 
-Clafer is now available on [Hackage](http://hackage.haskell.org/package/clafer-0.4.1/) and it can be installed using
-
-1. `cabal update`
-2. `cabal install clafer`
-3. on Windows `cd C:\Users\<user>\AppData\Roaming\cabal\i386-windows-ghc-7.10.2\clafer-0.4.1`
-4. on Linux `ca ~/.cabal/share/x86_64-linux-ghc-7.10.2/clafer-0.4.1/`
-5. to automatically download Alloy jars, execute
-  * `cd tools`
-  * `make`
+1. Install GHC
+2. `cabal update`
+3. `cabal install alex happy`
+4. `cabal install clafer`
+5. on Windows `cd C:\Users\<user>\AppData\Roaming\cabal\i386-windows-ghc-7.10.2\clafer-0.4.2.1`
+6. on Linux `ca ~/.cabal/share/x86_64-linux-ghc-7.10.2/clafer-0.4.2.1/`
+7. to automatically download Alloy jars, execute
+  * `make alloy4.2.jar`,
+  * move `alloy4.2.jar` to the location of the clafer executable.
 
 ### Installation from the source code
 
 Dependencies
 
-* [GHC](https://www.haskell.org/downloads) v7.10.*
-* [Alloy4.2](http://alloy.mit.edu/alloy/download.html)
-  * downloaded automatically during the build
+* [`stack`](https://github.com/commercialhaskell/stack#how-to-install)
 * [Git](http://git-scm.com/)
 
 On Windows
 
 * [MSYS2](http://msys2.sourceforge.net/)
-  * download MSYS2 installer
-  * in MSYS2 console, execute
+  * it is installed automatically by `stack`
+  * after building clafer, execute
      * `pacman -Syu`
      * `pacman -S make wget unzip diffutils`
 
@@ -118,13 +138,18 @@ Development versions from branches `develop` should work well together but this 
 
 #### Building
 
-1. install the dependencies
-2. open the command line terminal. On Windows, open MSYS2 terminal.
-3. in some `<source directory>` of your choice, execute
+1. in some `<source directory>` of your choice, execute
   * `git clone git://github.com/gsdlab/clafer.git`
-4. in `<source directory>/clafer`, execute
-  * `cabal update`
-  * `make init`
+2. in `<source directory>/clafer`, execute `stack setup`. This will install all dependencies, build tools, and MSYS2 (on Windows).
+3. first time only on Windows
+  * open `MinGW64 Shell` using `C:\Users\<user>\AppData\Local\Programs\stack\i386-windows\msys2-20150512\mingw64_shell.bat`
+  * update MSYS2 following the [update procedure](http://sourceforge.net/p/msys2/wiki/MSYS2%20installation/):
+    * `pacman -Sy`
+    * `pacman --needed -S bash pacman pacman-mirrors msys2-runtime`
+    * restart shell if the runtime was updated
+    * `pacman -Su`
+  * `pacman -S make wget unzip diffutils`
+4. `cd <source directory>`
   * `make`
 
 ### Installation
@@ -150,7 +175,7 @@ See [clafer-vim](https://github.com/wasowski/clafer-vim)
 (As printed by `clafer --help`)
 
 ```
-Clafer 0.4.1
+Clafer 0.4.2.1
 
 clafer [OPTIONS] [FILE]
 
@@ -184,13 +209,16 @@ Common flags:
                                           ('alloy' mode only).
   -s --no-stats                           Don't print statistics.
   -v --validate                           Validate outputs of all modes. Uses
-                                          'tools/alloy4.2.jar' for Alloy
-                                          models, and Clafer translator for
-                                          desugared Clafer models. Use
-                                          '--tooldir' to override the default
-                                          location of these tools.
+                                          '<tooldir>/alloy4.2.jar' for Alloy
+                                          models, '<tooldir>/claferchocoig.jar'
+                                          for Alloy models, and Clafer
+                                          translator for desugared Clafer
+                                          models. Use '--tooldir' to override
+                                          the default location ('.') of these
+                                          tools.
      --tooldir=DIR                        Specify the tools directory
-                                          ('validate' only). Default: 'tools/'.
+                                          ('validate' only). Default: '.'
+                                          (current directory).
   -a --alloy-mapping                      Generate mapping to Alloy source
                                           code ('alloy' mode only).
      --self-contained                     Generate a self-contained html
@@ -276,6 +304,11 @@ If the `develop` is ahead, merge it into the feature branch and perform integrat
 To make a release, we create a pull request from `develop` into `master`.
 We tag `master` with version numbers after each release merge.
 
+## Building
+
+We have switched to [Haskell Tool Stack](https://github.com/commercialhaskell/stack#the-haskell-tool-stack).
+Install the tool first.
+
 ## Testing
 
 We have both automated tests and regression tests.
@@ -283,13 +316,14 @@ We have both automated tests and regression tests.
 To run the automated tests (including both unit tests and [doctests](https://github.com/sol/doctest#readme)), execute
 
 ```
-cabal test
+stack test
 ```
 
+To only run unit tests, execute `stack test test-suite`.
 
-To only run unit tests, execute `cabal test test-suite`.
+To only run doctests, execute `stack test doctests`.
 
-To only run doctests, execute `cabal test doctests`.
+> Note: it is still possible to run `cabal test` as previously; however, the `Makefile` uses `stack` by default.
 
 For instructions for adding new modules to the doctest suite, see [cabal integration](https://github.com/sol/doctest#cabal-integration).
 

@@ -24,19 +24,19 @@ a[href$='Ambiguous name'] {color: yellow}
 
 
 <div>
-&lt;&lt;min <a href="#c0_aCar"><span class="reference">aCar</span></a>.<a href="#c0_total_cost"><span class="reference">total_cost</span></a>&gt;&gt;</div>
+&lt;&lt;<span class="keyword">minimize</span> <a href="#c0_aCar"><span class="reference">aCar</span></a>.<a href="#c0_total_cost"><span class="reference">total_cost</span></a>&gt;&gt;</div>
 
 
 <div>
-&lt;&lt;min <a href="#c0_aCar"><span class="reference">aCar</span></a>.<a href="#c0_total_fuel"><span class="reference">total_fuel</span></a>&gt;&gt;</div>
+&lt;&lt;<span class="keyword">minimize</span> <a href="#c0_aCar"><span class="reference">aCar</span></a>.<a href="#c0_total_fuel"><span class="reference">total_fuel</span></a>&gt;&gt;</div>
 
 
 <div>
-&lt;&lt;max <a href="#c0_aCar"><span class="reference">aCar</span></a>.<a href="#c0_total_comfort"><span class="reference">total_comfort</span></a>&gt;&gt;</div>
+&lt;&lt;<span class="keyword">maximize</span> <a href="#c0_aCar"><span class="reference">aCar</span></a>.<a href="#c0_total_comfort"><span class="reference">total_comfort</span></a>&gt;&gt;</div>
 
 
 <div>
-&lt;&lt;min <a href="#c0_aCar"><span class="reference">aCar</span></a>.<a href="#c0_total_mass"><span class="reference">total_mass</span></a>&gt;&gt;</div>
+&lt;&lt;<span class="keyword">minimize</span> <a href="#c0_aCar"><span class="reference">aCar</span></a>.<a href="#c0_total_mass"><span class="reference">total_mass</span></a>&gt;&gt;</div>
 
 <!-- # FRAGMENT /-->
 

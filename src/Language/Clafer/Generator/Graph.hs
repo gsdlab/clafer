@@ -81,25 +81,29 @@ graphSimpleClafer :: Clafer
 -- top-level abstract and concrete
 graphSimpleClafer (Clafer s abstract' tmod' gCard id' super' reference' crd init' trans es) (True, _, _) irMap showRefs =
   let
-    tooltip = genTooltip (Module s [ElementDecl s (Subclafer s (Clafer s abstract' tmod' gCard id' super' reference' crd init' trans es))]) irMap
+    tooltip = genTooltip (Module s [ElementDecl s (Subclafer s (Clafer s abstract tmod' gCard id' super' reference' crd init' trans es))]) irMap
+    firstLineQuoted = htmlChars $ head $ lines tooltip
+    tooltipQuoted = htmlChars tooltip
     uid' = getDivId s irMap
   in
      "\"" ++
       uid' ++
       "\" [label=\"" ++
-      (head $ lines tooltip) ++
+      firstLineQuoted ++
       "\" URL=\"#" ++
       uid' ++
       "\" tooltip=\"" ++
-      htmlChars tooltip ++
+      tooltipQuoted ++
       "\"];\n" ++
       graphSimpleSuper super' (True, Just uid', Just uid') irMap showRefs ++
       graphSimpleReference reference' (True, Just uid', Just uid') irMap showRefs ++
       graphSimpleElements es (False, Just uid', Just uid') irMap showRefs
 -- nested abstract
-graphSimpleClafer (Clafer s abstract'@(Abstract _) tmod' gCard id' super' reference' crd init' trans es) (False, _, _) irMap showRefs =
+graphSimpleClafer (Clafer s abstract@(Abstract _) gCard id' super' reference' crd init' es) (False, _, _) irMap showRefs =
   let
-    tooltip = genTooltip (Module s [ElementDecl s (Subclafer s (Clafer s abstract' tmod' gCard id' super' reference' crd init' trans es))]) irMap
+    tooltip = genTooltip (Module s [ElementDecl s (Subclafer s (Clafer s abstract gCard id' super' reference' crd init' trans es))]) irMap
+    firstLineQuoted = htmlChars $ head $ lines tooltip
+    tooltipQuoted = htmlChars tooltip
     uid' = getDivId s irMap
   in
      "\"" ++
@@ -301,10 +305,16 @@ graphCVLAssertion (Assertion s exps') parent' irMap = let body' = htmlChars $ ge
                                                                       if parent' == Nothing then "" else uid' ++ " -> \"" ++ fromJust parent' ++ "\";\n"
 
 graphCVLGoal :: Goal -> Maybe String -> Map.Map Span [Ir] -> String
-graphCVLGoal (Goal s exps') parent' irMap = let body' = htmlChars $ genTooltip (Module s [ElementDecl s (Subgoal s (Goal s exps'))]) irMap;
-                                                                       uid' = "\"" ++ getExpId s irMap ++ "\""
-                                                                    in uid' ++ " [label=\"" ++ body' ++ "\" shape=parallelogram];\n" ++
-                                                                      if parent' == Nothing then "" else uid' ++ " -> \"" ++ fromJust parent' ++ "\";\n"
+graphCVLGoal goal parent' irMap = let
+    s = getSpan goal
+    body' = htmlChars $ genTooltip (Module s [ElementDecl s (Subgoal s goal)]) irMap
+    uid' = "\"" ++ getExpId s irMap ++ "\""
+  in
+    uid' ++
+    " [label=\"" ++ body' ++ "\" shape=parallelogram];\n" ++
+    if parent' == Nothing
+    then ""
+    else uid' ++ " -> \"" ++ fromJust parent' ++ "\";\n"
 
 graphCVLCard :: Card -> Maybe String -> Map.Map Span [Ir] -> String
 graphCVLCard  (CardEmpty _) _ _ = "1..1"
@@ -412,6 +422,10 @@ while bool exp' = if bool then exp' else []-}
 htmlChars :: String -> String
 htmlChars "" = ""
 htmlChars ('\n':xs) = "&#10;" ++ htmlChars xs
+htmlChars ('\"':xs) = "&quot;" ++ htmlChars xs
+htmlChars ('\'':xs) = "&#39;" ++ htmlChars xs
+htmlChars ('&':xs) = "&amp;" ++ htmlChars xs
+htmlChars ('~':xs) = "&tilde;" ++ htmlChars xs
 htmlChars ('-':'>':'>':xs) = "-&gt;&gt;" ++ htmlChars xs
 htmlChars ('-':'>':xs) = "-&gt;" ++ htmlChars xs
 htmlChars (x:xs) = x:htmlChars xs

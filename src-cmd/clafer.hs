@@ -24,6 +24,7 @@ module Main where
 
 import Prelude hiding (writeFile, readFile, print, putStrLn)
 
+import Data.Functor (void)
 import System.IO
 import System.Timeout
 import System.Process (system)
@@ -50,4 +51,4 @@ runEcore2Clafer    ecoreFile toolPath
       putStrLn "Error: Provide a file name of an ECore model."
   | otherwise      = do
       putStrLn $ "Converting " ++ ecoreFile ++ " into Clafer"
-      voidf $ system $ "java -jar " ++ toolPath ++ "/ecore2clafer.jar " ++ ecoreFile
+      void $ system $ "java -jar " ++ toolPath ++ "/ecore2clafer.jar " ++ ecoreFile

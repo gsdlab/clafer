@@ -85,8 +85,8 @@ clafer = ClaferArgs {
   skip_resolver       = def &= help "Skip name resolution." &= name "f",
   keep_unused         = def &= help "Keep uninstantated abstract clafers ('alloy' mode only)." &= name "k",
   no_stats            = def &= help "Don't print statistics." &= name "s",
-  validate            = def &= help "Validate outputs of all modes. Uses 'tools/alloy4.2.jar' for Alloy models, and Clafer translator for desugared Clafer models. Use '--tooldir' to override the default location of these tools." &= name "v",
-  tooldir             = def &= typDir &= help "Specify the tools directory ('validate' only). Default: 'tools/'.",
+  validate            = def &= help "Validate outputs of all modes. Uses '<tooldir>/alloy4.2.jar' for Alloy models, '<tooldir>/claferchocoig.jar' for Alloy models, and Clafer translator for desugared Clafer models. Use '--tooldir' to override the default location ('.') of these tools." &= name "v",
+  tooldir             = "." &= typDir &= help "Specify the tools directory ('validate' only). Default: '.' (current directory).",
   alloy_mapping       = def &= help "Generate mapping to Alloy source code ('alloy' mode only)." &= name "a",
   self_contained      = def &= help "Generate a self-contained html document ('html' mode only).",
   add_graph           = def &= help "Add a graph to the generated html model ('html' mode only). Requires the \"dot\" executable to be on the system path.",
@@ -170,7 +170,7 @@ defaultClaferArgs = ClaferArgs
   , keep_unused = False
   , no_stats = False
   , validate = False
-  , tooldir = "tools/"
+  , tooldir = "."
   , alloy_mapping = False
   , self_contained = False
   , add_graph = False

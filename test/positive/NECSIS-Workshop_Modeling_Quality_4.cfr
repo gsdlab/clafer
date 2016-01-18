@@ -2,10 +2,10 @@
 
 aCar : Car
 
-<< min aCar.total_cost >>
-<< min aCar.total_fuel >>
-<< max aCar.total_comfort >>
-<< min aCar.total_mass >>
+<< minimize aCar.total_cost >>
+<< minimize aCar.total_fuel >>
+<< maximize aCar.total_comfort >>
+<< minimize aCar.total_mass >>
 //# FRAGMENT
 abstract Car
     ABS : ComfortFeature ?

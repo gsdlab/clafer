@@ -1,0 +1,18 @@
+from jsir.IR import *
+
+c0_X = Abstract("c0_X");
+c0_A = Clafer("c0_A").withCard(1, 1).extending(c0_X);
+c0_B = Clafer("c0_B").withCard(1, 1).extending(c0_X);
+c0_C = Clafer("c0_C").withCard(1, 1).extending(c0_X);
+c0_xs = Clafer("c0_xs");
+c0_X.refToUnique("int");
+c0_xs.refTo(c0_X);
+Constraint(implies(some(glob(c0_A)), equal(joinRef(glob(c0_A)), constant(1))));
+Constraint(implies(some(glob(c0_B)), equal(joinRef(glob(c0_B)), constant(2))));
+Constraint(implies(some(glob(c0_C)), equal(joinRef(glob(c0_C)), constant(3))));
+Constraint(equal(joinRef(glob(c0_xs)), set_union(set_union(glob(c0_A), glob(c0_B)), glob(c0_C))));
+Constraint(equal(joinRef(glob(c0_xs)), set_union(set_union(glob(c0_A), glob(c0_B)), glob(c0_C))));
+Constraint(equal(joinRef(joinRef(glob(c0_xs))), set_union(set_union(joinRef(glob(c0_A)), joinRef(glob(c0_B))), joinRef(glob(c0_C)))));
+scope({c0_X:3, c0_xs:3});
+defaultScope(1);
+stringLength(16);

@@ -11,7 +11,7 @@ edge [fontname=Sans fontsize=11];
 "c0_MobilePhone" -> "c0_Bluetooth" [arrowhead=vee arrowtail=diamond dir=both style=solid constraint=true weight=5 minlen=2 arrowsize=0.6 penwidth=0.5 ];
 "c0_LowEndPhone" [label="abstract LowEndPhone : MobilePhone" URL="#c0_LowEndPhone" tooltip="abstract LowEndPhone : MobilePhone&#10;  [ no WiFi ]&#10;"];
 "c0_LowEndPhone" -> "c0_MobilePhone" [arrowhead=onormal constraint=true weight=100];
-"c0_HighEndPhone" [label="abstract HighEndPhone : MobilePhone" URL="#c0_HighEndPhone" tooltip="abstract HighEndPhone : MobilePhone&#10;  [ USB && WiFi ]&#10;  QuadCPU ?&#10;"];
+"c0_HighEndPhone" [label="abstract HighEndPhone : MobilePhone" URL="#c0_HighEndPhone" tooltip="abstract HighEndPhone : MobilePhone&#10;  [ USB &amp;&amp; WiFi ]&#10;  QuadCPU ?&#10;"];
 "c0_HighEndPhone" -> "c0_MobilePhone" [arrowhead=onormal constraint=true weight=100];
 "c0_Phone1" [label="Phone1 : MobilePhone" URL="#c0_Phone1" tooltip="Phone1 : MobilePhone&#10;  [ WiFi ]&#10;  [ LTE ]&#10;  [ Bluetooth21 ]&#10;"];
 "c0_Phone1" -> "c0_MobilePhone" [arrowhead=onormal constraint=true weight=100];

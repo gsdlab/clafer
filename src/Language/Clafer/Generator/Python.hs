@@ -141,9 +141,8 @@ genPythonModule (imodule@IModule{_mDecls}, genv') scopes =
             | c <- mapMaybe iconstraint _elements]
 
     genGoal :: IElement -> Result
-    genGoal (IEGoal _ PExp{_exp = IFunExp{_op="max", _exps=[expr]}})  = "max(" ++ genConstraintPExp expr ++ ");\n"
-    genGoal (IEGoal _ PExp{_exp = IFunExp{_op="min", _exps=[expr]}})  = "min(" ++ genConstraintPExp expr ++ ");\n"
-    genGoal (IEGoal _ _) = error $ "Unknown objective"
+    genGoal (IEGoal True PExp{_exp=IFunExp _ [pexp]})  = "max(" ++ genConstraintPExp pexp ++ ");\n"
+    genGoal (IEGoal False PExp{_exp=IFunExp _ [pexp]})  = "min(" ++ genConstraintPExp pexp ++ ");\n"
     genGoal _ = ""
 
     rewrite :: PExp -> PExp
@@ -217,6 +216,8 @@ genPythonModule (imodule@IModule{_mDecls}, genv') scopes =
 
     mapFunc "!" = "not"
     mapFunc "#" = "card"
+    mapFunc "min" = "minimum"
+    mapFunc "max" = "maximum"
     mapFunc "<=>" = "ifOnlyIf"
     mapFunc "=>" = "implies"
     mapFunc "||" = "or"

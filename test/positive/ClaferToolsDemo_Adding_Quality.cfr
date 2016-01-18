@@ -65,10 +65,10 @@ abstract MobilePhone
     total_security -> integer = sum Feature.security
     total_cost -> integer = sum Feature.cost
 //# FRAGMENT
-<< max OptimalPhone.total_batterylife >>
-<< max OptimalPhone.total_productivity >>
-<< max OptimalPhone.total_security >>
-<< min OptimalPhone.total_cost >>
+<< maximize OptimalPhone.total_batterylife >>
+<< maximize OptimalPhone.total_productivity >>
+<< maximize OptimalPhone.total_security >>
+<< minimize OptimalPhone.total_cost >>
 //# FRAGMENT
 OptimalPhone : MobilePhone
 //# FRAGMENT

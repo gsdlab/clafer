@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=9">
+<style>.identifier{}
+.keyword{font-weight:bold}
+.reference{}
+.code { background-color: lightgray; padding: 5px 5px 5px 5px; border: 1px solid darkgray; margin-bottom: 15px; 
+        font-family: Pragmata, Menlo, 'DejaVu LGC Sans Mono', 'DejaVu Sans Mono', Consolas, 'Everson Mono', 'Lucida Console', 'Andale Mono', 'Nimbus Mono L', 'Liberation Mono', FreeMono, 'Osaka Monospaced', Courier, 'New Courier', monospace; }
+.standalonecomment { color: green; font-style:italic }
+.inlinecomment { color: green; padding-left:20px; font-style:italic }
+.error{background-color: yellow; color: red }
+.deprecated{color: orange }
+.indent{padding-left:20px}
+a[href$='Lookup failed'] {color: red}
+a[href$='Uid not found'] {color: red}
+a[href$='Ambiguous name'] {color: yellow}
+
+</style></head>
+<body>
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_A">A</span>
+  <div class="indent">
+  <span class="claferDecl" id="c0_a">a</span></div>
+</div>
+
+
+<div>
+<span class="keyword">abstract</span> <span class="keyword">or</span> <span class="claferDecl" id="c0_B">B</span><span class="keyword"> : </span><a href="#c0_A"><span class="reference">A</span></a>
+  <div class="indent">
+  <span class="claferDecl" id="c0_b">b</span></div>
+</div>
+
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_C">C</span><span class="keyword"> : </span><a href="#c0_B"><span class="reference">B</span></a>
+  <div class="indent">
+  <span class="claferDecl" id="c0_c">c</span></div>
+</div>
+
+
+<div>
+<span class="keyword">abstract</span> <span class="keyword">xor</span> <span class="claferDecl" id="c0_D">D</span><span class="keyword"> : </span><a href="#c0_C"><span class="reference">C</span></a>
+  <div class="indent">
+  <span class="claferDecl" id="c0_d">d</span></div>
+</div>
+
+
+<div>
+<span class="claferDecl" id="c0_E">E</span><span class="keyword"> : </span><a href="#c0_D"><span class="reference">D</span></a>
+  <div class="indent">
+  <span class="claferDecl" id="c0_e">e</span></div>
+</div>
+
+
+<div>
+<span class="keyword">assert [</span> <span class="keyword">one</span> <a href="#c0_E"><span class="reference">E</span></a>.<a href="#c0_a"><span class="reference">a</span></a> &amp;&amp; <span class="keyword">no</span> <a href="#c0_E"><span class="reference">E</span></a>.<a href="#c0_b"><span class="reference">b</span></a> &amp;&amp; <span class="keyword">no</span> <a href="#c0_E"><span class="reference">E</span></a>.<a href="#c0_c"><span class="reference">c</span></a> &amp;&amp; <span class="keyword">no</span> <a href="#c0_E"><span class="reference">E</span></a>.<a href="#c0_d"><span class="reference">d</span></a> &amp;&amp; <span class="keyword">no</span> <a href="#c0_E"><span class="reference">E</span></a>.<a href="#c0_e"><span class="reference">e</span></a> <span class="keyword">]</span></div>
+
+</body>
+</html>
