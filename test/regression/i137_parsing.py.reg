@@ -1,4 +1,0 @@
-from jsir.IR import *
-
-defaultScope(1);
-stringLength(16);

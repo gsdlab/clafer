@@ -72,7 +72,23 @@ a[href$='Ambiguous name'] {color: yellow}
 
 
 <div>
+<span class="keyword">[</span> <a href="#c0_childs"><span class="reference">childs</span></a> = <a href="#c0_Carol"><span class="reference">Carol</span></a> <span class="keyword">]</span></div>
+
+
+<div>
 <span class="claferDecl" id="c0_Bob">Bob</span><span class="keyword"> : </span><a href="#c0_Person"><span class="reference">Person</span></a></div>
+
+
+<div>
+<span class="keyword">assert [</span> <a href="#c0_Bob"><span class="reference">Bob</span></a>.<a href="#c0_age"><span class="reference">age</span></a> &gt;= 5 <span class="keyword">]</span></div>
+
+
+<div>
+<span class="keyword">assert [</span> <a href="#c0_Bob"><span class="reference">Bob</span></a>.<a href="#c0_maritalStatus"><span class="reference">maritalStatus</span></a>.<a href="#c0_married"><span class="reference">married</span></a>.<a href="#c0_spouse"><span class="reference">spouse</span></a> = <a href="#c0_Alice"><span class="reference">Alice</span></a> <span class="keyword">]</span></div>
+
+
+<div>
+<span class="keyword">assert [</span> <a href="#c0_Bob"><span class="reference">Bob</span></a>.<a href="#c0_childs"><span class="reference">childs</span></a> = <a href="#c0_Carol"><span class="reference">Carol</span></a> <span class="keyword">]</span></div>
 
 
 <div>
@@ -80,6 +96,10 @@ a[href$='Ambiguous name'] {color: yellow}
   <div class="indent">
   <span class="keyword">[</span> <a href="#c0_age"><span class="reference">age</span></a> = 1 <span class="keyword">]</span></div>
 </div>
+
+
+<div>
+<span class="keyword">assert [</span> <a href="#c0_Carol"><span class="reference">Carol</span></a>.<a href="#c0_parents"><span class="reference">parents</span></a> = <a href="#c0_Alice"><span class="reference">Alice</span></a>, <a href="#c0_Bob"><span class="reference">Bob</span></a> <span class="keyword">]</span></div>
 
 </body>
 </html>

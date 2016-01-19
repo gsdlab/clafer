@@ -1,8 +1,0 @@
-from jsir.IR import *
-
-c0_a = Clafer("c0_a").withCard(0, 1);
-c0_b = c0_a.addChild("c0_b").withCard(0, 1);
-c0_a.refTo("int");
-c0_b.addConstraint(equal(joinRef(joinParent($this())), constant(4)));
-defaultScope(1);
-stringLength(16);

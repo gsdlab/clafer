@@ -46,7 +46,7 @@ a[href$='Ambiguous name'] {color: yellow}
     <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_input"><span class="reference">input</span></a> <span class="keyword">]</span></div>
   </div>
   <div class="indent">
-  <span class="keyword">[</span> <a href="#c0_to"><span class="reference">to</span></a>.<span class="deprecated" title="Deprecated. Use `dref` instead.">ref</span>.<span class="deprecated" title="Deprecated. Use `dref` instead.">ref</span> = <a href="#c0_from"><span class="reference">from</span></a>.<span class="deprecated" title="Deprecated. Use `dref` instead.">ref</span>.<span class="deprecated" title="Deprecated. Use `dref` instead.">ref</span> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <a href="#c0_to"><span class="reference">to</span></a>.<span class="keyword">dref</span>.<span class="keyword">dref</span> = <a href="#c0_from"><span class="reference">from</span></a>.<span class="keyword">dref</span>.<span class="keyword">dref</span> <span class="keyword">]</span></div>
 </div>
 
 

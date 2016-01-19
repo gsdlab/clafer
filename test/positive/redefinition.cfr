@@ -13,3 +13,19 @@ abstract Controller : Component
 WinController : Controller
     req : req -> stop
     cmd : OutPort -> MotorCommand
+
+assert [ WinController.cmd = motorDown ]
+
+/* we cannot have
+assert [ WinController.req = stop ]
+
+because
+
+clafer "req" cannot be defined because the name should be unique in the same namespace.
+Available paths:
+c0_WinController.c1_req
+c0_WinController.c0_req
+*/
+
+// this demonstrates whether redefinition is properly implemented
+assert [ Controller.req = stop ]

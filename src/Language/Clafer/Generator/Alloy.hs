@@ -236,7 +236,7 @@ of Connection are nested under all Systems anyway.
   where
   constraints = concatMap genConst $ _elements c
   genConst x = case x of
-    IEConstraint True pexp  -> [ genPExp genEnv ((_uid c) : resPath) pexp ]
+    IEConstraint True pexp  -> [ genPExp genEnv (_uid c : resPath) pexp ]
     IEConstraint False pexp  -> [ CString "// Assertion " +++ (genAssertName pexp) +++ CString " ignored since nested assertions are not supported in Alloy.\n"]
     IEClafer c' ->
         (if genCardCrude (_card c') `elem` ["one", "lone", "some"]
@@ -479,19 +479,20 @@ transformExp    x@(IFunExp op' exps'@(e1:e2:_))
   | otherwise  = x
 transformExp x = x
 
-genIFunExp :: String -> GenEnv -> [String] -> IExp             -> Concat
-genIFunExp    pid'      genEnv    resPath     (IFunExp op' exps') =
-  if (op' == iSumSet)
-    then genIFunExp pid' genEnv resPath (IFunExp iSumSet' [(removeright (head exps')), (getRight $ head exps')])
-    else if (op' == iSumSet')
-      then Concat (IrPExp pid') $ intl exps'' (map CString $ genOp iSumSet)
-      else Concat (IrPExp pid') $ intl exps'' (map CString $ genOp op')
+genIFunExp :: String -> GenEnv -> [String] -> IExp                  -> Concat
+genIFunExp    pid'      genEnv    resPath     (IFunExp "min" [exp']) = Concat (IrPExp pid') $ (CString "min[") : (genPExp' genEnv resPath exp') : [CString "]"]
+genIFunExp    pid'      genEnv    resPath     (IFunExp "max" [exp']) = Concat (IrPExp pid') $ (CString "max[") : (genPExp' genEnv resPath exp') : [CString "]"]
+genIFunExp    pid'      genEnv    resPath     (IFunExp op' exps')
+  | op' == iSumSet = genIFunExp pid' genEnv resPath (IFunExp iSumSet' [(removeright (head exps')), (getRight $ head exps')])
+  | op' == iSumSet'  = Concat (IrPExp pid') $ intl exps'' (map CString $ genOp iSumSet)
+  | otherwise      = Concat (IrPExp pid') $ intl exps'' (map CString $ genOp op')
   where
-  intl
-    | op' == iSumSet' = flip interleave
-    | op' `elem` arithBinOps && length exps' == 2 = interleave
-    | otherwise = \xs ys -> reverse $ interleave (reverse xs) (reverse ys)
-  exps'' = map (optBrArg genEnv resPath) exps'
+      iSumSet' = "sum'"
+      intl
+        | op' == iSumSet' = flip interleave
+        | op' `elem` arithBinOps && length exps' == 2 = interleave
+        | otherwise = \xs ys -> reverse $ interleave (reverse xs) (reverse ys)
+      exps'' = map (optBrArg genEnv resPath) exps'
 genIFunExp _ _ _ x = error $ "[bug] Alloy.genIFunExp: expecting a IFunExp, instead got: " ++ show x--This should never happen
 
 

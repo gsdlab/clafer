@@ -5,7 +5,7 @@ allYellow ?
 warning ?
     flashing ?
 
-[ emergencyVehicle => (if (some allWayYellow) then (some allYellow) else (some warning)) ]
+[ emergencyVehicle => (if some allWayYellow then some allYellow else some warning) ]
 [ emergencyVehicle => (if allWayYellow then allYellow else warning) ]
 
 // [ (if allWayYellow then allYellow else warning).flashing ]

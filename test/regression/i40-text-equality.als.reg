@@ -16,11 +16,15 @@ one sig c0_text2
 fact { (some c0_text2) => ((c0_text2.@c0_text2_ref) = 0) }
 lone sig c0_equal1
 {}
-{ (c0_text.@c0_text_ref) = (c0_text1.@c0_text1_ref) }
 
+fact { ((c0_text.@c0_text_ref) = (c0_text1.@c0_text1_ref)) => (some c0_equal1) }
 lone sig c0_equal2
 {}
-{ (c0_text1.@c0_text1_ref) = (c0_text2.@c0_text2_ref) }
 
-fact { some c0_equal1 }
-fact { some c0_equal2 }
+fact { ((c0_text1.@c0_text1_ref) = (c0_text2.@c0_text2_ref)) => (some c0_equal2) }
+assert assertOnLine_15 { some c0_equal1 }
+check assertOnLine_15 for 1
+
+assert assertOnLine_16 { some c0_equal2 }
+check assertOnLine_16 for 1
+

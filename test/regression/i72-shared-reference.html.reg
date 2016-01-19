@@ -51,5 +51,9 @@ a[href$='Ambiguous name'] {color: yellow}
   <span class="keyword">[</span> <a href="#c0_participants"><span class="reference">participants</span></a> = <a href="#c0_JohnDoe"><span class="reference">JohnDoe</span></a>, <a href="#c0_MaryJane"><span class="reference">MaryJane</span></a> <span class="keyword">]</span></div>
 </div>
 
+
+<div>
+<span class="keyword">assert [</span> all wl<span class="keyword"> : </span><a href="#c0_WaitingLine"><span class="reference">WaitingLine</span></a> | <a href="#wl"><span class="reference">wl</span></a>.<a href="#c0_participants"><span class="reference">participants</span></a> = <a href="#c0_JohnDoe"><span class="reference">JohnDoe</span></a>, <a href="#c0_MaryJane"><span class="reference">MaryJane</span></a> <span class="keyword">]</span></div>
+
 </body>
 </html>

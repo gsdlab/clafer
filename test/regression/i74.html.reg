@@ -34,5 +34,9 @@ a[href$='Ambiguous name'] {color: yellow}
   <span class="keyword">[</span> <a href="#c0_Kernel"><span class="reference">Kernel</span></a>.<a href="#c0_memory"><span class="reference">memory</span></a> <span class="keyword">]</span></div>
 </div>
 
+
+<div>
+<span class="keyword">assert [</span> <span class="keyword">no</span> <a href="#c0_Kernel"><span class="reference">Kernel</span></a> <span class="keyword">]</span></div>
+
 </body>
 </html>

@@ -1,4 +1,3 @@
-{-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE NamedFieldPuns     #-}
 {-
  Copyright (C) 2012-2015 Kacper Bak, Jimmy Liang, Michal Antkiewicz <http://gsd.uwaterloo.ca>
@@ -127,7 +126,6 @@ import           Language.Clafer.Generator.Choco
 import           Language.Clafer.Generator.Concat
 import           Language.Clafer.Generator.Graph
 import           Language.Clafer.Generator.Html
-import           Language.Clafer.Generator.Python
 import           Language.Clafer.Generator.Stats
 import           Language.Clafer.Intermediate.Desugarer
 import           Language.Clafer.Intermediate.Intclafer
@@ -149,6 +147,7 @@ type InputModel = String
 runCompiler :: Maybe URL -> ClaferArgs -> InputModel -> IO ()
 runCompiler    mURL         args'         inputModel =
   do
+    hSetBuffering stdout LineBuffering
     result <- runClaferT args' $
       do
         forM_ (fragments inputModel) addModuleFragment
@@ -163,18 +162,16 @@ runCompiler    mURL         args'         inputModel =
         -}
         compile iModule
 
-        when (validate args') $ liftIO $ do
-          hSetBuffering stdout LineBuffering
-          putStrLn $ "[clafer]              Validating " ++ file args'
-
         fs <- save args'
+
+        when (validate args') $ liftIO $ do
+            putStrLn $ "[clafer]              Validating " ++ file args'
 
         when (validate args') $ liftIO $ do
           forM_ fs (runValidate args')
           putStrLn "\n"
-    if Html `elem` (mode args')
-      then htmlCatch result args' inputModel
-      else return ()
+    when (Html `elem` mode args') $
+      htmlCatch result args' inputModel
     result `cth` handleErrs
   where
   cth (Left err) f = f err
@@ -186,7 +183,7 @@ runCompiler    mURL         args'         inputModel =
 --  htmlCatch :: Either ClaferErr CompilerResult -> ClaferArgs -> String -> IO(CompilerResult)
   htmlCatch (Right r) _ _ = return r
   htmlCatch (Left err) args'' model =
-    do let f = (dropExtension $ file args'') ++ ".html"
+    do let f = dropExtension (file args'') ++ ".html"
        let result = (if (self_contained args'')
                      then Css.header ++ "<style>" ++ Css.css ++ "</style>" ++ "</head>\n<body>\n<pre>\n"
                      else "")
@@ -222,7 +219,7 @@ save args'=
     resultsMap <- generate
     let results = snd $ unzip $ Map.toList resultsMap
     -- print stats only once
-    when (not $ no_stats args') $ liftIO $ printStats results
+    unless (no_stats args') $ liftIO $ printStats results
     -- save the outputs
     (iModule, _, _) <- getIr
     forM results $ saveResult iModule resultsMap
@@ -259,7 +256,7 @@ save args'=
       Alloy `elem` mode args' ||
       Choco `elem` mode args'
 
-    getScopesList :: (Map.Map ClaferMode CompilerResult) -> [(UID, Integer)]
+    getScopesList :: Map.Map ClaferMode CompilerResult -> [(UID, Integer)]
     getScopesList    resultsMap =
         let
            alloyResult = Map.lookup Alloy resultsMap
@@ -293,21 +290,22 @@ runValidate args' fo = do
   when (Graph `elem` modes && ".dot" `isSuffixOf` fo) $ do
     liftIO $ putStrLn ("=========== Parsing+Generating   " ++ fo ++ " =============")
     void $ system $ validateGraph ++ fo
-  when (Mode.Clafer `elem` modes && ".des.cfr" `isSuffixOf` fo) $ do
-    liftIO $ putStrLn ("=========== Parsing+Typechecking " ++ fo ++ " =============")
-    void $ system $  validateClafer path ++ fo
+  -- when (Mode.Clafer `elem` modes && ".des.cfr" `isSuffixOf` fo) $ do
+  --   liftIO $ putStrLn ("=========== Parsing+Typechecking " ++ fo ++ " =============")
+  --   liftIO $ putStrLn $ validateClafer path ++ fo'
+  --   void $ system $  validateClafer path ++ fo'
 
 validateAlloy :: String -> String
-validateAlloy path = "java -cp " ++ path ++ "alloy4.2.jar edu.mit.csail.sdg.alloy4whole.ExampleUsingTheCompiler "
+validateAlloy path = "java -cp \"" ++ path ++ "alloy4.2.jar\" edu.mit.csail.sdg.alloy4whole.ExampleUsingTheCompiler "
 
 validateChoco :: String -> String
-validateChoco path = "java -jar " ++ path ++ "claferchocoig.jar -v --file "
+validateChoco path = "java -jar \"" ++ path ++ "chocosolver.jar\" -v --file "
 
 validateGraph :: String
 validateGraph = "dot -Tsvg -O "
 
-validateClafer :: String -> String
-validateClafer path = path ++ "clafer -s -m=clafer "
+-- validateClafer :: String -> String
+-- validateClafer path = "\""  ++ path ++ "clafer\" -s -k -m=clafer "
 
 
 -- | Add a new fragment to the model. Fragments should be added in order.
@@ -407,7 +405,7 @@ compile desugaredMod = do
       isKeyWord (IRClafer IClafer{_cinPos = (Span (Pos l c) _) ,_ident=i}) = if (i `elem` keywordIdents) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
       isKeyWord _ = ""
       gt1 :: Ir -> String
-      gt1 (IRClafer (IClafer (Span (Pos l c) _) (IClaferModifiers False False False) _ _ _ _ _ _ (Just (_, m)) _ _ _)) = if (m > 1 || m < 0) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
+      gt1 (IRClafer (IClafer (Span (Pos l c) _) (IClaferModifiers False _ _) _ _ _ _ _ _ (Just (_, m)) _ _ _)) = if (m > 1 || m < 0) then ("Line " ++ show l ++ " column " ++ show c ++ "\n") else ""
       gt1 _ = ""
 
 
@@ -441,22 +439,19 @@ generateHtml env =
     printComments [] = []
     printComments ((s, comment):cs') = (snd (printComment s [(s, comment)]) ++ "<br>\n"):printComments cs'
 
-iExpBasedChecks :: IModule -> (Bool, Bool, Bool, Bool)
-iExpBasedChecks iModule = (null realLiterals, null productOperators, null minMaxOperators, null tempOperators)
+iExpBasedChecks :: IModule -> (Bool, Bool, Bool)
+iExpBasedChecks iModule = (null realLiterals, null productOperators, null tempOperators)
   where
     iexps :: [ IExp ]
     iexps = universeOn biplate iModule
     realLiterals = filter isIDouble iexps
     productOperators = filter isProductOperator iexps
     tempOperators = filter isTempOperator iexps
-    minMaxOperators = filter isMinMaxOperator iexps
     isIDouble (IDouble _) = True
     isIDouble (IReal _) = True
     isIDouble _           = False
     isProductOperator (IFunExp op' _) = op' == iProdSet
     isProductOperator _               = False
-    isMinMaxOperator (IFunExp op' _) = op' `elem` [iMinimum, iMaximum]
-    isMinMaxOperator _               = False
     isTempOperator (IFunExp op' _) = op' `elem` (iLet : propertyKeywords ++ ltlOps)
     isTempOperator _               = False
 
@@ -479,7 +474,7 @@ generate =
     ast' <- getAst
     (iModule, genv, au) <- getIr
     let
-      (hasNoRealLiterals, hasNoProductOperator, hasNoMinMaxOperator, hasNoTempOperators) = iExpBasedChecks iModule
+      (hasNoRealLiterals, hasNoProductOperator, hasNoTempOperators) = iExpBasedChecks iModule
       (hasNoReferenceToReal, hasNoTempModifiers) = iClaferBasedChecks iModule
       staticClaferSubset = hasNoTempOperators && hasNoTempModifiers
       cargs = args env
@@ -491,7 +486,7 @@ generate =
     return $ Map.fromList (
         -- result for Alloy
         (if (Alloy `elem` modes)
-          then if (hasNoRealLiterals && hasNoReferenceToReal && hasNoProductOperator && hasNoMinMaxOperator)
+          then if (hasNoRealLiterals && hasNoReferenceToReal && hasNoProductOperator)
                 then
                    let
                       (imod,strMap) = astrModule iModule
@@ -517,7 +512,6 @@ generate =
                                 ++ (if hasNoRealLiterals then "" else "a real number literal, ")
                                 ++ (if hasNoReferenceToReal then "" else "a reference to a real, ")
                                 ++ (if hasNoProductOperator then "" else "the product operator, ")
-                                ++ (if hasNoMinMaxOperator then "" else "the min or max operator, ")
                         })
                      ]
           else []
@@ -595,20 +589,6 @@ generate =
                        mappingToAlloy = [],
                        stringMap = Map.empty,
                        scopesList = []
-                  }) ]
-          else []
-        )
-        -- result for Python
-        ++ (if (Python `elem` modes)
-          then [ (Python,
-                  CompilerResult {
-                    extension = "py",
-                    outputCode = genPythonModule (iModule, genv) scopes,
-                    statistics = stats,
-                    claferEnv  = env,
-                    mappingToAlloy = [],
-                    stringMap = Map.empty,
-                    scopesList = scopes
                   }) ]
           else []
         )

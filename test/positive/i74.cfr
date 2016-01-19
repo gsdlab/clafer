@@ -3,3 +3,5 @@ abstract Kernel
 Phone
    name -> string
    [Kernel.memory]
+
+assert [ no Kernel ]

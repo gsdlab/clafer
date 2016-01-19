@@ -32,6 +32,12 @@ lone sig c0_g
 {}
 { one r_c0_g }
 
+assert assertOnLine_14 { (some c0_E.@r_c0_f) || (some c0_E.@r_c0_g) }
+check assertOnLine_14 for 1
+
+assert assertOnLine_15 { !((some c0_E.@r_c0_f) && (some c0_E.@r_c0_g)) }
+check assertOnLine_15 for 1
+
 one sig c0_D
 { r_c0_Z : one c0_Z
 , r_c0_K : lone c0_K }
@@ -42,6 +48,12 @@ one sig c0_Z
 lone sig c0_K
 {}
 { one r_c0_K }
+
+assert assertOnLine_22 { one c0_D }
+check assertOnLine_22 for 1
+
+assert assertOnLine_23 { one c0_D.@r_c0_Z }
+check assertOnLine_23 for 1
 
 one sig c0_L
 { r_c0_M : one c0_M

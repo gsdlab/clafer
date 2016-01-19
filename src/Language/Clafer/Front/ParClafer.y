@@ -92,29 +92,31 @@ import Language.Clafer.Front.ErrM
   'lonce' { PT _ (TS _ 73) }
   'lone' { PT _ (TS _ 74) }
   'max' { PT _ (TS _ 75) }
-  'min' { PT _ (TS _ 76) }
-  'must' { PT _ (TS _ 77) }
-  'mux' { PT _ (TS _ 78) }
-  'never' { PT _ (TS _ 79) }
-  'next' { PT _ (TS _ 80) }
-  'no' { PT _ (TS _ 81) }
-  'not' { PT _ (TS _ 82) }
-  'one' { PT _ (TS _ 83) }
-  'opt' { PT _ (TS _ 84) }
-  'or' { PT _ (TS _ 85) }
-  'precede' { PT _ (TS _ 86) }
-  'product' { PT _ (TS _ 87) }
-  'some' { PT _ (TS _ 88) }
-  'sometime' { PT _ (TS _ 89) }
-  'sum' { PT _ (TS _ 90) }
-  'then' { PT _ (TS _ 91) }
-  'until' { PT _ (TS _ 92) }
-  'weakuntil' { PT _ (TS _ 93) }
-  'xor' { PT _ (TS _ 94) }
-  '{' { PT _ (TS _ 95) }
-  '|' { PT _ (TS _ 96) }
-  '||' { PT _ (TS _ 97) }
-  '}' { PT _ (TS _ 98) }
+  'maximize' { PT _ (TS _ 76) }
+  'min' { PT _ (TS _ 77) }
+  'minimize' { PT _ (TS _ 78) }
+  'must' { PT _ (TS _ 79) }
+  'mux' { PT _ (TS _ 80) }
+  'never' { PT _ (TS _ 81) }
+  'next' { PT _ (TS _ 82) }
+  'no' { PT _ (TS _ 83) }
+  'not' { PT _ (TS _ 84) }
+  'one' { PT _ (TS _ 85) }
+  'opt' { PT _ (TS _ 86) }
+  'or' { PT _ (TS _ 87) }
+  'precede' { PT _ (TS _ 88) }
+  'product' { PT _ (TS _ 89) }
+  'some' { PT _ (TS _ 90) }
+  'sometime' { PT _ (TS _ 91) }
+  'sum' { PT _ (TS _ 92) }
+  'then' { PT _ (TS _ 93) }
+  'until' { PT _ (TS _ 94) }
+  'weakuntil' { PT _ (TS _ 95) }
+  'xor' { PT _ (TS _ 96) }
+  '{' { PT _ (TS _ 97) }
+  '|' { PT _ (TS _ 98) }
+  '||' { PT _ (TS _ 99) }
+  '}' { PT _ (TS _ 100) }
 
 L_PosInteger { PT _ (T_PosInteger _) }
 L_PosDouble { PT _ (T_PosDouble _) }
@@ -151,7 +153,10 @@ Constraint : '[' ListExp ']' { Language.Clafer.Front.AbsClafer.Constraint ((mkTo
 Assertion :: { Assertion }
 Assertion : 'assert' '[' ListExp ']' { Language.Clafer.Front.AbsClafer.Assertion ((mkTokenSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3) >- (mkTokenSpan $4)) (reverse $3) }
 Goal :: { Goal }
-Goal : '<<' ListExp '>>' { Language.Clafer.Front.AbsClafer.Goal ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkTokenSpan $3)) (reverse $2) }
+Goal : '<<' 'min' ListExp '>>' { Language.Clafer.Front.AbsClafer.GoalMinDeprecated ((mkTokenSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3) >- (mkTokenSpan $4)) (reverse $3) }
+     | '<<' 'max' ListExp '>>' { Language.Clafer.Front.AbsClafer.GoalMaxDeprecated ((mkTokenSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3) >- (mkTokenSpan $4)) (reverse $3) }
+     | '<<' 'minimize' ListExp '>>' { Language.Clafer.Front.AbsClafer.GoalMinimize ((mkTokenSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3) >- (mkTokenSpan $4)) (reverse $3) }
+     | '<<' 'maximize' ListExp '>>' { Language.Clafer.Front.AbsClafer.GoalMaximize ((mkTokenSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3) >- (mkTokenSpan $4)) (reverse $3) }
 TempModifier :: { TempModifier }
 TempModifier : 'initial' { Language.Clafer.Front.AbsClafer.Initial ((mkTokenSpan $1)) }
              | 'final' { Language.Clafer.Front.AbsClafer.Final ((mkTokenSpan $1)) }
@@ -229,6 +234,7 @@ Exp2 : 'never' Exp3 PatternScope { Language.Clafer.Front.AbsClafer.TmpPatNever (
 Exp3 :: { Exp }
 Exp3 : 'max' Exp4 { Language.Clafer.Front.AbsClafer.EGMax ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
      | 'min' Exp4 { Language.Clafer.Front.AbsClafer.EGMin ((mkTokenSpan $1) >- (mkCatSpan $2)) $2 }
+     | 'if' Exp3 'then' Exp3 'else' Exp3 { Language.Clafer.Front.AbsClafer.EImpliesElse ((mkTokenSpan $1) >- (mkCatSpan $2) >- (mkTokenSpan $3) >- (mkCatSpan $4) >- (mkTokenSpan $5) >- (mkCatSpan $6)) $2 $4 $6 }
      | Exp3 '<=>' Exp4 { Language.Clafer.Front.AbsClafer.EIff ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
      | Exp4 {  $1 }
 Exp4 :: { Exp }

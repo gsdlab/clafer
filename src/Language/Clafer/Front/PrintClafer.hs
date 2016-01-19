@@ -140,7 +140,10 @@ instance Print Assertion where
 
 instance Print Goal where
   prt i e = case e of
-    Goal _ exps -> prPrec i 0 (concatD [doc (showString "<<"), prt 0 exps, doc (showString ">>")])
+    GoalMinDeprecated _ exps -> prPrec i 0 (concatD [doc (showString "<<"), doc (showString "min"), prt 0 exps, doc (showString ">>")])
+    GoalMaxDeprecated _ exps -> prPrec i 0 (concatD [doc (showString "<<"), doc (showString "max"), prt 0 exps, doc (showString ">>")])
+    GoalMinimize _ exps -> prPrec i 0 (concatD [doc (showString "<<"), doc (showString "minimize"), prt 0 exps, doc (showString ">>")])
+    GoalMaximize _ exps -> prPrec i 0 (concatD [doc (showString "<<"), doc (showString "maximize"), prt 0 exps, doc (showString ">>")])
 
 instance Print TempModifier where
   prt i e = case e of
@@ -244,6 +247,7 @@ instance Print Exp where
     TmpFinally _ exp -> prPrec i 2 (concatD [doc (showString "finally"), prt 3 exp])
     EGMax _ exp -> prPrec i 3 (concatD [doc (showString "max"), prt 4 exp])
     EGMin _ exp -> prPrec i 3 (concatD [doc (showString "min"), prt 4 exp])
+    EImpliesElse _ exp1 exp2 exp3 -> prPrec i 3 (concatD [doc (showString "if"), prt 3 exp1, doc (showString "then"), prt 3 exp2, doc (showString "else"), prt 3 exp3])
     EIff _ exp1 exp2 -> prPrec i 3 (concatD [prt 3 exp1, doc (showString "<=>"), prt 4 exp2])
     EImplies _ exp1 exp2 -> prPrec i 4 (concatD [prt 4 exp1, doc (showString "=>"), prt 5 exp2])
     EOr _ exp1 exp2 -> prPrec i 5 (concatD [prt 5 exp1, doc (showString "||"), prt 6 exp2])
@@ -278,7 +282,6 @@ instance Print Exp where
     EProd _ exp -> prPrec i 19 (concatD [doc (showString "product"), prt 20 exp])
     ECard _ exp -> prPrec i 19 (concatD [doc (showString "#"), prt 20 exp])
     EMinExp _ exp -> prPrec i 19 (concatD [doc (showString "-"), prt 20 exp])
-    EImpliesElse _ exp1 exp2 exp3 -> prPrec i 20 (concatD [doc (showString "if"), prt 20 exp1, doc (showString "then"), prt 20 exp2, doc (showString "else"), prt 21 exp3])
     EDomain _ exp1 exp2 -> prPrec i 21 (concatD [prt 21 exp1, doc (showString "<:"), prt 22 exp2])
     ERange _ exp1 exp2 -> prPrec i 22 (concatD [prt 22 exp1, doc (showString ":>"), prt 23 exp2])
     EUnion _ exp1 exp2 -> prPrec i 23 (concatD [prt 23 exp1, doc (showString "++"), prt 24 exp2])

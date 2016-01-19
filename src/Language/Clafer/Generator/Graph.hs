@@ -81,7 +81,7 @@ graphSimpleClafer :: Clafer
 -- top-level abstract and concrete
 graphSimpleClafer (Clafer s abstract' tmod' gCard id' super' reference' crd init' trans es) (True, _, _) irMap showRefs =
   let
-    tooltip = genTooltip (Module s [ElementDecl s (Subclafer s (Clafer s abstract tmod' gCard id' super' reference' crd init' trans es))]) irMap
+    tooltip = genTooltip (Module s [ElementDecl s (Subclafer s (Clafer s abstract' tmod' gCard id' super' reference' crd init' trans es))]) irMap
     firstLineQuoted = htmlChars $ head $ lines tooltip
     tooltipQuoted = htmlChars tooltip
     uid' = getDivId s irMap
@@ -99,9 +99,9 @@ graphSimpleClafer (Clafer s abstract' tmod' gCard id' super' reference' crd init
       graphSimpleReference reference' (True, Just uid', Just uid') irMap showRefs ++
       graphSimpleElements es (False, Just uid', Just uid') irMap showRefs
 -- nested abstract
-graphSimpleClafer (Clafer s abstract@(Abstract _) gCard id' super' reference' crd init' es) (False, _, _) irMap showRefs =
+graphSimpleClafer (Clafer s abstract@(Abstract _) tmod' gCard id' super' reference' crd init' trans es) (False, _, _) irMap showRefs =
   let
-    tooltip = genTooltip (Module s [ElementDecl s (Subclafer s (Clafer s abstract gCard id' super' reference' crd init' trans es))]) irMap
+    tooltip = genTooltip (Module s [ElementDecl s (Subclafer s (Clafer s abstract tmod' gCard id' super' reference' crd init' trans es))]) irMap
     firstLineQuoted = htmlChars $ head $ lines tooltip
     tooltipQuoted = htmlChars tooltip
     uid' = getDivId s irMap

@@ -11,5 +11,5 @@ Clafer2
         Type1
         Type2
 
-    [type.Type1 => clafer1.type.Type2] // this doesn't work
-    [this.type.Type1 => clafer1.type.Type2]    // this works
+    [type.Type1 => clafer1.type.Type2]
+    [this.type.Type1 => clafer1.type.Type2]

@@ -228,8 +228,8 @@ For IFunExp standard set of operators includes:
         !          - not (logical)
         #          - set counting operator
         -          - negation (arithmetic)
-        max        - maximum (created for goals)
-        min        - minimum (created for goals)
+        max        - maximum (created for goals and maximum of a set)
+        min        - minimum (created for goals and minimum of a set)
 2. Binary operators:
         \<=\>        - equivalence
         =\>         - implication

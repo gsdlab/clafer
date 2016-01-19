@@ -8,3 +8,4 @@ c0_B = Clafer("c0_B").withCard(2, 3);
 c0_A.refTo(Int);
 c0_B.refToUnique(Int);
 Constraint(equal(minimum(joinRef(global(c0_A))), maximum(joinRef(global(c0_B)))));
+assert(greaterThanEqual(maximum(joinRef(global(c0_A))), minimum(joinRef(global(c0_B)))));

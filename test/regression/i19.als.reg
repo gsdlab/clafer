@@ -17,3 +17,6 @@ sig c0_c
 one sig c0_a1 extends c0_A
 {}
 
+assert assertOnLine_8 { some (c0_A.@r_c0_b).@r_c0_c }
+check assertOnLine_8 for 1
+

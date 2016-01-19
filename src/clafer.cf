@@ -15,7 +15,11 @@ ElementDecl.    Declaration ::= Element ;
 Clafer.         Clafer ::= Abstract [TempModifier] GCard PosIdent Super Reference Card Init Transition Elements ;
 Constraint.     Constraint ::= "[" [Exp] "]" ;
 Assertion.      Assertion ::= "assert" "[" [Exp] "]";
-Goal.           Goal ::= "<<" [Exp] ">>" ;
+GoalMinDeprecated. Goal ::= "<<" "min" [Exp] ">>" ;
+GoalMaxDeprecated. Goal ::= "<<" "max" [Exp] ">>" ;
+GoalMinimize.   Goal ::= "<<" "minimize" [Exp] ">>" ;
+GoalMaximize.   Goal ::= "<<" "maximize" [Exp] ">>" ;
+
 
 Initial.        TempModifier ::= "initial";
 Final.          TempModifier ::= "final";

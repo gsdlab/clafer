@@ -15,3 +15,7 @@ c0_K = c0_D.addChild("c0_K").withCard(0, 1);
 c0_L = Clafer("c0_L").withCard(1, 1);
 c0_M = c0_L.addChild("c0_M").withCard(1, 1);
 c0_N = c0_L.addChild("c0_N").withCard(1, 1);
+assert(or(some(join(global(c0_E), c0_f)), some(join(global(c0_E), c0_g))));
+assert(not(and(some(join(global(c0_E), c0_f)), some(join(global(c0_E), c0_g)))));
+assert(one(global(c0_D)));
+assert(one(join(global(c0_D), c0_Z)));

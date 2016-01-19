@@ -801,16 +801,17 @@ genIFunExp    genEnv    pid'      ctx       (IFunExp op' exps') =
       then Concat (IrPExp pid') $ intl exps'' (map CString $ genOp iSumSet)
       else Concat (IrPExp pid') $ intl exps'' (map CString $ genOp op')
   where
-  firstExp = case exps' of
-                    x:_ -> x
-                    [] -> error "genIFunExp"
-  surroundPar [] = []
-  surroundPar xs = CString "(" : (xs ++ [CString ")"])
-  intl
-    | op' == iSumSet' = flip interleave
-    | op' `elem` arithBinOps && length exps' == 2 = interleave
-    | otherwise = \xs ys -> reverse $ interleave (reverse xs) (reverse ys)
-  exps'' = map (optBrArg genEnv ctx) exps'
+    iSumSet' = "sum'"
+    firstExp = case exps' of
+                      x:_ -> x
+                      [] -> error "genIFunExp"
+    surroundPar [] = []
+    surroundPar xs = CString "(" : (xs ++ [CString ")"])
+    intl
+      | op' == iSumSet' = flip interleave
+      | op' `elem` arithBinOps && length exps' == 2 = interleave
+      | otherwise = \xs ys -> reverse $ interleave (reverse xs) (reverse ys)
+    exps'' = map (optBrArg genEnv ctx) exps'
 genIFunExp _ _ _ x = error $ "[bug] Alloy.genIFunExp: expecting a IFunExp, instead got: " ++ show x--This should never happen
 
 genLtlExp :: GenEnv -> GenCtx -> String -> [PExp] -> [Concat]

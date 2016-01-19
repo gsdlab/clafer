@@ -62,12 +62,12 @@ The reserved words used in clafer are the following:
   | ``eventually`` | ``final`` | ``finally`` | ``finalref``
   | ``finaltarget`` | ``follow`` | ``globally`` | ``if``
   | ``in`` | ``initial`` | ``initially`` | ``let``
-  | ``lonce`` | ``lone`` | ``max`` | ``min``
-  | ``must`` | ``mux`` | ``never`` | ``next``
-  | ``no`` | ``not`` | ``one`` | ``opt``
-  | ``or`` | ``precede`` | ``product`` | ``some``
-  | ``sometime`` | ``sum`` | ``then`` | ``until``
-  | ``weakuntil`` | ``xor`` |  | 
+  | ``lonce`` | ``lone`` | ``max`` | ``maximize``
+  | ``min`` | ``minimize`` | ``must`` | ``mux``
+  | ``never`` | ``next`` | ``no`` | ``not``
+  | ``one`` | ``opt`` | ``or`` | ``precede``
+  | ``product`` | ``some`` | ``sometime`` | ``sum``
+  | ``then`` | ``until`` | ``weakuntil`` | ``xor``
 
 The symbols used in clafer are the following:
   | = | [ | ] | <<
@@ -98,7 +98,10 @@ All other symbols are terminals.
   | //Clafer// | -> | //Abstract// //[TempModifier]// //GCard// //PosIdent// //Super// //Reference// //Card// //Init// //Transition// //Elements// 
   | //Constraint// | -> | ``[`` //[Exp]// ``]`` 
   | //Assertion// | -> | ``assert`` ``[`` //[Exp]// ``]`` 
-  | //Goal// | -> | ``<<`` //[Exp]// ``>>`` 
+  | //Goal// | -> | ``<<`` ``min`` //[Exp]// ``>>`` 
+  |  |  **|**  | ``<<`` ``max`` //[Exp]// ``>>`` 
+  |  |  **|**  | ``<<`` ``minimize`` //[Exp]// ``>>`` 
+  |  |  **|**  | ``<<`` ``maximize`` //[Exp]// ``>>`` 
   | //TempModifier// | -> | ``initial`` 
   |  |  **|**  | ``final`` 
   |  |  **|**  | ``finalref`` 
@@ -158,6 +161,7 @@ All other symbols are terminals.
   |  |  **|**  | //Exp3// 
   | //Exp3// | -> | ``max`` //Exp4// 
   |  |  **|**  | ``min`` //Exp4// 
+  |  |  **|**  | ``if`` //Exp3// ``then`` //Exp3// ``else`` //Exp3// 
   |  |  **|**  | //Exp3// ``<=>`` //Exp4// 
   |  |  **|**  | //Exp4// 
   | //Exp4// | -> | //Exp4// ``=>`` //Exp5// 

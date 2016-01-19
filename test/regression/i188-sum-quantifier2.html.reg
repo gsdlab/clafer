@@ -50,5 +50,9 @@ a[href$='Ambiguous name'] {color: yellow}
 <div>
 <span class="claferDecl" id="c0_total">total</span><span class="keyword"> ->> </span><a href="#integer"><span class="reference">integer</span></a> = sum <a href="#c0_Component"><span class="reference">Component</span></a>.<a href="#c0_energy"><span class="reference">energy</span></a></div>
 
+
+<div>
+<span class="keyword">assert [</span> <a href="#c0_total"><span class="reference">total</span></a> = 3 <span class="keyword">]</span></div>
+
 </body>
 </html>
