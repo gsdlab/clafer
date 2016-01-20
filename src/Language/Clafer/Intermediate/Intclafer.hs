@@ -94,10 +94,12 @@ data IClafer
     , _reference :: Maybe IReference -- ^ reference type, bag or set
     , _card :: Maybe Interval -- ^ clafer cardinality
     , _glCard :: Interval     -- ^ (o) global cardinality
-    , _mutable :: Mutability  -- ^ clafer mutability information: not mutable = final + parent not mutable
     , _elements :: [IElement] -- ^ nested elements
     }
   deriving (Eq,Ord,Show,Data,Typeable)
+
+isMutable :: IClafer -> Bool
+isMutable = not . _final . _modifiers
 
 data IClaferModifiers
   = IClaferModifiers
@@ -313,10 +315,10 @@ iMap f (IRIElement (IEConstraint h pexp)) =
   f $ IRIElement $ IEConstraint h $ unWrapPExp $ iMap f $ IRPExp pexp
 iMap f (IRIElement (IEGoal m pexp)) =
   f $ IRIElement $ IEGoal m $ unWrapPExp $ iMap f $ IRPExp pexp
-iMap f (IRClafer (IClafer p a grc i u pu Nothing  r c goc mut elems)) =
-  f $ IRClafer $ IClafer p a (unWrapIGCard $ iMap f $ IRIGCard grc) i u pu Nothing                            (unWrapIReference $ iMap f $ IRIReference r) c goc mut $ map (unWrapIElement . iMap f . IRIElement) elems
-iMap f (IRClafer (IClafer p a grc i u pu (Just s) r c goc mut elems)) =
-  f $ IRClafer $ IClafer p a (unWrapIGCard $ iMap f $ IRIGCard grc) i u pu (Just $ unWrapPExp $ iMap f $ IRPExp s) (unWrapIReference $ iMap f $ IRIReference r) c goc mut $ map (unWrapIElement . iMap f . IRIElement) elems
+iMap f (IRClafer (IClafer p a grc i u pu Nothing  r c goc elems)) =
+  f $ IRClafer $ IClafer p a (unWrapIGCard $ iMap f $ IRIGCard grc) i u pu Nothing                            (unWrapIReference $ iMap f $ IRIReference r) c goc $ map (unWrapIElement . iMap f . IRIElement) elems
+iMap f (IRClafer (IClafer p a grc i u pu (Just s) r c goc elems)) =
+  f $ IRClafer $ IClafer p a (unWrapIGCard $ iMap f $ IRIGCard grc) i u pu (Just $ unWrapPExp $ iMap f $ IRPExp s) (unWrapIReference $ iMap f $ IRIReference r) c goc $ map (unWrapIElement . iMap f . IRIElement) elems
 iMap f (IRIExp (IDeclPExp q decs p)) =
   f $ IRIExp $ IDeclPExp (unWrapIQuant $ iMap f $ IRIQuant q) (map (unWrapIDecl . iMap f . IRIDecl) decs) $ unWrapPExp $ iMap f $ IRPExp p
 iMap f (IRIExp (IFunExp o pexps)) =
@@ -337,9 +339,9 @@ iFoldMap f i@(IRIElement (IEConstraint _ pexp)) =
   f i `mappend` (iFoldMap f $ IRPExp pexp)
 iFoldMap f i@(IRIElement (IEGoal _ pexp)) =
   f i `mappend` (iFoldMap f $ IRPExp pexp)
-iFoldMap f i@(IRClafer (IClafer _ _ grc _ _ _ Nothing r _ _ _ elems)) =
+iFoldMap f i@(IRClafer (IClafer _ _ grc _ _ _ Nothing r _ _ elems)) =
   f i `mappend` (iFoldMap f $ IRIReference r) `mappend` (iFoldMap f $ IRIGCard grc) `mappend` foldMap (iFoldMap f . IRIElement) elems
-iFoldMap f i@(IRClafer (IClafer _ _ grc _ _ _ (Just s) r _ _ _ elems)) =
+iFoldMap f i@(IRClafer (IClafer _ _ grc _ _ _ (Just s) r _ _ elems)) =
   f i `mappend` (iFoldMap f $ IRPExp s) `mappend` (iFoldMap f $ IRIReference r) `mappend` (iFoldMap f $ IRIGCard grc) `mappend` foldMap (iFoldMap f . IRIElement) elems
 iFoldMap f i@(IRIExp (IDeclPExp q decs p)) =
   f i `mappend` (iFoldMap f $ IRIQuant q) `mappend` (iFoldMap f $ IRPExp p) `mappend` foldMap (iFoldMap f . IRIDecl) decs

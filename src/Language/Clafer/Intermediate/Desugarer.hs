@@ -97,7 +97,7 @@ desugarClafer' claf'@(Clafer s' abstract' tmods' gcrd' id' super' reference' crd
   =  preElements
   ++ [(IEClafer $ IClafer s' iClaferModifiers (desugarGCard gcrd') (transIdent id')
                           "" "" (desugarSuper super') (desugarReference tmods' reference')
-                          (desugarCard crd') (0, -1) (desugarMutability tmods')
+                          (desugarCard crd') (0, -1)
                           elements'')]
   ++ (desugarInit id' init')
   where
@@ -138,7 +138,7 @@ getPExpClaferIdent (EJoin _ _ e2) = getPExpClaferIdent e2
 getPExpClaferIdent _ = error "Desugarer:getPExpClaferIdent not given a ClaferId PExp"
 
 sugarClafer :: IClafer -> Clafer
-sugarClafer (IClafer s modifiers' gcard' _ uid' _ super' reference' crd' _ _ elements') =
+sugarClafer (IClafer s modifiers' gcard' _ uid' _ super' reference' crd' _ elements') =
     Clafer s (sugarAbstract $ _abstract modifiers') (sugarModifier modifiers') (sugarGCard gcard') (mkIdent uid')
       (sugarSuper super') (sugarReference reference') (sugarCard crd') (InitEmpty s) (TransitionEmpty s) (sugarElements elements')
 
@@ -194,14 +194,6 @@ desugarTrans' s e1 arrow e2 =  case arrow of
       GuardedSyncTransArrow _ (TransGuard _ guardExp) -> EImplies s guardExp (LtlU s e1 e2)
       NextTransArrow _ -> EAnd s e1 (LtlX s e2)
       GuardedNextTransArrow _ (TransGuard _ guardExp) -> EImplies s guardExp (EAnd s e1 (LtlX s e2))
-
-
-desugarMutability :: [TempModifier] -> Mutability
-desugarMutability mods = not containsFinal  -- this is incorrect - final is context sensitive,
-  where                                     -- so a clafer can only be immutable if it's parent
-    containsFinal = any isFinalMod mods     -- is immutable. Also, final modifier can be inherited
-    isFinalMod (Final _) = True             -- which is why processing is added to inheritance resolver.
-    isFinalMod _ = False
 
 
 desugarFinality :: [TempModifier] -> Bool

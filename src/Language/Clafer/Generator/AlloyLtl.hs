@@ -78,7 +78,7 @@ genAlloyLtlModule    claferargs'   (imodule, genv)       scopes         otherTok
   -- multiply the scope by trace length for mutable clafers
   adjustScope :: (UID, Integer) -> (UID, Integer)
   adjustScope s@(uid', scope')   = case findIClafer uidIClaferMap' uid' of
-    Just claf -> if _mutable claf then (uid', tl * scope') else s
+    Just claf -> if isMutable claf then (uid', tl * scope') else s
     Nothing   -> s
 
   genScopes :: [(UID, Integer)] -> String
@@ -267,7 +267,7 @@ claferDecl    c     rest    = cconcat
   , Concat NoTrace [CString $ _uid c, genExtends $ _super c, CString "\n", rest]
   ]
   where
-  genSigCard = if not (_mutable c) then genOptCard c else CString ""
+  genSigCard = if not (isMutable c) then genOptCard c else CString ""
   genExtends Nothing = CString ""
   genExtends (Just (PExp _ _ _ (IClaferId _ i _ _))) = CString " " +++ Concat NoTrace [CString $ "extends " ++ i]
   -- todo: handle multiple inheritance
@@ -292,7 +292,7 @@ genRootRelations    genEnv    ctx        = maybeToList references ++ (map mkRel 
                 else
                         Nothing
   rType = flatten $ refType genEnv c
-  mkRel c' = trace ("root relation: " ++  show c') $ Concat NoTrace [CString $ genRel (genRelName $ _uid c') c' $ _uid c']
+  mkRel c' = Concat NoTrace [CString $ genRel (genRelName $ _uid c') c' $ _uid c']
 
 
 genRelations :: GenEnv -> GenCtx -> [Concat]
@@ -315,7 +315,7 @@ genRefName :: String -> String
 genRefName name = name ++ "_ref"
 
 genRel :: String -> IClafer -> String -> String
-genRel name c rType = trace ("genRel: " ++ rType') $ if _mutable c
+genRel name c rType = if isMutable c
   then genMutAlloyRel name rType'
   else genAlloyRel name (genCardCrude $ _card c) rType'
   where
@@ -353,7 +353,7 @@ containsStatefulExp    genEnv     (PExp iType' _ _ exp') =  case exp' of
   IClaferId _ sident' _ (GlobalBind claferUid) -> timedIClaferId
     where
     boundIClafer = fromJust $ findIClafer (uidIClaferMap genEnv) claferUid
-    mutable' = _mutable boundIClafer
+    mutable' = isMutable boundIClafer
     timedIClaferId
       | sident' == "ref" = mutable'
       | head sident' == '~' = False
@@ -378,7 +378,7 @@ containsMutable    genEnv    (PExp _ _ _ exp') = case exp' of
   IClaferId _ _ _ (GlobalBind bind) -> let
       boundIClafer = fromJust $ findIClafer (uidIClaferMap genEnv) bind
     in
-      _mutable boundIClafer
+      isMutable boundIClafer
   IDeclPExp _ decls' e -> anyTrue (map (containsMut genEnv) decls') || containsMutable genEnv e
   _ -> False
   where
@@ -427,7 +427,7 @@ genConstraints    genEnv    ctx
 -- if defined under root clafer:
 -- let t = first |
 genTimeDecl :: String -> [String] -> IClafer -> Concat
-genTimeDecl tvar rPath c | _mutable c = CString $ case rPath of
+genTimeDecl tvar rPath c | isMutable c = CString $ case rPath of
                                            par:_ -> genLocalFirst tvar par c
                                            [] -> globalFirstDecl -- For top level constraint
                          | otherwise = CString globalFirstDecl
@@ -445,13 +445,14 @@ genLocalFirst tvar parent c = "one " ++ tvar ++ " : localFirst[" ++
 -- typically:
 -- lone localFirst [rel, parent_sig, this] && lone r_c0_a.Time.this
 genMutClaferConst :: GenCtx -> IClafer -> Concat
-genMutClaferConst ctx c | _mutable c = let parentSig = head (resPath ctx) in
-                                           CString $ "lone localFirst[" ++ genRelName (_uid c) ++
-                                            ", " ++ parentSig ++
-                                            ", this] && " ++
-                                            "lone " ++ genRelName (_uid c) ++ "." ++ stateSig ++ ".this"
-                        | otherwise = CString ""
-
+genMutClaferConst ctx c
+  | isMutable c = CString $ "lone localFirst["
+                        ++ genRelName (_uid c) ++ ", " ++ parentSig ++ ", this] && " ++ "lone "
+                        ++ genRelName (_uid c) ++ "." ++ stateSig ++ ".this"
+  | otherwise = CString ""
+  where parentSig = case resPath ctx of
+              x:_ -> x
+              [] -> error "genMutClaferConst:: can not make parent"
 
 -- generates cardinality and parent dependency constraints for mutable subclafers
 -- typically all t: Time | lone r_field.t && lone r_field2.t &&
@@ -464,9 +465,9 @@ genMutSubClafersConst    genEnv c = genTimeQuant allSubExp +++ (cintercalate (CS
   allSubExp = cardConsts ++ refCardConst ++ (genReqParentConstBody "t" c mutClafers)
   cardConsts = map genCardConstBody $ filter (\c' -> cardStr c' /= "set") mutClafers
   refCardConst
-    | (_mutable c) && (isJust $ _reference c) = [CString $ "one this.@" ++ genRefName (_uid c) ++ ".t"]
+    | (isMutable c) && (isJust $ _reference c) = [CString $ "one this.@" ++ genRefName (_uid c) ++ ".t"]
     | otherwise = []
-  mutClafers = filter _mutable $ getSubclafers $ _elements c
+  mutClafers = filter isMutable $ getSubclafers $ _elements c
   cardStr c' = genCardCrude $ _card c'
   genTimeQuant [] = CString ""
   genTimeQuant _ = genTimeAllQuant "t"
@@ -480,7 +481,7 @@ genMutSubClafersConst    genEnv c = genTimeQuant allSubExp +++ (cintercalate (CS
 -- TODO needs to be tested
 genReqParentConstBody :: String -> IClafer -> [IClafer] -> [Concat]
 genReqParentConstBody time' c mutSubClafers =
-  if not (_mutable c) then []
+  if not (isMutable c) then []
                       else case mutSubClafers of
                                 [] -> []
                                 _  -> [CString ("(" ++ genAnticedent ++ " => " ++ intercalate " && " genConsequent ++ ")")]
@@ -550,7 +551,7 @@ genRefSubrelationConstriant    uidIClaferMap'   headClafer =
 genParentConst :: [String] -> IClafer -> Concat
 genParentConst [] _     = CString ""
 genParentConst _ c
-  | _mutable c = CString ""
+  | isMutable c = CString ""
   | otherwise  = genOptParentConst c
 
 genOptParentConst :: IClafer -> Concat
@@ -575,9 +576,9 @@ genGroupConst    genEnv    clafer'
   subclafers = getSubclafers $ concatMap _elements superHierarchy
   children' = intercalate " + " $ map childRel subclafers
   childRel :: IClafer -> String
-  childRel subc = (genRelName._uid) subc ++ (if _mutable subc then ".t" else "")
+  childRel subc = (genRelName._uid) subc ++ (if isMutable subc then ".t" else "")
   card'     = mkCard (_uid clafer') True "children" $ _interval $ fromJust $ _gcard $ clafer'
-  genTimeQuant = if any _mutable subclafers then genTimeAllQuant "t" else CString ""
+  genTimeQuant = if any isMutable subclafers then genTimeAllQuant "t" else CString ""
 
 mkCard :: String -> Bool -> String -> (Integer, Integer) -> Concat
 mkCard constraintName group' element' crd
@@ -672,7 +673,8 @@ genClaferIdSuffix :: GenEnv -> GenCtx -> ClaferBinding -> String
 genClaferIdSuffix genEnv ctx (GlobalBind claferUid) =
   let boundIClafer = findIClafer (uidIClaferMap genEnv) claferUid
   in case (boundIClafer, time ctx) of
-          (Just IClafer {_mutable=True}, Just t) -> "." ++ t
+          (Just c', Just t) | isMutable c' -> "." ++ t
+                            | otherwise -> ""
           _ -> ""
 genClaferIdSuffix _ _ _ = ""
 
@@ -700,7 +702,7 @@ genPExp'    genEnv    ctx       (PExp iType' pid' pos exp') = case exp' of
   IClaferId _ sid _ bind@(GlobalBind claferUid) -> CString $
       if head sid == '~'
       then if bound
-           then "~(" ++ tail sid ++ (if _mutable boundClafer then ".t" else "") ++ ")"
+           then "~(" ++ tail sid ++ (if isMutable boundClafer then ".t" else "") ++ ")"
            else error "AlloyLtl.genPExp' Unbounded parent expression" -- should never happen
       {-else if head sid == '~' then "~(" ++ tail sid ++ genClaferIdSuffix genEnv ctx bind ++ ")"-}
       else if isBuiltInExpr then vsident else sid'
@@ -739,7 +741,7 @@ genPExp'    genEnv    ctx       (PExp iType' pid' pos exp') = case exp' of
 transformExp :: IExp -> IClafer -> IExp
 transformExp (IFunExp op' (e1:_)) c'
   | op' == iMin = IFunExp iMul [PExp (_iType e1) "" noSpan $ IInt (-1), e1]
-{-  | op' == iInitially && _mutable c' = -- transforms to: (no this && X this) => X e1
+{-  | op' == iInitially && isMutable c' = -- transforms to: (no this && X this) => X e1
         let thisExpr = PExp (Just TBoolean) "" noSpan (IClaferId "" "this" False (GlobalBind (_uid c')))
             oper1 =  PExp (Just TBoolean) "" noSpan (IFunExp iNot [ thisExpr ])
             oper2 = PExp (Just TBoolean) "" noSpan (IFunExp iX [thisExpr])

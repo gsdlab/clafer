@@ -43,10 +43,10 @@ astrModule imodule = (imodule{_mDecls = decls''}, flipMap strMap')
 
 
 astrClafer :: Functor m => MonadState (Map.Map String Int) m => IClafer -> m IClafer
-astrClafer (IClafer s mods gcrd' ident' uid' puid' super' reference' crd' gCard mut elements') = do
+astrClafer (IClafer s mods gcrd' ident' uid' puid' super' reference' crd' gCard elements') = do
     reference'' <- astrReference reference'
     elements'' <- astrElement `mapM` elements'
-    return $ IClafer s mods gcrd' ident' uid' puid' super' reference'' crd' gCard mut elements''
+    return $ IClafer s mods gcrd' ident' uid' puid' super' reference'' crd' gCard elements''
 
 astrReference :: Functor m => MonadState (Map.Map String Int) m => Maybe IReference -> m (Maybe IReference)
 astrReference Nothing = return Nothing
