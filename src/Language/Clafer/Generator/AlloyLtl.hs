@@ -697,9 +697,8 @@ genPExp'    genEnv    ctx       (PExp iType' pid' pos exp') = case exp' of
   IClaferId _ "integer" _ _ -> CString "Int"
   IClaferId _ "int" _ _ -> CString "Int"
   IClaferId _ "string" _ _ -> CString "Int"
-  {-IClaferId _ "dref" _  bind -> CString $ "@ref" ++ genClaferIdSuffix genEnv ctx bind-}
-  IClaferId _ "dref" _ _ -> trace ("genPExp': " ++ show exp' ++ "\n" ++ show iType' ++ "\n\n" ++ show boundIClafer ++ "\n\n" ++ show (keys (uidIClaferMap genEnv))) $
-      CString $ getClaferIdWithState ctx ("@"  ++ getTClaferUID iType' ++ "_ref") (isNothing (boundIClafer >>= _reference >>= _refModifier))
+  IClaferId _ "dref" _ _ -> CString $ getClaferIdWithState ctx ("@"  ++ getTClaferUID iType' ++ "_ref")
+          (isNothing (boundIClafer >>= _reference >>= _refModifier))
     where
       boundIClafer = findIClafer (uidIClaferMap genEnv) (getTClaferUID iType')
       getTClaferUID (Just TMap{_so = TClafer{_hi = [u]}}) = u
@@ -710,8 +709,7 @@ genPExp'    genEnv    ctx       (PExp iType' pid' pos exp') = case exp' of
       then if bound
            then "~(" ++ tail sid ++ (if isMutable boundClafer then ".t" else "") ++ ")"
            else error "AlloyLtl.genPExp' Unbounded parent expression" -- should never happen
-      {-else if head sid == '~' then "~(" ++ tail sid ++ genClaferIdSuffix genEnv ctx bind ++ ")"-}
-      else if isBuiltInExpr then vsident else  trace ("using sid'" ++ sid') $ sid'
+      else if isBuiltInExpr then vsident else sid'
     where
     (bound, boundClafer) = case findIClafer (uidIClaferMap genEnv) claferUid of
                              Just c' -> (True, c')
@@ -877,7 +875,6 @@ adjustIExp ctx x = case x of
   IClaferId _ _ _  _-> aNav x
   _  -> x
   where
-  {-aNav e0 = let e' = fst (adjustNav (resPath ctx) e0) in trace ( "before adjust :\n"  ++ show e0 ++ "\nAfter adjust:\n" ++ show e' ) e'-}
   aNav = fst.(adjustNav $ resPath ctx)
 
 -- Essentially replaces IClaferId "parent" with appropriate relation name
