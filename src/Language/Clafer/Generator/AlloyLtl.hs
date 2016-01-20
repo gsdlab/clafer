@@ -1,4 +1,5 @@
 {-# LANGUAGE RankNTypes, FlexibleContexts #-}
+{-# LANGUAGE TemplateHaskell #-}
 {-
  Copyright (C) 2012-2015 Kacper Bak, Jimmy Liang, Michal Antkiewicz, Rafael Olaechea <http://gsd.uwaterloo.ca>
 
@@ -27,6 +28,7 @@ import Control.Applicative
 import Control.Conditional
 import Control.Lens hiding (elements, mapping, op)
 import Control.Monad.State
+import Data.FileEmbed
 import Data.List hiding (and)
 import Data.Maybe
 import Debug.Trace
@@ -155,56 +157,13 @@ genAlloyEscapes otherTokens' = concat $ map printAlloyEscape otherTokens'
       printAlloyEscape _                        = ""
 
 traceModuleSource :: String
-traceModuleSource = "/* Definition of timed traces (input independent) */ \n\
-    \sig State {}\n\
-    \\n\
-    \private one sig Ord {\n\
-    \   First: set State,\n\
-    \   Next: State -> State\n\
-    \} {\n\
-    \   pred/totalOrder[State,First,Next]\n\
-    \}\n\
-    \\n\
-    \lone sig back in State {}\n\
-    \\n\
-    \fun loop : State -> State {\n\
-    \  last -> back\n\
-    \}\n\
-    \\n\
-    \fun first: one State { Ord.First }\n\
-    \\n\
-    \fun last: one State { State - ((Ord.Next).State) }\n\
-    \\n\
-    \fun next : State->State { Ord.Next + loop }\n\
-    \\n\
-    \fun prev : State->State { ~this/next }\n\
-    \\n\
-    \fun past : State->State { ^(~this/next) }\n\
-    \\n\
-    \fun future : State -> State { State <: *this/next }\n\
-    \\n\
-    \fun upto[s,s' : State] : set State {\n\
-    \  (s' in s.*(Ord.Next) or finite) implies s.future & ^(Ord.Next).s' else s.*(Ord.Next) + (^(Ord.Next).s' & back.*(Ord.Next))\n\
-    \}\n\
-    \\n\
-    \\n\
-    \pred finite {\n\
-    \  no loop\n\
-    \}\n\
-    \\n\
-    \pred infinite {\n\
-    \  some loop\n\
-    \}\n\
-    \\n\
-    \fun localFirst [rel: univ->univ->State, parentSet: univ, child: univ] : State {\n\
-    \    let lifetime = child.(parentSet.rel) | lifetime - (lifetime.next)\n\
-    \}"
+traceModuleSource =  $(embedStringFile  "src/Language/Clafer/Generator/stateTrace.als")
 
 genRootClafer :: GenEnv -> IClafer -> Concat
 genRootClafer genEnv clafer'  =
   (cunlines $ filterNull
           [   claferDecl clafer' (
-              (showSet (CString "\n, ") $ genRelations genEnv ctx)
+              (showSet (CString "\n, ") $ genRootRelations genEnv ctx)
               +++ (optShowSet $ filterNull $ genConstraints genEnv ctx)
             )
           ]
@@ -322,11 +281,20 @@ genOptCard    c
   glCard' = genIntervalCrude $ _glCard c
 
 
--- -----------------------------------------------------------------------------
--- overlapping inheritance is a new clafer with val (unlike only relation)
--- relations: overlapping inheritance (val rel), children
--- adds parent relation
--- 29/March/2012  Rafael Olaechea: ref is now prepended with clafer name to be able to refer to it from partial instances.
+genRootRelations :: GenEnv -> GenCtx -> [Concat]
+genRootRelations    genEnv    ctx        = maybeToList references ++ (map mkRel $ getSubclafers $ _elements c)
+  where
+  c = ctxClafer ctx
+  references = if isJust $ _reference c
+                then
+                        Just $ Concat NoTrace [CString $ genRel (genRefName $ _uid c)
+                         c {_card = Just (1, 1)} rType]
+                else
+                        Nothing
+  rType = flatten $ refType genEnv c
+  mkRel c' = trace ("root relation: " ++  show c') $ Concat NoTrace [CString $ genRel (genRelName $ _uid c') c' $ _uid c']
+
+
 genRelations :: GenEnv -> GenCtx -> [Concat]
 genRelations    genEnv    ctx        = maybeToList r ++ (map mkRel $ getSubclafers $ _elements c)
   where
@@ -334,8 +302,7 @@ genRelations    genEnv    ctx        = maybeToList r ++ (map mkRel $ getSubclafe
   r = if isJust $ _reference c
                 then
                         Just $ Concat NoTrace [CString $ genRel (genRefName $ _uid c)
-                         c {_card = Just (1, 1)} $
-                         trace rType $ rType]
+                         c {_card = Just (1, 1)} rType]
                 else
                         Nothing
   rType = flatten $ refType genEnv c
@@ -348,7 +315,7 @@ genRefName :: String -> String
 genRefName name = name ++ "_ref"
 
 genRel :: String -> IClafer -> String -> String
-genRel name c rType = trace rType' $ if _mutable c
+genRel name c rType = trace ("genRel: " ++ rType') $ if _mutable c
   then genMutAlloyRel name rType'
   else genAlloyRel name (genCardCrude $ _card c) rType'
   where

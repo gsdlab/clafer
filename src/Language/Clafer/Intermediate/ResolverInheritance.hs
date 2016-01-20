@@ -43,6 +43,7 @@ import           Language.Clafer.Front.AbsClafer
 import           Language.Clafer.Intermediate.Intclafer
 import           Language.Clafer.Intermediate.ResolverName
 
+import           Debug.Trace
 
 -- | Resolve Non-overlapping inheritance
 resolveNModule :: (IModule, GEnv) -> Resolve (IModule, GEnv)
@@ -79,7 +80,7 @@ resolveNClafer abstractClafers clafer =
           Nothing               -> _parentUID clafer
     -- <F Top-level abstract clafer extending a nested abstract clafer <https://github.com/gsdlab/clafer/issues/67> <F
     elements' <- mapM (resolveNElement abstractClafers) $ _elements clafer
-    return $ clafer
+    trace ("resolveNClafer: " ++ show clafer ++ show superIClafer') $ return $ clafer
       { _super = super'
       , _parentUID = parentUID'
       , _modifiers = IClaferModifiers
