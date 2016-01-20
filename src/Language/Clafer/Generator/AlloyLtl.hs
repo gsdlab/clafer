@@ -31,6 +31,7 @@ import Control.Monad.State
 import Data.FileEmbed
 import Data.List hiding (and)
 import Data.Maybe
+import Data.StringMap (keys, elems, toList)
 import Debug.Trace
 import Prelude
 
@@ -670,13 +671,16 @@ genExInteger    element'  (y,z) x  =
 -- -----------------------------------------------------------------------------
 -- Generate code for logical expressions
 genClaferIdSuffix :: GenEnv -> GenCtx -> ClaferBinding -> String
-genClaferIdSuffix genEnv ctx (GlobalBind claferUid) =
-  let boundIClafer = findIClafer (uidIClaferMap genEnv) claferUid
-  in case (boundIClafer, time ctx) of
-          (Just c', Just t) | isMutable c' -> "." ++ t
-                            | otherwise -> ""
-          _ -> ""
+genClaferIdSuffix genEnv GenCtx{time=Just t} (GlobalBind claferUid) =
+  case findIClafer (uidIClaferMap genEnv) claferUid of
+    Just c' | isMutable c' -> "." ++ t
+            | otherwise -> ""
 genClaferIdSuffix _ _ _ = ""
+
+getClaferIdWithState :: GenCtx -> String -> Bool -> String
+getClaferIdWithState GenCtx{time=Just t} ident' True = ident' ++ "." ++ t
+getClaferIdWithState _ ident' _ = ident'
+
 
 genPExp :: GenEnv -> GenCtx -> PExp -> Concat
 genPExp    genEnv    ctx       x     = genPExp' genEnv ctx $ adjustPExp ctx x
@@ -694,8 +698,10 @@ genPExp'    genEnv    ctx       (PExp iType' pid' pos exp') = case exp' of
   IClaferId _ "int" _ _ -> CString "Int"
   IClaferId _ "string" _ _ -> CString "Int"
   {-IClaferId _ "dref" _  bind -> CString $ "@ref" ++ genClaferIdSuffix genEnv ctx bind-}
-  IClaferId _ "dref" _ _ -> CString $ "@"  ++ getTClaferUID iType' ++ "_ref"
+  IClaferId _ "dref" _ _ -> trace ("genPExp': " ++ show exp' ++ "\n" ++ show iType' ++ "\n\n" ++ show boundIClafer ++ "\n\n" ++ show (keys (uidIClaferMap genEnv))) $
+      CString $ getClaferIdWithState ctx ("@"  ++ getTClaferUID iType' ++ "_ref") (isNothing (boundIClafer >>= _reference >>= _refModifier))
     where
+      boundIClafer = findIClafer (uidIClaferMap genEnv) (getTClaferUID iType')
       getTClaferUID (Just TMap{_so = TClafer{_hi = [u]}}) = u
       getTClaferUID (Just TMap{_so = TClafer{_hi = (u:_)}}) = u
       getTClaferUID t = error $ "[bug] Alloy.genPExp'.getTClaferUID: unknown type: " ++ show t
@@ -707,10 +713,9 @@ genPExp'    genEnv    ctx       (PExp iType' pid' pos exp') = case exp' of
       {-else if head sid == '~' then "~(" ++ tail sid ++ genClaferIdSuffix genEnv ctx bind ++ ")"-}
       else if isBuiltInExpr then vsident else sid'
     where
-    (bound, boundClafer) = let finding = findIClafer (uidIClaferMap genEnv) claferUid
-                                  in case finding of
-                                          Just c' -> (True, c')
-                                          _ -> (False, undefined)
+    (bound, boundClafer) = case findIClafer (uidIClaferMap genEnv) claferUid of
+                             Just c' -> (True, c')
+                             _ -> (False, undefined)
     isBuiltInExpr = isPrimitive sid ||
       case iType' of
            Just TInteger -> True
