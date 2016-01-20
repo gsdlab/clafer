@@ -24,7 +24,7 @@
 module Language.Clafer.Intermediate.ResolverInheritance where
 
 import           Control.Applicative
-import           Control.Lens  ((^.), (&), (%%~), (.~), traverse)
+import           Control.Lens  ((^.), (&), (%%~), (.~))
 import           Control.Monad
 import           Control.Monad.Except
 import           Control.Monad.State
@@ -42,8 +42,6 @@ import           Language.Clafer.Common
 import           Language.Clafer.Front.AbsClafer
 import           Language.Clafer.Intermediate.Intclafer
 import           Language.Clafer.Intermediate.ResolverName
-
-import           Debug.Trace
 
 -- | Resolve Non-overlapping inheritance
 resolveNModule :: (IModule, GEnv) -> Resolve (IModule, GEnv)
@@ -80,7 +78,7 @@ resolveNClafer abstractClafers clafer =
           Nothing               -> _parentUID clafer
     -- <F Top-level abstract clafer extending a nested abstract clafer <https://github.com/gsdlab/clafer/issues/67> <F
     elements' <- mapM (resolveNElement abstractClafers) $ _elements clafer
-    trace ("resolveNClafer: " ++ show clafer ++ show superIClafer') $ return $ clafer
+    return $ clafer
       { _super = super'
       , _parentUID = parentUID'
       , _modifiers = IClaferModifiers
@@ -150,7 +148,7 @@ resolveOClafer env clafer =
 
 resolveOReference :: SEnv -> Maybe IReference -> Resolve (Maybe IReference)
 resolveOReference _   Nothing                      = return Nothing
-resolveOReference env (Just (IReference is' mod exp')) = Just <$> IReference is' mod <$> resolvePExp env exp'
+resolveOReference env (Just (IReference is' mods exp')) = Just <$> IReference is' mods <$> resolvePExp env exp'
 
 
 resolveOElement :: SEnv -> IElement -> Resolve IElement
