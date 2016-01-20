@@ -705,13 +705,13 @@ genPExp'    genEnv    ctx       (PExp iType' pid' pos exp') = case exp' of
       getTClaferUID (Just TMap{_so = TClafer{_hi = [u]}}) = u
       getTClaferUID (Just TMap{_so = TClafer{_hi = (u:_)}}) = u
       getTClaferUID t = error $ "[bug] Alloy.genPExp'.getTClaferUID: unknown type: " ++ show t
-  IClaferId _ sid _ bind@(GlobalBind claferUid) -> CString $
+  IClaferId _ sid isTop bind@(GlobalBind claferUid) -> CString $
       if head sid == '~'
       then if bound
            then "~(" ++ tail sid ++ (if isMutable boundClafer then ".t" else "") ++ ")"
            else error "AlloyLtl.genPExp' Unbounded parent expression" -- should never happen
       {-else if head sid == '~' then "~(" ++ tail sid ++ genClaferIdSuffix genEnv ctx bind ++ ")"-}
-      else if isBuiltInExpr then vsident else sid'
+      else if isBuiltInExpr then vsident else  trace ("using sid'" ++ sid') $ sid'
     where
     (bound, boundClafer) = case findIClafer (uidIClaferMap genEnv) claferUid of
                              Just c' -> (True, c')
@@ -722,7 +722,8 @@ genPExp'    genEnv    ctx       (PExp iType' pid' pos exp') = case exp' of
            Just TReal -> True
            Just TString -> True
            _ -> False
-    sid' = if isBuiltInExpr || sid == "this" then sid else ('@' : genRelName "" ++ sid ++ genClaferIdSuffix genEnv ctx bind)
+    sid' = if isBuiltInExpr || sid == "this" || isTop && bound && (not $ isMutable boundClafer)
+              then sid else ('@' : genRelName "" ++ sid ++ genClaferIdSuffix genEnv ctx bind)
     vsident = sid' ++  ".@"  ++ genRefName (if sid == "this" then head $ resPath ctx else sid)
   IClaferId _ sid _ (LocalBind _) -> CString sid  -- this is the case for local declarations in quantifiers
   IClaferId _ sid _ NoBind -> CString sid  -- this is the case for local declarations in quantifiers
@@ -789,7 +790,7 @@ genIFunExp    genEnv    pid'      ctx       (IFunExp op' exps') =
 genIFunExp _ _ _ x = error $ "[bug] Alloy.genIFunExp: expecting a IFunExp, instead got: " ++ show x--This should never happen
 
 genLtlExp :: GenEnv -> GenCtx -> String -> [PExp] -> [Concat]
-genLtlExp    genEnv    ctx       op'        exps' = {- trace ("call in genLtlExp; exps:\n" ++ show exps') $ -} dispatcher exps'
+genLtlExp    genEnv    ctx       op'        exps' = dispatcher exps'
   where
   dispatcher
     | op' == iF = genF
