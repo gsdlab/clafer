@@ -1,6 +1,10 @@
+# for GHC-7.10.3
+extra-deps: [ data-stringmap-1.0.1.1, aeson-0.11.1.2 ]
+resolver: nightly-2016-03-22
+
 # for GHC-7.10.2
-extra-deps: [ data-stringmap-1.0.1.1 ]
-resolver: lts-3.19
+# extra-deps: [ data-stringmap-1.0.1.1 ]
+# resolver: lts-3.22
 
 # for GHC-7.8.4
 # extra-deps: [ data-stringmap-1.0.1.1, json-builder-0.3 ]
