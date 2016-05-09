@@ -91,48 +91,6 @@ genAlloyLtlModule    claferargs'   (imodule, genv)       scopes         otherTok
   outputBody = genRootClafer genEnv clafer'
   output = header genEnv otherTokens' +++ outputBody
 
-
--- Traverses the intermediate AST and does several transformations:
--- - Converts initially constraint
---      [ initially" φ( "this" ) "]
---           to
---      [ (no this && X this) => X "φ("this") "]"
---    and lifts one level up
--- - Converts finally constraint
---   [ finally " φ("this") "]
---           to
---   [ (this && X no this) => "φ("this") "]
---    and lifts one level up
-{-
-transformAST :: IClafer -> IClafer
-transformAST = transform transformClafer
-
-transformClafer :: IClafer -> IClafer
-transformClafer x@(IClafer {}) = x {_elements = (_elements x) >>= (transformSubEls x)}
-
-transformSubEls :: IClafer -> IElement -> [IElement]
-transformSubEls parent (IEClafer clafer) = [IEClafer clafer'] ++ getLiftedEls
-  where
-    subEls = _elements clafer
-    clafer' = clafer {_elements = subEls >>= filterLiftedExps}
-    getLiftedEls = map liftExpr $ subEls >>= getLiftableExps
-transformSubEls parent x = [x]
-
-filterLiftedExps :: IElement -> [IElement]
-filterLiftedExps constr@(IEConstraint _ (PExp _ _ _ (IFunExp op _))) = if isLiftableOp op then [] else return constr
-filterLiftedExps x = return x
-
-getLiftableExps :: IElement -> [PExp]
-getLiftableExps (IEConstraint _ exp@(PExp _ _ _ (IFunExp op _))) = if isLiftableOp op then [exp] else []
-getLiftableExps _ = []
-
-isLiftableOp :: String -> Bool
-isLiftableOp op = op == iInitially || op == iFinally
-
-liftExpr :: PExp -> IElement
-liftExpr exp = IEConstraint True exp
--}
-
 header :: GenEnv -> [Token]    -> Concat
 header    genEnv   otherTokens' = CString $ unlines $ catMaybes
     [ (Alloy  `notElem` (mode args)) ?<> Just "open util/integer"
@@ -369,23 +327,6 @@ containsStatefulExp    genEnv     (PExp iType' _ _ exp') =  case exp' of
   where
   containsMut genEnv' (IDecl _ _ body') = containsStatefulExp genEnv' body'
 
-
--- Appears to be duplicate of containsStatefulExp
-{-
- containsMutable :: GenEnv -> PExp -> Bool
-containsMutable    genEnv    (PExp _ _ _ exp') = case exp' of
-  IFunExp op _ | op == iInitially || op == iFinally -> False
-  IFunExp _ exps' -> anyTrue $ map (containsMutable genEnv) exps'
-  IClaferId _ _ _ (GlobalBind bind) -> let
-      boundIClafer = fromJust $ findIClafer (uidIClaferMap genEnv) bind
-    in
-      isMutable boundIClafer
-  IDeclPExp _ decls' e -> anyTrue (map (containsMut genEnv) decls') || containsMutable genEnv e
-  _ -> False
-  where
-  containsMut genEnv' (IDecl _ _ body') = containsMutable genEnv' body'
--}
-
 genConstraints :: GenEnv -> GenCtx -> [Concat]
 genConstraints    genEnv    ctx
   = (genParentConst (resPath ctx) c)
@@ -393,6 +334,7 @@ genConstraints    genEnv    ctx
   : (genMutSubClafersConst genEnv c)
   : (genGroupConst genEnv c)
   : (genRefSubrelationConstriant (uidIClaferMap genEnv) c)
+  : (genInitialSubClafersConst genEnv ctx)
 -- Disabled because genPathConst is disabled in the static alloy generator.
 -- TODO: remove it if not needed
 --  : (genPathConst genEnv ctx  (if (noalloyruncommand (claferargs genEnv)) then  (_uid c ++ "_ref") else "ref") c)
@@ -417,6 +359,7 @@ genConstraints    genEnv    ctx
         )
         : (genParentSubrelationConstriant (uidIClaferMap genEnv) c')
         : (genSetUniquenessConstraint c')
+
     IEGoal _ _ -> error "[bug] Alloy.getConst: should not be given a goal." -- This should never happen
 
 
@@ -454,6 +397,22 @@ genMutClaferConst ctx c
   where parentSig = case resPath ctx of
               x:_ -> x
               [] -> error "genMutClaferConst:: can not make parent"
+
+genInitialSubClafersConst :: GenEnv -> GenCtx -> Concat
+genInitialSubClafersConst genEnv ctx =
+  let initialSubClafers = filter _isInitial $ getSubclafers $ _elements $ ctxClafer ctx in
+  case initialSubClafers of
+    x:_ -> genTimeDecl time' (resPath ctx) (ctxClafer ctx) +++
+      cintercalate (CString " && \n\t") (map genInitialConst initialSubClafers)
+    [] -> CString ""
+  where
+    makeSomeExp c = pExpDefPid noSpan $ IDeclPExp ISome [] $ cId c
+    cId c = mkPLClaferId noSpan (_uid c) False $ GlobalBind (_uid c)
+    genInitialConst c = cconcat [ CString "("
+               , genPExp' genEnv (ctx {time = Just time'}) $ makeSomeExp c
+               , CString ")"]
+    time' =  "t"
+
 
 -- generates cardinality and parent dependency constraints for mutable subclafers
 -- typically all t: Time | lone r_field.t && lone r_field2.t &&
@@ -589,31 +548,6 @@ mkCard constraintName group' element' crd
   where
   interval' = genInterval constraintName group' element' crd
   crd'  = flatten $ interval'
-
--- generates expression for references that point to expressions (not single clafers)
-{- unused
-genPathConst :: GenEnv -> GenCtx ->  String -> IClafer -> Concat
-genPathConst    genEnv    ctx        name      c
-  | isRefPath (c ^. reference) = cconcat [CString name, CString " = ",
-                                  fromMaybe (error "genPathConst: impossible.") $
-                                  fmap ((brArg id).(genPExp genEnv ctx)) $
-                                  _ref <$> _reference c]
-  | otherwise = CString ""
--}
-{-
-isRefPath :: Maybe IReference -> Bool
-isRefPath Nothing = False
-isRefPath (Just IReference{_ref=s}) = not $ isSimplePath s
--}
-{-
-isSimplePath :: PExp -> Bool
-isSimplePath    (PExp _ _ _ (IClaferId _ _ _ _)) = True
-isSimplePath    (PExp _ _ _ (IFunExp op' _)) = op' == iUnion
-isSimplePath    _ = False
--}
--- -----------------------------------------------------------------------------
--- Not used?
--- genGCard element gcard = genInterval element  $ interval $ fromJust gcard
 
 
 genCard :: String -> Maybe Interval -> Concat

@@ -94,36 +94,18 @@ desugarClafer claf@(Clafer s abstract' tmods gcrd' id' super' reference' crd' in
 
 desugarClafer' :: Clafer -> [IElement]
 desugarClafer' claf'@(Clafer s' abstract' tmods' gcrd' id' super' reference' crd' init' _ elements')
-  =  preElements
-  ++ [(IEClafer $ IClafer s' iClaferModifiers (desugarGCard gcrd') (transIdent id')
+  =  [(IEClafer $ IClafer s' iClaferModifiers (desugarGCard gcrd') (transIdent id')
                           "" "" (desugarSuper super') (desugarReference tmods' reference')
                           (desugarCard crd') (0, -1)
                           elements'')]
   ++ (desugarInit id' init')
   where
     iClaferModifiers = desugarModifiers abstract' tmods'
-    preElements =
-      if (not $ _abstract iClaferModifiers)   -- should only generate for concrete clafers
-        then desugarInitiallyModifier tmods' (transIdent id')
-        else []
     elements'' = (desugarClaferTrans claf') ++ (desugarElements elements')
 
 desugarModifiers :: Abstract -> [TempModifier] -> IClaferModifiers
 desugarModifiers    abstract'    tmods           =
   IClaferModifiers (desugarAbstract abstract') (desugarInitiality tmods) (desugarFinality tmods)
-
--- This is incorrect: initiality is inherited, which is resolved later on
--- Currently, this is only generated when explicitly declared as initial
-desugarInitiallyModifier :: [TempModifier] -> String -> [IElement]
-desugarInitiallyModifier [] _ = []
-desugarInitiallyModifier mods ident' = case (find isInitial mods) of
-  Just (Initial s) -> [IEConstraint True $ desugarConstraint $ mkExp s ]
-  Just _ -> error "Impossible: this should never happen."
-  Nothing -> []
-  where
-    isInitial (Initial _) = True
-    isInitial _ = False
-    mkExp s = Constraint s [TmpInitially s $ mkClaferIdExp s ident']
 
 sugarModifier :: IClaferModifiers -> [TempModifier]
 sugarModifier modifiers' =
