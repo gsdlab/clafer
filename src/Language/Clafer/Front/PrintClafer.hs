@@ -5,7 +5,7 @@ module Language.Clafer.Front.PrintClafer where
 
 import Language.Clafer.Front.AbsClafer
 import Data.Char
-
+import Prelude hiding (exp, init)
 
 -- the top-level printing method
 printTree :: Print a => a -> String

@@ -36,7 +36,7 @@ import Data.Version (showVersion)
 import GetURL
 
 -- | Type of output to be generated at the end of compilation
-data ClaferMode = AlloyLtl | Alloy | JSON | Clafer | Html | Graph | CVLGraph | Python | Choco
+data ClaferMode = AlloyLtl | Alloy | JSON | Clafer | Html | Graph | CVLGraph | Choco
   deriving (Eq, Show, Ord, Data, Typeable)
 instance Default ClaferMode where
   def = Alloy
