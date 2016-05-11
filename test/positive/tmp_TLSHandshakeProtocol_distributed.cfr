@@ -14,7 +14,7 @@ abstract final Domain
 
 enum ProtocolVersion = SSL2_0 | SSL3_0 | TLS1_0 | TLS1_1 | TLS1_2
 
-enum HandshakeStatus = initiated | completed | failed 
+enum HandshakeStatus = initiated | completed | failed
 
 abstract Port
 
@@ -57,7 +57,7 @@ abstract final Server : Node
 
 abstract final Client : Node
 
-// connecting messages 
+// connecting messages
 [Server.send = Client.receive]
 [Server.receive = Client.send]
 
@@ -82,31 +82,31 @@ Protocol : Domain
 
 
 
-		xor serverResponse 
+		xor serverResponse
 			[handshakeStatus =  initiated]
 
 			[initially (serverHello || mismatch)]
 
 			mismatch --> fatalError
-				[not (client.protocolversion = server.protocolversion)]
+				[!(client.protocolversion = server.protocolversion)]
 				[server.send = protocolMismatch]
 
-			
+
 			serverHello --> (serverCertificate || serverKeyExchange || certificateRequest || serverHelloDone)
 				[client.protocolversion in server.protocolversion]
 				[server.send = serverHelloMessage]
 			[serverHello -[no annonymousMode]-> serverCertificate]
-			
+
 
 			serverCertificate --> (serverKeyExchange || certificateRequest || serverHelloDone)
 				[server.send = serverCertificateMessage]
-            
+
             serverKeyExchange -->  certificateRequest || serverHelloDone
 				[server.send = serverKeyExchangeMessage]
 
 
             certificateRequest --> serverHelloDone
-            	// features: !annonymous mode + clientAuthentication 
+            	// features: !annonymous mode + clientAuthentication
             	[no annonymousMode && clientAuthentication]
             	[server.send = serverCertificateRequestMessage]
 
@@ -115,7 +115,7 @@ Protocol : Domain
 
 
 		xor clientResponse ?
-			[handshakeStatus = initiated]	
+			[handshakeStatus = initiated]
 			[initially (clientCertificate || clientKeyExchange) ]
 
 			clientCertificate --> clientKeyExchange
@@ -124,7 +124,7 @@ Protocol : Domain
 
 			clientKeyExchange --> (certificateVerify || clientChangeCipherSpec)
 				[client.send = clientKeyExchangeMessage]
-				
+
 
 			certificateVerify --> clientChangeCipherSpec
 				[client.certificate.signing]
