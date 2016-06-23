@@ -20,11 +20,17 @@ a[href$='Ambiguous name'] {color: yellow}
 <body>
 
 <div>
-<span class="claferDecl" id="c0_x">x</span><span class="keyword"> ->> </span><a href="#integer"><span class="reference">integer</span></a> *</div>
+<span class="claferDecl" id="c0_x">x</span><span class="keyword"> ->> </span><a href="#integer"><span class="reference">integer</span></a> 2..*
+  <div class="indent">
+  <span class="keyword">[</span> <span class="keyword">this</span> &gt;= -2 &amp;&amp; <span class="keyword">this</span> &lt;= 2 <span class="keyword">]</span></div>
+</div>
 
 
 <div>
-<span class="claferDecl" id="c0_y">y</span><span class="keyword"> ->> </span><a href="#integer"><span class="reference">integer</span></a> *</div>
+<span class="claferDecl" id="c0_y">y</span><span class="keyword"> ->> </span><a href="#integer"><span class="reference">integer</span></a> 2..*
+  <div class="indent">
+  <span class="keyword">[</span> <span class="keyword">this</span> &gt;= -2 &amp;&amp; <span class="keyword">this</span> &lt;= 2 <span class="keyword">]</span></div>
+</div>
 
 
 <div>
