@@ -236,6 +236,12 @@ TClafer {_hi = ["Alice","Student","Person","Bob","Employee"]}
 
 >>> tClaferAlice +++ tClaferAlice
 TClafer {_hi = ["Alice","Student","Person"]}
+
+>>> (TClafer {_hi = ["A", "X"]} +++ TClafer {_hi = ["B", "X"]}) +++ TClafer {_hi = ["C", "X"]}
+TClafer {_hi = ["A","X","B","C"]}
+
+>>> TClafer {_hi = ["A", "X"]} +++ (TClafer {_hi = ["B", "X"]} +++ TClafer {_hi = ["C", "X"]})
+TClafer {_hi = ["A","X","B","C"]}
 -}
 (+++) :: IType -> IType -> IType
 TBoolean        +++ TBoolean        = TBoolean
@@ -283,6 +289,8 @@ Cannot assign a TReal to a map to TInteger
 >>> runListT $ intersection undefined TReal tDrefMapDOB
 [Nothing]
 
+runListT $ intersection undefined TClafer {_hi = ["A","X","B","C"]} TClafer {_hi = ["X"]}
+[ Just TClafer {_hi = ["X"]]
 -}
 
 intersection :: Monad m => UIDIClaferMap -> IType -> IType -> m (Maybe IType)
