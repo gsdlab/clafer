@@ -10,13 +10,9 @@ Maintainer:             Michal Antkiewicz <mantkiew@gsd.uwaterloo.ca>
 Stability:              Experimental
 Category:               Model
 Build-type:             Simple
-tested-with:            GHC == 7.8.3
-                      , GHC == 7.8.4
-                      , GHC == 7.10.1
-                      , GHC == 7.10.2
-                      , GHC == 7.10.3
+tested-with:            GHC == 7.10.3
                       , GHC == 8.0.1
-Cabal-version:          >= 1.18
+Cabal-version:          >= 1.22
 data-files:             README.md
                       , CHANGES.md
                       , logo.pdf
@@ -28,7 +24,7 @@ source-repository head
     type:               git
     location:           git://github.com/gsdlab/clafer.git
 Executable clafer
-    build-tools:        ghc >= 7.8.3
+    build-tools:        ghc >= 7.10.3
     default-language:   Haskell2010
     main-is:            clafer.hs
     hs-source-dirs:     src-cmd
@@ -51,7 +47,7 @@ Executable clafer
     other-modules:      Paths_clafer
 
 library
-    build-tools:        ghc >= 7.8.3
+    build-tools:        ghc >= 7.10.3
                       , alex >= 3.1.7
                       , happy >= 1.19.5
     default-language:   Haskell2010
@@ -129,7 +125,7 @@ library
     other-modules:      GetURL
 
 Test-Suite test-suite
-    build-tools:        ghc >= 7.8.3
+    build-tools:        ghc >= 7.10.3
     default-language:   Haskell2010
     type:               exitcode-stdio-1.0
     main-is:            test-suite.hs
@@ -168,7 +164,7 @@ Test-Suite test-suite
                       , Suite.TypeSystem
 
 Test-suite doctests
-    build-tools:        ghc >= 7.8.3
+    build-tools:        ghc >= 7.10.3
     default-language:   Haskell2010
     type:               exitcode-stdio-1.0
     ghc-options:        -threaded -Wall

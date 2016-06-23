@@ -100,8 +100,8 @@ Stack is the only requirement: no other Haskell tooling needs to be installed be
 
 Dependencies
 
-* [GHC](https://www.haskell.org/downloads) >= 7.8.3. 7.10.3 or 8.0.1 are recommended,
-* `cabal-install` >= 1.18, should be installed together with a GHC distribution,
+* [GHC](https://www.haskell.org/downloads) >= 7.10.3 or 8.0.1 are recommended,
+* `cabal-install` >= 1.22, should be installed together with a GHC distribution,
 * [alex](https://hackage.haskell.org/package/alex),
 * [happy](https://hackage.haskell.org/package/happy).
 
