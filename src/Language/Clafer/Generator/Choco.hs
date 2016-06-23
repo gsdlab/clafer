@@ -36,7 +36,7 @@ genCModule (imodule@IModule{_mDecls}, genv') scopes  otherTokens' =
         ++ (genClafers =<< _elements)
     genClafers    _ = ""
 
-    genClaferNesting (IClafer{_isAbstract=True, _uid, _parentUID="root"})
+    genClaferNesting (IClafer{_isAbstract=True, _uid, _parentUID="clafer"})
         = " = Abstract(\"" ++ _uid ++ "\")"
     genClaferNesting (IClafer{_isAbstract=True, _uid, _parentUID})
         = " = " ++ _parentUID ++  ".addAbstractChild(\"" ++ _uid ++ "\")"

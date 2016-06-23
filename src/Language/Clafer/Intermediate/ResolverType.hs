@@ -183,8 +183,8 @@ resolveTElement    TAReferences  _         (IEClafer iclafer) =
         Just t -> if isTBoolean t
                   then Nothing
                   else Just $ oRef{_ref=r'}
-resolveTElement    TAReferences  _         iec@(IEConstraint{}) = return iec
-resolveTElement    TAReferences  _         ieg@(IEGoal{}) = return ieg
+resolveTElement    TAReferences  _         iec@IEConstraint{} = return iec
+resolveTElement    TAReferences  _         ieg@IEGoal{} = return ieg
 
 -- Phase two: only process constraints and goals
 resolveTElement    TAExpressions  _         (IEClafer iclafer) =
@@ -207,7 +207,7 @@ resolveTConstraint curThis' constraint =
   do
     uidIClaferMap' <- asks iUIDIClaferMap
     curThis'' <- claferWithUid uidIClaferMap' curThis'
-    head <$> (localCurThis curThis'' $ (resolveTPExp constraint :: TypeAnalysis [PExp]))
+    head <$> localCurThis curThis'' (resolveTPExp constraint :: TypeAnalysis [PExp])
 
 
 resolveTPExp :: PExp -> TypeAnalysis [PExp]

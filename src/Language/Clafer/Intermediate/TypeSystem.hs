@@ -132,7 +132,7 @@ getTClafer    iClafer' = case _uid iClafer' of
   "clafer" -> claferTClafer
   _        -> case _super iClafer' of
     Nothing     -> TClafer [ _uid iClafer']
-    Just super' -> (fromJust $ _iType super') & hi %~ ((:) (_uid iClafer'))
+    Just super' -> fromJust (_iType super') & hi %~ (:) (_uid iClafer')
 
 -- | Get TClafer for a given Clafer by its UID
 -- can only be called after inheritance resolver
@@ -202,6 +202,8 @@ fromUnionType u =
         ["int"]     -> Just TInteger
         ["double"]  -> Just TDouble
         ["real"]    -> Just TReal
+        ["root"]    -> Just rootTClafer
+        ["clafer"]  -> Just claferTClafer
         []          -> Nothing
         u'          -> Just $ TClafer u'
 
@@ -243,7 +245,7 @@ TDouble         +++ TDouble         = TDouble
 TInteger        +++ TInteger        = TInteger
 t1@(TClafer u1) +++ t2@(TClafer u2) = if t1 == t2
                                       then t1
-                                      else (TClafer $ nub $ u1 ++ u2)  -- should be TUnion [t1,t2]
+                                      else TClafer $ nub $ u1 ++ u2  -- should be TUnion [t1,t2]
 (TMap so1 ta1)  +++ (TMap so2 ta2)  = TMap (so1 +++ so2) (ta1 +++ ta2)
 (TUnion un1)    +++ (TUnion un2)    = collapseUnion (TUnion $ nub $ un1 ++ un2)
 (TUnion un1)    +++ t2              = collapseUnion (TUnion $ nub $ un1 ++ [t2])
@@ -295,6 +297,8 @@ intersection _              TDouble         TDouble       = return $ Just TDoubl
 intersection _              TDouble         TInteger      = return $ Just TDouble
 intersection _              TInteger        TDouble       = return $ Just TDouble
 intersection _              TInteger        TInteger      = return $ Just TInteger
+intersection _              t               (TClafer ["clafer"]) = return $ Just t
+intersection _              (TClafer ["clafer"]) t               = return $ Just t
 intersection uidIClaferMap' (TUnion t1s)    t2@(TClafer _) = do
   t1s' <- mapM (intersection uidIClaferMap' t2) t1s
   return $ case catMaybes t1s' of
@@ -310,8 +314,8 @@ intersection uidIClaferMap' t1@(TClafer _)  (TUnion t2s) = do
 intersection uidIClaferMap' t@(TClafer ut1) (TClafer ut2) = if ut1 == ut2
   then return $ Just t
   else do
-    h1 <- (mapM (hierarchyMap uidIClaferMap' _uid) ut1)
-    h2 <- (mapM (hierarchyMap uidIClaferMap' _uid) ut2)
+    h1 <- mapM (hierarchyMap uidIClaferMap' _uid) ut1
+    h2 <- mapM (hierarchyMap uidIClaferMap' _uid) ut2
     return $ fromUnionType $ catMaybes [contains (head u1) u2 `mplus` contains (head u2) u1 | u1 <- h1, u2 <- h2 ]
   where
   contains i is = if i `elem` is then Just i else Nothing
@@ -385,12 +389,12 @@ getIfThenElseType uidIClaferMap' t@(TClafer ut1) (TClafer ut2) = if ut1 == ut2
     commonHierarchy :: [UID] -> [UID] -> Maybe UID
     commonHierarchy h1 h2 = commonHierarchy' (reverse h1) (reverse h2) Nothing
     commonHierarchy' (x:xs) (y:ys) accumulator =
-      if (x == y)
-        then
-          if (null xs || null ys)
-            then Just x
-            else commonHierarchy' xs ys $ Just x
-        else accumulator
+      if x == y
+      then
+        if null xs || null ys
+        then Just x
+        else commonHierarchy' xs ys $ Just x
+      else accumulator
     commonHierarchy' _ _ _ = error "ResolverType.commonHierarchy' expects two non empty lists but was given at least one empty list!" -- Should never happen
 getIfThenElseType _ _ _ = return Nothing
 

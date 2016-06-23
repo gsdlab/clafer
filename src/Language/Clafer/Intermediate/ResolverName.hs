@@ -53,7 +53,7 @@ data SEnv
 
 -- | How a given name was resolved
 data HowResolved
-  = Special     -- ^ "this", "parent", "dref", "root", and "children"
+  = Special     -- ^ "this", "parent", "dref", "root", "clafer", and "children"
   | TypeSpecial -- ^ primitive type: "integer", "string"
   | Binding     -- ^ local variable (in constraints)
   | Subclafers  -- ^ clafer's descendant
@@ -253,7 +253,7 @@ resolveImmName pos' env id' = resolve env id'
 
 
 -- when one strategy fails, we want to move to the next one
-resolve :: (Monad f, Functor f) => SEnv -> String -> [SEnv -> String -> f (Maybe b)] -> f b
+resolve :: Monad f => SEnv -> String -> [SEnv -> String -> f (Maybe b)] -> f b
 resolve env id' fs = fromJust <$> (runMaybeT $ msum $ map (\x -> MaybeT $ x env id') fs)
 
 
