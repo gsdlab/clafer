@@ -248,7 +248,7 @@ resolveTPExp' p@PExp{_exp = IClaferId{_sident = "int"}} = runListT $ runExceptT 
 resolveTPExp' p@PExp{_exp = IClaferId{_sident = "string"}} = runListT $ runExceptT $ return $ p `withType` TString
 resolveTPExp' p@PExp{_exp = IClaferId{_sident = "double"}} = runListT $ runExceptT $ return $ p `withType` TDouble
 resolveTPExp' p@PExp{_exp = IClaferId{_sident = "real"}} = runListT $ runExceptT $ return $ p `withType` TReal
-resolveTPExp' p@PExp{_inPos, _exp = IClaferId{_sident="this"}} = do
+resolveTPExp' p@PExp{_inPos, _exp = IClaferId{_sident="this"}} =
   runListT $ runExceptT $ do
     sident' <- _uid <$> curThis
     result <- (p `withType`) <$> typeOfUid sident'
@@ -262,7 +262,7 @@ resolveTPExp' p@PExp{_inPos, _exp = IClaferId{_sident, _isTop}} = do
     sident' <- if _sident == "this" then _uid <$> curThis else return _sident
     when (isJust curPath') $ do
       c <- mapM (isChild uidIClaferMap' sident') $ unionType $ fromJust curPath'
-      unless (or c) $ throwError $ SemanticErr _inPos ("'" ++ sident' ++ "' is not a child of type '" ++ str (fromJust curPath') ++ "'")
+      unless (or c || _isTop) $ throwError $ SemanticErr _inPos ("'" ++ sident' ++ "' is not a child of type '" ++ str (fromJust curPath') ++ "'")
     result <- (p `withType`) <$> typeOfUid sident'
     if _isTop
     then return result -- Case 1: Use the sident
