@@ -262,7 +262,8 @@ resolveTPExp' p@PExp{_inPos, _exp = IClaferId{_sident, _isTop}} = do
     sident' <- if _sident == "this" then _uid <$> curThis else return _sident
     when (isJust curPath') $ do
       c <- mapM (isChild uidIClaferMap' sident') $ unionType $ fromJust curPath'
-      unless (or c || _isTop) $ throwError $ SemanticErr _inPos ("'" ++ sident' ++ "' is not a child of type '" ++ str (fromJust curPath') ++ "'")
+      let parentId' = str (fromJust curPath')
+      unless (or c || parentId' == "root") $ throwError $ SemanticErr _inPos ("'" ++ sident' ++ "' is not a child of type '" ++ parentId' ++ "'")
     result <- (p `withType`) <$> typeOfUid sident'
     if _isTop
     then return result -- Case 1: Use the sident

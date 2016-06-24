@@ -238,12 +238,8 @@ adjustAncestor ctx cPath rPath = (thisIdent, Just ctx) : parents ++ (fromJust $ 
 mkPath' :: Span -> String -> (HowResolved, String, [IClafer]) -> (IExp, [IClafer])
 mkPath'    pos' modName'  (howResolved, id', path)          = case howResolved of
   Reference -> (toNav' pos' (zip ["dref", id'] (map Just path)), path)
-  _ -> (IClaferId modName' id' top' (_uid <$> bind), path)
+  _ -> (IClaferId modName' id' False (_uid <$> bind), path)
   where
-    top' = case howResolved of
-      TopClafer   -> True
-      TypeSpecial -> True
-      _           -> False
     bind = case path of
       [] -> Nothing
       c:_ -> Just c

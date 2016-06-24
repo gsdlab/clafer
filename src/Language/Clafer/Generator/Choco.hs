@@ -153,6 +153,8 @@ genCModule (imodule@IModule{_mDecls}, genv') scopes  otherTokens' =
             genLocal local =
                 local ++ " = local(\"" ++ local ++ "\")"
 
+    genConstraintExp (IFunExp "." [PExp{_exp = IClaferId{_sident = "root"}}, e2]) =
+        genConstraintPExp e2
     genConstraintExp (IFunExp "." [e1, PExp{_exp = IClaferId{_sident = "dref"}}]) =
         "joinRef(" ++ genConstraintPExp e1 ++ ")"
     genConstraintExp (IFunExp "." [e1, PExp{_exp = IClaferId{_sident = "parent"}}]) =
