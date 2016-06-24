@@ -39,10 +39,10 @@ resolveModule :: ClaferArgs -> IModule -> Resolve (IModule, GEnv)
 resolveModule    args'         imodule =
   do
     r <- resolveNModule $ nameModule (skip_resolver args') imodule
-    resolveNamesModule args' =<< (rom' $ rem' r)
+    resolveNamesModule args' =<< rom' (rem' r)
   where
   rem' = if flatten_inheritance args' then resolveEModule else id
-  rom' = if skip_resolver args' then return . id else resolveOModule
+  rom' = if skip_resolver args' then return else resolveOModule
 
 
 -- | Name resolver
@@ -56,14 +56,15 @@ nameModule skipResolver imodule = (imodule', genv'')
 
 nameElement :: MonadState GEnv m => Bool -> UID -> IElement -> m IElement
 nameElement skipResolver puid x = case x of
-  IEClafer claf -> IEClafer `liftM` (nameClafer skipResolver puid claf)
-  IEConstraint isHard' pexp -> IEConstraint isHard' `liftM` (namePExp pexp)
-  IEGoal isMaximize' pexp -> IEGoal isMaximize' `liftM` (namePExp pexp)
+  IEClafer claf -> IEClafer <$> nameClafer skipResolver puid claf
+  IEConstraint isHard' pexp -> IEConstraint isHard' <$> namePExp pexp
+  IEGoal isMaximize' pexp -> IEGoal isMaximize' <$> namePExp pexp
 
 
 nameClafer :: MonadState GEnv m => Bool -> UID -> IClafer -> m IClafer
 nameClafer skipResolver puid claf = do
-  claf' <- if skipResolver then return claf{_uid = _ident claf, _parentUID = puid} else renameClafer True puid claf
+  let puid' = if _isAbstract claf && puid == "root" then baseClafer else puid
+  claf' <- if skipResolver then return claf{_uid = _ident claf, _parentUID = puid'} else renameClafer True puid' claf
   elements' <- mapM (nameElement skipResolver (_uid claf')) $ _elements claf
   return $ claf' {_elements = elements'}
 
@@ -81,7 +82,7 @@ nameIExp x = case x of
     decls'' <- mapM nameIDecl decls'
     pexp'  <- namePExp pexp
     return $ IDeclPExp quant' decls'' pexp'
-  IFunExp op' pexps -> IFunExp op' `liftM` (mapM namePExp pexps)
+  IFunExp op' pexps -> IFunExp op' `liftM` mapM namePExp pexps
   _ -> return x
 
 nameIDecl :: MonadState GEnv m => IDecl -> m IDecl

@@ -1896,8 +1896,8 @@ mkTokenSpan = gp
 {-# LINE 1 "templates\\GenericTemplate.hs" #-}
 {-# LINE 1 "<built-in>" #-}
 {-# LINE 1 "<command-line>" #-}
-{-# LINE 9 "<command-line>" #-}
-{-# LINE 1 "C:\\Users\\mantkiew\\AppData\\Local\\Programs\\stack\\i386-windows\\ghc-7.10.2\\lib/include\\ghcversion.h" #-}
+{-# LINE 12 "<command-line>" #-}
+{-# LINE 1 "C:\\Users\\mantkiew\\AppData\\Local\\Programs\\stack\\x86_64-windows\\ghc-7.10.3\\lib/include\\ghcversion.h" #-}
 
 
 
@@ -1915,7 +1915,7 @@ mkTokenSpan = gp
 
 
 
-{-# LINE 9 "<command-line>" #-}
+{-# LINE 12 "<command-line>" #-}
 {-# LINE 1 "templates\\GenericTemplate.hs" #-}
 -- Id: GenericTemplate.hs,v 1.26 2005/01/14 14:47:22 simonmar Exp 
 

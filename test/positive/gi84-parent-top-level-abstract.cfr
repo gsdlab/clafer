@@ -1,0 +1,11 @@
+abstract FeatureModel
+abstract Feature
+    [ parent in Feature, FeatureModel]
+
+
+FM : FeatureModel
+    F1 : Feature
+       F2 : Feature
+
+// It should be incorrect to have a Feature at the top-level
+// F3 : Feature

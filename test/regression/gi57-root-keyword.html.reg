@@ -20,21 +20,22 @@ a[href$='Ambiguous name'] {color: yellow}
 <body>
 
 <div>
-<span class="claferDecl" id="c0_x">x</span><span class="keyword"> ->> </span><a href="#integer"><span class="reference">integer</span></a> 2..*
+<span class="claferDecl" id="c0_a">a</span>
   <div class="indent">
-  <span class="keyword">[</span> <span class="keyword">this</span> &gt;= -2 &amp;&amp; <span class="keyword">this</span> &lt;= 2 <span class="keyword">]</span></div>
+  <span class="claferDecl" id="c0_b">b</span> ?</div>
 </div>
 
 
 <div>
-<span class="claferDecl" id="c0_y">y</span><span class="keyword"> ->> </span><a href="#integer"><span class="reference">integer</span></a> 2..*
-  <div class="indent">
-  <span class="keyword">[</span> <span class="keyword">this</span> &gt;= -2 &amp;&amp; <span class="keyword">this</span> &lt;= 2 <span class="keyword">]</span></div>
-</div>
+<span class="claferDecl" id="c1_b">b</span> ?</div>
 
 
 <div>
-<span class="claferDecl" id="c0_z">z</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a> = sum <a href="#c0_x"><span class="reference">x</span></a>++<a href="#c0_y"><span class="reference">y</span></a></div>
+<span class="keyword">[</span> <span class="keyword">some</span> <a href="#c0_a"><span class="reference">a</span></a>.<a href="#c0_b"><span class="reference">b</span></a> <span class="keyword">]</span></div>
+
+
+<div>
+<span class="keyword">[</span> <span class="keyword">some</span> <span class="keyword">root</span>.<a href="#c1_b"><span class="reference">b</span></a> <span class="keyword">]</span></div>
 
 </body>
 </html>

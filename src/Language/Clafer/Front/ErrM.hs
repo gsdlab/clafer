@@ -16,7 +16,7 @@ data Err a = Ok a | Bad Pos String
   deriving (Read, Show, Eq, Ord)
 
 instance Monad Err where
-  return      = Ok
+  return      = pure
   fail        = Bad noPos
   Ok a  >>= f = f a
   Bad p s >>= _ = Bad p s
@@ -24,7 +24,7 @@ instance Monad Err where
 instance Applicative Err where
   pure = Ok
   (Bad p s) <*> _ = Bad p s
-  (Ok f) <*> o  = liftM f o
+  (Ok f) <*> o  = fmap f o
 
 
 instance Functor Err where

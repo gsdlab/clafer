@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -fno-warn-unused-binds -fno-warn-missing-signatures #-}
 {-# LANGUAGE CPP,MagicHash #-}
 {-# LINE 3 "Language/Clafer/Front/LexClafer.x" #-}
 
@@ -28,6 +29,8 @@ import GHC.Exts
 #else
 import GlaExts
 #endif
+alex_tab_size :: Int
+alex_tab_size = 8
 alex_base :: AlexAddr
 alex_base = AlexA# "\xf8\xff\xff\xff\x4c\x00\x00\x00\xef\x00\x00\x00\x92\x01\x00\x00\x35\x02\x00\x00\xd8\x02\x00\x00\x8d\xff\xff\xff\x98\xff\xff\xff\x99\xff\xff\xff\xa6\xff\xff\xff\x9b\xff\xff\xff\xa3\xff\xff\xff\xa0\xff\xff\xff\xa1\xff\xff\xff\xd8\x03\x00\x00\x92\xff\xff\xff\x98\x03\x00\x00\x98\x04\x00\x00\x93\xff\xff\xff\x58\x04\x00\x00\x58\x05\x00\x00\x18\x05\x00\x00\x9c\x05\x00\x00\x20\x06\x00\x00\xa4\x06\x00\x00\x28\x07\x00\x00\xfe\x07\x00\x00\xfe\x08\x00\x00\x34\x00\x00\x00\x69\x07\x00\x00\x7e\x09\x00\x00\x3e\x09\x00\x00\xbe\x09\x00\x00\x33\x0a\x00\x00\x4d\x00\x00\x00\x61\x00\x00\x00\x79\x00\x00\x00\x7e\x00\x00\x00\xe5\xff\xff\xff\x4f\x00\x00\x00\xd4\xff\xff\xff\xd5\xff\xff\xff\xed\xff\xff\xff\xb3\xff\xff\xff\x00\x00\x00\x00\xbc\xff\xff\xff\xd7\xff\xff\xff\x3d\x00\x00\x00\xf1\xff\xff\xff\x2d\x00\x00\x00\x52\x00\x00\x00\x8c\x00\x00\x00\x1d\x01\x00\x00\x03\x0b\x00\x00\x00\x00\x00\x00\x28\x0b\x00\x00\x79\x0b\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xfd\x0b\x00\x00\x00\x00\x00\x00\x81\x0c\x00\x00"#
 
@@ -204,23 +207,23 @@ utf8Encode = map fromIntegral . go . ord
                         , 0x80 + oc Data.Bits..&. 0x3f
                         ]
 
-alex_action_1 =  tok (\p s -> PT p (eitherResIdent (TV . share) s)) 
-alex_action_2 =  tok (\p s -> PT p (eitherResIdent (T_PosInteger . share) s)) 
-alex_action_3 =  tok (\p s -> PT p (eitherResIdent (T_PosDouble . share) s)) 
-alex_action_4 =  tok (\p s -> PT p (eitherResIdent (T_PosReal . share) s)) 
-alex_action_5 =  tok (\p s -> PT p (eitherResIdent (T_PosString . share) s)) 
-alex_action_6 =  tok (\p s -> PT p (eitherResIdent (T_PosIdent . share) s)) 
-alex_action_7 =  tok (\p s -> PT p (eitherResIdent (T_PosLineComment . share) s)) 
-alex_action_8 =  tok (\p s -> PT p (eitherResIdent (T_PosBlockComment . share) s)) 
-alex_action_9 =  tok (\p s -> PT p (eitherResIdent (T_PosAlloy . share) s)) 
-alex_action_10 =  tok (\p s -> PT p (eitherResIdent (T_PosChoco . share) s)) 
-alex_action_11 =  tok (\p s -> PT p (eitherResIdent (TV . share) s)) 
+alex_action_1 =  tok (\p s -> PT p (eitherResIdent (TV . share) s))
+alex_action_2 =  tok (\p s -> PT p (eitherResIdent (T_PosInteger . share) s))
+alex_action_3 =  tok (\p s -> PT p (eitherResIdent (T_PosDouble . share) s))
+alex_action_4 =  tok (\p s -> PT p (eitherResIdent (T_PosReal . share) s))
+alex_action_5 =  tok (\p s -> PT p (eitherResIdent (T_PosString . share) s))
+alex_action_6 =  tok (\p s -> PT p (eitherResIdent (T_PosIdent . share) s))
+alex_action_7 =  tok (\p s -> PT p (eitherResIdent (T_PosLineComment . share) s))
+alex_action_8 =  tok (\p s -> PT p (eitherResIdent (T_PosBlockComment . share) s))
+alex_action_9 =  tok (\p s -> PT p (eitherResIdent (T_PosAlloy . share) s))
+alex_action_10 =  tok (\p s -> PT p (eitherResIdent (T_PosChoco . share) s))
+alex_action_11 =  tok (\p s -> PT p (eitherResIdent (TV . share) s))
 {-# LINE 1 "templates\GenericTemplate.hs" #-}
 {-# LINE 1 "templates\\GenericTemplate.hs" #-}
 {-# LINE 1 "<built-in>" #-}
 {-# LINE 1 "<command-line>" #-}
-{-# LINE 8 "<command-line>" #-}
-{-# LINE 1 "C:\\Users\\mantkiew\\AppData\\Local\\Programs\\stack\\i386-windows\\ghc-7.10.2\\lib/include\\ghcversion.h" #-}
+{-# LINE 11 "<command-line>" #-}
+{-# LINE 1 "C:\\Users\\mantkiew\\AppData\\Local\\Programs\\stack\\x86_64-windows\\ghc-7.10.3\\lib/include\\ghcversion.h" #-}
 
 
 
@@ -238,7 +241,7 @@ alex_action_11 =  tok (\p s -> PT p (eitherResIdent (TV . share) s))
 
 
 
-{-# LINE 8 "<command-line>" #-}
+{-# LINE 11 "<command-line>" #-}
 {-# LINE 1 "templates\\GenericTemplate.hs" #-}
 -- -----------------------------------------------------------------------------
 -- ALEX TEMPLATE
@@ -290,13 +293,13 @@ alexIndexInt16OffAddr (AlexA# arr) off =
 
 
 {-# INLINE alexIndexInt32OffAddr #-}
-alexIndexInt32OffAddr (AlexA# arr) off = 
+alexIndexInt32OffAddr (AlexA# arr) off =
 #ifdef WORDS_BIGENDIAN
   narrow32Int# i
   where
    i    = word2Int# ((b3 `uncheckedShiftL#` 24#) `or#`
-		     (b2 `uncheckedShiftL#` 16#) `or#`
-		     (b1 `uncheckedShiftL#` 8#) `or#` b0)
+                     (b2 `uncheckedShiftL#` 16#) `or#`
+                     (b1 `uncheckedShiftL#` 8#) `or#` b0)
    b3   = int2Word# (ord# (indexCharOffAddr# arr (off' +# 3#)))
    b2   = int2Word# (ord# (indexCharOffAddr# arr (off' +# 2#)))
    b1   = int2Word# (ord# (indexCharOffAddr# arr (off' +# 1#)))
@@ -336,30 +339,30 @@ alexScan input (I# (sc))
 
 alexScanUser user input (I# (sc))
   = case alex_scan_tkn user input 0# input sc AlexNone of
-	(AlexNone, input') ->
-		case alexGetByte input of
-			Nothing -> 
+        (AlexNone, input') ->
+                case alexGetByte input of
+                        Nothing ->
 
 
 
-				   AlexEOF
-			Just _ ->
+                                   AlexEOF
+                        Just _ ->
 
 
 
-				   AlexError input'
+                                   AlexError input'
 
-	(AlexLastSkip input'' len, _) ->
-
-
-
-		AlexSkip input'' len
-
-	(AlexLastAcc k input''' len, _) ->
+        (AlexLastSkip input'' len, _) ->
 
 
 
-		AlexToken input''' len k
+                AlexSkip input'' len
+
+        (AlexLastAcc k input''' len, _) ->
+
+
+
+                AlexToken input''' len k
 
 
 -- Push the input through the DFA, remembering the most recent accepting
@@ -367,13 +370,13 @@ alexScanUser user input (I# (sc))
 
 alex_scan_tkn user orig_input len input s last_acc =
   input `seq` -- strict in the input
-  let 
-	new_acc = (check_accs (alex_accept `quickIndex` (I# (s))))
+  let
+        new_acc = (check_accs (alex_accept `quickIndex` (I# (s))))
   in
   new_acc `seq`
   case alexGetByte input of
      Nothing -> (new_acc, input)
-     Just (c, new_input) -> 
+     Just (c, new_input) ->
 
 
 
@@ -382,23 +385,23 @@ alex_scan_tkn user orig_input len input s last_acc =
                 base   = alexIndexInt32OffAddr alex_base s
                 offset = (base +# ord_c)
                 check  = alexIndexInt16OffAddr alex_check offset
-		
+
                 new_s = if GTE(offset,0#) && EQ(check,ord_c)
-			  then alexIndexInt16OffAddr alex_table offset
-			  else alexIndexInt16OffAddr alex_deflt s
-	in
+                          then alexIndexInt16OffAddr alex_table offset
+                          else alexIndexInt16OffAddr alex_deflt s
+        in
         case new_s of
-	    -1# -> (new_acc, input)
-		-- on an error, we want to keep the input *before* the
-		-- character that failed, not after.
-    	    _ -> alex_scan_tkn user orig_input (if c < 0x80 || c >= 0xC0 then (len +# 1#) else len)
+            -1# -> (new_acc, input)
+                -- on an error, we want to keep the input *before* the
+                -- character that failed, not after.
+            _ -> alex_scan_tkn user orig_input (if c < 0x80 || c >= 0xC0 then (len +# 1#) else len)
                                                 -- note that the length is increased ONLY if this is the 1st byte in a char encoding)
-			new_input new_s new_acc
+                        new_input new_s new_acc
       }
   where
-	check_accs (AlexAccNone) = last_acc
-	check_accs (AlexAcc a  ) = AlexLastAcc a input (I# (len))
-	check_accs (AlexAccSkip) = AlexLastSkip  input (I# (len))
+        check_accs (AlexAccNone) = last_acc
+        check_accs (AlexAcc a  ) = AlexLastAcc a input (I# (len))
+        check_accs (AlexAccSkip) = AlexLastSkip  input (I# (len))
 {-# LINE 198 "templates\\GenericTemplate.hs" #-}
 
 data AlexLastAcc a
@@ -407,15 +410,11 @@ data AlexLastAcc a
   | AlexLastSkip  !AlexInput !Int
 
 instance Functor AlexLastAcc where
-    fmap f AlexNone = AlexNone
+    fmap _ AlexNone = AlexNone
     fmap f (AlexLastAcc x y z) = AlexLastAcc (f x) y z
-    fmap f (AlexLastSkip x y) = AlexLastSkip x y
+    fmap _ (AlexLastSkip x y) = AlexLastSkip x y
 
 data AlexAcc a user
   = AlexAccNone
   | AlexAcc a
   | AlexAccSkip
-{-# LINE 242 "templates\\GenericTemplate.hs" #-}
-
--- used by wrappers
-iUnbox (I# (i)) = i

@@ -1,0 +1,18 @@
+abstract FunctionalArchitecture
+abstract Deployment
+   abstract fa -> FunctionalArchitecture
+
+// then we write our generic power window deployment
+
+abstract PowerWindowFAA : FunctionalArchitecture
+abstract PowerWindowDpl : Deployment
+   abstract fa : fa -> PowerWindowFAA
+
+// Finally, we want to specialize it to driver power window.
+// Here we have concrete architecture
+
+System
+    DriverPowerWindowFAA : PowerWindowFAA
+    DriverPowerWindowDpl : PowerWindowDpl
+       // refine the type again to driver
+       fa : fa -> DriverPowerWindowFAA

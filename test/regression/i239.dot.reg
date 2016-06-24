@@ -6,7 +6,7 @@ nodesep=0.1;
 graph [fontname=Sans fontsize=11];
 node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
 edge [fontname=Sans fontsize=11];
-"c0_x" [label="x -&gt;&gt; integer *" URL="#c0_x" tooltip="x -&gt;&gt; integer *&#10;"];
-"c0_y" [label="y -&gt;&gt; integer *" URL="#c0_y" tooltip="y -&gt;&gt; integer *&#10;"];
+"c0_x" [label="x -&gt;&gt; integer 2..*" URL="#c0_x" tooltip="x -&gt;&gt; integer 2..*&#10;  [ this >= -2 &amp;&amp; this <= 2 ]&#10;"];
+"c0_y" [label="y -&gt;&gt; integer 2..*" URL="#c0_y" tooltip="y -&gt;&gt; integer 2..*&#10;  [ this >= -2 &amp;&amp; this <= 2 ]&#10;"];
 "c0_z" [label="z -&gt; integer = sum x++y" URL="#c0_z" tooltip="z -&gt; integer = sum x++y&#10;"];
 }

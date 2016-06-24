@@ -1,0 +1,16 @@
+open util/integer
+pred show {}
+
+
+one sig c0_a
+{ r_c0_b : lone c0_b }
+
+lone sig c0_b
+{}
+{ one r_c0_b }
+
+lone sig c1_b
+{}
+
+fact { some c0_a.@r_c0_b }
+fact { some c1_b }
