@@ -1,24 +1,24 @@
-X -> integer 3
-total_X -> integer = sum X
-Y
-  total_Y -> integer = sum X
+x -> integer 3
+total_x -> integer = sum x
+y
+  total_y -> integer = sum x
 
 // minimize the maximum of a set
-<< min max X >>
-<< minimize max X >>
+<< min max x >>
+<< minimize max x >>
 
 // maximize the minimum of a set
-<< max min X >>
-<< maximize min X >>
+<< max min x >>
+<< maximize min x >>
 
 // minimize the sum of a set
-<< minimize sum X >>
+<< minimize sum x >>
 
 // maximize the product of a set
-<< maximize product X >>
+<< maximize product x >>
 
 // minimize the number of elements of a set
-<< minimize # X >>
+<< minimize # x >>
 
-<< minimize total_X >>
-<< minimize Y.total_Y >>
+<< minimize total_x >>
+<< minimize y.total_y >>

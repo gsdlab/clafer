@@ -148,6 +148,7 @@ All other symbols are terminals.
   |  |  **|**  | ``all`` //Decl// ``|`` //Exp1// 
   |  |  **|**  | //Quant// ``disj`` //Decl// ``|`` //Exp1// 
   |  |  **|**  | //Quant// //Decl// ``|`` //Exp1// 
+  |  |  **|**  | ``if`` //Exp1// ``then`` //Exp1// ``else`` //Exp1// 
   |  |  **|**  | ``let`` //VarBinding// ``in`` //Exp1// 
   |  |  **|**  | //Exp2// 
   | //Exp2// | -> | ``never`` //Exp3// //PatternScope// 
@@ -159,10 +160,7 @@ All other symbols are terminals.
   |  |  **|**  | ``initially`` //Exp3// 
   |  |  **|**  | ``finally`` //Exp3// 
   |  |  **|**  | //Exp3// 
-  | //Exp3// | -> | ``max`` //Exp4// 
-  |  |  **|**  | ``min`` //Exp4// 
-  |  |  **|**  | ``if`` //Exp3// ``then`` //Exp3// ``else`` //Exp3// 
-  |  |  **|**  | //Exp3// ``<=>`` //Exp4// 
+  | //Exp3// | -> | //Exp3// ``<=>`` //Exp4// 
   |  |  **|**  | //Exp4// 
   | //Exp4// | -> | //Exp4// ``=>`` //Exp5// 
   |  |  **|**  | //Exp5// 
@@ -205,12 +203,13 @@ All other symbols are terminals.
   |  |  **|**  | //Exp18// ``/`` //Exp19// 
   |  |  **|**  | //Exp18// ``%`` //Exp19// 
   |  |  **|**  | //Exp19// 
-  | //Exp19// | -> | ``sum`` //Exp20// 
-  |  |  **|**  | ``product`` //Exp20// 
-  |  |  **|**  | ``#`` //Exp20// 
-  |  |  **|**  | ``-`` //Exp20// 
+  | //Exp19// | -> | ``max`` //Exp20// 
+  |  |  **|**  | ``min`` //Exp20// 
   |  |  **|**  | //Exp20// 
-  | //Exp20// | -> | ``if`` //Exp20// ``then`` //Exp20// ``else`` //Exp21// 
+  | //Exp20// | -> | ``sum`` //Exp21// 
+  |  |  **|**  | ``product`` //Exp21// 
+  |  |  **|**  | ``#`` //Exp21// 
+  |  |  **|**  | ``-`` //Exp21// 
   |  |  **|**  | //Exp21// 
   | //Exp21// | -> | //Exp21// ``<:`` //Exp22// 
   |  |  **|**  | //Exp22// 

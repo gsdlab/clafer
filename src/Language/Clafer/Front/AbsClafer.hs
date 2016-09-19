@@ -264,6 +264,7 @@ data Exp
     | EDeclAll Span Decl Exp
     | EDeclQuantDisj Span Quant Decl Exp
     | EDeclQuant Span Quant Decl Exp
+    | EImpliesElse Span Exp Exp Exp
     | LetExp Span VarBinding Exp
     | TmpPatNever Span Exp PatternScope
     | TmpPatSometime Span Exp PatternScope
@@ -273,9 +274,6 @@ data Exp
     | TmpPatFollow Span Exp Exp PatternScope
     | TmpInitially Span Exp
     | TmpFinally Span Exp
-    | EGMax Span Exp
-    | EGMin Span Exp
-    | EImpliesElse Span Exp Exp Exp
     | EIff Span Exp Exp
     | EImplies Span Exp Exp
     | EOr Span Exp Exp
@@ -306,6 +304,8 @@ data Exp
     | EMul Span Exp Exp
     | EDiv Span Exp Exp
     | ERem Span Exp Exp
+    | EGMax Span Exp
+    | EGMin Span Exp
     | ESum Span Exp
     | EProd Span Exp
     | ECard Span Exp
@@ -331,6 +331,7 @@ instance Spannable Exp where
     getSpan (EDeclAll s _ _ ) = s
     getSpan (EDeclQuantDisj s _ _ _ ) = s
     getSpan (EDeclQuant s _ _ _ ) = s
+    getSpan (EImpliesElse s _ _ _ ) = s
     getSpan (LetExp s _ _ ) = s
     getSpan (TmpPatNever s _ _ ) = s
     getSpan (TmpPatSometime s _ _ ) = s
@@ -340,9 +341,6 @@ instance Spannable Exp where
     getSpan (TmpPatFollow s _ _ _ ) = s
     getSpan (TmpInitially s _ ) = s
     getSpan (TmpFinally s _ ) = s
-    getSpan (EGMax s _ ) = s
-    getSpan (EGMin s _ ) = s
-    getSpan (EImpliesElse s _ _ _ ) = s
     getSpan (EIff s _ _ ) = s
     getSpan (EImplies s _ _ ) = s
     getSpan (EOr s _ _ ) = s
@@ -373,6 +371,8 @@ instance Spannable Exp where
     getSpan (EMul s _ _ ) = s
     getSpan (EDiv s _ _ ) = s
     getSpan (ERem s _ _ ) = s
+    getSpan (EGMax s _ ) = s
+    getSpan (EGMin s _ ) = s
     getSpan (ESum s _ ) = s
     getSpan (EProd s _ ) = s
     getSpan (ECard s _ ) = s

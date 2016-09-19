@@ -25,9 +25,8 @@ into Intermediate representation (IR) from "Language.Clafer.Intermediate.Intclaf
 -}
 module Language.Clafer.Intermediate.Desugarer where
 
-import Data.List (find)
 import Data.Maybe (fromMaybe)
-
+import Prelude hiding ((||))
 import Language.Clafer.Common
 import Language.Clafer.Front.AbsClafer as AbsClafer
 import Language.Clafer.Intermediate.Intclafer as IntClafer
@@ -135,7 +134,7 @@ desugarReference mods (ReferenceSet _ setexp) = Just $ IReference True (desugarR
 desugarReference mods (ReferenceBag _ setexp) = Just $ IReference False (desugarRefModifier mods) $ desugarExp setexp
 
 desugarRefModifier :: [TempModifier] -> Maybe IReferenceModifier
-desugarRefModifier (mod:_) = case mod of
+desugarRefModifier (modi:_) = case modi of
                                 Final _ -> Just FinalRefTarget
                                 AbsClafer.FinalRef _ -> Just IntClafer.FinalRef
                                 AbsClafer.FinalTarget _ -> Just IntClafer.FinalTarget
@@ -208,8 +207,8 @@ sugarSuper (Just pexp') = SuperSome noSpan (sugarExp pexp')
 
 sugarReference :: Maybe IReference -> Reference
 sugarReference Nothing = ReferenceEmpty noSpan
-sugarReference (Just (IReference True  mod pexp')) = ReferenceSet noSpan (sugarExp pexp')
-sugarReference (Just (IReference False mod pexp')) = ReferenceBag noSpan (sugarExp pexp')
+sugarReference (Just (IReference True  _ pexp')) = ReferenceSet noSpan (sugarExp pexp')
+sugarReference (Just (IReference False _ pexp')) = ReferenceBag noSpan (sugarExp pexp')
 
 sugarInitHow :: Bool -> InitHow
 sugarInitHow True  = InitConstant noSpan
