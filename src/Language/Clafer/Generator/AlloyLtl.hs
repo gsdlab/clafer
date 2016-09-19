@@ -385,14 +385,20 @@ genLocalFirst tvar parent c = "one " ++ tvar ++ " : localFirst[" ++
                                              ", this] | "
 
 -- if clafer is mutable, generates fact that prevents instance from disapearing for one or more snapshot
--- and then reapearing and says that  only subclafer may only have one parent.
+-- and then reapearing and says that  only subclafer may only have one parent. Also says that each clafer
+-- instance has to appear at least once in hierarchy of its parent
 -- typically:
 -- lone localFirst [rel, parent_sig, this] && lone r_c0_a.Time.this
+-- total[rel_c0_a, c0_a]
 genMutClaferConst :: GenCtx -> IClafer -> Concat
 genMutClaferConst ctx c
-  | isMutable c = CString $ "lone localFirst["
-                        ++ genRelName (_uid c) ++ ", " ++ parentSig ++ ", this] && " ++ "lone "
-                        ++ genRelName (_uid c) ++ "." ++ stateSig ++ ".this"
+  | isMutable c =
+    let relName = genRelName (_uid c) in
+    let singleOccurenceUnderParent =
+          CString $ "lone localFirst[" ++ relName ++ ", " ++ parentSig ++ ", this]" in
+    let singleParentInstance = CString $ "lone " ++ relName ++ "." ++ stateSig ++ ".this" in
+    let totalHierarchy = CString $ "total[" ++ relName ++ "," ++ _uid c ++ "]"
+     in cintercalate (CString " && ") [singleOccurenceUnderParent, singleParentInstance, totalHierarchy]
   | otherwise = CString ""
   where parentSig = case resPath ctx of
               x:_ -> x

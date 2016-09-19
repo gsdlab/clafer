@@ -42,3 +42,9 @@ pred infinite {
 fun localFirst [rel: univ->univ->State, parentSet: univ, child: univ] : State {
        let lifetime = child.(parentSet.rel) | lifetime - (lifetime.next)
 }
+
+pred total[rel: univ->univ->State, children: univ] {
+   children = ~(rel.State).univ 
+}
+
+
