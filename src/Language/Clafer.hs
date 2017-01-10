@@ -593,25 +593,30 @@ generate =
           else []
         )
         -- result for Choco
-        ++ (if (Choco `elem` modes)
-          then if (hasNoRealLiterals && hasNoReferenceToReal)
-                then [ (Choco,
-                        CompilerResult {
-                          extension = "js",
-                          outputCode = genCModule (iModule, genv) scopes otherTokens',
-                          statistics = stats,
-                          claferEnv  = env,
-                          mappingToAlloy = [],
-                          stringMap = Map.empty,
-                          scopesList = scopes
-                         }) ]
-                else [ (Choco,
-                         NoCompilerResult {
-                          reason = "Choco output unavailable because the model contains: "
-                                 ++ (if hasNoRealLiterals then "" else "a real number literal, ")
-                                 ++ (if hasNoReferenceToReal then "" else "a reference to a real, ")
-                         })
-                      ]
+        ++ (if Choco `elem` modes
+          then if hasNoRealLiterals && hasNoReferenceToReal && staticClaferSubset
+              then [
+                 (Choco,
+                  CompilerResult {
+                    extension = "js",
+                    outputCode = genCModule (iModule, genv) scopes otherTokens',
+                    statistics = stats,
+                    claferEnv  = env,
+                    mappingToAlloy = [],
+                    stringMap = Map.empty,
+                    scopesList = scopes
+                   })
+               ]
+              else [
+                 (Choco,
+                  NoCompilerResult {
+                    reason = if not staticClaferSubset
+                      then "Choco output unavailable because the model contains temporal operators"
+                      else "Choco output unavailable because the model contains: "
+                           ++ (if hasNoRealLiterals then "" else "a real number literal, ")
+                           ++ (if hasNoReferenceToReal then "" else "a reference to a real. ")
+                  })
+                   ]
           else []
         ))
 
