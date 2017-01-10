@@ -44,10 +44,10 @@ reg:
 
 .PHONY: clean
 clean:
-	stack clean
 	$(MAKE) -C $(SRC_DIR) clean
 	$(MAKE) cleanTools
 	$(MAKE) cleanTest
+	stack clean
 
 .PHONY: cleanTest
 cleanTest:

@@ -42,37 +42,37 @@ astrModule imodule = (imodule{_mDecls = decls''}, flipMap strMap')
     flipMap = Map.fromList . map swap . Map.toList
 
 
-astrClafer :: Functor m => MonadState (Map.Map String Int) m => IClafer -> m IClafer
+astrClafer :: MonadState (Map.Map String Int) m => IClafer -> m IClafer
 astrClafer (IClafer s mods gcrd' ident' uid' puid' super' reference' crd' gCard elements') = do
     reference'' <- astrReference reference'
     elements'' <- astrElement `mapM` elements'
     return $ IClafer s mods gcrd' ident' uid' puid' super' reference'' crd' gCard elements''
 
-astrReference :: Functor m => MonadState (Map.Map String Int) m => Maybe IReference -> m (Maybe IReference)
+astrReference :: MonadState (Map.Map String Int) m => Maybe IReference -> m (Maybe IReference)
 astrReference Nothing = return Nothing
 astrReference (Just (IReference isSet' mod ref')) = Just <$> IReference isSet' mod `liftM` astrPExp ref'
 
 -- astrs single subclafer
-astrElement :: Functor m => MonadState (Map.Map String Int) m => IElement -> m IElement
+astrElement :: MonadState (Map.Map String Int) m => IElement -> m IElement
 astrElement x = case x of
   IEClafer clafer -> IEClafer `liftM` astrClafer clafer
   IEConstraint isHard' pexp -> IEConstraint isHard' `liftM` astrPExp pexp
   IEGoal isMaximize' pexp -> IEGoal isMaximize' `liftM` astrPExp pexp
 
-astrPExp :: Functor m => MonadState (Map.Map String Int) m => PExp -> m PExp
+astrPExp :: MonadState (Map.Map String Int) m => PExp -> m PExp
 astrPExp (PExp (Just TString) pid' pos' exp') =
     PExp (Just TInteger) pid' pos' `liftM` astrIExp exp'
 astrPExp (PExp t pid' pos' (IFunExp op' exps')) = PExp t pid' pos' `liftM`
                               (IFunExp op' `liftM` mapM astrPExp exps')
-astrPExp (PExp t pid' pos' (IDeclPExp quant' oDecls' bpexp')) = PExp t pid' pos' `liftM`
-                              (IDeclPExp quant' oDecls' `liftM` (astrPExp bpexp'))
+astrPExp (PExp t pid' pos' (IDeclPExp quant' oDecls' bpexp')) =
+    PExp t pid' pos' `liftM` (IDeclPExp quant' oDecls' `liftM` astrPExp bpexp')
 astrPExp x = return x
 
-astrIExp :: Functor m => MonadState (Map.Map String Int) m => IExp -> m IExp
+astrIExp :: MonadState (Map.Map String Int) m => IExp -> m IExp
 astrIExp x = case x of
   IFunExp op' exps' -> IFunExp op' `liftM` mapM astrPExp exps'
   IStr str -> do
     modify (\e -> Map.insertWith (flip const) str (Map.size e) e)
     st <- get
-    return $  (IInt $ toInteger $ (Map.!) st str)
+    return (IInt $ toInteger $ (Map.!) st str)
   _ -> return x

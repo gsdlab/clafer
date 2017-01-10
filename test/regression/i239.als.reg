@@ -2,13 +2,17 @@ open util/integer
 pred show {}
 
 
+fact { 2 <= #c0_x }
 sig c0_x
 { c0_x_ref : one Int }
+{ ((this.@c0_x_ref) >= (-1.mul[2])) && ((this.@c0_x_ref) <= 2) }
 
+fact { 2 <= #c0_y }
 sig c0_y
 { c0_y_ref : one Int }
+{ ((this.@c0_y_ref) >= (-1.mul[2])) && ((this.@c0_y_ref) <= 2) }
 
 one sig c0_z
 { c0_z_ref : one Int }
 
-fact { (some c0_z) => ((c0_z.@c0_z_ref) = (sum temp : ((c0_x.@c0_x_ref) + c0_y) | temp.@c0_y_ref)) }
+fact { (some c0_z) => ((c0_z.@c0_z_ref) = (sum temp : (c0_x + c0_y) | temp.(@c0_y_ref + @c0_x_ref))) }

@@ -1,11 +1,14 @@
+scope({c0_x:2, c0_y:2});
 defaultScope(1);
 intRange(-8, 7);
 stringLength(16);
 
-c0_x = Clafer("c0_x");
-c0_y = Clafer("c0_y");
+c0_x = Clafer("c0_x").withCard(2);
+c0_y = Clafer("c0_y").withCard(2);
 c0_z = Clafer("c0_z").withCard(1, 1);
 c0_x.refTo(Int);
+c0_x.addConstraint(and(greaterThanEqual(joinRef($this()), constant(-2)), lessThanEqual(joinRef($this()), constant(2))));
 c0_y.refTo(Int);
+c0_y.addConstraint(and(greaterThanEqual(joinRef($this()), constant(-2)), lessThanEqual(joinRef($this()), constant(2))));
 c0_z.refTo(Int);
-Constraint(implies(some(global(c0_z)), equal(joinRef(global(c0_z)), sum(union(joinRef(global(c0_x)), joinRef(global(c0_y)))))));
+Constraint(implies(some(global(c0_z)), equal(joinRef(global(c0_z)), joinRef(sum(union(global(c0_x), global(c0_y)))))));

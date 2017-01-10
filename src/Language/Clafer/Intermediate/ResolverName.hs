@@ -53,7 +53,7 @@ data SEnv
 
 -- | How a given name was resolved
 data HowResolved
-  = Special     -- ^ "this", "parent", "dref", "root", and "children"
+  = Special     -- ^ "this", "parent", "dref", "root", "clafer", and "children"
   | TypeSpecial -- ^ primitive type: "integer", "string"
   | Binding     -- ^ local variable (in constraints)
   | Subclafers  -- ^ clafer's descendant
@@ -127,7 +127,7 @@ resolveClafer env clafer =
   where
   env' = env {context = Just clafer, resPath = clafer : resPath env}
   subClafers' = tail $ bfs toNodeDeep [env'{resPath = [clafer]}]
-  ancClafers' = (init $ tails $ resPath env) >>= (mkAncestorList env)
+  ancClafers' = init (tails $ resPath env) >>= (mkAncestorList env)
 
 mkAncestorList :: SEnv -> [IClafer] -> [(IClafer, [IClafer])]
 mkAncestorList env rp =
@@ -141,6 +141,7 @@ resolveElement env x = case x of
 
 resolvePExp :: SEnv -> PExp                          -> Resolve PExp
 resolvePExp    env     pexp@PExp{_exp=x} = case x of
+  -- only local declarations change the environment
   IDeclPExp quant' decls' pexp2 -> do
     let (decls'', env') = runState (runExceptT $ (mapM (ExceptT . processDecl) decls')) env
     exp' <- IDeclPExp quant' <$> decls'' <*> resolvePExp env' pexp2
@@ -161,35 +162,38 @@ liftError = ExceptT . return
 
 processDecl :: MonadState SEnv m => IDecl -> m (Resolve IDecl)
 processDecl decl = runExceptT $ do
-  env <- lift $ get
+  env <- lift get
   (body', path) <- liftError $ resolveNav env (_body decl) True
   lift $ modify (\e -> e { bindings = (_decls decl, path) : bindings e })
   return $ decl {_body = body'}
 
 resolveNav :: SEnv -> PExp                         -> Bool   -> Resolve (PExp, [IClafer])
-resolveNav    env     pexp0@PExp{_inPos=pos', _exp=x} isFirst = case x of
-  IFunExp "." [pexp1,pexp2] -> do
-    (pexp1', path1) <- resolveNav env                                               pexp1 True
-    (pexp2', path2) <- resolveNav env{context = listToMaybe path1, resPath = path1} pexp2 False
-    -- if `dref` was added to the RHS we need to left rotate the tree
-    case pexp2' of
-      PExp{_exp=IFunExp "." [pexp2'l, pexp2'r]} -> (case pexp2'l of
-        PExp{_exp=IClaferId{_sident="dref"}} ->
-          let -- move the `dref` to the LHS
-            pexp0' = pexp0{_exp=IFunExp iJoin [pexp1', pexp2'l]}
-          in -- keep the RHS as is
-            return (pexp2{_exp=IFunExp iJoin [pexp0', pexp2'r]}, path2)
+resolveNav    env     pexp0@PExp{_inPos=pos', _exp=x} isFirst =
+  case x of
+    IFunExp "." [pexp1,pexp2] -> do
+      (pexp1', path1) <- resolveNav env                                               pexp1 True
+      (pexp2', path2) <- resolveNav env{context = listToMaybe path1, resPath = path1} pexp2 False
+      -- if `dref` was added to the RHS we need to left rotate the tree
+      case pexp2' of
+        PExp{_exp=IFunExp "." [pexp2'l, pexp2'r]} -> case pexp2'l of
+          PExp{_exp=IClaferId{_sident="dref"}} ->
+            let -- move the `dref` to the LHS
+              pexp0' = pexp0{_exp=IFunExp iJoin [pexp1', pexp2'l]}
+            in -- keep the RHS as is
+              return (pexp2{_exp=IFunExp iJoin [pexp0', pexp2'r]}, path2)
+          _ -> return (pexp0{_exp=IFunExp iJoin [pexp1', pexp2']}, path2)
         _ -> return (pexp0{_exp=IFunExp iJoin [pexp1', pexp2']}, path2)
-        )
-      _ -> return (pexp0{_exp=IFunExp iJoin [pexp1', pexp2']}, path2)
-  IClaferId modName' id' _ _ -> if isFirst
-    then do
-           (exp', path') <- mkPath pos' env <$> resolveName pos' env id'
-           return (pexp0{_exp=exp'}, path')
-    else do
-           (exp', path') <- mkPath' pos' modName' <$> resolveImmName pos' env id'
-           return (pexp0{_exp=exp'}, path')
-  y -> throwError $ SemanticErr pos' $ "Cannot resolve nav of " ++ show y
+    IClaferId _ "root" _ _ -> return (pexp0, [])
+    IClaferId modName' id' _ _ -> if isFirst
+      then do
+             (exp', path') <- mkPath pos' env <$> resolveName pos' env id'
+             return (pexp0{_exp=exp'}, path')
+      else do
+             (exp', path') <- case resPath env of
+               [] -> mkPath' pos' modName' <$> resolveTopLevelName pos' env id'
+               _  -> mkPath' pos' modName' <$> resolveImmName pos' env id'
+             return (pexp0{_exp=exp'}, path')
+    y -> throwError $ SemanticErr pos' $ "Cannot resolve nav of " ++ show y
 
 -- | Depending on how resolved construct a navigation path from 'context env'
 mkPath :: Span -> SEnv -> (HowResolved, String, [IClafer]) -> (IExp, [IClafer])
@@ -249,6 +253,10 @@ mkPath'    pos' modName'  (howResolved, id', path)          = case howResolved o
 
 -- -----------------------------------------------------------------------------
 
+resolveTopLevelName :: Span -> SEnv -> String -> Resolve (HowResolved, String, [IClafer])
+resolveTopLevelName pos' env id' = resolve env id'
+  [resolveTopLevelOnly pos', resolveNone pos']
+
 resolveName :: Span -> SEnv -> String -> Resolve (HowResolved, String, [IClafer])
 resolveName pos' env id' = resolve env id'
   [resolveSpecial, resolveBind, resolveDescendants, resolveAncestor pos', resolveTopLevel pos', resolveNone pos']
@@ -260,7 +268,7 @@ resolveImmName pos' env id' = resolve env id'
 
 
 -- when one strategy fails, we want to move to the next one
-resolve :: (Monad f, Functor f) => SEnv -> String -> [SEnv -> String -> f (Maybe b)] -> f b
+resolve :: Monad f => SEnv -> String -> [SEnv -> String -> f (Maybe b)] -> f b
 resolve env id' fs = fromJust <$> (runMaybeT $ msum $ map (\x -> MaybeT $ x env id') fs)
 
 
@@ -297,7 +305,6 @@ resolveDescendants :: SEnv -> String -> Resolve (Maybe (HowResolved, String, [IC
 resolveDescendants env id' = return $
   (context env) >> (findFirst id' $ subClafers env) >>= (toMTriple Subclafers)
 
-
 -- searches for a name in immediate subclafers (BFS)
 resolveChildren :: Span -> SEnv -> String -> Resolve (Maybe (HowResolved, String, [IClafer]))
 resolveChildren pos' env id' = resolveChildren' pos' env id' allInhChildren Subclafers
@@ -331,6 +338,16 @@ resolveTopLevel pos' env id' = runMaybeT $ foldr1 mplus $ map
   (\(cs, hr) -> MaybeT (findUnique pos' id' cs) >>= (liftMaybe . toMTriple hr))
   [(aClafers env, AbsClafer), (cClafers env, TopClafer)]
 
+-- searches for a name in all subclafers (BFS)
+resolveTopLevelOnly :: Span -> SEnv -> String -> Resolve (Maybe (HowResolved, String, [IClafer]))
+resolveTopLevelOnly _ env id' = return result
+  where
+    found = filter (\c -> _ident c == id') $ clafers env
+    result = case found of
+      [c]  -> Just (TopClafer, _uid c, found)
+      _    -> Nothing
+
+
 toNodeDeep :: SEnv -> ((IClafer, [IClafer]), [SEnv])
               -- ((curr. clafer, resolution path), remaining children to traverse)
 toNodeDeep env
@@ -359,8 +376,8 @@ selectChildren f env = getSubclafers $ concat $
 findUnique :: Span -> String -> [(IClafer, [IClafer])] -> Resolve (Maybe (String, [IClafer]))
 findUnique pos' x xs =
   case filterPaths x $ nub xs of
-    []     -> return $ Nothing
-    [elem'] -> return $ Just $ (_uid $ fst elem', snd elem')
+    []     -> return Nothing
+    [elem'] -> return $ Just (_uid $ fst elem', snd elem')
     xs'    -> throwError $ SemanticErr pos' $ "clafer " ++ show x ++ " " ++ errMsg
       where
       xs''   = map ((map _uid).snd) xs'

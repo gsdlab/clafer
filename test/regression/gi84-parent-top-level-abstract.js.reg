@@ -1,0 +1,14 @@
+scope({c0_Feature:2});
+defaultScope(1);
+intRange(-8, 7);
+stringLength(16);
+
+c0_FeatureModel = Abstract("c0_FeatureModel");
+c0_Feature = Abstract("c0_Feature");
+c0_FM = Clafer("c0_FM").withCard(1, 1);
+c0_F1 = c0_FM.addChild("c0_F1").withCard(1, 1);
+c0_F2 = c0_F1.addChild("c0_F2").withCard(1, 1);
+c0_Feature.addConstraint($in(joinParent($this()), union(global(c0_Feature), global(c0_FeatureModel))));
+c0_FM.extending(c0_FeatureModel);
+c0_F1.extending(c0_Feature);
+c0_F2.extending(c0_Feature);

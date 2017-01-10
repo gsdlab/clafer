@@ -1,6 +1,7 @@
 *.sublime-project
 *.sublime-workspace
 dist
+dist-newstyle
 dist-stack
 .dist-buildwrapper
 .project

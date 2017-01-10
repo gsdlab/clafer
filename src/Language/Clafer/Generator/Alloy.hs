@@ -213,9 +213,9 @@ genType m x = genPExp m [] x
 -- a = NUMBER do all x : a | x = NUMBER (otherwise alloy sums a set)
 genConstraints :: GenEnv -> [String]      -> IClafer -> [Concat]
 genConstraints    genEnv    resPath c
-  = (genParentConst resPath c)
-  : (genGroupConst genEnv c)
-  : (genRefSubrelationConstriant (uidIClaferMap genEnv) c)
+  = genParentConst resPath c
+  : genGroupConst genEnv c
+  : genRefSubrelationConstriant (uidIClaferMap genEnv) c
 {- genPathConst produces incorrect code for top-level clafers
 
 abstract System
@@ -482,6 +482,8 @@ transformExp x = x
 genIFunExp :: String -> GenEnv -> [String] -> IExp                  -> Concat
 genIFunExp    pid'      genEnv    resPath     (IFunExp "min" [exp']) = Concat (IrPExp pid') $ (CString "min[") : (genPExp' genEnv resPath exp') : [CString "]"]
 genIFunExp    pid'      genEnv    resPath     (IFunExp "max" [exp']) = Concat (IrPExp pid') $ (CString "max[") : (genPExp' genEnv resPath exp') : [CString "]"]
+-- ignore navigation from the root
+genIFunExp    pid'      genEnv    resPath     (IFunExp "."  [PExp{_exp=IClaferId{_sident="root"}}, exp2]) = genPExp' genEnv resPath exp2
 genIFunExp    pid'      genEnv    resPath     (IFunExp op' exps')
   | op' == iSumSet = genIFunExp pid' genEnv resPath (IFunExp iSumSet' [(removeright (head exps')), (getRight $ head exps')])
   | op' == iSumSet'  = Concat (IrPExp pid') $ intl exps'' (map CString $ genOp iSumSet)
