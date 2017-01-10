@@ -1,0 +1,6 @@
+// behavioral clafer test for default globally or G
+
+a ?
+    b ?
+
+assert [ G(all b1 : b | some a1 : a | b1.parent = a1) ]
