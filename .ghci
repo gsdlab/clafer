@@ -1,6 +1,6 @@
 :set -fbreak-on-exception
 :set -fbreak-on-error
-:set prompt "\\>"
+:set prompt "λ> "
 :set stop :list
 :def seq (\arg -> return ("seq (" ++ arg ++ ") ()"))
 :set -fprint-evld-with-show

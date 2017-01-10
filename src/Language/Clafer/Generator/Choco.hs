@@ -36,7 +36,7 @@ genCModule (imodule@IModule{_mDecls}, genv') scopes  otherTokens' =
         ++ (genClafers =<< _elements)
     genClafers    _ = ""
 
-    genClaferNesting (IClafer{_isAbstract=True, _uid, _parentUID="root"})
+    genClaferNesting (IClafer{_isAbstract=True, _uid, _parentUID="clafer"})
         = " = Abstract(\"" ++ _uid ++ "\")"
     genClaferNesting (IClafer{_isAbstract=True, _uid, _parentUID})
         = " = " ++ _parentUID ++  ".addAbstractChild(\"" ++ _uid ++ "\")"
@@ -153,6 +153,8 @@ genCModule (imodule@IModule{_mDecls}, genv') scopes  otherTokens' =
             genLocal local =
                 local ++ " = local(\"" ++ local ++ "\")"
 
+    genConstraintExp (IFunExp "." [PExp{_exp = IClaferId{_sident = "root"}}, e2]) =
+        genConstraintPExp e2
     genConstraintExp (IFunExp "." [e1, PExp{_exp = IClaferId{_sident = "dref"}}]) =
         "joinRef(" ++ genConstraintPExp e1 ++ ")"
     genConstraintExp (IFunExp "." [e1, PExp{_exp = IClaferId{_sident = "parent"}}]) =

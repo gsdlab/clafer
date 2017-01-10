@@ -83,17 +83,17 @@ instance MonadTypeAnalysis TypeAnalysis where
     addTypeDecls t@TypeInfo{iTypeDecls = c} = t{iTypeDecls = extra ++ c}
 
 instance MonadTypeAnalysis m => MonadTypeAnalysis (ListT m) where
-  curThis = lift $ curThis
+  curThis = lift curThis
   localCurThis = mapListT . localCurThis
-  curPath = lift $ curPath
+  curPath = lift curPath
   localCurPath = mapListT . localCurPath
   typeDecls = lift typeDecls
   localDecls = mapListT . localDecls
 
 instance MonadTypeAnalysis m => MonadTypeAnalysis (ExceptT ClaferSErr m) where
-  curThis = lift $ curThis
+  curThis = lift curThis
   localCurThis = mapExceptT . localCurThis
-  curPath = lift $ curPath
+  curPath = lift curPath
   localCurPath = mapExceptT . localCurPath
   typeDecls = lift typeDecls
   localDecls = mapExceptT . localDecls
@@ -122,18 +122,18 @@ parentOf uidIClaferMap' c = case _parentUID <$> findIClafer uidIClaferMap' c of
 isIndirectChild :: (Monad m) => UIDIClaferMap -> UID -> UID -> m Bool
 isIndirectChild uidIClaferMap' child parent = do
   (_:allSupers) <- hierarchy uidIClaferMap' parent
-  childOfSupers <- mapM ((isChild uidIClaferMap' child)._uid) $ allSupers
+  childOfSupers <- mapM ((isChild uidIClaferMap' child)._uid) allSupers
   return $ or childOfSupers
 
 isChild :: (Monad m) => UIDIClaferMap -> UID -> UID -> m Bool
 isChild uidIClaferMap' child parent =
-    (case findIClafer uidIClaferMap' child of
-            Nothing -> return False
-            Just childIClafer -> do
-                let directChild = (parent == _parentUID childIClafer)
-                indirectChild <- isIndirectChild uidIClaferMap' child parent
-                return $ directChild || indirectChild
-            )
+    case findIClafer uidIClaferMap' child of
+        Nothing -> return False
+        Just childIClafer -> do
+            let directChild = (parent == _parentUID childIClafer)
+            indirectChild <- isIndirectChild uidIClaferMap' child parent
+            return $ directChild || indirectChild
+
 
 str :: IType -> String
 str t =
@@ -183,8 +183,8 @@ resolveTElement    TAReferences  _         (IEClafer iclafer) =
         Just t -> if isTBoolean t
                   then Nothing
                   else Just $ oRef{_ref=r'}
-resolveTElement    TAReferences  _         iec@(IEConstraint{}) = return iec
-resolveTElement    TAReferences  _         ieg@(IEGoal{}) = return ieg
+resolveTElement    TAReferences  _         iec@IEConstraint{} = return iec
+resolveTElement    TAReferences  _         ieg@IEGoal{} = return ieg
 
 -- Phase two: only process constraints and goals
 resolveTElement    TAExpressions  _         (IEClafer iclafer) =
@@ -207,7 +207,7 @@ resolveTConstraint curThis' constraint =
   do
     uidIClaferMap' <- asks iUIDIClaferMap
     curThis'' <- claferWithUid uidIClaferMap' curThis'
-    head <$> (localCurThis curThis'' $ (resolveTPExp constraint :: TypeAnalysis [PExp]))
+    head <$> localCurThis curThis'' (resolveTPExp constraint :: TypeAnalysis [PExp])
 
 
 resolveTPExp :: PExp -> TypeAnalysis [PExp]
@@ -248,7 +248,7 @@ resolveTPExp' p@PExp{_exp = IClaferId{_sident = "int"}} = runListT $ runExceptT 
 resolveTPExp' p@PExp{_exp = IClaferId{_sident = "string"}} = runListT $ runExceptT $ return $ p `withType` TString
 resolveTPExp' p@PExp{_exp = IClaferId{_sident = "double"}} = runListT $ runExceptT $ return $ p `withType` TDouble
 resolveTPExp' p@PExp{_exp = IClaferId{_sident = "real"}} = runListT $ runExceptT $ return $ p `withType` TReal
-resolveTPExp' p@PExp{_inPos, _exp = IClaferId{_sident="this"}} = do
+resolveTPExp' p@PExp{_inPos, _exp = IClaferId{_sident="this"}} =
   runListT $ runExceptT $ do
     sident' <- _uid <$> curThis
     result <- (p `withType`) <$> typeOfUid sident'
@@ -262,7 +262,8 @@ resolveTPExp' p@PExp{_inPos, _exp = IClaferId{_sident, _isTop}} = do
     sident' <- if _sident == "this" then _uid <$> curThis else return _sident
     when (isJust curPath') $ do
       c <- mapM (isChild uidIClaferMap' sident') $ unionType $ fromJust curPath'
-      unless (or c) $ throwError $ SemanticErr _inPos ("'" ++ sident' ++ "' is not a child of type '" ++ str (fromJust curPath') ++ "'")
+      let parentId' = str (fromJust curPath')
+      unless (or c || parentId' == "root") $ throwError $ SemanticErr _inPos ("'" ++ sident' ++ "' is not a child of type '" ++ parentId' ++ "'")
     result <- (p `withType`) <$> typeOfUid sident'
     if _isTop
     then return result -- Case 1: Use the sident
@@ -318,14 +319,21 @@ resolveTPExp' p@PExp{_inPos, _exp} =
       result' <- result
       return (result', e{_exps = [arg']})
 
-  resolveTExp e@IFunExp {_op = "++", _exps = [arg1, arg2]} =
-    do
-      arg1s' <- resolveTPExp arg1
-      arg2s' <- resolveTPExp arg2
-      let union' a b = typeOf a +++ typeOf b
-      return $ [ return (union' arg1' arg2', e{_exps = [arg1', arg2']})
-               | (arg1', arg2') <- sortBy (comparing $ length . unionType . uncurry union') $ liftM2 (,) arg1s' arg2s'
-               , (not $ isTBoolean $ typeOf arg1') && (not $ isTBoolean $ typeOf arg2') ]
+  resolveTExp e@IFunExp {_op = "++", _exps = [arg1, arg2]} = do
+      -- arg1s' <- resolveTPExp arg1
+      -- arg2s' <- resolveTPExp arg2
+      -- let union' a b = typeOf a +++ typeOf b
+      -- return [ return (union' arg1' arg2', e{_exps = [arg1', arg2']})
+      --        | (arg1', arg2') <- sortBy (comparing $ length . unionType . uncurry union') $ liftM2 (,) arg1s' arg2s'
+      --        , not (isTBoolean $ typeOf arg1') && not (isTBoolean $ typeOf arg2') ]
+      runListT $ runExceptT $ do
+        arg1' <- lift $ ListT $ resolveTPExp arg1
+        arg2' <- lift $ ListT $ resolveTPExp arg2
+        let t1 = typeOf arg1'
+        let t2 = typeOf arg2'
+        return (t1 +++ t2, e{_exps = [arg1', arg2']})
+
+
   resolveTExp e@IFunExp {_op, _exps = [arg1, arg2]} = do
     uidIClaferMap' <- asks iUIDIClaferMap
     runListT $ runExceptT $ do

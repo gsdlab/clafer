@@ -1,0 +1,9 @@
+defaultScope(1);
+intRange(-8, 7);
+stringLength(16);
+
+c0_a = Clafer("c0_a").withCard(1, 1);
+c0_b = c0_a.addChild("c0_b").withCard(0, 1);
+c1_b = Clafer("c1_b").withCard(0, 1);
+Constraint(some(join(global(c0_a), c0_b)));
+Constraint(some(global(c1_b)));

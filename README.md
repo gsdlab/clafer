@@ -3,7 +3,7 @@
 
 # Clafer, the language
 
-##### v0.4.3
+##### v0.4.4
 
 
 [Clafer](http://clafer.org) is a general-purpose lightweight structural modeling language developed by
@@ -14,7 +14,7 @@ The main goal of Clafer is to make modeling more accessible to a wider range of 
 
 There are many possible applications of Clafer; however, three are prominent:
 
-1. *Product-Line Modeling* - aims at representing and managing commonality and variability of assets in product lines and creating and verifying product configurations.
+1. *Product-Line Architecture Modeling* - aims at representing and managing commonality and variability of assets in product lines and creating and verifying product configurations.
 Clafer naturally supports multi-staged configuration.
 
 2. *Multi-Objective Product Optimization* - aims at finding a set of products in a given product line that are optimal with respect to a set of objectives.
@@ -22,6 +22,8 @@ Clafer multi-objective optimizer generates a Pareto front of optimal product con
 
 3. *Domain Modeling* - aims at improving the understanding of the problem domain in the early stages of software development and determining the requirements with fewer defects.
 This is also known as *Concept Modeling* or *Ontology Modeling*.
+
+May applications actually combine the three. For example, see [Technical Report: Case Studies on E/E Architectures for Power Window and Central Door Locks Systems](http://www.clafer.org/2016/06/technical-report-case-studies-on-ee.html).
 
 ### Resources
 
@@ -67,6 +69,7 @@ Optional:
 
 * [Java Platform (JDK)](http://www.oracle.com/technetwork/java/javase/downloads/index.html) v8+, 64bit
   * only needed for running Alloy validation
+  * 32bit on Windows
 * [Alloy4.2](http://alloy.mit.edu/alloy/download.html)
   * only needed for Alloy output validation
 * [GraphViz](http://graphviz.org/)
@@ -74,30 +77,31 @@ Optional:
 
 ### Installation from binaries
 
-Binary distributions of the release 0.4.3 of Clafer Tools for Windows, Mac, and Linux,
+Binary distributions of the release 0.4.4 of Clafer Tools for Windows, Mac, and Linux,
 can be downloaded from
 [Clafer Tools - Binary Distributions](http://gsd.uwaterloo.ca/clafer-tools-binary-distributions).
 
-1. download the binaries and unpack `<target directory>` of your choice
-2. add the `<target directory>` to your system path so that the executables can be found
+1. Download the binaries and unpack `<target directory>` of your choice.
+2. Add the `<target directory>` to your system path so that the executables can be found.
 
 ### Installation from Hackage
 
-Clafer is now available on [Hackage](http://hackage.haskell.org/package/clafer-0.4.3/) and it can be installed using either [`stack`](https://github.com/commercialhaskell/stack) or [`cabal-install`](https://hackage.haskell.org/package/cabal-install).
+Clafer is available on [Hackage](http://hackage.haskell.org/package/clafer-0.4.4/) and it can be installed using either [`stack`](https://github.com/commercialhaskell/stack) or [`cabal-install`](https://hackage.haskell.org/package/cabal-install).
 
 #### Installation using `stack`
 
 Stack is the only requirement: no other Haskell tooling needs to be installed because stack will automatically install everything that's needed.
 
-1. [install `stack`](https://github.com/commercialhaskell/stack#how-to-install)
-2. execute `stack install clafer`
+1. [Install `stack`](https://github.com/commercialhaskell/stack#how-to-install)
+   * (first time only) Execute `stack setup`.
+2. Execute `stack install clafer`.
 
 #### Installation using `cabal-install`
 
 Dependencies
 
-* [GHC](https://www.haskell.org/downloads) >= 7.8.3. 7.10.2 is recommended,
-* `cabal-install` >= 1.18, should be installed together with a GHC distribution,
+* [GHC](https://www.haskell.org/downloads) >= 7.10.3 or 8.0.1 are recommended,
+* `cabal-install` >= 1.22, should be installed together with a GHC distribution,
 * [alex](https://hackage.haskell.org/package/alex),
 * [happy](https://hackage.haskell.org/package/happy).
 
@@ -105,8 +109,8 @@ Dependencies
 2. `cabal update`
 3. `cabal install alex happy`
 4. `cabal install clafer`
-5. on Windows `cd C:\Users\<user>\AppData\Roaming\cabal\i386-windows-ghc-7.10.2\clafer-0.4.3`
-6. on Linux `ca ~/.cabal/share/x86_64-linux-ghc-7.10.2/clafer-0.4.3/`
+5. on Windows `cd C:\Users\<user>\AppData\Roaming\cabal\x86_64-windows-ghc-8.0.1\clafer-0.4.4`
+6. on Linux `ca ~/.cabal/share/x86_64-linux-ghc-8.0.1/clafer-0.4.4/`
 7. to automatically download Alloy jars, execute
   * `make alloy4.2.jar`,
   * move `alloy4.2.jar` to the location of the clafer executable.
@@ -122,11 +126,12 @@ On Windows
 
 * [MSYS2](http://msys2.sourceforge.net/)
   * it is installed automatically by `stack setup`
-  * to open MinGW64 shell, execute `mingw64_shell.bat` in `C:\Users\<user>\AppData\Local\Programs\stack\x86_64-windows\msys2-<date>`, where `<date>` is the release date of your MSYS installation
-  * update MSYS2 packages
-     * follow guide for [III. Updating packages](http://sourceforge.net/p/msys2/wiki/MSYS2%20installation/)
-  * execute
-     * `pacman -S make wget unzip diffutils`
+  * update MSYS2 following the [update procedure](http://sourceforge.net/p/msys2/wiki/MSYS2%20installation/):
+    * `stack exec pacman -- -Sy`
+    * `stack exec pacman -- --needed -S bash pacman pacman-mirrors msys2-runtime`
+    * restart shell if the runtime was updated
+    * `stack exec pacman -- -Su`
+  * `stack exec pacman -- -S make wget unzip diffutils`
 
 #### Important: branches must correspond
 
@@ -141,24 +146,18 @@ Development versions from branches `develop` should work well together but this 
 1. in some `<source directory>` of your choice, execute
   * `git clone git://github.com/gsdlab/clafer.git`
 2. in `<source directory>/clafer`, execute `stack setup`. This will install all dependencies, build tools, and MSYS2 (on Windows).
-3. first time only on Windows
-  * open `MinGW64 Shell` using `C:\Users\<user>\AppData\Local\Programs\stack\i386-windows\msys2-20150512\mingw64_shell.bat`
-  * update MSYS2 following the [update procedure](http://sourceforge.net/p/msys2/wiki/MSYS2%20installation/):
-    * `pacman -Sy`
-    * `pacman --needed -S bash pacman pacman-mirrors msys2-runtime`
-    * restart shell if the runtime was updated
-    * `pacman -Su`
-  * `pacman -S make wget unzip diffutils`
-4. `cd <source directory>`
-  * `make`
+3. `cd <source directory>`
+  * `make` on Linux/Mac
+  * `stack exec make` on Windows
 
 ### Installation
 
 1. Execute
-  * `make install to=<target directory>`
+  * `make install to=<target directory>` on Linux/Mac
+  * `stack exec make install to=<target directory>` on Windows
 
 #### Note:
-> On Windows, use `/` with the `make` command instead of `\`, e.g., `make install to=/c/clafer-tools-0.4.3/`
+> On Windows, use `/` with the `make` command instead of `\`, e.g., `make install to=/c/clafer-tools-0.4.4/`
 
 ## Integration with Sublime Text 2/3
 
@@ -175,7 +174,7 @@ See [clafer-vim](https://github.com/wasowski/clafer-vim)
 (As printed by `clafer --help`)
 
 ```
-Clafer 0.4.3
+Clafer 0.4.4
 
 clafer [OPTIONS] [FILE]
 
