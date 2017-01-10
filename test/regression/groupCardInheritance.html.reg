@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=9">
+<style>.identifier{}
+.keyword{font-weight:bold}
+.reference{}
+.code { background-color: lightgray; padding: 5px 5px 5px 5px; border: 1px solid darkgray; margin-bottom: 15px; 
+        font-family: Pragmata, Menlo, 'DejaVu LGC Sans Mono', 'DejaVu Sans Mono', Consolas, 'Everson Mono', 'Lucida Console', 'Andale Mono', 'Nimbus Mono L', 'Liberation Mono', FreeMono, 'Osaka Monospaced', Courier, 'New Courier', monospace; }
+.standalonecomment { color: green; font-style:italic }
+.inlinecomment { color: green; padding-left:20px; font-style:italic }
+.error{background-color: yellow; color: red }
+.deprecated{color: orange }
+.indent{padding-left:20px}
+a[href$='Lookup failed'] {color: red}
+a[href$='Uid not found'] {color: red}
+a[href$='Ambiguous name'] {color: yellow}
+
+</style></head>
+<body>
+
+<div>
+<span class="keyword">abstract</span> <span class="keyword">or</span> <span class="claferDecl" id="c0_Port">Port</span>
+  <div class="indent">
+  <span class="claferDecl" id="c0_input">input</span></div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_output">output</span></div>
+</div>
+
+
+<div>
+<span class="keyword">abstract</span> <span class="keyword">xor</span> <span class="claferDecl" id="c0_RelayPort">RelayPort</span><span class="keyword"> : </span><a href="#c0_Port"><span class="reference">Port</span></a>
+  <div class="indent">
+  <span class="claferDecl" id="c0_relay">relay</span></div>
+</div>
+
+
+<div>
+<span class="claferDecl" id="c0_req">req</span><span class="keyword"> : </span><a href="#c0_RelayPort"><span class="reference">RelayPort</span></a>
+  <div class="indent">
+  <span class="claferDecl" id="c0_flow">flow</span></div>
+  <div class="indent">
+  <span class="keyword">[</span> <a href="#c0_flow"><span class="reference">flow</span></a> <span class="keyword">]</span></div>
+</div>
+
+
+<div>
+<span class="keyword">assert [</span> <span class="keyword">no</span> <a href="#c0_req"><span class="reference">req</span></a>.<a href="#c0_input"><span class="reference">input</span></a> <span class="keyword">]</span></div>
+
+
+<div>
+<span class="keyword">assert [</span> <span class="keyword">no</span> <a href="#c0_req"><span class="reference">req</span></a>.<a href="#c0_output"><span class="reference">output</span></a> <span class="keyword">]</span></div>
+
+
+<div>
+<span class="keyword">assert [</span> <span class="keyword">no</span> <a href="#c0_req"><span class="reference">req</span></a>.<a href="#c0_relay"><span class="reference">relay</span></a> <span class="keyword">]</span></div>
+
+
+<div>
+<span class="keyword">assert [</span> <span class="keyword">one</span> <a href="#c0_req"><span class="reference">req</span></a>.<a href="#c0_flow"><span class="reference">flow</span></a> <span class="keyword">]</span></div>
+
+</body>
+</html>

@@ -14,11 +14,9 @@ sig c0_a extends c0_A
 {}
 
 one sig c0_ref1
-{ ref : one c0_A }
+{ c0_ref1_ref : one c0_A }
 
-fact { all disj x, y : c0_ref1 | (x.@ref) != (y.@ref) }
 one sig c0_ref2
-{ ref : one c0_ref1 }
-{ some (this.@ref).(@ref.@r_c0_x) }
+{ c0_ref2_ref : one c0_ref1 }
+{ some ((this.@c0_ref2_ref).@c0_ref1_ref).@r_c0_x }
 
-fact { all disj x, y : c0_ref2 | (x.@ref) != (y.@ref) }

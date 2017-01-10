@@ -30,17 +30,16 @@ fact { #c0_Element = 0 }
 abstract sig c0_Element
 { r_c0_ownedElement : set c0_ownedElement
 , r_c0_owner : lone c0_owner }
-{ all disj x, y : this.@r_c0_ownedElement | (x.@ref) != (y.@ref)
-  all  x : this.@r_c0_ownedElement | this in (x.(@ref.(@r_c0_owner.@ref)))
-  all disj x, y : this.@r_c0_owner | (x.@ref) != (y.@ref)
-  all  x : this.@r_c0_owner | this in (x.(@ref.(@r_c0_ownedElement.@ref))) }
+{ all disj x, y : this.@r_c0_ownedElement | (x.@c0_ownedElement_ref) != (y.@c0_ownedElement_ref) 
+  all  x : this.@r_c0_ownedElement | this in (((x.@c0_ownedElement_ref).@r_c0_owner).@c0_owner_ref)
+  all  x : this.@r_c0_owner | this in (((x.@c0_owner_ref).@r_c0_ownedElement).@c0_ownedElement_ref) }
 
 sig c0_ownedElement
-{ ref : one c0_Element }
+{ c0_ownedElement_ref : one c0_Element }
 { one @r_c0_ownedElement.this }
 
 sig c0_owner
-{ ref : one c0_Element }
+{ c0_owner_ref : one c0_Element }
 { one @r_c0_owner.this }
 
 fact { #c0_NamedElement = 0 }
@@ -48,7 +47,6 @@ abstract sig c0_NamedElement extends c0_Element
 { r_c0_name : lone c0_name
 , r_c0_qualifiedName : lone c0_qualifiedName
 , r_c0_visibility : lone c0_visibility }
-{ all disj x, y : this.@r_c0_visibility | (x.@ref) != (y.@ref) }
 
 sig c0_name extends c0_String
 {}
@@ -59,7 +57,7 @@ sig c0_qualifiedName extends c0_String
 { one @r_c0_qualifiedName.this }
 
 sig c0_visibility
-{ ref : one c0_VisibilityKind }
+{ c0_visibility_ref : one c0_VisibilityKind }
 { one @r_c0_visibility.this }
 
 fact { #c0_ValueSpecification = 0 }
@@ -71,20 +69,20 @@ abstract sig c0_DirectedRelationship
 { r_c0_relatedElement : some c0_relatedElement
 , r_c0_source : some c0_source
 , r_c0_target : some c0_target }
-{ all disj x, y : this.@r_c0_relatedElement | (x.@ref) != (y.@ref)
-  all disj x, y : this.@r_c0_source | (x.@ref) != (y.@ref)
-  all disj x, y : this.@r_c0_target | (x.@ref) != (y.@ref) }
+{ all disj x, y : this.@r_c0_relatedElement | (x.@c0_relatedElement_ref) != (y.@c0_relatedElement_ref) 
+  all disj x, y : this.@r_c0_source | (x.@c0_source_ref) != (y.@c0_source_ref) 
+  all disj x, y : this.@r_c0_target | (x.@c0_target_ref) != (y.@c0_target_ref)  }
 
 sig c0_relatedElement
-{ ref : one c0_Element }
+{ c0_relatedElement_ref : one c0_Element }
 { one @r_c0_relatedElement.this }
 
 sig c0_source
-{ ref : one c0_Element }
+{ c0_source_ref : one c0_Element }
 { one @r_c0_source.this }
 
 sig c0_target
-{ ref : one c0_Element }
+{ c0_target_ref : one c0_Element }
 { one @r_c0_target.this }
 
 fact { #c0_Class = 0 }
@@ -92,14 +90,14 @@ abstract sig c0_Class extends c0_Classifier
 { r_c0_isActive : lone c0_isActive
 , r_c0_superClass : set c0_superClass
 , r_c0_nestedClassifier : set c0_nestedClassifier }
-{ all disj x, y : this.@r_c0_superClass | (x.@ref) != (y.@ref) }
+{ all disj x, y : this.@r_c0_superClass | (x.@c0_superClass_ref) != (y.@c0_superClass_ref)  }
 
 sig c0_isActive
 {}
 { one @r_c0_isActive.this }
 
 sig c0_superClass
-{ ref : one c0_Class }
+{ c0_superClass_ref : one c0_Class }
 { one @r_c0_superClass.this }
 
 sig c0_nestedClassifier extends c0_Classifier
@@ -123,19 +121,12 @@ abstract sig c0_Property extends c0_StructuralFeature
 , r_c0_defaultValue : lone c0_defaultValue
 , r_c0_qualifier : set c0_qualifier
 , r_c0_associationEnd : lone c0_associationEnd }
-{ all disj x, y : this.@r_c0_aggregation | (x.@ref) != (y.@ref)
-  all disj x, y : this.@r_c0_class | (x.@ref) != (y.@ref)
-  all disj x, y : this.@r_c0_opposite | (x.@ref) != (y.@ref)
-  all disj x, y : this.@r_c0_owningAssociation | (x.@ref) != (y.@ref)
-  all  x : this.@r_c0_owningAssociation | this in (x.(@ref.@r_c0_ownedEnd))
-  all disj x, y : this.@r_c0_redefinedProperty | (x.@ref) != (y.@ref)
-  all disj x, y : this.@r_c0_subsettedProperty | (x.@ref) != (y.@ref)
-  all disj x, y : this.@r_c0_datatype | (x.@ref) != (y.@ref)
-  all  x : this.@r_c0_datatype | this in (x.(@ref.@r_c0_ownedAttribute))
-  all disj x, y : this.@r_c0_association | (x.@ref) != (y.@ref)
-  all  x : this.@r_c0_association | this in (x.(@ref.(@r_c0_memberEnd.@ref)))
-  all disj x, y : this.@r_c0_associationEnd | (x.@ref) != (y.@ref)
-  all  x : this.@r_c0_associationEnd | this in (x.(@ref.@r_c0_qualifier)) }
+{ all  x : this.@r_c0_owningAssociation | this in ((x.@c0_owningAssociation_ref).@r_c0_ownedEnd)
+  all disj x, y : this.@r_c0_redefinedProperty | (x.@c0_redefinedProperty_ref) != (y.@c0_redefinedProperty_ref) 
+  all disj x, y : this.@r_c0_subsettedProperty | (x.@c0_subsettedProperty_ref) != (y.@c0_subsettedProperty_ref) 
+  all  x : this.@r_c0_datatype | this in ((x.@c0_datatype_ref).@r_c0_ownedAttribute)
+  all  x : this.@r_c0_association | this in (((x.@c0_association_ref).@r_c0_memberEnd).@c0_memberEnd_ref)
+  all  x : this.@r_c0_associationEnd | this in ((x.@c0_associationEnd_ref).@r_c0_qualifier) }
 
 sig c0_default extends c0_String
 {}
@@ -154,35 +145,35 @@ sig c0_isDerivedUnion
 { one @r_c0_isDerivedUnion.this }
 
 sig c0_aggregation
-{ ref : one c0_AggregationKind }
+{ c0_aggregation_ref : one c0_AggregationKind }
 { one @r_c0_aggregation.this }
 
 sig c0_class
-{ ref : one c0_Class }
+{ c0_class_ref : one c0_Class }
 { one @r_c0_class.this }
 
 sig c0_opposite
-{ ref : one c0_Property }
+{ c0_opposite_ref : one c0_Property }
 { one @r_c0_opposite.this }
 
 sig c0_owningAssociation
-{ ref : one c0_Association }
+{ c0_owningAssociation_ref : one c0_Association }
 { one @r_c0_owningAssociation.this }
 
 sig c0_redefinedProperty
-{ ref : one c0_Property }
+{ c0_redefinedProperty_ref : one c0_Property }
 { one @r_c0_redefinedProperty.this }
 
 sig c0_subsettedProperty
-{ ref : one c0_Property }
+{ c0_subsettedProperty_ref : one c0_Property }
 { one @r_c0_subsettedProperty.this }
 
 sig c0_datatype
-{ ref : one c0_DataType }
+{ c0_datatype_ref : one c0_DataType }
 { one @r_c0_datatype.this }
 
 sig c0_association
-{ ref : one c0_Association }
+{ c0_association_ref : one c0_Association }
 { one @r_c0_association.this }
 
 sig c0_defaultValue extends c0_ValueSpecification
@@ -192,10 +183,10 @@ sig c0_defaultValue extends c0_ValueSpecification
 sig c0_qualifier extends c0_Property
 {}
 { one @r_c0_qualifier.this
-  (this.~@r_c0_qualifier) in (this.(@r_c0_associationEnd.@ref)) }
+  (this.~@r_c0_qualifier) in ((this.@r_c0_associationEnd).@c0_associationEnd_ref) }
 
 sig c0_associationEnd
-{ ref : one c0_Property }
+{ c0_associationEnd_ref : one c0_Property }
 { one @r_c0_associationEnd.this }
 
 fact { #c0_Enumeration = 0 }
@@ -205,7 +196,7 @@ abstract sig c0_Enumeration extends c0_DataType
 sig c0_ownedLiteral extends c0_EnumerationLiteral
 {}
 { one @r_c0_ownedLiteral.this
-  (this.~@r_c0_ownedLiteral) in (this.(@r_c0_enumeration.@ref)) }
+  (this.~@r_c0_ownedLiteral) in ((this.@r_c0_enumeration).@c0_enumeration_ref) }
 
 fact { #c0_DataType = 0 }
 abstract sig c0_DataType extends c0_Classifier
@@ -214,16 +205,15 @@ abstract sig c0_DataType extends c0_Classifier
 sig c0_ownedAttribute extends c0_Property
 {}
 { one @r_c0_ownedAttribute.this
-  (this.~@r_c0_ownedAttribute) in (this.(@r_c0_datatype.@ref)) }
+  (this.~@r_c0_ownedAttribute) in ((this.@r_c0_datatype).@c0_datatype_ref) }
 
 fact { #c0_EnumerationLiteral = 0 }
 abstract sig c0_EnumerationLiteral extends c0_InstanceSpecification
 { r_c0_enumeration : lone c0_enumeration }
-{ all disj x, y : this.@r_c0_enumeration | (x.@ref) != (y.@ref)
-  all  x : this.@r_c0_enumeration | this in (x.(@ref.@r_c0_ownedLiteral)) }
+{ all  x : this.@r_c0_enumeration | this in ((x.@c0_enumeration_ref).@r_c0_ownedLiteral) }
 
 sig c0_enumeration
-{ ref : one c0_Enumeration }
+{ c0_enumeration_ref : one c0_Enumeration }
 { one @r_c0_enumeration.this }
 
 fact { #c0_PrimitiveType = 0 }
@@ -240,61 +230,61 @@ abstract sig c0_Classifier extends c0_NamedElement
 , r_c0_attribute : set c0_attribute
 , r_c0_redefinedClassifier : set c0_redefinedClassifier
 , r_c0_powertypeExtent : set c0_powertypeExtent }
-{ all disj x, y : this.@r_c0_feature | (x.@ref) != (y.@ref)
-  all  x : this.@r_c0_feature | this in (x.(@ref.(@r_c0_featuringClassifier.@ref)))
-  all disj x, y : this.@r_c0_inheritedMember | (x.@ref) != (y.@ref)
-  all disj x, y : this.@r_c0_general | (x.@ref) != (y.@ref)
-  all disj x, y : this.@r_c0_attribute | (x.@ref) != (y.@ref)
-  all disj x, y : this.@r_c0_redefinedClassifier | (x.@ref) != (y.@ref)
-  all disj x, y : this.@r_c0_powertypeExtent | (x.@ref) != (y.@ref)
-  all  x : this.@r_c0_powertypeExtent | this in (x.(@ref.(@r_c0_powertype.@ref))) }
+{ all disj x, y : this.@r_c0_feature | (x.@c0_feature_ref) != (y.@c0_feature_ref) 
+  all  x : this.@r_c0_feature | this in (((x.@c0_feature_ref).@r_c0_featuringClassifier).@c0_featuringClassifier_ref)
+  all disj x, y : this.@r_c0_inheritedMember | (x.@c0_inheritedMember_ref) != (y.@c0_inheritedMember_ref) 
+  all disj x, y : this.@r_c0_general | (x.@c0_general_ref) != (y.@c0_general_ref) 
+  all disj x, y : this.@r_c0_attribute | (x.@c0_attribute_ref) != (y.@c0_attribute_ref) 
+  all disj x, y : this.@r_c0_redefinedClassifier | (x.@c0_redefinedClassifier_ref) != (y.@c0_redefinedClassifier_ref) 
+  all disj x, y : this.@r_c0_powertypeExtent | (x.@c0_powertypeExtent_ref) != (y.@c0_powertypeExtent_ref) 
+  all  x : this.@r_c0_powertypeExtent | this in (((x.@c0_powertypeExtent_ref).@r_c0_powertype).@c0_powertype_ref) }
 
 sig c0_isAbstract
 {}
 { one @r_c0_isAbstract.this }
 
 sig c0_feature
-{ ref : one c0_Feature }
+{ c0_feature_ref : one c0_Feature }
 { one @r_c0_feature.this }
 
 sig c0_inheritedMember
-{ ref : one c0_NamedElement }
+{ c0_inheritedMember_ref : one c0_NamedElement }
 { one @r_c0_inheritedMember.this }
 
 sig c0_general
-{ ref : one c0_Classifier }
+{ c0_general_ref : one c0_Classifier }
 { one @r_c0_general.this }
 
 sig c0_generalization extends c0_Generalization
 {}
 { one @r_c0_generalization.this
-  (this.~@r_c0_generalization) in (this.(@r_c0_specific.@ref)) }
+  (this.~@r_c0_generalization) in ((this.@r_c0_specific).@c0_specific_ref) }
 
 sig c0_attribute
-{ ref : one c0_Property }
+{ c0_attribute_ref : one c0_Property }
 { one @r_c0_attribute.this }
 
 sig c0_redefinedClassifier
-{ ref : one c0_Classifier }
+{ c0_redefinedClassifier_ref : one c0_Classifier }
 { one @r_c0_redefinedClassifier.this }
 
 sig c0_powertypeExtent
-{ ref : one c0_GeneralizationSet }
+{ c0_powertypeExtent_ref : one c0_GeneralizationSet }
 { one @r_c0_powertypeExtent.this }
 
 fact { #c0_Feature = 0 }
 abstract sig c0_Feature extends c0_NamedElement
 { r_c0_isStatic : lone c0_isStatic
 , r_c0_featuringClassifier : set c0_featuringClassifier }
-{ all disj x, y : this.@r_c0_featuringClassifier | (x.@ref) != (y.@ref)
-  all  x : this.@r_c0_featuringClassifier | this in (x.(@ref.(@r_c0_feature.@ref))) }
+{ all disj x, y : this.@r_c0_featuringClassifier | (x.@c0_featuringClassifier_ref) != (y.@c0_featuringClassifier_ref) 
+  all  x : this.@r_c0_featuringClassifier | this in (((x.@c0_featuringClassifier_ref).@r_c0_feature).@c0_feature_ref) }
 
 sig c0_isStatic
 {}
 { one @r_c0_isStatic.this }
 
 sig c0_featuringClassifier
-{ ref : one c0_Classifier }
+{ c0_featuringClassifier_ref : one c0_Classifier }
 { one @r_c0_featuringClassifier.this }
 
 abstract sig c0_VisibilityKind
@@ -340,8 +330,8 @@ fact { #c0_LiteralInteger = 0 }
 abstract sig c0_LiteralInteger extends c0_LiteralSpecification
 { r_c2_value : lone c2_value }
 
-sig c2_value extends c0_Integer
-{}
+sig c2_value
+{ c2_value_ref : one c0_Integer }
 { one @r_c2_value.this }
 
 fact { #c0_LiteralUnlimitedNatural = 0 }
@@ -374,8 +364,8 @@ sig c0_isUnique
 {}
 { one @r_c0_isUnique.this }
 
-sig c0_lower extends c0_Integer
-{}
+sig c0_lower
+{ c0_lower_ref : one c0_Integer }
 { one @r_c0_lower.this }
 
 sig c0_upper extends c0_UnlimitedNatural
@@ -395,15 +385,15 @@ abstract sig c0_InstanceSpecification extends c0_NamedElement
 { r_c0_slot : set c0_slot
 , r_c0_classifier : set c0_classifier
 , r_c0_specification : lone c0_specification }
-{ all disj x, y : this.@r_c0_classifier | (x.@ref) != (y.@ref) }
+{ all disj x, y : this.@r_c0_classifier | (x.@c0_classifier_ref) != (y.@c0_classifier_ref)  }
 
 sig c0_slot extends c0_Slot
 {}
 { one @r_c0_slot.this
-  (this.~@r_c0_slot) in (this.(@r_c0_owningInstance.@ref)) }
+  (this.~@r_c0_slot) in ((this.@r_c0_owningInstance).@c0_owningInstance_ref) }
 
 sig c0_classifier
-{ ref : one c0_Classifier }
+{ c0_classifier_ref : one c0_Classifier }
 { one @r_c0_classifier.this }
 
 sig c0_specification extends c0_ValueSpecification
@@ -415,12 +405,10 @@ abstract sig c0_Slot extends c0_Element
 { r_c0_owningInstance : one c0_owningInstance
 , r_c4_value : set c4_value
 , r_c0_definingFeature : one c0_definingFeature }
-{ all disj x, y : this.@r_c0_owningInstance | (x.@ref) != (y.@ref)
-  all  x : this.@r_c0_owningInstance | this in (x.(@ref.@r_c0_slot))
-  all disj x, y : this.@r_c0_definingFeature | (x.@ref) != (y.@ref) }
+{ all  x : this.@r_c0_owningInstance | this in ((x.@c0_owningInstance_ref).@r_c0_slot) }
 
 sig c0_owningInstance
-{ ref : one c0_InstanceSpecification }
+{ c0_owningInstance_ref : one c0_InstanceSpecification }
 { one @r_c0_owningInstance.this }
 
 sig c4_value extends c0_ValueSpecification
@@ -428,16 +416,15 @@ sig c4_value extends c0_ValueSpecification
 { one @r_c4_value.this }
 
 sig c0_definingFeature
-{ ref : one c0_StructuralFeature }
+{ c0_definingFeature_ref : one c0_StructuralFeature }
 { one @r_c0_definingFeature.this }
 
 fact { #c0_InstanceValue = 0 }
 abstract sig c0_InstanceValue extends c0_ValueSpecification
 { r_c0_instance : one c0_instance }
-{ all disj x, y : this.@r_c0_instance | (x.@ref) != (y.@ref) }
 
 sig c0_instance
-{ ref : one c0_InstanceSpecification }
+{ c0_instance_ref : one c0_InstanceSpecification }
 { one @r_c0_instance.this }
 
 fact { #c0_Generalization = 0 }
@@ -446,26 +433,24 @@ abstract sig c0_Generalization extends c0_DirectedRelationship
 , r_c0_specific : one c0_specific
 , r_c1_general : one c1_general
 , r_c0_generalizationSet : set c0_generalizationSet }
-{ all disj x, y : this.@r_c0_specific | (x.@ref) != (y.@ref)
-  all  x : this.@r_c0_specific | this in (x.(@ref.@r_c0_generalization))
-  all disj x, y : this.@r_c1_general | (x.@ref) != (y.@ref)
-  all disj x, y : this.@r_c0_generalizationSet | (x.@ref) != (y.@ref)
-  all  x : this.@r_c0_generalizationSet | this in (x.(@ref.(@r_c1_generalization.@ref))) }
+{ all  x : this.@r_c0_specific | this in ((x.@c0_specific_ref).@r_c0_generalization)
+  all disj x, y : this.@r_c0_generalizationSet | (x.@c0_generalizationSet_ref) != (y.@c0_generalizationSet_ref) 
+  all  x : this.@r_c0_generalizationSet | this in (((x.@c0_generalizationSet_ref).@r_c1_generalization).@c1_generalization_ref) }
 
 sig c0_isSubstitutable
 {}
 { one @r_c0_isSubstitutable.this }
 
 sig c0_specific
-{ ref : one c0_Classifier }
+{ c0_specific_ref : one c0_Classifier }
 { one @r_c0_specific.this }
 
 sig c1_general
-{ ref : one c0_Classifier }
+{ c1_general_ref : one c0_Classifier }
 { one @r_c1_general.this }
 
 sig c0_generalizationSet
-{ ref : one c0_GeneralizationSet }
+{ c0_generalizationSet_ref : one c0_GeneralizationSet }
 { one @r_c0_generalizationSet.this }
 
 fact { #c0_Association = 0 }
@@ -475,15 +460,15 @@ abstract sig c0_Association extends c0_Classifier
 , r_c0_ownedEnd : set c0_ownedEnd
 , r_c0_endType : some c0_endType
 , r_c0_memberEnd : set c0_memberEnd }
-{ all disj x, y : this.@r_c1_relatedElement | (x.@ref) != (y.@ref)
-  all disj x, y : this.@r_c0_endType | (x.@ref) != (y.@ref)
+{ all disj x, y : this.@r_c1_relatedElement | (x.@c1_relatedElement_ref) != (y.@c1_relatedElement_ref) 
+  all disj x, y : this.@r_c0_endType | (x.@c0_endType_ref) != (y.@c0_endType_ref) 
   2 <= #r_c0_memberEnd
-  all disj x, y : this.@r_c0_memberEnd | (x.@ref) != (y.@ref)
-  all  x : this.@r_c0_memberEnd | this in (x.(@ref.(@r_c0_association.@ref)))
-  ((#(this.@r_c0_memberEnd)) > 2) => ((this.(@r_c0_memberEnd.@ref)) in (this.@r_c0_ownedEnd)) }
+  all disj x, y : this.@r_c0_memberEnd | (x.@c0_memberEnd_ref) != (y.@c0_memberEnd_ref) 
+  all  x : this.@r_c0_memberEnd | this in (((x.@c0_memberEnd_ref).@r_c0_association).@c0_association_ref)
+  ((#(this.@r_c0_memberEnd)) > 2) => (((this.@r_c0_memberEnd).@c0_memberEnd_ref) in (this.@r_c0_ownedEnd)) }
 
 sig c1_relatedElement
-{ ref : one c0_Element }
+{ c1_relatedElement_ref : one c0_Element }
 { one @r_c1_relatedElement.this }
 
 sig c1_isDerived
@@ -493,14 +478,14 @@ sig c1_isDerived
 sig c0_ownedEnd extends c0_Property
 {}
 { one @r_c0_ownedEnd.this
-  (this.~@r_c0_ownedEnd) in (this.(@r_c0_owningAssociation.@ref)) }
+  (this.~@r_c0_ownedEnd) in ((this.@r_c0_owningAssociation).@c0_owningAssociation_ref) }
 
 sig c0_endType
-{ ref : one c0_NamedElement }
+{ c0_endType_ref : one c0_NamedElement }
 { one @r_c0_endType.this }
 
 sig c0_memberEnd
-{ ref : one c0_Property }
+{ c0_memberEnd_ref : one c0_Property }
 { one @r_c0_memberEnd.this }
 
 fact { #c0_ExtensionEnd = 0 }
@@ -525,10 +510,9 @@ abstract sig c0_GeneralizationSet extends c0_NamedElement
 , r_c0_isDisjoint : lone c0_isDisjoint
 , r_c0_powertype : lone c0_powertype
 , r_c1_generalization : set c1_generalization }
-{ all disj x, y : this.@r_c0_powertype | (x.@ref) != (y.@ref)
-  all  x : this.@r_c0_powertype | this in (x.(@ref.(@r_c0_powertypeExtent.@ref)))
-  all disj x, y : this.@r_c1_generalization | (x.@ref) != (y.@ref)
-  all  x : this.@r_c1_generalization | this in (x.(@ref.(@r_c0_generalizationSet.@ref))) }
+{ all  x : this.@r_c0_powertype | this in (((x.@c0_powertype_ref).@r_c0_powertypeExtent).@c0_powertypeExtent_ref)
+  all disj x, y : this.@r_c1_generalization | (x.@c1_generalization_ref) != (y.@c1_generalization_ref) 
+  all  x : this.@r_c1_generalization | this in (((x.@c1_generalization_ref).@r_c0_generalizationSet).@c0_generalizationSet_ref) }
 
 sig c0_isCovering
 {}
@@ -539,10 +523,10 @@ sig c0_isDisjoint
 { one @r_c0_isDisjoint.this }
 
 sig c0_powertype
-{ ref : one c0_Classifier }
+{ c0_powertype_ref : one c0_Classifier }
 { one @r_c0_powertype.this }
 
 sig c1_generalization
-{ ref : one c0_Generalization }
+{ c1_generalization_ref : one c0_Generalization }
 { one @r_c1_generalization.this }
 

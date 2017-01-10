@@ -1,6 +1,6 @@
 // http://gsd.uwaterloo.ca:8888/question/885/ref-should-only-be-needed-for-disambiguation-ii
 
-[ all disj c1; c2 : Car | c1.owner.ref != c2.owner.ref ]
+[ all disj c1; c2 : Car | c1.owner.dref != c2.owner.dref ]
 
 Car 4
    owner -> Person

@@ -1,0 +1,16 @@
+digraph "navAndDeref"
+{
+rankdir=BT;
+ranksep=0.3;
+nodesep=0.1;
+graph [fontname=Sans fontsize=11];
+node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
+edge [fontname=Sans fontsize=11];
+"c0_a" [label="a" URL="#c0_a" tooltip="a&#10;  b -&gt; e&#10;    [ f = h ]&#10;    [ this.f = h ]&#10;    [ this.f.dref = h ]&#10;    [ this.f.dref.dref = h ]&#10;  [ b.f = h ]&#10;  [ this.b.f = h ]&#10;  [ this.b.f.dref = h ]&#10;  [ this.b.f.dref.dref = h ]&#10;  c&#10;    d&#10;      [ b = e ]&#10;      [ parent.parent.b = e ]&#10;      [ this.parent.parent.b.dref = e ]&#10;    [ b.f = g ]&#10;    [ parent.b.f = g ]&#10;    [ this.parent.b.f.dref = g ]&#10;    [ this.parent.b.f.dref.dref = h ]&#10;"];
+"c0_a" -> "c0_e" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=b];
+"c0_e" [label="e" URL="#c0_e" tooltip="e&#10;  f -&gt; g ?&#10;"];
+"c0_e" -> "c0_g" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=f];
+"c0_g" [label="g -&gt; h" URL="#c0_g" tooltip="g -&gt; h&#10;"];
+"c0_g" -> "c0_h" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent];
+"c0_h" [label="h" URL="#c0_h" tooltip="h&#10;"];
+}

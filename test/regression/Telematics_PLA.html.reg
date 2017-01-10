@@ -1,3 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=9">
+<style>.identifier{}
+.keyword{font-weight:bold}
+.reference{}
+.code { background-color: lightgray; padding: 5px 5px 5px 5px; border: 1px solid darkgray; margin-bottom: 15px; 
+        font-family: Pragmata, Menlo, 'DejaVu LGC Sans Mono', 'DejaVu Sans Mono', Consolas, 'Everson Mono', 'Lucida Console', 'Andale Mono', 'Nimbus Mono L', 'Liberation Mono', FreeMono, 'Osaka Monospaced', Courier, 'New Courier', monospace; }
+.standalonecomment { color: green; font-style:italic }
+.inlinecomment { color: green; padding-left:20px; font-style:italic }
+.error{background-color: yellow; color: red }
+.deprecated{color: orange }
+.indent{padding-left:20px}
+a[href$='Lookup failed'] {color: red}
+a[href$='Uid not found'] {color: red}
+a[href$='Ambiguous name'] {color: yellow}
+
+</style></head>
+<body>
 
 <div>
 <span class="claferDecl" id="c0_telematicsSystem">telematicsSystem</span>
@@ -22,7 +42,7 @@
   <div class="indent">
   <span class="keyword">[</span> <a href="#c0_extraDisplay"><span class="reference">extraDisplay</span></a> &lt;=&gt; # <a href="#c0_ECU1"><span class="reference">ECU1</span></a>.<a href="#c1_display"><span class="reference">display</span></a> = 2 <span class="keyword">]</span></div>
   <div class="indent">
-  <span class="keyword">[</span> <a href="#c0_extraDisplay"><span class="reference">extraDisplay</span></a> &lt;=&gt; <a href="#c0_ECU2"><span class="reference">ECU2</span></a> => # <a href="#c0_ECU2"><span class="reference">ECU2</span></a>.<a href="#c1_display"><span class="reference">display</span></a> = 2 <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <a href="#c0_extraDisplay"><span class="reference">extraDisplay</span></a> &lt;=&gt; <a href="#c0_ECU2"><span class="reference">ECU2</span></a> =&gt; # <a href="#c0_ECU2"><span class="reference">ECU2</span></a>.<a href="#c1_display"><span class="reference">display</span></a> = 2 <span class="keyword">]</span></div>
   <div class="indent">
   <span class="keyword">[</span> <a href="#c0_large"><span class="reference">large</span></a> &lt;=&gt;  ! <a href="#c0_plaECU"><span class="reference">plaECU</span></a>.<a href="#c1_display"><span class="reference">display</span></a>.<a href="#c0_options"><span class="reference">options</span></a>.<a href="#c1_size"><span class="reference">size</span></a>.<a href="#c1_small"><span class="reference">small</span></a> <span class="keyword">]</span></div>
   <div class="indent">
@@ -34,23 +54,23 @@
 <div>
 <span class="keyword">abstract</span> <span class="claferDecl" id="c0_comp">comp</span>
   <div class="indent">
-  <span class="claferDecl" id="c0_version">version</span><span class="keyword"> :</span> <a href="#integer"><span class="reference">integer</span></a></div>
+  <span class="claferDecl" id="c0_version">version</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a></div>
 </div>
 
 <!-- # FRAGMENT /-->
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_ECU">ECU</span><span class="keyword"> :</span> <a href="#c0_comp"><span class="reference">comp</span></a></div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_ECU">ECU</span><span class="keyword"> : </span><a href="#c0_comp"><span class="reference">comp</span></a></div>
 
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_display">display</span><span class="keyword"> :</span> <a href="#c0_comp"><span class="reference">comp</span></a>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_display">display</span><span class="keyword"> : </span><a href="#c0_comp"><span class="reference">comp</span></a>
   <div class="indent">
-  <span class="claferDecl" id="c0_server">server</span><span class="keyword"> -></span> <a href="#c0_ECU"><span class="reference">ECU</span></a></div>
+  <span class="claferDecl" id="c0_server">server</span><span class="keyword"> -> </span><a href="#c0_ECU"><span class="reference">ECU</span></a></div>
   <div class="indent">
   `<a href="#c1_options"><span class="reference">options</span></a></div>
   <div class="indent">
-  <span class="keyword">[</span> <a href="#this"><span class="reference">this</span></a>.<a href="#c0_version"><span class="reference">version</span></a> >= <a href="#c0_server"><span class="reference">server</span></a>.<a href="#c0_version"><span class="reference">version</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_version"><span class="reference">version</span></a> &gt;= <a href="#c0_server"><span class="reference">server</span></a>.<a href="#c0_version"><span class="reference">version</span></a> <span class="keyword">]</span></div>
 </div>
 
 <!-- # FRAGMENT /-->
@@ -67,23 +87,23 @@
   <div class="indent">
   <span class="claferDecl" id="c0_cache">cache</span> ?
     <div class="indent">
-    <span class="claferDecl" id="c2_size">size</span><span class="keyword"> :</span> <a href="#integer"><span class="reference">integer</span></a>
+    <span class="claferDecl" id="c2_size">size</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a>
       <div class="indent">
       <span class="claferDecl" id="c0_fixed">fixed</span> ?</div>
     </div>
   </div>
   <div class="indent">
-  <span class="keyword">[</span> <a href="#c1_small"><span class="reference">small</span></a> && <a href="#c0_cache"><span class="reference">cache</span></a> => <a href="#c0_fixed"><span class="reference">fixed</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <a href="#c1_small"><span class="reference">small</span></a> &amp;&amp; <a href="#c0_cache"><span class="reference">cache</span></a> =&gt; <a href="#c0_fixed"><span class="reference">fixed</span></a> <span class="keyword">]</span></div>
 </div>
 
 <!-- # FRAGMENT /-->
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_plaECU">plaECU</span><span class="keyword"> :</span> <a href="#c0_ECU"><span class="reference">ECU</span></a>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_plaECU">plaECU</span><span class="keyword"> : </span><a href="#c0_ECU"><span class="reference">ECU</span></a>
   <div class="indent">
   `<a href="#c0_display"><span class="reference">display</span></a> 1..2 </div>
     <div class="indent">
-    <span class="keyword">[</span> <a href="#c0_server"><span class="reference">server</span></a> = <a href="#parent"><span class="reference">parent</span></a> <span class="keyword">]</span></div>
+    <span class="keyword">[</span> <a href="#c0_server"><span class="reference">server</span></a> = <span class="keyword">parent</span> <span class="keyword">]</span></div>
     <div class="indent">
     <span class="keyword">[</span>  ! <a href="#c0_options"><span class="reference">options</span></a>.<a href="#c0_cache"><span class="reference">cache</span></a> <span class="keyword">]</span></div>
  
@@ -91,13 +111,13 @@
 
 
 <div>
-<span class="claferDecl" id="c0_ECU1">ECU1</span><span class="keyword"> :</span> <a href="#c0_plaECU"><span class="reference">plaECU</span></a></div>
+<span class="claferDecl" id="c0_ECU1">ECU1</span><span class="keyword"> : </span><a href="#c0_plaECU"><span class="reference">plaECU</span></a></div>
 
 
 <div>
-<span class="claferDecl" id="c0_ECU2">ECU2</span><span class="keyword"> :</span> <a href="#c0_plaECU"><span class="reference">plaECU</span></a> ?
+<span class="claferDecl" id="c0_ECU2">ECU2</span><span class="keyword"> : </span><a href="#c0_plaECU"><span class="reference">plaECU</span></a> ?
   <div class="indent">
-  <span class="claferDecl" id="c0_master">master</span><span class="keyword"> -></span> <a href="#c0_ECU1"><span class="reference">ECU1</span></a></div>
+  <span class="claferDecl" id="c0_master">master</span><span class="keyword"> -> </span><a href="#c0_ECU1"><span class="reference">ECU1</span></a></div>
 </div>
 
 <!-- # FRAGMENT /-->
@@ -117,3 +137,5 @@
 <div>
 <span class="keyword">[</span> <a href="#c0_comp"><span class="reference">comp</span></a>.<a href="#c0_version"><span class="reference">version</span></a> = 1 <span class="keyword">]</span></div>
 
+</body>
+</html>

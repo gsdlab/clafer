@@ -1,249 +1,225 @@
-Clafer
-======
+[![Hackage](https://img.shields.io/hackage/v/clafer.svg)](https://hackage.haskell.org/package/clafer)
+[![Build Status](https://secure.travis-ci.org/gsdlab/clafer.svg)](http://travis-ci.org/gsdlab/clafer)
 
-v0.3.7
+# Clafer, the language
 
-[Clafer](http://clafer.org) is a general-purpose lightweight structural modeling language developed by 
-[GSD Lab](http://gsd.uwaterloo.ca/), [University of Waterloo](http://uwaterloo.ca), and 
+##### v0.4.3
+
+
+[Clafer](http://clafer.org) is a general-purpose lightweight structural modeling language developed by
+[GSD Lab](http://gsd.uwaterloo.ca/), [University of Waterloo](http://uwaterloo.ca), and
 [MODELS](http://www.itu.dk/research/models/) group at [IT University of Copenhagen](http://www.itu.dk/).
-Clafer can be used for modeling of static hierarchical structures but has no support for modeling the change of the structures over time (behavior). 
-The main goal of Clafer is to make modeling more accessible to a wider range of users and domains. 
+Clafer can be used for modeling of static hierarchical structures but has no support for modeling the change of the structures over time (behavior).
+The main goal of Clafer is to make modeling more accessible to a wider range of users and domains.
 
 There are many possible applications of Clafer; however, three are prominent:
 
-1. *Product-Line Modeling* - aims at representing and managing commonality and variability of assets in product lines and creating and verifying product configurations. 
-Clafer naturally supports multi-staged configuration. 
+1. *Product-Line Modeling* - aims at representing and managing commonality and variability of assets in product lines and creating and verifying product configurations.
+Clafer naturally supports multi-staged configuration.
 
-2. *Multi-Objective Product Optimization* - aims at finding a set of products in a given product line that are optimal with respect to a set of objectives. 
+2. *Multi-Objective Product Optimization* - aims at finding a set of products in a given product line that are optimal with respect to a set of objectives.
 Clafer multi-objective optimizer generates a Pareto front of optimal product configurations.
 
-3. *Domain Modeling* - aims at improving the understanding of the problem domain in the early stages of software development and determining the requirements with fewer defects. 
+3. *Domain Modeling* - aims at improving the understanding of the problem domain in the early stages of software development and determining the requirements with fewer defects.
 This is also known as *Concept Modeling* or *Ontology Modeling*.
 
-Clafer Compiler
-===============
+### Resources
 
-Clafer compiler provides a reference language implementation. 
-It translates models in Clafer to other formats (e.g., Alloy, XML, Python, JS, HTML, DOT) to allow for reasoning and processing with existing tools (Alloy Analyzer, Choco3, and Z3 SMT solver).
+* [Learning Clafer](http://t3-necsis.cs.uwaterloo.ca:8091/#learning-clafer)
+* [Cheat Sheet](doc/CheatSheet.md)
+* [Syntax Documentation](doc/clafer.pdf)
+* [Grammar](src/clafer.cf)
 
-Currently, the compiler is used by 
+# Clafer, the compiler
+
+Clafer compiler provides a reference implementation of Clafer, the language.
+It translates models in Clafer to other formats (e.g., Alloy, JSON, JS, HTML, DOT) to allow for reasoning and processing with existing tools (Alloy Analyzer, Choco3, and GraphViz).
+
+Currently, the compiler is used by
 
 * Backends
-  * Alloy-based Instance Generator ([ClaferIG](https://github.com/gsdlab/claferIG)), 
-  * Choco3-based Instance Generator and Multi-Objective Optimizer ([chocosolver](https://github.com/gsdlab/chocosolver), [ClaferChocoIG](https://github.com/gsdlab/ClaferChocoIG)), and
-  * Z3-based Instance Generator and Multi-Objective Optimizer ([ClaferSMT](https://github.com/gsdlab/claferSMT)), 
+  * Alloy-based Instance Generator ([ClaferIG](https://github.com/gsdlab/claferIG)),
+  * Choco3-based Instance Generator and Multi-Objective Optimizer ([chocosolver](https://github.com/gsdlab/chocosolver).
 * Web Frontends
   * Clafer Integrated Development Environment ([ClaferIDE](https://github.com/gsdlab/claferIDE)),
-  * Clafer Configurator ([ClaferConfigurator](https://github.com/gsdlab/ClaferConfigurator)), 
-  * Multi-Objective [Visualizer and Explorer](https://github.com/gsdlab/ClaferMooVisualizer), and 
+  * Clafer Configurator ([ClaferConfigurator](https://github.com/gsdlab/ClaferConfigurator)),
+  * Multi-Objective [Visualizer and Explorer](https://github.com/gsdlab/ClaferMooVisualizer), and
   * Clafer Wiki ([ClaferWiki](https://github.com/gsdlab/claferwiki)).
 
-Contributors
-------------
+## Contributors
 
+* [Michał Antkiewicz](http://gsd.uwaterloo.ca/mantkiew), Main developer.
 * [Kacper Bak](http://gsd.uwaterloo.ca/kbak), Original developer.
-* [Jimmy Liang](http://gsd.uwaterloo.ca/jliang), Main developer.
-* [Michał Antkiewicz](http://gsd.uwaterloo.ca/mantkiew), Requirements, development, architecture, testing, technology transfer.
-* [Ed Zulkoski](http://gsd.uwaterloo.ca/ezulkosk), Python IR Generator.
+* [Jimmy Liang](http://gsd.uwaterloo.ca/jliang), Developer.
 * Luke Michael Brown, co-op student May-Aug 2013. Many improvements.
 * Paulius Juodisius, [customized BNFC generator](https://github.com/juodaspaulius/bnfc) and layout resolver.
 * [Rafael Olaechea](http://gsd.uwaterloo.ca/rolaechea), Multi-Objective Optimization extensions.
 
-Getting the Clafer Compiler
----------------------------
+## Getting the Clafer compiler
 
 Clafer can be installed from a binary distribution (preferred), from Hackage, and from the source code.
 
 ### Dependencies for running
 
-Regardless of the installation method, the following are 
-
-Required:
-
-* [GNU Linear Programming Kit](http://www.gnu.org/software/glpk/) v4.55
-  * On Windows, [WinGLPK](http://winglpk.sourceforge.net/)
+Regardless of the installation method, the following are
 
 Optional:
 
-* [Java Platform (JDK)](http://www.oracle.com/technetwork/java/javase/downloads/index.html) v7+, 32bit
-  * needed only for running XML output validation
-* [Alloy4.1 and/or Alloy4.2](http://alloy.mit.edu/alloy/download.html)
-  * needed only for Alloy output validation
+* [Java Platform (JDK)](http://www.oracle.com/technetwork/java/javase/downloads/index.html) v8+, 64bit
+  * only needed for running Alloy validation
+* [Alloy4.2](http://alloy.mit.edu/alloy/download.html)
+  * only needed for Alloy output validation
 * [GraphViz](http://graphviz.org/)
   * the program `dot` is needed only in the `html` mode for SVG graph generation
 
-### Installation of GLPK
-
-On Linux
-
-1. [libglpk-dev](http://www.gnu.org/software/glpk/) v4.55
-  * execute `sudo apt-get install libglpk-dev` on Ubuntu
-2. [libgmp-dev](http://gmplib.org/)
-  * execute `sudo apt-get install libgmp-dev` on Ubuntu
-
-On Windows
-
-1. The binary distribution already includes the GNU Linear Programming Kit DLL `glpk_4_55.dll`.
-2. Install [WinGLPK](http://winglpk.sourceforge.net/) v4.55
-  * inside the `w64` folder, copy `glpk_4_55.dll` to `glpk.dll` so that it can be found when building Haskell package `glpk-hs`
-  * from `w64` folder, copy `glpk_4_55.dll` to `<user>\AppData\Roaming\cabal\bin`
-
-On Mac
-
-1. install GPLK 4.55 from [MacPorts](http://www.macports.org/)
-  * execute `sudo port install glpk +universal`
-
 ### Installation from binaries
 
-Binary distributions of the release 0.3.7 of Clafer Tools for Windows, Mac, and Linux, 
-can be downloaded from 
-[Clafer Tools - Binary Distributions](http://http://gsd.uwaterloo.ca/clafer-tools-binary-distributions). 
+Binary distributions of the release 0.4.3 of Clafer Tools for Windows, Mac, and Linux,
+can be downloaded from
+[Clafer Tools - Binary Distributions](http://gsd.uwaterloo.ca/clafer-tools-binary-distributions).
 
 1. download the binaries and unpack `<target directory>` of your choice
 2. add the `<target directory>` to your system path so that the executables can be found
 
 ### Installation from Hackage
 
+Clafer is now available on [Hackage](http://hackage.haskell.org/package/clafer-0.4.3/) and it can be installed using either [`stack`](https://github.com/commercialhaskell/stack) or [`cabal-install`](https://hackage.haskell.org/package/cabal-install).
+
+#### Installation using `stack`
+
+Stack is the only requirement: no other Haskell tooling needs to be installed because stack will automatically install everything that's needed.
+
+1. [install `stack`](https://github.com/commercialhaskell/stack#how-to-install)
+2. execute `stack install clafer`
+
+#### Installation using `cabal-install`
+
 Dependencies
 
-* [The Haskell Platform](http://hackage.haskell.org/platform/) v2014.2.0.0 64bit
-  * on Windows, use 32bit
+* [GHC](https://www.haskell.org/downloads) >= 7.8.3. 7.10.2 is recommended,
+* `cabal-install` >= 1.18, should be installed together with a GHC distribution,
+* [alex](https://hackage.haskell.org/package/alex),
+* [happy](https://hackage.haskell.org/package/happy).
 
-Clafer is now available on [Hackage](http://hackage.haskell.org/package/clafer-0.3.7/) and it can be installed using
-
-1. `cabal update`
-2. `cabal install clafer`
-3. `cd <cabal's lib or share folder>`  (`C:\Users\<user>\AppData\Roaming\cabal\x86_64-windows-ghc-7.8.3\clafer-0.3.7` on Windows or `.cabal/share/x86_64-linux-ghc-7.8.3/clafer-0.3.7/` on Linux)
-4. to automatically download Alloy jars
-  * execute `make` in `tools` 
-
-On Windows 
-
-* copy GLPK's dll `glpk_4_55.dll` to the `C:\Users\<user>\AppData\Roaming\cabal\bin` folder or any other folder on the system `PATH`
+1. Install GHC
+2. `cabal update`
+3. `cabal install alex happy`
+4. `cabal install clafer`
+5. on Windows `cd C:\Users\<user>\AppData\Roaming\cabal\i386-windows-ghc-7.10.2\clafer-0.4.3`
+6. on Linux `ca ~/.cabal/share/x86_64-linux-ghc-7.10.2/clafer-0.4.3/`
+7. to automatically download Alloy jars, execute
+  * `make alloy4.2.jar`,
+  * move `alloy4.2.jar` to the location of the clafer executable.
 
 ### Installation from the source code
 
 Dependencies
 
-* [The Haskell Platform](http://hackage.haskell.org/platform/) v2014.2.0.0 64bit
-  * on Windows, use 32bit
-  * Cabal >= 1.18
-* [Alloy4.1 and/or Alloy4.2](http://alloy.mit.edu/alloy/download.html)
-  * downloaded automatically during the build
+* [`stack`](https://github.com/commercialhaskell/stack#how-to-install)
 * [Git](http://git-scm.com/)
 
-On Windows 
+On Windows
 
-* [MSYS2](http://msys2.sourceforge.net/) 
-  * download MSYS2 installer
-  * in MSYS2 console, execute
-     * `pacman -Syu` 
+* [MSYS2](http://msys2.sourceforge.net/)
+  * it is installed automatically by `stack setup`
+  * to open MinGW64 shell, execute `mingw64_shell.bat` in `C:\Users\<user>\AppData\Local\Programs\stack\x86_64-windows\msys2-<date>`, where `<date>` is the release date of your MSYS installation
+  * update MSYS2 packages
+     * follow guide for [III. Updating packages](http://sourceforge.net/p/msys2/wiki/MSYS2%20installation/)
+  * execute
      * `pacman -S make wget unzip diffutils`
 
-#### Important: Branches must correspond
+#### Important: branches must correspond
 
-All related projects are following the *simultaneous release model*. 
-The branch `master` contains releases, whereas the branch `develop` contains code under development. 
+All related projects are following the *simultaneous release model*.
+The branch `master` contains releases, whereas the branch `develop` contains code under development.
 When building the tools, the branches should match.
 Releases from branches 'master` are guaranteed to work well together.
 Development versions from branches `develop` should work well together but this might not always be the case.
 
 #### Building
 
-1. install the dependencies
-2. open the command line terminal. On Windows, open MSYS2 terminal.
-3. in some `<source directory>` of your choice, execute 
+1. in some `<source directory>` of your choice, execute
   * `git clone git://github.com/gsdlab/clafer.git`
-4. in `<source directory>/clafer`, execute
-  * `cabal update`
-5. On Linux and Mac execute 
-  * `make init`
+2. in `<source directory>/clafer`, execute `stack setup`. This will install all dependencies, build tools, and MSYS2 (on Windows).
+3. first time only on Windows
+  * open `MinGW64 Shell` using `C:\Users\<user>\AppData\Local\Programs\stack\i386-windows\msys2-20150512\mingw64_shell.bat`
+  * update MSYS2 following the [update procedure](http://sourceforge.net/p/msys2/wiki/MSYS2%20installation/):
+    * `pacman -Sy`
+    * `pacman --needed -S bash pacman pacman-mirrors msys2-runtime`
+    * restart shell if the runtime was updated
+    * `pacman -Su`
+  * `pacman -S make wget unzip diffutils`
+4. `cd <source directory>`
   * `make`
-6. On Windows (in MSYS2 console), execute 
-  * `make glpk=/c/<your WinGLPK install dir>`
 
 ### Installation
 
-1. On Linux and Mac execute 
-  * `make install to=<target directory>` 
-2. On Windows (in MSYS2 console), execute 
-  * `make glpk=/c/<your WinGLPK instal dir> to=/c/Users/<your user name>/AppData/Roaming/cabal/bin`
+1. Execute
+  * `make install to=<target directory>`
 
-#### Note: 
-> On Windows, use `/` with the `make` command instead of `\`.
+#### Note:
+> On Windows, use `/` with the `make` command instead of `\`, e.g., `make install to=/c/clafer-tools-0.4.3/`
 
-Integration with Sublime Text 2/3
----------------------------------
+## Integration with Sublime Text 2/3
 
 See [ClaferToolsST](https://github.com/gsdlab/ClaferToolsST)
 
-Integration with VIM
---------------------
+## Integration with VIM
 
 See [clafer-vim](https://github.com/wasowski/clafer-vim)
 
-Usage
-=====
+## Usage
 
-Clafer Compiler
----------------
+### Clafer Compiler
 
 (As printed by `clafer --help`)
 
 ```
-Clafer 0.3.7
+Clafer 0.4.3
 
 clafer [OPTIONS] [FILE]
 
 Common flags:
   -m --mode=CLAFERMODE                    Generated output type. Available
-                                          CLAFERMODEs are: 'alloy' (Alloy 4.1);
-                                          'alloy42' (default, Alloy 4.2);
-                                          'xml' (intermediate representation of
-                                          Clafer model); 'clafer' (analyzed and
-                                          desugared clafer model); 'html'
-                                          (original model in HTML); 'graph'
-                                          (graphical representation written in
-                                          DOT language); 'cvlgraph' (cvl
-                                          notation representation written in
-                                          DOT language); 'python' (generates IR
-                                          in python); 'choco' (Choco constraint
+                                          CLAFERMODEs are: 'alloy' (default,
+                                          Alloy 4.2); 'json' (intermediate
+                                          representation of Clafer model);
+                                          'clafer' (analyzed and desugared
+                                          clafer model); 'html' (original model
+                                          in HTML); 'graph' (graphical
+                                          representation written in DOT
+                                          language); 'cvlgraph' (cvl notation
+                                          representation written in DOT
+                                          language); 'choco' (Choco constraint
                                           programming solver). Multiple modes
                                           can be specified at the same time,
                                           e.g., '-m alloy -m html'.
   -o --console-output                     Output code on console.
-  -i --flatten-inheritance                Flatten inheritance ('alloy' and
-                                          'alloy42' modes only).
+  -i --flatten-inheritance                Flatten inheritance ('alloy' mode
+                                          only).
      --timeout-analysis=INT               Timeout for analysis.
   -l --no-layout                          Don't resolve off-side rule layout.
-     --nl --new-layout                    Use new fast layout resolver
+  -n --nl --new-layout                    Use new fast layout resolver
                                           (experimental).
   -c --check-duplicates                   Check duplicated clafer names in
                                           the entire model.
   -f --skip-resolver                      Skip name resolution.
   -k --keep-unused                        Keep uninstantated abstract clafers
-                                          ('alloy' and 'alloy42' modes only).
+                                          ('alloy' mode only).
   -s --no-stats                           Don't print statistics.
-     --schema                             Show Clafer IR (intermediate
-                                          representation) XML schema.
   -v --validate                           Validate outputs of all modes. Uses
-                                          'tools/XsdCheck.class' for XML,
-                                          'tools/alloy4.jar' and
-                                          'tools/alloy4.2.jar' for Alloy
-                                          models, and Clafer translator for
-                                          desugared Clafer models. Use
-                                          '--tooldir' to override the default
-                                          location of these tools.
-     --nr --noalloyruncommand             For usage with partial instances:
-                                          Don't generate the alloy 'run show
-                                          for ... ' command, and rename @.ref
-                                          with unique names  ('alloy' and
-                                          'alloy42' modes only).
+                                          '<tooldir>/alloy4.2.jar' for Alloy
+                                          models, '<tooldir>/chocosolver.jar'
+                                          for Alloy models, and Clafer
+                                          translator for desugared Clafer
+                                          models. Use '--tooldir' to override
+                                          the default location ('.') of these
+                                          tools.
      --tooldir=DIR                        Specify the tools directory
-                                          ('validate' only). Default: 'tools/'.
+                                          ('validate' only). Default: '.'
+                                          (current directory).
   -a --alloy-mapping                      Generate mapping to Alloy source
-                                          code ('alloy' and 'alloy42' modes
-                                          only).
+                                          code ('alloy' mode only).
      --self-contained                     Generate a self-contained html
                                           document ('html' mode only).
      --add-graph                          Add a graph to the generated html
@@ -259,29 +235,26 @@ Common flags:
   -e --ecore2clafer                       Translate an ECore model into
                                           Clafer.
      --ss=SCOPESTRATEGY --scope-strategy  Use scope computation strategy:
-                                          none, simple (default), or full.
+                                          none or simple (default).
      --check-afm --afm                    Throws an error if the cardinality
                                           of any of the clafers is above 1.
-     --sg --skip-goals                    Skip generation of Alloy code for
-                                          goals. Useful for all tools working
-                                          with standard Alloy.
      --meta-data                          Generate a 'fully qualified
                                           name'-'least-partially-qualified
                                           name'-'unique ID' map ('.cfr-map').
-                                          In Alloy, Alloy42, and Choco modes,
-                                          generate the scopes map
-                                          ('.cfr-scope').
+                                          In Alloy and Choco modes, generate
+                                          the scopes map ('.cfr-scope').
   -? --help                               Display help message
   -V --version                            Print version information
+     --numeric-version                    Print just the version number
 ```
 
 The dependencies among the command line arguments are described on the [model wiki](http://t3-necsis.cs.uwaterloo.ca:8091/ClaferTools/CommandLineArguments).
 
-Multiple modes can be used at the same time. For example, 
+Multiple modes can be used at the same time. For example,
 
-`clafer model.cfr -m alloy -m xml -m html -m graph --self-contained --show-references --no-stats`
+`clafer model.cfr -m alloy -m json -m html -m graph --self-contained --show-references --no-stats`
 
-The mode `-m alloy42` is only a default mode if no other modes are given. When other modes are given, the mode `-m alloy42` must be added explicitly if needed.
+The mode `-m alloy` is only the default mode if no other modes are given. When other modes are given, the mode `-m alloy` must be added explicitly if needed.
 
 Additionally, `[OPTIONS]` can also be specified directly in the model file by inserting the following compiler directive as the first line of the file:
 
@@ -309,18 +282,79 @@ The following directives are markers of locations in the input files for differe
 
 * `//# FRAGMENT` - marks the beginning of the new [module fragment](http://gsd.uwaterloo.ca:8888/question/463/multi-fragment-modules).
 * `//# GRAPH` - marks the insertion point for a graph rendering. The graph is only produced in HTML mode with the argument `--add-graph`.
-* `//# STATS` - marks the insertion point for module statistics. The statistics can be omitted using the argument `--no-stats`. 
+* `//# STATS` - marks the insertion point for module statistics. The statistics can be omitted using the argument `--no-stats`.
 * `//# SUMMARY` - shorthand for `//# GRAPH` and `//# STATS`
-* `//# QUALITY_ATTRIBUTE` - is used by ClaferMooVisualizer and ClaferConfigurator to distinguish quality attributes, which should be filtered out, from other clafers.
 
-Need help?
-==========
-* See [language's website](http://clafer.org) for news, technical reports and more
-  * Check out a [Learning Clafer section](http://t3-necsis.cs.uwaterloo.ca:8091/#Learning Clafer)
-  * Try a live instance of [ClaferWiki](http://t3-necsis.cs.uwaterloo.ca:8091) which contains a repository of models for various applications
-  * Try a live instance of [ClaferIDE](http://t3-necsis.cs.uwaterloo.ca:8094)
-  * Try a live instance of [ClaferConfigurator](http://t3-necsis.cs.uwaterloo.ca:8093)
-  * Try a live instance of [ClaferMooVisualizer](http://t3-necsis.cs.uwaterloo.ca:8092)
-* Take a look at (incomplete) [Clafer by examples wiki](https://github.com/gsdlab/clafer/wiki)
-* Browse example models in the [test suite](https://github.com/gsdlab/clafer/tree/master/test/positive) and [MOO examples](https://github.com/gsdlab/clafer/tree/master/spl_configurator/dataset)
-* Post questions, report bugs, suggest improvements [GSD Lab Bug Tracker](http://gsd.uwaterloo.ca:8888/questions/). Tag your entries with `clafer` (so that we know what they are related to) and with `jimmy-liang` or `michal` (so that Jimmy or Michał gets a notification).
+# Developing Clafer
+
+Here is some information about the development of the Clafer compiler.
+
+## Branching
+
+We are following the simplified version of the [successful Git branching model](http://nvie.com/posts/a-successful-git-branching-model/).
+The branch `master` is for releases and hot fixes only.
+The branch `develop` is for minor development and for integration of features from feature branches.
+For any substantial work, branch off from `develop` and create a pull request back into `develop` after the work is completed.
+We do testing and code review before merging into develop.
+If the `develop` is ahead, merge it into the feature branch and perform integration testing there.
+To make a release, we create a pull request from `develop` into `master`.
+We tag `master` with version numbers after each release merge.
+
+## Building
+
+We have switched to [Haskell Tool Stack](https://github.com/commercialhaskell/stack#the-haskell-tool-stack).
+Install the tool first.
+
+## Testing
+
+We have both automated tests and regression tests.
+
+To run the automated tests (including both unit tests and [doctests](https://github.com/sol/doctest#readme)), execute
+
+```
+stack test
+```
+
+To only run unit tests, execute `stack test test-suite`.
+
+To only run doctests, execute `stack test doctests`.
+
+> Note: it is still possible to run `cabal test` as previously; however, the `Makefile` uses `stack` by default.
+
+For instructions for adding new modules to the doctest suite, see [cabal integration](https://github.com/sol/doctest#cabal-integration).
+
+To run all the automated tests and the regression tests, execute
+
+```
+make test
+```
+
+We do test-driven development in the following way:
+
+1. create a test case Clafer model in either `test/positive` or `test/negative` depending on whether a test case should compile successfully or return an error. For example, see a positive test case [test/positive/redefinition.cfr](https://github.com/gsdlab/clafer/blob/namedDrefs/test/positive/redefinition.cfr).
+2. produce the intended compiler output automatically if possible and manually fix the output. Save the intended output as a regression test case. For example, see [test/regression/redefinition.cfr.reg](https://github.com/gsdlab/clafer/blob/namedDrefs/test/regression/redefinition.als.reg).
+3. implement the feature to reproduce the intended output: compiler the test case and execute
+
+```
+cd test
+make diffRegressions
+```
+
+this will show you how the current output diverges from the intended output.
+
+
+## Modifying the grammar
+
+We are using a [customized version of BNCF](https://github.com/juodaspaulius/bnfc).
+Clone the repository and install a binary of `bnfc` so that it's visible in your `PATH`.
+After changing the grammar, execute
+
+```
+make grammar
+```
+
+
+# Need help?
+
+* Visit [language's website](http://clafer.org).
+* Report issues to [issue tracker](https://github.com/gsdlab/clafer/issues)

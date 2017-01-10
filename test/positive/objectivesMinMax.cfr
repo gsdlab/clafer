@@ -1,0 +1,24 @@
+X -> integer 3
+total_X -> integer = sum X
+Y
+  total_Y -> integer = sum X
+
+// minimize the maximum of a set
+<< min max X >>
+<< minimize max X >>
+
+// maximize the minimum of a set
+<< max min X >>
+<< maximize min X >>
+
+// minimize the sum of a set
+<< minimize sum X >>
+
+// maximize the product of a set
+<< maximize product X >>
+
+// minimize the number of elements of a set
+<< minimize # X >>
+
+<< minimize total_X >>
+<< minimize Y.total_Y >>

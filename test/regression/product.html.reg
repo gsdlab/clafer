@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=9">
+<style>.identifier{}
+.keyword{font-weight:bold}
+.reference{}
+.code { background-color: lightgray; padding: 5px 5px 5px 5px; border: 1px solid darkgray; margin-bottom: 15px; 
+        font-family: Pragmata, Menlo, 'DejaVu LGC Sans Mono', 'DejaVu Sans Mono', Consolas, 'Everson Mono', 'Lucida Console', 'Andale Mono', 'Nimbus Mono L', 'Liberation Mono', FreeMono, 'Osaka Monospaced', Courier, 'New Courier', monospace; }
+.standalonecomment { color: green; font-style:italic }
+.inlinecomment { color: green; padding-left:20px; font-style:italic }
+.error{background-color: yellow; color: red }
+.deprecated{color: orange }
+.indent{padding-left:20px}
+a[href$='Lookup failed'] {color: red}
+a[href$='Uid not found'] {color: red}
+a[href$='Ambiguous name'] {color: yellow}
+
+</style></head>
+<body>
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_N">N</span><span class="keyword"> ->> </span><a href="#integer"><span class="reference">integer</span></a></div>
+
+
+<div>
+<span class="claferDecl" id="c0_n1">n1</span><span class="keyword"> : </span><a href="#c0_N"><span class="reference">N</span></a> = 1</div>
+
+
+<div>
+<span class="claferDecl" id="c0_n2">n2</span><span class="keyword"> : </span><a href="#c0_N"><span class="reference">N</span></a> = 2</div>
+
+
+<div>
+<span class="claferDecl" id="c0_n3">n3</span><span class="keyword"> : </span><a href="#c0_N"><span class="reference">N</span></a> = 3</div>
+
+
+<div>
+<span class="claferDecl" id="c0_n4">n4</span><span class="keyword"> : </span><a href="#c0_N"><span class="reference">N</span></a> = 2</div>
+
+
+<div>
+<span class="claferDecl" id="c0_n5">n5</span><span class="keyword"> : </span><a href="#c0_N"><span class="reference">N</span></a> = 3</div>
+
+
+<div>
+<span class="claferDecl" id="c0_p">p</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a> = product <a href="#c0_N"><span class="reference">N</span></a></div>
+
+
+<div>
+<span class="keyword">assert [</span> <a href="#c0_p"><span class="reference">p</span></a> = 36 <span class="keyword">]</span></div>
+
+</body>
+</html>

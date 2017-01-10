@@ -6,22 +6,25 @@ abstract sig c0_Component
 { r_c0_energy : one c0_energy }
 
 sig c0_energy
-{ ref : one Int }
+{ c0_energy_ref : one Int }
 { one @r_c0_energy.this }
 
 one sig c0_c1 extends c0_Component
 {}
-{ (this.(@r_c0_energy.@ref)) = 1 }
+{ ((this.@r_c0_energy).@c0_energy_ref) = 1 }
 
 one sig c0_c2 extends c0_Component
 {}
-{ (this.(@r_c0_energy.@ref)) = 1 }
+{ ((this.@r_c0_energy).@c0_energy_ref) = 1 }
 
 one sig c0_c3 extends c0_Component
 {}
-{ (this.(@r_c0_energy.@ref)) = 1 }
+{ ((this.@r_c0_energy).@c0_energy_ref) = 1 }
 
 one sig c0_total
-{ ref : one Int }
+{ c0_total_ref : one Int }
 
-fact { (some c0_total) => ((c0_total.@ref) = (sum temp : (c0_Component.@r_c0_energy) | temp.@ref)) }
+fact { (some c0_total) => ((c0_total.@c0_total_ref) = (sum temp : (c0_Component.@r_c0_energy) | temp.@c0_energy_ref)) }
+assert assertOnLine_15 { (c0_total.@c0_total_ref) = 3 }
+check assertOnLine_15 for 1 but 3 c0_Component, 3 c0_energy
+

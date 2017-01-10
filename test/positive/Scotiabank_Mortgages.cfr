@@ -1,10 +1,10 @@
-abstract Currency : integer
+abstract Currency ->> integer
 
-abstract Percentage : integer
+abstract Percentage ->> integer
     [ this >= 0 && this <= 100 ]
 //# FRAGMENT
 abstract Mortgage
-    valueProposition : string
+    valueProposition -> string
     term -> MortgageTerm
     xor kind
         open
@@ -12,24 +12,24 @@ abstract Mortgage
     principalMortgageAmount -> Currency
     [ 5000 <= principalMortgageAmount && principalMortgageAmount <= 9999999 ]
     balance -> Currency
-    [ balance <= principalMortgageAmount ] 
+    [ balance <= principalMortgageAmount ]
     propertyValue -> Currency
     loanToValue -> Percentage
 //    [ loanToValue == balance / propertyValue ]
-    amortization : integer
+    amortization -> integer
     [ 1 <= amortization && amortization <= 30 ]
     xor interestRate
-        fixedForTheFullTerm 
+        fixedForTheFullTerm
         resetTogetherWithPaymentAmountEachTimeScotiabankPrimeRateChanges
     currentInterestRate -> Percentage
     // [ 0.5 <= currentInterestRate && currentInterestRate <= 25 ]
     currentPayment -> Currency
     xor paymentFrequency
-        weekly 
+        weekly
         biweekly
         semiMonthly
         monthly
-    xor financingAvailable 
+    xor financingAvailable
         conventional
         insured
 //# FRAGMENT

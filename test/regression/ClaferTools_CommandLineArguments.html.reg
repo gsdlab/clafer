@@ -1,14 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=9">
+<style>.identifier{}
+.keyword{font-weight:bold}
+.reference{}
+.code { background-color: lightgray; padding: 5px 5px 5px 5px; border: 1px solid darkgray; margin-bottom: 15px; 
+        font-family: Pragmata, Menlo, 'DejaVu LGC Sans Mono', 'DejaVu Sans Mono', Consolas, 'Everson Mono', 'Lucida Console', 'Andale Mono', 'Nimbus Mono L', 'Liberation Mono', FreeMono, 'Osaka Monospaced', Courier, 'New Courier', monospace; }
+.standalonecomment { color: green; font-style:italic }
+.inlinecomment { color: green; padding-left:20px; font-style:italic }
+.error{background-color: yellow; color: red }
+.deprecated{color: orange }
+.indent{padding-left:20px}
+a[href$='Lookup failed'] {color: red}
+a[href$='Uid not found'] {color: red}
+a[href$='Ambiguous name'] {color: yellow}
+
+</style></head>
+<body>
 
 <div>
 <span class="keyword">abstract</span> <span class="claferDecl" id="c0_Argument">Argument</span></div>
 
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_IntegerArgument">IntegerArgument</span><span class="keyword"> :</span> <a href="#integer"><span class="reference">integer</span></a></div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_IntegerArgument">IntegerArgument</span><span class="keyword"> ->> </span><a href="#integer"><span class="reference">integer</span></a></div>
 
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_StringArgument">StringArgument</span><span class="keyword"> :</span> <a href="#string"><span class="reference">string</span></a></div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_StringArgument">StringArgument</span><span class="keyword"> ->> </span><a href="#string"><span class="reference">string</span></a></div>
 
 
 <div>
@@ -25,36 +45,34 @@
   <div class="indent">
   <span class="claferDecl" id="c0_functional">functional</span>
     <div class="indent">
-    <span class="keyword">xor</span> <span class="claferDecl" id="c0_mode">mode</span><span class="keyword"> :</span> <a href="#c0_Argument"><span class="reference">Argument</span></a>
+    <span class="keyword">xor</span> <span class="claferDecl" id="c0_mode">mode</span><span class="keyword"> : </span><a href="#c0_Argument"><span class="reference">Argument</span></a>
       <div class="indent">
-      <span class="claferDecl" id="c0_alloy">alloy</span><span class="keyword"> :</span> <a href="#c0_DefaultValue"><span class="reference">DefaultValue</span></a>
+      <span class="claferDecl" id="c0_alloy">alloy</span><span class="keyword"> : </span><a href="#c0_DefaultValue"><span class="reference">DefaultValue</span></a>
         <div class="indent">
-        <span class="claferDecl" id="c0_alloy42">alloy42</span><span class="keyword"> :</span> <a href="#c0_Value"><span class="reference">Value</span></a> ?</div>
+        <span class="claferDecl" id="c0_noalloyruncommand">noalloyruncommand</span><span class="keyword"> : </span><a href="#c0_Argument"><span class="reference">Argument</span></a> ?</div>
         <div class="indent">
-        <span class="claferDecl" id="c0_noalloyruncommand">noalloyruncommand</span><span class="keyword"> :</span> <a href="#c0_Argument"><span class="reference">Argument</span></a> ?</div>
-        <div class="indent">
-        <span class="claferDecl" id="c0_alloy_mapping">alloy_mapping</span><span class="keyword"> :</span> <a href="#c0_Argument"><span class="reference">Argument</span></a> ?</div>
+        <span class="claferDecl" id="c0_alloy_mapping">alloy_mapping</span><span class="keyword"> : </span><a href="#c0_Argument"><span class="reference">Argument</span></a> ?</div>
       </div>
       <div class="indent">
-      <span class="claferDecl" id="c0_clafer">clafer</span><span class="keyword"> :</span> <a href="#c0_Value"><span class="reference">Value</span></a></div>
+      <span class="claferDecl" id="c0_desclafer">desclafer</span><span class="keyword"> : </span><a href="#c0_Value"><span class="reference">Value</span></a></div>
       <div class="indent">
-      <span class="claferDecl" id="c0_html">html</span><span class="keyword"> :</span> <a href="#c0_Value"><span class="reference">Value</span></a>
+      <span class="claferDecl" id="c0_html">html</span><span class="keyword"> : </span><a href="#c0_Value"><span class="reference">Value</span></a>
         <div class="indent">
         <span class="keyword">[</span> <a href="#c0_keep_unused"><span class="reference">keep_unused</span></a> <span class="keyword">]</span></div>
         <div class="indent">
-        <span class="claferDecl" id="c0_self_contained">self_contained</span><span class="keyword"> :</span> <a href="#c0_Argument"><span class="reference">Argument</span></a> ?</div>
+        <span class="claferDecl" id="c0_self_contained">self_contained</span><span class="keyword"> : </span><a href="#c0_Argument"><span class="reference">Argument</span></a> ?</div>
         <div class="indent">
-        <span class="claferDecl" id="c0_add_graph">add_graph</span><span class="keyword"> :</span> <a href="#c0_Argument"><span class="reference">Argument</span></a> ?</div>
+        <span class="claferDecl" id="c0_add_graph">add_graph</span><span class="keyword"> : </span><a href="#c0_Argument"><span class="reference">Argument</span></a> ?</div>
         <div class="indent">
-        <span class="claferDecl" id="c0_add_comments">add_comments</span><span class="keyword"> :</span> <a href="#c0_Argument"><span class="reference">Argument</span></a> ?</div>
+        <span class="claferDecl" id="c0_add_comments">add_comments</span><span class="keyword"> : </span><a href="#c0_Argument"><span class="reference">Argument</span></a> ?</div>
       </div>
       <div class="indent">
-      <span class="claferDecl" id="c0_graph">graph</span><span class="keyword"> :</span> <a href="#c0_Value"><span class="reference">Value</span></a>
+      <span class="claferDecl" id="c0_graph">graph</span><span class="keyword"> : </span><a href="#c0_Value"><span class="reference">Value</span></a>
         <div class="indent">
         <span class="keyword">[</span> <a href="#c0_keep_unused"><span class="reference">keep_unused</span></a> <span class="keyword">]</span></div>
       </div>
       <div class="indent">
-      <span class="claferDecl" id="c0_cvlGraph">cvlGraph</span><span class="keyword"> :</span> <a href="#c0_Value"><span class="reference">Value</span></a>
+      <span class="claferDecl" id="c0_cvlGraph">cvlGraph</span><span class="keyword"> : </span><a href="#c0_Value"><span class="reference">Value</span></a>
         <div class="indent">
         <span class="keyword">[</span> <a href="#c0_flatten_inheritance"><span class="reference">flatten_inheritance</span></a> <span class="keyword">]</span></div>
         <div class="indent">
@@ -62,28 +80,28 @@
       </div>
     </div>
     <div class="indent">
-    <span class="claferDecl" id="c0_keep_unused">keep_unused</span><span class="keyword"> :</span> <a href="#c0_Argument"><span class="reference">Argument</span></a> ?</div>
+    <span class="claferDecl" id="c0_keep_unused">keep_unused</span><span class="keyword"> : </span><a href="#c0_Argument"><span class="reference">Argument</span></a> ?</div>
     <div class="indent">
-    <span class="claferDecl" id="c0_flatten_inheritance">flatten_inheritance</span><span class="keyword"> :</span> <a href="#c0_Argument"><span class="reference">Argument</span></a> ?</div>
+    <span class="claferDecl" id="c0_flatten_inheritance">flatten_inheritance</span><span class="keyword"> : </span><a href="#c0_Argument"><span class="reference">Argument</span></a> ?</div>
     <div class="indent">
-    <span class="claferDecl" id="c0_console_output">console_output</span><span class="keyword"> :</span> <a href="#c0_Argument"><span class="reference">Argument</span></a> ?</div>
+    <span class="claferDecl" id="c0_console_output">console_output</span><span class="keyword"> : </span><a href="#c0_Argument"><span class="reference">Argument</span></a> ?</div>
     <div class="indent">
-    <span class="claferDecl" id="c0_timeout_analysis">timeout_analysis</span><span class="keyword"> :</span> <a href="#c0_IntegerArgument"><span class="reference">IntegerArgument</span></a> ?</div>
+    <span class="claferDecl" id="c0_timeout_analysis">timeout_analysis</span><span class="keyword"> : </span><a href="#c0_IntegerArgument"><span class="reference">IntegerArgument</span></a> ?</div>
     <div class="indent">
     <span class="keyword">mux</span> <span class="claferDecl" id="c0_layout">layout</span> ?
       <div class="indent">
-      <span class="claferDecl" id="c0_no_layout">no_layout</span><span class="keyword"> :</span> <a href="#c0_Argument"><span class="reference">Argument</span></a></div>
+      <span class="claferDecl" id="c0_no_layout">no_layout</span><span class="keyword"> : </span><a href="#c0_Argument"><span class="reference">Argument</span></a></div>
       <div class="indent">
-      <span class="claferDecl" id="c0_new_layout">new_layout</span><span class="keyword"> :</span> <a href="#c0_Argument"><span class="reference">Argument</span></a></div>
+      <span class="claferDecl" id="c0_new_layout">new_layout</span><span class="keyword"> : </span><a href="#c0_Argument"><span class="reference">Argument</span></a></div>
     </div>
     <div class="indent">
-    <span class="claferDecl" id="c0_check_duplicates">check_duplicates</span><span class="keyword"> :</span> <a href="#c0_Argument"><span class="reference">Argument</span></a> ?</div>
+    <span class="claferDecl" id="c0_check_duplicates">check_duplicates</span><span class="keyword"> : </span><a href="#c0_Argument"><span class="reference">Argument</span></a> ?</div>
     <div class="indent">
-    <span class="claferDecl" id="c0_skip_resolver">skip_resolver</span><span class="keyword"> :</span> <a href="#c0_Argument"><span class="reference">Argument</span></a> ?</div>
+    <span class="claferDecl" id="c0_skip_resolver">skip_resolver</span><span class="keyword"> : </span><a href="#c0_Argument"><span class="reference">Argument</span></a> ?</div>
     <div class="indent">
-    <span class="claferDecl" id="c0_no_stats">no_stats</span><span class="keyword"> :</span> <a href="#c0_Argument"><span class="reference">Argument</span></a> ?</div>
+    <span class="claferDecl" id="c0_no_stats">no_stats</span><span class="keyword"> : </span><a href="#c0_Argument"><span class="reference">Argument</span></a> ?</div>
     <div class="indent">
-    <span class="claferDecl" id="c0_validate">validate</span><span class="keyword"> :</span> <a href="#c0_Argument"><span class="reference">Argument</span></a> ?
+    <span class="claferDecl" id="c0_validate">validate</span><span class="keyword"> : </span><a href="#c0_Argument"><span class="reference">Argument</span></a> ?
       <div class="indent">
       <span class="keyword">[</span> <span class="keyword">no</span> <a href="#c0_html"><span class="reference">html</span></a> <span class="keyword">]</span></div>
       <div class="indent">
@@ -91,21 +109,21 @@
       <div class="indent">
       <span class="keyword">[</span> <span class="keyword">no</span> <a href="#c0_cvlGraph"><span class="reference">cvlGraph</span></a> <span class="keyword">]</span></div>
       <div class="indent">
-      <span class="claferDecl" id="c0_tooldir">tooldir</span><span class="keyword"> :</span> <a href="#c0_StringArgument"><span class="reference">StringArgument</span></a></div>
+      <span class="claferDecl" id="c0_tooldir">tooldir</span><span class="keyword"> : </span><a href="#c0_StringArgument"><span class="reference">StringArgument</span></a></div>
     </div>
   </div>
   <div class="indent">
-  <span class="claferDecl" id="c0_schema">schema</span><span class="keyword"> :</span> <a href="#c0_Argument"><span class="reference">Argument</span></a></div>
+  <span class="claferDecl" id="c0_schema">schema</span><span class="keyword"> : </span><a href="#c0_Argument"><span class="reference">Argument</span></a></div>
   <div class="indent">
-  <span class="claferDecl" id="c0_help">help</span><span class="keyword"> :</span> <a href="#c0_Argument"><span class="reference">Argument</span></a></div>
+  <span class="claferDecl" id="c0_help">help</span><span class="keyword"> : </span><a href="#c0_Argument"><span class="reference">Argument</span></a></div>
   <div class="indent">
-  <span class="claferDecl" id="c0_version">version</span><span class="keyword"> :</span> <a href="#c0_Argument"><span class="reference">Argument</span></a></div>
+  <span class="claferDecl" id="c0_version">version</span><span class="keyword"> : </span><a href="#c0_Argument"><span class="reference">Argument</span></a></div>
 </div>
 
 <!-- # FRAGMENT /-->
 
 <div>
-<span class="claferDecl" id="c0_ca1">ca1</span><span class="keyword"> :</span> <a href="#c0_ClaferArgs"><span class="reference">ClaferArgs</span></a>
+<span class="claferDecl" id="c0_ca1">ca1</span><span class="keyword"> : </span><a href="#c0_ClaferArgs"><span class="reference">ClaferArgs</span></a>
   <div class="indent">
   <span class="keyword">[</span> <a href="#c0_alloy"><span class="reference">alloy</span></a> <span class="keyword">]</span></div>
 </div>
@@ -113,7 +131,7 @@
 <!-- # FRAGMENT /-->
 
 <div>
-<span class="claferDecl" id="c0_ca2">ca2</span><span class="keyword"> :</span> <a href="#c0_ClaferArgs"><span class="reference">ClaferArgs</span></a>
+<span class="claferDecl" id="c0_ca2">ca2</span><span class="keyword"> : </span><a href="#c0_ClaferArgs"><span class="reference">ClaferArgs</span></a>
   <div class="indent">
   <span class="keyword">[</span> <a href="#c0_alloy"><span class="reference">alloy</span></a> <span class="keyword">]</span></div>
   <div class="indent">
@@ -125,9 +143,9 @@
 <!-- # FRAGMENT /-->
 
 <div>
-<span class="claferDecl" id="c0_ca3">ca3</span><span class="keyword"> :</span> <a href="#c0_ClaferArgs"><span class="reference">ClaferArgs</span></a>
+<span class="claferDecl" id="c0_ca3">ca3</span><span class="keyword"> : </span><a href="#c0_ClaferArgs"><span class="reference">ClaferArgs</span></a>
   <div class="indent">
-  <span class="keyword">[</span> <a href="#c0_alloy42"><span class="reference">alloy42</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <a href="#c0_alloy"><span class="reference">alloy</span></a> <span class="keyword">]</span></div>
   <div class="indent">
   <span class="keyword">[</span> <a href="#c0_keep_unused"><span class="reference">keep_unused</span></a> <span class="keyword">]</span></div>
   <div class="indent">
@@ -137,7 +155,7 @@
 <!-- # FRAGMENT /-->
 
 <div>
-<span class="claferDecl" id="c0_ca4">ca4</span><span class="keyword"> :</span> <a href="#c0_ClaferArgs"><span class="reference">ClaferArgs</span></a>
+<span class="claferDecl" id="c0_ca4">ca4</span><span class="keyword"> : </span><a href="#c0_ClaferArgs"><span class="reference">ClaferArgs</span></a>
   <div class="indent">
   <span class="keyword">[</span> <a href="#c0_html"><span class="reference">html</span></a> <span class="keyword">]</span></div>
 </div>
@@ -145,7 +163,7 @@
 <!-- # FRAGMENT /-->
 
 <div>
-<span class="claferDecl" id="c0_ca5">ca5</span><span class="keyword"> :</span> <a href="#c0_ClaferArgs"><span class="reference">ClaferArgs</span></a>
+<span class="claferDecl" id="c0_ca5">ca5</span><span class="keyword"> : </span><a href="#c0_ClaferArgs"><span class="reference">ClaferArgs</span></a>
   <div class="indent">
   <span class="keyword">[</span> <a href="#c0_html"><span class="reference">html</span></a> <span class="keyword">]</span></div>
   <div class="indent">
@@ -159,8 +177,10 @@
 <!-- # FRAGMENT /-->
 
 <div>
-<span class="claferDecl" id="c0_ca6">ca6</span><span class="keyword"> :</span> <a href="#c0_ClaferArgs"><span class="reference">ClaferArgs</span></a>
+<span class="claferDecl" id="c0_ca6">ca6</span><span class="keyword"> : </span><a href="#c0_ClaferArgs"><span class="reference">ClaferArgs</span></a>
   <div class="indent">
   <span class="keyword">[</span> <a href="#c0_cvlGraph"><span class="reference">cvlGraph</span></a> <span class="keyword">]</span></div>
 </div>
 
+</body>
+</html>

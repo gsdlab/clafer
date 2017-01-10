@@ -6,24 +6,23 @@ abstract sig c0_Person
 { r_c0_Age : one c0_Age }
 
 sig c0_Age
-{ ref : one Int }
+{ c0_Age_ref : one Int }
 { one @r_c0_Age.this }
 
 one sig c0_Team
 { r_c0_Contractor : one c0_Contractor
 , r_c0_Member : set c0_Member }
 { 2 <= #r_c0_Member
-  all disj x, y : this.@r_c0_Member | (x.@ref) != (y.@ref) }
+  all disj x, y : this.@r_c0_Member | (x.@c0_Member_ref) != (y.@c0_Member_ref)  }
 
 one sig c0_Contractor extends c0_Person
 { r_c0_since : one c0_since }
-{ all disj x, y : this.@r_c0_since | (x.@ref) != (y.@ref) }
 
 one sig c0_since
-{ ref : one Int }
+{ c0_since_ref : one Int }
 
 sig c0_Member
-{ ref : one c0_Person }
+{ c0_Member_ref : one c0_Person }
 { one @r_c0_Member.this }
 
 one sig c0_Alice extends c0_Person

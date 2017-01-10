@@ -13,17 +13,20 @@ one sig c0_MaryJane extends c0_Person
 
 abstract sig c0_WaitingLine
 { r_c0_participants : set c0_participants }
-{ all disj x, y : this.@r_c0_participants | (x.@ref) != (y.@ref) }
+{ all disj x, y : this.@r_c0_participants | (x.@c0_participants_ref) != (y.@c0_participants_ref)  }
 
 sig c0_participants
-{ ref : one c0_Person }
+{ c0_participants_ref : one c0_Person }
 { one @r_c0_participants.this }
 
 one sig c0_BusLine extends c0_WaitingLine
 {}
-{ (c0_JohnDoe in (this.(@r_c0_participants.@ref))) && (c0_MaryJane in (this.(@r_c0_participants.@ref))) }
+{ (c0_JohnDoe in ((this.@r_c0_participants).@c0_participants_ref)) && (c0_MaryJane in ((this.@r_c0_participants).@c0_participants_ref)) }
 
 one sig c0_JohnAndMaryLine extends c0_WaitingLine
 {}
-{ (this.(@r_c0_participants.@ref)) = (c0_JohnDoe + c0_MaryJane) }
+{ ((this.@r_c0_participants).@c0_participants_ref) = (c0_JohnDoe + c0_MaryJane) }
+
+assert assertOnLine_17 { all  wl : c0_WaitingLine | ((wl.@r_c0_participants).@c0_participants_ref) = (c0_JohnDoe + c0_MaryJane) }
+check assertOnLine_17 for 1 but 2 c0_Person, 2 c0_WaitingLine, 4 c0_participants
 

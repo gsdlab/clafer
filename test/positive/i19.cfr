@@ -5,5 +5,5 @@ abstract A
 
 a1 : A
 
-
+assert [ some c ]
 // http://gsd.uwaterloo.ca:8888/question/8/issue19-incorrect-expression-in-a-quantified

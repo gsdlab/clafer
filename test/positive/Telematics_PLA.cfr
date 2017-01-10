@@ -13,7 +13,7 @@ telematicsSystem
     [ small <=> ! plaECU.display.options.size.large ]
 //# FRAGMENT
 abstract comp
-    version : integer
+    version -> integer
 //# FRAGMENT
 abstract ECU : comp
 
@@ -27,7 +27,7 @@ abstract options
         small
         large
     cache ?
-        size : integer
+        size -> integer
             fixed ?
     [small && cache => fixed]
 //# FRAGMENT

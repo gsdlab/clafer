@@ -1,0 +1,27 @@
+abstract Component
+    abstract or Port
+       input
+       output
+    abstract TemperaturePort : Port -> integer
+
+// Can only make connectors from output ports to input ports
+abstract TemperatureConnector
+    from -> TemperaturePort
+        [ this.output ]
+    to -> TemperaturePort
+        [ this.input ]
+    [ to.dref.dref = from.dref.dref ] // the connector passes the same value
+
+sensor : Component
+    temperature : TemperaturePort
+        [ output ]
+
+controller : Component
+    temperature : TemperaturePort
+        [ input ]
+
+con1 : TemperatureConnector
+    [ from = sensor.temperature ]
+    [ to = controller.temperature ]
+
+assert [ controller.temperature = sensor.temperature ]

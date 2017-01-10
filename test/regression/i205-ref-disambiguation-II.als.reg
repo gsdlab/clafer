@@ -2,14 +2,13 @@ open util/integer
 pred show {}
 
 
-fact { all disj c1, c2 : c0_Car | ((c1.@r_c0_owner).@ref) != ((c2.@r_c0_owner).@ref) }
+fact { all disj c1, c2 : c0_Car | ((c1.@r_c0_owner).@c0_owner_ref) != ((c2.@r_c0_owner).@c0_owner_ref) }
 fact { 4 <= #c0_Car and #c0_Car <= 4 }
 sig c0_Car
 { r_c0_owner : one c0_owner }
-{ all disj x, y : this.@r_c0_owner | (x.@ref) != (y.@ref) }
 
 sig c0_owner
-{ ref : one c0_Person }
+{ c0_owner_ref : one c0_Person }
 { one @r_c0_owner.this }
 
 fact { 4 <= #c0_Person and #c0_Person <= 4 }

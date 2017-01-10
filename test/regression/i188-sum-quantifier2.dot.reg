@@ -6,12 +6,12 @@ nodesep=0.1;
 graph [fontname=Sans fontsize=11];
 node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
 edge [fontname=Sans fontsize=11];
-"c0_Component" [label="abstract Component" URL="#c0_Component" tooltip="abstract Component&#10;  energy ->> integer&#10;"];
+"c0_Component" [label="abstract Component" URL="#c0_Component" tooltip="abstract Component&#10;  energy -&gt;&gt; integer&#10;"];
 "c0_c1" [label="c1 : Component" URL="#c0_c1" tooltip="c1 : Component&#10;  [ energy = 1 ]&#10;"];
 "c0_c1" -> "c0_Component" [arrowhead=onormal constraint=true weight=100];
 "c0_c2" [label="c2 : Component" URL="#c0_c2" tooltip="c2 : Component&#10;  [ energy = 1 ]&#10;"];
 "c0_c2" -> "c0_Component" [arrowhead=onormal constraint=true weight=100];
 "c0_c3" [label="c3 : Component" URL="#c0_c3" tooltip="c3 : Component&#10;  [ energy = 1 ]&#10;"];
 "c0_c3" -> "c0_Component" [arrowhead=onormal constraint=true weight=100];
-"c0_total" [label="total ->> integer = sum Component.energy" URL="#c0_total" tooltip="total ->> integer = sum Component.energy&#10;"];
+"c0_total" [label="total -&gt;&gt; integer = sum Component.energy" URL="#c0_total" tooltip="total -&gt;&gt; integer = sum Component.energy&#10;"];
 }

@@ -1,0 +1,29 @@
+open util/integer
+pred show {}
+
+
+lone sig c0_x
+{}
+
+lone sig c0_y
+{}
+
+lone sig c0_z
+{}
+
+lone sig c0_w
+{}
+
+lone sig c0_u
+{}
+
+lone sig c0_o
+{}
+
+lone sig c0_p
+{}
+
+lone sig c0_h
+{}
+
+fact { (some c0_h) <=> (((some c0_x) => (some c0_z) else (some c0_y)) => ((some c0_x) => (some c0_y)) else ((no c0_w) => ((some c0_z) => (some c0_u) else (some c0_o)) else (some c0_p))) }

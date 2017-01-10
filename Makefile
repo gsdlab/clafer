@@ -1,76 +1,40 @@
 SRC_DIR  := src
 TEST_DIR := test
-TOOL_DIR := tools
-
 ifeq ($(OS),Windows_NT)
-	GPLK_LIBS_INCLUDES := --extra-include-dirs=$(glpk)/src --extra-include-dirs=$(glpk)/src/amd --extra-include-dirs=$(glpk)/src/colamd --extra-include-dirs=$(glpk)/src/minisat --extra-include-dirs=$(glpk)/src/zlib --extra-lib-dirs=$(glpk)/w32
-else
-	UNAME_S := $(shell uname -s)
-	ifeq ($(UNAME_S),Darwin)
-	MAC_USR_LIB := --extra-lib-dir=/opt/local/lib --extra-include-dir=/opt/local/include/
-	endif
+EXE := .exe
 endif
 
 all: build
 
-init:
-	cabal sandbox init --sandbox=../.clafertools-cabal-sandbox
-	cabal install --only-dependencies $(GPLK_LIBS_INCLUDES) $(MAC_USR_LIB) --enable-tests
+build: alloy4.2.jar
+	stack build
 
-build: 
-	$(MAKE) -C $(TOOL_DIR)
-	cabal configure
-	cabal build
-
-install:  
+install:
 	mkdir -p $(to)
-	mkdir -p $(to)/tools
 	cp -f README.md $(to)/clafer-README.md
 	cp -f LICENSE $(to)/
 	cp -f CHANGES.md $(to)/clafer-CHANGES.md
-	cp -f tools/alloy4.jar $(to)/tools
-	cp -f tools/alloy4.2.jar $(to)/tools
-	cp -f tools/XsdCheck.class $(to)/tools
-	cp -f tools/ecore2clafer.jar $(to)/tools
-	if test "$(glpk)" ; then cp -f $(glpk)/w32/glpk_4_55.dll $(to); fi
-	cabal install --bindir=$(to) $(GPLK_LIBS_INCLUDES) $(MAC_USR_LIB) --ghc-option="-O"
-
-# Removes current build and makes a clean new one (Don't use if starting from scratch!)
-cleanEnv:
-	make clean
-	ghc-pkg unregister clafer --package-db=../.clafertools-cabal-sandbox/x86_64-windows-ghc-7.8.3
-	rm `which clafer`
-	make 
+	cp -f alloy4.2.jar $(to)
+	cp -f ecore2clafer.jar $(to)
+	cp `stack path --local-install-root`/bin/clafer$(EXE) $(to)
 
 # regenerate grammar, call after clafer.cf changed
 grammar:
 	$(MAKE) -C $(SRC_DIR) grammar
 
-# build Schema.hs from ClaferIG.xsd, call after .xsd changed
-Schema.hs:
-	$(MAKE) -C $(SRC_DIR) Schema.hs
-
-# build Css.hs from clafer.css, call after .css changed
-Css.hs:
-	$(MAKE) -C $(SRC_DIR) Css.hs
-
-# enable profiler
-# first remove `cabal` and `ghc` folders (on win: `<User>\AppData\Roaming\cabal` and `<User>\AppData\Roaming\ghc`)
+# Just like "init" but with enabled profiler
 # this will reinstall everything with profiling support, build clafer, and copy it to .
-prof:
-	cabal update
-	cabal install --only-dependencies -p --enable-executable-profiling $(GPLK_LIBS_INCLUDES) $(MAC_USR_LIB)
-	cabal configure -p --enable-executable-profiling
-	cabal build --ghc-options="-prof -auto-all -rtsopts"
+prof: alloy4.2.jar
+	stack build --executable-profiling --library-profiling --ghc-options="-prof -fprof-auto -auto-all -caf-all -rtsopts -osuf p_o"
 
-.PHONY : test
-
+.PHONY: test
 test:
-	cabal test	
+	cp `stack path --local-install-root`/bin/clafer$(EXE) .
+	stack test 2>/dev/null || :    # supress error message and exit code if fail
 	$(MAKE) -C $(TEST_DIR) test
 
-generateAlloyJSPythonXMLXHTMLDot:
-	$(MAKE) -C $(TEST_DIR) generateAlloyJSPythonXMLXHTMLDot
+generateAlloyJSHTMLDot:
+	$(MAKE) -C $(TEST_DIR) generateAlloyJSHTMLDot
 
 diffRegressions:
 	$(MAKE) -C $(TEST_DIR) diffRegressions
@@ -78,12 +42,45 @@ diffRegressions:
 reg:
 	$(MAKE) -C $(TEST_DIR) reg
 
+.PHONY: clean
 clean:
-	rm -f clafer
-	cabal clean
+	stack clean
 	$(MAKE) -C $(SRC_DIR) clean
-	$(MAKE) -C $(TOOL_DIR) clean
+	$(MAKE) cleanTools
 	$(MAKE) cleanTest
 
+.PHONY: cleanTest
 cleanTest:
 	$(MAKE) -C $(TEST_DIR) clean
+
+.PHONY: cleanTools
+cleanTools:
+	find . -type f -name '*.class' -print0 | xargs -0 rm -f
+
+.PHONY: tags
+tags:
+	hasktags --ctags --extendedctag --ignore-close-implementation .
+
+.PHONY: codex
+codex:
+	codex update
+	mv codex.tags tags
+
+WGET_COMMAND := wget
+ifeq ($(OS),Windows_NT)
+	ifeq ($(shell which wget), which: wget: unkown command)
+		pacman -S make wget
+	endif
+else
+	UNAME_S := $(shell uname -s)
+	ifeq ($(UNAME_S),Darwin)
+		WGET_COMMAND := curl -O
+	endif
+endif
+
+alloy4.2.jar:
+	@if test ! -f "alloy4.2.jar"; then \
+		echo "[WARNING] Missing alloy4.2.jar. Downloading...";  \
+		$(WGET_COMMAND) http://alloy.mit.edu/alloy/downloads/alloy4.2_2015-02-22.jar; \
+		mv alloy4.2_2015-02-22.jar alloy4.2.jar; \
+	fi

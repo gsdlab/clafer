@@ -1,6 +1,6 @@
 abstract Element
 //# FRAGMENT
-abstract End : Element	
+abstract End : Element
     attainable ?
     xor term
         short
@@ -11,7 +11,7 @@ abstract End : Element
 //# FRAGMENT
 abstract Mean : Element
 //# FRAGMENT
-abstract Vision : End		
+abstract Vision : End
     [ enterprise ]
     [ long ]
     amplifiedBy -> Goal + 		// inverseOf amplifies
@@ -40,7 +40,7 @@ abstract Objective : DesiredResult
         [ attainable ]
         relevant
         timeBound
-    limitedInTimeframe  
+    limitedInTimeframe
         cyclical ?
     [ businessArea ]
     [ quantitative ]
@@ -64,23 +64,23 @@ abstract CourseOfAction : Mean
 //# FRAGMENT
 abstract Strategy : CourseOfAction
     implementedBy -> Tactic   // inverseOf implements
-    aComponentOfThePlanFor -> Mission  // inverseOf plannedByMeansOf 
+    aComponentOfThePlanFor -> Mission  // inverseOf plannedByMeansOf
     // [ channelsEffortsToward -> Goal ]
     rightApproachGiven
         // constraints -> Constraint *
         // risks -> Risk *
-    /* 
+    /*
     [ includes -> Strategy  * // strategies can only contain other strategies and not tactics
-      enables -> Strategy *    // strategies can only enable other strategies and not tactics ]  
+      enables -> Strategy *    // strategies can only enable other strategies and not tactics ]
    */
 //# FRAGMENT
 abstract Tactic : CourseOfAction
     implements -> Strategy // inverseOf implementedBy
     effectsEnforcementLevelOf -> BusinessRule
-    /* 
+    /*
     [ channelsEffortsToward -> Objective
       includes -> Tactic *  // tactics can only contain other tactics and not strategies
-      enables -> Tactic * // tactics can only enable other tactics and not strategies ] 
+      enables -> Tactic * // tactics can only enable other tactics and not strategies ]
    */
 //# FRAGMENT
 abstract Mission : Mean
@@ -107,7 +107,7 @@ abstract Directive : Mean
         discreteAndAtomic
     actionable ?
     automatable ?
-    // motivatedBy -> Assessment 
+    // motivatedBy -> Assessment
 //# FRAGMENT
 abstract BusinessPolicy : Directive
     providesBasisFor -> BusinessRule +
@@ -116,7 +116,7 @@ abstract BusinessPolicy : Directive
        control
        guide
        shape
-    // [ supportsTheAchievementOf -> Goal ]    
+    // [ supportsTheAchievementOf -> Goal ]
     [ lessStructured ]
     [ lessDiscreteAndComposite ]
     [ ! actionable ]
@@ -139,14 +139,14 @@ abstract BusinessRule : Directive
    [ actionable ]
    expressedUsingStandardBusinessVocabulary
 //# FRAGMENT
-abstract Regulation : Element 
+abstract Regulation : Element
    aRolePlayedBy -> Directive 		// inverseOf actsAs
 //# FRAGMENT
 abstract or Influencer : Element	// multiple inheritance in spec expressed by 'or' groups
     or externalInfluencer
         environment
         technology
-        regulation 
+        regulation
             xor prescribedBy
                 government
                 management
@@ -173,7 +173,7 @@ abstract or Influencer : Element	// multiple inheritance in spec expressed by 'o
             explicitCorporateValue
             implicitCorporateValue
 //# FRAGMENT
-abstract Assessment : Element 
+abstract Assessment : Element
     identifies -> PotentialImpact  // inverseOf significantTo
     about -> Influencer
     or affects
@@ -192,12 +192,12 @@ abstract PotentialImpact : Element
     providesImpetusFor -> Directive
     xor type
         risk
-            probabilityOfLoss : integer 	// in %
-            potentialLoss : integer
-            unitOfMeasure -> Currency			
+            probabilityOfLoss -> integer 	// in %
+            potentialLoss -> integer
+            unitOfMeasure -> Currency
         potentialReward
-            probabilityOfGain : integer 	// in %
-            potentialGain : integer
+            probabilityOfGain -> integer 	// in %
+            potentialGain -> integer
             unitOfMeasure -> Currency
 //# FRAGMENT
 abstract Metric : Element

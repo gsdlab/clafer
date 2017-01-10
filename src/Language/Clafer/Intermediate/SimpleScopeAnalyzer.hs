@@ -1,5 +1,5 @@
 {-
- Copyright (C) 2012-2014 Jimmy Liang, Kacper Bak, Michał Antkiewicz <http://gsd.uwaterloo.ca>
+ Copyright (C) 2012-2015 Jimmy Liang, Kacper Bak, Michał Antkiewicz <http://gsd.uwaterloo.ca>
 
  Permission is hereby granted, free of charge, to any person obtaining a copy of
  this software and associated documentation files (the "Software"), to deal in
@@ -21,66 +21,57 @@
 -}
 module Language.Clafer.Intermediate.SimpleScopeAnalyzer (simpleScopeAnalysis) where
 
-import Language.Clafer.Common
+import Control.Applicative
 import Control.Lens hiding (elements, assign)
 import Data.Graph
 import Data.List
+import Data.Data.Lens (biplate)
 import Data.Map (Map)
 import qualified Data.Map as Map
 import Data.Maybe
 import Data.Ord
 import Data.Ratio
-import Language.Clafer.Intermediate.Intclafer
 import Prelude hiding (exp)
 
-
-isReference :: IClafer -> Bool
-isReference = _isOverlapping . _super
-isConcrete :: IClafer -> Bool
-isConcrete = not . isReference
-isSuperest :: [IClafer] -> IClafer -> Bool
-isSuperest clafers clafer = isNothing $ directSuper clafers clafer
-
+import Language.Clafer.Common
+import Language.Clafer.Intermediate.Intclafer
 
 -- | Collects the global cardinality and hierarchy information into proper, not necessarily lower, bounds.
 simpleScopeAnalysis :: IModule -> [(String, Integer)]
-simpleScopeAnalysis IModule{_mDecls = decls'} =
-    [(a, b) | (a, b) <- finalAnalysis, isReferenceOrSuper a, b /= 1]
+simpleScopeAnalysis iModule@IModule{_mDecls = decls'} =
+    [(a, b) | (a, b) <- finalAnalysis, b /= 1]
     where
+    uidClaferMap' = createUidIClaferMap iModule
+    findClafer :: UID -> IClafer
+    findClafer uid' = fromJust $ findIClafer uidClaferMap' uid'
+
     finalAnalysis = Map.toList $ foldl analyzeComponent supersAndRefsAnalysis connectedComponents
-    
-    isReferenceOrSuper uid' =
-        isConcrete clafer || isReference clafer || isSuperest clafers clafer
-        where
-        clafer = findClafer uid'
-        
-    isConcrete' uid' = isConcrete $ findClafer uid'
-    
+
     upperCards u =
         Map.findWithDefault (error $ "No upper cardinality for clafer named \"" ++ u ++ "\".") u upperCardsMap
     upperCardsMap = Map.fromList [(_uid c, snd $ fromJust $ _card c) | c <- clafers]
-    
-    supersAnalysis = foldl (analyzeSupers clafers) Map.empty decls'
-    supersAndRefsAnalysis = foldl (analyzeRefs clafers) supersAnalysis decls'
+
+    supersAnalysis = foldl (analyzeSupers uidClaferMap' clafers) Map.empty decls'
+    supersAndRefsAnalysis = foldl (analyzeRefs uidClaferMap' clafers) supersAnalysis decls'
     constraintAnalysis = analyzeConstraints constraints upperCards
-    (subclaferMap, parentMap) = analyzeHierarchy clafers
-    connectedComponents = analyzeDependencies clafers
-    clafers = concatMap findClafers decls'
+    (subclaferMap, parentMap) = analyzeHierarchy uidClaferMap' clafers
+    connectedComponents = analyzeDependencies uidClaferMap' clafers
+    clafers :: [ IClafer ]
+    clafers = universeOn biplate iModule
     constraints = concatMap findConstraints decls'
-    findClafer uid' = fromJust $ find (isEqClaferId uid') clafers
-    
+
     lowerOrUpperFixedCard analysis' clafer =
         maximum [cardLb, cardUb, lowFromConstraints, oneForStar, targetScopeForStar ]
         where
         Just (cardLb, cardUb) = _card clafer
         oneForStar = if (cardLb == 0 && cardUb == -1) then 1 else 0
-        targetScopeForStar = if (isReference clafer && cardUb == -1) 
-            then case (directSuper clafers clafer) of
-                    (Just targetClafer) -> Map.findWithDefault 0 (_uid targetClafer) analysis'
-                    Nothing -> 0
+        targetScopeForStar = if ((isJust $ _reference clafer) && cardUb == -1)
+            then case getReference clafer of
+                [ref'] -> Map.findWithDefault 1 (fromMaybe "unknown" $ _uid <$> findIClafer uidClaferMap' ref' ) analysis'
+                _      -> 0
             else 0
         lowFromConstraints = Map.findWithDefault 0 (_uid clafer) constraintAnalysis
-    
+
     analyzeComponent analysis' component =
         case flattenSCC component of
             [uid'] -> analyzeSingleton uid' analysis'
@@ -91,7 +82,7 @@ simpleScopeAnalysis IModule{_mDecls = decls'} =
                 assume = foldr (`Map.insert` 1) analysis' uids
         where
         analyzeSingleton uid' analysis'' = analyze analysis'' $ findClafer uid'
-    
+
     analyze :: Map String Integer -> IClafer -> Map String Integer
     analyze analysis' clafer =
         -- Take the max between the supers and references analysis and this analysis
@@ -100,8 +91,8 @@ simpleScopeAnalysis IModule{_mDecls = decls'} =
         scope
             | _isAbstract clafer  = sum subclaferScopes
             | otherwise          = parentScope * (lowerOrUpperFixedCard analysis' clafer)
-        
-        subclaferScopes = map (findOrError " subclafer scope not found" analysis') $ filter isConcrete' subclafers
+
+        subclaferScopes = map (findOrError " subclafer scope not found" analysis') subclafers
         parentScope  =
             case parentMaybe of
                 Just parent'' -> findOrError " parent scope not found" analysis' parent''
@@ -110,36 +101,36 @@ simpleScopeAnalysis IModule{_mDecls = decls'} =
         parentMaybe = Map.lookup (_uid clafer) parentMap
         rootScope = 1
         findOrError message m key = Map.findWithDefault (error $ key ++ message) key m
-        
-analyzeSupers :: [IClafer] -> Map String Integer -> IElement -> Map String Integer    
-analyzeSupers clafers analysis (IEClafer clafer) =
-    foldl (analyzeSupers clafers) analysis' (_elements clafer)
+
+analyzeSupers :: UIDIClaferMap -> [IClafer] -> Map String Integer -> IElement -> Map String Integer
+analyzeSupers uidClaferMap' clafers analysis (IEClafer clafer) =
+    foldl (analyzeSupers uidClaferMap' clafers) analysis' (_elements clafer)
     where
     (Just (cardLb, cardUb)) = _card clafer
     lowerOrFixedUpperBound = maximum [1, cardLb, cardUb ]
-    analysis' = if (isReference clafer) 
+    analysis' = if (isJust $ _reference clafer)
                 then analysis
-                else case (directSuper clafers clafer) of
+                else case (directSuper uidClaferMap' clafer) of
                   (Just c) -> Map.alter (incLB lowerOrFixedUpperBound) (_uid c) analysis
-                  Nothing -> analysis                     
+                  Nothing -> analysis
     incLB lb' Nothing = Just lb'
     incLB lb' (Just lb) = Just (lb + lb')
-analyzeSupers _ analysis _ = analysis
+analyzeSupers _ _ analysis _ = analysis
 
-analyzeRefs :: [IClafer] -> Map String Integer -> IElement -> Map String Integer    
-analyzeRefs clafers analysis (IEClafer clafer) =
-    foldl (analyzeRefs clafers) analysis' (_elements clafer)
+analyzeRefs :: UIDIClaferMap -> [IClafer] -> Map String Integer -> IElement -> Map String Integer
+analyzeRefs uidClaferMap' clafers analysis (IEClafer clafer) =
+    foldl (analyzeRefs uidClaferMap' clafers) analysis' (_elements clafer)
     where
     (Just (cardLb, cardUb)) = _card clafer
     lowerOrFixedUpperBound = maximum [1, cardLb, cardUb]
-    analysis' = if (isReference clafer) 
-                then case (directSuper clafers clafer) of
+    analysis' = if (isJust $ _reference clafer)
+                then case (directSuper uidClaferMap' clafer) of
                     (Just c) -> Map.alter (maxLB lowerOrFixedUpperBound) (_uid c) analysis
                     Nothing -> analysis
-                else analysis                     
+                else analysis
     maxLB lb' Nothing = Just lb'
     maxLB lb' (Just lb) = Just (max lb lb')
-analyzeRefs _ analysis _ = analysis
+analyzeRefs _ _ analysis _ = analysis
 
 analyzeConstraints :: [PExp] -> (String -> Integer) -> Map String Integer
 analyzeConstraints constraints upperCards =
@@ -152,7 +143,7 @@ analyzeConstraints constraints upperCards =
             ISome -> True
             _     -> False
     isOneOrSomeConstraint _ = False
-    
+
     -- Only considers how quantifiers affect scope. Other types of constraints are not considered.
     -- Constraints of the type [some path1.path2] or [no path1.path2], etc.
     analyzeConstraint PExp{_exp = IDeclPExp{_oDecls = [], _bpexp = bpexp'}} analysis =
@@ -160,7 +151,7 @@ analyzeConstraints constraints upperCards =
         where
         path' = dropThisAndParent $ unfoldJoins bpexp'
         atLeastOne = Map.insertWith max `flip` 1
-        
+
     -- Constraints of the type [all disj a : path1.path2] or [some b : path3.path4], etc.
     analyzeConstraint PExp{_exp = IDeclPExp{_oDecls = decls'}} analysis =
         foldr analyzeDecl analysis decls'
@@ -175,9 +166,9 @@ analyzeConstraints constraints upperCards =
         -- "disj a;b;c" implies at least 3 whereas "a;b;c" implies at least one.
         minScope = if isDisj' then fromIntegral $ length decls' else 1
         insert' = Map.insertWith max
-        
+
         scores = assign path' minScope
-        
+
         {-
          - abstract Z
          -   C *
@@ -193,7 +184,7 @@ analyzeConstraints constraints upperCards =
          -- b) Make the effective lower cardinality of C=1 and D=4
          -- c) Some other combination.
          -- Choose b, a greedy algorithm that starts from the lowest child progressing upwards.
-         
+
         {-
          - abstract Z
          -   C *
@@ -219,65 +210,59 @@ analyzeConstraints constraints upperCards =
         pDesireScore = ceiling (score % psScore)
         pMaxScore = upperCards p
         pScore = min' pDesireScore pMaxScore
-        
+
     min' a b = if b == -1 then a else min a b
-        
+
     -- The each child has at most one parent. No matter what the path in a quantifier
     -- looks like, we ignore the parent parts.
     dropThisAndParent = dropWhile (== "parent") . dropWhile (== "this")
 
 
-analyzeDependencies :: [IClafer] -> [SCC String]
-analyzeDependencies clafers = connComponents
+analyzeDependencies :: UIDIClaferMap -> [IClafer] -> [SCC String]
+analyzeDependencies uidClaferMap' clafers = connComponents
     where
     connComponents  = stronglyConnComp [(key, key, depends) | (key, depends) <- dependencyGraph]
-    dependencies    = concatMap (dependency clafers) clafers
+    dependencies    = concatMap (dependency uidClaferMap') clafers
     dependencyGraph = Map.toList $ Map.fromListWith (++) [(a, [b]) | (a, b) <- dependencies]
 
-dependency :: [IClafer] -> IClafer -> [(String, String)]
-dependency clafers clafer =
+dependency :: UIDIClaferMap -> IClafer -> [(String, String)]
+dependency uidClaferMap' clafer =
     selfDependency : (maybeToList superDependency ++ childDependencies)
     where
      -- This is to make the "stronglyConnComp" from Data.Graph play nice. Otherwise,
      -- clafers with no dependencies will not appear in the result.
     selfDependency = (_uid clafer, _uid clafer)
     superDependency
-        | isReference clafer = Nothing
+        | isNothing $ _super clafer = Nothing
         | otherwise =
             do
-                super' <- directSuper clafers clafer
+                super' <- directSuper uidClaferMap' clafer
                 -- Need to analyze clafer before its super
                 return (_uid super', _uid clafer)
     -- Need to analyze clafer before its children
     childDependencies = [(_uid child, _uid clafer) | child <- childClafers clafer]
-        
 
-analyzeHierarchy :: [IClafer] -> (Map String [String], Map String String)
-analyzeHierarchy clafers =
+
+analyzeHierarchy :: UIDIClaferMap -> [IClafer] -> (Map String [String], Map String String)
+analyzeHierarchy uidClaferMap' clafers =
     foldl hierarchy (Map.empty, Map.empty) clafers
     where
     hierarchy (subclaferMap, parentMap) clafer = (subclaferMap', parentMap')
         where
-            subclaferMap' = 
+            subclaferMap' =
                 case super' of
                     Just super'' -> Map.insertWith (++) (_uid super'') [_uid clafer] subclaferMap
                     Nothing     -> subclaferMap
-            super' = directSuper clafers clafer
+            super' = directSuper uidClaferMap' clafer
             parentMap' = foldr (flip Map.insert $ _uid clafer) parentMap (map _uid $ childClafers clafer)
-    
-directSuper :: [IClafer] -> IClafer -> Maybe IClafer
-directSuper clafers clafer =
-    second $ findHierarchy getSuper clafers clafer
+
+directSuper :: UIDIClaferMap -> IClafer -> Maybe IClafer
+directSuper uidClaferMap' clafer =
+    second $ findHierarchy getSuper uidClaferMap' clafer
     where
     second [] = Nothing
     second [_] = Nothing
     second (_:x:_) = Just x
-    
-
--- Finds all ancestors
-findClafers :: IElement -> [IClafer]
-findClafers (IEClafer clafer) = clafer : concatMap findClafers (_elements clafer)
-findClafers _ = []
 
 
 -- Find all constraints
@@ -289,7 +274,7 @@ findConstraints _ = []
 -- Finds all the direct ancestors (ie. children)
 childClafers :: IClafer -> [IClafer]
 childClafers clafer = clafer ^.. elements.traversed.iClafer
-    
+
 -- Unfold joins
 -- If the expression is a tree of only joins, then this function will flatten
 -- the joins into a list.

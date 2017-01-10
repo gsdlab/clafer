@@ -1,0 +1,8 @@
+// test case from chocosolver's SetArithmeticTest.testMinAndMax()
+
+A ->> int 1..2
+B -> int 2..3
+
+[ min A.dref = max B.dref ]
+
+assert [ max A >= min B ]

@@ -3,14 +3,12 @@ pred show {}
 
 
 one sig c0_AliceAge
-{ ref : one Int }
+{ c0_AliceAge_ref : one Int }
 
-fact { all disj x, y : c0_AliceAge | (x.@ref) != (y.@ref) }
 one sig c0_BobAge
-{ ref : one Int }
+{ c0_BobAge_ref : one Int }
 
-fact { all disj x, y : c0_BobAge | (x.@ref) != (y.@ref) }
 lone sig c0_BobsBirthday
 {}
 
-fact { ((some c0_BobsBirthday) => (c0_BobAge.@ref) else (c0_AliceAge.@ref)) = 5 }
+fact { ((some c0_BobsBirthday) => (c0_BobAge.@c0_BobAge_ref) else (c0_AliceAge.@c0_AliceAge_ref)) = 5 }

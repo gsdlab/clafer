@@ -1,3 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=9">
+<style>.identifier{}
+.keyword{font-weight:bold}
+.reference{}
+.code { background-color: lightgray; padding: 5px 5px 5px 5px; border: 1px solid darkgray; margin-bottom: 15px; 
+        font-family: Pragmata, Menlo, 'DejaVu LGC Sans Mono', 'DejaVu Sans Mono', Consolas, 'Everson Mono', 'Lucida Console', 'Andale Mono', 'Nimbus Mono L', 'Liberation Mono', FreeMono, 'Osaka Monospaced', Courier, 'New Courier', monospace; }
+.standalonecomment { color: green; font-style:italic }
+.inlinecomment { color: green; padding-left:20px; font-style:italic }
+.error{background-color: yellow; color: red }
+.deprecated{color: orange }
+.indent{padding-left:20px}
+a[href$='Lookup failed'] {color: red}
+a[href$='Uid not found'] {color: red}
+a[href$='Ambiguous name'] {color: yellow}
+
+</style></head>
+<body>
 
 <div>
 <span class="keyword">abstract</span> <span class="claferDecl" id="c0_Boolean">Boolean</span></div>
@@ -26,57 +46,57 @@
 <div>
 <span class="keyword">abstract</span> <span class="claferDecl" id="c0_Element">Element</span>
   <div class="indent">
-  <span class="claferDecl" id="c0_ownedElement">ownedElement</span><span class="keyword"> -></span> <a href="#c0_Element"><span class="reference">Element</span></a> *</div>
+  <span class="claferDecl" id="c0_ownedElement">ownedElement</span><span class="keyword"> -> </span><a href="#c0_Element"><span class="reference">Element</span></a> *</div>
   <div class="indent">
-  <span class="keyword">[</span> all x<span class="keyword"> : </span><a href="#this"><span class="reference">this</span></a>.<a href="#c0_ownedElement"><span class="reference">ownedElement</span></a> | <a href="#this"><span class="reference">this</span></a> in <a href="#x"><span class="reference">x</span></a>.<a href="#c0_owner"><span class="reference">owner</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> all x<span class="keyword"> : </span><span class="keyword">this</span>.<a href="#c0_ownedElement"><span class="reference">ownedElement</span></a> | <span class="keyword">this</span> in <a href="#x"><span class="reference">x</span></a>.<a href="#c0_owner"><span class="reference">owner</span></a> <span class="keyword">]</span></div>
   <div class="indent">
-  <span class="claferDecl" id="c0_owner">owner</span><span class="keyword"> -></span> <a href="#c0_Element"><span class="reference">Element</span></a> ?</div>
+  <span class="claferDecl" id="c0_owner">owner</span><span class="keyword"> -> </span><a href="#c0_Element"><span class="reference">Element</span></a> ?</div>
   <div class="indent">
-  <span class="keyword">[</span> all x<span class="keyword"> : </span><a href="#this"><span class="reference">this</span></a>.<a href="#c0_owner"><span class="reference">owner</span></a> | <a href="#this"><span class="reference">this</span></a> in <a href="#x"><span class="reference">x</span></a>.<a href="#c0_ownedElement"><span class="reference">ownedElement</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> all x<span class="keyword"> : </span><span class="keyword">this</span>.<a href="#c0_owner"><span class="reference">owner</span></a> | <span class="keyword">this</span> in <a href="#x"><span class="reference">x</span></a>.<a href="#c0_ownedElement"><span class="reference">ownedElement</span></a> <span class="keyword">]</span></div>
 </div>
 
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_NamedElement">NamedElement</span><span class="keyword"> :</span> <a href="#c0_Element"><span class="reference">Element</span></a>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_NamedElement">NamedElement</span><span class="keyword"> : </span><a href="#c0_Element"><span class="reference">Element</span></a>
   <div class="indent">
-  <span class="claferDecl" id="c0_name">name</span><span class="keyword"> :</span> <a href="#c0_String"><span class="reference">String</span></a> ?</div>
+  <span class="claferDecl" id="c0_name">name</span><span class="keyword"> : </span><a href="#c0_String"><span class="reference">String</span></a> ?</div>
   <div class="indent">
-  <span class="claferDecl" id="c0_qualifiedName">qualifiedName</span><span class="keyword"> :</span> <a href="#c0_String"><span class="reference">String</span></a> ?</div>
+  <span class="claferDecl" id="c0_qualifiedName">qualifiedName</span><span class="keyword"> : </span><a href="#c0_String"><span class="reference">String</span></a> ?</div>
   <div class="indent">
-  <span class="claferDecl" id="c0_visibility">visibility</span><span class="keyword"> -></span> <a href="#c0_VisibilityKind"><span class="reference">VisibilityKind</span></a> ?</div>
+  <span class="claferDecl" id="c0_visibility">visibility</span><span class="keyword"> -> </span><a href="#c0_VisibilityKind"><span class="reference">VisibilityKind</span></a> ?</div>
 </div>
 
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_ValueSpecification">ValueSpecification</span><span class="keyword"> :</span> <a href="#c0_NamedElement"><span class="reference">NamedElement</span></a></div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_ValueSpecification">ValueSpecification</span><span class="keyword"> : </span><a href="#c0_NamedElement"><span class="reference">NamedElement</span></a></div>
 
 
 <div>
 <span class="keyword">abstract</span> <span class="claferDecl" id="c0_DirectedRelationship">DirectedRelationship</span>
   <div class="indent">
-  <span class="claferDecl" id="c0_relatedElement">relatedElement</span><span class="keyword"> -></span> <a href="#c0_Element"><span class="reference">Element</span></a> +</div>
+  <span class="claferDecl" id="c0_relatedElement">relatedElement</span><span class="keyword"> -> </span><a href="#c0_Element"><span class="reference">Element</span></a> +</div>
   <div class="indent">
-  <span class="claferDecl" id="c0_source">source</span><span class="keyword"> -></span> <a href="#c0_Element"><span class="reference">Element</span></a> +</div>
+  <span class="claferDecl" id="c0_source">source</span><span class="keyword"> -> </span><a href="#c0_Element"><span class="reference">Element</span></a> +</div>
   <div class="indent">
-  <span class="claferDecl" id="c0_target">target</span><span class="keyword"> -></span> <a href="#c0_Element"><span class="reference">Element</span></a> +</div>
+  <span class="claferDecl" id="c0_target">target</span><span class="keyword"> -> </span><a href="#c0_Element"><span class="reference">Element</span></a> +</div>
 </div>
 
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Class">Class</span><span class="keyword"> :</span> <a href="#c0_Classifier"><span class="reference">Classifier</span></a>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Class">Class</span><span class="keyword"> : </span><a href="#c0_Classifier"><span class="reference">Classifier</span></a>
   <div class="indent">
   <span class="claferDecl" id="c0_isActive">isActive</span> ?</div>
   <div class="indent">
-  <span class="claferDecl" id="c0_superClass">superClass</span><span class="keyword"> -></span> <a href="#c0_Class"><span class="reference">Class</span></a> *</div>
+  <span class="claferDecl" id="c0_superClass">superClass</span><span class="keyword"> -> </span><a href="#c0_Class"><span class="reference">Class</span></a> *</div>
   <div class="indent">
-  <span class="claferDecl" id="c0_nestedClassifier">nestedClassifier</span><span class="keyword"> :</span> <a href="#c0_Classifier"><span class="reference">Classifier</span></a> *</div>
+  <span class="claferDecl" id="c0_nestedClassifier">nestedClassifier</span><span class="keyword"> : </span><a href="#c0_Classifier"><span class="reference">Classifier</span></a> *</div>
 </div>
 
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Property">Property</span><span class="keyword"> :</span> <a href="#c0_StructuralFeature"><span class="reference">StructuralFeature</span></a>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Property">Property</span><span class="keyword"> : </span><a href="#c0_StructuralFeature"><span class="reference">StructuralFeature</span></a>
   <div class="indent">
-  <span class="claferDecl" id="c0_default">default</span><span class="keyword"> :</span> <a href="#c0_String"><span class="reference">String</span></a> ?</div>
+  <span class="claferDecl" id="c0_default">default</span><span class="keyword"> : </span><a href="#c0_String"><span class="reference">String</span></a> ?</div>
   <div class="indent">
   <span class="claferDecl" id="c0_isComposite">isComposite</span> ?</div>
   <div class="indent">
@@ -84,155 +104,155 @@
   <div class="indent">
   <span class="claferDecl" id="c0_isDerivedUnion">isDerivedUnion</span> ?</div>
   <div class="indent">
-  <span class="claferDecl" id="c0_aggregation">aggregation</span><span class="keyword"> -></span> <a href="#c0_AggregationKind"><span class="reference">AggregationKind</span></a> ?</div>
+  <span class="claferDecl" id="c0_aggregation">aggregation</span><span class="keyword"> -> </span><a href="#c0_AggregationKind"><span class="reference">AggregationKind</span></a> ?</div>
   <div class="indent">
-  <span class="claferDecl" id="c0_class">class</span><span class="keyword"> -></span> <a href="#c0_Class"><span class="reference">Class</span></a> ?</div>
+  <span class="claferDecl" id="c0_class">class</span><span class="keyword"> -> </span><a href="#c0_Class"><span class="reference">Class</span></a> ?</div>
   <div class="indent">
-  <span class="claferDecl" id="c0_opposite">opposite</span><span class="keyword"> -></span> <a href="#c0_Property"><span class="reference">Property</span></a> ?</div>
+  <span class="claferDecl" id="c0_opposite">opposite</span><span class="keyword"> -> </span><a href="#c0_Property"><span class="reference">Property</span></a> ?</div>
   <div class="indent">
-  <span class="claferDecl" id="c0_owningAssociation">owningAssociation</span><span class="keyword"> -></span> <a href="#c0_Association"><span class="reference">Association</span></a> ?</div>
+  <span class="claferDecl" id="c0_owningAssociation">owningAssociation</span><span class="keyword"> -> </span><a href="#c0_Association"><span class="reference">Association</span></a> ?</div>
   <div class="indent">
-  <span class="keyword">[</span> all x<span class="keyword"> : </span><a href="#this"><span class="reference">this</span></a>.<a href="#c0_owningAssociation"><span class="reference">owningAssociation</span></a> | <a href="#this"><span class="reference">this</span></a> in <a href="#x"><span class="reference">x</span></a>.<a href="#c0_ownedEnd"><span class="reference">ownedEnd</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> all x<span class="keyword"> : </span><span class="keyword">this</span>.<a href="#c0_owningAssociation"><span class="reference">owningAssociation</span></a> | <span class="keyword">this</span> in <a href="#x"><span class="reference">x</span></a>.<a href="#c0_ownedEnd"><span class="reference">ownedEnd</span></a> <span class="keyword">]</span></div>
   <div class="indent">
-  <span class="claferDecl" id="c0_redefinedProperty">redefinedProperty</span><span class="keyword"> -></span> <a href="#c0_Property"><span class="reference">Property</span></a> *</div>
+  <span class="claferDecl" id="c0_redefinedProperty">redefinedProperty</span><span class="keyword"> -> </span><a href="#c0_Property"><span class="reference">Property</span></a> *</div>
   <div class="indent">
-  <span class="claferDecl" id="c0_subsettedProperty">subsettedProperty</span><span class="keyword"> -></span> <a href="#c0_Property"><span class="reference">Property</span></a> *</div>
+  <span class="claferDecl" id="c0_subsettedProperty">subsettedProperty</span><span class="keyword"> -> </span><a href="#c0_Property"><span class="reference">Property</span></a> *</div>
   <div class="indent">
-  <span class="claferDecl" id="c0_datatype">datatype</span><span class="keyword"> -></span> <a href="#c0_DataType"><span class="reference">DataType</span></a> ?</div>
+  <span class="claferDecl" id="c0_datatype">datatype</span><span class="keyword"> -> </span><a href="#c0_DataType"><span class="reference">DataType</span></a> ?</div>
   <div class="indent">
-  <span class="keyword">[</span> all x<span class="keyword"> : </span><a href="#this"><span class="reference">this</span></a>.<a href="#c0_datatype"><span class="reference">datatype</span></a> | <a href="#this"><span class="reference">this</span></a> in <a href="#x"><span class="reference">x</span></a>.<a href="#c0_ownedAttribute"><span class="reference">ownedAttribute</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> all x<span class="keyword"> : </span><span class="keyword">this</span>.<a href="#c0_datatype"><span class="reference">datatype</span></a> | <span class="keyword">this</span> in <a href="#x"><span class="reference">x</span></a>.<a href="#c0_ownedAttribute"><span class="reference">ownedAttribute</span></a> <span class="keyword">]</span></div>
   <div class="indent">
-  <span class="claferDecl" id="c0_association">association</span><span class="keyword"> -></span> <a href="#c0_Association"><span class="reference">Association</span></a> ?</div>
+  <span class="claferDecl" id="c0_association">association</span><span class="keyword"> -> </span><a href="#c0_Association"><span class="reference">Association</span></a> ?</div>
   <div class="indent">
-  <span class="keyword">[</span> all x<span class="keyword"> : </span><a href="#this"><span class="reference">this</span></a>.<a href="#c0_association"><span class="reference">association</span></a> | <a href="#this"><span class="reference">this</span></a> in <a href="#x"><span class="reference">x</span></a>.<a href="#c0_memberEnd"><span class="reference">memberEnd</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> all x<span class="keyword"> : </span><span class="keyword">this</span>.<a href="#c0_association"><span class="reference">association</span></a> | <span class="keyword">this</span> in <a href="#x"><span class="reference">x</span></a>.<a href="#c0_memberEnd"><span class="reference">memberEnd</span></a> <span class="keyword">]</span></div>
   <div class="indent">
-  <span class="claferDecl" id="c0_defaultValue">defaultValue</span><span class="keyword"> :</span> <a href="#c0_ValueSpecification"><span class="reference">ValueSpecification</span></a> ?</div>
+  <span class="claferDecl" id="c0_defaultValue">defaultValue</span><span class="keyword"> : </span><a href="#c0_ValueSpecification"><span class="reference">ValueSpecification</span></a> ?</div>
   <div class="indent">
-  <span class="claferDecl" id="c0_qualifier">qualifier</span><span class="keyword"> :</span> <a href="#c0_Property"><span class="reference">Property</span></a> *
+  <span class="claferDecl" id="c0_qualifier">qualifier</span><span class="keyword"> : </span><a href="#c0_Property"><span class="reference">Property</span></a> *
     <div class="indent">
-    <span class="keyword">[</span> <a href="#parent"><span class="reference">parent</span></a> in <a href="#c0_associationEnd"><span class="reference">associationEnd</span></a> <span class="keyword">]</span></div>
+    <span class="keyword">[</span> <span class="keyword">parent</span> in <a href="#c0_associationEnd"><span class="reference">associationEnd</span></a> <span class="keyword">]</span></div>
   </div>
   <div class="indent">
-  <span class="claferDecl" id="c0_associationEnd">associationEnd</span><span class="keyword"> -></span> <a href="#c0_Property"><span class="reference">Property</span></a> ?</div>
+  <span class="claferDecl" id="c0_associationEnd">associationEnd</span><span class="keyword"> -> </span><a href="#c0_Property"><span class="reference">Property</span></a> ?</div>
   <div class="indent">
-  <span class="keyword">[</span> all x<span class="keyword"> : </span><a href="#this"><span class="reference">this</span></a>.<a href="#c0_associationEnd"><span class="reference">associationEnd</span></a> | <a href="#this"><span class="reference">this</span></a> in <a href="#x"><span class="reference">x</span></a>.<a href="#c0_qualifier"><span class="reference">qualifier</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> all x<span class="keyword"> : </span><span class="keyword">this</span>.<a href="#c0_associationEnd"><span class="reference">associationEnd</span></a> | <span class="keyword">this</span> in <a href="#x"><span class="reference">x</span></a>.<a href="#c0_qualifier"><span class="reference">qualifier</span></a> <span class="keyword">]</span></div>
 </div>
 
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Enumeration">Enumeration</span><span class="keyword"> :</span> <a href="#c0_DataType"><span class="reference">DataType</span></a>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Enumeration">Enumeration</span><span class="keyword"> : </span><a href="#c0_DataType"><span class="reference">DataType</span></a>
   <div class="indent">
-  <span class="claferDecl" id="c0_ownedLiteral">ownedLiteral</span><span class="keyword"> :</span> <a href="#c0_EnumerationLiteral"><span class="reference">EnumerationLiteral</span></a> *
+  <span class="claferDecl" id="c0_ownedLiteral">ownedLiteral</span><span class="keyword"> : </span><a href="#c0_EnumerationLiteral"><span class="reference">EnumerationLiteral</span></a> *
     <div class="indent">
-    <span class="keyword">[</span> <a href="#parent"><span class="reference">parent</span></a> in <a href="#c0_enumeration"><span class="reference">enumeration</span></a> <span class="keyword">]</span></div>
-  </div>
-</div>
-
-
-<div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_DataType">DataType</span><span class="keyword"> :</span> <a href="#c0_Classifier"><span class="reference">Classifier</span></a>
-  <div class="indent">
-  <span class="claferDecl" id="c0_ownedAttribute">ownedAttribute</span><span class="keyword"> :</span> <a href="#c0_Property"><span class="reference">Property</span></a> *
-    <div class="indent">
-    <span class="keyword">[</span> <a href="#parent"><span class="reference">parent</span></a> in <a href="#c0_datatype"><span class="reference">datatype</span></a> <span class="keyword">]</span></div>
+    <span class="keyword">[</span> <span class="keyword">parent</span> in <a href="#c0_enumeration"><span class="reference">enumeration</span></a> <span class="keyword">]</span></div>
   </div>
 </div>
 
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_EnumerationLiteral">EnumerationLiteral</span><span class="keyword"> :</span> <a href="#c0_InstanceSpecification"><span class="reference">InstanceSpecification</span></a>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_DataType">DataType</span><span class="keyword"> : </span><a href="#c0_Classifier"><span class="reference">Classifier</span></a>
   <div class="indent">
-  <span class="claferDecl" id="c0_enumeration">enumeration</span><span class="keyword"> -></span> <a href="#c0_Enumeration"><span class="reference">Enumeration</span></a> ?</div>
-  <div class="indent">
-  <span class="keyword">[</span> all x<span class="keyword"> : </span><a href="#this"><span class="reference">this</span></a>.<a href="#c0_enumeration"><span class="reference">enumeration</span></a> | <a href="#this"><span class="reference">this</span></a> in <a href="#x"><span class="reference">x</span></a>.<a href="#c0_ownedLiteral"><span class="reference">ownedLiteral</span></a> <span class="keyword">]</span></div>
+  <span class="claferDecl" id="c0_ownedAttribute">ownedAttribute</span><span class="keyword"> : </span><a href="#c0_Property"><span class="reference">Property</span></a> *
+    <div class="indent">
+    <span class="keyword">[</span> <span class="keyword">parent</span> in <a href="#c0_datatype"><span class="reference">datatype</span></a> <span class="keyword">]</span></div>
+  </div>
 </div>
 
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_PrimitiveType">PrimitiveType</span><span class="keyword"> :</span> <a href="#c0_DataType"><span class="reference">DataType</span></a></div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_EnumerationLiteral">EnumerationLiteral</span><span class="keyword"> : </span><a href="#c0_InstanceSpecification"><span class="reference">InstanceSpecification</span></a>
+  <div class="indent">
+  <span class="claferDecl" id="c0_enumeration">enumeration</span><span class="keyword"> -> </span><a href="#c0_Enumeration"><span class="reference">Enumeration</span></a> ?</div>
+  <div class="indent">
+  <span class="keyword">[</span> all x<span class="keyword"> : </span><span class="keyword">this</span>.<a href="#c0_enumeration"><span class="reference">enumeration</span></a> | <span class="keyword">this</span> in <a href="#x"><span class="reference">x</span></a>.<a href="#c0_ownedLiteral"><span class="reference">ownedLiteral</span></a> <span class="keyword">]</span></div>
+</div>
 
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Classifier">Classifier</span><span class="keyword"> :</span> <a href="#c0_NamedElement"><span class="reference">NamedElement</span></a>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_PrimitiveType">PrimitiveType</span><span class="keyword"> : </span><a href="#c0_DataType"><span class="reference">DataType</span></a></div>
+
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Classifier">Classifier</span><span class="keyword"> : </span><a href="#c0_NamedElement"><span class="reference">NamedElement</span></a>
   <div class="indent">
   <span class="claferDecl" id="c0_isAbstract">isAbstract</span> ?</div>
   <div class="indent">
-  <span class="claferDecl" id="c0_feature">feature</span><span class="keyword"> -></span> <a href="#c0_Feature"><span class="reference">Feature</span></a> *</div>
+  <span class="claferDecl" id="c0_feature">feature</span><span class="keyword"> -> </span><a href="#c0_Feature"><span class="reference">Feature</span></a> *</div>
   <div class="indent">
-  <span class="keyword">[</span> all x<span class="keyword"> : </span><a href="#this"><span class="reference">this</span></a>.<a href="#c0_feature"><span class="reference">feature</span></a> | <a href="#this"><span class="reference">this</span></a> in <a href="#x"><span class="reference">x</span></a>.<a href="#c0_featuringClassifier"><span class="reference">featuringClassifier</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> all x<span class="keyword"> : </span><span class="keyword">this</span>.<a href="#c0_feature"><span class="reference">feature</span></a> | <span class="keyword">this</span> in <a href="#x"><span class="reference">x</span></a>.<a href="#c0_featuringClassifier"><span class="reference">featuringClassifier</span></a> <span class="keyword">]</span></div>
   <div class="indent">
-  <span class="claferDecl" id="c0_inheritedMember">inheritedMember</span><span class="keyword"> -></span> <a href="#c0_NamedElement"><span class="reference">NamedElement</span></a> *</div>
+  <span class="claferDecl" id="c0_inheritedMember">inheritedMember</span><span class="keyword"> -> </span><a href="#c0_NamedElement"><span class="reference">NamedElement</span></a> *</div>
   <div class="indent">
-  <span class="claferDecl" id="c0_general">general</span><span class="keyword"> -></span> <a href="#c0_Classifier"><span class="reference">Classifier</span></a> *</div>
+  <span class="claferDecl" id="c0_general">general</span><span class="keyword"> -> </span><a href="#c0_Classifier"><span class="reference">Classifier</span></a> *</div>
   <div class="indent">
-  <span class="claferDecl" id="c0_generalization">generalization</span><span class="keyword"> :</span> <a href="#c0_Generalization"><span class="reference">Generalization</span></a> *
+  <span class="claferDecl" id="c0_generalization">generalization</span><span class="keyword"> : </span><a href="#c0_Generalization"><span class="reference">Generalization</span></a> *
     <div class="indent">
-    <span class="keyword">[</span> <a href="#parent"><span class="reference">parent</span></a> in <a href="#c0_specific"><span class="reference">specific</span></a> <span class="keyword">]</span></div>
+    <span class="keyword">[</span> <span class="keyword">parent</span> in <a href="#c0_specific"><span class="reference">specific</span></a> <span class="keyword">]</span></div>
   </div>
   <div class="indent">
-  <span class="claferDecl" id="c0_attribute">attribute</span><span class="keyword"> -></span> <a href="#c0_Property"><span class="reference">Property</span></a> *</div>
+  <span class="claferDecl" id="c0_attribute">attribute</span><span class="keyword"> -> </span><a href="#c0_Property"><span class="reference">Property</span></a> *</div>
   <div class="indent">
-  <span class="claferDecl" id="c0_redefinedClassifier">redefinedClassifier</span><span class="keyword"> -></span> <a href="#c0_Classifier"><span class="reference">Classifier</span></a> *</div>
+  <span class="claferDecl" id="c0_redefinedClassifier">redefinedClassifier</span><span class="keyword"> -> </span><a href="#c0_Classifier"><span class="reference">Classifier</span></a> *</div>
   <div class="indent">
-  <span class="claferDecl" id="c0_powertypeExtent">powertypeExtent</span><span class="keyword"> -></span> <a href="#c0_GeneralizationSet"><span class="reference">GeneralizationSet</span></a> *</div>
+  <span class="claferDecl" id="c0_powertypeExtent">powertypeExtent</span><span class="keyword"> -> </span><a href="#c0_GeneralizationSet"><span class="reference">GeneralizationSet</span></a> *</div>
   <div class="indent">
-  <span class="keyword">[</span> all x<span class="keyword"> : </span><a href="#this"><span class="reference">this</span></a>.<a href="#c0_powertypeExtent"><span class="reference">powertypeExtent</span></a> | <a href="#this"><span class="reference">this</span></a> in <a href="#x"><span class="reference">x</span></a>.<a href="#c0_powertype"><span class="reference">powertype</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> all x<span class="keyword"> : </span><span class="keyword">this</span>.<a href="#c0_powertypeExtent"><span class="reference">powertypeExtent</span></a> | <span class="keyword">this</span> in <a href="#x"><span class="reference">x</span></a>.<a href="#c0_powertype"><span class="reference">powertype</span></a> <span class="keyword">]</span></div>
 </div>
 
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Feature">Feature</span><span class="keyword"> :</span> <a href="#c0_NamedElement"><span class="reference">NamedElement</span></a>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Feature">Feature</span><span class="keyword"> : </span><a href="#c0_NamedElement"><span class="reference">NamedElement</span></a>
   <div class="indent">
   <span class="claferDecl" id="c0_isStatic">isStatic</span> ?</div>
   <div class="indent">
-  <span class="claferDecl" id="c0_featuringClassifier">featuringClassifier</span><span class="keyword"> -></span> <a href="#c0_Classifier"><span class="reference">Classifier</span></a> *</div>
+  <span class="claferDecl" id="c0_featuringClassifier">featuringClassifier</span><span class="keyword"> -> </span><a href="#c0_Classifier"><span class="reference">Classifier</span></a> *</div>
   <div class="indent">
-  <span class="keyword">[</span> all x<span class="keyword"> : </span><a href="#this"><span class="reference">this</span></a>.<a href="#c0_featuringClassifier"><span class="reference">featuringClassifier</span></a> | <a href="#this"><span class="reference">this</span></a> in <a href="#x"><span class="reference">x</span></a>.<a href="#c0_feature"><span class="reference">feature</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> all x<span class="keyword"> : </span><span class="keyword">this</span>.<a href="#c0_featuringClassifier"><span class="reference">featuringClassifier</span></a> | <span class="keyword">this</span> in <a href="#x"><span class="reference">x</span></a>.<a href="#c0_feature"><span class="reference">feature</span></a> <span class="keyword">]</span></div>
 </div>
 
 
 <div>
-<span class="keyword">enum</span> <span class="claferDecl" id="Lookup failed">VisibilityKind</span> = <span class="claferDecl" id="Lookup failed">package</span> | <span class="claferDecl" id="Lookup failed">private</span> | <span class="claferDecl" id="Lookup failed">protected</span> | <span class="claferDecl" id="Lookup failed">public</span></div>
+<span class="keyword">enum</span> VisibilityKind = <span class="claferDecl" id="c0_package">package</span> | <span class="claferDecl" id="c0_private">private</span> | <span class="claferDecl" id="c0_protected">protected</span> | <span class="claferDecl" id="c0_public">public</span></div>
 
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_LiteralBoolean">LiteralBoolean</span><span class="keyword"> :</span> <a href="#c0_LiteralSpecification"><span class="reference">LiteralSpecification</span></a>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_LiteralBoolean">LiteralBoolean</span><span class="keyword"> : </span><a href="#c0_LiteralSpecification"><span class="reference">LiteralSpecification</span></a>
   <div class="indent">
   <span class="claferDecl" id="c0_value">value</span> ?</div>
 </div>
 
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_LiteralSpecification">LiteralSpecification</span><span class="keyword"> :</span> <a href="#c0_ValueSpecification"><span class="reference">ValueSpecification</span></a></div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_LiteralSpecification">LiteralSpecification</span><span class="keyword"> : </span><a href="#c0_ValueSpecification"><span class="reference">ValueSpecification</span></a></div>
 
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_LiteralString">LiteralString</span><span class="keyword"> :</span> <a href="#c0_LiteralSpecification"><span class="reference">LiteralSpecification</span></a>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_LiteralString">LiteralString</span><span class="keyword"> : </span><a href="#c0_LiteralSpecification"><span class="reference">LiteralSpecification</span></a>
   <div class="indent">
-  <span class="claferDecl" id="c1_value">value</span><span class="keyword"> :</span> <a href="#c0_String"><span class="reference">String</span></a> ?</div>
+  <span class="claferDecl" id="c1_value">value</span><span class="keyword"> : </span><a href="#c0_String"><span class="reference">String</span></a> ?</div>
 </div>
 
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_LiteralNull">LiteralNull</span><span class="keyword"> :</span> <a href="#c0_LiteralSpecification"><span class="reference">LiteralSpecification</span></a></div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_LiteralNull">LiteralNull</span><span class="keyword"> : </span><a href="#c0_LiteralSpecification"><span class="reference">LiteralSpecification</span></a></div>
 
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_LiteralInteger">LiteralInteger</span><span class="keyword"> :</span> <a href="#c0_LiteralSpecification"><span class="reference">LiteralSpecification</span></a>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_LiteralInteger">LiteralInteger</span><span class="keyword"> : </span><a href="#c0_LiteralSpecification"><span class="reference">LiteralSpecification</span></a>
   <div class="indent">
-  <span class="claferDecl" id="c2_value">value</span><span class="keyword"> :</span> <a href="#c0_Integer"><span class="reference">Integer</span></a> ?</div>
+  <span class="claferDecl" id="c2_value">value</span><span class="keyword"> -> </span><a href="#c0_Integer"><span class="reference">Integer</span></a> ?</div>
 </div>
 
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_LiteralUnlimitedNatural">LiteralUnlimitedNatural</span><span class="keyword"> :</span> <a href="#c0_LiteralSpecification"><span class="reference">LiteralSpecification</span></a>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_LiteralUnlimitedNatural">LiteralUnlimitedNatural</span><span class="keyword"> : </span><a href="#c0_LiteralSpecification"><span class="reference">LiteralSpecification</span></a>
   <div class="indent">
-  <span class="claferDecl" id="c3_value">value</span><span class="keyword"> :</span> <a href="#c0_UnlimitedNatural"><span class="reference">UnlimitedNatural</span></a> ?</div>
+  <span class="claferDecl" id="c3_value">value</span><span class="keyword"> : </span><a href="#c0_UnlimitedNatural"><span class="reference">UnlimitedNatural</span></a> ?</div>
 </div>
 
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_StructuralFeature">StructuralFeature</span><span class="keyword"> :</span> <a href="#c0_Feature"><span class="reference">Feature</span></a>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_StructuralFeature">StructuralFeature</span><span class="keyword"> : </span><a href="#c0_Feature"><span class="reference">Feature</span></a>
   <div class="indent">
   <span class="claferDecl" id="c0_isReadOnly">isReadOnly</span> ?</div>
   <div class="indent">
@@ -240,110 +260,112 @@
   <div class="indent">
   <span class="claferDecl" id="c0_isUnique">isUnique</span> ?</div>
   <div class="indent">
-  <span class="claferDecl" id="c0_lower">lower</span><span class="keyword"> :</span> <a href="#c0_Integer"><span class="reference">Integer</span></a> ?</div>
+  <span class="claferDecl" id="c0_lower">lower</span><span class="keyword"> -> </span><a href="#c0_Integer"><span class="reference">Integer</span></a> ?</div>
   <div class="indent">
-  <span class="claferDecl" id="c0_upper">upper</span><span class="keyword"> :</span> <a href="#c0_UnlimitedNatural"><span class="reference">UnlimitedNatural</span></a> ?</div>
+  <span class="claferDecl" id="c0_upper">upper</span><span class="keyword"> : </span><a href="#c0_UnlimitedNatural"><span class="reference">UnlimitedNatural</span></a> ?</div>
   <div class="indent">
-  <span class="claferDecl" id="c0_upperValue">upperValue</span><span class="keyword"> :</span> <a href="#c0_ValueSpecification"><span class="reference">ValueSpecification</span></a> ?</div>
+  <span class="claferDecl" id="c0_upperValue">upperValue</span><span class="keyword"> : </span><a href="#c0_ValueSpecification"><span class="reference">ValueSpecification</span></a> ?</div>
   <div class="indent">
-  <span class="claferDecl" id="c0_lowerValue">lowerValue</span><span class="keyword"> :</span> <a href="#c0_ValueSpecification"><span class="reference">ValueSpecification</span></a> ?</div>
+  <span class="claferDecl" id="c0_lowerValue">lowerValue</span><span class="keyword"> : </span><a href="#c0_ValueSpecification"><span class="reference">ValueSpecification</span></a> ?</div>
 </div>
 
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_InstanceSpecification">InstanceSpecification</span><span class="keyword"> :</span> <a href="#c0_NamedElement"><span class="reference">NamedElement</span></a>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_InstanceSpecification">InstanceSpecification</span><span class="keyword"> : </span><a href="#c0_NamedElement"><span class="reference">NamedElement</span></a>
   <div class="indent">
-  <span class="claferDecl" id="c0_slot">slot</span><span class="keyword"> :</span> <a href="#c0_Slot"><span class="reference">Slot</span></a> *
+  <span class="claferDecl" id="c0_slot">slot</span><span class="keyword"> : </span><a href="#c0_Slot"><span class="reference">Slot</span></a> *
     <div class="indent">
-    <span class="keyword">[</span> <a href="#parent"><span class="reference">parent</span></a> in <a href="#c0_owningInstance"><span class="reference">owningInstance</span></a> <span class="keyword">]</span></div>
+    <span class="keyword">[</span> <span class="keyword">parent</span> in <a href="#c0_owningInstance"><span class="reference">owningInstance</span></a> <span class="keyword">]</span></div>
   </div>
   <div class="indent">
-  <span class="claferDecl" id="c0_classifier">classifier</span><span class="keyword"> -></span> <a href="#c0_Classifier"><span class="reference">Classifier</span></a> *</div>
+  <span class="claferDecl" id="c0_classifier">classifier</span><span class="keyword"> -> </span><a href="#c0_Classifier"><span class="reference">Classifier</span></a> *</div>
   <div class="indent">
-  <span class="claferDecl" id="c0_specification">specification</span><span class="keyword"> :</span> <a href="#c0_ValueSpecification"><span class="reference">ValueSpecification</span></a> ?</div>
+  <span class="claferDecl" id="c0_specification">specification</span><span class="keyword"> : </span><a href="#c0_ValueSpecification"><span class="reference">ValueSpecification</span></a> ?</div>
 </div>
 
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Slot">Slot</span><span class="keyword"> :</span> <a href="#c0_Element"><span class="reference">Element</span></a>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Slot">Slot</span><span class="keyword"> : </span><a href="#c0_Element"><span class="reference">Element</span></a>
   <div class="indent">
-  <span class="claferDecl" id="c0_owningInstance">owningInstance</span><span class="keyword"> -></span> <a href="#c0_InstanceSpecification"><span class="reference">InstanceSpecification</span></a></div>
+  <span class="claferDecl" id="c0_owningInstance">owningInstance</span><span class="keyword"> -> </span><a href="#c0_InstanceSpecification"><span class="reference">InstanceSpecification</span></a></div>
   <div class="indent">
-  <span class="keyword">[</span> all x<span class="keyword"> : </span><a href="#this"><span class="reference">this</span></a>.<a href="#c0_owningInstance"><span class="reference">owningInstance</span></a> | <a href="#this"><span class="reference">this</span></a> in <a href="#x"><span class="reference">x</span></a>.<a href="#c0_slot"><span class="reference">slot</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> all x<span class="keyword"> : </span><span class="keyword">this</span>.<a href="#c0_owningInstance"><span class="reference">owningInstance</span></a> | <span class="keyword">this</span> in <a href="#x"><span class="reference">x</span></a>.<a href="#c0_slot"><span class="reference">slot</span></a> <span class="keyword">]</span></div>
   <div class="indent">
-  <span class="claferDecl" id="c4_value">value</span><span class="keyword"> :</span> <a href="#c0_ValueSpecification"><span class="reference">ValueSpecification</span></a> *</div>
+  <span class="claferDecl" id="c4_value">value</span><span class="keyword"> : </span><a href="#c0_ValueSpecification"><span class="reference">ValueSpecification</span></a> *</div>
   <div class="indent">
-  <span class="claferDecl" id="c0_definingFeature">definingFeature</span><span class="keyword"> -></span> <a href="#c0_StructuralFeature"><span class="reference">StructuralFeature</span></a></div>
+  <span class="claferDecl" id="c0_definingFeature">definingFeature</span><span class="keyword"> -> </span><a href="#c0_StructuralFeature"><span class="reference">StructuralFeature</span></a></div>
 </div>
 
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_InstanceValue">InstanceValue</span><span class="keyword"> :</span> <a href="#c0_ValueSpecification"><span class="reference">ValueSpecification</span></a>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_InstanceValue">InstanceValue</span><span class="keyword"> : </span><a href="#c0_ValueSpecification"><span class="reference">ValueSpecification</span></a>
   <div class="indent">
-  <span class="claferDecl" id="c0_instance">instance</span><span class="keyword"> -></span> <a href="#c0_InstanceSpecification"><span class="reference">InstanceSpecification</span></a></div>
+  <span class="claferDecl" id="c0_instance">instance</span><span class="keyword"> -> </span><a href="#c0_InstanceSpecification"><span class="reference">InstanceSpecification</span></a></div>
 </div>
 
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Generalization">Generalization</span><span class="keyword"> :</span> <a href="#c0_DirectedRelationship"><span class="reference">DirectedRelationship</span></a>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Generalization">Generalization</span><span class="keyword"> : </span><a href="#c0_DirectedRelationship"><span class="reference">DirectedRelationship</span></a>
   <div class="indent">
   <span class="claferDecl" id="c0_isSubstitutable">isSubstitutable</span> ?</div>
   <div class="indent">
-  <span class="claferDecl" id="c0_specific">specific</span><span class="keyword"> -></span> <a href="#c0_Classifier"><span class="reference">Classifier</span></a></div>
+  <span class="claferDecl" id="c0_specific">specific</span><span class="keyword"> -> </span><a href="#c0_Classifier"><span class="reference">Classifier</span></a></div>
   <div class="indent">
-  <span class="keyword">[</span> all x<span class="keyword"> : </span><a href="#this"><span class="reference">this</span></a>.<a href="#c0_specific"><span class="reference">specific</span></a> | <a href="#this"><span class="reference">this</span></a> in <a href="#x"><span class="reference">x</span></a>.<a href="#c0_generalization"><span class="reference">generalization</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> all x<span class="keyword"> : </span><span class="keyword">this</span>.<a href="#c0_specific"><span class="reference">specific</span></a> | <span class="keyword">this</span> in <a href="#x"><span class="reference">x</span></a>.<a href="#c0_generalization"><span class="reference">generalization</span></a> <span class="keyword">]</span></div>
   <div class="indent">
-  <span class="claferDecl" id="c1_general">general</span><span class="keyword"> -></span> <a href="#c0_Classifier"><span class="reference">Classifier</span></a></div>
+  <span class="claferDecl" id="c1_general">general</span><span class="keyword"> -> </span><a href="#c0_Classifier"><span class="reference">Classifier</span></a></div>
   <div class="indent">
-  <span class="claferDecl" id="c0_generalizationSet">generalizationSet</span><span class="keyword"> -></span> <a href="#c0_GeneralizationSet"><span class="reference">GeneralizationSet</span></a> *</div>
+  <span class="claferDecl" id="c0_generalizationSet">generalizationSet</span><span class="keyword"> -> </span><a href="#c0_GeneralizationSet"><span class="reference">GeneralizationSet</span></a> *</div>
   <div class="indent">
-  <span class="keyword">[</span> all x<span class="keyword"> : </span><a href="#this"><span class="reference">this</span></a>.<a href="#c0_generalizationSet"><span class="reference">generalizationSet</span></a> | <a href="#this"><span class="reference">this</span></a> in <a href="#x"><span class="reference">x</span></a>.<a href="#c1_generalization"><span class="reference">generalization</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> all x<span class="keyword"> : </span><span class="keyword">this</span>.<a href="#c0_generalizationSet"><span class="reference">generalizationSet</span></a> | <span class="keyword">this</span> in <a href="#x"><span class="reference">x</span></a>.<a href="#c1_generalization"><span class="reference">generalization</span></a> <span class="keyword">]</span></div>
 </div>
 
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Association">Association</span><span class="keyword"> :</span> <a href="#c0_Classifier"><span class="reference">Classifier</span></a>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Association">Association</span><span class="keyword"> : </span><a href="#c0_Classifier"><span class="reference">Classifier</span></a>
   <div class="indent">
-  <span class="claferDecl" id="c1_relatedElement">relatedElement</span><span class="keyword"> -></span> <a href="#c0_Element"><span class="reference">Element</span></a> +</div>
+  <span class="claferDecl" id="c1_relatedElement">relatedElement</span><span class="keyword"> -> </span><a href="#c0_Element"><span class="reference">Element</span></a> +</div>
   <div class="indent">
   <span class="claferDecl" id="c1_isDerived">isDerived</span> ?</div>
   <div class="indent">
-  <span class="claferDecl" id="c0_ownedEnd">ownedEnd</span><span class="keyword"> :</span> <a href="#c0_Property"><span class="reference">Property</span></a> *
+  <span class="claferDecl" id="c0_ownedEnd">ownedEnd</span><span class="keyword"> : </span><a href="#c0_Property"><span class="reference">Property</span></a> *
     <div class="indent">
-    <span class="keyword">[</span> <a href="#parent"><span class="reference">parent</span></a> in <a href="#c0_owningAssociation"><span class="reference">owningAssociation</span></a> <span class="keyword">]</span></div>
+    <span class="keyword">[</span> <span class="keyword">parent</span> in <a href="#c0_owningAssociation"><span class="reference">owningAssociation</span></a> <span class="keyword">]</span></div>
   </div>
   <div class="indent">
-  <span class="claferDecl" id="c0_endType">endType</span><span class="keyword"> -></span> <a href="#c0_NamedElement"><span class="reference">NamedElement</span></a> +</div>
+  <span class="claferDecl" id="c0_endType">endType</span><span class="keyword"> -> </span><a href="#c0_NamedElement"><span class="reference">NamedElement</span></a> +</div>
   <div class="indent">
-  <span class="claferDecl" id="c0_memberEnd">memberEnd</span><span class="keyword"> -></span> <a href="#c0_Property"><span class="reference">Property</span></a> 2..* </div>
+  <span class="claferDecl" id="c0_memberEnd">memberEnd</span><span class="keyword"> -> </span><a href="#c0_Property"><span class="reference">Property</span></a> 2..* </div>
   <div class="indent">
-  <span class="keyword">[</span> all x<span class="keyword"> : </span><a href="#this"><span class="reference">this</span></a>.<a href="#c0_memberEnd"><span class="reference">memberEnd</span></a> | <a href="#this"><span class="reference">this</span></a> in <a href="#x"><span class="reference">x</span></a>.<a href="#c0_association"><span class="reference">association</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> all x<span class="keyword"> : </span><span class="keyword">this</span>.<a href="#c0_memberEnd"><span class="reference">memberEnd</span></a> | <span class="keyword">this</span> in <a href="#x"><span class="reference">x</span></a>.<a href="#c0_association"><span class="reference">association</span></a> <span class="keyword">]</span></div>
   <div class="indent">
-  <span class="keyword">[</span> # <a href="#c0_memberEnd"><span class="reference">memberEnd</span></a> > 2 => <a href="#c0_memberEnd"><span class="reference">memberEnd</span></a> in <a href="#c0_ownedEnd"><span class="reference">ownedEnd</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> # <a href="#c0_memberEnd"><span class="reference">memberEnd</span></a> &gt; 2 =&gt; <a href="#c0_memberEnd"><span class="reference">memberEnd</span></a> in <a href="#c0_ownedEnd"><span class="reference">ownedEnd</span></a> <span class="keyword">]</span></div>
 </div>
 
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_ExtensionEnd">ExtensionEnd</span><span class="keyword"> :</span> <a href="#c0_Property"><span class="reference">Property</span></a></div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_ExtensionEnd">ExtensionEnd</span><span class="keyword"> : </span><a href="#c0_Property"><span class="reference">Property</span></a></div>
 
 
 <div>
-<span class="keyword">enum</span> <span class="claferDecl" id="Lookup failed">AggregationKind</span> = <span class="claferDecl" id="Lookup failed">composite</span> | <span class="claferDecl" id="Lookup failed">none</span> | <span class="claferDecl" id="Lookup failed">shared</span></div>
+<span class="keyword">enum</span> AggregationKind = <span class="claferDecl" id="c0_composite">composite</span> | <span class="claferDecl" id="c0_none">none</span> | <span class="claferDecl" id="c0_shared">shared</span></div>
 
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_GeneralizationSet">GeneralizationSet</span><span class="keyword"> :</span> <a href="#c0_NamedElement"><span class="reference">NamedElement</span></a>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_GeneralizationSet">GeneralizationSet</span><span class="keyword"> : </span><a href="#c0_NamedElement"><span class="reference">NamedElement</span></a>
   <div class="indent">
   <span class="claferDecl" id="c0_isCovering">isCovering</span> ?</div>
   <div class="indent">
   <span class="claferDecl" id="c0_isDisjoint">isDisjoint</span> ?</div>
   <div class="indent">
-  <span class="claferDecl" id="c0_powertype">powertype</span><span class="keyword"> -></span> <a href="#c0_Classifier"><span class="reference">Classifier</span></a> ?</div>
+  <span class="claferDecl" id="c0_powertype">powertype</span><span class="keyword"> -> </span><a href="#c0_Classifier"><span class="reference">Classifier</span></a> ?</div>
   <div class="indent">
-  <span class="keyword">[</span> all x<span class="keyword"> : </span><a href="#this"><span class="reference">this</span></a>.<a href="#c0_powertype"><span class="reference">powertype</span></a> | <a href="#this"><span class="reference">this</span></a> in <a href="#x"><span class="reference">x</span></a>.<a href="#c0_powertypeExtent"><span class="reference">powertypeExtent</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> all x<span class="keyword"> : </span><span class="keyword">this</span>.<a href="#c0_powertype"><span class="reference">powertype</span></a> | <span class="keyword">this</span> in <a href="#x"><span class="reference">x</span></a>.<a href="#c0_powertypeExtent"><span class="reference">powertypeExtent</span></a> <span class="keyword">]</span></div>
   <div class="indent">
-  <span class="claferDecl" id="c1_generalization">generalization</span><span class="keyword"> -></span> <a href="#c0_Generalization"><span class="reference">Generalization</span></a> *</div>
+  <span class="claferDecl" id="c1_generalization">generalization</span><span class="keyword"> -> </span><a href="#c0_Generalization"><span class="reference">Generalization</span></a> *</div>
   <div class="indent">
-  <span class="keyword">[</span> all x<span class="keyword"> : </span><a href="#this"><span class="reference">this</span></a>.<a href="#c1_generalization"><span class="reference">generalization</span></a> | <a href="#this"><span class="reference">this</span></a> in <a href="#x"><span class="reference">x</span></a>.<a href="#c0_generalizationSet"><span class="reference">generalizationSet</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> all x<span class="keyword"> : </span><span class="keyword">this</span>.<a href="#c1_generalization"><span class="reference">generalization</span></a> | <span class="keyword">this</span> in <a href="#x"><span class="reference">x</span></a>.<a href="#c0_generalizationSet"><span class="reference">generalizationSet</span></a> <span class="keyword">]</span></div>
 </div>
 
+</body>
+</html>

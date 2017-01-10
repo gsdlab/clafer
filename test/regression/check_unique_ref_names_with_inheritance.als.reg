@@ -3,14 +3,14 @@ pred show {}
 
 
 abstract sig c0_date
-{ ref : one Int }
+{ c0_date_ref : one Int }
 
 abstract sig c0_Person
 { r_c0_Name : one c0_Name
 , r_c0_DateOfBirth : one c0_DateOfBirth }
 
 sig c0_Name
-{ ref : one Int }
+{ c0_Name_ref : one Int }
 { one @r_c0_Name.this }
 
 sig c0_DateOfBirth extends c0_date
@@ -19,5 +19,5 @@ sig c0_DateOfBirth extends c0_date
 
 one sig c0_JohnDoe extends c0_Person
 {}
-{ ((this.(@r_c0_Name.@ref)) = 0) && ((this.(@r_c0_DateOfBirth.@ref)) = 1) }
+{ (((this.@r_c0_Name).@c0_Name_ref) = 0) && (((this.@r_c0_DateOfBirth).@c0_date_ref) = 1) }
 

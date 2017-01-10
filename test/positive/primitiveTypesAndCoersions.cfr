@@ -1,0 +1,26 @@
+// constants of primitive types
+
+I -> integer = 5
+S -> string = "some string"
+R -> real = 3.1415
+D -> double = 1.2e2
+
+// coersions
+
+// int to real
+R2 -> real = 3.1415 + 6
+
+// int to double
+D2 -> double = 3.1415e2 + 7
+
+// double to real
+R3 -> real = 3.1415 + 6.0e0
+
+// int to real
+R4 -> real = 8
+
+// int to double
+D3 -> double = 9
+
+// double to real
+R5 -> real = 3.0e0

@@ -1,0 +1,11 @@
+abstract N ->> integer
+
+n1 : N = 1
+n2 : N = 2
+n3 : N = 3
+n4 : N = 2
+n5 : N = 3
+
+p -> integer = product N
+
+assert [ p = 36 ]

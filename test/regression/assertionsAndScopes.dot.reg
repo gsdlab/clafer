@@ -1,0 +1,10 @@
+digraph "assertionsAndScopes"
+{
+rankdir=BT;
+ranksep=0.3;
+nodesep=0.1;
+graph [fontname=Sans fontsize=11];
+node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
+edge [fontname=Sans fontsize=11];
+"c0_a" [label="a 2" URL="#c0_a" tooltip="a 2&#10;  b 3&#10;    c 0&#10;"];
+}

@@ -26,10 +26,9 @@ module Language.Clafer.Front.LayoutResolver where
 -- very simple layout resolver
 import Control.Monad.State
 import Data.Functor.Identity (Identity)
-import Language.Clafer.Common
 import Language.ClaferT
 
-import Language.Clafer.Front.Lexclafer
+import Language.Clafer.Front.LexClafer
 import Data.Maybe
 
 data LayEnv = LayEnv {
@@ -182,6 +181,7 @@ addNewLines ts@(t:_) = addNewLines' (if isBracketOpen t then 1 else 0) ts
 addNewLines' :: (Monad m) => Int -> [Token] -> ClaferT m [ExToken]
 addNewLines' _ []                     = return []
 addNewLines' 0 (t:[])                 = return [ExToken t]
+addNewLines' 1 (t:[])                 = return [ExToken t]
 addNewLines' _ ((PT (Pn z x y) t):[]) = throwErr $ ParseErr (ErrPos z fPos fPos) $ "']' bracket missing for (" ++ show t ++ ")"
   where
     fPos = (Pos (fromIntegral x) (fromIntegral y))
@@ -196,7 +196,7 @@ addNewLines' n (t0:t1:ts)
     addNewLines' (n - 1) (t1:ts) >>= (return . (ExToken t0:))
   | isNewLine t0 t1  = addNewLines' n (t1:ts) >>= (return . (ExToken t0:) . (NewLine (column t1, n):))
   | otherwise        = addNewLines' n (t1:ts) >>= (return . (ExToken t0:))
-addNewLines' _ _ = throwErr (ClaferErr "Function addNewLines' from LayoutResolver was given invalid arguments" :: CErr Span) -- This should never happen!
+addNewLines' _ tokens' = throwErr (ClaferErr ("[bug] LayoutResolver.addNewLines': invalid argument:" ++ show tokens') :: CErr Span) -- This should never happen!
 
 
 adjust :: (Monad m) => [Token] -> ClaferT m [Token]
@@ -234,7 +234,7 @@ addToken p@(Pn z x y) s ts = do
     t = tokenLookup s
 
 resLayout :: String -> String
-resLayout input' = 
+resLayout input' =
   reverse $ output $ execState resolveLayout' $ LayEnv 0 [] input'' [] 0
   where
   input'' = unlines $ filter (/= "") $ lines input'
@@ -257,7 +257,7 @@ handleIndent c = case c of
     c' <- readC n
     emitIndent n
     emitDedent n
-    when (c' `elem` ['[', ']','{', '}']) $ voidf $ handleIndent c'
+    when (c' `elem` ['[', ']','{', '}']) $ void $ handleIndent c'
     return c'
   '[' -> do
     modify (\e -> e {brCtr = brCtr e + 1})
@@ -293,7 +293,7 @@ eatSpaces = do
 
 emitIndent :: MonadState LayEnv m => Int -> m ()
 emitIndent n = do
-  lev <- gets level  
+  lev <- gets level
   when (n > lev) $ do
     ctr <- gets brCtr
     when (ctr < 1) $ do
@@ -322,7 +322,7 @@ getc = do
   return c
 
 revertLayout :: String -> String
-revertLayout input' = unlines $ revertLayout' (lines input') 0 
+revertLayout input' = unlines $ revertLayout' (lines input') 0
 
 revertLayout' :: [String] -> Int -> [String]
 revertLayout' []             _ = []

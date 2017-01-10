@@ -1,6 +1,6 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-
- Copyright (C) 2012 Kacper Bak <http://gsd.uwaterloo.ca>
+ Copyright (C) 2012 Kacper Bak, Michal Antkiewicz <http://gsd.uwaterloo.ca>
 
  Permission is hereby granted, free of charge, to any person obtaining a copy of
  this software and associated documentation files (the "Software"), to deal in
@@ -23,6 +23,8 @@
 module Language.Clafer.Generator.Stats where
 
 import Control.Monad.State
+import Data.Maybe (isJust)
+
 import Language.Clafer.Intermediate.Intclafer
 
 data Stats = Stats {
@@ -42,11 +44,11 @@ statsModule imodule =
 statsClafer :: MonadState Stats m => IClafer -> m ()
 statsClafer claf = do
   if _isAbstract claf
-    then modify (\e -> e {naClafers = naClafers e + 1})
-    else
-      if _isOverlapping $ _super claf
-        then modify (\e -> e {nrClafers = nrClafers e + 1})
-        else modify (\e -> e {ncClafers = ncClafers e + 1})
+  then modify (\e -> e {naClafers = naClafers e + 1})
+  else modify (\e -> e {ncClafers = ncClafers e + 1})
+
+  when (isJust $ _reference claf) $
+    modify (\e -> e {nrClafers = nrClafers e + 1})
   sglCard' <- gets sglCard
   modify (\e -> e {sglCard = statsCard sglCard' $ _glCard claf})
   mapM_ statsElement $ _elements claf

@@ -5,7 +5,9 @@ stringLength(16);
 
 c0_Animal = Abstract("c0_Animal");
 c0_leg = c0_Animal.addChild("c0_leg");
-c0_Dog = Clafer("c0_Dog").extending(c0_Animal);
-c0_Spider = Clafer("c0_Spider").extending(c0_Animal);
+c0_Dog = Clafer("c0_Dog");
+c0_Spider = Clafer("c0_Spider");
+c0_Dog.extending(c0_Animal);
 c0_Dog.addConstraint(equal(card(join($this(), c0_leg)), constant(4)));
+c0_Spider.extending(c0_Animal);
 c0_Spider.addConstraint(equal(card(join($this(), c0_leg)), constant(8)));

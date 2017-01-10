@@ -1,5 +1,7 @@
 abstract Kernel
    memory ?
 Phone
-   name : string
+   name -> string
    [Kernel.memory]
+
+assert [ no Kernel ]

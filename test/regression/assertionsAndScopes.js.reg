@@ -1,0 +1,12 @@
+scope({c0_a:2, c0_b:6, c0_c:0});
+defaultScope(1);
+intRange(-8, 7);
+stringLength(16);
+
+c0_a = Clafer("c0_a").withCard(2, 2);
+c0_b = c0_a.addChild("c0_b").withCard(3, 3);
+c0_c = c0_b.addChild("c0_c").withCard(0, 0);
+assert(none(join(join(global(c0_a), c0_b), c0_c)));
+assert(some(join(global(c0_a), c0_b)));
+assert(none(join(join(global(c0_a), c0_b), c0_c)));
+assert(equal(card(join(global(c0_a), c0_b)), constant(6)));

@@ -6,13 +6,13 @@ nodesep=0.1;
 graph [fontname=Sans fontsize=11];
 node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
 edge [fontname=Sans fontsize=11];
-"c0_Entity" [label="abstract Entity" URL="#c0_Entity" tooltip="abstract Entity&#10;  type : string&#10;"];
-"c0_E1" [label="E1 : Entity" URL="#c0_E1" tooltip="E1 : Entity&#10;  [ type = "E1T" ]&#10;"];
+"c0_Entity" [label="abstract Entity" URL="#c0_Entity" tooltip="abstract Entity&#10;  type -&gt; string&#10;"];
+"c0_E1" [label="E1 : Entity" URL="#c0_E1" tooltip="E1 : Entity&#10;  [ type = &quot;E1T&quot; ]&#10;"];
 "c0_E1" -> "c0_Entity" [arrowhead=onormal constraint=true weight=100];
-"c0_E2" [label="E2 : Entity" URL="#c0_E2" tooltip="E2 : Entity&#10;  [ type = "E1T" ]&#10;"];
+"c0_E2" [label="E2 : Entity" URL="#c0_E2" tooltip="E2 : Entity&#10;  [ type = &quot;E1T&quot; ]&#10;"];
 "c0_E2" -> "c0_Entity" [arrowhead=onormal constraint=true weight=100];
-"c0_E3" [label="E3 : Entity" URL="#c0_E3" tooltip="E3 : Entity&#10;  [ type = "E1T" ]&#10;"];
+"c0_E3" [label="E3 : Entity" URL="#c0_E3" tooltip="E3 : Entity&#10;  [ type = &quot;E1T&quot; ]&#10;"];
 "c0_E3" -> "c0_Entity" [arrowhead=onormal constraint=true weight=100];
-"c0_E1TEntities" [label="E1TEntities -> Entity *" URL="#c0_E1TEntities" tooltip="E1TEntities -> Entity *&#10;  [ type = "E1T" ]&#10;"];
+"c0_E1TEntities" [label="E1TEntities -&gt; Entity *" URL="#c0_E1TEntities" tooltip="E1TEntities -&gt; Entity *&#10;  [ type = &quot;E1T&quot; ]&#10;"];
 "c0_E1TEntities" -> "c0_Entity" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent];
 }

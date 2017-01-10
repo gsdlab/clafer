@@ -3,7 +3,7 @@ pred show {}
 
 
 abstract sig c0_date
-{ ref : one Int }
+{ c0_date_ref : one Int }
 
 abstract sig c0_NorthAmericanCountry
 {}
@@ -23,11 +23,11 @@ abstract sig c0_Person
 , r_c0_Address : one c0_Address }
 
 sig c0_Name
-{ ref : one Int }
+{ c0_Name_ref : one Int }
 { one @r_c0_Name.this }
 
 sig c0_Surname
-{ ref : one Int }
+{ c0_Surname_ref : one Int }
 { one @r_c0_Surname.this }
 
 sig c0_DateOfBirth extends c0_date
@@ -72,60 +72,59 @@ sig c0_Address
 , r_c0_City : one c0_City
 , r_c0_Country : one c0_Country
 , r_c0_PostalCode : one c0_PostalCode }
-{ one @r_c0_Address.this
-  all disj x, y : this.@r_c0_Country | (x.@ref) != (y.@ref) }
+{ one @r_c0_Address.this }
 
 sig c0_Street
-{ ref : one Int
+{ c0_Street_ref : one Int
 , r_c0_UnitNo : lone c0_UnitNo }
 { one @r_c0_Street.this }
 
 sig c0_UnitNo
-{ ref : one Int }
+{ c0_UnitNo_ref : one Int }
 { one @r_c0_UnitNo.this }
 
 sig c0_City
-{ ref : one Int }
+{ c0_City_ref : one Int }
 { one @r_c0_City.this }
 
 sig c0_Country
-{ ref : one c0_NorthAmericanCountry }
+{ c0_Country_ref : one c0_NorthAmericanCountry }
 { one @r_c0_Country.this }
 
 sig c0_PostalCode
-{ ref : one Int }
+{ c0_PostalCode_ref : one Int }
 { one @r_c0_PostalCode.this }
 
 one sig c0_JohnDoe extends c0_Person
 {}
-{ (((((((((this.(@r_c0_Name.@ref)) = 0) && ((this.(@r_c0_Surname.@ref)) = 1)) && ((this.(@r_c0_DateOfBirth.@ref)) = 2)) && (some (this.@r_c0_Gender).@r_c0_Male)) && (some (this.@r_c0_MaritalStatus).@r_c0_Married)) && (((this.@r_c0_Address).(@r_c0_Street.@ref)) = 3)) && (((this.@r_c0_Address).(@r_c0_City.@ref)) = 4)) && (((this.@r_c0_Address).(@r_c0_Country.@ref)) = c0_Canada)) && (((this.@r_c0_Address).(@r_c0_PostalCode.@ref)) = 5) }
+{ ((((((((((this.@r_c0_Name).@c0_Name_ref) = 0) && (((this.@r_c0_Surname).@c0_Surname_ref) = 1)) && (((this.@r_c0_DateOfBirth).@c0_date_ref) = 2)) && (some (this.@r_c0_Gender).@r_c0_Male)) && (some (this.@r_c0_MaritalStatus).@r_c0_Married)) && ((((this.@r_c0_Address).@r_c0_Street).@c0_Street_ref) = 3)) && ((((this.@r_c0_Address).@r_c0_City).@c0_City_ref) = 4)) && ((((this.@r_c0_Address).@r_c0_Country).@c0_Country_ref) = c0_Canada)) && ((((this.@r_c0_Address).@r_c0_PostalCode).@c0_PostalCode_ref) = 5) }
 
 abstract sig c0_Student extends c0_Person
 { r_c0_StudentId : one c0_StudentId }
 
 sig c0_StudentId
-{ ref : one Int }
+{ c0_StudentId_ref : one Int }
 { one @r_c0_StudentId.this }
 
 abstract sig c0_WaitingLine
 { r_c0_participants : set c0_participants }
-{ all disj x, y : this.@r_c0_participants | (x.@ref) != (y.@ref) }
+{ all disj x, y : this.@r_c0_participants | (x.@c0_participants_ref) != (y.@c0_participants_ref)  }
 
 sig c0_participants
-{ ref : one c0_Person }
+{ c0_participants_ref : one c0_Person }
 { one @r_c0_participants.this }
 
 one sig c0_MaryJane extends c0_Student
 {}
-{ (this.(@r_c0_StudentId.@ref)) = 6 }
+{ ((this.@r_c0_StudentId).@c0_StudentId_ref) = 6 }
 
 one sig c0_BusLine extends c0_WaitingLine
 {}
-{ (c0_JohnDoe in (this.(@r_c0_participants.@ref))) && (c0_MaryJane in (this.(@r_c0_participants.@ref))) }
+{ (c0_JohnDoe in ((this.@r_c0_participants).@c0_participants_ref)) && (c0_MaryJane in ((this.@r_c0_participants).@c0_participants_ref)) }
 
 one sig c0_JohnAndMaryLine extends c0_WaitingLine
 {}
-{ (this.(@r_c0_participants.@ref)) = (c0_JohnDoe + c0_MaryJane) }
+{ ((this.@r_c0_participants).@c0_participants_ref) = (c0_JohnDoe + c0_MaryJane) }
 
 fact { #c0_TwoPersonLine = 0 }
 abstract sig c0_TwoPersonLine extends c0_WaitingLine

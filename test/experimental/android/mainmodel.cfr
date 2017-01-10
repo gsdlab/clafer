@@ -14,7 +14,7 @@ abstract AndroidPhone
 
 abstract Hardware
 	Screen
-		price : integer 
+		price -> integer
 		  [ price >= 10 && price <= 30 ]
 		xor material
 			basicScreen
@@ -23,7 +23,7 @@ abstract Hardware
 		xor resolution
 			R_320_by_480
 			R_480_by_560
-			R_480_by_800	
+			R_480_by_800
 		xor screenType
 			Screen1
 				[ colorScreen && R_480_by_560 ]
@@ -39,31 +39,31 @@ abstract Hardware
 		xor Capability
 			C_1450mah
 			C_1730mah
-	CPU	
+	CPU
 		xor Cores
 			one_nonkeyword
 			two_nonkeyword
 				[ AndroidPhone.energyConsumption.increased
 				  AndroidPhone.performance.improved ]
-		xor Frequency	
+		xor Frequency
 			F_800MHz
 				[ AndroidPhone.energyConsumption.reduced
-				  AndroidPhone.performance.reduced 
+				  AndroidPhone.performance.reduced
 				]
 			F_1_point_1GHz
 			F_1_point_5GHz
-				[ AndroidPhone.energyConsumption.increased 
+				[ AndroidPhone.energyConsumption.increased
 				  AndroidPhone.performance.improved
 				]
 		overclocking?
-			[ AndroidPhone.energyConsumption.increased 
+			[ AndroidPhone.energyConsumption.increased
 			  AndroidPhone.performance.improved
 			]
 	RAM
-		Capability : integer 
-			   [RAM.Capability >=  1000 && RAM.Capability <= 2000]		
+		Capability -> integer
+			   [RAM.Capability >=  1000 && RAM.Capability <= 2000]
 	HW_ROM
-		Capability : integer
+		Capability -> integer
 			   [HW_ROM.Capability >=  1000 && HW_ROM.Capability <= 2000]
 	or Position	// Michal: actually should be"mux" because you may have none as well
 		GPS
@@ -73,25 +73,25 @@ abstract Hardware
 			P_800M
 			P_500M
 	Front_Camera ?
-		  [ ROM.versionasnumber >= 2  ] 
+		  [ ROM.versionasnumber >= 2  ]
 		  // can only use full number for now 2.3 ]
-	
+
 
 abstract ROM
 	//***Does Clafer have in-built type "version"?
-	version : string  // Clafer has no defaults for now : (= "2.3")
-	versionasnumber: integer // no ability to do lexicographical string comparison  
+	version -> string  // Clafer has no defaults for now : (= "2.3")
+	versionasnumber-> integer // no ability to do lexicographical string comparison
 		[versionasnumber >= 0]
 	kernel -> Kernel
 	systemapp -> SystemApplication +
 	userapp -> UserApplication +
 	feature -> Feature +
-	
+
 //We can use the clafer model from http://gsd.uwaterloo.ca/clafer/models
 //Here is just a very simple example for the kernel
 //There are some diferences between the linux kernel and the android kernel.
 abstract Kernel
-	kernelVersion : string // Clafer has no defaults for now:  (="2.6.35")
+	kernelVersion -> string // Clafer has no defaults for now:  (="2.6.35")
 	xor IOScheduler
 		NOOP
 			[ AndroidPhone.performance.improved]
@@ -104,7 +104,7 @@ abstract Kernel
 		xor wifi
 			Version1
 			Version2
-			//..			
+			//..
 		xor bluetooth
 			Version1
 			Version2
@@ -112,51 +112,51 @@ abstract Kernel
 		//		xor ...
 	LZMACompression ?
 		[ AndroidPhone.performance.improved ]
-	//lots of options......	
-		
+	//lots of options......
+
 
 abstract Application
 	removable ?
 	backgroundRunning ?
 	initializeInBootUp?
-		bootupTime : integer
+		bootupTime -> integer
 		[ bootupTime >= 0 ]
-	price : integer 
+	price -> integer
 	      [price >= 0 && price <= 50]
-	installationROM : integer
+	installationROM -> integer
 		[installationROM  >= 1]
 		xor isReduced
 			notReduced
 			Reduced
 			// (notReduced)
 		      	[ APP2SD => Reduced]
-	userDataROM : integer 
+	userDataROM -> integer
 		[userDataROM > 1]
 		xor isReduced?
 			notReduced // (1)
 			Reduced
 		[ DATA2SD => Reduced ]
-	vmRAM : integer 
+	vmRAM -> integer
 	        [vmRAM > 1]
 		xor isReduced?
 			notReduced // (1)
 			Reduced
 		[ Dalivik2SD => Reduced]
-	energyConsumption : integer
+	energyConsumption -> integer
 	xor Security
 		high
 		medium
 		low
-		// (medium) 
+		// (medium)
 	xor Stability
 		high
 		medium
 		low
 		// (medium)
-		
+
 abstract SystemApplication : Application
 	[ !(Application.removable) ]
-			
+
 abstract UserApplication : Application
 	[ Application.removable ]
 	xor Usability
@@ -167,25 +167,25 @@ abstract UserApplication : Application
 		U_0_1
 
 abstract Feature
-	price : integer 
+	price -> integer
 	      [price >= 0 && price <= 50]
 	initializeInBootUp?
-		bootupTime : integer
+		bootupTime -> integer
 		[ bootupTime > 0 ]
 	backgroundRunning ?
-	installationROM : integer 
+	installationROM -> integer
 		[installationROM >1]
-	userDataROM : integer 
+	userDataROM -> integer
 		 [userDataROM >1]
-	vmRAM : integer 
+	vmRAM -> integer
 	      	[vmRAM >1]
-	energyConsumption : integer
+	energyConsumption -> integer
 		[energyConsumption > 0]
 	xor Security
 		high
 		medium
 		low
-		// (medium) 
+		// (medium)
 	xor Stability
 		high
 		medium
@@ -193,13 +193,13 @@ abstract Feature
 		// (medium)
 
 
-// List of Features 
+// List of Features
 FullTegra2Rendering : Feature
         [ price = 0
         !initializeInBootUp
         backgroundRunning
   //      installationROM = XXX
- //       userDataROM =XXX 
+ //       userDataROM =XXX
  //       vmRAM = XXX
         energyConsumption = 35
         Security.high
@@ -208,12 +208,12 @@ FullTegra2Rendering : Feature
 UnsecureBootImg : Feature
         [ price = 0
         !initializeInBootUp
-        !backgroundRunning       
+        !backgroundRunning
     //    installationROM = XXX
         userDataROM = 0
         vmRAM = 0
         Security.low
-        Stability.low ] 
+        Stability.low ]
 
 Zipaligned : Feature
         [ price = 0
@@ -241,17 +241,17 @@ SuperuserPermission : Feature
 APP2SD : Feature
         [ price = 0
         initializeInBootUp
-        backgroundRunning       
+        backgroundRunning
        // bootuptime = XXX
        // installationROM = XXX
         userDataROM = 0
         vmRAM = 0
         Security.high
         Stability.high
-        Application.installationROM.isReduced.Reduced 
+        Application.installationROM.isReduced.Reduced
         Application.Stability.medium
         AndroidPhone.performance.reduced
-        AndroidPhone.energyConsumption.increased ]      
+        AndroidPhone.energyConsumption.increased ]
 
 
 Dalivik2SD : Feature
@@ -264,7 +264,7 @@ Dalivik2SD : Feature
         vmRAM = 0
         Security.high
         Stability.high
-        Application.userDataROM.isReduced.Reduced 
+        Application.userDataROM.isReduced.Reduced
         Application.Stability.medium
         AndroidPhone.performance.reduced
 	//        Application.energyConsumption.increased
@@ -280,13 +280,13 @@ DATA2SD : Feature
         vmRAM = 0
         Security.high
         Stability.high
-        Application.vmRAM.isReduced.Reduced 
+        Application.vmRAM.isReduced.Reduced
         Application.Stability.medium
         AndroidPhone.performance.reduced
        // Application.energyConsumption.increased
 
 	]
-         
+
 GPSStatus : Feature
         [ price = 0
         !initializeInBootUp
@@ -311,9 +311,9 @@ BatteryAutoCalibration : BatterySaving
        // vmRAM = XXX
         Security.high
         Stability.high
-    	//    Application.energyConsumption.increased 
+    	//    Application.energyConsumption.increased
     ]
-        
+
 ReduceWifiScaninterval: BatterySaving
         [ price = 0
         initializeInBootUp
@@ -334,10 +334,10 @@ CPUGovernor : Feature
        // userDataROM = XXX
        // vmRAM = XXX
         Security.high
-        Stability.high 
-       //  Application.energyConsumption.increased 
+        Stability.high
+       //  Application.energyConsumption.increased
        ]
-        
+
 VolumeBoost : Feature
         [ price = 0
         initializeInBootUp
@@ -347,7 +347,7 @@ VolumeBoost : Feature
        // userDataROM = XXX
        // vmRAM = XXX
         Security.high
-        Stability.high 
+        Stability.high
         AndroidPhone.energyConsumption.increased]
 
 abstract UserInterfaceEnhancement : Feature
@@ -362,7 +362,7 @@ LockedScreenWithMusicPlayer : UserInterfaceEnhancement
       //  userDataROM = XXX
       //  vmRAM = XXX
         Security.high
-        Stability.high 
+        Stability.high
         AndroidPhone.energyConsumption.increased]
 
 LockedScreenWithMusicPlayer : UserInterfaceEnhancement
@@ -374,7 +374,7 @@ LockedScreenWithMusicPlayer : UserInterfaceEnhancement
      //   userDataROM = XXX
      //   vmRAM = XXX
         Security.high
-        Stability.high 
+        Stability.high
         AndroidPhone.energyConsumption.increased ]
 
 
@@ -382,12 +382,12 @@ LockedScreenWithMusicPlayer : UserInterfaceEnhancement
 
 
 BusyBox : UserApplication
-                
+
 abstract Map : UserApplication
 GoogleMap : Map
 
-OruxMap : Map 
-        [ backgroundRunning 
+OruxMap : Map
+        [ backgroundRunning
         initializeInBootUp
         // bootupTime = XXX
         // price = xxx
@@ -396,11 +396,11 @@ OruxMap : Map
         // vmRAM = XXX
         // eneryConsumption = xxx
         Security.high
-        Stability.high 
+        Stability.high
         U_4_5 ]
 
 LaShouOfflineMap: Map
-        [ backgroundRunning 
+        [ backgroundRunning
         initializeInBootUp
         // bootupTime = XXX
         // price = xxx
@@ -409,11 +409,11 @@ LaShouOfflineMap: Map
         // vmRAM = XXX
         // eneryConsumption = xxx
         Security.high
-        Stability.high 
+        Stability.high
         U_3_4 ]
 
 BaiduMap: Map
-        [ backgroundRunning 
+        [ backgroundRunning
         initializeInBootUp
         // bootupTime = XXX
         // price = xxx
@@ -422,7 +422,7 @@ BaiduMap: Map
         // vmRAM = XXX
         // eneryConsumption = xxx
         Security.high
-        Stability.high 
+        Stability.high
         U_4_5 ]
 
 
@@ -430,8 +430,8 @@ abstract FitnessRunner : UserApplication
         [ this => GoogleMap]
 
 
-A : FitnessRunner 
-        [ backgroundRunning 
+A : FitnessRunner
+        [ backgroundRunning
         initializeInBootUp
         // bootupTime = XXX
         // price = xxx
@@ -440,11 +440,11 @@ A : FitnessRunner
         // vmRAM = XXX
         // eneryConsumption = xxx
         Security.high
-        Stability.high 
+        Stability.high
         U_4_5 ]
 
-B : FitnessRunner 
-        [ backgroundRunning 
+B : FitnessRunner
+        [ backgroundRunning
         initializeInBootUp
        // bootupTime = XXX
        //  price = xxx
@@ -453,7 +453,7 @@ B : FitnessRunner
        // vmRAM = XXX
        // eneryConsumption = xxx
         Security.high
-        Stability.high 
+        Stability.high
         U_4_5 ]
 
 

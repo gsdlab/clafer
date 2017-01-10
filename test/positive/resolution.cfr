@@ -1,9 +1,9 @@
-X
+XX
   x
     y
   [x]
 
-Z
-  z : int
+ZZ
+  z -> int
     y
   [z > 0]

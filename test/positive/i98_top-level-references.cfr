@@ -9,3 +9,10 @@ abstract Person
 abstract NewBorn -> Person
     [ age = 0
       ! married ]
+
+Alice : Person
+baby : NewBorn
+
+assert [ baby = Alice ]
+assert [ Alice.age = 0 ]
+assert [ not Alice.married ]

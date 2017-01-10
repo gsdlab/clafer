@@ -13,14 +13,13 @@ sig c0_b
 one sig c0_C
 { r_c1_b : lone c1_b
 , r_c0_a : one c0_a }
-{ all disj x, y : this.@r_c0_a | (x.@ref) != (y.@ref) }
 
 lone sig c1_b
 {}
 { one r_c1_b }
 
 one sig c0_a
-{ ref : one c0_A
+{ c0_a_ref : one c0_A
 , r_c0_d : one c0_d }
 { some (this.@r_c0_d).@r_c2_b }
 

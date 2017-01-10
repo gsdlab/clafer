@@ -1,17 +1,17 @@
 abstract Person
-	
+
 ada : Person
 
-cyd : Person	
+cyd : Person
 
 eve : Person
-	
+
 bob : Person
-	
+
 dan : Person
-	
+
 abstract Exam
-	date: string
+	date -> string
 		[this != ""]
 	recorder -> Person
 	examiner -> Person
@@ -50,7 +50,7 @@ examinerAda -> Exam *
 examineeOfAdaAsExaminer -> Person *
 	[one e:Exam|e.examiner = ada && e.examinee = this]
 [all e:Exam|e.examiner = ada => e.examinee in examineeOfAdaAsExaminer]
-	
+
 
 examineeOfAdaAsRecorder -> Person *
 	[one e:Exam|e.recorder = ada && e.examinee = this]

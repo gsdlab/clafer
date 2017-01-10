@@ -6,7 +6,7 @@ nodesep=0.1;
 graph [fontname=Sans fontsize=11];
 node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
 edge [fontname=Sans fontsize=11];
-"c0_Measurable" [label="abstract Measurable" URL="#c0_Measurable" tooltip="abstract Measurable&#10;  performance : integer&#10;"];
+"c0_Measurable" [label="abstract Measurable" URL="#c0_Measurable" tooltip="abstract Measurable&#10;  performance -&gt; integer&#10;"];
 "c0_D" [label="D : Measurable" URL="#c0_D" tooltip="D : Measurable&#10;"];
 "c0_D" -> "c0_Measurable" [arrowhead=onormal constraint=true weight=100];
 "c0_C" [label="C : Measurable" URL="#c0_C" tooltip="C : Measurable&#10;"];

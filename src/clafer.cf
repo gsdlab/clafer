@@ -1,4 +1,4 @@
-entrypoints Module ;
+entrypoints Module, Clafer, Constraint, Assertion, Goal ;
 
 
 -- To regenerate grammar (see src/Makefile, the goal 'grammar'):
@@ -7,45 +7,43 @@ entrypoints Module ;
 --         happy -gca Language/Clafer/Front/Parclafer.y
 --         alex -g Language/Clafer/Front/Lexclafer.x
 
-comment "//" ;
-comment "/*" "*/" ;
-
 Module.         Module ::= [Declaration] ;
 
 EnumDecl.       Declaration ::= "enum" PosIdent "=" [EnumId] ;
 ElementDecl.    Declaration ::= Element ;
 
-Clafer.         Clafer ::= Abstract GCard PosIdent Super Card Init Elements ;
+Clafer.         Clafer ::= Abstract GCard PosIdent Super Reference Card Init Elements ;
 Constraint.     Constraint ::= "[" [Exp] "]" ;
-SoftConstraint. SoftConstraint ::= "(" [Exp] ")";
-Goal.   		Goal ::= "<<" [Exp] ">>" ;
-
+Assertion.      Assertion ::= "assert" "[" [Exp] "]";
+GoalMinDeprecated. Goal ::= "<<" "min" [Exp] ">>" ;
+GoalMaxDeprecated. Goal ::= "<<" "max" [Exp] ">>" ;
+GoalMinimize.   Goal ::= "<<" "minimize" [Exp] ">>" ;
+GoalMaximize.   Goal ::= "<<" "maximize" [Exp] ">>" ;
 
 AbstractEmpty.  Abstract ::= ;
 Abstract.       Abstract ::= "abstract" ;
 
--- ElementsEmpty causes parsing problems
 ElementsEmpty.  Elements ::= ;
 ElementsList.   Elements ::= "{" [Element] "}" ;
 
 Subclafer.      Element ::= Clafer ;
 ClaferUse.      Element ::= "`" Name Card Elements ;
 Subconstraint.  Element ::= Constraint ;
-Subgoal. 		Element ::= Goal; 
-Subsoftconstraint. Element ::= SoftConstraint;
+Subgoal.        Element ::= Goal;
+SubAssertion.   Element ::= Assertion;
 
-SuperEmpty.     Super ::=  ;
-SuperSome.      Super ::= SuperHow SetExp ;
+SuperEmpty.     Super ::= ;
+SuperSome.      Super ::= ":" Exp18 ;
 
-SuperColon.     SuperHow ::= ":" ;
-SuperArrow.     SuperHow ::= "->" ;
-SuperMArrow.    SuperHow ::= "->>" ;
+ReferenceEmpty. Reference ::= ;
+ReferenceSet.   Reference ::= "->"  Exp15 ;
+ReferenceBag.   Reference ::= "->>" Exp15 ;
 
 InitEmpty.      Init ::= ;
 InitSome.       Init ::= InitHow Exp ;
 
-InitHow_1.      InitHow ::= "=" ;
-InitHow_2.      InitHow ::= ":=" ;
+InitConstant.   InitHow ::= "=" ;
+InitDefault.    InitHow ::= ":=" ;
 
 GCardEmpty.     GCard ::= ;
 GCardXor.       GCard ::= "xor" ;
@@ -68,13 +66,12 @@ ExIntegerNum.   ExInteger ::= PosInteger ;
 
 Path.           Name ::= [ModId] ;
 
-DeclAllDisj.    Exp   ::= "all" "disj" Decl "|" Exp ;
-DeclAll.        Exp   ::= "all"        Decl "|" Exp ;
-DeclQuantDisj.  Exp   ::= Quant "disj" Decl "|" Exp ;
-DeclQuant.      Exp   ::= Quant        Decl "|" Exp ;
-EGMax.          Exp1  ::= "max" Exp2 ;
-EGMin.          Exp1  ::= "min" Exp2 ;
-EIff.           Exp1  ::= Exp1 "<=>" Exp2 ;
+EDeclAllDisj.   Exp   ::= "all" "disj" Decl "|" Exp ;
+EDeclAll.       Exp   ::= "all"        Decl "|" Exp ;
+EDeclQuantDisj. Exp   ::= Quant "disj" Decl "|" Exp ;
+EDeclQuant.     Exp   ::= Quant        Decl "|" Exp ;
+EImpliesElse.   Exp   ::= "if" Exp "then" Exp "else" Exp ;
+EIff.           Exp   ::= Exp "<=>" Exp1 ;
 EImplies.       Exp2  ::= Exp2 "=>"  Exp3 ;
 EOr.            Exp3  ::= Exp3 "||"  Exp4 ;
 EXor.           Exp4  ::= Exp4 "xor" Exp5 ;
@@ -88,33 +85,36 @@ EGte.           Exp7  ::= Exp7 ">=" Exp8 ;
 ENeq.           Exp7  ::= Exp7 "!=" Exp8 ;
 EIn.            Exp7  ::= Exp7 "in" Exp8 ;
 ENin.           Exp7  ::= Exp7 "not" "in" Exp8 ;
-QuantExp.       Exp8  ::= Quant Exp12 ;
+EQuantExp.      Exp8  ::= Quant Exp12 ;
 EAdd.           Exp9  ::= Exp9  "+" Exp10 ;
 ESub.           Exp9  ::= Exp9  "-" Exp10 ;
 EMul.           Exp10 ::= Exp10 "*" Exp11 ;
 EDiv.           Exp10 ::= Exp10 "/" Exp11 ;
-ESumSetExp.     Exp11 ::= "sum" Exp12;
-ECSetExp.       Exp11 ::= "#" Exp12 ;
-EMinExp.        Exp11 ::= "-" Exp12 ;
-EImpliesElse.   Exp12 ::= "if" Exp12 "then" Exp12 "else" Exp13 ;
-EInt.           Exp13 ::= PosInteger ;
-EDouble.        Exp13 ::= PosDouble ;
-EStr.           Exp13 ::= PosString ;
-ESetExp.        Exp13 ::= SetExp ;
+ERem.           Exp10 ::= Exp10 "%" Exp11 ;
+EGMax.          Exp11 ::= "max" Exp12 ;
+EGMin.          Exp11 ::= "min" Exp12 ;
+ESum.           Exp12 ::= "sum" Exp13;
+EProd.          Exp12 ::= "product" Exp13;
+ECard.          Exp12 ::= "#" Exp13 ;
+EMinExp.        Exp12 ::= "-" Exp13 ;
+EDomain.        Exp13 ::= Exp13 "<:" Exp14 ;
+ERange.         Exp14 ::= Exp14 ":>" Exp15 ;
+EUnion.         Exp15 ::= Exp15 "++" Exp16 ;
+EUnionCom.      Exp15 ::= Exp15 ","  Exp16 ;
+EDifference.    Exp16 ::= Exp16 "--" Exp17 ;
+EIntersection.  Exp17 ::= Exp17 "**"  Exp18 ;
+EIntersectionDeprecated.  Exp17 ::= Exp17 "&"  Exp18 ;
+EJoin.          Exp18 ::= Exp18 "."  Exp19 ;
+ClaferId.       Exp19 ::= Name ;
+EInt.           Exp19 ::= PosInteger ;
+EDouble.        Exp19 ::= PosDouble ;
+EReal.          Exp19 ::= PosReal ;
+EStr.           Exp19 ::= PosString ;
 
-Union.          SetExp  ::= SetExp  "++" SetExp1 ;
-UnionCom.       SetExp  ::= SetExp  ","  SetExp1 ;
-Difference.     SetExp1 ::= SetExp1 "--" SetExp2 ;
-Intersection.   SetExp2 ::= SetExp2 "&"  SetExp3 ;
-Domain.         SetExp3 ::= SetExp3 "<:" SetExp4 ;
-Range.          SetExp4 ::= SetExp4 ":>" SetExp5 ;
-Join.           SetExp5 ::= SetExp5 "."  SetExp6 ;
-ClaferId.       SetExp6 ::= Name ;
-
-Decl.           Decl ::= [LocId] ":" SetExp ;
+Decl.           Decl ::= [LocId] ":" Exp15 ;
 
 QuantNo.        Quant ::= "no" ;
-QuantNot.		Quant ::= "not" ;
+QuantNot.       Quant ::= "not" ;
 QuantLone.      Quant ::= "lone" ;
 QuantOne.       Quant ::= "one" ;
 QuantSome.      Quant ::= "some" ;
@@ -130,10 +130,16 @@ separator           Exp         ""  ;
 separator  nonempty LocId       ";" ;
 separator  nonempty ModId       "\\" ;
 
-coercions Exp 13 ;
-coercions SetExp 6 ;
+coercions Exp 19 ;
 
 position token PosInteger (digit+) ;
-position token PosDouble (digit+ '.' digit+ ('e' '-'? digit+)?) ;
+position token PosDouble (digit+ '.' digit+ 'e' '-'? digit+) ;
+position token PosReal (digit+ '.' digit+) ;
 position token PosString '"' ((char - ["\"\\"]) | ('\\' ["\"\\nt"]))* '"' ;
 position token PosIdent (letter (letter|digit|'_'|'\'')*) ;
+
+-- non-parseable tokens
+position token PosLineComment   {"//"} (char-'\n')* ;
+position token PosBlockComment  {"/*"} ( (char-'*') | ('*'+ (char-["*/"]) ) )*  '*'+ '/' ;
+position token PosAlloy         {"[alloy|"} ( char-'|' | ('|'+ (char-']')) )* {"|]"} ;
+position token PosChoco         {"[choco|"} ( char-'|' | ('|'+ (char-']')) )* {"|]"} ;

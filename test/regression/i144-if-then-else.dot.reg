@@ -6,7 +6,7 @@ nodesep=0.1;
 graph [fontname=Sans fontsize=11];
 node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
 edge [fontname=Sans fontsize=11];
-"c0_AliceAge" [label="AliceAge -> int" URL="#c0_AliceAge" tooltip="AliceAge -> int&#10;"];
-"c0_BobAge" [label="BobAge -> int" URL="#c0_BobAge" tooltip="BobAge -> int&#10;"];
+"c0_AliceAge" [label="AliceAge -&gt; int" URL="#c0_AliceAge" tooltip="AliceAge -&gt; int&#10;"];
+"c0_BobAge" [label="BobAge -&gt; int" URL="#c0_BobAge" tooltip="BobAge -&gt; int&#10;"];
 "c0_BobsBirthday" [label="BobsBirthday ?" URL="#c0_BobsBirthday" tooltip="BobsBirthday ?&#10;"];
 }

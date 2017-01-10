@@ -4,8 +4,8 @@ pred show {}
 
 fact { #c0_degree = 0 }
 abstract sig c0_degree
-{ ref : one Int }
-{ ((this.@ref) > 0) && ((this.@ref) <= 360) }
+{ c0_degree_ref : one Int }
+{ ((this.@c0_degree_ref) > 0) && ((this.@c0_degree_ref) <= 360) }
 
 fact { #c0_Vehicle = 0 }
 abstract sig c0_Vehicle
@@ -22,17 +22,13 @@ abstract sig c0_Vehicle
 , r_c0_hasOversteer : lone c0_hasOversteer
 , r_c0_hasUndersteer : lone c0_hasUndersteer
 , r_c0_GVWR : one c0_GVWR }
-{ all disj x, y : this.@r_c0_AckermanSteerAngle | (x.@ref) != (y.@ref)
-  all disj x, y : this.@r_c0_lateralAcceleration | (x.@ref) != (y.@ref)
-  all disj x, y : this.@r_c0_sideSlipAngle | (x.@ref) != (y.@ref)
-  all disj x, y : this.@r_c0_yawRate | (x.@ref) != (y.@ref)
-  all disj x, y : this.@r_c0_normalYawRate | (x.@ref) != (y.@ref)
-  ((this.((@r_c0_yawRate.@ref).@ref)) > (this.((@r_c0_normalYawRate.@ref).@ref))) <=> (some this.@r_c0_hasOversteer)
-  ((this.((@r_c0_yawRate.@ref).@ref)) < (this.((@r_c0_normalYawRate.@ref).@ref))) <=> (some this.@r_c0_hasUndersteer) }
+{ ((((this.@r_c0_yawRate).@c0_yawRate_ref).@c0_degree_ref) > (((this.@r_c0_normalYawRate).@c0_normalYawRate_ref).@c0_degree_ref)) <=> (some this.@r_c0_hasOversteer)
+  ((((this.@r_c0_yawRate).@c0_yawRate_ref).@c0_degree_ref) < (((this.@r_c0_normalYawRate).@c0_normalYawRate_ref).@c0_degree_ref)) <=> (some this.@r_c0_hasUndersteer) }
 
 sig c0_DriveConfiguration extends c1_DriveConfiguration
 {}
-{ one @r_c0_DriveConfiguration.this }
+{ one @r_c0_DriveConfiguration.this
+  let children = (r_c0_twoWheelDrive + r_c0_frontWheelDrive + r_c0_rearWheelDrive + r_c0_allWheelDrive + r_c0_fourWheelDrive) | one children }
 
 sig c0_ElectronicStabilityControlSystem extends c1_ElectronicStabilityControlSystem
 {}
@@ -47,27 +43,27 @@ sig c0_TractionControlSystem extends c1_TractionControlSystem
 { one @r_c0_TractionControlSystem.this }
 
 sig c0_AckermanSteerAngle
-{ ref : one c0_degree }
+{ c0_AckermanSteerAngle_ref : one c0_degree }
 { one @r_c0_AckermanSteerAngle.this }
 
 sig c0_speed
-{ ref : one Int }
+{ c0_speed_ref : one Int }
 { one @r_c0_speed.this }
 
 sig c0_lateralAcceleration
-{ ref : one Int }
+{ c0_lateralAcceleration_ref : one Int }
 { one @r_c0_lateralAcceleration.this }
 
 sig c0_sideSlipAngle
-{ ref : one c0_degree }
+{ c0_sideSlipAngle_ref : one c0_degree }
 { one @r_c0_sideSlipAngle.this }
 
 sig c0_yawRate
-{ ref : one c0_degree }
+{ c0_yawRate_ref : one c0_degree }
 { one @r_c0_yawRate.this }
 
 sig c0_normalYawRate
-{ ref : one c0_degree
+{ c0_normalYawRate_ref : one c0_degree
 , r_c0_givenAckermanSteerAngle : one c0_givenAckermanSteerAngle }
 { one @r_c0_normalYawRate.this }
 
@@ -84,7 +80,7 @@ sig c0_hasUndersteer
 { one @r_c0_hasUndersteer.this }
 
 sig c0_GVWR
-{ ref : one Int }
+{ c0_GVWR_ref : one Int }
 { one @r_c0_GVWR.this }
 
 fact { #c1_DriveConfiguration = 0 }
@@ -94,7 +90,6 @@ abstract sig c1_DriveConfiguration
 , r_c0_rearWheelDrive : lone c0_rearWheelDrive
 , r_c0_allWheelDrive : lone c0_allWheelDrive
 , r_c0_fourWheelDrive : lone c0_fourWheelDrive }
-{ let children = (r_c0_twoWheelDrive + r_c0_frontWheelDrive + r_c0_rearWheelDrive + r_c0_allWheelDrive + r_c0_fourWheelDrive) | one children }
 
 sig c0_twoWheelDrive
 {}
@@ -140,10 +135,9 @@ abstract sig c1_ElectronicStabilityControlSystem
 , r_c0_satisfies : one c0_satisfies
 , r_c0_MalfunctionTelltale : lone c0_MalfunctionTelltale
 , r_c0_SystemControls : one c0_SystemControls }
-{ all disj x, y : this.@r_c0_vehicle | (x.@ref) != (y.@ref) }
 
 sig c0_vehicle
-{ ref : one c0_Vehicle }
+{ c0_vehicle_ref : one c0_Vehicle }
 { one @r_c0_vehicle.this }
 
 sig c0_augmentsVehiclesDirectionalStability
@@ -206,7 +200,7 @@ sig c0_isOperational
 , r_c0_withAntiLockBrakeSystem : one c0_withAntiLockBrakeSystem
 , r_c0_withTractionControlSystem : one c0_withTractionControlSystem }
 { one @r_c0_isOperational.this
-  (((this.~@r_c0_isOperational).@r_c0_vehicle).(@ref.(@r_c0_speed.@ref))) > 20 }
+  (((((this.~@r_c0_isOperational).@r_c0_vehicle).@c0_vehicle_ref).@r_c0_speed).@c0_speed_ref) > 20 }
 
 sig c0_duringAllPhasesOfDriving
 { r_c0_acceleration : one c0_acceleration

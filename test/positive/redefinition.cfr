@@ -1,0 +1,31 @@
+abstract Component
+    abstract InPort ->> Signal
+    abstract OutPort ->> Signal
+abstract Signal
+abstract Command : Signal
+abstract MotorCommand : Command
+motorDown : MotorCommand
+abstract Request : Signal
+stop : Request
+abstract Controller : Component
+    abstract req : InPort -> Request ?
+    down : Request
+WinController : Controller
+    req : req -> stop
+    cmd : OutPort -> MotorCommand
+
+assert [ WinController.cmd = motorDown ]
+
+/* we cannot have
+assert [ WinController.req = stop ]
+
+because
+
+clafer "req" cannot be defined because the name should be unique in the same namespace.
+Available paths:
+c0_WinController.c1_req
+c0_WinController.c0_req
+*/
+
+// this demonstrates whether redefinition is properly implemented
+assert [ Controller.req = stop ]

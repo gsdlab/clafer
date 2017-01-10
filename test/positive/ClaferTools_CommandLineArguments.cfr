@@ -1,8 +1,8 @@
 abstract Argument
 
-abstract IntegerArgument : integer
+abstract IntegerArgument ->> integer
 
-abstract StringArgument : string
+abstract StringArgument ->> string
 
 abstract Value
 
@@ -12,10 +12,9 @@ abstract xor ClaferArgs
    functional
       xor mode : Argument
          alloy : DefaultValue
-            alloy42 : Value ?
             noalloyruncommand : Argument ?
             alloy_mapping : Argument ?
-         clafer : Value
+         desclafer : Value
          html : Value
             [ keep_unused ]
             self_contained : Argument ?
@@ -54,7 +53,7 @@ ca2 : ClaferArgs
    [ tooldir = "~/clafer-tools-0.3.1/tools" ]
 //# FRAGMENT
 ca3 : ClaferArgs
-   [ alloy42 ]
+   [ alloy ]
    [ keep_unused ]
    [ flatten_inheritance ]
 //# FRAGMENT

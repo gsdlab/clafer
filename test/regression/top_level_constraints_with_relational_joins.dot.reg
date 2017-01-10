@@ -6,9 +6,9 @@ nodesep=0.1;
 graph [fontname=Sans fontsize=11];
 node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
 edge [fontname=Sans fontsize=11];
-"c0_Course" [label="abstract Course" URL="#c0_Course" tooltip="abstract Course&#10;  assistants -> TA *&#10;"];
+"c0_Course" [label="abstract Course" URL="#c0_Course" tooltip="abstract Course&#10;  assistants -&gt; TA *&#10;"];
 "c0_Course" -> "c0_TA" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=assistants];
-"c0_TA" [label="abstract TA" URL="#c0_TA" tooltip="abstract TA&#10;  first -> Course ?&#10;    [ parent in this.assistants ]&#10;"];
+"c0_TA" [label="abstract TA" URL="#c0_TA" tooltip="abstract TA&#10;  first -&gt; Course ?&#10;    [ parent in this.assistants ]&#10;"];
 "c0_TA" -> "c0_Course" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=first];
 "c0_CompilerGradStudent" [label="CompilerGradStudent : TA" URL="#c0_CompilerGradStudent" tooltip="CompilerGradStudent : TA&#10;"];
 "c0_CompilerGradStudent" -> "c0_TA" [arrowhead=onormal constraint=true weight=100];
@@ -18,5 +18,5 @@ edge [fontname=Sans fontsize=11];
 "c0_CompilerCourse" -> "c0_Course" [arrowhead=onormal constraint=true weight=100];
 "c0_MachineLearningCourse" [label="MachineLearningCourse : Course" URL="#c0_MachineLearningCourse" tooltip="MachineLearningCourse : Course&#10;"];
 "c0_MachineLearningCourse" -> "c0_Course" [arrowhead=onormal constraint=true weight=100];
-"c0_numerOfAssistants" [label="numerOfAssistants : integer = # Course.assistants" URL="#c0_numerOfAssistants" tooltip="numerOfAssistants : integer = # Course.assistants&#10;"];
+"c0_numerOfAssistants" [label="numerOfAssistants -&gt; integer = # Course.assistants" URL="#c0_numerOfAssistants" tooltip="numerOfAssistants -&gt; integer = # Course.assistants&#10;"];
 }

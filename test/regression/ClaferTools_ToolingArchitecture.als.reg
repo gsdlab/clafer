@@ -39,7 +39,8 @@ sig c0_optimizer
 
 sig c0_generator extends c0_Generator
 {}
-{ one @r_c0_generator.this }
+{ one @r_c0_generator.this
+  let children = (r_c0_alloy + r_c0_stats + r_c0_xml + r_c0_desClafer + r_c0_xsdSchema + r_c0_input + r_c0_output) | one children }
 
 abstract sig c0_Representation
 {}
@@ -59,48 +60,46 @@ one sig c0_ir extends c0_Representation
 abstract sig c0_io
 { r_c0_input : one c0_input
 , r_c0_output : one c0_output }
-{ all disj x, y : this.@r_c0_input | (x.@ref) != (y.@ref)
-  all disj x, y : this.@r_c0_output | (x.@ref) != (y.@ref) }
 
 sig c0_input
-{ ref : one c0_Representation }
+{ c0_input_ref : one c0_Representation }
 { one @r_c0_input.this }
 
 sig c0_output
-{ ref : one c0_Representation }
+{ c0_output_ref : one c0_Representation }
 { one @r_c0_output.this }
 
 abstract sig c0_text2tokens extends c0_io
 {}
-{ ((this.(@r_c0_input.@ref)) = c0_text) && ((this.(@r_c0_output.@ref)) = c0_tokens) }
+{ (((this.@r_c0_input).@c0_input_ref) = c0_text) && (((this.@r_c0_output).@c0_output_ref) = c0_tokens) }
 
 abstract sig c0_tokens2tokens extends c0_io
 {}
-{ ((this.(@r_c0_input.@ref)) = c0_tokens) && ((this.(@r_c0_output.@ref)) = c0_tokens) }
+{ (((this.@r_c0_input).@c0_input_ref) = c0_tokens) && (((this.@r_c0_output).@c0_output_ref) = c0_tokens) }
 
 abstract sig c0_tokens2ast extends c0_io
 {}
-{ ((this.(@r_c0_input.@ref)) = c0_tokens) && ((this.(@r_c0_output.@ref)) = c0_ast) }
+{ (((this.@r_c0_input).@c0_input_ref) = c0_tokens) && (((this.@r_c0_output).@c0_output_ref) = c0_ast) }
 
 abstract sig c0_ast2ast extends c0_io
 {}
-{ ((this.(@r_c0_input.@ref)) = c0_ast) && ((this.(@r_c0_output.@ref)) = c0_ast) }
+{ (((this.@r_c0_input).@c0_input_ref) = c0_ast) && (((this.@r_c0_output).@c0_output_ref) = c0_ast) }
 
 abstract sig c0_ast2text extends c0_io
 {}
-{ ((this.(@r_c0_input.@ref)) = c0_ast) && ((this.(@r_c0_output.@ref)) = c0_text) }
+{ (((this.@r_c0_input).@c0_input_ref) = c0_ast) && (((this.@r_c0_output).@c0_output_ref) = c0_text) }
 
 abstract sig c0_ast2ir extends c0_io
 {}
-{ ((this.(@r_c0_input.@ref)) = c0_ast) && ((this.(@r_c0_output.@ref)) = c0_ir) }
+{ (((this.@r_c0_input).@c0_input_ref) = c0_ast) && (((this.@r_c0_output).@c0_output_ref) = c0_ir) }
 
 abstract sig c0_ir2ir extends c0_io
 {}
-{ ((this.(@r_c0_input.@ref)) = c0_ir) && ((this.(@r_c0_output.@ref)) = c0_ir) }
+{ (((this.@r_c0_input).@c0_input_ref) = c0_ir) && (((this.@r_c0_output).@c0_output_ref) = c0_ir) }
 
 abstract sig c0_ir2text extends c0_io
 {}
-{ ((this.(@r_c0_input.@ref)) = c0_ir) && ((this.(@r_c0_output.@ref)) = c0_text) }
+{ (((this.@r_c0_input).@c0_input_ref) = c0_ir) && (((this.@r_c0_output).@c0_output_ref) = c0_text) }
 
 abstract sig c0_Front
 { r_c0_lexer : one c0_lexer
@@ -117,7 +116,7 @@ sig c0_layoutResolver extends c0_tokens2tokens
 { r_c0_stable : lone c0_stable
 , r_c0_experimental : lone c0_experimental }
 { one @r_c0_layoutResolver.this
-  let children = (r_c0_stable + r_c0_experimental) | one children }
+  let children = (r_c0_stable + r_c0_experimental + r_c0_input + r_c0_output) | one children }
 
 sig c0_stable
 {}
@@ -206,7 +205,6 @@ abstract sig c0_Generator extends c0_ir2text
 , r_c0_xml : lone c0_xml
 , r_c0_desClafer : lone c0_desClafer
 , r_c0_xsdSchema : lone c0_xsdSchema }
-{ let children = (r_c0_alloy + r_c0_stats + r_c0_xml + r_c0_desClafer + r_c0_xsdSchema) | one children }
 
 sig c0_alloy
 {}

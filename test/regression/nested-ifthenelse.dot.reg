@@ -1,0 +1,17 @@
+digraph "nested-ifthenelse"
+{
+rankdir=BT;
+ranksep=0.3;
+nodesep=0.1;
+graph [fontname=Sans fontsize=11];
+node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
+edge [fontname=Sans fontsize=11];
+"c0_x" [label="x ?" URL="#c0_x" tooltip="x ?&#10;"];
+"c0_y" [label="y ?" URL="#c0_y" tooltip="y ?&#10;"];
+"c0_z" [label="z ?" URL="#c0_z" tooltip="z ?&#10;"];
+"c0_w" [label="w ?" URL="#c0_w" tooltip="w ?&#10;"];
+"c0_u" [label="u ?" URL="#c0_u" tooltip="u ?&#10;"];
+"c0_o" [label="o ?" URL="#c0_o" tooltip="o ?&#10;"];
+"c0_p" [label="p ?" URL="#c0_p" tooltip="p ?&#10;"];
+"c0_h" [label="h ?" URL="#c0_h" tooltip="h ?&#10;"];
+}

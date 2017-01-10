@@ -9,8 +9,8 @@ edge [fontname=Sans fontsize=11];
 "c0_A" [label="abstract A" URL="#c0_A" tooltip="abstract A&#10;  x ?&#10;"];
 "c0_a" [label="a : A 2" URL="#c0_a" tooltip="a : A 2&#10;"];
 "c0_a" -> "c0_A" [arrowhead=onormal constraint=true weight=100];
-"c0_ref1" [label="ref1 -> A" URL="#c0_ref1" tooltip="ref1 -> A&#10;"];
+"c0_ref1" [label="ref1 -&gt; A" URL="#c0_ref1" tooltip="ref1 -&gt; A&#10;"];
 "c0_ref1" -> "c0_A" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent];
-"c0_ref2" [label="ref2 -> ref1" URL="#c0_ref2" tooltip="ref2 -> ref1&#10;  [ this.x ]&#10;"];
+"c0_ref2" [label="ref2 -&gt; ref1" URL="#c0_ref2" tooltip="ref2 -&gt; ref1&#10;  [ this.x ]&#10;"];
 "c0_ref2" -> "c0_ref1" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent];
 }

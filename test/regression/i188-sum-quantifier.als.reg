@@ -3,11 +3,10 @@ pred show {}
 
 
 sig c0_a
-{ ref : one Int }
+{ c0_a_ref : one Int }
 
 one sig c0_b
-{ ref : one Int }
+{ c0_b_ref : one Int }
 
-fact { (some c0_b) => ((c0_b.@ref) = (sum temp : c0_a | temp.@ref)) }
-fact { all disj x, y : c0_b | (x.@ref) != (y.@ref) }
-fact { (c0_b.@ref) = 2 }
+fact { (some c0_b) => ((c0_b.@c0_b_ref) = (sum temp : c0_a | temp.@c0_a_ref)) }
+fact { (c0_b.@c0_b_ref) = 2 }

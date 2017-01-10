@@ -25,5 +25,5 @@ c0_copier = c0_PrinterPool.addChild("c0_copier").withCard(0, 1);
 c0_scan = c0_PrinterPool.addChild("c0_scan").withCard(0, 1);
 c0_resolution.refTo(Int);
 c0_inkVolume.refTo(Int);
-Constraint(and(implies(some(join(global(c0_PrinterPool), c0_fax)), some(join(global(c0_PrinterPool), c0_printer))), implies(some(join(global(c0_PrinterPool), c0_copier)), and(some(join(global(c0_PrinterPool), c0_fax)), some(join(global(c0_PrinterPool), c0_printer))))));
 c0_PrinterPool.addConstraint(implies(some(join($this(), c0_fax)), some(join($this(), c0_printer))));
+Constraint(and(implies(some(join(global(c0_PrinterPool), c0_fax)), some(join(global(c0_PrinterPool), c0_printer))), implies(some(join(global(c0_PrinterPool), c0_copier)), and(some(join(global(c0_PrinterPool), c0_fax)), some(join(global(c0_PrinterPool), c0_printer))))));

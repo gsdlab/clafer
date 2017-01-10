@@ -11,7 +11,7 @@ edge [fontname=Sans fontsize=11];
 "c0_PhoneWithGps" -> "c0_Phone" [arrowhead=onormal constraint=true weight=100];
 "c0_PhoneWithWifi" [label="PhoneWithWifi : Phone" URL="#c0_PhoneWithWifi" tooltip="PhoneWithWifi : Phone&#10;  [ networking.wifi.typeN ]&#10;"];
 "c0_PhoneWithWifi" -> "c0_Phone" [arrowhead=onormal constraint=true weight=100];
-"c0_PhonewithWifiAndGpsNoBluetoothOrNfc" [label="PhonewithWifiAndGpsNoBluetoothOrNfc : Phone" URL="#c0_PhonewithWifiAndGpsNoBluetoothOrNfc" tooltip="PhonewithWifiAndGpsNoBluetoothOrNfc : Phone&#10;  [ wifi && gps &&  ! bluetooth || nfc ]&#10;"];
+"c0_PhonewithWifiAndGpsNoBluetoothOrNfc" [label="PhonewithWifiAndGpsNoBluetoothOrNfc : Phone" URL="#c0_PhonewithWifiAndGpsNoBluetoothOrNfc" tooltip="PhonewithWifiAndGpsNoBluetoothOrNfc : Phone&#10;  [ wifi &amp;&amp; gps &amp;&amp;  ! bluetooth || nfc ]&#10;"];
 "c0_PhonewithWifiAndGpsNoBluetoothOrNfc" -> "c0_Phone" [arrowhead=onormal constraint=true weight=100];
 "c0_PhoneWithGpu" [label="PhoneWithGpu : Phone" URL="#c0_PhoneWithGpu" tooltip="PhoneWithGpu : Phone&#10;  [ some gpu ]&#10;"];
 "c0_PhoneWithGpu" -> "c0_Phone" [arrowhead=onormal constraint=true weight=100];

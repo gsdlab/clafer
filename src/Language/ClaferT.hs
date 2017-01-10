@@ -1,6 +1,6 @@
 {-# LANGUAGE RankNTypes #-}
 {-
- Copyright (C) 2012-2014 Kacper Bak, Jimmy Liang, Michal Antkiewicz <http://gsd.uwaterloo.ca>
+ Copyright (C) 2012-2015 Kacper Bak, Jimmy Liang, Michal Antkiewicz <http://gsd.uwaterloo.ca>
 
  Permission is hereby granted, free of charge, to any person obtaining a copy of
  this software and associated documentation files (the "Software"), to deal in
@@ -25,47 +25,49 @@
 This is in a separate module from the module "Language.Clafer" so that other modules that require
 ClaferEnv can just import this module without all the parsing/compiline/generating functionality.
  -}
-module Language.ClaferT (
-                         ClaferEnv(..), 
-                         makeEnv, 
-                         getAst, 
-                         getIr, 
-                         ClaferM, 
-                         ClaferT, 
-                         CErr(..), 
-                         CErrs(..), 
-                         ClaferErr, 
-                         ClaferErrs, 
-                         ClaferSErr, 
-                         ClaferSErrs, 
-                         ErrPos(..), 
-                         PartialErrPos(..), 
-                         throwErrs, 
-                         throwErr, 
-                         catchErrs, 
-                         getEnv, 
-                         getsEnv, 
-                         modifyEnv, 
-                         putEnv, 
-                         runClafer, 
-                         runClaferT, 
-                         Throwable(..), 
-                         Span(..), 
-                         Pos(..)
-) where
+module Language.ClaferT
+  ( ClaferEnv(..)
+  , irModuleTrace
+  , uidIClaferMap
+  , makeEnv
+  , getAst
+  , getIr
+  , ClaferM
+  , ClaferT
+  , CErr(..)
+  , CErrs(..)
+  , ClaferErr
+  , ClaferErrs
+  , ClaferSErr
+  , ClaferSErrs
+  , ErrPos(..)
+  , PartialErrPos(..)
+  , throwErrs
+  , throwErr
+  , catchErrs
+  , getEnv
+  , getsEnv
+  , modifyEnv
+  , putEnv
+  , runClafer
+  , runClaferT
+  , Throwable(..)
+  , Span(..)
+  , Pos(..)
+  ) where
 
-import Control.Monad.Error
-import Control.Monad.State
-import Control.Monad.Identity
-import Data.List
-import Data.Map (Map)
+import           Control.Monad.Except
+import           Control.Monad.Identity
+import           Control.Monad.State
+import           Data.List
 import qualified Data.Map as Map
 
-import Language.Clafer.Common
-import Language.Clafer.Front.Absclafer
-import Language.Clafer.Intermediate.Tracing
-import Language.Clafer.Intermediate.Intclafer
-import Language.Clafer.ClaferArgs
+import           Language.Clafer.ClaferArgs
+import           Language.Clafer.Common
+import           Language.Clafer.Front.AbsClafer
+import           Language.Clafer.Front.LexClafer
+import           Language.Clafer.Intermediate.Intclafer
+import           Language.Clafer.Intermediate.Tracing
 
 {-
  - Examples.
@@ -95,15 +97,33 @@ import Language.Clafer.ClaferArgs
  -
  -}
 
-data ClaferEnv = ClaferEnv {
-                            args :: ClaferArgs,
-                            modelFrags :: [String], -- original text of the model fragments
-                            cAst :: Maybe Module,
-                            cIr :: Maybe (IModule, GEnv, Bool),
-                            frags :: [Pos],    -- line numbers of fragment markers
-                            irModuleTrace :: Map Span [Ir],
-                            astModuleTrace :: Map Span [Ast]
-                            } deriving Show
+data ClaferEnv
+  = ClaferEnv
+    { args           :: ClaferArgs
+    , modelFrags     :: [String] -- original text of the model fragments
+    , cAst           :: Maybe Module
+    , cIr            :: Maybe (IModule, GEnv, Bool)
+    , frags          :: [Pos]    -- line numbers of fragment markers
+    , astModuleTrace :: Map.Map Span [Ast]  -- can keep the Ast map since it never changes
+    , otherTokens    :: [Token]  -- non-parseable tokens: comments and escape blocks
+    } deriving Show
+
+-- | This simulates a field in the ClaferEnv that will always recompute the map,
+--   since the IR always changes and the map becomes obsolete
+irModuleTrace :: ClaferEnv -> Map.Map Span [Ir]
+irModuleTrace env = traceIrModule $ getIModule $ cIr env
+  where
+    getIModule (Just (imodule, _, _)) = imodule
+    getIModule Nothing                = error "BUG: irModuleTrace: cannot request IR map before desugaring."
+
+-- | This simulates a field in the ClaferEnv that will always recompute the map,
+--   since the IR always changes and the map becomes obsolete
+--   maps from a UID to an IClafer with the given UID
+uidIClaferMap :: ClaferEnv -> UIDIClaferMap
+uidIClaferMap env = createUidIClaferMap $ getIModule $ cIr env
+  where
+    getIModule (Just (iModule, _, _)) = iModule
+    getIModule Nothing                = error "BUG: uidIClaferMap: cannot request IClafer map before desugaring."
 
 getAst :: (Monad m) => ClaferT m Module
 getAst = do
@@ -119,26 +139,29 @@ getIr = do
     (Just i) -> return i
     _ -> throwErr (ClaferErr "No IR. Did you forget to compile?" :: CErr Span) -- Indicates a bug in the Clafer translator.
 
-makeEnv :: ClaferArgs -> ClaferEnv                                                                            
-makeEnv args' = ClaferEnv { args = args'',
-                           modelFrags = [],
-                           cAst = Nothing,
-                           cIr = Nothing,
-                           frags = [],
-                           irModuleTrace = Map.empty,
-                           astModuleTrace = Map.empty}
-               where 
-                  args'' = if (CVLGraph `elem` (mode args') ||
-                               Html `elem` (mode args') ||
-                               Graph `elem` (mode args'))
-                            then args'{keep_unused=True}
-                            else args'
+makeEnv :: ClaferArgs -> ClaferEnv
+makeEnv args' =
+  ClaferEnv
+    { args = args''
+    , modelFrags = []
+    , cAst = Nothing
+    , cIr = Nothing
+    , frags = []
+    , astModuleTrace = Map.empty
+    , otherTokens = []
+    }
+  where
+    args'' = if (CVLGraph `elem` (mode args') ||
+                 Html `elem` (mode args') ||
+                 Graph `elem` (mode args'))
+              then args'{keep_unused=True}
+              else args'
 
 -- | Monad for using Clafer.
 type ClaferM = ClaferT Identity
 
 -- | Monad Transformer for using Clafer.
-type ClaferT m = ErrorT ClaferErrs (StateT ClaferEnv m)
+type ClaferT m = ExceptT ClaferErrs (StateT ClaferEnv m)
 
 type ClaferErr = CErr ErrPos
 type ClaferErrs = CErrs ErrPos
@@ -148,47 +171,40 @@ type ClaferSErrs = CErrs Span
 
 -- | Possible errors that can occur when using Clafer
 -- | Generate errors using throwErr/throwErrs:
-data CErr p =
+data CErr p
   -- | Generic error
-  ClaferErr {  
-    msg :: String
-  } |
+  = ClaferErr
+    { msg :: String
+    }
   -- | Error generated by the parser
-  ParseErr {   
-    -- | Position of the error
-    pos :: p,  
-    msg :: String
-  } |
+  | ParseErr
+    { pos :: p -- ^ Position of the error
+    , msg :: String
+    }
   -- | Error generated by semantic analysis
-  SemanticErr { 
-    pos :: p,
-    msg :: String
-  }
+  | SemanticErr
+    { pos :: p
+    , msg :: String
+    }
   deriving Show
-  
+
 -- | Clafer keeps track of multiple errors.
 data CErrs p =
   ClaferErrs {errs :: [CErr p]}
   deriving Show
 
-instance Error (CErr p) where
-  strMsg = ClaferErr
-  
-instance Error (CErrs p) where
-  strMsg m = ClaferErrs [strMsg m]
-  
 data ErrPos =
   ErrPos {
     -- | The fragment where the error occurred.
-    fragId :: Int,
+    fragId   :: Int,
     -- | Error positions are relative to their fragments.
     -- | For example an error at (Pos 2 3) means line 2 column 3 of the fragment, not the entire model.
-    fragPos :: Pos,
+    fragPos  :: Pos,
     -- | The error position relative to the model.
     modelPos :: Pos
   }
   deriving Show
-  
+
 
 -- | The full ErrPos requires lots of information that needs to be consistent. Every time we throw an error,
 -- | we need BOTH the (fragId, fragPos) AND modelPos. This makes it easier for developers using ClaferT so they
@@ -208,11 +224,11 @@ data PartialErrPos =
   -- | fragId starts at 0
   -- | The position is relative to the start of the fragment.
   ErrFragPos {
-    pFragId :: Int,
+    pFragId  :: Int,
     pFragPos :: Pos
   } |
   ErrFragSpan {
-    pFragId :: Int,
+    pFragId   :: Int,
     pFragSpan :: Span
   } |
   -- | Position relative to the start of the complete model. Will calculate fragId and fragPos automatically.
@@ -225,16 +241,16 @@ data PartialErrPos =
     pModelSpan :: Span
   }
   deriving Show
-  
+
 class ClaferErrPos p where
   toErrPos :: Monad m => p -> ClaferT m ErrPos
-  
+
 instance ClaferErrPos Span where
   toErrPos = toErrPos . ErrModelSpan
-  
+
 instance ClaferErrPos ErrPos where
   toErrPos = return . id
-  
+
 instance ClaferErrPos PartialErrPos where
   toErrPos (ErrFragPos frgId frgPos) =
     do
@@ -248,7 +264,7 @@ instance ClaferErrPos PartialErrPos where
       let fragSpans = zipWith Span (Pos 1 1 : f) f
       case findFrag modelPos' fragSpans of
         Just (frgId, Span fragStart _) -> return $ ErrPos frgId (modelPos' `minusPos` fragStart) modelPos'
-        Nothing -> error $ show modelPos' ++ " not within any frag spans: " ++ show fragSpans -- Indicates a bug in the Clafer translator
+        Nothing -> return $ ErrPos 1 noPos noPos -- error $ show modelPos' ++ " not within any frag spans: " ++ show fragSpans -- Indicates a bug in the Clafer translator
     where
     findFrag pos'' spans =
       find (inSpan pos'' . snd) (zip [0..] spans)
@@ -256,14 +272,14 @@ instance ClaferErrPos PartialErrPos where
 
 class Throwable t where
   toErr :: t -> Monad m => ClaferT m ClaferErr
-  
+
 instance ClaferErrPos p => Throwable (CErr p) where
   toErr (ClaferErr mesg) = return $ ClaferErr mesg
   toErr err =
     do
       pos' <- toErrPos $ pos err
       return $ err{pos = pos'}
-  
+
 -- | Throw many errors.
 throwErrs :: (Monad m, Throwable t) => [t] -> ClaferT m a
 throwErrs throws =
@@ -309,7 +325,7 @@ putEnv = put
 -- |   Right is for success (with the result)
 runClaferT :: Monad m => ClaferArgs -> ClaferT m a -> m (Either [ClaferErr] a)
 runClaferT args' exec =
-  mapLeft errs `liftM` evalStateT (runErrorT exec) (makeEnv args')
+  mapLeft errs `liftM` evalStateT (runExceptT exec) (makeEnv args')
   where
   mapLeft :: (a -> c) -> Either a b -> Either c b
   mapLeft f (Left l) = Left (f l)

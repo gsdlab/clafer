@@ -58,7 +58,6 @@ abstract sig c0_Bluetooth
 { r_c0_Bluetooth20 : lone c0_Bluetooth20
 , r_c1_Bluetooth21 : lone c1_Bluetooth21
 , r_c1_Bluetooth40 : lone c1_Bluetooth40 }
-{ let children = (r_c0_Bluetooth20 + r_c1_Bluetooth21 + r_c1_Bluetooth40) | one children }
 
 sig c0_Bluetooth20
 {}
@@ -86,7 +85,8 @@ sig c2_Connectivity
 
 sig c1_Bluetooth extends c0_Bluetooth
 {}
-{ one @r_c1_Bluetooth.this }
+{ one @r_c1_Bluetooth.this
+  let children = (r_c0_Bluetooth20 + r_c1_Bluetooth21 + r_c1_Bluetooth40) | one children }
 
 sig c2_GSM
 {}

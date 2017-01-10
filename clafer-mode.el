@@ -1,10 +1,10 @@
 ;; define several class of keywords
 (defvar clafer-keywords
-  '("abstract" "else" "in" "no" "not" "opt" "xor" "all" "enum" "lone" "not" "or" "disj" "mux" "one" "some")
+  '("this" "parent" "dref" "root" "children" "max" "min" "sum" "product" "xor" "in" "if" "then" "else" "no" "not" "some" "one" "all" "disj" "opt" "mux" "or" "lone" "abstract" "enum" "assert" "final" "initial" "let" "never" "sometime" "lonce" "once" "always" "must" "precede" "follow" "initially" "finally" "U" "until" "W" "weakuntil" "F" "eventually" "G" "globally" "X" "next" "before" "after" "between" "and" "until")
   "Clafer keywords.")
 
 (defvar clafer-types
-  '("integer" "string" "real" "int")
+  '("integer" "string" "double" "real" "int" "clafer")
   "Clafer types.")
 
 (defvar clafer-operators
@@ -16,7 +16,7 @@
   "Clafer Cardinalities.")
 
 (defvar clafer-constraints-operators
-  '("<" ">" ">=" "<=" "<:" ":>" "=>" "+" "++" "!" "!=" "*" "#" "`" "in" "not in")
+  '("`" "#" "?" "*" "+" "+" "-" "/" "%" "." "<:" ":>" "\\" "&&" "|" "||" "++" "**" "--" "=" ":=" "!=" ">=" "<=" "=>" "<=>" "<" ">" "(" ")" "[" "]" ".." ">>" "<<" "-->" "-->>" "-[" "]->" "]->>")
   "Clafer Constraints Operators.")
 
 ;; create the regex string for each class of keywords
@@ -82,7 +82,7 @@
   ;; modify the keymap
 ;;   (define-key clafer-mode-map [remap comment-dwim] 'clafer-comment-dwim)
 
-  ;; perl style comment: “# ...” 
+  ;; perl style comment: “# ...”
 ;;   (modify-syntax-entry ?- "< b" clafer-mode-syntax-table)
 ;;   (modify-syntax-entry ?\n "> b" clafer-mode-syntax-table)
 ;; )

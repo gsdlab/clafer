@@ -1,3 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=9">
+<style>.identifier{}
+.keyword{font-weight:bold}
+.reference{}
+.code { background-color: lightgray; padding: 5px 5px 5px 5px; border: 1px solid darkgray; margin-bottom: 15px; 
+        font-family: Pragmata, Menlo, 'DejaVu LGC Sans Mono', 'DejaVu Sans Mono', Consolas, 'Everson Mono', 'Lucida Console', 'Andale Mono', 'Nimbus Mono L', 'Liberation Mono', FreeMono, 'Osaka Monospaced', Courier, 'New Courier', monospace; }
+.standalonecomment { color: green; font-style:italic }
+.inlinecomment { color: green; padding-left:20px; font-style:italic }
+.error{background-color: yellow; color: red }
+.deprecated{color: orange }
+.indent{padding-left:20px}
+a[href$='Lookup failed'] {color: red}
+a[href$='Uid not found'] {color: red}
+a[href$='Ambiguous name'] {color: yellow}
+
+</style></head>
+<body>
 
 <div>
 <span class="keyword">abstract</span> <span class="keyword">xor</span> <span class="claferDecl" id="c0_Bluetooth">Bluetooth</span>
@@ -39,16 +59,16 @@
 
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_LowEndPhone">LowEndPhone</span><span class="keyword"> :</span> <a href="#c0_MobilePhone"><span class="reference">MobilePhone</span></a>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_LowEndPhone">LowEndPhone</span><span class="keyword"> : </span><a href="#c0_MobilePhone"><span class="reference">MobilePhone</span></a>
   <div class="indent">
   <span class="keyword">[</span> <span class="keyword">no</span> <a href="#c0_WiFi"><span class="reference">WiFi</span></a> <span class="keyword">]</span></div>
 </div>
 
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_HighEndPhone">HighEndPhone</span><span class="keyword"> :</span> <a href="#c0_MobilePhone"><span class="reference">MobilePhone</span></a>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_HighEndPhone">HighEndPhone</span><span class="keyword"> : </span><a href="#c0_MobilePhone"><span class="reference">MobilePhone</span></a>
   <div class="indent">
-  <span class="keyword">[</span> <a href="#c0_USB"><span class="reference">USB</span></a> && <a href="#c0_WiFi"><span class="reference">WiFi</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <a href="#c0_USB"><span class="reference">USB</span></a> &amp;&amp; <a href="#c0_WiFi"><span class="reference">WiFi</span></a> <span class="keyword">]</span></div>
   <div class="indent">
   <span class="claferDecl" id="c0_QuadCPU">QuadCPU</span> ?</div>
 </div>
@@ -56,7 +76,7 @@
 <!-- # FRAGMENT /-->
 
 <div>
-<span class="claferDecl" id="c0_Phone1">Phone1</span><span class="keyword"> :</span> <a href="#c0_MobilePhone"><span class="reference">MobilePhone</span></a>
+<span class="claferDecl" id="c0_Phone1">Phone1</span><span class="keyword"> : </span><a href="#c0_MobilePhone"><span class="reference">MobilePhone</span></a>
   <div class="indent">
   <span class="keyword">[</span> <a href="#c0_WiFi"><span class="reference">WiFi</span></a> <span class="keyword">]</span></div>
   <div class="indent">
@@ -68,7 +88,7 @@
 <!-- # FRAGMENT /-->
 
 <div>
-<span class="claferDecl" id="c0_Phone2">Phone2</span><span class="keyword"> :</span> <a href="#c0_HighEndPhone"><span class="reference">HighEndPhone</span></a>
+<span class="claferDecl" id="c0_Phone2">Phone2</span><span class="keyword"> : </span><a href="#c0_HighEndPhone"><span class="reference">HighEndPhone</span></a>
   <div class="indent">
   <span class="keyword">[</span> <a href="#c0_LTE"><span class="reference">LTE</span></a> <span class="keyword">]</span></div>
   <div class="indent">
@@ -77,3 +97,5 @@
   <span class="keyword">[</span> <a href="#c0_QuadCPU"><span class="reference">QuadCPU</span></a> <span class="keyword">]</span></div>
 </div>
 
+</body>
+</html>

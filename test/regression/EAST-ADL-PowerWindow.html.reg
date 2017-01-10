@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=9">
+<style>.identifier{}
+.keyword{font-weight:bold}
+.reference{}
+.code { background-color: lightgray; padding: 5px 5px 5px 5px; border: 1px solid darkgray; margin-bottom: 15px; 
+        font-family: Pragmata, Menlo, 'DejaVu LGC Sans Mono', 'DejaVu Sans Mono', Consolas, 'Everson Mono', 'Lucida Console', 'Andale Mono', 'Nimbus Mono L', 'Liberation Mono', FreeMono, 'Osaka Monospaced', Courier, 'New Courier', monospace; }
+.standalonecomment { color: green; font-style:italic }
+.inlinecomment { color: green; padding-left:20px; font-style:italic }
+.error{background-color: yellow; color: red }
+.deprecated{color: orange }
+.indent{padding-left:20px}
+a[href$='Lookup failed'] {color: red}
+a[href$='Uid not found'] {color: red}
+a[href$='Ambiguous name'] {color: yellow}
+
+</style></head>
+<body>
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Feature">Feature</span></div>
+
+
+<div>
+<span class="claferDecl" id="c0_express">express</span><span class="keyword"> : </span><a href="#c0_Feature"><span class="reference">Feature</span></a> ?</div>
+
+
+<div>
+<span class="keyword">[</span> <a href="#c0_express"><span class="reference">express</span></a> &lt;=&gt; <a href="#c0_downX"><span class="reference">downX</span></a> <span class="keyword">]</span></div>
+
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Component">Component</span>
+  <div class="indent">
+  <span class="keyword">abstract</span> <span class="keyword">xor</span> <span class="claferDecl" id="c0_Port">Port</span>
+    <div class="indent">
+    <span class="claferDecl" id="c0_input">input</span></div>
+    <div class="indent">
+    <span class="claferDecl" id="c0_output">output</span></div>
+  </div>
+</div>
+
+
+<div>
+<span class="keyword">enum</span> Command = <span class="claferDecl" id="c0_motorUp">motorUp</span> | <span class="claferDecl" id="c0_motorDown">motorDown</span> | <span class="claferDecl" id="c0_motorStop">motorStop</span></div>
+
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Request">Request</span></div>
+
+
+<div>
+<span class="claferDecl" id="c0_up">up</span><span class="keyword"> : </span><a href="#c0_Request"><span class="reference">Request</span></a></div>
+
+
+<div>
+<span class="claferDecl" id="c0_down">down</span><span class="keyword"> : </span><a href="#c0_Request"><span class="reference">Request</span></a></div>
+
+
+<div>
+<span class="claferDecl" id="c0_downX">downX</span><span class="keyword"> : </span><a href="#c0_Request"><span class="reference">Request</span></a> ?</div>
+
+
+<div>
+<span class="claferDecl" id="c0_stop">stop</span><span class="keyword"> : </span><a href="#c0_Request"><span class="reference">Request</span></a></div>
+
+
+<div>
+<span class="claferDecl" id="c0_WinCtrl">WinCtrl</span><span class="keyword"> : </span><a href="#c0_Component"><span class="reference">Component</span></a>
+  <div class="indent">
+  <span class="claferDecl" id="c0_cmd">cmd</span><span class="keyword"> : </span><a href="#c0_Port"><span class="reference">Port</span></a><span class="keyword"> -> </span><a href="#c0_Command"><span class="reference">Command</span></a>
+    <div class="indent">
+    <span class="keyword">[</span> <a href="#c0_output"><span class="reference">output</span></a> <span class="keyword">]</span></div>
+  </div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_req">req</span><span class="keyword"> : </span><a href="#c0_Port"><span class="reference">Port</span></a><span class="keyword"> -> </span><a href="#c0_Request"><span class="reference">Request</span></a>
+    <div class="indent">
+    <span class="keyword">[</span> <a href="#c0_input"><span class="reference">input</span></a> <span class="keyword">]</span></div>
+  </div>
+</div>
+
+</body>
+</html>

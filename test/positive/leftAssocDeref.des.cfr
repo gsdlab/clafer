@@ -1,0 +1,10 @@
+0 .. * c0_x -> integer 1 .. 1 {
+  [this . ref = 1][this . ref = 1]
+}
+[c0_x . ref = 1][c0_x . ref = 1]0 .. * c0_y -> c0_x 1 .. 1 {
+  [this . ref . ref = 1][this . ref . ref = 1][this . ref . ref = 1]
+}
+[c0_y . ref . ref = 1][c0_y . ref . ref = 1][c0_y . ref . ref = 1]0 .. * c0_z -> c0_y 1 .. 1 {
+  [this . ref . ref . ref = 1][this . ref . ref . ref = 1][this . ref . ref . ref = 1][this . ref . ref . ref = 1]
+}
+[c0_z . ref . ref . ref = 1][c0_z . ref . ref . ref = 1][c0_z . ref . ref . ref = 1][c0_z . ref . ref . ref = 1]

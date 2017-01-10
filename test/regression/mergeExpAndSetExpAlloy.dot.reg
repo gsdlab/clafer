@@ -1,0 +1,25 @@
+digraph "mergeExpAndSetExpAlloy"
+{
+rankdir=BT;
+ranksep=0.3;
+nodesep=0.1;
+graph [fontname=Sans fontsize=11];
+node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
+edge [fontname=Sans fontsize=11];
+"c0_numberOne" [label="numberOne -&gt; 1" URL="#c0_numberOne" tooltip="numberOne -&gt; 1&#10;"];
+"c0_alice" [label="alice -&gt; &quot;Alice&quot;" URL="#c0_alice" tooltip="alice -&gt; &quot;Alice&quot;&#10;"];
+"c0_likertScaleVal" [label="likertScaleVal -&gt; 1, 2, 3, 4, 5" URL="#c0_likertScaleVal" tooltip="likertScaleVal -&gt; 1, 2, 3, 4, 5&#10;"];
+"c0_nonZero" [label="nonZero -&gt; integer--0" URL="#c0_nonZero" tooltip="nonZero -&gt; integer--0&#10;"];
+"c0_Person" [label="abstract Person" URL="#c0_Person" tooltip="abstract Person&#10;  abstract Head&#10;  likes -&gt; Person ?&#10;"];
+"c0_Head" [label="abstract Head" URL="#c0_Head" tooltip="abstract Head&#10;"];
+"c0_Person" -> "c0_Person" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=likes];
+"c0_Alice" [label="Alice : Person" URL="#c0_Alice" tooltip="Alice : Person&#10;  `Head&#10;  [ likes = Ella ]&#10;"];
+"c0_Alice" -> "c0_Person" [arrowhead=onormal constraint=true weight=100];
+"c0_Alice" -> "c0_Head" [arrowhead=vee arrowtail=diamond dir=both style=solid constraint=true weight=5 minlen=2 arrowsize=0.6 penwidth=0.5 ];
+"c0_Ella" [label="Ella : Person" URL="#c0_Ella" tooltip="Ella : Person&#10;  h : Person.Head&#10;  [ no likes ]&#10;"];
+"c0_Ella" -> "c0_Person" [arrowhead=onormal constraint=true weight=100];
+"c0_heads" [label="heads -&gt; Person.Head *" URL="#c0_heads" tooltip="heads -&gt; Person.Head *&#10;"];
+"c0_friend" [label="friend -&gt; Alice++Ella 2" URL="#c0_friend" tooltip="friend -&gt; Alice++Ella 2&#10;"];
+"c0_onlyAlice" [label="onlyAlice -&gt; Alice**Person" URL="#c0_onlyAlice" tooltip="onlyAlice -&gt; Alice**Person&#10;"];
+"c0_exceptElla" [label="exceptElla -&gt; Person--Ella" URL="#c0_exceptElla" tooltip="exceptElla -&gt; Person--Ella&#10;"];
+}

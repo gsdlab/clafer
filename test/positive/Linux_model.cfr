@@ -3,31 +3,31 @@ abstract tristate
 
 MISC_FILESYSTEMS ?
     display -> string = "Miscellaneous filesystems"
-    
+
     JFFS2_FS : tristate ?
         display -> string = "Journalling Flash File System"
         [MTD]
         [MTD => CRC32]
 
         FFS2_FS_DEBUG -> int
-            (this = 0)
+            [ this = 0 ] // default
             display -> string = "JFFS2 Debug level (0=quiet, 2=noisy)"
             [0 <= this && this <= 2]
 
         JFFS2_FS_WRITEBUFFER ?
-        (JFFS2_FS_WRITEBUFFER <=> HAS_IOMEM)
+        [JFFS2_FS_WRITEBUFFER <=> HAS_IOMEM] // default
 
         JFFS2_COMPRESS ?
             display -> string = "Advanced compression options for JFFS2"
-            
-            (JFFS2_ZLIB)
+
+            [JFFS2_ZLIB] // default
             JFFS2_ZLIB ?
                 display -> string = "Compress w/zlib..."
                 [ZLIB_INFLATE]
 
             CompressionChoice
                 display -> string = "Default compression"
-                (JFFS2_CMODE_PRIORITY)
+                [JFFS2_CMODE_PRIORITY] // default
                 xor choice
                     JFFS2_CMODE_NONE
                         display -> string = "no compression"

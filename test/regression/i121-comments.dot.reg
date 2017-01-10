@@ -7,6 +7,7 @@ graph [fontname=Sans fontsize=11];
 node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
 edge [fontname=Sans fontsize=11];
 "c0_A" [label="A" URL="#c0_A" tooltip="A&#10;  B&#10;  C ?&#10;"];
-"c0_D" [label="D -> A" URL="#c0_D" tooltip="D -> A&#10;"];
+"c0_D" [label="D -&gt; A" URL="#c0_D" tooltip="D -&gt; A&#10;"];
 "c0_D" -> "c0_A" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent];
+"c0_E" [label="E ?" URL="#c0_E" tooltip="E ?&#10;"];
 }
