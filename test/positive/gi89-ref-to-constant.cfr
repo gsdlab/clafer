@@ -1,0 +1,5 @@
+abstract ASIL -> integer
+A : ASIL -> 1
+B : ASIL -> 2
+C : ASIL -> 3
+D : ASIL -> 4
