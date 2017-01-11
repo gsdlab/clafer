@@ -15,4 +15,4 @@ sig c0_y
 one sig c0_z
 { c0_z_ref : one Int }
 
-fact { (some c0_z) => ((c0_z.@c0_z_ref) = (sum temp : (c0_x + c0_y) | temp.(@c0_y_ref + @c0_x_ref))) }
+fact { (some c0_z) => ((c0_z.@c0_z_ref) = (sum temp : (c0_x + c0_y) | temp.@c0_y_ref)) }

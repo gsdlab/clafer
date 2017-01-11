@@ -5,6 +5,6 @@ stringLength(16);
 c0_a = Clafer("c0_a");
 c0_b = Clafer("c0_b").withCard(1, 1);
 c0_a.refTo(Int);
-c0_b.refTo(Int);
+c0_b.refToUnique(Int);
 Constraint(implies(some(global(c0_b)), equal(joinRef(global(c0_b)), sum(global(c0_a)))));
 Constraint(equal(joinRef(global(c0_b)), constant(2)));
