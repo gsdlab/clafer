@@ -1,5 +1,10 @@
-abstract ASIL -> integer
+abstract ASIL ->> integer
 A : ASIL -> 1
 B : ASIL -> 2
 C : ASIL -> 3
 D : ASIL -> 4
+
+assert [ A.dref = 1 ]
+assert [ B.dref = 2 ]
+assert [ C.dref = 3 ]
+assert [ D.dref = 4 ]
