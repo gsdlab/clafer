@@ -1,5 +1,25 @@
 {-# LANGUAGE NamedFieldPuns #-}
+{-
+ Copyright (C) 2012-2017 Jimmy Liang, Michal Antkiewicz, Rafael Olaechea <http://gsd.uwaterloo.ca>
 
+ Permission is hereby granted, free of charge, to any person obtaining a copy of
+ this software and associated documentation files (the "Software"), to deal in
+ the Software without restriction, including without limitation the rights to
+ use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+ of the Software, and to permit persons to whom the Software is furnished to do
+ so, subject to the following conditions:
+
+ The above copyright notice and this permission notice shall be included in all
+ copies or substantial portions of the Software.
+
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ SOFTWARE.
+-}
 -- | Generates JS representation of IR for the <https://github.com/gsdlab/chocosolver Chocosolver>.
 module Language.Clafer.Generator.Choco (genCModule) where
 
@@ -9,7 +29,6 @@ import Control.Monad
 import Data.Data.Lens
 import Data.List
 import Data.Maybe
-import Data.Ord
 import Prelude hiding (exp)
 import Language.Clafer.Common
 import Language.Clafer.Intermediate.Intclafer
@@ -107,11 +126,9 @@ genCModule (imodule@IModule{_mDecls}, genv') scopes  otherTokens' =
     genSuperRefConstraintAssertGoal _ (IEClafer c@IClafer{_uid, _card, _super, _reference, _elements})
         = _uid
         ++ prop "extending" (superOf _uid)
-        ++ (case (getReference c, _reference, _card) of
-             ([target], Just (IReference True _), Just (lb, ub))  -> if lb > 1 || ub > 1 || lb == -1 || ub == -1
-                then ".refToUnique(" ++ genTarget target ++ ")"
-                else ".refTo(" ++ genTarget target ++ ")"
-             ([target], Just (IReference _ _), _) -> ".refTo(" ++ genTarget target ++ ")"
+        ++ (case (getReference c, _reference) of
+             ([target], Just (IReference True _))  -> ".refToUnique(" ++ genTarget target ++ ")"
+             ([target], Just (IReference False _)) -> ".refTo(" ++ genTarget target ++ ")"
              _ -> "")
         ++ ";\n"
         ++ (genSuperRefConstraintAssertGoal _uid =<< _elements)

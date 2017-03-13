@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-
- Copyright (C) 2014 Michal Antkiewicz <http://gsd.uwaterloo.ca>
+ Copyright (C) 2014-2017 Michal Antkiewicz <http://gsd.uwaterloo.ca>
 
  Permission is hereby granted, free of charge, to any person obtaining a copy of
  this software and associated documentation files (the "Software"), to deal in
@@ -77,20 +77,20 @@ generateLpqNameScopeArrayEntry    array    (lpqName, scope) =
 
 -- insert a new line after  [, {, and ,
 prettyPrintJSON :: String -> String
-prettyPrintJSON ('[':line) = '[':'\n':(prettyPrintJSON line)
-prettyPrintJSON ('{':line) = '{':'\n':(prettyPrintJSON line)
-prettyPrintJSON (',':line) = ',':'\n':(prettyPrintJSON line)
+prettyPrintJSON ('[':line) = '[':'\n':prettyPrintJSON line
+prettyPrintJSON ('{':line) = '{':'\n':prettyPrintJSON line
+prettyPrintJSON (',':line) = ',':'\n':prettyPrintJSON line
 -- insert a new line before ], }
-prettyPrintJSON (']':line) = '\n':']':(prettyPrintJSON line)
-prettyPrintJSON ('}':line) = '\n':'}':(prettyPrintJSON line)
+prettyPrintJSON (']':line) = '\n':']':prettyPrintJSON line
+prettyPrintJSON ('}':line) = '\n':'}':prettyPrintJSON line
 -- just rewrite and continue
-prettyPrintJSON (c:line) =  c:(prettyPrintJSON line)
+prettyPrintJSON (c:line) =  c:prettyPrintJSON line
 prettyPrintJSON ""         = ""
 
 -- | given the QNameMaps, parse the JSON scopes and return list of scopes
 parseJSONScopes :: QNameMaps -> String    -> [ (UID, Integer) ]
 parseJSONScopes    qNameMaps    scopesJSON =
-    foldl (\uidScopes qScope -> (qNameToUIDs qScope) ++ uidScopes) [] decodedScopes
+    foldl (\uidScopes qScope -> qNameToUIDs qScope ++ uidScopes) [] decodedScopes
     where
       --                  QName
       decodedScopes :: [ (T.Text, Integer) ]
