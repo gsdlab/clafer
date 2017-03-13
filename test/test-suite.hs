@@ -1,6 +1,6 @@
 {-# LANGUAGE TemplateHaskell, DeriveDataTypeable #-}
 {-
- Copyright (C) 2013 Luke Brown <http://gsd.uwaterloo.ca>
+ Copyright (C) 2013-2017 Luke Brown, Michal Antkiewicz <http://gsd.uwaterloo.ca>
 
  Permission is hereby granted, free of charge, to any person obtaining a copy of
  this software and associated documentation files (the "Software"), to deal in

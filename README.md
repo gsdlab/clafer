@@ -3,7 +3,7 @@
 
 # Clafer, the language
 
-##### v0.4.4
+##### v0.4.5
 
 
 [Clafer](http://clafer.org) is a general-purpose lightweight structural modeling language developed by
@@ -77,7 +77,7 @@ Optional:
 
 ### Installation from binaries
 
-Binary distributions of the release 0.4.4 of Clafer Tools for Windows, Mac, and Linux,
+Binary distributions of the release 0.4.5 of Clafer Tools for Windows, Mac, and Linux,
 can be downloaded from
 [Clafer Tools - Binary Distributions](http://gsd.uwaterloo.ca/clafer-tools-binary-distributions).
 
@@ -86,7 +86,7 @@ can be downloaded from
 
 ### Installation from Hackage
 
-Clafer is available on [Hackage](http://hackage.haskell.org/package/clafer-0.4.4/) and it can be installed using either [`stack`](https://github.com/commercialhaskell/stack) or [`cabal-install`](https://hackage.haskell.org/package/cabal-install).
+Clafer is available on [Hackage](http://hackage.haskell.org/package/clafer-0.4.5/) and it can be installed using either [`stack`](https://github.com/commercialhaskell/stack) or [`cabal-install`](https://hackage.haskell.org/package/cabal-install).
 
 #### Installation using `stack`
 
@@ -109,8 +109,8 @@ Dependencies
 2. `cabal update`
 3. `cabal install alex happy`
 4. `cabal install clafer`
-5. on Windows `cd C:\Users\<user>\AppData\Roaming\cabal\x86_64-windows-ghc-8.0.1\clafer-0.4.4`
-6. on Linux `ca ~/.cabal/share/x86_64-linux-ghc-8.0.1/clafer-0.4.4/`
+5. on Windows `cd C:\Users\<user>\AppData\Roaming\cabal\x86_64-windows-ghc-8.0.1\clafer-0.4.5`
+6. on Linux `ca ~/.cabal/share/x86_64-linux-ghc-8.0.1/clafer-0.4.5/`
 7. to automatically download Alloy jars, execute
   * `make alloy4.2.jar`,
   * move `alloy4.2.jar` to the location of the clafer executable.
@@ -157,7 +157,7 @@ Development versions from branches `develop` should work well together but this 
   * `stack exec make install to=<target directory>` on Windows
 
 #### Note:
-> On Windows, use `/` with the `make` command instead of `\`, e.g., `make install to=/c/clafer-tools-0.4.4/`
+> On Windows, use `/` with the `make` command instead of `\`, e.g., `make install to=/c/clafer-tools-0.4.5/`
 
 ## Integration with Sublime Text 2/3
 
@@ -174,7 +174,7 @@ See [clafer-vim](https://github.com/wasowski/clafer-vim)
 (As printed by `clafer --help`)
 
 ```
-Clafer 0.4.4
+Clafer 0.4.5
 
 clafer [OPTIONS] [FILE]
 

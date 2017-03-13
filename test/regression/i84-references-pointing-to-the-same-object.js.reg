@@ -13,7 +13,7 @@ c0_dimLevel1 = Clafer("c0_dimLevel1").withCard(1, 1);
 c0_dimLevel2 = Clafer("c0_dimLevel2").withCard(1, 1);
 c0_levels.refToUnique(c0_DimensionLevel);
 c0_Dimension.addConstraint(all([decl([dl = local("dl")], join($this(), c0_levels))], equal(joinRef(join(joinRef(dl), c0_belongsTo)), $this())));
-c0_belongsTo.refTo(c0_Dimension);
+c0_belongsTo.refToUnique(c0_Dimension);
 c0_dim1.extending(c0_Dimension);
 c0_dim2.extending(c0_Dimension);
 c0_dimLevel1.extending(c0_DimensionLevel);

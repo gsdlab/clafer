@@ -426,7 +426,7 @@ The following table provides versions in which support for a given feature was a
 <tr>
 <td>Reference refinement and redefinition</td>
 <td>0.4.0</td>
-<td>&nbsp;&nbsp;&nbsp;-</td>
+<td>0.4.4</td>
 </tr>
 
 <tr>

@@ -1,13 +1,8 @@
-# for GHC-8.0.1
+# for GHC-8.0.2
 extra-deps:
   - data-stringmap-1.0.1.1
   - json-builder-0.3
-resolver: lts-7.0
-
-# for GHC-7.10.3
-# extra-deps:
-#  - data-stringmap-1.0.1.1
-# resolver: lts-6.4
+resolver: lts-8.5
 
 flags: {}
 packages:
