@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=9">
+<style>.identifier{}
+.keyword{font-weight:bold}
+.reference{}
+.code { background-color: lightgray; padding: 5px 5px 5px 5px; border: 1px solid darkgray; margin-bottom: 15px; 
+        font-family: Pragmata, Menlo, 'DejaVu LGC Sans Mono', 'DejaVu Sans Mono', Consolas, 'Everson Mono', 'Lucida Console', 'Andale Mono', 'Nimbus Mono L', 'Liberation Mono', FreeMono, 'Osaka Monospaced', Courier, 'New Courier', monospace; }
+.standalonecomment { color: green; font-style:italic }
+.inlinecomment { color: green; padding-left:20px; font-style:italic }
+.error{background-color: yellow; color: red }
+.deprecated{color: orange }
+.indent{padding-left:20px}
+a[href$='Lookup failed'] {color: red}
+a[href$='Uid not found'] {color: red}
+a[href$='Ambiguous name'] {color: yellow}
+
+</style></head>
+<body>
+
+<div>
+<span class="keyword">abstract</span> <span class="keyword">xor</span> <span class="claferDecl" id="c0_TrafficLight_1">TrafficLight_1</span>
+  <div class="indent">
+  <span class="keyword">initial</span> <span class="keyword">xor</span> <span class="claferDecl" id="c0_on">on</span><span class="keyword"> --&gt; </span><a href="#c0_off"><span class="reference">off</span></a>
+    <div class="indent">
+    <span class="keyword">initial</span> <span class="keyword">xor</span> <span class="claferDecl" id="c0_normal">normal</span><span class="keyword"> --&gt; </span><a href="#c0_flashing"><span class="reference">flashing</span></a>
+      <div class="indent">
+      <span class="keyword">initial</span> <span class="claferDecl" id="c0_green">green</span><span class="keyword"> --&gt; </span><a href="#c0_yellow"><span class="reference">yellow</span></a></div>
+      <div class="indent">
+      <span class="claferDecl" id="c0_yellow">yellow</span><span class="keyword"> --&gt; </span><a href="#c0_red"><span class="reference">red</span></a></div>
+      <div class="indent">
+      <span class="claferDecl" id="c0_red">red</span><span class="keyword"> --&gt; </span><a href="#c0_green"><span class="reference">green</span></a></div>
+    </div>
+    <div class="indent">
+    <span class="keyword">xor</span> <span class="claferDecl" id="c0_flashing">flashing</span><span class="keyword"> --&gt; </span><a href="#c0_normal"><span class="reference">normal</span></a>
+      <div class="indent">
+      <span class="keyword">initial</span> <span class="claferDecl" id="c0_yellow_on">yellow_on</span><span class="keyword"> --&gt;&gt; </span><a href="#c0_yellow_off"><span class="reference">yellow_off</span></a></div>
+      <div class="indent">
+      <span class="claferDecl" id="c0_yellow_off">yellow_off</span><span class="keyword"> --&gt;&gt; </span><a href="#c0_yellow_on"><span class="reference">yellow_on</span></a></div>
+    </div>
+  </div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_off">off</span><span class="keyword"> --&gt; </span><a href="#c0_on"><span class="reference">on</span></a></div>
+</div>
+
+</body>
+</html>

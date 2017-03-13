@@ -1,0 +1,153 @@
+
+/* Definition of timed traces (input independent) */ 
+sig State {}
+
+private one sig Ord {
+   First: set State,
+   Next: State -> State
+} {
+   pred/totalOrder[State,First,Next]
+}
+
+lone sig back in State {}
+
+fun loop : State -> State {
+  last -> back
+}
+
+fun first: one State { Ord.First }
+
+fun last: one State { State - ((Ord.Next).State) }
+
+fun next : State->State { Ord.Next + loop }
+
+fun prev : State->State { ~this/next }
+
+fun past : State->State { ^(~this/next) }
+
+fun future : State -> State { State <: *this/next }
+
+fun upto[s,s' : State] : set State {
+  (s' in s.*(Ord.Next) or finite) implies s.future & ^(Ord.Next).s' else s.*(Ord.Next) + (^(Ord.Next).s' & back.*(Ord.Next))
+}
+
+
+pred finite {
+  no loop
+}
+
+pred infinite {
+  some loop
+}
+
+fun localFirst [rel: univ->univ->State, parentSet: univ, child: univ] : State {
+       let lifetime = child.(parentSet.rel) | lifetime - (lifetime.next)
+}
+
+pred total[rel: univ->univ->State, children: univ] {
+   children = ~(rel.State).univ 
+}
+
+
+
+pred show {}
+
+/* Clafer specifications (input dependent) */
+
+one sig root
+{ r_c0_TrafficLight_1 : c0_TrafficLight_1 -> State }
+
+abstract sig c0_TrafficLight_1
+{ r_c0_on : c0_on -> State
+, r_c0_off : c0_off -> State }
+{ lone localFirst[r_c0_TrafficLight_1, root, this] && lone r_c0_TrafficLight_1.State.this && total[r_c0_TrafficLight_1,c0_TrafficLight_1]
+  all t : State | lone r_c0_on.t && 
+	lone r_c0_off.t && 
+	(no r_c0_TrafficLight_1.t.this => no r_c0_on.t && no r_c0_off.t)
+  one t : localFirst[r_c0_TrafficLight_1,root, this] | (some @r_c0_on.t) }
+
+sig c0_on
+{ r_c0_normal : c0_normal -> State
+, r_c0_flashing : c0_flashing -> State }
+{ lone localFirst[r_c0_on, c0_TrafficLight_1, this] && lone r_c0_on.State.this && total[r_c0_on,c0_on]
+  all t : State | lone r_c0_normal.t && 
+	lone r_c0_flashing.t && 
+	(no r_c0_on.t.this => no r_c0_normal.t && no r_c0_flashing.t)
+  all t : State | let children = (r_c0_normal.t + r_c0_flashing.t) | one children
+  one t : localFirst[r_c0_on,c0_TrafficLight_1, this] | (some @r_c0_normal.t)
+  one t : localFirst[r_c0_on,c0_TrafficLight_1, this] | 
+  (some this) && ((some t.next and let t' = t.next | some (this.~(@r_c0_on.t)).@r_c0_off.t')) }
+
+sig c0_normal
+{ r_c0_green : c0_green -> State
+, r_c0_yellow : c0_yellow -> State
+, r_c0_red : c0_red -> State }
+{ lone localFirst[r_c0_normal, c0_on, this] && lone r_c0_normal.State.this && total[r_c0_normal,c0_normal]
+  all t : State | lone r_c0_green.t && 
+	lone r_c0_yellow.t && 
+	lone r_c0_red.t && 
+	(no r_c0_normal.t.this => no r_c0_green.t && no r_c0_yellow.t && no r_c0_red.t)
+  all t : State | let children = (r_c0_green.t + r_c0_yellow.t + r_c0_red.t) | one children
+  one t : localFirst[r_c0_normal,c0_on, this] | (some @r_c0_green.t)
+  one t : localFirst[r_c0_normal,c0_on, this] | 
+  (some this) && ((some t.next and let t' = t.next | some (this.~(@r_c0_normal.t)).@r_c0_flashing.t')) }
+
+sig c0_green
+{}
+{ lone localFirst[r_c0_green, c0_normal, this] && lone r_c0_green.State.this && total[r_c0_green,c0_green]
+  one t : localFirst[r_c0_green,c0_normal, this] | 
+  (some this) && ((some t.next and let t' = t.next | some (this.~(@r_c0_green.t)).@r_c0_yellow.t')) }
+
+
+sig c0_yellow
+{}
+{ lone localFirst[r_c0_yellow, c0_normal, this] && lone r_c0_yellow.State.this && total[r_c0_yellow,c0_yellow]
+  one t : localFirst[r_c0_yellow,c0_normal, this] | 
+  (some this) && ((some t.next and let t' = t.next | some (this.~(@r_c0_yellow.t)).@r_c0_red.t')) }
+
+
+sig c0_red
+{}
+{ lone localFirst[r_c0_red, c0_normal, this] && lone r_c0_red.State.this && total[r_c0_red,c0_red]
+  one t : localFirst[r_c0_red,c0_normal, this] | 
+  (some this) && ((some t.next and let t' = t.next | some (this.~(@r_c0_red.t)).@r_c0_green.t')) }
+
+
+
+sig c0_flashing
+{ r_c0_yellow_on : c0_yellow_on -> State
+, r_c0_yellow_off : c0_yellow_off -> State }
+{ lone localFirst[r_c0_flashing, c0_on, this] && lone r_c0_flashing.State.this && total[r_c0_flashing,c0_flashing]
+  all t : State | lone r_c0_yellow_on.t && 
+	lone r_c0_yellow_off.t && 
+	(no r_c0_flashing.t.this => no r_c0_yellow_on.t && no r_c0_yellow_off.t)
+  all t : State | let children = (r_c0_yellow_on.t + r_c0_yellow_off.t) | one children
+  one t : localFirst[r_c0_flashing,c0_on, this] | (some @r_c0_yellow_on.t)
+  one t : localFirst[r_c0_flashing,c0_on, this] | 
+  (some this) && ((some t.next and let t' = t.next | some (this.~(@r_c0_flashing.t)).@r_c0_normal.t')) }
+
+sig c0_yellow_on
+{}
+{ lone localFirst[r_c0_yellow_on, c0_flashing, this] && lone r_c0_yellow_on.State.this && total[r_c0_yellow_on,c0_yellow_on]
+  one t : localFirst[r_c0_yellow_on,c0_flashing, this] | 
+  (some t':t.future | some (this.~(@r_c0_yellow_on.t)).@r_c0_yellow_off.t' and ( all t'': upto[t, t'] | some this)) }
+
+
+sig c0_yellow_off
+{}
+{ lone localFirst[r_c0_yellow_off, c0_flashing, this] && lone r_c0_yellow_off.State.this && total[r_c0_yellow_off,c0_yellow_off]
+  one t : localFirst[r_c0_yellow_off,c0_flashing, this] | 
+  (some t':t.future | some (this.~(@r_c0_yellow_off.t)).@r_c0_yellow_on.t' and ( all t'': upto[t, t'] | some this)) }
+
+
+
+
+sig c0_off
+{}
+{ lone localFirst[r_c0_off, c0_TrafficLight_1, this] && lone r_c0_off.State.this && total[r_c0_off,c0_off]
+  one t : localFirst[r_c0_off,c0_TrafficLight_1, this] | 
+  (some this) && ((some t.next and let t' = t.next | some (this.~(@r_c0_off.t)).@r_c0_on.t')) }
+
+
+
+

@@ -1,0 +1,10 @@
+digraph "tmp_trafficLight_history"
+{
+rankdir=BT;
+ranksep=0.3;
+nodesep=0.1;
+graph [fontname=Sans fontsize=11];
+node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
+edge [fontname=Sans fontsize=11];
+"c0_TrafficLight_4" [label="xor TrafficLight_4 1" URL="#c0_TrafficLight_4" tooltip="xor TrafficLight_4 1&#10;  xor on&#10;    normal&#10;    flashing&#10;  off&#10;  [ initially off ]&#10;  [ G on.normal &amp;&amp; F  ! on => F  ! on W on.normal ]&#10;  [ G on.flashing &amp;&amp; F  ! on => F  ! on W on.flashing ]&#10;"];
+}

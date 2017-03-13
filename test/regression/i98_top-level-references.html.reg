@@ -31,7 +31,7 @@ a[href$='Ambiguous name'] {color: yellow}
 <div>
 <span class="keyword">abstract</span> <span class="claferDecl" id="c0_NewBorn">NewBorn</span><span class="keyword"> -> </span><a href="#c0_Person"><span class="reference">Person</span></a>
   <div class="indent">
-  <span class="keyword">[</span> <a href="#c0_age"><span class="reference">age</span></a> = 0 <span class="keyword">]</span><span class="keyword">[</span> ! <a href="#c0_married"><span class="reference">married</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <a href="#c0_age"><span class="reference">age</span></a> = 0 <span class="keyword">]</span><span class="keyword">[</span>  ! <a href="#c0_married"><span class="reference">married</span></a> <span class="keyword">]</span></div>
 </div>
 
 

@@ -8,7 +8,7 @@ node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" hei
 edge [fontname=Sans fontsize=11];
 "c0_Component" [label="abstract Component" URL="#c0_Component" tooltip="abstract Component&#10;  abstract or Port&#10;    input&#10;    output&#10;  abstract TemperaturePort : Port -&gt; integer&#10;"];
 "c0_Port" [label="abstract or Port" URL="#c0_Port" tooltip="abstract or Port&#10;  input&#10;  output&#10;"];
-"c0_TemperaturePort" [label="abstract TemperaturePort : Port -&gt; integer" URL="#c0_TemperaturePort" tooltip="abstract TemperaturePort : Port -&gt; integer&#10;"];
+"c0_TemperaturePort" [label="abstract TemperaturePort : Port -> integer" URL="#c0_TemperaturePort" tooltip="abstract TemperaturePort : Port -&gt; integer&#10;"];
 "c0_TemperaturePort" -> "c0_Port" [arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];
 "c0_TemperatureConnector" [label="abstract TemperatureConnector" URL="#c0_TemperatureConnector" tooltip="abstract TemperatureConnector&#10;  from -&gt; TemperaturePort&#10;    [ this.output ]&#10;  to -&gt; TemperaturePort&#10;    [ this.input ]&#10;  [ to.dref.dref = from.dref.dref ]&#10;"];
 "c0_TemperatureConnector" -> "c0_TemperaturePort" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=from];

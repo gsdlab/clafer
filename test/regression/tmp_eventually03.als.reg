@@ -1,37 +1,78 @@
-/*
-All clafers: 2 | Abstract: 0 | Concrete: 2 | References: 0
-Constraints: 2
-Goals: 0
-Global scope: 1..1
-Can skip resolver: yes
-*/
 
-open util/ordering[Time]
+/* Definition of timed traces (input independent) */ 
+sig State {}
+
+private one sig Ord {
+   First: set State,
+   Next: State -> State
+} {
+   pred/totalOrder[State,First,Next]
+}
+
+lone sig back in State {}
+
+fun loop : State -> State {
+  last -> back
+}
+
+fun first: one State { Ord.First }
+
+fun last: one State { State - ((Ord.Next).State) }
+
+fun next : State->State { Ord.Next + loop }
+
+fun prev : State->State { ~this/next }
+
+fun past : State->State { ^(~this/next) }
+
+fun future : State -> State { State <: *this/next }
+
+fun upto[s,s' : State] : set State {
+  (s' in s.*(Ord.Next) or finite) implies s.future & ^(Ord.Next).s' else s.*(Ord.Next) + (^(Ord.Next).s' & back.*(Ord.Next))
+}
+
+
+pred finite {
+  no loop
+}
+
+pred infinite {
+  some loop
+}
+
+fun localFirst [rel: univ->univ->State, parentSet: univ, child: univ] : State {
+       let lifetime = child.(parentSet.rel) | lifetime - (lifetime.next)
+}
+
+pred total[rel: univ->univ->State, children: univ] {
+   children = ~(rel.State).univ 
+}
+
+
+
 pred show {}
-run show for 10
 
-sig Time {loop: lone Time}
-fact Loop {loop in last->Time}
-fun timeLoop: Time -> Time { Time <: next + loop }
+/* Clafer specifications (input dependent) */
 
 one sig root
-{ r_c0_a : c0_a -> Time }
-{ all t : Time | one r_c0_a.t }
+{ r_c0_a : c0_a -> State }
+{ all t : State | one r_c0_a.t }
 
 sig c0_a
-{ r_c0_b : c0_b -> Time }
-{ all t : Time | one @r_c0_a.t.this
-  all t : Time | lone r_c0_b.t
-  let local_next = (this.(root.@r_c0_a)) <: next  | one t : Time | one t <: local_next and no local_next :> t and 
-  (some t':t.*timeLoop | (let t''=t'.timeLoop | some t'' and some this.@r_c0_b.t'')) }
+{ r_c0_b : c0_b -> State }
+{ lone localFirst[r_c0_a, root, this] && lone r_c0_a.State.this && total[r_c0_a,c0_a]
+  all t : State | lone r_c0_b.t && 
+	(no r_c0_a.t.this => no r_c0_b.t)
+  one t : localFirst[r_c0_a,root, this] | 
+  (some t':t.*next | (some t'.next and let t'' = t'.next | some this.@r_c0_b.t'')) }
 
 sig c0_b
 {}
-{ all t : Time | one @r_c0_b.t.this }
+{ lone localFirst[r_c0_b, c0_a, this] && lone r_c0_b.State.this && total[r_c0_b,c0_b] }
 
 
 
 
-assert assertOnLine_5 { one t : first <: Time | (some loop and all t':t.*timeLoop | no @r_c0_a.t'.@r_c0_b.t') }
-check assertOnLine_5 for 10
+assert assertOnLine_6 { let t = first | (some t':t.*next | some @r_c0_a.t'.@r_c0_b.t') }
+check assertOnLine_6 for 10
 
