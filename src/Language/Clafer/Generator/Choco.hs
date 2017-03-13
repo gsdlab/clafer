@@ -9,7 +9,6 @@ import Control.Monad
 import Data.Data.Lens
 import Data.List
 import Data.Maybe
-import Data.Ord
 import Prelude hiding (exp)
 import Language.Clafer.Common
 import Language.Clafer.Intermediate.Intclafer
@@ -107,12 +106,10 @@ genCModule (imodule@IModule{_mDecls}, genv') scopes  otherTokens' =
     genSuperRefConstraintAssertGoal _ (IEClafer c@IClafer{_uid, _card, _super, _reference, _elements})
         = _uid
         ++ prop "extending" (superOf _uid)
-        ++ (case (getReference c, _reference, _card) of
-             ([target], Just (IReference True _ _), Just (lb, ub))  -> if lb > 1 || ub > 1 || lb == -1 || ub == -1
-                then ".refToUnique(" ++ genTarget target ++ ")"
-                else ".refTo(" ++ genTarget target ++ ")"
-             ([target], Just (IReference _ _ _), _) -> ".refTo(" ++ genTarget target ++ ")"
-             _ -> "")
+        ++ (case (getReference c, _reference) of
+             ([target], Just (IReference True _ _))  -> ".refToUnique(" ++ genTarget target ++ ")"
+             ([target], Just (IReference False _ _)) -> ".refTo(" ++ genTarget target ++ ")"
+             _                                       -> "")
         ++ ";\n"
         ++ (genSuperRefConstraintAssertGoal _uid =<< _elements)
         where

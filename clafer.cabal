@@ -1,5 +1,5 @@
 Name:                   clafer
-Version:                0.4.4
+Version:                0.4.5
 Synopsis:               Compiles Clafer models to other formats: Alloy, JavaScript, JSON, HTML, Dot.
 Description:            Clafer is a general purpose, lightweight, structural modeling language developed at GSD Lab, University of Waterloo, and MODELS group at IT University of Copenhagen. Lightweight modeling aims at improving the understanding of the problem domain in the early stages of software development and determining the requirements with fewer defects. Clafer's goal is to make modeling more accessible to a wider range of users and domains. The tool provides a reference language implementation. It translates models to other formats (e.g. Alloy, JavaScript, JSON) to allow for reasoning with existing tools.
 Homepage:               http://clafer.org
@@ -12,6 +12,7 @@ Category:               Model
 Build-type:             Simple
 tested-with:            GHC == 7.10.3
                       , GHC == 8.0.1
+                      , GHC == 8.0.2
 Cabal-version:          >= 1.22
 data-files:             README.md
                       , CHANGES.md
@@ -43,7 +44,7 @@ Executable clafer
                       , cmdargs >= 0.10.12
                       , split >= 0.2.2
 
-                      , clafer == 0.4.4
+                      , clafer == 0.4.5
     other-modules:      Paths_clafer
 
 library
@@ -154,7 +155,7 @@ Test-Suite test-suite
                       , tasty-th >= 0.1.3
                       , transformers-compat >= 0.3
                       , mtl-compat >= 0.2.1
-                      , clafer == 0.4.4
+                      , clafer == 0.4.5
 
     ghc-options:        -Wall
 

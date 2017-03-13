@@ -34,13 +34,13 @@ c0_telematicsSystem.addConstraint(ifOnlyIf(some(join($this(), c0_extraDisplay)),
 c0_telematicsSystem.addConstraint(ifOnlyIf(some(join($this(), c0_extraDisplay)), implies(some(global(c0_ECU2)), equal(card(join(global(c0_ECU2), c1_display)), constant(2)))));
 c0_telematicsSystem.addConstraint(ifOnlyIf(some(join(join($this(), c0_size), c0_large)), none(join(join(join(join(global(c0_plaECU), c1_display), c0_options), c1_size), c1_small))));
 c0_telematicsSystem.addConstraint(ifOnlyIf(some(join(join($this(), c0_size), c0_small)), none(join(join(join(join(global(c0_plaECU), c1_display), c0_options), c1_size), c1_large))));
-c0_version.refTo(Int);
+c0_version.refToUnique(Int);
 c0_ECU.extending(c0_comp);
 c0_display.extending(c0_comp);
-c0_server.refTo(c0_ECU);
+c0_server.refToUnique(c0_ECU);
 c0_options.extending(c1_options);
 c0_display.addConstraint(greaterThanEqual(joinRef(join($this(), c0_version)), joinRef(join(joinRef(join($this(), c0_server)), c0_version))));
-c2_size.refTo(Int);
+c2_size.refToUnique(Int);
 c1_options.addConstraint(implies(and(some(join(join($this(), c1_size), c1_small)), some(join($this(), c0_cache))), some(join(join(join($this(), c0_cache), c2_size), c0_fixed))));
 c0_plaECU.extending(c0_ECU);
 c1_display.extending(c0_display);
@@ -48,7 +48,7 @@ c1_display.addConstraint(equal(joinRef(join($this(), c0_server)), joinParent($th
 c1_display.addConstraint(none(join(join($this(), c0_options), c0_cache)));
 c0_ECU1.extending(c0_plaECU);
 c0_ECU2.extending(c0_plaECU);
-c0_master.refTo(c0_ECU1);
+c0_master.refToUnique(c0_ECU1);
 Constraint(some(join(join(global(c0_telematicsSystem), c0_channel), c0_dual)));
 Constraint(some(join(global(c0_telematicsSystem), c0_extraDisplay)));
 Constraint(some(join(join(global(c0_telematicsSystem), c0_size), c0_large)));
