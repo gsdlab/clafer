@@ -1,21 +1,21 @@
-scope({c0_X:3, c0_xs:3});
+scope({c0_x:3, c0_xs:3});
 defaultScope(1);
 intRange(-8, 7);
 stringLength(16);
 
-c0_X = Abstract("c0_X");
+c0_x = Abstract("c0_x");
 c0_A = Clafer("c0_A").withCard(1, 1);
 c0_B = Clafer("c0_B").withCard(1, 1);
 c0_C = Clafer("c0_C").withCard(1, 1);
 c0_xs = Clafer("c0_xs");
-c0_X.refToUnique(Int);
-c0_A.extending(c0_X);
+c0_x.refToUnique(Int);
+c0_A.extending(c0_x);
 Constraint(implies(some(global(c0_A)), equal(joinRef(global(c0_A)), constant(1))));
-c0_B.extending(c0_X);
+c0_B.extending(c0_x);
 Constraint(implies(some(global(c0_B)), equal(joinRef(global(c0_B)), constant(2))));
-c0_C.extending(c0_X);
+c0_C.extending(c0_x);
 Constraint(implies(some(global(c0_C)), equal(joinRef(global(c0_C)), constant(3))));
-c0_xs.refTo(c0_X);
+c0_xs.refTo(c0_x);
 Constraint(equal(joinRef(global(c0_xs)), union(union(global(c0_A), global(c0_B)), global(c0_C))));
 Constraint(equal(joinRef(global(c0_xs)), union(union(global(c0_A), global(c0_B)), global(c0_C))));
 Constraint(equal(joinRef(joinRef(global(c0_xs))), union(union(joinRef(global(c0_A)), joinRef(global(c0_B))), joinRef(global(c0_C)))));

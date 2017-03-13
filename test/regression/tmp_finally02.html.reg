@@ -32,5 +32,9 @@ a[href$='Ambiguous name'] {color: yellow}
   </div>
 </div>
 
+
+<div>
+<span class="keyword">[</span> <span class="keyword">finally </span><a href="#c0_e"><span class="reference">e</span></a> <span class="keyword">]</span></div>
+
 </body>
 </html>

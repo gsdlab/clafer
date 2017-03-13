@@ -287,7 +287,7 @@ abstract sig c0_Node extends c0_Domain
 	one r_c0_receive.t && 
 	some r_c0_protocolversion.t && 
 	lone r_c0_certificate.t
-  all disj x, y : this.@r_c0_protocolversion | (x.@c0_protocolversion_ref) != (y.@c0_protocolversion_ref)  }
+   all disj x, y : c0_protocolversion | (x.@c0_protocolversion_ref) != (y.@c0_protocolversion_ref)  }
 
 sig c0_send extends c0_Port
 { c0_send_ref : c0_Message -> State }

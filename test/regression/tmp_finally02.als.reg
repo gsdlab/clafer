@@ -56,7 +56,9 @@ pred show {}
 
 one sig root
 { r_c0_a : c0_a -> State }
-{ all t : State | one r_c0_a.t }
+{ all t : State | one r_c0_a.t
+  let t = first | 
+  ((some this) && ((no this))) => (some (@r_c0_a.t.@r_c0_b.t).@r_c0_e) }
 
 sig c0_a
 { r_c0_b : c0_b -> State }
