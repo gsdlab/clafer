@@ -230,6 +230,8 @@ printModifiers :: [TempModifier] -> Bool -> String
 printModifiers tmods' html = concatMap printTempMod tmods'
   where
     printTempMod (AbsClafer.Final _) = (while html "<span class=\"keyword\">") ++ "final" ++ (while html "</span>") ++ " "
+    printTempMod (AbsClafer.FinalRef _) = (while html "<span class=\"keyword\">") ++ "finalref" ++ (while html "</span>") ++ " "
+    printTempMod (AbsClafer.FinalTarget _) = (while html "<span class=\"keyword\">") ++ "finaltarget" ++ (while html "</span>") ++ " "
     printTempMod (Initial _) = (while html "<span class=\"keyword\">") ++ "initial" ++ (while html "</span>") ++ " "
 
 printGCard :: GCard -> Bool -> String

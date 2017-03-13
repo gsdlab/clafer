@@ -470,9 +470,6 @@ liftError e =
 liftList :: Monad m => [a] -> ListT m a
 liftList = ListT . return
 
-comparing :: Ord b => (a -> b) -> a -> a -> Ordering
-comparing f a b = f a `compare` f b
-
 syntaxOf :: PExp -> String
 syntaxOf = printTree . sugarExp
 

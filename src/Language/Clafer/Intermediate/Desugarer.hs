@@ -295,7 +295,7 @@ desugarGCard x = case x of
       Just $ IGCard (isOptionalDef ncard) $ desugarNCard ncard
 
 isOptionalDef :: NCard -> Bool
-isOptionalDef (NCard _ m n) = ((0::Integer) == mkInteger m) && (not $ isExIntegerAst n)
+isOptionalDef (NCard _ m n) = ((0::Integer) == mkInteger m) && not (isExIntegerAst n)
 
 isExIntegerAst :: ExInteger -> Bool
 isExIntegerAst (ExIntegerAst _) = True
@@ -330,7 +330,7 @@ sugarCard x = case x of
       CardInterval noSpan $ NCard noSpan (PosInteger ((0, 0), show i)) (sugarExInteger ex)
 
 sugarExInteger :: Integer -> ExInteger
-sugarExInteger n = if n == -1 then ExIntegerAst noSpan else (ExIntegerNum noSpan $ PosInteger ((0, 0), show n))
+sugarExInteger n = if n == -1 then ExIntegerAst noSpan else ExIntegerNum noSpan $ PosInteger ((0, 0), show n)
 
 desugarExp :: Exp -> PExp
 desugarExp x = pExpDefPid (getSpan x) $ desugarExp' x
@@ -339,46 +339,46 @@ desugarExp x = pExpDefPid (getSpan x) $ desugarExp' x
 translateTmpPatterns :: Exp -> Exp
 translateTmpPatterns e = case e of
   TmpPatNever _ p scope -> case scope of
-    PatScopeEmpty _ ->            g $ not p
-    PatScopeBefore _ r ->         f r ==> (not p `u` r)
-    PatScopeAfter _ q ->          g(q ==> g (not p))
-    PatScopeBetweenAnd _ q r ->   g ((q & not r & f r) ==> (not p `u` r))
-    PatScopeAfterUntil _ q r ->   g((q & not r) ==> (not p `w` r))
+    PatScopeEmpty _ ->            g $ not' p
+    PatScopeBefore _ r ->         f r ==> (not' p `u` r)
+    PatScopeAfter _ q ->          g(q ==> g (not' p))
+    PatScopeBetweenAnd _ q r ->   g ((q & not' r & f r) ==> (not' p `u` r))
+    PatScopeAfterUntil _ q r ->   g((q & not' r) ==> (not' p `w` r))
   TmpPatSometime _ p scope -> case scope of
     PatScopeEmpty _ ->            f p
-    PatScopeBefore _ r ->         not r `w` (p & not r)
-    PatScopeAfter _ q ->          (g $ not q) || f (q & f p)
-    PatScopeBetweenAnd _ q r ->   g ( (q & not r) ==> (not r `w` (p & not r)) )
-    PatScopeAfterUntil _ q r ->   g ( (q & not r) ==> (not r `u` (p & not r)) )
+    PatScopeBefore _ r ->         not' r `w` (p & not' r)
+    PatScopeAfter _ q ->          g (not' q) || f (q & f p)
+    PatScopeBetweenAnd _ q r ->   g ( (q & not' r) ==> (not' r `w` (p & not' r)) )
+    PatScopeAfterUntil _ q r ->   g ( (q & not' r) ==> (not' r `u` (p & not' r)) )
   TmpPatLessOrOnce _ p scope -> case scope of
                                   -- (!P W (P W []!P))
-    PatScopeEmpty _ ->            not p `w` (p `w` g (not p))
+    PatScopeEmpty _ ->            not' p `w` (p `w` g (not' p))
                                   -- <> R -> ((!P & !R) U ((R | (P & !R)) U ( R | (!P U R))))
-    PatScopeBefore _ r ->         f r ==> ((not p & not r) `u` (r || ((p & not r) `u` (r || (not p `u` r)))))
+    PatScopeBefore _ r ->         f r ==> ((not' p & not' r) `u` (r || ((p & not' r) `u` (r || (not' p `u` r)))))
                                   -- <>Q -> (!Q U (Q & (!P W (P W []!P))))
-    PatScopeAfter _ q ->          f q ==> ((not q) `u` (q & (not p `w` (p `w` g (not p))) ))
+    PatScopeAfter _ q ->          f q ==> (not' q `u` (q & (not' p `w` (p `w` g (not' p))) ))
                                   -- []((Q & <>R) -> ((!P & !R) U (R | ((P & !R) U (R | (!P U R))))))
-    PatScopeBetweenAnd _ q r ->   g((q & f r) ==> ((not p & not r) `u` (r || ((p & not r) `u` (r || (not p `u` r))))))
+    PatScopeBetweenAnd _ q r ->   g((q & f r) ==> ((not' p & not' r) `u` (r || ((p & not' r) `u` (r || (not' p `u` r))))))
                                   -- [](Q -> ((!P & !R) U (R | ((P & !R) U (R | (!P W R) | []P)))))
-    PatScopeAfterUntil _ q r ->   g(q ==> ((not p & not r) `u` (r || ((p & not r) `u` (r || (not p `w` r) || g p)))))
+    PatScopeAfterUntil _ q r ->   g(q ==> ((not' p & not' r) `u` (r || ((p & not' r) `u` (r || (not' p `w` r) || g p)))))
   TmpPatAlways _ p scope -> case scope of
     PatScopeEmpty _ ->            g p
     PatScopeBefore _ r ->         f r ==> (p `u` r)
     PatScopeAfter _ q ->          g (q ==> g p)
-    PatScopeBetweenAnd _ q r ->   g ((q & not r & f r ) ==> (p `u` r))
-    PatScopeAfterUntil _ q r ->   g((q & not r) ==> (p `w` r))
+    PatScopeBetweenAnd _ q r ->   g ((q & not' r & f r ) ==> (p `u` r))
+    PatScopeAfterUntil _ q r ->   g((q & not' r) ==> (p `w` r))
   TmpPatPrecede _ s p scope -> case scope of
-    PatScopeEmpty _ ->            not p `w` s
-    PatScopeBefore _ r ->         f r ==> (not p `u` (s || r))
-    PatScopeAfter _ q ->          g (not q) || f (q & (not p `w` s))
-    PatScopeBetweenAnd _ q r ->   g ((q & not r & f r) ==> (not p `u` (s || r)))
-    PatScopeAfterUntil _ q r ->   g ((q & not r) ==> (not p `w` (s || r)))
+    PatScopeEmpty _ ->            not' p `w` s
+    PatScopeBefore _ r ->         f r ==> (not' p `u` (s || r))
+    PatScopeAfter _ q ->          g (not' q) || f (q & (not' p `w` s))
+    PatScopeBetweenAnd _ q r ->   g ((q & not' r & f r) ==> (not' p `u` (s || r)))
+    PatScopeAfterUntil _ q r ->   g ((q & not' r) ==> (not' p `w` (s || r)))
   TmpPatFollow _ s p scope -> case scope of
     PatScopeEmpty _ ->            g(p ==> f s)
-    PatScopeBefore _ r ->         f r ==> ((p ==> (not r `u` (s & not r))) `u` r)
+    PatScopeBefore _ r ->         f r ==> ((p ==> (not' r `u` (s & not' r))) `u` r)
     PatScopeAfter _ q ->          g(q ==> g(p ==> f s))
-    PatScopeBetweenAnd _ q r ->   g((q & not r & f r) ==> (p ==> (((not r `u` (s & not r))) `u` r)))
-    PatScopeAfterUntil _ q r ->   g((q & not r) ==> ((p==> (not r `u` (s & not r))) `w` r))
+    PatScopeBetweenAnd _ q r ->   g((q & not' r & f r) ==> (p ==> (((not' r `u` (s & not' r))) `u` r)))
+    PatScopeAfterUntil _ q r ->   g((q & not' r) ==> ((p==> (not' r `u` (s & not' r))) `w` r))
   {-TmpInitially s exp' -> -}
     {-let oper1 =  ENeg s $ mkClaferIdExp s "this"-}
         {-oper2 = LtlX s $ mkClaferIdExp s "this"-}
@@ -407,7 +407,7 @@ translateTmpPatterns e = case e of
     e1 || e2 = EOr span' e1 e2
     f = LtlF span'
     g = LtlG span'
-    not = ENeg span'
+    not' = ENeg span'
     span' = getSpan e
 
 

@@ -26,13 +26,10 @@ module Language.Clafer.Generator.AlloyLtl (genAlloyLtlModule) where
 
 import Control.Applicative
 import Control.Conditional
-import Control.Lens hiding (elements, mapping, op)
 import Control.Monad.State
 import Data.FileEmbed
 import Data.List hiding (and)
 import Data.Maybe
-import Data.StringMap (keys, elems, toList)
-import Debug.Trace
 import Prelude
 
 import Language.Clafer.Common
@@ -60,12 +57,9 @@ data GenEnv = GenEnv
 stateSig :: String
 stateSig = "State"
 
-anyTrue :: [Bool] -> Bool
-anyTrue = any (\x -> x)
-
 -- Alloy code generation
-genAlloyLtlModule :: ClaferArgs -> (IModule, GEnv) -> [(UID, Integer)] -> [Token]   -> (Result, [(Span, IrTrace)])
-genAlloyLtlModule    claferargs'   (imodule, genv)       scopes         otherTokens' = (flatten output, filter ((/= NoTrace) . snd) $ mapLineCol output)
+genAlloyLtlModule :: ClaferArgs -> (IModule, GEnv) -> [(UID, Integer)] -> [Token]     -> (Result, [(Span, IrTrace)])
+genAlloyLtlModule    claferargs'   (_      , genv)    scopes              otherTokens' = (flatten output, filter ((/= NoTrace) . snd) $ mapLineCol output)
   where
   tl = trace_len claferargs'
   uidIClaferMap' = uidClaferMap genv
@@ -295,9 +289,9 @@ getTarget    x     = case x of
   PExp _ _ _ (IFunExp op' (_:pexp:_))  -> if op' == iJoin then pexp else x
   _ -> x
 
-genType :: GenEnv -> IClafer -> PExp                                -> Concat
-genType    _         c       x@(PExp _ _ _ y@(IClaferId _ sid _ _)) = CString sid
-genType    genEnv    c       x                                      = genPExp genEnv (emptyCtx c) x
+genType :: GenEnv -> IClafer -> PExp                             -> Concat
+genType    _         _         (PExp _ _ _ (IClaferId _ sid _ _)) = CString sid
+genType    genEnv    c       x                                    = genPExp genEnv (emptyCtx c) x
 
 
 -- -----------------------------------------------------------------------------
@@ -307,8 +301,8 @@ genType    genEnv    c       x                                      = genPExp ge
 
 containsStatefulExp :: GenEnv ->  PExp -> Bool
 containsStatefulExp    genEnv     (PExp iType' _ _ exp') =  case exp' of
-  IFunExp op _ | op == iInitially || op == iFinally -> False
-  IFunExp _ exps' -> anyTrue $ map (containsStatefulExp genEnv) exps'
+  IFunExp op' _ | op' == iInitially || op' == iFinally -> False
+  IFunExp _ exps' -> any (containsStatefulExp genEnv) exps'
   IClaferId _ sident' _ (GlobalBind claferUid) -> timedIClaferId
     where
     boundIClafer = fromJust $ findIClafer (uidIClaferMap genEnv) claferUid
@@ -317,24 +311,24 @@ containsStatefulExp    genEnv     (PExp iType' _ _ exp') =  case exp' of
       | sident' == "ref" = mutable'
       | head sident' == '~' = False
       | isNothing iType' = mutable'
-      | otherwise = case fromJust $ iType' of
+      | otherwise = case fromJust iType' of
         TInteger -> False
         TReal -> False
         TString -> False
         _ -> mutable'
-  IDeclPExp _ decls' e -> anyTrue (map (containsMut genEnv) decls') || containsStatefulExp genEnv e
+  IDeclPExp _ decls' e -> any (containsMut genEnv) decls' || containsStatefulExp genEnv e
   _ -> False
   where
   containsMut genEnv' (IDecl _ _ body') = containsStatefulExp genEnv' body'
 
 genConstraints :: GenEnv -> GenCtx -> [Concat]
 genConstraints    genEnv    ctx
-  = (genParentConst (resPath ctx) c)
-  : (genMutClaferConst ctx c)
-  : (genMutSubClafersConst genEnv c)
-  : (genGroupConst genEnv c)
-  : (genRefSubrelationConstriant (uidIClaferMap genEnv) c)
-  : (genInitialSubClafersConst genEnv ctx)
+  = genParentConst (resPath ctx) c
+  : genMutClaferConst ctx c
+  : genMutSubClafersConst genEnv c
+  : genGroupConst genEnv c
+  : genRefSubrelationConstriant (uidIClaferMap genEnv) c
+  : genInitialSubClafersConst genEnv ctx
 -- Disabled because genPathConst is disabled in the static alloy generator.
 -- TODO: remove it if not needed
 --  : (genPathConst genEnv ctx  (if (noalloyruncommand (claferargs genEnv)) then  (_uid c ++ "_ref") else "ref") c)
@@ -346,19 +340,19 @@ genConstraints    genEnv    ctx
   genConst    x = case x of
     IEConstraint True pexp  -> -- genPExp cargs ((_uid c) : resPath) pexp
         if containsStatefulExp genEnv pexp
-        then [genTimeDecl "t" (resPath ctx) c, genPExp genEnv ctx { time = Just "t", resPath = ((_uid c) : (resPath ctx))} pexp]
-        else [genPExp genEnv ctx { time = Nothing, resPath = ((_uid c) : (resPath ctx))} pexp]
+        then [genTimeDecl "t" (resPath ctx) c, genPExp genEnv ctx { time = Just "t", resPath = _uid c : resPath ctx} pexp]
+        else [genPExp genEnv ctx { time = Nothing, resPath = _uid c : resPath ctx} pexp]
     IEConstraint False pexp ->
         if _ident c == rootIdent
         then []  -- has already been generated in genRootClafer
-        else [ CString "// Assertion " +++ (genAssertName pexp) +++ CString " ignored since nested assertions are not supported in Alloy.\n" ]
+        else [ CString "// Assertion " +++ genAssertName pexp +++ CString " ignored since nested assertions are not supported in Alloy.\n" ]
     IEClafer c' ->
         (if genCardCrude (_card c') `elem` ["one", "lone", "some"]
          then CString ""
          else mkCard ({- do not use the genRelName as the constraint name -} _uid c') False (genRelName $ _uid c') $ fromJust (_card c')
         )
-        : (genParentSubrelationConstriant (uidIClaferMap genEnv) c')
-        : (genSetUniquenessConstraint c')
+        : genParentSubrelationConstriant (uidIClaferMap genEnv) c'
+        : genSetUniquenessConstraint c'
 
     IEGoal _ _ -> error "[bug] Alloy.getConst: should not be given a goal." -- This should never happen
 
@@ -408,7 +402,7 @@ genInitialSubClafersConst :: GenEnv -> GenCtx -> Concat
 genInitialSubClafersConst genEnv ctx =
   let initialSubClafers = filter _isInitial $ getSubclafers $ _elements $ ctxClafer ctx in
   case initialSubClafers of
-    x:_ -> genTimeDecl time' (resPath ctx) (ctxClafer ctx) +++
+    _:_ -> genTimeDecl time' (resPath ctx) (ctxClafer ctx) +++
       cintercalate (CString " && \n\t") (map genInitialConst initialSubClafers)
     [] -> CString ""
   where
@@ -426,18 +420,18 @@ genInitialSubClafersConst genEnv ctx =
 -- Michal: TODO: revise because now a clafer can have both super and reference at the same time
 -- Paulius: TODO: check if cardinality constraints are correct
 genMutSubClafersConst :: GenEnv -> IClafer -> Concat
-genMutSubClafersConst    genEnv c = genTimeQuant allSubExp +++ (cintercalate (CString " && \n\t") allSubExp)
+genMutSubClafersConst    _         c = genTimeQuant allSubExp +++ (cintercalate (CString " && \n\t") allSubExp)
   where
-  allSubExp = cardConsts ++ refCardConst ++ (genReqParentConstBody "t" c mutClafers)
+  allSubExp = cardConsts ++ refCardConst ++ genReqParentConstBody "t" c mutClafers
   cardConsts = map genCardConstBody $ filter (\c' -> cardStr c' /= "set") mutClafers
   refCardConst
-    | (isMutable c) && (isJust $ _reference c) = [CString $ "one this.@" ++ genRefName (_uid c) ++ ".t"]
+    | isMutable c && isJust (_reference c) = [CString $ "one this.@" ++ genRefName (_uid c) ++ ".t"]
     | otherwise = []
   mutClafers = filter isMutable $ getSubclafers $ _elements c
   cardStr c' = genCardCrude $ _card c'
   genTimeQuant [] = CString ""
   genTimeQuant _ = genTimeAllQuant "t"
-  genCardConstBody c' = CString $ (cardStr c') ++ " " ++ (genRelName $ _uid c') ++ ".t"
+  genCardConstBody c' = CString $ cardStr c' ++ " " ++ genRelName (_uid c') ++ ".t"
 
 -- Generates constraints that prevents instance subgraphs that are not connected to the root
 -- Constraints says that if at some time moment t there is no connection to the parent then that clafer can not have any subchildren
@@ -458,20 +452,19 @@ genReqParentConstBody time' c mutSubClafers =
 
 genSetUniquenessConstraint :: IClafer -> [Concat]
 genSetUniquenessConstraint c =
-    (case _reference c of
+    case _reference c of
       Just (IReference True _ _) ->
-        (case _card c of
-            Just (lb,  ub) -> if (lb > 1 || ub > 1 || ub == -1)
-              then [ CString $ (
-                        (case isTopLevel c of
-                          False -> "all disj x, y : this.@" ++ (genRelName $ _uid c)
-                          True  -> " all disj x, y : "       ++ (_uid c)))
+        case _card c of
+            Just (lb,  ub) -> if lb > 1 || ub > 1 || ub == -1
+              then [ CString $
+                        if isTopLevel c
+                        then "all disj x, y : this.@" ++ genRelName (_uid c)
+                        else " all disj x, y : "       ++ _uid c
                      ++ " | (x.@" ++ genRefName (_uid c) ++ ") != (y.@" ++ genRefName (_uid c) ++ ") "
                    ]
               else []
-            _ -> [])
+            _ -> []
       _ -> []
-    )
 
 -- TODO: need to include time stamps
 genParentSubrelationConstriant :: UIDIClaferMap -> IClafer   -> Concat
@@ -480,7 +473,7 @@ genParentSubrelationConstriant    uidIClaferMap'   headClafer =
     Nothing -> CString ""
     Just NestedInheritanceMatch {
            _superClafer = superClafer
-         }  -> if (isProperNesting uidIClaferMap' match) && (not $ isTopLevel superClafer)
+         }  -> if isProperNesting uidIClaferMap' match && not (isTopLevel superClafer)
                then CString $ concat
                 [ genRelName $ _uid headClafer
                 , " in "
@@ -604,8 +597,11 @@ cardUpperConcat    constraintName = Concat . UpperCard constraintName
 
 genExInteger :: String -> Interval -> Integer -> Maybe Result
 genExInteger    element'  (y,z) x  =
-  if (y==0 && z==0) then Just $ concat ["#", element', " = ", "0"] else
-    if x == -1 then Nothing else Just $ concat ["#", element', " <= ", show x]
+  if y==0 && z==0
+  then Just $ concat ["#", element', " = ", "0"]
+  else if x == -1
+       then Nothing
+       else Just $ concat ["#", element', " <= ", show x]
 
 
 -- -----------------------------------------------------------------------------
@@ -614,7 +610,8 @@ genClaferIdSuffix :: GenEnv -> GenCtx -> ClaferBinding -> String
 genClaferIdSuffix genEnv GenCtx{time=Just t} (GlobalBind claferUid) =
   case findIClafer (uidIClaferMap genEnv) claferUid of
     Just c' | isMutable c' -> "." ++ t
-            | otherwise -> ""
+            | otherwise    -> ""
+    Nothing                -> error $ "AlloyLtl.genClaferIdSuffix: clafer not found: " ++ claferUid
 genClaferIdSuffix _ _ _ = ""
 
 getClaferIdWithState :: GenCtx -> String -> Bool -> String
@@ -644,7 +641,7 @@ genPExp'    genEnv    ctx       (PExp iType' pid' pos exp') = case exp' of
       getTClaferUID (Just TMap{_so = TClafer{_hi = [u]}}) = u
       getTClaferUID (Just TMap{_so = TClafer{_hi = (u:_)}}) = u
       getTClaferUID t = error $ "[bug] Alloy.genPExp'.getTClaferUID: unknown type: " ++ show t
-  IClaferId _ sid isTop bind@(GlobalBind claferUid) -> CString $
+  IClaferId _ sid isTop' bind@(GlobalBind claferUid) -> CString $
       if head sid == '~'
       then if bound
            then "~(" ++ tail sid ++ (if isMutable boundClafer then ".t" else "") ++ ")"
@@ -660,8 +657,9 @@ genPExp'    genEnv    ctx       (PExp iType' pid' pos exp') = case exp' of
            Just TReal -> True
            Just TString -> True
            _ -> False
-    sid' = if isBuiltInExpr || sid == "this" || isTop && bound && (not $ isMutable boundClafer)
-              then sid else ('@' : genRelName "" ++ sid ++ genClaferIdSuffix genEnv ctx bind)
+    sid' = if isBuiltInExpr || sid == "this" || isTop' && bound && not (isMutable boundClafer)
+           then sid
+           else '@' : genRelName "" ++ sid ++ genClaferIdSuffix genEnv ctx bind
     vsident = sid' ++  ".@"  ++ genRefName (if sid == "this" then head $ resPath ctx else sid)
   IClaferId _ sid _ (LocalBind _) -> CString sid  -- this is the case for local declarations in quantifiers
   IClaferId _ sid _ NoBind -> CString sid  -- this is the case for local declarations in quantifiers
@@ -674,8 +672,6 @@ genPExp'    genEnv    ctx       (PExp iType' pid' pos exp') = case exp' of
   IDouble _ -> error "no double numbers allowed"
   IReal _ -> error "no real numbers allowed"
   IStr _ -> error "no strings allowed"
-  x -> error $ "AlloyLtl.genPExp': No pattern match for " ++ show x
-
 
 -- 3-May-2012 Rafael Olaechea.
 -- Removed transfromation from x = -2 to x = (0-2) as this creates problem with  partial instances.
@@ -683,7 +679,7 @@ genPExp'    genEnv    ctx       (PExp iType' pid' pos exp') = case exp' of
 -- Encoding of Weak Until expression is done by translating to equivalent Until expression
 -- a W b === G a || a U b
 transformExp :: IExp -> IClafer -> IExp
-transformExp (IFunExp op' (e1:_)) c'
+transformExp (IFunExp op' (e1:_)) _
   | op' == iMin = IFunExp iMul [PExp (_iType e1) "" noSpan $ IInt (-1), e1]
 {-  | op' == iInitially && isMutable c' = -- transforms to: (no this && X this) => X e1
         let thisExpr = PExp (Just TBoolean) "" noSpan (IClaferId "" "this" False (GlobalBind (_uid c')))
@@ -919,11 +915,11 @@ firstLine :: LineNo
 firstLine = 1 :: LineNo
 
 removeright :: PExp -> PExp
-removeright (PExp _ _ _ (IFunExp _ (x : (PExp _ _ _ IClaferId{}) : _))) = x
-removeright (PExp _ _ _ (IFunExp _ (x : (PExp _ _ _ (IInt _ )) : _))) = x
-removeright (PExp _ _ _ (IFunExp _ (x : (PExp _ _ _ (IStr _ )) : _))) = x
-removeright (PExp _ _ _ (IFunExp _ (x : (PExp _ _ _ (IDouble _ )) : _))) = x
-removeright (PExp t id' pos (IFunExp o (x1:x2:xs))) = PExp t id' pos (IFunExp o (x1:(removeright x2):xs))
+removeright (PExp _ _ _ (IFunExp _ (x : PExp _ _ _ IClaferId{} : _))) = x
+removeright (PExp _ _ _ (IFunExp _ (x : PExp _ _ _ (IInt _ ) : _))) = x
+removeright (PExp _ _ _ (IFunExp _ (x : PExp _ _ _ (IStr _ ) : _))) = x
+removeright (PExp _ _ _ (IFunExp _ (x : PExp _ _ _ (IDouble _ ) : _))) = x
+removeright (PExp t id' pos (IFunExp o (x1:x2:xs))) = PExp t id' pos (IFunExp o (x1:removeright x2:xs))
 removeright x@PExp{} = error $ "[bug] AlloyGenerator.removeright: expects a PExp with a IFunExp inside but was given: " ++ show x --This should never happen
 
 getRight :: PExp -> PExp

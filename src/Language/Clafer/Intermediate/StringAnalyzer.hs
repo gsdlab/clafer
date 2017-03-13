@@ -50,7 +50,7 @@ astrClafer (IClafer s mods gcrd' ident' uid' puid' super' reference' crd' gCard 
 
 astrReference :: MonadState (Map.Map String Int) m => Maybe IReference -> m (Maybe IReference)
 astrReference Nothing = return Nothing
-astrReference (Just (IReference isSet' mod ref')) = Just <$> IReference isSet' mod `liftM` astrPExp ref'
+astrReference (Just (IReference isSet' mod' ref')) = Just <$> IReference isSet' mod' `liftM` astrPExp ref'
 
 -- astrs single subclafer
 astrElement :: MonadState (Map.Map String Int) m => IElement -> m IElement

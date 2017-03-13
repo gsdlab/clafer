@@ -179,17 +179,36 @@ traverseExp :: Exp -> [Ast]
 traverseExp x =
   AstExp x :
     case x of
+    TransitionExp _ e1 _ e2 -> traverseExp e1 ++ traverseExp e2
     EDeclAllDisj _ d e -> traverseDecl d ++ traverseExp e
     EDeclAll _ d e -> traverseDecl d ++ traverseExp e
     EDeclQuantDisj _ q d e -> traverseQuant q ++ traverseDecl d ++ traverseExp e
     EDeclQuant _ q d e -> traverseQuant q ++ traverseDecl d ++ traverseExp e
-    EGMax _ e -> traverseExp e
-    EGMin _ e -> traverseExp e
+    EImpliesElse _ e1 e2 e3 -> traverseExp e1 ++ traverseExp e2 ++ traverseExp e3
+    LetExp _ _ e -> traverseExp e
+    TmpPatNever _ e _ -> traverseExp e
+    TmpPatSometime _ e _ -> traverseExp e
+    TmpPatLessOrOnce _ e _ -> traverseExp e
+    TmpPatAlways _ e _ -> traverseExp e
+    TmpPatPrecede _ e1 e2 _ -> traverseExp e1 ++ traverseExp e2
+    TmpPatFollow _ e1 e2 _ -> traverseExp e1 ++ traverseExp e2
+    TmpInitially _ e -> traverseExp e
+    TmpFinally _ e -> traverseExp e
     EIff _ e1 e2 -> traverseExp e1 ++ traverseExp e2
     EImplies _ e1 e2 -> traverseExp e1 ++ traverseExp e2
     EOr _ e1 e2 -> traverseExp e1 ++ traverseExp e2
     EXor _ e1 e2 -> traverseExp e1 ++ traverseExp e2
     EAnd _ e1 e2 -> traverseExp e1 ++ traverseExp e2
+    LtlU _ e1 e2 -> traverseExp e1 ++ traverseExp e2
+    TmpUntil _ e1 e2 -> traverseExp e1 ++ traverseExp e2
+    LtlW _ e1 e2 -> traverseExp e1 ++ traverseExp e2
+    TmpWUntil _ e1 e2 -> traverseExp e1 ++ traverseExp e2
+    LtlF _ e -> traverseExp e
+    TmpEventually _ e -> traverseExp e
+    LtlG _ e -> traverseExp e
+    TmpGlobally _ e -> traverseExp e
+    LtlX _ e -> traverseExp e
+    TmpNext _ e -> traverseExp e
     ENeg _ e -> traverseExp e
     ELt _ e1 e2 -> traverseExp e1 ++ traverseExp e2
     EGt _ e1 e2 -> traverseExp e1 ++ traverseExp e2
@@ -205,24 +224,25 @@ traverseExp x =
     EMul _ e1 e2 -> traverseExp e1 ++ traverseExp e2
     EDiv _ e1 e2 -> traverseExp e1 ++ traverseExp e2
     ERem _ e1 e2 -> traverseExp e1 ++ traverseExp e2
+    EGMax _ e -> traverseExp e
+    EGMin _ e -> traverseExp e
     ESum _ e -> traverseExp e
     EProd _ e -> traverseExp e
     ECard _ e -> traverseExp e
     EMinExp _ e -> traverseExp e
-    EImpliesElse _ e1 e2 e3 -> traverseExp e1 ++ traverseExp e2 ++ traverseExp e3
-    EInt _ _ -> []
-    EDouble _ _ -> []
-    EReal _ _ -> []
-    EStr _ _ -> []
+    EDomain _ s1 s2 -> traverseExp s1 ++ traverseExp s2
+    ERange _ s1 s2 -> traverseExp s1 ++ traverseExp s2
     EUnion _ s1 s2 -> traverseExp s1 ++ traverseExp s2
     EUnionCom _ s1 s2 -> traverseExp s1 ++ traverseExp s2
     EDifference _ s1 s2 -> traverseExp s1 ++ traverseExp s2
     EIntersection _ s1 s2 -> traverseExp s1 ++ traverseExp s2
     EIntersectionDeprecated _ s1 s2 -> traverseExp s1 ++ traverseExp s2
-    EDomain _ s1 s2 -> traverseExp s1 ++ traverseExp s2
-    ERange _ s1 s2 -> traverseExp s1 ++ traverseExp s2
     EJoin _ s1 s2 -> traverseExp s1 ++ traverseExp s2
     ClaferId _ n -> traverseName n
+    EInt _ _ -> []
+    EDouble _ _ -> []
+    EReal _ _ -> []
+    EStr _ _ -> []
 
 traverseDecl :: Decl -> [Ast]
 traverseDecl x@(Decl _ l s) =

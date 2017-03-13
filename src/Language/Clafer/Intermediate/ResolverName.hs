@@ -120,14 +120,14 @@ resolveModuleNames    (imodule, genv') =
 resolveClafer :: SEnv -> IClafer -> Resolve IClafer
 resolveClafer env clafer =
   do
-    elements' <- mapM (resolveElement env'{subClafers = subClafers',
-                                              ancClafers = ancClafers'}) $
+    elements' <- mapM (resolveElement env'{ subClafers = subClafers'
+                                          , ancClafers = ancClafers'}) $
                           _elements clafer
     return $ clafer {_elements = elements'}
   where
   env' = env {context = Just clafer, resPath = clafer : resPath env}
   subClafers' = tail $ bfs toNodeDeep [env'{resPath = [clafer]}]
-  ancClafers' = init (tails $ resPath env) >>= (mkAncestorList env)
+  ancClafers' = init (tails $ resPath env) >>= mkAncestorList env
 
 mkAncestorList :: SEnv -> [IClafer] -> [(IClafer, [IClafer])]
 mkAncestorList env rp =
@@ -237,7 +237,7 @@ adjustAncestor ctx cPath rPath = (thisIdent, Just ctx) : parents ++ (fromJust $ 
   {-parents = replicate (length $ fromJust $ stripPrefix prefix cPath) (parentIdent, Nothing)-}
   parents = map createParent $ fromJust $ stripPrefix prefix cPath
   createParent :: (String, Maybe IClafer) -> (String, Maybe IClafer)
-  createParent (cname, clafer) = (parentIdent, clafer)
+  createParent (_, clafer) = (parentIdent, clafer)
   prefix = fst $ unzip $ takeWhile (uncurry eqIds) $ zip cPath rPath
   eqIds a b = (fst a) == (fst b)
 

@@ -328,8 +328,8 @@ iMap f (IRPExp (PExp (Just iType') pID p iExp)) =
 iMap f (IRPExp (PExp Nothing pID p iExp)) =
   f $ IRPExp $ PExp Nothing pID p $ unWrapIExp $ iMap f $ IRIExp iExp
 iMap _ x@(IRIReference Nothing) = x
-iMap f (IRIReference (Just (IReference is mod ref))) =
- f $ IRIReference $ Just $ IReference is mod ((unWrapPExp . iMap f . IRPExp) ref)
+iMap f (IRIReference (Just (IReference is mod' ref))) =
+ f $ IRIReference $ Just $ IReference is mod' ((unWrapPExp . iMap f . IRPExp) ref)
 iMap f (IRIDecl (IDecl i d body')) =
   f $ IRIDecl $ IDecl i d $ unWrapPExp $ iMap f $ IRPExp body'
 iMap f i = f i
