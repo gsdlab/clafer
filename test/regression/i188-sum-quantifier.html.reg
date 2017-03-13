@@ -3,9 +3,10 @@
 <head>
 <meta http-equiv="X-UA-Compatible" content="IE=9">
 <style>.identifier{}
-.keyword{font-weight:bold}
+.keyword{font-weight: bold;}
+.tKeyword{font-style: oblique;}
 .reference{}
-.code { background-color: lightgray; padding: 5px 5px 5px 5px; border: 1px solid darkgray; margin-bottom: 15px; 
+.code { background-color: lightgray; padding: 5px 5px 5px 5px; border: 1px solid darkgray; margin-bottom: 15px;
         font-family: Pragmata, Menlo, 'DejaVu LGC Sans Mono', 'DejaVu Sans Mono', Consolas, 'Everson Mono', 'Lucida Console', 'Andale Mono', 'Nimbus Mono L', 'Liberation Mono', FreeMono, 'Osaka Monospaced', Courier, 'New Courier', monospace; }
 .standalonecomment { color: green; font-style:italic }
 .inlinecomment { color: green; padding-left:20px; font-style:italic }
@@ -15,7 +16,6 @@
 a[href$='Lookup failed'] {color: red}
 a[href$='Uid not found'] {color: red}
 a[href$='Ambiguous name'] {color: yellow}
-
 </style></head>
 <body>
 
@@ -24,7 +24,7 @@ a[href$='Ambiguous name'] {color: yellow}
 
 
 <div>
-<span class="claferDecl" id="c0_b">b</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a> = sum <a href="#c0_a"><span class="reference">a</span></a></div>
+<span class="claferDecl" id="c0_b">b</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a> = <span class="keyword">sum </span><a href="#c0_a"><span class="reference">a</span></a></div>
 
 
 <div>

@@ -3,9 +3,10 @@
 <head>
 <meta http-equiv="X-UA-Compatible" content="IE=9">
 <style>.identifier{}
-.keyword{font-weight:bold}
+.keyword{font-weight: bold;}
+.tKeyword{font-style: oblique;}
 .reference{}
-.code { background-color: lightgray; padding: 5px 5px 5px 5px; border: 1px solid darkgray; margin-bottom: 15px; 
+.code { background-color: lightgray; padding: 5px 5px 5px 5px; border: 1px solid darkgray; margin-bottom: 15px;
         font-family: Pragmata, Menlo, 'DejaVu LGC Sans Mono', 'DejaVu Sans Mono', Consolas, 'Everson Mono', 'Lucida Console', 'Andale Mono', 'Nimbus Mono L', 'Liberation Mono', FreeMono, 'Osaka Monospaced', Courier, 'New Courier', monospace; }
 .standalonecomment { color: green; font-style:italic }
 .inlinecomment { color: green; padding-left:20px; font-style:italic }
@@ -15,7 +16,6 @@
 a[href$='Lookup failed'] {color: red}
 a[href$='Uid not found'] {color: red}
 a[href$='Ambiguous name'] {color: yellow}
-
 </style></head>
 <body>
 
@@ -24,19 +24,19 @@ a[href$='Ambiguous name'] {color: yellow}
 
 
 <div>
-&lt;&lt;<span class="keyword">minimize</span> <a href="#c0_aCar"><span class="reference">aCar</span></a>.<a href="#c0_total_cost"><span class="reference">total_cost</span></a>&gt;&gt;</div>
+&lt;&lt;<span class="keyword">minimize </span><a href="#c0_aCar"><span class="reference">aCar</span></a>.<a href="#c0_total_cost"><span class="reference">total_cost</span></a>&gt;&gt;</div>
 
 
 <div>
-&lt;&lt;<span class="keyword">minimize</span> <a href="#c0_aCar"><span class="reference">aCar</span></a>.<a href="#c0_total_fuel"><span class="reference">total_fuel</span></a>&gt;&gt;</div>
+&lt;&lt;<span class="keyword">minimize </span><a href="#c0_aCar"><span class="reference">aCar</span></a>.<a href="#c0_total_fuel"><span class="reference">total_fuel</span></a>&gt;&gt;</div>
 
 
 <div>
-&lt;&lt;<span class="keyword">maximize</span> <a href="#c0_aCar"><span class="reference">aCar</span></a>.<a href="#c0_total_comfort"><span class="reference">total_comfort</span></a>&gt;&gt;</div>
+&lt;&lt;<span class="keyword">maximize </span><a href="#c0_aCar"><span class="reference">aCar</span></a>.<a href="#c0_total_comfort"><span class="reference">total_comfort</span></a>&gt;&gt;</div>
 
 
 <div>
-&lt;&lt;<span class="keyword">minimize</span> <a href="#c0_aCar"><span class="reference">aCar</span></a>.<a href="#c0_total_mass"><span class="reference">total_mass</span></a>&gt;&gt;</div>
+&lt;&lt;<span class="keyword">minimize </span><a href="#c0_aCar"><span class="reference">aCar</span></a>.<a href="#c0_total_mass"><span class="reference">total_mass</span></a>&gt;&gt;</div>
 
 <!-- # FRAGMENT /-->
 
@@ -150,13 +150,13 @@ a[href$='Ambiguous name'] {color: yellow}
   <div class="indent">
   <span class="keyword">[</span> <a href="#c0_ACC"><span class="reference">ACC</span></a> =&gt; <a href="#c0_FCA"><span class="reference">FCA</span></a> <span class="keyword">]</span></div>
   <div class="indent">
-  <span class="claferDecl" id="c0_total_cost">total_cost</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a> = sum <a href="#c0_Feature"><span class="reference">Feature</span></a>.<a href="#c0_cost"><span class="reference">cost</span></a></div>
+  <span class="claferDecl" id="c0_total_cost">total_cost</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a> = <span class="keyword">sum </span><a href="#c0_Feature"><span class="reference">Feature</span></a>.<a href="#c0_cost"><span class="reference">cost</span></a></div>
   <div class="indent">
-  <span class="claferDecl" id="c0_total_comfort">total_comfort</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a> = sum <a href="#c0_ComfortFeature"><span class="reference">ComfortFeature</span></a>.<a href="#c0_cost"><span class="reference">cost</span></a></div>
+  <span class="claferDecl" id="c0_total_comfort">total_comfort</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a> = <span class="keyword">sum </span><a href="#c0_ComfortFeature"><span class="reference">ComfortFeature</span></a>.<a href="#c0_cost"><span class="reference">cost</span></a></div>
   <div class="indent">
-  <span class="claferDecl" id="c0_total_fuel">total_fuel</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a> = sum <a href="#c0_FuelFeature"><span class="reference">FuelFeature</span></a>.<a href="#c0_cost"><span class="reference">cost</span></a></div>
+  <span class="claferDecl" id="c0_total_fuel">total_fuel</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a> = <span class="keyword">sum </span><a href="#c0_FuelFeature"><span class="reference">FuelFeature</span></a>.<a href="#c0_cost"><span class="reference">cost</span></a></div>
   <div class="indent">
-  <span class="claferDecl" id="c0_total_mass">total_mass</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a> = sum <a href="#c0_FuelFeature"><span class="reference">FuelFeature</span></a>.<a href="#c0_mass"><span class="reference">mass</span></a></div>
+  <span class="claferDecl" id="c0_total_mass">total_mass</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a> = <span class="keyword">sum </span><a href="#c0_FuelFeature"><span class="reference">FuelFeature</span></a>.<a href="#c0_mass"><span class="reference">mass</span></a></div>
 </div>
 
 <!-- # FRAGMENT /-->
