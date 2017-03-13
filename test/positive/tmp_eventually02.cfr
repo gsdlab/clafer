@@ -1,13 +1,7 @@
 // Test for eventually constraint
 
-/*
-a
- final b ?
-  	c ?
- 	[F c]
-assert[never c]
-*/
 final a
 	b
 	[F b]
-assert[never a.b]
+
+assert [ eventually a.b ]

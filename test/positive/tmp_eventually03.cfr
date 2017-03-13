@@ -2,4 +2,5 @@
 a
 	b ?
 	[eventually X b]
-assert[never a.b]
+
+assert[F a.b]

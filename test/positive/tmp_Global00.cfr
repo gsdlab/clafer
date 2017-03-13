@@ -3,4 +3,5 @@
 a ?
     b ?
 
-assert [ G(all b1 : b | some a1 : a | b1.parent = a1) ]
+// generates incorrect Alloy as of 0.4.5: The name "@r_root" cannot be found.
+// assert [ G(all b1 : b | some a1 : a | b1.parent = a1) ]

@@ -7,3 +7,6 @@ A *
 [ G (all c : A.B.C | one c.D) ]
 
 assert [ G (all c : A.B.C | some c.D) ]
+
+// generates incorrect Alloy as of 0.4.5:
+// Analysis cannot be performed since it requires higher-order quantification that could not be skolemized.

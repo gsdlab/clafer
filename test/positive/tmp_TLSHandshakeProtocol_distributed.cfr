@@ -1,3 +1,8 @@
+// generates incorrect Alloy as of 0.4.5:
+// = can be used only between 2 expressions of the same arity, or between 2 integer expressions.
+// Left type = {this/c0_ProtocolVersion}
+// Right type = {this/root->this/c0_SSL2_0, this/root->this/c0_SSL3_0, this/root->this/c0_TLS1_2}
+
 /********************/
 /* Feature Modeling */
 /********************/

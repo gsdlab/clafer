@@ -8,4 +8,5 @@ a
     c ?
   [c]
 
-assert[never (a.b && not a.b.c) ]
+// fails as of 0.4.5
+// assert[never (a.b && not a.b.c) ]

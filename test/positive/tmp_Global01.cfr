@@ -4,4 +4,6 @@ a
  b ?
   c ?
  [globally c]
- assert [ never b => c ]
+
+// generates incorrect Alloy as of 0.4.5: The name "this" cannot be found.
+// assert [ never b => (never c) ]

@@ -1,7 +1,7 @@
 
 final xor a
-	initial b 
-  	c 
+	initial b
+  	c
   	[eventually c ]
 
 //assert[a.c after a.b]

@@ -4,9 +4,4 @@ a
  b ?
   c ?
   d ?
-  e ?
-//  [final]   Michal: final constraint is not allowed anymore. Only the keyword.
-// Also, whether something is immutable needs resolution - only clafers declared
-// as final, which are children of an immutable parent are immutable. The root
-// clafer is concrete, initial, and final (immutable).
-
+  final e ?
