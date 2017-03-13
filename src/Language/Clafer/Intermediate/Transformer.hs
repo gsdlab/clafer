@@ -1,5 +1,5 @@
 {-
- Copyright (C) 2012 Kacper Bak <http://gsd.uwaterloo.ca>
+ Copyright (C) 2012-2017 Kacper Bak <http://gsd.uwaterloo.ca>
 
  Permission is hereby granted, free of charge, to any person obtaining a copy of
  this software and associated documentation files (the "Software"), to deal in
@@ -50,5 +50,3 @@ transIExp iType' ife@(IFunExp op' _)    = exps . traversed %~ transPExp cond  $ 
     cond = op' == iIfThenElse &&
            iType' `elem` [TBoolean, TClafer []]
 transIExp _      iexp' = iexp'
-
-
