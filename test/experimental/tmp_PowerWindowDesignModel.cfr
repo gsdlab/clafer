@@ -35,7 +35,7 @@ abstract PWLStateAndRequestHandler
                [this -[req=upR]-> movingUpBsc]
                [this -[req=upXR]-> movingUpX]
                movingDownBsc
-                    [this -[req=stopC]-> partiallyOpen]
+                    [this -[req=stopR]-> partiallyOpen]
                     [this -[req=downXR]-> movingDownX]
                movingDownX
           xor movingUp
@@ -44,10 +44,10 @@ abstract PWLStateAndRequestHandler
                [this -[req=downR]-> movingDownBsc]
                [this -[req=downXR]-> movingDownX]
                movingUpBsc
-                    [this -[req=stopC]-> partiallyOpen]
+                    [this -[req=stopR]-> partiallyOpen]
                     [this -[req=upXR]-> movingUpX ]
                xor movingUpX
-                   initial  movingUpXwithPinchProtectOverride -[req!=upX]-> movingUpXwithPinchProtect
+                   initial  movingUpXwithPinchProtectOverride -[req!=upXR]-> movingUpXwithPinchProtect
                     movingUpXwithPinchProtect
                          [this -[object=true]-> retracting ]
                          [this -[req=upXR]-> movingUpXwithPinchProtectOverride]
@@ -67,4 +67,3 @@ before no abstract PWLStateAndRequestHandler {
  Reason: 'no' is already defined in bclafer as a keyword or operator, so Boolean true = no | enum, fails.
 
 */
-
