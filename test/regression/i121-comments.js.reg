@@ -7,4 +7,4 @@ c0_B = c0_A.addChild("c0_B").withCard(1, 1);
 c0_C = c0_A.addChild("c0_C").withCard(0, 1);
 c0_D = Clafer("c0_D").withCard(1, 1);
 c0_E = Clafer("c0_E").withCard(0, 1);
-c0_D.refTo(c0_A);
+c0_D.refToUnique(c0_A);

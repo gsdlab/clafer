@@ -21,6 +21,6 @@ c0_n4.extending(c0_N);
 Constraint(implies(some(global(c0_n4)), equal(joinRef(global(c0_n4)), constant(2))));
 c0_n5.extending(c0_N);
 Constraint(implies(some(global(c0_n5)), equal(joinRef(global(c0_n5)), constant(3))));
-c0_p.refTo(Int);
+c0_p.refToUnique(Int);
 Constraint(implies(some(global(c0_p)), equal(joinRef(global(c0_p)), product(global(c0_N)))));
 assert(equal(joinRef(global(c0_p)), constant(36)));

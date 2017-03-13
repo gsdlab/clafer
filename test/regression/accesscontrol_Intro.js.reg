@@ -20,7 +20,7 @@ c0_CombiningAlgo = Abstract("c0_CombiningAlgo");
 c0_PermitOverrides = Clafer("c0_PermitOverrides").withCard(1, 1);
 c0_DenyOverrides = Clafer("c0_DenyOverrides").withCard(1, 1);
 c0_OnlyOneApplicable = Clafer("c0_OnlyOneApplicable").withCard(1, 1);
-c0_value.refTo(c0_Value);
+c0_value.refToUnique(c0_Value);
 c0_ActionName.extending(c0_Attribute);
 c0_Role.extending(c0_Attribute);
 c0_ResourceName.extending(c0_Attribute);

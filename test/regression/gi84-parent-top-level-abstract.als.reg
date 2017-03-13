@@ -1,14 +1,13 @@
 open util/integer
 pred show {}
 
-run show for 1
 
 abstract sig c0_FeatureModel
 {}
 
 abstract sig c0_Feature
 {}
-{ (this.~(@r_c0_F1+@r_c0_F2)) in (c0_Feature + c0_FeatureModel) }
+{ (this.~@r_c0_Feature) in (c0_Feature + c0_FeatureModel) }
 
 one sig c0_FM extends c0_FeatureModel
 { r_c0_F1 : one c0_F1 }
@@ -18,3 +17,4 @@ one sig c0_F1 extends c0_Feature
 
 one sig c0_F2 extends c0_Feature
 {}
+

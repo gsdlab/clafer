@@ -9,6 +9,6 @@ c0_a = Clafer("c0_a").withCard(2, 2);
 c0_ref1 = Clafer("c0_ref1").withCard(1, 1);
 c0_ref2 = Clafer("c0_ref2").withCard(1, 1);
 c0_a.extending(c0_A);
-c0_ref1.refTo(c0_A);
-c0_ref2.refTo(c0_ref1);
+c0_ref1.refToUnique(c0_A);
+c0_ref2.refToUnique(c0_ref1);
 c0_ref2.addConstraint(some(join(joinRef(joinRef($this())), c0_x)));
