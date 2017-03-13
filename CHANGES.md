@@ -1,3 +1,7 @@
+##### Clafer Version 0.4.5 released on March 13, 2017
+
+* [Release](https://github.com/gsdlab/clafer/pull/91)
+
 ##### Clafer Version 0.4.4 released on Jun 23, 2016
 
 * [Release](https://github.com/gsdlab/clafer/pull/88)

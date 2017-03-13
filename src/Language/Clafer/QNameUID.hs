@@ -1,5 +1,5 @@
 {-
- Copyright (C) 2014 Michal Antkiewicz <http://gsd.uwaterloo.ca>
+ Copyright (C) 2014-2017 Michal Antkiewicz <http://gsd.uwaterloo.ca>
 
  Permission is hereby granted, free of charge, to any person obtaining a copy of
  this software and associated documentation files (the "Software"), to deal in
@@ -95,7 +95,7 @@ addElements    path        elems         maps                         = foldl (a
 addClafer :: [String] -> (FQNameUIDMap, UIDFqNameMap) -> IElement          -> (FQNameUIDMap, UIDFqNameMap)
 addClafer    path        (fqNameUIDMap, uidFqNameMap)    (IEClafer iClaf) =
     let
-        newPath = (_ident iClaf) : path
+        newPath = _ident iClaf : path
         fqKey :: FQKey
         fqKey = concat newPath
         fqName :: FQName
