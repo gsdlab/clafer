@@ -233,7 +233,7 @@ save args'=
                    return $ summary graph result
             else return result
       let f = dropExtension $ file args'
-      let f' = f ++ "." ++ extension
+      let f' = f ++ "." ++ if extension == "tmp.als" then "als" else extension
       liftIO $ if console_output args' then putStrLn (outputCode result') else writeFile f' (outputCode result')
       liftIO $ when (alloy_mapping args') $ writeFile (f ++ ".map") $ show (mappingToAlloy result')
       let
@@ -254,6 +254,7 @@ save args'=
     inScopeModes :: Bool
     inScopeModes =
       Alloy `elem` mode args' ||
+      AlloyLtl `elem` mode args' ||
       Choco `elem` mode args'
 
     getScopesList :: Map.Map ClaferMode CompilerResult -> [(UID, Integer)]
