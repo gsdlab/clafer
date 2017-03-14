@@ -1,0 +1,9 @@
+// Test for final (immutable) constraint
+
+a
+ b ?
+  c ?
+  d ?
+  final e ?
+
+/* Michal: the final keyword does not desugar. */

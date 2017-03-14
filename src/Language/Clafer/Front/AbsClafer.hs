@@ -113,11 +113,11 @@ instance Spannable Declaration where
     getSpan (EnumDecl s _ _ ) = s
     getSpan (ElementDecl s _ ) = s
 data Clafer
-    = Clafer Span Abstract GCard PosIdent Super Reference Card Init Elements
+    = Clafer Span Abstract [TempModifier] GCard PosIdent Super Reference Card Init Transition Elements
   deriving (Eq, Ord, Show, Read, Data, Typeable, Generic)
 
 instance Spannable Clafer where
-    getSpan (Clafer s _ _ _ _ _ _ _ _ ) = s
+    getSpan (Clafer s _ _ _ _ _ _ _ _ _ _ ) = s
 data Constraint = Constraint Span [Exp]
   deriving (Eq, Ord, Show, Read, Data, Typeable, Generic)
 
@@ -140,6 +140,22 @@ instance Spannable Goal where
     getSpan (GoalMaxDeprecated s _ ) = s
     getSpan (GoalMinimize s _ ) = s
     getSpan (GoalMaximize s _ ) = s
+data TempModifier
+    = Initial Span | Final Span | FinalRef Span | FinalTarget Span
+  deriving (Eq, Ord, Show, Read, Data, Typeable, Generic)
+
+instance Spannable TempModifier where
+    getSpan (Initial s ) = s
+    getSpan (Final s ) = s
+    getSpan (FinalRef s ) = s
+    getSpan (FinalTarget s ) = s
+data Transition
+    = TransitionEmpty Span | Transition Span TransArrow Exp
+  deriving (Eq, Ord, Show, Read, Data, Typeable, Generic)
+
+instance Spannable Transition where
+    getSpan (TransitionEmpty s ) = s
+    getSpan (Transition s _ _ ) = s
 data Abstract = AbstractEmpty Span | Abstract Span
   deriving (Eq, Ord, Show, Read, Data, Typeable, Generic)
 
@@ -243,16 +259,36 @@ data Name = Path Span [ModId]
 instance Spannable Name where
     getSpan (Path s _ ) = s
 data Exp
-    = EDeclAllDisj Span Decl Exp
+    = TransitionExp Span Exp TransArrow Exp
+    | EDeclAllDisj Span Decl Exp
     | EDeclAll Span Decl Exp
     | EDeclQuantDisj Span Quant Decl Exp
     | EDeclQuant Span Quant Decl Exp
     | EImpliesElse Span Exp Exp Exp
+    | LetExp Span VarBinding Exp
+    | TmpPatNever Span Exp PatternScope
+    | TmpPatSometime Span Exp PatternScope
+    | TmpPatLessOrOnce Span Exp PatternScope
+    | TmpPatAlways Span Exp PatternScope
+    | TmpPatPrecede Span Exp Exp PatternScope
+    | TmpPatFollow Span Exp Exp PatternScope
+    | TmpInitially Span Exp
+    | TmpFinally Span Exp
     | EIff Span Exp Exp
     | EImplies Span Exp Exp
     | EOr Span Exp Exp
     | EXor Span Exp Exp
     | EAnd Span Exp Exp
+    | LtlU Span Exp Exp
+    | TmpUntil Span Exp Exp
+    | LtlW Span Exp Exp
+    | TmpWUntil Span Exp Exp
+    | LtlF Span Exp
+    | TmpEventually Span Exp
+    | LtlG Span Exp
+    | TmpGlobally Span Exp
+    | LtlX Span Exp
+    | TmpNext Span Exp
     | ENeg Span Exp
     | ELt Span Exp Exp
     | EGt Span Exp Exp
@@ -290,16 +326,36 @@ data Exp
   deriving (Eq, Ord, Show, Read, Data, Typeable, Generic)
 
 instance Spannable Exp where
+    getSpan (TransitionExp s _ _ _ ) = s
     getSpan (EDeclAllDisj s _ _ ) = s
     getSpan (EDeclAll s _ _ ) = s
     getSpan (EDeclQuantDisj s _ _ _ ) = s
     getSpan (EDeclQuant s _ _ _ ) = s
     getSpan (EImpliesElse s _ _ _ ) = s
+    getSpan (LetExp s _ _ ) = s
+    getSpan (TmpPatNever s _ _ ) = s
+    getSpan (TmpPatSometime s _ _ ) = s
+    getSpan (TmpPatLessOrOnce s _ _ ) = s
+    getSpan (TmpPatAlways s _ _ ) = s
+    getSpan (TmpPatPrecede s _ _ _ ) = s
+    getSpan (TmpPatFollow s _ _ _ ) = s
+    getSpan (TmpInitially s _ ) = s
+    getSpan (TmpFinally s _ ) = s
     getSpan (EIff s _ _ ) = s
     getSpan (EImplies s _ _ ) = s
     getSpan (EOr s _ _ ) = s
     getSpan (EXor s _ _ ) = s
     getSpan (EAnd s _ _ ) = s
+    getSpan (LtlU s _ _ ) = s
+    getSpan (TmpUntil s _ _ ) = s
+    getSpan (LtlW s _ _ ) = s
+    getSpan (TmpWUntil s _ _ ) = s
+    getSpan (LtlF s _ ) = s
+    getSpan (TmpEventually s _ ) = s
+    getSpan (LtlG s _ ) = s
+    getSpan (TmpGlobally s _ ) = s
+    getSpan (LtlX s _ ) = s
+    getSpan (TmpNext s _ ) = s
     getSpan (ENeg s _ ) = s
     getSpan (ELt s _ _ ) = s
     getSpan (EGt s _ _ ) = s
@@ -334,11 +390,47 @@ instance Spannable Exp where
     getSpan (EDouble s _ ) = s
     getSpan (EReal s _ ) = s
     getSpan (EStr s _ ) = s
+data TransGuard = TransGuard Span Exp
+  deriving (Eq, Ord, Show, Read, Data, Typeable, Generic)
+
+instance Spannable TransGuard where
+    getSpan (TransGuard s _ ) = s
+data TransArrow
+    = SyncTransArrow Span
+    | GuardedSyncTransArrow Span TransGuard
+    | NextTransArrow Span
+    | GuardedNextTransArrow Span TransGuard
+  deriving (Eq, Ord, Show, Read, Data, Typeable, Generic)
+
+instance Spannable TransArrow where
+    getSpan (SyncTransArrow s ) = s
+    getSpan (GuardedSyncTransArrow s _ ) = s
+    getSpan (NextTransArrow s ) = s
+    getSpan (GuardedNextTransArrow s _ ) = s
+data PatternScope
+    = PatScopeBefore Span Exp
+    | PatScopeAfter Span Exp
+    | PatScopeBetweenAnd Span Exp Exp
+    | PatScopeAfterUntil Span Exp Exp
+    | PatScopeEmpty Span
+  deriving (Eq, Ord, Show, Read, Data, Typeable, Generic)
+
+instance Spannable PatternScope where
+    getSpan (PatScopeBefore s _ ) = s
+    getSpan (PatScopeAfter s _ ) = s
+    getSpan (PatScopeBetweenAnd s _ _ ) = s
+    getSpan (PatScopeAfterUntil s _ _ ) = s
+    getSpan (PatScopeEmpty s ) = s
 data Decl = Decl Span [LocId] Exp
   deriving (Eq, Ord, Show, Read, Data, Typeable, Generic)
 
 instance Spannable Decl where
     getSpan (Decl s _ _ ) = s
+data VarBinding = VarBinding Span LocId Name
+  deriving (Eq, Ord, Show, Read, Data, Typeable, Generic)
+
+instance Spannable VarBinding where
+    getSpan (VarBinding s _ _ ) = s
 data Quant
     = QuantNo Span
     | QuantNot Span

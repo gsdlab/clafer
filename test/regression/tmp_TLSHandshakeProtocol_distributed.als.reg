@@ -1,0 +1,606 @@
+
+/* Definition of timed traces (input independent) */ 
+sig State {}
+
+private one sig Ord {
+   First: set State,
+   Next: State -> State
+} {
+   pred/totalOrder[State,First,Next]
+}
+
+lone sig back in State {}
+
+fun loop : State -> State {
+  last -> back
+}
+
+fun first: one State { Ord.First }
+
+fun last: one State { State - ((Ord.Next).State) }
+
+fun next : State->State { Ord.Next + loop }
+
+fun prev : State->State { ~this/next }
+
+fun past : State->State { ^(~this/next) }
+
+fun future : State -> State { State <: *this/next }
+
+fun upto[s,s' : State] : set State {
+  (s' in s.*(Ord.Next) or finite) implies s.future & ^(Ord.Next).s' else s.*(Ord.Next) + (^(Ord.Next).s' & back.*(Ord.Next))
+}
+
+
+pred finite {
+  no loop
+}
+
+pred infinite {
+  some loop
+}
+
+fun localFirst [rel: univ->univ->State, parentSet: univ, child: univ] : State {
+       let lifetime = child.(parentSet.rel) | lifetime - (lifetime.next)
+}
+
+pred total[rel: univ->univ->State, children: univ] {
+   children = ~(rel.State).univ 
+}
+
+
+
+pred show {}
+
+/* Clafer specifications (input dependent) */
+
+one sig root
+{ r_c0_Feature : set c0_Feature
+, r_c0_FeatureModel : set c0_FeatureModel
+, r_c0_TLSFeatures : one c0_TLSFeatures
+, r_c0_Domain : set c0_Domain
+, r_c0_ProtocolVersion : c0_ProtocolVersion -> State
+, r_c0_SSL2_0 : c0_SSL2_0 -> State
+, r_c0_SSL3_0 : c0_SSL3_0 -> State
+, r_c0_TLS1_0 : c0_TLS1_0 -> State
+, r_c0_TLS1_1 : c0_TLS1_1 -> State
+, r_c0_TLS1_2 : c0_TLS1_2 -> State
+, r_c0_HandshakeStatus : c0_HandshakeStatus -> State
+, r_c0_initiated : c0_initiated -> State
+, r_c0_completed : c0_completed -> State
+, r_c0_failed : c0_failed -> State
+, r_c0_Port : c0_Port -> State
+, r_c0_Message : set c0_Message
+, r_c0_serverHelloRequestMessage : one c0_serverHelloRequestMessage
+, r_c0_serverHelloMessage : one c0_serverHelloMessage
+, r_c0_serverCertificateMessage : one c0_serverCertificateMessage
+, r_c0_serverKeyExchangeMessage : one c0_serverKeyExchangeMessage
+, r_c0_serverCertificateRequestMessage : one c0_serverCertificateRequestMessage
+, r_c0_serverHelloDoneMessage : one c0_serverHelloDoneMessage
+, r_c0_serverChangeCipherSpecMessage : one c0_serverChangeCipherSpecMessage
+, r_c0_serverFinishedMessage : one c0_serverFinishedMessage
+, r_c0_protocolMismatch : one c0_protocolMismatch
+, r_c0_clientHelloMessage : one c0_clientHelloMessage
+, r_c0_clientCertificateMessage : one c0_clientCertificateMessage
+, r_c0_clientKeyExchangeMessage : one c0_clientKeyExchangeMessage
+, r_c0_certificateVerifyMessage : one c0_certificateVerifyMessage
+, r_c0_clientChangeCipherSpecMessage : one c0_clientChangeCipherSpecMessage
+, r_c0_clientFinishedMessage : one c0_clientFinishedMessage
+, r_c0_applicationDataMessage : one c0_applicationDataMessage
+, r_c0_Node : set c0_Node
+, r_c0_Server : set c0_Server
+, r_c0_Client : set c0_Client
+, r_c0_OurServer : one c0_OurServer
+, r_c0_aClient : one c0_aClient
+, r_c0_Protocol : one c0_Protocol }
+{ all t : State | one r_c0_SSL2_0.t && 
+	one r_c0_SSL3_0.t && 
+	one r_c0_TLS1_0.t && 
+	one r_c0_TLS1_1.t && 
+	one r_c0_TLS1_2.t && 
+	one r_c0_initiated.t && 
+	one r_c0_completed.t && 
+	one r_c0_failed.t
+  let t = first | 
+  ((c0_Server.@r_c0_send.t).@c0_send_ref.t) = ((c0_Client.@r_c0_receive.t).@c0_receive_ref.t)
+  let t = first | 
+  ((c0_Server.@r_c0_receive.t).@c0_receive_ref.t) = ((c0_Client.@r_c0_send.t).@c0_send_ref.t) }
+
+abstract sig c0_Feature
+{}
+{ one @r_c0_Feature.this }
+
+
+abstract sig c0_FeatureModel
+{}
+{ one @r_c0_FeatureModel.this }
+
+
+sig c0_TLSFeatures extends c0_FeatureModel
+{ r_c0_annonymousMode : lone c0_annonymousMode
+, r_c0_clientAuthentication : lone c0_clientAuthentication }
+{ one @r_c0_TLSFeatures.this }
+
+sig c0_annonymousMode extends c0_Feature
+{}
+{ one @r_c0_annonymousMode.this }
+
+
+sig c0_clientAuthentication extends c0_Feature
+{}
+{ one @r_c0_clientAuthentication.this }
+
+
+
+abstract sig c0_Domain
+{}
+{ one @r_c0_Domain.this }
+
+
+abstract sig c0_ProtocolVersion
+{}
+{ lone localFirst[r_c0_ProtocolVersion, root, this] && lone r_c0_ProtocolVersion.State.this && total[r_c0_ProtocolVersion,c0_ProtocolVersion] }
+
+
+sig c0_SSL2_0 extends c0_ProtocolVersion
+{}
+{ lone localFirst[r_c0_SSL2_0, root, this] && lone r_c0_SSL2_0.State.this && total[r_c0_SSL2_0,c0_SSL2_0] }
+
+
+sig c0_SSL3_0 extends c0_ProtocolVersion
+{}
+{ lone localFirst[r_c0_SSL3_0, root, this] && lone r_c0_SSL3_0.State.this && total[r_c0_SSL3_0,c0_SSL3_0] }
+
+
+sig c0_TLS1_0 extends c0_ProtocolVersion
+{}
+{ lone localFirst[r_c0_TLS1_0, root, this] && lone r_c0_TLS1_0.State.this && total[r_c0_TLS1_0,c0_TLS1_0] }
+
+
+sig c0_TLS1_1 extends c0_ProtocolVersion
+{}
+{ lone localFirst[r_c0_TLS1_1, root, this] && lone r_c0_TLS1_1.State.this && total[r_c0_TLS1_1,c0_TLS1_1] }
+
+
+sig c0_TLS1_2 extends c0_ProtocolVersion
+{}
+{ lone localFirst[r_c0_TLS1_2, root, this] && lone r_c0_TLS1_2.State.this && total[r_c0_TLS1_2,c0_TLS1_2] }
+
+
+abstract sig c0_HandshakeStatus
+{}
+{ lone localFirst[r_c0_HandshakeStatus, root, this] && lone r_c0_HandshakeStatus.State.this && total[r_c0_HandshakeStatus,c0_HandshakeStatus] }
+
+
+sig c0_initiated extends c0_HandshakeStatus
+{}
+{ lone localFirst[r_c0_initiated, root, this] && lone r_c0_initiated.State.this && total[r_c0_initiated,c0_initiated] }
+
+
+sig c0_completed extends c0_HandshakeStatus
+{}
+{ lone localFirst[r_c0_completed, root, this] && lone r_c0_completed.State.this && total[r_c0_completed,c0_completed] }
+
+
+sig c0_failed extends c0_HandshakeStatus
+{}
+{ lone localFirst[r_c0_failed, root, this] && lone r_c0_failed.State.this && total[r_c0_failed,c0_failed] }
+
+
+abstract sig c0_Port
+{}
+{ lone localFirst[r_c0_Port, root, this] && lone r_c0_Port.State.this && total[r_c0_Port,c0_Port] }
+
+
+abstract sig c0_Message
+{}
+{ one @r_c0_Message.this }
+
+
+sig c0_serverHelloRequestMessage extends c0_Message
+{}
+{ one @r_c0_serverHelloRequestMessage.this }
+
+
+sig c0_serverHelloMessage extends c0_Message
+{}
+{ one @r_c0_serverHelloMessage.this }
+
+
+sig c0_serverCertificateMessage extends c0_Message
+{}
+{ one @r_c0_serverCertificateMessage.this }
+
+
+sig c0_serverKeyExchangeMessage extends c0_Message
+{}
+{ one @r_c0_serverKeyExchangeMessage.this }
+
+
+sig c0_serverCertificateRequestMessage extends c0_Message
+{}
+{ one @r_c0_serverCertificateRequestMessage.this }
+
+
+sig c0_serverHelloDoneMessage extends c0_Message
+{}
+{ one @r_c0_serverHelloDoneMessage.this }
+
+
+sig c0_serverChangeCipherSpecMessage extends c0_Message
+{}
+{ one @r_c0_serverChangeCipherSpecMessage.this }
+
+
+sig c0_serverFinishedMessage extends c0_Message
+{}
+{ one @r_c0_serverFinishedMessage.this }
+
+
+sig c0_protocolMismatch extends c0_Message
+{}
+{ one @r_c0_protocolMismatch.this }
+
+
+sig c0_clientHelloMessage extends c0_Message
+{}
+{ one @r_c0_clientHelloMessage.this }
+
+
+sig c0_clientCertificateMessage extends c0_Message
+{}
+{ one @r_c0_clientCertificateMessage.this }
+
+
+sig c0_clientKeyExchangeMessage extends c0_Message
+{}
+{ one @r_c0_clientKeyExchangeMessage.this }
+
+
+sig c0_certificateVerifyMessage extends c0_Message
+{}
+{ one @r_c0_certificateVerifyMessage.this }
+
+
+sig c0_clientChangeCipherSpecMessage extends c0_Message
+{}
+{ one @r_c0_clientChangeCipherSpecMessage.this }
+
+
+sig c0_clientFinishedMessage extends c0_Message
+{}
+{ one @r_c0_clientFinishedMessage.this }
+
+
+sig c0_applicationDataMessage extends c0_Message
+{}
+{ one @r_c0_applicationDataMessage.this }
+
+
+abstract sig c0_Node extends c0_Domain
+{ r_c0_send : c0_send -> State
+, r_c0_receive : c0_receive -> State
+, r_c0_protocolversion : c0_protocolversion -> State
+, r_c0_certificate : c0_certificate -> State }
+{ one @r_c0_Node.this
+  all t : State | one r_c0_send.t && 
+	one r_c0_receive.t && 
+	some r_c0_protocolversion.t && 
+	lone r_c0_certificate.t
+   all disj x, y : c0_protocolversion | (x.@c0_protocolversion_ref) != (y.@c0_protocolversion_ref)  }
+
+sig c0_send extends c0_Port
+{ c0_send_ref : c0_Message -> State }
+{ lone localFirst[r_c0_send, c0_Node, this] && lone r_c0_send.State.this && total[r_c0_send,c0_send]
+  all t : State | one this.@c0_send_ref.t }
+
+
+sig c0_receive extends c0_Port
+{ c0_receive_ref : c0_Message -> State }
+{ lone localFirst[r_c0_receive, c0_Node, this] && lone r_c0_receive.State.this && total[r_c0_receive,c0_receive]
+  all t : State | one this.@c0_receive_ref.t }
+
+
+sig c0_protocolversion
+{ c0_protocolversion_ref : c0_ProtocolVersion -> State }
+{ lone localFirst[r_c0_protocolversion, c0_Node, this] && lone r_c0_protocolversion.State.this && total[r_c0_protocolversion,c0_protocolversion]
+  all t : State | one this.@c0_protocolversion_ref.t }
+
+
+sig c0_certificate
+{ r_c0_signing : c0_signing -> State }
+{ lone localFirst[r_c0_certificate, c0_Node, this] && lone r_c0_certificate.State.this && total[r_c0_certificate,c0_certificate]
+  all t : State | lone r_c0_signing.t && 
+	(no r_c0_certificate.t.this => no r_c0_signing.t) }
+
+sig c0_signing
+{}
+{ lone localFirst[r_c0_signing, c0_certificate, this] && lone r_c0_signing.State.this && total[r_c0_signing,c0_signing] }
+
+
+
+
+abstract sig c0_Server extends c0_Node
+{}
+{ one @r_c0_Server.this }
+
+
+abstract sig c0_Client extends c0_Node
+{}
+{ one @r_c0_Client.this }
+
+
+sig c0_OurServer extends c0_Server
+{}
+{ one @r_c0_OurServer.this
+  let t = first | 
+  ((this.@r_c0_protocolversion.t).@c0_protocolversion_ref.t) = ((@r_c0_SSL2_0.t + @r_c0_SSL3_0.t) + @r_c0_TLS1_2.t) }
+
+
+sig c0_aClient extends c0_Client
+{}
+{ one @r_c0_aClient.this
+  let t = first | 
+  some this.@r_c0_certificate.t
+  let t = first | 
+  ((this.@r_c0_protocolversion.t).@c0_protocolversion_ref.t) = @r_c0_TLS1_2.t }
+
+
+sig c0_Protocol extends c0_Domain
+{ r_c0_client : one c0_client
+, r_c0_server : one c0_server
+, r_c0_handshakeStatus : c0_handshakeStatus -> State }
+{ one @r_c0_Protocol.this
+  all t : State | one r_c0_handshakeStatus.t }
+
+sig c0_client
+{ c0_client_ref : one c0_aClient }
+{ one @r_c0_client.this }
+
+
+sig c0_server
+{ c0_server_ref : one c0_OurServer }
+{ one @r_c0_server.this }
+
+
+sig c0_handshakeStatus
+{ c0_handshakeStatus_ref : c0_HandshakeStatus -> State
+, r_c0_channel : c0_channel -> State
+, r_c0_serverKeyExchange : c0_serverKeyExchange -> State
+, r_c0_certificateRequest : c0_certificateRequest -> State
+, r_c0_serverHelloDone : c0_serverHelloDone -> State
+, r_c0_clientResponse : c0_clientResponse -> State
+, r_c0_serverFinish : c0_serverFinish -> State
+, r_c0_dataTransfer : c0_dataTransfer -> State
+, r_c0_fatalError : c0_fatalError -> State }
+{ lone localFirst[r_c0_handshakeStatus, c0_Protocol, this] && lone r_c0_handshakeStatus.State.this && total[r_c0_handshakeStatus,c0_handshakeStatus]
+  all t : State | one r_c0_channel.t && 
+	one r_c0_serverKeyExchange.t && 
+	one r_c0_certificateRequest.t && 
+	one r_c0_serverHelloDone.t && 
+	lone r_c0_clientResponse.t && 
+	one r_c0_serverFinish.t && 
+	one r_c0_dataTransfer.t && 
+	one r_c0_fatalError.t && 
+	one this.@c0_handshakeStatus_ref.t && 
+	(no r_c0_handshakeStatus.t.this => no r_c0_channel.t && no r_c0_serverKeyExchange.t && no r_c0_certificateRequest.t && no r_c0_serverHelloDone.t && no r_c0_clientResponse.t && no r_c0_serverFinish.t && no r_c0_dataTransfer.t && no r_c0_fatalError.t) }
+
+sig c0_channel
+{ r_c0_clientHello : c0_clientHello -> State
+, r_c0_serverResponse : c0_serverResponse -> State }
+{ lone localFirst[r_c0_channel, c0_handshakeStatus, this] && lone r_c0_channel.State.this && total[r_c0_channel,c0_channel]
+  all t : State | lone r_c0_clientHello.t && 
+	lone r_c0_serverResponse.t && 
+	(no r_c0_channel.t.this => no r_c0_clientHello.t && no r_c0_serverResponse.t)
+  all t : State | let children = (r_c0_clientHello.t + r_c0_serverResponse.t) | one children
+  one t : localFirst[r_c0_channel,c0_handshakeStatus, this] | (some @r_c0_clientHello.t) }
+
+sig c0_clientHello
+{}
+{ lone localFirst[r_c0_clientHello, c0_channel, this] && lone r_c0_clientHello.State.this && total[r_c0_clientHello,c0_clientHello]
+  one t : localFirst[r_c0_clientHello,c0_channel, this] | 
+  (some this) && ((some t.next and let t' = t.next | (some (this.~(@r_c0_clientHello.t)).@r_c0_serverResponse.t') || (some ((this.~(@r_c0_clientHello.t)).~(@r_c0_channel.t)).@r_c0_fatalError.t')))
+  one t : localFirst[r_c0_clientHello,c0_channel, this] | 
+  (((this.~(@r_c0_clientHello.t)).~(@r_c0_channel.t)).@c0_handshakeStatus_ref.t) = @r_c0_initiated.t
+  one t : localFirst[r_c0_clientHello,c0_channel, this] | 
+  (((((((this.~(@r_c0_clientHello.t)).~(@r_c0_channel.t)).~(@r_c0_handshakeStatus.t)).@r_c0_client).@c0_client_ref).@r_c0_send).@c0_send_ref.t) = c0_clientHelloMessage }
+
+
+sig c0_serverResponse
+{ r_c0_mismatch : c0_mismatch -> State
+, r_c0_serverHello : c0_serverHello -> State
+, r_c0_serverCertificate : c0_serverCertificate -> State }
+{ lone localFirst[r_c0_serverResponse, c0_channel, this] && lone r_c0_serverResponse.State.this && total[r_c0_serverResponse,c0_serverResponse]
+  all t : State | lone r_c0_mismatch.t && 
+	lone r_c0_serverHello.t && 
+	lone r_c0_serverCertificate.t && 
+	(no r_c0_serverResponse.t.this => no r_c0_mismatch.t && no r_c0_serverHello.t && no r_c0_serverCertificate.t)
+  all t : State | let children = (r_c0_mismatch.t + r_c0_serverHello.t + r_c0_serverCertificate.t) | one children
+  one t : localFirst[r_c0_serverResponse,c0_channel, this] | 
+  (((this.~(@r_c0_serverResponse.t)).~(@r_c0_channel.t)).@c0_handshakeStatus_ref.t) = @r_c0_initiated.t
+  ((one t0 : localFirst[r_c0_serverResponse,c0_serverResponse, this] | (some this.@r_c0_serverHello.t0) || (some this.@r_c0_mismatch.t0)))
+  one t : localFirst[r_c0_serverResponse,c0_channel, this] | 
+  (no c0_TLSFeatures.@r_c0_annonymousMode) => ((some this.@r_c0_serverHello.t) && ((some t.next and let t' = t.next | some this.@r_c0_serverCertificate.t'))) }
+
+sig c0_mismatch
+{}
+{ lone localFirst[r_c0_mismatch, c0_serverResponse, this] && lone r_c0_mismatch.State.this && total[r_c0_mismatch,c0_mismatch]
+  one t : localFirst[r_c0_mismatch,c0_serverResponse, this] | 
+  (some this) && ((some t.next and let t' = t.next | some (((this.~(@r_c0_mismatch.t)).~(@r_c0_serverResponse.t)).~(@r_c0_channel.t)).@r_c0_fatalError.t'))
+  one t : localFirst[r_c0_mismatch,c0_serverResponse, this] | 
+  !((((((((this.~(@r_c0_mismatch.t)).~(@r_c0_serverResponse.t)).~(@r_c0_channel.t)).~(@r_c0_handshakeStatus.t)).@r_c0_client).@c0_client_ref).@r_c0_protocolversion) = (((((((this.~(@r_c0_mismatch.t)).~(@r_c0_serverResponse.t)).~(@r_c0_channel.t)).~(@r_c0_handshakeStatus.t)).@r_c0_server).@c0_server_ref).@r_c0_protocolversion))
+  one t : localFirst[r_c0_mismatch,c0_serverResponse, this] | 
+  ((((((((this.~(@r_c0_mismatch.t)).~(@r_c0_serverResponse.t)).~(@r_c0_channel.t)).~(@r_c0_handshakeStatus.t)).@r_c0_server).@c0_server_ref).@r_c0_send).@c0_send_ref.t) = c0_protocolMismatch }
+
+
+sig c0_serverHello
+{}
+{ lone localFirst[r_c0_serverHello, c0_serverResponse, this] && lone r_c0_serverHello.State.this && total[r_c0_serverHello,c0_serverHello]
+  one t : localFirst[r_c0_serverHello,c0_serverResponse, this] | 
+  (some this) && ((some t.next and let t' = t.next | (((some (this.~(@r_c0_serverHello.t)).@r_c0_serverCertificate.t') || (some (((this.~(@r_c0_serverHello.t)).~(@r_c0_serverResponse.t)).~(@r_c0_channel.t)).@r_c0_serverKeyExchange.t')) || (some (((this.~(@r_c0_serverHello.t)).~(@r_c0_serverResponse.t)).~(@r_c0_channel.t)).@r_c0_certificateRequest.t')) || (some (((this.~(@r_c0_serverHello.t)).~(@r_c0_serverResponse.t)).~(@r_c0_channel.t)).@r_c0_serverHelloDone.t')))
+  one t : localFirst[r_c0_serverHello,c0_serverResponse, this] | 
+  (((((((this.~(@r_c0_serverHello.t)).~(@r_c0_serverResponse.t)).~(@r_c0_channel.t)).~(@r_c0_handshakeStatus.t)).@r_c0_client).@c0_client_ref).@r_c0_protocolversion) in (((((((this.~(@r_c0_serverHello.t)).~(@r_c0_serverResponse.t)).~(@r_c0_channel.t)).~(@r_c0_handshakeStatus.t)).@r_c0_server).@c0_server_ref).@r_c0_protocolversion)
+  one t : localFirst[r_c0_serverHello,c0_serverResponse, this] | 
+  ((((((((this.~(@r_c0_serverHello.t)).~(@r_c0_serverResponse.t)).~(@r_c0_channel.t)).~(@r_c0_handshakeStatus.t)).@r_c0_server).@c0_server_ref).@r_c0_send).@c0_send_ref.t) = c0_serverHelloMessage }
+
+
+sig c0_serverCertificate
+{}
+{ lone localFirst[r_c0_serverCertificate, c0_serverResponse, this] && lone r_c0_serverCertificate.State.this && total[r_c0_serverCertificate,c0_serverCertificate]
+  one t : localFirst[r_c0_serverCertificate,c0_serverResponse, this] | 
+  (some this) && ((some t.next and let t' = t.next | ((some (((this.~(@r_c0_serverCertificate.t)).~(@r_c0_serverResponse.t)).~(@r_c0_channel.t)).@r_c0_serverKeyExchange.t') || (some (((this.~(@r_c0_serverCertificate.t)).~(@r_c0_serverResponse.t)).~(@r_c0_channel.t)).@r_c0_certificateRequest.t')) || (some (((this.~(@r_c0_serverCertificate.t)).~(@r_c0_serverResponse.t)).~(@r_c0_channel.t)).@r_c0_serverHelloDone.t')))
+  one t : localFirst[r_c0_serverCertificate,c0_serverResponse, this] | 
+  ((((((((this.~(@r_c0_serverCertificate.t)).~(@r_c0_serverResponse.t)).~(@r_c0_channel.t)).~(@r_c0_handshakeStatus.t)).@r_c0_server).@c0_server_ref).@r_c0_send).@c0_send_ref.t) = c0_serverCertificateMessage }
+
+
+
+
+sig c0_serverKeyExchange
+{}
+{ lone localFirst[r_c0_serverKeyExchange, c0_handshakeStatus, this] && lone r_c0_serverKeyExchange.State.this && total[r_c0_serverKeyExchange,c0_serverKeyExchange]
+  one t : localFirst[r_c0_serverKeyExchange,c0_handshakeStatus, this] | 
+  (some this) && ((some t.next and let t' = t.next | (some (this.~(@r_c0_serverKeyExchange.t)).@r_c0_certificateRequest.t') || (some (this.~(@r_c0_serverKeyExchange.t)).@r_c0_serverHelloDone.t')))
+  one t : localFirst[r_c0_serverKeyExchange,c0_handshakeStatus, this] | 
+  ((((((this.~(@r_c0_serverKeyExchange.t)).~(@r_c0_handshakeStatus.t)).@r_c0_server).@c0_server_ref).@r_c0_send).@c0_send_ref.t) = c0_serverKeyExchangeMessage }
+
+
+sig c0_certificateRequest
+{}
+{ lone localFirst[r_c0_certificateRequest, c0_handshakeStatus, this] && lone r_c0_certificateRequest.State.this && total[r_c0_certificateRequest,c0_certificateRequest]
+  one t : localFirst[r_c0_certificateRequest,c0_handshakeStatus, this] | 
+  (some this) && ((some t.next and let t' = t.next | some (this.~(@r_c0_certificateRequest.t)).@r_c0_serverHelloDone.t'))
+  (no c0_TLSFeatures.@r_c0_annonymousMode) && (some c0_TLSFeatures.@r_c0_clientAuthentication)
+  one t : localFirst[r_c0_certificateRequest,c0_handshakeStatus, this] | 
+  ((((((this.~(@r_c0_certificateRequest.t)).~(@r_c0_handshakeStatus.t)).@r_c0_server).@c0_server_ref).@r_c0_send).@c0_send_ref.t) = c0_serverCertificateRequestMessage }
+
+
+sig c0_serverHelloDone
+{}
+{ lone localFirst[r_c0_serverHelloDone, c0_handshakeStatus, this] && lone r_c0_serverHelloDone.State.this && total[r_c0_serverHelloDone,c0_serverHelloDone]
+  one t : localFirst[r_c0_serverHelloDone,c0_handshakeStatus, this] | 
+  (some this) && ((some t.next and let t' = t.next | some (this.~(@r_c0_serverHelloDone.t)).@r_c0_clientResponse.t'))
+  one t : localFirst[r_c0_serverHelloDone,c0_handshakeStatus, this] | 
+  ((((((this.~(@r_c0_serverHelloDone.t)).~(@r_c0_handshakeStatus.t)).@r_c0_server).@c0_server_ref).@r_c0_send).@c0_send_ref.t) = c0_serverHelloDoneMessage }
+
+
+sig c0_clientResponse
+{ r_c0_clientCertificate : c0_clientCertificate -> State
+, r_c0_clientKeyExchange : c0_clientKeyExchange -> State
+, r_c0_certificateVerify : c0_certificateVerify -> State
+, r_c0_clientChangeCipherSpec : c0_clientChangeCipherSpec -> State
+, r_c0_clientFinished : c0_clientFinished -> State }
+{ lone localFirst[r_c0_clientResponse, c0_handshakeStatus, this] && lone r_c0_clientResponse.State.this && total[r_c0_clientResponse,c0_clientResponse]
+  all t : State | lone r_c0_clientCertificate.t && 
+	lone r_c0_clientKeyExchange.t && 
+	lone r_c0_certificateVerify.t && 
+	lone r_c0_clientChangeCipherSpec.t && 
+	lone r_c0_clientFinished.t && 
+	(no r_c0_clientResponse.t.this => no r_c0_clientCertificate.t && no r_c0_clientKeyExchange.t && no r_c0_certificateVerify.t && no r_c0_clientChangeCipherSpec.t && no r_c0_clientFinished.t)
+  all t : State | let children = (r_c0_clientCertificate.t + r_c0_clientKeyExchange.t + r_c0_certificateVerify.t + r_c0_clientChangeCipherSpec.t + r_c0_clientFinished.t) | one children
+  one t : localFirst[r_c0_clientResponse,c0_handshakeStatus, this] | 
+  ((this.~(@r_c0_clientResponse.t)).@c0_handshakeStatus_ref.t) = @r_c0_initiated.t
+  ((one t0 : localFirst[r_c0_clientResponse,c0_clientResponse, this] | (some this.@r_c0_clientCertificate.t0) || (some this.@r_c0_clientKeyExchange.t0))) }
+
+sig c0_clientCertificate
+{}
+{ lone localFirst[r_c0_clientCertificate, c0_clientResponse, this] && lone r_c0_clientCertificate.State.this && total[r_c0_clientCertificate,c0_clientCertificate]
+  one t : localFirst[r_c0_clientCertificate,c0_clientResponse, this] | 
+  (some this) && ((some t.next and let t' = t.next | some (this.~(@r_c0_clientCertificate.t)).@r_c0_clientKeyExchange.t'))
+  (no c0_TLSFeatures.@r_c0_annonymousMode) && (some c0_TLSFeatures.@r_c0_clientAuthentication)
+  one t : localFirst[r_c0_clientCertificate,c0_clientResponse, this] | 
+  (((((((this.~(@r_c0_clientCertificate.t)).~(@r_c0_clientResponse.t)).~(@r_c0_handshakeStatus.t)).@r_c0_client).@c0_client_ref).@r_c0_send).@c0_send_ref.t) = c0_clientCertificateMessage }
+
+
+sig c0_clientKeyExchange
+{}
+{ lone localFirst[r_c0_clientKeyExchange, c0_clientResponse, this] && lone r_c0_clientKeyExchange.State.this && total[r_c0_clientKeyExchange,c0_clientKeyExchange]
+  one t : localFirst[r_c0_clientKeyExchange,c0_clientResponse, this] | 
+  (some this) && ((some t.next and let t' = t.next | (some (this.~(@r_c0_clientKeyExchange.t)).@r_c0_certificateVerify.t') || (some (this.~(@r_c0_clientKeyExchange.t)).@r_c0_clientChangeCipherSpec.t')))
+  one t : localFirst[r_c0_clientKeyExchange,c0_clientResponse, this] | 
+  (((((((this.~(@r_c0_clientKeyExchange.t)).~(@r_c0_clientResponse.t)).~(@r_c0_handshakeStatus.t)).@r_c0_client).@c0_client_ref).@r_c0_send).@c0_send_ref.t) = c0_clientKeyExchangeMessage }
+
+
+sig c0_certificateVerify
+{}
+{ lone localFirst[r_c0_certificateVerify, c0_clientResponse, this] && lone r_c0_certificateVerify.State.this && total[r_c0_certificateVerify,c0_certificateVerify]
+  one t : localFirst[r_c0_certificateVerify,c0_clientResponse, this] | 
+  (some this) && ((some t.next and let t' = t.next | some (this.~(@r_c0_certificateVerify.t)).@r_c0_clientChangeCipherSpec.t'))
+  one t : localFirst[r_c0_certificateVerify,c0_clientResponse, this] | 
+  some ((((((this.~(@r_c0_certificateVerify.t)).~(@r_c0_clientResponse.t)).~(@r_c0_handshakeStatus.t)).@r_c0_client).@c0_client_ref).@r_c0_certificate).@r_c0_signing.t
+  one t : localFirst[r_c0_certificateVerify,c0_clientResponse, this] | 
+  (((((((this.~(@r_c0_certificateVerify.t)).~(@r_c0_clientResponse.t)).~(@r_c0_handshakeStatus.t)).@r_c0_client).@c0_client_ref).@r_c0_send).@c0_send_ref.t) = c0_certificateVerifyMessage }
+
+
+sig c0_clientChangeCipherSpec
+{}
+{ lone localFirst[r_c0_clientChangeCipherSpec, c0_clientResponse, this] && lone r_c0_clientChangeCipherSpec.State.this && total[r_c0_clientChangeCipherSpec,c0_clientChangeCipherSpec]
+  one t : localFirst[r_c0_clientChangeCipherSpec,c0_clientResponse, this] | 
+  (some this) && ((some t.next and let t' = t.next | some (this.~(@r_c0_clientChangeCipherSpec.t)).@r_c0_clientFinished.t'))
+  one t : localFirst[r_c0_clientChangeCipherSpec,c0_clientResponse, this] | 
+  (((((((this.~(@r_c0_clientChangeCipherSpec.t)).~(@r_c0_clientResponse.t)).~(@r_c0_handshakeStatus.t)).@r_c0_client).@c0_client_ref).@r_c0_send).@c0_send_ref.t) = c0_clientChangeCipherSpecMessage }
+
+
+sig c0_clientFinished
+{}
+{ lone localFirst[r_c0_clientFinished, c0_clientResponse, this] && lone r_c0_clientFinished.State.this && total[r_c0_clientFinished,c0_clientFinished]
+  one t : localFirst[r_c0_clientFinished,c0_clientResponse, this] | 
+  (some this) && ((some t.next and let t' = t.next | some ((this.~(@r_c0_clientFinished.t)).~(@r_c0_clientResponse.t)).@r_c0_serverFinish.t'))
+  one t : localFirst[r_c0_clientFinished,c0_clientResponse, this] | 
+  (((((((this.~(@r_c0_clientFinished.t)).~(@r_c0_clientResponse.t)).~(@r_c0_handshakeStatus.t)).@r_c0_client).@c0_client_ref).@r_c0_send).@c0_send_ref.t) = c0_clientFinishedMessage }
+
+
+
+sig c0_serverFinish
+{ r_c0_serverChangeCipherSpec : c0_serverChangeCipherSpec -> State
+, r_c0_serverFinished : c0_serverFinished -> State }
+{ lone localFirst[r_c0_serverFinish, c0_handshakeStatus, this] && lone r_c0_serverFinish.State.this && total[r_c0_serverFinish,c0_serverFinish]
+  all t : State | lone r_c0_serverChangeCipherSpec.t && 
+	lone r_c0_serverFinished.t && 
+	(no r_c0_serverFinish.t.this => no r_c0_serverChangeCipherSpec.t && no r_c0_serverFinished.t)
+  all t : State | let children = (r_c0_serverChangeCipherSpec.t + r_c0_serverFinished.t) | one children
+  one t : localFirst[r_c0_serverFinish,c0_handshakeStatus, this] | (some @r_c0_serverChangeCipherSpec.t)
+  one t : localFirst[r_c0_serverFinish,c0_handshakeStatus, this] | 
+  (some this) && ((some t.next and let t' = t.next | some this.@r_c0_serverFinished.t'))
+  one t : localFirst[r_c0_serverFinish,c0_handshakeStatus, this] | 
+  ((this.~(@r_c0_serverFinish.t)).@c0_handshakeStatus_ref.t) = @r_c0_initiated.t }
+
+sig c0_serverChangeCipherSpec
+{}
+{ lone localFirst[r_c0_serverChangeCipherSpec, c0_serverFinish, this] && lone r_c0_serverChangeCipherSpec.State.this && total[r_c0_serverChangeCipherSpec,c0_serverChangeCipherSpec]
+  one t : localFirst[r_c0_serverChangeCipherSpec,c0_serverFinish, this] | 
+  (((((((this.~(@r_c0_serverChangeCipherSpec.t)).~(@r_c0_serverFinish.t)).~(@r_c0_handshakeStatus.t)).@r_c0_server).@c0_server_ref).@r_c0_send).@c0_send_ref.t) = c0_serverChangeCipherSpecMessage }
+
+
+sig c0_serverFinished
+{}
+{ lone localFirst[r_c0_serverFinished, c0_serverFinish, this] && lone r_c0_serverFinished.State.this && total[r_c0_serverFinished,c0_serverFinished]
+  one t : localFirst[r_c0_serverFinished,c0_serverFinish, this] | 
+  (some this) && ((some t.next and let t' = t.next | some ((this.~(@r_c0_serverFinished.t)).~(@r_c0_serverFinish.t)).@r_c0_dataTransfer.t'))
+  one t : localFirst[r_c0_serverFinished,c0_serverFinish, this] | 
+  (((((((this.~(@r_c0_serverFinished.t)).~(@r_c0_serverFinish.t)).~(@r_c0_handshakeStatus.t)).@r_c0_server).@c0_server_ref).@r_c0_send).@c0_send_ref.t) = c0_serverFinishedMessage
+  one t : localFirst[r_c0_serverFinished,c0_serverFinish, this] | 
+  (((this.~(@r_c0_serverFinished.t)).~(@r_c0_serverFinish.t)).@c0_handshakeStatus_ref.t) = @r_c0_completed.t }
+
+
+
+sig c0_dataTransfer
+{}
+{ lone localFirst[r_c0_dataTransfer, c0_handshakeStatus, this] && lone r_c0_dataTransfer.State.this && total[r_c0_dataTransfer,c0_dataTransfer]
+  one t : localFirst[r_c0_dataTransfer,c0_handshakeStatus, this] | 
+  (some t':t.future | ((this.~(@r_c0_dataTransfer.t)).@c0_handshakeStatus_ref.t') = @r_c0_initiated.t' and ( all t'': upto[t, t'] | some this))
+  one t : localFirst[r_c0_dataTransfer,c0_handshakeStatus, this] | 
+  ((this.~(@r_c0_dataTransfer.t)).@c0_handshakeStatus_ref.t) = @r_c0_completed.t
+  one t : localFirst[r_c0_dataTransfer,c0_handshakeStatus, this] | 
+  ((((((this.~(@r_c0_dataTransfer.t)).~(@r_c0_handshakeStatus.t)).@r_c0_client).@c0_client_ref).@r_c0_send).@c0_send_ref.t) = c0_applicationDataMessage }
+
+
+sig c0_fatalError
+{}
+{ lone localFirst[r_c0_fatalError, c0_handshakeStatus, this] && lone r_c0_fatalError.State.this && total[r_c0_fatalError,c0_fatalError]
+  one t : localFirst[r_c0_fatalError,c0_handshakeStatus, this] | 
+  ((this.~(@r_c0_fatalError.t)).@c0_handshakeStatus_ref.t) = @r_c0_failed.t }
+
+
+
+
+

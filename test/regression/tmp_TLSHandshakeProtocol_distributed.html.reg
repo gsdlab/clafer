@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=9">
+<style>.identifier{}
+.keyword{font-weight: bold;}
+.tKeyword{font-style: oblique;}
+.reference{}
+.code { background-color: lightgray; padding: 5px 5px 5px 5px; border: 1px solid darkgray; margin-bottom: 15px;
+        font-family: Pragmata, Menlo, 'DejaVu LGC Sans Mono', 'DejaVu Sans Mono', Consolas, 'Everson Mono', 'Lucida Console', 'Andale Mono', 'Nimbus Mono L', 'Liberation Mono', FreeMono, 'Osaka Monospaced', Courier, 'New Courier', monospace; }
+.standalonecomment { color: green; font-style:italic }
+.inlinecomment { color: green; padding-left:20px; font-style:italic }
+.error{background-color: yellow; color: red }
+.deprecated{color: orange }
+.indent{padding-left:20px}
+a[href$='Lookup failed'] {color: red}
+a[href$='Uid not found'] {color: red}
+a[href$='Ambiguous name'] {color: yellow}
+</style></head>
+<body>
+
+<div>
+<span class="keyword">abstract</span> <span class="tKeyword">final</span> <span class="claferDecl" id="c0_Feature">Feature</span></div>
+
+
+<div>
+<span class="keyword">abstract</span> <span class="tKeyword">final</span> <span class="claferDecl" id="c0_FeatureModel">FeatureModel</span></div>
+
+
+<div>
+<span class="claferDecl" id="c0_TLSFeatures">TLSFeatures</span><span class="keyword"> : </span><a href="#c0_FeatureModel"><span class="reference">FeatureModel</span></a>
+  <div class="indent">
+  <span class="claferDecl" id="c0_annonymousMode">annonymousMode</span><span class="keyword"> : </span><a href="#c0_Feature"><span class="reference">Feature</span></a> ?</div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_clientAuthentication">clientAuthentication</span><span class="keyword"> : </span><a href="#c0_Feature"><span class="reference">Feature</span></a> ?</div>
+</div>
+
+
+<div>
+<span class="keyword">abstract</span> <span class="tKeyword">final</span> <span class="claferDecl" id="c0_Domain">Domain</span></div>
+
+
+<div>
+<span class="keyword">enum</span> ProtocolVersion = <span class="claferDecl" id="c0_SSL2_0">SSL2_0</span> | <span class="claferDecl" id="c0_SSL3_0">SSL3_0</span> | <span class="claferDecl" id="c0_TLS1_0">TLS1_0</span> | <span class="claferDecl" id="c0_TLS1_1">TLS1_1</span> | <span class="claferDecl" id="c0_TLS1_2">TLS1_2</span></div>
+
+
+<div>
+<span class="keyword">enum</span> HandshakeStatus = <span class="claferDecl" id="c0_initiated">initiated</span> | <span class="claferDecl" id="c0_completed">completed</span> | <span class="claferDecl" id="c0_failed">failed</span></div>
+
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Port">Port</span></div>
+
+
+<div>
+<span class="keyword">abstract</span> <span class="tKeyword">final</span> <span class="claferDecl" id="c0_Message">Message</span></div>
+
+
+<div>
+<span class="claferDecl" id="c0_serverHelloRequestMessage">serverHelloRequestMessage</span><span class="keyword"> : </span><a href="#c0_Message"><span class="reference">Message</span></a></div>
+
+
+<div>
+<span class="claferDecl" id="c0_serverHelloMessage">serverHelloMessage</span><span class="keyword"> : </span><a href="#c0_Message"><span class="reference">Message</span></a></div>
+
+
+<div>
+<span class="claferDecl" id="c0_serverCertificateMessage">serverCertificateMessage</span><span class="keyword"> : </span><a href="#c0_Message"><span class="reference">Message</span></a></div>
+
+
+<div>
+<span class="claferDecl" id="c0_serverKeyExchangeMessage">serverKeyExchangeMessage</span><span class="keyword"> : </span><a href="#c0_Message"><span class="reference">Message</span></a></div>
+
+
+<div>
+<span class="claferDecl" id="c0_serverCertificateRequestMessage">serverCertificateRequestMessage</span><span class="keyword"> : </span><a href="#c0_Message"><span class="reference">Message</span></a></div>
+
+
+<div>
+<span class="claferDecl" id="c0_serverHelloDoneMessage">serverHelloDoneMessage</span><span class="keyword"> : </span><a href="#c0_Message"><span class="reference">Message</span></a></div>
+
+
+<div>
+<span class="claferDecl" id="c0_serverChangeCipherSpecMessage">serverChangeCipherSpecMessage</span><span class="keyword"> : </span><a href="#c0_Message"><span class="reference">Message</span></a></div>
+
+
+<div>
+<span class="claferDecl" id="c0_serverFinishedMessage">serverFinishedMessage</span><span class="keyword"> : </span><a href="#c0_Message"><span class="reference">Message</span></a></div>
+
+
+<div>
+<span class="claferDecl" id="c0_protocolMismatch">protocolMismatch</span><span class="keyword"> : </span><a href="#c0_Message"><span class="reference">Message</span></a></div>
+
+
+<div>
+<span class="claferDecl" id="c0_clientHelloMessage">clientHelloMessage</span><span class="keyword"> : </span><a href="#c0_Message"><span class="reference">Message</span></a></div>
+
+
+<div>
+<span class="claferDecl" id="c0_clientCertificateMessage">clientCertificateMessage</span><span class="keyword"> : </span><a href="#c0_Message"><span class="reference">Message</span></a></div>
+
+
+<div>
+<span class="claferDecl" id="c0_clientKeyExchangeMessage">clientKeyExchangeMessage</span><span class="keyword"> : </span><a href="#c0_Message"><span class="reference">Message</span></a></div>
+
+
+<div>
+<span class="claferDecl" id="c0_certificateVerifyMessage">certificateVerifyMessage</span><span class="keyword"> : </span><a href="#c0_Message"><span class="reference">Message</span></a></div>
+
+
+<div>
+<span class="claferDecl" id="c0_clientChangeCipherSpecMessage">clientChangeCipherSpecMessage</span><span class="keyword"> : </span><a href="#c0_Message"><span class="reference">Message</span></a></div>
+
+
+<div>
+<span class="claferDecl" id="c0_clientFinishedMessage">clientFinishedMessage</span><span class="keyword"> : </span><a href="#c0_Message"><span class="reference">Message</span></a></div>
+
+
+<div>
+<span class="claferDecl" id="c0_applicationDataMessage">applicationDataMessage</span><span class="keyword"> : </span><a href="#c0_Message"><span class="reference">Message</span></a></div>
+
+
+<div>
+<span class="keyword">abstract</span> <span class="tKeyword">final</span> <span class="claferDecl" id="c0_Node">Node</span><span class="keyword"> : </span><a href="#c0_Domain"><span class="reference">Domain</span></a>
+  <div class="indent">
+  <span class="claferDecl" id="c0_send">send</span><span class="keyword"> : </span><a href="#c0_Port"><span class="reference">Port</span></a><span class="keyword"> -> </span><a href="#c0_Message"><span class="reference">Message</span></a></div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_receive">receive</span><span class="keyword"> : </span><a href="#c0_Port"><span class="reference">Port</span></a><span class="keyword"> -> </span><a href="#c0_Message"><span class="reference">Message</span></a></div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_protocolversion">protocolversion</span><span class="keyword"> -> </span><a href="#c0_ProtocolVersion"><span class="reference">ProtocolVersion</span></a> +</div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_certificate">certificate</span> ?
+    <div class="indent">
+    <span class="claferDecl" id="c0_signing">signing</span> ?</div>
+  </div>
+</div>
+
+
+<div>
+<span class="keyword">abstract</span> <span class="tKeyword">final</span> <span class="claferDecl" id="c0_Server">Server</span><span class="keyword"> : </span><a href="#c0_Node"><span class="reference">Node</span></a></div>
+
+
+<div>
+<span class="keyword">abstract</span> <span class="tKeyword">final</span> <span class="claferDecl" id="c0_Client">Client</span><span class="keyword"> : </span><a href="#c0_Node"><span class="reference">Node</span></a></div>
+
+
+<div>
+<span class="keyword">[</span> <a href="#c0_Server"><span class="reference">Server</span></a>.<a href="#c0_send"><span class="reference">send</span></a> = <a href="#c0_Client"><span class="reference">Client</span></a>.<a href="#c0_receive"><span class="reference">receive</span></a> <span class="keyword">]</span></div>
+
+
+<div>
+<span class="keyword">[</span> <a href="#c0_Server"><span class="reference">Server</span></a>.<a href="#c0_receive"><span class="reference">receive</span></a> = <a href="#c0_Client"><span class="reference">Client</span></a>.<a href="#c0_send"><span class="reference">send</span></a> <span class="keyword">]</span></div>
+
+
+<div>
+<span class="claferDecl" id="c0_OurServer">OurServer</span><span class="keyword"> : </span><a href="#c0_Server"><span class="reference">Server</span></a>
+  <div class="indent">
+  <span class="keyword">[</span> <a href="#c0_protocolversion"><span class="reference">protocolversion</span></a> = <a href="#c0_SSL2_0"><span class="reference">SSL2_0</span></a>, <a href="#c0_SSL3_0"><span class="reference">SSL3_0</span></a>, <a href="#c0_TLS1_2"><span class="reference">TLS1_2</span></a> <span class="keyword">]</span></div>
+</div>
+
+
+<div>
+<span class="claferDecl" id="c0_aClient">aClient</span><span class="keyword"> : </span><a href="#c0_Client"><span class="reference">Client</span></a>
+  <div class="indent">
+  <span class="keyword">[</span> <a href="#c0_certificate"><span class="reference">certificate</span></a> <span class="keyword">]</span></div>
+  <div class="indent">
+  <span class="keyword">[</span> <a href="#c0_protocolversion"><span class="reference">protocolversion</span></a> = <a href="#c0_TLS1_2"><span class="reference">TLS1_2</span></a> <span class="keyword">]</span></div>
+</div>
+
+
+<div>
+<span class="claferDecl" id="c0_Protocol">Protocol</span><span class="keyword"> : </span><a href="#c0_Domain"><span class="reference">Domain</span></a>
+  <div class="indent">
+  <span class="tKeyword">final</span> <span class="claferDecl" id="c0_client">client</span><span class="keyword"> -> </span><a href="#c0_aClient"><span class="reference">aClient</span></a></div>
+  <div class="indent">
+  <span class="tKeyword">final</span> <span class="claferDecl" id="c0_server">server</span><span class="keyword"> -> </span><a href="#c0_OurServer"><span class="reference">OurServer</span></a></div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_handshakeStatus">handshakeStatus</span><span class="keyword"> -> </span><a href="#c0_HandshakeStatus"><span class="reference">HandshakeStatus</span></a>
+    <div class="indent">
+    <span class="keyword">xor</span> <span class="claferDecl" id="c0_channel">channel</span>
+      <div class="indent">
+      <span class="tKeyword">initial</span> <span class="claferDecl" id="c0_clientHello">clientHello</span><span class="tKeyword"> --&gt; </span><a href="#c0_serverResponse"><span class="reference">serverResponse</span></a> &#124;&#124; <a href="#c0_fatalError"><span class="reference">fatalError</span></a>
+        <div class="indent">
+        <span class="keyword">[</span> handshakeStatus = <a href="#c0_initiated"><span class="reference">initiated</span></a> <span class="keyword">]</span></div>
+        <div class="indent">
+        <span class="keyword">[</span> <a href="#c0_client"><span class="reference">client</span></a>.<a href="#c0_send"><span class="reference">send</span></a> = <a href="#c0_clientHelloMessage"><span class="reference">clientHelloMessage</span></a> <span class="keyword">]</span></div>
+      </div>
+      <div class="indent">
+      <span class="keyword">xor</span> <span class="claferDecl" id="c0_serverResponse">serverResponse</span>
+        <div class="indent">
+        <span class="keyword">[</span> handshakeStatus = <a href="#c0_initiated"><span class="reference">initiated</span></a> <span class="keyword">]</span></div>
+        <div class="indent">
+        <span class="keyword">[</span> <span class="tKeyword">initially </span><a href="#c0_serverHello"><span class="reference">serverHello</span></a> &#124;&#124; <a href="#c0_mismatch"><span class="reference">mismatch</span></a> <span class="keyword">]</span></div>
+        <div class="indent">
+        <span class="claferDecl" id="c0_mismatch">mismatch</span><span class="tKeyword"> --&gt; </span><a href="#c0_fatalError"><span class="reference">fatalError</span></a>
+          <div class="indent">
+          <span class="keyword">[</span>  ! <a href="#c0_client"><span class="reference">client</span></a>.<a href="#c0_protocolversion"><span class="reference">protocolversion</span></a> = <a href="#c0_server"><span class="reference">server</span></a>.<a href="#c0_protocolversion"><span class="reference">protocolversion</span></a> <span class="keyword">]</span></div>
+          <div class="indent">
+          <span class="keyword">[</span> <a href="#c0_server"><span class="reference">server</span></a>.<a href="#c0_send"><span class="reference">send</span></a> = <a href="#c0_protocolMismatch"><span class="reference">protocolMismatch</span></a> <span class="keyword">]</span></div>
+        </div>
+        <div class="indent">
+        <span class="claferDecl" id="c0_serverHello">serverHello</span><span class="tKeyword"> --&gt; </span><a href="#c0_serverCertificate"><span class="reference">serverCertificate</span></a> &#124;&#124; <a href="#c0_serverKeyExchange"><span class="reference">serverKeyExchange</span></a> &#124;&#124; <a href="#c0_certificateRequest"><span class="reference">certificateRequest</span></a> &#124;&#124; <a href="#c0_serverHelloDone"><span class="reference">serverHelloDone</span></a>
+          <div class="indent">
+          <span class="keyword">[</span> <a href="#c0_client"><span class="reference">client</span></a>.<a href="#c0_protocolversion"><span class="reference">protocolversion</span></a> in <a href="#c0_server"><span class="reference">server</span></a>.<a href="#c0_protocolversion"><span class="reference">protocolversion</span></a> <span class="keyword">]</span></div>
+          <div class="indent">
+          <span class="keyword">[</span> <a href="#c0_server"><span class="reference">server</span></a>.<a href="#c0_send"><span class="reference">send</span></a> = <a href="#c0_serverHelloMessage"><span class="reference">serverHelloMessage</span></a> <span class="keyword">]</span></div>
+        </div>
+        <div class="indent">
+        <span class="keyword">[</span> <a href="#c0_serverHello"><span class="reference">serverHello</span></a><span class="tKeyword"> -[</span><span class="keyword">no</span> <a href="#c0_annonymousMode"><span class="reference">annonymousMode</span></a><span class="tKeyword">]--&gt; </span><a href="#c0_serverCertificate"><span class="reference">serverCertificate</span></a> <span class="keyword">]</span></div>
+        <div class="indent">
+        <span class="claferDecl" id="c0_serverCertificate">serverCertificate</span><span class="tKeyword"> --&gt; </span><a href="#c0_serverKeyExchange"><span class="reference">serverKeyExchange</span></a> &#124;&#124; <a href="#c0_certificateRequest"><span class="reference">certificateRequest</span></a> &#124;&#124; <a href="#c0_serverHelloDone"><span class="reference">serverHelloDone</span></a>
+          <div class="indent">
+          <span class="keyword">[</span> <a href="#c0_server"><span class="reference">server</span></a>.<a href="#c0_send"><span class="reference">send</span></a> = <a href="#c0_serverCertificateMessage"><span class="reference">serverCertificateMessage</span></a> <span class="keyword">]</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="indent">
+    <span class="claferDecl" id="c0_serverKeyExchange">serverKeyExchange</span><span class="tKeyword"> --&gt; </span><a href="#c0_certificateRequest"><span class="reference">certificateRequest</span></a> &#124;&#124; <a href="#c0_serverHelloDone"><span class="reference">serverHelloDone</span></a>
+      <div class="indent">
+      <span class="keyword">[</span> <a href="#c0_server"><span class="reference">server</span></a>.<a href="#c0_send"><span class="reference">send</span></a> = <a href="#c0_serverKeyExchangeMessage"><span class="reference">serverKeyExchangeMessage</span></a> <span class="keyword">]</span></div>
+    </div>
+    <div class="indent">
+    <span class="claferDecl" id="c0_certificateRequest">certificateRequest</span><span class="tKeyword"> --&gt; </span><a href="#c0_serverHelloDone"><span class="reference">serverHelloDone</span></a>
+      <div class="indent">
+      <span class="keyword">[</span> <span class="keyword">no</span> <a href="#c0_annonymousMode"><span class="reference">annonymousMode</span></a> &amp;&amp; <a href="#c0_clientAuthentication"><span class="reference">clientAuthentication</span></a> <span class="keyword">]</span></div>
+      <div class="indent">
+      <span class="keyword">[</span> <a href="#c0_server"><span class="reference">server</span></a>.<a href="#c0_send"><span class="reference">send</span></a> = <a href="#c0_serverCertificateRequestMessage"><span class="reference">serverCertificateRequestMessage</span></a> <span class="keyword">]</span></div>
+    </div>
+    <div class="indent">
+    <span class="claferDecl" id="c0_serverHelloDone">serverHelloDone</span><span class="tKeyword"> --&gt; </span><a href="#c0_clientResponse"><span class="reference">clientResponse</span></a>
+      <div class="indent">
+      <span class="keyword">[</span> <a href="#c0_server"><span class="reference">server</span></a>.<a href="#c0_send"><span class="reference">send</span></a> = <a href="#c0_serverHelloDoneMessage"><span class="reference">serverHelloDoneMessage</span></a> <span class="keyword">]</span></div>
+    </div>
+    <div class="indent">
+    <span class="keyword">xor</span> <span class="claferDecl" id="c0_clientResponse">clientResponse</span> ?
+      <div class="indent">
+      <span class="keyword">[</span> handshakeStatus = <a href="#c0_initiated"><span class="reference">initiated</span></a> <span class="keyword">]</span></div>
+      <div class="indent">
+      <span class="keyword">[</span> <span class="tKeyword">initially </span><a href="#c0_clientCertificate"><span class="reference">clientCertificate</span></a> &#124;&#124; <a href="#c0_clientKeyExchange"><span class="reference">clientKeyExchange</span></a> <span class="keyword">]</span></div>
+      <div class="indent">
+      <span class="claferDecl" id="c0_clientCertificate">clientCertificate</span><span class="tKeyword"> --&gt; </span><a href="#c0_clientKeyExchange"><span class="reference">clientKeyExchange</span></a>
+        <div class="indent">
+        <span class="keyword">[</span> <span class="keyword">no</span> <a href="#c0_annonymousMode"><span class="reference">annonymousMode</span></a> &amp;&amp; <a href="#c0_clientAuthentication"><span class="reference">clientAuthentication</span></a> <span class="keyword">]</span></div>
+        <div class="indent">
+        <span class="keyword">[</span> <a href="#c0_client"><span class="reference">client</span></a>.<a href="#c0_send"><span class="reference">send</span></a> = <a href="#c0_clientCertificateMessage"><span class="reference">clientCertificateMessage</span></a> <span class="keyword">]</span></div>
+      </div>
+      <div class="indent">
+      <span class="claferDecl" id="c0_clientKeyExchange">clientKeyExchange</span><span class="tKeyword"> --&gt; </span><a href="#c0_certificateVerify"><span class="reference">certificateVerify</span></a> &#124;&#124; <a href="#c0_clientChangeCipherSpec"><span class="reference">clientChangeCipherSpec</span></a>
+        <div class="indent">
+        <span class="keyword">[</span> <a href="#c0_client"><span class="reference">client</span></a>.<a href="#c0_send"><span class="reference">send</span></a> = <a href="#c0_clientKeyExchangeMessage"><span class="reference">clientKeyExchangeMessage</span></a> <span class="keyword">]</span></div>
+      </div>
+      <div class="indent">
+      <span class="claferDecl" id="c0_certificateVerify">certificateVerify</span><span class="tKeyword"> --&gt; </span><a href="#c0_clientChangeCipherSpec"><span class="reference">clientChangeCipherSpec</span></a>
+        <div class="indent">
+        <span class="keyword">[</span> <a href="#c0_client"><span class="reference">client</span></a>.<a href="#c0_certificate"><span class="reference">certificate</span></a>.<a href="#c0_signing"><span class="reference">signing</span></a> <span class="keyword">]</span></div>
+        <div class="indent">
+        <span class="keyword">[</span> <a href="#c0_client"><span class="reference">client</span></a>.<a href="#c0_send"><span class="reference">send</span></a> = <a href="#c0_certificateVerifyMessage"><span class="reference">certificateVerifyMessage</span></a> <span class="keyword">]</span></div>
+      </div>
+      <div class="indent">
+      <span class="claferDecl" id="c0_clientChangeCipherSpec">clientChangeCipherSpec</span><span class="tKeyword"> --&gt; </span><a href="#c0_clientFinished"><span class="reference">clientFinished</span></a>
+        <div class="indent">
+        <span class="keyword">[</span> <a href="#c0_client"><span class="reference">client</span></a>.<a href="#c0_send"><span class="reference">send</span></a> = <a href="#c0_clientChangeCipherSpecMessage"><span class="reference">clientChangeCipherSpecMessage</span></a> <span class="keyword">]</span></div>
+      </div>
+      <div class="indent">
+      <span class="claferDecl" id="c0_clientFinished">clientFinished</span><span class="tKeyword"> --&gt; </span><a href="#c0_serverFinish"><span class="reference">serverFinish</span></a>
+        <div class="indent">
+        <span class="keyword">[</span> <a href="#c0_client"><span class="reference">client</span></a>.<a href="#c0_send"><span class="reference">send</span></a> = <a href="#c0_clientFinishedMessage"><span class="reference">clientFinishedMessage</span></a> <span class="keyword">]</span></div>
+      </div>
+    </div>
+    <div class="indent">
+    <span class="keyword">xor</span> <span class="claferDecl" id="c0_serverFinish">serverFinish</span><span class="tKeyword"> --&gt; </span><a href="#c0_serverFinished"><span class="reference">serverFinished</span></a>
+      <div class="indent">
+      <span class="keyword">[</span> handshakeStatus = <a href="#c0_initiated"><span class="reference">initiated</span></a> <span class="keyword">]</span></div>
+      <div class="indent">
+      <span class="tKeyword">initial</span> <span class="claferDecl" id="c0_serverChangeCipherSpec">serverChangeCipherSpec</span>
+        <div class="indent">
+        <span class="keyword">[</span> <a href="#c0_server"><span class="reference">server</span></a>.<a href="#c0_send"><span class="reference">send</span></a> = <a href="#c0_serverChangeCipherSpecMessage"><span class="reference">serverChangeCipherSpecMessage</span></a> <span class="keyword">]</span></div>
+      </div>
+      <div class="indent">
+      <span class="claferDecl" id="c0_serverFinished">serverFinished</span><span class="tKeyword"> --&gt; </span><a href="#c0_dataTransfer"><span class="reference">dataTransfer</span></a>
+        <div class="indent">
+        <span class="keyword">[</span> <a href="#c0_server"><span class="reference">server</span></a>.<a href="#c0_send"><span class="reference">send</span></a> = <a href="#c0_serverFinishedMessage"><span class="reference">serverFinishedMessage</span></a> <span class="keyword">]</span></div>
+        <div class="indent">
+        <span class="keyword">[</span> handshakeStatus = <a href="#c0_completed"><span class="reference">completed</span></a> <span class="keyword">]</span></div>
+      </div>
+    </div>
+    <div class="indent">
+    <span class="claferDecl" id="c0_dataTransfer">dataTransfer</span><span class="tKeyword"> --&gt;&gt; </span>handshakeStatus = <a href="#c0_initiated"><span class="reference">initiated</span></a>
+      <div class="indent">
+      <span class="keyword">[</span> handshakeStatus = <a href="#c0_completed"><span class="reference">completed</span></a> <span class="keyword">]</span></div>
+      <div class="indent">
+      <span class="keyword">[</span> <a href="#c0_client"><span class="reference">client</span></a>.<a href="#c0_send"><span class="reference">send</span></a> = <a href="#c0_applicationDataMessage"><span class="reference">applicationDataMessage</span></a> <span class="keyword">]</span></div>
+    </div>
+    <div class="indent">
+    <span class="claferDecl" id="c0_fatalError">fatalError</span>
+      <div class="indent">
+      <span class="keyword">[</span> handshakeStatus = <a href="#c0_failed"><span class="reference">failed</span></a> <span class="keyword">]</span></div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

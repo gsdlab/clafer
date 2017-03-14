@@ -120,14 +120,14 @@ resolveModuleNames    (imodule, genv') =
 resolveClafer :: SEnv -> IClafer -> Resolve IClafer
 resolveClafer env clafer =
   do
-    elements' <- mapM (resolveElement env'{subClafers = subClafers',
-                                              ancClafers = ancClafers'}) $
+    elements' <- mapM (resolveElement env'{ subClafers = subClafers'
+                                          , ancClafers = ancClafers'}) $
                           _elements clafer
     return $ clafer {_elements = elements'}
   where
   env' = env {context = Just clafer, resPath = clafer : resPath env}
   subClafers' = tail $ bfs toNodeDeep [env'{resPath = [clafer]}]
-  ancClafers' = init (tails $ resPath env) >>= (mkAncestorList env)
+  ancClafers' = init (tails $ resPath env) >>= mkAncestorList env
 
 mkAncestorList :: SEnv -> [IClafer] -> [(IClafer, [IClafer])]
 mkAncestorList env rp =
@@ -198,9 +198,9 @@ resolveNav    env     pexp0@PExp{_inPos=pos', _exp=x} isFirst =
 -- | Depending on how resolved construct a navigation path from 'context env'
 mkPath :: Span -> SEnv -> (HowResolved, String, [IClafer]) -> (IExp, [IClafer])
 mkPath    pos'    env     (howResolved, id',    path)       = case howResolved of
-  Binding -> (IClaferId "" id' True Nothing, path)
+  Binding -> (IClaferId "" id' True (LocalBind id'), path)
   Special -> (specIExp id', path)
-  TypeSpecial -> (IClaferId "" id' True (Just id'), path)
+  TypeSpecial -> (IClaferId "" id' True (GlobalBind id'), path)
   Subclafers -> (toNav $ tail $ reverse $ map toTuple path, path)
   Ancestor -> (toNav' pos' $ adjustAncestor (fromJust $ context env)
                                        (reverse $ map toTuple $ resPath env)
@@ -210,13 +210,13 @@ mkPath    pos'    env     (howResolved, id',    path)       = case howResolved o
   TopClafer -> (toNav' pos' $ reverse $ map toTuple path, path)
   where
   toNav tuplePath = foldl'
-          (\exp' (id'', cbind) -> IFunExp iJoin [pExpDefPid pos' exp', mkPLClaferId pos' id'' (fromMaybe False $ isTopLevel <$> cbind) $ _uid <$> cbind])
-          (IClaferId "" thisIdent True (_uid <$> context env))
+          (\exp' (id'', cbind) -> IFunExp iJoin [pExpDefPid pos' exp', mkPLClaferId pos' id'' False $ createBind cbind])
+          (IClaferId "" thisIdent True (createBind $ context env))
           tuplePath
-  specIExp "this"     = IClaferId "" thisIdent True (_uid <$> context env)
+  specIExp "this"     = IClaferId "" thisIdent True (createBind $ context env)
   specIExp "parent"   = toNav [("parent", Just $ head path)]
   specIExp "dref"     = toNav [("dref", Just $ head path)]
-  specIExp "root"     = IClaferId "" rootIdent True (Just rootIdent)
+  specIExp "root"     = IClaferId "" rootIdent True (GlobalBind rootIdent)
   specIExp "children" = toNav [(id', Just $ head path)]
   specIExp i          = error $ "[BUG] ResolverName.specIExp: Unknown special id: " ++ i
 
@@ -225,12 +225,19 @@ toTuple c = (_uid c, Just c)
 
 toNav' :: Span -> [(String, Maybe IClafer)] -> IExp
 toNav'    pos'    tuplePath                  =
-  (mkIFunExp pos' iJoin $ map (\(id', cbind) -> IClaferId "" id' (fromMaybe False $ isTopLevel <$> cbind) (_uid <$> cbind)) tuplePath) :: IExp
+  (mkIFunExp pos' iJoin $ map (\(id', cbind) -> IClaferId "" id' (fromMaybe False $ isTopLevel <$> cbind) (createBind cbind)) tuplePath) :: IExp
+
+createBind :: Maybe IClafer -> ClaferBinding
+createBind (Just c) = GlobalBind $ _uid c
+createBind _ = NoBind
 
 adjustAncestor :: IClafer -> [(String, Maybe IClafer)] -> [(String, Maybe IClafer)] -> [(String, Maybe IClafer)]
 adjustAncestor ctx cPath rPath = (thisIdent, Just ctx) : parents ++ (fromJust $ stripPrefix prefix rPath)
   where
-  parents = replicate (length $ fromJust $ stripPrefix prefix cPath) (parentIdent, Nothing)
+  {-parents = replicate (length $ fromJust $ stripPrefix prefix cPath) (parentIdent, Nothing)-}
+  parents = map createParent $ fromJust $ stripPrefix prefix cPath
+  createParent :: (String, Maybe IClafer) -> (String, Maybe IClafer)
+  createParent (_, clafer) = (parentIdent, clafer)
   prefix = fst $ unzip $ takeWhile (uncurry eqIds) $ zip cPath rPath
   eqIds a b = (fst a) == (fst b)
 
@@ -238,11 +245,11 @@ adjustAncestor ctx cPath rPath = (thisIdent, Just ctx) : parents ++ (fromJust $ 
 mkPath' :: Span -> String -> (HowResolved, String, [IClafer]) -> (IExp, [IClafer])
 mkPath'    pos' modName'  (howResolved, id', path)          = case howResolved of
   Reference -> (toNav' pos' (zip ["dref", id'] (map Just path)), path)
-  _ -> (IClaferId modName' id' False (_uid <$> bind), path)
+  _ -> (IClaferId modName' id' False bind, path)
   where
-    bind = case path of
-      [] -> Nothing
-      c:_ -> Just c
+  bind = case path of
+    [] -> NoBind
+    c:_ -> GlobalBind $ _uid c
 
 -- -----------------------------------------------------------------------------
 

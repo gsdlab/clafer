@@ -11,7 +11,7 @@ grammar:
 	rm $(FRONT_DIR)/SkelClafer.hs
 	rm $(FRONT_DIR)/TestClafer.hs
 	mv $(FRONT_DIR)/DocClafer.txt ../doc
-	rm $(FRONT_DIR)/*.bak
+	rm -f $(FRONT_DIR)/*.bak
 
 # before running grammarDoc it is necessary to manually modify the following rules in clafer.cf
 # ModuleX.         Module ::= [Declaration] ;

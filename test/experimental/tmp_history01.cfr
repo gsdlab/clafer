@@ -1,0 +1,34 @@
+// Test case for history keyword
+
+xor TrafficLight 1
+  history xor on 
+    initial normal
+    flashing
+  initial off
+
+/*
+Rao: The above code desugars to 
+
+xor TrafficLight 1 {
+  history xor on {
+    initial normal flashing 
+  }
+  initial off 
+}
+
+
+But it should be desugared to the following,
+
+xor TrafficLight 1
+   xor on
+     initial normal
+     flashing
+   initial off
+   [G (on.normal && X !on) => X(!on W on.normal)] 
+   [G (on.flashing && X !on) => X(!on W on.flashing)]
+
+
+
+
+
+*/

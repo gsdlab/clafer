@@ -25,7 +25,7 @@ grammar:
 # Just like "init" but with enabled profiler
 # this will reinstall everything with profiling support, build clafer, and copy it to .
 prof: alloy4.2.jar
-	stack build --executable-profiling --library-profiling --ghc-options="-prof -fprof-auto -auto-all -caf-all -rtsopts -osuf p_o"
+	stack build --executable-profiling --library-profiling --ghc-options="-auto-all -caf-all -rtsopts -osuf p_o"
 
 .PHONY: test
 test:

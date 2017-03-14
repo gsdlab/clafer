@@ -1,0 +1,10 @@
+// Test for initially constraint
+
+xor b
+    c
+    d
+    e
+    [c --> d || e]
+    /* desugars to
+    [some this . c0_c && X (some this . c0_d || some this . c0_e)]
+    */

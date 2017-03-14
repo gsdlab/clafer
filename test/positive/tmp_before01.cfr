@@ -1,0 +1,10 @@
+// Test for before scope
+
+a
+ xor b
+  c
+  d
+  //[once c before d]
+  [sometime c before d]
+
+assert[never d before c]

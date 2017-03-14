@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=9">
+<style>.identifier{}
+.keyword{font-weight: bold;}
+.tKeyword{font-style: oblique;}
+.reference{}
+.code { background-color: lightgray; padding: 5px 5px 5px 5px; border: 1px solid darkgray; margin-bottom: 15px;
+        font-family: Pragmata, Menlo, 'DejaVu LGC Sans Mono', 'DejaVu Sans Mono', Consolas, 'Everson Mono', 'Lucida Console', 'Andale Mono', 'Nimbus Mono L', 'Liberation Mono', FreeMono, 'Osaka Monospaced', Courier, 'New Courier', monospace; }
+.standalonecomment { color: green; font-style:italic }
+.inlinecomment { color: green; padding-left:20px; font-style:italic }
+.error{background-color: yellow; color: red }
+.deprecated{color: orange }
+.indent{padding-left:20px}
+a[href$='Lookup failed'] {color: red}
+a[href$='Uid not found'] {color: red}
+a[href$='Ambiguous name'] {color: yellow}
+</style></head>
+<body>
+
+<div>
+<span class="claferDecl" id="c0_a">a</span>
+  <div class="indent">
+  <span class="keyword">xor</span> <span class="claferDecl" id="c0_b">b</span> ?
+    <div class="indent">
+    <span class="claferDecl" id="c0_c">c</span></div>
+    <div class="indent">
+    <span class="claferDecl" id="c0_d">d</span></div>
+    <div class="indent">
+    <span class="claferDecl" id="c0_e">e</span></div>
+    <div class="indent">
+    <span class="keyword">[</span> <a href="#c0_c"><span class="reference">c</span></a><span class="tKeyword"> -[</span><a href="#c0_e"><span class="reference">e</span></a><span class="tKeyword">]--&gt;&gt; </span><a href="#c0_d"><span class="reference">d</span></a> <span class="keyword">]</span></div>
+  </div>
+</div>
+
+</body>
+</html>

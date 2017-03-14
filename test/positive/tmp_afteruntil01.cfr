@@ -1,0 +1,10 @@
+// Test for after until scope
+
+a
+ 	xor b
+  		c
+  		d
+  		e
+		[always c after d until e ]
+
+assert [never a.b.c after a.b.d until a.b.e ]

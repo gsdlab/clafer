@@ -1,0 +1,10 @@
+digraph "tmp_before01"
+{
+rankdir=BT;
+ranksep=0.3;
+nodesep=0.1;
+graph [fontname=Sans fontsize=11];
+node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
+edge [fontname=Sans fontsize=11];
+"c0_a" [label="a" URL="#c0_a" tooltip="a&#10;  xor b&#10;    c&#10;    d&#10;    [ sometime c before d ]&#10;"];
+}

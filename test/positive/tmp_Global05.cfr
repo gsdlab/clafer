@@ -1,0 +1,6 @@
+// Test for globally combined constraint
+
+a
+ b ?
+  c ?
+  [next globally c]

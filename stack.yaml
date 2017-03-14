@@ -2,6 +2,7 @@
 extra-deps:
   - data-stringmap-1.0.1.1
   - json-builder-0.3
+  - cond-0.4.1.1
 resolver: lts-8.5
 
 flags: {}

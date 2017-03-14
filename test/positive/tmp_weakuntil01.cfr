@@ -1,0 +1,8 @@
+// Test for weakuntil constraint
+
+a
+ b ?
+  c ?
+  d ?
+  [c weakuntil d]
+

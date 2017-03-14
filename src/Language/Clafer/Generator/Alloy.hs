@@ -251,7 +251,7 @@ of Connection are nested under all Systems anyway.
 genSetUniquenessConstraint :: IClafer -> [Concat]
 genSetUniquenessConstraint c =
     (case _reference c of
-      Just (IReference True _) ->
+      Just (IReference True _ _) ->
         (case _card c of
             Just (lb,  ub) -> if (lb > 1 || ub > 1 || ub == -1)
               then [ CString $ (
@@ -483,7 +483,7 @@ genIFunExp :: String -> GenEnv -> [String] -> IExp                  -> Concat
 genIFunExp    pid'      genEnv    resPath     (IFunExp "min" [exp']) = Concat (IrPExp pid') $ (CString "min[") : (genPExp' genEnv resPath exp') : [CString "]"]
 genIFunExp    pid'      genEnv    resPath     (IFunExp "max" [exp']) = Concat (IrPExp pid') $ (CString "max[") : (genPExp' genEnv resPath exp') : [CString "]"]
 -- ignore navigation from the root
-genIFunExp    pid'      genEnv    resPath     (IFunExp "."  [PExp{_exp=IClaferId{_sident="root"}}, exp2]) = genPExp' genEnv resPath exp2
+genIFunExp    _         genEnv    resPath     (IFunExp "."  [PExp{_exp=IClaferId{_sident="root"}}, exp2]) = genPExp' genEnv resPath exp2
 genIFunExp    pid'      genEnv    resPath     (IFunExp op' exps')
   | op' == iSumSet = genIFunExp pid' genEnv resPath (IFunExp iSumSet' [(removeright (head exps')), (getRight $ head exps')])
   | op' == iSumSet'  = Concat (IrPExp pid') $ intl exps'' (map CString $ genOp iSumSet)

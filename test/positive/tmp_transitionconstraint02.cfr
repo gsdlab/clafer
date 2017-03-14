@@ -1,0 +1,7 @@
+// Test for multi-step transition constraint
+
+xor b
+   c
+   d
+   e
+   [c -->> d]

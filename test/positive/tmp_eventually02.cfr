@@ -1,0 +1,7 @@
+// Test for eventually constraint
+
+final a
+	b
+	[F b]
+
+assert [ eventually a.b ]

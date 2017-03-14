@@ -1,0 +1,9 @@
+// Test for initially constraint
+
+a
+ b ?
+  initial c ?
+  /* desugars to
+  [no this && X some this => X some this . c0_c]
+  */
+  d ?

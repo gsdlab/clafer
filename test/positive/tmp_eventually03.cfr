@@ -1,0 +1,6 @@
+// Test for eventually constraint
+a
+	b ?
+	[eventually X b]
+
+assert[F a.b]

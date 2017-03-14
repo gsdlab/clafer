@@ -1,0 +1,9 @@
+// Test for finally constraint
+
+a
+ b ?
+  c ?
+  d ?
+  e ?
+  [finally e]
+

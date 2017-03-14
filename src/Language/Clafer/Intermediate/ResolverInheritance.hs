@@ -24,7 +24,7 @@
 module Language.Clafer.Intermediate.ResolverInheritance where
 
 import           Control.Applicative
-import           Control.Lens  ((^.), (&), (%%~), (.~), traverse)
+import           Control.Lens  ((^.), (&), (%%~), (.~))
 import           Control.Monad
 import           Control.Monad.Except
 import           Control.Monad.State
@@ -35,14 +35,13 @@ import           Data.List
 import qualified Data.Map as Map
 import           Data.StringMap (StringMap)
 import qualified Data.StringMap as SMap
-import           Prelude hiding (traverse)
+import           Prelude
 
 import           Language.ClaferT
 import           Language.Clafer.Common
 import           Language.Clafer.Front.AbsClafer
 import           Language.Clafer.Intermediate.Intclafer
 import           Language.Clafer.Intermediate.ResolverName
-
 
 -- | Resolve Non-overlapping inheritance
 resolveNModule :: (IModule, GEnv) -> Resolve (IModule, GEnv)
@@ -79,8 +78,15 @@ resolveNClafer abstractClafers clafer =
           Nothing               -> _parentUID clafer
     -- <F Top-level abstract clafer extending a nested abstract clafer <https://github.com/gsdlab/clafer/issues/67> <F
     elements' <- mapM (resolveNElement abstractClafers) $ _elements clafer
-    return $ clafer {_super = super', _parentUID = parentUID', _elements = elements'}
-
+    return $ clafer
+      { _super = super'
+      , _parentUID = parentUID'
+      , _modifiers = IClaferModifiers
+          (_isAbstract clafer)
+          (_isInitial clafer || (fromMaybe False $ _isInitial <$> superIClafer'))  -- the clafer is declared as initial or inherits it
+          (_isFinal clafer || (fromMaybe False $ _isFinal <$> superIClafer'))      -- the clafer is declared as final or inherits it
+      , _elements = elements'
+      }
 
 resolveNSuper :: [IClafer] -> Maybe PExp -> Resolve (Maybe PExp, Maybe IClafer)
 resolveNSuper _ Nothing = return (Nothing, Nothing)
@@ -92,7 +98,7 @@ resolveNSuper abstractClafers (Just (PExp _ pid' pos' (IClaferId _ id' _ _))) =
         (id'', [superClafer']) <- case r of
           Nothing -> throwError $ SemanticErr pos' $ "No superclafer found: " ++ id'
           Just m  -> return m
-        return (Just $ PExp (Just $ TClafer [id'']) pid' pos' (IClaferId "" id'' (isTopLevel superClafer') (Just id''))
+        return (Just $ PExp (Just $ TClafer [id'']) pid' pos' (IClaferId "" id'' (isTopLevel superClafer') (GlobalBind id''))
                  , Just superClafer')
 resolveNSuper _ x = return (x, Nothing)
 
@@ -142,7 +148,7 @@ resolveOClafer env clafer =
 
 resolveOReference :: SEnv -> Maybe IReference -> Resolve (Maybe IReference)
 resolveOReference _   Nothing                      = return Nothing
-resolveOReference env (Just (IReference is' exp')) = Just <$> IReference is' <$> resolvePExp env exp'
+resolveOReference env (Just (IReference is' mods exp')) = Just <$> IReference is' mods <$> resolvePExp env exp'
 
 
 resolveOElement :: SEnv -> IElement -> Resolve IElement

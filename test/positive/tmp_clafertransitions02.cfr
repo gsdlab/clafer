@@ -1,0 +1,9 @@
+// Test for multi-step transition
+
+a
+  xor b ?
+    c -->> d
+    d
+    e
+
+assert[a.b.c => F a.b.d]

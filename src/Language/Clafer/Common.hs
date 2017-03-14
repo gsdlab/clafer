@@ -93,6 +93,9 @@ isEqClaferId    uid'      claf'    = _uid claf' == uid'
 mkPLClaferId :: Span -> CName -> Bool -> ClaferBinding -> PExp
 mkPLClaferId pos' id' isTop' bind' = pExpDefPid pos' $ IClaferId "" id' isTop' bind'
 
+pExpDefPidPos :: IExp -> PExp
+pExpDefPidPos = pExpDefPid noSpan
+
 pExpDefPid :: Span -> IExp -> PExp
 pExpDefPid = pExpDef ""
 
@@ -145,14 +148,15 @@ createUidIClaferMap    iModule  = foldl'
   where
     allClafers :: [ IClafer ]
     allClafers = universeOn biplate iModule
-    rootClafer = IClafer noSpan False (Just $ IGCard False (0, -1)) rootIdent rootIdent "" Nothing Nothing (Just (1,1)) (1, 1) (_mDecls iModule)
-    integerClafer = IClafer noSpan False (Just $ IGCard False (0, -1)) integerType integerType "" (Just $ pExpDefPid noSpan $ IClaferId "" doubleType True $ Just doubleType) Nothing (Just (1,1)) (1, 1) []
-    intClafer = IClafer noSpan False (Just $ IGCard False (0, -1)) "int" "int" "" (Just $ pExpDefPid noSpan $ IClaferId "" doubleType True $ Just doubleType) Nothing (Just (1,1)) (1, 1) []
-    stringClafer = IClafer noSpan False (Just $ IGCard False (0, -1)) stringType stringType "" Nothing Nothing (Just (1,1)) (1, 1) []
-    doubleClafer = IClafer noSpan False (Just $ IGCard False (0, -1)) doubleType doubleType "" (Just $ pExpDefPid noSpan $ IClaferId "" realType True $ Just realType) Nothing (Just (1,1)) (1, 1) []
-    realClafer = IClafer noSpan False (Just $ IGCard False (0, -1)) realType realType "" Nothing Nothing (Just (1,1)) (1, 1) []
-    booleanClafer = IClafer noSpan False (Just $ IGCard False (0, -1)) booleanType booleanType "" Nothing Nothing (Just (1,1)) (1, 1) []
-    clafer = IClafer noSpan False (Just $ IGCard False (0, -1)) baseClafer baseClafer "" Nothing Nothing (Just (1,1)) (1, 1) []
+    defaultModifiers = IClaferModifiers False True True
+    rootClafer = IClafer noSpan defaultModifiers (Just $ IGCard False (0, -1)) rootIdent rootIdent "" Nothing Nothing (Just (1,1)) (1, 1) (_mDecls iModule)
+    integerClafer = IClafer noSpan defaultModifiers (Just $ IGCard False (0, -1)) integerType integerType "" (Just $ pExpDefPidPos $ IClaferId "" doubleType True $ GlobalBind doubleType) Nothing (Just (1,1)) (1, 1) []
+    intClafer = IClafer noSpan defaultModifiers (Just $ IGCard False (0, -1)) "int" "int" "" (Just $ pExpDefPidPos $ IClaferId "" doubleType True $ GlobalBind doubleType) Nothing (Just (1,1)) (1, 1) []
+    stringClafer = IClafer noSpan defaultModifiers (Just $ IGCard False (0, -1)) stringType stringType "" Nothing Nothing (Just (1,1)) (1, 1) []
+    doubleClafer = IClafer noSpan defaultModifiers (Just $ IGCard False (0, -1)) doubleType doubleType "" (Just $ pExpDefPidPos $ IClaferId "" realType True $ GlobalBind realType) Nothing (Just (1,1)) (1, 1) []
+    realClafer = IClafer noSpan defaultModifiers (Just $ IGCard False (0, -1)) realType realType "" Nothing Nothing (Just (1,1)) (1, 1) []
+    booleanClafer = IClafer noSpan defaultModifiers (Just $ IGCard False (0, -1)) booleanType booleanType "" Nothing Nothing (Just (1,1)) (1, 1) []
+    clafer = IClafer noSpan defaultModifiers (Just $ IGCard False (0, -1)) baseClafer baseClafer "" Nothing Nothing (Just (1,1)) (1, 1) []
 
 -- -----------------------------------------------------------------------------
 -- functions using the UID -> IClafer map
@@ -366,6 +370,21 @@ toMTriple a (b,c) = Just (a, b, c)
 iNot :: String
 iNot          = "!"
 
+iG :: String
+iG          = "G"
+
+iF :: String
+iF          = "F"
+
+iX :: String
+iX          = "X"
+
+iInitially :: String
+iInitially    = "initially"
+
+iFinally :: String
+iFinally    = "finally"
+
 iCSet :: String
 iCSet         = "#"
 
@@ -391,7 +410,7 @@ iProdSet :: String
 iProdSet  = "product"
 
 unOps :: [String]
-unOps = [iNot, iCSet, iMin, iMaximum, iMinimum, iMaximize, iMinimize, iSumSet, iProdSet]
+unOps = [iNot, iCSet, iMin, iMaximum, iMinimum, iMaximize, iMinimize, iSumSet, iProdSet, iX, iF, iG, iInitially]
 
 -- binary operators
 iIff :: String
@@ -409,8 +428,14 @@ iXor          = "xor"
 iAnd :: String
 iAnd          = "&&"
 
+iU :: String
+iU          = "U"
+
+iW :: String
+iW          = "W"
+
 logBinOps :: [String]
-logBinOps = [iIff, iImpl, iOr, iXor, iAnd]
+logBinOps = [iIff, iImpl, iOr, iXor, iAnd, iU, iW]
 
 iLt :: String
 iLt           = "<"
@@ -435,6 +460,15 @@ iIn           = "in"
 
 iNin :: String
 iNin          = "not in"
+
+ltlOps :: [String]
+ltlOps = [iW, iU, iX, iG, iF, iInitially]
+
+ltlBinOps :: [String]
+ltlBinOps = [iW, iU]
+
+ltlUnOps :: [String]
+ltlUnOps = [iX, iG, iF, iInitially]
 
 relGenBinOps :: [String]
 relGenBinOps = [iLt, iGt, iEq, iLte, iGte, iNeq]
@@ -486,6 +520,23 @@ setBinOps = [iUnion, iDifference, iIntersection, iDomain, iRange, iJoin]
 
 binOps :: [String]
 binOps = logBinOps ++ relBinOps ++ arithBinOps ++ setBinOps
+
+-- temporal keywords and property patterns
+
+temporalModifiers :: [String]
+temporalModifiers = [ "final", "initial" ]
+
+iLet :: String
+iLet = "let"
+
+propertyKeywords :: [String]
+propertyKeywords =
+  [ "never", "sometime", "lonce", "always"
+  , "must", "precede", "follow"
+  , "initially", "finally"
+  , "until", "weakuntil", "eventually", "globally", "next"
+  , "before", "after", "between", "and", "after"
+  ]
 
 -- ternary operators
 iIfThenElse :: String
@@ -567,7 +618,11 @@ keywordIdents =
   [ "if", "then", "else" ] ++ -- ternary operators
   [ "no", "not", "some", "one", "all", "disj" ] ++ -- quantifiers
   [ "opt", "mux", "or", "lone" ] ++ -- group cardinalities
-  [ "abstract", "enum" ] -- keywords
+  [ "abstract", "enum" ] ++ -- keywords
+  temporalModifiers ++ -- temporal
+  ltlOps ++ -- LTL
+  propertyKeywords ++ -- temp patterns
+  [ iLet ]
 
 data GEnv
   = GEnv
