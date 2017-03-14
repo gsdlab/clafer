@@ -8,5 +8,5 @@ A *
 
 assert [ G (all c : A.B.C | some c.D) ]
 
-// generates incorrect Alloy as of 0.4.5:
+// generates incorrect Alloy as of 0.5.0:
 // Analysis cannot be performed since it requires higher-order quantification that could not be skolemized.

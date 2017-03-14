@@ -6,5 +6,5 @@ a
 		d
 
 
-// fails as of 0.4.5
+// fails as of 0.5.0
 // assert[always a.b.c => a.b.d]
