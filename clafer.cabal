@@ -20,6 +20,7 @@ data-files:             README.md
                       , Makefile
                       , ecore2clafer.jar
                       , stack.yaml
+                      , src/Language/Clafer/Generator/stateTrace.als
 extra-source-files:     src/Language/Clafer/clafer.css
 source-repository head
     type:               git
