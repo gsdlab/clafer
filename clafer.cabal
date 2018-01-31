@@ -10,9 +10,8 @@ Maintainer:             Michal Antkiewicz <mantkiew@gsd.uwaterloo.ca>
 Stability:              Experimental
 Category:               Model
 Build-type:             Simple
-tested-with:            GHC == 7.10.3
-                      , GHC == 8.0.1
-                      , GHC == 8.0.2
+tested-with:            GHC == 8.0.2
+                      , GHC == 8.2.2
 Cabal-version:          >= 1.22
 data-files:             README.md
                       , CHANGES.md
@@ -26,67 +25,60 @@ source-repository head
     type:               git
     location:           git://github.com/gsdlab/clafer.git
 Executable clafer
-    build-tools:        ghc >= 7.10.3
+    build-tools:        ghc >= 8.0.2
     default-language:   Haskell2010
     main-is:            clafer.hs
     hs-source-dirs:     src-cmd
-    if impl(ghc >= 8.0)
-      ghc-options: -Wcompat
-      -- -Wnoncanonical-monad-instances -Wnoncanonical-monadfail-instances
-    else
-      build-depends: fail == 4.9.*, semigroups == 0.18.*
-    build-depends:      base >= 4.7.0.1 && < 5
-                      , containers >= 0.5.5.1
-                      , filepath >= 1.3.0.2
-                      , process >= 1.2.0.0
+    ghc-options: -Wcompat
 
-                      , mtl >= 2.1.3.1
+    -- -Wnoncanonical-monad-instances -Wnoncanonical-monadfail-instances
+    build-depends:      base >= 4.9.1.0
+                      , containers >= 0.5.7.1
+                      , filepath >= 1.4.1.1
+                      , process >= 1.4.3.0
 
-                      , cmdargs >= 0.10.12
-                      , split >= 0.2.2
+                      , mtl >= 2.2.1
+
+                      , cmdargs >= 0.10.18
+                      , split >= 0.2.3.2
 
                       , clafer == 0.5.0
     other-modules:      Paths_clafer
 
 library
-    build-tools:        ghc >= 7.10.3
-                      , alex >= 3.1.7
-                      , happy >= 1.19.5
+    build-tools:        ghc >= 8.0.2
+                      , happy >= 1.19.8
+                      , alex >= 3.2.3
     default-language:   Haskell2010
-    if impl(ghc >= 8.0)
-      ghc-options: -Wcompat
-      -- -Wnoncanonical-monad-instances -Wnoncanonical-monadfail-instances
-    else
-      build-depends: fail == 4.9.*, semigroups == 0.18.*
     build-depends:      array >= 0.5.0.0
-                      , base >= 4.7.0.1 && < 5
-                      , bytestring >= 0.10.4.0
+                      , base >= 4.9.1.0
+                      , bytestring >= 0.10.8.1
                       , cond >= 0.4
-                      , containers >= 0.5.5.1
-                      , directory >= 1.2.1.0
-                      , filepath >= 1.3.0.2
-                      , process >= 1.2.0.0
-                      , transformers >= 0.3.0.0
+                      , containers >= 0.5.7.1
+                      , directory >= 1.3.0.0
+                      , filepath >= 1.4.1.1
+                      , process >= 1.4.3.0
+                      , transformers >= 0.5.2.0
 
-                      , HTTP >= 4000.2.10
-                      , mtl >= 2.1.3.1
-                      , network >= 2.4.2.3
-                      , parsec >= 3.1.5
-                      , text >= 1.1.0.0
+                      , HTTP >= 4000.3.9
+                      , mtl >= 2.2.1
+                      , network >= 2.6.3.2
+                      , parsec >= 3.1.11
+                      , text >= 1.2.2.2
 
-                      , aeson >= 0.11.1.2
-                      , cmdargs >= 0.10.12
+                      , aeson >= 1.1.2.0
+                      , cmdargs >= 0.10.18
                       , data-stringmap >= 1.0.1.1
-                      , executable-path >= 0.0.3
-                      , file-embed >= 0.0.9
+                      , executable-path >= 0.0.3.1
+                      , file-embed >= 0.0.10
                       , json-builder >= 0.3
-                      , lens >= 4.6.0.1
-                      , lens-aeson >= 1.0.0.5
-                      , network-uri >= 2.5.0.0
-                      , string-conversions >= 0.3.0.3
-                      , split >= 0.2.2
-                      , transformers-compat >= 0.3
-                      , mtl-compat >= 0.2.1
+                      , lens >= 4.15.4
+                      , lens-aeson >= 1.0.2
+                      , network-uri >= 2.6.1.0
+                      , string-conversions >= 0.4.0.1
+                      , split >= 0.2.3.2
+                      , transformers-compat >= 0.5.1.4
+                      , mtl-compat >= 0.2.1.3
 
     hs-source-dirs:     src
     ghc-options:        -Wall -fno-warn-orphans
@@ -129,33 +121,30 @@ library
     other-modules:      GetURL
 
 Test-Suite test-suite
-    build-tools:        ghc >= 7.10.3
+    build-tools:        ghc >= 8.0.2
     default-language:   Haskell2010
     type:               exitcode-stdio-1.0
     main-is:            test-suite.hs
     hs-source-dirs:     test
-    if impl(ghc >= 8.0)
-      ghc-options: -Wcompat
-      -- -Wnoncanonical-monad-instances -Wnoncanonical-monadfail-instances
-    else
-      build-depends: fail == 4.9.*, semigroups == 0.18.*
-    build-depends:      base >= 4.7.0.1 && < 5
-                      , containers >= 0.5.5.1
-                      , directory >= 1.2.1.0
-                      , filepath >= 1.3.0.2
+    ghc-options: -Wcompat
+    -- -Wnoncanonical-monad-instances -Wnoncanonical-monadfail-instances
+    build-depends:      base >= 4.9.1.0
+                      , containers >= 0.5.7.1
+                      , directory >= 1.3.0.0
+                      , filepath >= 1.4.1.1
 
-                      , HUnit >= 1.2.5.2
-                      , mtl >= 2.1.3.1
-                      , QuickCheck >= 2.6
+                      , HUnit >= 1.5.0.0
+                      , mtl >= 2.2.1
+                      , QuickCheck >= 2.9.2
 
                       , data-stringmap >= 1.0.1.1
                       , lens >= 4.6.0.1
-                      , lens-aeson >= 1.0.0.5
-                      , tasty >= 0.10.1.2
+                      , lens-aeson >= 1.0.2
+                      , tasty >= 0.11.3
                       , tasty-hunit >= 0.9.2
-                      , tasty-th >= 0.1.3
-                      , transformers-compat >= 0.3
-                      , mtl-compat >= 0.2.1
+                      , tasty-th >= 0.1.7
+                      , transformers-compat >= 0.5.1.4
+                      , mtl-compat >= 0.2.1.3
                       , clafer == 0.5.0
 
     ghc-options:        -Wall
@@ -168,11 +157,11 @@ Test-Suite test-suite
                       , Suite.TypeSystem
 
 Test-suite doctests
-    build-tools:        ghc >= 7.10.3
+    build-tools:        ghc >= 8.0.2
     default-language:   Haskell2010
     type:               exitcode-stdio-1.0
     ghc-options:        -threaded -Wall
     main-is:            doctests.hs
     hs-source-dirs:     test
     build-depends:      base
-                      , doctest >= 0.10.1
+                      , doctest >= 0.11.4

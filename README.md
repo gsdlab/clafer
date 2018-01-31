@@ -5,8 +5,7 @@
 
 ##### v0.5.0
 
-
-[Clafer](http://clafer.org) is a general-purpose lightweight structural modeling language developed by
+[Clafer](http://clafer.org) is a general-purpose lightweight structural and behavioral modeling language developed by
 [GSD Lab](http://gsd.uwaterloo.ca/), [University of Waterloo](http://uwaterloo.ca), and
 [MODELS](http://www.itu.dk/research/models/) group at [IT University of Copenhagen](http://www.itu.dk/).
 Clafer can be used for modeling of static hierarchical structures and for modeling the change of the structures over time (behavior). Clafer allows for naturally expressing variability in both the structure and behavior.
@@ -24,7 +23,13 @@ Clafer multi-objective optimizer generates a Pareto front of optimal product con
 3. *Domain Modeling* - aims at improving the understanding of the problem domain in the early stages of software development and determining the requirements with fewer defects.
 This is also known as *Concept Modeling* or *Ontology Modeling*.
 
+4. *Concept Behavior Modeling* - aims at eliciting how a structure of a concept evolved
+over time and checking properties of possible behaviors.
+
 May applications actually combine the three. For example, see [Technical Report: Case Studies on E/E Architectures for Power Window and Central Door Locks Systems](http://www.clafer.org/2016/06/technical-report-case-studies-on-ee.html).
+
+For examples of behavior modeling, see [Behavioral Modeling](http://t3-necsis.cs.uwaterloo.ca:8091/#behavioral-modeling) section on the wiki.
+Currently; however, no reasoning capability is available for behavior modeling.
 
 ### Resources
 
@@ -101,8 +106,8 @@ Stack is the only requirement: no other Haskell tooling needs to be installed be
 
 Dependencies
 
-* [GHC](https://www.haskell.org/downloads) >= 7.10.3 or 8.0.2 are recommended,
-* `cabal-install` >= 1.22, should be installed together with a GHC distribution,
+* [GHC](https://www.haskell.org/downloads) >= 8.0.2 are recommended,
+* `cabal-install` >= 2.0.0.1, should be installed together with a GHC distribution,
 * [alex](https://hackage.haskell.org/package/alex),
 * [happy](https://hackage.haskell.org/package/happy).
 

@@ -1,6 +1,8 @@
-##### Clafer Version 0.5.0 released on ??? ??, 2017
+##### Clafer Version 0.5.0 released on Jan 31, 2018
 
-* [Release](https://github.com/gsdlab/clafer/pull/??)
+This major release adds behavioral modeling capability to Clafer.
+
+* [Release](https://github.com/gsdlab/clafer/pull/94)
 
 ##### Clafer Version 0.4.5 released on Mar 13, 2017
 
