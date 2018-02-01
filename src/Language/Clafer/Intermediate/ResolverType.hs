@@ -311,6 +311,7 @@ resolveTPExp' p@PExp{_inPos, _exp} =
               throwError $ SemanticErr _inPos ("Function '" ++ _op ++ "' cannot be performed on " ++ _op ++ " '" ++ showType arg' ++ "'")
       let result
             | _op == iNot = test (isTBoolean t) >> return TBoolean
+            | _op `elem` ltlUnOps = test (isTBoolean t) >> return TBoolean
             | _op == iCSet = return TInteger
             | _op == iSumSet = test (isTInteger t) >> return TInteger
             | _op == iProdSet = test (isTInteger t) >> return TInteger
@@ -357,6 +358,7 @@ resolveTPExp' p@PExp{_inPos, _exp} =
               throwError $ SemanticErr _inPos ("Function '" ++ _op ++ "' cannot be performed on\n" ++ showType arg1' ++ "\n" ++ _op ++ "\n" ++ showType arg2')
       let result
             | _op `elem` logBinOps = test (isTBoolean t1 && isTBoolean t2) >> return TBoolean
+            | _op `elem` ltlBinOps = test (isTBoolean t1 && isTBoolean t2) >> return TBoolean
             | _op `elem` [iLt, iGt, iLte, iGte] = test (numeric t1 && numeric t2) >> return TBoolean
             | _op `elem` [iEq, iNeq] = testNotSame arg1' arg2' >> testIntersect t1 t2 >> return TBoolean
             | _op == iDifference = testNotSame arg1' arg2' >> testIntersect t1 t2 >> return t1
@@ -430,7 +432,7 @@ addDref :: PExp -> ExceptT ClaferSErr (ListT TypeAnalysis) PExp
 addDref pexp =
   do
     localCurPath (typeOf pexp) $ do
-      deref <- (ExceptT $ ListT $ resolveTPExp' $ newPExp $ IClaferId "" "dref" False Nothing) `catchError` const (lift mzero)
+      deref <- (ExceptT $ ListT $ resolveTPExp' $ newPExp $ IClaferId "" "dref" False NoBind) `catchError` const (lift mzero)
       let result = (newPExp $ IFunExp "." [pexp, deref]) `withType` typeOf deref
       return result <++> addDref result
   where
@@ -467,9 +469,6 @@ liftError e =
 
 liftList :: Monad m => [a] -> ListT m a
 liftList = ListT . return
-
-comparing :: Ord b => (a -> b) -> a -> a -> Ordering
-comparing f a b = f a `compare` f b
 
 syntaxOf :: PExp -> String
 syntaxOf = printTree . sugarExp

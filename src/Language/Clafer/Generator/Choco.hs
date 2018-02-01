@@ -55,14 +55,14 @@ genCModule (imodule@IModule{_mDecls}, genv') scopes  otherTokens' =
         ++ (genClafers =<< _elements)
     genClafers    _ = ""
 
-    genClaferNesting (IClafer{_isAbstract=True, _uid, _parentUID="clafer"})
+    genClaferNesting (IClafer{_modifiers=IClaferModifiers{_abstract=True}, _uid, _parentUID="clafer"})
         = " = Abstract(\"" ++ _uid ++ "\")"
-    genClaferNesting (IClafer{_isAbstract=True, _uid, _parentUID})
+    genClaferNesting (IClafer{_modifiers=IClaferModifiers{_abstract=True}, _uid, _parentUID})
         = " = " ++ _parentUID ++  ".addAbstractChild(\"" ++ _uid ++ "\")"
-    genClaferNesting (IClafer{_isAbstract=False, _uid, _card, _parentUID="root"})
+    genClaferNesting (IClafer{_modifiers=IClaferModifiers{_abstract=False}, _uid, _card, _parentUID="root"})
         = " = Clafer(\"" ++ _uid ++ "\")"
         ++ prop "withCard" (genCard _card)
-    genClaferNesting (IClafer{_isAbstract=False, _uid, _card, _parentUID})
+    genClaferNesting (IClafer{_modifiers=IClaferModifiers{_abstract=False}, _uid, _card, _parentUID})
         = " = "
         ++ _parentUID
         ++  ".addChild(\"" ++ _uid ++ "\")"
@@ -127,9 +127,9 @@ genCModule (imodule@IModule{_mDecls}, genv') scopes  otherTokens' =
         = _uid
         ++ prop "extending" (superOf _uid)
         ++ (case (getReference c, _reference) of
-             ([target], Just (IReference True _))  -> ".refToUnique(" ++ genTarget target ++ ")"
-             ([target], Just (IReference False _)) -> ".refTo(" ++ genTarget target ++ ")"
-             _ -> "")
+             ([target], Just (IReference True _ _))  -> ".refToUnique(" ++ genTarget target ++ ")"
+             ([target], Just (IReference False _ _)) -> ".refTo(" ++ genTarget target ++ ")"
+             _                                       -> "")
         ++ ";\n"
         ++ (genSuperRefConstraintAssertGoal _uid =<< _elements)
         where

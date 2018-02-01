@@ -1,0 +1,11 @@
+open util/integer
+pred show {}
+
+
+lone sig c0_a
+{ r_c0_b : lone c0_b }
+
+lone sig c0_b
+{}
+{ one r_c0_b }
+

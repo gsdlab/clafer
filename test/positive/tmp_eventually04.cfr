@@ -1,0 +1,9 @@
+// Test for eventually combined constraint
+
+xor a
+	b
+	c
+	[b => eventually c]
+
+// fails as of 0.5.0
+// assert[always (a.b => eventually a.c)]

@@ -374,13 +374,13 @@ getIfThenElseType _              TDouble         TDouble       = return $ Just T
 getIfThenElseType _              TDouble         TInteger      = return $ Just TDouble
 getIfThenElseType _              TInteger        TDouble       = return $ Just TDouble
 getIfThenElseType _              TInteger        TInteger      = return $ Just TInteger
-getIfThenElseType uidIClaferMap' (TUnion t1s)    t2@(TClafer _) = undefined {- o
+getIfThenElseType _ {-uidIClaferMap'-} (TUnion _ {-t1s-}){-t2@-} (TClafer _) = undefined {- o
   t1s' <- mapM (getIfThenElseType uidIClaferMap' t2) t1s
   return $ case catMaybes t1s' of
     [] -> Nothing
     [t] -> Just t
     t1s'' -> Just $ TUnion t1s''  -}
-getIfThenElseType uidIClaferMap' t1@(TClafer _)  (TUnion t2s) = undefined {- do
+getIfThenElseType _ {-uidIClaferMap'-} {-t1@-}(TClafer _)  (TUnion _{-t2s-}) = undefined {- do
   t2s' <- mapM (getIfThenElseType uidIClaferMap' t1) t2s
   return $ case catMaybes t2s' of
     [] -> Nothing

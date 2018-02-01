@@ -1,0 +1,6 @@
+
+ xor a
+	b 
+  	c 
+  	[eventually c ]
+  	[initially b]

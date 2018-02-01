@@ -1,0 +1,7 @@
+// behavioral clafer test for next or X temporal operator
+
+a
+ b ?
+  c ?
+  [X !b]
+  [X X b]

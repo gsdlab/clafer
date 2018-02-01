@@ -1,0 +1,30 @@
+digraph "tmp_TrafficLight"
+{
+rankdir=BT;
+ranksep=0.3;
+nodesep=0.1;
+graph [fontname=Sans fontsize=11];
+node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
+edge [fontname=Sans fontsize=11];
+"c0_TrafficLight_1" [label="abstract xor TrafficLight_1" URL="#c0_TrafficLight_1" tooltip="abstract xor TrafficLight_1&#10;  initial xor on --&gt; off&#10;    initial xor normal --&gt; flashing&#10;      initial green --&gt; yellow&#10;      yellow --&gt; red&#10;      red --&gt; green&#10;    xor flashing --&gt; normal&#10;      initial yellow_on --&gt;&gt; yellow_off&#10;      yellow_off --&gt;&gt; yellow_on&#10;  off --&gt; on&#10;"];
+"c0_t1" [label="t1 : TrafficLight_1" URL="#c0_t1" tooltip="t1 : TrafficLight_1&#10;  [ on --&gt;&gt; flashing --&gt;&gt; yellow_on --&gt;&gt; yellow_off --&gt;&gt; yellow_on ]&#10;  [ on U flashing U yellow_on U yellow_off U yellow_on ]&#10;"];
+"c0_t1" -> "c0_TrafficLight_1" [arrowhead=onormal constraint=true weight=100];
+"c0_t2" [label="t2 : TrafficLight_1" URL="#c0_t2" tooltip="t2 : TrafficLight_1&#10;  [ on --&gt; flashing --&gt; yellow_on --&gt; yellow_off --&gt; yellow_on ]&#10;  [ on &amp;&amp; F flashing &amp;&amp; F yellow_on &amp;&amp; F yellow_off &amp;&amp; F yellow_on ]&#10;"];
+"c0_t2" -> "c0_TrafficLight_1" [arrowhead=onormal constraint=true weight=100];
+"c0_t3" [label="t3 : TrafficLight_1" URL="#c0_t3" tooltip="t3 : TrafficLight_1&#10;  [ on --&gt;&gt; yellow_off --&gt; yellow_on --&gt; yellow_off ]&#10;"];
+"c0_t3" -> "c0_TrafficLight_1" [arrowhead=onormal constraint=true weight=100];
+"c0_feature_model" [label="final feature_model" URL="#c0_feature_model" tooltip="final feature_model&#10;  EU ?&#10;"];
+"c0_TrafficLight_2" [label="abstract xor TrafficLight_2" URL="#c0_TrafficLight_2" tooltip="abstract xor TrafficLight_2&#10;  initial xor on --&gt; off&#10;    initial xor normal --&gt; flashing&#10;      initial green --&gt; yellow&#10;      yellow --&gt; red || EU &amp;&amp; green&#10;      red --&gt; green || EU &amp;&amp; yellow&#10;    xor flashing --&gt; normal&#10;      initial yellow_on --&gt;&gt; yellow_off&#10;      yellow_off --&gt;&gt; yellow_on&#10;  off --&gt; on&#10;"];
+"c0_event" [label="abstract event" URL="#c0_event" tooltip="abstract event&#10;  [ F no this ]&#10;"];
+"c0_events" [label="mux events" URL="#c0_events" tooltip="mux events&#10;  e_on_off : event&#10;  e_police : event&#10;  e_after_5 : event&#10;  e_after_7 : event&#10;  e_after_0_5 : event&#10;"];
+"c0_events" -> "c0_event" [arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];
+"c0_events" -> "c0_event" [arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];
+"c0_events" -> "c0_event" [arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];
+"c0_events" -> "c0_event" [arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];
+"c0_events" -> "c0_event" [arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];
+"c0_TrafficLight_3" [label="abstract xor TrafficLight_3" URL="#c0_TrafficLight_3" tooltip="abstract xor TrafficLight_3&#10;  initial xor on -[e_on_off]-&gt;&gt; off&#10;    initial xor normal -[e_police]-&gt;&gt; flashing&#10;      initial green --&gt; yellow&#10;      red --&gt; green&#10;      yellow --&gt; red&#10;    xor flashing --&gt; normal&#10;      initial yellow_on -[e_after_0_5]-&gt;&gt; yellow_off&#10;      yellow_off -[e_after_0_5]-&gt;&gt; yellow_on&#10;  off --&gt; on&#10;"];
+"c0_TrafficLight_H" [label="abstract xor TrafficLight_H" URL="#c0_TrafficLight_H" tooltip="abstract xor TrafficLight_H&#10;  xor on --&gt; off&#10;    xor normal --&gt; flashing&#10;      initial green --&gt; yellow&#10;      red --&gt; green&#10;      yellow --&gt; red&#10;    xor flashing --&gt; normal&#10;      initial yellow_on --&gt;&gt; yellow_off&#10;      yellow_off --&gt;&gt; yellow_on&#10;  off --&gt; on&#10;"];
+"c0_TrafficLight_4" [label="xor TrafficLight_4 1" URL="#c0_TrafficLight_4" tooltip="xor TrafficLight_4 1&#10;  xor on&#10;    normal&#10;    flashing&#10;  off&#10;  [ initially off ]&#10;  [ G on.normal &amp;&amp; F  ! on => F  ! on W on.normal ]&#10;  [ G on.flashing &amp;&amp; F  ! on => F  ! on W on.flashing ]&#10;"];
+"c0_TrafficLight_5" [label="xor TrafficLight_5 1" URL="#c0_TrafficLight_5" tooltip="xor TrafficLight_5 1&#10;  xor on&#10;"];
+"c5_normal" [label="normal" URL="#c5_normal" tooltip="normal&#10;  flashing&#10;    off&#10;"];
+}

@@ -1,0 +1,11 @@
+// Test for transition guard constraint
+
+a
+ xor b ?
+      c
+      d
+      e
+      [c -[e]-> d]
+      /* desugars to
+      [some this . c0_e => some this . c0_c && X some this . c0_d]
+      */

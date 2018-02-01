@@ -1,0 +1,10 @@
+// Test for after scope
+a ?
+ xor b 1
+  c ?
+  d ?
+  [never d after c ]
+
+// fail as of 0.5.0
+//assert [never a.b.c after a.b.d ]
+//assert [never a.b.d after a.b.c ]

@@ -85,7 +85,7 @@ data IModule
 data IClafer
   = IClafer
     { _cinPos :: Span         -- ^ the position of the syntax in source code
-    , _isAbstract :: Bool     -- ^ whether abstract or not (i.e., concrete)
+    , _modifiers :: IClaferModifiers -- ^ abstract, initial, final
     , _gcard :: Maybe IGCard  -- ^ group cardinality
     , _ident :: CName         -- ^ name declared in the model
     , _uid :: UID             -- ^ a unique identifier
@@ -97,6 +97,25 @@ data IClafer
     , _elements :: [IElement] -- ^ nested elements
     }
   deriving (Eq,Ord,Show,Data,Typeable)
+
+isMutable :: IClafer -> Bool
+isMutable = not . _final . _modifiers
+
+data IClaferModifiers
+  = IClaferModifiers
+  { _abstract :: Bool -- ^ declared as "abstract"
+  , _initial :: Bool  -- ^ declared as "initial"
+  , _final :: Bool    -- ^ declared as "final"
+  } deriving (Eq,Ord,Show,Data,Typeable)
+
+_isAbstract :: IClafer -> Bool     -- ^ whether abstract or not (i.e., concrete)
+_isAbstract = _abstract . _modifiers
+
+_isFinal :: IClafer -> Bool     -- ^ whether declared final or not
+_isFinal = _final . _modifiers
+
+_isInitial :: IClafer -> Bool     -- ^ whether declared initial or not
+_isInitial = _initial . _modifiers
 
 -- | Clafer's subelement is either a clafer, a constraint, or a goal (objective)
 --   This is a wrapper type needed to have polymorphic lists of elements
@@ -121,9 +140,16 @@ data IElement
 data IReference
   = IReference
     { _isSet :: Bool -- ^ whether set or bag
+    , _refModifier :: Maybe IReferenceModifier
     , _ref :: PExp  -- ^ the only allowed reference expressions are IClafer and set expr. (++, **, --s)
     }
   deriving (Eq,Ord,Show,Data,Typeable)
+
+data IReferenceModifier
+  = FinalRefTarget
+  | FinalRef
+  | FinalTarget
+  deriving (Eq, Ord, Show, Data, Typeable)
 
 -- | Group cardinality is specified as an interval. It may also be given by a keyword.
 --   xor    1..1 isKeyword = True
@@ -137,6 +163,8 @@ data IGCard
 -- | (Min, Max) integer interval. -1 denotes *
 type Interval = (Integer, Integer)
 
+type Mutability = Bool
+
 -- | This is expression container (parent).
 --   It has meta information about an actual expression 'exp'
 data PExp
@@ -149,7 +177,11 @@ data PExp
   deriving (Eq,Ord,Show,Data,Typeable)
 
 -- | Embedes reference to a resolved Clafer
-type ClaferBinding = Maybe UID
+{-type ClaferBinding = Maybe UID-}
+data ClaferBinding = GlobalBind UID
+  | LocalBind CName
+  | NoBind
+  deriving (Eq,Ord,Show,Data,Typeable)
 
 data IExp
     -- | quantified expression with declarations
@@ -296,8 +328,8 @@ iMap f (IRPExp (PExp (Just iType') pID p iExp)) =
 iMap f (IRPExp (PExp Nothing pID p iExp)) =
   f $ IRPExp $ PExp Nothing pID p $ unWrapIExp $ iMap f $ IRIExp iExp
 iMap _ x@(IRIReference Nothing) = x
-iMap f (IRIReference (Just (IReference is ref))) =
- f $ IRIReference $ Just $ IReference is $ (unWrapPExp . iMap f . IRPExp) ref
+iMap f (IRIReference (Just (IReference is mod' ref))) =
+ f $ IRIReference $ Just $ IReference is mod' ((unWrapPExp . iMap f . IRPExp) ref)
 iMap f (IRIDecl (IDecl i d body')) =
   f $ IRIDecl $ IDecl i d $ unWrapPExp $ iMap f $ IRPExp body'
 iMap f i = f i
@@ -320,7 +352,7 @@ iFoldMap f i@(IRPExp (PExp (Just iType') _ _ iExp)) =
 iFoldMap f i@(IRPExp (PExp Nothing _ _ iExp)) =
   f i `mappend` (iFoldMap f $ IRIExp iExp)
 iFoldMap f i@(IRIReference Nothing) = f i
-iFoldMap f i@(IRIReference (Just (IReference _ ref))) =
+iFoldMap f i@(IRIReference (Just (IReference _ _ ref))) =
   f i `mappend` (iFoldMap f . IRPExp) ref
 iFoldMap f i@(IRIDecl (IDecl _ _ body')) =
   f i `mappend` (iFoldMap f $ IRPExp body')
@@ -375,6 +407,10 @@ makeLenses ''IClafer
 
 makeLenses ''IElement
 
+makeLenses ''IClaferModifiers
+
+makeLenses ''IReferenceModifier
+
 makeLenses ''IReference
 
 makeLenses ''IGCard
@@ -389,11 +425,17 @@ $(deriveToJSON defaultOptions{fieldLabelModifier = tail, omitNothingFields=True}
 
 $(deriveToJSON defaultOptions{fieldLabelModifier = tail, omitNothingFields=True} ''IModule)
 
-$(deriveToJSON defaultOptions{fieldLabelModifier = tail, omitNothingFields=True} ''IClafer)
+$(deriveToJSON defaultOptions{fieldLabelModifier = tail, omitNothingFields=True} ''IClaferModifiers)
+
+$(deriveToJSON defaultOptions{fieldLabelModifier = tail, omitNothingFields=True} ''ClaferBinding)
 
 $(deriveToJSON defaultOptions{fieldLabelModifier = tail, omitNothingFields=True} ''IElement)
 
+$(deriveToJSON defaultOptions{fieldLabelModifier = tail, omitNothingFields=True} ''IReferenceModifier)
+
 $(deriveToJSON defaultOptions{fieldLabelModifier = tail, omitNothingFields=True} ''IReference)
+
+$(deriveToJSON defaultOptions{fieldLabelModifier = tail, omitNothingFields=True} ''IClafer)
 
 $(deriveToJSON defaultOptions{fieldLabelModifier = tail, omitNothingFields=True} ''IGCard)
 

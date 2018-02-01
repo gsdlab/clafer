@@ -1,0 +1,12 @@
+// Test for between-and scope
+
+final a
+ final xor b
+  c
+  d
+  e
+  [always c between d and e ]
+  [sometime d]
+  [sometime c]
+  [sometime e]
+assert[always c between d and e]

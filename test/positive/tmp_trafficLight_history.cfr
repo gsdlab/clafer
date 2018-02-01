@@ -1,0 +1,17 @@
+/* 
+Part of Traffic Light test case to check if the 
+model remembers history 
+*/
+
+xor TrafficLight_4 1
+  xor on
+    normal
+    flashing
+  off
+  [initially off]
+  // a constraint that 'remembers' that we left from normal
+  [G (on.normal && X !on) => X(!on W on.normal)]  // (*)
+  // a constraint that 'remembers' that we left from flashing
+  [G (on.flashing && X !on) => X(!on W on.flashing)]
+
+

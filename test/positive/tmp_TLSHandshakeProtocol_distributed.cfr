@@ -1,0 +1,160 @@
+// generates incorrect Alloy as of 0.5.0:
+// = can be used only between 2 expressions of the same arity, or between 2 integer expressions.
+// Left type = {this/c0_ProtocolVersion}
+// Right type = {this/root->this/c0_SSL2_0, this/root->this/c0_SSL3_0, this/root->this/c0_TLS1_2}
+
+/********************/
+/* Feature Modeling */
+/********************/
+
+abstract final Feature
+abstract final FeatureModel
+
+TLSFeatures : FeatureModel
+    annonymousMode : Feature ?
+    clientAuthentication : Feature ?
+
+
+abstract final Domain
+
+enum ProtocolVersion = SSL2_0 | SSL3_0 | TLS1_0 | TLS1_1 | TLS1_2
+
+enum HandshakeStatus = initiated | completed | failed
+
+abstract Port
+
+abstract final Message
+
+// server side messages
+serverHelloRequestMessage : Message
+serverHelloMessage : Message
+serverCertificateMessage : Message
+serverKeyExchangeMessage : Message
+serverCertificateRequestMessage : Message
+serverHelloDoneMessage : Message
+serverChangeCipherSpecMessage : Message
+serverFinishedMessage : Message
+protocolMismatch : Message
+
+// client side messages
+clientHelloMessage : Message
+clientCertificateMessage : Message
+clientKeyExchangeMessage : Message
+certificateVerifyMessage : Message
+clientChangeCipherSpecMessage : Message
+clientFinishedMessage : Message
+
+// Application data
+applicationDataMessage : Message
+
+
+
+
+abstract final Node : Domain
+	send : Port -> Message
+	receive : Port -> Message
+	protocolversion -> ProtocolVersion +
+	certificate ?
+		signing ?
+
+
+abstract final Server : Node
+
+abstract final Client : Node
+
+// connecting messages
+[Server.send = Client.receive]
+[Server.receive = Client.send]
+
+
+OurServer : Server
+    [ protocolversion = SSL2_0, SSL3_0, TLS1_2 ]
+
+aClient : Client
+    [ certificate ]
+    [ protocolversion = TLS1_2 ]
+
+
+Protocol : Domain
+    final client -> aClient
+    final server -> OurServer
+    handshakeStatus -> HandshakeStatus
+
+	xor channel
+		initial clientHello --> (serverResponse || fatalError)
+			[handshakeStatus = initiated]
+			[client.send = clientHelloMessage]
+
+
+
+		xor serverResponse
+			[handshakeStatus =  initiated]
+
+			[initially (serverHello || mismatch)]
+
+			mismatch --> fatalError
+				[!(client.protocolversion = server.protocolversion)]
+				[server.send = protocolMismatch]
+
+
+			serverHello --> (serverCertificate || serverKeyExchange || certificateRequest || serverHelloDone)
+				[client.protocolversion in server.protocolversion]
+				[server.send = serverHelloMessage]
+			[serverHello -[no annonymousMode]-> serverCertificate]
+
+
+			serverCertificate --> (serverKeyExchange || certificateRequest || serverHelloDone)
+				[server.send = serverCertificateMessage]
+
+            serverKeyExchange -->  certificateRequest || serverHelloDone
+				[server.send = serverKeyExchangeMessage]
+
+
+            certificateRequest --> serverHelloDone
+            	// features: !annonymous mode + clientAuthentication
+            	[no annonymousMode && clientAuthentication]
+            	[server.send = serverCertificateRequestMessage]
+
+            serverHelloDone --> clientResponse
+				[server.send = serverHelloDoneMessage]
+
+
+		xor clientResponse ?
+			[handshakeStatus = initiated]
+			[initially (clientCertificate || clientKeyExchange) ]
+
+			clientCertificate --> clientKeyExchange
+				[no annonymousMode && clientAuthentication]
+				[client.send = clientCertificateMessage]
+
+			clientKeyExchange --> (certificateVerify || clientChangeCipherSpec)
+				[client.send = clientKeyExchangeMessage]
+
+
+			certificateVerify --> clientChangeCipherSpec
+				[client.certificate.signing]
+				[client.send = certificateVerifyMessage]
+
+
+			clientChangeCipherSpec --> clientFinished
+				[client.send = clientChangeCipherSpecMessage]
+
+			clientFinished --> serverFinish
+				[client.send = clientFinishedMessage]
+
+
+		xor serverFinish --> serverFinished
+			[handshakeStatus = initiated]
+			initial serverChangeCipherSpec
+				[server.send = serverChangeCipherSpecMessage]
+
+			serverFinished --> dataTransfer
+				[server.send = serverFinishedMessage]
+				[handshakeStatus = completed]
+
+		dataTransfer -->> (handshakeStatus = initiated)
+			[handshakeStatus = completed]
+			[client.send = applicationDataMessage]
+
+		fatalError
+			[handshakeStatus = failed]

@@ -1,0 +1,10 @@
+digraph "tmp_TrafficLight1"
+{
+rankdir=BT;
+ranksep=0.3;
+nodesep=0.1;
+graph [fontname=Sans fontsize=11];
+node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
+edge [fontname=Sans fontsize=11];
+"c0_TrafficLight_1" [label="abstract xor TrafficLight_1" URL="#c0_TrafficLight_1" tooltip="abstract xor TrafficLight_1&#10;  initial xor on --&gt; off&#10;    initial xor normal --&gt; flashing&#10;      initial green --&gt; yellow&#10;      yellow --&gt; red&#10;      red --&gt; green&#10;    xor flashing --&gt; normal&#10;      initial yellow_on --&gt;&gt; yellow_off&#10;      yellow_off --&gt;&gt; yellow_on&#10;  off --&gt; on&#10;"];
+}
