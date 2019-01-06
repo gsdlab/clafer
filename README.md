@@ -3,7 +3,7 @@
 
 # Clafer, the language
 
-##### v0.5.0
+##### v0.5.1
 
 [Clafer](http://clafer.org) is a general-purpose lightweight structural and behavioral modeling language developed by
 [GSD Lab](http://gsd.uwaterloo.ca/), [University of Waterloo](http://uwaterloo.ca), and
@@ -83,7 +83,7 @@ Optional:
 
 ### Installation from binaries
 
-Binary distributions of the release 0.5.0 of Clafer Tools for Windows, Mac, and Linux,
+Binary distributions of the release 0.5.1 of Clafer Tools for Windows, Mac, and Linux,
 can be downloaded from
 [Clafer Tools - Binary Distributions](http://gsd.uwaterloo.ca/clafer-tools-binary-distributions).
 
@@ -92,13 +92,13 @@ can be downloaded from
 
 ### Installation from Hackage
 
-Clafer is available on [Hackage](http://hackage.haskell.org/package/clafer-0.5.0/) and it can be installed using either [`stack`](https://github.com/commercialhaskell/stack) or [`cabal-install`](https://hackage.haskell.org/package/cabal-install).
+Clafer is available on [Hackage](http://hackage.haskell.org/package/clafer-0.5.1/) and it can be installed using either [`stack`](https://haskellstack.org) or [`cabal-install`](https://hackage.haskell.org/package/cabal-install).
 
 #### Installation using `stack`
 
 Stack is the only requirement: no other Haskell tooling needs to be installed because stack will automatically install everything that's needed.
 
-1. [Install `stack`](https://github.com/commercialhaskell/stack#how-to-install)
+1. [Install `stack`](https://docs.haskellstack.org/en/stable/README/#how-to-install)
    * (first time only) Execute `stack setup`.
 2. Execute `stack install clafer`.
 
@@ -106,8 +106,8 @@ Stack is the only requirement: no other Haskell tooling needs to be installed be
 
 Dependencies
 
-* [GHC](https://www.haskell.org/downloads) >= 8.0.2 are recommended,
-* `cabal-install` >= 2.0.0.1, should be installed together with a GHC distribution,
+* [GHC](https://www.haskell.org/downloads) >= 8.4.4 are recommended,
+* `cabal-install` >= 2.2, should be installed together with a GHC distribution,
 * [alex](https://hackage.haskell.org/package/alex),
 * [happy](https://hackage.haskell.org/package/happy).
 
@@ -115,8 +115,8 @@ Dependencies
 2. `cabal update`
 3. `cabal install alex happy`
 4. `cabal install clafer`
-5. on Windows `cd C:\Users\<user>\AppData\Roaming\cabal\x86_64-windows-ghc-8.0.2\clafer-0.5.0`
-6. on Linux `ca ~/.cabal/share/x86_64-linux-ghc-8.0.2/clafer-0.5.0/`
+5. on Windows `cd C:\Users\<user>\AppData\Roaming\cabal\x86_64-windows-ghc-8.4.4\clafer-0.5.1`
+6. on Linux `ca ~/.cabal/share/x86_64-linux-ghc-8.4.4/clafer-0.5.1/`
 7. to automatically download Alloy jars, execute
   * `make alloy4.2.jar`,
   * move `alloy4.2.jar` to the location of the clafer executable.
@@ -163,7 +163,7 @@ Development versions from branches `develop` should work well together but this 
   * `stack exec make install to=<target directory>` on Windows
 
 #### Note:
-> On Windows, use `/` with the `make` command instead of `\`, e.g., `make install to=/c/clafer-tools-0.5.0/`
+> On Windows, use `/` with the `make` command instead of `\`, e.g., `make install to=/c/clafer-tools-0.5.1/`
 
 ## Integration with Sublime Text 2/3
 
@@ -180,7 +180,7 @@ See [clafer-vim](https://github.com/wasowski/clafer-vim)
 (As printed by `clafer --help`)
 
 ```
-Clafer 0.5.0
+Clafer 0.5.1
 
 clafer [OPTIONS] [FILE]
 
@@ -307,7 +307,7 @@ We tag `master` with version numbers after each release merge.
 
 ## Building
 
-We have switched to [Haskell Tool Stack](https://github.com/commercialhaskell/stack#the-haskell-tool-stack).
+We have switched to [Haskell Tool Stack](https://haskellstack.org/).
 Install the tool first.
 
 ## Testing

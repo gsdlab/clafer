@@ -1,8 +1,10 @@
-# for GHC-8.2.2
+# for GHC-8.4.4
 extra-deps:
-  - data-stringmap-1.0.1.1
-  - cond-0.4.1.1
-resolver: lts-10.4
+- data-stringmap-1.0.1.1@sha256:93261201485505eb8c1a4e5c76f7c16fb1bb6095d410af0e1ea9252629a27b70
+- github: nikomi/json-builder
+  commit: fef4700b53da502f8d70d2106c9f4b65e1a69b3f
+
+resolver: lts-12.26
 
 flags: {}
 packages:
