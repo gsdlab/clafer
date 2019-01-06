@@ -15,12 +15,12 @@ matrix:
   include:
     - env: CABALVER=2.2 GHCVER=8.4.4
       compiler: ": #GHC 8.4.4"
-      addons: {apt: {packages: [cabal-install-2.2,ghc-8.4.4,alex-3.1.7,happy-1.19.5], sources: [hvr-ghc]}}
+      addons: {apt: {packages: [cabal-install-2.2,ghc-8.4.4,alex-3.2.4,happy-1.19.9], sources: [hvr-ghc]}}
 
 before_install:
  - unset CC
- - export HAPPYVER=1.19.5
- - export ALEXVER=3.1.7
+ - export HAPPYVER=1.19.9
+ - export ALEXVER=3.2.4
  - export PATH=~/.cabal/bin:/opt/ghc/$GHCVER/bin:/opt/cabal/$CABALVER/bin:/opt/happy/$HAPPYVER/bin:/opt/alex/$ALEXVER/bin:$PATH
 
 install:
