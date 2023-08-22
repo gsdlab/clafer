@@ -281,7 +281,7 @@ resolveNone pos' env id' =
     , "' not found within paths:"
     , showPath $ map _uid $ resPath env
     , "in context of '"
-    , show $ fromMaybe "none" (_uid <$> context env)
+    , show $ maybe "none" _uid (context env)
     , "'" ]
 
 
@@ -303,7 +303,7 @@ resolveBind env id' = return $ find (\bs -> id' `elem` fst bs) (bindings env) >>
 -- searches for a name in all subclafers (BFS)
 resolveDescendants :: SEnv -> String -> Resolve (Maybe (HowResolved, String, [IClafer]))
 resolveDescendants env id' = return $
-  (context env) >> (findFirst id' $ subClafers env) >>= (toMTriple Subclafers)
+  context env >> findFirst id' (subClafers env) >>= toMTriple Subclafers
 
 -- searches for a name in immediate subclafers (BFS)
 resolveChildren :: Span -> SEnv -> String -> Resolve (Maybe (HowResolved, String, [IClafer]))
@@ -380,7 +380,7 @@ findUnique pos' x xs =
     [elem'] -> return $ Just (_uid $ fst elem', snd elem')
     xs'    -> throwError $ SemanticErr pos' $ "clafer " ++ show x ++ " " ++ errMsg
       where
-      xs''   = map ((map _uid).snd) xs'
+      xs''   = map (map _uid.snd) xs'
       errMsg = (if isNamespaceConflict xs''
                then "cannot be defined because the name should be unique in the same namespace.\n"
                else "is not unique. ") ++
@@ -393,7 +393,7 @@ findFirst x xs =
     (ele:_) -> Just $ (_uid $ fst ele, snd ele)
 
 showPath :: [String] -> String
-showPath xs = (intercalate "." $ reverse xs) ++ "\n"
+showPath xs = intercalate "." (reverse xs) ++ "\n"
 
 isNamespaceConflict :: [[String]] -> Bool
 isNamespaceConflict (xs:ys:_) = tail xs == tail ys
@@ -401,4 +401,4 @@ isNamespaceConflict x         = error $ "isNamespaceConflict must be given a lis
                                          ++ " of at least two elements, but was given " ++ show x
 
 filterPaths :: String -> [(IClafer, [IClafer])] -> [(IClafer, [IClafer])]
-filterPaths x xs = filter (((==) x)._ident.fst) xs
+filterPaths x = filter ((==) x._ident.fst)

@@ -95,8 +95,8 @@ resolveNSuper abstractClafers (Just (PExp _ pid' pos' (IClaferId _ id' _ _))) =
       then throwError $ SemanticErr pos' $ "Primitive types are not allowed as super types: " ++ id'
       else do
         r <- resolveN pos' abstractClafers id'
-        (id'', [superClafer']) <- case r of
-          Nothing -> throwError $ SemanticErr pos' $ "No superclafer found: " ++ id'
+        ~(id'', [superClafer']) <- case r of
+          Nothing -> throwError $ SemanticErr pos' ("No superclafer found: " ++ id')
           Just m  -> return m
         return (Just $ PExp (Just $ TClafer [id'']) pid' pos' (IClaferId "" id'' (isTopLevel superClafer') (GlobalBind id''))
                  , Just superClafer')
@@ -234,8 +234,8 @@ getDirUnrollables :: [(String, [String])] -> [String]
 getDirUnrollables dependencies = (filter isUnrollable $ map (map v2n) $
                                   map flatten (scc graph)) >>= map fst3
   where
-  (graph, v2n, _) = graphFromEdges $map (\(c, ss) -> (c, c, ss)) dependencies
-  isUnrollable (x:[]) = fst3 x `elem` trd3 x
+  (graph, v2n, _) = graphFromEdges $ map (\(c, ss) -> (c, c, ss)) dependencies
+  isUnrollable [x] = fst3 x `elem` trd3 x
   isUnrollable _ = True
 
 -- -----------------------------------------------------------------------------

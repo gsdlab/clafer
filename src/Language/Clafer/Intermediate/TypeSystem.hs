@@ -1,4 +1,3 @@
-{-# LANGUAGE NamedFieldPuns #-}
 {-
  Copyright (C) 2015-2017 Michal Antkiewicz <http://gsd.uwaterloo.ca>
 
@@ -169,12 +168,12 @@ getDrefTMapByUID    uidIClaferMap'   uid' = case uid' of
   _        -> findIClafer uidIClaferMap' uid' >>= getDrefTMap
 
 
-hierarchy :: (Monad m) => UIDIClaferMap -> UID -> m [IClafer]
+hierarchy :: (Monad m, MonadFail m) => UIDIClaferMap -> UID -> m [IClafer]
 hierarchy uidIClaferMap' uid' = case findIClafer uidIClaferMap' uid' of
       Nothing -> fail $ "TypeSystem.hierarchy: clafer " ++ uid' ++ "not found!"
       Just clafer -> return $ findHierarchy getSuper uidIClaferMap' clafer
 
-hierarchyMap :: (Monad m) => UIDIClaferMap -> (IClafer -> a) -> UID -> m [a]
+hierarchyMap :: (Monad m, MonadFail m) => UIDIClaferMap -> (IClafer -> a) -> UID -> m [a]
 hierarchyMap uidIClaferMap' f c = case findIClafer uidIClaferMap' c of
       Nothing -> fail $ "TypeSystem.hierarchyMap: clafer " ++ c ++ "not found!"
       Just clafer -> return $ mapHierarchy f getSuper uidIClaferMap' clafer
@@ -293,7 +292,7 @@ runListT $ intersection undefined TClafer {_hi = ["A","X","B","C"]} TClafer {_hi
 [ Just TClafer {_hi = ["X"]]
 -}
 
-intersection :: Monad m => UIDIClaferMap -> IType -> IType -> m (Maybe IType)
+intersection :: (Monad m, MonadFail m) => UIDIClaferMap -> IType -> IType -> m (Maybe IType)
 intersection _              TBoolean        TBoolean      = return $ Just TBoolean
 intersection _              TString         TString       = return $ Just TString
 intersection _              TReal           TReal         = return $ Just TReal
@@ -362,7 +361,7 @@ intersection _              _            _            = do
 -- C : A
 -- Outputs:
 -- the resulting type is: A, and the type combination is valid
-getIfThenElseType :: Monad m => UIDIClaferMap -> IType -> IType -> m (Maybe IType)
+getIfThenElseType :: (Monad m, MonadFail m) => UIDIClaferMap -> IType -> IType -> m (Maybe IType)
 getIfThenElseType _              TBoolean        TBoolean      = return $ Just TBoolean
 getIfThenElseType _              TString         TString       = return $ Just TString
 getIfThenElseType _              TReal           TReal         = return $ Just TReal
@@ -439,7 +438,7 @@ The following should return [Nothing]
 >>> runListT $ composition undefined (TMap TString TReal) (TMap TInteger TString)
 [Just (TMap {_so = TString, _ta = TString})]
 -}
-composition :: Monad m => UIDIClaferMap -> IType -> IType -> m (Maybe IType)
+composition :: (Monad m, MonadFail m) => UIDIClaferMap -> IType -> IType -> m (Maybe IType)
 composition uidIClaferMap' (TMap so1 ta1) (TMap so2 ta2) = do
     -- check whether we can compose?
     _ <- intersection uidIClaferMap' ta1 so2
@@ -464,7 +463,7 @@ addHierarchy    uidIClaferMap'   (TMap so' ta')   = TMap (addHierarchy uidIClafe
 addHierarchy    uidIClaferMap'   (TUnion un')     = TUnion $ map (addHierarchy uidIClaferMap') un'
 addHierarchy    _                x                = x
 
-closure :: Monad m => UIDIClaferMap -> [String] -> m [String]
+closure :: (Monad m, MonadFail m) => UIDIClaferMap -> [String] -> m [String]
 closure uidIClaferMap' ut = concat `liftM` mapM (hierarchyMap uidIClaferMap' _uid) ut
 
 getTMaps :: UIDIClaferMap -> IType        -> [IType]

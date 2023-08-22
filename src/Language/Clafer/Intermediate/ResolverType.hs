@@ -48,7 +48,7 @@ newtype TypeAnalysis a = TypeAnalysis (ReaderT TypeInfo (Either ClaferSErr) a)
 
 -- return the type of a UID but give preference to local declarations in quantified expressions, which shadow global names
 typeOfUid :: MonadTypeAnalysis m => UID -> m IType
-typeOfUid uid = (fromMaybe (TClafer [uid]) . lookup uid) <$> typeDecls
+typeOfUid uid = fromMaybe (TClafer [uid]) . lookup uid <$> typeDecls
 
 class (Functor m, Monad m) => MonadTypeAnalysis m where
   -- What "this" refers to
@@ -105,9 +105,9 @@ runTypeAnalysis (TypeAnalysis tc) imodule = runReaderT tc $ TypeInfo [] (createU
 claferWithUid :: (Monad m) => UIDIClaferMap -> String -> m IClafer
 claferWithUid uidIClaferMap' u = case findIClafer uidIClaferMap' u of
   Just c -> return c
-  Nothing -> fail $ "ResolverType.claferWithUid: " ++ u ++ " not found!"
+  Nothing -> error $ "ResolverType.claferWithUid: " ++ u ++ " not found!"
 
-parentOf :: (Monad m) => UIDIClaferMap -> UID -> m UID
+parentOf :: (Monad m, MonadFail m) => UIDIClaferMap -> UID -> m UID
 parentOf uidIClaferMap' c = case _parentUID <$> findIClafer uidIClaferMap' c of
   Just u -> return u
   Nothing -> fail $ "ResolverType.parentOf: " ++ c ++ " not found!"
@@ -119,13 +119,13 @@ parentOf uidIClaferMap' c = case _parentUID <$> findIClafer uidIClaferMap' c of
  -    C      // C - child
  -  B : A    // B - parent
  -}
-isIndirectChild :: (Monad m) => UIDIClaferMap -> UID -> UID -> m Bool
+isIndirectChild :: (Monad m, MonadFail m) => UIDIClaferMap -> UID -> UID -> m Bool
 isIndirectChild uidIClaferMap' child parent = do
   (_:allSupers) <- hierarchy uidIClaferMap' parent
   childOfSupers <- mapM ((isChild uidIClaferMap' child)._uid) allSupers
   return $ or childOfSupers
 
-isChild :: (Monad m) => UIDIClaferMap -> UID -> UID -> m Bool
+isChild :: (Monad m, MonadFail m) => UIDIClaferMap -> UID -> UID -> m Bool
 isChild uidIClaferMap' child parent =
     case findIClafer uidIClaferMap' child of
         Nothing -> return False

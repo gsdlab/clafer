@@ -17,9 +17,11 @@ data Err a = Ok a | Bad Pos String
 
 instance Monad Err where
   return      = pure
-  fail        = Bad noPos
   Ok a  >>= f = f a
   Bad p s >>= _ = Bad p s
+
+instance MonadFail Err where
+  fail        = Bad noPos
 
 instance Applicative Err where
   pure = Ok

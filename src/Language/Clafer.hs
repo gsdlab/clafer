@@ -270,7 +270,8 @@ save args'=
            else scopesList $ fromJust alloyResult
 
 summary :: String -> CompilerResult -> CompilerResult
-summary graph result = result{outputCode=unlines $ summary' graph ("<pre>" ++ statistics result ++ "</pre>") (lines $ outputCode result)}
+summary graph result@CompilerResult{} = result{outputCode=unlines $ summary' graph ("<pre>" ++ statistics result ++ "</pre>") (lines $ outputCode result)}
+summary _     noResult = noResult
 
 summary' :: String -> String -> [String] -> [String]
 summary' _ _ [] = []
@@ -282,7 +283,7 @@ summary' graph stats (x:xs) = x:summary' graph stats xs
 
 runValidate :: ClaferArgs -> String -> IO ()
 runValidate args' fo = do
-  let path = (tooldir args') ++ "/"
+  let path = tooldir args' ++ "/"
   let modes = mode args'
   when (Alloy `elem` modes && ".als" `isSuffixOf` fo) $ do
     void $ system $ validateAlloy path ++ fo
@@ -420,9 +421,9 @@ generateHtml env =
         cargs = args env;
         irMap = irModuleTrace env;
         comments = if add_comments cargs then getComments $ unlines $ modelFrags env else [];
-    in (if (self_contained cargs) then Css.header ++ "<style>" ++ Css.css ++ "</style></head>\n<body>\n" else "")
-       ++ (unlines $ genFragments decls' (frags env) irMap comments) ++
-       (if (self_contained cargs) then "</body>\n</html>" else "")
+    in (if self_contained cargs then Css.header ++ "<style>" ++ Css.css ++ "</style></head>\n<body>\n" else "")
+       ++ unlines (genFragments decls' (frags env) irMap comments) ++
+       (if self_contained cargs then "</body>\n</html>" else "")
 
   where
     lne :: Declaration -> Pos
