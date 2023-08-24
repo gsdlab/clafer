@@ -107,7 +107,7 @@ claferWithUid uidIClaferMap' u = case findIClafer uidIClaferMap' u of
   Just c -> return c
   Nothing -> error $ "ResolverType.claferWithUid: " ++ u ++ " not found!"
 
-parentOf :: (Monad m, MonadFail m) => UIDIClaferMap -> UID -> m UID
+parentOf :: MonadFail m => UIDIClaferMap -> UID -> m UID
 parentOf uidIClaferMap' c = case _parentUID <$> findIClafer uidIClaferMap' c of
   Just u -> return u
   Nothing -> fail $ "ResolverType.parentOf: " ++ c ++ " not found!"
@@ -119,13 +119,13 @@ parentOf uidIClaferMap' c = case _parentUID <$> findIClafer uidIClaferMap' c of
  -    C      // C - child
  -  B : A    // B - parent
  -}
-isIndirectChild :: (Monad m, MonadFail m) => UIDIClaferMap -> UID -> UID -> m Bool
+isIndirectChild :: MonadFail m => UIDIClaferMap -> UID -> UID -> m Bool
 isIndirectChild uidIClaferMap' child parent = do
   (_:allSupers) <- hierarchy uidIClaferMap' parent
   childOfSupers <- mapM ((isChild uidIClaferMap' child)._uid) allSupers
   return $ or childOfSupers
 
-isChild :: (Monad m, MonadFail m) => UIDIClaferMap -> UID -> UID -> m Bool
+isChild :: MonadFail m => UIDIClaferMap -> UID -> UID -> m Bool
 isChild uidIClaferMap' child parent =
     case findIClafer uidIClaferMap' child of
         Nothing -> return False
