@@ -1,8 +1,9 @@
 # for GHC-9.4.6
 extra-deps:
-- data-stringmap-1.0.1.1@sha256:93261201485505eb8c1a4e5c76f7c16fb1bb6095d410af0e1ea9252629a27b70
 - github: nikomi/json-builder
   commit: fef4700b53da502f8d70d2106c9f4b65e1a69b3f
+- github: gsdlab/StringMap
+  commit: 0fe1e8e3919de3077b40a61f54cb681c3548307e
 
 resolver: lts-21.8
 
