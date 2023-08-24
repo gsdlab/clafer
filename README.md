@@ -106,18 +106,18 @@ Stack is the only requirement: no other Haskell tooling needs to be installed be
 
 Dependencies
 
-* [GHC](https://www.haskell.org/downloads) >= 8.4.4 are recommended,
-* `cabal-install` >= 2.2, should be installed together with a GHC distribution,
+* `ghc-9.6.4`,
+* `cabal-install-3.8`
 * [alex](https://hackage.haskell.org/package/alex),
 * [happy](https://hackage.haskell.org/package/happy).
 
-1. Install GHC
-2. `cabal update`
-3. `cabal install alex happy`
-4. `cabal install clafer`
-5. on Windows `cd C:\Users\<user>\AppData\Roaming\cabal\x86_64-windows-ghc-8.4.4\clafer-0.5.1`
-6. on Linux `ca ~/.cabal/share/x86_64-linux-ghc-8.4.4/clafer-0.5.1/`
-7. to automatically download Alloy jars, execute
+0. Use `ghcup` to install `ghc`, `cabal`, and `stack`
+1. `cabal update`
+2. `cabal install alex happy`
+3. `cabal install exe:clafer`
+4. on Windows `cd C:\Users\<user>\AppData\Roaming\cabal\x86_64-windows-ghc-9.6.4\clafer-0.5.1`
+5. on Linux `cd ~/.cabal/bin/`
+6. to automatically download Alloy jars, execute
   * `make alloy4.2.jar`,
   * move `alloy4.2.jar` to the location of the clafer executable.
 
