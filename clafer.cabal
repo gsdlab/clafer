@@ -7,7 +7,7 @@ homepage:               http://clafer.org
 license:                MIT
 license-file:           LICENSE
 author:                 Kacper Bak, Jimmy Liang, Michal Antkiewicz, Ed Zulkoski, Luke Michael Brown, Paulius Juodisius, Rafael Olaechea
-maintainer:             Michal Antkiewicz <mantkiew@gsd.uwaterloo.ca>
+maintainer:             Michal Antkiewicz <michal.antkiewicz@uwaterloo.ca>
 stability:              Experimental
 category:               Model
 build-type:             Simple
