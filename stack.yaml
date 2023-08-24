@@ -3,7 +3,7 @@ extra-deps:
 - github: nikomi/json-builder
   commit: fef4700b53da502f8d70d2106c9f4b65e1a69b3f
 - github: gsdlab/StringMap
-  commit: 0fe1e8e3919de3077b40a61f54cb681c3548307e
+  commit: 2ce0adb947adaa5581d347ce8555ec76db44d815
 
 resolver: lts-21.8
 
