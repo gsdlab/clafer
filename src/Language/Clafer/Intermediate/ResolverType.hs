@@ -102,7 +102,7 @@ instance MonadTypeAnalysis m => MonadTypeAnalysis (ExceptT ClaferSErr m) where
 runTypeAnalysis :: TypeAnalysis a -> IModule -> Either ClaferSErr a
 runTypeAnalysis (TypeAnalysis tc) imodule = runReaderT tc $ TypeInfo [] (createUidIClaferMap imodule) undefined Nothing
 
-claferWithUid :: (Monad m) => UIDIClaferMap -> String -> m IClafer
+claferWithUid :: Monad m => UIDIClaferMap -> String -> m IClafer
 claferWithUid uidIClaferMap' u = case findIClafer uidIClaferMap' u of
   Just c -> return c
   Nothing -> error $ "ResolverType.claferWithUid: " ++ u ++ " not found!"
@@ -122,7 +122,7 @@ parentOf uidIClaferMap' c = case _parentUID <$> findIClafer uidIClaferMap' c of
 isIndirectChild :: MonadFail m => UIDIClaferMap -> UID -> UID -> m Bool
 isIndirectChild uidIClaferMap' child parent = do
   (_:allSupers) <- hierarchy uidIClaferMap' parent
-  childOfSupers <- mapM ((isChild uidIClaferMap' child)._uid) allSupers
+  childOfSupers <- mapM (isChild uidIClaferMap' child._uid) allSupers
   return $ or childOfSupers
 
 isChild :: MonadFail m => UIDIClaferMap -> UID -> UID -> m Bool
@@ -432,8 +432,8 @@ addDref :: PExp -> ExceptT ClaferSErr (ListT TypeAnalysis) PExp
 addDref pexp =
   do
     localCurPath (typeOf pexp) $ do
-      deref <- (ExceptT $ ListT $ resolveTPExp' $ newPExp $ IClaferId "" "dref" False NoBind) `catchError` const (lift mzero)
-      let result = (newPExp $ IFunExp "." [pexp, deref]) `withType` typeOf deref
+      deref <- ExceptT (ListT $ resolveTPExp' $ newPExp $ IClaferId "" "dref" False NoBind) `catchError` const (lift mzero)
+      let result = newPExp (IFunExp "." [pexp, deref]) `withType` typeOf deref
       return result <++> addDref result
   where
   newPExp = PExp Nothing "" $ _inPos pexp
