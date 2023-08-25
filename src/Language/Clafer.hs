@@ -316,7 +316,7 @@ addModuleFragment i =
   do
     env <- getEnv
     let modelFrags' = modelFrags env ++ [i]
-    let frags' = frags env ++ [(endPos $ concat modelFrags')]
+    let frags' = frags env ++ [endPos $ concat modelFrags']
     putEnv env{ modelFrags = modelFrags', frags = frags' }
   where
   endPos "" = Pos 1 1
@@ -325,7 +325,7 @@ addModuleFragment i =
     where
     input' = lines' model
     line' = toInteger $ length input'
-    column' = 1 + (toInteger $ length $ last input')
+    column' = 1 + toInteger (length $ last input')
     -- Can't use the builtin lines because it ignores the last empty lines (as of base 4.5).
     lines' "" = [""]
     lines' input'' =
@@ -417,14 +417,16 @@ compile desugaredMod = do
 -- | Splits the AST into their fragments, and generates the output for each fragment.
 generateHtml :: ClaferEnv -> String
 generateHtml env =
-    let (Just (Module _ decls')) = cAst env;
-        cargs = args env;
-        irMap = irModuleTrace env;
-        comments = if add_comments cargs then getComments $ unlines $ modelFrags env else [];
-    in (if self_contained cargs then Css.header ++ "<style>" ++ Css.css ++ "</style></head>\n<body>\n" else "")
-       ++ unlines (genFragments decls' (frags env) irMap comments) ++
-       (if self_contained cargs then "</body>\n</html>" else "")
-
+  case cAst env of
+    Nothing -> ""
+    (Just (Module _ decls')) ->
+      let
+          cargs = args env
+          irMap = irModuleTrace env
+          comments = if add_comments cargs then getComments $ unlines $ modelFrags env else [];
+      in (if self_contained cargs then Css.header ++ "<style>" ++ Css.css ++ "</style></head>\n<body>\n" else "")
+        ++ unlines (genFragments decls' (frags env) irMap comments) ++
+        (if self_contained cargs then "</body>\n</html>" else "")
   where
     lne :: Declaration -> Pos
     lne (ElementDecl (Span p _) _) = p
@@ -432,10 +434,10 @@ generateHtml env =
     genFragments :: [Declaration] -> [Pos] -> Map.Map Span [Ir] -> [(Span, String)] -> [String]
     genFragments []           _            _     comments = printComments comments
     genFragments (decl:decls') []           irMap comments = let (comments', c) = printPreComment (getSpan decl) comments in
-                                                                   [c] ++ (cleanOutput $ revertLayout $ printDeclaration decl 0 irMap True $ inDecl decl comments') : (genFragments decls' [] irMap $ afterDecl decl comments')
+                                                                   c : (cleanOutput $ revertLayout $ printDeclaration decl 0 irMap True $ inDecl decl comments') : (genFragments decls' [] irMap $ afterDecl decl comments')
     genFragments (decl:decls') (frg:frgs) irMap comments = if lne decl < frg
                                                                  then let (comments', c) = printPreComment (getSpan decl) comments in
-                                                                   [c] ++ (cleanOutput $ revertLayout $ printDeclaration decl 0 irMap True $ inDecl decl comments') : (genFragments decls' (frg:frgs) irMap $ afterDecl decl comments')
+                                                                   c : (cleanOutput $ revertLayout $ printDeclaration decl 0 irMap True $ inDecl decl comments') : (genFragments decls' (frg:frgs) irMap $ afterDecl decl comments')
                                                                  else "<!-- # FRAGMENT /-->" : genFragments (decl:decls') frgs irMap comments
     inDecl :: Declaration -> [(Span, String)] -> [(Span, String)]
     inDecl decl comments = let s = getSpan decl in dropWhile (\x -> fst x <= s) comments
