@@ -6,8 +6,8 @@ description:            Clafer is a general purpose, lightweight, structural mod
 homepage:               http://clafer.org
 license:                MIT
 license-file:           LICENSE
-author:                 Kacper Bak, Jimmy Liang, Michal Antkiewicz, Ed Zulkoski, Luke Michael Brown, Paulius Juodisius, Rafael Olaechea
-maintainer:             Michal Antkiewicz <michal.antkiewicz@uwaterloo.ca>
+author:                 Kacper Bak, Jimmy Liang, Michał Antkiewicz, Ed Zulkoski, Luke Michael Brown, Paulius Juodisius, Rafael Olaechea
+maintainer:             Michał Antkiewicz <michal.antkiewicz@uwaterloo.ca>
 stability:              Experimental
 category:               Model
 build-type:             Simple
@@ -28,7 +28,7 @@ source-repository head
 common shared-deps
     default-language:   Haskell2010
     ghc-options:        -Wall
-    build-depends:      base >= 4.16
+    build-depends:      base >= 4.16 && < 5
                       , containers >= 0.5.7.1
                       , filepath >= 1.4.1.1
                       , mtl >= 2.2.1
@@ -59,7 +59,7 @@ library
                       , HTTP >= 4000.3.9
                       , network >= 2.6.3.2
                       , parsec >= 3.1.11
-                      , text >= 1.2.2.2
+                      , text >= 2.0
 
                       , aeson >= 1.1.2.0
                       , cmdargs >= 0.10.20
