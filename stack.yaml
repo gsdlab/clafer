@@ -5,7 +5,7 @@ extra-deps:
 - github: gsdlab/StringMap
   commit: 2ce0adb947adaa5581d347ce8555ec76db44d815
 
-resolver: lts-21.9
+resolver: lts-21.11
 
 flags: {}
 packages:
