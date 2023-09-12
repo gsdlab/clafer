@@ -17,3 +17,4 @@ codex.tags
 .stack-work
 alloy4.2.jar
 chocosolver.jar
+stack.yaml.lock

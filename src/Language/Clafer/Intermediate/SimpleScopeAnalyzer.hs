@@ -63,7 +63,9 @@ simpleScopeAnalysis iModule@IModule{_mDecls = decls'} =
     lowerOrUpperFixedCard analysis' clafer =
         maximum [cardLb, cardUb, lowFromConstraints, oneForStar, targetScopeForStar ]
         where
-        Just (cardLb, cardUb) = _card clafer
+        (cardLb, cardUb) = case _card clafer of
+            (Just c) -> c
+            Nothing  -> (1, 1)
         oneForStar = if (cardLb == 0 && cardUb == -1) then 1 else 0
         targetScopeForStar = if ((isJust $ _reference clafer) && cardUb == -1)
             then case getReference clafer of
@@ -106,7 +108,9 @@ analyzeSupers :: UIDIClaferMap -> [IClafer] -> Map String Integer -> IElement ->
 analyzeSupers uidClaferMap' clafers analysis (IEClafer clafer) =
     foldl (analyzeSupers uidClaferMap' clafers) analysis' (_elements clafer)
     where
-    (Just (cardLb, cardUb)) = _card clafer
+    (cardLb, cardUb) = case _card clafer of
+        (Just c) -> c
+        Nothing  -> (1, 1)
     lowerOrFixedUpperBound = maximum [1, cardLb, cardUb ]
     analysis' = if (isJust $ _reference clafer)
                 then analysis
@@ -121,7 +125,9 @@ analyzeRefs :: UIDIClaferMap -> [IClafer] -> Map String Integer -> IElement -> M
 analyzeRefs uidClaferMap' clafers analysis (IEClafer clafer) =
     foldl (analyzeRefs uidClaferMap' clafers) analysis' (_elements clafer)
     where
-    (Just (cardLb, cardUb)) = _card clafer
+    (cardLb, cardUb) = case _card clafer of
+        (Just c) -> c
+        Nothing  -> (1, 1)
     lowerOrFixedUpperBound = maximum [1, cardLb, cardUb]
     analysis' = if (isJust $ _reference clafer)
                 then case (directSuper uidClaferMap' clafer) of

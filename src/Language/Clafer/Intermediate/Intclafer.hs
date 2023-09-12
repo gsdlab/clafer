@@ -1,4 +1,4 @@
-{-# LANGUAGE TemplateHaskell, DeriveDataTypeable #-}
+{-# LANGUAGE TemplateHaskell, DeriveDataTypeable, DeriveGeneric, DeriveAnyClass #-}
 {-
  Copyright (C) 2012-2017 Kacper Bak, Jimmy Liang, Michal Antkiewicz, Luke Michael Brown <http://gsd.uwaterloo.ca>
 
@@ -27,8 +27,8 @@ import Language.Clafer.Front.AbsClafer
 
 import Control.Lens
 import Data.Aeson
-import Data.Aeson.TH
 import Data.Data
+import GHC.Generics
 import Data.Monoid
 import Data.Foldable
 import Prelude
@@ -52,7 +52,7 @@ data Ir
   | IRIQuant IQuant
   | IRIDecl IDecl
   | IRIGCard (Maybe IGCard)
-  deriving (Eq, Show)
+  deriving (Eq,Ord,Show,Data,Typeable,Generic,ToJSON)
 
 data IType
   = TBoolean
@@ -70,8 +70,7 @@ data IType
   | TUnion
     { _un :: [IType]          -- ^ [IType] is a list of basic types (not union types)
     }
-
-  deriving (Eq,Ord,Show,Data,Typeable)
+  deriving (Eq,Ord,Show,Data,Typeable,Generic,ToJSON)
 
 -- | each file contains exactly one mode. A module is a list of declarations
 data IModule
@@ -79,7 +78,13 @@ data IModule
     { _mName :: String -- ^ always empty (no syntax for declaring modules)
     , _mDecls :: [IElement] -- ^ List of top-level elements
     }
-  deriving (Eq,Ord,Show,Data,Typeable)
+  deriving (Eq,Ord,Show,Data,Typeable,Generic,ToJSON)
+
+instance ToJSON Span where
+  toJSON _ = Null
+
+instance ToJSON Pos where
+  toJSON _ = Null
 
 -- | Clafer has a list of fields that specify its properties. Some fields, marked as (o) are for generating optimized code
 data IClafer
@@ -96,7 +101,7 @@ data IClafer
     , _glCard :: Interval     -- ^ (o) global cardinality
     , _elements :: [IElement] -- ^ nested elements
     }
-  deriving (Eq,Ord,Show,Data,Typeable)
+  deriving (Eq,Ord,Show,Data,Typeable,Generic,ToJSON)
 
 isMutable :: IClafer -> Bool
 isMutable = not . _final . _modifiers
@@ -106,7 +111,7 @@ data IClaferModifiers
   { _abstract :: Bool -- ^ declared as "abstract"
   , _initial :: Bool  -- ^ declared as "initial"
   , _final :: Bool    -- ^ declared as "final"
-  } deriving (Eq,Ord,Show,Data,Typeable)
+  } deriving (Eq,Ord,Show,Data,Typeable,Generic,ToJSON)
 
 _isAbstract :: IClafer -> Bool     -- ^ whether abstract or not (i.e., concrete)
 _isAbstract = _abstract . _modifiers
@@ -132,7 +137,7 @@ data IElement
     { _isMaximize :: Bool     -- ^ whether maximize or minimize
     , _cpexp :: PExp          -- ^ the expression
     }
-  deriving (Eq,Ord,Show,Data,Typeable)
+  deriving (Eq,Ord,Show,Data,Typeable,Generic,ToJSON)
 
 -- | A type of reference.
 --   ->    values unique (set)
@@ -143,13 +148,13 @@ data IReference
     , _refModifier :: Maybe IReferenceModifier
     , _ref :: PExp  -- ^ the only allowed reference expressions are IClafer and set expr. (++, **, --s)
     }
-  deriving (Eq,Ord,Show,Data,Typeable)
+  deriving (Eq,Ord,Show,Data,Typeable,Generic,ToJSON)
 
 data IReferenceModifier
   = FinalRefTarget
   | FinalRef
   | FinalTarget
-  deriving (Eq, Ord, Show, Data, Typeable)
+  deriving (Eq, Ord, Show, Data, Typeable,Generic,ToJSON)
 
 -- | Group cardinality is specified as an interval. It may also be given by a keyword.
 --   xor    1..1 isKeyword = True
@@ -158,7 +163,7 @@ data IGCard
   = IGCard
     { _isKeyword :: Bool    -- ^ whether given by keyword: or, xor, mux
     , _interval :: Interval
-    } deriving (Eq,Ord,Show,Data,Typeable)
+    } deriving (Eq,Ord,Show,Data,Typeable,Generic,ToJSON)
 
 -- | (Min, Max) integer interval. -1 denotes *
 type Interval = (Integer, Integer)
@@ -174,14 +179,14 @@ data PExp
     , _inPos :: Span          -- ^ position in the input Clafer file
     , _exp :: IExp            -- ^ the actual expression
     }
-  deriving (Eq,Ord,Show,Data,Typeable)
+  deriving (Eq,Ord,Show,Data,Typeable,Generic,ToJSON)
 
 -- | Embedes reference to a resolved Clafer
 {-type ClaferBinding = Maybe UID-}
 data ClaferBinding = GlobalBind UID
   | LocalBind CName
   | NoBind
-  deriving (Eq,Ord,Show,Data,Typeable)
+  deriving (Eq,Ord,Show,Data,Typeable,Generic,ToJSON)
 
 data IExp
     -- | quantified expression with declarations
@@ -222,7 +227,7 @@ data IExp
     , _isTop :: Bool             -- ^ identifier refers to a top-level definition
     , _binding :: ClaferBinding  -- ^ the UID of the bound IClafer, if resolved
     }
-  deriving (Eq,Ord,Show,Data,Typeable)
+  deriving (Eq,Ord,Show,Data,Typeable,Generic,ToJSON)
 
 {- |
 For IFunExp standard set of operators includes:
@@ -269,7 +274,7 @@ data IDecl
     , _decls :: [CName]  -- ^ a list of local names
     , _body :: PExp      -- ^ set to which local names refer to
     }
-  deriving (Eq,Ord,Show,Data,Typeable)
+  deriving (Eq,Ord,Show,Data,Typeable,Generic,ToJSON)
 
 -- | quantifier
 data IQuant
@@ -278,7 +283,7 @@ data IQuant
   | IOne   -- ^ exactly one
   | ISome  -- ^ at least one (i.e., exists)
   | IAll   -- ^ for all
-  deriving (Eq,Ord,Show,Data,Typeable)
+  deriving (Eq,Ord,Show,Data,Typeable,Generic,ToJSON)
 
 type LineNo = Integer
 type ColNo  = Integer
@@ -400,64 +405,20 @@ instance Plated PExp
 instance Plated IExp
 
 makeLenses ''IType
-
 makeLenses ''IModule
-
 makeLenses ''IClafer
-
 makeLenses ''IElement
-
 makeLenses ''IClaferModifiers
-
 makeLenses ''IReferenceModifier
-
 makeLenses ''IReference
-
 makeLenses ''IGCard
-
 makeLenses ''PExp
-
 makeLenses ''IExp
-
 makeLenses ''IDecl
-
-$(deriveToJSON defaultOptions{fieldLabelModifier = tail, omitNothingFields=True} ''IType)
-
-$(deriveToJSON defaultOptions{fieldLabelModifier = tail, omitNothingFields=True} ''IModule)
-
-$(deriveToJSON defaultOptions{fieldLabelModifier = tail, omitNothingFields=True} ''IClaferModifiers)
-
-$(deriveToJSON defaultOptions{fieldLabelModifier = tail, omitNothingFields=True} ''ClaferBinding)
-
-$(deriveToJSON defaultOptions{fieldLabelModifier = tail, omitNothingFields=True} ''IElement)
-
-$(deriveToJSON defaultOptions{fieldLabelModifier = tail, omitNothingFields=True} ''IReferenceModifier)
-
-$(deriveToJSON defaultOptions{fieldLabelModifier = tail, omitNothingFields=True} ''IReference)
-
-$(deriveToJSON defaultOptions{fieldLabelModifier = tail, omitNothingFields=True} ''IClafer)
-
-$(deriveToJSON defaultOptions{fieldLabelModifier = tail, omitNothingFields=True} ''IGCard)
-
-$(deriveToJSON defaultOptions{fieldLabelModifier = tail, omitNothingFields=True} ''PExp)
-
-$(deriveToJSON defaultOptions{fieldLabelModifier = tail, omitNothingFields=True} ''IExp)
-
-$(deriveToJSON defaultOptions{fieldLabelModifier = tail, omitNothingFields=True} ''IDecl)
-
-$(deriveToJSON defaultOptions{fieldLabelModifier = tail, omitNothingFields=True} ''IQuant)
-
-instance ToJSON Span where
-  toJSON _ = Null
-
-instance ToJSON Pos where
-  toJSON _ = Null
 
 -- | Datatype used for JSON output. See Language.Clafer.gatherObjectivesAndAttributes
 data ObjectivesAndAttributes
   = ObjectivesAndAttributes
     { _qualities :: [String]
     , _attributes :: [String]
-    }
-
-$(deriveToJSON defaultOptions{fieldLabelModifier = tail} ''ObjectivesAndAttributes)
+    } deriving (Eq,Ord,Show,Data,Typeable,Generic,ToJSON)

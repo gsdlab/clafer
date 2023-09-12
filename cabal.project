@@ -1,0 +1,11 @@
+packages:
+    ./clafer.cabal
+
+source-repository-package
+    type: git
+    location: https://github.com/nikomi/json-builder
+    tag: fef4700b53da502f8d70d2106c9f4b65e1a69b3f
+source-repository-package
+    type: git
+    location: https://github.com/gsdlab/StringMap
+    tag: 2ce0adb947adaa5581d347ce8555ec76db44d815

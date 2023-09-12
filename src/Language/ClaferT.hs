@@ -284,7 +284,7 @@ instance ClaferErrPos p => Throwable (CErr p) where
 throwErrs :: (Monad m, Throwable t) => [t] -> ClaferT m a
 throwErrs throws =
   do
-    errors <- mapM toErr throws
+    errors <- mapM (\e -> toErr e) throws
     throwError $ ClaferErrs errors
 
 -- | Throw one error.

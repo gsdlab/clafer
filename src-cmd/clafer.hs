@@ -19,7 +19,6 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
 -}
-{-# LANGUAGE DeriveDataTypeable, NamedFieldPuns #-}
 module Main where
 
 import Prelude hiding (writeFile, readFile, print, putStrLn)
@@ -35,14 +34,14 @@ main :: IO ()
 main = do
   (args', model) <- mainArgs
   let timeInSec = (timeout_analysis args') * 10^(6::Integer)
-  if timeInSec > 0
-    then timeout timeInSec $ start args' model
-    else Just `fmap` start args' model
+  _ <- if timeInSec > 0
+         then timeout timeInSec $ start args' model
+         else Just `fmap` start args' model
   return ()
 
 start :: ClaferArgs -> InputModel-> IO ()
 start args' model = if ecore2clafer args'
-  then runEcore2Clafer (file args') $ (tooldir args')
+  then runEcore2Clafer (file args') $ tooldir args'
   else runCompiler Nothing args' model
 
 runEcore2Clafer :: FilePath -> FilePath -> IO ()

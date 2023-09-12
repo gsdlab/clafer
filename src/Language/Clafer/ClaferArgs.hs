@@ -28,7 +28,7 @@ module Language.Clafer.ClaferArgs where
 
 import System.Console.CmdArgs
 import System.Console.CmdArgs.Explicit hiding (mode)
-import Data.List
+import Data.List ( isPrefixOf )
 import Language.Clafer.SplitJoin
 import Paths_clafer (version)
 import Data.Version (showVersion)

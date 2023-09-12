@@ -46,11 +46,14 @@ data TypeInfo = TypeInfo {iTypeDecls::TypeDecls, iUIDIClaferMap::UIDIClaferMap, 
 newtype TypeAnalysis a = TypeAnalysis (ReaderT TypeInfo (Either ClaferSErr) a)
   deriving (MonadError ClaferSErr, Monad, Functor, MonadReader TypeInfo, Applicative)
 
+instance MonadFail TypeAnalysis where
+  fail = throwError . ClaferErr
+
 -- return the type of a UID but give preference to local declarations in quantified expressions, which shadow global names
 typeOfUid :: MonadTypeAnalysis m => UID -> m IType
-typeOfUid uid = (fromMaybe (TClafer [uid]) . lookup uid) <$> typeDecls
+typeOfUid uid = fromMaybe (TClafer [uid]) . lookup uid <$> typeDecls
 
-class (Functor m, Monad m) => MonadTypeAnalysis m where
+class MonadFail m => MonadTypeAnalysis m where
   -- What "this" refers to
   curThis :: m IClafer
   localCurThis :: IClafer -> m a -> m a
@@ -102,12 +105,12 @@ instance MonadTypeAnalysis m => MonadTypeAnalysis (ExceptT ClaferSErr m) where
 runTypeAnalysis :: TypeAnalysis a -> IModule -> Either ClaferSErr a
 runTypeAnalysis (TypeAnalysis tc) imodule = runReaderT tc $ TypeInfo [] (createUidIClaferMap imodule) undefined Nothing
 
-claferWithUid :: (Monad m) => UIDIClaferMap -> String -> m IClafer
+claferWithUid :: MonadFail m => UIDIClaferMap -> String -> m IClafer
 claferWithUid uidIClaferMap' u = case findIClafer uidIClaferMap' u of
   Just c -> return c
   Nothing -> fail $ "ResolverType.claferWithUid: " ++ u ++ " not found!"
 
-parentOf :: (Monad m) => UIDIClaferMap -> UID -> m UID
+parentOf :: MonadFail m => UIDIClaferMap -> UID -> m UID
 parentOf uidIClaferMap' c = case _parentUID <$> findIClafer uidIClaferMap' c of
   Just u -> return u
   Nothing -> fail $ "ResolverType.parentOf: " ++ c ++ " not found!"
@@ -119,13 +122,13 @@ parentOf uidIClaferMap' c = case _parentUID <$> findIClafer uidIClaferMap' c of
  -    C      // C - child
  -  B : A    // B - parent
  -}
-isIndirectChild :: (Monad m) => UIDIClaferMap -> UID -> UID -> m Bool
+isIndirectChild :: MonadFail m => UIDIClaferMap -> UID -> UID -> m Bool
 isIndirectChild uidIClaferMap' child parent = do
   (_:allSupers) <- hierarchy uidIClaferMap' parent
-  childOfSupers <- mapM ((isChild uidIClaferMap' child)._uid) allSupers
+  childOfSupers <- mapM (isChild uidIClaferMap' child._uid) allSupers
   return $ or childOfSupers
 
-isChild :: (Monad m) => UIDIClaferMap -> UID -> UID -> m Bool
+isChild :: MonadFail m => UIDIClaferMap -> UID -> UID -> m Bool
 isChild uidIClaferMap' child parent =
     case findIClafer uidIClaferMap' child of
         Nothing -> return False
@@ -316,7 +319,7 @@ resolveTPExp' p@PExp{_inPos, _exp} =
             | _op == iSumSet = test (isTInteger t) >> return TInteger
             | _op == iProdSet = test (isTInteger t) >> return TInteger
             | _op `elem` [iMin, iMinimum, iMaximum, iMinimize, iMaximize] = test (numeric t) >> return t
-            | otherwise = assert False $ error $ "Unknown op '" ++ _op ++ "'"
+            | otherwise = assert False $ fail $ "Unknown op '" ++ _op ++ "'"
       result' <- result
       return (result', e{_exps = [arg']})
 
@@ -370,7 +373,7 @@ resolveTPExp' p@PExp{_inPos, _exp} =
                 (test (isTString t1 && isTString t2) >> return TString) -- Case 1: String concatenation
                 `catchError`
                 const (test (numeric t1 && numeric t2) >> return (coerce t1 t2)) -- Case 2: Addition
-            | otherwise = error $ "ResolverType: Unknown op: " ++ show e
+            | otherwise = fail $ "ResolverType: Unknown op: " ++ show e
       result' <- result
       return (result', e{_exps = [arg1', arg2']})
 
@@ -425,15 +428,15 @@ resolveTPExp' p@PExp{_inPos, _exp} =
             Just t' -> if  isTBoolean t'
                        then throwError $ SemanticErr _inPos "The type of declaration of a quantified expression must not be 'TBoolean'"
                        else return $ d{_body = body'}
-  resolveTExp e = error $ "Unknown iexp: " ++ show e
+  resolveTExp e = fail $ "Unknown iexp: " ++ show e
 
 -- Adds "dref"s at the end, effectively dereferencing Clafers when needed.
 addDref :: PExp -> ExceptT ClaferSErr (ListT TypeAnalysis) PExp
 addDref pexp =
   do
     localCurPath (typeOf pexp) $ do
-      deref <- (ExceptT $ ListT $ resolveTPExp' $ newPExp $ IClaferId "" "dref" False NoBind) `catchError` const (lift mzero)
-      let result = (newPExp $ IFunExp "." [pexp, deref]) `withType` typeOf deref
+      deref <- ExceptT (ListT $ resolveTPExp' $ newPExp $ IClaferId "" "dref" False NoBind) `catchError` const (lift mzero)
+      let result = newPExp (IFunExp "." [pexp, deref]) `withType` typeOf deref
       return result <++> addDref result
   where
   newPExp = PExp Nothing "" $ _inPos pexp

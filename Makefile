@@ -81,6 +81,6 @@ endif
 alloy4.2.jar:
 	@if test ! -f "alloy4.2.jar"; then \
 		echo "[WARNING] Missing alloy4.2.jar. Downloading...";  \
-		$(WGET_COMMAND) http://alloy.lcs.mit.edu/alloy/downloads/alloy4.2_2015-02-22.jar; \
+		$(WGET_COMMAND) http://alloytools.org/download/alloy4.2_2015-02-22.jar; \
 		mv alloy4.2_2015-02-22.jar alloy4.2.jar; \
 	fi

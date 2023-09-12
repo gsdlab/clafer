@@ -1,18 +1,18 @@
-Name:                   clafer
-Version:                0.5.0
-Synopsis:               Compiles Clafer models to other formats: Alloy, JavaScript, JSON, HTML, Dot.
-Description:            Clafer is a general purpose, lightweight, structural modeling language developed at GSD Lab, University of Waterloo, and MODELS group at IT University of Copenhagen. Lightweight modeling aims at improving the understanding of the problem domain in the early stages of software development and determining the requirements with fewer defects. Clafer's goal is to make modeling more accessible to a wider range of users and domains. The tool provides a reference language implementation. It translates models to other formats (e.g. Alloy, JavaScript, JSON) to allow for reasoning with existing tools.
-Homepage:               http://clafer.org
-License:                MIT
-License-file:           LICENSE
-Author:                 Kacper Bak, Jimmy Liang, Michal Antkiewicz, Ed Zulkoski, Luke Michael Brown, Paulius Juodisius, Rafael Olaechea
-Maintainer:             Michal Antkiewicz <mantkiew@gsd.uwaterloo.ca>
-Stability:              Experimental
-Category:               Model
-Build-type:             Simple
-tested-with:            GHC == 8.0.2
-                      , GHC == 8.2.2
-Cabal-version:          >= 1.22
+cabal-version:          3.8
+name:                   clafer
+version:                0.5.1
+synopsis:               Compiles Clafer models to other formats: Alloy, JavaScript, JSON, HTML, Dot.
+description:            Clafer is a general purpose, lightweight, structural modeling language developed at GSD Lab, University of Waterloo, and MODELS group at IT University of Copenhagen. Lightweight modeling aims at improving the understanding of the problem domain in the early stages of software development and determining the requirements with fewer defects. Clafer's goal is to make modeling more accessible to a wider range of users and domains. The tool provides a reference language implementation. It translates models to other formats (e.g. Alloy, JavaScript, JSON) to allow for reasoning with existing tools.
+homepage:               http://clafer.org
+license:                MIT
+license-file:           LICENSE
+author:                 Kacper Bak, Jimmy Liang, Michał Antkiewicz, Ed Zulkoski, Luke Michael Brown, Paulius Juodisius, Rafael Olaechea
+maintainer:             Michał Antkiewicz <michal.antkiewicz@uwaterloo.ca>
+stability:              Experimental
+category:               Model
+build-type:             Simple
+tested-with:            GHC == 9.2.8
+                      , GHC == 9.4.6
 data-files:             README.md
                       , CHANGES.md
                       , logo.pdf
@@ -24,50 +24,45 @@ extra-source-files:     src/Language/Clafer/clafer.css
 source-repository head
     type:               git
     location:           git://github.com/gsdlab/clafer.git
-Executable clafer
-    build-tools:        ghc >= 8.0.2
-    default-language:   Haskell2010
-    main-is:            clafer.hs
-    hs-source-dirs:     src-cmd
-    ghc-options: -Wcompat
 
-    -- -Wnoncanonical-monad-instances -Wnoncanonical-monadfail-instances
-    build-depends:      base >= 4.9.1.0 && < 5
+common shared-deps
+    default-language:   Haskell2010
+    ghc-options:        -Wall
+    build-depends:      base >= 4.16 && < 5
                       , containers >= 0.5.7.1
                       , filepath >= 1.4.1.1
-                      , process >= 1.4.3.0
-
                       , mtl >= 2.2.1
-
-                      , cmdargs >= 0.10.18
                       , split >= 0.2.3.2
 
+executable clafer
+    import:             shared-deps
+    main-is:            clafer.hs
+    hs-source-dirs:     src-cmd
+
+    -- -Wnoncanonical-monad-instances -Wnoncanonical-monadfail-instances
+    build-depends:      process >= 1.6.3.0
+                      , cmdargs >= 0.10.20
                       , clafer
     other-modules:      Paths_clafer
 
 library
-    build-tools:        ghc >= 8.0.2
-                      , happy >= 1.19.5
-                      , alex >= 3.1.7
-    default-language:   Haskell2010
+    import:             shared-deps
+    build-tool-depends: happy:happy >= 1.19.5
+                      , alex:alex >= 3.1.7
     build-depends:      array >= 0.5.0.0
-                      , base >= 4.9.1.0 && < 5
                       , bytestring >= 0.10.8.1
                       , cond >= 0.4
-                      , containers >= 0.5.7.1
                       , directory >= 1.3.0.0
-                      , filepath >= 1.4.1.1
                       , process >= 1.4.3.0
-                      , transformers >= 0.5.2.0
+                      , transformers >= 0.5.6
 
                       , HTTP >= 4000.3.9
-                      , mtl >= 2.2.1
                       , network >= 2.6.3.2
                       , parsec >= 3.1.11
-                      , text >= 1.2.2.2
+                      , text >= 2.0
 
                       , aeson >= 1.1.2.0
-                      , cmdargs >= 0.10.18
+                      , cmdargs >= 0.10.20
                       , data-stringmap >= 1.0.1.1
                       , executable-path >= 0.0.3.1
                       , file-embed >= 0.0.10
@@ -76,12 +71,11 @@ library
                       , lens-aeson >= 1.0.2
                       , network-uri >= 2.6.1.0
                       , string-conversions >= 0.4.0.1
-                      , split >= 0.2.3.2
                       , transformers-compat >= 0.5.1.4
                       , mtl-compat >= 0.2.1.3
 
     hs-source-dirs:     src
-    ghc-options:        -Wall -fno-warn-orphans
+    ghc-options:        -fno-warn-orphans
     exposed-modules:    Language.Clafer
                       , Language.ClaferT
                       , Language.Clafer.ClaferArgs
@@ -121,20 +115,13 @@ library
     other-modules:      GetURL
 
 Test-Suite test-suite
-    build-tools:        ghc >= 8.0.2
-    default-language:   Haskell2010
+    import:             shared-deps
     type:               exitcode-stdio-1.0
     main-is:            test-suite.hs
     hs-source-dirs:     test
-    ghc-options: -Wcompat
-    -- -Wnoncanonical-monad-instances -Wnoncanonical-monadfail-instances
-    build-depends:      base >= 4.9.1.0 && < 5
-                      , containers >= 0.5.7.1
-                      , directory >= 1.3.0.0
-                      , filepath >= 1.4.1.1
+    build-depends:      directory >= 1.3.0.0
 
                       , HUnit >= 1.5.0.0
-                      , mtl >= 2.2.1
                       , QuickCheck >= 2.9.2
 
                       , data-stringmap >= 1.0.1.1
@@ -147,8 +134,6 @@ Test-Suite test-suite
                       , mtl-compat >= 0.2.1.3
                       , clafer
 
-    ghc-options:        -Wall
-
     other-modules:      Functions
                       , Suite.Positive
                       , Suite.Negative
@@ -157,11 +142,9 @@ Test-Suite test-suite
                       , Suite.TypeSystem
 
 Test-suite doctests
-    build-tools:        ghc >= 8.0.2
-    default-language:   Haskell2010
+    import:             shared-deps
     type:               exitcode-stdio-1.0
-    ghc-options:        -threaded -Wall
+    ghc-options:        -threaded
     main-is:            doctests.hs
     hs-source-dirs:     test
-    build-depends:      base
-                      , doctest >= 0.11.4
+    build-depends:      doctest >= 0.11.4
