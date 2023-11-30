@@ -1,11 +1,11 @@
-# for GHC-9.4.6
+# for GHC-9.4.8
 extra-deps:
 - github: nikomi/json-builder
   commit: fef4700b53da502f8d70d2106c9f4b65e1a69b3f
 - github: gsdlab/StringMap
   commit: 2ce0adb947adaa5581d347ce8555ec76db44d815
 
-resolver: lts-21.11
+resolver: lts-21.22
 
 flags: {}
 packages:
