@@ -56,7 +56,7 @@ AliceAndBob2 -> Alice ++ Bob
 -}
 
 {- $setup
->>> :m + Control.Monad.List
+>>> :m + Control.Monad.Trans.Maybe
 
 TClafer
 >>> let tClaferPerson = TClafer [ "Person" ]
@@ -268,28 +268,28 @@ collapseUnion t            = t
 -- t1 +++ t2 = fromJust $ fromUnionType $ unionType t1 ++ unionType t2
 
 {- | Intersection of two types.
->>> runListT $ intersection undefined TString TString
-[Just TString]
+>>> runMaybeT $ intersection undefined TString TString
+Just (Just TString)
 
->>> runListT $ intersection undefined TInteger TString
-[Nothing]
+>>> runMaybeT $ intersection undefined TInteger TString
+Just Nothing
 
->>> runListT $ intersection undefined TInteger TReal
-[Just TReal]
+>>> runMaybeT $ intersection undefined TInteger TReal
+Just (Just TReal)
 
->>> runListT $ intersection undefined tDrefMapDOB TInteger
-[Just TInteger]
-
-Cannot assign a TReal to a map to TInteger
->>> runListT $ intersection undefined tDrefMapDOB TReal
-[Nothing]
+>>> runMaybeT $ intersection undefined tDrefMapDOB TInteger
+Just (Just TInteger)
 
 Cannot assign a TReal to a map to TInteger
->>> runListT $ intersection undefined TReal tDrefMapDOB
-[Nothing]
+>>> runMaybeT $ intersection undefined tDrefMapDOB TReal
+Just Nothing
 
-runListT $ intersection undefined TClafer {_hi = ["A","X","B","C"]} TClafer {_hi = ["X"]}
-[ Just TClafer {_hi = ["X"]]
+Cannot assign a TReal to a map to TInteger
+>>> runMaybeT $ intersection undefined TReal tDrefMapDOB
+Just Nothing
+
+runMaybeT $ intersection undefined TClafer {_hi = ["A","X","B","C"]} TClafer {_hi = ["X"]}
+Just (Just TClafer {_hi = ["X"]})
 -}
 
 intersection :: MonadFail m => UIDIClaferMap -> IType -> IType -> m (Maybe IType)
@@ -407,36 +407,36 @@ getIfThenElseType _ _ _ = return Nothing
 
 
 {- | Compute the type of sequential composition of two types
->>> runListT $ composition undefined TString TString
-[Nothing]
+>>> runMaybeT $ composition undefined TString TString
+Just Nothing
 
->>> runListT $ composition undefined TInteger TString
-[Nothing]
+>>> runMaybeT $ composition undefined TInteger TString
+Just Nothing
 
->>> runListT $ composition undefined TInteger TReal
-[Nothing]
+>>> runMaybeT $ composition undefined TInteger TReal
+Just Nothing
 
->>> runListT $ composition undefined tDrefMapDOB TInteger
-[Just (TMap {_so = TClafer {_hi = ["DOB"]}, _ta = TInteger})]
+>>> runMaybeT $ composition undefined tDrefMapDOB TInteger
+Just (Just (TMap {_so = TClafer {_hi = ["DOB"]}, _ta = TInteger}))
 
 Cannot assign a TReal to a map to TInteger, should return [Nothing]
->>> runListT $ composition undefined tDrefMapDOB TReal
-[Just (TMap {_so = TClafer {_hi = ["DOB"]}, _ta = TReal})]
+>>> runMaybeT $ composition undefined tDrefMapDOB TReal
+Just (Just (TMap {_so = TClafer {_hi = ["DOB"]}, _ta = TReal}))
 
 Cannot assign a TInteger to a map to TInteger
->>> runListT $ composition undefined TInteger tDrefMapDOB
-[Nothing]
+>>> runMaybeT $ composition undefined TInteger tDrefMapDOB
+Just Nothing
 
 Cannot assign a TReal to a map to TInteger
->>> runListT $ composition undefined TReal tDrefMapDOB
-[Nothing]
+>>> runMaybeT $ composition undefined TReal tDrefMapDOB
+Just Nothing
 
->>> runListT $ composition undefined tDrefMapDOB (TMap TReal TString)
-[Just (TMap {_so = TClafer {_hi = ["DOB"]}, _ta = TString})]
+>>> runMaybeT $ composition undefined tDrefMapDOB (TMap TReal TString)
+Just (Just (TMap {_so = TClafer {_hi = ["DOB"]}, _ta = TString}))
 
 The following should return [Nothing]
->>> runListT $ composition undefined (TMap TString TReal) (TMap TInteger TString)
-[Just (TMap {_so = TString, _ta = TString})]
+>>> runMaybeT $ composition undefined (TMap TString TReal) (TMap TInteger TString)
+Just (Just (TMap {_so = TString, _ta = TString}))
 -}
 composition :: MonadFail m => UIDIClaferMap -> IType -> IType -> m (Maybe IType)
 composition uidIClaferMap' (TMap so1 ta1) (TMap so2 ta2) = do
