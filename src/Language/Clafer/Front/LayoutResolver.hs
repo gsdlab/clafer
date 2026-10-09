@@ -24,6 +24,7 @@
 module Language.Clafer.Front.LayoutResolver where
 
 -- very simple layout resolver
+import Control.Monad
 import Control.Monad.State
 import Data.Functor.Identity (Identity)
 import Language.ClaferT

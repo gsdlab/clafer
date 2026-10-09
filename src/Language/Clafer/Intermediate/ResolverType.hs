@@ -32,8 +32,9 @@ import Language.Clafer.Front.PrintClafer
 import Control.Applicative
 import Control.Exception (assert)
 import Control.Lens ((&), (%~), traversed)
+import Control.Monad
 import Control.Monad.Except
-import Control.Monad.List
+import Control.Monad.Trans.List  -- instead of the deprecated Control.Monad.List
 import Control.Monad.Reader
 import Data.Either
 import Data.List

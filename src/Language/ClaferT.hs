@@ -56,6 +56,7 @@ module Language.ClaferT
   , Pos(..)
   ) where
 
+import           Control.Monad
 import           Control.Monad.Except
 import           Control.Monad.Identity
 import           Control.Monad.State
