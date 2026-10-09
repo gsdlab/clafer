@@ -26,6 +26,7 @@ import Data.Maybe
 import Data.List
 import Control.Applicative
 import Control.Lens hiding (elements, children, un)
+import Control.Monad
 import Control.Monad.State
 import Data.Data.Lens (biplate)
 import qualified Data.Map as Map

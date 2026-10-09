@@ -1,3 +1,7 @@
+##### Clafer Version 0.5.2 released on Oct 9, 2026
+
+Minor release, Haskell compatibility (GHC 9.6.7 and lts-22.44).
+
 ##### Clafer Version 0.5.1 released on Sep 12, 2023
 
 Minor release, latest Haskell compatibility (GHC 9.4.6 and LTS-21.11).

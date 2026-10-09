@@ -3,7 +3,7 @@
 
 # Clafer, the language
 
-##### v0.5.1
+##### v0.5.2
 
 [Clafer](http://clafer.org) is a general-purpose lightweight structural and behavioral modeling language developed by
 [GSD Lab](http://gsd.uwaterloo.ca/), [University of Waterloo](http://uwaterloo.ca), and
@@ -56,7 +56,7 @@ Currently, the compiler is used by
 
 ## Contributors
 
-* [Michał Antkiewicz](http://gsd.uwaterloo.ca/mantkiew), Main developer.
+* [Michał Antkiewicz](https://uwaterloo.ca/wise-lab/profiles/michal-antkiewicz), Main developer.
 * [Kacper Bak](http://gsd.uwaterloo.ca/kbak), Original developer.
 * [Jimmy Liang](http://gsd.uwaterloo.ca/jliang), Developer.
 * Luke Michael Brown, co-op student May-Aug 2013. Many improvements.
@@ -83,16 +83,16 @@ Optional:
 
 ### Installation from binaries
 
-Binary distributions of the release 0.5.1 of Clafer Tools for Windows, Mac, and Linux,
+Binary distributions of the release 0.5.2 of Clafer Tools for Windows, Mac, and Linux,
 can be downloaded from
-[Clafer Tools - Binary Distributions](http://gsd.uwaterloo.ca/clafer-tools-binary-distributions).
+[Clafer Tools - Binary Distributions](http://wiselab.uwaterloo.ca/clafer-tools-binary-distributions).
 
 1. Download the binaries and unpack `<target directory>` of your choice.
 2. Add the `<target directory>` to your system path so that the executables can be found.
 
 ### Installation from Hackage
 
-Clafer is available on [Hackage](http://hackage.haskell.org/package/clafer-0.5.1/) and it can be installed using either [`stack`](https://haskellstack.org) or [`cabal-install`](https://hackage.haskell.org/package/cabal-install).
+Clafer is available on [Hackage](http://hackage.haskell.org/package/clafer-0.5.2/) and it can be installed using either [`stack`](https://haskellstack.org) or [`cabal-install`](https://hackage.haskell.org/package/cabal-install).
 
 #### Installation using `stack`
 
@@ -106,8 +106,8 @@ Stack is the only requirement: no other Haskell tooling needs to be installed be
 
 Dependencies
 
-* `ghc-9.6.4`,
-* `cabal-install-3.8`
+* `ghc-9.6.7`,
+* `cabal-install-3.10.3`
 * [alex](https://hackage.haskell.org/package/alex),
 * [happy](https://hackage.haskell.org/package/happy).
 
@@ -115,7 +115,7 @@ Dependencies
 1. `cabal update`
 2. `cabal install alex happy`
 3. `cabal install exe:clafer`
-4. on Windows `cd C:\Users\<user>\AppData\Roaming\cabal\x86_64-windows-ghc-9.6.4\clafer-0.5.1`
+4. on Windows `cd C:\Users\<user>\AppData\Roaming\cabal\x86_64-windows-ghc-9.6.7\clafer-0.5.2`
 5. on Linux `cd ~/.cabal/bin/`
 6. to automatically download Alloy jars, execute
   * `make alloy4.2.jar`,
@@ -163,7 +163,7 @@ Development versions from branches `develop` should work well together but this 
   * `stack exec make install to=<target directory>` on Windows
 
 #### Note:
-> On Windows, use `/` with the `make` command instead of `\`, e.g., `make install to=/c/clafer-tools-0.5.1/`
+> On Windows, use `/` with the `make` command instead of `\`, e.g., `make install to=/c/clafer-tools-0.5.2/`
 
 ## Integration with Sublime Text 2/3
 
@@ -180,7 +180,7 @@ See [clafer-vim](https://github.com/wasowski/clafer-vim)
 (As printed by `clafer --help`)
 
 ```
-Clafer 0.5.1
+Clafer 0.5.2
 
 clafer [OPTIONS] [FILE]
 
@@ -264,16 +264,18 @@ The mode `-m alloy` is only the default mode if no other modes are given. When o
 Additionally, `[OPTIONS]` can also be specified directly in the model file by inserting the following compiler directive as the first line of the file:
 
 ```
-//# [OPTIONS]
+//# OPTIONS [OPTIONS]
 ```
 
 for example
 
 ```
-//# --keep-unused -m=alloy
+//# OPTIONS --keep-unused -m=alloy
 ```
 
-Options given at command line override the options given in the file using `//#` which, in turn, override the defaults.
+The directive is only recognized on the very first line of the file and must start exactly with `//# OPTIONS ` (no leading whitespace).
+
+Options given at command line override the options given in the file using `//# OPTIONS` which, in turn, override the defaults.
 
 ### Using compiler directives
 
@@ -283,7 +285,7 @@ Compiler directives are comments of the form
 //# <directive name>
 ```
 
-The following directives are markers of locations in the input files for different purposes:
+The following directives are markers of locations in the input files for different purposes. Each must appear alone on its own line, exactly as written (no leading or trailing whitespace):
 
 * `//# FRAGMENT` - marks the beginning of the new [module fragment](http://gsd.uwaterloo.ca:8888/question/463/multi-fragment-modules).
 * `//# GRAPH` - marks the insertion point for a graph rendering. The graph is only produced in HTML mode with the argument `--add-graph`.

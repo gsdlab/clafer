@@ -22,6 +22,7 @@
 -}
 module Language.Clafer.Generator.Stats where
 
+import Control.Monad
 import Control.Monad.State
 import Data.Maybe (isJust)
 

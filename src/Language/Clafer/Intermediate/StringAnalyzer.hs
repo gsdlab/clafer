@@ -23,6 +23,7 @@
 module Language.Clafer.Intermediate.StringAnalyzer where
 
 import Control.Applicative
+import Control.Monad
 import Control.Monad.State
 import Data.Tuple
 import qualified Data.Map as Map
