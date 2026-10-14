@@ -18,3 +18,10 @@ codex.tags
 alloy4.2.jar
 chocosolver.jar
 stack.yaml.lock
+# make test: the copied compiler and the outputs generated in test/positive
+/clafer
+test/positive/*.als
+test/positive/*.js
+test/positive/*.html
+test/positive/*.dot
+test/positive/*.dot.svg

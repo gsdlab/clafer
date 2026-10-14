@@ -111,15 +111,9 @@ clean:
 	@echo "| Cleaning up |"
 	@echo "==============="
 	@echo ""
-	@echo 'Removing *.als'
-	@find . -type f -name '*.als' -print0 | xargs -0 rm -f
-	@echo 'Removing *.js'
-	@find . -type f -name '*.js' -print0 | xargs -0 rm -f
-	@echo 'Removing *.html'
-	@find . -type f -name '*.html' -print0 | xargs -0 rm -f
-	@echo 'Removing *.dot'
-	@find . -type f -name '*.dot' -print0 | xargs -0 rm -f
-	@echo 'Removing *.dot.svg'
-	@find . -type f -name '*.dot.svg' -print0 | xargs -0 rm -f
+	@# Only the outputs generated in $(SUITE_DIR): other directories have
+	@# tracked inputs with these extensions, e.g., failing/gi89-ref-to-constant.js.
+	@echo 'Removing $(SUITE_DIR)/*.als, *.js, *.html, *.dot, *.dot.svg'
+	@find $(SUITE_DIR) -type f \( -name '*.als' -o -name '*.js' -o -name '*.html' -o -name '*.dot' -o -name '*.dot.svg' \) -print0 | xargs -0 rm -f
 	@echo 'Removing *~'
 	@find . -type f -name '*~' -print0 | xargs -0 rm -f

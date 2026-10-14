@@ -28,7 +28,8 @@ prof: alloy4.2.jar
 	stack build --executable-profiling --library-profiling --ghc-options="-auto-all -caf-all -rtsopts -osuf p_o"
 
 .PHONY: test
-test:
+# Build first, so that the regression tests use the current compiler.
+test: build
 	cp `stack path --local-install-root`/bin/clafer$(EXE) .
 	stack test 2>/dev/null || :    # supress error message and exit code if fail
 	$(MAKE) -C $(TEST_DIR) test
