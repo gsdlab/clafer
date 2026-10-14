@@ -78,6 +78,11 @@ sugarDeclaration  (IEGoal isMaximize' goal) = ElementDecl (_inPos goal) $ Subgoa
 
 
 desugarClafer :: Clafer -> [IElement]
+-- A reference to a constant, e.g., `-> 1`, is a reference to its type with
+-- the constant as the value: `-> integer = 1`.
+desugarClafer (Clafer s abstract' tmods gcrd' id' super' reference' crd' (InitEmpty si) trans' elements')
+  | Just (typeReference, constant') <- referenceToConstant reference' =
+    desugarClafer (Clafer s abstract' tmods gcrd' id' super' typeReference crd' (InitSome si (InitConstant si) constant') trans' elements')
 desugarClafer claf@(Clafer s abstract' tmods gcrd' id' super' reference' crd' init' trans' elements') =
   case (super', reference') of
     (SuperSome ss setExp, ReferenceEmpty _) -> if isPrimitive $ getPExpClaferIdent setExp
@@ -90,6 +95,27 @@ desugarClafer claf@(Clafer s abstract' tmods gcrd' id' super' reference' crd' in
       then error "Desugarer: cannot rewrite : with primitive type into -> because a reference is also present. Using : with primitive types is discouraged."
       else desugarClafer' claf
     _ -> desugarClafer' claf
+
+-- | For a reference to a constant, the reference to the constant's type, and the constant.
+referenceToConstant :: Reference -> Maybe (Reference, Exp)
+referenceToConstant (ReferenceSet s e) = (\t -> (ReferenceSet s t, e)) <$> constantType e
+referenceToConstant (ReferenceBag s e) = (\t -> (ReferenceBag s t, e)) <$> constantType e
+referenceToConstant _                  = Nothing
+
+-- | The type of a constant, as a reference target.
+constantType :: Exp -> Maybe Exp
+constantType e = typeExp <$> case e of
+    EInt _ _               -> Just integerType
+    EDouble _ _            -> Just doubleType
+    EReal _ _              -> Just realType
+    EStr _ _               -> Just stringType
+    EMinExp _ (EInt _ _)   -> Just integerType
+    EMinExp _ (EDouble _ _) -> Just doubleType
+    EMinExp _ (EReal _ _)  -> Just realType
+    _                      -> Nothing
+  where
+    s = getSpan e
+    typeExp t = ClaferId s (Path s [ModIdIdent s (mkIdent t)])
 
 desugarClafer' :: Clafer -> [IElement]
 desugarClafer' claf'@(Clafer s' abstract' tmods' gcrd' id' super' reference' crd' init' _ elements')

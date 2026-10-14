@@ -3,11 +3,13 @@ pred show {}
 
 
 one sig c0_numberOne
-{ c0_numberOne_ref : one 1 }
+{ c0_numberOne_ref : one Int }
 
+fact { (some c0_numberOne) => ((c0_numberOne.@c0_numberOne_ref) = 1) }
 one sig c0_alice
-{ c0_alice_ref : one 0 }
+{ c0_alice_ref : one Int }
 
+fact { (some c0_alice) => ((c0_alice.@c0_alice_ref) = 0) }
 one sig c0_likertScaleVal
 { c0_likertScaleVal_ref : one (((1 + 2) + 3) + 4) + 5 }
 

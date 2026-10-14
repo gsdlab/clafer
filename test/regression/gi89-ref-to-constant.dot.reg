@@ -1,0 +1,18 @@
+digraph "gi89-ref-to-constant"
+{
+rankdir=BT;
+ranksep=0.3;
+nodesep=0.1;
+graph [fontname=Sans fontsize=11];
+node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
+edge [fontname=Sans fontsize=11];
+"c0_ASIL" [label="abstract ASIL -&gt;&gt; integer" URL="#c0_ASIL" tooltip="abstract ASIL -&gt;&gt; integer&#10;"];
+"c0_A" [label="A : ASIL -&gt; 1" URL="#c0_A" tooltip="A : ASIL -&gt; 1&#10;"];
+"c0_A" -> "c0_ASIL" [arrowhead=onormal constraint=true weight=100];
+"c0_B" [label="B : ASIL -&gt; 2" URL="#c0_B" tooltip="B : ASIL -&gt; 2&#10;"];
+"c0_B" -> "c0_ASIL" [arrowhead=onormal constraint=true weight=100];
+"c0_C" [label="C : ASIL -&gt; 3" URL="#c0_C" tooltip="C : ASIL -&gt; 3&#10;"];
+"c0_C" -> "c0_ASIL" [arrowhead=onormal constraint=true weight=100];
+"c0_D" [label="D : ASIL -&gt; 4" URL="#c0_D" tooltip="D : ASIL -&gt; 4&#10;"];
+"c0_D" -> "c0_ASIL" [arrowhead=onormal constraint=true weight=100];
+}

@@ -111,8 +111,8 @@ clean:
 	@echo "| Cleaning up |"
 	@echo "==============="
 	@echo ""
-	@# Only the outputs generated in $(SUITE_DIR): other directories have
-	@# tracked inputs with these extensions, e.g., failing/gi89-ref-to-constant.js.
+	@# Only the outputs generated in $(SUITE_DIR), so that tracked files with
+	@# these extensions in other directories are kept.
 	@echo 'Removing $(SUITE_DIR)/*.als, *.js, *.html, *.dot, *.dot.svg'
 	@find $(SUITE_DIR) -type f \( -name '*.als' -o -name '*.js' -o -name '*.html' -o -name '*.dot' -o -name '*.dot.svg' \) -print0 | xargs -0 rm -f
 	@echo 'Removing *~'
