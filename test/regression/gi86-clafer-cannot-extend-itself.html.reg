@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=9">
+<style>.identifier{}
+.keyword{font-weight: bold;}
+.tKeyword{font-style: oblique;}
+.reference{}
+.code { background-color: lightgray; padding: 5px 5px 5px 5px; border: 1px solid darkgray; margin-bottom: 15px;
+        font-family: Pragmata, Menlo, 'DejaVu LGC Sans Mono', 'DejaVu Sans Mono', Consolas, 'Everson Mono', 'Lucida Console', 'Andale Mono', 'Nimbus Mono L', 'Liberation Mono', FreeMono, 'Osaka Monospaced', Courier, 'New Courier', monospace; }
+.standalonecomment { color: green; font-style:italic }
+.inlinecomment { color: green; padding-left:20px; font-style:italic }
+.error{background-color: yellow; color: red }
+.deprecated{color: orange }
+.indent{padding-left:20px}
+a[href$='Lookup failed'] {color: red}
+a[href$='Uid not found'] {color: red}
+a[href$='Ambiguous name'] {color: yellow}
+</style></head>
+<body>
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_FunctionalArchitecture">FunctionalArchitecture</span></div>
+
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Deployment">Deployment</span>
+  <div class="indent">
+  <span class="keyword">abstract</span> <span class="claferDecl" id="c0_fa">fa</span><span class="keyword"> -> </span><a href="#c0_FunctionalArchitecture"><span class="reference">FunctionalArchitecture</span></a></div>
+</div>
+
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_PowerWindowFAA">PowerWindowFAA</span><span class="keyword"> : </span><a href="#c0_FunctionalArchitecture"><span class="reference">FunctionalArchitecture</span></a></div>
+
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_PowerWindowDpl">PowerWindowDpl</span><span class="keyword"> : </span><a href="#c0_Deployment"><span class="reference">Deployment</span></a>
+  <div class="indent">
+  <span class="keyword">abstract</span> <span class="claferDecl" id="c1_fa">fa</span><span class="keyword"> : </span><a href="#c0_fa"><span class="reference">fa</span></a><span class="keyword"> -> </span><a href="#c0_PowerWindowFAA"><span class="reference">PowerWindowFAA</span></a></div>
+</div>
+
+
+<div>
+<span class="claferDecl" id="c0_System">System</span>
+  <div class="indent">
+  <span class="claferDecl" id="c0_DriverPowerWindowFAA">DriverPowerWindowFAA</span><span class="keyword"> : </span><a href="#c0_PowerWindowFAA"><span class="reference">PowerWindowFAA</span></a></div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_DriverPowerWindowDpl">DriverPowerWindowDpl</span><span class="keyword"> : </span><a href="#c0_PowerWindowDpl"><span class="reference">PowerWindowDpl</span></a>
+    <div class="indent">
+    <span class="claferDecl" id="c2_fa">fa</span><span class="keyword"> : </span><a href="#c1_fa"><span class="reference">fa</span></a><span class="keyword"> -> </span><a href="#c0_DriverPowerWindowFAA"><span class="reference">DriverPowerWindowFAA</span></a></div>
+  </div>
+</div>
+
+</body>
+</html>

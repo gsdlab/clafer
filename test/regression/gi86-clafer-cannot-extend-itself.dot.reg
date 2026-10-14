@@ -1,0 +1,25 @@
+digraph "gi86-clafer-cannot-extend-itself"
+{
+rankdir=BT;
+ranksep=0.3;
+nodesep=0.1;
+graph [fontname=Sans fontsize=11];
+node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
+edge [fontname=Sans fontsize=11];
+"c0_FunctionalArchitecture" [label="abstract FunctionalArchitecture" URL="#c0_FunctionalArchitecture" tooltip="abstract FunctionalArchitecture&#10;"];
+"c0_Deployment" [label="abstract Deployment" URL="#c0_Deployment" tooltip="abstract Deployment&#10;  abstract fa -&gt; FunctionalArchitecture&#10;"];
+"c0_fa" [label="abstract fa -> FunctionalArchitecture" URL="#c0_fa" tooltip="abstract fa -&gt; FunctionalArchitecture&#10;"];
+"c0_fa" -> "c0_FunctionalArchitecture" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=c0_fa];
+"c0_PowerWindowFAA" [label="abstract PowerWindowFAA : FunctionalArchitecture" URL="#c0_PowerWindowFAA" tooltip="abstract PowerWindowFAA : FunctionalArchitecture&#10;"];
+"c0_PowerWindowFAA" -> "c0_FunctionalArchitecture" [arrowhead=onormal constraint=true weight=100];
+"c0_PowerWindowDpl" [label="abstract PowerWindowDpl : Deployment" URL="#c0_PowerWindowDpl" tooltip="abstract PowerWindowDpl : Deployment&#10;  abstract fa : fa -&gt; PowerWindowFAA&#10;"];
+"c0_PowerWindowDpl" -> "c0_Deployment" [arrowhead=onormal constraint=true weight=100];
+"c1_fa" [label="abstract fa : fa -> PowerWindowFAA" URL="#c1_fa" tooltip="abstract fa : fa -&gt; PowerWindowFAA&#10;"];
+"c1_fa" -> "c0_fa" [arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];
+"c1_fa" -> "c0_PowerWindowFAA" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=c1_fa];
+"c0_System" [label="System" URL="#c0_System" tooltip="System&#10;  DriverPowerWindowFAA : PowerWindowFAA&#10;  DriverPowerWindowDpl : PowerWindowDpl&#10;    fa : fa -&gt; DriverPowerWindowFAA&#10;"];
+"c0_System" -> "c0_PowerWindowFAA" [arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];
+"c0_System" -> "c0_PowerWindowDpl" [arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];
+"c0_System" -> "c1_fa" [arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];
+"c0_System" -> "c0_DriverPowerWindowFAA" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=fa];
+}
