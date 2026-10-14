@@ -1,0 +1,25 @@
+defaultScope(1);
+intRange(-8, 7);
+stringLength(16);
+
+c0_a = Clafer("c0_a").withCard(1, 1);
+c0_b = Clafer("c0_b").withCard(1, 1);
+c0_c = Clafer("c0_c").withCard(1, 1);
+c0_spread = Clafer("c0_spread").withCard(1, 1);
+c0_range = Clafer("c0_range").withCard(1, 1);
+c0_above = Clafer("c0_above").withCard(1, 1);
+c0_a.refToUnique(Int);
+c0_b.refToUnique(Int);
+c0_c.refToUnique(Int);
+c0_spread.refToUnique(Int);
+Constraint(implies(some(global(c0_spread)), equal(joinRef(global(c0_spread)), sub(maximum(union(union(joinRef(global(c0_a)), joinRef(global(c0_b))), joinRef(global(c0_c)))), minimum(union(union(joinRef(global(c0_a)), joinRef(global(c0_b))), joinRef(global(c0_c))))))));
+c0_range.refToUnique(Int);
+Constraint(implies(some(global(c0_range)), equal(joinRef(global(c0_range)), sub(maximum(union(union(joinRef(global(c0_a)), joinRef(global(c0_b))), joinRef(global(c0_c)))), minimum(union(union(joinRef(global(c0_a)), joinRef(global(c0_b))), joinRef(global(c0_c))))))));
+c0_above.refToUnique(Int);
+Constraint(implies(some(global(c0_above)), equal(joinRef(global(c0_above)), add(maximum(union(joinRef(global(c0_a)), constant(3))), constant(1)))));
+Constraint(equal(joinRef(global(c0_a)), constant(5)));
+Constraint(equal(joinRef(global(c0_b)), constant(2)));
+Constraint(equal(joinRef(global(c0_c)), constant(9)));
+Constraint(equal(joinRef(global(c0_spread)), constant(7)));
+Constraint(equal(joinRef(global(c0_range)), constant(7)));
+Constraint(equal(joinRef(global(c0_above)), constant(6)));

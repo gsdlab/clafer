@@ -679,7 +679,8 @@ genPExp'    genEnv    ctx       (PExp iType' pid' pos exp') = case exp' of
 -- Encoding of Weak Until expression is done by translating to equivalent Until expression
 -- a W b === G a || a U b
 transformExp :: IExp -> IClafer -> IExp
-transformExp (IFunExp op' (e1:_)) _
+-- Unary minus only: binary subtraction (iSub) is also "-".
+transformExp (IFunExp op' [e1]) _
   | op' == iMin = IFunExp iMul [PExp (_iType e1) "" noSpan $ IInt (-1), e1]
 {-  | op' == iInitially && isMutable c' = -- transforms to: (no this && X this) => X e1
         let thisExpr = PExp (Just TBoolean) "" noSpan (IClaferId "" "this" False (GlobalBind (_uid c')))
