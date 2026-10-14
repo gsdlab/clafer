@@ -369,11 +369,11 @@ resolveTPExp' p@PExp{_inPos, _exp} =
             | _op == iIntersection = testNotSame arg1' arg2' >> testIntersect t1 t2
             | _op `elem` [iDomain, iRange] = testIntersect t1 t2
             | _op `elem` relSetBinOps = testIntersect t1 t2 >> return TBoolean
-            | _op `elem` [iSub, iMul, iDiv, iRem] = test (numeric t1 && numeric t2) >> return (coerce t1 t2)
+            | _op `elem` [iSub, iMul, iDiv, iRem] = test (allNumeric t1 && allNumeric t2) >> return (coerce t1 t2)
             | _op == iPlus =
                 (test (isTString t1 && isTString t2) >> return TString) -- Case 1: String concatenation
                 `catchError`
-                const (test (numeric t1 && numeric t2) >> return (coerce t1 t2)) -- Case 2: Addition
+                const (test (allNumeric t1 && allNumeric t2) >> return (coerce t1 t2)) -- Case 2: Addition
             | otherwise = fail $ "ResolverType: Unknown op: " ++ show e
       result' <- result
       return (result', e{_exps = [arg1', arg2']})

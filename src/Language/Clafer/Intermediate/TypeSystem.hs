@@ -105,6 +105,13 @@ numeric (TMap _ ta') = numeric ta'
 numeric (TUnion un') = any numeric un'
 numeric _            = False
 
+-- | Whether arithmetic can be performed on the type: unlike 'numeric', all
+-- the types of a union must be numeric, so that 'coerce' can be applied.
+allNumeric :: IType     -> Bool
+allNumeric (TMap _ ta') = allNumeric ta'
+allNumeric (TUnion un') = all allNumeric un'
+allNumeric t            = numeric t
+
 isTInteger :: IType    -> Bool
 isTInteger TInteger     = True
 isTInteger (TMap _ ta') = isTInteger ta'
@@ -486,6 +493,8 @@ TInteger
 TInteger
 >>> coerce tDrefMapDOB tDrefMapDOB
 TInteger
+>>> coerce (TUnion [TInteger, TReal]) TInteger
+TReal
 -}
 
 coerce :: IType -> IType -> IType
@@ -503,6 +512,9 @@ coerce TInteger TInteger = TInteger
 coerce (TMap _ t1) (TMap _ t2) = coerce t1 t2
 coerce (TMap _ t1) t2          = coerce t1 t2
 coerce t1          (TMap _ t2) = coerce t1 t2
+-- unions of numeric types (see 'allNumeric')
+coerce (TUnion un1) t2         = coerce (foldr1 coerce un1) t2
+coerce t1          (TUnion un2) = coerce t1 (foldr1 coerce un2)
 coerce x y = error $ "TypeSystem.coerce: Cannot coerce not numeric: " ++ show x ++ " and " ++ show y
 
 
