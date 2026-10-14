@@ -70,6 +70,7 @@ multExInt m n = if m == -1 || n == -1 then -1 else m * n
 
 -- -----------------------------------------------------------------------------
 
+-- | Abstract clafers which no concrete clafer extends get no instances.
 makeZeroUnusedAbs :: [IElement] -> [IElement]
 makeZeroUnusedAbs decls' = map (\x -> if (x `elem` unusedAbs) then IEClafer (getIClafer x){_card = Just (0, 0)} else x) decls'
   where
@@ -79,12 +80,35 @@ makeZeroUnusedAbs decls' = map (\x -> if (x `elem` unusedAbs) then IEClafer (get
   getIClafer (IEClafer c) = c
   getIClafer _ = error "Function makeZeroUnusedAbs from Optimizer expected paramter of type IClafer got a differnt IElement" --This should never happen
 
+-- | Removes the abstract clafers which no concrete clafer extends, unless a
+-- reference or a constraint names them: those are kept, without instances.
 remUnusedAbs :: [IElement] -> [IElement]
-remUnusedAbs decls' = decls' \\ unusedAbs
+remUnusedAbs decls' = makeZeroUnusedAbs $ decls' \\ unneededAbs
   where
-  unusedAbs = map IEClafer $ findUnusedAbs clafers $ map _uid $
-              filter (not._isAbstract) clafers
-  clafers   = toClafers decls'
+  unneededAbs = map IEClafer $ findUnneededAbs clafers $ neededRoots decls'
+  clafers     = toClafers decls'
+
+-- | The clafers needed to begin with: the concrete clafers and the clafers
+-- named in constraints.
+neededRoots :: [IElement] -> [String]
+neededRoots decls' =
+  map _uid (filter (not . _isAbstract) $ toClafers decls')
+  ++ [ sid | pexp <- constraints decls', IClaferId{_sident = sid} <- universeOn biplate pexp ]
+  where
+  constraints = concatMap constraint
+  constraint (IEConstraint _ pexp) = [pexp]
+  constraint (IEClafer c)          = constraints $ _elements c
+  constraint _                     = []
+
+-- | Like 'findUnusedAbs', but a clafer also needs the targets of its reference
+-- and those of its subclafers.
+findUnneededAbs :: [IClafer] -> [String] -> [IClafer]
+findUnneededAbs maybeNeeded [] = maybeNeeded
+findUnneededAbs [] _ = []
+findUnneededAbs maybeNeeded needed = findUnneededAbs maybeNeeded' $ nub $ needed' >>= getNeeded
+  where
+  (needed', maybeNeeded') = partition (\c -> _uid c `elem` needed) maybeNeeded
+  getNeeded c = getSuper c ++ getReference c ++ ((getSubclafers $ _elements c) >>= getNeeded)
 
 
 findUnusedAbs :: [IClafer] -> [String] -> [IClafer]
