@@ -35,6 +35,9 @@ import Language.Clafer.Intermediate.Intclafer
 import Language.Clafer.Front.LexClafer
 
 
+-- | A formula over the target of a reference, simplified when constant.
+data Membership = MTrue | MFalse | MExp String
+
 -- | Choco 3 code generation
 genCModule :: (IModule, GEnv) -> [(UID, Integer)] -> [Token]     -> Result
 genCModule (imodule@IModule{_mDecls}, genv') scopes  otherTokens' =
@@ -127,12 +130,17 @@ genCModule (imodule@IModule{_mDecls}, genv') scopes  otherTokens' =
         = _uid
         ++ prop "extending" (superOf _uid)
         ++ (case (getReference c, _reference) of
-             ([target], Just (IReference True _ _))  -> ".refToUnique(" ++ genTarget target ++ ")"
-             ([target], Just (IReference False _ _)) -> ".refTo(" ++ genTarget target ++ ")"
-             _                                       -> "")
+             (_, Just (IReference isSet' _ ref')) | isSetExp ref', Just target <- setExpType ref' -> refTo isSet' target
+             ([target], Just (IReference isSet' _ _))                                          -> refTo isSet' target
+             _                                                                                  -> "")
         ++ ";\n"
+        ++ (case _reference of
+             Just (IReference _ _ ref') | isSetExp ref', Just _ <- setExpType ref' -> genSetExpTarget _uid ref'
+             _                                                                     -> "")
         ++ (genSuperRefConstraintAssertGoal _uid =<< _elements)
         where
+            refTo True target  = ".refToUnique(" ++ genTarget target ++ ")"
+            refTo False target = ".refTo(" ++ genTarget target ++ ")"
             genTarget "integer" = "Int"
             genTarget "int" = "Int"
             genTarget target = target
@@ -143,6 +151,63 @@ genCModule (imodule@IModule{_mDecls}, genv') scopes  otherTokens' =
     genSuperRefConstraintAssertGoal _ (IEGoal False PExp{_exp=IFunExp _ [pexp]})  = "min(" ++ genConstraintPExp pexp ++ ");\n"
     genSuperRefConstraintAssertGoal _ _ = ""
 
+
+    -- A reference to a set expression, e.g., `-> 1, 2, 3`, `-> integer -- 0` or
+    -- `-> Alice ++ Ella`, is a reference to a type containing all its values,
+    -- constrained to the values of the expression.
+    isSetExp :: PExp -> Bool
+    isSetExp PExp{_exp = IFunExp op' _} = op' `elem` ["++", "**", "--"]
+    isSetExp _                          = False
+
+    -- | The type to reference: the primitive type of the values, or the nearest
+    -- common super of the clafers.
+    setExpType :: PExp -> Maybe String
+    setExpType ref' = case nub $ getRefIds ref' of
+        ids@(_:_) | all isPrimitive ids -> case nub $ map normalize ids of
+            [t] -> Just t
+            _   -> Nothing
+                  | not (any isPrimitive ids) -> commonSuper ids
+        _ -> Nothing
+      where
+        normalize "int" = "integer"
+        normalize t     = t
+
+    commonSuper :: [String] -> Maybe String
+    commonSuper ids = case map supersOf ids of
+        (first:rest) -> find (\u -> all (u `elem`) rest) first
+        []           -> Nothing
+      where
+        supersOf uid' = uid' : maybe [] (tail . mapHierarchy _uid getSuper uidIClaferMap') (findIClafer uidIClaferMap' uid')
+
+    -- | Constrains the target of the reference to the values of the set expression.
+    genSetExpTarget :: String -> PExp -> String
+    genSetExpTarget uid' ref'
+        | Just _ <- setExpType ref', any isPrimitive (getRefIds ref') =
+            case member ref' of
+                MTrue    -> ""
+                MFalse   -> uid' ++ ".addConstraint(none($this()));\n"
+                MExp e'  -> uid' ++ ".addConstraint(" ++ e' ++ ");\n"
+        | otherwise = uid' ++ ".addConstraint($in(joinRef($this()), " ++ genConstraintPExp ref' ++ "));\n"
+      where
+        -- membership of the target in a set expression over primitives, as a formula
+        member PExp{_exp = IFunExp "++" [a, b]} = mOr (member a) (member b)
+        member PExp{_exp = IFunExp "**" [a, b]} = mAnd (member a) (member b)
+        member PExp{_exp = IFunExp "--" [a, b]} = mAnd (member a) (mNot $ member b)
+        member PExp{_exp = IClaferId{_sident}} | isPrimitive _sident = MTrue
+        member e' = MExp $ "equal(joinRef($this()), " ++ genConstraintPExp e' ++ ")"
+        mOr MTrue _ = MTrue
+        mOr _ MTrue = MTrue
+        mOr MFalse b = b
+        mOr a MFalse = a
+        mOr (MExp a) (MExp b) = MExp $ "or(" ++ a ++ ", " ++ b ++ ")"
+        mAnd MFalse _ = MFalse
+        mAnd _ MFalse = MFalse
+        mAnd MTrue b = b
+        mAnd a MTrue = a
+        mAnd (MExp a) (MExp b) = MExp $ "and(" ++ a ++ ", " ++ b ++ ")"
+        mNot MTrue = MFalse
+        mNot MFalse = MTrue
+        mNot (MExp a) = MExp $ "not(" ++ a ++ ")"
 
     rewrite :: PExp -> PExp
     -- Rearrange right joins to left joins.
