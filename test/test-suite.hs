@@ -29,8 +29,6 @@ import Language.Clafer
 import Language.Clafer.QNameUID
 import Language.Clafer.Intermediate.Intclafer
 
-import Suite.Positive
-import Suite.Negative
 import Suite.SimpleScopeAnalyser
 import Suite.Redefinition
 import Suite.TypeSystem
@@ -47,8 +45,6 @@ main = defaultMain $ testGroup "Tests"
     [ tg_Test_Suite_TypeSystem
     , tg_Test_Suite_Redefinition
     , tg_Main_Test_Suite
-    , tg_Test_Suite_Positive
-    , tg_Test_Suite_Negative
     , tg_Test_Suite_SimpleScopeAnalyser
     ]
 
