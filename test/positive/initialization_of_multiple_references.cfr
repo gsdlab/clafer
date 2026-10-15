@@ -1,0 +1,11 @@
+// Multiple references initialized with several values (= 1, 2, 3): to integers, and to clafers with a duplicate (p1, p1, p3) in a set reference.
+
+x -> integer * = 1, 2, 3
+
+abstract Person
+
+p1 : Person
+p2 : Person
+p3 : Person
+
+people -> Person * = p1, p1, p3

@@ -1,0 +1,17 @@
+open util/integer
+pred show {}
+
+
+one sig c0_A
+{ r_c0_x : one c0_x
+, r_c0_y : one c0_y }
+{ ((1.plus[2]).mul[3]) = 9
+  ((this.@r_c0_x).@c0_x_ref) = ((-1.mul[((6.plus[(5.minus[4])]).mul[3])]).div[(2.plus[1])])
+  ((this.@r_c0_y).@c0_y_ref) = ((this.@r_c0_x).@c0_x_ref) }
+
+one sig c0_x
+{ c0_x_ref : one Int }
+
+one sig c0_y
+{ c0_y_ref : one Int }
+

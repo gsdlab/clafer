@@ -1,0 +1,8 @@
+// Integer arithmetic (+, -, *, /, unary minus of a parenthesized expression) on constants and references, assigned with implicit and explicit this.
+
+A
+  [ (1 + 2) * 3 = 9 ]
+  x -> integer
+  y -> integer
+  [ x = -((6 + (5 - 4)) * 3) / (2 + 1) ]
+  [ this.y = x ]

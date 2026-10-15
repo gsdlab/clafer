@@ -1,5 +1,0 @@
-#!/bin/bash
-
-rm *~
-rm *.als
-rm \#*

@@ -1,0 +1,5 @@
+// Expected: a parse error. Actual: b : B A 3 is parsed as two clafers, b : B and A 3.
+
+abstract B
+A
+  b : B A 3

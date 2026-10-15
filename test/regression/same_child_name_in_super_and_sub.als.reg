@@ -1,0 +1,21 @@
+open util/integer
+pred show {}
+
+
+abstract sig c0_A
+{ r_c0_Item : one c0_Item }
+
+sig c0_Item
+{}
+{ one @r_c0_Item.this }
+
+abstract sig c0_B extends c0_A
+{ r_c1_Item : one c1_Item }
+
+sig c1_Item
+{}
+{ one @r_c1_Item.this }
+
+one sig c0_C extends c0_B
+{}
+

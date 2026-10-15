@@ -1,0 +1,7 @@
+scope({c0_Item:5});
+defaultScope(1);
+intRange(-8, 7);
+stringLength(16);
+
+c0_A = Clafer("c0_A").withCard(1, 1).withGroupCard(2, 3);
+c0_Item = c0_A.addChild("c0_Item").withCard(1, 5);

@@ -1,0 +1,13 @@
+open util/integer
+pred show {}
+
+
+one sig c0_A
+{ r_c0_Item : set c0_Item }
+{ let children = (r_c0_Item) | 2 <= #children and #children <= 3
+  1 <= #r_c0_Item and #r_c0_Item <= 5 }
+
+sig c0_Item
+{}
+{ one @r_c0_Item.this }
+

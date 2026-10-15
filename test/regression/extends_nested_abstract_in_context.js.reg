@@ -1,0 +1,10 @@
+defaultScope(1);
+intRange(-8, 7);
+stringLength(16);
+
+c0_A = Abstract("c0_A");
+c0_B = c0_A.addAbstractChild("c0_B");
+c0_C = Clafer("c0_C").withCard(1, 1);
+c0_D = c0_C.addChild("c0_D").withCard(1, 1);
+c0_C.extending(c0_A);
+c0_D.extending(c0_B);

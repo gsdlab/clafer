@@ -1,0 +1,14 @@
+digraph "same_child_name_in_super_and_sub"
+{
+rankdir=BT;
+ranksep=0.3;
+nodesep=0.1;
+graph [fontname=Sans fontsize=11];
+node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
+edge [fontname=Sans fontsize=11];
+"c0_A" [label="abstract A" URL="#c0_A" tooltip="abstract A&#10;  Item&#10;"];
+"c0_B" [label="abstract B : A" URL="#c0_B" tooltip="abstract B : A&#10;  Item&#10;"];
+"c0_B" -> "c0_A" [arrowhead=onormal constraint=true weight=100];
+"c0_C" [label="C : B" URL="#c0_C" tooltip="C : B&#10;"];
+"c0_C" -> "c0_B" [arrowhead=onormal constraint=true weight=100];
+}

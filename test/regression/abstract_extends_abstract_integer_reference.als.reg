@@ -1,0 +1,12 @@
+open util/integer
+pred show {}
+
+
+fact { #c0_clafer1 = 0 }
+abstract sig c0_clafer1 extends c0_clafer2
+{}
+
+fact { #c0_clafer2 = 0 }
+abstract sig c0_clafer2
+{ c0_clafer2_ref : one Int }
+

@@ -1,0 +1,7 @@
+// A clafer extends a nested abstract clafer (A.B) outside of a clafer which extends A.
+
+abstract A
+  abstract B
+
+C : A
+D : B

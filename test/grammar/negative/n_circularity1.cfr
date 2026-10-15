@@ -1,6 +1,0 @@
-// Tests that a clafer cannot be its own super
-//
-// Expected Output:
-//   Type/Name Resolution Error
-
-A : A

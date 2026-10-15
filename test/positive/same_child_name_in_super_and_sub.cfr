@@ -1,0 +1,9 @@
+// An abstract clafer and its abstract super both declare a child Item; an instance of the sub has both Items.
+
+abstract A
+  Item
+
+abstract B : A
+  Item
+
+C : B

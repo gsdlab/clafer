@@ -1,0 +1,9 @@
+scope({c0_clafer1:0});
+defaultScope(1);
+intRange(-8, 7);
+stringLength(16);
+
+c0_clafer1 = Abstract("c0_clafer1");
+c0_clafer2 = Abstract("c0_clafer2");
+c0_clafer1.extending(c0_clafer2);
+c0_clafer2.refToUnique(Int);
