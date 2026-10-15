@@ -356,9 +356,14 @@ resolveTPExp' p@PExp{_inPos, _exp} =
       topmost uidIClaferMap' u = maybe u (last . mapHierarchy _uid getSuper uidIClaferMap') $ findIClafer uidIClaferMap' u
 
 
+  -- The alternatives which type check only through the type "clafer" come last.
+  -- For example, under the reference `services -> Service` of Machine,
+  -- `this.machine = parent` is this.dref.machine.dref = this.parent; the
+  -- alternative this.dref.machine = this.dref.parent, the parent of the abstract
+  -- Service of type "clafer", also type checks.
   resolveTExp e@IFunExp {_op, _exps = [arg1, arg2]} = do
     uidIClaferMap' <- asks iUIDIClaferMap
-    runListT $ runExceptT $ do
+    sortOn (either (const maxBound) (viaClafer . snd)) <$> (runListT $ runExceptT $ do
       arg1' <- lift $ ListT $ resolveTPExp arg1
       arg2' <- lift $ ListT $ resolveTPExp arg2
       let t1 = typeOf arg1'
@@ -393,7 +398,12 @@ resolveTPExp' p@PExp{_inPos, _exp} =
                 const (test (allNumeric t1 && allNumeric t2) >> return (coerce t1 t2)) -- Case 2: Addition
             | otherwise = fail $ "ResolverType: Unknown op: " ++ show e
       result' <- result
-      return (result', e{_exps = [arg1', arg2']})
+      return (result', e{_exps = [arg1', arg2']}))
+    where
+      -- the number of operands of type "clafer"
+      viaClafer :: IExp -> Int
+      viaClafer IFunExp{_exps = exps'} = length [ () | PExp{_iType = Just t} <- exps', "clafer" `elem` unionType t ]
+      viaClafer _ = 0
 
   resolveTExp e@(IFunExp "ifthenelse" [arg1, arg2, arg3]) = do
     uidIClaferMap' <- asks iUIDIClaferMap

@@ -23,7 +23,7 @@ one sig c0_E3 extends c0_Entity
 
 sig c0_E1TEntities
 { c0_E1TEntities_ref : one c0_Entity }
-{ ((c0_Entity.@r_c0_type).@c0_type_ref) = 0 }
+{ (((this.@c0_E1TEntities_ref).@r_c0_type).@c0_type_ref) = 0 }
 
 fact {  all disj x, y : c0_E1TEntities | (x.@c0_E1TEntities_ref) != (y.@c0_E1TEntities_ref)  }
 fact { (#c0_E1TEntities) = 3 }

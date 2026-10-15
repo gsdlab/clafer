@@ -1,0 +1,16 @@
+// In a constraint nested under a reference, an ancestor (Machine, parent) is the enclosing instance: [this.machine = Machine] means this.dref.machine.dref = this.parent, not the parent of the referenced Service.
+
+abstract Service
+    machine -> Machine
+
+abstract Machine
+    services -> Service *
+        [ this.machine = Machine ]
+        [ machine = parent ]
+
+m1 : Machine
+m2 : Machine
+s1 : Service
+s2 : Service
+
+[ s1 in m1.services && s2 in m2.services ]

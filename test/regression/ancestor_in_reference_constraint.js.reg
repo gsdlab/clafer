@@ -1,0 +1,21 @@
+scope({c0_Machine:2, c0_Service:2, c0_machine:2, c0_services:4});
+defaultScope(1);
+stringLength(16);
+
+c0_Service = Abstract("c0_Service");
+c0_machine = c0_Service.addChild("c0_machine").withCard(1, 1);
+c0_Machine = Abstract("c0_Machine");
+c0_services = c0_Machine.addChild("c0_services");
+c0_m1 = Clafer("c0_m1").withCard(1, 1);
+c0_m2 = Clafer("c0_m2").withCard(1, 1);
+c0_s1 = Clafer("c0_s1").withCard(1, 1);
+c0_s2 = Clafer("c0_s2").withCard(1, 1);
+c0_machine.refToUnique(c0_Machine);
+c0_services.refToUnique(c0_Service);
+c0_services.addConstraint(equal(joinRef(join(joinRef($this()), c0_machine)), joinParent($this())));
+c0_services.addConstraint(equal(joinRef(join(joinRef($this()), c0_machine)), joinParent($this())));
+c0_m1.extending(c0_Machine);
+c0_m2.extending(c0_Machine);
+c0_s1.extending(c0_Service);
+c0_s2.extending(c0_Service);
+Constraint(and($in(global(c0_s1), joinRef(join(global(c0_m1), c0_services))), $in(global(c0_s2), joinRef(join(global(c0_m2), c0_services)))));

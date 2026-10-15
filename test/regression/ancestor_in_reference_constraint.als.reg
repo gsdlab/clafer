@@ -1,0 +1,34 @@
+open util/integer
+pred show {}
+
+
+abstract sig c0_Service
+{ r_c0_machine : one c0_machine }
+
+sig c0_machine
+{ c0_machine_ref : one c0_Machine }
+{ one @r_c0_machine.this }
+
+abstract sig c0_Machine
+{ r_c0_services : set c0_services }
+{ all disj x, y : this.@r_c0_services | (x.@c0_services_ref) != (y.@c0_services_ref)  }
+
+sig c0_services
+{ c0_services_ref : one c0_Service }
+{ one @r_c0_services.this
+  (((this.@c0_services_ref).@r_c0_machine).@c0_machine_ref) = (this.~@r_c0_services)
+  (((this.@c0_services_ref).@r_c0_machine).@c0_machine_ref) = (this.~@r_c0_services) }
+
+one sig c0_m1 extends c0_Machine
+{}
+
+one sig c0_m2 extends c0_Machine
+{}
+
+one sig c0_s1 extends c0_Service
+{}
+
+one sig c0_s2 extends c0_Service
+{}
+
+fact { (c0_s1 in ((c0_m1.@r_c0_services).@c0_services_ref)) && (c0_s2 in ((c0_m2.@r_c0_services).@c0_services_ref)) }

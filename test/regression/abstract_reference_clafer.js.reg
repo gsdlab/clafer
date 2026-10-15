@@ -9,7 +9,7 @@ c0_Alice = Clafer("c0_Alice").withCard(1, 1);
 c0_baby = Clafer("c0_baby").withCard(1, 1);
 c0_age.refToUnique(Int);
 c0_NewBorn.refToUnique(c0_Person);
-c0_NewBorn.addConstraint(and(equal(joinRef(join(global(c0_Person), c0_age)), constant(0)), none(join(global(c0_Person), c0_married))));
+c0_NewBorn.addConstraint(and(equal(joinRef(join(joinRef($this()), c0_age)), constant(0)), none(join(joinRef($this()), c0_married))));
 c0_Alice.extending(c0_Person);
 c0_baby.extending(c0_NewBorn);
 assert(equal(joinRef(global(c0_baby)), global(c0_Alice)));

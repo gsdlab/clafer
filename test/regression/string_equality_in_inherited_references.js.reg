@@ -16,5 +16,5 @@ c0_E2.addConstraint(equal(joinRef(join($this(), c0_type)), constant("\"E1T\"")))
 c0_E3.extending(c0_Entity);
 c0_E3.addConstraint(equal(joinRef(join($this(), c0_type)), constant("\"E1T\"")));
 c0_E1TEntities.refToUnique(c0_Entity);
-c0_E1TEntities.addConstraint(equal(joinRef(join(global(c0_Entity), c0_type)), constant("\"E1T\"")));
+c0_E1TEntities.addConstraint(equal(joinRef(join(joinRef($this()), c0_type)), constant("\"E1T\"")));
 Constraint(equal(card(global(c0_E1TEntities)), constant(3)));
