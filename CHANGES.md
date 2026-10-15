@@ -1,4 +1,4 @@
-##### Clafer Version 0.5.3, unreleased
+##### Clafer Version 0.5.3, Oct 15, 2026
 
 Minor release: compiler fixes found with larger example models, the integer range of the Choco output, and a reorganized test suite.
 
