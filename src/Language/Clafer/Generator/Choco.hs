@@ -38,9 +38,9 @@ import Language.Clafer.Front.LexClafer
 -- | A formula over the target of a reference, simplified when constant.
 data Membership = MTrue | MFalse | MExp String
 
--- | Choco 3 code generation
-genCModule :: (IModule, GEnv) -> [(UID, Integer)] -> [Token]     -> Result
-genCModule (imodule@IModule{_mDecls}, genv') scopes  otherTokens' =
+-- | Choco 3 code generation, with the given smallest and largest integers, if any
+genCModule :: (IModule, GEnv) -> [(UID, Integer)] -> (Maybe Integer, Maybe Integer) -> [Token]     -> Result
+genCModule (imodule@IModule{_mDecls}, genv') scopes  (minInt, maxInt) otherTokens' =
     genScopes
     ++ "\n"
     ++ (genClafers =<< _mDecls)
@@ -97,11 +97,14 @@ genCModule (imodule@IModule{_mDecls}, genv') scopes  otherTokens' =
     genScopes =
         (if null scopeMap then "" else "scope({" ++ intercalate ", " scopeMap ++ "});\n")
         ++ "defaultScope(1);\n"
-        ++ "intRange(-" ++ show largestPositiveInt ++ ", " ++ show (largestPositiveInt - 1) ++ ");\n"
+        ++ genIntRange
         ++ "stringLength(" ++ show longestString ++ ");\n"
         where
-            largestPositiveInt :: Integer
-            largestPositiveInt = 2 ^ (bitwidth - 1)
+            -- Without --minint and --maxint, chocosolver chooses the range (-128..127
+            -- unless overridden on its command line).
+            genIntRange
+                | isNothing minInt && isNothing maxInt = ""
+                | otherwise = "intRange(" ++ show (fromMaybe (-128) minInt) ++ ", " ++ show (fromMaybe 127 maxInt) ++ ");\n"
             scopeMap = [uid' ++ ":" ++ show scope | (uid', scope) <- scopes, uid' /= "int"]
 
     genChocoEscapes :: String
@@ -307,4 +310,3 @@ genCModule (imodule@IModule{_mDecls}, genv') scopes  otherTokens' =
     mapFunc "ifthenelse" = "ifThenElse"
     mapFunc op' = error $ "Choco: Unknown op: " ++ op'
 
-    bitwidth = fromMaybe 4 $ lookup "int" scopes :: Integer

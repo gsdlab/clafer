@@ -1,6 +1,5 @@
 scope({c0_Person:3, c0_age:3, c0_childs:9, c0_divorced:3, c0_maritalStatus:3, c0_married:3, c0_neverMarried:3, c0_parents:6, c0_spouse:3});
 defaultScope(1);
-intRange(-8, 7);
 stringLength(16);
 
 c0_Person = Abstract("c0_Person");

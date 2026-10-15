@@ -1,6 +1,5 @@
 scope({c0_AndroidDevice1:0, c0_input:0, c1_CPU:4, c1_OLED:0, c2_AMOLED:0, c2_CPU:4, c2_HSPA:0, c2_LCD:0, c2_touchscreen:0, c3_CPU:4, c3_GSM:0, c3_keyboard:0, c4_CPU:0, c5_CPU:4, c5_display:0, c6_CPU:2});
 defaultScope(1);
-intRange(-8, 7);
 stringLength(16);
 
 c0_ExamplePhone1 = Clafer("c0_ExamplePhone1").withCard(1, 1);

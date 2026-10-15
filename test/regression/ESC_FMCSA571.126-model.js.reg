@@ -1,6 +1,5 @@
 scope({c0_AckermanSteerAngle:0, c0_AntiLockBreakSystem:0, c0_DriveConfiguration:0, c0_ElectronicStabilityControlSystem:0, c0_GVWR:0, c0_TractionControlSystem:0, c0_Vehicle:0, c0_degree:0, c0_givenAckermanSteerAngle:0, c0_hasOversteer:0, c0_hasUndersteer:0, c0_lateralAcceleration:0, c0_normalYawRate:0, c0_sideSlipAngle:0, c0_speed:0, c0_yawRate:0});
 defaultScope(1);
-intRange(-8, 7);
 stringLength(16);
 
 c0_degree = Abstract("c0_degree");

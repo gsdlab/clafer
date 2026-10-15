@@ -1,6 +1,5 @@
 scope({c0_Component:2, c0_Port:2, c0_TemperaturePort:2, c0_input:2, c0_output:2});
 defaultScope(1);
-intRange(-8, 7);
 stringLength(16);
 
 c0_Component = Abstract("c0_Component");

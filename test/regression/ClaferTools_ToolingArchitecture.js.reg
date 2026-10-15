@@ -1,6 +1,5 @@
 scope({c0_Front:3, c0_Generator:3, c0_Intermediate:3, c0_Representation:4, c0_alloy:3, c0_ast2ast:3, c0_ast2ir:3, c0_ast2text:3, c0_claferLib:3, c0_common:3, c0_desClafer:3, c0_desugarer:3, c0_experimental:3, c0_findDuplicates:3, c0_front:3, c0_generator:3, c0_inheritanceFlattener:3, c0_inheritanceResolver:3, c0_input:33, c0_intermediate:3, c0_io:33, c0_ir2ir:12, c0_ir2text:3, c0_layoutResolver:3, c0_lexer:3, c0_mapper:3, c0_nameResolution:3, c0_nameResolver:3, c0_optimizer:3, c0_output:33, c0_parser:3, c0_prettyPrinter:3, c0_resolver:3, c0_scopeAnalysis:3, c0_setUid:3, c0_stable:3, c0_stats:3, c0_stringAnalyzer:3, c0_text2tokens:3, c0_tokens2ast:3, c0_tokens2tokens:3, c0_transformer:3, c0_typeResolver:3, c0_xml:3, c0_xsdSchema:3});
 defaultScope(1);
-intRange(-8, 7);
 stringLength(16);
 
 c0_claferCompiler = Clafer("c0_claferCompiler").withCard(1, 1);

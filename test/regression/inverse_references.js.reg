@@ -1,6 +1,5 @@
 scope({c0_Machine:3, c0_Requirements:10, c0_Resources:6, c0_Service:4, c0_cpu:10, c0_isFree:3, c0_limits:3, c0_machine:4, c0_requirements:4, c0_services:12, c0_utilization:3});
 defaultScope(1);
-intRange(-8, 7);
 stringLength(16);
 
 c0_Service = Abstract("c0_Service");

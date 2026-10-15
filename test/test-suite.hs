@@ -118,6 +118,17 @@ case_ReferencedUnusedAbstractKept = do
     ("fact { #c0_Property = 0 }" `isInfixOf` alloy) @? "Alloy: Property may have instances\n" ++ alloy
     not ("c0_Unused" `isInfixOf` alloy) @? "Alloy: the unused Unused is declared\n" ++ alloy
 
+-- The integer range of the Choco output can be set with --minint and --maxint,
+-- also in //# OPTIONS; without them, chocosolver chooses it.
+case_ChocoIntRange :: Assertion
+case_ChocoIntRange = do
+    let
+        choco args' model' = outputCode $ fromJust $ Map.lookup Choco $ fromRight $ compileOneFragment args' model'
+        withOptions = "//# OPTIONS --minint=-500 --maxint=500\nx -> integer = 170\n"
+    ("intRange(-500, 500);" `isInfixOf` choco defaultClaferArgs{mode = [Choco]} withOptions) @? "OPTIONS ignored"
+    not ("intRange" `isInfixOf` choco defaultClaferArgs{mode = [Choco]} "x -> integer = 1\n") @? "Range set without options"
+    ("intRange(-128, 100);" `isInfixOf` choco defaultClaferArgs{mode = [Choco], maxint = Just 100} "x -> integer = 1\n") @? "--maxint ignored"
+
 -- A clafer which extends itself is reported as such, not as a missing super.
 case_SelfInheritanceReported :: Assertion
 case_SelfInheritanceReported =

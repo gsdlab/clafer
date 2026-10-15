@@ -70,6 +70,8 @@ data ClaferArgs = ClaferArgs {
       scope_strategy :: ScopeStrategy,
       afm :: Bool,
       meta_data :: Bool,
+      minint :: Maybe Integer,
+      maxint :: Maybe Integer,
       file :: FilePath
     } deriving (Eq, Show, Data, Typeable)
 
@@ -97,6 +99,8 @@ clafer = ClaferArgs {
   scope_strategy      = def &= help "Use scope computation strategy: none or simple (default)." &= name "ss",
   afm                 = def &= help "Throws an error if the cardinality of any of the clafers is above 1." &= name "check-afm",
   meta_data           = def &= help "Generate a 'fully qualified name'-'least-partially-qualified name'-'unique ID' map ('.cfr-map'). In Alloy and Choco modes, generate the scopes map ('.cfr-scope').",
+  minint              = def &= help "Smallest integer value ('choco' mode only). Default: -128, chosen by chocosolver." &= typ "INT" &= explicit &= name "minint",
+  maxint              = def &= help "Largest integer value ('choco' mode only). Default: 127, chosen by chocosolver." &= typ "INT" &= explicit &= name "maxint",
   file                = def &= args   &= typ "FILE"
  } &= summary ("Clafer " ++ showVersion Paths_clafer.version) &= program "clafer"
 
@@ -112,7 +116,7 @@ mergeArgs a1 a2  = ClaferArgs (mode a1) coMergeArg
   (mergeArg add_comments) (mergeArg ecore2clafer)
   (mergeArg trace_len)
   (mergeArg scope_strategy) (mergeArg afm)
-  (mergeArg meta_data) (mergeArg file)
+  (mergeArg meta_data) (mergeArg minint) (mergeArg maxint) (mergeArg file)
   where
     coMergeArg :: Bool
     coMergeArg = if r1 then r1 else
@@ -181,5 +185,7 @@ defaultClaferArgs = ClaferArgs
   , scope_strategy = Simple
   , afm = False
   , meta_data = False
+  , minint = Nothing
+  , maxint = Nothing
   , file = ""
   }

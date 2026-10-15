@@ -1,6 +1,5 @@
 scope({c0_M:5, c0_Meeting:4, c0_Member:7, c0_Month:2, c0_Room:2, c0_capacity:2, c0_computer:2, c0_electronic:2, c0_mt:4, c0_onlineParticipant:28, c0_participant:28, c0_projector:2, c0_traditional:2, c1_audioConferencing:2, c2_chair:4, c2_room:4, c2_whiteboard:2});
 defaultScope(1);
-intRange(-8, 7);
 stringLength(16);
 
 c0_midYearReview = Clafer("c0_midYearReview").withCard(1, 1);

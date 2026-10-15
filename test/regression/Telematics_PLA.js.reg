@@ -1,6 +1,5 @@
 scope({c0_ECU:2, c0_cache:4, c0_comp:6, c0_display:4, c0_fixed:4, c0_options:4, c0_plaECU:2, c0_server:4, c0_version:6, c1_display:4, c1_large:4, c1_options:4, c1_size:4, c1_small:4, c2_size:4});
 defaultScope(1);
-intRange(-8, 7);
 stringLength(16);
 
 c0_telematicsSystem = Clafer("c0_telematicsSystem").withCard(1, 1);

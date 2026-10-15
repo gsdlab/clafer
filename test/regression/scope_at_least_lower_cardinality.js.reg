@@ -1,6 +1,5 @@
 scope({c0_d:2, c0_e:2, c0_f:2, c0_g:4});
 defaultScope(1);
-intRange(-8, 7);
 stringLength(16);
 
 c0_a = Clafer("c0_a").withCard(0, 1);

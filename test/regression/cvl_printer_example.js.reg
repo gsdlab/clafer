@@ -1,6 +1,5 @@
 scope({c0_Cartridge:4, c0_Head:2, c0_High:4, c0_Low:4, c0_Speed:4, c0_Turbo:4, c0_inkVolume:4});
 defaultScope(1);
-intRange(-8, 7);
 stringLength(16);
 
 c0_Office = Clafer("c0_Office").withCard(1, 1);

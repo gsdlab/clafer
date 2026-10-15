@@ -1,5 +1,4 @@
 defaultScope(1);
-intRange(-8, 7);
 stringLength(34);
 
 c0_MISC_FILESYSTEMS = Clafer("c0_MISC_FILESYSTEMS").withCard(0, 1);

@@ -1,6 +1,5 @@
 scope({c0_ASIL:4});
 defaultScope(1);
-intRange(-8, 7);
 stringLength(16);
 
 c0_ASIL = Abstract("c0_ASIL");

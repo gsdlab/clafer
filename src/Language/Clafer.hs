@@ -623,7 +623,7 @@ generate =
                  then [(Choco,
                         CompilerResult {
                           extension = "js",
-                          outputCode = genCModule (iModule, genv) scopes otherTokens',
+                          outputCode = genCModule (iModule, genv) scopes (minint cargs, maxint cargs) otherTokens',
                           statistics = stats,
                           claferEnv  = env,
                           mappingToAlloy = [],

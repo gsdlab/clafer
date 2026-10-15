@@ -1,6 +1,5 @@
 scope({c0_Feature:6, c0_SecurityFeature:2, c0_energy:6, c0_performance:6, c0_security:2});
 defaultScope(1);
-intRange(-8, 7);
 stringLength(16);
 
 c0_Feature = Abstract("c0_Feature");

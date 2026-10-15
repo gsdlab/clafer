@@ -1,6 +1,5 @@
 scope({c0_Path:2, c0_isDir:2});
 defaultScope(1);
-intRange(-8, 7);
 stringLength(16);
 
 c0_Path = Abstract("c0_Path");
