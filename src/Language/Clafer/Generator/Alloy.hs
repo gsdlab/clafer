@@ -27,6 +27,7 @@ import Control.Applicative
 import Control.Monad.State
 import Data.List
 import Data.Maybe
+import qualified Data.StringMap as SMap
 import Prelude
 
 import Language.Clafer.Common
@@ -422,7 +423,7 @@ genExInteger    element'  (y,z) x  =
 -- Generate code for logical expressions
 
 genPExp :: GenEnv -> [String] -> PExp -> Concat
-genPExp    genEnv    resPath     x     = genPExp' genEnv resPath $ adjustPExp resPath x
+genPExp    genEnv    resPath     x     = genPExp' genEnv resPath $ adjustPExp (uidIClaferMap genEnv) resPath x
 
 genPExp' :: GenEnv -> [String] -> PExp                      -> Concat
 genPExp'    genEnv    resPath     (PExp iType' pid' pos exp') = case exp' of
@@ -539,34 +540,49 @@ genOp    op'
 genOp op' = error $ "[bug] Alloy.genOp: Unmatched operator: " ++ op'
 
 -- adjust parent
-adjustPExp :: [String] -> PExp -> PExp
-adjustPExp resPath (PExp t pid' pos x) = PExp t pid' pos $ adjustIExp resPath x
+adjustPExp :: UIDIClaferMap -> [String] -> PExp -> PExp
+adjustPExp uidIClaferMap' resPath (PExp t pid' pos x) = PExp t pid' pos $ adjustIExp uidIClaferMap' resPath x
 
-adjustIExp :: [String] -> IExp -> IExp
-adjustIExp resPath x = case x of
-  IDeclPExp q d pexp -> IDeclPExp q d $ adjustPExp resPath pexp
+adjustIExp :: UIDIClaferMap -> [String] -> IExp -> IExp
+adjustIExp uidIClaferMap' resPath x = case x of
+  IDeclPExp q d pexp -> IDeclPExp q d $ adjustPExp uidIClaferMap' resPath pexp
   IFunExp op' exps' -> adjNav $ IFunExp op' $ map adjExps exps'
     where
     (adjNav, adjExps) = if op' == iJoin then (aNav, id)
-                        else (id, adjustPExp resPath)
+                        else (id, adjustPExp uidIClaferMap' resPath)
   IClaferId{} -> aNav x
   _  -> x
   where
-  aNav = fst.(adjustNav resPath)
+  aNav = fst.(adjustNav uidIClaferMap' resPath)
 
-adjustNav :: [String] -> IExp -> (IExp, [String])
-adjustNav resPath x@(IFunExp op' (pexp0:pexp:_))
+adjustNav :: UIDIClaferMap -> [String] -> IExp -> (IExp, [String])
+adjustNav uidIClaferMap' resPath x@(IFunExp op' (pexp0:pexp:_))
   | op' == iJoin = (IFunExp iJoin
                    [pexp0{_exp = iexp0},
                     pexp{_exp = iexp}], path')
   | otherwise   = (x, resPath)
   where
-  (iexp0, path) = adjustNav resPath (_exp pexp0)
-  (iexp, path') = adjustNav path    (_exp pexp)
-adjustNav resPath x@(IClaferId _ id' _ _)
-  | id' == parentIdent = (x{_sident = "~@" ++ (genRelName $ head resPath)}, tail resPath)
+  (iexp0, path) = adjustNav uidIClaferMap' resPath (_exp pexp0)
+  (iexp, path') = adjustNav uidIClaferMap' path    (_exp pexp)
+adjustNav uidIClaferMap' resPath x@(IClaferId _ id' _ _)
+  | id' == parentIdent = (x{_sident = parentRel uidIClaferMap' $ head resPath}, tail resPath)
   | otherwise    = (x, resPath)
-adjustNav _ _ = error "Function adjustNav Expect a IFunExp or IClaferID as one of it's argument but it was given a differnt IExp" --This should never happen
+adjustNav _ _ _ = error "Function adjustNav Expect a IFunExp or IClaferID as one of it's argument but it was given a differnt IExp" --This should never happen
+
+-- | The inverse of the parent relation of the clafer with the given UID.
+-- A top-level abstract clafer has no parent relation; its parent is the parent
+-- of the instance in one of its nested subclafers.
+parentRel :: UIDIClaferMap -> UID -> String
+parentRel uidIClaferMap' uid' = case findIClafer uidIClaferMap' uid' of
+  Just c | isTopLevel c && _isAbstract c && not (null subRels)
+    -> "~(" ++ intercalate " + " (map ('@' :) subRels) ++ ")"
+  _ -> "~@" ++ genRelName uid'
+  where
+  subRels = [ genRelName $ _uid c'
+            | c' <- SMap.elems uidIClaferMap'
+            , not $ isTopLevel c'
+            , _uid c' /= rootIdent
+            , uid' `elem` map _uid (tail $ findHierarchy getSuper uidIClaferMap' c') ]
 
 genQuant :: IQuant -> String
 genQuant    x       = case x of

@@ -3,7 +3,7 @@
 Minor release: compiler fixes found with larger example models, the integer range of the Choco output, and a reorganized test suite.
 
 * Type checker: no crash on arithmetic over `max`/`min` of a union, or on if/then/else over unions and dereferenced references.
-* Alloy output: `a - b` was generated as `-a`.
+* Alloy output: `a - b` was generated as `-a`; `parent` of a top-level abstract clafer is the union of the parent relations of its subclafers ([#84](https://github.com/gsdlab/clafer/issues/84)).
 * References: `-> 1` lost the constant ([#89](https://github.com/gsdlab/clafer/issues/89)); redefinition of an inherited abstract clafer ([#86](https://github.com/gsdlab/clafer/issues/86)); Choco references to set expressions were dropped; unused abstract clafers named by a reference or a constraint are kept.
 * Implicit `.dref` in unions (`BobPicks ++ 3`, `others ++ p1`); `sum` and `product` over a union.
 * Inside a reference clafer, an ancestor (`Machine`, `parent`) is the enclosing instance, and the children of the target resolve through the reference.
