@@ -4,9 +4,12 @@ ifeq ($(OS),Windows_NT)
 EXE := .exe
 endif
 
+ALLOY_JAR := alloy6.2.0.jar
+ALLOY_URL := https://github.com/AlloyTools/org.alloytools.alloy/releases/download/v6.2.0/org.alloytools.alloy.dist.jar
+
 all: build
 
-build: alloy4.2.jar
+build: $(ALLOY_JAR)
 	stack build
 
 install:
@@ -14,7 +17,7 @@ install:
 	cp -f README.md $(to)/clafer-README.md
 	cp -f LICENSE $(to)/
 	cp -f CHANGES.md $(to)/clafer-CHANGES.md
-	cp -f alloy4.2.jar $(to)
+	cp -f $(ALLOY_JAR) $(to)
 	cp -f ecore2clafer.jar $(to)
 	cp `stack path --local-install-root`/bin/clafer$(EXE) $(to)
 
@@ -24,7 +27,7 @@ grammar:
 
 # Just like "init" but with enabled profiler
 # this will reinstall everything with profiling support, build clafer, and copy it to .
-prof: alloy4.2.jar
+prof: $(ALLOY_JAR)
 	stack build --executable-profiling --library-profiling --ghc-options="-auto-all -caf-all -rtsopts -osuf p_o"
 
 .PHONY: test
@@ -67,21 +70,6 @@ codex:
 	codex update
 	mv codex.tags tags
 
-WGET_COMMAND := wget
-ifeq ($(OS),Windows_NT)
-	ifeq ($(shell which wget), which: wget: unkown command)
-		pacman -S make wget
-	endif
-else
-	UNAME_S := $(shell uname -s)
-	ifeq ($(UNAME_S),Darwin)
-		WGET_COMMAND := curl -O
-	endif
-endif
-
-alloy4.2.jar:
-	@if test ! -f "alloy4.2.jar"; then \
-		echo "[WARNING] Missing alloy4.2.jar. Downloading...";  \
-		$(WGET_COMMAND) http://alloytools.org/download/alloy4.2_2015-02-22.jar; \
-		mv alloy4.2_2015-02-22.jar alloy4.2.jar; \
-	fi
+$(ALLOY_JAR):
+	@echo "[WARNING] Missing $(ALLOY_JAR). Downloading..."
+	curl -fsSL -o $(ALLOY_JAR) $(ALLOY_URL)

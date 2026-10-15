@@ -20,7 +20,7 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
 -}
--- | Generates Alloy4.2 code for a Clafer model
+-- | Generates Alloy code for a Clafer model
 module Language.Clafer.Generator.Alloy (genModule) where
 
 import Control.Applicative

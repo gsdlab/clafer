@@ -73,10 +73,9 @@ Regardless of the installation method, the following are
 
 Optional:
 
-* [Java Platform (JDK)](http://www.oracle.com/technetwork/java/javase/downloads/index.html) v8+, 64bit
+* [Java Platform (JDK)](https://adoptium.net) v17+, 64bit
   * only needed for running Alloy validation
-  * 32bit on Windows
-* [Alloy4.2](http://alloy.mit.edu/alloy/download.html)
+* [Alloy 6.2.0](https://github.com/AlloyTools/org.alloytools.alloy/releases/tag/v6.2.0) (`alloy6.2.0.jar`)
   * only needed for Alloy output validation
 * [GraphViz](http://graphviz.org/)
   * the program `dot` is needed only in the `html` mode for SVG graph generation
@@ -117,9 +116,9 @@ Dependencies
 3. `cabal install exe:clafer`
 4. on Windows `cd C:\Users\<user>\AppData\Roaming\cabal\x86_64-windows-ghc-9.6.7\clafer-0.5.3`
 5. on Linux `cd ~/.cabal/bin/`
-6. to automatically download Alloy jars, execute
-  * `make alloy4.2.jar`,
-  * move `alloy4.2.jar` to the location of the clafer executable.
+6. to automatically download the Alloy jar, execute
+  * `make alloy6.2.0.jar`,
+  * move `alloy6.2.0.jar` to the location of the clafer executable.
 
 ### Installation from the source code
 
@@ -187,7 +186,7 @@ clafer [OPTIONS] [FILE]
 Common flags:
   -m --mode=CLAFERMODE                    Generated output type. Available
                                           CLAFERMODEs are: 'alloy' (default,
-                                          Alloy 4.2); 'json' (intermediate
+                                          Alloy 6); 'json' (intermediate
                                           representation of Clafer model);
                                           'clafer' (analyzed and desugared
                                           clafer model); 'html' (original model
@@ -213,9 +212,9 @@ Common flags:
                                           ('alloy' mode only).
   -s --no-stats                           Don't print statistics.
   -v --validate                           Validate outputs of all modes. Uses
-                                          '<tooldir>/alloy4.2.jar' for Alloy
+                                          '<tooldir>/alloy6.2.0.jar' for Alloy
                                           models, '<tooldir>/chocosolver.jar'
-                                          for Alloy models, and Clafer
+                                          for Choco models, and Clafer
                                           translator for desugared Clafer
                                           models. Use '--tooldir' to override
                                           the default location ('.') of these

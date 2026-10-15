@@ -286,6 +286,7 @@ runValidate args' fo = do
   let path = tooldir args' ++ "/"
   let modes = mode args'
   when (Alloy `elem` modes && ".als" `isSuffixOf` fo) $ do
+    liftIO $ putStrLn ("=========== Running the commands of " ++ fo ++ " =============")
     void $ system $ validateAlloy path ++ fo
   when (Choco `elem` modes && ".js" `isSuffixOf` fo) $ do
     void $ system $ validateChoco path ++ fo
@@ -297,8 +298,9 @@ runValidate args' fo = do
   --   liftIO $ putStrLn $ validateClafer path ++ fo'
   --   void $ system $  validateClafer path ++ fo'
 
+-- | Runs all commands (the default run command if there are none) and prints the instances and counterexamples.
 validateAlloy :: String -> String
-validateAlloy path = "java -cp \"" ++ path ++ "alloy4.2.jar\" edu.mit.csail.sdg.alloy4whole.ExampleUsingTheCompiler "
+validateAlloy path = "java --enable-native-access=ALL-UNNAMED -jar \"" ++ path ++ "alloy6.2.0.jar\" exec -c \"*\" -t table -o - "
 
 validateChoco :: String -> String
 validateChoco path = "java -jar \"" ++ path ++ "chocosolver.jar\" -v --file "

@@ -41,8 +41,8 @@ generateAlloyJSHTMLDot:
 	@echo "|                          - validating Alloy output                              |"
 	@echo "==================================================================================="
 
-	@if test ! -f "../alloy4.2.jar"; then \
-		echo "[ERROR] Missing ../alloy4.2.jar."; false; \
+	@if test ! -f "../alloy6.2.0.jar"; then \
+		echo "[ERROR] Missing ../alloy6.2.0.jar."; false; \
 	fi
 
 	@if test ! -f "../chocosolver.jar"; then \
