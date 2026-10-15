@@ -322,21 +322,38 @@ resolveTPExp' p@PExp{_inPos, _exp} =
             | _op `elem` [iMin, iMinimum, iMaximum, iMinimize, iMaximize] = test (numeric t) >> return t
             | otherwise = assert False $ fail $ "Unknown op '" ++ _op ++ "'"
       result' <- result
-      return (result', e{_exps = [arg']})
+      return (result', splitUnion e{_exps = [arg']})
+    where
+    -- The generators sum (multiply) the references of each instance, so
+    -- sum (a ++ b) becomes sum a + sum b, and product (a ++ b) product a * product b.
+    -- A constant in the union is added (multiplied) as is.
+    splitUnion e'@IFunExp{_op = op', _exps = [PExp{_exp = IFunExp "++" [a, b]}]}
+      | op' `elem` [iSumSet, iProdSet] = IFunExp (if op' == iSumSet then iPlus else iMul) [part a, part b]
+      | otherwise = e'
+      where
+      part a'@PExp{_exp = IInt _} = a'
+      part a'@(PExp _ _ pos' _) = PExp (Just TInteger) "" pos' (splitUnion $ IFunExp op' [a'])
+    splitUnion e' = e'
 
+  -- The unions of the fewest unrelated types (with distinct topmost supers) come
+  -- first, so that a reference is dereferenced when that makes the operands
+  -- alike: in `others ++ p1`, with `others -> Person` and `p1 : Person`,
+  -- others.dref ++ p1 (Person) is preferred over others ++ p1 (others or
+  -- Person), and in `BobPicks ++ 3`, BobPicks.dref ++ 3 (integer) over
+  -- BobPicks ++ 3 (BobPicks or integer). Among equally good unions, the
+  -- original order (without dereferencing) is kept. Unions of booleans come last.
   resolveTExp e@IFunExp {_op = "++", _exps = [arg1, arg2]} = do
-      -- arg1s' <- resolveTPExp arg1
-      -- arg2s' <- resolveTPExp arg2
-      -- let union' a b = typeOf a +++ typeOf b
-      -- return [ return (union' arg1' arg2', e{_exps = [arg1', arg2']})
-      --        | (arg1', arg2') <- sortBy (comparing $ length . unionType . uncurry union') $ liftM2 (,) arg1s' arg2s'
-      --        , not (isTBoolean $ typeOf arg1') && not (isTBoolean $ typeOf arg2') ]
-      runListT $ runExceptT $ do
+      uidIClaferMap' <- asks iUIDIClaferMap
+      unions <- runListT $ runExceptT $ do
         arg1' <- lift $ ListT $ resolveTPExp arg1
         arg2' <- lift $ ListT $ resolveTPExp arg2
         let t1 = typeOf arg1'
         let t2 = typeOf arg2'
         return (t1 +++ t2, e{_exps = [arg1', arg2']})
+      return $ sortOn (either (const (True, maxBound)) (rank uidIClaferMap' . fst)) unions
+    where
+      rank uidIClaferMap' t = (isTBoolean t, length $ nub $ map (topmost uidIClaferMap') $ unionType t)
+      topmost uidIClaferMap' u = maybe u (last . mapHierarchy _uid getSuper uidIClaferMap') $ findIClafer uidIClaferMap' u
 
 
   resolveTExp e@IFunExp {_op, _exps = [arg1, arg2]} = do

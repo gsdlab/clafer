@@ -248,6 +248,13 @@ TClafer {_hi = ["A","X","B","C"]}
 
 >>> TClafer {_hi = ["A", "X"]} +++ (TClafer {_hi = ["B", "X"]} +++ TClafer {_hi = ["C", "X"]})
 TClafer {_hi = ["A","X","B","C"]}
+
+A dereferenced reference in a union with a value, e.g., `BobPicks ++ 3`, is a union of the targets.
+>>> tDrefMapEmplID +++ TInteger
+TInteger
+
+>>> TInteger +++ tDrefMapEmplID
+TInteger
 -}
 (+++) :: IType -> IType -> IType
 TBoolean        +++ TBoolean        = TBoolean
@@ -259,6 +266,8 @@ t1@(TClafer u1) +++ t2@(TClafer u2) = if t1 == t2
                                       then t1
                                       else TClafer $ nub $ u1 ++ u2  -- should be TUnion [t1,t2]
 (TMap so1 ta1)  +++ (TMap so2 ta2)  = TMap (so1 +++ so2) (ta1 +++ ta2)
+(TMap _ ta1)    +++ t2              = ta1 +++ t2
+t1              +++ (TMap _ ta2)    = t1 +++ ta2
 (TUnion un1)    +++ (TUnion un2)    = collapseUnion (TUnion $ nub $ un1 ++ un2)
 (TUnion un1)    +++ t2              = collapseUnion (TUnion $ nub $ un1 ++ [t2])
 t1              +++ (TUnion un2)    = collapseUnion (TUnion $ nub $ t1:un2)

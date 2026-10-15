@@ -1,6 +1,0 @@
-// Expected: BobPicks in a union with a constant (BobPicks ++ 3) is dereferenced implicitly, as in BobPicks.dref ++ 3. Actual: a type error.
-
-AlicePicks ->> integer *
-BobPicks ->> integer *
-
-[ AlicePicks = (BobPicks ++ 3) ]

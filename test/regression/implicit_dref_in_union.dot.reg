@@ -1,0 +1,22 @@
+digraph "implicit_dref_in_union"
+{
+rankdir=BT;
+ranksep=0.3;
+nodesep=0.1;
+graph [fontname=Sans fontsize=11];
+node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
+edge [fontname=Sans fontsize=11];
+"c0_AlicePicks" [label="AlicePicks -&gt;&gt; integer *" URL="#c0_AlicePicks" tooltip="AlicePicks -&gt;&gt; integer *&#10;"];
+"c0_BobPicks" [label="BobPicks -&gt;&gt; integer *" URL="#c0_BobPicks" tooltip="BobPicks -&gt;&gt; integer *&#10;"];
+"c0_Person" [label="abstract Person" URL="#c0_Person" tooltip="abstract Person&#10;"];
+"c0_p1" [label="p1 : Person" URL="#c0_p1" tooltip="p1 : Person&#10;"];
+"c0_p1" -> "c0_Person" [arrowhead=onormal constraint=true weight=100];
+"c0_p2" [label="p2 : Person" URL="#c0_p2" tooltip="p2 : Person&#10;"];
+"c0_p2" -> "c0_Person" [arrowhead=onormal constraint=true weight=100];
+"c0_p3" [label="p3 : Person" URL="#c0_p3" tooltip="p3 : Person&#10;"];
+"c0_p3" -> "c0_Person" [arrowhead=onormal constraint=true weight=100];
+"c0_friends" [label="friends -&gt; Person *" URL="#c0_friends" tooltip="friends -&gt; Person *&#10;"];
+"c0_friends" -> "c0_Person" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent];
+"c0_others" [label="others -&gt; Person *" URL="#c0_others" tooltip="others -&gt; Person *&#10;"];
+"c0_others" -> "c0_Person" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent];
+}

@@ -1,0 +1,34 @@
+open util/integer
+pred show {}
+
+
+sig c0_AlicePicks
+{ c0_AlicePicks_ref : one Int }
+
+sig c0_BobPicks
+{ c0_BobPicks_ref : one Int }
+
+fact { (c0_AlicePicks.@c0_AlicePicks_ref) = ((c0_BobPicks.@c0_BobPicks_ref) + 3) }
+fact { (3 + (c0_BobPicks.@c0_BobPicks_ref)) = (c0_AlicePicks.@c0_AlicePicks_ref) }
+abstract sig c0_Person
+{}
+
+one sig c0_p1 extends c0_Person
+{}
+
+one sig c0_p2 extends c0_Person
+{}
+
+one sig c0_p3 extends c0_Person
+{}
+
+sig c0_friends
+{ c0_friends_ref : one c0_Person }
+
+fact {  all disj x, y : c0_friends | (x.@c0_friends_ref) != (y.@c0_friends_ref)  }
+sig c0_others
+{ c0_others_ref : one c0_Person }
+
+fact {  all disj x, y : c0_others | (x.@c0_others_ref) != (y.@c0_others_ref)  }
+fact { (c0_friends.@c0_friends_ref) = ((c0_others.@c0_others_ref) + c0_p1) }
+fact { (c0_others.@c0_others_ref) = c0_p2 }

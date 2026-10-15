@@ -1,0 +1,18 @@
+// A reference in a union is dereferenced implicitly when that makes the operands alike: BobPicks ++ 3 means BobPicks.dref ++ 3, and others ++ p1 means others.dref ++ p1.
+
+AlicePicks ->> integer *
+BobPicks ->> integer *
+
+[ AlicePicks = (BobPicks ++ 3) ]
+[ 3 ++ BobPicks = AlicePicks.dref ]
+
+abstract Person
+p1 : Person
+p2 : Person
+p3 : Person
+
+friends -> Person *
+others -> Person *
+
+[ friends = others ++ p1 ]
+[ others = p2 ]

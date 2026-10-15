@@ -11,4 +11,4 @@ c0_x.addConstraint(and(greaterThanEqual(joinRef($this()), constant(-2)), lessTha
 c0_y.refTo(Int);
 c0_y.addConstraint(and(greaterThanEqual(joinRef($this()), constant(-2)), lessThanEqual(joinRef($this()), constant(2))));
 c0_z.refToUnique(Int);
-Constraint(implies(some(global(c0_z)), equal(joinRef(global(c0_z)), sum(union(global(c0_x), joinRef(global(c0_y)))))));
+Constraint(implies(some(global(c0_z)), equal(joinRef(global(c0_z)), add(sum(global(c0_x)), sum(global(c0_y))))));
