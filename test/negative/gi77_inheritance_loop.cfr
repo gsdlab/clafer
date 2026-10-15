@@ -1,0 +1,4 @@
+// Two abstract clafers which extend each other form an inheritance loop (GitHub issue 77).
+
+abstract A : B
+abstract B : A

@@ -1,6 +1,5 @@
 scope({c0_Exam:3, c0_Person:5, c0_date:3, c0_examinee:3, c0_examineeAda:3, c0_examineeOfAdaAsExaminer:5, c0_examineeOfAdaAsRecorder:5, c0_examiner:3, c0_examinerAda:3, c0_examinerOfAdaAsExaminee:5, c0_examinerOfAdaAsRecorder:5, c0_recorder:3, c0_recorderAda:3, c0_recorderOfAdaAsExaminee:5, c0_recorderOfAdaAsExaminer:5});
 defaultScope(1);
-intRange(-8, 7);
 stringLength(16);
 
 c0_Person = Abstract("c0_Person");

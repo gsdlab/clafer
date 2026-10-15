@@ -1,6 +1,5 @@
 scope({c0_Battery:3, c0_Bluetooth:3, c0_Bluetooth20:3, c0_Bluetooth21:3, c0_Bluetooth40:3, c0_Connectivity:3, c0_GSM:3, c0_LTE:3, c0_LiBattery1150:3, c0_LiBattery1400:3, c0_LowEndPhone:0, c0_MobilePhone:3, c0_USB:3, c0_WiFi:3, c1_Bluetooth:3});
 defaultScope(1);
-intRange(-8, 7);
 stringLength(16);
 
 c0_Bluetooth = Abstract("c0_Bluetooth").withGroupCard(1, 1);

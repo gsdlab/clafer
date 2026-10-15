@@ -1,5 +1,4 @@
 defaultScope(1);
-intRange(-8, 7);
 stringLength(40);
 
 c0_tristate = Abstract("c0_tristate");

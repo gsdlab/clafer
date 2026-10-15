@@ -105,6 +105,13 @@ numeric (TMap _ ta') = numeric ta'
 numeric (TUnion un') = any numeric un'
 numeric _            = False
 
+-- | Whether arithmetic can be performed on the type: unlike 'numeric', all
+-- the types of a union must be numeric, so that 'coerce' can be applied.
+allNumeric :: IType     -> Bool
+allNumeric (TMap _ ta') = allNumeric ta'
+allNumeric (TUnion un') = all allNumeric un'
+allNumeric t            = numeric t
+
 isTInteger :: IType    -> Bool
 isTInteger TInteger     = True
 isTInteger (TMap _ ta') = isTInteger ta'
@@ -241,6 +248,13 @@ TClafer {_hi = ["A","X","B","C"]}
 
 >>> TClafer {_hi = ["A", "X"]} +++ (TClafer {_hi = ["B", "X"]} +++ TClafer {_hi = ["C", "X"]})
 TClafer {_hi = ["A","X","B","C"]}
+
+A dereferenced reference in a union with a value, e.g., `BobPicks ++ 3`, is a union of the targets.
+>>> tDrefMapEmplID +++ TInteger
+TInteger
+
+>>> TInteger +++ tDrefMapEmplID
+TInteger
 -}
 (+++) :: IType -> IType -> IType
 TBoolean        +++ TBoolean        = TBoolean
@@ -252,6 +266,8 @@ t1@(TClafer u1) +++ t2@(TClafer u2) = if t1 == t2
                                       then t1
                                       else TClafer $ nub $ u1 ++ u2  -- should be TUnion [t1,t2]
 (TMap so1 ta1)  +++ (TMap so2 ta2)  = TMap (so1 +++ so2) (ta1 +++ ta2)
+(TMap _ ta1)    +++ t2              = ta1 +++ t2
+t1              +++ (TMap _ ta2)    = t1 +++ ta2
 (TUnion un1)    +++ (TUnion un2)    = collapseUnion (TUnion $ nub $ un1 ++ un2)
 (TUnion un1)    +++ t2              = collapseUnion (TUnion $ nub $ un1 ++ [t2])
 t1              +++ (TUnion un2)    = collapseUnion (TUnion $ nub $ t1:un2)
@@ -373,18 +389,13 @@ getIfThenElseType _              TDouble         TDouble       = return $ Just T
 getIfThenElseType _              TDouble         TInteger      = return $ Just TDouble
 getIfThenElseType _              TInteger        TDouble       = return $ Just TDouble
 getIfThenElseType _              TInteger        TInteger      = return $ Just TInteger
-getIfThenElseType _ {-uidIClaferMap'-} (TUnion _ {-t1s-}){-t2@-} (TClafer _) = undefined {- o
-  t1s' <- mapM (getIfThenElseType uidIClaferMap' t2) t1s
-  return $ case catMaybes t1s' of
-    [] -> Nothing
-    [t] -> Just t
-    t1s'' -> Just $ TUnion t1s''  -}
-getIfThenElseType _ {-uidIClaferMap'-} {-t1@-}(TClafer _)  (TUnion _{-t2s-}) = undefined {- do
-  t2s' <- mapM (getIfThenElseType uidIClaferMap' t1) t2s
-  return $ case catMaybes t2s' of
-    [] -> Nothing
-    [t] -> Just t
-    t2s'' -> Just $ TUnion t2s''  -}
+-- Each type of a union must combine with the other branch, e.g., a union of
+-- clafers and booleans does not combine with clafers.
+getIfThenElseType uidIClaferMap' (TUnion t1s)    t2            = combineAll uidIClaferMap' [ (t1, t2) | t1 <- t1s ]
+getIfThenElseType uidIClaferMap' t1              (TUnion t2s)  = combineAll uidIClaferMap' [ (t1, t2) | t2 <- t2s ]
+-- A dereferenced reference, e.g., if c then a.dref else b, has the type of its targets.
+getIfThenElseType uidIClaferMap' (TMap _ ta1)    t2            = getIfThenElseType uidIClaferMap' ta1 t2
+getIfThenElseType uidIClaferMap' t1              (TMap _ ta2)  = getIfThenElseType uidIClaferMap' t1 ta2
 getIfThenElseType uidIClaferMap' t@(TClafer ut1) (TClafer ut2) = if ut1 == ut2
   then return $ Just t
   else do
@@ -404,6 +415,15 @@ getIfThenElseType uidIClaferMap' t@(TClafer ut1) (TClafer ut2) = if ut1 == ut2
       else accumulator
     commonHierarchy' _ _ _ = error "ResolverType.commonHierarchy' expects two non empty lists but was given at least one empty list!" -- Should never happen
 getIfThenElseType _ _ _ = return Nothing
+
+-- | The union of the if/then/else types of the pairs, if every pair combines.
+combineAll :: MonadFail m => UIDIClaferMap -> [(IType, IType)] -> m (Maybe IType)
+combineAll uidIClaferMap' pairs = do
+  ts <- mapM (uncurry $ getIfThenElseType uidIClaferMap') pairs
+  return $ foldr1 (+++) <$> (nonEmpty' =<< sequence ts)
+  where
+  nonEmpty' [] = Nothing
+  nonEmpty' xs = Just xs
 
 
 {- | Compute the type of sequential composition of two types
@@ -486,6 +506,8 @@ TInteger
 TInteger
 >>> coerce tDrefMapDOB tDrefMapDOB
 TInteger
+>>> coerce (TUnion [TInteger, TReal]) TInteger
+TReal
 -}
 
 coerce :: IType -> IType -> IType
@@ -503,6 +525,9 @@ coerce TInteger TInteger = TInteger
 coerce (TMap _ t1) (TMap _ t2) = coerce t1 t2
 coerce (TMap _ t1) t2          = coerce t1 t2
 coerce t1          (TMap _ t2) = coerce t1 t2
+-- unions of numeric types (see 'allNumeric')
+coerce (TUnion un1) t2         = coerce (foldr1 coerce un1) t2
+coerce t1          (TUnion un2) = coerce t1 (foldr1 coerce un2)
 coerce x y = error $ "TypeSystem.coerce: Cannot coerce not numeric: " ++ show x ++ " and " ++ show y
 
 

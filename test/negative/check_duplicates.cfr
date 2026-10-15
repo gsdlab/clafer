@@ -1,0 +1,10 @@
+//# OPTIONS --check-duplicates
+// The --check-duplicates check rejects clafers with the same name in different contexts (a, b and c).
+
+a
+  b
+    c
+  a
+    c
+c
+  b

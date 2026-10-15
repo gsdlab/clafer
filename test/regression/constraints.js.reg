@@ -1,6 +1,5 @@
 scope({c0_Phone:4, c0_agps:4, c0_bluetooth:4, c0_gps:4, c0_gpu:4, c0_location:4, c0_mobile:4, c0_networking:4, c0_nfc:4, c0_typeB:4, c0_typeG:4, c0_typeN:4, c0_wifi:4});
 defaultScope(1);
-intRange(-8, 7);
 stringLength(16);
 
 c0_Phone = Abstract("c0_Phone");

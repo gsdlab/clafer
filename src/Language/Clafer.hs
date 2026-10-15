@@ -286,6 +286,7 @@ runValidate args' fo = do
   let path = tooldir args' ++ "/"
   let modes = mode args'
   when (Alloy `elem` modes && ".als" `isSuffixOf` fo) $ do
+    liftIO $ putStrLn ("=========== Running the commands of " ++ fo ++ " =============")
     void $ system $ validateAlloy path ++ fo
   when (Choco `elem` modes && ".js" `isSuffixOf` fo) $ do
     void $ system $ validateChoco path ++ fo
@@ -297,8 +298,9 @@ runValidate args' fo = do
   --   liftIO $ putStrLn $ validateClafer path ++ fo'
   --   void $ system $  validateClafer path ++ fo'
 
+-- | Runs all commands (the default run command if there are none) and prints the instances and counterexamples.
 validateAlloy :: String -> String
-validateAlloy path = "java -cp \"" ++ path ++ "alloy4.2.jar\" edu.mit.csail.sdg.alloy4whole.ExampleUsingTheCompiler "
+validateAlloy path = "java --enable-native-access=ALL-UNNAMED -jar \"" ++ path ++ "alloy6.2.0.jar\" exec -c \"*\" -t table -o - "
 
 validateChoco :: String -> String
 validateChoco path = "java -jar \"" ++ path ++ "chocosolver.jar\" -v --file "
@@ -368,9 +370,28 @@ parse =
 
     (astErr, otherTokens') <- (parseFrag $ args env) completeModel
     ast <- liftParseErr astErr
+    case sameLineClafers ast of
+      (span', name') : _ -> throwErr (ParseErr span' $ "clafer " ++ name' ++ " must start on a new line" :: CErr Span)
+      []                 -> return ()
 
     putEnv env{ cAst = Just ast, astModuleTrace = traceAstModule ast, otherTokens = otherTokens' }
   where
+  -- Elements have no separator in the grammar, so `b : B A 3` parses as two
+  -- sibling clafers, b : B and A 3. Returns the clafers which start on the same
+  -- line as their previous sibling clafer.
+  sameLineClafers :: Module -> [(Span, String)]
+  sameLineClafers (Module _ decls') = concatMap sameLine $ elementLists [ e | ElementDecl _ e <- decls' ]
+    where
+    elementLists es = es : concatMap elementLists [ es' | ElementsList _ es' <- map nested es ]
+    nested (Subclafer _ (Clafer _ _ _ _ _ _ _ _ _ _ elements')) = elements'
+    nested (ClaferUse _ _ _ elements') = elements'
+    nested e = ElementsEmpty $ getSpan e
+    sameLine es = [ (s2, n2) | ((Span (Pos l1 _) _, _), (s2@(Span (Pos l2 _) _), n2)) <- zip clafers' (drop 1 clafers'), l1 == l2 ]
+      where
+      clafers' = mapMaybe claferStart es
+    claferStart (Subclafer s (Clafer _ _ _ _ (PosIdent (_, n)) _ _ _ _ _ _)) = Just (s, n)
+    claferStart (ClaferUse s name' _ _) = Just (s, "`" ++ printTree name')
+    claferStart _ = Nothing
   parseFrag :: (Monad m) => ClaferArgs -> String    -> ClaferT m (Err Module, [Token])
   parseFrag                 args'         inputModel = do
     let model' = if (not $ no_layout args') && (new_layout args') then resLayout inputModel else inputModel
@@ -604,7 +625,7 @@ generate =
                  then [(Choco,
                         CompilerResult {
                           extension = "js",
-                          outputCode = genCModule (iModule, genv) scopes otherTokens',
+                          outputCode = genCModule (iModule, genv) scopes (minint cargs, maxint cargs) otherTokens',
                           statistics = stats,
                           claferEnv  = env,
                           mappingToAlloy = [],

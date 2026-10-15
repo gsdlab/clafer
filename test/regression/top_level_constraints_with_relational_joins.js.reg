@@ -1,6 +1,5 @@
 scope({c0_Course:2, c0_TA:2, c0_assistants:4, c0_first:2});
 defaultScope(1);
-intRange(-8, 7);
 stringLength(16);
 
 c0_Course = Abstract("c0_Course");

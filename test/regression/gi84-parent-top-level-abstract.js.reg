@@ -1,6 +1,5 @@
 scope({c0_Feature:2});
 defaultScope(1);
-intRange(-8, 7);
 stringLength(16);
 
 c0_FeatureModel = Abstract("c0_FeatureModel");

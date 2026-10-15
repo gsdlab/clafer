@@ -1,6 +1,5 @@
 scope({c0_ComfortFeature:8, c0_Feature:10, c0_FuelFeature:5, c0_comfort:8, c0_cost:10, c0_fuel:5, c0_mass:10});
 defaultScope(1);
-intRange(-8, 7);
 stringLength(16);
 
 c0_aCar = Clafer("c0_aCar").withCard(1, 1);

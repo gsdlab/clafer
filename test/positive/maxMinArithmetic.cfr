@@ -1,0 +1,18 @@
+// Arithmetic on max and min of a union of integers.
+// The type checker crashed with "TypeSystem.coerce: Cannot coerce not numeric",
+// and the Alloy generator translated a - b as -a.
+
+a -> integer
+b -> integer
+c -> integer
+
+spread -> integer = max(a.dref, b.dref, c.dref) - min(a.dref, b.dref, c.dref)
+range -> integer = max(a.dref ++ b.dref ++ c.dref) - min(a.dref ++ b.dref ++ c.dref)
+above -> integer = max(a.dref ++ 3) + 1
+
+[a = 5]
+[b = 2]
+[c = 9]
+[spread = 7]
+[range = 7]
+[above = 6]

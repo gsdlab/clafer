@@ -1,5 +1,4 @@
 defaultScope(1);
-intRange(-8, 7);
 stringLength(16);
 
 c0_a = Clafer("c0_a").withCard(1, 1);
@@ -11,7 +10,7 @@ c0_f = c0_e.addChild("c0_f").withCard(0, 1);
 c0_g = Clafer("c0_g").withCard(1, 1);
 c0_h = Clafer("c0_h").withCard(1, 1);
 c0_b.refToUnique(c0_e);
-c0_b.addConstraint(equal(joinRef(joinRef(join(global(c0_e), c0_f))), global(c0_h)));
+c0_b.addConstraint(equal(joinRef(joinRef(join(joinRef($this()), c0_f))), global(c0_h)));
 c0_b.addConstraint(equal(joinRef(joinRef(join(joinRef($this()), c0_f))), global(c0_h)));
 c0_b.addConstraint(equal(joinRef(joinRef(join(joinRef($this()), c0_f))), global(c0_h)));
 c0_b.addConstraint(equal(joinRef(joinRef(join(joinRef($this()), c0_f))), global(c0_h)));

@@ -1,0 +1,43 @@
+open util/integer
+pred show {}
+
+
+abstract sig c0_FunctionalArchitecture
+{}
+
+abstract sig c0_Deployment
+{ r_c0_fa : set c0_fa }
+{ all disj x, y : this.@r_c0_fa | (x.@c0_fa_ref) != (y.@c0_fa_ref)  }
+
+abstract sig c0_fa
+{ c0_fa_ref : one c0_FunctionalArchitecture }
+{ one @r_c0_fa.this }
+
+abstract sig c0_PowerWindowFAA extends c0_FunctionalArchitecture
+{}
+
+abstract sig c0_PowerWindowDpl extends c0_Deployment
+{ r_c1_fa : set c1_fa }
+{ r_c1_fa in r_c0_fa
+  all disj x, y : this.@r_c1_fa | (x.@c1_fa_ref) != (y.@c1_fa_ref)  }
+
+abstract sig c1_fa extends c0_fa
+{ c1_fa_ref : one c0_PowerWindowFAA }
+{ one @r_c1_fa.this
+  c1_fa_ref in c0_fa_ref }
+
+one sig c0_System
+{ r_c0_DriverPowerWindowFAA : one c0_DriverPowerWindowFAA
+, r_c0_DriverPowerWindowDpl : one c0_DriverPowerWindowDpl }
+
+one sig c0_DriverPowerWindowFAA extends c0_PowerWindowFAA
+{}
+
+one sig c0_DriverPowerWindowDpl extends c0_PowerWindowDpl
+{ r_c2_fa : one c2_fa }
+{ r_c2_fa in r_c1_fa }
+
+one sig c2_fa extends c1_fa
+{ c2_fa_ref : one c0_DriverPowerWindowFAA }
+{ c2_fa_ref in c1_fa_ref }
+

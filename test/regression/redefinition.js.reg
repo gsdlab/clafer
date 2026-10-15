@@ -1,6 +1,5 @@
 scope({c0_Request:2, c0_Signal:3});
 defaultScope(1);
-intRange(-8, 7);
 stringLength(16);
 
 c0_Component = Abstract("c0_Component");

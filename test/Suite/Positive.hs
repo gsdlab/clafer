@@ -52,10 +52,10 @@ case_compileTest = do
 
 case_reference_Unused_Abstract_Clafer :: Assertion
 case_reference_Unused_Abstract_Clafer = do
-    model <- readFile "test/positive/i235.cfr"
+    model <- readFile "test/positive/reference_to_unextended_abstract.cfr"
     let compiledClafers = [("None", compileOneFragment defaultClaferArgs{scope_strategy = None} model), ("Simple", compileOneFragment defaultClaferArgs{scope_strategy = Simple} model)]
     forM_ compiledClafers (\(ss, compiled) ->
-        when (not $ compiledCheck compiled) $ putStrLn ("i235.cfr failed for scope_strategy = " ++ ss))
+        when (not $ compiledCheck compiled) $ putStrLn ("reference_to_unextended_abstract.cfr failed for scope_strategy = " ++ ss))
     (andMap (compiledCheck . snd) compiledClafers
         @? "reference_Unused_Abstract_Clafer (i235) failed, error for referencing unused abstract clafer")
 

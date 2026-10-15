@@ -1,0 +1,19 @@
+digraph "initialization_of_multiple_references"
+{
+rankdir=BT;
+ranksep=0.3;
+nodesep=0.1;
+graph [fontname=Sans fontsize=11];
+node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
+edge [fontname=Sans fontsize=11];
+"c0_x" [label="x -&gt; integer * = 1, 2, 3" URL="#c0_x" tooltip="x -&gt; integer * = 1, 2, 3&#10;"];
+"c0_Person" [label="abstract Person" URL="#c0_Person" tooltip="abstract Person&#10;"];
+"c0_p1" [label="p1 : Person" URL="#c0_p1" tooltip="p1 : Person&#10;"];
+"c0_p1" -> "c0_Person" [arrowhead=onormal constraint=true weight=100];
+"c0_p2" [label="p2 : Person" URL="#c0_p2" tooltip="p2 : Person&#10;"];
+"c0_p2" -> "c0_Person" [arrowhead=onormal constraint=true weight=100];
+"c0_p3" [label="p3 : Person" URL="#c0_p3" tooltip="p3 : Person&#10;"];
+"c0_p3" -> "c0_Person" [arrowhead=onormal constraint=true weight=100];
+"c0_people" [label="people -&gt; Person * = p1, p1, p3" URL="#c0_people" tooltip="people -&gt; Person * = p1, p1, p3&#10;"];
+"c0_people" -> "c0_Person" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent];
+}

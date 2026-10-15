@@ -1,0 +1,14 @@
+// A 1..* group cardinality has the semantics of an or-group: the children become optional, see the expected desugaring below.
+
+1..* A
+    B
+    C
+
+/* Expected desugaring:
+1 .. * c1_A : clafer 1 .. 1 {
+  0 .. * c2_B : clafer 1 .. 1 {
+    }
+  0 .. * c3_C : clafer 1 .. 1 {
+    }
+  }
+*/

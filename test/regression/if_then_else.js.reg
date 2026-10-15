@@ -1,0 +1,17 @@
+defaultScope(1);
+stringLength(16);
+
+c0_emergencyVehicle = Clafer("c0_emergencyVehicle").withCard(0, 1);
+c0_allWayYellow = Clafer("c0_allWayYellow").withCard(0, 1);
+c0_allYellow = Clafer("c0_allYellow").withCard(0, 1);
+c0_flashing = c0_allYellow.addChild("c0_flashing").withCard(0, 1);
+c0_warning = Clafer("c0_warning").withCard(0, 1);
+c1_flashing = c0_warning.addChild("c1_flashing").withCard(0, 1);
+c0_AliceAge = Clafer("c0_AliceAge").withCard(1, 1);
+c0_BobAge = Clafer("c0_BobAge").withCard(1, 1);
+c0_BobsBirthday = Clafer("c0_BobsBirthday").withCard(0, 1);
+Constraint(implies(some(global(c0_emergencyVehicle)), ifThenElse(some(global(c0_allWayYellow)), some(global(c0_allYellow)), some(global(c0_warning)))));
+Constraint(implies(some(global(c0_emergencyVehicle)), ifThenElse(some(global(c0_allWayYellow)), some(global(c0_allYellow)), some(global(c0_warning)))));
+c0_AliceAge.refToUnique(Int);
+c0_BobAge.refToUnique(Int);
+Constraint(equal(ifThenElse(some(global(c0_BobsBirthday)), joinRef(global(c0_BobAge)), joinRef(global(c0_AliceAge))), constant(5)));

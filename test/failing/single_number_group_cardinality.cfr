@@ -1,0 +1,6 @@
+// Expected: a group cardinality written as a single number (2), like 2..2. Actual: a parse error.
+
+abstract 2 D
+  Y *
+
+C : D

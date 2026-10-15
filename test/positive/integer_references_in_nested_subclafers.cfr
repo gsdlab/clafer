@@ -1,0 +1,12 @@
+// Integer references inherited by a nested subclafer, and its own, had the parent-child relation missing in the output.
+
+abstract Person
+    Age -> integer
+
+Team
+    Contractor : Person
+        since -> integer
+    Member -> Person 2..*
+
+Alice : Person
+Bob : Person

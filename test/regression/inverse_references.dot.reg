@@ -1,0 +1,29 @@
+digraph "inverse_references"
+{
+rankdir=BT;
+ranksep=0.3;
+nodesep=0.1;
+graph [fontname=Sans fontsize=11];
+node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
+edge [fontname=Sans fontsize=11];
+"c0_Service" [label="abstract Service" URL="#c0_Service" tooltip="abstract Service&#10;  requirements : Requirements&#10;  machine -&gt; Machine&#10;  [ this in machine.services ]&#10;"];
+"c0_Service" -> "c0_Requirements" [arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];
+"c0_Service" -> "c0_Machine" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=machine];
+"c0_Requirements" [label="abstract Requirements" URL="#c0_Requirements" tooltip="abstract Requirements&#10;  cpu -&gt;&gt; integer&#10;"];
+"c0_Resources" [label="abstract Resources : Requirements" URL="#c0_Resources" tooltip="abstract Resources : Requirements&#10;"];
+"c0_Resources" -> "c0_Requirements" [arrowhead=onormal constraint=true weight=100];
+"c0_Machine" [label="abstract Machine" URL="#c0_Machine" tooltip="abstract Machine&#10;  services -&gt; Service *&#10;  [ all s : services | s.machine = this ]&#10;  isFree ?&#10;  [ isFree <=> no services ]&#10;  limits : Resources&#10;  utilization : Resources&#10;    [ cpu = sum services.requirements.cpu ]&#10;    [ cpu < limits.cpu ]&#10;"];
+"c0_Machine" -> "c0_Service" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=services];
+"c0_Machine" -> "c0_Resources" [arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];
+"c0_Machine" -> "c0_Resources" [arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];
+"c0_Task" [label="abstract Task" URL="#c0_Task" tooltip="abstract Task&#10;  total_free : integer = # Machine.isFree&#10;"];
+"c0_MyTask" [label="MyTask : Task" URL="#c0_MyTask" tooltip="MyTask : Task&#10;  GoogleCA : Machine&#10;    [ limits.cpu = 10 ]&#10;  GoogleNY : Machine&#10;    [ limits.cpu = 16 ]&#10;  GoogleTX : Machine&#10;    [ limits.cpu = 14 ]&#10;  MailService : Service&#10;    [ requirements.cpu = 4 ]&#10;  SearchService : Service&#10;    [ requirements.cpu = 3 ]&#10;  CalendarService : Service&#10;    [ requirements.cpu = 1 ]&#10;  DriveService : Service&#10;    [ requirements.cpu = 2 ]&#10;"];
+"c0_MyTask" -> "c0_Task" [arrowhead=onormal constraint=true weight=100];
+"c0_MyTask" -> "c0_Machine" [arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];
+"c0_MyTask" -> "c0_Machine" [arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];
+"c0_MyTask" -> "c0_Machine" [arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];
+"c0_MyTask" -> "c0_Service" [arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];
+"c0_MyTask" -> "c0_Service" [arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];
+"c0_MyTask" -> "c0_Service" [arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];
+"c0_MyTask" -> "c0_Service" [arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];
+}

@@ -1,0 +1,5 @@
+// A reference to an abstract clafer which nothing extends, so it has no possible targets.
+
+abstract A
+
+aRef -> A

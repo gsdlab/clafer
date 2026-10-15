@@ -1,6 +1,5 @@
 scope({c0_Hand:4, c0_Hook:2, c0_Object:6, c0_Person:2});
 defaultScope(1);
-intRange(-8, 7);
 stringLength(16);
 
 c0_Object = Abstract("c0_Object");

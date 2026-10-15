@@ -7,6 +7,9 @@ extra-deps:
 - github: gsdlab/StringMap
   commit: 2ce0adb947adaa5581d347ce8555ec76db44d815
 
-flags: {}
+flags:
+  # The test suite that compiles the models in test/positive and test/negative.
+  clafer:
+    model-tests: true
 packages:
 - '.'

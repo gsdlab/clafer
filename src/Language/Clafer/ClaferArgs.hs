@@ -70,12 +70,14 @@ data ClaferArgs = ClaferArgs {
       scope_strategy :: ScopeStrategy,
       afm :: Bool,
       meta_data :: Bool,
+      minint :: Maybe Integer,
+      maxint :: Maybe Integer,
       file :: FilePath
     } deriving (Eq, Show, Data, Typeable)
 
 clafer :: ClaferArgs
 clafer = ClaferArgs {
-  mode                = [] &= help "Generated output type. Available CLAFERMODEs are: 'alloy' (default, Alloy 4.2); 'json' (intermediate representation of Clafer model); 'clafer' (analyzed and desugared clafer model); 'html' (original model in HTML); 'graph' (graphical representation written in DOT language); 'cvlgraph' (cvl notation representation written in DOT language); 'choco' (Choco constraint programming solver). Multiple modes can be specified at the same time, e.g., '-m alloy -m html'." &= name "m",
+  mode                = [] &= help "Generated output type. Available CLAFERMODEs are: 'alloy' (default, Alloy 6); 'json' (intermediate representation of Clafer model); 'clafer' (analyzed and desugared clafer model); 'html' (original model in HTML); 'graph' (graphical representation written in DOT language); 'cvlgraph' (cvl notation representation written in DOT language); 'choco' (Choco constraint programming solver). Multiple modes can be specified at the same time, e.g., '-m alloy -m html'." &= name "m",
   console_output      = def &= help "Output code on console." &= name "o",
   flatten_inheritance = def &= help "Flatten inheritance ('alloy' mode only)." &= name "i",
   timeout_analysis    = def &= help "Timeout for analysis.",
@@ -85,7 +87,7 @@ clafer = ClaferArgs {
   skip_resolver       = def &= help "Skip name resolution." &= name "f",
   keep_unused         = def &= help "Keep uninstantated abstract clafers ('alloy' mode only)." &= name "k",
   no_stats            = def &= help "Don't print statistics." &= name "s",
-  validate            = def &= help "Validate outputs of all modes. Uses '<tooldir>/alloy4.2.jar' for Alloy models, '<tooldir>/chocosolver.jar' for Alloy models, and Clafer translator for desugared Clafer models. Use '--tooldir' to override the default location ('.') of these tools." &= name "v",
+  validate            = def &= help "Validate outputs of all modes. Uses '<tooldir>/alloy6.2.0.jar' for Alloy models, '<tooldir>/chocosolver.jar' for Choco models, and Clafer translator for desugared Clafer models. Use '--tooldir' to override the default location ('.') of these tools." &= name "v",
   tooldir             = "." &= typDir &= help "Specify the tools directory ('validate' only). Default: '.' (current directory).",
   alloy_mapping       = def &= help "Generate mapping to Alloy source code ('alloy' mode only)." &= name "a",
   self_contained      = def &= help "Generate a self-contained html document ('html' mode only).",
@@ -97,6 +99,8 @@ clafer = ClaferArgs {
   scope_strategy      = def &= help "Use scope computation strategy: none or simple (default)." &= name "ss",
   afm                 = def &= help "Throws an error if the cardinality of any of the clafers is above 1." &= name "check-afm",
   meta_data           = def &= help "Generate a 'fully qualified name'-'least-partially-qualified name'-'unique ID' map ('.cfr-map'). In Alloy and Choco modes, generate the scopes map ('.cfr-scope').",
+  minint              = def &= help "Smallest integer value ('choco' mode only). Default: -128, chosen by chocosolver." &= typ "INT" &= explicit &= name "minint",
+  maxint              = def &= help "Largest integer value ('choco' mode only). Default: 127, chosen by chocosolver." &= typ "INT" &= explicit &= name "maxint",
   file                = def &= args   &= typ "FILE"
  } &= summary ("Clafer " ++ showVersion Paths_clafer.version) &= program "clafer"
 
@@ -112,7 +116,7 @@ mergeArgs a1 a2  = ClaferArgs (mode a1) coMergeArg
   (mergeArg add_comments) (mergeArg ecore2clafer)
   (mergeArg trace_len)
   (mergeArg scope_strategy) (mergeArg afm)
-  (mergeArg meta_data) (mergeArg file)
+  (mergeArg meta_data) (mergeArg minint) (mergeArg maxint) (mergeArg file)
   where
     coMergeArg :: Bool
     coMergeArg = if r1 then r1 else
@@ -181,5 +185,7 @@ defaultClaferArgs = ClaferArgs
   , scope_strategy = Simple
   , afm = False
   , meta_data = False
+  , minint = Nothing
+  , maxint = Nothing
   , file = ""
   }

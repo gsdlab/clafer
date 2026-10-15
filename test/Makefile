@@ -41,8 +41,8 @@ generateAlloyJSHTMLDot:
 	@echo "|                          - validating Alloy output                              |"
 	@echo "==================================================================================="
 
-	@if test ! -f "../alloy4.2.jar"; then \
-		echo "[ERROR] Missing ../alloy4.2.jar."; false; \
+	@if test ! -f "../alloy6.2.0.jar"; then \
+		echo "[ERROR] Missing ../alloy6.2.0.jar."; false; \
 	fi
 
 	@if test ! -f "../chocosolver.jar"; then \
@@ -111,15 +111,9 @@ clean:
 	@echo "| Cleaning up |"
 	@echo "==============="
 	@echo ""
-	@echo 'Removing *.als'
-	@find . -type f -name '*.als' -print0 | xargs -0 rm -f
-	@echo 'Removing *.js'
-	@find . -type f -name '*.js' -print0 | xargs -0 rm -f
-	@echo 'Removing *.html'
-	@find . -type f -name '*.html' -print0 | xargs -0 rm -f
-	@echo 'Removing *.dot'
-	@find . -type f -name '*.dot' -print0 | xargs -0 rm -f
-	@echo 'Removing *.dot.svg'
-	@find . -type f -name '*.dot.svg' -print0 | xargs -0 rm -f
+	@# Only the outputs generated in $(SUITE_DIR), so that tracked files with
+	@# these extensions in other directories are kept.
+	@echo 'Removing $(SUITE_DIR)/*.als, *.js, *.html, *.dot, *.dot.svg'
+	@find $(SUITE_DIR) -type f \( -name '*.als' -o -name '*.js' -o -name '*.html' -o -name '*.dot' -o -name '*.dot.svg' \) -print0 | xargs -0 rm -f
 	@echo 'Removing *~'
 	@find . -type f -name '*~' -print0 | xargs -0 rm -f

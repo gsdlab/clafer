@@ -58,6 +58,7 @@ data HowResolved
   | Binding     -- ^ local variable (in constraints)
   | Subclafers  -- ^ clafer's descendant
   | Reference   -- ^ resolved by a reference
+  | TargetChild -- ^ child of the target of the reference clafer (the context)
   | Ancestor    -- ^ clafer's ancestor
   | AbsClafer   -- ^ abstract clafer
   | TopClafer   -- ^ non-abstract top-level clafer
@@ -206,6 +207,7 @@ mkPath    pos'    env     (howResolved, id',    path)       = case howResolved o
                                        (reverse $ map toTuple $ resPath env)
                                        (reverse $ map toTuple path), path)
   Reference -> (toNav' pos' $ reverse $ map toTuple path, path)
+  TargetChild -> (toNav [("dref", context env), (id', Just $ head path)], path)
   AbsClafer -> (toNav' pos' $ reverse $ map toTuple path, path)
   TopClafer -> (toNav' pos' $ reverse $ map toTuple path, path)
   where
@@ -259,7 +261,7 @@ resolveTopLevelName pos' env id' = resolve env id'
 
 resolveName :: Span -> SEnv -> String -> Resolve (HowResolved, String, [IClafer])
 resolveName pos' env id' = resolve env id'
-  [resolveSpecial, resolveBind, resolveDescendants, resolveAncestor pos', resolveTopLevel pos', resolveNone pos']
+  [resolveSpecial, resolveBind, resolveDescendants, resolveAncestor pos', resolveTargetChild pos', resolveTopLevel pos', resolveNone pos']
 
 
 resolveImmName :: Span -> SEnv -> String -> Resolve (HowResolved, String, [IClafer])
@@ -308,6 +310,16 @@ resolveDescendants env id' = return $
 -- searches for a name in immediate subclafers (BFS)
 resolveChildren :: Span -> SEnv -> String -> Resolve (Maybe (HowResolved, String, [IClafer]))
 resolveChildren pos' env id' = resolveChildren' pos' env id' allInhChildren Subclafers
+
+-- searches for a name among the children of the target of the reference clafer
+-- which is the context, e.g., machine in `services -> Service` with `Service`
+-- having a child `machine`, which becomes this.dref.machine
+resolveTargetChild :: Span -> SEnv -> String -> Resolve (Maybe (HowResolved, String, [IClafer]))
+resolveTargetChild pos' env id' = case context env of
+  Just IClafer{_reference = Just _} -> resolveChildren' pos' env id' targetChildren TargetChild
+  _                                 -> return Nothing
+  where
+  targetChildren env' = allChildren env' \\ allInhChildren env'
 
 -- searches for a name by dereferencing clafer
 resolveReference :: Span -> SEnv -> String -> Resolve (Maybe (HowResolved, String, [IClafer]))

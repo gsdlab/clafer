@@ -1,6 +1,5 @@
 scope({c0_Connection:5, c0_System:2, c0_connections:10});
 defaultScope(1);
-intRange(-8, 7);
 stringLength(16);
 
 c0_System = Abstract("c0_System");

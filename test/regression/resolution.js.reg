@@ -1,5 +1,4 @@
 defaultScope(1);
-intRange(-8, 7);
 stringLength(16);
 
 c0_XX = Clafer("c0_XX").withCard(1, 1);

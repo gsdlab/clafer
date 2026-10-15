@@ -1,0 +1,12 @@
+digraph "abstract_extends_abstract_integer_reference"
+{
+rankdir=BT;
+ranksep=0.3;
+nodesep=0.1;
+graph [fontname=Sans fontsize=11];
+node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
+edge [fontname=Sans fontsize=11];
+"c0_clafer1" [label="abstract clafer1 : clafer2" URL="#c0_clafer1" tooltip="abstract clafer1 : clafer2&#10;"];
+"c0_clafer1" -> "c0_clafer2" [arrowhead=onormal constraint=true weight=100];
+"c0_clafer2" [label="abstract clafer2 -&gt; integer" URL="#c0_clafer2" tooltip="abstract clafer2 -&gt; integer&#10;"];
+}

@@ -1,0 +1,17 @@
+// Syntax errors in a model split into fragments; the first one (=> instead of ->) is reported, with its position in the whole model.
+
+Company
+   employs => Person
+
+//# FRAGMENT
+
+abstract - Person
+   age -> integer
+
+//# FRAGMENT
+
+Adults -> Person in Company
+
+//# FRAGMENT
+
+1 + 2 = 5

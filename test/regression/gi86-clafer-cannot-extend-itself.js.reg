@@ -1,0 +1,20 @@
+defaultScope(1);
+stringLength(16);
+
+c0_FunctionalArchitecture = Abstract("c0_FunctionalArchitecture");
+c0_Deployment = Abstract("c0_Deployment");
+c0_fa = c0_Deployment.addAbstractChild("c0_fa");
+c0_PowerWindowFAA = Abstract("c0_PowerWindowFAA");
+c0_PowerWindowDpl = Abstract("c0_PowerWindowDpl");
+c1_fa = c0_PowerWindowDpl.addAbstractChild("c1_fa");
+c0_System = Clafer("c0_System").withCard(1, 1);
+c0_DriverPowerWindowFAA = c0_System.addChild("c0_DriverPowerWindowFAA").withCard(1, 1);
+c0_DriverPowerWindowDpl = c0_System.addChild("c0_DriverPowerWindowDpl").withCard(1, 1);
+c2_fa = c0_DriverPowerWindowDpl.addChild("c2_fa").withCard(1, 1);
+c0_fa.refToUnique(c0_FunctionalArchitecture);
+c0_PowerWindowFAA.extending(c0_FunctionalArchitecture);
+c0_PowerWindowDpl.extending(c0_Deployment);
+c1_fa.extending(c0_fa).refToUnique(c0_PowerWindowFAA);
+c0_DriverPowerWindowFAA.extending(c0_PowerWindowFAA);
+c0_DriverPowerWindowDpl.extending(c0_PowerWindowDpl);
+c2_fa.extending(c1_fa).refToUnique(c0_DriverPowerWindowFAA);

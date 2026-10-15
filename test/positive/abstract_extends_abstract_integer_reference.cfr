@@ -1,0 +1,4 @@
+// An abstract clafer extends an abstract reference to integer declared after it.
+
+abstract clafer1 : clafer2
+abstract clafer2 -> integer

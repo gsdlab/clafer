@@ -12,7 +12,7 @@ one sig c0_a
 
 one sig c0_b
 { c0_b_ref : one c0_e }
-{ (((c0_e.@r_c0_f).@c0_f_ref).@c0_g_ref) = c0_h
+{ ((((this.@c0_b_ref).@r_c0_f).@c0_f_ref).@c0_g_ref) = c0_h
   ((((this.@c0_b_ref).@r_c0_f).@c0_f_ref).@c0_g_ref) = c0_h
   ((((this.@c0_b_ref).@r_c0_f).@c0_f_ref).@c0_g_ref) = c0_h
   ((((this.@c0_b_ref).@r_c0_f).@c0_f_ref).@c0_g_ref) = c0_h }

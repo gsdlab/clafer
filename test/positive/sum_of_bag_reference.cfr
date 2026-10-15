@@ -1,0 +1,6 @@
+// sum over a bag reference of integers (->>), assigned to another reference.
+
+a ->> integer * 
+
+b -> integer = sum a
+[ b = 2 ]

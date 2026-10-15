@@ -1,0 +1,19 @@
+open util/integer
+pred show {}
+
+
+abstract sig c0_B
+{}
+
+abstract sig c0_A extends c0_B
+{ r_c0_Item : set c0_Item }
+
+sig c0_Item
+{}
+{ one @r_c0_Item.this }
+
+fact { 4 <= #c0_C and #c0_C <= 4 }
+sig c0_C extends c0_A
+{}
+{ let children = (r_c0_Item) | 2 <= #children and #children <= 3 }
+

@@ -1,0 +1,15 @@
+digraph "maxMinArithmetic"
+{
+rankdir=BT;
+ranksep=0.3;
+nodesep=0.1;
+graph [fontname=Sans fontsize=11];
+node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
+edge [fontname=Sans fontsize=11];
+"c0_a" [label="a -&gt; integer" URL="#c0_a" tooltip="a -&gt; integer&#10;"];
+"c0_b" [label="b -&gt; integer" URL="#c0_b" tooltip="b -&gt; integer&#10;"];
+"c0_c" [label="c -&gt; integer" URL="#c0_c" tooltip="c -&gt; integer&#10;"];
+"c0_spread" [label="spread -&gt; integer = max a.dref, b.dref, c.dref - min a.dref, b.dref, c.dref" URL="#c0_spread" tooltip="spread -&gt; integer = max a.dref, b.dref, c.dref - min a.dref, b.dref, c.dref&#10;"];
+"c0_range" [label="range -&gt; integer = max a.dref++b.dref++c.dref - min a.dref++b.dref++c.dref" URL="#c0_range" tooltip="range -&gt; integer = max a.dref++b.dref++c.dref - min a.dref++b.dref++c.dref&#10;"];
+"c0_above" [label="above -&gt; integer = max a.dref++3 + 1" URL="#c0_above" tooltip="above -&gt; integer = max a.dref++3 + 1&#10;"];
+}

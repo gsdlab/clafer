@@ -1,0 +1,7 @@
+// Type resolution of the expressions this and parent, used as constraints.
+
+A
+	b ->> A ?
+		[ parent ]
+	[ this ]
+	

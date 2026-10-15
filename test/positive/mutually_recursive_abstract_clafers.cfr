@@ -1,0 +1,9 @@
+// Abstract clafers whose children extend each other (A.b : B, B.a : A) form a recursive structure; with mandatory children it has no finite instance.
+
+abstract A
+  b : B
+
+abstract B
+  a : A
+
+x : A

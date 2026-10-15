@@ -1,0 +1,26 @@
+// Children of groups other than the default (or, xor, 2..3) are optional by default; children of the default group are mandatory.
+// other than "any" group - children optional
+
+2..3 A
+   b
+   c 1
+   d
+
+xor E
+   f
+   g
+
+assert [ f || g ]
+assert [ ! (f && g) ]
+
+// default "any" group - children mandatory
+D
+  Z
+  K ?
+
+assert [ one D ]
+assert [ one Z ]
+
+0..* L
+  M
+  N

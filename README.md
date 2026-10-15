@@ -3,7 +3,7 @@
 
 # Clafer, the language
 
-##### v0.5.2
+##### v0.5.3
 
 [Clafer](http://clafer.org) is a general-purpose lightweight structural and behavioral modeling language developed by
 [GSD Lab](http://gsd.uwaterloo.ca/), [University of Waterloo](http://uwaterloo.ca), and
@@ -73,17 +73,16 @@ Regardless of the installation method, the following are
 
 Optional:
 
-* [Java Platform (JDK)](http://www.oracle.com/technetwork/java/javase/downloads/index.html) v8+, 64bit
+* [Java Platform (JDK)](https://adoptium.net) v17+, 64bit
   * only needed for running Alloy validation
-  * 32bit on Windows
-* [Alloy4.2](http://alloy.mit.edu/alloy/download.html)
+* [Alloy 6.2.0](https://github.com/AlloyTools/org.alloytools.alloy/releases/tag/v6.2.0) (`alloy6.2.0.jar`)
   * only needed for Alloy output validation
 * [GraphViz](http://graphviz.org/)
   * the program `dot` is needed only in the `html` mode for SVG graph generation
 
 ### Installation from binaries
 
-Binary distributions of the release 0.5.2 of Clafer Tools for Windows, Mac, and Linux,
+Binary distributions of the release 0.5.3 of Clafer Tools for Windows, Mac, and Linux,
 can be downloaded from
 [Clafer Tools - Binary Distributions](http://wiselab.uwaterloo.ca/clafer-tools-binary-distributions).
 
@@ -92,7 +91,7 @@ can be downloaded from
 
 ### Installation from Hackage
 
-Clafer is available on [Hackage](http://hackage.haskell.org/package/clafer-0.5.2/) and it can be installed using either [`stack`](https://haskellstack.org) or [`cabal-install`](https://hackage.haskell.org/package/cabal-install).
+Clafer is available on [Hackage](http://hackage.haskell.org/package/clafer-0.5.3/) and it can be installed using either [`stack`](https://haskellstack.org) or [`cabal-install`](https://hackage.haskell.org/package/cabal-install).
 
 #### Installation using `stack`
 
@@ -115,11 +114,11 @@ Dependencies
 1. `cabal update`
 2. `cabal install alex happy`
 3. `cabal install exe:clafer`
-4. on Windows `cd C:\Users\<user>\AppData\Roaming\cabal\x86_64-windows-ghc-9.6.7\clafer-0.5.2`
+4. on Windows `cd C:\Users\<user>\AppData\Roaming\cabal\x86_64-windows-ghc-9.6.7\clafer-0.5.3`
 5. on Linux `cd ~/.cabal/bin/`
-6. to automatically download Alloy jars, execute
-  * `make alloy4.2.jar`,
-  * move `alloy4.2.jar` to the location of the clafer executable.
+6. to automatically download the Alloy jar, execute
+  * `make alloy6.2.0.jar`,
+  * move `alloy6.2.0.jar` to the location of the clafer executable.
 
 ### Installation from the source code
 
@@ -163,7 +162,7 @@ Development versions from branches `develop` should work well together but this 
   * `stack exec make install to=<target directory>` on Windows
 
 #### Note:
-> On Windows, use `/` with the `make` command instead of `\`, e.g., `make install to=/c/clafer-tools-0.5.2/`
+> On Windows, use `/` with the `make` command instead of `\`, e.g., `make install to=/c/clafer-tools-0.5.3/`
 
 ## Integration with Sublime Text 2/3
 
@@ -180,14 +179,14 @@ See [clafer-vim](https://github.com/wasowski/clafer-vim)
 (As printed by `clafer --help`)
 
 ```
-Clafer 0.5.2
+Clafer 0.5.3
 
 clafer [OPTIONS] [FILE]
 
 Common flags:
   -m --mode=CLAFERMODE                    Generated output type. Available
                                           CLAFERMODEs are: 'alloy' (default,
-                                          Alloy 4.2); 'json' (intermediate
+                                          Alloy 6); 'json' (intermediate
                                           representation of Clafer model);
                                           'clafer' (analyzed and desugared
                                           clafer model); 'html' (original model
@@ -213,9 +212,9 @@ Common flags:
                                           ('alloy' mode only).
   -s --no-stats                           Don't print statistics.
   -v --validate                           Validate outputs of all modes. Uses
-                                          '<tooldir>/alloy4.2.jar' for Alloy
+                                          '<tooldir>/alloy6.2.0.jar' for Alloy
                                           models, '<tooldir>/chocosolver.jar'
-                                          for Alloy models, and Clafer
+                                          for Choco models, and Clafer
                                           translator for desugared Clafer
                                           models. Use '--tooldir' to override
                                           the default location ('.') of these
@@ -239,6 +238,7 @@ Common flags:
                                           only).
   -e --ecore2clafer                       Translate an ECore model into
                                           Clafer.
+     --tl=INT --trace-len                 Define the maximum trace length.
      --ss=SCOPESTRATEGY --scope-strategy  Use scope computation strategy:
                                           none or simple (default).
      --check-afm --afm                    Throws an error if the cardinality
@@ -248,6 +248,12 @@ Common flags:
                                           name'-'unique ID' map ('.cfr-map').
                                           In Alloy and Choco modes, generate
                                           the scopes map ('.cfr-scope').
+     --minint=INT                         Smallest integer value ('choco'
+                                          mode only). Default: -128, chosen by
+                                          chocosolver.
+     --maxint=INT                         Largest integer value ('choco' mode
+                                          only). Default: 127, chosen by
+                                          chocosolver.
   -? --help                               Display help message
   -V --version                            Print version information
      --numeric-version                    Print just the version number
@@ -276,6 +282,16 @@ for example
 The directive is only recognized on the very first line of the file and must start exactly with `//# OPTIONS ` (no leading whitespace).
 
 Options given at command line override the options given in the file using `//# OPTIONS` which, in turn, override the defaults.
+
+### Integer range of the Choco output
+
+The options `--minint` and `--maxint` set the range of integers that the Choco output (`-m choco`) allows, for example, for a model whose attributes and their sums exceed the default range:
+
+```
+//# OPTIONS --minint=-1000 --maxint=1000
+```
+
+Without them, chocosolver chooses the range: -128..127. The options `--minint` and `--maxint` of chocosolver itself override the range of the model. A range that is too small silently restricts the instances, for example, the optimal instances of a multi-objective model; a range that is too large slows down the search. The options do not affect the Alloy output: ClaferIG sets the integer range of Alloy with its option `--maxint` (or `--bitwidth`).
 
 ### Using compiler directives
 

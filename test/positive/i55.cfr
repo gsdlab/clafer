@@ -1,8 +1,0 @@
-// http://gsd.uwaterloo.ca:8888/question/222/clafer-regression
-
-D
-    b ?
-    c -> integer ?
-    [c = 5 ]
-    [c = 5 ]
-    [ b ]

@@ -1,0 +1,7 @@
+// A cardinality (0) on an abstract clafer, with a constraint that it has some instances.
+
+abstract a 0
+b
+c ?
+
+[ some a ]

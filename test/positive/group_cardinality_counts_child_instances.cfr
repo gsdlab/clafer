@@ -1,0 +1,4 @@
+// A group cardinality (2..3) counts the instances of the children: one child Item 1..5 has 2 or 3 instances.
+
+2..3 A
+  Item 1..5

@@ -1,8 +1,0 @@
-// https://github.com/gsdlab/clafer/issues/14
-
-abstract A
-	a -> integer
-
-
-A1 : A
-	[ a = 10 ]

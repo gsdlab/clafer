@@ -1,0 +1,12 @@
+scope({c0_A:2});
+defaultScope(1);
+stringLength(16);
+
+c0_A = Abstract("c0_A");
+c0_b = c0_A.addChild("c0_b").withCard(1, 1);
+c0_B = Abstract("c0_B");
+c0_a = c0_B.addChild("c0_a").withCard(1, 1);
+c0_x = Clafer("c0_x").withCard(1, 1);
+c0_b.extending(c0_B);
+c0_a.extending(c0_A);
+c0_x.extending(c0_A);

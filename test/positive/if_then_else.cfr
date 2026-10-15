@@ -1,0 +1,21 @@
+// if/then/else as a formula, with boolean or set-valued consequent and alternative, and as an integer value.
+
+emergencyVehicle ?
+allWayYellow ?
+allYellow ?
+    flashing ?
+warning ?
+    flashing ?
+
+[ emergencyVehicle => (if some allWayYellow then some allYellow else some warning) ]
+[ emergencyVehicle => (if allWayYellow then allYellow else warning) ]
+
+// [ (if allWayYellow then allYellow else warning).flashing ]
+// [ some (if allWayYellow then allYellow else warning).flashing ]
+
+AliceAge -> int
+BobAge -> int
+
+BobsBirthday ?
+
+[(if BobsBirthday then BobAge.dref else AliceAge.dref) = 5]

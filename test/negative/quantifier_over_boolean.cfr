@@ -1,0 +1,6 @@
+// A quantifier without declarations (no) applied to a boolean expression (A && B) is a type error.
+
+A ?
+B ?
+
+[ no (A && B) ]

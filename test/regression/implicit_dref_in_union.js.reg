@@ -1,0 +1,23 @@
+scope({c0_Person:3, c0_friends:3, c0_others:3});
+defaultScope(1);
+stringLength(16);
+
+c0_AlicePicks = Clafer("c0_AlicePicks");
+c0_BobPicks = Clafer("c0_BobPicks");
+c0_Person = Abstract("c0_Person");
+c0_p1 = Clafer("c0_p1").withCard(1, 1);
+c0_p2 = Clafer("c0_p2").withCard(1, 1);
+c0_p3 = Clafer("c0_p3").withCard(1, 1);
+c0_friends = Clafer("c0_friends");
+c0_others = Clafer("c0_others");
+c0_AlicePicks.refTo(Int);
+c0_BobPicks.refTo(Int);
+Constraint(equal(joinRef(global(c0_AlicePicks)), union(joinRef(global(c0_BobPicks)), constant(3))));
+Constraint(equal(union(constant(3), joinRef(global(c0_BobPicks))), joinRef(global(c0_AlicePicks))));
+c0_p1.extending(c0_Person);
+c0_p2.extending(c0_Person);
+c0_p3.extending(c0_Person);
+c0_friends.refToUnique(c0_Person);
+c0_others.refToUnique(c0_Person);
+Constraint(equal(joinRef(global(c0_friends)), union(joinRef(global(c0_others)), global(c0_p1))));
+Constraint(equal(joinRef(global(c0_others)), global(c0_p2)));

@@ -1,0 +1,4 @@
+// A clafer cannot extend a concrete clafer.
+
+B
+A : B

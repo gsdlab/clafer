@@ -1,0 +1,11 @@
+// A constraint on an abstract clafer which nothing extends (Kernel.memory); abstract clafers have no instances of their own.
+
+abstract Kernel
+   memory ?
+Phone
+   name -> string
+   [Kernel.memory]
+
+assert [ no Kernel ]
+
+// no instances of abstract clafers

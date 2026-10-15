@@ -1,0 +1,8 @@
+// A clafer with duplicated constraints ([c = 5] twice) and a reference to integer; this regressed.
+
+D
+    b ?
+    c -> integer ?
+    [c = 5 ]
+    [c = 5 ]
+    [ b ]

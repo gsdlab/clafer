@@ -29,8 +29,6 @@ import Language.Clafer
 import Language.Clafer.QNameUID
 import Language.Clafer.Intermediate.Intclafer
 
-import Suite.Positive
-import Suite.Negative
 import Suite.SimpleScopeAnalyser
 import Suite.Redefinition
 import Suite.TypeSystem
@@ -47,8 +45,6 @@ main = defaultMain $ testGroup "Tests"
     [ tg_Test_Suite_TypeSystem
     , tg_Test_Suite_Redefinition
     , tg_Main_Test_Suite
-    , tg_Test_Suite_Positive
-    , tg_Test_Suite_Negative
     , tg_Test_Suite_SimpleScopeAnalyser
     ]
 
@@ -101,3 +97,41 @@ case_AllClafersGenerics = do
         allClafers = universeOn biplate iModule
         allClafersUids = map _uid allClafers
     allClafersUids == [ "c0_a", "c0_b", "c1_b", "c0_c", "c0_d", "c2_b", "c1_d", "c3_b"] @? "All clafers\n" ++ show allClafersUids
+
+{-
+An abstract clafer which no concrete clafer extends is removed, unless a
+reference or a constraint names it: then it is kept, without instances.
+-}
+unusedAbstractModel :: String
+unusedAbstractModel = "abstract Property\nabstract Unused\nabstract Named\nComponent\n    properties -> Property *\n[ no Named ]"
+
+case_ReferencedUnusedAbstractKept :: Assertion
+case_ReferencedUnusedAbstractKept = do
+    let
+        results = fromRight $ compileOneFragment defaultClaferArgs{mode = [Alloy, Choco]} unusedAbstractModel
+        alloy = outputCode $ fromJust $ Map.lookup Alloy results
+        choco = outputCode $ fromJust $ Map.lookup Choco results
+    ("c0_Property = Abstract" `isInfixOf` choco) @? "Choco: the referenced Property is not declared\n" ++ choco
+    ("c0_Named = Abstract" `isInfixOf` choco) @? "Choco: Named, used in a constraint, is not declared\n" ++ choco
+    not ("c0_Unused" `isInfixOf` choco) @? "Choco: the unused Unused is declared\n" ++ choco
+    ("abstract sig c0_Property" `isInfixOf` alloy) @? "Alloy: the referenced Property is not declared\n" ++ alloy
+    ("fact { #c0_Property = 0 }" `isInfixOf` alloy) @? "Alloy: Property may have instances\n" ++ alloy
+    not ("c0_Unused" `isInfixOf` alloy) @? "Alloy: the unused Unused is declared\n" ++ alloy
+
+-- The integer range of the Choco output can be set with --minint and --maxint,
+-- also in //# OPTIONS; without them, chocosolver chooses it.
+case_ChocoIntRange :: Assertion
+case_ChocoIntRange = do
+    let
+        choco args' model' = outputCode $ fromJust $ Map.lookup Choco $ fromRight $ compileOneFragment args' model'
+        withOptions = "//# OPTIONS --minint=-500 --maxint=500\nx -> integer = 170\n"
+    ("intRange(-500, 500);" `isInfixOf` choco defaultClaferArgs{mode = [Choco]} withOptions) @? "OPTIONS ignored"
+    not ("intRange" `isInfixOf` choco defaultClaferArgs{mode = [Choco]} "x -> integer = 1\n") @? "Range set without options"
+    ("intRange(-128, 100);" `isInfixOf` choco defaultClaferArgs{mode = [Choco], maxint = Just 100} "x -> integer = 1\n") @? "--maxint ignored"
+
+-- A clafer which extends itself is reported as such, not as a missing super.
+case_SelfInheritanceReported :: Assertion
+case_SelfInheritanceReported =
+    case compileOneFragment defaultClaferArgs "abstract A : A\nb : A" of
+        Left errs' -> ("inherits from itself" `isInfixOf` show errs') @? "Unexpected errors\n" ++ show errs'
+        Right _ -> assertFailure "abstract A : A compiled"

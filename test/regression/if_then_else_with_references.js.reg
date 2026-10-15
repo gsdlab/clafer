@@ -1,0 +1,23 @@
+scope({c0_Hardware:2, c0_Software:2, c0_noHardware:0, c0_target:2, c0_uses:2});
+defaultScope(1);
+stringLength(16);
+
+c0_Hardware = Abstract("c0_Hardware");
+c0_h1 = Clafer("c0_h1").withCard(1, 1);
+c0_h2 = Clafer("c0_h2").withCard(1, 1);
+c0_Software = Abstract("c0_Software");
+c0_target = c0_Software.addChild("c0_target").withCard(1, 1);
+c0_s1 = Clafer("c0_s1").withCard(1, 1);
+c0_s2 = Clafer("c0_s2").withCard(1, 1);
+c0_noHardware = Clafer("c0_noHardware").withCard(0, 0);
+c0_uses = Clafer("c0_uses");
+c0_h1.extending(c0_Hardware);
+c0_h2.extending(c0_Hardware);
+c0_target.refToUnique(c0_Hardware);
+c0_s1.extending(c0_Software);
+c0_s1.addConstraint(equal(joinRef(join($this(), c0_target)), global(c0_h1)));
+c0_s2.extending(c0_Software);
+c0_s2.addConstraint(equal(joinRef(join($this(), c0_target)), global(c0_h2)));
+c0_noHardware.refToUnique(c0_Hardware);
+c0_uses.refToUnique(c0_Hardware);
+Constraint(equal(joinRef(global(c0_uses)), ifThenElse(greaterThan(card(global(c0_Software)), constant(0)), union(joinRef(join(global(c0_s1), c0_target)), joinRef(join(global(c0_s2), c0_target))), joinRef(global(c0_noHardware)))));

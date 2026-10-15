@@ -1,6 +1,5 @@
 scope({c0_Address:2, c0_City:2, c0_Country:2, c0_DateOfBirth:2, c0_Divorced:2, c0_Female:2, c0_Gender:2, c0_Male:2, c0_MaritalStatus:2, c0_Married:2, c0_Name:2, c0_NeverMarried:2, c0_NorthAmericanCountry:2, c0_OneToTenPersonLine:0, c0_Person:2, c0_PostalCode:2, c0_Street:2, c0_Surname:2, c0_TwoPersonLine:0, c0_UnitNo:2, c0_WaitingLine:4, c0_date:2, c0_participants:8});
 defaultScope(1);
-intRange(-8, 7);
 stringLength(16);
 
 c0_date = Abstract("c0_date");

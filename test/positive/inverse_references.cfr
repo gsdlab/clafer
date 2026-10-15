@@ -1,0 +1,93 @@
+// Inverse relationships between references (Service.machine and Machine.services), in a service allocation optimization.
+
+//=======================================================
+// Generic model
+//=======================================================
+
+// ------------------
+// Service prototype
+// ------------------
+
+abstract Service
+    requirements: Requirements  // resources required by a service
+    machine -> Machine          // machine the service is allocated to 
+    [this in machine.services]  // inverse relationship constraint
+
+// ----------------------------------
+// Requirements and Resources prototypes
+// ----------------------------------
+
+abstract Requirements
+    cpu ->> integer
+
+abstract Resources: Requirements
+
+// ------------------
+// Machine prototype
+// ------------------
+
+abstract Machine
+
+    services -> Service*        // set of services allocated to this machine
+    [all s : services | s.machine = this] // inverse relationship constraint
+        
+    isFree? // boolean showing whether the machine is free or not
+    [isFree <=> no services] // being free means no services allocated
+
+    limits : Resources
+
+    // constraints for limiting total requirements
+    //---------------------------------------------
+    
+    utilization : Resources
+        [cpu = sum services.requirements.cpu]
+        [cpu < limits.cpu]
+
+
+// -----------------------------------
+// Optimization goals and constraints
+// -----------------------------------
+
+abstract Task   
+    // total number of machines free
+    total_free : integer = #Machine.isFree
+
+MyTask: Task
+
+//=======================================================
+// SSAP problem specifics
+//=======================================================
+
+// nothing
+
+
+//=======================================================
+// Particular data (machines and services)
+//=======================================================
+
+// machines:
+
+    GoogleCA : Machine
+        [limits.cpu = 10]
+
+    GoogleNY : Machine
+        [limits.cpu = 16]
+
+    GoogleTX : Machine
+        [limits.cpu = 14]
+
+    // services:
+
+    MailService : Service
+        [requirements.cpu = 4]
+
+    SearchService : Service
+        [requirements.cpu = 3]
+
+    CalendarService : Service
+        [requirements.cpu = 1]
+
+    DriveService : Service
+        [requirements.cpu = 2]
+
+<<max MyTask.total_free>>

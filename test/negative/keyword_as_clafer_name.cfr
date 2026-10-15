@@ -1,0 +1,4 @@
+// A clafer named after the primitive type integer.
+
+abstract integer -> integer
+A -> integer

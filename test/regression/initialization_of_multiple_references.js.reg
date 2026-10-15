@@ -1,0 +1,17 @@
+scope({c0_Person:3, c0_people:3});
+defaultScope(1);
+stringLength(16);
+
+c0_x = Clafer("c0_x");
+c0_Person = Abstract("c0_Person");
+c0_p1 = Clafer("c0_p1").withCard(1, 1);
+c0_p2 = Clafer("c0_p2").withCard(1, 1);
+c0_p3 = Clafer("c0_p3").withCard(1, 1);
+c0_people = Clafer("c0_people");
+c0_x.refToUnique(Int);
+Constraint(implies(some(global(c0_x)), equal(joinRef(global(c0_x)), union(union(constant(1), constant(2)), constant(3)))));
+c0_p1.extending(c0_Person);
+c0_p2.extending(c0_Person);
+c0_p3.extending(c0_Person);
+c0_people.refToUnique(c0_Person);
+Constraint(implies(some(global(c0_people)), equal(joinRef(global(c0_people)), union(union(global(c0_p1), global(c0_p1)), global(c0_p3)))));

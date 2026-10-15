@@ -1,0 +1,17 @@
+//# OPTIONS --keep-unused
+// An abstract clafer which is a reference (abstract NewBorn -> Person), extended by a concrete clafer.
+
+abstract Person
+    age -> integer
+    married ?
+
+abstract NewBorn -> Person
+    [ age = 0
+      ! married ]
+
+Alice : Person
+baby : NewBorn
+
+assert [ baby = Alice ]
+assert [ Alice.age = 0 ]
+assert [ not Alice.married ]

@@ -1,6 +1,5 @@
 scope({c0_percent:2});
 defaultScope(1);
-intRange(-8, 7);
 stringLength(16);
 
 c0_percent = Abstract("c0_percent");

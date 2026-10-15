@@ -141,6 +141,26 @@ case_ScopeTest = do
         "Computed scopes different from expected:\n" ++ (unlines $ M.foldl (\acc v -> v:acc) [] differences)
 
 
+-- The lower bound of a group cardinality is covered: four C with at least 2 Items each,
+-- and two D with at least 3 of their at most 2 Ys or of their Zs.
+case_ScopeFromGroupCardinality :: Assertion
+case_ScopeFromGroupCardinality = do
+    let
+        groupModel = unlines
+            [ "abstract 2..3 A"
+            , "    Item *"
+            , "C : A 4"
+            , "3..4 D 2"
+            , "    Y 0..2"
+            , "    Z *"
+            ]
+        (Right compilerResultMap) = compileOneFragment defaultClaferArgs groupModel
+        (Just compilerResult) = M.lookup Alloy compilerResultMap
+        computedScopes = M.fromList $ scopesList compilerResult
+    M.lookup "c0_Item" computedScopes @?= Just 8
+    M.lookup "c0_Y" computedScopes @?= Just 4
+    M.lookup "c0_Z" computedScopes @?= Just 6
+
 case_ReadScopesJSON :: Assertion
 case_ReadScopesJSON = do
     let

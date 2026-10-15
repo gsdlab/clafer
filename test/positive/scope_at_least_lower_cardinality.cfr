@@ -1,0 +1,9 @@
+// An individual scope must never be smaller than the lower bound of the cardinality (c +, d 2..*, g 2..*).
+
+a ?
+b
+c +
+d 2..*
+    e ?
+    f
+    g 2..*

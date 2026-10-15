@@ -1,0 +1,37 @@
+open util/integer
+pred show {}
+
+
+abstract sig c0_Hardware
+{}
+
+one sig c0_h1 extends c0_Hardware
+{}
+
+one sig c0_h2 extends c0_Hardware
+{}
+
+abstract sig c0_Software
+{ r_c0_target : one c0_target }
+
+sig c0_target
+{ c0_target_ref : one c0_Hardware }
+{ one @r_c0_target.this }
+
+one sig c0_s1 extends c0_Software
+{}
+{ ((this.@r_c0_target).@c0_target_ref) = c0_h1 }
+
+one sig c0_s2 extends c0_Software
+{}
+{ ((this.@r_c0_target).@c0_target_ref) = c0_h2 }
+
+fact { #c0_noHardware = 0 }
+sig c0_noHardware
+{ c0_noHardware_ref : one c0_Hardware }
+
+sig c0_uses
+{ c0_uses_ref : one c0_Hardware }
+
+fact {  all disj x, y : c0_uses | (x.@c0_uses_ref) != (y.@c0_uses_ref)  }
+fact { (c0_uses.@c0_uses_ref) = (((#c0_Software) > 0) => (((c0_s1.@r_c0_target).@c0_target_ref) + ((c0_s2.@r_c0_target).@c0_target_ref)) else (c0_noHardware.@c0_noHardware_ref)) }

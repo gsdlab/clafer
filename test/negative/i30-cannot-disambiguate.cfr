@@ -1,6 +1,0 @@
-abstract A
-    a -> string
-
-A1 : A
-    a -> integer
-    [ A1.a = 10 ]

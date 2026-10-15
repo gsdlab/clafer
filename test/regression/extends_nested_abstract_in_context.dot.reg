@@ -1,0 +1,14 @@
+digraph "extends_nested_abstract_in_context"
+{
+rankdir=BT;
+ranksep=0.3;
+nodesep=0.1;
+graph [fontname=Sans fontsize=11];
+node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
+edge [fontname=Sans fontsize=11];
+"c0_A" [label="abstract A" URL="#c0_A" tooltip="abstract A&#10;  abstract B&#10;"];
+"c0_B" [label="abstract B" URL="#c0_B" tooltip="abstract B&#10;"];
+"c0_C" [label="C : A" URL="#c0_C" tooltip="C : A&#10;  D : B&#10;"];
+"c0_C" -> "c0_A" [arrowhead=onormal constraint=true weight=100];
+"c0_C" -> "c0_B" [arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];
+}

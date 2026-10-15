@@ -1,0 +1,8 @@
+// Comparing the targets of references (.dref) of two disjoint quantified variables, before the declarations they use.
+
+[ all disj c1; c2 : Car | c1.owner.dref != c2.owner.dref ]
+
+Car 4
+   owner -> Person
+
+Person 4

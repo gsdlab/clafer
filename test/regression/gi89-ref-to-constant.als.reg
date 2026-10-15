@@ -1,0 +1,39 @@
+open util/integer
+pred show {}
+
+
+abstract sig c0_ASIL
+{ c0_ASIL_ref : one Int }
+
+one sig c0_A extends c0_ASIL
+{ c0_A_ref : one Int }
+{ c0_A_ref in c0_ASIL_ref }
+
+fact { (some c0_A) => ((c0_A.@c0_A_ref) = 1) }
+one sig c0_B extends c0_ASIL
+{ c0_B_ref : one Int }
+{ c0_B_ref in c0_ASIL_ref }
+
+fact { (some c0_B) => ((c0_B.@c0_B_ref) = 2) }
+one sig c0_C extends c0_ASIL
+{ c0_C_ref : one Int }
+{ c0_C_ref in c0_ASIL_ref }
+
+fact { (some c0_C) => ((c0_C.@c0_C_ref) = 3) }
+one sig c0_D extends c0_ASIL
+{ c0_D_ref : one Int }
+{ c0_D_ref in c0_ASIL_ref }
+
+fact { (some c0_D) => ((c0_D.@c0_D_ref) = 4) }
+assert assertOnLine_7 { (c0_A.@c0_A_ref) = 1 }
+check assertOnLine_7 for 1 but 4 c0_ASIL
+
+assert assertOnLine_8 { (c0_B.@c0_B_ref) = 2 }
+check assertOnLine_8 for 1 but 4 c0_ASIL
+
+assert assertOnLine_9 { (c0_C.@c0_C_ref) = 3 }
+check assertOnLine_9 for 1 but 4 c0_ASIL
+
+assert assertOnLine_10 { (c0_D.@c0_D_ref) = 4 }
+check assertOnLine_10 for 1 but 4 c0_ASIL
+

@@ -1,0 +1,7 @@
+// Equality of clafers which are neither references nor attributes (a = b) is a type error.
+
+xor a
+    b
+    c
+
+[ a = b ]        //a is neither an attribute nor a reference

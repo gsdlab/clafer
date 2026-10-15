@@ -1,0 +1,13 @@
+// Generated unique names for clafers with the same name in different contexts, including an abstract clafer, a nested clafer and the `b reference syntax.
+
+abstract A
+	b
+
+a : A
+	b
+
+abstract b
+
+c
+	`b
+		a

@@ -1,0 +1,59 @@
+// Multi-objective optimization with five objectives over sums of feature attributes.
+
+abstract Feature
+    performance -> integer
+    energy -> integer
+    mass -> integer
+    [ mass >= 0 ]
+    cost -> integer
+    [ cost >= 0 ]
+
+abstract SecurityFeature : Feature
+    security -> integer
+
+abstract MobilePhone
+    or Connectivity : Feature
+        [ this.performance = 0]
+        [ this.energy = 0]
+        [ this.mass = 0]
+        [ this.cost = 12]
+        Bluetooth : Feature
+            [ this.performance = 9]
+            [ this.energy = 10 ]
+            [ this.mass = 2]
+            [ this.cost = 3]
+        USB : Feature
+            [ this.performance = 10]
+            [ this.energy = 5 ]
+            [ this.mass = 3]
+            [ this.cost = 5]
+        Wifi : Feature
+            [ this.performance = 22]
+            [ this.energy = 17 ]
+            [ this.mass = 6]
+            [ this.cost = 5]
+    PasswordProtection : SecurityFeature ?
+        [ this.security = 5]
+        [ this.performance = 1]
+        [ this.energy = 2 ]
+        [ this.mass = 0]
+        [ this.cost = 2]
+    FingerprintProtection : SecurityFeature ?
+        [ this.mass = 0]
+        [ this.security = 5]
+        [ this.performance = 3]
+        [ this.energy = 1 ]
+        [ this.cost = 13]
+    total_performance -> integer = sum Feature.performance
+    total_energy      -> integer = sum Feature.energy
+    total_security    -> integer = sum SecurityFeature.security
+    total_mass        -> integer = sum Feature.mass
+    total_cost        -> integer = sum Feature.cost
+
+MyPhone : MobilePhone
+
+<< min MyPhone.total_energy >>
+<< max MyPhone.total_performance >>
+<< max MyPhone.total_security >>
+<< min MyPhone.total_mass >>
+<< min MyPhone.total_cost >>

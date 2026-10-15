@@ -1,9 +1,0 @@
-//# OPTIONS --keep-unused
-
-abstract A
-    b *
-        c ?
-    [ some b1 : b | b1.c ]
-
-
-// https://github.com/gsdlab/clafer/issues/17

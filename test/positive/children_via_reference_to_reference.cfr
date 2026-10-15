@@ -1,0 +1,13 @@
+//# OPTIONS -k
+// Children of the target are visible through a reference to a reference (this.x in ref2 -> ref1).
+
+abstract A
+	x ?
+
+a : A 2
+
+ref1 -> A
+
+ref2 -> ref1
+	[ this.x ]
+

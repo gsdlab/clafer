@@ -1,0 +1,13 @@
+// Navigation through parent (parent, parent.claferC.parent and parent.parent) is resolved from the current instance.
+
+claferA
+  claferB
+    [parent]
+    claferC
+      [parent.claferC.parent]
+      [parent.claferC]
+
+Person
+  maritalStatus
+    married
+      [ parent.parent ]

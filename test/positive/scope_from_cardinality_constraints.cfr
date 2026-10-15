@@ -1,0 +1,10 @@
+// Scope inference must account for constraints on the number of children (#leg = 4, #leg = 8) in subclafers of an abstract clafer; it computed too small a scope.
+
+abstract Animal
+  leg *
+
+Dog : Animal *
+  [#leg = 4]
+
+Spider : Animal *
+  [#leg = 8]

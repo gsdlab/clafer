@@ -1,6 +1,5 @@
 scope({c0_A:2, c0_B:0, c0_C:2, c0_c:4});
 defaultScope(1);
-intRange(-8, 7);
 stringLength(16);
 
 c0_A = Abstract("c0_A");

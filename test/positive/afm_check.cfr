@@ -1,0 +1,9 @@
+//# OPTIONS --check-afm
+// The --check-afm attributed feature model check accepts optional features and features with cardinalities 0..1, 1..1, 0..0 and 1.
+// This model should pass the attributed feature model check
+a
+   b ?
+   c 0..1
+d 1..1
+e 0..0
+f 1

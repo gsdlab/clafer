@@ -1,0 +1,4 @@
+// Parsing a model whose //# FRAGMENT directives delimit empty fragments.
+//# FRAGMENT
+
+//# FRAGMENT

@@ -1,0 +1,7 @@
+// The inferred scope of Item covers the lower bound of the group cardinality (2..3) of each of the four Cs: at least 8 Items.
+
+abstract B
+abstract 2..3 A : B
+  Item *
+
+C : A 4
