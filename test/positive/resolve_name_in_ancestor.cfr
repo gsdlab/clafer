@@ -1,0 +1,9 @@
+// A name (age) is found below the nearest ancestor that has it (person.haha.lala.age), navigating from the current instance rather than globally from the root.
+
+person
+  haha
+    lala
+      age -> int
+  ble
+    married ?
+      [age >= 18]

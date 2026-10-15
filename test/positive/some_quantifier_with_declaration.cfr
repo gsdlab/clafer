@@ -1,0 +1,10 @@
+// The some quantifier with a local declaration, [ some b1 : b | b1.c ], in an abstract clafer was translated to Alloy incorrectly.
+
+abstract A
+    b *
+        c ?
+    [ some b1 : b | b1.c ]
+
+a1 : A
+
+assert [ some c ]

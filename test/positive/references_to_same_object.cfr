@@ -1,0 +1,16 @@
+// Two references pointing to the same object, and an inverse relation between references.
+
+abstract Dimension
+	levels -> DimensionLevel *
+	[all dl : this.levels | dl.belongsTo = this]
+
+abstract DimensionLevel
+	belongsTo -> Dimension
+
+dim1 : Dimension
+dim2 : Dimension
+
+dimLevel1 : DimensionLevel
+dimLevel2 : DimensionLevel
+
+[some disj dl1;dl2 : DimensionLevel | dl1.belongsTo.dref = dl2.belongsTo.dref ]

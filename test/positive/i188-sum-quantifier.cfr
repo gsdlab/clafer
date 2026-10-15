@@ -1,4 +1,0 @@
-a ->> integer * 
-
-b -> integer = sum a
-[ b = 2 ]

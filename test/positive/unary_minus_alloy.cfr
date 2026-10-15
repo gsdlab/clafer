@@ -1,0 +1,6 @@
+// Unary minus of a parenthesized expression, -(1+2)/(3), was generated incorrectly for Alloy 4.2.
+
+x -> integer
+[x = -(1+2)/(3)]
+
+assert [ x = -1]

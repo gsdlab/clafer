@@ -1,0 +1,9 @@
+// sum over the union (++) of two bag references of integers.
+
+x ->> integer 2..*
+  [ this >= -2 && this <= 2 ]
+y ->> integer 2..*
+  [ this >= -2 && this <= 2 ]
+z -> integer = sum (x ++ y)
+
+// assert [ z.dref = (sum x) + (sum y)]

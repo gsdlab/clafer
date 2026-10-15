@@ -1,0 +1,8 @@
+// A clafer which extends itself, with no other clafer of that name to redefine (GitHub issue 77).
+
+abstract LogicalBus : LogicalBus
+    xor type
+        CAN
+        LIN
+
+bus1 : LogicalBus

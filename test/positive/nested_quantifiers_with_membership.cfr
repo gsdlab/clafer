@@ -1,0 +1,15 @@
+// Nested quantifiers over references with membership (in) and conjunction in logical expressions.
+// needs scope 20 to instantiate
+
+abstract Course
+	taughtBy -> Teacher *
+          x ?
+
+abstract Teacher
+	teaches -> Course *
+  
+[ all c : Course | all t : c.taughtBy | t.x && c in t.teaches ]
+
+course : Course 5
+
+teacher : Teacher 3

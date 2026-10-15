@@ -1,7 +1,0 @@
-x ->> integer 2..*
-  [ this >= -2 && this <= 2 ]
-y ->> integer 2..*
-  [ this >= -2 && this <= 2 ]
-z -> integer = sum (x ++ y)
-
-// assert [ z.dref = (sum x) + (sum y)]

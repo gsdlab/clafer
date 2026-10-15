@@ -1,0 +1,5 @@
+// `this` in a constraint nested under a reference to integer is the integer value; it was translated to Alloy as the clafer (GitHub issue 10).
+
+A
+	x -> integer
+   		[ this >= 0 ]

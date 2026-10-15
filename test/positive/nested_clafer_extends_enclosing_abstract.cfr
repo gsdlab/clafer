@@ -1,0 +1,8 @@
+// A clafer nested in an abstract clafer extends that same abstract clafer (a recursive structure), with a constraint on the nested clafer.
+
+abstract Path
+  p : Path ?
+  isDir ?
+  [this.isDir => this.p]
+
+pth : Path

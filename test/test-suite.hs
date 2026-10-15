@@ -117,3 +117,10 @@ case_ReferencedUnusedAbstractKept = do
     ("abstract sig c0_Property" `isInfixOf` alloy) @? "Alloy: the referenced Property is not declared\n" ++ alloy
     ("fact { #c0_Property = 0 }" `isInfixOf` alloy) @? "Alloy: Property may have instances\n" ++ alloy
     not ("c0_Unused" `isInfixOf` alloy) @? "Alloy: the unused Unused is declared\n" ++ alloy
+
+-- A clafer which extends itself is reported as such, not as a missing super.
+case_SelfInheritanceReported :: Assertion
+case_SelfInheritanceReported =
+    case compileOneFragment defaultClaferArgs "abstract A : A\nb : A" of
+        Left errs' -> ("inherits from itself" `isInfixOf` show errs') @? "Unexpected errors\n" ++ show errs'
+        Right _ -> assertFailure "abstract A : A compiled"

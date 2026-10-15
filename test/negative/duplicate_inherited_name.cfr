@@ -1,0 +1,8 @@
+// A subclafer declares a, which it also inherits from its abstract super; the names clash.
+
+abstract A
+    a -> string
+
+A1 : A
+    a -> integer
+    [ A1.a = 10 ]

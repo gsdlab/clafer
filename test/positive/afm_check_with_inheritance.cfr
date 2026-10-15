@@ -1,0 +1,6 @@
+//# OPTIONS --check-afm
+// The --check-afm attributed feature model check accepts a feature which extends an abstract clafer.
+
+abstract A
+
+a : A

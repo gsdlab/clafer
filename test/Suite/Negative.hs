@@ -37,7 +37,7 @@ negativeClaferModels = do
     claferModels <- getClafers "test/negative"
     return $ filter ((`notElem` crashModels) . fst ) claferModels
     where
-        crashModels = ["i127-loop.cfr", "i141-constraints.cfr"]
+        crashModels = []
 {-Put models in the list above that completly crash
   the compiler, this will avoid crashing the test suite
   Note: If the model is giving an unexpected error it

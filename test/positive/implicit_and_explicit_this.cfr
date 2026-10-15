@@ -1,0 +1,7 @@
+// Implicit this (i = 1) and explicit this (this.i = 1, this = 1) must produce the same IR.
+
+A
+	i -> integer
+		[ this = 1 ]
+	[ this.i = 1 ]
+	[ i = 1 ]

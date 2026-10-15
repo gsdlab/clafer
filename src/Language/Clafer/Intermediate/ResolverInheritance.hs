@@ -69,6 +69,12 @@ resolveNClafer abstractClafers parent clafer =
   do
     -- a clafer cannot extend itself <https://github.com/gsdlab/clafer/issues/86>
     let abstractClafers' = filter ((/= _uid clafer) . _uid) abstractClafers
+    -- unless it redefines another clafer with its name <https://github.com/gsdlab/clafer/issues/77>
+    case _super clafer of
+      Just (PExp _ _ _ (IClaferId _ id' _ _))
+        | _isAbstract clafer && id' == _ident clafer && id' `notElem` map _ident abstractClafers'
+        -> throwError $ SemanticErr (_cinPos clafer) $ "ResolverInheritance: clafer " ++ _uid clafer ++ " inherits from itself"
+      _ -> return ()
     (super', superIClafer')    <- resolveNSuper abstractClafers' parent $ _super clafer
     -- F> Top-level abstract clafer extending a nested abstract clafer <https://github.com/gsdlab/clafer/issues/67> F>
     let

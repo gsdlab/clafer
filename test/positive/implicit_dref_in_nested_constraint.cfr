@@ -1,0 +1,5 @@
+// A reference is dereferenced implicitly (a = 4, not a.dref = 4) in a constraint of its child; .dref should only be needed to disambiguate.
+
+a -> integer ?
+    b ?
+        [ a = 4 ]

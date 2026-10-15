@@ -1,8 +1,0 @@
-// Non-boolean consequent in if/then/else
-
-AliceAge -> int
-BobAge -> int
-
-BobsBirthday ?
-
-[(if BobsBirthday then BobAge.dref else AliceAge.dref) = 5]

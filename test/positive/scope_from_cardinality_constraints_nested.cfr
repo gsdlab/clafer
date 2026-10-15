@@ -1,0 +1,13 @@
+// Like scope_from_cardinality_constraints, with the cardinality constraints on a nested clafer (Pet.leg) of the subclafers.
+
+abstract Animal
+  leg *
+
+abstract Owner
+  Pet : Animal
+
+SnakeOwner : Owner +
+  [no Pet.leg]
+
+DogOwner : Owner +
+  [#Pet.leg = 4]

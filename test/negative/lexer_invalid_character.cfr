@@ -1,0 +1,4 @@
+// A lexer error: $ cannot occur in a clafer name.
+
+A
+   C$

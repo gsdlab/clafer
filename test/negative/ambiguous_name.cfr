@@ -1,0 +1,8 @@
+// The name claferB is ambiguous in a constraint of a claferB nested in another claferB.
+
+claferA
+  claferB
+    claferB
+      claferC
+        claferD
+      [claferB]

@@ -1,0 +1,17 @@
+// A reference inherited from an abstract clafer is not shared: each subclafer has its own participants.
+
+abstract Person
+JohnDoe : Person
+MaryJane : Person
+
+abstract WaitingLine
+    participants -> Person *
+
+BusLine : WaitingLine
+    [ JohnDoe in participants
+      MaryJane in participants ]
+
+JohnAndMaryLine : WaitingLine
+    [ participants  = JohnDoe, MaryJane ]
+
+assert [ all wl : WaitingLine | wl.participants = JohnDoe, MaryJane ]

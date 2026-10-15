@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=9">
+<style>.identifier{}
+.keyword{font-weight: bold;}
+.tKeyword{font-style: oblique;}
+.reference{}
+.code { background-color: lightgray; padding: 5px 5px 5px 5px; border: 1px solid darkgray; margin-bottom: 15px;
+        font-family: Pragmata, Menlo, 'DejaVu LGC Sans Mono', 'DejaVu Sans Mono', Consolas, 'Everson Mono', 'Lucida Console', 'Andale Mono', 'Nimbus Mono L', 'Liberation Mono', FreeMono, 'Osaka Monospaced', Courier, 'New Courier', monospace; }
+.standalonecomment { color: green; font-style:italic }
+.inlinecomment { color: green; padding-left:20px; font-style:italic }
+.error{background-color: yellow; color: red }
+.deprecated{color: orange }
+.indent{padding-left:20px}
+a[href$='Lookup failed'] {color: red}
+a[href$='Uid not found'] {color: red}
+a[href$='Ambiguous name'] {color: yellow}
+</style></head>
+<body>
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Feature">Feature</span>
+  <div class="indent">
+  <span class="claferDecl" id="c0_performance">performance</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a></div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_energy">energy</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a></div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_mass">mass</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a></div>
+  <div class="indent">
+  <span class="keyword">[</span> <a href="#c0_mass"><span class="reference">mass</span></a> &gt;= 0 <span class="keyword">]</span></div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_cost">cost</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a></div>
+  <div class="indent">
+  <span class="keyword">[</span> <a href="#c0_cost"><span class="reference">cost</span></a> &gt;= 0 <span class="keyword">]</span></div>
+</div>
+
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_SecurityFeature">SecurityFeature</span><span class="keyword"> : </span><a href="#c0_Feature"><span class="reference">Feature</span></a>
+  <div class="indent">
+  <span class="claferDecl" id="c0_security">security</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a></div>
+</div>
+
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_MobilePhone">MobilePhone</span>
+  <div class="indent">
+  <span class="keyword">or</span> <span class="claferDecl" id="c0_Connectivity">Connectivity</span><span class="keyword"> : </span><a href="#c0_Feature"><span class="reference">Feature</span></a>
+    <div class="indent">
+    <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_performance"><span class="reference">performance</span></a> = 0 <span class="keyword">]</span></div>
+    <div class="indent">
+    <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_energy"><span class="reference">energy</span></a> = 0 <span class="keyword">]</span></div>
+    <div class="indent">
+    <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_mass"><span class="reference">mass</span></a> = 0 <span class="keyword">]</span></div>
+    <div class="indent">
+    <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_cost"><span class="reference">cost</span></a> = 12 <span class="keyword">]</span></div>
+    <div class="indent">
+    <span class="claferDecl" id="c0_Bluetooth">Bluetooth</span><span class="keyword"> : </span><a href="#c0_Feature"><span class="reference">Feature</span></a>
+      <div class="indent">
+      <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_performance"><span class="reference">performance</span></a> = 9 <span class="keyword">]</span></div>
+      <div class="indent">
+      <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_energy"><span class="reference">energy</span></a> = 10 <span class="keyword">]</span></div>
+      <div class="indent">
+      <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_mass"><span class="reference">mass</span></a> = 2 <span class="keyword">]</span></div>
+      <div class="indent">
+      <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_cost"><span class="reference">cost</span></a> = 3 <span class="keyword">]</span></div>
+    </div>
+    <div class="indent">
+    <span class="claferDecl" id="c0_USB">USB</span><span class="keyword"> : </span><a href="#c0_Feature"><span class="reference">Feature</span></a>
+      <div class="indent">
+      <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_performance"><span class="reference">performance</span></a> = 10 <span class="keyword">]</span></div>
+      <div class="indent">
+      <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_energy"><span class="reference">energy</span></a> = 5 <span class="keyword">]</span></div>
+      <div class="indent">
+      <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_mass"><span class="reference">mass</span></a> = 3 <span class="keyword">]</span></div>
+      <div class="indent">
+      <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_cost"><span class="reference">cost</span></a> = 5 <span class="keyword">]</span></div>
+    </div>
+    <div class="indent">
+    <span class="claferDecl" id="c0_Wifi">Wifi</span><span class="keyword"> : </span><a href="#c0_Feature"><span class="reference">Feature</span></a>
+      <div class="indent">
+      <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_performance"><span class="reference">performance</span></a> = 22 <span class="keyword">]</span></div>
+      <div class="indent">
+      <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_energy"><span class="reference">energy</span></a> = 17 <span class="keyword">]</span></div>
+      <div class="indent">
+      <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_mass"><span class="reference">mass</span></a> = 6 <span class="keyword">]</span></div>
+      <div class="indent">
+      <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_cost"><span class="reference">cost</span></a> = 5 <span class="keyword">]</span></div>
+    </div>
+  </div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_PasswordProtection">PasswordProtection</span><span class="keyword"> : </span><a href="#c0_SecurityFeature"><span class="reference">SecurityFeature</span></a> ?
+    <div class="indent">
+    <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_security"><span class="reference">security</span></a> = 5 <span class="keyword">]</span></div>
+    <div class="indent">
+    <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_performance"><span class="reference">performance</span></a> = 1 <span class="keyword">]</span></div>
+    <div class="indent">
+    <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_energy"><span class="reference">energy</span></a> = 2 <span class="keyword">]</span></div>
+    <div class="indent">
+    <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_mass"><span class="reference">mass</span></a> = 0 <span class="keyword">]</span></div>
+    <div class="indent">
+    <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_cost"><span class="reference">cost</span></a> = 2 <span class="keyword">]</span></div>
+  </div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_FingerprintProtection">FingerprintProtection</span><span class="keyword"> : </span><a href="#c0_SecurityFeature"><span class="reference">SecurityFeature</span></a> ?
+    <div class="indent">
+    <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_mass"><span class="reference">mass</span></a> = 0 <span class="keyword">]</span></div>
+    <div class="indent">
+    <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_security"><span class="reference">security</span></a> = 5 <span class="keyword">]</span></div>
+    <div class="indent">
+    <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_performance"><span class="reference">performance</span></a> = 3 <span class="keyword">]</span></div>
+    <div class="indent">
+    <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_energy"><span class="reference">energy</span></a> = 1 <span class="keyword">]</span></div>
+    <div class="indent">
+    <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_cost"><span class="reference">cost</span></a> = 13 <span class="keyword">]</span></div>
+  </div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_total_performance">total_performance</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a> = <span class="keyword">sum </span><a href="#c0_Feature"><span class="reference">Feature</span></a>.<a href="#c0_performance"><span class="reference">performance</span></a></div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_total_energy">total_energy</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a> = <span class="keyword">sum </span><a href="#c0_Feature"><span class="reference">Feature</span></a>.<a href="#c0_energy"><span class="reference">energy</span></a></div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_total_security">total_security</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a> = <span class="keyword">sum </span><a href="#c0_SecurityFeature"><span class="reference">SecurityFeature</span></a>.<a href="#c0_security"><span class="reference">security</span></a></div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_total_mass">total_mass</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a> = <span class="keyword">sum </span><a href="#c0_Feature"><span class="reference">Feature</span></a>.<a href="#c0_mass"><span class="reference">mass</span></a></div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_total_cost">total_cost</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a> = <span class="keyword">sum </span><a href="#c0_Feature"><span class="reference">Feature</span></a>.<a href="#c0_cost"><span class="reference">cost</span></a></div>
+</div>
+
+
+<div>
+<span class="claferDecl" id="c0_MyPhone">MyPhone</span><span class="keyword"> : </span><a href="#c0_MobilePhone"><span class="reference">MobilePhone</span></a></div>
+
+
+<div>
+&lt;&lt;<span class="deprecated" title="Deprecated. Use `minimize` instead.">min </span><a href="#c0_MyPhone"><span class="reference">MyPhone</span></a>.<a href="#c0_total_energy"><span class="reference">total_energy</span></a>&gt;&gt;</div>
+
+
+<div>
+&lt;&lt;<span class="deprecated" title="Deprecated. Use `maximize` instead.">max </span><a href="#c0_MyPhone"><span class="reference">MyPhone</span></a>.<a href="#c0_total_performance"><span class="reference">total_performance</span></a>&gt;&gt;</div>
+
+
+<div>
+&lt;&lt;<span class="deprecated" title="Deprecated. Use `maximize` instead.">max </span><a href="#c0_MyPhone"><span class="reference">MyPhone</span></a>.<a href="#c0_total_security"><span class="reference">total_security</span></a>&gt;&gt;</div>
+
+
+<div>
+&lt;&lt;<span class="deprecated" title="Deprecated. Use `minimize` instead.">min </span><a href="#c0_MyPhone"><span class="reference">MyPhone</span></a>.<a href="#c0_total_mass"><span class="reference">total_mass</span></a>&gt;&gt;</div>
+
+
+<div>
+&lt;&lt;<span class="deprecated" title="Deprecated. Use `minimize` instead.">min </span><a href="#c0_MyPhone"><span class="reference">MyPhone</span></a>.<a href="#c0_total_cost"><span class="reference">total_cost</span></a>&gt;&gt;</div>
+
+</body>
+</html>

@@ -1,5 +1,0 @@
-// https://github.com/gsdlab/clafer/issues/10
-
-A
-	x -> integer
-   		[ this >= 0 ]

@@ -1,0 +1,99 @@
+open util/integer
+pred show {}
+
+
+abstract sig c0_Service
+{ r_c0_requirements : one c0_requirements
+, r_c0_machine : one c0_machine }
+{ this in ((((this.@r_c0_machine).@c0_machine_ref).@r_c0_services).@c0_services_ref) }
+
+sig c0_requirements extends c0_Requirements
+{}
+{ one @r_c0_requirements.this }
+
+sig c0_machine
+{ c0_machine_ref : one c0_Machine }
+{ one @r_c0_machine.this }
+
+abstract sig c0_Requirements
+{ r_c0_cpu : one c0_cpu }
+
+sig c0_cpu
+{ c0_cpu_ref : one Int }
+{ one @r_c0_cpu.this }
+
+abstract sig c0_Resources extends c0_Requirements
+{}
+
+abstract sig c0_Machine
+{ r_c0_services : set c0_services
+, r_c0_isFree : lone c0_isFree
+, r_c0_limits : one c0_limits
+, r_c0_utilization : one c0_utilization }
+{ all disj x, y : this.@r_c0_services | (x.@c0_services_ref) != (y.@c0_services_ref) 
+  all  s : this.@r_c0_services | (((s.@c0_services_ref).@r_c0_machine).@c0_machine_ref) = this
+  (some this.@r_c0_isFree) <=> (no this.@r_c0_services) }
+
+sig c0_services
+{ c0_services_ref : one c0_Service }
+{ one @r_c0_services.this }
+
+sig c0_isFree
+{}
+{ one @r_c0_isFree.this }
+
+sig c0_limits extends c0_Resources
+{}
+{ one @r_c0_limits.this }
+
+sig c0_utilization extends c0_Resources
+{}
+{ one @r_c0_utilization.this
+  ((this.@r_c0_cpu).@c0_cpu_ref) = (sum temp : (((((this.~@r_c0_utilization).@r_c0_services).@c0_services_ref).@r_c0_requirements).@r_c0_cpu) | temp.@c0_cpu_ref)
+  ((this.@r_c0_cpu).@c0_cpu_ref) < ((((this.~@r_c0_utilization).@r_c0_limits).@r_c0_cpu).@c0_cpu_ref) }
+
+abstract sig c0_Task
+{ r_c0_total_free : one c0_total_free }
+{ (some this.@r_c0_total_free) => (((this.@r_c0_total_free).@c0_total_free_ref) = (#(c0_Machine.@r_c0_isFree))) }
+
+sig c0_total_free
+{ c0_total_free_ref : one Int }
+{ one @r_c0_total_free.this }
+
+one sig c0_MyTask extends c0_Task
+{ r_c0_GoogleCA : one c0_GoogleCA
+, r_c0_GoogleNY : one c0_GoogleNY
+, r_c0_GoogleTX : one c0_GoogleTX
+, r_c0_MailService : one c0_MailService
+, r_c0_SearchService : one c0_SearchService
+, r_c0_CalendarService : one c0_CalendarService
+, r_c0_DriveService : one c0_DriveService }
+
+one sig c0_GoogleCA extends c0_Machine
+{}
+{ (((this.@r_c0_limits).@r_c0_cpu).@c0_cpu_ref) = 10 }
+
+one sig c0_GoogleNY extends c0_Machine
+{}
+{ (((this.@r_c0_limits).@r_c0_cpu).@c0_cpu_ref) = 16 }
+
+one sig c0_GoogleTX extends c0_Machine
+{}
+{ (((this.@r_c0_limits).@r_c0_cpu).@c0_cpu_ref) = 14 }
+
+one sig c0_MailService extends c0_Service
+{}
+{ (((this.@r_c0_requirements).@r_c0_cpu).@c0_cpu_ref) = 4 }
+
+one sig c0_SearchService extends c0_Service
+{}
+{ (((this.@r_c0_requirements).@r_c0_cpu).@c0_cpu_ref) = 3 }
+
+one sig c0_CalendarService extends c0_Service
+{}
+{ (((this.@r_c0_requirements).@r_c0_cpu).@c0_cpu_ref) = 1 }
+
+one sig c0_DriveService extends c0_Service
+{}
+{ (((this.@r_c0_requirements).@r_c0_cpu).@c0_cpu_ref) = 2 }
+
