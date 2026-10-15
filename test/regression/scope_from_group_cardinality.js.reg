@@ -1,0 +1,11 @@
+scope({c0_A:4, c0_B:4, c0_C:4, c0_Item:8});
+defaultScope(1);
+intRange(-8, 7);
+stringLength(16);
+
+c0_B = Abstract("c0_B");
+c0_A = Abstract("c0_A").withGroupCard(2, 3);
+c0_Item = c0_A.addChild("c0_Item");
+c0_C = Clafer("c0_C").withCard(4, 4).withGroupCard(2, 3);
+c0_A.extending(c0_B);
+c0_C.extending(c0_A);

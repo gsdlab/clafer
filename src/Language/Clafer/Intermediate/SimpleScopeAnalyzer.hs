@@ -61,7 +61,7 @@ simpleScopeAnalysis iModule@IModule{_mDecls = decls'} =
     constraints = concatMap findConstraints decls'
 
     lowerOrUpperFixedCard analysis' clafer =
-        maximum [cardLb, cardUb, lowFromConstraints, oneForStar, targetScopeForStar ]
+        maximum [cardLb, cardUb, lowFromConstraints, oneForStar, targetScopeForStar, lowFromGroupCard ]
         where
         (cardLb, cardUb) = case _card clafer of
             (Just c) -> c
@@ -73,6 +73,12 @@ simpleScopeAnalysis iModule@IModule{_mDecls = decls'} =
                 _      -> 0
             else 0
         lowFromConstraints = Map.findWithDefault 0 (_uid clafer) constraintAnalysis
+        -- The group cardinality n..m of the parent requires at least n children,
+        -- possibly all instances of this clafer.
+        lowFromGroupCard = case _gcard =<< findIClafer uidClaferMap' =<< Map.lookup (_uid clafer) parentMap of
+            Just (IGCard _ (groupLb, _)) | cardUb == -1 -> groupLb
+                                         | otherwise    -> min groupLb cardUb
+            Nothing -> 0
 
     analyzeComponent analysis' component =
         case flattenSCC component of

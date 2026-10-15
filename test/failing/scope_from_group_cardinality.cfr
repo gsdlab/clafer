@@ -1,7 +1,0 @@
-// Expected: an instance with four C, each with two or three Items. Actual: no instance, the inferred scope of Item (4) ignores the lower bound of the group cardinality (2..3) of the four Cs.
-
-abstract B
-abstract 2..3 A : B
-  Item *
-
-C : A 4
