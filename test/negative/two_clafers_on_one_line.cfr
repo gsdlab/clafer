@@ -1,0 +1,5 @@
+// Two clafers on one line, b : B A 3, are a parse error, not the two clafers b : B and A 3.
+
+abstract B
+A
+  b : B A 3
