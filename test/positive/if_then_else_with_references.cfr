@@ -1,0 +1,18 @@
+// if/then/else over references is dereferenced implicitly, with a union of references (s1.target ++ s2.target) as one branch.
+
+abstract Hardware
+h1 : Hardware
+h2 : Hardware
+
+abstract Software
+    target -> Hardware
+
+s1 : Software
+    [ target = h1 ]
+s2 : Software
+    [ target = h2 ]
+
+noHardware -> Hardware 0
+
+uses -> Hardware *
+[ uses = (if (#Software > 0) then (s1.target ++ s2.target) else noHardware) ]

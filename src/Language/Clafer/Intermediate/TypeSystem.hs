@@ -389,18 +389,13 @@ getIfThenElseType _              TDouble         TDouble       = return $ Just T
 getIfThenElseType _              TDouble         TInteger      = return $ Just TDouble
 getIfThenElseType _              TInteger        TDouble       = return $ Just TDouble
 getIfThenElseType _              TInteger        TInteger      = return $ Just TInteger
-getIfThenElseType _ {-uidIClaferMap'-} (TUnion _ {-t1s-}){-t2@-} (TClafer _) = undefined {- o
-  t1s' <- mapM (getIfThenElseType uidIClaferMap' t2) t1s
-  return $ case catMaybes t1s' of
-    [] -> Nothing
-    [t] -> Just t
-    t1s'' -> Just $ TUnion t1s''  -}
-getIfThenElseType _ {-uidIClaferMap'-} {-t1@-}(TClafer _)  (TUnion _{-t2s-}) = undefined {- do
-  t2s' <- mapM (getIfThenElseType uidIClaferMap' t1) t2s
-  return $ case catMaybes t2s' of
-    [] -> Nothing
-    [t] -> Just t
-    t2s'' -> Just $ TUnion t2s''  -}
+-- Each type of a union must combine with the other branch, e.g., a union of
+-- clafers and booleans does not combine with clafers.
+getIfThenElseType uidIClaferMap' (TUnion t1s)    t2            = combineAll uidIClaferMap' [ (t1, t2) | t1 <- t1s ]
+getIfThenElseType uidIClaferMap' t1              (TUnion t2s)  = combineAll uidIClaferMap' [ (t1, t2) | t2 <- t2s ]
+-- A dereferenced reference, e.g., if c then a.dref else b, has the type of its targets.
+getIfThenElseType uidIClaferMap' (TMap _ ta1)    t2            = getIfThenElseType uidIClaferMap' ta1 t2
+getIfThenElseType uidIClaferMap' t1              (TMap _ ta2)  = getIfThenElseType uidIClaferMap' t1 ta2
 getIfThenElseType uidIClaferMap' t@(TClafer ut1) (TClafer ut2) = if ut1 == ut2
   then return $ Just t
   else do
@@ -420,6 +415,15 @@ getIfThenElseType uidIClaferMap' t@(TClafer ut1) (TClafer ut2) = if ut1 == ut2
       else accumulator
     commonHierarchy' _ _ _ = error "ResolverType.commonHierarchy' expects two non empty lists but was given at least one empty list!" -- Should never happen
 getIfThenElseType _ _ _ = return Nothing
+
+-- | The union of the if/then/else types of the pairs, if every pair combines.
+combineAll :: MonadFail m => UIDIClaferMap -> [(IType, IType)] -> m (Maybe IType)
+combineAll uidIClaferMap' pairs = do
+  ts <- mapM (uncurry $ getIfThenElseType uidIClaferMap') pairs
+  return $ foldr1 (+++) <$> (nonEmpty' =<< sequence ts)
+  where
+  nonEmpty' [] = Nothing
+  nonEmpty' xs = Just xs
 
 
 {- | Compute the type of sequential composition of two types

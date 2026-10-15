@@ -1,0 +1,24 @@
+digraph "if_then_else_with_references"
+{
+rankdir=BT;
+ranksep=0.3;
+nodesep=0.1;
+graph [fontname=Sans fontsize=11];
+node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
+edge [fontname=Sans fontsize=11];
+"c0_Hardware" [label="abstract Hardware" URL="#c0_Hardware" tooltip="abstract Hardware&#10;"];
+"c0_h1" [label="h1 : Hardware" URL="#c0_h1" tooltip="h1 : Hardware&#10;"];
+"c0_h1" -> "c0_Hardware" [arrowhead=onormal constraint=true weight=100];
+"c0_h2" [label="h2 : Hardware" URL="#c0_h2" tooltip="h2 : Hardware&#10;"];
+"c0_h2" -> "c0_Hardware" [arrowhead=onormal constraint=true weight=100];
+"c0_Software" [label="abstract Software" URL="#c0_Software" tooltip="abstract Software&#10;  target -&gt; Hardware&#10;"];
+"c0_Software" -> "c0_Hardware" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=target];
+"c0_s1" [label="s1 : Software" URL="#c0_s1" tooltip="s1 : Software&#10;  [ target = h1 ]&#10;"];
+"c0_s1" -> "c0_Software" [arrowhead=onormal constraint=true weight=100];
+"c0_s2" [label="s2 : Software" URL="#c0_s2" tooltip="s2 : Software&#10;  [ target = h2 ]&#10;"];
+"c0_s2" -> "c0_Software" [arrowhead=onormal constraint=true weight=100];
+"c0_noHardware" [label="noHardware -&gt; Hardware 0" URL="#c0_noHardware" tooltip="noHardware -&gt; Hardware 0&#10;"];
+"c0_noHardware" -> "c0_Hardware" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent];
+"c0_uses" [label="uses -&gt; Hardware *" URL="#c0_uses" tooltip="uses -&gt; Hardware *&#10;"];
+"c0_uses" -> "c0_Hardware" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent];
+}
