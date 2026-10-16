@@ -28,12 +28,12 @@ over time and checking properties of possible behaviors.
 
 May applications actually combine the three. For example, see [Technical Report: Case Studies on E/E Architectures for Power Window and Central Door Locks Systems](http://www.clafer.org/2016/06/technical-report-case-studies-on-ee.html).
 
-For examples of behavior modeling, see [Behavioral Modeling](http://t3-necsis.cs.uwaterloo.ca:8091/#behavioral-modeling) section on the wiki.
+For examples of behavior modeling, see [Behavioral Modeling](https://wiselab.uwaterloo.ca/modelwiki/#behavioral-modeling) section on the wiki.
 Currently; however, no reasoning capability is available for behavior modeling.
 
 ### Resources
 
-* [Learning Clafer](http://t3-necsis.cs.uwaterloo.ca:8091/#learning-clafer)
+* [Learning Clafer](https://wiselab.uwaterloo.ca/modelwiki/#learning-clafer)
 * [Cheat Sheet](doc/CheatSheet.md)
 * [Syntax Documentation](doc/clafer.pdf)
 * [Grammar](src/clafer.cf)
@@ -259,7 +259,7 @@ Common flags:
      --numeric-version                    Print just the version number
 ```
 
-The dependencies among the command line arguments are described on the [model wiki](http://t3-necsis.cs.uwaterloo.ca:8091/ClaferTools/CommandLineArguments).
+The dependencies among the command line arguments are described on the [model wiki](https://wiselab.uwaterloo.ca/modelwiki/ClaferTools/CommandLineArguments).
 
 Multiple modes can be used at the same time. For example,
 
