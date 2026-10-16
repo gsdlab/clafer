@@ -22,7 +22,7 @@
 -}
 {- | Command Line Arguments of the compiler.
 
-See also <http://t3-necsis.cs.uwaterloo.ca:8091/ClaferTools/CommandLineArguments a model of the arguments in Clafer>,  including constraints and examples.
+See also <https://wiselab.uwaterloo.ca/modelwiki/ClaferTools/CommandLineArguments a model of the arguments in Clafer>,  including constraints and examples.
 -}
 module Language.Clafer.ClaferArgs where
 
