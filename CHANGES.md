@@ -1,5 +1,6 @@
 ##### Clafer Version 0.5.4, unreleased
 
+* Clafer names with apostrophes (`same'`) work with Alloy and Choco: an apostrophe is not allowed in their identifiers (in Alloy 6, it is the next-state operator), so it becomes `__prime__` in the clafer's UID (`c0_same__prime__`); the name keeps it. Such models are not counted as able to skip the name resolver.
 * HTML output: comments are escaped and shown as written (`--add-comments`); markup in a comment was rendered, and `--` in a `//#` comment could end the generated HTML comment early.
 
 ##### Clafer Version 0.5.3, Oct 15, 2026

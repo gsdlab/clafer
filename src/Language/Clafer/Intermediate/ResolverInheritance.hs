@@ -296,14 +296,22 @@ renameClafer True  puid clafer = renameClafer' puid clafer
 
 renameClafer' :: MonadState GEnv m => UID -> IClafer -> m IClafer
 renameClafer' puid clafer = do
-  let claferIdent = _ident clafer
+  -- counted by the UID's name, so that, e.g., a' and a__prime__ get different UIDs
+  let uidName = uidIdent $ _ident clafer
   identCountMap' <- gets identCountMap
-  let count = Map.findWithDefault 0 claferIdent identCountMap'
-  modify (\e -> e { identCountMap = Map.alter (\_ -> Just (count+1)) claferIdent identCountMap' } )
-  return $ clafer { _uid = genId claferIdent count, _parentUID = puid }
+  let count = Map.findWithDefault 0 uidName identCountMap'
+  modify (\e -> e { identCountMap = Map.alter (\_ -> Just (count+1)) uidName identCountMap' } )
+  return $ clafer { _uid = genId uidName count, _parentUID = puid }
 
 genId :: String -> Int -> String
 genId id' count = concat ["c", show count, "_",  id']
+
+-- | The name of a clafer as used in its UID. Clafer names may contain apostrophes,
+-- but the UIDs are identifiers in the Alloy and Choco (JavaScript) outputs, where
+-- an apostrophe is not allowed (in Alloy 6, it is the next-state operator):
+-- name' becomes name__prime__.
+uidIdent :: String -> String
+uidIdent = concatMap (\c -> if c == '\'' then "__prime__" else [c])
 
 resolveEInheritance :: MonadState GEnv m => [String] -> [String] -> Bool -> [IElement] -> [IClafer]  -> m ([IElement], Maybe PExp, [IClafer])
 resolveEInheritance predecessors unrollables absAncestor declarations allSuper = do

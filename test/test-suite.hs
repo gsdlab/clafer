@@ -115,6 +115,32 @@ case_HtmlCommentsEscaped = do
     ("<!-- # note - - with - -> /-->" `isInfixOf` html) @? "The //# comment contains \"--\"\n" ++ html
 
 {-
+Clafer names may contain apostrophes, but the UIDs are identifiers in the Alloy
+and Choco (JavaScript) outputs, where apostrophes are not allowed: they become
+"__prime__", and same' and same__prime__ still get different UIDs.
+-}
+apostropheModel :: String
+apostropheModel = "A\n    same' ?\n    same__prime__ ?\n    links' -> same' *\n    [ some same' ]\n"
+
+case_ApostrophesNotInUIDs :: Assertion
+case_ApostrophesNotInUIDs = do
+    let
+        results = fromRight $ compileOneFragment defaultClaferArgs{mode = [Alloy, Choco]} apostropheModel
+        alloy = outputCode $ fromJust $ Map.lookup Alloy results
+        choco = outputCode $ fromJust $ Map.lookup Choco results
+        (Just (iModule, _, _)) = cIr $ claferEnv $ fromJust $ Map.lookup Alloy results
+        clafers :: [ IClafer ]
+        clafers = universeOn biplate iModule
+        uidsOf name = [ _uid c | c <- clafers, _ident c == name ]
+    uidsOf "same'" == ["c0_same__prime__"] @? "UID of same' is not c0_same__prime__: " ++ show (uidsOf "same'")
+    uidsOf "same__prime__" == ["c1_same__prime__"] @? "UID of same__prime__ is not c1_same__prime__: " ++ show (uidsOf "same__prime__")
+    uidsOf "links'" == ["c0_links__prime__"] @? "UID of links' is not c0_links__prime__: " ++ show (uidsOf "links'")
+    not ("c0_same'" `isInfixOf` alloy) @? "Alloy: an apostrophe in a UID\n" ++ alloy
+    ("sig c0_same__prime__" `isInfixOf` alloy && "sig c1_same__prime__" `isInfixOf` alloy) @? "Alloy: same' and same__prime__ are not two signatures\n" ++ alloy
+    not ("c0_same'" `isInfixOf` choco) @? "Choco: an apostrophe in a UID\n" ++ choco
+    ("c0_same__prime__ = c0_A.addChild(\"c0_same__prime__\")" `isInfixOf` choco) @? "Choco: same' is not declared as c0_same__prime__\n" ++ choco
+
+{-
 An abstract clafer which no concrete clafer extends is removed, unless a
 reference or a constraint names it: then it is kept, without instances.
 -}
