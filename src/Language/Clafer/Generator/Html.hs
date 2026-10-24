@@ -59,7 +59,7 @@ printPreComment (Span (Pos r _) _) (c@((Span (Pos r' _) _), _):cs)
     where findAll _ ([],comments) = ([],comments)
           findAll row ((c'@((Span (Pos row' col') _), comment):cs'), comments)
             | row > row' = case take 3 comment of
-                ['/', '/', '#'] -> findAll row (cs', concat [comments, "<!-- " ++ trim (drop 2 comment) ++ " /-->\n"])
+                ['/', '/', '#'] -> findAll row (cs', concat [comments, printHtmlComment (trim (drop 2 comment)) ++ "\n"])
                 ['/', '/', _]   -> if col' == 1
                                    then findAll row (cs', concat [comments, printStandaloneComment comment ++ "\n"])
                                    else findAll row (cs', concat [comments, printInlineComment comment ++ "\n"])
@@ -70,7 +70,7 @@ printComment :: Span -> [(Span, String)] -> ([(Span, String)], String)
 printComment _ [] = ([],[])
 printComment (Span (Pos row _) _) (c@(Span (Pos row' col') _, comment):cs)
   | row == row' = case take 3 comment of
-        ['/', '/', '#'] -> (cs,"<!-- " ++ trim' (drop 2 comment) ++ " /-->\n")
+        ['/', '/', '#'] -> (cs, printHtmlComment (trim' (drop 2 comment)) ++ "\n")
         ['/', '/', _]   -> if col' == 1
                            then (cs, printStandaloneComment comment ++ "\n")
                            else (cs, printInlineComment comment ++ "\n")
@@ -79,7 +79,7 @@ printComment (Span (Pos row _) _) (c@(Span (Pos row' col') _, comment):cs)
   | otherwise = (c:cs, "")
   where trim' = let f = reverse. dropWhile isSpace in f . f
 printStandaloneComment :: String -> String
-printStandaloneComment comment = "<div class=\"standalonecomment\">" ++ replaceNLwithBR comment ++ "</div>"
+printStandaloneComment comment = "<div class=\"standalonecomment\">" ++ replaceNLwithBR (escapeHtml comment) ++ "</div>"
   where
     replaceNLwithBR :: String   -> String
     replaceNLwithBR    ""        = ""
@@ -88,7 +88,26 @@ printStandaloneComment comment = "<div class=\"standalonecomment\">" ++ replaceN
 
 
 printInlineComment :: String -> String
-printInlineComment comment = "<span class=\"inlinecomment\">" ++ comment ++ "</span>"
+printInlineComment comment = "<span class=\"inlinecomment\">" ++ escapeHtml comment ++ "</span>"
+
+-- | A //# comment as an HTML comment, e.g., <!-- # FRAGMENT /-->. Its text must not
+-- contain "--", which could end the HTML comment early.
+printHtmlComment :: String -> String
+printHtmlComment text = "<!-- " ++ noDoubleDash text ++ " /-->"
+  where
+    noDoubleDash ('-':'-':cs) = "- " ++ noDoubleDash ('-':cs)
+    noDoubleDash (c:cs)       = c : noDoubleDash cs
+    noDoubleDash ""           = ""
+
+-- | Escapes the text of a comment for HTML, so that it is shown as written.
+escapeHtml :: String -> String
+escapeHtml = concatMap escape
+  where
+    escape '&' = "&amp;"
+    escape '<' = "&lt;"
+    escape '>' = "&gt;"
+    escape '"' = "&quot;"
+    escape c   = [c]
 
 printDeprecated :: String -> String -> Bool -> String
 printDeprecated    s         m         html = while html ("<span class=\"deprecated\" title=\"" ++ "Deprecated. " ++ m ++ "\">")

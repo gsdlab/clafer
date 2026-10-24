@@ -99,6 +99,22 @@ case_AllClafersGenerics = do
     allClafersUids == [ "c0_a", "c0_b", "c1_b", "c0_c", "c0_d", "c2_b", "c1_d", "c3_b"] @? "All clafers\n" ++ show allClafersUids
 
 {-
+Comments are shown as written in the HTML output: their markup is escaped, and
+a //# comment, which becomes an HTML comment, cannot end it early with "--".
+-}
+commentsModel :: String
+commentsModel = "// standalone <b>tags</b> & \"quotes\"\nA\n    B // inline <i>x</i>\n//# note -- with -->\n"
+
+case_HtmlCommentsEscaped :: Assertion
+case_HtmlCommentsEscaped = do
+    let
+        html = outputCode $ fromJust $ Map.lookup Html $ fromRight $ compileOneFragment defaultClaferArgs{mode = [Html], add_comments = True} commentsModel
+    ("// standalone &lt;b&gt;tags&lt;/b&gt; &amp; &quot;quotes&quot;" `isInfixOf` html) @? "The standalone comment is not escaped\n" ++ html
+    ("// inline &lt;i&gt;x&lt;/i&gt;" `isInfixOf` html) @? "The inline comment is not escaped\n" ++ html
+    not ("<b>" `isInfixOf` html || "<i>" `isInfixOf` html) @? "Markup from a comment is in the HTML\n" ++ html
+    ("<!-- # note - - with - -> /-->" `isInfixOf` html) @? "The //# comment contains \"--\"\n" ++ html
+
+{-
 An abstract clafer which no concrete clafer extends is removed, unless a
 reference or a constraint names it: then it is kept, without instances.
 -}

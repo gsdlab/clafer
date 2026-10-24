@@ -1,3 +1,7 @@
+##### Clafer Version 0.5.4, unreleased
+
+* HTML output: comments are escaped and shown as written (`--add-comments`); markup in a comment was rendered, and `--` in a `//#` comment could end the generated HTML comment early.
+
 ##### Clafer Version 0.5.3, Oct 15, 2026
 
 Minor release: compiler fixes found with larger example models, the integer range of the Choco output, and a reorganized test suite.
