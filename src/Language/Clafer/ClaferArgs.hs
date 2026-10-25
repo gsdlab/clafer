@@ -1,6 +1,6 @@
 {-# LANGUAGE DeriveDataTypeable #-}
 {-
- Copyright (C) 2012-2017 Kacper Bak, Jimmy Liang <http://gsd.uwaterloo.ca>
+ Copyright (C) 2012-2026 Kacper Bak, Jimmy Liang <http://gsd.uwaterloo.ca>
 
  Permission is hereby granted, free of charge, to any person obtaining a copy of
  this software and associated documentation files (the "Software"), to deal in
@@ -33,7 +33,6 @@ import Language.Clafer.SplitJoin
 import Paths_clafer (version)
 import Data.Version (showVersion)
 
-import GetURL
 
 -- | Type of output to be generated at the end of compilation
 data ClaferMode = AlloyLtl | Alloy | JSON | Clafer | Html | Graph | CVLGraph | Choco
@@ -72,6 +71,7 @@ data ClaferArgs = ClaferArgs {
       meta_data :: Bool,
       minint :: Maybe Integer,
       maxint :: Maybe Integer,
+      imports :: [FilePath],
       file :: FilePath
     } deriving (Eq, Show, Data, Typeable)
 
@@ -101,61 +101,62 @@ clafer = ClaferArgs {
   meta_data           = def &= help "Generate a 'fully qualified name'-'least-partially-qualified name'-'unique ID' map ('.cfr-map'). In Alloy and Choco modes, generate the scopes map ('.cfr-scope').",
   minint              = def &= help "Smallest integer value ('choco' mode only). Default: -128, chosen by chocosolver." &= typ "INT" &= explicit &= name "minint",
   maxint              = def &= help "Largest integer value ('choco' mode only). Default: 127, chosen by chocosolver." &= typ "INT" &= explicit &= name "maxint",
+  imports             = def &= help "Compile the model with the model in FILE (a path or an http/https URL), which is compiled before it (and only once, if imported by several files). In '//# OPTIONS', FILE is relative to the model's folder or URL; options of the imported files are combined with the model's. Can be repeated." &= typFile &= explicit &= name "import",
   file                = def &= args   &= typ "FILE"
  } &= summary ("Clafer " ++ showVersion Paths_clafer.version) &= program "clafer"
 
+-- | The command line of the compiler, built once: cmdArgs reads the annotations of 'clafer'
+--   (e.g., the names of the options) only the first time it is used, so the command line and
+--   the @//# OPTIONS@ of the models must be parsed with this mode.
+claferMode :: Mode (CmdArgs ClaferArgs)
+claferMode = cmdArgsMode clafer
+{-# NOINLINE claferMode #-}
+
+-- | The arguments of an empty command line (the defaults).
+claferDefaults :: ClaferArgs
+claferDefaults = either error cmdArgsValue $ process claferMode []
+
+-- | Merges the command line arguments (a1) with the options of the model (a2): an argument
+--   given on the command line takes precedence, the imports of both are kept.
 mergeArgs :: ClaferArgs -> ClaferArgs -> ClaferArgs
-mergeArgs a1 a2  = ClaferArgs (mode a1) coMergeArg
-  (mergeArg flatten_inheritance) (mergeArg timeout_analysis)
-  (mergeArg no_layout) (mergeArg new_layout)
-  (mergeArg check_duplicates) (mergeArg skip_resolver)
-  (mergeArg keep_unused) (mergeArg no_stats)
-  (mergeArg validate) toolMergeArg
-  (mergeArg alloy_mapping) (mergeArg self_contained)
-  (mergeArg add_graph) (mergeArg show_references)
-  (mergeArg add_comments) (mergeArg ecore2clafer)
-  (mergeArg trace_len)
-  (mergeArg scope_strategy) (mergeArg afm)
-  (mergeArg meta_data) (mergeArg minint) (mergeArg maxint) (mergeArg file)
+mergeArgs a1 a2  = ClaferArgs
+  { mode = mergeArg mode
+  , console_output = console_output a1 || console_output a2 || null (file a1)
+  , flatten_inheritance = mergeArg flatten_inheritance
+  , timeout_analysis = mergeArg timeout_analysis
+  , no_layout = mergeArg no_layout
+  , new_layout = mergeArg new_layout
+  , check_duplicates = mergeArg check_duplicates
+  , skip_resolver = mergeArg skip_resolver
+  , keep_unused = mergeArg keep_unused
+  , no_stats = mergeArg no_stats
+  , validate = mergeArg validate
+  , tooldir = mergeArg tooldir
+  , alloy_mapping = mergeArg alloy_mapping
+  , self_contained = mergeArg self_contained
+  , add_graph = mergeArg add_graph
+  , show_references = mergeArg show_references
+  , add_comments = mergeArg add_comments
+  , ecore2clafer = mergeArg ecore2clafer
+  , trace_len = mergeArg trace_len
+  , scope_strategy = mergeArg scope_strategy
+  , afm = mergeArg afm
+  , meta_data = mergeArg meta_data
+  , minint = mergeArg minint
+  , maxint = mergeArg maxint
+  , imports = imports a1 ++ filter (`notElem` imports a1) (imports a2)
+  , file = mergeArg file
+  }
   where
-    coMergeArg :: Bool
-    coMergeArg = if r1 then r1 else
-      if r2 then r2 else (null $ file a1)
-         where r1 = console_output a1;r2 = console_output a2
-    toolMergeArg :: String
-    toolMergeArg = if r1 /= "" then r1 else
-      if r2 /= "" then r2 else "/tools"
-      where r1 = tooldir a1;r2 = tooldir a2
-    mergeArg :: (Default a, Eq a) => (ClaferArgs -> a) -> a
-    mergeArg f = (\r -> if r /= def then r else f a2) $ f a1
-
-mainArgs :: IO (ClaferArgs, String)
-mainArgs = do
-  argsFromCmd <- cmdArgs clafer
-  model <- retrieveModelFromURL $ file argsFromCmd
-  let argsWithOpts = argsWithOPTIONS argsFromCmd model
-  -- Alloy should be the default mode but only if nothing else was specified
-  -- cannot use [ Alloy ] as the default in the definition of `clafer :: ClaferArgs` since
-  -- Alloy will always be a mode in addition to the other specified modes (it will become mandatory)
-  let argsWithDef = if null $ mode argsWithOpts
-                then argsWithOpts{mode = [ Alloy ]}
-                else argsWithOpts
-  return (argsWithDef, model)
-
-retrieveModelFromURL :: String -> IO String
-retrieveModelFromURL url =
-  case url of
-    "" -> getContents -- this is the pre-module system behavior
-    ('f':'i':'l':'e':':':'/':'/':n) -> readFile n
-    ('h':'t':'t':'p':':':'/':'/':_) -> getURL url
-    ('f':'t':'p':':':'/':'/':_) -> getURL url
-    n -> readFile n -- this is the pre-module system behavior
+    -- the command line's value, unless it is the default (an option not given)
+    mergeArg :: Eq a => (ClaferArgs -> a) -> a
+    mergeArg f = if f a1 /= f claferDefaults then f a1 else f a2
 
 argsWithOPTIONS :: ClaferArgs -> String -> ClaferArgs
 argsWithOPTIONS    args'         model   =
   if "//# OPTIONS " `isPrefixOf` model
   then either (const args') (mergeArgs args' . cmdArgsValue) $ -- merge wth command line arguments, which take precedence
-          process (cmdArgsMode clafer) $          -- instantiate ClaferArgs record
+          process claferMode $                    -- instantiate ClaferArgs record
             Language.Clafer.SplitJoin.splitArgs $ -- extract individual arguments
               drop 12 $                           -- strip "//# OPTIONS "
                 takeWhile (/= '\n') model         -- get first line
@@ -187,5 +188,6 @@ defaultClaferArgs = ClaferArgs
   , meta_data = False
   , minint = Nothing
   , maxint = Nothing
+  , imports = []
   , file = ""
   }

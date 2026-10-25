@@ -127,6 +127,7 @@ import           Language.Clafer.Generator.Concat
 import           Language.Clafer.Generator.Graph
 import           Language.Clafer.Generator.Html
 import           Language.Clafer.Generator.Stats
+import           Language.Clafer.Import
 import           Language.Clafer.Intermediate.Desugarer
 import           Language.Clafer.Intermediate.Intclafer
 import           Language.Clafer.Intermediate.Resolver
@@ -141,11 +142,12 @@ import           Language.ClaferT
 
 type InputModel = String
 
--- | Run the Clafer compiler.
+-- | Run the Clafer compiler on the files of a model, as read by 'readModel': the imported
+-- files and the model, compiled together.
 -- mURL = Nothing means compile the top-level module
 -- mURL = Just url means compile an imported module from the given url
-runCompiler :: Maybe URL -> ClaferArgs -> InputModel -> IO ()
-runCompiler    mURL         args'         inputModel =
+runCompiler :: Maybe URL -> ClaferArgs -> [ModelFile] -> IO ()
+runCompiler    mURL         args'         modelFiles =
   do
     hSetBuffering stdout LineBuffering
     result <- runClaferT args' $
@@ -174,6 +176,7 @@ runCompiler    mURL         args'         inputModel =
       htmlCatch result args' inputModel
     result `cth` handleErrs
   where
+  inputModel = modelText modelFiles
   cth (Left err) f = f err
   cth (Right r)  _ = return r
   fragments model = map unlines $ fragments' $ lines model
@@ -204,14 +207,18 @@ runCompiler    mURL         args'         inputModel =
   -- only care about the position relative to
   handleErr (ParseErr ErrPos{modelPos = Pos l c} mesg) =
     do
-      putStrLn $ "\nParse failed at line " ++ show l ++ " column " ++ show c ++ "..."
+      putStrLn $ "\nParse failed at " ++ errorPosition l c ++ "..."
       putStrLn mesg
       exitFailure
   handleErr (SemanticErr ErrPos{modelPos = Pos l c} mesg) =
     do
-      putStrLn $ "\nCompile error at line " ++ show l ++ " column " ++ show c ++ "..."
+      putStrLn $ "\nCompile error at " ++ errorPosition l c ++ "..."
       putStrLn mesg
       exitFailure
+  -- "line 3 column 5" in a single file; "file.cfr:3:5" in a model with imports
+  errorPosition l c = case modelFiles of
+    [_] -> "line " ++ show l ++ " column " ++ show c
+    _   -> let (path, l') = modelPosition modelFiles l in path ++ ":" ++ show l' ++ ":" ++ show c
 
 save :: MonadIO m => ClaferArgs -> ClaferT m [ String ]
 save args'=

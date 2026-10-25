@@ -28,9 +28,14 @@ import qualified Data.Map as Map
 import Data.Maybe
 import Data.String (fromString)
 import Language.Clafer
+import Language.Clafer.Import
 import Language.Clafer.QNameUID
 import Language.Clafer.Front.AbsClafer (Span (..), noSpan)
 import Language.Clafer.Intermediate.Intclafer
+import Language.ClaferT (CErr (..), ErrPos (..))
+
+import Network.URI (parseURI)
+import System.Directory (createDirectoryIfMissing, getTemporaryDirectory, removeDirectoryRecursive)
 
 import Suite.SimpleScopeAnalyser
 import Suite.Redefinition
@@ -228,6 +233,86 @@ case_ChildDefaultsOfGroups = do
     all (\n -> cardOf n == [Just (1, 1)]) mandatory @? "Not mandatory: " ++ show (map cardOf mandatory)
     map keywordOf ["Extras", "Car", "Engine", "Colours", "Free"] == map (\k -> [Just k]) [True, True, True, False, False]
         @? "Wrong _isKeyword: " ++ show (map keywordOf ["Extras", "Car", "Engine", "Colours", "Free"])
+
+{-
+A model imports other files with --import, in its //# OPTIONS or on the command
+line: the imports are followed transitively, each file is included once, before
+the files importing it, and a path in //# OPTIONS is relative to its file. The
+options of all files are combined.
+-}
+importFiles :: [(FilePath, String)]
+importFiles =
+  [ ("lib/base.cfr", "//# OPTIONS --maxint=63\nabstract Base\n  x -> integer\n")
+  , ("lib/mid.cfr",  "//# OPTIONS --import=base.cfr --maxint=127 --minint=-5 -k\nabstract Mid : Base\n")
+  , ("sys.cfr",      "//# OPTIONS --import=lib/mid.cfr --import=lib/base.cfr -m choco\nSys : Mid\n  [ x = 100 ]\n")
+  , ("cli.cfr",      "Gadget : Base\n")
+  , ("bad.cfr",      "//# OPTIONS --import=lib/base.cfr\nBad : Base\n  [ y = 1 ]\n")
+  , ("c1.cfr",       "//# OPTIONS --import=c2.cfr\nA\n")
+  , ("c2.cfr",       "//# OPTIONS --import=c1.cfr\nB\n")
+  , ("missing.cfr",  "//# OPTIONS --import=nothere.cfr\nA\n")
+  , ("lib/run.cfr",  "//# OPTIONS -v\nabstract R\n")
+  , ("run.cfr",      "//# OPTIONS --import=lib/run.cfr\nr : R\n")
+  , ("lib/nl.cfr",   "//# OPTIONS --nl\nabstract N\n")
+  , ("nl.cfr",       "//# OPTIONS --import=lib/nl.cfr\nn : N\n")
+  ]
+
+case_Imports :: Assertion
+case_Imports = do
+    tmp <- getTemporaryDirectory
+    let dir = tmp ++ "/clafer-test-imports"
+        path name = dir ++ "/" ++ name
+        readModel' name args' = readModel args'{file = path name}
+    createDirectoryIfMissing True (dir ++ "/lib")
+    mapM_ (\(name, text) -> writeFile (path name) text) importFiles
+    -- a chain and a diamond: base once, before mid, before sys; the options combined
+    Right (args', files) <- readModel' "sys.cfr" claferDefaults
+    map modelFilePath files == map path ["lib/base.cfr", "lib/mid.cfr", "sys.cfr"] @? "Files: " ++ show (map modelFilePath files)
+    (maxint args', minint args', mode args', keep_unused args') == (Just 127, Just (-5), [Choco], True)
+        @? "Combined options: " ++ show (maxint args', minint args', mode args', keep_unused args')
+    let results = fromRight $ compileOneFragment args'{mode = [Choco]} $ modelText files
+    ("intRange(-5, 127);" `isInfixOf` outputCode (fromJust $ Map.lookup Choco results)) @? "No combined integer range"
+    -- the command line's arguments take precedence, and its imports are relative to the current folder
+    Right (cliArgs, cliFiles) <- readModel' "cli.cfr" claferDefaults{imports = [path "lib/base.cfr"], maxint = Just 7}
+    (map modelFilePath cliFiles, maxint cliArgs) == (map path ["lib/base.cfr", "cli.cfr"], Just 7)
+        @? "Command line import: " ++ show (map modelFilePath cliFiles, maxint cliArgs)
+    -- an error in a file is reported at its line in that file
+    Right (_, badFiles) <- readModel' "bad.cfr" claferDefaults
+    case compileOneFragment defaultClaferArgs $ modelText badFiles of
+      Left [SemanticErr ErrPos{modelPos = Pos l c} _] ->
+        (modelPosition badFiles l, c) == ((path "bad.cfr", 3), 5) @? "Error position: " ++ show (modelPosition badFiles l, c)
+      result -> assertFailure $ "bad.cfr: " ++ either show (const "compiled") result
+    -- cycles, missing files, options of the compilation in an imported file, different layouts
+    let failsWith name expected = do
+          result <- readModel' name claferDefaults
+          case result of
+            Left message -> (expected `isInfixOf` message) @? name ++ ": " ++ message
+            Right _      -> assertFailure $ name ++ " was read"
+    failsWith "c1.cfr" "Import cycle: "
+    failsWith "missing.cfr" "nothere.cfr does not exist"
+    failsWith "run.cfr" "the options -v can only be given in the compiled model"
+    failsWith "nl.cfr" "The option --nl must be the same in all files"
+    removeDirectoryRecursive dir
+
+{-
+An import is relative to the importing file: to its folder, or to its URL. A
+file:// URL is a local path, and a model read from a URL can only import URLs.
+-}
+case_ImportLocations :: Assertion
+case_ImportLocations = do
+    let url = fromJust . parseURI
+        systemURL = Remote $ url "https://example.org/models/system.cfr"
+    location "file:///tmp/a%20b.cfr" == Local "/tmp/a b.cfr" @? "file:// URL"
+    location "http://example.org/a.cfr" == Remote (url "http://example.org/a.cfr") @? "http:// URL"
+    importLocation (Local "models/system.cfr") "lib/base.cfr" == Right (Local "models/lib/base.cfr") @? "relative to a folder"
+    importLocation (Local "system.cfr") "../base.cfr" == Right (Local "../base.cfr") @? "relative to the current folder"
+    importLocation systemURL "lib/base.cfr" == Right (Remote $ url "https://example.org/models/lib/base.cfr") @? "relative to a URL"
+    importLocation systemURL "../shared/base.cfr" == Right (Remote $ url "https://example.org/shared/base.cfr") @? "a parent of a URL"
+    importLocation systemURL "design space.cfr" == Right (Remote $ url "https://example.org/models/design%20space.cfr") @? "a space in a URL"
+    importLocation (Local "system.cfr") "https://example.org/base.cfr" == Right (Remote $ url "https://example.org/base.cfr") @? "a URL from a local file"
+    isLeft (importLocation systemURL "/etc/hostname") @? "a local path from a URL"
+    isLeft (importLocation systemURL "file:///etc/hostname") @? "a file:// URL from a URL"
+  where
+    isLeft = either (const True) (const False)
 
 {-
 An abstract clafer which no concrete clafer extends is removed, unless a

@@ -24,25 +24,33 @@ module Main where
 import Prelude hiding (writeFile, readFile, print, putStrLn)
 
 import Data.Functor (void)
+import System.Console.CmdArgs (cmdArgsRun)
+import System.Exit (exitFailure)
 import System.IO
 import System.Timeout
 import System.Process (system)
 
 import Language.Clafer
+import Language.Clafer.Import
 
 main :: IO ()
 main = do
-  (args', model) <- mainArgs
-  let timeInSec = (timeout_analysis args') * 10^(6::Integer)
-  _ <- if timeInSec > 0
-         then timeout timeInSec $ start args' model
-         else Just `fmap` start args' model
-  return ()
-
-start :: ClaferArgs -> InputModel-> IO ()
-start args' model = if ecore2clafer args'
-  then runEcore2Clafer (file args') $ tooldir args'
-  else runCompiler Nothing args' model
+  argsFromCmd <- cmdArgsRun claferMode
+  if ecore2clafer argsFromCmd
+    then runEcore2Clafer (file argsFromCmd) $ tooldir argsFromCmd
+    else do
+      -- the model, the files it imports, and the options of all of them
+      model <- readModel argsFromCmd
+      case model of
+        Left message -> do
+          putStrLn $ "\nError...\n" ++ message
+          exitFailure
+        Right (args', modelFiles) -> do
+          let timeInSec = (timeout_analysis args') * 10^(6::Integer)
+          _ <- if timeInSec > 0
+                 then timeout timeInSec $ runCompiler Nothing args' modelFiles
+                 else Just `fmap` runCompiler Nothing args' modelFiles
+          return ()
 
 runEcore2Clafer :: FilePath -> FilePath -> IO ()
 runEcore2Clafer    ecoreFile toolPath

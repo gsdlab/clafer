@@ -252,6 +252,14 @@ Common flags:
      --maxint=INT                         Largest integer value ('choco' mode
                                           only). Default: 127, chosen by
                                           chocosolver.
+     --import=FILE                        Compile the model with the model in
+                                          FILE (a path or an http/https URL),
+                                          which is compiled before it (and only
+                                          once, if imported by several files).
+                                          In '//# OPTIONS', FILE is relative to
+                                          the model's folder or URL; options of
+                                          the imported files are combined with
+                                          the model's. Can be repeated.
   -? --help                               Display help message
   -V --version                            Print version information
      --numeric-version                    Print just the version number
@@ -280,6 +288,27 @@ for example
 The directive is only recognized on the very first line of the file and must start exactly with `//# OPTIONS ` (no leading whitespace).
 
 Options given at command line override the options given in the file using `//# OPTIONS` which, in turn, override the defaults.
+An option that the compiler does not know is an error.
+
+### Models in several files
+
+A model can import other files, which are compiled together with it as one model: `--import=FILE`, in its `//# OPTIONS` or on the command line, for example, a model of one system that imports the model of a design space:
+
+```
+//# OPTIONS --import=design-space.cfr
+System : DesignSpace
+```
+
+or `clafer System.cfr --import=design-space.cfr`. The option can be repeated.
+
+* In `//# OPTIONS`, the path is relative to the file containing the directive; on the command line, to the current directory.
+* The model and the imported files can be URLs (`http://`, `https://`): `clafer https://example.org/models/System.cfr`. An import in a model read from a URL is relative to its URL (e.g., `--import=design-space.cfr` reads `https://example.org/models/design-space.cfr`), and such a model can only import URLs, not local files. A local model can import a URL, e.g., a design space published on a server: `//# OPTIONS --import=https://example.org/models/design-space.cfr`. A `file://` URL is a local path.
+* The imports are followed transitively: an imported file may import other files. Each file is compiled only once, even if several files import it, and before the files importing it. An import cycle is an error.
+* All files share one namespace, as if they were concatenated: a clafer defined in one file can be used in the others, and the same top-level name in two files is an error. There are no qualified names or separate compilation.
+* The outputs are named after the compiled model (`System.als`, `System.js`, ...), in the current directory for a model read from a URL, and errors name the file: `Compile error at design-space.cfr:12:5...`.
+* The options of all files are combined: the largest `--maxint`, `--tl` and `--timeout-analysis`, the smallest `--minint`, all modes and imports; `-k`, `-c`, `--check-afm` and `-i` if any file has them, `-f` only if all files have it. The layout (`-l`, `--nl`) and the scope strategy (`--ss`) must be the same in all files. Options of the compilation rather than of the model (`-o`, `-s`, `-v`, `--tooldir`, `-a`, `--self-contained`, `--add-graph`, `--sr`, `--add-comments`, `--meta-data`) are only allowed in the compiled model and on the command line.
+
+See [#100](https://github.com/gsdlab/clafer/issues/100) for the design.
 
 ### Integer range of the Choco output
 
