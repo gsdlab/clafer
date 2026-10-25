@@ -215,10 +215,8 @@ runCompiler    mURL         args'         modelFiles =
       putStrLn $ "\nCompile error at " ++ errorPosition l c ++ "..."
       putStrLn mesg
       exitFailure
-  -- "line 3 column 5" in a single file; "file.cfr:3:5" in a model with imports
-  errorPosition l c = case modelFiles of
-    [_] -> "line " ++ show l ++ " column " ++ show c
-    _   -> let (path, l') = modelPosition modelFiles l in path ++ ":" ++ show l' ++ ":" ++ show c
+  -- the file and the position in it: "file.cfr:3:5"
+  errorPosition l c = let (path, l') = modelPosition modelFiles l in path ++ ":" ++ show l' ++ ":" ++ show c
 
 save :: MonadIO m => ClaferArgs -> ClaferT m [ String ]
 save args'=

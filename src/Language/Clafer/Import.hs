@@ -109,18 +109,20 @@ readModel args' = do
   runExceptT $ do
     let root = file args'
         rootLocation = location root
+        -- the name of the model in messages
+        rootName = if null root then "<stdin>" else root
     text <- withNewline <$> if null root then liftIO getContents else readLocation manager "" rootLocation
-    rootOptions <- liftEither $ either (Left . inFile root) Right $ fileOptions text
-    rootImports <- liftEither $ either (Left . inFile root) Right $ mapM (importLocation rootLocation) (imports rootOptions)
+    rootOptions <- liftEither $ either (Left . inFile rootName) Right $ fileOptions text
+    rootImports <- liftEither $ either (Left . inFile rootName) Right $ mapM (importLocation rootLocation) (imports rootOptions)
     rootKey <- if null root then return [] else (:[]) <$> key rootLocation
     imported <- flip execStateT ([], []) $
-      forM_ (map location (imports args') ++ rootImports) $ visit manager [ (k, root) | k <- rootKey ]
-    options <- liftEither $ combineOptions (snd imported) (root, rootOptions)
+      forM_ (map location (imports args') ++ rootImports) $ visit manager [ (k, rootName) | k <- rootKey ]
+    options <- liftEither $ combineOptions (snd imported) (rootName, rootOptions)
     let localName = case rootLocation of
           Local path -> path
           Remote uri -> case takeFileName (unEscapeString (uriPath uri)) of { "" -> "model.cfr"; name -> name }
     return ( (withDefaultMode $ mergeArgs args' options){file = localName}
-           , map fst (snd imported) ++ [ModelFile (showLocation rootLocation) text] )
+           , map fst (snd imported) ++ [ModelFile (if null root then rootName else showLocation rootLocation) text] )
   where
   -- the stack of the importing files (key and name), to report cycles
   visit :: IORef (Maybe Manager) -> [(String, String)] -> Location -> StateT ([String], [(ModelFile, ClaferArgs)]) (ExceptT String IO) ()
@@ -202,7 +204,7 @@ combineOptions imported (root, rootOptions) = do
     case [ path | (path, options) <- files, isDifferent options rootOptions ] of
       []    -> return ()
       paths -> Left $ "The option " ++ name' ++ " must be the same in all files of the model: it differs in "
-                 ++ intercalate ", " paths ++ " from " ++ (if null root then "the model" else root)
+                 ++ intercalate ", " paths ++ " from " ++ root
   return rootOptions
     { mode                = nub $ concatMap mode all'
     , imports             = nub $ concatMap imports all'
