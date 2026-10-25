@@ -260,6 +260,19 @@ Common flags:
                                           the model's folder or URL; options of
                                           the imported files are combined with
                                           the model's. Can be repeated.
+     --import-root=DIR                    Allow only local imports inside
+                                          DIR, after resolving '..' and
+                                          symbolic links (command line only).
+                                          Can be repeated; without it, any
+                                          local file can be imported.
+     --public-imports                     Allow only URL imports from public
+                                          addresses, not from loopback,
+                                          private, or link-local ones, without
+                                          a proxy (command line only).
+     --import-base=URL                    The URL from which the model's text
+                                          was read: its imports are relative to
+                                          the URL, and can only be URLs
+                                          (command line only).
   -? --help                               Display help message
   -V --version                            Print version information
      --numeric-version                    Print just the version number
@@ -307,6 +320,8 @@ or `clafer System.cfr --import=design-space.cfr`. The option can be repeated.
 * All files share one namespace, as if they were concatenated: a clafer defined in one file can be used in the others, and the same top-level name in two files is an error. There are no qualified names or separate compilation.
 * The outputs are named after the compiled model (`System.als`, `System.js`, ...), in the current directory for a model read from a URL. Errors give the file in which they are, as in a model of one file: `Compile error at design-space.cfr:12:5...`. The spans of the JSON IR name their file (`{"file": "design-space.cfr", "start": …, "end": …}`), and the HTML output shows each file under its name.
 * The options of all files are combined: the largest `--maxint`, `--tl` and `--timeout-analysis`, the smallest `--minint`, all modes and imports; `-k`, `-c`, `--check-afm` and `-i` if any file has them, `-f` only if all files have it. The layout (`-l`, `--nl`) and the scope strategy (`--ss`) must be the same in all files. Options of the compilation rather than of the model (`-o`, `-s`, `-v`, `--tooldir`, `-a`, `--self-contained`, `--add-graph`, `--sr`, `--add-comments`, `--meta-data`) are only allowed in the compiled model and on the command line.
+
+* A model that may come from anyone, e.g., in a web tool, is compiled with options that restrict its imports, which only the command line can give: `--import-root=DIR` allows local imports only inside the given folders (after resolving `..` and symbolic links), `--public-imports` allows URL imports only from public addresses, and `--import-base=URL` resolves the imports of a model whose text was read from that URL. `-v` and `--tooldir`, which run tools, can only be given on the command line too: in `//# OPTIONS`, these options are an error.
 
 See [#100](https://github.com/gsdlab/clafer/issues/100) for the design.
 

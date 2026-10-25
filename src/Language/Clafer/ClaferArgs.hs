@@ -72,6 +72,9 @@ data ClaferArgs = ClaferArgs {
       minint :: Maybe Integer,
       maxint :: Maybe Integer,
       imports :: [FilePath],
+      import_root :: [FilePath],
+      public_imports :: Bool,
+      import_base :: String,
       file :: FilePath
     } deriving (Eq, Show, Data, Typeable)
 
@@ -102,6 +105,9 @@ clafer = ClaferArgs {
   minint              = def &= help "Smallest integer value ('choco' mode only). Default: -128, chosen by chocosolver." &= typ "INT" &= explicit &= name "minint",
   maxint              = def &= help "Largest integer value ('choco' mode only). Default: 127, chosen by chocosolver." &= typ "INT" &= explicit &= name "maxint",
   imports             = def &= help "Compile the model with the model in FILE (a path or an http/https URL), which is compiled before it (and only once, if imported by several files). In '//# OPTIONS', FILE is relative to the model's folder or URL; options of the imported files are combined with the model's. Can be repeated." &= typFile &= explicit &= name "import",
+  import_root         = def &= help "Allow only local imports inside DIR, after resolving '..' and symbolic links (command line only). Can be repeated; without it, any local file can be imported." &= typDir &= explicit &= name "import-root",
+  public_imports      = def &= help "Allow only URL imports from public addresses, not from loopback, private, or link-local ones, without a proxy (command line only)." &= explicit &= name "public-imports",
+  import_base         = def &= help "The URL from which the model's text was read: its imports are relative to the URL, and can only be URLs (command line only)." &= typ "URL" &= explicit &= name "import-base",
   file                = def &= args   &= typ "FILE"
  } &= summary ("Clafer " ++ showVersion Paths_clafer.version) &= program "clafer"
 
@@ -145,6 +151,9 @@ mergeArgs a1 a2  = ClaferArgs
   , minint = mergeArg minint
   , maxint = mergeArg maxint
   , imports = imports a1 ++ filter (`notElem` imports a1) (imports a2)
+  , import_root = mergeArg import_root
+  , public_imports = mergeArg public_imports
+  , import_base = mergeArg import_base
   , file = mergeArg file
   }
   where
@@ -189,5 +198,8 @@ defaultClaferArgs = ClaferArgs
   , minint = Nothing
   , maxint = Nothing
   , imports = []
+  , import_root = []
+  , public_imports = False
+  , import_base = ""
   , file = ""
   }

@@ -36,7 +36,8 @@ import Language.ClaferT (CErr (..), ErrPos (..), modifyEnv)
 import Language.Clafer.Generator.Html (highlightErrorsIn)
 
 import Network.URI (parseURI)
-import System.Directory (createDirectoryIfMissing, getTemporaryDirectory, removeDirectoryRecursive)
+import Network.Socket (tupleToHostAddress)
+import System.Directory (createDirectoryIfMissing, createDirectoryLink, createFileLink, getTemporaryDirectory, removeDirectoryRecursive)
 
 import Suite.SimpleScopeAnalyser
 import Suite.Redefinition
@@ -290,7 +291,7 @@ case_Imports = do
             Right _      -> assertFailure $ name ++ " was read"
     failsWith "c1.cfr" "Import cycle: "
     failsWith "missing.cfr" "nothere.cfr does not exist"
-    failsWith "run.cfr" "the options -v can only be given in the compiled model"
+    failsWith "run.cfr" "the option -v can only be given on the command line"
     failsWith "nl.cfr" "The option --nl must be the same in all files"
     removeDirectoryRecursive dir
 
@@ -348,6 +349,49 @@ instance Aeson.FromJSON SpanInFile where
     start <- o Aeson..: fromString "start"
     l <- start Aeson..: fromString "line"
     return $ SpanInFile f l
+
+{-
+A model which may come from anyone (e.g., in a web tool) is compiled with --import-root: a
+local import must be inside one of the roots, after resolving .. and symbolic links. The
+options that run tools or restrict the imports cannot be set in //# OPTIONS.
+-}
+case_ImportRestrictions :: Assertion
+case_ImportRestrictions = do
+    tmp <- getTemporaryDirectory
+    let dir = tmp ++ "/clafer-test-roots"
+        path name = dir ++ "/" ++ name
+    createDirectoryIfMissing True (path "session")
+    createDirectoryIfMissing True (path "Examples")
+    writeFile (path "Examples/lib.cfr") "abstract Lib\n"
+    writeFile (path "outside.cfr") "abstract Outside\n"
+    createDirectoryLink (path "Examples") (path "session/Examples")
+    createFileLink (path "outside.cfr") (path "session/escape.cfr")
+    let compileWith imports' = do
+          writeFile (path "session/model.cfr") $ "//# OPTIONS " ++ imports' ++ "\nA\n"
+          readModel claferDefaults{file = path "session/model.cfr", import_root = [path "session", path "Examples"]}
+        allowed imports' = compileWith imports' >>= \r -> either (\m -> assertFailure $ imports' ++ ": " ++ m) (const $ return ()) r
+        refused imports' expected = compileWith imports' >>= \r -> case r of
+          Left message -> (expected `isInfixOf` message) @? imports' ++ ": " ++ message
+          Right _      -> assertFailure $ imports' ++ " was read"
+        outside = "is outside the folders from which files can be imported"
+    allowed "--import=Examples/lib.cfr"
+    refused "--import=../outside.cfr" outside
+    refused ("--import=" ++ path "outside.cfr") outside
+    refused "--import=escape.cfr" outside
+    refused "--import=../nothere.cfr" outside
+    refused "--import=nothere.cfr" "does not exist"
+    refused "-v" "the option -v can only be given on the command line"
+    refused "--tooldir=/tmp --import-root=/" "the options --tooldir, --import-root can only be given on the command line"
+    refused "--public-imports --import-base=http://example.org/" "the options --public-imports, --import-base can only be given"
+    removeDirectoryRecursive dir
+
+case_PublicAddresses :: Assertion
+case_PublicAddresses = do
+    let public = isPublicAddress . tupleToHostAddress
+    map public [(8, 8, 8, 8), (140, 82, 112, 3), (172, 32, 0, 1), (100, 128, 0, 1)] @?= [True, True, True, True]
+    map public [ (127, 0, 0, 1), (10, 1, 2, 3), (172, 16, 0, 1), (192, 168, 1, 1), (169, 254, 169, 254)
+               , (0, 0, 0, 0), (100, 64, 0, 1), (224, 0, 0, 1), (255, 255, 255, 255), (198, 18, 0, 1) ]
+        @?= replicate 10 False
 
 {-
 An import is relative to the importing file: to its folder, or to its URL. A
