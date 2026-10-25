@@ -21,12 +21,15 @@
  SOFTWARE.
 -}
 import Control.Lens
+import qualified Data.Aeson as Aeson
 import Data.Data.Lens
 import Data.List
 import qualified Data.Map as Map
 import Data.Maybe
+import Data.String (fromString)
 import Language.Clafer
 import Language.Clafer.QNameUID
+import Language.Clafer.Front.AbsClafer (noSpan)
 import Language.Clafer.Intermediate.Intclafer
 
 import Suite.SimpleScopeAnalyser
@@ -139,6 +142,29 @@ case_ApostrophesNotInUIDs = do
     ("sig c0_same__prime__" `isInfixOf` alloy && "sig c1_same__prime__" `isInfixOf` alloy) @? "Alloy: same' and same__prime__ are not two signatures\n" ++ alloy
     not ("c0_same'" `isInfixOf` choco) @? "Choco: an apostrophe in a UID\n" ++ choco
     ("c0_same__prime__ = c0_A.addChild(\"c0_same__prime__\")" `isInfixOf` choco) @? "Choco: same' is not declared as c0_same__prime__\n" ++ choco
+
+{-
+The JSON IR has the source positions of the clafers and expressions: lines and
+columns from 1, with an exclusive end; a tab advances to the next column 8k+1.
+-}
+positionsModel :: String
+positionsModel = "A\n  b ?\nC\n\td ?\n[ some b ]\n"
+
+case_JsonPositions :: Assertion
+case_JsonPositions = do
+    let
+        (Just (iModule, _, _)) = cIr $ claferEnv $ fromJust $ Map.lookup Alloy $ fromRight $ compileOneFragment defaultClaferArgs positionsModel
+        clafers :: [ IClafer ]
+        clafers = universeOn biplate iModule
+        posOf name = [ Aeson.toJSON $ _cinPos c | c <- clafers, _ident c == name ]
+        constraintPos = [ Aeson.toJSON $ _inPos e | IEConstraint _ e <- _mDecls iModule ]
+        jsonSpan (l1, c1) (l2, c2) = Aeson.object [ (fromString "start", jsonPos l1 c1), (fromString "end", jsonPos l2 c2) ]
+        jsonPos :: Integer -> Integer -> Aeson.Value
+        jsonPos l c = Aeson.object [ (fromString "line", Aeson.toJSON l), (fromString "column", Aeson.toJSON c) ]
+    posOf "b" == [ jsonSpan (2, 3) (2, 6) ] @? "Position of b: " ++ show (posOf "b")
+    posOf "d" == [ jsonSpan (4, 9) (4, 12) ] @? "Position of d, indented with a tab: " ++ show (posOf "d")
+    constraintPos == [ jsonSpan (5, 3) (5, 9) ] @? "Position of the constraint: " ++ show constraintPos
+    Aeson.toJSON noSpan == Aeson.Null @? "noSpan is not null"
 
 {-
 An abstract clafer which no concrete clafer extends is removed, unless a

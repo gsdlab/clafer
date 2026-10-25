@@ -1,6 +1,7 @@
 ##### Clafer Version 0.5.4, unreleased
 
 * Clafer names with apostrophes (`same'`) work with Alloy and Choco: an apostrophe is not allowed in their identifiers (in Alloy 6, it is the next-state operator), so it becomes `__prime__` in the clafer's UID (`c0_same__prime__`); the name keeps it. Such models are not counted as able to skip the name resolver.
+* JSON output: the IR has the source positions of the clafers (`_cinPos`) and expressions (`_inPos`), which were always `null`: `{"start": {"line": 2, "column": 3}, "end": {"line": 2, "column": 6}}`, with lines and columns from 1 and an exclusive end. A tab advances the column to the next multiple of 8, plus 1, as in the compiler's error messages. The span of a clafer with children ends one or two columns after its last token, at the closing brace that the layout resolver inserts. Desugared expressions without a position in the model are still `null`.
 * HTML output: comments are escaped and shown as written (`--add-comments`); markup in a comment was rendered, and `--` in a `//#` comment could end the generated HTML comment early.
 
 ##### Clafer Version 0.5.3, Oct 15, 2026
