@@ -66,15 +66,13 @@ one sig root
 , r_c0_TrafficLight_3 : c0_TrafficLight_3 -> State
 , r_c0_TrafficLight_H : c0_TrafficLight_H -> State
 , r_c0_TrafficLight_4 : c0_TrafficLight_4 -> State
-, r_c0_TrafficLight_5 : c0_TrafficLight_5 -> State
-, r_c5_normal : c5_normal -> State }
+, r_c0_TrafficLight_5 : c0_TrafficLight_5 -> State }
 { all t : State | one r_c0_t1.t && 
 	one r_c0_t2.t && 
 	one r_c0_t3.t && 
 	one r_c0_events.t && 
 	one r_c0_TrafficLight_4.t && 
-	one r_c0_TrafficLight_5.t && 
-	one r_c5_normal.t }
+	one r_c0_TrafficLight_5.t }
 
 abstract sig c0_TrafficLight_1
 { r_c0_on : c0_on -> State
@@ -574,34 +572,37 @@ sig c4_off
 
 
 sig c0_TrafficLight_5
-{ r_c5_on : c5_on -> State }
+{ r_c5_on : c5_on -> State
+, r_c5_off : c5_off -> State }
 { lone localFirst[r_c0_TrafficLight_5, root, this] && lone r_c0_TrafficLight_5.State.this && total[r_c0_TrafficLight_5,c0_TrafficLight_5]
   all t : State | lone r_c5_on.t && 
-	(no r_c0_TrafficLight_5.t.this => no r_c5_on.t)
-  all t : State | let children = (r_c5_on.t) | one children }
+	lone r_c5_off.t && 
+	(no r_c0_TrafficLight_5.t.this => no r_c5_on.t && no r_c5_off.t)
+  all t : State | let children = (r_c5_on.t + r_c5_off.t) | one children }
 
 sig c5_on
-{}
-{ lone localFirst[r_c5_on, c0_TrafficLight_5, this] && lone r_c5_on.State.this && total[r_c5_on,c5_on] }
-
-
+{ r_c5_normal : c5_normal -> State
+, r_c5_flashing : c5_flashing -> State }
+{ lone localFirst[r_c5_on, c0_TrafficLight_5, this] && lone r_c5_on.State.this && total[r_c5_on,c5_on]
+  all t : State | lone r_c5_normal.t && 
+	lone r_c5_flashing.t && 
+	(no r_c5_on.t.this => no r_c5_normal.t && no r_c5_flashing.t)
+  all t : State | let children = (r_c5_normal.t + r_c5_flashing.t) | one children }
 
 sig c5_normal
-{ r_c5_flashing : c5_flashing -> State }
-{ lone localFirst[r_c5_normal, root, this] && lone r_c5_normal.State.this && total[r_c5_normal,c5_normal]
-  all t : State | one r_c5_flashing.t && 
-	(no r_c5_normal.t.this => no r_c5_flashing.t) }
+{}
+{ lone localFirst[r_c5_normal, c5_on, this] && lone r_c5_normal.State.this && total[r_c5_normal,c5_normal] }
+
 
 sig c5_flashing
-{ r_c5_off : c5_off -> State }
-{ lone localFirst[r_c5_flashing, c5_normal, this] && lone r_c5_flashing.State.this && total[r_c5_flashing,c5_flashing]
-  all t : State | one r_c5_off.t && 
-	(no r_c5_flashing.t.this => no r_c5_off.t) }
+{}
+{ lone localFirst[r_c5_flashing, c5_on, this] && lone r_c5_flashing.State.this && total[r_c5_flashing,c5_flashing] }
+
+
 
 sig c5_off
 {}
-{ lone localFirst[r_c5_off, c5_flashing, this] && lone r_c5_off.State.this && total[r_c5_off,c5_off] }
-
+{ lone localFirst[r_c5_off, c0_TrafficLight_5, this] && lone r_c5_off.State.this && total[r_c5_off,c5_off] }
 
 
 

@@ -200,17 +200,14 @@ a[href$='Ambiguous name'] {color: yellow}
 <div>
 <span class="keyword">xor</span> <span class="claferDecl" id="c0_TrafficLight_5">TrafficLight_5</span> 1
   <div class="indent">
-  <span class="keyword">xor</span> <span class="claferDecl" id="c5_on">on</span></div>
-</div>
-
-
-<div>
-<span class="claferDecl" id="c5_normal">normal</span>
-  <div class="indent">
-  <span class="claferDecl" id="c5_flashing">flashing</span>
+  <span class="keyword">xor</span> <span class="claferDecl" id="c5_on">on</span>
     <div class="indent">
-    <span class="claferDecl" id="c5_off">off</span></div>
+    <span class="claferDecl" id="c5_normal">normal</span></div>
+    <div class="indent">
+    <span class="claferDecl" id="c5_flashing">flashing</span></div>
   </div>
+  <div class="indent">
+  <span class="claferDecl" id="c5_off">off</span></div>
 </div>
 
 </body>
