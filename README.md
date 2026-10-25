@@ -164,13 +164,11 @@ Development versions from branches `develop` should work well together but this 
 #### Note:
 > On Windows, use `/` with the `make` command instead of `\`, e.g., `make install to=/c/clafer-tools-0.5.4/`
 
-## Integration with Sublime Text 2/3
+## Integration with text editors
 
-See [ClaferToolsST](https://github.com/gsdlab/ClaferToolsST)
-
-## Integration with VIM
-
-See [clafer-vim](https://github.com/wasowski/clafer-vim)
+* VS Code: [clafer-vscode](https://github.com/gsdlab/clafer-vscode)
+* Sublime Text 4: [ClaferToolsST](https://github.com/gsdlab/ClaferToolsST)
+* VIM: [clafer-vim](https://github.com/wasowski/clafer-vim)
 
 ## Usage
 
