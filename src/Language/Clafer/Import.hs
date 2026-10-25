@@ -28,6 +28,10 @@ each only once; their options are combined with the model's ('combineOptions').
 A model and its imports are local files or URLs (@http://@, @https://@). An import is
 relative to the importing file: to its folder, or to its URL. A model read from a URL
 may only import URLs.
+
+An import must be a @.cfr@ file: a URL's path must end with @.cfr@, also after a redirect, and
+a URL served as HTML, JSON or XML is refused. Then a model, which may come from anyone (e.g.,
+in a web tool), cannot read other files or web pages, whose text the errors would show.
 -}
 module Language.Clafer.Import
   ( ModelFile (..)
@@ -41,6 +45,8 @@ module Language.Clafer.Import
   , modelPosition
   , fileStarts
   , isPublicAddress
+  , isModelPath
+  , isModelContentType
   ) where
 
 import Control.Exception (IOException, bracketOnError, catch, displayException, fromException, try)
@@ -48,17 +54,21 @@ import Control.Monad
 import Control.Monad.Except
 import Control.Monad.State
 import qualified Data.ByteString as B
+import qualified Data.ByteString.Char8 as BC
 import Data.IORef
-import Data.List (find, intercalate, isPrefixOf, nub)
+import Data.Char (isSpace, toLower)
+import Data.List (dropWhileEnd, find, intercalate, isPrefixOf, isSuffixOf, nub)
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
 import Data.Text.Encoding.Error (lenientDecode)
 import Data.Default (def)
 import qualified Network.Connection as NC
-import Network.HTTP.Client (BodyReader, HttpException (..), HttpExceptionContent (..), Manager, ManagerSettings (..), brRead, managerSetProxy, newManager, noProxy, parseUrlThrow, responseBody, responseStatus, responseTimeoutMicro, withResponse)
+import Network.HTTP.Client (BodyReader, HttpException (..), HttpExceptionContent (..), Manager, ManagerSettings (..), brRead, getOriginalRequest, getUri, managerSetProxy, newManager, noProxy, parseUrlThrow, responseBody, responseHeaders, responseStatus, responseTimeoutMicro, withResponse)
+import qualified Network.HTTP.Client as HC (path)
 import Network.HTTP.Client.Internal (Connection, makeConnection)
 import Network.HTTP.Client.TLS (newTlsManager, tlsManagerSettings)
 import Network.Socket (AddrInfo (..), Family (AF_INET), HostAddress, SockAddr (..), SocketType (Stream), close, connect, defaultHints, getAddrInfo, hostAddressToTuple, socket)
+import Network.HTTP.Types.Header (hContentType)
 import Network.HTTP.Types.Status (statusCode, statusMessage)
 import Network.URI (URI (..), escapeURIString, isUnescapedInURI, parseAbsoluteURI, parseRelativeReference, relativeTo, unEscapeString, uriToString)
 import System.Console.CmdArgs (cmdArgsValue)
@@ -123,7 +133,7 @@ readModel args' = do
         -- the location of the model for its imports: where its text is, or --import-base
         baseLocation = if null (import_base args') then rootLocation else location (import_base args')
         fetch = readLocation (public_imports args') manager
-    text <- withNewline <$> if null root then liftIO getContents else fetch "" rootLocation
+    text <- withNewline <$> if null root then liftIO getContents else fetch False "" rootLocation
     rootOptions <- liftEither $ either (Left . inFile rootName) Right $ fileOptions text
     rootImports <- liftEither $ either (Left . inFile rootName) Right $ mapM (importLocation baseLocation) (imports rootOptions)
     rootKey <- if null root then return [] else (:[]) <$> key baseLocation
@@ -137,18 +147,20 @@ readModel args' = do
            , map fst (snd imported) ++ [ModelFile (if null root then rootName else showLocation rootLocation) text] )
   where
   -- the stack of the importing files (key and name), to report cycles
-  visit :: (String -> Location -> ExceptT String IO String) -> [FilePath] -> [(String, String)] -> Location -> StateT ([String], [(ModelFile, ClaferArgs)]) (ExceptT String IO) ()
+  visit :: (Bool -> String -> Location -> ExceptT String IO String) -> [FilePath] -> [(String, String)] -> Location -> StateT ([String], [(ModelFile, ClaferArgs)]) (ExceptT String IO) ()
   visit fetch roots stack loc = do
     let importer = maybe "the command line" snd $ safeHead stack
         name = showLocation loc
     -- before anything is known about the file, e.g., whether it exists
+    unless (isModelPath $ locationPath loc) $
+      throwError $ inFile importer $ "the import " ++ name ++ " is not a .cfr file"
     lift $ insideRoots importer roots loc
     k <- lift $ either (const $ return name) return =<< liftIO (runExceptT (key loc))
     when (k `elem` map fst stack) $
       throwError $ "Import cycle: " ++ intercalate " imports " (reverse (name : map snd (takeWhile ((/= k) . fst) stack) ++ [name]))
     done <- gets fst
     unless (k `elem` done) $ do
-      text <- withNewline <$> lift (fetch importer loc)
+      text <- withNewline <$> lift (fetch True importer loc)
       options <- either (throwError . inFile name) return $ fileOptions text
       locations <- either (throwError . inFile name) return $ mapM (importLocation loc) (imports options)
       forM_ locations $ visit fetch roots ((k, name) : stack)
@@ -160,7 +172,22 @@ readModel args' = do
     if exists then liftIO (canonicalizePath path) else return path
   key loc@(Remote _) = return $ showLocation loc
   safeHead xs = case xs of { x : _ -> Just x; [] -> Nothing }
+  locationPath (Local path) = path
+  locationPath (Remote uri) = unEscapeString $ uriPath uri
   withDefaultMode a = if null (mode a) then a{mode = [Alloy]} else a
+
+-- | Whether a path names a Clafer model: it ends with @.cfr@.
+isModelPath :: String -> Bool
+isModelPath = (".cfr" `isSuffixOf`)
+
+-- | Whether a URL's Content-Type may be a Clafer model: not HTML, JSON or XML, which web pages
+--   and services are served as, whatever their URLs.
+isModelContentType :: Maybe B.ByteString -> Bool
+isModelContentType Nothing = True
+isModelContentType (Just value) = not $
+  mediaType `elem` ["text/html", "application/xhtml+xml", "application/json", "text/json", "application/xml", "text/xml"]
+  || any (`isSuffixOf` mediaType) ["+json", "+xml"]
+  where mediaType = map toLower $ dropWhileEnd isSpace $ dropWhile isSpace $ takeWhile (/= ';') $ BC.unpack value
 
 -- | With import roots (--import-root), a local file must be inside one of them, after resolving
 --   @..@ and symbolic links.
@@ -176,22 +203,32 @@ maxDownload :: Int
 maxDownload = 16 * 1024 * 1024
 
 -- | Reads a file or downloads a URL, from a public address only if @public@; the importer names
---   the file importing it, for messages.
-readLocation :: Bool -> IORef (Maybe Manager) -> String -> Location -> ExceptT String IO String
-readLocation _ _ importer (Local path) = do
+--   the file importing it, for messages. An import, downloaded after redirects, must still be a
+--   @.cfr@ file and not be served as a web page ('isModelContentType').
+readLocation :: Bool -> IORef (Maybe Manager) -> Bool -> String -> Location -> ExceptT String IO String
+readLocation _ _ _ importer (Local path) = do
   exists <- liftIO $ doesFileExist path
   unless exists $ throwError $ inFile importer $ "the file " ++ path ++ " does not exist"
   liftIO $ IO.withFile path IO.ReadMode $ \h -> do
     s <- IO.hGetContents h
     length s `seq` return s
-readLocation public managerRef importer loc@(Remote uri) = do
+readLocation public managerRef isImport importer loc@(Remote uri) = do
   manager <- liftIO $ readIORef managerRef >>= maybe (newManager' >>= \m -> writeIORef managerRef (Just m) >> return m) return
   result <- liftIO $ try $ do
     request <- parseUrlThrow $ showLocation loc
-    withResponse request manager $ readBody 0 [] . responseBody
+    withResponse request manager $ \response -> do
+      -- the request of the response, after redirects
+      let final = getOriginalRequest response
+          contentType = lookup hContentType $ responseHeaders response
+      if isImport && not (isModelPath $ unEscapeString $ BC.unpack $ HC.path final)
+      then return $ Left $ "redirected to " ++ uriToString id (getUri final) "" ++ ", which is not a .cfr file"
+      else if isImport && not (isModelContentType contentType)
+      then return $ Left $ "it is served as " ++ maybe "" BC.unpack contentType ++ ", not as a Clafer model"
+      else maybe (Left $ "larger than " ++ show (maxDownload `div` (1024 * 1024)) ++ " MB") Right
+             <$> readBody 0 [] (responseBody response)
   case result of
-    Right Nothing -> throwError $ inFile importer $ "cannot read " ++ showLocation loc ++ ": larger than " ++ show (maxDownload `div` (1024 * 1024)) ++ " MB"
-    Right (Just body) -> return $ T.unpack $ TE.decodeUtf8With lenientDecode body
+    Right (Left problem) -> throwError $ inFile importer $ "cannot read " ++ showLocation loc ++ ": " ++ problem
+    Right (Right body) -> return $ T.unpack $ TE.decodeUtf8With lenientDecode body
     Left (HttpExceptionRequest _ (StatusCodeException response _)) ->
       throwError $ inFile importer $ "cannot read " ++ showLocation loc ++ ": HTTP "
         ++ show (statusCode $ responseStatus response) ++ " " ++ T.unpack (TE.decodeUtf8With lenientDecode $ statusMessage $ responseStatus response)

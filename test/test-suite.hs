@@ -37,7 +37,7 @@ import Language.Clafer.Generator.Html (highlightErrorsIn)
 
 import Network.URI (parseURI)
 import Network.Socket (tupleToHostAddress)
-import System.Directory (createDirectoryIfMissing, createDirectoryLink, createFileLink, getTemporaryDirectory, removeDirectoryRecursive)
+import System.Directory (createDirectoryIfMissing, createDirectoryLink, createFileLink, getTemporaryDirectory, removeDirectoryRecursive, removePathForcibly)
 
 import Suite.SimpleScopeAnalyser
 import Suite.Redefinition
@@ -360,6 +360,7 @@ case_ImportRestrictions = do
     tmp <- getTemporaryDirectory
     let dir = tmp ++ "/clafer-test-roots"
         path name = dir ++ "/" ++ name
+    removePathForcibly dir  -- left by a failed run
     createDirectoryIfMissing True (path "session")
     createDirectoryIfMissing True (path "Examples")
     writeFile (path "Examples/lib.cfr") "abstract Lib\n"
@@ -380,6 +381,8 @@ case_ImportRestrictions = do
     refused "--import=escape.cfr" outside
     refused "--import=../nothere.cfr" outside
     refused "--import=nothere.cfr" "does not exist"
+    refused "--import=../../../etc/hostname" "etc/hostname is not a .cfr file"
+    refused "--import=http://example.org/index.php?x=.cfr" "is not a .cfr file"
     refused "-v" "the option -v can only be given on the command line"
     refused "--tooldir=/tmp --import-root=/" "the options --tooldir, --import-root can only be given on the command line"
     refused "--public-imports --import-base=http://example.org/" "the options --public-imports, --import-base can only be given"
@@ -392,6 +395,19 @@ case_PublicAddresses = do
     map public [ (127, 0, 0, 1), (10, 1, 2, 3), (172, 16, 0, 1), (192, 168, 1, 1), (169, 254, 169, 254)
                , (0, 0, 0, 0), (100, 64, 0, 1), (224, 0, 0, 1), (255, 255, 255, 255), (198, 18, 0, 1) ]
         @?= replicate 10 False
+
+{-
+An import must be a .cfr file, and a URL import must not be served as a web page.
+-}
+case_ModelFilesOnly :: Assertion
+case_ModelFilesOnly = do
+    map isModelPath ["lib.cfr", "/models/design space.cfr"] @?= [True, True]
+    map isModelPath ["/etc/hostname", "/index.php", "lib.cfr.bak", ""] @?= replicate 4 False
+    map (isModelContentType . fmap fromString) [Nothing, Just "text/plain; charset=utf-8", Just "application/octet-stream"]
+        @?= [True, True, True]
+    map (isModelContentType . Just . fromString)
+        ["text/html", "Text/HTML; charset=UTF-8", "application/json", "application/problem+json", "application/xml", "image/svg+xml"]
+        @?= replicate 6 False
 
 {-
 An import is relative to the importing file: to its folder, or to its URL. A
