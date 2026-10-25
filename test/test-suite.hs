@@ -207,6 +207,29 @@ case_UnsatisfiableGroupRejected = do
     compiles "2..* many\n   x *\n" @? "2..* over x * rejected"
 
 {-
+A child without a multiplicity is mandatory under the default group (no group
+cardinality or 0..*) and optional under a keyword group, opt included, also when
+the group is inherited, or under another range. Only keywords set _isKeyword.
+-}
+childDefaultsModel :: String
+childDefaultsModel = "opt Extras\n  sunroof\nabstract opt Options\n  usb\nCar : Options\n  towbar\nxor Engine\n  gas\n0..3 Colours\n  red\nPlain\n  seat\n0..* Free\n  x\n"
+
+case_ChildDefaultsOfGroups :: Assertion
+case_ChildDefaultsOfGroups = do
+    let
+        (Just (iModule, _, _)) = cIr $ claferEnv $ fromJust $ Map.lookup Alloy $ fromRight $ compileOneFragment defaultClaferArgs childDefaultsModel
+        clafers :: [ IClafer ]
+        clafers = universeOn biplate iModule
+        cardOf name = [ _card c | c <- clafers, _ident c == name ]
+        keywordOf name = [ _isKeyword <$> _gcard c | c <- clafers, _ident c == name ]
+        optional' = [ "sunroof", "usb", "towbar", "gas", "red" ]
+        mandatory = [ "seat", "x" ]
+    all (\n -> cardOf n == [Just (0, 1)]) optional' @? "Not optional: " ++ show (map cardOf optional')
+    all (\n -> cardOf n == [Just (1, 1)]) mandatory @? "Not mandatory: " ++ show (map cardOf mandatory)
+    map keywordOf ["Extras", "Car", "Engine", "Colours", "Free"] == map (\k -> [Just k]) [True, True, True, False, False]
+        @? "Wrong _isKeyword: " ++ show (map keywordOf ["Extras", "Car", "Engine", "Colours", "Free"])
+
+{-
 An abstract clafer which no concrete clafer extends is removed, unless a
 reference or a constraint names it: then it is kept, without instances.
 -}

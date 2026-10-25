@@ -167,7 +167,7 @@ data IReferenceModifier
 --   1..1   1..1 isKeyword = False
 data IGCard
   = IGCard
-    { _isKeyword :: Bool    -- ^ whether given by keyword: or, xor, mux
+    { _isKeyword :: Bool    -- ^ whether given by keyword: xor, or, mux, opt
     , _interval :: Interval
     } deriving (Eq,Ord,Show,Data,Typeable,Generic,ToJSON)
 

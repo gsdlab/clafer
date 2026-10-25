@@ -96,7 +96,8 @@ whereas duplicate values are allowed when declared using `->>` (bag).
 
 The number of instances of a clafer per each instance of its parent is restricted by multiplicity.
 The default multiplicity depends on the parent clafer's group cardinality:
-if the group is `0..*` then the default multiplicity is `1`, otherwise it is `0..1`.
+if the clafer has no group cardinality (or `0..*`), the default multiplicity is `1`;
+for a keyword (`xor`, `or`, `mux`, `opt`) or another range, it is `0..1`.
 Useful shorthands are
 `?` = `0..1`,
 `*` = `0..*`

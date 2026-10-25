@@ -223,10 +223,11 @@ analyzeCard env clafer = _card clafer `mplus` Just card'
   where
   card'
     | _isAbstract clafer = (0, -1)
-    | (isJust $ context env) && pGcard == (0, -1)
+    -- mandatory under the default group; optional under a keyword group (opt included) or a numeric one
+    | (isJust $ context env) && pGcard == IGCard False (0, -1)
       || (isTopLevel clafer) = (1, 1)
     | otherwise = (0, 1)
-  pGcard = _interval $ fromJust $ _gcard $ fromJust $ context env
+  pGcard = fromJust $ _gcard $ fromJust $ context env
 
 analyzeElement :: SEnv -> IElement -> IElement
 analyzeElement env x = case x of
