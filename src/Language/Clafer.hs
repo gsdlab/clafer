@@ -422,6 +422,8 @@ compile desugaredMod = do
 
     let spanList = foldMapIR gt1 imodule
     when (afm (args env) && spanList/="") $ throwErr (ClaferErr $ ("The model is not an attributed feature model.\nThe following places contain cardinality larger than 1:\n"++) spanList :: CErr Span)
+    let unsatisfiableGroups' = unsatisfiableGroups imodule
+    unless (null unsatisfiableGroups') $ throwErrs unsatisfiableGroups'
     putEnv $ env{ cIr = Just ir }
     where
       isKeyWord :: Ir -> String
@@ -492,6 +494,30 @@ iClaferBasedChecks iModule = (not (any hasReferenceToReal iClafers), null tempMo
     hasReferenceToReal _                                                 = False
     tempModifiers = filter hasTempModifier iClafers
     hasTempModifier (IClafer _ (IClaferModifiers _ isInitial' isFinal') _ _ _ _ _ _ _ _ _) = isInitial' || isFinal'
+
+-- | Errors for the groups of concrete clafers whose children, including the inherited ones,
+--   cannot have as many instances as the lower bound of the group cardinality requires,
+--   e.g., @xor@ over no children. The group cardinality may be inherited or redefined.
+unsatisfiableGroups :: IModule -> [CErr Span]
+unsatisfiableGroups iModule = mapMaybe groupErr iClafers
+  where
+    iClafers :: [ IClafer ]
+    iClafers = universeOn biplate iModule
+    uidIClaferMap' = createUidIClaferMap iModule
+    groupErr c@IClafer{_cinPos, _ident, _gcard = Just IGCard{_interval = gcard'@(gMin, _)}}
+      | not (_isAbstract c) && gMin > 0 && maybe False (< gMin) maxInstances =
+          Just $ SemanticErr _cinPos $ "The group cardinality " ++ showInterval gcard' ++ " of " ++ _ident
+            ++ " cannot be satisfied: its children, including the inherited ones, can have at most "
+            ++ show (fromJust maxInstances) ++ " instances"
+      | otherwise = Nothing
+      where
+        children' = getSubclafers $ concatMap _elements $ findHierarchy getSuper uidIClaferMap' c
+        -- Nothing if a child has no upper bound
+        maxInstances = foldM addUpper 0 children'
+        addUpper n child = case _card child of
+          Just (_, m) | m >= 0 -> Just (n + m)
+          _                    -> Nothing
+    groupErr _ = Nothing
 
 -- | Generates outputs for the given IR.
 generate :: Monad m => ClaferT m (Map.Map ClaferMode CompilerResult)

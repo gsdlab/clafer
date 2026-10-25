@@ -187,6 +187,26 @@ case_CommentsNotInLayout = do
     startOf "on" == [(2, 15)] @? "Position of on changed: " ++ show (startOf "on")
 
 {-
+A group cardinality whose lower bound the children cannot reach is an error.
+The children include the inherited ones, and the group cardinality may be
+inherited or redefined: myGroup's 2..2 is satisfiable with d and the inherited
+a, b and c. An abstract clafer's group may get its children from subclafers.
+-}
+groupsModel :: String
+groupsModel = "abstract or SuperGroup\n   a ?\n   b ?\n   c ?\n\n2..2 myGroup : SuperGroup\n   d ?\n\nabstract xor Empty\nfilled : Empty\n   e ?\n   f ?\n"
+
+case_UnsatisfiableGroupRejected :: Assertion
+case_UnsatisfiableGroupRejected = do
+    let
+        compiles model' = either (const False) (const True) $ compileOneFragment defaultClaferArgs model'
+        errorsOf model' = either show (const "") $ compileOneFragment defaultClaferArgs model'
+    compiles groupsModel @? "Inherited children are not counted\n" ++ errorsOf groupsModel
+    ("of Mode cannot be satisfied" `isInfixOf` errorsOf "Phone\n   xor Mode\n") @? "xor over no children compiled: " ++ errorsOf "Phone\n   xor Mode\n"
+    ("of bare cannot be satisfied" `isInfixOf` errorsOf (groupsModel ++ "bare : Empty\n")) @? "Inherited xor over no children compiled"
+    ("of tooFew cannot be satisfied" `isInfixOf` errorsOf "3..* tooFew\n   x ?\n   y 0..1\n") @? "3..* over two optional children compiled"
+    compiles "2..* many\n   x *\n" @? "2..* over x * rejected"
+
+{-
 An abstract clafer which no concrete clafer extends is removed, unless a
 reference or a constraint names it: then it is kept, without instances.
 -}
