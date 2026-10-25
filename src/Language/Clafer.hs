@@ -397,7 +397,7 @@ parse =
     let model' = if (not $ no_layout args') && (new_layout args') then resLayout inputModel else inputModel
     let allTokens = myLexer model'
     let (parseableTokens, otherTokens') = partition isParseable allTokens
-    tokens2 <- if not ((new_layout args') || (no_layout args')) then resolveLayout parseableTokens else return parseableTokens
+    tokens2 <- if not ((new_layout args') || (no_layout args')) then resolveLayout otherTokens' parseableTokens else return parseableTokens
     return (pModule tokens2, otherTokens')
     where
       isParseable (PT _ (T_PosLineComment _))  = False

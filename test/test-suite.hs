@@ -29,7 +29,7 @@ import Data.Maybe
 import Data.String (fromString)
 import Language.Clafer
 import Language.Clafer.QNameUID
-import Language.Clafer.Front.AbsClafer (noSpan)
+import Language.Clafer.Front.AbsClafer (Span (..), noSpan)
 import Language.Clafer.Intermediate.Intclafer
 
 import Suite.SimpleScopeAnalyser
@@ -165,6 +165,26 @@ case_JsonPositions = do
     posOf "d" == [ jsonSpan (4, 9) (4, 12) ] @? "Position of d, indented with a tab: " ++ show (posOf "d")
     constraintPos == [ jsonSpan (5, 3) (5, 9) ] @? "Position of the constraint: " ++ show constraintPos
     Aeson.toJSON noSpan == Aeson.Null @? "noSpan is not null"
+
+{-
+Comments do not count in the layout: a line which starts with a comment is
+indented as if the comment was not there, at the column where it starts. The
+positions of the clafers are unchanged.
+-}
+commentLayoutModel :: String
+commentLayoutModel = "A\n  /*history*/ xor on\n    normal\n    flashing\n  /*history*/ off\n      // further right\n  B /* trailing */\n/* a block\n   comment */ C\n"
+
+case_CommentsNotInLayout :: Assertion
+case_CommentsNotInLayout = do
+    let
+        (Just (iModule, _, _)) = cIr $ claferEnv $ fromJust $ Map.lookup Alloy $ fromRight $ compileOneFragment defaultClaferArgs commentLayoutModel
+        clafers :: [ IClafer ]
+        clafers = universeOn biplate iModule
+        parentOf name = [ _parentUID c | c <- clafers, _ident c == name ]
+        startOf name = [ (l, c') | c <- clafers, _ident c == name, let Span (Pos l c') _ = _cinPos c ]
+    map parentOf ["on", "normal", "flashing", "off", "B", "C"] == map (:[]) ["c0_A", "c0_on", "c0_on", "c0_A", "c0_A", "root"]
+        @? "Wrong nesting: " ++ show (map parentOf ["on", "normal", "flashing", "off", "B", "C"])
+    startOf "on" == [(2, 15)] @? "Position of on changed: " ++ show (startOf "on")
 
 {-
 An abstract clafer which no concrete clafer extends is removed, unless a
