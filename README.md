@@ -3,7 +3,7 @@
 
 # Clafer, the language
 
-##### v0.5.3
+##### v0.5.4
 
 [Clafer](http://clafer.org) is a general-purpose lightweight structural and behavioral modeling language developed by
 [GSD Lab](http://gsd.uwaterloo.ca/), [University of Waterloo](http://uwaterloo.ca), and
@@ -82,7 +82,7 @@ Optional:
 
 ### Installation from binaries
 
-Binary distributions of the release 0.5.3 of Clafer Tools for Windows, Mac, and Linux,
+Binary distributions of the release 0.5.4 of Clafer Tools for Windows, Mac, and Linux,
 can be downloaded from
 [Clafer Tools - Binary Distributions](http://wiselab.uwaterloo.ca/clafer-tools-binary-distributions).
 
@@ -91,7 +91,7 @@ can be downloaded from
 
 ### Installation from Hackage
 
-Clafer is available on [Hackage](http://hackage.haskell.org/package/clafer-0.5.3/) and it can be installed using either [`stack`](https://haskellstack.org) or [`cabal-install`](https://hackage.haskell.org/package/cabal-install).
+Clafer is available on [Hackage](http://hackage.haskell.org/package/clafer-0.5.4/) and it can be installed using either [`stack`](https://haskellstack.org) or [`cabal-install`](https://hackage.haskell.org/package/cabal-install).
 
 #### Installation using `stack`
 
@@ -114,7 +114,7 @@ Dependencies
 1. `cabal update`
 2. `cabal install alex happy`
 3. `cabal install exe:clafer`
-4. on Windows `cd C:\Users\<user>\AppData\Roaming\cabal\x86_64-windows-ghc-9.6.7\clafer-0.5.3`
+4. on Windows `cd C:\Users\<user>\AppData\Roaming\cabal\x86_64-windows-ghc-9.6.7\clafer-0.5.4`
 5. on Linux `cd ~/.cabal/bin/`
 6. to automatically download the Alloy jar, execute
   * `make alloy6.2.0.jar`,
@@ -162,7 +162,7 @@ Development versions from branches `develop` should work well together but this 
   * `stack exec make install to=<target directory>` on Windows
 
 #### Note:
-> On Windows, use `/` with the `make` command instead of `\`, e.g., `make install to=/c/clafer-tools-0.5.3/`
+> On Windows, use `/` with the `make` command instead of `\`, e.g., `make install to=/c/clafer-tools-0.5.4/`
 
 ## Integration with Sublime Text 2/3
 
@@ -179,7 +179,7 @@ See [clafer-vim](https://github.com/wasowski/clafer-vim)
 (As printed by `clafer --help`)
 
 ```
-Clafer 0.5.3
+Clafer 0.5.4
 
 clafer [OPTIONS] [FILE]
 
