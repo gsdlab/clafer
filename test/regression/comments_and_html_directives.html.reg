@@ -13,12 +13,13 @@
 .error{background-color: yellow; color: red }
 .deprecated{color: orange }
 .indent{padding-left:20px}
+.file { font-weight: bold; border-bottom: 1px solid darkgray; margin: 1em 0 0.5em 0 }
 a[href$='Lookup failed'] {color: red}
 a[href$='Uid not found'] {color: red}
 a[href$='Ambiguous name'] {color: yellow}
 </style></head>
 <body>
-<!-- # FRAGMENT /-->
+<div class="file">positive/comments_and_html_directives.cfr</div>
 <!-- # OPTIONS - -self-contained - -add-graph - -add-comments /-->
 <div class="standalonecomment">// Comments and the //# FRAGMENT, STATS, SUMMARY and GRAPH directives in the HTML output with --add-comments; the &quot;N|&quot; prefixes are line numbers.</div>
 <!-- # STATS /-->
@@ -27,6 +28,8 @@ a[href$='Ambiguous name'] {color: yellow}
 7| &lt;code&gt;B&lt;/code&gt; and<br>
 8| optionally &lt;b&gt;C&lt;/b&gt;<br>
 */</div>
+
+<!-- # FRAGMENT /-->
 
 <div>
 <span class="claferDecl" id="c0_A">A</span>
@@ -37,8 +40,9 @@ a[href$='Ambiguous name'] {color: yellow}
   <span class="claferDecl" id="c0_C">C</span> ?</div>
 </div>
 
-<!-- # FRAGMENT /-->
 <span class="inlinecomment">// 14| C is important!</span>
+
+<!-- # FRAGMENT /-->
 <div class="standalonecomment">// 15| after-A inline comment</div>
 
 <div>

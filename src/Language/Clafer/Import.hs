@@ -38,6 +38,7 @@ module Language.Clafer.Import
   , combineOptions
   , modelText
   , modelPosition
+  , fileStarts
   ) where
 
 import Control.Exception (try)
@@ -239,6 +240,10 @@ combineOptions imported (root, rootOptions) = do
 -- | The text of the complete model: the files in order.
 modelText :: [ModelFile] -> String
 modelText = concatMap modelFileText
+
+-- | The files and the lines of the complete model where they start (lines from 1).
+fileStarts :: [ModelFile] -> [(Integer, FilePath)]
+fileStarts files = zip (scanl (+) 1 [ fromIntegral $ length $ filter (== '\n') text | ModelFile _ text <- files ]) (map modelFilePath files)
 
 -- | The file and the line in it of a line of the complete model (lines from 1).
 modelPosition :: [ModelFile] -> Integer -> (FilePath, Integer)

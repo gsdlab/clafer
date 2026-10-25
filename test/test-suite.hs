@@ -32,7 +32,8 @@ import Language.Clafer.Import
 import Language.Clafer.QNameUID
 import Language.Clafer.Front.AbsClafer (Span (..), noSpan)
 import Language.Clafer.Intermediate.Intclafer
-import Language.ClaferT (CErr (..), ErrPos (..))
+import Language.ClaferT (CErr (..), ErrPos (..), modifyEnv)
+import Language.Clafer.Generator.Html (highlightErrorsIn)
 
 import Network.URI (parseURI)
 import System.Directory (createDirectoryIfMissing, getTemporaryDirectory, removeDirectoryRecursive)
@@ -292,6 +293,61 @@ case_Imports = do
     failsWith "run.cfr" "the options -v can only be given in the compiled model"
     failsWith "nl.cfr" "The option --nl must be the same in all files"
     removeDirectoryRecursive dir
+
+{-
+The spans of the JSON IR and the HTML output give the files of the model: each span
+names its file, with the lines in that file, and the HTML shows each file under its
+name, also the errors' positions.
+-}
+filesModel :: [ModelFile]
+filesModel =
+  [ ModelFile "lib.cfr" "abstract L\n  x ?\n"
+  , ModelFile "m.cfr" "// the model\nA : L\n  [ x ]\n" ]
+
+-- | Compiles the files of a model, as the compiler does.
+compileFiles :: ClaferArgs -> [ModelFile] -> Either [ClaferErr] (Map.Map ClaferMode CompilerResult)
+compileFiles args' files = runClafer args' $ do
+    addModuleFragment $ modelText files
+    modifyEnv $ \env -> env{inputFiles = files}
+    parse
+    iModule <- desugar Nothing
+    compile iModule
+    generate
+
+case_SpansInFiles :: Assertion
+case_SpansInFiles = do
+    let results = fromRight $ compileFiles defaultClaferArgs{mode = [JSON, Html]} filesModel
+        output m = outputCode $ fromJust $ Map.lookup m results
+        Just json = Aeson.decode (fromString $ output JSON) :: Maybe Aeson.Value
+        -- the files and start lines of the spans
+        spans :: Aeson.Value -> [(String, Integer)]
+        spans (Aeson.Object o) = case (Aeson.fromJSON (Aeson.Object o)) of
+          Aeson.Success (SpanInFile f l) -> [(f, l)]
+          _ -> concatMap spans (toListOf folded o)
+        spans (Aeson.Array a) = concatMap spans (toListOf folded a)
+        spans _ = []
+        html = output Html
+    (sort $ nub $ spans json) == [("lib.cfr", 1), ("lib.cfr", 2), ("m.cfr", 2), ("m.cfr", 3)]
+        @? "Spans: " ++ show (sort $ nub $ spans json)
+    let headers = [ i | (i, l) <- zip [0 :: Int ..] (lines html), "<div class=\"file\">" `isPrefixOf` l ]
+    (map (lines html !!) headers == ["<div class=\"file\">lib.cfr</div>", "<div class=\"file\">m.cfr</div>"])
+        @? "File headers: " ++ show (map (lines html !!) headers)
+    -- an error in a file: the HTML error output gives its file and line
+    let bad = [ head filesModel, ModelFile "m.cfr" "A : L\n  [ y ]\n" ]
+    case compileFiles defaultClaferArgs{mode = [Html]} bad of
+      Left errs -> ("Compiling failed at m.cfr:2:5..." `isInfixOf` highlightErrorsIn bad (modelText bad) errs)
+                     @? "Error HTML: " ++ highlightErrorsIn bad (modelText bad) errs
+      Right _ -> assertFailure "m.cfr compiled"
+
+-- | A span in a file, as in the JSON IR: its file and start line.
+data SpanInFile = SpanInFile String Integer
+
+instance Aeson.FromJSON SpanInFile where
+  parseJSON = Aeson.withObject "span" $ \o -> do
+    f <- o Aeson..: fromString "file"
+    start <- o Aeson..: fromString "start"
+    l <- start Aeson..: fromString "line"
+    return $ SpanInFile f l
 
 {-
 An import is relative to the importing file: to its folder, or to its URL. A

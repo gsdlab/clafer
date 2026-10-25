@@ -36,6 +36,8 @@ module Language.Clafer.Generator.Html
   , printStandaloneComment
   , printInlineComment
   , highlightErrors
+  , highlightErrorsIn
+  , printFileHeader
   ) where
 
 import Language.ClaferT
@@ -43,6 +45,7 @@ import Language.Clafer.Front.AbsClafer as AbsClafer
 import Language.Clafer.Front.LayoutResolver(revertLayout)
 import Language.Clafer.Intermediate.Tracing
 import Language.Clafer.Intermediate.Intclafer
+import Language.Clafer.Import (ModelFile, modelPosition, fileStarts)
 
 import Control.Applicative
 import Data.List (intersperse,genericSplitAt)
@@ -532,23 +535,43 @@ cleanOutput (x:xs) = x : cleanOutput xs
 trim :: String -> String
 trim = let f = reverse . dropWhile isSpace in f . f
 
+-- | The model with its errors highlighted, for a model whose files are not known (e.g., a wiki
+--   page): positions as @line 3 column 5@.
 highlightErrors :: String -> [ClaferErr] -> String
-highlightErrors model errors = "<pre>\n" ++ unlines (replace "<!-- # FRAGMENT /-->" "</pre>\n<!-- # FRAGMENT /-->\n<pre>" --assumes the fragments have been concatenated
-                            (highlightErrors' (replace "//# FRAGMENT" "<!-- # FRAGMENT /-->" (lines model)) errors)) ++ "</pre>"
+highlightErrors = highlightErrorsIn []
+
+-- | The model with its errors highlighted: each file under its name, and the positions of the
+--   errors as @file.cfr:3:5@.
+highlightErrorsIn :: [ModelFile] -> String -> [ClaferErr] -> String
+highlightErrorsIn files model errors = "<pre>\n" ++ unlines (withHeaders $ replace "<!-- # FRAGMENT /-->" "</pre>\n<!-- # FRAGMENT /-->\n<pre>" --assumes the fragments have been concatenated
+                            (highlightErrors' position (replace "//# FRAGMENT" "<!-- # FRAGMENT /-->" (lines model)) errors)) ++ "</pre>"
   where
     replace _ _ []     = []
     replace x y (z:zs) = (if x == z then y else z):replace x y zs
+    position l c
+      | null files = "line " ++ show l ++ " column " ++ show c
+      | otherwise  = let (path, l') = modelPosition files l in path ++ ":" ++ show l' ++ ":" ++ show c
+    -- the lines of the model, one per line of the text: each file starts with its name
+    withHeaders = go 1 (fileStarts files)
+      where
+      go _ _ [] = []
+      go n ((start, path) : starts) ls | start <= n = printFileHeader path : go n starts ls
+      go n starts (l : ls) = l : go (n + 1) starts ls
 
-highlightErrors' :: [String] -> [ClaferErr] -> [String]
-highlightErrors' model' [] = model'
-highlightErrors' model' (ClaferErr _:es) = highlightErrors' model' es
-highlightErrors' model' (ParseErr ErrPos{modelPos = Pos l c, fragId = n} msg':es) =
+highlightErrors' :: (Integer -> Integer -> String) -> [String] -> [ClaferErr] -> [String]
+highlightErrors' _ model' [] = model'
+highlightErrors' position model' (ClaferErr _:es) = highlightErrors' position model' es
+highlightErrors' position model' (ParseErr ErrPos{modelPos = Pos l c, fragId = n} msg':es) =
   let (ls, lss) = genericSplitAt (l + toInteger n) model'
-      newLine = fst (genericSplitAt (c - 1) $ last ls) ++ "<span class=\"error\" title=\"Parsing failed at line " ++ show l ++ " column " ++ show c ++
-           "...\n" ++ msg' ++ "\">" ++ (if snd (genericSplitAt (c - 1) $ last ls) == "" then "&nbsp;" else snd (genericSplitAt (c - 1) $ last ls)) ++ "</span>"
-  in highlightErrors' (init ls ++ [newLine] ++ lss) es
-highlightErrors' model' (SemanticErr ErrPos{modelPos = Pos l c, fragId = n} msg':es) =
+      newLine = fst (genericSplitAt (c - 1) $ last ls) ++ "<span class=\"error\" title=\"Parsing failed at " ++ position l c ++
+           "...\n" ++ escapeHtml msg' ++ "\">" ++ (if snd (genericSplitAt (c - 1) $ last ls) == "" then "&nbsp;" else snd (genericSplitAt (c - 1) $ last ls)) ++ "</span>"
+  in highlightErrors' position (init ls ++ [newLine] ++ lss) es
+highlightErrors' position model' (SemanticErr ErrPos{modelPos = Pos l c, fragId = n} msg':es) =
   let (ls, lss) = genericSplitAt (l + toInteger n) model'
-      newLine = fst (genericSplitAt (c - 1) $ last ls) ++ "<span class=\"error\" title=\"Compiling failed at line " ++ show l ++ " column " ++ show c ++
-           "...\n" ++ msg' ++ "\">" ++ (if snd (genericSplitAt (c - 1) $ last ls) == "" then "&nbsp;" else snd (genericSplitAt (c - 1) $ last ls)) ++ "</span>"
-  in highlightErrors' (init ls ++ [newLine] ++ lss) es
+      newLine = fst (genericSplitAt (c - 1) $ last ls) ++ "<span class=\"error\" title=\"Compiling failed at " ++ position l c ++
+           "...\n" ++ escapeHtml msg' ++ "\">" ++ (if snd (genericSplitAt (c - 1) $ last ls) == "" then "&nbsp;" else snd (genericSplitAt (c - 1) $ last ls)) ++ "</span>"
+  in highlightErrors' position (init ls ++ [newLine] ++ lss) es
+
+-- | The header of a file of the model in the HTML output: its name.
+printFileHeader :: FilePath -> String
+printFileHeader path = "<div class=\"file\">" ++ escapeHtml path ++ "</div>"
