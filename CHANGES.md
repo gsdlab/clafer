@@ -1,4 +1,4 @@
-##### Clafer Version 0.5.4, unreleased
+##### Clafer Version 0.5.4, Oct 25, 2026
 
 * Models in several files: `--import=FILE`, in `//# OPTIONS` or on the command line, compiles the model together with the imported files, transitively, each file once and before the files importing it ([#100](https://github.com/gsdlab/clafer/issues/100)). The options of all files are combined. The model and its imports can be URLs; an import is relative to the importing file's folder or URL.
 * Errors give their position as `file.cfr:line:column`, also in a model of one file (`Parse failed at model.cfr:3:5...`, previously `line 3 column 5`), and in a model with imports, the file in which they are. A model read from the standard input is `<stdin>`.
@@ -14,6 +14,7 @@
 * JSON output: the IR has the source positions of the clafers (`_cinPos`) and expressions (`_inPos`), which were always `null`: `{"file": "model.cfr", "start": {"line": 2, "column": 3}, "end": {"line": 2, "column": 6}}`, the file and the position in it, with lines and columns from 1 and an exclusive end. A tab advances the column to the next multiple of 8, plus 1, as in the compiler's error messages. The span of a clafer with children ends one or two columns after its last token, at the closing brace that the layout resolver inserts. Desugared expressions without a position in the model are still `null`.
 * HTML output: comments are escaped and shown as written (`--add-comments`); markup in a comment was rendered, and `--` in a `//#` comment could end the generated HTML comment early.
 * HTML output: each file of the model starts with its name (`<div class="file">model.cfr</div>`), also a model of one file, and the comments before a `//# FRAGMENT` directive are shown before it. The HTML shown for a model with errors gives their positions as `file.cfr:line:column`, and an error message with quotes no longer ends the tooltip.
+* [Release](https://github.com/gsdlab/clafer/pull/101)
 
 ##### Clafer Version 0.5.3, Oct 15, 2026
 
