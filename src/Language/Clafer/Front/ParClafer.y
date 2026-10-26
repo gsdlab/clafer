@@ -390,9 +390,11 @@ thenM = (>>=)
 
 happyError :: [Token] -> Err a
 happyError ts =
-  Bad (pp ts) $ "syntax error at " ++ tokenPos ts ++ 
+  -- the position is reported with the error; in a model of several files, the line of the
+  -- token is a line of the complete model
+  Bad (pp ts) $ "syntax error" ++
   case ts of
-    [] -> []
+    [] -> " at end of file"
     [Err _] -> " due to lexer error"
     _ -> " before " ++ unwords (map (id . prToken) (take 4 ts))
 

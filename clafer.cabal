@@ -1,6 +1,6 @@
 cabal-version:          3.8
 name:                   clafer
-version:                0.5.3
+version:                0.5.4
 synopsis:               Compiles Clafer models to other formats: Alloy, JavaScript, JSON, HTML, Dot.
 description:            Clafer is a general purpose, lightweight, structural modeling language developed at GSD Lab, University of Waterloo, and MODELS group at IT University of Copenhagen. Lightweight modeling aims at improving the understanding of the problem domain in the early stages of software development and determining the requirements with fewer defects. Clafer's goal is to make modeling more accessible to a wider range of users and domains. The tool provides a reference language implementation. It translates models to other formats (e.g. Alloy, JavaScript, JSON) to allow for reasoning with existing tools.
 homepage:               http://clafer.org
@@ -63,8 +63,12 @@ library
                       , process >= 1.4.3.0
                       , transformers >= 0.6
 
-                      , HTTP >= 4000.3.9
-                      , network >= 2.6.3.2
+                      , http-client >= 0.7
+                      , http-client-tls >= 0.3.5
+                      , http-types >= 0.12
+                      , crypton-connection >= 0.3
+                      , data-default >= 0.7
+                      , network >= 3.1
                       , parsec >= 3.1.11
                       , text >= 2.0
 
@@ -86,6 +90,7 @@ library
     exposed-modules:    Language.Clafer
                       , Language.ClaferT
                       , Language.Clafer.ClaferArgs
+                      , Language.Clafer.Import
                       , Language.Clafer.Comments
                       , Language.Clafer.Common
                       , Language.Clafer.Css
@@ -120,8 +125,7 @@ library
                       , Language.Clafer.SplitJoin
                       , Paths_clafer
     autogen-modules:    Paths_clafer
-    other-modules:      GetURL
-                      , Control.Monad.Trans.List
+    other-modules:      Control.Monad.Trans.List
 
 Test-Suite test-suite
     import:             shared-deps
@@ -133,9 +137,12 @@ Test-Suite test-suite
                       , HUnit >= 1.5.0.0
                       , QuickCheck >= 2.9.2
 
+                      , aeson >= 1.1.2.0
                       , data-stringmap >= 1.0.1.1
                       , lens >= 4.6.0.1
                       , lens-aeson >= 1.0.2
+                      , network-uri >= 2.6.1.0
+                      , network >= 3.1
                       , tasty >= 0.11.3
                       , tasty-hunit >= 0.9.2
                       , tasty-th >= 0.1.7

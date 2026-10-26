@@ -36,6 +36,8 @@ module Language.Clafer.Generator.Html
   , printStandaloneComment
   , printInlineComment
   , highlightErrors
+  , highlightErrorsIn
+  , printFileHeader
   ) where
 
 import Language.ClaferT
@@ -43,6 +45,7 @@ import Language.Clafer.Front.AbsClafer as AbsClafer
 import Language.Clafer.Front.LayoutResolver(revertLayout)
 import Language.Clafer.Intermediate.Tracing
 import Language.Clafer.Intermediate.Intclafer
+import Language.Clafer.Import (ModelFile, modelPosition, fileStarts)
 
 import Control.Applicative
 import Data.List (intersperse,genericSplitAt)
@@ -59,7 +62,7 @@ printPreComment (Span (Pos r _) _) (c@((Span (Pos r' _) _), _):cs)
     where findAll _ ([],comments) = ([],comments)
           findAll row ((c'@((Span (Pos row' col') _), comment):cs'), comments)
             | row > row' = case take 3 comment of
-                ['/', '/', '#'] -> findAll row (cs', concat [comments, "<!-- " ++ trim (drop 2 comment) ++ " /-->\n"])
+                ['/', '/', '#'] -> findAll row (cs', concat [comments, printHtmlComment (trim (drop 2 comment)) ++ "\n"])
                 ['/', '/', _]   -> if col' == 1
                                    then findAll row (cs', concat [comments, printStandaloneComment comment ++ "\n"])
                                    else findAll row (cs', concat [comments, printInlineComment comment ++ "\n"])
@@ -70,7 +73,7 @@ printComment :: Span -> [(Span, String)] -> ([(Span, String)], String)
 printComment _ [] = ([],[])
 printComment (Span (Pos row _) _) (c@(Span (Pos row' col') _, comment):cs)
   | row == row' = case take 3 comment of
-        ['/', '/', '#'] -> (cs,"<!-- " ++ trim' (drop 2 comment) ++ " /-->\n")
+        ['/', '/', '#'] -> (cs, printHtmlComment (trim' (drop 2 comment)) ++ "\n")
         ['/', '/', _]   -> if col' == 1
                            then (cs, printStandaloneComment comment ++ "\n")
                            else (cs, printInlineComment comment ++ "\n")
@@ -79,7 +82,7 @@ printComment (Span (Pos row _) _) (c@(Span (Pos row' col') _, comment):cs)
   | otherwise = (c:cs, "")
   where trim' = let f = reverse. dropWhile isSpace in f . f
 printStandaloneComment :: String -> String
-printStandaloneComment comment = "<div class=\"standalonecomment\">" ++ replaceNLwithBR comment ++ "</div>"
+printStandaloneComment comment = "<div class=\"standalonecomment\">" ++ replaceNLwithBR (escapeHtml comment) ++ "</div>"
   where
     replaceNLwithBR :: String   -> String
     replaceNLwithBR    ""        = ""
@@ -88,7 +91,26 @@ printStandaloneComment comment = "<div class=\"standalonecomment\">" ++ replaceN
 
 
 printInlineComment :: String -> String
-printInlineComment comment = "<span class=\"inlinecomment\">" ++ comment ++ "</span>"
+printInlineComment comment = "<span class=\"inlinecomment\">" ++ escapeHtml comment ++ "</span>"
+
+-- | A //# comment as an HTML comment, e.g., <!-- # FRAGMENT /-->. Its text must not
+-- contain "--", which could end the HTML comment early.
+printHtmlComment :: String -> String
+printHtmlComment text = "<!-- " ++ noDoubleDash text ++ " /-->"
+  where
+    noDoubleDash ('-':'-':cs) = "- " ++ noDoubleDash ('-':cs)
+    noDoubleDash (c:cs)       = c : noDoubleDash cs
+    noDoubleDash ""           = ""
+
+-- | Escapes the text of a comment for HTML, so that it is shown as written.
+escapeHtml :: String -> String
+escapeHtml = concatMap escape
+  where
+    escape '&' = "&amp;"
+    escape '<' = "&lt;"
+    escape '>' = "&gt;"
+    escape '"' = "&quot;"
+    escape c   = [c]
 
 printDeprecated :: String -> String -> Bool -> String
 printDeprecated    s         m         html = while html ("<span class=\"deprecated\" title=\"" ++ "Deprecated. " ++ m ++ "\">")
@@ -513,23 +535,43 @@ cleanOutput (x:xs) = x : cleanOutput xs
 trim :: String -> String
 trim = let f = reverse . dropWhile isSpace in f . f
 
+-- | The model with its errors highlighted, for a model whose files are not known (e.g., a wiki
+--   page): positions as @line 3 column 5@.
 highlightErrors :: String -> [ClaferErr] -> String
-highlightErrors model errors = "<pre>\n" ++ unlines (replace "<!-- # FRAGMENT /-->" "</pre>\n<!-- # FRAGMENT /-->\n<pre>" --assumes the fragments have been concatenated
-                            (highlightErrors' (replace "//# FRAGMENT" "<!-- # FRAGMENT /-->" (lines model)) errors)) ++ "</pre>"
+highlightErrors = highlightErrorsIn []
+
+-- | The model with its errors highlighted: each file under its name, and the positions of the
+--   errors as @file.cfr:3:5@.
+highlightErrorsIn :: [ModelFile] -> String -> [ClaferErr] -> String
+highlightErrorsIn files model errors = "<pre>\n" ++ unlines (withHeaders $ replace "<!-- # FRAGMENT /-->" "</pre>\n<!-- # FRAGMENT /-->\n<pre>" --assumes the fragments have been concatenated
+                            (highlightErrors' position (replace "//# FRAGMENT" "<!-- # FRAGMENT /-->" (lines model)) errors)) ++ "</pre>"
   where
     replace _ _ []     = []
     replace x y (z:zs) = (if x == z then y else z):replace x y zs
+    position l c
+      | null files = "line " ++ show l ++ " column " ++ show c
+      | otherwise  = let (path, l') = modelPosition files l in path ++ ":" ++ show l' ++ ":" ++ show c
+    -- the lines of the model, one per line of the text: each file starts with its name
+    withHeaders = go 1 (fileStarts files)
+      where
+      go _ _ [] = []
+      go n ((start, path) : starts) ls | start <= n = printFileHeader path : go n starts ls
+      go n starts (l : ls) = l : go (n + 1) starts ls
 
-highlightErrors' :: [String] -> [ClaferErr] -> [String]
-highlightErrors' model' [] = model'
-highlightErrors' model' (ClaferErr _:es) = highlightErrors' model' es
-highlightErrors' model' (ParseErr ErrPos{modelPos = Pos l c, fragId = n} msg':es) =
+highlightErrors' :: (Integer -> Integer -> String) -> [String] -> [ClaferErr] -> [String]
+highlightErrors' _ model' [] = model'
+highlightErrors' position model' (ClaferErr _:es) = highlightErrors' position model' es
+highlightErrors' position model' (ParseErr ErrPos{modelPos = Pos l c, fragId = n} msg':es) =
   let (ls, lss) = genericSplitAt (l + toInteger n) model'
-      newLine = fst (genericSplitAt (c - 1) $ last ls) ++ "<span class=\"error\" title=\"Parsing failed at line " ++ show l ++ " column " ++ show c ++
-           "...\n" ++ msg' ++ "\">" ++ (if snd (genericSplitAt (c - 1) $ last ls) == "" then "&nbsp;" else snd (genericSplitAt (c - 1) $ last ls)) ++ "</span>"
-  in highlightErrors' (init ls ++ [newLine] ++ lss) es
-highlightErrors' model' (SemanticErr ErrPos{modelPos = Pos l c, fragId = n} msg':es) =
+      newLine = fst (genericSplitAt (c - 1) $ last ls) ++ "<span class=\"error\" title=\"Parsing failed at " ++ position l c ++
+           "...\n" ++ escapeHtml msg' ++ "\">" ++ (if snd (genericSplitAt (c - 1) $ last ls) == "" then "&nbsp;" else snd (genericSplitAt (c - 1) $ last ls)) ++ "</span>"
+  in highlightErrors' position (init ls ++ [newLine] ++ lss) es
+highlightErrors' position model' (SemanticErr ErrPos{modelPos = Pos l c, fragId = n} msg':es) =
   let (ls, lss) = genericSplitAt (l + toInteger n) model'
-      newLine = fst (genericSplitAt (c - 1) $ last ls) ++ "<span class=\"error\" title=\"Compiling failed at line " ++ show l ++ " column " ++ show c ++
-           "...\n" ++ msg' ++ "\">" ++ (if snd (genericSplitAt (c - 1) $ last ls) == "" then "&nbsp;" else snd (genericSplitAt (c - 1) $ last ls)) ++ "</span>"
-  in highlightErrors' (init ls ++ [newLine] ++ lss) es
+      newLine = fst (genericSplitAt (c - 1) $ last ls) ++ "<span class=\"error\" title=\"Compiling failed at " ++ position l c ++
+           "...\n" ++ escapeHtml msg' ++ "\">" ++ (if snd (genericSplitAt (c - 1) $ last ls) == "" then "&nbsp;" else snd (genericSplitAt (c - 1) $ last ls)) ++ "</span>"
+  in highlightErrors' position (init ls ++ [newLine] ++ lss) es
+
+-- | The header of a file of the model in the HTML output: its name.
+printFileHeader :: FilePath -> String
+printFileHeader path = "<div class=\"file\">" ++ escapeHtml path ++ "</div>"

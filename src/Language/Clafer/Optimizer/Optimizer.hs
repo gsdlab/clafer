@@ -205,7 +205,7 @@ split' _ _ = error "Function split' from Optimizer expects an argument of type C
 -- checking if all clafers have unique names and don't extend other clafers
 
 allUnique :: IModule -> Bool
-allUnique iModule = dontExtend && identsUnique
+allUnique iModule = dontExtend && identsUnique && noApostrophes
   where
     allClafers :: [ IClafer ]
     allClafers = universeOn biplate iModule
@@ -215,6 +215,9 @@ allUnique iModule = dontExtend && identsUnique
     allIdents = map _ident allClafers
     -- all idents are unique when nub cannot remove any duplicates
     identsUnique = (length allIdents) == (length $ nub allIdents)
+    -- without the name resolver, the names are the UIDs, which cannot contain apostrophes
+    -- (see genId in ResolverInheritance)
+    noApostrophes = not $ any ('\'' `elem`) allIdents
 
 checkConstraintElement :: [String] -> IElement -> Bool
 checkConstraintElement idents x = case x of

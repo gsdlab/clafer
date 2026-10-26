@@ -318,14 +318,7 @@ desugarGCard x = case x of
   GCardMux _ -> Just $ IGCard True (0, 1)
   GCardOpt _ -> Just $ IGCard True (0, -1)
   GCardInterval _ ncard ->
-      Just $ IGCard (isOptionalDef ncard) $ desugarNCard ncard
-
-isOptionalDef :: NCard -> Bool
-isOptionalDef (NCard _ m n) = ((0::Integer) == mkInteger m) && not (isExIntegerAst n)
-
-isExIntegerAst :: ExInteger -> Bool
-isExIntegerAst (ExIntegerAst _) = True
-isExIntegerAst _ = False
+      Just $ IGCard False $ desugarNCard ncard
 
 sugarGCard :: Maybe IGCard -> GCard
 sugarGCard x = case x of

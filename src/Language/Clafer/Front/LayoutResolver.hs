@@ -30,6 +30,7 @@ import Data.Functor.Identity (Identity)
 import Language.ClaferT
 
 import Language.Clafer.Front.LexClafer
+import qualified Data.Map as Map
 import Data.Maybe
 
 data LayEnv = LayEnv {
@@ -63,8 +64,24 @@ layoutOpen  = "{"
 layoutClose :: String
 layoutClose = "}"
 
-resolveLayout :: (Monad m) => [Token] -> ClaferT m  [Token]
-resolveLayout xs = addNewLines xs >>= (resolve (LEnv [1] Nothing)) >>= adjust
+-- | Resolves the layout of the parseable tokens. The other tokens (comments and escape blocks) do not
+-- | count: a line which starts with them is indented as if they were not there, at the column where
+-- | the first of them starts, e.g., @/*history*/ xor on@ at the column of @/*@. Token positions are unchanged.
+resolveLayout :: (Monad m) => [Token] -- ^ the other tokens
+                           -> [Token] -- ^ the parseable tokens
+                           -> ClaferT m [Token]
+resolveLayout otherTokens' xs = addNewLines (layoutColumn otherTokens') xs >>= (resolve (LEnv [1] Nothing)) >>= adjust
+
+-- | The column which determines the indentation of a line starting with the given token:
+-- | the column of the first other token which ends on the token's line before it, if any.
+layoutColumn :: [Token] -> Token -> Int
+layoutColumn otherTokens' t = case Map.lookup (line t) firstOnLine of
+  Just (l, c) | (l, c) < (line t, column t) -> c
+  _                                         -> column t
+  where
+  -- the start of the first other token ending on each line
+  firstOnLine = Map.fromListWith min [ (endLine o, (line o, column o)) | o <- otherTokens' ]
+  endLine o = line o + length (filter (== '\n') $ prToken o)
 
 resolve :: (Monad m) => LEnv -> [ExToken] -> ClaferT m [Token]
 resolve (LEnv st _) [] = return $ replicate (length st - 1) dedent
@@ -175,29 +192,30 @@ tokenLength :: Token -> Int
 tokenLength t = length $ prToken t
 
 -- data ExToken = NewLine (Int, Int) | ExToken Token
-addNewLines :: (Monad m) => [Token] -> ClaferT m [ExToken]
-addNewLines []    = return []
-addNewLines ts@(t:_) = addNewLines' (if isBracketOpen t then 1 else 0) ts
+addNewLines :: (Monad m) => (Token -> Int) -- ^ the column which determines the indentation of a line starting with the token
+                         -> [Token] -> ClaferT m [ExToken]
+addNewLines _         []       = return []
+addNewLines layoutCol ts@(t:_) = addNewLines' layoutCol (if isBracketOpen t then 1 else 0) ts
 
-addNewLines' :: (Monad m) => Int -> [Token] -> ClaferT m [ExToken]
-addNewLines' _ []                     = return []
-addNewLines' 0 (t:[])                 = return [ExToken t]
-addNewLines' 1 (t:[])                 = return [ExToken t]
-addNewLines' _ ((PT (Pn z x y) t):[]) = throwErr $ ParseErr (ErrPos z fPos fPos) $ "']' bracket missing for (" ++ show t ++ ")"
+addNewLines' :: (Monad m) => (Token -> Int) -> Int -> [Token] -> ClaferT m [ExToken]
+addNewLines' _ _ []                     = return []
+addNewLines' _ 0 (t:[])                 = return [ExToken t]
+addNewLines' _ 1 (t:[])                 = return [ExToken t]
+addNewLines' _ _ ((PT (Pn z x y) t):[]) = throwErr $ ParseErr (ErrPos z fPos fPos) $ "']' bracket missing for (" ++ show t ++ ")"
   where
     fPos = (Pos (fromIntegral x) (fromIntegral y))
-addNewLines' n (t0:t1:ts)
+addNewLines' layoutCol n (t0:t1:ts)
   | isNewLine t0 t1 && isBracketOpen t1 =
-    addNewLines' (n + 1) (t1:ts) >>= (return . (ExToken t0:) . (NewLine (column t1, n):))
+    addNewLines' layoutCol (n + 1) (t1:ts) >>= (return . (ExToken t0:) . (NewLine (layoutCol t1, n):))
   | isNewLine t0 t1 && isBracketClose t1 =
-    addNewLines' (n - 1) (t1:ts) >>= (return . (ExToken t0:) . (NewLine (column t1, n):))
+    addNewLines' layoutCol (n - 1) (t1:ts) >>= (return . (ExToken t0:) . (NewLine (layoutCol t1, n):))
   | isLayoutOpen t1  || isBracketOpen t1 =
-    addNewLines' (n + 1) (t1:ts) >>= (return . (ExToken t0:))
+    addNewLines' layoutCol (n + 1) (t1:ts) >>= (return . (ExToken t0:))
   | isLayoutClose t1 || isBracketClose t1 =
-    addNewLines' (n - 1) (t1:ts) >>= (return . (ExToken t0:))
-  | isNewLine t0 t1  = addNewLines' n (t1:ts) >>= (return . (ExToken t0:) . (NewLine (column t1, n):))
-  | otherwise        = addNewLines' n (t1:ts) >>= (return . (ExToken t0:))
-addNewLines' _ tokens' = throwErr (ClaferErr ("[bug] LayoutResolver.addNewLines': invalid argument:" ++ show tokens') :: CErr Span) -- This should never happen!
+    addNewLines' layoutCol (n - 1) (t1:ts) >>= (return . (ExToken t0:))
+  | isNewLine t0 t1  = addNewLines' layoutCol n (t1:ts) >>= (return . (ExToken t0:) . (NewLine (layoutCol t1, n):))
+  | otherwise        = addNewLines' layoutCol n (t1:ts) >>= (return . (ExToken t0:))
+addNewLines' _ _ tokens' = throwErr (ClaferErr ("[bug] LayoutResolver.addNewLines': invalid argument:" ++ show tokens') :: CErr Span) -- This should never happen!
 
 
 adjust :: (Monad m) => [Token] -> ClaferT m [Token]

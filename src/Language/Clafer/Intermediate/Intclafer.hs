@@ -1,4 +1,4 @@
-{-# LANGUAGE TemplateHaskell, DeriveDataTypeable, DeriveGeneric, DeriveAnyClass #-}
+{-# LANGUAGE TemplateHaskell, DeriveDataTypeable, DeriveGeneric, DeriveAnyClass, OverloadedStrings #-}
 {-
  Copyright (C) 2012-2017 Kacper Bak, Jimmy Liang, Michal Antkiewicz, Luke Michael Brown <http://gsd.uwaterloo.ca>
 
@@ -25,7 +25,7 @@ module Language.Clafer.Intermediate.Intclafer where
 
 import Language.Clafer.Front.AbsClafer
 
-import Control.Lens
+import Control.Lens hiding ((.=))
 import Data.Aeson
 import Data.Data
 import GHC.Generics
@@ -80,11 +80,17 @@ data IModule
     }
   deriving (Eq,Ord,Show,Data,Typeable,Generic,ToJSON)
 
+-- | @{"start": pos, "end": pos}@, where the end is exclusive; @null@ for 'noSpan'
 instance ToJSON Span where
-  toJSON _ = Null
+  toJSON s@(Span start' end')
+    | s == noSpan = Null
+    | otherwise   = object [ "start" .= start', "end" .= end' ]
 
+-- | @{"line": l, "column": c}@, both from 1 (a tab advances the column to the next multiple of 8, plus 1); @null@ for 'noPos'
 instance ToJSON Pos where
-  toJSON _ = Null
+  toJSON p@(Pos line' column')
+    | p == noPos = Null
+    | otherwise  = object [ "line" .= line', "column" .= column' ]
 
 -- | Clafer has a list of fields that specify its properties. Some fields, marked as (o) are for generating optimized code
 data IClafer
@@ -161,7 +167,7 @@ data IReferenceModifier
 --   1..1   1..1 isKeyword = False
 data IGCard
   = IGCard
-    { _isKeyword :: Bool    -- ^ whether given by keyword: or, xor, mux
+    { _isKeyword :: Bool    -- ^ whether given by keyword: xor, or, mux, opt
     , _interval :: Interval
     } deriving (Eq,Ord,Show,Data,Typeable,Generic,ToJSON)
 

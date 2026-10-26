@@ -1,6 +1,6 @@
 # Clafer Cheat Sheet
 
-The cheat sheet is based on the [grammar](https://github.com/gsdlab/clafer/blob/develop/src/clafer.cf) and the [generated syntax documentation](https://github.com/gsdlab/clafer/raw/master/doc/clafer.pdf).
+The cheat sheet is based on the [grammar](https://github.com/gsdlab/clafer/blob/master/src/clafer.cf) and the [generated syntax documentation](https://github.com/gsdlab/clafer/raw/master/doc/clafer.pdf).
 The cheat sheet additionally provides commentary and type information, while sacrificing formality of the grammar.
 
 ## Predefined sets
@@ -96,7 +96,8 @@ whereas duplicate values are allowed when declared using `->>` (bag).
 
 The number of instances of a clafer per each instance of its parent is restricted by multiplicity.
 The default multiplicity depends on the parent clafer's group cardinality:
-if the group is `0..*` then the default multiplicity is `1`, otherwise it is `0..1`.
+if the clafer has no group cardinality (or `0..*`), the default multiplicity is `1`;
+for a keyword (`xor`, `or`, `mux`, `opt`) or another range, it is `0..1`.
 Useful shorthands are
 `?` = `0..1`,
 `*` = `0..*`
@@ -205,13 +206,13 @@ All objectives in a model are equally important and optimal instances trade a wo
 Minimize
 
 ```
-<< min <numeric expression> >>
+<< minimize <numeric expression> >>
 ```
 
 Maximize
 
 ```
-<< max <numeric expression> >>
+<< maximize <numeric expression> >>
 ```
 
 ## Expressions
@@ -319,6 +320,9 @@ product <numeric expression>
 
 ### Set expressions
 
+Expressions which result in sets.
+
+`.` is relational join.
 `,` is a synonym for union `++`.
 
 `<set expression>`:
@@ -343,7 +347,7 @@ if <boolean expression> then <set expression> else <set expression>
 ```
 <identifier>
 <relation expression> :> <set expression>
-<set expression> <: <set relation>
+<set expression> <: <relation expression>
 ```
 
 ### Identifiers
@@ -382,6 +386,36 @@ Escapes allow to write fragments of code in the target language of the clafer co
 <ChocoSolver code>
 |]
 ```
+
+## Compiler options in the model
+
+The first line of a model can give options of the compiler, as on its command line:
+
+```
+//# OPTIONS <options>
+```
+
+For example, `//# OPTIONS --maxint=1000 --import=design-space.cfr`.
+An unknown option is an error.
+The command line takes precedence over the options in the model.
+
+### Models in several files
+
+A model can import other models, which are compiled with it as one model (since 0.5.4):
+
+```
+//# OPTIONS --import=<file>
+```
+
+or on the command line: `clafer SystemA.cfr --import=design-space.cfr`.
+
+* `--import` can be repeated, to import several files. An imported file must be a `.cfr` file.
+* A path is relative to the file that imports it (on the command line, to the current directory). A model and its imports can be URLs (`http://`, `https://`); an import in a model read from a URL is relative to that URL, and it can only import URLs.
+* The imports are followed transitively. Each file is compiled once, before the files that import it. An import cycle is an error.
+* All files share one namespace, as if they were concatenated: a clafer of one file can be used in the others, and the same top-level name in two files is an error.
+* The options of all files are combined: the largest `--maxint`, the smallest `--minint`, all modes and imports. The layout (`-l`, `--nl`) must be the same in all files. Options of the compilation (e.g., `-o`, `-s`) are only allowed in the compiled model.
+* Errors give the file in which they are: `Compile error at design-space.cfr:12:5`, i.e., file, line and column.
+* `-v`, `--tooldir` and the options that restrict the imports (`--import-root`, `--public-imports`, `--import-base`) can only be given on the command line.
 
 # Backend Compatibility
 
@@ -430,7 +464,7 @@ The following table provides versions in which support for a given feature was a
 </tr>
 
 <tr>
-<td>Escapes, <code>dref</code>, and <code>**</code></td>
+<td>Escapes (<code>[alloy| ... |]</code> and <code>[choco| ... |]</code>), <code>dref</code>, and <code>**</code></td>
 <td>0.4.1</td>
 <td>0.4.1</td>
 </tr>
@@ -457,6 +491,12 @@ The following table provides versions in which support for a given feature was a
 <td>Default initializer <code>:=</code></td>
 <td>&nbsp;&nbsp;&nbsp;-</td>
 <td>&nbsp;&nbsp;&nbsp;-</td>
+</tr>
+
+<tr>
+<td>Models in several files (<code>--import</code>)</td>
+<td>0.5.4</td>
+<td>0.5.4</td>
 </tr>
 
 </table>

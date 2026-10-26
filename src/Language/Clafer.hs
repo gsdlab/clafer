@@ -98,6 +98,8 @@ import           Control.Lens.Plated
 import           Control.Monad
 import           Control.Monad.State
 import           Data.Aeson
+import qualified Data.Aeson.Key as Key
+import qualified Data.Aeson.KeyMap as KeyMap
 import           Data.Data.Lens
 import           Data.Either
 import           Data.List
@@ -127,6 +129,7 @@ import           Language.Clafer.Generator.Concat
 import           Language.Clafer.Generator.Graph
 import           Language.Clafer.Generator.Html
 import           Language.Clafer.Generator.Stats
+import           Language.Clafer.Import
 import           Language.Clafer.Intermediate.Desugarer
 import           Language.Clafer.Intermediate.Intclafer
 import           Language.Clafer.Intermediate.Resolver
@@ -141,16 +144,18 @@ import           Language.ClaferT
 
 type InputModel = String
 
--- | Run the Clafer compiler.
+-- | Run the Clafer compiler on the files of a model, as read by 'readModel': the imported
+-- files and the model, compiled together.
 -- mURL = Nothing means compile the top-level module
 -- mURL = Just url means compile an imported module from the given url
-runCompiler :: Maybe URL -> ClaferArgs -> InputModel -> IO ()
-runCompiler    mURL         args'         inputModel =
+runCompiler :: Maybe URL -> ClaferArgs -> [ModelFile] -> IO ()
+runCompiler    mURL         args'         modelFiles =
   do
     hSetBuffering stdout LineBuffering
     result <- runClaferT args' $
       do
         forM_ (fragments inputModel) addModuleFragment
+        modifyEnv $ \env -> env{inputFiles = modelFiles}
         parse
         iModule <- desugar mURL
         {- need to runCompiler on imports
@@ -174,6 +179,7 @@ runCompiler    mURL         args'         inputModel =
       htmlCatch result args' inputModel
     result `cth` handleErrs
   where
+  inputModel = modelText modelFiles
   cth (Left err) f = f err
   cth (Right r)  _ = return r
   fragments model = map unlines $ fragments' $ lines model
@@ -187,7 +193,7 @@ runCompiler    mURL         args'         inputModel =
        let result = (if (self_contained args'')
                      then Css.header ++ "<style>" ++ Css.css ++ "</style>" ++ "</head>\n<body>\n<pre>\n"
                      else "")
-                     ++ highlightErrors model err ++
+                     ++ highlightErrorsIn modelFiles model err ++
                      (if (self_contained args'')
                       then "\n</pre>\n</html>"
                       else "")
@@ -204,14 +210,16 @@ runCompiler    mURL         args'         inputModel =
   -- only care about the position relative to
   handleErr (ParseErr ErrPos{modelPos = Pos l c} mesg) =
     do
-      putStrLn $ "\nParse failed at line " ++ show l ++ " column " ++ show c ++ "..."
+      putStrLn $ "\nParse failed at " ++ errorPosition l c ++ "..."
       putStrLn mesg
       exitFailure
   handleErr (SemanticErr ErrPos{modelPos = Pos l c} mesg) =
     do
-      putStrLn $ "\nCompile error at line " ++ show l ++ " column " ++ show c ++ "..."
+      putStrLn $ "\nCompile error at " ++ errorPosition l c ++ "..."
       putStrLn mesg
       exitFailure
+  -- the file and the position in it: "file.cfr:3:5"
+  errorPosition l c = let (path, l') = modelPosition modelFiles l in path ++ ":" ++ show l' ++ ":" ++ show c
 
 save :: MonadIO m => ClaferArgs -> ClaferT m [ String ]
 save args'=
@@ -397,7 +405,7 @@ parse =
     let model' = if (not $ no_layout args') && (new_layout args') then resLayout inputModel else inputModel
     let allTokens = myLexer model'
     let (parseableTokens, otherTokens') = partition isParseable allTokens
-    tokens2 <- if not ((new_layout args') || (no_layout args')) then resolveLayout parseableTokens else return parseableTokens
+    tokens2 <- if not ((new_layout args') || (no_layout args')) then resolveLayout otherTokens' parseableTokens else return parseableTokens
     return (pModule tokens2, otherTokens')
     where
       isParseable (PT _ (T_PosLineComment _))  = False
@@ -422,6 +430,8 @@ compile desugaredMod = do
 
     let spanList = foldMapIR gt1 imodule
     when (afm (args env) && spanList/="") $ throwErr (ClaferErr $ ("The model is not an attributed feature model.\nThe following places contain cardinality larger than 1:\n"++) spanList :: CErr Span)
+    let unsatisfiableGroups' = unsatisfiableGroups imodule
+    unless (null unsatisfiableGroups') $ throwErrs unsatisfiableGroups'
     putEnv $ env{ cIr = Just ir }
     where
       isKeyWord :: Ir -> String
@@ -435,7 +445,30 @@ compile desugaredMod = do
       gt1 _ = ""
 
 
--- | Splits the AST into their fragments, and generates the output for each fragment.
+-- | The spans of the JSON output in the files of the model:
+--   @{"file": "lib.cfr", "start": {"line": 3, "column": 5}, "end": ...}@, with the lines in the file.
+--   Unchanged if the files are not known.
+spansInFiles :: [ModelFile] -> Value -> Value
+spansInFiles [] value = value
+spansInFiles files value = inFiles value
+  where
+  inFiles (Object o) = case (KeyMap.lookup (Key.fromString "start") o, KeyMap.lookup (Key.fromString "end") o) of
+    (Just (Object start'), Just (Object end'))
+      | KeyMap.size o == 2
+      , Just (Number line1) <- KeyMap.lookup (Key.fromString "line") start'
+      , Just (Number line2) <- KeyMap.lookup (Key.fromString "line") end' ->
+        let (path, line1') = modelPosition files (round line1)
+            -- the end is in the same file, relative to the start
+            line2' = round line2 - round line1 + line1'
+        in object [ Key.fromString "file" .= path
+                  , Key.fromString "start" .= KeyMap.insert (Key.fromString "line") (toJSON line1') start'
+                  , Key.fromString "end" .= KeyMap.insert (Key.fromString "line") (toJSON line2') end' ]
+    _ -> Object $ fmap inFiles o
+  inFiles (Array a) = Array $ fmap inFiles a
+  inFiles other = other
+
+-- | Splits the AST into their fragments, and generates the output for each fragment; each file
+--   of the model starts with its name.
 generateHtml :: ClaferEnv -> String
 generateHtml env =
   case cAst env of
@@ -445,21 +478,31 @@ generateHtml env =
           cargs = args env
           irMap = irModuleTrace env
           comments = if add_comments cargs then getComments $ unlines $ modelFrags env else [];
+          -- the fragment markers and the names of the files, where they start
+          markers = sortOn fst $ map (\frg -> (frg, fragmentMarker)) (frags env)
+                                 ++ [ (Pos line' 1, printFileHeader path) | (line', path) <- fileStarts (inputFiles env) ]
       in (if self_contained cargs then Css.header ++ "<style>" ++ Css.css ++ "</style></head>\n<body>\n" else "")
-        ++ unlines (genFragments decls' (frags env) irMap comments) ++
+        ++ unlines (genFragments decls' markers irMap comments) ++
         (if self_contained cargs then "</body>\n</html>" else "")
   where
     lne :: Declaration -> Pos
     lne (ElementDecl (Span p _) _) = p
     lne (EnumDecl (Span p _) _  _) = p
-    genFragments :: [Declaration] -> [Pos] -> Map.Map Span [Ir] -> [(Span, String)] -> [String]
-    genFragments []           _            _     comments = printComments comments
-    genFragments (decl:decls') []           irMap comments = let (comments', c) = printPreComment (getSpan decl) comments in
-                                                                   c : (cleanOutput $ revertLayout $ printDeclaration decl 0 irMap True $ inDecl decl comments') : (genFragments decls' [] irMap $ afterDecl decl comments')
-    genFragments (decl:decls') (frg:frgs) irMap comments = if lne decl < frg
-                                                                 then let (comments', c) = printPreComment (getSpan decl) comments in
-                                                                   c : (cleanOutput $ revertLayout $ printDeclaration decl 0 irMap True $ inDecl decl comments') : (genFragments decls' (frg:frgs) irMap $ afterDecl decl comments')
-                                                                 else "<!-- # FRAGMENT /-->" : genFragments (decl:decls') frgs irMap comments
+    genFragments :: [Declaration] -> [(Pos, String)] -> Map.Map Span [Ir] -> [(Span, String)] -> [String]
+    genFragments []           markers _ comments = printRest markers comments
+    genFragments (decl:decls') ((pos, marker):markers) irMap comments
+      | pos <= lne decl = let (comments', c) = printPreComment (Span pos pos) comments in
+                            [ c | not (null c) ] ++ marker : genFragments (decl:decls') markers irMap comments'
+    genFragments (decl:decls') markers irMap comments = let (comments', c) = printPreComment (getSpan decl) comments in
+                                                          c : (cleanOutput $ revertLayout $ printDeclaration decl 0 irMap True $ inDecl decl comments') : (genFragments decls' markers irMap $ afterDecl decl comments')
+    -- the comments and the names of the files after the last declaration, in the order of the
+    -- text; the fragment markers end with the last declaration
+    printRest [] comments = printComments comments
+    printRest ((pos, marker):markers) comments
+      | marker == fragmentMarker = printRest markers comments
+      | otherwise = let (before, after) = span (\(Span p _, _) -> p < pos) comments in
+                      printComments before ++ marker : printRest markers after
+    fragmentMarker = "<!-- # FRAGMENT /-->"
     inDecl :: Declaration -> [(Span, String)] -> [(Span, String)]
     inDecl decl comments = let s = getSpan decl in dropWhile (\x -> fst x <= s) comments
     afterDecl :: Declaration -> [(Span, String)] -> [(Span, String)]
@@ -492,6 +535,30 @@ iClaferBasedChecks iModule = (not (any hasReferenceToReal iClafers), null tempMo
     hasReferenceToReal _                                                 = False
     tempModifiers = filter hasTempModifier iClafers
     hasTempModifier (IClafer _ (IClaferModifiers _ isInitial' isFinal') _ _ _ _ _ _ _ _ _) = isInitial' || isFinal'
+
+-- | Errors for the groups of concrete clafers whose children, including the inherited ones,
+--   cannot have as many instances as the lower bound of the group cardinality requires,
+--   e.g., @xor@ over no children. The group cardinality may be inherited or redefined.
+unsatisfiableGroups :: IModule -> [CErr Span]
+unsatisfiableGroups iModule = mapMaybe groupErr iClafers
+  where
+    iClafers :: [ IClafer ]
+    iClafers = universeOn biplate iModule
+    uidIClaferMap' = createUidIClaferMap iModule
+    groupErr c@IClafer{_cinPos, _ident, _gcard = Just IGCard{_interval = gcard'@(gMin, _)}}
+      | not (_isAbstract c) && gMin > 0 && maybe False (< gMin) maxInstances =
+          Just $ SemanticErr _cinPos $ "The group cardinality " ++ showInterval gcard' ++ " of " ++ _ident
+            ++ " cannot be satisfied: its children, including the inherited ones, can have at most "
+            ++ show (fromJust maxInstances) ++ " instances"
+      | otherwise = Nothing
+      where
+        children' = getSubclafers $ concatMap _elements $ findHierarchy getSuper uidIClaferMap' c
+        -- Nothing if a child has no upper bound
+        maxInstances = foldM addUpper 0 children'
+        addUpper n child = case _card child of
+          Just (_, m) | m >= 0 -> Just (n + m)
+          _                    -> Nothing
+    groupErr _ = Nothing
 
 -- | Generates outputs for the given IR.
 generate :: Monad m => ClaferT m (Map.Map ClaferMode CompilerResult)
@@ -552,9 +619,9 @@ generate =
                      [ "{"
                      , case gatherObjectivesAndAttributes iModule $ astModuleTrace env of
                           Nothing         -> ""
-                          Just objectives -> "\"objectives\":" ++ convertString (encode $ toJSON objectives) ++ ","
+                          Just objectives -> "\"objectives\":" ++ convertString (encode $ spansInFiles (inputFiles env) $ toJSON objectives) ++ ","
                      , "\"iModule\":"
-                     , convertString $ encode $ toJSON iModule
+                     , convertString $ encode $ spansInFiles (inputFiles env) $ toJSON iModule
                      , "}"
                      ],
                    statistics = stats,
