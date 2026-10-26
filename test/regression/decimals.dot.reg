@@ -1,0 +1,30 @@
+digraph "decimals"
+{
+rankdir=BT;
+ranksep=0.3;
+nodesep=0.1;
+graph [fontname=Sans fontsize=11];
+node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
+edge [fontname=Sans fontsize=11];
+"c0_Feature" [label="abstract Feature" URL="#c0_Feature" tooltip="abstract Feature&#10;  cost -&gt; decimal&#10;  weight -&gt; decimal&#10;"];
+"c0_Feature" -> "decimal" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=cost];
+"c0_Feature" -> "decimal" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=weight];
+"c0_Bike" [label="abstract Bike" URL="#c0_Bike" tooltip="abstract Bike&#10;  Light : Feature ?&#10;    [ cost = 19.99 ]&#10;    [ weight = 0.25 ]&#10;  Rack : Feature ?&#10;    [ cost = 34.5 ]&#10;    [ weight = 1.2 ]&#10;  Bell : Feature ?&#10;    [ cost = 4.75 ]&#10;    [ weight = 0.05 ]&#10;  Frame : Feature&#10;    [ cost = 250 ]&#10;    [ weight = 9.8 ]&#10;  subtotal -&gt; decimal = sum Feature.cost&#10;  tax -&gt; decimal = subtotal * 0.13&#10;  total -&gt; decimal = subtotal + tax&#10;  weightPerFeature -&gt; decimal = sum Feature.weight / # Feature&#10;  [ total <= 340 ]&#10;  [ weightPerFeature < 5 ]&#10;"];
+"c0_Bike" -> "c0_Feature" [arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];
+"c0_Bike" -> "c0_Feature" [arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];
+"c0_Bike" -> "c0_Feature" [arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];
+"c0_Bike" -> "c0_Feature" [arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];
+"c0_Bike" -> "decimal" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=subtotal];
+"c0_Bike" -> "decimal" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=tax];
+"c0_Bike" -> "decimal" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=total];
+"c0_Bike" -> "decimal" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=weightPerFeature];
+"c0_aBike" [label="aBike : Bike" URL="#c0_aBike" tooltip="aBike : Bike&#10;"];
+"c0_aBike" -> "c0_Bike" [arrowhead=onormal constraint=true weight=100];
+"c0_size" [label="size -&gt; 1, 2.5" URL="#c0_size" tooltip="size -&gt; 1, 2.5&#10;  [ this != 1 ]&#10;"];
+"c0_change" [label="change -&gt; decimal = -aBike.total + 400" URL="#c0_change" tooltip="change -&gt; decimal = -aBike.total + 400&#10;"];
+"c0_change" -> "decimal" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent];
+"c0_share" [label="share -&gt; decimal = 2 / 3" URL="#c0_share" tooltip="share -&gt; decimal = 2 / 3&#10;"];
+"c0_share" -> "decimal" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent];
+"c0_discount" [label="discount -&gt; decimal = if aBike.total > 300 then 0.1 else 0" URL="#c0_discount" tooltip="discount -&gt; decimal = if aBike.total > 300 then 0.1 else 0&#10;"];
+"c0_discount" -> "decimal" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent];
+}

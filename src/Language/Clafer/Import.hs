@@ -320,7 +320,7 @@ fileOptions model
 
 {- | Combines the options of the imported files and of the model:
 
-* the largest @--maxint@, @--tl@ and @--timeout-analysis@, the smallest @--minint@;
+* the largest @--maxint@, @--decimal-digits@, @--tl@ and @--timeout-analysis@, the smallest @--minint@;
 * all modes (@-m@) and imports;
 * @-k@, @-c@, @--check-afm@ and @-i@ if any file has them, @-f@ only if all files have it;
 * the layout (@-l@, @--nl@) and the scope strategy (@--ss@) must be the same in all files,
@@ -352,6 +352,7 @@ combineOptions imported (root, rootOptions) = do
     , imports             = nub $ concatMap imports all'
     , maxint              = maximumOf $ map maxint all'
     , minint              = minimumOf $ map minint all'
+    , decimal_digits      = maximumOf $ map decimal_digits all'
     , trace_len           = maximum $ map trace_len all'
     , timeout_analysis    = maximum $ map timeout_analysis all'
     , keep_unused         = any keep_unused all'

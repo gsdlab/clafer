@@ -99,6 +99,7 @@ claferTClafer = TClafer ["clafer"]
 
 numeric :: IType     -> Bool
 numeric TInteger     = True
+numeric TDecimal     = True
 numeric TReal        = True
 numeric TDouble      = True
 numeric (TMap _ ta') = numeric ta'
@@ -117,6 +118,12 @@ isTInteger TInteger     = True
 isTInteger (TMap _ ta') = isTInteger ta'
 isTInteger (TUnion un') = any isTInteger un'
 isTInteger _            = False
+
+isTDecimal :: IType    -> Bool
+isTDecimal TDecimal     = True
+isTDecimal (TMap _ ta') = isTDecimal ta'
+isTDecimal (TUnion un') = any isTDecimal un'
+isTDecimal _            = False
 
 isTString :: IType    -> Bool
 isTString TString      = True
@@ -153,7 +160,7 @@ getTClaferByUID    uidIClaferMap'   uid' = case uid' of
 getTClaferFromIExp :: UIDIClaferMap -> IExp -> Maybe IType
 getTClaferFromIExp    uidIClaferMap'   (IClaferId _ uid' _ _) = getTClaferByUID uidIClaferMap' uid'
 getTClaferFromIExp    _                (IInt _)               = Just TInteger
-getTClaferFromIExp    _                (IReal _)              = Just TReal
+getTClaferFromIExp    _                (IDecimal _)           = Just TDecimal
 getTClaferFromIExp    _                (IDouble _)            = Just TDouble
 getTClaferFromIExp    _                (IStr _)               = Just TString
 getTClaferFromIExp    _                _                      = Nothing
@@ -193,6 +200,7 @@ hierarchyMap uidIClaferMap' f c = case findIClafer uidIClaferMap' c of
 unionType :: IType -> [String]
 unionType TString  = [stringType]
 unionType TReal    = [realType]
+unionType TDecimal = [decimalType]
 unionType TDouble  = [doubleType]
 unionType TInteger = [integerType]
 unionType TBoolean = [booleanType]
@@ -206,6 +214,7 @@ fromUnionType u =
         ["string"]  -> Just TString
         ["integer"] -> Just TInteger
         ["int"]     -> Just TInteger
+        ["decimal"] -> Just TDecimal
         ["double"]  -> Just TDouble
         ["real"]    -> Just TReal
         ["root"]    -> Just rootTClafer
@@ -223,6 +232,10 @@ TString
 
 >>> TString +++ TInteger
 TUnion {_un = [TString,TInteger]}
+
+Integers are decimals, e.g., in `1, 2.5`.
+>>> TInteger +++ TDecimal
+TDecimal
 
 >>> TString +++ TUnion [TInteger]
 TUnion {_un = [TString,TInteger]}
@@ -260,6 +273,9 @@ TInteger
 TBoolean        +++ TBoolean        = TBoolean
 TString         +++ TString         = TString
 TReal           +++ TReal           = TReal
+TDecimal        +++ TDecimal        = TDecimal
+TDecimal        +++ TInteger        = TDecimal
+TInteger        +++ TDecimal        = TDecimal
 TDouble         +++ TDouble         = TDouble
 TInteger        +++ TInteger        = TInteger
 t1@(TClafer u1) +++ t2@(TClafer u2) = if t1 == t2
@@ -304,6 +320,14 @@ Cannot assign a TReal to a map to TInteger
 >>> runMaybeT $ intersection undefined TReal tDrefMapDOB
 Just Nothing
 
+Integers are decimals.
+>>> runMaybeT $ intersection undefined TInteger TDecimal
+Just (Just TDecimal)
+
+A decimal and a double have only real in common: 0.1 is not a double.
+>>> runMaybeT $ intersection undefined TDecimal TDouble
+Just (Just TReal)
+
 runMaybeT $ intersection undefined TClafer {_hi = ["A","X","B","C"]} TClafer {_hi = ["X"]}
 Just (Just TClafer {_hi = ["X"]})
 -}
@@ -316,6 +340,13 @@ intersection _              TReal           TDouble       = return $ Just TReal
 intersection _              TDouble         TReal         = return $ Just TReal
 intersection _              TReal           TInteger      = return $ Just TReal
 intersection _              TInteger        TReal         = return $ Just TReal
+intersection _              TDecimal        TDecimal      = return $ Just TDecimal
+intersection _              TDecimal        TInteger      = return $ Just TDecimal
+intersection _              TInteger        TDecimal      = return $ Just TDecimal
+intersection _              TDecimal        TReal         = return $ Just TReal
+intersection _              TReal           TDecimal      = return $ Just TReal
+intersection _              TDecimal        TDouble       = return $ Just TReal
+intersection _              TDouble         TDecimal      = return $ Just TReal
 intersection _              TDouble         TDouble       = return $ Just TDouble
 intersection _              TDouble         TInteger      = return $ Just TDouble
 intersection _              TInteger        TDouble       = return $ Just TDouble
@@ -385,6 +416,13 @@ getIfThenElseType _              TReal           TDouble       = return $ Just T
 getIfThenElseType _              TDouble         TReal         = return $ Just TReal
 getIfThenElseType _              TReal           TInteger      = return $ Just TReal
 getIfThenElseType _              TInteger        TReal         = return $ Just TReal
+getIfThenElseType _              TDecimal        TDecimal      = return $ Just TDecimal
+getIfThenElseType _              TDecimal        TInteger      = return $ Just TDecimal
+getIfThenElseType _              TInteger        TDecimal      = return $ Just TDecimal
+getIfThenElseType _              TDecimal        TReal         = return $ Just TReal
+getIfThenElseType _              TReal           TDecimal      = return $ Just TReal
+getIfThenElseType _              TDecimal        TDouble       = return $ Just TReal
+getIfThenElseType _              TDouble         TDecimal      = return $ Just TReal
 getIfThenElseType _              TDouble         TDouble       = return $ Just TDouble
 getIfThenElseType _              TDouble         TInteger      = return $ Just TDouble
 getIfThenElseType _              TInteger        TDouble       = return $ Just TDouble
@@ -508,6 +546,12 @@ TInteger
 TInteger
 >>> coerce (TUnion [TInteger, TReal]) TInteger
 TReal
+
+>>> coerce TInteger TDecimal
+TDecimal
+
+>>> coerce TDecimal TDouble
+TReal
 -}
 
 coerce :: IType -> IType -> IType
@@ -517,6 +561,13 @@ coerce TReal TInteger    = TReal
 coerce TInteger TReal    = TReal
 coerce TReal TDouble     = TReal
 coerce TDouble TReal     = TReal
+coerce TDecimal TDecimal = TDecimal
+coerce TDecimal TInteger = TDecimal
+coerce TInteger TDecimal = TDecimal
+coerce TDecimal TReal    = TReal
+coerce TReal TDecimal    = TReal
+coerce TDecimal TDouble  = TReal
+coerce TDouble TDecimal  = TReal
 coerce TDouble TDouble   = TDouble
 coerce TDouble TInteger  = TDouble
 coerce TInteger TDouble  = TDouble

@@ -1,0 +1,40 @@
+// Decimals: numbers with a fixed number of fractional digits, the decimal scale of
+// the model, here 2, the most fractional digits of the literals (--decimal-digits
+// overrides it). decimal * decimal and divisions with a decimal round half away from
+// zero; a division of integers stays an integer division. Choco only.
+
+abstract Feature
+    cost -> decimal
+    weight -> decimal
+
+abstract Bike
+    Light : Feature ?
+        [ cost = 19.99 ]
+        [ weight = 0.25 ]
+    Rack : Feature ?
+        [ cost = 34.5 ]
+        [ weight = 1.2 ]
+    Bell : Feature ?
+        [ cost = 4.75 ]
+        [ weight = 0.05 ]
+    Frame : Feature
+        [ cost = 250 ]
+        [ weight = 9.8 ]
+    subtotal -> decimal = sum Feature.cost
+    tax -> decimal = subtotal * 0.13
+    total -> decimal = subtotal + tax
+    weightPerFeature -> decimal = (sum Feature.weight) / #Feature
+    [ total <= 340 ]
+    [ weightPerFeature < 5 ]
+
+aBike : Bike
+
+// a reference to a set of an integer and a decimal
+size -> 1, 2.5
+    [ this != 1 ]
+
+change -> decimal = -aBike.total + 400
+share -> decimal = 2 / 3
+discount -> decimal = if aBike.total > 300 then 0.1 else 0
+
+<< max aBike.total >>

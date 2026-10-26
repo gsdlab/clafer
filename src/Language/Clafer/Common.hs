@@ -82,7 +82,7 @@ getRefIds (PExp _ _ _ (IFunExp{_op="--", _exps = [leftExp, rightExp]})) = getRef
 getRefIds (PExp _ _ _ (IFunExp{_op="**", _exps = [leftExp, rightExp]})) = getRefIds leftExp ++ getRefIds rightExp
 getRefIds (PExp _ _ _ (IInt _)) = [integerType]
 getRefIds (PExp _ _ _ (IDouble _)) = [doubleType]
-getRefIds (PExp _ _ _ (IReal _)) = [realType]
+getRefIds (PExp _ _ _ (IDecimal _)) = [decimalType]
 getRefIds (PExp _ _ _ (IStr _)) = [stringType]
 getRefIds (PExp _ _ _ (IDeclPExp{_quant = ISome})) = []
 getRefIds pexp' = error $ "[Bug] Commmon.getRefIds called on unexpected argument '" ++ show pexp' ++ "'"
@@ -144,15 +144,17 @@ createUidIClaferMap :: IModule -> UIDIClaferMap
 createUidIClaferMap    iModule  = foldl'
     (\accumMap' claf -> SMap.insert (_uid claf) claf accumMap')
     (SMap.singleton rootIdent rootClafer)
-    (integerClafer : intClafer : stringClafer : doubleClafer : realClafer : booleanClafer : clafer : allClafers)
+    (integerClafer : intClafer : stringClafer : decimalClafer : doubleClafer : realClafer : booleanClafer : clafer : allClafers)
   where
     allClafers :: [ IClafer ]
     allClafers = universeOn biplate iModule
     defaultModifiers = IClaferModifiers False True True
     rootClafer = IClafer noSpan defaultModifiers (Just $ IGCard False (0, -1)) rootIdent rootIdent "" Nothing Nothing (Just (1,1)) (1, 1) (_mDecls iModule)
-    integerClafer = IClafer noSpan defaultModifiers (Just $ IGCard False (0, -1)) integerType integerType "" (Just $ pExpDefPidPos $ IClaferId "" doubleType True $ GlobalBind doubleType) Nothing (Just (1,1)) (1, 1) []
-    intClafer = IClafer noSpan defaultModifiers (Just $ IGCard False (0, -1)) "int" "int" "" (Just $ pExpDefPidPos $ IClaferId "" doubleType True $ GlobalBind doubleType) Nothing (Just (1,1)) (1, 1) []
+    -- integers are decimals, decimals and doubles are reals; integers also convert to doubles (see TypeSystem)
+    integerClafer = IClafer noSpan defaultModifiers (Just $ IGCard False (0, -1)) integerType integerType "" (Just $ pExpDefPidPos $ IClaferId "" decimalType True $ GlobalBind decimalType) Nothing (Just (1,1)) (1, 1) []
+    intClafer = IClafer noSpan defaultModifiers (Just $ IGCard False (0, -1)) "int" "int" "" (Just $ pExpDefPidPos $ IClaferId "" decimalType True $ GlobalBind decimalType) Nothing (Just (1,1)) (1, 1) []
     stringClafer = IClafer noSpan defaultModifiers (Just $ IGCard False (0, -1)) stringType stringType "" Nothing Nothing (Just (1,1)) (1, 1) []
+    decimalClafer = IClafer noSpan defaultModifiers (Just $ IGCard False (0, -1)) decimalType decimalType "" (Just $ pExpDefPidPos $ IClaferId "" realType True $ GlobalBind realType) Nothing (Just (1,1)) (1, 1) []
     doubleClafer = IClafer noSpan defaultModifiers (Just $ IGCard False (0, -1)) doubleType doubleType "" (Just $ pExpDefPidPos $ IClaferId "" realType True $ GlobalBind realType) Nothing (Just (1,1)) (1, 1) []
     realClafer = IClafer noSpan defaultModifiers (Just $ IGCard False (0, -1)) realType realType "" Nothing Nothing (Just (1,1)) (1, 1) []
     booleanClafer = IClafer noSpan defaultModifiers (Just $ IGCard False (0, -1)) booleanType booleanType "" Nothing Nothing (Just (1,1)) (1, 1) []
@@ -272,7 +274,9 @@ isProperRefinement    uidIClaferMap    (Just m)
           (Just IReference{_isSet=headIsSet}, Just IReference{_isSet=superIsSet}) -> superIsSet <= headIsSet  -- set (True) implies set (True), bag (False) allows bag (False) or set (True)
           _ -> True -- covers 1) only one of them has a ref, and 2) none of them has a ref
     properTargetSubtyping NestedInheritanceMatch{_targetClafer=[targetClafer], _superClafersTarget=[superClafersTarget]}
-      = isJust $ findUIDinSupers uidIClaferMap (_uid superClafersTarget) targetClafer
+      = isJust (findUIDinSupers uidIClaferMap (_uid superClafersTarget) targetClafer)
+        -- integers are decimals in the hierarchy, and also doubles
+        || (_uid targetClafer `elem` [integerType, intType] && _uid superClafersTarget == doubleType)
     properTargetSubtyping _
       = True -- covers 1) only one of the target clafers exists, and 2) none of the target clafers exist
 
@@ -589,6 +593,10 @@ integerType = "integer"
 realType :: String
 realType = "real"
 
+-- | Numbers with a fixed number of fractional digits, the decimal scale of the model
+decimalType :: String
+decimalType = "decimal"
+
 doubleType :: String
 doubleType = "double"
 
@@ -602,7 +610,7 @@ modSep :: String
 modSep = "\\"
 
 primitiveTypes :: [String]
-primitiveTypes = [stringType, intType, integerType, doubleType, realType]
+primitiveTypes = [stringType, intType, integerType, decimalType, doubleType, realType]
 
 isPrimitive :: String -> Bool
 isPrimitive = flip elem primitiveTypes

@@ -107,11 +107,11 @@ constantType :: Exp -> Maybe Exp
 constantType e = typeExp <$> case e of
     EInt _ _               -> Just integerType
     EDouble _ _            -> Just doubleType
-    EReal _ _              -> Just realType
+    EReal _ _              -> Just decimalType
     EStr _ _               -> Just stringType
     EMinExp _ (EInt _ _)   -> Just integerType
     EMinExp _ (EDouble _ _) -> Just doubleType
-    EMinExp _ (EReal _ _)  -> Just realType
+    EMinExp _ (EReal _ _)  -> Just decimalType
     _                      -> Nothing
   where
     s = getSpan e
@@ -475,7 +475,8 @@ desugarExp' x = let x' =  translateTmpPatterns x in case x' of
   EGMin _ exp' -> dop iMinimum [exp']
   EInt _ n  -> IInt $ mkInteger n
   EDouble _ (PosDouble n) -> IDouble $ read $ snd n
-  EReal _ (PosReal n) -> IReal $ read $ snd n
+  -- a plain decimal literal, e.g., 19.99, is a decimal, kept as written
+  EReal _ (PosReal n) -> IDecimal $ snd n
   EStr _ (PosString str)  -> IStr $ snd str
   EUnion _ exp0 exp'        -> dop iUnion        [exp0, exp']
   EUnionCom _ exp0 exp'     -> dop iUnion        [exp0, exp']
@@ -534,7 +535,7 @@ sugarExp' x = case x of
   IClaferId modName' id' _ _ -> ClaferId noSpan $ Path noSpan $ (sugarModId modName') : [sugarModId id']
   IInt n -> EInt noSpan $ PosInteger ((0, 0), show n)
   IDouble n -> EDouble noSpan $ PosDouble ((0, 0), show n)
-  IReal n -> EReal noSpan $ PosReal ((0, 0), show n)
+  IDecimal n -> EReal noSpan $ PosReal ((0, 0), n)
   IStr str -> EStr noSpan $ PosString ((0, 0), str)
   IFunExp op' exps' ->
     if op' `elem` unOps then (sugarUnOp op') (exps''!!0)

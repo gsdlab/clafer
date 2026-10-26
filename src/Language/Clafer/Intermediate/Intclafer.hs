@@ -58,6 +58,7 @@ data IType
   = TBoolean
   | TString
   | TInteger
+  | TDecimal
   | TDouble
   | TReal
   | TClafer
@@ -214,9 +215,9 @@ data IExp
   | IInt
     { _iint :: Integer
     }
-    -- | real number
-  | IReal
-    { _ireal :: Double
+    -- | decimal number, as written, e.g., "2.50"
+  | IDecimal
+    { _idecimal :: String
     }
     -- | double-precision floating point number
   | IDouble
