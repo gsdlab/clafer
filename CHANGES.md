@@ -1,4 +1,4 @@
-##### Clafer Version 0.5.5, unreleased
+##### Clafer Version 0.5.5, Oct 27, 2026
 
 * Decimals: a primitive type `decimal` of numbers with a fixed number of fractional digits, the decimal scale of the model, for the Choco backend (chocosolver 0.5.5). A plain decimal literal, e.g., `19.99`, is a decimal (it was a `real`); the scale is the most fractional digits of the literals, as written, or `--decimal-digits`. `decimal * decimal` and divisions with a decimal round half away from zero; a division of integers stays an integer division. Integers are decimals, decimals and doubles are reals, and a decimal and a double do not mix. `real` and `double` stay unsupported by the backends, and the Alloy backend does not support decimals. In the Choco output: `refTo(Decimal)`, `decimal("19.99")` and `decimalScale(2)`.
 * `clafer-mode.el` highlights `decimal` as a type.
