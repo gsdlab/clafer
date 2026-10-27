@@ -239,7 +239,7 @@ analyzeDependencies uidClaferMap' clafers = connComponents
 
 dependency :: UIDIClaferMap -> IClafer -> [(String, String)]
 dependency uidClaferMap' clafer =
-    selfDependency : (maybeToList superDependency ++ childDependencies)
+    selfDependency : (maybeToList superDependency ++ childDependencies ++ targetDependencies)
     where
      -- This is to make the "stronglyConnComp" from Data.Graph play nice. Otherwise,
      -- clafers with no dependencies will not appear in the result.
@@ -253,6 +253,11 @@ dependency uidClaferMap' clafer =
                 return (_uid super', _uid clafer)
     -- Need to analyze clafer before its children
     childDependencies = [(_uid child, _uid clafer) | child <- childClafers clafer]
+    -- Need to analyze the target of a reference with an unbounded cardinality before
+    -- the reference, whose scope uses the target's (targetScopeForStar)
+    targetDependencies
+        | (snd <$> _card clafer) /= Just (-1) = []
+        | otherwise = [(_uid clafer, _uid target) | [ref'] <- [getReference clafer], Just target <- [findIClafer uidClaferMap' ref']]
 
 
 analyzeHierarchy :: UIDIClaferMap -> [IClafer] -> (Map String [String], Map String String)
