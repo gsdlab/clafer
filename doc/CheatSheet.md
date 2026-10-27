@@ -9,6 +9,8 @@ The cheat sheet additionally provides commentary and type information, while sac
 
 `decimal` is a number with a fixed number of fractional digits, the decimal scale of the model: the most fractional digits of the model's decimal literals, unless given by `--decimal-digits`.
 `decimal * decimal` and divisions with a decimal round to the scale, half away from zero (`19.99 * 0.13` is `2.6` with 2 digits); a division of integers stays an integer division (`2 / 3` is `0`).
+Equality is exact, after rounding, so a constraint holds only on the grid of the scale: `x * x = 2` has no instance with 2 digits, since `1.41 * 1.41` is `1.99` and `1.42 * 1.42` is `2.02`.
+Either use more digits (with `--decimal-digits=4`, `x` is `±1.4142`), or allow a tolerance with two inequalities: `[ x * x >= 1.98 && x * x <= 2.02 ]` gives `x` is `±1.41` and `±1.42`.
 Decimals are supported by the Choco backend only.
 `double` is a double precision floating point number (not supported by backends).
 `real` is an algebraic real (not supported by backends).
