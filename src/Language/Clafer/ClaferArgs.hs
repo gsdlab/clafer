@@ -71,6 +71,7 @@ data ClaferArgs = ClaferArgs {
       meta_data :: Bool,
       minint :: Maybe Integer,
       maxint :: Maybe Integer,
+      decimal_digits :: Maybe Integer,
       imports :: [FilePath],
       import_root :: [FilePath],
       public_imports :: Bool,
@@ -104,6 +105,7 @@ clafer = ClaferArgs {
   meta_data           = def &= help "Generate a 'fully qualified name'-'least-partially-qualified name'-'unique ID' map ('.cfr-map'). In Alloy and Choco modes, generate the scopes map ('.cfr-scope').",
   minint              = def &= help "Smallest integer value ('choco' mode only). Default: -128, chosen by chocosolver." &= typ "INT" &= explicit &= name "minint",
   maxint              = def &= help "Largest integer value ('choco' mode only). Default: 127, chosen by chocosolver." &= typ "INT" &= explicit &= name "maxint",
+  decimal_digits      = def &= help "Number of fractional digits of decimals ('choco' mode only). Default: the most fractional digits of the model's decimal literals." &= typ "INT" &= explicit &= name "decimal-digits",
   imports             = def &= help "Compile the model with the model in FILE (a path or an http/https URL), which is compiled before it (and only once, if imported by several files). In '//# OPTIONS', FILE is relative to the model's folder or URL; options of the imported files are combined with the model's. Can be repeated." &= typFile &= explicit &= name "import",
   import_root         = def &= help "Allow only local imports inside DIR, after resolving '..' and symbolic links (command line only). Can be repeated; without it, any local file can be imported." &= typDir &= explicit &= name "import-root",
   public_imports      = def &= help "Allow only URL imports from public addresses, not from loopback, private, or link-local ones, without a proxy (command line only)." &= explicit &= name "public-imports",
@@ -150,6 +152,7 @@ mergeArgs a1 a2  = ClaferArgs
   , meta_data = mergeArg meta_data
   , minint = mergeArg minint
   , maxint = mergeArg maxint
+  , decimal_digits = mergeArg decimal_digits
   , imports = imports a1 ++ filter (`notElem` imports a1) (imports a2)
   , import_root = mergeArg import_root
   , public_imports = mergeArg public_imports
@@ -197,6 +200,7 @@ defaultClaferArgs = ClaferArgs
   , meta_data = False
   , minint = Nothing
   , maxint = Nothing
+  , decimal_digits = Nothing
   , imports = []
   , import_root = []
   , public_imports = False

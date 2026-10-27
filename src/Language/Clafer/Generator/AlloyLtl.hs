@@ -313,6 +313,7 @@ containsStatefulExp    genEnv     (PExp iType' _ _ exp') =  case exp' of
       | isNothing iType' = mutable'
       | otherwise = case fromJust iType' of
         TInteger -> False
+        TDecimal -> False
         TReal -> False
         TString -> False
         _ -> mutable'
@@ -654,6 +655,7 @@ genPExp'    genEnv    ctx       (PExp iType' pid' pos exp') = case exp' of
     isBuiltInExpr = isPrimitive sid ||
       case iType' of
            Just TInteger -> True
+           Just TDecimal -> True
            Just TReal -> True
            Just TString -> True
            _ -> False
@@ -670,6 +672,7 @@ genPExp'    genEnv    ctx       (PExp iType' pid' pos exp') = case exp' of
     exp'' = transformExp exp' $ ctxClafer ctx
   IInt n -> CString $ show n
   IDouble _ -> error "no double numbers allowed"
+  IDecimal _ -> error "no decimal numbers allowed"
   IReal _ -> error "no real numbers allowed"
   IStr _ -> error "no strings allowed"
 

@@ -7,11 +7,19 @@ The cheat sheet additionally provides commentary and type information, while sac
 
 ### Sets of primitive values
 
-`double` is a double precision floating point number (limited support by ChocoSolver backend).
-`real` is an algebraic real (not supported by backends)
+`decimal` is a number with a fixed number of fractional digits, the decimal scale of the model: the most fractional digits of the model's decimal literals, unless given by `--decimal-digits`.
+`decimal * decimal` and divisions with a decimal round to the scale, half away from zero (`19.99 * 0.13` is `2.6` with 2 digits); a division of integers stays an integer division (`2 / 3` is `0`).
+Equality is exact, after rounding, so a constraint holds only on the grid of the scale: `x * x = 2` has no instance with 2 digits, since `1.41 * 1.41` is `1.99` and `1.42 * 1.42` is `2.02`.
+Either use more digits (with `--decimal-digits=4`, `x` is `±1.4142`), or allow a tolerance with two inequalities: `[ x * x >= 1.98 && x * x <= 2.02 ]` gives `x` is `±1.41` and `±1.42`.
+Decimals are supported by the Choco backend only.
+`double` is a double precision floating point number (not supported by backends).
+`real` is an algebraic real (not supported by backends).
+
+Integers are decimals, and decimals and doubles are reals. A decimal and a double have only `real` in common, since most decimals are not doubles (`0.1` is not), so they do not mix.
 
 ```
 integer
+decimal
 double
 real
 string
@@ -298,8 +306,8 @@ Overloaded comparisons (can be sets of instances or primitive values):
 `<numeric expression>`:
 ```
 <int literal>
-<double literal>
-<real literal>
+<decimal literal>          // e.g., 19.99
+<double literal>           // e.g., 1.5e-3
 <numeric expression> + <numeric expression>
 <numeric expression> - <numeric expression>
 <numeric expression> * <numeric expression>
@@ -479,6 +487,12 @@ The following table provides versions in which support for a given feature was a
 <td><code>&lt;:</code> and <code>:&gt;</code></td>
 <td>0.3.0</td>
 <td>0.4.2</td>
+</tr>
+
+<tr>
+<td><code>decimal</code></td>
+<td>&nbsp;&nbsp;&nbsp;-</td>
+<td>0.5.5</td>
 </tr>
 
 <tr>

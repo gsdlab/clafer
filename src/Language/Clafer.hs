@@ -510,29 +510,36 @@ generateHtml env =
     printComments [] = []
     printComments ((s, comment):cs') = (snd (printComment s [(s, comment)]) ++ "<br>\n"):printComments cs'
 
-iExpBasedChecks :: IModule -> (Bool, Bool, Bool)
-iExpBasedChecks iModule = (null realLiterals, null productOperators, null tempOperators)
+-- | Whether the model has no decimal literals, no real or double literals, no product
+--   operator and no temporal operators.
+iExpBasedChecks :: IModule -> (Bool, Bool, Bool, Bool)
+iExpBasedChecks iModule = (null decimalLiterals, null realLiterals, null productOperators, null tempOperators)
   where
     iexps :: [ IExp ]
     iexps = universeOn biplate iModule
-    realLiterals = filter isIDouble iexps
+    decimalLiterals = [ e | e@(IDecimal _) <- iexps ]
+    realLiterals = [ e | e <- iexps, isRealOrDouble e ]
+    isRealOrDouble (IReal _)   = True
+    isRealOrDouble (IDouble _) = True
+    isRealOrDouble _           = False
     productOperators = filter isProductOperator iexps
     tempOperators = filter isTempOperator iexps
-    isIDouble (IDouble _) = True
-    isIDouble (IReal _) = True
-    isIDouble _           = False
     isProductOperator (IFunExp op' _) = op' == iProdSet
     isProductOperator _               = False
     isTempOperator (IFunExp op' _) = op' `elem` (iLet : propertyKeywords ++ ltlOps)
     isTempOperator _               = False
 
-iClaferBasedChecks :: IModule -> (Bool, Bool)
-iClaferBasedChecks iModule = (not (any hasReferenceToReal iClafers), null tempModifiers)
+-- | Whether the model has no references to decimals, no references to reals or doubles, and
+--   no temporal modifiers.
+iClaferBasedChecks :: IModule -> (Bool, Bool, Bool)
+iClaferBasedChecks iModule = ( not (any (hasReferenceTo [ decimalType ]) iClafers)
+                             , not (any (hasReferenceTo [ realType, doubleType ]) iClafers)
+                             , null tempModifiers)
   where
     iClafers :: [ IClafer ]
     iClafers = universeOn biplate iModule
-    hasReferenceToReal IClafer{_reference=(Just IReference{_ref=pexp'})} = any (`elem` [ "real", "double" ]) $ getRefIds pexp'
-    hasReferenceToReal _                                                 = False
+    hasReferenceTo types IClafer{_reference=(Just IReference{_ref=pexp'})} = any (`elem` types) $ getRefIds pexp'
+    hasReferenceTo _     _                                                 = False
     tempModifiers = filter hasTempModifier iClafers
     hasTempModifier (IClafer _ (IClaferModifiers _ isInitial' isFinal') _ _ _ _ _ _ _ _ _) = isInitial' || isFinal'
 
@@ -568,8 +575,8 @@ generate =
     ast' <- getAst
     (iModule, genv, au) <- getIr
     let
-      (hasNoRealLiterals, hasNoProductOperator, hasNoTempOperators) = iExpBasedChecks iModule
-      (hasNoReferenceToReal, hasNoTempModifiers) = iClaferBasedChecks iModule
+      (hasNoDecimalLiterals, hasNoRealLiterals, hasNoProductOperator, hasNoTempOperators) = iExpBasedChecks iModule
+      (hasNoReferenceToDecimal, hasNoReferenceToReal, hasNoTempModifiers) = iClaferBasedChecks iModule
       staticClaferSubset = hasNoTempOperators && hasNoTempModifiers
       cargs = args env
       otherTokens' = otherTokens env
@@ -580,7 +587,7 @@ generate =
     return $ Map.fromList (
         -- result for Alloy
         (if Alloy `elem` modes
-         then if hasNoRealLiterals && hasNoReferenceToReal && hasNoProductOperator
+         then if hasNoDecimalLiterals && hasNoRealLiterals && hasNoReferenceToDecimal && hasNoReferenceToReal && hasNoProductOperator
               then
                  let
                     (imod,strMap) = astrModule iModule
@@ -603,8 +610,10 @@ generate =
               else [ (Alloy,
                       NoCompilerResult {
                          reason = "Alloy output unavailable because the model contains: "
-                                ++ (if hasNoRealLiterals then "" else "a real number literal, ")
-                                ++ (if hasNoReferenceToReal then "" else "a reference to a real, ")
+                                ++ (if hasNoDecimalLiterals then "" else "a decimal literal, ")
+                                ++ (if hasNoRealLiterals then "" else "a real or double literal, ")
+                                ++ (if hasNoReferenceToDecimal then "" else "a reference to a decimal, ")
+                                ++ (if hasNoReferenceToReal then "" else "a reference to a real or double, ")
                                 ++ (if hasNoProductOperator then "" else "the product operator, ")
                         })
                      ]
@@ -692,7 +701,7 @@ generate =
                  then [(Choco,
                         CompilerResult {
                           extension = "js",
-                          outputCode = genCModule (iModule, genv) scopes (minint cargs, maxint cargs) otherTokens',
+                          outputCode = genCModule (iModule, genv) scopes (minint cargs, maxint cargs) (decimal_digits cargs) otherTokens',
                           statistics = stats,
                           claferEnv  = env,
                           mappingToAlloy = [],
@@ -705,8 +714,8 @@ generate =
                           reason = if not staticClaferSubset
                             then "Choco output unavailable because the model contains temporal operators"
                             else "Choco output unavailable because the model contains: "
-                                 ++ (if hasNoRealLiterals then "" else "a real number literal, ")
-                                 ++ (if hasNoReferenceToReal then "" else "a reference to a real. ")
+                                 ++ (if hasNoRealLiterals then "" else "a real or double literal, ")
+                                 ++ (if hasNoReferenceToReal then "" else "a reference to a real or double. ")
                         })
                       ]
           else []

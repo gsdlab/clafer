@@ -58,6 +58,7 @@ data IType
   = TBoolean
   | TString
   | TInteger
+  | TDecimal
   | TDouble
   | TReal
   | TClafer
@@ -214,7 +215,12 @@ data IExp
   | IInt
     { _iint :: Integer
     }
-    -- | real number
+    -- | decimal number, as written, e.g., "2.50"
+  | IDecimal
+    { _idecimal :: String
+    }
+    -- | real number; there is no literal syntax for reals yet: a plain decimal literal,
+    --   e.g., 19.99, is a decimal
   | IReal
     { _ireal :: Double
     }

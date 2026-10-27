@@ -38,9 +38,10 @@ import Language.Clafer.Front.LexClafer
 -- | A formula over the target of a reference, simplified when constant.
 data Membership = MTrue | MFalse | MExp String
 
--- | Choco 3 code generation, with the given smallest and largest integers, if any
-genCModule :: (IModule, GEnv) -> [(UID, Integer)] -> (Maybe Integer, Maybe Integer) -> [Token]     -> Result
-genCModule (imodule@IModule{_mDecls}, genv') scopes  (minInt, maxInt) otherTokens' =
+-- | Choco 3 code generation, with the given smallest and largest integers, if any, and the
+--   number of fractional digits of decimals, if given
+genCModule :: (IModule, GEnv) -> [(UID, Integer)] -> (Maybe Integer, Maybe Integer) -> Maybe Integer -> [Token] -> Result
+genCModule (imodule@IModule{_mDecls}, genv') scopes  (minInt, maxInt) decimalDigits otherTokens' =
     genScopes
     ++ "\n"
     ++ (genClafers =<< _mDecls)
@@ -99,7 +100,11 @@ genCModule (imodule@IModule{_mDecls}, genv') scopes  (minInt, maxInt) otherToken
         ++ "defaultScope(1);\n"
         ++ genIntRange
         ++ "stringLength(" ++ show longestString ++ ");\n"
+        ++ genDecimalScale
         where
+            genDecimalScale
+                | usesDecimals || isJust decimalDigits = "decimalScale(" ++ show decimalScale ++ ");\n"
+                | otherwise = ""
             -- Without --minint and --maxint, chocosolver chooses the range (-128..127
             -- unless overridden on its command line).
             genIntRange
@@ -126,6 +131,30 @@ genCModule (imodule@IModule{_mDecls}, genv') scopes  (minInt, maxInt) otherToken
     longestString :: Int
     longestString = maximum $ 16 : mapMaybe stringLength exprs
 
+    -- | The number of fractional digits of a decimal literal, as written, e.g., 2 for 2.50
+    fractionalDigits :: String -> Integer
+    fractionalDigits literal = genericLength $ drop 1 $ dropWhile (/= '.') literal
+
+    decimalLiterals :: [String]
+    decimalLiterals = [ literal | IDecimal literal <- exprs ]
+
+    -- | Whether the model has decimal literals or references to decimals
+    usesDecimals :: Bool
+    usesDecimals = not (null decimalLiterals) || any refersToDecimal (universeOn biplate imodule :: [IClafer])
+      where
+        refersToDecimal IClafer{_reference = Just IReference{_ref = ref'}} = decimalType `elem` getRefIds ref'
+        refersToDecimal _ = False
+
+    -- | The decimal scale: the largest number of fractional digits of the decimal literals,
+    --   unless given by --decimal-digits
+    decimalScale :: Integer
+    decimalScale = fromMaybe (maximum $ 0 : map fractionalDigits decimalLiterals) decimalDigits
+
+    -- | A decimal literal with the fractional digits of the decimal scale, e.g., 2.5 as 2.50
+    --   with 2 digits; with more digits, chocosolver reports that the literal does not fit.
+    genDecimal :: String -> String
+    genDecimal literal = literal ++ genericReplicate (decimalScale - fractionalDigits literal) '0'
+
     genSuperRefConstraintAssertGoal :: String -> IElement -> Result
     genSuperRefConstraintAssertGoal _ IEClafer{_iClafer=IClafer{_uid, _super=Nothing, _reference=Nothing, _elements}}
         = genSuperRefConstraintAssertGoal _uid =<< _elements
@@ -146,6 +175,7 @@ genCModule (imodule@IModule{_mDecls}, genv') scopes  (minInt, maxInt) otherToken
             refTo False target = ".refTo(" ++ genTarget target ++ ")"
             genTarget "integer" = "Int"
             genTarget "int" = "Int"
+            genTarget "decimal" = "Decimal"
             genTarget target = target
     genSuperRefConstraintAssertGoal "root" (IEConstraint True pexp) = "Constraint(" ++ genConstraintPExp pexp ++ ");\n"
     genSuperRefConstraintAssertGoal pUID (IEConstraint True pexp) = pUID ++ ".addConstraint(" ++ genConstraintPExp pexp ++ ");\n"
@@ -166,8 +196,10 @@ genCModule (imodule@IModule{_mDecls}, genv') scopes  (minInt, maxInt) otherToken
     -- common super of the clafers.
     setExpType :: PExp -> Maybe String
     setExpType ref' = case nub $ getRefIds ref' of
-        ids@(_:_) | all isPrimitive ids -> case nub $ map normalize ids of
+        ids@(_:_) | all isPrimitive ids -> case sort $ nub $ map normalize ids of
             [t] -> Just t
+            -- integers are decimals, e.g., in `-> 1, 2.5`
+            [d, i] | d == decimalType && i == integerType -> Just decimalType
             _   -> Nothing
                   | not (any isPrimitive ids) -> commonSuper ids
         _ -> Nothing
@@ -275,7 +307,8 @@ genCModule (imodule@IModule{_mDecls}, genv') scopes  (minInt, maxInt) otherToken
     genConstraintExp (IInt val) = "constant(" ++ show val ++ ")"
     genConstraintExp (IStr val) = "constant(" ++ show val ++ ")"
     genConstraintExp (IDouble val) = "constant(" ++ show val ++ ")"
-    genConstraintExp (IReal val) = "constant(" ++ show val ++ ")"
+    genConstraintExp (IDecimal val) = "decimal(\"" ++ genDecimal val ++ "\")"
+    genConstraintExp (IReal _) = error "no real numbers allowed"
 
     mapQuant INo = "none"
     mapQuant ISome = "some"

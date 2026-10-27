@@ -252,6 +252,7 @@ resolveTPExp' p@PExp{_exp = IClaferId{_sident = "int"}} = runListT $ runExceptT 
 resolveTPExp' p@PExp{_exp = IClaferId{_sident = "string"}} = runListT $ runExceptT $ return $ p `withType` TString
 resolveTPExp' p@PExp{_exp = IClaferId{_sident = "double"}} = runListT $ runExceptT $ return $ p `withType` TDouble
 resolveTPExp' p@PExp{_exp = IClaferId{_sident = "real"}} = runListT $ runExceptT $ return $ p `withType` TReal
+resolveTPExp' p@PExp{_exp = IClaferId{_sident = "decimal"}} = runListT $ runExceptT $ return $ p `withType` TDecimal
 resolveTPExp' p@PExp{_inPos, _exp = IClaferId{_sident="this"}} =
   runListT $ runExceptT $ do
     sident' <- _uid <$> curThis
@@ -302,6 +303,7 @@ resolveTPExp' p@PExp{_inPos, _exp} =
   resolveTExp :: IExp -> TypeAnalysis [Either ClaferSErr (IType, IExp)]
   resolveTExp e@(IInt _)    = runListT $ runExceptT $ return (TInteger, e)
   resolveTExp e@(IDouble _) = runListT $ runExceptT $ return (TDouble, e)
+  resolveTExp e@(IDecimal _) = runListT $ runExceptT $ return (TDecimal, e)
   resolveTExp e@(IReal _) = runListT $ runExceptT $ return (TReal, e)
   resolveTExp e@(IStr _)    = runListT $ runExceptT $ return (TString, e)
 
@@ -317,23 +319,25 @@ resolveTPExp' p@PExp{_inPos, _exp} =
             | _op == iNot = test (isTBoolean t) >> return TBoolean
             | _op `elem` ltlUnOps = test (isTBoolean t) >> return TBoolean
             | _op == iCSet = return TInteger
-            | _op == iSumSet = test (isTInteger t) >> return TInteger
+            -- a sum of decimals is a decimal; a product of decimals is not supported
+            | _op == iSumSet = test (isTInteger t || isTDecimal t) >> return (if isTDecimal t then TDecimal else TInteger)
             | _op == iProdSet = test (isTInteger t) >> return TInteger
             | _op `elem` [iMin, iMinimum, iMaximum, iMinimize, iMaximize] = test (numeric t) >> return t
             | otherwise = assert False $ fail $ "Unknown op '" ++ _op ++ "'"
       result' <- result
-      return (result', splitUnion e{_exps = [arg']})
+      return (result', splitUnion result' e{_exps = [arg']})
     where
     -- The generators sum (multiply) the references of each instance, so
     -- sum (a ++ b) becomes sum a + sum b, and product (a ++ b) product a * product b.
     -- A constant in the union is added (multiplied) as is.
-    splitUnion e'@IFunExp{_op = op', _exps = [PExp{_exp = IFunExp "++" [a, b]}]}
+    splitUnion t' e'@IFunExp{_op = op', _exps = [PExp{_exp = IFunExp "++" [a, b]}]}
       | op' `elem` [iSumSet, iProdSet] = IFunExp (if op' == iSumSet then iPlus else iMul) [part a, part b]
       | otherwise = e'
       where
       part a'@PExp{_exp = IInt _} = a'
-      part a'@(PExp _ _ pos' _) = PExp (Just TInteger) "" pos' (splitUnion $ IFunExp op' [a'])
-    splitUnion e' = e'
+      part a'@PExp{_exp = IDecimal _} = a'
+      part a'@(PExp _ _ pos' _) = PExp (Just t') "" pos' (splitUnion t' $ IFunExp op' [a'])
+    splitUnion _ e' = e'
 
   -- The unions of the fewest unrelated types (with distinct topmost supers) come
   -- first, so that a reference is dereferenced when that makes the operands

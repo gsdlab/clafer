@@ -3,7 +3,7 @@
 
 # Clafer, the language
 
-##### v0.5.4
+##### v0.5.5
 
 [Clafer](http://clafer.org) is a general-purpose lightweight structural and behavioral modeling language developed by
 [GSD Lab](http://gsd.uwaterloo.ca/), [University of Waterloo](http://uwaterloo.ca), and
@@ -177,7 +177,7 @@ Development versions from branches `develop` should work well together but this 
 (As printed by `clafer --help`)
 
 ```
-Clafer 0.5.4
+Clafer 0.5.5
 
 clafer [OPTIONS] [FILE]
 
@@ -252,6 +252,10 @@ Common flags:
      --maxint=INT                         Largest integer value ('choco' mode
                                           only). Default: 127, chosen by
                                           chocosolver.
+     --decimal-digits=INT                 Number of fractional digits of
+                                          decimals ('choco' mode only).
+                                          Default: the most fractional digits
+                                          of the model's decimal literals.
      --import=FILE                        Compile the model with the model in
                                           FILE (a path or an http/https URL),
                                           which is compiled before it (and only
@@ -320,7 +324,7 @@ or `clafer System.cfr --import=design-space.cfr`. The option can be repeated.
 * The imports are followed transitively: an imported file may import other files. Each file is compiled only once, even if several files import it, and before the files importing it. An import cycle is an error.
 * All files share one namespace, as if they were concatenated: a clafer defined in one file can be used in the others, and the same top-level name in two files is an error. There are no qualified names or separate compilation.
 * The outputs are named after the compiled model (`System.als`, `System.js`, ...), in the current directory for a model read from a URL. Errors give the file in which they are, as in a model of one file: `Compile error at design-space.cfr:12:5...`. The spans of the JSON IR name their file (`{"file": "design-space.cfr", "start": …, "end": …}`), and the HTML output shows each file under its name.
-* The options of all files are combined: the largest `--maxint`, `--tl` and `--timeout-analysis`, the smallest `--minint`, all modes and imports; `-k`, `-c`, `--check-afm` and `-i` if any file has them, `-f` only if all files have it. The layout (`-l`, `--nl`) and the scope strategy (`--ss`) must be the same in all files. Options of the compilation rather than of the model (`-o`, `-s`, `-v`, `--tooldir`, `-a`, `--self-contained`, `--add-graph`, `--sr`, `--add-comments`, `--meta-data`) are only allowed in the compiled model and on the command line.
+* The options of all files are combined: the largest `--maxint`, `--decimal-digits`, `--tl` and `--timeout-analysis`, the smallest `--minint`, all modes and imports; `-k`, `-c`, `--check-afm` and `-i` if any file has them, `-f` only if all files have it. The layout (`-l`, `--nl`) and the scope strategy (`--ss`) must be the same in all files. Options of the compilation rather than of the model (`-o`, `-s`, `-v`, `--tooldir`, `-a`, `--self-contained`, `--add-graph`, `--sr`, `--add-comments`, `--meta-data`) are only allowed in the compiled model and on the command line.
 
 * A model that may come from anyone, e.g., in a web tool, is compiled with options that restrict its imports, which only the command line can give: `--import-root=DIR` allows local imports only inside the given folders (after resolving `..` and symbolic links), `--public-imports` allows URL imports only from public addresses, and `--import-base=URL` resolves the imports of a model whose text was read from that URL. `-v` and `--tooldir`, which run tools, can only be given on the command line too: in `//# OPTIONS`, these options are an error.
 

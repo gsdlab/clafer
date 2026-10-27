@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=9">
+<style>.identifier{}
+.keyword{font-weight: bold;}
+.tKeyword{font-style: oblique;}
+.reference{}
+.code { background-color: lightgray; padding: 5px 5px 5px 5px; border: 1px solid darkgray; margin-bottom: 15px;
+        font-family: Pragmata, Menlo, 'DejaVu LGC Sans Mono', 'DejaVu Sans Mono', Consolas, 'Everson Mono', 'Lucida Console', 'Andale Mono', 'Nimbus Mono L', 'Liberation Mono', FreeMono, 'Osaka Monospaced', Courier, 'New Courier', monospace; }
+.standalonecomment { color: green; font-style:italic }
+.inlinecomment { color: green; padding-left:20px; font-style:italic }
+.error{background-color: yellow; color: red }
+.deprecated{color: orange }
+.indent{padding-left:20px}
+.file { font-weight: bold; border-bottom: 1px solid darkgray; margin: 1em 0 0.5em 0 }
+a[href$='Lookup failed'] {color: red}
+a[href$='Uid not found'] {color: red}
+a[href$='Ambiguous name'] {color: yellow}
+</style></head>
+<body>
+<div class="file">positive/decimals.cfr</div>
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Feature">Feature</span>
+  <div class="indent">
+  <span class="claferDecl" id="c0_cost">cost</span><span class="keyword"> -> </span><a href="#decimal"><span class="reference">decimal</span></a></div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_weight">weight</span><span class="keyword"> -> </span><a href="#decimal"><span class="reference">decimal</span></a></div>
+</div>
+
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Bike">Bike</span>
+  <div class="indent">
+  <span class="claferDecl" id="c0_Light">Light</span><span class="keyword"> : </span><a href="#c0_Feature"><span class="reference">Feature</span></a> ?
+    <div class="indent">
+    <span class="keyword">[</span> <a href="#c0_cost"><span class="reference">cost</span></a> = 19.99 <span class="keyword">]</span></div>
+    <div class="indent">
+    <span class="keyword">[</span> <a href="#c0_weight"><span class="reference">weight</span></a> = 0.25 <span class="keyword">]</span></div>
+  </div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_Rack">Rack</span><span class="keyword"> : </span><a href="#c0_Feature"><span class="reference">Feature</span></a> ?
+    <div class="indent">
+    <span class="keyword">[</span> <a href="#c0_cost"><span class="reference">cost</span></a> = 34.5 <span class="keyword">]</span></div>
+    <div class="indent">
+    <span class="keyword">[</span> <a href="#c0_weight"><span class="reference">weight</span></a> = 1.2 <span class="keyword">]</span></div>
+  </div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_Bell">Bell</span><span class="keyword"> : </span><a href="#c0_Feature"><span class="reference">Feature</span></a> ?
+    <div class="indent">
+    <span class="keyword">[</span> <a href="#c0_cost"><span class="reference">cost</span></a> = 4.75 <span class="keyword">]</span></div>
+    <div class="indent">
+    <span class="keyword">[</span> <a href="#c0_weight"><span class="reference">weight</span></a> = 0.05 <span class="keyword">]</span></div>
+  </div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_Frame">Frame</span><span class="keyword"> : </span><a href="#c0_Feature"><span class="reference">Feature</span></a>
+    <div class="indent">
+    <span class="keyword">[</span> <a href="#c0_cost"><span class="reference">cost</span></a> = 250 <span class="keyword">]</span></div>
+    <div class="indent">
+    <span class="keyword">[</span> <a href="#c0_weight"><span class="reference">weight</span></a> = 9.8 <span class="keyword">]</span></div>
+  </div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_subtotal">subtotal</span><span class="keyword"> -> </span><a href="#decimal"><span class="reference">decimal</span></a> = <span class="keyword">sum </span><a href="#c0_Feature"><span class="reference">Feature</span></a>.<a href="#c0_cost"><span class="reference">cost</span></a></div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_tax">tax</span><span class="keyword"> -> </span><a href="#decimal"><span class="reference">decimal</span></a> = <a href="#c0_subtotal"><span class="reference">subtotal</span></a> * 0.13</div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_total">total</span><span class="keyword"> -> </span><a href="#decimal"><span class="reference">decimal</span></a> = <a href="#c0_subtotal"><span class="reference">subtotal</span></a> + <a href="#c0_tax"><span class="reference">tax</span></a></div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_weightPerFeature">weightPerFeature</span><span class="keyword"> -> </span><a href="#decimal"><span class="reference">decimal</span></a> = <span class="keyword">sum </span><a href="#c0_Feature"><span class="reference">Feature</span></a>.<a href="#c0_weight"><span class="reference">weight</span></a> &#47; # <a href="#c0_Feature"><span class="reference">Feature</span></a></div>
+  <div class="indent">
+  <span class="keyword">[</span> <a href="#c0_total"><span class="reference">total</span></a> &lt;= 340 <span class="keyword">]</span></div>
+  <div class="indent">
+  <span class="keyword">[</span> <a href="#c0_weightPerFeature"><span class="reference">weightPerFeature</span></a> &lt; 5 <span class="keyword">]</span></div>
+</div>
+
+
+<div>
+<span class="claferDecl" id="c0_aBike">aBike</span><span class="keyword"> : </span><a href="#c0_Bike"><span class="reference">Bike</span></a></div>
+
+
+<div>
+<span class="claferDecl" id="c0_size">size</span><span class="keyword"> -> </span>1, 2.5
+  <div class="indent">
+  <span class="keyword">[</span> <span class="keyword">this</span> != 1 <span class="keyword">]</span></div>
+</div>
+
+
+<div>
+<span class="claferDecl" id="c0_change">change</span><span class="keyword"> -> </span><a href="#decimal"><span class="reference">decimal</span></a> = -<a href="#c0_aBike"><span class="reference">aBike</span></a>.<a href="#c0_total"><span class="reference">total</span></a> + 400</div>
+
+
+<div>
+<span class="claferDecl" id="c0_share">share</span><span class="keyword"> -> </span><a href="#decimal"><span class="reference">decimal</span></a> = 2 &#47; 3</div>
+
+
+<div>
+<span class="claferDecl" id="c0_discount">discount</span><span class="keyword"> -> </span><a href="#decimal"><span class="reference">decimal</span></a> = <span class="keyword">if </span><a href="#c0_aBike"><span class="reference">aBike</span></a>.<a href="#c0_total"><span class="reference">total</span></a> &gt; 300<span class="keyword"> then </span>0.1<span class="keyword"> else </span>0</div>
+
+
+<div>
+&lt;&lt;<span class="deprecated" title="Deprecated. Use `maximize` instead.">max </span><a href="#c0_aBike"><span class="reference">aBike</span></a>.<a href="#c0_total"><span class="reference">total</span></a>&gt;&gt;</div>
+
+</body>
+</html>
