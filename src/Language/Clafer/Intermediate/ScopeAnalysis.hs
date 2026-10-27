@@ -21,7 +21,12 @@
 -}
 module Language.Clafer.Intermediate.ScopeAnalysis where
 
+import Control.Lens (universeOn)
+import Data.Data.Lens (biplate)
+import Data.Maybe
+
 import Language.Clafer.ClaferArgs
+import Language.Clafer.Common
 import Language.Clafer.Intermediate.Intclafer
 import Language.Clafer.Intermediate.SimpleScopeAnalyzer
 
@@ -29,3 +34,25 @@ import Language.Clafer.Intermediate.SimpleScopeAnalyzer
 getScopeStrategy :: ScopeStrategy -> IModule -> [(String, Integer)]
 getScopeStrategy Simple = simpleScopeAnalysis
 getScopeStrategy _      = const []
+
+-- | The scope above which a scope is large
+largeScope :: Integer
+largeScope = 100
+
+-- | The references with an unbounded multiplicity to a clafer (`refs -> A *`) whose scopes are large,
+-- with their targets. Such a reference may point to every instance of its target, so its scope is
+-- the target's scope per parent; an upper bound in its multiplicity makes it smaller.
+largeReferenceScopes :: IModule -> [(UID, Integer)] -> [(IClafer, Integer, IClafer, Integer)]
+largeReferenceScopes iModule scopes =
+    [ (c, scopeOf c, target, scopeOf target)
+    | c <- universeOn biplate iModule
+    , (snd <$> _card c) == Just (-1)
+    , [ref'] <- [getReference c]
+    , not $ isPrimitive ref'
+    , Just target <- [findIClafer uidClaferMap' ref']
+    , scopeOf c > largeScope
+    ]
+    where
+    uidClaferMap' = createUidIClaferMap iModule
+    -- a clafer without an inferred scope has the global scope, 1 by default
+    scopeOf c' = fromMaybe 1 $ lookup (_uid c') scopes

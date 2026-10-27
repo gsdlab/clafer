@@ -581,8 +581,12 @@ generate =
       cargs = args env
       otherTokens' = otherTokens env
       modes = mode cargs
-      stats = showStats au $ statsModule iModule
       scopes = getScopeStrategy (scope_strategy cargs) iModule
+      -- the scopes are used by the Alloy and Choco outputs only
+      scopeWarnings = if any (`elem` modes) [Alloy, AlloyLtl, Choco]
+                      then showLargeScopes (inputFiles env) $ largeReferenceScopes iModule scopes
+                      else ""
+      stats = showStats au (statsModule iModule) ++ scopeWarnings
 
     return $ Map.fromList (
         -- result for Alloy
@@ -760,6 +764,22 @@ showStats au (Stats na nr nc nconst ngoals sgl) =
           , "Goals: " ++ show ngoals
           , "Global scope: " ++ showInterval sgl
           , "Can skip name resolver: " ++ if au then "yes" else "no" ]
+
+-- | Warnings about the large scopes of references with an unbounded multiplicity, at their positions in the files
+showLargeScopes :: [ModelFile] -> [(IClafer, Integer, IClafer, Integer)] -> String
+showLargeScopes files = unlines . map showLargeScope
+  where
+  showLargeScope (clafer, scope', target, targetScope) =
+    let
+      Span (Pos l c) _ = _cinPos clafer
+      (path, l') = modelPosition files l
+      name = _ident clafer
+      reference = name ++ " -> " ++ _ident target
+      card' = fromMaybe (0, -1) $ _card clafer
+    in
+      "Warning: " ++ path ++ ":" ++ show l' ++ ":" ++ show c ++ ": the scope of " ++ reference ++ " " ++ showInterval card'
+      ++ " is " ++ show scope' ++ ", since " ++ name ++ " may point to all " ++ show targetScope ++ " " ++ _ident target ++ " in each of its parents."
+      ++ " If fewer suffice, give it an upper bound, e.g., " ++ reference ++ " " ++ show (fst card') ++ "..10, to make the instance generation faster."
 
 showInterval :: (Integer, Integer) -> String
 showInterval (n, -1) = show n ++ "..*"
