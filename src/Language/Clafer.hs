@@ -510,15 +510,18 @@ generateHtml env =
     printComments [] = []
     printComments ((s, comment):cs') = (snd (printComment s [(s, comment)]) ++ "<br>\n"):printComments cs'
 
--- | Whether the model has no decimal literals, no double literals, no product operator and
---   no temporal operators.
+-- | Whether the model has no decimal literals, no real or double literals, no product
+--   operator and no temporal operators.
 iExpBasedChecks :: IModule -> (Bool, Bool, Bool, Bool)
-iExpBasedChecks iModule = (null decimalLiterals, null doubleLiterals, null productOperators, null tempOperators)
+iExpBasedChecks iModule = (null decimalLiterals, null realLiterals, null productOperators, null tempOperators)
   where
     iexps :: [ IExp ]
     iexps = universeOn biplate iModule
     decimalLiterals = [ e | e@(IDecimal _) <- iexps ]
-    doubleLiterals = [ e | e@(IDouble _) <- iexps ]
+    realLiterals = [ e | e <- iexps, isRealOrDouble e ]
+    isRealOrDouble (IReal _)   = True
+    isRealOrDouble (IDouble _) = True
+    isRealOrDouble _           = False
     productOperators = filter isProductOperator iexps
     tempOperators = filter isTempOperator iexps
     isProductOperator (IFunExp op' _) = op' == iProdSet
@@ -572,7 +575,7 @@ generate =
     ast' <- getAst
     (iModule, genv, au) <- getIr
     let
-      (hasNoDecimalLiterals, hasNoDoubleLiterals, hasNoProductOperator, hasNoTempOperators) = iExpBasedChecks iModule
+      (hasNoDecimalLiterals, hasNoRealLiterals, hasNoProductOperator, hasNoTempOperators) = iExpBasedChecks iModule
       (hasNoReferenceToDecimal, hasNoReferenceToReal, hasNoTempModifiers) = iClaferBasedChecks iModule
       staticClaferSubset = hasNoTempOperators && hasNoTempModifiers
       cargs = args env
@@ -584,7 +587,7 @@ generate =
     return $ Map.fromList (
         -- result for Alloy
         (if Alloy `elem` modes
-         then if hasNoDecimalLiterals && hasNoDoubleLiterals && hasNoReferenceToDecimal && hasNoReferenceToReal && hasNoProductOperator
+         then if hasNoDecimalLiterals && hasNoRealLiterals && hasNoReferenceToDecimal && hasNoReferenceToReal && hasNoProductOperator
               then
                  let
                     (imod,strMap) = astrModule iModule
@@ -608,7 +611,7 @@ generate =
                       NoCompilerResult {
                          reason = "Alloy output unavailable because the model contains: "
                                 ++ (if hasNoDecimalLiterals then "" else "a decimal literal, ")
-                                ++ (if hasNoDoubleLiterals then "" else "a double literal, ")
+                                ++ (if hasNoRealLiterals then "" else "a real or double literal, ")
                                 ++ (if hasNoReferenceToDecimal then "" else "a reference to a decimal, ")
                                 ++ (if hasNoReferenceToReal then "" else "a reference to a real or double, ")
                                 ++ (if hasNoProductOperator then "" else "the product operator, ")
@@ -694,7 +697,7 @@ generate =
         )
         -- result for Choco
         ++ (if Choco `elem` modes
-            then if hasNoDoubleLiterals && hasNoReferenceToReal && staticClaferSubset
+            then if hasNoRealLiterals && hasNoReferenceToReal && staticClaferSubset
                  then [(Choco,
                         CompilerResult {
                           extension = "js",
@@ -711,7 +714,7 @@ generate =
                           reason = if not staticClaferSubset
                             then "Choco output unavailable because the model contains temporal operators"
                             else "Choco output unavailable because the model contains: "
-                                 ++ (if hasNoDoubleLiterals then "" else "a double literal, ")
+                                 ++ (if hasNoRealLiterals then "" else "a real or double literal, ")
                                  ++ (if hasNoReferenceToReal then "" else "a reference to a real or double. ")
                         })
                       ]

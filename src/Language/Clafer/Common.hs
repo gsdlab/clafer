@@ -83,6 +83,7 @@ getRefIds (PExp _ _ _ (IFunExp{_op="**", _exps = [leftExp, rightExp]})) = getRef
 getRefIds (PExp _ _ _ (IInt _)) = [integerType]
 getRefIds (PExp _ _ _ (IDouble _)) = [doubleType]
 getRefIds (PExp _ _ _ (IDecimal _)) = [decimalType]
+getRefIds (PExp _ _ _ (IReal _)) = [realType]
 getRefIds (PExp _ _ _ (IStr _)) = [stringType]
 getRefIds (PExp _ _ _ (IDeclPExp{_quant = ISome})) = []
 getRefIds pexp' = error $ "[Bug] Commmon.getRefIds called on unexpected argument '" ++ show pexp' ++ "'"

@@ -219,6 +219,11 @@ data IExp
   | IDecimal
     { _idecimal :: String
     }
+    -- | real number; there is no literal syntax for reals yet: a plain decimal literal,
+    --   e.g., 19.99, is a decimal
+  | IReal
+    { _ireal :: Double
+    }
     -- | double-precision floating point number
   | IDouble
     { _idouble :: Double

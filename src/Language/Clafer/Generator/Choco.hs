@@ -308,6 +308,7 @@ genCModule (imodule@IModule{_mDecls}, genv') scopes  (minInt, maxInt) decimalDig
     genConstraintExp (IStr val) = "constant(" ++ show val ++ ")"
     genConstraintExp (IDouble val) = "constant(" ++ show val ++ ")"
     genConstraintExp (IDecimal val) = "decimal(\"" ++ genDecimal val ++ "\")"
+    genConstraintExp (IReal _) = error "no real numbers allowed"
 
     mapQuant INo = "none"
     mapQuant ISome = "some"

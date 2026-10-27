@@ -161,6 +161,7 @@ getTClaferFromIExp :: UIDIClaferMap -> IExp -> Maybe IType
 getTClaferFromIExp    uidIClaferMap'   (IClaferId _ uid' _ _) = getTClaferByUID uidIClaferMap' uid'
 getTClaferFromIExp    _                (IInt _)               = Just TInteger
 getTClaferFromIExp    _                (IDecimal _)           = Just TDecimal
+getTClaferFromIExp    _                (IReal _)              = Just TReal
 getTClaferFromIExp    _                (IDouble _)            = Just TDouble
 getTClaferFromIExp    _                (IStr _)               = Just TString
 getTClaferFromIExp    _                _                      = Nothing

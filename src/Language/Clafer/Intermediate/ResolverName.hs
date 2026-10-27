@@ -155,6 +155,7 @@ resolvePExp    env     pexp@PExp{_exp=x} = case x of
   IInt _ -> return pexp
   IDouble _ -> return pexp
   IDecimal _ -> return pexp
+  IReal _ -> return pexp
   IStr _ -> return pexp
   IClaferId{} -> fst <$> resolveNav env pexp True
 

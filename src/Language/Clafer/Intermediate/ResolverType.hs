@@ -304,6 +304,7 @@ resolveTPExp' p@PExp{_inPos, _exp} =
   resolveTExp e@(IInt _)    = runListT $ runExceptT $ return (TInteger, e)
   resolveTExp e@(IDouble _) = runListT $ runExceptT $ return (TDouble, e)
   resolveTExp e@(IDecimal _) = runListT $ runExceptT $ return (TDecimal, e)
+  resolveTExp e@(IReal _) = runListT $ runExceptT $ return (TReal, e)
   resolveTExp e@(IStr _)    = runListT $ runExceptT $ return (TString, e)
 
   resolveTExp e@IFunExp {_op, _exps = [arg]} =

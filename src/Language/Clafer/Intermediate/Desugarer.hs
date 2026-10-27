@@ -536,6 +536,7 @@ sugarExp' x = case x of
   IInt n -> EInt noSpan $ PosInteger ((0, 0), show n)
   IDouble n -> EDouble noSpan $ PosDouble ((0, 0), show n)
   IDecimal n -> EReal noSpan $ PosReal ((0, 0), n)
+  IReal n -> EReal noSpan $ PosReal ((0, 0), show n)
   IStr str -> EStr noSpan $ PosString ((0, 0), str)
   IFunExp op' exps' ->
     if op' `elem` unOps then (sugarUnOp op') (exps''!!0)
