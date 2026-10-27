@@ -28,6 +28,7 @@ import Language.Clafer.JSONMetaData
 import Language.Clafer.QNameUID
 import Functions
 
+import Data.List (isInfixOf)
 import qualified Data.Map as M
 
 import Test.Tasty
@@ -87,13 +88,13 @@ expectedScopesSet = M.fromList $ [ ("c0_a", 0)
                                  , ("c0_i", 22)
                                  , ("c0_j", 22)
                                  , ("c0_k", 44)
-                                 , ("c0_Hs", 16)
+                                 , ("c0_Hs", 22)
                                  , ("c0_H1", 2)
                                  , ("c0_H12", 4)
                                  , ("c0_H2", 4)
                                  , ("c0_H3", 2)
                                  , ("c0_H4", 5)
-                                 , ("c0_Hs2", 16)
+                                 , ("c0_Hs2", 22)
                                  , ("c0_Hs3", 8)
                                  , ("c0_l", 8)
                                  , ("c0_FF", 5)
@@ -160,6 +161,28 @@ case_ScopeFromGroupCardinality = do
     M.lookup "c0_Item" computedScopes @?= Just 8
     M.lookup "c0_Y" computedScopes @?= Just 4
     M.lookup "c0_Z" computedScopes @?= Just 6
+
+-- A reference with an unbounded multiplicity may point to all 20 B in each of the 6 A, so its scope is
+-- 120, above 100: the statistics warn and suggest an upper bound. With the upper bound 3, it is 18.
+case_LargeReferenceScopeWarning :: Assertion
+case_LargeReferenceScopeWarning = do
+    let
+        refsModel card' = unlines
+            [ "abstract B"
+            , "B1 : B 20"
+            , "A 6"
+            , "    refs -> B " ++ card'
+            ]
+        statisticsOf m = let
+            (Right compilerResultMap) = compileOneFragment defaultClaferArgs m
+            (Just compilerResult) = M.lookup Alloy compilerResultMap
+          in statistics compilerResult
+        warning = "the scope of refs -> B 0..* is 120, since refs may point to all 20 B in each of its parents."
+    (warning `isInfixOf` statisticsOf (refsModel "*")) @?
+        "No large scope warning in:\n" ++ statisticsOf (refsModel "*")
+    ("refs -> B 0..10" `isInfixOf` statisticsOf (refsModel "*")) @? "No upper bound suggested"
+    (not $ "Warning" `isInfixOf` statisticsOf (refsModel "0..3")) @?
+        "Unexpected warning in:\n" ++ statisticsOf (refsModel "0..3")
 
 case_ReadScopesJSON :: Assertion
 case_ReadScopesJSON = do

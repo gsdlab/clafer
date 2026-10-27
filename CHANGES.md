@@ -2,6 +2,8 @@
 
 * Decimals: a primitive type `decimal` of numbers with a fixed number of fractional digits, the decimal scale of the model, for the Choco backend (chocosolver 0.5.5). A plain decimal literal, e.g., `19.99`, is a decimal (it was a `real`); the scale is the most fractional digits of the literals, as written, or `--decimal-digits`. `decimal * decimal` and divisions with a decimal round half away from zero; a division of integers stays an integer division. Integers are decimals, decimals and doubles are reals, and a decimal and a double do not mix. `real` and `double` stay unsupported by the backends, and the Alloy backend does not support decimals. In the Choco output: `refTo(Decimal)`, `decimal("19.99")` and `decimalScale(2)`.
 * `clafer-mode.el` highlights `decimal` as a type.
+* Scopes: a reference with an unbounded multiplicity (`-> Feature *`) gets the scope of its target per parent, as intended; the target's scope was read before it was computed, so it could be 1 or a partial sum of the target's subclafers. Models whose references needed more targets than that had no instances, e.g., ClaferCaseStudies' `AADL_Complete.cfr`.
+* Scopes: in the Alloy and Choco modes, the statistics warn about such references whose scope is above 100 and suggest an upper bound, e.g., `Warning: model.cfr:16:5: the scope of Cfeatures -> Feature 0..* is 1672, since Cfeatures may point to all 76 Feature in each of its parents. If fewer suffice, give it an upper bound, e.g., Cfeatures -> Feature 0..10, to make the instance generation faster.`
 
 ##### Clafer Version 0.5.4, Oct 25, 2026
 
