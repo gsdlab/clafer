@@ -1,10 +1,42 @@
+//# OPTIONS --keep-unused
+
 abstract xor TrafficLight_1
-	initial xor on --> off
-		initial xor normal --> flashing
+	initial xor on -->> off
+		initial xor normal  // no -->> flashing because we don't want to force it, it's optional
 			initial green --> yellow
 			yellow --> red
 			red --> green
-		xor flashing --> normal
-			initial yellow_on -->> yellow_off
-			yellow_off -->> yellow_on
+		xor flashing -->> normal
+			initial yellow_on --> yellow_off
+			yellow_off --> yellow_on
 	off --> on
+
+// The scenarios are in tmp_TrafficLight1_*.cfr, which import this model.
+
+/*
+Construct	            | Meaning
+----------------------------------------------------------------------------------------------------------------
+on -->> off	            | on lasts any number of steps but must eventually become off.
+off --> on	            | off lasts exactly one step.
+initial xor normal	    | Every time on starts, it starts in normal, and initial green makes it start in green.
+                        | Re-entering on starts it again.
+no transition on normal	| normal may stay or switch to flashing at any step.
+flashing -->> normal	| flashing lasts at least one step and must eventually end.
+green --> yellow etc.	| The strict cycles inside a state.
+ */
+
+
+ /* Traces found for all 5 scenarios:
+- a long on,
+- normal -> flashing -> normal,
+- flashing -> off,
+- never flashing, and
+- a long flashing.
+
+No counterexample to the spec:
+- on always ends,
+- off lasts one step,
+- every on starts in normal/green,
+- flashing ends in normal or off,
+- and the green -> yellow cycle holds.
+*/

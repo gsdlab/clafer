@@ -1,0 +1,36 @@
+//# OPTIONS --keep-unused
+
+// The traffic light of tmp_TrafficLight1.cfr with variability: its behaviour depends on
+// the feature EU, where the light may go back from yellow to green, and from red through
+// yellow to green.
+
+final feature_model
+    EU ?
+
+abstract xor TrafficLight_2
+    initial xor on -->> off
+        initial xor normal
+            initial green --> yellow
+            yellow --> red || (EU && green)
+            red --> green || (EU && yellow)
+        xor flashing -->> normal
+            initial yellow_on --> yellow_off
+            yellow_off --> yellow_on
+    off --> on
+
+// The variable transitions can also be written with guards, as transition constraints
+// of normal instead of the transitions of yellow and red:
+//
+//     [ yellow -[EU]-> red || green ]
+//     [ yellow -[no EU]-> red ]
+//     [ red -[EU]-> green || yellow ]
+//     [ red -[no EU]-> green ]
+//
+// which desugar to
+//
+//     [ yellow && EU => X (red || green) ]
+//     [ yellow && no EU => X red ]
+//     [ red && EU => X (green || yellow) ]
+//     [ red && no EU => X green ]
+
+// The scenarios are in tmp_TrafficLight2_*.cfr, which import this model.

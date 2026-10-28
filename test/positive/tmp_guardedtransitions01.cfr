@@ -1,0 +1,24 @@
+// Test for guarded transitions: the next step (-[ ]->) and the multi-step (-[ ]->>)
+// arrow, as clafer transitions and as transition constraints
+
+signal ?
+
+xor light
+    initial red -[ signal ]-> green
+    green -[ no signal ]->> red
+    /* desugars to
+    [some this . c0_red && some c0_signal => X some this . c0_green]
+    [some this . c0_green && no c0_signal => (some this && some this . c0_green) U some this . c0_red]
+    */
+
+xor door
+    initial closed
+    opened
+    [ closed -[ signal ]-> opened ]
+    [ opened -[ no signal ]->> closed ]
+
+// a transition happens when its guard holds; a multi-step one eventually
+assert [ (light.red && signal) => X light.green ]
+assert [ (light.green && no signal) => F light.red ]
+assert [ (door.closed && signal) => X door.opened ]
+assert [ (door.opened && no signal) => F door.closed ]

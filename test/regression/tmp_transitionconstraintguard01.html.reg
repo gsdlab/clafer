@@ -32,7 +32,7 @@ a[href$='Ambiguous name'] {color: yellow}
     <div class="indent">
     <span class="claferDecl" id="c0_e">e</span></div>
     <div class="indent">
-    <span class="keyword">[</span> <a href="#c0_c"><span class="reference">c</span></a><span class="tKeyword"> -[</span><a href="#c0_e"><span class="reference">e</span></a><span class="tKeyword">]--&gt; </span><a href="#c0_d"><span class="reference">d</span></a> <span class="keyword">]</span></div>
+    <span class="keyword">[</span> <a href="#c0_c"><span class="reference">c</span></a><span class="tKeyword"> -[</span><a href="#c0_e"><span class="reference">e</span></a><span class="tKeyword">]-&gt; </span><a href="#c0_d"><span class="reference">d</span></a> <span class="keyword">]</span></div>
   </div>
 </div>
 

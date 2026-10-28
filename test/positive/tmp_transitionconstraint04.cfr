@@ -1,4 +1,4 @@
-// Test for initially constraint
+// Test for next step transition constraint
 
 xor b
     c
@@ -6,5 +6,5 @@ xor b
     e
     [c --> d || e]
     /* desugars to
-    [some this . c0_c && X (some this . c0_d || some this . c0_e)]
+    [some this . c0_c => X (some this . c0_d || some this . c0_e)]
     */

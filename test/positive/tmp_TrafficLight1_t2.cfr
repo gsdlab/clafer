@@ -1,0 +1,9 @@
+//# OPTIONS --import=tmp_TrafficLight1.cfr
+
+// Scenario: on, then flashing at the next step
+t2 : TrafficLight_1
+    [ initially (on --> yellow_on --> yellow_off --> yellow_on) ]
+// desugars to
+//  [ initially (on => X (yellow_on && X (yellow_off && X yellow_on))) ]
+// flashing starts in yellow_on, so on --> flashing --> yellow_on would require yellow_on
+// twice in a row, which yellow_on --> yellow_off forbids

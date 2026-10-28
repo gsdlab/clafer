@@ -28,6 +28,7 @@ import Data.Foldable hiding (forM_)
 import Data.Maybe
 import Control.Monad
 import Language.Clafer
+import Language.Clafer.Import (readModel, modelText)
 import Language.ClaferT
 import Test.Tasty
 import Test.Tasty.HUnit
@@ -38,8 +39,13 @@ import Prelude
 tg_Test_Suite_Positive :: TestTree
 tg_Test_Suite_Positive = $(testGroupGenerator)
 
+-- | The models with the models they import (//# OPTIONS --import), compiled together
 positiveClaferModels :: IO [(String, String)]
-positiveClaferModels = getClafers "test/positive"
+positiveClaferModels = do
+    claferModels <- getClafers "test/positive"
+    forM claferModels (\(file', model) -> do
+        modelFiles <- readModel defaultClaferArgs{file = "test/positive/" ++ file'}
+        return (file', either (const model) (modelText . snd) modelFiles))
 
 case_compileTest :: Assertion
 case_compileTest = do

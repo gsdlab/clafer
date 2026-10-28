@@ -6,4 +6,7 @@ a
     d
     e
 
-assert[a.b.c => F a.b.d]
+// The transition is a constraint of b, so it disappears together with b. Unlike in
+// Juodisius et al. 2019, section 6.1, where the source c (and thus b) has to exist until
+// the target d holds, b may disappear before d.
+assert[all b1 : a.b | b1.c => F (b1.d || no (b1 ** a.b))]

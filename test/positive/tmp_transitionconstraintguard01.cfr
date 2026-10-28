@@ -7,5 +7,6 @@ a
       e
       [c -[e]-> d]
       /* desugars to
-      [some this . c0_e => some this . c0_c && X some this . c0_d]
+      [some this . c0_c && some this . c0_e => X some this . c0_d]
+      c and e are exclusive, so the transition never applies
       */

@@ -1,0 +1,8 @@
+defaultScope(1);
+stringLength(16);
+
+c0_TrafficLight_5 = Clafer("c0_TrafficLight_5").withCard(1, 1).withGroupCard(1, 1);
+c0_on = c0_TrafficLight_5.addChild("c0_on").withCard(0, 1).withGroupCard(1, 1);
+c0_normal = c0_on.addChild("c0_normal").withCard(0, 1);
+c0_flashing = c0_on.addChild("c0_flashing").withCard(0, 1);
+c0_off = c0_TrafficLight_5.addChild("c0_off").withCard(0, 1);

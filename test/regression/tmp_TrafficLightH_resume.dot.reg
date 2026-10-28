@@ -1,0 +1,12 @@
+digraph "tmp_TrafficLightH_resume"
+{
+rankdir=BT;
+ranksep=0.3;
+nodesep=0.1;
+graph [fontname=Sans fontsize=11];
+node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
+edge [fontname=Sans fontsize=11];
+"c0_TrafficLight_H" [label="abstract xor TrafficLight_H" URL="#c0_TrafficLight_H" tooltip="abstract xor TrafficLight_H&#10;  xor on --&gt;&gt; off&#10;    xor normal&#10;      initial green --&gt; yellow&#10;      yellow --&gt; red&#10;      red --&gt; green&#10;    xor flashing --&gt;&gt; normal&#10;      initial yellow_on --&gt; yellow_off&#10;      yellow_off --&gt; yellow_on&#10;  off --&gt; on&#10;  [ on.normal &amp;&amp; X no on => X (no on W on.normal) ]&#10;  [ on.flashing &amp;&amp; X no on => X (no on W on.flashing) ]&#10;"];
+"c0_tl" [label="tl : TrafficLight_H" URL="#c0_tl" tooltip="tl : TrafficLight_H&#10;  [ initially green ]&#10;  [ initially (green --&gt; yellow_on --&gt; off --&gt; yellow_on) ]&#10;"];
+"c0_tl" -> "c0_TrafficLight_H" [arrowhead=onormal constraint=true weight=100];
+}

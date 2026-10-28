@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=9">
+<style>.identifier{}
+.keyword{font-weight: bold;}
+.tKeyword{font-style: oblique;}
+.reference{}
+.code { background-color: lightgray; padding: 5px 5px 5px 5px; border: 1px solid darkgray; margin-bottom: 15px;
+        font-family: Pragmata, Menlo, 'DejaVu LGC Sans Mono', 'DejaVu Sans Mono', Consolas, 'Everson Mono', 'Lucida Console', 'Andale Mono', 'Nimbus Mono L', 'Liberation Mono', FreeMono, 'Osaka Monospaced', Courier, 'New Courier', monospace; }
+.standalonecomment { color: green; font-style:italic }
+.inlinecomment { color: green; padding-left:20px; font-style:italic }
+.error{background-color: yellow; color: red }
+.deprecated{color: orange }
+.indent{padding-left:20px}
+.file { font-weight: bold; border-bottom: 1px solid darkgray; margin: 1em 0 0.5em 0 }
+a[href$='Lookup failed'] {color: red}
+a[href$='Uid not found'] {color: red}
+a[href$='Ambiguous name'] {color: yellow}
+</style></head>
+<body>
+<div class="file">positive/tmp_guardedtransitions01.cfr</div>
+
+<div>
+<span class="claferDecl" id="c0_signal">signal</span> ?</div>
+
+
+<div>
+<span class="keyword">xor</span> <span class="claferDecl" id="c0_light">light</span>
+  <div class="indent">
+  <span class="tKeyword">initial</span> <span class="claferDecl" id="c0_red">red</span><span class="tKeyword"> -[</span><a href="#c0_signal"><span class="reference">signal</span></a><span class="tKeyword">]-&gt; </span><a href="#c0_green"><span class="reference">green</span></a></div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_green">green</span><span class="tKeyword"> -[</span><span class="keyword">no</span> <a href="#c0_signal"><span class="reference">signal</span></a><span class="tKeyword">]-&gt;&gt; </span><a href="#c0_red"><span class="reference">red</span></a></div>
+</div>
+
+
+<div>
+<span class="keyword">xor</span> <span class="claferDecl" id="c0_door">door</span>
+  <div class="indent">
+  <span class="tKeyword">initial</span> <span class="claferDecl" id="c0_closed">closed</span></div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_opened">opened</span></div>
+  <div class="indent">
+  <span class="keyword">[</span> <a href="#c0_closed"><span class="reference">closed</span></a><span class="tKeyword"> -[</span><a href="#c0_signal"><span class="reference">signal</span></a><span class="tKeyword">]-&gt; </span><a href="#c0_opened"><span class="reference">opened</span></a> <span class="keyword">]</span></div>
+  <div class="indent">
+  <span class="keyword">[</span> <a href="#c0_opened"><span class="reference">opened</span></a><span class="tKeyword"> -[</span><span class="keyword">no</span> <a href="#c0_signal"><span class="reference">signal</span></a><span class="tKeyword">]-&gt;&gt; </span><a href="#c0_closed"><span class="reference">closed</span></a> <span class="keyword">]</span></div>
+</div>
+
+
+<div>
+<span class="keyword">assert [</span> <a href="#c0_light"><span class="reference">light</span></a>.<a href="#c0_red"><span class="reference">red</span></a> &amp;&amp; <a href="#c0_signal"><span class="reference">signal</span></a> =&gt; X <a href="#c0_light"><span class="reference">light</span></a>.<a href="#c0_green"><span class="reference">green</span></a> <span class="keyword">]</span></div>
+
+
+<div>
+<span class="keyword">assert [</span> <a href="#c0_light"><span class="reference">light</span></a>.<a href="#c0_green"><span class="reference">green</span></a> &amp;&amp; <span class="keyword">no</span> <a href="#c0_signal"><span class="reference">signal</span></a> =&gt; F <a href="#c0_light"><span class="reference">light</span></a>.<a href="#c0_red"><span class="reference">red</span></a> <span class="keyword">]</span></div>
+
+
+<div>
+<span class="keyword">assert [</span> <a href="#c0_door"><span class="reference">door</span></a>.<a href="#c0_closed"><span class="reference">closed</span></a> &amp;&amp; <a href="#c0_signal"><span class="reference">signal</span></a> =&gt; X <a href="#c0_door"><span class="reference">door</span></a>.<a href="#c0_opened"><span class="reference">opened</span></a> <span class="keyword">]</span></div>
+
+
+<div>
+<span class="keyword">assert [</span> <a href="#c0_door"><span class="reference">door</span></a>.<a href="#c0_opened"><span class="reference">opened</span></a> &amp;&amp; <span class="keyword">no</span> <a href="#c0_signal"><span class="reference">signal</span></a> =&gt; F <a href="#c0_door"><span class="reference">door</span></a>.<a href="#c0_closed"><span class="reference">closed</span></a> <span class="keyword">]</span></div>
+
+</body>
+</html>

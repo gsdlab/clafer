@@ -1,0 +1,21 @@
+//# OPTIONS --keep-unused
+
+// The traffic light of tmp_TrafficLight1.cfr that remembers its history: when it is switched
+// back on, it continues normal or flashing, whichever it was in when it was switched off
+// (a shallow history: normal starts again in green, and flashing in yellow_on).
+
+abstract xor TrafficLight_H
+    xor on -->> off
+        xor normal
+            initial green --> yellow
+            yellow --> red
+            red --> green
+        xor flashing -->> normal
+            initial yellow_on --> yellow_off
+            yellow_off --> yellow_on
+    off --> on
+    // the history of on, as in tmp_trafficLight_history.cfr
+    [ (on.normal && X no on) => X (no on W on.normal) ]
+    [ (on.flashing && X no on) => X (no on W on.flashing) ]
+
+// The scenarios are in tmp_TrafficLightH_*.cfr, which import this model.

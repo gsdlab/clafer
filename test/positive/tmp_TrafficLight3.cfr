@@ -1,0 +1,35 @@
+//# OPTIONS --keep-unused
+
+// The traffic light of tmp_TrafficLight1.cfr reacting to events: the guards of the
+// transitions are events. At most one event happens in a state, and an event that is
+// present in consecutive states happens again.
+//
+// A constraint [ X no this ] in event, to make the consumption of events explicit, would
+// be vacuous: the obligations of a constraint end when its context instance disappears.
+
+abstract event
+
+mux events
+    e_on_off   : event
+    e_police   : event
+    e_after_5  : event
+    e_after_7  : event
+    e_after_0_5: event
+
+abstract xor TrafficLight_3
+    initial xor on -[ e_on_off ]->> off
+    // desugars to
+    //  [ on && e_on_off => (this && on) U off ]
+        initial xor normal -[ e_police ]->> flashing
+            initial green --> yellow
+            yellow --> red
+            red --> green
+        xor flashing -[ e_police ]->> normal
+            initial yellow_on -[ e_after_0_5 ]->> yellow_off
+            // desugars to
+            //  [ yellow_on && e_after_0_5 => (this && yellow_on) U yellow_off ]
+            yellow_off -[ e_after_0_5 ]->> yellow_on
+    off --> on
+
+// A transition does not prevent other changes: e.g., normal may change to flashing without
+// e_police. The scenarios are in tmp_TrafficLight3_*.cfr, which import this model.

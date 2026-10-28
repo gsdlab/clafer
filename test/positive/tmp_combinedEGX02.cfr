@@ -4,4 +4,4 @@ final xor a
   	c
   	[eventually c ]
 
-//assert[a.c after a.b]
+assert[sometime a.c after a.b]

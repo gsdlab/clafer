@@ -1,0 +1,7 @@
+//# OPTIONS --import=tmp_TrafficLight1.cfr
+
+// Scenario: on until yellow_off, then the flashing cycle step by step
+t3 : TrafficLight_1
+    [ initially (on -->> yellow_off --> yellow_on --> yellow_off) ]
+// desugars to
+//  [ initially (on => (this && on) U (yellow_off && X (yellow_on && X yellow_off))) ]
