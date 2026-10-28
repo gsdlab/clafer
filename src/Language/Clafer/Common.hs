@@ -543,6 +543,24 @@ propertyKeywords =
   , "before", "after", "between", "and", "after"
   ]
 
+-- | Whether the expression applies a temporal operator, e.g., @always@ or @X@.
+isTempOperator :: IExp -> Bool
+isTempOperator (IFunExp op' _) = op' `elem` (iLet : propertyKeywords ++ ltlOps)
+isTempOperator _               = False
+
+-- | Whether the clafer is declared @initial@ or @final@.
+hasTempModifier :: IClafer -> Bool
+hasTempModifier c = _initial (_modifiers c) || _final (_modifiers c)
+
+-- | Whether the model is dynamic: it has temporal operators or temporal modifiers.
+isDynamicModule :: IModule -> Bool
+isDynamicModule iModule = any isTempOperator iExps || any hasTempModifier iClafers
+  where
+    iExps :: [ IExp ]
+    iExps = universeOn biplate iModule
+    iClafers :: [ IClafer ]
+    iClafers = universeOn biplate iModule
+
 -- ternary operators
 iIfThenElse :: String
 iIfThenElse   = "ifthenelse"

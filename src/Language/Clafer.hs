@@ -526,8 +526,6 @@ iExpBasedChecks iModule = (null decimalLiterals, null realLiterals, null product
     tempOperators = filter isTempOperator iexps
     isProductOperator (IFunExp op' _) = op' == iProdSet
     isProductOperator _               = False
-    isTempOperator (IFunExp op' _) = op' `elem` (iLet : propertyKeywords ++ ltlOps)
-    isTempOperator _               = False
 
 -- | Whether the model has no references to decimals, no references to reals or doubles, and
 --   no temporal modifiers.
@@ -541,7 +539,6 @@ iClaferBasedChecks iModule = ( not (any (hasReferenceTo [ decimalType ]) iClafer
     hasReferenceTo types IClafer{_reference=(Just IReference{_ref=pexp'})} = any (`elem` types) $ getRefIds pexp'
     hasReferenceTo _     _                                                 = False
     tempModifiers = filter hasTempModifier iClafers
-    hasTempModifier (IClafer _ (IClaferModifiers _ isInitial' isFinal') _ _ _ _ _ _ _ _ _) = isInitial' || isFinal'
 
 -- | Errors for the groups of concrete clafers whose children, including the inherited ones,
 --   cannot have as many instances as the lower bound of the group cardinality requires,

@@ -1,0 +1,14 @@
+// In a dynamic model, an enumeration is final: its literals do not change over time.
+// The enumeration below is the same as
+//
+// abstract final UserRequest
+// stop : UserRequest
+// up : UserRequest
+// down : UserRequest
+
+enum UserRequest = stop | up | down
+
+Elevator
+    request -> UserRequest
+    [ initially request = stop ]
+    [ always (request = up => X request = stop) ]

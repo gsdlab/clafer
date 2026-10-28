@@ -1,0 +1,101 @@
+
+/* Definition of timed traces (input independent) */ 
+sig State {}
+
+private one sig Ord {
+   First: set State,
+   Next: State -> State
+} {
+   pred/totalOrder[State,First,Next]
+}
+
+lone sig back in State {}
+
+fun loop : State -> State {
+  last -> back
+}
+
+fun first: one State { Ord.First }
+
+fun last: one State { State - ((Ord.Next).State) }
+
+fun next : State->State { Ord.Next + loop }
+
+fun prev : State->State { ~this/next }
+
+fun past : State->State { ^(~this/next) }
+
+fun future : State -> State { State <: *this/next }
+
+fun upto[s,s' : State] : set State {
+  (s' in s.*(Ord.Next) or finite) implies s.future & ^(Ord.Next).s' else s.*(Ord.Next) + (^(Ord.Next).s' & back.*(Ord.Next))
+}
+
+
+pred finite {
+  no loop
+}
+
+pred infinite {
+  some loop
+}
+
+fun localFirst [rel: univ->univ->State, parentSet: univ, child: univ] : State {
+       let lifetime = child.(parentSet.rel) | lifetime - (lifetime.next)
+}
+
+pred total[rel: univ->univ->State, children: univ] {
+   children = ~(rel.State).univ 
+}
+
+
+
+pred show {}
+
+/* Clafer specifications (input dependent) */
+
+one sig root
+{ r_c0_UserRequest : set c0_UserRequest
+, r_c0_stop : one c0_stop
+, r_c0_up : one c0_up
+, r_c0_down : one c0_down
+, r_c0_Elevator : c0_Elevator -> State }
+{ all t : State | one r_c0_Elevator.t }
+
+abstract sig c0_UserRequest
+{}
+{ one @r_c0_UserRequest.this }
+
+
+sig c0_stop extends c0_UserRequest
+{}
+{ one @r_c0_stop.this }
+
+
+sig c0_up extends c0_UserRequest
+{}
+{ one @r_c0_up.this }
+
+
+sig c0_down extends c0_UserRequest
+{}
+{ one @r_c0_down.this }
+
+
+sig c0_Elevator
+{ r_c0_request : c0_request -> State }
+{ lone localFirst[r_c0_Elevator, root, this] && lone r_c0_Elevator.State.this && total[r_c0_Elevator,c0_Elevator]
+  all t : State | one r_c0_request.t && 
+	(no r_c0_Elevator.t.this => no r_c0_request.t)
+  ((one t0 : localFirst[r_c0_Elevator,c0_Elevator, this] | ((this.@r_c0_request.t0).@c0_request_ref.t0) = c0_stop))
+  one t : localFirst[r_c0_Elevator,root, this] | 
+  (infinite and all t':t.*next | (((this.@r_c0_request.t').@c0_request_ref.t') = c0_up) => ((some t'.next and let t'' = t'.next | ((this.@r_c0_request.t'').@c0_request_ref.t'') = c0_stop))) }
+
+sig c0_request
+{ c0_request_ref : c0_UserRequest -> State }
+{ lone localFirst[r_c0_request, c0_Elevator, this] && lone r_c0_request.State.this && total[r_c0_request,c0_request]
+  all t : State | one this.@c0_request_ref.t }
+
+
+
+

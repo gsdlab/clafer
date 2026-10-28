@@ -31,18 +31,26 @@ import Language.Clafer.Common
 import Language.Clafer.Front.AbsClafer as AbsClafer
 import Language.Clafer.Intermediate.Intclafer as IntClafer
 
--- | Transform the AST into the intermediate representation (IR)
+-- | Transform the AST into the intermediate representation (IR). In a dynamic model, the
+--   enumerations are final, so that their literals do not change over time.
 desugarModule :: Maybe String -> Module -> IModule
-desugarModule mURL (Module _ declarations) = IModule
-  (fromMaybe "" mURL)
-  (declarations >>= desugarEnums >>= desugarDeclaration)
+desugarModule mURL (Module _ declarations) = if isDynamicModule staticModule
+  then desugarWith True
+  else staticModule
+  where
+    -- the non-final enumerations do not make a model dynamic
+    staticModule = desugarWith False
+    desugarWith finalEnums = IModule
+      (fromMaybe "" mURL)
+      (declarations >>= desugarEnums finalEnums >>= desugarDeclaration)
 
 sugarModule :: IModule -> Module
 sugarModule x = Module noSpan $ map sugarDeclaration $ _mDecls x -- (fragments x >>= mDecls)
 
--- | desugars enumeration to abstract and global singleton features
-desugarEnums :: Declaration -> [Declaration]
-desugarEnums (EnumDecl (Span p1 p2) id' enumids) = absEnum : map mkEnum enumids
+-- | desugars enumeration to abstract and global singleton features; the abstract clafer is
+--   final if requested, and its literals inherit the finality
+desugarEnums :: Bool -> Declaration -> [Declaration]
+desugarEnums finalEnum (EnumDecl (Span p1 p2) id' enumids) = absEnum : map mkEnum enumids
     where
     p2' = case enumids of
       -- the abstract enum clafer should end before the first literal begins
@@ -55,12 +63,12 @@ desugarEnums (EnumDecl (Span p1 p2) id' enumids) = absEnum : map mkEnum enumids
       in
         ElementDecl s1 $
           Subclafer s1 $
-            Clafer s1 (Abstract s1) [] (GCardEmpty s1) id' (SuperEmpty s1) (ReferenceEmpty s1) (CardEmpty s1) (InitEmpty s1) (TransitionEmpty s1) (ElementsList s1 [])
+            Clafer s1 (Abstract s1) [ Final s1 | finalEnum ] (GCardEmpty s1) id' (SuperEmpty s1) (ReferenceEmpty s1) (CardEmpty s1) (InitEmpty s1) (TransitionEmpty s1) (ElementsList s1 [])
     mkEnum (EnumIdIdent s2 eId) = -- each concrete clafer must fit within the original span of the literal
       ElementDecl s2 $
         Subclafer s2 $
           Clafer s2 (AbstractEmpty s2) [] (GCardEmpty s2) eId ((SuperSome s2) (ClaferId s2 $ Path s2 [ModIdIdent s2 id'])) (ReferenceEmpty s2) (oneToOne (0, 0)) (InitEmpty s2) (TransitionEmpty s2) (ElementsList s2 [])
-desugarEnums x = [x]
+desugarEnums _ x = [x]
 
 
 desugarDeclaration :: Declaration -> [IElement]
