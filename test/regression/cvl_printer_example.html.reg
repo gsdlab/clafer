@@ -75,7 +75,7 @@ a[href$='Ambiguous name'] {color: yellow}
 
 
 <div>
-<span class="keyword">[</span> <a href="#c0_fax"><span class="reference">fax</span></a> =&gt; <a href="#c0_printer"><span class="reference">printer</span></a> &amp;&amp; <a href="#c0_copier"><span class="reference">copier</span></a> =&gt; <a href="#c0_fax"><span class="reference">fax</span></a> &amp;&amp; <a href="#c0_printer"><span class="reference">printer</span></a> <span class="keyword">]</span></div>
+<span class="keyword">[</span> (<a href="#c0_fax"><span class="reference">fax</span></a> =&gt; <a href="#c0_printer"><span class="reference">printer</span></a>) &amp;&amp; (<a href="#c0_copier"><span class="reference">copier</span></a> =&gt; <a href="#c0_fax"><span class="reference">fax</span></a> &amp;&amp; <a href="#c0_printer"><span class="reference">printer</span></a>) <span class="keyword">]</span></div>
 
 </body>
 </html>

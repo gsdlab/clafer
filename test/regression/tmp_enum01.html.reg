@@ -32,7 +32,7 @@ a[href$='Ambiguous name'] {color: yellow}
   <div class="indent">
   <span class="keyword">[</span> <span class="tKeyword">initially </span><a href="#c0_request"><span class="reference">request</span></a> = <a href="#c0_stop"><span class="reference">stop</span></a> <span class="keyword">]</span></div>
   <div class="indent">
-  <span class="keyword">[</span> <span class="tKeyword">always </span><a href="#c0_request"><span class="reference">request</span></a> = <a href="#c0_up"><span class="reference">up</span></a> =&gt; F <a href="#c0_request"><span class="reference">request</span></a> = <a href="#c0_stop"><span class="reference">stop</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <span class="tKeyword">always </span><a href="#c0_request"><span class="reference">request</span></a> = <a href="#c0_up"><span class="reference">up</span></a> =&gt; X <a href="#c0_request"><span class="reference">request</span></a> = <a href="#c0_stop"><span class="reference">stop</span></a> <span class="keyword">]</span></div>
 </div>
 
 </body>

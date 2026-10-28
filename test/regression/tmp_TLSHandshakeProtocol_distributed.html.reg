@@ -208,7 +208,7 @@ a[href$='Ambiguous name'] {color: yellow}
           <span class="keyword">[</span> <a href="#c0_server"><span class="reference">server</span></a>.<a href="#c0_send"><span class="reference">send</span></a> = <a href="#c0_serverHelloMessage"><span class="reference">serverHelloMessage</span></a> <span class="keyword">]</span></div>
         </div>
         <div class="indent">
-        <span class="keyword">[</span> <a href="#c0_serverHello"><span class="reference">serverHello</span></a><span class="tKeyword"> -[</span><span class="keyword">no</span> <a href="#c0_annonymousMode"><span class="reference">annonymousMode</span></a><span class="tKeyword">]--&gt; </span><a href="#c0_serverCertificate"><span class="reference">serverCertificate</span></a> <span class="keyword">]</span></div>
+        <span class="keyword">[</span> <a href="#c0_serverHello"><span class="reference">serverHello</span></a><span class="tKeyword"> -[</span><span class="keyword">no</span> <a href="#c0_annonymousMode"><span class="reference">annonymousMode</span></a><span class="tKeyword">]-&gt; </span><a href="#c0_serverCertificate"><span class="reference">serverCertificate</span></a> <span class="keyword">]</span></div>
         <div class="indent">
         <span class="claferDecl" id="c0_serverCertificate">serverCertificate</span><span class="tKeyword"> --&gt; </span><a href="#c0_serverKeyExchange"><span class="reference">serverKeyExchange</span></a> &#124;&#124; <a href="#c0_certificateRequest"><span class="reference">certificateRequest</span></a> &#124;&#124; <a href="#c0_serverHelloDone"><span class="reference">serverHelloDone</span></a>
           <div class="indent">
