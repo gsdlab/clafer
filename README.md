@@ -3,7 +3,7 @@
 
 # Clafer, the language
 
-##### v0.5.5
+##### v0.5.6
 
 [Clafer](http://clafer.org) is a general-purpose lightweight structural and behavioral modeling language developed by
 [GSD Lab](http://gsd.uwaterloo.ca/), [University of Waterloo](http://uwaterloo.ca), and
@@ -177,7 +177,7 @@ Development versions from branches `develop` should work well together but this 
 (As printed by `clafer --help`)
 
 ```
-Clafer 0.5.5
+Clafer 0.5.6
 
 clafer [OPTIONS] [FILE]
 
