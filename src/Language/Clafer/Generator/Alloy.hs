@@ -565,11 +565,21 @@ adjustNav uidIClaferMap' resPath x@(IFunExp op' (pexp0:pexp:_))
   | otherwise   = (x, resPath)
   where
   (iexp0, path) = adjustNav uidIClaferMap' resPath (_exp pexp0)
-  (iexp, path') = adjustNav uidIClaferMap' path    (_exp pexp)
+  (iexp, path') = adjustNav uidIClaferMap' (typePath path) (_exp pexp)
+  -- the right operand navigates from the clafer of the left one, e.g., a variable @b1@ in @b1.parent@
+  typePath p = case _iType pexp0 of
+    Just (TClafer (uid':_)) | isJust (findIClafer uidIClaferMap' uid') -> claferPath uidIClaferMap' uid'
+    _ -> p
 adjustNav uidIClaferMap' resPath x@(IClaferId _ id' _ _)
   | id' == parentIdent = (x{_sident = parentRel uidIClaferMap' $ head resPath}, tail resPath)
   | otherwise    = (x, resPath)
 adjustNav _ _ _ = error "Function adjustNav Expect a IFunExp or IClaferID as one of it's argument but it was given a differnt IExp" --This should never happen
+
+-- | The UID of a clafer followed by the UIDs of its ancestors, without the root.
+claferPath :: UIDIClaferMap -> UID -> [UID]
+claferPath uidIClaferMap' uid' = uid' : case findIClafer uidIClaferMap' uid' of
+  Just c | _parentUID c /= rootIdent, isJust (findIClafer uidIClaferMap' $ _parentUID c) -> claferPath uidIClaferMap' $ _parentUID c
+  _ -> []
 
 -- | The inverse of the parent relation of the clafer with the given UID.
 -- A top-level abstract clafer has no parent relation; its parent is the parent
