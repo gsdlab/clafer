@@ -132,9 +132,12 @@ desugarClafer' claf'@(Clafer s' abstract' tmods' gcrd' id' super' reference' crd
                           (desugarCard crd') (0, -1)
                           elements'')]
   ++ (desugarInit id' init')
+  -- the transition of a clafer is a constraint in its parent's context, so it lasts as long
+  -- as the parent, e.g., `on --> off` takes the traffic light from on to off
+  ++ (desugarClaferTrans claf')
   where
     iClaferModifiers = desugarModifiers abstract' tmods'
-    elements'' = (desugarClaferTrans claf') ++ (desugarElements elements')
+    elements'' = desugarElements elements'
 
 desugarModifiers :: Abstract -> [TempModifier] -> IClaferModifiers
 desugarModifiers    abstract'    tmods           =
@@ -203,12 +206,37 @@ desugarClaferTrans (Clafer _ _ _ _ name _ _ _ _ trans _) =
 desugarTrans :: Span -> Exp -> TransArrow -> Exp -> PExp
 desugarTrans s e1 arrow e2 = desugarExp $ desugarTrans' s e1 arrow e2
 
+-- | The transitions as in Juodisius et al., Clafer: Lightweight Modeling of Structure,
+--   Behaviour, and Variability (2019), section 6.1: if the precondition holds in a state,
+--   the postcondition holds in the next state (-->), or the precondition and the context
+--   instance last until the postcondition holds (-->>); a guard strengthens the precondition.
+--
+--   Change: a chain of transitions is a sequence, e.g., a scenario
+--   @[ initially (green --> yellow --> red) ]@; only its first precondition is a condition,
+--   so @a --> b --> c@ is @a => X (b && X c)@, not @a => X (b => X c)@.
 desugarTrans' :: Span -> Exp -> TransArrow -> Exp -> Exp
-desugarTrans' s e1 arrow e2 =  case arrow of
-      SyncTransArrow _ -> LtlU s e1 e2
-      GuardedSyncTransArrow _ (TransGuard _ guardExp) -> EImplies s guardExp (LtlU s e1 e2)
-      NextTransArrow _ -> EAnd s e1 (LtlX s e2)
-      GuardedNextTransArrow _ (TransGuard _ guardExp) -> EImplies s guardExp (EAnd s e1 (LtlX s e2))
+desugarTrans' s e1 arrow e2 = EImplies s (precondition s e1 arrow) (step s e1 arrow $ desugarSequence e2)
+
+-- | The rest of a chain of transitions: the states follow each other.
+desugarSequence :: Exp -> Exp
+desugarSequence (TransitionExp s e1 arrow e2) = EAnd s (precondition s e1 arrow) (step s e1 arrow $ desugarSequence e2)
+desugarSequence e = e
+
+precondition :: Span -> Exp -> TransArrow -> Exp
+precondition s e1 arrow = case arrow of
+      GuardedSyncTransArrow _ (TransGuard _ guardExp) -> EAnd s e1 guardExp
+      GuardedNextTransArrow _ (TransGuard _ guardExp) -> EAnd s e1 guardExp
+      _ -> e1
+
+-- | The step from the source @e1@ to the target @e2@.
+step :: Span -> Exp -> TransArrow -> Exp -> Exp
+step s e1 arrow e2 = case arrow of
+      SyncTransArrow _ -> multiStep
+      GuardedSyncTransArrow _ _ -> multiStep
+      NextTransArrow _ -> LtlX s e2
+      GuardedNextTransArrow _ _ -> LtlX s e2
+  where
+    multiStep = LtlU s (EAnd s (mkClaferIdExp s "this") e1) e2
 
 
 desugarFinality :: [TempModifier] -> Bool

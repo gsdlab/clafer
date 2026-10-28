@@ -1,93 +1,45 @@
-
-/* Definition of timed traces (input independent) */ 
-sig State {}
-
-private one sig Ord {
-   First: set State,
-   Next: State -> State
-} {
-   pred/totalOrder[State,First,Next]
-}
-
-lone sig back in State {}
-
-fun loop : State -> State {
-  last -> back
-}
-
-fun first: one State { Ord.First }
-
-fun last: one State { State - ((Ord.Next).State) }
-
-fun next : State->State { Ord.Next + loop }
-
-fun prev : State->State { ~this/next }
-
-fun past : State->State { ^(~this/next) }
-
-fun future : State -> State { State <: *this/next }
-
-fun upto[s,s' : State] : set State {
-  (s' in s.*(Ord.Next) or finite) implies s.future & ^(Ord.Next).s' else s.*(Ord.Next) + (^(Ord.Next).s' & back.*(Ord.Next))
-}
-
-
-pred finite {
-  no loop
-}
-
-pred infinite {
-  some loop
-}
-
-fun localFirst [rel: univ->univ->State, parentSet: univ, child: univ] : State {
-       let lifetime = child.(parentSet.rel) | lifetime - (lifetime.next)
-}
-
-pred total[rel: univ->univ->State, children: univ] {
-   children = ~(rel.State).univ 
-}
-
-
-
+open util/integer
 pred show {}
 
-/* Clafer specifications (input dependent) */
 
 one sig root
-{ r_c0_A : c0_A -> State }
-{ let t = first | 
-  (infinite and all t':t.*next | all  c : (@r_c0_A.t'.@r_c0_B.t').@r_c0_C.t' | one c.@r_c0_D.t') }
+{ var r_c0_A : set c0_A }
+{ always (always (all  c : (alive_c0_A.@r_c0_B).@r_c0_C | one c.@r_c0_D)) }
+assert assertOnLine_9 { always (always (all  c : (alive_c0_A.@r_c0_B).@r_c0_C | some c.@r_c0_D)) }
+check assertOnLine_9 for 1 but 10 steps
+
+
 
 sig c0_A
-{ r_c0_B : c0_B -> State }
-{ lone localFirst[r_c0_A, root, this] && lone r_c0_A.State.this && total[r_c0_A,c0_A]
-  all t : State | (no r_c0_A.t.this => no r_c0_B.t)
-  one t : localFirst[r_c0_A,root, this] | 
-  (infinite and all t':t.*next | all  c : (this.@r_c0_B.t').@r_c0_C.t' | one c.@r_c0_D.t') }
+{ p_c0_A : lone root
+, var r_c0_B : set c0_B }
+{ always (this in alive_c0_A implies ((not some (this & alive_c0_A)) releases (not some (this & alive_c0_A) or (all  c : (this.@r_c0_B).@r_c0_C | one c.@r_c0_D)))) }
+fun alive_c0_A : set c0_A { root.@r_c0_A }
+fact { always ~@r_c0_A in @p_c0_A }
+
 
 sig c0_B
-{ r_c0_C : c0_C -> State }
-{ lone localFirst[r_c0_B, c0_A, this] && lone r_c0_B.State.this && total[r_c0_B,c0_B]
-  all t : State | (no r_c0_B.t.this => no r_c0_C.t)
-  one t : localFirst[r_c0_B,c0_A, this] | 
-  (infinite and all t':t.*next | one (this.@r_c0_C.t').@r_c0_D.t') }
+{ p_c0_B : lone c0_A
+, var r_c0_C : set c0_C }
+{ always (this in alive_c0_B implies ((not some (this & alive_c0_B)) releases (not some (this & alive_c0_B) or (one (this.@r_c0_C).@r_c0_D)))) }
+fun alive_c0_B : set c0_B { c0_A.@r_c0_B }
+fact { always ~@r_c0_B in @p_c0_B
+  always @r_c0_B.univ in alive_c0_A }
+
 
 sig c0_C
-{ r_c0_D : c0_D -> State }
-{ lone localFirst[r_c0_C, c0_B, this] && lone r_c0_C.State.this && total[r_c0_C,c0_C]
-  all t : State | lone r_c0_D.t && 
-	(no r_c0_C.t.this => no r_c0_D.t) }
+{ p_c0_C : lone c0_B
+, var r_c0_D : set c0_D }
+{ always (this in alive_c0_C implies (lone this.@r_c0_D)) }
+fun alive_c0_C : set c0_C { c0_B.@r_c0_C }
+fact { always ~@r_c0_C in @p_c0_C
+  always @r_c0_C.univ in alive_c0_B }
+
 
 sig c0_D
-{}
-{ lone localFirst[r_c0_D, c0_C, this] && lone r_c0_D.State.this && total[r_c0_D,c0_D] }
+{ p_c0_D : lone c0_C }
+fun alive_c0_D : set c0_D { c0_C.@r_c0_D }
+fact { always ~@r_c0_D in @p_c0_D
+  always @r_c0_D.univ in alive_c0_C }
 
-
-
-
-
-
-assert assertOnLine_9 { let t = first | (infinite and all t':t.*next | all  c : (@r_c0_A.t'.@r_c0_B.t').@r_c0_C.t' | some c.@r_c0_D.t') }
-check assertOnLine_9 for 10
 
