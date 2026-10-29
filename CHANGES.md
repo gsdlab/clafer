@@ -8,6 +8,7 @@
   * A chain of transitions is a sequence: `a --> b --> c` is `a => X (b && X c)` (it was `a => X (b => X c)`), e.g., the scenario `[ initially (green --> yellow --> red) ]`. Its first state is a condition, so a scenario states it when the model does not force it.
 * Enumerations are final in dynamic models: their literals do not change over time ([#92](https://github.com/gsdlab/clafer/issues/92)). In static models, they are not final, so that they do not make the model dynamic.
 * The parent of a quantified variable, e.g., `[ all b1 : b | b1.parent = a ]`, is the parent of its clafer; it was taken from the context of the constraint, and the compiler failed with "Prelude.head: empty list".
+* Partially qualified names match whole names: `yellow` matched `yellow_on` and `yellow_off` too, so it was ambiguous, and its least-partially-qualified name, e.g., in a `.cfr-scope` file, was qualified more than needed (`normal::yellow`).
 * HTML and graph outputs: expressions are shown with the parentheses that the grammar requires, e.g., `[ (1 + 2) * 3 = 9 ]` and `X (a || b)`, which were shown as `[ 1 + 2 * 3 = 9 ]` and `X a || b`. `X` was shown as `F`, and the guarded arrows `-[g]->` and `-[g]->>` as `-[g]-->` and `-[g]-->>`.
 * The temporal test models are fixed according to the paper and the above changes, the traffic light models are split into one file per model and its scenarios, which import it, and the test suite compiles each model with the models it imports.
 

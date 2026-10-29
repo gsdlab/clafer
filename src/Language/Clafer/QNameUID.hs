@@ -108,7 +108,11 @@ addClafer    _           maps                            _                  = ma
 
 findUIDsByFQName :: FQNameUIDMap -> FQName            -> [ UID ]
 findUIDsByFQName    fqNameUIDMap    fqName@(':':':':_) = SMap.lookup (getFQKey fqName) fqNameUIDMap
-findUIDsByFQName    fqNameUIDMap    fqName             = SMap.prefixFind (getFQKey fqName) fqNameUIDMap
+-- the empty name matches all clafers, which ends the search for the least-partially-qualified name
+findUIDsByFQName    fqNameUIDMap    ""                 = SMap.prefixFind "" fqNameUIDMap
+-- a key is the names of the clafer and its ancestors, each followed by ::, so that a partially
+-- qualified name matches whole names, e.g., `yellow` does not match `yellow_on`
+findUIDsByFQName    fqNameUIDMap    fqName             = SMap.prefixFind (getFQKey fqName ++ "::") fqNameUIDMap
 
 reverseOnQualifier :: FQName -> FQName
 reverseOnQualifier fqName = concat $ reverse $ split (onSublist "::") fqName
