@@ -1,3 +1,16 @@
+##### Clafer Version 0.5.6, Oct 28, 2026
+
+* Temporal models (behavioural Clafer) compile to the temporal logic of Alloy 6: mutable relations (`var`) and the operators `always`, `after`, `eventually` and `until`. The temporal generator encoded traces explicitly for Alloy 4.2, which had no temporal operators, and its output did not compile with Alloy 6. The Alloy Analyzer 6.2 finds the traces of small temporal models and checks their assertions in seconds.
+* The semantics of temporal models follows Juodisius et al., *Clafer: Lightweight Modeling of Structure, Behaviour, and Variability* (2019), sections 5 and 6: `a --> b` is `a => X b`, `a -->> b` is `a => (this && a) U b`, and a guard strengthens the precondition (`a -[g]-> b` is `a && g => X b`). It differs from the paper in these points:
+  * An instance may disappear and reappear, which cyclic state machines need in the lasso traces of Alloy.
+  * The temporal obligations of a constraint (`X`, `F`, `G`, `U`) hold while its context instance exists; a constraint placed higher in the hierarchy, or at the top level, lasts longer.
+  * The transition of a clafer, e.g., `on --> off`, is a constraint of its parent, so the transition of a nested state disappears when its enclosing state is left.
+  * A chain of transitions is a sequence: `a --> b --> c` is `a => X (b && X c)` (it was `a => X (b => X c)`), e.g., the scenario `[ initially (green --> yellow --> red) ]`. Its first state is a condition, so a scenario states it when the model does not force it.
+* Enumerations are final in dynamic models: their literals do not change over time ([#92](https://github.com/gsdlab/clafer/issues/92)). In static models, they are not final, so that they do not make the model dynamic.
+* The parent of a quantified variable, e.g., `[ all b1 : b | b1.parent = a ]`, is the parent of its clafer; it was taken from the context of the constraint, and the compiler failed with "Prelude.head: empty list".
+* HTML and graph outputs: expressions are shown with the parentheses that the grammar requires, e.g., `[ (1 + 2) * 3 = 9 ]` and `X (a || b)`, which were shown as `[ 1 + 2 * 3 = 9 ]` and `X a || b`. `X` was shown as `F`, and the guarded arrows `-[g]->` and `-[g]->>` as `-[g]-->` and `-[g]-->>`.
+* The temporal test models are fixed according to the paper and the above changes, the traffic light models are split into one file per model and its scenarios, which import it, and the test suite compiles each model with the models it imports.
+
 ##### Clafer Version 0.5.5, Oct 27, 2026
 
 * Decimals: a primitive type `decimal` of numbers with a fixed number of fractional digits, the decimal scale of the model, for the Choco backend (chocosolver 0.5.5). A plain decimal literal, e.g., `19.99`, is a decimal (it was a `real`); the scale is the most fractional digits of the literals, as written, or `--decimal-digits`. `decimal * decimal` and divisions with a decimal round half away from zero; a division of integers stays an integer division. Integers are decimals, decimals and doubles are reals, and a decimal and a double do not mix. `real` and `double` stay unsupported by the backends, and the Alloy backend does not support decimals. In the Choco output: `refTo(Decimal)`, `decimal("19.99")` and `decimalScale(2)`.
