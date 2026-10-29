@@ -51,6 +51,7 @@
 module Language.Clafer.Generator.AlloyLtl (genAlloyLtlModule) where
 
 import Control.Monad.State
+import Data.Char (isAlphaNum)
 import Data.List
 import Data.Maybe
 import Prelude
@@ -191,6 +192,7 @@ genClafer genEnv c = cunlines (filterNull
   [ claferDecl c (showSet (CString "\n, ") (genRelations genEnv c) +++ optShowSet (filterNull $ genConstraints genEnv c))
   , if isRoot c then CString "" else aliveFun
   , mkFact $ cintercalate (CString "\n  ") $ filterNull $ genStructure genEnv c
+  , cunlines $ genFacts genEnv c
   , cconcat $ map (mkAssert genEnv) $ getAssertions c
   ]) +++ CString "\n"
   where
@@ -260,7 +262,7 @@ genStructure genEnv c
 
 -- | The constraints in the signature fact of the clafer, which hold for every existing instance.
 genConstraints :: GenEnv -> IClafer -> [Concat]
-genConstraints genEnv c = map always' (filterNull $ refConsts ++ groupConst ++ childConsts ++ userConsts) ++ initialConsts ++ finalConsts
+genConstraints genEnv c = map always' (filterNull $ refConsts ++ groupConst ++ childConsts) ++ initialConsts ++ finalConsts
   where
   uid' = _uid c
   alive = aliveName uid'
@@ -277,11 +279,7 @@ genConstraints genEnv c = map always' (filterNull $ refConsts ++ groupConst ++ c
     Nothing -> []
   groupConst = [ genGroupConst genEnv c ]
   childConsts = concatMap childConst $ containedClafers c
-  childConst c' =
-    [ mkCard (_uid c') False ("this.@" ++ genRelName (_uid c')) $ fromJust $ _card c'
-    , genParentSubrelationConstraint (uidIClaferMap genEnv) c'
-    ] ++ genSetUniquenessConstraint c'
-  userConsts = [ genPExp genEnv [uid'] pexp | IEConstraint True pexp <- _elements c ]
+  childConst c' = genParentSubrelationConstraint (uidIClaferMap genEnv) c' : genSetUniquenessConstraint c'
   -- whenever this instance appears
   initialConsts =
     [ appears $ CString $ "some this.@" ++ genRelName (_uid c') | c' <- containedClafers c, _isInitial c' ]
@@ -294,6 +292,52 @@ genConstraints genEnv c = map always' (filterNull $ refConsts ++ groupConst ++ c
     | c' <- containedClafers c, _isFinal c', not (isStatic genEnv c'), let rel = genRelName (_uid c') ] ++
     [ CString $ "always (this in " ++ alive ++ " and after this in " ++ alive ++ " implies (this.@" ++ refRel ++ ")' = this.@" ++ refRel ++ ")"
     | Just r <- [_reference c], isJust (_refModifier r), not (isStatic genEnv c), let refRel = genRefName uid' ]
+
+-- | The constraints of the clafer and the cardinalities of its children, each a fact of its own,
+--   which holds for every existing instance: an unsat core gives these, which are removed to find
+--   a near-miss example. Alloy gives the unsat core of the temporal formulas of a signature fact
+--   for the whole fact, so they are not in the signature fact. The bounds of an interval are two
+--   facts, which are removed one by one.
+genFacts :: GenEnv -> IClafer -> [Concat]
+genFacts genEnv c = map fact $ concatMap childCards (containedClafers c) ++ userFacts
+  where
+  uid' = _uid c
+  userFacts = [ (IrPExp $ _pid pexp, genPExp genEnv [uid'] pexp) | IEConstraint True pexp <- _elements c ]
+  childCards c' = case fromJust $ _card c' of
+    (1, 1)  -> [(ExactCard child False, CString $ "one " ++ rel)]
+    (0, 1)  -> [(ExactCard child False, CString $ "lone " ++ rel)]
+    (1, -1) -> [(ExactCard child False, CString $ "some " ++ rel)]
+    (n, m)  -> [ (LowerCard child False, CString $ show n ++ " <= #(" ++ rel ++ ")") | n > 0 ] ++
+               [ (UpperCard child False, CString $ "#(" ++ rel ++ ") <= " ++ show m) | m /= -1 ]
+    where
+    child = _uid c'
+    rel = "this.@" ++ genRelName child
+  -- the constraint, for every instance in every snapshot in which it exists
+  fact (trace, x) = cconcat
+    [ CString "fact { "
+    , Concat trace [CString $ "all " ++ selfIdent ++ " : " ++ sigOf c ++ " | ", bindSelf $ always' x]
+    , CString " }" ]
+  always' x
+    | isRoot c  = cconcat [CString "always (", x, CString ")"]
+    | otherwise = cconcat [CString $ "always (" ++ selfIdent ++ " in " ++ aliveName uid' ++ " implies (", x, CString "))"]
+  sigOf c' = if isRoot c' then rootIdent else _uid c'
+
+-- | The variable of the instance in a fact: this is a keyword, which only signature facts bind.
+selfIdent :: String
+selfIdent = "self_"
+
+-- | The constraint for the instance bound to 'selfIdent' instead of this.
+bindSelf :: Concat -> Concat
+bindSelf (CString str) = CString $ bind Nothing str
+  where
+  bind prev ('t':'h':'i':'s':rest)
+    | maybe True (not . identChar) prev && not (startsIdent rest) = selfIdent ++ bind (Just '_') rest
+  bind _ (x:xs) = x : bind (Just x) xs
+  bind _ [] = []
+  startsIdent (x:_) = identChar x
+  startsIdent [] = False
+  identChar x = isAlphaNum x || x == '_' || x == '\''
+bindSelf (Concat trace xs) = Concat trace $ map bindSelf xs
 
 getAssertions :: IClafer -> [PExp]
 getAssertions c = [ pexp | isRoot c, IEConstraint False pexp <- _elements c ]

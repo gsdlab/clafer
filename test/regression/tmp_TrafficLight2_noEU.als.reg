@@ -5,16 +5,18 @@ pred show {}
 one sig root
 { r_c0_feature_model : set c0_feature_model
 , var r_c0_tl : set c0_tl }
-{ always (one this.@r_c0_feature_model)
-  always (one this.@r_c0_tl)
-  always (no alive_c0_feature_model.@r_c0_EU) }
+fact { all self_ : root | always (one self_.@r_c0_feature_model) }
+fact { all self_ : root | always (one self_.@r_c0_tl) }
+fact { all self_ : root | always (no alive_c0_feature_model.@r_c0_EU) }
+
 
 sig c0_feature_model
 { p_c0_feature_model : lone root
 , var r_c0_EU : set c0_EU }
-{ always (this in alive_c0_feature_model implies (lone this.@r_c0_EU)) }
 fun alive_c0_feature_model : set c0_feature_model { root.@r_c0_feature_model }
 fact { always ~@r_c0_feature_model in @p_c0_feature_model }
+
+fact { all self_ : c0_feature_model | always (self_ in alive_c0_feature_model implies (lone self_.@r_c0_EU)) }
 
 
 sig c0_EU
@@ -27,25 +29,27 @@ fact { always ~@r_c0_EU in @p_c0_EU
 abstract sig c0_TrafficLight_2
 { var r_c0_on : set c0_on
 , var r_c0_off : set c0_off }
-{ always (this in alive_c0_TrafficLight_2 implies (lone this.@r_c0_on))
-  always (this in alive_c0_TrafficLight_2 implies (lone this.@r_c0_off))
-  always (this in alive_c0_TrafficLight_2 implies ((some this.@r_c0_on) => ((some (this & alive_c0_TrafficLight_2) and ((some (this & alive_c0_TrafficLight_2)) && (some this.@r_c0_on))) until (not some (this & alive_c0_TrafficLight_2) or (some this.@r_c0_off)))))
-  always (this in alive_c0_TrafficLight_2 implies ((some this.@r_c0_off) => (after (not some (this & alive_c0_TrafficLight_2) or (some this.@r_c0_on)))))
-  always (this in alive_c0_TrafficLight_2 and not before this in alive_c0_TrafficLight_2 implies (some this.@r_c0_on)) }
+{ always (this in alive_c0_TrafficLight_2 and not before this in alive_c0_TrafficLight_2 implies (some this.@r_c0_on)) }
 fun alive_c0_TrafficLight_2 : set c0_TrafficLight_2 { alive_c0_tl }
+fact { all self_ : c0_TrafficLight_2 | always (self_ in alive_c0_TrafficLight_2 implies (lone self_.@r_c0_on)) }
+fact { all self_ : c0_TrafficLight_2 | always (self_ in alive_c0_TrafficLight_2 implies (lone self_.@r_c0_off)) }
+fact { all self_ : c0_TrafficLight_2 | always (self_ in alive_c0_TrafficLight_2 implies ((some self_.@r_c0_on) => ((some (self_ & alive_c0_TrafficLight_2) and ((some (self_ & alive_c0_TrafficLight_2)) && (some self_.@r_c0_on))) until (not some (self_ & alive_c0_TrafficLight_2) or (some self_.@r_c0_off))))) }
+fact { all self_ : c0_TrafficLight_2 | always (self_ in alive_c0_TrafficLight_2 implies ((some self_.@r_c0_off) => (after (not some (self_ & alive_c0_TrafficLight_2) or (some self_.@r_c0_on))))) }
+
 
 sig c0_on
 { p_c0_on : lone c0_TrafficLight_2
 , var r_c0_normal : set c0_normal
 , var r_c0_flashing : set c0_flashing }
 { always (this in alive_c0_on implies (let children = (this.@r_c0_normal + this.@r_c0_flashing) | one children))
-  always (this in alive_c0_on implies (lone this.@r_c0_normal))
-  always (this in alive_c0_on implies (lone this.@r_c0_flashing))
-  always (this in alive_c0_on implies ((some this.@r_c0_flashing) => ((some (this & alive_c0_on) and ((some (this & alive_c0_on)) && (some this.@r_c0_flashing))) until (not some (this & alive_c0_on) or (some this.@r_c0_normal)))))
   always (this in alive_c0_on and not before this in alive_c0_on implies (some this.@r_c0_normal)) }
 fun alive_c0_on : set c0_on { c0_TrafficLight_2.@r_c0_on }
 fact { always ~@r_c0_on in @p_c0_on
   always @r_c0_on.univ in alive_c0_TrafficLight_2 }
+
+fact { all self_ : c0_on | always (self_ in alive_c0_on implies (lone self_.@r_c0_normal)) }
+fact { all self_ : c0_on | always (self_ in alive_c0_on implies (lone self_.@r_c0_flashing)) }
+fact { all self_ : c0_on | always (self_ in alive_c0_on implies ((some self_.@r_c0_flashing) => ((some (self_ & alive_c0_on) and ((some (self_ & alive_c0_on)) && (some self_.@r_c0_flashing))) until (not some (self_ & alive_c0_on) or (some self_.@r_c0_normal))))) }
 
 
 sig c0_normal
@@ -54,16 +58,17 @@ sig c0_normal
 , var r_c0_yellow : set c0_yellow
 , var r_c0_red : set c0_red }
 { always (this in alive_c0_normal implies (let children = (this.@r_c0_green + this.@r_c0_yellow + this.@r_c0_red) | one children))
-  always (this in alive_c0_normal implies (lone this.@r_c0_green))
-  always (this in alive_c0_normal implies (lone this.@r_c0_yellow))
-  always (this in alive_c0_normal implies (lone this.@r_c0_red))
-  always (this in alive_c0_normal implies ((some this.@r_c0_green) => (after (not some (this & alive_c0_normal) or (some this.@r_c0_yellow)))))
-  always (this in alive_c0_normal implies ((some this.@r_c0_yellow) => (after (not some (this & alive_c0_normal) or ((some this.@r_c0_red) || ((some alive_c0_feature_model.@r_c0_EU) && (some this.@r_c0_green)))))))
-  always (this in alive_c0_normal implies ((some this.@r_c0_red) => (after (not some (this & alive_c0_normal) or ((some this.@r_c0_green) || ((some alive_c0_feature_model.@r_c0_EU) && (some this.@r_c0_yellow)))))))
   always (this in alive_c0_normal and not before this in alive_c0_normal implies (some this.@r_c0_green)) }
 fun alive_c0_normal : set c0_normal { c0_on.@r_c0_normal }
 fact { always ~@r_c0_normal in @p_c0_normal
   always @r_c0_normal.univ in alive_c0_on }
+
+fact { all self_ : c0_normal | always (self_ in alive_c0_normal implies (lone self_.@r_c0_green)) }
+fact { all self_ : c0_normal | always (self_ in alive_c0_normal implies (lone self_.@r_c0_yellow)) }
+fact { all self_ : c0_normal | always (self_ in alive_c0_normal implies (lone self_.@r_c0_red)) }
+fact { all self_ : c0_normal | always (self_ in alive_c0_normal implies ((some self_.@r_c0_green) => (after (not some (self_ & alive_c0_normal) or (some self_.@r_c0_yellow))))) }
+fact { all self_ : c0_normal | always (self_ in alive_c0_normal implies ((some self_.@r_c0_yellow) => (after (not some (self_ & alive_c0_normal) or ((some self_.@r_c0_red) || ((some alive_c0_feature_model.@r_c0_EU) && (some self_.@r_c0_green))))))) }
+fact { all self_ : c0_normal | always (self_ in alive_c0_normal implies ((some self_.@r_c0_red) => (after (not some (self_ & alive_c0_normal) or ((some self_.@r_c0_green) || ((some alive_c0_feature_model.@r_c0_EU) && (some self_.@r_c0_yellow))))))) }
 
 
 sig c0_green
@@ -92,14 +97,15 @@ sig c0_flashing
 , var r_c0_yellow_on : set c0_yellow_on
 , var r_c0_yellow_off : set c0_yellow_off }
 { always (this in alive_c0_flashing implies (let children = (this.@r_c0_yellow_on + this.@r_c0_yellow_off) | one children))
-  always (this in alive_c0_flashing implies (lone this.@r_c0_yellow_on))
-  always (this in alive_c0_flashing implies (lone this.@r_c0_yellow_off))
-  always (this in alive_c0_flashing implies ((some this.@r_c0_yellow_on) => (after (not some (this & alive_c0_flashing) or (some this.@r_c0_yellow_off)))))
-  always (this in alive_c0_flashing implies ((some this.@r_c0_yellow_off) => (after (not some (this & alive_c0_flashing) or (some this.@r_c0_yellow_on)))))
   always (this in alive_c0_flashing and not before this in alive_c0_flashing implies (some this.@r_c0_yellow_on)) }
 fun alive_c0_flashing : set c0_flashing { c0_on.@r_c0_flashing }
 fact { always ~@r_c0_flashing in @p_c0_flashing
   always @r_c0_flashing.univ in alive_c0_on }
+
+fact { all self_ : c0_flashing | always (self_ in alive_c0_flashing implies (lone self_.@r_c0_yellow_on)) }
+fact { all self_ : c0_flashing | always (self_ in alive_c0_flashing implies (lone self_.@r_c0_yellow_off)) }
+fact { all self_ : c0_flashing | always (self_ in alive_c0_flashing implies ((some self_.@r_c0_yellow_on) => (after (not some (self_ & alive_c0_flashing) or (some self_.@r_c0_yellow_off))))) }
+fact { all self_ : c0_flashing | always (self_ in alive_c0_flashing implies ((some self_.@r_c0_yellow_off) => (after (not some (self_ & alive_c0_flashing) or (some self_.@r_c0_yellow_on))))) }
 
 
 sig c0_yellow_on
@@ -125,9 +131,10 @@ fact { always ~@r_c0_off in @p_c0_off
 
 sig c0_tl extends c0_TrafficLight_2
 { p_c0_tl : lone root }
-{ always (this in alive_c0_tl implies (let children = (this.@r_c0_on + this.@r_c0_off) | one children))
-  always (this in alive_c0_tl implies ((not before this in alive_c0_tl) implies ((some ((this.@r_c0_on).@r_c0_normal).@r_c0_green) => (after (not some (this & alive_c0_tl) or ((some ((this.@r_c0_on).@r_c0_normal).@r_c0_yellow) && (after (not some (this & alive_c0_tl) or ((some ((this.@r_c0_on).@r_c0_normal).@r_c0_red) && (after (not some (this & alive_c0_tl) or (some ((this.@r_c0_on).@r_c0_normal).@r_c0_green)))))))))))) }
+{ always (this in alive_c0_tl implies (let children = (this.@r_c0_on + this.@r_c0_off) | one children)) }
 fun alive_c0_tl : set c0_tl { root.@r_c0_tl }
 fact { always ~@r_c0_tl in @p_c0_tl }
+
+fact { all self_ : c0_tl | always (self_ in alive_c0_tl implies ((not before self_ in alive_c0_tl) implies ((some ((self_.@r_c0_on).@r_c0_normal).@r_c0_green) => (after (not some (self_ & alive_c0_tl) or ((some ((self_.@r_c0_on).@r_c0_normal).@r_c0_yellow) && (after (not some (self_ & alive_c0_tl) or ((some ((self_.@r_c0_on).@r_c0_normal).@r_c0_red) && (after (not some (self_ & alive_c0_tl) or (some ((self_.@r_c0_on).@r_c0_normal).@r_c0_green)))))))))))) }
 
 

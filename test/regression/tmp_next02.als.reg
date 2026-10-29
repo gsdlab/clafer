@@ -4,24 +4,27 @@ pred show {}
 
 one sig root
 { var r_c0_a : set c0_a }
-{ always (one this.@r_c0_a) }
+fact { all self_ : root | always (one self_.@r_c0_a) }
+
 
 sig c0_a
 { p_c0_a : lone root
 , var r_c0_b : set c0_b }
-{ always (this in alive_c0_a implies (lone this.@r_c0_b)) }
 fun alive_c0_a : set c0_a { root.@r_c0_a }
 fact { always ~@r_c0_a in @p_c0_a }
+
+fact { all self_ : c0_a | always (self_ in alive_c0_a implies (lone self_.@r_c0_b)) }
 
 
 sig c0_b
 { p_c0_b : lone c0_a
 , var r_c0_c : set c0_c }
-{ always (this in alive_c0_b implies (lone this.@r_c0_c))
-  always (this in alive_c0_b implies (after (not some (this & alive_c0_b) or (some this.@r_c0_c)))) }
 fun alive_c0_b : set c0_b { c0_a.@r_c0_b }
 fact { always ~@r_c0_b in @p_c0_b
   always @r_c0_b.univ in alive_c0_a }
+
+fact { all self_ : c0_b | always (self_ in alive_c0_b implies (lone self_.@r_c0_c)) }
+fact { all self_ : c0_b | always (self_ in alive_c0_b implies (after (not some (self_ & alive_c0_b) or (some self_.@r_c0_c)))) }
 
 
 sig c0_c

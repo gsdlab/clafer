@@ -201,7 +201,8 @@ desugarClaferTrans :: Clafer -> [IElement]
 desugarClaferTrans (Clafer _ _ _ _ name _ _ _ _ trans _) =
   case trans of
       TransitionEmpty _ -> []
-      Transition s arrow e -> [IEConstraint True (desugarTrans s (mkClaferIdExp s $ transIdent name) arrow e)]
+      -- the constraint spans the clafer's name and its transition, e.g., green --> yellow
+      Transition s arrow e -> let s' = getSpan name >- s in [IEConstraint True (desugarTrans s' (mkClaferIdExp s' $ transIdent name) arrow e)]
 
 desugarTrans :: Span -> Exp -> TransArrow -> Exp -> PExp
 desugarTrans s e1 arrow e2 = desugarExp $ desugarTrans' s e1 arrow e2

@@ -4,7 +4,8 @@ pred show {}
 
 one sig root
 { var r_c0_A : set c0_A }
-{ always (always (all  c : (alive_c0_A.@r_c0_B).@r_c0_C | one c.@r_c0_D)) }
+fact { all self_ : root | always (always (all  c : (alive_c0_A.@r_c0_B).@r_c0_C | one c.@r_c0_D)) }
+
 assert assertOnLine_9 { always (always (all  c : (alive_c0_A.@r_c0_B).@r_c0_C | some c.@r_c0_D)) }
 check assertOnLine_9 for 1 but 10 steps
 
@@ -13,27 +14,30 @@ check assertOnLine_9 for 1 but 10 steps
 sig c0_A
 { p_c0_A : lone root
 , var r_c0_B : set c0_B }
-{ always (this in alive_c0_A implies ((not some (this & alive_c0_A)) releases (not some (this & alive_c0_A) or (all  c : (this.@r_c0_B).@r_c0_C | one c.@r_c0_D)))) }
 fun alive_c0_A : set c0_A { root.@r_c0_A }
 fact { always ~@r_c0_A in @p_c0_A }
+
+fact { all self_ : c0_A | always (self_ in alive_c0_A implies ((not some (self_ & alive_c0_A)) releases (not some (self_ & alive_c0_A) or (all  c : (self_.@r_c0_B).@r_c0_C | one c.@r_c0_D)))) }
 
 
 sig c0_B
 { p_c0_B : lone c0_A
 , var r_c0_C : set c0_C }
-{ always (this in alive_c0_B implies ((not some (this & alive_c0_B)) releases (not some (this & alive_c0_B) or (one (this.@r_c0_C).@r_c0_D)))) }
 fun alive_c0_B : set c0_B { c0_A.@r_c0_B }
 fact { always ~@r_c0_B in @p_c0_B
   always @r_c0_B.univ in alive_c0_A }
+
+fact { all self_ : c0_B | always (self_ in alive_c0_B implies ((not some (self_ & alive_c0_B)) releases (not some (self_ & alive_c0_B) or (one (self_.@r_c0_C).@r_c0_D)))) }
 
 
 sig c0_C
 { p_c0_C : lone c0_B
 , var r_c0_D : set c0_D }
-{ always (this in alive_c0_C implies (lone this.@r_c0_D)) }
 fun alive_c0_C : set c0_C { c0_B.@r_c0_C }
 fact { always ~@r_c0_C in @p_c0_C
   always @r_c0_C.univ in alive_c0_B }
+
+fact { all self_ : c0_C | always (self_ in alive_c0_C implies (lone self_.@r_c0_D)) }
 
 
 sig c0_D
