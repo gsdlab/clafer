@@ -6,7 +6,7 @@ nodesep=0.1;
 graph [fontname=Sans fontsize=11];
 node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
 edge [fontname=Sans fontsize=11];
-"c0_feature_model" [label="final feature_model" URL="#c0_feature_model" tooltip="final feature_model&#10;  EU ?&#10;"];
+"c0_feature_model" [label="final feature_model" URL="#c0_feature_model" tooltip="final feature_model&#10;  final EU ?&#10;"];
 "c0_TrafficLight_2" [label="abstract xor TrafficLight_2" URL="#c0_TrafficLight_2" tooltip="abstract xor TrafficLight_2&#10;  initial xor on --&gt;&gt; off&#10;    initial xor normal&#10;      initial green --&gt; yellow&#10;      yellow --&gt; red || EU &amp;&amp; green&#10;      red --&gt; green || EU &amp;&amp; yellow&#10;    xor flashing --&gt;&gt; normal&#10;      initial yellow_on --&gt; yellow_off&#10;      yellow_off --&gt; yellow_on&#10;  off --&gt; on&#10;"];
 "c0_tl" [label="tl : TrafficLight_2" URL="#c0_tl" tooltip="tl : TrafficLight_2&#10;  [ initially (green --&gt; yellow --&gt; green --&gt; yellow --&gt; red --&gt; yellow --&gt; green) ]&#10;"];
 "c0_tl" -> "c0_TrafficLight_2" [arrowhead=onormal constraint=true weight=100];

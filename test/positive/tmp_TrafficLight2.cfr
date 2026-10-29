@@ -2,10 +2,11 @@
 
 // The traffic light of tmp_TrafficLight1.cfr with variability: its behaviour depends on
 // the feature EU, where the light may go back from yellow to green, and from red through
-// yellow to green.
+// yellow to green. The feature is final: it does not change during a trace, and another trace
+// may have the other variant.
 
 final feature_model
-    EU ?
+    final EU ?
 
 abstract xor TrafficLight_2
     initial xor on -->> off

@@ -12,7 +12,7 @@ fact { all self_ : root | always (no alive_c0_feature_model.@r_c0_EU) }
 
 sig c0_feature_model
 { p_c0_feature_model : lone root
-, var r_c0_EU : set c0_EU }
+, r_c0_EU : set c0_EU }
 fun alive_c0_feature_model : set c0_feature_model { root.@r_c0_feature_model }
 fact { always ~@r_c0_feature_model in @p_c0_feature_model }
 

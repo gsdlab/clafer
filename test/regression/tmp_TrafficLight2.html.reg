@@ -24,7 +24,7 @@ a[href$='Ambiguous name'] {color: yellow}
 <div>
 <span class="tKeyword">final</span> <span class="claferDecl" id="c0_feature_model">feature_model</span>
   <div class="indent">
-  <span class="claferDecl" id="c0_EU">EU</span> ?</div>
+  <span class="tKeyword">final</span> <span class="claferDecl" id="c0_EU">EU</span> ?</div>
 </div>
 
 
