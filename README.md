@@ -29,7 +29,7 @@ over time and checking properties of possible behaviors.
 May applications actually combine the three. For example, see [Technical Report: Case Studies on E/E Architectures for Power Window and Central Door Locks Systems](http://www.clafer.org/2016/06/technical-report-case-studies-on-ee.html).
 
 For examples of behavior modeling, see [Behavioral Modeling](https://wiselab.uwaterloo.ca/modelwiki/#behavioral-modeling) section on the wiki.
-Currently; however, no reasoning capability is available for behavior modeling.
+Behavior models compile to the temporal logic of Alloy 6: [ClaferIG](https://github.com/gsdlab/claferIG) generates their traces and checks their assertions. The Choco backend supports only static models.
 
 ### Resources
 
