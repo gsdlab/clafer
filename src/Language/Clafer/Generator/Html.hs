@@ -304,12 +304,12 @@ printPosIdentRef (PosIdent (p, id')) irMap True
 
 printSuper :: Super -> Int -> Map.Map Span [Ir] -> Bool -> [(Span, String)] -> String
 printSuper (SuperEmpty _) _ _ _ _ = ""
-printSuper (SuperSome _ setExp) indent irMap html comments = while html "<span class=\"keyword\">" ++ " : " ++ while html "</span>" ++ printExp setExp indent irMap html comments
+printSuper (SuperSome _ setExp) indent irMap html comments = while html "<span class=\"keyword\">" ++ " : " ++ while html "</span>" ++ printOperand 26 setExp indent irMap html comments
 
 printReference :: Reference -> Int -> Map.Map Span [Ir] -> Bool -> [(Span, String)] -> String
 printReference (ReferenceEmpty _) _ _ _ _ = ""
-printReference (ReferenceSet _ setExp) indent irMap html comments = while html "<span class=\"keyword\">" ++ " -> " ++ while html "</span>" ++ printExp setExp indent irMap html comments
-printReference (ReferenceBag _ setExp) indent irMap html comments = while html "<span class=\"keyword\">" ++ " ->> " ++ while html "</span>" ++ printExp setExp indent irMap html comments
+printReference (ReferenceSet _ setExp) indent irMap html comments = while html "<span class=\"keyword\">" ++ " -> " ++ while html "</span>" ++ printOperand 23 setExp indent irMap html comments
+printReference (ReferenceBag _ setExp) indent irMap html comments = while html "<span class=\"keyword\">" ++ " ->> " ++ while html "</span>" ++ printOperand 23 setExp indent irMap html comments
 
 
 printCard :: Card -> String
@@ -344,7 +344,7 @@ printAssertion' exp' indent' irMap html comments =
 printDecl :: Decl-> Int -> Map.Map Span [Ir] -> Bool -> [(Span, String)] -> String
 printDecl (Decl _ locids setExp) indent irMap html comments =
   concat (intersperse "; " $ map printLocId locids) ++
-  while html "<span class=\"keyword\">" ++ " : " ++ while html "</span>" ++ printExp setExp indent irMap html comments
+  while html "<span class=\"keyword\">" ++ " : " ++ while html "</span>" ++ printOperand 21 setExp indent irMap html comments
   where
     printLocId :: LocId -> String
     printLocId (LocIdIdent _ (PosIdent (_, ident'))) = ident'
@@ -370,89 +370,164 @@ printTransition :: Transition -> Int -> Map.Map Span [Ir] -> Bool -> [(Span, Str
 printTransition (TransitionEmpty _) _ _ _ _ = ""
 printTransition (Transition _ (SyncTransArrow _) exp2) indent irMap html comments = (if html then "<span class=\"tKeyword\"> --&gt;&gt; </span>" else " -->> ") ++ printExp exp2 indent irMap html comments
 printTransition (Transition _ (NextTransArrow _) exp2) indent irMap html comments = (if html then "<span class=\"tKeyword\"> --&gt; </span>" else " --> ") ++ printExp exp2 indent irMap html comments
-printTransition (Transition _ (GuardedSyncTransArrow _ (TransGuard _ guardExp)) exp2) indent irMap html comments = while html "<span class=\"tKeyword\">" ++ " -[" ++ while html "</span>" ++ printExp guardExp indent irMap html comments ++ (if html then "<span class=\"tKeyword\">]--&gt;&gt; </span>" else "]->> ")  ++ printExp exp2 indent irMap html comments
-printTransition (Transition _ (GuardedNextTransArrow _ (TransGuard _ guardExp)) exp2) indent irMap html comments = while html "<span class=\"tKeyword\">" ++ " -[" ++ while html "</span>" ++ printExp guardExp indent irMap html comments ++ (if html then "<span class=\"tKeyword\">]--&gt; </span>" else "]-> ") ++ printExp exp2 indent irMap html comments
+printTransition (Transition _ (GuardedSyncTransArrow _ (TransGuard _ guardExp)) exp2) indent irMap html comments = while html "<span class=\"tKeyword\">" ++ " -[" ++ while html "</span>" ++ printOperand 1 guardExp indent irMap html comments ++ (if html then "<span class=\"tKeyword\">]-&gt;&gt; </span>" else "]->> ")  ++ printExp exp2 indent irMap html comments
+printTransition (Transition _ (GuardedNextTransArrow _ (TransGuard _ guardExp)) exp2) indent irMap html comments = while html "<span class=\"tKeyword\">" ++ " -[" ++ while html "</span>" ++ printOperand 1 guardExp indent irMap html comments ++ (if html then "<span class=\"tKeyword\">]-&gt; </span>" else "]-> ") ++ printExp exp2 indent irMap html comments
 
 printExp :: Exp -> Int -> Map.Map Span [Ir] -> Bool -> [(Span, String)] -> String
-printExp (TransitionExp _ exp1 (SyncTransArrow _) exp2) indent irMap html comments = printExp exp1 indent irMap html comments ++ (if html then "<span class=\"tKeyword\"> --&gt;&gt; </span>" else " -->> ") ++ printExp exp2 indent irMap html comments
-printExp (TransitionExp _ exp1 (NextTransArrow _) exp2) indent irMap html comments = printExp exp1 indent irMap html comments ++ (if html then "<span class=\"tKeyword\"> --&gt; </span>" else " --> ") ++ printExp exp2 indent irMap html comments
-printExp (TransitionExp _ exp1 (GuardedSyncTransArrow _ (TransGuard _ guardExp)) exp2) indent irMap html comments = printExp exp1 indent irMap html comments ++ while html "<span class=\"tKeyword\">" ++ " -[" ++ while html "</span>" ++ printExp guardExp indent irMap html comments ++ (if html then "<span class=\"tKeyword\">]--&gt;&gt; </span>" else "]->> ")  ++ printExp exp2 indent irMap html comments
-printExp (TransitionExp _ exp1 (GuardedNextTransArrow _ (TransGuard _ guardExp)) exp2) indent irMap html comments = printExp exp1 indent irMap html comments ++ while html "<span class=\"tKeyword\">" ++ " -[" ++ while html "</span>" ++ printExp guardExp indent irMap html comments ++ (if html then "<span class=\"tKeyword\">]--&gt; </span>" else "]-> ") ++ printExp exp2 indent irMap html comments
-printExp (EDeclAllDisj _ decl exp') indent irMap html comments = "all disj " ++ printDecl decl indent irMap html comments ++ " | " ++ printExp exp' indent irMap html comments
-printExp (EDeclAll _     decl exp') indent irMap html comments = "all " ++ printDecl decl indent irMap html comments ++ " | " ++ printExp exp' indent irMap html comments
-printExp (EDeclQuantDisj _ quant' decl exp') indent irMap html comments = printQuant quant' html ++ "disj" ++ printDecl decl indent irMap html comments ++ " | " ++ printExp exp' indent irMap html comments
-printExp (EDeclQuant _     quant' decl exp') indent irMap html comments = printQuant quant' html ++ printDecl decl indent irMap html comments ++ " | " ++ printExp exp' indent irMap html comments
-printExp (LetExp _ varBinding exp') indent irMap html comments = while html "<span class=\"keyword\">" ++ "let " ++ while html "</span>" ++ printVarBinding varBinding indent irMap html comments ++ while html "<span class=\"keyword\">" ++ " in " ++ while html "</span>" ++ printExp exp' indent irMap html comments
-printExp (TmpPatNever _ exp' patternScope)        indent irMap html comments = while html "<span class=\"tKeyword\">" ++ "never " ++ while html "</span>" ++ printExp exp' indent irMap html comments ++ printPatternScope patternScope indent irMap html comments
-printExp (TmpPatSometime _ exp' patternScope)     indent irMap html comments = while html "<span class=\"tKeyword\">" ++ "sometime " ++ while html "</span>" ++ printExp exp' indent irMap html comments ++ printPatternScope patternScope indent irMap html comments
-printExp (TmpPatLessOrOnce _ exp' patternScope)   indent irMap html comments = while html "<span class=\"tKeyword\">" ++ "lonce " ++ while html "</span>" ++ printExp exp' indent irMap html comments ++ printPatternScope patternScope indent irMap html comments
-printExp (TmpPatAlways _ exp' patternScope)       indent irMap html comments = while html "<span class=\"tKeyword\">" ++ "always " ++ while html "</span>" ++ printExp exp' indent irMap html comments ++ printPatternScope patternScope indent irMap html comments
-printExp (TmpPatPrecede _ exp1 exp2 patternScope) indent irMap html comments = printExp exp1 indent irMap html comments ++ while html "<span class=\"tKeyword\">" ++ " must precede " ++ while html "</span>" ++ printExp exp2 indent irMap html comments ++ printPatternScope patternScope indent irMap html comments
-printExp (TmpPatFollow _ exp1 exp2 patternScope)  indent irMap html comments = printExp exp1 indent irMap html comments ++ while html "<span class=\"tKeyword\">" ++ " must follow " ++ while html "</span>" ++ printExp exp2 indent irMap html comments ++ printPatternScope patternScope indent irMap html comments
-printExp (TmpInitially _ exp')    indent irMap html comments = while html "<span class=\"tKeyword\">" ++ "initially " ++ while html "</span>" ++ printExp exp' indent irMap html comments
-printExp (TmpFinally _ exp')      indent irMap html comments = while html "<span class=\"tKeyword\">" ++ "finally " ++ while html "</span>" ++ printExp exp' indent irMap html comments
-printExp (EGMax _ exp')           indent irMap html comments = "max " ++ printExp exp' indent irMap html comments
-printExp (EGMin _ exp')           indent irMap html comments = "min " ++ printExp exp' indent irMap html comments
-printExp (ENeq _ exp1 exp2)       indent irMap html comments = printExp exp1 indent irMap html comments ++ " != " ++ printExp exp2 indent irMap html comments
-printExp (EQuantExp _ quant' exp') indent irMap html comments = printQuant quant' html ++ printExp exp' indent irMap html comments
-printExp (EIff _ exp1 exp2)       indent irMap html comments = printExp exp1 indent irMap html comments ++ (if html then " &lt;=&gt; " else " <=> ") ++ printExp exp2 indent irMap html comments
-printExp (EImplies _ exp1 exp2)   indent irMap html comments = printExp exp1 indent irMap html comments ++ (if html then " =&gt; " else " => ") ++ printExp exp2 indent irMap html comments
-printExp (EAnd _ exp1 exp2)       indent irMap html comments = printExp exp1 indent irMap html comments ++ (if html then " &amp;&amp; " else " && ")  ++ printExp exp2 indent irMap html comments
-printExp (EOr _ exp1 exp2)        indent irMap html comments = printExp exp1 indent irMap html comments ++ (if html then " &#124;&#124; " else " || ") ++ printExp exp2 indent irMap html comments
-printExp (EXor _ exp1 exp2)       indent irMap html comments = printExp exp1 indent irMap html comments ++ " xor " ++ printExp exp2 indent irMap html comments
-printExp (LtlU _ exp1 exp2)       indent irMap html comments = printExp exp1 indent irMap html comments ++ " U " ++ printExp exp2 indent irMap html comments
-printExp (TmpUntil _ exp1 exp2)   indent irMap html comments = printExp exp1 indent irMap html comments ++ while html "<span class=\"tKeyword\">" ++ " until " ++ while html "</span>" ++ printExp exp2 indent irMap html comments
-printExp (LtlW _ exp1 exp2)       indent irMap html comments = printExp exp1 indent irMap html comments ++ " W " ++ printExp exp2 indent irMap html comments
-printExp (TmpWUntil _ exp1 exp2)  indent irMap html comments = printExp exp1 indent irMap html comments ++ while html "<span class=\"tKeyword\">" ++ " weakuntil " ++ while html "</span>" ++ printExp exp2 indent irMap html comments
-printExp (LtlF _ exp')            indent irMap html comments = "F " ++ printExp exp' indent irMap html comments
-printExp (TmpEventually _ exp')   indent irMap html comments = while html "<span class=\"tKeyword\">" ++ "eventually " ++ while html "</span>" ++ printExp exp' indent irMap html comments
-printExp (LtlG _ exp')            indent irMap html comments = "G " ++ printExp exp' indent irMap html comments
-printExp (TmpGlobally _ exp')     indent irMap html comments = while html "<span class=\"tKeyword\">" ++ "globally " ++ while html "</span>" ++ printExp exp' indent irMap html comments
-printExp (LtlX _ exp')            indent irMap html comments = "F " ++ printExp exp' indent irMap html comments
-printExp (TmpNext _ exp')         indent irMap html comments = while html "<span class=\"tKeyword\">" ++ "next " ++ while html "</span>" ++ printExp exp' indent irMap html comments
-printExp (ENeg _ exp')            indent irMap html comments = " ! " ++ printExp exp' indent irMap html comments
-printExp (ELt _ exp1 exp2)        indent irMap html comments = printExp exp1 indent irMap html comments ++ (if html then " &lt; " else " < ") ++ printExp exp2 indent irMap html comments
-printExp (EGt _ exp1 exp2)        indent irMap html comments = printExp exp1 indent irMap html comments ++ (if html then " &gt; " else " > ") ++ printExp exp2 indent irMap html comments
-printExp (EEq _ exp1 exp2)        indent irMap html comments = printExp exp1 indent irMap html comments ++ " = " ++ printExp exp2 indent irMap html comments
-printExp (ELte _ exp1 exp2)       indent irMap html comments = printExp exp1 indent irMap html comments ++ (if html then " &lt;= " else " <= ") ++ printExp exp2 indent irMap html comments
-printExp (EGte _ exp1 exp2)       indent irMap html comments = printExp exp1 indent irMap html comments ++ (if html then " &gt;= " else " >= ") ++ printExp exp2 indent irMap html comments
-printExp (EIn _ exp1 exp2)        indent irMap html comments = printExp exp1 indent irMap html comments ++ " in " ++ printExp exp2 indent irMap html comments
-printExp (ENin _ exp1 exp2)       indent irMap html comments = printExp exp1 indent irMap html comments ++ " not in " ++ printExp exp2 indent irMap html comments
-printExp (EAdd _ exp1 exp2)       indent irMap html comments = printExp exp1 indent irMap html comments ++ " + " ++ printExp exp2 indent irMap html comments
-printExp (ESub _ exp1 exp2)       indent irMap html comments = printExp exp1 indent irMap html comments ++ " - " ++ printExp exp2 indent irMap html comments
-printExp (EMul _ exp1 exp2)       indent irMap html comments = printExp exp1 indent irMap html comments ++ " * " ++ printExp exp2 indent irMap html comments
-printExp (EDiv _ exp1 exp2)       indent irMap html comments = printExp exp1 indent irMap html comments ++ (if html then " &#47; " else " / ") ++ printExp exp2 indent irMap html comments
-printExp (ERem _ exp1 exp2)       indent irMap html comments = printExp exp1 indent irMap html comments ++ (if html then " &#37; " else " % ") ++ printExp exp2 indent irMap html comments
-printExp (ESum _ exp')            indent irMap html comments = while html "<span class=\"keyword\">" ++ "sum " ++ while html "</span>" ++ printExp exp' indent irMap html comments
-printExp (EProd _ exp')           indent irMap html comments = while html "<span class=\"keyword\">" ++ "product " ++ while html "</span>" ++ printExp exp' indent irMap html comments
-printExp (ECard _ exp')           indent irMap html comments = "# " ++ printExp exp' indent irMap html comments
-printExp (EMinExp _ exp')         indent irMap html comments = "-" ++ printExp exp' indent irMap html comments
+printExp (TransitionExp _ exp1 (SyncTransArrow _) exp2) indent irMap html comments = printOperand 1 exp1 indent irMap html comments ++ (if html then "<span class=\"tKeyword\"> --&gt;&gt; </span>" else " -->> ") ++ printOperand 0 exp2 indent irMap html comments
+printExp (TransitionExp _ exp1 (NextTransArrow _) exp2) indent irMap html comments = printOperand 1 exp1 indent irMap html comments ++ (if html then "<span class=\"tKeyword\"> --&gt; </span>" else " --> ") ++ printOperand 0 exp2 indent irMap html comments
+printExp (TransitionExp _ exp1 (GuardedSyncTransArrow _ (TransGuard _ guardExp)) exp2) indent irMap html comments = printOperand 1 exp1 indent irMap html comments ++ while html "<span class=\"tKeyword\">" ++ " -[" ++ while html "</span>" ++ printOperand 1 guardExp indent irMap html comments ++ (if html then "<span class=\"tKeyword\">]-&gt;&gt; </span>" else "]->> ")  ++ printOperand 0 exp2 indent irMap html comments
+printExp (TransitionExp _ exp1 (GuardedNextTransArrow _ (TransGuard _ guardExp)) exp2) indent irMap html comments = printOperand 1 exp1 indent irMap html comments ++ while html "<span class=\"tKeyword\">" ++ " -[" ++ while html "</span>" ++ printOperand 1 guardExp indent irMap html comments ++ (if html then "<span class=\"tKeyword\">]-&gt; </span>" else "]-> ") ++ printOperand 0 exp2 indent irMap html comments
+printExp (EDeclAllDisj _ decl exp') indent irMap html comments = "all disj " ++ printDecl decl indent irMap html comments ++ " | " ++ printOperand 1 exp' indent irMap html comments
+printExp (EDeclAll _     decl exp') indent irMap html comments = "all " ++ printDecl decl indent irMap html comments ++ " | " ++ printOperand 1 exp' indent irMap html comments
+printExp (EDeclQuantDisj _ quant' decl exp') indent irMap html comments = printQuant quant' html ++ "disj" ++ printDecl decl indent irMap html comments ++ " | " ++ printOperand 1 exp' indent irMap html comments
+printExp (EDeclQuant _     quant' decl exp') indent irMap html comments = printQuant quant' html ++ printDecl decl indent irMap html comments ++ " | " ++ printOperand 1 exp' indent irMap html comments
+printExp (LetExp _ varBinding exp') indent irMap html comments = while html "<span class=\"keyword\">" ++ "let " ++ while html "</span>" ++ printVarBinding varBinding indent irMap html comments ++ while html "<span class=\"keyword\">" ++ " in " ++ while html "</span>" ++ printOperand 1 exp' indent irMap html comments
+printExp (TmpPatNever _ exp' patternScope)        indent irMap html comments = while html "<span class=\"tKeyword\">" ++ "never " ++ while html "</span>" ++ printOperand 3 exp' indent irMap html comments ++ printPatternScope patternScope indent irMap html comments
+printExp (TmpPatSometime _ exp' patternScope)     indent irMap html comments = while html "<span class=\"tKeyword\">" ++ "sometime " ++ while html "</span>" ++ printOperand 3 exp' indent irMap html comments ++ printPatternScope patternScope indent irMap html comments
+printExp (TmpPatLessOrOnce _ exp' patternScope)   indent irMap html comments = while html "<span class=\"tKeyword\">" ++ "lonce " ++ while html "</span>" ++ printOperand 3 exp' indent irMap html comments ++ printPatternScope patternScope indent irMap html comments
+printExp (TmpPatAlways _ exp' patternScope)       indent irMap html comments = while html "<span class=\"tKeyword\">" ++ "always " ++ while html "</span>" ++ printOperand 3 exp' indent irMap html comments ++ printPatternScope patternScope indent irMap html comments
+printExp (TmpPatPrecede _ exp1 exp2 patternScope) indent irMap html comments = printOperand 3 exp1 indent irMap html comments ++ while html "<span class=\"tKeyword\">" ++ " must precede " ++ while html "</span>" ++ printOperand 3 exp2 indent irMap html comments ++ printPatternScope patternScope indent irMap html comments
+printExp (TmpPatFollow _ exp1 exp2 patternScope)  indent irMap html comments = printOperand 3 exp1 indent irMap html comments ++ while html "<span class=\"tKeyword\">" ++ " must follow " ++ while html "</span>" ++ printOperand 3 exp2 indent irMap html comments ++ printPatternScope patternScope indent irMap html comments
+printExp (TmpInitially _ exp')    indent irMap html comments = while html "<span class=\"tKeyword\">" ++ "initially " ++ while html "</span>" ++ printOperand 3 exp' indent irMap html comments
+printExp (TmpFinally _ exp')      indent irMap html comments = while html "<span class=\"tKeyword\">" ++ "finally " ++ while html "</span>" ++ printOperand 3 exp' indent irMap html comments
+printExp (EGMax _ exp')           indent irMap html comments = "max " ++ printOperand 20 exp' indent irMap html comments
+printExp (EGMin _ exp')           indent irMap html comments = "min " ++ printOperand 20 exp' indent irMap html comments
+printExp (ENeq _ exp1 exp2)       indent irMap html comments = printOperand 15 exp1 indent irMap html comments ++ " != " ++ printOperand 16 exp2 indent irMap html comments
+printExp (EQuantExp _ quant' exp') indent irMap html comments = printQuant quant' html ++ printOperand 20 exp' indent irMap html comments
+printExp (EIff _ exp1 exp2)       indent irMap html comments = printOperand 3 exp1 indent irMap html comments ++ (if html then " &lt;=&gt; " else " <=> ") ++ printOperand 4 exp2 indent irMap html comments
+printExp (EImplies _ exp1 exp2)   indent irMap html comments = printOperand 4 exp1 indent irMap html comments ++ (if html then " =&gt; " else " => ") ++ printOperand 5 exp2 indent irMap html comments
+printExp (EAnd _ exp1 exp2)       indent irMap html comments = printOperand 7 exp1 indent irMap html comments ++ (if html then " &amp;&amp; " else " && ")  ++ printOperand 8 exp2 indent irMap html comments
+printExp (EOr _ exp1 exp2)        indent irMap html comments = printOperand 5 exp1 indent irMap html comments ++ (if html then " &#124;&#124; " else " || ") ++ printOperand 6 exp2 indent irMap html comments
+printExp (EXor _ exp1 exp2)       indent irMap html comments = printOperand 6 exp1 indent irMap html comments ++ " xor " ++ printOperand 7 exp2 indent irMap html comments
+printExp (LtlU _ exp1 exp2)       indent irMap html comments = printOperand 8 exp1 indent irMap html comments ++ " U " ++ printOperand 9 exp2 indent irMap html comments
+printExp (TmpUntil _ exp1 exp2)   indent irMap html comments = printOperand 8 exp1 indent irMap html comments ++ while html "<span class=\"tKeyword\">" ++ " until " ++ while html "</span>" ++ printOperand 9 exp2 indent irMap html comments
+printExp (LtlW _ exp1 exp2)       indent irMap html comments = printOperand 9 exp1 indent irMap html comments ++ " W " ++ printOperand 10 exp2 indent irMap html comments
+printExp (TmpWUntil _ exp1 exp2)  indent irMap html comments = printOperand 9 exp1 indent irMap html comments ++ while html "<span class=\"tKeyword\">" ++ " weakuntil " ++ while html "</span>" ++ printOperand 10 exp2 indent irMap html comments
+printExp (LtlF _ exp')            indent irMap html comments = "F " ++ printOperand 10 exp' indent irMap html comments
+printExp (TmpEventually _ exp')   indent irMap html comments = while html "<span class=\"tKeyword\">" ++ "eventually " ++ while html "</span>" ++ printOperand 10 exp' indent irMap html comments
+printExp (LtlG _ exp')            indent irMap html comments = "G " ++ printOperand 10 exp' indent irMap html comments
+printExp (TmpGlobally _ exp')     indent irMap html comments = while html "<span class=\"tKeyword\">" ++ "globally " ++ while html "</span>" ++ printOperand 10 exp' indent irMap html comments
+printExp (LtlX _ exp')            indent irMap html comments = "X " ++ printOperand 10 exp' indent irMap html comments
+printExp (TmpNext _ exp')         indent irMap html comments = while html "<span class=\"tKeyword\">" ++ "next " ++ while html "</span>" ++ printOperand 10 exp' indent irMap html comments
+printExp (ENeg _ exp')            indent irMap html comments = " ! " ++ printOperand 11 exp' indent irMap html comments
+printExp (ELt _ exp1 exp2)        indent irMap html comments = printOperand 15 exp1 indent irMap html comments ++ (if html then " &lt; " else " < ") ++ printOperand 16 exp2 indent irMap html comments
+printExp (EGt _ exp1 exp2)        indent irMap html comments = printOperand 15 exp1 indent irMap html comments ++ (if html then " &gt; " else " > ") ++ printOperand 16 exp2 indent irMap html comments
+printExp (EEq _ exp1 exp2)        indent irMap html comments = printOperand 15 exp1 indent irMap html comments ++ " = " ++ printOperand 16 exp2 indent irMap html comments
+printExp (ELte _ exp1 exp2)       indent irMap html comments = printOperand 15 exp1 indent irMap html comments ++ (if html then " &lt;= " else " <= ") ++ printOperand 16 exp2 indent irMap html comments
+printExp (EGte _ exp1 exp2)       indent irMap html comments = printOperand 15 exp1 indent irMap html comments ++ (if html then " &gt;= " else " >= ") ++ printOperand 16 exp2 indent irMap html comments
+printExp (EIn _ exp1 exp2)        indent irMap html comments = printOperand 15 exp1 indent irMap html comments ++ " in " ++ printOperand 16 exp2 indent irMap html comments
+printExp (ENin _ exp1 exp2)       indent irMap html comments = printOperand 15 exp1 indent irMap html comments ++ " not in " ++ printOperand 16 exp2 indent irMap html comments
+printExp (EAdd _ exp1 exp2)       indent irMap html comments = printOperand 17 exp1 indent irMap html comments ++ " + " ++ printOperand 18 exp2 indent irMap html comments
+printExp (ESub _ exp1 exp2)       indent irMap html comments = printOperand 17 exp1 indent irMap html comments ++ " - " ++ printOperand 18 exp2 indent irMap html comments
+printExp (EMul _ exp1 exp2)       indent irMap html comments = printOperand 18 exp1 indent irMap html comments ++ " * " ++ printOperand 19 exp2 indent irMap html comments
+printExp (EDiv _ exp1 exp2)       indent irMap html comments = printOperand 18 exp1 indent irMap html comments ++ (if html then " &#47; " else " / ") ++ printOperand 19 exp2 indent irMap html comments
+printExp (ERem _ exp1 exp2)       indent irMap html comments = printOperand 18 exp1 indent irMap html comments ++ (if html then " &#37; " else " % ") ++ printOperand 19 exp2 indent irMap html comments
+printExp (ESum _ exp')            indent irMap html comments = while html "<span class=\"keyword\">" ++ "sum " ++ while html "</span>" ++ printOperand 21 exp' indent irMap html comments
+printExp (EProd _ exp')           indent irMap html comments = while html "<span class=\"keyword\">" ++ "product " ++ while html "</span>" ++ printOperand 21 exp' indent irMap html comments
+printExp (ECard _ exp')           indent irMap html comments = "# " ++ printOperand 21 exp' indent irMap html comments
+printExp (EMinExp _ exp')         indent irMap html comments = "-" ++ printOperand 21 exp' indent irMap html comments
 printExp (EImpliesElse _ exp1 exp2 exp'3) indent irMap html comments
     = while html "<span class=\"keyword\">" ++ "if " ++ while html "</span>"
-    ++ printExp exp1 indent irMap html comments
+    ++ printOperand 1 exp1 indent irMap html comments
     ++ while html "<span class=\"keyword\">" ++ " then " ++ while html "</span>"
-    ++ printExp exp2 indent irMap html comments
+    ++ printOperand 1 exp2 indent irMap html comments
     ++ while html "<span class=\"keyword\">" ++ " else " ++ while html "</span>"
-    ++ printExp exp'3 indent irMap html comments
+    ++ printOperand 1 exp'3 indent irMap html comments
 printExp (ClaferId _ name)           indent irMap html comments = printName name indent irMap html comments
-printExp (EUnion _ set1 set2)        indent irMap html comments = printExp set1 indent irMap html comments ++ "++" ++ printExp set2 indent irMap html comments
-printExp (EUnionCom _ set1 set2)     indent irMap html comments = printExp set1 indent irMap html comments ++ ", " ++ printExp set2 indent irMap html comments
-printExp (EDifference _ set1 set2)   indent irMap html comments = printExp set1 indent irMap html comments ++ "--" ++ printExp set2 indent irMap html comments
-printExp (EIntersection _ set1 set2) indent irMap html comments = printExp set1 indent irMap html comments ++ "**" ++ printExp set2 indent irMap html comments
-printExp (EIntersectionDeprecated _ set1 set2) indent irMap html comments = printExp set1 indent irMap html comments ++ printDeprecated "&amp;" "Use `**` instead." html ++ printExp set2 indent irMap html comments
-printExp (EDomain _ set1 set2) indent irMap html comments = printExp set1 indent irMap html comments ++ "<:" ++ printExp set2 indent irMap html comments
-printExp (ERange _ set1 set2)  indent irMap html comments = printExp set1 indent irMap html comments ++ ":>" ++ printExp set2 indent irMap html comments
-printExp (EJoin _ set1 set2)   indent irMap html comments = printExp set1 indent irMap html comments ++ "." ++ printExp set2 indent irMap html comments
+printExp (EUnion _ set1 set2)        indent irMap html comments = printOperand 23 set1 indent irMap html comments ++ "++" ++ printOperand 24 set2 indent irMap html comments
+printExp (EUnionCom _ set1 set2)     indent irMap html comments = printOperand 23 set1 indent irMap html comments ++ ", " ++ printOperand 24 set2 indent irMap html comments
+printExp (EDifference _ set1 set2)   indent irMap html comments = printOperand 24 set1 indent irMap html comments ++ "--" ++ printOperand 25 set2 indent irMap html comments
+printExp (EIntersection _ set1 set2) indent irMap html comments = printOperand 25 set1 indent irMap html comments ++ "**" ++ printOperand 26 set2 indent irMap html comments
+printExp (EIntersectionDeprecated _ set1 set2) indent irMap html comments = printOperand 26 set1 indent irMap html comments ++ printDeprecated "&amp;" "Use `**` instead." html ++ printOperand 27 set2 indent irMap html comments
+printExp (EDomain _ set1 set2) indent irMap html comments = printOperand 21 set1 indent irMap html comments ++ "<:" ++ printOperand 22 set2 indent irMap html comments
+printExp (ERange _ set1 set2)  indent irMap html comments = printOperand 22 set1 indent irMap html comments ++ ":>" ++ printOperand 23 set2 indent irMap html comments
+printExp (EJoin _ set1 set2)   indent irMap html comments = printOperand 26 set1 indent irMap html comments ++ "." ++ printOperand 27 set2 indent irMap html comments
 printExp (EInt _ (PosInteger (_, num))) _ _ _ _ = num
 printExp (EDouble _ (PosDouble (_, num))) _ _ _ _ = num
 printExp (EReal _ (PosReal (_, num))) _ _ _ _ = num
 printExp (EStr _ (PosString (_, str))) _ _ _ _ = str
 
+-- | Prints an operand at the precedence level that the grammar (src/clafer.cf) requires
+--   there, in parentheses when its operator binds less tightly, e.g., X (a || b)
+printOperand :: Int -> Exp -> Int -> Map.Map Span [Ir] -> Bool -> [(Span, String)] -> String
+printOperand level exp' indent irMap html comments
+  | expPrec exp' < level = "(" ++ printExp exp' indent irMap html comments ++ ")"
+  | otherwise            = printExp exp' indent irMap html comments
+
+-- | The precedence level of an expression in the grammar, as in Front/PrintClafer.hs
+expPrec :: Exp -> Int
+expPrec exp' = case exp' of
+  TransitionExp{}           -> 0
+  EDeclAllDisj{}            -> 1
+  EDeclAll{}                -> 1
+  EDeclQuantDisj{}          -> 1
+  EDeclQuant{}              -> 1
+  EImpliesElse{}            -> 1
+  LetExp{}                  -> 1
+  TmpPatNever{}             -> 2
+  TmpPatSometime{}          -> 2
+  TmpPatLessOrOnce{}        -> 2
+  TmpPatAlways{}            -> 2
+  TmpPatPrecede{}           -> 2
+  TmpPatFollow{}            -> 2
+  TmpInitially{}            -> 2
+  TmpFinally{}              -> 2
+  EIff{}                    -> 3
+  EImplies{}                -> 4
+  EOr{}                     -> 5
+  EXor{}                    -> 6
+  EAnd{}                    -> 7
+  LtlU{}                    -> 8
+  TmpUntil{}                -> 8
+  LtlW{}                    -> 9
+  TmpWUntil{}               -> 9
+  LtlF{}                    -> 10
+  TmpEventually{}           -> 10
+  LtlG{}                    -> 10
+  TmpGlobally{}             -> 10
+  LtlX{}                    -> 10
+  TmpNext{}                 -> 10
+  ENeg{}                    -> 11
+  ELt{}                     -> 15
+  EGt{}                     -> 15
+  EEq{}                     -> 15
+  ELte{}                    -> 15
+  EGte{}                    -> 15
+  ENeq{}                    -> 15
+  EIn{}                     -> 15
+  ENin{}                    -> 15
+  EQuantExp{}               -> 16
+  EAdd{}                    -> 17
+  ESub{}                    -> 17
+  EMul{}                    -> 18
+  EDiv{}                    -> 18
+  ERem{}                    -> 18
+  EGMax{}                   -> 19
+  EGMin{}                   -> 19
+  ESum{}                    -> 20
+  EProd{}                   -> 20
+  ECard{}                   -> 20
+  EMinExp{}                 -> 20
+  EDomain{}                 -> 21
+  ERange{}                  -> 22
+  EUnion{}                  -> 23
+  EUnionCom{}               -> 23
+  EDifference{}             -> 24
+  EIntersection{}           -> 25
+  EIntersectionDeprecated{} -> 26
+  EJoin{}                   -> 26
+  ClaferId{}                -> 27
+  EInt{}                    -> 27
+  EDouble{}                 -> 27
+  EReal{}                   -> 27
+  EStr{}                    -> 27
+
 printPatternScope :: PatternScope -> Int -> Map.Map Span [Ir] -> Bool -> [(Span, String)] -> String
-printPatternScope (PatScopeBefore _ exp')          indent irMap html comments = while html "<span class=\"tKeyword\">" ++ " before " ++ while html "</span>" ++ (printExp exp' indent irMap html comments)
-printPatternScope (PatScopeAfter _ exp')           indent irMap html comments = while html "<span class=\"tKeyword\">" ++ " after " ++ while html "</span>" ++ (printExp exp' indent irMap html comments)
-printPatternScope (PatScopeBetweenAnd _ exp1 exp2) indent irMap html comments = while html "<span class=\"tKeyword\">" ++ " between " ++ while html "</span>" ++ printExp exp1 indent irMap html comments ++ while html "<span class=\"tKeyword\">" ++ " and " ++ while html "</span>" ++ printExp exp2 indent irMap html comments
-printPatternScope (PatScopeAfterUntil _ exp1 exp2) indent irMap html comments = while html "<span class=\"tKeyword\">" ++ " after " ++ while html "</span>" ++ printExp exp1 indent irMap html comments ++ while html "<span class=\"tKeyword\">" ++ " until " ++ while html "</span>" ++ printExp exp2 indent irMap html comments
+printPatternScope (PatScopeBefore _ exp')          indent irMap html comments = while html "<span class=\"tKeyword\">" ++ " before " ++ while html "</span>" ++ (printOperand 11 exp' indent irMap html comments)
+printPatternScope (PatScopeAfter _ exp')           indent irMap html comments = while html "<span class=\"tKeyword\">" ++ " after " ++ while html "</span>" ++ (printOperand 11 exp' indent irMap html comments)
+printPatternScope (PatScopeBetweenAnd _ exp1 exp2) indent irMap html comments = while html "<span class=\"tKeyword\">" ++ " between " ++ while html "</span>" ++ printOperand 11 exp1 indent irMap html comments ++ while html "<span class=\"tKeyword\">" ++ " and " ++ while html "</span>" ++ printOperand 11 exp2 indent irMap html comments
+printPatternScope (PatScopeAfterUntil _ exp1 exp2) indent irMap html comments = while html "<span class=\"tKeyword\">" ++ " after " ++ while html "</span>" ++ printOperand 11 exp1 indent irMap html comments ++ while html "<span class=\"tKeyword\">" ++ " until " ++ while html "</span>" ++ printOperand 11 exp2 indent irMap html comments
 printPatternScope _                           _      _     _    _        = ""
 
 printQuant :: Quant -> Bool -> String

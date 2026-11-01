@@ -56,7 +56,7 @@ The only mandatory part of clafer declaration is `<name>`:.
 
 `<clafer>`:
 ```
-<abstract?> <group cardinality?> <name> <super?> <reference?> <multiplicity?> <initializer?>
+<abstract?> <temporal modifier*> <group cardinality?> <name> <super?> <reference?> <multiplicity?> <initializer?> <transition?>
     <elements*>
 ```
 
@@ -199,6 +199,10 @@ Constraints are used for instance generation.
 
 An assertion is a boolean expression that we are checking whether it is true for all instances of the model.
 A failed assertion means there exists an instance for which the boolean expression is not true.
+An assertion can be nested in a clafer; it then holds for each of its instances.
+To check the assertions of a model, use the command `check` of claferIG or the button Check of ClaferIDE.
+Each failed assertion gives a counterexample.
+The check is bounded: no counterexample means that the assertion holds within the scopes and the maximum trace length, not in general.
 
 ```
 assert [ <boolean expression> ]
@@ -373,6 +377,145 @@ parent
 dref
 ```
 
+## Temporal models
+
+A model with temporal modifiers or operators is dynamic: its instances are traces, sequences of states, each of them an instance of the model.
+A trace is a lasso: after the last state, it loops back to an earlier state and repeats from there forever.
+A clafer can come and go between the states.
+Temporal models are supported by the Alloy backend only.
+
+The behaviour can be written in three styles, which can be mixed.
+For a complete model, see the example `CoffeeMachine.cfr` in ClaferIDE.
+
+### Temporal modifiers
+
+`initial` means that the clafer is present in the first state of its parent.
+`final` means that the clafer, and its reference, do not change during a trace. Another trace can have other values, so `final` suits the features of a product line.
+`finalref` fixes only the reference of the clafer, and `finaltarget` only the set that it points to.
+
+`<temporal modifier>`:
+```
+initial
+final
+finalref
+finaltarget
+```
+
+### Transitions
+
+A transition is a boolean expression that holds whenever its source does.
+`a --> b` says that from `a` the next state is `b`, and `a -->> b` that `a` lasts until `b`, however long that takes.
+A guard strengthens the source: the transition holds only when the guard also holds.
+
+`<boolean expression>`:
+```
+<boolean expression> --> <boolean expression>          // a => X b
+<boolean expression> -->> <boolean expression>         // a => (this && a) U b
+<boolean expression> -[ <guard> ]-> <boolean expression>    // a && g => X b
+<boolean expression> -[ <guard> ]->> <boolean expression>   // a && g => (this && a) U b
+```
+
+A clafer can declare its own transition, which is a constraint of its parent.
+
+`<transition>`:
+```
+--> <boolean expression>
+-->> <boolean expression>
+-[ <guard> ]-> <boolean expression>
+-[ <guard> ]->> <boolean expression>
+```
+
+`<guard>`:
+```
+<boolean expression>
+```
+
+A chain is a sequence: `a --> b --> c` is `a => X (b && X c)`.
+With `initially`, it is a scenario, which holds once, at the start of the trace.
+
+* A transition says only what happens when it fires: it does not keep the other clafers from changing, and it does not keep the state from changing without it.
+* A clafer has one transition. Give a state more ways out with constraints, e.g., `[ a -[ g ]-> c ]`.
+* The transition of a nested state disappears when its enclosing state is left.
+* A clafer that starts with `xor` cannot follow a transition, because `xor` continues the expression: declare it first, or write the transition as a constraint.
+
+#### Examples
+
+```
+final milk ?
+coin ?
+
+xor machine
+    initial idle -[ coin ]-> brewing
+    brewing -[ milk ]->> frothing
+    [ brewing -[ no milk ]->> ready ]
+    frothing --> ready
+    ready --> idle
+
+[ initially (machine.idle --> machine.brewing) ]
+```
+
+### Temporal logic
+
+A constraint holds in every state by default, as if it started with `G`: its context is present in that state.
+Use `initially` to anchor a constraint to the first state of its context, which at the top level is the start of the trace, so `[ initially (sometime a) ]` means once, whereas `[ sometime a ]` means again and again.
+`finally` anchors a constraint to the last state of its context instance, before it disappears.
+
+Each operator has a symbol and a keyword.
+
+`<boolean expression>`:
+```
+X <boolean expression>                                 // next
+F <boolean expression>                                 // eventually
+G <boolean expression>                                 // globally
+<boolean expression> U <boolean expression>            // until
+<boolean expression> W <boolean expression>            // weakuntil
+next <boolean expression>
+eventually <boolean expression>
+globally <boolean expression>
+<boolean expression> until <boolean expression>
+<boolean expression> weakuntil <boolean expression>
+initially <boolean expression>
+finally <boolean expression>
+```
+
+### Dwyer's patterns
+
+Specification patterns say what must hold in a part of the trace, without temporal operators: they read as requirements.
+A pattern without a scope holds on the whole trace.
+
+`<boolean expression>`:
+```
+never <boolean expression> <pattern scope?>                                    // absence
+sometime <boolean expression> <pattern scope?>                                 // existence
+lonce <boolean expression> <pattern scope?>                                    // at most once
+always <boolean expression> <pattern scope?>                                   // universality
+<boolean expression> must precede <boolean expression> <pattern scope?>        // precedence
+<boolean expression> must follow <boolean expression> <pattern scope?>         // response
+```
+
+`<pattern scope>`:
+```
+before <boolean expression>
+after <boolean expression>
+between <boolean expression> and <boolean expression>
+after <boolean expression> until <boolean expression>
+```
+
+#### Examples
+
+```
+[ never coin between brewing and ready ]
+[ ready must follow coin ]
+```
+
+### Assertions on traces
+
+An assertion must hold for all traces of the model, up to the maximum trace length, and a failed assertion gives a trace as a counterexample when it is checked.
+
+```
+assert [ machine.idle && no coin => X machine.idle ]
+```
+
 ## Escapes
 
 Escapes allow to write fragments of code in the target language of the clafer compiler: Alloy or ChocoSolver.
@@ -493,6 +636,12 @@ The following table provides versions in which support for a given feature was a
 <td><code>decimal</code></td>
 <td>&nbsp;&nbsp;&nbsp;-</td>
 <td>0.5.5</td>
+</tr>
+
+<tr>
+<td>Temporal models</td>
+<td>0.5.6</td>
+<td>&nbsp;&nbsp;&nbsp;-</td>
 </tr>
 
 <tr>

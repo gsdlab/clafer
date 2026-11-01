@@ -5,6 +5,9 @@ a ?
   d ?
   [never d after c ]
 
-// fail as of 0.5.0
-//assert [never a.b.c after a.b.d ]
-//assert [never a.b.d after a.b.c ]
+// The constraint holds while its b exists: b disappears together with a, and when a
+// reappears, the constraint starts again, so these assertions do not hold
+// assert [never a.b.c after a.b.d ]
+// assert [never a.b.d after a.b.c ]
+// While an instance of b exists, its d does not follow its c
+assert [all b1 : a.b | never (b1.c && X b1.d) ]

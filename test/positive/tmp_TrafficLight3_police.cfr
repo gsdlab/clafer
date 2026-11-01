@@ -1,0 +1,9 @@
+//# OPTIONS --import=tmp_TrafficLight3.cfr
+
+// Scenario: the police calls when the light is green
+tl : TrafficLight_3
+    [ initially (green && e_police) ]
+
+// the light reacts to the events: it eventually flashes or is switched off, and blinks
+assert [ (tl.on.normal && e_police) => F (tl.on.flashing || tl.off) ]
+assert [ (tl.on.flashing.yellow_on && e_after_0_5) => F (tl.on.flashing.yellow_off || no tl.on.flashing) ]

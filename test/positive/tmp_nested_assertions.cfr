@@ -1,0 +1,8 @@
+// Nested assertions of a temporal model: for each instance of their clafer in the states in
+// which it exists, and several assertions on a line
+xor s
+    initial a --> b
+    b --> a
+    assert [ a => X b ]  assert [ b => X a ]
+
+assert [ always s ]

@@ -35,9 +35,9 @@ a[href$='Ambiguous name'] {color: yellow}
   <div class="indent">
   <span class="keyword">[</span> <span class="tKeyword">initially </span><a href="#c0_off"><span class="reference">off</span></a> <span class="keyword">]</span></div>
   <div class="indent">
-  <span class="keyword">[</span> G <a href="#c0_on"><span class="reference">on</span></a>.<a href="#c0_normal"><span class="reference">normal</span></a> &amp;&amp; F  ! <a href="#c0_on"><span class="reference">on</span></a> =&gt; F  ! <a href="#c0_on"><span class="reference">on</span></a> W <a href="#c0_on"><span class="reference">on</span></a>.<a href="#c0_normal"><span class="reference">normal</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <a href="#c0_on"><span class="reference">on</span></a>.<a href="#c0_normal"><span class="reference">normal</span></a> &amp;&amp; X  ! <a href="#c0_on"><span class="reference">on</span></a> =&gt; X ( ! <a href="#c0_on"><span class="reference">on</span></a> W <a href="#c0_on"><span class="reference">on</span></a>.<a href="#c0_normal"><span class="reference">normal</span></a>) <span class="keyword">]</span></div>
   <div class="indent">
-  <span class="keyword">[</span> G <a href="#c0_on"><span class="reference">on</span></a>.<a href="#c0_flashing"><span class="reference">flashing</span></a> &amp;&amp; F  ! <a href="#c0_on"><span class="reference">on</span></a> =&gt; F  ! <a href="#c0_on"><span class="reference">on</span></a> W <a href="#c0_on"><span class="reference">on</span></a>.<a href="#c0_flashing"><span class="reference">flashing</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <a href="#c0_on"><span class="reference">on</span></a>.<a href="#c0_flashing"><span class="reference">flashing</span></a> &amp;&amp; X  ! <a href="#c0_on"><span class="reference">on</span></a> =&gt; X ( ! <a href="#c0_on"><span class="reference">on</span></a> W <a href="#c0_on"><span class="reference">on</span></a>.<a href="#c0_flashing"><span class="reference">flashing</span></a>) <span class="keyword">]</span></div>
 </div>
 
 </body>

@@ -10,8 +10,27 @@ xor TrafficLight_4 1
   off
   [initially off]
   // a constraint that 'remembers' that we left from normal
-  [G (on.normal && X !on) => X(!on W on.normal)]  // (*)
+  [ (on.normal && X !on) => X (!on W on.normal) ]  // (*)
   // a constraint that 'remembers' that we left from flashing
-  [G (on.flashing && X !on) => X(!on W on.flashing)]
+  [ (on.flashing && X !on) => X (!on W on.flashing) ]
+  // A nested constraint holds in every state, so it needs no G. With G, the constraint
+  // [G (on.normal && X !on) => X(!on W on.normal)] would mean
+  // [(G (on.normal && X !on)) => X(!on W on.normal)], which holds trivially.
 
+// The constraint pattern is: if you see that we are leaving the
+// superstate, we are only allowing to come back to the same superstate
+// if activating the same substate.  With this encoding I have to repeat
+// this pattern for each subclafer of a history clafer.
 
+// I am not entirely sure how this will work for clafers of higher
+// cardinality (so if on was non-singleton, and if normal/flashing were
+// cardinality higher than 1).  This is quite mind boggling.
+
+// (*)  aggregating these two into a single constraint requires using a
+// reference to store the history. But using a reference requires
+// also encoding the states as references so that equality can be
+// tested. For 'Boolean' (optional) clafers allowing set types would
+// work, which is currently not possible in clafer
+// [ on && (X !on) => let history : (on.normal ++ on.flashing) in X (!on W ) ]
+
+// See tmp_TrafficLightH.cfr for the traffic light of tmp_TrafficLight1.cfr with history.

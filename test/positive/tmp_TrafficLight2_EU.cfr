@@ -1,0 +1,8 @@
+//# OPTIONS --import=tmp_TrafficLight2.cfr
+
+// Scenario: in the EU, the light goes back from yellow to green, and from red through
+// yellow to green
+[ EU ]
+
+tl : TrafficLight_2
+    [ initially (green --> yellow --> green --> yellow --> red --> yellow --> green) ]

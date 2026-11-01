@@ -1,0 +1,7 @@
+//# OPTIONS --import=tmp_TrafficLight1.cfr
+
+// Scenario: the normal cycle, then flashing, then off
+tl : TrafficLight_1
+    [ initially (green --> yellow --> red --> green --> yellow_on --> yellow_off --> off) ]
+// A chain of transitions is a sequence; it desugars to
+//  [ initially (green && X (yellow && X (red && X (green && X (yellow_on && X (yellow_off && X off)))))) ]

@@ -1,0 +1,8 @@
+//# OPTIONS --import=tmp_TrafficLight2.cfr
+
+// Scenario: outside the EU, the light cycles from green through yellow and red; it cannot
+// go back from yellow to green, nor from red to yellow
+[ no EU ]
+
+tl : TrafficLight_2
+    [ initially (green --> yellow --> red --> green) ]

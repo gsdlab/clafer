@@ -6,7 +6,10 @@ final a
   d
   e
   [always c between d and e ]
-  [sometime d]
-  [sometime c]
-  [sometime e]
+  // a nested constraint holds in every state of its context (Juodisius et al. 2019,
+  // section 6.1), so [sometime d] would mean that d happens infinitely often; together
+  // with the between-and scope this is unsatisfiable. initially makes them hold once.
+  [initially (sometime d)]
+  [initially (sometime c)]
+  [initially (sometime e)]
 assert[always c between d and e]

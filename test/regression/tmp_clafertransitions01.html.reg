@@ -32,5 +32,9 @@ a[href$='Ambiguous name'] {color: yellow}
   </div>
 </div>
 
+
+<div>
+<span class="keyword">assert [</span> all b1<span class="keyword"> : </span><a href="#c0_a"><span class="reference">a</span></a>.<a href="#c0_b"><span class="reference">b</span></a> | <a href="#b1"><span class="reference">b1</span></a>.<a href="#c0_c"><span class="reference">c</span></a> =&gt; X (<a href="#b1"><span class="reference">b1</span></a>.<a href="#c0_d"><span class="reference">d</span></a> &#124;&#124; <span class="keyword">no</span> <a href="#b1"><span class="reference">b1</span></a>**<a href="#c0_a"><span class="reference">a</span></a>.<a href="#c0_b"><span class="reference">b</span></a>) <span class="keyword">]</span></div>
+
 </body>
 </html>

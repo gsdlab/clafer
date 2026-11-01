@@ -28,6 +28,7 @@ import Data.Foldable hiding (forM_)
 import Data.Maybe
 import Control.Monad
 import Language.Clafer
+import Language.Clafer.Import (readModel, modelText)
 import Language.ClaferT
 import Test.Tasty
 import Test.Tasty.HUnit
@@ -38,8 +39,13 @@ import Prelude
 tg_Test_Suite_Positive :: TestTree
 tg_Test_Suite_Positive = $(testGroupGenerator)
 
+-- | The models with the models they import (//# OPTIONS --import), compiled together
 positiveClaferModels :: IO [(String, String)]
-positiveClaferModels = getClafers "test/positive"
+positiveClaferModels = do
+    claferModels <- getClafers "test/positive"
+    forM claferModels (\(file', model) -> do
+        modelFiles <- readModel defaultClaferArgs{file = "test/positive/" ++ file'}
+        return (file', either (const model) (modelText . snd) modelFiles))
 
 case_compileTest :: Assertion
 case_compileTest = do
@@ -81,3 +87,23 @@ case_stringEqual :: Assertion
 case_stringEqual = do
     let strMap = stringMap $ fromJust $ Map.lookup Alloy $ fromRight $ compileOneFragment defaultClaferArgs "A\n    text1 -> string = \"some text\"\n    text2 -> string = \"some text\""
     (Map.size strMap) == 1 @? "Error: same string assigned to differnet numbers!"
+
+-- | In a dynamic model, an enumeration and its literals are final (#92); in a static
+--   model, they are not, so that the enumeration does not make the model dynamic.
+case_enumFinalInDynamicModel :: Assertion
+case_enumFinalInDynamicModel = do
+    let
+        enumeration = "enum UserRequest = stop | up | down\nElevator\n    request -> UserRequest\n"
+        dynamicModel = enumeration ++ "    [ initially request = stop ]\n"
+        staticModel = enumeration ++ "    [ request = stop ]\n"
+        finality model = case Map.lookup Alloy $ fromRight $ compileOneFragment defaultClaferArgs model of
+            Just CompilerResult{claferEnv = ClaferEnv{cIr = Just (iMod, _, _)}} -> foldMapIR enumFinality iMod
+            _ -> []
+        enumFinality (IRClafer c) | _ident c `elem` ["UserRequest", "stop", "up", "down"] = [(_ident c, _isFinal c)]
+        enumFinality _ = []
+    map fst (finality dynamicModel) == ["UserRequest", "stop", "up", "down"]
+        @? "The enumeration is missing from the IR: " ++ show (finality dynamicModel)
+    all snd (finality dynamicModel)
+        @? "The enumeration is not final in a dynamic model: " ++ show (finality dynamicModel)
+    not (any snd (finality staticModel))
+        @? "The enumeration is final in a static model: " ++ show (finality staticModel)

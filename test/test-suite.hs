@@ -99,6 +99,16 @@ case_FQMapLookup = do
     null (getUIDs qNameMaps "x") @? "UID for `x` different from []"
     null (getUIDs qNameMaps "::x") @? "UID for `::x` different from []"
 
+-- | A name that is a prefix of another name does not match it
+case_QNamesWholeNames :: Assertion
+case_QNamesWholeNames = do
+    let
+        (Just (iModule, _, _)) = cIr $ claferEnv $ fromJust $ Map.lookup Alloy $ fromRight $ compileOneFragment defaultClaferArgs "light\n    yellow\n    yellow_on\n"
+        qNameMaps = deriveQNameMaps iModule
+    [ "c0_yellow" ] == getUIDs qNameMaps "yellow"  @? "UIDs for `yellow`: " ++ show (getUIDs qNameMaps "yellow")
+    [ "c0_yellow" ] == getUIDs qNameMaps "light::yellow"  @? "UIDs for `light::yellow`: " ++ show (getUIDs qNameMaps "light::yellow")
+    Just "yellow" == getLPQName qNameMaps "c0_yellow"  @? "LPQ name of `c0_yellow`: " ++ show (getLPQName qNameMaps "c0_yellow")
+
 case_AllClafersGenerics :: Assertion
 case_AllClafersGenerics = do
     let

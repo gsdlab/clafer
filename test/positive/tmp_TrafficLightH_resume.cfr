@@ -1,0 +1,7 @@
+//# OPTIONS --import=tmp_TrafficLightH.cfr
+
+// Scenario: the light flashes, is switched off, and continues flashing
+tl : TrafficLight_H
+    // the first state of a chain is a condition, so the scenario states it
+    [ initially green ]
+    [ initially (green --> yellow_on --> off --> yellow_on) ]

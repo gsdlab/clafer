@@ -1,0 +1,28 @@
+// A proposal of syntactic sugar for history: the keyword history, which is not implemented.
+//
+// xor TrafficLight 1
+//   history xor on
+//     initial normal
+//     flashing
+//   initial off
+//
+// would expand to
+//
+// xor TrafficLight 1
+//   xor on
+//     initial normal
+//     flashing
+//   initial off
+//   [ (on.normal && X !on) => X (!on W on.normal) ]
+//   [ (on.flashing && X !on) => X (!on W on.flashing) ]
+//
+// so a constraint is generated for each subclafer of a history clafer,
+// and placed at the parent of the history clafer (so at the
+// same nesting level as the history clafer itself), as in tmp_trafficLight_history.cfr
+// and tmp_TrafficLightH.cfr.
+
+xor TrafficLight_5 1
+  /*history*/ xor on
+    normal
+    flashing
+  /*history*/ off

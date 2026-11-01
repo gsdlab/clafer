@@ -31,18 +31,26 @@ import Language.Clafer.Common
 import Language.Clafer.Front.AbsClafer as AbsClafer
 import Language.Clafer.Intermediate.Intclafer as IntClafer
 
--- | Transform the AST into the intermediate representation (IR)
+-- | Transform the AST into the intermediate representation (IR). In a dynamic model, the
+--   enumerations are final, so that their literals do not change over time.
 desugarModule :: Maybe String -> Module -> IModule
-desugarModule mURL (Module _ declarations) = IModule
-  (fromMaybe "" mURL)
-  (declarations >>= desugarEnums >>= desugarDeclaration)
+desugarModule mURL (Module _ declarations) = if isDynamicModule staticModule
+  then desugarWith True
+  else staticModule
+  where
+    -- the non-final enumerations do not make a model dynamic
+    staticModule = desugarWith False
+    desugarWith finalEnums = IModule
+      (fromMaybe "" mURL)
+      (declarations >>= desugarEnums finalEnums >>= desugarDeclaration)
 
 sugarModule :: IModule -> Module
 sugarModule x = Module noSpan $ map sugarDeclaration $ _mDecls x -- (fragments x >>= mDecls)
 
--- | desugars enumeration to abstract and global singleton features
-desugarEnums :: Declaration -> [Declaration]
-desugarEnums (EnumDecl (Span p1 p2) id' enumids) = absEnum : map mkEnum enumids
+-- | desugars enumeration to abstract and global singleton features; the abstract clafer is
+--   final if requested, and its literals inherit the finality
+desugarEnums :: Bool -> Declaration -> [Declaration]
+desugarEnums finalEnum (EnumDecl (Span p1 p2) id' enumids) = absEnum : map mkEnum enumids
     where
     p2' = case enumids of
       -- the abstract enum clafer should end before the first literal begins
@@ -55,12 +63,12 @@ desugarEnums (EnumDecl (Span p1 p2) id' enumids) = absEnum : map mkEnum enumids
       in
         ElementDecl s1 $
           Subclafer s1 $
-            Clafer s1 (Abstract s1) [] (GCardEmpty s1) id' (SuperEmpty s1) (ReferenceEmpty s1) (CardEmpty s1) (InitEmpty s1) (TransitionEmpty s1) (ElementsList s1 [])
+            Clafer s1 (Abstract s1) [ Final s1 | finalEnum ] (GCardEmpty s1) id' (SuperEmpty s1) (ReferenceEmpty s1) (CardEmpty s1) (InitEmpty s1) (TransitionEmpty s1) (ElementsList s1 [])
     mkEnum (EnumIdIdent s2 eId) = -- each concrete clafer must fit within the original span of the literal
       ElementDecl s2 $
         Subclafer s2 $
           Clafer s2 (AbstractEmpty s2) [] (GCardEmpty s2) eId ((SuperSome s2) (ClaferId s2 $ Path s2 [ModIdIdent s2 id'])) (ReferenceEmpty s2) (oneToOne (0, 0)) (InitEmpty s2) (TransitionEmpty s2) (ElementsList s2 [])
-desugarEnums x = [x]
+desugarEnums _ x = [x]
 
 
 desugarDeclaration :: Declaration -> [IElement]
@@ -124,9 +132,12 @@ desugarClafer' claf'@(Clafer s' abstract' tmods' gcrd' id' super' reference' crd
                           (desugarCard crd') (0, -1)
                           elements'')]
   ++ (desugarInit id' init')
+  -- the transition of a clafer is a constraint in its parent's context, so it lasts as long
+  -- as the parent, e.g., `on --> off` takes the traffic light from on to off
+  ++ (desugarClaferTrans claf')
   where
     iClaferModifiers = desugarModifiers abstract' tmods'
-    elements'' = (desugarClaferTrans claf') ++ (desugarElements elements')
+    elements'' = desugarElements elements'
 
 desugarModifiers :: Abstract -> [TempModifier] -> IClaferModifiers
 desugarModifiers    abstract'    tmods           =
@@ -190,17 +201,43 @@ desugarClaferTrans :: Clafer -> [IElement]
 desugarClaferTrans (Clafer _ _ _ _ name _ _ _ _ trans _) =
   case trans of
       TransitionEmpty _ -> []
-      Transition s arrow e -> [IEConstraint True (desugarTrans s (mkClaferIdExp s $ transIdent name) arrow e)]
+      -- the constraint spans the clafer's name and its transition, e.g., green --> yellow
+      Transition s arrow e -> let s' = getSpan name >- s in [IEConstraint True (desugarTrans s' (mkClaferIdExp s' $ transIdent name) arrow e)]
 
 desugarTrans :: Span -> Exp -> TransArrow -> Exp -> PExp
 desugarTrans s e1 arrow e2 = desugarExp $ desugarTrans' s e1 arrow e2
 
+-- | The transitions as in Juodisius et al., Clafer: Lightweight Modeling of Structure,
+--   Behaviour, and Variability (2019), section 6.1: if the precondition holds in a state,
+--   the postcondition holds in the next state (-->), or the precondition and the context
+--   instance last until the postcondition holds (-->>); a guard strengthens the precondition.
+--
+--   Change: a chain of transitions is a sequence, e.g., a scenario
+--   @[ initially (green --> yellow --> red) ]@; only its first precondition is a condition,
+--   so @a --> b --> c@ is @a => X (b && X c)@, not @a => X (b => X c)@.
 desugarTrans' :: Span -> Exp -> TransArrow -> Exp -> Exp
-desugarTrans' s e1 arrow e2 =  case arrow of
-      SyncTransArrow _ -> LtlU s e1 e2
-      GuardedSyncTransArrow _ (TransGuard _ guardExp) -> EImplies s guardExp (LtlU s e1 e2)
-      NextTransArrow _ -> EAnd s e1 (LtlX s e2)
-      GuardedNextTransArrow _ (TransGuard _ guardExp) -> EImplies s guardExp (EAnd s e1 (LtlX s e2))
+desugarTrans' s e1 arrow e2 = EImplies s (precondition s e1 arrow) (step s e1 arrow $ desugarSequence e2)
+
+-- | The rest of a chain of transitions: the states follow each other.
+desugarSequence :: Exp -> Exp
+desugarSequence (TransitionExp s e1 arrow e2) = EAnd s (precondition s e1 arrow) (step s e1 arrow $ desugarSequence e2)
+desugarSequence e = e
+
+precondition :: Span -> Exp -> TransArrow -> Exp
+precondition s e1 arrow = case arrow of
+      GuardedSyncTransArrow _ (TransGuard _ guardExp) -> EAnd s e1 guardExp
+      GuardedNextTransArrow _ (TransGuard _ guardExp) -> EAnd s e1 guardExp
+      _ -> e1
+
+-- | The step from the source @e1@ to the target @e2@.
+step :: Span -> Exp -> TransArrow -> Exp -> Exp
+step s e1 arrow e2 = case arrow of
+      SyncTransArrow _ -> multiStep
+      GuardedSyncTransArrow _ _ -> multiStep
+      NextTransArrow _ -> LtlX s e2
+      GuardedNextTransArrow _ _ -> LtlX s e2
+  where
+    multiStep = LtlU s (EAnd s (mkClaferIdExp s "this") e1) e2
 
 
 desugarFinality :: [TempModifier] -> Bool

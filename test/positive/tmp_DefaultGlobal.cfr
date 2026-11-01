@@ -1,6 +1,6 @@
 // behavioral clafer test for default globally or G
-// incorrectly desugars to [some this . c0_b . c0_c]
-// correct desugaring:[globally (this . c0_b => this . c0_b . c0_c) ].
+// [c] is resolved to [some this . c0_b . c0_c] and holds in every state of a,
+// so b and c always exist
 
 
 a
@@ -8,5 +8,4 @@ a
     c ?
   [c]
 
-// fails as of 0.5.0
-// assert[never (a.b && not a.b.c) ]
+assert[never (a.b && not a.b.c) ]

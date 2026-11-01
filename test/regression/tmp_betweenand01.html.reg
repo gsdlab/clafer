@@ -34,11 +34,11 @@ a[href$='Ambiguous name'] {color: yellow}
     <div class="indent">
     <span class="keyword">[</span> <span class="tKeyword">always </span><a href="#c0_c"><span class="reference">c</span></a><span class="tKeyword"> between </span><a href="#c0_d"><span class="reference">d</span></a><span class="tKeyword"> and </span><a href="#c0_e"><span class="reference">e</span></a> <span class="keyword">]</span></div>
     <div class="indent">
-    <span class="keyword">[</span> <span class="tKeyword">sometime </span><a href="#c0_d"><span class="reference">d</span></a> <span class="keyword">]</span></div>
+    <span class="keyword">[</span> <span class="tKeyword">initially </span>(<span class="tKeyword">sometime </span><a href="#c0_d"><span class="reference">d</span></a>) <span class="keyword">]</span></div>
     <div class="indent">
-    <span class="keyword">[</span> <span class="tKeyword">sometime </span><a href="#c0_c"><span class="reference">c</span></a> <span class="keyword">]</span></div>
+    <span class="keyword">[</span> <span class="tKeyword">initially </span>(<span class="tKeyword">sometime </span><a href="#c0_c"><span class="reference">c</span></a>) <span class="keyword">]</span></div>
     <div class="indent">
-    <span class="keyword">[</span> <span class="tKeyword">sometime </span><a href="#c0_e"><span class="reference">e</span></a> <span class="keyword">]</span></div>
+    <span class="keyword">[</span> <span class="tKeyword">initially </span>(<span class="tKeyword">sometime </span><a href="#c0_e"><span class="reference">e</span></a>) <span class="keyword">]</span></div>
   </div>
 </div>
 

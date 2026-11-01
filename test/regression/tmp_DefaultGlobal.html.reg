@@ -32,5 +32,9 @@ a[href$='Ambiguous name'] {color: yellow}
   <span class="keyword">[</span> <a href="#c0_c"><span class="reference">c</span></a> <span class="keyword">]</span></div>
 </div>
 
+
+<div>
+<span class="keyword">assert [</span> <span class="tKeyword">never </span><a href="#c0_a"><span class="reference">a</span></a>.<a href="#c0_b"><span class="reference">b</span></a> &amp;&amp; <span class="keyword">not</span> <a href="#c0_a"><span class="reference">a</span></a>.<a href="#c0_b"><span class="reference">b</span></a>.<a href="#c0_c"><span class="reference">c</span></a> <span class="keyword">]</span></div>
+
 </body>
 </html>

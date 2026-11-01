@@ -93,6 +93,10 @@ instance ToJSON Pos where
     | p == noPos = Null
     | otherwise  = object [ "line" .= line', "column" .= column' ]
 
+-- | The name of an assertion in the Alloy output: its position, since a line can have several assertions.
+assertionName :: PExp -> String
+assertionName PExp{_inPos = Span (Pos line column) _} = "assertAt_" ++ show line ++ "_" ++ show column
+
 -- | Clafer has a list of fields that specify its properties. Some fields, marked as (o) are for generating optimized code
 data IClafer
   = IClafer
