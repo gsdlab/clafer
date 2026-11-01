@@ -1,0 +1,12 @@
+// Nested assertions, for each instance of their clafer, and several assertions on a line
+a ?
+b ?
+assert [ a => a ]  assert [ b => b ]
+
+abstract P
+    age -> integer
+    [ age >= 0 ]
+    assert [ age >= 0 ]
+
+x : P
+    assert [ age >= 0 ]

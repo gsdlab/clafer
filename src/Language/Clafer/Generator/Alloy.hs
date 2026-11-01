@@ -34,6 +34,7 @@ import Language.Clafer.Common
 import Language.Clafer.ClaferArgs
 import Language.Clafer.Front.AbsClafer
 import Language.Clafer.Front.LexClafer
+import Language.Clafer.Generator.AlloyLtl (bindSelf, selfIdent)
 import Language.Clafer.Generator.Concat
 import Language.Clafer.Intermediate.Intclafer hiding (exp)
 
@@ -90,7 +91,7 @@ mkFact x@(CString "") = x
 mkFact xs = cconcat [CString "fact ", mkSet xs, CString "\n"]
 
 genAssertName :: PExp -> Concat
-genAssertName    PExp{_inPos=(Span _ (Pos line _))} = CString $ "assertOnLine_" ++ show line
+genAssertName = CString . assertionName
 
 mkAssert :: GenEnv -> Concat -> Concat        -> Concat
 mkAssert    _         _         x@(CString "") = x
@@ -130,7 +131,14 @@ genClafer genEnv resPath clafer'
     )
   +++ CString "\n"
   +++ children'
+  +++ assertions
   where
+  -- this is a keyword that only signature facts bind, so an assertion names the instance
+  assertions = cconcat
+    [ mkAssert genEnv (genAssertName pexp) $ cconcat
+        [ CString $ "all " ++ selfIdent ++ " : " ++ _uid clafer' ++ " | "
+        , bindSelf $ genPExp genEnv (_uid clafer' : resPath) pexp ]
+    | IEConstraint False pexp <- _elements clafer' ]
   children' = cconcat $ filterNull $ map
              (genClafer genEnv ((_uid clafer') : resPath)) $
              getSubclafers $ _elements clafer'
@@ -238,7 +246,7 @@ of Connection are nested under all Systems anyway.
   constraints = concatMap genConst $ _elements c
   genConst x = case x of
     IEConstraint True pexp  -> [ genPExp genEnv (_uid c : resPath) pexp ]
-    IEConstraint False pexp  -> [ CString "// Assertion " +++ (genAssertName pexp) +++ CString " ignored since nested assertions are not supported in Alloy.\n"]
+    IEConstraint False _  -> [] -- an assertion follows the signature, see genClafer
     IEClafer c' ->
         (if genCardCrude (_card c') `elem` ["one", "lone", "some"]
          then CString ""

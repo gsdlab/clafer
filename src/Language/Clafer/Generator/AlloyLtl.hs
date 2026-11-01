@@ -48,7 +48,7 @@
      * @initially@ and @finally@ refer to the first and the last snapshot of the context
        instance's lifetime.
 -}
-module Language.Clafer.Generator.AlloyLtl (genAlloyLtlModule) where
+module Language.Clafer.Generator.AlloyLtl (genAlloyLtlModule, bindSelf, selfIdent) where
 
 import Control.Monad.State
 import Data.Char (isAlphaNum)
@@ -193,7 +193,7 @@ genClafer genEnv c = cunlines (filterNull
   , if isRoot c then CString "" else aliveFun
   , mkFact $ cintercalate (CString "\n  ") $ filterNull $ genStructure genEnv c
   , cunlines $ genFacts genEnv c
-  , cconcat $ map (mkAssert genEnv) $ getAssertions c
+  , cconcat $ map (mkAssert genEnv c) $ getAssertions c
   ]) +++ CString "\n"
   where
   aliveFun = CString $ "fun " ++ aliveName (_uid c) ++ " : set " ++ _uid c ++ " { " ++ aliveBody ++ " }"
@@ -315,12 +315,18 @@ genFacts genEnv c = map fact $ concatMap childCards (containedClafers c) ++ user
   -- the constraint, for every instance in every snapshot in which it exists
   fact (trace, x) = cconcat
     [ CString "fact { "
-    , Concat trace [CString $ "all " ++ selfIdent ++ " : " ++ sigOf c ++ " | ", bindSelf $ always' x]
+    , Concat trace [forEveryInstance c x]
     , CString " }" ]
-  always' x
+
+-- | The constraint for every instance of the clafer, in every snapshot in which it exists.
+forEveryInstance :: IClafer -> Concat -> Concat
+forEveryInstance c x = cconcat [CString $ "all " ++ selfIdent ++ " : " ++ sigOf ++ " | ", bindSelf always']
+  where
+  uid' = _uid c
+  always'
     | isRoot c  = cconcat [CString "always (", x, CString ")"]
     | otherwise = cconcat [CString $ "always (" ++ selfIdent ++ " in " ++ aliveName uid' ++ " implies (", x, CString "))"]
-  sigOf c' = if isRoot c' then rootIdent else _uid c'
+  sigOf = if isRoot c then rootIdent else uid'
 
 -- | The variable of the instance in a fact: this is a keyword, which only signature facts bind.
 selfIdent :: String
@@ -340,16 +346,15 @@ bindSelf (CString str) = CString $ bind Nothing str
 bindSelf (Concat trace xs) = Concat trace $ map bindSelf xs
 
 getAssertions :: IClafer -> [PExp]
-getAssertions c = [ pexp | isRoot c, IEConstraint False pexp <- _elements c ]
+getAssertions c = [ pexp | IEConstraint False pexp <- _elements c ]
 
-mkAssert :: GenEnv -> PExp -> Concat
-mkAssert genEnv pexp = cconcat
-  [ CString "assert ", name, CString " { always (", genPExp genEnv [rootIdent] pexp, CString ") }\n"
+mkAssert :: GenEnv -> IClafer -> PExp -> Concat
+mkAssert genEnv c pexp = cconcat
+  [ CString "assert ", name, CString " { ", forEveryInstance c $ genPExp genEnv [_uid c] pexp, CString " }\n"
   , CString "check ", name, CString " ", CString $ forScopes genEnv, CString "\n\n"
   ]
   where
-  name = CString $ "assertOnLine_" ++ show line
-  Span (Pos line _) _ = _inPos pexp
+  name = CString $ assertionName pexp
 
 genSetUniquenessConstraint :: IClafer -> [Concat]
 genSetUniquenessConstraint c = case (_reference c, _card c) of

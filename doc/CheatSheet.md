@@ -199,6 +199,10 @@ Constraints are used for instance generation.
 
 An assertion is a boolean expression that we are checking whether it is true for all instances of the model.
 A failed assertion means there exists an instance for which the boolean expression is not true.
+An assertion can be nested in a clafer; it then holds for each of its instances.
+To check the assertions of a model, use the command `check` of claferIG or the button Check of ClaferIDE.
+Each failed assertion gives a counterexample.
+The check is bounded: no counterexample means that the assertion holds within the scopes and the maximum trace length, not in general.
 
 ```
 assert [ <boolean expression> ]
@@ -506,7 +510,7 @@ after <boolean expression> until <boolean expression>
 
 ### Assertions on traces
 
-An assertion must hold for all traces of the model, and a failed assertion gives a trace as a counterexample.
+An assertion must hold for all traces of the model, up to the maximum trace length, and a failed assertion gives a trace as a counterexample when it is checked.
 
 ```
 assert [ machine.idle && no coin => X machine.idle ]

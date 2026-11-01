@@ -1,5 +1,6 @@
 ##### Clafer Version 0.5.6, Oct 28, 2026
 
+* The Alloy outputs have the nested assertions too, for each instance of their clafer, and name the assertions by their line and column (`assertAt_3_5`), so that a line can have several assertions. Nested assertions were ignored, silently in temporal models.
 * Temporal models (behavioural Clafer) compile to the temporal logic of Alloy 6: mutable relations (`var`) and the operators `always`, `after`, `eventually` and `until`. The temporal generator encoded traces explicitly for Alloy 4.2, which had no temporal operators, and its output did not compile with Alloy 6. The Alloy Analyzer 6.2 finds the traces of small temporal models and checks their assertions in seconds.
 * The semantics of temporal models follows Juodisius et al., *Clafer: Lightweight Modeling of Structure, Behaviour, and Variability* (2019), sections 5 and 6: `a --> b` is `a => X b`, `a -->> b` is `a => (this && a) U b`, and a guard strengthens the precondition (`a -[g]-> b` is `a && g => X b`). It differs from the paper in these points:
   * An instance may disappear and reappear, which cyclic state machines need in the lasso traces of Alloy.
