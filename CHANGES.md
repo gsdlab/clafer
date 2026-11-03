@@ -1,3 +1,9 @@
+##### Clafer Version 0.5.7, unreleased
+
+* Temporal models: the obligations of a constraint (`X`, `F`, `G`, `U`) last while the parent of its context instance exists, not only while the context instance exists ([#107](https://github.com/gsdlab/clafer/issues/107)). A transition nested in its source state, e.g., `[ req=down --> movingDown ]` in the state `movingUp`, as in the power window of Juodisius et al. (2019), takes the machine to `movingDown`; it only forced leaving `movingUp`. The pending obligations of nested states still lapse when their enclosing state is left, and `[ X no this ]` makes an instance last one step. For a top-level clafer, whose parent is the root, they last for the whole trace.
+* The transition of a clafer, e.g., `on --> off`, is a constraint of the clafer, with the same meaning as before. For `-->>`, the source lasts until the target holds, while its parent exists.
+* Temporal models: `parent` of an instance of a top-level abstract clafer, and its constraints' obligations, use the parents of its subclafers' instances; `parent` was empty for the instances of a nested subclafer, so `[ some this.parent ]` in `abstract Port` excluded them.
+
 ##### Clafer Version 0.5.6, Nov 1, 2026
 
 * The Alloy outputs have the nested assertions too, for each instance of their clafer, and name the assertions by their line and column (`assertAt_3_5`), so that a line can have several assertions. Nested assertions were ignored, silently in temporal models.

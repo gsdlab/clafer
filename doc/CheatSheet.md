@@ -415,7 +415,7 @@ A guard strengthens the source: the transition holds only when the guard also ho
 <boolean expression> -[ <guard> ]->> <boolean expression>   // a && g => (this && a) U b
 ```
 
-A clafer can declare its own transition, which is a constraint of its parent.
+A clafer can declare its own transition, which is a constraint of the clafer.
 
 `<transition>`:
 ```
@@ -457,6 +457,8 @@ xor machine
 ### Temporal logic
 
 A constraint holds in every state by default, as if it started with `G`: its context is present in that state.
+What a constraint requires of later states (`X`, `F`, `G`, `U`) lasts while the parent of its context exists, also after the context itself is gone, e.g., `[ req=down --> movingDown ]` in the state `movingUp` leads to `movingDown`.
+To make a constraint last longer, place it higher in the hierarchy, or at the top level.
 Use `initially` to anchor a constraint to the first state of its context, which at the top level is the start of the trace, so `[ initially (sometime a) ]` means once, whereas `[ sometime a ]` means again and again.
 `finally` anchors a constraint to the last state of its context instance, before it disappears.
 

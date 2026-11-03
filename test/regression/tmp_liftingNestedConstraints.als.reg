@@ -6,8 +6,8 @@ one sig root
 { var r_c0_A : set c0_A }
 fact { all self_ : root | always (always (all  c : (alive_c0_A.@r_c0_B).@r_c0_C | one c.@r_c0_D)) }
 
-assert assertOnLine_9 { always (always (all  c : (alive_c0_A.@r_c0_B).@r_c0_C | some c.@r_c0_D)) }
-check assertOnLine_9 for 1 but 10 steps
+assert assertAt_9_10 { all self_ : root | always (always (all  c : (alive_c0_A.@r_c0_B).@r_c0_C | some c.@r_c0_D)) }
+check assertAt_9_10 for 1 but 10 steps
 
 
 
@@ -17,7 +17,7 @@ sig c0_A
 fun alive_c0_A : set c0_A { root.@r_c0_A }
 fact { always ~@r_c0_A in @p_c0_A }
 
-fact { all self_ : c0_A | always (self_ in alive_c0_A implies ((not some (self_ & alive_c0_A)) releases (not some (self_ & alive_c0_A) or (all  c : (self_.@r_c0_B).@r_c0_C | one c.@r_c0_D)))) }
+fact { all self_ : c0_A | always (self_ in alive_c0_A implies (always (all  c : (self_.@r_c0_B).@r_c0_C | one c.@r_c0_D))) }
 
 
 sig c0_B
@@ -27,7 +27,7 @@ fun alive_c0_B : set c0_B { c0_A.@r_c0_B }
 fact { always ~@r_c0_B in @p_c0_B
   always @r_c0_B.univ in alive_c0_A }
 
-fact { all self_ : c0_B | always (self_ in alive_c0_B implies ((not some (self_ & alive_c0_B)) releases (not some (self_ & alive_c0_B) or (one (self_.@r_c0_C).@r_c0_D)))) }
+fact { all self_ : c0_B | always (self_ in alive_c0_B implies ((not some self_.(@p_c0_B :> alive_c0_A)) releases (not some self_.(@p_c0_B :> alive_c0_A) or (one (self_.@r_c0_C).@r_c0_D)))) }
 
 
 sig c0_C

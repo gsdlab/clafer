@@ -1,0 +1,10 @@
+digraph "tmp_nested_assertions"
+{
+rankdir=BT;
+ranksep=0.3;
+nodesep=0.1;
+graph [fontname=Sans fontsize=11];
+node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
+edge [fontname=Sans fontsize=11];
+"c0_s" [label="xor s" URL="#c0_s" tooltip="xor s&#10;  initial a --&gt; b&#10;  b --&gt; a&#10;  assert [ a => X b ]&#10;  assert [ b => X a ]&#10;"];
+}

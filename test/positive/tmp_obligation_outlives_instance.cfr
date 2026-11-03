@@ -1,0 +1,20 @@
+// The obligations of a constraint outlive its context instance while the parent exists:
+// [ X no this ] makes an event last one step. The context is a top-level abstract clafer,
+// whose instances have the parents of its subclafers.
+
+abstract event
+  [ X no this ]
+
+mux events
+  e1 : event
+  e2 : event
+
+abstract Port
+  [ some this.parent ]
+
+sys ?
+  p1 : Port
+top : Port
+
+assert [ all e : event | X no (e ** event) ]
+assert [ all p : sys.p1 | p.parent = sys ]

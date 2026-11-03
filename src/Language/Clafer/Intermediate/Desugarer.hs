@@ -132,12 +132,11 @@ desugarClafer' claf'@(Clafer s' abstract' tmods' gcrd' id' super' reference' crd
                           (desugarCard crd') (0, -1)
                           elements'')]
   ++ (desugarInit id' init')
-  -- the transition of a clafer is a constraint in its parent's context, so it lasts as long
-  -- as the parent, e.g., `on --> off` takes the traffic light from on to off
-  ++ (desugarClaferTrans claf')
   where
     iClaferModifiers = desugarModifiers abstract' tmods'
-    elements'' = desugarElements elements'
+    -- the transition of a clafer is a constraint of the clafer, whose obligations last as long
+    -- as its parent, e.g., `on --> off` takes the traffic light from on to off
+    elements'' = desugarElements elements' ++ desugarClaferTrans claf'
 
 desugarModifiers :: Abstract -> [TempModifier] -> IClaferModifiers
 desugarModifiers    abstract'    tmods           =
@@ -201,8 +200,9 @@ desugarClaferTrans :: Clafer -> [IElement]
 desugarClaferTrans (Clafer _ _ _ _ name _ _ _ _ trans _) =
   case trans of
       TransitionEmpty _ -> []
-      -- the constraint spans the clafer's name and its transition, e.g., green --> yellow
-      Transition s arrow e -> let s' = getSpan name >- s in [IEConstraint True (desugarTrans s' (mkClaferIdExp s' $ transIdent name) arrow e)]
+      -- the constraint spans the clafer's name and its transition, e.g., green --> yellow; its
+      -- source is the instance of the clafer
+      Transition s arrow e -> let s' = getSpan name >- s in [IEConstraint True (desugarTrans s' (mkClaferIdExp s' thisIdent) arrow e)]
 
 desugarTrans :: Span -> Exp -> TransArrow -> Exp -> PExp
 desugarTrans s e1 arrow e2 = desugarExp $ desugarTrans' s e1 arrow e2
@@ -237,7 +237,11 @@ step s e1 arrow e2 = case arrow of
       NextTransArrow _ -> LtlX s e2
       GuardedNextTransArrow _ _ -> LtlX s e2
   where
-    multiStep = LtlU s (EAnd s (mkClaferIdExp s "this") e1) e2
+    this' = mkClaferIdExp s thisIdent
+    -- the source of a clafer's transition is this
+    multiStep = LtlU s (if isThis e1 then this' else EAnd s this' e1) e2
+    isThis (ClaferId _ (Path _ [ModIdIdent _ i])) = transIdent i == thisIdent
+    isThis _ = False
 
 
 desugarFinality :: [TempModifier] -> Bool

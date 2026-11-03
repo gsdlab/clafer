@@ -38,11 +38,12 @@
      * The multiplicities, group cardinalities and constraints of a clafer hold in every
        snapshot, for every existing instance; the top-level ones hold in every snapshot.
      * Change: the temporal obligations of a constraint (X, F, G and U, Alloy's @after@,
-       @eventually@, @always@ and @until@) hold while the context instance exists; the
-       constraint disappears together with it. A modeller extends the timeline of a
-       constraint by placing it higher in the hierarchy, or at the top level. A transition
-       of a clafer, e.g., @on --> off@, is a constraint of its parent, so the transition of
-       a nested state disappears when its enclosing state is left.
+       @eventually@, @always@ and @until@) hold while the parent of the context instance
+       exists; the paper does not bound them. So @[ req=down --> movingDown ]@ in the state
+       @movingUp@ takes the machine to @movingDown@, and the pending obligations of nested
+       states lapse when their enclosing state is left. A modeller extends the timeline of
+       a constraint by placing it higher in the hierarchy, or at the top level. A transition
+       of a clafer, e.g., @on --> off@, is a constraint of the clafer.
      * @initial@ children exist whenever their parent appears; the instances of a @final@
        clafer do not change while their parent exists.
      * @initially@ and @finally@ refer to the first and the last snapshot of the context
@@ -159,16 +160,17 @@ genParentName name = "p_" ++ name
 
 -- | The relation from the instances of the clafer to their existing parents. The parent of an
 --   instance does not change, so the navigation also works after the instance disappeared.
+--   An abstract clafer's instances are those of its concrete subclafers, which may have
+--   other parents, e.g., the subclafers of a top-level abstract clafer.
 parentRel :: GenEnv -> UID -> String
 parentRel genEnv uid' = case findIClafer (uidIClaferMap genEnv) uid' of
-  Just c -> "(" ++ rels c ++ " :> " ++ maybe rootIdent (aliveName . _uid) (parentOf genEnv c) ++ ")"
+  Just c -> case map rel $ concreteSubs genEnv c of
+    []    -> "(none->none)"
+    [r]   -> r
+    rels' -> "(" ++ intercalate " + " rels' ++ ")"
   Nothing -> error $ "AlloyLtl.parentRel: clafer not found: " ++ uid'
   where
-  rels c
-    | _isAbstract c = case map (('@' :) . genParentName . _uid) $ concreteSubs genEnv c of
-        []    -> "none->none"
-        rels' -> "(" ++ intercalate " + " rels' ++ ")"
-    | otherwise = '@' : genParentName (_uid c)
+  rel c = "(@" ++ genParentName (_uid c) ++ " :> " ++ maybe rootIdent (aliveName . _uid) (parentOf genEnv c) ++ ")"
 
 mkFact :: Concat -> Concat
 mkFact x@(CString "") = x
@@ -476,10 +478,14 @@ thisAlive :: [String] -> String
 thisAlive (ctx:_) | ctx /= rootIdent = "(this & " ++ aliveName ctx ++ ")"
 thisAlive _ = rootIdent
 
--- | Whether the context instance exists, unless the context is the root, which always exists.
-contextExists :: [String] -> Maybe String
-contextExists resPath@(ctx:_) | ctx /= rootIdent = Just $ "some " ++ thisAlive resPath
-contextExists _ = Nothing
+-- | Whether the parent of the context instance exists, unless the parent is the root, which
+--   always exists. The obligations of a constraint last as long as the parent.
+parentExists :: GenEnv -> [String] -> Maybe String
+parentExists genEnv (ctx:_)
+  | Just c <- findIClafer (uidIClaferMap genEnv) ctx
+  , any (maybe False (not . isRoot) . parentOf genEnv) $ concreteSubs genEnv c
+  = Just $ "some this." ++ parentRel genEnv ctx
+parentExists _ _ = Nothing
 
 -- | Whether the context instance appears now (its first snapshot), or the trace begins.
 appearsNow :: [String] -> String
@@ -512,17 +518,17 @@ genIFunExp    pid'      genEnv    resPath     (IFunExp op' [PExp{_exp=IClaferId{
 genIFunExp    pid'      genEnv    resPath     (IFunExp op' [exp'])
   | op' == iInitially = Concat (IrPExp pid') [CString $ "(" ++ appearsNow resPath ++ ") implies ", brArg (genPExp' genEnv resPath) exp']
   | op' == iFinally   = Concat (IrPExp pid') [CString $ "(some " ++ thisAlive resPath ++ " and after no " ++ thisAlive resPath ++ ") implies ", brArg (genPExp' genEnv resPath) exp']
-  -- the obligations hold while the context instance exists
-  | Just p <- contextExists resPath, op' == iX =
+  -- the obligations hold while the parent of the context instance exists
+  | Just p <- parentExists genEnv resPath, op' == iX =
       Concat (IrPExp pid') [CString $ "after (not " ++ p ++ " or ", e, CString ")"]
-  | Just p <- contextExists resPath, op' == iF =
+  | Just p <- parentExists genEnv resPath, op' == iF =
       Concat (IrPExp pid') [CString $ "eventually (not " ++ p ++ " or ", e, CString ")"]
-  | Just p <- contextExists resPath, op' == iG =
+  | Just p <- parentExists genEnv resPath, op' == iG =
       Concat (IrPExp pid') [CString $ "(not " ++ p ++ ") releases (not " ++ p ++ " or ", e, CString ")"]
   where
   e = brArg (genPExp' genEnv resPath) exp'
 genIFunExp    pid'      genEnv    resPath     (IFunExp op' [exp1, exp2])
-  | Just p <- contextExists resPath, op' == iU =
+  | Just p <- parentExists genEnv resPath, op' == iU =
       Concat (IrPExp pid') [CString $ "(" ++ p ++ " and ", brArg (genPExp' genEnv resPath) exp1,
                              CString $ ") until (not " ++ p ++ " or ", brArg (genPExp' genEnv resPath) exp2, CString ")"]
 genIFunExp    pid'      genEnv    resPath     (IFunExp op' exps')

@@ -6,8 +6,8 @@ one sig root
 { var r_c0_a : set c0_a }
 fact { all self_ : root | always (lone self_.@r_c0_a) }
 
-assert assertOnLine_6 { always (always (all  b1 : alive_c0_a.@r_c0_b | some  a1 : alive_c0_a | (b1.(@p_c0_b :> alive_c0_a)) = a1)) }
-check assertOnLine_6 for 1 but 10 steps
+assert assertAt_6_10 { all self_ : root | always (always (all  b1 : alive_c0_a.@r_c0_b | some  a1 : alive_c0_a | (b1.(@p_c0_b :> alive_c0_a)) = a1)) }
+check assertAt_6_10 for 1 but 10 steps
 
 
 
