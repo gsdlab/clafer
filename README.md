@@ -399,6 +399,10 @@ To run all the automated tests and the regression tests, execute
 make test
 ```
 
+It fails if a test suite fails, or if an output of a model in `test/positive` differs from its regression in `test/regression`, has no regression, or a regression has no output.
+The outputs then become the new regressions: a missing regression is created, and a differing one is replaced, unless it has uncommitted changes.
+Review them with `git diff test/regression`, commit them (or restore the ones that are wrong), and run `make test` again.
+
 We do test-driven development in the following way:
 
 1. create a test case Clafer model in either `test/positive` or `test/negative` depending on whether a test case should compile successfully or return an error. For example, see a positive test case [test/positive/redefinition.cfr](https://github.com/gsdlab/clafer/blob/namedDrefs/test/positive/redefinition.cfr).
@@ -410,7 +414,7 @@ cd test
 make diffRegressions
 ```
 
-this will show you how the current output diverges from the intended output.
+this will show you how the current output diverges from the intended output. A regression with uncommitted changes, such as an intended output written by hand, is kept.
 
 
 ## Modifying the grammar

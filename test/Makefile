@@ -9,13 +9,11 @@ ifeq ($(UNAME), darwin)
     FIND_JS_COMMAND :=  find $(SUITE_DIR)  -type f \( -iname "*.js" \)   | sed s/$(SUITE_DIR)\\///
     FIND_HTML_COMMAND :=  find $(SUITE_DIR)  -type f \( -iname "*.html" \)   | sed s/$(SUITE_DIR)\\///
     FIND_DOT_COMMAND :=  find $(SUITE_DIR)  -type f \( -iname "*.dot" \)   | sed s/$(SUITE_DIR)\\///
-    XARGS_DIFF_COMMAND := xargs  -I % -L1 diff -w -B  $(SUITE_DIR)/% $(REG_DIR)/%.reg
 else
     FIND_ALS_COMMAND :=  find $(SUITE_DIR)  -type f \( -iname "*.als" \) -printf "%f\n"
     FIND_JS_COMMAND :=  find $(SUITE_DIR)  -type f \( -iname "*.js" \) -printf "%f\n"
     FIND_HTML_COMMAND :=  find $(SUITE_DIR)  -type f \( -iname "*.html" \) -printf "%f\n"
     FIND_DOT_COMMAND :=  find $(SUITE_DIR)  -type f \( -iname "*.dot" \) -printf "%f\n"
-    XARGS_DIFF_COMMAND := xargs  -i diff -w -B $(REG_DIR)/{}.reg $(SUITE_DIR)/{}
 endif
 
 
@@ -56,26 +54,9 @@ diffRegressions:
 	@echo "======================================================="
 	@echo "| Testing 'Positive' suite - Diffing with regressions |"
 	@echo "======================================================="
-
-	@echo "---------------------"
-	@echo "| Alloy regressions |"
-	@echo "---------------------"
-	@$(FIND_ALS_COMMAND) | $(XARGS_DIFF_COMMAND) ; true
-
-	@echo "---------------------"
-	@echo "| Choco regressions |"
-	@echo "---------------------"
-	@$(FIND_JS_COMMAND) | $(XARGS_DIFF_COMMAND) ; true
-
-	@echo "--------------------"
-	@echo "| HTML regressions |"
-	@echo "--------------------"
-	@$(FIND_HTML_COMMAND) | $(XARGS_DIFF_COMMAND) ; true
-
-	@echo "---------------------"
-	@echo "| Graph regressions |"
-	@echo "---------------------"
-	@$(FIND_DOT_COMMAND) | $(XARGS_DIFF_COMMAND) ; true
+	@# Fails if an output differs, has no regression, or a regression has no output;
+	@# the outputs become the new regressions, to be reviewed and committed.
+	@bash diff-regressions.sh $(SUITE_DIR) $(REG_DIR)
 
 reg:
 	@echo "============================"
