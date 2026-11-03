@@ -38,6 +38,6 @@ lone sig c0_e
 {}
 { one r_c0_e }
 
-assert assertOnLine_19 { ((((one c0_E.@r_c0_a) && (no c0_E.@r_c0_b)) && (no c0_E.@r_c0_c)) && (no c0_E.@r_c0_d)) && (no c0_E.@r_c0_e) }
-check assertOnLine_19 for 1
+assert assertAt_19_10 { ((((one c0_E.@r_c0_a) && (no c0_E.@r_c0_b)) && (no c0_E.@r_c0_c)) && (no c0_E.@r_c0_d)) && (no c0_E.@r_c0_e) }
+check assertAt_19_10 for 1
 

@@ -20,6 +20,6 @@ sig c0_d
 { one @r_c0_d.this }
 
 fact { all  x : (c0_a.@r_c0_b).@r_c0_c | one x.@r_c0_d }
-assert assertOnLine_9 { all  x : (c0_a.@r_c0_b).@r_c0_c | some x.@r_c0_d }
-check assertOnLine_9 for 1
+assert assertAt_9_10 { all  x : (c0_a.@r_c0_b).@r_c0_c | some x.@r_c0_d }
+check assertAt_9_10 for 1
 

@@ -24,8 +24,8 @@ one sig c0_Alice extends c0_Person
 one sig c0_Bob extends c0_Person
 {}
 
-assert assertOnLine_8 { ((c0_Bob.@r_c0_spouse).@c0_spouse_ref) = c0_Alice }
-check assertOnLine_8 for 1 but 4 c0_Person, 4 c0_spouse
+assert assertAt_8_10 { ((c0_Bob.@r_c0_spouse).@c0_spouse_ref) = c0_Alice }
+check assertAt_8_10 for 1 but 4 c0_Person, 4 c0_spouse
 
 one sig c0_Carol extends c0_Person
 {}
@@ -34,6 +34,6 @@ one sig c0_Carol extends c0_Person
 one sig c0_Dave extends c0_Person
 {}
 
-assert assertOnLine_14 { no c0_Dave.@r_c0_spouse }
-check assertOnLine_14 for 1 but 4 c0_Person, 4 c0_spouse
+assert assertAt_14_10 { no c0_Dave.@r_c0_spouse }
+check assertAt_14_10 for 1 but 4 c0_Person, 4 c0_spouse
 

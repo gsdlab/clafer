@@ -55,18 +55,18 @@ fact {  all disj x, y : c0_friend | (x.@c0_friend_ref) != (y.@c0_friend_ref)  }
 one sig c0_onlyAlice
 { c0_onlyAlice_ref : one c0_Alice & c0_Person }
 
-assert assertOnLine_37 { c0_Alice in (c0_onlyAlice.@c0_onlyAlice_ref) }
-check assertOnLine_37 for 1 but 2 c0_Person, 2 c0_friend, 2 c0_likes
+assert assertAt_37_10 { c0_Alice in (c0_onlyAlice.@c0_onlyAlice_ref) }
+check assertAt_37_10 for 1 but 2 c0_Person, 2 c0_friend, 2 c0_likes
 
-assert assertOnLine_38 { c0_Ella not in (c0_onlyAlice.@c0_onlyAlice_ref) }
-check assertOnLine_38 for 1 but 2 c0_Person, 2 c0_friend, 2 c0_likes
+assert assertAt_38_10 { c0_Ella not in (c0_onlyAlice.@c0_onlyAlice_ref) }
+check assertAt_38_10 for 1 but 2 c0_Person, 2 c0_friend, 2 c0_likes
 
 one sig c0_exceptElla
 { c0_exceptElla_ref : one c0_Person - c0_Ella }
 
-assert assertOnLine_43 { c0_Alice in (c0_exceptElla.@c0_exceptElla_ref) }
-check assertOnLine_43 for 1 but 2 c0_Person, 2 c0_friend, 2 c0_likes
+assert assertAt_43_10 { c0_Alice in (c0_exceptElla.@c0_exceptElla_ref) }
+check assertAt_43_10 for 1 but 2 c0_Person, 2 c0_friend, 2 c0_likes
 
-assert assertOnLine_44 { c0_Ella not in (c0_exceptElla.@c0_exceptElla_ref) }
-check assertOnLine_44 for 1 but 2 c0_Person, 2 c0_friend, 2 c0_likes
+assert assertAt_44_10 { c0_Ella not in (c0_exceptElla.@c0_exceptElla_ref) }
+check assertAt_44_10 for 1 but 2 c0_Person, 2 c0_friend, 2 c0_likes
 

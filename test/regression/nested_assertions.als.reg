@@ -1,0 +1,33 @@
+open util/integer
+pred show {}
+
+
+lone sig c0_a
+{}
+
+lone sig c0_b
+{}
+
+assert assertAt_4_10 { (some c0_a) => (some c0_a) }
+check assertAt_4_10 for 1
+
+assert assertAt_4_29 { (some c0_b) => (some c0_b) }
+check assertAt_4_29 for 1
+
+abstract sig c0_P
+{ r_c0_age : one c0_age }
+{ ((this.@r_c0_age).@c0_age_ref) >= 0 }
+
+sig c0_age
+{ c0_age_ref : one Int }
+{ one @r_c0_age.this }
+
+assert assertAt_9_14 { all self_ : c0_P | ((self_.@r_c0_age).@c0_age_ref) >= 0 }
+check assertAt_9_14 for 1
+
+one sig c0_x extends c0_P
+{}
+
+assert assertAt_12_14 { all self_ : c0_x | ((self_.@r_c0_age).@c0_age_ref) >= 0 }
+check assertAt_12_14 for 1
+

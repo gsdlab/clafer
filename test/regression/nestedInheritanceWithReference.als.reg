@@ -28,8 +28,8 @@ one sig c0_con1 extends c0_Connection
 one sig c0_con2 extends c0_Connection
 {}
 
-assert assertOnLine_10 { ((c0_SystemX.@r_c0_connections).@c0_connections_ref) = ((c0_SystemX.@r_c0_con1) + (c0_SystemX.@r_c0_con2)) }
-check assertOnLine_10 for 1 but 5 c0_Connection, 2 c0_System, 10 c0_connections
+assert assertAt_10_10 { ((c0_SystemX.@r_c0_connections).@c0_connections_ref) = ((c0_SystemX.@r_c0_con1) + (c0_SystemX.@r_c0_con2)) }
+check assertAt_10_10 for 1 but 5 c0_Connection, 2 c0_System, 10 c0_connections
 
 one sig c0_SystemY extends c0_System
 { r_c0_con3 : one c0_con3
@@ -48,6 +48,6 @@ one sig c0_con4 extends c0_Connection
 one sig c0_con5 extends c0_Connection
 {}
 
-assert assertOnLine_17 { ((c0_SystemY.@r_c0_connections).@c0_connections_ref) = (((c0_SystemY.@r_c0_con3) + (c0_SystemY.@r_c0_con4)) + (c0_SystemY.@r_c0_con5)) }
-check assertOnLine_17 for 1 but 5 c0_Connection, 2 c0_System, 10 c0_connections
+assert assertAt_17_10 { ((c0_SystemY.@r_c0_connections).@c0_connections_ref) = (((c0_SystemY.@r_c0_con3) + (c0_SystemY.@r_c0_con4)) + (c0_SystemY.@r_c0_con5)) }
+check assertAt_17_10 for 1 but 5 c0_Connection, 2 c0_System, 10 c0_connections
 

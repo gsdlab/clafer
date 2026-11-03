@@ -17,6 +17,6 @@ one sig c0_Phone
 one sig c0_name
 { c0_name_ref : one Int }
 
-assert assertOnLine_9 { no c0_Kernel }
-check assertOnLine_9 for 1 but 0 c0_Kernel, 0 c0_memory
+assert assertAt_9_10 { no c0_Kernel }
+check assertAt_9_10 for 1 but 0 c0_Kernel, 0 c0_memory
 
