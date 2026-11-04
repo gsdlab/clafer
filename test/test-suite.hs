@@ -21,6 +21,7 @@
  SOFTWARE.
 -}
 import Control.Lens
+import Control.Monad (forM_)
 import qualified Data.Aeson as Aeson
 import Data.Data.Lens
 import Data.List
@@ -470,6 +471,30 @@ case_ChocoIntRange = do
     ("intRange(-500, 500);" `isInfixOf` choco defaultClaferArgs{mode = [Choco]} withOptions) @? "OPTIONS ignored"
     not ("intRange" `isInfixOf` choco defaultClaferArgs{mode = [Choco]} "x -> integer = 1\n") @? "Range set without options"
     ("intRange(-128, 100);" `isInfixOf` choco defaultClaferArgs{mode = [Choco], maxint = Just 100} "x -> integer = 1\n") @? "--maxint ignored"
+
+-- After an explicit dref, the names are the children of the reference's target (#108):
+-- this.dref.speed means this.speed, in the static and the temporal generators.
+case_ExplicitDrefNavigation :: Assertion
+case_ExplicitDrefNavigation = do
+    let
+        output mode' constraint = fmap (outputCode . fromJust . Map.lookup mode') $ compileOneFragment defaultClaferArgs{mode = [mode']} $ unlines
+            [ "abstract Port"
+            , "    speed -> integer"
+            , "hub : Port"
+            , "l -> Port"
+            , "    " ++ constraint ]
+        same mode' a b = case (output mode' a, output mode' b) of
+            (Right a', Right b') -> a' == b' @? (show mode' ++ ": " ++ a ++ " differs from " ++ b)
+            (Left errs', _) -> assertFailure $ a ++ ": " ++ show errs'
+            (_, Left errs') -> assertFailure $ b ++ ": " ++ show errs'
+    forM_ [Alloy, Choco] $ \mode' -> do
+        same mode' "[ this.speed = 3 ]" "[ this.dref.speed = 3 ]"
+        same mode' "[ this.speed = 3 ]" "[ dref.speed = 3 ]"
+        same mode' "[ this.speed = 3 ]" "[ this.dref.speed.dref = 3 ]"
+    same Alloy "[ G this.speed = 3 ]" "[ G this.dref.speed = 3 ]"
+    case output Alloy "[ all t : this.dref | t.speed = 3 ]" of
+        Right _ -> return ()
+        Left errs' -> assertFailure $ show errs'
 
 -- A clafer which extends itself is reported as such, not as a missing super.
 case_SelfInheritanceReported :: Assertion

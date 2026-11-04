@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=9">
+<style>.identifier{}
+.keyword{font-weight: bold;}
+.tKeyword{font-style: oblique;}
+.reference{}
+.code { background-color: lightgray; padding: 5px 5px 5px 5px; border: 1px solid darkgray; margin-bottom: 15px;
+        font-family: Pragmata, Menlo, 'DejaVu LGC Sans Mono', 'DejaVu Sans Mono', Consolas, 'Everson Mono', 'Lucida Console', 'Andale Mono', 'Nimbus Mono L', 'Liberation Mono', FreeMono, 'Osaka Monospaced', Courier, 'New Courier', monospace; }
+.standalonecomment { color: green; font-style:italic }
+.inlinecomment { color: green; padding-left:20px; font-style:italic }
+.error{background-color: yellow; color: red }
+.deprecated{color: orange }
+.indent{padding-left:20px}
+.file { font-weight: bold; border-bottom: 1px solid darkgray; margin: 1em 0 0.5em 0 }
+a[href$='Lookup failed'] {color: red}
+a[href$='Uid not found'] {color: red}
+a[href$='Ambiguous name'] {color: yellow}
+</style></head>
+<body>
+<div class="file">positive/explicit_dref_navigation.cfr</div>
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Port">Port</span>
+  <div class="indent">
+  <span class="claferDecl" id="c0_speed">speed</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a></div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_name">name</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a></div>
+</div>
+
+
+<div>
+<span class="claferDecl" id="c0_Hub">Hub</span>
+  <div class="indent">
+  <span class="claferDecl" id="c0_p">p</span><span class="keyword"> : </span><a href="#c0_Port"><span class="reference">Port</span></a> 2</div>
+</div>
+
+
+<div>
+<span class="claferDecl" id="c0_fast">fast</span><span class="keyword"> : </span><a href="#c0_Port"><span class="reference">Port</span></a>
+  <div class="indent">
+  <span class="keyword">[</span> <a href="#c0_speed"><span class="reference">speed</span></a> = 10 <span class="keyword">]</span></div>
+</div>
+
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Component">Component</span>
+  <div class="indent">
+  <span class="keyword">abstract</span> <span class="claferDecl" id="c0_link">link</span><span class="keyword"> -> </span><a href="#c0_Port"><span class="reference">Port</span></a> *
+    <div class="indent">
+    <span class="claferDecl" id="c0_latency">latency</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a></div>
+    <div class="indent">
+    <span class="claferDecl" id="c1_speed">speed</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a></div>
+    <div class="indent">
+    <span class="keyword">[</span> <span class="keyword">this</span>.<span class="keyword">dref</span>.<a href="#c0_speed"><span class="reference">speed</span></a> &gt;= <span class="keyword">this</span>.<a href="#c1_speed"><span class="reference">speed</span></a> <span class="keyword">]</span></div>
+    <div class="indent">
+    <span class="keyword">[</span> all t<span class="keyword"> : </span><span class="keyword">this</span>.<span class="keyword">dref</span> | <a href="#t"><span class="reference">t</span></a>.<a href="#c0_speed"><span class="reference">speed</span></a> &gt;= <a href="#c0_latency"><span class="reference">latency</span></a> <span class="keyword">]</span></div>
+  </div>
+</div>
+
+
+<div>
+<span class="claferDecl" id="c0_cam">cam</span><span class="keyword"> : </span><a href="#c0_Component"><span class="reference">Component</span></a>
+  <div class="indent">
+  <span class="claferDecl" id="c0_l">l</span><span class="keyword"> : </span><a href="#c0_link"><span class="reference">link</span></a><span class="keyword"> -> </span><a href="#c0_Hub"><span class="reference">Hub</span></a>.<a href="#c0_p"><span class="reference">p</span></a> 1
+    <div class="indent">
+    <span class="keyword">[</span> <span class="keyword">this</span>.<span class="keyword">dref</span>.<a href="#c0_speed"><span class="reference">speed</span></a> = 3 <span class="keyword">]</span></div>
+    <div class="indent">
+    <span class="keyword">[</span> <span class="keyword">dref</span>.<a href="#c0_name"><span class="reference">name</span></a> = 1 <span class="keyword">]</span></div>
+  </div>
+  <div class="indent">
+  <span class="keyword">[</span> <a href="#c0_l"><span class="reference">l</span></a>.<span class="keyword">dref</span>.<a href="#c0_speed"><span class="reference">speed</span></a> = 3 <span class="keyword">]</span></div>
+</div>
+
+
+<div>
+<span class="claferDecl" id="c0_b">b</span><span class="keyword"> ->> </span><a href="#c0_Port"><span class="reference">Port</span></a> 2
+  <div class="indent">
+  <span class="keyword">[</span> <span class="keyword">this</span>.<span class="keyword">dref</span>.<a href="#c0_speed"><span class="reference">speed</span></a>.<span class="keyword">dref</span> = 3 <span class="keyword">]</span></div>
+</div>
+
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Plug">Plug</span><span class="keyword"> -> </span><a href="#c0_Port"><span class="reference">Port</span></a>
+  <div class="indent">
+  <span class="claferDecl" id="c2_speed">speed</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a></div>
+</div>
+
+
+<div>
+<span class="claferDecl" id="c0_plug">plug</span><span class="keyword"> : </span><a href="#c0_Plug"><span class="reference">Plug</span></a></div>
+
+
+<div>
+<span class="claferDecl" id="c0_pl">pl</span><span class="keyword"> -> </span><a href="#c0_Plug"><span class="reference">Plug</span></a>
+  <div class="indent">
+  <span class="keyword">[</span> <span class="keyword">this</span>.<span class="keyword">dref</span>.<a href="#c2_speed"><span class="reference">speed</span></a> = 5 <span class="keyword">]</span></div>
+</div>
+
+
+<div>
+<span class="claferDecl" id="c0_u">u</span><span class="keyword"> -> </span><a href="#c0_Hub"><span class="reference">Hub</span></a>.<a href="#c0_p"><span class="reference">p</span></a>++<a href="#c0_fast"><span class="reference">fast</span></a>
+  <div class="indent">
+  <span class="keyword">[</span> <span class="keyword">this</span>.<span class="keyword">dref</span>.<a href="#c0_speed"><span class="reference">speed</span></a> = 10 <span class="keyword">]</span></div>
+</div>
+
+</body>
+</html>

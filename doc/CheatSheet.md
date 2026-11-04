@@ -95,6 +95,10 @@ A clafer inherits group cardinality, children, and reference of its super clafer
 Instances of a reference clafer point to instances from the target set expression.
 When declared using `->` (set), the instances pointed to cannot repeat per each instance of its parent,
 whereas duplicate values are allowed when declared using `->>` (bag).
+Where a value is expected, a reference clafer stands for its target: `[ speed = 3 ]` is `[ speed.dref = 3 ]`.
+A comparison (`=`, `!=`, `in`, `not in`), an intersection (`**`) or a difference (`--`) of two reference clafers is of their targets: `this.a = parent.b.a` is `this.a.dref = parent.b.a.dref`, since the instances of `a` under different parents are never the same.
+To compare the instances themselves, compare `this` or a variable, or write `dref` on one side.
+After `dref`, a name is a child of the target: `this.dref.speed` is the target's `speed`.
 
 `<reference>`:
 ```

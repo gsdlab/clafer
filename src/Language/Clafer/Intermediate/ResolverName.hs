@@ -178,6 +178,10 @@ resolveNav    env     pexp0@PExp{_inPos=pos', _exp=x} isFirst =
       -- if `dref` was added to the RHS we need to left rotate the tree
       case pexp2' of
         PExp{_exp=IFunExp "." [pexp2'l, pexp2'r]} -> case pexp2'l of
+          -- after an explicit `dref`, e.g., to a union of clafers, a name of its target needs
+          -- no second `dref`
+          PExp{_exp=IClaferId{_sident="dref"}} | endsWithDref pexp1' ->
+            return (pexp0{_exp=IFunExp iJoin [pexp1', pexp2'r]}, path2)
           PExp{_exp=IClaferId{_sident="dref"}} ->
             let -- move the `dref` to the LHS
               pexp0' = pexp0{_exp=IFunExp iJoin [pexp1', pexp2'l]}
@@ -189,13 +193,32 @@ resolveNav    env     pexp0@PExp{_inPos=pos', _exp=x} isFirst =
     IClaferId modName' id' _ _ -> if isFirst
       then do
              (exp', path') <- mkPath pos' env <$> resolveName pos' env id'
-             return (pexp0{_exp=exp'}, path')
+             return (pexp0{_exp=exp'}, derefPath env id' path')
       else do
              (exp', path') <- case resPath env of
                [] -> mkPath' pos' modName' <$> resolveTopLevelName pos' env id'
                _  -> mkPath' pos' modName' <$> resolveImmName pos' env id'
-             return (pexp0{_exp=exp'}, path')
+             return (pexp0{_exp=exp'}, derefPath env id' path')
     y -> throwError $ SemanticErr pos' $ "Cannot resolve nav of " ++ show y
+
+endsWithDref :: PExp -> Bool
+endsWithDref PExp{_exp=IClaferId{_sident=s}} = s == drefIdent
+endsWithDref PExp{_exp=IFunExp "." [_, r]} = endsWithDref r
+endsWithDref _ = False
+
+-- | After @dref@, the path continues at the target of the reference, which a clafer declares or
+--   inherits, so that the names after it are the target's children: @this.dref.speed@ under
+--   @l -> Port@ is the @speed@ of the port, not @this.dref.dref.speed@. A reference to a union
+--   of clafers has no single target, and the path stays at the reference clafer.
+derefPath :: SEnv -> String -> [IClafer] -> [IClafer]
+derefPath env id' path
+  | id' == drefIdent, c : _ <- path
+  , [target] : _ <- filter (not . null) $ mapHierarchy getReference getSuper uidMap c
+  , Just t <- findIClafer uidMap target
+  = t : path
+  | otherwise = path
+  where
+  uidMap = uidClaferMap $ genv env
 
 -- | Depending on how resolved construct a navigation path from 'context env'
 mkPath :: Span -> SEnv -> (HowResolved, String, [IClafer]) -> (IExp, [IClafer])
@@ -247,7 +270,8 @@ adjustAncestor ctx cPath rPath = (thisIdent, Just ctx) : parents ++ (fromJust $ 
 
 mkPath' :: Span -> String -> (HowResolved, String, [IClafer]) -> (IExp, [IClafer])
 mkPath'    pos' modName'  (howResolved, id', path)          = case howResolved of
-  Reference -> (toNav' pos' (zip ["dref", id'] (map Just path)), path)
+  -- the path is [the child, the reference clafer]: dref belongs to the reference clafer
+  Reference -> (toNav' pos' (zip ["dref", id'] (map Just $ reverse path)), path)
   _ -> (IClaferId modName' id' False bind, path)
   where
   bind = case path of

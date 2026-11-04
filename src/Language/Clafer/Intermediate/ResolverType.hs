@@ -365,9 +365,14 @@ resolveTPExp' p@PExp{_inPos, _exp} =
   -- `this.machine = parent` is this.dref.machine.dref = this.parent; the
   -- alternative this.dref.machine = this.dref.parent, the parent of the abstract
   -- Service of type "clafer", also type checks.
+  -- A comparison, an intersection or a difference of two navigations to reference clafers is
+  -- of their targets, e.g.,
+  -- `this.a = parent.b.a` is this.a.dref = parent.b.a.dref: the instances of `a` under different
+  -- parents are never equal (#87). An operand that is `this`, a variable or ends with `dref`
+  -- is compared as it is.
   resolveTExp e@IFunExp {_op, _exps = [arg1, arg2]} = do
     uidIClaferMap' <- asks iUIDIClaferMap
-    sortOn (either (const maxBound) (viaClafer . snd)) <$> (runListT $ runExceptT $ do
+    sortOn (either (const (maxBound, maxBound)) (\(_, e') -> (viaClafer e', comparesReferences uidIClaferMap' e'))) <$> (runListT $ runExceptT $ do
       arg1' <- lift $ ListT $ resolveTPExp arg1
       arg2' <- lift $ ListT $ resolveTPExp arg2
       let t1 = typeOf arg1'
@@ -408,6 +413,21 @@ resolveTPExp' p@PExp{_inPos, _exp} =
       viaClafer :: IExp -> Int
       viaClafer IFunExp{_exps = exps'} = length [ () | PExp{_iType = Just t} <- exps', "clafer" `elem` unionType t ]
       viaClafer _ = 0
+      -- whether a comparison, an intersection or a difference is of the instances of reference
+      -- clafers on both sides
+      comparesReferences :: UIDIClaferMap -> IExp -> Int
+      comparesReferences uidIClaferMap' IFunExp{_op = op', _exps = [e1, e2]}
+        | op' `elem` [iEq, iNeq, iIn, iNin, iIntersection, iDifference], all (isReferenceNav uidIClaferMap') [e1, e2] = 1
+      comparesReferences _ _ = 0
+      isReferenceNav uidIClaferMap' pexp = case lastName pexp of
+        Just uid' -> maybe False (any (not . null) . mapHierarchy getReference getSuper uidIClaferMap') $ findIClafer uidIClaferMap' uid'
+        Nothing -> False
+      lastName PExp{_exp = IFunExp op' [_, r]} | op' == iJoin = lastName r
+      lastName PExp{_exp = IClaferId{_sident = s, _binding = b}}
+        | s `notElem` specialNames, not (isLocalBind b) = Just s
+      lastName _ = Nothing
+      isLocalBind (LocalBind _) = True
+      isLocalBind _ = False
 
   resolveTExp e@(IFunExp "ifthenelse" [arg1, arg2, arg3]) = do
     uidIClaferMap' <- asks iUIDIClaferMap

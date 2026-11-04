@@ -1,0 +1,21 @@
+// A comparison of two navigations to reference clafers compares their targets (#87): the
+// instances of a under different parents are never equal, so this.a = parent.b1.a means
+// this.a.dref = parent.b1.a.dref. With this, a variable or an explicit dref on one side, the
+// instances are compared as written.
+
+abstract Port
+abstract B
+    a -> Port
+p1 : Port
+p2 : Port
+sys
+    b1 : B
+    b2 : B
+        [ this.a = parent.b1.a ]           // the targets
+        [ this.a != sys.b1.a || a = sys.b1.a ] // the targets
+choice -> B
+    [ this.a in sys.b1.a ]             // the targets, through the reference
+sel -> sys.b1.a
+    [ this in sys.b1.a ]               // the instances of a: sel points to them
+    [ this.dref = sys.b1.a ]           // the instances of a
+[ all x : sys.b1.a | x = sys.b1.a ]    // the instances of a

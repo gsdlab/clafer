@@ -1,0 +1,27 @@
+scope({c0_B:2, c0_Port:2, c0_a:2});
+defaultScope(1);
+stringLength(16);
+
+c0_Port = Abstract("c0_Port");
+c0_B = Abstract("c0_B");
+c0_a = c0_B.addChild("c0_a").withCard(1, 1);
+c0_p1 = Clafer("c0_p1").withCard(1, 1);
+c0_p2 = Clafer("c0_p2").withCard(1, 1);
+c0_sys = Clafer("c0_sys").withCard(1, 1);
+c0_b1 = c0_sys.addChild("c0_b1").withCard(1, 1);
+c0_b2 = c0_sys.addChild("c0_b2").withCard(1, 1);
+c0_choice = Clafer("c0_choice").withCard(1, 1);
+c0_sel = Clafer("c0_sel").withCard(1, 1);
+c0_a.refToUnique(c0_Port);
+c0_p1.extending(c0_Port);
+c0_p2.extending(c0_Port);
+c0_b1.extending(c0_B);
+c0_b2.extending(c0_B);
+c0_b2.addConstraint(equal(joinRef(join($this(), c0_a)), joinRef(join(join(joinParent($this()), c0_b1), c0_a))));
+c0_b2.addConstraint(or(notEqual(joinRef(join($this(), c0_a)), joinRef(join(join(joinParent($this()), c0_b1), c0_a))), equal(joinRef(join($this(), c0_a)), joinRef(join(join(joinParent($this()), c0_b1), c0_a)))));
+c0_choice.refToUnique(c0_B);
+c0_choice.addConstraint($in(joinRef(join(joinRef($this()), c0_a)), joinRef(join(join(global(c0_sys), c0_b1), c0_a))));
+c0_sel.refToUnique(c0_a);
+c0_sel.addConstraint($in(joinRef($this()), join(join(global(c0_sys), c0_b1), c0_a)));
+c0_sel.addConstraint(equal(joinRef($this()), join(join(global(c0_sys), c0_b1), c0_a)));
+Constraint(all([decl([x = local("x")], join(join(global(c0_sys), c0_b1), c0_a))], equal(x, join(join(global(c0_sys), c0_b1), c0_a))));

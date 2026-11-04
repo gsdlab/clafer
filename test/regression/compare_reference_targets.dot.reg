@@ -1,0 +1,22 @@
+digraph "compare_reference_targets"
+{
+rankdir=BT;
+ranksep=0.3;
+nodesep=0.1;
+graph [fontname=Sans fontsize=11];
+node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
+edge [fontname=Sans fontsize=11];
+"c0_Port" [label="abstract Port" URL="#c0_Port" tooltip="abstract Port&#10;"];
+"c0_B" [label="abstract B" URL="#c0_B" tooltip="abstract B&#10;  a -&gt; Port&#10;"];
+"c0_B" -> "c0_Port" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=a];
+"c0_p1" [label="p1 : Port" URL="#c0_p1" tooltip="p1 : Port&#10;"];
+"c0_p1" -> "c0_Port" [arrowhead=onormal constraint=true weight=100];
+"c0_p2" [label="p2 : Port" URL="#c0_p2" tooltip="p2 : Port&#10;"];
+"c0_p2" -> "c0_Port" [arrowhead=onormal constraint=true weight=100];
+"c0_sys" [label="sys" URL="#c0_sys" tooltip="sys&#10;  b1 : B&#10;  b2 : B&#10;    [ this.a = parent.b1.a ]&#10;    [ this.a != sys.b1.a || a = sys.b1.a ]&#10;"];
+"c0_sys" -> "c0_B" [arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];
+"c0_sys" -> "c0_B" [arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];
+"c0_choice" [label="choice -&gt; B" URL="#c0_choice" tooltip="choice -&gt; B&#10;  [ this.a in sys.b1.a ]&#10;"];
+"c0_choice" -> "c0_B" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent];
+"c0_sel" [label="sel -&gt; sys.b1.a" URL="#c0_sel" tooltip="sel -&gt; sys.b1.a&#10;  [ this in sys.b1.a ]&#10;  [ this.dref = sys.b1.a ]&#10;"];
+}

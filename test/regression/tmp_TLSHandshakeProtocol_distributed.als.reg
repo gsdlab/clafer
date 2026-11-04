@@ -80,6 +80,7 @@ fact { always ~@r_c0_TLSFeatures in @p_c0_TLSFeatures }
 
 fact { all self_ : c0_TLSFeatures | always (self_ in alive_c0_TLSFeatures implies (lone self_.@r_c0_annonymousMode)) }
 fact { all self_ : c0_TLSFeatures | always (self_ in alive_c0_TLSFeatures implies (lone self_.@r_c0_clientAuthentication)) }
+fact { all self_ : c0_TLSFeatures | always (self_ in alive_c0_TLSFeatures implies ((some self_.@r_c0_clientAuthentication) => (no self_.@r_c0_annonymousMode))) }
 
 
 sig c0_annonymousMode extends c0_Feature
@@ -349,13 +350,15 @@ sig c0_Protocol extends c0_Domain
 { p_c0_Protocol : lone root
 , r_c0_client : set c0_client
 , r_c0_server : set c0_server
-, var r_c0_handshakeStatus : set c0_handshakeStatus }
+, var r_c0_handshakeStatus : set c0_handshakeStatus
+, var r_c0_channel : set c0_channel }
 fun alive_c0_Protocol : set c0_Protocol { root.@r_c0_Protocol }
 fact { always ~@r_c0_Protocol in @p_c0_Protocol }
 
 fact { all self_ : c0_Protocol | always (self_ in alive_c0_Protocol implies (one self_.@r_c0_client)) }
 fact { all self_ : c0_Protocol | always (self_ in alive_c0_Protocol implies (one self_.@r_c0_server)) }
 fact { all self_ : c0_Protocol | always (self_ in alive_c0_Protocol implies (one self_.@r_c0_handshakeStatus)) }
+fact { all self_ : c0_Protocol | always (self_ in alive_c0_Protocol implies (one self_.@r_c0_channel)) }
 
 
 sig c0_client
@@ -380,43 +383,41 @@ fact { always ~@r_c0_server in @p_c0_server
 
 sig c0_handshakeStatus
 { p_c0_handshakeStatus : lone c0_Protocol
-, var c0_handshakeStatus_ref : set c0_HandshakeStatus
-, var r_c0_channel : set c0_channel
-, var r_c0_serverKeyExchange : set c0_serverKeyExchange
-, var r_c0_certificateRequest : set c0_certificateRequest
-, var r_c0_serverHelloDone : set c0_serverHelloDone
-, var r_c0_clientResponse : set c0_clientResponse
-, var r_c0_serverFinish : set c0_serverFinish
-, var r_c0_dataTransfer : set c0_dataTransfer
-, var r_c0_fatalError : set c0_fatalError }
+, var c0_handshakeStatus_ref : set c0_HandshakeStatus }
 { always (this in alive_c0_handshakeStatus implies (one this.@c0_handshakeStatus_ref))
   always (this in alive_c0_handshakeStatus implies (this.@c0_handshakeStatus_ref in alive_c0_HandshakeStatus)) }
 fun alive_c0_handshakeStatus : set c0_handshakeStatus { c0_Protocol.@r_c0_handshakeStatus }
 fact { always ~@r_c0_handshakeStatus in @p_c0_handshakeStatus
   always @r_c0_handshakeStatus.univ in alive_c0_Protocol }
 
-fact { all self_ : c0_handshakeStatus | always (self_ in alive_c0_handshakeStatus implies (one self_.@r_c0_channel)) }
-fact { all self_ : c0_handshakeStatus | always (self_ in alive_c0_handshakeStatus implies (one self_.@r_c0_serverKeyExchange)) }
-fact { all self_ : c0_handshakeStatus | always (self_ in alive_c0_handshakeStatus implies (one self_.@r_c0_certificateRequest)) }
-fact { all self_ : c0_handshakeStatus | always (self_ in alive_c0_handshakeStatus implies (one self_.@r_c0_serverHelloDone)) }
-fact { all self_ : c0_handshakeStatus | always (self_ in alive_c0_handshakeStatus implies (lone self_.@r_c0_clientResponse)) }
-fact { all self_ : c0_handshakeStatus | always (self_ in alive_c0_handshakeStatus implies (one self_.@r_c0_serverFinish)) }
-fact { all self_ : c0_handshakeStatus | always (self_ in alive_c0_handshakeStatus implies (one self_.@r_c0_dataTransfer)) }
-fact { all self_ : c0_handshakeStatus | always (self_ in alive_c0_handshakeStatus implies (one self_.@r_c0_fatalError)) }
-
 
 sig c0_channel
-{ p_c0_channel : lone c0_handshakeStatus
+{ p_c0_channel : lone c0_Protocol
 , var r_c0_clientHello : set c0_clientHello
-, var r_c0_serverResponse : set c0_serverResponse }
-{ always (this in alive_c0_channel implies (let children = (this.@r_c0_clientHello + this.@r_c0_serverResponse) | one children))
+, var r_c0_serverResponse : set c0_serverResponse
+, var r_c0_clientResponse : set c0_clientResponse
+, var r_c0_serverFinish : set c0_serverFinish
+, var r_c0_dataTransfer : set c0_dataTransfer
+, var r_c0_fatalError : set c0_fatalError }
+{ always (this in alive_c0_channel implies (let children = (this.@r_c0_clientHello + this.@r_c0_serverResponse + this.@r_c0_clientResponse + this.@r_c0_serverFinish + this.@r_c0_dataTransfer + this.@r_c0_fatalError) | one children))
   always (this in alive_c0_channel and not before this in alive_c0_channel implies (some this.@r_c0_clientHello)) }
-fun alive_c0_channel : set c0_channel { c0_handshakeStatus.@r_c0_channel }
+fun alive_c0_channel : set c0_channel { c0_Protocol.@r_c0_channel }
 fact { always ~@r_c0_channel in @p_c0_channel
-  always @r_c0_channel.univ in alive_c0_handshakeStatus }
+  always @r_c0_channel.univ in alive_c0_Protocol }
 
 fact { all self_ : c0_channel | always (self_ in alive_c0_channel implies (lone self_.@r_c0_clientHello)) }
 fact { all self_ : c0_channel | always (self_ in alive_c0_channel implies (lone self_.@r_c0_serverResponse)) }
+fact { all self_ : c0_channel | always (self_ in alive_c0_channel implies (lone self_.@r_c0_clientResponse)) }
+fact { all self_ : c0_channel | always (self_ in alive_c0_channel implies (lone self_.@r_c0_serverFinish)) }
+fact { all self_ : c0_channel | always (self_ in alive_c0_channel implies (lone self_.@r_c0_dataTransfer)) }
+fact { all self_ : c0_channel | always (self_ in alive_c0_channel implies (lone self_.@r_c0_fatalError)) }
+fact { all self_ : c0_channel | always (self_ in alive_c0_channel implies (((some self_.@r_c0_serverResponse) && (!((some (self_.@r_c0_serverResponse).@r_c0_mismatch) || (some (self_.@r_c0_serverResponse).@r_c0_serverHelloDone)))) => (after (not some self_.(@p_c0_channel :> alive_c0_Protocol) or (some self_.@r_c0_serverResponse))))) }
+fact { all self_ : c0_channel | always (self_ in alive_c0_channel implies ((some (self_.@r_c0_serverResponse).@r_c0_mismatch) => (after (not some self_.(@p_c0_channel :> alive_c0_Protocol) or (some self_.@r_c0_fatalError))))) }
+fact { all self_ : c0_channel | always (self_ in alive_c0_channel implies ((some (self_.@r_c0_serverResponse).@r_c0_serverHelloDone) => (after (not some self_.(@p_c0_channel :> alive_c0_Protocol) or (some self_.@r_c0_clientResponse))))) }
+fact { all self_ : c0_channel | always (self_ in alive_c0_channel implies (((some self_.@r_c0_clientResponse) && (no (self_.@r_c0_clientResponse).@r_c0_clientFinished)) => (after (not some self_.(@p_c0_channel :> alive_c0_Protocol) or (some self_.@r_c0_clientResponse))))) }
+fact { all self_ : c0_channel | always (self_ in alive_c0_channel implies ((some (self_.@r_c0_clientResponse).@r_c0_clientFinished) => (after (not some self_.(@p_c0_channel :> alive_c0_Protocol) or (some self_.@r_c0_serverFinish))))) }
+fact { all self_ : c0_channel | always (self_ in alive_c0_channel implies (((some self_.@r_c0_serverFinish) && (no (self_.@r_c0_serverFinish).@r_c0_serverFinished)) => (after (not some self_.(@p_c0_channel :> alive_c0_Protocol) or (some self_.@r_c0_serverFinish))))) }
+fact { all self_ : c0_channel | always (self_ in alive_c0_channel implies ((some (self_.@r_c0_serverFinish).@r_c0_serverFinished) => (after (not some self_.(@p_c0_channel :> alive_c0_Protocol) or (some self_.@r_c0_dataTransfer))))) }
 
 
 sig c0_clientHello
@@ -425,17 +426,20 @@ fun alive_c0_clientHello : set c0_clientHello { c0_channel.@r_c0_clientHello }
 fact { always ~@r_c0_clientHello in @p_c0_clientHello
   always @r_c0_clientHello.univ in alive_c0_channel }
 
-fact { all self_ : c0_clientHello | always (self_ in alive_c0_clientHello implies ((((self_.(@p_c0_clientHello :> alive_c0_channel)).(@p_c0_channel :> alive_c0_handshakeStatus)).@c0_handshakeStatus_ref) = alive_c0_initiated)) }
-fact { all self_ : c0_clientHello | always (self_ in alive_c0_clientHello implies ((((((((self_.(@p_c0_clientHello :> alive_c0_channel)).(@p_c0_channel :> alive_c0_handshakeStatus)).(@p_c0_handshakeStatus :> alive_c0_Protocol)).@r_c0_client).@c0_client_ref).@r_c0_send).@c0_send_ref) = alive_c0_clientHelloMessage)) }
-fact { all self_ : c0_clientHello | always (self_ in alive_c0_clientHello implies ((some (self_ & alive_c0_clientHello)) => (after (not some self_.(@p_c0_clientHello :> alive_c0_channel) or ((some (self_.(@p_c0_clientHello :> alive_c0_channel)).@r_c0_serverResponse) || (some ((self_.(@p_c0_clientHello :> alive_c0_channel)).(@p_c0_channel :> alive_c0_handshakeStatus)).@r_c0_fatalError)))))) }
+fact { all self_ : c0_clientHello | always (self_ in alive_c0_clientHello implies (((((self_.(@p_c0_clientHello :> alive_c0_channel)).(@p_c0_channel :> alive_c0_Protocol)).@r_c0_handshakeStatus).@c0_handshakeStatus_ref) = alive_c0_initiated)) }
+fact { all self_ : c0_clientHello | always (self_ in alive_c0_clientHello implies (((((((self_.(@p_c0_clientHello :> alive_c0_channel)).(@p_c0_channel :> alive_c0_Protocol)).@r_c0_client).@c0_client_ref).@r_c0_send).@c0_send_ref) = alive_c0_clientHelloMessage)) }
+fact { all self_ : c0_clientHello | always (self_ in alive_c0_clientHello implies ((some (self_ & alive_c0_clientHello)) => (after (not some self_.(@p_c0_clientHello :> alive_c0_channel) or ((some (self_.(@p_c0_clientHello :> alive_c0_channel)).@r_c0_serverResponse) || (some (self_.(@p_c0_clientHello :> alive_c0_channel)).@r_c0_fatalError)))))) }
 
 
 sig c0_serverResponse
 { p_c0_serverResponse : lone c0_channel
 , var r_c0_mismatch : set c0_mismatch
 , var r_c0_serverHello : set c0_serverHello
-, var r_c0_serverCertificate : set c0_serverCertificate }
-{ always (this in alive_c0_serverResponse implies (let children = (this.@r_c0_mismatch + this.@r_c0_serverHello + this.@r_c0_serverCertificate) | one children)) }
+, var r_c0_serverCertificate : set c0_serverCertificate
+, var r_c0_serverKeyExchange : set c0_serverKeyExchange
+, var r_c0_certificateRequest : set c0_certificateRequest
+, var r_c0_serverHelloDone : set c0_serverHelloDone }
+{ always (this in alive_c0_serverResponse implies (let children = (this.@r_c0_mismatch + this.@r_c0_serverHello + this.@r_c0_serverCertificate + this.@r_c0_serverKeyExchange + this.@r_c0_certificateRequest + this.@r_c0_serverHelloDone) | one children)) }
 fun alive_c0_serverResponse : set c0_serverResponse { c0_channel.@r_c0_serverResponse }
 fact { always ~@r_c0_serverResponse in @p_c0_serverResponse
   always @r_c0_serverResponse.univ in alive_c0_channel }
@@ -443,9 +447,17 @@ fact { always ~@r_c0_serverResponse in @p_c0_serverResponse
 fact { all self_ : c0_serverResponse | always (self_ in alive_c0_serverResponse implies (lone self_.@r_c0_mismatch)) }
 fact { all self_ : c0_serverResponse | always (self_ in alive_c0_serverResponse implies (lone self_.@r_c0_serverHello)) }
 fact { all self_ : c0_serverResponse | always (self_ in alive_c0_serverResponse implies (lone self_.@r_c0_serverCertificate)) }
-fact { all self_ : c0_serverResponse | always (self_ in alive_c0_serverResponse implies ((((self_.(@p_c0_serverResponse :> alive_c0_channel)).(@p_c0_channel :> alive_c0_handshakeStatus)).@c0_handshakeStatus_ref) = alive_c0_initiated)) }
+fact { all self_ : c0_serverResponse | always (self_ in alive_c0_serverResponse implies (lone self_.@r_c0_serverKeyExchange)) }
+fact { all self_ : c0_serverResponse | always (self_ in alive_c0_serverResponse implies (lone self_.@r_c0_certificateRequest)) }
+fact { all self_ : c0_serverResponse | always (self_ in alive_c0_serverResponse implies (lone self_.@r_c0_serverHelloDone)) }
+fact { all self_ : c0_serverResponse | always (self_ in alive_c0_serverResponse implies (((((self_.(@p_c0_serverResponse :> alive_c0_channel)).(@p_c0_channel :> alive_c0_Protocol)).@r_c0_handshakeStatus).@c0_handshakeStatus_ref) = alive_c0_initiated)) }
 fact { all self_ : c0_serverResponse | always (self_ in alive_c0_serverResponse implies ((not before self_ in alive_c0_serverResponse) implies ((some self_.@r_c0_serverHello) || (some self_.@r_c0_mismatch)))) }
 fact { all self_ : c0_serverResponse | always (self_ in alive_c0_serverResponse implies (((some self_.@r_c0_serverHello) && (no alive_c0_TLSFeatures.@r_c0_annonymousMode)) => (after (not some self_.(@p_c0_serverResponse :> alive_c0_channel) or (some self_.@r_c0_serverCertificate))))) }
+fact { all self_ : c0_serverResponse | always (self_ in alive_c0_serverResponse implies (((some self_.@r_c0_serverHello) && (some alive_c0_TLSFeatures.@r_c0_annonymousMode)) => (after (not some self_.(@p_c0_serverResponse :> alive_c0_channel) or (some self_.@r_c0_serverKeyExchange))))) }
+fact { all self_ : c0_serverResponse | always (self_ in alive_c0_serverResponse implies (((some self_.@r_c0_serverCertificate) && (some alive_c0_TLSFeatures.@r_c0_clientAuthentication)) => (after (not some self_.(@p_c0_serverResponse :> alive_c0_channel) or ((some self_.@r_c0_serverKeyExchange) || (some self_.@r_c0_certificateRequest)))))) }
+fact { all self_ : c0_serverResponse | always (self_ in alive_c0_serverResponse implies (((some self_.@r_c0_serverCertificate) && (no alive_c0_TLSFeatures.@r_c0_clientAuthentication)) => (after (not some self_.(@p_c0_serverResponse :> alive_c0_channel) or ((some self_.@r_c0_serverKeyExchange) || (some self_.@r_c0_serverHelloDone)))))) }
+fact { all self_ : c0_serverResponse | always (self_ in alive_c0_serverResponse implies (((some self_.@r_c0_serverKeyExchange) && (some alive_c0_TLSFeatures.@r_c0_clientAuthentication)) => (after (not some self_.(@p_c0_serverResponse :> alive_c0_channel) or (some self_.@r_c0_certificateRequest))))) }
+fact { all self_ : c0_serverResponse | always (self_ in alive_c0_serverResponse implies (((some self_.@r_c0_serverKeyExchange) && (no alive_c0_TLSFeatures.@r_c0_clientAuthentication)) => (after (not some self_.(@p_c0_serverResponse :> alive_c0_channel) or (some self_.@r_c0_serverHelloDone))))) }
 
 
 sig c0_mismatch
@@ -454,9 +466,8 @@ fun alive_c0_mismatch : set c0_mismatch { c0_serverResponse.@r_c0_mismatch }
 fact { always ~@r_c0_mismatch in @p_c0_mismatch
   always @r_c0_mismatch.univ in alive_c0_serverResponse }
 
-fact { all self_ : c0_mismatch | always (self_ in alive_c0_mismatch implies (!((((((((self_.(@p_c0_mismatch :> alive_c0_serverResponse)).(@p_c0_serverResponse :> alive_c0_channel)).(@p_c0_channel :> alive_c0_handshakeStatus)).(@p_c0_handshakeStatus :> alive_c0_Protocol)).@r_c0_client).@c0_client_ref).@r_c0_protocolversion) = (((((((self_.(@p_c0_mismatch :> alive_c0_serverResponse)).(@p_c0_serverResponse :> alive_c0_channel)).(@p_c0_channel :> alive_c0_handshakeStatus)).(@p_c0_handshakeStatus :> alive_c0_Protocol)).@r_c0_server).@c0_server_ref).@r_c0_protocolversion)))) }
-fact { all self_ : c0_mismatch | always (self_ in alive_c0_mismatch implies (((((((((self_.(@p_c0_mismatch :> alive_c0_serverResponse)).(@p_c0_serverResponse :> alive_c0_channel)).(@p_c0_channel :> alive_c0_handshakeStatus)).(@p_c0_handshakeStatus :> alive_c0_Protocol)).@r_c0_server).@c0_server_ref).@r_c0_send).@c0_send_ref) = alive_c0_protocolMismatch)) }
-fact { all self_ : c0_mismatch | always (self_ in alive_c0_mismatch implies ((some (self_ & alive_c0_mismatch)) => (after (not some self_.(@p_c0_mismatch :> alive_c0_serverResponse) or (some (((self_.(@p_c0_mismatch :> alive_c0_serverResponse)).(@p_c0_serverResponse :> alive_c0_channel)).(@p_c0_channel :> alive_c0_handshakeStatus)).@r_c0_fatalError))))) }
+fact { all self_ : c0_mismatch | always (self_ in alive_c0_mismatch implies (no (((((((self_.(@p_c0_mismatch :> alive_c0_serverResponse)).(@p_c0_serverResponse :> alive_c0_channel)).(@p_c0_channel :> alive_c0_Protocol)).@r_c0_client).@c0_client_ref).@r_c0_protocolversion).@c0_protocolversion_ref) & (((((((self_.(@p_c0_mismatch :> alive_c0_serverResponse)).(@p_c0_serverResponse :> alive_c0_channel)).(@p_c0_channel :> alive_c0_Protocol)).@r_c0_server).@c0_server_ref).@r_c0_protocolversion).@c0_protocolversion_ref))) }
+fact { all self_ : c0_mismatch | always (self_ in alive_c0_mismatch implies ((((((((self_.(@p_c0_mismatch :> alive_c0_serverResponse)).(@p_c0_serverResponse :> alive_c0_channel)).(@p_c0_channel :> alive_c0_Protocol)).@r_c0_server).@c0_server_ref).@r_c0_send).@c0_send_ref) = alive_c0_protocolMismatch)) }
 
 
 sig c0_serverHello
@@ -465,9 +476,8 @@ fun alive_c0_serverHello : set c0_serverHello { c0_serverResponse.@r_c0_serverHe
 fact { always ~@r_c0_serverHello in @p_c0_serverHello
   always @r_c0_serverHello.univ in alive_c0_serverResponse }
 
-fact { all self_ : c0_serverHello | always (self_ in alive_c0_serverHello implies ((((((((self_.(@p_c0_serverHello :> alive_c0_serverResponse)).(@p_c0_serverResponse :> alive_c0_channel)).(@p_c0_channel :> alive_c0_handshakeStatus)).(@p_c0_handshakeStatus :> alive_c0_Protocol)).@r_c0_client).@c0_client_ref).@r_c0_protocolversion) in (((((((self_.(@p_c0_serverHello :> alive_c0_serverResponse)).(@p_c0_serverResponse :> alive_c0_channel)).(@p_c0_channel :> alive_c0_handshakeStatus)).(@p_c0_handshakeStatus :> alive_c0_Protocol)).@r_c0_server).@c0_server_ref).@r_c0_protocolversion))) }
-fact { all self_ : c0_serverHello | always (self_ in alive_c0_serverHello implies (((((((((self_.(@p_c0_serverHello :> alive_c0_serverResponse)).(@p_c0_serverResponse :> alive_c0_channel)).(@p_c0_channel :> alive_c0_handshakeStatus)).(@p_c0_handshakeStatus :> alive_c0_Protocol)).@r_c0_server).@c0_server_ref).@r_c0_send).@c0_send_ref) = alive_c0_serverHelloMessage)) }
-fact { all self_ : c0_serverHello | always (self_ in alive_c0_serverHello implies ((some (self_ & alive_c0_serverHello)) => (after (not some self_.(@p_c0_serverHello :> alive_c0_serverResponse) or ((((some (self_.(@p_c0_serverHello :> alive_c0_serverResponse)).@r_c0_serverCertificate) || (some (((self_.(@p_c0_serverHello :> alive_c0_serverResponse)).(@p_c0_serverResponse :> alive_c0_channel)).(@p_c0_channel :> alive_c0_handshakeStatus)).@r_c0_serverKeyExchange)) || (some (((self_.(@p_c0_serverHello :> alive_c0_serverResponse)).(@p_c0_serverResponse :> alive_c0_channel)).(@p_c0_channel :> alive_c0_handshakeStatus)).@r_c0_certificateRequest)) || (some (((self_.(@p_c0_serverHello :> alive_c0_serverResponse)).(@p_c0_serverResponse :> alive_c0_channel)).(@p_c0_channel :> alive_c0_handshakeStatus)).@r_c0_serverHelloDone)))))) }
+fact { all self_ : c0_serverHello | always (self_ in alive_c0_serverHello implies (some (((((((self_.(@p_c0_serverHello :> alive_c0_serverResponse)).(@p_c0_serverResponse :> alive_c0_channel)).(@p_c0_channel :> alive_c0_Protocol)).@r_c0_client).@c0_client_ref).@r_c0_protocolversion).@c0_protocolversion_ref) & (((((((self_.(@p_c0_serverHello :> alive_c0_serverResponse)).(@p_c0_serverResponse :> alive_c0_channel)).(@p_c0_channel :> alive_c0_Protocol)).@r_c0_server).@c0_server_ref).@r_c0_protocolversion).@c0_protocolversion_ref))) }
+fact { all self_ : c0_serverHello | always (self_ in alive_c0_serverHello implies ((((((((self_.(@p_c0_serverHello :> alive_c0_serverResponse)).(@p_c0_serverResponse :> alive_c0_channel)).(@p_c0_channel :> alive_c0_Protocol)).@r_c0_server).@c0_server_ref).@r_c0_send).@c0_send_ref) = alive_c0_serverHelloMessage)) }
 
 
 sig c0_serverCertificate
@@ -476,60 +486,61 @@ fun alive_c0_serverCertificate : set c0_serverCertificate { c0_serverResponse.@r
 fact { always ~@r_c0_serverCertificate in @p_c0_serverCertificate
   always @r_c0_serverCertificate.univ in alive_c0_serverResponse }
 
-fact { all self_ : c0_serverCertificate | always (self_ in alive_c0_serverCertificate implies (((((((((self_.(@p_c0_serverCertificate :> alive_c0_serverResponse)).(@p_c0_serverResponse :> alive_c0_channel)).(@p_c0_channel :> alive_c0_handshakeStatus)).(@p_c0_handshakeStatus :> alive_c0_Protocol)).@r_c0_server).@c0_server_ref).@r_c0_send).@c0_send_ref) = alive_c0_serverCertificateMessage)) }
-fact { all self_ : c0_serverCertificate | always (self_ in alive_c0_serverCertificate implies ((some (self_ & alive_c0_serverCertificate)) => (after (not some self_.(@p_c0_serverCertificate :> alive_c0_serverResponse) or (((some (((self_.(@p_c0_serverCertificate :> alive_c0_serverResponse)).(@p_c0_serverResponse :> alive_c0_channel)).(@p_c0_channel :> alive_c0_handshakeStatus)).@r_c0_serverKeyExchange) || (some (((self_.(@p_c0_serverCertificate :> alive_c0_serverResponse)).(@p_c0_serverResponse :> alive_c0_channel)).(@p_c0_channel :> alive_c0_handshakeStatus)).@r_c0_certificateRequest)) || (some (((self_.(@p_c0_serverCertificate :> alive_c0_serverResponse)).(@p_c0_serverResponse :> alive_c0_channel)).(@p_c0_channel :> alive_c0_handshakeStatus)).@r_c0_serverHelloDone)))))) }
+fact { all self_ : c0_serverCertificate | always (self_ in alive_c0_serverCertificate implies (no alive_c0_TLSFeatures.@r_c0_annonymousMode)) }
+fact { all self_ : c0_serverCertificate | always (self_ in alive_c0_serverCertificate implies ((((((((self_.(@p_c0_serverCertificate :> alive_c0_serverResponse)).(@p_c0_serverResponse :> alive_c0_channel)).(@p_c0_channel :> alive_c0_Protocol)).@r_c0_server).@c0_server_ref).@r_c0_send).@c0_send_ref) = alive_c0_serverCertificateMessage)) }
 
 
 sig c0_serverKeyExchange
-{ p_c0_serverKeyExchange : lone c0_handshakeStatus }
-fun alive_c0_serverKeyExchange : set c0_serverKeyExchange { c0_handshakeStatus.@r_c0_serverKeyExchange }
+{ p_c0_serverKeyExchange : lone c0_serverResponse }
+fun alive_c0_serverKeyExchange : set c0_serverKeyExchange { c0_serverResponse.@r_c0_serverKeyExchange }
 fact { always ~@r_c0_serverKeyExchange in @p_c0_serverKeyExchange
-  always @r_c0_serverKeyExchange.univ in alive_c0_handshakeStatus }
+  always @r_c0_serverKeyExchange.univ in alive_c0_serverResponse }
 
-fact { all self_ : c0_serverKeyExchange | always (self_ in alive_c0_serverKeyExchange implies (((((((self_.(@p_c0_serverKeyExchange :> alive_c0_handshakeStatus)).(@p_c0_handshakeStatus :> alive_c0_Protocol)).@r_c0_server).@c0_server_ref).@r_c0_send).@c0_send_ref) = alive_c0_serverKeyExchangeMessage)) }
-fact { all self_ : c0_serverKeyExchange | always (self_ in alive_c0_serverKeyExchange implies ((some (self_ & alive_c0_serverKeyExchange)) => (after (not some self_.(@p_c0_serverKeyExchange :> alive_c0_handshakeStatus) or ((some (self_.(@p_c0_serverKeyExchange :> alive_c0_handshakeStatus)).@r_c0_certificateRequest) || (some (self_.(@p_c0_serverKeyExchange :> alive_c0_handshakeStatus)).@r_c0_serverHelloDone)))))) }
+fact { all self_ : c0_serverKeyExchange | always (self_ in alive_c0_serverKeyExchange implies ((((((((self_.(@p_c0_serverKeyExchange :> alive_c0_serverResponse)).(@p_c0_serverResponse :> alive_c0_channel)).(@p_c0_channel :> alive_c0_Protocol)).@r_c0_server).@c0_server_ref).@r_c0_send).@c0_send_ref) = alive_c0_serverKeyExchangeMessage)) }
 
 
 sig c0_certificateRequest
-{ p_c0_certificateRequest : lone c0_handshakeStatus }
-fun alive_c0_certificateRequest : set c0_certificateRequest { c0_handshakeStatus.@r_c0_certificateRequest }
+{ p_c0_certificateRequest : lone c0_serverResponse }
+fun alive_c0_certificateRequest : set c0_certificateRequest { c0_serverResponse.@r_c0_certificateRequest }
 fact { always ~@r_c0_certificateRequest in @p_c0_certificateRequest
-  always @r_c0_certificateRequest.univ in alive_c0_handshakeStatus }
+  always @r_c0_certificateRequest.univ in alive_c0_serverResponse }
 
-fact { all self_ : c0_certificateRequest | always (self_ in alive_c0_certificateRequest implies ((no alive_c0_TLSFeatures.@r_c0_annonymousMode) && (some alive_c0_TLSFeatures.@r_c0_clientAuthentication))) }
-fact { all self_ : c0_certificateRequest | always (self_ in alive_c0_certificateRequest implies (((((((self_.(@p_c0_certificateRequest :> alive_c0_handshakeStatus)).(@p_c0_handshakeStatus :> alive_c0_Protocol)).@r_c0_server).@c0_server_ref).@r_c0_send).@c0_send_ref) = alive_c0_serverCertificateRequestMessage)) }
-fact { all self_ : c0_certificateRequest | always (self_ in alive_c0_certificateRequest implies ((some (self_ & alive_c0_certificateRequest)) => (after (not some self_.(@p_c0_certificateRequest :> alive_c0_handshakeStatus) or (some (self_.(@p_c0_certificateRequest :> alive_c0_handshakeStatus)).@r_c0_serverHelloDone))))) }
+fact { all self_ : c0_certificateRequest | always (self_ in alive_c0_certificateRequest implies (some alive_c0_TLSFeatures.@r_c0_clientAuthentication)) }
+fact { all self_ : c0_certificateRequest | always (self_ in alive_c0_certificateRequest implies ((((((((self_.(@p_c0_certificateRequest :> alive_c0_serverResponse)).(@p_c0_serverResponse :> alive_c0_channel)).(@p_c0_channel :> alive_c0_Protocol)).@r_c0_server).@c0_server_ref).@r_c0_send).@c0_send_ref) = alive_c0_serverCertificateRequestMessage)) }
+fact { all self_ : c0_certificateRequest | always (self_ in alive_c0_certificateRequest implies ((some (self_ & alive_c0_certificateRequest)) => (after (not some self_.(@p_c0_certificateRequest :> alive_c0_serverResponse) or (some (self_.(@p_c0_certificateRequest :> alive_c0_serverResponse)).@r_c0_serverHelloDone))))) }
 
 
 sig c0_serverHelloDone
-{ p_c0_serverHelloDone : lone c0_handshakeStatus }
-fun alive_c0_serverHelloDone : set c0_serverHelloDone { c0_handshakeStatus.@r_c0_serverHelloDone }
+{ p_c0_serverHelloDone : lone c0_serverResponse }
+fun alive_c0_serverHelloDone : set c0_serverHelloDone { c0_serverResponse.@r_c0_serverHelloDone }
 fact { always ~@r_c0_serverHelloDone in @p_c0_serverHelloDone
-  always @r_c0_serverHelloDone.univ in alive_c0_handshakeStatus }
+  always @r_c0_serverHelloDone.univ in alive_c0_serverResponse }
 
-fact { all self_ : c0_serverHelloDone | always (self_ in alive_c0_serverHelloDone implies (((((((self_.(@p_c0_serverHelloDone :> alive_c0_handshakeStatus)).(@p_c0_handshakeStatus :> alive_c0_Protocol)).@r_c0_server).@c0_server_ref).@r_c0_send).@c0_send_ref) = alive_c0_serverHelloDoneMessage)) }
-fact { all self_ : c0_serverHelloDone | always (self_ in alive_c0_serverHelloDone implies ((some (self_ & alive_c0_serverHelloDone)) => (after (not some self_.(@p_c0_serverHelloDone :> alive_c0_handshakeStatus) or (some (self_.(@p_c0_serverHelloDone :> alive_c0_handshakeStatus)).@r_c0_clientResponse))))) }
+fact { all self_ : c0_serverHelloDone | always (self_ in alive_c0_serverHelloDone implies ((((((((self_.(@p_c0_serverHelloDone :> alive_c0_serverResponse)).(@p_c0_serverResponse :> alive_c0_channel)).(@p_c0_channel :> alive_c0_Protocol)).@r_c0_server).@c0_server_ref).@r_c0_send).@c0_send_ref) = alive_c0_serverHelloDoneMessage)) }
 
 
 sig c0_clientResponse
-{ p_c0_clientResponse : lone c0_handshakeStatus
+{ p_c0_clientResponse : lone c0_channel
 , var r_c0_clientCertificate : set c0_clientCertificate
 , var r_c0_clientKeyExchange : set c0_clientKeyExchange
 , var r_c0_certificateVerify : set c0_certificateVerify
 , var r_c0_clientChangeCipherSpec : set c0_clientChangeCipherSpec
 , var r_c0_clientFinished : set c0_clientFinished }
 { always (this in alive_c0_clientResponse implies (let children = (this.@r_c0_clientCertificate + this.@r_c0_clientKeyExchange + this.@r_c0_certificateVerify + this.@r_c0_clientChangeCipherSpec + this.@r_c0_clientFinished) | one children)) }
-fun alive_c0_clientResponse : set c0_clientResponse { c0_handshakeStatus.@r_c0_clientResponse }
+fun alive_c0_clientResponse : set c0_clientResponse { c0_channel.@r_c0_clientResponse }
 fact { always ~@r_c0_clientResponse in @p_c0_clientResponse
-  always @r_c0_clientResponse.univ in alive_c0_handshakeStatus }
+  always @r_c0_clientResponse.univ in alive_c0_channel }
 
 fact { all self_ : c0_clientResponse | always (self_ in alive_c0_clientResponse implies (lone self_.@r_c0_clientCertificate)) }
 fact { all self_ : c0_clientResponse | always (self_ in alive_c0_clientResponse implies (lone self_.@r_c0_clientKeyExchange)) }
 fact { all self_ : c0_clientResponse | always (self_ in alive_c0_clientResponse implies (lone self_.@r_c0_certificateVerify)) }
 fact { all self_ : c0_clientResponse | always (self_ in alive_c0_clientResponse implies (lone self_.@r_c0_clientChangeCipherSpec)) }
 fact { all self_ : c0_clientResponse | always (self_ in alive_c0_clientResponse implies (lone self_.@r_c0_clientFinished)) }
-fact { all self_ : c0_clientResponse | always (self_ in alive_c0_clientResponse implies (((self_.(@p_c0_clientResponse :> alive_c0_handshakeStatus)).@c0_handshakeStatus_ref) = alive_c0_initiated)) }
-fact { all self_ : c0_clientResponse | always (self_ in alive_c0_clientResponse implies ((not before self_ in alive_c0_clientResponse) implies ((some self_.@r_c0_clientCertificate) || (some self_.@r_c0_clientKeyExchange)))) }
+fact { all self_ : c0_clientResponse | always (self_ in alive_c0_clientResponse implies (((((self_.(@p_c0_clientResponse :> alive_c0_channel)).(@p_c0_channel :> alive_c0_Protocol)).@r_c0_handshakeStatus).@c0_handshakeStatus_ref) = alive_c0_initiated)) }
+fact { all self_ : c0_clientResponse | always (self_ in alive_c0_clientResponse implies ((not before self_ in alive_c0_clientResponse) implies ((some alive_c0_TLSFeatures.@r_c0_clientAuthentication) => (some self_.@r_c0_clientCertificate)))) }
+fact { all self_ : c0_clientResponse | always (self_ in alive_c0_clientResponse implies ((not before self_ in alive_c0_clientResponse) implies ((no alive_c0_TLSFeatures.@r_c0_clientAuthentication) => (some self_.@r_c0_clientKeyExchange)))) }
+fact { all self_ : c0_clientResponse | always (self_ in alive_c0_clientResponse implies (((some self_.@r_c0_clientKeyExchange) && ((some alive_c0_TLSFeatures.@r_c0_clientAuthentication) && (some (((((self_.(@p_c0_clientResponse :> alive_c0_channel)).(@p_c0_channel :> alive_c0_Protocol)).@r_c0_client).@c0_client_ref).@r_c0_certificate).@r_c0_signing))) => (after (not some self_.(@p_c0_clientResponse :> alive_c0_channel) or (some self_.@r_c0_certificateVerify))))) }
+fact { all self_ : c0_clientResponse | always (self_ in alive_c0_clientResponse implies (((some self_.@r_c0_clientKeyExchange) && (!((some alive_c0_TLSFeatures.@r_c0_clientAuthentication) && (some (((((self_.(@p_c0_clientResponse :> alive_c0_channel)).(@p_c0_channel :> alive_c0_Protocol)).@r_c0_client).@c0_client_ref).@r_c0_certificate).@r_c0_signing)))) => (after (not some self_.(@p_c0_clientResponse :> alive_c0_channel) or (some self_.@r_c0_clientChangeCipherSpec))))) }
 
 
 sig c0_clientCertificate
@@ -538,8 +549,8 @@ fun alive_c0_clientCertificate : set c0_clientCertificate { c0_clientResponse.@r
 fact { always ~@r_c0_clientCertificate in @p_c0_clientCertificate
   always @r_c0_clientCertificate.univ in alive_c0_clientResponse }
 
-fact { all self_ : c0_clientCertificate | always (self_ in alive_c0_clientCertificate implies ((no alive_c0_TLSFeatures.@r_c0_annonymousMode) && (some alive_c0_TLSFeatures.@r_c0_clientAuthentication))) }
-fact { all self_ : c0_clientCertificate | always (self_ in alive_c0_clientCertificate implies ((((((((self_.(@p_c0_clientCertificate :> alive_c0_clientResponse)).(@p_c0_clientResponse :> alive_c0_handshakeStatus)).(@p_c0_handshakeStatus :> alive_c0_Protocol)).@r_c0_client).@c0_client_ref).@r_c0_send).@c0_send_ref) = alive_c0_clientCertificateMessage)) }
+fact { all self_ : c0_clientCertificate | always (self_ in alive_c0_clientCertificate implies (some alive_c0_TLSFeatures.@r_c0_clientAuthentication)) }
+fact { all self_ : c0_clientCertificate | always (self_ in alive_c0_clientCertificate implies ((((((((self_.(@p_c0_clientCertificate :> alive_c0_clientResponse)).(@p_c0_clientResponse :> alive_c0_channel)).(@p_c0_channel :> alive_c0_Protocol)).@r_c0_client).@c0_client_ref).@r_c0_send).@c0_send_ref) = alive_c0_clientCertificateMessage)) }
 fact { all self_ : c0_clientCertificate | always (self_ in alive_c0_clientCertificate implies ((some (self_ & alive_c0_clientCertificate)) => (after (not some self_.(@p_c0_clientCertificate :> alive_c0_clientResponse) or (some (self_.(@p_c0_clientCertificate :> alive_c0_clientResponse)).@r_c0_clientKeyExchange))))) }
 
 
@@ -549,8 +560,7 @@ fun alive_c0_clientKeyExchange : set c0_clientKeyExchange { c0_clientResponse.@r
 fact { always ~@r_c0_clientKeyExchange in @p_c0_clientKeyExchange
   always @r_c0_clientKeyExchange.univ in alive_c0_clientResponse }
 
-fact { all self_ : c0_clientKeyExchange | always (self_ in alive_c0_clientKeyExchange implies ((((((((self_.(@p_c0_clientKeyExchange :> alive_c0_clientResponse)).(@p_c0_clientResponse :> alive_c0_handshakeStatus)).(@p_c0_handshakeStatus :> alive_c0_Protocol)).@r_c0_client).@c0_client_ref).@r_c0_send).@c0_send_ref) = alive_c0_clientKeyExchangeMessage)) }
-fact { all self_ : c0_clientKeyExchange | always (self_ in alive_c0_clientKeyExchange implies ((some (self_ & alive_c0_clientKeyExchange)) => (after (not some self_.(@p_c0_clientKeyExchange :> alive_c0_clientResponse) or ((some (self_.(@p_c0_clientKeyExchange :> alive_c0_clientResponse)).@r_c0_certificateVerify) || (some (self_.(@p_c0_clientKeyExchange :> alive_c0_clientResponse)).@r_c0_clientChangeCipherSpec)))))) }
+fact { all self_ : c0_clientKeyExchange | always (self_ in alive_c0_clientKeyExchange implies ((((((((self_.(@p_c0_clientKeyExchange :> alive_c0_clientResponse)).(@p_c0_clientResponse :> alive_c0_channel)).(@p_c0_channel :> alive_c0_Protocol)).@r_c0_client).@c0_client_ref).@r_c0_send).@c0_send_ref) = alive_c0_clientKeyExchangeMessage)) }
 
 
 sig c0_certificateVerify
@@ -559,8 +569,8 @@ fun alive_c0_certificateVerify : set c0_certificateVerify { c0_clientResponse.@r
 fact { always ~@r_c0_certificateVerify in @p_c0_certificateVerify
   always @r_c0_certificateVerify.univ in alive_c0_clientResponse }
 
-fact { all self_ : c0_certificateVerify | always (self_ in alive_c0_certificateVerify implies (some ((((((self_.(@p_c0_certificateVerify :> alive_c0_clientResponse)).(@p_c0_clientResponse :> alive_c0_handshakeStatus)).(@p_c0_handshakeStatus :> alive_c0_Protocol)).@r_c0_client).@c0_client_ref).@r_c0_certificate).@r_c0_signing)) }
-fact { all self_ : c0_certificateVerify | always (self_ in alive_c0_certificateVerify implies ((((((((self_.(@p_c0_certificateVerify :> alive_c0_clientResponse)).(@p_c0_clientResponse :> alive_c0_handshakeStatus)).(@p_c0_handshakeStatus :> alive_c0_Protocol)).@r_c0_client).@c0_client_ref).@r_c0_send).@c0_send_ref) = alive_c0_certificateVerifyMessage)) }
+fact { all self_ : c0_certificateVerify | always (self_ in alive_c0_certificateVerify implies (some ((((((self_.(@p_c0_certificateVerify :> alive_c0_clientResponse)).(@p_c0_clientResponse :> alive_c0_channel)).(@p_c0_channel :> alive_c0_Protocol)).@r_c0_client).@c0_client_ref).@r_c0_certificate).@r_c0_signing)) }
+fact { all self_ : c0_certificateVerify | always (self_ in alive_c0_certificateVerify implies ((((((((self_.(@p_c0_certificateVerify :> alive_c0_clientResponse)).(@p_c0_clientResponse :> alive_c0_channel)).(@p_c0_channel :> alive_c0_Protocol)).@r_c0_client).@c0_client_ref).@r_c0_send).@c0_send_ref) = alive_c0_certificateVerifyMessage)) }
 fact { all self_ : c0_certificateVerify | always (self_ in alive_c0_certificateVerify implies ((some (self_ & alive_c0_certificateVerify)) => (after (not some self_.(@p_c0_certificateVerify :> alive_c0_clientResponse) or (some (self_.(@p_c0_certificateVerify :> alive_c0_clientResponse)).@r_c0_clientChangeCipherSpec))))) }
 
 
@@ -570,7 +580,7 @@ fun alive_c0_clientChangeCipherSpec : set c0_clientChangeCipherSpec { c0_clientR
 fact { always ~@r_c0_clientChangeCipherSpec in @p_c0_clientChangeCipherSpec
   always @r_c0_clientChangeCipherSpec.univ in alive_c0_clientResponse }
 
-fact { all self_ : c0_clientChangeCipherSpec | always (self_ in alive_c0_clientChangeCipherSpec implies ((((((((self_.(@p_c0_clientChangeCipherSpec :> alive_c0_clientResponse)).(@p_c0_clientResponse :> alive_c0_handshakeStatus)).(@p_c0_handshakeStatus :> alive_c0_Protocol)).@r_c0_client).@c0_client_ref).@r_c0_send).@c0_send_ref) = alive_c0_clientChangeCipherSpecMessage)) }
+fact { all self_ : c0_clientChangeCipherSpec | always (self_ in alive_c0_clientChangeCipherSpec implies ((((((((self_.(@p_c0_clientChangeCipherSpec :> alive_c0_clientResponse)).(@p_c0_clientResponse :> alive_c0_channel)).(@p_c0_channel :> alive_c0_Protocol)).@r_c0_client).@c0_client_ref).@r_c0_send).@c0_send_ref) = alive_c0_clientChangeCipherSpecMessage)) }
 fact { all self_ : c0_clientChangeCipherSpec | always (self_ in alive_c0_clientChangeCipherSpec implies ((some (self_ & alive_c0_clientChangeCipherSpec)) => (after (not some self_.(@p_c0_clientChangeCipherSpec :> alive_c0_clientResponse) or (some (self_.(@p_c0_clientChangeCipherSpec :> alive_c0_clientResponse)).@r_c0_clientFinished))))) }
 
 
@@ -580,24 +590,21 @@ fun alive_c0_clientFinished : set c0_clientFinished { c0_clientResponse.@r_c0_cl
 fact { always ~@r_c0_clientFinished in @p_c0_clientFinished
   always @r_c0_clientFinished.univ in alive_c0_clientResponse }
 
-fact { all self_ : c0_clientFinished | always (self_ in alive_c0_clientFinished implies ((((((((self_.(@p_c0_clientFinished :> alive_c0_clientResponse)).(@p_c0_clientResponse :> alive_c0_handshakeStatus)).(@p_c0_handshakeStatus :> alive_c0_Protocol)).@r_c0_client).@c0_client_ref).@r_c0_send).@c0_send_ref) = alive_c0_clientFinishedMessage)) }
-fact { all self_ : c0_clientFinished | always (self_ in alive_c0_clientFinished implies ((some (self_ & alive_c0_clientFinished)) => (after (not some self_.(@p_c0_clientFinished :> alive_c0_clientResponse) or (some ((self_.(@p_c0_clientFinished :> alive_c0_clientResponse)).(@p_c0_clientResponse :> alive_c0_handshakeStatus)).@r_c0_serverFinish))))) }
+fact { all self_ : c0_clientFinished | always (self_ in alive_c0_clientFinished implies ((((((((self_.(@p_c0_clientFinished :> alive_c0_clientResponse)).(@p_c0_clientResponse :> alive_c0_channel)).(@p_c0_channel :> alive_c0_Protocol)).@r_c0_client).@c0_client_ref).@r_c0_send).@c0_send_ref) = alive_c0_clientFinishedMessage)) }
 
 
 sig c0_serverFinish
-{ p_c0_serverFinish : lone c0_handshakeStatus
+{ p_c0_serverFinish : lone c0_channel
 , var r_c0_serverChangeCipherSpec : set c0_serverChangeCipherSpec
 , var r_c0_serverFinished : set c0_serverFinished }
 { always (this in alive_c0_serverFinish implies (let children = (this.@r_c0_serverChangeCipherSpec + this.@r_c0_serverFinished) | one children))
   always (this in alive_c0_serverFinish and not before this in alive_c0_serverFinish implies (some this.@r_c0_serverChangeCipherSpec)) }
-fun alive_c0_serverFinish : set c0_serverFinish { c0_handshakeStatus.@r_c0_serverFinish }
+fun alive_c0_serverFinish : set c0_serverFinish { c0_channel.@r_c0_serverFinish }
 fact { always ~@r_c0_serverFinish in @p_c0_serverFinish
-  always @r_c0_serverFinish.univ in alive_c0_handshakeStatus }
+  always @r_c0_serverFinish.univ in alive_c0_channel }
 
 fact { all self_ : c0_serverFinish | always (self_ in alive_c0_serverFinish implies (lone self_.@r_c0_serverChangeCipherSpec)) }
 fact { all self_ : c0_serverFinish | always (self_ in alive_c0_serverFinish implies (lone self_.@r_c0_serverFinished)) }
-fact { all self_ : c0_serverFinish | always (self_ in alive_c0_serverFinish implies (((self_.(@p_c0_serverFinish :> alive_c0_handshakeStatus)).@c0_handshakeStatus_ref) = alive_c0_initiated)) }
-fact { all self_ : c0_serverFinish | always (self_ in alive_c0_serverFinish implies ((some (self_ & alive_c0_serverFinish)) => (after (not some self_.(@p_c0_serverFinish :> alive_c0_handshakeStatus) or (some self_.@r_c0_serverFinished))))) }
 
 
 sig c0_serverChangeCipherSpec
@@ -606,7 +613,9 @@ fun alive_c0_serverChangeCipherSpec : set c0_serverChangeCipherSpec { c0_serverF
 fact { always ~@r_c0_serverChangeCipherSpec in @p_c0_serverChangeCipherSpec
   always @r_c0_serverChangeCipherSpec.univ in alive_c0_serverFinish }
 
-fact { all self_ : c0_serverChangeCipherSpec | always (self_ in alive_c0_serverChangeCipherSpec implies ((((((((self_.(@p_c0_serverChangeCipherSpec :> alive_c0_serverFinish)).(@p_c0_serverFinish :> alive_c0_handshakeStatus)).(@p_c0_handshakeStatus :> alive_c0_Protocol)).@r_c0_server).@c0_server_ref).@r_c0_send).@c0_send_ref) = alive_c0_serverChangeCipherSpecMessage)) }
+fact { all self_ : c0_serverChangeCipherSpec | always (self_ in alive_c0_serverChangeCipherSpec implies ((((((self_.(@p_c0_serverChangeCipherSpec :> alive_c0_serverFinish)).(@p_c0_serverFinish :> alive_c0_channel)).(@p_c0_channel :> alive_c0_Protocol)).@r_c0_handshakeStatus).@c0_handshakeStatus_ref) = alive_c0_initiated)) }
+fact { all self_ : c0_serverChangeCipherSpec | always (self_ in alive_c0_serverChangeCipherSpec implies ((((((((self_.(@p_c0_serverChangeCipherSpec :> alive_c0_serverFinish)).(@p_c0_serverFinish :> alive_c0_channel)).(@p_c0_channel :> alive_c0_Protocol)).@r_c0_server).@c0_server_ref).@r_c0_send).@c0_send_ref) = alive_c0_serverChangeCipherSpecMessage)) }
+fact { all self_ : c0_serverChangeCipherSpec | always (self_ in alive_c0_serverChangeCipherSpec implies ((some (self_ & alive_c0_serverChangeCipherSpec)) => (after (not some self_.(@p_c0_serverChangeCipherSpec :> alive_c0_serverFinish) or (some (self_.(@p_c0_serverChangeCipherSpec :> alive_c0_serverFinish)).@r_c0_serverFinished))))) }
 
 
 sig c0_serverFinished
@@ -615,28 +624,28 @@ fun alive_c0_serverFinished : set c0_serverFinished { c0_serverFinish.@r_c0_serv
 fact { always ~@r_c0_serverFinished in @p_c0_serverFinished
   always @r_c0_serverFinished.univ in alive_c0_serverFinish }
 
-fact { all self_ : c0_serverFinished | always (self_ in alive_c0_serverFinished implies ((((((((self_.(@p_c0_serverFinished :> alive_c0_serverFinish)).(@p_c0_serverFinish :> alive_c0_handshakeStatus)).(@p_c0_handshakeStatus :> alive_c0_Protocol)).@r_c0_server).@c0_server_ref).@r_c0_send).@c0_send_ref) = alive_c0_serverFinishedMessage)) }
-fact { all self_ : c0_serverFinished | always (self_ in alive_c0_serverFinished implies ((((self_.(@p_c0_serverFinished :> alive_c0_serverFinish)).(@p_c0_serverFinish :> alive_c0_handshakeStatus)).@c0_handshakeStatus_ref) = alive_c0_completed)) }
-fact { all self_ : c0_serverFinished | always (self_ in alive_c0_serverFinished implies ((some (self_ & alive_c0_serverFinished)) => (after (not some self_.(@p_c0_serverFinished :> alive_c0_serverFinish) or (some ((self_.(@p_c0_serverFinished :> alive_c0_serverFinish)).(@p_c0_serverFinish :> alive_c0_handshakeStatus)).@r_c0_dataTransfer))))) }
+fact { all self_ : c0_serverFinished | always (self_ in alive_c0_serverFinished implies ((((((((self_.(@p_c0_serverFinished :> alive_c0_serverFinish)).(@p_c0_serverFinish :> alive_c0_channel)).(@p_c0_channel :> alive_c0_Protocol)).@r_c0_server).@c0_server_ref).@r_c0_send).@c0_send_ref) = alive_c0_serverFinishedMessage)) }
+fact { all self_ : c0_serverFinished | always (self_ in alive_c0_serverFinished implies ((((((self_.(@p_c0_serverFinished :> alive_c0_serverFinish)).(@p_c0_serverFinish :> alive_c0_channel)).(@p_c0_channel :> alive_c0_Protocol)).@r_c0_handshakeStatus).@c0_handshakeStatus_ref) = alive_c0_completed)) }
 
 
 sig c0_dataTransfer
-{ p_c0_dataTransfer : lone c0_handshakeStatus }
-fun alive_c0_dataTransfer : set c0_dataTransfer { c0_handshakeStatus.@r_c0_dataTransfer }
+{ p_c0_dataTransfer : lone c0_channel }
+fun alive_c0_dataTransfer : set c0_dataTransfer { c0_channel.@r_c0_dataTransfer }
 fact { always ~@r_c0_dataTransfer in @p_c0_dataTransfer
-  always @r_c0_dataTransfer.univ in alive_c0_handshakeStatus }
+  always @r_c0_dataTransfer.univ in alive_c0_channel }
 
-fact { all self_ : c0_dataTransfer | always (self_ in alive_c0_dataTransfer implies (((self_.(@p_c0_dataTransfer :> alive_c0_handshakeStatus)).@c0_handshakeStatus_ref) = alive_c0_completed)) }
-fact { all self_ : c0_dataTransfer | always (self_ in alive_c0_dataTransfer implies (((((((self_.(@p_c0_dataTransfer :> alive_c0_handshakeStatus)).(@p_c0_handshakeStatus :> alive_c0_Protocol)).@r_c0_client).@c0_client_ref).@r_c0_send).@c0_send_ref) = alive_c0_applicationDataMessage)) }
-fact { all self_ : c0_dataTransfer | always (self_ in alive_c0_dataTransfer implies ((some (self_ & alive_c0_dataTransfer)) => ((some self_.(@p_c0_dataTransfer :> alive_c0_handshakeStatus) and (some (self_ & alive_c0_dataTransfer))) until (not some self_.(@p_c0_dataTransfer :> alive_c0_handshakeStatus) or (((self_.(@p_c0_dataTransfer :> alive_c0_handshakeStatus)).@c0_handshakeStatus_ref) = alive_c0_initiated))))) }
+fact { all self_ : c0_dataTransfer | always (self_ in alive_c0_dataTransfer implies (((((self_.(@p_c0_dataTransfer :> alive_c0_channel)).(@p_c0_channel :> alive_c0_Protocol)).@r_c0_handshakeStatus).@c0_handshakeStatus_ref) = alive_c0_completed)) }
+fact { all self_ : c0_dataTransfer | always (self_ in alive_c0_dataTransfer implies (((((((self_.(@p_c0_dataTransfer :> alive_c0_channel)).(@p_c0_channel :> alive_c0_Protocol)).@r_c0_client).@c0_client_ref).@r_c0_send).@c0_send_ref) = alive_c0_applicationDataMessage)) }
+fact { all self_ : c0_dataTransfer | always (self_ in alive_c0_dataTransfer implies ((some (self_ & alive_c0_dataTransfer)) => ((some self_.(@p_c0_dataTransfer :> alive_c0_channel) and (some (self_ & alive_c0_dataTransfer))) until (not some self_.(@p_c0_dataTransfer :> alive_c0_channel) or (some (self_.(@p_c0_dataTransfer :> alive_c0_channel)).@r_c0_clientHello))))) }
 
 
 sig c0_fatalError
-{ p_c0_fatalError : lone c0_handshakeStatus }
-fun alive_c0_fatalError : set c0_fatalError { c0_handshakeStatus.@r_c0_fatalError }
+{ p_c0_fatalError : lone c0_channel }
+fun alive_c0_fatalError : set c0_fatalError { c0_channel.@r_c0_fatalError }
 fact { always ~@r_c0_fatalError in @p_c0_fatalError
-  always @r_c0_fatalError.univ in alive_c0_handshakeStatus }
+  always @r_c0_fatalError.univ in alive_c0_channel }
 
-fact { all self_ : c0_fatalError | always (self_ in alive_c0_fatalError implies (((self_.(@p_c0_fatalError :> alive_c0_handshakeStatus)).@c0_handshakeStatus_ref) = alive_c0_failed)) }
+fact { all self_ : c0_fatalError | always (self_ in alive_c0_fatalError implies (((((self_.(@p_c0_fatalError :> alive_c0_channel)).(@p_c0_channel :> alive_c0_Protocol)).@r_c0_handshakeStatus).@c0_handshakeStatus_ref) = alive_c0_failed)) }
+fact { all self_ : c0_fatalError | always (self_ in alive_c0_fatalError implies ((some (self_ & alive_c0_fatalError)) => (after (not some self_.(@p_c0_fatalError :> alive_c0_channel) or (some (self_ & alive_c0_fatalError)))))) }
 
 
