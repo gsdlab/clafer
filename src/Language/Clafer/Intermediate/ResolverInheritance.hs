@@ -94,6 +94,7 @@ resolveNClafer abstractClafers parent clafer =
           (_isAbstract clafer)
           (_isInitial clafer || (fromMaybe False $ _isInitial <$> superIClafer'))  -- the clafer is declared as initial or inherits it
           (_isFinal clafer || (fromMaybe False $ _isFinal <$> superIClafer'))      -- the clafer is declared as final or inherits it
+          (_finalReference $ _modifiers clafer)
       , _elements = elements'
       }
 

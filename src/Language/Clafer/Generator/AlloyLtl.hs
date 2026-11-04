@@ -138,6 +138,11 @@ isStatic genEnv c
   | isRoot c  = True
   | otherwise = _isFinal c && maybe True (isStatic genEnv) (parentOf genEnv c)
 
+-- | The nearest super clafer that declares a reference, and the reference.
+inheritedReference :: GenEnv -> IClafer -> Maybe (IClafer, IReference)
+inheritedReference genEnv c = listToMaybe
+  [ (s, r) | s <- tail $ findHierarchy getSuper (uidIClaferMap genEnv) c, Just r <- [_reference s] ]
+
 -- | The direct subclafers of the clafer.
 subsOf :: GenEnv -> IClafer -> [IClafer]
 subsOf genEnv c = [ c' | c' <- allClafers genEnv, getSuper c' == [_uid c] ]
@@ -297,7 +302,12 @@ genConstraints genEnv c = map always' (filterNull $ refConsts ++ groupConst ++ c
     [ CString $ "always (this in " ++ alive ++ " and after this in " ++ alive ++ " implies (this.@" ++ rel ++ ")' = this.@" ++ rel ++ ")"
     | c' <- containedClafers c, _isFinal c', not (isStatic genEnv c'), let rel = genRelName (_uid c') ] ++
     [ CString $ "always (this in " ++ alive ++ " and after this in " ++ alive ++ " implies (this.@" ++ refRel ++ ")' = this.@" ++ refRel ++ ")"
-    | Just r <- [_reference c], isJust (_refModifier r), not (isStatic genEnv c), let refRel = genRefName uid' ]
+    | Just r <- [_reference c], isJust (_refModifier r), not (isStatic genEnv c), let refRel = genRefName uid' ] ++
+    -- `final motor : engine` or `finalref motor : engine` fixes the reference that motor inherits
+    -- from engine, unless engine's modifier fixes it already (#109)
+    [ CString $ "always (this in " ++ alive ++ " and after this in " ++ alive ++ " implies (this.@" ++ refRel ++ ")' = this.@" ++ refRel ++ ")"
+    | Nothing <- [_reference c], _isFinal c || isJust (_finalReference $ _modifiers c)
+    , Just (sup, r) <- [inheritedReference genEnv c], isNothing (_refModifier r), let refRel = genRefName $ _uid sup ]
 
 -- | The constraints of the clafer and the cardinalities of its children, each a fact of its own,
 --   which holds for every existing instance: an unsat core gives these, which are removed to find

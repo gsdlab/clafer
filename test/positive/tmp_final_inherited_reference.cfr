@@ -1,0 +1,24 @@
+// `final`, `finalref` and `finaltarget` on a clafer that inherits its reference fix the
+// reference, as they fix a reference that the clafer declares (#109).
+
+abstract Engine
+gas : Engine
+electric : Engine
+abstract Car
+    abstract engine -> Engine
+    xor gear
+        initial park --> drive
+        drive
+tesla : Car
+    final motor : engine
+leaf : Car
+    finalref motor2 : engine
+bolt : Car
+    finaltarget motor3 : engine
+// without a modifier, the reference may change
+mini : Car
+    motor4 : engine
+
+assert [ tesla.motor = gas => G tesla.motor = gas ]
+assert [ leaf.motor2 = gas => G leaf.motor2 = gas ]
+assert [ bolt.motor3 = gas => G bolt.motor3 = gas ]

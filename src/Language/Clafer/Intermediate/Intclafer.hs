@@ -122,6 +122,9 @@ data IClaferModifiers
   { _abstract :: Bool -- ^ declared as "abstract"
   , _initial :: Bool  -- ^ declared as "initial"
   , _final :: Bool    -- ^ declared as "final"
+  , _finalReference :: Maybe IReferenceModifier
+    -- ^ declared as "finalref" or "finaltarget" without a reference of its own: the modifier of
+    --   the reference that the clafer inherits (#109)
   } deriving (Eq,Ord,Show,Data,Typeable,Generic,ToJSON)
 
 _isAbstract :: IClafer -> Bool     -- ^ whether abstract or not (i.e., concrete)

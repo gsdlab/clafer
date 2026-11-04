@@ -547,6 +547,20 @@ case_ParentOfTopLevel = do
             ("joinParent(inter($this(), join(global(c0_g), c0_f2)))" `isInfixOf` choco) @? choco
         Left errs' -> assertFailure $ show errs'
 
+-- final, finalref and finaltarget on a clafer that inherits its reference fix the reference in
+-- the temporal output (#109).
+case_FinalInheritedReference :: Assertion
+case_FinalInheritedReference =
+    forM_ ["final", "finalref", "finaltarget", ""] $ \modifier ->
+        case compileOneFragment defaultClaferArgs{mode = [Alloy]} (unlines
+                [ "abstract Engine", "gas : Engine", "abstract Car", "    abstract engine -> Engine"
+                , "    xor gear", "        initial park --> drive", "        drive"
+                , "tesla : Car", "    " ++ modifier ++ " motor : engine" ]) of
+            Right r -> let alloy = outputCode $ fromJust $ Map.lookup Alloy r
+                           fixed = "implies (this.@c0_engine_ref)' = this.@c0_engine_ref)" `isInfixOf` alloy
+                       in fixed == (modifier /= "") @? (modifier ++ ": " ++ alloy)
+            Left errs' -> assertFailure $ modifier ++ ": " ++ show errs'
+
 -- A clafer which extends itself is reported as such, not as a missing super.
 case_SelfInheritanceReported :: Assertion
 case_SelfInheritanceReported =

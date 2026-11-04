@@ -1,0 +1,29 @@
+digraph "tmp_final_inherited_reference"
+{
+rankdir=BT;
+ranksep=0.3;
+nodesep=0.1;
+graph [fontname=Sans fontsize=11];
+node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
+edge [fontname=Sans fontsize=11];
+"c0_Engine" [label="abstract Engine" URL="#c0_Engine" tooltip="abstract Engine&#10;"];
+"c0_gas" [label="gas : Engine" URL="#c0_gas" tooltip="gas : Engine&#10;"];
+"c0_gas" -> "c0_Engine" [arrowhead=onormal constraint=true weight=100];
+"c0_electric" [label="electric : Engine" URL="#c0_electric" tooltip="electric : Engine&#10;"];
+"c0_electric" -> "c0_Engine" [arrowhead=onormal constraint=true weight=100];
+"c0_Car" [label="abstract Car" URL="#c0_Car" tooltip="abstract Car&#10;  abstract engine -&gt; Engine&#10;  xor gear&#10;    initial park --&gt; drive&#10;    drive&#10;"];
+"c0_engine" [label="abstract engine -> Engine" URL="#c0_engine" tooltip="abstract engine -&gt; Engine&#10;"];
+"c0_engine" -> "c0_Engine" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=c0_engine];
+"c0_tesla" [label="tesla : Car" URL="#c0_tesla" tooltip="tesla : Car&#10;  final motor : engine&#10;"];
+"c0_tesla" -> "c0_Car" [arrowhead=onormal constraint=true weight=100];
+"c0_tesla" -> "c0_engine" [arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];
+"c0_leaf" [label="leaf : Car" URL="#c0_leaf" tooltip="leaf : Car&#10;  finalref motor2 : engine&#10;"];
+"c0_leaf" -> "c0_Car" [arrowhead=onormal constraint=true weight=100];
+"c0_leaf" -> "c0_engine" [arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];
+"c0_bolt" [label="bolt : Car" URL="#c0_bolt" tooltip="bolt : Car&#10;  finaltarget motor3 : engine&#10;"];
+"c0_bolt" -> "c0_Car" [arrowhead=onormal constraint=true weight=100];
+"c0_bolt" -> "c0_engine" [arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];
+"c0_mini" [label="mini : Car" URL="#c0_mini" tooltip="mini : Car&#10;  motor4 : engine&#10;"];
+"c0_mini" -> "c0_Car" [arrowhead=onormal constraint=true weight=100];
+"c0_mini" -> "c0_engine" [arrowhead=vee arrowtail=diamond dir=both style=solid weight=10 color=gray arrowsize=0.6 minlen=2 penwidth=0.5 constraint=true];
+}
