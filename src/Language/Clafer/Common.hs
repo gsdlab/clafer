@@ -415,7 +415,7 @@ iProdSet :: String
 iProdSet  = "product"
 
 unOps :: [String]
-unOps = [iNot, iCSet, iMin, iMaximum, iMinimum, iMaximize, iMinimize, iSumSet, iProdSet, iX, iF, iG, iInitially]
+unOps = [iNot, iCSet, iMin, iMaximum, iMinimum, iMaximize, iMinimize, iSumSet, iProdSet, iX, iF, iG, iInitially, iFinally]
 
 -- binary operators
 iIff :: String
@@ -467,13 +467,13 @@ iNin :: String
 iNin          = "not in"
 
 ltlOps :: [String]
-ltlOps = [iW, iU, iX, iG, iF, iInitially]
+ltlOps = [iW, iU, iX, iG, iF, iInitially, iFinally]
 
 ltlBinOps :: [String]
 ltlBinOps = [iW, iU]
 
 ltlUnOps :: [String]
-ltlUnOps = [iX, iG, iF, iInitially]
+ltlUnOps = [iX, iG, iF, iInitially, iFinally]
 
 relGenBinOps :: [String]
 relGenBinOps = [iLt, iGt, iEq, iLte, iGte, iNeq]

@@ -382,6 +382,8 @@ dref
 A model with temporal modifiers or operators is dynamic: its instances are traces, sequences of states, each of them an instance of the model.
 A trace is a lasso: after the last state, it loops back to an earlier state and repeats from there forever.
 A clafer can come and go between the states.
+An instance may disappear and reappear, and it keeps its parent, also across its absences.
+A scope bounds the instances of a clafer over the whole trace, not in each state: a mandatory clafer whose instance is replaced by another needs a scope of 2.
 Temporal models are supported by the Alloy backend only.
 
 The behaviour can be written in three styles, which can be mixed.
@@ -434,7 +436,7 @@ A chain is a sequence: `a --> b --> c` is `a => X (b && X c)`.
 With `initially`, it is a scenario, which holds once, at the start of the trace.
 
 * A transition says only what happens when it fires: it does not keep the other clafers from changing, and it does not keep the state from changing without it.
-* A clafer has one transition. Give a state more ways out with constraints, e.g., `[ a -[ g ]-> c ]`.
+* A clafer has one transition. Give a state more ways out with constraints in the state, e.g., `[ this -[ g ]-> c ]` in `a`. A constraint `[ a -[ g ]-> c ]` in the parent of `a` lasts while the parent's parent exists, so it is not left with the parent.
 * The transition of a nested state disappears when its enclosing state is left.
 * A clafer that starts with `xor` cannot follow a transition, because `xor` continues the expression: declare it first, or write the transition as a constraint.
 
@@ -447,7 +449,7 @@ coin ?
 xor machine
     initial idle -[ coin ]-> brewing
     brewing -[ milk ]->> frothing
-    [ brewing -[ no milk ]->> ready ]
+        [ this -[ no milk ]->> ready ]
     frothing --> ready
     ready --> idle
 
@@ -459,6 +461,9 @@ xor machine
 A constraint holds in every state by default, as if it started with `G`: its context is present in that state.
 What a constraint requires of later states (`X`, `F`, `G`, `U`) lasts while the parent of its context exists, also after the context itself is gone, e.g., `[ req=down --> movingDown ]` in the state `movingUp` leads to `movingDown`.
 To make a constraint last longer, place it higher in the hierarchy, or at the top level.
+This holds for negated obligations too: the negations are pushed inside the temporal operators first (`!F a` is `G !a`, `!X a` is `X !a`, `!(a U b)` is `!b W (!a && !b)`), so `[ !(F error) ]`, like `[ G !error ]`, lets the parent disappear.
+So a formula and its negation can both hold, on a lifetime that ends before their obligations are due, e.g., `F error` and `!(F error)`.
+Under `one` and `lone`, the negation stays classical.
 Use `initially` to anchor a constraint to the first state of its context, which at the top level is the start of the trace, so `[ initially (sometime a) ]` means once, whereas `[ sometime a ]` means again and again.
 `finally` anchors a constraint to the last state of its context instance, before it disappears.
 

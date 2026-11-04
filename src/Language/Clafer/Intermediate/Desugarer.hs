@@ -443,10 +443,6 @@ translateTmpPatterns e = case e of
     {-let oper1 =  ENeg s $ mkClaferIdExp s "this"-}
         {-oper2 = LtlX s $ mkClaferIdExp s "this"-}
     {-in EImplies s (EAnd s oper1 oper2) $ LtlX s exp'-}
-  TmpFinally s exp' ->
-    let oper1 =  mkClaferIdExp s "this"
-        oper2 = LtlX s $ ENeg s $ mkClaferIdExp s "this"
-    in EImplies s (EAnd s oper1 oper2) exp'
   TmpEventually s exp' -> LtlF s exp'
   TmpWUntil s exp0 exp1 -> LtlW s exp0 exp1
   TmpUntil s exp0 exp1 -> LtlU s exp0 exp1
@@ -493,6 +489,7 @@ desugarExp' x = let x' =  translateTmpPatterns x in case x' of
   LtlG  _ exp'  -> dop iG  [exp']
   LtlX  _ exp'  -> dop iX  [exp']
   TmpInitially _ exp' -> dop iInitially [exp']
+  TmpFinally _ exp' -> dop iFinally [exp']
   EQuantExp _ quant' exp' ->
       IDeclPExp (desugarQuant quant') [] (desugarExp exp')
   ELt  _ exp0 exp'  -> dop iLt  [exp0, exp']
@@ -536,7 +533,6 @@ desugarExp' x = let x' =  translateTmpPatterns x in case x' of
   TmpPatAlways{} -> showPatErr
   TmpPatPrecede{} -> showPatErr
   TmpPatFollow{} -> showPatErr
-  TmpFinally{} -> showPatErr
   TmpUntil{} -> showPatErr
   TmpWUntil{} -> showPatErr
   TmpEventually{} -> showPatErr
@@ -599,6 +595,7 @@ sugarExp' x = case x of
     | op'' == iG             = LtlG noSpan
     | op'' == iX             = LtlX noSpan
     | op'' == iInitially     = TmpInitially noSpan
+    | op'' == iFinally       = TmpFinally noSpan
     | otherwise              = error $ show op'' ++ "is not an op"
   sugarOp op''
     | op'' == iIff           = EIff noSpan

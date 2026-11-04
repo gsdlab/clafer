@@ -1,0 +1,48 @@
+open util/integer
+pred show {}
+
+
+one sig root
+{ var r_c0_machine : set c0_machine }
+fact { all self_ : root | always (lone self_.@r_c0_machine) }
+fact { all self_ : root | always ((not before some root) implies (some alive_c0_machine)) }
+fact { all self_ : root | always ((not before some root) implies (after (no alive_c0_machine))) }
+
+
+sig c0_machine
+{ p_c0_machine : lone root
+, var r_c0_ctx : set c0_ctx }
+fun alive_c0_machine : set c0_machine { root.@r_c0_machine }
+fact { always ~@r_c0_machine in @p_c0_machine }
+
+fact { all self_ : c0_machine | always (self_ in alive_c0_machine implies (one self_.@r_c0_ctx)) }
+
+
+sig c0_ctx
+{ p_c0_ctx : lone c0_machine
+, var r_c0_error : set c0_error }
+fun alive_c0_ctx : set c0_ctx { c0_machine.@r_c0_ctx }
+fact { always ~@r_c0_ctx in @p_c0_ctx
+  always @r_c0_ctx.univ in alive_c0_machine }
+
+fact { all self_ : c0_ctx | always (self_ in alive_c0_ctx implies (lone self_.@r_c0_error)) }
+fact { all self_ : c0_ctx | always (self_ in alive_c0_ctx implies ((not some self_.(@p_c0_ctx :> alive_c0_machine)) releases (not some self_.(@p_c0_ctx :> alive_c0_machine) or (!(some self_.@r_c0_error))))) }
+
+assert assertAt_9_15 { all self_ : c0_ctx | always (self_ in alive_c0_ctx implies (((eventually (not some self_.(@p_c0_ctx :> alive_c0_machine) or (!(no self_.@r_c0_error)))) || ((not some self_.(@p_c0_ctx :> alive_c0_machine)) releases (not some self_.(@p_c0_ctx :> alive_c0_machine) or (!(some self_.@r_c0_error))))) && ((eventually (not some self_.(@p_c0_ctx :> alive_c0_machine) or (some self_.@r_c0_error))) || ((not some self_.(@p_c0_ctx :> alive_c0_machine)) releases (not some self_.(@p_c0_ctx :> alive_c0_machine) or (no self_.@r_c0_error)))))) }
+check assertAt_9_15 for 1 but 10 steps
+
+assert assertAt_10_14 { all self_ : c0_ctx | always (self_ in alive_c0_ctx implies (((after (not some self_.(@p_c0_ctx :> alive_c0_machine) or (some self_.@r_c0_error))) || (after (not some self_.(@p_c0_ctx :> alive_c0_machine) or (no self_.@r_c0_error)))) && ((after (not some self_.(@p_c0_ctx :> alive_c0_machine) or (!(no self_.@r_c0_error)))) || (after (not some self_.(@p_c0_ctx :> alive_c0_machine) or (!(some self_.@r_c0_error))))))) }
+check assertAt_10_14 for 1 but 10 steps
+
+assert assertAt_11_14 { all self_ : c0_ctx | always (self_ in alive_c0_ctx implies ((((some self_.(@p_c0_ctx :> alive_c0_machine) and (some self_.@r_c0_error)) until (not some self_.(@p_c0_ctx :> alive_c0_machine) or (no self_.@r_c0_error))) || (((not some self_.(@p_c0_ctx :> alive_c0_machine)) releases (not some self_.(@p_c0_ctx :> alive_c0_machine) or (some self_.@r_c0_error))) || ((some self_.(@p_c0_ctx :> alive_c0_machine) and (some self_.@r_c0_error)) until (not some self_.(@p_c0_ctx :> alive_c0_machine) or ((no self_.@r_c0_error) && (some self_.@r_c0_error)))))) && (((some self_.(@p_c0_ctx :> alive_c0_machine) and (!((no self_.@r_c0_error) && (some self_.@r_c0_error)))) until (not some self_.(@p_c0_ctx :> alive_c0_machine) or ((!(some self_.@r_c0_error)) && (!((no self_.@r_c0_error) && (some self_.@r_c0_error)))))) || (((not some self_.(@p_c0_ctx :> alive_c0_machine)) releases (not some self_.(@p_c0_ctx :> alive_c0_machine) or (!(no self_.@r_c0_error)))) || ((some self_.(@p_c0_ctx :> alive_c0_machine) and (!(no self_.@r_c0_error))) until (not some self_.(@p_c0_ctx :> alive_c0_machine) or ((!(some self_.@r_c0_error)) && (!(no self_.@r_c0_error))))))))) }
+check assertAt_11_14 for 1 but 10 steps
+
+
+
+sig c0_error
+{ p_c0_error : lone c0_ctx }
+fun alive_c0_error : set c0_error { c0_ctx.@r_c0_error }
+fact { always ~@r_c0_error in @p_c0_error
+  always @r_c0_error.univ in alive_c0_ctx }
+
+

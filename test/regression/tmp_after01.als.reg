@@ -6,7 +6,7 @@ one sig root
 { var r_c0_a : set c0_a }
 fact { all self_ : root | always (lone self_.@r_c0_a) }
 
-assert assertAt_14_9 { all self_ : root | always (all  b1 : alive_c0_a.@r_c0_b | always (!((some b1.@r_c0_c) && (after (some b1.@r_c0_d))))) }
+assert assertAt_14_9 { all self_ : root | always (all  b1 : alive_c0_a.@r_c0_b | always ((!(some b1.@r_c0_c)) || (after (!(some b1.@r_c0_d))))) }
 check assertAt_14_9 for 1 but 10 steps
 
 

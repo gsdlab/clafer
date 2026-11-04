@@ -4,12 +4,12 @@ pred show {}
 
 one sig root
 { var r_c0_go : set c0_go
-, var r_c0_sm : set c0_sm }
+, r_c0_sm : set c0_sm }
 fact { all self_ : root | always (lone self_.@r_c0_go) }
 fact { all self_ : root | always (one self_.@r_c0_sm) }
 
-assert assertAt_11_10 { all self_ : root | always (((some alive_c0_sm.@r_c0_a) && (some alive_c0_go)) => (after (some alive_c0_sm.@r_c0_b))) }
-check assertAt_11_10 for 1 but 10 steps
+assert assertAt_13_10 { all self_ : root | always (((some alive_c0_sm.@r_c0_a) && (some alive_c0_go)) => (after (some alive_c0_sm.@r_c0_b))) }
+check assertAt_13_10 for 1 but 10 steps
 
 
 

@@ -6,7 +6,7 @@ one sig root
 { var r_c0_a : set c0_a }
 fact { all self_ : root | always (one self_.@r_c0_a) }
 
-assert assertAt_10_8 { all self_ : root | always ((eventually (some (alive_c0_a.@r_c0_b).@r_c0_c)) => ((no (alive_c0_a.@r_c0_b).@r_c0_d) until (some (alive_c0_a.@r_c0_b).@r_c0_c))) }
+assert assertAt_10_8 { all self_ : root | always ((always (!(some (alive_c0_a.@r_c0_b).@r_c0_c))) || ((no (alive_c0_a.@r_c0_b).@r_c0_d) until (some (alive_c0_a.@r_c0_b).@r_c0_c))) }
 check assertAt_10_8 for 1 but 10 steps
 
 

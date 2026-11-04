@@ -30,8 +30,9 @@
        exists in a snapshot when its parent links it through the containment relation
        @r_c@, which is @var@ unless the clafer is static (see 'isStatic'); @alive_c@ is the
        set of the existing instances of @c@.
-     * An instance does not change its parent (the static field @p_c@), and nothing outlives
-       its parent.
+     * An instance does not change its parent (the static field @p_c@), also when it
+       disappears and reappears, and nothing outlives its parent. A scope bounds the instances
+       of a clafer over the trace, not in a snapshot.
      * Change: an instance may reappear. The paper forbids it, but then a cyclic behaviour,
        e.g., green, yellow, red, green, ..., needs infinitely many instances, which no lasso
        trace over finitely many atoms has.
@@ -44,6 +45,8 @@
        states lapse when their enclosing state is left. A modeller extends the timeline of
        a constraint by placing it higher in the hierarchy, or at the top level. A transition
        of a clafer, e.g., @on --> off@, is a constraint of the clafer.
+     * The negations are pushed inside the temporal operators first (see 'pushNegations'),
+       so a negated obligation lapses with the parent too: @!(F error)@ is @G !error@.
      * @initial@ children exist whenever their parent appears; the instances of a @final@
        clafer do not change while their parent exists.
      * @initially@ and @finally@ refer to the first and the last snapshot of the context
@@ -81,7 +84,8 @@ genAlloyLtlModule    claferargs'   (_      , genv)    scopes              otherT
   tl = trace_len claferargs'
   genEnv = GenEnv claferargs' uidIClaferMap' clafers' forScopes'
 
-  -- a disappeared instance may reappear, so a scope bounds the instances in a snapshot
+  -- a scope bounds the instance identities across the trace, which may be reused when an
+  -- instance reappears; the multiplicities bound the existing instances in each snapshot
   forScopes' = "for 1 but " ++ intercalate ", " (map (\(uid', scope') -> show scope' ++ " " ++ uid') scopes ++ [show tl ++ " steps"])
   output = header genEnv otherTokens' +++ cconcat (map (genClafer genEnv) $ root : clafers')
 
@@ -425,7 +429,55 @@ genExInteger element' (y, z) x
 -- expressions; the head of the path is the UID of the context clafer
 
 genPExp :: GenEnv -> [String] -> PExp -> Concat
-genPExp genEnv resPath x = genPExp' genEnv resPath $ adjustPExp genEnv resPath x
+genPExp genEnv resPath x = genPExp' genEnv resPath $ adjustPExp genEnv resPath $ pushNegations True x
+
+-- | Pushes the negations of the formulas with temporal operators to the formulas without them,
+--   with the dualities of LTL (@!F a@ is @G !a@, @!X a@ is @X !a@, @!(a U b)@ is @!b W (!a && !b)@).
+--   The obligations are bounded by the parent's lifetime afterwards, so an obligation lapses with
+--   the parent also when it is negated: @!(F error)@ means @G !error@, and lets the parent
+--   disappear. @initially@ and @finally@ anchor their negation: @!initially a@ is @initially !a@.
+--   A formula and its negation may both hold, on a lifetime that ends before their obligations.
+--   The polarity is @True@ for the formula itself, @False@ for its negation. @one@ and @lone@
+--   keep the classical negation.
+pushNegations :: Bool -> PExp -> PExp
+pushNegations pos' x@(PExp t pid' sp e)
+  | not $ hasTemporal x = if pos' then x else neg x
+  | otherwise = case e of
+    IFunExp op' [a]
+      | op' == iNot -> pushNegations (not pos') a
+      | op' == iF   -> mk (if pos' then iF else iG) [push a]
+      | op' == iG   -> mk (if pos' then iG else iF) [push a]
+      | op' `elem` [iX, iInitially, iFinally] -> mk op' [push a]
+    IFunExp op' [a, b]
+      | op' == iAnd  -> mk (if pos' then iAnd else iOr) [push a, push b]
+      | op' == iOr   -> mk (if pos' then iOr else iAnd) [push a, push b]
+      | op' == iImpl, pos', not (hasTemporal a) -> mk iImpl [a, push b]
+      | op' == iImpl -> mk (if pos' then iOr else iAnd) [pushNegations (not pos') a, push b]
+      | op' == iIff  -> pushNegations pos' $ bool iAnd [bool iImpl [a, b], bool iImpl [b, a]]
+      | op' == iXor  -> pushNegations pos' $ bool iOr [bool iAnd [a, bool iNot [b]], bool iAnd [bool iNot [a], b]]
+      | op' `elem` [iU, iW], pos' -> mk op' [push a, push b]
+      | op' `elem` [iU, iW] -> mk (if op' == iU then iW else iU) [push b, mk iAnd [push a, push b]]
+    IFunExp op' [c, a, b]
+      | op' == iIfThenElse, t == Just TBoolean, not (hasTemporal c) -> mk op' [c, push a, push b]
+      | op' == iIfThenElse, t == Just TBoolean ->
+          pushNegations pos' $ bool iAnd [bool iImpl [c, a], bool iImpl [bool iNot [c], b]]
+    IDeclPExp q ds@(_:_) body
+      | q == IAll -> PExp t pid' sp $ IDeclPExp (if pos' then IAll else ISome) ds $ push body
+      | q == ISome -> PExp t pid' sp $ IDeclPExp (if pos' then ISome else IAll) ds $ push body
+      | q == INo -> PExp t pid' sp $ IDeclPExp (if pos' then IAll else ISome) ds $ pushNegations (not pos') body
+    _ -> if pos' then x else neg x
+  where
+  push = pushNegations pos'
+  mk op' = PExp t pid' sp . IFunExp op'
+  bool op' = PExp (Just TBoolean) pid' sp . IFunExp op'
+  neg a = bool iNot [a]
+
+-- | Whether the formula has temporal operators.
+hasTemporal :: PExp -> Bool
+hasTemporal (PExp _ _ _ e) = case e of
+  IFunExp op' es -> op' `elem` (iFinally : ltlOps) || any hasTemporal es
+  IDeclPExp _ _ body -> hasTemporal body
+  _ -> False
 
 genPExp' :: GenEnv -> [String] -> PExp                      -> Concat
 genPExp'    genEnv    resPath     (PExp iType' pid' pos exp') = case exp' of

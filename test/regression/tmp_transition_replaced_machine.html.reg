@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=9">
+<style>.identifier{}
+.keyword{font-weight: bold;}
+.tKeyword{font-style: oblique;}
+.reference{}
+.code { background-color: lightgray; padding: 5px 5px 5px 5px; border: 1px solid darkgray; margin-bottom: 15px;
+        font-family: Pragmata, Menlo, 'DejaVu LGC Sans Mono', 'DejaVu Sans Mono', Consolas, 'Everson Mono', 'Lucida Console', 'Andale Mono', 'Nimbus Mono L', 'Liberation Mono', FreeMono, 'Osaka Monospaced', Courier, 'New Courier', monospace; }
+.standalonecomment { color: green; font-style:italic }
+.inlinecomment { color: green; padding-left:20px; font-style:italic }
+.error{background-color: yellow; color: red }
+.deprecated{color: orange }
+.indent{padding-left:20px}
+.file { font-weight: bold; border-bottom: 1px solid darkgray; margin: 1em 0 0.5em 0 }
+a[href$='Lookup failed'] {color: red}
+a[href$='Uid not found'] {color: red}
+a[href$='Ambiguous name'] {color: yellow}
+</style></head>
+<body>
+<div class="file">positive/tmp_transition_replaced_machine.cfr</div>
+
+<div>
+<span class="claferDecl" id="c0_go">go</span> ?</div>
+
+
+<div>
+<span class="keyword">xor</span> <span class="claferDecl" id="c0_sm">sm</span>
+  <div class="indent">
+  <span class="tKeyword">initial</span> <span class="claferDecl" id="c0_a">a</span>
+    <div class="indent">
+    <span class="keyword">[</span> <a href="#c0_go"><span class="reference">go</span></a><span class="tKeyword"> --&gt; </span><a href="#c0_b"><span class="reference">b</span></a> <span class="keyword">]</span></div>
+  </div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_b">b</span></div>
+  <div class="indent">
+  <span class="claferDecl" id="c0_c">c</span></div>
+</div>
+
+
+<div>
+<span class="keyword">assert [</span> all m<span class="keyword"> : </span><a href="#c0_sm"><span class="reference">sm</span></a> | <a href="#m"><span class="reference">m</span></a>.<a href="#c0_a"><span class="reference">a</span></a> &amp;&amp; <a href="#c0_go"><span class="reference">go</span></a> =&gt; X (<a href="#m"><span class="reference">m</span></a>.<a href="#c0_b"><span class="reference">b</span></a> &#124;&#124; <span class="keyword">no</span> <a href="#m"><span class="reference">m</span></a>**<a href="#c0_sm"><span class="reference">sm</span></a>) <span class="keyword">]</span></div>
+
+
+<div>
+<span class="keyword">assert [</span> <a href="#c0_sm"><span class="reference">sm</span></a>.<a href="#c0_a"><span class="reference">a</span></a> &amp;&amp; <a href="#c0_go"><span class="reference">go</span></a> =&gt; X <a href="#c0_sm"><span class="reference">sm</span></a>.<a href="#c0_b"><span class="reference">b</span></a> <span class="keyword">]</span></div>
+
+</body>
+</html>

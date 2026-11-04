@@ -7,5 +7,5 @@ graph [fontname=Sans fontsize=11];
 node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
 edge [fontname=Sans fontsize=11];
 "c0_go" [label="go ?" URL="#c0_go" tooltip="go ?&#10;"];
-"c0_sm" [label="xor sm" URL="#c0_sm" tooltip="xor sm&#10;  initial a&#10;    [ go --&gt; b ]&#10;  b&#10;  c&#10;"];
+"c0_sm" [label="final xor sm" URL="#c0_sm" tooltip="final xor sm&#10;  initial a&#10;    [ go --&gt; b ]&#10;  b&#10;  c&#10;"];
 }

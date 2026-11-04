@@ -1,0 +1,10 @@
+digraph "tmp_negated_obligations"
+{
+rankdir=BT;
+ranksep=0.3;
+nodesep=0.1;
+graph [fontname=Sans fontsize=11];
+node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
+edge [fontname=Sans fontsize=11];
+"c0_machine" [label="machine ?" URL="#c0_machine" tooltip="machine ?&#10;  ctx&#10;    error ?&#10;    [  ! (F error) ]&#10;    assert [ G  ! error <=>  ! (F error) ]&#10;    assert [  ! (X error) <=> X  ! error ]&#10;    assert [  ! (error U  ! error) <=> error W ( ! error &amp;&amp; error) ]&#10;"];
+}

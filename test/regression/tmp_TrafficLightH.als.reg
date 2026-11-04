@@ -11,8 +11,8 @@ abstract sig c0_TrafficLight_H
 fun alive_c0_TrafficLight_H : set c0_TrafficLight_H { none }
 fact { all self_ : c0_TrafficLight_H | always (self_ in alive_c0_TrafficLight_H implies (lone self_.@r_c0_on)) }
 fact { all self_ : c0_TrafficLight_H | always (self_ in alive_c0_TrafficLight_H implies (lone self_.@r_c0_off)) }
-fact { all self_ : c0_TrafficLight_H | always (self_ in alive_c0_TrafficLight_H implies (((some (self_.@r_c0_on).@r_c0_normal) && (after (no self_.@r_c0_on))) => (after ((always (no self_.@r_c0_on)) || ((no self_.@r_c0_on) until (some (self_.@r_c0_on).@r_c0_normal)))))) }
-fact { all self_ : c0_TrafficLight_H | always (self_ in alive_c0_TrafficLight_H implies (((some (self_.@r_c0_on).@r_c0_flashing) && (after (no self_.@r_c0_on))) => (after ((always (no self_.@r_c0_on)) || ((no self_.@r_c0_on) until (some (self_.@r_c0_on).@r_c0_flashing)))))) }
+fact { all self_ : c0_TrafficLight_H | always (self_ in alive_c0_TrafficLight_H implies (((!(some (self_.@r_c0_on).@r_c0_normal)) || (after (!(no self_.@r_c0_on)))) || (after ((always (no self_.@r_c0_on)) || ((no self_.@r_c0_on) until (some (self_.@r_c0_on).@r_c0_normal)))))) }
+fact { all self_ : c0_TrafficLight_H | always (self_ in alive_c0_TrafficLight_H implies (((!(some (self_.@r_c0_on).@r_c0_flashing)) || (after (!(no self_.@r_c0_on)))) || (after ((always (no self_.@r_c0_on)) || ((no self_.@r_c0_on) until (some (self_.@r_c0_on).@r_c0_flashing)))))) }
 
 
 sig c0_on

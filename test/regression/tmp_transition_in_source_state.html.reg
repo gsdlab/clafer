@@ -26,7 +26,7 @@ a[href$='Ambiguous name'] {color: yellow}
 
 
 <div>
-<span class="keyword">xor</span> <span class="claferDecl" id="c0_sm">sm</span>
+<span class="tKeyword">final</span> <span class="keyword">xor</span> <span class="claferDecl" id="c0_sm">sm</span>
   <div class="indent">
   <span class="tKeyword">initial</span> <span class="claferDecl" id="c0_a">a</span>
     <div class="indent">
