@@ -114,6 +114,7 @@ library
                       , Language.Clafer.Intermediate.ResolverInheritance
                       , Language.Clafer.Intermediate.ResolverName
                       , Language.Clafer.Intermediate.ResolverType
+                      , Language.Clafer.Intermediate.ResolverRoot
                       , Language.Clafer.Intermediate.ScopeAnalysis
                       , Language.Clafer.Intermediate.SimpleScopeAnalyzer
                       , Language.Clafer.Intermediate.StringAnalyzer

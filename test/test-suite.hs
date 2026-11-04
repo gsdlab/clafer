@@ -496,6 +496,57 @@ case_ExplicitDrefNavigation = do
         Right _ -> return ()
         Left errs' -> assertFailure $ show errs'
 
+-- The parent of an instance of a top-level clafer is the synthetic root, a navigation from which
+-- is a navigation from the top level (#112).
+case_ParentOfTopLevel :: Assertion
+case_ParentOfTopLevel = do
+    let
+        model constraint = unlines [ "a", "b", "    " ++ constraint ]
+        output mode' constraint = fmap (outputCode . fromJust . Map.lookup mode') $ compileOneFragment defaultClaferArgs{mode = [mode']} $ model constraint
+        same mode' x y = case (output mode' x, output mode' y) of
+            (Right x', Right y') -> x' == y' @? (show mode' ++ ": " ++ x ++ " differs from " ++ y)
+            (Left errs', _) -> assertFailure $ x ++ ": " ++ show errs'
+            (_, Left errs') -> assertFailure $ y ++ ": " ++ show errs'
+        refused x expected = case compileOneFragment defaultClaferArgs x of
+            Left errs' -> (expected `isInfixOf` show errs') @? ("Unexpected errors\n" ++ show errs')
+            Right _ -> assertFailure $ x ++ " compiled"
+    forM_ [Alloy, Choco] $ \mode' -> do
+        same mode' "[ some a ]" "[ some parent.a ]"
+        same mode' "[ some a ]" "[ some this.parent.a ]"
+        same mode' "[ some a ]" "[ some root.a ]"
+        same mode' "[ all v : b | some a ]" "[ all v : b | some v.parent.a ]"
+    same Alloy "[ G some a ]" "[ G some parent.a ]"
+    -- the root as a value is a constant: true as 0 < 1, false as 1 < 0, and 1 for #root
+    let contains mode' x expected = case output mode' x of
+            Right x' -> (expected `isInfixOf` x') @? (show mode' ++ ": " ++ x ++ " is not " ++ expected ++ "\n" ++ x')
+            Left errs' -> assertFailure $ x ++ ": " ++ show errs'
+    contains Alloy "[ some parent ]" "{ 0 < 1 }"
+    contains Alloy "[ no root ]" "{ 1 < 0 }"
+    contains Alloy "[ #this.parent = 1 ]" "{ 0 < 1 }"
+    contains Choco "[ some parent ]" "lessThan(constant(0), constant(1))"
+    -- the parent of a set of instances of a top-level clafer is the root when an instance exists
+    let optional constraint = unlines [ "a ?", "b", "    " ++ constraint ]
+        sameOptional mode' x y = case (compile' mode' x, compile' mode' y) of
+            (Right x', Right y') -> x' == y' @? (show mode' ++ ": " ++ x ++ " differs from " ++ y)
+            (Left errs', _) -> assertFailure $ x ++ ": " ++ show errs'
+            (_, Left errs') -> assertFailure $ y ++ ": " ++ show errs'
+        compile' mode' = fmap (outputCode . fromJust . Map.lookup mode') . compileOneFragment defaultClaferArgs{mode = [mode']} . optional
+    forM_ [Alloy, Choco] $ \mode' -> do
+        sameOptional mode' "[ some a ]" "[ some a.parent ]"
+        sameOptional mode' "[ no a ]" "[ no a.parent ]"
+    case compile' Alloy "[ some a.parent.a ]" of
+        Right x' -> ("some ((some c0_a) => (c0_a) else ((c0_a) - (c0_a)))" `isInfixOf` x') @? x'
+        Left errs' -> assertFailure $ show errs'
+    refused (unlines [ "abstract Feat", "f1 : Feat", "g", "    f2 : Feat", "[ all v : Feat | some v.parent ]" ]) "take the parent of `this`"
+    -- some subclafers of Feat are at the top level and some nested: its constraint is split on this
+    case compileOneFragment defaultClaferArgs{mode = [Alloy, Choco]} (unlines [ "abstract Feat", "    [ some parent ]", "f1 : Feat", "g", "    f2 : Feat" ]) of
+        Right r -> do
+            let alloy = outputCode $ fromJust $ Map.lookup Alloy r
+                choco = outputCode $ fromJust $ Map.lookup Choco r
+            ("((this in c0_f1) => (0 < 1)) && ((this in (c0_g.@r_c0_f2)) => (some (this & (c0_g.@r_c0_f2)).~(@r_c0_f2)))" `isInfixOf` alloy) @? alloy
+            ("joinParent(inter($this(), join(global(c0_g), c0_f2)))" `isInfixOf` choco) @? choco
+        Left errs' -> assertFailure $ show errs'
+
 -- A clafer which extends itself is reported as such, not as a missing super.
 case_SelfInheritanceReported :: Assertion
 case_SelfInheritanceReported =

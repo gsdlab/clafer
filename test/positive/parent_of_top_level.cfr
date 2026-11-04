@@ -1,0 +1,37 @@
+// The parent of an instance of a top-level clafer is the root (#112). The root is synthetic:
+// a navigation from it is a navigation from the top level, so `parent.a` in `b` is `a`.
+
+a
+    x -> integer
+extra ?
+b
+    [ some parent.a ]
+    [ some this.parent ]
+    [ #parent = 1 ]
+    [ parent.a.x = 2 ]
+    [ all v : b | some v.parent.a ]
+    // the parent of a clafer that always exists is the root
+    [ some a.parent.a ]
+    // the parent of a set of instances is the root when an instance exists, and empty otherwise
+    [ some extra.parent <=> some extra ]
+    [ #extra.parent = 1 => some extra ]
+    [ some extra.parent.a => some extra ]
+[ some root ]
+[ root.a.x = 2 ]
+
+// all the subclafers are at the top level: the parent is the root
+abstract Top
+    [ some parent ]
+top1 : Top
+top2 : Top
+
+// some subclafers are at the top level, some nested: the constraint is split on `this`
+abstract Feat
+    [ some parent ]
+    [ #parent = 1 ]
+f1 : Feat
+g
+    f2 : Feat
+h 2
+    i
+        f3 : Feat

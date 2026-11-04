@@ -33,6 +33,7 @@ import Language.Clafer.Intermediate.Intclafer
 import Language.Clafer.Intermediate.ResolverName
 import Language.Clafer.Intermediate.ResolverType
 import Language.Clafer.Intermediate.ResolverInheritance
+import Language.Clafer.Intermediate.ResolverRoot
 
 -- | Run the various resolvers
 resolveModule :: ClaferArgs -> IModule -> Resolve (IModule, GEnv)
@@ -97,5 +98,5 @@ resolveNamesModule args' (imodule, genv') =
   where
   funs :: [(IModule, GEnv) -> Resolve IModule]
   funs
-    | skip_resolver args' = [return . analyzeModule, resolveRedefinition, resolveTModule]
-    | otherwise = [ return . analyzeModule, resolveModuleNames, resolveRedefinition, resolveTModule]
+    | skip_resolver args' = [return . analyzeModule, resolveRedefinition, resolveTModule, resolveRootModule]
+    | otherwise = [ return . analyzeModule, resolveModuleNames, resolveRedefinition, resolveTModule, resolveRootModule]

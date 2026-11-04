@@ -438,8 +438,11 @@ genPExp'    genEnv    resPath     (PExp iType' pid' pos exp') = case exp' of
   IDeclPExp q d pexp -> Concat (IrPExp pid') $
     [ CString $ genQuant q, CString " "
     , cintercalate (CString ", ") $ map (genDecl genEnv resPath) d
-    , CString $ optBar d, genPExp' genEnv resPath pexp]
+    , CString $ optBar d, quantBody pexp]
     where
+    -- `some (c => a else b)`: without the parentheses, `some c` would be the condition
+    quantBody p@PExp{_exp = IFunExp op' _} | op' == iIfThenElse = brArg (genPExp' genEnv resPath) p
+    quantBody p = genPExp' genEnv resPath p
     optBar [] = ""
     optBar _  = " | "
   IClaferId _ "integer" _ _ -> CString "Int"

@@ -1,0 +1,63 @@
+open util/integer
+pred show {}
+
+
+one sig c0_a
+{ r_c0_x : one c0_x }
+
+one sig c0_x
+{ c0_x_ref : one Int }
+
+lone sig c0_extra
+{}
+
+one sig c0_b
+{}
+{ some c0_a
+  0 < 1
+  0 < 1
+  (((c0_a).@r_c0_x).@c0_x_ref) = 2
+  all  v : c0_b | some c0_a
+  some c0_a
+  (some c0_extra) <=> (some c0_extra)
+  (((some c0_extra) => 1 else 0) = 1) => (some c0_extra)
+  (some ((some c0_extra) => (c0_a) else ((c0_a) - (c0_a)))) => (some c0_extra) }
+
+fact { 0 < 1 }
+fact { (((c0_a).@r_c0_x).@c0_x_ref) = 2 }
+abstract sig c0_Top
+{}
+{ 0 < 1 }
+
+one sig c0_top1 extends c0_Top
+{}
+
+one sig c0_top2 extends c0_Top
+{}
+
+abstract sig c0_Feat
+{}
+{ (((this in c0_f1) => (0 < 1)) && ((this in (c0_g.@r_c0_f2)) => (some (this & (c0_g.@r_c0_f2)).~(@r_c0_f2 + @r_c0_f3)))) && ((this in ((c0_h.@r_c0_i).@r_c0_f3)) => (some (this & ((c0_h.@r_c0_i).@r_c0_f3)).~(@r_c0_f2 + @r_c0_f3)))
+  (((this in c0_f1) => (0 < 1)) && ((this in (c0_g.@r_c0_f2)) => ((#((this & (c0_g.@r_c0_f2)).~(@r_c0_f2 + @r_c0_f3))) = 1))) && ((this in ((c0_h.@r_c0_i).@r_c0_f3)) => ((#((this & ((c0_h.@r_c0_i).@r_c0_f3)).~(@r_c0_f2 + @r_c0_f3))) = 1)) }
+
+one sig c0_f1 extends c0_Feat
+{}
+
+one sig c0_g
+{ r_c0_f2 : one c0_f2 }
+
+one sig c0_f2 extends c0_Feat
+{}
+
+fact { 2 <= #c0_h and #c0_h <= 2 }
+sig c0_h
+{ r_c0_i : one c0_i }
+
+sig c0_i
+{ r_c0_f3 : one c0_f3 }
+{ one @r_c0_i.this }
+
+sig c0_f3 extends c0_Feat
+{}
+{ one @r_c0_f3.this }
+

@@ -188,6 +188,10 @@ resolveNav    env     pexp0@PExp{_inPos=pos', _exp=x} isFirst =
             in -- keep the RHS as is
               return (pexp2{_exp=IFunExp iJoin [pexp0', pexp2'r]}, path2)
           _ -> return (pexp0{_exp=IFunExp iJoin [pexp1', pexp2']}, path2)
+        -- the parent of an instance of a top-level clafer is the root (#112); that of another set
+        -- of instances is the root when the set is not empty, which ResolverRoot decides
+        PExp{_exp=IClaferId{_sident="parent"}} | Just c <- listToMaybe path1, isRootChild c, isSingleInstance pexp1' ->
+          return (pexp0{_exp=rootIExp}, [])
         _ -> return (pexp0{_exp=IFunExp iJoin [pexp1', pexp2']}, path2)
     IClaferId _ "root" _ _ -> return (pexp0, [])
     IClaferId modName' id' _ _ -> if isFirst
@@ -200,6 +204,21 @@ resolveNav    env     pexp0@PExp{_inPos=pos', _exp=x} isFirst =
                _  -> mkPath' pos' modName' <$> resolveImmName pos' env id'
              return (pexp0{_exp=exp'}, derefPath env id' path')
     y -> throwError $ SemanticErr pos' $ "Cannot resolve nav of " ++ show y
+
+-- | A concrete top-level clafer, whose parent is the root. The root is synthetic: it has no
+--   instance in the outputs, and a navigation from it is a navigation from the top level.
+isRootChild :: IClafer -> Bool
+isRootChild c = _parentUID c == rootIdent && not (_isAbstract c)
+
+-- | @this@ or a variable: one instance, whose parent always exists. The parent of a set of
+--   instances of a top-level clafer is the root only when the set is not empty.
+isSingleInstance :: PExp -> Bool
+isSingleInstance PExp{_exp=IClaferId{_sident=s}} | s == thisIdent = True
+isSingleInstance PExp{_exp=IClaferId{_binding=LocalBind _}} = True
+isSingleInstance _ = False
+
+rootIExp :: IExp
+rootIExp = IClaferId "" rootIdent True (GlobalBind rootIdent)
 
 endsWithDref :: PExp -> Bool
 endsWithDref PExp{_exp=IClaferId{_sident=s}} = s == drefIdent
@@ -240,7 +259,11 @@ mkPath    pos'    env     (howResolved, id',    path)       = case howResolved o
           (IClaferId "" thisIdent True (createBind $ context env))
           tuplePath
   specIExp "this"     = IClaferId "" thisIdent True (createBind $ context env)
-  specIExp "parent"   = toNav [("parent", Just $ head path)]
+  -- at the top level, the parent of a concrete clafer is the root (#112); that of an abstract
+  -- one is the parent of the instances of its subclafers
+  specIExp "parent"   = case (path, context env) of
+    ([], Just c) | isRootChild c -> rootIExp
+    _ -> toNav [("parent", listToMaybe path)]
   specIExp "dref"     = toNav [("dref", Just $ head path)]
   specIExp "root"     = IClaferId "" rootIdent True (GlobalBind rootIdent)
   specIExp "children" = toNav [(id', Just $ head path)]
@@ -272,7 +295,8 @@ mkPath' :: Span -> String -> (HowResolved, String, [IClafer]) -> (IExp, [IClafer
 mkPath'    pos' modName'  (howResolved, id', path)          = case howResolved of
   -- the path is [the child, the reference clafer]: dref belongs to the reference clafer
   Reference -> (toNav' pos' (zip ["dref", id'] (map Just $ reverse path)), path)
-  _ -> (IClaferId modName' id' False bind, path)
+  -- a top-level clafer after `root.` (#112)
+  _ -> (IClaferId modName' id' (maybe False isTopLevel $ listToMaybe path) bind, path)
   where
   bind = case path of
     [] -> NoBind
