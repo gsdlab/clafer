@@ -14,6 +14,7 @@
 * Temporal models: a name that resolves through a reference, e.g., `this.speed` in `l -> Port`, compiles to valid Alloy; it joined the target with the set of all existing `speed`s.
 * `make test` fails when a test suite fails, or when an output of the positive test models differs from its regression, has no regression, or a regression has no output; the outputs become the new regressions, to be reviewed and committed. It passed regardless, so the regressions of 0.5.6 were outdated.
 * Temporal models: `parent` of an instance of a top-level abstract clafer, and its constraints' obligations, use the parents of its subclafers' instances; `parent` was empty for the instances of a nested subclafer, so `[ some this.parent ]` in `abstract Port` excluded them.
+* The unused JavaCC grammar `src/Language/Clafer/Front/Clafer.jj` is removed. It dated from 2012, was never part of the compiler, and did not follow the syntax since 0.4; the grammar is `src/clafer.cf`.
 
 ##### Clafer Version 0.5.6, Nov 1, 2026
 
