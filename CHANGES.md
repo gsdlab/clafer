@@ -18,6 +18,7 @@
 * The simple scope analysis no longer adds the instances of a clafer that has none, e.g., such an abstract clafer, to the scope of its super: every subclafer added at least 1. The scopes of the supers are smaller, e.g., `WaitingLine` 2 instead of 4 and `participants` 4 instead of 8 in the tutorial, and the `Element` of the UML class diagram model 4 instead of 25.
 * Temporal models leave out the abstract clafers that the optimizer removed, as static models do; the temporal generator took the clafers of the model before the optimization.
 * The unused JavaCC grammar `src/Language/Clafer/Front/Clafer.jj` is removed. It dated from 2012, was never part of the compiler, and did not follow the syntax since 0.4; the grammar is `src/clafer.cf`.
+* Scope files (`.cfr-scope`, claferIG's `loadScopes`): entries other than `{"lpqName": name, "scope": n}`, e.g., chocosolver's `{"int": [-8, 7]}` or `{"defaultScope": 1}`, are skipped; they stopped claferIG with an error. A name may also be a clafer's UID, e.g., `c0_Cfeatures`, as chocosolver writes them.
 
 ##### Clafer Version 0.5.6, Nov 1, 2026
 

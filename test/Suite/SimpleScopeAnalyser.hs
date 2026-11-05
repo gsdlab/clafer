@@ -204,3 +204,22 @@ case_ReadScopesJSON = do
 
     (M.size differences) == 0 @?
         "Parsed scopes different from original:\n" ++ (unlines $ M.foldl (\acc v -> v:acc) [] differences)
+
+-- | chocosolver's scope files (ScopeFile) name clafers by their UIDs and also give the default scope
+-- | and the ranges: the clafer scopes are read, by UID or by name, and the other entries are skipped.
+case_ReadChocoScopesJSON :: Assertion
+case_ReadChocoScopesJSON = do
+    let
+        (Right compilerResultMap) = compileOneFragment defaultClaferArgs model
+        (Just compilerResult) = M.lookup Alloy compilerResultMap
+        Just (iModule, _, _) = cIr $ claferEnv compilerResult
+        qNameMaps = deriveQNameMaps iModule
+        scopesInJSON = unlines
+            [ "["
+            , "{\"lpqName\": \"c0_b\", \"scope\": 2},"
+            , "{\"lpqName\": \"H::k\", \"scope\": 5},"
+            , "{\"defaultScope\": 1},"
+            , "{\"int\": [-8, 7]},"
+            , "{\"decimal\": [-2.5, 2.5]}"
+            , "]" ]
+    M.fromList (parseJSONScopes qNameMaps scopesInJSON) @?= M.fromList [ ("c0_b", 2), ("c0_k", 5) ]
