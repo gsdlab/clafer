@@ -111,8 +111,11 @@ simpleScopeAnalysis iModule@IModule{_mDecls = decls'} =
         findOrError message m key = Map.findWithDefault (error $ key ++ message) key m
 
 analyzeSupers :: UIDIClaferMap -> [IClafer] -> Map String Integer -> IElement -> Map String Integer
-analyzeSupers uidClaferMap' clafers analysis (IEClafer clafer) =
-    foldl (analyzeSupers uidClaferMap' clafers) analysis' (_elements clafer)
+analyzeSupers uidClaferMap' clafers analysis (IEClafer clafer)
+    -- a clafer without instances, e.g., an abstract clafer that no concrete clafer extends,
+    -- adds none to its super, and neither do its children
+    | cardUb == 0 = analysis
+    | otherwise   = foldl (analyzeSupers uidClaferMap' clafers) analysis' (_elements clafer)
     where
     (cardLb, cardUb) = case _card clafer of
         (Just c) -> c

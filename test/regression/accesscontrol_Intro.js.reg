@@ -1,4 +1,4 @@
-scope({c0_ActionName:0, c0_Attribute:4, c0_CombiningAlgo:3, c0_Effect:4, c0_Element:0, c0_ResourceName:0, c0_Role:0, c0_Value:0, c0_attributes:0, c0_value:4});
+scope({c0_ActionName:0, c0_Attribute:0, c0_CombiningAlgo:3, c0_Effect:4, c0_Element:0, c0_ResourceName:0, c0_Role:0, c0_Value:0, c0_attributes:0, c0_value:0});
 defaultScope(1);
 stringLength(16);
 

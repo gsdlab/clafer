@@ -76,10 +76,13 @@ data GenEnv = GenEnv
 
 -- | Alloy 6 code generation
 genAlloyLtlModule :: ClaferArgs -> (IModule, GEnv) -> [(UID, Integer)] -> [Token]     -> (Result, [(Span, IrTrace)])
-genAlloyLtlModule    claferargs'   (_      , genv)    scopes              otherTokens' = (flatten output, filter ((/= NoTrace) . snd) $ mapLineCol output)
+genAlloyLtlModule    claferargs'   (imodule, genv)    scopes              otherTokens' = (flatten output, filter ((/= NoTrace) . snd) $ mapLineCol output)
   where
   uidIClaferMap' = uidClaferMap genv
-  root = fromMaybe (error "AlloyLtl: missing root clafer") $ findIClafer uidIClaferMap' rootIdent
+  -- the clafers of the module, as the optimizer left them: the map of the environment still has
+  -- the abstract clafers that no concrete clafer extends, which the optimizer removed
+  root = (fromMaybe (error "AlloyLtl: missing root clafer") $ findIClafer uidIClaferMap' rootIdent)
+           { _elements = _mDecls imodule }
   clafers' = tail $ nestedClafers root
   tl = trace_len claferargs'
   genEnv = GenEnv claferargs' uidIClaferMap' clafers' forScopes'

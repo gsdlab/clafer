@@ -24,6 +24,8 @@ module Language.Clafer.Intermediate.ScopeAnalysis where
 import Control.Lens (universeOn)
 import Data.Data.Lens (biplate)
 import Data.Maybe
+import qualified Data.Map as Map
+import qualified Data.Set as Set
 
 import Language.Clafer.ClaferArgs
 import Language.Clafer.Common
@@ -32,8 +34,27 @@ import Language.Clafer.Intermediate.SimpleScopeAnalyzer
 
 -- | Return an appropriate scope analysis for a given strategy
 getScopeStrategy :: ScopeStrategy -> IModule -> [(String, Integer)]
-getScopeStrategy Simple = simpleScopeAnalysis
-getScopeStrategy _      = const []
+getScopeStrategy strategy iModule = withEmptyAbstracts iModule $ case strategy of
+    Simple -> simpleScopeAnalysis iModule
+    _      -> []
+
+-- | An abstract clafer that no concrete clafer inherits from, directly or through other abstract
+-- clafers, has no instances: its scope is 0. Alloy gives an abstract sig without subsigs atoms
+-- of its own otherwise, and translates all the constraints of the clafer for them.
+withEmptyAbstracts :: IModule -> [(UID, Integer)] -> [(UID, Integer)]
+withEmptyAbstracts iModule scopes =
+    Map.toList $ Map.union (Map.fromSet (const 0) $ emptyAbstracts iModule) (Map.fromList scopes)
+
+-- | The abstract clafers that no concrete clafer inherits from, directly or through other abstract
+-- clafers, and the clafers nested in them: they have no instances, whatever their scopes.
+emptyAbstracts :: IModule -> Set.Set UID
+emptyAbstracts iModule =
+    Set.fromList [ _uid c' | c <- clafers, _isAbstract c, not $ Set.member (_uid c) inherited, c' <- c : universeOn biplate c ]
+    where
+    uidClaferMap' = createUidIClaferMap iModule
+    clafers = universeOn biplate iModule :: [IClafer]
+    -- the supers of the concrete clafers, all the way up their chains of inheritance
+    inherited = Set.fromList [ _uid super' | c <- clafers, not $ _isAbstract c, super' <- drop 1 $ findHierarchy getSuper uidClaferMap' c ]
 
 -- | The scope above which a scope is large
 largeScope :: Integer
