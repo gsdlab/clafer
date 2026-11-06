@@ -76,6 +76,20 @@ a[href$='Ambiguous name'] {color: yellow}
 
 
 <div>
+<span class="claferDecl" id="volt">volt</span><span class="keyword"> : </span><a href="#Car"><span class="reference">Car</span></a>
+  <div class="indent">
+  <span class="tKeyword">finalref</span> <span class="tKeyword">finaltarget</span> <span class="claferDecl" id="motor5">motor5</span><span class="keyword"> : </span><a href="#engine"><span class="reference">engine</span></a></div>
+</div>
+
+
+<div>
+<span class="claferDecl" id="prius">prius</span><span class="keyword"> : </span><a href="#Car"><span class="reference">Car</span></a>
+  <div class="indent">
+  <span class="tKeyword">finaltarget</span> <span class="tKeyword">finalref</span> <span class="claferDecl" id="motor6">motor6</span><span class="keyword"> -> </span><a href="#Engine"><span class="reference">Engine</span></a></div>
+</div>
+
+
+<div>
 <span class="keyword">assert [</span> <a href="#tesla"><span class="reference">tesla</span></a>.<a href="#motor"><span class="reference">motor</span></a> = <a href="#gas"><span class="reference">gas</span></a> =&gt; G <a href="#tesla"><span class="reference">tesla</span></a>.<a href="#motor"><span class="reference">motor</span></a> = <a href="#gas"><span class="reference">gas</span></a> <span class="keyword">]</span></div>
 
 
@@ -85,6 +99,14 @@ a[href$='Ambiguous name'] {color: yellow}
 
 <div>
 <span class="keyword">assert [</span> <a href="#bolt"><span class="reference">bolt</span></a>.<a href="#motor3"><span class="reference">motor3</span></a> = <a href="#gas"><span class="reference">gas</span></a> =&gt; G <a href="#bolt"><span class="reference">bolt</span></a>.<a href="#motor3"><span class="reference">motor3</span></a> = <a href="#gas"><span class="reference">gas</span></a> <span class="keyword">]</span></div>
+
+
+<div>
+<span class="keyword">assert [</span> <a href="#volt"><span class="reference">volt</span></a>.<a href="#motor5"><span class="reference">motor5</span></a> = <a href="#gas"><span class="reference">gas</span></a> =&gt; G <a href="#volt"><span class="reference">volt</span></a>.<a href="#motor5"><span class="reference">motor5</span></a> = <a href="#gas"><span class="reference">gas</span></a> <span class="keyword">]</span></div>
+
+
+<div>
+<span class="keyword">assert [</span> <a href="#prius"><span class="reference">prius</span></a>.<a href="#motor6"><span class="reference">motor6</span></a> = <a href="#gas"><span class="reference">gas</span></a> =&gt; G <a href="#prius"><span class="reference">prius</span></a>.<a href="#motor6"><span class="reference">motor6</span></a> = <a href="#gas"><span class="reference">gas</span></a> <span class="keyword">]</span></div>
 
 </body>
 </html>

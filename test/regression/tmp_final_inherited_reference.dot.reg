@@ -16,4 +16,7 @@ edge [fontname=Sans fontsize=11];
 "leaf" [label="leaf : Car" URL="#leaf" tooltip="leaf : Car&#10;  finalref motor2 : engine&#10;"];
 "bolt" [label="bolt : Car" URL="#bolt" tooltip="bolt : Car&#10;  finaltarget motor3 : engine&#10;"];
 "mini" [label="mini : Car" URL="#mini" tooltip="mini : Car&#10;  motor4 : engine&#10;"];
+"volt" [label="volt : Car" URL="#volt" tooltip="volt : Car&#10;  finalref finaltarget motor5 : engine&#10;"];
+"prius" [label="prius : Car" URL="#prius" tooltip="prius : Car&#10;  finaltarget finalref motor6 -&gt; Engine&#10;"];
+"prius" -> "Engine" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=motor6];
 }

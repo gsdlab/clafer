@@ -8,22 +8,32 @@ one sig root
 , var r_tesla : set tesla
 , var r_leaf : set leaf
 , var r_bolt : set bolt
-, var r_mini : set mini }
+, var r_mini : set mini
+, var r_volt : set volt
+, var r_prius : set prius }
 fact { all self_ : root | always (one self_.@r_gas) }
 fact { all self_ : root | always (one self_.@r_electric) }
 fact { all self_ : root | always (one self_.@r_tesla) }
 fact { all self_ : root | always (one self_.@r_leaf) }
 fact { all self_ : root | always (one self_.@r_bolt) }
 fact { all self_ : root | always (one self_.@r_mini) }
+fact { all self_ : root | always (one self_.@r_volt) }
+fact { all self_ : root | always (one self_.@r_prius) }
 
-assert assertAt_22_10 { all self_ : root | always ((((alive_tesla.@r_motor).@engine_ref) = alive_gas) => (always (((alive_tesla.@r_motor).@engine_ref) = alive_gas))) }
-check assertAt_22_10 for 1 but 4 Car, 2 Engine, 4 drive, 4 engine, 4 gear, 4 park, 10 steps
+assert assertAt_30_10 { all self_ : root | always ((((alive_tesla.@r_motor).@engine_ref) = alive_gas) => (always (((alive_tesla.@r_motor).@engine_ref) = alive_gas))) }
+check assertAt_30_10 for 1 but 6 Car, 2 Engine, 6 drive, 5 engine, 6 gear, 6 park, 10 steps
 
-assert assertAt_23_10 { all self_ : root | always ((((alive_leaf.@r_motor2).@engine_ref) = alive_gas) => (always (((alive_leaf.@r_motor2).@engine_ref) = alive_gas))) }
-check assertAt_23_10 for 1 but 4 Car, 2 Engine, 4 drive, 4 engine, 4 gear, 4 park, 10 steps
+assert assertAt_31_10 { all self_ : root | always ((((alive_leaf.@r_motor2).@engine_ref) = alive_gas) => (always (((alive_leaf.@r_motor2).@engine_ref) = alive_gas))) }
+check assertAt_31_10 for 1 but 6 Car, 2 Engine, 6 drive, 5 engine, 6 gear, 6 park, 10 steps
 
-assert assertAt_24_10 { all self_ : root | always ((((alive_bolt.@r_motor3).@engine_ref) = alive_gas) => (always (((alive_bolt.@r_motor3).@engine_ref) = alive_gas))) }
-check assertAt_24_10 for 1 but 4 Car, 2 Engine, 4 drive, 4 engine, 4 gear, 4 park, 10 steps
+assert assertAt_32_10 { all self_ : root | always ((((alive_bolt.@r_motor3).@engine_ref) = alive_gas) => (always (((alive_bolt.@r_motor3).@engine_ref) = alive_gas))) }
+check assertAt_32_10 for 1 but 6 Car, 2 Engine, 6 drive, 5 engine, 6 gear, 6 park, 10 steps
+
+assert assertAt_33_10 { all self_ : root | always ((((alive_volt.@r_motor5).@engine_ref) = alive_gas) => (always (((alive_volt.@r_motor5).@engine_ref) = alive_gas))) }
+check assertAt_33_10 for 1 but 6 Car, 2 Engine, 6 drive, 5 engine, 6 gear, 6 park, 10 steps
+
+assert assertAt_34_10 { all self_ : root | always ((((alive_prius.@r_motor6).@motor6_ref) = alive_gas) => (always (((alive_prius.@r_motor6).@motor6_ref) = alive_gas))) }
+check assertAt_34_10 for 1 but 6 Car, 2 Engine, 6 drive, 5 engine, 6 gear, 6 park, 10 steps
 
 
 
@@ -47,7 +57,7 @@ abstract sig Car
 { var r_engine : set engine
 , var r_gear : set gear }
 { always (this in alive_Car implies (all disj x, y : this.@r_engine | (x.@engine_ref) != (y.@engine_ref))) }
-fun alive_Car : set Car { alive_tesla + alive_leaf + alive_bolt + alive_mini }
+fun alive_Car : set Car { alive_tesla + alive_leaf + alive_bolt + alive_mini + alive_volt + alive_prius }
 fact { all self_ : Car | always (self_ in alive_Car implies (one self_.@r_gear)) }
 
 
@@ -56,7 +66,7 @@ abstract sig engine
 { always (this in alive_engine implies (one this.@engine_ref))
   always (this in alive_engine implies (this.@engine_ref in alive_Engine)) }
 fun alive_engine : set engine { Car.@r_engine }
-fact { always @r_engine = (@r_motor + @r_motor2 + @r_motor3 + @r_motor4) }
+fact { always @r_engine = (@r_motor + @r_motor2 + @r_motor3 + @r_motor4 + @r_motor5) }
 
 
 sig gear
@@ -159,5 +169,45 @@ sig motor4 extends engine
 fun alive_motor4 : set motor4 { mini.@r_motor4 }
 fact { always ~@r_motor4 in @p_motor4
   always @r_motor4.univ in alive_mini }
+
+
+sig volt extends Car
+{ p_volt : lone root
+, var r_motor5 : set motor5 }
+{ always (this in alive_volt implies (this.@r_motor5 in this.@r_engine))
+  always (this in alive_volt and after this in alive_volt implies (this.@r_motor5.@engine_ref)' = this.@r_motor5.@engine_ref) }
+fun alive_volt : set volt { root.@r_volt }
+fact { always ~@r_volt in @p_volt }
+
+fact { all self_ : volt | always (self_ in alive_volt implies (one self_.@r_motor5)) }
+
+
+sig motor5 extends engine
+{ p_motor5 : lone volt }
+{ always (this in alive_motor5 and after this in alive_motor5 implies (this.@engine_ref)' = this.@engine_ref) }
+fun alive_motor5 : set motor5 { volt.@r_motor5 }
+fact { always ~@r_motor5 in @p_motor5
+  always @r_motor5.univ in alive_volt }
+
+
+sig prius extends Car
+{ p_prius : lone root
+, var r_motor6 : set motor6 }
+{ always (this in alive_prius and after this in alive_prius implies (this.@r_motor6.@motor6_ref)' = this.@r_motor6.@motor6_ref) }
+fun alive_prius : set prius { root.@r_prius }
+fact { always ~@r_prius in @p_prius }
+
+fact { all self_ : prius | always (self_ in alive_prius implies (one self_.@r_motor6)) }
+
+
+sig motor6
+{ p_motor6 : lone prius
+, var motor6_ref : set Engine }
+{ always (this in alive_motor6 implies (one this.@motor6_ref))
+  always (this in alive_motor6 implies (this.@motor6_ref in alive_Engine))
+  always (this in alive_motor6 and after this in alive_motor6 implies (this.@motor6_ref)' = this.@motor6_ref) }
+fun alive_motor6 : set motor6 { prius.@r_motor6 }
+fact { always ~@r_motor6 in @p_motor6
+  always @r_motor6.univ in alive_prius }
 
 
