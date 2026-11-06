@@ -20,7 +20,7 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
 -}
-module Language.Clafer.Intermediate.ResolverType (resolveTModule)  where
+module Language.Clafer.Intermediate.ResolverType (resolveTModule, redundantExps)  where
 
 import Language.ClaferT
 import Language.Clafer.Common
@@ -32,6 +32,8 @@ import Language.Clafer.Front.PrintClafer
 import Control.Applicative
 import Control.Exception (assert)
 import Control.Lens ((&), (%~), traversed)
+import Control.Lens.Plated (universeOn)
+import Data.Data.Lens (biplate)
 import Control.Monad
 import Control.Monad.Except
 import Control.Monad.Trans.List  -- instead of the deprecated Control.Monad.List
@@ -389,9 +391,6 @@ resolveTPExp' p@PExp{_inPos, _exp} =
                             then throwError $ SemanticErr _inPos ("Function '" ++ _op ++ "' cannot be performed on\n" ++ showType arg1' ++ "\n" ++ _op ++ "\n" ++ showType arg2')
                             else return it'
                 Nothing  -> throwError $ SemanticErr _inPos ("Function '" ++ _op ++ "' cannot be performed on\n" ++ showType arg1' ++ "\n" ++ _op ++ "\n" ++ showType arg2')
-      let testNotSame e1 e2 =
-            when (e1 `sameAs` e2) $
-              throwError $ SemanticErr _inPos ("Function '" ++ _op ++ "' is redundant because the two subexpressions are always equivalent")
       let test c =
             unless c $
               throwError $ SemanticErr _inPos ("Function '" ++ _op ++ "' cannot be performed on\n" ++ showType arg1' ++ "\n" ++ _op ++ "\n" ++ showType arg2')
@@ -399,9 +398,9 @@ resolveTPExp' p@PExp{_inPos, _exp} =
             | _op `elem` logBinOps = test (isTBoolean t1 && isTBoolean t2) >> return TBoolean
             | _op `elem` ltlBinOps = test (isTBoolean t1 && isTBoolean t2) >> return TBoolean
             | _op `elem` [iLt, iGt, iLte, iGte] = test (numeric t1 && numeric t2) >> return TBoolean
-            | _op `elem` [iEq, iNeq] = testNotSame arg1' arg2' >> testIntersect t1 t2 >> return TBoolean
-            | _op == iDifference = testNotSame arg1' arg2' >> testIntersect t1 t2 >> return t1
-            | _op == iIntersection = testNotSame arg1' arg2' >> testIntersect t1 t2
+            | _op `elem` [iEq, iNeq] = testIntersect t1 t2 >> return TBoolean
+            | _op == iDifference = testIntersect t1 t2 >> return t1
+            | _op == iIntersection = testIntersect t1 t2
             | _op `elem` [iDomain, iRange] = testIntersect t1 t2
             | _op `elem` relSetBinOps = testIntersect t1 t2 >> return TBoolean
             | _op `elem` [iSub, iMul, iDiv, iRem] = test (allNumeric t1 && allNumeric t2) >> return (coerce t1 t2)
@@ -531,6 +530,14 @@ liftList = ListT . return
 
 syntaxOf :: PExp -> String
 syntaxOf = printTree . sugarExp
+
+-- | The comparisons, differences and intersections of an expression with itself, e.g., @x = x@:
+-- correct, but probably not what was meant, so the compiler warns about them
+redundantExps :: IModule -> [PExp]
+redundantExps imodule =
+  [ p | p@PExp{_exp = IFunExp fun [e1, e2]} <- universeOn biplate imodule
+      , fun `elem` [iEq, iNeq, iDifference, iIntersection]
+      , e1 `sameAs` e2 ]
 
 -- Returns true iff the left and right expressions are syntactically identical
 sameAs :: PExp -> PExp -> Bool

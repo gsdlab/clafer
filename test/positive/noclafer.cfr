@@ -43,3 +43,13 @@ assert [ some c => (if some c then a else noclafer) = a ]
 assert [ no c => no (if some c then a else noclafer) ]
 assert [ no c => (if no c then noclafer else b) = noclafer ]
 assert [ #(if some c then a else noclafer) <= #a ]
+
+// equal to itself, which the compiler warns about as redundant
+assert [ noclafer = noclafer ]
+assert [ !(noclafer != noclafer) ]
+
+// a navigation from it is empty, whatever it navigates to, which the compiler warns about
+assert [ no noclafer.d ]
+assert [ no noclafer.parent ]
+assert [ noclafer.d = noclafer ]
+assert [ #noclafer.d.parent = 0 ]

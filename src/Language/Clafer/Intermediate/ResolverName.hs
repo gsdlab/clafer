@@ -172,6 +172,9 @@ processDecl decl = runExceptT $ do
 resolveNav :: SEnv -> PExp                         -> Bool   -> Resolve (PExp, [IClafer])
 resolveNav    env     pexp0@PExp{_inPos=pos', _exp=x} isFirst =
   case x of
+    -- a navigation from the empty set is empty, whatever it navigates to, so the names after
+    -- `noclafer` are not resolved; the compiler warns about it
+    IFunExp "." [pexp1, _] | fromNoClafer pexp1 -> return (pexp0{_exp = noClaferIExp}, [])
     IFunExp "." [pexp1,pexp2] -> do
       (pexp1', path1) <- resolveNav env                                               pexp1 True
       (pexp2', path2) <- resolveNav env{context = listToMaybe path1, resPath = path1} pexp2 False
@@ -202,7 +205,7 @@ resolveNav    env     pexp0@PExp{_inPos=pos', _exp=x} isFirst =
       (r', pathR) <- resolveNav env r True
       return (pexp0{_exp = IFunExp op' [l', r']}, if op' == iIntersection then pathR else pathL)
     IClaferId _ "root" _ _ -> return (pexp0, [])
-    IClaferId _ "noclafer" _ _ -> return (pexp0{_exp = IClaferId "" noClaferIdent True (GlobalBind noClaferIdent)}, [])
+    IClaferId _ "noclafer" _ _ -> return (pexp0{_exp = noClaferIExp}, [])
     -- clafer as a value, the union of all clafers, which ResolverRoot writes out
     IClaferId _ "clafer" _ _ | isFirst -> return (pexp0{_exp = IClaferId "" baseClafer True (GlobalBind baseClafer)}, [])
     IClaferId modName' id' _ _ -> if isFirst
@@ -230,6 +233,14 @@ isSingleInstance _ = False
 
 rootIExp :: IExp
 rootIExp = IClaferId "" rootIdent True (GlobalBind rootIdent)
+
+noClaferIExp :: IExp
+noClaferIExp = IClaferId "" noClaferIdent True (GlobalBind noClaferIdent)
+
+-- | A navigation that starts at @noclafer@, e.g., @noclafer@ in @noclafer.d.e@, before resolution
+fromNoClafer :: PExp -> Bool
+fromNoClafer PExp{_exp = IFunExp "." [l, _]} = fromNoClafer l
+fromNoClafer p = isNoClafer p
 
 endsWithDref :: PExp -> Bool
 endsWithDref PExp{_exp=IClaferId{_sident=s}} = s == drefIdent
@@ -277,7 +288,7 @@ mkPath    pos'    env     (howResolved, id',    path)       = case howResolved o
     _ -> toNav [("parent", listToMaybe path)]
   specIExp "dref"     = toNav [("dref", Just $ head path)]
   specIExp "root"     = IClaferId "" rootIdent True (GlobalBind rootIdent)
-  specIExp "noclafer" = IClaferId "" noClaferIdent True (GlobalBind noClaferIdent)
+  specIExp "noclafer" = noClaferIExp
   specIExp "children" = toNav [(id', Just $ head path)]
   specIExp i          = error $ "[BUG] ResolverName.specIExp: Unknown special id: " ++ i
 

@@ -133,6 +133,7 @@ import           Language.Clafer.Import
 import           Language.Clafer.Intermediate.Desugarer
 import           Language.Clafer.Intermediate.Intclafer
 import           Language.Clafer.Intermediate.Resolver
+import           Language.Clafer.Intermediate.ResolverType (redundantExps)
 import           Language.Clafer.Intermediate.ScopeAnalysis
 import           Language.Clafer.Intermediate.StringAnalyzer
 import           Language.Clafer.Intermediate.Tracing
@@ -583,7 +584,8 @@ generate =
       scopeWarnings = if any (`elem` modes) [Alloy, AlloyLtl, Choco]
                       then showLargeScopes (inputFiles env) $ largeReferenceScopes iModule scopes
                       else ""
-      stats = showStats au (statsModule iModule) ++ scopeWarnings
+      stats = showStats au (statsModule iModule) ++ scopeWarnings ++ showRedundantExps (inputFiles env) (redundantExps iModule)
+              ++ showNoClaferNavs (inputFiles env) (noClaferNavs ast')
 
     return $ Map.fromList (
         -- result for Alloy
@@ -782,6 +784,39 @@ showLargeScopes files = unlines . map showLargeScope
       "Warning: " ++ path ++ ":" ++ show l' ++ ":" ++ show c ++ ": the scope of " ++ reference ++ " " ++ showInterval card'
       ++ " is " ++ show scope' ++ ", since " ++ name ++ " may point to all " ++ show targetScope ++ " " ++ _ident target ++ " in each of its parents."
       ++ " If fewer suffice, give it an upper bound, e.g., " ++ reference ++ " " ++ show (fst card') ++ "..10, to make the instance generation faster."
+
+-- | Warnings about the expressions compared with, subtracted from or intersected with themselves, at their positions in the files
+showRedundantExps :: [ModelFile] -> [PExp] -> String
+showRedundantExps files = unlines . map showRedundantExp
+  where
+  showRedundantExp PExp{_inPos = Span (Pos l c) _, _exp = IFunExp fun _} =
+    let
+      (path, l') = modelPosition files l
+    in
+      "Warning: " ++ path ++ ":" ++ show l' ++ ":" ++ show c ++ ": '" ++ fun ++ "' is redundant because the two subexpressions are always equivalent, so it is " ++ meaning fun ++ "."
+  showRedundantExp _ = ""
+  meaning fun
+    | fun == iEq         = "always true"
+    | fun == iNeq        = "always false"
+    | fun == iDifference = "always empty"
+    | otherwise          = "the same as either subexpression"
+
+-- | The navigations from @noclafer@, e.g., @noclafer.d@, as written: the desugarer and the name
+--   resolver replace them with @noclafer@, since a navigation from the empty set is empty
+noClaferNavs :: Module -> [Span]
+noClaferNavs ast' =
+  [ s | EJoin s (ClaferId _ (Path _ [ModIdIdent _ (PosIdent (_, n))])) _ <- universeOnOf biplate uniplate ast'
+      , n == noClaferIdent ]
+
+-- | Warnings about the navigations from @noclafer@, at their positions in the files
+showNoClaferNavs :: [ModelFile] -> [Span] -> String
+showNoClaferNavs files = unlines . map showNoClaferNav
+  where
+  showNoClaferNav (Span (Pos l c) _) =
+    let
+      (path, l') = modelPosition files l
+    in
+      "Warning: " ++ path ++ ":" ++ show l' ++ ":" ++ show c ++ ": a navigation from '" ++ noClaferIdent ++ "' is redundant, since it is always empty."
 
 showInterval :: (Integer, Integer) -> String
 showInterval (n, -1) = show n ++ "..*"

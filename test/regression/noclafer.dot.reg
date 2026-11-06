@@ -11,5 +11,5 @@ edge [fontname=Sans fontsize=11];
 "c0_a" -> "c0_Thing" [arrowhead=onormal constraint=true weight=100];
 "c0_b" [label="b : Thing ?" URL="#c0_b" tooltip="b : Thing ?&#10;"];
 "c0_b" -> "c0_Thing" [arrowhead=onormal constraint=true weight=100];
-"c0_c" [label="c ?" URL="#c0_c" tooltip="c ?&#10;"];
+"c0_c" [label="c ?" URL="#c0_c" tooltip="c ?&#10;  d ?&#10;"];
 }
