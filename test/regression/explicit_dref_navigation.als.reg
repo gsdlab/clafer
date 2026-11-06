@@ -2,83 +2,83 @@ open util/integer
 pred show {}
 
 
-abstract sig c0_Port
-{ r_c0_speed : one c0_speed
-, r_c0_name : one c0_name }
+abstract sig Port
+{ r_Port__speed : one Port__speed
+, r_name : one name }
 
-sig c0_speed
-{ c0_speed_ref : one Int }
-{ one @r_c0_speed.this }
+sig Port__speed
+{ Port__speed_ref : one Int }
+{ one @r_Port__speed.this }
 
-sig c0_name
-{ c0_name_ref : one Int }
-{ one @r_c0_name.this }
+sig name
+{ name_ref : one Int }
+{ one @r_name.this }
 
-one sig c0_Hub
-{ r_c0_p : set c0_p }
-{ 2 <= #r_c0_p and #r_c0_p <= 2 }
+one sig Hub
+{ r_p : set p }
+{ 2 <= #r_p and #r_p <= 2 }
 
-sig c0_p extends c0_Port
+sig p extends Port
 {}
-{ one @r_c0_p.this }
+{ one @r_p.this }
 
-one sig c0_fast extends c0_Port
+one sig fast extends Port
 {}
-{ ((this.@r_c0_speed).@c0_speed_ref) = 10 }
+{ ((this.@r_Port__speed).@Port__speed_ref) = 10 }
 
-abstract sig c0_Component
-{ r_c0_link : set c0_link }
-{ all disj x, y : this.@r_c0_link | (x.@c0_link_ref) != (y.@c0_link_ref)  }
+abstract sig Component
+{ r_link : set link }
+{ all disj x, y : this.@r_link | (x.@link_ref) != (y.@link_ref)  }
 
-abstract sig c0_link
-{ c0_link_ref : one c0_Port
-, r_c0_latency : one c0_latency
-, r_c1_speed : one c1_speed }
-{ one @r_c0_link.this
-  (((this.@c0_link_ref).@r_c0_speed).@c0_speed_ref) >= ((this.@r_c1_speed).@c1_speed_ref)
-  all  t : this.@c0_link_ref | ((t.@r_c0_speed).@c0_speed_ref) >= ((this.@r_c0_latency).@c0_latency_ref) }
+abstract sig link
+{ link_ref : one Port
+, r_latency : one latency
+, r_link__speed : one link__speed }
+{ one @r_link.this
+  (((this.@link_ref).@r_Port__speed).@Port__speed_ref) >= ((this.@r_link__speed).@link__speed_ref)
+  all  t : this.@link_ref | ((t.@r_Port__speed).@Port__speed_ref) >= ((this.@r_latency).@latency_ref) }
 
-sig c0_latency
-{ c0_latency_ref : one Int }
-{ one @r_c0_latency.this }
+sig latency
+{ latency_ref : one Int }
+{ one @r_latency.this }
 
-sig c1_speed
-{ c1_speed_ref : one Int }
-{ one @r_c1_speed.this }
+sig link__speed
+{ link__speed_ref : one Int }
+{ one @r_link__speed.this }
 
-one sig c0_cam extends c0_Component
-{ r_c0_l : one c0_l }
-{ r_c0_l in r_c0_link
-  ((((this.@r_c0_l).@c0_l_ref).@r_c0_speed).@c0_speed_ref) = 3 }
+one sig cam extends Component
+{ r_l : one l }
+{ r_l in r_link
+  ((((this.@r_l).@l_ref).@r_Port__speed).@Port__speed_ref) = 3 }
 
-one sig c0_l extends c0_link
-{ c0_l_ref : one c0_p }
-{ c0_l_ref in c0_link_ref
-  (((this.@c0_l_ref).@r_c0_speed).@c0_speed_ref) = 3
-  (((this.@c0_l_ref).@r_c0_name).@c0_name_ref) = 1 }
+one sig l extends link
+{ l_ref : one p }
+{ l_ref in link_ref
+  (((this.@l_ref).@r_Port__speed).@Port__speed_ref) = 3
+  (((this.@l_ref).@r_name).@name_ref) = 1 }
 
-fact { 2 <= #c0_b and #c0_b <= 2 }
-sig c0_b
-{ c0_b_ref : one c0_Port }
-{ (((this.@c0_b_ref).@r_c0_speed).@c0_speed_ref) = 3 }
+fact { 2 <= #b and #b <= 2 }
+sig b
+{ b_ref : one Port }
+{ (((this.@b_ref).@r_Port__speed).@Port__speed_ref) = 3 }
 
-abstract sig c0_Plug
-{ c0_Plug_ref : one c0_Port
-, r_c2_speed : one c2_speed }
+abstract sig Plug
+{ Plug_ref : one Port
+, r_Plug__speed : one Plug__speed }
 
-sig c2_speed
-{ c2_speed_ref : one Int }
-{ one @r_c2_speed.this }
+sig Plug__speed
+{ Plug__speed_ref : one Int }
+{ one @r_Plug__speed.this }
 
-fact {  all disj x, y : c0_Plug | (x.@c0_Plug_ref) != (y.@c0_Plug_ref)  }
-one sig c0_plug extends c0_Plug
+fact {  all disj x, y : Plug | (x.@Plug_ref) != (y.@Plug_ref)  }
+one sig plug extends Plug
 {}
 
-one sig c0_pl
-{ c0_pl_ref : one c0_Plug }
-{ (((this.@c0_pl_ref).@r_c2_speed).@c2_speed_ref) = 5 }
+one sig pl
+{ pl_ref : one Plug }
+{ (((this.@pl_ref).@r_Plug__speed).@Plug__speed_ref) = 5 }
 
-one sig c0_u
-{ c0_u_ref : one (c0_Hub.@r_c0_p) + c0_fast }
-{ (((this.@c0_u_ref).@r_c0_speed).@c0_speed_ref) = 10 }
+one sig u
+{ u_ref : one (Hub.@r_p) + fast }
+{ (((this.@u_ref).@r_Port__speed).@Port__speed_ref) = 10 }
 

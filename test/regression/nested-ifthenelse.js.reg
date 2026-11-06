@@ -1,12 +1,12 @@
 defaultScope(1);
 stringLength(16);
 
-c0_x = Clafer("c0_x").withCard(0, 1);
-c0_y = Clafer("c0_y").withCard(0, 1);
-c0_z = Clafer("c0_z").withCard(0, 1);
-c0_w = Clafer("c0_w").withCard(0, 1);
-c0_u = Clafer("c0_u").withCard(0, 1);
-c0_o = Clafer("c0_o").withCard(0, 1);
-c0_p = Clafer("c0_p").withCard(0, 1);
-c0_h = Clafer("c0_h").withCard(0, 1);
-Constraint(ifOnlyIf(some(global(c0_h)), ifThenElse(ifThenElse(some(global(c0_x)), some(global(c0_z)), some(global(c0_y))), implies(some(global(c0_x)), some(global(c0_y))), ifThenElse(none(global(c0_w)), ifThenElse(some(global(c0_z)), some(global(c0_u)), some(global(c0_o))), some(global(c0_p))))));
+$x = Clafer("x").withCard(0, 1);
+$y = Clafer("y").withCard(0, 1);
+$z = Clafer("z").withCard(0, 1);
+$w = Clafer("w").withCard(0, 1);
+$u = Clafer("u").withCard(0, 1);
+$o = Clafer("o").withCard(0, 1);
+$p = Clafer("p").withCard(0, 1);
+$h = Clafer("h").withCard(0, 1);
+Constraint(ifOnlyIf(some(global($h)), ifThenElse(ifThenElse(some(global($x)), some(global($z)), some(global($y))), implies(some(global($x)), some(global($y))), ifThenElse(none(global($w)), ifThenElse(some(global($z)), some(global($u)), some(global($o))), some(global($p))))));

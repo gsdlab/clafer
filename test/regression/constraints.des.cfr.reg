@@ -1,31 +1,31 @@
 //# OPTIONS --explicit
-[all p : c0_Phone | (#p . c0_networking . c0_mobile) >= 1]
-abstract 0..* c0_Phone 0..* {
-  0..* c0_networking 1..1 {
-    0..* c0_wifi 0..1 {
-      0..* c0_typeB 0..1 {}
-      0..* c0_typeG 0..1 {}
-      0..* c0_typeN 0..1 {}
+[all p : Phone | (#p . networking . mobile) >= 1]
+abstract 0..* Phone 0..* {
+  0..* networking 1..1 {
+    0..* wifi 0..1 {
+      0..* typeB 0..1 {}
+      0..* typeG 0..1 {}
+      0..* typeN 0..1 {}
     }
-    0..* c0_bluetooth 0..1 {}
-    0..* c0_mobile 0..1 {}
-    0..* c0_nfc 0..1 {}
+    0..* bluetooth 0..1 {}
+    0..* mobile 0..1 {}
+    0..* nfc 0..1 {}
   }
-  1..1 c0_location 0..1 {
-    0..* c0_gps 0..1 {}
-    0..* c0_agps 0..1 {}
+  1..1 location 0..1 {
+    0..* gps 0..1 {}
+    0..* agps 0..1 {}
   }
-  0..* c0_gpu 0..* {}
+  0..* gpu 0..* {}
 }
-0..* c0_PhoneWithGps : c0_Phone 1..1 {
-  [(#this . c0_location . c0_gps) >= 1]
+0..* PhoneWithGps : Phone 1..1 {
+  [(#this . location . gps) >= 1]
 }
-0..* c0_PhoneWithWifi : c0_Phone 1..1 {
-  [(#this . c0_networking . c0_wifi . c0_typeN) >= 1]
+0..* PhoneWithWifi : Phone 1..1 {
+  [(#this . networking . wifi . typeN) >= 1]
 }
-0..* c0_PhonewithWifiAndGpsNoBluetoothOrNfc : c0_Phone 1..1 {
-  [(((#this . c0_networking . c0_wifi) >= 1) && ((#this . c0_location . c0_gps) >= 1)) && (!(((#this . c0_networking . c0_bluetooth) >= 1) || ((#this . c0_networking . c0_nfc) >= 1)))]
+0..* PhonewithWifiAndGpsNoBluetoothOrNfc : Phone 1..1 {
+  [(((#this . networking . wifi) >= 1) && ((#this . location . gps) >= 1)) && (!(((#this . networking . bluetooth) >= 1) || ((#this . networking . nfc) >= 1)))]
 }
-0..* c0_PhoneWithGpu : c0_Phone 1..1 {
-  [(#this . c0_gpu) >= 1]
+0..* PhoneWithGpu : Phone 1..1 {
+  [(#this . gpu) >= 1]
 }

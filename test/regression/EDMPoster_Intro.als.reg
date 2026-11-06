@@ -2,254 +2,254 @@ open util/integer
 pred show {}
 
 
-one sig c0_ExamplePhone1
-{ r_c0_display : one c0_display
-, r_c0_GSM : one c0_GSM
-, r_c0_CPU : one c0_CPU
-, r_c0_keyboard : one c0_keyboard }
+one sig ExamplePhone1
+{ r_ExamplePhone1__display : one ExamplePhone1__display
+, r_ExamplePhone1__GSM : one ExamplePhone1__GSM
+, r_ExamplePhone1__CPU : one ExamplePhone1__CPU
+, r_ExamplePhone1__keyboard : one ExamplePhone1__keyboard }
 
-one sig c0_display
-{ r_c0_LCD : one c0_LCD }
+one sig ExamplePhone1__display
+{ r_ExamplePhone1__display__LCD : one ExamplePhone1__display__LCD }
 
-one sig c0_LCD
+one sig ExamplePhone1__display__LCD
 {}
 
-one sig c0_GSM
+one sig ExamplePhone1__GSM
 {}
 
-one sig c0_CPU
+one sig ExamplePhone1__CPU
 {}
 
-one sig c0_keyboard
+one sig ExamplePhone1__keyboard
 {}
 
-one sig c0_ExamplePhone2
-{ r_c1_display : one c1_display
-, r_c1_GSM : one c1_GSM
-, r_c0_touchscreen : one c0_touchscreen }
+one sig ExamplePhone2
+{ r_ExamplePhone2__display : one ExamplePhone2__display
+, r_ExamplePhone2__GSM : one ExamplePhone2__GSM
+, r_ExamplePhone2__touchscreen : one ExamplePhone2__touchscreen }
 
-one sig c1_display
-{ r_c0_OLED : one c0_OLED }
+one sig ExamplePhone2__display
+{ r_ExamplePhone2__display__OLED : one ExamplePhone2__display__OLED }
 
-one sig c0_OLED
+one sig ExamplePhone2__display__OLED
 {}
 
-one sig c1_GSM
+one sig ExamplePhone2__GSM
 {}
 
-one sig c0_touchscreen
+one sig ExamplePhone2__touchscreen
 {}
 
-one sig c0_ExampleTablet1
-{ r_c2_display : one c2_display
-, r_c0_HSPA : one c0_HSPA
-, r_c1_CPU : set c1_CPU
-, r_c1_touchscreen : one c1_touchscreen }
-{ 4 <= #r_c1_CPU and #r_c1_CPU <= 4 }
+one sig ExampleTablet1
+{ r_ExampleTablet1__display : one ExampleTablet1__display
+, r_ExampleTablet1__HSPA : one ExampleTablet1__HSPA
+, r_ExampleTablet1__CPU : set ExampleTablet1__CPU
+, r_ExampleTablet1__touchscreen : one ExampleTablet1__touchscreen }
+{ 4 <= #r_ExampleTablet1__CPU and #r_ExampleTablet1__CPU <= 4 }
 
-one sig c2_display
-{ r_c0_AMOLED : one c0_AMOLED }
+one sig ExampleTablet1__display
+{ r_ExampleTablet1__display__AMOLED : one ExampleTablet1__display__AMOLED }
 
-one sig c0_AMOLED
+one sig ExampleTablet1__display__AMOLED
 {}
 
-one sig c0_HSPA
+one sig ExampleTablet1__HSPA
 {}
 
-sig c1_CPU
+sig ExampleTablet1__CPU
 {}
-{ one @r_c1_CPU.this }
+{ one @r_ExampleTablet1__CPU.this }
 
-one sig c1_touchscreen
-{}
-
-one sig c0_ExamplePhone3
-{ r_c3_display : one c3_display
-, r_c2_GSM : one c2_GSM
-, r_c2_CPU : set c2_CPU
-, r_c1_keyboard : one c1_keyboard }
-{ 4 <= #r_c2_CPU and #r_c2_CPU <= 4 }
-
-one sig c3_display
-{ r_c1_LCD : one c1_LCD }
-
-one sig c1_LCD
+one sig ExampleTablet1__touchscreen
 {}
 
-one sig c2_GSM
+one sig ExamplePhone3
+{ r_ExamplePhone3__display : one ExamplePhone3__display
+, r_ExamplePhone3__GSM : one ExamplePhone3__GSM
+, r_ExamplePhone3__CPU : set ExamplePhone3__CPU
+, r_ExamplePhone3__keyboard : one ExamplePhone3__keyboard }
+{ 4 <= #r_ExamplePhone3__CPU and #r_ExamplePhone3__CPU <= 4 }
+
+one sig ExamplePhone3__display
+{ r_ExamplePhone3__display__LCD : one ExamplePhone3__display__LCD }
+
+one sig ExamplePhone3__display__LCD
 {}
 
-sig c2_CPU
-{}
-{ one @r_c2_CPU.this }
-
-one sig c1_keyboard
+one sig ExamplePhone3__GSM
 {}
 
-one sig c0_ExampleTablet2
-{ r_c4_display : one c4_display
-, r_c1_HSPA : one c1_HSPA
-, r_c3_CPU : set c3_CPU
-, r_c2_keyboard : one c2_keyboard }
-{ 4 <= #r_c3_CPU and #r_c3_CPU <= 4 }
+sig ExamplePhone3__CPU
+{}
+{ one @r_ExamplePhone3__CPU.this }
 
-one sig c4_display
-{ r_c1_AMOLED : one c1_AMOLED }
-
-one sig c1_AMOLED
+one sig ExamplePhone3__keyboard
 {}
 
-one sig c1_HSPA
+one sig ExampleTablet2
+{ r_ExampleTablet2__display : one ExampleTablet2__display
+, r_ExampleTablet2__HSPA : one ExampleTablet2__HSPA
+, r_ExampleTablet2__CPU : set ExampleTablet2__CPU
+, r_ExampleTablet2__keyboard : one ExampleTablet2__keyboard }
+{ 4 <= #r_ExampleTablet2__CPU and #r_ExampleTablet2__CPU <= 4 }
+
+one sig ExampleTablet2__display
+{ r_ExampleTablet2__display__AMOLED : one ExampleTablet2__display__AMOLED }
+
+one sig ExampleTablet2__display__AMOLED
 {}
 
-sig c3_CPU
-{}
-{ one @r_c3_CPU.this }
-
-one sig c2_keyboard
+one sig ExampleTablet2__HSPA
 {}
 
-fact { #c0_AndroidDevice1 = 0 }
-abstract sig c0_AndroidDevice1
-{ r_c5_display : one c5_display
-, r_c3_GSM : one c3_GSM
-, r_c2_HSPA : lone c2_HSPA
-, r_c4_CPU : set c4_CPU
-, r_c0_input : one c0_input }
-{ 1 <= #r_c4_CPU and #r_c4_CPU <= 4 }
-
-sig c5_display
-{ r_c2_LCD : lone c2_LCD
-, r_c1_OLED : lone c1_OLED
-, r_c2_AMOLED : lone c2_AMOLED }
-{ one @r_c5_display.this
-  let children = (r_c2_LCD + r_c1_OLED + r_c2_AMOLED) | one children }
-
-sig c2_LCD
+sig ExampleTablet2__CPU
 {}
-{ one @r_c2_LCD.this }
+{ one @r_ExampleTablet2__CPU.this }
 
-sig c1_OLED
-{}
-{ one @r_c1_OLED.this }
-
-sig c2_AMOLED
-{}
-{ one @r_c2_AMOLED.this
-  no (((this.~@r_c2_AMOLED).~@r_c5_display).@r_c0_input).@r_c3_keyboard }
-
-sig c3_GSM
-{}
-{ one @r_c3_GSM.this }
-
-sig c2_HSPA
-{}
-{ one @r_c2_HSPA.this }
-
-sig c4_CPU
-{}
-{ one @r_c4_CPU.this }
-
-sig c0_input
-{ r_c3_keyboard : lone c3_keyboard
-, r_c2_touchscreen : lone c2_touchscreen }
-{ one @r_c0_input.this
-  let children = (r_c3_keyboard + r_c2_touchscreen) | one children }
-
-sig c3_keyboard
-{}
-{ one @r_c3_keyboard.this }
-
-sig c2_touchscreen
-{}
-{ one @r_c2_touchscreen.this }
-
-abstract sig c0_AndroidPhone extends c0_AndroidDevice
-{}
-{ some this.@r_c4_GSM
-  (#(this.@r_c5_CPU)) < 4 }
-
-abstract sig c0_AndroidDevice
-{ r_c6_display : one c6_display
-, r_c4_GSM : lone c4_GSM
-, r_c3_HSPA : lone c3_HSPA
-, r_c5_CPU : set c5_CPU
-, r_c1_input : one c1_input }
-{ 1 <= #r_c5_CPU and #r_c5_CPU <= 4 }
-
-sig c6_display
-{ r_c3_LCD : lone c3_LCD
-, r_c2_OLED : lone c2_OLED
-, r_c3_AMOLED : lone c3_AMOLED }
-{ one @r_c6_display.this
-  let children = (r_c3_LCD + r_c2_OLED + r_c3_AMOLED) | one children }
-
-sig c3_LCD
-{}
-{ one @r_c3_LCD.this }
-
-sig c2_OLED
-{}
-{ one @r_c2_OLED.this }
-
-sig c3_AMOLED
-{}
-{ one @r_c3_AMOLED.this
-  no (((this.~@r_c3_AMOLED).~@r_c6_display).@r_c1_input).@r_c4_keyboard }
-
-sig c4_GSM
-{}
-{ one @r_c4_GSM.this }
-
-sig c3_HSPA
-{}
-{ one @r_c3_HSPA.this }
-
-sig c5_CPU
-{}
-{ one @r_c5_CPU.this }
-
-sig c1_input
-{ r_c4_keyboard : lone c4_keyboard
-, r_c3_touchscreen : lone c3_touchscreen }
-{ one @r_c1_input.this
-  let children = (r_c4_keyboard + r_c3_touchscreen) | one children }
-
-sig c4_keyboard
-{}
-{ one @r_c4_keyboard.this }
-
-sig c3_touchscreen
-{}
-{ one @r_c3_touchscreen.this }
-
-one sig c0_AndroidPhone4 extends c0_AndroidPhone
-{ r_c7_display : one c7_display
-, r_c5_GSM : one c5_GSM
-, r_c4_HSPA : one c4_HSPA
-, r_c6_CPU : set c6_CPU
-, r_c2_input : one c2_input }
-{ 2 <= #r_c6_CPU and #r_c6_CPU <= 2 }
-
-one sig c7_display
-{ r_c4_AMOLED : one c4_AMOLED }
-
-one sig c4_AMOLED
+one sig ExampleTablet2__keyboard
 {}
 
-one sig c5_GSM
+fact { #AndroidDevice1 = 0 }
+abstract sig AndroidDevice1
+{ r_AndroidDevice1__display : one AndroidDevice1__display
+, r_AndroidDevice1__GSM : one AndroidDevice1__GSM
+, r_AndroidDevice1__HSPA : lone AndroidDevice1__HSPA
+, r_AndroidDevice1__CPU : set AndroidDevice1__CPU
+, r_AndroidDevice1__input : one AndroidDevice1__input }
+{ 1 <= #r_AndroidDevice1__CPU and #r_AndroidDevice1__CPU <= 4 }
+
+sig AndroidDevice1__display
+{ r_AndroidDevice1__display__LCD : lone AndroidDevice1__display__LCD
+, r_AndroidDevice1__display__OLED : lone AndroidDevice1__display__OLED
+, r_AndroidDevice1__display__AMOLED : lone AndroidDevice1__display__AMOLED }
+{ one @r_AndroidDevice1__display.this
+  let children = (r_AndroidDevice1__display__LCD + r_AndroidDevice1__display__OLED + r_AndroidDevice1__display__AMOLED) | one children }
+
+sig AndroidDevice1__display__LCD
+{}
+{ one @r_AndroidDevice1__display__LCD.this }
+
+sig AndroidDevice1__display__OLED
+{}
+{ one @r_AndroidDevice1__display__OLED.this }
+
+sig AndroidDevice1__display__AMOLED
+{}
+{ one @r_AndroidDevice1__display__AMOLED.this
+  no (((this.~@r_AndroidDevice1__display__AMOLED).~@r_AndroidDevice1__display).@r_AndroidDevice1__input).@r_AndroidDevice1__input__keyboard }
+
+sig AndroidDevice1__GSM
+{}
+{ one @r_AndroidDevice1__GSM.this }
+
+sig AndroidDevice1__HSPA
+{}
+{ one @r_AndroidDevice1__HSPA.this }
+
+sig AndroidDevice1__CPU
+{}
+{ one @r_AndroidDevice1__CPU.this }
+
+sig AndroidDevice1__input
+{ r_AndroidDevice1__input__keyboard : lone AndroidDevice1__input__keyboard
+, r_AndroidDevice1__input__touchscreen : lone AndroidDevice1__input__touchscreen }
+{ one @r_AndroidDevice1__input.this
+  let children = (r_AndroidDevice1__input__keyboard + r_AndroidDevice1__input__touchscreen) | one children }
+
+sig AndroidDevice1__input__keyboard
+{}
+{ one @r_AndroidDevice1__input__keyboard.this }
+
+sig AndroidDevice1__input__touchscreen
+{}
+{ one @r_AndroidDevice1__input__touchscreen.this }
+
+abstract sig AndroidPhone extends AndroidDevice
+{}
+{ some this.@r_AndroidDevice__GSM
+  (#(this.@r_AndroidDevice__CPU)) < 4 }
+
+abstract sig AndroidDevice
+{ r_AndroidDevice__display : one AndroidDevice__display
+, r_AndroidDevice__GSM : lone AndroidDevice__GSM
+, r_AndroidDevice__HSPA : lone AndroidDevice__HSPA
+, r_AndroidDevice__CPU : set AndroidDevice__CPU
+, r_AndroidDevice__input : one AndroidDevice__input }
+{ 1 <= #r_AndroidDevice__CPU and #r_AndroidDevice__CPU <= 4 }
+
+sig AndroidDevice__display
+{ r_AndroidDevice__display__LCD : lone AndroidDevice__display__LCD
+, r_AndroidDevice__display__OLED : lone AndroidDevice__display__OLED
+, r_AndroidDevice__display__AMOLED : lone AndroidDevice__display__AMOLED }
+{ one @r_AndroidDevice__display.this
+  let children = (r_AndroidDevice__display__LCD + r_AndroidDevice__display__OLED + r_AndroidDevice__display__AMOLED) | one children }
+
+sig AndroidDevice__display__LCD
+{}
+{ one @r_AndroidDevice__display__LCD.this }
+
+sig AndroidDevice__display__OLED
+{}
+{ one @r_AndroidDevice__display__OLED.this }
+
+sig AndroidDevice__display__AMOLED
+{}
+{ one @r_AndroidDevice__display__AMOLED.this
+  no (((this.~@r_AndroidDevice__display__AMOLED).~@r_AndroidDevice__display).@r_AndroidDevice__input).@r_AndroidDevice__input__keyboard }
+
+sig AndroidDevice__GSM
+{}
+{ one @r_AndroidDevice__GSM.this }
+
+sig AndroidDevice__HSPA
+{}
+{ one @r_AndroidDevice__HSPA.this }
+
+sig AndroidDevice__CPU
+{}
+{ one @r_AndroidDevice__CPU.this }
+
+sig AndroidDevice__input
+{ r_AndroidDevice__input__keyboard : lone AndroidDevice__input__keyboard
+, r_AndroidDevice__input__touchscreen : lone AndroidDevice__input__touchscreen }
+{ one @r_AndroidDevice__input.this
+  let children = (r_AndroidDevice__input__keyboard + r_AndroidDevice__input__touchscreen) | one children }
+
+sig AndroidDevice__input__keyboard
+{}
+{ one @r_AndroidDevice__input__keyboard.this }
+
+sig AndroidDevice__input__touchscreen
+{}
+{ one @r_AndroidDevice__input__touchscreen.this }
+
+one sig AndroidPhone4 extends AndroidPhone
+{ r_AndroidPhone4__display : one AndroidPhone4__display
+, r_AndroidPhone4__GSM : one AndroidPhone4__GSM
+, r_AndroidPhone4__HSPA : one AndroidPhone4__HSPA
+, r_AndroidPhone4__CPU : set AndroidPhone4__CPU
+, r_AndroidPhone4__input : one AndroidPhone4__input }
+{ 2 <= #r_AndroidPhone4__CPU and #r_AndroidPhone4__CPU <= 2 }
+
+one sig AndroidPhone4__display
+{ r_AndroidPhone4__display__AMOLED : one AndroidPhone4__display__AMOLED }
+
+one sig AndroidPhone4__display__AMOLED
 {}
 
-one sig c4_HSPA
+one sig AndroidPhone4__GSM
 {}
 
-sig c6_CPU
+one sig AndroidPhone4__HSPA
 {}
-{ one @r_c6_CPU.this }
 
-one sig c2_input
-{ r_c4_touchscreen : one c4_touchscreen }
+sig AndroidPhone4__CPU
+{}
+{ one @r_AndroidPhone4__CPU.this }
 
-one sig c4_touchscreen
+one sig AndroidPhone4__input
+{ r_AndroidPhone4__input__touchscreen : one AndroidPhone4__input__touchscreen }
+
+one sig AndroidPhone4__input__touchscreen
 {}
 

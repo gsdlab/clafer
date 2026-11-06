@@ -2,18 +2,18 @@ open util/integer
 pred show {}
 
 
-abstract sig c0_A
+abstract sig A
 {}
 
-some sig c0_a extends c0_A
+some sig a extends A
 {}
 
-fact { 3 <= #c0_setRefToA and #c0_setRefToA <= 3 }
-sig c0_setRefToA
-{ c0_setRefToA_ref : one c0_A }
+fact { 3 <= #setRefToA and #setRefToA <= 3 }
+sig setRefToA
+{ setRefToA_ref : one A }
 
-fact {  all disj x, y : c0_setRefToA | (x.@c0_setRefToA_ref) != (y.@c0_setRefToA_ref)  }
-fact { 3 <= #c0_multisetRefToA and #c0_multisetRefToA <= 3 }
-sig c0_multisetRefToA
-{ c0_multisetRefToA_ref : one c0_A }
+fact {  all disj x, y : setRefToA | (x.@setRefToA_ref) != (y.@setRefToA_ref)  }
+fact { 3 <= #multisetRefToA and #multisetRefToA <= 3 }
+sig multisetRefToA
+{ multisetRefToA_ref : one A }
 

@@ -1,75 +1,75 @@
 //# OPTIONS --explicit
-abstract 0..* c0_Argument 0..* {}
-abstract 0..* c0_IntegerArgument ->> int 0..* {}
-abstract 0..* c0_StringArgument ->> string 0..* {}
-abstract 0..* c0_Value 0..* {}
-abstract 0..* c0_DefaultValue 0..* {}
-abstract 1..1 c0_ClaferArgs 0..* {
-  0..* c0_functional 0..1 {
-    1..1 c0_mode : c0_Argument 1..1 {
-      0..* c0_alloy : c0_DefaultValue 0..1 {
-        0..* c0_noalloyruncommand : c0_Argument 0..1 {}
-        0..* c0_alloy_mapping : c0_Argument 0..1 {}
+abstract 0..* Argument 0..* {}
+abstract 0..* IntegerArgument ->> int 0..* {}
+abstract 0..* StringArgument ->> string 0..* {}
+abstract 0..* Value 0..* {}
+abstract 0..* DefaultValue 0..* {}
+abstract 1..1 ClaferArgs 0..* {
+  0..* functional 0..1 {
+    1..1 mode : Argument 1..1 {
+      0..* alloy : DefaultValue 0..1 {
+        0..* noalloyruncommand : Argument 0..1 {}
+        0..* alloy_mapping : Argument 0..1 {}
       }
-      0..* c0_desclafer : c0_Value 0..1 {}
-      0..* c0_html : c0_Value 0..1 {
-        [(#this . parent . parent . c0_keep_unused) >= 1]
-        0..* c0_self_contained : c0_Argument 0..1 {}
-        0..* c0_add_graph : c0_Argument 0..1 {}
-        0..* c0_add_comments : c0_Argument 0..1 {}
+      0..* desclafer : Value 0..1 {}
+      0..* html : Value 0..1 {
+        [(#this . parent . parent . keep_unused) >= 1]
+        0..* self_contained : Argument 0..1 {}
+        0..* add_graph : Argument 0..1 {}
+        0..* add_comments : Argument 0..1 {}
       }
-      0..* c0_graph : c0_Value 0..1 {
-        [(#this . parent . parent . c0_keep_unused) >= 1]
+      0..* graph : Value 0..1 {
+        [(#this . parent . parent . keep_unused) >= 1]
       }
-      0..* c0_cvlGraph : c0_Value 0..1 {
-        [(#this . parent . parent . c0_flatten_inheritance) >= 1]
-        [(#this . parent . parent . c0_keep_unused) >= 1]
+      0..* cvlGraph : Value 0..1 {
+        [(#this . parent . parent . flatten_inheritance) >= 1]
+        [(#this . parent . parent . keep_unused) >= 1]
       }
     }
-    0..* c0_keep_unused : c0_Argument 0..1 {}
-    0..* c0_flatten_inheritance : c0_Argument 0..1 {}
-    0..* c0_console_output : c0_Argument 0..1 {}
-    0..* c0_timeout_analysis : c0_IntegerArgument 0..1 {}
-    0..1 c0_layout 0..1 {
-      0..* c0_no_layout : c0_Argument 0..1 {}
-      0..* c0_new_layout : c0_Argument 0..1 {}
+    0..* keep_unused : Argument 0..1 {}
+    0..* flatten_inheritance : Argument 0..1 {}
+    0..* console_output : Argument 0..1 {}
+    0..* timeout_analysis : IntegerArgument 0..1 {}
+    0..1 layout 0..1 {
+      0..* no_layout : Argument 0..1 {}
+      0..* new_layout : Argument 0..1 {}
     }
-    0..* c0_check_duplicates : c0_Argument 0..1 {}
-    0..* c0_skip_resolver : c0_Argument 0..1 {}
-    0..* c0_no_stats : c0_Argument 0..1 {}
-    0..* c0_validate : c0_Argument 0..1 {
-      [(#this . parent . c0_mode . c0_html) = 0]
-      [(#this . parent . c0_mode . c0_graph) = 0]
-      [(#this . parent . c0_mode . c0_cvlGraph) = 0]
-      0..* c0_tooldir : c0_StringArgument 1..1 {}
+    0..* check_duplicates : Argument 0..1 {}
+    0..* skip_resolver : Argument 0..1 {}
+    0..* no_stats : Argument 0..1 {}
+    0..* validate : Argument 0..1 {
+      [(#this . parent . mode . html) = 0]
+      [(#this . parent . mode . graph) = 0]
+      [(#this . parent . mode . cvlGraph) = 0]
+      0..* tooldir : StringArgument 1..1 {}
     }
   }
-  0..* c0_schema : c0_Argument 0..1 {}
-  0..* c0_help : c0_Argument 0..1 {}
-  0..* c0_version : c0_Argument 0..1 {}
+  0..* schema : Argument 0..1 {}
+  0..* help : Argument 0..1 {}
+  0..* version : Argument 0..1 {}
 }
-1..1 c0_ca1 : c0_ClaferArgs 1..1 {
-  [(#this . c0_functional . c0_mode . c0_alloy) >= 1]
+1..1 ca1 : ClaferArgs 1..1 {
+  [(#this . functional . mode . alloy) >= 1]
 }
-1..1 c0_ca2 : c0_ClaferArgs 1..1 {
-  [(#this . c0_functional . c0_mode . c0_alloy) >= 1]
-  [(#this . c0_functional . c0_validate) >= 1]
-  [this . c0_functional . c0_validate . c0_tooldir . dref = "~/clafer-tools-0.3.1/tools"]
+1..1 ca2 : ClaferArgs 1..1 {
+  [(#this . functional . mode . alloy) >= 1]
+  [(#this . functional . validate) >= 1]
+  [this . functional . validate . tooldir . dref = "~/clafer-tools-0.3.1/tools"]
 }
-1..1 c0_ca3 : c0_ClaferArgs 1..1 {
-  [(#this . c0_functional . c0_mode . c0_alloy) >= 1]
-  [(#this . c0_functional . c0_keep_unused) >= 1]
-  [(#this . c0_functional . c0_flatten_inheritance) >= 1]
+1..1 ca3 : ClaferArgs 1..1 {
+  [(#this . functional . mode . alloy) >= 1]
+  [(#this . functional . keep_unused) >= 1]
+  [(#this . functional . flatten_inheritance) >= 1]
 }
-1..1 c0_ca4 : c0_ClaferArgs 1..1 {
-  [(#this . c0_functional . c0_mode . c0_html) >= 1]
+1..1 ca4 : ClaferArgs 1..1 {
+  [(#this . functional . mode . html) >= 1]
 }
-1..1 c0_ca5 : c0_ClaferArgs 1..1 {
-  [(#this . c0_functional . c0_mode . c0_html) >= 1]
-  [(#this . c0_functional . c0_mode . c0_html . c0_self_contained) >= 1]
-  [(#this . c0_functional . c0_mode . c0_html . c0_add_graph) >= 1]
-  [(#this . c0_functional . c0_mode . c0_html . c0_add_comments) >= 1]
+1..1 ca5 : ClaferArgs 1..1 {
+  [(#this . functional . mode . html) >= 1]
+  [(#this . functional . mode . html . self_contained) >= 1]
+  [(#this . functional . mode . html . add_graph) >= 1]
+  [(#this . functional . mode . html . add_comments) >= 1]
 }
-1..1 c0_ca6 : c0_ClaferArgs 1..1 {
-  [(#this . c0_functional . c0_mode . c0_cvlGraph) >= 1]
+1..1 ca6 : ClaferArgs 1..1 {
+  [(#this . functional . mode . cvlGraph) >= 1]
 }

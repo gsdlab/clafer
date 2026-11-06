@@ -1,24 +1,24 @@
 //# OPTIONS --explicit
-[((#c0_twoPercent) >= 1) => (c0_twoPercent . dref = 2)]
-[((#c0_threePercent) >= 1) => (c0_threePercent . dref = (c0_twoPercent . dref + 1))]
-[((#c0_today) >= 1) => (c0_today . dref = "Mar 20, 2012")]
-[((#c0_time) >= 1) => (c0_time . dref = (c0_time . c0_minute . dref + c0_time . c0_hour . dref))]
-abstract 0..* c0_percent ->> int 0..* {
+[((#twoPercent) >= 1) => (twoPercent . dref = 2)]
+[((#threePercent) >= 1) => (threePercent . dref = (twoPercent . dref + 1))]
+[((#today) >= 1) => (today . dref = "Mar 20, 2012")]
+[((#time) >= 1) => (time . dref = (time . minute . dref + time . hour . dref))]
+abstract 0..* percent ->> int 0..* {
   [(this . dref >= 0) && (this . dref <= 5)]
 }
-0..* c0_twoPercent : c0_percent 1..1 {}
-0..* c0_threePercent : c0_percent 1..1 {}
-abstract 0..* c0_date ->> string 0..* {}
-0..* c0_today : c0_date 1..1 {}
-abstract 0..* c0_time ->> int 0..* {
-  0..* c0_minute -> int 1..1 {
+0..* twoPercent : percent 1..1 {}
+0..* threePercent : percent 1..1 {}
+abstract 0..* date ->> string 0..* {}
+0..* today : date 1..1 {}
+abstract 0..* time ->> int 0..* {
+  0..* minute -> int 1..1 {
     [(this . dref >= 0) && (this . dref <= 5)]
   }
-  0..* c0_hour -> int 1..1 {
+  0..* hour -> int 1..1 {
     [(this . dref >= 0) && (this . dref <= 5)]
   }
 }
-0..* c0_now : c0_time 1..1 {
-  [this . c0_minute . dref = 3]
-  [this . c0_hour . dref = 1]
+0..* now : time 1..1 {
+  [this . minute . dref = 3]
+  [this . hour . dref = 1]
 }

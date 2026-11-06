@@ -2,129 +2,129 @@ open util/integer
 pred show {}
 
 
-abstract sig c0_Person
-{ r_c0_name : one c0_name
-, r_c0_civstat : one c0_civstat
-, r_c0_gender : one c0_gender
-, r_c0_alive : lone c0_alive
-, r_c0_husband : lone c0_husband
-, r_c0_wife : lone c0_wife }
-{ (((((this.@r_c0_civstat).@c0_civstat_ref) = 0) || (((this.@r_c0_civstat).@c0_civstat_ref) = 1)) || (((this.@r_c0_civstat).@c0_civstat_ref) = 2)) || (((this.@r_c0_civstat).@c0_civstat_ref) = 3)
-  (((this.@r_c0_gender).@c0_gender_ref) = 4) || (((this.@r_c0_gender).@c0_gender_ref) = 5)
-  all  p : c0_Person | (this != p) => (((this.@r_c0_name).@c0_name_ref) != ((p.@r_c0_name).@c0_name_ref))
-  one  p : c0_Person | ((p.@r_c0_name).@c0_name_ref) = ((this.@r_c0_name).@c0_name_ref) }
+abstract sig Person
+{ r_name : one name
+, r_civstat : one civstat
+, r_gender : one gender
+, r_alive : lone alive
+, r_husband : lone husband
+, r_wife : lone wife }
+{ (((((this.@r_civstat).@civstat_ref) = 0) || (((this.@r_civstat).@civstat_ref) = 1)) || (((this.@r_civstat).@civstat_ref) = 2)) || (((this.@r_civstat).@civstat_ref) = 3)
+  (((this.@r_gender).@gender_ref) = 4) || (((this.@r_gender).@gender_ref) = 5)
+  all  p : Person | (this != p) => (((this.@r_name).@name_ref) != ((p.@r_name).@name_ref))
+  one  p : Person | ((p.@r_name).@name_ref) = ((this.@r_name).@name_ref) }
 
-sig c0_name
-{ c0_name_ref : one Int }
-{ one @r_c0_name.this }
+sig name
+{ name_ref : one Int }
+{ one @r_name.this }
 
-sig c0_civstat
-{ c0_civstat_ref : one Int }
-{ one @r_c0_civstat.this }
+sig civstat
+{ civstat_ref : one Int }
+{ one @r_civstat.this }
 
-sig c0_gender
-{ c0_gender_ref : one Int }
-{ one @r_c0_gender.this }
+sig gender
+{ gender_ref : one Int }
+{ one @r_gender.this }
 
-sig c0_alive
+sig alive
 {}
-{ one @r_c0_alive.this }
+{ one @r_alive.this }
 
-sig c0_husband
-{ c0_husband_ref : one c0_Person }
-{ one @r_c0_husband.this
-  (this.~@r_c0_husband) in (((this.@c0_husband_ref).@r_c0_wife).@c0_wife_ref) }
+sig husband
+{ husband_ref : one Person }
+{ one @r_husband.this
+  (this.~@r_husband) in (((this.@husband_ref).@r_wife).@wife_ref) }
 
-sig c0_wife
-{ c0_wife_ref : one c0_Person }
-{ one @r_c0_wife.this
-  (this.~@r_c0_wife) in (((this.@c0_wife_ref).@r_c0_husband).@c0_husband_ref) }
+sig wife
+{ wife_ref : one Person }
+{ one @r_wife.this
+  (this.~@r_wife) in (((this.@wife_ref).@r_husband).@husband_ref) }
 
-one sig c0_ada extends c0_Person
+one sig ada extends Person
 {}
-{ (((((((this.@r_c0_name).@c0_name_ref) = 6) && (((this.@r_c0_civstat).@c0_civstat_ref) = 3)) && (((this.@r_c0_gender).@c0_gender_ref) = 4)) && (some this.@r_c0_alive)) && (no this.@r_c0_husband)) && (no this.@r_c0_wife) }
+{ (((((((this.@r_name).@name_ref) = 6) && (((this.@r_civstat).@civstat_ref) = 3)) && (((this.@r_gender).@gender_ref) = 4)) && (some this.@r_alive)) && (no this.@r_husband)) && (no this.@r_wife) }
 
-one sig c0_cyd extends c0_Person
+one sig cyd extends Person
 {}
-{ (((((((this.@r_c0_name).@c0_name_ref) = 7) && (((this.@r_c0_civstat).@c0_civstat_ref) = 1)) && (((this.@r_c0_gender).@c0_gender_ref) = 5)) && (no this.@r_c0_alive)) && (no this.@r_c0_husband)) && (no this.@r_c0_wife) }
+{ (((((((this.@r_name).@name_ref) = 7) && (((this.@r_civstat).@civstat_ref) = 1)) && (((this.@r_gender).@gender_ref) = 5)) && (no this.@r_alive)) && (no this.@r_husband)) && (no this.@r_wife) }
 
-one sig c0_eve extends c0_Person
+one sig eve extends Person
 {}
-{ (((((((this.@r_c0_name).@c0_name_ref) = 8) && (((this.@r_c0_civstat).@c0_civstat_ref) = 1)) && (((this.@r_c0_gender).@c0_gender_ref) = 4)) && (some this.@r_c0_alive)) && (((this.@r_c0_husband).@c0_husband_ref) = c0_dan)) && (no this.@r_c0_wife) }
+{ (((((((this.@r_name).@name_ref) = 8) && (((this.@r_civstat).@civstat_ref) = 1)) && (((this.@r_gender).@gender_ref) = 4)) && (some this.@r_alive)) && (((this.@r_husband).@husband_ref) = dan)) && (no this.@r_wife) }
 
-one sig c0_bob extends c0_Person
+one sig bob extends Person
 {}
-{ (((((((this.@r_c0_name).@c0_name_ref) = 9) && (((this.@r_c0_civstat).@c0_civstat_ref) = 2)) && (((this.@r_c0_gender).@c0_gender_ref) = 5)) && (some this.@r_c0_alive)) && (no this.@r_c0_husband)) && (no this.@r_c0_wife) }
+{ (((((((this.@r_name).@name_ref) = 9) && (((this.@r_civstat).@civstat_ref) = 2)) && (((this.@r_gender).@gender_ref) = 5)) && (some this.@r_alive)) && (no this.@r_husband)) && (no this.@r_wife) }
 
-one sig c0_dan extends c0_Person
+one sig dan extends Person
 {}
-{ (((((((this.@r_c0_name).@c0_name_ref) = 10) && (((this.@r_c0_civstat).@c0_civstat_ref) = 1)) && (((this.@r_c0_gender).@c0_gender_ref) = 5)) && (some this.@r_c0_alive)) && (no this.@r_c0_husband)) && (((this.@r_c0_wife).@c0_wife_ref) = c0_eve) }
+{ (((((((this.@r_name).@name_ref) = 10) && (((this.@r_civstat).@civstat_ref) = 1)) && (((this.@r_gender).@gender_ref) = 5)) && (some this.@r_alive)) && (no this.@r_husband)) && (((this.@r_wife).@wife_ref) = eve) }
 
-fact { (((c0_adaBobCyd.@c0_adaBobCyd_ref).@r_c0_name).@c0_name_ref) = (c0_stringSet1.@c0_stringSet1_ref) }
-fact { (((c0_personWithUndefinedHusband1.@c0_personWithUndefinedHusband1_ref).@r_c0_name).@c0_name_ref) = (c0_stringSet2.@c0_stringSet2_ref) }
-fact { (((c0_personWithUndefinedHusband2.@c0_personWithUndefinedHusband2_ref).@r_c0_name).@c0_name_ref) = (c0_stringSet2.@c0_stringSet2_ref) }
-fact { ((((((c0_possiblePairs.@c0_possiblePairs_ref).@r_c0_first).@c0_first_ref).@r_c0_name).@c0_name_ref) = 6) && ((((((c0_possiblePairs.@c0_possiblePairs_ref).@r_c0_second).@c0_second_ref).@r_c0_name).@c0_name_ref) = 9) }
-sig c0_adaBobCyd
-{ c0_adaBobCyd_ref : one c0_Person }
-{ (((this.@c0_adaBobCyd_ref).@r_c0_name).@c0_name_ref) in (c0_stringSet1.@c0_stringSet1_ref) }
+fact { (((adaBobCyd.@adaBobCyd_ref).@r_name).@name_ref) = (stringSet1.@stringSet1_ref) }
+fact { (((personWithUndefinedHusband1.@personWithUndefinedHusband1_ref).@r_name).@name_ref) = (stringSet2.@stringSet2_ref) }
+fact { (((personWithUndefinedHusband2.@personWithUndefinedHusband2_ref).@r_name).@name_ref) = (stringSet2.@stringSet2_ref) }
+fact { ((((((possiblePairs.@possiblePairs_ref).@r_first).@first_ref).@r_name).@name_ref) = 6) && ((((((possiblePairs.@possiblePairs_ref).@r_second).@second_ref).@r_name).@name_ref) = 9) }
+sig adaBobCyd
+{ adaBobCyd_ref : one Person }
+{ (((this.@adaBobCyd_ref).@r_name).@name_ref) in (stringSet1.@stringSet1_ref) }
 
-fact {  all disj x, y : c0_adaBobCyd | (x.@c0_adaBobCyd_ref) != (y.@c0_adaBobCyd_ref)  }
-fact { all  p : c0_Person | (((p.@r_c0_name).@c0_name_ref) in (c0_stringSet1.@c0_stringSet1_ref)) => (p in (c0_adaBobCyd.@c0_adaBobCyd_ref)) }
-sig c0_personWithUndefinedHusband1
-{ c0_personWithUndefinedHusband1_ref : one c0_Person }
-{ (((this.@c0_personWithUndefinedHusband1_ref).@r_c0_husband).@c0_husband_ref) = (c0_emptyPersonSet1.@c0_emptyPersonSet1_ref) }
+fact {  all disj x, y : adaBobCyd | (x.@adaBobCyd_ref) != (y.@adaBobCyd_ref)  }
+fact { all  p : Person | (((p.@r_name).@name_ref) in (stringSet1.@stringSet1_ref)) => (p in (adaBobCyd.@adaBobCyd_ref)) }
+sig personWithUndefinedHusband1
+{ personWithUndefinedHusband1_ref : one Person }
+{ (((this.@personWithUndefinedHusband1_ref).@r_husband).@husband_ref) = (emptyPersonSet1.@emptyPersonSet1_ref) }
 
-fact {  all disj x, y : c0_personWithUndefinedHusband1 | (x.@c0_personWithUndefinedHusband1_ref) != (y.@c0_personWithUndefinedHusband1_ref)  }
-fact { all  p : c0_Person | (((p.@r_c0_husband).@c0_husband_ref) = (c0_emptyPersonSet1.@c0_emptyPersonSet1_ref)) => (p in (c0_personWithUndefinedHusband1.@c0_personWithUndefinedHusband1_ref)) }
-sig c0_personWithUndefinedHusband2
-{ c0_personWithUndefinedHusband2_ref : one c0_Person }
-{ (((this.@c0_personWithUndefinedHusband2_ref).@r_c0_husband).@c0_husband_ref) = (c0_emptyPersonSet2.@c0_emptyPersonSet2_ref) }
+fact {  all disj x, y : personWithUndefinedHusband1 | (x.@personWithUndefinedHusband1_ref) != (y.@personWithUndefinedHusband1_ref)  }
+fact { all  p : Person | (((p.@r_husband).@husband_ref) = (emptyPersonSet1.@emptyPersonSet1_ref)) => (p in (personWithUndefinedHusband1.@personWithUndefinedHusband1_ref)) }
+sig personWithUndefinedHusband2
+{ personWithUndefinedHusband2_ref : one Person }
+{ (((this.@personWithUndefinedHusband2_ref).@r_husband).@husband_ref) = (emptyPersonSet2.@emptyPersonSet2_ref) }
 
-fact {  all disj x, y : c0_personWithUndefinedHusband2 | (x.@c0_personWithUndefinedHusband2_ref) != (y.@c0_personWithUndefinedHusband2_ref)  }
-fact { all  p : c0_Person | (((p.@r_c0_husband).@c0_husband_ref) = (c0_emptyPersonSet2.@c0_emptyPersonSet2_ref)) => (p in (c0_personWithUndefinedHusband2.@c0_personWithUndefinedHusband2_ref)) }
-sig c0_personWithNoWife
-{ c0_personWithNoWife_ref : one c0_Person }
-{ no (this.@c0_personWithNoWife_ref).@r_c0_wife }
+fact {  all disj x, y : personWithUndefinedHusband2 | (x.@personWithUndefinedHusband2_ref) != (y.@personWithUndefinedHusband2_ref)  }
+fact { all  p : Person | (((p.@r_husband).@husband_ref) = (emptyPersonSet2.@emptyPersonSet2_ref)) => (p in (personWithUndefinedHusband2.@personWithUndefinedHusband2_ref)) }
+sig personWithNoWife
+{ personWithNoWife_ref : one Person }
+{ no (this.@personWithNoWife_ref).@r_wife }
 
-fact {  all disj x, y : c0_personWithNoWife | (x.@c0_personWithNoWife_ref) != (y.@c0_personWithNoWife_ref)  }
-fact { all  p : c0_Person | (no p.@r_c0_wife) => (p in (c0_personWithNoWife.@c0_personWithNoWife_ref)) }
-sig c0_emptyPersonSet1
-{ c0_emptyPersonSet1_ref : one c0_Person }
+fact {  all disj x, y : personWithNoWife | (x.@personWithNoWife_ref) != (y.@personWithNoWife_ref)  }
+fact { all  p : Person | (no p.@r_wife) => (p in (personWithNoWife.@personWithNoWife_ref)) }
+sig emptyPersonSet1
+{ emptyPersonSet1_ref : one Person }
 
-fact {  all disj x, y : c0_emptyPersonSet1 | (x.@c0_emptyPersonSet1_ref) != (y.@c0_emptyPersonSet1_ref)  }
-fact { (c0_emptyPersonSet1.@c0_emptyPersonSet1_ref) = (((c0_personWithNoWife.@c0_personWithNoWife_ref).@r_c0_wife).@c0_wife_ref) }
-sig c0_emptyPersonSet2
-{ c0_emptyPersonSet2_ref : one c0_Person }
+fact {  all disj x, y : emptyPersonSet1 | (x.@emptyPersonSet1_ref) != (y.@emptyPersonSet1_ref)  }
+fact { (emptyPersonSet1.@emptyPersonSet1_ref) = (((personWithNoWife.@personWithNoWife_ref).@r_wife).@wife_ref) }
+sig emptyPersonSet2
+{ emptyPersonSet2_ref : one Person }
 { 1 > 2 }
 
-fact {  all disj x, y : c0_emptyPersonSet2 | (x.@c0_emptyPersonSet2_ref) != (y.@c0_emptyPersonSet2_ref)  }
-sig c0_personPair
-{ r_c0_first : one c0_first
-, r_c0_second : one c0_second }
+fact {  all disj x, y : emptyPersonSet2 | (x.@emptyPersonSet2_ref) != (y.@emptyPersonSet2_ref)  }
+sig personPair
+{ r_first : one first
+, r_second : one second }
 
-sig c0_first
-{ c0_first_ref : one c0_Person }
-{ one @r_c0_first.this }
+sig first
+{ first_ref : one Person }
+{ one @r_first.this }
 
-sig c0_second
-{ c0_second_ref : one c0_Person }
-{ one @r_c0_second.this }
+sig second
+{ second_ref : one Person }
+{ one @r_second.this }
 
-sig c0_possiblePairs
-{ c0_possiblePairs_ref : one c0_personPair }
-{ ((((((((this.@c0_possiblePairs_ref).@r_c0_first).@c0_first_ref).@r_c0_gender).@c0_gender_ref) = 4) && (some (((this.@c0_possiblePairs_ref).@r_c0_first).@c0_first_ref).@r_c0_alive)) && ((((((this.@c0_possiblePairs_ref).@r_c0_first).@c0_first_ref).@r_c0_civstat).@c0_civstat_ref) != 1)) && ((((((((this.@c0_possiblePairs_ref).@r_c0_second).@c0_second_ref).@r_c0_gender).@c0_gender_ref) = 5) && (some (((this.@c0_possiblePairs_ref).@r_c0_second).@c0_second_ref).@r_c0_alive)) && ((((((this.@c0_possiblePairs_ref).@r_c0_second).@c0_second_ref).@r_c0_civstat).@c0_civstat_ref) != 1)) }
+sig possiblePairs
+{ possiblePairs_ref : one personPair }
+{ ((((((((this.@possiblePairs_ref).@r_first).@first_ref).@r_gender).@gender_ref) = 4) && (some (((this.@possiblePairs_ref).@r_first).@first_ref).@r_alive)) && ((((((this.@possiblePairs_ref).@r_first).@first_ref).@r_civstat).@civstat_ref) != 1)) && ((((((((this.@possiblePairs_ref).@r_second).@second_ref).@r_gender).@gender_ref) = 5) && (some (((this.@possiblePairs_ref).@r_second).@second_ref).@r_alive)) && ((((((this.@possiblePairs_ref).@r_second).@second_ref).@r_civstat).@civstat_ref) != 1)) }
 
-fact {  all disj x, y : c0_possiblePairs | (x.@c0_possiblePairs_ref) != (y.@c0_possiblePairs_ref)  }
-fact { all  p, q : c0_Person | ((((((((p.@r_c0_gender).@c0_gender_ref) = 4) && (some p.@r_c0_alive)) && (((p.@r_c0_civstat).@c0_civstat_ref) != 1)) && (((q.@r_c0_gender).@c0_gender_ref) = 5)) && (some q.@r_c0_alive)) && (((q.@r_c0_civstat).@c0_civstat_ref) != 1)) => (one  pair : c0_personPair | ((((pair.@r_c0_first).@c0_first_ref) = p) && (((pair.@r_c0_second).@c0_second_ref) = q)) && (pair in (c0_possiblePairs.@c0_possiblePairs_ref))) }
-fact { 3 <= #c0_stringSet1 and #c0_stringSet1 <= 3 }
-sig c0_stringSet1
-{ c0_stringSet1_ref : one Int }
-{ (((this.@c0_stringSet1_ref) = 6) || ((this.@c0_stringSet1_ref) = 9)) || ((this.@c0_stringSet1_ref) = 7) }
+fact {  all disj x, y : possiblePairs | (x.@possiblePairs_ref) != (y.@possiblePairs_ref)  }
+fact { all  p, q : Person | ((((((((p.@r_gender).@gender_ref) = 4) && (some p.@r_alive)) && (((p.@r_civstat).@civstat_ref) != 1)) && (((q.@r_gender).@gender_ref) = 5)) && (some q.@r_alive)) && (((q.@r_civstat).@civstat_ref) != 1)) => (one  pair : personPair | ((((pair.@r_first).@first_ref) = p) && (((pair.@r_second).@second_ref) = q)) && (pair in (possiblePairs.@possiblePairs_ref))) }
+fact { 3 <= #stringSet1 and #stringSet1 <= 3 }
+sig stringSet1
+{ stringSet1_ref : one Int }
+{ (((this.@stringSet1_ref) = 6) || ((this.@stringSet1_ref) = 9)) || ((this.@stringSet1_ref) = 7) }
 
-fact {  all disj x, y : c0_stringSet1 | (x.@c0_stringSet1_ref) != (y.@c0_stringSet1_ref)  }
-fact { 4 <= #c0_stringSet2 and #c0_stringSet2 <= 4 }
-sig c0_stringSet2
-{ c0_stringSet2_ref : one Int }
-{ ((((this.@c0_stringSet2_ref) = 6) || ((this.@c0_stringSet2_ref) = 9)) || ((this.@c0_stringSet2_ref) = 7)) || ((this.@c0_stringSet2_ref) = 10) }
+fact {  all disj x, y : stringSet1 | (x.@stringSet1_ref) != (y.@stringSet1_ref)  }
+fact { 4 <= #stringSet2 and #stringSet2 <= 4 }
+sig stringSet2
+{ stringSet2_ref : one Int }
+{ ((((this.@stringSet2_ref) = 6) || ((this.@stringSet2_ref) = 9)) || ((this.@stringSet2_ref) = 7)) || ((this.@stringSet2_ref) = 10) }
 
-fact {  all disj x, y : c0_stringSet2 | (x.@c0_stringSet2_ref) != (y.@c0_stringSet2_ref)  }
+fact {  all disj x, y : stringSet2 | (x.@stringSet2_ref) != (y.@stringSet2_ref)  }

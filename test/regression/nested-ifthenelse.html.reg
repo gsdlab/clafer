@@ -22,39 +22,39 @@ a[href$='Ambiguous name'] {color: yellow}
 <div class="file">positive/nested-ifthenelse.cfr</div>
 
 <div>
-<span class="claferDecl" id="c0_x">x</span> ?</div>
+<span class="claferDecl" id="x">x</span> ?</div>
 
 
 <div>
-<span class="claferDecl" id="c0_y">y</span> ?</div>
+<span class="claferDecl" id="y">y</span> ?</div>
 
 
 <div>
-<span class="claferDecl" id="c0_z">z</span> ?</div>
+<span class="claferDecl" id="z">z</span> ?</div>
 
 
 <div>
-<span class="claferDecl" id="c0_w">w</span> ?</div>
+<span class="claferDecl" id="w">w</span> ?</div>
 
 
 <div>
-<span class="claferDecl" id="c0_u">u</span> ?</div>
+<span class="claferDecl" id="u">u</span> ?</div>
 
 
 <div>
-<span class="claferDecl" id="c0_o">o</span> ?</div>
+<span class="claferDecl" id="o">o</span> ?</div>
 
 
 <div>
-<span class="claferDecl" id="c0_p">p</span> ?</div>
+<span class="claferDecl" id="p">p</span> ?</div>
 
 
 <div>
-<span class="claferDecl" id="c0_h">h</span> ?</div>
+<span class="claferDecl" id="h">h</span> ?</div>
 
 
 <div>
-<span class="keyword">[</span> <a href="#c0_h"><span class="reference">h</span></a> &lt;=&gt; (<span class="keyword">if </span><span class="keyword">if </span><a href="#c0_x"><span class="reference">x</span></a><span class="keyword"> then </span><a href="#c0_z"><span class="reference">z</span></a><span class="keyword"> else </span><a href="#c0_y"><span class="reference">y</span></a><span class="keyword"> then </span><a href="#c0_x"><span class="reference">x</span></a> =&gt; <a href="#c0_y"><span class="reference">y</span></a><span class="keyword"> else </span><span class="keyword">if </span><span class="keyword">no</span> <a href="#c0_w"><span class="reference">w</span></a><span class="keyword"> then </span><span class="keyword">if </span><a href="#c0_z"><span class="reference">z</span></a><span class="keyword"> then </span><a href="#c0_u"><span class="reference">u</span></a><span class="keyword"> else </span><a href="#c0_o"><span class="reference">o</span></a><span class="keyword"> else </span><span class="keyword">some</span> <a href="#c0_p"><span class="reference">p</span></a>) <span class="keyword">]</span></div>
+<span class="keyword">[</span> <a href="#h"><span class="reference">h</span></a> &lt;=&gt; (<span class="keyword">if </span><span class="keyword">if </span><a href="#x"><span class="reference">x</span></a><span class="keyword"> then </span><a href="#z"><span class="reference">z</span></a><span class="keyword"> else </span><a href="#y"><span class="reference">y</span></a><span class="keyword"> then </span><a href="#x"><span class="reference">x</span></a> =&gt; <a href="#y"><span class="reference">y</span></a><span class="keyword"> else </span><span class="keyword">if </span><span class="keyword">no</span> <a href="#w"><span class="reference">w</span></a><span class="keyword"> then </span><span class="keyword">if </span><a href="#z"><span class="reference">z</span></a><span class="keyword"> then </span><a href="#u"><span class="reference">u</span></a><span class="keyword"> else </span><a href="#o"><span class="reference">o</span></a><span class="keyword"> else </span><span class="keyword">some</span> <a href="#p"><span class="reference">p</span></a>) <span class="keyword">]</span></div>
 
 </body>
 </html>

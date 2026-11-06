@@ -1,13 +1,13 @@
 //# OPTIONS --explicit
-[some disj dl1; dl2 : c0_DimensionLevel | dl1 . c0_belongsTo . dref = dl2 . c0_belongsTo . dref]
-abstract 0..* c0_Dimension 0..* {
-  [all dl : this . c0_levels | dl . dref . c0_belongsTo . dref = this]
-  0..* c0_levels -> c0_DimensionLevel 0..* {}
+[some disj dl1; dl2 : DimensionLevel | dl1 . belongsTo . dref = dl2 . belongsTo . dref]
+abstract 0..* Dimension 0..* {
+  [all dl : this . levels | dl . dref . belongsTo . dref = this]
+  0..* levels -> DimensionLevel 0..* {}
 }
-abstract 0..* c0_DimensionLevel 0..* {
-  0..* c0_belongsTo -> c0_Dimension 1..1 {}
+abstract 0..* DimensionLevel 0..* {
+  0..* belongsTo -> Dimension 1..1 {}
 }
-0..* c0_dim1 : c0_Dimension 1..1 {}
-0..* c0_dim2 : c0_Dimension 1..1 {}
-0..* c0_dimLevel1 : c0_DimensionLevel 1..1 {}
-0..* c0_dimLevel2 : c0_DimensionLevel 1..1 {}
+0..* dim1 : Dimension 1..1 {}
+0..* dim2 : Dimension 1..1 {}
+0..* dimLevel1 : DimensionLevel 1..1 {}
+0..* dimLevel2 : DimensionLevel 1..1 {}

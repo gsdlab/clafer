@@ -2,29 +2,29 @@ open util/integer
 pred show {}
 
 
-one sig c0_text
-{ c0_text_ref : one Int }
+one sig text
+{ text_ref : one Int }
 
-fact { (some c0_text) => ((c0_text.@c0_text_ref) = 0) }
-one sig c0_text1
-{ c0_text1_ref : one Int }
+fact { (some text) => ((text.@text_ref) = 0) }
+one sig text1
+{ text1_ref : one Int }
 
-fact { (some c0_text1) => ((c0_text1.@c0_text1_ref) = 0) }
-one sig c0_text2
-{ c0_text2_ref : one Int }
+fact { (some text1) => ((text1.@text1_ref) = 0) }
+one sig text2
+{ text2_ref : one Int }
 
-fact { (some c0_text2) => ((c0_text2.@c0_text2_ref) = 0) }
-lone sig c0_equal1
+fact { (some text2) => ((text2.@text2_ref) = 0) }
+lone sig equal1
 {}
 
-fact { ((c0_text.@c0_text_ref) = (c0_text1.@c0_text1_ref)) => (some c0_equal1) }
-lone sig c0_equal2
+fact { ((text.@text_ref) = (text1.@text1_ref)) => (some equal1) }
+lone sig equal2
 {}
 
-fact { ((c0_text1.@c0_text1_ref) = (c0_text2.@c0_text2_ref)) => (some c0_equal2) }
-assert assertAt_15_10 { some c0_equal1 }
+fact { ((text1.@text1_ref) = (text2.@text2_ref)) => (some equal2) }
+assert assertAt_15_10 { some equal1 }
 check assertAt_15_10 for 1
 
-assert assertAt_16_10 { some c0_equal2 }
+assert assertAt_16_10 { some equal2 }
 check assertAt_16_10 for 1
 

@@ -2,20 +2,20 @@ open util/integer
 pred show {}
 
 
-one sig c0_A
-{ r_c0_B : one c0_B
-, r_c0_C : lone c0_C }
+one sig A
+{ r_B : one B
+, r_C : lone C }
 
-one sig c0_B
+one sig B
 {}
 
-lone sig c0_C
+lone sig C
 {}
-{ one r_c0_C }
+{ one r_C }
 
-one sig c0_D
-{ c0_D_ref : one c0_A }
+one sig D
+{ D_ref : one A }
 
-lone sig c0_E
+lone sig E
 {}
 

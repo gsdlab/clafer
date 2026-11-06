@@ -1,13 +1,13 @@
 //# OPTIONS --explicit
-[all x : c0_a . c0_b . c0_c | (#x . c0_d) = 1]
-0..* c0_a 0..* {
-  [all x : this . c0_b . c0_c | (#x . c0_d) = 1]
-  0..* c0_b 0..* {
-    [(#this . c0_c . c0_d) = 1]
-    0..* c0_c 0..* {
-      0..* c0_d 0..1 {}
+[all x : a . b . c | (#x . d) = 1]
+0..* a 0..* {
+  [all x : this . b . c | (#x . d) = 1]
+  0..* b 0..* {
+    [(#this . c . d) = 1]
+    0..* c 0..* {
+      0..* d 0..1 {}
     }
   }
 }
 
-assert [all x : c0_a . c0_b . c0_c | (#x . c0_d) >= 1]
+assert [all x : a . b . c | (#x . d) >= 1]

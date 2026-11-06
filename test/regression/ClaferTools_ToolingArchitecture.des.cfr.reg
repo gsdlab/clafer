@@ -1,85 +1,85 @@
 //# OPTIONS --explicit
-0..* c0_claferCompiler : c0_claferLib 1..1 {}
-0..* c0_claferIG : c0_claferLib 1..1 {}
-0..* c0_claferMOO : c0_claferLib 1..1 {
-  0..* c0_moo 1..1 {}
+0..* claferCompiler : claferLib 1..1 {}
+0..* claferIG : claferLib 1..1 {}
+0..* claferMOO : claferLib 1..1 {
+  0..* moo 1..1 {}
 }
-abstract 0..* c0_claferLib 0..* {
-  0..* c0_common 1..1 {}
-  0..* c0_front : c0_Front 1..1 {}
-  0..* c0_intermediate : c0_Intermediate 1..1 {}
-  0..* c0_optimizer 1..1 {}
-  1..1 c0_generator : c0_Generator 1..1 {}
+abstract 0..* claferLib 0..* {
+  0..* common 1..1 {}
+  0..* front : Front 1..1 {}
+  0..* intermediate : Intermediate 1..1 {}
+  0..* optimizer 1..1 {}
+  1..1 generator : Generator 1..1 {}
 }
-abstract 0..* c0_Representation 0..* {}
-0..* c0_text : c0_Representation 1..1 {}
-0..* c0_tokens : c0_Representation 1..1 {}
-0..* c0_ast : c0_Representation 1..1 {}
-0..* c0_ir : c0_Representation 1..1 {}
-abstract 0..* c0_io 0..* {
-  0..* c0_input -> c0_Representation 1..1 {}
-  0..* c0_output -> c0_Representation 1..1 {}
+abstract 0..* Representation 0..* {}
+0..* text : Representation 1..1 {}
+0..* tokens : Representation 1..1 {}
+0..* ast : Representation 1..1 {}
+0..* ir : Representation 1..1 {}
+abstract 0..* io 0..* {
+  0..* input -> Representation 1..1 {}
+  0..* output -> Representation 1..1 {}
 }
-abstract 0..* c0_text2tokens : c0_io 0..* {
-  [(this . c0_input . dref = c0_text) && (this . c0_output . dref = c0_tokens)]
+abstract 0..* text2tokens : io 0..* {
+  [(this . input . dref = text) && (this . output . dref = tokens)]
 }
-abstract 0..* c0_tokens2tokens : c0_io 0..* {
-  [(this . c0_input . dref = c0_tokens) && (this . c0_output . dref = c0_tokens)]
+abstract 0..* tokens2tokens : io 0..* {
+  [(this . input . dref = tokens) && (this . output . dref = tokens)]
 }
-abstract 0..* c0_tokens2ast : c0_io 0..* {
-  [(this . c0_input . dref = c0_tokens) && (this . c0_output . dref = c0_ast)]
+abstract 0..* tokens2ast : io 0..* {
+  [(this . input . dref = tokens) && (this . output . dref = ast)]
 }
-abstract 0..* c0_ast2ast : c0_io 0..* {
-  [(this . c0_input . dref = c0_ast) && (this . c0_output . dref = c0_ast)]
+abstract 0..* ast2ast : io 0..* {
+  [(this . input . dref = ast) && (this . output . dref = ast)]
 }
-abstract 0..* c0_ast2text : c0_io 0..* {
-  [(this . c0_input . dref = c0_ast) && (this . c0_output . dref = c0_text)]
+abstract 0..* ast2text : io 0..* {
+  [(this . input . dref = ast) && (this . output . dref = text)]
 }
-abstract 0..* c0_ast2ir : c0_io 0..* {
-  [(this . c0_input . dref = c0_ast) && (this . c0_output . dref = c0_ir)]
+abstract 0..* ast2ir : io 0..* {
+  [(this . input . dref = ast) && (this . output . dref = ir)]
 }
-abstract 0..* c0_ir2ir : c0_io 0..* {
-  [(this . c0_input . dref = c0_ir) && (this . c0_output . dref = c0_ir)]
+abstract 0..* ir2ir : io 0..* {
+  [(this . input . dref = ir) && (this . output . dref = ir)]
 }
-abstract 0..* c0_ir2text : c0_io 0..* {
-  [(this . c0_input . dref = c0_ir) && (this . c0_output . dref = c0_text)]
+abstract 0..* ir2text : io 0..* {
+  [(this . input . dref = ir) && (this . output . dref = text)]
 }
-abstract 0..* c0_Front 0..* {
-  0..* c0_lexer : c0_text2tokens 1..1 {}
-  1..1 c0_layoutResolver : c0_tokens2tokens 0..1 {
-    0..* c0_stable 0..1 {}
-    0..* c0_experimental 0..1 {}
+abstract 0..* Front 0..* {
+  0..* lexer : text2tokens 1..1 {}
+  1..1 layoutResolver : tokens2tokens 0..1 {
+    0..* stable 0..1 {}
+    0..* experimental 0..1 {}
   }
-  0..* c0_parser : c0_tokens2ast 1..1 {}
-  0..* c0_mapper : c0_ast2ast 1..1 {}
-  0..* c0_prettyPrinter : c0_ast2text 0..1 {}
+  0..* parser : tokens2ast 1..1 {}
+  0..* mapper : ast2ast 1..1 {}
+  0..* prettyPrinter : ast2text 0..1 {}
 }
-abstract 0..* c0_Intermediate 0..* {
-  0..* c0_desugarer : c0_ast2ir 1..1 {}
-  0..* c0_findDuplicates 0..1 {}
-  0..* c0_resolver : c0_ir2ir 0..1 {
-    0..* c0_setUid 1..1 {}
-    0..* c0_inheritanceFlattener 0..1 {}
-    0..* c0_nameResolution 1..1 {
-      0..* c0_nameResolver 0..1 {
-        [(#this . parent . parent . parent . c0_findDuplicates) >= 1]
+abstract 0..* Intermediate 0..* {
+  0..* desugarer : ast2ir 1..1 {}
+  0..* findDuplicates 0..1 {}
+  0..* resolver : ir2ir 0..1 {
+    0..* setUid 1..1 {}
+    0..* inheritanceFlattener 0..1 {}
+    0..* nameResolution 1..1 {
+      0..* nameResolver 0..1 {
+        [(#this . parent . parent . parent . findDuplicates) >= 1]
       }
-      0..* c0_inheritanceResolver 1..1 {}
-      0..* c0_typeResolver 1..1 {}
+      0..* inheritanceResolver 1..1 {}
+      0..* typeResolver 1..1 {}
     }
   }
-  0..* c0_transformer : c0_ir2ir 1..1 {}
-  0..* c0_stringAnalyzer : c0_ir2ir 0..1 {}
-  0..* c0_scopeAnalysis : c0_ir2ir 0..1 {}
+  0..* transformer : ir2ir 1..1 {}
+  0..* stringAnalyzer : ir2ir 0..1 {}
+  0..* scopeAnalysis : ir2ir 0..1 {}
 }
-abstract 1..1 c0_Generator : c0_ir2text 0..* {
-  0..* c0_alloy 0..1 {
-    [((#c0_Intermediate . c0_stringAnalyzer) >= 1) && ((#c0_Intermediate . c0_scopeAnalysis) >= 1)]
+abstract 1..1 Generator : ir2text 0..* {
+  0..* alloy 0..1 {
+    [((#Intermediate . stringAnalyzer) >= 1) && ((#Intermediate . scopeAnalysis) >= 1)]
   }
-  0..* c0_stats 0..1 {}
-  0..* c0_xml 0..1 {}
-  0..* c0_desClafer 0..1 {
-    [(#c0_Front . c0_prettyPrinter) >= 1]
+  0..* stats 0..1 {}
+  0..* xml 0..1 {}
+  0..* desClafer 0..1 {
+    [(#Front . prettyPrinter) >= 1]
   }
-  0..* c0_xsdSchema 0..1 {}
+  0..* xsdSchema 0..1 {}
 }

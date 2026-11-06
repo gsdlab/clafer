@@ -60,19 +60,21 @@ main = defaultMain $ testGroup "Tests"
     ]
 
 {-
-a            // ::a -> c0_a
-    b        // ::a::b -> c0_b
-b            // ::b -> c1_b
-c            // ::c -> c0_c
-    d        // ::c::d -> c0_d
-         b   // ::c::d::b -> c2_b
-d            // ::d -> c1_d
-    b        // ::d::b -> c3_b
+The UID of each clafer is its least-partially-qualified name:
 
-"b" -> "c0_b", "c1_b", "c2_b", "c3_b"
-"d::b" -> "c2_b", "c3_b"
-"c::d" -> "c0_d"
-"d" -> "c0_d", "c1_d"
+a            // root__a, ::a -> a
+    b        // root__a__b, ::a::b -> a__b
+b            // root__b, ::b -> root__b
+c            // root__c, ::c -> c
+    d        // root__c__d, ::c::d -> c__d
+         b   // root__c__d__b, ::c::d::b -> c__d__b
+d            // root__d, ::d -> root__d
+    b        // root__d__b, ::d::b -> root__d__b
+
+"b" -> "a__b", "root__b", "c__d__b", "root__d__b"
+"d::b", "d__b" -> "c__d__b", "root__d__b"
+"c::d", "c__d" -> "c__d"
+"d" -> "c__d", "root__d"
 "x" -> []
 
 a\n    b\nb\nc\n    d\n         b\nd\n    b
@@ -85,18 +87,26 @@ case_FQMapLookup = do
     let
         (Just (iModule, _, _)) = cIr $ claferEnv $ fromJust $ Map.lookup Alloy $ fromRight $ compileOneFragment defaultClaferArgs model
         qNameMaps = deriveQNameMaps iModule
-    [ "c0_a" ] == getUIDs qNameMaps "::a"  @? "UID for `::a` different from `c0_a`"
-    [ "c0_b" ] == getUIDs qNameMaps "::a::b"  @? "UID for `::a::b` different from `c0_b`"
-    [ "c1_b" ] == getUIDs qNameMaps "::b"  @? "UID for `::b` different from `c1_b`"
-    [ "c0_c" ] == getUIDs qNameMaps "::c"  @? "UID for `::c` different from `c0_c`"
-    [ "c0_d" ] == getUIDs qNameMaps "::c::d"  @? "UID for `::c::d` different from `c0_d`"
-    [ "c0_d" ] == getUIDs qNameMaps "c::d"  @? "UID for `c::d` different from `c0_d`"
-    [ "c2_b" ] == getUIDs qNameMaps "::c::d::b"  @? "UID for `::c::d::b` different from `c2_b`"
-    [ "c1_d" ] == getUIDs qNameMaps "::d"  @? "UID for `::d` different from `c1_d`"
-    [ "c3_b" ] == getUIDs qNameMaps "::d::b"  @? "UID for `::d::b` different from `c3_d`"
-    null ([ "c0_b", "c1_b", "c2_b", "c3_b" ] \\ (getUIDs qNameMaps "b" )) @? "UIDs for `b` different from `c0_b`, `c1_b`, `c2_b`, `c3_b` "
-    null ([ "c2_b", "c3_b" ] \\ (getUIDs qNameMaps "d::b" )) @? "UIDs for `d::b` different from `c2_b`, `c3_b` "
-    null ([ "c0_d", "c1_d" ] \\ (getUIDs qNameMaps "d" )) @? "UIDs for `d` different from `c0_d`, `c1_d` "
+    [ "a" ] == getUIDs qNameMaps "::a"  @? "UID for `::a` different from `a`"
+    [ "a__b" ] == getUIDs qNameMaps "::a::b"  @? "UID for `::a::b` different from `a__b`"
+    [ "root__b" ] == getUIDs qNameMaps "::b"  @? "UID for `::b` different from `root__b`"
+    [ "c" ] == getUIDs qNameMaps "::c"  @? "UID for `::c` different from `c`"
+    [ "c__d" ] == getUIDs qNameMaps "::c::d"  @? "UID for `::c::d` different from `c__d`"
+    [ "c__d" ] == getUIDs qNameMaps "c::d"  @? "UID for `c::d` different from `c__d`"
+    [ "c__d__b" ] == getUIDs qNameMaps "::c::d::b"  @? "UID for `::c::d::b` different from `c__d__b`"
+    [ "root__d" ] == getUIDs qNameMaps "::d"  @? "UID for `::d` different from `root__d`"
+    [ "root__d__b" ] == getUIDs qNameMaps "::d::b"  @? "UID for `::d::b` different from `root__d__b`"
+    null ([ "a__b", "root__b", "c__d__b", "root__d__b" ] \\ (getUIDs qNameMaps "b" )) @? "UIDs for `b` different from `a__b`, `root__b`, `c__d__b`, `root__d__b`"
+    null ([ "c__d__b", "root__d__b" ] \\ (getUIDs qNameMaps "d::b" )) @? "UIDs for `d::b` different from `c__d__b`, `root__d__b`"
+    null ([ "c__d", "root__d" ] \\ (getUIDs qNameMaps "d" )) @? "UIDs for `d` different from `c__d`, `root__d`"
+    -- the same with __, the separator of the UIDs, and root__ for ::
+    [ "a" ] == getUIDs qNameMaps "root__a"  @? "UID for `root__a` different from `a`"
+    [ "root__b" ] == getUIDs qNameMaps "root__b"  @? "UID for `root__b` different from `root__b`"
+    [ "c__d" ] == getUIDs qNameMaps "c__d"  @? "UID for `c__d` different from `c__d`"
+    [ "c__d__b" ] == getUIDs qNameMaps "root__c__d__b"  @? "UID for `root__c__d__b` different from `c__d__b`"
+    null ([ "c__d__b", "root__d__b" ] \\ (getUIDs qNameMaps "d__b" )) @? "UIDs for `d__b` different from `c__d__b`, `root__d__b`"
+    Just "root__c__d__b" == getFQName qNameMaps "c__d__b"  @? "FQ name of `c__d__b`: " ++ show (getFQName qNameMaps "c__d__b")
+    Just "root__d" == getLPQName qNameMaps "root__d"  @? "LPQ name of `root__d`: " ++ show (getLPQName qNameMaps "root__d")
     null (getUIDs qNameMaps "x") @? "UID for `x` different from []"
     null (getUIDs qNameMaps "::x") @? "UID for `::x` different from []"
 
@@ -106,9 +116,10 @@ case_QNamesWholeNames = do
     let
         (Just (iModule, _, _)) = cIr $ claferEnv $ fromJust $ Map.lookup Alloy $ fromRight $ compileOneFragment defaultClaferArgs "light\n    yellow\n    yellow_on\n"
         qNameMaps = deriveQNameMaps iModule
-    [ "c0_yellow" ] == getUIDs qNameMaps "yellow"  @? "UIDs for `yellow`: " ++ show (getUIDs qNameMaps "yellow")
-    [ "c0_yellow" ] == getUIDs qNameMaps "light::yellow"  @? "UIDs for `light::yellow`: " ++ show (getUIDs qNameMaps "light::yellow")
-    Just "yellow" == getLPQName qNameMaps "c0_yellow"  @? "LPQ name of `c0_yellow`: " ++ show (getLPQName qNameMaps "c0_yellow")
+    [ "yellow" ] == getUIDs qNameMaps "yellow"  @? "UIDs for `yellow`: " ++ show (getUIDs qNameMaps "yellow")
+    [ "yellow" ] == getUIDs qNameMaps "light::yellow"  @? "UIDs for `light::yellow`: " ++ show (getUIDs qNameMaps "light::yellow")
+    [ "yellow" ] == getUIDs qNameMaps "light__yellow"  @? "UIDs for `light__yellow`: " ++ show (getUIDs qNameMaps "light__yellow")
+    Just "yellow" == getLPQName qNameMaps "yellow"  @? "LPQ name of `yellow`: " ++ show (getLPQName qNameMaps "yellow")
 
 case_AllClafersGenerics :: Assertion
 case_AllClafersGenerics = do
@@ -117,7 +128,7 @@ case_AllClafersGenerics = do
         allClafers :: [ IClafer ]
         allClafers = universeOn biplate iModule
         allClafersUids = map _uid allClafers
-    allClafersUids == [ "c0_a", "c0_b", "c1_b", "c0_c", "c0_d", "c2_b", "c1_d", "c3_b"] @? "All clafers\n" ++ show allClafersUids
+    allClafersUids == [ "a", "a__b", "root__b", "c", "c__d", "c__d__b", "root__d", "root__d__b"] @? "All clafers\n" ++ show allClafersUids
 
 {-
 Comments are shown as written in the HTML output: their markup is escaped, and
@@ -136,12 +147,12 @@ case_HtmlCommentsEscaped = do
     ("<!-- # note - - with - -> /-->" `isInfixOf` html) @? "The //# comment contains \"--\"\n" ++ html
 
 {-
-Clafer names may contain apostrophes, but the UIDs are identifiers in the Alloy
-and Choco (JavaScript) outputs, where apostrophes are not allowed: they become
-"__prime__", and same' and same__prime__ still get different UIDs.
+Clafer names may contain apostrophes, but the UIDs are identifiers, in Clafer and in
+the Alloy and Choco (JavaScript) outputs: an apostrophe becomes "_prime". same'
+and same_prime still get different UIDs: the one later in the model gets __2.
 -}
 apostropheModel :: String
-apostropheModel = "A\n    same' ?\n    same__prime__ ?\n    links' -> same' *\n    [ some same' ]\n"
+apostropheModel = "A\n    same' ?\n    same_prime ?\n    links' -> same' *\n    [ some same' ]\n"
 
 case_ApostrophesNotInUIDs :: Assertion
 case_ApostrophesNotInUIDs = do
@@ -153,13 +164,36 @@ case_ApostrophesNotInUIDs = do
         clafers :: [ IClafer ]
         clafers = universeOn biplate iModule
         uidsOf name = [ _uid c | c <- clafers, _ident c == name ]
-    uidsOf "same'" == ["c0_same__prime__"] @? "UID of same' is not c0_same__prime__: " ++ show (uidsOf "same'")
-    uidsOf "same__prime__" == ["c1_same__prime__"] @? "UID of same__prime__ is not c1_same__prime__: " ++ show (uidsOf "same__prime__")
-    uidsOf "links'" == ["c0_links__prime__"] @? "UID of links' is not c0_links__prime__: " ++ show (uidsOf "links'")
-    not ("c0_same'" `isInfixOf` alloy) @? "Alloy: an apostrophe in a UID\n" ++ alloy
-    ("sig c0_same__prime__" `isInfixOf` alloy && "sig c1_same__prime__" `isInfixOf` alloy) @? "Alloy: same' and same__prime__ are not two signatures\n" ++ alloy
-    not ("c0_same'" `isInfixOf` choco) @? "Choco: an apostrophe in a UID\n" ++ choco
-    ("c0_same__prime__ = c0_A.addChild(\"c0_same__prime__\")" `isInfixOf` choco) @? "Choco: same' is not declared as c0_same__prime__\n" ++ choco
+    uidsOf "same'" == ["same_prime"] @? "UID of same' is not same_prime: " ++ show (uidsOf "same'")
+    uidsOf "same_prime" == ["same_prime__2"] @? "UID of same_prime is not same_prime__2: " ++ show (uidsOf "same_prime")
+    uidsOf "links'" == ["links_prime"] @? "UID of links' is not links_prime: " ++ show (uidsOf "links'")
+    not ("same'" `isInfixOf` alloy) @? "Alloy: an apostrophe in a UID\n" ++ alloy
+    ("sig same_prime" `isInfixOf` alloy && "sig same_prime__2" `isInfixOf` alloy) @? "Alloy: same' and same_prime are not two signatures\n" ++ alloy
+    not ("same'" `isInfixOf` choco) @? "Choco: an apostrophe in a UID\n" ++ choco
+    ("$same_prime = $A.addChild(\"same_prime\")" `isInfixOf` choco) @? "Choco: same' is not declared as same_prime\n" ++ choco
+
+{-
+The UIDs do not depend on the outputs: a clafer named sig (an Alloy keyword) or show (the
+Alloy output's predicate) keeps its UID, and so does r_x next to x (r_x is the relation of x);
+the Alloy output renames them, and the variables of the Choco output are $ and the UID.
+-}
+alloyNamesModel :: String
+alloyNamesModel = "sig ?\nshow ?\nx\nr_x ?\n[ some sig => some show ]\n"
+
+case_UIDsNotOfTheOutputs :: Assertion
+case_UIDsNotOfTheOutputs = do
+    let
+        results = fromRight $ compileOneFragment defaultClaferArgs{mode = [Alloy, Choco]} alloyNamesModel
+        alloy = outputCode $ fromJust $ Map.lookup Alloy results
+        choco = outputCode $ fromJust $ Map.lookup Choco results
+        (Just (iModule, _, _)) = cIr $ claferEnv $ fromJust $ Map.lookup Alloy results
+        uids = map _uid (universeOn biplate iModule :: [ IClafer ])
+    uids == ["sig", "show", "x", "r_x"] @? "UIDs: " ++ show uids
+    all (`isInfixOf` alloy) ["lone sig sig_1", "lone sig show_1", "one sig x", "lone sig r_x_1", "(some sig_1) => (some show_1)"]
+        @? "Alloy: the clafers are not renamed\n" ++ alloy
+    not ("sig sig\n" `isInfixOf` alloy) @? "Alloy: a signature named sig\n" ++ alloy
+    all (`isInfixOf` choco) ["$sig = Clafer(\"sig\")", "$show = Clafer(\"show\")", "$r_x = Clafer(\"r_x\")"]
+        @? "Choco: the clafers are not declared by their UIDs\n" ++ choco
 
 {-
 The JSON IR has the source positions of the clafers and expressions: lines and
@@ -200,7 +234,7 @@ case_CommentsNotInLayout = do
         clafers = universeOn biplate iModule
         parentOf name = [ _parentUID c | c <- clafers, _ident c == name ]
         startOf name = [ (l, c') | c <- clafers, _ident c == name, let Span (Pos l c') _ = _cinPos c ]
-    map parentOf ["on", "normal", "flashing", "off", "B", "C"] == map (:[]) ["c0_A", "c0_on", "c0_on", "c0_A", "c0_A", "root"]
+    map parentOf ["on", "normal", "flashing", "off", "B", "C"] == map (:[]) ["A", "on", "on", "A", "A", "root"]
         @? "Wrong nesting: " ++ show (map parentOf ["on", "normal", "flashing", "off", "B", "C"])
     startOf "on" == [(2, 15)] @? "Position of on changed: " ++ show (startOf "on")
 
@@ -454,12 +488,12 @@ case_ReferencedUnusedAbstractKept = do
         results = fromRight $ compileOneFragment defaultClaferArgs{mode = [Alloy, Choco]} unusedAbstractModel
         alloy = outputCode $ fromJust $ Map.lookup Alloy results
         choco = outputCode $ fromJust $ Map.lookup Choco results
-    ("c0_Property = Abstract" `isInfixOf` choco) @? "Choco: the referenced Property is not declared\n" ++ choco
-    ("c0_Named = Abstract" `isInfixOf` choco) @? "Choco: Named, used in a constraint, is not declared\n" ++ choco
-    not ("c0_Unused" `isInfixOf` choco) @? "Choco: the unused Unused is declared\n" ++ choco
-    ("abstract sig c0_Property" `isInfixOf` alloy) @? "Alloy: the referenced Property is not declared\n" ++ alloy
-    ("fact { #c0_Property = 0 }" `isInfixOf` alloy) @? "Alloy: Property may have instances\n" ++ alloy
-    not ("c0_Unused" `isInfixOf` alloy) @? "Alloy: the unused Unused is declared\n" ++ alloy
+    ("$Property = Abstract" `isInfixOf` choco) @? "Choco: the referenced Property is not declared\n" ++ choco
+    ("$Named = Abstract" `isInfixOf` choco) @? "Choco: Named, used in a constraint, is not declared\n" ++ choco
+    not ("$Unused" `isInfixOf` choco) @? "Choco: the unused Unused is declared\n" ++ choco
+    ("abstract sig Property" `isInfixOf` alloy) @? "Alloy: the referenced Property is not declared\n" ++ alloy
+    ("fact { #Property = 0 }" `isInfixOf` alloy) @? "Alloy: Property may have instances\n" ++ alloy
+    not ("sig Unused" `isInfixOf` alloy) @? "Alloy: the unused Unused is declared\n" ++ alloy
 
 -- The integer range of the Choco output can be set with --minint and --maxint,
 -- also in //# OPTIONS; without them, chocosolver chooses it.
@@ -535,7 +569,7 @@ case_ParentOfTopLevel = do
         sameOptional mode' "[ some a ]" "[ some a.parent ]"
         sameOptional mode' "[ no a ]" "[ no a.parent ]"
     case compile' Alloy "[ some a.parent.a ]" of
-        Right x' -> ("some ((some c0_a) => (c0_a) else none)" `isInfixOf` x') @? x'
+        Right x' -> ("some ((some a) => (a) else none)" `isInfixOf` x') @? x'
         Left errs' -> assertFailure $ show errs'
     refused (unlines [ "abstract Feat", "f1 : Feat", "g", "    f2 : Feat", "[ all v : Feat | some v.parent ]" ]) "take the parent of `this`"
     -- some subclafers of Feat are at the top level and some nested: its constraint is split on this
@@ -543,8 +577,8 @@ case_ParentOfTopLevel = do
         Right r -> do
             let alloy = outputCode $ fromJust $ Map.lookup Alloy r
                 choco = outputCode $ fromJust $ Map.lookup Choco r
-            ("((this in c0_f1) => (0 < 1)) && ((this in (c0_g.@r_c0_f2)) => (some (this & (c0_g.@r_c0_f2)).~(@r_c0_f2)))" `isInfixOf` alloy) @? alloy
-            ("joinParent(inter($this(), join(global(c0_g), c0_f2)))" `isInfixOf` choco) @? choco
+            ("((this in f1) => (0 < 1)) && ((this in (g.@r_f2)) => (some (this & (g.@r_f2)).~(@r_f2)))" `isInfixOf` alloy) @? alloy
+            ("joinParent(inter($this(), join(global($g), $f2)))" `isInfixOf` choco) @? choco
         Left errs' -> assertFailure $ show errs'
 
 -- final, finalref and finaltarget on a clafer that inherits its reference fix the reference in
@@ -557,7 +591,7 @@ case_FinalInheritedReference =
                 , "    xor gear", "        initial park --> drive", "        drive"
                 , "tesla : Car", "    " ++ modifier ++ " motor : engine" ]) of
             Right r -> let alloy = outputCode $ fromJust $ Map.lookup Alloy r
-                           fixed = "implies (this.@c0_engine_ref)' = this.@c0_engine_ref)" `isInfixOf` alloy
+                           fixed = "implies (this.@engine_ref)' = this.@engine_ref)" `isInfixOf` alloy
                        in fixed == (modifier /= "") @? (modifier ++ ": " ++ alloy)
             Left errs' -> assertFailure $ modifier ++ ": " ++ show errs'
 

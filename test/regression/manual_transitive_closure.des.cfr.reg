@@ -1,24 +1,24 @@
 //# OPTIONS --explicit
-[c0_Week1 . c0_aggregatesTo . dref in c0_Week1AggregatesTo . dref]
-[c0_Week1 . c0_aggregatesTo . dref . c0_aggregatesTo . dref in c0_Week1AggregatesTo . dref]
-[c0_Week1AggregatesTo . dref = (c0_Jan2012 ++ c0_Year2012)]
-abstract 0..* c0_TimeLevel 0..* {
-  0..* c0_aggregatesTo -> c0_TimeLevel 0..1 {}
+[Week1 . aggregatesTo . dref in Week1AggregatesTo . dref]
+[Week1 . aggregatesTo . dref . aggregatesTo . dref in Week1AggregatesTo . dref]
+[Week1AggregatesTo . dref = (Jan2012 ++ Year2012)]
+abstract 0..* TimeLevel 0..* {
+  0..* aggregatesTo -> TimeLevel 0..1 {}
 }
-abstract 0..* c0_YearLevel : c0_TimeLevel 0..* {
-  [(#this . c0_aggregatesTo) = 0]
+abstract 0..* YearLevel : TimeLevel 0..* {
+  [(#this . aggregatesTo) = 0]
 }
-abstract 0..* c0_MonthLevel : c0_TimeLevel 0..* {
-  [this . c0_aggregatesTo . dref in c0_YearLevel]
+abstract 0..* MonthLevel : TimeLevel 0..* {
+  [this . aggregatesTo . dref in YearLevel]
 }
-abstract 0..* c0_WeekLevel : c0_TimeLevel 0..* {
-  [this . c0_aggregatesTo . dref in c0_MonthLevel]
+abstract 0..* WeekLevel : TimeLevel 0..* {
+  [this . aggregatesTo . dref in MonthLevel]
 }
-0..* c0_Year2012 : c0_YearLevel 1..1 {}
-0..* c0_Jan2012 : c0_MonthLevel 1..1 {
-  [this . c0_aggregatesTo . dref = c0_Year2012]
+0..* Year2012 : YearLevel 1..1 {}
+0..* Jan2012 : MonthLevel 1..1 {
+  [this . aggregatesTo . dref = Year2012]
 }
-0..* c0_Week1 : c0_WeekLevel 1..1 {
-  [this . c0_aggregatesTo . dref = c0_Jan2012]
+0..* Week1 : WeekLevel 1..1 {
+  [this . aggregatesTo . dref = Jan2012]
 }
-0..* c0_Week1AggregatesTo -> c0_TimeLevel 0..* {}
+0..* Week1AggregatesTo -> TimeLevel 0..* {}

@@ -22,28 +22,28 @@ a[href$='Ambiguous name'] {color: yellow}
 <div class="file">positive/parent_navigation.cfr</div>
 
 <div>
-<span class="claferDecl" id="c0_claferA">claferA</span>
+<span class="claferDecl" id="claferA">claferA</span>
   <div class="indent">
-  <span class="claferDecl" id="c0_claferB">claferB</span>
+  <span class="claferDecl" id="claferB">claferB</span>
     <div class="indent">
     <span class="keyword">[</span> <span class="keyword">parent</span> <span class="keyword">]</span></div>
     <div class="indent">
-    <span class="claferDecl" id="c0_claferC">claferC</span>
+    <span class="claferDecl" id="claferC">claferC</span>
       <div class="indent">
       <span class="keyword">[</span> <span class="keyword">parent</span>.claferC.<span class="keyword">parent</span> <span class="keyword">]</span></div>
       <div class="indent">
-      <span class="keyword">[</span> <span class="keyword">parent</span>.<a href="#c0_claferC"><span class="reference">claferC</span></a> <span class="keyword">]</span></div>
+      <span class="keyword">[</span> <span class="keyword">parent</span>.<a href="#claferC"><span class="reference">claferC</span></a> <span class="keyword">]</span></div>
     </div>
   </div>
 </div>
 
 
 <div>
-<span class="claferDecl" id="c0_Person">Person</span>
+<span class="claferDecl" id="Person">Person</span>
   <div class="indent">
-  <span class="claferDecl" id="c0_maritalStatus">maritalStatus</span>
+  <span class="claferDecl" id="maritalStatus">maritalStatus</span>
     <div class="indent">
-    <span class="claferDecl" id="c0_married">married</span>
+    <span class="claferDecl" id="married">married</span>
       <div class="indent">
       <span class="keyword">[</span> <span class="keyword">parent</span>.<span class="keyword">parent</span> <span class="keyword">]</span></div>
     </div>

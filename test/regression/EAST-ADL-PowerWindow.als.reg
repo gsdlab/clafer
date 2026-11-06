@@ -2,69 +2,69 @@ open util/integer
 pred show {}
 
 
-abstract sig c0_Feature
+abstract sig Feature
 {}
 
-lone sig c0_express extends c0_Feature
+lone sig express extends Feature
 {}
 
-fact { (some c0_express) <=> (some c0_downX) }
-abstract sig c0_Component
-{ r_c0_Port : set c0_Port }
+fact { (some express) <=> (some downX) }
+abstract sig Component
+{ r_Port : set Port }
 
-abstract sig c0_Port
-{ r_c0_input : lone c0_input
-, r_c0_output : lone c0_output }
-{ one @r_c0_Port.this }
+abstract sig Port
+{ r_input : lone input
+, r_output : lone output }
+{ one @r_Port.this }
 
-sig c0_input
+sig input
 {}
-{ one @r_c0_input.this }
+{ one @r_input.this }
 
-sig c0_output
+sig output
 {}
-{ one @r_c0_output.this }
+{ one @r_output.this }
 
-abstract sig c0_Command
-{}
-
-one sig c0_motorUp extends c0_Command
+abstract sig Command
 {}
 
-one sig c0_motorDown extends c0_Command
+one sig motorUp extends Command
 {}
 
-one sig c0_motorStop extends c0_Command
+one sig motorDown extends Command
 {}
 
-abstract sig c0_Request
+one sig motorStop extends Command
 {}
 
-one sig c0_up extends c0_Request
+abstract sig Request
 {}
 
-one sig c0_down extends c0_Request
+one sig up extends Request
 {}
 
-lone sig c0_downX extends c0_Request
+one sig down extends Request
 {}
 
-one sig c0_stop extends c0_Request
+lone sig downX extends Request
 {}
 
-one sig c0_WinCtrl extends c0_Component
-{ r_c0_cmd : one c0_cmd
-, r_c0_req : one c0_req }
-{ r_c0_cmd in r_c0_Port
-  r_c0_req in r_c0_Port }
+one sig stop extends Request
+{}
 
-one sig c0_cmd extends c0_Port
-{ c0_cmd_ref : one c0_Command }
-{ let children = (r_c0_input + r_c0_output) | one children
-  some this.@r_c0_output }
+one sig WinCtrl extends Component
+{ r_cmd : one cmd
+, r_req : one req }
+{ r_cmd in r_Port
+  r_req in r_Port }
 
-one sig c0_req extends c0_Port
-{ c0_req_ref : one c0_Request }
-{ let children = (r_c0_input + r_c0_output) | one children
-  some this.@r_c0_input }
+one sig cmd extends Port
+{ cmd_ref : one Command }
+{ let children = (r_input + r_output) | one children
+  some this.@r_output }
+
+one sig req extends Port
+{ req_ref : one Request }
+{ let children = (r_input + r_output) | one children
+  some this.@r_input }
 

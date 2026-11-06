@@ -1,5 +1,5 @@
 //# OPTIONS --explicit
-[((#c0_b) >= 1) => (c0_b . dref = (sum c0_a . dref))]
-[c0_b . dref = 2]
-0..* c0_a ->> int 0..* {}
-0..* c0_b -> int 1..1 {}
+[((#b) >= 1) => (b . dref = (sum a . dref))]
+[b . dref = 2]
+0..* a ->> int 0..* {}
+0..* b -> int 1..1 {}

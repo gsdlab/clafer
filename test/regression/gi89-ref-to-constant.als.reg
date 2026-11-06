@@ -2,38 +2,38 @@ open util/integer
 pred show {}
 
 
-abstract sig c0_ASIL
-{ c0_ASIL_ref : one Int }
+abstract sig ASIL
+{ ASIL_ref : one Int }
 
-one sig c0_A extends c0_ASIL
-{ c0_A_ref : one Int }
-{ c0_A_ref in c0_ASIL_ref }
+one sig A extends ASIL
+{ A_ref : one Int }
+{ A_ref in ASIL_ref }
 
-fact { (some c0_A) => ((c0_A.@c0_A_ref) = 1) }
-one sig c0_B extends c0_ASIL
-{ c0_B_ref : one Int }
-{ c0_B_ref in c0_ASIL_ref }
+fact { (some A) => ((A.@A_ref) = 1) }
+one sig B extends ASIL
+{ B_ref : one Int }
+{ B_ref in ASIL_ref }
 
-fact { (some c0_B) => ((c0_B.@c0_B_ref) = 2) }
-one sig c0_C extends c0_ASIL
-{ c0_C_ref : one Int }
-{ c0_C_ref in c0_ASIL_ref }
+fact { (some B) => ((B.@B_ref) = 2) }
+one sig C extends ASIL
+{ C_ref : one Int }
+{ C_ref in ASIL_ref }
 
-fact { (some c0_C) => ((c0_C.@c0_C_ref) = 3) }
-one sig c0_D extends c0_ASIL
-{ c0_D_ref : one Int }
-{ c0_D_ref in c0_ASIL_ref }
+fact { (some C) => ((C.@C_ref) = 3) }
+one sig D extends ASIL
+{ D_ref : one Int }
+{ D_ref in ASIL_ref }
 
-fact { (some c0_D) => ((c0_D.@c0_D_ref) = 4) }
-assert assertAt_7_10 { (c0_A.@c0_A_ref) = 1 }
-check assertAt_7_10 for 1 but 4 c0_ASIL
+fact { (some D) => ((D.@D_ref) = 4) }
+assert assertAt_7_10 { (A.@A_ref) = 1 }
+check assertAt_7_10 for 1 but 4 ASIL
 
-assert assertAt_8_10 { (c0_B.@c0_B_ref) = 2 }
-check assertAt_8_10 for 1 but 4 c0_ASIL
+assert assertAt_8_10 { (B.@B_ref) = 2 }
+check assertAt_8_10 for 1 but 4 ASIL
 
-assert assertAt_9_10 { (c0_C.@c0_C_ref) = 3 }
-check assertAt_9_10 for 1 but 4 c0_ASIL
+assert assertAt_9_10 { (C.@C_ref) = 3 }
+check assertAt_9_10 for 1 but 4 ASIL
 
-assert assertAt_10_10 { (c0_D.@c0_D_ref) = 4 }
-check assertAt_10_10 for 1 but 4 c0_ASIL
+assert assertAt_10_10 { (D.@D_ref) = 4 }
+check assertAt_10_10 for 1 but 4 ASIL
 

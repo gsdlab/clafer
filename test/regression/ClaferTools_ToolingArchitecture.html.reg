@@ -22,183 +22,183 @@ a[href$='Ambiguous name'] {color: yellow}
 <div class="file">positive/ClaferTools_ToolingArchitecture.cfr</div>
 
 <div>
-<span class="claferDecl" id="c0_claferCompiler">claferCompiler</span><span class="keyword"> : </span><a href="#c0_claferLib"><span class="reference">claferLib</span></a></div>
+<span class="claferDecl" id="claferCompiler">claferCompiler</span><span class="keyword"> : </span><a href="#claferLib"><span class="reference">claferLib</span></a></div>
 
 
 <div>
-<span class="claferDecl" id="c0_claferIG">claferIG</span><span class="keyword"> : </span><a href="#c0_claferLib"><span class="reference">claferLib</span></a></div>
+<span class="claferDecl" id="claferIG">claferIG</span><span class="keyword"> : </span><a href="#claferLib"><span class="reference">claferLib</span></a></div>
 
 
 <div>
-<span class="claferDecl" id="c0_claferMOO">claferMOO</span><span class="keyword"> : </span><a href="#c0_claferLib"><span class="reference">claferLib</span></a>
+<span class="claferDecl" id="claferMOO">claferMOO</span><span class="keyword"> : </span><a href="#claferLib"><span class="reference">claferLib</span></a>
   <div class="indent">
-  <span class="claferDecl" id="c0_moo">moo</span></div>
+  <span class="claferDecl" id="moo">moo</span></div>
 </div>
 
 <!-- # FRAGMENT /-->
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_claferLib">claferLib</span>
+<span class="keyword">abstract</span> <span class="claferDecl" id="claferLib">claferLib</span>
   <div class="indent">
-  <span class="claferDecl" id="c0_common">common</span></div>
+  <span class="claferDecl" id="common">common</span></div>
   <div class="indent">
-  <span class="claferDecl" id="c0_front">front</span><span class="keyword"> : </span><a href="#c0_Front"><span class="reference">Front</span></a></div>
+  <span class="claferDecl" id="front">front</span><span class="keyword"> : </span><a href="#Front"><span class="reference">Front</span></a></div>
   <div class="indent">
-  <span class="claferDecl" id="c0_intermediate">intermediate</span><span class="keyword"> : </span><a href="#c0_Intermediate"><span class="reference">Intermediate</span></a></div>
+  <span class="claferDecl" id="intermediate">intermediate</span><span class="keyword"> : </span><a href="#Intermediate"><span class="reference">Intermediate</span></a></div>
   <div class="indent">
-  <span class="claferDecl" id="c0_optimizer">optimizer</span></div>
+  <span class="claferDecl" id="optimizer">optimizer</span></div>
   <div class="indent">
-  <span class="claferDecl" id="c0_generator">generator</span><span class="keyword"> : </span><a href="#c0_Generator"><span class="reference">Generator</span></a></div>
+  <span class="claferDecl" id="generator">generator</span><span class="keyword"> : </span><a href="#Generator"><span class="reference">Generator</span></a></div>
 </div>
 
 <!-- # FRAGMENT /-->
 
 <div>
-<span class="keyword">enum</span> Representation = <span class="claferDecl" id="c0_text">text</span> | <span class="claferDecl" id="c0_tokens">tokens</span> | <span class="claferDecl" id="c0_ast">ast</span> | <span class="claferDecl" id="c0_ir">ir</span></div>
+<span class="keyword">enum</span> Representation = <span class="claferDecl" id="text">text</span> | <span class="claferDecl" id="tokens">tokens</span> | <span class="claferDecl" id="ast">ast</span> | <span class="claferDecl" id="ir">ir</span></div>
 
 <!-- # FRAGMENT /-->
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_io">io</span>
+<span class="keyword">abstract</span> <span class="claferDecl" id="io">io</span>
   <div class="indent">
-  <span class="claferDecl" id="c0_input">input</span><span class="keyword"> -> </span><a href="#c0_Representation"><span class="reference">Representation</span></a></div>
+  <span class="claferDecl" id="input">input</span><span class="keyword"> -> </span><a href="#Representation"><span class="reference">Representation</span></a></div>
   <div class="indent">
-  <span class="claferDecl" id="c0_output">output</span><span class="keyword"> -> </span><a href="#c0_Representation"><span class="reference">Representation</span></a></div>
-</div>
-
-<!-- # FRAGMENT /-->
-
-<div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_text2tokens">text2tokens</span><span class="keyword"> : </span><a href="#c0_io"><span class="reference">io</span></a>
-  <div class="indent">
-  <span class="keyword">[</span> <a href="#c0_input"><span class="reference">input</span></a> = <a href="#c0_text"><span class="reference">text</span></a> &amp;&amp; <a href="#c0_output"><span class="reference">output</span></a> = <a href="#c0_tokens"><span class="reference">tokens</span></a> <span class="keyword">]</span></div>
-</div>
-
-
-<div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_tokens2tokens">tokens2tokens</span><span class="keyword"> : </span><a href="#c0_io"><span class="reference">io</span></a>
-  <div class="indent">
-  <span class="keyword">[</span> <a href="#c0_input"><span class="reference">input</span></a> = <a href="#c0_tokens"><span class="reference">tokens</span></a> &amp;&amp; <a href="#c0_output"><span class="reference">output</span></a> = <a href="#c0_tokens"><span class="reference">tokens</span></a> <span class="keyword">]</span></div>
-</div>
-
-
-<div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_tokens2ast">tokens2ast</span><span class="keyword"> : </span><a href="#c0_io"><span class="reference">io</span></a>
-  <div class="indent">
-  <span class="keyword">[</span> <a href="#c0_input"><span class="reference">input</span></a> = <a href="#c0_tokens"><span class="reference">tokens</span></a> &amp;&amp; <a href="#c0_output"><span class="reference">output</span></a> = <a href="#c0_ast"><span class="reference">ast</span></a> <span class="keyword">]</span></div>
-</div>
-
-
-<div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_ast2ast">ast2ast</span><span class="keyword"> : </span><a href="#c0_io"><span class="reference">io</span></a>
-  <div class="indent">
-  <span class="keyword">[</span> <a href="#c0_input"><span class="reference">input</span></a> = <a href="#c0_ast"><span class="reference">ast</span></a> &amp;&amp; <a href="#c0_output"><span class="reference">output</span></a> = <a href="#c0_ast"><span class="reference">ast</span></a> <span class="keyword">]</span></div>
-</div>
-
-
-<div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_ast2text">ast2text</span><span class="keyword"> : </span><a href="#c0_io"><span class="reference">io</span></a>
-  <div class="indent">
-  <span class="keyword">[</span> <a href="#c0_input"><span class="reference">input</span></a> = <a href="#c0_ast"><span class="reference">ast</span></a> &amp;&amp; <a href="#c0_output"><span class="reference">output</span></a> = <a href="#c0_text"><span class="reference">text</span></a> <span class="keyword">]</span></div>
-</div>
-
-
-<div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_ast2ir">ast2ir</span><span class="keyword"> : </span><a href="#c0_io"><span class="reference">io</span></a>
-  <div class="indent">
-  <span class="keyword">[</span> <a href="#c0_input"><span class="reference">input</span></a> = <a href="#c0_ast"><span class="reference">ast</span></a> &amp;&amp; <a href="#c0_output"><span class="reference">output</span></a> = <a href="#c0_ir"><span class="reference">ir</span></a> <span class="keyword">]</span></div>
-</div>
-
-
-<div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_ir2ir">ir2ir</span><span class="keyword"> : </span><a href="#c0_io"><span class="reference">io</span></a>
-  <div class="indent">
-  <span class="keyword">[</span> <a href="#c0_input"><span class="reference">input</span></a> = <a href="#c0_ir"><span class="reference">ir</span></a> &amp;&amp; <a href="#c0_output"><span class="reference">output</span></a> = <a href="#c0_ir"><span class="reference">ir</span></a> <span class="keyword">]</span></div>
-</div>
-
-
-<div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_ir2text">ir2text</span><span class="keyword"> : </span><a href="#c0_io"><span class="reference">io</span></a>
-  <div class="indent">
-  <span class="keyword">[</span> <a href="#c0_input"><span class="reference">input</span></a> = <a href="#c0_ir"><span class="reference">ir</span></a> &amp;&amp; <a href="#c0_output"><span class="reference">output</span></a> = <a href="#c0_text"><span class="reference">text</span></a> <span class="keyword">]</span></div>
+  <span class="claferDecl" id="output">output</span><span class="keyword"> -> </span><a href="#Representation"><span class="reference">Representation</span></a></div>
 </div>
 
 <!-- # FRAGMENT /-->
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Front">Front</span>
+<span class="keyword">abstract</span> <span class="claferDecl" id="text2tokens">text2tokens</span><span class="keyword"> : </span><a href="#io"><span class="reference">io</span></a>
   <div class="indent">
-  <span class="claferDecl" id="c0_lexer">lexer</span><span class="keyword"> : </span><a href="#c0_text2tokens"><span class="reference">text2tokens</span></a></div>
+  <span class="keyword">[</span> <a href="#input"><span class="reference">input</span></a> = <a href="#text"><span class="reference">text</span></a> &amp;&amp; <a href="#output"><span class="reference">output</span></a> = <a href="#tokens"><span class="reference">tokens</span></a> <span class="keyword">]</span></div>
+</div>
+
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="tokens2tokens">tokens2tokens</span><span class="keyword"> : </span><a href="#io"><span class="reference">io</span></a>
   <div class="indent">
-  <span class="keyword">xor</span> <span class="claferDecl" id="c0_layoutResolver">layoutResolver</span><span class="keyword"> : </span><a href="#c0_tokens2tokens"><span class="reference">tokens2tokens</span></a> ?
+  <span class="keyword">[</span> <a href="#input"><span class="reference">input</span></a> = <a href="#tokens"><span class="reference">tokens</span></a> &amp;&amp; <a href="#output"><span class="reference">output</span></a> = <a href="#tokens"><span class="reference">tokens</span></a> <span class="keyword">]</span></div>
+</div>
+
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="tokens2ast">tokens2ast</span><span class="keyword"> : </span><a href="#io"><span class="reference">io</span></a>
+  <div class="indent">
+  <span class="keyword">[</span> <a href="#input"><span class="reference">input</span></a> = <a href="#tokens"><span class="reference">tokens</span></a> &amp;&amp; <a href="#output"><span class="reference">output</span></a> = <a href="#ast"><span class="reference">ast</span></a> <span class="keyword">]</span></div>
+</div>
+
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="ast2ast">ast2ast</span><span class="keyword"> : </span><a href="#io"><span class="reference">io</span></a>
+  <div class="indent">
+  <span class="keyword">[</span> <a href="#input"><span class="reference">input</span></a> = <a href="#ast"><span class="reference">ast</span></a> &amp;&amp; <a href="#output"><span class="reference">output</span></a> = <a href="#ast"><span class="reference">ast</span></a> <span class="keyword">]</span></div>
+</div>
+
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="ast2text">ast2text</span><span class="keyword"> : </span><a href="#io"><span class="reference">io</span></a>
+  <div class="indent">
+  <span class="keyword">[</span> <a href="#input"><span class="reference">input</span></a> = <a href="#ast"><span class="reference">ast</span></a> &amp;&amp; <a href="#output"><span class="reference">output</span></a> = <a href="#text"><span class="reference">text</span></a> <span class="keyword">]</span></div>
+</div>
+
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="ast2ir">ast2ir</span><span class="keyword"> : </span><a href="#io"><span class="reference">io</span></a>
+  <div class="indent">
+  <span class="keyword">[</span> <a href="#input"><span class="reference">input</span></a> = <a href="#ast"><span class="reference">ast</span></a> &amp;&amp; <a href="#output"><span class="reference">output</span></a> = <a href="#ir"><span class="reference">ir</span></a> <span class="keyword">]</span></div>
+</div>
+
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="ir2ir">ir2ir</span><span class="keyword"> : </span><a href="#io"><span class="reference">io</span></a>
+  <div class="indent">
+  <span class="keyword">[</span> <a href="#input"><span class="reference">input</span></a> = <a href="#ir"><span class="reference">ir</span></a> &amp;&amp; <a href="#output"><span class="reference">output</span></a> = <a href="#ir"><span class="reference">ir</span></a> <span class="keyword">]</span></div>
+</div>
+
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="ir2text">ir2text</span><span class="keyword"> : </span><a href="#io"><span class="reference">io</span></a>
+  <div class="indent">
+  <span class="keyword">[</span> <a href="#input"><span class="reference">input</span></a> = <a href="#ir"><span class="reference">ir</span></a> &amp;&amp; <a href="#output"><span class="reference">output</span></a> = <a href="#text"><span class="reference">text</span></a> <span class="keyword">]</span></div>
+</div>
+
+<!-- # FRAGMENT /-->
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="Front">Front</span>
+  <div class="indent">
+  <span class="claferDecl" id="lexer">lexer</span><span class="keyword"> : </span><a href="#text2tokens"><span class="reference">text2tokens</span></a></div>
+  <div class="indent">
+  <span class="keyword">xor</span> <span class="claferDecl" id="layoutResolver">layoutResolver</span><span class="keyword"> : </span><a href="#tokens2tokens"><span class="reference">tokens2tokens</span></a> ?
     <div class="indent">
-    <span class="claferDecl" id="c0_stable">stable</span></div>
+    <span class="claferDecl" id="stable">stable</span></div>
     <div class="indent">
-    <span class="claferDecl" id="c0_experimental">experimental</span></div>
+    <span class="claferDecl" id="experimental">experimental</span></div>
   </div>
   <div class="indent">
-  <span class="claferDecl" id="c0_parser">parser</span><span class="keyword"> : </span><a href="#c0_tokens2ast"><span class="reference">tokens2ast</span></a></div>
+  <span class="claferDecl" id="parser">parser</span><span class="keyword"> : </span><a href="#tokens2ast"><span class="reference">tokens2ast</span></a></div>
   <div class="indent">
-  <span class="claferDecl" id="c0_mapper">mapper</span><span class="keyword"> : </span><a href="#c0_ast2ast"><span class="reference">ast2ast</span></a></div>
+  <span class="claferDecl" id="mapper">mapper</span><span class="keyword"> : </span><a href="#ast2ast"><span class="reference">ast2ast</span></a></div>
   <div class="indent">
-  <span class="claferDecl" id="c0_prettyPrinter">prettyPrinter</span><span class="keyword"> : </span><a href="#c0_ast2text"><span class="reference">ast2text</span></a> ?</div>
+  <span class="claferDecl" id="prettyPrinter">prettyPrinter</span><span class="keyword"> : </span><a href="#ast2text"><span class="reference">ast2text</span></a> ?</div>
 </div>
 
 <!-- # FRAGMENT /-->
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Intermediate">Intermediate</span>
+<span class="keyword">abstract</span> <span class="claferDecl" id="Intermediate">Intermediate</span>
   <div class="indent">
-  <span class="claferDecl" id="c0_desugarer">desugarer</span><span class="keyword"> : </span><a href="#c0_ast2ir"><span class="reference">ast2ir</span></a></div>
+  <span class="claferDecl" id="desugarer">desugarer</span><span class="keyword"> : </span><a href="#ast2ir"><span class="reference">ast2ir</span></a></div>
   <div class="indent">
-  <span class="claferDecl" id="c0_findDuplicates">findDuplicates</span> ?</div>
+  <span class="claferDecl" id="findDuplicates">findDuplicates</span> ?</div>
   <div class="indent">
-  <span class="claferDecl" id="c0_resolver">resolver</span><span class="keyword"> : </span><a href="#c0_ir2ir"><span class="reference">ir2ir</span></a> ?
+  <span class="claferDecl" id="resolver">resolver</span><span class="keyword"> : </span><a href="#ir2ir"><span class="reference">ir2ir</span></a> ?
     <div class="indent">
-    <span class="claferDecl" id="c0_setUid">setUid</span></div>
+    <span class="claferDecl" id="setUid">setUid</span></div>
     <div class="indent">
-    <span class="claferDecl" id="c0_inheritanceFlattener">inheritanceFlattener</span> ?</div>
+    <span class="claferDecl" id="inheritanceFlattener">inheritanceFlattener</span> ?</div>
     <div class="indent">
-    <span class="claferDecl" id="c0_nameResolution">nameResolution</span>
+    <span class="claferDecl" id="nameResolution">nameResolution</span>
       <div class="indent">
-      <span class="claferDecl" id="c0_nameResolver">nameResolver</span> ?
+      <span class="claferDecl" id="nameResolver">nameResolver</span> ?
         <div class="indent">
-        <span class="keyword">[</span> <a href="#c0_findDuplicates"><span class="reference">findDuplicates</span></a> <span class="keyword">]</span></div>
+        <span class="keyword">[</span> <a href="#findDuplicates"><span class="reference">findDuplicates</span></a> <span class="keyword">]</span></div>
       </div>
       <div class="indent">
-      <span class="claferDecl" id="c0_inheritanceResolver">inheritanceResolver</span></div>
+      <span class="claferDecl" id="inheritanceResolver">inheritanceResolver</span></div>
       <div class="indent">
-      <span class="claferDecl" id="c0_typeResolver">typeResolver</span></div>
+      <span class="claferDecl" id="typeResolver">typeResolver</span></div>
     </div>
   </div>
   <div class="indent">
-  <span class="claferDecl" id="c0_transformer">transformer</span><span class="keyword"> : </span><a href="#c0_ir2ir"><span class="reference">ir2ir</span></a></div>
+  <span class="claferDecl" id="transformer">transformer</span><span class="keyword"> : </span><a href="#ir2ir"><span class="reference">ir2ir</span></a></div>
   <div class="indent">
-  <span class="claferDecl" id="c0_stringAnalyzer">stringAnalyzer</span><span class="keyword"> : </span><a href="#c0_ir2ir"><span class="reference">ir2ir</span></a> ?</div>
+  <span class="claferDecl" id="stringAnalyzer">stringAnalyzer</span><span class="keyword"> : </span><a href="#ir2ir"><span class="reference">ir2ir</span></a> ?</div>
   <div class="indent">
-  <span class="claferDecl" id="c0_scopeAnalysis">scopeAnalysis</span><span class="keyword"> : </span><a href="#c0_ir2ir"><span class="reference">ir2ir</span></a> ?</div>
+  <span class="claferDecl" id="scopeAnalysis">scopeAnalysis</span><span class="keyword"> : </span><a href="#ir2ir"><span class="reference">ir2ir</span></a> ?</div>
 </div>
 
 <!-- # FRAGMENT /-->
 
 <div>
-<span class="keyword">abstract</span> <span class="keyword">xor</span> <span class="claferDecl" id="c0_Generator">Generator</span><span class="keyword"> : </span><a href="#c0_ir2text"><span class="reference">ir2text</span></a>
+<span class="keyword">abstract</span> <span class="keyword">xor</span> <span class="claferDecl" id="Generator">Generator</span><span class="keyword"> : </span><a href="#ir2text"><span class="reference">ir2text</span></a>
   <div class="indent">
-  <span class="claferDecl" id="c0_alloy">alloy</span>
+  <span class="claferDecl" id="alloy">alloy</span>
     <div class="indent">
-    <span class="keyword">[</span> <a href="#c0_Intermediate"><span class="reference">Intermediate</span></a>.<a href="#c0_stringAnalyzer"><span class="reference">stringAnalyzer</span></a> &amp;&amp; <a href="#c0_Intermediate"><span class="reference">Intermediate</span></a>.<a href="#c0_scopeAnalysis"><span class="reference">scopeAnalysis</span></a> <span class="keyword">]</span></div>
+    <span class="keyword">[</span> <a href="#Intermediate"><span class="reference">Intermediate</span></a>.<a href="#stringAnalyzer"><span class="reference">stringAnalyzer</span></a> &amp;&amp; <a href="#Intermediate"><span class="reference">Intermediate</span></a>.<a href="#scopeAnalysis"><span class="reference">scopeAnalysis</span></a> <span class="keyword">]</span></div>
   </div>
   <div class="indent">
-  <span class="claferDecl" id="c0_stats">stats</span></div>
+  <span class="claferDecl" id="stats">stats</span></div>
   <div class="indent">
-  <span class="claferDecl" id="c0_xml">xml</span></div>
+  <span class="claferDecl" id="xml">xml</span></div>
   <div class="indent">
-  <span class="claferDecl" id="c0_desClafer">desClafer</span>
+  <span class="claferDecl" id="desClafer">desClafer</span>
     <div class="indent">
-    <span class="keyword">[</span> <a href="#c0_Front"><span class="reference">Front</span></a>.<a href="#c0_prettyPrinter"><span class="reference">prettyPrinter</span></a> <span class="keyword">]</span></div>
+    <span class="keyword">[</span> <a href="#Front"><span class="reference">Front</span></a>.<a href="#prettyPrinter"><span class="reference">prettyPrinter</span></a> <span class="keyword">]</span></div>
   </div>
   <div class="indent">
-  <span class="claferDecl" id="c0_xsdSchema">xsdSchema</span></div>
+  <span class="claferDecl" id="xsdSchema">xsdSchema</span></div>
 </div>
 
 </body>

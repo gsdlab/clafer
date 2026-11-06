@@ -76,38 +76,38 @@ model = unlines
             ]
 
 expectedScopesSet :: M.Map UID Integer
-expectedScopesSet = M.fromList $ [ ("c0_a", 0)
-                            --   , ("c0_b", 1)  -- uses global scope
-                            --   , ("c0_c", 1)  -- uses global scope
-                            --   , ("c0_d", 1)  -- uses global scope
-                            --   , ("c0_e", 1)  -- uses global scope
-                                 , ("c0_f", 4)
-                                 , ("c0_g", 3)
-                                 , ("c0_gs", 2)
-                                 , ("c0_H", 22)
-                                 , ("c0_i", 22)
-                                 , ("c0_j", 22)
-                                 , ("c0_k", 44)
-                                 , ("c0_Hs", 22)
-                                 , ("c0_H1", 2)
-                                 , ("c0_H12", 4)
-                                 , ("c0_H2", 4)
-                                 , ("c0_H3", 2)
-                                 , ("c0_H4", 5)
-                                 , ("c0_Hs2", 22)
-                                 , ("c0_Hs3", 8)
-                                 , ("c0_l", 8)
-                                 , ("c0_FF", 5)
-                                 , ("c0_f1", 5)
-                                 , ("c0_m", 0)
-                                 , ("c0_i1", 4)
-                            --   , ("c0_i2", 1) -- uses global scope
-                            --   , ("c0_i3", 1) -- uses global scope
-                            --   , ("c0_i4", 1) -- uses global scope
-                                 , ("c0_s1", 2)
-                            --   , ("c0_s2", 1) -- uses global scope
-                            --   , ("c0_s3", 1) -- uses global scope
-                            --   , ("c0_s4", 1) -- uses global scope
+expectedScopesSet = M.fromList $ [ ("a", 0)
+                            --   , ("b", 1)  -- uses global scope
+                            --   , ("c", 1)  -- uses global scope
+                            --   , ("d", 1)  -- uses global scope
+                            --   , ("e", 1)  -- uses global scope
+                                 , ("f", 4)
+                                 , ("g", 3)
+                                 , ("gs", 2)
+                                 , ("H", 22)
+                                 , ("i", 22)
+                                 , ("j", 22)
+                                 , ("k", 44)
+                                 , ("Hs", 22)
+                                 , ("H1", 2)
+                                 , ("H12", 4)
+                                 , ("H2", 4)
+                                 , ("H3", 2)
+                                 , ("H4", 5)
+                                 , ("Hs2", 22)
+                                 , ("Hs3", 8)
+                                 , ("l", 8)
+                                 , ("FF", 5)
+                                 , ("f1", 5)
+                                 , ("m", 0)
+                                 , ("i1", 4)
+                            --   , ("i2", 1) -- uses global scope
+                            --   , ("i3", 1) -- uses global scope
+                            --   , ("i4", 1) -- uses global scope
+                                 , ("s1", 2)
+                            --   , ("s2", 1) -- uses global scope
+                            --   , ("s3", 1) -- uses global scope
+                            --   , ("s4", 1) -- uses global scope
                                  ]
 
 
@@ -158,9 +158,9 @@ case_ScopeFromGroupCardinality = do
         (Right compilerResultMap) = compileOneFragment defaultClaferArgs groupModel
         (Just compilerResult) = M.lookup Alloy compilerResultMap
         computedScopes = M.fromList $ scopesList compilerResult
-    M.lookup "c0_Item" computedScopes @?= Just 8
-    M.lookup "c0_Y" computedScopes @?= Just 4
-    M.lookup "c0_Z" computedScopes @?= Just 6
+    M.lookup "Item" computedScopes @?= Just 8
+    M.lookup "Y" computedScopes @?= Just 4
+    M.lookup "Z" computedScopes @?= Just 6
 
 -- A reference with an unbounded multiplicity may point to all 20 B in each of the 6 A, so its scope is
 -- 120, above 100: the statistics warn and suggest an upper bound. With the upper bound 3, it is 18.
@@ -216,13 +216,13 @@ case_ReadChocoScopesJSON = do
         qNameMaps = deriveQNameMaps iModule
         scopesInJSON = unlines
             [ "["
-            , "{\"lpqName\": \"c0_b\", \"scope\": 2},"
+            , "{\"lpqName\": \"b\", \"scope\": 2},"
             , "{\"lpqName\": \"H::k\", \"scope\": 5},"
             , "{\"defaultScope\": 1},"
             , "{\"int\": [-8, 7]},"
             , "{\"decimal\": [-2.5, 2.5]}"
             , "]" ]
-    M.fromList (parseJSONScopes qNameMaps scopesInJSON) @?= M.fromList [ ("c0_b", 2), ("c0_k", 5) ]
+    M.fromList (parseJSONScopes qNameMaps scopesInJSON) @?= M.fromList [ ("b", 2), ("k", 5) ]
 
 -- | The least-partially-qualified name of the only clafer of a model is its name; the search for it
 -- | did not end (clafer --meta-data hung on such a model).
@@ -232,4 +232,4 @@ case_LpqNameOfOnlyClafer = do
         (Right compilerResultMap) = compileOneFragment defaultClaferArgs "x\n"
         (Just compilerResult) = M.lookup Alloy compilerResultMap
         Just (iModule, _, _) = cIr $ claferEnv compilerResult
-    getLPQName (deriveQNameMaps iModule) "c0_x" @?= Just "x"
+    getLPQName (deriveQNameMaps iModule) "x" @?= Just "x"

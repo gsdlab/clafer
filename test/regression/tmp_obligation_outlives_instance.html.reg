@@ -22,45 +22,45 @@ a[href$='Ambiguous name'] {color: yellow}
 <div class="file">positive/tmp_obligation_outlives_instance.cfr</div>
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_event">event</span>
+<span class="keyword">abstract</span> <span class="claferDecl" id="event">event</span>
   <div class="indent">
   <span class="keyword">[</span> X <span class="keyword">no</span> <span class="keyword">this</span> <span class="keyword">]</span></div>
 </div>
 
 
 <div>
-<span class="keyword">mux</span> <span class="claferDecl" id="c0_events">events</span>
+<span class="keyword">mux</span> <span class="claferDecl" id="events">events</span>
   <div class="indent">
-  <span class="claferDecl" id="c0_e1">e1</span><span class="keyword"> : </span><a href="#c0_event"><span class="reference">event</span></a></div>
+  <span class="claferDecl" id="e1">e1</span><span class="keyword"> : </span><a href="#event"><span class="reference">event</span></a></div>
   <div class="indent">
-  <span class="claferDecl" id="c0_e2">e2</span><span class="keyword"> : </span><a href="#c0_event"><span class="reference">event</span></a></div>
+  <span class="claferDecl" id="e2">e2</span><span class="keyword"> : </span><a href="#event"><span class="reference">event</span></a></div>
 </div>
 
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Port">Port</span>
+<span class="keyword">abstract</span> <span class="claferDecl" id="Port">Port</span>
   <div class="indent">
   <span class="keyword">[</span> <span class="keyword">some</span> <span class="keyword">this</span>.<span class="keyword">parent</span> <span class="keyword">]</span></div>
 </div>
 
 
 <div>
-<span class="claferDecl" id="c0_sys">sys</span> ?
+<span class="claferDecl" id="sys">sys</span> ?
   <div class="indent">
-  <span class="claferDecl" id="c0_p1">p1</span><span class="keyword"> : </span><a href="#c0_Port"><span class="reference">Port</span></a></div>
+  <span class="claferDecl" id="p1">p1</span><span class="keyword"> : </span><a href="#Port"><span class="reference">Port</span></a></div>
 </div>
 
 
 <div>
-<span class="claferDecl" id="c0_top">top</span><span class="keyword"> : </span><a href="#c0_Port"><span class="reference">Port</span></a></div>
+<span class="claferDecl" id="top">top</span><span class="keyword"> : </span><a href="#Port"><span class="reference">Port</span></a></div>
 
 
 <div>
-<span class="keyword">assert [</span> all e<span class="keyword"> : </span><a href="#c0_event"><span class="reference">event</span></a> | X <span class="keyword">no</span> <a href="#e"><span class="reference">e</span></a>**<a href="#c0_event"><span class="reference">event</span></a> <span class="keyword">]</span></div>
+<span class="keyword">assert [</span> all e<span class="keyword"> : </span><a href="#event"><span class="reference">event</span></a> | X <span class="keyword">no</span> <a href="#e"><span class="reference">e</span></a>**<a href="#event"><span class="reference">event</span></a> <span class="keyword">]</span></div>
 
 
 <div>
-<span class="keyword">assert [</span> all p<span class="keyword"> : </span><a href="#c0_sys"><span class="reference">sys</span></a>.<a href="#c0_p1"><span class="reference">p1</span></a> | <a href="#p"><span class="reference">p</span></a>.<span class="keyword">parent</span> = <a href="#c0_sys"><span class="reference">sys</span></a> <span class="keyword">]</span></div>
+<span class="keyword">assert [</span> all p<span class="keyword"> : </span><a href="#sys"><span class="reference">sys</span></a>.<a href="#p1"><span class="reference">p1</span></a> | <a href="#p"><span class="reference">p</span></a>.<span class="keyword">parent</span> = <a href="#sys"><span class="reference">sys</span></a> <span class="keyword">]</span></div>
 
 </body>
 </html>

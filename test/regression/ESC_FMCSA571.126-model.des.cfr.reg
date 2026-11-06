@@ -1,105 +1,105 @@
 //# OPTIONS --explicit
-abstract 0..* c0_degree ->> int 0..* {
+abstract 0..* degree ->> int 0..* {
   [(this . dref > 0) && (this . dref <= 360)]
 }
-abstract 0..* c0_Vehicle 0..* {
-  [(this . c0_yawRate . dref . dref > this . c0_normalYawRate . dref . dref) <=> ((#this . c0_hasOversteer) >= 1)]
-  [(this . c0_yawRate . dref . dref < this . c0_normalYawRate . dref . dref) <=> ((#this . c0_hasUndersteer) >= 1)]
-  1..1 c0_DriveConfiguration : c1_DriveConfiguration 1..1 {}
-  0..* c0_ElectronicStabilityControlSystem : c1_ElectronicStabilityControlSystem 1..1 {}
-  0..* c0_AntiLockBreakSystem : c1_AntiLockBreakSystem 1..1 {}
-  0..* c0_TractionControlSystem : c1_TractionControlSystem 1..1 {}
-  0..* c0_AckermanSteerAngle -> c0_degree 1..1 {}
-  0..* c0_speed -> int 1..1 {}
-  0..* c0_lateralAcceleration -> int 1..1 {}
-  0..* c0_sideSlipAngle -> c0_degree 1..1 {}
-  0..* c0_yawRate -> c0_degree 1..1 {}
-  0..* c0_normalYawRate -> c0_degree 1..1 {
-    0..* c0_givenAckermanSteerAngle 1..1 {}
+abstract 0..* Vehicle 0..* {
+  [(this . yawRate . dref . dref > this . normalYawRate . dref . dref) <=> ((#this . hasOversteer) >= 1)]
+  [(this . yawRate . dref . dref < this . normalYawRate . dref . dref) <=> ((#this . hasUndersteer) >= 1)]
+  1..1 Vehicle__DriveConfiguration : root__DriveConfiguration 1..1 {}
+  0..* Vehicle__ElectronicStabilityControlSystem : root__ElectronicStabilityControlSystem 1..1 {}
+  0..* Vehicle__AntiLockBreakSystem : root__AntiLockBreakSystem 1..1 {}
+  0..* Vehicle__TractionControlSystem : root__TractionControlSystem 1..1 {}
+  0..* AckermanSteerAngle -> degree 1..1 {}
+  0..* speed -> int 1..1 {}
+  0..* lateralAcceleration -> int 1..1 {}
+  0..* sideSlipAngle -> degree 1..1 {}
+  0..* yawRate -> degree 1..1 {}
+  0..* normalYawRate -> degree 1..1 {
+    0..* givenAckermanSteerAngle 1..1 {}
   }
-  0..* c0_hasOversteer 0..1 {}
-  0..* c0_hasUndersteer 0..1 {}
-  0..* c0_GVWR -> int 1..1 {}
+  0..* hasOversteer 0..1 {}
+  0..* hasUndersteer 0..1 {}
+  0..* GVWR -> int 1..1 {}
 }
-abstract 1..1 c1_DriveConfiguration 0..* {
-  0..* c0_twoWheelDrive 0..1 {}
-  0..* c0_frontWheelDrive 0..1 {}
-  0..* c0_rearWheelDrive 0..1 {}
-  0..* c0_allWheelDrive 0..1 {}
-  1..1 c0_fourWheelDrive 0..1 {
-    0..* c0_highGearWithLockedDifferential 0..1 {}
-    0..* c0_lowGear 0..1 {}
-  }
-}
-abstract 0..* c1_ElectronicStabilityControlSystem 0..* {
-  0..* c0_vehicle -> c0_Vehicle 1..1 {}
-  0..* c0_augmentsVehiclesDirectionalStability 1..1 {
-    0..* c0_adjustsBrakeTorquesToInduceCorrectingYawMoment 1..1 {
-      0..* c0_toEachWheelIndividually 1..1 {}
-    }
-  }
-  0..* c0_limits 1..1 {
-    0..* c0_understeer 1..1 {}
-    0..* c0_oversteer 1..1 {}
-  }
-  0..* c0_estimates 1..1 {
-    0..* c0_YawRate 1..1 {}
-    0..* c0_sideSlip 1..1 {
-      0..* c0_derivativeWithRespectToTime 1..1 {}
-    }
-  }
-  0..* c0_monitors 1..1 {
-    0..* c0_driverSteeringInputs 1..1 {}
-    0..* c0_modifiesEngineTorque 1..1 {}
-  }
-  0..* c0_isOperational 0..1 {
-    [this . parent . c0_vehicle . dref . c0_speed . dref > 20]
-    0..* c0_duringAllPhasesOfDriving 1..1 {
-      0..* c0_acceleration 1..1 {}
-      0..* c0_coasting 1..1 {}
-      0..* c0_deceleration 1..1 {}
-      0..* c0_breaking 1..1 {}
-    }
-    0..* c0_withAntiLockBrakeSystem 1..1 {}
-    0..* c0_withTractionControlSystem 1..1 {}
-  }
-  1..* c0_isNotOperational 1..1 {
-    0..* c0_whenTurnedOffByTheDriver 0..1 {}
-    0..* c0_whenDrivenInReverse 0..1 {}
-    0..* c0_duringSystemInitialization 0..1 {}
-  }
-  0..* c0_Mode 1..1 {
-    0..* c0_driverSelected 0..1 {}
-    1..1 c0_type 1..1 {
-      0..* c0_standard 0..1 {}
-      0..* c0_performance 0..1 {}
-      0..* c0_snowOrSlipperyRoad 0..1 {}
-      0..* c0_Off 0..1 {}
-    }
-  }
-  0..* c0_entersStandardModeAfterIgnition 1..1 {}
-  0..* c0_satisfies 1..1 {
-    0..* c0_stabilityCriteria 1..1 {}
-    0..* c0_responsivenessCriterion 1..1 {}
-  }
-  1..* c0_MalfunctionTelltale 0..1 {
-    0..* c0_malfunctionDetected 0..1 {
-      0..* c0_mustRemainContinuouslyIlluminatedForAsLongAsMalfunctionExists 1..1 {}
-    }
-    0..* c0_ignitionLockInOnPosition 0..1 {}
-    0..* c0_mustExtinguishAtTheNextIgnitionCycleAfterTheMalfunctionHasBeenCorrected 0..1 {}
-    0..* c0_flashingWhenInOperation 0..1 {}
-    0..* c0_mustIlluminateWhenIgnitionControlInCheckPosition 0..1 {}
-  }
-  0..* c0_SystemControls 1..1 {
-    0..* c1_Off 1..1 {}
-    1..1 c0_ignitionControlPosition 1..1 {
-      0..* c2_Off 0..1 {}
-      0..* c0_Check 0..1 {}
-      0..* c0_On 0..1 {}
-      0..* c0_Start 0..1 {}
-    }
+abstract 1..1 root__DriveConfiguration 0..* {
+  0..* twoWheelDrive 0..1 {}
+  0..* frontWheelDrive 0..1 {}
+  0..* rearWheelDrive 0..1 {}
+  0..* allWheelDrive 0..1 {}
+  1..1 fourWheelDrive 0..1 {
+    0..* highGearWithLockedDifferential 0..1 {}
+    0..* lowGear 0..1 {}
   }
 }
-abstract 0..* c1_AntiLockBreakSystem 0..* {}
-abstract 0..* c1_TractionControlSystem 0..* {}
+abstract 0..* root__ElectronicStabilityControlSystem 0..* {
+  0..* vehicle -> Vehicle 1..1 {}
+  0..* augmentsVehiclesDirectionalStability 1..1 {
+    0..* adjustsBrakeTorquesToInduceCorrectingYawMoment 1..1 {
+      0..* toEachWheelIndividually 1..1 {}
+    }
+  }
+  0..* limits 1..1 {
+    0..* understeer 1..1 {}
+    0..* oversteer 1..1 {}
+  }
+  0..* estimates 1..1 {
+    0..* YawRate 1..1 {}
+    0..* sideSlip 1..1 {
+      0..* derivativeWithRespectToTime 1..1 {}
+    }
+  }
+  0..* monitors 1..1 {
+    0..* driverSteeringInputs 1..1 {}
+    0..* modifiesEngineTorque 1..1 {}
+  }
+  0..* isOperational 0..1 {
+    [this . parent . vehicle . dref . speed . dref > 20]
+    0..* duringAllPhasesOfDriving 1..1 {
+      0..* acceleration 1..1 {}
+      0..* coasting 1..1 {}
+      0..* deceleration 1..1 {}
+      0..* breaking 1..1 {}
+    }
+    0..* withAntiLockBrakeSystem 1..1 {}
+    0..* withTractionControlSystem 1..1 {}
+  }
+  1..* isNotOperational 1..1 {
+    0..* whenTurnedOffByTheDriver 0..1 {}
+    0..* whenDrivenInReverse 0..1 {}
+    0..* duringSystemInitialization 0..1 {}
+  }
+  0..* Mode 1..1 {
+    0..* driverSelected 0..1 {}
+    1..1 type 1..1 {
+      0..* standard 0..1 {}
+      0..* performance 0..1 {}
+      0..* snowOrSlipperyRoad 0..1 {}
+      0..* type__Off 0..1 {}
+    }
+  }
+  0..* entersStandardModeAfterIgnition 1..1 {}
+  0..* satisfies 1..1 {
+    0..* stabilityCriteria 1..1 {}
+    0..* responsivenessCriterion 1..1 {}
+  }
+  1..* MalfunctionTelltale 0..1 {
+    0..* malfunctionDetected 0..1 {
+      0..* mustRemainContinuouslyIlluminatedForAsLongAsMalfunctionExists 1..1 {}
+    }
+    0..* ignitionLockInOnPosition 0..1 {}
+    0..* mustExtinguishAtTheNextIgnitionCycleAfterTheMalfunctionHasBeenCorrected 0..1 {}
+    0..* flashingWhenInOperation 0..1 {}
+    0..* mustIlluminateWhenIgnitionControlInCheckPosition 0..1 {}
+  }
+  0..* SystemControls 1..1 {
+    0..* SystemControls__Off 1..1 {}
+    1..1 ignitionControlPosition 1..1 {
+      0..* ignitionControlPosition__Off 0..1 {}
+      0..* Check 0..1 {}
+      0..* On 0..1 {}
+      0..* Start 0..1 {}
+    }
+  }
+}
+abstract 0..* root__AntiLockBreakSystem 0..* {}
+abstract 0..* root__TractionControlSystem 0..* {}

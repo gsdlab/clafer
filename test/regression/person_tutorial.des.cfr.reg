@@ -1,51 +1,51 @@
 //# OPTIONS --explicit
-abstract 0..* c0_date ->> string 0..* {}
-abstract 0..* c0_NorthAmericanCountry 0..* {}
-0..* c0_Canada : c0_NorthAmericanCountry 1..1 {}
-0..* c0_USA : c0_NorthAmericanCountry 1..1 {}
-abstract 0..* c0_Person 0..* {
-  0..* c0_Name -> string 1..1 {}
-  0..* c0_Surname -> string 1..1 {}
-  0..* c0_DateOfBirth : c0_date 1..1 {}
-  1..* c0_Gender 1..1 {
-    0..* c0_Male 0..1 {}
-    0..* c0_Female 0..1 {}
+abstract 0..* date ->> string 0..* {}
+abstract 0..* NorthAmericanCountry 0..* {}
+0..* Canada : NorthAmericanCountry 1..1 {}
+0..* USA : NorthAmericanCountry 1..1 {}
+abstract 0..* Person 0..* {
+  0..* Name -> string 1..1 {}
+  0..* Surname -> string 1..1 {}
+  0..* DateOfBirth : date 1..1 {}
+  1..* Gender 1..1 {
+    0..* Male 0..1 {}
+    0..* Female 0..1 {}
   }
-  1..1 c0_MaritalStatus 1..1 {
-    0..* c0_NeverMarried 0..1 {}
-    0..* c0_Married 0..1 {}
-    0..* c0_Divorced 0..1 {}
+  1..1 MaritalStatus 1..1 {
+    0..* NeverMarried 0..1 {}
+    0..* Married 0..1 {}
+    0..* Divorced 0..1 {}
   }
-  0..* c0_Address 1..1 {
-    0..* c0_Street -> string 1..1 {
-      0..* c0_UnitNo -> string 0..1 {}
+  0..* Address 1..1 {
+    0..* Street -> string 1..1 {
+      0..* UnitNo -> string 0..1 {}
     }
-    0..* c0_City -> string 1..1 {}
-    0..* c0_Country -> c0_NorthAmericanCountry 1..1 {}
-    0..* c0_PostalCode -> string 1..1 {}
+    0..* City -> string 1..1 {}
+    0..* Country -> NorthAmericanCountry 1..1 {}
+    0..* PostalCode -> string 1..1 {}
   }
 }
-0..* c0_JohnDoe : c0_Person 1..1 {
-  [((((((((this . c0_Name . dref = "John") && (this . c0_Surname . dref = "Doe")) && (this . c0_DateOfBirth . dref = "01/02/1985")) && ((#this . c0_Gender . c0_Male) >= 1)) && ((#this . c0_MaritalStatus . c0_Married) >= 1)) && (this . c0_Address . c0_Street . dref = "123 Main St.")) && (this . c0_Address . c0_City . dref = "Great Town")) && (this . c0_Address . c0_Country . dref = c0_Canada)) && (this . c0_Address . c0_PostalCode . dref = "A1B 2C3")]
+0..* JohnDoe : Person 1..1 {
+  [((((((((this . Name . dref = "John") && (this . Surname . dref = "Doe")) && (this . DateOfBirth . dref = "01/02/1985")) && ((#this . Gender . Male) >= 1)) && ((#this . MaritalStatus . Married) >= 1)) && (this . Address . Street . dref = "123 Main St.")) && (this . Address . City . dref = "Great Town")) && (this . Address . Country . dref = Canada)) && (this . Address . PostalCode . dref = "A1B 2C3")]
 }
-abstract 0..* c0_Student : c0_Person 0..* {
-  0..* c0_StudentId -> string 1..1 {}
+abstract 0..* Student : Person 0..* {
+  0..* StudentId -> string 1..1 {}
 }
-abstract 0..* c0_WaitingLine 0..* {
-  0..* c0_participants -> c0_Person 0..* {}
+abstract 0..* WaitingLine 0..* {
+  0..* participants -> Person 0..* {}
 }
-0..* c0_MaryJane : c0_Student 1..1 {
-  [this . c0_StudentId . dref = "MJ13421354"]
+0..* MaryJane : Student 1..1 {
+  [this . StudentId . dref = "MJ13421354"]
 }
-0..* c0_BusLine : c0_WaitingLine 1..1 {
-  [(c0_JohnDoe in this . c0_participants . dref) && (c0_MaryJane in this . c0_participants . dref)]
+0..* BusLine : WaitingLine 1..1 {
+  [(JohnDoe in this . participants . dref) && (MaryJane in this . participants . dref)]
 }
-0..* c0_JohnAndMaryLine : c0_WaitingLine 1..1 {
-  [this . c0_participants . dref = (c0_JohnDoe ++ c0_MaryJane)]
+0..* JohnAndMaryLine : WaitingLine 1..1 {
+  [this . participants . dref = (JohnDoe ++ MaryJane)]
 }
-abstract 0..* c0_TwoPersonLine : c0_WaitingLine 0..* {
-  [(#this . c0_participants) = 2]
+abstract 0..* TwoPersonLine : WaitingLine 0..* {
+  [(#this . participants) = 2]
 }
-abstract 0..* c0_OneToTenPersonLine : c0_WaitingLine 0..* {
-  [((#this . c0_participants) >= 1) && ((#this . c0_participants) <= 10)]
+abstract 0..* OneToTenPersonLine : WaitingLine 0..* {
+  [((#this . participants) >= 1) && ((#this . participants) <= 10)]
 }

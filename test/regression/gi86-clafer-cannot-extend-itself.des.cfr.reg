@@ -1,15 +1,15 @@
 //# OPTIONS --explicit
-abstract 0..* c0_FunctionalArchitecture 0..* {}
-abstract 0..* c0_Deployment 0..* {
-  abstract 0..* c0_fa -> c0_FunctionalArchitecture 0..* {}
+abstract 0..* FunctionalArchitecture 0..* {}
+abstract 0..* Deployment 0..* {
+  abstract 0..* Deployment__fa -> FunctionalArchitecture 0..* {}
 }
-abstract 0..* c0_PowerWindowFAA : c0_FunctionalArchitecture 0..* {}
-abstract 0..* c0_PowerWindowDpl : c0_Deployment 0..* {
-  abstract 0..* c1_fa : c0_fa -> c0_PowerWindowFAA 0..* {}
+abstract 0..* PowerWindowFAA : FunctionalArchitecture 0..* {}
+abstract 0..* PowerWindowDpl : Deployment 0..* {
+  abstract 0..* PowerWindowDpl__fa : Deployment__fa -> PowerWindowFAA 0..* {}
 }
-0..* c0_System 1..1 {
-  0..* c0_DriverPowerWindowFAA : c0_PowerWindowFAA 1..1 {}
-  0..* c0_DriverPowerWindowDpl : c0_PowerWindowDpl 1..1 {
-    0..* c2_fa : c1_fa -> c0_DriverPowerWindowFAA 1..1 {}
+0..* System 1..1 {
+  0..* DriverPowerWindowFAA : PowerWindowFAA 1..1 {}
+  0..* DriverPowerWindowDpl : PowerWindowDpl 1..1 {
+    0..* DriverPowerWindowDpl__fa : PowerWindowDpl__fa -> DriverPowerWindowFAA 1..1 {}
   }
 }

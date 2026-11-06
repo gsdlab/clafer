@@ -3,649 +3,649 @@ pred show {}
 
 
 one sig root
-{ r_c0_TLSFeatures : set c0_TLSFeatures
-, r_c0_SSL2_0 : set c0_SSL2_0
-, r_c0_SSL3_0 : set c0_SSL3_0
-, r_c0_TLS1_0 : set c0_TLS1_0
-, r_c0_TLS1_1 : set c0_TLS1_1
-, r_c0_TLS1_2 : set c0_TLS1_2
-, r_c0_initiated : set c0_initiated
-, r_c0_completed : set c0_completed
-, r_c0_failed : set c0_failed
-, r_c0_serverHelloRequestMessage : set c0_serverHelloRequestMessage
-, r_c0_serverHelloMessage : set c0_serverHelloMessage
-, r_c0_serverCertificateMessage : set c0_serverCertificateMessage
-, r_c0_serverKeyExchangeMessage : set c0_serverKeyExchangeMessage
-, r_c0_serverCertificateRequestMessage : set c0_serverCertificateRequestMessage
-, r_c0_serverHelloDoneMessage : set c0_serverHelloDoneMessage
-, r_c0_serverChangeCipherSpecMessage : set c0_serverChangeCipherSpecMessage
-, r_c0_serverFinishedMessage : set c0_serverFinishedMessage
-, r_c0_protocolMismatch : set c0_protocolMismatch
-, r_c0_clientHelloMessage : set c0_clientHelloMessage
-, r_c0_clientCertificateMessage : set c0_clientCertificateMessage
-, r_c0_clientKeyExchangeMessage : set c0_clientKeyExchangeMessage
-, r_c0_certificateVerifyMessage : set c0_certificateVerifyMessage
-, r_c0_clientChangeCipherSpecMessage : set c0_clientChangeCipherSpecMessage
-, r_c0_clientFinishedMessage : set c0_clientFinishedMessage
-, r_c0_applicationDataMessage : set c0_applicationDataMessage
-, r_c0_OurServer : set c0_OurServer
-, r_c0_aClient : set c0_aClient
-, r_c0_Protocol : set c0_Protocol }
-fact { all self_ : root | always (one self_.@r_c0_TLSFeatures) }
-fact { all self_ : root | always (one self_.@r_c0_SSL2_0) }
-fact { all self_ : root | always (one self_.@r_c0_SSL3_0) }
-fact { all self_ : root | always (one self_.@r_c0_TLS1_0) }
-fact { all self_ : root | always (one self_.@r_c0_TLS1_1) }
-fact { all self_ : root | always (one self_.@r_c0_TLS1_2) }
-fact { all self_ : root | always (one self_.@r_c0_initiated) }
-fact { all self_ : root | always (one self_.@r_c0_completed) }
-fact { all self_ : root | always (one self_.@r_c0_failed) }
-fact { all self_ : root | always (one self_.@r_c0_serverHelloRequestMessage) }
-fact { all self_ : root | always (one self_.@r_c0_serverHelloMessage) }
-fact { all self_ : root | always (one self_.@r_c0_serverCertificateMessage) }
-fact { all self_ : root | always (one self_.@r_c0_serverKeyExchangeMessage) }
-fact { all self_ : root | always (one self_.@r_c0_serverCertificateRequestMessage) }
-fact { all self_ : root | always (one self_.@r_c0_serverHelloDoneMessage) }
-fact { all self_ : root | always (one self_.@r_c0_serverChangeCipherSpecMessage) }
-fact { all self_ : root | always (one self_.@r_c0_serverFinishedMessage) }
-fact { all self_ : root | always (one self_.@r_c0_protocolMismatch) }
-fact { all self_ : root | always (one self_.@r_c0_clientHelloMessage) }
-fact { all self_ : root | always (one self_.@r_c0_clientCertificateMessage) }
-fact { all self_ : root | always (one self_.@r_c0_clientKeyExchangeMessage) }
-fact { all self_ : root | always (one self_.@r_c0_certificateVerifyMessage) }
-fact { all self_ : root | always (one self_.@r_c0_clientChangeCipherSpecMessage) }
-fact { all self_ : root | always (one self_.@r_c0_clientFinishedMessage) }
-fact { all self_ : root | always (one self_.@r_c0_applicationDataMessage) }
-fact { all self_ : root | always (one self_.@r_c0_OurServer) }
-fact { all self_ : root | always (one self_.@r_c0_aClient) }
-fact { all self_ : root | always (one self_.@r_c0_Protocol) }
-fact { all self_ : root | always (((alive_c0_Server.@r_c0_send).@c0_send_ref) = ((alive_c0_Client.@r_c0_receive).@c0_receive_ref)) }
-fact { all self_ : root | always (((alive_c0_Server.@r_c0_receive).@c0_receive_ref) = ((alive_c0_Client.@r_c0_send).@c0_send_ref)) }
+{ r_TLSFeatures : set TLSFeatures
+, r_SSL2_0 : set SSL2_0
+, r_SSL3_0 : set SSL3_0
+, r_TLS1_0 : set TLS1_0
+, r_TLS1_1 : set TLS1_1
+, r_TLS1_2 : set TLS1_2
+, r_initiated : set initiated
+, r_completed : set completed
+, r_failed : set failed
+, r_serverHelloRequestMessage : set serverHelloRequestMessage
+, r_serverHelloMessage : set serverHelloMessage
+, r_serverCertificateMessage : set serverCertificateMessage
+, r_serverKeyExchangeMessage : set serverKeyExchangeMessage
+, r_serverCertificateRequestMessage : set serverCertificateRequestMessage
+, r_serverHelloDoneMessage : set serverHelloDoneMessage
+, r_serverChangeCipherSpecMessage : set serverChangeCipherSpecMessage
+, r_serverFinishedMessage : set serverFinishedMessage
+, r_protocolMismatch : set protocolMismatch
+, r_clientHelloMessage : set clientHelloMessage
+, r_clientCertificateMessage : set clientCertificateMessage
+, r_clientKeyExchangeMessage : set clientKeyExchangeMessage
+, r_certificateVerifyMessage : set certificateVerifyMessage
+, r_clientChangeCipherSpecMessage : set clientChangeCipherSpecMessage
+, r_clientFinishedMessage : set clientFinishedMessage
+, r_applicationDataMessage : set applicationDataMessage
+, r_OurServer : set OurServer
+, r_aClient : set aClient
+, r_Protocol : set Protocol }
+fact { all self_ : root | always (one self_.@r_TLSFeatures) }
+fact { all self_ : root | always (one self_.@r_SSL2_0) }
+fact { all self_ : root | always (one self_.@r_SSL3_0) }
+fact { all self_ : root | always (one self_.@r_TLS1_0) }
+fact { all self_ : root | always (one self_.@r_TLS1_1) }
+fact { all self_ : root | always (one self_.@r_TLS1_2) }
+fact { all self_ : root | always (one self_.@r_initiated) }
+fact { all self_ : root | always (one self_.@r_completed) }
+fact { all self_ : root | always (one self_.@r_failed) }
+fact { all self_ : root | always (one self_.@r_serverHelloRequestMessage) }
+fact { all self_ : root | always (one self_.@r_serverHelloMessage) }
+fact { all self_ : root | always (one self_.@r_serverCertificateMessage) }
+fact { all self_ : root | always (one self_.@r_serverKeyExchangeMessage) }
+fact { all self_ : root | always (one self_.@r_serverCertificateRequestMessage) }
+fact { all self_ : root | always (one self_.@r_serverHelloDoneMessage) }
+fact { all self_ : root | always (one self_.@r_serverChangeCipherSpecMessage) }
+fact { all self_ : root | always (one self_.@r_serverFinishedMessage) }
+fact { all self_ : root | always (one self_.@r_protocolMismatch) }
+fact { all self_ : root | always (one self_.@r_clientHelloMessage) }
+fact { all self_ : root | always (one self_.@r_clientCertificateMessage) }
+fact { all self_ : root | always (one self_.@r_clientKeyExchangeMessage) }
+fact { all self_ : root | always (one self_.@r_certificateVerifyMessage) }
+fact { all self_ : root | always (one self_.@r_clientChangeCipherSpecMessage) }
+fact { all self_ : root | always (one self_.@r_clientFinishedMessage) }
+fact { all self_ : root | always (one self_.@r_applicationDataMessage) }
+fact { all self_ : root | always (one self_.@r_OurServer) }
+fact { all self_ : root | always (one self_.@r_aClient) }
+fact { all self_ : root | always (one self_.@r_Protocol) }
+fact { all self_ : root | always (((alive_Server.@r_send).@send_ref) = ((alive_Client.@r_receive).@receive_ref)) }
+fact { all self_ : root | always (((alive_Server.@r_receive).@receive_ref) = ((alive_Client.@r_send).@send_ref)) }
 
 
-abstract sig c0_Feature
+abstract sig Feature
 {}
-fun alive_c0_Feature : set c0_Feature { alive_c0_annonymousMode + alive_c0_clientAuthentication }
+fun alive_Feature : set Feature { alive_annonymousMode + alive_clientAuthentication }
 
-abstract sig c0_FeatureModel
+abstract sig FeatureModel
 {}
-fun alive_c0_FeatureModel : set c0_FeatureModel { alive_c0_TLSFeatures }
+fun alive_FeatureModel : set FeatureModel { alive_TLSFeatures }
 
-sig c0_TLSFeatures extends c0_FeatureModel
-{ p_c0_TLSFeatures : lone root
-, r_c0_annonymousMode : set c0_annonymousMode
-, r_c0_clientAuthentication : set c0_clientAuthentication }
-fun alive_c0_TLSFeatures : set c0_TLSFeatures { root.@r_c0_TLSFeatures }
-fact { always ~@r_c0_TLSFeatures in @p_c0_TLSFeatures }
+sig TLSFeatures extends FeatureModel
+{ p_TLSFeatures : lone root
+, r_annonymousMode : set annonymousMode
+, r_clientAuthentication : set clientAuthentication }
+fun alive_TLSFeatures : set TLSFeatures { root.@r_TLSFeatures }
+fact { always ~@r_TLSFeatures in @p_TLSFeatures }
 
-fact { all self_ : c0_TLSFeatures | always (self_ in alive_c0_TLSFeatures implies (lone self_.@r_c0_annonymousMode)) }
-fact { all self_ : c0_TLSFeatures | always (self_ in alive_c0_TLSFeatures implies (lone self_.@r_c0_clientAuthentication)) }
-fact { all self_ : c0_TLSFeatures | always (self_ in alive_c0_TLSFeatures implies ((some self_.@r_c0_clientAuthentication) => (no self_.@r_c0_annonymousMode))) }
-
-
-sig c0_annonymousMode extends c0_Feature
-{ p_c0_annonymousMode : lone c0_TLSFeatures }
-fun alive_c0_annonymousMode : set c0_annonymousMode { c0_TLSFeatures.@r_c0_annonymousMode }
-fact { always ~@r_c0_annonymousMode in @p_c0_annonymousMode
-  always @r_c0_annonymousMode.univ in alive_c0_TLSFeatures }
+fact { all self_ : TLSFeatures | always (self_ in alive_TLSFeatures implies (lone self_.@r_annonymousMode)) }
+fact { all self_ : TLSFeatures | always (self_ in alive_TLSFeatures implies (lone self_.@r_clientAuthentication)) }
+fact { all self_ : TLSFeatures | always (self_ in alive_TLSFeatures implies ((some self_.@r_clientAuthentication) => (no self_.@r_annonymousMode))) }
 
 
-sig c0_clientAuthentication extends c0_Feature
-{ p_c0_clientAuthentication : lone c0_TLSFeatures }
-fun alive_c0_clientAuthentication : set c0_clientAuthentication { c0_TLSFeatures.@r_c0_clientAuthentication }
-fact { always ~@r_c0_clientAuthentication in @p_c0_clientAuthentication
-  always @r_c0_clientAuthentication.univ in alive_c0_TLSFeatures }
+sig annonymousMode extends Feature
+{ p_annonymousMode : lone TLSFeatures }
+fun alive_annonymousMode : set annonymousMode { TLSFeatures.@r_annonymousMode }
+fact { always ~@r_annonymousMode in @p_annonymousMode
+  always @r_annonymousMode.univ in alive_TLSFeatures }
 
 
-abstract sig c0_Domain
+sig clientAuthentication extends Feature
+{ p_clientAuthentication : lone TLSFeatures }
+fun alive_clientAuthentication : set clientAuthentication { TLSFeatures.@r_clientAuthentication }
+fact { always ~@r_clientAuthentication in @p_clientAuthentication
+  always @r_clientAuthentication.univ in alive_TLSFeatures }
+
+
+abstract sig Domain
 {}
-fun alive_c0_Domain : set c0_Domain { alive_c0_Node + alive_c0_Protocol }
+fun alive_Domain : set Domain { alive_Node + alive_Protocol }
 
-abstract sig c0_ProtocolVersion
+abstract sig ProtocolVersion
 {}
-fun alive_c0_ProtocolVersion : set c0_ProtocolVersion { alive_c0_SSL2_0 + alive_c0_SSL3_0 + alive_c0_TLS1_0 + alive_c0_TLS1_1 + alive_c0_TLS1_2 }
+fun alive_ProtocolVersion : set ProtocolVersion { alive_SSL2_0 + alive_SSL3_0 + alive_TLS1_0 + alive_TLS1_1 + alive_TLS1_2 }
 
-sig c0_SSL2_0 extends c0_ProtocolVersion
-{ p_c0_SSL2_0 : lone root }
-fun alive_c0_SSL2_0 : set c0_SSL2_0 { root.@r_c0_SSL2_0 }
-fact { always ~@r_c0_SSL2_0 in @p_c0_SSL2_0 }
-
-
-sig c0_SSL3_0 extends c0_ProtocolVersion
-{ p_c0_SSL3_0 : lone root }
-fun alive_c0_SSL3_0 : set c0_SSL3_0 { root.@r_c0_SSL3_0 }
-fact { always ~@r_c0_SSL3_0 in @p_c0_SSL3_0 }
+sig SSL2_0 extends ProtocolVersion
+{ p_SSL2_0 : lone root }
+fun alive_SSL2_0 : set SSL2_0 { root.@r_SSL2_0 }
+fact { always ~@r_SSL2_0 in @p_SSL2_0 }
 
 
-sig c0_TLS1_0 extends c0_ProtocolVersion
-{ p_c0_TLS1_0 : lone root }
-fun alive_c0_TLS1_0 : set c0_TLS1_0 { root.@r_c0_TLS1_0 }
-fact { always ~@r_c0_TLS1_0 in @p_c0_TLS1_0 }
+sig SSL3_0 extends ProtocolVersion
+{ p_SSL3_0 : lone root }
+fun alive_SSL3_0 : set SSL3_0 { root.@r_SSL3_0 }
+fact { always ~@r_SSL3_0 in @p_SSL3_0 }
 
 
-sig c0_TLS1_1 extends c0_ProtocolVersion
-{ p_c0_TLS1_1 : lone root }
-fun alive_c0_TLS1_1 : set c0_TLS1_1 { root.@r_c0_TLS1_1 }
-fact { always ~@r_c0_TLS1_1 in @p_c0_TLS1_1 }
+sig TLS1_0 extends ProtocolVersion
+{ p_TLS1_0 : lone root }
+fun alive_TLS1_0 : set TLS1_0 { root.@r_TLS1_0 }
+fact { always ~@r_TLS1_0 in @p_TLS1_0 }
 
 
-sig c0_TLS1_2 extends c0_ProtocolVersion
-{ p_c0_TLS1_2 : lone root }
-fun alive_c0_TLS1_2 : set c0_TLS1_2 { root.@r_c0_TLS1_2 }
-fact { always ~@r_c0_TLS1_2 in @p_c0_TLS1_2 }
+sig TLS1_1 extends ProtocolVersion
+{ p_TLS1_1 : lone root }
+fun alive_TLS1_1 : set TLS1_1 { root.@r_TLS1_1 }
+fact { always ~@r_TLS1_1 in @p_TLS1_1 }
 
 
-abstract sig c0_HandshakeStatus
+sig TLS1_2 extends ProtocolVersion
+{ p_TLS1_2 : lone root }
+fun alive_TLS1_2 : set TLS1_2 { root.@r_TLS1_2 }
+fact { always ~@r_TLS1_2 in @p_TLS1_2 }
+
+
+abstract sig HandshakeStatus
 {}
-fun alive_c0_HandshakeStatus : set c0_HandshakeStatus { alive_c0_initiated + alive_c0_completed + alive_c0_failed }
+fun alive_HandshakeStatus : set HandshakeStatus { alive_initiated + alive_completed + alive_failed }
 
-sig c0_initiated extends c0_HandshakeStatus
-{ p_c0_initiated : lone root }
-fun alive_c0_initiated : set c0_initiated { root.@r_c0_initiated }
-fact { always ~@r_c0_initiated in @p_c0_initiated }
-
-
-sig c0_completed extends c0_HandshakeStatus
-{ p_c0_completed : lone root }
-fun alive_c0_completed : set c0_completed { root.@r_c0_completed }
-fact { always ~@r_c0_completed in @p_c0_completed }
+sig initiated extends HandshakeStatus
+{ p_initiated : lone root }
+fun alive_initiated : set initiated { root.@r_initiated }
+fact { always ~@r_initiated in @p_initiated }
 
 
-sig c0_failed extends c0_HandshakeStatus
-{ p_c0_failed : lone root }
-fun alive_c0_failed : set c0_failed { root.@r_c0_failed }
-fact { always ~@r_c0_failed in @p_c0_failed }
+sig completed extends HandshakeStatus
+{ p_completed : lone root }
+fun alive_completed : set completed { root.@r_completed }
+fact { always ~@r_completed in @p_completed }
 
 
-abstract sig c0_Port
+sig failed extends HandshakeStatus
+{ p_failed : lone root }
+fun alive_failed : set failed { root.@r_failed }
+fact { always ~@r_failed in @p_failed }
+
+
+abstract sig Port
 {}
-fun alive_c0_Port : set c0_Port { alive_c0_send + alive_c0_receive }
+fun alive_Port : set Port { alive_send + alive_receive }
 
-abstract sig c0_Message
+abstract sig Message
 {}
-fun alive_c0_Message : set c0_Message { alive_c0_serverHelloRequestMessage + alive_c0_serverHelloMessage + alive_c0_serverCertificateMessage + alive_c0_serverKeyExchangeMessage + alive_c0_serverCertificateRequestMessage + alive_c0_serverHelloDoneMessage + alive_c0_serverChangeCipherSpecMessage + alive_c0_serverFinishedMessage + alive_c0_protocolMismatch + alive_c0_clientHelloMessage + alive_c0_clientCertificateMessage + alive_c0_clientKeyExchangeMessage + alive_c0_certificateVerifyMessage + alive_c0_clientChangeCipherSpecMessage + alive_c0_clientFinishedMessage + alive_c0_applicationDataMessage }
+fun alive_Message : set Message { alive_serverHelloRequestMessage + alive_serverHelloMessage + alive_serverCertificateMessage + alive_serverKeyExchangeMessage + alive_serverCertificateRequestMessage + alive_serverHelloDoneMessage + alive_serverChangeCipherSpecMessage + alive_serverFinishedMessage + alive_protocolMismatch + alive_clientHelloMessage + alive_clientCertificateMessage + alive_clientKeyExchangeMessage + alive_certificateVerifyMessage + alive_clientChangeCipherSpecMessage + alive_clientFinishedMessage + alive_applicationDataMessage }
 
-sig c0_serverHelloRequestMessage extends c0_Message
-{ p_c0_serverHelloRequestMessage : lone root }
-fun alive_c0_serverHelloRequestMessage : set c0_serverHelloRequestMessage { root.@r_c0_serverHelloRequestMessage }
-fact { always ~@r_c0_serverHelloRequestMessage in @p_c0_serverHelloRequestMessage }
-
-
-sig c0_serverHelloMessage extends c0_Message
-{ p_c0_serverHelloMessage : lone root }
-fun alive_c0_serverHelloMessage : set c0_serverHelloMessage { root.@r_c0_serverHelloMessage }
-fact { always ~@r_c0_serverHelloMessage in @p_c0_serverHelloMessage }
+sig serverHelloRequestMessage extends Message
+{ p_serverHelloRequestMessage : lone root }
+fun alive_serverHelloRequestMessage : set serverHelloRequestMessage { root.@r_serverHelloRequestMessage }
+fact { always ~@r_serverHelloRequestMessage in @p_serverHelloRequestMessage }
 
 
-sig c0_serverCertificateMessage extends c0_Message
-{ p_c0_serverCertificateMessage : lone root }
-fun alive_c0_serverCertificateMessage : set c0_serverCertificateMessage { root.@r_c0_serverCertificateMessage }
-fact { always ~@r_c0_serverCertificateMessage in @p_c0_serverCertificateMessage }
+sig serverHelloMessage extends Message
+{ p_serverHelloMessage : lone root }
+fun alive_serverHelloMessage : set serverHelloMessage { root.@r_serverHelloMessage }
+fact { always ~@r_serverHelloMessage in @p_serverHelloMessage }
 
 
-sig c0_serverKeyExchangeMessage extends c0_Message
-{ p_c0_serverKeyExchangeMessage : lone root }
-fun alive_c0_serverKeyExchangeMessage : set c0_serverKeyExchangeMessage { root.@r_c0_serverKeyExchangeMessage }
-fact { always ~@r_c0_serverKeyExchangeMessage in @p_c0_serverKeyExchangeMessage }
+sig serverCertificateMessage extends Message
+{ p_serverCertificateMessage : lone root }
+fun alive_serverCertificateMessage : set serverCertificateMessage { root.@r_serverCertificateMessage }
+fact { always ~@r_serverCertificateMessage in @p_serverCertificateMessage }
 
 
-sig c0_serverCertificateRequestMessage extends c0_Message
-{ p_c0_serverCertificateRequestMessage : lone root }
-fun alive_c0_serverCertificateRequestMessage : set c0_serverCertificateRequestMessage { root.@r_c0_serverCertificateRequestMessage }
-fact { always ~@r_c0_serverCertificateRequestMessage in @p_c0_serverCertificateRequestMessage }
+sig serverKeyExchangeMessage extends Message
+{ p_serverKeyExchangeMessage : lone root }
+fun alive_serverKeyExchangeMessage : set serverKeyExchangeMessage { root.@r_serverKeyExchangeMessage }
+fact { always ~@r_serverKeyExchangeMessage in @p_serverKeyExchangeMessage }
 
 
-sig c0_serverHelloDoneMessage extends c0_Message
-{ p_c0_serverHelloDoneMessage : lone root }
-fun alive_c0_serverHelloDoneMessage : set c0_serverHelloDoneMessage { root.@r_c0_serverHelloDoneMessage }
-fact { always ~@r_c0_serverHelloDoneMessage in @p_c0_serverHelloDoneMessage }
+sig serverCertificateRequestMessage extends Message
+{ p_serverCertificateRequestMessage : lone root }
+fun alive_serverCertificateRequestMessage : set serverCertificateRequestMessage { root.@r_serverCertificateRequestMessage }
+fact { always ~@r_serverCertificateRequestMessage in @p_serverCertificateRequestMessage }
 
 
-sig c0_serverChangeCipherSpecMessage extends c0_Message
-{ p_c0_serverChangeCipherSpecMessage : lone root }
-fun alive_c0_serverChangeCipherSpecMessage : set c0_serverChangeCipherSpecMessage { root.@r_c0_serverChangeCipherSpecMessage }
-fact { always ~@r_c0_serverChangeCipherSpecMessage in @p_c0_serverChangeCipherSpecMessage }
+sig serverHelloDoneMessage extends Message
+{ p_serverHelloDoneMessage : lone root }
+fun alive_serverHelloDoneMessage : set serverHelloDoneMessage { root.@r_serverHelloDoneMessage }
+fact { always ~@r_serverHelloDoneMessage in @p_serverHelloDoneMessage }
 
 
-sig c0_serverFinishedMessage extends c0_Message
-{ p_c0_serverFinishedMessage : lone root }
-fun alive_c0_serverFinishedMessage : set c0_serverFinishedMessage { root.@r_c0_serverFinishedMessage }
-fact { always ~@r_c0_serverFinishedMessage in @p_c0_serverFinishedMessage }
+sig serverChangeCipherSpecMessage extends Message
+{ p_serverChangeCipherSpecMessage : lone root }
+fun alive_serverChangeCipherSpecMessage : set serverChangeCipherSpecMessage { root.@r_serverChangeCipherSpecMessage }
+fact { always ~@r_serverChangeCipherSpecMessage in @p_serverChangeCipherSpecMessage }
 
 
-sig c0_protocolMismatch extends c0_Message
-{ p_c0_protocolMismatch : lone root }
-fun alive_c0_protocolMismatch : set c0_protocolMismatch { root.@r_c0_protocolMismatch }
-fact { always ~@r_c0_protocolMismatch in @p_c0_protocolMismatch }
+sig serverFinishedMessage extends Message
+{ p_serverFinishedMessage : lone root }
+fun alive_serverFinishedMessage : set serverFinishedMessage { root.@r_serverFinishedMessage }
+fact { always ~@r_serverFinishedMessage in @p_serverFinishedMessage }
 
 
-sig c0_clientHelloMessage extends c0_Message
-{ p_c0_clientHelloMessage : lone root }
-fun alive_c0_clientHelloMessage : set c0_clientHelloMessage { root.@r_c0_clientHelloMessage }
-fact { always ~@r_c0_clientHelloMessage in @p_c0_clientHelloMessage }
+sig protocolMismatch extends Message
+{ p_protocolMismatch : lone root }
+fun alive_protocolMismatch : set protocolMismatch { root.@r_protocolMismatch }
+fact { always ~@r_protocolMismatch in @p_protocolMismatch }
 
 
-sig c0_clientCertificateMessage extends c0_Message
-{ p_c0_clientCertificateMessage : lone root }
-fun alive_c0_clientCertificateMessage : set c0_clientCertificateMessage { root.@r_c0_clientCertificateMessage }
-fact { always ~@r_c0_clientCertificateMessage in @p_c0_clientCertificateMessage }
+sig clientHelloMessage extends Message
+{ p_clientHelloMessage : lone root }
+fun alive_clientHelloMessage : set clientHelloMessage { root.@r_clientHelloMessage }
+fact { always ~@r_clientHelloMessage in @p_clientHelloMessage }
 
 
-sig c0_clientKeyExchangeMessage extends c0_Message
-{ p_c0_clientKeyExchangeMessage : lone root }
-fun alive_c0_clientKeyExchangeMessage : set c0_clientKeyExchangeMessage { root.@r_c0_clientKeyExchangeMessage }
-fact { always ~@r_c0_clientKeyExchangeMessage in @p_c0_clientKeyExchangeMessage }
+sig clientCertificateMessage extends Message
+{ p_clientCertificateMessage : lone root }
+fun alive_clientCertificateMessage : set clientCertificateMessage { root.@r_clientCertificateMessage }
+fact { always ~@r_clientCertificateMessage in @p_clientCertificateMessage }
 
 
-sig c0_certificateVerifyMessage extends c0_Message
-{ p_c0_certificateVerifyMessage : lone root }
-fun alive_c0_certificateVerifyMessage : set c0_certificateVerifyMessage { root.@r_c0_certificateVerifyMessage }
-fact { always ~@r_c0_certificateVerifyMessage in @p_c0_certificateVerifyMessage }
+sig clientKeyExchangeMessage extends Message
+{ p_clientKeyExchangeMessage : lone root }
+fun alive_clientKeyExchangeMessage : set clientKeyExchangeMessage { root.@r_clientKeyExchangeMessage }
+fact { always ~@r_clientKeyExchangeMessage in @p_clientKeyExchangeMessage }
 
 
-sig c0_clientChangeCipherSpecMessage extends c0_Message
-{ p_c0_clientChangeCipherSpecMessage : lone root }
-fun alive_c0_clientChangeCipherSpecMessage : set c0_clientChangeCipherSpecMessage { root.@r_c0_clientChangeCipherSpecMessage }
-fact { always ~@r_c0_clientChangeCipherSpecMessage in @p_c0_clientChangeCipherSpecMessage }
+sig certificateVerifyMessage extends Message
+{ p_certificateVerifyMessage : lone root }
+fun alive_certificateVerifyMessage : set certificateVerifyMessage { root.@r_certificateVerifyMessage }
+fact { always ~@r_certificateVerifyMessage in @p_certificateVerifyMessage }
 
 
-sig c0_clientFinishedMessage extends c0_Message
-{ p_c0_clientFinishedMessage : lone root }
-fun alive_c0_clientFinishedMessage : set c0_clientFinishedMessage { root.@r_c0_clientFinishedMessage }
-fact { always ~@r_c0_clientFinishedMessage in @p_c0_clientFinishedMessage }
+sig clientChangeCipherSpecMessage extends Message
+{ p_clientChangeCipherSpecMessage : lone root }
+fun alive_clientChangeCipherSpecMessage : set clientChangeCipherSpecMessage { root.@r_clientChangeCipherSpecMessage }
+fact { always ~@r_clientChangeCipherSpecMessage in @p_clientChangeCipherSpecMessage }
 
 
-sig c0_applicationDataMessage extends c0_Message
-{ p_c0_applicationDataMessage : lone root }
-fun alive_c0_applicationDataMessage : set c0_applicationDataMessage { root.@r_c0_applicationDataMessage }
-fact { always ~@r_c0_applicationDataMessage in @p_c0_applicationDataMessage }
+sig clientFinishedMessage extends Message
+{ p_clientFinishedMessage : lone root }
+fun alive_clientFinishedMessage : set clientFinishedMessage { root.@r_clientFinishedMessage }
+fact { always ~@r_clientFinishedMessage in @p_clientFinishedMessage }
 
 
-abstract sig c0_Node extends c0_Domain
-{ var r_c0_send : set c0_send
-, var r_c0_receive : set c0_receive
-, var r_c0_protocolversion : set c0_protocolversion
-, var r_c0_certificate : set c0_certificate }
-{ always (this in alive_c0_Node implies (all disj x, y : this.@r_c0_protocolversion | (x.@c0_protocolversion_ref) != (y.@c0_protocolversion_ref))) }
-fun alive_c0_Node : set c0_Node { alive_c0_Server + alive_c0_Client }
-fact { all self_ : c0_Node | always (self_ in alive_c0_Node implies (one self_.@r_c0_send)) }
-fact { all self_ : c0_Node | always (self_ in alive_c0_Node implies (one self_.@r_c0_receive)) }
-fact { all self_ : c0_Node | always (self_ in alive_c0_Node implies (some self_.@r_c0_protocolversion)) }
-fact { all self_ : c0_Node | always (self_ in alive_c0_Node implies (lone self_.@r_c0_certificate)) }
+sig applicationDataMessage extends Message
+{ p_applicationDataMessage : lone root }
+fun alive_applicationDataMessage : set applicationDataMessage { root.@r_applicationDataMessage }
+fact { always ~@r_applicationDataMessage in @p_applicationDataMessage }
 
 
-sig c0_send extends c0_Port
-{ p_c0_send : lone c0_Node
-, var c0_send_ref : set c0_Message }
-{ always (this in alive_c0_send implies (one this.@c0_send_ref))
-  always (this in alive_c0_send implies (this.@c0_send_ref in alive_c0_Message)) }
-fun alive_c0_send : set c0_send { c0_Node.@r_c0_send }
-fact { always ~@r_c0_send in @p_c0_send
-  always @r_c0_send.univ in alive_c0_Node }
+abstract sig Node extends Domain
+{ var r_send : set send
+, var r_receive : set receive
+, var r_protocolversion : set protocolversion
+, var r_certificate : set certificate }
+{ always (this in alive_Node implies (all disj x, y : this.@r_protocolversion | (x.@protocolversion_ref) != (y.@protocolversion_ref))) }
+fun alive_Node : set Node { alive_Server + alive_Client }
+fact { all self_ : Node | always (self_ in alive_Node implies (one self_.@r_send)) }
+fact { all self_ : Node | always (self_ in alive_Node implies (one self_.@r_receive)) }
+fact { all self_ : Node | always (self_ in alive_Node implies (some self_.@r_protocolversion)) }
+fact { all self_ : Node | always (self_ in alive_Node implies (lone self_.@r_certificate)) }
 
 
-sig c0_receive extends c0_Port
-{ p_c0_receive : lone c0_Node
-, var c0_receive_ref : set c0_Message }
-{ always (this in alive_c0_receive implies (one this.@c0_receive_ref))
-  always (this in alive_c0_receive implies (this.@c0_receive_ref in alive_c0_Message)) }
-fun alive_c0_receive : set c0_receive { c0_Node.@r_c0_receive }
-fact { always ~@r_c0_receive in @p_c0_receive
-  always @r_c0_receive.univ in alive_c0_Node }
+sig send extends Port
+{ p_send : lone Node
+, var send_ref : set Message }
+{ always (this in alive_send implies (one this.@send_ref))
+  always (this in alive_send implies (this.@send_ref in alive_Message)) }
+fun alive_send : set send { Node.@r_send }
+fact { always ~@r_send in @p_send
+  always @r_send.univ in alive_Node }
 
 
-sig c0_protocolversion
-{ p_c0_protocolversion : lone c0_Node
-, var c0_protocolversion_ref : set c0_ProtocolVersion }
-{ always (this in alive_c0_protocolversion implies (one this.@c0_protocolversion_ref))
-  always (this in alive_c0_protocolversion implies (this.@c0_protocolversion_ref in alive_c0_ProtocolVersion)) }
-fun alive_c0_protocolversion : set c0_protocolversion { c0_Node.@r_c0_protocolversion }
-fact { always ~@r_c0_protocolversion in @p_c0_protocolversion
-  always @r_c0_protocolversion.univ in alive_c0_Node }
+sig receive extends Port
+{ p_receive : lone Node
+, var receive_ref : set Message }
+{ always (this in alive_receive implies (one this.@receive_ref))
+  always (this in alive_receive implies (this.@receive_ref in alive_Message)) }
+fun alive_receive : set receive { Node.@r_receive }
+fact { always ~@r_receive in @p_receive
+  always @r_receive.univ in alive_Node }
 
 
-sig c0_certificate
-{ p_c0_certificate : lone c0_Node
-, var r_c0_signing : set c0_signing }
-fun alive_c0_certificate : set c0_certificate { c0_Node.@r_c0_certificate }
-fact { always ~@r_c0_certificate in @p_c0_certificate
-  always @r_c0_certificate.univ in alive_c0_Node }
-
-fact { all self_ : c0_certificate | always (self_ in alive_c0_certificate implies (lone self_.@r_c0_signing)) }
-
-
-sig c0_signing
-{ p_c0_signing : lone c0_certificate }
-fun alive_c0_signing : set c0_signing { c0_certificate.@r_c0_signing }
-fact { always ~@r_c0_signing in @p_c0_signing
-  always @r_c0_signing.univ in alive_c0_certificate }
+sig protocolversion
+{ p_protocolversion : lone Node
+, var protocolversion_ref : set ProtocolVersion }
+{ always (this in alive_protocolversion implies (one this.@protocolversion_ref))
+  always (this in alive_protocolversion implies (this.@protocolversion_ref in alive_ProtocolVersion)) }
+fun alive_protocolversion : set protocolversion { Node.@r_protocolversion }
+fact { always ~@r_protocolversion in @p_protocolversion
+  always @r_protocolversion.univ in alive_Node }
 
 
-abstract sig c0_Server extends c0_Node
+sig certificate
+{ p_certificate : lone Node
+, var r_signing : set signing }
+fun alive_certificate : set certificate { Node.@r_certificate }
+fact { always ~@r_certificate in @p_certificate
+  always @r_certificate.univ in alive_Node }
+
+fact { all self_ : certificate | always (self_ in alive_certificate implies (lone self_.@r_signing)) }
+
+
+sig signing
+{ p_signing : lone certificate }
+fun alive_signing : set signing { certificate.@r_signing }
+fact { always ~@r_signing in @p_signing
+  always @r_signing.univ in alive_certificate }
+
+
+abstract sig Server extends Node
 {}
-fun alive_c0_Server : set c0_Server { alive_c0_OurServer }
+fun alive_Server : set Server { alive_OurServer }
 
-abstract sig c0_Client extends c0_Node
+abstract sig Client extends Node
 {}
-fun alive_c0_Client : set c0_Client { alive_c0_aClient }
-
-sig c0_OurServer extends c0_Server
-{ p_c0_OurServer : lone root }
-fun alive_c0_OurServer : set c0_OurServer { root.@r_c0_OurServer }
-fact { always ~@r_c0_OurServer in @p_c0_OurServer }
-
-fact { all self_ : c0_OurServer | always (self_ in alive_c0_OurServer implies (((self_.@r_c0_protocolversion).@c0_protocolversion_ref) = ((alive_c0_SSL2_0 + alive_c0_SSL3_0) + alive_c0_TLS1_2))) }
-
-
-sig c0_aClient extends c0_Client
-{ p_c0_aClient : lone root }
-fun alive_c0_aClient : set c0_aClient { root.@r_c0_aClient }
-fact { always ~@r_c0_aClient in @p_c0_aClient }
-
-fact { all self_ : c0_aClient | always (self_ in alive_c0_aClient implies (some self_.@r_c0_certificate)) }
-fact { all self_ : c0_aClient | always (self_ in alive_c0_aClient implies (((self_.@r_c0_protocolversion).@c0_protocolversion_ref) = alive_c0_TLS1_2)) }
-
-
-sig c0_Protocol extends c0_Domain
-{ p_c0_Protocol : lone root
-, r_c0_client : set c0_client
-, r_c0_server : set c0_server
-, var r_c0_handshakeStatus : set c0_handshakeStatus
-, var r_c0_channel : set c0_channel }
-fun alive_c0_Protocol : set c0_Protocol { root.@r_c0_Protocol }
-fact { always ~@r_c0_Protocol in @p_c0_Protocol }
-
-fact { all self_ : c0_Protocol | always (self_ in alive_c0_Protocol implies (one self_.@r_c0_client)) }
-fact { all self_ : c0_Protocol | always (self_ in alive_c0_Protocol implies (one self_.@r_c0_server)) }
-fact { all self_ : c0_Protocol | always (self_ in alive_c0_Protocol implies (one self_.@r_c0_handshakeStatus)) }
-fact { all self_ : c0_Protocol | always (self_ in alive_c0_Protocol implies (one self_.@r_c0_channel)) }
-
-
-sig c0_client
-{ p_c0_client : lone c0_Protocol
-, c0_client_ref : set c0_aClient }
-{ always (this in alive_c0_client implies (one this.@c0_client_ref))
-  always (this in alive_c0_client implies (this.@c0_client_ref in alive_c0_aClient)) }
-fun alive_c0_client : set c0_client { c0_Protocol.@r_c0_client }
-fact { always ~@r_c0_client in @p_c0_client
-  always @r_c0_client.univ in alive_c0_Protocol }
-
-
-sig c0_server
-{ p_c0_server : lone c0_Protocol
-, c0_server_ref : set c0_OurServer }
-{ always (this in alive_c0_server implies (one this.@c0_server_ref))
-  always (this in alive_c0_server implies (this.@c0_server_ref in alive_c0_OurServer)) }
-fun alive_c0_server : set c0_server { c0_Protocol.@r_c0_server }
-fact { always ~@r_c0_server in @p_c0_server
-  always @r_c0_server.univ in alive_c0_Protocol }
-
-
-sig c0_handshakeStatus
-{ p_c0_handshakeStatus : lone c0_Protocol
-, var c0_handshakeStatus_ref : set c0_HandshakeStatus }
-{ always (this in alive_c0_handshakeStatus implies (one this.@c0_handshakeStatus_ref))
-  always (this in alive_c0_handshakeStatus implies (this.@c0_handshakeStatus_ref in alive_c0_HandshakeStatus)) }
-fun alive_c0_handshakeStatus : set c0_handshakeStatus { c0_Protocol.@r_c0_handshakeStatus }
-fact { always ~@r_c0_handshakeStatus in @p_c0_handshakeStatus
-  always @r_c0_handshakeStatus.univ in alive_c0_Protocol }
-
-
-sig c0_channel
-{ p_c0_channel : lone c0_Protocol
-, var r_c0_clientHello : set c0_clientHello
-, var r_c0_serverResponse : set c0_serverResponse
-, var r_c0_clientResponse : set c0_clientResponse
-, var r_c0_serverFinish : set c0_serverFinish
-, var r_c0_dataTransfer : set c0_dataTransfer
-, var r_c0_fatalError : set c0_fatalError }
-{ always (this in alive_c0_channel implies (let children = (this.@r_c0_clientHello + this.@r_c0_serverResponse + this.@r_c0_clientResponse + this.@r_c0_serverFinish + this.@r_c0_dataTransfer + this.@r_c0_fatalError) | one children))
-  always (this in alive_c0_channel and not before this in alive_c0_channel implies (some this.@r_c0_clientHello)) }
-fun alive_c0_channel : set c0_channel { c0_Protocol.@r_c0_channel }
-fact { always ~@r_c0_channel in @p_c0_channel
-  always @r_c0_channel.univ in alive_c0_Protocol }
-
-fact { all self_ : c0_channel | always (self_ in alive_c0_channel implies (lone self_.@r_c0_clientHello)) }
-fact { all self_ : c0_channel | always (self_ in alive_c0_channel implies (lone self_.@r_c0_serverResponse)) }
-fact { all self_ : c0_channel | always (self_ in alive_c0_channel implies (lone self_.@r_c0_clientResponse)) }
-fact { all self_ : c0_channel | always (self_ in alive_c0_channel implies (lone self_.@r_c0_serverFinish)) }
-fact { all self_ : c0_channel | always (self_ in alive_c0_channel implies (lone self_.@r_c0_dataTransfer)) }
-fact { all self_ : c0_channel | always (self_ in alive_c0_channel implies (lone self_.@r_c0_fatalError)) }
-fact { all self_ : c0_channel | always (self_ in alive_c0_channel implies (((some self_.@r_c0_serverResponse) && (!((some (self_.@r_c0_serverResponse).@r_c0_mismatch) || (some (self_.@r_c0_serverResponse).@r_c0_serverHelloDone)))) => (after (not some self_.(@p_c0_channel :> alive_c0_Protocol) or (some self_.@r_c0_serverResponse))))) }
-fact { all self_ : c0_channel | always (self_ in alive_c0_channel implies ((some (self_.@r_c0_serverResponse).@r_c0_mismatch) => (after (not some self_.(@p_c0_channel :> alive_c0_Protocol) or (some self_.@r_c0_fatalError))))) }
-fact { all self_ : c0_channel | always (self_ in alive_c0_channel implies ((some (self_.@r_c0_serverResponse).@r_c0_serverHelloDone) => (after (not some self_.(@p_c0_channel :> alive_c0_Protocol) or (some self_.@r_c0_clientResponse))))) }
-fact { all self_ : c0_channel | always (self_ in alive_c0_channel implies (((some self_.@r_c0_clientResponse) && (no (self_.@r_c0_clientResponse).@r_c0_clientFinished)) => (after (not some self_.(@p_c0_channel :> alive_c0_Protocol) or (some self_.@r_c0_clientResponse))))) }
-fact { all self_ : c0_channel | always (self_ in alive_c0_channel implies ((some (self_.@r_c0_clientResponse).@r_c0_clientFinished) => (after (not some self_.(@p_c0_channel :> alive_c0_Protocol) or (some self_.@r_c0_serverFinish))))) }
-fact { all self_ : c0_channel | always (self_ in alive_c0_channel implies (((some self_.@r_c0_serverFinish) && (no (self_.@r_c0_serverFinish).@r_c0_serverFinished)) => (after (not some self_.(@p_c0_channel :> alive_c0_Protocol) or (some self_.@r_c0_serverFinish))))) }
-fact { all self_ : c0_channel | always (self_ in alive_c0_channel implies ((some (self_.@r_c0_serverFinish).@r_c0_serverFinished) => (after (not some self_.(@p_c0_channel :> alive_c0_Protocol) or (some self_.@r_c0_dataTransfer))))) }
-
-
-sig c0_clientHello
-{ p_c0_clientHello : lone c0_channel }
-fun alive_c0_clientHello : set c0_clientHello { c0_channel.@r_c0_clientHello }
-fact { always ~@r_c0_clientHello in @p_c0_clientHello
-  always @r_c0_clientHello.univ in alive_c0_channel }
-
-fact { all self_ : c0_clientHello | always (self_ in alive_c0_clientHello implies (((((self_.(@p_c0_clientHello :> alive_c0_channel)).(@p_c0_channel :> alive_c0_Protocol)).@r_c0_handshakeStatus).@c0_handshakeStatus_ref) = alive_c0_initiated)) }
-fact { all self_ : c0_clientHello | always (self_ in alive_c0_clientHello implies (((((((self_.(@p_c0_clientHello :> alive_c0_channel)).(@p_c0_channel :> alive_c0_Protocol)).@r_c0_client).@c0_client_ref).@r_c0_send).@c0_send_ref) = alive_c0_clientHelloMessage)) }
-fact { all self_ : c0_clientHello | always (self_ in alive_c0_clientHello implies ((some (self_ & alive_c0_clientHello)) => (after (not some self_.(@p_c0_clientHello :> alive_c0_channel) or ((some (self_.(@p_c0_clientHello :> alive_c0_channel)).@r_c0_serverResponse) || (some (self_.(@p_c0_clientHello :> alive_c0_channel)).@r_c0_fatalError)))))) }
-
-
-sig c0_serverResponse
-{ p_c0_serverResponse : lone c0_channel
-, var r_c0_mismatch : set c0_mismatch
-, var r_c0_serverHello : set c0_serverHello
-, var r_c0_serverCertificate : set c0_serverCertificate
-, var r_c0_serverKeyExchange : set c0_serverKeyExchange
-, var r_c0_certificateRequest : set c0_certificateRequest
-, var r_c0_serverHelloDone : set c0_serverHelloDone }
-{ always (this in alive_c0_serverResponse implies (let children = (this.@r_c0_mismatch + this.@r_c0_serverHello + this.@r_c0_serverCertificate + this.@r_c0_serverKeyExchange + this.@r_c0_certificateRequest + this.@r_c0_serverHelloDone) | one children)) }
-fun alive_c0_serverResponse : set c0_serverResponse { c0_channel.@r_c0_serverResponse }
-fact { always ~@r_c0_serverResponse in @p_c0_serverResponse
-  always @r_c0_serverResponse.univ in alive_c0_channel }
-
-fact { all self_ : c0_serverResponse | always (self_ in alive_c0_serverResponse implies (lone self_.@r_c0_mismatch)) }
-fact { all self_ : c0_serverResponse | always (self_ in alive_c0_serverResponse implies (lone self_.@r_c0_serverHello)) }
-fact { all self_ : c0_serverResponse | always (self_ in alive_c0_serverResponse implies (lone self_.@r_c0_serverCertificate)) }
-fact { all self_ : c0_serverResponse | always (self_ in alive_c0_serverResponse implies (lone self_.@r_c0_serverKeyExchange)) }
-fact { all self_ : c0_serverResponse | always (self_ in alive_c0_serverResponse implies (lone self_.@r_c0_certificateRequest)) }
-fact { all self_ : c0_serverResponse | always (self_ in alive_c0_serverResponse implies (lone self_.@r_c0_serverHelloDone)) }
-fact { all self_ : c0_serverResponse | always (self_ in alive_c0_serverResponse implies (((((self_.(@p_c0_serverResponse :> alive_c0_channel)).(@p_c0_channel :> alive_c0_Protocol)).@r_c0_handshakeStatus).@c0_handshakeStatus_ref) = alive_c0_initiated)) }
-fact { all self_ : c0_serverResponse | always (self_ in alive_c0_serverResponse implies ((not before self_ in alive_c0_serverResponse) implies ((some self_.@r_c0_serverHello) || (some self_.@r_c0_mismatch)))) }
-fact { all self_ : c0_serverResponse | always (self_ in alive_c0_serverResponse implies (((some self_.@r_c0_serverHello) && (no alive_c0_TLSFeatures.@r_c0_annonymousMode)) => (after (not some self_.(@p_c0_serverResponse :> alive_c0_channel) or (some self_.@r_c0_serverCertificate))))) }
-fact { all self_ : c0_serverResponse | always (self_ in alive_c0_serverResponse implies (((some self_.@r_c0_serverHello) && (some alive_c0_TLSFeatures.@r_c0_annonymousMode)) => (after (not some self_.(@p_c0_serverResponse :> alive_c0_channel) or (some self_.@r_c0_serverKeyExchange))))) }
-fact { all self_ : c0_serverResponse | always (self_ in alive_c0_serverResponse implies (((some self_.@r_c0_serverCertificate) && (some alive_c0_TLSFeatures.@r_c0_clientAuthentication)) => (after (not some self_.(@p_c0_serverResponse :> alive_c0_channel) or ((some self_.@r_c0_serverKeyExchange) || (some self_.@r_c0_certificateRequest)))))) }
-fact { all self_ : c0_serverResponse | always (self_ in alive_c0_serverResponse implies (((some self_.@r_c0_serverCertificate) && (no alive_c0_TLSFeatures.@r_c0_clientAuthentication)) => (after (not some self_.(@p_c0_serverResponse :> alive_c0_channel) or ((some self_.@r_c0_serverKeyExchange) || (some self_.@r_c0_serverHelloDone)))))) }
-fact { all self_ : c0_serverResponse | always (self_ in alive_c0_serverResponse implies (((some self_.@r_c0_serverKeyExchange) && (some alive_c0_TLSFeatures.@r_c0_clientAuthentication)) => (after (not some self_.(@p_c0_serverResponse :> alive_c0_channel) or (some self_.@r_c0_certificateRequest))))) }
-fact { all self_ : c0_serverResponse | always (self_ in alive_c0_serverResponse implies (((some self_.@r_c0_serverKeyExchange) && (no alive_c0_TLSFeatures.@r_c0_clientAuthentication)) => (after (not some self_.(@p_c0_serverResponse :> alive_c0_channel) or (some self_.@r_c0_serverHelloDone))))) }
-
-
-sig c0_mismatch
-{ p_c0_mismatch : lone c0_serverResponse }
-fun alive_c0_mismatch : set c0_mismatch { c0_serverResponse.@r_c0_mismatch }
-fact { always ~@r_c0_mismatch in @p_c0_mismatch
-  always @r_c0_mismatch.univ in alive_c0_serverResponse }
-
-fact { all self_ : c0_mismatch | always (self_ in alive_c0_mismatch implies (no (((((((self_.(@p_c0_mismatch :> alive_c0_serverResponse)).(@p_c0_serverResponse :> alive_c0_channel)).(@p_c0_channel :> alive_c0_Protocol)).@r_c0_client).@c0_client_ref).@r_c0_protocolversion).@c0_protocolversion_ref) & (((((((self_.(@p_c0_mismatch :> alive_c0_serverResponse)).(@p_c0_serverResponse :> alive_c0_channel)).(@p_c0_channel :> alive_c0_Protocol)).@r_c0_server).@c0_server_ref).@r_c0_protocolversion).@c0_protocolversion_ref))) }
-fact { all self_ : c0_mismatch | always (self_ in alive_c0_mismatch implies ((((((((self_.(@p_c0_mismatch :> alive_c0_serverResponse)).(@p_c0_serverResponse :> alive_c0_channel)).(@p_c0_channel :> alive_c0_Protocol)).@r_c0_server).@c0_server_ref).@r_c0_send).@c0_send_ref) = alive_c0_protocolMismatch)) }
-
-
-sig c0_serverHello
-{ p_c0_serverHello : lone c0_serverResponse }
-fun alive_c0_serverHello : set c0_serverHello { c0_serverResponse.@r_c0_serverHello }
-fact { always ~@r_c0_serverHello in @p_c0_serverHello
-  always @r_c0_serverHello.univ in alive_c0_serverResponse }
-
-fact { all self_ : c0_serverHello | always (self_ in alive_c0_serverHello implies (some (((((((self_.(@p_c0_serverHello :> alive_c0_serverResponse)).(@p_c0_serverResponse :> alive_c0_channel)).(@p_c0_channel :> alive_c0_Protocol)).@r_c0_client).@c0_client_ref).@r_c0_protocolversion).@c0_protocolversion_ref) & (((((((self_.(@p_c0_serverHello :> alive_c0_serverResponse)).(@p_c0_serverResponse :> alive_c0_channel)).(@p_c0_channel :> alive_c0_Protocol)).@r_c0_server).@c0_server_ref).@r_c0_protocolversion).@c0_protocolversion_ref))) }
-fact { all self_ : c0_serverHello | always (self_ in alive_c0_serverHello implies ((((((((self_.(@p_c0_serverHello :> alive_c0_serverResponse)).(@p_c0_serverResponse :> alive_c0_channel)).(@p_c0_channel :> alive_c0_Protocol)).@r_c0_server).@c0_server_ref).@r_c0_send).@c0_send_ref) = alive_c0_serverHelloMessage)) }
-
-
-sig c0_serverCertificate
-{ p_c0_serverCertificate : lone c0_serverResponse }
-fun alive_c0_serverCertificate : set c0_serverCertificate { c0_serverResponse.@r_c0_serverCertificate }
-fact { always ~@r_c0_serverCertificate in @p_c0_serverCertificate
-  always @r_c0_serverCertificate.univ in alive_c0_serverResponse }
-
-fact { all self_ : c0_serverCertificate | always (self_ in alive_c0_serverCertificate implies (no alive_c0_TLSFeatures.@r_c0_annonymousMode)) }
-fact { all self_ : c0_serverCertificate | always (self_ in alive_c0_serverCertificate implies ((((((((self_.(@p_c0_serverCertificate :> alive_c0_serverResponse)).(@p_c0_serverResponse :> alive_c0_channel)).(@p_c0_channel :> alive_c0_Protocol)).@r_c0_server).@c0_server_ref).@r_c0_send).@c0_send_ref) = alive_c0_serverCertificateMessage)) }
-
-
-sig c0_serverKeyExchange
-{ p_c0_serverKeyExchange : lone c0_serverResponse }
-fun alive_c0_serverKeyExchange : set c0_serverKeyExchange { c0_serverResponse.@r_c0_serverKeyExchange }
-fact { always ~@r_c0_serverKeyExchange in @p_c0_serverKeyExchange
-  always @r_c0_serverKeyExchange.univ in alive_c0_serverResponse }
-
-fact { all self_ : c0_serverKeyExchange | always (self_ in alive_c0_serverKeyExchange implies ((((((((self_.(@p_c0_serverKeyExchange :> alive_c0_serverResponse)).(@p_c0_serverResponse :> alive_c0_channel)).(@p_c0_channel :> alive_c0_Protocol)).@r_c0_server).@c0_server_ref).@r_c0_send).@c0_send_ref) = alive_c0_serverKeyExchangeMessage)) }
-
-
-sig c0_certificateRequest
-{ p_c0_certificateRequest : lone c0_serverResponse }
-fun alive_c0_certificateRequest : set c0_certificateRequest { c0_serverResponse.@r_c0_certificateRequest }
-fact { always ~@r_c0_certificateRequest in @p_c0_certificateRequest
-  always @r_c0_certificateRequest.univ in alive_c0_serverResponse }
-
-fact { all self_ : c0_certificateRequest | always (self_ in alive_c0_certificateRequest implies (some alive_c0_TLSFeatures.@r_c0_clientAuthentication)) }
-fact { all self_ : c0_certificateRequest | always (self_ in alive_c0_certificateRequest implies ((((((((self_.(@p_c0_certificateRequest :> alive_c0_serverResponse)).(@p_c0_serverResponse :> alive_c0_channel)).(@p_c0_channel :> alive_c0_Protocol)).@r_c0_server).@c0_server_ref).@r_c0_send).@c0_send_ref) = alive_c0_serverCertificateRequestMessage)) }
-fact { all self_ : c0_certificateRequest | always (self_ in alive_c0_certificateRequest implies ((some (self_ & alive_c0_certificateRequest)) => (after (not some self_.(@p_c0_certificateRequest :> alive_c0_serverResponse) or (some (self_.(@p_c0_certificateRequest :> alive_c0_serverResponse)).@r_c0_serverHelloDone))))) }
-
-
-sig c0_serverHelloDone
-{ p_c0_serverHelloDone : lone c0_serverResponse }
-fun alive_c0_serverHelloDone : set c0_serverHelloDone { c0_serverResponse.@r_c0_serverHelloDone }
-fact { always ~@r_c0_serverHelloDone in @p_c0_serverHelloDone
-  always @r_c0_serverHelloDone.univ in alive_c0_serverResponse }
-
-fact { all self_ : c0_serverHelloDone | always (self_ in alive_c0_serverHelloDone implies ((((((((self_.(@p_c0_serverHelloDone :> alive_c0_serverResponse)).(@p_c0_serverResponse :> alive_c0_channel)).(@p_c0_channel :> alive_c0_Protocol)).@r_c0_server).@c0_server_ref).@r_c0_send).@c0_send_ref) = alive_c0_serverHelloDoneMessage)) }
-
-
-sig c0_clientResponse
-{ p_c0_clientResponse : lone c0_channel
-, var r_c0_clientCertificate : set c0_clientCertificate
-, var r_c0_clientKeyExchange : set c0_clientKeyExchange
-, var r_c0_certificateVerify : set c0_certificateVerify
-, var r_c0_clientChangeCipherSpec : set c0_clientChangeCipherSpec
-, var r_c0_clientFinished : set c0_clientFinished }
-{ always (this in alive_c0_clientResponse implies (let children = (this.@r_c0_clientCertificate + this.@r_c0_clientKeyExchange + this.@r_c0_certificateVerify + this.@r_c0_clientChangeCipherSpec + this.@r_c0_clientFinished) | one children)) }
-fun alive_c0_clientResponse : set c0_clientResponse { c0_channel.@r_c0_clientResponse }
-fact { always ~@r_c0_clientResponse in @p_c0_clientResponse
-  always @r_c0_clientResponse.univ in alive_c0_channel }
-
-fact { all self_ : c0_clientResponse | always (self_ in alive_c0_clientResponse implies (lone self_.@r_c0_clientCertificate)) }
-fact { all self_ : c0_clientResponse | always (self_ in alive_c0_clientResponse implies (lone self_.@r_c0_clientKeyExchange)) }
-fact { all self_ : c0_clientResponse | always (self_ in alive_c0_clientResponse implies (lone self_.@r_c0_certificateVerify)) }
-fact { all self_ : c0_clientResponse | always (self_ in alive_c0_clientResponse implies (lone self_.@r_c0_clientChangeCipherSpec)) }
-fact { all self_ : c0_clientResponse | always (self_ in alive_c0_clientResponse implies (lone self_.@r_c0_clientFinished)) }
-fact { all self_ : c0_clientResponse | always (self_ in alive_c0_clientResponse implies (((((self_.(@p_c0_clientResponse :> alive_c0_channel)).(@p_c0_channel :> alive_c0_Protocol)).@r_c0_handshakeStatus).@c0_handshakeStatus_ref) = alive_c0_initiated)) }
-fact { all self_ : c0_clientResponse | always (self_ in alive_c0_clientResponse implies ((not before self_ in alive_c0_clientResponse) implies ((some alive_c0_TLSFeatures.@r_c0_clientAuthentication) => (some self_.@r_c0_clientCertificate)))) }
-fact { all self_ : c0_clientResponse | always (self_ in alive_c0_clientResponse implies ((not before self_ in alive_c0_clientResponse) implies ((no alive_c0_TLSFeatures.@r_c0_clientAuthentication) => (some self_.@r_c0_clientKeyExchange)))) }
-fact { all self_ : c0_clientResponse | always (self_ in alive_c0_clientResponse implies (((some self_.@r_c0_clientKeyExchange) && ((some alive_c0_TLSFeatures.@r_c0_clientAuthentication) && (some (((((self_.(@p_c0_clientResponse :> alive_c0_channel)).(@p_c0_channel :> alive_c0_Protocol)).@r_c0_client).@c0_client_ref).@r_c0_certificate).@r_c0_signing))) => (after (not some self_.(@p_c0_clientResponse :> alive_c0_channel) or (some self_.@r_c0_certificateVerify))))) }
-fact { all self_ : c0_clientResponse | always (self_ in alive_c0_clientResponse implies (((some self_.@r_c0_clientKeyExchange) && (!((some alive_c0_TLSFeatures.@r_c0_clientAuthentication) && (some (((((self_.(@p_c0_clientResponse :> alive_c0_channel)).(@p_c0_channel :> alive_c0_Protocol)).@r_c0_client).@c0_client_ref).@r_c0_certificate).@r_c0_signing)))) => (after (not some self_.(@p_c0_clientResponse :> alive_c0_channel) or (some self_.@r_c0_clientChangeCipherSpec))))) }
-
-
-sig c0_clientCertificate
-{ p_c0_clientCertificate : lone c0_clientResponse }
-fun alive_c0_clientCertificate : set c0_clientCertificate { c0_clientResponse.@r_c0_clientCertificate }
-fact { always ~@r_c0_clientCertificate in @p_c0_clientCertificate
-  always @r_c0_clientCertificate.univ in alive_c0_clientResponse }
-
-fact { all self_ : c0_clientCertificate | always (self_ in alive_c0_clientCertificate implies (some alive_c0_TLSFeatures.@r_c0_clientAuthentication)) }
-fact { all self_ : c0_clientCertificate | always (self_ in alive_c0_clientCertificate implies ((((((((self_.(@p_c0_clientCertificate :> alive_c0_clientResponse)).(@p_c0_clientResponse :> alive_c0_channel)).(@p_c0_channel :> alive_c0_Protocol)).@r_c0_client).@c0_client_ref).@r_c0_send).@c0_send_ref) = alive_c0_clientCertificateMessage)) }
-fact { all self_ : c0_clientCertificate | always (self_ in alive_c0_clientCertificate implies ((some (self_ & alive_c0_clientCertificate)) => (after (not some self_.(@p_c0_clientCertificate :> alive_c0_clientResponse) or (some (self_.(@p_c0_clientCertificate :> alive_c0_clientResponse)).@r_c0_clientKeyExchange))))) }
-
-
-sig c0_clientKeyExchange
-{ p_c0_clientKeyExchange : lone c0_clientResponse }
-fun alive_c0_clientKeyExchange : set c0_clientKeyExchange { c0_clientResponse.@r_c0_clientKeyExchange }
-fact { always ~@r_c0_clientKeyExchange in @p_c0_clientKeyExchange
-  always @r_c0_clientKeyExchange.univ in alive_c0_clientResponse }
-
-fact { all self_ : c0_clientKeyExchange | always (self_ in alive_c0_clientKeyExchange implies ((((((((self_.(@p_c0_clientKeyExchange :> alive_c0_clientResponse)).(@p_c0_clientResponse :> alive_c0_channel)).(@p_c0_channel :> alive_c0_Protocol)).@r_c0_client).@c0_client_ref).@r_c0_send).@c0_send_ref) = alive_c0_clientKeyExchangeMessage)) }
-
-
-sig c0_certificateVerify
-{ p_c0_certificateVerify : lone c0_clientResponse }
-fun alive_c0_certificateVerify : set c0_certificateVerify { c0_clientResponse.@r_c0_certificateVerify }
-fact { always ~@r_c0_certificateVerify in @p_c0_certificateVerify
-  always @r_c0_certificateVerify.univ in alive_c0_clientResponse }
-
-fact { all self_ : c0_certificateVerify | always (self_ in alive_c0_certificateVerify implies (some ((((((self_.(@p_c0_certificateVerify :> alive_c0_clientResponse)).(@p_c0_clientResponse :> alive_c0_channel)).(@p_c0_channel :> alive_c0_Protocol)).@r_c0_client).@c0_client_ref).@r_c0_certificate).@r_c0_signing)) }
-fact { all self_ : c0_certificateVerify | always (self_ in alive_c0_certificateVerify implies ((((((((self_.(@p_c0_certificateVerify :> alive_c0_clientResponse)).(@p_c0_clientResponse :> alive_c0_channel)).(@p_c0_channel :> alive_c0_Protocol)).@r_c0_client).@c0_client_ref).@r_c0_send).@c0_send_ref) = alive_c0_certificateVerifyMessage)) }
-fact { all self_ : c0_certificateVerify | always (self_ in alive_c0_certificateVerify implies ((some (self_ & alive_c0_certificateVerify)) => (after (not some self_.(@p_c0_certificateVerify :> alive_c0_clientResponse) or (some (self_.(@p_c0_certificateVerify :> alive_c0_clientResponse)).@r_c0_clientChangeCipherSpec))))) }
-
-
-sig c0_clientChangeCipherSpec
-{ p_c0_clientChangeCipherSpec : lone c0_clientResponse }
-fun alive_c0_clientChangeCipherSpec : set c0_clientChangeCipherSpec { c0_clientResponse.@r_c0_clientChangeCipherSpec }
-fact { always ~@r_c0_clientChangeCipherSpec in @p_c0_clientChangeCipherSpec
-  always @r_c0_clientChangeCipherSpec.univ in alive_c0_clientResponse }
-
-fact { all self_ : c0_clientChangeCipherSpec | always (self_ in alive_c0_clientChangeCipherSpec implies ((((((((self_.(@p_c0_clientChangeCipherSpec :> alive_c0_clientResponse)).(@p_c0_clientResponse :> alive_c0_channel)).(@p_c0_channel :> alive_c0_Protocol)).@r_c0_client).@c0_client_ref).@r_c0_send).@c0_send_ref) = alive_c0_clientChangeCipherSpecMessage)) }
-fact { all self_ : c0_clientChangeCipherSpec | always (self_ in alive_c0_clientChangeCipherSpec implies ((some (self_ & alive_c0_clientChangeCipherSpec)) => (after (not some self_.(@p_c0_clientChangeCipherSpec :> alive_c0_clientResponse) or (some (self_.(@p_c0_clientChangeCipherSpec :> alive_c0_clientResponse)).@r_c0_clientFinished))))) }
-
-
-sig c0_clientFinished
-{ p_c0_clientFinished : lone c0_clientResponse }
-fun alive_c0_clientFinished : set c0_clientFinished { c0_clientResponse.@r_c0_clientFinished }
-fact { always ~@r_c0_clientFinished in @p_c0_clientFinished
-  always @r_c0_clientFinished.univ in alive_c0_clientResponse }
-
-fact { all self_ : c0_clientFinished | always (self_ in alive_c0_clientFinished implies ((((((((self_.(@p_c0_clientFinished :> alive_c0_clientResponse)).(@p_c0_clientResponse :> alive_c0_channel)).(@p_c0_channel :> alive_c0_Protocol)).@r_c0_client).@c0_client_ref).@r_c0_send).@c0_send_ref) = alive_c0_clientFinishedMessage)) }
-
-
-sig c0_serverFinish
-{ p_c0_serverFinish : lone c0_channel
-, var r_c0_serverChangeCipherSpec : set c0_serverChangeCipherSpec
-, var r_c0_serverFinished : set c0_serverFinished }
-{ always (this in alive_c0_serverFinish implies (let children = (this.@r_c0_serverChangeCipherSpec + this.@r_c0_serverFinished) | one children))
-  always (this in alive_c0_serverFinish and not before this in alive_c0_serverFinish implies (some this.@r_c0_serverChangeCipherSpec)) }
-fun alive_c0_serverFinish : set c0_serverFinish { c0_channel.@r_c0_serverFinish }
-fact { always ~@r_c0_serverFinish in @p_c0_serverFinish
-  always @r_c0_serverFinish.univ in alive_c0_channel }
-
-fact { all self_ : c0_serverFinish | always (self_ in alive_c0_serverFinish implies (lone self_.@r_c0_serverChangeCipherSpec)) }
-fact { all self_ : c0_serverFinish | always (self_ in alive_c0_serverFinish implies (lone self_.@r_c0_serverFinished)) }
-
-
-sig c0_serverChangeCipherSpec
-{ p_c0_serverChangeCipherSpec : lone c0_serverFinish }
-fun alive_c0_serverChangeCipherSpec : set c0_serverChangeCipherSpec { c0_serverFinish.@r_c0_serverChangeCipherSpec }
-fact { always ~@r_c0_serverChangeCipherSpec in @p_c0_serverChangeCipherSpec
-  always @r_c0_serverChangeCipherSpec.univ in alive_c0_serverFinish }
-
-fact { all self_ : c0_serverChangeCipherSpec | always (self_ in alive_c0_serverChangeCipherSpec implies ((((((self_.(@p_c0_serverChangeCipherSpec :> alive_c0_serverFinish)).(@p_c0_serverFinish :> alive_c0_channel)).(@p_c0_channel :> alive_c0_Protocol)).@r_c0_handshakeStatus).@c0_handshakeStatus_ref) = alive_c0_initiated)) }
-fact { all self_ : c0_serverChangeCipherSpec | always (self_ in alive_c0_serverChangeCipherSpec implies ((((((((self_.(@p_c0_serverChangeCipherSpec :> alive_c0_serverFinish)).(@p_c0_serverFinish :> alive_c0_channel)).(@p_c0_channel :> alive_c0_Protocol)).@r_c0_server).@c0_server_ref).@r_c0_send).@c0_send_ref) = alive_c0_serverChangeCipherSpecMessage)) }
-fact { all self_ : c0_serverChangeCipherSpec | always (self_ in alive_c0_serverChangeCipherSpec implies ((some (self_ & alive_c0_serverChangeCipherSpec)) => (after (not some self_.(@p_c0_serverChangeCipherSpec :> alive_c0_serverFinish) or (some (self_.(@p_c0_serverChangeCipherSpec :> alive_c0_serverFinish)).@r_c0_serverFinished))))) }
-
-
-sig c0_serverFinished
-{ p_c0_serverFinished : lone c0_serverFinish }
-fun alive_c0_serverFinished : set c0_serverFinished { c0_serverFinish.@r_c0_serverFinished }
-fact { always ~@r_c0_serverFinished in @p_c0_serverFinished
-  always @r_c0_serverFinished.univ in alive_c0_serverFinish }
-
-fact { all self_ : c0_serverFinished | always (self_ in alive_c0_serverFinished implies ((((((((self_.(@p_c0_serverFinished :> alive_c0_serverFinish)).(@p_c0_serverFinish :> alive_c0_channel)).(@p_c0_channel :> alive_c0_Protocol)).@r_c0_server).@c0_server_ref).@r_c0_send).@c0_send_ref) = alive_c0_serverFinishedMessage)) }
-fact { all self_ : c0_serverFinished | always (self_ in alive_c0_serverFinished implies ((((((self_.(@p_c0_serverFinished :> alive_c0_serverFinish)).(@p_c0_serverFinish :> alive_c0_channel)).(@p_c0_channel :> alive_c0_Protocol)).@r_c0_handshakeStatus).@c0_handshakeStatus_ref) = alive_c0_completed)) }
-
-
-sig c0_dataTransfer
-{ p_c0_dataTransfer : lone c0_channel }
-fun alive_c0_dataTransfer : set c0_dataTransfer { c0_channel.@r_c0_dataTransfer }
-fact { always ~@r_c0_dataTransfer in @p_c0_dataTransfer
-  always @r_c0_dataTransfer.univ in alive_c0_channel }
-
-fact { all self_ : c0_dataTransfer | always (self_ in alive_c0_dataTransfer implies (((((self_.(@p_c0_dataTransfer :> alive_c0_channel)).(@p_c0_channel :> alive_c0_Protocol)).@r_c0_handshakeStatus).@c0_handshakeStatus_ref) = alive_c0_completed)) }
-fact { all self_ : c0_dataTransfer | always (self_ in alive_c0_dataTransfer implies (((((((self_.(@p_c0_dataTransfer :> alive_c0_channel)).(@p_c0_channel :> alive_c0_Protocol)).@r_c0_client).@c0_client_ref).@r_c0_send).@c0_send_ref) = alive_c0_applicationDataMessage)) }
-fact { all self_ : c0_dataTransfer | always (self_ in alive_c0_dataTransfer implies ((some (self_ & alive_c0_dataTransfer)) => ((some self_.(@p_c0_dataTransfer :> alive_c0_channel) and (some (self_ & alive_c0_dataTransfer))) until (not some self_.(@p_c0_dataTransfer :> alive_c0_channel) or (some (self_.(@p_c0_dataTransfer :> alive_c0_channel)).@r_c0_clientHello))))) }
-
-
-sig c0_fatalError
-{ p_c0_fatalError : lone c0_channel }
-fun alive_c0_fatalError : set c0_fatalError { c0_channel.@r_c0_fatalError }
-fact { always ~@r_c0_fatalError in @p_c0_fatalError
-  always @r_c0_fatalError.univ in alive_c0_channel }
-
-fact { all self_ : c0_fatalError | always (self_ in alive_c0_fatalError implies (((((self_.(@p_c0_fatalError :> alive_c0_channel)).(@p_c0_channel :> alive_c0_Protocol)).@r_c0_handshakeStatus).@c0_handshakeStatus_ref) = alive_c0_failed)) }
-fact { all self_ : c0_fatalError | always (self_ in alive_c0_fatalError implies ((some (self_ & alive_c0_fatalError)) => (after (not some self_.(@p_c0_fatalError :> alive_c0_channel) or (some (self_ & alive_c0_fatalError)))))) }
+fun alive_Client : set Client { alive_aClient }
+
+sig OurServer extends Server
+{ p_OurServer : lone root }
+fun alive_OurServer : set OurServer { root.@r_OurServer }
+fact { always ~@r_OurServer in @p_OurServer }
+
+fact { all self_ : OurServer | always (self_ in alive_OurServer implies (((self_.@r_protocolversion).@protocolversion_ref) = ((alive_SSL2_0 + alive_SSL3_0) + alive_TLS1_2))) }
+
+
+sig aClient extends Client
+{ p_aClient : lone root }
+fun alive_aClient : set aClient { root.@r_aClient }
+fact { always ~@r_aClient in @p_aClient }
+
+fact { all self_ : aClient | always (self_ in alive_aClient implies (some self_.@r_certificate)) }
+fact { all self_ : aClient | always (self_ in alive_aClient implies (((self_.@r_protocolversion).@protocolversion_ref) = alive_TLS1_2)) }
+
+
+sig Protocol extends Domain
+{ p_Protocol : lone root
+, r_client : set client
+, r_server : set server
+, var r_handshakeStatus : set handshakeStatus
+, var r_channel : set channel }
+fun alive_Protocol : set Protocol { root.@r_Protocol }
+fact { always ~@r_Protocol in @p_Protocol }
+
+fact { all self_ : Protocol | always (self_ in alive_Protocol implies (one self_.@r_client)) }
+fact { all self_ : Protocol | always (self_ in alive_Protocol implies (one self_.@r_server)) }
+fact { all self_ : Protocol | always (self_ in alive_Protocol implies (one self_.@r_handshakeStatus)) }
+fact { all self_ : Protocol | always (self_ in alive_Protocol implies (one self_.@r_channel)) }
+
+
+sig client
+{ p_client : lone Protocol
+, client_ref : set aClient }
+{ always (this in alive_client implies (one this.@client_ref))
+  always (this in alive_client implies (this.@client_ref in alive_aClient)) }
+fun alive_client : set client { Protocol.@r_client }
+fact { always ~@r_client in @p_client
+  always @r_client.univ in alive_Protocol }
+
+
+sig server
+{ p_server : lone Protocol
+, server_ref : set OurServer }
+{ always (this in alive_server implies (one this.@server_ref))
+  always (this in alive_server implies (this.@server_ref in alive_OurServer)) }
+fun alive_server : set server { Protocol.@r_server }
+fact { always ~@r_server in @p_server
+  always @r_server.univ in alive_Protocol }
+
+
+sig handshakeStatus
+{ p_handshakeStatus : lone Protocol
+, var handshakeStatus_ref : set HandshakeStatus }
+{ always (this in alive_handshakeStatus implies (one this.@handshakeStatus_ref))
+  always (this in alive_handshakeStatus implies (this.@handshakeStatus_ref in alive_HandshakeStatus)) }
+fun alive_handshakeStatus : set handshakeStatus { Protocol.@r_handshakeStatus }
+fact { always ~@r_handshakeStatus in @p_handshakeStatus
+  always @r_handshakeStatus.univ in alive_Protocol }
+
+
+sig channel
+{ p_channel : lone Protocol
+, var r_clientHello : set clientHello
+, var r_serverResponse : set serverResponse
+, var r_clientResponse : set clientResponse
+, var r_serverFinish : set serverFinish
+, var r_dataTransfer : set dataTransfer
+, var r_fatalError : set fatalError }
+{ always (this in alive_channel implies (let children = (this.@r_clientHello + this.@r_serverResponse + this.@r_clientResponse + this.@r_serverFinish + this.@r_dataTransfer + this.@r_fatalError) | one children))
+  always (this in alive_channel and not before this in alive_channel implies (some this.@r_clientHello)) }
+fun alive_channel : set channel { Protocol.@r_channel }
+fact { always ~@r_channel in @p_channel
+  always @r_channel.univ in alive_Protocol }
+
+fact { all self_ : channel | always (self_ in alive_channel implies (lone self_.@r_clientHello)) }
+fact { all self_ : channel | always (self_ in alive_channel implies (lone self_.@r_serverResponse)) }
+fact { all self_ : channel | always (self_ in alive_channel implies (lone self_.@r_clientResponse)) }
+fact { all self_ : channel | always (self_ in alive_channel implies (lone self_.@r_serverFinish)) }
+fact { all self_ : channel | always (self_ in alive_channel implies (lone self_.@r_dataTransfer)) }
+fact { all self_ : channel | always (self_ in alive_channel implies (lone self_.@r_fatalError)) }
+fact { all self_ : channel | always (self_ in alive_channel implies (((some self_.@r_serverResponse) && (!((some (self_.@r_serverResponse).@r_mismatch) || (some (self_.@r_serverResponse).@r_serverHelloDone)))) => (after (not some self_.(@p_channel :> alive_Protocol) or (some self_.@r_serverResponse))))) }
+fact { all self_ : channel | always (self_ in alive_channel implies ((some (self_.@r_serverResponse).@r_mismatch) => (after (not some self_.(@p_channel :> alive_Protocol) or (some self_.@r_fatalError))))) }
+fact { all self_ : channel | always (self_ in alive_channel implies ((some (self_.@r_serverResponse).@r_serverHelloDone) => (after (not some self_.(@p_channel :> alive_Protocol) or (some self_.@r_clientResponse))))) }
+fact { all self_ : channel | always (self_ in alive_channel implies (((some self_.@r_clientResponse) && (no (self_.@r_clientResponse).@r_clientFinished)) => (after (not some self_.(@p_channel :> alive_Protocol) or (some self_.@r_clientResponse))))) }
+fact { all self_ : channel | always (self_ in alive_channel implies ((some (self_.@r_clientResponse).@r_clientFinished) => (after (not some self_.(@p_channel :> alive_Protocol) or (some self_.@r_serverFinish))))) }
+fact { all self_ : channel | always (self_ in alive_channel implies (((some self_.@r_serverFinish) && (no (self_.@r_serverFinish).@r_serverFinished)) => (after (not some self_.(@p_channel :> alive_Protocol) or (some self_.@r_serverFinish))))) }
+fact { all self_ : channel | always (self_ in alive_channel implies ((some (self_.@r_serverFinish).@r_serverFinished) => (after (not some self_.(@p_channel :> alive_Protocol) or (some self_.@r_dataTransfer))))) }
+
+
+sig clientHello
+{ p_clientHello : lone channel }
+fun alive_clientHello : set clientHello { channel.@r_clientHello }
+fact { always ~@r_clientHello in @p_clientHello
+  always @r_clientHello.univ in alive_channel }
+
+fact { all self_ : clientHello | always (self_ in alive_clientHello implies (((((self_.(@p_clientHello :> alive_channel)).(@p_channel :> alive_Protocol)).@r_handshakeStatus).@handshakeStatus_ref) = alive_initiated)) }
+fact { all self_ : clientHello | always (self_ in alive_clientHello implies (((((((self_.(@p_clientHello :> alive_channel)).(@p_channel :> alive_Protocol)).@r_client).@client_ref).@r_send).@send_ref) = alive_clientHelloMessage)) }
+fact { all self_ : clientHello | always (self_ in alive_clientHello implies ((some (self_ & alive_clientHello)) => (after (not some self_.(@p_clientHello :> alive_channel) or ((some (self_.(@p_clientHello :> alive_channel)).@r_serverResponse) || (some (self_.(@p_clientHello :> alive_channel)).@r_fatalError)))))) }
+
+
+sig serverResponse
+{ p_serverResponse : lone channel
+, var r_mismatch : set mismatch
+, var r_serverHello : set serverHello
+, var r_serverCertificate : set serverCertificate
+, var r_serverKeyExchange : set serverKeyExchange
+, var r_certificateRequest : set certificateRequest
+, var r_serverHelloDone : set serverHelloDone }
+{ always (this in alive_serverResponse implies (let children = (this.@r_mismatch + this.@r_serverHello + this.@r_serverCertificate + this.@r_serverKeyExchange + this.@r_certificateRequest + this.@r_serverHelloDone) | one children)) }
+fun alive_serverResponse : set serverResponse { channel.@r_serverResponse }
+fact { always ~@r_serverResponse in @p_serverResponse
+  always @r_serverResponse.univ in alive_channel }
+
+fact { all self_ : serverResponse | always (self_ in alive_serverResponse implies (lone self_.@r_mismatch)) }
+fact { all self_ : serverResponse | always (self_ in alive_serverResponse implies (lone self_.@r_serverHello)) }
+fact { all self_ : serverResponse | always (self_ in alive_serverResponse implies (lone self_.@r_serverCertificate)) }
+fact { all self_ : serverResponse | always (self_ in alive_serverResponse implies (lone self_.@r_serverKeyExchange)) }
+fact { all self_ : serverResponse | always (self_ in alive_serverResponse implies (lone self_.@r_certificateRequest)) }
+fact { all self_ : serverResponse | always (self_ in alive_serverResponse implies (lone self_.@r_serverHelloDone)) }
+fact { all self_ : serverResponse | always (self_ in alive_serverResponse implies (((((self_.(@p_serverResponse :> alive_channel)).(@p_channel :> alive_Protocol)).@r_handshakeStatus).@handshakeStatus_ref) = alive_initiated)) }
+fact { all self_ : serverResponse | always (self_ in alive_serverResponse implies ((not before self_ in alive_serverResponse) implies ((some self_.@r_serverHello) || (some self_.@r_mismatch)))) }
+fact { all self_ : serverResponse | always (self_ in alive_serverResponse implies (((some self_.@r_serverHello) && (no alive_TLSFeatures.@r_annonymousMode)) => (after (not some self_.(@p_serverResponse :> alive_channel) or (some self_.@r_serverCertificate))))) }
+fact { all self_ : serverResponse | always (self_ in alive_serverResponse implies (((some self_.@r_serverHello) && (some alive_TLSFeatures.@r_annonymousMode)) => (after (not some self_.(@p_serverResponse :> alive_channel) or (some self_.@r_serverKeyExchange))))) }
+fact { all self_ : serverResponse | always (self_ in alive_serverResponse implies (((some self_.@r_serverCertificate) && (some alive_TLSFeatures.@r_clientAuthentication)) => (after (not some self_.(@p_serverResponse :> alive_channel) or ((some self_.@r_serverKeyExchange) || (some self_.@r_certificateRequest)))))) }
+fact { all self_ : serverResponse | always (self_ in alive_serverResponse implies (((some self_.@r_serverCertificate) && (no alive_TLSFeatures.@r_clientAuthentication)) => (after (not some self_.(@p_serverResponse :> alive_channel) or ((some self_.@r_serverKeyExchange) || (some self_.@r_serverHelloDone)))))) }
+fact { all self_ : serverResponse | always (self_ in alive_serverResponse implies (((some self_.@r_serverKeyExchange) && (some alive_TLSFeatures.@r_clientAuthentication)) => (after (not some self_.(@p_serverResponse :> alive_channel) or (some self_.@r_certificateRequest))))) }
+fact { all self_ : serverResponse | always (self_ in alive_serverResponse implies (((some self_.@r_serverKeyExchange) && (no alive_TLSFeatures.@r_clientAuthentication)) => (after (not some self_.(@p_serverResponse :> alive_channel) or (some self_.@r_serverHelloDone))))) }
+
+
+sig mismatch
+{ p_mismatch : lone serverResponse }
+fun alive_mismatch : set mismatch { serverResponse.@r_mismatch }
+fact { always ~@r_mismatch in @p_mismatch
+  always @r_mismatch.univ in alive_serverResponse }
+
+fact { all self_ : mismatch | always (self_ in alive_mismatch implies (no (((((((self_.(@p_mismatch :> alive_serverResponse)).(@p_serverResponse :> alive_channel)).(@p_channel :> alive_Protocol)).@r_client).@client_ref).@r_protocolversion).@protocolversion_ref) & (((((((self_.(@p_mismatch :> alive_serverResponse)).(@p_serverResponse :> alive_channel)).(@p_channel :> alive_Protocol)).@r_server).@server_ref).@r_protocolversion).@protocolversion_ref))) }
+fact { all self_ : mismatch | always (self_ in alive_mismatch implies ((((((((self_.(@p_mismatch :> alive_serverResponse)).(@p_serverResponse :> alive_channel)).(@p_channel :> alive_Protocol)).@r_server).@server_ref).@r_send).@send_ref) = alive_protocolMismatch)) }
+
+
+sig serverHello
+{ p_serverHello : lone serverResponse }
+fun alive_serverHello : set serverHello { serverResponse.@r_serverHello }
+fact { always ~@r_serverHello in @p_serverHello
+  always @r_serverHello.univ in alive_serverResponse }
+
+fact { all self_ : serverHello | always (self_ in alive_serverHello implies (some (((((((self_.(@p_serverHello :> alive_serverResponse)).(@p_serverResponse :> alive_channel)).(@p_channel :> alive_Protocol)).@r_client).@client_ref).@r_protocolversion).@protocolversion_ref) & (((((((self_.(@p_serverHello :> alive_serverResponse)).(@p_serverResponse :> alive_channel)).(@p_channel :> alive_Protocol)).@r_server).@server_ref).@r_protocolversion).@protocolversion_ref))) }
+fact { all self_ : serverHello | always (self_ in alive_serverHello implies ((((((((self_.(@p_serverHello :> alive_serverResponse)).(@p_serverResponse :> alive_channel)).(@p_channel :> alive_Protocol)).@r_server).@server_ref).@r_send).@send_ref) = alive_serverHelloMessage)) }
+
+
+sig serverCertificate
+{ p_serverCertificate : lone serverResponse }
+fun alive_serverCertificate : set serverCertificate { serverResponse.@r_serverCertificate }
+fact { always ~@r_serverCertificate in @p_serverCertificate
+  always @r_serverCertificate.univ in alive_serverResponse }
+
+fact { all self_ : serverCertificate | always (self_ in alive_serverCertificate implies (no alive_TLSFeatures.@r_annonymousMode)) }
+fact { all self_ : serverCertificate | always (self_ in alive_serverCertificate implies ((((((((self_.(@p_serverCertificate :> alive_serverResponse)).(@p_serverResponse :> alive_channel)).(@p_channel :> alive_Protocol)).@r_server).@server_ref).@r_send).@send_ref) = alive_serverCertificateMessage)) }
+
+
+sig serverKeyExchange
+{ p_serverKeyExchange : lone serverResponse }
+fun alive_serverKeyExchange : set serverKeyExchange { serverResponse.@r_serverKeyExchange }
+fact { always ~@r_serverKeyExchange in @p_serverKeyExchange
+  always @r_serverKeyExchange.univ in alive_serverResponse }
+
+fact { all self_ : serverKeyExchange | always (self_ in alive_serverKeyExchange implies ((((((((self_.(@p_serverKeyExchange :> alive_serverResponse)).(@p_serverResponse :> alive_channel)).(@p_channel :> alive_Protocol)).@r_server).@server_ref).@r_send).@send_ref) = alive_serverKeyExchangeMessage)) }
+
+
+sig certificateRequest
+{ p_certificateRequest : lone serverResponse }
+fun alive_certificateRequest : set certificateRequest { serverResponse.@r_certificateRequest }
+fact { always ~@r_certificateRequest in @p_certificateRequest
+  always @r_certificateRequest.univ in alive_serverResponse }
+
+fact { all self_ : certificateRequest | always (self_ in alive_certificateRequest implies (some alive_TLSFeatures.@r_clientAuthentication)) }
+fact { all self_ : certificateRequest | always (self_ in alive_certificateRequest implies ((((((((self_.(@p_certificateRequest :> alive_serverResponse)).(@p_serverResponse :> alive_channel)).(@p_channel :> alive_Protocol)).@r_server).@server_ref).@r_send).@send_ref) = alive_serverCertificateRequestMessage)) }
+fact { all self_ : certificateRequest | always (self_ in alive_certificateRequest implies ((some (self_ & alive_certificateRequest)) => (after (not some self_.(@p_certificateRequest :> alive_serverResponse) or (some (self_.(@p_certificateRequest :> alive_serverResponse)).@r_serverHelloDone))))) }
+
+
+sig serverHelloDone
+{ p_serverHelloDone : lone serverResponse }
+fun alive_serverHelloDone : set serverHelloDone { serverResponse.@r_serverHelloDone }
+fact { always ~@r_serverHelloDone in @p_serverHelloDone
+  always @r_serverHelloDone.univ in alive_serverResponse }
+
+fact { all self_ : serverHelloDone | always (self_ in alive_serverHelloDone implies ((((((((self_.(@p_serverHelloDone :> alive_serverResponse)).(@p_serverResponse :> alive_channel)).(@p_channel :> alive_Protocol)).@r_server).@server_ref).@r_send).@send_ref) = alive_serverHelloDoneMessage)) }
+
+
+sig clientResponse
+{ p_clientResponse : lone channel
+, var r_clientCertificate : set clientCertificate
+, var r_clientKeyExchange : set clientKeyExchange
+, var r_certificateVerify : set certificateVerify
+, var r_clientChangeCipherSpec : set clientChangeCipherSpec
+, var r_clientFinished : set clientFinished }
+{ always (this in alive_clientResponse implies (let children = (this.@r_clientCertificate + this.@r_clientKeyExchange + this.@r_certificateVerify + this.@r_clientChangeCipherSpec + this.@r_clientFinished) | one children)) }
+fun alive_clientResponse : set clientResponse { channel.@r_clientResponse }
+fact { always ~@r_clientResponse in @p_clientResponse
+  always @r_clientResponse.univ in alive_channel }
+
+fact { all self_ : clientResponse | always (self_ in alive_clientResponse implies (lone self_.@r_clientCertificate)) }
+fact { all self_ : clientResponse | always (self_ in alive_clientResponse implies (lone self_.@r_clientKeyExchange)) }
+fact { all self_ : clientResponse | always (self_ in alive_clientResponse implies (lone self_.@r_certificateVerify)) }
+fact { all self_ : clientResponse | always (self_ in alive_clientResponse implies (lone self_.@r_clientChangeCipherSpec)) }
+fact { all self_ : clientResponse | always (self_ in alive_clientResponse implies (lone self_.@r_clientFinished)) }
+fact { all self_ : clientResponse | always (self_ in alive_clientResponse implies (((((self_.(@p_clientResponse :> alive_channel)).(@p_channel :> alive_Protocol)).@r_handshakeStatus).@handshakeStatus_ref) = alive_initiated)) }
+fact { all self_ : clientResponse | always (self_ in alive_clientResponse implies ((not before self_ in alive_clientResponse) implies ((some alive_TLSFeatures.@r_clientAuthentication) => (some self_.@r_clientCertificate)))) }
+fact { all self_ : clientResponse | always (self_ in alive_clientResponse implies ((not before self_ in alive_clientResponse) implies ((no alive_TLSFeatures.@r_clientAuthentication) => (some self_.@r_clientKeyExchange)))) }
+fact { all self_ : clientResponse | always (self_ in alive_clientResponse implies (((some self_.@r_clientKeyExchange) && ((some alive_TLSFeatures.@r_clientAuthentication) && (some (((((self_.(@p_clientResponse :> alive_channel)).(@p_channel :> alive_Protocol)).@r_client).@client_ref).@r_certificate).@r_signing))) => (after (not some self_.(@p_clientResponse :> alive_channel) or (some self_.@r_certificateVerify))))) }
+fact { all self_ : clientResponse | always (self_ in alive_clientResponse implies (((some self_.@r_clientKeyExchange) && (!((some alive_TLSFeatures.@r_clientAuthentication) && (some (((((self_.(@p_clientResponse :> alive_channel)).(@p_channel :> alive_Protocol)).@r_client).@client_ref).@r_certificate).@r_signing)))) => (after (not some self_.(@p_clientResponse :> alive_channel) or (some self_.@r_clientChangeCipherSpec))))) }
+
+
+sig clientCertificate
+{ p_clientCertificate : lone clientResponse }
+fun alive_clientCertificate : set clientCertificate { clientResponse.@r_clientCertificate }
+fact { always ~@r_clientCertificate in @p_clientCertificate
+  always @r_clientCertificate.univ in alive_clientResponse }
+
+fact { all self_ : clientCertificate | always (self_ in alive_clientCertificate implies (some alive_TLSFeatures.@r_clientAuthentication)) }
+fact { all self_ : clientCertificate | always (self_ in alive_clientCertificate implies ((((((((self_.(@p_clientCertificate :> alive_clientResponse)).(@p_clientResponse :> alive_channel)).(@p_channel :> alive_Protocol)).@r_client).@client_ref).@r_send).@send_ref) = alive_clientCertificateMessage)) }
+fact { all self_ : clientCertificate | always (self_ in alive_clientCertificate implies ((some (self_ & alive_clientCertificate)) => (after (not some self_.(@p_clientCertificate :> alive_clientResponse) or (some (self_.(@p_clientCertificate :> alive_clientResponse)).@r_clientKeyExchange))))) }
+
+
+sig clientKeyExchange
+{ p_clientKeyExchange : lone clientResponse }
+fun alive_clientKeyExchange : set clientKeyExchange { clientResponse.@r_clientKeyExchange }
+fact { always ~@r_clientKeyExchange in @p_clientKeyExchange
+  always @r_clientKeyExchange.univ in alive_clientResponse }
+
+fact { all self_ : clientKeyExchange | always (self_ in alive_clientKeyExchange implies ((((((((self_.(@p_clientKeyExchange :> alive_clientResponse)).(@p_clientResponse :> alive_channel)).(@p_channel :> alive_Protocol)).@r_client).@client_ref).@r_send).@send_ref) = alive_clientKeyExchangeMessage)) }
+
+
+sig certificateVerify
+{ p_certificateVerify : lone clientResponse }
+fun alive_certificateVerify : set certificateVerify { clientResponse.@r_certificateVerify }
+fact { always ~@r_certificateVerify in @p_certificateVerify
+  always @r_certificateVerify.univ in alive_clientResponse }
+
+fact { all self_ : certificateVerify | always (self_ in alive_certificateVerify implies (some ((((((self_.(@p_certificateVerify :> alive_clientResponse)).(@p_clientResponse :> alive_channel)).(@p_channel :> alive_Protocol)).@r_client).@client_ref).@r_certificate).@r_signing)) }
+fact { all self_ : certificateVerify | always (self_ in alive_certificateVerify implies ((((((((self_.(@p_certificateVerify :> alive_clientResponse)).(@p_clientResponse :> alive_channel)).(@p_channel :> alive_Protocol)).@r_client).@client_ref).@r_send).@send_ref) = alive_certificateVerifyMessage)) }
+fact { all self_ : certificateVerify | always (self_ in alive_certificateVerify implies ((some (self_ & alive_certificateVerify)) => (after (not some self_.(@p_certificateVerify :> alive_clientResponse) or (some (self_.(@p_certificateVerify :> alive_clientResponse)).@r_clientChangeCipherSpec))))) }
+
+
+sig clientChangeCipherSpec
+{ p_clientChangeCipherSpec : lone clientResponse }
+fun alive_clientChangeCipherSpec : set clientChangeCipherSpec { clientResponse.@r_clientChangeCipherSpec }
+fact { always ~@r_clientChangeCipherSpec in @p_clientChangeCipherSpec
+  always @r_clientChangeCipherSpec.univ in alive_clientResponse }
+
+fact { all self_ : clientChangeCipherSpec | always (self_ in alive_clientChangeCipherSpec implies ((((((((self_.(@p_clientChangeCipherSpec :> alive_clientResponse)).(@p_clientResponse :> alive_channel)).(@p_channel :> alive_Protocol)).@r_client).@client_ref).@r_send).@send_ref) = alive_clientChangeCipherSpecMessage)) }
+fact { all self_ : clientChangeCipherSpec | always (self_ in alive_clientChangeCipherSpec implies ((some (self_ & alive_clientChangeCipherSpec)) => (after (not some self_.(@p_clientChangeCipherSpec :> alive_clientResponse) or (some (self_.(@p_clientChangeCipherSpec :> alive_clientResponse)).@r_clientFinished))))) }
+
+
+sig clientFinished
+{ p_clientFinished : lone clientResponse }
+fun alive_clientFinished : set clientFinished { clientResponse.@r_clientFinished }
+fact { always ~@r_clientFinished in @p_clientFinished
+  always @r_clientFinished.univ in alive_clientResponse }
+
+fact { all self_ : clientFinished | always (self_ in alive_clientFinished implies ((((((((self_.(@p_clientFinished :> alive_clientResponse)).(@p_clientResponse :> alive_channel)).(@p_channel :> alive_Protocol)).@r_client).@client_ref).@r_send).@send_ref) = alive_clientFinishedMessage)) }
+
+
+sig serverFinish
+{ p_serverFinish : lone channel
+, var r_serverChangeCipherSpec : set serverChangeCipherSpec
+, var r_serverFinished : set serverFinished }
+{ always (this in alive_serverFinish implies (let children = (this.@r_serverChangeCipherSpec + this.@r_serverFinished) | one children))
+  always (this in alive_serverFinish and not before this in alive_serverFinish implies (some this.@r_serverChangeCipherSpec)) }
+fun alive_serverFinish : set serverFinish { channel.@r_serverFinish }
+fact { always ~@r_serverFinish in @p_serverFinish
+  always @r_serverFinish.univ in alive_channel }
+
+fact { all self_ : serverFinish | always (self_ in alive_serverFinish implies (lone self_.@r_serverChangeCipherSpec)) }
+fact { all self_ : serverFinish | always (self_ in alive_serverFinish implies (lone self_.@r_serverFinished)) }
+
+
+sig serverChangeCipherSpec
+{ p_serverChangeCipherSpec : lone serverFinish }
+fun alive_serverChangeCipherSpec : set serverChangeCipherSpec { serverFinish.@r_serverChangeCipherSpec }
+fact { always ~@r_serverChangeCipherSpec in @p_serverChangeCipherSpec
+  always @r_serverChangeCipherSpec.univ in alive_serverFinish }
+
+fact { all self_ : serverChangeCipherSpec | always (self_ in alive_serverChangeCipherSpec implies ((((((self_.(@p_serverChangeCipherSpec :> alive_serverFinish)).(@p_serverFinish :> alive_channel)).(@p_channel :> alive_Protocol)).@r_handshakeStatus).@handshakeStatus_ref) = alive_initiated)) }
+fact { all self_ : serverChangeCipherSpec | always (self_ in alive_serverChangeCipherSpec implies ((((((((self_.(@p_serverChangeCipherSpec :> alive_serverFinish)).(@p_serverFinish :> alive_channel)).(@p_channel :> alive_Protocol)).@r_server).@server_ref).@r_send).@send_ref) = alive_serverChangeCipherSpecMessage)) }
+fact { all self_ : serverChangeCipherSpec | always (self_ in alive_serverChangeCipherSpec implies ((some (self_ & alive_serverChangeCipherSpec)) => (after (not some self_.(@p_serverChangeCipherSpec :> alive_serverFinish) or (some (self_.(@p_serverChangeCipherSpec :> alive_serverFinish)).@r_serverFinished))))) }
+
+
+sig serverFinished
+{ p_serverFinished : lone serverFinish }
+fun alive_serverFinished : set serverFinished { serverFinish.@r_serverFinished }
+fact { always ~@r_serverFinished in @p_serverFinished
+  always @r_serverFinished.univ in alive_serverFinish }
+
+fact { all self_ : serverFinished | always (self_ in alive_serverFinished implies ((((((((self_.(@p_serverFinished :> alive_serverFinish)).(@p_serverFinish :> alive_channel)).(@p_channel :> alive_Protocol)).@r_server).@server_ref).@r_send).@send_ref) = alive_serverFinishedMessage)) }
+fact { all self_ : serverFinished | always (self_ in alive_serverFinished implies ((((((self_.(@p_serverFinished :> alive_serverFinish)).(@p_serverFinish :> alive_channel)).(@p_channel :> alive_Protocol)).@r_handshakeStatus).@handshakeStatus_ref) = alive_completed)) }
+
+
+sig dataTransfer
+{ p_dataTransfer : lone channel }
+fun alive_dataTransfer : set dataTransfer { channel.@r_dataTransfer }
+fact { always ~@r_dataTransfer in @p_dataTransfer
+  always @r_dataTransfer.univ in alive_channel }
+
+fact { all self_ : dataTransfer | always (self_ in alive_dataTransfer implies (((((self_.(@p_dataTransfer :> alive_channel)).(@p_channel :> alive_Protocol)).@r_handshakeStatus).@handshakeStatus_ref) = alive_completed)) }
+fact { all self_ : dataTransfer | always (self_ in alive_dataTransfer implies (((((((self_.(@p_dataTransfer :> alive_channel)).(@p_channel :> alive_Protocol)).@r_client).@client_ref).@r_send).@send_ref) = alive_applicationDataMessage)) }
+fact { all self_ : dataTransfer | always (self_ in alive_dataTransfer implies ((some (self_ & alive_dataTransfer)) => ((some self_.(@p_dataTransfer :> alive_channel) and (some (self_ & alive_dataTransfer))) until (not some self_.(@p_dataTransfer :> alive_channel) or (some (self_.(@p_dataTransfer :> alive_channel)).@r_clientHello))))) }
+
+
+sig fatalError
+{ p_fatalError : lone channel }
+fun alive_fatalError : set fatalError { channel.@r_fatalError }
+fact { always ~@r_fatalError in @p_fatalError
+  always @r_fatalError.univ in alive_channel }
+
+fact { all self_ : fatalError | always (self_ in alive_fatalError implies (((((self_.(@p_fatalError :> alive_channel)).(@p_channel :> alive_Protocol)).@r_handshakeStatus).@handshakeStatus_ref) = alive_failed)) }
+fact { all self_ : fatalError | always (self_ in alive_fatalError implies ((some (self_ & alive_fatalError)) => (after (not some self_.(@p_fatalError :> alive_channel) or (some (self_ & alive_fatalError)))))) }
 
 

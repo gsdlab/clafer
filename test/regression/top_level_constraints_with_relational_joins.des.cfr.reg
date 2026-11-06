@@ -1,17 +1,17 @@
 //# OPTIONS --explicit
-[c0_CompilerGradStudent . c0_first . dref = c0_CompilerCourse]
-[c0_AIGradStudent . c0_first . dref = c0_MachineLearningCourse]
-[((#c0_numerOfAssistants) >= 1) => (c0_numerOfAssistants . dref = (#c0_Course . c0_assistants))]
-abstract 0..* c0_Course 0..* {
-  0..* c0_assistants -> c0_TA 0..* {}
+[CompilerGradStudent . first . dref = CompilerCourse]
+[AIGradStudent . first . dref = MachineLearningCourse]
+[((#numerOfAssistants) >= 1) => (numerOfAssistants . dref = (#Course . assistants))]
+abstract 0..* Course 0..* {
+  0..* assistants -> TA 0..* {}
 }
-abstract 0..* c0_TA 0..* {
-  0..* c0_first -> c0_Course 0..1 {
-    [this . parent in this . dref . c0_assistants . dref]
+abstract 0..* TA 0..* {
+  0..* first -> Course 0..1 {
+    [this . parent in this . dref . assistants . dref]
   }
 }
-0..* c0_CompilerGradStudent : c0_TA 1..1 {}
-0..* c0_AIGradStudent : c0_TA 1..1 {}
-0..* c0_CompilerCourse : c0_Course 1..1 {}
-0..* c0_MachineLearningCourse : c0_Course 1..1 {}
-0..* c0_numerOfAssistants -> int 1..1 {}
+0..* CompilerGradStudent : TA 1..1 {}
+0..* AIGradStudent : TA 1..1 {}
+0..* CompilerCourse : Course 1..1 {}
+0..* MachineLearningCourse : Course 1..1 {}
+0..* numerOfAssistants -> int 1..1 {}

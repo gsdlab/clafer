@@ -22,9 +22,9 @@ a[href$='Ambiguous name'] {color: yellow}
 <div class="file">positive/i10_this_in_integer_reference.cfr</div>
 
 <div>
-<span class="claferDecl" id="c0_A">A</span>
+<span class="claferDecl" id="A">A</span>
   <div class="indent">
-  <span class="claferDecl" id="c0_x">x</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a>
+  <span class="claferDecl" id="x">x</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a>
     <div class="indent">
     <span class="keyword">[</span> <span class="keyword">this</span> &gt;= 0 <span class="keyword">]</span></div>
   </div>

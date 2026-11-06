@@ -1,52 +1,52 @@
 //# OPTIONS --explicit
-[(#c0_telematicsSystem . c0_channel . c0_dual) >= 1]
-[(#c0_telematicsSystem . c0_extraDisplay) >= 1]
-[(#c0_telematicsSystem . c0_size . c0_large) >= 1]
-[c0_comp . c0_version . dref = 1]
-0..* c0_telematicsSystem 1..1 {
-  [((#this . c0_channel . c0_dual) >= 1) <=> ((#c0_ECU2) >= 1)]
-  [((#this . c0_extraDisplay) >= 1) <=> ((#c0_ECU1 . c1_display) = 2)]
-  [((#this . c0_extraDisplay) >= 1) <=> (((#c0_ECU2) >= 1) => ((#c0_ECU2 . c1_display) = 2))]
-  [((#this . c0_size . c0_large) >= 1) <=> ((#c0_plaECU . c1_display . c0_options . c1_size . c1_small) = 0)]
-  [((#this . c0_size . c0_small) >= 1) <=> ((#c0_plaECU . c1_display . c0_options . c1_size . c1_large) = 0)]
-  1..1 c0_channel 1..1 {
-    0..* c0_single 0..1 {}
-    0..* c0_dual 0..1 {}
+[(#telematicsSystem . channel . dual) >= 1]
+[(#telematicsSystem . extraDisplay) >= 1]
+[(#telematicsSystem . telematicsSystem__size . telematicsSystem__size__large) >= 1]
+[comp . version . dref = 1]
+0..* telematicsSystem 1..1 {
+  [((#this . channel . dual) >= 1) <=> ((#ECU2) >= 1)]
+  [((#this . extraDisplay) >= 1) <=> ((#ECU1 . plaECU__display) = 2)]
+  [((#this . extraDisplay) >= 1) <=> (((#ECU2) >= 1) => ((#ECU2 . plaECU__display) = 2))]
+  [((#this . telematicsSystem__size . telematicsSystem__size__large) >= 1) <=> ((#plaECU . plaECU__display . display__options . options__size . options__size__small) = 0)]
+  [((#this . telematicsSystem__size . telematicsSystem__size__small) >= 1) <=> ((#plaECU . plaECU__display . display__options . options__size . options__size__large) = 0)]
+  1..1 channel 1..1 {
+    0..* single 0..1 {}
+    0..* dual 0..1 {}
   }
-  0..* c0_extraDisplay 0..1 {}
-  1..1 c0_size 1..1 {
-    0..* c0_small 0..1 {}
-    0..* c0_large 0..1 {}
+  0..* extraDisplay 0..1 {}
+  1..1 telematicsSystem__size 1..1 {
+    0..* telematicsSystem__size__small 0..1 {}
+    0..* telematicsSystem__size__large 0..1 {}
   }
 }
-abstract 0..* c0_comp 0..* {
-  0..* c0_version -> int 1..1 {}
+abstract 0..* comp 0..* {
+  0..* version -> int 1..1 {}
 }
-abstract 0..* c0_ECU : c0_comp 0..* {}
-abstract 0..* c0_display : c0_comp 0..* {
-  [this . c0_version . dref >= this . c0_server . dref . c0_version . dref]
-  0..* c0_server -> c0_ECU 1..1 {}
-  0..* c0_options : c1_options 1..1 {}
+abstract 0..* ECU : comp 0..* {}
+abstract 0..* root__display : comp 0..* {
+  [this . version . dref >= this . server . dref . version . dref]
+  0..* server -> ECU 1..1 {}
+  0..* display__options : root__options 1..1 {}
 }
-abstract 0..* c1_options 0..* {
-  [(((#this . c1_size . c1_small) >= 1) && ((#this . c0_cache) >= 1)) => ((#this . c0_cache . c2_size . c0_fixed) >= 1)]
-  1..1 c1_size 1..1 {
-    0..* c1_small 0..1 {}
-    0..* c1_large 0..1 {}
+abstract 0..* root__options 0..* {
+  [(((#this . options__size . options__size__small) >= 1) && ((#this . cache) >= 1)) => ((#this . cache . cache__size . fixed) >= 1)]
+  1..1 options__size 1..1 {
+    0..* options__size__small 0..1 {}
+    0..* options__size__large 0..1 {}
   }
-  0..* c0_cache 0..1 {
-    0..* c2_size -> int 1..1 {
-      0..* c0_fixed 0..1 {}
+  0..* cache 0..1 {
+    0..* cache__size -> int 1..1 {
+      0..* fixed 0..1 {}
     }
   }
 }
-abstract 0..* c0_plaECU : c0_ECU 0..* {
-  0..* c1_display : c0_display 1..2 {
-    [this . c0_server . dref = this . parent]
-    [(#this . c0_options . c0_cache) = 0]
+abstract 0..* plaECU : ECU 0..* {
+  0..* plaECU__display : root__display 1..2 {
+    [this . server . dref = this . parent]
+    [(#this . display__options . cache) = 0]
   }
 }
-0..* c0_ECU1 : c0_plaECU 1..1 {}
-0..* c0_ECU2 : c0_plaECU 0..1 {
-  0..* c0_master -> c0_ECU1 1..1 {}
+0..* ECU1 : plaECU 1..1 {}
+0..* ECU2 : plaECU 0..1 {
+  0..* master -> ECU1 1..1 {}
 }

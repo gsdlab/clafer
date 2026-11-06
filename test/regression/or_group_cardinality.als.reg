@@ -2,16 +2,16 @@ open util/integer
 pred show {}
 
 
-one sig c0_A
-{ r_c0_B : lone c0_B
-, r_c0_C : lone c0_C }
-{ let children = (r_c0_B + r_c0_C) | some children }
+one sig A
+{ r_B : lone B
+, r_C : lone C }
+{ let children = (r_B + r_C) | some children }
 
-lone sig c0_B
+lone sig B
 {}
-{ one r_c0_B }
+{ one r_B }
 
-lone sig c0_C
+lone sig C
 {}
-{ one r_c0_C }
+{ one r_C }
 

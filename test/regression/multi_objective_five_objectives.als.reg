@@ -2,125 +2,125 @@ open util/integer
 pred show {}
 
 
-abstract sig c0_Feature
-{ r_c0_performance : one c0_performance
-, r_c0_energy : one c0_energy
-, r_c0_mass : one c0_mass
-, r_c0_cost : one c0_cost }
-{ ((this.@r_c0_mass).@c0_mass_ref) >= 0
-  ((this.@r_c0_cost).@c0_cost_ref) >= 0 }
+abstract sig Feature
+{ r_performance : one performance
+, r_energy : one energy
+, r_mass : one mass
+, r_cost : one cost }
+{ ((this.@r_mass).@mass_ref) >= 0
+  ((this.@r_cost).@cost_ref) >= 0 }
 
-sig c0_performance
-{ c0_performance_ref : one Int }
-{ one @r_c0_performance.this }
+sig performance
+{ performance_ref : one Int }
+{ one @r_performance.this }
 
-sig c0_energy
-{ c0_energy_ref : one Int }
-{ one @r_c0_energy.this }
+sig energy
+{ energy_ref : one Int }
+{ one @r_energy.this }
 
-sig c0_mass
-{ c0_mass_ref : one Int }
-{ one @r_c0_mass.this }
+sig mass
+{ mass_ref : one Int }
+{ one @r_mass.this }
 
-sig c0_cost
-{ c0_cost_ref : one Int }
-{ one @r_c0_cost.this }
+sig cost
+{ cost_ref : one Int }
+{ one @r_cost.this }
 
-abstract sig c0_SecurityFeature extends c0_Feature
-{ r_c0_security : one c0_security }
+abstract sig SecurityFeature extends Feature
+{ r_security : one security }
 
-sig c0_security
-{ c0_security_ref : one Int }
-{ one @r_c0_security.this }
+sig security
+{ security_ref : one Int }
+{ one @r_security.this }
 
-abstract sig c0_MobilePhone
-{ r_c0_Connectivity : one c0_Connectivity
-, r_c0_PasswordProtection : lone c0_PasswordProtection
-, r_c0_FingerprintProtection : lone c0_FingerprintProtection
-, r_c0_total_performance : one c0_total_performance
-, r_c0_total_energy : one c0_total_energy
-, r_c0_total_security : one c0_total_security
-, r_c0_total_mass : one c0_total_mass
-, r_c0_total_cost : one c0_total_cost }
-{ (some this.@r_c0_total_performance) => (((this.@r_c0_total_performance).@c0_total_performance_ref) = (sum temp : (c0_Feature.@r_c0_performance) | temp.@c0_performance_ref))
-  (some this.@r_c0_total_energy) => (((this.@r_c0_total_energy).@c0_total_energy_ref) = (sum temp : (c0_Feature.@r_c0_energy) | temp.@c0_energy_ref))
-  (some this.@r_c0_total_security) => (((this.@r_c0_total_security).@c0_total_security_ref) = (sum temp : (c0_SecurityFeature.@r_c0_security) | temp.@c0_security_ref))
-  (some this.@r_c0_total_mass) => (((this.@r_c0_total_mass).@c0_total_mass_ref) = (sum temp : (c0_Feature.@r_c0_mass) | temp.@c0_mass_ref))
-  (some this.@r_c0_total_cost) => (((this.@r_c0_total_cost).@c0_total_cost_ref) = (sum temp : (c0_Feature.@r_c0_cost) | temp.@c0_cost_ref)) }
+abstract sig MobilePhone
+{ r_Connectivity : one Connectivity
+, r_PasswordProtection : lone PasswordProtection
+, r_FingerprintProtection : lone FingerprintProtection
+, r_total_performance : one total_performance
+, r_total_energy : one total_energy
+, r_total_security : one total_security
+, r_total_mass : one total_mass
+, r_total_cost : one total_cost }
+{ (some this.@r_total_performance) => (((this.@r_total_performance).@total_performance_ref) = (sum temp : (Feature.@r_performance) | temp.@performance_ref))
+  (some this.@r_total_energy) => (((this.@r_total_energy).@total_energy_ref) = (sum temp : (Feature.@r_energy) | temp.@energy_ref))
+  (some this.@r_total_security) => (((this.@r_total_security).@total_security_ref) = (sum temp : (SecurityFeature.@r_security) | temp.@security_ref))
+  (some this.@r_total_mass) => (((this.@r_total_mass).@total_mass_ref) = (sum temp : (Feature.@r_mass) | temp.@mass_ref))
+  (some this.@r_total_cost) => (((this.@r_total_cost).@total_cost_ref) = (sum temp : (Feature.@r_cost) | temp.@cost_ref)) }
 
-sig c0_Connectivity extends c0_Feature
-{ r_c0_Bluetooth : lone c0_Bluetooth
-, r_c0_USB : lone c0_USB
-, r_c0_Wifi : lone c0_Wifi }
-{ one @r_c0_Connectivity.this
-  let children = (r_c0_Bluetooth + r_c0_USB + r_c0_Wifi + r_c0_performance + r_c0_energy + r_c0_mass + r_c0_cost) | some children
-  ((this.@r_c0_performance).@c0_performance_ref) = 0
-  ((this.@r_c0_energy).@c0_energy_ref) = 0
-  ((this.@r_c0_mass).@c0_mass_ref) = 0
-  ((this.@r_c0_cost).@c0_cost_ref) = 12 }
+sig Connectivity extends Feature
+{ r_Bluetooth : lone Bluetooth
+, r_USB : lone USB
+, r_Wifi : lone Wifi }
+{ one @r_Connectivity.this
+  let children = (r_Bluetooth + r_USB + r_Wifi + r_performance + r_energy + r_mass + r_cost) | some children
+  ((this.@r_performance).@performance_ref) = 0
+  ((this.@r_energy).@energy_ref) = 0
+  ((this.@r_mass).@mass_ref) = 0
+  ((this.@r_cost).@cost_ref) = 12 }
 
-sig c0_Bluetooth extends c0_Feature
+sig Bluetooth extends Feature
 {}
-{ one @r_c0_Bluetooth.this
-  ((this.@r_c0_performance).@c0_performance_ref) = 9
-  ((this.@r_c0_energy).@c0_energy_ref) = 10
-  ((this.@r_c0_mass).@c0_mass_ref) = 2
-  ((this.@r_c0_cost).@c0_cost_ref) = 3 }
+{ one @r_Bluetooth.this
+  ((this.@r_performance).@performance_ref) = 9
+  ((this.@r_energy).@energy_ref) = 10
+  ((this.@r_mass).@mass_ref) = 2
+  ((this.@r_cost).@cost_ref) = 3 }
 
-sig c0_USB extends c0_Feature
+sig USB extends Feature
 {}
-{ one @r_c0_USB.this
-  ((this.@r_c0_performance).@c0_performance_ref) = 10
-  ((this.@r_c0_energy).@c0_energy_ref) = 5
-  ((this.@r_c0_mass).@c0_mass_ref) = 3
-  ((this.@r_c0_cost).@c0_cost_ref) = 5 }
+{ one @r_USB.this
+  ((this.@r_performance).@performance_ref) = 10
+  ((this.@r_energy).@energy_ref) = 5
+  ((this.@r_mass).@mass_ref) = 3
+  ((this.@r_cost).@cost_ref) = 5 }
 
-sig c0_Wifi extends c0_Feature
+sig Wifi extends Feature
 {}
-{ one @r_c0_Wifi.this
-  ((this.@r_c0_performance).@c0_performance_ref) = 22
-  ((this.@r_c0_energy).@c0_energy_ref) = 17
-  ((this.@r_c0_mass).@c0_mass_ref) = 6
-  ((this.@r_c0_cost).@c0_cost_ref) = 5 }
+{ one @r_Wifi.this
+  ((this.@r_performance).@performance_ref) = 22
+  ((this.@r_energy).@energy_ref) = 17
+  ((this.@r_mass).@mass_ref) = 6
+  ((this.@r_cost).@cost_ref) = 5 }
 
-sig c0_PasswordProtection extends c0_SecurityFeature
+sig PasswordProtection extends SecurityFeature
 {}
-{ one @r_c0_PasswordProtection.this
-  ((this.@r_c0_security).@c0_security_ref) = 5
-  ((this.@r_c0_performance).@c0_performance_ref) = 1
-  ((this.@r_c0_energy).@c0_energy_ref) = 2
-  ((this.@r_c0_mass).@c0_mass_ref) = 0
-  ((this.@r_c0_cost).@c0_cost_ref) = 2 }
+{ one @r_PasswordProtection.this
+  ((this.@r_security).@security_ref) = 5
+  ((this.@r_performance).@performance_ref) = 1
+  ((this.@r_energy).@energy_ref) = 2
+  ((this.@r_mass).@mass_ref) = 0
+  ((this.@r_cost).@cost_ref) = 2 }
 
-sig c0_FingerprintProtection extends c0_SecurityFeature
+sig FingerprintProtection extends SecurityFeature
 {}
-{ one @r_c0_FingerprintProtection.this
-  ((this.@r_c0_mass).@c0_mass_ref) = 0
-  ((this.@r_c0_security).@c0_security_ref) = 5
-  ((this.@r_c0_performance).@c0_performance_ref) = 3
-  ((this.@r_c0_energy).@c0_energy_ref) = 1
-  ((this.@r_c0_cost).@c0_cost_ref) = 13 }
+{ one @r_FingerprintProtection.this
+  ((this.@r_mass).@mass_ref) = 0
+  ((this.@r_security).@security_ref) = 5
+  ((this.@r_performance).@performance_ref) = 3
+  ((this.@r_energy).@energy_ref) = 1
+  ((this.@r_cost).@cost_ref) = 13 }
 
-sig c0_total_performance
-{ c0_total_performance_ref : one Int }
-{ one @r_c0_total_performance.this }
+sig total_performance
+{ total_performance_ref : one Int }
+{ one @r_total_performance.this }
 
-sig c0_total_energy
-{ c0_total_energy_ref : one Int }
-{ one @r_c0_total_energy.this }
+sig total_energy
+{ total_energy_ref : one Int }
+{ one @r_total_energy.this }
 
-sig c0_total_security
-{ c0_total_security_ref : one Int }
-{ one @r_c0_total_security.this }
+sig total_security
+{ total_security_ref : one Int }
+{ one @r_total_security.this }
 
-sig c0_total_mass
-{ c0_total_mass_ref : one Int }
-{ one @r_c0_total_mass.this }
+sig total_mass
+{ total_mass_ref : one Int }
+{ one @r_total_mass.this }
 
-sig c0_total_cost
-{ c0_total_cost_ref : one Int }
-{ one @r_c0_total_cost.this }
+sig total_cost
+{ total_cost_ref : one Int }
+{ one @r_total_cost.this }
 
-one sig c0_MyPhone extends c0_MobilePhone
+one sig MyPhone extends MobilePhone
 {}
 

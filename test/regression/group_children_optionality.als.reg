@@ -2,66 +2,66 @@ open util/integer
 pred show {}
 
 
-one sig c0_A
-{ r_c0_b : lone c0_b
-, r_c0_c : one c0_c
-, r_c0_d : lone c0_d }
-{ let children = (r_c0_b + r_c0_c + r_c0_d) | 2 <= #children and #children <= 3 }
+one sig A
+{ r_b : lone b
+, r_c : one c
+, r_d : lone d }
+{ let children = (r_b + r_c + r_d) | 2 <= #children and #children <= 3 }
 
-lone sig c0_b
+lone sig b
 {}
-{ one r_c0_b }
+{ one r_b }
 
-one sig c0_c
+one sig c
 {}
 
-lone sig c0_d
+lone sig d
 {}
-{ one r_c0_d }
+{ one r_d }
 
-one sig c0_E
-{ r_c0_f : lone c0_f
-, r_c0_g : lone c0_g }
-{ let children = (r_c0_f + r_c0_g) | one children }
+one sig E
+{ r_f : lone f
+, r_g : lone g }
+{ let children = (r_f + r_g) | one children }
 
-lone sig c0_f
+lone sig f
 {}
-{ one r_c0_f }
+{ one r_f }
 
-lone sig c0_g
+lone sig g
 {}
-{ one r_c0_g }
+{ one r_g }
 
-assert assertAt_13_10 { (some c0_E.@r_c0_f) || (some c0_E.@r_c0_g) }
+assert assertAt_13_10 { (some E.@r_f) || (some E.@r_g) }
 check assertAt_13_10 for 1
 
-assert assertAt_14_10 { !((some c0_E.@r_c0_f) && (some c0_E.@r_c0_g)) }
+assert assertAt_14_10 { !((some E.@r_f) && (some E.@r_g)) }
 check assertAt_14_10 for 1
 
-one sig c0_D
-{ r_c0_Z : one c0_Z
-, r_c0_K : lone c0_K }
+one sig D
+{ r_Z : one Z
+, r_K : lone K }
 
-one sig c0_Z
+one sig Z
 {}
 
-lone sig c0_K
+lone sig K
 {}
-{ one r_c0_K }
+{ one r_K }
 
-assert assertAt_21_10 { one c0_D }
+assert assertAt_21_10 { one D }
 check assertAt_21_10 for 1
 
-assert assertAt_22_10 { one c0_D.@r_c0_Z }
+assert assertAt_22_10 { one D.@r_Z }
 check assertAt_22_10 for 1
 
-one sig c0_L
-{ r_c0_M : one c0_M
-, r_c0_N : one c0_N }
+one sig L
+{ r_M : one M
+, r_N : one N }
 
-one sig c0_M
+one sig M
 {}
 
-one sig c0_N
+one sig N
 {}
 

@@ -2,9 +2,9 @@ open util/integer
 pred show {}
 
 
-abstract sig c0_A
+abstract sig A
 {}
 
-one sig c0_a extends c0_A
+one sig a extends A
 {}
 

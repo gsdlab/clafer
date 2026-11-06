@@ -2,32 +2,32 @@ open util/integer
 pred show {}
 
 
-abstract sig c0_Person
-{ r_c0_Age : one c0_Age }
+abstract sig Person
+{ r_Age : one Age }
 
-sig c0_Age
-{ c0_Age_ref : one Int }
-{ one @r_c0_Age.this }
+sig Age
+{ Age_ref : one Int }
+{ one @r_Age.this }
 
-one sig c0_Team
-{ r_c0_Contractor : one c0_Contractor
-, r_c0_Member : set c0_Member }
-{ 2 <= #r_c0_Member
-  all disj x, y : this.@r_c0_Member | (x.@c0_Member_ref) != (y.@c0_Member_ref)  }
+one sig Team
+{ r_Contractor : one Contractor
+, r_Member : set Member }
+{ 2 <= #r_Member
+  all disj x, y : this.@r_Member | (x.@Member_ref) != (y.@Member_ref)  }
 
-one sig c0_Contractor extends c0_Person
-{ r_c0_since : one c0_since }
+one sig Contractor extends Person
+{ r_since_1 : one since_1 }
 
-one sig c0_since
-{ c0_since_ref : one Int }
+one sig since_1
+{ since_1_ref : one Int }
 
-sig c0_Member
-{ c0_Member_ref : one c0_Person }
-{ one @r_c0_Member.this }
+sig Member
+{ Member_ref : one Person }
+{ one @r_Member.this }
 
-one sig c0_Alice extends c0_Person
+one sig Alice extends Person
 {}
 
-one sig c0_Bob extends c0_Person
+one sig Bob extends Person
 {}
 

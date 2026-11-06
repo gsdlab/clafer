@@ -22,29 +22,29 @@ a[href$='Ambiguous name'] {color: yellow}
 <div class="file">positive/tmp_negated_obligations.cfr</div>
 
 <div>
-<span class="claferDecl" id="c0_machine">machine</span> ?
+<span class="claferDecl" id="machine">machine</span> ?
   <div class="indent">
-  <span class="claferDecl" id="c0_ctx">ctx</span>
+  <span class="claferDecl" id="ctx">ctx</span>
     <div class="indent">
-    <span class="claferDecl" id="c0_error">error</span> ?</div>
+    <span class="claferDecl" id="error">error</span> ?</div>
     <div class="indent">
-    <span class="keyword">[</span>  ! (F <a href="#c0_error"><span class="reference">error</span></a>) <span class="keyword">]</span></div>
+    <span class="keyword">[</span>  ! (F <a href="#error"><span class="reference">error</span></a>) <span class="keyword">]</span></div>
     <div class="indent">
-    <span class="keyword">assert [</span> G  ! <a href="#c0_error"><span class="reference">error</span></a> &lt;=&gt;  ! (F <a href="#c0_error"><span class="reference">error</span></a>) <span class="keyword">]</span></div>
+    <span class="keyword">assert [</span> G  ! <a href="#error"><span class="reference">error</span></a> &lt;=&gt;  ! (F <a href="#error"><span class="reference">error</span></a>) <span class="keyword">]</span></div>
     <div class="indent">
-    <span class="keyword">assert [</span>  ! (X <a href="#c0_error"><span class="reference">error</span></a>) &lt;=&gt; X  ! <a href="#c0_error"><span class="reference">error</span></a> <span class="keyword">]</span></div>
+    <span class="keyword">assert [</span>  ! (X <a href="#error"><span class="reference">error</span></a>) &lt;=&gt; X  ! <a href="#error"><span class="reference">error</span></a> <span class="keyword">]</span></div>
     <div class="indent">
-    <span class="keyword">assert [</span>  ! (<a href="#c0_error"><span class="reference">error</span></a> U  ! <a href="#c0_error"><span class="reference">error</span></a>) &lt;=&gt; <a href="#c0_error"><span class="reference">error</span></a> W ( ! <a href="#c0_error"><span class="reference">error</span></a> &amp;&amp; <a href="#c0_error"><span class="reference">error</span></a>) <span class="keyword">]</span></div>
+    <span class="keyword">assert [</span>  ! (<a href="#error"><span class="reference">error</span></a> U  ! <a href="#error"><span class="reference">error</span></a>) &lt;=&gt; <a href="#error"><span class="reference">error</span></a> W ( ! <a href="#error"><span class="reference">error</span></a> &amp;&amp; <a href="#error"><span class="reference">error</span></a>) <span class="keyword">]</span></div>
   </div>
 </div>
 
 
 <div>
-<span class="keyword">[</span> <span class="tKeyword">initially </span><a href="#c0_machine"><span class="reference">machine</span></a> <span class="keyword">]</span></div>
+<span class="keyword">[</span> <span class="tKeyword">initially </span><a href="#machine"><span class="reference">machine</span></a> <span class="keyword">]</span></div>
 
 
 <div>
-<span class="keyword">[</span> <span class="tKeyword">initially </span>X <span class="keyword">no</span> <a href="#c0_machine"><span class="reference">machine</span></a> <span class="keyword">]</span></div>
+<span class="keyword">[</span> <span class="tKeyword">initially </span>X <span class="keyword">no</span> <a href="#machine"><span class="reference">machine</span></a> <span class="keyword">]</span></div>
 
 </body>
 </html>

@@ -1,22 +1,22 @@
 //# OPTIONS --explicit
-abstract 0..* c0_Component 0..* {
-  abstract 0..* c0_InPort ->> c0_Signal 0..* {}
-  abstract 0..* c0_OutPort ->> c0_Signal 0..* {}
+abstract 0..* Component 0..* {
+  abstract 0..* InPort ->> Signal 0..* {}
+  abstract 0..* OutPort ->> Signal 0..* {}
 }
-abstract 0..* c0_Signal 0..* {}
-abstract 0..* c0_Command : c0_Signal 0..* {}
-abstract 0..* c0_MotorCommand : c0_Command 0..* {}
-0..* c0_motorDown : c0_MotorCommand 1..1 {}
-abstract 0..* c0_Request : c0_Signal 0..* {}
-0..* c0_stop : c0_Request 1..1 {}
-abstract 0..* c0_Controller : c0_Component 0..* {
-  abstract 0..* c0_req : c0_InPort -> c0_Request 0..* {}
-  0..* c0_down : c0_Request 1..1 {}
+abstract 0..* Signal 0..* {}
+abstract 0..* Command : Signal 0..* {}
+abstract 0..* MotorCommand : Command 0..* {}
+0..* motorDown : MotorCommand 1..1 {}
+abstract 0..* Request : Signal 0..* {}
+0..* stop : Request 1..1 {}
+abstract 0..* Controller : Component 0..* {
+  abstract 0..* Controller__req : InPort -> Request 0..* {}
+  0..* down : Request 1..1 {}
 }
-0..* c0_WinController : c0_Controller 1..1 {
-  0..* c1_req : c0_req -> c0_stop 1..1 {}
-  0..* c0_cmd : c0_OutPort -> c0_MotorCommand 1..1 {}
+0..* WinController : Controller 1..1 {
+  0..* WinController__req : Controller__req -> stop 1..1 {}
+  0..* cmd : OutPort -> MotorCommand 1..1 {}
 }
 
-assert [c0_WinController . c0_cmd . dref = c0_motorDown]
-assert [c0_Controller . c0_req . dref = c0_stop]
+assert [WinController . cmd . dref = motorDown]
+assert [Controller . Controller__req . dref = stop]

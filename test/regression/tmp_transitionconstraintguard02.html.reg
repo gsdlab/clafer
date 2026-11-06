@@ -22,17 +22,17 @@ a[href$='Ambiguous name'] {color: yellow}
 <div class="file">positive/tmp_transitionconstraintguard02.cfr</div>
 
 <div>
-<span class="claferDecl" id="c0_a">a</span>
+<span class="claferDecl" id="a">a</span>
   <div class="indent">
-  <span class="keyword">xor</span> <span class="claferDecl" id="c0_b">b</span> ?
+  <span class="keyword">xor</span> <span class="claferDecl" id="b">b</span> ?
     <div class="indent">
-    <span class="claferDecl" id="c0_c">c</span></div>
+    <span class="claferDecl" id="c">c</span></div>
     <div class="indent">
-    <span class="claferDecl" id="c0_d">d</span></div>
+    <span class="claferDecl" id="d">d</span></div>
     <div class="indent">
-    <span class="claferDecl" id="c0_e">e</span></div>
+    <span class="claferDecl" id="e">e</span></div>
     <div class="indent">
-    <span class="keyword">[</span> <a href="#c0_c"><span class="reference">c</span></a><span class="tKeyword"> -[</span><a href="#c0_e"><span class="reference">e</span></a><span class="tKeyword">]-&gt;&gt; </span><a href="#c0_d"><span class="reference">d</span></a> <span class="keyword">]</span></div>
+    <span class="keyword">[</span> <a href="#c"><span class="reference">c</span></a><span class="tKeyword"> -[</span><a href="#e"><span class="reference">e</span></a><span class="tKeyword">]-&gt;&gt; </span><a href="#d"><span class="reference">d</span></a> <span class="keyword">]</span></div>
   </div>
 </div>
 

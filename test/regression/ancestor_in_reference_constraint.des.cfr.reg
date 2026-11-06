@@ -1,15 +1,15 @@
 //# OPTIONS --explicit
-[(c0_s1 in c0_m1 . c0_services . dref) && (c0_s2 in c0_m2 . c0_services . dref)]
-abstract 0..* c0_Service 0..* {
-  0..* c0_machine -> c0_Machine 1..1 {}
+[(s1 in m1 . services . dref) && (s2 in m2 . services . dref)]
+abstract 0..* Service 0..* {
+  0..* machine -> Machine 1..1 {}
 }
-abstract 0..* c0_Machine 0..* {
-  0..* c0_services -> c0_Service 0..* {
-    [this . dref . c0_machine . dref = this . parent]
-    [this . dref . c0_machine . dref = this . parent]
+abstract 0..* Machine 0..* {
+  0..* services -> Service 0..* {
+    [this . dref . machine . dref = this . parent]
+    [this . dref . machine . dref = this . parent]
   }
 }
-0..* c0_m1 : c0_Machine 1..1 {}
-0..* c0_m2 : c0_Machine 1..1 {}
-0..* c0_s1 : c0_Service 1..1 {}
-0..* c0_s2 : c0_Service 1..1 {}
+0..* m1 : Machine 1..1 {}
+0..* m2 : Machine 1..1 {}
+0..* s1 : Service 1..1 {}
+0..* s2 : Service 1..1 {}

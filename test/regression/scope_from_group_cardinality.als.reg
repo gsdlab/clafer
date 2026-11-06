@@ -2,18 +2,18 @@ open util/integer
 pred show {}
 
 
-abstract sig c0_B
+abstract sig B
 {}
 
-abstract sig c0_A extends c0_B
-{ r_c0_Item : set c0_Item }
+abstract sig A extends B
+{ r_Item : set Item }
 
-sig c0_Item
+sig Item
 {}
-{ one @r_c0_Item.this }
+{ one @r_Item.this }
 
-fact { 4 <= #c0_C and #c0_C <= 4 }
-sig c0_C extends c0_A
+fact { 4 <= #C and #C <= 4 }
+sig C extends A
 {}
-{ let children = (r_c0_Item) | 2 <= #children and #children <= 3 }
+{ let children = (r_Item) | 2 <= #children and #children <= 3 }
 

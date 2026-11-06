@@ -1,13 +1,13 @@
 //# OPTIONS --explicit
-[c0_AlicePicks . dref = (c0_BobPicks . dref ++ 3)]
-[(3 ++ c0_BobPicks . dref) = c0_AlicePicks . dref]
-[c0_friends . dref = (c0_others . dref ++ c0_p1)]
-[c0_others . dref = c0_p2]
-0..* c0_AlicePicks ->> int 0..* {}
-0..* c0_BobPicks ->> int 0..* {}
-abstract 0..* c0_Person 0..* {}
-0..* c0_p1 : c0_Person 1..1 {}
-0..* c0_p2 : c0_Person 1..1 {}
-0..* c0_p3 : c0_Person 1..1 {}
-0..* c0_friends -> c0_Person 0..* {}
-0..* c0_others -> c0_Person 0..* {}
+[AlicePicks . dref = (BobPicks . dref ++ 3)]
+[(3 ++ BobPicks . dref) = AlicePicks . dref]
+[friends . dref = (others . dref ++ p1)]
+[others . dref = p2]
+0..* AlicePicks ->> int 0..* {}
+0..* BobPicks ->> int 0..* {}
+abstract 0..* Person 0..* {}
+0..* p1 : Person 1..1 {}
+0..* p2 : Person 1..1 {}
+0..* p3 : Person 1..1 {}
+0..* friends -> Person 0..* {}
+0..* others -> Person 0..* {}

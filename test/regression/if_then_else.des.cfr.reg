@@ -1,15 +1,15 @@
 //# OPTIONS --explicit
-[((#c0_emergencyVehicle) >= 1) => (if ((#c0_allWayYellow) >= 1) then ((#c0_allYellow) >= 1) else ((#c0_warning) >= 1))]
-[((#c0_emergencyVehicle) >= 1) => (if ((#c0_allWayYellow) >= 1) then ((#c0_allYellow) >= 1) else ((#c0_warning) >= 1))]
-[(if ((#c0_BobsBirthday) >= 1) then c0_BobAge . dref else c0_AliceAge . dref) = 5]
-0..* c0_emergencyVehicle 0..1 {}
-0..* c0_allWayYellow 0..1 {}
-0..* c0_allYellow 0..1 {
-  0..* c0_flashing 0..1 {}
+[((#emergencyVehicle) >= 1) => (if ((#allWayYellow) >= 1) then ((#allYellow) >= 1) else ((#warning) >= 1))]
+[((#emergencyVehicle) >= 1) => (if ((#allWayYellow) >= 1) then ((#allYellow) >= 1) else ((#warning) >= 1))]
+[(if ((#BobsBirthday) >= 1) then BobAge . dref else AliceAge . dref) = 5]
+0..* emergencyVehicle 0..1 {}
+0..* allWayYellow 0..1 {}
+0..* allYellow 0..1 {
+  0..* allYellow__flashing 0..1 {}
 }
-0..* c0_warning 0..1 {
-  0..* c1_flashing 0..1 {}
+0..* warning 0..1 {
+  0..* warning__flashing 0..1 {}
 }
-0..* c0_AliceAge -> int 1..1 {}
-0..* c0_BobAge -> int 1..1 {}
-0..* c0_BobsBirthday 0..1 {}
+0..* AliceAge -> int 1..1 {}
+0..* BobAge -> int 1..1 {}
+0..* BobsBirthday 0..1 {}

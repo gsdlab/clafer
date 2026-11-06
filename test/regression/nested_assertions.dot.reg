@@ -6,9 +6,8 @@ nodesep=0.1;
 graph [fontname=Sans fontsize=11];
 node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
 edge [fontname=Sans fontsize=11];
-"c0_a" [label="a ?" URL="#c0_a" tooltip="a ?&#10;"];
-"c0_b" [label="b ?" URL="#c0_b" tooltip="b ?&#10;"];
-"c0_P" [label="abstract P" URL="#c0_P" tooltip="abstract P&#10;  age -&gt; integer&#10;  [ age >= 0 ]&#10;  assert [ age >= 0 ]&#10;"];
-"c0_x" [label="x : P" URL="#c0_x" tooltip="x : P&#10;  assert [ age >= 0 ]&#10;"];
-"c0_x" -> "c0_P" [arrowhead=onormal constraint=true weight=100];
+"a" [label="a ?" URL="#a" tooltip="a ?&#10;"];
+"b" [label="b ?" URL="#b" tooltip="b ?&#10;"];
+"P" [label="abstract P" URL="#P" tooltip="abstract P&#10;  age -&gt; integer&#10;  [ age >= 0 ]&#10;  assert [ age >= 0 ]&#10;"];
+"x" [label="x : P" URL="#x" tooltip="x : P&#10;  assert [ age >= 0 ]&#10;"];
 }

@@ -22,30 +22,30 @@ a[href$='Ambiguous name'] {color: yellow}
 <div class="file">positive/scope_from_cardinality_constraints_nested.cfr</div>
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Animal">Animal</span>
+<span class="keyword">abstract</span> <span class="claferDecl" id="Animal">Animal</span>
   <div class="indent">
-  <span class="claferDecl" id="c0_leg">leg</span> *</div>
+  <span class="claferDecl" id="leg">leg</span> *</div>
 </div>
 
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Owner">Owner</span>
+<span class="keyword">abstract</span> <span class="claferDecl" id="Owner">Owner</span>
   <div class="indent">
-  <span class="claferDecl" id="c0_Pet">Pet</span><span class="keyword"> : </span><a href="#c0_Animal"><span class="reference">Animal</span></a></div>
+  <span class="claferDecl" id="Pet">Pet</span><span class="keyword"> : </span><a href="#Animal"><span class="reference">Animal</span></a></div>
 </div>
 
 
 <div>
-<span class="claferDecl" id="c0_SnakeOwner">SnakeOwner</span><span class="keyword"> : </span><a href="#c0_Owner"><span class="reference">Owner</span></a> +
+<span class="claferDecl" id="SnakeOwner">SnakeOwner</span><span class="keyword"> : </span><a href="#Owner"><span class="reference">Owner</span></a> +
   <div class="indent">
-  <span class="keyword">[</span> <span class="keyword">no</span> <a href="#c0_Pet"><span class="reference">Pet</span></a>.<a href="#c0_leg"><span class="reference">leg</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <span class="keyword">no</span> <a href="#Pet"><span class="reference">Pet</span></a>.<a href="#leg"><span class="reference">leg</span></a> <span class="keyword">]</span></div>
 </div>
 
 
 <div>
-<span class="claferDecl" id="c0_DogOwner">DogOwner</span><span class="keyword"> : </span><a href="#c0_Owner"><span class="reference">Owner</span></a> +
+<span class="claferDecl" id="DogOwner">DogOwner</span><span class="keyword"> : </span><a href="#Owner"><span class="reference">Owner</span></a> +
   <div class="indent">
-  <span class="keyword">[</span> # <a href="#c0_Pet"><span class="reference">Pet</span></a>.<a href="#c0_leg"><span class="reference">leg</span></a> = 4 <span class="keyword">]</span></div>
+  <span class="keyword">[</span> # <a href="#Pet"><span class="reference">Pet</span></a>.<a href="#leg"><span class="reference">leg</span></a> = 4 <span class="keyword">]</span></div>
 </div>
 
 </body>

@@ -22,98 +22,98 @@ a[href$='Ambiguous name'] {color: yellow}
 <div class="file">positive/inverse_references.cfr</div>
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Service">Service</span>
+<span class="keyword">abstract</span> <span class="claferDecl" id="Service">Service</span>
   <div class="indent">
-  <span class="claferDecl" id="c0_requirements">requirements</span><span class="keyword"> : </span><a href="#c0_Requirements"><span class="reference">Requirements</span></a></div>
+  <span class="claferDecl" id="requirements">requirements</span><span class="keyword"> : </span><a href="#Requirements"><span class="reference">Requirements</span></a></div>
   <div class="indent">
-  <span class="claferDecl" id="c0_machine">machine</span><span class="keyword"> -> </span><a href="#c0_Machine"><span class="reference">Machine</span></a></div>
+  <span class="claferDecl" id="machine">machine</span><span class="keyword"> -> </span><a href="#Machine"><span class="reference">Machine</span></a></div>
   <div class="indent">
-  <span class="keyword">[</span> <span class="keyword">this</span> in <a href="#c0_machine"><span class="reference">machine</span></a>.<a href="#c0_services"><span class="reference">services</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <span class="keyword">this</span> in <a href="#machine"><span class="reference">machine</span></a>.<a href="#services"><span class="reference">services</span></a> <span class="keyword">]</span></div>
 </div>
 
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Requirements">Requirements</span>
+<span class="keyword">abstract</span> <span class="claferDecl" id="Requirements">Requirements</span>
   <div class="indent">
-  <span class="claferDecl" id="c0_cpu">cpu</span><span class="keyword"> ->> </span><a href="#integer"><span class="reference">integer</span></a></div>
+  <span class="claferDecl" id="cpu">cpu</span><span class="keyword"> ->> </span><a href="#integer"><span class="reference">integer</span></a></div>
 </div>
 
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Resources">Resources</span><span class="keyword"> : </span><a href="#c0_Requirements"><span class="reference">Requirements</span></a></div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="Resources">Resources</span><span class="keyword"> : </span><a href="#Requirements"><span class="reference">Requirements</span></a></div>
 
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Machine">Machine</span>
+<span class="keyword">abstract</span> <span class="claferDecl" id="Machine">Machine</span>
   <div class="indent">
-  <span class="claferDecl" id="c0_services">services</span><span class="keyword"> -> </span><a href="#c0_Service"><span class="reference">Service</span></a> *</div>
+  <span class="claferDecl" id="services">services</span><span class="keyword"> -> </span><a href="#Service"><span class="reference">Service</span></a> *</div>
   <div class="indent">
-  <span class="keyword">[</span> all s<span class="keyword"> : </span><a href="#c0_services"><span class="reference">services</span></a> | <a href="#s"><span class="reference">s</span></a>.<a href="#c0_machine"><span class="reference">machine</span></a> = <span class="keyword">this</span> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> all s<span class="keyword"> : </span><a href="#services"><span class="reference">services</span></a> | <a href="#s"><span class="reference">s</span></a>.<a href="#machine"><span class="reference">machine</span></a> = <span class="keyword">this</span> <span class="keyword">]</span></div>
   <div class="indent">
-  <span class="claferDecl" id="c0_isFree">isFree</span> ?</div>
+  <span class="claferDecl" id="isFree">isFree</span> ?</div>
   <div class="indent">
-  <span class="keyword">[</span> <a href="#c0_isFree"><span class="reference">isFree</span></a> &lt;=&gt; <span class="keyword">no</span> <a href="#c0_services"><span class="reference">services</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <a href="#isFree"><span class="reference">isFree</span></a> &lt;=&gt; <span class="keyword">no</span> <a href="#services"><span class="reference">services</span></a> <span class="keyword">]</span></div>
   <div class="indent">
-  <span class="claferDecl" id="c0_limits">limits</span><span class="keyword"> : </span><a href="#c0_Resources"><span class="reference">Resources</span></a></div>
+  <span class="claferDecl" id="limits">limits</span><span class="keyword"> : </span><a href="#Resources"><span class="reference">Resources</span></a></div>
   <div class="indent">
-  <span class="claferDecl" id="c0_utilization">utilization</span><span class="keyword"> : </span><a href="#c0_Resources"><span class="reference">Resources</span></a>
+  <span class="claferDecl" id="utilization">utilization</span><span class="keyword"> : </span><a href="#Resources"><span class="reference">Resources</span></a>
     <div class="indent">
-    <span class="keyword">[</span> <a href="#c0_cpu"><span class="reference">cpu</span></a> = <span class="keyword">sum </span><a href="#c0_services"><span class="reference">services</span></a>.<a href="#c0_requirements"><span class="reference">requirements</span></a>.<a href="#c0_cpu"><span class="reference">cpu</span></a> <span class="keyword">]</span></div>
+    <span class="keyword">[</span> <a href="#cpu"><span class="reference">cpu</span></a> = <span class="keyword">sum </span><a href="#services"><span class="reference">services</span></a>.<a href="#requirements"><span class="reference">requirements</span></a>.<a href="#cpu"><span class="reference">cpu</span></a> <span class="keyword">]</span></div>
     <div class="indent">
-    <span class="keyword">[</span> <a href="#c0_cpu"><span class="reference">cpu</span></a> &lt; <a href="#c0_limits"><span class="reference">limits</span></a>.<a href="#c0_cpu"><span class="reference">cpu</span></a> <span class="keyword">]</span></div>
-  </div>
-</div>
-
-
-<div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Task">Task</span>
-  <div class="indent">
-  <span class="claferDecl" id="c0_total_free">total_free</span><span class="keyword"> : </span><a href="#integer"><span class="reference">integer</span></a> = # <a href="#c0_Machine"><span class="reference">Machine</span></a>.<a href="#c0_isFree"><span class="reference">isFree</span></a></div>
-</div>
-
-
-<div>
-<span class="claferDecl" id="c0_MyTask">MyTask</span><span class="keyword"> : </span><a href="#c0_Task"><span class="reference">Task</span></a>
-  <div class="indent">
-  <span class="claferDecl" id="c0_GoogleCA">GoogleCA</span><span class="keyword"> : </span><a href="#c0_Machine"><span class="reference">Machine</span></a>
-    <div class="indent">
-    <span class="keyword">[</span> <a href="#c0_limits"><span class="reference">limits</span></a>.<a href="#c0_cpu"><span class="reference">cpu</span></a> = 10 <span class="keyword">]</span></div>
-  </div>
-  <div class="indent">
-  <span class="claferDecl" id="c0_GoogleNY">GoogleNY</span><span class="keyword"> : </span><a href="#c0_Machine"><span class="reference">Machine</span></a>
-    <div class="indent">
-    <span class="keyword">[</span> <a href="#c0_limits"><span class="reference">limits</span></a>.<a href="#c0_cpu"><span class="reference">cpu</span></a> = 16 <span class="keyword">]</span></div>
-  </div>
-  <div class="indent">
-  <span class="claferDecl" id="c0_GoogleTX">GoogleTX</span><span class="keyword"> : </span><a href="#c0_Machine"><span class="reference">Machine</span></a>
-    <div class="indent">
-    <span class="keyword">[</span> <a href="#c0_limits"><span class="reference">limits</span></a>.<a href="#c0_cpu"><span class="reference">cpu</span></a> = 14 <span class="keyword">]</span></div>
-  </div>
-  <div class="indent">
-  <span class="claferDecl" id="c0_MailService">MailService</span><span class="keyword"> : </span><a href="#c0_Service"><span class="reference">Service</span></a>
-    <div class="indent">
-    <span class="keyword">[</span> <a href="#c0_requirements"><span class="reference">requirements</span></a>.<a href="#c0_cpu"><span class="reference">cpu</span></a> = 4 <span class="keyword">]</span></div>
-  </div>
-  <div class="indent">
-  <span class="claferDecl" id="c0_SearchService">SearchService</span><span class="keyword"> : </span><a href="#c0_Service"><span class="reference">Service</span></a>
-    <div class="indent">
-    <span class="keyword">[</span> <a href="#c0_requirements"><span class="reference">requirements</span></a>.<a href="#c0_cpu"><span class="reference">cpu</span></a> = 3 <span class="keyword">]</span></div>
-  </div>
-  <div class="indent">
-  <span class="claferDecl" id="c0_CalendarService">CalendarService</span><span class="keyword"> : </span><a href="#c0_Service"><span class="reference">Service</span></a>
-    <div class="indent">
-    <span class="keyword">[</span> <a href="#c0_requirements"><span class="reference">requirements</span></a>.<a href="#c0_cpu"><span class="reference">cpu</span></a> = 1 <span class="keyword">]</span></div>
-  </div>
-  <div class="indent">
-  <span class="claferDecl" id="c0_DriveService">DriveService</span><span class="keyword"> : </span><a href="#c0_Service"><span class="reference">Service</span></a>
-    <div class="indent">
-    <span class="keyword">[</span> <a href="#c0_requirements"><span class="reference">requirements</span></a>.<a href="#c0_cpu"><span class="reference">cpu</span></a> = 2 <span class="keyword">]</span></div>
+    <span class="keyword">[</span> <a href="#cpu"><span class="reference">cpu</span></a> &lt; <a href="#limits"><span class="reference">limits</span></a>.<a href="#cpu"><span class="reference">cpu</span></a> <span class="keyword">]</span></div>
   </div>
 </div>
 
 
 <div>
-&lt;&lt;<span class="deprecated" title="Deprecated. Use `maximize` instead.">max </span><a href="#c0_MyTask"><span class="reference">MyTask</span></a>.<a href="#c0_total_free"><span class="reference">total_free</span></a>&gt;&gt;</div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="Task">Task</span>
+  <div class="indent">
+  <span class="claferDecl" id="total_free">total_free</span><span class="keyword"> : </span><a href="#integer"><span class="reference">integer</span></a> = # <a href="#Machine"><span class="reference">Machine</span></a>.<a href="#isFree"><span class="reference">isFree</span></a></div>
+</div>
+
+
+<div>
+<span class="claferDecl" id="MyTask">MyTask</span><span class="keyword"> : </span><a href="#Task"><span class="reference">Task</span></a>
+  <div class="indent">
+  <span class="claferDecl" id="GoogleCA">GoogleCA</span><span class="keyword"> : </span><a href="#Machine"><span class="reference">Machine</span></a>
+    <div class="indent">
+    <span class="keyword">[</span> <a href="#limits"><span class="reference">limits</span></a>.<a href="#cpu"><span class="reference">cpu</span></a> = 10 <span class="keyword">]</span></div>
+  </div>
+  <div class="indent">
+  <span class="claferDecl" id="GoogleNY">GoogleNY</span><span class="keyword"> : </span><a href="#Machine"><span class="reference">Machine</span></a>
+    <div class="indent">
+    <span class="keyword">[</span> <a href="#limits"><span class="reference">limits</span></a>.<a href="#cpu"><span class="reference">cpu</span></a> = 16 <span class="keyword">]</span></div>
+  </div>
+  <div class="indent">
+  <span class="claferDecl" id="GoogleTX">GoogleTX</span><span class="keyword"> : </span><a href="#Machine"><span class="reference">Machine</span></a>
+    <div class="indent">
+    <span class="keyword">[</span> <a href="#limits"><span class="reference">limits</span></a>.<a href="#cpu"><span class="reference">cpu</span></a> = 14 <span class="keyword">]</span></div>
+  </div>
+  <div class="indent">
+  <span class="claferDecl" id="MailService">MailService</span><span class="keyword"> : </span><a href="#Service"><span class="reference">Service</span></a>
+    <div class="indent">
+    <span class="keyword">[</span> <a href="#requirements"><span class="reference">requirements</span></a>.<a href="#cpu"><span class="reference">cpu</span></a> = 4 <span class="keyword">]</span></div>
+  </div>
+  <div class="indent">
+  <span class="claferDecl" id="SearchService">SearchService</span><span class="keyword"> : </span><a href="#Service"><span class="reference">Service</span></a>
+    <div class="indent">
+    <span class="keyword">[</span> <a href="#requirements"><span class="reference">requirements</span></a>.<a href="#cpu"><span class="reference">cpu</span></a> = 3 <span class="keyword">]</span></div>
+  </div>
+  <div class="indent">
+  <span class="claferDecl" id="CalendarService">CalendarService</span><span class="keyword"> : </span><a href="#Service"><span class="reference">Service</span></a>
+    <div class="indent">
+    <span class="keyword">[</span> <a href="#requirements"><span class="reference">requirements</span></a>.<a href="#cpu"><span class="reference">cpu</span></a> = 1 <span class="keyword">]</span></div>
+  </div>
+  <div class="indent">
+  <span class="claferDecl" id="DriveService">DriveService</span><span class="keyword"> : </span><a href="#Service"><span class="reference">Service</span></a>
+    <div class="indent">
+    <span class="keyword">[</span> <a href="#requirements"><span class="reference">requirements</span></a>.<a href="#cpu"><span class="reference">cpu</span></a> = 2 <span class="keyword">]</span></div>
+  </div>
+</div>
+
+
+<div>
+&lt;&lt;<span class="deprecated" title="Deprecated. Use `maximize` instead.">max </span><a href="#MyTask"><span class="reference">MyTask</span></a>.<a href="#total_free"><span class="reference">total_free</span></a>&gt;&gt;</div>
 
 </body>
 </html>

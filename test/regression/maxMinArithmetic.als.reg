@@ -2,30 +2,30 @@ open util/integer
 pred show {}
 
 
-one sig c0_a
-{ c0_a_ref : one Int }
+one sig a
+{ a_ref : one Int }
 
-one sig c0_b
-{ c0_b_ref : one Int }
+one sig b
+{ b_ref : one Int }
 
-one sig c0_c
-{ c0_c_ref : one Int }
+one sig c
+{ c_ref : one Int }
 
-one sig c0_spread
-{ c0_spread_ref : one Int }
+one sig spread
+{ spread_ref : one Int }
 
-fact { (some c0_spread) => ((c0_spread.@c0_spread_ref) = ((max[((c0_a.@c0_a_ref) + (c0_b.@c0_b_ref)) + (c0_c.@c0_c_ref)]).minus[(min[((c0_a.@c0_a_ref) + (c0_b.@c0_b_ref)) + (c0_c.@c0_c_ref)])])) }
-one sig c0_range
-{ c0_range_ref : one Int }
+fact { (some spread) => ((spread.@spread_ref) = ((max[((a.@a_ref) + (b.@b_ref)) + (c.@c_ref)]).minus[(min[((a.@a_ref) + (b.@b_ref)) + (c.@c_ref)])])) }
+one sig range
+{ range_ref : one Int }
 
-fact { (some c0_range) => ((c0_range.@c0_range_ref) = ((max[((c0_a.@c0_a_ref) + (c0_b.@c0_b_ref)) + (c0_c.@c0_c_ref)]).minus[(min[((c0_a.@c0_a_ref) + (c0_b.@c0_b_ref)) + (c0_c.@c0_c_ref)])])) }
-one sig c0_above
-{ c0_above_ref : one Int }
+fact { (some range) => ((range.@range_ref) = ((max[((a.@a_ref) + (b.@b_ref)) + (c.@c_ref)]).minus[(min[((a.@a_ref) + (b.@b_ref)) + (c.@c_ref)])])) }
+one sig above
+{ above_ref : one Int }
 
-fact { (some c0_above) => ((c0_above.@c0_above_ref) = ((max[(c0_a.@c0_a_ref) + 3]).plus[1])) }
-fact { (c0_a.@c0_a_ref) = 5 }
-fact { (c0_b.@c0_b_ref) = 2 }
-fact { (c0_c.@c0_c_ref) = 9 }
-fact { (c0_spread.@c0_spread_ref) = 7 }
-fact { (c0_range.@c0_range_ref) = 7 }
-fact { (c0_above.@c0_above_ref) = 6 }
+fact { (some above) => ((above.@above_ref) = ((max[(a.@a_ref) + 3]).plus[1])) }
+fact { (a.@a_ref) = 5 }
+fact { (b.@b_ref) = 2 }
+fact { (c.@c_ref) = 9 }
+fact { (spread.@spread_ref) = 7 }
+fact { (range.@range_ref) = 7 }
+fact { (above.@above_ref) = 6 }

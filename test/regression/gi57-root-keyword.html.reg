@@ -22,22 +22,22 @@ a[href$='Ambiguous name'] {color: yellow}
 <div class="file">positive/gi57-root-keyword.cfr</div>
 
 <div>
-<span class="claferDecl" id="c0_a">a</span>
+<span class="claferDecl" id="a">a</span>
   <div class="indent">
-  <span class="claferDecl" id="c0_b">b</span> ?</div>
+  <span class="claferDecl" id="a__b">b</span> ?</div>
 </div>
 
 
 <div>
-<span class="claferDecl" id="c1_b">b</span> ?</div>
+<span class="claferDecl" id="root__b">b</span> ?</div>
 
 
 <div>
-<span class="keyword">[</span> <span class="keyword">some</span> <a href="#c0_a"><span class="reference">a</span></a>.<a href="#c0_b"><span class="reference">b</span></a> <span class="keyword">]</span></div>
+<span class="keyword">[</span> <span class="keyword">some</span> <a href="#a"><span class="reference">a</span></a>.<a href="#a__b"><span class="reference">b</span></a> <span class="keyword">]</span></div>
 
 
 <div>
-<span class="keyword">[</span> <span class="keyword">some</span> <span class="keyword">root</span>.<a href="#c1_b"><span class="reference">b</span></a> <span class="keyword">]</span></div>
+<span class="keyword">[</span> <span class="keyword">some</span> <span class="keyword">root</span>.<a href="#root__b"><span class="reference">b</span></a> <span class="keyword">]</span></div>
 
 </body>
 </html>

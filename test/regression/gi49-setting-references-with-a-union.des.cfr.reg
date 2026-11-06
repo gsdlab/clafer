@@ -1,12 +1,12 @@
 //# OPTIONS --explicit
-[((#c0_A) >= 1) => (c0_A . dref = 1)]
-[((#c0_B) >= 1) => (c0_B . dref = 2)]
-[((#c0_C) >= 1) => (c0_C . dref = 3)]
-[c0_xs . dref = ((c0_A ++ c0_B) ++ c0_C)]
-[c0_xs . dref = ((c0_A ++ c0_B) ++ c0_C)]
-[c0_xs . dref . dref = ((c0_A . dref ++ c0_B . dref) ++ c0_C . dref)]
-abstract 0..* c0_x -> int 0..* {}
-0..* c0_A : c0_x 1..1 {}
-0..* c0_B : c0_x 1..1 {}
-0..* c0_C : c0_x 1..1 {}
-0..* c0_xs ->> c0_x 0..* {}
+[((#A) >= 1) => (A . dref = 1)]
+[((#B) >= 1) => (B . dref = 2)]
+[((#C) >= 1) => (C . dref = 3)]
+[xs . dref = ((A ++ B) ++ C)]
+[xs . dref = ((A ++ B) ++ C)]
+[xs . dref . dref = ((A . dref ++ B . dref) ++ C . dref)]
+abstract 0..* x -> int 0..* {}
+0..* A : x 1..1 {}
+0..* B : x 1..1 {}
+0..* C : x 1..1 {}
+0..* xs ->> x 0..* {}

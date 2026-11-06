@@ -2,229 +2,229 @@ open util/integer
 pred show {}
 
 
-one sig c0_claferCompiler extends c0_claferLib
+one sig claferCompiler extends claferLib
 {}
 
-one sig c0_claferIG extends c0_claferLib
+one sig claferIG extends claferLib
 {}
 
-one sig c0_claferMOO extends c0_claferLib
-{ r_c0_moo : one c0_moo }
+one sig claferMOO extends claferLib
+{ r_moo : one moo }
 
-one sig c0_moo
+one sig moo
 {}
 
-abstract sig c0_claferLib
-{ r_c0_common : one c0_common
-, r_c0_front : one c0_front
-, r_c0_intermediate : one c0_intermediate
-, r_c0_optimizer : one c0_optimizer
-, r_c0_generator : one c0_generator }
+abstract sig claferLib
+{ r_common : one common
+, r_front : one front
+, r_intermediate : one intermediate
+, r_optimizer : one optimizer
+, r_generator : one generator }
 
-sig c0_common
+sig common
 {}
-{ one @r_c0_common.this }
+{ one @r_common.this }
 
-sig c0_front extends c0_Front
+sig front extends Front
 {}
-{ one @r_c0_front.this }
+{ one @r_front.this }
 
-sig c0_intermediate extends c0_Intermediate
+sig intermediate extends Intermediate
 {}
-{ one @r_c0_intermediate.this }
+{ one @r_intermediate.this }
 
-sig c0_optimizer
+sig optimizer
 {}
-{ one @r_c0_optimizer.this }
+{ one @r_optimizer.this }
 
-sig c0_generator extends c0_Generator
+sig generator extends Generator
 {}
-{ one @r_c0_generator.this
-  let children = (r_c0_alloy + r_c0_stats + r_c0_xml + r_c0_desClafer + r_c0_xsdSchema + r_c0_input + r_c0_output) | one children }
+{ one @r_generator.this
+  let children = (r_alloy + r_stats + r_xml + r_desClafer + r_xsdSchema + r_input + r_output) | one children }
 
-abstract sig c0_Representation
-{}
-
-one sig c0_text extends c0_Representation
+abstract sig Representation
 {}
 
-one sig c0_tokens extends c0_Representation
+one sig text extends Representation
 {}
 
-one sig c0_ast extends c0_Representation
+one sig tokens extends Representation
 {}
 
-one sig c0_ir extends c0_Representation
+one sig ast extends Representation
 {}
 
-abstract sig c0_io
-{ r_c0_input : one c0_input
-, r_c0_output : one c0_output }
-
-sig c0_input
-{ c0_input_ref : one c0_Representation }
-{ one @r_c0_input.this }
-
-sig c0_output
-{ c0_output_ref : one c0_Representation }
-{ one @r_c0_output.this }
-
-abstract sig c0_text2tokens extends c0_io
+one sig ir extends Representation
 {}
-{ (((this.@r_c0_input).@c0_input_ref) = c0_text) && (((this.@r_c0_output).@c0_output_ref) = c0_tokens) }
 
-abstract sig c0_tokens2tokens extends c0_io
+abstract sig io
+{ r_input : one input
+, r_output : one output }
+
+sig input
+{ input_ref : one Representation }
+{ one @r_input.this }
+
+sig output
+{ output_ref : one Representation }
+{ one @r_output.this }
+
+abstract sig text2tokens extends io
 {}
-{ (((this.@r_c0_input).@c0_input_ref) = c0_tokens) && (((this.@r_c0_output).@c0_output_ref) = c0_tokens) }
+{ (((this.@r_input).@input_ref) = text) && (((this.@r_output).@output_ref) = tokens) }
 
-abstract sig c0_tokens2ast extends c0_io
+abstract sig tokens2tokens extends io
 {}
-{ (((this.@r_c0_input).@c0_input_ref) = c0_tokens) && (((this.@r_c0_output).@c0_output_ref) = c0_ast) }
+{ (((this.@r_input).@input_ref) = tokens) && (((this.@r_output).@output_ref) = tokens) }
 
-abstract sig c0_ast2ast extends c0_io
+abstract sig tokens2ast extends io
 {}
-{ (((this.@r_c0_input).@c0_input_ref) = c0_ast) && (((this.@r_c0_output).@c0_output_ref) = c0_ast) }
+{ (((this.@r_input).@input_ref) = tokens) && (((this.@r_output).@output_ref) = ast) }
 
-abstract sig c0_ast2text extends c0_io
+abstract sig ast2ast extends io
 {}
-{ (((this.@r_c0_input).@c0_input_ref) = c0_ast) && (((this.@r_c0_output).@c0_output_ref) = c0_text) }
+{ (((this.@r_input).@input_ref) = ast) && (((this.@r_output).@output_ref) = ast) }
 
-abstract sig c0_ast2ir extends c0_io
+abstract sig ast2text extends io
 {}
-{ (((this.@r_c0_input).@c0_input_ref) = c0_ast) && (((this.@r_c0_output).@c0_output_ref) = c0_ir) }
+{ (((this.@r_input).@input_ref) = ast) && (((this.@r_output).@output_ref) = text) }
 
-abstract sig c0_ir2ir extends c0_io
+abstract sig ast2ir extends io
 {}
-{ (((this.@r_c0_input).@c0_input_ref) = c0_ir) && (((this.@r_c0_output).@c0_output_ref) = c0_ir) }
+{ (((this.@r_input).@input_ref) = ast) && (((this.@r_output).@output_ref) = ir) }
 
-abstract sig c0_ir2text extends c0_io
+abstract sig ir2ir extends io
 {}
-{ (((this.@r_c0_input).@c0_input_ref) = c0_ir) && (((this.@r_c0_output).@c0_output_ref) = c0_text) }
+{ (((this.@r_input).@input_ref) = ir) && (((this.@r_output).@output_ref) = ir) }
 
-abstract sig c0_Front
-{ r_c0_lexer : one c0_lexer
-, r_c0_layoutResolver : lone c0_layoutResolver
-, r_c0_parser : one c0_parser
-, r_c0_mapper : one c0_mapper
-, r_c0_prettyPrinter : lone c0_prettyPrinter }
-
-sig c0_lexer extends c0_text2tokens
+abstract sig ir2text extends io
 {}
-{ one @r_c0_lexer.this }
+{ (((this.@r_input).@input_ref) = ir) && (((this.@r_output).@output_ref) = text) }
 
-sig c0_layoutResolver extends c0_tokens2tokens
-{ r_c0_stable : lone c0_stable
-, r_c0_experimental : lone c0_experimental }
-{ one @r_c0_layoutResolver.this
-  let children = (r_c0_stable + r_c0_experimental + r_c0_input + r_c0_output) | one children }
+abstract sig Front
+{ r_lexer : one lexer
+, r_layoutResolver : lone layoutResolver
+, r_parser : one parser
+, r_mapper : one mapper
+, r_prettyPrinter : lone prettyPrinter }
 
-sig c0_stable
+sig lexer extends text2tokens
 {}
-{ one @r_c0_stable.this }
+{ one @r_lexer.this }
 
-sig c0_experimental
+sig layoutResolver extends tokens2tokens
+{ r_stable : lone stable
+, r_experimental : lone experimental }
+{ one @r_layoutResolver.this
+  let children = (r_stable + r_experimental + r_input + r_output) | one children }
+
+sig stable
 {}
-{ one @r_c0_experimental.this }
+{ one @r_stable.this }
 
-sig c0_parser extends c0_tokens2ast
+sig experimental
 {}
-{ one @r_c0_parser.this }
+{ one @r_experimental.this }
 
-sig c0_mapper extends c0_ast2ast
+sig parser extends tokens2ast
 {}
-{ one @r_c0_mapper.this }
+{ one @r_parser.this }
 
-sig c0_prettyPrinter extends c0_ast2text
+sig mapper extends ast2ast
 {}
-{ one @r_c0_prettyPrinter.this }
+{ one @r_mapper.this }
 
-abstract sig c0_Intermediate
-{ r_c0_desugarer : one c0_desugarer
-, r_c0_findDuplicates : lone c0_findDuplicates
-, r_c0_resolver : lone c0_resolver
-, r_c0_transformer : one c0_transformer
-, r_c0_stringAnalyzer : lone c0_stringAnalyzer
-, r_c0_scopeAnalysis : lone c0_scopeAnalysis }
-
-sig c0_desugarer extends c0_ast2ir
+sig prettyPrinter extends ast2text
 {}
-{ one @r_c0_desugarer.this }
+{ one @r_prettyPrinter.this }
 
-sig c0_findDuplicates
+abstract sig Intermediate
+{ r_desugarer : one desugarer
+, r_findDuplicates : lone findDuplicates
+, r_resolver : lone resolver
+, r_transformer : one transformer
+, r_stringAnalyzer : lone stringAnalyzer
+, r_scopeAnalysis : lone scopeAnalysis }
+
+sig desugarer extends ast2ir
 {}
-{ one @r_c0_findDuplicates.this }
+{ one @r_desugarer.this }
 
-sig c0_resolver extends c0_ir2ir
-{ r_c0_setUid : one c0_setUid
-, r_c0_inheritanceFlattener : lone c0_inheritanceFlattener
-, r_c0_nameResolution : one c0_nameResolution }
-{ one @r_c0_resolver.this }
-
-sig c0_setUid
+sig findDuplicates
 {}
-{ one @r_c0_setUid.this }
+{ one @r_findDuplicates.this }
 
-sig c0_inheritanceFlattener
+sig resolver extends ir2ir
+{ r_setUid : one setUid
+, r_inheritanceFlattener : lone inheritanceFlattener
+, r_nameResolution : one nameResolution }
+{ one @r_resolver.this }
+
+sig setUid
 {}
-{ one @r_c0_inheritanceFlattener.this }
+{ one @r_setUid.this }
 
-sig c0_nameResolution
-{ r_c0_nameResolver : lone c0_nameResolver
-, r_c0_inheritanceResolver : one c0_inheritanceResolver
-, r_c0_typeResolver : one c0_typeResolver }
-{ one @r_c0_nameResolution.this }
-
-sig c0_nameResolver
+sig inheritanceFlattener
 {}
-{ one @r_c0_nameResolver.this
-  some (((this.~@r_c0_nameResolver).~@r_c0_nameResolution).~@r_c0_resolver).@r_c0_findDuplicates }
+{ one @r_inheritanceFlattener.this }
 
-sig c0_inheritanceResolver
+sig nameResolution
+{ r_nameResolver : lone nameResolver
+, r_inheritanceResolver : one inheritanceResolver
+, r_typeResolver : one typeResolver }
+{ one @r_nameResolution.this }
+
+sig nameResolver
 {}
-{ one @r_c0_inheritanceResolver.this }
+{ one @r_nameResolver.this
+  some (((this.~@r_nameResolver).~@r_nameResolution).~@r_resolver).@r_findDuplicates }
 
-sig c0_typeResolver
+sig inheritanceResolver
 {}
-{ one @r_c0_typeResolver.this }
+{ one @r_inheritanceResolver.this }
 
-sig c0_transformer extends c0_ir2ir
+sig typeResolver
 {}
-{ one @r_c0_transformer.this }
+{ one @r_typeResolver.this }
 
-sig c0_stringAnalyzer extends c0_ir2ir
+sig transformer extends ir2ir
 {}
-{ one @r_c0_stringAnalyzer.this }
+{ one @r_transformer.this }
 
-sig c0_scopeAnalysis extends c0_ir2ir
+sig stringAnalyzer extends ir2ir
 {}
-{ one @r_c0_scopeAnalysis.this }
+{ one @r_stringAnalyzer.this }
 
-abstract sig c0_Generator extends c0_ir2text
-{ r_c0_alloy : lone c0_alloy
-, r_c0_stats : lone c0_stats
-, r_c0_xml : lone c0_xml
-, r_c0_desClafer : lone c0_desClafer
-, r_c0_xsdSchema : lone c0_xsdSchema }
-
-sig c0_alloy
+sig scopeAnalysis extends ir2ir
 {}
-{ one @r_c0_alloy.this
-  (some c0_Intermediate.@r_c0_stringAnalyzer) && (some c0_Intermediate.@r_c0_scopeAnalysis) }
+{ one @r_scopeAnalysis.this }
 
-sig c0_stats
-{}
-{ one @r_c0_stats.this }
+abstract sig Generator extends ir2text
+{ r_alloy : lone alloy
+, r_stats : lone stats
+, r_xml : lone xml
+, r_desClafer : lone desClafer
+, r_xsdSchema : lone xsdSchema }
 
-sig c0_xml
+sig alloy
 {}
-{ one @r_c0_xml.this }
+{ one @r_alloy.this
+  (some Intermediate.@r_stringAnalyzer) && (some Intermediate.@r_scopeAnalysis) }
 
-sig c0_desClafer
+sig stats
 {}
-{ one @r_c0_desClafer.this
-  some c0_Front.@r_c0_prettyPrinter }
+{ one @r_stats.this }
 
-sig c0_xsdSchema
+sig xml
 {}
-{ one @r_c0_xsdSchema.this }
+{ one @r_xml.this }
+
+sig desClafer
+{}
+{ one @r_desClafer.this
+  some Front.@r_prettyPrinter }
+
+sig xsdSchema
+{}
+{ one @r_xsdSchema.this }
 

@@ -1,10 +1,10 @@
 //# OPTIONS --explicit
-abstract 0..* c0_FeatureModel 0..* {}
-abstract 0..* c0_Feature 0..* {
-  [this . parent in (c0_Feature ++ c0_FeatureModel)]
+abstract 0..* FeatureModel 0..* {}
+abstract 0..* Feature 0..* {
+  [this . parent in (Feature ++ FeatureModel)]
 }
-0..* c0_FM : c0_FeatureModel 1..1 {
-  0..* c0_F1 : c0_Feature 1..1 {
-    0..* c0_F2 : c0_Feature 1..1 {}
+0..* FM : FeatureModel 1..1 {
+  0..* F1 : Feature 1..1 {
+    0..* F2 : Feature 1..1 {}
   }
 }

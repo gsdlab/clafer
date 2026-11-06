@@ -1,8 +1,8 @@
 //# OPTIONS --explicit
-abstract 0..* c0_A 0..* {
-  0..* c0_Item 1..1 {}
+abstract 0..* A 0..* {
+  0..* A__Item 1..1 {}
 }
-abstract 0..* c0_B : c0_A 0..* {
-  0..* c1_Item 1..1 {}
+abstract 0..* B : A 0..* {
+  0..* B__Item 1..1 {}
 }
-0..* c0_C : c0_B 1..1 {}
+0..* C : B 1..1 {}

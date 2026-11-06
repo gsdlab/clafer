@@ -22,22 +22,22 @@ a[href$='Ambiguous name'] {color: yellow}
 <div class="file">positive/tmp_parent_across_lifetimes.cfr</div>
 
 <div>
-<span class="claferDecl" id="c0_box">box</span> 2
+<span class="claferDecl" id="box">box</span> 2
   <div class="indent">
-  <span class="claferDecl" id="c0_item">item</span> ?</div>
+  <span class="claferDecl" id="item">item</span> ?</div>
 </div>
 
 
 <div>
-<span class="keyword">[</span> <span class="tKeyword">initially </span><span class="keyword">some</span> <a href="#c0_box"><span class="reference">box</span></a>.<a href="#c0_item"><span class="reference">item</span></a> <span class="keyword">]</span></div>
+<span class="keyword">[</span> <span class="tKeyword">initially </span><span class="keyword">some</span> <a href="#box"><span class="reference">box</span></a>.<a href="#item"><span class="reference">item</span></a> <span class="keyword">]</span></div>
 
 
 <div>
-<span class="keyword">[</span> <span class="tKeyword">initially </span>(all i<span class="keyword"> : </span><a href="#c0_box"><span class="reference">box</span></a>.<a href="#c0_item"><span class="reference">item</span></a> | X (<span class="keyword">no</span> <a href="#i"><span class="reference">i</span></a>**<a href="#c0_box"><span class="reference">box</span></a>.<a href="#c0_item"><span class="reference">item</span></a> &amp;&amp; X <span class="keyword">some</span> <a href="#i"><span class="reference">i</span></a>**<a href="#c0_box"><span class="reference">box</span></a>.<a href="#c0_item"><span class="reference">item</span></a>)) <span class="keyword">]</span></div>
+<span class="keyword">[</span> <span class="tKeyword">initially </span>(all i<span class="keyword"> : </span><a href="#box"><span class="reference">box</span></a>.<a href="#item"><span class="reference">item</span></a> | X (<span class="keyword">no</span> <a href="#i"><span class="reference">i</span></a>**<a href="#box"><span class="reference">box</span></a>.<a href="#item"><span class="reference">item</span></a> &amp;&amp; X <span class="keyword">some</span> <a href="#i"><span class="reference">i</span></a>**<a href="#box"><span class="reference">box</span></a>.<a href="#item"><span class="reference">item</span></a>)) <span class="keyword">]</span></div>
 
 
 <div>
-<span class="keyword">assert [</span> all b<span class="keyword"> : </span><a href="#c0_box"><span class="reference">box</span></a> | all i<span class="keyword"> : </span><a href="#b"><span class="reference">b</span></a>.<a href="#c0_item"><span class="reference">item</span></a> | G (<span class="keyword">some</span> <a href="#i"><span class="reference">i</span></a>**<a href="#c0_box"><span class="reference">box</span></a>.<a href="#c0_item"><span class="reference">item</span></a> =&gt; <span class="keyword">some</span> <a href="#i"><span class="reference">i</span></a>**<a href="#b"><span class="reference">b</span></a>.<a href="#c0_item"><span class="reference">item</span></a>) <span class="keyword">]</span></div>
+<span class="keyword">assert [</span> all b<span class="keyword"> : </span><a href="#box"><span class="reference">box</span></a> | all i<span class="keyword"> : </span><a href="#b"><span class="reference">b</span></a>.<a href="#item"><span class="reference">item</span></a> | G (<span class="keyword">some</span> <a href="#i"><span class="reference">i</span></a>**<a href="#box"><span class="reference">box</span></a>.<a href="#item"><span class="reference">item</span></a> =&gt; <span class="keyword">some</span> <a href="#i"><span class="reference">i</span></a>**<a href="#b"><span class="reference">b</span></a>.<a href="#item"><span class="reference">item</span></a>) <span class="keyword">]</span></div>
 
 </body>
 </html>

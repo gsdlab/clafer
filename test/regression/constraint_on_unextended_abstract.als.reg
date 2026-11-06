@@ -2,21 +2,21 @@ open util/integer
 pred show {}
 
 
-fact { #c0_Kernel = 0 }
-abstract sig c0_Kernel
-{ r_c0_memory : lone c0_memory }
+fact { #Kernel = 0 }
+abstract sig Kernel
+{ r_memory : lone memory }
 
-sig c0_memory
+sig memory
 {}
-{ one @r_c0_memory.this }
+{ one @r_memory.this }
 
-one sig c0_Phone
-{ r_c0_name : one c0_name }
-{ some c0_Kernel.@r_c0_memory }
+one sig Phone
+{ r_name : one name }
+{ some Kernel.@r_memory }
 
-one sig c0_name
-{ c0_name_ref : one Int }
+one sig name
+{ name_ref : one Int }
 
-assert assertAt_9_10 { no c0_Kernel }
-check assertAt_9_10 for 1 but 0 c0_Kernel, 0 c0_memory
+assert assertAt_9_10 { no Kernel }
+check assertAt_9_10 for 1 but 0 Kernel, 0 memory
 

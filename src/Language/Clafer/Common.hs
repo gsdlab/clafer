@@ -172,13 +172,16 @@ isTopLevelByUID    uidIClaferMap    uid' = isTopLevel <$> (findIClafer uidIClafe
 
 -- | Finds all super clafers according to sFun
 findHierarchy :: (IClafer -> [String]) -> UIDIClaferMap -> IClafer -> [IClafer]
-findHierarchy    sFun                     uidIClaferMap    clafer   = case sFun clafer of
-  []           -> [clafer]  -- no super and no reference
-  supersOrRefs -> let
-                    superOrRefClafers = mapMaybe (findIClafer uidIClaferMap) supersOrRefs
-                  in
-                    clafer
-                    : concatMap (findHierarchy sFun uidIClaferMap) superOrRefClafers
+findHierarchy    sFun                     uidIClaferMap    clafer   = go [] clafer
+  where
+  -- A path through references can be a cycle, e.g., `abstract Person -> Bob` with
+  -- `Bob : Person`: it ends at a clafer that is already on it, which is included once, so
+  -- that an inheritance loop shows (ResolverInheritance.resolveHierarchy reports it).
+  go path c
+    | _uid c `elem` path = [c]
+    | otherwise          = case sFun c of
+        []           -> [c]  -- no super and no reference
+        supersOrRefs -> c : concatMap (go (_uid c : path)) (mapMaybe (findIClafer uidIClaferMap) supersOrRefs)
 
 -- | Finds hierarchy and transforms each element
 mapHierarchy :: (IClafer -> b)

@@ -1,17 +1,17 @@
 //# OPTIONS --explicit
-[(#c0_E1TEntities) = 3]
-abstract 0..* c0_Entity 0..* {
-  0..* c0_type -> string 1..1 {}
+[(#E1TEntities) = 3]
+abstract 0..* Entity 0..* {
+  0..* type -> string 1..1 {}
 }
-0..* c0_E1 : c0_Entity 1..1 {
-  [this . c0_type . dref = "E1T"]
+0..* E1 : Entity 1..1 {
+  [this . type . dref = "E1T"]
 }
-0..* c0_E2 : c0_Entity 1..1 {
-  [this . c0_type . dref = "E1T"]
+0..* E2 : Entity 1..1 {
+  [this . type . dref = "E1T"]
 }
-0..* c0_E3 : c0_Entity 1..1 {
-  [this . c0_type . dref = "E1T"]
+0..* E3 : Entity 1..1 {
+  [this . type . dref = "E1T"]
 }
-0..* c0_E1TEntities -> c0_Entity 0..* {
-  [this . dref . c0_type . dref = "E1T"]
+0..* E1TEntities -> Entity 0..* {
+  [this . dref . type . dref = "E1T"]
 }

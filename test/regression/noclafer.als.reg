@@ -2,107 +2,107 @@ open util/integer
 pred show {}
 
 
-abstract sig c0_Thing
+abstract sig Thing
 {}
 
-fact { #c0_a <= 2 }
-sig c0_a extends c0_Thing
+fact { #a <= 2 }
+sig a extends Thing
 {}
 
-lone sig c0_b extends c0_Thing
+lone sig b extends Thing
 {}
 
-lone sig c0_c
-{ r_c0_d : lone c0_d }
+lone sig c
+{ r_d : lone d }
 
-lone sig c0_d
+lone sig d
 {}
-{ one r_c0_d }
+{ one r_d }
 
-assert assertAt_11_10 { (((c0_Thing + c0_c) + (c0_c.@r_c0_d)) - none) = ((c0_Thing + c0_c) + (c0_c.@r_c0_d)) }
-check assertAt_11_10 for 1 but 3 c0_Thing, 2 c0_a
+assert assertAt_11_10 { (((Thing + c) + (c.@r_d)) - none) = ((Thing + c) + (c.@r_d)) }
+check assertAt_11_10 for 1 but 3 Thing, 2 a
 
-assert assertAt_12_10 { (((c0_Thing + c0_c) + (c0_c.@r_c0_d)) + none) = ((c0_Thing + c0_c) + (c0_c.@r_c0_d)) }
-check assertAt_12_10 for 1 but 3 c0_Thing, 2 c0_a
+assert assertAt_12_10 { (((Thing + c) + (c.@r_d)) + none) = ((Thing + c) + (c.@r_d)) }
+check assertAt_12_10 for 1 but 3 Thing, 2 a
 
-assert assertAt_13_10 { (((c0_Thing + c0_c) + (c0_c.@r_c0_d)) & none) = none }
-check assertAt_13_10 for 1 but 3 c0_Thing, 2 c0_a
+assert assertAt_13_10 { (((Thing + c) + (c.@r_d)) & none) = none }
+check assertAt_13_10 for 1 but 3 Thing, 2 a
 
-assert assertAt_14_10 { c0_a in ((c0_Thing + c0_c) + (c0_c.@r_c0_d)) }
-check assertAt_14_10 for 1 but 3 c0_Thing, 2 c0_a
+assert assertAt_14_10 { a in ((Thing + c) + (c.@r_d)) }
+check assertAt_14_10 for 1 but 3 Thing, 2 a
 
-assert assertAt_15_10 { (c0_c.@r_c0_d) in ((c0_Thing + c0_c) + (c0_c.@r_c0_d)) }
-check assertAt_15_10 for 1 but 3 c0_Thing, 2 c0_a
+assert assertAt_15_10 { (c.@r_d) in ((Thing + c) + (c.@r_d)) }
+check assertAt_15_10 for 1 but 3 Thing, 2 a
 
-assert assertAt_16_10 { (#((c0_Thing + c0_c) + (c0_c.@r_c0_d))) = (((#c0_Thing).plus[(#c0_c)]).plus[(#(c0_c.@r_c0_d))]) }
-check assertAt_16_10 for 1 but 3 c0_Thing, 2 c0_a
+assert assertAt_16_10 { (#((Thing + c) + (c.@r_d))) = (((#Thing).plus[(#c)]).plus[(#(c.@r_d))]) }
+check assertAt_16_10 for 1 but 3 Thing, 2 a
 
 assert assertAt_19_10 { no none }
-check assertAt_19_10 for 1 but 3 c0_Thing, 2 c0_a
+check assertAt_19_10 for 1 but 3 Thing, 2 a
 
 assert assertAt_20_10 { (#none) = 0 }
-check assertAt_20_10 for 1 but 3 c0_Thing, 2 c0_a
+check assertAt_20_10 for 1 but 3 Thing, 2 a
 
-assert assertAt_23_10 { (c0_a + none) = c0_a }
-check assertAt_23_10 for 1 but 3 c0_Thing, 2 c0_a
+assert assertAt_23_10 { (a + none) = a }
+check assertAt_23_10 for 1 but 3 Thing, 2 a
 
-assert assertAt_24_10 { (none + c0_a) = c0_a }
-check assertAt_24_10 for 1 but 3 c0_Thing, 2 c0_a
+assert assertAt_24_10 { (none + a) = a }
+check assertAt_24_10 for 1 but 3 Thing, 2 a
 
-assert assertAt_25_10 { (#(c0_a + none)) = (#c0_a) }
-check assertAt_25_10 for 1 but 3 c0_Thing, 2 c0_a
+assert assertAt_25_10 { (#(a + none)) = (#a) }
+check assertAt_25_10 for 1 but 3 Thing, 2 a
 
-assert assertAt_28_10 { (c0_a & none) = none }
-check assertAt_28_10 for 1 but 3 c0_Thing, 2 c0_a
+assert assertAt_28_10 { (a & none) = none }
+check assertAt_28_10 for 1 but 3 Thing, 2 a
 
-assert assertAt_29_10 { (none & c0_a) = none }
-check assertAt_29_10 for 1 but 3 c0_Thing, 2 c0_a
+assert assertAt_29_10 { (none & a) = none }
+check assertAt_29_10 for 1 but 3 Thing, 2 a
 
-assert assertAt_30_10 { no c0_Thing & none }
-check assertAt_30_10 for 1 but 3 c0_Thing, 2 c0_a
+assert assertAt_30_10 { no Thing & none }
+check assertAt_30_10 for 1 but 3 Thing, 2 a
 
-assert assertAt_33_10 { (c0_a - none) = c0_a }
-check assertAt_33_10 for 1 but 3 c0_Thing, 2 c0_a
+assert assertAt_33_10 { (a - none) = a }
+check assertAt_33_10 for 1 but 3 Thing, 2 a
 
-assert assertAt_34_10 { (none - c0_a) = none }
-check assertAt_34_10 for 1 but 3 c0_Thing, 2 c0_a
+assert assertAt_34_10 { (none - a) = none }
+check assertAt_34_10 for 1 but 3 Thing, 2 a
 
-assert assertAt_37_10 { none in c0_a }
-check assertAt_37_10 for 1 but 3 c0_Thing, 2 c0_a
+assert assertAt_37_10 { none in a }
+check assertAt_37_10 for 1 but 3 Thing, 2 a
 
-assert assertAt_38_10 { none in c0_Thing }
-check assertAt_38_10 for 1 but 3 c0_Thing, 2 c0_a
+assert assertAt_38_10 { none in Thing }
+check assertAt_38_10 for 1 but 3 Thing, 2 a
 
-assert assertAt_39_10 { (no c0_a) || (!(c0_a in none)) }
-check assertAt_39_10 for 1 but 3 c0_Thing, 2 c0_a
+assert assertAt_39_10 { (no a) || (!(a in none)) }
+check assertAt_39_10 for 1 but 3 Thing, 2 a
 
-assert assertAt_42_10 { (some c0_c) => (((some c0_c) => c0_a else none) = c0_a) }
-check assertAt_42_10 for 1 but 3 c0_Thing, 2 c0_a
+assert assertAt_42_10 { (some c) => (((some c) => a else none) = a) }
+check assertAt_42_10 for 1 but 3 Thing, 2 a
 
-assert assertAt_43_10 { (no c0_c) => (no ((some c0_c) => c0_a else none)) }
-check assertAt_43_10 for 1 but 3 c0_Thing, 2 c0_a
+assert assertAt_43_10 { (no c) => (no ((some c) => a else none)) }
+check assertAt_43_10 for 1 but 3 Thing, 2 a
 
-assert assertAt_44_10 { (no c0_c) => (((no c0_c) => none else c0_b) = none) }
-check assertAt_44_10 for 1 but 3 c0_Thing, 2 c0_a
+assert assertAt_44_10 { (no c) => (((no c) => none else b) = none) }
+check assertAt_44_10 for 1 but 3 Thing, 2 a
 
-assert assertAt_45_10 { (#((some c0_c) => c0_a else none)) <= (#c0_a) }
-check assertAt_45_10 for 1 but 3 c0_Thing, 2 c0_a
+assert assertAt_45_10 { (#((some c) => a else none)) <= (#a) }
+check assertAt_45_10 for 1 but 3 Thing, 2 a
 
 assert assertAt_48_10 { none = none }
-check assertAt_48_10 for 1 but 3 c0_Thing, 2 c0_a
+check assertAt_48_10 for 1 but 3 Thing, 2 a
 
 assert assertAt_49_10 { !(none != none) }
-check assertAt_49_10 for 1 but 3 c0_Thing, 2 c0_a
+check assertAt_49_10 for 1 but 3 Thing, 2 a
 
 assert assertAt_52_10 { no none }
-check assertAt_52_10 for 1 but 3 c0_Thing, 2 c0_a
+check assertAt_52_10 for 1 but 3 Thing, 2 a
 
 assert assertAt_53_10 { no none }
-check assertAt_53_10 for 1 but 3 c0_Thing, 2 c0_a
+check assertAt_53_10 for 1 but 3 Thing, 2 a
 
 assert assertAt_54_10 { none = none }
-check assertAt_54_10 for 1 but 3 c0_Thing, 2 c0_a
+check assertAt_54_10 for 1 but 3 Thing, 2 a
 
 assert assertAt_55_10 { (#none) = 0 }
-check assertAt_55_10 for 1 but 3 c0_Thing, 2 c0_a
+check assertAt_55_10 for 1 but 3 Thing, 2 a
 

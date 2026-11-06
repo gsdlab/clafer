@@ -2,62 +2,62 @@ open util/integer
 pred show {}
 
 
-one sig c0_a
-{ r_c0_x : one c0_x }
+one sig a
+{ r_x : one x }
 
-one sig c0_x
-{ c0_x_ref : one Int }
+one sig x
+{ x_ref : one Int }
 
-lone sig c0_extra
+lone sig extra
 {}
 
-one sig c0_b
+one sig b
 {}
-{ some c0_a
+{ some a
   0 < 1
   0 < 1
-  (((c0_a).@r_c0_x).@c0_x_ref) = 2
-  all  v : c0_b | some c0_a
-  some c0_a
-  (some c0_extra) <=> (some c0_extra)
-  (((some c0_extra) => 1 else 0) = 1) => (some c0_extra)
-  (some ((some c0_extra) => (c0_a) else none)) => (some c0_extra) }
+  (((a).@r_x).@x_ref) = 2
+  all  v : b | some a
+  some a
+  (some extra) <=> (some extra)
+  (((some extra) => 1 else 0) = 1) => (some extra)
+  (some ((some extra) => (a) else none)) => (some extra) }
 
 fact { 0 < 1 }
-fact { (((c0_a).@r_c0_x).@c0_x_ref) = 2 }
-abstract sig c0_Top
+fact { (((a).@r_x).@x_ref) = 2 }
+abstract sig Top
 {}
 { 0 < 1 }
 
-one sig c0_top1 extends c0_Top
+one sig top1 extends Top
 {}
 
-one sig c0_top2 extends c0_Top
+one sig top2 extends Top
 {}
 
-abstract sig c0_Feat
+abstract sig Feat
 {}
-{ (((this in c0_f1) => (0 < 1)) && ((this in (c0_g.@r_c0_f2)) => (some (this & (c0_g.@r_c0_f2)).~(@r_c0_f2 + @r_c0_f3)))) && ((this in ((c0_h.@r_c0_i).@r_c0_f3)) => (some (this & ((c0_h.@r_c0_i).@r_c0_f3)).~(@r_c0_f2 + @r_c0_f3)))
-  (((this in c0_f1) => (0 < 1)) && ((this in (c0_g.@r_c0_f2)) => ((#((this & (c0_g.@r_c0_f2)).~(@r_c0_f2 + @r_c0_f3))) = 1))) && ((this in ((c0_h.@r_c0_i).@r_c0_f3)) => ((#((this & ((c0_h.@r_c0_i).@r_c0_f3)).~(@r_c0_f2 + @r_c0_f3))) = 1)) }
+{ (((this in f1) => (0 < 1)) && ((this in (g.@r_f2)) => (some (this & (g.@r_f2)).~(@r_f2 + @r_f3)))) && ((this in ((h.@r_i).@r_f3)) => (some (this & ((h.@r_i).@r_f3)).~(@r_f2 + @r_f3)))
+  (((this in f1) => (0 < 1)) && ((this in (g.@r_f2)) => ((#((this & (g.@r_f2)).~(@r_f2 + @r_f3))) = 1))) && ((this in ((h.@r_i).@r_f3)) => ((#((this & ((h.@r_i).@r_f3)).~(@r_f2 + @r_f3))) = 1)) }
 
-one sig c0_f1 extends c0_Feat
-{}
-
-one sig c0_g
-{ r_c0_f2 : one c0_f2 }
-
-one sig c0_f2 extends c0_Feat
+one sig f1 extends Feat
 {}
 
-fact { 2 <= #c0_h and #c0_h <= 2 }
-sig c0_h
-{ r_c0_i : one c0_i }
+one sig g
+{ r_f2 : one f2 }
 
-sig c0_i
-{ r_c0_f3 : one c0_f3 }
-{ one @r_c0_i.this }
-
-sig c0_f3 extends c0_Feat
+one sig f2 extends Feat
 {}
-{ one @r_c0_f3.this }
+
+fact { 2 <= #h and #h <= 2 }
+sig h
+{ r_i : one i }
+
+sig i
+{ r_f3 : one f3 }
+{ one @r_i.this }
+
+sig f3 extends Feat
+{}
+{ one @r_f3.this }
 

@@ -2,71 +2,71 @@ open util/integer
 pred show {}
 
 
-one sig c0_numberOne
-{ c0_numberOne_ref : one Int }
+one sig numberOne
+{ numberOne_ref : one Int }
 
-fact { (some c0_numberOne) => ((c0_numberOne.@c0_numberOne_ref) = 1) }
-one sig c0_alice
-{ c0_alice_ref : one Int }
+fact { (some numberOne) => ((numberOne.@numberOne_ref) = 1) }
+one sig alice
+{ alice_ref : one Int }
 
-fact { (some c0_alice) => ((c0_alice.@c0_alice_ref) = 0) }
-one sig c0_likertScaleVal
-{ c0_likertScaleVal_ref : one (((1 + 2) + 3) + 4) + 5 }
+fact { (some alice) => ((alice.@alice_ref) = 0) }
+one sig likertScaleVal
+{ likertScaleVal_ref : one (((1 + 2) + 3) + 4) + 5 }
 
-one sig c0_nonZero
-{ c0_nonZero_ref : one Int - 0 }
+one sig nonZero
+{ nonZero_ref : one Int - 0 }
 
-abstract sig c0_Person
-{ r_c0_Head : set c0_Head
-, r_c0_likes : lone c0_likes }
+abstract sig Person
+{ r_Person__Head : set Person__Head
+, r_likes : lone likes }
 
-abstract sig c0_Head
+abstract sig Person__Head
 {}
-{ one @r_c0_Head.this }
+{ one @r_Person__Head.this }
 
-sig c0_likes
-{ c0_likes_ref : one c0_Person }
-{ one @r_c0_likes.this }
+sig likes
+{ likes_ref : one Person }
+{ one @r_likes.this }
 
-one sig c0_Alice extends c0_Person
-{ r_c1_Head : one c1_Head }
-{ r_c1_Head in r_c0_Head
-  ((this.@r_c0_likes).@c0_likes_ref) = c0_Ella }
+one sig Alice extends Person
+{ r_Alice__Head : one Alice__Head }
+{ r_Alice__Head in r_Person__Head
+  ((this.@r_likes).@likes_ref) = Ella }
 
-one sig c1_Head extends c0_Head
-{}
-
-one sig c0_Ella extends c0_Person
-{ r_c0_h : one c0_h }
-{ no this.@r_c0_likes }
-
-one sig c0_h
+one sig Alice__Head extends Person__Head
 {}
 
-sig c0_heads
-{ c0_heads_ref : one c0_Head }
+one sig Ella extends Person
+{ r_h : one h }
+{ no this.@r_likes }
 
-fact {  all disj x, y : c0_heads | (x.@c0_heads_ref) != (y.@c0_heads_ref)  }
-fact { 2 <= #c0_friend and #c0_friend <= 2 }
-sig c0_friend
-{ c0_friend_ref : one c0_Alice + c0_Ella }
+one sig h
+{}
 
-fact {  all disj x, y : c0_friend | (x.@c0_friend_ref) != (y.@c0_friend_ref)  }
-one sig c0_onlyAlice
-{ c0_onlyAlice_ref : one c0_Alice & c0_Person }
+sig heads
+{ heads_ref : one Person__Head }
 
-assert assertAt_37_10 { c0_Alice in (c0_onlyAlice.@c0_onlyAlice_ref) }
-check assertAt_37_10 for 1 but 2 c0_Person, 2 c0_friend, 2 c0_likes
+fact {  all disj x, y : heads | (x.@heads_ref) != (y.@heads_ref)  }
+fact { 2 <= #friend and #friend <= 2 }
+sig friend
+{ friend_ref : one Alice + Ella }
 
-assert assertAt_38_10 { c0_Ella not in (c0_onlyAlice.@c0_onlyAlice_ref) }
-check assertAt_38_10 for 1 but 2 c0_Person, 2 c0_friend, 2 c0_likes
+fact {  all disj x, y : friend | (x.@friend_ref) != (y.@friend_ref)  }
+one sig onlyAlice
+{ onlyAlice_ref : one Alice & Person }
 
-one sig c0_exceptElla
-{ c0_exceptElla_ref : one c0_Person - c0_Ella }
+assert assertAt_37_10 { Alice in (onlyAlice.@onlyAlice_ref) }
+check assertAt_37_10 for 1 but 2 Person, 2 friend, 2 likes
 
-assert assertAt_43_10 { c0_Alice in (c0_exceptElla.@c0_exceptElla_ref) }
-check assertAt_43_10 for 1 but 2 c0_Person, 2 c0_friend, 2 c0_likes
+assert assertAt_38_10 { Ella not in (onlyAlice.@onlyAlice_ref) }
+check assertAt_38_10 for 1 but 2 Person, 2 friend, 2 likes
 
-assert assertAt_44_10 { c0_Ella not in (c0_exceptElla.@c0_exceptElla_ref) }
-check assertAt_44_10 for 1 but 2 c0_Person, 2 c0_friend, 2 c0_likes
+one sig exceptElla
+{ exceptElla_ref : one Person - Ella }
+
+assert assertAt_43_10 { Alice in (exceptElla.@exceptElla_ref) }
+check assertAt_43_10 for 1 but 2 Person, 2 friend, 2 likes
+
+assert assertAt_44_10 { Ella not in (exceptElla.@exceptElla_ref) }
+check assertAt_44_10 for 1 but 2 Person, 2 friend, 2 likes
 

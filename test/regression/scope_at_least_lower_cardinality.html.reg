@@ -22,25 +22,25 @@ a[href$='Ambiguous name'] {color: yellow}
 <div class="file">positive/scope_at_least_lower_cardinality.cfr</div>
 
 <div>
-<span class="claferDecl" id="c0_a">a</span> ?</div>
+<span class="claferDecl" id="a">a</span> ?</div>
 
 
 <div>
-<span class="claferDecl" id="c0_b">b</span></div>
+<span class="claferDecl" id="b">b</span></div>
 
 
 <div>
-<span class="claferDecl" id="c0_c">c</span> +</div>
+<span class="claferDecl" id="c">c</span> +</div>
 
 
 <div>
-<span class="claferDecl" id="c0_d">d</span> 2..*
+<span class="claferDecl" id="d">d</span> 2..*
   <div class="indent">
-  <span class="claferDecl" id="c0_e">e</span> ?</div>
+  <span class="claferDecl" id="e">e</span> ?</div>
   <div class="indent">
-  <span class="claferDecl" id="c0_f">f</span></div>
+  <span class="claferDecl" id="f">f</span></div>
   <div class="indent">
-  <span class="claferDecl" id="c0_g">g</span> 2..* </div>
+  <span class="claferDecl" id="g">g</span> 2..* </div>
 </div>
 
 </body>

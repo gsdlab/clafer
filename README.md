@@ -344,6 +344,25 @@ or `clafer System.cfr --import=design-space.cfr`. The option can be repeated.
 
 See [#100](https://github.com/gsdlab/clafer/issues/100) for the design.
 
+### Unique names of clafers (UIDs)
+
+Every clafer has a unique name, its UID, which the outputs use for it: the Alloy signatures, the Choco model, the explicit model (`-m clafer`), the JSON IR, the anchors of the HTML output, and the scope files (`.cfr-scope`). The UID of a clafer is its least-partially-qualified name, with `__` between the names:
+
+```
+size          // root__size: another clafer named size exists
+x
+    size      // x__size
+    color     // color: no other clafer is named so
+```
+
+An apostrophe in a name is `_prime` in the UID (`a'` is `a_prime`), and a UID that would be the same as one before it in the model gets `__2`, `__3`, .... A lookup by name, e.g., in a scope file or claferIG's `i size 3`, takes a UID or a qualified name, which names all the clafers whose paths end with it: `size` names both clafers above, `x__size` the one in `x`, and `root__size` the top-level one. The older form `x::size` and `::size` is read too. A name with `__` is a warning, since `__` separates the names of a UID.
+
+The outputs write the UIDs in the form their language allows: the Alloy output renames a clafer whose UID is an Alloy keyword or a name the Alloy output uses (e.g., `sig` is `sig_1`), and the variables of the Choco output are `$` and the UID (`$x__size`).
+
+### Explicit models
+
+`-m clafer` writes the explicit model of a static model to `model.des.cfr`: the model that chocosolver solves, with every name a UID, every card, group card, `this`, `parent` and `dref` written out, and nesting in braces; with `--meta-data`, also its scope file with every scope, `model.des.cfr-scope`. An explicit model is a Clafer model. Its first line, `//# OPTIONS --explicit`, marks it: for clafer, `--explicit` means `-f -k -l --ss=none`, so the model compiles to itself, and chocosolver reads such a model with its own parser, without the compiler.
+
 ### Integer range of the Choco output
 
 The options `--minint` and `--maxint` set the range of integers that the Choco output (`-m choco`) allows, for example, for a model whose attributes and their sums exceed the default range:

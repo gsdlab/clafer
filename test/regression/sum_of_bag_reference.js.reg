@@ -1,9 +1,9 @@
 defaultScope(1);
 stringLength(16);
 
-c0_a = Clafer("c0_a");
-c0_b = Clafer("c0_b").withCard(1, 1);
-c0_a.refTo(Int);
-c0_b.refToUnique(Int);
-Constraint(implies(some(global(c0_b)), equal(joinRef(global(c0_b)), sum(global(c0_a)))));
-Constraint(equal(joinRef(global(c0_b)), constant(2)));
+$a = Clafer("a");
+$b = Clafer("b").withCard(1, 1);
+$a.refTo(Int);
+$b.refToUnique(Int);
+Constraint(implies(some(global($b)), equal(joinRef(global($b)), sum(global($a)))));
+Constraint(equal(joinRef(global($b)), constant(2)));

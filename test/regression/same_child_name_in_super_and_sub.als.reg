@@ -2,20 +2,20 @@ open util/integer
 pred show {}
 
 
-abstract sig c0_A
-{ r_c0_Item : one c0_Item }
+abstract sig A
+{ r_A__Item : one A__Item }
 
-sig c0_Item
+sig A__Item
 {}
-{ one @r_c0_Item.this }
+{ one @r_A__Item.this }
 
-abstract sig c0_B extends c0_A
-{ r_c1_Item : one c1_Item }
+abstract sig B extends A
+{ r_B__Item : one B__Item }
 
-sig c1_Item
+sig B__Item
 {}
-{ one @r_c1_Item.this }
+{ one @r_B__Item.this }
 
-one sig c0_C extends c0_B
+one sig C extends B
 {}
 

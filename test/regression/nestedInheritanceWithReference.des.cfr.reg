@@ -1,18 +1,18 @@
 //# OPTIONS --explicit
-abstract 0..* c0_System 0..* {
-  [this . c0_connections . dref = this . c0_Connection]
-  abstract 0..* c0_Connection 0..* {}
-  0..* c0_connections -> c0_Connection 0..* {}
+abstract 0..* System 0..* {
+  [this . connections . dref = this . Connection]
+  abstract 0..* Connection 0..* {}
+  0..* connections -> Connection 0..* {}
 }
-0..* c0_SystemX : c0_System 1..1 {
-  0..* c0_con1 : c0_Connection 1..1 {}
-  0..* c0_con2 : c0_Connection 1..1 {}
+0..* SystemX : System 1..1 {
+  0..* con1 : Connection 1..1 {}
+  0..* con2 : Connection 1..1 {}
 }
-0..* c0_SystemY : c0_System 1..1 {
-  0..* c0_con3 : c0_Connection 1..1 {}
-  0..* c0_con4 : c0_Connection 1..1 {}
-  0..* c0_con5 : c0_Connection 1..1 {}
+0..* SystemY : System 1..1 {
+  0..* con3 : Connection 1..1 {}
+  0..* con4 : Connection 1..1 {}
+  0..* con5 : Connection 1..1 {}
 }
 
-assert [c0_SystemX . c0_connections . dref = (c0_SystemX . c0_con1 ++ c0_SystemX . c0_con2)]
-assert [c0_SystemY . c0_connections . dref = ((c0_SystemY . c0_con3 ++ c0_SystemY . c0_con4) ++ c0_SystemY . c0_con5)]
+assert [SystemX . connections . dref = (SystemX . con1 ++ SystemX . con2)]
+assert [SystemY . connections . dref = ((SystemY . con3 ++ SystemY . con4) ++ SystemY . con5)]

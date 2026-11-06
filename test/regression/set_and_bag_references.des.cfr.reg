@@ -1,5 +1,5 @@
 //# OPTIONS --explicit
-abstract 0..* c0_A 0..* {}
-0..* c0_a : c0_A 1..* {}
-0..* c0_setRefToA -> c0_A 3..3 {}
-0..* c0_multisetRefToA ->> c0_A 3..3 {}
+abstract 0..* A 0..* {}
+0..* a : A 1..* {}
+0..* setRefToA -> A 3..3 {}
+0..* multisetRefToA ->> A 3..3 {}

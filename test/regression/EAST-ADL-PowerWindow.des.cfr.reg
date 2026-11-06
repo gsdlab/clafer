@@ -1,27 +1,27 @@
 //# OPTIONS --explicit
-[((#c0_express) >= 1) <=> ((#c0_downX) >= 1)]
-abstract 0..* c0_Feature 0..* {}
-0..* c0_express : c0_Feature 0..1 {}
-abstract 0..* c0_Component 0..* {
-  abstract 1..1 c0_Port 0..* {
-    0..* c0_input 0..1 {}
-    0..* c0_output 0..1 {}
+[((#express) >= 1) <=> ((#downX) >= 1)]
+abstract 0..* Feature 0..* {}
+0..* express : Feature 0..1 {}
+abstract 0..* Component 0..* {
+  abstract 1..1 Port 0..* {
+    0..* input 0..1 {}
+    0..* output 0..1 {}
   }
 }
-abstract 0..* c0_Command 0..* {}
-0..* c0_motorUp : c0_Command 1..1 {}
-0..* c0_motorDown : c0_Command 1..1 {}
-0..* c0_motorStop : c0_Command 1..1 {}
-abstract 0..* c0_Request 0..* {}
-0..* c0_up : c0_Request 1..1 {}
-0..* c0_down : c0_Request 1..1 {}
-0..* c0_downX : c0_Request 0..1 {}
-0..* c0_stop : c0_Request 1..1 {}
-0..* c0_WinCtrl : c0_Component 1..1 {
-  1..1 c0_cmd : c0_Port -> c0_Command 1..1 {
-    [(#this . c0_output) >= 1]
+abstract 0..* Command 0..* {}
+0..* motorUp : Command 1..1 {}
+0..* motorDown : Command 1..1 {}
+0..* motorStop : Command 1..1 {}
+abstract 0..* Request 0..* {}
+0..* up : Request 1..1 {}
+0..* down : Request 1..1 {}
+0..* downX : Request 0..1 {}
+0..* stop : Request 1..1 {}
+0..* WinCtrl : Component 1..1 {
+  1..1 cmd : Port -> Command 1..1 {
+    [(#this . output) >= 1]
   }
-  1..1 c0_req : c0_Port -> c0_Request 1..1 {
-    [(#this . c0_input) >= 1]
+  1..1 req : Port -> Request 1..1 {
+    [(#this . input) >= 1]
   }
 }

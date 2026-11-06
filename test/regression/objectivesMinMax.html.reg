@@ -22,54 +22,54 @@ a[href$='Ambiguous name'] {color: yellow}
 <div class="file">positive/objectivesMinMax.cfr</div>
 
 <div>
-<span class="claferDecl" id="c0_x">x</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a> 3</div>
+<span class="claferDecl" id="x">x</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a> 3</div>
 
 
 <div>
-<span class="claferDecl" id="c0_total_x">total_x</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a> = <span class="keyword">sum </span><a href="#c0_x"><span class="reference">x</span></a></div>
+<span class="claferDecl" id="total_x">total_x</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a> = <span class="keyword">sum </span><a href="#x"><span class="reference">x</span></a></div>
 
 
 <div>
-<span class="claferDecl" id="c0_y">y</span>
+<span class="claferDecl" id="y">y</span>
   <div class="indent">
-  <span class="claferDecl" id="c0_total_y">total_y</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a> = <span class="keyword">sum </span><a href="#c0_x"><span class="reference">x</span></a></div>
+  <span class="claferDecl" id="total_y">total_y</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a> = <span class="keyword">sum </span><a href="#x"><span class="reference">x</span></a></div>
 </div>
 
 
 <div>
-&lt;&lt;<span class="deprecated" title="Deprecated. Use `minimize` instead.">min </span>max <a href="#c0_x"><span class="reference">x</span></a>&gt;&gt;</div>
+&lt;&lt;<span class="deprecated" title="Deprecated. Use `minimize` instead.">min </span>max <a href="#x"><span class="reference">x</span></a>&gt;&gt;</div>
 
 
 <div>
-&lt;&lt;<span class="keyword">minimize </span>max <a href="#c0_x"><span class="reference">x</span></a>&gt;&gt;</div>
+&lt;&lt;<span class="keyword">minimize </span>max <a href="#x"><span class="reference">x</span></a>&gt;&gt;</div>
 
 
 <div>
-&lt;&lt;<span class="deprecated" title="Deprecated. Use `maximize` instead.">max </span>min <a href="#c0_x"><span class="reference">x</span></a>&gt;&gt;</div>
+&lt;&lt;<span class="deprecated" title="Deprecated. Use `maximize` instead.">max </span>min <a href="#x"><span class="reference">x</span></a>&gt;&gt;</div>
 
 
 <div>
-&lt;&lt;<span class="keyword">maximize </span>min <a href="#c0_x"><span class="reference">x</span></a>&gt;&gt;</div>
+&lt;&lt;<span class="keyword">maximize </span>min <a href="#x"><span class="reference">x</span></a>&gt;&gt;</div>
 
 
 <div>
-&lt;&lt;<span class="keyword">minimize </span><span class="keyword">sum </span><a href="#c0_x"><span class="reference">x</span></a>&gt;&gt;</div>
+&lt;&lt;<span class="keyword">minimize </span><span class="keyword">sum </span><a href="#x"><span class="reference">x</span></a>&gt;&gt;</div>
 
 
 <div>
-&lt;&lt;<span class="keyword">maximize </span><span class="keyword">product </span><a href="#c0_x"><span class="reference">x</span></a>&gt;&gt;</div>
+&lt;&lt;<span class="keyword">maximize </span><span class="keyword">product </span><a href="#x"><span class="reference">x</span></a>&gt;&gt;</div>
 
 
 <div>
-&lt;&lt;<span class="keyword">minimize </span># <a href="#c0_x"><span class="reference">x</span></a>&gt;&gt;</div>
+&lt;&lt;<span class="keyword">minimize </span># <a href="#x"><span class="reference">x</span></a>&gt;&gt;</div>
 
 
 <div>
-&lt;&lt;<span class="keyword">minimize </span><a href="#c0_total_x"><span class="reference">total_x</span></a>&gt;&gt;</div>
+&lt;&lt;<span class="keyword">minimize </span><a href="#total_x"><span class="reference">total_x</span></a>&gt;&gt;</div>
 
 
 <div>
-&lt;&lt;<span class="keyword">minimize </span><a href="#c0_y"><span class="reference">y</span></a>.<a href="#c0_total_y"><span class="reference">total_y</span></a>&gt;&gt;</div>
+&lt;&lt;<span class="keyword">minimize </span><a href="#y"><span class="reference">y</span></a>.<a href="#total_y"><span class="reference">total_y</span></a>&gt;&gt;</div>
 
 </body>
 </html>

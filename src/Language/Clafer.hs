@@ -124,6 +124,7 @@ import           Language.Clafer.Front.ParClafer
 import           Language.Clafer.Front.PrintClafer
 import           Language.Clafer.Generator.Alloy
 import           Language.Clafer.Generator.AlloyLtl
+import           Language.Clafer.Generator.AlloyNames (alloyNames, toAlloyNames)
 import           Language.Clafer.Generator.Choco
 import           Language.Clafer.Generator.Concat
 import           Language.Clafer.Generator.Explicit
@@ -590,6 +591,7 @@ generate =
                       else ""
       stats = showStats au (statsModule iModule) ++ scopeWarnings ++ showRedundantExps (inputFiles env) (redundantExps iModule)
               ++ showNoClaferNavs (inputFiles env) (noClaferNavs ast')
+              ++ (if skip_resolver cargs then "" else showDoubleUnderscoreNames (inputFiles env) iModule)
 
     return $ Map.fromList (
         -- result for Alloy
@@ -600,7 +602,12 @@ generate =
                     (imod,strMap) = astrModule iModule
                     useAlloyLtlGen = not staticClaferSubset || AlloyLtl `elem` modes
                     (genAlloyCode, alloyModes, fileExt) = if useAlloyLtlGen then (genAlloyLtlModule, [Alloy, AlloyLtl], "tmp.als") else (genModule, [Alloy], "als")
-                    alloyCode = genAlloyCode cargs{mode = alloyModes} (imod, genv) scopes otherTokens'
+                    -- the clafers whose UIDs cannot be Alloy names get names of their own
+                    names = alloyNames imod
+                    imodA = toAlloyNames names imod
+                    genvA = if Map.null names then genv else genv{uidClaferMap = createUidIClaferMap imodA}
+                    scopesA = [ (Map.findWithDefault u u names, s) | (u, s) <- scopes ]
+                    alloyCode = genAlloyCode cargs{mode = alloyModes} (imodA, genvA) scopesA otherTokens'
                     addCommentStats = if no_stats cargs then const else addStats
                  in
                     [ (Alloy,
@@ -830,6 +837,18 @@ showNoClaferNavs files = unlines . map showNoClaferNav
       (path, l') = modelPosition files l
     in
       "Warning: " ++ path ++ ":" ++ show l' ++ ":" ++ show c ++ ": a navigation from '" ++ noClaferIdent ++ "' is redundant, since it is always empty."
+
+-- | Warnings about the names with @__@, which the compiler uses between the names of a UID
+--   (e.g., @x__size@ for the @size@ in @x@): in a full model, such a name may be the UID of
+--   another clafer, and a lookup by name, e.g., in a scope file, splits it. An explicit model
+--   (@-f@, @--explicit@) has them by design.
+showDoubleUnderscoreNames :: [ModelFile] -> IModule -> String
+showDoubleUnderscoreNames files iModule = unlines
+  [ "Warning: " ++ path ++ ":" ++ show l' ++ ":" ++ show c ++ ": the name '" ++ _ident claf
+    ++ "' contains '__', which the compiler uses in the unique names of clafers (e.g., x__size for the size in x)."
+  | claf@IClafer{_cinPos = Span (Pos l c) _} <- universeOn biplate iModule :: [IClafer]
+  , "__" `isInfixOf` _ident claf
+  , let (path, l') = modelPosition files l ]
 
 showInterval :: (Integer, Integer) -> String
 showInterval (n, -1) = show n ++ "..*"

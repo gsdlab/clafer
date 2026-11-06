@@ -2,21 +2,21 @@ open util/integer
 pred show {}
 
 
-abstract sig c0_Person
-{ r_c0_married : lone c0_married
-, r_c0_child : set c0_child }
-{ all disj x, y : this.@r_c0_child | (x.@c0_child_ref) != (y.@c0_child_ref)  }
+abstract sig Person
+{ r_married : lone married
+, r_child : set child }
+{ all disj x, y : this.@r_child | (x.@child_ref) != (y.@child_ref)  }
 
-sig c0_married
+sig married
 {}
-{ one @r_c0_married.this }
+{ one @r_married.this }
 
-sig c0_child
-{ c0_child_ref : one c0_Person }
-{ one @r_c0_child.this }
+sig child
+{ child_ref : one Person }
+{ one @r_child.this }
 
-one sig c0_Alice extends c0_Person
+one sig Alice extends Person
 {}
-{ no this.@r_c0_married
-  no this.@r_c0_child }
+{ no this.@r_married
+  no this.@r_child }
 

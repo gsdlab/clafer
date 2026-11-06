@@ -2,80 +2,80 @@ open util/integer
 pred show {}
 
 
-abstract sig c0_Person
-{ r_c0_age : one c0_age
-, r_c0_maritalStatus : one c0_maritalStatus
-, r_c0_childs : set c0_childs
-, r_c0_parents : set c0_parents }
-{ all disj x, y : this.@r_c0_childs | (x.@c0_childs_ref) != (y.@c0_childs_ref) 
-  #r_c0_parents <= 2
-  all disj x, y : this.@r_c0_parents | (x.@c0_parents_ref) != (y.@c0_parents_ref)  }
+abstract sig Person
+{ r_age : one age
+, r_maritalStatus : one maritalStatus
+, r_childs : set childs
+, r_parents : set parents }
+{ all disj x, y : this.@r_childs | (x.@childs_ref) != (y.@childs_ref) 
+  #r_parents <= 2
+  all disj x, y : this.@r_parents | (x.@parents_ref) != (y.@parents_ref)  }
 
-sig c0_age
-{ c0_age_ref : one Int }
-{ one @r_c0_age.this
-  (this.@c0_age_ref) >= 0 }
+sig age
+{ age_ref : one Int }
+{ one @r_age.this
+  (this.@age_ref) >= 0 }
 
-sig c0_maritalStatus
-{ r_c0_neverMarried : lone c0_neverMarried
-, r_c0_married : lone c0_married
-, r_c0_divorced : lone c0_divorced }
-{ one @r_c0_maritalStatus.this
-  let children = (r_c0_neverMarried + r_c0_married + r_c0_divorced) | one children
-  ((some this.@r_c0_married) || (some this.@r_c0_divorced)) => ((((this.~@r_c0_maritalStatus).@r_c0_age).@c0_age_ref) >= 5) }
+sig maritalStatus
+{ r_neverMarried : lone neverMarried
+, r_married : lone married
+, r_divorced : lone divorced }
+{ one @r_maritalStatus.this
+  let children = (r_neverMarried + r_married + r_divorced) | one children
+  ((some this.@r_married) || (some this.@r_divorced)) => ((((this.~@r_maritalStatus).@r_age).@age_ref) >= 5) }
 
-sig c0_neverMarried
+sig neverMarried
 {}
-{ one @r_c0_neverMarried.this }
+{ one @r_neverMarried.this }
 
-sig c0_married
-{ r_c0_spouse : one c0_spouse }
-{ one @r_c0_married.this
-  ((this.@r_c0_spouse).@c0_spouse_ref) != ((this.~@r_c0_married).~@r_c0_maritalStatus) }
+sig married
+{ r_spouse : one spouse }
+{ one @r_married.this
+  ((this.@r_spouse).@spouse_ref) != ((this.~@r_married).~@r_maritalStatus) }
 
-sig c0_spouse
-{ c0_spouse_ref : one c0_Person }
-{ one @r_c0_spouse.this
-  (((((this.@c0_spouse_ref).@r_c0_maritalStatus).@r_c0_married).@r_c0_spouse).@c0_spouse_ref) = (((this.~@r_c0_spouse).~@r_c0_married).~@r_c0_maritalStatus) }
+sig spouse
+{ spouse_ref : one Person }
+{ one @r_spouse.this
+  (((((this.@spouse_ref).@r_maritalStatus).@r_married).@r_spouse).@spouse_ref) = (((this.~@r_spouse).~@r_married).~@r_maritalStatus) }
 
-sig c0_divorced
+sig divorced
 {}
-{ one @r_c0_divorced.this }
+{ one @r_divorced.this }
 
-sig c0_childs
-{ c0_childs_ref : one c0_Person }
-{ one @r_c0_childs.this
-  (this.~@r_c0_childs) in (((this.@c0_childs_ref).@r_c0_parents).@c0_parents_ref)
-  (((((this.~@r_c0_childs).@r_c0_maritalStatus).@r_c0_married).@r_c0_spouse).@c0_spouse_ref) in (((this.@c0_childs_ref).@r_c0_parents).@c0_parents_ref)
-  (((this.@c0_childs_ref).@r_c0_age).@c0_age_ref) < (((this.~@r_c0_childs).@r_c0_age).@c0_age_ref) }
+sig childs
+{ childs_ref : one Person }
+{ one @r_childs.this
+  (this.~@r_childs) in (((this.@childs_ref).@r_parents).@parents_ref)
+  (((((this.~@r_childs).@r_maritalStatus).@r_married).@r_spouse).@spouse_ref) in (((this.@childs_ref).@r_parents).@parents_ref)
+  (((this.@childs_ref).@r_age).@age_ref) < (((this.~@r_childs).@r_age).@age_ref) }
 
-sig c0_parents
-{ c0_parents_ref : one c0_Person }
-{ one @r_c0_parents.this
-  (this.~@r_c0_parents) in (((this.@c0_parents_ref).@r_c0_childs).@c0_childs_ref) }
+sig parents
+{ parents_ref : one Person }
+{ one @r_parents.this
+  (this.~@r_parents) in (((this.@parents_ref).@r_childs).@childs_ref) }
 
-one sig c0_Alice extends c0_Person
+one sig Alice extends Person
 {}
-{ ((this.@r_c0_age).@c0_age_ref) = 6
-  ((((this.@r_c0_maritalStatus).@r_c0_married).@r_c0_spouse).@c0_spouse_ref) = c0_Bob }
+{ ((this.@r_age).@age_ref) = 6
+  ((((this.@r_maritalStatus).@r_married).@r_spouse).@spouse_ref) = Bob }
 
-fact { ((c0_Person.@r_c0_childs).@c0_childs_ref) = c0_Carol }
-one sig c0_Bob extends c0_Person
+fact { ((Person.@r_childs).@childs_ref) = Carol }
+one sig Bob extends Person
 {}
 
-assert assertAt_28_10 { ((c0_Bob.@r_c0_age).@c0_age_ref) >= 5 }
-check assertAt_28_10 for 1 but 3 c0_Person, 3 c0_age, 9 c0_childs, 3 c0_divorced, 3 c0_maritalStatus, 3 c0_married, 3 c0_neverMarried, 6 c0_parents, 3 c0_spouse
+assert assertAt_28_10 { ((Bob.@r_age).@age_ref) >= 5 }
+check assertAt_28_10 for 1 but 3 Person, 3 age, 9 childs, 3 divorced, 3 maritalStatus, 3 married, 3 neverMarried, 6 parents, 3 spouse
 
-assert assertAt_29_10 { ((((c0_Bob.@r_c0_maritalStatus).@r_c0_married).@r_c0_spouse).@c0_spouse_ref) = c0_Alice }
-check assertAt_29_10 for 1 but 3 c0_Person, 3 c0_age, 9 c0_childs, 3 c0_divorced, 3 c0_maritalStatus, 3 c0_married, 3 c0_neverMarried, 6 c0_parents, 3 c0_spouse
+assert assertAt_29_10 { ((((Bob.@r_maritalStatus).@r_married).@r_spouse).@spouse_ref) = Alice }
+check assertAt_29_10 for 1 but 3 Person, 3 age, 9 childs, 3 divorced, 3 maritalStatus, 3 married, 3 neverMarried, 6 parents, 3 spouse
 
-assert assertAt_30_10 { ((c0_Bob.@r_c0_childs).@c0_childs_ref) = c0_Carol }
-check assertAt_30_10 for 1 but 3 c0_Person, 3 c0_age, 9 c0_childs, 3 c0_divorced, 3 c0_maritalStatus, 3 c0_married, 3 c0_neverMarried, 6 c0_parents, 3 c0_spouse
+assert assertAt_30_10 { ((Bob.@r_childs).@childs_ref) = Carol }
+check assertAt_30_10 for 1 but 3 Person, 3 age, 9 childs, 3 divorced, 3 maritalStatus, 3 married, 3 neverMarried, 6 parents, 3 spouse
 
-one sig c0_Carol extends c0_Person
+one sig Carol extends Person
 {}
-{ ((this.@r_c0_age).@c0_age_ref) = 1 }
+{ ((this.@r_age).@age_ref) = 1 }
 
-assert assertAt_35_10 { ((c0_Carol.@r_c0_parents).@c0_parents_ref) = (c0_Alice + c0_Bob) }
-check assertAt_35_10 for 1 but 3 c0_Person, 3 c0_age, 9 c0_childs, 3 c0_divorced, 3 c0_maritalStatus, 3 c0_married, 3 c0_neverMarried, 6 c0_parents, 3 c0_spouse
+assert assertAt_35_10 { ((Carol.@r_parents).@parents_ref) = (Alice + Bob) }
+check assertAt_35_10 for 1 but 3 Person, 3 age, 9 childs, 3 divorced, 3 maritalStatus, 3 married, 3 neverMarried, 6 parents, 3 spouse
 

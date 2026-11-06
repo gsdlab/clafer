@@ -1,9 +1,9 @@
 //# OPTIONS --explicit
-abstract 0..* c0_Person 0..* {
-  0..* c0_married 0..1 {}
-  0..* c0_child -> c0_Person 0..* {}
+abstract 0..* Person 0..* {
+  0..* married 0..1 {}
+  0..* child -> Person 0..* {}
 }
-0..* c0_Alice : c0_Person 1..1 {
-  [(#this . c0_married) = 0]
-  [(#this . c0_child) = 0]
+0..* Alice : Person 1..1 {
+  [(#this . married) = 0]
+  [(#this . child) = 0]
 }

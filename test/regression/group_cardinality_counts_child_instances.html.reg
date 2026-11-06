@@ -22,9 +22,9 @@ a[href$='Ambiguous name'] {color: yellow}
 <div class="file">positive/group_cardinality_counts_child_instances.cfr</div>
 
 <div>
-2..3 <span class="claferDecl" id="c0_A">A</span>
+2..3 <span class="claferDecl" id="A">A</span>
   <div class="indent">
-  <span class="claferDecl" id="c0_Item">Item</span> 1..5 </div>
+  <span class="claferDecl" id="Item">Item</span> 1..5 </div>
 </div>
 
 </body>

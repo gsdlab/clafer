@@ -1,55 +1,55 @@
 //# OPTIONS --explicit
-abstract 0..* c0_tristate 0..* {
-  0..* c0_module 0..1 {}
+abstract 0..* tristate 0..* {
+  0..* module 0..1 {}
 }
-0..* c0_MISC_FILESYSTEMS 0..1 {
-  [((#this . c0_display) >= 1) => (this . c0_display . dref = "Miscellaneous filesystems")]
-  0..* c0_display -> string 1..1 {}
-  0..* c0_JFFS2_FS : c0_tristate 0..1 {
-    [((#this . c1_display) >= 1) => (this . c1_display . dref = "Journalling Flash File System")]
-    [(#c0_MTD) >= 1]
-    [((#c0_MTD) >= 1) => ((#c0_CRC32) >= 1)]
-    [((#this . c0_JFFS2_FS_WRITEBUFFER) >= 1) <=> ((#c0_HAS_IOMEM) >= 1)]
-    0..* c1_display -> string 1..1 {}
-    0..* c0_FFS2_FS_DEBUG -> int 1..1 {
+0..* MISC_FILESYSTEMS 0..1 {
+  [((#this . MISC_FILESYSTEMS__display) >= 1) => (this . MISC_FILESYSTEMS__display . dref = "Miscellaneous filesystems")]
+  0..* MISC_FILESYSTEMS__display -> string 1..1 {}
+  0..* JFFS2_FS : tristate 0..1 {
+    [((#this . JFFS2_FS__display) >= 1) => (this . JFFS2_FS__display . dref = "Journalling Flash File System")]
+    [(#MTD) >= 1]
+    [((#MTD) >= 1) => ((#CRC32) >= 1)]
+    [((#this . JFFS2_FS_WRITEBUFFER) >= 1) <=> ((#HAS_IOMEM) >= 1)]
+    0..* JFFS2_FS__display -> string 1..1 {}
+    0..* FFS2_FS_DEBUG -> int 1..1 {
       [this . dref = 0]
-      [((#this . c2_display) >= 1) => (this . c2_display . dref = "JFFS2 Debug level (0=quiet, 2=noisy)")]
+      [((#this . FFS2_FS_DEBUG__display) >= 1) => (this . FFS2_FS_DEBUG__display . dref = "JFFS2 Debug level (0=quiet, 2=noisy)")]
       [(0 <= this . dref) && (this . dref <= 2)]
-      0..* c2_display -> string 1..1 {}
+      0..* FFS2_FS_DEBUG__display -> string 1..1 {}
     }
-    0..* c0_JFFS2_FS_WRITEBUFFER 0..1 {}
-    0..* c0_JFFS2_COMPRESS 0..1 {
-      [((#this . c3_display) >= 1) => (this . c3_display . dref = "Advanced compression options for JFFS2")]
-      [(#this . c0_JFFS2_ZLIB) >= 1]
-      0..* c3_display -> string 1..1 {}
-      0..* c0_JFFS2_ZLIB 0..1 {
-        [((#this . c4_display) >= 1) => (this . c4_display . dref = "Compress w/zlib...")]
-        [(#c0_ZLIB_INFLATE) >= 1]
-        0..* c4_display -> string 1..1 {}
+    0..* JFFS2_FS_WRITEBUFFER 0..1 {}
+    0..* JFFS2_COMPRESS 0..1 {
+      [((#this . JFFS2_COMPRESS__display) >= 1) => (this . JFFS2_COMPRESS__display . dref = "Advanced compression options for JFFS2")]
+      [(#this . JFFS2_ZLIB) >= 1]
+      0..* JFFS2_COMPRESS__display -> string 1..1 {}
+      0..* JFFS2_ZLIB 0..1 {
+        [((#this . JFFS2_ZLIB__display) >= 1) => (this . JFFS2_ZLIB__display . dref = "Compress w/zlib...")]
+        [(#ZLIB_INFLATE) >= 1]
+        0..* JFFS2_ZLIB__display -> string 1..1 {}
       }
-      0..* c0_CompressionChoice 1..1 {
-        [((#this . c5_display) >= 1) => (this . c5_display . dref = "Default compression")]
-        [(#this . c0_choice . c0_JFFS2_CMODE_PRIORITY) >= 1]
-        0..* c5_display -> string 1..1 {}
-        1..1 c0_choice 1..1 {
-          0..* c0_JFFS2_CMODE_NONE 0..1 {
-            [((#this . c6_display) >= 1) => (this . c6_display . dref = "no compression")]
-            0..* c6_display -> string 1..1 {}
+      0..* CompressionChoice 1..1 {
+        [((#this . CompressionChoice__display) >= 1) => (this . CompressionChoice__display . dref = "Default compression")]
+        [(#this . choice . JFFS2_CMODE_PRIORITY) >= 1]
+        0..* CompressionChoice__display -> string 1..1 {}
+        1..1 choice 1..1 {
+          0..* JFFS2_CMODE_NONE 0..1 {
+            [((#this . JFFS2_CMODE_NONE__display) >= 1) => (this . JFFS2_CMODE_NONE__display . dref = "no compression")]
+            0..* JFFS2_CMODE_NONE__display -> string 1..1 {}
           }
-          0..* c0_JFFS2_CMODE_PRIORITY 0..1 {
-            [((#this . c7_display) >= 1) => (this . c7_display . dref = "priority")]
-            0..* c7_display -> string 1..1 {}
+          0..* JFFS2_CMODE_PRIORITY 0..1 {
+            [((#this . JFFS2_CMODE_PRIORITY__display) >= 1) => (this . JFFS2_CMODE_PRIORITY__display . dref = "priority")]
+            0..* JFFS2_CMODE_PRIORITY__display -> string 1..1 {}
           }
-          0..* c0_JFFS2_CMODE_SIZE 0..1 {
-            [((#this . c8_display) >= 1) => (this . c8_display . dref = "size (EXPERIMENTAL)")]
-            0..* c8_display -> string 1..1 {}
+          0..* JFFS2_CMODE_SIZE 0..1 {
+            [((#this . JFFS2_CMODE_SIZE__display) >= 1) => (this . JFFS2_CMODE_SIZE__display . dref = "size (EXPERIMENTAL)")]
+            0..* JFFS2_CMODE_SIZE__display -> string 1..1 {}
           }
         }
       }
     }
   }
 }
-0..* c0_MTD 1..1 {}
-0..* c0_CRC32 1..1 {}
-0..* c0_HAS_IOMEM 1..1 {}
-0..* c0_ZLIB_INFLATE 1..1 {}
+0..* MTD 1..1 {}
+0..* CRC32 1..1 {}
+0..* HAS_IOMEM 1..1 {}
+0..* ZLIB_INFLATE 1..1 {}

@@ -1,13 +1,13 @@
 //# OPTIONS --explicit
-abstract 0..* c0_Book 0..* {
-  0..* c0_author -> c0_Author 1..* {
-    [this . parent in this . dref . c0_book . dref]
+abstract 0..* Book 0..* {
+  0..* author -> Author 1..* {
+    [this . parent in this . dref . book . dref]
   }
 }
-abstract 0..* c0_Author 0..* {
-  0..* c0_book -> c0_Book 1..* {
-    [this . parent in this . dref . c0_author . dref]
+abstract 0..* Author 0..* {
+  0..* book -> Book 1..* {
+    [this . parent in this . dref . author . dref]
   }
 }
-0..* c0_B : c0_Book 5..5 {}
-0..* c0_A : c0_Author 6..6 {}
+0..* B : Book 5..5 {}
+0..* A : Author 6..6 {}

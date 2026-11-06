@@ -2,96 +2,96 @@ open util/integer
 pred show {}
 
 
-lone sig c0_MISC_FILESYSTEMS
-{ r_c0_display : one c0_display
-, r_c0_CYGPKG_FS_JFFS2 : lone c0_CYGPKG_FS_JFFS2 }
-{ (some this.@r_c0_display) => (((this.@r_c0_display).@c0_display_ref) = 0) }
+lone sig MISC_FILESYSTEMS
+{ r_MISC_FILESYSTEMS__display : one MISC_FILESYSTEMS__display
+, r_CYGPKG_FS_JFFS2 : lone CYGPKG_FS_JFFS2 }
+{ (some this.@r_MISC_FILESYSTEMS__display) => (((this.@r_MISC_FILESYSTEMS__display).@MISC_FILESYSTEMS__display_ref) = 0) }
 
-lone sig c0_display
-{ c0_display_ref : one Int }
-{ one r_c0_display }
+lone sig MISC_FILESYSTEMS__display
+{ MISC_FILESYSTEMS__display_ref : one Int }
+{ one r_MISC_FILESYSTEMS__display }
 
-lone sig c0_CYGPKG_FS_JFFS2
-{ r_c1_display : one c1_display
-, r_c0_CYGOPT_FS_JFFS2_DEBUG : one c0_CYGOPT_FS_JFFS2_DEBUG
-, r_c0_CYGOPT_FS_JFFS2_NAND : lone c0_CYGOPT_FS_JFFS2_NAND
-, r_c0_CYGOPT_FS_JFFS2_COMPRESS : lone c0_CYGOPT_FS_JFFS2_COMPRESS }
-{ one r_c0_CYGPKG_FS_JFFS2
-  (some this.@r_c1_display) => (((this.@r_c1_display).@c1_display_ref) = 1)
-  some c0_CYGPKG_CRC
-  some c0_MTD
-  (some this.@r_c0_CYGOPT_FS_JFFS2_NAND) <=> (some c0_HAS_IOMEM)
-  some this.@r_c0_CYGOPT_FS_JFFS2_COMPRESS }
+lone sig CYGPKG_FS_JFFS2
+{ r_CYGPKG_FS_JFFS2__display : one CYGPKG_FS_JFFS2__display
+, r_CYGOPT_FS_JFFS2_DEBUG : one CYGOPT_FS_JFFS2_DEBUG
+, r_CYGOPT_FS_JFFS2_NAND : lone CYGOPT_FS_JFFS2_NAND
+, r_CYGOPT_FS_JFFS2_COMPRESS : lone CYGOPT_FS_JFFS2_COMPRESS }
+{ one r_CYGPKG_FS_JFFS2
+  (some this.@r_CYGPKG_FS_JFFS2__display) => (((this.@r_CYGPKG_FS_JFFS2__display).@CYGPKG_FS_JFFS2__display_ref) = 1)
+  some CYGPKG_CRC
+  some MTD
+  (some this.@r_CYGOPT_FS_JFFS2_NAND) <=> (some HAS_IOMEM)
+  some this.@r_CYGOPT_FS_JFFS2_COMPRESS }
 
-lone sig c1_display
-{ c1_display_ref : one Int }
-{ one r_c1_display }
+lone sig CYGPKG_FS_JFFS2__display
+{ CYGPKG_FS_JFFS2__display_ref : one Int }
+{ one r_CYGPKG_FS_JFFS2__display }
 
-lone sig c0_CYGOPT_FS_JFFS2_DEBUG
-{ c0_CYGOPT_FS_JFFS2_DEBUG_ref : one Int
-, r_c2_display : one c2_display
-, r_c0_description : one c0_description }
-{ one r_c0_CYGOPT_FS_JFFS2_DEBUG
-  (this.@c0_CYGOPT_FS_JFFS2_DEBUG_ref) = 0
-  (some this.@r_c2_display) => (((this.@r_c2_display).@c2_display_ref) = 2)
-  (0 <= (this.@c0_CYGOPT_FS_JFFS2_DEBUG_ref)) && ((this.@c0_CYGOPT_FS_JFFS2_DEBUG_ref) <= 2)
-  (some this.@r_c0_description) => (((this.@r_c0_description).@c0_description_ref) = 3) }
+lone sig CYGOPT_FS_JFFS2_DEBUG
+{ CYGOPT_FS_JFFS2_DEBUG_ref : one Int
+, r_CYGOPT_FS_JFFS2_DEBUG__display : one CYGOPT_FS_JFFS2_DEBUG__display
+, r_description : one description }
+{ one r_CYGOPT_FS_JFFS2_DEBUG
+  (this.@CYGOPT_FS_JFFS2_DEBUG_ref) = 0
+  (some this.@r_CYGOPT_FS_JFFS2_DEBUG__display) => (((this.@r_CYGOPT_FS_JFFS2_DEBUG__display).@CYGOPT_FS_JFFS2_DEBUG__display_ref) = 2)
+  (0 <= (this.@CYGOPT_FS_JFFS2_DEBUG_ref)) && ((this.@CYGOPT_FS_JFFS2_DEBUG_ref) <= 2)
+  (some this.@r_description) => (((this.@r_description).@description_ref) = 3) }
 
-lone sig c2_display
-{ c2_display_ref : one Int }
-{ one r_c2_display }
+lone sig CYGOPT_FS_JFFS2_DEBUG__display
+{ CYGOPT_FS_JFFS2_DEBUG__display_ref : one Int }
+{ one r_CYGOPT_FS_JFFS2_DEBUG__display }
 
-lone sig c0_description
-{ c0_description_ref : one Int }
-{ one r_c0_description }
+lone sig description
+{ description_ref : one Int }
+{ one r_description }
 
-lone sig c0_CYGOPT_FS_JFFS2_NAND
+lone sig CYGOPT_FS_JFFS2_NAND
 {}
-{ one r_c0_CYGOPT_FS_JFFS2_NAND }
+{ one r_CYGOPT_FS_JFFS2_NAND }
 
-lone sig c0_CYGOPT_FS_JFFS2_COMPRESS
-{ r_c3_display : one c3_display
-, r_c0_CYGOPT_FS_JFFS2_COMPRESS_ZLIB : lone c0_CYGOPT_FS_JFFS2_COMPRESS_ZLIB
-, r_c0_CYGOPT_FS_JFFS2_COMPRESS_CMODE : one c0_CYGOPT_FS_JFFS2_COMPRESS_CMODE }
-{ one r_c0_CYGOPT_FS_JFFS2_COMPRESS
-  (some this.@r_c3_display) => (((this.@r_c3_display).@c3_display_ref) = 4)
-  some this.@r_c0_CYGOPT_FS_JFFS2_COMPRESS_ZLIB }
+lone sig CYGOPT_FS_JFFS2_COMPRESS
+{ r_CYGOPT_FS_JFFS2_COMPRESS__display : one CYGOPT_FS_JFFS2_COMPRESS__display
+, r_CYGOPT_FS_JFFS2_COMPRESS_ZLIB : lone CYGOPT_FS_JFFS2_COMPRESS_ZLIB
+, r_CYGOPT_FS_JFFS2_COMPRESS_CMODE : one CYGOPT_FS_JFFS2_COMPRESS_CMODE }
+{ one r_CYGOPT_FS_JFFS2_COMPRESS
+  (some this.@r_CYGOPT_FS_JFFS2_COMPRESS__display) => (((this.@r_CYGOPT_FS_JFFS2_COMPRESS__display).@CYGOPT_FS_JFFS2_COMPRESS__display_ref) = 4)
+  some this.@r_CYGOPT_FS_JFFS2_COMPRESS_ZLIB }
 
-lone sig c3_display
-{ c3_display_ref : one Int }
-{ one r_c3_display }
+lone sig CYGOPT_FS_JFFS2_COMPRESS__display
+{ CYGOPT_FS_JFFS2_COMPRESS__display_ref : one Int }
+{ one r_CYGOPT_FS_JFFS2_COMPRESS__display }
 
-lone sig c0_CYGOPT_FS_JFFS2_COMPRESS_ZLIB
-{ r_c4_display : one c4_display }
-{ one r_c0_CYGOPT_FS_JFFS2_COMPRESS_ZLIB
-  (some this.@r_c4_display) => (((this.@r_c4_display).@c4_display_ref) = 5)
-  some c0_CYGPKG_COMPRESS_ZLIB }
+lone sig CYGOPT_FS_JFFS2_COMPRESS_ZLIB
+{ r_CYGOPT_FS_JFFS2_COMPRESS_ZLIB__display : one CYGOPT_FS_JFFS2_COMPRESS_ZLIB__display }
+{ one r_CYGOPT_FS_JFFS2_COMPRESS_ZLIB
+  (some this.@r_CYGOPT_FS_JFFS2_COMPRESS_ZLIB__display) => (((this.@r_CYGOPT_FS_JFFS2_COMPRESS_ZLIB__display).@CYGOPT_FS_JFFS2_COMPRESS_ZLIB__display_ref) = 5)
+  some CYGPKG_COMPRESS_ZLIB }
 
-lone sig c4_display
-{ c4_display_ref : one Int }
-{ one r_c4_display }
+lone sig CYGOPT_FS_JFFS2_COMPRESS_ZLIB__display
+{ CYGOPT_FS_JFFS2_COMPRESS_ZLIB__display_ref : one Int }
+{ one r_CYGOPT_FS_JFFS2_COMPRESS_ZLIB__display }
 
-lone sig c0_CYGOPT_FS_JFFS2_COMPRESS_CMODE
-{ c0_CYGOPT_FS_JFFS2_COMPRESS_CMODE_ref : one Int
-, r_c5_display : one c5_display }
-{ one r_c0_CYGOPT_FS_JFFS2_COMPRESS_CMODE
-  (this.@c0_CYGOPT_FS_JFFS2_COMPRESS_CMODE_ref) = 6
-  (some this.@r_c5_display) => (((this.@r_c5_display).@c5_display_ref) = 7)
-  (((this.@c0_CYGOPT_FS_JFFS2_COMPRESS_CMODE_ref) = 8) || ((this.@c0_CYGOPT_FS_JFFS2_COMPRESS_CMODE_ref) = 6)) || ((this.@c0_CYGOPT_FS_JFFS2_COMPRESS_CMODE_ref) = 9) }
+lone sig CYGOPT_FS_JFFS2_COMPRESS_CMODE
+{ CYGOPT_FS_JFFS2_COMPRESS_CMODE_ref : one Int
+, r_CYGOPT_FS_JFFS2_COMPRESS_CMODE__display : one CYGOPT_FS_JFFS2_COMPRESS_CMODE__display }
+{ one r_CYGOPT_FS_JFFS2_COMPRESS_CMODE
+  (this.@CYGOPT_FS_JFFS2_COMPRESS_CMODE_ref) = 6
+  (some this.@r_CYGOPT_FS_JFFS2_COMPRESS_CMODE__display) => (((this.@r_CYGOPT_FS_JFFS2_COMPRESS_CMODE__display).@CYGOPT_FS_JFFS2_COMPRESS_CMODE__display_ref) = 7)
+  (((this.@CYGOPT_FS_JFFS2_COMPRESS_CMODE_ref) = 8) || ((this.@CYGOPT_FS_JFFS2_COMPRESS_CMODE_ref) = 6)) || ((this.@CYGOPT_FS_JFFS2_COMPRESS_CMODE_ref) = 9) }
 
-lone sig c5_display
-{ c5_display_ref : one Int }
-{ one r_c5_display }
+lone sig CYGOPT_FS_JFFS2_COMPRESS_CMODE__display
+{ CYGOPT_FS_JFFS2_COMPRESS_CMODE__display_ref : one Int }
+{ one r_CYGOPT_FS_JFFS2_COMPRESS_CMODE__display }
 
-one sig c0_CYGPKG_CRC
-{}
-
-one sig c0_MTD
+one sig CYGPKG_CRC
 {}
 
-one sig c0_CYGPKG_COMPRESS_ZLIB
+one sig MTD
 {}
 
-one sig c0_HAS_IOMEM
+one sig CYGPKG_COMPRESS_ZLIB
+{}
+
+one sig HAS_IOMEM
 {}
 

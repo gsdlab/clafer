@@ -2,11 +2,11 @@ open util/integer
 pred show {}
 
 
-lone sig c0_intVal
-{ c0_intVal_ref : one Int }
+lone sig intVal
+{ intVal_ref : one Int }
 
-fact { (some c0_intVal) => ((c0_intVal.@c0_intVal_ref) = 1) }
-lone sig c0_stringVal
-{ c0_stringVal_ref : one Int }
+fact { (some intVal) => ((intVal.@intVal_ref) = 1) }
+lone sig stringVal
+{ stringVal_ref : one Int }
 
-fact { (some c0_stringVal) => ((c0_stringVal.@c0_stringVal_ref) = 0) }
+fact { (some stringVal) => ((stringVal.@stringVal_ref) = 0) }

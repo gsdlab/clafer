@@ -1,12 +1,12 @@
 //# OPTIONS --explicit
-[all c : c0_Course | all t : c . c0_taughtBy | ((#t . c0_x) >= 1) && (c in t . dref . c0_teaches . dref)]
-abstract 0..* c0_Course 0..* {
-  0..* c0_taughtBy -> c0_Teacher 0..* {
-    0..* c0_x 0..1 {}
+[all c : Course | all t : c . taughtBy | ((#t . x) >= 1) && (c in t . dref . teaches . dref)]
+abstract 0..* Course 0..* {
+  0..* taughtBy -> Teacher 0..* {
+    0..* x 0..1 {}
   }
 }
-abstract 0..* c0_Teacher 0..* {
-  0..* c0_teaches -> c0_Course 0..* {}
+abstract 0..* Teacher 0..* {
+  0..* teaches -> Course 0..* {}
 }
-0..* c0_course : c0_Course 5..5 {}
-0..* c0_teacher : c0_Teacher 3..3 {}
+0..* course : Course 5..5 {}
+0..* teacher : Teacher 3..3 {}

@@ -1,14 +1,14 @@
 //# OPTIONS --explicit
-abstract 0..* c0_Object 0..* {}
-abstract 0..* c0_Person : c0_Object 0..* {
-  abstract 0..* c0_Hand : c0_Object 0..* {}
-  abstract 0..* c0_Hook : c0_Hand 0..* {}
+abstract 0..* Object 0..* {}
+abstract 0..* Person : Object 0..* {
+  abstract 0..* Hand : Object 0..* {}
+  abstract 0..* Hook : Hand 0..* {}
 }
-0..* c0_CptHookHand : c0_Person 1..1 {
-  0..* c0_left : c0_Hook 1..1 {}
-  0..* c0_right : c0_Hand 1..1 {}
+0..* CptHookHand : Person 1..1 {
+  0..* CptHookHand__left : Hook 1..1 {}
+  0..* CptHookHand__right : Hand 1..1 {}
 }
-0..* c0_CptHandHook : c0_Person 1..1 {
-  0..* c1_left : c0_Hand 1..1 {}
-  0..* c1_right : c0_Hook 1..1 {}
+0..* CptHandHook : Person 1..1 {
+  0..* CptHandHook__left : Hand 1..1 {}
+  0..* CptHandHook__right : Hook 1..1 {}
 }

@@ -2,9 +2,9 @@ open util/integer
 pred show {}
 
 
-one sig c0_A
+one sig A
 {}
 
-one sig c0_B
+one sig B
 {}
 

@@ -3,49 +3,49 @@ pred show {}
 
 
 one sig root
-{ var r_c0_s : set c0_s }
-fact { all self_ : root | always (one self_.@r_c0_s) }
+{ var r_s : set s }
+fact { all self_ : root | always (one self_.@r_s) }
 
-assert assertAt_8_10 { all self_ : root | always (always (some alive_c0_s)) }
+assert assertAt_8_10 { all self_ : root | always (always (some alive_s)) }
 check assertAt_8_10 for 1 but 10 steps
 
 
 
-sig c0_s
-{ p_c0_s : lone root
-, var r_c0_a : set c0_a
-, var r_c0_b : set c0_b }
-{ always (this in alive_c0_s implies (let children = (this.@r_c0_a + this.@r_c0_b) | one children))
-  always (this in alive_c0_s and not before this in alive_c0_s implies (some this.@r_c0_a)) }
-fun alive_c0_s : set c0_s { root.@r_c0_s }
-fact { always ~@r_c0_s in @p_c0_s }
+sig s
+{ p_s : lone root
+, var r_a : set a
+, var r_b : set b }
+{ always (this in alive_s implies (let children = (this.@r_a + this.@r_b) | one children))
+  always (this in alive_s and not before this in alive_s implies (some this.@r_a)) }
+fun alive_s : set s { root.@r_s }
+fact { always ~@r_s in @p_s }
 
-fact { all self_ : c0_s | always (self_ in alive_c0_s implies (lone self_.@r_c0_a)) }
-fact { all self_ : c0_s | always (self_ in alive_c0_s implies (lone self_.@r_c0_b)) }
+fact { all self_ : s | always (self_ in alive_s implies (lone self_.@r_a)) }
+fact { all self_ : s | always (self_ in alive_s implies (lone self_.@r_b)) }
 
-assert assertAt_6_14 { all self_ : c0_s | always (self_ in alive_c0_s implies ((some self_.@r_c0_a) => (after (some self_.@r_c0_b)))) }
+assert assertAt_6_14 { all self_ : s | always (self_ in alive_s implies ((some self_.@r_a) => (after (some self_.@r_b)))) }
 check assertAt_6_14 for 1 but 10 steps
 
-assert assertAt_6_35 { all self_ : c0_s | always (self_ in alive_c0_s implies ((some self_.@r_c0_b) => (after (some self_.@r_c0_a)))) }
+assert assertAt_6_35 { all self_ : s | always (self_ in alive_s implies ((some self_.@r_b) => (after (some self_.@r_a)))) }
 check assertAt_6_35 for 1 but 10 steps
 
 
 
-sig c0_a
-{ p_c0_a : lone c0_s }
-fun alive_c0_a : set c0_a { c0_s.@r_c0_a }
-fact { always ~@r_c0_a in @p_c0_a
-  always @r_c0_a.univ in alive_c0_s }
+sig a
+{ p_a : lone s }
+fun alive_a : set a { s.@r_a }
+fact { always ~@r_a in @p_a
+  always @r_a.univ in alive_s }
 
-fact { all self_ : c0_a | always (self_ in alive_c0_a implies ((some (self_ & alive_c0_a)) => (after (not some self_.(@p_c0_a :> alive_c0_s) or (some (self_.(@p_c0_a :> alive_c0_s)).@r_c0_b))))) }
+fact { all self_ : a | always (self_ in alive_a implies ((some (self_ & alive_a)) => (after (not some self_.(@p_a :> alive_s) or (some (self_.(@p_a :> alive_s)).@r_b))))) }
 
 
-sig c0_b
-{ p_c0_b : lone c0_s }
-fun alive_c0_b : set c0_b { c0_s.@r_c0_b }
-fact { always ~@r_c0_b in @p_c0_b
-  always @r_c0_b.univ in alive_c0_s }
+sig b
+{ p_b : lone s }
+fun alive_b : set b { s.@r_b }
+fact { always ~@r_b in @p_b
+  always @r_b.univ in alive_s }
 
-fact { all self_ : c0_b | always (self_ in alive_c0_b implies ((some (self_ & alive_c0_b)) => (after (not some self_.(@p_c0_b :> alive_c0_s) or (some (self_.(@p_c0_b :> alive_c0_s)).@r_c0_a))))) }
+fact { all self_ : b | always (self_ in alive_b implies ((some (self_ & alive_b)) => (after (not some self_.(@p_b :> alive_s) or (some (self_.(@p_b :> alive_s)).@r_a))))) }
 
 

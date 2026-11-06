@@ -1,10 +1,10 @@
 //# OPTIONS --explicit
-abstract 0..* c0_Animal 0..* {
-  0..* c0_leg 0..* {}
+abstract 0..* Animal 0..* {
+  0..* leg 0..* {}
 }
-0..* c0_Dog : c0_Animal 0..* {
-  [(#this . c0_leg) = 4]
+0..* Dog : Animal 0..* {
+  [(#this . leg) = 4]
 }
-0..* c0_Spider : c0_Animal 0..* {
-  [(#this . c0_leg) = 8]
+0..* Spider : Animal 0..* {
+  [(#this . leg) = 8]
 }

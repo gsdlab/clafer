@@ -22,29 +22,29 @@ a[href$='Ambiguous name'] {color: yellow}
 <div class="file">positive/tmp_transition_replaced_machine.cfr</div>
 
 <div>
-<span class="claferDecl" id="c0_go">go</span> ?</div>
+<span class="claferDecl" id="go">go</span> ?</div>
 
 
 <div>
-<span class="keyword">xor</span> <span class="claferDecl" id="c0_sm">sm</span>
+<span class="keyword">xor</span> <span class="claferDecl" id="sm">sm</span>
   <div class="indent">
-  <span class="tKeyword">initial</span> <span class="claferDecl" id="c0_a">a</span>
+  <span class="tKeyword">initial</span> <span class="claferDecl" id="a">a</span>
     <div class="indent">
-    <span class="keyword">[</span> <a href="#c0_go"><span class="reference">go</span></a><span class="tKeyword"> --&gt; </span><a href="#c0_b"><span class="reference">b</span></a> <span class="keyword">]</span></div>
+    <span class="keyword">[</span> <a href="#go"><span class="reference">go</span></a><span class="tKeyword"> --&gt; </span><a href="#b"><span class="reference">b</span></a> <span class="keyword">]</span></div>
   </div>
   <div class="indent">
-  <span class="claferDecl" id="c0_b">b</span></div>
+  <span class="claferDecl" id="b">b</span></div>
   <div class="indent">
-  <span class="claferDecl" id="c0_c">c</span></div>
+  <span class="claferDecl" id="c">c</span></div>
 </div>
 
 
 <div>
-<span class="keyword">assert [</span> all m<span class="keyword"> : </span><a href="#c0_sm"><span class="reference">sm</span></a> | <a href="#m"><span class="reference">m</span></a>.<a href="#c0_a"><span class="reference">a</span></a> &amp;&amp; <a href="#c0_go"><span class="reference">go</span></a> =&gt; X (<a href="#m"><span class="reference">m</span></a>.<a href="#c0_b"><span class="reference">b</span></a> &#124;&#124; <span class="keyword">no</span> <a href="#m"><span class="reference">m</span></a>**<a href="#c0_sm"><span class="reference">sm</span></a>) <span class="keyword">]</span></div>
+<span class="keyword">assert [</span> all m<span class="keyword"> : </span><a href="#sm"><span class="reference">sm</span></a> | <a href="#m"><span class="reference">m</span></a>.<a href="#a"><span class="reference">a</span></a> &amp;&amp; <a href="#go"><span class="reference">go</span></a> =&gt; X (<a href="#m"><span class="reference">m</span></a>.<a href="#b"><span class="reference">b</span></a> &#124;&#124; <span class="keyword">no</span> <a href="#m"><span class="reference">m</span></a>**<a href="#sm"><span class="reference">sm</span></a>) <span class="keyword">]</span></div>
 
 
 <div>
-<span class="keyword">assert [</span> <a href="#c0_sm"><span class="reference">sm</span></a>.<a href="#c0_a"><span class="reference">a</span></a> &amp;&amp; <a href="#c0_go"><span class="reference">go</span></a> =&gt; X <a href="#c0_sm"><span class="reference">sm</span></a>.<a href="#c0_b"><span class="reference">b</span></a> <span class="keyword">]</span></div>
+<span class="keyword">assert [</span> <a href="#sm"><span class="reference">sm</span></a>.<a href="#a"><span class="reference">a</span></a> &amp;&amp; <a href="#go"><span class="reference">go</span></a> =&gt; X <a href="#sm"><span class="reference">sm</span></a>.<a href="#b"><span class="reference">b</span></a> <span class="keyword">]</span></div>
 
 </body>
 </html>

@@ -2,102 +2,102 @@ open util/integer
 pred show {}
 
 
-fact { #c0_a = 0 }
-sig c0_a
+fact { #a = 0 }
+sig a
 {}
 
-lone sig c0_b
+lone sig b
 {}
 
-one sig c0_c
+one sig c
 {}
 
-sig c0_d
+sig d
 {}
 
-some sig c0_e
+some sig e
 {}
 
-fact { 2 <= #c0_f and #c0_f <= 4 }
-sig c0_f
+fact { 2 <= #f and #f <= 4 }
+sig f
 {}
 
-fact { 3 <= #c0_g }
-sig c0_g
+fact { 3 <= #g }
+sig g
 {}
 
-fact { 2 <= #c0_gs and #c0_gs <= 2 }
-sig c0_gs
-{ c0_gs_ref : one c0_g }
+fact { 2 <= #gs and #gs <= 2 }
+sig gs
+{ gs_ref : one g }
 
-fact {  all disj x, y : c0_gs | (x.@c0_gs_ref) != (y.@c0_gs_ref)  }
-abstract sig c0_H
-{ r_c0_i : lone c0_i
-, r_c0_j : set c0_j
-, r_c0_k : set c0_k }
-{ 2 <= #r_c0_k and #r_c0_k <= 2 }
+fact {  all disj x, y : gs | (x.@gs_ref) != (y.@gs_ref)  }
+abstract sig H
+{ r_i : lone i
+, r_j : set j
+, r_k : set k }
+{ 2 <= #r_k and #r_k <= 2 }
 
-sig c0_i
+sig i
 {}
-{ one @r_c0_i.this }
+{ one @r_i.this }
 
-sig c0_j
+sig j
 {}
-{ one @r_c0_j.this }
+{ one @r_j.this }
 
-sig c0_k
+sig k
 {}
-{ one @r_c0_k.this }
+{ one @r_k.this }
 
-fact { 3 <= #c0_Hs }
-sig c0_Hs
-{ c0_Hs_ref : one c0_H }
+fact { 3 <= #Hs }
+sig Hs
+{ Hs_ref : one H }
 
-fact {  all disj x, y : c0_Hs | (x.@c0_Hs_ref) != (y.@c0_Hs_ref)  }
-fact { 2 <= #c0_H1 and #c0_H1 <= 2 }
-sig c0_H1 extends c0_H
-{ r_c0_H12 : set c0_H12 }
-{ 2 <= #r_c0_H12 and #r_c0_H12 <= 2 }
+fact {  all disj x, y : Hs | (x.@Hs_ref) != (y.@Hs_ref)  }
+fact { 2 <= #H1 and #H1 <= 2 }
+sig H1 extends H
+{ r_H12 : set H12 }
+{ 2 <= #r_H12 and #r_H12 <= 2 }
 
-sig c0_H12 extends c0_H
+sig H12 extends H
 {}
-{ one @r_c0_H12.this }
+{ one @r_H12.this }
 
-fact { 4 <= #c0_H2 and #c0_H2 <= 4 }
-sig c0_H2 extends c0_H
-{}
-
-fact { 1 <= #c0_H3 and #c0_H3 <= 2 }
-sig c0_H3 extends c0_H
+fact { 4 <= #H2 and #H2 <= 4 }
+sig H2 extends H
 {}
 
-fact { 5 <= #c0_H4 }
-sig c0_H4 extends c0_H
+fact { 1 <= #H3 and #H3 <= 2 }
+sig H3 extends H
 {}
 
-sig c0_Hs2
-{ c0_Hs2_ref : one c0_H }
-
-fact {  all disj x, y : c0_Hs2 | (x.@c0_Hs2_ref) != (y.@c0_Hs2_ref)  }
-fact { 5 <= #c0_Hs3 and #c0_Hs3 <= 8 }
-sig c0_Hs3
-{ c0_Hs3_ref : one c0_H
-, r_c0_l : lone c0_l }
-
-sig c0_l
-{}
-{ one @r_c0_l.this }
-
-fact {  all disj x, y : c0_Hs3 | (x.@c0_Hs3_ref) != (y.@c0_Hs3_ref)  }
-abstract sig c0_FF extends c0_H
+fact { 5 <= #H4 }
+sig H4 extends H
 {}
 
-fact { 2 <= #c0_f1 and #c0_f1 <= 5 }
-sig c0_f1 extends c0_FF
-{ r_c0_m : set c0_m }
-{ #r_c0_m = 0 }
+sig Hs2
+{ Hs2_ref : one H }
 
-sig c0_m
+fact {  all disj x, y : Hs2 | (x.@Hs2_ref) != (y.@Hs2_ref)  }
+fact { 5 <= #Hs3 and #Hs3 <= 8 }
+sig Hs3
+{ Hs3_ref : one H
+, r_l : lone l }
+
+sig l
 {}
-{ one @r_c0_m.this }
+{ one @r_l.this }
+
+fact {  all disj x, y : Hs3 | (x.@Hs3_ref) != (y.@Hs3_ref)  }
+abstract sig FF extends H
+{}
+
+fact { 2 <= #f1 and #f1 <= 5 }
+sig f1 extends FF
+{ r_m : set m }
+{ #r_m = 0 }
+
+sig m
+{}
+{ one @r_m.this }
 

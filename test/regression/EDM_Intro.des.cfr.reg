@@ -1,66 +1,66 @@
 //# OPTIONS --explicit
-0..* c0_midYearReview : c0_Meeting 1..1 {
-  [((#this . c0_month) >= 1) => (this . c0_month . dref = c0_June)]
-  [((#this . c0_chair) >= 1) => (this . c0_chair . dref = c0_Steven)]
-  [((#this . c0_room) >= 1) => (this . c0_room . dref = c0_C)]
-  [(#this . c0_onlineParticipant) >= 1]
-  0..* c0_month -> c0_Month 1..1 {}
-  0..* c0_chair -> c0_Member 1..1 {}
-  0..* c0_room -> c0_Room 1..1 {}
+0..* midYearReview : Meeting 1..1 {
+  [((#this . month) >= 1) => (this . month . dref = June)]
+  [((#this . midYearReview__chair) >= 1) => (this . midYearReview__chair . dref = Steven)]
+  [((#this . midYearReview__room) >= 1) => (this . midYearReview__room . dref = C)]
+  [(#this . onlineParticipant) >= 1]
+  0..* month -> Month 1..1 {}
+  0..* midYearReview__chair -> Member 1..1 {}
+  0..* midYearReview__room -> Room 1..1 {}
 }
-0..* c0_Steven : c0_Member 1..1 {}
-0..* c0_C : c0_Room 1..1 {
-  0..* c0_whiteboard 1..1 {}
-  0..* c0_audioConferencing 1..1 {}
+0..* Steven : Member 1..1 {}
+0..* C : Room 1..1 {
+  0..* C__whiteboard 1..1 {}
+  0..* C__audioConferencing 1..1 {}
 }
-0..* c0_ondemandMeeting : c0_Meeting 1..1 {
-  [((#this . c1_chair) >= 1) => (this . c1_chair . dref = c0_Joanna)]
-  [(#this . c0_onlineParticipant) = 0]
-  [((#this . c1_room) >= 1) => (this . c1_room . dref = c0_D)]
-  0..* c1_chair -> c0_Member 1..1 {}
-  0..* c1_room -> c0_Room 1..1 {}
+0..* ondemandMeeting : Meeting 1..1 {
+  [((#this . ondemandMeeting__chair) >= 1) => (this . ondemandMeeting__chair . dref = Joanna)]
+  [(#this . onlineParticipant) = 0]
+  [((#this . ondemandMeeting__room) >= 1) => (this . ondemandMeeting__room . dref = D)]
+  0..* ondemandMeeting__chair -> Member 1..1 {}
+  0..* ondemandMeeting__room -> Room 1..1 {}
 }
-0..* c0_Joanna : c0_Member 1..1 {}
-0..* c0_D : c0_Room 1..1 {
-  0..* c1_whiteboard 1..1 {}
+0..* Joanna : Member 1..1 {}
+0..* D : Room 1..1 {
+  0..* D__whiteboard 1..1 {}
 }
-abstract 0..* c0_Meeting 0..* {
-  [this . c2_chair . dref not in this . c0_participant . dref]
-  [this . c2_chair . dref not in this . c0_onlineParticipant . dref]
-  [((#this . c0_onlineParticipant) >= 1) => ((#this . c2_room . dref . c1_audioConferencing) >= 1)]
-  0..* c2_chair -> c0_Member 1..1 {}
-  0..* c0_participant -> c0_Member 1..* {}
-  0..* c0_onlineParticipant -> c0_Member 0..* {}
-  0..* c2_room -> c0_Room 1..1 {
-    [this . dref . c0_capacity . dref >= ((#this . parent . c0_participant) + 1)]
+abstract 0..* Meeting 0..* {
+  [this . Meeting__chair . dref not in this . participant . dref]
+  [this . Meeting__chair . dref not in this . onlineParticipant . dref]
+  [((#this . onlineParticipant) >= 1) => ((#this . Meeting__room . dref . Room__audioConferencing) >= 1)]
+  0..* Meeting__chair -> Member 1..1 {}
+  0..* participant -> Member 1..* {}
+  0..* onlineParticipant -> Member 0..* {}
+  0..* Meeting__room -> Room 1..1 {
+    [this . dref . capacity . dref >= ((#this . parent . participant) + 1)]
   }
 }
-abstract 0..* c0_Month 0..* {}
-0..* c0_June : c0_Month 1..1 {}
-0..* c0_July : c0_Month 1..1 {}
-abstract 0..* c0_Member 0..* {}
-abstract 0..* c0_Room 0..* {
-  0..* c0_capacity -> int 1..1 {}
-  1..* c2_whiteboard 1..1 {
-    0..* c0_traditional 0..1 {}
-    0..* c0_electronic 0..1 {}
+abstract 0..* Month 0..* {}
+0..* June : Month 1..1 {}
+0..* July : Month 1..1 {}
+abstract 0..* Member 0..* {}
+abstract 0..* Room 0..* {
+  0..* capacity -> int 1..1 {}
+  1..* Room__whiteboard 1..1 {
+    0..* traditional 0..1 {}
+    0..* electronic 0..1 {}
   }
-  0..* c0_projector 0..1 {}
-  0..* c0_computer 0..1 {}
-  0..* c1_audioConferencing 0..1 {}
+  0..* projector 0..1 {}
+  0..* computer 0..1 {}
+  0..* Room__audioConferencing 0..1 {}
 }
-0..* c0_M : c0_Member 5..5 {}
-0..* c0_SueAgenda : c0_Agenda 1..1 {
-  [((#this . c0_m1) >= 1) => (this . c0_m1 . dref = c0_M1)]
-  [((#this . c0_m2) >= 1) => (this . c0_m2 . dref = c0_M2)]
-  0..* c0_m1 -> c0_Meeting 0..1 {}
-  0..* c0_m2 -> c0_Meeting 0..1 {}
+0..* M : Member 5..5 {}
+0..* SueAgenda : Agenda 1..1 {
+  [((#this . m1) >= 1) => (this . m1 . dref = M1)]
+  [((#this . m2) >= 1) => (this . m2 . dref = M2)]
+  0..* m1 -> Meeting 0..1 {}
+  0..* m2 -> Meeting 0..1 {}
 }
-0..* c0_M1 : c0_Meeting 0..1 {}
-0..* c0_M2 : c0_Meeting 0..1 {
-  [((#this . c0_time) >= 1) => (this . c0_time . dref = 10)]
-  0..* c0_time -> int 1..1 {}
+0..* M1 : Meeting 0..1 {}
+0..* M2 : Meeting 0..1 {
+  [((#this . time) >= 1) => (this . time . dref = 10)]
+  0..* time -> int 1..1 {}
 }
-abstract 0..* c0_Agenda 0..* {
-  0..* c0_mt -> c0_Meeting 0..* {}
+abstract 0..* Agenda 0..* {
+  0..* mt -> Meeting 0..* {}
 }

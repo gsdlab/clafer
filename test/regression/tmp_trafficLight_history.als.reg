@@ -3,56 +3,56 @@ pred show {}
 
 
 one sig root
-{ var r_c0_TrafficLight_4 : set c0_TrafficLight_4 }
-fact { all self_ : root | always (one self_.@r_c0_TrafficLight_4) }
+{ var r_TrafficLight_4 : set TrafficLight_4 }
+fact { all self_ : root | always (one self_.@r_TrafficLight_4) }
 
 
-sig c0_TrafficLight_4
-{ p_c0_TrafficLight_4 : lone root
-, var r_c0_on : set c0_on
-, var r_c0_off : set c0_off }
-{ always (this in alive_c0_TrafficLight_4 implies (let children = (this.@r_c0_on + this.@r_c0_off) | one children)) }
-fun alive_c0_TrafficLight_4 : set c0_TrafficLight_4 { root.@r_c0_TrafficLight_4 }
-fact { always ~@r_c0_TrafficLight_4 in @p_c0_TrafficLight_4 }
+sig TrafficLight_4
+{ p_TrafficLight_4 : lone root
+, var r_on : set on
+, var r_off : set off }
+{ always (this in alive_TrafficLight_4 implies (let children = (this.@r_on + this.@r_off) | one children)) }
+fun alive_TrafficLight_4 : set TrafficLight_4 { root.@r_TrafficLight_4 }
+fact { always ~@r_TrafficLight_4 in @p_TrafficLight_4 }
 
-fact { all self_ : c0_TrafficLight_4 | always (self_ in alive_c0_TrafficLight_4 implies (lone self_.@r_c0_on)) }
-fact { all self_ : c0_TrafficLight_4 | always (self_ in alive_c0_TrafficLight_4 implies (lone self_.@r_c0_off)) }
-fact { all self_ : c0_TrafficLight_4 | always (self_ in alive_c0_TrafficLight_4 implies ((not before self_ in alive_c0_TrafficLight_4) implies (some self_.@r_c0_off))) }
-fact { all self_ : c0_TrafficLight_4 | always (self_ in alive_c0_TrafficLight_4 implies (((!(some (self_.@r_c0_on).@r_c0_normal)) || (after (!(no self_.@r_c0_on)))) || (after ((always (no self_.@r_c0_on)) || ((no self_.@r_c0_on) until (some (self_.@r_c0_on).@r_c0_normal)))))) }
-fact { all self_ : c0_TrafficLight_4 | always (self_ in alive_c0_TrafficLight_4 implies (((!(some (self_.@r_c0_on).@r_c0_flashing)) || (after (!(no self_.@r_c0_on)))) || (after ((always (no self_.@r_c0_on)) || ((no self_.@r_c0_on) until (some (self_.@r_c0_on).@r_c0_flashing)))))) }
-
-
-sig c0_on
-{ p_c0_on : lone c0_TrafficLight_4
-, var r_c0_normal : set c0_normal
-, var r_c0_flashing : set c0_flashing }
-{ always (this in alive_c0_on implies (let children = (this.@r_c0_normal + this.@r_c0_flashing) | one children)) }
-fun alive_c0_on : set c0_on { c0_TrafficLight_4.@r_c0_on }
-fact { always ~@r_c0_on in @p_c0_on
-  always @r_c0_on.univ in alive_c0_TrafficLight_4 }
-
-fact { all self_ : c0_on | always (self_ in alive_c0_on implies (lone self_.@r_c0_normal)) }
-fact { all self_ : c0_on | always (self_ in alive_c0_on implies (lone self_.@r_c0_flashing)) }
+fact { all self_ : TrafficLight_4 | always (self_ in alive_TrafficLight_4 implies (lone self_.@r_on)) }
+fact { all self_ : TrafficLight_4 | always (self_ in alive_TrafficLight_4 implies (lone self_.@r_off)) }
+fact { all self_ : TrafficLight_4 | always (self_ in alive_TrafficLight_4 implies ((not before self_ in alive_TrafficLight_4) implies (some self_.@r_off))) }
+fact { all self_ : TrafficLight_4 | always (self_ in alive_TrafficLight_4 implies (((!(some (self_.@r_on).@r_normal)) || (after (!(no self_.@r_on)))) || (after ((always (no self_.@r_on)) || ((no self_.@r_on) until (some (self_.@r_on).@r_normal)))))) }
+fact { all self_ : TrafficLight_4 | always (self_ in alive_TrafficLight_4 implies (((!(some (self_.@r_on).@r_flashing)) || (after (!(no self_.@r_on)))) || (after ((always (no self_.@r_on)) || ((no self_.@r_on) until (some (self_.@r_on).@r_flashing)))))) }
 
 
-sig c0_normal
-{ p_c0_normal : lone c0_on }
-fun alive_c0_normal : set c0_normal { c0_on.@r_c0_normal }
-fact { always ~@r_c0_normal in @p_c0_normal
-  always @r_c0_normal.univ in alive_c0_on }
+sig on
+{ p_on : lone TrafficLight_4
+, var r_normal : set normal
+, var r_flashing : set flashing }
+{ always (this in alive_on implies (let children = (this.@r_normal + this.@r_flashing) | one children)) }
+fun alive_on : set on { TrafficLight_4.@r_on }
+fact { always ~@r_on in @p_on
+  always @r_on.univ in alive_TrafficLight_4 }
+
+fact { all self_ : on | always (self_ in alive_on implies (lone self_.@r_normal)) }
+fact { all self_ : on | always (self_ in alive_on implies (lone self_.@r_flashing)) }
 
 
-sig c0_flashing
-{ p_c0_flashing : lone c0_on }
-fun alive_c0_flashing : set c0_flashing { c0_on.@r_c0_flashing }
-fact { always ~@r_c0_flashing in @p_c0_flashing
-  always @r_c0_flashing.univ in alive_c0_on }
+sig normal
+{ p_normal : lone on }
+fun alive_normal : set normal { on.@r_normal }
+fact { always ~@r_normal in @p_normal
+  always @r_normal.univ in alive_on }
 
 
-sig c0_off
-{ p_c0_off : lone c0_TrafficLight_4 }
-fun alive_c0_off : set c0_off { c0_TrafficLight_4.@r_c0_off }
-fact { always ~@r_c0_off in @p_c0_off
-  always @r_c0_off.univ in alive_c0_TrafficLight_4 }
+sig flashing
+{ p_flashing : lone on }
+fun alive_flashing : set flashing { on.@r_flashing }
+fact { always ~@r_flashing in @p_flashing
+  always @r_flashing.univ in alive_on }
+
+
+sig off
+{ p_off : lone TrafficLight_4 }
+fun alive_off : set off { TrafficLight_4.@r_off }
+fact { always ~@r_off in @p_off
+  always @r_off.univ in alive_TrafficLight_4 }
 
 

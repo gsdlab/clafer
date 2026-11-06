@@ -1,10 +1,10 @@
 //# OPTIONS --explicit
-[(#(c0_Comp1 ** c0_Component)) >= 1]
-[(#(c0_Comp1 ** c0_Component)) >= 1]
-abstract 0..* c0_Component 0..* {
-  0..* c0_link -> c0_Component 0..1 {}
+[(#(Comp1 ** Component)) >= 1]
+[(#(Comp1 ** Component)) >= 1]
+abstract 0..* Component 0..* {
+  0..* link -> Component 0..1 {}
 }
-0..* c0_Comp1 : c0_Component 1..1 {
-  [this . c0_link . dref = c0_Comp1]
-  [this . c0_link . dref = c0_Comp1]
+0..* Comp1 : Component 1..1 {
+  [this . link . dref = Comp1]
+  [this . link . dref = Comp1]
 }

@@ -22,33 +22,33 @@ a[href$='Ambiguous name'] {color: yellow}
 <div class="file">positive/stop_following_references.cfr</div>
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_A">A</span>
+<span class="keyword">abstract</span> <span class="claferDecl" id="A">A</span>
   <div class="indent">
-  <span class="claferDecl" id="c0_b">b</span> ?</div>
+  <span class="claferDecl" id="A__b">b</span> ?</div>
 </div>
 
 
 <div>
-<span class="claferDecl" id="c0_A1">A1</span><span class="keyword"> : </span><a href="#c0_A"><span class="reference">A</span></a>
+<span class="claferDecl" id="A1">A1</span><span class="keyword"> : </span><a href="#A"><span class="reference">A</span></a>
   <div class="indent">
-  <span class="keyword">[</span>  ! <a href="#c0_b"><span class="reference">b</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span>  ! <a href="#A__b"><span class="reference">b</span></a> <span class="keyword">]</span></div>
 </div>
 
 
 <div>
-<span class="claferDecl" id="c0_C">C</span>
+<span class="claferDecl" id="C">C</span>
   <div class="indent">
-  <span class="claferDecl" id="c1_b">b</span> ?</div>
+  <span class="claferDecl" id="C__b">b</span> ?</div>
   <div class="indent">
-  <span class="keyword">[</span> <a href="#c0_C"><span class="reference">C</span></a>.<a href="#c1_b"><span class="reference">b</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <a href="#C"><span class="reference">C</span></a>.<a href="#C__b"><span class="reference">b</span></a> <span class="keyword">]</span></div>
   <div class="indent">
-  <span class="claferDecl" id="c0_a">a</span><span class="keyword"> -> </span><a href="#c0_A"><span class="reference">A</span></a>
+  <span class="claferDecl" id="a">a</span><span class="keyword"> -> </span><a href="#A"><span class="reference">A</span></a>
     <div class="indent">
-    <span class="keyword">[</span> <a href="#c2_b"><span class="reference">b</span></a> <span class="keyword">]</span></div>
+    <span class="keyword">[</span> <a href="#d__b"><span class="reference">b</span></a> <span class="keyword">]</span></div>
     <div class="indent">
-    <span class="claferDecl" id="c0_d">d</span>
+    <span class="claferDecl" id="d">d</span>
       <div class="indent">
-      <span class="claferDecl" id="c2_b">b</span> ?</div>
+      <span class="claferDecl" id="d__b">b</span> ?</div>
     </div>
   </div>
 </div>

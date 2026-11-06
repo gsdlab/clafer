@@ -209,7 +209,7 @@ allUnique :: IModule -> Bool
 allUnique = null . nonUidNames
 
 -- | The clafers whose names cannot be their UIDs: a name of several clafers, or a name with an
--- | apostrophe, which a UID cannot contain (see genId in ResolverInheritance).
+-- | apostrophe, which a UID cannot contain (see Language.Clafer.Intermediate.UIDs).
 nonUidNames :: IModule -> [ IClafer ]
 nonUidNames iModule = filter (\c -> '\'' `elem` _ident c || Map.findWithDefault 0 (_ident c) counts > (1 :: Int)) allClafers
   where

@@ -1,23 +1,23 @@
 //# OPTIONS --explicit
-[c0_x . dref = 1]
-[c0_x . dref = 1]
-[c0_y . dref . dref = 1]
-[c0_y . dref . dref = 1]
-[c0_y . dref . dref = 1]
-[c0_z . dref . dref . dref = 1]
-[c0_z . dref . dref . dref = 1]
-[c0_z . dref . dref . dref = 1]
-[c0_z . dref . dref . dref = 1]
-0..* c0_x -> int 1..1 {
+[x . dref = 1]
+[x . dref = 1]
+[y . dref . dref = 1]
+[y . dref . dref = 1]
+[y . dref . dref = 1]
+[z . dref . dref . dref = 1]
+[z . dref . dref . dref = 1]
+[z . dref . dref . dref = 1]
+[z . dref . dref . dref = 1]
+0..* x -> int 1..1 {
   [this . dref = 1]
   [this . dref = 1]
 }
-0..* c0_y -> c0_x 1..1 {
+0..* y -> x 1..1 {
   [this . dref . dref = 1]
   [this . dref . dref = 1]
   [this . dref . dref = 1]
 }
-0..* c0_z -> c0_y 1..1 {
+0..* z -> y 1..1 {
   [this . dref . dref . dref = 1]
   [this . dref . dref . dref = 1]
   [this . dref . dref . dref = 1]

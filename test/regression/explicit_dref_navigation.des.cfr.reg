@@ -1,40 +1,40 @@
 //# OPTIONS --explicit
-abstract 0..* c0_Port 0..* {
-  0..* c0_speed -> int 1..1 {}
-  0..* c0_name -> int 1..1 {}
+abstract 0..* Port 0..* {
+  0..* Port__speed -> int 1..1 {}
+  0..* name -> int 1..1 {}
 }
-0..* c0_Hub 1..1 {
-  0..* c0_p : c0_Port 2..2 {}
+0..* Hub 1..1 {
+  0..* p : Port 2..2 {}
 }
-0..* c0_fast : c0_Port 1..1 {
-  [this . c0_speed . dref = 10]
+0..* fast : Port 1..1 {
+  [this . Port__speed . dref = 10]
 }
-abstract 0..* c0_Component 0..* {
-  abstract 0..* c0_link -> c0_Port 0..* {
-    [this . dref . c0_speed . dref >= this . c1_speed . dref]
-    [all t : this . dref | t . c0_speed . dref >= this . c0_latency . dref]
-    0..* c0_latency -> int 1..1 {}
-    0..* c1_speed -> int 1..1 {}
+abstract 0..* Component 0..* {
+  abstract 0..* link -> Port 0..* {
+    [this . dref . Port__speed . dref >= this . link__speed . dref]
+    [all t : this . dref | t . Port__speed . dref >= this . latency . dref]
+    0..* latency -> int 1..1 {}
+    0..* link__speed -> int 1..1 {}
   }
 }
-0..* c0_cam : c0_Component 1..1 {
-  [this . c0_l . dref . c0_speed . dref = 3]
-  0..* c0_l : c0_link -> c0_p 1..1 {
-    [this . dref . c0_speed . dref = 3]
-    [this . dref . c0_name . dref = 1]
+0..* cam : Component 1..1 {
+  [this . l . dref . Port__speed . dref = 3]
+  0..* l : link -> p 1..1 {
+    [this . dref . Port__speed . dref = 3]
+    [this . dref . name . dref = 1]
   }
 }
-0..* c0_b ->> c0_Port 2..2 {
-  [this . dref . c0_speed . dref = 3]
+0..* b ->> Port 2..2 {
+  [this . dref . Port__speed . dref = 3]
 }
-abstract 0..* c0_Plug -> c0_Port 0..* {
-  0..* c2_speed -> int 1..1 {}
+abstract 0..* Plug -> Port 0..* {
+  0..* Plug__speed -> int 1..1 {}
 }
-0..* c0_plug : c0_Plug 1..1 {}
-0..* c0_pl -> c0_Plug 1..1 {
-  [this . dref . c2_speed . dref = 5]
+0..* plug : Plug 1..1 {}
+0..* pl -> Plug 1..1 {
+  [this . dref . Plug__speed . dref = 5]
 }
-0..* c0_u -> c0_Port 1..1 {
-  [this . dref in (c0_Hub . c0_p ++ c0_fast)]
-  [this . dref . c0_speed . dref = 10]
+0..* u -> Port 1..1 {
+  [this . dref in (Hub . p ++ fast)]
+  [this . dref . Port__speed . dref = 10]
 }

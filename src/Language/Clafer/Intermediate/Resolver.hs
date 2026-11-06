@@ -24,6 +24,7 @@ module Language.Clafer.Intermediate.Resolver where
 
 import Control.Monad
 import Control.Monad.State
+import Data.List (mapAccumL)
 import qualified Data.Map as Map
 import qualified Data.StringMap as SMap
 
@@ -34,6 +35,7 @@ import Language.Clafer.Intermediate.ResolverName
 import Language.Clafer.Intermediate.ResolverType
 import Language.Clafer.Intermediate.ResolverInheritance
 import Language.Clafer.Intermediate.ResolverRoot
+import Language.Clafer.Intermediate.UIDs (assignUIDs)
 
 -- | Run the various resolvers. With -f (skip_resolver), the names are the UIDs, as in an
 -- | explicit model: the clafers are not renamed, but all names are still resolved and checked.
@@ -47,27 +49,43 @@ resolveModule    args'         imodule =
 
 
 -- | Name resolver
+-- | Gives every clafer its UID (see "Language.Clafer.Intermediate.UIDs"), or with -f its name,
+-- | and every expression its id.
 nameModule :: Bool -> IModule -> (IModule, GEnv)
 nameModule skipResolver imodule = (imodule', genv'')
   where
-    (decls', genv') = runState (mapM (nameElement skipResolver "root") $ _mDecls imodule) $ GEnv Map.empty 0 Map.empty [] SMap.empty
+    paths = concatMap (claferPaths []) $ _mDecls imodule
+    uids = if skipResolver then map last paths else assignUIDs paths
+    named = snd $ mapAccumL withUIDs uids $ _mDecls imodule
+    (decls', genv') = runState (mapM (nameElement "root") named) $ GEnv Map.empty 0 Map.empty [] SMap.empty
     imodule' = imodule{_mDecls = decls'}
     genv'' = genv'{uidClaferMap = createUidIClaferMap imodule'}
 
+-- | The names of the clafers and their ancestors, from the top level, in pre-order.
+claferPaths :: [String] -> IElement -> [[String]]
+claferPaths path (IEClafer claf) = path' : concatMap (claferPaths path') (_elements claf)
+  where path' = path ++ [_ident claf]
+claferPaths _ _ = []
 
-nameElement :: MonadState GEnv m => Bool -> UID -> IElement -> m IElement
-nameElement skipResolver puid x = case x of
-  IEClafer claf -> IEClafer <$> nameClafer skipResolver puid claf
+-- | Sets the UIDs of the clafers, in pre-order.
+withUIDs :: [UID] -> IElement -> ([UID], IElement)
+withUIDs (uid' : uids) (IEClafer claf) = (uids', IEClafer claf{_uid = uid', _elements = elements'})
+  where (uids', elements') = mapAccumL withUIDs uids $ _elements claf
+withUIDs uids x = (uids, x)
+
+
+nameElement :: MonadState GEnv m => UID -> IElement -> m IElement
+nameElement puid x = case x of
+  IEClafer claf -> IEClafer <$> nameClafer puid claf
   IEConstraint isHard' pexp -> IEConstraint isHard' <$> namePExp pexp
   IEGoal isMaximize' pexp -> IEGoal isMaximize' <$> namePExp pexp
 
 
-nameClafer :: MonadState GEnv m => Bool -> UID -> IClafer -> m IClafer
-nameClafer skipResolver puid claf = do
+nameClafer :: MonadState GEnv m => UID -> IClafer -> m IClafer
+nameClafer puid claf = do
   let puid' = if _isAbstract claf && puid == "root" then baseClafer else puid
-  claf' <- if skipResolver then return claf{_uid = _ident claf, _parentUID = puid'} else renameClafer True puid' claf
-  elements' <- mapM (nameElement skipResolver (_uid claf')) $ _elements claf
-  return $ claf' {_elements = elements'}
+  elements' <- mapM (nameElement (_uid claf)) $ _elements claf
+  return $ claf {_parentUID = puid', _elements = elements'}
 
 
 namePExp :: MonadState GEnv m => PExp -> m PExp

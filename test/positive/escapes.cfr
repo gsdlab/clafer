@@ -17,12 +17,12 @@ assert [ no Dave.spouse ]
 open util/relation
 
 fact {
-symmetric[r_c0_spouse . c0_spouse_ref]
-irreflexive[r_c0_spouse . c0_spouse_ref]
+symmetric[r_spouse . spouse_ref]
+irreflexive[r_spouse . spouse_ref]
 }
 |]
 
 [choco|
-//symmetric[r_c0_spouse . c0_spouse_ref]
-//irreflexive[r_c0_spouse . c0_spouse_ref]
+//symmetric[r_spouse . spouse_ref]
+//irreflexive[r_spouse . spouse_ref]
 |]

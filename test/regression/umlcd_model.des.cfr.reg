@@ -1,162 +1,162 @@
 //# OPTIONS --explicit
-abstract 0..* c0_Boolean 0..* {}
-abstract 0..* c0_Integer 0..* {}
-abstract 0..* c0_String 0..* {}
-abstract 0..* c0_UnlimitedNatural 0..* {}
-abstract 0..* c0_Sequence 0..* {}
-abstract 0..* c0_Set 0..* {}
-abstract 0..* c0_Element 0..* {
-  [all x : this . c0_ownedElement | this in x . dref . c0_owner . dref]
-  [all x : this . c0_owner | this in x . dref . c0_ownedElement . dref]
-  0..* c0_ownedElement -> c0_Element 0..* {}
-  0..* c0_owner -> c0_Element 0..1 {}
+abstract 0..* Boolean 0..* {}
+abstract 0..* Integer 0..* {}
+abstract 0..* String 0..* {}
+abstract 0..* UnlimitedNatural 0..* {}
+abstract 0..* Sequence 0..* {}
+abstract 0..* Set 0..* {}
+abstract 0..* Element 0..* {
+  [all x : this . ownedElement | this in x . dref . owner . dref]
+  [all x : this . owner | this in x . dref . ownedElement . dref]
+  0..* ownedElement -> Element 0..* {}
+  0..* owner -> Element 0..1 {}
 }
-abstract 0..* c0_NamedElement : c0_Element 0..* {
-  0..* c0_name : c0_String 0..1 {}
-  0..* c0_qualifiedName : c0_String 0..1 {}
-  0..* c0_visibility -> c0_VisibilityKind 0..1 {}
+abstract 0..* NamedElement : Element 0..* {
+  0..* name : String 0..1 {}
+  0..* qualifiedName : String 0..1 {}
+  0..* visibility -> VisibilityKind 0..1 {}
 }
-abstract 0..* c0_ValueSpecification : c0_NamedElement 0..* {}
-abstract 0..* c0_DirectedRelationship 0..* {
-  0..* c0_relatedElement -> c0_Element 1..* {}
-  0..* c0_source -> c0_Element 1..* {}
-  0..* c0_target -> c0_Element 1..* {}
+abstract 0..* ValueSpecification : NamedElement 0..* {}
+abstract 0..* DirectedRelationship 0..* {
+  0..* DirectedRelationship__relatedElement -> Element 1..* {}
+  0..* source -> Element 1..* {}
+  0..* target -> Element 1..* {}
 }
-abstract 0..* c0_Class : c0_Classifier 0..* {
-  0..* c0_isActive 0..1 {}
-  0..* c0_superClass -> c0_Class 0..* {}
-  0..* c0_nestedClassifier : c0_Classifier 0..* {}
+abstract 0..* Class : Classifier 0..* {
+  0..* isActive 0..1 {}
+  0..* superClass -> Class 0..* {}
+  0..* nestedClassifier : Classifier 0..* {}
 }
-abstract 0..* c0_Property : c0_StructuralFeature 0..* {
-  [all x : this . c0_owningAssociation | this in x . dref . c0_ownedEnd]
-  [all x : this . c0_datatype | this in x . dref . c0_ownedAttribute]
-  [all x : this . c0_association | this in x . dref . c0_memberEnd . dref]
-  [all x : this . c0_associationEnd | this in x . dref . c0_qualifier]
-  0..* c0_default : c0_String 0..1 {}
-  0..* c0_isComposite 0..1 {}
-  0..* c0_isDerived 0..1 {}
-  0..* c0_isDerivedUnion 0..1 {}
-  0..* c0_aggregation -> c0_AggregationKind 0..1 {}
-  0..* c0_class -> c0_Class 0..1 {}
-  0..* c0_opposite -> c0_Property 0..1 {}
-  0..* c0_owningAssociation -> c0_Association 0..1 {}
-  0..* c0_redefinedProperty -> c0_Property 0..* {}
-  0..* c0_subsettedProperty -> c0_Property 0..* {}
-  0..* c0_datatype -> c0_DataType 0..1 {}
-  0..* c0_association -> c0_Association 0..1 {}
-  0..* c0_defaultValue : c0_ValueSpecification 0..1 {}
-  0..* c0_qualifier : c0_Property 0..* {
-    [this . parent in this . c0_associationEnd . dref]
+abstract 0..* Property : StructuralFeature 0..* {
+  [all x : this . owningAssociation | this in x . dref . ownedEnd]
+  [all x : this . datatype | this in x . dref . ownedAttribute]
+  [all x : this . association | this in x . dref . memberEnd . dref]
+  [all x : this . associationEnd | this in x . dref . qualifier]
+  0..* default : String 0..1 {}
+  0..* isComposite 0..1 {}
+  0..* Property__isDerived 0..1 {}
+  0..* isDerivedUnion 0..1 {}
+  0..* aggregation -> AggregationKind 0..1 {}
+  0..* class -> Class 0..1 {}
+  0..* opposite -> Property 0..1 {}
+  0..* owningAssociation -> Association 0..1 {}
+  0..* redefinedProperty -> Property 0..* {}
+  0..* subsettedProperty -> Property 0..* {}
+  0..* datatype -> DataType 0..1 {}
+  0..* association -> Association 0..1 {}
+  0..* defaultValue : ValueSpecification 0..1 {}
+  0..* qualifier : Property 0..* {
+    [this . parent in this . associationEnd . dref]
   }
-  0..* c0_associationEnd -> c0_Property 0..1 {}
+  0..* associationEnd -> Property 0..1 {}
 }
-abstract 0..* c0_Enumeration : c0_DataType 0..* {
-  0..* c0_ownedLiteral : c0_EnumerationLiteral 0..* {
-    [this . parent in this . c0_enumeration . dref]
-  }
-}
-abstract 0..* c0_DataType : c0_Classifier 0..* {
-  0..* c0_ownedAttribute : c0_Property 0..* {
-    [this . parent in this . c0_datatype . dref]
+abstract 0..* Enumeration : DataType 0..* {
+  0..* ownedLiteral : EnumerationLiteral 0..* {
+    [this . parent in this . enumeration . dref]
   }
 }
-abstract 0..* c0_EnumerationLiteral : c0_InstanceSpecification 0..* {
-  [all x : this . c0_enumeration | this in x . dref . c0_ownedLiteral]
-  0..* c0_enumeration -> c0_Enumeration 0..1 {}
-}
-abstract 0..* c0_PrimitiveType : c0_DataType 0..* {}
-abstract 0..* c0_Classifier : c0_NamedElement 0..* {
-  [all x : this . c0_feature | this in x . dref . c0_featuringClassifier . dref]
-  [all x : this . c0_powertypeExtent | this in x . dref . c0_powertype . dref]
-  0..* c0_isAbstract 0..1 {}
-  0..* c0_feature -> c0_Feature 0..* {}
-  0..* c0_inheritedMember -> c0_NamedElement 0..* {}
-  0..* c0_general -> c0_Classifier 0..* {}
-  0..* c0_generalization : c0_Generalization 0..* {
-    [this . parent in this . c0_specific . dref]
+abstract 0..* DataType : Classifier 0..* {
+  0..* ownedAttribute : Property 0..* {
+    [this . parent in this . datatype . dref]
   }
-  0..* c0_attribute -> c0_Property 0..* {}
-  0..* c0_redefinedClassifier -> c0_Classifier 0..* {}
-  0..* c0_powertypeExtent -> c0_GeneralizationSet 0..* {}
 }
-abstract 0..* c0_Feature : c0_NamedElement 0..* {
-  [all x : this . c0_featuringClassifier | this in x . dref . c0_feature . dref]
-  0..* c0_isStatic 0..1 {}
-  0..* c0_featuringClassifier -> c0_Classifier 0..* {}
+abstract 0..* EnumerationLiteral : InstanceSpecification 0..* {
+  [all x : this . enumeration | this in x . dref . ownedLiteral]
+  0..* enumeration -> Enumeration 0..1 {}
 }
-abstract 0..* c0_VisibilityKind 0..* {}
-0..* c0_package : c0_VisibilityKind 1..1 {}
-0..* c0_private : c0_VisibilityKind 1..1 {}
-0..* c0_protected : c0_VisibilityKind 1..1 {}
-0..* c0_public : c0_VisibilityKind 1..1 {}
-abstract 0..* c0_LiteralBoolean : c0_LiteralSpecification 0..* {
-  0..* c0_value 0..1 {}
-}
-abstract 0..* c0_LiteralSpecification : c0_ValueSpecification 0..* {}
-abstract 0..* c0_LiteralString : c0_LiteralSpecification 0..* {
-  0..* c1_value : c0_String 0..1 {}
-}
-abstract 0..* c0_LiteralNull : c0_LiteralSpecification 0..* {}
-abstract 0..* c0_LiteralInteger : c0_LiteralSpecification 0..* {
-  0..* c2_value -> c0_Integer 0..1 {}
-}
-abstract 0..* c0_LiteralUnlimitedNatural : c0_LiteralSpecification 0..* {
-  0..* c3_value : c0_UnlimitedNatural 0..1 {}
-}
-abstract 0..* c0_StructuralFeature : c0_Feature 0..* {
-  0..* c0_isReadOnly 0..1 {}
-  0..* c0_isOrdered 0..1 {}
-  0..* c0_isUnique 0..1 {}
-  0..* c0_lower -> c0_Integer 0..1 {}
-  0..* c0_upper : c0_UnlimitedNatural 0..1 {}
-  0..* c0_upperValue : c0_ValueSpecification 0..1 {}
-  0..* c0_lowerValue : c0_ValueSpecification 0..1 {}
-}
-abstract 0..* c0_InstanceSpecification : c0_NamedElement 0..* {
-  0..* c0_slot : c0_Slot 0..* {
-    [this . parent in this . c0_owningInstance . dref]
+abstract 0..* PrimitiveType : DataType 0..* {}
+abstract 0..* Classifier : NamedElement 0..* {
+  [all x : this . feature | this in x . dref . featuringClassifier . dref]
+  [all x : this . powertypeExtent | this in x . dref . powertype . dref]
+  0..* isAbstract 0..1 {}
+  0..* feature -> Feature 0..* {}
+  0..* inheritedMember -> NamedElement 0..* {}
+  0..* Classifier__general -> Classifier 0..* {}
+  0..* Classifier__generalization : Generalization 0..* {
+    [this . parent in this . specific . dref]
   }
-  0..* c0_classifier -> c0_Classifier 0..* {}
-  0..* c0_specification : c0_ValueSpecification 0..1 {}
+  0..* attribute -> Property 0..* {}
+  0..* redefinedClassifier -> Classifier 0..* {}
+  0..* powertypeExtent -> GeneralizationSet 0..* {}
 }
-abstract 0..* c0_Slot : c0_Element 0..* {
-  [all x : this . c0_owningInstance | this in x . dref . c0_slot]
-  0..* c0_owningInstance -> c0_InstanceSpecification 1..1 {}
-  0..* c4_value : c0_ValueSpecification 0..* {}
-  0..* c0_definingFeature -> c0_StructuralFeature 1..1 {}
+abstract 0..* Feature : NamedElement 0..* {
+  [all x : this . featuringClassifier | this in x . dref . feature . dref]
+  0..* isStatic 0..1 {}
+  0..* featuringClassifier -> Classifier 0..* {}
 }
-abstract 0..* c0_InstanceValue : c0_ValueSpecification 0..* {
-  0..* c0_instance -> c0_InstanceSpecification 1..1 {}
+abstract 0..* VisibilityKind 0..* {}
+0..* package : VisibilityKind 1..1 {}
+0..* private : VisibilityKind 1..1 {}
+0..* protected : VisibilityKind 1..1 {}
+0..* public : VisibilityKind 1..1 {}
+abstract 0..* LiteralBoolean : LiteralSpecification 0..* {
+  0..* LiteralBoolean__value 0..1 {}
 }
-abstract 0..* c0_Generalization : c0_DirectedRelationship 0..* {
-  [all x : this . c0_specific | this in x . dref . c0_generalization]
-  [all x : this . c0_generalizationSet | this in x . dref . c1_generalization . dref]
-  0..* c0_isSubstitutable 0..1 {}
-  0..* c0_specific -> c0_Classifier 1..1 {}
-  0..* c1_general -> c0_Classifier 1..1 {}
-  0..* c0_generalizationSet -> c0_GeneralizationSet 0..* {}
+abstract 0..* LiteralSpecification : ValueSpecification 0..* {}
+abstract 0..* LiteralString : LiteralSpecification 0..* {
+  0..* LiteralString__value : String 0..1 {}
 }
-abstract 0..* c0_Association : c0_Classifier 0..* {
-  [all x : this . c0_memberEnd | this in x . dref . c0_association . dref]
-  [((#this . c0_memberEnd) > 2) => (this . c0_memberEnd . dref in this . c0_ownedEnd)]
-  0..* c1_relatedElement -> c0_Element 1..* {}
-  0..* c1_isDerived 0..1 {}
-  0..* c0_ownedEnd : c0_Property 0..* {
-    [this . parent in this . c0_owningAssociation . dref]
+abstract 0..* LiteralNull : LiteralSpecification 0..* {}
+abstract 0..* LiteralInteger : LiteralSpecification 0..* {
+  0..* LiteralInteger__value -> Integer 0..1 {}
+}
+abstract 0..* LiteralUnlimitedNatural : LiteralSpecification 0..* {
+  0..* LiteralUnlimitedNatural__value : UnlimitedNatural 0..1 {}
+}
+abstract 0..* StructuralFeature : Feature 0..* {
+  0..* isReadOnly 0..1 {}
+  0..* isOrdered 0..1 {}
+  0..* isUnique 0..1 {}
+  0..* lower -> Integer 0..1 {}
+  0..* upper : UnlimitedNatural 0..1 {}
+  0..* upperValue : ValueSpecification 0..1 {}
+  0..* lowerValue : ValueSpecification 0..1 {}
+}
+abstract 0..* InstanceSpecification : NamedElement 0..* {
+  0..* slot : Slot 0..* {
+    [this . parent in this . owningInstance . dref]
   }
-  0..* c0_endType -> c0_NamedElement 1..* {}
-  0..* c0_memberEnd -> c0_Property 2..* {}
+  0..* classifier -> Classifier 0..* {}
+  0..* specification : ValueSpecification 0..1 {}
 }
-abstract 0..* c0_ExtensionEnd : c0_Property 0..* {}
-abstract 0..* c0_AggregationKind 0..* {}
-0..* c0_composite : c0_AggregationKind 1..1 {}
-0..* c0_none : c0_AggregationKind 1..1 {}
-0..* c0_shared : c0_AggregationKind 1..1 {}
-abstract 0..* c0_GeneralizationSet : c0_NamedElement 0..* {
-  [all x : this . c0_powertype | this in x . dref . c0_powertypeExtent . dref]
-  [all x : this . c1_generalization | this in x . dref . c0_generalizationSet . dref]
-  0..* c0_isCovering 0..1 {}
-  0..* c0_isDisjoint 0..1 {}
-  0..* c0_powertype -> c0_Classifier 0..1 {}
-  0..* c1_generalization -> c0_Generalization 0..* {}
+abstract 0..* Slot : Element 0..* {
+  [all x : this . owningInstance | this in x . dref . slot]
+  0..* owningInstance -> InstanceSpecification 1..1 {}
+  0..* Slot__value : ValueSpecification 0..* {}
+  0..* definingFeature -> StructuralFeature 1..1 {}
+}
+abstract 0..* InstanceValue : ValueSpecification 0..* {
+  0..* instance -> InstanceSpecification 1..1 {}
+}
+abstract 0..* Generalization : DirectedRelationship 0..* {
+  [all x : this . specific | this in x . dref . Classifier__generalization]
+  [all x : this . generalizationSet | this in x . dref . GeneralizationSet__generalization . dref]
+  0..* isSubstitutable 0..1 {}
+  0..* specific -> Classifier 1..1 {}
+  0..* Generalization__general -> Classifier 1..1 {}
+  0..* generalizationSet -> GeneralizationSet 0..* {}
+}
+abstract 0..* Association : Classifier 0..* {
+  [all x : this . memberEnd | this in x . dref . association . dref]
+  [((#this . memberEnd) > 2) => (this . memberEnd . dref in this . ownedEnd)]
+  0..* Association__relatedElement -> Element 1..* {}
+  0..* Association__isDerived 0..1 {}
+  0..* ownedEnd : Property 0..* {
+    [this . parent in this . owningAssociation . dref]
+  }
+  0..* endType -> NamedElement 1..* {}
+  0..* memberEnd -> Property 2..* {}
+}
+abstract 0..* ExtensionEnd : Property 0..* {}
+abstract 0..* AggregationKind 0..* {}
+0..* composite : AggregationKind 1..1 {}
+0..* none : AggregationKind 1..1 {}
+0..* shared : AggregationKind 1..1 {}
+abstract 0..* GeneralizationSet : NamedElement 0..* {
+  [all x : this . powertype | this in x . dref . powertypeExtent . dref]
+  [all x : this . GeneralizationSet__generalization | this in x . dref . generalizationSet . dref]
+  0..* isCovering 0..1 {}
+  0..* isDisjoint 0..1 {}
+  0..* powertype -> Classifier 0..1 {}
+  0..* GeneralizationSet__generalization -> Generalization 0..* {}
 }

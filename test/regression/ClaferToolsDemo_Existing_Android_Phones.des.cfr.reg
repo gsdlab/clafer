@@ -1,49 +1,49 @@
 //# OPTIONS --explicit
-0..* c0_AndroidPhone1 1..1 {
-  0..* c0_Connectivity 1..1 {
-    0..* c0_Bluetooth40 1..1 {}
-    0..* c0_GSM 1..1 {}
-    0..* c0_WiFi 1..1 {}
-    0..* c0_USB 1..1 {}
+0..* AndroidPhone1 1..1 {
+  0..* AndroidPhone1__Connectivity 1..1 {
+    0..* Connectivity__Bluetooth40 1..1 {}
+    0..* AndroidPhone1__Connectivity__GSM 1..1 {}
+    0..* AndroidPhone1__Connectivity__WiFi 1..1 {}
+    0..* AndroidPhone1__Connectivity__USB 1..1 {}
   }
-  0..* c0_Battery 1..1 {
-    0..* c0_LiBattery1450 1..1 {}
-  }
-}
-0..* c0_AndroidPhone2 1..1 {
-  0..* c1_Connectivity 1..1 {
-    0..* c0_Bluetooth21 1..1 {}
-    0..* c1_GSM 1..1 {}
-    0..* c1_USB 1..1 {}
-  }
-  0..* c1_Battery 1..1 {
-    0..* c0_LiBattery1150 1..1 {}
+  0..* AndroidPhone1__Battery 1..1 {
+    0..* LiBattery1450 1..1 {}
   }
 }
-abstract 1..1 c0_Bluetooth 0..* {
-  0..* c0_Bluetooth20 0..1 {}
-  0..* c1_Bluetooth21 0..1 {}
-  0..* c1_Bluetooth40 0..1 {}
+0..* AndroidPhone2 1..1 {
+  0..* AndroidPhone2__Connectivity 1..1 {
+    0..* Connectivity__Bluetooth21 1..1 {}
+    0..* AndroidPhone2__Connectivity__GSM 1..1 {}
+    0..* AndroidPhone2__Connectivity__USB 1..1 {}
+  }
+  0..* AndroidPhone2__Battery 1..1 {
+    0..* AndroidPhone2__Battery__LiBattery1150 1..1 {}
+  }
 }
-abstract 0..* c0_MobilePhone 0..* {
-  0..* c2_Connectivity 1..1 {
-    1..1 c1_Bluetooth : c0_Bluetooth 1..1 {}
-    0..* c2_GSM 1..1 {}
-    0..* c0_LTE 0..1 {
-      [(#this . parent . parent . c2_Battery . c0_LiBattery1400) >= 1]
+abstract 1..1 root__Bluetooth 0..* {
+  0..* Bluetooth20 0..1 {}
+  0..* Bluetooth__Bluetooth21 0..1 {}
+  0..* Bluetooth__Bluetooth40 0..1 {}
+}
+abstract 0..* MobilePhone 0..* {
+  0..* MobilePhone__Connectivity 1..1 {
+    1..1 Connectivity__Bluetooth : root__Bluetooth 1..1 {}
+    0..* MobilePhone__Connectivity__GSM 1..1 {}
+    0..* LTE 0..1 {
+      [(#this . parent . parent . MobilePhone__Battery . LiBattery1400) >= 1]
     }
-    0..* c1_WiFi 0..1 {}
-    0..* c2_USB 0..1 {}
+    0..* MobilePhone__Connectivity__WiFi 0..1 {}
+    0..* MobilePhone__Connectivity__USB 0..1 {}
   }
-  1..1 c2_Battery 1..1 {
-    0..* c1_LiBattery1150 0..1 {}
-    0..* c0_LiBattery1400 0..1 {}
+  1..1 MobilePhone__Battery 1..1 {
+    0..* MobilePhone__Battery__LiBattery1150 0..1 {}
+    0..* LiBattery1400 0..1 {}
   }
 }
-0..* c0_LowEndPhones : c0_MobilePhone 1..1 {
-  [(#this . c2_Connectivity . c1_WiFi) = 0]
+0..* LowEndPhones : MobilePhone 1..1 {
+  [(#this . MobilePhone__Connectivity . MobilePhone__Connectivity__WiFi) = 0]
 }
-0..* c0_HighEndPhones : c0_MobilePhone 1..1 {
-  [((#this . c2_Connectivity . c2_USB) >= 1) && ((#this . c2_Connectivity . c1_WiFi) >= 1)]
-  0..* c0_QuadCPU 0..1 {}
+0..* HighEndPhones : MobilePhone 1..1 {
+  [((#this . MobilePhone__Connectivity . MobilePhone__Connectivity__USB) >= 1) && ((#this . MobilePhone__Connectivity . MobilePhone__Connectivity__WiFi) >= 1)]
+  0..* QuadCPU 0..1 {}
 }

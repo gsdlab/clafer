@@ -22,19 +22,19 @@ a[href$='Ambiguous name'] {color: yellow}
 <div class="file">positive/minAndMax.cfr</div>
 
 <div>
-<span class="claferDecl" id="c0_A">A</span><span class="keyword"> ->> </span><a href="#int"><span class="reference">int</span></a> 1..2 </div>
+<span class="claferDecl" id="A">A</span><span class="keyword"> ->> </span><a href="#int"><span class="reference">int</span></a> 1..2 </div>
 
 
 <div>
-<span class="claferDecl" id="c0_B">B</span><span class="keyword"> -> </span><a href="#int"><span class="reference">int</span></a> 2..3 </div>
+<span class="claferDecl" id="B">B</span><span class="keyword"> -> </span><a href="#int"><span class="reference">int</span></a> 2..3 </div>
 
 
 <div>
-<span class="keyword">[</span> min <a href="#c0_A"><span class="reference">A</span></a>.<span class="keyword">dref</span> = max <a href="#c0_B"><span class="reference">B</span></a>.<span class="keyword">dref</span> <span class="keyword">]</span></div>
+<span class="keyword">[</span> min <a href="#A"><span class="reference">A</span></a>.<span class="keyword">dref</span> = max <a href="#B"><span class="reference">B</span></a>.<span class="keyword">dref</span> <span class="keyword">]</span></div>
 
 
 <div>
-<span class="keyword">assert [</span> max <a href="#c0_A"><span class="reference">A</span></a> &gt;= min <a href="#c0_B"><span class="reference">B</span></a> <span class="keyword">]</span></div>
+<span class="keyword">assert [</span> max <a href="#A"><span class="reference">A</span></a> &gt;= min <a href="#B"><span class="reference">B</span></a> <span class="keyword">]</span></div>
 
 </body>
 </html>

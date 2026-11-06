@@ -1,13 +1,13 @@
 //# OPTIONS --explicit
-0..* c0_a 0..1 {}
-0..* c0_b 0..1 {}
-abstract 0..* c0_P 0..* {
-  [this . c0_age . dref >= 0]
-  0..* c0_age -> int 1..1 {}
+0..* a 0..1 {}
+0..* b 0..1 {}
+abstract 0..* P 0..* {
+  [this . age . dref >= 0]
+  0..* age -> int 1..1 {}
 }
-0..* c0_x : c0_P 1..1 {}
+0..* x : P 1..1 {}
 
-assert [((#c0_a) >= 1) => ((#c0_a) >= 1)]
-assert [((#c0_b) >= 1) => ((#c0_b) >= 1)]
-assert [all this_ : c0_P | this_ . c0_age . dref >= 0]
-assert [all this_ : c0_x | this_ . c0_age . dref >= 0]
+assert [((#a) >= 1) => ((#a) >= 1)]
+assert [((#b) >= 1) => ((#b) >= 1)]
+assert [all this_ : P | this_ . age . dref >= 0]
+assert [all this_ : x | this_ . age . dref >= 0]

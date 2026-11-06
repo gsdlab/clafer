@@ -3,78 +3,78 @@ pred show {}
 
 
 one sig root
-{ var r_c0_events : set c0_events
-, var r_c0_sys : set c0_sys
-, var r_c0_top : set c0_top }
-fact { all self_ : root | always (one self_.@r_c0_events) }
-fact { all self_ : root | always (lone self_.@r_c0_sys) }
-fact { all self_ : root | always (one self_.@r_c0_top) }
+{ var r_events : set events
+, var r_sys : set sys
+, var r_top : set top }
+fact { all self_ : root | always (one self_.@r_events) }
+fact { all self_ : root | always (lone self_.@r_sys) }
+fact { all self_ : root | always (one self_.@r_top) }
 
-assert assertAt_19_10 { all self_ : root | always (all  e : alive_c0_event | after (no e & alive_c0_event)) }
-check assertAt_19_10 for 1 but 2 c0_Port, 2 c0_event, 10 steps
+assert assertAt_19_10 { all self_ : root | always (all  e : alive_event | after (no e & alive_event)) }
+check assertAt_19_10 for 1 but 2 Port, 2 event, 10 steps
 
-assert assertAt_20_10 { all self_ : root | always (all  p : alive_c0_sys.@r_c0_p1 | (p.(@p_c0_p1 :> alive_c0_sys)) = alive_c0_sys) }
-check assertAt_20_10 for 1 but 2 c0_Port, 2 c0_event, 10 steps
+assert assertAt_20_10 { all self_ : root | always (all  p : alive_sys.@r_p1 | (p.(@p_p1 :> alive_sys)) = alive_sys) }
+check assertAt_20_10 for 1 but 2 Port, 2 event, 10 steps
 
 
 
-abstract sig c0_event
+abstract sig event
 {}
-fun alive_c0_event : set c0_event { alive_c0_e1 + alive_c0_e2 }
-fact { all self_ : c0_event | always (self_ in alive_c0_event implies (after (not some self_.((@p_c0_e1 :> alive_c0_events) + (@p_c0_e2 :> alive_c0_events)) or (no (self_ & alive_c0_event))))) }
+fun alive_event : set event { alive_e1 + alive_e2 }
+fact { all self_ : event | always (self_ in alive_event implies (after (not some self_.((@p_e1 :> alive_events) + (@p_e2 :> alive_events)) or (no (self_ & alive_event))))) }
 
 
-sig c0_events
-{ p_c0_events : lone root
-, var r_c0_e1 : set c0_e1
-, var r_c0_e2 : set c0_e2 }
-{ always (this in alive_c0_events implies (let children = (this.@r_c0_e1 + this.@r_c0_e2) | lone children)) }
-fun alive_c0_events : set c0_events { root.@r_c0_events }
-fact { always ~@r_c0_events in @p_c0_events }
+sig events
+{ p_events : lone root
+, var r_e1 : set e1
+, var r_e2 : set e2 }
+{ always (this in alive_events implies (let children = (this.@r_e1 + this.@r_e2) | lone children)) }
+fun alive_events : set events { root.@r_events }
+fact { always ~@r_events in @p_events }
 
-fact { all self_ : c0_events | always (self_ in alive_c0_events implies (lone self_.@r_c0_e1)) }
-fact { all self_ : c0_events | always (self_ in alive_c0_events implies (lone self_.@r_c0_e2)) }
-
-
-sig c0_e1 extends c0_event
-{ p_c0_e1 : lone c0_events }
-fun alive_c0_e1 : set c0_e1 { c0_events.@r_c0_e1 }
-fact { always ~@r_c0_e1 in @p_c0_e1
-  always @r_c0_e1.univ in alive_c0_events }
+fact { all self_ : events | always (self_ in alive_events implies (lone self_.@r_e1)) }
+fact { all self_ : events | always (self_ in alive_events implies (lone self_.@r_e2)) }
 
 
-sig c0_e2 extends c0_event
-{ p_c0_e2 : lone c0_events }
-fun alive_c0_e2 : set c0_e2 { c0_events.@r_c0_e2 }
-fact { always ~@r_c0_e2 in @p_c0_e2
-  always @r_c0_e2.univ in alive_c0_events }
+sig e1 extends event
+{ p_e1 : lone events }
+fun alive_e1 : set e1 { events.@r_e1 }
+fact { always ~@r_e1 in @p_e1
+  always @r_e1.univ in alive_events }
 
 
-abstract sig c0_Port
+sig e2 extends event
+{ p_e2 : lone events }
+fun alive_e2 : set e2 { events.@r_e2 }
+fact { always ~@r_e2 in @p_e2
+  always @r_e2.univ in alive_events }
+
+
+abstract sig Port
 {}
-fun alive_c0_Port : set c0_Port { alive_c0_p1 + alive_c0_top }
-fact { all self_ : c0_Port | always (self_ in alive_c0_Port implies (some self_.((@p_c0_p1 :> alive_c0_sys) + (@p_c0_top :> root)))) }
+fun alive_Port : set Port { alive_p1 + alive_top }
+fact { all self_ : Port | always (self_ in alive_Port implies (some self_.((@p_p1 :> alive_sys) + (@p_top :> root)))) }
 
 
-sig c0_sys
-{ p_c0_sys : lone root
-, var r_c0_p1 : set c0_p1 }
-fun alive_c0_sys : set c0_sys { root.@r_c0_sys }
-fact { always ~@r_c0_sys in @p_c0_sys }
+sig sys
+{ p_sys : lone root
+, var r_p1 : set p1 }
+fun alive_sys : set sys { root.@r_sys }
+fact { always ~@r_sys in @p_sys }
 
-fact { all self_ : c0_sys | always (self_ in alive_c0_sys implies (one self_.@r_c0_p1)) }
-
-
-sig c0_p1 extends c0_Port
-{ p_c0_p1 : lone c0_sys }
-fun alive_c0_p1 : set c0_p1 { c0_sys.@r_c0_p1 }
-fact { always ~@r_c0_p1 in @p_c0_p1
-  always @r_c0_p1.univ in alive_c0_sys }
+fact { all self_ : sys | always (self_ in alive_sys implies (one self_.@r_p1)) }
 
 
-sig c0_top extends c0_Port
-{ p_c0_top : lone root }
-fun alive_c0_top : set c0_top { root.@r_c0_top }
-fact { always ~@r_c0_top in @p_c0_top }
+sig p1 extends Port
+{ p_p1 : lone sys }
+fun alive_p1 : set p1 { sys.@r_p1 }
+fact { always ~@r_p1 in @p_p1
+  always @r_p1.univ in alive_sys }
+
+
+sig top extends Port
+{ p_top : lone root }
+fun alive_top : set top { root.@r_top }
+fact { always ~@r_top in @p_top }
 
 

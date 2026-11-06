@@ -22,20 +22,20 @@ a[href$='Ambiguous name'] {color: yellow}
 <div class="file">positive/tmp_nested_assertions.cfr</div>
 
 <div>
-<span class="keyword">xor</span> <span class="claferDecl" id="c0_s">s</span>
+<span class="keyword">xor</span> <span class="claferDecl" id="s">s</span>
   <div class="indent">
-  <span class="tKeyword">initial</span> <span class="claferDecl" id="c0_a">a</span><span class="tKeyword"> --&gt; </span><a href="#c0_b"><span class="reference">b</span></a></div>
+  <span class="tKeyword">initial</span> <span class="claferDecl" id="a">a</span><span class="tKeyword"> --&gt; </span><a href="#b"><span class="reference">b</span></a></div>
   <div class="indent">
-  <span class="claferDecl" id="c0_b">b</span><span class="tKeyword"> --&gt; </span><a href="#c0_a"><span class="reference">a</span></a></div>
+  <span class="claferDecl" id="b">b</span><span class="tKeyword"> --&gt; </span><a href="#a"><span class="reference">a</span></a></div>
   <div class="indent">
-  <span class="keyword">assert [</span> <a href="#c0_a"><span class="reference">a</span></a> =&gt; X <a href="#c0_b"><span class="reference">b</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">assert [</span> <a href="#a"><span class="reference">a</span></a> =&gt; X <a href="#b"><span class="reference">b</span></a> <span class="keyword">]</span></div>
   <div class="indent">
-  <span class="keyword">assert [</span> <a href="#c0_b"><span class="reference">b</span></a> =&gt; X <a href="#c0_a"><span class="reference">a</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">assert [</span> <a href="#b"><span class="reference">b</span></a> =&gt; X <a href="#a"><span class="reference">a</span></a> <span class="keyword">]</span></div>
 </div>
 
 
 <div>
-<span class="keyword">assert [</span> <span class="tKeyword">always </span><a href="#c0_s"><span class="reference">s</span></a> <span class="keyword">]</span></div>
+<span class="keyword">assert [</span> <span class="tKeyword">always </span><a href="#s"><span class="reference">s</span></a> <span class="keyword">]</span></div>
 
 </body>
 </html>

@@ -179,12 +179,12 @@ defaultScope(1);
 stringLength(16);
 decimalScale(2);
 
-c0_rate = Clafer("c0_rate").withCard(1, 1);
-c0_interest = Clafer("c0_interest").withCard(1, 1);
-c0_rate.refToUnique(Decimal);
-Constraint(equal(joinRef(global(c0_rate)), decimal("1.99")));
-c0_interest.refToUnique(Decimal);
-Constraint(implies(some(global(c0_interest)), equal(joinRef(global(c0_interest)), mul(constant(100), joinRef(global(c0_rate))))));
+$rate = Clafer("rate").withCard(1, 1);
+$interest = Clafer("interest").withCard(1, 1);
+$rate.refToUnique(Decimal);
+Constraint(equal(joinRef(global($rate)), decimal("1.99")));
+$interest.refToUnique(Decimal);
+Constraint(implies(some(global($interest)), equal(joinRef(global($interest)), mul(constant(100), joinRef(global($rate))))));
 ```
 
 (the same as the int version, with `Decimal`, `decimal(...)` and `decimalScale`). The instance

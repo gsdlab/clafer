@@ -22,69 +22,69 @@ a[href$='Ambiguous name'] {color: yellow}
 <div class="file">positive/tmp_final_inherited_reference.cfr</div>
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Engine">Engine</span></div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="Engine">Engine</span></div>
 
 
 <div>
-<span class="claferDecl" id="c0_gas">gas</span><span class="keyword"> : </span><a href="#c0_Engine"><span class="reference">Engine</span></a></div>
+<span class="claferDecl" id="gas">gas</span><span class="keyword"> : </span><a href="#Engine"><span class="reference">Engine</span></a></div>
 
 
 <div>
-<span class="claferDecl" id="c0_electric">electric</span><span class="keyword"> : </span><a href="#c0_Engine"><span class="reference">Engine</span></a></div>
+<span class="claferDecl" id="electric">electric</span><span class="keyword"> : </span><a href="#Engine"><span class="reference">Engine</span></a></div>
 
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Car">Car</span>
+<span class="keyword">abstract</span> <span class="claferDecl" id="Car">Car</span>
   <div class="indent">
-  <span class="keyword">abstract</span> <span class="claferDecl" id="c0_engine">engine</span><span class="keyword"> -> </span><a href="#c0_Engine"><span class="reference">Engine</span></a></div>
+  <span class="keyword">abstract</span> <span class="claferDecl" id="engine">engine</span><span class="keyword"> -> </span><a href="#Engine"><span class="reference">Engine</span></a></div>
   <div class="indent">
-  <span class="keyword">xor</span> <span class="claferDecl" id="c0_gear">gear</span>
+  <span class="keyword">xor</span> <span class="claferDecl" id="gear">gear</span>
     <div class="indent">
-    <span class="tKeyword">initial</span> <span class="claferDecl" id="c0_park">park</span><span class="tKeyword"> --&gt; </span><a href="#c0_drive"><span class="reference">drive</span></a></div>
+    <span class="tKeyword">initial</span> <span class="claferDecl" id="park">park</span><span class="tKeyword"> --&gt; </span><a href="#drive"><span class="reference">drive</span></a></div>
     <div class="indent">
-    <span class="claferDecl" id="c0_drive">drive</span></div>
+    <span class="claferDecl" id="drive">drive</span></div>
   </div>
 </div>
 
 
 <div>
-<span class="claferDecl" id="c0_tesla">tesla</span><span class="keyword"> : </span><a href="#c0_Car"><span class="reference">Car</span></a>
+<span class="claferDecl" id="tesla">tesla</span><span class="keyword"> : </span><a href="#Car"><span class="reference">Car</span></a>
   <div class="indent">
-  <span class="tKeyword">final</span> <span class="claferDecl" id="c0_motor">motor</span><span class="keyword"> : </span><a href="#c0_engine"><span class="reference">engine</span></a></div>
+  <span class="tKeyword">final</span> <span class="claferDecl" id="motor">motor</span><span class="keyword"> : </span><a href="#engine"><span class="reference">engine</span></a></div>
 </div>
 
 
 <div>
-<span class="claferDecl" id="c0_leaf">leaf</span><span class="keyword"> : </span><a href="#c0_Car"><span class="reference">Car</span></a>
+<span class="claferDecl" id="leaf">leaf</span><span class="keyword"> : </span><a href="#Car"><span class="reference">Car</span></a>
   <div class="indent">
-  <span class="tKeyword">finalref</span> <span class="claferDecl" id="c0_motor2">motor2</span><span class="keyword"> : </span><a href="#c0_engine"><span class="reference">engine</span></a></div>
+  <span class="tKeyword">finalref</span> <span class="claferDecl" id="motor2">motor2</span><span class="keyword"> : </span><a href="#engine"><span class="reference">engine</span></a></div>
 </div>
 
 
 <div>
-<span class="claferDecl" id="c0_bolt">bolt</span><span class="keyword"> : </span><a href="#c0_Car"><span class="reference">Car</span></a>
+<span class="claferDecl" id="bolt">bolt</span><span class="keyword"> : </span><a href="#Car"><span class="reference">Car</span></a>
   <div class="indent">
-  <span class="tKeyword">finaltarget</span> <span class="claferDecl" id="c0_motor3">motor3</span><span class="keyword"> : </span><a href="#c0_engine"><span class="reference">engine</span></a></div>
+  <span class="tKeyword">finaltarget</span> <span class="claferDecl" id="motor3">motor3</span><span class="keyword"> : </span><a href="#engine"><span class="reference">engine</span></a></div>
 </div>
 
 
 <div>
-<span class="claferDecl" id="c0_mini">mini</span><span class="keyword"> : </span><a href="#c0_Car"><span class="reference">Car</span></a>
+<span class="claferDecl" id="mini">mini</span><span class="keyword"> : </span><a href="#Car"><span class="reference">Car</span></a>
   <div class="indent">
-  <span class="claferDecl" id="c0_motor4">motor4</span><span class="keyword"> : </span><a href="#c0_engine"><span class="reference">engine</span></a></div>
+  <span class="claferDecl" id="motor4">motor4</span><span class="keyword"> : </span><a href="#engine"><span class="reference">engine</span></a></div>
 </div>
 
 
 <div>
-<span class="keyword">assert [</span> <a href="#c0_tesla"><span class="reference">tesla</span></a>.<a href="#c0_motor"><span class="reference">motor</span></a> = <a href="#c0_gas"><span class="reference">gas</span></a> =&gt; G <a href="#c0_tesla"><span class="reference">tesla</span></a>.<a href="#c0_motor"><span class="reference">motor</span></a> = <a href="#c0_gas"><span class="reference">gas</span></a> <span class="keyword">]</span></div>
+<span class="keyword">assert [</span> <a href="#tesla"><span class="reference">tesla</span></a>.<a href="#motor"><span class="reference">motor</span></a> = <a href="#gas"><span class="reference">gas</span></a> =&gt; G <a href="#tesla"><span class="reference">tesla</span></a>.<a href="#motor"><span class="reference">motor</span></a> = <a href="#gas"><span class="reference">gas</span></a> <span class="keyword">]</span></div>
 
 
 <div>
-<span class="keyword">assert [</span> <a href="#c0_leaf"><span class="reference">leaf</span></a>.<a href="#c0_motor2"><span class="reference">motor2</span></a> = <a href="#c0_gas"><span class="reference">gas</span></a> =&gt; G <a href="#c0_leaf"><span class="reference">leaf</span></a>.<a href="#c0_motor2"><span class="reference">motor2</span></a> = <a href="#c0_gas"><span class="reference">gas</span></a> <span class="keyword">]</span></div>
+<span class="keyword">assert [</span> <a href="#leaf"><span class="reference">leaf</span></a>.<a href="#motor2"><span class="reference">motor2</span></a> = <a href="#gas"><span class="reference">gas</span></a> =&gt; G <a href="#leaf"><span class="reference">leaf</span></a>.<a href="#motor2"><span class="reference">motor2</span></a> = <a href="#gas"><span class="reference">gas</span></a> <span class="keyword">]</span></div>
 
 
 <div>
-<span class="keyword">assert [</span> <a href="#c0_bolt"><span class="reference">bolt</span></a>.<a href="#c0_motor3"><span class="reference">motor3</span></a> = <a href="#c0_gas"><span class="reference">gas</span></a> =&gt; G <a href="#c0_bolt"><span class="reference">bolt</span></a>.<a href="#c0_motor3"><span class="reference">motor3</span></a> = <a href="#c0_gas"><span class="reference">gas</span></a> <span class="keyword">]</span></div>
+<span class="keyword">assert [</span> <a href="#bolt"><span class="reference">bolt</span></a>.<a href="#motor3"><span class="reference">motor3</span></a> = <a href="#gas"><span class="reference">gas</span></a> =&gt; G <a href="#bolt"><span class="reference">bolt</span></a>.<a href="#motor3"><span class="reference">motor3</span></a> = <a href="#gas"><span class="reference">gas</span></a> <span class="keyword">]</span></div>
 
 </body>
 </html>

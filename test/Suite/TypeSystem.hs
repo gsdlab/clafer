@@ -43,11 +43,11 @@ tg_Test_Suite_TypeSystem = $(testGroupGenerator)
 
 model :: String
 model = unlines
-    [ "abstract A"             -- c0_A
-    , "    abstract as -> A *" -- c0_as
-    , "abstract B : A"         -- c0_B
-    , "    as : as -> B *"     -- c1_as
-    , "b : B"                  -- c0_b
+    [ "abstract A"             -- A
+    , "    abstract as -> A *" -- A__as
+    , "abstract B : A"         -- B
+    , "    as : as -> B *"     -- B__as
+    , "b : B"                  -- b
     , "    [ as = b ]"
     , "    [ as.ref = b ]"
     ]
@@ -64,21 +64,21 @@ case_TypeSystemTest = case compileOneFragment defaultClaferArgs{keep_unused=True
 
         root_TClafer = getTClaferByUID um' "root"
         clafer_TClafer = getTClaferByUID um' "clafer"
-        c0_A_TClafer = getTClaferByUID um' "c0_A"
-        c0_A_TClaferR = Just $ TClafer [ "c0_A" ]
-        c0_A_TMap = getDrefTMapByUID um' "c0_A"
-        c0_as_TMap = getDrefTMapByUID um' "c0_as"
-        c0_as_TMapR = Just (TMap {_so = TClafer {_hi = ["c0_as"]}, _ta = TClafer {_hi = ["c0_A"]}})
-        c0_B_TClafer = getTClaferByUID um' "c0_B"
-        c0_B_TClaferR = Just $ TClafer [ "c0_B", "c0_A" ]
-        c1_as_TClafer = getTClaferByUID um' "c1_as"
-        c1_as_TClaferR = Just $ TClafer [ "c1_as", "c0_as" ]
-        c1_as_TMap = getDrefTMapByUID um' "c1_as"
-        c1_as_TMapR = Just (TMap {_so = TClafer {_hi = ["c1_as","c0_as"]}, _ta = TClafer {_hi = [ "c0_B", "c0_A" ]}})
-        c0_b_TClafer = getTClaferByUID um' "c0_b"
-        c0_b_TClaferR = Just $ TClafer [ "c0_b", "c0_B", "c0_A" ]
+        c0_A_TClafer = getTClaferByUID um' "A"
+        c0_A_TClaferR = Just $ TClafer [ "A" ]
+        c0_A_TMap = getDrefTMapByUID um' "A"
+        c0_as_TMap = getDrefTMapByUID um' "A__as"
+        c0_as_TMapR = Just (TMap {_so = TClafer {_hi = ["A__as"]}, _ta = TClafer {_hi = ["A"]}})
+        c0_B_TClafer = getTClaferByUID um' "B"
+        c0_B_TClaferR = Just $ TClafer [ "B", "A" ]
+        c1_as_TClafer = getTClaferByUID um' "B__as"
+        c1_as_TClaferR = Just $ TClafer [ "B__as", "A__as" ]
+        c1_as_TMap = getDrefTMapByUID um' "B__as"
+        c1_as_TMapR = Just (TMap {_so = TClafer {_hi = ["B__as","A__as"]}, _ta = TClafer {_hi = [ "B", "A" ]}})
+        c0_b_TClafer = getTClaferByUID um' "b"
+        c0_b_TClaferR = Just $ TClafer [ "b", "B", "A" ]
       in do
-        (isJust $ findIClafer um' "c0_A")    @? ("Clafer c0_A not found" ++ show um')
+        (isJust $ findIClafer um' "A")    @? ("Clafer c0_A not found" ++ show um')
         root_TClafer == Just rootTClafer     @? ("Incorrect class type for 'root':\ngot        '" ++ show root_TClafer ++ "'\ninstead of '" ++ show rootTClafer ++ "'")
         clafer_TClafer == Just claferTClafer @? ("Incorrect class type for 'clafer':\ngot        '" ++ show clafer_TClafer ++ "'\ninstead of '" ++ show claferTClafer ++ "'")
         c0_A_TClafer == c0_A_TClaferR        @? ("Incorrect class type for 'c0_A':\ngot        '" ++ show c0_A_TClafer ++ "'\ninstead of '" ++ show c0_A_TClaferR ++ "'")

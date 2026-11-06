@@ -1,12 +1,12 @@
 //# OPTIONS --explicit
-abstract 0..* c0_Person 0..* {
-  0..* c0_Age -> int 1..1 {}
+abstract 0..* Person 0..* {
+  0..* Age -> int 1..1 {}
 }
-0..* c0_Team 1..1 {
-  0..* c0_Contractor : c0_Person 1..1 {
-    0..* c0_since -> int 1..1 {}
+0..* Team 1..1 {
+  0..* Contractor : Person 1..1 {
+    0..* since -> int 1..1 {}
   }
-  0..* c0_Member -> c0_Person 2..* {}
+  0..* Member -> Person 2..* {}
 }
-0..* c0_Alice : c0_Person 1..1 {}
-0..* c0_Bob : c0_Person 1..1 {}
+0..* Alice : Person 1..1 {}
+0..* Bob : Person 1..1 {}

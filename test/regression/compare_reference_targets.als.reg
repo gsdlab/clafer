@@ -2,41 +2,41 @@ open util/integer
 pred show {}
 
 
-abstract sig c0_Port
+abstract sig Port
 {}
 
-abstract sig c0_B
-{ r_c0_a : one c0_a }
+abstract sig B
+{ r_a : one a }
 
-sig c0_a
-{ c0_a_ref : one c0_Port }
-{ one @r_c0_a.this }
+sig a
+{ a_ref : one Port }
+{ one @r_a.this }
 
-one sig c0_p1 extends c0_Port
+one sig p1 extends Port
 {}
 
-one sig c0_p2 extends c0_Port
+one sig p2 extends Port
 {}
 
-one sig c0_sys
-{ r_c0_b1 : one c0_b1
-, r_c0_b2 : one c0_b2 }
+one sig sys
+{ r_b1 : one b1
+, r_b2 : one b2 }
 
-one sig c0_b1 extends c0_B
+one sig b1 extends B
 {}
 
-one sig c0_b2 extends c0_B
+one sig b2 extends B
 {}
-{ ((this.@r_c0_a).@c0_a_ref) = ((((this.~@r_c0_b2).@r_c0_b1).@r_c0_a).@c0_a_ref)
-  (((this.@r_c0_a).@c0_a_ref) != ((((this.~@r_c0_b2).@r_c0_b1).@r_c0_a).@c0_a_ref)) || (((this.@r_c0_a).@c0_a_ref) = ((((this.~@r_c0_b2).@r_c0_b1).@r_c0_a).@c0_a_ref)) }
+{ ((this.@r_a).@a_ref) = ((((this.~@r_b2).@r_b1).@r_a).@a_ref)
+  (((this.@r_a).@a_ref) != ((((this.~@r_b2).@r_b1).@r_a).@a_ref)) || (((this.@r_a).@a_ref) = ((((this.~@r_b2).@r_b1).@r_a).@a_ref)) }
 
-one sig c0_choice
-{ c0_choice_ref : one c0_B }
-{ (((this.@c0_choice_ref).@r_c0_a).@c0_a_ref) in (((c0_sys.@r_c0_b1).@r_c0_a).@c0_a_ref) }
+one sig choice
+{ choice_ref : one B }
+{ (((this.@choice_ref).@r_a).@a_ref) in (((sys.@r_b1).@r_a).@a_ref) }
 
-one sig c0_sel
-{ c0_sel_ref : one c0_a }
-{ (this.@c0_sel_ref) in ((c0_sys.@r_c0_b1).@r_c0_a)
-  (this.@c0_sel_ref) = ((c0_sys.@r_c0_b1).@r_c0_a) }
+one sig sel
+{ sel_ref : one a }
+{ (this.@sel_ref) in ((sys.@r_b1).@r_a)
+  (this.@sel_ref) = ((sys.@r_b1).@r_a) }
 
-fact { all  x : (c0_sys.@r_c0_b1).@r_c0_a | x = ((c0_sys.@r_c0_b1).@r_c0_a) }
+fact { all  x : (sys.@r_b1).@r_a | x = ((sys.@r_b1).@r_a) }

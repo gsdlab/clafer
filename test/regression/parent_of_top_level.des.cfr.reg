@@ -1,36 +1,36 @@
 //# OPTIONS --explicit
 [0 < 1]
-[c0_a . c0_x . dref = 2]
-0..* c0_a 1..1 {
-  0..* c0_x -> int 1..1 {}
+[a . x . dref = 2]
+0..* a 1..1 {
+  0..* x -> int 1..1 {}
 }
-0..* c0_extra 0..1 {}
-0..* c0_b 1..1 {
-  [(#c0_a) >= 1]
+0..* extra 0..1 {}
+0..* b 1..1 {
+  [(#a) >= 1]
   [0 < 1]
   [0 < 1]
-  [c0_a . c0_x . dref = 2]
-  [all v : c0_b | (#c0_a) >= 1]
-  [(#c0_a) >= 1]
-  [((#c0_extra) >= 1) <=> ((#c0_extra) >= 1)]
-  [((if ((#c0_extra) >= 1) then 1 else 0) = 1) => ((#c0_extra) >= 1)]
-  [((#(if ((#c0_extra) >= 1) then c0_a else noclafer)) >= 1) => ((#c0_extra) >= 1)]
+  [a . x . dref = 2]
+  [all v : b | (#a) >= 1]
+  [(#a) >= 1]
+  [((#extra) >= 1) <=> ((#extra) >= 1)]
+  [((if ((#extra) >= 1) then 1 else 0) = 1) => ((#extra) >= 1)]
+  [((#(if ((#extra) >= 1) then a else noclafer)) >= 1) => ((#extra) >= 1)]
 }
-abstract 0..* c0_Top 0..* {
+abstract 0..* Top 0..* {
   [0 < 1]
 }
-0..* c0_top1 : c0_Top 1..1 {}
-0..* c0_top2 : c0_Top 1..1 {}
-abstract 0..* c0_Feat 0..* {
-  [(((this in c0_f1) => (0 < 1)) && ((this in c0_g . c0_f2) => ((#(this ** c0_g . c0_f2) . parent) >= 1))) && ((this in c0_h . c0_i . c0_f3) => ((#(this ** c0_h . c0_i . c0_f3) . parent) >= 1))]
-  [(((this in c0_f1) => (0 < 1)) && ((this in c0_g . c0_f2) => ((#(this ** c0_g . c0_f2) . parent) = 1))) && ((this in c0_h . c0_i . c0_f3) => ((#(this ** c0_h . c0_i . c0_f3) . parent) = 1))]
+0..* top1 : Top 1..1 {}
+0..* top2 : Top 1..1 {}
+abstract 0..* Feat 0..* {
+  [(((this in f1) => (0 < 1)) && ((this in g . f2) => ((#(this ** g . f2) . parent) >= 1))) && ((this in h . i . f3) => ((#(this ** h . i . f3) . parent) >= 1))]
+  [(((this in f1) => (0 < 1)) && ((this in g . f2) => ((#(this ** g . f2) . parent) = 1))) && ((this in h . i . f3) => ((#(this ** h . i . f3) . parent) = 1))]
 }
-0..* c0_f1 : c0_Feat 1..1 {}
-0..* c0_g 1..1 {
-  0..* c0_f2 : c0_Feat 1..1 {}
+0..* f1 : Feat 1..1 {}
+0..* g 1..1 {
+  0..* f2 : Feat 1..1 {}
 }
-0..* c0_h 2..2 {
-  0..* c0_i 1..1 {
-    0..* c0_f3 : c0_Feat 1..1 {}
+0..* h 2..2 {
+  0..* i 1..1 {
+    0..* f3 : Feat 1..1 {}
   }
 }

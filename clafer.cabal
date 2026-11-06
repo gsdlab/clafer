@@ -103,6 +103,7 @@ library
                       , Language.Clafer.Front.PrintClafer
                       , Language.Clafer.Generator.Alloy
                       , Language.Clafer.Generator.AlloyLtl
+                      , Language.Clafer.Generator.AlloyNames
                       , Language.Clafer.Generator.Choco
                       , Language.Clafer.Generator.ChocoModel
                       , Language.Clafer.Generator.Explicit
@@ -121,6 +122,7 @@ library
                       , Language.Clafer.Intermediate.SimpleScopeAnalyzer
                       , Language.Clafer.Intermediate.StringAnalyzer
                       , Language.Clafer.Intermediate.Tracing
+                      , Language.Clafer.Intermediate.UIDs
                       , Language.Clafer.Intermediate.Transformer
                       , Language.Clafer.Intermediate.TypeSystem
                       , Language.Clafer.Optimizer.Optimizer

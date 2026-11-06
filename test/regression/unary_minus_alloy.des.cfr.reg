@@ -1,5 +1,5 @@
 //# OPTIONS --explicit
-[c0_x . dref = ((-(1 + 2)) / 3)]
-0..* c0_x -> int 1..1 {}
+[x . dref = ((-(1 + 2)) / 3)]
+0..* x -> int 1..1 {}
 
-assert [c0_x . dref = -1]
+assert [x . dref = -1]

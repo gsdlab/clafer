@@ -1,15 +1,15 @@
 //# OPTIONS --explicit
-abstract 0..* c0_Person 0..* {
-  0..* c0_spouse -> c0_Person 0..1 {}
+abstract 0..* Person 0..* {
+  0..* spouse -> Person 0..1 {}
 }
-0..* c0_Alice : c0_Person 1..1 {
-  [this . c0_spouse . dref = c0_Bob]
+0..* Alice : Person 1..1 {
+  [this . spouse . dref = Bob]
 }
-0..* c0_Bob : c0_Person 1..1 {}
-0..* c0_Carol : c0_Person 1..1 {
-  [(#this . c0_spouse) = 0]
+0..* Bob : Person 1..1 {}
+0..* Carol : Person 1..1 {
+  [(#this . spouse) = 0]
 }
-0..* c0_Dave : c0_Person 1..1 {}
+0..* Dave : Person 1..1 {}
 
-assert [c0_Bob . c0_spouse . dref = c0_Alice]
-assert [(#c0_Dave . c0_spouse) = 0]
+assert [Bob . spouse . dref = Alice]
+assert [(#Dave . spouse) = 0]

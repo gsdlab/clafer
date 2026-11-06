@@ -1,6 +1,6 @@
 //# OPTIONS --explicit
-[(min c0_A . dref) = (max c0_B . dref)]
-0..* c0_A ->> int 1..2 {}
-0..* c0_B -> int 2..3 {}
+[(min A . dref) = (max B . dref)]
+0..* A ->> int 1..2 {}
+0..* B -> int 2..3 {}
 
-assert [(max c0_A . dref) >= (min c0_B . dref)]
+assert [(max A . dref) >= (min B . dref)]

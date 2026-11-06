@@ -34,6 +34,17 @@ import Language.Clafer.Intermediate.Intclafer
 genCModule :: (IModule, GEnv) -> [(UID, Integer)] -> (Maybe Integer, Maybe Integer) -> Maybe Integer -> [Token] -> Result
 genCModule ir scopes intRange decimalDigits otherTokens' = jsModel $ chocoModel ir scopes intRange decimalDigits otherTokens'
 
+-- | The variable of a clafer: $ and its UID, e.g., $x for the clafer x, so that a clafer whose
+--   name is a function of chocosolver's API (e.g., join) or a word of JavaScript does not
+--   replace it.
+jsVar :: UID -> String
+jsVar = ('$' :)
+
+-- | The variable of a local of a quantifier: $_ and its name, e.g., $_x for x, apart from the
+--   clafers' variables (a name starts with a letter).
+jsLocalVar :: String -> String
+jsLocalVar = ("$_" ++)
+
 jsModel :: CModel -> Result
 jsModel CModel{cmElements, cmScope, cmEscapes} =
     jsScope cmScope
@@ -44,7 +55,8 @@ jsModel CModel{cmElements, cmScope, cmEscapes} =
 
 jsScope :: CScope -> Result
 jsScope CScope{csClafers, csIntRange, csStringLength, csDecimalScale} =
-    (if null csClafers then "" else "scope({" ++ intercalate ", " [uid' ++ ":" ++ show scope | (uid', scope) <- csClafers] ++ "});\n")
+    -- chocosolver looks the keys up as the clafers' variables
+    (if null csClafers then "" else "scope({" ++ intercalate ", " [jsVar uid' ++ ":" ++ show scope | (uid', scope) <- csClafers] ++ "});\n")
     ++ "defaultScope(1);\n"
     ++ maybe "" (\(low, high) -> "intRange(" ++ show low ++ ", " ++ show high ++ ");\n") csIntRange
     ++ "stringLength(" ++ show csStringLength ++ ");\n"
@@ -53,7 +65,7 @@ jsScope CScope{csClafers, csIntRange, csStringLength, csDecimalScale} =
 -- | The clafers, nested
 jsClafer :: CElement -> Result
 jsClafer (CEClafer CClafer{ccUid, ccParent, ccAbstract, ccCard, ccGCard, ccElements}) =
-    ccUid
+    jsVar ccUid
     ++ nesting
     ++ prop "withGroupCard" (jsCard ccGCard)
     ++ ";\n"
@@ -61,20 +73,20 @@ jsClafer (CEClafer CClafer{ccUid, ccParent, ccAbstract, ccCard, ccGCard, ccEleme
   where
     nesting
         | ccAbstract && ccParent == "clafer" = " = Abstract(\"" ++ ccUid ++ "\")"
-        | ccAbstract                         = " = " ++ ccParent ++ ".addAbstractChild(\"" ++ ccUid ++ "\")"
+        | ccAbstract                         = " = " ++ jsVar ccParent ++ ".addAbstractChild(\"" ++ ccUid ++ "\")"
         | ccParent == "root"                 = " = Clafer(\"" ++ ccUid ++ "\")" ++ prop "withCard" (jsCard ccCard)
-        | otherwise                          = " = " ++ ccParent ++ ".addChild(\"" ++ ccUid ++ "\")" ++ prop "withCard" (jsCard ccCard)
+        | otherwise                          = " = " ++ jsVar ccParent ++ ".addChild(\"" ++ ccUid ++ "\")" ++ prop "withCard" (jsCard ccCard)
 jsClafer _ = ""
 
 -- | The super clafers, references, constraints, objectives and assertions, in the context of a clafer
 jsLinks :: String -> CElement -> Result
 jsLinks _ (CEClafer CClafer{ccUid, ccLinked, ccSuper, ccRef, ccRefConstraints, ccElements})
     | ccLinked =
-        ccUid
-        ++ prop "extending" ccSuper
+        jsVar ccUid
+        ++ prop "extending" (jsVar <$> ccSuper)
         ++ maybe "" refTo ccRef
         ++ ";\n"
-        ++ concatMap (\c -> ccUid ++ ".addConstraint(" ++ jsExp c ++ ");\n") ccRefConstraints
+        ++ concatMap (\c -> jsVar ccUid ++ ".addConstraint(" ++ jsExp c ++ ");\n") ccRefConstraints
         ++ (jsLinks ccUid =<< ccElements)
     | otherwise = jsLinks ccUid =<< ccElements
   where
@@ -83,9 +95,10 @@ jsLinks _ (CEClafer CClafer{ccUid, ccLinked, ccSuper, ccRef, ccRefConstraints, c
     jsTarget "integer" = "Int"
     jsTarget "int" = "Int"
     jsTarget "decimal" = "Decimal"
-    jsTarget target = target
+    jsTarget "string" = "string"
+    jsTarget target = jsVar target
 jsLinks "root" (CEConstraint e) = "Constraint(" ++ jsExp e ++ ");\n"
-jsLinks pUID (CEConstraint e) = pUID ++ ".addConstraint(" ++ jsExp e ++ ");\n"
+jsLinks pUID (CEConstraint e) = jsVar pUID ++ ".addConstraint(" ++ jsExp e ++ ");\n"
 jsLinks _ (CEAssert e) = "assert(" ++ jsExp e ++ ");\n"
 jsLinks _ (CEObjective True e) = "max(" ++ jsExp e ++ ");\n"
 jsLinks _ (CEObjective False e) = "min(" ++ jsExp e ++ ");\n"
@@ -100,14 +113,15 @@ jsCard Nothing            = Nothing
 
 jsExp :: CExp -> String
 jsExp CThis = "$this()"  -- this is a keyword in Javascript
-jsExp (CGlobal u) = "global(" ++ u ++ ")"
-jsExp (CName n) = n
+jsExp (CGlobal u) = "global(" ++ jsVar u ++ ")"
+jsExp (CName n) = jsLocalVar n
 jsExp (CInt val) = "constant(" ++ show val ++ ")"
 jsExp (CStr val) = "constant(" ++ show val ++ ")"
 jsExp (CDouble val) = "constant(" ++ show val ++ ")"
 jsExp (CDecimal val) = "decimal(\"" ++ val ++ "\")"
-jsExp (CEmpty c) = "constant(" ++ c ++ ")"
-jsExp (CJoin e c) = "join(" ++ jsExp e ++ ", " ++ c ++ ")"
+jsExp (CEmpty "Int") = "constant(Int)"
+jsExp (CEmpty c) = "constant(" ++ jsVar c ++ ")"
+jsExp (CJoin e c) = "join(" ++ jsExp e ++ ", " ++ jsVar c ++ ")"
 jsExp (CJoinRef e) = "joinRef(" ++ jsExp e ++ ")"
 jsExp (CJoinParent e) = "joinParent(" ++ jsExp e ++ ")"
 jsExp (CFun f args') = f ++ "(" ++ intercalate ", " (map jsExp args') ++ ")"
@@ -117,7 +131,7 @@ jsExp (CQuant q decls' body') =
   where
     jsDecl (CDecl isDisj' locals body'') =
         (if isDisj' then "disjDecl" else "decl") ++ "([" ++ intercalate ", " (map jsLocal locals) ++ "], " ++ jsExp body'' ++ ")"
-    jsLocal local = local ++ " = local(\"" ++ local ++ "\")"
+    jsLocal local = jsLocalVar local ++ " = local(\"" ++ local ++ "\")"
 
 jsQuant :: IQuant -> String
 jsQuant INo = "none"

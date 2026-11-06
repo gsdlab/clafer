@@ -1,60 +1,60 @@
 //# OPTIONS --explicit
-[all e : c0_Exam | (e . c0_examinee . dref = c0_ada) => (e in c0_examineeAda . dref)]
-[all e : c0_Exam | (e . c0_recorder . dref = c0_ada) => (e in c0_recorderAda . dref)]
-[all e : c0_Exam | (e . c0_examiner . dref = c0_ada) => (e in c0_examinerAda . dref)]
-[all e : c0_Exam | (e . c0_examiner . dref = c0_ada) => (e . c0_examinee . dref in c0_examineeOfAdaAsExaminer . dref)]
-[all e : c0_Exam | (e . c0_recorder . dref = c0_ada) => (e . c0_examinee . dref in c0_examineeOfAdaAsRecorder . dref)]
-[all e : c0_Exam | (e . c0_examinee . dref = c0_ada) => (e . c0_examiner . dref in c0_examinerOfAdaAsExaminee . dref)]
-[all e : c0_Exam | (e . c0_recorder . dref = c0_ada) => (e . c0_examiner . dref in c0_examinerOfAdaAsRecorder . dref)]
-[all e : c0_Exam | (e . c0_examinee . dref = c0_ada) => (e . c0_recorder . dref in c0_recorderOfAdaAsExaminee . dref)]
-[all e : c0_Exam | (e . c0_examiner . dref = c0_ada) => (e . c0_recorder . dref in c0_recorderOfAdaAsExaminer . dref)]
-abstract 0..* c0_Person 0..* {}
-0..* c0_ada : c0_Person 1..1 {}
-0..* c0_cyd : c0_Person 1..1 {}
-0..* c0_eve : c0_Person 1..1 {}
-0..* c0_bob : c0_Person 1..1 {}
-0..* c0_dan : c0_Person 1..1 {}
-abstract 0..* c0_Exam 0..* {
-  0..* c0_date -> string 1..1 {
+[all e : Exam | (e . examinee . dref = ada) => (e in examineeAda . dref)]
+[all e : Exam | (e . recorder . dref = ada) => (e in recorderAda . dref)]
+[all e : Exam | (e . examiner . dref = ada) => (e in examinerAda . dref)]
+[all e : Exam | (e . examiner . dref = ada) => (e . examinee . dref in examineeOfAdaAsExaminer . dref)]
+[all e : Exam | (e . recorder . dref = ada) => (e . examinee . dref in examineeOfAdaAsRecorder . dref)]
+[all e : Exam | (e . examinee . dref = ada) => (e . examiner . dref in examinerOfAdaAsExaminee . dref)]
+[all e : Exam | (e . recorder . dref = ada) => (e . examiner . dref in examinerOfAdaAsRecorder . dref)]
+[all e : Exam | (e . examinee . dref = ada) => (e . recorder . dref in recorderOfAdaAsExaminee . dref)]
+[all e : Exam | (e . examiner . dref = ada) => (e . recorder . dref in recorderOfAdaAsExaminer . dref)]
+abstract 0..* Person 0..* {}
+0..* ada : Person 1..1 {}
+0..* cyd : Person 1..1 {}
+0..* eve : Person 1..1 {}
+0..* bob : Person 1..1 {}
+0..* dan : Person 1..1 {}
+abstract 0..* Exam 0..* {
+  0..* date -> string 1..1 {
     [this . dref != ""]
   }
-  0..* c0_recorder -> c0_Person 1..1 {}
-  0..* c0_examiner -> c0_Person 1..1 {}
-  0..* c0_examinee -> c0_Person 1..1 {}
+  0..* recorder -> Person 1..1 {}
+  0..* examiner -> Person 1..1 {}
+  0..* examinee -> Person 1..1 {}
 }
-0..* c0_ada_bob_cyd : c0_Exam 1..1 {
-  [(((this . c0_date . dref = "20001023") && (this . c0_recorder . dref = c0_cyd)) && (this . c0_examiner . dref = c0_bob)) && (this . c0_examinee . dref = c0_ada)]
+0..* ada_bob_cyd : Exam 1..1 {
+  [(((this . date . dref = "20001023") && (this . recorder . dref = cyd)) && (this . examiner . dref = bob)) && (this . examinee . dref = ada)]
 }
-0..* c0_dan_bob_ada : c0_Exam 1..1 {
-  [(((this . c0_date . dref = "20040817") && (this . c0_recorder . dref = c0_ada)) && (this . c0_examiner . dref = c0_bob)) && (this . c0_examinee . dref = c0_dan)]
+0..* dan_bob_ada : Exam 1..1 {
+  [(((this . date . dref = "20040817") && (this . recorder . dref = ada)) && (this . examiner . dref = bob)) && (this . examinee . dref = dan)]
 }
-0..* c0_eve_ada_dan : c0_Exam 1..1 {
-  [(((this . c0_date . dref = "20080331") && (this . c0_recorder . dref = c0_dan)) && (this . c0_examiner . dref = c0_ada)) && (this . c0_examinee . dref = c0_eve)]
+0..* eve_ada_dan : Exam 1..1 {
+  [(((this . date . dref = "20080331") && (this . recorder . dref = dan)) && (this . examiner . dref = ada)) && (this . examinee . dref = eve)]
 }
-0..* c0_examineeAda -> c0_Exam 0..* {
-  [this . dref . c0_examinee . dref = c0_ada]
+0..* examineeAda -> Exam 0..* {
+  [this . dref . examinee . dref = ada]
 }
-0..* c0_recorderAda -> c0_Exam 0..* {
-  [this . dref . c0_recorder . dref = c0_ada]
+0..* recorderAda -> Exam 0..* {
+  [this . dref . recorder . dref = ada]
 }
-0..* c0_examinerAda -> c0_Exam 0..* {
-  [this . dref . c0_examiner . dref = c0_ada]
+0..* examinerAda -> Exam 0..* {
+  [this . dref . examiner . dref = ada]
 }
-0..* c0_examineeOfAdaAsExaminer -> c0_Person 0..* {
-  [one e : c0_Exam | (e . c0_examiner . dref = c0_ada) && (e . c0_examinee . dref = this . dref)]
+0..* examineeOfAdaAsExaminer -> Person 0..* {
+  [one e : Exam | (e . examiner . dref = ada) && (e . examinee . dref = this . dref)]
 }
-0..* c0_examineeOfAdaAsRecorder -> c0_Person 0..* {
-  [one e : c0_Exam | (e . c0_recorder . dref = c0_ada) && (e . c0_examinee . dref = this . dref)]
+0..* examineeOfAdaAsRecorder -> Person 0..* {
+  [one e : Exam | (e . recorder . dref = ada) && (e . examinee . dref = this . dref)]
 }
-0..* c0_examinerOfAdaAsExaminee -> c0_Person 0..* {
-  [one e : c0_Exam | (e . c0_examinee . dref = c0_ada) && (e . c0_examiner . dref = this . dref)]
+0..* examinerOfAdaAsExaminee -> Person 0..* {
+  [one e : Exam | (e . examinee . dref = ada) && (e . examiner . dref = this . dref)]
 }
-0..* c0_examinerOfAdaAsRecorder -> c0_Person 0..* {
-  [one e : c0_Exam | (e . c0_recorder . dref = c0_ada) && (e . c0_examiner . dref = this . dref)]
+0..* examinerOfAdaAsRecorder -> Person 0..* {
+  [one e : Exam | (e . recorder . dref = ada) && (e . examiner . dref = this . dref)]
 }
-0..* c0_recorderOfAdaAsExaminee -> c0_Person 0..* {
-  [one e : c0_Exam | (e . c0_examinee . dref = c0_ada) && (e . c0_recorder . dref = this . dref)]
+0..* recorderOfAdaAsExaminee -> Person 0..* {
+  [one e : Exam | (e . examinee . dref = ada) && (e . recorder . dref = this . dref)]
 }
-0..* c0_recorderOfAdaAsExaminer -> c0_Person 0..* {
-  [one e : c0_Exam | (e . c0_examiner . dref = c0_ada) && (e . c0_recorder . dref = this . dref)]
+0..* recorderOfAdaAsExaminer -> Person 0..* {
+  [one e : Exam | (e . examiner . dref = ada) && (e . recorder . dref = this . dref)]
 }

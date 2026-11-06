@@ -1,5 +1,5 @@
 {-
- Copyright (C) 2014-2017 Michal Antkiewicz <http://gsd.uwaterloo.ca>
+ Copyright (C) 2014-2026 Michal Antkiewicz <http://gsd.uwaterloo.ca>
 
  Permission is hereby granted, free of charge, to any person obtaining a copy of
  this software and associated documentation files (the "Software"), to deal in
@@ -19,7 +19,18 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
 -}
--- | Support for dealing with unique IDs (UIDs), fully- and least-partially qualified names.
+{- | Fully- and least-partially-qualified names of clafers, and the clafers that a name names.
+
+The least-partially-qualified (LPQ) name of a clafer is its UID (see
+"Language.Clafer.Intermediate.UIDs"): its name, qualified with the names of its ancestors only as
+much as needed to be unique, with @__@ between the names, e.g., @size@, @x__size@ or
+@root__size@. The fully-qualified name has all of them, from the root, e.g., @root__x__size@.
+
+A name names the clafer whose UID it is; otherwise, split on @__@, all the clafers whose paths of
+names end with it, e.g., @size@ names every clafer named @size@, @x__size@ every @size@ in an
+@x@, and @root__size@ only a top-level @size@. The older form with @::@ is read too: @x::size@ is
+@x__size@, and @::size@ is @root__size@.
+-}
 module Language.Clafer.QNameUID (
         QName,
         FQName,
@@ -35,133 +46,61 @@ module Language.Clafer.QNameUID (
 
 where
 
-import Data.Maybe
+import Data.List
 import Data.List.Split
 import qualified Data.Map as Map
-import qualified Data.StringMap as SMap
 
+import Language.Clafer.Common (rootIdent)
 import Language.Clafer.Intermediate.Intclafer
 
 -- | a fully- or partially-qualified name
 type QName = String
 
--- | fully-qualified name, must begin with ::
--- | e.g., `::Person::name`, `::Company::Department::chair`
+-- | fully-qualified name, from the root, e.g., `root__Person__name`
 type FQName = String
 
--- a reversed FQName used as a key in the FQNameUIDMap
-type FQKey = String
-
--- | partially-qualified name, must not begin with ::
--- | e.g., `Person::name`, `chair`
+-- | partially-qualified name, e.g., `Person__name`, `chair`
 type PQName = String
 
--- a map from reversed FQName (FQKey) to UID
-type FQNameUIDMap = SMap.StringMap UID
+-- | the clafers by UID, in the order of the model: the names of each clafer and its ancestors,
+--   from the top level
+data QNameMaps = QNameMaps [(UID, [String])] (Map.Map UID [String])
 
-type UIDFqNameMap = Map.Map UID FQName
-type UIDLpqNameMap = Map.Map UID PQName
+-- | the UIDs of the clafers that a name names: one for a UID, possibly many for a partially
+--   qualified name
+getUIDs :: QNameMaps -> QName -> [UID]
+getUIDs (QNameMaps paths pathOf) qName
+  | Map.member qName pathOf = [qName]
+  | null names              = []
+  | otherwise               = [ uid' | (uid', path) <- paths, if fromRoot then path == names else names `isSuffixOf` path ]
+  where
+    (fromRoot, names) = case qName of
+      ':' : ':' : rest -> (True, splitOn "::" rest)
+      _ | "::" `isInfixOf` qName -> (False, splitOn "::" qName)
+      _ -> case splitOn "__" qName of
+        (r : rest@(_ : _)) | r == rootIdent -> (True, rest)
+        parts -> (False, parts)
 
--- | maps between fully-, least-partially-qualified names and UIDs
-data QNameMaps =  QNameMaps FQNameUIDMap UIDFqNameMap UIDLpqNameMap
+-- | the fully-qualified name of a clafer given its UID
+getFQName :: QNameMaps -> UID -> Maybe FQName
+getFQName (QNameMaps _ pathOf) uid' = fqName <$> Map.lookup uid' pathOf
 
--- | get the UID of a clafer given a fully qualifed name or potentially many UIDs given a partially qualified name
-getUIDs :: QNameMaps                 -> QName -> [UID]
-getUIDs    (QNameMaps fqNameUIDMap _ _) qName = findUIDsByFQName fqNameUIDMap qName
+-- | the least-partially-qualified name of a clafer given its UID: the UID
+getLPQName :: QNameMaps -> UID -> Maybe PQName
+getLPQName (QNameMaps _ pathOf) uid' = if Map.member uid' pathOf then Just uid' else Nothing
 
--- | get the fully-qualified name of a clafer given its UID
-getFQName :: QNameMaps                 -> UID -> Maybe FQName
-getFQName    (QNameMaps _ uidFqNameMap _) uid' = Map.lookup uid' uidFqNameMap
+fqName :: [String] -> FQName
+fqName = intercalate "__" . (rootIdent :)
 
--- | get the least-partially-qualified name of a clafer given its UID
-getLPQName :: QNameMaps                 -> UID -> Maybe PQName
-getLPQName    (QNameMaps _ _ uidLpqNameMap) uid' = Map.lookup uid' uidLpqNameMap
-
--- | derive maps between fully-, partially-qualified names, and UIDs
+-- | derive the names of the clafers of a module
 deriveQNameMaps :: IModule -> QNameMaps
-deriveQNameMaps    iModule =
-    let
-        (fqNameUIDMap, uidFqNameMap) = deriveFQNameUIDMaps iModule
-        uidLpqNameMap = deriveUidLpqNameMap fqNameUIDMap
-    in
-        QNameMaps fqNameUIDMap uidFqNameMap uidLpqNameMap
+deriveQNameMaps iModule = QNameMaps paths (Map.fromList paths)
+  where
+    paths = concatMap (claferPaths []) $ _mDecls iModule
+    claferPaths path (IEClafer iClaf) = (_uid iClaf, path') : concatMap (claferPaths path') (_elements iClaf)
+      where path' = path ++ [_ident iClaf]
+    claferPaths _ _ = []
 
-deriveFQNameUIDMaps :: IModule -> (FQNameUIDMap, UIDFqNameMap)
-deriveFQNameUIDMaps    iModule = addElements ["::"] (_mDecls iModule) (SMap.empty, Map.empty)
-
-addElements :: [String] -> [IElement] -> (FQNameUIDMap, UIDFqNameMap) -> (FQNameUIDMap, UIDFqNameMap)
-addElements    path        elems         maps                         = foldl (addClafer path) maps elems
-
-addClafer :: [String] -> (FQNameUIDMap, UIDFqNameMap) -> IElement          -> (FQNameUIDMap, UIDFqNameMap)
-addClafer    path        (fqNameUIDMap, uidFqNameMap)    (IEClafer iClaf) =
-    let
-        newPath = _ident iClaf : path
-        fqKey :: FQKey
-        fqKey = concat newPath
-        fqName :: FQName
-        fqName = getQNameFromKey fqKey
-        fqNameUIDMap' = SMap.insert fqKey (_uid iClaf) fqNameUIDMap
-        uidFqNameMap' = Map.insert (_uid iClaf) fqName uidFqNameMap
-    in
-        addElements ("::" : newPath) (_elements iClaf) (fqNameUIDMap', uidFqNameMap')
-addClafer    _           maps                            _                  = maps
-
-findUIDsByFQName :: FQNameUIDMap -> FQName            -> [ UID ]
-findUIDsByFQName    fqNameUIDMap    fqName@(':':':':_) = SMap.lookup (getFQKey fqName) fqNameUIDMap
--- the empty name matches all clafers, which ends the search for the least-partially-qualified name
-findUIDsByFQName    fqNameUIDMap    ""                 = SMap.prefixFind "" fqNameUIDMap
--- a key is the names of the clafer and its ancestors, each followed by ::, so that a partially
--- qualified name matches whole names, e.g., `yellow` does not match `yellow_on`
-findUIDsByFQName    fqNameUIDMap    fqName             = SMap.prefixFind (getFQKey fqName ++ "::") fqNameUIDMap
-
-reverseOnQualifier :: FQName -> FQName
-reverseOnQualifier fqName = concat $ reverse $ split (onSublist "::") fqName
-
-getFQKey :: FQName -> FQKey
-getFQKey = reverseOnQualifier
-
-getQNameFromKey :: FQKey -> QName
-getQNameFromKey = reverseOnQualifier
-
-deriveUidLpqNameMap :: FQNameUIDMap ->  UIDLpqNameMap
-deriveUidLpqNameMap    fqNameUIDMap =
-    SMap.foldrWithKey (generateUIDLpqMapEntry fqNameUIDMap) Map.empty fqNameUIDMap
-
-generateUIDLpqMapEntry :: FQNameUIDMap ->  SMap.Key -> UID -> UIDLpqNameMap -> UIDLpqNameMap
-generateUIDLpqMapEntry    fqNameUIDMap     fqKey       uid'   uidLpqNameMap =
-    Map.insert uid' lpqName uidLpqNameMap
-    where
-      -- need to reverse the key to get a fully qualified name
-      fqName :: FQName
-      fqName = getQNameFromKey fqKey
-
-      -- name qualified just sufficiently to uniquely identify the clafer
-      -- can be both FQName or PQName
-      lpqName :: QName
-      lpqName = findLeastQualifiedName fqName fqNameUIDMap
-
-      findLeastQualifiedName :: String -> FQNameUIDMap -> String
-      -- handle fully qualified name case
-      findLeastQualifiedName fqName'@(':':':':pqName) fqNameUIDMap' =
-          if (length (findUIDsByFQName fqNameUIDMap' pqName) > 1)
-              then fqName'
-              else findLeastQualifiedName pqName fqNameUIDMap'
-      -- handle partially qualified name case
-      findLeastQualifiedName pqName fqNameUIDMap' =
-         let
-            -- remove one segment of qualification
-            lessQName =  concat $ drop 2 $ split (onSublist "::") pqName
-         in
-            -- a single name cannot be qualified less, e.g., of the only clafer of a model, which
-            -- the empty name, matching all clafers, would not end
-            if null lessQName || length (findUIDsByFQName fqNameUIDMap' lessQName) > 1
-              then pqName
-              else findLeastQualifiedName lessQName fqNameUIDMap'
-
+-- | the fully-qualified name, the least-partially-qualified name and the UID of each clafer
 getQNameUIDTriples :: QNameMaps -> [(FQName, PQName, UID)]
-getQNameUIDTriples qNameMaps@(QNameMaps _ uidFqNameMap _) =
-    let
-      uidFqNameList :: [(UID, FQName)]
-      uidFqNameList = Map.toList uidFqNameMap
-    in
-      map (\(uid', fqName) -> (fqName, fromMaybe fqName $ getLPQName qNameMaps uid', uid')) uidFqNameList
+getQNameUIDTriples (QNameMaps paths _) = [ (fqName path, uid', uid') | (uid', path) <- paths ]

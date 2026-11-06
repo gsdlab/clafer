@@ -22,7 +22,7 @@ a[href$='Ambiguous name'] {color: yellow}
 <div class="file">positive/leftAssocDeref.cfr</div>
 
 <div>
-<span class="claferDecl" id="c0_x">x</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a>
+<span class="claferDecl" id="x">x</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a>
   <div class="indent">
   <span class="keyword">[</span> <span class="keyword">this</span> = 1 <span class="keyword">]</span></div>
   <div class="indent">
@@ -31,15 +31,15 @@ a[href$='Ambiguous name'] {color: yellow}
 
 
 <div>
-<span class="keyword">[</span> <a href="#c0_x"><span class="reference">x</span></a> = 1 <span class="keyword">]</span></div>
+<span class="keyword">[</span> <a href="#x"><span class="reference">x</span></a> = 1 <span class="keyword">]</span></div>
 
 
 <div>
-<span class="keyword">[</span> <a href="#c0_x"><span class="reference">x</span></a>.<span class="keyword">dref</span> = 1 <span class="keyword">]</span></div>
+<span class="keyword">[</span> <a href="#x"><span class="reference">x</span></a>.<span class="keyword">dref</span> = 1 <span class="keyword">]</span></div>
 
 
 <div>
-<span class="claferDecl" id="c0_y">y</span><span class="keyword"> -> </span><a href="#c0_x"><span class="reference">x</span></a>
+<span class="claferDecl" id="y">y</span><span class="keyword"> -> </span><a href="#x"><span class="reference">x</span></a>
   <div class="indent">
   <span class="keyword">[</span> <span class="keyword">this</span> = 1 <span class="keyword">]</span></div>
   <div class="indent">
@@ -50,19 +50,19 @@ a[href$='Ambiguous name'] {color: yellow}
 
 
 <div>
-<span class="keyword">[</span> <a href="#c0_y"><span class="reference">y</span></a> = 1 <span class="keyword">]</span></div>
+<span class="keyword">[</span> <a href="#y"><span class="reference">y</span></a> = 1 <span class="keyword">]</span></div>
 
 
 <div>
-<span class="keyword">[</span> <a href="#c0_y"><span class="reference">y</span></a>.<span class="keyword">dref</span> = 1 <span class="keyword">]</span></div>
+<span class="keyword">[</span> <a href="#y"><span class="reference">y</span></a>.<span class="keyword">dref</span> = 1 <span class="keyword">]</span></div>
 
 
 <div>
-<span class="keyword">[</span> <a href="#c0_y"><span class="reference">y</span></a>.<span class="keyword">dref</span>.<span class="keyword">dref</span> = 1 <span class="keyword">]</span></div>
+<span class="keyword">[</span> <a href="#y"><span class="reference">y</span></a>.<span class="keyword">dref</span>.<span class="keyword">dref</span> = 1 <span class="keyword">]</span></div>
 
 
 <div>
-<span class="claferDecl" id="c0_z">z</span><span class="keyword"> -> </span><a href="#c0_y"><span class="reference">y</span></a>
+<span class="claferDecl" id="z">z</span><span class="keyword"> -> </span><a href="#y"><span class="reference">y</span></a>
   <div class="indent">
   <span class="keyword">[</span> <span class="keyword">this</span> = 1 <span class="keyword">]</span></div>
   <div class="indent">
@@ -75,19 +75,19 @@ a[href$='Ambiguous name'] {color: yellow}
 
 
 <div>
-<span class="keyword">[</span> <a href="#c0_z"><span class="reference">z</span></a> = 1 <span class="keyword">]</span></div>
+<span class="keyword">[</span> <a href="#z"><span class="reference">z</span></a> = 1 <span class="keyword">]</span></div>
 
 
 <div>
-<span class="keyword">[</span> <a href="#c0_z"><span class="reference">z</span></a>.<span class="keyword">dref</span> = 1 <span class="keyword">]</span></div>
+<span class="keyword">[</span> <a href="#z"><span class="reference">z</span></a>.<span class="keyword">dref</span> = 1 <span class="keyword">]</span></div>
 
 
 <div>
-<span class="keyword">[</span> <a href="#c0_z"><span class="reference">z</span></a>.<span class="keyword">dref</span>.<span class="keyword">dref</span> = 1 <span class="keyword">]</span></div>
+<span class="keyword">[</span> <a href="#z"><span class="reference">z</span></a>.<span class="keyword">dref</span>.<span class="keyword">dref</span> = 1 <span class="keyword">]</span></div>
 
 
 <div>
-<span class="keyword">[</span> <a href="#c0_z"><span class="reference">z</span></a>.<span class="keyword">dref</span>.<span class="keyword">dref</span>.<span class="keyword">dref</span> = 1 <span class="keyword">]</span></div>
+<span class="keyword">[</span> <a href="#z"><span class="reference">z</span></a>.<span class="keyword">dref</span>.<span class="keyword">dref</span>.<span class="keyword">dref</span> = 1 <span class="keyword">]</span></div>
 
 </body>
 </html>
