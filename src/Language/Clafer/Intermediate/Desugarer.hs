@@ -25,7 +25,8 @@ into Intermediate representation (IR) from "Language.Clafer.Intermediate.Intclaf
 -}
 module Language.Clafer.Intermediate.Desugarer where
 
-import Data.Maybe (fromMaybe, listToMaybe, mapMaybe)
+import Data.List (nub)
+import Data.Maybe (fromMaybe, mapMaybe)
 import Prelude hiding ((||))
 import Language.Clafer.Common
 import Language.Clafer.Front.AbsClafer as AbsClafer
@@ -144,8 +145,8 @@ desugarModifiers    abstract'    tmods           reference' =
   where
   -- finalref or finaltarget of a clafer that inherits its reference, e.g., `finalref motor : engine`
   inherited = case reference' of
-    ReferenceEmpty _ -> desugarRefModifier [ m | m <- tmods, isRefMod m ]
-    _ -> Nothing
+    ReferenceEmpty _ -> desugarRefModifiers [ m | m <- tmods, isRefMod m ]
+    _ -> []
   isRefMod (AbsClafer.FinalRef _) = True
   isRefMod (AbsClafer.FinalTarget _) = True
   isRefMod _ = False
@@ -156,10 +157,12 @@ sugarModifier modifiers' =
   ++
   (if _final modifiers' then [Final noSpan] else [])
   ++
-  (case _finalReference modifiers' of
-     Just IntClafer.FinalRef -> [AbsClafer.FinalRef noSpan]
-     Just IntClafer.FinalTarget -> [AbsClafer.FinalTarget noSpan]
-     _ -> [])
+  concatMap sugarRefModifier (_finalReferences modifiers')
+  where
+  sugarRefModifier m = case m of
+     IntClafer.FinalRef -> [AbsClafer.FinalRef noSpan]
+     IntClafer.FinalTarget -> [AbsClafer.FinalTarget noSpan]
+     _ -> []
 
 
 getPExpClaferIdent :: Exp -> String
@@ -179,12 +182,13 @@ desugarSuper (SuperSome _ setexp) = Just $ desugarExp setexp
 
 desugarReference :: [TempModifier] -> Reference -> Maybe IReference
 desugarReference _ (ReferenceEmpty _) = Nothing
-desugarReference mods (ReferenceSet _ setexp) = Just $ IReference True (desugarRefModifier mods) $ desugarExp setexp
-desugarReference mods (ReferenceBag _ setexp) = Just $ IReference False (desugarRefModifier mods) $ desugarExp setexp
+desugarReference mods (ReferenceSet _ setexp) = Just $ IReference True (desugarRefModifiers mods) $ desugarExp setexp
+desugarReference mods (ReferenceBag _ setexp) = Just $ IReference False (desugarRefModifiers mods) $ desugarExp setexp
 
--- | The first modifier of the reference, e.g., `final` in `initial final x -> T`
-desugarRefModifier :: [TempModifier] -> Maybe IReferenceModifier
-desugarRefModifier mods = listToMaybe $ mapMaybe refModifier mods
+-- | The modifiers of the reference, e.g., `final` in `initial final x -> T`, and both in
+--   `finalref finaltarget x -> T`, each once
+desugarRefModifiers :: [TempModifier] -> [IReferenceModifier]
+desugarRefModifiers mods = nub $ mapMaybe refModifier mods
   where
   refModifier modi = case modi of
     Final _ -> Just FinalRefTarget

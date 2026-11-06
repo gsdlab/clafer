@@ -400,7 +400,7 @@ For a complete model, see the example `CoffeeMachine.cfr` in ClaferIDE.
 
 `initial` means that the clafer is present in the first state of its parent.
 `final` means that the clafer, and its reference, do not change during a trace. Another trace can have other values, so `final` suits the features of a product line.
-`finalref` fixes only the reference of each instance of the clafer, while that instance exists. `finaltarget` fixes only the set of targets of the clafer's instances, while their parent instance exists: the instances may change and swap their targets, but a new instance points to one of the targets. `final` implies both.
+`finalref` fixes only the reference of each instance of the clafer, while that instance exists. `finaltarget` fixes only the set of targets of the clafer's instances, while their parent instance exists: the instances may change and swap their targets, but a new instance points to one of the targets. `final` implies both, and `finalref finaltarget` means both.
 A clafer that inherits its reference can add these modifiers: `final motor : engine` fixes the reference that `motor` inherits from `abstract engine -> Engine`.
 
 `<temporal modifier>`:

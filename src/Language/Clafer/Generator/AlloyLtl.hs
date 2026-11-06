@@ -239,7 +239,7 @@ genRelations genEnv c = parent' ++ reference' ++ map mkRel (containedClafers c)
     | otherwise = []
   sigName p = if isRoot p then rootIdent else _uid p
   reference' = case _reference c of
-    Just r  -> [CString $ var' (isStatic genEnv c && isJust (_refModifier r)) ++ genRefName (_uid c) ++ " : set " ++ refType genEnv c]
+    Just r  -> [CString $ var' (isStatic genEnv c && not (null (_refModifiers r))) ++ genRefName (_uid c) ++ " : set " ++ refType genEnv c]
     Nothing -> []
   mkRel c' = Concat NoTrace [CString $ var' (isStatic genEnv c') ++ genRelName (_uid c') ++ " : set " ++ _uid c']
   var' static = if static then "" else "var "
@@ -305,7 +305,7 @@ genConstraints genEnv c = map always' (filterNull $ refConsts ++ groupConst ++ c
     | isRoot c  = CString $ "always ((" ++ x ++ ")' = " ++ x ++ ")"
     | otherwise = CString $ "always (this in " ++ alive ++ " and after this in " ++ alive ++ " implies (" ++ x ++ ")' = " ++ x ++ ")"
   -- final and finalref fix the target of each instance, finaltarget only the set of targets
-  fixesEach s r = _isFinal s || _refModifier r `elem` [Just FinalRefTarget, Just FinalRef]
+  fixesEach s r = _isFinal s || any (`elem` [FinalRefTarget, FinalRef]) (_refModifiers r)
   finalConsts =
     -- the instances of a final child do not change while this instance exists
     [ stable $ "this.@" ++ genRelName (_uid c') | c' <- containedClafers c, _isFinal c', not (isStatic genEnv c') ] ++
@@ -313,16 +313,16 @@ genConstraints genEnv c = map always' (filterNull $ refConsts ++ groupConst ++ c
     -- `final motor : engine` or `finalref motor : engine` fixes the reference that motor inherits
     -- from engine, unless engine's modifier fixes it already (#109)
     [ stable $ "this.@" ++ genRefName (_uid sup)
-    | Nothing <- [_reference c], _isFinal c || _finalReference (_modifiers c) == Just FinalRef
+    | Nothing <- [_reference c], _isFinal c || FinalRef `elem` _finalReferences (_modifiers c)
     , Just (sup, r) <- [inheritedReference genEnv c], not (fixesEach sup r) ] ++
     -- a finaltarget child points to the same set of targets while this instance exists; its
     -- instances may change and swap their targets
     [ stable $ "this.@" ++ genRelName (_uid c') ++ ".@" ++ refRel | c' <- containedClafers c, Just refRel <- [finalTargetRef c'] ]
   finalTargetRef c' = case _reference c' of
-    Just r | _refModifier r == Just FinalTarget, not (isStatic genEnv c') -> Just $ genRefName (_uid c')
+    Just r | FinalTarget `elem` _refModifiers r, not (isStatic genEnv c') -> Just $ genRefName (_uid c')
     Just _ -> Nothing
     Nothing
-      | _finalReference (_modifiers c') == Just FinalTarget, not (isStatic genEnv c') -> genRefName . _uid . fst <$> inheritedReference genEnv c'
+      | FinalTarget `elem` _finalReferences (_modifiers c'), not (isStatic genEnv c') -> genRefName . _uid . fst <$> inheritedReference genEnv c'
       | otherwise -> Nothing
 
 -- | The constraints of the clafer and the cardinalities of its children, each a fact of its own,

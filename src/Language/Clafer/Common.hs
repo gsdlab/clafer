@@ -149,7 +149,7 @@ createUidIClaferMap    iModule  = foldl'
   where
     allClafers :: [ IClafer ]
     allClafers = universeOn biplate iModule
-    defaultModifiers = IClaferModifiers False True True Nothing
+    defaultModifiers = IClaferModifiers False True True []
     rootClafer = IClafer noSpan defaultModifiers (Just $ IGCard False (0, -1)) rootIdent rootIdent "" Nothing Nothing (Just (1,1)) (1, 1) (_mDecls iModule)
     -- integers are decimals, decimals and doubles are reals; integers also convert to doubles (see TypeSystem)
     integerClafer = IClafer noSpan defaultModifiers (Just $ IGCard False (0, -1)) integerType integerType "" (Just $ pExpDefPidPos $ IClaferId "" decimalType True $ GlobalBind decimalType) Nothing (Just (1,1)) (1, 1) []
