@@ -1,0 +1,9 @@
+//# OPTIONS --explicit
+[((#c0_z) >= 1) => (c0_z . dref = ((sum c0_x . dref) + (sum c0_y . dref)))]
+0..* c0_x ->> int 2..* {
+  [(this . dref >= -2) && (this . dref <= 2)]
+}
+0..* c0_y ->> int 2..* {
+  [(this . dref >= -2) && (this . dref <= 2)]
+}
+0..* c0_z -> int 1..1 {}

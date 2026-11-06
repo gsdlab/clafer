@@ -1,0 +1,39 @@
+//# OPTIONS --explicit
+[c0_Person . c0_childs . dref = c0_Carol]
+abstract 0..* c0_Person 0..* {
+  0..* c0_age -> int 1..1 {
+    [this . dref >= 0]
+  }
+  1..1 c0_maritalStatus 1..1 {
+    [(((#this . c0_married) >= 1) || ((#this . c0_divorced) >= 1)) => (this . parent . c0_age . dref >= 5)]
+    0..* c0_neverMarried 0..1 {}
+    0..* c0_married 0..1 {
+      [this . c0_spouse . dref != this . parent . parent]
+      0..* c0_spouse -> c0_Person 1..1 {
+        [this . dref . c0_maritalStatus . c0_married . c0_spouse . dref = this . parent . parent . parent]
+      }
+    }
+    0..* c0_divorced 0..1 {}
+  }
+  0..* c0_childs -> c0_Person 0..* {
+    [this . parent in this . dref . c0_parents . dref]
+    [this . parent . c0_maritalStatus . c0_married . c0_spouse . dref in this . dref . c0_parents . dref]
+    [this . dref . c0_age . dref < this . parent . c0_age . dref]
+  }
+  0..* c0_parents -> c0_Person 0..2 {
+    [this . parent in this . dref . c0_childs . dref]
+  }
+}
+0..* c0_Alice : c0_Person 1..1 {
+  [this . c0_age . dref = 6]
+  [this . c0_maritalStatus . c0_married . c0_spouse . dref = c0_Bob]
+}
+0..* c0_Bob : c0_Person 1..1 {}
+0..* c0_Carol : c0_Person 1..1 {
+  [this . c0_age . dref = 1]
+}
+
+assert [c0_Bob . c0_age . dref >= 5]
+assert [c0_Bob . c0_maritalStatus . c0_married . c0_spouse . dref = c0_Alice]
+assert [c0_Bob . c0_childs . dref = c0_Carol]
+assert [c0_Carol . c0_parents . dref = (c0_Alice ++ c0_Bob)]

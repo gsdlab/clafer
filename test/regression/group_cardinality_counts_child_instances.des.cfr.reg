@@ -1,0 +1,4 @@
+//# OPTIONS --explicit
+2..3 c0_A 1..1 {
+  0..* c0_Item 1..5 {}
+}

@@ -1,0 +1,11 @@
+//# OPTIONS --explicit
+abstract 0..* c0_A 0..* {
+  0..* c0_c -> c0_C 0..* {}
+}
+0..* c0_A1 : c0_A 1..1 {
+  [(#this . c0_c) = 2]
+}
+abstract 0..* c0_B : c0_A 0..* {}
+abstract 0..* c0_C 0..* {}
+0..* c0_C1 : c0_C 1..1 {}
+0..* c0_C2 : c0_C 1..1 {}

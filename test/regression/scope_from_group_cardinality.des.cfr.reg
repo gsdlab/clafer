@@ -1,0 +1,6 @@
+//# OPTIONS --explicit
+abstract 0..* c0_B 0..* {}
+abstract 2..3 c0_A : c0_B 0..* {
+  0..* c0_Item 0..* {}
+}
+2..3 c0_C : c0_A 4..4 {}

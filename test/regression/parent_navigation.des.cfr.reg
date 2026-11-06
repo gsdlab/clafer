@@ -1,0 +1,17 @@
+//# OPTIONS --explicit
+0..* c0_claferA 1..1 {
+  0..* c0_claferB 1..1 {
+    [(#this . parent) >= 1]
+    0..* c0_claferC 1..1 {
+      [(#this . parent) >= 1]
+      [(#this . parent . c0_claferC) >= 1]
+    }
+  }
+}
+0..* c0_Person 1..1 {
+  0..* c0_maritalStatus 1..1 {
+    0..* c0_married 1..1 {
+      [(#this . parent . parent) >= 1]
+    }
+  }
+}

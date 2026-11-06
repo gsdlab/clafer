@@ -1,0 +1,20 @@
+//# OPTIONS --explicit
+abstract 0..* c0_Value 0..* {}
+abstract 0..* c0_Attribute 0..* {
+  0..* c0_value -> c0_Value 1..1 {}
+}
+abstract 0..* c0_ActionName : c0_Attribute 0..* {}
+abstract 0..* c0_Role : c0_Attribute 0..* {}
+abstract 0..* c0_ResourceName : c0_Attribute 0..* {}
+abstract 0..* c0_Element 0..* {
+  abstract 0..* c0_attributes : c0_Attribute 0..* {}
+}
+abstract 0..* c0_Effect 0..* {}
+0..* c0_Permit : c0_Effect 1..1 {}
+0..* c0_Deny : c0_Effect 1..1 {}
+0..* c0_NotApplicable : c0_Effect 1..1 {}
+0..* c0_Indeterminate : c0_Effect 1..1 {}
+abstract 0..* c0_CombiningAlgo 0..* {}
+0..* c0_PermitOverrides : c0_CombiningAlgo 1..1 {}
+0..* c0_DenyOverrides : c0_CombiningAlgo 1..1 {}
+0..* c0_OnlyOneApplicable : c0_CombiningAlgo 1..1 {}

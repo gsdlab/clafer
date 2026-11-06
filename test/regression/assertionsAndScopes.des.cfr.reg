@@ -1,0 +1,11 @@
+//# OPTIONS --explicit
+0..* c0_a 2..2 {
+  0..* c0_b 3..3 {
+    0..* c0_c 0..0 {}
+  }
+}
+
+assert [(#c0_a . c0_b . c0_c) = 0]
+assert [(#c0_a . c0_b) >= 1]
+assert [(#c0_a . c0_b . c0_c) = 0]
+assert [(#c0_a . c0_b) = 6]

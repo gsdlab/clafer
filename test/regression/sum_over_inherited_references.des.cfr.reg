@@ -1,0 +1,17 @@
+//# OPTIONS --explicit
+[((#c0_total) >= 1) => (c0_total . dref = (sum c0_Component . c0_energy . dref))]
+abstract 0..* c0_Component 0..* {
+  0..* c0_energy ->> int 1..1 {}
+}
+0..* c0_c1 : c0_Component 1..1 {
+  [this . c0_energy . dref = 1]
+}
+0..* c0_c2 : c0_Component 1..1 {
+  [this . c0_energy . dref = 1]
+}
+0..* c0_c3 : c0_Component 1..1 {
+  [this . c0_energy . dref = 1]
+}
+0..* c0_total ->> int 1..1 {}
+
+assert [c0_total . dref = 3]

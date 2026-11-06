@@ -1,0 +1,15 @@
+//# OPTIONS --explicit
+[(c0_s1 in c0_m1 . c0_services . dref) && (c0_s2 in c0_m2 . c0_services . dref)]
+abstract 0..* c0_Service 0..* {
+  0..* c0_machine -> c0_Machine 1..1 {}
+}
+abstract 0..* c0_Machine 0..* {
+  0..* c0_services -> c0_Service 0..* {
+    [this . dref . c0_machine . dref = this . parent]
+    [this . dref . c0_machine . dref = this . parent]
+  }
+}
+0..* c0_m1 : c0_Machine 1..1 {}
+0..* c0_m2 : c0_Machine 1..1 {}
+0..* c0_s1 : c0_Service 1..1 {}
+0..* c0_s2 : c0_Service 1..1 {}

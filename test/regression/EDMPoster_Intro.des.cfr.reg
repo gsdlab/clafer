@@ -1,0 +1,87 @@
+//# OPTIONS --explicit
+0..* c0_ExamplePhone1 1..1 {
+  0..* c0_display 1..1 {
+    0..* c0_LCD 1..1 {}
+  }
+  0..* c0_GSM 1..1 {}
+  0..* c0_CPU 1..1 {}
+  0..* c0_keyboard 1..1 {}
+}
+0..* c0_ExamplePhone2 1..1 {
+  0..* c1_display 1..1 {
+    0..* c0_OLED 1..1 {}
+  }
+  0..* c1_GSM 1..1 {}
+  0..* c0_touchscreen 1..1 {}
+}
+0..* c0_ExampleTablet1 1..1 {
+  0..* c2_display 1..1 {
+    0..* c0_AMOLED 1..1 {}
+  }
+  0..* c0_HSPA 1..1 {}
+  0..* c1_CPU 4..4 {}
+  0..* c1_touchscreen 1..1 {}
+}
+0..* c0_ExamplePhone3 1..1 {
+  0..* c3_display 1..1 {
+    0..* c1_LCD 1..1 {}
+  }
+  0..* c2_GSM 1..1 {}
+  0..* c2_CPU 4..4 {}
+  0..* c1_keyboard 1..1 {}
+}
+0..* c0_ExampleTablet2 1..1 {
+  0..* c4_display 1..1 {
+    0..* c1_AMOLED 1..1 {}
+  }
+  0..* c1_HSPA 1..1 {}
+  0..* c3_CPU 4..4 {}
+  0..* c2_keyboard 1..1 {}
+}
+abstract 0..* c0_AndroidDevice1 0..* {
+  1..1 c5_display 1..1 {
+    0..* c2_LCD 0..1 {}
+    0..* c1_OLED 0..1 {}
+    0..* c2_AMOLED 0..1 {
+      [(#this . parent . parent . c0_input . c3_keyboard) = 0]
+    }
+  }
+  0..* c3_GSM 1..1 {}
+  0..* c2_HSPA 0..1 {}
+  0..* c4_CPU 1..4 {}
+  1..1 c0_input 1..1 {
+    0..* c3_keyboard 0..1 {}
+    0..* c2_touchscreen 0..1 {}
+  }
+}
+abstract 0..* c0_AndroidPhone : c0_AndroidDevice 0..* {
+  [(#this . c4_GSM) >= 1]
+  [(#this . c5_CPU) < 4]
+}
+abstract 0..* c0_AndroidDevice 0..* {
+  1..1 c6_display 1..1 {
+    0..* c3_LCD 0..1 {}
+    0..* c2_OLED 0..1 {}
+    0..* c3_AMOLED 0..1 {
+      [(#this . parent . parent . c1_input . c4_keyboard) = 0]
+    }
+  }
+  0..* c4_GSM 0..1 {}
+  0..* c3_HSPA 0..1 {}
+  0..* c5_CPU 1..4 {}
+  1..1 c1_input 1..1 {
+    0..* c4_keyboard 0..1 {}
+    0..* c3_touchscreen 0..1 {}
+  }
+}
+0..* c0_AndroidPhone4 : c0_AndroidPhone 1..1 {
+  0..* c7_display 1..1 {
+    0..* c4_AMOLED 1..1 {}
+  }
+  0..* c5_GSM 1..1 {}
+  0..* c4_HSPA 1..1 {}
+  0..* c6_CPU 2..2 {}
+  0..* c2_input 1..1 {
+    0..* c4_touchscreen 1..1 {}
+  }
+}

@@ -1,0 +1,7 @@
+//# OPTIONS --explicit
+abstract 0..* c0_Path 0..* {
+  [((#this . c0_isDir) >= 1) => ((#this . c0_p) >= 1)]
+  0..* c0_p : c0_Path 0..1 {}
+  0..* c0_isDir 0..1 {}
+}
+0..* c0_pth : c0_Path 1..1 {}

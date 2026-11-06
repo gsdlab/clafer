@@ -1,0 +1,40 @@
+//# OPTIONS --explicit
+abstract 0..* c0_Currency ->> int 0..* {}
+abstract 0..* c0_Percentage ->> int 0..* {
+  [(this . dref >= 0) && (this . dref <= 100)]
+}
+abstract 0..* c0_Mortgage 0..* {
+  [(5000 <= this . c0_principalMortgageAmount . dref . dref) && (this . c0_principalMortgageAmount . dref . dref <= 9999999)]
+  [this . c0_balance . dref . dref <= this . c0_principalMortgageAmount . dref . dref]
+  [(1 <= this . c0_amortization . dref) && (this . c0_amortization . dref <= 30)]
+  0..* c0_valueProposition -> string 1..1 {}
+  0..* c0_term -> c0_MortgageTerm 1..1 {}
+  1..1 c0_kind 1..1 {
+    0..* c0_open 0..1 {}
+    0..* c0_closed 0..1 {}
+  }
+  0..* c0_principalMortgageAmount -> c0_Currency 1..1 {}
+  0..* c0_balance -> c0_Currency 1..1 {}
+  0..* c0_propertyValue -> c0_Currency 1..1 {}
+  0..* c0_loanToValue -> c0_Percentage 1..1 {}
+  0..* c0_amortization -> int 1..1 {}
+  1..1 c0_interestRate 1..1 {
+    0..* c0_fixedForTheFullTerm 0..1 {}
+    0..* c0_resetTogetherWithPaymentAmountEachTimeScotiabankPrimeRateChanges 0..1 {}
+  }
+  0..* c0_currentInterestRate -> c0_Percentage 1..1 {}
+  0..* c0_currentPayment -> c0_Currency 1..1 {}
+  1..1 c0_paymentFrequency 1..1 {
+    0..* c0_weekly 0..1 {}
+    0..* c0_biweekly 0..1 {}
+    0..* c0_semiMonthly 0..1 {}
+    0..* c0_monthly 0..1 {}
+  }
+  1..1 c0_financingAvailable 1..1 {
+    0..* c0_conventional 0..1 {}
+    0..* c0_insured 0..1 {}
+  }
+}
+abstract 0..* c0_MortgageTerm 0..* {}
+0..* c0_sixMonths : c0_MortgageTerm 1..1 {}
+0..* c0_oneYear : c0_MortgageTerm 1..1 {}

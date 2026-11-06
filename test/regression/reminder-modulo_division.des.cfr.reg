@@ -1,0 +1,11 @@
+//# OPTIONS --explicit
+[((#c0_a) >= 1) => (c0_a . dref = (6 % 4))]
+[((#c0_b) >= 1) => (c0_b . dref = (0 % 4))]
+[((#c0_c) >= 1) => (c0_c . dref = (4 % 2))]
+0..* c0_a -> int 1..1 {}
+0..* c0_b -> int 1..1 {}
+0..* c0_c -> int 1..1 {}
+
+assert [c0_a . dref = 2]
+assert [c0_b . dref = 0]
+assert [c0_c . dref = 0]

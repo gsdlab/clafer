@@ -1,0 +1,22 @@
+//# OPTIONS --explicit
+[all x : c0_sys . c0_b1 . c0_a | x = c0_sys . c0_b1 . c0_a]
+abstract 0..* c0_Port 0..* {}
+abstract 0..* c0_B 0..* {
+  0..* c0_a -> c0_Port 1..1 {}
+}
+0..* c0_p1 : c0_Port 1..1 {}
+0..* c0_p2 : c0_Port 1..1 {}
+0..* c0_sys 1..1 {
+  0..* c0_b1 : c0_B 1..1 {}
+  0..* c0_b2 : c0_B 1..1 {
+    [this . c0_a . dref = this . parent . c0_b1 . c0_a . dref]
+    [(this . c0_a . dref != this . parent . c0_b1 . c0_a . dref) || (this . c0_a . dref = this . parent . c0_b1 . c0_a . dref)]
+  }
+}
+0..* c0_choice -> c0_B 1..1 {
+  [this . dref . c0_a . dref in c0_sys . c0_b1 . c0_a . dref]
+}
+0..* c0_sel -> c0_a 1..1 {
+  [this . dref in c0_sys . c0_b1 . c0_a]
+  [this . dref = c0_sys . c0_b1 . c0_a]
+}

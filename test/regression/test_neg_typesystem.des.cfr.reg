@@ -1,0 +1,7 @@
+//# OPTIONS --explicit
+[c0_C . c0_performance . dref = (-c0_D . c0_performance . dref)]
+abstract 0..* c0_Measurable 0..* {
+  0..* c0_performance -> int 1..1 {}
+}
+0..* c0_D : c0_Measurable 1..1 {}
+0..* c0_C : c0_Measurable 1..1 {}

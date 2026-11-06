@@ -1,0 +1,8 @@
+//# OPTIONS --explicit
+0..* c0_A 1..1 {
+  [all b : this . c0_B | (#b . c0_C) >= 1]
+  [all b : this . c0_B | (b . dref + 1) = 2]
+  0..* c0_B -> int 0..* {
+    0..* c0_C 0..1 {}
+  }
+}

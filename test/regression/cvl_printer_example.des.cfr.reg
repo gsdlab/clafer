@@ -1,0 +1,30 @@
+//# OPTIONS --explicit
+[(((#c0_PrinterPool . c0_fax) >= 1) => ((#c0_PrinterPool . c0_printer) >= 1)) && (((#c0_PrinterPool . c0_copier) >= 1) => (((#c0_PrinterPool . c0_fax) >= 1) && ((#c0_PrinterPool . c0_printer) >= 1)))]
+0..* c0_Office 1..1 {
+  0..* c0_Printer 0..1 {
+    0..* c0_resolution -> int 1..1 {}
+    0..* c0_Cartridge 1..4 {
+      0..* c0_inkVolume -> int 1..1 {}
+      1..* c0_Speed 1..1 {
+        0..* c0_High 0..1 {}
+        0..* c0_Low 0..1 {}
+      }
+      0..* c0_Turbo 0..1 {}
+    }
+    1..1 c0_Type 1..1 {
+      0..* c0_Color 0..1 {}
+      0..* c0_BW 0..1 {}
+    }
+  }
+  0..* c0_Scanner 0..1 {
+    0..* c0_GreenMode 0..1 {}
+    0..* c0_Head 1..2 {}
+  }
+}
+0..* c0_PrinterPool 1..1 {
+  [((#this . c0_fax) >= 1) => ((#this . c0_printer) >= 1)]
+  0..* c0_fax 0..1 {}
+  0..* c0_printer 0..1 {}
+  0..* c0_copier 0..1 {}
+  0..* c0_scan 0..1 {}
+}

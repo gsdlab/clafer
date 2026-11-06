@@ -1,0 +1,3 @@
+//# OPTIONS --explicit
+abstract 0..* c0_clafer1 : c0_clafer2 0..* {}
+abstract 0..* c0_clafer2 -> int 0..* {}

@@ -1,0 +1,15 @@
+//# OPTIONS --explicit
+abstract 0..* c0_Person 0..* {}
+0..* c0_JohnDoe : c0_Person 1..1 {}
+0..* c0_MaryJane : c0_Person 1..1 {}
+abstract 0..* c0_WaitingLine 0..* {
+  0..* c0_participants -> c0_Person 0..* {}
+}
+0..* c0_BusLine : c0_WaitingLine 1..1 {
+  [(c0_JohnDoe in this . c0_participants . dref) && (c0_MaryJane in this . c0_participants . dref)]
+}
+0..* c0_JohnAndMaryLine : c0_WaitingLine 1..1 {
+  [this . c0_participants . dref = (c0_JohnDoe ++ c0_MaryJane)]
+}
+
+assert [all wl : c0_WaitingLine | wl . c0_participants . dref = (c0_JohnDoe ++ c0_MaryJane)]

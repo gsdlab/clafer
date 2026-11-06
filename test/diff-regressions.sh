@@ -1,5 +1,5 @@
 #!/bin/bash
-# Compares the outputs of the positive test suite (.als, .js, .html, .dot) with their
+# Compares the outputs of the positive test suite (.als, .js, .des.cfr, .html, .dot) with their
 # regressions, and fails if any output differs, has no regression, or a regression has
 # no output.
 #
@@ -23,7 +23,7 @@ kept=()
 created=()
 orphaned=()
 
-for output in "$SUITE_DIR"/*.als "$SUITE_DIR"/*.js "$SUITE_DIR"/*.html "$SUITE_DIR"/*.dot; do
+for output in "$SUITE_DIR"/*.als "$SUITE_DIR"/*.js "$SUITE_DIR"/*.des.cfr "$SUITE_DIR"/*.html "$SUITE_DIR"/*.dot; do
   [ -f "$output" ] || continue
   reg="$REG_DIR/$(basename "$output").reg"
   if [ ! -f "$reg" ]; then

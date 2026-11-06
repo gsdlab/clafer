@@ -7,11 +7,13 @@ UNAME := $(shell uname | tr "A-Z" "a-z")
 ifeq ($(UNAME), darwin)
     FIND_ALS_COMMAND :=  find $(SUITE_DIR)  -type f \( -iname "*.als" \)   | sed s/$(SUITE_DIR)\\///
     FIND_JS_COMMAND :=  find $(SUITE_DIR)  -type f \( -iname "*.js" \)   | sed s/$(SUITE_DIR)\\///
+    FIND_DES_COMMAND :=  find $(SUITE_DIR)  -type f \( -iname "*.des.cfr" \)   | sed s/$(SUITE_DIR)\\///
     FIND_HTML_COMMAND :=  find $(SUITE_DIR)  -type f \( -iname "*.html" \)   | sed s/$(SUITE_DIR)\\///
     FIND_DOT_COMMAND :=  find $(SUITE_DIR)  -type f \( -iname "*.dot" \)   | sed s/$(SUITE_DIR)\\///
 else
     FIND_ALS_COMMAND :=  find $(SUITE_DIR)  -type f \( -iname "*.als" \) -printf "%f\n"
     FIND_JS_COMMAND :=  find $(SUITE_DIR)  -type f \( -iname "*.js" \) -printf "%f\n"
+    FIND_DES_COMMAND :=  find $(SUITE_DIR)  -type f \( -iname "*.des.cfr" \) -printf "%f\n"
     FIND_HTML_COMMAND :=  find $(SUITE_DIR)  -type f \( -iname "*.html" \) -printf "%f\n"
     FIND_DOT_COMMAND :=  find $(SUITE_DIR)  -type f \( -iname "*.dot" \) -printf "%f\n"
 endif
@@ -36,6 +38,7 @@ test:
 generateAlloyJSHTMLDot:
 	@echo "==================================================================================="
 	@echo "| Testing 'Positive' suite - generating Alloy, JavaScript, HTML, and Graph output |"
+	@echo "|                          and the explicit form (-m clafer)                      |"
 	@echo "|                          - validating Alloy output                              |"
 	@echo "==================================================================================="
 
@@ -47,8 +50,8 @@ generateAlloyJSHTMLDot:
 		echo "[ERROR] Missing ../chocosolver.jar."; false; \
 	fi
 
-	# Compile the positive test suite to Alloy, Choco, HTML, and Graph
-	@find $(SUITE_DIR) -type f \( -iname "*.cfr" ! -iname "*.des.cfr" \) |  xargs -L1 $(CLAFER) -m=alloy -m=choco -m=html -m=graph --self-contained; true ; \
+	# Compile the positive test suite to Alloy, Choco, the explicit form, HTML, and Graph
+	@find $(SUITE_DIR) -type f \( -iname "*.cfr" ! -iname "*.des.cfr" \) |  xargs -L1 $(CLAFER) -m=alloy -m=choco -m=clafer -m=html -m=graph --self-contained; true ; \
 
 diffRegressions:
 	@echo "======================================================="
@@ -74,6 +77,10 @@ newReg:
 	@echo "| Choco regressions |"
 	@echo "---------------------"
 	@$(FIND_JS_COMMAND) | $(XARGS_CP_REGS)
+	@echo "-------------------------------"
+	@echo "| Explicit form regressions |"
+	@echo "-------------------------------"
+	@$(FIND_DES_COMMAND) | $(XARGS_CP_REGS)
 	@echo "---------------------"
 	@echo "| HTML regressions |"
 	@echo "---------------------"
@@ -94,7 +101,7 @@ clean:
 	@echo ""
 	@# Only the outputs generated in $(SUITE_DIR), so that tracked files with
 	@# these extensions in other directories are kept.
-	@echo 'Removing $(SUITE_DIR)/*.als, *.js, *.html, *.dot, *.dot.svg'
-	@find $(SUITE_DIR) -type f \( -name '*.als' -o -name '*.js' -o -name '*.html' -o -name '*.dot' -o -name '*.dot.svg' \) -print0 | xargs -0 rm -f
+	@echo 'Removing $(SUITE_DIR)/*.als, *.js, *.des.cfr, *.html, *.dot, *.dot.svg'
+	@find $(SUITE_DIR) -type f \( -name '*.als' -o -name '*.js' -o -name '*.des.cfr' -o -name '*.html' -o -name '*.dot' -o -name '*.dot.svg' \) -print0 | xargs -0 rm -f
 	@echo 'Removing *~'
 	@find . -type f -name '*~' -print0 | xargs -0 rm -f

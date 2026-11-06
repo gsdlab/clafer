@@ -1,0 +1,46 @@
+//# OPTIONS --explicit
+[((#c0_change) >= 1) => (c0_change . dref = ((-c0_aBike . c0_total . dref) + 400))]
+[((#c0_share) >= 1) => (c0_share . dref = (2 / 3))]
+[((#c0_discount) >= 1) => (c0_discount . dref = (if (c0_aBike . c0_total . dref > 300) then 0.10 else 0))]
+abstract 0..* c0_Feature 0..* {
+  0..* c0_cost -> decimal 1..1 {}
+  0..* c0_weight -> decimal 1..1 {}
+}
+abstract 0..* c0_Bike 0..* {
+  [((#this . c0_subtotal) >= 1) => (this . c0_subtotal . dref = (sum c0_Feature . c0_cost . dref))]
+  [((#this . c0_tax) >= 1) => (this . c0_tax . dref = (this . c0_subtotal . dref * 0.13))]
+  [((#this . c0_total) >= 1) => (this . c0_total . dref = (this . c0_subtotal . dref + this . c0_tax . dref))]
+  [((#this . c0_weightPerFeature) >= 1) => (this . c0_weightPerFeature . dref = ((sum c0_Feature . c0_weight . dref) / (#c0_Feature)))]
+  [this . c0_total . dref <= 340]
+  [this . c0_weightPerFeature . dref < 5]
+  0..* c0_Light : c0_Feature 0..1 {
+    [this . c0_cost . dref = 19.99]
+    [this . c0_weight . dref = 0.25]
+  }
+  0..* c0_Rack : c0_Feature 0..1 {
+    [this . c0_cost . dref = 34.50]
+    [this . c0_weight . dref = 1.20]
+  }
+  0..* c0_Bell : c0_Feature 0..1 {
+    [this . c0_cost . dref = 4.75]
+    [this . c0_weight . dref = 0.05]
+  }
+  0..* c0_Frame : c0_Feature 1..1 {
+    [this . c0_cost . dref = 250]
+    [this . c0_weight . dref = 9.80]
+  }
+  0..* c0_subtotal -> decimal 1..1 {}
+  0..* c0_tax -> decimal 1..1 {}
+  0..* c0_total -> decimal 1..1 {}
+  0..* c0_weightPerFeature -> decimal 1..1 {}
+}
+0..* c0_aBike : c0_Bike 1..1 {}
+0..* c0_size -> decimal 1..1 {
+  [(this . dref = 1) || (this . dref = 2.50)]
+  [this . dref != 1]
+}
+0..* c0_change -> decimal 1..1 {}
+0..* c0_share -> decimal 1..1 {}
+0..* c0_discount -> decimal 1..1 {}
+
+<< max c0_aBike . c0_total . dref >>

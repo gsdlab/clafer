@@ -1,0 +1,32 @@
+//# OPTIONS --explicit
+abstract 0..* c0_car 0..* {
+  [((#this . c0_cc . c0_acc) >= 1) => ((#this . c0_fca) >= 1)]
+  1..1 c0_transmission 1..1 {
+    0..* c0_automatic 0..1 {}
+    0..* c0_manual 0..1 {}
+  }
+  0..* c0_fca : c1_fca 0..1 {}
+  0..* c0_cc : c1_cc 1..1 {}
+}
+abstract 0..* c1_fca 0..* {
+  1..1 c0_sensor 1..1 {
+    0..* c0_radar 0..1 {}
+    0..* c0_lidar 0..1 {}
+  }
+}
+abstract 0..* c1_cc 0..* {
+  0..* c0_switches 2..3 {
+    0..* c0_backlight 0..1 {}
+  }
+  0..* c0_acc 0..1 {}
+}
+abstract 0..* c0_camaro : c0_car 0..* {
+  [all s : this . c0_cc . c0_switches | (#s . c0_backlight) >= 1]
+  0..* c0_transformer 0..1 {
+    [(#this . parent . c0_cc . c0_switches) = 3]
+  }
+}
+0..* c0_bumbleBee : c0_camaro 1..1 {
+  [(#this . c0_transformer) >= 1]
+  [(#this . c0_transmission . c0_manual) >= 1]
+}

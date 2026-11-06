@@ -1,0 +1,9 @@
+//# OPTIONS --explicit
+abstract 0..* c0_date ->> string 0..* {}
+abstract 0..* c0_Person 0..* {
+  0..* c0_Name -> string 1..1 {}
+  0..* c0_DateOfBirth : c0_date 1..1 {}
+}
+0..* c0_JohnDoe : c0_Person 1..1 {
+  [(this . c0_Name . dref = "John") && (this . c0_DateOfBirth . dref = "01/02/1985")]
+}

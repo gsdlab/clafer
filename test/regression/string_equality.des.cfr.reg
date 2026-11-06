@@ -1,0 +1,14 @@
+//# OPTIONS --explicit
+[((#c0_text) >= 1) => (c0_text . dref = "some text")]
+[((#c0_text1) >= 1) => (c0_text1 . dref = "some text")]
+[((#c0_text2) >= 1) => (c0_text2 . dref = "some text")]
+[(c0_text . dref = c0_text1 . dref) => ((#c0_equal1) >= 1)]
+[(c0_text1 . dref = c0_text2 . dref) => ((#c0_equal2) >= 1)]
+0..* c0_text -> string 1..1 {}
+0..* c0_text1 -> string 1..1 {}
+0..* c0_text2 -> string 1..1 {}
+0..* c0_equal1 0..1 {}
+0..* c0_equal2 0..1 {}
+
+assert [(#c0_equal1) >= 1]
+assert [(#c0_equal2) >= 1]

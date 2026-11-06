@@ -1,0 +1,38 @@
+//# OPTIONS --explicit
+abstract 1..1 c0_Bluetooth 0..* {
+  0..* c0_Bluetooth20 0..1 {}
+  0..* c0_Bluetooth21 0..1 {}
+  0..* c0_Bluetooth40 0..1 {}
+}
+abstract 0..* c0_MobilePhone 0..* {
+  0..* c0_Connectivity 1..1 {
+    1..1 c1_Bluetooth : c0_Bluetooth 1..1 {}
+    0..* c0_GSM 1..1 {}
+    0..* c0_LTE 0..1 {
+      [(#this . parent . parent . c0_Battery . c0_LiBattery1400) >= 1]
+    }
+    0..* c0_WiFi 0..1 {}
+    0..* c0_USB 0..1 {}
+  }
+  1..1 c0_Battery 1..1 {
+    0..* c0_LiBattery1150 0..1 {}
+    0..* c0_LiBattery1400 0..1 {}
+  }
+}
+abstract 0..* c0_LowEndPhone : c0_MobilePhone 0..* {
+  [(#this . c0_Connectivity . c0_WiFi) = 0]
+}
+abstract 0..* c0_HighEndPhone : c0_MobilePhone 0..* {
+  [((#this . c0_Connectivity . c0_USB) >= 1) && ((#this . c0_Connectivity . c0_WiFi) >= 1)]
+  0..* c0_QuadCPU 0..1 {}
+}
+0..* c0_Phone1 : c0_MobilePhone 1..1 {
+  [(#this . c0_Connectivity . c0_WiFi) >= 1]
+  [(#this . c0_Connectivity . c0_LTE) >= 1]
+  [(#this . c0_Connectivity . c1_Bluetooth . c0_Bluetooth21) >= 1]
+}
+0..* c0_Phone2 : c0_HighEndPhone 1..1 {
+  [(#this . c0_Connectivity . c0_LTE) >= 1]
+  [(#this . c0_Connectivity . c1_Bluetooth . c0_Bluetooth21) >= 1]
+  [(#this . c0_QuadCPU) >= 1]
+}

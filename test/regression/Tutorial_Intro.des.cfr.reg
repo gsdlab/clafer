@@ -1,0 +1,69 @@
+//# OPTIONS --explicit
+abstract 0..* c0_Person 0..* {
+  0..* c0_Name -> string 1..1 {}
+  0..* c0_Surname -> string 1..1 {}
+  0..* c0_DateOfBirth : c0_date 1..1 {}
+  1..* c0_Gender 1..1 {
+    0..* c0_Male 0..1 {}
+    0..* c0_Female 0..1 {}
+  }
+  1..1 c0_MaritalStatus 1..1 {
+    0..* c0_NeverMarried 0..1 {}
+    0..* c0_Married 0..1 {}
+    0..* c0_Divorced 0..1 {}
+  }
+  0..* c0_Address 1..1 {
+    0..* c0_Street -> string 1..1 {
+      0..* c0_UnitNo -> string 0..1 {}
+    }
+    0..* c0_City -> string 1..1 {}
+    0..* c0_Country -> string 1..1 {}
+    0..* c0_PostalCode -> string 1..1 {}
+  }
+}
+abstract 0..* c0_date ->> string 0..* {}
+0..* c0_JohnDoe : c0_Person 1..1 {
+  [this . c0_Name . dref = "John"]
+  [this . c0_Surname . dref = "Doe"]
+  [this . c0_DateOfBirth . dref = "01/02/1985"]
+  [(#this . c0_Gender . c0_Male) >= 1]
+  [(#this . c0_MaritalStatus . c0_Married) >= 1]
+  [this . c0_Address . c0_Street . dref = "123 Main St."]
+  [this . c0_Address . c0_City . dref = "Great Town"]
+  [this . c0_Address . c0_Country . dref = "Canada"]
+  [this . c0_Address . c0_PostalCode . dref = "A1B 2C3"]
+}
+abstract 0..* c0_Student : c0_Person 0..* {
+  0..* c0_StudentId -> string 1..1 {}
+}
+abstract 0..* c0_WaitingLine 0..* {
+  0..* c0_participants -> c0_Person 0..* {}
+}
+0..* c0_MaryJane : c0_Student 1..1 {
+  [this . c0_Name . dref = "Mary Jane"]
+  [this . c0_StudentId . dref = "MJ13421354"]
+}
+0..* c0_BusLine : c0_WaitingLine 1..1 {
+  [c0_JohnDoe in this . c0_participants . dref]
+  [c0_MaryJane in this . c0_participants . dref]
+}
+0..* c0_JohnAndMaryLine : c0_WaitingLine 1..1 {
+  [this . c0_participants . dref = (c0_JohnDoe ++ c0_MaryJane)]
+}
+abstract 0..* c0_TwoPersonLine : c0_WaitingLine 0..* {
+  [(#this . c0_participants) = 2]
+}
+abstract 0..* c0_OneToTenPersonLine : c0_WaitingLine 0..* {
+  [(#this . c0_participants) >= 1]
+  [(#this . c0_participants) <= 10]
+}
+abstract 0..* c0_NorthAmericanCountry 0..* {}
+0..* c0_Canada : c0_NorthAmericanCountry 1..1 {}
+0..* c0_USA : c0_NorthAmericanCountry 1..1 {}
+0..* c0_Mexico : c0_NorthAmericanCountry 1..1 {}
+abstract 0..* c0_Person2 0..* {
+  0..* c1_Country -> c0_NorthAmericanCountry 1..1 {}
+}
+0..* c0_JohnDoe2 : c0_Person2 1..1 {
+  [this . c1_Country . dref = c0_Canada]
+}

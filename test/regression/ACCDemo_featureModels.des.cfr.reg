@@ -1,0 +1,24 @@
+//# OPTIONS --explicit
+abstract 0..* c0_Car 0..* {
+  0..* c0_ABS 0..1 {}
+  0..* c0_CC 0..1 {
+    0..* c0_ACC 0..1 {
+      [(#this . parent . parent . c0_FCA) >= 1]
+    }
+  }
+  1..1 c0_Transmission 1..1 {
+    0..* c0_Automatic 0..1 {}
+    0..* c0_Manual 0..1 {}
+  }
+  0..* c0_FCA 0..1 {
+    1..1 c0_Sensor 1..1 {
+      0..* c0_Radar 0..1 {}
+      0..* c0_Lidar 0..1 {}
+    }
+    1..1 c0_Alert 0..1 {
+      0..* c0_Haptic 0..1 {}
+      0..* c0_Audible 0..1 {}
+    }
+  }
+}
+0..* c0_aCar : c0_Car 1..1 {}

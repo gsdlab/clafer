@@ -1,0 +1,17 @@
+//# OPTIONS --explicit
+abstract 1..* c0_Port 0..* {
+  0..* c0_input 0..1 {}
+  0..* c0_output 0..1 {}
+}
+abstract 1..1 c0_RelayPort : c0_Port 0..* {
+  0..* c0_relay 0..1 {}
+}
+1..1 c0_req : c0_RelayPort 1..1 {
+  [(#this . c0_flow) >= 1]
+  0..* c0_flow 0..1 {}
+}
+
+assert [(#c0_req . c0_input) = 0]
+assert [(#c0_req . c0_output) = 0]
+assert [(#c0_req . c0_relay) = 0]
+assert [(#c0_req . c0_flow) = 1]

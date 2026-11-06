@@ -186,16 +186,18 @@ Common flags:
                                           CLAFERMODEs are: 'alloy' (default,
                                           Alloy 6); 'json' (intermediate
                                           representation of Clafer model);
-                                          'clafer' (analyzed and desugared
-                                          clafer model); 'html' (original model
-                                          in HTML); 'graph' (graphical
-                                          representation written in DOT
-                                          language); 'cvlgraph' (cvl notation
-                                          representation written in DOT
-                                          language); 'choco' (Choco constraint
-                                          programming solver). Multiple modes
-                                          can be specified at the same time,
-                                          e.g., '-m alloy -m html'.
+                                          'clafer' (the explicit model, with
+                                          everything written out, as Choco
+                                          solves it; static models only);
+                                          'html' (original model in HTML);
+                                          'graph' (graphical representation
+                                          written in DOT language); 'cvlgraph'
+                                          (cvl notation representation written
+                                          in DOT language); 'choco' (Choco
+                                          constraint programming solver).
+                                          Multiple modes can be specified at
+                                          the same time, e.g., '-m alloy -m
+                                          html'.
   -o --console-output                     Output code on console.
   -i --flatten-inheritance                Flatten inheritance ('alloy' mode
                                           only).
@@ -205,7 +207,16 @@ Common flags:
                                           (experimental).
   -c --check-duplicates                   Check duplicated clafer names in
                                           the entire model.
-  -f --skip-resolver                      Skip name resolution.
+  -f --skip-resolver                      The names of the clafers are their
+                                          UIDs, as in an explicit model: skip
+                                          renaming them. Names must be unique;
+                                          they are still resolved and checked.
+     --explicit                           The model is an explicit model, as
+                                          'clafer -m clafer' prints it, with
+                                          every name a UID and every card
+                                          written out, and its scopes in its
+                                          scope file. Shorthand for -f -k -l
+                                          --ss=none.
   -k --keep-unused                        Keep uninstantated abstract clafers
                                           ('alloy' mode only).
   -s --no-stats                           Don't print statistics.
@@ -245,7 +256,10 @@ Common flags:
                                           name'-'least-partially-qualified
                                           name'-'unique ID' map ('.cfr-map').
                                           In Alloy and Choco modes, generate
-                                          the scopes map ('.cfr-scope').
+                                          the scopes map ('.cfr-scope'); in
+                                          Clafer mode, the explicit model's
+                                          scope file with every scope
+                                          ('.des.cfr-scope').
      --minint=INT                         Smallest integer value ('choco'
                                           mode only). Default: -128, chosen by
                                           chocosolver.

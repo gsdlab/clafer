@@ -1,0 +1,13 @@
+//# OPTIONS --explicit
+abstract 0..* c0_Animal 0..* {
+  0..* c0_leg 0..* {}
+}
+abstract 0..* c0_Owner 0..* {
+  0..* c0_Pet : c0_Animal 1..1 {}
+}
+0..* c0_SnakeOwner : c0_Owner 1..* {
+  [(#this . c0_Pet . c0_leg) = 0]
+}
+0..* c0_DogOwner : c0_Owner 1..* {
+  [(#this . c0_Pet . c0_leg) = 4]
+}

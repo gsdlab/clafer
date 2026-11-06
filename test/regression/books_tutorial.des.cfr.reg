@@ -1,0 +1,44 @@
+//# OPTIONS --explicit
+abstract 0..* c0_Book 0..* {
+  [(this . c0_year . dref >= 5) => ((#this . c0_ISBN) >= 1)]
+  0..* c0_title -> string 1..1 {
+    0..* c0_subtitle -> string 0..1 {}
+  }
+  0..* c0_year -> int 1..1 {}
+  0..* c0_page 2..* {}
+  1..1 c0_format 1..1 {
+    0..* c0_paper 0..1 {
+      0..* c0_hardcover 0..1 {}
+    }
+    0..* c0_electronic 0..1 {}
+  }
+  1..1 c0_kind 1..1 {
+    0..* c0_textbook 0..1 {}
+    0..* c0_manual 0..1 {}
+    0..* c0_reference 0..1 {}
+    0..* c0_fiction 0..1 {}
+    0..* c0_nonfiction 0..1 {}
+    0..* c0_other -> string 0..1 {}
+  }
+  0..* c0_authors -> c0_Author 1..* {}
+  0..* c0_ISBN -> string 0..1 {
+    [(this . parent . c0_year . dref >= 6) => ((#this . c0_GS1) >= 1)]
+    0..* c0_GS1 -> string 0..1 {}
+  }
+}
+abstract 0..* c0_Person 0..* {
+  0..* c0_name -> string 1..1 {}
+  0..* c0_dob -> string 0..1 {}
+}
+abstract 0..* c0_Author : c0_Person 0..* {
+  0..* c0_books -> c0_Book 1..* {}
+}
+0..* c0_GenerativeProgramming : c0_Book 1..1 {
+  [((((((((this . c0_title . dref = "name") && ((#this . c0_title . c0_subtitle) = 0)) && (this . c0_year . dref = 5)) && ((#this . c0_page) = 4)) && ((#this . c0_format . c0_paper) >= 1)) && ((#this . c0_kind . c0_nonfiction) >= 1)) && (this . c0_authors . dref = (c0_Czarnecki ++ c0_Eisenecker))) && (this . c0_ISBN . dref = "name")) && ((#this . c0_ISBN . c0_GS1) = 0)]
+}
+0..* c0_Czarnecki : c0_Author 1..1 {
+  [(this . c0_name . dref = "name") && (c0_GenerativeProgramming in this . c0_books . dref)]
+}
+0..* c0_Eisenecker : c0_Author 1..1 {
+  [(this . c0_name . dref = "name") && (c0_GenerativeProgramming in this . c0_books . dref)]
+}

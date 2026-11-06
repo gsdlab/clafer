@@ -19,7 +19,7 @@ a[href$='Uid not found'] {color: red}
 a[href$='Ambiguous name'] {color: yellow}
 </style></head>
 <body>
-<div class="file">noclafer.cfr</div>
+<div class="file">positive/noclafer.cfr</div>
 
 <div>
 <span class="keyword">abstract</span> <span class="claferDecl" id="c0_Thing">Thing</span></div>

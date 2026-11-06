@@ -1,0 +1,217 @@
+//# OPTIONS --explicit
+abstract 0..* c0_Element 0..* {}
+abstract 0..* c0_End : c0_Element 0..* {
+  0..* c0_attainable 0..1 {}
+  1..1 c0_term 1..1 {
+    0..* c0_short 0..1 {}
+    0..* c0_long 0..1 {}
+  }
+  1..1 c0_focusedOn 1..1 {
+    0..* c0_enterprise 0..1 {}
+    0..* c0_businessArea 0..1 {}
+  }
+}
+abstract 0..* c0_Mean : c0_Element 0..* {}
+abstract 0..* c0_Vision : c0_End 0..* {
+  [(#this . c0_focusedOn . c0_enterprise) >= 1]
+  [(#this . c0_term . c0_long) >= 1]
+  0..* c0_amplifiedBy -> c0_Goal 1..* {}
+  0..* c0_madeOperativeBy -> c0_Mission 1..1 {}
+}
+abstract 0..* c0_DesiredResult : c0_End 0..* {
+  0..* c0_supportedBy -> c0_CourseOfAction 1..* {}
+  1..1 c0_kind 1..1 {
+    0..* c0_qualitative 0..1 {}
+    0..* c0_quantitative 0..1 {}
+  }
+}
+abstract 0..* c0_Goal : c0_DesiredResult 0..* {
+  [(#this . c0_focusedOn . c0_businessArea) >= 1]
+  [(#this . c0_attainable) >= 1]
+  [(#this . c0_kind . c0_qualitative) >= 1]
+  [(#this . c0_term . c0_long) >= 1]
+  0..* c0_amplifies -> c0_Vision 1..1 {}
+  0..* c0_general 1..1 {}
+  0..* c0_ongoing 1..1 {}
+}
+abstract 0..* c0_Objective : c0_DesiredResult 0..* {
+  [(#this . c0_focusedOn . c0_businessArea) >= 1]
+  [(#this . c0_kind . c0_quantitative) >= 1]
+  [(#this . c0_term . c0_short) >= 1]
+  0..* c0_SMART 1..1 {
+    [(#this . parent . c0_attainable) >= 1]
+    0..* c0_specific 1..1 {}
+    0..* c0_relevant 1..1 {}
+    0..* c0_timeBound 1..1 {}
+  }
+  0..* c0_limitedInTimeframe 1..1 {
+    0..* c0_cyclical 0..1 {}
+  }
+  0..* c0_quantifies -> c0_Goal 1..* {}
+}
+abstract 0..* c0_CourseOfAction : c0_Mean 0..* {
+  [(((#this . c0_scope . c0_broad) >= 1) && ((#this . c1_term . c1_long) >= 1)) || (((#this . c0_scope . c0_narrow) >= 1) && ((#this . c1_term . c1_short) >= 1))]
+  0..* c0_channelsEffortsToward -> c0_DesiredResult 1..1 {}
+  0..* c0_governedBy -> c0_Directive 1..1 {}
+  0..* c0_formulatedBasedOn -> c0_Directive 1..1 {}
+  1..1 c0_scope 1..1 {
+    0..* c0_broad 0..1 {}
+    0..* c0_narrow 0..1 {}
+  }
+  1..1 c1_term 1..1 {
+    0..* c1_short 0..1 {}
+    0..* c1_long 0..1 {}
+  }
+  0..* c0_includes -> c0_CourseOfAction 0..* {}
+  0..* c0_enables -> c0_CourseOfAction 0..* {}
+}
+abstract 0..* c0_Strategy : c0_CourseOfAction 0..* {
+  0..* c0_implementedBy -> c0_Tactic 1..1 {}
+  0..* c0_aComponentOfThePlanFor -> c0_Mission 1..1 {}
+  0..* c0_rightApproachGiven 1..1 {}
+}
+abstract 0..* c0_Tactic : c0_CourseOfAction 0..* {
+  0..* c0_implements -> c0_Strategy 1..1 {}
+  0..* c0_effectsEnforcementLevelOf -> c0_BusinessRule 1..1 {}
+}
+abstract 0..* c0_Mission : c0_Mean 0..* {
+  0..* c0_makesOperative -> c0_Vision 1..1 {}
+  0..* c0_plannedByMeansOf -> c0_Strategy 1..1 {}
+}
+abstract 0..* c0_Directive : c0_Mean 0..* {
+  0..* c0_governs -> c0_CourseOfAction 1..1 {}
+  0..* c0_sourceOf -> c0_CourseOfAction 1..1 {}
+  0..* c0_supportsTheAchievementOf -> c0_DesiredResult 1..1 {}
+  1..1 c0_influencesAspectOfEnterprise 1..1 {
+    0..* c0_defines 0..1 {}
+    0..* c0_constraints 0..1 {}
+    0..* c0_liberates 0..1 {}
+    0..* c0_asserts 0..1 {}
+    0..* c0_controls 0..1 {}
+  }
+  0..* c0_declarative 1..1 {}
+  0..* c0_actsAs -> c0_Regulation 1..1 {}
+  1..1 c0_degreeOfStructure 1..1 {
+    0..* c0_lessStructured 0..1 {}
+    0..* c0_highlyStructured 0..1 {}
+  }
+  1..1 c0_granularity 1..1 {
+    0..* c0_lessDiscreteAndComposite 0..1 {}
+    0..* c0_discreteAndAtomic 0..1 {}
+  }
+  0..* c0_actionable 0..1 {}
+  0..* c0_automatable 0..1 {}
+}
+abstract 0..* c0_BusinessPolicy : c0_Directive 0..* {
+  [(#this . c0_degreeOfStructure . c0_lessStructured) >= 1]
+  [(#this . c0_granularity . c0_lessDiscreteAndComposite) >= 1]
+  [(#this . c0_actionable) = 0]
+  [(#this . c0_automatable) = 0]
+  0..* c0_providesBasisFor -> c0_BusinessRule 1..* {}
+  0..* c1_governs -> c0_CourseOfAction 0..* {
+    0..* c0_control 1..1 {}
+    0..* c0_guide 1..1 {}
+    0..* c0_shape 1..1 {}
+  }
+  0..* c1_includes -> c0_BusinessPolicy 0..* {}
+}
+abstract 0..* c0_BusinessRule : c0_Directive 0..* {
+  [all o : this . c0_supportsTheAchievementOf | o . dref in c0_Objective]
+  [(#this . c0_degreeOfStructure . c0_highlyStructured) >= 1]
+  [(#this . c0_granularity . c0_discreteAndAtomic) >= 1]
+  [(#this . c0_actionable) >= 1]
+  1..1 c0_enforcementLevel 1..1 {
+    0..* c0_strictlyEnforced 0..1 {}
+    0..* c0_deferredEnforcement 0..1 {}
+    0..* c0_preAuthorizedOverride 0..1 {}
+    0..* c0_postJustifiedOverride 0..1 {}
+    0..* c0_overrideWithExplanation 0..1 {}
+    0..* c0_guideline 0..1 {}
+  }
+  0..* c0_hasEnforcementLevelEffectedBy -> c0_Tactic 1..1 {}
+  0..* c0_expressedUsingStandardBusinessVocabulary 1..1 {}
+}
+abstract 0..* c0_Regulation : c0_Element 0..* {
+  0..* c0_aRolePlayedBy -> c0_Directive 1..1 {}
+}
+abstract 1..* c0_Influencer : c0_Element 0..* {
+  1..* c0_externalInfluencer 0..1 {
+    0..* c0_environment 0..1 {}
+    0..* c0_technology 0..1 {}
+    0..* c0_regulation 0..1 {
+      1..1 c0_prescribedBy 1..1 {
+        0..* c0_government 0..1 {}
+        0..* c0_management 0..1 {}
+      }
+    }
+    0..* c0_supplier 0..1 {
+      1..1 c0_provides 1..1 {
+        0..* c0_products 0..1 {}
+        0..* c0_services 0..1 {}
+      }
+    }
+    0..* c0_customer 0..1 {
+      1..1 c0_productsOrServices 1..1 {
+        0..* c0_investigated 0..1 {}
+        0..* c0_ordered 0..1 {}
+        0..* c0_received 0..1 {}
+        0..* c0_paidFor 0..1 {}
+      }
+    }
+    0..* c0_competitor 0..1 {}
+    0..* c0_partner 0..1 {}
+  }
+  1..* c0_internalInfluencer 0..1 {
+    0..* c0_infrastructure 0..1 {}
+    0..* c0_issue 0..1 {}
+    0..* c0_assumption 0..1 {}
+    0..* c0_resource 0..1 {}
+    0..* c0_habit 0..1 {}
+    0..* c0_managementPrerogative 0..1 {}
+    1..1 c0_corporateValue 0..1 {
+      0..* c0_explicitCorporateValue 0..1 {}
+      0..* c0_implicitCorporateValue 0..1 {}
+    }
+  }
+}
+abstract 0..* c0_Assessment : c0_Element 0..* {
+  0..* c0_identifies -> c0_PotentialImpact 1..1 {}
+  0..* c0_about -> c0_Influencer 1..1 {}
+  1..* c0_affects 1..1 {
+    0..* c0_employmentOf -> c0_Mean 1..* {}
+    0..* c0_achievementOf -> c0_End 1..* {}
+  }
+  0..* c0_madeBy -> c0_OrganizationUnit 1..1 {}
+  0..* c0_uses -> c0_Assessment 0..* {}
+  1..1 c0_SWOT 1..1 {
+    0..* c0_strength 0..1 {}
+    0..* c0_weakness 0..1 {}
+    0..* c0_opportunity 0..1 {}
+    0..* c0_threat 0..1 {}
+  }
+}
+abstract 0..* c0_PotentialImpact : c0_Element 0..* {
+  0..* c0_significantTo -> c0_Assessment 1..1 {}
+  0..* c0_providesImpetusFor -> c0_Directive 1..1 {}
+  1..1 c0_type 1..1 {
+    0..* c0_risk 0..1 {
+      0..* c0_probabilityOfLoss -> int 1..1 {}
+      0..* c0_potentialLoss -> int 1..1 {}
+      0..* c0_unitOfMeasure -> c0_Currency 1..1 {}
+    }
+    0..* c0_potentialReward 0..1 {
+      0..* c0_probabilityOfGain -> int 1..1 {}
+      0..* c0_potentialGain -> int 1..1 {}
+      0..* c1_unitOfMeasure -> c0_Currency 1..1 {}
+    }
+  }
+}
+abstract 0..* c0_Metric : c0_Element 0..* {}
+abstract 0..* c0_KeyPerformanceIndicator : c0_Metric 0..* {}
+abstract 0..* c0_CriticalSuccessFactor : c0_Metric 0..* {}
+abstract 0..* c0_Currency 0..* {}
+0..* c0_USD : c0_Currency 1..1 {}
+0..* c0_EUR : c0_Currency 1..1 {}
+0..* c0_CAD : c0_Currency 1..1 {}
+abstract 0..* c0_OrganizationUnit 0..* {}
+abstract 0..* c0_BusinessProcess 0..* {}

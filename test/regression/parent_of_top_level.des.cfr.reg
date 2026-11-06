@@ -1,0 +1,36 @@
+//# OPTIONS --explicit
+[0 < 1]
+[c0_a . c0_x . dref = 2]
+0..* c0_a 1..1 {
+  0..* c0_x -> int 1..1 {}
+}
+0..* c0_extra 0..1 {}
+0..* c0_b 1..1 {
+  [(#c0_a) >= 1]
+  [0 < 1]
+  [0 < 1]
+  [c0_a . c0_x . dref = 2]
+  [all v : c0_b | (#c0_a) >= 1]
+  [(#c0_a) >= 1]
+  [((#c0_extra) >= 1) <=> ((#c0_extra) >= 1)]
+  [((if ((#c0_extra) >= 1) then 1 else 0) = 1) => ((#c0_extra) >= 1)]
+  [((#(if ((#c0_extra) >= 1) then c0_a else noclafer)) >= 1) => ((#c0_extra) >= 1)]
+}
+abstract 0..* c0_Top 0..* {
+  [0 < 1]
+}
+0..* c0_top1 : c0_Top 1..1 {}
+0..* c0_top2 : c0_Top 1..1 {}
+abstract 0..* c0_Feat 0..* {
+  [(((this in c0_f1) => (0 < 1)) && ((this in c0_g . c0_f2) => ((#(this ** c0_g . c0_f2) . parent) >= 1))) && ((this in c0_h . c0_i . c0_f3) => ((#(this ** c0_h . c0_i . c0_f3) . parent) >= 1))]
+  [(((this in c0_f1) => (0 < 1)) && ((this in c0_g . c0_f2) => ((#(this ** c0_g . c0_f2) . parent) = 1))) && ((this in c0_h . c0_i . c0_f3) => ((#(this ** c0_h . c0_i . c0_f3) . parent) = 1))]
+}
+0..* c0_f1 : c0_Feat 1..1 {}
+0..* c0_g 1..1 {
+  0..* c0_f2 : c0_Feat 1..1 {}
+}
+0..* c0_h 2..2 {
+  0..* c0_i 1..1 {
+    0..* c0_f3 : c0_Feat 1..1 {}
+  }
+}

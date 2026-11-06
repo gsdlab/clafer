@@ -1,0 +1,16 @@
+//# OPTIONS --explicit
+[((#c0_n1) >= 1) => (c0_n1 . dref = 1)]
+[((#c0_n2) >= 1) => (c0_n2 . dref = 2)]
+[((#c0_n3) >= 1) => (c0_n3 . dref = 3)]
+[((#c0_n4) >= 1) => (c0_n4 . dref = 2)]
+[((#c0_n5) >= 1) => (c0_n5 . dref = 3)]
+[((#c0_p) >= 1) => (c0_p . dref = (product c0_N . dref))]
+abstract 0..* c0_N ->> int 0..* {}
+0..* c0_n1 : c0_N 1..1 {}
+0..* c0_n2 : c0_N 1..1 {}
+0..* c0_n3 : c0_N 1..1 {}
+0..* c0_n4 : c0_N 1..1 {}
+0..* c0_n5 : c0_N 1..1 {}
+0..* c0_p -> int 1..1 {}
+
+assert [c0_p . dref = 36]

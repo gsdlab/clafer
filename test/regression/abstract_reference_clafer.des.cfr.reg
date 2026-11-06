@@ -1,0 +1,14 @@
+//# OPTIONS --explicit
+abstract 0..* c0_Person 0..* {
+  0..* c0_age -> int 1..1 {}
+  0..* c0_married 0..1 {}
+}
+abstract 0..* c0_NewBorn -> c0_Person 0..* {
+  [(this . dref . c0_age . dref = 0) && ((#this . dref . c0_married) = 0)]
+}
+0..* c0_Alice : c0_Person 1..1 {}
+0..* c0_baby : c0_NewBorn 1..1 {}
+
+assert [c0_baby . dref = c0_Alice]
+assert [c0_Alice . c0_age . dref = 0]
+assert [(#c0_Alice . c0_married) = 0]

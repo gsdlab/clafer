@@ -1,0 +1,16 @@
+//# OPTIONS --explicit
+[c0_uses . dref = (if ((#c0_Software) > 0) then (c0_s1 . c0_target . dref ++ c0_s2 . c0_target . dref) else c0_noHardware . dref)]
+abstract 0..* c0_Hardware 0..* {}
+0..* c0_h1 : c0_Hardware 1..1 {}
+0..* c0_h2 : c0_Hardware 1..1 {}
+abstract 0..* c0_Software 0..* {
+  0..* c0_target -> c0_Hardware 1..1 {}
+}
+0..* c0_s1 : c0_Software 1..1 {
+  [this . c0_target . dref = c0_h1]
+}
+0..* c0_s2 : c0_Software 1..1 {
+  [this . c0_target . dref = c0_h2]
+}
+0..* c0_noHardware -> c0_Hardware 0..0 {}
+0..* c0_uses -> c0_Hardware 0..* {}

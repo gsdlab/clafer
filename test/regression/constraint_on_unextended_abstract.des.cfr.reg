@@ -1,0 +1,10 @@
+//# OPTIONS --explicit
+abstract 0..* c0_Kernel 0..* {
+  0..* c0_memory 0..1 {}
+}
+0..* c0_Phone 1..1 {
+  [(#c0_Kernel . c0_memory) >= 1]
+  0..* c0_name -> string 1..1 {}
+}
+
+assert [(#c0_Kernel) = 0]

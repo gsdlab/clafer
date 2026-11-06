@@ -1,0 +1,87 @@
+//# OPTIONS --explicit
+abstract 0..* c0_Feature 0..* {
+  0..* c0_productivity -> int 1..1 {}
+  0..* c0_cost -> int 1..1 {}
+  0..* c0_batterylife -> int 1..1 {}
+  0..* c0_security -> int 1..1 {}
+}
+abstract 0..* c0_MobilePhone 0..* {
+  [((#this . c0_total_productivity) >= 1) => (this . c0_total_productivity . dref = (sum c0_Feature . c0_productivity . dref))]
+  [((#this . c0_total_batterylife) >= 1) => (this . c0_total_batterylife . dref = (sum c0_Feature . c0_batterylife . dref))]
+  [((#this . c0_total_security) >= 1) => (this . c0_total_security . dref = (sum c0_Feature . c0_security . dref))]
+  [((#this . c0_total_cost) >= 1) => (this . c0_total_cost . dref = (sum c0_Feature . c0_cost . dref))]
+  0..* c0_Connectivity : c0_Feature 1..1 {
+    [this . c0_batterylife . dref = -12]
+    [this . c0_productivity . dref = 14]
+    [this . c0_security . dref = 43]
+    [this . c0_cost . dref = 101]
+    1..1 c0_Bluetooth 1..1 {
+      0..* c0_Bluetooth20EDR : c0_Feature 0..1 {
+        [this . c0_batterylife . dref = -4]
+        [this . c0_productivity . dref = 1]
+        [this . c0_security . dref = -15]
+        [this . c0_cost . dref = 1]
+      }
+      0..* c0_Bluetooth21EDR : c0_Feature 0..1 {
+        [this . c0_batterylife . dref = -2]
+        [this . c0_productivity . dref = 4]
+        [this . c0_security . dref = -10]
+        [this . c0_cost . dref = 1]
+      }
+      0..* c0_Bluetooth40 : c0_Feature 0..1 {
+        [this . c0_batterylife . dref = -1]
+        [this . c0_productivity . dref = 16]
+        [this . c0_security . dref = -2]
+        [this . c0_cost . dref = 2]
+      }
+    }
+    0..* c0_GSM : c0_Feature 1..1 {
+      [this . c0_batterylife . dref = -2]
+      [this . c0_productivity . dref = 2]
+      [this . c0_security . dref = -10]
+      [this . c0_cost . dref = 1]
+    }
+    0..* c0_LTE : c0_Feature 0..1 {
+      [this . c0_batterylife . dref = -1]
+      [this . c0_productivity . dref = 16]
+      [this . c0_security . dref = -3]
+      [this . c0_cost . dref = 3]
+    }
+    0..* c0_WiFi : c0_Feature 0..1 {
+      [this . c0_batterylife . dref = -10]
+      [this . c0_productivity . dref = 20]
+      [this . c0_security . dref = -15]
+      [this . c0_cost . dref = 20]
+    }
+    0..* c0_USB : c0_Feature 0..1 {
+      [this . c0_batterylife . dref = 10]
+      [this . c0_productivity . dref = 20]
+      [this . c0_security . dref = 0]
+      [this . c0_cost . dref = 3]
+    }
+  }
+  1..1 c0_Battery 1..1 {
+    0..* c0_LiBattery1150 : c0_Feature 0..1 {
+      [this . c0_batterylife . dref = 60]
+      [this . c0_productivity . dref = 0]
+      [this . c0_security . dref = 0]
+      [this . c0_cost . dref = 10]
+    }
+    0..* c0_LiBattery1400 : c0_Feature 0..1 {
+      [this . c0_batterylife . dref = 70]
+      [this . c0_productivity . dref = 0]
+      [this . c0_security . dref = 0]
+      [this . c0_cost . dref = 15]
+    }
+  }
+  0..* c0_total_productivity -> int 1..1 {}
+  0..* c0_total_batterylife -> int 1..1 {}
+  0..* c0_total_security -> int 1..1 {}
+  0..* c0_total_cost -> int 1..1 {}
+}
+0..* c0_OptimalPhone : c0_MobilePhone 1..1 {}
+
+<< max c0_OptimalPhone . c0_total_batterylife . dref >>
+<< max c0_OptimalPhone . c0_total_productivity . dref >>
+<< max c0_OptimalPhone . c0_total_security . dref >>
+<< min c0_OptimalPhone . c0_total_cost . dref >>

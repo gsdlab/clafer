@@ -223,3 +223,13 @@ case_ReadChocoScopesJSON = do
             , "{\"decimal\": [-2.5, 2.5]}"
             , "]" ]
     M.fromList (parseJSONScopes qNameMaps scopesInJSON) @?= M.fromList [ ("c0_b", 2), ("c0_k", 5) ]
+
+-- | The least-partially-qualified name of the only clafer of a model is its name; the search for it
+-- | did not end (clafer --meta-data hung on such a model).
+case_LpqNameOfOnlyClafer :: Assertion
+case_LpqNameOfOnlyClafer = do
+    let
+        (Right compilerResultMap) = compileOneFragment defaultClaferArgs "x\n"
+        (Just compilerResult) = M.lookup Alloy compilerResultMap
+        Just (iModule, _, _) = cIr $ claferEnv compilerResult
+    getLPQName (deriveQNameMaps iModule) "c0_x" @?= Just "x"

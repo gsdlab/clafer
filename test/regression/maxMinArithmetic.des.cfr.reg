@@ -1,0 +1,16 @@
+//# OPTIONS --explicit
+[((#c0_spread) >= 1) => (c0_spread . dref = ((max ((c0_a . dref ++ c0_b . dref) ++ c0_c . dref)) - (min ((c0_a . dref ++ c0_b . dref) ++ c0_c . dref))))]
+[((#c0_range) >= 1) => (c0_range . dref = ((max ((c0_a . dref ++ c0_b . dref) ++ c0_c . dref)) - (min ((c0_a . dref ++ c0_b . dref) ++ c0_c . dref))))]
+[((#c0_above) >= 1) => (c0_above . dref = ((max (c0_a . dref ++ 3)) + 1))]
+[c0_a . dref = 5]
+[c0_b . dref = 2]
+[c0_c . dref = 9]
+[c0_spread . dref = 7]
+[c0_range . dref = 7]
+[c0_above . dref = 6]
+0..* c0_a -> int 1..1 {}
+0..* c0_b -> int 1..1 {}
+0..* c0_c -> int 1..1 {}
+0..* c0_spread -> int 1..1 {}
+0..* c0_range -> int 1..1 {}
+0..* c0_above -> int 1..1 {}

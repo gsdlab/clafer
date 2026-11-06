@@ -1,0 +1,5 @@
+//# OPTIONS --explicit
+0..* c0_z 1..1 {
+  [this . c0_y . dref = -1]
+  0..* c0_y -> int 1..1 {}
+}

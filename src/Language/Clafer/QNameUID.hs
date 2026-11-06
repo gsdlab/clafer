@@ -152,7 +152,9 @@ generateUIDLpqMapEntry    fqNameUIDMap     fqKey       uid'   uidLpqNameMap =
             -- remove one segment of qualification
             lessQName =  concat $ drop 2 $ split (onSublist "::") pqName
          in
-            if (length (findUIDsByFQName fqNameUIDMap' lessQName) > 1)
+            -- a single name cannot be qualified less, e.g., of the only clafer of a model, which
+            -- the empty name, matching all clafers, would not end
+            if null lessQName || length (findUIDsByFQName fqNameUIDMap' lessQName) > 1
               then pqName
               else findLeastQualifiedName lessQName fqNameUIDMap'
 

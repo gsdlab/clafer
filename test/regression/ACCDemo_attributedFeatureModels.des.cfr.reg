@@ -1,0 +1,72 @@
+//# OPTIONS --explicit
+abstract 0..* c0_Feature 0..* {
+  0..* c0_cost -> int 1..1 {}
+}
+abstract 0..* c0_ComfortFeature : c0_Feature 0..* {
+  0..* c0_comfort -> int 1..1 {}
+}
+abstract 0..* c0_FuelFeature : c0_ComfortFeature 0..* {
+  0..* c0_fuel -> int 1..1 {}
+}
+abstract 0..* c0_Car 0..* {
+  [((#this . c0_total_cost) >= 1) => (this . c0_total_cost . dref = (sum c0_Feature . c0_cost . dref))]
+  [((#this . c0_total_comfort) >= 1) => (this . c0_total_comfort . dref = (sum c0_ComfortFeature . c0_comfort . dref))]
+  [((#this . c0_total_fuel) >= 1) => (this . c0_total_fuel . dref = (sum c0_FuelFeature . c0_fuel . dref))]
+  0..* c0_ABS : c0_Feature 0..1 {
+    [this . c0_cost . dref = 2]
+  }
+  0..* c0_CC : c0_FuelFeature 0..1 {
+    [this . c0_fuel . dref = 1]
+    [this . c0_comfort . dref = 3]
+    [this . c0_cost . dref = 4]
+    0..* c0_ACC : c0_FuelFeature 0..1 {
+      [this . c0_fuel . dref = 2]
+      [this . c0_comfort . dref = 6]
+      [this . c0_cost . dref = 3]
+      [(#this . parent . parent . c0_FCA) >= 1]
+    }
+  }
+  1..1 c0_Transmission 1..1 {
+    0..* c0_Automatic : c0_FuelFeature 0..1 {
+      [this . c0_fuel . dref = 2]
+      [this . c0_comfort . dref = 2]
+      [this . c0_cost . dref = 3]
+    }
+    0..* c0_Manual : c0_FuelFeature 0..1 {
+      [this . c0_fuel . dref = 0]
+      [this . c0_comfort . dref = 1]
+      [this . c0_cost . dref = 2]
+    }
+  }
+  0..* c0_FCA : c0_FuelFeature 0..1 {
+    [this . c0_fuel . dref = 2]
+    [this . c0_comfort . dref = 4]
+    [this . c0_cost . dref = 5]
+    1..1 c0_Sensor 1..1 {
+      0..* c0_Radar : c0_Feature 0..1 {
+        [this . c0_cost . dref = 2]
+      }
+      0..* c0_Lidar : c0_Feature 0..1 {
+        [this . c0_cost . dref = 4]
+      }
+    }
+    1..1 c0_Alert 1..1 {
+      0..* c0_Haptic : c0_ComfortFeature 0..1 {
+        [this . c0_comfort . dref = 4]
+        [this . c0_cost . dref = 2]
+      }
+      0..* c0_Audible : c0_ComfortFeature 0..1 {
+        [this . c0_comfort . dref = 2]
+        [this . c0_cost . dref = 1]
+      }
+    }
+  }
+  0..* c0_total_cost -> int 1..1 {}
+  0..* c0_total_comfort -> int 1..1 {}
+  0..* c0_total_fuel -> int 1..1 {}
+}
+0..* c0_aCar : c0_Car 1..1 {}
+
+<< min c0_aCar . c0_total_cost . dref >>
+<< min c0_aCar . c0_total_fuel . dref >>
+<< max c0_aCar . c0_total_comfort . dref >>

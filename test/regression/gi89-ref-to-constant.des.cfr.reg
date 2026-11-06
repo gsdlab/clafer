@@ -1,0 +1,15 @@
+//# OPTIONS --explicit
+[((#c0_A) >= 1) => (c0_A . dref = 1)]
+[((#c0_B) >= 1) => (c0_B . dref = 2)]
+[((#c0_C) >= 1) => (c0_C . dref = 3)]
+[((#c0_D) >= 1) => (c0_D . dref = 4)]
+abstract 0..* c0_ASIL ->> int 0..* {}
+0..* c0_A : c0_ASIL -> int 1..1 {}
+0..* c0_B : c0_ASIL -> int 1..1 {}
+0..* c0_C : c0_ASIL -> int 1..1 {}
+0..* c0_D : c0_ASIL -> int 1..1 {}
+
+assert [c0_A . dref = 1]
+assert [c0_B . dref = 2]
+assert [c0_C . dref = 3]
+assert [c0_D . dref = 4]

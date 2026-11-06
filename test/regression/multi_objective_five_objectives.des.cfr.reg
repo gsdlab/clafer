@@ -1,0 +1,69 @@
+//# OPTIONS --explicit
+abstract 0..* c0_Feature 0..* {
+  [this . c0_mass . dref >= 0]
+  [this . c0_cost . dref >= 0]
+  0..* c0_performance -> int 1..1 {}
+  0..* c0_energy -> int 1..1 {}
+  0..* c0_mass -> int 1..1 {}
+  0..* c0_cost -> int 1..1 {}
+}
+abstract 0..* c0_SecurityFeature : c0_Feature 0..* {
+  0..* c0_security -> int 1..1 {}
+}
+abstract 0..* c0_MobilePhone 0..* {
+  [((#this . c0_total_performance) >= 1) => (this . c0_total_performance . dref = (sum c0_Feature . c0_performance . dref))]
+  [((#this . c0_total_energy) >= 1) => (this . c0_total_energy . dref = (sum c0_Feature . c0_energy . dref))]
+  [((#this . c0_total_security) >= 1) => (this . c0_total_security . dref = (sum c0_SecurityFeature . c0_security . dref))]
+  [((#this . c0_total_mass) >= 1) => (this . c0_total_mass . dref = (sum c0_Feature . c0_mass . dref))]
+  [((#this . c0_total_cost) >= 1) => (this . c0_total_cost . dref = (sum c0_Feature . c0_cost . dref))]
+  1..* c0_Connectivity : c0_Feature 1..1 {
+    [this . c0_performance . dref = 0]
+    [this . c0_energy . dref = 0]
+    [this . c0_mass . dref = 0]
+    [this . c0_cost . dref = 12]
+    0..* c0_Bluetooth : c0_Feature 0..1 {
+      [this . c0_performance . dref = 9]
+      [this . c0_energy . dref = 10]
+      [this . c0_mass . dref = 2]
+      [this . c0_cost . dref = 3]
+    }
+    0..* c0_USB : c0_Feature 0..1 {
+      [this . c0_performance . dref = 10]
+      [this . c0_energy . dref = 5]
+      [this . c0_mass . dref = 3]
+      [this . c0_cost . dref = 5]
+    }
+    0..* c0_Wifi : c0_Feature 0..1 {
+      [this . c0_performance . dref = 22]
+      [this . c0_energy . dref = 17]
+      [this . c0_mass . dref = 6]
+      [this . c0_cost . dref = 5]
+    }
+  }
+  0..* c0_PasswordProtection : c0_SecurityFeature 0..1 {
+    [this . c0_security . dref = 5]
+    [this . c0_performance . dref = 1]
+    [this . c0_energy . dref = 2]
+    [this . c0_mass . dref = 0]
+    [this . c0_cost . dref = 2]
+  }
+  0..* c0_FingerprintProtection : c0_SecurityFeature 0..1 {
+    [this . c0_mass . dref = 0]
+    [this . c0_security . dref = 5]
+    [this . c0_performance . dref = 3]
+    [this . c0_energy . dref = 1]
+    [this . c0_cost . dref = 13]
+  }
+  0..* c0_total_performance -> int 1..1 {}
+  0..* c0_total_energy -> int 1..1 {}
+  0..* c0_total_security -> int 1..1 {}
+  0..* c0_total_mass -> int 1..1 {}
+  0..* c0_total_cost -> int 1..1 {}
+}
+0..* c0_MyPhone : c0_MobilePhone 1..1 {}
+
+<< min c0_MyPhone . c0_total_energy . dref >>
+<< max c0_MyPhone . c0_total_performance . dref >>
+<< max c0_MyPhone . c0_total_security . dref >>
+<< min c0_MyPhone . c0_total_mass . dref >>
+<< min c0_MyPhone . c0_total_cost . dref >>

@@ -1,0 +1,18 @@
+//# OPTIONS --explicit
+abstract 0..* c0_System 0..* {
+  [this . c0_connections . dref = this . c0_Connection]
+  abstract 0..* c0_Connection 0..* {}
+  0..* c0_connections -> c0_Connection 0..* {}
+}
+0..* c0_SystemX : c0_System 1..1 {
+  0..* c0_con1 : c0_Connection 1..1 {}
+  0..* c0_con2 : c0_Connection 1..1 {}
+}
+0..* c0_SystemY : c0_System 1..1 {
+  0..* c0_con3 : c0_Connection 1..1 {}
+  0..* c0_con4 : c0_Connection 1..1 {}
+  0..* c0_con5 : c0_Connection 1..1 {}
+}
+
+assert [c0_SystemX . c0_connections . dref = (c0_SystemX . c0_con1 ++ c0_SystemX . c0_con2)]
+assert [c0_SystemY . c0_connections . dref = ((c0_SystemY . c0_con3 ++ c0_SystemY . c0_con4) ++ c0_SystemY . c0_con5)]

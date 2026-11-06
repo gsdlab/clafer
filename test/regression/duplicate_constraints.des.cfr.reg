@@ -1,0 +1,8 @@
+//# OPTIONS --explicit
+0..* c0_D 1..1 {
+  [this . c0_c . dref = 5]
+  [this . c0_c . dref = 5]
+  [(#this . c0_b) >= 1]
+  0..* c0_b 0..1 {}
+  0..* c0_c -> int 0..1 {}
+}

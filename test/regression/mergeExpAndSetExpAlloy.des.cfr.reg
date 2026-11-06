@@ -1,0 +1,38 @@
+//# OPTIONS --explicit
+[((#c0_numberOne) >= 1) => (c0_numberOne . dref = 1)]
+[((#c0_alice) >= 1) => (c0_alice . dref = "Alice")]
+0..* c0_numberOne -> int 1..1 {}
+0..* c0_alice -> string 1..1 {}
+0..* c0_likertScaleVal -> int 1..1 {
+  [((((this . dref = 1) || (this . dref = 2)) || (this . dref = 3)) || (this . dref = 4)) || (this . dref = 5)]
+}
+0..* c0_nonZero -> int 1..1 {
+  [!(this . dref = 0)]
+}
+abstract 0..* c0_Person 0..* {
+  abstract 0..* c0_Head 0..* {}
+  0..* c0_likes -> c0_Person 0..1 {}
+}
+0..* c0_Alice : c0_Person 1..1 {
+  [this . c0_likes . dref = c0_Ella]
+  0..* c1_Head : c0_Head 1..1 {}
+}
+0..* c0_Ella : c0_Person 1..1 {
+  [(#this . c0_likes) = 0]
+  0..* c0_h 1..1 {}
+}
+0..* c0_heads -> c0_Head 0..* {}
+0..* c0_friend -> c0_Person 2..2 {
+  [this . dref in (c0_Alice ++ c0_Ella)]
+}
+0..* c0_onlyAlice -> c0_Person 1..1 {
+  [this . dref in (c0_Alice ** c0_Person)]
+}
+0..* c0_exceptElla -> c0_Person 1..1 {
+  [this . dref in (c0_Person -- c0_Ella)]
+}
+
+assert [c0_Alice in c0_onlyAlice . dref]
+assert [c0_Ella not in c0_onlyAlice . dref]
+assert [c0_Alice in c0_exceptElla . dref]
+assert [c0_Ella not in c0_exceptElla . dref]

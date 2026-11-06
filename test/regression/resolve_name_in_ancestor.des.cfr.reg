@@ -1,0 +1,13 @@
+//# OPTIONS --explicit
+0..* c0_person 1..1 {
+  0..* c0_haha 1..1 {
+    0..* c0_lala 1..1 {
+      0..* c0_age -> int 1..1 {}
+    }
+  }
+  0..* c0_ble 1..1 {
+    0..* c0_married 0..1 {
+      [this . parent . parent . c0_haha . c0_lala . c0_age . dref >= 18]
+    }
+  }
+}

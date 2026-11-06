@@ -1,0 +1,3 @@
+//# OPTIONS --explicit
+abstract 0..* c0_A 0..* {}
+0..* c0_a : c0_A 1..1 {}

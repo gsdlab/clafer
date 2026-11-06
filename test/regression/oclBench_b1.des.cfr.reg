@@ -1,0 +1,71 @@
+//# OPTIONS --explicit
+[c0_adaBobCyd . dref . c0_name . dref = c0_stringSet1 . dref]
+[c0_personWithUndefinedHusband1 . dref . c0_name . dref = c0_stringSet2 . dref]
+[c0_personWithUndefinedHusband2 . dref . c0_name . dref = c0_stringSet2 . dref]
+[(c0_possiblePairs . dref . c0_first . dref . c0_name . dref = "Ada") && (c0_possiblePairs . dref . c0_second . dref . c0_name . dref = "Bob")]
+[all p : c0_Person | (p . c0_name . dref in c0_stringSet1 . dref) => (p in c0_adaBobCyd . dref)]
+[all p : c0_Person | (p . c0_husband . dref = c0_emptyPersonSet1 . dref) => (p in c0_personWithUndefinedHusband1 . dref)]
+[all p : c0_Person | (p . c0_husband . dref = c0_emptyPersonSet2 . dref) => (p in c0_personWithUndefinedHusband2 . dref)]
+[all p : c0_Person | ((#p . c0_wife) = 0) => (p in c0_personWithNoWife . dref)]
+[c0_emptyPersonSet1 . dref = c0_personWithNoWife . dref . c0_wife . dref]
+[all p; q : c0_Person | ((((((p . c0_gender . dref = "female") && ((#p . c0_alive) >= 1)) && (p . c0_civstat . dref != "married")) && (q . c0_gender . dref = "male")) && ((#q . c0_alive) >= 1)) && (q . c0_civstat . dref != "married")) => (one pair : c0_personPair | ((pair . c0_first . dref = p) && (pair . c0_second . dref = q)) && (pair in c0_possiblePairs . dref))]
+abstract 0..* c0_Person 0..* {
+  [(((this . c0_civstat . dref = "single") || (this . c0_civstat . dref = "married")) || (this . c0_civstat . dref = "divorced")) || (this . c0_civstat . dref = "widowed")]
+  [(this . c0_gender . dref = "female") || (this . c0_gender . dref = "male")]
+  [all p : c0_Person | (this != p) => (this . c0_name . dref != p . c0_name . dref)]
+  [one p : c0_Person | p . c0_name . dref = this . c0_name . dref]
+  0..* c0_name -> string 1..1 {}
+  0..* c0_civstat -> string 1..1 {}
+  0..* c0_gender -> string 1..1 {}
+  0..* c0_alive 0..1 {}
+  0..* c0_husband -> c0_Person 0..1 {
+    [this . parent in this . dref . c0_wife . dref]
+  }
+  0..* c0_wife -> c0_Person 0..1 {
+    [this . parent in this . dref . c0_husband . dref]
+  }
+}
+0..* c0_ada : c0_Person 1..1 {
+  [(((((this . c0_name . dref = "Ada") && (this . c0_civstat . dref = "widowed")) && (this . c0_gender . dref = "female")) && ((#this . c0_alive) >= 1)) && ((#this . c0_husband) = 0)) && ((#this . c0_wife) = 0)]
+}
+0..* c0_cyd : c0_Person 1..1 {
+  [(((((this . c0_name . dref = "Cyd") && (this . c0_civstat . dref = "married")) && (this . c0_gender . dref = "male")) && ((#this . c0_alive) = 0)) && ((#this . c0_husband) = 0)) && ((#this . c0_wife) = 0)]
+}
+0..* c0_eve : c0_Person 1..1 {
+  [(((((this . c0_name . dref = "Eve") && (this . c0_civstat . dref = "married")) && (this . c0_gender . dref = "female")) && ((#this . c0_alive) >= 1)) && (this . c0_husband . dref = c0_dan)) && ((#this . c0_wife) = 0)]
+}
+0..* c0_bob : c0_Person 1..1 {
+  [(((((this . c0_name . dref = "Bob") && (this . c0_civstat . dref = "divorced")) && (this . c0_gender . dref = "male")) && ((#this . c0_alive) >= 1)) && ((#this . c0_husband) = 0)) && ((#this . c0_wife) = 0)]
+}
+0..* c0_dan : c0_Person 1..1 {
+  [(((((this . c0_name . dref = "Dan") && (this . c0_civstat . dref = "married")) && (this . c0_gender . dref = "male")) && ((#this . c0_alive) >= 1)) && ((#this . c0_husband) = 0)) && (this . c0_wife . dref = c0_eve)]
+}
+0..* c0_adaBobCyd -> c0_Person 0..* {
+  [this . dref . c0_name . dref in c0_stringSet1 . dref]
+}
+0..* c0_personWithUndefinedHusband1 -> c0_Person 0..* {
+  [this . dref . c0_husband . dref = c0_emptyPersonSet1 . dref]
+}
+0..* c0_personWithUndefinedHusband2 -> c0_Person 0..* {
+  [this . dref . c0_husband . dref = c0_emptyPersonSet2 . dref]
+}
+0..* c0_personWithNoWife -> c0_Person 0..* {
+  [(#this . dref . c0_wife) = 0]
+}
+0..* c0_emptyPersonSet1 -> c0_Person 0..* {}
+0..* c0_emptyPersonSet2 -> c0_Person 0..* {
+  [1 > 2]
+}
+0..* c0_personPair 0..* {
+  0..* c0_first -> c0_Person 1..1 {}
+  0..* c0_second -> c0_Person 1..1 {}
+}
+0..* c0_possiblePairs -> c0_personPair 0..* {
+  [(((this . dref . c0_first . dref . c0_gender . dref = "female") && ((#this . dref . c0_first . dref . c0_alive) >= 1)) && (this . dref . c0_first . dref . c0_civstat . dref != "married")) && (((this . dref . c0_second . dref . c0_gender . dref = "male") && ((#this . dref . c0_second . dref . c0_alive) >= 1)) && (this . dref . c0_second . dref . c0_civstat . dref != "married"))]
+}
+0..* c0_stringSet1 -> string 3..3 {
+  [((this . dref = "Ada") || (this . dref = "Bob")) || (this . dref = "Cyd")]
+}
+0..* c0_stringSet2 -> string 4..4 {
+  [(((this . dref = "Ada") || (this . dref = "Bob")) || (this . dref = "Cyd")) || (this . dref = "Dan")]
+}

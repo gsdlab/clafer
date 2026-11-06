@@ -1,0 +1,18 @@
+//# OPTIONS --explicit
+[((#c0_total_x) >= 1) => (c0_total_x . dref = (sum c0_x . dref))]
+0..* c0_x -> int 3..3 {}
+0..* c0_total_x -> int 1..1 {}
+0..* c0_y 1..1 {
+  [((#this . c0_total_y) >= 1) => (this . c0_total_y . dref = (sum c0_x . dref))]
+  0..* c0_total_y -> int 1..1 {}
+}
+
+<< min max c0_x . dref >>
+<< min max c0_x . dref >>
+<< max min c0_x . dref >>
+<< max min c0_x . dref >>
+<< min sum c0_x . dref >>
+<< max product c0_x . dref >>
+<< min #c0_x >>
+<< min c0_total_x . dref >>
+<< min c0_y . c0_total_y . dref >>

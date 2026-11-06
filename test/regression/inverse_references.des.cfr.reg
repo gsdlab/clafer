@@ -1,0 +1,50 @@
+//# OPTIONS --explicit
+abstract 0..* c0_Service 0..* {
+  [this in this . c0_machine . dref . c0_services . dref]
+  0..* c0_requirements : c0_Requirements 1..1 {}
+  0..* c0_machine -> c0_Machine 1..1 {}
+}
+abstract 0..* c0_Requirements 0..* {
+  0..* c0_cpu ->> int 1..1 {}
+}
+abstract 0..* c0_Resources : c0_Requirements 0..* {}
+abstract 0..* c0_Machine 0..* {
+  [all s : this . c0_services | s . dref . c0_machine . dref = this]
+  [((#this . c0_isFree) >= 1) <=> ((#this . c0_services) = 0)]
+  0..* c0_services -> c0_Service 0..* {}
+  0..* c0_isFree 0..1 {}
+  0..* c0_limits : c0_Resources 1..1 {}
+  0..* c0_utilization : c0_Resources 1..1 {
+    [this . c0_cpu . dref = (sum this . parent . c0_services . dref . c0_requirements . c0_cpu . dref)]
+    [this . c0_cpu . dref < this . parent . c0_limits . c0_cpu . dref]
+  }
+}
+abstract 0..* c0_Task 0..* {
+  [((#this . c0_total_free) >= 1) => (this . c0_total_free . dref = (#c0_Machine . c0_isFree))]
+  0..* c0_total_free -> int 1..1 {}
+}
+0..* c0_MyTask : c0_Task 1..1 {
+  0..* c0_GoogleCA : c0_Machine 1..1 {
+    [this . c0_limits . c0_cpu . dref = 10]
+  }
+  0..* c0_GoogleNY : c0_Machine 1..1 {
+    [this . c0_limits . c0_cpu . dref = 16]
+  }
+  0..* c0_GoogleTX : c0_Machine 1..1 {
+    [this . c0_limits . c0_cpu . dref = 14]
+  }
+  0..* c0_MailService : c0_Service 1..1 {
+    [this . c0_requirements . c0_cpu . dref = 4]
+  }
+  0..* c0_SearchService : c0_Service 1..1 {
+    [this . c0_requirements . c0_cpu . dref = 3]
+  }
+  0..* c0_CalendarService : c0_Service 1..1 {
+    [this . c0_requirements . c0_cpu . dref = 1]
+  }
+  0..* c0_DriveService : c0_Service 1..1 {
+    [this . c0_requirements . c0_cpu . dref = 2]
+  }
+}
+
+<< max c0_MyTask . c0_total_free . dref >>

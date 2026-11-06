@@ -104,6 +104,8 @@ library
                       , Language.Clafer.Generator.Alloy
                       , Language.Clafer.Generator.AlloyLtl
                       , Language.Clafer.Generator.Choco
+                      , Language.Clafer.Generator.ChocoModel
+                      , Language.Clafer.Generator.Explicit
                       , Language.Clafer.Generator.Concat
                       , Language.Clafer.Generator.Graph
                       , Language.Clafer.Generator.Html

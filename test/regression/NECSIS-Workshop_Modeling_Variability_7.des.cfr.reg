@@ -1,0 +1,35 @@
+//# OPTIONS --explicit
+0..* c0_BumbleBee : c0_Camaro 1..1 {
+  [(#this . c0_transformer) >= 1]
+}
+abstract 0..* c0_Camaro : c0_Car 0..* {
+  [(#this . c0_CC . c0_ACC) >= 1]
+  [(#this . c0_CC . c0_switch . c0_backlight) >= 1]
+  0..* c0_transformer 0..1 {}
+}
+abstract 0..* c0_Car 0..* {
+  [((#this . c0_CC . c0_ACC) >= 1) => ((#this . c0_FCA) >= 1)]
+  0..* c0_ABS 0..1 {}
+  1..1 c0_Transmission 1..1 {
+    0..* c0_Automatic 0..1 {}
+    0..* c0_Manual 0..1 {}
+  }
+  0..* c0_FCA : c1_FCA 0..1 {}
+  0..* c0_CC : c1_CC 0..1 {}
+}
+abstract 0..* c1_FCA 0..* {
+  1..1 c0_Sensor 1..1 {
+    0..* c0_Radar 0..1 {}
+    0..* c0_Lidar 0..1 {}
+  }
+  1..1 c0_Alert 1..1 {
+    0..* c0_Haptic 0..1 {}
+    0..* c0_Audible 0..1 {}
+  }
+}
+abstract 0..* c1_CC 0..* {
+  0..* c0_switch 1..1 {
+    0..* c0_backlight 0..1 {}
+  }
+  0..* c0_ACC 0..1 {}
+}

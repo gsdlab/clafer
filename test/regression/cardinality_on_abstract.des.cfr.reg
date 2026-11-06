@@ -1,0 +1,5 @@
+//# OPTIONS --explicit
+[(#c0_a) >= 1]
+abstract 0..* c0_a 0..* {}
+0..* c0_b 1..1 {}
+0..* c0_c 0..1 {}

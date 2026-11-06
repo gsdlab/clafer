@@ -1,0 +1,29 @@
+//# OPTIONS --explicit
+0..* c0_a 1..1 {
+  [this . c0_b . dref . c0_f . dref . dref = c0_h]
+  [this . c0_b . dref . c0_f . dref . dref = c0_h]
+  [this . c0_b . dref . c0_f . dref . dref = c0_h]
+  [this . c0_b . dref . c0_f . dref . dref = c0_h]
+  0..* c0_b -> c0_e 1..1 {
+    [this . dref . c0_f . dref . dref = c0_h]
+    [this . dref . c0_f . dref . dref = c0_h]
+    [this . dref . c0_f . dref . dref = c0_h]
+    [this . dref . c0_f . dref . dref = c0_h]
+  }
+  0..* c0_c 1..1 {
+    [this . parent . c0_b . dref . c0_f . dref = c0_g]
+    [this . parent . c0_b . dref . c0_f . dref = c0_g]
+    [this . parent . c0_b . dref . c0_f . dref = c0_g]
+    [this . parent . c0_b . dref . c0_f . dref . dref = c0_h]
+    0..* c0_d 1..1 {
+      [this . parent . parent . c0_b . dref = c0_e]
+      [this . parent . parent . c0_b . dref = c0_e]
+      [this . parent . parent . c0_b . dref = c0_e]
+    }
+  }
+}
+0..* c0_e 1..1 {
+  0..* c0_f -> c0_g 0..1 {}
+}
+0..* c0_g -> c0_h 1..1 {}
+0..* c0_h 1..1 {}

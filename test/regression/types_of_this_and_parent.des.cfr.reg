@@ -1,0 +1,7 @@
+//# OPTIONS --explicit
+0..* c0_A 1..1 {
+  [(#this) >= 1]
+  0..* c0_b ->> c0_A 0..1 {
+    [(#this . parent) >= 1]
+  }
+}
