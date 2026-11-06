@@ -175,6 +175,9 @@ resolveRootModule (imodule, _)
     exists l' = PExp (Just TBoolean) "" noSpan $ IDeclPExp ISome [] l'
 
   parentKindOf :: PExp -> Maybe ParentKind
+  -- an intersection is in its right operand, e.g., this ** g.f2 of a split constraint, which an
+  -- explicit model keeps: its instances have the parents of the right operand's
+  parentKindOf PExp{_exp = IFunExp op' [_, r]} | op' == iIntersection = parentKindOf r
   parentKindOf p = case _iType p of
     Just (TClafer uids@(_:_)) | Just cs <- mapM (findIClafer uidMap) uids, all isRootChild cs -> Just ParentRoot
     Just (TClafer [uid']) | Just c <- findIClafer uidMap uid', isTopLevel c, _isAbstract c -> Just $ parentKind uid'

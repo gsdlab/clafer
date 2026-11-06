@@ -88,7 +88,7 @@ clafer = ClaferArgs {
   no_layout           = def &= help "Don't resolve off-side rule layout." &= name "l",
   new_layout          = def &= help "Use new fast layout resolver (experimental)." &= name "nl",
   check_duplicates    = def &= help "Check duplicated clafer names in the entire model."  &= name "c",
-  skip_resolver       = def &= help "Skip name resolution." &= name "f",
+  skip_resolver       = def &= help "The names of the clafers are their UIDs, as in an explicit model: skip renaming them. Names must be unique; they are still resolved and checked." &= name "f",
   keep_unused         = def &= help "Keep uninstantated abstract clafers ('alloy' mode only)." &= name "k",
   no_stats            = def &= help "Don't print statistics." &= name "s",
   validate            = def &= help "Validate outputs of all modes. Uses '<tooldir>/alloy6.2.0.jar' for Alloy models, '<tooldir>/chocosolver.jar' for Choco models, and Clafer translator for desugared Clafer models. Use '--tooldir' to override the default location ('.') of these tools." &= name "v",

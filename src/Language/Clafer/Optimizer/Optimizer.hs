@@ -202,22 +202,20 @@ split' (IClaferId modName' id' isTop' bind') f = do
 split' _ _ = error "Function split' from Optimizer expects an argument of type ClaferId or IFunExp but was given another IExp"
 
 -- -----------------------------------------------------------------------------
--- checking if all clafers have unique names and don't extend other clafers
+-- checking if the names of all clafers can be their UIDs
 
+-- | Whether the name of every clafer can be its UID, so that `-f` can skip renaming.
 allUnique :: IModule -> Bool
-allUnique iModule = dontExtend && identsUnique && noApostrophes
+allUnique = null . nonUidNames
+
+-- | The clafers whose names cannot be their UIDs: a name of several clafers, or a name with an
+-- | apostrophe, which a UID cannot contain (see genId in ResolverInheritance).
+nonUidNames :: IModule -> [ IClafer ]
+nonUidNames iModule = filter (\c -> '\'' `elem` _ident c || Map.findWithDefault 0 (_ident c) counts > (1 :: Int)) allClafers
   where
     allClafers :: [ IClafer ]
     allClafers = universeOn biplate iModule
-
-    -- True when getSuper always returns Nothing and therefore concatMap returned []
-    dontExtend = null $ concatMap getSuper allClafers
-    allIdents = map _ident allClafers
-    -- all idents are unique when nub cannot remove any duplicates
-    identsUnique = (length allIdents) == (length $ nub allIdents)
-    -- without the name resolver, the names are the UIDs, which cannot contain apostrophes
-    -- (see genId in ResolverInheritance)
-    noApostrophes = not $ any ('\'' `elem`) allIdents
+    counts = Map.fromListWith (+) [ (_ident c, 1) | c <- allClafers ]
 
 checkConstraintElement :: [String] -> IElement -> Bool
 checkConstraintElement idents x = case x of

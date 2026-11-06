@@ -396,7 +396,9 @@ resolveTPExp' p@PExp{_inPos, _exp} =
             | _op `elem` ltlBinOps = test (isTBoolean t1 && isTBoolean t2) >> return TBoolean
             | _op `elem` [iLt, iGt, iLte, iGte] = test (numeric t1 && numeric t2) >> return TBoolean
             | _op `elem` [iEq, iNeq] = testNotSame arg1' arg2' >> testIntersect t1 t2 >> return TBoolean
-            | _op == iDifference = testNotSame arg1' arg2' >> testIntersect t1 t2 >> return t1
+            -- x -- x is the empty set, which Clafer has no other syntax for, e.g., in ResolverRoot's
+            -- if some extra then a else a -- a (kbak/clafer-semantics#134)
+            | _op == iDifference = testIntersect t1 t2 >> return t1
             | _op == iIntersection = testNotSame arg1' arg2' >> testIntersect t1 t2
             | _op `elem` [iDomain, iRange] = testIntersect t1 t2
             | _op `elem` relSetBinOps = testIntersect t1 t2 >> return TBoolean

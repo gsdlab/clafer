@@ -193,6 +193,14 @@ resolveNav    env     pexp0@PExp{_inPos=pos', _exp=x} isFirst =
         PExp{_exp=IClaferId{_sident="parent"}} | Just c <- listToMaybe path1, isRootChild c, isSingleInstance pexp1' ->
           return (pexp0{_exp=rootIExp}, [])
         _ -> return (pexp0{_exp=IFunExp iJoin [pexp1', pexp2']}, path2)
+    -- a navigation from an intersection or a difference of sets, e.g., (this ** g.f2).parent,
+    -- which ResolverRoot writes for a split constraint (#112) and an explicit model keeps: the
+    -- set is in the right operand of `**` and in the left of `--`, whose path the navigation
+    -- continues from
+    IFunExp op' [l, r] | op' == iIntersection || op' == iDifference -> do
+      (l', pathL) <- resolveNav env l True
+      (r', pathR) <- resolveNav env r True
+      return (pexp0{_exp = IFunExp op' [l', r']}, if op' == iIntersection then pathR else pathL)
     IClaferId _ "root" _ _ -> return (pexp0, [])
     IClaferId modName' id' _ _ -> if isFirst
       then do

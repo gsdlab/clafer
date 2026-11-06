@@ -179,10 +179,21 @@ genCModule (imodule@IModule{_mDecls}, genv') scopes  (minInt, maxInt) decimalDig
             genTarget target = target
     genSuperRefConstraintAssertGoal "root" (IEConstraint True pexp) = "Constraint(" ++ genConstraintPExp pexp ++ ");\n"
     genSuperRefConstraintAssertGoal pUID (IEConstraint True pexp) = pUID ++ ".addConstraint(" ++ genConstraintPExp pexp ++ ");\n"
-    genSuperRefConstraintAssertGoal _ (IEConstraint False pexp) = "assert(" ++ genConstraintPExp pexp ++ ");\n"
+    genSuperRefConstraintAssertGoal "root" (IEConstraint False pexp) = "assert(" ++ genConstraintPExp pexp ++ ");\n"
+    -- chocosolver's assertions have no context: a nested assertion holds for each instance of its
+    -- clafer, so it is quantified over them, with `this` as the local this_, e.g., in clafer c0_P:
+    -- assert(all([decl([this_ = local("this_")], global(c0_P))], ... join(this_, c0_age) ...))
+    genSuperRefConstraintAssertGoal pUID (IEConstraint False pexp) =
+        "assert(all([decl([" ++ thisLocal ++ " = local(\"" ++ thisLocal ++ "\")], global(" ++ pUID ++ "))], "
+        ++ genConstraintPExp (transformOn biplate thisToLocal pexp) ++ "));\n"
+      where
+        thisToLocal e@IClaferId{_sident = "this"} = e{_sident = thisLocal}
+        thisToLocal e = e
     genSuperRefConstraintAssertGoal _ (IEGoal True PExp{_exp=IFunExp _ [pexp]})  = "max(" ++ genConstraintPExp pexp ++ ");\n"
     genSuperRefConstraintAssertGoal _ (IEGoal False PExp{_exp=IFunExp _ [pexp]})  = "min(" ++ genConstraintPExp pexp ++ ");\n"
     genSuperRefConstraintAssertGoal _ _ = ""
+
+    thisLocal = "this_"
 
 
     -- A reference to a set expression, e.g., `-> 1, 2, 3`, `-> integer -- 0` or

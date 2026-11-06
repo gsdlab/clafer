@@ -746,10 +746,15 @@ analyze args' iModule = do
   _ <-liftError $ findDupModule args' iModule
   let
     au = allUnique iModule
-  let args'' = args'{skip_resolver = au && (skip_resolver args')}
-  (rTree, genv) <- liftError $ resolveModule args'' iModule
+  -- With -f, the names are the UIDs, as in an explicit model: a name that cannot be a UID is an error.
+  case nonUidNames iModule of
+    (c : _) | skip_resolver args' -> throwErr (SemanticErr (_cinPos c) $
+      "With -f (--skip-resolver), the names of the clafers are their UIDs, so they must be unique and without apostrophes, but "
+      ++ _ident c ++ " is not" :: ClaferSErr)
+    _ -> return ()
+  (rTree, genv) <- liftError $ resolveModule args' iModule
   let tTree = transModule rTree
-  return (optimizeModule args'' (tTree, genv), genv, au)
+  return (optimizeModule args' (tTree, genv), genv, au)
 
 addStats :: String -> String -> String
 addStats code stats = "/*\n" ++ stats ++ "*/\n" ++ code

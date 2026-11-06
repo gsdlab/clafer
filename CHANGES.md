@@ -19,6 +19,11 @@
 * Temporal models leave out the abstract clafers that the optimizer removed, as static models do; the temporal generator took the clafers of the model before the optimization.
 * The unused JavaCC grammar `src/Language/Clafer/Front/Clafer.jj` is removed. It dated from 2012, was never part of the compiler, and did not follow the syntax since 0.4; the grammar is `src/clafer.cf`.
 * Scope files (`.cfr-scope`, claferIG's `loadScopes`): entries other than `{"lpqName": name, "scope": n}`, e.g., chocosolver's `{"int": [-8, 7]}` or `{"defaultScope": 1}`, are skipped; they stopped claferIG with an error. A name may also be a clafer's UID, e.g., `c0_Cfeatures`, as chocosolver writes them.
+* Explicit models: a model with everything written out, e.g., as chocosolver's `AstPrinter` prints one, is a Clafer model that compiles to itself with `clafer -f -k -l --ss=none`: all 131 positive test models with a Choco output, printed that way, compile to the same model and give the same instances.
+  * `-f` (`--skip-resolver`) means that the names of the clafers are their UIDs: they are not renamed, and they are still resolved and checked, so a misspelled name is an error. It was ignored for models with inheritance, which were renamed (`c0_A` became `c0_c0_A`), and without inheritance it skipped the name resolution and its checks. A name that cannot be a UID, of several clafers or with an apostrophe, is an error with `-f`; `-f` was ignored then too.
+  * The Choco output of a nested assertion is quantified over the instances of its clafer, e.g., `assert [ age >= 0 ]` in `abstract P` is `all this_ : P | this_.age >= 0`. It was an assertion over `this` without a context, which chocosolver's validation (`-v`) refused with a type error.
+  * A navigation from an intersection or a difference of sets, e.g., `(this ** g.f2).parent`, resolves: from the right operand of `**` and the left of `--`, which contain the set. The split constraints of #112 are of this form.
+  * `x -- x` is allowed, as the empty set, for which Clafer has no other syntax ([kbak/clafer-semantics#134](https://github.com/kbak/clafer-semantics/issues/134)); it was refused as redundant.
 
 ##### Clafer Version 0.5.6, Nov 1, 2026
 

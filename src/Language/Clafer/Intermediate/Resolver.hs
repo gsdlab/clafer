@@ -35,15 +35,15 @@ import Language.Clafer.Intermediate.ResolverType
 import Language.Clafer.Intermediate.ResolverInheritance
 import Language.Clafer.Intermediate.ResolverRoot
 
--- | Run the various resolvers
+-- | Run the various resolvers. With -f (skip_resolver), the names are the UIDs, as in an
+-- | explicit model: the clafers are not renamed, but all names are still resolved and checked.
 resolveModule :: ClaferArgs -> IModule -> Resolve (IModule, GEnv)
 resolveModule    args'         imodule =
   do
     r <- resolveNModule $ nameModule (skip_resolver args') imodule
-    resolveNamesModule args' =<< rom' (rem' r)
+    resolveNamesModule =<< resolveOModule (rem' r)
   where
   rem' = if flatten_inheritance args' then resolveEModule else id
-  rom' = if skip_resolver args' then return else resolveOModule
 
 
 -- | Name resolver
@@ -90,13 +90,11 @@ nameIDecl :: MonadState GEnv m => IDecl -> m IDecl
 nameIDecl (IDecl isDisj' dels body') = IDecl isDisj' dels `liftM` (namePExp body')
 
 -- -----------------------------------------------------------------------------
-resolveNamesModule :: ClaferArgs -> (IModule, GEnv) -> Resolve (IModule, GEnv)
-resolveNamesModule args' (imodule, genv') =
+resolveNamesModule :: (IModule, GEnv) -> Resolve (IModule, GEnv)
+resolveNamesModule (imodule, genv') =
   do
     imodule' <- foldM (flip ($)) imodule $ map (\f -> flip (curry f) genv') funs
     return (imodule', genv'{uidClaferMap = createUidIClaferMap imodule'})
   where
   funs :: [(IModule, GEnv) -> Resolve IModule]
-  funs
-    | skip_resolver args' = [return . analyzeModule, resolveRedefinition, resolveTModule, resolveRootModule]
-    | otherwise = [ return . analyzeModule, resolveModuleNames, resolveRedefinition, resolveTModule, resolveRootModule]
+  funs = [ return . analyzeModule, resolveModuleNames, resolveRedefinition, resolveTModule, resolveRootModule]

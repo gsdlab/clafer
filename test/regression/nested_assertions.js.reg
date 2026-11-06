@@ -10,6 +10,6 @@ assert(implies(some(global(c0_a)), some(global(c0_a))));
 assert(implies(some(global(c0_b)), some(global(c0_b))));
 c0_age.refToUnique(Int);
 c0_P.addConstraint(greaterThanEqual(joinRef(join($this(), c0_age)), constant(0)));
-assert(greaterThanEqual(joinRef(join($this(), c0_age)), constant(0)));
+assert(all([decl([this_ = local("this_")], global(c0_P))], greaterThanEqual(joinRef(join(this_, c0_age)), constant(0))));
 c0_x.extending(c0_P);
-assert(greaterThanEqual(joinRef(join($this(), c0_age)), constant(0)));
+assert(all([decl([this_ = local("this_")], global(c0_x))], greaterThanEqual(joinRef(join(this_, c0_age)), constant(0))));
