@@ -594,8 +594,17 @@ drefIdent = "dref"
 childrenIdent :: String
 childrenIdent = "children"
 
+-- | The empty set: no instance of any clafer, the dual of @clafer@, the union of all clafers. Like
+-- | the root, it is not declared; its type is a subtype of every clafer type (kbak/clafer-semantics#134).
+noClaferIdent :: String
+noClaferIdent = "noclafer"
+
+isNoClafer :: PExp -> Bool
+isNoClafer PExp{_exp = IClaferId{_sident = s}} = s == noClaferIdent
+isNoClafer _ = False
+
 specialNames :: [String]
-specialNames = [thisIdent, parentIdent, drefIdent, rootIdent, childrenIdent]
+specialNames = [thisIdent, parentIdent, drefIdent, rootIdent, childrenIdent, noClaferIdent]
 
 isSpecial :: String -> Bool
 isSpecial = flip elem specialNames

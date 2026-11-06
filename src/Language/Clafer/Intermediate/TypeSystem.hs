@@ -97,6 +97,11 @@ rootTClafer = TClafer ["root"]
 claferTClafer :: IType
 claferTClafer = TClafer ["clafer"]
 
+-- | The type of @noclafer@, the empty set: a subtype of every clafer type, so a union with it
+-- | and an @if@ with it as a branch have the type of the other operand
+noClaferTClafer :: IType
+noClaferTClafer = TClafer ["noclafer"]
+
 numeric :: IType     -> Bool
 numeric TInteger     = True
 numeric TDecimal     = True
@@ -153,6 +158,7 @@ getTClaferByUID :: UIDIClaferMap -> UID -> Maybe IType
 getTClaferByUID    uidIClaferMap'   uid' = case uid' of
   "root"   -> Just rootTClafer
   "clafer" -> Just claferTClafer
+  "noclafer" -> Just noClaferTClafer
   _        -> findIClafer uidIClaferMap' uid' <&> getTClafer
 
 -- | Get TClafer for a given Clafer by its UID
@@ -180,6 +186,7 @@ getDrefTMapByUID :: UIDIClaferMap -> UID -> Maybe IType
 getDrefTMapByUID    uidIClaferMap'   uid' = case uid' of
   "root"   -> Nothing
   "clafer" -> Nothing
+  "noclafer" -> Nothing
   _        -> findIClafer uidIClaferMap' uid' >>= getDrefTMap
 
 
@@ -220,6 +227,7 @@ fromUnionType u =
         ["real"]    -> Just TReal
         ["root"]    -> Just rootTClafer
         ["clafer"]  -> Just claferTClafer
+        ["noclafer"] -> Just noClaferTClafer
         []          -> Nothing
         u'          -> Just $ TClafer u'
 
@@ -271,6 +279,9 @@ TInteger
 TInteger
 -}
 (+++) :: IType -> IType -> IType
+-- noclafer, the empty set, adds nothing
+TClafer ["noclafer"] +++ t2         = t2
+t1              +++ TClafer ["noclafer"] = t1
 TBoolean        +++ TBoolean        = TBoolean
 TString         +++ TString         = TString
 TReal           +++ TReal           = TReal
@@ -354,6 +365,11 @@ intersection _              TInteger        TDouble       = return $ Just TDoubl
 intersection _              TInteger        TInteger      = return $ Just TInteger
 intersection _              t               (TClafer ["clafer"]) = return $ Just t
 intersection _              (TClafer ["clafer"]) t               = return $ Just t
+-- noclafer, the empty set, is in every set of clafers
+intersection _              t@(TClafer ["noclafer"]) (TClafer _) = return $ Just t
+intersection _              (TClafer _) t@(TClafer ["noclafer"]) = return $ Just t
+intersection _              t@(TClafer ["noclafer"]) (TUnion _)  = return $ Just t
+intersection _              (TUnion _) t@(TClafer ["noclafer"])  = return $ Just t
 intersection uidIClaferMap' (TUnion t1s)    t2@(TClafer _) = do
   t1s' <- mapM (intersection uidIClaferMap' t2) t1s
   return $ case catMaybes t1s' of
@@ -428,6 +444,11 @@ getIfThenElseType _              TDouble         TDouble       = return $ Just T
 getIfThenElseType _              TDouble         TInteger      = return $ Just TDouble
 getIfThenElseType _              TInteger        TDouble       = return $ Just TDouble
 getIfThenElseType _              TInteger        TInteger      = return $ Just TInteger
+-- noclafer, the empty set, as a branch: the type of the other branch, of clafers
+getIfThenElseType _              (TClafer ["noclafer"]) t@(TClafer _) = return $ Just t
+getIfThenElseType _              t@(TClafer _) (TClafer ["noclafer"]) = return $ Just t
+getIfThenElseType _              (TClafer ["noclafer"]) t@(TUnion _)  = return $ Just t
+getIfThenElseType _              t@(TUnion _)  (TClafer ["noclafer"]) = return $ Just t
 -- Each type of a union must combine with the other branch, e.g., a union of
 -- clafers and booleans does not combine with clafers.
 getIfThenElseType uidIClaferMap' (TUnion t1s)    t2            = combineAll uidIClaferMap' [ (t1, t2) | t1 <- t1s ]

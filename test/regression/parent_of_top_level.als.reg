@@ -21,7 +21,7 @@ one sig c0_b
   some c0_a
   (some c0_extra) <=> (some c0_extra)
   (((some c0_extra) => 1 else 0) = 1) => (some c0_extra)
-  (some ((some c0_extra) => (c0_a) else ((c0_a) - (c0_a)))) => (some c0_extra) }
+  (some ((some c0_extra) => (c0_a) else none)) => (some c0_extra) }
 
 fact { 0 < 1 }
 fact { (((c0_a).@r_c0_x).@c0_x_ref) = 2 }

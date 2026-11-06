@@ -372,6 +372,8 @@ if <boolean expression> then <set expression> else <set expression>
 `parent` is a relation from the context clafer to its parent.
 `dref` is a relation from the context reference clafer to its target set.
 `root` is the parent of the instances of the top-level clafers. It is synthetic: a navigation from it is a navigation from the top level, so in a top-level clafer `b`, `parent.a` is `root.a`, i.e., the top-level clafer `a`. `some root` holds and `#root` is 1, but `root` cannot be used as a set otherwise. The parent of a set of instances of a top-level clafer, e.g., `a.parent` for `a ?`, is the root when an instance exists and empty otherwise: `some a.parent` is `some a`, and `a.parent.c` is `c` when `a` exists. In an abstract clafer whose subclafers are at the top level and nested, the parent of `this` is the root for the instances of the top-level ones.
+`clafer` is the set of all instances of all clafers, the root excluded: the union of the clafers that have no super clafer, nested ones included (static models only).
+`noclafer` is the empty set: no instance of any clafer. Its type is below every clafer type, so `a ++ noclafer` and `if c then a else noclafer` have the type of `a`; `a ++ noclafer = a`, `a ** noclafer = noclafer`, `noclafer in a`, `no noclafer` and `#noclafer = 0` hold. Like `root` and `clafer`, it is a reserved name. An explicit model, which writes everything out, uses it where Clafer has no other way to write the empty set.
 
 
 `<identifier>`:

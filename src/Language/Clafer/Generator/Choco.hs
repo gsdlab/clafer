@@ -195,6 +195,24 @@ genCModule (imodule@IModule{_mDecls}, genv') scopes  (minInt, maxInt) decimalDig
 
     thisLocal = "this_"
 
+    -- an empty set of the clafer; with no clafer beside it, e.g., in #noclafer, of the model's
+    -- first clafer, since chocosolver neither counts nor quantifies sets of integers
+    emptyOf :: Maybe String -> String
+    emptyOf c = "constant(" ++ fromMaybe "Int" (c <|> firstClafer) ++ ")"
+    firstClafer = listToMaybe [ _uid c | IEClafer c <- _mDecls ]
+
+    -- the clafer whose instances a set expression is of, e.g., c0_a for a, its type's first; for
+    -- an expression of the type of noclafer, e.g., a ** noclafer, that of an operand
+    claferOf :: PExp -> Maybe String
+    claferOf PExp{_iType = t, _exp = e} = (claferOfType =<< t) <|> case e of
+        IFunExp _ args' -> listToMaybe $ mapMaybe claferOf args'
+        _ -> Nothing
+      where
+        claferOfType (TClafer (u : _)) | u `notElem` [noClaferIdent, rootIdent, baseClafer] = Just u
+        claferOfType (TMap so _) = claferOfType so
+        claferOfType (TUnion (t' : _)) = claferOfType t'
+        claferOfType _ = Nothing
+
 
     -- A reference to a set expression, e.g., `-> 1, 2, 3`, `-> integer -- 0` or
     -- `-> Alice ++ Ella`, is a reference to a type containing all its values,
@@ -309,7 +327,15 @@ genCModule (imodule@IModule{_mDecls}, genv') scopes  (minInt, maxInt) decimalDig
         (if _iType (head args') == Just TString then "concat" else "add") ++
             "(" ++ intercalate ", " (map genConstraintPExp args') ++ ")"
     genConstraintExp (IFunExp op' args') =
-        mapFunc op' ++ "(" ++ intercalate ", " (map genConstraintPExp args') ++ ")"
+        mapFunc op' ++ "(" ++ intercalate ", " (map genArg args') ++ ")"
+        where
+            -- noclafer, the empty set, is an empty constant of the type of a set beside it, e.g.,
+            -- constant(c0_a) in if some extra then a else noclafer
+            genArg a
+                | isNoClafer a = emptyOf $ listToMaybe $ mapMaybe claferOf $ filter (not . isNoClafer) args'
+                | otherwise    = genConstraintPExp a
+    -- noclafer alone, e.g., #noclafer
+    genConstraintExp IClaferId{_sident = "noclafer"} = emptyOf Nothing
     -- this is a keyword in Javascript so use "$this" instead
     genConstraintExp IClaferId{_sident = "this"} = "$this()"
     genConstraintExp IClaferId{_sident}

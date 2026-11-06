@@ -37,15 +37,18 @@
 --     instances of the top-level subclafers, the parent is the root.
 module Language.Clafer.Intermediate.ResolverRoot (resolveRootModule) where
 
+import Control.Lens.Plated (universeOn)
 import Control.Monad
 import Control.Monad.Except
+import Data.Data.Lens (biplate)
+import Data.Maybe (isNothing)
 import qualified Data.StringMap as SMap
 
 import Language.ClaferT
 import Language.Clafer.Front.AbsClafer (noSpan)
 import Language.Clafer.Common
 import Language.Clafer.Intermediate.Intclafer
-import Language.Clafer.Intermediate.TypeSystem (rootTClafer)
+import Language.Clafer.Intermediate.TypeSystem (rootTClafer, noClaferTClafer, (+++))
 
 type Resolve = Either ClaferSErr
 
@@ -56,12 +59,17 @@ resolveRootModule :: (IModule, GEnv) -> Resolve IModule
 resolveRootModule (imodule, _)
   -- the temporal generator has a root signature, and the parent of an instance of a top-level
   -- abstract clafer is the root for those of its top-level subclafers there
-  | isDynamicModule imodule = return imodule
+  | isDynamicModule imodule = case [ p | p@PExp{_exp = IClaferId{_sident = s}} <- universeOn biplate imodule, s == baseClafer ] of
+    -- the instances of the clafers change over a trace
+    p : _ -> throwError $ SemanticErr (_inPos p) "`clafer` as a value, the union of all clafers, is not supported in temporal models"
+    [] -> return imodule
   | otherwise = do
     decls' <- mapM (rootElement Nothing) $ _mDecls imodule
     return imodule{_mDecls = decls'}
   where
   uidMap = createUidIClaferMap imodule
+  -- the clafers with no super clafer, whose union is all clafers, in the order of the model
+  topClafers = [ c | c <- universeOn biplate imodule, isNothing (_super c), _uid c `notElem` [rootIdent, baseClafer] ]
 
   rootElement :: Maybe IClafer -> IElement -> Resolve IElement
   rootElement _ (IEClafer c) = do
@@ -121,13 +129,14 @@ resolveRootModule (imodule, _)
         _ -> return pexp{_exp = IFunExp op' [l', r]}
     -- a navigation from the parent of a set of instances of top-level clafers, e.g.,
     -- extra.parent.a for extra ?, is the navigation from the root when an instance exists:
-    -- if some extra then a else a -- a, since the IR has no empty set
+    -- if some extra then a else noclafer
     IFunExp op' [PExp{_exp = IFunExp op'' [l, PExp{_exp = IClaferId{_sident = s}}]}, r]
       | op' == iJoin, op'' == iJoin, s == parentIdent, Just ParentRoot <- parentKindOf l, not (isSingle l || alwaysExists l) -> do
       l' <- rootPExp ctx split l
       r' <- rootPExp ctx split r
       let nav = pexp{_pid = "", _exp = IFunExp iJoin [toRoot l', r']}
-      return pexp{_exp = IFunExp iIfThenElse [exists l', nav, nav{_exp = IFunExp iDifference [nav, nav]}]}
+      let noClafer = PExp (Just noClaferTClafer) "" noSpan $ IClaferId "" noClaferIdent True (GlobalBind noClaferIdent)
+      return pexp{_exp = IFunExp iIfThenElse [exists l', nav, noClafer]}
     IFunExp op' [l, r] | op' == iJoin -> do
       l' <- rootPExp ctx split l
       r' <- rootPExp ctx split r
@@ -169,9 +178,16 @@ resolveRootModule (imodule, _)
         return d{_body = body'}
       e' <- rootPExp ctx split e
       return pexp{_exp = IDeclPExp q ds' e'}
+    -- clafer as a value: the union of all clafers, i.e., of the clafers with no super clafer, or
+    -- noclafer in a model without clafers
+    IClaferId{_sident = s} | s == baseClafer -> return $ case topClafers of
+      [] -> pexp{_iType = Just noClaferTClafer, _exp = IClaferId "" noClaferIdent True (GlobalBind noClaferIdent)}
+      -- all the instances of each clafer, a nested one by its path from the top level, e.g., c.d
+      cs -> (foldl1 union' $ map instancesOf cs){_inPos = pos'}
     _ -> return pexp
     where
     toRoot p = p{_iType = Just rootTClafer, _exp = IClaferId "" rootIdent True (GlobalBind rootIdent)}
+    union' l r = PExp ((+++) <$> _iType l <*> _iType r) "" pos' $ IFunExp iUnion [l, r]
     exists l' = PExp (Just TBoolean) "" noSpan $ IDeclPExp ISome [] l'
 
   parentKindOf :: PExp -> Maybe ParentKind

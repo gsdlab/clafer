@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=9">
+<style>.identifier{}
+.keyword{font-weight: bold;}
+.tKeyword{font-style: oblique;}
+.reference{}
+.code { background-color: lightgray; padding: 5px 5px 5px 5px; border: 1px solid darkgray; margin-bottom: 15px;
+        font-family: Pragmata, Menlo, 'DejaVu LGC Sans Mono', 'DejaVu Sans Mono', Consolas, 'Everson Mono', 'Lucida Console', 'Andale Mono', 'Nimbus Mono L', 'Liberation Mono', FreeMono, 'Osaka Monospaced', Courier, 'New Courier', monospace; }
+.standalonecomment { color: green; font-style:italic }
+.inlinecomment { color: green; padding-left:20px; font-style:italic }
+.error{background-color: yellow; color: red }
+.deprecated{color: orange }
+.indent{padding-left:20px}
+.file { font-weight: bold; border-bottom: 1px solid darkgray; margin: 1em 0 0.5em 0 }
+a[href$='Lookup failed'] {color: red}
+a[href$='Uid not found'] {color: red}
+a[href$='Ambiguous name'] {color: yellow}
+</style></head>
+<body>
+<div class="file">positive/noclafer.cfr</div>
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Thing">Thing</span></div>
+
+
+<div>
+<span class="claferDecl" id="c0_a">a</span><span class="keyword"> : </span><a href="#c0_Thing"><span class="reference">Thing</span></a> 0..2 </div>
+
+
+<div>
+<span class="claferDecl" id="c0_b">b</span><span class="keyword"> : </span><a href="#c0_Thing"><span class="reference">Thing</span></a> ?</div>
+
+
+<div>
+<span class="claferDecl" id="c0_c">c</span> ?</div>
+
+
+<div>
+<span class="keyword">assert [</span> <span class="keyword">no</span> <a href="#noclafer"><span class="reference">noclafer</span></a> <span class="keyword">]</span></div>
+
+
+<div>
+<span class="keyword">assert [</span> # <a href="#noclafer"><span class="reference">noclafer</span></a> = 0 <span class="keyword">]</span></div>
+
+
+<div>
+<span class="keyword">assert [</span> <a href="#c0_a"><span class="reference">a</span></a>++<a href="#noclafer"><span class="reference">noclafer</span></a> = <a href="#c0_a"><span class="reference">a</span></a> <span class="keyword">]</span></div>
+
+
+<div>
+<span class="keyword">assert [</span> <a href="#noclafer"><span class="reference">noclafer</span></a>++<a href="#c0_a"><span class="reference">a</span></a> = <a href="#c0_a"><span class="reference">a</span></a> <span class="keyword">]</span></div>
+
+
+<div>
+<span class="keyword">assert [</span> # <a href="#c0_a"><span class="reference">a</span></a>++<a href="#noclafer"><span class="reference">noclafer</span></a> = # <a href="#c0_a"><span class="reference">a</span></a> <span class="keyword">]</span></div>
+
+
+<div>
+<span class="keyword">assert [</span> <a href="#c0_a"><span class="reference">a</span></a>**<a href="#noclafer"><span class="reference">noclafer</span></a> = <a href="#noclafer"><span class="reference">noclafer</span></a> <span class="keyword">]</span></div>
+
+
+<div>
+<span class="keyword">assert [</span> <a href="#noclafer"><span class="reference">noclafer</span></a>**<a href="#c0_a"><span class="reference">a</span></a> = <a href="#noclafer"><span class="reference">noclafer</span></a> <span class="keyword">]</span></div>
+
+
+<div>
+<span class="keyword">assert [</span> <span class="keyword">no</span> <a href="#c0_Thing"><span class="reference">Thing</span></a>**<a href="#noclafer"><span class="reference">noclafer</span></a> <span class="keyword">]</span></div>
+
+
+<div>
+<span class="keyword">assert [</span> <a href="#c0_a"><span class="reference">a</span></a>--<a href="#noclafer"><span class="reference">noclafer</span></a> = <a href="#c0_a"><span class="reference">a</span></a> <span class="keyword">]</span></div>
+
+
+<div>
+<span class="keyword">assert [</span> <a href="#noclafer"><span class="reference">noclafer</span></a>--<a href="#c0_a"><span class="reference">a</span></a> = <a href="#noclafer"><span class="reference">noclafer</span></a> <span class="keyword">]</span></div>
+
+
+<div>
+<span class="keyword">assert [</span> <a href="#noclafer"><span class="reference">noclafer</span></a> in <a href="#c0_a"><span class="reference">a</span></a> <span class="keyword">]</span></div>
+
+
+<div>
+<span class="keyword">assert [</span> <a href="#noclafer"><span class="reference">noclafer</span></a> in <a href="#c0_Thing"><span class="reference">Thing</span></a> <span class="keyword">]</span></div>
+
+
+<div>
+<span class="keyword">assert [</span>  ! <span class="keyword">some</span> <a href="#c0_a"><span class="reference">a</span></a> &#124;&#124;  ! <a href="#c0_a"><span class="reference">a</span></a> in <a href="#noclafer"><span class="reference">noclafer</span></a> <span class="keyword">]</span></div>
+
+
+<div>
+<span class="keyword">assert [</span> <span class="keyword">some</span> <a href="#c0_c"><span class="reference">c</span></a> =&gt; (<span class="keyword">if </span><span class="keyword">some</span> <a href="#c0_c"><span class="reference">c</span></a><span class="keyword"> then </span><a href="#c0_a"><span class="reference">a</span></a><span class="keyword"> else </span><a href="#noclafer"><span class="reference">noclafer</span></a>) = <a href="#c0_a"><span class="reference">a</span></a> <span class="keyword">]</span></div>
+
+
+<div>
+<span class="keyword">assert [</span> <span class="keyword">no</span> <a href="#c0_c"><span class="reference">c</span></a> =&gt; <span class="keyword">no</span> (<span class="keyword">if </span><span class="keyword">some</span> <a href="#c0_c"><span class="reference">c</span></a><span class="keyword"> then </span><a href="#c0_a"><span class="reference">a</span></a><span class="keyword"> else </span><a href="#noclafer"><span class="reference">noclafer</span></a>) <span class="keyword">]</span></div>
+
+
+<div>
+<span class="keyword">assert [</span> <span class="keyword">no</span> <a href="#c0_c"><span class="reference">c</span></a> =&gt; (<span class="keyword">if </span><span class="keyword">no</span> <a href="#c0_c"><span class="reference">c</span></a><span class="keyword"> then </span><a href="#noclafer"><span class="reference">noclafer</span></a><span class="keyword"> else </span><a href="#c0_b"><span class="reference">b</span></a>) = <a href="#noclafer"><span class="reference">noclafer</span></a> <span class="keyword">]</span></div>
+
+
+<div>
+<span class="keyword">assert [</span> # (<span class="keyword">if </span><span class="keyword">some</span> <a href="#c0_c"><span class="reference">c</span></a><span class="keyword"> then </span><a href="#c0_a"><span class="reference">a</span></a><span class="keyword"> else </span><a href="#noclafer"><span class="reference">noclafer</span></a>) &lt;= # <a href="#c0_a"><span class="reference">a</span></a> <span class="keyword">]</span></div>
+
+</body>
+</html>

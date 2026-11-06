@@ -253,6 +253,10 @@ resolveTPExp' p@PExp{_exp = IClaferId{_sident = "string"}} = runListT $ runExcep
 resolveTPExp' p@PExp{_exp = IClaferId{_sident = "double"}} = runListT $ runExceptT $ return $ p `withType` TDouble
 resolveTPExp' p@PExp{_exp = IClaferId{_sident = "real"}} = runListT $ runExceptT $ return $ p `withType` TReal
 resolveTPExp' p@PExp{_exp = IClaferId{_sident = "decimal"}} = runListT $ runExceptT $ return $ p `withType` TDecimal
+-- noclafer, the empty set, has no reference to dereference
+resolveTPExp' p@PExp{_exp = IClaferId{_sident = "noclafer"}} = runListT $ runExceptT $ return $ p `withType` noClaferTClafer
+-- clafer, the union of all clafers, which ResolverRoot writes out
+resolveTPExp' p@PExp{_exp = IClaferId{_sident = "clafer"}} = runListT $ runExceptT $ return $ p `withType` claferTClafer
 resolveTPExp' p@PExp{_inPos, _exp = IClaferId{_sident="this"}} =
   runListT $ runExceptT $ do
     sident' <- _uid <$> curThis
@@ -396,9 +400,7 @@ resolveTPExp' p@PExp{_inPos, _exp} =
             | _op `elem` ltlBinOps = test (isTBoolean t1 && isTBoolean t2) >> return TBoolean
             | _op `elem` [iLt, iGt, iLte, iGte] = test (numeric t1 && numeric t2) >> return TBoolean
             | _op `elem` [iEq, iNeq] = testNotSame arg1' arg2' >> testIntersect t1 t2 >> return TBoolean
-            -- x -- x is the empty set, which Clafer has no other syntax for, e.g., in ResolverRoot's
-            -- if some extra then a else a -- a (kbak/clafer-semantics#134)
-            | _op == iDifference = testIntersect t1 t2 >> return t1
+            | _op == iDifference = testNotSame arg1' arg2' >> testIntersect t1 t2 >> return t1
             | _op == iIntersection = testNotSame arg1' arg2' >> testIntersect t1 t2
             | _op `elem` [iDomain, iRange] = testIntersect t1 t2
             | _op `elem` relSetBinOps = testIntersect t1 t2 >> return TBoolean

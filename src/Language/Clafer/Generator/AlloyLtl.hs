@@ -504,6 +504,8 @@ genPExp'    genEnv    resPath     (PExp iType' pid' pos exp') = case exp' of
   IClaferId _ "integer" _ _ -> CString "Int"
   IClaferId _ "int" _ _ -> CString "Int"
   IClaferId _ "string" _ _ -> CString "Int"
+  -- the empty set
+  IClaferId _ "noclafer" _ _ -> CString "none"
   IClaferId _ "dref" _ _ -> CString $ "@" ++ genRefName (getTClaferUID iType')
     where
       getTClaferUID (Just TMap{_so = TClafer{_hi = (u:_)}}) = u

@@ -25,7 +25,7 @@ c0_b.addConstraint(all([decl([v = local("v")], global(c0_b))], some(global(c0_a)
 c0_b.addConstraint(some(global(c0_a)));
 c0_b.addConstraint(ifOnlyIf(some(global(c0_extra)), some(global(c0_extra))));
 c0_b.addConstraint(implies(equal(ifThenElse(some(global(c0_extra)), constant(1), constant(0)), constant(1)), some(global(c0_extra))));
-c0_b.addConstraint(implies(some(ifThenElse(some(global(c0_extra)), global(c0_a), diff(global(c0_a), global(c0_a)))), some(global(c0_extra))));
+c0_b.addConstraint(implies(some(ifThenElse(some(global(c0_extra)), global(c0_a), constant(c0_a))), some(global(c0_extra))));
 Constraint(lessThan(constant(0), constant(1)));
 Constraint(equal(joinRef(join(global(c0_a), c0_x)), constant(2)));
 c0_Top.addConstraint(lessThan(constant(0), constant(1)));

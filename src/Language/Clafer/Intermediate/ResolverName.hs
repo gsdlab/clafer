@@ -53,7 +53,7 @@ data SEnv
 
 -- | How a given name was resolved
 data HowResolved
-  = Special     -- ^ "this", "parent", "dref", "root", "clafer", and "children"
+  = Special     -- ^ "this", "parent", "dref", "root", "clafer", "children" and "noclafer"
   | TypeSpecial -- ^ primitive type: "integer", "string"
   | Binding     -- ^ local variable (in constraints)
   | Subclafers  -- ^ clafer's descendant
@@ -202,6 +202,9 @@ resolveNav    env     pexp0@PExp{_inPos=pos', _exp=x} isFirst =
       (r', pathR) <- resolveNav env r True
       return (pexp0{_exp = IFunExp op' [l', r']}, if op' == iIntersection then pathR else pathL)
     IClaferId _ "root" _ _ -> return (pexp0, [])
+    IClaferId _ "noclafer" _ _ -> return (pexp0{_exp = IClaferId "" noClaferIdent True (GlobalBind noClaferIdent)}, [])
+    -- clafer as a value, the union of all clafers, which ResolverRoot writes out
+    IClaferId _ "clafer" _ _ | isFirst -> return (pexp0{_exp = IClaferId "" baseClafer True (GlobalBind baseClafer)}, [])
     IClaferId modName' id' _ _ -> if isFirst
       then do
              (exp', path') <- mkPath pos' env <$> resolveName pos' env id'
@@ -274,6 +277,7 @@ mkPath    pos'    env     (howResolved, id',    path)       = case howResolved o
     _ -> toNav [("parent", listToMaybe path)]
   specIExp "dref"     = toNav [("dref", Just $ head path)]
   specIExp "root"     = IClaferId "" rootIdent True (GlobalBind rootIdent)
+  specIExp "noclafer" = IClaferId "" noClaferIdent True (GlobalBind noClaferIdent)
   specIExp "children" = toNav [(id', Just $ head path)]
   specIExp i          = error $ "[BUG] ResolverName.specIExp: Unknown special id: " ++ i
 

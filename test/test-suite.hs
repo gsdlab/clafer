@@ -535,7 +535,7 @@ case_ParentOfTopLevel = do
         sameOptional mode' "[ some a ]" "[ some a.parent ]"
         sameOptional mode' "[ no a ]" "[ no a.parent ]"
     case compile' Alloy "[ some a.parent.a ]" of
-        Right x' -> ("some ((some c0_a) => (c0_a) else ((c0_a) - (c0_a)))" `isInfixOf` x') @? x'
+        Right x' -> ("some ((some c0_a) => (c0_a) else none)" `isInfixOf` x') @? x'
         Left errs' -> assertFailure $ show errs'
     refused (unlines [ "abstract Feat", "f1 : Feat", "g", "    f2 : Feat", "[ all v : Feat | some v.parent ]" ]) "take the parent of `this`"
     -- some subclafers of Feat are at the top level and some nested: its constraint is split on this
