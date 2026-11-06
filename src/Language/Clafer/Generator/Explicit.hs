@@ -37,15 +37,18 @@ import Language.Clafer.Intermediate.Intclafer
 --   with @\/\/# OPTIONS --explicit@ (i.e., -f -k -l --ss=none) and compiles to itself; and
 --   every scope, as chocosolver's @AstPrinter@ and @ScopeFile@ print them. The [choco| |]
 --   escapes, which are JavaScript, are left out.
-genExplicitModule :: (IModule, GEnv) -> [(UID, Integer)] -> (Maybe Integer, Maybe Integer) -> Maybe Integer -> (Result, String)
-genExplicitModule ir scopes intRange decimalDigits =
+--   A temporal model has its temporal modifiers and operators, which chocosolver does not
+--   read, and its trace length among the options.
+genExplicitModule :: (IModule, GEnv) -> [(UID, Integer)] -> (Maybe Integer, Maybe Integer) -> Maybe Integer -> Maybe Integer -> (Result, String)
+genExplicitModule ir scopes intRange decimalDigits traceLength =
     let model = chocoModel ir scopes intRange decimalDigits []
-    in (explicitModel model, explicitScopes model)
+    in (explicitModel traceLength model, explicitScopes model)
 
-explicitModel :: CModel -> Result
-explicitModel CModel{cmElements} =
+-- | The explicit model, with the trace length of a temporal model
+explicitModel :: Maybe Integer -> CModel -> Result
+explicitModel traceLength CModel{cmElements} =
     -- the model declares itself explicit, for clafer and chocosolver
-    "//# OPTIONS --explicit\n"
+    "//# OPTIONS --explicit" ++ maybe "" (\tl -> " --tl=" ++ show tl) traceLength ++ "\n"
     ++ concat [ "[" ++ exExp e ++ "]\n" | CEConstraint e <- cmElements ]
     ++ concat [ exClafer superMap "" c | CEClafer c <- cmElements ]
     ++ (if null objectives && null assertions then "" else "\n")
@@ -63,9 +66,10 @@ explicitModel CModel{cmElements} =
 --   inherits), its super clafer, its own reference, its card (0..* if abstract), then its
 --   constraints and children
 exClafer :: Map.Map UID CClafer -> String -> CClafer -> Result
-exClafer superMap indent CClafer{ccUid, ccAbstract, ccCard, ccGCard, ccSuper, ccRef, ccRefConstraints, ccElements} =
+exClafer superMap indent CClafer{ccUid, ccAbstract, ccModifiers, ccCard, ccGCard, ccSuper, ccRef, ccRefConstraints, ccElements} =
     indent
     ++ (if ccAbstract then "abstract " else "")
+    ++ concatMap (++ " ") ccModifiers
     ++ exCard (inheritedGCard ccGCard ccSuper) ++ " "
     ++ ccUid
     ++ maybe "" (" : " ++) ccSuper
@@ -126,6 +130,8 @@ exExp (CFun f args') = case (f, args') of
     ("minimum", [a])   -> "min " ++ exOperand a
     ("concat", [a, b]) -> "concat(" ++ exExp a ++ ", " ++ exExp b ++ ")"
     ("ifThenElse", [a, b, c]) -> "if " ++ exOperand a ++ " then " ++ exOperand b ++ " else " ++ exOperand c
+    -- the temporal operators F, G, X, initially and finally; U and W are binary operators
+    (_, [a]) | f `elem` ltlUnOps -> f ++ " " ++ exOperand a
     (_, [a, b]) | Just op' <- lookup f binaryOps -> exOperand a ++ " " ++ op' ++ " " ++ exOperand b
     _ -> error $ "Choco: no explicit form of " ++ f
   where
@@ -138,7 +144,7 @@ exExp (CFun f args') = case (f, args') of
         , ("and", "&&"), ("or", "||"), ("implies", "=>"), ("ifOnlyIf", "<=>"), ("xor", "xor")
         , ("lessThan", "<"), ("lessThanEqual", "<="), ("greaterThan", ">"), ("greaterThanEqual", ">=")
         , ("equal", "="), ("notEqual", "!="), ("$in", "in"), ("notIn", "not in")
-        , ("union", "++"), ("diff", "--"), ("inter", "**") ]
+        , ("union", "++"), ("diff", "--"), ("inter", "**"), ("U", "U"), ("W", "W") ]
 
 exQuant :: IQuant -> String
 exQuant INo = "no"

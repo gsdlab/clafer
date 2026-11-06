@@ -1,0 +1,8 @@
+//# OPTIONS --explicit --tl=10
+[initially ((#box . item) >= 1)]
+[initially (all i : box . item | X (((#(i ** box . item)) = 0) && (X ((#(i ** box . item)) >= 1))))]
+0..* box 2..2 {
+  0..* item 0..1 {}
+}
+
+assert [all b : box | all i : b . item | G (((#(i ** box . item)) >= 1) => ((#(i ** b . item)) >= 1))]

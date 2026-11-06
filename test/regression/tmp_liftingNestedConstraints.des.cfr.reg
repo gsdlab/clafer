@@ -1,0 +1,13 @@
+//# OPTIONS --explicit --tl=10
+[G (all c : A . B . C | (#c . D) = 1)]
+0..* A 0..* {
+  [G (all c : this . B . C | (#c . D) = 1)]
+  0..* B 0..* {
+    [G ((#this . C . D) = 1)]
+    0..* C 0..* {
+      0..* D 0..1 {}
+    }
+  }
+}
+
+assert [G (all c : A . B . C | (#c . D) >= 1)]

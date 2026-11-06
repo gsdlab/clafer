@@ -1,0 +1,13 @@
+//# OPTIONS --explicit --tl=10
+1..1 s 1..1 {
+  initial 0..* a 0..1 {
+    [((#this) >= 1) => (X ((#this . parent . b) >= 1))]
+  }
+  0..* b 0..1 {
+    [((#this) >= 1) => (X ((#this . parent . a) >= 1))]
+  }
+}
+
+assert [all this_ : s | ((#this_ . a) >= 1) => (X ((#this_ . b) >= 1))]
+assert [all this_ : s | ((#this_ . b) >= 1) => (X ((#this_ . a) >= 1))]
+assert [G ((#s) >= 1)]

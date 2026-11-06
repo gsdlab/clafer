@@ -1,0 +1,8 @@
+//# OPTIONS --explicit --tl=10
+final 1..1 a 1..1 {
+  [F ((#this . c) >= 1)]
+  initial 0..* b 0..1 {}
+  0..* c 0..1 {}
+}
+
+assert [(G ((#a . b) = 0)) || (F (((#a . b) >= 1) && (F ((#a . c) >= 1))))]

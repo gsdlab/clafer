@@ -1,0 +1,3 @@
+//# OPTIONS --explicit --tl=10
+[initially (all x : item | X ((#(x ** item)) = 0))]
+0..* item 1..1 {}

@@ -254,7 +254,7 @@ save args'=
       liftIO $ when (meta_data args' && inScopeModes) $ writeFile (f ++ ".cfr-scope") $ generateJSONScopes qNameMaps $ getScopesList resultsMap'
       -- the explicit form's scope file: every scope chocosolver solves it with
       liftIO $ when (meta_data args' && extension == "des.cfr") $ writeFile (f ++ ".des.cfr-scope") $
-        snd $ genExplicitModule (iModule', genv') scopesList (minint args', maxint args') (decimal_digits args')
+        snd $ genExplicitModule (iModule', genv') scopesList (minint args', maxint args') (decimal_digits args') Nothing
       return f'
     saveResult _ _ NoCompilerResult { reason } = do
       liftIO $ putStrLn reason
@@ -655,13 +655,15 @@ generate =
                   }) ]
           else []
         )
-        -- result for Clafer: the explicit form of the model chocosolver solves
+        -- result for Clafer: the explicit form of the model, static or temporal; chocosolver
+        -- solves the static ones
         ++ (if Mode.Clafer `elem` modes
-          then if hasNoRealLiterals && hasNoReferenceToReal && staticClaferSubset
+          then if hasNoRealLiterals && hasNoReferenceToReal
                then [ (Mode.Clafer,
                   CompilerResult {
                    extension = "des.cfr",
-                   outputCode = fst $ genExplicitModule (iModule, genv) scopes (minint cargs, maxint cargs) (decimal_digits cargs),
+                   outputCode = fst $ genExplicitModule (iModule, genv) scopes (minint cargs, maxint cargs) (decimal_digits cargs)
+                                  (if staticClaferSubset then Nothing else Just (trace_len cargs)),
                    statistics = stats,
                    claferEnv  = env,
                    mappingToAlloy = [],
@@ -670,9 +672,7 @@ generate =
                   }) ]
                else [ (Mode.Clafer,
                   NoCompilerResult {
-                    reason = if not staticClaferSubset
-                      then "Clafer output unavailable because the model contains temporal operators"
-                      else "Clafer output unavailable because the model contains: "
+                    reason = "Clafer output unavailable because the model contains: "
                            ++ (if hasNoRealLiterals then "" else "a real or double literal, ")
                            ++ (if hasNoReferenceToReal then "" else "a reference to a real or double. ")
                   }) ]

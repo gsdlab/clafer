@@ -1,0 +1,11 @@
+//# OPTIONS --explicit --tl=10
+0..* go 0..1 {}
+final 1..1 sm 1..1 {
+  initial 0..* a 0..1 {
+    [((#go) >= 1) => (X ((#this . parent . b) >= 1))]
+  }
+  0..* b 0..1 {}
+  0..* c 0..1 {}
+}
+
+assert [(((#sm . a) >= 1) && ((#go) >= 1)) => (X ((#sm . b) >= 1))]

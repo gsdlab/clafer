@@ -82,7 +82,7 @@ data ClaferArgs = ClaferArgs {
 
 clafer :: ClaferArgs
 clafer = ClaferArgs {
-  mode                = [] &= help "Generated output type. Available CLAFERMODEs are: 'alloy' (default, Alloy 6); 'json' (intermediate representation of Clafer model); 'clafer' (the explicit model, with everything written out, as Choco solves it; static models only); 'html' (original model in HTML); 'graph' (graphical representation written in DOT language); 'cvlgraph' (cvl notation representation written in DOT language); 'choco' (Choco constraint programming solver). Multiple modes can be specified at the same time, e.g., '-m alloy -m html'." &= name "m",
+  mode                = [] &= help "Generated output type. Available CLAFERMODEs are: 'alloy' (default, Alloy 6); 'json' (intermediate representation of Clafer model); 'clafer' (the explicit model, with everything written out, as Choco solves it; a temporal model with its temporal modifiers and operators, which only Alloy solves); 'html' (original model in HTML); 'graph' (graphical representation written in DOT language); 'cvlgraph' (cvl notation representation written in DOT language); 'choco' (Choco constraint programming solver). Multiple modes can be specified at the same time, e.g., '-m alloy -m html'." &= name "m",
   console_output      = def &= help "Output code on console." &= name "o",
   flatten_inheritance = def &= help "Flatten inheritance ('alloy' mode only)." &= name "i",
   timeout_analysis    = def &= help "Timeout for analysis.",

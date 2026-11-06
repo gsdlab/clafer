@@ -65,6 +65,7 @@ data CClafer = CClafer
     { ccUid      :: UID
     , ccParent   :: UID           -- ^ "clafer" for a top-level abstract clafer, "root" for a top-level concrete one
     , ccAbstract :: Bool
+    , ccModifiers :: [String]     -- ^ its temporal modifiers, e.g., initial, final, finalref, which chocosolver does not read
     , ccCard     :: Maybe Interval   -- ^ only if not 0..*
     , ccGCard    :: Maybe Interval   -- ^ only if not 0..*
     , ccLinked   :: Bool          -- ^ whether it has a super clafer or a reference in the IR
@@ -125,6 +126,7 @@ chocoModel (imodule@IModule{_mDecls}, genv') scopes (minInt, maxInt) decimalDigi
         { ccUid = _uid
         , ccParent = _parentUID
         , ccAbstract = _abstract _modifiers
+        , ccModifiers = temporalModifiers' _modifiers _reference
         , ccCard = nonDefault _card
         , ccGCard = nonDefault $ _interval <$> _gcard
         , ccLinked = isJust _super || isJust _reference
@@ -141,17 +143,33 @@ chocoModel (imodule@IModule{_mDecls}, genv') scopes (minInt, maxInt) decimalDigi
     genElement _ (IEConstraint True pexp) = Just $ CEConstraint $ genConstraintPExp pexp
     genElement "root" (IEConstraint False pexp) = Just $ CEAssert $ genConstraintPExp pexp
     -- chocosolver's assertions have no context: a nested assertion holds for each instance of its
-    -- clafer, so it is quantified over them, with `this` as the local this_, e.g., in clafer c0_P:
-    -- assert(all([decl([this_ = local("this_")], global(c0_P))], ... join(this_, c0_age) ...))
+    -- clafer, so it is quantified over them, with `this` as the local this_, e.g., in clafer P:
+    -- assert(all([decl([this_ = local("this_")], global(P))], ... join(this_, age) ...)); the
+    -- instances of a nested clafer by the path from its top-level clafer, as clafer resolves
+    -- its name, e.g., machine . ctx
     genElement pUID (IEConstraint False pexp) = Just $ CEAssert $
-        CQuant IAll [CDecl False [thisLocal] (CGlobal pUID)] (genConstraintPExp (transformOn biplate thisToLocal pexp))
+        CQuant IAll [CDecl False [thisLocal] (instancesOf pUID)] (genConstraintPExp (transformOn biplate thisToLocal pexp))
       where
         thisToLocal e@IClaferId{_sident = "this"} = e{_sident = thisLocal}
         thisToLocal e = e
+        instancesOf u
+            | isTopLevel c = CGlobal u
+            | otherwise    = CJoin (instancesOf $ _parentUID c) u
+          where
+            c = claferWithUid u
     genElement _ (IEGoal isMax PExp{_exp=IFunExp _ [pexp]}) = Just $ CEObjective isMax $ genConstraintPExp pexp
     genElement _ _ = Nothing
 
     thisLocal = "this_"
+
+    -- the temporal modifiers of a clafer: final, which implies finalref and finaltarget, or the
+    -- modifiers of its own reference or of the reference it inherits
+    temporalModifiers' IClaferModifiers{_initial, _final, _finalReferences} ref' =
+        [ "initial" | _initial ] ++ [ "final" | _final ] ++
+        [ refModifierKeyword m | not _final, m <- nub (maybe [] _refModifiers ref' ++ _finalReferences) ]
+    refModifierKeyword FinalRef = "finalref"
+    refModifierKeyword FinalTarget = "finaltarget"
+    refModifierKeyword FinalRefTarget = "final"
 
     -- a card or group card, unless it is 0..*, which chocosolver has by default
     nonDefault (Just (0, -1)) = Nothing
@@ -380,4 +398,6 @@ chocoModel (imodule@IModule{_mDecls}, genv') scopes (minInt, maxInt) decimalDigi
     mapFunc "--" = "diff"
     mapFunc "**" = "inter"
     mapFunc "ifthenelse" = "ifThenElse"
+    -- the temporal operators, which chocosolver does not solve, by their names
+    mapFunc op' | op' `elem` ltlOps = op'
     mapFunc op' = error $ "Choco: Unknown op: " ++ op'

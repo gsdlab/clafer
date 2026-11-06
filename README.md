@@ -188,7 +188,9 @@ Common flags:
                                           representation of Clafer model);
                                           'clafer' (the explicit model, with
                                           everything written out, as Choco
-                                          solves it; static models only);
+                                          solves it; a temporal model with its
+                                          temporal modifiers and operators,
+                                          which only Alloy solves);
                                           'html' (original model in HTML);
                                           'graph' (graphical representation
                                           written in DOT language); 'cvlgraph'

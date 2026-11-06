@@ -1,0 +1,37 @@
+//# OPTIONS --explicit --tl=10
+abstract 0..* Engine 0..* {}
+0..* gas : Engine 1..1 {}
+0..* electric : Engine 1..1 {}
+abstract 0..* Car 0..* {
+  abstract 0..* engine -> Engine 0..* {}
+  1..1 gear 1..1 {
+    initial 0..* park 0..1 {
+      [((#this) >= 1) => (X ((#this . parent . drive) >= 1))]
+    }
+    0..* drive 0..1 {}
+  }
+}
+0..* tesla : Car 1..1 {
+  final 0..* motor : engine 1..1 {}
+}
+0..* leaf : Car 1..1 {
+  finalref 0..* motor2 : engine 1..1 {}
+}
+0..* bolt : Car 1..1 {
+  finaltarget 0..* motor3 : engine 1..1 {}
+}
+0..* mini : Car 1..1 {
+  0..* motor4 : engine 1..1 {}
+}
+0..* volt : Car 1..1 {
+  finalref finaltarget 0..* motor5 : engine 1..1 {}
+}
+0..* prius : Car 1..1 {
+  finaltarget finalref 0..* motor6 -> Engine 1..1 {}
+}
+
+assert [(tesla . motor . dref = gas) => (G (tesla . motor . dref = gas))]
+assert [(leaf . motor2 . dref = gas) => (G (leaf . motor2 . dref = gas))]
+assert [(bolt . motor3 . dref = gas) => (G (bolt . motor3 . dref = gas))]
+assert [(volt . motor5 . dref = gas) => (G (volt . motor5 . dref = gas))]
+assert [(prius . motor6 . dref = gas) => (G (prius . motor6 . dref = gas))]

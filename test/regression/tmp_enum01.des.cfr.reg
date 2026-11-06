@@ -1,0 +1,10 @@
+//# OPTIONS --explicit --tl=10
+abstract final 0..* UserRequest 0..* {}
+final 0..* stop : UserRequest 1..1 {}
+final 0..* up : UserRequest 1..1 {}
+final 0..* down : UserRequest 1..1 {}
+0..* Elevator 1..1 {
+  [initially (this . request . dref = stop)]
+  [G ((this . request . dref = up) => (X (this . request . dref = stop)))]
+  0..* request -> UserRequest 1..1 {}
+}

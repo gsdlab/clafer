@@ -1,0 +1,38 @@
+//# OPTIONS --explicit --tl=10
+abstract 0..* event 0..* {}
+0..1 events 1..1 {
+  0..* e_on_off : event 0..1 {}
+  0..* e_police : event 0..1 {}
+  0..* e_after_5 : event 0..1 {}
+  0..* e_after_7 : event 0..1 {}
+  0..* e_after_0_5 : event 0..1 {}
+}
+abstract 1..1 TrafficLight_3 0..* {
+  initial 1..1 on 0..1 {
+    [(((#this) >= 1) && ((#events . e_on_off) >= 1)) => (((#this) >= 1) U ((#this . parent . off) >= 1))]
+    initial 1..1 normal 0..1 {
+      [(((#this) >= 1) && ((#events . e_police) >= 1)) => (((#this) >= 1) U ((#this . parent . flashing) >= 1))]
+      initial 0..* green 0..1 {
+        [((#this) >= 1) => (X ((#this . parent . yellow) >= 1))]
+      }
+      0..* yellow 0..1 {
+        [((#this) >= 1) => (X ((#this . parent . red) >= 1))]
+      }
+      0..* red 0..1 {
+        [((#this) >= 1) => (X ((#this . parent . green) >= 1))]
+      }
+    }
+    1..1 flashing 0..1 {
+      [(((#this) >= 1) && ((#events . e_police) >= 1)) => (((#this) >= 1) U ((#this . parent . normal) >= 1))]
+      initial 0..* yellow_on 0..1 {
+        [(((#this) >= 1) && ((#events . e_after_0_5) >= 1)) => (((#this) >= 1) U ((#this . parent . yellow_off) >= 1))]
+      }
+      0..* yellow_off 0..1 {
+        [(((#this) >= 1) && ((#events . e_after_0_5) >= 1)) => (((#this) >= 1) U ((#this . parent . yellow_on) >= 1))]
+      }
+    }
+  }
+  0..* off 0..1 {
+    [((#this) >= 1) => (X ((#this . parent . on) >= 1))]
+  }
+}
