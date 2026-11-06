@@ -229,7 +229,7 @@ The examples use it for static structure: "the architecture is static" (p. 2:12)
 - **Shallow:** `final` fixes the instances of the clafer and its reference, not its children. To fix a feature model, mark each feature `final`, e.g. `final EU ?`. A feature then has one value per trace and may have another value in another trace.
 - **Lifetime:** with T1 and T2, the instances of a `final` clafer do not change while its parent instance exists. A parent that reappears may come back with other instances. A `final` clafer whose ancestors are all `final` exists unchanged in the whole trace, and the Alloy output makes its relation static.
 - **Inheritance:** `final` and `initial` are inherited from the super clafer, as in the paper. A refinement can add `final`, `finalref` or `finaltarget` to the reference that it inherits, e.g., `final motor : engine` under `abstract engine -> Engine`. Clafer 0.5.6 fixed only a reference that the clafer declares, so such a `final` fixed the instances of `motor` but not their reference, and `finalref` and `finaltarget` were ignored ([gsdlab/clafer#109](https://github.com/gsdlab/clafer/issues/109), fixed in 0.5.7).
-- **Extensions:** `finalref` fixes only the reference, and `finaltarget` only the set that the reference points to.
+- **Extensions:** `finalref` fixes only the reference of each instance, while that instance exists. `finaltarget` fixes only the set of targets of the instances in their parent, while the parent instance exists: the instances may change and swap their targets, but a new instance points to one of the targets. `final` implies both. The paper does not define these modifiers. Up to 0.5.6, `finaltarget` fixed the reference of each instance, as `finalref` does; the distinction follows [kbak/clafer-semantics#127](https://github.com/kbak/clafer-semantics/issues/127) (0.5.7).
 - **Enumerations:** in dynamic models, the literals of an `enum` are final ([gsdlab/clafer#92](https://github.com/gsdlab/clafer/issues/92)). In static models, they are not, so that they do not make a static model dynamic.
 
 The paper's rewrite has a typo: `this.d` should name `D`.
@@ -243,6 +243,12 @@ Dwyer's patterns are "just a syntactic sugar exercise" (§4.2, p. 2:18).
 A pattern without a scope holds on the whole trace from each state in which its constraint applies.
 So at the top level, `[ sometime d ]` is `G F d`: `d` again and again.
 For "once", write `[ initially (sometime d) ]`.
+The scope `after q` starts at the first `q`, so at the top level each `q` starts a scope of its own, and `[ initially (s must precede p after q) ]` starts at the first `q` of the trace.
+Two expansions of Dwyer's patterns did not follow the scopes up to 0.5.6; 0.5.7 corrects them ([kbak/clafer-semantics#127](https://github.com/kbak/clafer-semantics/issues/127)):
+
+- `s must follow p between q and r` checked only a `p` in the state of `q`: the brackets of Dwyer's `[]((Q & !R & <>R) -> ((P -> (!R U (S & !R))) U R))` were misplaced. Each `p` up to the next `r` needs an `s` before that `r`.
+- `s must precede p after q` was Dwyer's `[]!Q | <>(Q & (!P W S))`, which may start the scope at a later `q`, so q, p, q, s held. It starts at the first `q`: `<>Q -> (!Q U (Q & (!P W S)))`, as `lonce p after q` does. For the other patterns, a later `q` gives the same result.
+
 The test `tmp_betweenand01.cfr` had `[ sometime d ]` next to `always c between d and e` under an `xor`, which made it unsatisfiable. It now uses `initially`.
 
 ## T10. Default multiplicities: `opt` (correction)

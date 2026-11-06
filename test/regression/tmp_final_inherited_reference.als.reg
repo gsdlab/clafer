@@ -129,7 +129,8 @@ fact { always ~@r_motor2 in @p_motor2
 sig bolt extends Car
 { p_bolt : lone root
 , var r_motor3 : set motor3 }
-{ always (this in alive_bolt implies (this.@r_motor3 in this.@r_engine)) }
+{ always (this in alive_bolt implies (this.@r_motor3 in this.@r_engine))
+  always (this in alive_bolt and after this in alive_bolt implies (this.@r_motor3.@engine_ref)' = this.@r_motor3.@engine_ref) }
 fun alive_bolt : set bolt { root.@r_bolt }
 fact { always ~@r_bolt in @p_bolt }
 
@@ -138,7 +139,6 @@ fact { all self_ : bolt | always (self_ in alive_bolt implies (one self_.@r_moto
 
 sig motor3 extends engine
 { p_motor3 : lone bolt }
-{ always (this in alive_motor3 and after this in alive_motor3 implies (this.@engine_ref)' = this.@engine_ref) }
 fun alive_motor3 : set motor3 { bolt.@r_motor3 }
 fact { always ~@r_motor3 in @p_motor3
   always @r_motor3.univ in alive_bolt }

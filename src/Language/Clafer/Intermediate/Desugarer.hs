@@ -445,14 +445,16 @@ translateTmpPatterns e = case e of
   TmpPatPrecede _ s p scope -> case scope of
     PatScopeEmpty _ ->            not' p `w` s
     PatScopeBefore _ r ->         f r ==> (not' p `u` (s || r))
-    PatScopeAfter _ q ->          g (not' q) || f (q & (not' p `w` s))
+                                  -- from the first q: Dwyer's []!Q | <>(Q & (!P W S)) may pick a later q
+    PatScopeAfter _ q ->          f q ==> (not' q `u` (q & (not' p `w` s)))
     PatScopeBetweenAnd _ q r ->   g ((q & not' r & f r) ==> (not' p `u` (s || r)))
     PatScopeAfterUntil _ q r ->   g ((q & not' r) ==> (not' p `w` (s || r)))
   TmpPatFollow _ s p scope -> case scope of
     PatScopeEmpty _ ->            g(p ==> f s)
     PatScopeBefore _ r ->         f r ==> ((p ==> (not' r `u` (s & not' r))) `u` r)
     PatScopeAfter _ q ->          g(q ==> g(p ==> f s))
-    PatScopeBetweenAnd _ q r ->   g((q & not' r & f r) ==> (p ==> (((not' r `u` (s & not' r))) `u` r)))
+                                  -- every p up to r: []((Q & !R & <>R) -> ((P -> (!R U (S & !R))) U R))
+    PatScopeBetweenAnd _ q r ->   g((q & not' r & f r) ==> ((p ==> (not' r `u` (s & not' r))) `u` r))
     PatScopeAfterUntil _ q r ->   g((q & not' r) ==> ((p==> (not' r `u` (s & not' r))) `w` r))
   {-TmpInitially s exp' -> -}
     {-let oper1 =  ENeg s $ mkClaferIdExp s "this"-}

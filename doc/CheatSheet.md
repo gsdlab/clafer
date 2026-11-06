@@ -400,7 +400,7 @@ For a complete model, see the example `CoffeeMachine.cfr` in ClaferIDE.
 
 `initial` means that the clafer is present in the first state of its parent.
 `final` means that the clafer, and its reference, do not change during a trace. Another trace can have other values, so `final` suits the features of a product line.
-`finalref` fixes only the reference of the clafer, and `finaltarget` only the set that it points to.
+`finalref` fixes only the reference of each instance of the clafer, while that instance exists. `finaltarget` fixes only the set of targets of the clafer's instances, while their parent instance exists: the instances may change and swap their targets, but a new instance points to one of the targets. `final` implies both.
 A clafer that inherits its reference can add these modifiers: `final motor : engine` fixes the reference that `motor` inherits from `abstract engine -> Engine`.
 
 `<temporal modifier>`:
@@ -497,6 +497,8 @@ finally <boolean expression>
 
 Specification patterns say what must hold in a part of the trace, without temporal operators: they read as requirements.
 A pattern without a scope holds on the whole trace.
+`after q` starts at the first `q`; `between q and r` and `after q until r` start at each `q` and end at the next `r`.
+A top-level constraint holds in every state, so there every `q` starts a scope of `after q`; `[ initially (s must precede p after q) ]` starts it at the first `q` of the trace.
 
 `<boolean expression>`:
 ```

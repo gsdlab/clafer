@@ -62,7 +62,7 @@ import Prelude
 
 import Language.Clafer.Common
 import Language.Clafer.ClaferArgs
-import Language.Clafer.Front.AbsClafer
+import Language.Clafer.Front.AbsClafer hiding (FinalRef, FinalTarget)
 import Language.Clafer.Front.LexClafer
 import Language.Clafer.Generator.Concat
 import Language.Clafer.Intermediate.Intclafer hiding (exp)
@@ -300,17 +300,30 @@ genConstraints genEnv c = map always' (filterNull $ refConsts ++ groupConst ++ c
   appears x
     | isRoot c  = x
     | otherwise = cconcat [CString "always (this in ", CString alive, CString " and not before this in ", CString alive, CString " implies (", x, CString "))"]
-  -- the instances of a final child do not change while this instance exists
+  -- the relation does not change while this instance exists
+  stable x
+    | isRoot c  = CString $ "always ((" ++ x ++ ")' = " ++ x ++ ")"
+    | otherwise = CString $ "always (this in " ++ alive ++ " and after this in " ++ alive ++ " implies (" ++ x ++ ")' = " ++ x ++ ")"
+  -- final and finalref fix the target of each instance, finaltarget only the set of targets
+  fixesEach s r = _isFinal s || _refModifier r `elem` [Just FinalRefTarget, Just FinalRef]
   finalConsts =
-    [ CString $ "always (this in " ++ alive ++ " and after this in " ++ alive ++ " implies (this.@" ++ rel ++ ")' = this.@" ++ rel ++ ")"
-    | c' <- containedClafers c, _isFinal c', not (isStatic genEnv c'), let rel = genRelName (_uid c') ] ++
-    [ CString $ "always (this in " ++ alive ++ " and after this in " ++ alive ++ " implies (this.@" ++ refRel ++ ")' = this.@" ++ refRel ++ ")"
-    | Just r <- [_reference c], isJust (_refModifier r), not (isStatic genEnv c), let refRel = genRefName uid' ] ++
+    -- the instances of a final child do not change while this instance exists
+    [ stable $ "this.@" ++ genRelName (_uid c') | c' <- containedClafers c, _isFinal c', not (isStatic genEnv c') ] ++
+    [ stable $ "this.@" ++ genRefName uid' | Just r <- [_reference c], fixesEach c r, not (isStatic genEnv c) ] ++
     -- `final motor : engine` or `finalref motor : engine` fixes the reference that motor inherits
     -- from engine, unless engine's modifier fixes it already (#109)
-    [ CString $ "always (this in " ++ alive ++ " and after this in " ++ alive ++ " implies (this.@" ++ refRel ++ ")' = this.@" ++ refRel ++ ")"
-    | Nothing <- [_reference c], _isFinal c || isJust (_finalReference $ _modifiers c)
-    , Just (sup, r) <- [inheritedReference genEnv c], isNothing (_refModifier r), let refRel = genRefName $ _uid sup ]
+    [ stable $ "this.@" ++ genRefName (_uid sup)
+    | Nothing <- [_reference c], _isFinal c || _finalReference (_modifiers c) == Just FinalRef
+    , Just (sup, r) <- [inheritedReference genEnv c], not (fixesEach sup r) ] ++
+    -- a finaltarget child points to the same set of targets while this instance exists; its
+    -- instances may change and swap their targets
+    [ stable $ "this.@" ++ genRelName (_uid c') ++ ".@" ++ refRel | c' <- containedClafers c, Just refRel <- [finalTargetRef c'] ]
+  finalTargetRef c' = case _reference c' of
+    Just r | _refModifier r == Just FinalTarget, not (isStatic genEnv c') -> Just $ genRefName (_uid c')
+    Just _ -> Nothing
+    Nothing
+      | _finalReference (_modifiers c') == Just FinalTarget, not (isStatic genEnv c') -> genRefName . _uid . fst <$> inheritedReference genEnv c'
+      | otherwise -> Nothing
 
 -- | The constraints of the clafer and the cardinalities of its children, each a fact of its own,
 --   which holds for every existing instance: an unsat core gives these, which are removed to find

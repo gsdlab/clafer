@@ -591,8 +591,12 @@ case_FinalInheritedReference =
                 , "    xor gear", "        initial park --> drive", "        drive"
                 , "tesla : Car", "    " ++ modifier ++ " motor : engine" ]) of
             Right r -> let alloy = outputCode $ fromJust $ Map.lookup Alloy r
-                           fixed = "implies (this.@engine_ref)' = this.@engine_ref)" `isInfixOf` alloy
-                       in fixed == (modifier /= "") @? (modifier ++ ": " ++ alloy)
+                           -- final and finalref fix the reference of each motor, finaltarget the
+                           -- targets of the motors of a tesla (kbak/clafer-semantics#127)
+                           eachFixed = "implies (this.@engine_ref)' = this.@engine_ref)" `isInfixOf` alloy
+                           targetsFixed = "implies (this.@r_motor.@engine_ref)' = this.@r_motor.@engine_ref)" `isInfixOf` alloy
+                       in (eachFixed, targetsFixed) == (modifier `elem` ["final", "finalref"], modifier == "finaltarget")
+                            @? (modifier ++ ": " ++ alloy)
             Left errs' -> assertFailure $ modifier ++ ": " ++ show errs'
 
 -- A clafer which extends itself is reported as such, not as a missing super.
