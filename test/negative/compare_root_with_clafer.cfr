@@ -1,0 +1,4 @@
+// The root is not a clafer that the instances of `a` could equal: the comparison is a type
+// error (#112).
+a
+[ root = a ]

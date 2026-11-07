@@ -1,0 +1,5 @@
+// The parent of the instances of a top-level clafer that may not exist is the root when an
+// instance exists, and nothing otherwise (#112): it can be navigated from, quantified or
+// counted (test/positive/parent_of_top_level.cfr), but not compared as a set.
+extra ?
+[ extra.parent = extra.parent ]

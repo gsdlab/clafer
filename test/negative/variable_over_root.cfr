@@ -1,0 +1,4 @@
+// A variable cannot range over the root, which has no instance in the static outputs (#112).
+// `root.a` navigates from it.
+a ?
+[ all r : root | some r.a ]
