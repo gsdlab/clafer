@@ -110,6 +110,7 @@ import           System.Exit
 import           System.FilePath (dropExtension, takeBaseName)
 import           System.IO
 import           System.Process (readProcessWithExitCode, system)
+import           System.Environment (getExecutablePath)
 
 import           Language.Clafer.ClaferArgs hiding (Clafer)
 import qualified Language.Clafer.ClaferArgs  as Mode (ClaferMode (Clafer))
@@ -176,8 +177,12 @@ runCompiler    mURL         args'         modelFiles =
             putStrLn $ "[clafer]              Validating " ++ file args'
 
         when (validate args') $ liftIO $ do
-          forM_ fs (runValidate args')
+          failed <- concat <$> forM fs (runValidate args')
           putStrLn "\n"
+          -- an output that its tool rejects is an error, as a compile error is
+          unless (null failed) $ do
+            putStrLn $ "[clafer]              Validation failed: " ++ intercalate ", " failed
+            exitFailure
     when (Html `elem` mode args') $
       htmlCatch result args' inputModel
     result `cth` handleErrs
@@ -295,22 +300,45 @@ summary' graph stats ("<!-- # GRAPH /-->":xs) = graph:summary' graph stats xs
 summary' graph stats ("<!-- # CVLGRAPH /-->":xs) = graph:summary' graph stats xs
 summary' graph stats (x:xs) = x:summary' graph stats xs
 
-runValidate :: ClaferArgs -> String -> IO ()
-runValidate args' fo = do
-  let path = tooldir args' ++ "/"
-  let modes = mode args'
-  when (Alloy `elem` modes && ".als" `isSuffixOf` fo) $ do
-    liftIO $ putStrLn ("=========== Running the commands of " ++ fo ++ " =============")
-    void $ system $ validateAlloy path ++ fo
-  when (Choco `elem` modes && ".js" `isSuffixOf` fo) $ do
-    void $ system $ validateChoco path ++ fo
-  when (Graph `elem` modes && ".dot" `isSuffixOf` fo) $ do
-    liftIO $ putStrLn ("=========== Parsing+Generating   " ++ fo ++ " =============")
-    void $ system $ validateGraph ++ fo
-  -- when (Mode.Clafer `elem` modes && ".des.cfr" `isSuffixOf` fo) $ do
-  --   liftIO $ putStrLn ("=========== Parsing+Typechecking " ++ fo ++ " =============")
-  --   liftIO $ putStrLn $ validateClafer path ++ fo'
-  --   void $ system $  validateClafer path ++ fo'
+-- | Validates an output with its tool; returns the output if the tool rejects it. A counterexample
+--   is not a failure: the tool exits with 0.
+runValidate :: ClaferArgs -> String -> IO [String]
+runValidate args' fo
+  | Alloy `elem` modes && ".als" `isSuffixOf` fo = do
+    putStrLn ("=========== Running the commands of " ++ fo ++ " =============")
+    run $ validateAlloy path ++ fo
+  | Choco `elem` modes && ".js" `isSuffixOf` fo =
+    run $ validateChoco path ++ fo
+  | Graph `elem` modes && ".dot" `isSuffixOf` fo = do
+    putStrLn ("=========== Parsing+Generating   " ++ fo ++ " =============")
+    run $ validateGraph ++ fo
+  | Mode.Clafer `elem` modes && ".des.cfr" `isSuffixOf` fo = do
+    putStrLn ("=========== Compiling the explicit model " ++ fo ++ " =============")
+    validateClafer fo
+  | otherwise = return []
+  where
+  path = tooldir args' ++ "/"
+  modes = mode args'
+  run command = do
+    code <- system command
+    return [ fo | code /= ExitSuccess ]
+
+-- | The explicit model compiles to itself: clafer -m clafer on it prints it (its first line,
+--   //# OPTIONS --explicit, gives the options).
+validateClafer :: FilePath -> IO [String]
+validateClafer fo = do
+  clafer' <- getExecutablePath
+  explicit <- readFile fo
+  (code, out, err) <- readProcessWithExitCode clafer' ["-s", "-m", "clafer", "-o", fo] ""
+  case code of
+    -- the console output ends with one more newline
+    ExitSuccess | dropWhileEnd (== '\n') out == dropWhileEnd (== '\n') explicit -> return []
+                | otherwise       -> do
+                    putStrLn $ "The explicit model does not compile to itself: " ++ fo
+                    return [fo]
+    _ -> do
+      putStrLn $ out ++ err
+      return [fo]
 
 -- | Runs all commands (the default run command if there are none) and prints the instances and counterexamples.
 validateAlloy :: String -> String
@@ -322,8 +350,6 @@ validateChoco path = "java -jar \"" ++ path ++ "chocosolver.jar\" -v --file "
 validateGraph :: String
 validateGraph = "dot -Tsvg -O "
 
--- validateClafer :: String -> String
--- validateClafer path = "\""  ++ path ++ "clafer\" -s -k -m=clafer "
 
 
 -- | Add a new fragment to the model. Fragments should be added in order.

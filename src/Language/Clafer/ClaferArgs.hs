@@ -93,7 +93,7 @@ clafer = ClaferArgs {
   explicit_model      = def &= help "The model is an explicit model, as 'clafer -m clafer' prints it, with every name a UID and every card written out, and its scopes in its scope file. Shorthand for -f -k -l --ss=none." &= explicit &= name "explicit",
   keep_unused         = def &= help "Keep uninstantated abstract clafers ('alloy' mode only)." &= name "k",
   no_stats            = def &= help "Don't print statistics." &= name "s",
-  validate            = def &= help "Validate outputs of all modes. Uses '<tooldir>/alloy6.2.0.jar' for Alloy models, '<tooldir>/chocosolver.jar' for Choco models, and Clafer translator for desugared Clafer models. Use '--tooldir' to override the default location ('.') of these tools." &= name "v",
+  validate            = def &= help "Validate outputs of all modes, and exit with 1 if a tool rejects one. Uses '<tooldir>/alloy6.2.0.jar' for Alloy models, '<tooldir>/chocosolver.jar' for Choco models, dot for graphs, and clafer itself for explicit models, which must compile to themselves. Use '--tooldir' to override the default location ('.') of these tools." &= name "v",
   tooldir             = "." &= typDir &= help "Specify the tools directory ('validate' only). Default: '.' (current directory).",
   alloy_mapping       = def &= help "Generate mapping to Alloy source code ('alloy' mode only)." &= name "a",
   self_contained      = def &= help "Generate a self-contained html document ('html' mode only).",

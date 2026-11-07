@@ -32,14 +32,18 @@ test:
 	@echo "========================"
 	@$(CLAFER) -V
 	$(MAKE) clean
-	$(MAKE) generateAlloyJSHTMLDot
-	$(MAKE) diffRegressions
+	@# diff the regressions also when a model fails, and fail if either fails
+	@$(MAKE) generateAlloyJSHTMLDot; generated=$$?; \
+	$(MAKE) diffRegressions; regressions=$$?; \
+	test $$generated -eq 0 -a $$regressions -eq 0
 
 generateAlloyJSHTMLDot:
 	@echo "==================================================================================="
 	@echo "| Testing 'Positive' suite - generating Alloy, JavaScript, HTML, and Graph output |"
 	@echo "|                          and the explicit form (-m clafer)                      |"
-	@echo "|                          - validating Alloy output                              |"
+	@echo "|                          - validating them: Alloy and chocosolver run them,     |"
+	@echo "|                            dot draws the graphs, the explicit form compiles to  |"
+	@echo "|                            itself                                                |"
 	@echo "==================================================================================="
 
 	@if test ! -f "../alloy6.2.0.jar"; then \
@@ -50,8 +54,18 @@ generateAlloyJSHTMLDot:
 		echo "[ERROR] Missing ../chocosolver.jar."; false; \
 	fi
 
-	# Compile the positive test suite to Alloy, Choco, the explicit form, HTML, and Graph
-	@find $(SUITE_DIR) -type f \( -iname "*.cfr" ! -iname "*.des.cfr" \) |  xargs -L1 $(CLAFER) -m=alloy -m=choco -m=clafer -m=html -m=graph --self-contained; true ; \
+	@# Compile the positive test suite to Alloy, Choco, the explicit form, HTML, and Graph,
+	@# and validate the outputs; fails, after all the models, if one fails to compile or an
+	@# output fails to validate (a counterexample is not a failure)
+	@failed=""; \
+	for model in $$(find $(SUITE_DIR) -type f \( -iname "*.cfr" ! -iname "*.des.cfr" \) | sort); do \
+		$(CLAFER) -m=alloy -m=choco -m=clafer -m=html -m=graph --self-contained "$$model" || failed="$$failed $$model"; \
+	done; \
+	if [ -n "$$failed" ]; then \
+		echo; echo "[FAIL] Models that fail to compile or whose outputs fail to validate:"; \
+		for model in $$failed; do echo "  $$model"; done; \
+		false; \
+	fi
 
 diffRegressions:
 	@echo "======================================================="

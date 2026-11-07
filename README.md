@@ -222,14 +222,16 @@ Common flags:
   -k --keep-unused                        Keep uninstantated abstract clafers
                                           ('alloy' mode only).
   -s --no-stats                           Don't print statistics.
-  -v --validate                           Validate outputs of all modes. Uses
-                                          '<tooldir>/alloy6.2.0.jar' for Alloy
-                                          models, '<tooldir>/chocosolver.jar'
-                                          for Choco models, and Clafer
-                                          translator for desugared Clafer
-                                          models. Use '--tooldir' to override
-                                          the default location ('.') of these
-                                          tools.
+  -v --validate                           Validate outputs of all modes, and
+                                          exit with 1 if a tool rejects one.
+                                          Uses '<tooldir>/alloy6.2.0.jar' for
+                                          Alloy models,
+                                          '<tooldir>/chocosolver.jar' for Choco
+                                          models, dot for graphs, and clafer
+                                          itself for explicit models, which
+                                          must compile to themselves. Use
+                                          '--tooldir' to override the default
+                                          location ('.') of these tools.
      --tooldir=DIR                        Specify the tools directory
                                           ('validate' only). Default: '.'
                                           (current directory).
