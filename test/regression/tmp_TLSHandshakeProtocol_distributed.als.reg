@@ -31,36 +31,36 @@ one sig root
 , r_OurServer : set OurServer
 , r_aClient : set aClient
 , r_Protocol : set Protocol }
-fact { all self_ : root | always (one self_.@r_TLSFeatures) }
-fact { all self_ : root | always (one self_.@r_SSL2_0) }
-fact { all self_ : root | always (one self_.@r_SSL3_0) }
-fact { all self_ : root | always (one self_.@r_TLS1_0) }
-fact { all self_ : root | always (one self_.@r_TLS1_1) }
-fact { all self_ : root | always (one self_.@r_TLS1_2) }
-fact { all self_ : root | always (one self_.@r_initiated) }
-fact { all self_ : root | always (one self_.@r_completed) }
-fact { all self_ : root | always (one self_.@r_failed) }
-fact { all self_ : root | always (one self_.@r_serverHelloRequestMessage) }
-fact { all self_ : root | always (one self_.@r_serverHelloMessage) }
-fact { all self_ : root | always (one self_.@r_serverCertificateMessage) }
-fact { all self_ : root | always (one self_.@r_serverKeyExchangeMessage) }
-fact { all self_ : root | always (one self_.@r_serverCertificateRequestMessage) }
-fact { all self_ : root | always (one self_.@r_serverHelloDoneMessage) }
-fact { all self_ : root | always (one self_.@r_serverChangeCipherSpecMessage) }
-fact { all self_ : root | always (one self_.@r_serverFinishedMessage) }
-fact { all self_ : root | always (one self_.@r_protocolMismatch) }
-fact { all self_ : root | always (one self_.@r_clientHelloMessage) }
-fact { all self_ : root | always (one self_.@r_clientCertificateMessage) }
-fact { all self_ : root | always (one self_.@r_clientKeyExchangeMessage) }
-fact { all self_ : root | always (one self_.@r_certificateVerifyMessage) }
-fact { all self_ : root | always (one self_.@r_clientChangeCipherSpecMessage) }
-fact { all self_ : root | always (one self_.@r_clientFinishedMessage) }
-fact { all self_ : root | always (one self_.@r_applicationDataMessage) }
-fact { all self_ : root | always (one self_.@r_OurServer) }
-fact { all self_ : root | always (one self_.@r_aClient) }
-fact { all self_ : root | always (one self_.@r_Protocol) }
-fact { all self_ : root | always (((alive_Server.@r_send).@send_ref) = ((alive_Client.@r_receive).@receive_ref)) }
-fact { all self_ : root | always (((alive_Server.@r_receive).@receive_ref) = ((alive_Client.@r_send).@send_ref)) }
+fact { always (one root.@r_TLSFeatures) }
+fact { always (one root.@r_SSL2_0) }
+fact { always (one root.@r_SSL3_0) }
+fact { always (one root.@r_TLS1_0) }
+fact { always (one root.@r_TLS1_1) }
+fact { always (one root.@r_TLS1_2) }
+fact { always (one root.@r_initiated) }
+fact { always (one root.@r_completed) }
+fact { always (one root.@r_failed) }
+fact { always (one root.@r_serverHelloRequestMessage) }
+fact { always (one root.@r_serverHelloMessage) }
+fact { always (one root.@r_serverCertificateMessage) }
+fact { always (one root.@r_serverKeyExchangeMessage) }
+fact { always (one root.@r_serverCertificateRequestMessage) }
+fact { always (one root.@r_serverHelloDoneMessage) }
+fact { always (one root.@r_serverChangeCipherSpecMessage) }
+fact { always (one root.@r_serverFinishedMessage) }
+fact { always (one root.@r_protocolMismatch) }
+fact { always (one root.@r_clientHelloMessage) }
+fact { always (one root.@r_clientCertificateMessage) }
+fact { always (one root.@r_clientKeyExchangeMessage) }
+fact { always (one root.@r_certificateVerifyMessage) }
+fact { always (one root.@r_clientChangeCipherSpecMessage) }
+fact { always (one root.@r_clientFinishedMessage) }
+fact { always (one root.@r_applicationDataMessage) }
+fact { always (one root.@r_OurServer) }
+fact { always (one root.@r_aClient) }
+fact { always (one root.@r_Protocol) }
+fact { always (((alive_Server.@r_send).@send_ref) = ((alive_Client.@r_receive).@receive_ref)) }
+fact { always (((alive_Server.@r_receive).@receive_ref) = ((alive_Client.@r_send).@send_ref)) }
 
 
 abstract sig Feature

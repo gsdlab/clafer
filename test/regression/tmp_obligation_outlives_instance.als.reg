@@ -6,14 +6,14 @@ one sig root
 { var r_events : set events
 , var r_sys : set sys
 , var r_top : set top }
-fact { all self_ : root | always (one self_.@r_events) }
-fact { all self_ : root | always (lone self_.@r_sys) }
-fact { all self_ : root | always (one self_.@r_top) }
+fact { always (one root.@r_events) }
+fact { always (lone root.@r_sys) }
+fact { always (one root.@r_top) }
 
-assert assertAt_19_10 { all self_ : root | always (all  e : alive_event | after (no e & alive_event)) }
+assert assertAt_19_10 { always (all  e : alive_event | after (no e & alive_event)) }
 check assertAt_19_10 for 1 but 2 Port, 2 event, 10 steps
 
-assert assertAt_20_10 { all self_ : root | always (all  p : alive_sys.@r_p1 | (p.(@p_p1 :> alive_sys)) = alive_sys) }
+assert assertAt_20_10 { always (all  p : alive_sys.@r_p1 | (p.(@p_p1 :> alive_sys)) = alive_sys) }
 check assertAt_20_10 for 1 but 2 Port, 2 event, 10 steps
 
 

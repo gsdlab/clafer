@@ -4,12 +4,12 @@ pred show {}
 
 one sig root
 { var r_box : set box }
-fact { all self_ : root | always (2 <= #(self_.@r_box)) }
-fact { all self_ : root | always (#(self_.@r_box) <= 2) }
-fact { all self_ : root | always ((not before some root) implies (some alive_box.@r_item)) }
-fact { all self_ : root | always ((not before some root) implies (all  i : alive_box.@r_item | after ((no i & (alive_box.@r_item)) && (after (some i & (alive_box.@r_item)))))) }
+fact { always (2 <= #(root.@r_box)) }
+fact { always (#(root.@r_box) <= 2) }
+fact { always ((not before some root) implies (some alive_box.@r_item)) }
+fact { always ((not before some root) implies (all  i : alive_box.@r_item | after ((no i & (alive_box.@r_item)) && (after (some i & (alive_box.@r_item)))))) }
 
-assert assertAt_8_10 { all self_ : root | always (all  b : alive_box | all  i : b.@r_item | always ((some i & (alive_box.@r_item)) => (some i & (b.@r_item)))) }
+assert assertAt_8_10 { always (all  b : alive_box | all  i : b.@r_item | always ((some i & (alive_box.@r_item)) => (some i & (b.@r_item)))) }
 check assertAt_8_10 for 1 but 2 box, 2 item, 10 steps
 
 

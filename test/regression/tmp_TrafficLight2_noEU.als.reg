@@ -5,9 +5,9 @@ pred show {}
 one sig root
 { r_feature_model : set feature_model
 , var r_tl : set tl }
-fact { all self_ : root | always (one self_.@r_feature_model) }
-fact { all self_ : root | always (one self_.@r_tl) }
-fact { all self_ : root | always (no alive_feature_model.@r_EU) }
+fact { always (one root.@r_feature_model) }
+fact { always (one root.@r_tl) }
+fact { always (no alive_feature_model.@r_EU) }
 
 
 sig feature_model

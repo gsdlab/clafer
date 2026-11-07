@@ -4,7 +4,7 @@ pred show {}
 
 one sig root
 { r_feature_model : set feature_model }
-fact { all self_ : root | always (one self_.@r_feature_model) }
+fact { always (one root.@r_feature_model) }
 
 
 sig feature_model

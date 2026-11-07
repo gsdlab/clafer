@@ -353,15 +353,16 @@ genFacts genEnv c = map fact $ concatMap childCards (containedClafers c) ++ user
     , Concat trace [forEveryInstance c x]
     , CString " }" ]
 
--- | The constraint for every instance of the clafer, in every snapshot in which it exists.
+-- | The constraint for every instance of the clafer, in every snapshot in which it exists. The
+--   root has one instance, root itself, which this is in a top-level constraint: a quantified
+--   variable would mostly be unused, which Alloy warns about.
 forEveryInstance :: IClafer -> Concat -> Concat
-forEveryInstance c x = cconcat [CString $ "all " ++ selfIdent ++ " : " ++ sigOf ++ " | ", bindSelf always']
+forEveryInstance c x
+  | isRoot c  = bindTo rootIdent $ cconcat [CString "always (", x, CString ")"]
+  | otherwise = cconcat [CString $ "all " ++ selfIdent ++ " : " ++ uid' ++ " | ", bindSelf always']
   where
   uid' = _uid c
-  always'
-    | isRoot c  = cconcat [CString "always (", x, CString ")"]
-    | otherwise = cconcat [CString $ "always (" ++ selfIdent ++ " in " ++ aliveName uid' ++ " implies (", x, CString "))"]
-  sigOf = if isRoot c then rootIdent else uid'
+  always' = cconcat [CString $ "always (" ++ selfIdent ++ " in " ++ aliveName uid' ++ " implies (", x, CString "))"]
 
 -- | The variable of the instance in a fact: this is a keyword, which only signature facts bind.
 selfIdent :: String
@@ -369,16 +370,20 @@ selfIdent = "self_"
 
 -- | The constraint for the instance bound to 'selfIdent' instead of this.
 bindSelf :: Concat -> Concat
-bindSelf (CString str) = CString $ bind Nothing str
+bindSelf = bindTo selfIdent
+
+-- | The constraint with this replaced by the given name.
+bindTo :: String -> Concat -> Concat
+bindTo ident (CString str) = CString $ bind Nothing str
   where
   bind prev ('t':'h':'i':'s':rest)
-    | maybe True (not . identChar) prev && not (startsIdent rest) = selfIdent ++ bind (Just '_') rest
+    | maybe True (not . identChar) prev && not (startsIdent rest) = ident ++ bind (Just '_') rest
   bind _ (x:xs) = x : bind (Just x) xs
   bind _ [] = []
   startsIdent (x:_) = identChar x
   startsIdent [] = False
   identChar x = isAlphaNum x || x == '_' || x == '\''
-bindSelf (Concat trace xs) = Concat trace $ map bindSelf xs
+bindTo ident (Concat trace xs) = Concat trace $ map (bindTo ident) xs
 
 getAssertions :: IClafer -> [PExp]
 getAssertions c = [ pexp | IEConstraint False pexp <- _elements c ]

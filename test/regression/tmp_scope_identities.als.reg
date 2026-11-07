@@ -4,8 +4,8 @@ pred show {}
 
 one sig root
 { var r_item : set item }
-fact { all self_ : root | always (one self_.@r_item) }
-fact { all self_ : root | always ((not before some root) implies (all  x : alive_item | after (no x & alive_item))) }
+fact { always (one root.@r_item) }
+fact { always ((not before some root) implies (all  x : alive_item | after (no x & alive_item))) }
 
 
 sig item

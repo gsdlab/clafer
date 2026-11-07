@@ -4,9 +4,9 @@ pred show {}
 
 one sig root
 { var r_A : set A }
-fact { all self_ : root | always (always (all  c : (alive_A.@r_B).@r_C | one c.@r_D)) }
+fact { always (always (all  c : (alive_A.@r_B).@r_C | one c.@r_D)) }
 
-assert assertAt_9_10 { all self_ : root | always (always (all  c : (alive_A.@r_B).@r_C | some c.@r_D)) }
+assert assertAt_9_10 { always (always (all  c : (alive_A.@r_B).@r_C | some c.@r_D)) }
 check assertAt_9_10 for 1 but 10 steps
 
 

@@ -5,13 +5,13 @@ pred show {}
 one sig root
 { var r_events : set events
 , var r_tl : set tl }
-fact { all self_ : root | always (one self_.@r_events) }
-fact { all self_ : root | always (one self_.@r_tl) }
+fact { always (one root.@r_events) }
+fact { always (one root.@r_tl) }
 
-assert assertAt_43_11 { all self_ : root | always (((some (alive_tl.@r_on).@r_normal) && (some alive_events.@r_e_police)) => (eventually ((some (alive_tl.@r_on).@r_flashing) || (some alive_tl.@r_off)))) }
+assert assertAt_43_11 { always (((some (alive_tl.@r_on).@r_normal) && (some alive_events.@r_e_police)) => (eventually ((some (alive_tl.@r_on).@r_flashing) || (some alive_tl.@r_off)))) }
 check assertAt_43_11 for 1 but 5 event, 10 steps
 
-assert assertAt_44_11 { all self_ : root | always (((some ((alive_tl.@r_on).@r_flashing).@r_yellow_on) && (some alive_events.@r_e_after_0_5)) => (eventually ((some ((alive_tl.@r_on).@r_flashing).@r_yellow_off) || (no (alive_tl.@r_on).@r_flashing)))) }
+assert assertAt_44_11 { always (((some ((alive_tl.@r_on).@r_flashing).@r_yellow_on) && (some alive_events.@r_e_after_0_5)) => (eventually ((some ((alive_tl.@r_on).@r_flashing).@r_yellow_off) || (no (alive_tl.@r_on).@r_flashing)))) }
 check assertAt_44_11 for 1 but 5 event, 10 steps
 
 

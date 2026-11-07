@@ -5,13 +5,13 @@ pred show {}
 one sig root
 { var r_go : set go
 , var r_sm : set sm }
-fact { all self_ : root | always (lone self_.@r_go) }
-fact { all self_ : root | always (one self_.@r_sm) }
+fact { always (lone root.@r_go) }
+fact { always (one root.@r_sm) }
 
-assert assertAt_12_10 { all self_ : root | always (all  m : alive_sm | ((some m.@r_a) && (some alive_go)) => (after ((some m.@r_b) || (no m & alive_sm)))) }
+assert assertAt_12_10 { always (all  m : alive_sm | ((some m.@r_a) && (some alive_go)) => (after ((some m.@r_b) || (no m & alive_sm)))) }
 check assertAt_12_10 for 1 but 10 steps
 
-assert assertAt_13_10 { all self_ : root | always (((some alive_sm.@r_a) && (some alive_go)) => (after (some alive_sm.@r_b))) }
+assert assertAt_13_10 { always (((some alive_sm.@r_a) && (some alive_go)) => (after (some alive_sm.@r_b))) }
 check assertAt_13_10 for 1 but 10 steps
 
 

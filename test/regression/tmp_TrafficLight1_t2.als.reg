@@ -4,7 +4,7 @@ pred show {}
 
 one sig root
 { var r_t2 : set t2 }
-fact { all self_ : root | always (one self_.@r_t2) }
+fact { always (one root.@r_t2) }
 
 
 abstract sig TrafficLight_1

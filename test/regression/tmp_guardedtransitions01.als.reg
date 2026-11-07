@@ -6,20 +6,20 @@ one sig root
 { var r_signal : set signal
 , var r_light : set light
 , var r_door : set door }
-fact { all self_ : root | always (lone self_.@r_signal) }
-fact { all self_ : root | always (one self_.@r_light) }
-fact { all self_ : root | always (one self_.@r_door) }
+fact { always (lone root.@r_signal) }
+fact { always (one root.@r_light) }
+fact { always (one root.@r_door) }
 
-assert assertAt_21_11 { all self_ : root | always (((some alive_light.@r_red) && (some alive_signal)) => (after (some alive_light.@r_green))) }
+assert assertAt_21_11 { always (((some alive_light.@r_red) && (some alive_signal)) => (after (some alive_light.@r_green))) }
 check assertAt_21_11 for 1 but 10 steps
 
-assert assertAt_22_11 { all self_ : root | always (((some alive_light.@r_green) && (no alive_signal)) => (eventually (some alive_light.@r_red))) }
+assert assertAt_22_11 { always (((some alive_light.@r_green) && (no alive_signal)) => (eventually (some alive_light.@r_red))) }
 check assertAt_22_11 for 1 but 10 steps
 
-assert assertAt_23_11 { all self_ : root | always (((some alive_door.@r_closed) && (some alive_signal)) => (after (some alive_door.@r_opened))) }
+assert assertAt_23_11 { always (((some alive_door.@r_closed) && (some alive_signal)) => (after (some alive_door.@r_opened))) }
 check assertAt_23_11 for 1 but 10 steps
 
-assert assertAt_24_11 { all self_ : root | always (((some alive_door.@r_opened) && (no alive_signal)) => (eventually (some alive_door.@r_closed))) }
+assert assertAt_24_11 { always (((some alive_door.@r_opened) && (no alive_signal)) => (eventually (some alive_door.@r_closed))) }
 check assertAt_24_11 for 1 but 10 steps
 
 

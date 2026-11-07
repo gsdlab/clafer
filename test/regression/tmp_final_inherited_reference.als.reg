@@ -13,33 +13,33 @@ one sig root
 , var r_prius : set prius
 , var r_garage : set garage
 , var r_corolla : set corolla }
-fact { all self_ : root | always (one self_.@r_gas) }
-fact { all self_ : root | always (one self_.@r_electric) }
-fact { all self_ : root | always (one self_.@r_tesla) }
-fact { all self_ : root | always (one self_.@r_leaf) }
-fact { all self_ : root | always (one self_.@r_bolt) }
-fact { all self_ : root | always (one self_.@r_mini) }
-fact { all self_ : root | always (one self_.@r_volt) }
-fact { all self_ : root | always (one self_.@r_prius) }
-fact { all self_ : root | always (one self_.@r_garage) }
-fact { all self_ : root | always (one self_.@r_corolla) }
+fact { always (one root.@r_gas) }
+fact { always (one root.@r_electric) }
+fact { always (one root.@r_tesla) }
+fact { always (one root.@r_leaf) }
+fact { always (one root.@r_bolt) }
+fact { always (one root.@r_mini) }
+fact { always (one root.@r_volt) }
+fact { always (one root.@r_prius) }
+fact { always (one root.@r_garage) }
+fact { always (one root.@r_corolla) }
 
-assert assertAt_35_10 { all self_ : root | always ((((alive_tesla.@r_motor).@engine_ref) = alive_gas) => (always (((alive_tesla.@r_motor).@engine_ref) = alive_gas))) }
+assert assertAt_35_10 { always ((((alive_tesla.@r_motor).@engine_ref) = alive_gas) => (always (((alive_tesla.@r_motor).@engine_ref) = alive_gas))) }
 check assertAt_35_10 for 1 but 7 Car, 3 Engine, 7 drive, 5 engine, 7 gear, 7 park, 10 steps
 
-assert assertAt_36_10 { all self_ : root | always ((((alive_leaf.@r_motor2).@engine_ref) = alive_gas) => (always (((alive_leaf.@r_motor2).@engine_ref) = alive_gas))) }
+assert assertAt_36_10 { always ((((alive_leaf.@r_motor2).@engine_ref) = alive_gas) => (always (((alive_leaf.@r_motor2).@engine_ref) = alive_gas))) }
 check assertAt_36_10 for 1 but 7 Car, 3 Engine, 7 drive, 5 engine, 7 gear, 7 park, 10 steps
 
-assert assertAt_37_10 { all self_ : root | always ((((alive_bolt.@r_motor3).@engine_ref) = alive_gas) => (always (((alive_bolt.@r_motor3).@engine_ref) = alive_gas))) }
+assert assertAt_37_10 { always ((((alive_bolt.@r_motor3).@engine_ref) = alive_gas) => (always (((alive_bolt.@r_motor3).@engine_ref) = alive_gas))) }
 check assertAt_37_10 for 1 but 7 Car, 3 Engine, 7 drive, 5 engine, 7 gear, 7 park, 10 steps
 
-assert assertAt_38_10 { all self_ : root | always ((((alive_volt.@r_motor5).@engine_ref) = alive_gas) => (always (((alive_volt.@r_motor5).@engine_ref) = alive_gas))) }
+assert assertAt_38_10 { always ((((alive_volt.@r_motor5).@engine_ref) = alive_gas) => (always (((alive_volt.@r_motor5).@engine_ref) = alive_gas))) }
 check assertAt_38_10 for 1 but 7 Car, 3 Engine, 7 drive, 5 engine, 7 gear, 7 park, 10 steps
 
-assert assertAt_39_10 { all self_ : root | always ((((alive_prius.@r_motor6).@motor6_ref) = alive_gas) => (always (((alive_prius.@r_motor6).@motor6_ref) = alive_gas))) }
+assert assertAt_39_10 { always ((((alive_prius.@r_motor6).@motor6_ref) = alive_gas) => (always (((alive_prius.@r_motor6).@motor6_ref) = alive_gas))) }
 check assertAt_39_10 for 1 but 7 Car, 3 Engine, 7 drive, 5 engine, 7 gear, 7 park, 10 steps
 
-assert assertAt_40_10 { all self_ : root | always ((((alive_corolla.@r_motor7).@motor7_ref) = alive_gas) => (always (((alive_corolla.@r_motor7).@motor7_ref) = alive_gas))) }
+assert assertAt_40_10 { always ((((alive_corolla.@r_motor7).@motor7_ref) = alive_gas) => (always (((alive_corolla.@r_motor7).@motor7_ref) = alive_gas))) }
 check assertAt_40_10 for 1 but 7 Car, 3 Engine, 7 drive, 5 engine, 7 gear, 7 park, 10 steps
 
 

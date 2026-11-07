@@ -7,10 +7,10 @@ one sig root
 , r_up : set up
 , r_down : set down
 , var r_Elevator : set Elevator }
-fact { all self_ : root | always (one self_.@r_stop) }
-fact { all self_ : root | always (one self_.@r_up) }
-fact { all self_ : root | always (one self_.@r_down) }
-fact { all self_ : root | always (one self_.@r_Elevator) }
+fact { always (one root.@r_stop) }
+fact { always (one root.@r_up) }
+fact { always (one root.@r_down) }
+fact { always (one root.@r_Elevator) }
 
 
 abstract sig UserRequest

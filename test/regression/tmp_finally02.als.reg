@@ -4,8 +4,8 @@ pred show {}
 
 one sig root
 { var r_a : set a }
-fact { all self_ : root | always (one self_.@r_a) }
-fact { all self_ : root | always ((some root and after no root) implies (some (alive_a.@r_b).@r_e)) }
+fact { always (one root.@r_a) }
+fact { always ((some root and after no root) implies (some (alive_a.@r_b).@r_e)) }
 
 
 sig a

@@ -4,7 +4,7 @@ pred show {}
 
 one sig root
 { var r_a : set a }
-fact { all self_ : root | always (one self_.@r_a) }
+fact { always (one root.@r_a) }
 
 
 sig a
