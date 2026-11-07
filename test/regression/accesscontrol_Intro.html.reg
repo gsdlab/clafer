@@ -22,43 +22,43 @@ a[href$='Ambiguous name'] {color: yellow}
 <div class="file">positive/accesscontrol_Intro.cfr</div>
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Value">Value</span></div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="Value">Value</span></div>
 
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Attribute">Attribute</span>
+<span class="keyword">abstract</span> <span class="claferDecl" id="Attribute">Attribute</span>
   <div class="indent">
-  <span class="claferDecl" id="c0_value">value</span><span class="keyword"> -> </span><a href="#c0_Value"><span class="reference">Value</span></a></div>
+  <span class="claferDecl" id="value">value</span><span class="keyword"> -> </span><a href="#Value"><span class="reference">Value</span></a></div>
 </div>
 
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_ActionName">ActionName</span><span class="keyword"> : </span><a href="#c0_Attribute"><span class="reference">Attribute</span></a></div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="ActionName">ActionName</span><span class="keyword"> : </span><a href="#Attribute"><span class="reference">Attribute</span></a></div>
 
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Role">Role</span><span class="keyword"> : </span><a href="#c0_Attribute"><span class="reference">Attribute</span></a></div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="Role">Role</span><span class="keyword"> : </span><a href="#Attribute"><span class="reference">Attribute</span></a></div>
 
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_ResourceName">ResourceName</span><span class="keyword"> : </span><a href="#c0_Attribute"><span class="reference">Attribute</span></a></div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="ResourceName">ResourceName</span><span class="keyword"> : </span><a href="#Attribute"><span class="reference">Attribute</span></a></div>
 
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Element">Element</span>
+<span class="keyword">abstract</span> <span class="claferDecl" id="Element">Element</span>
   <div class="indent">
-  <span class="keyword">abstract</span> <span class="claferDecl" id="c0_attributes">attributes</span><span class="keyword"> : </span><a href="#c0_Attribute"><span class="reference">Attribute</span></a> *</div>
+  <span class="keyword">abstract</span> <span class="claferDecl" id="attributes">attributes</span><span class="keyword"> : </span><a href="#Attribute"><span class="reference">Attribute</span></a> *</div>
 </div>
 
 <!-- # FRAGMENT /-->
 
 <div>
-<span class="keyword">enum</span> Effect = <span class="claferDecl" id="c0_Permit">Permit</span> | <span class="claferDecl" id="c0_Deny">Deny</span> | <span class="claferDecl" id="c0_NotApplicable">NotApplicable</span> | <span class="claferDecl" id="c0_Indeterminate">Indeterminate</span></div>
+<span class="keyword">enum</span> Effect = <span class="claferDecl" id="Permit">Permit</span> | <span class="claferDecl" id="Deny">Deny</span> | <span class="claferDecl" id="NotApplicable">NotApplicable</span> | <span class="claferDecl" id="Indeterminate">Indeterminate</span></div>
 
 <!-- # FRAGMENT /-->
 
 <div>
-<span class="keyword">enum</span> CombiningAlgo = <span class="claferDecl" id="c0_PermitOverrides">PermitOverrides</span> | <span class="claferDecl" id="c0_DenyOverrides">DenyOverrides</span> | <span class="claferDecl" id="c0_OnlyOneApplicable">OnlyOneApplicable</span></div>
+<span class="keyword">enum</span> CombiningAlgo = <span class="claferDecl" id="PermitOverrides">PermitOverrides</span> | <span class="claferDecl" id="DenyOverrides">DenyOverrides</span> | <span class="claferDecl" id="OnlyOneApplicable">OnlyOneApplicable</span></div>
 
 </body>
 </html>

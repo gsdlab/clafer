@@ -1,0 +1,37 @@
+// After an explicit dref, the names are the children of the reference's target (#108):
+// this.dref.speed is the speed of the target, also when the reference clafer has a child of the
+// same name, and when it inherits or narrows its reference.
+
+abstract Port
+    speed -> integer
+    name -> integer
+Hub
+    p : Port 2
+fast : Port
+    [ speed = 10 ]
+
+abstract Component
+    // a reference with children: its own speed, and the speed of its target
+    abstract link -> Port *
+        latency -> integer
+        speed -> integer
+        [ this.dref.speed >= this.speed ]
+        [ all t : this.dref | t.speed >= latency ]
+cam : Component
+    // inherits the reference, and narrows it to the ports of the hub
+    l : link -> Hub.p 1
+        [ this.dref.speed = 3 ]
+        [ dref.name = 1 ]
+    [ l.dref.speed = 3 ]
+// a bag reference
+b ->> Port 2
+    [ this.dref.speed.dref = 3 ]
+// a target that is a reference too, with a child of the same name
+abstract Plug -> Port
+    speed -> integer
+plug : Plug
+pl -> Plug
+    [ this.dref.speed = 5 ]  // the plug's own speed
+// a union of targets
+u -> Hub.p ++ fast
+    [ (this.dref).speed = 10 ]

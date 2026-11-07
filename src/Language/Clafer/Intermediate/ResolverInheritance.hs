@@ -94,6 +94,7 @@ resolveNClafer abstractClafers parent clafer =
           (_isAbstract clafer)
           (_isInitial clafer || (fromMaybe False $ _isInitial <$> superIClafer'))  -- the clafer is declared as initial or inherits it
           (_isFinal clafer || (fromMaybe False $ _isFinal <$> superIClafer'))      -- the clafer is declared as final or inherits it
+          (_finalReferences $ _modifiers clafer)
       , _elements = elements'
       }
 
@@ -297,22 +298,19 @@ renameClafer True  puid clafer = renameClafer' puid clafer
 
 renameClafer' :: MonadState GEnv m => UID -> IClafer -> m IClafer
 renameClafer' puid clafer = do
-  -- counted by the UID's name, so that, e.g., a' and a__prime__ get different UIDs
-  let uidName = uidIdent $ _ident clafer
+  -- a copy of an inherited clafer (-i): the UID of the original with the first suffix __2,
+  -- __3, ... that no clafer has (see Language.Clafer.Intermediate.UIDs)
+  let original = _uid clafer
   identCountMap' <- gets identCountMap
-  let count = Map.findWithDefault 0 uidName identCountMap'
-  modify (\e -> e { identCountMap = Map.alter (\_ -> Just (count+1)) uidName identCountMap' } )
-  return $ clafer { _uid = genId uidName count, _parentUID = puid }
+  uidClaferMap' <- gets uidClaferMap
+  let count = Map.findWithDefault 1 original identCountMap'
+      taken n = isJust $ findIClafer uidClaferMap' (copyId original n)
+      n' = head [ n | n <- [count + 1 ..], not (taken n) ]
+  modify (\e -> e { identCountMap = Map.insert original n' identCountMap' } )
+  return $ clafer { _uid = copyId original n', _parentUID = puid }
 
-genId :: String -> Int -> String
-genId id' count = concat ["c", show count, "_",  id']
-
--- | The name of a clafer as used in its UID. Clafer names may contain apostrophes,
--- but the UIDs are identifiers in the Alloy and Choco (JavaScript) outputs, where
--- an apostrophe is not allowed (in Alloy 6, it is the next-state operator):
--- name' becomes name__prime__.
-uidIdent :: String -> String
-uidIdent = concatMap (\c -> if c == '\'' then "__prime__" else [c])
+copyId :: String -> Int -> String
+copyId id' n = id' ++ "__" ++ show n
 
 resolveEInheritance :: MonadState GEnv m => [String] -> [String] -> Bool -> [IElement] -> [IClafer]  -> m ([IElement], Maybe PExp, [IClafer])
 resolveEInheritance predecessors unrollables absAncestor declarations allSuper = do

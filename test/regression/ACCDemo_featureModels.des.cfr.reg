@@ -1,0 +1,24 @@
+//# OPTIONS --explicit
+abstract 0..* Car 0..* {
+  0..* ABS 0..1 {}
+  0..* CC 0..1 {
+    0..* ACC 0..1 {
+      [(#this.parent.parent.FCA) >= 1]
+    }
+  }
+  1..1 Transmission 1..1 {
+    0..* Automatic 0..1 {}
+    0..* Manual 0..1 {}
+  }
+  0..* FCA 0..1 {
+    1..1 Sensor 1..1 {
+      0..* Radar 0..1 {}
+      0..* Lidar 0..1 {}
+    }
+    1..1 Alert 0..1 {
+      0..* Haptic 0..1 {}
+      0..* Audible 0..1 {}
+    }
+  }
+}
+0..* aCar : Car 1..1 {}

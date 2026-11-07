@@ -1,7 +1,24 @@
-// generates incorrect Alloy as of 0.5.0:
-// = can be used only between 2 expressions of the same arity, or between 2 integer expressions.
-// Left type = {this/c0_ProtocolVersion}
-// Right type = {this/root->this/c0_SSL2_0, this/root->this/c0_SSL3_0, this/root->this/c0_TLS1_2}
+// The TLS 1.2 handshake (RFC 5246, section 7.3) between a client and a server, as a product
+// line: anonymous mode and client authentication are features, fixed in each trace.
+//
+//   Client                                   Server
+//   ClientHello                  -------->
+//                                            ServerHello
+//                                            Certificate*
+//                                            ServerKeyExchange*
+//                                            CertificateRequest*
+//                                <--------   ServerHelloDone
+//   Certificate*
+//   ClientKeyExchange
+//   CertificateVerify*
+//   [ChangeCipherSpec]
+//   Finished                     -------->
+//                                            [ChangeCipherSpec]
+//                                <--------   Finished
+//   Application Data             <------->   Application Data
+//
+// The server answers with a protocol_version alert when the client and the server have no
+// version in common, and a fatal alert ends the connection.
 
 /********************/
 /* Feature Modeling */
@@ -13,6 +30,8 @@ abstract final FeatureModel
 TLSFeatures : FeatureModel
     annonymousMode : Feature ?
     clientAuthentication : Feature ?
+    // the server requests a client certificate only from a known server (no anonymous mode)
+    [ clientAuthentication => no annonymousMode ]
 
 
 abstract final Domain
@@ -48,14 +67,12 @@ clientFinishedMessage : Message
 applicationDataMessage : Message
 
 
-
-
 abstract final Node : Domain
-	send : Port -> Message
-	receive : Port -> Message
-	protocolversion -> ProtocolVersion +
-	certificate ?
-		signing ?
+    send : Port -> Message
+    receive : Port -> Message
+    protocolversion -> ProtocolVersion +
+    certificate ?
+        signing ?
 
 
 abstract final Server : Node
@@ -80,81 +97,102 @@ Protocol : Domain
     final server -> OurServer
     handshakeStatus -> HandshakeStatus
 
-	xor channel
-		initial clientHello --> (serverResponse || fatalError)
-			[handshakeStatus = initiated]
-			[client.send = clientHelloMessage]
+    // The phases of the connection. A phase is left only from its last states, and a
+    // transition that leaves a phase is a constraint of the channel: as a transition of a state
+    // nested in the phase, it would lapse when the phase is left, which is when it should take
+    // effect. The transitions within a phase hold while the phase lasts.
+    xor channel
+        initial clientHello --> (serverResponse || fatalError)
+            [ handshakeStatus = initiated ]
+            [ client.send = clientHelloMessage ]
 
+        xor serverResponse
+            [ handshakeStatus = initiated ]
+            [ initially (serverHello || mismatch) ]
 
+            // no version in common: a protocol_version alert
+            mismatch
+                [ no (client.protocolversion ** server.protocolversion) ]
+                [ server.send = protocolMismatch ]
 
-		xor serverResponse
-			[handshakeStatus =  initiated]
+            // the server picks a version that both support
+            serverHello
+                [ some (client.protocolversion ** server.protocolversion) ]
+                [ server.send = serverHelloMessage ]
+            // a known server sends its certificate; an anonymous one its key exchange
+            [ serverHello -[ no annonymousMode ]-> serverCertificate ]
+            [ serverHello -[ annonymousMode ]-> serverKeyExchange ]
 
-			[initially (serverHello || mismatch)]
+            serverCertificate
+                [ no annonymousMode ]
+                [ server.send = serverCertificateMessage ]
+            [ serverCertificate -[ clientAuthentication ]-> (serverKeyExchange || certificateRequest) ]
+            [ serverCertificate -[ no clientAuthentication ]-> (serverKeyExchange || serverHelloDone) ]
 
-			mismatch --> fatalError
-				[!(client.protocolversion = server.protocolversion)]
-				[server.send = protocolMismatch]
+            serverKeyExchange
+                [ server.send = serverKeyExchangeMessage ]
+            [ serverKeyExchange -[ clientAuthentication ]-> certificateRequest ]
+            [ serverKeyExchange -[ no clientAuthentication ]-> serverHelloDone ]
 
-
-			serverHello --> (serverCertificate || serverKeyExchange || certificateRequest || serverHelloDone)
-				[client.protocolversion in server.protocolversion]
-				[server.send = serverHelloMessage]
-			[serverHello -[no annonymousMode]-> serverCertificate]
-
-
-			serverCertificate --> (serverKeyExchange || certificateRequest || serverHelloDone)
-				[server.send = serverCertificateMessage]
-
-            serverKeyExchange -->  certificateRequest || serverHelloDone
-				[server.send = serverKeyExchangeMessage]
-
-
+            // features: client authentication
             certificateRequest --> serverHelloDone
-            	// features: !annonymous mode + clientAuthentication
-            	[no annonymousMode && clientAuthentication]
-            	[server.send = serverCertificateRequestMessage]
+                [ clientAuthentication ]
+                [ server.send = serverCertificateRequestMessage ]
 
-            serverHelloDone --> clientResponse
-				[server.send = serverHelloDoneMessage]
+            serverHelloDone
+                [ server.send = serverHelloDoneMessage ]
 
+        [ serverResponse -[ !(serverResponse.mismatch || serverResponse.serverHelloDone) ]-> serverResponse ]
+        [ serverResponse.mismatch --> fatalError ]
+        [ serverResponse.serverHelloDone --> clientResponse ]
 
-		xor clientResponse ?
-			[handshakeStatus = initiated]
-			[initially (clientCertificate || clientKeyExchange) ]
+        xor clientResponse
+            [ handshakeStatus = initiated ]
+            // the client sends its certificate when the server requests it
+            [ initially (clientAuthentication => clientCertificate) ]
+            [ initially (no clientAuthentication => clientKeyExchange) ]
 
-			clientCertificate --> clientKeyExchange
-				[no annonymousMode && clientAuthentication]
-				[client.send = clientCertificateMessage]
+            clientCertificate --> clientKeyExchange
+                [ clientAuthentication ]
+                [ client.send = clientCertificateMessage ]
 
-			clientKeyExchange --> (certificateVerify || clientChangeCipherSpec)
-				[client.send = clientKeyExchangeMessage]
+            // a client with a certificate that can sign proves that it has the private key
+            clientKeyExchange
+                [ client.send = clientKeyExchangeMessage ]
+            [ clientKeyExchange -[ clientAuthentication && some client.certificate.signing ]-> certificateVerify ]
+            [ clientKeyExchange -[ !(clientAuthentication && some client.certificate.signing) ]-> clientChangeCipherSpec ]
 
+            certificateVerify --> clientChangeCipherSpec
+                [ client.certificate.signing ]
+                [ client.send = certificateVerifyMessage ]
 
-			certificateVerify --> clientChangeCipherSpec
-				[client.certificate.signing]
-				[client.send = certificateVerifyMessage]
+            clientChangeCipherSpec --> clientFinished
+                [ client.send = clientChangeCipherSpecMessage ]
 
+            clientFinished
+                [ client.send = clientFinishedMessage ]
 
-			clientChangeCipherSpec --> clientFinished
-				[client.send = clientChangeCipherSpecMessage]
+        [ clientResponse -[ no clientResponse.clientFinished ]-> clientResponse ]
+        [ clientResponse.clientFinished --> serverFinish ]
 
-			clientFinished --> serverFinish
-				[client.send = clientFinishedMessage]
+        xor serverFinish
+            initial serverChangeCipherSpec --> serverFinished
+                [ handshakeStatus = initiated ]
+                [ server.send = serverChangeCipherSpecMessage ]
 
+            // both Finished messages complete the handshake
+            serverFinished
+                [ server.send = serverFinishedMessage ]
+                [ handshakeStatus = completed ]
 
-		xor serverFinish --> serverFinished
-			[handshakeStatus = initiated]
-			initial serverChangeCipherSpec
-				[server.send = serverChangeCipherSpecMessage]
+        [ serverFinish -[ no serverFinish.serverFinished ]-> serverFinish ]
+        [ serverFinish.serverFinished --> dataTransfer ]
 
-			serverFinished --> dataTransfer
-				[server.send = serverFinishedMessage]
-				[handshakeStatus = completed]
+        // the application data flows until a new handshake (renegotiation)
+        dataTransfer -->> clientHello
+            [ handshakeStatus = completed ]
+            [ client.send = applicationDataMessage ]
 
-		dataTransfer -->> (handshakeStatus = initiated)
-			[handshakeStatus = completed]
-			[client.send = applicationDataMessage]
-
-		fatalError
-			[handshakeStatus = failed]
+        // a fatal alert ends the connection
+        fatalError --> fatalError
+            [ handshakeStatus = failed ]

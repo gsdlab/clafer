@@ -1,0 +1,13 @@
+//# OPTIONS --explicit
+abstract 0..* Animal 0..* {
+  0..* leg 0..* {}
+}
+abstract 0..* Owner 0..* {
+  0..* Pet : Animal 1..1 {}
+}
+0..* SnakeOwner : Owner 1..* {
+  [(#this.Pet.leg) = 0]
+}
+0..* DogOwner : Owner 1..* {
+  [(#this.Pet.leg) = 4]
+}

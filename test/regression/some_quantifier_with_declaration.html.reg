@@ -22,23 +22,23 @@ a[href$='Ambiguous name'] {color: yellow}
 <div class="file">positive/some_quantifier_with_declaration.cfr</div>
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_A">A</span>
+<span class="keyword">abstract</span> <span class="claferDecl" id="A">A</span>
   <div class="indent">
-  <span class="claferDecl" id="c0_b">b</span> *
+  <span class="claferDecl" id="b">b</span> *
     <div class="indent">
-    <span class="claferDecl" id="c0_c">c</span> ?</div>
+    <span class="claferDecl" id="c">c</span> ?</div>
   </div>
   <div class="indent">
-  <span class="keyword">[</span> <span class="keyword">some</span> b1<span class="keyword"> : </span><a href="#c0_b"><span class="reference">b</span></a> | <a href="#b1"><span class="reference">b1</span></a>.<a href="#c0_c"><span class="reference">c</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <span class="keyword">some</span> b1<span class="keyword"> : </span><a href="#b"><span class="reference">b</span></a> | <a href="#b1"><span class="reference">b1</span></a>.<a href="#c"><span class="reference">c</span></a> <span class="keyword">]</span></div>
 </div>
 
 
 <div>
-<span class="claferDecl" id="c0_a1">a1</span><span class="keyword"> : </span><a href="#c0_A"><span class="reference">A</span></a></div>
+<span class="claferDecl" id="a1">a1</span><span class="keyword"> : </span><a href="#A"><span class="reference">A</span></a></div>
 
 
 <div>
-<span class="keyword">assert [</span> <span class="keyword">some</span> <a href="#c0_c"><span class="reference">c</span></a> <span class="keyword">]</span></div>
+<span class="keyword">assert [</span> <span class="keyword">some</span> <a href="#c"><span class="reference">c</span></a> <span class="keyword">]</span></div>
 
 </body>
 </html>

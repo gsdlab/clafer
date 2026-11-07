@@ -22,81 +22,81 @@ a[href$='Ambiguous name'] {color: yellow}
 <div class="file">positive/ClaferToolsDemo_Variant_Derivation.cfr</div>
 
 <div>
-<span class="keyword">abstract</span> <span class="keyword">xor</span> <span class="claferDecl" id="c0_Bluetooth">Bluetooth</span>
+<span class="keyword">abstract</span> <span class="keyword">xor</span> <span class="claferDecl" id="root__Bluetooth">Bluetooth</span>
   <div class="indent">
-  <span class="claferDecl" id="c0_Bluetooth20">Bluetooth20</span> ?</div>
+  <span class="claferDecl" id="Bluetooth20">Bluetooth20</span> ?</div>
   <div class="indent">
-  <span class="claferDecl" id="c0_Bluetooth21">Bluetooth21</span> ?</div>
+  <span class="claferDecl" id="Bluetooth21">Bluetooth21</span> ?</div>
   <div class="indent">
-  <span class="claferDecl" id="c0_Bluetooth40">Bluetooth40</span> ?</div>
+  <span class="claferDecl" id="Bluetooth40">Bluetooth40</span> ?</div>
 </div>
 
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_MobilePhone">MobilePhone</span>
+<span class="keyword">abstract</span> <span class="claferDecl" id="MobilePhone">MobilePhone</span>
   <div class="indent">
-  <span class="claferDecl" id="c0_Connectivity">Connectivity</span>
+  <span class="claferDecl" id="Connectivity">Connectivity</span>
     <div class="indent">
-    `<a href="#c0_Bluetooth"><span class="reference">Bluetooth</span></a></div>
+    `<a href="#root__Bluetooth"><span class="reference">Bluetooth</span></a></div>
     <div class="indent">
-    <span class="claferDecl" id="c0_GSM">GSM</span></div>
+    <span class="claferDecl" id="GSM">GSM</span></div>
     <div class="indent">
-    <span class="claferDecl" id="c0_LTE">LTE</span> ?
+    <span class="claferDecl" id="LTE">LTE</span> ?
       <div class="indent">
-      <span class="keyword">[</span> <a href="#c0_LiBattery1400"><span class="reference">LiBattery1400</span></a> <span class="keyword">]</span></div>
+      <span class="keyword">[</span> <a href="#LiBattery1400"><span class="reference">LiBattery1400</span></a> <span class="keyword">]</span></div>
     </div>
     <div class="indent">
-    <span class="claferDecl" id="c0_WiFi">WiFi</span> ?</div>
+    <span class="claferDecl" id="WiFi">WiFi</span> ?</div>
     <div class="indent">
-    <span class="claferDecl" id="c0_USB">USB</span> ?</div>
+    <span class="claferDecl" id="USB">USB</span> ?</div>
   </div>
   <div class="indent">
-  <span class="keyword">xor</span> <span class="claferDecl" id="c0_Battery">Battery</span>
+  <span class="keyword">xor</span> <span class="claferDecl" id="Battery">Battery</span>
     <div class="indent">
-    <span class="claferDecl" id="c0_LiBattery1150">LiBattery1150</span> ?</div>
+    <span class="claferDecl" id="LiBattery1150">LiBattery1150</span> ?</div>
     <div class="indent">
-    <span class="claferDecl" id="c0_LiBattery1400">LiBattery1400</span> ?</div>
+    <span class="claferDecl" id="LiBattery1400">LiBattery1400</span> ?</div>
   </div>
 </div>
 
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_LowEndPhone">LowEndPhone</span><span class="keyword"> : </span><a href="#c0_MobilePhone"><span class="reference">MobilePhone</span></a>
+<span class="keyword">abstract</span> <span class="claferDecl" id="LowEndPhone">LowEndPhone</span><span class="keyword"> : </span><a href="#MobilePhone"><span class="reference">MobilePhone</span></a>
   <div class="indent">
-  <span class="keyword">[</span> <span class="keyword">no</span> <a href="#c0_WiFi"><span class="reference">WiFi</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <span class="keyword">no</span> <a href="#WiFi"><span class="reference">WiFi</span></a> <span class="keyword">]</span></div>
 </div>
 
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_HighEndPhone">HighEndPhone</span><span class="keyword"> : </span><a href="#c0_MobilePhone"><span class="reference">MobilePhone</span></a>
+<span class="keyword">abstract</span> <span class="claferDecl" id="HighEndPhone">HighEndPhone</span><span class="keyword"> : </span><a href="#MobilePhone"><span class="reference">MobilePhone</span></a>
   <div class="indent">
-  <span class="keyword">[</span> <a href="#c0_USB"><span class="reference">USB</span></a> &amp;&amp; <a href="#c0_WiFi"><span class="reference">WiFi</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <a href="#USB"><span class="reference">USB</span></a> &amp;&amp; <a href="#WiFi"><span class="reference">WiFi</span></a> <span class="keyword">]</span></div>
   <div class="indent">
-  <span class="claferDecl" id="c0_QuadCPU">QuadCPU</span> ?</div>
+  <span class="claferDecl" id="QuadCPU">QuadCPU</span> ?</div>
 </div>
 
 <!-- # FRAGMENT /-->
 
 <div>
-<span class="claferDecl" id="c0_Phone1">Phone1</span><span class="keyword"> : </span><a href="#c0_MobilePhone"><span class="reference">MobilePhone</span></a>
+<span class="claferDecl" id="Phone1">Phone1</span><span class="keyword"> : </span><a href="#MobilePhone"><span class="reference">MobilePhone</span></a>
   <div class="indent">
-  <span class="keyword">[</span> <a href="#c0_WiFi"><span class="reference">WiFi</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <a href="#WiFi"><span class="reference">WiFi</span></a> <span class="keyword">]</span></div>
   <div class="indent">
-  <span class="keyword">[</span> <a href="#c0_LTE"><span class="reference">LTE</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <a href="#LTE"><span class="reference">LTE</span></a> <span class="keyword">]</span></div>
   <div class="indent">
-  <span class="keyword">[</span> <a href="#c0_Bluetooth21"><span class="reference">Bluetooth21</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <a href="#Bluetooth21"><span class="reference">Bluetooth21</span></a> <span class="keyword">]</span></div>
 </div>
 
 <!-- # FRAGMENT /-->
 
 <div>
-<span class="claferDecl" id="c0_Phone2">Phone2</span><span class="keyword"> : </span><a href="#c0_HighEndPhone"><span class="reference">HighEndPhone</span></a>
+<span class="claferDecl" id="Phone2">Phone2</span><span class="keyword"> : </span><a href="#HighEndPhone"><span class="reference">HighEndPhone</span></a>
   <div class="indent">
-  <span class="keyword">[</span> <a href="#c0_LTE"><span class="reference">LTE</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <a href="#LTE"><span class="reference">LTE</span></a> <span class="keyword">]</span></div>
   <div class="indent">
-  <span class="keyword">[</span> <a href="#c0_Bluetooth21"><span class="reference">Bluetooth21</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <a href="#Bluetooth21"><span class="reference">Bluetooth21</span></a> <span class="keyword">]</span></div>
   <div class="indent">
-  <span class="keyword">[</span> <a href="#c0_QuadCPU"><span class="reference">QuadCPU</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <a href="#QuadCPU"><span class="reference">QuadCPU</span></a> <span class="keyword">]</span></div>
 </div>
 
 </body>

@@ -1,0 +1,51 @@
+open util/integer
+pred show {}
+
+
+one sig root
+{ var r_s : set s }
+fact { always (one root.@r_s) }
+
+assert assertAt_8_10 { always (always (some alive_s)) }
+check assertAt_8_10 for 1 but 10 steps
+
+
+
+sig s
+{ p_s : lone root
+, var r_a : set a
+, var r_b : set b }
+{ always (this in alive_s implies (let children = (this.@r_a + this.@r_b) | one children))
+  always (this in alive_s and not before this in alive_s implies (some this.@r_a)) }
+fun alive_s : set s { root.@r_s }
+fact { always ~@r_s in @p_s }
+
+fact { all self_ : s | always (self_ in alive_s implies (lone self_.@r_a)) }
+fact { all self_ : s | always (self_ in alive_s implies (lone self_.@r_b)) }
+
+assert assertAt_6_14 { all self_ : s | always (self_ in alive_s implies ((some self_.@r_a) => (after (some self_.@r_b)))) }
+check assertAt_6_14 for 1 but 10 steps
+
+assert assertAt_6_35 { all self_ : s | always (self_ in alive_s implies ((some self_.@r_b) => (after (some self_.@r_a)))) }
+check assertAt_6_35 for 1 but 10 steps
+
+
+
+sig a
+{ p_a : lone s }
+fun alive_a : set a { s.@r_a }
+fact { always ~@r_a in @p_a
+  always @r_a.univ in alive_s }
+
+fact { all self_ : a | always (self_ in alive_a implies ((some (self_ & alive_a)) => (after (not some self_.(@p_a :> alive_s) or (some (self_.(@p_a :> alive_s)).@r_b))))) }
+
+
+sig b
+{ p_b : lone s }
+fun alive_b : set b { s.@r_b }
+fact { always ~@r_b in @p_b
+  always @r_b.univ in alive_s }
+
+fact { all self_ : b | always (self_ in alive_b implies ((some (self_ & alive_b)) => (after (not some self_.(@p_b :> alive_s) or (some (self_.(@p_b :> alive_s)).@r_a))))) }
+
+

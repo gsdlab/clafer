@@ -22,13 +22,13 @@ a[href$='Ambiguous name'] {color: yellow}
 <div class="file">positive/simpleConstraint.cfr</div>
 
 <div>
-<span class="claferDecl" id="c0_A">A</span>
+<span class="claferDecl" id="A">A</span>
   <div class="indent">
-  <span class="claferDecl" id="c0_x">x</span> ?</div>
+  <span class="claferDecl" id="x">x</span> ?</div>
   <div class="indent">
-  <span class="claferDecl" id="c0_y">y</span> ?</div>
+  <span class="claferDecl" id="y">y</span> ?</div>
   <div class="indent">
-  <span class="keyword">[</span> <a href="#c0_x"><span class="reference">x</span></a> =&gt;  ! <a href="#c0_y"><span class="reference">y</span></a> <span class="keyword">]</span><span class="keyword">[</span> <a href="#c0_y"><span class="reference">y</span></a> =&gt;  ! <a href="#c0_x"><span class="reference">x</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <a href="#x"><span class="reference">x</span></a> =&gt;  ! <a href="#y"><span class="reference">y</span></a> <span class="keyword">]</span><span class="keyword">[</span> <a href="#y"><span class="reference">y</span></a> =&gt;  ! <a href="#x"><span class="reference">x</span></a> <span class="keyword">]</span></div>
 </div>
 
 </body>

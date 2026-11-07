@@ -1,9 +1,9 @@
-scope({c0_Car:4, c0_Person:4, c0_owner:4});
+scope({$Car:4, $Person:4, $owner:4});
 defaultScope(1);
 stringLength(16);
 
-c0_Car = Clafer("c0_Car").withCard(4, 4);
-c0_owner = c0_Car.addChild("c0_owner").withCard(1, 1);
-c0_Person = Clafer("c0_Person").withCard(4, 4);
-Constraint(all([disjDecl([c1 = local("c1"), c2 = local("c2")], global(c0_Car))], notEqual(joinRef(join(c1, c0_owner)), joinRef(join(c2, c0_owner)))));
-c0_owner.refToUnique(c0_Person);
+$Car = Clafer("Car").withCard(4, 4);
+$owner = $Car.addChild("owner").withCard(1, 1);
+$Person = Clafer("Person").withCard(4, 4);
+Constraint(all([disjDecl([$_c1 = local("c1"), $_c2 = local("c2")], global($Car))], notEqual(joinRef(join($_c1, $owner)), joinRef(join($_c2, $owner)))));
+$owner.refToUnique($Person);

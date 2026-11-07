@@ -1,0 +1,24 @@
+digraph "explicit_dref_navigation"
+{
+rankdir=BT;
+ranksep=0.3;
+nodesep=0.1;
+graph [fontname=Sans fontsize=11];
+node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
+edge [fontname=Sans fontsize=11];
+"Port" [label="abstract Port" URL="#Port" tooltip="abstract Port&#10;  speed -&gt; integer&#10;  name -&gt; integer&#10;"];
+"Hub" [label="Hub" URL="#Hub" tooltip="Hub&#10;  p : Port 2&#10;"];
+"fast" [label="fast : Port" URL="#fast" tooltip="fast : Port&#10;  [ speed = 10 ]&#10;"];
+"Component" [label="abstract Component" URL="#Component" tooltip="abstract Component&#10;  abstract link -&gt; Port *&#10;    latency -&gt; integer&#10;    speed -&gt; integer&#10;    [ this.dref.speed >= this.speed ]&#10;    [ all t : this.dref | t.speed >= latency ]&#10;"];
+"link" [label="abstract link -> Port *" URL="#link" tooltip="abstract link -&gt; Port *&#10;  latency -&gt; integer&#10;  speed -&gt; integer&#10;  [ this.dref.speed >= this.speed ]&#10;  [ all t : this.dref | t.speed >= latency ]&#10;"];
+"link" -> "Port" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=link];
+"cam" [label="cam : Component" URL="#cam" tooltip="cam : Component&#10;  l : link -&gt; Hub.p 1&#10;    [ this.dref.speed = 3 ]&#10;    [ dref.name = 1 ]&#10;  [ l.dref.speed = 3 ]&#10;"];
+"b" [label="b -&gt;&gt; Port 2" URL="#b" tooltip="b -&gt;&gt; Port 2&#10;  [ this.dref.speed.dref = 3 ]&#10;"];
+"b" -> "Port" [arrowhead=veevee arrowsize=0.6 minlen=1.5 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent];
+"Plug" [label="abstract Plug -&gt; Port" URL="#Plug" tooltip="abstract Plug -&gt; Port&#10;  speed -&gt; integer&#10;"];
+"Plug" -> "Port" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent];
+"plug" [label="plug : Plug" URL="#plug" tooltip="plug : Plug&#10;"];
+"pl" [label="pl -&gt; Plug" URL="#pl" tooltip="pl -&gt; Plug&#10;  [ this.dref.speed = 5 ]&#10;"];
+"pl" -> "Plug" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent];
+"u" [label="u -&gt; Hub.p++fast" URL="#u" tooltip="u -&gt; Hub.p++fast&#10;  [ this.dref.speed = 10 ]&#10;"];
+}

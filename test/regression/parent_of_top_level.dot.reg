@@ -1,0 +1,19 @@
+digraph "parent_of_top_level"
+{
+rankdir=BT;
+ranksep=0.3;
+nodesep=0.1;
+graph [fontname=Sans fontsize=11];
+node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
+edge [fontname=Sans fontsize=11];
+"a" [label="a" URL="#a" tooltip="a&#10;  x -&gt; integer&#10;"];
+"extra" [label="extra ?" URL="#extra" tooltip="extra ?&#10;"];
+"b" [label="b" URL="#b" tooltip="b&#10;  [ some parent.a ]&#10;  [ some this.parent ]&#10;  [ # parent = 1 ]&#10;  [ parent.a.x = 2 ]&#10;  [ all v : b | some v.parent.a ]&#10;  [ some a.parent.a ]&#10;  [ some extra.parent <=> some extra ]&#10;  [ # extra.parent = 1 => some extra ]&#10;  [ some extra.parent.a => some extra ]&#10;"];
+"Top" [label="abstract Top" URL="#Top" tooltip="abstract Top&#10;  [ some parent ]&#10;"];
+"top1" [label="top1 : Top" URL="#top1" tooltip="top1 : Top&#10;"];
+"top2" [label="top2 : Top" URL="#top2" tooltip="top2 : Top&#10;"];
+"Feat" [label="abstract Feat" URL="#Feat" tooltip="abstract Feat&#10;  [ some parent ]&#10;  [ # parent = 1 ]&#10;"];
+"f1" [label="f1 : Feat" URL="#f1" tooltip="f1 : Feat&#10;"];
+"g" [label="g" URL="#g" tooltip="g&#10;  f2 : Feat&#10;"];
+"h" [label="h 2" URL="#h" tooltip="h 2&#10;  i&#10;    f3 : Feat&#10;"];
+}

@@ -2,25 +2,25 @@ open util/integer
 pred show {}
 
 
-abstract sig c0_x
-{ c0_x_ref : one Int }
+abstract sig x
+{ x_ref : one Int }
 
-fact {  all disj x, y : c0_x | (x.@c0_x_ref) != (y.@c0_x_ref)  }
-one sig c0_A extends c0_x
+fact {  all disj x, y : x | (x.@x_ref) != (y.@x_ref)  }
+one sig A extends x
 {}
 
-fact { (some c0_A) => ((c0_A.@c0_x_ref) = 1) }
-one sig c0_B extends c0_x
+fact { (some A) => ((A.@x_ref) = 1) }
+one sig B extends x
 {}
 
-fact { (some c0_B) => ((c0_B.@c0_x_ref) = 2) }
-one sig c0_C extends c0_x
+fact { (some B) => ((B.@x_ref) = 2) }
+one sig C extends x
 {}
 
-fact { (some c0_C) => ((c0_C.@c0_x_ref) = 3) }
-sig c0_xs
-{ c0_xs_ref : one c0_x }
+fact { (some C) => ((C.@x_ref) = 3) }
+sig xs
+{ xs_ref : one x }
 
-fact { (c0_xs.@c0_xs_ref) = ((c0_A + c0_B) + c0_C) }
-fact { (c0_xs.@c0_xs_ref) = ((c0_A + c0_B) + c0_C) }
-fact { ((c0_xs.@c0_xs_ref).@c0_x_ref) = (((c0_A.@c0_x_ref) + (c0_B.@c0_x_ref)) + (c0_C.@c0_x_ref)) }
+fact { (xs.@xs_ref) = ((A + B) + C) }
+fact { (xs.@xs_ref) = ((A + B) + C) }
+fact { ((xs.@xs_ref).@x_ref) = (((A.@x_ref) + (B.@x_ref)) + (C.@x_ref)) }

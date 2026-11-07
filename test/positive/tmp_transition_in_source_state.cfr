@@ -1,0 +1,13 @@
+// A transition nested in its source state, as in the power window of Juodisius et al. 2019:
+// its obligation lasts while the parent of the state exists, so it takes the machine to b.
+// The machine is final: a mandatory clafer may be replaced by another instance between two
+// states, which ends the obligations of the old one (see tmp_transition_replaced_machine).
+
+go ?
+final xor sm
+  initial a
+    [ go --> b ]
+  b
+  c
+
+assert [ sm.a && go => X sm.b ]

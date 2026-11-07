@@ -1,0 +1,13 @@
+//# OPTIONS --explicit
+0..* person 1..1 {
+  0..* haha 1..1 {
+    0..* lala 1..1 {
+      0..* age -> int 1..1 {}
+    }
+  }
+  0..* ble 1..1 {
+    0..* married 0..1 {
+      [this.parent.parent.haha.lala.age.dref >= 18]
+    }
+  }
+}

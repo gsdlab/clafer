@@ -1,0 +1,49 @@
+//# OPTIONS --explicit
+abstract 0..* Feature 0..* {
+  0..* performance -> int 1..1 {}
+  0..* energy -> int 1..1 {}
+}
+abstract 0..* SecurityFeature : Feature 0..* {
+  0..* security -> int 1..1 {}
+}
+abstract 0..* MobilePhone 0..* {
+  [this.total_performance.dref = (sum Feature.performance.dref)]
+  [this.total_energy.dref = (sum Feature.energy.dref)]
+  [this.total_security.dref = (sum SecurityFeature.security.dref)]
+  1..* Connectivity : Feature 1..1 {
+    [this.performance.dref = 0]
+    [this.energy.dref = 0]
+    0..* Bluetooth : Feature 0..1 {
+      [this.performance.dref = 9]
+      [this.energy.dref = 10]
+    }
+    0..* USB : Feature 0..1 {
+      [this.performance.dref = 15]
+      [this.energy.dref = 7]
+    }
+    0..* Wifi : Feature 0..1 {
+      [this.performance.dref = 22]
+      [this.energy.dref = 17]
+    }
+  }
+  0..* PasswordProtection : SecurityFeature 0..1 {
+    [this.security.dref = 5]
+    [this.performance.dref = 1]
+    [this.energy.dref = 2]
+  }
+  0..* FingerprintProtection : SecurityFeature 0..1 {
+    [this.security.dref = 5]
+    [this.performance.dref = 2]
+    [this.energy.dref = 4]
+  }
+  0..* total_performance -> int 1..1 {}
+  0..* total_energy -> int 1..1 {}
+  0..* total_security -> int 1..1 {}
+}
+0..* MyPhone : MobilePhone 1..1 {
+  [((#this.Connectivity.Bluetooth) >= 1) && ((#this.Connectivity.USB) = 0)]
+}
+
+<< min MyPhone.total_energy.dref >>
+<< max MyPhone.total_performance.dref >>
+<< max MyPhone.total_security.dref >>

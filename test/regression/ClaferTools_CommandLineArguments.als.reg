@@ -2,195 +2,195 @@ open util/integer
 pred show {}
 
 
-abstract sig c0_Argument
+abstract sig Argument
 {}
 
-abstract sig c0_IntegerArgument
-{ c0_IntegerArgument_ref : one Int }
+abstract sig IntegerArgument
+{ IntegerArgument_ref : one Int }
 
-abstract sig c0_StringArgument
-{ c0_StringArgument_ref : one Int }
+abstract sig StringArgument
+{ StringArgument_ref : one Int }
 
-abstract sig c0_Value
+abstract sig Value
 {}
 
-abstract sig c0_DefaultValue
+abstract sig DefaultValue
 {}
 
-abstract sig c0_ClaferArgs
-{ r_c0_functional : lone c0_functional
-, r_c0_schema : lone c0_schema
-, r_c0_help : lone c0_help
-, r_c0_version : lone c0_version }
+abstract sig ClaferArgs
+{ r_functional : lone functional
+, r_schema : lone schema
+, r_help : lone help
+, r_version : lone version }
 
-sig c0_functional
-{ r_c0_mode : one c0_mode
-, r_c0_keep_unused : lone c0_keep_unused
-, r_c0_flatten_inheritance : lone c0_flatten_inheritance
-, r_c0_console_output : lone c0_console_output
-, r_c0_timeout_analysis : lone c0_timeout_analysis
-, r_c0_layout : lone c0_layout
-, r_c0_check_duplicates : lone c0_check_duplicates
-, r_c0_skip_resolver : lone c0_skip_resolver
-, r_c0_no_stats : lone c0_no_stats
-, r_c0_validate : lone c0_validate }
-{ one @r_c0_functional.this }
+sig functional
+{ r_mode : one mode
+, r_keep_unused : lone keep_unused
+, r_flatten_inheritance : lone flatten_inheritance
+, r_console_output : lone console_output
+, r_timeout_analysis : lone timeout_analysis
+, r_layout : lone layout
+, r_check_duplicates : lone check_duplicates
+, r_skip_resolver : lone skip_resolver
+, r_no_stats : lone no_stats
+, r_validate : lone validate }
+{ one @r_functional.this }
 
-sig c0_mode extends c0_Argument
-{ r_c0_alloy : lone c0_alloy
-, r_c0_desclafer : lone c0_desclafer
-, r_c0_html : lone c0_html
-, r_c0_graph : lone c0_graph
-, r_c0_cvlGraph : lone c0_cvlGraph }
-{ one @r_c0_mode.this
-  let children = (r_c0_alloy + r_c0_desclafer + r_c0_html + r_c0_graph + r_c0_cvlGraph) | one children }
+sig mode extends Argument
+{ r_alloy : lone alloy
+, r_desclafer : lone desclafer
+, r_html : lone html
+, r_graph : lone graph
+, r_cvlGraph : lone cvlGraph }
+{ one @r_mode.this
+  let children = (r_alloy + r_desclafer + r_html + r_graph + r_cvlGraph) | one children }
 
-sig c0_alloy extends c0_DefaultValue
-{ r_c0_noalloyruncommand : lone c0_noalloyruncommand
-, r_c0_alloy_mapping : lone c0_alloy_mapping }
-{ one @r_c0_alloy.this }
+sig alloy extends DefaultValue
+{ r_noalloyruncommand : lone noalloyruncommand
+, r_alloy_mapping : lone alloy_mapping }
+{ one @r_alloy.this }
 
-sig c0_noalloyruncommand extends c0_Argument
+sig noalloyruncommand extends Argument
 {}
-{ one @r_c0_noalloyruncommand.this }
+{ one @r_noalloyruncommand.this }
 
-sig c0_alloy_mapping extends c0_Argument
+sig alloy_mapping extends Argument
 {}
-{ one @r_c0_alloy_mapping.this }
+{ one @r_alloy_mapping.this }
 
-sig c0_desclafer extends c0_Value
+sig desclafer extends Value
 {}
-{ one @r_c0_desclafer.this }
+{ one @r_desclafer.this }
 
-sig c0_html extends c0_Value
-{ r_c0_self_contained : lone c0_self_contained
-, r_c0_add_graph : lone c0_add_graph
-, r_c0_add_comments : lone c0_add_comments }
-{ one @r_c0_html.this
-  some ((this.~@r_c0_html).~@r_c0_mode).@r_c0_keep_unused }
+sig html extends Value
+{ r_self_contained : lone self_contained
+, r_add_graph : lone add_graph
+, r_add_comments : lone add_comments }
+{ one @r_html.this
+  some ((this.~@r_html).~@r_mode).@r_keep_unused }
 
-sig c0_self_contained extends c0_Argument
+sig self_contained extends Argument
 {}
-{ one @r_c0_self_contained.this }
+{ one @r_self_contained.this }
 
-sig c0_add_graph extends c0_Argument
+sig add_graph extends Argument
 {}
-{ one @r_c0_add_graph.this }
+{ one @r_add_graph.this }
 
-sig c0_add_comments extends c0_Argument
+sig add_comments extends Argument
 {}
-{ one @r_c0_add_comments.this }
+{ one @r_add_comments.this }
 
-sig c0_graph extends c0_Value
+sig graph extends Value
 {}
-{ one @r_c0_graph.this
-  some ((this.~@r_c0_graph).~@r_c0_mode).@r_c0_keep_unused }
+{ one @r_graph.this
+  some ((this.~@r_graph).~@r_mode).@r_keep_unused }
 
-sig c0_cvlGraph extends c0_Value
+sig cvlGraph extends Value
 {}
-{ one @r_c0_cvlGraph.this
-  some ((this.~@r_c0_cvlGraph).~@r_c0_mode).@r_c0_flatten_inheritance
-  some ((this.~@r_c0_cvlGraph).~@r_c0_mode).@r_c0_keep_unused }
+{ one @r_cvlGraph.this
+  some ((this.~@r_cvlGraph).~@r_mode).@r_flatten_inheritance
+  some ((this.~@r_cvlGraph).~@r_mode).@r_keep_unused }
 
-sig c0_keep_unused extends c0_Argument
+sig keep_unused extends Argument
 {}
-{ one @r_c0_keep_unused.this }
+{ one @r_keep_unused.this }
 
-sig c0_flatten_inheritance extends c0_Argument
+sig flatten_inheritance extends Argument
 {}
-{ one @r_c0_flatten_inheritance.this }
+{ one @r_flatten_inheritance.this }
 
-sig c0_console_output extends c0_Argument
+sig console_output extends Argument
 {}
-{ one @r_c0_console_output.this }
+{ one @r_console_output.this }
 
-sig c0_timeout_analysis extends c0_IntegerArgument
+sig timeout_analysis extends IntegerArgument
 {}
-{ one @r_c0_timeout_analysis.this }
+{ one @r_timeout_analysis.this }
 
-sig c0_layout
-{ r_c0_no_layout : lone c0_no_layout
-, r_c0_new_layout : lone c0_new_layout }
-{ one @r_c0_layout.this
-  let children = (r_c0_no_layout + r_c0_new_layout) | lone children }
+sig layout
+{ r_no_layout : lone no_layout
+, r_new_layout : lone new_layout }
+{ one @r_layout.this
+  let children = (r_no_layout + r_new_layout) | lone children }
 
-sig c0_no_layout extends c0_Argument
+sig no_layout extends Argument
 {}
-{ one @r_c0_no_layout.this }
+{ one @r_no_layout.this }
 
-sig c0_new_layout extends c0_Argument
+sig new_layout extends Argument
 {}
-{ one @r_c0_new_layout.this }
+{ one @r_new_layout.this }
 
-sig c0_check_duplicates extends c0_Argument
+sig check_duplicates extends Argument
 {}
-{ one @r_c0_check_duplicates.this }
+{ one @r_check_duplicates.this }
 
-sig c0_skip_resolver extends c0_Argument
+sig skip_resolver extends Argument
 {}
-{ one @r_c0_skip_resolver.this }
+{ one @r_skip_resolver.this }
 
-sig c0_no_stats extends c0_Argument
+sig no_stats extends Argument
 {}
-{ one @r_c0_no_stats.this }
+{ one @r_no_stats.this }
 
-sig c0_validate extends c0_Argument
-{ r_c0_tooldir : one c0_tooldir }
-{ one @r_c0_validate.this
-  no ((this.~@r_c0_validate).@r_c0_mode).@r_c0_html
-  no ((this.~@r_c0_validate).@r_c0_mode).@r_c0_graph
-  no ((this.~@r_c0_validate).@r_c0_mode).@r_c0_cvlGraph }
+sig validate extends Argument
+{ r_tooldir : one tooldir }
+{ one @r_validate.this
+  no ((this.~@r_validate).@r_mode).@r_html
+  no ((this.~@r_validate).@r_mode).@r_graph
+  no ((this.~@r_validate).@r_mode).@r_cvlGraph }
 
-sig c0_tooldir extends c0_StringArgument
+sig tooldir extends StringArgument
 {}
-{ one @r_c0_tooldir.this }
+{ one @r_tooldir.this }
 
-sig c0_schema extends c0_Argument
+sig schema extends Argument
 {}
-{ one @r_c0_schema.this }
+{ one @r_schema.this }
 
-sig c0_help extends c0_Argument
+sig help extends Argument
 {}
-{ one @r_c0_help.this }
+{ one @r_help.this }
 
-sig c0_version extends c0_Argument
+sig version extends Argument
 {}
-{ one @r_c0_version.this }
+{ one @r_version.this }
 
-one sig c0_ca1 extends c0_ClaferArgs
+one sig ca1 extends ClaferArgs
 {}
-{ let children = (r_c0_functional + r_c0_schema + r_c0_help + r_c0_version) | one children
-  some ((this.@r_c0_functional).@r_c0_mode).@r_c0_alloy }
+{ let children = (r_functional + r_schema + r_help + r_version) | one children
+  some ((this.@r_functional).@r_mode).@r_alloy }
 
-one sig c0_ca2 extends c0_ClaferArgs
+one sig ca2 extends ClaferArgs
 {}
-{ let children = (r_c0_functional + r_c0_schema + r_c0_help + r_c0_version) | one children
-  some ((this.@r_c0_functional).@r_c0_mode).@r_c0_alloy
-  some (this.@r_c0_functional).@r_c0_validate
-  ((((this.@r_c0_functional).@r_c0_validate).@r_c0_tooldir).@c0_StringArgument_ref) = 0 }
+{ let children = (r_functional + r_schema + r_help + r_version) | one children
+  some ((this.@r_functional).@r_mode).@r_alloy
+  some (this.@r_functional).@r_validate
+  ((((this.@r_functional).@r_validate).@r_tooldir).@StringArgument_ref) = 0 }
 
-one sig c0_ca3 extends c0_ClaferArgs
+one sig ca3 extends ClaferArgs
 {}
-{ let children = (r_c0_functional + r_c0_schema + r_c0_help + r_c0_version) | one children
-  some ((this.@r_c0_functional).@r_c0_mode).@r_c0_alloy
-  some (this.@r_c0_functional).@r_c0_keep_unused
-  some (this.@r_c0_functional).@r_c0_flatten_inheritance }
+{ let children = (r_functional + r_schema + r_help + r_version) | one children
+  some ((this.@r_functional).@r_mode).@r_alloy
+  some (this.@r_functional).@r_keep_unused
+  some (this.@r_functional).@r_flatten_inheritance }
 
-one sig c0_ca4 extends c0_ClaferArgs
+one sig ca4 extends ClaferArgs
 {}
-{ let children = (r_c0_functional + r_c0_schema + r_c0_help + r_c0_version) | one children
-  some ((this.@r_c0_functional).@r_c0_mode).@r_c0_html }
+{ let children = (r_functional + r_schema + r_help + r_version) | one children
+  some ((this.@r_functional).@r_mode).@r_html }
 
-one sig c0_ca5 extends c0_ClaferArgs
+one sig ca5 extends ClaferArgs
 {}
-{ let children = (r_c0_functional + r_c0_schema + r_c0_help + r_c0_version) | one children
-  some ((this.@r_c0_functional).@r_c0_mode).@r_c0_html
-  some (((this.@r_c0_functional).@r_c0_mode).@r_c0_html).@r_c0_self_contained
-  some (((this.@r_c0_functional).@r_c0_mode).@r_c0_html).@r_c0_add_graph
-  some (((this.@r_c0_functional).@r_c0_mode).@r_c0_html).@r_c0_add_comments }
+{ let children = (r_functional + r_schema + r_help + r_version) | one children
+  some ((this.@r_functional).@r_mode).@r_html
+  some (((this.@r_functional).@r_mode).@r_html).@r_self_contained
+  some (((this.@r_functional).@r_mode).@r_html).@r_add_graph
+  some (((this.@r_functional).@r_mode).@r_html).@r_add_comments }
 
-one sig c0_ca6 extends c0_ClaferArgs
+one sig ca6 extends ClaferArgs
 {}
-{ let children = (r_c0_functional + r_c0_schema + r_c0_help + r_c0_version) | one children
-  some ((this.@r_c0_functional).@r_c0_mode).@r_c0_cvlGraph }
+{ let children = (r_functional + r_schema + r_help + r_version) | one children
+  some ((this.@r_functional).@r_mode).@r_cvlGraph }
 

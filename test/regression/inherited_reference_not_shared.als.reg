@@ -2,31 +2,31 @@ open util/integer
 pred show {}
 
 
-abstract sig c0_Person
+abstract sig Person
 {}
 
-one sig c0_JohnDoe extends c0_Person
+one sig JohnDoe extends Person
 {}
 
-one sig c0_MaryJane extends c0_Person
+one sig MaryJane extends Person
 {}
 
-abstract sig c0_WaitingLine
-{ r_c0_participants : set c0_participants }
-{ all disj x, y : this.@r_c0_participants | (x.@c0_participants_ref) != (y.@c0_participants_ref)  }
+abstract sig WaitingLine
+{ r_participants : set participants }
+{ all disj x, y : this.@r_participants | (x.@participants_ref) != (y.@participants_ref)  }
 
-sig c0_participants
-{ c0_participants_ref : one c0_Person }
-{ one @r_c0_participants.this }
+sig participants
+{ participants_ref : one Person }
+{ one @r_participants.this }
 
-one sig c0_BusLine extends c0_WaitingLine
+one sig BusLine extends WaitingLine
 {}
-{ (c0_JohnDoe in ((this.@r_c0_participants).@c0_participants_ref)) && (c0_MaryJane in ((this.@r_c0_participants).@c0_participants_ref)) }
+{ (JohnDoe in ((this.@r_participants).@participants_ref)) && (MaryJane in ((this.@r_participants).@participants_ref)) }
 
-one sig c0_JohnAndMaryLine extends c0_WaitingLine
+one sig JohnAndMaryLine extends WaitingLine
 {}
-{ ((this.@r_c0_participants).@c0_participants_ref) = (c0_JohnDoe + c0_MaryJane) }
+{ ((this.@r_participants).@participants_ref) = (JohnDoe + MaryJane) }
 
-assert assertOnLine_17 { all  wl : c0_WaitingLine | ((wl.@r_c0_participants).@c0_participants_ref) = (c0_JohnDoe + c0_MaryJane) }
-check assertOnLine_17 for 1 but 2 c0_Person, 2 c0_WaitingLine, 4 c0_participants
+assert assertAt_17_10 { all  wl : WaitingLine | ((wl.@r_participants).@participants_ref) = (JohnDoe + MaryJane) }
+check assertAt_17_10 for 1 but 2 Person, 2 WaitingLine, 4 participants
 

@@ -2,11 +2,11 @@ open util/integer
 pred show {}
 
 
-sig c0_a
-{ c0_a_ref : one Int }
+sig a
+{ a_ref : one Int }
 
-one sig c0_b
-{ c0_b_ref : one Int }
+one sig b
+{ b_ref : one Int }
 
-fact { (some c0_b) => ((c0_b.@c0_b_ref) = (sum temp : c0_a | temp.@c0_a_ref)) }
-fact { (c0_b.@c0_b_ref) = 2 }
+fact { (some b) => ((b.@b_ref) = (sum temp : a | temp.@a_ref)) }
+fact { (b.@b_ref) = 2 }

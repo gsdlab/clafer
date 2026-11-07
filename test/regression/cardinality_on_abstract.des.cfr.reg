@@ -1,0 +1,5 @@
+//# OPTIONS --explicit
+[(#a) >= 1]
+abstract 0..* a 0..* {}
+0..* b 1..1 {}
+0..* c 0..1 {}

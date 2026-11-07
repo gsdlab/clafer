@@ -1,0 +1,38 @@
+//# OPTIONS --explicit
+abstract 1..1 root__Bluetooth 0..* {
+  0..* Bluetooth20 0..1 {}
+  0..* Bluetooth21 0..1 {}
+  0..* Bluetooth40 0..1 {}
+}
+abstract 0..* MobilePhone 0..* {
+  0..* Connectivity 1..1 {
+    1..1 Connectivity__Bluetooth : root__Bluetooth 1..1 {}
+    0..* GSM 1..1 {}
+    0..* LTE 0..1 {
+      [(#this.parent.parent.Battery.LiBattery1400) >= 1]
+    }
+    0..* WiFi 0..1 {}
+    0..* USB 0..1 {}
+  }
+  1..1 Battery 1..1 {
+    0..* LiBattery1150 0..1 {}
+    0..* LiBattery1400 0..1 {}
+  }
+}
+abstract 0..* LowEndPhone : MobilePhone 0..* {
+  [(#this.Connectivity.WiFi) = 0]
+}
+abstract 0..* HighEndPhone : MobilePhone 0..* {
+  [((#this.Connectivity.USB) >= 1) && ((#this.Connectivity.WiFi) >= 1)]
+  0..* QuadCPU 0..1 {}
+}
+0..* Phone1 : MobilePhone 1..1 {
+  [(#this.Connectivity.WiFi) >= 1]
+  [(#this.Connectivity.LTE) >= 1]
+  [(#this.Connectivity.Connectivity__Bluetooth.Bluetooth21) >= 1]
+}
+0..* Phone2 : HighEndPhone 1..1 {
+  [(#this.Connectivity.LTE) >= 1]
+  [(#this.Connectivity.Connectivity__Bluetooth.Bluetooth21) >= 1]
+  [(#this.QuadCPU) >= 1]
+}

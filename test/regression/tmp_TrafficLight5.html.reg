@@ -22,16 +22,16 @@ a[href$='Ambiguous name'] {color: yellow}
 <div class="file">positive/tmp_TrafficLight5.cfr</div>
 
 <div>
-<span class="keyword">xor</span> <span class="claferDecl" id="c0_TrafficLight_5">TrafficLight_5</span> 1
+<span class="keyword">xor</span> <span class="claferDecl" id="TrafficLight_5">TrafficLight_5</span> 1
   <div class="indent">
-  <span class="keyword">xor</span> <span class="claferDecl" id="c0_on">on</span>
+  <span class="keyword">xor</span> <span class="claferDecl" id="on">on</span>
     <div class="indent">
-    <span class="claferDecl" id="c0_normal">normal</span></div>
+    <span class="claferDecl" id="normal">normal</span></div>
     <div class="indent">
-    <span class="claferDecl" id="c0_flashing">flashing</span></div>
+    <span class="claferDecl" id="flashing">flashing</span></div>
   </div>
   <div class="indent">
-  <span class="claferDecl" id="c0_off">off</span></div>
+  <span class="claferDecl" id="off">off</span></div>
 </div>
 
 </body>

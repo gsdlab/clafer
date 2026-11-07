@@ -2,29 +2,29 @@ open util/integer
 pred show {}
 
 
-fact { 2 <= #c0_a and #c0_a <= 2 }
-sig c0_a
-{ r_c0_b : set c0_b }
-{ 3 <= #r_c0_b and #r_c0_b <= 3 }
+fact { 2 <= #a and #a <= 2 }
+sig a
+{ r_b : set b }
+{ 3 <= #r_b and #r_b <= 3 }
 
-sig c0_b
-{ r_c0_c : set c0_c }
-{ one @r_c0_b.this
-  #r_c0_c = 0 }
+sig b
+{ r_c : set c }
+{ one @r_b.this
+  #r_c = 0 }
 
-sig c0_c
+sig c
 {}
-{ one @r_c0_c.this }
+{ one @r_c.this }
 
-assert assertOnLine_5 { no (c0_a.@r_c0_b).@r_c0_c }
-check assertOnLine_5 for 1 but 2 c0_a, 6 c0_b, 0 c0_c
+assert assertAt_5_10 { no (a.@r_b).@r_c }
+check assertAt_5_10 for 1 but 2 a, 6 b, 0 c
 
-assert assertOnLine_7 { some c0_a.@r_c0_b }
-check assertOnLine_7 for 1 but 2 c0_a, 6 c0_b, 0 c0_c
+assert assertAt_7_10 { some a.@r_b }
+check assertAt_7_10 for 1 but 2 a, 6 b, 0 c
 
-assert assertOnLine_9 { no (c0_a.@r_c0_b).@r_c0_c }
-check assertOnLine_9 for 1 but 2 c0_a, 6 c0_b, 0 c0_c
+assert assertAt_9_10 { no (a.@r_b).@r_c }
+check assertAt_9_10 for 1 but 2 a, 6 b, 0 c
 
-assert assertOnLine_11 { (#(c0_a.@r_c0_b)) = 6 }
-check assertOnLine_11 for 1 but 2 c0_a, 6 c0_b, 0 c0_c
+assert assertAt_11_10 { (#(a.@r_b)) = 6 }
+check assertAt_11_10 for 1 but 2 a, 6 b, 0 c
 

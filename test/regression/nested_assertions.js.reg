@@ -1,0 +1,15 @@
+defaultScope(1);
+stringLength(16);
+
+$a = Clafer("a").withCard(0, 1);
+$b = Clafer("b").withCard(0, 1);
+$P = Abstract("P");
+$age = $P.addChild("age").withCard(1, 1);
+$x = Clafer("x").withCard(1, 1);
+assert(implies(some(global($a)), some(global($a))));
+assert(implies(some(global($b)), some(global($b))));
+$age.refToUnique(Int);
+$P.addConstraint(greaterThanEqual(joinRef(join($this(), $age)), constant(0)));
+assert(all([decl([$_this_ = local("this_")], global($P))], greaterThanEqual(joinRef(join($_this_, $age)), constant(0))));
+$x.extending($P);
+assert(all([decl([$_this_ = local("this_")], global($x))], greaterThanEqual(joinRef(join($_this_, $age)), constant(0))));

@@ -110,6 +110,7 @@ import           System.Exit
 import           System.FilePath (dropExtension, takeBaseName)
 import           System.IO
 import           System.Process (readProcessWithExitCode, system)
+import           System.Environment (getExecutablePath)
 
 import           Language.Clafer.ClaferArgs hiding (Clafer)
 import qualified Language.Clafer.ClaferArgs  as Mode (ClaferMode (Clafer))
@@ -124,8 +125,10 @@ import           Language.Clafer.Front.ParClafer
 import           Language.Clafer.Front.PrintClafer
 import           Language.Clafer.Generator.Alloy
 import           Language.Clafer.Generator.AlloyLtl
+import           Language.Clafer.Generator.AlloyNames (alloyNames, toAlloyNames)
 import           Language.Clafer.Generator.Choco
 import           Language.Clafer.Generator.Concat
+import           Language.Clafer.Generator.Explicit
 import           Language.Clafer.Generator.Graph
 import           Language.Clafer.Generator.Html
 import           Language.Clafer.Generator.Stats
@@ -133,6 +136,7 @@ import           Language.Clafer.Import
 import           Language.Clafer.Intermediate.Desugarer
 import           Language.Clafer.Intermediate.Intclafer
 import           Language.Clafer.Intermediate.Resolver
+import           Language.Clafer.Intermediate.ResolverType (redundantExps)
 import           Language.Clafer.Intermediate.ScopeAnalysis
 import           Language.Clafer.Intermediate.StringAnalyzer
 import           Language.Clafer.Intermediate.Tracing
@@ -173,8 +177,12 @@ runCompiler    mURL         args'         modelFiles =
             putStrLn $ "[clafer]              Validating " ++ file args'
 
         when (validate args') $ liftIO $ do
-          forM_ fs (runValidate args')
+          failed <- concat <$> forM fs (runValidate args')
           putStrLn "\n"
+          -- an output that its tool rejects is an error, as a compile error is
+          unless (null failed) $ do
+            putStrLn $ "[clafer]              Validation failed: " ++ intercalate ", " failed
+            exitFailure
     when (Html `elem` mode args') $
       htmlCatch result args' inputModel
     result `cth` handleErrs
@@ -229,11 +237,11 @@ save args'=
     -- print stats only once
     unless (no_stats args') $ liftIO $ printStats results
     -- save the outputs
-    (iModule, _, _) <- getIr
-    forM results $ saveResult iModule resultsMap
+    (iModule, genv, _) <- getIr
+    forM results $ saveResult (iModule, genv) resultsMap
   where
     -- saveResult :: MonadIO m => CompilerResult -> IModule -> (Map.Map ClaferMode CompilerResult) -> ClaferT m String
-    saveResult iModule' resultsMap' result@CompilerResult { extension } = do
+    saveResult (iModule', genv') resultsMap' result@CompilerResult { extension, scopesList } = do
       result' <- if (add_graph args') && (Html `elem` (mode args') && ("dot" `isSuffixOf` (extension)))
             then do
                    ast' <- getAst
@@ -249,6 +257,9 @@ save args'=
         qNameMaps = deriveQNameMaps iModule'
       liftIO $ when (meta_data args') $ writeFile (f ++ ".cfr-map") $ generateJSONnameUIDMap qNameMaps
       liftIO $ when (meta_data args' && inScopeModes) $ writeFile (f ++ ".cfr-scope") $ generateJSONScopes qNameMaps $ getScopesList resultsMap'
+      -- the explicit form's scope file: every scope chocosolver solves it with
+      liftIO $ when (meta_data args' && extension == "des.cfr") $ writeFile (f ++ ".des.cfr-scope") $
+        snd $ genExplicitModule (iModule', genv') scopesList (minint args', maxint args') (decimal_digits args') Nothing
       return f'
     saveResult _ _ NoCompilerResult { reason } = do
       liftIO $ putStrLn reason
@@ -289,22 +300,45 @@ summary' graph stats ("<!-- # GRAPH /-->":xs) = graph:summary' graph stats xs
 summary' graph stats ("<!-- # CVLGRAPH /-->":xs) = graph:summary' graph stats xs
 summary' graph stats (x:xs) = x:summary' graph stats xs
 
-runValidate :: ClaferArgs -> String -> IO ()
-runValidate args' fo = do
-  let path = tooldir args' ++ "/"
-  let modes = mode args'
-  when (Alloy `elem` modes && ".als" `isSuffixOf` fo) $ do
-    liftIO $ putStrLn ("=========== Running the commands of " ++ fo ++ " =============")
-    void $ system $ validateAlloy path ++ fo
-  when (Choco `elem` modes && ".js" `isSuffixOf` fo) $ do
-    void $ system $ validateChoco path ++ fo
-  when (Graph `elem` modes && ".dot" `isSuffixOf` fo) $ do
-    liftIO $ putStrLn ("=========== Parsing+Generating   " ++ fo ++ " =============")
-    void $ system $ validateGraph ++ fo
-  -- when (Mode.Clafer `elem` modes && ".des.cfr" `isSuffixOf` fo) $ do
-  --   liftIO $ putStrLn ("=========== Parsing+Typechecking " ++ fo ++ " =============")
-  --   liftIO $ putStrLn $ validateClafer path ++ fo'
-  --   void $ system $  validateClafer path ++ fo'
+-- | Validates an output with its tool; returns the output if the tool rejects it. A counterexample
+--   is not a failure: the tool exits with 0.
+runValidate :: ClaferArgs -> String -> IO [String]
+runValidate args' fo
+  | Alloy `elem` modes && ".als" `isSuffixOf` fo = do
+    putStrLn ("=========== Running the commands of " ++ fo ++ " =============")
+    run $ validateAlloy path ++ fo
+  | Choco `elem` modes && ".js" `isSuffixOf` fo =
+    run $ validateChoco path ++ fo
+  | Graph `elem` modes && ".dot" `isSuffixOf` fo = do
+    putStrLn ("=========== Parsing+Generating   " ++ fo ++ " =============")
+    run $ validateGraph ++ fo
+  | Mode.Clafer `elem` modes && ".des.cfr" `isSuffixOf` fo = do
+    putStrLn ("=========== Compiling the explicit model " ++ fo ++ " =============")
+    validateClafer fo
+  | otherwise = return []
+  where
+  path = tooldir args' ++ "/"
+  modes = mode args'
+  run command = do
+    code <- system command
+    return [ fo | code /= ExitSuccess ]
+
+-- | The explicit model compiles to itself: clafer -m clafer on it prints it (its first line,
+--   //# OPTIONS --explicit, gives the options).
+validateClafer :: FilePath -> IO [String]
+validateClafer fo = do
+  clafer' <- getExecutablePath
+  explicit <- readFile fo
+  (code, out, err) <- readProcessWithExitCode clafer' ["-s", "-m", "clafer", "-o", fo] ""
+  case code of
+    -- the console output ends with one more newline
+    ExitSuccess | dropWhileEnd (== '\n') out == dropWhileEnd (== '\n') explicit -> return []
+                | otherwise       -> do
+                    putStrLn $ "The explicit model does not compile to itself: " ++ fo
+                    return [fo]
+    _ -> do
+      putStrLn $ out ++ err
+      return [fo]
 
 -- | Runs all commands (the default run command if there are none) and prints the instances and counterexamples.
 validateAlloy :: String -> String
@@ -316,8 +350,6 @@ validateChoco path = "java -jar \"" ++ path ++ "chocosolver.jar\" -v --file "
 validateGraph :: String
 validateGraph = "dot -Tsvg -O "
 
--- validateClafer :: String -> String
--- validateClafer path = "\""  ++ path ++ "clafer\" -s -k -m=clafer "
 
 
 -- | Add a new fragment to the model. Fragments should be added in order.
@@ -583,7 +615,9 @@ generate =
       scopeWarnings = if any (`elem` modes) [Alloy, AlloyLtl, Choco]
                       then showLargeScopes (inputFiles env) $ largeReferenceScopes iModule scopes
                       else ""
-      stats = showStats au (statsModule iModule) ++ scopeWarnings
+      stats = showStats au (statsModule iModule) ++ scopeWarnings ++ showRedundantExps (inputFiles env) (redundantExps iModule)
+              ++ showNoClaferNavs (inputFiles env) (noClaferNavs ast')
+              ++ (if skip_resolver cargs then "" else showDoubleUnderscoreNames (inputFiles env) iModule)
 
     return $ Map.fromList (
         -- result for Alloy
@@ -594,7 +628,12 @@ generate =
                     (imod,strMap) = astrModule iModule
                     useAlloyLtlGen = not staticClaferSubset || AlloyLtl `elem` modes
                     (genAlloyCode, alloyModes, fileExt) = if useAlloyLtlGen then (genAlloyLtlModule, [Alloy, AlloyLtl], "tmp.als") else (genModule, [Alloy], "als")
-                    alloyCode = genAlloyCode cargs{mode = alloyModes} (imod, genv) scopes otherTokens'
+                    -- the clafers whose UIDs cannot be Alloy names get names of their own
+                    names = alloyNames imod
+                    imodA = toAlloyNames names imod
+                    genvA = if Map.null names then genv else genv{uidClaferMap = createUidIClaferMap imodA}
+                    scopesA = [ (Map.findWithDefault u u names, s) | (u, s) <- scopes ]
+                    alloyCode = genAlloyCode cargs{mode = alloyModes} (imodA, genvA) scopesA otherTokens'
                     addCommentStats = if no_stats cargs then const else addStats
                  in
                     [ (Alloy,
@@ -642,17 +681,26 @@ generate =
                   }) ]
           else []
         )
-        -- result for Clafer
+        -- result for Clafer: the explicit form of the model, static or temporal; chocosolver
+        -- solves the static ones
         ++ (if Mode.Clafer `elem` modes
-          then [ (Mode.Clafer,
+          then if hasNoRealLiterals && hasNoReferenceToReal
+               then [ (Mode.Clafer,
                   CompilerResult {
                    extension = "des.cfr",
-                   outputCode = printTree $ sugarModule iModule,
+                   outputCode = fst $ genExplicitModule (iModule, genv) scopes (minint cargs, maxint cargs) (decimal_digits cargs)
+                                  (if staticClaferSubset then Nothing else Just (trace_len cargs)),
                    statistics = stats,
                    claferEnv  = env,
                    mappingToAlloy = [],
                    stringMap = Map.empty,
-                   scopesList = []
+                   scopesList = scopes
+                  }) ]
+               else [ (Mode.Clafer,
+                  NoCompilerResult {
+                    reason = "Clafer output unavailable because the model contains: "
+                           ++ (if hasNoRealLiterals then "" else "a real or double literal, ")
+                           ++ (if hasNoReferenceToReal then "" else "a reference to a real or double. ")
                   }) ]
           else []
         )
@@ -746,10 +794,15 @@ analyze args' iModule = do
   _ <-liftError $ findDupModule args' iModule
   let
     au = allUnique iModule
-  let args'' = args'{skip_resolver = au && (skip_resolver args')}
-  (rTree, genv) <- liftError $ resolveModule args'' iModule
+  -- With -f, the names are the UIDs, as in an explicit model: a name that cannot be a UID is an error.
+  case nonUidNames iModule of
+    (c : _) | skip_resolver args' -> throwErr (SemanticErr (_cinPos c) $
+      "With -f (--skip-resolver), the names of the clafers are their UIDs, so they must be unique and without apostrophes, but "
+      ++ _ident c ++ " is not" :: ClaferSErr)
+    _ -> return ()
+  (rTree, genv) <- liftError $ resolveModule args' iModule
   let tTree = transModule rTree
-  return (optimizeModule args'' (tTree, genv), genv, au)
+  return (optimizeModule args' (tTree, genv), genv, au)
 
 addStats :: String -> String -> String
 addStats code stats = "/*\n" ++ stats ++ "*/\n" ++ code
@@ -777,6 +830,51 @@ showLargeScopes files = unlines . map showLargeScope
       "Warning: " ++ path ++ ":" ++ show l' ++ ":" ++ show c ++ ": the scope of " ++ reference ++ " " ++ showInterval card'
       ++ " is " ++ show scope' ++ ", since " ++ name ++ " may point to all " ++ show targetScope ++ " " ++ _ident target ++ " in each of its parents."
       ++ " If fewer suffice, give it an upper bound, e.g., " ++ reference ++ " " ++ show (fst card') ++ "..10, to make the instance generation faster."
+
+-- | Warnings about the expressions compared with, subtracted from or intersected with themselves, at their positions in the files
+showRedundantExps :: [ModelFile] -> [PExp] -> String
+showRedundantExps files = unlines . map showRedundantExp
+  where
+  showRedundantExp PExp{_inPos = Span (Pos l c) _, _exp = IFunExp fun _} =
+    let
+      (path, l') = modelPosition files l
+    in
+      "Warning: " ++ path ++ ":" ++ show l' ++ ":" ++ show c ++ ": '" ++ fun ++ "' is redundant because the two subexpressions are always equivalent, so it is " ++ meaning fun ++ "."
+  showRedundantExp _ = ""
+  meaning fun
+    | fun == iEq         = "always true"
+    | fun == iNeq        = "always false"
+    | fun == iDifference = "always empty"
+    | otherwise          = "the same as either subexpression"
+
+-- | The navigations from @noclafer@, e.g., @noclafer.d@, as written: the desugarer and the name
+--   resolver replace them with @noclafer@, since a navigation from the empty set is empty
+noClaferNavs :: Module -> [Span]
+noClaferNavs ast' =
+  [ s | EJoin s (ClaferId _ (Path _ [ModIdIdent _ (PosIdent (_, n))])) _ <- universeOnOf biplate uniplate ast'
+      , n == noClaferIdent ]
+
+-- | Warnings about the navigations from @noclafer@, at their positions in the files
+showNoClaferNavs :: [ModelFile] -> [Span] -> String
+showNoClaferNavs files = unlines . map showNoClaferNav
+  where
+  showNoClaferNav (Span (Pos l c) _) =
+    let
+      (path, l') = modelPosition files l
+    in
+      "Warning: " ++ path ++ ":" ++ show l' ++ ":" ++ show c ++ ": a navigation from '" ++ noClaferIdent ++ "' is redundant, since it is always empty."
+
+-- | Warnings about the names with @__@, which the compiler uses between the names of a UID
+--   (e.g., @x__size@ for the @size@ in @x@): in a full model, such a name may be the UID of
+--   another clafer, and a lookup by name, e.g., in a scope file, splits it. An explicit model
+--   (@-f@, @--explicit@) has them by design.
+showDoubleUnderscoreNames :: [ModelFile] -> IModule -> String
+showDoubleUnderscoreNames files iModule = unlines
+  [ "Warning: " ++ path ++ ":" ++ show l' ++ ":" ++ show c ++ ": the name '" ++ _ident claf
+    ++ "' contains '__', which the compiler uses in the unique names of clafers (e.g., x__size for the size in x)."
+  | claf@IClafer{_cinPos = Span (Pos l c) _} <- universeOn biplate iModule :: [IClafer]
+  , "__" `isInfixOf` _ident claf
+  , let (path, l') = modelPosition files l ]
 
 showInterval :: (Integer, Integer) -> String
 showInterval (n, -1) = show n ++ "..*"

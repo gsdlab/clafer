@@ -22,49 +22,49 @@ a[href$='Ambiguous name'] {color: yellow}
 <div class="file">positive/if_then_else.cfr</div>
 
 <div>
-<span class="claferDecl" id="c0_emergencyVehicle">emergencyVehicle</span> ?</div>
+<span class="claferDecl" id="emergencyVehicle">emergencyVehicle</span> ?</div>
 
 
 <div>
-<span class="claferDecl" id="c0_allWayYellow">allWayYellow</span> ?</div>
+<span class="claferDecl" id="allWayYellow">allWayYellow</span> ?</div>
 
 
 <div>
-<span class="claferDecl" id="c0_allYellow">allYellow</span> ?
+<span class="claferDecl" id="allYellow">allYellow</span> ?
   <div class="indent">
-  <span class="claferDecl" id="c0_flashing">flashing</span> ?</div>
+  <span class="claferDecl" id="allYellow__flashing">flashing</span> ?</div>
 </div>
 
 
 <div>
-<span class="claferDecl" id="c0_warning">warning</span> ?
+<span class="claferDecl" id="warning">warning</span> ?
   <div class="indent">
-  <span class="claferDecl" id="c1_flashing">flashing</span> ?</div>
+  <span class="claferDecl" id="warning__flashing">flashing</span> ?</div>
 </div>
 
 
 <div>
-<span class="keyword">[</span> <a href="#c0_emergencyVehicle"><span class="reference">emergencyVehicle</span></a> =&gt; (<span class="keyword">if </span><span class="keyword">some</span> <a href="#c0_allWayYellow"><span class="reference">allWayYellow</span></a><span class="keyword"> then </span><span class="keyword">some</span> <a href="#c0_allYellow"><span class="reference">allYellow</span></a><span class="keyword"> else </span><span class="keyword">some</span> <a href="#c0_warning"><span class="reference">warning</span></a>) <span class="keyword">]</span></div>
+<span class="keyword">[</span> <a href="#emergencyVehicle"><span class="reference">emergencyVehicle</span></a> =&gt; (<span class="keyword">if </span><span class="keyword">some</span> <a href="#allWayYellow"><span class="reference">allWayYellow</span></a><span class="keyword"> then </span><span class="keyword">some</span> <a href="#allYellow"><span class="reference">allYellow</span></a><span class="keyword"> else </span><span class="keyword">some</span> <a href="#warning"><span class="reference">warning</span></a>) <span class="keyword">]</span></div>
 
 
 <div>
-<span class="keyword">[</span> <a href="#c0_emergencyVehicle"><span class="reference">emergencyVehicle</span></a> =&gt; (<span class="keyword">if </span><a href="#c0_allWayYellow"><span class="reference">allWayYellow</span></a><span class="keyword"> then </span><a href="#c0_allYellow"><span class="reference">allYellow</span></a><span class="keyword"> else </span><a href="#c0_warning"><span class="reference">warning</span></a>) <span class="keyword">]</span></div>
+<span class="keyword">[</span> <a href="#emergencyVehicle"><span class="reference">emergencyVehicle</span></a> =&gt; (<span class="keyword">if </span><a href="#allWayYellow"><span class="reference">allWayYellow</span></a><span class="keyword"> then </span><a href="#allYellow"><span class="reference">allYellow</span></a><span class="keyword"> else </span><a href="#warning"><span class="reference">warning</span></a>) <span class="keyword">]</span></div>
 
 
 <div>
-<span class="claferDecl" id="c0_AliceAge">AliceAge</span><span class="keyword"> -> </span><a href="#int"><span class="reference">int</span></a></div>
+<span class="claferDecl" id="AliceAge">AliceAge</span><span class="keyword"> -> </span><a href="#int"><span class="reference">int</span></a></div>
 
 
 <div>
-<span class="claferDecl" id="c0_BobAge">BobAge</span><span class="keyword"> -> </span><a href="#int"><span class="reference">int</span></a></div>
+<span class="claferDecl" id="BobAge">BobAge</span><span class="keyword"> -> </span><a href="#int"><span class="reference">int</span></a></div>
 
 
 <div>
-<span class="claferDecl" id="c0_BobsBirthday">BobsBirthday</span> ?</div>
+<span class="claferDecl" id="BobsBirthday">BobsBirthday</span> ?</div>
 
 
 <div>
-<span class="keyword">[</span> (<span class="keyword">if </span><a href="#c0_BobsBirthday"><span class="reference">BobsBirthday</span></a><span class="keyword"> then </span><a href="#c0_BobAge"><span class="reference">BobAge</span></a>.<span class="keyword">dref</span><span class="keyword"> else </span><a href="#c0_AliceAge"><span class="reference">AliceAge</span></a>.<span class="keyword">dref</span>) = 5 <span class="keyword">]</span></div>
+<span class="keyword">[</span> (<span class="keyword">if </span><a href="#BobsBirthday"><span class="reference">BobsBirthday</span></a><span class="keyword"> then </span><a href="#BobAge"><span class="reference">BobAge</span></a>.<span class="keyword">dref</span><span class="keyword"> else </span><a href="#AliceAge"><span class="reference">AliceAge</span></a>.<span class="keyword">dref</span>) = 5 <span class="keyword">]</span></div>
 
 </body>
 </html>

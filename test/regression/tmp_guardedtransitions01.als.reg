@@ -3,88 +3,90 @@ pred show {}
 
 
 one sig root
-{ var r_c0_signal : set c0_signal
-, var r_c0_light : set c0_light
-, var r_c0_door : set c0_door }
-fact { all self_ : root | always (lone self_.@r_c0_signal) }
-fact { all self_ : root | always (one self_.@r_c0_light) }
-fact { all self_ : root | always (one self_.@r_c0_door) }
+{ var r_signal : set signal
+, var r_light : set light
+, var r_door : set door }
+fact { always (lone root.@r_signal) }
+fact { always (one root.@r_light) }
+fact { always (one root.@r_door) }
 
-assert assertOnLine_21 { always (((some alive_c0_light.@r_c0_red) && (some alive_c0_signal)) => (after (some alive_c0_light.@r_c0_green))) }
-check assertOnLine_21 for 1 but 10 steps
+assert assertAt_21_11 { always (((some alive_light.@r_red) && (some alive_signal)) => (after (some alive_light.@r_green))) }
+check assertAt_21_11 for 1 but 10 steps
 
-assert assertOnLine_22 { always (((some alive_c0_light.@r_c0_green) && (no alive_c0_signal)) => (eventually (some alive_c0_light.@r_c0_red))) }
-check assertOnLine_22 for 1 but 10 steps
+assert assertAt_22_11 { always (((some alive_light.@r_green) && (no alive_signal)) => (eventually (some alive_light.@r_red))) }
+check assertAt_22_11 for 1 but 10 steps
 
-assert assertOnLine_23 { always (((some alive_c0_door.@r_c0_closed) && (some alive_c0_signal)) => (after (some alive_c0_door.@r_c0_opened))) }
-check assertOnLine_23 for 1 but 10 steps
+assert assertAt_23_11 { always (((some alive_door.@r_closed) && (some alive_signal)) => (after (some alive_door.@r_opened))) }
+check assertAt_23_11 for 1 but 10 steps
 
-assert assertOnLine_24 { always (((some alive_c0_door.@r_c0_opened) && (no alive_c0_signal)) => (eventually (some alive_c0_door.@r_c0_closed))) }
-check assertOnLine_24 for 1 but 10 steps
-
-
-
-sig c0_signal
-{ p_c0_signal : lone root }
-fun alive_c0_signal : set c0_signal { root.@r_c0_signal }
-fact { always ~@r_c0_signal in @p_c0_signal }
+assert assertAt_24_11 { always (((some alive_door.@r_opened) && (no alive_signal)) => (eventually (some alive_door.@r_closed))) }
+check assertAt_24_11 for 1 but 10 steps
 
 
-sig c0_light
-{ p_c0_light : lone root
-, var r_c0_red : set c0_red
-, var r_c0_green : set c0_green }
-{ always (this in alive_c0_light implies (let children = (this.@r_c0_red + this.@r_c0_green) | one children))
-  always (this in alive_c0_light and not before this in alive_c0_light implies (some this.@r_c0_red)) }
-fun alive_c0_light : set c0_light { root.@r_c0_light }
-fact { always ~@r_c0_light in @p_c0_light }
 
-fact { all self_ : c0_light | always (self_ in alive_c0_light implies (lone self_.@r_c0_red)) }
-fact { all self_ : c0_light | always (self_ in alive_c0_light implies (lone self_.@r_c0_green)) }
-fact { all self_ : c0_light | always (self_ in alive_c0_light implies (((some self_.@r_c0_red) && (some alive_c0_signal)) => (after (not some (self_ & alive_c0_light) or (some self_.@r_c0_green))))) }
-fact { all self_ : c0_light | always (self_ in alive_c0_light implies (((some self_.@r_c0_green) && (no alive_c0_signal)) => ((some (self_ & alive_c0_light) and ((some (self_ & alive_c0_light)) && (some self_.@r_c0_green))) until (not some (self_ & alive_c0_light) or (some self_.@r_c0_red))))) }
+sig signal
+{ p_signal : lone root }
+fun alive_signal : set signal { root.@r_signal }
+fact { always ~@r_signal in @p_signal }
 
 
-sig c0_red
-{ p_c0_red : lone c0_light }
-fun alive_c0_red : set c0_red { c0_light.@r_c0_red }
-fact { always ~@r_c0_red in @p_c0_red
-  always @r_c0_red.univ in alive_c0_light }
+sig light
+{ p_light : lone root
+, var r_red : set red
+, var r_green : set green }
+{ always (this in alive_light implies (let children = (this.@r_red + this.@r_green) | one children))
+  always (this in alive_light and not before this in alive_light implies (some this.@r_red)) }
+fun alive_light : set light { root.@r_light }
+fact { always ~@r_light in @p_light }
+
+fact { all self_ : light | always (self_ in alive_light implies (lone self_.@r_red)) }
+fact { all self_ : light | always (self_ in alive_light implies (lone self_.@r_green)) }
 
 
-sig c0_green
-{ p_c0_green : lone c0_light }
-fun alive_c0_green : set c0_green { c0_light.@r_c0_green }
-fact { always ~@r_c0_green in @p_c0_green
-  always @r_c0_green.univ in alive_c0_light }
+sig red
+{ p_red : lone light }
+fun alive_red : set red { light.@r_red }
+fact { always ~@r_red in @p_red
+  always @r_red.univ in alive_light }
+
+fact { all self_ : red | always (self_ in alive_red implies (((some (self_ & alive_red)) && (some alive_signal)) => (after (not some self_.(@p_red :> alive_light) or (some (self_.(@p_red :> alive_light)).@r_green))))) }
 
 
-sig c0_door
-{ p_c0_door : lone root
-, var r_c0_closed : set c0_closed
-, var r_c0_opened : set c0_opened }
-{ always (this in alive_c0_door implies (let children = (this.@r_c0_closed + this.@r_c0_opened) | one children))
-  always (this in alive_c0_door and not before this in alive_c0_door implies (some this.@r_c0_closed)) }
-fun alive_c0_door : set c0_door { root.@r_c0_door }
-fact { always ~@r_c0_door in @p_c0_door }
+sig green
+{ p_green : lone light }
+fun alive_green : set green { light.@r_green }
+fact { always ~@r_green in @p_green
+  always @r_green.univ in alive_light }
 
-fact { all self_ : c0_door | always (self_ in alive_c0_door implies (lone self_.@r_c0_closed)) }
-fact { all self_ : c0_door | always (self_ in alive_c0_door implies (lone self_.@r_c0_opened)) }
-fact { all self_ : c0_door | always (self_ in alive_c0_door implies (((some self_.@r_c0_closed) && (some alive_c0_signal)) => (after (not some (self_ & alive_c0_door) or (some self_.@r_c0_opened))))) }
-fact { all self_ : c0_door | always (self_ in alive_c0_door implies (((some self_.@r_c0_opened) && (no alive_c0_signal)) => ((some (self_ & alive_c0_door) and ((some (self_ & alive_c0_door)) && (some self_.@r_c0_opened))) until (not some (self_ & alive_c0_door) or (some self_.@r_c0_closed))))) }
+fact { all self_ : green | always (self_ in alive_green implies (((some (self_ & alive_green)) && (no alive_signal)) => ((some self_.(@p_green :> alive_light) and (some (self_ & alive_green))) until (not some self_.(@p_green :> alive_light) or (some (self_.(@p_green :> alive_light)).@r_red))))) }
 
 
-sig c0_closed
-{ p_c0_closed : lone c0_door }
-fun alive_c0_closed : set c0_closed { c0_door.@r_c0_closed }
-fact { always ~@r_c0_closed in @p_c0_closed
-  always @r_c0_closed.univ in alive_c0_door }
+sig door
+{ p_door : lone root
+, var r_closed : set closed
+, var r_opened : set opened }
+{ always (this in alive_door implies (let children = (this.@r_closed + this.@r_opened) | one children))
+  always (this in alive_door and not before this in alive_door implies (some this.@r_closed)) }
+fun alive_door : set door { root.@r_door }
+fact { always ~@r_door in @p_door }
+
+fact { all self_ : door | always (self_ in alive_door implies (lone self_.@r_closed)) }
+fact { all self_ : door | always (self_ in alive_door implies (lone self_.@r_opened)) }
+fact { all self_ : door | always (self_ in alive_door implies (((some self_.@r_closed) && (some alive_signal)) => (after (some self_.@r_opened)))) }
+fact { all self_ : door | always (self_ in alive_door implies (((some self_.@r_opened) && (no alive_signal)) => (((some (self_ & alive_door)) && (some self_.@r_opened)) until (some self_.@r_closed)))) }
 
 
-sig c0_opened
-{ p_c0_opened : lone c0_door }
-fun alive_c0_opened : set c0_opened { c0_door.@r_c0_opened }
-fact { always ~@r_c0_opened in @p_c0_opened
-  always @r_c0_opened.univ in alive_c0_door }
+sig closed
+{ p_closed : lone door }
+fun alive_closed : set closed { door.@r_closed }
+fact { always ~@r_closed in @p_closed
+  always @r_closed.univ in alive_door }
+
+
+sig opened
+{ p_opened : lone door }
+fun alive_opened : set opened { door.@r_opened }
+fact { always ~@r_opened in @p_opened
+  always @r_opened.univ in alive_door }
 
 

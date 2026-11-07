@@ -1,0 +1,13 @@
+//# OPTIONS --explicit
+[AlicePicks.dref = (BobPicks.dref ++ 3)]
+[(3 ++ BobPicks.dref) = AlicePicks.dref]
+[friends.dref = (others.dref ++ p1)]
+[others.dref = p2]
+0..* AlicePicks ->> int 0..* {}
+0..* BobPicks ->> int 0..* {}
+abstract 0..* Person 0..* {}
+0..* p1 : Person 1..1 {}
+0..* p2 : Person 1..1 {}
+0..* p3 : Person 1..1 {}
+0..* friends -> Person 0..* {}
+0..* others -> Person 0..* {}

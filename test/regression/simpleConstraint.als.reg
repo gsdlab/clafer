@@ -2,16 +2,16 @@ open util/integer
 pred show {}
 
 
-one sig c0_A
-{ r_c0_x : lone c0_x
-, r_c0_y : lone c0_y }
-{ ((some this.@r_c0_x) => (no this.@r_c0_y)) && ((some this.@r_c0_y) => (no this.@r_c0_x)) }
+one sig A
+{ r_x : lone x
+, r_y : lone y }
+{ ((some this.@r_x) => (no this.@r_y)) && ((some this.@r_y) => (no this.@r_x)) }
 
-lone sig c0_x
+lone sig x
 {}
-{ one r_c0_x }
+{ one r_x }
 
-lone sig c0_y
+lone sig y
 {}
-{ one r_c0_y }
+{ one r_y }
 

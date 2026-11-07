@@ -1,0 +1,13 @@
+//# OPTIONS --explicit
+abstract 0..* Person 0..* {
+  abstract 0..* Hand 0..* {}
+  abstract 0..* Hook : Hand 0..* {}
+}
+0..* CptHookHand : Person 1..1 {
+  0..* CptHookHand__left : Hook 1..1 {}
+  0..* CptHookHand__right : Hand 1..1 {}
+}
+0..* CptHandHook : Person 1..1 {
+  0..* CptHandHook__left : Hand 1..1 {}
+  0..* CptHandHook__right : Hook 1..1 {}
+}

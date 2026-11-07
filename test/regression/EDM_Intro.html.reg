@@ -22,137 +22,137 @@ a[href$='Ambiguous name'] {color: yellow}
 <div class="file">positive/EDM_Intro.cfr</div>
 
 <div>
-<span class="claferDecl" id="c0_midYearReview">midYearReview</span><span class="keyword"> : </span><a href="#c0_Meeting"><span class="reference">Meeting</span></a>
+<span class="claferDecl" id="midYearReview">midYearReview</span><span class="keyword"> : </span><a href="#Meeting"><span class="reference">Meeting</span></a>
   <div class="indent">
-  <span class="claferDecl" id="c0_month">month</span><span class="keyword"> -> </span><a href="#c0_Month"><span class="reference">Month</span></a> = <a href="#c0_June"><span class="reference">June</span></a></div>
+  <span class="claferDecl" id="month">month</span><span class="keyword"> -> </span><a href="#Month"><span class="reference">Month</span></a> = <a href="#June"><span class="reference">June</span></a></div>
   <div class="indent">
-  <span class="claferDecl" id="c0_chair">chair</span><span class="keyword"> -> </span><a href="#c0_Member"><span class="reference">Member</span></a> = <a href="#c0_Steven"><span class="reference">Steven</span></a></div>
+  <span class="claferDecl" id="midYearReview__chair">chair</span><span class="keyword"> -> </span><a href="#Member"><span class="reference">Member</span></a> = <a href="#Steven"><span class="reference">Steven</span></a></div>
   <div class="indent">
-  <span class="claferDecl" id="c0_room">room</span><span class="keyword"> -> </span><a href="#c0_Room"><span class="reference">Room</span></a> = <a href="#c0_C"><span class="reference">C</span></a></div>
+  <span class="claferDecl" id="midYearReview__room">room</span><span class="keyword"> -> </span><a href="#Room"><span class="reference">Room</span></a> = <a href="#C"><span class="reference">C</span></a></div>
   <div class="indent">
-  <span class="keyword">[</span> <span class="keyword">some</span> <a href="#c0_onlineParticipant"><span class="reference">onlineParticipant</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <span class="keyword">some</span> <a href="#onlineParticipant"><span class="reference">onlineParticipant</span></a> <span class="keyword">]</span></div>
 </div>
 
 
 <div>
-<span class="claferDecl" id="c0_Steven">Steven</span><span class="keyword"> : </span><a href="#c0_Member"><span class="reference">Member</span></a></div>
+<span class="claferDecl" id="Steven">Steven</span><span class="keyword"> : </span><a href="#Member"><span class="reference">Member</span></a></div>
 
 
 <div>
-<span class="claferDecl" id="c0_C">C</span><span class="keyword"> : </span><a href="#c0_Room"><span class="reference">Room</span></a>
+<span class="claferDecl" id="C">C</span><span class="keyword"> : </span><a href="#Room"><span class="reference">Room</span></a>
   <div class="indent">
-  <span class="claferDecl" id="c0_whiteboard">whiteboard</span></div>
+  <span class="claferDecl" id="C__whiteboard">whiteboard</span></div>
   <div class="indent">
-  <span class="claferDecl" id="c0_audioConferencing">audioConferencing</span></div>
-</div>
-
-<!-- # FRAGMENT /-->
-
-<div>
-<span class="claferDecl" id="c0_ondemandMeeting">ondemandMeeting</span><span class="keyword"> : </span><a href="#c0_Meeting"><span class="reference">Meeting</span></a>
-  <div class="indent">
-  <span class="claferDecl" id="c1_chair">chair</span><span class="keyword"> -> </span><a href="#c0_Member"><span class="reference">Member</span></a> = <a href="#c0_Joanna"><span class="reference">Joanna</span></a></div>
-  <div class="indent">
-  <span class="keyword">[</span> <span class="keyword">no</span> <a href="#c0_onlineParticipant"><span class="reference">onlineParticipant</span></a> <span class="keyword">]</span></div>
-  <div class="indent">
-  <span class="claferDecl" id="c1_room">room</span><span class="keyword"> -> </span><a href="#c0_Room"><span class="reference">Room</span></a> = <a href="#c0_D"><span class="reference">D</span></a></div>
-</div>
-
-
-<div>
-<span class="claferDecl" id="c0_Joanna">Joanna</span><span class="keyword"> : </span><a href="#c0_Member"><span class="reference">Member</span></a></div>
-
-
-<div>
-<span class="claferDecl" id="c0_D">D</span><span class="keyword"> : </span><a href="#c0_Room"><span class="reference">Room</span></a>
-  <div class="indent">
-  <span class="claferDecl" id="c1_whiteboard">whiteboard</span></div>
+  <span class="claferDecl" id="C__audioConferencing">audioConferencing</span></div>
 </div>
 
 <!-- # FRAGMENT /-->
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Meeting">Meeting</span>
+<span class="claferDecl" id="ondemandMeeting">ondemandMeeting</span><span class="keyword"> : </span><a href="#Meeting"><span class="reference">Meeting</span></a>
   <div class="indent">
-  <span class="claferDecl" id="c2_chair">chair</span><span class="keyword"> -> </span><a href="#c0_Member"><span class="reference">Member</span></a></div>
+  <span class="claferDecl" id="ondemandMeeting__chair">chair</span><span class="keyword"> -> </span><a href="#Member"><span class="reference">Member</span></a> = <a href="#Joanna"><span class="reference">Joanna</span></a></div>
   <div class="indent">
-  <span class="claferDecl" id="c0_participant">participant</span><span class="keyword"> -> </span><a href="#c0_Member"><span class="reference">Member</span></a> +</div>
+  <span class="keyword">[</span> <span class="keyword">no</span> <a href="#onlineParticipant"><span class="reference">onlineParticipant</span></a> <span class="keyword">]</span></div>
   <div class="indent">
-  <span class="keyword">[</span> <a href="#c2_chair"><span class="reference">chair</span></a> not in <a href="#c0_participant"><span class="reference">participant</span></a> <span class="keyword">]</span></div>
+  <span class="claferDecl" id="ondemandMeeting__room">room</span><span class="keyword"> -> </span><a href="#Room"><span class="reference">Room</span></a> = <a href="#D"><span class="reference">D</span></a></div>
+</div>
+
+
+<div>
+<span class="claferDecl" id="Joanna">Joanna</span><span class="keyword"> : </span><a href="#Member"><span class="reference">Member</span></a></div>
+
+
+<div>
+<span class="claferDecl" id="D">D</span><span class="keyword"> : </span><a href="#Room"><span class="reference">Room</span></a>
   <div class="indent">
-  <span class="claferDecl" id="c0_onlineParticipant">onlineParticipant</span><span class="keyword"> -> </span><a href="#c0_Member"><span class="reference">Member</span></a> *</div>
+  <span class="claferDecl" id="D__whiteboard">whiteboard</span></div>
+</div>
+
+<!-- # FRAGMENT /-->
+
+<div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="Meeting">Meeting</span>
   <div class="indent">
-  <span class="keyword">[</span> <a href="#c2_chair"><span class="reference">chair</span></a> not in <a href="#c0_onlineParticipant"><span class="reference">onlineParticipant</span></a> <span class="keyword">]</span></div>
+  <span class="claferDecl" id="Meeting__chair">chair</span><span class="keyword"> -> </span><a href="#Member"><span class="reference">Member</span></a></div>
   <div class="indent">
-  <span class="claferDecl" id="c2_room">room</span><span class="keyword"> -> </span><a href="#c0_Room"><span class="reference">Room</span></a>
+  <span class="claferDecl" id="participant">participant</span><span class="keyword"> -> </span><a href="#Member"><span class="reference">Member</span></a> +</div>
+  <div class="indent">
+  <span class="keyword">[</span> <a href="#Meeting__chair"><span class="reference">chair</span></a> not in <a href="#participant"><span class="reference">participant</span></a> <span class="keyword">]</span></div>
+  <div class="indent">
+  <span class="claferDecl" id="onlineParticipant">onlineParticipant</span><span class="keyword"> -> </span><a href="#Member"><span class="reference">Member</span></a> *</div>
+  <div class="indent">
+  <span class="keyword">[</span> <a href="#Meeting__chair"><span class="reference">chair</span></a> not in <a href="#onlineParticipant"><span class="reference">onlineParticipant</span></a> <span class="keyword">]</span></div>
+  <div class="indent">
+  <span class="claferDecl" id="Meeting__room">room</span><span class="keyword"> -> </span><a href="#Room"><span class="reference">Room</span></a>
     <div class="indent">
-    <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_capacity"><span class="reference">capacity</span></a> &gt;= # <a href="#c0_participant"><span class="reference">participant</span></a> + 1 <span class="keyword">]</span></div>
+    <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#capacity"><span class="reference">capacity</span></a> &gt;= # <a href="#participant"><span class="reference">participant</span></a> + 1 <span class="keyword">]</span></div>
   </div>
   <div class="indent">
-  <span class="keyword">[</span> <span class="keyword">some</span> <a href="#c0_onlineParticipant"><span class="reference">onlineParticipant</span></a> =&gt; <a href="#c2_room"><span class="reference">room</span></a>.<a href="#c1_audioConferencing"><span class="reference">audioConferencing</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <span class="keyword">some</span> <a href="#onlineParticipant"><span class="reference">onlineParticipant</span></a> =&gt; <a href="#Meeting__room"><span class="reference">room</span></a>.<a href="#Room__audioConferencing"><span class="reference">audioConferencing</span></a> <span class="keyword">]</span></div>
 </div>
 
 
 <div>
-<span class="keyword">enum</span> Month = <span class="claferDecl" id="c0_June">June</span> | <span class="claferDecl" id="c0_July">July</span></div>
+<span class="keyword">enum</span> Month = <span class="claferDecl" id="June">June</span> | <span class="claferDecl" id="July">July</span></div>
 
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Member">Member</span></div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="Member">Member</span></div>
 
 <!-- # FRAGMENT /-->
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Room">Room</span>
+<span class="keyword">abstract</span> <span class="claferDecl" id="Room">Room</span>
   <div class="indent">
-  <span class="claferDecl" id="c0_capacity">capacity</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a></div>
+  <span class="claferDecl" id="capacity">capacity</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a></div>
   <div class="indent">
-  <span class="keyword">or</span> <span class="claferDecl" id="c2_whiteboard">whiteboard</span>
+  <span class="keyword">or</span> <span class="claferDecl" id="Room__whiteboard">whiteboard</span>
     <div class="indent">
-    <span class="claferDecl" id="c0_traditional">traditional</span></div>
+    <span class="claferDecl" id="traditional">traditional</span></div>
     <div class="indent">
-    <span class="claferDecl" id="c0_electronic">electronic</span></div>
+    <span class="claferDecl" id="electronic">electronic</span></div>
   </div>
   <div class="indent">
-  <span class="claferDecl" id="c0_projector">projector</span> ?</div>
+  <span class="claferDecl" id="projector">projector</span> ?</div>
   <div class="indent">
-  <span class="claferDecl" id="c0_computer">computer</span> ?</div>
+  <span class="claferDecl" id="computer">computer</span> ?</div>
   <div class="indent">
-  <span class="claferDecl" id="c1_audioConferencing">audioConferencing</span> ?</div>
+  <span class="claferDecl" id="Room__audioConferencing">audioConferencing</span> ?</div>
 </div>
 
 <!-- # FRAGMENT /-->
 
 <div>
-<span class="claferDecl" id="c0_M">M</span><span class="keyword"> : </span><a href="#c0_Member"><span class="reference">Member</span></a> 5</div>
+<span class="claferDecl" id="M">M</span><span class="keyword"> : </span><a href="#Member"><span class="reference">Member</span></a> 5</div>
 
 <!-- # FRAGMENT /-->
 
 <div>
-<span class="claferDecl" id="c0_SueAgenda">SueAgenda</span><span class="keyword"> : </span><a href="#c0_Agenda"><span class="reference">Agenda</span></a>
+<span class="claferDecl" id="SueAgenda">SueAgenda</span><span class="keyword"> : </span><a href="#Agenda"><span class="reference">Agenda</span></a>
   <div class="indent">
-  <span class="claferDecl" id="c0_m1">m1</span><span class="keyword"> -> </span><a href="#c0_Meeting"><span class="reference">Meeting</span></a> ? = <a href="#c0_M1"><span class="reference">M1</span></a></div>
+  <span class="claferDecl" id="m1">m1</span><span class="keyword"> -> </span><a href="#Meeting"><span class="reference">Meeting</span></a> ? = <a href="#M1"><span class="reference">M1</span></a></div>
   <div class="indent">
-  <span class="claferDecl" id="c0_m2">m2</span><span class="keyword"> -> </span><a href="#c0_Meeting"><span class="reference">Meeting</span></a> ? = <a href="#c0_M2"><span class="reference">M2</span></a></div>
+  <span class="claferDecl" id="m2">m2</span><span class="keyword"> -> </span><a href="#Meeting"><span class="reference">Meeting</span></a> ? = <a href="#M2"><span class="reference">M2</span></a></div>
 </div>
 
 
 <div>
-<span class="claferDecl" id="c0_M1">M1</span><span class="keyword"> : </span><a href="#c0_Meeting"><span class="reference">Meeting</span></a> ?</div>
+<span class="claferDecl" id="M1">M1</span><span class="keyword"> : </span><a href="#Meeting"><span class="reference">Meeting</span></a> ?</div>
 
 
 <div>
-<span class="claferDecl" id="c0_M2">M2</span><span class="keyword"> : </span><a href="#c0_Meeting"><span class="reference">Meeting</span></a> ?
+<span class="claferDecl" id="M2">M2</span><span class="keyword"> : </span><a href="#Meeting"><span class="reference">Meeting</span></a> ?
   <div class="indent">
-  <span class="claferDecl" id="c0_time">time</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a> = 10</div>
+  <span class="claferDecl" id="time">time</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a> = 10</div>
 </div>
 
 <!-- # FRAGMENT /-->
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Agenda">Agenda</span>
+<span class="keyword">abstract</span> <span class="claferDecl" id="Agenda">Agenda</span>
   <div class="indent">
-  <span class="claferDecl" id="c0_mt">mt</span><span class="keyword"> -> </span><a href="#c0_Meeting"><span class="reference">Meeting</span></a> *</div>
+  <span class="claferDecl" id="mt">mt</span><span class="keyword"> -> </span><a href="#Meeting"><span class="reference">Meeting</span></a> *</div>
 </div>
 
 </body>

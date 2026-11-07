@@ -22,16 +22,16 @@ a[href$='Ambiguous name'] {color: yellow}
 <div class="file">positive/implicit_and_explicit_this.cfr</div>
 
 <div>
-<span class="claferDecl" id="c0_A">A</span>
+<span class="claferDecl" id="A">A</span>
   <div class="indent">
-  <span class="claferDecl" id="c0_i">i</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a>
+  <span class="claferDecl" id="i">i</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a>
     <div class="indent">
     <span class="keyword">[</span> <span class="keyword">this</span> = 1 <span class="keyword">]</span></div>
   </div>
   <div class="indent">
-  <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_i"><span class="reference">i</span></a> = 1 <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#i"><span class="reference">i</span></a> = 1 <span class="keyword">]</span></div>
   <div class="indent">
-  <span class="keyword">[</span> <a href="#c0_i"><span class="reference">i</span></a> = 1 <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <a href="#i"><span class="reference">i</span></a> = 1 <span class="keyword">]</span></div>
 </div>
 
 </body>

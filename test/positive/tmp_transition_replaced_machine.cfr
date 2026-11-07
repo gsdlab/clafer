@@ -1,0 +1,13 @@
+// A mandatory machine may be replaced by another instance between two states, which may start
+// again in a: the pending transition of the old instance lapses with it. So the first assertion
+// holds, and the second has a counterexample from scope 2 on.
+
+go ?
+xor sm
+  initial a
+    [ go --> b ]
+  b
+  c
+
+assert [ all m : sm | m.a && go => X (m.b || no (m ** sm)) ]
+assert [ sm.a && go => X sm.b ]

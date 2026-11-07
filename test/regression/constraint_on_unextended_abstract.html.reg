@@ -22,23 +22,23 @@ a[href$='Ambiguous name'] {color: yellow}
 <div class="file">positive/constraint_on_unextended_abstract.cfr</div>
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Kernel">Kernel</span>
+<span class="keyword">abstract</span> <span class="claferDecl" id="Kernel">Kernel</span>
   <div class="indent">
-  <span class="claferDecl" id="c0_memory">memory</span> ?</div>
+  <span class="claferDecl" id="memory">memory</span> ?</div>
 </div>
 
 
 <div>
-<span class="claferDecl" id="c0_Phone">Phone</span>
+<span class="claferDecl" id="Phone">Phone</span>
   <div class="indent">
-  <span class="claferDecl" id="c0_name">name</span><span class="keyword"> -> </span><a href="#string"><span class="reference">string</span></a></div>
+  <span class="claferDecl" id="name">name</span><span class="keyword"> -> </span><a href="#string"><span class="reference">string</span></a></div>
   <div class="indent">
-  <span class="keyword">[</span> <a href="#c0_Kernel"><span class="reference">Kernel</span></a>.<a href="#c0_memory"><span class="reference">memory</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <a href="#Kernel"><span class="reference">Kernel</span></a>.<a href="#memory"><span class="reference">memory</span></a> <span class="keyword">]</span></div>
 </div>
 
 
 <div>
-<span class="keyword">assert [</span> <span class="keyword">no</span> <a href="#c0_Kernel"><span class="reference">Kernel</span></a> <span class="keyword">]</span></div>
+<span class="keyword">assert [</span> <span class="keyword">no</span> <a href="#Kernel"><span class="reference">Kernel</span></a> <span class="keyword">]</span></div>
 
 </body>
 </html>

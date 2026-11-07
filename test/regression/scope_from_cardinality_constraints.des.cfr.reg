@@ -1,0 +1,10 @@
+//# OPTIONS --explicit
+abstract 0..* Animal 0..* {
+  0..* leg 0..* {}
+}
+0..* Dog : Animal 0..* {
+  [(#this.leg) = 4]
+}
+0..* Spider : Animal 0..* {
+  [(#this.leg) = 8]
+}

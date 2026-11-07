@@ -3,37 +3,37 @@ open util/integer
 open util/relation
 
 fact {
-symmetric[r_c0_spouse . c0_spouse_ref]
-irreflexive[r_c0_spouse . c0_spouse_ref]
+symmetric[r_spouse . spouse_ref]
+irreflexive[r_spouse . spouse_ref]
 }
 
 pred show {}
 
 
-abstract sig c0_Person
-{ r_c0_spouse : lone c0_spouse }
+abstract sig Person
+{ r_spouse : lone spouse }
 
-sig c0_spouse
-{ c0_spouse_ref : one c0_Person }
-{ one @r_c0_spouse.this }
+sig spouse
+{ spouse_ref : one Person }
+{ one @r_spouse.this }
 
-one sig c0_Alice extends c0_Person
+one sig Alice extends Person
 {}
-{ ((this.@r_c0_spouse).@c0_spouse_ref) = c0_Bob }
+{ ((this.@r_spouse).@spouse_ref) = Bob }
 
-one sig c0_Bob extends c0_Person
-{}
-
-assert assertOnLine_8 { ((c0_Bob.@r_c0_spouse).@c0_spouse_ref) = c0_Alice }
-check assertOnLine_8 for 1 but 4 c0_Person, 4 c0_spouse
-
-one sig c0_Carol extends c0_Person
-{}
-{ no this.@r_c0_spouse }
-
-one sig c0_Dave extends c0_Person
+one sig Bob extends Person
 {}
 
-assert assertOnLine_14 { no c0_Dave.@r_c0_spouse }
-check assertOnLine_14 for 1 but 4 c0_Person, 4 c0_spouse
+assert assertAt_8_10 { ((Bob.@r_spouse).@spouse_ref) = Alice }
+check assertAt_8_10 for 1 but 4 Person, 4 spouse
+
+one sig Carol extends Person
+{}
+{ no this.@r_spouse }
+
+one sig Dave extends Person
+{}
+
+assert assertAt_14_10 { no Dave.@r_spouse }
+check assertAt_14_10 for 1 but 4 Person, 4 spouse
 

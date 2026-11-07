@@ -2,36 +2,36 @@ open util/integer
 pred show {}
 
 
-abstract sig c0_Hardware
+abstract sig Hardware
 {}
 
-one sig c0_h1 extends c0_Hardware
+one sig h1 extends Hardware
 {}
 
-one sig c0_h2 extends c0_Hardware
+one sig h2 extends Hardware
 {}
 
-abstract sig c0_Software
-{ r_c0_target : one c0_target }
+abstract sig Software
+{ r_target : one target }
 
-sig c0_target
-{ c0_target_ref : one c0_Hardware }
-{ one @r_c0_target.this }
+sig target
+{ target_ref : one Hardware }
+{ one @r_target.this }
 
-one sig c0_s1 extends c0_Software
+one sig s1 extends Software
 {}
-{ ((this.@r_c0_target).@c0_target_ref) = c0_h1 }
+{ ((this.@r_target).@target_ref) = h1 }
 
-one sig c0_s2 extends c0_Software
+one sig s2 extends Software
 {}
-{ ((this.@r_c0_target).@c0_target_ref) = c0_h2 }
+{ ((this.@r_target).@target_ref) = h2 }
 
-fact { #c0_noHardware = 0 }
-sig c0_noHardware
-{ c0_noHardware_ref : one c0_Hardware }
+fact { #noHardware = 0 }
+sig noHardware
+{ noHardware_ref : one Hardware }
 
-sig c0_uses
-{ c0_uses_ref : one c0_Hardware }
+sig uses
+{ uses_ref : one Hardware }
 
-fact {  all disj x, y : c0_uses | (x.@c0_uses_ref) != (y.@c0_uses_ref)  }
-fact { (c0_uses.@c0_uses_ref) = (((#c0_Software) > 0) => (((c0_s1.@r_c0_target).@c0_target_ref) + ((c0_s2.@r_c0_target).@c0_target_ref)) else (c0_noHardware.@c0_noHardware_ref)) }
+fact {  all disj x, y : uses | (x.@uses_ref) != (y.@uses_ref)  }
+fact { (uses.@uses_ref) = (((#Software) > 0) => (((s1.@r_target).@target_ref) + ((s2.@r_target).@target_ref)) else (noHardware.@noHardware_ref)) }

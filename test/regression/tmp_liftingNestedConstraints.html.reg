@@ -22,28 +22,28 @@ a[href$='Ambiguous name'] {color: yellow}
 <div class="file">positive/tmp_liftingNestedConstraints.cfr</div>
 
 <div>
-<span class="claferDecl" id="c0_A">A</span> *
+<span class="claferDecl" id="A">A</span> *
   <div class="indent">
-  <span class="claferDecl" id="c0_B">B</span> *
+  <span class="claferDecl" id="B">B</span> *
     <div class="indent">
-    <span class="claferDecl" id="c0_C">C</span> *
+    <span class="claferDecl" id="C">C</span> *
       <div class="indent">
-      <span class="claferDecl" id="c0_D">D</span> ?</div>
+      <span class="claferDecl" id="D">D</span> ?</div>
     </div>
     <div class="indent">
-    <span class="keyword">[</span> <span class="tKeyword">globally </span><span class="keyword">one</span> <a href="#c0_D"><span class="reference">D</span></a> <span class="keyword">]</span></div>
+    <span class="keyword">[</span> <span class="tKeyword">globally </span><span class="keyword">one</span> <a href="#D"><span class="reference">D</span></a> <span class="keyword">]</span></div>
   </div>
   <div class="indent">
-  <span class="keyword">[</span> G (all c<span class="keyword"> : </span><a href="#c0_B"><span class="reference">B</span></a>.<a href="#c0_C"><span class="reference">C</span></a> | <span class="keyword">one</span> <a href="#c"><span class="reference">c</span></a>.<a href="#c0_D"><span class="reference">D</span></a>) <span class="keyword">]</span></div>
+  <span class="keyword">[</span> G (all c<span class="keyword"> : </span><a href="#B"><span class="reference">B</span></a>.<a href="#C"><span class="reference">C</span></a> | <span class="keyword">one</span> <a href="#c"><span class="reference">c</span></a>.<a href="#D"><span class="reference">D</span></a>) <span class="keyword">]</span></div>
 </div>
 
 
 <div>
-<span class="keyword">[</span> G (all c<span class="keyword"> : </span><a href="#c0_A"><span class="reference">A</span></a>.<a href="#c0_B"><span class="reference">B</span></a>.<a href="#c0_C"><span class="reference">C</span></a> | <span class="keyword">one</span> <a href="#c"><span class="reference">c</span></a>.<a href="#c0_D"><span class="reference">D</span></a>) <span class="keyword">]</span></div>
+<span class="keyword">[</span> G (all c<span class="keyword"> : </span><a href="#A"><span class="reference">A</span></a>.<a href="#B"><span class="reference">B</span></a>.<a href="#C"><span class="reference">C</span></a> | <span class="keyword">one</span> <a href="#c"><span class="reference">c</span></a>.<a href="#D"><span class="reference">D</span></a>) <span class="keyword">]</span></div>
 
 
 <div>
-<span class="keyword">assert [</span> G (all c<span class="keyword"> : </span><a href="#c0_A"><span class="reference">A</span></a>.<a href="#c0_B"><span class="reference">B</span></a>.<a href="#c0_C"><span class="reference">C</span></a> | <span class="keyword">some</span> <a href="#c"><span class="reference">c</span></a>.<a href="#c0_D"><span class="reference">D</span></a>) <span class="keyword">]</span></div>
+<span class="keyword">assert [</span> G (all c<span class="keyword"> : </span><a href="#A"><span class="reference">A</span></a>.<a href="#B"><span class="reference">B</span></a>.<a href="#C"><span class="reference">C</span></a> | <span class="keyword">some</span> <a href="#c"><span class="reference">c</span></a>.<a href="#D"><span class="reference">D</span></a>) <span class="keyword">]</span></div>
 
 </body>
 </html>

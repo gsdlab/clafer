@@ -2,17 +2,17 @@ open util/integer
 pred show {}
 
 
-abstract sig c0_A
-{ r_c0_B : set c0_B }
+abstract sig A
+{ r_B : set B }
 
-abstract sig c0_B
+abstract sig B
 {}
-{ one @r_c0_B.this }
+{ one @r_B.this }
 
-one sig c0_C extends c0_A
-{ r_c0_D : one c0_D }
-{ r_c0_D in r_c0_B }
+one sig C extends A
+{ r_D : one D }
+{ r_D in r_B }
 
-one sig c0_D extends c0_B
+one sig D extends B
 {}
 

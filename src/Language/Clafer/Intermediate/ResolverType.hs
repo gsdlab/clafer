@@ -20,7 +20,7 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
 -}
-module Language.Clafer.Intermediate.ResolverType (resolveTModule)  where
+module Language.Clafer.Intermediate.ResolverType (resolveTModule, redundantExps)  where
 
 import Language.ClaferT
 import Language.Clafer.Common
@@ -32,6 +32,8 @@ import Language.Clafer.Front.PrintClafer
 import Control.Applicative
 import Control.Exception (assert)
 import Control.Lens ((&), (%~), traversed)
+import Control.Lens.Plated (universeOn)
+import Data.Data.Lens (biplate)
 import Control.Monad
 import Control.Monad.Except
 import Control.Monad.Trans.List  -- instead of the deprecated Control.Monad.List
@@ -253,6 +255,10 @@ resolveTPExp' p@PExp{_exp = IClaferId{_sident = "string"}} = runListT $ runExcep
 resolveTPExp' p@PExp{_exp = IClaferId{_sident = "double"}} = runListT $ runExceptT $ return $ p `withType` TDouble
 resolveTPExp' p@PExp{_exp = IClaferId{_sident = "real"}} = runListT $ runExceptT $ return $ p `withType` TReal
 resolveTPExp' p@PExp{_exp = IClaferId{_sident = "decimal"}} = runListT $ runExceptT $ return $ p `withType` TDecimal
+-- noclafer, the empty set, has no reference to dereference
+resolveTPExp' p@PExp{_exp = IClaferId{_sident = "noclafer"}} = runListT $ runExceptT $ return $ p `withType` noClaferTClafer
+-- clafer, the union of all clafers, which ResolverRoot writes out
+resolveTPExp' p@PExp{_exp = IClaferId{_sident = "clafer"}} = runListT $ runExceptT $ return $ p `withType` claferTClafer
 resolveTPExp' p@PExp{_inPos, _exp = IClaferId{_sident="this"}} =
   runListT $ runExceptT $ do
     sident' <- _uid <$> curThis
@@ -365,9 +371,14 @@ resolveTPExp' p@PExp{_inPos, _exp} =
   -- `this.machine = parent` is this.dref.machine.dref = this.parent; the
   -- alternative this.dref.machine = this.dref.parent, the parent of the abstract
   -- Service of type "clafer", also type checks.
+  -- A comparison, an intersection or a difference of two navigations to reference clafers is
+  -- of their targets, e.g.,
+  -- `this.a = parent.b.a` is this.a.dref = parent.b.a.dref: the instances of `a` under different
+  -- parents are never equal (#87). An operand that is `this`, a variable or ends with `dref`
+  -- is compared as it is.
   resolveTExp e@IFunExp {_op, _exps = [arg1, arg2]} = do
     uidIClaferMap' <- asks iUIDIClaferMap
-    sortOn (either (const maxBound) (viaClafer . snd)) <$> (runListT $ runExceptT $ do
+    sortOn (either (const (maxBound, maxBound)) (\(_, e') -> (viaClafer e', comparesReferences uidIClaferMap' e'))) <$> (runListT $ runExceptT $ do
       arg1' <- lift $ ListT $ resolveTPExp arg1
       arg2' <- lift $ ListT $ resolveTPExp arg2
       let t1 = typeOf arg1'
@@ -380,9 +391,6 @@ resolveTPExp' p@PExp{_inPos, _exp} =
                             then throwError $ SemanticErr _inPos ("Function '" ++ _op ++ "' cannot be performed on\n" ++ showType arg1' ++ "\n" ++ _op ++ "\n" ++ showType arg2')
                             else return it'
                 Nothing  -> throwError $ SemanticErr _inPos ("Function '" ++ _op ++ "' cannot be performed on\n" ++ showType arg1' ++ "\n" ++ _op ++ "\n" ++ showType arg2')
-      let testNotSame e1 e2 =
-            when (e1 `sameAs` e2) $
-              throwError $ SemanticErr _inPos ("Function '" ++ _op ++ "' is redundant because the two subexpressions are always equivalent")
       let test c =
             unless c $
               throwError $ SemanticErr _inPos ("Function '" ++ _op ++ "' cannot be performed on\n" ++ showType arg1' ++ "\n" ++ _op ++ "\n" ++ showType arg2')
@@ -390,9 +398,9 @@ resolveTPExp' p@PExp{_inPos, _exp} =
             | _op `elem` logBinOps = test (isTBoolean t1 && isTBoolean t2) >> return TBoolean
             | _op `elem` ltlBinOps = test (isTBoolean t1 && isTBoolean t2) >> return TBoolean
             | _op `elem` [iLt, iGt, iLte, iGte] = test (numeric t1 && numeric t2) >> return TBoolean
-            | _op `elem` [iEq, iNeq] = testNotSame arg1' arg2' >> testIntersect t1 t2 >> return TBoolean
-            | _op == iDifference = testNotSame arg1' arg2' >> testIntersect t1 t2 >> return t1
-            | _op == iIntersection = testNotSame arg1' arg2' >> testIntersect t1 t2
+            | _op `elem` [iEq, iNeq] = testIntersect t1 t2 >> return TBoolean
+            | _op == iDifference = testIntersect t1 t2 >> return t1
+            | _op == iIntersection = testIntersect t1 t2
             | _op `elem` [iDomain, iRange] = testIntersect t1 t2
             | _op `elem` relSetBinOps = testIntersect t1 t2 >> return TBoolean
             | _op `elem` [iSub, iMul, iDiv, iRem] = test (allNumeric t1 && allNumeric t2) >> return (coerce t1 t2)
@@ -408,6 +416,21 @@ resolveTPExp' p@PExp{_inPos, _exp} =
       viaClafer :: IExp -> Int
       viaClafer IFunExp{_exps = exps'} = length [ () | PExp{_iType = Just t} <- exps', "clafer" `elem` unionType t ]
       viaClafer _ = 0
+      -- whether a comparison, an intersection or a difference is of the instances of reference
+      -- clafers on both sides
+      comparesReferences :: UIDIClaferMap -> IExp -> Int
+      comparesReferences uidIClaferMap' IFunExp{_op = op', _exps = [e1, e2]}
+        | op' `elem` [iEq, iNeq, iIn, iNin, iIntersection, iDifference], all (isReferenceNav uidIClaferMap') [e1, e2] = 1
+      comparesReferences _ _ = 0
+      isReferenceNav uidIClaferMap' pexp = case lastName pexp of
+        Just uid' -> maybe False (any (not . null) . mapHierarchy getReference getSuper uidIClaferMap') $ findIClafer uidIClaferMap' uid'
+        Nothing -> False
+      lastName PExp{_exp = IFunExp op' [_, r]} | op' == iJoin = lastName r
+      lastName PExp{_exp = IClaferId{_sident = s, _binding = b}}
+        | s `notElem` specialNames, not (isLocalBind b) = Just s
+      lastName _ = Nothing
+      isLocalBind (LocalBind _) = True
+      isLocalBind _ = False
 
   resolveTExp e@(IFunExp "ifthenelse" [arg1, arg2, arg3]) = do
     uidIClaferMap' <- asks iUIDIClaferMap
@@ -507,6 +530,14 @@ liftList = ListT . return
 
 syntaxOf :: PExp -> String
 syntaxOf = printTree . sugarExp
+
+-- | The comparisons, differences and intersections of an expression with itself, e.g., @x = x@:
+-- correct, but probably not what was meant, so the compiler warns about them
+redundantExps :: IModule -> [PExp]
+redundantExps imodule =
+  [ p | p@PExp{_exp = IFunExp fun [e1, e2]} <- universeOn biplate imodule
+      , fun `elem` [iEq, iNeq, iDifference, iIntersection]
+      , e1 `sameAs` e2 ]
 
 -- Returns true iff the left and right expressions are syntactically identical
 sameAs :: PExp -> PExp -> Bool

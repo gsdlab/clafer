@@ -1,0 +1,33 @@
+open util/integer
+pred show {}
+
+
+lone sig a
+{}
+
+lone sig b
+{}
+
+assert assertAt_4_10 { (some a) => (some a) }
+check assertAt_4_10 for 1
+
+assert assertAt_4_29 { (some b) => (some b) }
+check assertAt_4_29 for 1
+
+abstract sig P
+{ r_age : one age }
+{ ((this.@r_age).@age_ref) >= 0 }
+
+sig age
+{ age_ref : one Int }
+{ one @r_age.this }
+
+assert assertAt_9_14 { all self_ : P | ((self_.@r_age).@age_ref) >= 0 }
+check assertAt_9_14 for 1
+
+one sig x extends P
+{}
+
+assert assertAt_12_14 { all self_ : x | ((self_.@r_age).@age_ref) >= 0 }
+check assertAt_12_14 for 1
+

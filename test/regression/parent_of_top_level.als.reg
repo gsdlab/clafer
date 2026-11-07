@@ -1,0 +1,63 @@
+open util/integer
+pred show {}
+
+
+one sig a
+{ r_x : one x }
+
+one sig x
+{ x_ref : one Int }
+
+lone sig extra
+{}
+
+one sig b
+{}
+{ some a
+  0 < 1
+  0 < 1
+  (((a).@r_x).@x_ref) = 2
+  all  v : b | some a
+  some a
+  (some extra) <=> (some extra)
+  (((some extra) => 1 else 0) = 1) => (some extra)
+  (some ((some extra) => (a) else none)) => (some extra) }
+
+fact { 0 < 1 }
+fact { (((a).@r_x).@x_ref) = 2 }
+abstract sig Top
+{}
+{ 0 < 1 }
+
+one sig top1 extends Top
+{}
+
+one sig top2 extends Top
+{}
+
+abstract sig Feat
+{}
+{ (((this in f1) => (0 < 1)) && ((this in (g.@r_f2)) => (some (this & (g.@r_f2)).~(@r_f2 + @r_f3)))) && ((this in ((h.@r_i).@r_f3)) => (some (this & ((h.@r_i).@r_f3)).~(@r_f2 + @r_f3)))
+  (((this in f1) => (0 < 1)) && ((this in (g.@r_f2)) => ((#((this & (g.@r_f2)).~(@r_f2 + @r_f3))) = 1))) && ((this in ((h.@r_i).@r_f3)) => ((#((this & ((h.@r_i).@r_f3)).~(@r_f2 + @r_f3))) = 1)) }
+
+one sig f1 extends Feat
+{}
+
+one sig g
+{ r_f2 : one f2 }
+
+one sig f2 extends Feat
+{}
+
+fact { 2 <= #h and #h <= 2 }
+sig h
+{ r_i : one i }
+
+sig i
+{ r_f3 : one f3 }
+{ one @r_i.this }
+
+sig f3 extends Feat
+{}
+{ one @r_f3.this }
+

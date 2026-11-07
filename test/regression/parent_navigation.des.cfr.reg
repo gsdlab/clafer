@@ -1,0 +1,17 @@
+//# OPTIONS --explicit
+0..* claferA 1..1 {
+  0..* claferB 1..1 {
+    [(#this.parent) >= 1]
+    0..* claferC 1..1 {
+      [(#this.parent) >= 1]
+      [(#this.parent.claferC) >= 1]
+    }
+  }
+}
+0..* Person 1..1 {
+  0..* maritalStatus 1..1 {
+    0..* married 1..1 {
+      [(#this.parent.parent) >= 1]
+    }
+  }
+}

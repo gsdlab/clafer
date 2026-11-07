@@ -2,132 +2,132 @@ open util/integer
 pred show {}
 
 
-one sig c0_AndroidPhone1
-{ r_c0_Connectivity : one c0_Connectivity
-, r_c0_Battery : one c0_Battery }
+one sig AndroidPhone1
+{ r_AndroidPhone1__Connectivity : one AndroidPhone1__Connectivity
+, r_AndroidPhone1__Battery : one AndroidPhone1__Battery }
 
-one sig c0_Connectivity
-{ r_c0_Bluetooth40 : one c0_Bluetooth40
-, r_c0_GSM : one c0_GSM
-, r_c0_WiFi : one c0_WiFi
-, r_c0_USB : one c0_USB }
+one sig AndroidPhone1__Connectivity
+{ r_Connectivity__Bluetooth40 : one Connectivity__Bluetooth40
+, r_AndroidPhone1__Connectivity__GSM : one AndroidPhone1__Connectivity__GSM
+, r_AndroidPhone1__Connectivity__WiFi : one AndroidPhone1__Connectivity__WiFi
+, r_AndroidPhone1__Connectivity__USB : one AndroidPhone1__Connectivity__USB }
 
-one sig c0_Bluetooth40
+one sig Connectivity__Bluetooth40
 {}
 
-one sig c0_GSM
+one sig AndroidPhone1__Connectivity__GSM
 {}
 
-one sig c0_WiFi
+one sig AndroidPhone1__Connectivity__WiFi
 {}
 
-one sig c0_USB
+one sig AndroidPhone1__Connectivity__USB
 {}
 
-one sig c0_Battery
-{ r_c0_LiBattery1450 : one c0_LiBattery1450 }
+one sig AndroidPhone1__Battery
+{ r_LiBattery1450 : one LiBattery1450 }
 
-one sig c0_LiBattery1450
+one sig LiBattery1450
 {}
 
-one sig c0_AndroidPhone2
-{ r_c1_Connectivity : one c1_Connectivity
-, r_c1_Battery : one c1_Battery }
+one sig AndroidPhone2
+{ r_AndroidPhone2__Connectivity : one AndroidPhone2__Connectivity
+, r_AndroidPhone2__Battery : one AndroidPhone2__Battery }
 
-one sig c1_Connectivity
-{ r_c0_Bluetooth21 : one c0_Bluetooth21
-, r_c1_GSM : one c1_GSM
-, r_c1_USB : one c1_USB }
+one sig AndroidPhone2__Connectivity
+{ r_Connectivity__Bluetooth21 : one Connectivity__Bluetooth21
+, r_AndroidPhone2__Connectivity__GSM : one AndroidPhone2__Connectivity__GSM
+, r_AndroidPhone2__Connectivity__USB : one AndroidPhone2__Connectivity__USB }
 
-one sig c0_Bluetooth21
+one sig Connectivity__Bluetooth21
 {}
 
-one sig c1_GSM
+one sig AndroidPhone2__Connectivity__GSM
 {}
 
-one sig c1_USB
+one sig AndroidPhone2__Connectivity__USB
 {}
 
-one sig c1_Battery
-{ r_c0_LiBattery1150 : one c0_LiBattery1150 }
+one sig AndroidPhone2__Battery
+{ r_AndroidPhone2__Battery__LiBattery1150 : one AndroidPhone2__Battery__LiBattery1150 }
 
-one sig c0_LiBattery1150
+one sig AndroidPhone2__Battery__LiBattery1150
 {}
 
-abstract sig c0_Bluetooth
-{ r_c0_Bluetooth20 : lone c0_Bluetooth20
-, r_c1_Bluetooth21 : lone c1_Bluetooth21
-, r_c1_Bluetooth40 : lone c1_Bluetooth40 }
+abstract sig root__Bluetooth
+{ r_Bluetooth20 : lone Bluetooth20
+, r_Bluetooth__Bluetooth21 : lone Bluetooth__Bluetooth21
+, r_Bluetooth__Bluetooth40 : lone Bluetooth__Bluetooth40 }
 
-sig c0_Bluetooth20
+sig Bluetooth20
 {}
-{ one @r_c0_Bluetooth20.this }
+{ one @r_Bluetooth20.this }
 
-sig c1_Bluetooth21
+sig Bluetooth__Bluetooth21
 {}
-{ one @r_c1_Bluetooth21.this }
+{ one @r_Bluetooth__Bluetooth21.this }
 
-sig c1_Bluetooth40
+sig Bluetooth__Bluetooth40
 {}
-{ one @r_c1_Bluetooth40.this }
+{ one @r_Bluetooth__Bluetooth40.this }
 
-abstract sig c0_MobilePhone
-{ r_c2_Connectivity : one c2_Connectivity
-, r_c2_Battery : one c2_Battery }
+abstract sig MobilePhone
+{ r_MobilePhone__Connectivity : one MobilePhone__Connectivity
+, r_MobilePhone__Battery : one MobilePhone__Battery }
 
-sig c2_Connectivity
-{ r_c1_Bluetooth : one c1_Bluetooth
-, r_c2_GSM : one c2_GSM
-, r_c0_LTE : lone c0_LTE
-, r_c1_WiFi : lone c1_WiFi
-, r_c2_USB : lone c2_USB }
-{ one @r_c2_Connectivity.this }
+sig MobilePhone__Connectivity
+{ r_Connectivity__Bluetooth : one Connectivity__Bluetooth
+, r_MobilePhone__Connectivity__GSM : one MobilePhone__Connectivity__GSM
+, r_LTE : lone LTE
+, r_MobilePhone__Connectivity__WiFi : lone MobilePhone__Connectivity__WiFi
+, r_MobilePhone__Connectivity__USB : lone MobilePhone__Connectivity__USB }
+{ one @r_MobilePhone__Connectivity.this }
 
-sig c1_Bluetooth extends c0_Bluetooth
+sig Connectivity__Bluetooth extends root__Bluetooth
 {}
-{ one @r_c1_Bluetooth.this
-  let children = (r_c0_Bluetooth20 + r_c1_Bluetooth21 + r_c1_Bluetooth40) | one children }
+{ one @r_Connectivity__Bluetooth.this
+  let children = (r_Bluetooth20 + r_Bluetooth__Bluetooth21 + r_Bluetooth__Bluetooth40) | one children }
 
-sig c2_GSM
+sig MobilePhone__Connectivity__GSM
 {}
-{ one @r_c2_GSM.this }
+{ one @r_MobilePhone__Connectivity__GSM.this }
 
-sig c0_LTE
+sig LTE
 {}
-{ one @r_c0_LTE.this
-  some (((this.~@r_c0_LTE).~@r_c2_Connectivity).@r_c2_Battery).@r_c0_LiBattery1400 }
+{ one @r_LTE.this
+  some (((this.~@r_LTE).~@r_MobilePhone__Connectivity).@r_MobilePhone__Battery).@r_LiBattery1400 }
 
-sig c1_WiFi
+sig MobilePhone__Connectivity__WiFi
 {}
-{ one @r_c1_WiFi.this }
+{ one @r_MobilePhone__Connectivity__WiFi.this }
 
-sig c2_USB
+sig MobilePhone__Connectivity__USB
 {}
-{ one @r_c2_USB.this }
+{ one @r_MobilePhone__Connectivity__USB.this }
 
-sig c2_Battery
-{ r_c1_LiBattery1150 : lone c1_LiBattery1150
-, r_c0_LiBattery1400 : lone c0_LiBattery1400 }
-{ one @r_c2_Battery.this
-  let children = (r_c1_LiBattery1150 + r_c0_LiBattery1400) | one children }
+sig MobilePhone__Battery
+{ r_MobilePhone__Battery__LiBattery1150 : lone MobilePhone__Battery__LiBattery1150
+, r_LiBattery1400 : lone LiBattery1400 }
+{ one @r_MobilePhone__Battery.this
+  let children = (r_MobilePhone__Battery__LiBattery1150 + r_LiBattery1400) | one children }
 
-sig c1_LiBattery1150
+sig MobilePhone__Battery__LiBattery1150
 {}
-{ one @r_c1_LiBattery1150.this }
+{ one @r_MobilePhone__Battery__LiBattery1150.this }
 
-sig c0_LiBattery1400
+sig LiBattery1400
 {}
-{ one @r_c0_LiBattery1400.this }
+{ one @r_LiBattery1400.this }
 
-one sig c0_LowEndPhones extends c0_MobilePhone
+one sig LowEndPhones extends MobilePhone
 {}
-{ no (this.@r_c2_Connectivity).@r_c1_WiFi }
+{ no (this.@r_MobilePhone__Connectivity).@r_MobilePhone__Connectivity__WiFi }
 
-one sig c0_HighEndPhones extends c0_MobilePhone
-{ r_c0_QuadCPU : lone c0_QuadCPU }
-{ (some (this.@r_c2_Connectivity).@r_c2_USB) && (some (this.@r_c2_Connectivity).@r_c1_WiFi) }
+one sig HighEndPhones extends MobilePhone
+{ r_QuadCPU : lone QuadCPU }
+{ (some (this.@r_MobilePhone__Connectivity).@r_MobilePhone__Connectivity__USB) && (some (this.@r_MobilePhone__Connectivity).@r_MobilePhone__Connectivity__WiFi) }
 
-lone sig c0_QuadCPU
+lone sig QuadCPU
 {}
-{ one r_c0_QuadCPU }
+{ one r_QuadCPU }
 

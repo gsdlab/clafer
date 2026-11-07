@@ -22,32 +22,32 @@ a[href$='Ambiguous name'] {color: yellow}
 <div class="file">positive/nested_quantifiers_with_membership.cfr</div>
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Course">Course</span>
+<span class="keyword">abstract</span> <span class="claferDecl" id="Course">Course</span>
   <div class="indent">
-  <span class="claferDecl" id="c0_taughtBy">taughtBy</span><span class="keyword"> -> </span><a href="#c0_Teacher"><span class="reference">Teacher</span></a> *
+  <span class="claferDecl" id="taughtBy">taughtBy</span><span class="keyword"> -> </span><a href="#Teacher"><span class="reference">Teacher</span></a> *
     <div class="indent">
-    <span class="claferDecl" id="c0_x">x</span> ?</div>
+    <span class="claferDecl" id="x">x</span> ?</div>
   </div>
 </div>
 
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Teacher">Teacher</span>
+<span class="keyword">abstract</span> <span class="claferDecl" id="Teacher">Teacher</span>
   <div class="indent">
-  <span class="claferDecl" id="c0_teaches">teaches</span><span class="keyword"> -> </span><a href="#c0_Course"><span class="reference">Course</span></a> *</div>
+  <span class="claferDecl" id="teaches">teaches</span><span class="keyword"> -> </span><a href="#Course"><span class="reference">Course</span></a> *</div>
 </div>
 
 
 <div>
-<span class="keyword">[</span> all c<span class="keyword"> : </span><a href="#c0_Course"><span class="reference">Course</span></a> | all t<span class="keyword"> : </span><a href="#c"><span class="reference">c</span></a>.<a href="#c0_taughtBy"><span class="reference">taughtBy</span></a> | <a href="#t"><span class="reference">t</span></a>.<a href="#c0_x"><span class="reference">x</span></a> &amp;&amp; <a href="#c"><span class="reference">c</span></a> in <a href="#t"><span class="reference">t</span></a>.<a href="#c0_teaches"><span class="reference">teaches</span></a> <span class="keyword">]</span></div>
+<span class="keyword">[</span> all c<span class="keyword"> : </span><a href="#Course"><span class="reference">Course</span></a> | all t<span class="keyword"> : </span><a href="#c"><span class="reference">c</span></a>.<a href="#taughtBy"><span class="reference">taughtBy</span></a> | <a href="#t"><span class="reference">t</span></a>.<a href="#x"><span class="reference">x</span></a> &amp;&amp; <a href="#c"><span class="reference">c</span></a> in <a href="#t"><span class="reference">t</span></a>.<a href="#teaches"><span class="reference">teaches</span></a> <span class="keyword">]</span></div>
 
 
 <div>
-<span class="claferDecl" id="c0_course">course</span><span class="keyword"> : </span><a href="#c0_Course"><span class="reference">Course</span></a> 5</div>
+<span class="claferDecl" id="course">course</span><span class="keyword"> : </span><a href="#Course"><span class="reference">Course</span></a> 5</div>
 
 
 <div>
-<span class="claferDecl" id="c0_teacher">teacher</span><span class="keyword"> : </span><a href="#c0_Teacher"><span class="reference">Teacher</span></a> 3</div>
+<span class="claferDecl" id="teacher">teacher</span><span class="keyword"> : </span><a href="#Teacher"><span class="reference">Teacher</span></a> 3</div>
 
 </body>
 </html>

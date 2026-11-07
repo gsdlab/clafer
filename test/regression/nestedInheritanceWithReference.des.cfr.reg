@@ -1,0 +1,18 @@
+//# OPTIONS --explicit
+abstract 0..* System 0..* {
+  [this.connections.dref = this.Connection]
+  abstract 0..* Connection 0..* {}
+  0..* connections -> Connection 0..* {}
+}
+0..* SystemX : System 1..1 {
+  0..* con1 : Connection 1..1 {}
+  0..* con2 : Connection 1..1 {}
+}
+0..* SystemY : System 1..1 {
+  0..* con3 : Connection 1..1 {}
+  0..* con4 : Connection 1..1 {}
+  0..* con5 : Connection 1..1 {}
+}
+
+assert [SystemX.connections.dref = (SystemX.con1 ++ SystemX.con2)]
+assert [SystemY.connections.dref = ((SystemY.con3 ++ SystemY.con4) ++ SystemY.con5)]

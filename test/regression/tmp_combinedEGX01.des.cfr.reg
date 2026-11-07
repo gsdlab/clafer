@@ -1,0 +1,7 @@
+//# OPTIONS --explicit --tl=10
+1..1 a 1..1 {
+  [F ((#this.c) >= 1)]
+  [initially ((#this.b) >= 1)]
+  0..* b 0..1 {}
+  0..* c 0..1 {}
+}

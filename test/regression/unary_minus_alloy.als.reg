@@ -2,10 +2,10 @@ open util/integer
 pred show {}
 
 
-one sig c0_x
-{ c0_x_ref : one Int }
+one sig x
+{ x_ref : one Int }
 
-fact { (c0_x.@c0_x_ref) = ((-1.mul[(1.plus[2])]).div[3]) }
-assert assertOnLine_6 { (c0_x.@c0_x_ref) = (-1.mul[1]) }
-check assertOnLine_6 for 1
+fact { (x.@x_ref) = ((-1.mul[(1.plus[2])]).div[3]) }
+assert assertAt_6_10 { (x.@x_ref) = (-1.mul[1]) }
+check assertAt_6_10 for 1
 

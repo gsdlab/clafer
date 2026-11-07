@@ -1,13 +1,13 @@
 defaultScope(1);
 stringLength(16);
 
-c0_date = Abstract("c0_date");
-c0_Person = Abstract("c0_Person");
-c0_Name = c0_Person.addChild("c0_Name").withCard(1, 1);
-c0_DateOfBirth = c0_Person.addChild("c0_DateOfBirth").withCard(1, 1);
-c0_JohnDoe = Clafer("c0_JohnDoe").withCard(1, 1);
-c0_date.refTo(string);
-c0_Name.refToUnique(string);
-c0_DateOfBirth.extending(c0_date);
-c0_JohnDoe.extending(c0_Person);
-c0_JohnDoe.addConstraint(and(equal(joinRef(join($this(), c0_Name)), constant("\"John\"")), equal(joinRef(join($this(), c0_DateOfBirth)), constant("\"01/02/1985\""))));
+$date = Abstract("date");
+$Person = Abstract("Person");
+$Name = $Person.addChild("Name").withCard(1, 1);
+$DateOfBirth = $Person.addChild("DateOfBirth").withCard(1, 1);
+$JohnDoe = Clafer("JohnDoe").withCard(1, 1);
+$date.refTo(string);
+$Name.refToUnique(string);
+$DateOfBirth.extending($date);
+$JohnDoe.extending($Person);
+$JohnDoe.addConstraint(and(equal(joinRef(join($this(), $Name)), constant("\"John\"")), equal(joinRef(join($this(), $DateOfBirth)), constant("\"01/02/1985\""))));

@@ -1,0 +1,15 @@
+//# OPTIONS --explicit
+[((#A) >= 1) => (A.dref = 1)]
+[((#B) >= 1) => (B.dref = 2)]
+[((#C) >= 1) => (C.dref = 3)]
+[((#D) >= 1) => (D.dref = 4)]
+abstract 0..* ASIL ->> int 0..* {}
+0..* A : ASIL -> int 1..1 {}
+0..* B : ASIL -> int 1..1 {}
+0..* C : ASIL -> int 1..1 {}
+0..* D : ASIL -> int 1..1 {}
+
+assert [A.dref = 1]
+assert [B.dref = 2]
+assert [C.dref = 3]
+assert [D.dref = 4]

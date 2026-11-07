@@ -2,79 +2,79 @@ open util/integer
 pred show {}
 
 
-abstract sig c0_car
-{ r_c0_transmission : one c0_transmission
-, r_c0_fca : lone c0_fca
-, r_c0_cc : one c0_cc }
-{ (some (this.@r_c0_cc).@r_c0_acc) => (some this.@r_c0_fca) }
+abstract sig car
+{ r_transmission : one transmission
+, r_car__fca : lone car__fca
+, r_car__cc : one car__cc }
+{ (some (this.@r_car__cc).@r_acc) => (some this.@r_car__fca) }
 
-sig c0_transmission
-{ r_c0_automatic : lone c0_automatic
-, r_c0_manual : lone c0_manual }
-{ one @r_c0_transmission.this
-  let children = (r_c0_automatic + r_c0_manual) | one children }
+sig transmission
+{ r_automatic : lone automatic
+, r_manual : lone manual }
+{ one @r_transmission.this
+  let children = (r_automatic + r_manual) | one children }
 
-sig c0_automatic
+sig automatic
 {}
-{ one @r_c0_automatic.this }
+{ one @r_automatic.this }
 
-sig c0_manual
+sig manual
 {}
-{ one @r_c0_manual.this }
+{ one @r_manual.this }
 
-sig c0_fca extends c1_fca
+sig car__fca extends root__fca
 {}
-{ one @r_c0_fca.this }
+{ one @r_car__fca.this }
 
-sig c0_cc extends c1_cc
+sig car__cc extends root__cc
 {}
-{ one @r_c0_cc.this }
+{ one @r_car__cc.this }
 
-abstract sig c1_fca
-{ r_c0_sensor : one c0_sensor }
+abstract sig root__fca
+{ r_sensor : one sensor }
 
-sig c0_sensor
-{ r_c0_radar : lone c0_radar
-, r_c0_lidar : lone c0_lidar }
-{ one @r_c0_sensor.this
-  let children = (r_c0_radar + r_c0_lidar) | one children }
+sig sensor
+{ r_radar : lone radar
+, r_lidar : lone lidar }
+{ one @r_sensor.this
+  let children = (r_radar + r_lidar) | one children }
 
-sig c0_radar
+sig radar
 {}
-{ one @r_c0_radar.this }
+{ one @r_radar.this }
 
-sig c0_lidar
+sig lidar
 {}
-{ one @r_c0_lidar.this }
+{ one @r_lidar.this }
 
-abstract sig c1_cc
-{ r_c0_switches : set c0_switches
-, r_c0_acc : lone c0_acc }
-{ 2 <= #r_c0_switches and #r_c0_switches <= 3 }
+abstract sig root__cc
+{ r_switches : set switches
+, r_acc : lone acc }
+{ 2 <= #r_switches and #r_switches <= 3 }
 
-sig c0_switches
-{ r_c0_backlight : lone c0_backlight }
-{ one @r_c0_switches.this }
+sig switches
+{ r_backlight : lone backlight }
+{ one @r_switches.this }
 
-sig c0_backlight
+sig backlight
 {}
-{ one @r_c0_backlight.this }
+{ one @r_backlight.this }
 
-sig c0_acc
+sig acc
 {}
-{ one @r_c0_acc.this }
+{ one @r_acc.this }
 
-abstract sig c0_camaro extends c0_car
-{ r_c0_transformer : lone c0_transformer }
-{ all  s : (this.@r_c0_cc).@r_c0_switches | some s.@r_c0_backlight }
+abstract sig camaro extends car
+{ r_transformer : lone transformer }
+{ all  s : (this.@r_car__cc).@r_switches | some s.@r_backlight }
 
-sig c0_transformer
+sig transformer
 {}
-{ one @r_c0_transformer.this
-  (#(((this.~@r_c0_transformer).@r_c0_cc).@r_c0_switches)) = 3 }
+{ one @r_transformer.this
+  (#(((this.~@r_transformer).@r_car__cc).@r_switches)) = 3 }
 
-one sig c0_bumbleBee extends c0_camaro
+one sig bumbleBee extends camaro
 {}
-{ some this.@r_c0_transformer
-  some (this.@r_c0_transmission).@r_c0_manual }
+{ some this.@r_transformer
+  some (this.@r_transmission).@r_manual }
 

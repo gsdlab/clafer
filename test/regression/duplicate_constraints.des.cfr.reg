@@ -1,0 +1,8 @@
+//# OPTIONS --explicit
+0..* D 1..1 {
+  [this.c.dref = 5]
+  [this.c.dref = 5]
+  [(#this.b) >= 1]
+  0..* b 0..1 {}
+  0..* c -> int 0..1 {}
+}

@@ -2,18 +2,18 @@ open util/integer
 pred show {}
 
 
-one sig c0_A
-{ r_c0_B : set c0_B }
-{ all disj x, y : this.@r_c0_B | (x.@c0_B_ref) != (y.@c0_B_ref) 
-  all  b : this.@r_c0_B | some b.@r_c0_C
-  all  b : this.@r_c0_B | ((b.@c0_B_ref).plus[1]) = 2 }
+one sig A
+{ r_B : set B }
+{ all disj x, y : this.@r_B | (x.@B_ref) != (y.@B_ref) 
+  all  b : this.@r_B | some b.@r_C
+  all  b : this.@r_B | ((b.@B_ref).plus[1]) = 2 }
 
-sig c0_B
-{ c0_B_ref : one Int
-, r_c0_C : lone c0_C }
-{ one @r_c0_B.this }
+sig B
+{ B_ref : one Int
+, r_C : lone C }
+{ one @r_B.this }
 
-sig c0_C
+sig C
 {}
-{ one @r_c0_C.this }
+{ one @r_C.this }
 

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=9">
+<style>.identifier{}
+.keyword{font-weight: bold;}
+.tKeyword{font-style: oblique;}
+.reference{}
+.code { background-color: lightgray; padding: 5px 5px 5px 5px; border: 1px solid darkgray; margin-bottom: 15px;
+        font-family: Pragmata, Menlo, 'DejaVu LGC Sans Mono', 'DejaVu Sans Mono', Consolas, 'Everson Mono', 'Lucida Console', 'Andale Mono', 'Nimbus Mono L', 'Liberation Mono', FreeMono, 'Osaka Monospaced', Courier, 'New Courier', monospace; }
+.standalonecomment { color: green; font-style:italic }
+.inlinecomment { color: green; padding-left:20px; font-style:italic }
+.error{background-color: yellow; color: red }
+.deprecated{color: orange }
+.indent{padding-left:20px}
+.file { font-weight: bold; border-bottom: 1px solid darkgray; margin: 1em 0 0.5em 0 }
+a[href$='Lookup failed'] {color: red}
+a[href$='Uid not found'] {color: red}
+a[href$='Ambiguous name'] {color: yellow}
+</style></head>
+<body>
+<div class="file">positive/tmp_negated_obligations.cfr</div>
+
+<div>
+<span class="claferDecl" id="machine">machine</span> ?
+  <div class="indent">
+  <span class="claferDecl" id="ctx">ctx</span>
+    <div class="indent">
+    <span class="claferDecl" id="error">error</span> ?</div>
+    <div class="indent">
+    <span class="keyword">[</span>  ! (F <a href="#error"><span class="reference">error</span></a>) <span class="keyword">]</span></div>
+    <div class="indent">
+    <span class="keyword">assert [</span> G  ! <a href="#error"><span class="reference">error</span></a> &lt;=&gt;  ! (F <a href="#error"><span class="reference">error</span></a>) <span class="keyword">]</span></div>
+    <div class="indent">
+    <span class="keyword">assert [</span>  ! (X <a href="#error"><span class="reference">error</span></a>) &lt;=&gt; X  ! <a href="#error"><span class="reference">error</span></a> <span class="keyword">]</span></div>
+    <div class="indent">
+    <span class="keyword">assert [</span>  ! (<a href="#error"><span class="reference">error</span></a> U  ! <a href="#error"><span class="reference">error</span></a>) &lt;=&gt; <a href="#error"><span class="reference">error</span></a> W ( ! <a href="#error"><span class="reference">error</span></a> &amp;&amp; <a href="#error"><span class="reference">error</span></a>) <span class="keyword">]</span></div>
+  </div>
+</div>
+
+
+<div>
+<span class="keyword">[</span> <span class="tKeyword">initially </span><a href="#machine"><span class="reference">machine</span></a> <span class="keyword">]</span></div>
+
+
+<div>
+<span class="keyword">[</span> <span class="tKeyword">initially </span>X <span class="keyword">no</span> <a href="#machine"><span class="reference">machine</span></a> <span class="keyword">]</span></div>
+
+</body>
+</html>

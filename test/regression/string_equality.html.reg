@@ -22,39 +22,39 @@ a[href$='Ambiguous name'] {color: yellow}
 <div class="file">positive/string_equality.cfr</div>
 
 <div>
-<span class="claferDecl" id="c0_text">text</span><span class="keyword"> -> </span><a href="#string"><span class="reference">string</span></a> = "some text"</div>
+<span class="claferDecl" id="text">text</span><span class="keyword"> -> </span><a href="#string"><span class="reference">string</span></a> = "some text"</div>
 
 
 <div>
-<span class="claferDecl" id="c0_text1">text1</span><span class="keyword"> -> </span><a href="#string"><span class="reference">string</span></a> = "some text"</div>
+<span class="claferDecl" id="text1">text1</span><span class="keyword"> -> </span><a href="#string"><span class="reference">string</span></a> = "some text"</div>
 
 
 <div>
-<span class="claferDecl" id="c0_text2">text2</span><span class="keyword"> -> </span><a href="#string"><span class="reference">string</span></a> = "some text"</div>
+<span class="claferDecl" id="text2">text2</span><span class="keyword"> -> </span><a href="#string"><span class="reference">string</span></a> = "some text"</div>
 
 
 <div>
-<span class="claferDecl" id="c0_equal1">equal1</span> ?</div>
+<span class="claferDecl" id="equal1">equal1</span> ?</div>
 
 
 <div>
-<span class="keyword">[</span> <a href="#c0_text"><span class="reference">text</span></a> = <a href="#c0_text1"><span class="reference">text1</span></a> =&gt; <a href="#c0_equal1"><span class="reference">equal1</span></a> <span class="keyword">]</span></div>
+<span class="keyword">[</span> <a href="#text"><span class="reference">text</span></a> = <a href="#text1"><span class="reference">text1</span></a> =&gt; <a href="#equal1"><span class="reference">equal1</span></a> <span class="keyword">]</span></div>
 
 
 <div>
-<span class="claferDecl" id="c0_equal2">equal2</span> ?</div>
+<span class="claferDecl" id="equal2">equal2</span> ?</div>
 
 
 <div>
-<span class="keyword">[</span> <a href="#c0_text1"><span class="reference">text1</span></a> = <a href="#c0_text2"><span class="reference">text2</span></a> =&gt; <a href="#c0_equal2"><span class="reference">equal2</span></a> <span class="keyword">]</span></div>
+<span class="keyword">[</span> <a href="#text1"><span class="reference">text1</span></a> = <a href="#text2"><span class="reference">text2</span></a> =&gt; <a href="#equal2"><span class="reference">equal2</span></a> <span class="keyword">]</span></div>
 
 
 <div>
-<span class="keyword">assert [</span> <a href="#c0_equal1"><span class="reference">equal1</span></a> <span class="keyword">]</span></div>
+<span class="keyword">assert [</span> <a href="#equal1"><span class="reference">equal1</span></a> <span class="keyword">]</span></div>
 
 
 <div>
-<span class="keyword">assert [</span> <a href="#c0_equal2"><span class="reference">equal2</span></a> <span class="keyword">]</span></div>
+<span class="keyword">assert [</span> <a href="#equal2"><span class="reference">equal2</span></a> <span class="keyword">]</span></div>
 
 </body>
 </html>

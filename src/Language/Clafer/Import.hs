@@ -314,7 +314,7 @@ withNewline s = if null s || last s == '\n' then s else s ++ "\n"
 fileOptions :: String -> Either String ClaferArgs
 fileOptions model
   | "//# OPTIONS " `isPrefixOf` model =
-      either (Left . ("//# OPTIONS: " ++)) (Right . cmdArgsValue) $
+      either (Left . ("//# OPTIONS: " ++)) (Right . withExplicit . cmdArgsValue) $
         process claferMode $ splitArgs $ filter (/= '\r') $ drop 12 $ takeWhile (/= '\n') model
   | otherwise = Right claferDefaults
 

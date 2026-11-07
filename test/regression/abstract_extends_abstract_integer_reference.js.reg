@@ -1,8 +1,8 @@
-scope({c0_clafer1:0});
+scope({$clafer1:0, $clafer2:0});
 defaultScope(1);
 stringLength(16);
 
-c0_clafer1 = Abstract("c0_clafer1");
-c0_clafer2 = Abstract("c0_clafer2");
-c0_clafer1.extending(c0_clafer2);
-c0_clafer2.refToUnique(Int);
+$clafer1 = Abstract("clafer1");
+$clafer2 = Abstract("clafer2");
+$clafer1.extending($clafer2);
+$clafer2.refToUnique(Int);

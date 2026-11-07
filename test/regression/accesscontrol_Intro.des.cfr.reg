@@ -1,0 +1,20 @@
+//# OPTIONS --explicit
+abstract 0..* Value 0..* {}
+abstract 0..* Attribute 0..* {
+  0..* value -> Value 1..1 {}
+}
+abstract 0..* ActionName : Attribute 0..* {}
+abstract 0..* Role : Attribute 0..* {}
+abstract 0..* ResourceName : Attribute 0..* {}
+abstract 0..* Element 0..* {
+  abstract 0..* attributes : Attribute 0..* {}
+}
+abstract 0..* Effect 0..* {}
+0..* Permit : Effect 1..1 {}
+0..* Deny : Effect 1..1 {}
+0..* NotApplicable : Effect 1..1 {}
+0..* Indeterminate : Effect 1..1 {}
+abstract 0..* CombiningAlgo 0..* {}
+0..* PermitOverrides : CombiningAlgo 1..1 {}
+0..* DenyOverrides : CombiningAlgo 1..1 {}
+0..* OnlyOneApplicable : CombiningAlgo 1..1 {}

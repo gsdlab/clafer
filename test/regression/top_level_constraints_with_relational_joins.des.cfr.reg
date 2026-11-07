@@ -1,0 +1,17 @@
+//# OPTIONS --explicit
+[CompilerGradStudent.first.dref = CompilerCourse]
+[AIGradStudent.first.dref = MachineLearningCourse]
+[((#numerOfAssistants) >= 1) => (numerOfAssistants.dref = (#Course.assistants))]
+abstract 0..* Course 0..* {
+  0..* assistants -> TA 0..* {}
+}
+abstract 0..* TA 0..* {
+  0..* first -> Course 0..1 {
+    [this.parent in this.dref.assistants.dref]
+  }
+}
+0..* CompilerGradStudent : TA 1..1 {}
+0..* AIGradStudent : TA 1..1 {}
+0..* CompilerCourse : Course 1..1 {}
+0..* MachineLearningCourse : Course 1..1 {}
+0..* numerOfAssistants -> int 1..1 {}

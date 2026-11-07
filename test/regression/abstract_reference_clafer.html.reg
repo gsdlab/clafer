@@ -22,39 +22,39 @@ a[href$='Ambiguous name'] {color: yellow}
 <div class="file">positive/abstract_reference_clafer.cfr</div>
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Person">Person</span>
+<span class="keyword">abstract</span> <span class="claferDecl" id="Person">Person</span>
   <div class="indent">
-  <span class="claferDecl" id="c0_age">age</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a></div>
+  <span class="claferDecl" id="age">age</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a></div>
   <div class="indent">
-  <span class="claferDecl" id="c0_married">married</span> ?</div>
+  <span class="claferDecl" id="married">married</span> ?</div>
 </div>
 
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_NewBorn">NewBorn</span><span class="keyword"> -> </span><a href="#c0_Person"><span class="reference">Person</span></a>
+<span class="keyword">abstract</span> <span class="claferDecl" id="NewBorn">NewBorn</span><span class="keyword"> -> </span><a href="#Person"><span class="reference">Person</span></a>
   <div class="indent">
-  <span class="keyword">[</span> <a href="#c0_age"><span class="reference">age</span></a> = 0 <span class="keyword">]</span><span class="keyword">[</span>  ! <a href="#c0_married"><span class="reference">married</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <a href="#age"><span class="reference">age</span></a> = 0 <span class="keyword">]</span><span class="keyword">[</span>  ! <a href="#married"><span class="reference">married</span></a> <span class="keyword">]</span></div>
 </div>
 
 
 <div>
-<span class="claferDecl" id="c0_Alice">Alice</span><span class="keyword"> : </span><a href="#c0_Person"><span class="reference">Person</span></a></div>
+<span class="claferDecl" id="Alice">Alice</span><span class="keyword"> : </span><a href="#Person"><span class="reference">Person</span></a></div>
 
 
 <div>
-<span class="claferDecl" id="c0_baby">baby</span><span class="keyword"> : </span><a href="#c0_NewBorn"><span class="reference">NewBorn</span></a></div>
+<span class="claferDecl" id="baby">baby</span><span class="keyword"> : </span><a href="#NewBorn"><span class="reference">NewBorn</span></a></div>
 
 
 <div>
-<span class="keyword">assert [</span> <a href="#c0_baby"><span class="reference">baby</span></a> = <a href="#c0_Alice"><span class="reference">Alice</span></a> <span class="keyword">]</span></div>
+<span class="keyword">assert [</span> <a href="#baby"><span class="reference">baby</span></a> = <a href="#Alice"><span class="reference">Alice</span></a> <span class="keyword">]</span></div>
 
 
 <div>
-<span class="keyword">assert [</span> <a href="#c0_Alice"><span class="reference">Alice</span></a>.<a href="#c0_age"><span class="reference">age</span></a> = 0 <span class="keyword">]</span></div>
+<span class="keyword">assert [</span> <a href="#Alice"><span class="reference">Alice</span></a>.<a href="#age"><span class="reference">age</span></a> = 0 <span class="keyword">]</span></div>
 
 
 <div>
-<span class="keyword">assert [</span> <span class="keyword">not</span> <a href="#c0_Alice"><span class="reference">Alice</span></a>.<a href="#c0_married"><span class="reference">married</span></a> <span class="keyword">]</span></div>
+<span class="keyword">assert [</span> <span class="keyword">not</span> <a href="#Alice"><span class="reference">Alice</span></a>.<a href="#married"><span class="reference">married</span></a> <span class="keyword">]</span></div>
 
 </body>
 </html>

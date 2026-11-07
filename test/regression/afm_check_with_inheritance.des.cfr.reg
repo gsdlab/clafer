@@ -1,0 +1,3 @@
+//# OPTIONS --explicit
+abstract 0..* A 0..* {}
+0..* a : A 1..1 {}

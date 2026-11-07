@@ -1,0 +1,9 @@
+//# OPTIONS --explicit
+abstract 0..* A 0..* {
+  0..* x 0..1 {}
+}
+0..* a : A 2..2 {}
+0..* ref1 -> A 1..1 {}
+0..* ref2 -> ref1 1..1 {
+  [(#this.dref.dref.x) >= 1]
+}

@@ -1,0 +1,85 @@
+//# OPTIONS --explicit
+0..* claferCompiler : claferLib 1..1 {}
+0..* claferIG : claferLib 1..1 {}
+0..* claferMOO : claferLib 1..1 {
+  0..* moo 1..1 {}
+}
+abstract 0..* claferLib 0..* {
+  0..* common 1..1 {}
+  0..* front : Front 1..1 {}
+  0..* intermediate : Intermediate 1..1 {}
+  0..* optimizer 1..1 {}
+  1..1 generator : Generator 1..1 {}
+}
+abstract 0..* Representation 0..* {}
+0..* text : Representation 1..1 {}
+0..* tokens : Representation 1..1 {}
+0..* ast : Representation 1..1 {}
+0..* ir : Representation 1..1 {}
+abstract 0..* io 0..* {
+  0..* input -> Representation 1..1 {}
+  0..* output -> Representation 1..1 {}
+}
+abstract 0..* text2tokens : io 0..* {
+  [(this.input.dref = text) && (this.output.dref = tokens)]
+}
+abstract 0..* tokens2tokens : io 0..* {
+  [(this.input.dref = tokens) && (this.output.dref = tokens)]
+}
+abstract 0..* tokens2ast : io 0..* {
+  [(this.input.dref = tokens) && (this.output.dref = ast)]
+}
+abstract 0..* ast2ast : io 0..* {
+  [(this.input.dref = ast) && (this.output.dref = ast)]
+}
+abstract 0..* ast2text : io 0..* {
+  [(this.input.dref = ast) && (this.output.dref = text)]
+}
+abstract 0..* ast2ir : io 0..* {
+  [(this.input.dref = ast) && (this.output.dref = ir)]
+}
+abstract 0..* ir2ir : io 0..* {
+  [(this.input.dref = ir) && (this.output.dref = ir)]
+}
+abstract 0..* ir2text : io 0..* {
+  [(this.input.dref = ir) && (this.output.dref = text)]
+}
+abstract 0..* Front 0..* {
+  0..* lexer : text2tokens 1..1 {}
+  1..1 layoutResolver : tokens2tokens 0..1 {
+    0..* stable 0..1 {}
+    0..* experimental 0..1 {}
+  }
+  0..* parser : tokens2ast 1..1 {}
+  0..* mapper : ast2ast 1..1 {}
+  0..* prettyPrinter : ast2text 0..1 {}
+}
+abstract 0..* Intermediate 0..* {
+  0..* desugarer : ast2ir 1..1 {}
+  0..* findDuplicates 0..1 {}
+  0..* resolver : ir2ir 0..1 {
+    0..* setUid 1..1 {}
+    0..* inheritanceFlattener 0..1 {}
+    0..* nameResolution 1..1 {
+      0..* nameResolver 0..1 {
+        [(#this.parent.parent.parent.findDuplicates) >= 1]
+      }
+      0..* inheritanceResolver 1..1 {}
+      0..* typeResolver 1..1 {}
+    }
+  }
+  0..* transformer : ir2ir 1..1 {}
+  0..* stringAnalyzer : ir2ir 0..1 {}
+  0..* scopeAnalysis : ir2ir 0..1 {}
+}
+abstract 1..1 Generator : ir2text 0..* {
+  0..* alloy 0..1 {
+    [((#Intermediate.stringAnalyzer) >= 1) && ((#Intermediate.scopeAnalysis) >= 1)]
+  }
+  0..* stats 0..1 {}
+  0..* xml 0..1 {}
+  0..* desClafer 0..1 {
+    [(#Front.prettyPrinter) >= 1]
+  }
+  0..* xsdSchema 0..1 {}
+}

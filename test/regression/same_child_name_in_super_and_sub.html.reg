@@ -22,21 +22,21 @@ a[href$='Ambiguous name'] {color: yellow}
 <div class="file">positive/same_child_name_in_super_and_sub.cfr</div>
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_A">A</span>
+<span class="keyword">abstract</span> <span class="claferDecl" id="A">A</span>
   <div class="indent">
-  <span class="claferDecl" id="c0_Item">Item</span></div>
+  <span class="claferDecl" id="A__Item">Item</span></div>
 </div>
 
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_B">B</span><span class="keyword"> : </span><a href="#c0_A"><span class="reference">A</span></a>
+<span class="keyword">abstract</span> <span class="claferDecl" id="B">B</span><span class="keyword"> : </span><a href="#A"><span class="reference">A</span></a>
   <div class="indent">
-  <span class="claferDecl" id="c1_Item">Item</span></div>
+  <span class="claferDecl" id="B__Item">Item</span></div>
 </div>
 
 
 <div>
-<span class="claferDecl" id="c0_C">C</span><span class="keyword"> : </span><a href="#c0_B"><span class="reference">B</span></a></div>
+<span class="claferDecl" id="C">C</span><span class="keyword"> : </span><a href="#B"><span class="reference">B</span></a></div>
 
 </body>
 </html>

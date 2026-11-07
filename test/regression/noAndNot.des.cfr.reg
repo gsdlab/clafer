@@ -1,0 +1,9 @@
+//# OPTIONS --explicit
+abstract 0..* Person 0..* {
+  0..* married 0..1 {}
+  0..* child -> Person 0..* {}
+}
+0..* Alice : Person 1..1 {
+  [(#this.married) = 0]
+  [(#this.child) = 0]
+}

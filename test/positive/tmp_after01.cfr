@@ -5,8 +5,9 @@ a ?
   d ?
   [never d after c ]
 
-// The constraint holds while its b exists: b disappears together with a, and when a
-// reappears, the constraint starts again, so these assertions do not hold
+// The constraint is one of its instance of b, whose obligations last while a exists: a may
+// replace its b with another instance, and a may disappear and reappear, and then the
+// constraint starts again, so these assertions do not hold
 // assert [never a.b.c after a.b.d ]
 // assert [never a.b.d after a.b.c ]
 // While an instance of b exists, its d does not follow its c

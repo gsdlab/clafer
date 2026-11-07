@@ -149,7 +149,7 @@ createUidIClaferMap    iModule  = foldl'
   where
     allClafers :: [ IClafer ]
     allClafers = universeOn biplate iModule
-    defaultModifiers = IClaferModifiers False True True
+    defaultModifiers = IClaferModifiers False True True []
     rootClafer = IClafer noSpan defaultModifiers (Just $ IGCard False (0, -1)) rootIdent rootIdent "" Nothing Nothing (Just (1,1)) (1, 1) (_mDecls iModule)
     -- integers are decimals, decimals and doubles are reals; integers also convert to doubles (see TypeSystem)
     integerClafer = IClafer noSpan defaultModifiers (Just $ IGCard False (0, -1)) integerType integerType "" (Just $ pExpDefPidPos $ IClaferId "" decimalType True $ GlobalBind decimalType) Nothing (Just (1,1)) (1, 1) []
@@ -172,13 +172,16 @@ isTopLevelByUID    uidIClaferMap    uid' = isTopLevel <$> (findIClafer uidIClafe
 
 -- | Finds all super clafers according to sFun
 findHierarchy :: (IClafer -> [String]) -> UIDIClaferMap -> IClafer -> [IClafer]
-findHierarchy    sFun                     uidIClaferMap    clafer   = case sFun clafer of
-  []           -> [clafer]  -- no super and no reference
-  supersOrRefs -> let
-                    superOrRefClafers = mapMaybe (findIClafer uidIClaferMap) supersOrRefs
-                  in
-                    clafer
-                    : concatMap (findHierarchy sFun uidIClaferMap) superOrRefClafers
+findHierarchy    sFun                     uidIClaferMap    clafer   = go [] clafer
+  where
+  -- A path through references can be a cycle, e.g., `abstract Person -> Bob` with
+  -- `Bob : Person`: it ends at a clafer that is already on it, which is included once, so
+  -- that an inheritance loop shows (ResolverInheritance.resolveHierarchy reports it).
+  go path c
+    | _uid c `elem` path = [c]
+    | otherwise          = case sFun c of
+        []           -> [c]  -- no super and no reference
+        supersOrRefs -> c : concatMap (go (_uid c : path)) (mapMaybe (findIClafer uidIClaferMap) supersOrRefs)
 
 -- | Finds hierarchy and transforms each element
 mapHierarchy :: (IClafer -> b)
@@ -415,7 +418,7 @@ iProdSet :: String
 iProdSet  = "product"
 
 unOps :: [String]
-unOps = [iNot, iCSet, iMin, iMaximum, iMinimum, iMaximize, iMinimize, iSumSet, iProdSet, iX, iF, iG, iInitially]
+unOps = [iNot, iCSet, iMin, iMaximum, iMinimum, iMaximize, iMinimize, iSumSet, iProdSet, iX, iF, iG, iInitially, iFinally]
 
 -- binary operators
 iIff :: String
@@ -467,13 +470,13 @@ iNin :: String
 iNin          = "not in"
 
 ltlOps :: [String]
-ltlOps = [iW, iU, iX, iG, iF, iInitially]
+ltlOps = [iW, iU, iX, iG, iF, iInitially, iFinally]
 
 ltlBinOps :: [String]
 ltlBinOps = [iW, iU]
 
 ltlUnOps :: [String]
-ltlUnOps = [iX, iG, iF, iInitially]
+ltlUnOps = [iX, iG, iF, iInitially, iFinally]
 
 relGenBinOps :: [String]
 relGenBinOps = [iLt, iGt, iEq, iLte, iGte, iNeq]
@@ -594,8 +597,17 @@ drefIdent = "dref"
 childrenIdent :: String
 childrenIdent = "children"
 
+-- | The empty set: no instance of any clafer, the dual of @clafer@, the union of all clafers. Like
+-- | the root, it is not declared; its type is a subtype of every clafer type (kbak/clafer-semantics#134).
+noClaferIdent :: String
+noClaferIdent = "noclafer"
+
+isNoClafer :: PExp -> Bool
+isNoClafer PExp{_exp = IClaferId{_sident = s}} = s == noClaferIdent
+isNoClafer _ = False
+
 specialNames :: [String]
-specialNames = [thisIdent, parentIdent, drefIdent, rootIdent, childrenIdent]
+specialNames = [thisIdent, parentIdent, drefIdent, rootIdent, childrenIdent, noClaferIdent]
 
 isSpecial :: String -> Bool
 isSpecial = flip elem specialNames

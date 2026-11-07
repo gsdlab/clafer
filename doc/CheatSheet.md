@@ -95,6 +95,10 @@ A clafer inherits group cardinality, children, and reference of its super clafer
 Instances of a reference clafer point to instances from the target set expression.
 When declared using `->` (set), the instances pointed to cannot repeat per each instance of its parent,
 whereas duplicate values are allowed when declared using `->>` (bag).
+Where a value is expected, a reference clafer stands for its target: `[ speed = 3 ]` is `[ speed.dref = 3 ]`.
+A comparison (`=`, `!=`, `in`, `not in`), an intersection (`**`) or a difference (`--`) of two reference clafers is of their targets: `this.a = parent.b.a` is `this.a.dref = parent.b.a.dref`, since the instances of `a` under different parents are never the same.
+To compare the instances themselves, compare `this` or a variable, or write `dref` on one side.
+After `dref`, a name is a child of the target: `this.dref.speed` is the target's `speed`.
 
 `<reference>`:
 ```
@@ -367,6 +371,9 @@ if <boolean expression> then <set expression> else <set expression>
 `this` is a singleton set referring to an instance of the context clafer.
 `parent` is a relation from the context clafer to its parent.
 `dref` is a relation from the context reference clafer to its target set.
+`root` is the parent of the instances of the top-level clafers. It is synthetic: a navigation from it is a navigation from the top level, so in a top-level clafer `b`, `parent.a` is `root.a`, i.e., the top-level clafer `a`. `some root` holds and `#root` is 1, but `root` cannot be used as a set otherwise. The parent of a set of instances of a top-level clafer, e.g., `a.parent` for `a ?`, is the root when an instance exists and empty otherwise: `some a.parent` is `some a`, and `a.parent.c` is `c` when `a` exists. In an abstract clafer whose subclafers are at the top level and nested, the parent of `this` is the root for the instances of the top-level ones.
+`clafer` is the set of all instances of all clafers, the root excluded: the union of the clafers that have no super clafer, nested ones included (static models only).
+`noclafer` is the empty set: no instance of any clafer. Its type is below every clafer type, so `a ++ noclafer` and `if c then a else noclafer` have the type of `a`; `a ++ noclafer = a`, `a ** noclafer = noclafer`, `noclafer in a`, `no noclafer` and `#noclafer = 0` hold. A navigation from it, e.g., `noclafer.d`, is `noclafer`; the compiler warns about it, as about `x = x`, which is always true. Like `root` and `clafer`, it is a reserved name. An explicit model, which writes everything out, uses it where Clafer has no other way to write the empty set.
 
 
 `<identifier>`:
@@ -382,6 +389,8 @@ dref
 A model with temporal modifiers or operators is dynamic: its instances are traces, sequences of states, each of them an instance of the model.
 A trace is a lasso: after the last state, it loops back to an earlier state and repeats from there forever.
 A clafer can come and go between the states.
+An instance may disappear and reappear, and it keeps its parent, also across its absences.
+A scope bounds the instances of a clafer over the whole trace, not in each state: a mandatory clafer whose instance is replaced by another needs a scope of 2.
 Temporal models are supported by the Alloy backend only.
 
 The behaviour can be written in three styles, which can be mixed.
@@ -391,7 +400,8 @@ For a complete model, see the example `CoffeeMachine.cfr` in ClaferIDE.
 
 `initial` means that the clafer is present in the first state of its parent.
 `final` means that the clafer, and its reference, do not change during a trace. Another trace can have other values, so `final` suits the features of a product line.
-`finalref` fixes only the reference of the clafer, and `finaltarget` only the set that it points to.
+`finalref` fixes only the reference of each instance of the clafer, while that instance exists. `finaltarget` fixes only the set of targets of the clafer's instances, while their parent instance exists: the instances may change and swap their targets, but a new instance points to one of the targets. `final` implies both, and `finalref finaltarget` means both.
+A clafer that inherits its reference can add these modifiers: `final motor : engine` fixes the reference that `motor` inherits from `abstract engine -> Engine`.
 
 `<temporal modifier>`:
 ```
@@ -415,7 +425,7 @@ A guard strengthens the source: the transition holds only when the guard also ho
 <boolean expression> -[ <guard> ]->> <boolean expression>   // a && g => (this && a) U b
 ```
 
-A clafer can declare its own transition, which is a constraint of its parent.
+A clafer can declare its own transition, which is a constraint of the clafer.
 
 `<transition>`:
 ```
@@ -434,7 +444,7 @@ A chain is a sequence: `a --> b --> c` is `a => X (b && X c)`.
 With `initially`, it is a scenario, which holds once, at the start of the trace.
 
 * A transition says only what happens when it fires: it does not keep the other clafers from changing, and it does not keep the state from changing without it.
-* A clafer has one transition. Give a state more ways out with constraints, e.g., `[ a -[ g ]-> c ]`.
+* A clafer has one transition. Give a state more ways out with constraints in the state, e.g., `[ this -[ g ]-> c ]` in `a`. A constraint `[ a -[ g ]-> c ]` in the parent of `a` lasts while the parent's parent exists, so it is not left with the parent.
 * The transition of a nested state disappears when its enclosing state is left.
 * A clafer that starts with `xor` cannot follow a transition, because `xor` continues the expression: declare it first, or write the transition as a constraint.
 
@@ -447,7 +457,7 @@ coin ?
 xor machine
     initial idle -[ coin ]-> brewing
     brewing -[ milk ]->> frothing
-    [ brewing -[ no milk ]->> ready ]
+        [ this -[ no milk ]->> ready ]
     frothing --> ready
     ready --> idle
 
@@ -457,6 +467,11 @@ xor machine
 ### Temporal logic
 
 A constraint holds in every state by default, as if it started with `G`: its context is present in that state.
+What a constraint requires of later states (`X`, `F`, `G`, `U`) lasts while the parent of its context exists, also after the context itself is gone, e.g., `[ req=down --> movingDown ]` in the state `movingUp` leads to `movingDown`.
+To make a constraint last longer, place it higher in the hierarchy, or at the top level.
+This holds for negated obligations too: the negations are pushed inside the temporal operators first (`!F a` is `G !a`, `!X a` is `X !a`, `!(a U b)` is `!b W (!a && !b)`), so `[ !(F error) ]`, like `[ G !error ]`, lets the parent disappear.
+So a formula and its negation can both hold, on a lifetime that ends before their obligations are due, e.g., `F error` and `!(F error)`.
+Under `one` and `lone`, the negation stays classical.
 Use `initially` to anchor a constraint to the first state of its context, which at the top level is the start of the trace, so `[ initially (sometime a) ]` means once, whereas `[ sometime a ]` means again and again.
 `finally` anchors a constraint to the last state of its context instance, before it disappears.
 
@@ -482,6 +497,8 @@ finally <boolean expression>
 
 Specification patterns say what must hold in a part of the trace, without temporal operators: they read as requirements.
 A pattern without a scope holds on the whole trace.
+`after q` starts at the first `q`; `between q and r` and `after q until r` start at each `q` and end at the next `r`.
+A top-level constraint holds in every state, so there every `q` starts a scope of `after q`; `[ initially (s must precede p after q) ]` starts it at the first `q` of the trace.
 
 `<boolean expression>`:
 ```

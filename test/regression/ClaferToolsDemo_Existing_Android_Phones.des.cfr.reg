@@ -1,0 +1,49 @@
+//# OPTIONS --explicit
+0..* AndroidPhone1 1..1 {
+  0..* AndroidPhone1__Connectivity 1..1 {
+    0..* Connectivity__Bluetooth40 1..1 {}
+    0..* AndroidPhone1__Connectivity__GSM 1..1 {}
+    0..* AndroidPhone1__Connectivity__WiFi 1..1 {}
+    0..* AndroidPhone1__Connectivity__USB 1..1 {}
+  }
+  0..* AndroidPhone1__Battery 1..1 {
+    0..* LiBattery1450 1..1 {}
+  }
+}
+0..* AndroidPhone2 1..1 {
+  0..* AndroidPhone2__Connectivity 1..1 {
+    0..* Connectivity__Bluetooth21 1..1 {}
+    0..* AndroidPhone2__Connectivity__GSM 1..1 {}
+    0..* AndroidPhone2__Connectivity__USB 1..1 {}
+  }
+  0..* AndroidPhone2__Battery 1..1 {
+    0..* AndroidPhone2__Battery__LiBattery1150 1..1 {}
+  }
+}
+abstract 1..1 root__Bluetooth 0..* {
+  0..* Bluetooth20 0..1 {}
+  0..* Bluetooth__Bluetooth21 0..1 {}
+  0..* Bluetooth__Bluetooth40 0..1 {}
+}
+abstract 0..* MobilePhone 0..* {
+  0..* MobilePhone__Connectivity 1..1 {
+    1..1 Connectivity__Bluetooth : root__Bluetooth 1..1 {}
+    0..* MobilePhone__Connectivity__GSM 1..1 {}
+    0..* LTE 0..1 {
+      [(#this.parent.parent.MobilePhone__Battery.LiBattery1400) >= 1]
+    }
+    0..* MobilePhone__Connectivity__WiFi 0..1 {}
+    0..* MobilePhone__Connectivity__USB 0..1 {}
+  }
+  1..1 MobilePhone__Battery 1..1 {
+    0..* MobilePhone__Battery__LiBattery1150 0..1 {}
+    0..* LiBattery1400 0..1 {}
+  }
+}
+0..* LowEndPhones : MobilePhone 1..1 {
+  [(#this.MobilePhone__Connectivity.MobilePhone__Connectivity__WiFi) = 0]
+}
+0..* HighEndPhones : MobilePhone 1..1 {
+  [((#this.MobilePhone__Connectivity.MobilePhone__Connectivity__USB) >= 1) && ((#this.MobilePhone__Connectivity.MobilePhone__Connectivity__WiFi) >= 1)]
+  0..* QuadCPU 0..1 {}
+}

@@ -1,0 +1,6 @@
+//# OPTIONS --explicit
+[all disj c1; c2 : Car | c1.owner.dref != c2.owner.dref]
+0..* Car 4..4 {
+  0..* owner -> Person 1..1 {}
+}
+0..* Person 4..4 {}

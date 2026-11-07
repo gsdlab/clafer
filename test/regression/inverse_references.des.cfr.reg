@@ -1,0 +1,50 @@
+//# OPTIONS --explicit
+abstract 0..* Service 0..* {
+  [this in this.machine.dref.services.dref]
+  0..* requirements : Requirements 1..1 {}
+  0..* machine -> Machine 1..1 {}
+}
+abstract 0..* Requirements 0..* {
+  0..* cpu ->> int 1..1 {}
+}
+abstract 0..* Resources : Requirements 0..* {}
+abstract 0..* Machine 0..* {
+  [all s : this.services | s.dref.machine.dref = this]
+  [((#this.isFree) >= 1) <=> ((#this.services) = 0)]
+  0..* services -> Service 0..* {}
+  0..* isFree 0..1 {}
+  0..* limits : Resources 1..1 {}
+  0..* utilization : Resources 1..1 {
+    [this.cpu.dref = (sum this.parent.services.dref.requirements.cpu.dref)]
+    [this.cpu.dref < this.parent.limits.cpu.dref]
+  }
+}
+abstract 0..* Task 0..* {
+  [((#this.total_free) >= 1) => (this.total_free.dref = (#Machine.isFree))]
+  0..* total_free -> int 1..1 {}
+}
+0..* MyTask : Task 1..1 {
+  0..* GoogleCA : Machine 1..1 {
+    [this.limits.cpu.dref = 10]
+  }
+  0..* GoogleNY : Machine 1..1 {
+    [this.limits.cpu.dref = 16]
+  }
+  0..* GoogleTX : Machine 1..1 {
+    [this.limits.cpu.dref = 14]
+  }
+  0..* MailService : Service 1..1 {
+    [this.requirements.cpu.dref = 4]
+  }
+  0..* SearchService : Service 1..1 {
+    [this.requirements.cpu.dref = 3]
+  }
+  0..* CalendarService : Service 1..1 {
+    [this.requirements.cpu.dref = 1]
+  }
+  0..* DriveService : Service 1..1 {
+    [this.requirements.cpu.dref = 2]
+  }
+}
+
+<< max MyTask.total_free.dref >>

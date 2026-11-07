@@ -2,15 +2,15 @@ open util/integer
 pred show {}
 
 
-one sig c0_a
-{ r_c0_b : lone c0_b }
+one sig a
+{ r_a__b : lone a__b }
 
-lone sig c0_b
+lone sig a__b
 {}
-{ one r_c0_b }
+{ one r_a__b }
 
-lone sig c1_b
+lone sig root__b
 {}
 
-fact { some c0_a.@r_c0_b }
-fact { some c1_b }
+fact { some a.@r_a__b }
+fact { some root__b }

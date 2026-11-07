@@ -22,60 +22,60 @@ a[href$='Ambiguous name'] {color: yellow}
 <div class="file">positive/cvl_printer_example.cfr</div>
 
 <div>
-<span class="claferDecl" id="c0_Office">Office</span>
+<span class="claferDecl" id="Office">Office</span>
   <div class="indent">
-  <span class="claferDecl" id="c0_Printer">Printer</span> ?
+  <span class="claferDecl" id="Printer">Printer</span> ?
     <div class="indent">
-    <span class="claferDecl" id="c0_resolution">resolution</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a></div>
+    <span class="claferDecl" id="resolution">resolution</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a></div>
     <div class="indent">
-    <span class="claferDecl" id="c0_Cartridge">Cartridge</span> 1..4
+    <span class="claferDecl" id="Cartridge">Cartridge</span> 1..4
       <div class="indent">
-      <span class="claferDecl" id="c0_inkVolume">inkVolume</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a></div>
+      <span class="claferDecl" id="inkVolume">inkVolume</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a></div>
       <div class="indent">
-      <span class="keyword">or</span> <span class="claferDecl" id="c0_Speed">Speed</span>
+      <span class="keyword">or</span> <span class="claferDecl" id="Speed">Speed</span>
         <div class="indent">
-        <span class="claferDecl" id="c0_High">High</span></div>
+        <span class="claferDecl" id="High">High</span></div>
         <div class="indent">
-        <span class="claferDecl" id="c0_Low">Low</span></div>
+        <span class="claferDecl" id="Low">Low</span></div>
       </div>
       <div class="indent">
-      <span class="claferDecl" id="c0_Turbo">Turbo</span> ?</div>
+      <span class="claferDecl" id="Turbo">Turbo</span> ?</div>
     </div>
     <div class="indent">
-    <span class="keyword">xor</span> <span class="claferDecl" id="c0_Type">Type</span>
+    <span class="keyword">xor</span> <span class="claferDecl" id="Type">Type</span>
       <div class="indent">
-      <span class="claferDecl" id="c0_Color">Color</span></div>
+      <span class="claferDecl" id="Color">Color</span></div>
       <div class="indent">
-      <span class="claferDecl" id="c0_BW">BW</span></div>
+      <span class="claferDecl" id="BW">BW</span></div>
     </div>
   </div>
   <div class="indent">
-  <span class="claferDecl" id="c0_Scanner">Scanner</span> ?
+  <span class="claferDecl" id="Scanner">Scanner</span> ?
     <div class="indent">
-    <span class="claferDecl" id="c0_GreenMode">GreenMode</span> ?</div>
+    <span class="claferDecl" id="GreenMode">GreenMode</span> ?</div>
     <div class="indent">
-    <span class="claferDecl" id="c0_Head">Head</span> 1..2 </div>
+    <span class="claferDecl" id="Head">Head</span> 1..2 </div>
   </div>
 </div>
 
 
 <div>
-<span class="claferDecl" id="c0_PrinterPool">PrinterPool</span>
+<span class="claferDecl" id="PrinterPool">PrinterPool</span>
   <div class="indent">
-  <span class="claferDecl" id="c0_fax">fax</span> ?</div>
+  <span class="claferDecl" id="fax">fax</span> ?</div>
   <div class="indent">
-  <span class="claferDecl" id="c0_printer">printer</span> ?</div>
+  <span class="claferDecl" id="printer">printer</span> ?</div>
   <div class="indent">
-  <span class="claferDecl" id="c0_copier">copier</span> ?</div>
+  <span class="claferDecl" id="copier">copier</span> ?</div>
   <div class="indent">
-  <span class="claferDecl" id="c0_scan">scan</span> ?</div>
+  <span class="claferDecl" id="scan">scan</span> ?</div>
   <div class="indent">
-  <span class="keyword">[</span> <a href="#c0_fax"><span class="reference">fax</span></a> =&gt; <a href="#c0_printer"><span class="reference">printer</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <a href="#fax"><span class="reference">fax</span></a> =&gt; <a href="#printer"><span class="reference">printer</span></a> <span class="keyword">]</span></div>
 </div>
 
 
 <div>
-<span class="keyword">[</span> (<a href="#c0_fax"><span class="reference">fax</span></a> =&gt; <a href="#c0_printer"><span class="reference">printer</span></a>) &amp;&amp; (<a href="#c0_copier"><span class="reference">copier</span></a> =&gt; <a href="#c0_fax"><span class="reference">fax</span></a> &amp;&amp; <a href="#c0_printer"><span class="reference">printer</span></a>) <span class="keyword">]</span></div>
+<span class="keyword">[</span> (<a href="#fax"><span class="reference">fax</span></a> =&gt; <a href="#printer"><span class="reference">printer</span></a>) &amp;&amp; (<a href="#copier"><span class="reference">copier</span></a> =&gt; <a href="#fax"><span class="reference">fax</span></a> &amp;&amp; <a href="#printer"><span class="reference">printer</span></a>) <span class="keyword">]</span></div>
 
 </body>
 </html>

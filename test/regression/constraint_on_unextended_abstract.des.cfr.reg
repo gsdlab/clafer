@@ -1,0 +1,10 @@
+//# OPTIONS --explicit
+abstract 0..* Kernel 0..* {
+  0..* memory 0..1 {}
+}
+0..* Phone 1..1 {
+  [(#Kernel.memory) >= 1]
+  0..* name -> string 1..1 {}
+}
+
+assert [(#Kernel) = 0]

@@ -1,0 +1,16 @@
+open util/integer
+pred show {}
+
+
+one sig root
+{ var r_item : set item }
+fact { always (one root.@r_item) }
+fact { always ((not before some root) implies (all  x : alive_item | after (no x & alive_item))) }
+
+
+sig item
+{ p_item : lone root }
+fun alive_item : set item { root.@r_item }
+fact { always ~@r_item in @p_item }
+
+

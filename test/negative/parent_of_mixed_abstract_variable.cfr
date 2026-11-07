@@ -1,0 +1,7 @@
+// The parent of an instance of Feat is the root for f1 and an instance of g for f2: only
+// the parent of `this` in a constraint of Feat is supported (#112).
+abstract Feat
+f1 : Feat
+g
+    f2 : Feat
+[ all v : Feat | some v.parent ]

@@ -55,6 +55,7 @@ data ClaferArgs = ClaferArgs {
       new_layout :: Bool,
       check_duplicates :: Bool,
       skip_resolver :: Bool,
+      explicit_model :: Bool,
       keep_unused :: Bool,
       no_stats :: Bool,
       validate :: Bool,
@@ -81,17 +82,18 @@ data ClaferArgs = ClaferArgs {
 
 clafer :: ClaferArgs
 clafer = ClaferArgs {
-  mode                = [] &= help "Generated output type. Available CLAFERMODEs are: 'alloy' (default, Alloy 6); 'json' (intermediate representation of Clafer model); 'clafer' (analyzed and desugared clafer model); 'html' (original model in HTML); 'graph' (graphical representation written in DOT language); 'cvlgraph' (cvl notation representation written in DOT language); 'choco' (Choco constraint programming solver). Multiple modes can be specified at the same time, e.g., '-m alloy -m html'." &= name "m",
+  mode                = [] &= help "Generated output type. Available CLAFERMODEs are: 'alloy' (default, Alloy 6); 'json' (intermediate representation of Clafer model); 'clafer' (the explicit model, with everything written out, as Choco solves it; a temporal model with its temporal modifiers and operators, which only Alloy solves); 'html' (original model in HTML); 'graph' (graphical representation written in DOT language); 'cvlgraph' (cvl notation representation written in DOT language); 'choco' (Choco constraint programming solver). Multiple modes can be specified at the same time, e.g., '-m alloy -m html'." &= name "m",
   console_output      = def &= help "Output code on console." &= name "o",
   flatten_inheritance = def &= help "Flatten inheritance ('alloy' mode only)." &= name "i",
   timeout_analysis    = def &= help "Timeout for analysis.",
   no_layout           = def &= help "Don't resolve off-side rule layout." &= name "l",
   new_layout          = def &= help "Use new fast layout resolver (experimental)." &= name "nl",
   check_duplicates    = def &= help "Check duplicated clafer names in the entire model."  &= name "c",
-  skip_resolver       = def &= help "Skip name resolution." &= name "f",
+  skip_resolver       = def &= help "The names of the clafers are their UIDs, as in an explicit model: skip renaming them. Names must be unique; they are still resolved and checked." &= name "f",
+  explicit_model      = def &= help "The model is an explicit model, as 'clafer -m clafer' prints it, with every name a UID and every card written out, and its scopes in its scope file. Shorthand for -f -k -l --ss=none." &= explicit &= name "explicit",
   keep_unused         = def &= help "Keep uninstantated abstract clafers ('alloy' mode only)." &= name "k",
   no_stats            = def &= help "Don't print statistics." &= name "s",
-  validate            = def &= help "Validate outputs of all modes. Uses '<tooldir>/alloy6.2.0.jar' for Alloy models, '<tooldir>/chocosolver.jar' for Choco models, and Clafer translator for desugared Clafer models. Use '--tooldir' to override the default location ('.') of these tools." &= name "v",
+  validate            = def &= help "Validate outputs of all modes, and exit with 1 if a tool rejects one. Uses '<tooldir>/alloy6.2.0.jar' for Alloy models, '<tooldir>/chocosolver.jar' for Choco models, dot for graphs, and clafer itself for explicit models, which must compile to themselves. Use '--tooldir' to override the default location ('.') of these tools." &= name "v",
   tooldir             = "." &= typDir &= help "Specify the tools directory ('validate' only). Default: '.' (current directory).",
   alloy_mapping       = def &= help "Generate mapping to Alloy source code ('alloy' mode only)." &= name "a",
   self_contained      = def &= help "Generate a self-contained html document ('html' mode only).",
@@ -102,7 +104,7 @@ clafer = ClaferArgs {
   trace_len           = 10 &= help "Define the maximum trace length." &= name "tl",
   scope_strategy      = def &= help "Use scope computation strategy: none or simple (default)." &= name "ss",
   afm                 = def &= help "Throws an error if the cardinality of any of the clafers is above 1." &= name "check-afm",
-  meta_data           = def &= help "Generate a 'fully qualified name'-'least-partially-qualified name'-'unique ID' map ('.cfr-map'). In Alloy and Choco modes, generate the scopes map ('.cfr-scope').",
+  meta_data           = def &= help "Generate a 'fully qualified name'-'least-partially-qualified name'-'unique ID' map ('.cfr-map'). In Alloy and Choco modes, generate the scopes map ('.cfr-scope'); in Clafer mode, the explicit model's scope file with every scope ('.des.cfr-scope').",
   minint              = def &= help "Smallest integer value ('choco' mode only). Default: -128, chosen by chocosolver." &= typ "INT" &= explicit &= name "minint",
   maxint              = def &= help "Largest integer value ('choco' mode only). Default: 127, chosen by chocosolver." &= typ "INT" &= explicit &= name "maxint",
   decimal_digits      = def &= help "Number of fractional digits of decimals ('choco' mode only). Default: the most fractional digits of the model's decimal literals." &= typ "INT" &= explicit &= name "decimal-digits",
@@ -127,7 +129,7 @@ claferDefaults = either error cmdArgsValue $ process claferMode []
 -- | Merges the command line arguments (a1) with the options of the model (a2): an argument
 --   given on the command line takes precedence, the imports of both are kept.
 mergeArgs :: ClaferArgs -> ClaferArgs -> ClaferArgs
-mergeArgs a1 a2  = ClaferArgs
+mergeArgs a1 a2  = withExplicit ClaferArgs
   { mode = mergeArg mode
   , console_output = console_output a1 || console_output a2 || null (file a1)
   , flatten_inheritance = mergeArg flatten_inheritance
@@ -136,6 +138,7 @@ mergeArgs a1 a2  = ClaferArgs
   , new_layout = mergeArg new_layout
   , check_duplicates = mergeArg check_duplicates
   , skip_resolver = mergeArg skip_resolver
+  , explicit_model = mergeArg explicit_model
   , keep_unused = mergeArg keep_unused
   , no_stats = mergeArg no_stats
   , validate = mergeArg validate
@@ -164,6 +167,14 @@ mergeArgs a1 a2  = ClaferArgs
     mergeArg :: Eq a => (ClaferArgs -> a) -> a
     mergeArg f = if f a1 /= f claferDefaults then f a1 else f a2
 
+-- | The options of an explicit model (--explicit): the names are the UIDs (-f), all clafers
+--   are kept (-k), there is no layout (-l) and no scope analysis (--ss=none), since the model
+--   and its scope file already have everything written out.
+withExplicit :: ClaferArgs -> ClaferArgs
+withExplicit args'
+  | explicit_model args' = args' { skip_resolver = True, keep_unused = True, no_layout = True, scope_strategy = None }
+  | otherwise            = args'
+
 argsWithOPTIONS :: ClaferArgs -> String -> ClaferArgs
 argsWithOPTIONS    args'         model   =
   if "//# OPTIONS " `isPrefixOf` model
@@ -172,7 +183,7 @@ argsWithOPTIONS    args'         model   =
             Language.Clafer.SplitJoin.splitArgs $ -- extract individual arguments
               drop 12 $                           -- strip "//# OPTIONS "
                 takeWhile (/= '\n') model         -- get first line
-  else args'
+  else withExplicit args'
 
 defaultClaferArgs :: ClaferArgs
 defaultClaferArgs = ClaferArgs
@@ -184,6 +195,7 @@ defaultClaferArgs = ClaferArgs
   , new_layout = False
   , check_duplicates = False
   , skip_resolver = False
+  , explicit_model = False
   , keep_unused = False
   , no_stats = False
   , validate = False

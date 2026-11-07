@@ -1,0 +1,8 @@
+// An instance keeps its parent across its lifetimes: an item that disappears and reappears is
+// under the same box. The assertion holds.
+
+box 2
+  item ?
+[ initially (some box.item) ]
+[ initially (all i : box.item | X (no (i ** box.item) && X some (i ** box.item))) ]
+assert [ all b : box | all i : b.item | G (some (i ** box.item) => some (i ** b.item)) ]

@@ -22,51 +22,51 @@ a[href$='Ambiguous name'] {color: yellow}
 <div class="file">positive/maxMinArithmetic.cfr</div>
 
 <div>
-<span class="claferDecl" id="c0_a">a</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a></div>
+<span class="claferDecl" id="a">a</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a></div>
 
 
 <div>
-<span class="claferDecl" id="c0_b">b</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a></div>
+<span class="claferDecl" id="b">b</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a></div>
 
 
 <div>
-<span class="claferDecl" id="c0_c">c</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a></div>
+<span class="claferDecl" id="c">c</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a></div>
 
 
 <div>
-<span class="claferDecl" id="c0_spread">spread</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a> = max <a href="#c0_a"><span class="reference">a</span></a>.<span class="keyword">dref</span>, <a href="#c0_b"><span class="reference">b</span></a>.<span class="keyword">dref</span>, <a href="#c0_c"><span class="reference">c</span></a>.<span class="keyword">dref</span> - min <a href="#c0_a"><span class="reference">a</span></a>.<span class="keyword">dref</span>, <a href="#c0_b"><span class="reference">b</span></a>.<span class="keyword">dref</span>, <a href="#c0_c"><span class="reference">c</span></a>.<span class="keyword">dref</span></div>
+<span class="claferDecl" id="spread">spread</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a> = max <a href="#a"><span class="reference">a</span></a>.<span class="keyword">dref</span>, <a href="#b"><span class="reference">b</span></a>.<span class="keyword">dref</span>, <a href="#c"><span class="reference">c</span></a>.<span class="keyword">dref</span> - min <a href="#a"><span class="reference">a</span></a>.<span class="keyword">dref</span>, <a href="#b"><span class="reference">b</span></a>.<span class="keyword">dref</span>, <a href="#c"><span class="reference">c</span></a>.<span class="keyword">dref</span></div>
 
 
 <div>
-<span class="claferDecl" id="c0_range">range</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a> = max <a href="#c0_a"><span class="reference">a</span></a>.<span class="keyword">dref</span>++<a href="#c0_b"><span class="reference">b</span></a>.<span class="keyword">dref</span>++<a href="#c0_c"><span class="reference">c</span></a>.<span class="keyword">dref</span> - min <a href="#c0_a"><span class="reference">a</span></a>.<span class="keyword">dref</span>++<a href="#c0_b"><span class="reference">b</span></a>.<span class="keyword">dref</span>++<a href="#c0_c"><span class="reference">c</span></a>.<span class="keyword">dref</span></div>
+<span class="claferDecl" id="range">range</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a> = max <a href="#a"><span class="reference">a</span></a>.<span class="keyword">dref</span>++<a href="#b"><span class="reference">b</span></a>.<span class="keyword">dref</span>++<a href="#c"><span class="reference">c</span></a>.<span class="keyword">dref</span> - min <a href="#a"><span class="reference">a</span></a>.<span class="keyword">dref</span>++<a href="#b"><span class="reference">b</span></a>.<span class="keyword">dref</span>++<a href="#c"><span class="reference">c</span></a>.<span class="keyword">dref</span></div>
 
 
 <div>
-<span class="claferDecl" id="c0_above">above</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a> = max <a href="#c0_a"><span class="reference">a</span></a>.<span class="keyword">dref</span>++3 + 1</div>
+<span class="claferDecl" id="above">above</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a> = max <a href="#a"><span class="reference">a</span></a>.<span class="keyword">dref</span>++3 + 1</div>
 
 
 <div>
-<span class="keyword">[</span> <a href="#c0_a"><span class="reference">a</span></a> = 5 <span class="keyword">]</span></div>
+<span class="keyword">[</span> <a href="#a"><span class="reference">a</span></a> = 5 <span class="keyword">]</span></div>
 
 
 <div>
-<span class="keyword">[</span> <a href="#c0_b"><span class="reference">b</span></a> = 2 <span class="keyword">]</span></div>
+<span class="keyword">[</span> <a href="#b"><span class="reference">b</span></a> = 2 <span class="keyword">]</span></div>
 
 
 <div>
-<span class="keyword">[</span> <a href="#c0_c"><span class="reference">c</span></a> = 9 <span class="keyword">]</span></div>
+<span class="keyword">[</span> <a href="#c"><span class="reference">c</span></a> = 9 <span class="keyword">]</span></div>
 
 
 <div>
-<span class="keyword">[</span> <a href="#c0_spread"><span class="reference">spread</span></a> = 7 <span class="keyword">]</span></div>
+<span class="keyword">[</span> <a href="#spread"><span class="reference">spread</span></a> = 7 <span class="keyword">]</span></div>
 
 
 <div>
-<span class="keyword">[</span> <a href="#c0_range"><span class="reference">range</span></a> = 7 <span class="keyword">]</span></div>
+<span class="keyword">[</span> <a href="#range"><span class="reference">range</span></a> = 7 <span class="keyword">]</span></div>
 
 
 <div>
-<span class="keyword">[</span> <a href="#c0_above"><span class="reference">above</span></a> = 6 <span class="keyword">]</span></div>
+<span class="keyword">[</span> <a href="#above"><span class="reference">above</span></a> = 6 <span class="keyword">]</span></div>
 
 </body>
 </html>

@@ -22,136 +22,136 @@ a[href$='Ambiguous name'] {color: yellow}
 <div class="file">positive/multi_objective_five_objectives.cfr</div>
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Feature">Feature</span>
+<span class="keyword">abstract</span> <span class="claferDecl" id="Feature">Feature</span>
   <div class="indent">
-  <span class="claferDecl" id="c0_performance">performance</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a></div>
+  <span class="claferDecl" id="performance">performance</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a></div>
   <div class="indent">
-  <span class="claferDecl" id="c0_energy">energy</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a></div>
+  <span class="claferDecl" id="energy">energy</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a></div>
   <div class="indent">
-  <span class="claferDecl" id="c0_mass">mass</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a></div>
+  <span class="claferDecl" id="mass">mass</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a></div>
   <div class="indent">
-  <span class="keyword">[</span> <a href="#c0_mass"><span class="reference">mass</span></a> &gt;= 0 <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <a href="#mass"><span class="reference">mass</span></a> &gt;= 0 <span class="keyword">]</span></div>
   <div class="indent">
-  <span class="claferDecl" id="c0_cost">cost</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a></div>
+  <span class="claferDecl" id="cost">cost</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a></div>
   <div class="indent">
-  <span class="keyword">[</span> <a href="#c0_cost"><span class="reference">cost</span></a> &gt;= 0 <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <a href="#cost"><span class="reference">cost</span></a> &gt;= 0 <span class="keyword">]</span></div>
 </div>
 
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_SecurityFeature">SecurityFeature</span><span class="keyword"> : </span><a href="#c0_Feature"><span class="reference">Feature</span></a>
+<span class="keyword">abstract</span> <span class="claferDecl" id="SecurityFeature">SecurityFeature</span><span class="keyword"> : </span><a href="#Feature"><span class="reference">Feature</span></a>
   <div class="indent">
-  <span class="claferDecl" id="c0_security">security</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a></div>
+  <span class="claferDecl" id="security">security</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a></div>
 </div>
 
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_MobilePhone">MobilePhone</span>
+<span class="keyword">abstract</span> <span class="claferDecl" id="MobilePhone">MobilePhone</span>
   <div class="indent">
-  <span class="keyword">or</span> <span class="claferDecl" id="c0_Connectivity">Connectivity</span><span class="keyword"> : </span><a href="#c0_Feature"><span class="reference">Feature</span></a>
+  <span class="keyword">or</span> <span class="claferDecl" id="Connectivity">Connectivity</span><span class="keyword"> : </span><a href="#Feature"><span class="reference">Feature</span></a>
     <div class="indent">
-    <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_performance"><span class="reference">performance</span></a> = 0 <span class="keyword">]</span></div>
+    <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#performance"><span class="reference">performance</span></a> = 0 <span class="keyword">]</span></div>
     <div class="indent">
-    <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_energy"><span class="reference">energy</span></a> = 0 <span class="keyword">]</span></div>
+    <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#energy"><span class="reference">energy</span></a> = 0 <span class="keyword">]</span></div>
     <div class="indent">
-    <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_mass"><span class="reference">mass</span></a> = 0 <span class="keyword">]</span></div>
+    <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#mass"><span class="reference">mass</span></a> = 0 <span class="keyword">]</span></div>
     <div class="indent">
-    <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_cost"><span class="reference">cost</span></a> = 12 <span class="keyword">]</span></div>
+    <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#cost"><span class="reference">cost</span></a> = 12 <span class="keyword">]</span></div>
     <div class="indent">
-    <span class="claferDecl" id="c0_Bluetooth">Bluetooth</span><span class="keyword"> : </span><a href="#c0_Feature"><span class="reference">Feature</span></a>
+    <span class="claferDecl" id="Bluetooth">Bluetooth</span><span class="keyword"> : </span><a href="#Feature"><span class="reference">Feature</span></a>
       <div class="indent">
-      <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_performance"><span class="reference">performance</span></a> = 9 <span class="keyword">]</span></div>
+      <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#performance"><span class="reference">performance</span></a> = 9 <span class="keyword">]</span></div>
       <div class="indent">
-      <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_energy"><span class="reference">energy</span></a> = 10 <span class="keyword">]</span></div>
+      <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#energy"><span class="reference">energy</span></a> = 10 <span class="keyword">]</span></div>
       <div class="indent">
-      <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_mass"><span class="reference">mass</span></a> = 2 <span class="keyword">]</span></div>
+      <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#mass"><span class="reference">mass</span></a> = 2 <span class="keyword">]</span></div>
       <div class="indent">
-      <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_cost"><span class="reference">cost</span></a> = 3 <span class="keyword">]</span></div>
+      <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#cost"><span class="reference">cost</span></a> = 3 <span class="keyword">]</span></div>
     </div>
     <div class="indent">
-    <span class="claferDecl" id="c0_USB">USB</span><span class="keyword"> : </span><a href="#c0_Feature"><span class="reference">Feature</span></a>
+    <span class="claferDecl" id="USB">USB</span><span class="keyword"> : </span><a href="#Feature"><span class="reference">Feature</span></a>
       <div class="indent">
-      <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_performance"><span class="reference">performance</span></a> = 10 <span class="keyword">]</span></div>
+      <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#performance"><span class="reference">performance</span></a> = 10 <span class="keyword">]</span></div>
       <div class="indent">
-      <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_energy"><span class="reference">energy</span></a> = 5 <span class="keyword">]</span></div>
+      <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#energy"><span class="reference">energy</span></a> = 5 <span class="keyword">]</span></div>
       <div class="indent">
-      <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_mass"><span class="reference">mass</span></a> = 3 <span class="keyword">]</span></div>
+      <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#mass"><span class="reference">mass</span></a> = 3 <span class="keyword">]</span></div>
       <div class="indent">
-      <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_cost"><span class="reference">cost</span></a> = 5 <span class="keyword">]</span></div>
+      <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#cost"><span class="reference">cost</span></a> = 5 <span class="keyword">]</span></div>
     </div>
     <div class="indent">
-    <span class="claferDecl" id="c0_Wifi">Wifi</span><span class="keyword"> : </span><a href="#c0_Feature"><span class="reference">Feature</span></a>
+    <span class="claferDecl" id="Wifi">Wifi</span><span class="keyword"> : </span><a href="#Feature"><span class="reference">Feature</span></a>
       <div class="indent">
-      <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_performance"><span class="reference">performance</span></a> = 22 <span class="keyword">]</span></div>
+      <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#performance"><span class="reference">performance</span></a> = 22 <span class="keyword">]</span></div>
       <div class="indent">
-      <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_energy"><span class="reference">energy</span></a> = 17 <span class="keyword">]</span></div>
+      <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#energy"><span class="reference">energy</span></a> = 17 <span class="keyword">]</span></div>
       <div class="indent">
-      <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_mass"><span class="reference">mass</span></a> = 6 <span class="keyword">]</span></div>
+      <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#mass"><span class="reference">mass</span></a> = 6 <span class="keyword">]</span></div>
       <div class="indent">
-      <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_cost"><span class="reference">cost</span></a> = 5 <span class="keyword">]</span></div>
+      <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#cost"><span class="reference">cost</span></a> = 5 <span class="keyword">]</span></div>
     </div>
   </div>
   <div class="indent">
-  <span class="claferDecl" id="c0_PasswordProtection">PasswordProtection</span><span class="keyword"> : </span><a href="#c0_SecurityFeature"><span class="reference">SecurityFeature</span></a> ?
+  <span class="claferDecl" id="PasswordProtection">PasswordProtection</span><span class="keyword"> : </span><a href="#SecurityFeature"><span class="reference">SecurityFeature</span></a> ?
     <div class="indent">
-    <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_security"><span class="reference">security</span></a> = 5 <span class="keyword">]</span></div>
+    <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#security"><span class="reference">security</span></a> = 5 <span class="keyword">]</span></div>
     <div class="indent">
-    <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_performance"><span class="reference">performance</span></a> = 1 <span class="keyword">]</span></div>
+    <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#performance"><span class="reference">performance</span></a> = 1 <span class="keyword">]</span></div>
     <div class="indent">
-    <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_energy"><span class="reference">energy</span></a> = 2 <span class="keyword">]</span></div>
+    <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#energy"><span class="reference">energy</span></a> = 2 <span class="keyword">]</span></div>
     <div class="indent">
-    <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_mass"><span class="reference">mass</span></a> = 0 <span class="keyword">]</span></div>
+    <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#mass"><span class="reference">mass</span></a> = 0 <span class="keyword">]</span></div>
     <div class="indent">
-    <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_cost"><span class="reference">cost</span></a> = 2 <span class="keyword">]</span></div>
+    <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#cost"><span class="reference">cost</span></a> = 2 <span class="keyword">]</span></div>
   </div>
   <div class="indent">
-  <span class="claferDecl" id="c0_FingerprintProtection">FingerprintProtection</span><span class="keyword"> : </span><a href="#c0_SecurityFeature"><span class="reference">SecurityFeature</span></a> ?
+  <span class="claferDecl" id="FingerprintProtection">FingerprintProtection</span><span class="keyword"> : </span><a href="#SecurityFeature"><span class="reference">SecurityFeature</span></a> ?
     <div class="indent">
-    <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_mass"><span class="reference">mass</span></a> = 0 <span class="keyword">]</span></div>
+    <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#mass"><span class="reference">mass</span></a> = 0 <span class="keyword">]</span></div>
     <div class="indent">
-    <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_security"><span class="reference">security</span></a> = 5 <span class="keyword">]</span></div>
+    <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#security"><span class="reference">security</span></a> = 5 <span class="keyword">]</span></div>
     <div class="indent">
-    <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_performance"><span class="reference">performance</span></a> = 3 <span class="keyword">]</span></div>
+    <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#performance"><span class="reference">performance</span></a> = 3 <span class="keyword">]</span></div>
     <div class="indent">
-    <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_energy"><span class="reference">energy</span></a> = 1 <span class="keyword">]</span></div>
+    <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#energy"><span class="reference">energy</span></a> = 1 <span class="keyword">]</span></div>
     <div class="indent">
-    <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_cost"><span class="reference">cost</span></a> = 13 <span class="keyword">]</span></div>
+    <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#cost"><span class="reference">cost</span></a> = 13 <span class="keyword">]</span></div>
   </div>
   <div class="indent">
-  <span class="claferDecl" id="c0_total_performance">total_performance</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a> = <span class="keyword">sum </span><a href="#c0_Feature"><span class="reference">Feature</span></a>.<a href="#c0_performance"><span class="reference">performance</span></a></div>
+  <span class="claferDecl" id="total_performance">total_performance</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a> = <span class="keyword">sum </span><a href="#Feature"><span class="reference">Feature</span></a>.<a href="#performance"><span class="reference">performance</span></a></div>
   <div class="indent">
-  <span class="claferDecl" id="c0_total_energy">total_energy</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a> = <span class="keyword">sum </span><a href="#c0_Feature"><span class="reference">Feature</span></a>.<a href="#c0_energy"><span class="reference">energy</span></a></div>
+  <span class="claferDecl" id="total_energy">total_energy</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a> = <span class="keyword">sum </span><a href="#Feature"><span class="reference">Feature</span></a>.<a href="#energy"><span class="reference">energy</span></a></div>
   <div class="indent">
-  <span class="claferDecl" id="c0_total_security">total_security</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a> = <span class="keyword">sum </span><a href="#c0_SecurityFeature"><span class="reference">SecurityFeature</span></a>.<a href="#c0_security"><span class="reference">security</span></a></div>
+  <span class="claferDecl" id="total_security">total_security</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a> = <span class="keyword">sum </span><a href="#SecurityFeature"><span class="reference">SecurityFeature</span></a>.<a href="#security"><span class="reference">security</span></a></div>
   <div class="indent">
-  <span class="claferDecl" id="c0_total_mass">total_mass</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a> = <span class="keyword">sum </span><a href="#c0_Feature"><span class="reference">Feature</span></a>.<a href="#c0_mass"><span class="reference">mass</span></a></div>
+  <span class="claferDecl" id="total_mass">total_mass</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a> = <span class="keyword">sum </span><a href="#Feature"><span class="reference">Feature</span></a>.<a href="#mass"><span class="reference">mass</span></a></div>
   <div class="indent">
-  <span class="claferDecl" id="c0_total_cost">total_cost</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a> = <span class="keyword">sum </span><a href="#c0_Feature"><span class="reference">Feature</span></a>.<a href="#c0_cost"><span class="reference">cost</span></a></div>
+  <span class="claferDecl" id="total_cost">total_cost</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a> = <span class="keyword">sum </span><a href="#Feature"><span class="reference">Feature</span></a>.<a href="#cost"><span class="reference">cost</span></a></div>
 </div>
 
 
 <div>
-<span class="claferDecl" id="c0_MyPhone">MyPhone</span><span class="keyword"> : </span><a href="#c0_MobilePhone"><span class="reference">MobilePhone</span></a></div>
+<span class="claferDecl" id="MyPhone">MyPhone</span><span class="keyword"> : </span><a href="#MobilePhone"><span class="reference">MobilePhone</span></a></div>
 
 
 <div>
-&lt;&lt;<span class="deprecated" title="Deprecated. Use `minimize` instead.">min </span><a href="#c0_MyPhone"><span class="reference">MyPhone</span></a>.<a href="#c0_total_energy"><span class="reference">total_energy</span></a>&gt;&gt;</div>
+&lt;&lt;<span class="deprecated" title="Deprecated. Use `minimize` instead.">min </span><a href="#MyPhone"><span class="reference">MyPhone</span></a>.<a href="#total_energy"><span class="reference">total_energy</span></a>&gt;&gt;</div>
 
 
 <div>
-&lt;&lt;<span class="deprecated" title="Deprecated. Use `maximize` instead.">max </span><a href="#c0_MyPhone"><span class="reference">MyPhone</span></a>.<a href="#c0_total_performance"><span class="reference">total_performance</span></a>&gt;&gt;</div>
+&lt;&lt;<span class="deprecated" title="Deprecated. Use `maximize` instead.">max </span><a href="#MyPhone"><span class="reference">MyPhone</span></a>.<a href="#total_performance"><span class="reference">total_performance</span></a>&gt;&gt;</div>
 
 
 <div>
-&lt;&lt;<span class="deprecated" title="Deprecated. Use `maximize` instead.">max </span><a href="#c0_MyPhone"><span class="reference">MyPhone</span></a>.<a href="#c0_total_security"><span class="reference">total_security</span></a>&gt;&gt;</div>
+&lt;&lt;<span class="deprecated" title="Deprecated. Use `maximize` instead.">max </span><a href="#MyPhone"><span class="reference">MyPhone</span></a>.<a href="#total_security"><span class="reference">total_security</span></a>&gt;&gt;</div>
 
 
 <div>
-&lt;&lt;<span class="deprecated" title="Deprecated. Use `minimize` instead.">min </span><a href="#c0_MyPhone"><span class="reference">MyPhone</span></a>.<a href="#c0_total_mass"><span class="reference">total_mass</span></a>&gt;&gt;</div>
+&lt;&lt;<span class="deprecated" title="Deprecated. Use `minimize` instead.">min </span><a href="#MyPhone"><span class="reference">MyPhone</span></a>.<a href="#total_mass"><span class="reference">total_mass</span></a>&gt;&gt;</div>
 
 
 <div>
-&lt;&lt;<span class="deprecated" title="Deprecated. Use `minimize` instead.">min </span><a href="#c0_MyPhone"><span class="reference">MyPhone</span></a>.<a href="#c0_total_cost"><span class="reference">total_cost</span></a>&gt;&gt;</div>
+&lt;&lt;<span class="deprecated" title="Deprecated. Use `minimize` instead.">min </span><a href="#MyPhone"><span class="reference">MyPhone</span></a>.<a href="#total_cost"><span class="reference">total_cost</span></a>&gt;&gt;</div>
 
 </body>
 </html>

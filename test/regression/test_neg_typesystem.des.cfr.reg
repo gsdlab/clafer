@@ -1,0 +1,7 @@
+//# OPTIONS --explicit
+[C.performance.dref = (-D.performance.dref)]
+abstract 0..* Measurable 0..* {
+  0..* performance -> int 1..1 {}
+}
+0..* D : Measurable 1..1 {}
+0..* C : Measurable 1..1 {}

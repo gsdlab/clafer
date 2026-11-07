@@ -2,40 +2,40 @@ open util/integer
 pred show {}
 
 
-abstract sig c0_Person
-{ r_c0_Hand : set c0_Hand
-, r_c0_Hook : set c0_Hook }
-{ r_c0_Hook in r_c0_Hand }
+abstract sig Person
+{ r_Hand : set Hand
+, r_Hook : set Hook }
+{ r_Hook in r_Hand }
 
-abstract sig c0_Hand
+abstract sig Hand
 {}
-{ one @r_c0_Hand.this }
+{ one @r_Hand.this }
 
-abstract sig c0_Hook extends c0_Hand
+abstract sig Hook extends Hand
 {}
-{ one @r_c0_Hook.this }
+{ one @r_Hook.this }
 
-one sig c0_CptHookHand extends c0_Person
-{ r_c0_left : one c0_left
-, r_c0_right : one c0_right }
-{ r_c0_left in r_c0_Hook
-  r_c0_right in r_c0_Hand }
+one sig CptHookHand extends Person
+{ r_CptHookHand__left : one CptHookHand__left
+, r_CptHookHand__right : one CptHookHand__right }
+{ r_CptHookHand__left in r_Hook
+  r_CptHookHand__right in r_Hand }
 
-one sig c0_left extends c0_Hook
-{}
-
-one sig c0_right extends c0_Hand
+one sig CptHookHand__left extends Hook
 {}
 
-one sig c0_CptHandHook extends c0_Person
-{ r_c1_left : one c1_left
-, r_c1_right : one c1_right }
-{ r_c1_left in r_c0_Hand
-  r_c1_right in r_c0_Hook }
-
-one sig c1_left extends c0_Hand
+one sig CptHookHand__right extends Hand
 {}
 
-one sig c1_right extends c0_Hook
+one sig CptHandHook extends Person
+{ r_CptHandHook__left : one CptHandHook__left
+, r_CptHandHook__right : one CptHandHook__right }
+{ r_CptHandHook__left in r_Hand
+  r_CptHandHook__right in r_Hook }
+
+one sig CptHandHook__left extends Hand
+{}
+
+one sig CptHandHook__right extends Hook
 {}
 

@@ -22,39 +22,39 @@ a[href$='Ambiguous name'] {color: yellow}
 <div class="file">positive/gi89-ref-to-constant.cfr</div>
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_ASIL">ASIL</span><span class="keyword"> ->> </span><a href="#integer"><span class="reference">integer</span></a></div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="ASIL">ASIL</span><span class="keyword"> ->> </span><a href="#integer"><span class="reference">integer</span></a></div>
 
 
 <div>
-<span class="claferDecl" id="c0_A">A</span><span class="keyword"> : </span><a href="#c0_ASIL"><span class="reference">ASIL</span></a><span class="keyword"> -> </span>1</div>
+<span class="claferDecl" id="A">A</span><span class="keyword"> : </span><a href="#ASIL"><span class="reference">ASIL</span></a><span class="keyword"> -> </span>1</div>
 
 
 <div>
-<span class="claferDecl" id="c0_B">B</span><span class="keyword"> : </span><a href="#c0_ASIL"><span class="reference">ASIL</span></a><span class="keyword"> -> </span>2</div>
+<span class="claferDecl" id="B">B</span><span class="keyword"> : </span><a href="#ASIL"><span class="reference">ASIL</span></a><span class="keyword"> -> </span>2</div>
 
 
 <div>
-<span class="claferDecl" id="c0_C">C</span><span class="keyword"> : </span><a href="#c0_ASIL"><span class="reference">ASIL</span></a><span class="keyword"> -> </span>3</div>
+<span class="claferDecl" id="C">C</span><span class="keyword"> : </span><a href="#ASIL"><span class="reference">ASIL</span></a><span class="keyword"> -> </span>3</div>
 
 
 <div>
-<span class="claferDecl" id="c0_D">D</span><span class="keyword"> : </span><a href="#c0_ASIL"><span class="reference">ASIL</span></a><span class="keyword"> -> </span>4</div>
+<span class="claferDecl" id="D">D</span><span class="keyword"> : </span><a href="#ASIL"><span class="reference">ASIL</span></a><span class="keyword"> -> </span>4</div>
 
 
 <div>
-<span class="keyword">assert [</span> <a href="#c0_A"><span class="reference">A</span></a>.<span class="keyword">dref</span> = 1 <span class="keyword">]</span></div>
+<span class="keyword">assert [</span> <a href="#A"><span class="reference">A</span></a>.<span class="keyword">dref</span> = 1 <span class="keyword">]</span></div>
 
 
 <div>
-<span class="keyword">assert [</span> <a href="#c0_B"><span class="reference">B</span></a>.<span class="keyword">dref</span> = 2 <span class="keyword">]</span></div>
+<span class="keyword">assert [</span> <a href="#B"><span class="reference">B</span></a>.<span class="keyword">dref</span> = 2 <span class="keyword">]</span></div>
 
 
 <div>
-<span class="keyword">assert [</span> <a href="#c0_C"><span class="reference">C</span></a>.<span class="keyword">dref</span> = 3 <span class="keyword">]</span></div>
+<span class="keyword">assert [</span> <a href="#C"><span class="reference">C</span></a>.<span class="keyword">dref</span> = 3 <span class="keyword">]</span></div>
 
 
 <div>
-<span class="keyword">assert [</span> <a href="#c0_D"><span class="reference">D</span></a>.<span class="keyword">dref</span> = 4 <span class="keyword">]</span></div>
+<span class="keyword">assert [</span> <a href="#D"><span class="reference">D</span></a>.<span class="keyword">dref</span> = 4 <span class="keyword">]</span></div>
 
 </body>
 </html>

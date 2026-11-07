@@ -48,7 +48,7 @@ import Language.Clafer.Intermediate.Intclafer
 import Language.Clafer.Import (ModelFile, modelPosition, fileStarts)
 
 import Control.Applicative
-import Data.List (intersperse,genericSplitAt)
+import Data.List (find, intersperse, genericSplitAt)
 import qualified Data.Map as Map
 import Data.Maybe
 import Data.Char (isSpace)
@@ -554,19 +554,12 @@ printIndentId _ html = while html "<div class=\"indent\">" ++ "\n"
 printIndentEnd :: Bool -> String
 printIndentEnd html = while html "</div>" ++ "\n"
 
-dropUid :: String -> String
-dropUid uid' = let id' = rest $ dropWhile (/= '_') uid'
-              in if id' == ""
-                then uid'
-                else id'
-
---so it fails more gracefully on empty lists
-{-first :: String -> String
-first [] = []
-first (x:_) = x-}
-rest :: String -> String
-rest [] = []
-rest (_:xs) = xs
+-- | The name of a clafer or local in an expression of the IR: a clafer's name (its _ident),
+--   found in the trace of the IR, whose UID need not contain it; a local's name is itself.
+nameIn :: Map.Map Span [Ir] -> String -> String
+nameIn irMap uid' = case [ _ident c | IRClafer c <- concat (Map.elems irMap), _uid c == uid' ] of
+  (name : _) -> name
+  []         -> uid'
 
 getUid :: PosIdent -> Map.Map Span [Ir] -> Maybe String
 getUid posIdent@(PosIdent (_, id')) irMap =
@@ -582,8 +575,9 @@ getUid posIdent@(PosIdent (_, id')) irMap =
     getIdentIExp (IClaferId _ id'' _ _) = [id'']
     getIdentIExp (IDeclPExp _ _ pexp) = getIdentPExp pexp
     getIdentIExp _ = []
-    findUid name (x:xs) = if name == dropUid x then Just x else findUid name xs
-    findUid _    []     = Nothing
+    -- the UID of the clafer named so; one UID is the one
+    findUid _    [x]    = Just x
+    findUid name xs     = find ((== name) . nameIn irMap) xs
 
 getDivId :: Span -> Map.Map Span [Ir] -> String
 getDivId s irMap = if isNothing $ Map.lookup s irMap

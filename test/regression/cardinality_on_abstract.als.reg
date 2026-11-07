@@ -2,14 +2,14 @@ open util/integer
 pred show {}
 
 
-fact { #c0_a = 0 }
-abstract sig c0_a
+fact { #a = 0 }
+abstract sig a
 {}
 
-one sig c0_b
+one sig b
 {}
 
-lone sig c0_c
+lone sig c
 {}
 
-fact { some c0_a }
+fact { some a }

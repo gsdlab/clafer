@@ -30,19 +30,23 @@
        exists in a snapshot when its parent links it through the containment relation
        @r_c@, which is @var@ unless the clafer is static (see 'isStatic'); @alive_c@ is the
        set of the existing instances of @c@.
-     * An instance does not change its parent (the static field @p_c@), and nothing outlives
-       its parent.
+     * An instance does not change its parent (the static field @p_c@), also when it
+       disappears and reappears, and nothing outlives its parent. A scope bounds the instances
+       of a clafer over the trace, not in a snapshot.
      * Change: an instance may reappear. The paper forbids it, but then a cyclic behaviour,
        e.g., green, yellow, red, green, ..., needs infinitely many instances, which no lasso
        trace over finitely many atoms has.
      * The multiplicities, group cardinalities and constraints of a clafer hold in every
        snapshot, for every existing instance; the top-level ones hold in every snapshot.
      * Change: the temporal obligations of a constraint (X, F, G and U, Alloy's @after@,
-       @eventually@, @always@ and @until@) hold while the context instance exists; the
-       constraint disappears together with it. A modeller extends the timeline of a
-       constraint by placing it higher in the hierarchy, or at the top level. A transition
-       of a clafer, e.g., @on --> off@, is a constraint of its parent, so the transition of
-       a nested state disappears when its enclosing state is left.
+       @eventually@, @always@ and @until@) hold while the parent of the context instance
+       exists; the paper does not bound them. So @[ req=down --> movingDown ]@ in the state
+       @movingUp@ takes the machine to @movingDown@, and the pending obligations of nested
+       states lapse when their enclosing state is left. A modeller extends the timeline of
+       a constraint by placing it higher in the hierarchy, or at the top level. A transition
+       of a clafer, e.g., @on --> off@, is a constraint of the clafer.
+     * The negations are pushed inside the temporal operators first (see 'pushNegations'),
+       so a negated obligation lapses with the parent too: @!(F error)@ is @G !error@.
      * @initial@ children exist whenever their parent appears; the instances of a @final@
        clafer do not change while their parent exists.
      * @initially@ and @finally@ refer to the first and the last snapshot of the context
@@ -58,7 +62,7 @@ import Prelude
 
 import Language.Clafer.Common
 import Language.Clafer.ClaferArgs
-import Language.Clafer.Front.AbsClafer
+import Language.Clafer.Front.AbsClafer hiding (FinalRef, FinalTarget)
 import Language.Clafer.Front.LexClafer
 import Language.Clafer.Generator.Concat
 import Language.Clafer.Intermediate.Intclafer hiding (exp)
@@ -72,15 +76,19 @@ data GenEnv = GenEnv
 
 -- | Alloy 6 code generation
 genAlloyLtlModule :: ClaferArgs -> (IModule, GEnv) -> [(UID, Integer)] -> [Token]     -> (Result, [(Span, IrTrace)])
-genAlloyLtlModule    claferargs'   (_      , genv)    scopes              otherTokens' = (flatten output, filter ((/= NoTrace) . snd) $ mapLineCol output)
+genAlloyLtlModule    claferargs'   (imodule, genv)    scopes              otherTokens' = (flatten output, filter ((/= NoTrace) . snd) $ mapLineCol output)
   where
   uidIClaferMap' = uidClaferMap genv
-  root = fromMaybe (error "AlloyLtl: missing root clafer") $ findIClafer uidIClaferMap' rootIdent
+  -- the clafers of the module, as the optimizer left them: the map of the environment still has
+  -- the abstract clafers that no concrete clafer extends, which the optimizer removed
+  root = (fromMaybe (error "AlloyLtl: missing root clafer") $ findIClafer uidIClaferMap' rootIdent)
+           { _elements = _mDecls imodule }
   clafers' = tail $ nestedClafers root
   tl = trace_len claferargs'
   genEnv = GenEnv claferargs' uidIClaferMap' clafers' forScopes'
 
-  -- a disappeared instance may reappear, so a scope bounds the instances in a snapshot
+  -- a scope bounds the instance identities across the trace, which may be reused when an
+  -- instance reappears; the multiplicities bound the existing instances in each snapshot
   forScopes' = "for 1 but " ++ intercalate ", " (map (\(uid', scope') -> show scope' ++ " " ++ uid') scopes ++ [show tl ++ " steps"])
   output = header genEnv otherTokens' +++ cconcat (map (genClafer genEnv) $ root : clafers')
 
@@ -133,6 +141,11 @@ isStatic genEnv c
   | isRoot c  = True
   | otherwise = _isFinal c && maybe True (isStatic genEnv) (parentOf genEnv c)
 
+-- | The nearest super clafer that declares a reference, and the reference.
+inheritedReference :: GenEnv -> IClafer -> Maybe (IClafer, IReference)
+inheritedReference genEnv c = listToMaybe
+  [ (s, r) | s <- tail $ findHierarchy getSuper (uidIClaferMap genEnv) c, Just r <- [_reference s] ]
+
 -- | The direct subclafers of the clafer.
 subsOf :: GenEnv -> IClafer -> [IClafer]
 subsOf genEnv c = [ c' | c' <- allClafers genEnv, getSuper c' == [_uid c] ]
@@ -159,16 +172,17 @@ genParentName name = "p_" ++ name
 
 -- | The relation from the instances of the clafer to their existing parents. The parent of an
 --   instance does not change, so the navigation also works after the instance disappeared.
+--   An abstract clafer's instances are those of its concrete subclafers, which may have
+--   other parents, e.g., the subclafers of a top-level abstract clafer.
 parentRel :: GenEnv -> UID -> String
 parentRel genEnv uid' = case findIClafer (uidIClaferMap genEnv) uid' of
-  Just c -> "(" ++ rels c ++ " :> " ++ maybe rootIdent (aliveName . _uid) (parentOf genEnv c) ++ ")"
+  Just c -> case map rel $ concreteSubs genEnv c of
+    []    -> "(none->none)"
+    [r]   -> r
+    rels' -> "(" ++ intercalate " + " rels' ++ ")"
   Nothing -> error $ "AlloyLtl.parentRel: clafer not found: " ++ uid'
   where
-  rels c
-    | _isAbstract c = case map (('@' :) . genParentName . _uid) $ concreteSubs genEnv c of
-        []    -> "none->none"
-        rels' -> "(" ++ intercalate " + " rels' ++ ")"
-    | otherwise = '@' : genParentName (_uid c)
+  rel c = "(@" ++ genParentName (_uid c) ++ " :> " ++ maybe rootIdent (aliveName . _uid) (parentOf genEnv c) ++ ")"
 
 mkFact :: Concat -> Concat
 mkFact x@(CString "") = x
@@ -225,18 +239,21 @@ genRelations genEnv c = parent' ++ reference' ++ map mkRel (containedClafers c)
     | otherwise = []
   sigName p = if isRoot p then rootIdent else _uid p
   reference' = case _reference c of
-    Just r  -> [CString $ var' (isStatic genEnv c && isJust (_refModifier r)) ++ genRefName (_uid c) ++ " : set " ++ refType genEnv c]
+    Just r  -> [CString $ var' (isStatic genEnv c && not (null (_refModifiers r))) ++ genRefName (_uid c) ++ " : set " ++ refType genEnv c]
     Nothing -> []
   mkRel c' = Concat NoTrace [CString $ var' (isStatic genEnv c') ++ genRelName (_uid c') ++ " : set " ++ _uid c']
   var' static = if static then "" else "var "
 
 refType :: GenEnv -> IClafer -> String
-refType genEnv c = case _ref <$> _reference c of
-  Just pexp -> case getTarget pexp of
+refType genEnv c = maybe "" (targetType . _ref) $ _reference c
+  where
+  targetType pexp = case getTarget pexp of
     PExp _ _ _ (IClaferId _ sid _ _) | isPrimitive sid -> "Int"
                                      | otherwise       -> sid
+    -- a union of targets, e.g., Hub.p ++ fast: the union of their signatures (p + fast), since a
+    -- field declaration cannot name another signature's field
+    PExp _ _ _ (IFunExp op' ps) | op' == iUnion -> intercalate " + " $ map targetType ps
     target -> flatten $ genPExp genEnv [_uid c] target
-  Nothing -> ""
 
 getTarget :: PExp -> PExp
 getTarget    x     = case x of
@@ -286,12 +303,30 @@ genConstraints genEnv c = map always' (filterNull $ refConsts ++ groupConst ++ c
   appears x
     | isRoot c  = x
     | otherwise = cconcat [CString "always (this in ", CString alive, CString " and not before this in ", CString alive, CString " implies (", x, CString "))"]
-  -- the instances of a final child do not change while this instance exists
+  -- the relation does not change while this instance exists
+  stable x
+    | isRoot c  = CString $ "always ((" ++ x ++ ")' = " ++ x ++ ")"
+    | otherwise = CString $ "always (this in " ++ alive ++ " and after this in " ++ alive ++ " implies (" ++ x ++ ")' = " ++ x ++ ")"
+  -- final and finalref fix the target of each instance, finaltarget only the set of targets
+  fixesEach s r = _isFinal s || any (`elem` [FinalRefTarget, FinalRef]) (_refModifiers r)
   finalConsts =
-    [ CString $ "always (this in " ++ alive ++ " and after this in " ++ alive ++ " implies (this.@" ++ rel ++ ")' = this.@" ++ rel ++ ")"
-    | c' <- containedClafers c, _isFinal c', not (isStatic genEnv c'), let rel = genRelName (_uid c') ] ++
-    [ CString $ "always (this in " ++ alive ++ " and after this in " ++ alive ++ " implies (this.@" ++ refRel ++ ")' = this.@" ++ refRel ++ ")"
-    | Just r <- [_reference c], isJust (_refModifier r), not (isStatic genEnv c), let refRel = genRefName uid' ]
+    -- the instances of a final child do not change while this instance exists
+    [ stable $ "this.@" ++ genRelName (_uid c') | c' <- containedClafers c, _isFinal c', not (isStatic genEnv c') ] ++
+    [ stable $ "this.@" ++ genRefName uid' | Just r <- [_reference c], fixesEach c r, not (isStatic genEnv c) ] ++
+    -- `final motor : engine` or `finalref motor : engine` fixes the reference that motor inherits
+    -- from engine, unless engine's modifier fixes it already (#109)
+    [ stable $ "this.@" ++ genRefName (_uid sup)
+    | Nothing <- [_reference c], _isFinal c || FinalRef `elem` _finalReferences (_modifiers c)
+    , Just (sup, r) <- [inheritedReference genEnv c], not (fixesEach sup r) ] ++
+    -- a finaltarget child points to the same set of targets while this instance exists; its
+    -- instances may change and swap their targets
+    [ stable $ "this.@" ++ genRelName (_uid c') ++ ".@" ++ refRel | c' <- containedClafers c, Just refRel <- [finalTargetRef c'] ]
+  finalTargetRef c' = case _reference c' of
+    Just r | FinalTarget `elem` _refModifiers r, not (isStatic genEnv c') -> Just $ genRefName (_uid c')
+    Just _ -> Nothing
+    Nothing
+      | FinalTarget `elem` _finalReferences (_modifiers c'), not (isStatic genEnv c') -> genRefName . _uid . fst <$> inheritedReference genEnv c'
+      | otherwise -> Nothing
 
 -- | The constraints of the clafer and the cardinalities of its children, each a fact of its own,
 --   which holds for every existing instance: an unsat core gives these, which are removed to find
@@ -318,15 +353,16 @@ genFacts genEnv c = map fact $ concatMap childCards (containedClafers c) ++ user
     , Concat trace [forEveryInstance c x]
     , CString " }" ]
 
--- | The constraint for every instance of the clafer, in every snapshot in which it exists.
+-- | The constraint for every instance of the clafer, in every snapshot in which it exists. The
+--   root has one instance, root itself, which this is in a top-level constraint: a quantified
+--   variable would mostly be unused, which Alloy warns about.
 forEveryInstance :: IClafer -> Concat -> Concat
-forEveryInstance c x = cconcat [CString $ "all " ++ selfIdent ++ " : " ++ sigOf ++ " | ", bindSelf always']
+forEveryInstance c x
+  | isRoot c  = bindTo rootIdent $ cconcat [CString "always (", x, CString ")"]
+  | otherwise = cconcat [CString $ "all " ++ selfIdent ++ " : " ++ uid' ++ " | ", bindSelf always']
   where
   uid' = _uid c
-  always'
-    | isRoot c  = cconcat [CString "always (", x, CString ")"]
-    | otherwise = cconcat [CString $ "always (" ++ selfIdent ++ " in " ++ aliveName uid' ++ " implies (", x, CString "))"]
-  sigOf = if isRoot c then rootIdent else uid'
+  always' = cconcat [CString $ "always (" ++ selfIdent ++ " in " ++ aliveName uid' ++ " implies (", x, CString "))"]
 
 -- | The variable of the instance in a fact: this is a keyword, which only signature facts bind.
 selfIdent :: String
@@ -334,16 +370,20 @@ selfIdent = "self_"
 
 -- | The constraint for the instance bound to 'selfIdent' instead of this.
 bindSelf :: Concat -> Concat
-bindSelf (CString str) = CString $ bind Nothing str
+bindSelf = bindTo selfIdent
+
+-- | The constraint with this replaced by the given name.
+bindTo :: String -> Concat -> Concat
+bindTo ident (CString str) = CString $ bind Nothing str
   where
   bind prev ('t':'h':'i':'s':rest)
-    | maybe True (not . identChar) prev && not (startsIdent rest) = selfIdent ++ bind (Just '_') rest
+    | maybe True (not . identChar) prev && not (startsIdent rest) = ident ++ bind (Just '_') rest
   bind _ (x:xs) = x : bind (Just x) xs
   bind _ [] = []
   startsIdent (x:_) = identChar x
   startsIdent [] = False
   identChar x = isAlphaNum x || x == '_' || x == '\''
-bindSelf (Concat trace xs) = Concat trace $ map bindSelf xs
+bindTo ident (Concat trace xs) = Concat trace $ map (bindTo ident) xs
 
 getAssertions :: IClafer -> [PExp]
 getAssertions c = [ pexp | IEConstraint False pexp <- _elements c ]
@@ -423,7 +463,55 @@ genExInteger element' (y, z) x
 -- expressions; the head of the path is the UID of the context clafer
 
 genPExp :: GenEnv -> [String] -> PExp -> Concat
-genPExp genEnv resPath x = genPExp' genEnv resPath $ adjustPExp genEnv resPath x
+genPExp genEnv resPath x = genPExp' genEnv resPath $ adjustPExp genEnv resPath $ pushNegations True x
+
+-- | Pushes the negations of the formulas with temporal operators to the formulas without them,
+--   with the dualities of LTL (@!F a@ is @G !a@, @!X a@ is @X !a@, @!(a U b)@ is @!b W (!a && !b)@).
+--   The obligations are bounded by the parent's lifetime afterwards, so an obligation lapses with
+--   the parent also when it is negated: @!(F error)@ means @G !error@, and lets the parent
+--   disappear. @initially@ and @finally@ anchor their negation: @!initially a@ is @initially !a@.
+--   A formula and its negation may both hold, on a lifetime that ends before their obligations.
+--   The polarity is @True@ for the formula itself, @False@ for its negation. @one@ and @lone@
+--   keep the classical negation.
+pushNegations :: Bool -> PExp -> PExp
+pushNegations pos' x@(PExp t pid' sp e)
+  | not $ hasTemporal x = if pos' then x else neg x
+  | otherwise = case e of
+    IFunExp op' [a]
+      | op' == iNot -> pushNegations (not pos') a
+      | op' == iF   -> mk (if pos' then iF else iG) [push a]
+      | op' == iG   -> mk (if pos' then iG else iF) [push a]
+      | op' `elem` [iX, iInitially, iFinally] -> mk op' [push a]
+    IFunExp op' [a, b]
+      | op' == iAnd  -> mk (if pos' then iAnd else iOr) [push a, push b]
+      | op' == iOr   -> mk (if pos' then iOr else iAnd) [push a, push b]
+      | op' == iImpl, pos', not (hasTemporal a) -> mk iImpl [a, push b]
+      | op' == iImpl -> mk (if pos' then iOr else iAnd) [pushNegations (not pos') a, push b]
+      | op' == iIff  -> pushNegations pos' $ bool iAnd [bool iImpl [a, b], bool iImpl [b, a]]
+      | op' == iXor  -> pushNegations pos' $ bool iOr [bool iAnd [a, bool iNot [b]], bool iAnd [bool iNot [a], b]]
+      | op' `elem` [iU, iW], pos' -> mk op' [push a, push b]
+      | op' `elem` [iU, iW] -> mk (if op' == iU then iW else iU) [push b, mk iAnd [push a, push b]]
+    IFunExp op' [c, a, b]
+      | op' == iIfThenElse, t == Just TBoolean, not (hasTemporal c) -> mk op' [c, push a, push b]
+      | op' == iIfThenElse, t == Just TBoolean ->
+          pushNegations pos' $ bool iAnd [bool iImpl [c, a], bool iImpl [bool iNot [c], b]]
+    IDeclPExp q ds@(_:_) body
+      | q == IAll -> PExp t pid' sp $ IDeclPExp (if pos' then IAll else ISome) ds $ push body
+      | q == ISome -> PExp t pid' sp $ IDeclPExp (if pos' then ISome else IAll) ds $ push body
+      | q == INo -> PExp t pid' sp $ IDeclPExp (if pos' then IAll else ISome) ds $ pushNegations (not pos') body
+    _ -> if pos' then x else neg x
+  where
+  push = pushNegations pos'
+  mk op' = PExp t pid' sp . IFunExp op'
+  bool op' = PExp (Just TBoolean) pid' sp . IFunExp op'
+  neg a = bool iNot [a]
+
+-- | Whether the formula has temporal operators.
+hasTemporal :: PExp -> Bool
+hasTemporal (PExp _ _ _ e) = case e of
+  IFunExp op' es -> op' `elem` (iFinally : ltlOps) || any hasTemporal es
+  IDeclPExp _ _ body -> hasTemporal body
+  _ -> False
 
 genPExp' :: GenEnv -> [String] -> PExp                      -> Concat
 genPExp'    genEnv    resPath     (PExp iType' pid' pos exp') = case exp' of
@@ -437,6 +525,8 @@ genPExp'    genEnv    resPath     (PExp iType' pid' pos exp') = case exp' of
   IClaferId _ "integer" _ _ -> CString "Int"
   IClaferId _ "int" _ _ -> CString "Int"
   IClaferId _ "string" _ _ -> CString "Int"
+  -- the empty set
+  IClaferId _ "noclafer" _ _ -> CString "none"
   IClaferId _ "dref" _ _ -> CString $ "@" ++ genRefName (getTClaferUID iType')
     where
       getTClaferUID (Just TMap{_so = TClafer{_hi = (u:_)}}) = u
@@ -476,10 +566,14 @@ thisAlive :: [String] -> String
 thisAlive (ctx:_) | ctx /= rootIdent = "(this & " ++ aliveName ctx ++ ")"
 thisAlive _ = rootIdent
 
--- | Whether the context instance exists, unless the context is the root, which always exists.
-contextExists :: [String] -> Maybe String
-contextExists resPath@(ctx:_) | ctx /= rootIdent = Just $ "some " ++ thisAlive resPath
-contextExists _ = Nothing
+-- | Whether the parent of the context instance exists, unless the parent is the root, which
+--   always exists. The obligations of a constraint last as long as the parent.
+parentExists :: GenEnv -> [String] -> Maybe String
+parentExists genEnv (ctx:_)
+  | Just c <- findIClafer (uidIClaferMap genEnv) ctx
+  , any (maybe False (not . isRoot) . parentOf genEnv) $ concreteSubs genEnv c
+  = Just $ "some this." ++ parentRel genEnv ctx
+parentExists _ _ = Nothing
 
 -- | Whether the context instance appears now (its first snapshot), or the trace begins.
 appearsNow :: [String] -> String
@@ -512,17 +606,17 @@ genIFunExp    pid'      genEnv    resPath     (IFunExp op' [PExp{_exp=IClaferId{
 genIFunExp    pid'      genEnv    resPath     (IFunExp op' [exp'])
   | op' == iInitially = Concat (IrPExp pid') [CString $ "(" ++ appearsNow resPath ++ ") implies ", brArg (genPExp' genEnv resPath) exp']
   | op' == iFinally   = Concat (IrPExp pid') [CString $ "(some " ++ thisAlive resPath ++ " and after no " ++ thisAlive resPath ++ ") implies ", brArg (genPExp' genEnv resPath) exp']
-  -- the obligations hold while the context instance exists
-  | Just p <- contextExists resPath, op' == iX =
+  -- the obligations hold while the parent of the context instance exists
+  | Just p <- parentExists genEnv resPath, op' == iX =
       Concat (IrPExp pid') [CString $ "after (not " ++ p ++ " or ", e, CString ")"]
-  | Just p <- contextExists resPath, op' == iF =
+  | Just p <- parentExists genEnv resPath, op' == iF =
       Concat (IrPExp pid') [CString $ "eventually (not " ++ p ++ " or ", e, CString ")"]
-  | Just p <- contextExists resPath, op' == iG =
+  | Just p <- parentExists genEnv resPath, op' == iG =
       Concat (IrPExp pid') [CString $ "(not " ++ p ++ ") releases (not " ++ p ++ " or ", e, CString ")"]
   where
   e = brArg (genPExp' genEnv resPath) exp'
 genIFunExp    pid'      genEnv    resPath     (IFunExp op' [exp1, exp2])
-  | Just p <- contextExists resPath, op' == iU =
+  | Just p <- parentExists genEnv resPath, op' == iU =
       Concat (IrPExp pid') [CString $ "(" ++ p ++ " and ", brArg (genPExp' genEnv resPath) exp1,
                              CString $ ") until (not " ++ p ++ " or ", brArg (genPExp' genEnv resPath) exp2, CString ")"]
 genIFunExp    pid'      genEnv    resPath     (IFunExp op' exps')

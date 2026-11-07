@@ -2,12 +2,12 @@ open util/integer
 pred show {}
 
 
-one sig c0_A
-{ r_c0_Item : set c0_Item }
-{ let children = (r_c0_Item) | 2 <= #children and #children <= 3
-  1 <= #r_c0_Item and #r_c0_Item <= 5 }
+one sig A
+{ r_Item : set Item }
+{ let children = (r_Item) | 2 <= #children and #children <= 3
+  1 <= #r_Item and #r_Item <= 5 }
 
-sig c0_Item
+sig Item
 {}
-{ one @r_c0_Item.this }
+{ one @r_Item.this }
 

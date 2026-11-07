@@ -2,12 +2,12 @@ open util/integer
 pred show {}
 
 
-lone sig c0_a
-{ c0_a_ref : one Int
-, r_c0_b : lone c0_b }
+lone sig a
+{ a_ref : one Int
+, r_b : lone b }
 
-lone sig c0_b
+lone sig b
 {}
-{ one r_c0_b
-  ((this.~@r_c0_b).@c0_a_ref) = 4 }
+{ one r_b
+  ((this.~@r_b).@a_ref) = 4 }
 

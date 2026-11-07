@@ -1,0 +1,7 @@
+//# OPTIONS --explicit --tl=10
+0..* a 1..1 {
+  [F (X ((#this.b) >= 1))]
+  0..* b 0..1 {}
+}
+
+assert [F ((#a.b) >= 1)]
