@@ -1,12 +1,12 @@
 //# OPTIONS --explicit
-[(s1 in m1 . services . dref) && (s2 in m2 . services . dref)]
+[(s1 in m1.services.dref) && (s2 in m2.services.dref)]
 abstract 0..* Service 0..* {
   0..* machine -> Machine 1..1 {}
 }
 abstract 0..* Machine 0..* {
   0..* services -> Service 0..* {
-    [this . dref . machine . dref = this . parent]
-    [this . dref . machine . dref = this . parent]
+    [this.dref.machine.dref = this.parent]
+    [this.dref.machine.dref = this.parent]
   }
 }
 0..* m1 : Machine 1..1 {}

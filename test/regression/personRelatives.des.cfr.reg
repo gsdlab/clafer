@@ -1,39 +1,39 @@
 //# OPTIONS --explicit
-[Person . childs . dref = Carol]
+[Person.childs.dref = Carol]
 abstract 0..* Person 0..* {
   0..* age -> int 1..1 {
-    [this . dref >= 0]
+    [this.dref >= 0]
   }
   1..1 maritalStatus 1..1 {
-    [(((#this . married) >= 1) || ((#this . divorced) >= 1)) => (this . parent . age . dref >= 5)]
+    [(((#this.married) >= 1) || ((#this.divorced) >= 1)) => (this.parent.age.dref >= 5)]
     0..* neverMarried 0..1 {}
     0..* married 0..1 {
-      [this . spouse . dref != this . parent . parent]
+      [this.spouse.dref != this.parent.parent]
       0..* spouse -> Person 1..1 {
-        [this . dref . maritalStatus . married . spouse . dref = this . parent . parent . parent]
+        [this.dref.maritalStatus.married.spouse.dref = this.parent.parent.parent]
       }
     }
     0..* divorced 0..1 {}
   }
   0..* childs -> Person 0..* {
-    [this . parent in this . dref . parents . dref]
-    [this . parent . maritalStatus . married . spouse . dref in this . dref . parents . dref]
-    [this . dref . age . dref < this . parent . age . dref]
+    [this.parent in this.dref.parents.dref]
+    [this.parent.maritalStatus.married.spouse.dref in this.dref.parents.dref]
+    [this.dref.age.dref < this.parent.age.dref]
   }
   0..* parents -> Person 0..2 {
-    [this . parent in this . dref . childs . dref]
+    [this.parent in this.dref.childs.dref]
   }
 }
 0..* Alice : Person 1..1 {
-  [this . age . dref = 6]
-  [this . maritalStatus . married . spouse . dref = Bob]
+  [this.age.dref = 6]
+  [this.maritalStatus.married.spouse.dref = Bob]
 }
 0..* Bob : Person 1..1 {}
 0..* Carol : Person 1..1 {
-  [this . age . dref = 1]
+  [this.age.dref = 1]
 }
 
-assert [Bob . age . dref >= 5]
-assert [Bob . maritalStatus . married . spouse . dref = Alice]
-assert [Bob . childs . dref = Carol]
-assert [Carol . parents . dref = (Alice ++ Bob)]
+assert [Bob.age.dref >= 5]
+assert [Bob.maritalStatus.married.spouse.dref = Alice]
+assert [Bob.childs.dref = Carol]
+assert [Carol.parents.dref = (Alice ++ Bob)]

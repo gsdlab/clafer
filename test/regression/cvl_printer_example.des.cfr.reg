@@ -1,5 +1,5 @@
 //# OPTIONS --explicit
-[(((#PrinterPool . fax) >= 1) => ((#PrinterPool . printer) >= 1)) && (((#PrinterPool . copier) >= 1) => (((#PrinterPool . fax) >= 1) && ((#PrinterPool . printer) >= 1)))]
+[(((#PrinterPool.fax) >= 1) => ((#PrinterPool.printer) >= 1)) && (((#PrinterPool.copier) >= 1) => (((#PrinterPool.fax) >= 1) && ((#PrinterPool.printer) >= 1)))]
 0..* Office 1..1 {
   0..* Printer 0..1 {
     0..* resolution -> int 1..1 {}
@@ -22,7 +22,7 @@
   }
 }
 0..* PrinterPool 1..1 {
-  [((#this . fax) >= 1) => ((#this . printer) >= 1)]
+  [((#this.fax) >= 1) => ((#this.printer) >= 1)]
   0..* fax 0..1 {}
   0..* printer 0..1 {}
   0..* copier 0..1 {}

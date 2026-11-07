@@ -21,28 +21,28 @@ abstract 0..* io 0..* {
   0..* output -> Representation 1..1 {}
 }
 abstract 0..* text2tokens : io 0..* {
-  [(this . input . dref = text) && (this . output . dref = tokens)]
+  [(this.input.dref = text) && (this.output.dref = tokens)]
 }
 abstract 0..* tokens2tokens : io 0..* {
-  [(this . input . dref = tokens) && (this . output . dref = tokens)]
+  [(this.input.dref = tokens) && (this.output.dref = tokens)]
 }
 abstract 0..* tokens2ast : io 0..* {
-  [(this . input . dref = tokens) && (this . output . dref = ast)]
+  [(this.input.dref = tokens) && (this.output.dref = ast)]
 }
 abstract 0..* ast2ast : io 0..* {
-  [(this . input . dref = ast) && (this . output . dref = ast)]
+  [(this.input.dref = ast) && (this.output.dref = ast)]
 }
 abstract 0..* ast2text : io 0..* {
-  [(this . input . dref = ast) && (this . output . dref = text)]
+  [(this.input.dref = ast) && (this.output.dref = text)]
 }
 abstract 0..* ast2ir : io 0..* {
-  [(this . input . dref = ast) && (this . output . dref = ir)]
+  [(this.input.dref = ast) && (this.output.dref = ir)]
 }
 abstract 0..* ir2ir : io 0..* {
-  [(this . input . dref = ir) && (this . output . dref = ir)]
+  [(this.input.dref = ir) && (this.output.dref = ir)]
 }
 abstract 0..* ir2text : io 0..* {
-  [(this . input . dref = ir) && (this . output . dref = text)]
+  [(this.input.dref = ir) && (this.output.dref = text)]
 }
 abstract 0..* Front 0..* {
   0..* lexer : text2tokens 1..1 {}
@@ -62,7 +62,7 @@ abstract 0..* Intermediate 0..* {
     0..* inheritanceFlattener 0..1 {}
     0..* nameResolution 1..1 {
       0..* nameResolver 0..1 {
-        [(#this . parent . parent . parent . findDuplicates) >= 1]
+        [(#this.parent.parent.parent.findDuplicates) >= 1]
       }
       0..* inheritanceResolver 1..1 {}
       0..* typeResolver 1..1 {}
@@ -74,12 +74,12 @@ abstract 0..* Intermediate 0..* {
 }
 abstract 1..1 Generator : ir2text 0..* {
   0..* alloy 0..1 {
-    [((#Intermediate . stringAnalyzer) >= 1) && ((#Intermediate . scopeAnalysis) >= 1)]
+    [((#Intermediate.stringAnalyzer) >= 1) && ((#Intermediate.scopeAnalysis) >= 1)]
   }
   0..* stats 0..1 {}
   0..* xml 0..1 {}
   0..* desClafer 0..1 {
-    [(#Front . prettyPrinter) >= 1]
+    [(#Front.prettyPrinter) >= 1]
   }
   0..* xsdSchema 0..1 {}
 }

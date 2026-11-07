@@ -5,6 +5,6 @@ abstract 0..* Component 0..* {
   0..* link -> Component 0..1 {}
 }
 0..* Comp1 : Component 1..1 {
-  [this . link . dref = Comp1]
-  [this . link . dref = Comp1]
+  [this.link.dref = Comp1]
+  [this.link.dref = Comp1]
 }

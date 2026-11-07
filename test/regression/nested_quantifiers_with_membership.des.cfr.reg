@@ -1,5 +1,5 @@
 //# OPTIONS --explicit
-[all c : Course | all t : c . taughtBy | ((#t . x) >= 1) && (c in t . dref . teaches . dref)]
+[all c : Course | all t : c.taughtBy | ((#t.x) >= 1) && (c in t.dref.teaches.dref)]
 abstract 0..* Course 0..* {
   0..* taughtBy -> Teacher 0..* {
     0..* x 0..1 {}

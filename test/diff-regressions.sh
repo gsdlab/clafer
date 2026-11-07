@@ -1,7 +1,7 @@
 #!/bin/bash
 # Compares the outputs of the positive test suite (.als, .js, .des.cfr, .html, .dot) with their
-# regressions, and fails if any output differs, has no regression, or a regression has
-# no output.
+# regressions, exactly, also their whitespace, and fails if any output differs, has no
+# regression, or a regression has no output.
 #
 # The outputs become the new regressions, to be reviewed with `git diff` and committed:
 # a missing regression is created, and a differing one is replaced if it has no
@@ -29,10 +29,10 @@ for output in "$SUITE_DIR"/*.als "$SUITE_DIR"/*.js "$SUITE_DIR"/*.des.cfr "$SUIT
   if [ ! -f "$reg" ]; then
     cp "$output" "$reg"
     created+=("$reg")
-  elif ! diff -w -B "$reg" "$output" > /dev/null; then
+  elif ! cmp -s "$reg" "$output"; then
     echo "--- $reg"
     echo "+++ $output"
-    diff -w -B "$reg" "$output"
+    diff "$reg" "$output"
     if restorable "$reg"; then
       cp "$output" "$reg"
       changed+=("$reg")

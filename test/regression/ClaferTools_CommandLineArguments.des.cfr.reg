@@ -13,17 +13,17 @@ abstract 1..1 ClaferArgs 0..* {
       }
       0..* desclafer : Value 0..1 {}
       0..* html : Value 0..1 {
-        [(#this . parent . parent . keep_unused) >= 1]
+        [(#this.parent.parent.keep_unused) >= 1]
         0..* self_contained : Argument 0..1 {}
         0..* add_graph : Argument 0..1 {}
         0..* add_comments : Argument 0..1 {}
       }
       0..* graph : Value 0..1 {
-        [(#this . parent . parent . keep_unused) >= 1]
+        [(#this.parent.parent.keep_unused) >= 1]
       }
       0..* cvlGraph : Value 0..1 {
-        [(#this . parent . parent . flatten_inheritance) >= 1]
-        [(#this . parent . parent . keep_unused) >= 1]
+        [(#this.parent.parent.flatten_inheritance) >= 1]
+        [(#this.parent.parent.keep_unused) >= 1]
       }
     }
     0..* keep_unused : Argument 0..1 {}
@@ -38,9 +38,9 @@ abstract 1..1 ClaferArgs 0..* {
     0..* skip_resolver : Argument 0..1 {}
     0..* no_stats : Argument 0..1 {}
     0..* validate : Argument 0..1 {
-      [(#this . parent . mode . html) = 0]
-      [(#this . parent . mode . graph) = 0]
-      [(#this . parent . mode . cvlGraph) = 0]
+      [(#this.parent.mode.html) = 0]
+      [(#this.parent.mode.graph) = 0]
+      [(#this.parent.mode.cvlGraph) = 0]
       0..* tooldir : StringArgument 1..1 {}
     }
   }
@@ -49,27 +49,27 @@ abstract 1..1 ClaferArgs 0..* {
   0..* version : Argument 0..1 {}
 }
 1..1 ca1 : ClaferArgs 1..1 {
-  [(#this . functional . mode . alloy) >= 1]
+  [(#this.functional.mode.alloy) >= 1]
 }
 1..1 ca2 : ClaferArgs 1..1 {
-  [(#this . functional . mode . alloy) >= 1]
-  [(#this . functional . validate) >= 1]
-  [this . functional . validate . tooldir . dref = "~/clafer-tools-0.3.1/tools"]
+  [(#this.functional.mode.alloy) >= 1]
+  [(#this.functional.validate) >= 1]
+  [this.functional.validate.tooldir.dref = "~/clafer-tools-0.3.1/tools"]
 }
 1..1 ca3 : ClaferArgs 1..1 {
-  [(#this . functional . mode . alloy) >= 1]
-  [(#this . functional . keep_unused) >= 1]
-  [(#this . functional . flatten_inheritance) >= 1]
+  [(#this.functional.mode.alloy) >= 1]
+  [(#this.functional.keep_unused) >= 1]
+  [(#this.functional.flatten_inheritance) >= 1]
 }
 1..1 ca4 : ClaferArgs 1..1 {
-  [(#this . functional . mode . html) >= 1]
+  [(#this.functional.mode.html) >= 1]
 }
 1..1 ca5 : ClaferArgs 1..1 {
-  [(#this . functional . mode . html) >= 1]
-  [(#this . functional . mode . html . self_contained) >= 1]
-  [(#this . functional . mode . html . add_graph) >= 1]
-  [(#this . functional . mode . html . add_comments) >= 1]
+  [(#this.functional.mode.html) >= 1]
+  [(#this.functional.mode.html.self_contained) >= 1]
+  [(#this.functional.mode.html.add_graph) >= 1]
+  [(#this.functional.mode.html.add_comments) >= 1]
 }
 1..1 ca6 : ClaferArgs 1..1 {
-  [(#this . functional . mode . cvlGraph) >= 1]
+  [(#this.functional.mode.cvlGraph) >= 1]
 }

@@ -13,8 +13,8 @@ abstract 0..* End : Element 0..* {
 }
 abstract 0..* Mean : Element 0..* {}
 abstract 0..* Vision : End 0..* {
-  [(#this . focusedOn . enterprise) >= 1]
-  [(#this . End__term . End__term__long) >= 1]
+  [(#this.focusedOn.enterprise) >= 1]
+  [(#this.End__term.End__term__long) >= 1]
   0..* amplifiedBy -> Goal 1..* {}
   0..* madeOperativeBy -> Mission 1..1 {}
 }
@@ -26,20 +26,20 @@ abstract 0..* DesiredResult : End 0..* {
   }
 }
 abstract 0..* Goal : DesiredResult 0..* {
-  [(#this . focusedOn . businessArea) >= 1]
-  [(#this . attainable) >= 1]
-  [(#this . kind . qualitative) >= 1]
-  [(#this . End__term . End__term__long) >= 1]
+  [(#this.focusedOn.businessArea) >= 1]
+  [(#this.attainable) >= 1]
+  [(#this.kind.qualitative) >= 1]
+  [(#this.End__term.End__term__long) >= 1]
   0..* amplifies -> Vision 1..1 {}
   0..* general 1..1 {}
   0..* ongoing 1..1 {}
 }
 abstract 0..* Objective : DesiredResult 0..* {
-  [(#this . focusedOn . businessArea) >= 1]
-  [(#this . kind . quantitative) >= 1]
-  [(#this . End__term . End__term__short) >= 1]
+  [(#this.focusedOn.businessArea) >= 1]
+  [(#this.kind.quantitative) >= 1]
+  [(#this.End__term.End__term__short) >= 1]
   0..* SMART 1..1 {
-    [(#this . parent . attainable) >= 1]
+    [(#this.parent.attainable) >= 1]
     0..* specific 1..1 {}
     0..* relevant 1..1 {}
     0..* timeBound 1..1 {}
@@ -50,7 +50,7 @@ abstract 0..* Objective : DesiredResult 0..* {
   0..* quantifies -> Goal 1..* {}
 }
 abstract 0..* CourseOfAction : Mean 0..* {
-  [(((#this . scope . broad) >= 1) && ((#this . CourseOfAction__term . CourseOfAction__term__long) >= 1)) || (((#this . scope . narrow) >= 1) && ((#this . CourseOfAction__term . CourseOfAction__term__short) >= 1))]
+  [(((#this.scope.broad) >= 1) && ((#this.CourseOfAction__term.CourseOfAction__term__long) >= 1)) || (((#this.scope.narrow) >= 1) && ((#this.CourseOfAction__term.CourseOfAction__term__short) >= 1))]
   0..* channelsEffortsToward -> DesiredResult 1..1 {}
   0..* governedBy -> Directive 1..1 {}
   0..* formulatedBasedOn -> Directive 1..1 {}
@@ -103,10 +103,10 @@ abstract 0..* Directive : Mean 0..* {
   0..* automatable 0..1 {}
 }
 abstract 0..* BusinessPolicy : Directive 0..* {
-  [(#this . degreeOfStructure . lessStructured) >= 1]
-  [(#this . granularity . lessDiscreteAndComposite) >= 1]
-  [(#this . actionable) = 0]
-  [(#this . automatable) = 0]
+  [(#this.degreeOfStructure.lessStructured) >= 1]
+  [(#this.granularity.lessDiscreteAndComposite) >= 1]
+  [(#this.actionable) = 0]
+  [(#this.automatable) = 0]
   0..* providesBasisFor -> BusinessRule 1..* {}
   0..* BusinessPolicy__governs -> CourseOfAction 0..* {
     0..* control 1..1 {}
@@ -116,10 +116,10 @@ abstract 0..* BusinessPolicy : Directive 0..* {
   0..* BusinessPolicy__includes -> BusinessPolicy 0..* {}
 }
 abstract 0..* BusinessRule : Directive 0..* {
-  [all o : this . supportsTheAchievementOf | o . dref in Objective]
-  [(#this . degreeOfStructure . highlyStructured) >= 1]
-  [(#this . granularity . discreteAndAtomic) >= 1]
-  [(#this . actionable) >= 1]
+  [all o : this.supportsTheAchievementOf | o.dref in Objective]
+  [(#this.degreeOfStructure.highlyStructured) >= 1]
+  [(#this.granularity.discreteAndAtomic) >= 1]
+  [(#this.actionable) >= 1]
   1..1 enforcementLevel 1..1 {
     0..* strictlyEnforced 0..1 {}
     0..* deferredEnforcement 0..1 {}

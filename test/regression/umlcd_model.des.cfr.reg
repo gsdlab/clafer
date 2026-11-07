@@ -6,8 +6,8 @@ abstract 0..* UnlimitedNatural 0..* {}
 abstract 0..* Sequence 0..* {}
 abstract 0..* Set 0..* {}
 abstract 0..* Element 0..* {
-  [all x : this . ownedElement | this in x . dref . owner . dref]
-  [all x : this . owner | this in x . dref . ownedElement . dref]
+  [all x : this.ownedElement | this in x.dref.owner.dref]
+  [all x : this.owner | this in x.dref.ownedElement.dref]
   0..* ownedElement -> Element 0..* {}
   0..* owner -> Element 0..1 {}
 }
@@ -28,10 +28,10 @@ abstract 0..* Class : Classifier 0..* {
   0..* nestedClassifier : Classifier 0..* {}
 }
 abstract 0..* Property : StructuralFeature 0..* {
-  [all x : this . owningAssociation | this in x . dref . ownedEnd]
-  [all x : this . datatype | this in x . dref . ownedAttribute]
-  [all x : this . association | this in x . dref . memberEnd . dref]
-  [all x : this . associationEnd | this in x . dref . qualifier]
+  [all x : this.owningAssociation | this in x.dref.ownedEnd]
+  [all x : this.datatype | this in x.dref.ownedAttribute]
+  [all x : this.association | this in x.dref.memberEnd.dref]
+  [all x : this.associationEnd | this in x.dref.qualifier]
   0..* default : String 0..1 {}
   0..* isComposite 0..1 {}
   0..* Property__isDerived 0..1 {}
@@ -46,41 +46,41 @@ abstract 0..* Property : StructuralFeature 0..* {
   0..* association -> Association 0..1 {}
   0..* defaultValue : ValueSpecification 0..1 {}
   0..* qualifier : Property 0..* {
-    [this . parent in this . associationEnd . dref]
+    [this.parent in this.associationEnd.dref]
   }
   0..* associationEnd -> Property 0..1 {}
 }
 abstract 0..* Enumeration : DataType 0..* {
   0..* ownedLiteral : EnumerationLiteral 0..* {
-    [this . parent in this . enumeration . dref]
+    [this.parent in this.enumeration.dref]
   }
 }
 abstract 0..* DataType : Classifier 0..* {
   0..* ownedAttribute : Property 0..* {
-    [this . parent in this . datatype . dref]
+    [this.parent in this.datatype.dref]
   }
 }
 abstract 0..* EnumerationLiteral : InstanceSpecification 0..* {
-  [all x : this . enumeration | this in x . dref . ownedLiteral]
+  [all x : this.enumeration | this in x.dref.ownedLiteral]
   0..* enumeration -> Enumeration 0..1 {}
 }
 abstract 0..* PrimitiveType : DataType 0..* {}
 abstract 0..* Classifier : NamedElement 0..* {
-  [all x : this . feature | this in x . dref . featuringClassifier . dref]
-  [all x : this . powertypeExtent | this in x . dref . powertype . dref]
+  [all x : this.feature | this in x.dref.featuringClassifier.dref]
+  [all x : this.powertypeExtent | this in x.dref.powertype.dref]
   0..* isAbstract 0..1 {}
   0..* feature -> Feature 0..* {}
   0..* inheritedMember -> NamedElement 0..* {}
   0..* Classifier__general -> Classifier 0..* {}
   0..* Classifier__generalization : Generalization 0..* {
-    [this . parent in this . specific . dref]
+    [this.parent in this.specific.dref]
   }
   0..* attribute -> Property 0..* {}
   0..* redefinedClassifier -> Classifier 0..* {}
   0..* powertypeExtent -> GeneralizationSet 0..* {}
 }
 abstract 0..* Feature : NamedElement 0..* {
-  [all x : this . featuringClassifier | this in x . dref . feature . dref]
+  [all x : this.featuringClassifier | this in x.dref.feature.dref]
   0..* isStatic 0..1 {}
   0..* featuringClassifier -> Classifier 0..* {}
 }
@@ -114,13 +114,13 @@ abstract 0..* StructuralFeature : Feature 0..* {
 }
 abstract 0..* InstanceSpecification : NamedElement 0..* {
   0..* slot : Slot 0..* {
-    [this . parent in this . owningInstance . dref]
+    [this.parent in this.owningInstance.dref]
   }
   0..* classifier -> Classifier 0..* {}
   0..* specification : ValueSpecification 0..1 {}
 }
 abstract 0..* Slot : Element 0..* {
-  [all x : this . owningInstance | this in x . dref . slot]
+  [all x : this.owningInstance | this in x.dref.slot]
   0..* owningInstance -> InstanceSpecification 1..1 {}
   0..* Slot__value : ValueSpecification 0..* {}
   0..* definingFeature -> StructuralFeature 1..1 {}
@@ -129,20 +129,20 @@ abstract 0..* InstanceValue : ValueSpecification 0..* {
   0..* instance -> InstanceSpecification 1..1 {}
 }
 abstract 0..* Generalization : DirectedRelationship 0..* {
-  [all x : this . specific | this in x . dref . Classifier__generalization]
-  [all x : this . generalizationSet | this in x . dref . GeneralizationSet__generalization . dref]
+  [all x : this.specific | this in x.dref.Classifier__generalization]
+  [all x : this.generalizationSet | this in x.dref.GeneralizationSet__generalization.dref]
   0..* isSubstitutable 0..1 {}
   0..* specific -> Classifier 1..1 {}
   0..* Generalization__general -> Classifier 1..1 {}
   0..* generalizationSet -> GeneralizationSet 0..* {}
 }
 abstract 0..* Association : Classifier 0..* {
-  [all x : this . memberEnd | this in x . dref . association . dref]
-  [((#this . memberEnd) > 2) => (this . memberEnd . dref in this . ownedEnd)]
+  [all x : this.memberEnd | this in x.dref.association.dref]
+  [((#this.memberEnd) > 2) => (this.memberEnd.dref in this.ownedEnd)]
   0..* Association__relatedElement -> Element 1..* {}
   0..* Association__isDerived 0..1 {}
   0..* ownedEnd : Property 0..* {
-    [this . parent in this . owningAssociation . dref]
+    [this.parent in this.owningAssociation.dref]
   }
   0..* endType -> NamedElement 1..* {}
   0..* memberEnd -> Property 2..* {}
@@ -153,8 +153,8 @@ abstract 0..* AggregationKind 0..* {}
 0..* none : AggregationKind 1..1 {}
 0..* shared : AggregationKind 1..1 {}
 abstract 0..* GeneralizationSet : NamedElement 0..* {
-  [all x : this . powertype | this in x . dref . powertypeExtent . dref]
-  [all x : this . GeneralizationSet__generalization | this in x . dref . generalizationSet . dref]
+  [all x : this.powertype | this in x.dref.powertypeExtent.dref]
+  [all x : this.GeneralizationSet__generalization | this in x.dref.generalizationSet.dref]
   0..* isCovering 0..1 {}
   0..* isDisjoint 0..1 {}
   0..* powertype -> Classifier 0..1 {}

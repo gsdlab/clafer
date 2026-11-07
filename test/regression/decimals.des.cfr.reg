@@ -1,33 +1,33 @@
 //# OPTIONS --explicit
-[((#change) >= 1) => (change . dref = ((-aBike . total . dref) + 400))]
-[((#share) >= 1) => (share . dref = (2 / 3))]
-[((#discount) >= 1) => (discount . dref = (if (aBike . total . dref > 300) then 0.10 else 0))]
+[((#change) >= 1) => (change.dref = ((-aBike.total.dref) + 400))]
+[((#share) >= 1) => (share.dref = (2 / 3))]
+[((#discount) >= 1) => (discount.dref = (if (aBike.total.dref > 300) then 0.10 else 0))]
 abstract 0..* Feature 0..* {
   0..* cost -> decimal 1..1 {}
   0..* weight -> decimal 1..1 {}
 }
 abstract 0..* Bike 0..* {
-  [((#this . subtotal) >= 1) => (this . subtotal . dref = (sum Feature . cost . dref))]
-  [((#this . tax) >= 1) => (this . tax . dref = (this . subtotal . dref * 0.13))]
-  [((#this . total) >= 1) => (this . total . dref = (this . subtotal . dref + this . tax . dref))]
-  [((#this . weightPerFeature) >= 1) => (this . weightPerFeature . dref = ((sum Feature . weight . dref) / (#Feature)))]
-  [this . total . dref <= 340]
-  [this . weightPerFeature . dref < 5]
+  [((#this.subtotal) >= 1) => (this.subtotal.dref = (sum Feature.cost.dref))]
+  [((#this.tax) >= 1) => (this.tax.dref = (this.subtotal.dref * 0.13))]
+  [((#this.total) >= 1) => (this.total.dref = (this.subtotal.dref + this.tax.dref))]
+  [((#this.weightPerFeature) >= 1) => (this.weightPerFeature.dref = ((sum Feature.weight.dref) / (#Feature)))]
+  [this.total.dref <= 340]
+  [this.weightPerFeature.dref < 5]
   0..* Light : Feature 0..1 {
-    [this . cost . dref = 19.99]
-    [this . weight . dref = 0.25]
+    [this.cost.dref = 19.99]
+    [this.weight.dref = 0.25]
   }
   0..* Rack : Feature 0..1 {
-    [this . cost . dref = 34.50]
-    [this . weight . dref = 1.20]
+    [this.cost.dref = 34.50]
+    [this.weight.dref = 1.20]
   }
   0..* Bell : Feature 0..1 {
-    [this . cost . dref = 4.75]
-    [this . weight . dref = 0.05]
+    [this.cost.dref = 4.75]
+    [this.weight.dref = 0.05]
   }
   0..* Frame : Feature 1..1 {
-    [this . cost . dref = 250]
-    [this . weight . dref = 9.80]
+    [this.cost.dref = 250]
+    [this.weight.dref = 9.80]
   }
   0..* subtotal -> decimal 1..1 {}
   0..* tax -> decimal 1..1 {}
@@ -36,11 +36,11 @@ abstract 0..* Bike 0..* {
 }
 0..* aBike : Bike 1..1 {}
 0..* size -> decimal 1..1 {
-  [(this . dref = 1) || (this . dref = 2.50)]
-  [this . dref != 1]
+  [(this.dref = 1) || (this.dref = 2.50)]
+  [this.dref != 1]
 }
 0..* change -> decimal 1..1 {}
 0..* share -> decimal 1..1 {}
 0..* discount -> decimal 1..1 {}
 
-<< max aBike . total . dref >>
+<< max aBike.total.dref >>

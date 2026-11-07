@@ -2,32 +2,32 @@
 abstract 0..* Person 0..* {
   0..* age -> int 1..1 {}
   1..1 maritalStatus 1..1 {
-    [(((#this . married) >= 1) || ((#this . divorced) >= 1)) => (this . parent . age . dref >= 3)]
+    [(((#this.married) >= 1) || ((#this.divorced) >= 1)) => (this.parent.age.dref >= 3)]
     0..* neverMarried 0..1 {}
     0..* married 0..1 {
       0..* spouse -> Person 1..1 {
-        [this . dref != this . parent . parent . parent]
-        [this . dref . maritalStatus . married . spouse . dref = this . parent . parent . parent]
+        [this.dref != this.parent.parent.parent]
+        [this.dref.maritalStatus.married.spouse.dref = this.parent.parent.parent]
       }
     }
     0..* divorced 0..1 {}
   }
   0..* childs -> Person 0..* {
-    [this . parent in this . dref . parents . dref]
-    [this . parent . maritalStatus . married . spouse . dref in this . dref . parents . dref]
-    [this . dref . age . dref < this . parent . age . dref]
+    [this.parent in this.dref.parents.dref]
+    [this.parent.maritalStatus.married.spouse.dref in this.dref.parents.dref]
+    [this.dref.age.dref < this.parent.age.dref]
   }
   0..* parents -> Person 0..2 {
-    [this . parent in this . dref . childs . dref]
+    [this.parent in this.dref.childs.dref]
   }
 }
 0..* Alice : Person 1..1 {
-  [this . age . dref = 4]
-  [(#this . maritalStatus . married) >= 1]
+  [this.age.dref = 4]
+  [(#this.maritalStatus.married) >= 1]
 }
 0..* Bob : Person 1..1 {
-  [this . age . dref = 5]
+  [this.age.dref = 5]
 }
 0..* Carol : Person 1..1 {
-  [this . age . dref = 1]
+  [this.age.dref = 1]
 }

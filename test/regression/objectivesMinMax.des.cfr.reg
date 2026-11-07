@@ -1,18 +1,18 @@
 //# OPTIONS --explicit
-[((#total_x) >= 1) => (total_x . dref = (sum x . dref))]
+[((#total_x) >= 1) => (total_x.dref = (sum x.dref))]
 0..* x -> int 3..3 {}
 0..* total_x -> int 1..1 {}
 0..* y 1..1 {
-  [((#this . total_y) >= 1) => (this . total_y . dref = (sum x . dref))]
+  [((#this.total_y) >= 1) => (this.total_y.dref = (sum x.dref))]
   0..* total_y -> int 1..1 {}
 }
 
-<< min max x . dref >>
-<< min max x . dref >>
-<< max min x . dref >>
-<< max min x . dref >>
-<< min sum x . dref >>
-<< max product x . dref >>
+<< min max x.dref >>
+<< min max x.dref >>
+<< max min x.dref >>
+<< max min x.dref >>
+<< min sum x.dref >>
+<< max product x.dref >>
 << min #x >>
-<< min total_x . dref >>
-<< min y . total_y . dref >>
+<< min total_x.dref >>
+<< min y.total_y.dref >>

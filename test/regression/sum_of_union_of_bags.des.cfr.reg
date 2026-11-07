@@ -1,9 +1,9 @@
 //# OPTIONS --explicit
-[((#z) >= 1) => (z . dref = ((sum x . dref) + (sum y . dref)))]
+[((#z) >= 1) => (z.dref = ((sum x.dref) + (sum y.dref)))]
 0..* x ->> int 2..* {
-  [(this . dref >= -2) && (this . dref <= 2)]
+  [(this.dref >= -2) && (this.dref <= 2)]
 }
 0..* y ->> int 2..* {
-  [(this . dref >= -2) && (this . dref <= 2)]
+  [(this.dref >= -2) && (this.dref <= 2)]
 }
 0..* z -> int 1..1 {}

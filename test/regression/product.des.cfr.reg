@@ -1,10 +1,10 @@
 //# OPTIONS --explicit
-[((#n1) >= 1) => (n1 . dref = 1)]
-[((#n2) >= 1) => (n2 . dref = 2)]
-[((#n3) >= 1) => (n3 . dref = 3)]
-[((#n4) >= 1) => (n4 . dref = 2)]
-[((#n5) >= 1) => (n5 . dref = 3)]
-[((#p) >= 1) => (p . dref = (product N . dref))]
+[((#n1) >= 1) => (n1.dref = 1)]
+[((#n2) >= 1) => (n2.dref = 2)]
+[((#n3) >= 1) => (n3.dref = 3)]
+[((#n4) >= 1) => (n4.dref = 2)]
+[((#n5) >= 1) => (n5.dref = 3)]
+[((#p) >= 1) => (p.dref = (product N.dref))]
 abstract 0..* N ->> int 0..* {}
 0..* n1 : N 1..1 {}
 0..* n2 : N 1..1 {}
@@ -13,4 +13,4 @@ abstract 0..* N ->> int 0..* {}
 0..* n5 : N 1..1 {}
 0..* p -> int 1..1 {}
 
-assert [p . dref = 36]
+assert [p.dref = 36]

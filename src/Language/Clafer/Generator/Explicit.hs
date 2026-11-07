@@ -104,9 +104,9 @@ exExp (CStr val) = val
 exExp (CDouble val) = show val
 exExp (CDecimal val) = val
 exExp (CEmpty _) = "noclafer"
-exExp (CJoin e c) = exOperand e ++ " . " ++ c
-exExp (CJoinRef e) = exOperand e ++ " . dref"
-exExp (CJoinParent e) = exOperand e ++ " . parent"
+exExp (CJoin e c) = exOperand e ++ "." ++ c
+exExp (CJoinRef e) = exOperand e ++ ".dref"
+exExp (CJoinParent e) = exOperand e ++ ".parent"
 -- chocosolver's quantifiers over a set compare its size, e.g., none(x) is #x = 0
 exExp (CQuant q [] set) = case q of
     INo   -> sizeIs "=" 0
@@ -124,8 +124,8 @@ exExp (CFun f args') = case (f, args') of
     -- -1 is a constant, so the negation of a number is -(1)
     ("minus", [a])     -> "-" ++ (if isConstant a then "(" ++ exExp a ++ ")" else exOperand a)
     ("card", [a])      -> "#" ++ exOperand a
-    ("sum", [a])       -> "sum " ++ exOperand a ++ " . dref"
-    ("product", [a])   -> "product " ++ exOperand a ++ " . dref"
+    ("sum", [a])       -> "sum " ++ exOperand a ++ ".dref"
+    ("product", [a])   -> "product " ++ exOperand a ++ ".dref"
     ("maximum", [a])   -> "max " ++ exOperand a
     ("minimum", [a])   -> "min " ++ exOperand a
     ("concat", [a, b]) -> "concat(" ++ exExp a ++ ", " ++ exExp b ++ ")"

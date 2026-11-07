@@ -7,7 +7,7 @@
   }
   0..* ble 1..1 {
     0..* married 0..1 {
-      [this . parent . parent . haha . lala . age . dref >= 18]
+      [this.parent.parent.haha.lala.age.dref >= 18]
     }
   }
 }

@@ -3,7 +3,7 @@ abstract 0..* A 0..* {
   0..* c -> C 0..* {}
 }
 0..* A1 : A 1..1 {
-  [(#this . c) = 2]
+  [(#this.c) = 2]
 }
 abstract 0..* B : A 0..* {}
 abstract 0..* C 0..* {}

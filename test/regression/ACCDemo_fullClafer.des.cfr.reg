@@ -1,6 +1,6 @@
 //# OPTIONS --explicit
 abstract 0..* car 0..* {
-  [((#this . car__cc . acc) >= 1) => ((#this . car__fca) >= 1)]
+  [((#this.car__cc.acc) >= 1) => ((#this.car__fca) >= 1)]
   1..1 transmission 1..1 {
     0..* automatic 0..1 {}
     0..* manual 0..1 {}
@@ -21,12 +21,12 @@ abstract 0..* root__cc 0..* {
   0..* acc 0..1 {}
 }
 abstract 0..* camaro : car 0..* {
-  [all s : this . car__cc . switches | (#s . backlight) >= 1]
+  [all s : this.car__cc.switches | (#s.backlight) >= 1]
   0..* transformer 0..1 {
-    [(#this . parent . car__cc . switches) = 3]
+    [(#this.parent.car__cc.switches) = 3]
   }
 }
 0..* bumbleBee : camaro 1..1 {
-  [(#this . transformer) >= 1]
-  [(#this . transmission . manual) >= 1]
+  [(#this.transformer) >= 1]
+  [(#this.transmission.manual) >= 1]
 }

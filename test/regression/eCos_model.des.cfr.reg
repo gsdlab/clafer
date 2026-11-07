@@ -1,36 +1,36 @@
 //# OPTIONS --explicit
 0..* MISC_FILESYSTEMS 0..1 {
-  [((#this . MISC_FILESYSTEMS__display) >= 1) => (this . MISC_FILESYSTEMS__display . dref = "Miscellaneous filesystems")]
+  [((#this.MISC_FILESYSTEMS__display) >= 1) => (this.MISC_FILESYSTEMS__display.dref = "Miscellaneous filesystems")]
   0..* MISC_FILESYSTEMS__display -> string 1..1 {}
   0..* CYGPKG_FS_JFFS2 0..1 {
-    [((#this . CYGPKG_FS_JFFS2__display) >= 1) => (this . CYGPKG_FS_JFFS2__display . dref = "Journalling Flash File System")]
+    [((#this.CYGPKG_FS_JFFS2__display) >= 1) => (this.CYGPKG_FS_JFFS2__display.dref = "Journalling Flash File System")]
     [(#CYGPKG_CRC) >= 1]
     [(#MTD) >= 1]
-    [((#this . CYGOPT_FS_JFFS2_NAND) >= 1) <=> ((#HAS_IOMEM) >= 1)]
-    [(#this . CYGOPT_FS_JFFS2_COMPRESS) >= 1]
+    [((#this.CYGOPT_FS_JFFS2_NAND) >= 1) <=> ((#HAS_IOMEM) >= 1)]
+    [(#this.CYGOPT_FS_JFFS2_COMPRESS) >= 1]
     0..* CYGPKG_FS_JFFS2__display -> string 1..1 {}
     0..* CYGOPT_FS_JFFS2_DEBUG -> int 1..1 {
-      [this . dref = 0]
-      [((#this . CYGOPT_FS_JFFS2_DEBUG__display) >= 1) => (this . CYGOPT_FS_JFFS2_DEBUG__display . dref = "Debug level")]
-      [(0 <= this . dref) && (this . dref <= 2)]
-      [((#this . description) >= 1) => (this . description . dref = "Debug verbosity of....")]
+      [this.dref = 0]
+      [((#this.CYGOPT_FS_JFFS2_DEBUG__display) >= 1) => (this.CYGOPT_FS_JFFS2_DEBUG__display.dref = "Debug level")]
+      [(0 <= this.dref) && (this.dref <= 2)]
+      [((#this.description) >= 1) => (this.description.dref = "Debug verbosity of....")]
       0..* CYGOPT_FS_JFFS2_DEBUG__display -> string 1..1 {}
       0..* description -> string 1..1 {}
     }
     0..* CYGOPT_FS_JFFS2_NAND 0..1 {}
     0..* CYGOPT_FS_JFFS2_COMPRESS 0..1 {
-      [((#this . CYGOPT_FS_JFFS2_COMPRESS__display) >= 1) => (this . CYGOPT_FS_JFFS2_COMPRESS__display . dref = "Compress data")]
-      [(#this . CYGOPT_FS_JFFS2_COMPRESS_ZLIB) >= 1]
+      [((#this.CYGOPT_FS_JFFS2_COMPRESS__display) >= 1) => (this.CYGOPT_FS_JFFS2_COMPRESS__display.dref = "Compress data")]
+      [(#this.CYGOPT_FS_JFFS2_COMPRESS_ZLIB) >= 1]
       0..* CYGOPT_FS_JFFS2_COMPRESS__display -> string 1..1 {}
       0..* CYGOPT_FS_JFFS2_COMPRESS_ZLIB 0..1 {
-        [((#this . CYGOPT_FS_JFFS2_COMPRESS_ZLIB__display) >= 1) => (this . CYGOPT_FS_JFFS2_COMPRESS_ZLIB__display . dref = "Compress data using zlib")]
+        [((#this.CYGOPT_FS_JFFS2_COMPRESS_ZLIB__display) >= 1) => (this.CYGOPT_FS_JFFS2_COMPRESS_ZLIB__display.dref = "Compress data using zlib")]
         [(#CYGPKG_COMPRESS_ZLIB) >= 1]
         0..* CYGOPT_FS_JFFS2_COMPRESS_ZLIB__display -> string 1..1 {}
       }
       0..* CYGOPT_FS_JFFS2_COMPRESS_CMODE -> string 1..1 {
-        [this . dref = "PRIORITY"]
-        [((#this . CYGOPT_FS_JFFS2_COMPRESS_CMODE__display) >= 1) => (this . CYGOPT_FS_JFFS2_COMPRESS_CMODE__display . dref = "Set the default compression mode")]
-        [((this . dref = "NONE") || (this . dref = "PRIORITY")) || (this . dref = "SIZE")]
+        [this.dref = "PRIORITY"]
+        [((#this.CYGOPT_FS_JFFS2_COMPRESS_CMODE__display) >= 1) => (this.CYGOPT_FS_JFFS2_COMPRESS_CMODE__display.dref = "Set the default compression mode")]
+        [((this.dref = "NONE") || (this.dref = "PRIORITY")) || (this.dref = "SIZE")]
         0..* CYGOPT_FS_JFFS2_COMPRESS_CMODE__display -> string 1..1 {}
       }
     }

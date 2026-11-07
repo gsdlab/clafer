@@ -3,13 +3,13 @@ abstract 0..* Person 0..* {
   0..* spouse -> Person 0..1 {}
 }
 0..* Alice : Person 1..1 {
-  [this . spouse . dref = Bob]
+  [this.spouse.dref = Bob]
 }
 0..* Bob : Person 1..1 {}
 0..* Carol : Person 1..1 {
-  [(#this . spouse) = 0]
+  [(#this.spouse) = 0]
 }
 0..* Dave : Person 1..1 {}
 
-assert [Bob . spouse . dref = Alice]
-assert [(#Dave . spouse) = 0]
+assert [Bob.spouse.dref = Alice]
+assert [(#Dave.spouse) = 0]

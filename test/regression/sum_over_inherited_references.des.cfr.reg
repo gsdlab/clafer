@@ -1,17 +1,17 @@
 //# OPTIONS --explicit
-[((#total) >= 1) => (total . dref = (sum Component . energy . dref))]
+[((#total) >= 1) => (total.dref = (sum Component.energy.dref))]
 abstract 0..* Component 0..* {
   0..* energy ->> int 1..1 {}
 }
 0..* c1 : Component 1..1 {
-  [this . energy . dref = 1]
+  [this.energy.dref = 1]
 }
 0..* c2 : Component 1..1 {
-  [this . energy . dref = 1]
+  [this.energy.dref = 1]
 }
 0..* c3 : Component 1..1 {
-  [this . energy . dref = 1]
+  [this.energy.dref = 1]
 }
 0..* total ->> int 1..1 {}
 
-assert [total . dref = 3]
+assert [total.dref = 3]

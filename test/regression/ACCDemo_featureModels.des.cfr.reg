@@ -3,7 +3,7 @@ abstract 0..* Car 0..* {
   0..* ABS 0..1 {}
   0..* CC 0..1 {
     0..* ACC 0..1 {
-      [(#this . parent . parent . FCA) >= 1]
+      [(#this.parent.parent.FCA) >= 1]
     }
   }
   1..1 Transmission 1..1 {

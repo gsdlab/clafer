@@ -1,6 +1,6 @@
 //# OPTIONS --explicit
-[(min A . dref) = (max B . dref)]
+[(min A.dref) = (max B.dref)]
 0..* A ->> int 1..2 {}
 0..* B -> int 2..3 {}
 
-assert [(max A . dref) >= (min B . dref)]
+assert [(max A.dref) >= (min B.dref)]

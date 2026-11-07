@@ -3,45 +3,45 @@ abstract 0..* tristate 0..* {
   0..* module 0..1 {}
 }
 0..* MISC_FILESYSTEMS 0..1 {
-  [((#this . MISC_FILESYSTEMS__display) >= 1) => (this . MISC_FILESYSTEMS__display . dref = "Miscellaneous filesystems")]
+  [((#this.MISC_FILESYSTEMS__display) >= 1) => (this.MISC_FILESYSTEMS__display.dref = "Miscellaneous filesystems")]
   0..* MISC_FILESYSTEMS__display -> string 1..1 {}
   0..* JFFS2_FS : tristate 0..1 {
-    [((#this . JFFS2_FS__display) >= 1) => (this . JFFS2_FS__display . dref = "Journalling Flash File System")]
+    [((#this.JFFS2_FS__display) >= 1) => (this.JFFS2_FS__display.dref = "Journalling Flash File System")]
     [(#MTD) >= 1]
     [((#MTD) >= 1) => ((#CRC32) >= 1)]
-    [((#this . JFFS2_FS_WRITEBUFFER) >= 1) <=> ((#HAS_IOMEM) >= 1)]
+    [((#this.JFFS2_FS_WRITEBUFFER) >= 1) <=> ((#HAS_IOMEM) >= 1)]
     0..* JFFS2_FS__display -> string 1..1 {}
     0..* FFS2_FS_DEBUG -> int 1..1 {
-      [this . dref = 0]
-      [((#this . FFS2_FS_DEBUG__display) >= 1) => (this . FFS2_FS_DEBUG__display . dref = "JFFS2 Debug level (0=quiet, 2=noisy)")]
-      [(0 <= this . dref) && (this . dref <= 2)]
+      [this.dref = 0]
+      [((#this.FFS2_FS_DEBUG__display) >= 1) => (this.FFS2_FS_DEBUG__display.dref = "JFFS2 Debug level (0=quiet, 2=noisy)")]
+      [(0 <= this.dref) && (this.dref <= 2)]
       0..* FFS2_FS_DEBUG__display -> string 1..1 {}
     }
     0..* JFFS2_FS_WRITEBUFFER 0..1 {}
     0..* JFFS2_COMPRESS 0..1 {
-      [((#this . JFFS2_COMPRESS__display) >= 1) => (this . JFFS2_COMPRESS__display . dref = "Advanced compression options for JFFS2")]
-      [(#this . JFFS2_ZLIB) >= 1]
+      [((#this.JFFS2_COMPRESS__display) >= 1) => (this.JFFS2_COMPRESS__display.dref = "Advanced compression options for JFFS2")]
+      [(#this.JFFS2_ZLIB) >= 1]
       0..* JFFS2_COMPRESS__display -> string 1..1 {}
       0..* JFFS2_ZLIB 0..1 {
-        [((#this . JFFS2_ZLIB__display) >= 1) => (this . JFFS2_ZLIB__display . dref = "Compress w/zlib...")]
+        [((#this.JFFS2_ZLIB__display) >= 1) => (this.JFFS2_ZLIB__display.dref = "Compress w/zlib...")]
         [(#ZLIB_INFLATE) >= 1]
         0..* JFFS2_ZLIB__display -> string 1..1 {}
       }
       0..* CompressionChoice 1..1 {
-        [((#this . CompressionChoice__display) >= 1) => (this . CompressionChoice__display . dref = "Default compression")]
-        [(#this . choice . JFFS2_CMODE_PRIORITY) >= 1]
+        [((#this.CompressionChoice__display) >= 1) => (this.CompressionChoice__display.dref = "Default compression")]
+        [(#this.choice.JFFS2_CMODE_PRIORITY) >= 1]
         0..* CompressionChoice__display -> string 1..1 {}
         1..1 choice 1..1 {
           0..* JFFS2_CMODE_NONE 0..1 {
-            [((#this . JFFS2_CMODE_NONE__display) >= 1) => (this . JFFS2_CMODE_NONE__display . dref = "no compression")]
+            [((#this.JFFS2_CMODE_NONE__display) >= 1) => (this.JFFS2_CMODE_NONE__display.dref = "no compression")]
             0..* JFFS2_CMODE_NONE__display -> string 1..1 {}
           }
           0..* JFFS2_CMODE_PRIORITY 0..1 {
-            [((#this . JFFS2_CMODE_PRIORITY__display) >= 1) => (this . JFFS2_CMODE_PRIORITY__display . dref = "priority")]
+            [((#this.JFFS2_CMODE_PRIORITY__display) >= 1) => (this.JFFS2_CMODE_PRIORITY__display.dref = "priority")]
             0..* JFFS2_CMODE_PRIORITY__display -> string 1..1 {}
           }
           0..* JFFS2_CMODE_SIZE 0..1 {
-            [((#this . JFFS2_CMODE_SIZE__display) >= 1) => (this . JFFS2_CMODE_SIZE__display . dref = "size (EXPERIMENTAL)")]
+            [((#this.JFFS2_CMODE_SIZE__display) >= 1) => (this.JFFS2_CMODE_SIZE__display.dref = "size (EXPERIMENTAL)")]
             0..* JFFS2_CMODE_SIZE__display -> string 1..1 {}
           }
         }

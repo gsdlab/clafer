@@ -1,5 +1,5 @@
 //# OPTIONS --explicit
-[((#intVal) >= 1) => (intVal . dref = 1)]
-[((#stringVal) >= 1) => (stringVal . dref = "aaa")]
+[((#intVal) >= 1) => (intVal.dref = 1)]
+[((#stringVal) >= 1) => (stringVal.dref = "aaa")]
 0..* intVal ->> int 0..1 {}
 0..* stringVal ->> string 0..1 {}

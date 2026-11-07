@@ -1,10 +1,10 @@
 //# OPTIONS --explicit
 abstract 0..* degree ->> int 0..* {
-  [(this . dref > 0) && (this . dref <= 360)]
+  [(this.dref > 0) && (this.dref <= 360)]
 }
 abstract 0..* Vehicle 0..* {
-  [(this . yawRate . dref . dref > this . normalYawRate . dref . dref) <=> ((#this . hasOversteer) >= 1)]
-  [(this . yawRate . dref . dref < this . normalYawRate . dref . dref) <=> ((#this . hasUndersteer) >= 1)]
+  [(this.yawRate.dref.dref > this.normalYawRate.dref.dref) <=> ((#this.hasOversteer) >= 1)]
+  [(this.yawRate.dref.dref < this.normalYawRate.dref.dref) <=> ((#this.hasUndersteer) >= 1)]
   1..1 Vehicle__DriveConfiguration : root__DriveConfiguration 1..1 {}
   0..* Vehicle__ElectronicStabilityControlSystem : root__ElectronicStabilityControlSystem 1..1 {}
   0..* Vehicle__AntiLockBreakSystem : root__AntiLockBreakSystem 1..1 {}
@@ -53,7 +53,7 @@ abstract 0..* root__ElectronicStabilityControlSystem 0..* {
     0..* modifiesEngineTorque 1..1 {}
   }
   0..* isOperational 0..1 {
-    [this . parent . vehicle . dref . speed . dref > 20]
+    [this.parent.vehicle.dref.speed.dref > 20]
     0..* duringAllPhasesOfDriving 1..1 {
       0..* acceleration 1..1 {}
       0..* coasting 1..1 {}

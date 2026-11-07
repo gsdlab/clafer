@@ -18,5 +18,5 @@ abstract 0..* Controller : Component 0..* {
   0..* cmd : OutPort -> MotorCommand 1..1 {}
 }
 
-assert [WinController . cmd . dref = motorDown]
-assert [Controller . Controller__req . dref = stop]
+assert [WinController.cmd.dref = motorDown]
+assert [Controller.Controller__req.dref = stop]

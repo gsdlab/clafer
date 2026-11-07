@@ -1,12 +1,12 @@
 //# OPTIONS --explicit
 abstract 0..* Currency ->> int 0..* {}
 abstract 0..* Percentage ->> int 0..* {
-  [(this . dref >= 0) && (this . dref <= 100)]
+  [(this.dref >= 0) && (this.dref <= 100)]
 }
 abstract 0..* Mortgage 0..* {
-  [(5000 <= this . principalMortgageAmount . dref . dref) && (this . principalMortgageAmount . dref . dref <= 9999999)]
-  [this . balance . dref . dref <= this . principalMortgageAmount . dref . dref]
-  [(1 <= this . amortization . dref) && (this . amortization . dref <= 30)]
+  [(5000 <= this.principalMortgageAmount.dref.dref) && (this.principalMortgageAmount.dref.dref <= 9999999)]
+  [this.balance.dref.dref <= this.principalMortgageAmount.dref.dref]
+  [(1 <= this.amortization.dref) && (this.amortization.dref <= 30)]
   0..* valueProposition -> string 1..1 {}
   0..* term -> MortgageTerm 1..1 {}
   1..1 kind 1..1 {

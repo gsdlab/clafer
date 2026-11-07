@@ -1,68 +1,68 @@
 //# OPTIONS --explicit
 0..* aCar : Car 1..1 {}
 abstract 0..* Car 0..* {
-  [((#this . CC . ACC) >= 1) => ((#this . FCA) >= 1)]
-  [((#this . total_cost) >= 1) => (this . total_cost . dref = (sum Feature . cost . dref))]
-  [((#this . total_comfort) >= 1) => (this . total_comfort . dref = (sum ComfortFeature . cost . dref))]
-  [((#this . total_fuel) >= 1) => (this . total_fuel . dref = (sum FuelFeature . cost . dref))]
-  [((#this . total_mass) >= 1) => (this . total_mass . dref = (sum FuelFeature . mass . dref))]
+  [((#this.CC.ACC) >= 1) => ((#this.FCA) >= 1)]
+  [((#this.total_cost) >= 1) => (this.total_cost.dref = (sum Feature.cost.dref))]
+  [((#this.total_comfort) >= 1) => (this.total_comfort.dref = (sum ComfortFeature.cost.dref))]
+  [((#this.total_fuel) >= 1) => (this.total_fuel.dref = (sum FuelFeature.cost.dref))]
+  [((#this.total_mass) >= 1) => (this.total_mass.dref = (sum FuelFeature.mass.dref))]
   0..* ABS : ComfortFeature 0..1 {
-    [this . cost . dref = 2]
-    [this . mass . dref = 1]
-    [this . comfort . dref = 1]
+    [this.cost.dref = 2]
+    [this.mass.dref = 1]
+    [this.comfort.dref = 1]
   }
   1..1 Transmission 1..1 {
     0..* Automatic : FuelFeature 0..1 {
-      [this . fuel . dref = 2]
-      [this . mass . dref = 1]
-      [this . comfort . dref = 2]
-      [this . cost . dref = 4]
+      [this.fuel.dref = 2]
+      [this.mass.dref = 1]
+      [this.comfort.dref = 2]
+      [this.cost.dref = 4]
     }
     0..* Manual : FuelFeature 0..1 {
-      [this . fuel . dref = 0]
-      [this . mass . dref = 1]
-      [this . comfort . dref = 1]
-      [this . cost . dref = 3]
+      [this.fuel.dref = 0]
+      [this.mass.dref = 1]
+      [this.comfort.dref = 1]
+      [this.cost.dref = 3]
     }
   }
   0..* FCA : FuelFeature 0..1 {
-    [this . fuel . dref = 2]
-    [this . mass . dref = 2]
-    [this . comfort . dref = 4]
-    [this . cost . dref = 5]
+    [this.fuel.dref = 2]
+    [this.mass.dref = 2]
+    [this.comfort.dref = 4]
+    [this.cost.dref = 5]
     1..1 Sensor 1..1 {
       0..* Radar : Feature 0..1 {
-        [this . cost . dref = 3]
-        [this . mass . dref = 1]
+        [this.cost.dref = 3]
+        [this.mass.dref = 1]
       }
       0..* Lidar : Feature 0..1 {
-        [this . cost . dref = 5]
-        [this . mass . dref = 1]
+        [this.cost.dref = 5]
+        [this.mass.dref = 1]
       }
     }
     1..1 Alert 0..1 {
       0..* Haptic : ComfortFeature 0..1 {
-        [this . comfort . dref = 4]
-        [this . cost . dref = 2]
-        [this . mass . dref = 1]
+        [this.comfort.dref = 4]
+        [this.cost.dref = 2]
+        [this.mass.dref = 1]
       }
       0..* Audible : ComfortFeature 0..1 {
-        [this . comfort . dref = 2]
-        [this . cost . dref = 1]
-        [this . mass . dref = 1]
+        [this.comfort.dref = 2]
+        [this.cost.dref = 1]
+        [this.mass.dref = 1]
       }
     }
   }
   0..* CC : FuelFeature 0..1 {
-    [this . fuel . dref = 1]
-    [this . mass . dref = 1]
-    [this . comfort . dref = 3]
-    [this . cost . dref = 4]
+    [this.fuel.dref = 1]
+    [this.mass.dref = 1]
+    [this.comfort.dref = 3]
+    [this.cost.dref = 4]
     0..* ACC : FuelFeature 0..1 {
-      [this . fuel . dref = 2]
-      [this . mass . dref = 2]
-      [this . comfort . dref = 6]
-      [this . cost . dref = 3]
+      [this.fuel.dref = 2]
+      [this.mass.dref = 2]
+      [this.comfort.dref = 6]
+      [this.cost.dref = 3]
     }
   }
   0..* total_cost -> int 1..1 {}
@@ -81,7 +81,7 @@ abstract 0..* FuelFeature : ComfortFeature 0..* {
   0..* fuel -> int 1..1 {}
 }
 
-<< min aCar . total_cost . dref >>
-<< min aCar . total_fuel . dref >>
-<< max aCar . total_comfort . dref >>
-<< min aCar . total_mass . dref >>
+<< min aCar.total_cost.dref >>
+<< min aCar.total_fuel.dref >>
+<< max aCar.total_comfort.dref >>
+<< min aCar.total_mass.dref >>

@@ -5,5 +5,5 @@ abstract 0..* Person 0..* {
   0..* DateOfBirth : date 1..1 {}
 }
 0..* JohnDoe : Person 1..1 {
-  [(this . Name . dref = "John") && (this . DateOfBirth . dref = "01/02/1985")]
+  [(this.Name.dref = "John") && (this.DateOfBirth.dref = "01/02/1985")]
 }

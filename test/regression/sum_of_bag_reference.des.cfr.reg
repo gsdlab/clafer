@@ -1,5 +1,5 @@
 //# OPTIONS --explicit
-[((#b) >= 1) => (b . dref = (sum a . dref))]
-[b . dref = 2]
+[((#b) >= 1) => (b.dref = (sum a.dref))]
+[b.dref = 2]
 0..* a ->> int 0..* {}
 0..* b -> int 1..1 {}

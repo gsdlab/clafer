@@ -2,20 +2,20 @@
 0..* signal 0..1 {}
 1..1 light 1..1 {
   initial 0..* red 0..1 {
-    [(((#this) >= 1) && ((#signal) >= 1)) => (X ((#this . parent . green) >= 1))]
+    [(((#this) >= 1) && ((#signal) >= 1)) => (X ((#this.parent.green) >= 1))]
   }
   0..* green 0..1 {
-    [(((#this) >= 1) && ((#signal) = 0)) => (((#this) >= 1) U ((#this . parent . red) >= 1))]
+    [(((#this) >= 1) && ((#signal) = 0)) => (((#this) >= 1) U ((#this.parent.red) >= 1))]
   }
 }
 1..1 door 1..1 {
-  [(((#this . closed) >= 1) && ((#signal) >= 1)) => (X ((#this . opened) >= 1))]
-  [(((#this . opened) >= 1) && ((#signal) = 0)) => ((((#this) >= 1) && ((#this . opened) >= 1)) U ((#this . closed) >= 1))]
+  [(((#this.closed) >= 1) && ((#signal) >= 1)) => (X ((#this.opened) >= 1))]
+  [(((#this.opened) >= 1) && ((#signal) = 0)) => ((((#this) >= 1) && ((#this.opened) >= 1)) U ((#this.closed) >= 1))]
   initial 0..* closed 0..1 {}
   0..* opened 0..1 {}
 }
 
-assert [(((#light . red) >= 1) && ((#signal) >= 1)) => (X ((#light . green) >= 1))]
-assert [(((#light . green) >= 1) && ((#signal) = 0)) => (F ((#light . red) >= 1))]
-assert [(((#door . closed) >= 1) && ((#signal) >= 1)) => (X ((#door . opened) >= 1))]
-assert [(((#door . opened) >= 1) && ((#signal) = 0)) => (F ((#door . closed) >= 1))]
+assert [(((#light.red) >= 1) && ((#signal) >= 1)) => (X ((#light.green) >= 1))]
+assert [(((#light.green) >= 1) && ((#signal) = 0)) => (F ((#light.red) >= 1))]
+assert [(((#door.closed) >= 1) && ((#signal) >= 1)) => (X ((#door.opened) >= 1))]
+assert [(((#door.opened) >= 1) && ((#signal) = 0)) => (F ((#door.closed) >= 1))]

@@ -4,11 +4,11 @@ abstract 0..* Person 0..* {
   0..* married 0..1 {}
 }
 abstract 0..* NewBorn -> Person 0..* {
-  [(this . dref . age . dref = 0) && ((#this . dref . married) = 0)]
+  [(this.dref.age.dref = 0) && ((#this.dref.married) = 0)]
 }
 0..* Alice : Person 1..1 {}
 0..* baby : NewBorn 1..1 {}
 
-assert [baby . dref = Alice]
-assert [Alice . age . dref = 0]
-assert [(#Alice . married) = 0]
+assert [baby.dref = Alice]
+assert [Alice.age.dref = 0]
+assert [(#Alice.married) = 0]

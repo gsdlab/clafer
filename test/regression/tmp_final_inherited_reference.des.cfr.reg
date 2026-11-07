@@ -6,7 +6,7 @@ abstract 0..* Car 0..* {
   abstract 0..* engine -> Engine 0..* {}
   1..1 gear 1..1 {
     initial 0..* park 0..1 {
-      [((#this) >= 1) => (X ((#this . parent . drive) >= 1))]
+      [((#this) >= 1) => (X ((#this.parent.drive) >= 1))]
     }
     0..* drive 0..1 {}
   }
@@ -34,13 +34,13 @@ abstract 0..* Car 0..* {
 }
 0..* corolla : Car 1..1 {
   finalref 0..* motor7 -> Engine 1..1 {
-    [this . dref in (garage . spare ++ gas)]
+    [this.dref in (garage.spare ++ gas)]
   }
 }
 
-assert [(tesla . motor . dref = gas) => (G (tesla . motor . dref = gas))]
-assert [(leaf . motor2 . dref = gas) => (G (leaf . motor2 . dref = gas))]
-assert [(bolt . motor3 . dref = gas) => (G (bolt . motor3 . dref = gas))]
-assert [(volt . motor5 . dref = gas) => (G (volt . motor5 . dref = gas))]
-assert [(prius . motor6 . dref = gas) => (G (prius . motor6 . dref = gas))]
-assert [(corolla . motor7 . dref = gas) => (G (corolla . motor7 . dref = gas))]
+assert [(tesla.motor.dref = gas) => (G (tesla.motor.dref = gas))]
+assert [(leaf.motor2.dref = gas) => (G (leaf.motor2.dref = gas))]
+assert [(bolt.motor3.dref = gas) => (G (bolt.motor3.dref = gas))]
+assert [(volt.motor5.dref = gas) => (G (volt.motor5.dref = gas))]
+assert [(prius.motor6.dref = gas) => (G (prius.motor6.dref = gas))]
+assert [(corolla.motor7.dref = gas) => (G (corolla.motor7.dref = gas))]

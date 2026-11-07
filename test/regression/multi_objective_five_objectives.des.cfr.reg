@@ -1,7 +1,7 @@
 //# OPTIONS --explicit
 abstract 0..* Feature 0..* {
-  [this . mass . dref >= 0]
-  [this . cost . dref >= 0]
+  [this.mass.dref >= 0]
+  [this.cost.dref >= 0]
   0..* performance -> int 1..1 {}
   0..* energy -> int 1..1 {}
   0..* mass -> int 1..1 {}
@@ -11,48 +11,48 @@ abstract 0..* SecurityFeature : Feature 0..* {
   0..* security -> int 1..1 {}
 }
 abstract 0..* MobilePhone 0..* {
-  [((#this . total_performance) >= 1) => (this . total_performance . dref = (sum Feature . performance . dref))]
-  [((#this . total_energy) >= 1) => (this . total_energy . dref = (sum Feature . energy . dref))]
-  [((#this . total_security) >= 1) => (this . total_security . dref = (sum SecurityFeature . security . dref))]
-  [((#this . total_mass) >= 1) => (this . total_mass . dref = (sum Feature . mass . dref))]
-  [((#this . total_cost) >= 1) => (this . total_cost . dref = (sum Feature . cost . dref))]
+  [((#this.total_performance) >= 1) => (this.total_performance.dref = (sum Feature.performance.dref))]
+  [((#this.total_energy) >= 1) => (this.total_energy.dref = (sum Feature.energy.dref))]
+  [((#this.total_security) >= 1) => (this.total_security.dref = (sum SecurityFeature.security.dref))]
+  [((#this.total_mass) >= 1) => (this.total_mass.dref = (sum Feature.mass.dref))]
+  [((#this.total_cost) >= 1) => (this.total_cost.dref = (sum Feature.cost.dref))]
   1..* Connectivity : Feature 1..1 {
-    [this . performance . dref = 0]
-    [this . energy . dref = 0]
-    [this . mass . dref = 0]
-    [this . cost . dref = 12]
+    [this.performance.dref = 0]
+    [this.energy.dref = 0]
+    [this.mass.dref = 0]
+    [this.cost.dref = 12]
     0..* Bluetooth : Feature 0..1 {
-      [this . performance . dref = 9]
-      [this . energy . dref = 10]
-      [this . mass . dref = 2]
-      [this . cost . dref = 3]
+      [this.performance.dref = 9]
+      [this.energy.dref = 10]
+      [this.mass.dref = 2]
+      [this.cost.dref = 3]
     }
     0..* USB : Feature 0..1 {
-      [this . performance . dref = 10]
-      [this . energy . dref = 5]
-      [this . mass . dref = 3]
-      [this . cost . dref = 5]
+      [this.performance.dref = 10]
+      [this.energy.dref = 5]
+      [this.mass.dref = 3]
+      [this.cost.dref = 5]
     }
     0..* Wifi : Feature 0..1 {
-      [this . performance . dref = 22]
-      [this . energy . dref = 17]
-      [this . mass . dref = 6]
-      [this . cost . dref = 5]
+      [this.performance.dref = 22]
+      [this.energy.dref = 17]
+      [this.mass.dref = 6]
+      [this.cost.dref = 5]
     }
   }
   0..* PasswordProtection : SecurityFeature 0..1 {
-    [this . security . dref = 5]
-    [this . performance . dref = 1]
-    [this . energy . dref = 2]
-    [this . mass . dref = 0]
-    [this . cost . dref = 2]
+    [this.security.dref = 5]
+    [this.performance.dref = 1]
+    [this.energy.dref = 2]
+    [this.mass.dref = 0]
+    [this.cost.dref = 2]
   }
   0..* FingerprintProtection : SecurityFeature 0..1 {
-    [this . mass . dref = 0]
-    [this . security . dref = 5]
-    [this . performance . dref = 3]
-    [this . energy . dref = 1]
-    [this . cost . dref = 13]
+    [this.mass.dref = 0]
+    [this.security.dref = 5]
+    [this.performance.dref = 3]
+    [this.energy.dref = 1]
+    [this.cost.dref = 13]
   }
   0..* total_performance -> int 1..1 {}
   0..* total_energy -> int 1..1 {}
@@ -62,8 +62,8 @@ abstract 0..* MobilePhone 0..* {
 }
 0..* MyPhone : MobilePhone 1..1 {}
 
-<< min MyPhone . total_energy . dref >>
-<< max MyPhone . total_performance . dref >>
-<< max MyPhone . total_security . dref >>
-<< min MyPhone . total_mass . dref >>
-<< min MyPhone . total_cost . dref >>
+<< min MyPhone.total_energy.dref >>
+<< max MyPhone.total_performance.dref >>
+<< max MyPhone.total_security.dref >>
+<< min MyPhone.total_mass.dref >>
+<< min MyPhone.total_cost.dref >>

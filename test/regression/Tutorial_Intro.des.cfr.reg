@@ -23,15 +23,15 @@ abstract 0..* Person 0..* {
 }
 abstract 0..* date ->> string 0..* {}
 0..* JohnDoe : Person 1..1 {
-  [this . Name . dref = "John"]
-  [this . Surname . dref = "Doe"]
-  [this . DateOfBirth . dref = "01/02/1985"]
-  [(#this . Gender . Male) >= 1]
-  [(#this . MaritalStatus . Married) >= 1]
-  [this . Address . Street . dref = "123 Main St."]
-  [this . Address . City . dref = "Great Town"]
-  [this . Address . Address__Country . dref = "Canada"]
-  [this . Address . PostalCode . dref = "A1B 2C3"]
+  [this.Name.dref = "John"]
+  [this.Surname.dref = "Doe"]
+  [this.DateOfBirth.dref = "01/02/1985"]
+  [(#this.Gender.Male) >= 1]
+  [(#this.MaritalStatus.Married) >= 1]
+  [this.Address.Street.dref = "123 Main St."]
+  [this.Address.City.dref = "Great Town"]
+  [this.Address.Address__Country.dref = "Canada"]
+  [this.Address.PostalCode.dref = "A1B 2C3"]
 }
 abstract 0..* Student : Person 0..* {
   0..* StudentId -> string 1..1 {}
@@ -40,22 +40,22 @@ abstract 0..* WaitingLine 0..* {
   0..* participants -> Person 0..* {}
 }
 0..* MaryJane : Student 1..1 {
-  [this . Name . dref = "Mary Jane"]
-  [this . StudentId . dref = "MJ13421354"]
+  [this.Name.dref = "Mary Jane"]
+  [this.StudentId.dref = "MJ13421354"]
 }
 0..* BusLine : WaitingLine 1..1 {
-  [JohnDoe in this . participants . dref]
-  [MaryJane in this . participants . dref]
+  [JohnDoe in this.participants.dref]
+  [MaryJane in this.participants.dref]
 }
 0..* JohnAndMaryLine : WaitingLine 1..1 {
-  [this . participants . dref = (JohnDoe ++ MaryJane)]
+  [this.participants.dref = (JohnDoe ++ MaryJane)]
 }
 abstract 0..* TwoPersonLine : WaitingLine 0..* {
-  [(#this . participants) = 2]
+  [(#this.participants) = 2]
 }
 abstract 0..* OneToTenPersonLine : WaitingLine 0..* {
-  [(#this . participants) >= 1]
-  [(#this . participants) <= 10]
+  [(#this.participants) >= 1]
+  [(#this.participants) <= 10]
 }
 abstract 0..* NorthAmericanCountry 0..* {}
 0..* Canada : NorthAmericanCountry 1..1 {}
@@ -65,5 +65,5 @@ abstract 0..* Person2 0..* {
   0..* Person2__Country -> NorthAmericanCountry 1..1 {}
 }
 0..* JohnDoe2 : Person2 1..1 {
-  [this . Person2__Country . dref = Canada]
+  [this.Person2__Country.dref = Canada]
 }

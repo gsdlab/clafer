@@ -6,10 +6,10 @@ abstract 0..* WaitingLine 0..* {
   0..* participants -> Person 0..* {}
 }
 0..* BusLine : WaitingLine 1..1 {
-  [(JohnDoe in this . participants . dref) && (MaryJane in this . participants . dref)]
+  [(JohnDoe in this.participants.dref) && (MaryJane in this.participants.dref)]
 }
 0..* JohnAndMaryLine : WaitingLine 1..1 {
-  [this . participants . dref = (JohnDoe ++ MaryJane)]
+  [this.participants.dref = (JohnDoe ++ MaryJane)]
 }
 
-assert [all wl : WaitingLine | wl . participants . dref = (JohnDoe ++ MaryJane)]
+assert [all wl : WaitingLine | wl.participants.dref = (JohnDoe ++ MaryJane)]

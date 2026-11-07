@@ -1,6 +1,8 @@
 SUITE_DIR = positive
 REG_DIR = regression
 CLAFER = ../clafer -s -v -k --tooldir=..
+# the number of models compiled and validated at a time, e.g., make test JOBS=4
+JOBS ?= $(shell nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 4)
 
 UNAME := $(shell uname | tr "A-Z" "a-z")
 
@@ -55,17 +57,9 @@ generateAlloyJSHTMLDot:
 	fi
 
 	@# Compile the positive test suite to Alloy, Choco, the explicit form, HTML, and Graph,
-	@# and validate the outputs; fails, after all the models, if one fails to compile or an
-	@# output fails to validate (a counterexample is not a failure)
-	@failed=""; \
-	for model in $$(find $(SUITE_DIR) -type f \( -iname "*.cfr" ! -iname "*.des.cfr" \) | sort); do \
-		$(CLAFER) -m=alloy -m=choco -m=clafer -m=html -m=graph --self-contained "$$model" || failed="$$failed $$model"; \
-	done; \
-	if [ -n "$$failed" ]; then \
-		echo; echo "[FAIL] Models that fail to compile or whose outputs fail to validate:"; \
-		for model in $$failed; do echo "  $$model"; done; \
-		false; \
-	fi
+	@# and validate the outputs, $(JOBS) models at a time; fails, after all the models, if one
+	@# fails to compile or an output fails to validate (a counterexample is not a failure)
+	@bash compile-positive.sh $(SUITE_DIR) $(JOBS) $(CLAFER) -m=alloy -m=choco -m=clafer -m=html -m=graph --self-contained
 
 diffRegressions:
 	@echo "======================================================="

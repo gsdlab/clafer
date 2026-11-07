@@ -6,12 +6,12 @@ abstract 0..* Thing 0..* {}
   0..* d 0..1 {}
 }
 
-assert [(((Thing ++ c) ++ c . d) -- noclafer) = ((Thing ++ c) ++ c . d)]
-assert [(((Thing ++ c) ++ c . d) ++ noclafer) = ((Thing ++ c) ++ c . d)]
-assert [(((Thing ++ c) ++ c . d) ** noclafer) = noclafer]
-assert [a in ((Thing ++ c) ++ c . d)]
-assert [c . d in ((Thing ++ c) ++ c . d)]
-assert [(#((Thing ++ c) ++ c . d)) = (((#Thing) + (#c)) + (#c . d))]
+assert [(((Thing ++ c) ++ c.d) -- noclafer) = ((Thing ++ c) ++ c.d)]
+assert [(((Thing ++ c) ++ c.d) ++ noclafer) = ((Thing ++ c) ++ c.d)]
+assert [(((Thing ++ c) ++ c.d) ** noclafer) = noclafer]
+assert [a in ((Thing ++ c) ++ c.d)]
+assert [c.d in ((Thing ++ c) ++ c.d)]
+assert [(#((Thing ++ c) ++ c.d)) = (((#Thing) + (#c)) + (#c.d))]
 assert [(#noclafer) = 0]
 assert [(#noclafer) = 0]
 assert [(a ++ noclafer) = a]

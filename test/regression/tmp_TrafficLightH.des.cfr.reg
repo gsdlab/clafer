@@ -1,31 +1,31 @@
 //# OPTIONS --explicit --tl=10
 abstract 1..1 TrafficLight_H 0..* {
-  [(((#this . on . normal) >= 1) && (X ((#this . on) = 0))) => (X (((#this . on) = 0) W ((#this . on . normal) >= 1)))]
-  [(((#this . on . flashing) >= 1) && (X ((#this . on) = 0))) => (X (((#this . on) = 0) W ((#this . on . flashing) >= 1)))]
+  [(((#this.on.normal) >= 1) && (X ((#this.on) = 0))) => (X (((#this.on) = 0) W ((#this.on.normal) >= 1)))]
+  [(((#this.on.flashing) >= 1) && (X ((#this.on) = 0))) => (X (((#this.on) = 0) W ((#this.on.flashing) >= 1)))]
   1..1 on 0..1 {
-    [((#this) >= 1) => (((#this) >= 1) U ((#this . parent . off) >= 1))]
+    [((#this) >= 1) => (((#this) >= 1) U ((#this.parent.off) >= 1))]
     1..1 normal 0..1 {
       initial 0..* green 0..1 {
-        [((#this) >= 1) => (X ((#this . parent . yellow) >= 1))]
+        [((#this) >= 1) => (X ((#this.parent.yellow) >= 1))]
       }
       0..* yellow 0..1 {
-        [((#this) >= 1) => (X ((#this . parent . red) >= 1))]
+        [((#this) >= 1) => (X ((#this.parent.red) >= 1))]
       }
       0..* red 0..1 {
-        [((#this) >= 1) => (X ((#this . parent . green) >= 1))]
+        [((#this) >= 1) => (X ((#this.parent.green) >= 1))]
       }
     }
     1..1 flashing 0..1 {
-      [((#this) >= 1) => (((#this) >= 1) U ((#this . parent . normal) >= 1))]
+      [((#this) >= 1) => (((#this) >= 1) U ((#this.parent.normal) >= 1))]
       initial 0..* yellow_on 0..1 {
-        [((#this) >= 1) => (X ((#this . parent . yellow_off) >= 1))]
+        [((#this) >= 1) => (X ((#this.parent.yellow_off) >= 1))]
       }
       0..* yellow_off 0..1 {
-        [((#this) >= 1) => (X ((#this . parent . yellow_on) >= 1))]
+        [((#this) >= 1) => (X ((#this.parent.yellow_on) >= 1))]
       }
     }
   }
   0..* off 0..1 {
-    [((#this) >= 1) => (X ((#this . parent . on) >= 1))]
+    [((#this) >= 1) => (X ((#this.parent.on) >= 1))]
   }
 }

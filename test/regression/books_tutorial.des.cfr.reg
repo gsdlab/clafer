@@ -1,6 +1,6 @@
 //# OPTIONS --explicit
 abstract 0..* Book 0..* {
-  [(this . year . dref >= 5) => ((#this . ISBN) >= 1)]
+  [(this.year.dref >= 5) => ((#this.ISBN) >= 1)]
   0..* title -> string 1..1 {
     0..* subtitle -> string 0..1 {}
   }
@@ -22,7 +22,7 @@ abstract 0..* Book 0..* {
   }
   0..* authors -> Author 1..* {}
   0..* ISBN -> string 0..1 {
-    [(this . parent . year . dref >= 6) => ((#this . GS1) >= 1)]
+    [(this.parent.year.dref >= 6) => ((#this.GS1) >= 1)]
     0..* GS1 -> string 0..1 {}
   }
 }
@@ -34,11 +34,11 @@ abstract 0..* Author : Person 0..* {
   0..* books -> Book 1..* {}
 }
 0..* GenerativeProgramming : Book 1..1 {
-  [((((((((this . title . dref = "name") && ((#this . title . subtitle) = 0)) && (this . year . dref = 5)) && ((#this . page) = 4)) && ((#this . format . paper) >= 1)) && ((#this . kind . nonfiction) >= 1)) && (this . authors . dref = (Czarnecki ++ Eisenecker))) && (this . ISBN . dref = "name")) && ((#this . ISBN . GS1) = 0)]
+  [((((((((this.title.dref = "name") && ((#this.title.subtitle) = 0)) && (this.year.dref = 5)) && ((#this.page) = 4)) && ((#this.format.paper) >= 1)) && ((#this.kind.nonfiction) >= 1)) && (this.authors.dref = (Czarnecki ++ Eisenecker))) && (this.ISBN.dref = "name")) && ((#this.ISBN.GS1) = 0)]
 }
 0..* Czarnecki : Author 1..1 {
-  [(this . name . dref = "name") && (GenerativeProgramming in this . books . dref)]
+  [(this.name.dref = "name") && (GenerativeProgramming in this.books.dref)]
 }
 0..* Eisenecker : Author 1..1 {
-  [(this . name . dref = "name") && (GenerativeProgramming in this . books . dref)]
+  [(this.name.dref = "name") && (GenerativeProgramming in this.books.dref)]
 }

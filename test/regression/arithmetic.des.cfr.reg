@@ -1,8 +1,8 @@
 //# OPTIONS --explicit
 0..* A 1..1 {
   [((1 + 2) * 3) = 9]
-  [this . x . dref = ((-((6 + (5 - 4)) * 3)) / (2 + 1))]
-  [this . y . dref = this . x . dref]
+  [this.x.dref = ((-((6 + (5 - 4)) * 3)) / (2 + 1))]
+  [this.y.dref = this.x.dref]
   0..* x -> int 1..1 {}
   0..* y -> int 1..1 {}
 }

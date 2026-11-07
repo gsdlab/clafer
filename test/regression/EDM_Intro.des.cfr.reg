@@ -1,9 +1,9 @@
 //# OPTIONS --explicit
 0..* midYearReview : Meeting 1..1 {
-  [((#this . month) >= 1) => (this . month . dref = June)]
-  [((#this . midYearReview__chair) >= 1) => (this . midYearReview__chair . dref = Steven)]
-  [((#this . midYearReview__room) >= 1) => (this . midYearReview__room . dref = C)]
-  [(#this . onlineParticipant) >= 1]
+  [((#this.month) >= 1) => (this.month.dref = June)]
+  [((#this.midYearReview__chair) >= 1) => (this.midYearReview__chair.dref = Steven)]
+  [((#this.midYearReview__room) >= 1) => (this.midYearReview__room.dref = C)]
+  [(#this.onlineParticipant) >= 1]
   0..* month -> Month 1..1 {}
   0..* midYearReview__chair -> Member 1..1 {}
   0..* midYearReview__room -> Room 1..1 {}
@@ -14,9 +14,9 @@
   0..* C__audioConferencing 1..1 {}
 }
 0..* ondemandMeeting : Meeting 1..1 {
-  [((#this . ondemandMeeting__chair) >= 1) => (this . ondemandMeeting__chair . dref = Joanna)]
-  [(#this . onlineParticipant) = 0]
-  [((#this . ondemandMeeting__room) >= 1) => (this . ondemandMeeting__room . dref = D)]
+  [((#this.ondemandMeeting__chair) >= 1) => (this.ondemandMeeting__chair.dref = Joanna)]
+  [(#this.onlineParticipant) = 0]
+  [((#this.ondemandMeeting__room) >= 1) => (this.ondemandMeeting__room.dref = D)]
   0..* ondemandMeeting__chair -> Member 1..1 {}
   0..* ondemandMeeting__room -> Room 1..1 {}
 }
@@ -25,14 +25,14 @@
   0..* D__whiteboard 1..1 {}
 }
 abstract 0..* Meeting 0..* {
-  [this . Meeting__chair . dref not in this . participant . dref]
-  [this . Meeting__chair . dref not in this . onlineParticipant . dref]
-  [((#this . onlineParticipant) >= 1) => ((#this . Meeting__room . dref . Room__audioConferencing) >= 1)]
+  [this.Meeting__chair.dref not in this.participant.dref]
+  [this.Meeting__chair.dref not in this.onlineParticipant.dref]
+  [((#this.onlineParticipant) >= 1) => ((#this.Meeting__room.dref.Room__audioConferencing) >= 1)]
   0..* Meeting__chair -> Member 1..1 {}
   0..* participant -> Member 1..* {}
   0..* onlineParticipant -> Member 0..* {}
   0..* Meeting__room -> Room 1..1 {
-    [this . dref . capacity . dref >= ((#this . parent . participant) + 1)]
+    [this.dref.capacity.dref >= ((#this.parent.participant) + 1)]
   }
 }
 abstract 0..* Month 0..* {}
@@ -51,14 +51,14 @@ abstract 0..* Room 0..* {
 }
 0..* M : Member 5..5 {}
 0..* SueAgenda : Agenda 1..1 {
-  [((#this . m1) >= 1) => (this . m1 . dref = M1)]
-  [((#this . m2) >= 1) => (this . m2 . dref = M2)]
+  [((#this.m1) >= 1) => (this.m1.dref = M1)]
+  [((#this.m2) >= 1) => (this.m2.dref = M2)]
   0..* m1 -> Meeting 0..1 {}
   0..* m2 -> Meeting 0..1 {}
 }
 0..* M1 : Meeting 0..1 {}
 0..* M2 : Meeting 0..1 {
-  [((#this . time) >= 1) => (this . time . dref = 10)]
+  [((#this.time) >= 1) => (this.time.dref = 10)]
   0..* time -> int 1..1 {}
 }
 abstract 0..* Agenda 0..* {

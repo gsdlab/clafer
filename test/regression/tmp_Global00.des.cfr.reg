@@ -3,4 +3,4 @@
   0..* b 0..1 {}
 }
 
-assert [G (all b1 : a . b | some a1 : a | b1 . parent = a1)]
+assert [G (all b1 : a.b | some a1 : a | b1.parent = a1)]

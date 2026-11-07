@@ -1,5 +1,5 @@
 //# OPTIONS --explicit
 0..* z 1..1 {
-  [this . y . dref = -1]
+  [this.y.dref = -1]
   0..* y -> int 1..1 {}
 }

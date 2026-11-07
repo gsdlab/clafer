@@ -1,11 +1,11 @@
 //# OPTIONS --explicit
-[((#a) >= 1) => (a . dref = (6 % 4))]
-[((#b) >= 1) => (b . dref = (0 % 4))]
-[((#c) >= 1) => (c . dref = (4 % 2))]
+[((#a) >= 1) => (a.dref = (6 % 4))]
+[((#b) >= 1) => (b.dref = (0 % 4))]
+[((#c) >= 1) => (c.dref = (4 % 2))]
 0..* a -> int 1..1 {}
 0..* b -> int 1..1 {}
 0..* c -> int 1..1 {}
 
-assert [a . dref = 2]
-assert [b . dref = 0]
-assert [c . dref = 0]
+assert [a.dref = 2]
+assert [b.dref = 0]
+assert [c.dref = 0]

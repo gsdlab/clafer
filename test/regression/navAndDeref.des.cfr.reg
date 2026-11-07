@@ -1,24 +1,24 @@
 //# OPTIONS --explicit
 0..* a 1..1 {
-  [this . b . dref . f . dref . dref = h]
-  [this . b . dref . f . dref . dref = h]
-  [this . b . dref . f . dref . dref = h]
-  [this . b . dref . f . dref . dref = h]
+  [this.b.dref.f.dref.dref = h]
+  [this.b.dref.f.dref.dref = h]
+  [this.b.dref.f.dref.dref = h]
+  [this.b.dref.f.dref.dref = h]
   0..* b -> e 1..1 {
-    [this . dref . f . dref . dref = h]
-    [this . dref . f . dref . dref = h]
-    [this . dref . f . dref . dref = h]
-    [this . dref . f . dref . dref = h]
+    [this.dref.f.dref.dref = h]
+    [this.dref.f.dref.dref = h]
+    [this.dref.f.dref.dref = h]
+    [this.dref.f.dref.dref = h]
   }
   0..* c 1..1 {
-    [this . parent . b . dref . f . dref = g]
-    [this . parent . b . dref . f . dref = g]
-    [this . parent . b . dref . f . dref = g]
-    [this . parent . b . dref . f . dref . dref = h]
+    [this.parent.b.dref.f.dref = g]
+    [this.parent.b.dref.f.dref = g]
+    [this.parent.b.dref.f.dref = g]
+    [this.parent.b.dref.f.dref.dref = h]
     0..* d 1..1 {
-      [this . parent . parent . b . dref = e]
-      [this . parent . parent . b . dref = e]
-      [this . parent . parent . b . dref = e]
+      [this.parent.parent.b.dref = e]
+      [this.parent.parent.b.dref = e]
+      [this.parent.parent.b.dref = e]
     }
   }
 }

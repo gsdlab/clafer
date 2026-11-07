@@ -1,38 +1,38 @@
 //# OPTIONS --explicit
-[((#numberOne) >= 1) => (numberOne . dref = 1)]
-[((#alice) >= 1) => (alice . dref = "Alice")]
+[((#numberOne) >= 1) => (numberOne.dref = 1)]
+[((#alice) >= 1) => (alice.dref = "Alice")]
 0..* numberOne -> int 1..1 {}
 0..* alice -> string 1..1 {}
 0..* likertScaleVal -> int 1..1 {
-  [((((this . dref = 1) || (this . dref = 2)) || (this . dref = 3)) || (this . dref = 4)) || (this . dref = 5)]
+  [((((this.dref = 1) || (this.dref = 2)) || (this.dref = 3)) || (this.dref = 4)) || (this.dref = 5)]
 }
 0..* nonZero -> int 1..1 {
-  [!(this . dref = 0)]
+  [!(this.dref = 0)]
 }
 abstract 0..* Person 0..* {
   abstract 0..* Person__Head 0..* {}
   0..* likes -> Person 0..1 {}
 }
 0..* Alice : Person 1..1 {
-  [this . likes . dref = Ella]
+  [this.likes.dref = Ella]
   0..* Alice__Head : Person__Head 1..1 {}
 }
 0..* Ella : Person 1..1 {
-  [(#this . likes) = 0]
+  [(#this.likes) = 0]
   0..* h 1..1 {}
 }
 0..* heads -> Person__Head 0..* {}
 0..* friend -> Person 2..2 {
-  [this . dref in (Alice ++ Ella)]
+  [this.dref in (Alice ++ Ella)]
 }
 0..* onlyAlice -> Person 1..1 {
-  [this . dref in (Alice ** Person)]
+  [this.dref in (Alice ** Person)]
 }
 0..* exceptElla -> Person 1..1 {
-  [this . dref in (Person -- Ella)]
+  [this.dref in (Person -- Ella)]
 }
 
-assert [Alice in onlyAlice . dref]
-assert [Ella not in onlyAlice . dref]
-assert [Alice in exceptElla . dref]
-assert [Ella not in exceptElla . dref]
+assert [Alice in onlyAlice.dref]
+assert [Ella not in onlyAlice.dref]
+assert [Alice in exceptElla.dref]
+assert [Ella not in exceptElla.dref]

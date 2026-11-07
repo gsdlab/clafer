@@ -30,7 +30,7 @@ abstract 0..* MobilePhone 0..* {
     1..1 Connectivity__Bluetooth : root__Bluetooth 1..1 {}
     0..* MobilePhone__Connectivity__GSM 1..1 {}
     0..* LTE 0..1 {
-      [(#this . parent . parent . MobilePhone__Battery . LiBattery1400) >= 1]
+      [(#this.parent.parent.MobilePhone__Battery.LiBattery1400) >= 1]
     }
     0..* MobilePhone__Connectivity__WiFi 0..1 {}
     0..* MobilePhone__Connectivity__USB 0..1 {}
@@ -41,9 +41,9 @@ abstract 0..* MobilePhone 0..* {
   }
 }
 0..* LowEndPhones : MobilePhone 1..1 {
-  [(#this . MobilePhone__Connectivity . MobilePhone__Connectivity__WiFi) = 0]
+  [(#this.MobilePhone__Connectivity.MobilePhone__Connectivity__WiFi) = 0]
 }
 0..* HighEndPhones : MobilePhone 1..1 {
-  [((#this . MobilePhone__Connectivity . MobilePhone__Connectivity__USB) >= 1) && ((#this . MobilePhone__Connectivity . MobilePhone__Connectivity__WiFi) >= 1)]
+  [((#this.MobilePhone__Connectivity.MobilePhone__Connectivity__USB) >= 1) && ((#this.MobilePhone__Connectivity.MobilePhone__Connectivity__WiFi) >= 1)]
   0..* QuadCPU 0..1 {}
 }

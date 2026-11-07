@@ -1,6 +1,6 @@
 //# OPTIONS --explicit
 abstract 0..* Path 0..* {
-  [((#this . isDir) >= 1) => ((#this . p) >= 1)]
+  [((#this.isDir) >= 1) => ((#this.p) >= 1)]
   0..* p : Path 0..1 {}
   0..* isDir 0..1 {}
 }

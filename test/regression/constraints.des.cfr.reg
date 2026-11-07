@@ -1,5 +1,5 @@
 //# OPTIONS --explicit
-[all p : Phone | (#p . networking . mobile) >= 1]
+[all p : Phone | (#p.networking.mobile) >= 1]
 abstract 0..* Phone 0..* {
   0..* networking 1..1 {
     0..* wifi 0..1 {
@@ -18,14 +18,14 @@ abstract 0..* Phone 0..* {
   0..* gpu 0..* {}
 }
 0..* PhoneWithGps : Phone 1..1 {
-  [(#this . location . gps) >= 1]
+  [(#this.location.gps) >= 1]
 }
 0..* PhoneWithWifi : Phone 1..1 {
-  [(#this . networking . wifi . typeN) >= 1]
+  [(#this.networking.wifi.typeN) >= 1]
 }
 0..* PhonewithWifiAndGpsNoBluetoothOrNfc : Phone 1..1 {
-  [(((#this . networking . wifi) >= 1) && ((#this . location . gps) >= 1)) && (!(((#this . networking . bluetooth) >= 1) || ((#this . networking . nfc) >= 1)))]
+  [(((#this.networking.wifi) >= 1) && ((#this.location.gps) >= 1)) && (!(((#this.networking.bluetooth) >= 1) || ((#this.networking.nfc) >= 1)))]
 }
 0..* PhoneWithGpu : Phone 1..1 {
-  [(#this . gpu) >= 1]
+  [(#this.gpu) >= 1]
 }

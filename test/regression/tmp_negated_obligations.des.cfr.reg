@@ -3,11 +3,11 @@
 [initially (X ((#machine) = 0))]
 0..* machine 0..1 {
   0..* ctx 1..1 {
-    [!(F ((#this . error) >= 1))]
+    [!(F ((#this.error) >= 1))]
     0..* error 0..1 {}
   }
 }
 
-assert [all this_ : machine . ctx | (G ((#this_ . error) = 0)) <=> (!(F ((#this_ . error) >= 1)))]
-assert [all this_ : machine . ctx | (!(X ((#this_ . error) >= 1))) <=> (X ((#this_ . error) = 0))]
-assert [all this_ : machine . ctx | (!(((#this_ . error) >= 1) U ((#this_ . error) = 0))) <=> (((#this_ . error) >= 1) W (((#this_ . error) = 0) && ((#this_ . error) >= 1)))]
+assert [all this_ : machine.ctx | (G ((#this_.error) = 0)) <=> (!(F ((#this_.error) >= 1)))]
+assert [all this_ : machine.ctx | (!(X ((#this_.error) >= 1))) <=> (X ((#this_.error) = 0))]
+assert [all this_ : machine.ctx | (!(((#this_.error) >= 1) U ((#this_.error) = 0))) <=> (((#this_.error) >= 1) W (((#this_.error) = 0) && ((#this_.error) >= 1)))]

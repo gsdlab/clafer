@@ -19,9 +19,9 @@ abstract 0..* Request 0..* {}
 0..* stop : Request 1..1 {}
 0..* WinCtrl : Component 1..1 {
   1..1 cmd : Port -> Command 1..1 {
-    [(#this . output) >= 1]
+    [(#this.output) >= 1]
   }
   1..1 req : Port -> Request 1..1 {
-    [(#this . input) >= 1]
+    [(#this.input) >= 1]
   }
 }

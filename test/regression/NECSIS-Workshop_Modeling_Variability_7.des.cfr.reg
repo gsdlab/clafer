@@ -1,14 +1,14 @@
 //# OPTIONS --explicit
 0..* BumbleBee : Camaro 1..1 {
-  [(#this . transformer) >= 1]
+  [(#this.transformer) >= 1]
 }
 abstract 0..* Camaro : Car 0..* {
-  [(#this . Car__CC . ACC) >= 1]
-  [(#this . Car__CC . switch . backlight) >= 1]
+  [(#this.Car__CC.ACC) >= 1]
+  [(#this.Car__CC.switch.backlight) >= 1]
   0..* transformer 0..1 {}
 }
 abstract 0..* Car 0..* {
-  [((#this . Car__CC . ACC) >= 1) => ((#this . Car__FCA) >= 1)]
+  [((#this.Car__CC.ACC) >= 1) => ((#this.Car__FCA) >= 1)]
   0..* ABS 0..1 {}
   1..1 Transmission 1..1 {
     0..* Automatic 0..1 {}

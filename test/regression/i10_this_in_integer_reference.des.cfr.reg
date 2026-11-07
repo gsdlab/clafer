@@ -1,6 +1,6 @@
 //# OPTIONS --explicit
 0..* A 1..1 {
   0..* x -> int 1..1 {
-    [this . dref >= 0]
+    [this.dref >= 0]
   }
 }
