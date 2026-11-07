@@ -79,6 +79,6 @@ one sig pl
 { (((this.@pl_ref).@r_Plug__speed).@Plug__speed_ref) = 5 }
 
 one sig u
-{ u_ref : one (Hub.@r_p) + fast }
+{ u_ref : one p + fast }
 { (((this.@u_ref).@r_Port__speed).@Port__speed_ref) = 10 }
 

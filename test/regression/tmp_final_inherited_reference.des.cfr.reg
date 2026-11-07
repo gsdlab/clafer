@@ -29,9 +29,18 @@ abstract 0..* Car 0..* {
 0..* prius : Car 1..1 {
   finaltarget finalref 0..* motor6 -> Engine 1..1 {}
 }
+0..* garage 1..1 {
+  0..* spare : Engine 1..1 {}
+}
+0..* corolla : Car 1..1 {
+  finalref 0..* motor7 -> Engine 1..1 {
+    [this . dref in (garage . spare ++ gas)]
+  }
+}
 
 assert [(tesla . motor . dref = gas) => (G (tesla . motor . dref = gas))]
 assert [(leaf . motor2 . dref = gas) => (G (leaf . motor2 . dref = gas))]
 assert [(bolt . motor3 . dref = gas) => (G (bolt . motor3 . dref = gas))]
 assert [(volt . motor5 . dref = gas) => (G (volt . motor5 . dref = gas))]
 assert [(prius . motor6 . dref = gas) => (G (prius . motor6 . dref = gas))]
+assert [(corolla . motor7 . dref = gas) => (G (corolla . motor7 . dref = gas))]

@@ -26,9 +26,15 @@ volt : Car
     finalref finaltarget motor5 : engine
 prius : Car
     finaltarget finalref motor6 -> Engine
+// a union of targets, one of them nested
+garage
+    spare : Engine
+corolla : Car
+    finalref motor7 -> garage.spare ++ gas
 
 assert [ tesla.motor = gas => G tesla.motor = gas ]
 assert [ leaf.motor2 = gas => G leaf.motor2 = gas ]
 assert [ bolt.motor3 = gas => G bolt.motor3 = gas ]
 assert [ volt.motor5 = gas => G volt.motor5 = gas ]
 assert [ prius.motor6 = gas => G prius.motor6 = gas ]
+assert [ corolla.motor7.dref = gas => G corolla.motor7.dref = gas ]

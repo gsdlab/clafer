@@ -245,12 +245,15 @@ genRelations genEnv c = parent' ++ reference' ++ map mkRel (containedClafers c)
   var' static = if static then "" else "var "
 
 refType :: GenEnv -> IClafer -> String
-refType genEnv c = case _ref <$> _reference c of
-  Just pexp -> case getTarget pexp of
+refType genEnv c = maybe "" (targetType . _ref) $ _reference c
+  where
+  targetType pexp = case getTarget pexp of
     PExp _ _ _ (IClaferId _ sid _ _) | isPrimitive sid -> "Int"
                                      | otherwise       -> sid
+    -- a union of targets, e.g., Hub.p ++ fast: the union of their signatures (p + fast), since a
+    -- field declaration cannot name another signature's field
+    PExp _ _ _ (IFunExp op' ps) | op' == iUnion -> intercalate " + " $ map targetType ps
     target -> flatten $ genPExp genEnv [_uid c] target
-  Nothing -> ""
 
 getTarget :: PExp -> PExp
 getTarget    x     = case x of

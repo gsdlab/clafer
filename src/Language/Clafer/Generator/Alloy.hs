@@ -207,8 +207,14 @@ refType    genEnv c = fromMaybe (CString "") (((genType genEnv).getTarget) <$> (
 
 getTarget :: PExp -> PExp
 getTarget    x     = case x of
-  PExp _ _ _ (IFunExp op' (_:pexp:_))  -> if op' == iJoin then pexp else x
+  PExp _ _ _ (IFunExp op' (_:pexp:_)) | op' == iJoin -> pexp
+  -- a union of targets, e.g., Hub.p ++ fast: the union of their types (p + fast), since a field
+  -- declaration cannot name another signature's field
+  PExp _ _ _ e@(IFunExp op' ps) | op' == iUnion -> x{_exp = e{_exps = map (asTop . getTarget) ps}}
   _ -> x
+  where
+  asTop p@(PExp _ _ _ y@IClaferId{}) = p{_exp = y{_isTop = True}}
+  asTop p = p
 
 genType :: GenEnv -> PExp                              -> Concat
 genType    genEnv    x@(PExp _ _ _ y@(IClaferId _ _ _ _)) = genPExp genEnv []

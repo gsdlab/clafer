@@ -19,4 +19,6 @@ edge [fontname=Sans fontsize=11];
 "volt" [label="volt : Car" URL="#volt" tooltip="volt : Car&#10;  finalref finaltarget motor5 : engine&#10;"];
 "prius" [label="prius : Car" URL="#prius" tooltip="prius : Car&#10;  finaltarget finalref motor6 -&gt; Engine&#10;"];
 "prius" -> "Engine" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=motor6];
+"garage" [label="garage" URL="#garage" tooltip="garage&#10;  spare : Engine&#10;"];
+"corolla" [label="corolla : Car" URL="#corolla" tooltip="corolla : Car&#10;  finalref motor7 -&gt; garage.spare++gas&#10;"];
 }

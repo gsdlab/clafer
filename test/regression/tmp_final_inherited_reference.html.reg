@@ -90,6 +90,20 @@ a[href$='Ambiguous name'] {color: yellow}
 
 
 <div>
+<span class="claferDecl" id="garage">garage</span>
+  <div class="indent">
+  <span class="claferDecl" id="spare">spare</span><span class="keyword"> : </span><a href="#Engine"><span class="reference">Engine</span></a></div>
+</div>
+
+
+<div>
+<span class="claferDecl" id="corolla">corolla</span><span class="keyword"> : </span><a href="#Car"><span class="reference">Car</span></a>
+  <div class="indent">
+  <span class="tKeyword">finalref</span> <span class="claferDecl" id="motor7">motor7</span><span class="keyword"> -> </span><a href="#garage"><span class="reference">garage</span></a>.<a href="#spare"><span class="reference">spare</span></a>++<a href="#gas"><span class="reference">gas</span></a></div>
+</div>
+
+
+<div>
 <span class="keyword">assert [</span> <a href="#tesla"><span class="reference">tesla</span></a>.<a href="#motor"><span class="reference">motor</span></a> = <a href="#gas"><span class="reference">gas</span></a> =&gt; G <a href="#tesla"><span class="reference">tesla</span></a>.<a href="#motor"><span class="reference">motor</span></a> = <a href="#gas"><span class="reference">gas</span></a> <span class="keyword">]</span></div>
 
 
@@ -107,6 +121,10 @@ a[href$='Ambiguous name'] {color: yellow}
 
 <div>
 <span class="keyword">assert [</span> <a href="#prius"><span class="reference">prius</span></a>.<a href="#motor6"><span class="reference">motor6</span></a> = <a href="#gas"><span class="reference">gas</span></a> =&gt; G <a href="#prius"><span class="reference">prius</span></a>.<a href="#motor6"><span class="reference">motor6</span></a> = <a href="#gas"><span class="reference">gas</span></a> <span class="keyword">]</span></div>
+
+
+<div>
+<span class="keyword">assert [</span> <a href="#corolla"><span class="reference">corolla</span></a>.<a href="#motor7"><span class="reference">motor7</span></a>.<span class="keyword">dref</span> = <a href="#gas"><span class="reference">gas</span></a> =&gt; G <a href="#corolla"><span class="reference">corolla</span></a>.<a href="#motor7"><span class="reference">motor7</span></a>.<span class="keyword">dref</span> = <a href="#gas"><span class="reference">gas</span></a> <span class="keyword">]</span></div>
 
 </body>
 </html>
