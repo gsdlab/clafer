@@ -22,67 +22,67 @@ a[href$='Ambiguous name'] {color: yellow}
 <div class="file">positive/constraints.cfr</div>
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Phone">Phone</span>
+<span class="keyword">abstract</span> <span class="claferDecl" id="Phone">Phone</span>
   <div class="indent">
-  <span class="claferDecl" id="c0_networking">networking</span>
+  <span class="claferDecl" id="networking">networking</span>
     <div class="indent">
-    <span class="claferDecl" id="c0_wifi">wifi</span> ?
+    <span class="claferDecl" id="wifi">wifi</span> ?
       <div class="indent">
-      <span class="claferDecl" id="c0_typeB">typeB</span> ?</div>
+      <span class="claferDecl" id="typeB">typeB</span> ?</div>
       <div class="indent">
-      <span class="claferDecl" id="c0_typeG">typeG</span> ?</div>
+      <span class="claferDecl" id="typeG">typeG</span> ?</div>
       <div class="indent">
-      <span class="claferDecl" id="c0_typeN">typeN</span> ?</div>
+      <span class="claferDecl" id="typeN">typeN</span> ?</div>
     </div>
     <div class="indent">
-    <span class="claferDecl" id="c0_bluetooth">bluetooth</span> ?</div>
+    <span class="claferDecl" id="bluetooth">bluetooth</span> ?</div>
     <div class="indent">
-    <span class="claferDecl" id="c0_mobile">mobile</span> ?</div>
+    <span class="claferDecl" id="mobile">mobile</span> ?</div>
     <div class="indent">
-    <span class="claferDecl" id="c0_nfc">nfc</span> ?</div>
+    <span class="claferDecl" id="nfc">nfc</span> ?</div>
   </div>
   <div class="indent">
-  <span class="keyword">xor</span> <span class="claferDecl" id="c0_location">location</span> ?
+  <span class="keyword">xor</span> <span class="claferDecl" id="location">location</span> ?
     <div class="indent">
-    <span class="claferDecl" id="c0_gps">gps</span></div>
+    <span class="claferDecl" id="gps">gps</span></div>
     <div class="indent">
-    <span class="claferDecl" id="c0_agps">agps</span></div>
+    <span class="claferDecl" id="agps">agps</span></div>
   </div>
   <div class="indent">
-  <span class="claferDecl" id="c0_gpu">gpu</span> *</div>
+  <span class="claferDecl" id="gpu">gpu</span> *</div>
 </div>
 
 
 <div>
-<span class="claferDecl" id="c0_PhoneWithGps">PhoneWithGps</span><span class="keyword"> : </span><a href="#c0_Phone"><span class="reference">Phone</span></a>
+<span class="claferDecl" id="PhoneWithGps">PhoneWithGps</span><span class="keyword"> : </span><a href="#Phone"><span class="reference">Phone</span></a>
   <div class="indent">
-  <span class="keyword">[</span> <a href="#c0_gps"><span class="reference">gps</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <a href="#gps"><span class="reference">gps</span></a> <span class="keyword">]</span></div>
 </div>
 
 
 <div>
-<span class="claferDecl" id="c0_PhoneWithWifi">PhoneWithWifi</span><span class="keyword"> : </span><a href="#c0_Phone"><span class="reference">Phone</span></a>
+<span class="claferDecl" id="PhoneWithWifi">PhoneWithWifi</span><span class="keyword"> : </span><a href="#Phone"><span class="reference">Phone</span></a>
   <div class="indent">
-  <span class="keyword">[</span> <a href="#c0_networking"><span class="reference">networking</span></a>.<a href="#c0_wifi"><span class="reference">wifi</span></a>.<a href="#c0_typeN"><span class="reference">typeN</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <a href="#networking"><span class="reference">networking</span></a>.<a href="#wifi"><span class="reference">wifi</span></a>.<a href="#typeN"><span class="reference">typeN</span></a> <span class="keyword">]</span></div>
 </div>
 
 
 <div>
-<span class="claferDecl" id="c0_PhonewithWifiAndGpsNoBluetoothOrNfc">PhonewithWifiAndGpsNoBluetoothOrNfc</span><span class="keyword"> : </span><a href="#c0_Phone"><span class="reference">Phone</span></a>
+<span class="claferDecl" id="PhonewithWifiAndGpsNoBluetoothOrNfc">PhonewithWifiAndGpsNoBluetoothOrNfc</span><span class="keyword"> : </span><a href="#Phone"><span class="reference">Phone</span></a>
   <div class="indent">
-  <span class="keyword">[</span> <a href="#c0_wifi"><span class="reference">wifi</span></a> &amp;&amp; <a href="#c0_gps"><span class="reference">gps</span></a> &amp;&amp;  ! (<a href="#c0_bluetooth"><span class="reference">bluetooth</span></a> &#124;&#124; <a href="#c0_nfc"><span class="reference">nfc</span></a>) <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <a href="#wifi"><span class="reference">wifi</span></a> &amp;&amp; <a href="#gps"><span class="reference">gps</span></a> &amp;&amp;  ! (<a href="#bluetooth"><span class="reference">bluetooth</span></a> &#124;&#124; <a href="#nfc"><span class="reference">nfc</span></a>) <span class="keyword">]</span></div>
 </div>
 
 
 <div>
-<span class="claferDecl" id="c0_PhoneWithGpu">PhoneWithGpu</span><span class="keyword"> : </span><a href="#c0_Phone"><span class="reference">Phone</span></a>
+<span class="claferDecl" id="PhoneWithGpu">PhoneWithGpu</span><span class="keyword"> : </span><a href="#Phone"><span class="reference">Phone</span></a>
   <div class="indent">
-  <span class="keyword">[</span> <span class="keyword">some</span> <a href="#c0_gpu"><span class="reference">gpu</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <span class="keyword">some</span> <a href="#gpu"><span class="reference">gpu</span></a> <span class="keyword">]</span></div>
 </div>
 
 
 <div>
-<span class="keyword">[</span> all p<span class="keyword"> : </span><a href="#c0_Phone"><span class="reference">Phone</span></a> | <a href="#p"><span class="reference">p</span></a>.<a href="#c0_networking"><span class="reference">networking</span></a>.<a href="#c0_mobile"><span class="reference">mobile</span></a> <span class="keyword">]</span></div>
+<span class="keyword">[</span> all p<span class="keyword"> : </span><a href="#Phone"><span class="reference">Phone</span></a> | <a href="#p"><span class="reference">p</span></a>.<a href="#networking"><span class="reference">networking</span></a>.<a href="#mobile"><span class="reference">mobile</span></a> <span class="keyword">]</span></div>
 
 </body>
 </html>

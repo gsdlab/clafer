@@ -1,0 +1,40 @@
+//# OPTIONS --explicit
+abstract 0..* Port 0..* {
+  0..* Port__speed -> int 1..1 {}
+  0..* name -> int 1..1 {}
+}
+0..* Hub 1..1 {
+  0..* p : Port 2..2 {}
+}
+0..* fast : Port 1..1 {
+  [this.Port__speed.dref = 10]
+}
+abstract 0..* Component 0..* {
+  abstract 0..* link -> Port 0..* {
+    [this.dref.Port__speed.dref >= this.link__speed.dref]
+    [all t : this.dref | t.Port__speed.dref >= this.latency.dref]
+    0..* latency -> int 1..1 {}
+    0..* link__speed -> int 1..1 {}
+  }
+}
+0..* cam : Component 1..1 {
+  [this.l.dref.Port__speed.dref = 3]
+  0..* l : link -> p 1..1 {
+    [this.dref.Port__speed.dref = 3]
+    [this.dref.name.dref = 1]
+  }
+}
+0..* b ->> Port 2..2 {
+  [this.dref.Port__speed.dref = 3]
+}
+abstract 0..* Plug -> Port 0..* {
+  0..* Plug__speed -> int 1..1 {}
+}
+0..* plug : Plug 1..1 {}
+0..* pl -> Plug 1..1 {
+  [this.dref.Plug__speed.dref = 5]
+}
+0..* u -> Port 1..1 {
+  [this.dref in (Hub.p ++ fast)]
+  [this.dref.Port__speed.dref = 10]
+}

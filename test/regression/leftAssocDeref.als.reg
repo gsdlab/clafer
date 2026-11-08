@@ -2,30 +2,30 @@ open util/integer
 pred show {}
 
 
-one sig c0_x
-{ c0_x_ref : one Int }
-{ (this.@c0_x_ref) = 1
-  (this.@c0_x_ref) = 1 }
+one sig x
+{ x_ref : one Int }
+{ (this.@x_ref) = 1
+  (this.@x_ref) = 1 }
 
-fact { (c0_x.@c0_x_ref) = 1 }
-fact { (c0_x.@c0_x_ref) = 1 }
-one sig c0_y
-{ c0_y_ref : one c0_x }
-{ ((this.@c0_y_ref).@c0_x_ref) = 1
-  ((this.@c0_y_ref).@c0_x_ref) = 1
-  ((this.@c0_y_ref).@c0_x_ref) = 1 }
+fact { (x.@x_ref) = 1 }
+fact { (x.@x_ref) = 1 }
+one sig y
+{ y_ref : one x }
+{ ((this.@y_ref).@x_ref) = 1
+  ((this.@y_ref).@x_ref) = 1
+  ((this.@y_ref).@x_ref) = 1 }
 
-fact { ((c0_y.@c0_y_ref).@c0_x_ref) = 1 }
-fact { ((c0_y.@c0_y_ref).@c0_x_ref) = 1 }
-fact { ((c0_y.@c0_y_ref).@c0_x_ref) = 1 }
-one sig c0_z
-{ c0_z_ref : one c0_y }
-{ (((this.@c0_z_ref).@c0_y_ref).@c0_x_ref) = 1
-  (((this.@c0_z_ref).@c0_y_ref).@c0_x_ref) = 1
-  (((this.@c0_z_ref).@c0_y_ref).@c0_x_ref) = 1
-  (((this.@c0_z_ref).@c0_y_ref).@c0_x_ref) = 1 }
+fact { ((y.@y_ref).@x_ref) = 1 }
+fact { ((y.@y_ref).@x_ref) = 1 }
+fact { ((y.@y_ref).@x_ref) = 1 }
+one sig z
+{ z_ref : one y }
+{ (((this.@z_ref).@y_ref).@x_ref) = 1
+  (((this.@z_ref).@y_ref).@x_ref) = 1
+  (((this.@z_ref).@y_ref).@x_ref) = 1
+  (((this.@z_ref).@y_ref).@x_ref) = 1 }
 
-fact { (((c0_z.@c0_z_ref).@c0_y_ref).@c0_x_ref) = 1 }
-fact { (((c0_z.@c0_z_ref).@c0_y_ref).@c0_x_ref) = 1 }
-fact { (((c0_z.@c0_z_ref).@c0_y_ref).@c0_x_ref) = 1 }
-fact { (((c0_z.@c0_z_ref).@c0_y_ref).@c0_x_ref) = 1 }
+fact { (((z.@z_ref).@y_ref).@x_ref) = 1 }
+fact { (((z.@z_ref).@y_ref).@x_ref) = 1 }
+fact { (((z.@z_ref).@y_ref).@x_ref) = 1 }
+fact { (((z.@z_ref).@y_ref).@x_ref) = 1 }

@@ -22,9 +22,9 @@ a[href$='Ambiguous name'] {color: yellow}
 <div class="file">positive/types_of_this_and_parent.cfr</div>
 
 <div>
-<span class="claferDecl" id="c0_A">A</span>
+<span class="claferDecl" id="A">A</span>
   <div class="indent">
-  <span class="claferDecl" id="c0_b">b</span><span class="keyword"> ->> </span><a href="#c0_A"><span class="reference">A</span></a> ?
+  <span class="claferDecl" id="b">b</span><span class="keyword"> ->> </span><a href="#A"><span class="reference">A</span></a> ?
     <div class="indent">
     <span class="keyword">[</span> <span class="keyword">parent</span> <span class="keyword">]</span></div>
   </div>

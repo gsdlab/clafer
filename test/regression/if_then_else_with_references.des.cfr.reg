@@ -1,0 +1,16 @@
+//# OPTIONS --explicit
+[uses.dref = (if ((#Software) > 0) then (s1.target.dref ++ s2.target.dref) else noHardware.dref)]
+abstract 0..* Hardware 0..* {}
+0..* h1 : Hardware 1..1 {}
+0..* h2 : Hardware 1..1 {}
+abstract 0..* Software 0..* {
+  0..* target -> Hardware 1..1 {}
+}
+0..* s1 : Software 1..1 {
+  [this.target.dref = h1]
+}
+0..* s2 : Software 1..1 {
+  [this.target.dref = h2]
+}
+0..* noHardware -> Hardware 0..0 {}
+0..* uses -> Hardware 0..* {}

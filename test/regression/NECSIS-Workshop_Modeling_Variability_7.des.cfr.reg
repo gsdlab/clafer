@@ -1,0 +1,35 @@
+//# OPTIONS --explicit
+0..* BumbleBee : Camaro 1..1 {
+  [(#this.transformer) >= 1]
+}
+abstract 0..* Camaro : Car 0..* {
+  [(#this.Car__CC.ACC) >= 1]
+  [(#this.Car__CC.switch.backlight) >= 1]
+  0..* transformer 0..1 {}
+}
+abstract 0..* Car 0..* {
+  [((#this.Car__CC.ACC) >= 1) => ((#this.Car__FCA) >= 1)]
+  0..* ABS 0..1 {}
+  1..1 Transmission 1..1 {
+    0..* Automatic 0..1 {}
+    0..* Manual 0..1 {}
+  }
+  0..* Car__FCA : root__FCA 0..1 {}
+  0..* Car__CC : root__CC 0..1 {}
+}
+abstract 0..* root__FCA 0..* {
+  1..1 Sensor 1..1 {
+    0..* Radar 0..1 {}
+    0..* Lidar 0..1 {}
+  }
+  1..1 Alert 1..1 {
+    0..* Haptic 0..1 {}
+    0..* Audible 0..1 {}
+  }
+}
+abstract 0..* root__CC 0..* {
+  0..* switch 1..1 {
+    0..* backlight 0..1 {}
+  }
+  0..* ACC 0..1 {}
+}

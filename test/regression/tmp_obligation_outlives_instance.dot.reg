@@ -1,0 +1,14 @@
+digraph "tmp_obligation_outlives_instance"
+{
+rankdir=BT;
+ranksep=0.3;
+nodesep=0.1;
+graph [fontname=Sans fontsize=11];
+node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
+edge [fontname=Sans fontsize=11];
+"event" [label="abstract event" URL="#event" tooltip="abstract event&#10;  [ X no this ]&#10;"];
+"events" [label="mux events" URL="#events" tooltip="mux events&#10;  e1 : event&#10;  e2 : event&#10;"];
+"Port" [label="abstract Port" URL="#Port" tooltip="abstract Port&#10;  [ some this.parent ]&#10;"];
+"sys" [label="sys ?" URL="#sys" tooltip="sys ?&#10;  p1 : Port&#10;"];
+"top" [label="top : Port" URL="#top" tooltip="top : Port&#10;"];
+}

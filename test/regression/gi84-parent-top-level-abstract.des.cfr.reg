@@ -1,0 +1,10 @@
+//# OPTIONS --explicit
+abstract 0..* FeatureModel 0..* {}
+abstract 0..* Feature 0..* {
+  [this.parent in (Feature ++ FeatureModel)]
+}
+0..* FM : FeatureModel 1..1 {
+  0..* F1 : Feature 1..1 {
+    0..* F2 : Feature 1..1 {}
+  }
+}

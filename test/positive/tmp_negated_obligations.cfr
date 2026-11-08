@@ -1,0 +1,14 @@
+// A negated obligation lapses with the parent too: the negations are pushed to the formulas
+// without temporal operators first, so !(F error) is G !error, and lets the machine disappear.
+// The assertion holds, and the model has a trace.
+
+machine ?
+  ctx
+    error ?
+    [ !(F error) ]
+    assert [ (G !error) <=> !(F error) ]
+    assert [ !(X error) <=> X !error ]
+    assert [ !(error U !error) <=> (error W (!error && error)) ]
+
+[ initially machine ]
+[ initially (X no machine) ]

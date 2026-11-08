@@ -1,0 +1,14 @@
+//# OPTIONS --explicit
+[((#text) >= 1) => (text.dref = "some text")]
+[((#text1) >= 1) => (text1.dref = "some text")]
+[((#text2) >= 1) => (text2.dref = "some text")]
+[(text.dref = text1.dref) => ((#equal1) >= 1)]
+[(text1.dref = text2.dref) => ((#equal2) >= 1)]
+0..* text -> string 1..1 {}
+0..* text1 -> string 1..1 {}
+0..* text2 -> string 1..1 {}
+0..* equal1 0..1 {}
+0..* equal2 0..1 {}
+
+assert [(#equal1) >= 1]
+assert [(#equal2) >= 1]

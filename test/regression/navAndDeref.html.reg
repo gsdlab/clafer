@@ -22,62 +22,62 @@ a[href$='Ambiguous name'] {color: yellow}
 <div class="file">positive/navAndDeref.cfr</div>
 
 <div>
-<span class="claferDecl" id="c0_a">a</span>
+<span class="claferDecl" id="a">a</span>
   <div class="indent">
-  <span class="claferDecl" id="c0_b">b</span><span class="keyword"> -> </span><a href="#c0_e"><span class="reference">e</span></a>
+  <span class="claferDecl" id="b">b</span><span class="keyword"> -> </span><a href="#e"><span class="reference">e</span></a>
     <div class="indent">
-    <span class="keyword">[</span> <a href="#c0_f"><span class="reference">f</span></a> = <a href="#c0_h"><span class="reference">h</span></a> <span class="keyword">]</span></div>
+    <span class="keyword">[</span> <a href="#f"><span class="reference">f</span></a> = <a href="#h"><span class="reference">h</span></a> <span class="keyword">]</span></div>
     <div class="indent">
-    <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_f"><span class="reference">f</span></a> = <a href="#c0_h"><span class="reference">h</span></a> <span class="keyword">]</span></div>
+    <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#f"><span class="reference">f</span></a> = <a href="#h"><span class="reference">h</span></a> <span class="keyword">]</span></div>
     <div class="indent">
-    <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_f"><span class="reference">f</span></a>.<span class="keyword">dref</span> = <a href="#c0_h"><span class="reference">h</span></a> <span class="keyword">]</span></div>
+    <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#f"><span class="reference">f</span></a>.<span class="keyword">dref</span> = <a href="#h"><span class="reference">h</span></a> <span class="keyword">]</span></div>
     <div class="indent">
-    <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_f"><span class="reference">f</span></a>.<span class="keyword">dref</span>.<span class="keyword">dref</span> = <a href="#c0_h"><span class="reference">h</span></a> <span class="keyword">]</span></div>
+    <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#f"><span class="reference">f</span></a>.<span class="keyword">dref</span>.<span class="keyword">dref</span> = <a href="#h"><span class="reference">h</span></a> <span class="keyword">]</span></div>
   </div>
   <div class="indent">
-  <span class="keyword">[</span> <a href="#c0_b"><span class="reference">b</span></a>.<a href="#c0_f"><span class="reference">f</span></a> = <a href="#c0_h"><span class="reference">h</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <a href="#b"><span class="reference">b</span></a>.<a href="#f"><span class="reference">f</span></a> = <a href="#h"><span class="reference">h</span></a> <span class="keyword">]</span></div>
   <div class="indent">
-  <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_b"><span class="reference">b</span></a>.<a href="#c0_f"><span class="reference">f</span></a> = <a href="#c0_h"><span class="reference">h</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#b"><span class="reference">b</span></a>.<a href="#f"><span class="reference">f</span></a> = <a href="#h"><span class="reference">h</span></a> <span class="keyword">]</span></div>
   <div class="indent">
-  <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_b"><span class="reference">b</span></a>.<a href="#c0_f"><span class="reference">f</span></a>.<span class="keyword">dref</span> = <a href="#c0_h"><span class="reference">h</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#b"><span class="reference">b</span></a>.<a href="#f"><span class="reference">f</span></a>.<span class="keyword">dref</span> = <a href="#h"><span class="reference">h</span></a> <span class="keyword">]</span></div>
   <div class="indent">
-  <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#c0_b"><span class="reference">b</span></a>.<a href="#c0_f"><span class="reference">f</span></a>.<span class="keyword">dref</span>.<span class="keyword">dref</span> = <a href="#c0_h"><span class="reference">h</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <span class="keyword">this</span>.<a href="#b"><span class="reference">b</span></a>.<a href="#f"><span class="reference">f</span></a>.<span class="keyword">dref</span>.<span class="keyword">dref</span> = <a href="#h"><span class="reference">h</span></a> <span class="keyword">]</span></div>
   <div class="indent">
-  <span class="claferDecl" id="c0_c">c</span>
+  <span class="claferDecl" id="c">c</span>
     <div class="indent">
-    <span class="claferDecl" id="c0_d">d</span>
+    <span class="claferDecl" id="d">d</span>
       <div class="indent">
-      <span class="keyword">[</span> <a href="#c0_b"><span class="reference">b</span></a> = <a href="#c0_e"><span class="reference">e</span></a> <span class="keyword">]</span></div>
+      <span class="keyword">[</span> <a href="#b"><span class="reference">b</span></a> = <a href="#e"><span class="reference">e</span></a> <span class="keyword">]</span></div>
       <div class="indent">
-      <span class="keyword">[</span> <span class="keyword">parent</span>.<span class="keyword">parent</span>.<a href="#c0_b"><span class="reference">b</span></a> = <a href="#c0_e"><span class="reference">e</span></a> <span class="keyword">]</span></div>
+      <span class="keyword">[</span> <span class="keyword">parent</span>.<span class="keyword">parent</span>.<a href="#b"><span class="reference">b</span></a> = <a href="#e"><span class="reference">e</span></a> <span class="keyword">]</span></div>
       <div class="indent">
-      <span class="keyword">[</span> <span class="keyword">this</span>.<span class="keyword">parent</span>.<span class="keyword">parent</span>.<a href="#c0_b"><span class="reference">b</span></a>.<span class="keyword">dref</span> = <a href="#c0_e"><span class="reference">e</span></a> <span class="keyword">]</span></div>
+      <span class="keyword">[</span> <span class="keyword">this</span>.<span class="keyword">parent</span>.<span class="keyword">parent</span>.<a href="#b"><span class="reference">b</span></a>.<span class="keyword">dref</span> = <a href="#e"><span class="reference">e</span></a> <span class="keyword">]</span></div>
     </div>
     <div class="indent">
-    <span class="keyword">[</span> <a href="#c0_b"><span class="reference">b</span></a>.<a href="#c0_f"><span class="reference">f</span></a> = <a href="#c0_g"><span class="reference">g</span></a> <span class="keyword">]</span></div>
+    <span class="keyword">[</span> <a href="#b"><span class="reference">b</span></a>.<a href="#f"><span class="reference">f</span></a> = <a href="#g"><span class="reference">g</span></a> <span class="keyword">]</span></div>
     <div class="indent">
-    <span class="keyword">[</span> <span class="keyword">parent</span>.<a href="#c0_b"><span class="reference">b</span></a>.<a href="#c0_f"><span class="reference">f</span></a> = <a href="#c0_g"><span class="reference">g</span></a> <span class="keyword">]</span></div>
+    <span class="keyword">[</span> <span class="keyword">parent</span>.<a href="#b"><span class="reference">b</span></a>.<a href="#f"><span class="reference">f</span></a> = <a href="#g"><span class="reference">g</span></a> <span class="keyword">]</span></div>
     <div class="indent">
-    <span class="keyword">[</span> <span class="keyword">this</span>.<span class="keyword">parent</span>.<a href="#c0_b"><span class="reference">b</span></a>.<a href="#c0_f"><span class="reference">f</span></a>.<span class="keyword">dref</span> = <a href="#c0_g"><span class="reference">g</span></a> <span class="keyword">]</span></div>
+    <span class="keyword">[</span> <span class="keyword">this</span>.<span class="keyword">parent</span>.<a href="#b"><span class="reference">b</span></a>.<a href="#f"><span class="reference">f</span></a>.<span class="keyword">dref</span> = <a href="#g"><span class="reference">g</span></a> <span class="keyword">]</span></div>
     <div class="indent">
-    <span class="keyword">[</span> <span class="keyword">this</span>.<span class="keyword">parent</span>.<a href="#c0_b"><span class="reference">b</span></a>.<a href="#c0_f"><span class="reference">f</span></a>.<span class="keyword">dref</span>.<span class="keyword">dref</span> = <a href="#c0_h"><span class="reference">h</span></a> <span class="keyword">]</span></div>
+    <span class="keyword">[</span> <span class="keyword">this</span>.<span class="keyword">parent</span>.<a href="#b"><span class="reference">b</span></a>.<a href="#f"><span class="reference">f</span></a>.<span class="keyword">dref</span>.<span class="keyword">dref</span> = <a href="#h"><span class="reference">h</span></a> <span class="keyword">]</span></div>
   </div>
 </div>
 
 
 <div>
-<span class="claferDecl" id="c0_e">e</span>
+<span class="claferDecl" id="e">e</span>
   <div class="indent">
-  <span class="claferDecl" id="c0_f">f</span><span class="keyword"> -> </span><a href="#c0_g"><span class="reference">g</span></a> ?</div>
+  <span class="claferDecl" id="f">f</span><span class="keyword"> -> </span><a href="#g"><span class="reference">g</span></a> ?</div>
 </div>
 
 
 <div>
-<span class="claferDecl" id="c0_g">g</span><span class="keyword"> -> </span><a href="#c0_h"><span class="reference">h</span></a></div>
+<span class="claferDecl" id="g">g</span><span class="keyword"> -> </span><a href="#h"><span class="reference">h</span></a></div>
 
 
 <div>
-<span class="claferDecl" id="c0_h">h</span></div>
+<span class="claferDecl" id="h">h</span></div>
 
 </body>
 </html>

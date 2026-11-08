@@ -1,0 +1,55 @@
+// noclafer is the empty set: no instance of any clafer, the dual of clafer, the union of all
+// clafers (kbak/clafer-semantics#134). Like root, it is a reserved name, never declared; its type
+// is a subtype of every clafer type. All the assertions hold.
+abstract Thing
+a : Thing 0..2
+b : Thing ?
+c ?
+    d ?
+
+// clafer, the union of all clafers, the root excluded, with noclafer
+assert [ clafer -- noclafer = clafer ]
+assert [ clafer ++ noclafer = clafer ]
+assert [ clafer ** noclafer = noclafer ]
+assert [ a in clafer ]
+assert [ c.d in clafer ]
+assert [ #clafer = #Thing + #c + #c.d ]
+
+// it has no instances
+assert [ no noclafer ]
+assert [ #noclafer = 0 ]
+
+// the neutral element of union
+assert [ a ++ noclafer = a ]
+assert [ noclafer ++ a = a ]
+assert [ #(a ++ noclafer) = #a ]
+
+// the absorbing element of intersection
+assert [ a ** noclafer = noclafer ]
+assert [ noclafer ** a = noclafer ]
+assert [ no (Thing ** noclafer) ]
+
+// difference
+assert [ a -- noclafer = a ]
+assert [ noclafer -- a = noclafer ]
+
+// a subset of every set
+assert [ noclafer in a ]
+assert [ noclafer in Thing ]
+assert [ !(some a) || !(a in noclafer) ]
+
+// the neutral branch of if: the other branch when its condition selects it, nothing otherwise
+assert [ some c => (if some c then a else noclafer) = a ]
+assert [ no c => no (if some c then a else noclafer) ]
+assert [ no c => (if no c then noclafer else b) = noclafer ]
+assert [ #(if some c then a else noclafer) <= #a ]
+
+// equal to itself, which the compiler warns about as redundant
+assert [ noclafer = noclafer ]
+assert [ !(noclafer != noclafer) ]
+
+// a navigation from it is empty, whatever it navigates to, which the compiler warns about
+assert [ no noclafer.d ]
+assert [ no noclafer.parent ]
+assert [ noclafer.d = noclafer ]
+assert [ #noclafer.d.parent = 0 ]

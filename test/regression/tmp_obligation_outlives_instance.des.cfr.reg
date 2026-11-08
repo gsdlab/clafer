@@ -1,0 +1,18 @@
+//# OPTIONS --explicit --tl=10
+abstract 0..* event 0..* {
+  [X ((#this) = 0)]
+}
+0..1 events 1..1 {
+  0..* e1 : event 0..1 {}
+  0..* e2 : event 0..1 {}
+}
+abstract 0..* Port 0..* {
+  [(#this.parent) >= 1]
+}
+0..* sys 0..1 {
+  0..* p1 : Port 1..1 {}
+}
+0..* top : Port 1..1 {}
+
+assert [all e : event | X ((#(e ** event)) = 0)]
+assert [all p : sys.p1 | p.parent = sys]

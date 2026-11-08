@@ -22,22 +22,22 @@ a[href$='Ambiguous name'] {color: yellow}
 <div class="file">positive/tmp_trafficLight_history.cfr</div>
 
 <div>
-<span class="keyword">xor</span> <span class="claferDecl" id="c0_TrafficLight_4">TrafficLight_4</span> 1
+<span class="keyword">xor</span> <span class="claferDecl" id="TrafficLight_4">TrafficLight_4</span> 1
   <div class="indent">
-  <span class="keyword">xor</span> <span class="claferDecl" id="c0_on">on</span>
+  <span class="keyword">xor</span> <span class="claferDecl" id="on">on</span>
     <div class="indent">
-    <span class="claferDecl" id="c0_normal">normal</span></div>
+    <span class="claferDecl" id="normal">normal</span></div>
     <div class="indent">
-    <span class="claferDecl" id="c0_flashing">flashing</span></div>
+    <span class="claferDecl" id="flashing">flashing</span></div>
   </div>
   <div class="indent">
-  <span class="claferDecl" id="c0_off">off</span></div>
+  <span class="claferDecl" id="off">off</span></div>
   <div class="indent">
-  <span class="keyword">[</span> <span class="tKeyword">initially </span><a href="#c0_off"><span class="reference">off</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <span class="tKeyword">initially </span><a href="#off"><span class="reference">off</span></a> <span class="keyword">]</span></div>
   <div class="indent">
-  <span class="keyword">[</span> <a href="#c0_on"><span class="reference">on</span></a>.<a href="#c0_normal"><span class="reference">normal</span></a> &amp;&amp; X  ! <a href="#c0_on"><span class="reference">on</span></a> =&gt; X ( ! <a href="#c0_on"><span class="reference">on</span></a> W <a href="#c0_on"><span class="reference">on</span></a>.<a href="#c0_normal"><span class="reference">normal</span></a>) <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <a href="#on"><span class="reference">on</span></a>.<a href="#normal"><span class="reference">normal</span></a> &amp;&amp; X  ! <a href="#on"><span class="reference">on</span></a> =&gt; X ( ! <a href="#on"><span class="reference">on</span></a> W <a href="#on"><span class="reference">on</span></a>.<a href="#normal"><span class="reference">normal</span></a>) <span class="keyword">]</span></div>
   <div class="indent">
-  <span class="keyword">[</span> <a href="#c0_on"><span class="reference">on</span></a>.<a href="#c0_flashing"><span class="reference">flashing</span></a> &amp;&amp; X  ! <a href="#c0_on"><span class="reference">on</span></a> =&gt; X ( ! <a href="#c0_on"><span class="reference">on</span></a> W <a href="#c0_on"><span class="reference">on</span></a>.<a href="#c0_flashing"><span class="reference">flashing</span></a>) <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <a href="#on"><span class="reference">on</span></a>.<a href="#flashing"><span class="reference">flashing</span></a> &amp;&amp; X  ! <a href="#on"><span class="reference">on</span></a> =&gt; X ( ! <a href="#on"><span class="reference">on</span></a> W <a href="#on"><span class="reference">on</span></a>.<a href="#flashing"><span class="reference">flashing</span></a>) <span class="keyword">]</span></div>
 </div>
 
 </body>

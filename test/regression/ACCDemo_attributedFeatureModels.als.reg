@@ -2,133 +2,133 @@ open util/integer
 pred show {}
 
 
-abstract sig c0_Feature
-{ r_c0_cost : one c0_cost }
+abstract sig Feature
+{ r_cost : one cost }
 
-sig c0_cost
-{ c0_cost_ref : one Int }
-{ one @r_c0_cost.this }
+sig cost
+{ cost_ref : one Int }
+{ one @r_cost.this }
 
-abstract sig c0_ComfortFeature extends c0_Feature
-{ r_c0_comfort : one c0_comfort }
+abstract sig ComfortFeature extends Feature
+{ r_comfort : one comfort }
 
-sig c0_comfort
-{ c0_comfort_ref : one Int }
-{ one @r_c0_comfort.this }
+sig comfort
+{ comfort_ref : one Int }
+{ one @r_comfort.this }
 
-abstract sig c0_FuelFeature extends c0_ComfortFeature
-{ r_c0_fuel : one c0_fuel }
+abstract sig FuelFeature extends ComfortFeature
+{ r_fuel : one fuel }
 
-sig c0_fuel
-{ c0_fuel_ref : one Int }
-{ one @r_c0_fuel.this }
+sig fuel
+{ fuel_ref : one Int }
+{ one @r_fuel.this }
 
-abstract sig c0_Car
-{ r_c0_ABS : lone c0_ABS
-, r_c0_CC : lone c0_CC
-, r_c0_Transmission : one c0_Transmission
-, r_c0_FCA : lone c0_FCA
-, r_c0_total_cost : one c0_total_cost
-, r_c0_total_comfort : one c0_total_comfort
-, r_c0_total_fuel : one c0_total_fuel }
-{ (some this.@r_c0_total_cost) => (((this.@r_c0_total_cost).@c0_total_cost_ref) = (sum temp : (c0_Feature.@r_c0_cost) | temp.@c0_cost_ref))
-  (some this.@r_c0_total_comfort) => (((this.@r_c0_total_comfort).@c0_total_comfort_ref) = (sum temp : (c0_ComfortFeature.@r_c0_comfort) | temp.@c0_comfort_ref))
-  (some this.@r_c0_total_fuel) => (((this.@r_c0_total_fuel).@c0_total_fuel_ref) = (sum temp : (c0_FuelFeature.@r_c0_fuel) | temp.@c0_fuel_ref)) }
+abstract sig Car
+{ r_ABS : lone ABS
+, r_CC : lone CC
+, r_Transmission : one Transmission
+, r_FCA : lone FCA
+, r_total_cost : one total_cost
+, r_total_comfort : one total_comfort
+, r_total_fuel : one total_fuel }
+{ (some this.@r_total_cost) => (((this.@r_total_cost).@total_cost_ref) = (sum temp : (Feature.@r_cost) | temp.@cost_ref))
+  (some this.@r_total_comfort) => (((this.@r_total_comfort).@total_comfort_ref) = (sum temp : (ComfortFeature.@r_comfort) | temp.@comfort_ref))
+  (some this.@r_total_fuel) => (((this.@r_total_fuel).@total_fuel_ref) = (sum temp : (FuelFeature.@r_fuel) | temp.@fuel_ref)) }
 
-sig c0_ABS extends c0_Feature
+sig ABS extends Feature
 {}
-{ one @r_c0_ABS.this
-  ((this.@r_c0_cost).@c0_cost_ref) = 2 }
+{ one @r_ABS.this
+  ((this.@r_cost).@cost_ref) = 2 }
 
-sig c0_CC extends c0_FuelFeature
-{ r_c0_ACC : lone c0_ACC }
-{ one @r_c0_CC.this
-  ((this.@r_c0_fuel).@c0_fuel_ref) = 1
-  ((this.@r_c0_comfort).@c0_comfort_ref) = 3
-  ((this.@r_c0_cost).@c0_cost_ref) = 4 }
+sig CC extends FuelFeature
+{ r_ACC : lone ACC }
+{ one @r_CC.this
+  ((this.@r_fuel).@fuel_ref) = 1
+  ((this.@r_comfort).@comfort_ref) = 3
+  ((this.@r_cost).@cost_ref) = 4 }
 
-sig c0_ACC extends c0_FuelFeature
+sig ACC extends FuelFeature
 {}
-{ one @r_c0_ACC.this
-  ((this.@r_c0_fuel).@c0_fuel_ref) = 2
-  ((this.@r_c0_comfort).@c0_comfort_ref) = 6
-  ((this.@r_c0_cost).@c0_cost_ref) = 3
-  some ((this.~@r_c0_ACC).~@r_c0_CC).@r_c0_FCA }
+{ one @r_ACC.this
+  ((this.@r_fuel).@fuel_ref) = 2
+  ((this.@r_comfort).@comfort_ref) = 6
+  ((this.@r_cost).@cost_ref) = 3
+  some ((this.~@r_ACC).~@r_CC).@r_FCA }
 
-sig c0_Transmission
-{ r_c0_Automatic : lone c0_Automatic
-, r_c0_Manual : lone c0_Manual }
-{ one @r_c0_Transmission.this
-  let children = (r_c0_Automatic + r_c0_Manual) | one children }
+sig Transmission
+{ r_Automatic : lone Automatic
+, r_Manual : lone Manual }
+{ one @r_Transmission.this
+  let children = (r_Automatic + r_Manual) | one children }
 
-sig c0_Automatic extends c0_FuelFeature
+sig Automatic extends FuelFeature
 {}
-{ one @r_c0_Automatic.this
-  ((this.@r_c0_fuel).@c0_fuel_ref) = 2
-  ((this.@r_c0_comfort).@c0_comfort_ref) = 2
-  ((this.@r_c0_cost).@c0_cost_ref) = 3 }
+{ one @r_Automatic.this
+  ((this.@r_fuel).@fuel_ref) = 2
+  ((this.@r_comfort).@comfort_ref) = 2
+  ((this.@r_cost).@cost_ref) = 3 }
 
-sig c0_Manual extends c0_FuelFeature
+sig Manual extends FuelFeature
 {}
-{ one @r_c0_Manual.this
-  ((this.@r_c0_fuel).@c0_fuel_ref) = 0
-  ((this.@r_c0_comfort).@c0_comfort_ref) = 1
-  ((this.@r_c0_cost).@c0_cost_ref) = 2 }
+{ one @r_Manual.this
+  ((this.@r_fuel).@fuel_ref) = 0
+  ((this.@r_comfort).@comfort_ref) = 1
+  ((this.@r_cost).@cost_ref) = 2 }
 
-sig c0_FCA extends c0_FuelFeature
-{ r_c0_Sensor : one c0_Sensor
-, r_c0_Alert : one c0_Alert }
-{ one @r_c0_FCA.this
-  ((this.@r_c0_fuel).@c0_fuel_ref) = 2
-  ((this.@r_c0_comfort).@c0_comfort_ref) = 4
-  ((this.@r_c0_cost).@c0_cost_ref) = 5 }
+sig FCA extends FuelFeature
+{ r_Sensor : one Sensor
+, r_Alert : one Alert }
+{ one @r_FCA.this
+  ((this.@r_fuel).@fuel_ref) = 2
+  ((this.@r_comfort).@comfort_ref) = 4
+  ((this.@r_cost).@cost_ref) = 5 }
 
-sig c0_Sensor
-{ r_c0_Radar : lone c0_Radar
-, r_c0_Lidar : lone c0_Lidar }
-{ one @r_c0_Sensor.this
-  let children = (r_c0_Radar + r_c0_Lidar) | one children }
+sig Sensor
+{ r_Radar : lone Radar
+, r_Lidar : lone Lidar }
+{ one @r_Sensor.this
+  let children = (r_Radar + r_Lidar) | one children }
 
-sig c0_Radar extends c0_Feature
+sig Radar extends Feature
 {}
-{ one @r_c0_Radar.this
-  ((this.@r_c0_cost).@c0_cost_ref) = 2 }
+{ one @r_Radar.this
+  ((this.@r_cost).@cost_ref) = 2 }
 
-sig c0_Lidar extends c0_Feature
+sig Lidar extends Feature
 {}
-{ one @r_c0_Lidar.this
-  ((this.@r_c0_cost).@c0_cost_ref) = 4 }
+{ one @r_Lidar.this
+  ((this.@r_cost).@cost_ref) = 4 }
 
-sig c0_Alert
-{ r_c0_Haptic : lone c0_Haptic
-, r_c0_Audible : lone c0_Audible }
-{ one @r_c0_Alert.this
-  let children = (r_c0_Haptic + r_c0_Audible) | one children }
+sig Alert
+{ r_Haptic : lone Haptic
+, r_Audible : lone Audible }
+{ one @r_Alert.this
+  let children = (r_Haptic + r_Audible) | one children }
 
-sig c0_Haptic extends c0_ComfortFeature
+sig Haptic extends ComfortFeature
 {}
-{ one @r_c0_Haptic.this
-  ((this.@r_c0_comfort).@c0_comfort_ref) = 4
-  ((this.@r_c0_cost).@c0_cost_ref) = 2 }
+{ one @r_Haptic.this
+  ((this.@r_comfort).@comfort_ref) = 4
+  ((this.@r_cost).@cost_ref) = 2 }
 
-sig c0_Audible extends c0_ComfortFeature
+sig Audible extends ComfortFeature
 {}
-{ one @r_c0_Audible.this
-  ((this.@r_c0_comfort).@c0_comfort_ref) = 2
-  ((this.@r_c0_cost).@c0_cost_ref) = 1 }
+{ one @r_Audible.this
+  ((this.@r_comfort).@comfort_ref) = 2
+  ((this.@r_cost).@cost_ref) = 1 }
 
-sig c0_total_cost
-{ c0_total_cost_ref : one Int }
-{ one @r_c0_total_cost.this }
+sig total_cost
+{ total_cost_ref : one Int }
+{ one @r_total_cost.this }
 
-sig c0_total_comfort
-{ c0_total_comfort_ref : one Int }
-{ one @r_c0_total_comfort.this }
+sig total_comfort
+{ total_comfort_ref : one Int }
+{ one @r_total_comfort.this }
 
-sig c0_total_fuel
-{ c0_total_fuel_ref : one Int }
-{ one @r_c0_total_fuel.this }
+sig total_fuel
+{ total_fuel_ref : one Int }
+{ one @r_total_fuel.this }
 
-one sig c0_aCar extends c0_Car
+one sig aCar extends Car
 {}
 

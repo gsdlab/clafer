@@ -34,8 +34,10 @@ prof: $(ALLOY_JAR)
 # Build first, so that the regression tests use the current compiler.
 test: build
 	cp `stack path --local-install-root`/bin/clafer$(EXE) .
-	stack test 2>/dev/null || :    # supress error message and exit code if fail
-	$(MAKE) -C $(TEST_DIR) test
+	@# run the regression tests also when the test suites fail, and fail if either fails
+	stack test; suites=$$?; \
+	$(MAKE) -C $(TEST_DIR) test; regressions=$$?; \
+	test $$suites -eq 0 -a $$regressions -eq 0
 
 generateAlloyJSHTMLDot:
 	$(MAKE) -C $(TEST_DIR) generateAlloyJSHTMLDot

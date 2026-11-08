@@ -2,130 +2,130 @@ open util/integer
 pred show {}
 
 
-abstract sig c0_Book
-{ r_c0_title : one c0_title
-, r_c0_year : one c0_year
-, r_c0_page : set c0_page
-, r_c0_format : one c0_format
-, r_c0_kind : one c0_kind
-, r_c0_authors : some c0_authors
-, r_c0_ISBN : lone c0_ISBN }
-{ 2 <= #r_c0_page
-  all disj x, y : this.@r_c0_authors | (x.@c0_authors_ref) != (y.@c0_authors_ref) 
-  (((this.@r_c0_year).@c0_year_ref) >= 5) => (some this.@r_c0_ISBN) }
+abstract sig Book
+{ r_title : one title
+, r_year : one year
+, r_page : set page
+, r_format : one format
+, r_kind : one kind
+, r_authors : some authors
+, r_ISBN : lone ISBN }
+{ 2 <= #r_page
+  all disj x, y : this.@r_authors | (x.@authors_ref) != (y.@authors_ref) 
+  (((this.@r_year).@year_ref) >= 5) => (some this.@r_ISBN) }
 
-sig c0_title
-{ c0_title_ref : one Int
-, r_c0_subtitle : lone c0_subtitle }
-{ one @r_c0_title.this }
+sig title
+{ title_ref : one Int
+, r_subtitle : lone subtitle }
+{ one @r_title.this }
 
-sig c0_subtitle
-{ c0_subtitle_ref : one Int }
-{ one @r_c0_subtitle.this }
+sig subtitle
+{ subtitle_ref : one Int }
+{ one @r_subtitle.this }
 
-sig c0_year
-{ c0_year_ref : one Int }
-{ one @r_c0_year.this }
+sig year
+{ year_ref : one Int }
+{ one @r_year.this }
 
-sig c0_page
+sig page
 {}
-{ one @r_c0_page.this }
+{ one @r_page.this }
 
-sig c0_format
-{ r_c0_paper : lone c0_paper
-, r_c0_electronic : lone c0_electronic }
-{ one @r_c0_format.this
-  let children = (r_c0_paper + r_c0_electronic) | one children }
+sig format
+{ r_paper : lone paper
+, r_electronic : lone electronic }
+{ one @r_format.this
+  let children = (r_paper + r_electronic) | one children }
 
-sig c0_paper
-{ r_c0_hardcover : lone c0_hardcover }
-{ one @r_c0_paper.this }
+sig paper
+{ r_hardcover : lone hardcover }
+{ one @r_paper.this }
 
-sig c0_hardcover
+sig hardcover
 {}
-{ one @r_c0_hardcover.this }
+{ one @r_hardcover.this }
 
-sig c0_electronic
+sig electronic
 {}
-{ one @r_c0_electronic.this }
+{ one @r_electronic.this }
 
-sig c0_kind
-{ r_c0_textbook : lone c0_textbook
-, r_c0_manual : lone c0_manual
-, r_c0_reference : lone c0_reference
-, r_c0_fiction : lone c0_fiction
-, r_c0_nonfiction : lone c0_nonfiction
-, r_c0_other : lone c0_other }
-{ one @r_c0_kind.this
-  let children = (r_c0_textbook + r_c0_manual + r_c0_reference + r_c0_fiction + r_c0_nonfiction + r_c0_other) | one children }
+sig kind
+{ r_textbook : lone textbook
+, r_manual : lone manual
+, r_reference : lone reference
+, r_fiction : lone fiction
+, r_nonfiction : lone nonfiction
+, r_other : lone other }
+{ one @r_kind.this
+  let children = (r_textbook + r_manual + r_reference + r_fiction + r_nonfiction + r_other) | one children }
 
-sig c0_textbook
+sig textbook
 {}
-{ one @r_c0_textbook.this }
+{ one @r_textbook.this }
 
-sig c0_manual
+sig manual
 {}
-{ one @r_c0_manual.this }
+{ one @r_manual.this }
 
-sig c0_reference
+sig reference
 {}
-{ one @r_c0_reference.this }
+{ one @r_reference.this }
 
-sig c0_fiction
+sig fiction
 {}
-{ one @r_c0_fiction.this }
+{ one @r_fiction.this }
 
-sig c0_nonfiction
+sig nonfiction
 {}
-{ one @r_c0_nonfiction.this }
+{ one @r_nonfiction.this }
 
-sig c0_other
-{ c0_other_ref : one Int }
-{ one @r_c0_other.this }
+sig other
+{ other_ref : one Int }
+{ one @r_other.this }
 
-sig c0_authors
-{ c0_authors_ref : one c0_Author }
-{ one @r_c0_authors.this }
+sig authors
+{ authors_ref : one Author }
+{ one @r_authors.this }
 
-sig c0_ISBN
-{ c0_ISBN_ref : one Int
-, r_c0_GS1 : lone c0_GS1 }
-{ one @r_c0_ISBN.this
-  ((((this.~@r_c0_ISBN).@r_c0_year).@c0_year_ref) >= 6) => (some this.@r_c0_GS1) }
+sig ISBN
+{ ISBN_ref : one Int
+, r_GS1 : lone GS1 }
+{ one @r_ISBN.this
+  ((((this.~@r_ISBN).@r_year).@year_ref) >= 6) => (some this.@r_GS1) }
 
-sig c0_GS1
-{ c0_GS1_ref : one Int }
-{ one @r_c0_GS1.this }
+sig GS1
+{ GS1_ref : one Int }
+{ one @r_GS1.this }
 
-abstract sig c0_Person
-{ r_c0_name : one c0_name
-, r_c0_dob : lone c0_dob }
+abstract sig Person
+{ r_name : one name
+, r_dob : lone dob }
 
-sig c0_name
-{ c0_name_ref : one Int }
-{ one @r_c0_name.this }
+sig name
+{ name_ref : one Int }
+{ one @r_name.this }
 
-sig c0_dob
-{ c0_dob_ref : one Int }
-{ one @r_c0_dob.this }
+sig dob
+{ dob_ref : one Int }
+{ one @r_dob.this }
 
-abstract sig c0_Author extends c0_Person
-{ r_c0_books : some c0_books }
-{ all disj x, y : this.@r_c0_books | (x.@c0_books_ref) != (y.@c0_books_ref)  }
+abstract sig Author extends Person
+{ r_books : some books }
+{ all disj x, y : this.@r_books | (x.@books_ref) != (y.@books_ref)  }
 
-sig c0_books
-{ c0_books_ref : one c0_Book }
-{ one @r_c0_books.this }
+sig books
+{ books_ref : one Book }
+{ one @r_books.this }
 
-one sig c0_GenerativeProgramming extends c0_Book
+one sig GenerativeProgramming extends Book
 {}
-{ ((((((((((this.@r_c0_title).@c0_title_ref) = 0) && (no (this.@r_c0_title).@r_c0_subtitle)) && (((this.@r_c0_year).@c0_year_ref) = 5)) && ((#(this.@r_c0_page)) = 4)) && (some (this.@r_c0_format).@r_c0_paper)) && (some (this.@r_c0_kind).@r_c0_nonfiction)) && (((this.@r_c0_authors).@c0_authors_ref) = (c0_Czarnecki + c0_Eisenecker))) && (((this.@r_c0_ISBN).@c0_ISBN_ref) = 0)) && (no (this.@r_c0_ISBN).@r_c0_GS1) }
+{ ((((((((((this.@r_title).@title_ref) = 0) && (no (this.@r_title).@r_subtitle)) && (((this.@r_year).@year_ref) = 5)) && ((#(this.@r_page)) = 4)) && (some (this.@r_format).@r_paper)) && (some (this.@r_kind).@r_nonfiction)) && (((this.@r_authors).@authors_ref) = (Czarnecki + Eisenecker))) && (((this.@r_ISBN).@ISBN_ref) = 0)) && (no (this.@r_ISBN).@r_GS1) }
 
-one sig c0_Czarnecki extends c0_Author
+one sig Czarnecki extends Author
 {}
-{ (((this.@r_c0_name).@c0_name_ref) = 0) && (c0_GenerativeProgramming in ((this.@r_c0_books).@c0_books_ref)) }
+{ (((this.@r_name).@name_ref) = 0) && (GenerativeProgramming in ((this.@r_books).@books_ref)) }
 
-one sig c0_Eisenecker extends c0_Author
+one sig Eisenecker extends Author
 {}
-{ (((this.@r_c0_name).@c0_name_ref) = 0) && (c0_GenerativeProgramming in ((this.@r_c0_books).@c0_books_ref)) }
+{ (((this.@r_name).@name_ref) = 0) && (GenerativeProgramming in ((this.@r_books).@books_ref)) }
 

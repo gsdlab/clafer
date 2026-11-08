@@ -1,0 +1,29 @@
+//# OPTIONS --explicit
+0..* a 1..1 {
+  [this.b.dref.f.dref.dref = h]
+  [this.b.dref.f.dref.dref = h]
+  [this.b.dref.f.dref.dref = h]
+  [this.b.dref.f.dref.dref = h]
+  0..* b -> e 1..1 {
+    [this.dref.f.dref.dref = h]
+    [this.dref.f.dref.dref = h]
+    [this.dref.f.dref.dref = h]
+    [this.dref.f.dref.dref = h]
+  }
+  0..* c 1..1 {
+    [this.parent.b.dref.f.dref = g]
+    [this.parent.b.dref.f.dref = g]
+    [this.parent.b.dref.f.dref = g]
+    [this.parent.b.dref.f.dref.dref = h]
+    0..* d 1..1 {
+      [this.parent.parent.b.dref = e]
+      [this.parent.parent.b.dref = e]
+      [this.parent.parent.b.dref = e]
+    }
+  }
+}
+0..* e 1..1 {
+  0..* f -> g 0..1 {}
+}
+0..* g -> h 1..1 {}
+0..* h 1..1 {}

@@ -2,28 +2,28 @@ open util/integer
 pred show {}
 
 
-lone sig c0_x
+lone sig x
 {}
 
-lone sig c0_y
+lone sig y
 {}
 
-lone sig c0_z
+lone sig z
 {}
 
-lone sig c0_w
+lone sig w
 {}
 
-lone sig c0_u
+lone sig u
 {}
 
-lone sig c0_o
+lone sig o
 {}
 
-lone sig c0_p
+lone sig p
 {}
 
-lone sig c0_h
+lone sig h
 {}
 
-fact { (some c0_h) <=> (((some c0_x) => (some c0_z) else (some c0_y)) => ((some c0_x) => (some c0_y)) else ((no c0_w) => ((some c0_z) => (some c0_u) else (some c0_o)) else (some c0_p))) }
+fact { (some h) <=> (((some x) => (some z) else (some y)) => ((some x) => (some y)) else ((no w) => ((some z) => (some u) else (some o)) else (some p))) }

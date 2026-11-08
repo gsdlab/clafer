@@ -2,62 +2,62 @@ open util/integer
 pred show {}
 
 
-fact { #c0_Value = 0 }
-abstract sig c0_Value
+fact { #Value = 0 }
+abstract sig Value
 {}
 
-fact { #c0_Attribute = 0 }
-abstract sig c0_Attribute
-{ r_c0_value : one c0_value }
+fact { #Attribute = 0 }
+abstract sig Attribute
+{ r_value : one value }
 
-sig c0_value
-{ c0_value_ref : one c0_Value }
-{ one @r_c0_value.this }
+sig value
+{ value_ref : one Value }
+{ one @r_value.this }
 
-fact { #c0_ActionName = 0 }
-abstract sig c0_ActionName extends c0_Attribute
+fact { #ActionName = 0 }
+abstract sig ActionName extends Attribute
 {}
 
-fact { #c0_Role = 0 }
-abstract sig c0_Role extends c0_Attribute
+fact { #Role = 0 }
+abstract sig Role extends Attribute
 {}
 
-fact { #c0_ResourceName = 0 }
-abstract sig c0_ResourceName extends c0_Attribute
+fact { #ResourceName = 0 }
+abstract sig ResourceName extends Attribute
 {}
 
-fact { #c0_Element = 0 }
-abstract sig c0_Element
-{ r_c0_attributes : set c0_attributes }
+fact { #Element = 0 }
+abstract sig Element
+{ r_attributes : set attributes }
 
-abstract sig c0_attributes extends c0_Attribute
+abstract sig attributes extends Attribute
 {}
-{ one @r_c0_attributes.this }
+{ one @r_attributes.this }
 
-abstract sig c0_Effect
-{}
-
-one sig c0_Permit extends c0_Effect
+abstract sig Effect
 {}
 
-one sig c0_Deny extends c0_Effect
+one sig Permit extends Effect
 {}
 
-one sig c0_NotApplicable extends c0_Effect
+one sig Deny extends Effect
 {}
 
-one sig c0_Indeterminate extends c0_Effect
+one sig NotApplicable extends Effect
 {}
 
-abstract sig c0_CombiningAlgo
+one sig Indeterminate extends Effect
 {}
 
-one sig c0_PermitOverrides extends c0_CombiningAlgo
+abstract sig CombiningAlgo
 {}
 
-one sig c0_DenyOverrides extends c0_CombiningAlgo
+one sig PermitOverrides extends CombiningAlgo
 {}
 
-one sig c0_OnlyOneApplicable extends c0_CombiningAlgo
+one sig DenyOverrides extends CombiningAlgo
+{}
+
+one sig OnlyOneApplicable extends CombiningAlgo
 {}
 

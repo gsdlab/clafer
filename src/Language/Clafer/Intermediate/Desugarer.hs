@@ -25,7 +25,8 @@ into Intermediate representation (IR) from "Language.Clafer.Intermediate.Intclaf
 -}
 module Language.Clafer.Intermediate.Desugarer where
 
-import Data.Maybe (fromMaybe)
+import Data.List (nub)
+import Data.Maybe (fromMaybe, mapMaybe)
 import Prelude hiding ((||))
 import Language.Clafer.Common
 import Language.Clafer.Front.AbsClafer as AbsClafer
@@ -132,22 +133,36 @@ desugarClafer' claf'@(Clafer s' abstract' tmods' gcrd' id' super' reference' crd
                           (desugarCard crd') (0, -1)
                           elements'')]
   ++ (desugarInit id' init')
-  -- the transition of a clafer is a constraint in its parent's context, so it lasts as long
-  -- as the parent, e.g., `on --> off` takes the traffic light from on to off
-  ++ (desugarClaferTrans claf')
   where
-    iClaferModifiers = desugarModifiers abstract' tmods'
-    elements'' = desugarElements elements'
+    iClaferModifiers = desugarModifiers abstract' tmods' reference'
+    -- the transition of a clafer is a constraint of the clafer, whose obligations last as long
+    -- as its parent, e.g., `on --> off` takes the traffic light from on to off
+    elements'' = desugarElements elements' ++ desugarClaferTrans claf'
 
-desugarModifiers :: Abstract -> [TempModifier] -> IClaferModifiers
-desugarModifiers    abstract'    tmods           =
-  IClaferModifiers (desugarAbstract abstract') (desugarInitiality tmods) (desugarFinality tmods)
+desugarModifiers :: Abstract -> [TempModifier] -> Reference -> IClaferModifiers
+desugarModifiers    abstract'    tmods           reference' =
+  IClaferModifiers (desugarAbstract abstract') (desugarInitiality tmods) (desugarFinality tmods) inherited
+  where
+  -- finalref or finaltarget of a clafer that inherits its reference, e.g., `finalref motor : engine`
+  inherited = case reference' of
+    ReferenceEmpty _ -> desugarRefModifiers [ m | m <- tmods, isRefMod m ]
+    _ -> []
+  isRefMod (AbsClafer.FinalRef _) = True
+  isRefMod (AbsClafer.FinalTarget _) = True
+  isRefMod _ = False
 
 sugarModifier :: IClaferModifiers -> [TempModifier]
 sugarModifier modifiers' =
   (if _initial modifiers' then [Initial noSpan] else [])
   ++
   (if _final modifiers' then [Final noSpan] else [])
+  ++
+  concatMap sugarRefModifier (_finalReferences modifiers')
+  where
+  sugarRefModifier m = case m of
+     IntClafer.FinalRef -> [AbsClafer.FinalRef noSpan]
+     IntClafer.FinalTarget -> [AbsClafer.FinalTarget noSpan]
+     _ -> []
 
 
 getPExpClaferIdent :: Exp -> String
@@ -167,16 +182,19 @@ desugarSuper (SuperSome _ setexp) = Just $ desugarExp setexp
 
 desugarReference :: [TempModifier] -> Reference -> Maybe IReference
 desugarReference _ (ReferenceEmpty _) = Nothing
-desugarReference mods (ReferenceSet _ setexp) = Just $ IReference True (desugarRefModifier mods) $ desugarExp setexp
-desugarReference mods (ReferenceBag _ setexp) = Just $ IReference False (desugarRefModifier mods) $ desugarExp setexp
+desugarReference mods (ReferenceSet _ setexp) = Just $ IReference True (desugarRefModifiers mods) $ desugarExp setexp
+desugarReference mods (ReferenceBag _ setexp) = Just $ IReference False (desugarRefModifiers mods) $ desugarExp setexp
 
-desugarRefModifier :: [TempModifier] -> Maybe IReferenceModifier
-desugarRefModifier (modi:_) = case modi of
-                                Final _ -> Just FinalRefTarget
-                                AbsClafer.FinalRef _ -> Just IntClafer.FinalRef
-                                AbsClafer.FinalTarget _ -> Just IntClafer.FinalTarget
-                                _ -> Nothing
-desugarRefModifier _ = Nothing
+-- | The modifiers of the reference, e.g., `final` in `initial final x -> T`, and both in
+--   `finalref finaltarget x -> T`, each once
+desugarRefModifiers :: [TempModifier] -> [IReferenceModifier]
+desugarRefModifiers mods = nub $ mapMaybe refModifier mods
+  where
+  refModifier modi = case modi of
+    Final _ -> Just FinalRefTarget
+    AbsClafer.FinalRef _ -> Just IntClafer.FinalRef
+    AbsClafer.FinalTarget _ -> Just IntClafer.FinalTarget
+    _ -> Nothing
 
 desugarInit :: PosIdent -> Init -> [IElement]
 desugarInit _ (InitEmpty _) = []
@@ -201,8 +219,9 @@ desugarClaferTrans :: Clafer -> [IElement]
 desugarClaferTrans (Clafer _ _ _ _ name _ _ _ _ trans _) =
   case trans of
       TransitionEmpty _ -> []
-      -- the constraint spans the clafer's name and its transition, e.g., green --> yellow
-      Transition s arrow e -> let s' = getSpan name >- s in [IEConstraint True (desugarTrans s' (mkClaferIdExp s' $ transIdent name) arrow e)]
+      -- the constraint spans the clafer's name and its transition, e.g., green --> yellow; its
+      -- source is the instance of the clafer
+      Transition s arrow e -> let s' = getSpan name >- s in [IEConstraint True (desugarTrans s' (mkClaferIdExp s' thisIdent) arrow e)]
 
 desugarTrans :: Span -> Exp -> TransArrow -> Exp -> PExp
 desugarTrans s e1 arrow e2 = desugarExp $ desugarTrans' s e1 arrow e2
@@ -237,7 +256,11 @@ step s e1 arrow e2 = case arrow of
       NextTransArrow _ -> LtlX s e2
       GuardedNextTransArrow _ _ -> LtlX s e2
   where
-    multiStep = LtlU s (EAnd s (mkClaferIdExp s "this") e1) e2
+    this' = mkClaferIdExp s thisIdent
+    -- the source of a clafer's transition is this
+    multiStep = LtlU s (if isThis e1 then this' else EAnd s this' e1) e2
+    isThis (ClaferId _ (Path _ [ModIdIdent _ i])) = transIdent i == thisIdent
+    isThis _ = False
 
 
 desugarFinality :: [TempModifier] -> Bool
@@ -426,23 +449,21 @@ translateTmpPatterns e = case e of
   TmpPatPrecede _ s p scope -> case scope of
     PatScopeEmpty _ ->            not' p `w` s
     PatScopeBefore _ r ->         f r ==> (not' p `u` (s || r))
-    PatScopeAfter _ q ->          g (not' q) || f (q & (not' p `w` s))
+                                  -- from the first q: Dwyer's []!Q | <>(Q & (!P W S)) may pick a later q
+    PatScopeAfter _ q ->          f q ==> (not' q `u` (q & (not' p `w` s)))
     PatScopeBetweenAnd _ q r ->   g ((q & not' r & f r) ==> (not' p `u` (s || r)))
     PatScopeAfterUntil _ q r ->   g ((q & not' r) ==> (not' p `w` (s || r)))
   TmpPatFollow _ s p scope -> case scope of
     PatScopeEmpty _ ->            g(p ==> f s)
     PatScopeBefore _ r ->         f r ==> ((p ==> (not' r `u` (s & not' r))) `u` r)
     PatScopeAfter _ q ->          g(q ==> g(p ==> f s))
-    PatScopeBetweenAnd _ q r ->   g((q & not' r & f r) ==> (p ==> (((not' r `u` (s & not' r))) `u` r)))
+                                  -- every p up to r: []((Q & !R & <>R) -> ((P -> (!R U (S & !R))) U R))
+    PatScopeBetweenAnd _ q r ->   g((q & not' r & f r) ==> ((p ==> (not' r `u` (s & not' r))) `u` r))
     PatScopeAfterUntil _ q r ->   g((q & not' r) ==> ((p==> (not' r `u` (s & not' r))) `w` r))
   {-TmpInitially s exp' -> -}
     {-let oper1 =  ENeg s $ mkClaferIdExp s "this"-}
         {-oper2 = LtlX s $ mkClaferIdExp s "this"-}
     {-in EImplies s (EAnd s oper1 oper2) $ LtlX s exp'-}
-  TmpFinally s exp' ->
-    let oper1 =  mkClaferIdExp s "this"
-        oper2 = LtlX s $ ENeg s $ mkClaferIdExp s "this"
-    in EImplies s (EAnd s oper1 oper2) exp'
   TmpEventually s exp' -> LtlF s exp'
   TmpWUntil s exp0 exp1 -> LtlW s exp0 exp1
   TmpUntil s exp0 exp1 -> LtlU s exp0 exp1
@@ -489,6 +510,7 @@ desugarExp' x = let x' =  translateTmpPatterns x in case x' of
   LtlG  _ exp'  -> dop iG  [exp']
   LtlX  _ exp'  -> dop iX  [exp']
   TmpInitially _ exp' -> dop iInitially [exp']
+  TmpFinally _ exp' -> dop iFinally [exp']
   EQuantExp _ quant' exp' ->
       IDeclPExp (desugarQuant quant') [] (desugarExp exp')
   ELt  _ exp0 exp'  -> dop iLt  [exp0, exp']
@@ -532,7 +554,6 @@ desugarExp' x = let x' =  translateTmpPatterns x in case x' of
   TmpPatAlways{} -> showPatErr
   TmpPatPrecede{} -> showPatErr
   TmpPatFollow{} -> showPatErr
-  TmpFinally{} -> showPatErr
   TmpUntil{} -> showPatErr
   TmpWUntil{} -> showPatErr
   TmpEventually{} -> showPatErr
@@ -595,6 +616,7 @@ sugarExp' x = case x of
     | op'' == iG             = LtlG noSpan
     | op'' == iX             = LtlX noSpan
     | op'' == iInitially     = TmpInitially noSpan
+    | op'' == iFinally       = TmpFinally noSpan
     | otherwise              = error $ show op'' ++ "is not an op"
   sugarOp op''
     | op'' == iIff           = EIff noSpan

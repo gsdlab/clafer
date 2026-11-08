@@ -1,0 +1,42 @@
+open util/integer
+pred show {}
+
+
+abstract sig Port
+{}
+
+abstract sig B
+{ r_a : one a }
+
+sig a
+{ a_ref : one Port }
+{ one @r_a.this }
+
+one sig p1 extends Port
+{}
+
+one sig p2 extends Port
+{}
+
+one sig sys
+{ r_b1 : one b1
+, r_b2 : one b2 }
+
+one sig b1 extends B
+{}
+
+one sig b2 extends B
+{}
+{ ((this.@r_a).@a_ref) = ((((this.~@r_b2).@r_b1).@r_a).@a_ref)
+  (((this.@r_a).@a_ref) != ((((this.~@r_b2).@r_b1).@r_a).@a_ref)) || (((this.@r_a).@a_ref) = ((((this.~@r_b2).@r_b1).@r_a).@a_ref)) }
+
+one sig choice
+{ choice_ref : one B }
+{ (((this.@choice_ref).@r_a).@a_ref) in (((sys.@r_b1).@r_a).@a_ref) }
+
+one sig sel
+{ sel_ref : one a }
+{ (this.@sel_ref) in ((sys.@r_b1).@r_a)
+  (this.@sel_ref) = ((sys.@r_b1).@r_a) }
+
+fact { all  x : (sys.@r_b1).@r_a | x = ((sys.@r_b1).@r_a) }

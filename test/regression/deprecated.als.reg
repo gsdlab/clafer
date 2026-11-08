@@ -2,17 +2,17 @@ open util/integer
 pred show {}
 
 
-abstract sig c0_Component
-{ r_c0_link : lone c0_link }
+abstract sig Component
+{ r_link : lone link }
 
-sig c0_link
-{ c0_link_ref : one c0_Component }
-{ one @r_c0_link.this }
+sig link
+{ link_ref : one Component }
+{ one @r_link.this }
 
-one sig c0_Comp1 extends c0_Component
+one sig Comp1 extends Component
 {}
-{ ((this.@r_c0_link).@c0_link_ref) = c0_Comp1
-  ((this.@r_c0_link).@c0_link_ref) = c0_Comp1 }
+{ ((this.@r_link).@link_ref) = Comp1
+  ((this.@r_link).@link_ref) = Comp1 }
 
-fact { some c0_Comp1 & c0_Component }
-fact { some c0_Comp1 & c0_Component }
+fact { some Comp1 & Component }
+fact { some Comp1 & Component }

@@ -2,10 +2,10 @@ open util/integer
 pred show {}
 
 
-one sig c0_z
-{ r_c0_y : one c0_y }
-{ ((this.@r_c0_y).@c0_y_ref) = (-1.mul[1]) }
+one sig z
+{ r_y : one y }
+{ ((this.@r_y).@y_ref) = (-1.mul[1]) }
 
-one sig c0_y
-{ c0_y_ref : one Int }
+one sig y
+{ y_ref : one Int }
 

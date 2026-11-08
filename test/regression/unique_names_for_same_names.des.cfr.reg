@@ -1,0 +1,13 @@
+//# OPTIONS --explicit
+abstract 0..* A 0..* {
+  0..* A__b 1..1 {}
+}
+0..* root__a : A 1..1 {
+  0..* a__b 1..1 {}
+}
+abstract 0..* root__b 0..* {}
+0..* c 1..1 {
+  0..* c__b : root__b 1..1 {
+    0..* b__a 1..1 {}
+  }
+}

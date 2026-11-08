@@ -1,0 +1,59 @@
+open util/integer
+pred show {}
+
+
+one sig root
+{ var r_go : set go
+, r_sm : set sm }
+fact { always (lone root.@r_go) }
+fact { always (one root.@r_sm) }
+
+assert assertAt_13_10 { always (((some alive_sm.@r_a) && (some alive_go)) => (after (some alive_sm.@r_b))) }
+check assertAt_13_10 for 1 but 10 steps
+
+
+
+sig go
+{ p_go : lone root }
+fun alive_go : set go { root.@r_go }
+fact { always ~@r_go in @p_go }
+
+
+sig sm
+{ p_sm : lone root
+, var r_a : set a
+, var r_b : set b
+, var r_c : set c }
+{ always (this in alive_sm implies (let children = (this.@r_a + this.@r_b + this.@r_c) | one children))
+  always (this in alive_sm and not before this in alive_sm implies (some this.@r_a)) }
+fun alive_sm : set sm { root.@r_sm }
+fact { always ~@r_sm in @p_sm }
+
+fact { all self_ : sm | always (self_ in alive_sm implies (lone self_.@r_a)) }
+fact { all self_ : sm | always (self_ in alive_sm implies (lone self_.@r_b)) }
+fact { all self_ : sm | always (self_ in alive_sm implies (lone self_.@r_c)) }
+
+
+sig a
+{ p_a : lone sm }
+fun alive_a : set a { sm.@r_a }
+fact { always ~@r_a in @p_a
+  always @r_a.univ in alive_sm }
+
+fact { all self_ : a | always (self_ in alive_a implies ((some alive_go) => (after (not some self_.(@p_a :> alive_sm) or (some (self_.(@p_a :> alive_sm)).@r_b))))) }
+
+
+sig b
+{ p_b : lone sm }
+fun alive_b : set b { sm.@r_b }
+fact { always ~@r_b in @p_b
+  always @r_b.univ in alive_sm }
+
+
+sig c
+{ p_c : lone sm }
+fun alive_c : set c { sm.@r_c }
+fact { always ~@r_c in @p_c
+  always @r_c.univ in alive_sm }
+
+

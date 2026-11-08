@@ -1,0 +1,10 @@
+digraph "tmp_parent_across_lifetimes"
+{
+rankdir=BT;
+ranksep=0.3;
+nodesep=0.1;
+graph [fontname=Sans fontsize=11];
+node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
+edge [fontname=Sans fontsize=11];
+"box" [label="box 2" URL="#box" tooltip="box 2&#10;  item ?&#10;"];
+}

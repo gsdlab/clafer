@@ -1,0 +1,5 @@
+// The root has no instance in the static outputs (#112): it can be navigated from, counted and
+// quantified, but not used as a set, e.g. in a union. Temporal models, whose output has a root
+// signature, accept it.
+a ?
+[ some (root ++ a) ]

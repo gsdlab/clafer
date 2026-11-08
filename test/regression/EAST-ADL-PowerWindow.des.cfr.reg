@@ -1,0 +1,27 @@
+//# OPTIONS --explicit
+[((#express) >= 1) <=> ((#downX) >= 1)]
+abstract 0..* Feature 0..* {}
+0..* express : Feature 0..1 {}
+abstract 0..* Component 0..* {
+  abstract 1..1 Port 0..* {
+    0..* input 0..1 {}
+    0..* output 0..1 {}
+  }
+}
+abstract 0..* Command 0..* {}
+0..* motorUp : Command 1..1 {}
+0..* motorDown : Command 1..1 {}
+0..* motorStop : Command 1..1 {}
+abstract 0..* Request 0..* {}
+0..* up : Request 1..1 {}
+0..* down : Request 1..1 {}
+0..* downX : Request 0..1 {}
+0..* stop : Request 1..1 {}
+0..* WinCtrl : Component 1..1 {
+  1..1 cmd : Port -> Command 1..1 {
+    [(#this.output) >= 1]
+  }
+  1..1 req : Port -> Request 1..1 {
+    [(#this.input) >= 1]
+  }
+}

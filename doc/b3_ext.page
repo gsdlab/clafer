@@ -1,0 +1,101 @@
+---
+title: OCL Benchmark B3 with extensions
+...
+
+
+```{.clafer}
+abstract Person
+	
+ada : Person
+
+cyd : Person	
+
+eve : Person
+	
+bob : Person
+	
+dan : Person
+	
+abstract Exam
+	date: string
+		[this != ""]
+	recorder -> Person
+	examiner -> Person
+	examinee -> Person
+
+ada_bob_cyd:Exam
+	[date = "20001023"
+	recorder = cyd
+	examiner = bob
+	examinee = ada]
+
+dan_bob_ada:Exam
+	[date = "20040817"
+	recorder = ada
+	examiner = bob
+	examinee = dan]
+
+eve_ada_dan:Exam
+	[date = "20080331"
+	recorder = dan
+	examiner = ada
+	examinee = eve]
+
+examineeAda -> Exam *
+[examineeAda = {e:Exam|e.examinee = ada}]
+	
+recorderAda -> Exam *
+[recorderAda = {e:Exam|e.recorder = ada}]	
+
+examinerAda -> Exam *
+[examinerAda = {e:Exam|e.examiner = ada}]	
+
+//Navigating higher-order association using Set Comprehension extension
+
+examineeOfAdaAsExaminer -> Person *
+[examineeOfAdaAsExaminer = {e:Exam|e.examiner = ada|e.examinee}]	
+
+examineeOfAdaAsRecorder -> Person *
+[examineeOfAdaAsRecorder = {e:Exam|e.recorder = ada|e.examinee}]
+
+
+examinerOfAdaAsExaminee -> Person *
+[examinerOfAdaAsExaminee = {e:Exam|e.examinee = ada|e.examiner}]
+
+
+examinerOfAdaAsRecorder -> Person *
+[examinerOfAdaAsRecorder = {e:Exam|e.recorder = ada|e.examiner}]
+
+recorderOfAdaAsExaminee -> Person *
+[recorderOfAdaAsExaminee = {e:Exam|e.examinee = ada|e.recorder}]
+
+recorderOfAdaAsExaminer -> Person *
+[recorderOfAdaAsExaminer = {e:Exam|e.examiner = ada|e.recorder}]
+
+
+//Navigating higher-order association using Reverse Reference
+
+examineeOfAdaAsExaminer -> Person *
+[examineeOfAdaAsExaminer = ada.~examiner.parent.examinee]
+
+examineeOfAdaAsRecorder -> Person *
+[examineeOfAdaAsRecorder = ada.~recorder.parent.examinee]
+
+
+examinerOfAdaAsExaminee -> Person *
+[examinerOfAdaAsExaminee = ada.~examinee.parent.examiner]
+
+
+examinerOfAdaAsRecorder -> Person *
+[examinerOfAdaAsRecorder = ada.~recorder.parent.examiner]
+
+recorderOfAdaAsExaminee -> Person *
+[recorderOfAdaAsExaminee = ada.~examinee.parent.recorder]
+
+recorderOfAdaAsExaminer -> Person *
+[recorderOfAdaAsExaminer = ada.~examiner.parent.recorder]
+
+```
+
+```{.clafer .summary}
+```

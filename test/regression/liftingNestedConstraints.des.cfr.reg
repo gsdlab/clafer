@@ -1,0 +1,13 @@
+//# OPTIONS --explicit
+[all x : a.b.c | (#x.d) = 1]
+0..* a 0..* {
+  [all x : this.b.c | (#x.d) = 1]
+  0..* b 0..* {
+    [(#this.c.d) = 1]
+    0..* c 0..* {
+      0..* d 0..1 {}
+    }
+  }
+}
+
+assert [all x : a.b.c | (#x.d) >= 1]

@@ -4,8 +4,8 @@
 // transitions are events. At most one event happens in a state, and an event that is
 // present in consecutive states happens again.
 //
-// A constraint [ X no this ] in event, to make the consumption of events explicit, would
-// be vacuous: the obligations of a constraint end when its context instance disappears.
+// A constraint [ X no this ] in event would make each event last one step, i.e., consumed by
+// the transition that it triggers.
 
 abstract event
 

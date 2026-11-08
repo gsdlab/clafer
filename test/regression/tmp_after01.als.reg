@@ -3,48 +3,48 @@ pred show {}
 
 
 one sig root
-{ var r_c0_a : set c0_a }
-fact { all self_ : root | always (lone self_.@r_c0_a) }
+{ var r_a : set a }
+fact { always (lone root.@r_a) }
 
-assert assertOnLine_13 { always (all  b1 : alive_c0_a.@r_c0_b | always (!((some b1.@r_c0_c) && (after (some b1.@r_c0_d))))) }
-check assertOnLine_13 for 1 but 10 steps
-
-
-
-sig c0_a
-{ p_c0_a : lone root
-, var r_c0_b : set c0_b }
-fun alive_c0_a : set c0_a { root.@r_c0_a }
-fact { always ~@r_c0_a in @p_c0_a }
-
-fact { all self_ : c0_a | always (self_ in alive_c0_a implies (one self_.@r_c0_b)) }
+assert assertAt_14_9 { always (all  b1 : alive_a.@r_b | always ((!(some b1.@r_c)) || (after (!(some b1.@r_d))))) }
+check assertAt_14_9 for 1 but 10 steps
 
 
-sig c0_b
-{ p_c0_b : lone c0_a
-, var r_c0_c : set c0_c
-, var r_c0_d : set c0_d }
-{ always (this in alive_c0_b implies (let children = (this.@r_c0_c + this.@r_c0_d) | one children)) }
-fun alive_c0_b : set c0_b { c0_a.@r_c0_b }
-fact { always ~@r_c0_b in @p_c0_b
-  always @r_c0_b.univ in alive_c0_a }
 
-fact { all self_ : c0_b | always (self_ in alive_c0_b implies (lone self_.@r_c0_c)) }
-fact { all self_ : c0_b | always (self_ in alive_c0_b implies (lone self_.@r_c0_d)) }
-fact { all self_ : c0_b | always (self_ in alive_c0_b implies ((not some (self_ & alive_c0_b)) releases (not some (self_ & alive_c0_b) or ((some self_.@r_c0_c) => ((not some (self_ & alive_c0_b)) releases (not some (self_ & alive_c0_b) or (no self_.@r_c0_d))))))) }
+sig a
+{ p_a : lone root
+, var r_b : set b }
+fun alive_a : set a { root.@r_a }
+fact { always ~@r_a in @p_a }
+
+fact { all self_ : a | always (self_ in alive_a implies (one self_.@r_b)) }
 
 
-sig c0_c
-{ p_c0_c : lone c0_b }
-fun alive_c0_c : set c0_c { c0_b.@r_c0_c }
-fact { always ~@r_c0_c in @p_c0_c
-  always @r_c0_c.univ in alive_c0_b }
+sig b
+{ p_b : lone a
+, var r_c : set c
+, var r_d : set d }
+{ always (this in alive_b implies (let children = (this.@r_c + this.@r_d) | one children)) }
+fun alive_b : set b { a.@r_b }
+fact { always ~@r_b in @p_b
+  always @r_b.univ in alive_a }
+
+fact { all self_ : b | always (self_ in alive_b implies (lone self_.@r_c)) }
+fact { all self_ : b | always (self_ in alive_b implies (lone self_.@r_d)) }
+fact { all self_ : b | always (self_ in alive_b implies ((not some self_.(@p_b :> alive_a)) releases (not some self_.(@p_b :> alive_a) or ((some self_.@r_c) => ((not some self_.(@p_b :> alive_a)) releases (not some self_.(@p_b :> alive_a) or (no self_.@r_d))))))) }
 
 
-sig c0_d
-{ p_c0_d : lone c0_b }
-fun alive_c0_d : set c0_d { c0_b.@r_c0_d }
-fact { always ~@r_c0_d in @p_c0_d
-  always @r_c0_d.univ in alive_c0_b }
+sig c
+{ p_c : lone b }
+fun alive_c : set c { b.@r_c }
+fact { always ~@r_c in @p_c
+  always @r_c.univ in alive_b }
+
+
+sig d
+{ p_d : lone b }
+fun alive_d : set d { b.@r_d }
+fact { always ~@r_d in @p_d
+  always @r_d.univ in alive_b }
 
 

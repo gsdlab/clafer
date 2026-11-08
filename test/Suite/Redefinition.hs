@@ -71,27 +71,27 @@ case_NestedInheritanceMatchTest = case compileOneFragment defaultClaferArgs mode
         Just compilerResult -> let
                 uidIClaferMap' :: StringMap IClafer
                 uidIClaferMap' = uidIClaferMap $ claferEnv compilerResult
-                c0_req = fromJust $ findIClafer uidIClaferMap' "c0_req"
+                c0_req = fromJust $ findIClafer uidIClaferMap' "Controller__req"
                 c0_req_match = matchNestedInheritance uidIClaferMap' c0_req
-                c1_req = fromJust $ findIClafer uidIClaferMap' "c1_req"
+                c1_req = fromJust $ findIClafer uidIClaferMap' "WinController__req"
                 c1_req_match = matchNestedInheritance uidIClaferMap' c1_req
-                c0_cmd = fromJust $ findIClafer uidIClaferMap' "c0_cmd"
+                c0_cmd = fromJust $ findIClafer uidIClaferMap' "cmd"
                 c0_cmd_match = matchNestedInheritance uidIClaferMap' c0_cmd
-                c0_Component = fromJust $ findIClafer uidIClaferMap' "c0_Component"
+                c0_Component = fromJust $ findIClafer uidIClaferMap' "Component"
                 c0_Component_match = matchNestedInheritance uidIClaferMap' c0_Component
-                c0_InPort = fromJust $ findIClafer uidIClaferMap' "c0_InPort"
+                c0_InPort = fromJust $ findIClafer uidIClaferMap' "InPort"
                 c0_InPort_match = matchNestedInheritance uidIClaferMap' c0_InPort
-                c0_WinController = fromJust $ findIClafer uidIClaferMap' "c0_WinController"
+                c0_WinController = fromJust $ findIClafer uidIClaferMap' "WinController"
                 c0_WinController_match = matchNestedInheritance uidIClaferMap' c0_WinController
-                c0_down = fromJust $ findIClafer uidIClaferMap' "c0_down"
+                c0_down = fromJust $ findIClafer uidIClaferMap' "down"
                 c0_down_match = matchNestedInheritance uidIClaferMap' c0_down
-                c0_Exception = fromJust $ findIClafer uidIClaferMap' "c0_Exception"
+                c0_Exception = fromJust $ findIClafer uidIClaferMap' "Exception"
                 c0_Exception_match = matchNestedInheritance uidIClaferMap' c0_Exception
-                c0_powerDown = fromJust $ findIClafer uidIClaferMap' "c0_powerDown"
+                c0_powerDown = fromJust $ findIClafer uidIClaferMap' "powerDown"
                 c0_powerDown_match = matchNestedInheritance uidIClaferMap' c0_powerDown
-                {-c0_Alice = fromJust $ findIClafer uidIClaferMap' "c0_Alice"
+                {-c0_Alice = fromJust $ findIClafer uidIClaferMap' "Alice"
                 c0_Alice_match = matchNestedInheritance uidIClaferMap' c0_Alice
-                c0_Bob = fromJust $ findIClafer uidIClaferMap' "c0_Bob"
+                c0_Bob = fromJust $ findIClafer uidIClaferMap' "Bob"
                 c0_Bob_match = matchNestedInheritance uidIClaferMap' c0_Bob-}
             in do
                 isJust c0_req_match @? ("NestedInheritanceMatch not found for " ++ show c0_req)
@@ -123,8 +123,8 @@ case_NestedInheritanceMatchTest = case compileOneFragment defaultClaferArgs mode
                 (isProperNesting uidIClaferMap' (c0_powerDown_match)) @? ("Improper nesting for " ++ show c0_powerDown)
 
                 (not $ isTopLevel c0_Exception) @? ("isTopLevel c0_Exception must return False")
-                _parentUID c0_Exception == "c0_Component" @? ("Parent of c0_Exception should be c0_Component but it is " ++ _parentUID c0_Exception)
-                (_uid <$> _parentClafer <$> c0_Exception_match) == (Just "c0_Component") @? ("_parentClafer of c0_Exception should be c0_Component in the match")
+                _parentUID c0_Exception == "Component" @? ("Parent of c0_Exception should be c0_Component but it is " ++ _parentUID c0_Exception)
+                (_uid <$> _parentClafer <$> c0_Exception_match) == (Just "Component") @? ("_parentClafer of c0_Exception should be c0_Component in the match")
                {- isJust c0_Alice_match @? ("NestedInheritanceMatch not found for " ++ show c0_Alice)
                 isProperNesting uidIClaferMap' (c0_Alice_match) @? ("Improper nesting for " ++ show c0_Alice)
                 (False, False, True) == (isProperRefinement uidIClaferMap' (c0_Alice_match)) @? ("Improper refinement for " ++ show c0_Alice)

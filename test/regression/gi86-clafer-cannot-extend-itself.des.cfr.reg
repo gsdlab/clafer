@@ -1,0 +1,15 @@
+//# OPTIONS --explicit
+abstract 0..* FunctionalArchitecture 0..* {}
+abstract 0..* Deployment 0..* {
+  abstract 0..* Deployment__fa -> FunctionalArchitecture 0..* {}
+}
+abstract 0..* PowerWindowFAA : FunctionalArchitecture 0..* {}
+abstract 0..* PowerWindowDpl : Deployment 0..* {
+  abstract 0..* PowerWindowDpl__fa : Deployment__fa -> PowerWindowFAA 0..* {}
+}
+0..* System 1..1 {
+  0..* DriverPowerWindowFAA : PowerWindowFAA 1..1 {}
+  0..* DriverPowerWindowDpl : PowerWindowDpl 1..1 {
+    0..* DriverPowerWindowDpl__fa : PowerWindowDpl__fa -> DriverPowerWindowFAA 1..1 {}
+  }
+}

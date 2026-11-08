@@ -1,0 +1,9 @@
+//# OPTIONS --explicit
+[((#x) >= 1) => (x.dref = ((1 ++ 2) ++ 3))]
+[((#people) >= 1) => (people.dref = ((p1 ++ p1) ++ p3))]
+0..* x -> int 0..* {}
+abstract 0..* Person 0..* {}
+0..* p1 : Person 1..1 {}
+0..* p2 : Person 1..1 {}
+0..* p3 : Person 1..1 {}
+0..* people -> Person 0..* {}

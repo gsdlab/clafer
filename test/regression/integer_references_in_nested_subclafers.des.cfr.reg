@@ -1,0 +1,12 @@
+//# OPTIONS --explicit
+abstract 0..* Person 0..* {
+  0..* Age -> int 1..1 {}
+}
+0..* Team 1..1 {
+  0..* Contractor : Person 1..1 {
+    0..* since -> int 1..1 {}
+  }
+  0..* Member -> Person 2..* {}
+}
+0..* Alice : Person 1..1 {}
+0..* Bob : Person 1..1 {}

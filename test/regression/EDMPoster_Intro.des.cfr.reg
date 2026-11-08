@@ -1,0 +1,87 @@
+//# OPTIONS --explicit
+0..* ExamplePhone1 1..1 {
+  0..* ExamplePhone1__display 1..1 {
+    0..* ExamplePhone1__display__LCD 1..1 {}
+  }
+  0..* ExamplePhone1__GSM 1..1 {}
+  0..* ExamplePhone1__CPU 1..1 {}
+  0..* ExamplePhone1__keyboard 1..1 {}
+}
+0..* ExamplePhone2 1..1 {
+  0..* ExamplePhone2__display 1..1 {
+    0..* ExamplePhone2__display__OLED 1..1 {}
+  }
+  0..* ExamplePhone2__GSM 1..1 {}
+  0..* ExamplePhone2__touchscreen 1..1 {}
+}
+0..* ExampleTablet1 1..1 {
+  0..* ExampleTablet1__display 1..1 {
+    0..* ExampleTablet1__display__AMOLED 1..1 {}
+  }
+  0..* ExampleTablet1__HSPA 1..1 {}
+  0..* ExampleTablet1__CPU 4..4 {}
+  0..* ExampleTablet1__touchscreen 1..1 {}
+}
+0..* ExamplePhone3 1..1 {
+  0..* ExamplePhone3__display 1..1 {
+    0..* ExamplePhone3__display__LCD 1..1 {}
+  }
+  0..* ExamplePhone3__GSM 1..1 {}
+  0..* ExamplePhone3__CPU 4..4 {}
+  0..* ExamplePhone3__keyboard 1..1 {}
+}
+0..* ExampleTablet2 1..1 {
+  0..* ExampleTablet2__display 1..1 {
+    0..* ExampleTablet2__display__AMOLED 1..1 {}
+  }
+  0..* ExampleTablet2__HSPA 1..1 {}
+  0..* ExampleTablet2__CPU 4..4 {}
+  0..* ExampleTablet2__keyboard 1..1 {}
+}
+abstract 0..* AndroidDevice1 0..* {
+  1..1 AndroidDevice1__display 1..1 {
+    0..* AndroidDevice1__display__LCD 0..1 {}
+    0..* AndroidDevice1__display__OLED 0..1 {}
+    0..* AndroidDevice1__display__AMOLED 0..1 {
+      [(#this.parent.parent.AndroidDevice1__input.AndroidDevice1__input__keyboard) = 0]
+    }
+  }
+  0..* AndroidDevice1__GSM 1..1 {}
+  0..* AndroidDevice1__HSPA 0..1 {}
+  0..* AndroidDevice1__CPU 1..4 {}
+  1..1 AndroidDevice1__input 1..1 {
+    0..* AndroidDevice1__input__keyboard 0..1 {}
+    0..* AndroidDevice1__input__touchscreen 0..1 {}
+  }
+}
+abstract 0..* AndroidPhone : AndroidDevice 0..* {
+  [(#this.AndroidDevice__GSM) >= 1]
+  [(#this.AndroidDevice__CPU) < 4]
+}
+abstract 0..* AndroidDevice 0..* {
+  1..1 AndroidDevice__display 1..1 {
+    0..* AndroidDevice__display__LCD 0..1 {}
+    0..* AndroidDevice__display__OLED 0..1 {}
+    0..* AndroidDevice__display__AMOLED 0..1 {
+      [(#this.parent.parent.AndroidDevice__input.AndroidDevice__input__keyboard) = 0]
+    }
+  }
+  0..* AndroidDevice__GSM 0..1 {}
+  0..* AndroidDevice__HSPA 0..1 {}
+  0..* AndroidDevice__CPU 1..4 {}
+  1..1 AndroidDevice__input 1..1 {
+    0..* AndroidDevice__input__keyboard 0..1 {}
+    0..* AndroidDevice__input__touchscreen 0..1 {}
+  }
+}
+0..* AndroidPhone4 : AndroidPhone 1..1 {
+  0..* AndroidPhone4__display 1..1 {
+    0..* AndroidPhone4__display__AMOLED 1..1 {}
+  }
+  0..* AndroidPhone4__GSM 1..1 {}
+  0..* AndroidPhone4__HSPA 1..1 {}
+  0..* AndroidPhone4__CPU 2..2 {}
+  0..* AndroidPhone4__input 1..1 {
+    0..* AndroidPhone4__input__touchscreen 1..1 {}
+  }
+}

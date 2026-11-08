@@ -1,0 +1,5 @@
+// A scope bounds the instance identities across the trace, not the instances in one state:
+// item is mandatory in every state, but each state has another instance, which needs scope 2.
+
+item
+[ initially (all x : item | X no (x ** item)) ]

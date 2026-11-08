@@ -1,12 +1,12 @@
-scope({c0_Measurable:2, c0_performance:2});
+scope({$Measurable:2, $performance:2});
 defaultScope(1);
 stringLength(16);
 
-c0_Measurable = Abstract("c0_Measurable");
-c0_performance = c0_Measurable.addChild("c0_performance").withCard(1, 1);
-c0_D = Clafer("c0_D").withCard(1, 1);
-c0_C = Clafer("c0_C").withCard(1, 1);
-c0_performance.refToUnique(Int);
-c0_D.extending(c0_Measurable);
-c0_C.extending(c0_Measurable);
-Constraint(equal(joinRef(join(global(c0_C), c0_performance)), minus(joinRef(join(global(c0_D), c0_performance)))));
+$Measurable = Abstract("Measurable");
+$performance = $Measurable.addChild("performance").withCard(1, 1);
+$D = Clafer("D").withCard(1, 1);
+$C = Clafer("C").withCard(1, 1);
+$performance.refToUnique(Int);
+$D.extending($Measurable);
+$C.extending($Measurable);
+Constraint(equal(joinRef(join(global($C), $performance)), minus(joinRef(join(global($D), $performance)))));

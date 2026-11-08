@@ -6,9 +6,7 @@ nodesep=0.1;
 graph [fontname=Sans fontsize=11];
 node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
 edge [fontname=Sans fontsize=11];
-"c0_B" [label="abstract B" URL="#c0_B" tooltip="abstract B&#10;"];
-"c0_A" [label="abstract 2..3 A : B" URL="#c0_A" tooltip="abstract 2..3 A : B&#10;  Item *&#10;"];
-"c0_A" -> "c0_B" [arrowhead=onormal constraint=true weight=100];
-"c0_C" [label="C : A 4" URL="#c0_C" tooltip="C : A 4&#10;"];
-"c0_C" -> "c0_A" [arrowhead=onormal constraint=true weight=100];
+"B" [label="abstract B" URL="#B" tooltip="abstract B&#10;"];
+"A" [label="abstract 2..3 A : B" URL="#A" tooltip="abstract 2..3 A : B&#10;  Item *&#10;"];
+"C" [label="C : A 4" URL="#C" tooltip="C : A 4&#10;"];
 }

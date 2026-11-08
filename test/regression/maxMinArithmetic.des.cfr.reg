@@ -1,0 +1,16 @@
+//# OPTIONS --explicit
+[((#spread) >= 1) => (spread.dref = ((max ((a.dref ++ b.dref) ++ c.dref)) - (min ((a.dref ++ b.dref) ++ c.dref))))]
+[((#range) >= 1) => (range.dref = ((max ((a.dref ++ b.dref) ++ c.dref)) - (min ((a.dref ++ b.dref) ++ c.dref))))]
+[((#above) >= 1) => (above.dref = ((max (a.dref ++ 3)) + 1))]
+[a.dref = 5]
+[b.dref = 2]
+[c.dref = 9]
+[spread.dref = 7]
+[range.dref = 7]
+[above.dref = 6]
+0..* a -> int 1..1 {}
+0..* b -> int 1..1 {}
+0..* c -> int 1..1 {}
+0..* spread -> int 1..1 {}
+0..* range -> int 1..1 {}
+0..* above -> int 1..1 {}

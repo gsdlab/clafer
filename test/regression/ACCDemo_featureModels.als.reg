@@ -2,72 +2,72 @@ open util/integer
 pred show {}
 
 
-abstract sig c0_Car
-{ r_c0_ABS : lone c0_ABS
-, r_c0_CC : lone c0_CC
-, r_c0_Transmission : one c0_Transmission
-, r_c0_FCA : lone c0_FCA }
+abstract sig Car
+{ r_ABS : lone ABS
+, r_CC : lone CC
+, r_Transmission : one Transmission
+, r_FCA : lone FCA }
 
-sig c0_ABS
+sig ABS
 {}
-{ one @r_c0_ABS.this }
+{ one @r_ABS.this }
 
-sig c0_CC
-{ r_c0_ACC : lone c0_ACC }
-{ one @r_c0_CC.this }
+sig CC
+{ r_ACC : lone ACC }
+{ one @r_CC.this }
 
-sig c0_ACC
+sig ACC
 {}
-{ one @r_c0_ACC.this
-  some ((this.~@r_c0_ACC).~@r_c0_CC).@r_c0_FCA }
+{ one @r_ACC.this
+  some ((this.~@r_ACC).~@r_CC).@r_FCA }
 
-sig c0_Transmission
-{ r_c0_Automatic : lone c0_Automatic
-, r_c0_Manual : lone c0_Manual }
-{ one @r_c0_Transmission.this
-  let children = (r_c0_Automatic + r_c0_Manual) | one children }
+sig Transmission
+{ r_Automatic : lone Automatic
+, r_Manual : lone Manual }
+{ one @r_Transmission.this
+  let children = (r_Automatic + r_Manual) | one children }
 
-sig c0_Automatic
+sig Automatic
 {}
-{ one @r_c0_Automatic.this }
+{ one @r_Automatic.this }
 
-sig c0_Manual
+sig Manual
 {}
-{ one @r_c0_Manual.this }
+{ one @r_Manual.this }
 
-sig c0_FCA
-{ r_c0_Sensor : one c0_Sensor
-, r_c0_Alert : lone c0_Alert }
-{ one @r_c0_FCA.this }
+sig FCA
+{ r_Sensor : one Sensor
+, r_Alert : lone Alert }
+{ one @r_FCA.this }
 
-sig c0_Sensor
-{ r_c0_Radar : lone c0_Radar
-, r_c0_Lidar : lone c0_Lidar }
-{ one @r_c0_Sensor.this
-  let children = (r_c0_Radar + r_c0_Lidar) | one children }
+sig Sensor
+{ r_Radar : lone Radar
+, r_Lidar : lone Lidar }
+{ one @r_Sensor.this
+  let children = (r_Radar + r_Lidar) | one children }
 
-sig c0_Radar
+sig Radar
 {}
-{ one @r_c0_Radar.this }
+{ one @r_Radar.this }
 
-sig c0_Lidar
+sig Lidar
 {}
-{ one @r_c0_Lidar.this }
+{ one @r_Lidar.this }
 
-sig c0_Alert
-{ r_c0_Haptic : lone c0_Haptic
-, r_c0_Audible : lone c0_Audible }
-{ one @r_c0_Alert.this
-  let children = (r_c0_Haptic + r_c0_Audible) | one children }
+sig Alert
+{ r_Haptic : lone Haptic
+, r_Audible : lone Audible }
+{ one @r_Alert.this
+  let children = (r_Haptic + r_Audible) | one children }
 
-sig c0_Haptic
+sig Haptic
 {}
-{ one @r_c0_Haptic.this }
+{ one @r_Haptic.this }
 
-sig c0_Audible
+sig Audible
 {}
-{ one @r_c0_Audible.this }
+{ one @r_Audible.this }
 
-one sig c0_aCar extends c0_Car
+one sig aCar extends Car
 {}
 

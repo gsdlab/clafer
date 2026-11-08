@@ -22,23 +22,23 @@ a[href$='Ambiguous name'] {color: yellow}
 <div class="file">positive/scope_from_cardinality_constraints.cfr</div>
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Animal">Animal</span>
+<span class="keyword">abstract</span> <span class="claferDecl" id="Animal">Animal</span>
   <div class="indent">
-  <span class="claferDecl" id="c0_leg">leg</span> *</div>
+  <span class="claferDecl" id="leg">leg</span> *</div>
 </div>
 
 
 <div>
-<span class="claferDecl" id="c0_Dog">Dog</span><span class="keyword"> : </span><a href="#c0_Animal"><span class="reference">Animal</span></a> *
+<span class="claferDecl" id="Dog">Dog</span><span class="keyword"> : </span><a href="#Animal"><span class="reference">Animal</span></a> *
   <div class="indent">
-  <span class="keyword">[</span> # <a href="#c0_leg"><span class="reference">leg</span></a> = 4 <span class="keyword">]</span></div>
+  <span class="keyword">[</span> # <a href="#leg"><span class="reference">leg</span></a> = 4 <span class="keyword">]</span></div>
 </div>
 
 
 <div>
-<span class="claferDecl" id="c0_Spider">Spider</span><span class="keyword"> : </span><a href="#c0_Animal"><span class="reference">Animal</span></a> *
+<span class="claferDecl" id="Spider">Spider</span><span class="keyword"> : </span><a href="#Animal"><span class="reference">Animal</span></a> *
   <div class="indent">
-  <span class="keyword">[</span> # <a href="#c0_leg"><span class="reference">leg</span></a> = 8 <span class="keyword">]</span></div>
+  <span class="keyword">[</span> # <a href="#leg"><span class="reference">leg</span></a> = 8 <span class="keyword">]</span></div>
 </div>
 
 </body>

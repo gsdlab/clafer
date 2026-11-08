@@ -22,21 +22,21 @@ a[href$='Ambiguous name'] {color: yellow}
 <div class="file">positive/resolve_name_in_ancestor.cfr</div>
 
 <div>
-<span class="claferDecl" id="c0_person">person</span>
+<span class="claferDecl" id="person">person</span>
   <div class="indent">
-  <span class="claferDecl" id="c0_haha">haha</span>
+  <span class="claferDecl" id="haha">haha</span>
     <div class="indent">
-    <span class="claferDecl" id="c0_lala">lala</span>
+    <span class="claferDecl" id="lala">lala</span>
       <div class="indent">
-      <span class="claferDecl" id="c0_age">age</span><span class="keyword"> -> </span><a href="#int"><span class="reference">int</span></a></div>
+      <span class="claferDecl" id="age">age</span><span class="keyword"> -> </span><a href="#int"><span class="reference">int</span></a></div>
     </div>
   </div>
   <div class="indent">
-  <span class="claferDecl" id="c0_ble">ble</span>
+  <span class="claferDecl" id="ble">ble</span>
     <div class="indent">
-    <span class="claferDecl" id="c0_married">married</span> ?
+    <span class="claferDecl" id="married">married</span> ?
       <div class="indent">
-      <span class="keyword">[</span> <a href="#c0_age"><span class="reference">age</span></a> &gt;= 18 <span class="keyword">]</span></div>
+      <span class="keyword">[</span> <a href="#age"><span class="reference">age</span></a> &gt;= 18 <span class="keyword">]</span></div>
     </div>
   </div>
 </div>

@@ -1,0 +1,102 @@
+---
+title: OCL Benchmark B1 with extensions
+...
+
+
+```{.clafer}
+abstract Person
+	name : string
+	civstat : string
+	gender : string
+	alive ?
+	husband -> Person ?
+		[parent in this.wife]
+	wife -> Person ?
+		[parent in this.husband]
+	[civstat in ("single"++"married"++"divorced"++"widowed")]
+	[gender in ("female"++"male")]
+	[all p:Person|this != p =>  this.name.ref!=p.name.ref]
+	[one p:Person|p.name.ref = this.name.ref]	
+
+ada : Person
+	[name = "Ada"
+	civstat = "widowed"
+	gender = "female"
+	alive
+	no husband
+	no wife
+	]
+
+cyd : Person
+	[name = "Cyd"
+	civstat = "married"
+	gender = "male"
+	no alive
+	no husband
+	no wife
+	]
+
+eve : Person
+	[name = "Eve"
+	civstat = "married"
+	gender = "female"
+	alive
+	husband = dan
+	no wife
+	]
+
+bob : Person
+	[name = "Bob"
+	civstat = "divorced"
+	gender = "male"
+	alive
+	no husband
+	no wife]
+
+dan : Person
+	[name = "Dan"
+	civstat = "married"
+	gender = "male"
+	alive
+	no husband
+	wife = eve]
+
+[personWithUndefinedHusband1.name = stringSet2]
+[personWithUndefinedHusband2.name = stringSet2]
+[possiblePairs.first.name = "Ada" && possiblePairs.second.name = "Bob"]
+
+adaBobCyd -> Person *
+[adaBobCyd.name = stringSet1]
+
+personWithUndefinedHusband1 -> Person *
+[personWithUndefinedHusband1 = {p:Person|p.husband = emptyPersonSet1}]	
+
+personWithUndefinedHusband2 -> Person *
+[personWithUndefinedHusband2 = {p:Person|p.husband = emptyPersonSet2}]		
+
+emptyPersonSet1 -> Person *
+[emptyPersonSet1 = {p:Person|no p.wife|p.wife}]
+
+emptyPersonSet2 -> Person *
+	[1 > 2]
+
+
+personPair *
+	first -> Person
+	second -> Person
+	
+possiblePairs -> personPair *
+[possiblePairs = {p:personPair|p.first.gender = "female" && p.first.alive && p.first.civstat!="married" &&	p.second.gender = "male" && p.second.alive && p.second.civstat!="married"}]
+
+	
+
+stringSet1 -> string *
+[stringSet1 = ("Ada"++"Bob"++"Cyd")]
+
+stringSet2 -> string 4
+[stringSet2 = ("Ada"++"Bob"++"Cyd"++"Dan")]
+
+```
+
+```{.clafer .summary}
+```

@@ -22,11 +22,11 @@ a[href$='Ambiguous name'] {color: yellow}
 <div class="file">positive/layout.cfr</div>
 
 <div>
-<span class="claferDecl" id="c0_A">A</span></div>
+<span class="claferDecl" id="A">A</span></div>
 
 
 <div>
-<span class="claferDecl" id="c0_B">B</span></div>
+<span class="claferDecl" id="B">B</span></div>
 
 </body>
 </html>

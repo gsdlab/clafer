@@ -1,0 +1,22 @@
+//# OPTIONS --explicit
+abstract 0..* Component 0..* {
+  abstract 0..* InPort ->> Signal 0..* {}
+  abstract 0..* OutPort ->> Signal 0..* {}
+}
+abstract 0..* Signal 0..* {}
+abstract 0..* Command : Signal 0..* {}
+abstract 0..* MotorCommand : Command 0..* {}
+0..* motorDown : MotorCommand 1..1 {}
+abstract 0..* Request : Signal 0..* {}
+0..* stop : Request 1..1 {}
+abstract 0..* Controller : Component 0..* {
+  abstract 0..* Controller__req : InPort -> Request 0..* {}
+  0..* down : Request 1..1 {}
+}
+0..* WinController : Controller 1..1 {
+  0..* WinController__req : Controller__req -> stop 1..1 {}
+  0..* cmd : OutPort -> MotorCommand 1..1 {}
+}
+
+assert [WinController.cmd.dref = motorDown]
+assert [Controller.Controller__req.dref = stop]

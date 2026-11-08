@@ -22,48 +22,48 @@ a[href$='Ambiguous name'] {color: yellow}
 <div class="file">positive/top_level_constraints_with_relational_joins.cfr</div>
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Course">Course</span>
+<span class="keyword">abstract</span> <span class="claferDecl" id="Course">Course</span>
   <div class="indent">
-  <span class="claferDecl" id="c0_assistants">assistants</span><span class="keyword"> -> </span><a href="#c0_TA"><span class="reference">TA</span></a> *</div>
+  <span class="claferDecl" id="assistants">assistants</span><span class="keyword"> -> </span><a href="#TA"><span class="reference">TA</span></a> *</div>
 </div>
 
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_TA">TA</span>
+<span class="keyword">abstract</span> <span class="claferDecl" id="TA">TA</span>
   <div class="indent">
-  <span class="claferDecl" id="c0_first">first</span><span class="keyword"> -> </span><a href="#c0_Course"><span class="reference">Course</span></a> ?
+  <span class="claferDecl" id="first">first</span><span class="keyword"> -> </span><a href="#Course"><span class="reference">Course</span></a> ?
     <div class="indent">
-    <span class="keyword">[</span> <span class="keyword">parent</span> in <span class="keyword">this</span>.<a href="#c0_assistants"><span class="reference">assistants</span></a> <span class="keyword">]</span></div>
+    <span class="keyword">[</span> <span class="keyword">parent</span> in <span class="keyword">this</span>.<a href="#assistants"><span class="reference">assistants</span></a> <span class="keyword">]</span></div>
   </div>
 </div>
 
 
 <div>
-<span class="claferDecl" id="c0_CompilerGradStudent">CompilerGradStudent</span><span class="keyword"> : </span><a href="#c0_TA"><span class="reference">TA</span></a></div>
+<span class="claferDecl" id="CompilerGradStudent">CompilerGradStudent</span><span class="keyword"> : </span><a href="#TA"><span class="reference">TA</span></a></div>
 
 
 <div>
-<span class="claferDecl" id="c0_AIGradStudent">AIGradStudent</span><span class="keyword"> : </span><a href="#c0_TA"><span class="reference">TA</span></a></div>
+<span class="claferDecl" id="AIGradStudent">AIGradStudent</span><span class="keyword"> : </span><a href="#TA"><span class="reference">TA</span></a></div>
 
 
 <div>
-<span class="claferDecl" id="c0_CompilerCourse">CompilerCourse</span><span class="keyword"> : </span><a href="#c0_Course"><span class="reference">Course</span></a></div>
+<span class="claferDecl" id="CompilerCourse">CompilerCourse</span><span class="keyword"> : </span><a href="#Course"><span class="reference">Course</span></a></div>
 
 
 <div>
-<span class="claferDecl" id="c0_MachineLearningCourse">MachineLearningCourse</span><span class="keyword"> : </span><a href="#c0_Course"><span class="reference">Course</span></a></div>
+<span class="claferDecl" id="MachineLearningCourse">MachineLearningCourse</span><span class="keyword"> : </span><a href="#Course"><span class="reference">Course</span></a></div>
 
 
 <div>
-<span class="keyword">[</span> <a href="#c0_CompilerGradStudent"><span class="reference">CompilerGradStudent</span></a>.<a href="#c0_first"><span class="reference">first</span></a> = <a href="#c0_CompilerCourse"><span class="reference">CompilerCourse</span></a> <span class="keyword">]</span></div>
+<span class="keyword">[</span> <a href="#CompilerGradStudent"><span class="reference">CompilerGradStudent</span></a>.<a href="#first"><span class="reference">first</span></a> = <a href="#CompilerCourse"><span class="reference">CompilerCourse</span></a> <span class="keyword">]</span></div>
 
 
 <div>
-<span class="keyword">[</span> <a href="#c0_AIGradStudent"><span class="reference">AIGradStudent</span></a>.<a href="#c0_first"><span class="reference">first</span></a> = <a href="#c0_MachineLearningCourse"><span class="reference">MachineLearningCourse</span></a> <span class="keyword">]</span></div>
+<span class="keyword">[</span> <a href="#AIGradStudent"><span class="reference">AIGradStudent</span></a>.<a href="#first"><span class="reference">first</span></a> = <a href="#MachineLearningCourse"><span class="reference">MachineLearningCourse</span></a> <span class="keyword">]</span></div>
 
 
 <div>
-<span class="claferDecl" id="c0_numerOfAssistants">numerOfAssistants</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a> = # <a href="#c0_Course"><span class="reference">Course</span></a>.<a href="#c0_assistants"><span class="reference">assistants</span></a></div>
+<span class="claferDecl" id="numerOfAssistants">numerOfAssistants</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a> = # <a href="#Course"><span class="reference">Course</span></a>.<a href="#assistants"><span class="reference">assistants</span></a></div>
 
 </body>
 </html>

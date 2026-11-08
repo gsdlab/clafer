@@ -1,0 +1,11 @@
+//# OPTIONS --explicit --tl=10
+1..1 TrafficLight_4 1..1 {
+  [initially ((#this.off) >= 1)]
+  [(((#this.on.normal) >= 1) && (X ((#this.on) = 0))) => (X (((#this.on) = 0) W ((#this.on.normal) >= 1)))]
+  [(((#this.on.flashing) >= 1) && (X ((#this.on) = 0))) => (X (((#this.on) = 0) W ((#this.on.flashing) >= 1)))]
+  1..1 on 0..1 {
+    0..* normal 0..1 {}
+    0..* flashing 0..1 {}
+  }
+  0..* off 0..1 {}
+}

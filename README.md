@@ -3,7 +3,7 @@
 
 # Clafer, the language
 
-##### v0.5.6
+##### v0.5.7
 
 [Clafer](http://clafer.org) is a general-purpose lightweight structural and behavioral modeling language developed by
 [GSD Lab](http://gsd.uwaterloo.ca/), [University of Waterloo](http://uwaterloo.ca), and
@@ -177,7 +177,7 @@ Development versions from branches `develop` should work well together but this 
 (As printed by `clafer --help`)
 
 ```
-Clafer 0.5.6
+Clafer 0.5.7
 
 clafer [OPTIONS] [FILE]
 
@@ -186,16 +186,20 @@ Common flags:
                                           CLAFERMODEs are: 'alloy' (default,
                                           Alloy 6); 'json' (intermediate
                                           representation of Clafer model);
-                                          'clafer' (analyzed and desugared
-                                          clafer model); 'html' (original model
-                                          in HTML); 'graph' (graphical
-                                          representation written in DOT
-                                          language); 'cvlgraph' (cvl notation
-                                          representation written in DOT
-                                          language); 'choco' (Choco constraint
-                                          programming solver). Multiple modes
-                                          can be specified at the same time,
-                                          e.g., '-m alloy -m html'.
+                                          'clafer' (the explicit model, with
+                                          everything written out, as Choco
+                                          solves it; a temporal model with its
+                                          temporal modifiers and operators,
+                                          which only Alloy solves);
+                                          'html' (original model in HTML);
+                                          'graph' (graphical representation
+                                          written in DOT language); 'cvlgraph'
+                                          (cvl notation representation written
+                                          in DOT language); 'choco' (Choco
+                                          constraint programming solver).
+                                          Multiple modes can be specified at
+                                          the same time, e.g., '-m alloy -m
+                                          html'.
   -o --console-output                     Output code on console.
   -i --flatten-inheritance                Flatten inheritance ('alloy' mode
                                           only).
@@ -205,18 +209,29 @@ Common flags:
                                           (experimental).
   -c --check-duplicates                   Check duplicated clafer names in
                                           the entire model.
-  -f --skip-resolver                      Skip name resolution.
+  -f --skip-resolver                      The names of the clafers are their
+                                          UIDs, as in an explicit model: skip
+                                          renaming them. Names must be unique;
+                                          they are still resolved and checked.
+     --explicit                           The model is an explicit model, as
+                                          'clafer -m clafer' prints it, with
+                                          every name a UID and every card
+                                          written out, and its scopes in its
+                                          scope file. Shorthand for -f -k -l
+                                          --ss=none.
   -k --keep-unused                        Keep uninstantated abstract clafers
                                           ('alloy' mode only).
   -s --no-stats                           Don't print statistics.
-  -v --validate                           Validate outputs of all modes. Uses
-                                          '<tooldir>/alloy6.2.0.jar' for Alloy
-                                          models, '<tooldir>/chocosolver.jar'
-                                          for Choco models, and Clafer
-                                          translator for desugared Clafer
-                                          models. Use '--tooldir' to override
-                                          the default location ('.') of these
-                                          tools.
+  -v --validate                           Validate outputs of all modes, and
+                                          exit with 1 if a tool rejects one.
+                                          Uses '<tooldir>/alloy6.2.0.jar' for
+                                          Alloy models,
+                                          '<tooldir>/chocosolver.jar' for Choco
+                                          models, dot for graphs, and clafer
+                                          itself for explicit models, which
+                                          must compile to themselves. Use
+                                          '--tooldir' to override the default
+                                          location ('.') of these tools.
      --tooldir=DIR                        Specify the tools directory
                                           ('validate' only). Default: '.'
                                           (current directory).
@@ -245,7 +260,10 @@ Common flags:
                                           name'-'least-partially-qualified
                                           name'-'unique ID' map ('.cfr-map').
                                           In Alloy and Choco modes, generate
-                                          the scopes map ('.cfr-scope').
+                                          the scopes map ('.cfr-scope'); in
+                                          Clafer mode, the explicit model's
+                                          scope file with every scope
+                                          ('.des.cfr-scope').
      --minint=INT                         Smallest integer value ('choco'
                                           mode only). Default: -128, chosen by
                                           chocosolver.
@@ -330,6 +348,25 @@ or `clafer System.cfr --import=design-space.cfr`. The option can be repeated.
 
 See [#100](https://github.com/gsdlab/clafer/issues/100) for the design.
 
+### Unique names of clafers (UIDs)
+
+Every clafer has a unique name, its UID, which the outputs use for it: the Alloy signatures, the Choco model, the explicit model (`-m clafer`), the JSON IR, the anchors of the HTML output, and the scope files (`.cfr-scope`). The UID of a clafer is its least-partially-qualified name, with `__` between the names:
+
+```
+size          // root__size: another clafer named size exists
+x
+    size      // x__size
+    color     // color: no other clafer is named so
+```
+
+An apostrophe in a name is `_prime` in the UID (`a'` is `a_prime`), and a UID that would be the same as one before it in the model gets `__2`, `__3`, .... A lookup by name, e.g., in a scope file or claferIG's `i size 3`, takes a UID or a qualified name, which names all the clafers whose paths end with it: `size` names both clafers above, `x__size` the one in `x`, and `root__size` the top-level one. The older form `x::size` and `::size` is read too. A name with `__` is a warning, since `__` separates the names of a UID.
+
+The outputs write the UIDs in the form their language allows: the Alloy output renames a clafer whose UID is an Alloy keyword or a name the Alloy output uses (e.g., `sig` is `sig_1`), and the variables of the Choco output are `$` and the UID (`$x__size`).
+
+### Explicit models
+
+`-m clafer` writes the explicit model of a static model to `model.des.cfr`: the model that chocosolver solves, with every name a UID, every card, group card, `this`, `parent` and `dref` written out, and nesting in braces; with `--meta-data`, also its scope file with every scope, `model.des.cfr-scope`. An explicit model is a Clafer model. Its first line, `//# OPTIONS --explicit`, marks it: for clafer, `--explicit` means `-f -k -l --ss=none`, so the model compiles to itself, and chocosolver reads such a model with its own parser, without the compiler.
+
 ### Integer range of the Choco output
 
 The options `--minint` and `--maxint` set the range of integers that the Choco output (`-m choco`) allows, for example, for a model whose attributes and their sums exceed the default range:
@@ -399,6 +436,10 @@ To run all the automated tests and the regression tests, execute
 make test
 ```
 
+It fails if a test suite fails, or if an output of a model in `test/positive` differs from its regression in `test/regression`, has no regression, or a regression has no output.
+The outputs then become the new regressions: a missing regression is created, and a differing one is replaced, unless it has uncommitted changes.
+Review them with `git diff test/regression`, commit them (or restore the ones that are wrong), and run `make test` again.
+
 We do test-driven development in the following way:
 
 1. create a test case Clafer model in either `test/positive` or `test/negative` depending on whether a test case should compile successfully or return an error. For example, see a positive test case [test/positive/redefinition.cfr](https://github.com/gsdlab/clafer/blob/namedDrefs/test/positive/redefinition.cfr).
@@ -410,7 +451,7 @@ cd test
 make diffRegressions
 ```
 
-this will show you how the current output diverges from the intended output.
+this will show you how the current output diverges from the intended output. A regression with uncommitted changes, such as an intended output written by hand, is kept.
 
 
 ## Modifying the grammar

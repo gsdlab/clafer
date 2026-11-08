@@ -2,93 +2,93 @@ open util/integer
 pred show {}
 
 
-abstract sig c0_Bluetooth
-{ r_c0_Bluetooth20 : lone c0_Bluetooth20
-, r_c0_Bluetooth21 : lone c0_Bluetooth21
-, r_c0_Bluetooth40 : lone c0_Bluetooth40 }
+abstract sig root__Bluetooth
+{ r_Bluetooth20 : lone Bluetooth20
+, r_Bluetooth21 : lone Bluetooth21
+, r_Bluetooth40 : lone Bluetooth40 }
 
-sig c0_Bluetooth20
+sig Bluetooth20
 {}
-{ one @r_c0_Bluetooth20.this }
+{ one @r_Bluetooth20.this }
 
-sig c0_Bluetooth21
+sig Bluetooth21
 {}
-{ one @r_c0_Bluetooth21.this }
+{ one @r_Bluetooth21.this }
 
-sig c0_Bluetooth40
+sig Bluetooth40
 {}
-{ one @r_c0_Bluetooth40.this }
+{ one @r_Bluetooth40.this }
 
-abstract sig c0_MobilePhone
-{ r_c0_Connectivity : one c0_Connectivity
-, r_c0_Battery : one c0_Battery }
+abstract sig MobilePhone
+{ r_Connectivity : one Connectivity
+, r_Battery : one Battery }
 
-sig c0_Connectivity
-{ r_c1_Bluetooth : one c1_Bluetooth
-, r_c0_GSM : one c0_GSM
-, r_c0_LTE : lone c0_LTE
-, r_c0_WiFi : lone c0_WiFi
-, r_c0_USB : lone c0_USB }
-{ one @r_c0_Connectivity.this }
+sig Connectivity
+{ r_Connectivity__Bluetooth : one Connectivity__Bluetooth
+, r_GSM : one GSM
+, r_LTE : lone LTE
+, r_WiFi : lone WiFi
+, r_USB : lone USB }
+{ one @r_Connectivity.this }
 
-sig c1_Bluetooth extends c0_Bluetooth
+sig Connectivity__Bluetooth extends root__Bluetooth
 {}
-{ one @r_c1_Bluetooth.this
-  let children = (r_c0_Bluetooth20 + r_c0_Bluetooth21 + r_c0_Bluetooth40) | one children }
+{ one @r_Connectivity__Bluetooth.this
+  let children = (r_Bluetooth20 + r_Bluetooth21 + r_Bluetooth40) | one children }
 
-sig c0_GSM
+sig GSM
 {}
-{ one @r_c0_GSM.this }
+{ one @r_GSM.this }
 
-sig c0_LTE
+sig LTE
 {}
-{ one @r_c0_LTE.this
-  some (((this.~@r_c0_LTE).~@r_c0_Connectivity).@r_c0_Battery).@r_c0_LiBattery1400 }
+{ one @r_LTE.this
+  some (((this.~@r_LTE).~@r_Connectivity).@r_Battery).@r_LiBattery1400 }
 
-sig c0_WiFi
+sig WiFi
 {}
-{ one @r_c0_WiFi.this }
+{ one @r_WiFi.this }
 
-sig c0_USB
+sig USB
 {}
-{ one @r_c0_USB.this }
+{ one @r_USB.this }
 
-sig c0_Battery
-{ r_c0_LiBattery1150 : lone c0_LiBattery1150
-, r_c0_LiBattery1400 : lone c0_LiBattery1400 }
-{ one @r_c0_Battery.this
-  let children = (r_c0_LiBattery1150 + r_c0_LiBattery1400) | one children }
+sig Battery
+{ r_LiBattery1150 : lone LiBattery1150
+, r_LiBattery1400 : lone LiBattery1400 }
+{ one @r_Battery.this
+  let children = (r_LiBattery1150 + r_LiBattery1400) | one children }
 
-sig c0_LiBattery1150
+sig LiBattery1150
 {}
-{ one @r_c0_LiBattery1150.this }
+{ one @r_LiBattery1150.this }
 
-sig c0_LiBattery1400
+sig LiBattery1400
 {}
-{ one @r_c0_LiBattery1400.this }
+{ one @r_LiBattery1400.this }
 
-fact { #c0_LowEndPhone = 0 }
-abstract sig c0_LowEndPhone extends c0_MobilePhone
+fact { #LowEndPhone = 0 }
+abstract sig LowEndPhone extends MobilePhone
 {}
-{ no (this.@r_c0_Connectivity).@r_c0_WiFi }
+{ no (this.@r_Connectivity).@r_WiFi }
 
-abstract sig c0_HighEndPhone extends c0_MobilePhone
-{ r_c0_QuadCPU : lone c0_QuadCPU }
-{ (some (this.@r_c0_Connectivity).@r_c0_USB) && (some (this.@r_c0_Connectivity).@r_c0_WiFi) }
+abstract sig HighEndPhone extends MobilePhone
+{ r_QuadCPU : lone QuadCPU }
+{ (some (this.@r_Connectivity).@r_USB) && (some (this.@r_Connectivity).@r_WiFi) }
 
-sig c0_QuadCPU
+sig QuadCPU
 {}
-{ one @r_c0_QuadCPU.this }
+{ one @r_QuadCPU.this }
 
-one sig c0_Phone1 extends c0_MobilePhone
+one sig Phone1 extends MobilePhone
 {}
-{ some (this.@r_c0_Connectivity).@r_c0_WiFi
-  some (this.@r_c0_Connectivity).@r_c0_LTE
-  some ((this.@r_c0_Connectivity).@r_c1_Bluetooth).@r_c0_Bluetooth21 }
+{ some (this.@r_Connectivity).@r_WiFi
+  some (this.@r_Connectivity).@r_LTE
+  some ((this.@r_Connectivity).@r_Connectivity__Bluetooth).@r_Bluetooth21 }
 
-one sig c0_Phone2 extends c0_HighEndPhone
+one sig Phone2 extends HighEndPhone
 {}
-{ some (this.@r_c0_Connectivity).@r_c0_LTE
-  some ((this.@r_c0_Connectivity).@r_c1_Bluetooth).@r_c0_Bluetooth21
-  some this.@r_c0_QuadCPU }
+{ some (this.@r_Connectivity).@r_LTE
+  some ((this.@r_Connectivity).@r_Connectivity__Bluetooth).@r_Bluetooth21
+  some this.@r_QuadCPU }
 

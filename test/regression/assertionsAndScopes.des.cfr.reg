@@ -1,0 +1,11 @@
+//# OPTIONS --explicit
+0..* a 2..2 {
+  0..* b 3..3 {
+    0..* c 0..0 {}
+  }
+}
+
+assert [(#a.b.c) = 0]
+assert [(#a.b) >= 1]
+assert [(#a.b.c) = 0]
+assert [(#a.b) = 6]

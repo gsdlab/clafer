@@ -1,0 +1,8 @@
+//# OPTIONS --explicit
+0..* A 1..1 {
+  [all b : this.B | (#b.C) >= 1]
+  [all b : this.B | (b.dref + 1) = 2]
+  0..* B -> int 0..* {
+    0..* C 0..1 {}
+  }
+}

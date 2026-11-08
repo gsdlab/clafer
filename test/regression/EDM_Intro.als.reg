@@ -2,170 +2,170 @@ open util/integer
 pred show {}
 
 
-one sig c0_midYearReview extends c0_Meeting
-{ r_c0_month : one c0_month
-, r_c0_chair : one c0_chair
-, r_c0_room : one c0_room }
-{ (some this.@r_c0_month) => (((this.@r_c0_month).@c0_month_ref) = c0_June)
-  (some this.@r_c0_chair) => (((this.@r_c0_chair).@c0_chair_ref) = c0_Steven)
-  (some this.@r_c0_room) => (((this.@r_c0_room).@c0_room_ref) = c0_C)
-  some this.@r_c0_onlineParticipant }
+one sig midYearReview extends Meeting
+{ r_month : one month
+, r_midYearReview__chair : one midYearReview__chair
+, r_midYearReview__room : one midYearReview__room }
+{ (some this.@r_month) => (((this.@r_month).@month_ref) = June)
+  (some this.@r_midYearReview__chair) => (((this.@r_midYearReview__chair).@midYearReview__chair_ref) = Steven)
+  (some this.@r_midYearReview__room) => (((this.@r_midYearReview__room).@midYearReview__room_ref) = C)
+  some this.@r_onlineParticipant }
 
-one sig c0_month
-{ c0_month_ref : one c0_Month }
+one sig month
+{ month_ref : one Month }
 
-one sig c0_chair
-{ c0_chair_ref : one c0_Member }
+one sig midYearReview__chair
+{ midYearReview__chair_ref : one Member }
 
-one sig c0_room
-{ c0_room_ref : one c0_Room }
+one sig midYearReview__room
+{ midYearReview__room_ref : one Room }
 
-one sig c0_Steven extends c0_Member
+one sig Steven extends Member
 {}
 
-one sig c0_C extends c0_Room
-{ r_c0_whiteboard : one c0_whiteboard
-, r_c0_audioConferencing : one c0_audioConferencing }
+one sig C extends Room
+{ r_C__whiteboard : one C__whiteboard
+, r_C__audioConferencing : one C__audioConferencing }
 
-one sig c0_whiteboard
+one sig C__whiteboard
 {}
 
-one sig c0_audioConferencing
+one sig C__audioConferencing
 {}
 
-one sig c0_ondemandMeeting extends c0_Meeting
-{ r_c1_chair : one c1_chair
-, r_c1_room : one c1_room }
-{ (some this.@r_c1_chair) => (((this.@r_c1_chair).@c1_chair_ref) = c0_Joanna)
-  no this.@r_c0_onlineParticipant
-  (some this.@r_c1_room) => (((this.@r_c1_room).@c1_room_ref) = c0_D) }
+one sig ondemandMeeting extends Meeting
+{ r_ondemandMeeting__chair : one ondemandMeeting__chair
+, r_ondemandMeeting__room : one ondemandMeeting__room }
+{ (some this.@r_ondemandMeeting__chair) => (((this.@r_ondemandMeeting__chair).@ondemandMeeting__chair_ref) = Joanna)
+  no this.@r_onlineParticipant
+  (some this.@r_ondemandMeeting__room) => (((this.@r_ondemandMeeting__room).@ondemandMeeting__room_ref) = D) }
 
-one sig c1_chair
-{ c1_chair_ref : one c0_Member }
+one sig ondemandMeeting__chair
+{ ondemandMeeting__chair_ref : one Member }
 
-one sig c1_room
-{ c1_room_ref : one c0_Room }
+one sig ondemandMeeting__room
+{ ondemandMeeting__room_ref : one Room }
 
-one sig c0_Joanna extends c0_Member
+one sig Joanna extends Member
 {}
 
-one sig c0_D extends c0_Room
-{ r_c1_whiteboard : one c1_whiteboard }
+one sig D extends Room
+{ r_D__whiteboard : one D__whiteboard }
 
-one sig c1_whiteboard
+one sig D__whiteboard
 {}
 
-abstract sig c0_Meeting
-{ r_c2_chair : one c2_chair
-, r_c0_participant : some c0_participant
-, r_c0_onlineParticipant : set c0_onlineParticipant
-, r_c2_room : one c2_room }
-{ all disj x, y : this.@r_c0_participant | (x.@c0_participant_ref) != (y.@c0_participant_ref) 
-  ((this.@r_c2_chair).@c2_chair_ref) not in ((this.@r_c0_participant).@c0_participant_ref)
-  all disj x, y : this.@r_c0_onlineParticipant | (x.@c0_onlineParticipant_ref) != (y.@c0_onlineParticipant_ref) 
-  ((this.@r_c2_chair).@c2_chair_ref) not in ((this.@r_c0_onlineParticipant).@c0_onlineParticipant_ref)
-  (some this.@r_c0_onlineParticipant) => (some ((this.@r_c2_room).@c2_room_ref).@r_c1_audioConferencing) }
+abstract sig Meeting
+{ r_Meeting__chair : one Meeting__chair
+, r_participant : some participant
+, r_onlineParticipant : set onlineParticipant
+, r_Meeting__room : one Meeting__room }
+{ all disj x, y : this.@r_participant | (x.@participant_ref) != (y.@participant_ref) 
+  ((this.@r_Meeting__chair).@Meeting__chair_ref) not in ((this.@r_participant).@participant_ref)
+  all disj x, y : this.@r_onlineParticipant | (x.@onlineParticipant_ref) != (y.@onlineParticipant_ref) 
+  ((this.@r_Meeting__chair).@Meeting__chair_ref) not in ((this.@r_onlineParticipant).@onlineParticipant_ref)
+  (some this.@r_onlineParticipant) => (some ((this.@r_Meeting__room).@Meeting__room_ref).@r_Room__audioConferencing) }
 
-sig c2_chair
-{ c2_chair_ref : one c0_Member }
-{ one @r_c2_chair.this }
+sig Meeting__chair
+{ Meeting__chair_ref : one Member }
+{ one @r_Meeting__chair.this }
 
-sig c0_participant
-{ c0_participant_ref : one c0_Member }
-{ one @r_c0_participant.this }
+sig participant
+{ participant_ref : one Member }
+{ one @r_participant.this }
 
-sig c0_onlineParticipant
-{ c0_onlineParticipant_ref : one c0_Member }
-{ one @r_c0_onlineParticipant.this }
+sig onlineParticipant
+{ onlineParticipant_ref : one Member }
+{ one @r_onlineParticipant.this }
 
-sig c2_room
-{ c2_room_ref : one c0_Room }
-{ one @r_c2_room.this
-  (((this.@c2_room_ref).@r_c0_capacity).@c0_capacity_ref) >= ((#((this.~@r_c2_room).@r_c0_participant)).plus[1]) }
+sig Meeting__room
+{ Meeting__room_ref : one Room }
+{ one @r_Meeting__room.this
+  (((this.@Meeting__room_ref).@r_capacity).@capacity_ref) >= ((#((this.~@r_Meeting__room).@r_participant)).plus[1]) }
 
-abstract sig c0_Month
+abstract sig Month
 {}
 
-one sig c0_June extends c0_Month
+one sig June extends Month
 {}
 
-one sig c0_July extends c0_Month
+one sig July extends Month
 {}
 
-abstract sig c0_Member
+abstract sig Member
 {}
 
-abstract sig c0_Room
-{ r_c0_capacity : one c0_capacity
-, r_c2_whiteboard : one c2_whiteboard
-, r_c0_projector : lone c0_projector
-, r_c0_computer : lone c0_computer
-, r_c1_audioConferencing : lone c1_audioConferencing }
+abstract sig Room
+{ r_capacity : one capacity
+, r_Room__whiteboard : one Room__whiteboard
+, r_projector : lone projector
+, r_computer : lone computer
+, r_Room__audioConferencing : lone Room__audioConferencing }
 
-sig c0_capacity
-{ c0_capacity_ref : one Int }
-{ one @r_c0_capacity.this }
+sig capacity
+{ capacity_ref : one Int }
+{ one @r_capacity.this }
 
-sig c2_whiteboard
-{ r_c0_traditional : lone c0_traditional
-, r_c0_electronic : lone c0_electronic }
-{ one @r_c2_whiteboard.this
-  let children = (r_c0_traditional + r_c0_electronic) | some children }
+sig Room__whiteboard
+{ r_traditional : lone traditional
+, r_electronic : lone electronic }
+{ one @r_Room__whiteboard.this
+  let children = (r_traditional + r_electronic) | some children }
 
-sig c0_traditional
+sig traditional
 {}
-{ one @r_c0_traditional.this }
+{ one @r_traditional.this }
 
-sig c0_electronic
+sig electronic
 {}
-{ one @r_c0_electronic.this }
+{ one @r_electronic.this }
 
-sig c0_projector
+sig projector
 {}
-{ one @r_c0_projector.this }
+{ one @r_projector.this }
 
-sig c0_computer
+sig computer
 {}
-{ one @r_c0_computer.this }
+{ one @r_computer.this }
 
-sig c1_audioConferencing
+sig Room__audioConferencing
 {}
-{ one @r_c1_audioConferencing.this }
+{ one @r_Room__audioConferencing.this }
 
-fact { 5 <= #c0_M and #c0_M <= 5 }
-sig c0_M extends c0_Member
-{}
-
-one sig c0_SueAgenda extends c0_Agenda
-{ r_c0_m1 : lone c0_m1
-, r_c0_m2 : lone c0_m2 }
-{ (some this.@r_c0_m1) => (((this.@r_c0_m1).@c0_m1_ref) = c0_M1)
-  (some this.@r_c0_m2) => (((this.@r_c0_m2).@c0_m2_ref) = c0_M2) }
-
-lone sig c0_m1
-{ c0_m1_ref : one c0_Meeting }
-{ one r_c0_m1 }
-
-lone sig c0_m2
-{ c0_m2_ref : one c0_Meeting }
-{ one r_c0_m2 }
-
-lone sig c0_M1 extends c0_Meeting
+fact { 5 <= #M and #M <= 5 }
+sig M extends Member
 {}
 
-lone sig c0_M2 extends c0_Meeting
-{ r_c0_time : one c0_time }
-{ (some this.@r_c0_time) => (((this.@r_c0_time).@c0_time_ref) = 10) }
+one sig SueAgenda extends Agenda
+{ r_m1 : lone m1
+, r_m2 : lone m2 }
+{ (some this.@r_m1) => (((this.@r_m1).@m1_ref) = M1)
+  (some this.@r_m2) => (((this.@r_m2).@m2_ref) = M2) }
 
-lone sig c0_time
-{ c0_time_ref : one Int }
-{ one r_c0_time }
+lone sig m1
+{ m1_ref : one Meeting }
+{ one r_m1 }
 
-abstract sig c0_Agenda
-{ r_c0_mt : set c0_mt }
-{ all disj x, y : this.@r_c0_mt | (x.@c0_mt_ref) != (y.@c0_mt_ref)  }
+lone sig m2
+{ m2_ref : one Meeting }
+{ one r_m2 }
 
-sig c0_mt
-{ c0_mt_ref : one c0_Meeting }
-{ one @r_c0_mt.this }
+lone sig M1 extends Meeting
+{}
+
+lone sig M2 extends Meeting
+{ r_time : one time }
+{ (some this.@r_time) => (((this.@r_time).@time_ref) = 10) }
+
+lone sig time
+{ time_ref : one Int }
+{ one r_time }
+
+abstract sig Agenda
+{ r_mt : set mt }
+{ all disj x, y : this.@r_mt | (x.@mt_ref) != (y.@mt_ref)  }
+
+sig mt
+{ mt_ref : one Meeting }
+{ one @r_mt.this }
 

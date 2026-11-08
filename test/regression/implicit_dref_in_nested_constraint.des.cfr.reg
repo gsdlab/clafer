@@ -1,0 +1,6 @@
+//# OPTIONS --explicit
+0..* a -> int 0..1 {
+  0..* b 0..1 {
+    [this.parent.dref = 4]
+  }
+}

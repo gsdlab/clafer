@@ -122,6 +122,9 @@ data IClaferModifiers
   { _abstract :: Bool -- ^ declared as "abstract"
   , _initial :: Bool  -- ^ declared as "initial"
   , _final :: Bool    -- ^ declared as "final"
+  , _finalReferences :: [IReferenceModifier]
+    -- ^ declared as "finalref" or "finaltarget" without a reference of its own: the modifiers of
+    --   the reference that the clafer inherits (#109)
   } deriving (Eq,Ord,Show,Data,Typeable,Generic,ToJSON)
 
 _isAbstract :: IClafer -> Bool     -- ^ whether abstract or not (i.e., concrete)
@@ -156,7 +159,7 @@ data IElement
 data IReference
   = IReference
     { _isSet :: Bool -- ^ whether set or bag
-    , _refModifier :: Maybe IReferenceModifier
+    , _refModifiers :: [IReferenceModifier] -- ^ all of them: `finalref finaltarget` means both
     , _ref :: PExp  -- ^ the only allowed reference expressions are IClafer and set expr. (++, **, --s)
     }
   deriving (Eq,Ord,Show,Data,Typeable,Generic,ToJSON)

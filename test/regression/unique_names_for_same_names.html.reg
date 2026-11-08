@@ -22,29 +22,29 @@ a[href$='Ambiguous name'] {color: yellow}
 <div class="file">positive/unique_names_for_same_names.cfr</div>
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_A">A</span>
+<span class="keyword">abstract</span> <span class="claferDecl" id="A">A</span>
   <div class="indent">
-  <span class="claferDecl" id="c0_b">b</span></div>
+  <span class="claferDecl" id="A__b">b</span></div>
 </div>
 
 
 <div>
-<span class="claferDecl" id="c0_a">a</span><span class="keyword"> : </span><a href="#c0_A"><span class="reference">A</span></a>
+<span class="claferDecl" id="root__a">a</span><span class="keyword"> : </span><a href="#A"><span class="reference">A</span></a>
   <div class="indent">
-  <span class="claferDecl" id="c1_b">b</span></div>
+  <span class="claferDecl" id="a__b">b</span></div>
 </div>
 
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c2_b">b</span></div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="root__b">b</span></div>
 
 
 <div>
-<span class="claferDecl" id="c0_c">c</span>
+<span class="claferDecl" id="c">c</span>
   <div class="indent">
-  `<a href="#c2_b"><span class="reference">b</span></a></div>
+  `<a href="#root__b"><span class="reference">b</span></a></div>
     <div class="indent">
-    <span class="claferDecl" id="c1_a">a</span></div>
+    <span class="claferDecl" id="b__a">a</span></div>
  
 </div>
 

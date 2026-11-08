@@ -2,10 +2,10 @@ open util/integer
 pred show {}
 
 
-fact { #c0_A = 0 }
-abstract sig c0_A
+fact { #A = 0 }
+abstract sig A
 {}
 
-one sig c0_aRef
-{ c0_aRef_ref : one c0_A }
+one sig aRef
+{ aRef_ref : one A }
 

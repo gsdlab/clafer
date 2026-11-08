@@ -28,6 +28,7 @@ import Language.Clafer.Intermediate.Tracing
 import Language.Clafer.Intermediate.Intclafer
 import Language.Clafer.Generator.Html(genTooltip)
 import Control.Applicative
+import Data.List (find)
 import qualified Data.Map as Map
 import Data.Maybe
 import Prelude hiding (exp)
@@ -266,7 +267,7 @@ graphCVLClafer (Clafer s _ _ gCard _ super' reference' crd _ _ es) parent' irMap
           gcrd = graphCVLGCard gCard parent' irMap;
           super'' = graphCVLSuper super' parent' irMap;
           reference'' = graphCVLReference reference' parent' irMap} in
-     "\"" ++ uid' ++ "\" [URL=\"#" ++ uid' ++ "\" label=\"" ++ dropUid uid' ++ super'' ++ reference'' ++ (if choiceCard crd then "\" style=rounded"  else " [" ++ graphCVLCard crd parent' irMap ++ "]\"")
+     "\"" ++ uid' ++ "\" [URL=\"#" ++ uid' ++ "\" label=\"" ++ nameIn irMap uid' ++ super'' ++ reference'' ++ (if choiceCard crd then "\" style=rounded"  else " [" ++ graphCVLCard crd parent' irMap ++ "]\"")
      ++ (if super'' == "" then "" else " shape=oval") ++ "];\n"
      ++ (if gcrd == "" then "" else "g" ++ uid' ++ " [label=\"" ++ gcrd ++ "\" fontsize=10 shape=triangle];\ng" ++ uid' ++ " -> " ++ uid' ++ " [weight=10];\n")
      ++ (if parent'==Nothing then "" else uid' ++ " -> " ++ fromJust parent' ++ (if lowerCard crd == "0" then " [style=dashed]" else "") ++ ";\n")
@@ -375,12 +376,12 @@ lowerCard :: Card -> String
 lowerCard crd = takeWhile (/= '.') $ graphCVLCard crd Nothing Map.empty
 
 --Miscellaneous functions
-dropUid :: String -> String
-dropUid uid' = let id' = rest $ dropWhile (\x -> x /= '_') uid' in if id' == "" then uid' else id'
-
-rest :: String -> String
-rest [] = []
-rest (_:xs) = xs
+-- | The name of a clafer or local in an expression of the IR: a clafer's name (its _ident),
+--   found in the trace of the IR, whose UID need not contain it; a local's name is itself.
+nameIn :: Map.Map Span [Ir] -> String -> String
+nameIn irMap uid' = case [ _ident c | IRClafer c <- concat (Map.elems irMap), _uid c == uid' ] of
+  (name : _) -> name
+  []         -> uid'
 
 getUid :: PosIdent -> Map.Map Span [Ir] -> String
 getUid (PosIdent (pos, id')) irMap = if Map.lookup (getSpan (PosIdent (pos, id'))) irMap == Nothing
@@ -392,8 +393,8 @@ getUid (PosIdent (pos, id')) irMap = if Map.lookup (getSpan (PosIdent (pos, id')
                                  getIdentIExp (IClaferId _ id'' _ _) = [id''];
                                  getIdentIExp (IDeclPExp _ _ pexp) = getIdentPExp pexp;
                                  getIdentIExp _ = [];
-                                 findUid name (x:xs) = if name == dropUid x then x else findUid name xs;
-                                 findUid name []     = name}
+                                 findUid _    [x]    = x;
+                                 findUid name xs     = fromMaybe name $ find ((== name) . nameIn irMap) xs}
 
 getDivId :: Span -> Map.Map Span [Ir] -> String
 getDivId s irMap = if Map.lookup s irMap == Nothing

@@ -22,89 +22,89 @@ a[href$='Ambiguous name'] {color: yellow}
 <div class="file">positive/books_tutorial.cfr</div>
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Book">Book</span>
+<span class="keyword">abstract</span> <span class="claferDecl" id="Book">Book</span>
   <div class="indent">
-  <span class="claferDecl" id="c0_title">title</span><span class="keyword"> -> </span><a href="#string"><span class="reference">string</span></a>
+  <span class="claferDecl" id="title">title</span><span class="keyword"> -> </span><a href="#string"><span class="reference">string</span></a>
     <div class="indent">
-    <span class="claferDecl" id="c0_subtitle">subtitle</span><span class="keyword"> -> </span><a href="#string"><span class="reference">string</span></a> ?</div>
+    <span class="claferDecl" id="subtitle">subtitle</span><span class="keyword"> -> </span><a href="#string"><span class="reference">string</span></a> ?</div>
   </div>
   <div class="indent">
-  <span class="claferDecl" id="c0_year">year</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a></div>
+  <span class="claferDecl" id="year">year</span><span class="keyword"> -> </span><a href="#integer"><span class="reference">integer</span></a></div>
   <div class="indent">
-  <span class="claferDecl" id="c0_page">page</span> 2..* </div>
+  <span class="claferDecl" id="page">page</span> 2..* </div>
   <div class="indent">
-  <span class="keyword">xor</span> <span class="claferDecl" id="c0_format">format</span>
+  <span class="keyword">xor</span> <span class="claferDecl" id="format">format</span>
     <div class="indent">
-    <span class="claferDecl" id="c0_paper">paper</span>
+    <span class="claferDecl" id="paper">paper</span>
       <div class="indent">
-      <span class="claferDecl" id="c0_hardcover">hardcover</span> ?</div>
+      <span class="claferDecl" id="hardcover">hardcover</span> ?</div>
     </div>
     <div class="indent">
-    <span class="claferDecl" id="c0_electronic">electronic</span></div>
+    <span class="claferDecl" id="electronic">electronic</span></div>
   </div>
   <div class="indent">
-  <span class="keyword">xor</span> <span class="claferDecl" id="c0_kind">kind</span>
+  <span class="keyword">xor</span> <span class="claferDecl" id="kind">kind</span>
     <div class="indent">
-    <span class="claferDecl" id="c0_textbook">textbook</span></div>
+    <span class="claferDecl" id="textbook">textbook</span></div>
     <div class="indent">
-    <span class="claferDecl" id="c0_manual">manual</span></div>
+    <span class="claferDecl" id="manual">manual</span></div>
     <div class="indent">
-    <span class="claferDecl" id="c0_reference">reference</span></div>
+    <span class="claferDecl" id="reference">reference</span></div>
     <div class="indent">
-    <span class="claferDecl" id="c0_fiction">fiction</span></div>
+    <span class="claferDecl" id="fiction">fiction</span></div>
     <div class="indent">
-    <span class="claferDecl" id="c0_nonfiction">nonfiction</span></div>
+    <span class="claferDecl" id="nonfiction">nonfiction</span></div>
     <div class="indent">
-    <span class="claferDecl" id="c0_other">other</span><span class="keyword"> -> </span><a href="#string"><span class="reference">string</span></a></div>
+    <span class="claferDecl" id="other">other</span><span class="keyword"> -> </span><a href="#string"><span class="reference">string</span></a></div>
   </div>
   <div class="indent">
-  <span class="claferDecl" id="c0_authors">authors</span><span class="keyword"> -> </span><a href="#c0_Author"><span class="reference">Author</span></a> +</div>
+  <span class="claferDecl" id="authors">authors</span><span class="keyword"> -> </span><a href="#Author"><span class="reference">Author</span></a> +</div>
   <div class="indent">
-  <span class="keyword">[</span> <a href="#c0_year"><span class="reference">year</span></a> &gt;= 5 =&gt; <a href="#c0_ISBN"><span class="reference">ISBN</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <a href="#year"><span class="reference">year</span></a> &gt;= 5 =&gt; <a href="#ISBN"><span class="reference">ISBN</span></a> <span class="keyword">]</span></div>
   <div class="indent">
-  <span class="claferDecl" id="c0_ISBN">ISBN</span><span class="keyword"> -> </span><a href="#string"><span class="reference">string</span></a> ?
+  <span class="claferDecl" id="ISBN">ISBN</span><span class="keyword"> -> </span><a href="#string"><span class="reference">string</span></a> ?
     <div class="indent">
-    <span class="claferDecl" id="c0_GS1">GS1</span><span class="keyword"> -> </span><a href="#string"><span class="reference">string</span></a> ?</div>
+    <span class="claferDecl" id="GS1">GS1</span><span class="keyword"> -> </span><a href="#string"><span class="reference">string</span></a> ?</div>
     <div class="indent">
-    <span class="keyword">[</span> <a href="#c0_year"><span class="reference">year</span></a> &gt;= 6 =&gt; <a href="#c0_GS1"><span class="reference">GS1</span></a> <span class="keyword">]</span></div>
+    <span class="keyword">[</span> <a href="#year"><span class="reference">year</span></a> &gt;= 6 =&gt; <a href="#GS1"><span class="reference">GS1</span></a> <span class="keyword">]</span></div>
   </div>
 </div>
 
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Person">Person</span>
+<span class="keyword">abstract</span> <span class="claferDecl" id="Person">Person</span>
   <div class="indent">
-  <span class="claferDecl" id="c0_name">name</span><span class="keyword"> -> </span><a href="#string"><span class="reference">string</span></a></div>
+  <span class="claferDecl" id="name">name</span><span class="keyword"> -> </span><a href="#string"><span class="reference">string</span></a></div>
   <div class="indent">
-  <span class="claferDecl" id="c0_dob">dob</span><span class="keyword"> -> </span><a href="#string"><span class="reference">string</span></a> ?</div>
+  <span class="claferDecl" id="dob">dob</span><span class="keyword"> -> </span><a href="#string"><span class="reference">string</span></a> ?</div>
 </div>
 
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_Author">Author</span><span class="keyword"> : </span><a href="#c0_Person"><span class="reference">Person</span></a>
+<span class="keyword">abstract</span> <span class="claferDecl" id="Author">Author</span><span class="keyword"> : </span><a href="#Person"><span class="reference">Person</span></a>
   <div class="indent">
-  <span class="claferDecl" id="c0_books">books</span><span class="keyword"> -> </span><a href="#c0_Book"><span class="reference">Book</span></a> +</div>
+  <span class="claferDecl" id="books">books</span><span class="keyword"> -> </span><a href="#Book"><span class="reference">Book</span></a> +</div>
 </div>
 
 
 <div>
-<span class="claferDecl" id="c0_GenerativeProgramming">GenerativeProgramming</span><span class="keyword"> : </span><a href="#c0_Book"><span class="reference">Book</span></a>
+<span class="claferDecl" id="GenerativeProgramming">GenerativeProgramming</span><span class="keyword"> : </span><a href="#Book"><span class="reference">Book</span></a>
   <div class="indent">
-  <span class="keyword">[</span> <a href="#c0_title"><span class="reference">title</span></a> = "name" <span class="keyword">]</span><span class="keyword">[</span> <span class="keyword">no</span> <a href="#c0_subtitle"><span class="reference">subtitle</span></a> <span class="keyword">]</span><span class="keyword">[</span> <a href="#c0_year"><span class="reference">year</span></a> = 5 <span class="keyword">]</span><span class="keyword">[</span> # <a href="#c0_page"><span class="reference">page</span></a> = 4 <span class="keyword">]</span><span class="keyword">[</span> <a href="#c0_paper"><span class="reference">paper</span></a> <span class="keyword">]</span><span class="keyword">[</span> <a href="#c0_nonfiction"><span class="reference">nonfiction</span></a> <span class="keyword">]</span><span class="keyword">[</span> <a href="#c0_authors"><span class="reference">authors</span></a> = <a href="#c0_Czarnecki"><span class="reference">Czarnecki</span></a>, <a href="#c0_Eisenecker"><span class="reference">Eisenecker</span></a> <span class="keyword">]</span><span class="keyword">[</span> <a href="#c0_ISBN"><span class="reference">ISBN</span></a> = "name" <span class="keyword">]</span><span class="keyword">[</span> <span class="keyword">no</span> <a href="#c0_GS1"><span class="reference">GS1</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <a href="#title"><span class="reference">title</span></a> = "name" <span class="keyword">]</span><span class="keyword">[</span> <span class="keyword">no</span> <a href="#subtitle"><span class="reference">subtitle</span></a> <span class="keyword">]</span><span class="keyword">[</span> <a href="#year"><span class="reference">year</span></a> = 5 <span class="keyword">]</span><span class="keyword">[</span> # <a href="#page"><span class="reference">page</span></a> = 4 <span class="keyword">]</span><span class="keyword">[</span> <a href="#paper"><span class="reference">paper</span></a> <span class="keyword">]</span><span class="keyword">[</span> <a href="#nonfiction"><span class="reference">nonfiction</span></a> <span class="keyword">]</span><span class="keyword">[</span> <a href="#authors"><span class="reference">authors</span></a> = <a href="#Czarnecki"><span class="reference">Czarnecki</span></a>, <a href="#Eisenecker"><span class="reference">Eisenecker</span></a> <span class="keyword">]</span><span class="keyword">[</span> <a href="#ISBN"><span class="reference">ISBN</span></a> = "name" <span class="keyword">]</span><span class="keyword">[</span> <span class="keyword">no</span> <a href="#GS1"><span class="reference">GS1</span></a> <span class="keyword">]</span></div>
 </div>
 
 
 <div>
-<span class="claferDecl" id="c0_Czarnecki">Czarnecki</span><span class="keyword"> : </span><a href="#c0_Author"><span class="reference">Author</span></a>
+<span class="claferDecl" id="Czarnecki">Czarnecki</span><span class="keyword"> : </span><a href="#Author"><span class="reference">Author</span></a>
   <div class="indent">
-  <span class="keyword">[</span> <a href="#c0_name"><span class="reference">name</span></a> = "name" <span class="keyword">]</span><span class="keyword">[</span> <a href="#c0_GenerativeProgramming"><span class="reference">GenerativeProgramming</span></a> in <a href="#c0_books"><span class="reference">books</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <a href="#name"><span class="reference">name</span></a> = "name" <span class="keyword">]</span><span class="keyword">[</span> <a href="#GenerativeProgramming"><span class="reference">GenerativeProgramming</span></a> in <a href="#books"><span class="reference">books</span></a> <span class="keyword">]</span></div>
 </div>
 
 
 <div>
-<span class="claferDecl" id="c0_Eisenecker">Eisenecker</span><span class="keyword"> : </span><a href="#c0_Author"><span class="reference">Author</span></a>
+<span class="claferDecl" id="Eisenecker">Eisenecker</span><span class="keyword"> : </span><a href="#Author"><span class="reference">Author</span></a>
   <div class="indent">
-  <span class="keyword">[</span> <a href="#c0_name"><span class="reference">name</span></a> = "name" <span class="keyword">]</span><span class="keyword">[</span> <a href="#c0_GenerativeProgramming"><span class="reference">GenerativeProgramming</span></a> in <a href="#c0_books"><span class="reference">books</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <a href="#name"><span class="reference">name</span></a> = "name" <span class="keyword">]</span><span class="keyword">[</span> <a href="#GenerativeProgramming"><span class="reference">GenerativeProgramming</span></a> in <a href="#books"><span class="reference">books</span></a> <span class="keyword">]</span></div>
 </div>
 
 </body>

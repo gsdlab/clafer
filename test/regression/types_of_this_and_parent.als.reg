@@ -2,12 +2,12 @@ open util/integer
 pred show {}
 
 
-one sig c0_A
-{ r_c0_b : lone c0_b }
+one sig A
+{ r_b : lone b }
 { some this }
 
-lone sig c0_b
-{ c0_b_ref : one c0_A }
-{ one r_c0_b
-  some this.~@r_c0_b }
+lone sig b
+{ b_ref : one A }
+{ one r_b
+  some this.~@r_b }
 

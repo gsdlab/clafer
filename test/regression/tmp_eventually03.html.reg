@@ -22,16 +22,16 @@ a[href$='Ambiguous name'] {color: yellow}
 <div class="file">positive/tmp_eventually03.cfr</div>
 
 <div>
-<span class="claferDecl" id="c0_a">a</span>
+<span class="claferDecl" id="a">a</span>
   <div class="indent">
-  <span class="claferDecl" id="c0_b">b</span> ?</div>
+  <span class="claferDecl" id="b">b</span> ?</div>
   <div class="indent">
-  <span class="keyword">[</span> <span class="tKeyword">eventually </span>X <a href="#c0_b"><span class="reference">b</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <span class="tKeyword">eventually </span>X <a href="#b"><span class="reference">b</span></a> <span class="keyword">]</span></div>
 </div>
 
 
 <div>
-<span class="keyword">assert [</span> F <a href="#c0_a"><span class="reference">a</span></a>.<a href="#c0_b"><span class="reference">b</span></a> <span class="keyword">]</span></div>
+<span class="keyword">assert [</span> F <a href="#a"><span class="reference">a</span></a>.<a href="#b"><span class="reference">b</span></a> <span class="keyword">]</span></div>
 
 </body>
 </html>

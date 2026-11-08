@@ -1,0 +1,13 @@
+//# OPTIONS --explicit
+abstract 0..* Book 0..* {
+  0..* author -> Author 1..* {
+    [this.parent in this.dref.book.dref]
+  }
+}
+abstract 0..* Author 0..* {
+  0..* book -> Book 1..* {
+    [this.parent in this.dref.author.dref]
+  }
+}
+0..* B : Book 5..5 {}
+0..* A : Author 6..6 {}

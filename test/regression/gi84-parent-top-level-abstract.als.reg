@@ -2,19 +2,19 @@ open util/integer
 pred show {}
 
 
-abstract sig c0_FeatureModel
+abstract sig FeatureModel
 {}
 
-abstract sig c0_Feature
+abstract sig Feature
 {}
-{ (this.~(@r_c0_F1 + @r_c0_F2)) in (c0_Feature + c0_FeatureModel) }
+{ (this.~(@r_F1 + @r_F2)) in (Feature + FeatureModel) }
 
-one sig c0_FM extends c0_FeatureModel
-{ r_c0_F1 : one c0_F1 }
+one sig FM extends FeatureModel
+{ r_F1 : one F1 }
 
-one sig c0_F1 extends c0_Feature
-{ r_c0_F2 : one c0_F2 }
+one sig F1 extends Feature
+{ r_F2 : one F2 }
 
-one sig c0_F2 extends c0_Feature
+one sig F2 extends Feature
 {}
 

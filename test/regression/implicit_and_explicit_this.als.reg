@@ -2,12 +2,12 @@ open util/integer
 pred show {}
 
 
-one sig c0_A
-{ r_c0_i : one c0_i }
-{ ((this.@r_c0_i).@c0_i_ref) = 1
-  ((this.@r_c0_i).@c0_i_ref) = 1 }
+one sig A
+{ r_i : one i }
+{ ((this.@r_i).@i_ref) = 1
+  ((this.@r_i).@i_ref) = 1 }
 
-one sig c0_i
-{ c0_i_ref : one Int }
-{ (this.@c0_i_ref) = 1 }
+one sig i
+{ i_ref : one Int }
+{ (this.@i_ref) = 1 }
 

@@ -22,26 +22,26 @@ a[href$='Ambiguous name'] {color: yellow}
 <div class="file">positive/resolution.cfr</div>
 
 <div>
-<span class="claferDecl" id="c0_XX">XX</span>
+<span class="claferDecl" id="XX">XX</span>
   <div class="indent">
-  <span class="claferDecl" id="c0_x">x</span>
+  <span class="claferDecl" id="x">x</span>
     <div class="indent">
-    <span class="claferDecl" id="c0_y">y</span></div>
+    <span class="claferDecl" id="x__y">y</span></div>
   </div>
   <div class="indent">
-  <span class="keyword">[</span> <a href="#c0_x"><span class="reference">x</span></a> <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <a href="#x"><span class="reference">x</span></a> <span class="keyword">]</span></div>
 </div>
 
 
 <div>
-<span class="claferDecl" id="c0_ZZ">ZZ</span>
+<span class="claferDecl" id="ZZ">ZZ</span>
   <div class="indent">
-  <span class="claferDecl" id="c0_z">z</span><span class="keyword"> -> </span><a href="#int"><span class="reference">int</span></a>
+  <span class="claferDecl" id="z">z</span><span class="keyword"> -> </span><a href="#int"><span class="reference">int</span></a>
     <div class="indent">
-    <span class="claferDecl" id="c1_y">y</span></div>
+    <span class="claferDecl" id="z__y">y</span></div>
   </div>
   <div class="indent">
-  <span class="keyword">[</span> <a href="#c0_z"><span class="reference">z</span></a> &gt; 0 <span class="keyword">]</span></div>
+  <span class="keyword">[</span> <a href="#z"><span class="reference">z</span></a> &gt; 0 <span class="keyword">]</span></div>
 </div>
 
 </body>

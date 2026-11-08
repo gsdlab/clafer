@@ -2,43 +2,43 @@ open util/integer
 pred show {}
 
 
-abstract sig c0_percent
-{ c0_percent_ref : one Int }
-{ ((this.@c0_percent_ref) >= 0) && ((this.@c0_percent_ref) <= 5) }
+abstract sig percent
+{ percent_ref : one Int }
+{ ((this.@percent_ref) >= 0) && ((this.@percent_ref) <= 5) }
 
-one sig c0_twoPercent extends c0_percent
+one sig twoPercent extends percent
 {}
 
-fact { (some c0_twoPercent) => ((c0_twoPercent.@c0_percent_ref) = 2) }
-one sig c0_threePercent extends c0_percent
+fact { (some twoPercent) => ((twoPercent.@percent_ref) = 2) }
+one sig threePercent extends percent
 {}
 
-fact { (some c0_threePercent) => ((c0_threePercent.@c0_percent_ref) = ((c0_twoPercent.@c0_percent_ref).plus[1])) }
-abstract sig c0_date
-{ c0_date_ref : one Int }
+fact { (some threePercent) => ((threePercent.@percent_ref) = ((twoPercent.@percent_ref).plus[1])) }
+abstract sig date
+{ date_ref : one Int }
 
-one sig c0_today extends c0_date
+one sig today extends date
 {}
 
-fact { (some c0_today) => ((c0_today.@c0_date_ref) = 0) }
-abstract sig c0_time
-{ c0_time_ref : one Int
-, r_c0_minute : one c0_minute
-, r_c0_hour : one c0_hour }
+fact { (some today) => ((today.@date_ref) = 0) }
+abstract sig time
+{ time_ref : one Int
+, r_minute : one minute
+, r_hour : one hour }
 
-sig c0_minute
-{ c0_minute_ref : one Int }
-{ one @r_c0_minute.this
-  ((this.@c0_minute_ref) >= 0) && ((this.@c0_minute_ref) <= 5) }
+sig minute
+{ minute_ref : one Int }
+{ one @r_minute.this
+  ((this.@minute_ref) >= 0) && ((this.@minute_ref) <= 5) }
 
-sig c0_hour
-{ c0_hour_ref : one Int }
-{ one @r_c0_hour.this
-  ((this.@c0_hour_ref) >= 0) && ((this.@c0_hour_ref) <= 5) }
+sig hour
+{ hour_ref : one Int }
+{ one @r_hour.this
+  ((this.@hour_ref) >= 0) && ((this.@hour_ref) <= 5) }
 
-fact { (some c0_time) => ((c0_time.@c0_time_ref) = (((c0_time.@r_c0_minute).@c0_minute_ref).plus[((c0_time.@r_c0_hour).@c0_hour_ref)])) }
-one sig c0_now extends c0_time
+fact { (some time) => ((time.@time_ref) = (((time.@r_minute).@minute_ref).plus[((time.@r_hour).@hour_ref)])) }
+one sig now extends time
 {}
-{ ((this.@r_c0_minute).@c0_minute_ref) = 3
-  ((this.@r_c0_hour).@c0_hour_ref) = 1 }
+{ ((this.@r_minute).@minute_ref) = 3
+  ((this.@r_hour).@hour_ref) = 1 }
 

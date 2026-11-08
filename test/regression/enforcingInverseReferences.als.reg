@@ -2,29 +2,29 @@ open util/integer
 pred show {}
 
 
-abstract sig c0_Book
-{ r_c0_author : some c0_author }
-{ all disj x, y : this.@r_c0_author | (x.@c0_author_ref) != (y.@c0_author_ref)  }
+abstract sig Book
+{ r_author : some author }
+{ all disj x, y : this.@r_author | (x.@author_ref) != (y.@author_ref)  }
 
-sig c0_author
-{ c0_author_ref : one c0_Author }
-{ one @r_c0_author.this
-  (this.~@r_c0_author) in (((this.@c0_author_ref).@r_c0_book).@c0_book_ref) }
+sig author
+{ author_ref : one Author }
+{ one @r_author.this
+  (this.~@r_author) in (((this.@author_ref).@r_book).@book_ref) }
 
-abstract sig c0_Author
-{ r_c0_book : some c0_book }
-{ all disj x, y : this.@r_c0_book | (x.@c0_book_ref) != (y.@c0_book_ref)  }
+abstract sig Author
+{ r_book : some book }
+{ all disj x, y : this.@r_book | (x.@book_ref) != (y.@book_ref)  }
 
-sig c0_book
-{ c0_book_ref : one c0_Book }
-{ one @r_c0_book.this
-  (this.~@r_c0_book) in (((this.@c0_book_ref).@r_c0_author).@c0_author_ref) }
+sig book
+{ book_ref : one Book }
+{ one @r_book.this
+  (this.~@r_book) in (((this.@book_ref).@r_author).@author_ref) }
 
-fact { 5 <= #c0_B and #c0_B <= 5 }
-sig c0_B extends c0_Book
+fact { 5 <= #B and #B <= 5 }
+sig B extends Book
 {}
 
-fact { 6 <= #c0_A and #c0_A <= 6 }
-sig c0_A extends c0_Author
+fact { 6 <= #A and #A <= 6 }
+sig A extends Author
 {}
 

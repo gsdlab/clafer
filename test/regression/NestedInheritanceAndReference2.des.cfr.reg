@@ -1,0 +1,33 @@
+//# OPTIONS --explicit
+abstract 0..* Component 0..* {
+  abstract 1..* Port 0..* {
+    0..* input 0..1 {}
+    0..* output 0..1 {}
+  }
+  abstract 1..* TemperaturePort : Port -> int 0..* {}
+}
+abstract 0..* TemperatureConnector 0..* {
+  [this.to.dref.dref = this.from.dref.dref]
+  0..* from -> TemperaturePort 1..1 {
+    [(#this.dref.output) >= 1]
+  }
+  0..* to -> TemperaturePort 1..1 {
+    [(#this.dref.input) >= 1]
+  }
+}
+0..* sensor : Component 1..1 {
+  1..* sensor__temperature : TemperaturePort 1..1 {
+    [(#this.output) >= 1]
+  }
+}
+0..* controller : Component 1..1 {
+  1..* controller__temperature : TemperaturePort 1..1 {
+    [(#this.input) >= 1]
+  }
+}
+0..* con1 : TemperatureConnector 1..1 {
+  [this.from.dref = sensor.sensor__temperature]
+  [this.to.dref = controller.controller__temperature]
+}
+
+assert [controller.controller__temperature.dref = sensor.sensor__temperature.dref]

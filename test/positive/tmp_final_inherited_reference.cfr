@@ -1,0 +1,40 @@
+// `final`, `finalref` and `finaltarget` on a clafer that inherits its reference fix the
+// reference, as they fix a reference that the clafer declares (#109).
+// `finalref` fixes the target of each instance, `finaltarget` the set of targets of the
+// instances in their parent, and both modifiers, in either order, mean both
+// (kbak/clafer-semantics#127).
+
+abstract Engine
+gas : Engine
+electric : Engine
+abstract Car
+    abstract engine -> Engine
+    xor gear
+        initial park --> drive
+        drive
+tesla : Car
+    final motor : engine
+leaf : Car
+    finalref motor2 : engine
+bolt : Car
+    finaltarget motor3 : engine
+// without a modifier, the reference may change
+mini : Car
+    motor4 : engine
+// both modifiers, on an inherited reference and on a reference of its own
+volt : Car
+    finalref finaltarget motor5 : engine
+prius : Car
+    finaltarget finalref motor6 -> Engine
+// a union of targets, one of them nested
+garage
+    spare : Engine
+corolla : Car
+    finalref motor7 -> garage.spare ++ gas
+
+assert [ tesla.motor = gas => G tesla.motor = gas ]
+assert [ leaf.motor2 = gas => G leaf.motor2 = gas ]
+assert [ bolt.motor3 = gas => G bolt.motor3 = gas ]
+assert [ volt.motor5 = gas => G volt.motor5 = gas ]
+assert [ prius.motor6 = gas => G prius.motor6 = gas ]
+assert [ corolla.motor7.dref = gas => G corolla.motor7.dref = gas ]

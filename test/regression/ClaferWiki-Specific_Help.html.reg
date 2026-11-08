@@ -22,34 +22,34 @@ a[href$='Ambiguous name'] {color: yellow}
 <div class="file">positive/ClaferWiki-Specific_Help.cfr</div>
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_A">A</span>
+<span class="keyword">abstract</span> <span class="claferDecl" id="A">A</span>
   <div class="indent">
-  <span class="claferDecl" id="c0_c">c</span><span class="keyword"> -> </span><a href="#c0_C"><span class="reference">C</span></a> *</div>
+  <span class="claferDecl" id="c">c</span><span class="keyword"> -> </span><a href="#C"><span class="reference">C</span></a> *</div>
 </div>
 
 
 <div>
-<span class="claferDecl" id="c0_A1">A1</span><span class="keyword"> : </span><a href="#c0_A"><span class="reference">A</span></a>
+<span class="claferDecl" id="A1">A1</span><span class="keyword"> : </span><a href="#A"><span class="reference">A</span></a>
   <div class="indent">
-  <span class="keyword">[</span> # <a href="#c0_c"><span class="reference">c</span></a> = 2 <span class="keyword">]</span></div>
+  <span class="keyword">[</span> # <a href="#c"><span class="reference">c</span></a> = 2 <span class="keyword">]</span></div>
 </div>
 
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_B">B</span><span class="keyword"> : </span><a href="#c0_A"><span class="reference">A</span></a></div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="B">B</span><span class="keyword"> : </span><a href="#A"><span class="reference">A</span></a></div>
 
 
 <div>
-<span class="keyword">abstract</span> <span class="claferDecl" id="c0_C">C</span></div>
+<span class="keyword">abstract</span> <span class="claferDecl" id="C">C</span></div>
 
 <!-- # FRAGMENT /-->
 
 <div>
-<span class="claferDecl" id="c0_C1">C1</span><span class="keyword"> : </span><a href="#c0_C"><span class="reference">C</span></a></div>
+<span class="claferDecl" id="C1">C1</span><span class="keyword"> : </span><a href="#C"><span class="reference">C</span></a></div>
 
 
 <div>
-<span class="claferDecl" id="c0_C2">C2</span><span class="keyword"> : </span><a href="#c0_C"><span class="reference">C</span></a></div>
+<span class="claferDecl" id="C2">C2</span><span class="keyword"> : </span><a href="#C"><span class="reference">C</span></a></div>
 
 </body>
 </html>

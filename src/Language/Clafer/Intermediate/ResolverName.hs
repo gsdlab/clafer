@@ -53,7 +53,7 @@ data SEnv
 
 -- | How a given name was resolved
 data HowResolved
-  = Special     -- ^ "this", "parent", "dref", "root", "clafer", and "children"
+  = Special     -- ^ "this", "parent", "dref", "root", "clafer", "children" and "noclafer"
   | TypeSpecial -- ^ primitive type: "integer", "string"
   | Binding     -- ^ local variable (in constraints)
   | Subclafers  -- ^ clafer's descendant
@@ -172,30 +172,94 @@ processDecl decl = runExceptT $ do
 resolveNav :: SEnv -> PExp                         -> Bool   -> Resolve (PExp, [IClafer])
 resolveNav    env     pexp0@PExp{_inPos=pos', _exp=x} isFirst =
   case x of
+    -- a navigation from the empty set is empty, whatever it navigates to, so the names after
+    -- `noclafer` are not resolved; the compiler warns about it
+    IFunExp "." [pexp1, _] | fromNoClafer pexp1 -> return (pexp0{_exp = noClaferIExp}, [])
     IFunExp "." [pexp1,pexp2] -> do
       (pexp1', path1) <- resolveNav env                                               pexp1 True
       (pexp2', path2) <- resolveNav env{context = listToMaybe path1, resPath = path1} pexp2 False
       -- if `dref` was added to the RHS we need to left rotate the tree
       case pexp2' of
         PExp{_exp=IFunExp "." [pexp2'l, pexp2'r]} -> case pexp2'l of
+          -- after an explicit `dref`, e.g., to a union of clafers, a name of its target needs
+          -- no second `dref`
+          PExp{_exp=IClaferId{_sident="dref"}} | endsWithDref pexp1' ->
+            return (pexp0{_exp=IFunExp iJoin [pexp1', pexp2'r]}, path2)
           PExp{_exp=IClaferId{_sident="dref"}} ->
             let -- move the `dref` to the LHS
               pexp0' = pexp0{_exp=IFunExp iJoin [pexp1', pexp2'l]}
             in -- keep the RHS as is
               return (pexp2{_exp=IFunExp iJoin [pexp0', pexp2'r]}, path2)
           _ -> return (pexp0{_exp=IFunExp iJoin [pexp1', pexp2']}, path2)
+        -- the parent of an instance of a top-level clafer is the root (#112); that of another set
+        -- of instances is the root when the set is not empty, which ResolverRoot decides
+        PExp{_exp=IClaferId{_sident="parent"}} | Just c <- listToMaybe path1, isRootChild c, isSingleInstance pexp1' ->
+          return (pexp0{_exp=rootIExp}, [])
         _ -> return (pexp0{_exp=IFunExp iJoin [pexp1', pexp2']}, path2)
+    -- a navigation from an intersection or a difference of sets, e.g., (this ** g.f2).parent,
+    -- which ResolverRoot writes for a split constraint (#112) and an explicit model keeps: the
+    -- set is in the right operand of `**` and in the left of `--`, whose path the navigation
+    -- continues from
+    IFunExp op' [l, r] | op' == iIntersection || op' == iDifference -> do
+      (l', pathL) <- resolveNav env l True
+      (r', pathR) <- resolveNav env r True
+      return (pexp0{_exp = IFunExp op' [l', r']}, if op' == iIntersection then pathR else pathL)
     IClaferId _ "root" _ _ -> return (pexp0, [])
+    IClaferId _ "noclafer" _ _ -> return (pexp0{_exp = noClaferIExp}, [])
+    -- clafer as a value, the union of all clafers, which ResolverRoot writes out
+    IClaferId _ "clafer" _ _ | isFirst -> return (pexp0{_exp = IClaferId "" baseClafer True (GlobalBind baseClafer)}, [])
     IClaferId modName' id' _ _ -> if isFirst
       then do
              (exp', path') <- mkPath pos' env <$> resolveName pos' env id'
-             return (pexp0{_exp=exp'}, path')
+             return (pexp0{_exp=exp'}, derefPath env id' path')
       else do
              (exp', path') <- case resPath env of
                [] -> mkPath' pos' modName' <$> resolveTopLevelName pos' env id'
                _  -> mkPath' pos' modName' <$> resolveImmName pos' env id'
-             return (pexp0{_exp=exp'}, path')
+             return (pexp0{_exp=exp'}, derefPath env id' path')
     y -> throwError $ SemanticErr pos' $ "Cannot resolve nav of " ++ show y
+
+-- | A concrete top-level clafer, whose parent is the root. The root is synthetic: it has no
+--   instance in the outputs, and a navigation from it is a navigation from the top level.
+isRootChild :: IClafer -> Bool
+isRootChild c = _parentUID c == rootIdent && not (_isAbstract c)
+
+-- | @this@ or a variable: one instance, whose parent always exists. The parent of a set of
+--   instances of a top-level clafer is the root only when the set is not empty.
+isSingleInstance :: PExp -> Bool
+isSingleInstance PExp{_exp=IClaferId{_sident=s}} | s == thisIdent = True
+isSingleInstance PExp{_exp=IClaferId{_binding=LocalBind _}} = True
+isSingleInstance _ = False
+
+rootIExp :: IExp
+rootIExp = IClaferId "" rootIdent True (GlobalBind rootIdent)
+
+noClaferIExp :: IExp
+noClaferIExp = IClaferId "" noClaferIdent True (GlobalBind noClaferIdent)
+
+-- | A navigation that starts at @noclafer@, e.g., @noclafer@ in @noclafer.d.e@, before resolution
+fromNoClafer :: PExp -> Bool
+fromNoClafer PExp{_exp = IFunExp "." [l, _]} = fromNoClafer l
+fromNoClafer p = isNoClafer p
+
+endsWithDref :: PExp -> Bool
+endsWithDref PExp{_exp=IClaferId{_sident=s}} = s == drefIdent
+endsWithDref PExp{_exp=IFunExp "." [_, r]} = endsWithDref r
+endsWithDref _ = False
+
+-- | After @dref@, the path continues at the target of the reference, which a clafer declares or
+--   inherits, so that the names after it are the target's children: @this.dref.speed@ under
+--   @l -> Port@ is the @speed@ of the port, not @this.dref.dref.speed@. A reference to a union
+--   of clafers has no single target, and the path stays at the reference clafer.
+derefPath :: SEnv -> String -> [IClafer] -> [IClafer]
+derefPath env id' path
+  | id' == drefIdent, c : _ <- path
+  , [target] : _ <- filter (not . null) $ mapHierarchy getReference getSuper uidMap c
+  , Just t <- findIClafer uidMap target
+  = t : path
+  | otherwise = path
+  where
+  uidMap = uidClaferMap $ genv env
 
 -- | Depending on how resolved construct a navigation path from 'context env'
 mkPath :: Span -> SEnv -> (HowResolved, String, [IClafer]) -> (IExp, [IClafer])
@@ -217,9 +281,14 @@ mkPath    pos'    env     (howResolved, id',    path)       = case howResolved o
           (IClaferId "" thisIdent True (createBind $ context env))
           tuplePath
   specIExp "this"     = IClaferId "" thisIdent True (createBind $ context env)
-  specIExp "parent"   = toNav [("parent", Just $ head path)]
+  -- at the top level, the parent of a concrete clafer is the root (#112); that of an abstract
+  -- one is the parent of the instances of its subclafers
+  specIExp "parent"   = case (path, context env) of
+    ([], Just c) | isRootChild c -> rootIExp
+    _ -> toNav [("parent", listToMaybe path)]
   specIExp "dref"     = toNav [("dref", Just $ head path)]
   specIExp "root"     = IClaferId "" rootIdent True (GlobalBind rootIdent)
+  specIExp "noclafer" = noClaferIExp
   specIExp "children" = toNav [(id', Just $ head path)]
   specIExp i          = error $ "[BUG] ResolverName.specIExp: Unknown special id: " ++ i
 
@@ -247,8 +316,10 @@ adjustAncestor ctx cPath rPath = (thisIdent, Just ctx) : parents ++ (fromJust $ 
 
 mkPath' :: Span -> String -> (HowResolved, String, [IClafer]) -> (IExp, [IClafer])
 mkPath'    pos' modName'  (howResolved, id', path)          = case howResolved of
-  Reference -> (toNav' pos' (zip ["dref", id'] (map Just path)), path)
-  _ -> (IClaferId modName' id' False bind, path)
+  -- the path is [the child, the reference clafer]: dref belongs to the reference clafer
+  Reference -> (toNav' pos' (zip ["dref", id'] (map Just $ reverse path)), path)
+  -- a top-level clafer after `root.` (#112)
+  _ -> (IClaferId modName' id' (maybe False isTopLevel $ listToMaybe path) bind, path)
   where
   bind = case path of
     [] -> NoBind

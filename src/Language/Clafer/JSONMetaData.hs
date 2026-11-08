@@ -87,22 +87,25 @@ prettyPrintJSON ('}':line) = '\n':'}':prettyPrintJSON line
 prettyPrintJSON (c:line) =  c:prettyPrintJSON line
 prettyPrintJSON ""         = ""
 
--- | given the QNameMaps, parse the JSON scopes and return list of scopes
+-- | given the QNameMaps, parse the JSON scopes and return list of scopes.
+-- | Only the entries {"lpqName": name, "scope": n} are clafer scopes; the others, e.g., chocosolver's
+-- | {"int": [low, high]} or {"defaultScope": n}, are skipped.
 parseJSONScopes :: QNameMaps -> String    -> [ (UID, Integer) ]
 parseJSONScopes    qNameMaps    scopesJSON =
     foldl (\uidScopes qScope -> qNameToUIDs qScope ++ uidScopes) [] decodedScopes
     where
       --                  QName
       decodedScopes :: [ (T.Text, Integer) ]
-      decodedScopes = scopesJSON ^.. _Array . traverse
-                                       . to (\o -> ( o ^?! key "lpqName" . _String
-                                                   , o ^?! key "scope"  . _Integer)
-                                            )
-      -- a QName may resolve to potentially multiple UIDs
+      decodedScopes = mapMaybe claferScope $ scopesJSON ^.. _Array . traverse
+      claferScope o = (,) <$> o ^? key "lpqName" . _String <*> o ^? key "scope" . _Integer
+      -- a UID names its clafer; a QName may resolve to potentially multiple UIDs
       qNameToUIDs :: (T.Text, Integer) -> [ (UID, Integer) ]
-      qNameToUIDs   (qName, scope)  = if T.null qName
-                                       then [ ("", scope) ]
-                                       else [ (uid, scope) | uid <- getUIDs qNameMaps $ convertString qName]
+      qNameToUIDs   (qName, scope)
+        | T.null qName                       = [ ("", scope) ]
+        | isJust $ getFQName qNameMaps name  = [ (name, scope) ]
+        | otherwise                          = [ (uid, scope) | uid <- getUIDs qNameMaps name ]
+        where
+          name = convertString qName
 
 -- | Write a .cfr-scope file
 writeCfrScopeFile :: [ (UID, Integer) ] -> QNameMaps -> FilePath        -> IO ()

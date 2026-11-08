@@ -22,56 +22,56 @@ a[href$='Ambiguous name'] {color: yellow}
 <div class="file">positive/group_children_optionality.cfr</div>
 
 <div>
-2..3 <span class="claferDecl" id="c0_A">A</span>
+2..3 <span class="claferDecl" id="A">A</span>
   <div class="indent">
-  <span class="claferDecl" id="c0_b">b</span></div>
+  <span class="claferDecl" id="b">b</span></div>
   <div class="indent">
-  <span class="claferDecl" id="c0_c">c</span> 1</div>
+  <span class="claferDecl" id="c">c</span> 1</div>
   <div class="indent">
-  <span class="claferDecl" id="c0_d">d</span></div>
+  <span class="claferDecl" id="d">d</span></div>
 </div>
 
 
 <div>
-<span class="keyword">xor</span> <span class="claferDecl" id="c0_E">E</span>
+<span class="keyword">xor</span> <span class="claferDecl" id="E">E</span>
   <div class="indent">
-  <span class="claferDecl" id="c0_f">f</span></div>
+  <span class="claferDecl" id="f">f</span></div>
   <div class="indent">
-  <span class="claferDecl" id="c0_g">g</span></div>
+  <span class="claferDecl" id="g">g</span></div>
 </div>
 
 
 <div>
-<span class="keyword">assert [</span> <a href="#c0_f"><span class="reference">f</span></a> &#124;&#124; <a href="#c0_g"><span class="reference">g</span></a> <span class="keyword">]</span></div>
+<span class="keyword">assert [</span> <a href="#f"><span class="reference">f</span></a> &#124;&#124; <a href="#g"><span class="reference">g</span></a> <span class="keyword">]</span></div>
 
 
 <div>
-<span class="keyword">assert [</span>  ! (<a href="#c0_f"><span class="reference">f</span></a> &amp;&amp; <a href="#c0_g"><span class="reference">g</span></a>) <span class="keyword">]</span></div>
+<span class="keyword">assert [</span>  ! (<a href="#f"><span class="reference">f</span></a> &amp;&amp; <a href="#g"><span class="reference">g</span></a>) <span class="keyword">]</span></div>
 
 
 <div>
-<span class="claferDecl" id="c0_D">D</span>
+<span class="claferDecl" id="D">D</span>
   <div class="indent">
-  <span class="claferDecl" id="c0_Z">Z</span></div>
+  <span class="claferDecl" id="Z">Z</span></div>
   <div class="indent">
-  <span class="claferDecl" id="c0_K">K</span> ?</div>
+  <span class="claferDecl" id="K">K</span> ?</div>
 </div>
 
 
 <div>
-<span class="keyword">assert [</span> <span class="keyword">one</span> <a href="#c0_D"><span class="reference">D</span></a> <span class="keyword">]</span></div>
+<span class="keyword">assert [</span> <span class="keyword">one</span> <a href="#D"><span class="reference">D</span></a> <span class="keyword">]</span></div>
 
 
 <div>
-<span class="keyword">assert [</span> <span class="keyword">one</span> <a href="#c0_Z"><span class="reference">Z</span></a> <span class="keyword">]</span></div>
+<span class="keyword">assert [</span> <span class="keyword">one</span> <a href="#Z"><span class="reference">Z</span></a> <span class="keyword">]</span></div>
 
 
 <div>
-0..* <span class="claferDecl" id="c0_L">L</span>
+0..* <span class="claferDecl" id="L">L</span>
   <div class="indent">
-  <span class="claferDecl" id="c0_M">M</span></div>
+  <span class="claferDecl" id="M">M</span></div>
   <div class="indent">
-  <span class="claferDecl" id="c0_N">N</span></div>
+  <span class="claferDecl" id="N">N</span></div>
 </div>
 
 </body>

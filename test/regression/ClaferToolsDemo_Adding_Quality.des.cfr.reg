@@ -1,0 +1,87 @@
+//# OPTIONS --explicit
+abstract 0..* Feature 0..* {
+  0..* productivity -> int 1..1 {}
+  0..* cost -> int 1..1 {}
+  0..* batterylife -> int 1..1 {}
+  0..* security -> int 1..1 {}
+}
+abstract 0..* MobilePhone 0..* {
+  [((#this.total_productivity) >= 1) => (this.total_productivity.dref = (sum Feature.productivity.dref))]
+  [((#this.total_batterylife) >= 1) => (this.total_batterylife.dref = (sum Feature.batterylife.dref))]
+  [((#this.total_security) >= 1) => (this.total_security.dref = (sum Feature.security.dref))]
+  [((#this.total_cost) >= 1) => (this.total_cost.dref = (sum Feature.cost.dref))]
+  0..* Connectivity : Feature 1..1 {
+    [this.batterylife.dref = -12]
+    [this.productivity.dref = 14]
+    [this.security.dref = 43]
+    [this.cost.dref = 101]
+    1..1 Bluetooth 1..1 {
+      0..* Bluetooth20EDR : Feature 0..1 {
+        [this.batterylife.dref = -4]
+        [this.productivity.dref = 1]
+        [this.security.dref = -15]
+        [this.cost.dref = 1]
+      }
+      0..* Bluetooth21EDR : Feature 0..1 {
+        [this.batterylife.dref = -2]
+        [this.productivity.dref = 4]
+        [this.security.dref = -10]
+        [this.cost.dref = 1]
+      }
+      0..* Bluetooth40 : Feature 0..1 {
+        [this.batterylife.dref = -1]
+        [this.productivity.dref = 16]
+        [this.security.dref = -2]
+        [this.cost.dref = 2]
+      }
+    }
+    0..* GSM : Feature 1..1 {
+      [this.batterylife.dref = -2]
+      [this.productivity.dref = 2]
+      [this.security.dref = -10]
+      [this.cost.dref = 1]
+    }
+    0..* LTE : Feature 0..1 {
+      [this.batterylife.dref = -1]
+      [this.productivity.dref = 16]
+      [this.security.dref = -3]
+      [this.cost.dref = 3]
+    }
+    0..* WiFi : Feature 0..1 {
+      [this.batterylife.dref = -10]
+      [this.productivity.dref = 20]
+      [this.security.dref = -15]
+      [this.cost.dref = 20]
+    }
+    0..* USB : Feature 0..1 {
+      [this.batterylife.dref = 10]
+      [this.productivity.dref = 20]
+      [this.security.dref = 0]
+      [this.cost.dref = 3]
+    }
+  }
+  1..1 Battery 1..1 {
+    0..* LiBattery1150 : Feature 0..1 {
+      [this.batterylife.dref = 60]
+      [this.productivity.dref = 0]
+      [this.security.dref = 0]
+      [this.cost.dref = 10]
+    }
+    0..* LiBattery1400 : Feature 0..1 {
+      [this.batterylife.dref = 70]
+      [this.productivity.dref = 0]
+      [this.security.dref = 0]
+      [this.cost.dref = 15]
+    }
+  }
+  0..* total_productivity -> int 1..1 {}
+  0..* total_batterylife -> int 1..1 {}
+  0..* total_security -> int 1..1 {}
+  0..* total_cost -> int 1..1 {}
+}
+0..* OptimalPhone : MobilePhone 1..1 {}
+
+<< max OptimalPhone.total_batterylife.dref >>
+<< max OptimalPhone.total_productivity.dref >>
+<< max OptimalPhone.total_security.dref >>
+<< min OptimalPhone.total_cost.dref >>

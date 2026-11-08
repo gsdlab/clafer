@@ -1,10 +1,10 @@
 defaultScope(1);
 stringLength(16);
 
-c0_A = Abstract("c0_A");
-c0_Item = c0_A.addChild("c0_Item").withCard(1, 1);
-c0_B = Abstract("c0_B");
-c1_Item = c0_B.addChild("c1_Item").withCard(1, 1);
-c0_C = Clafer("c0_C").withCard(1, 1);
-c0_B.extending(c0_A);
-c0_C.extending(c0_B);
+$A = Abstract("A");
+$A__Item = $A.addChild("A__Item").withCard(1, 1);
+$B = Abstract("B");
+$B__Item = $B.addChild("B__Item").withCard(1, 1);
+$C = Clafer("C").withCard(1, 1);
+$B.extending($A);
+$C.extending($B);

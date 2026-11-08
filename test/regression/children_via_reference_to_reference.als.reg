@@ -2,21 +2,21 @@ open util/integer
 pred show {}
 
 
-abstract sig c0_A
-{ r_c0_x : lone c0_x }
+abstract sig A
+{ r_x : lone x }
 
-sig c0_x
+sig x
 {}
-{ one @r_c0_x.this }
+{ one @r_x.this }
 
-fact { 2 <= #c0_a and #c0_a <= 2 }
-sig c0_a extends c0_A
+fact { 2 <= #a and #a <= 2 }
+sig a extends A
 {}
 
-one sig c0_ref1
-{ c0_ref1_ref : one c0_A }
+one sig ref1
+{ ref1_ref : one A }
 
-one sig c0_ref2
-{ c0_ref2_ref : one c0_ref1 }
-{ some ((this.@c0_ref2_ref).@c0_ref1_ref).@r_c0_x }
+one sig ref2
+{ ref2_ref : one ref1 }
+{ some ((this.@ref2_ref).@ref1_ref).@r_x }
 

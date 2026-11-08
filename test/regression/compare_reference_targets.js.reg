@@ -1,0 +1,27 @@
+scope({$B:2, $Port:2, $a:2});
+defaultScope(1);
+stringLength(16);
+
+$Port = Abstract("Port");
+$B = Abstract("B");
+$a = $B.addChild("a").withCard(1, 1);
+$p1 = Clafer("p1").withCard(1, 1);
+$p2 = Clafer("p2").withCard(1, 1);
+$sys = Clafer("sys").withCard(1, 1);
+$b1 = $sys.addChild("b1").withCard(1, 1);
+$b2 = $sys.addChild("b2").withCard(1, 1);
+$choice = Clafer("choice").withCard(1, 1);
+$sel = Clafer("sel").withCard(1, 1);
+$a.refToUnique($Port);
+$p1.extending($Port);
+$p2.extending($Port);
+$b1.extending($B);
+$b2.extending($B);
+$b2.addConstraint(equal(joinRef(join($this(), $a)), joinRef(join(join(joinParent($this()), $b1), $a))));
+$b2.addConstraint(or(notEqual(joinRef(join($this(), $a)), joinRef(join(join(joinParent($this()), $b1), $a))), equal(joinRef(join($this(), $a)), joinRef(join(join(joinParent($this()), $b1), $a)))));
+$choice.refToUnique($B);
+$choice.addConstraint($in(joinRef(join(joinRef($this()), $a)), joinRef(join(join(global($sys), $b1), $a))));
+$sel.refToUnique($a);
+$sel.addConstraint($in(joinRef($this()), join(join(global($sys), $b1), $a)));
+$sel.addConstraint(equal(joinRef($this()), join(join(global($sys), $b1), $a)));
+Constraint(all([decl([$_x = local("x")], join(join(global($sys), $b1), $a))], equal($_x, join(join(global($sys), $b1), $a))));

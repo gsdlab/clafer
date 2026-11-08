@@ -1,0 +1,32 @@
+open util/integer
+pred show {}
+
+
+one sig root
+{ var r_box : set box }
+fact { always (2 <= #(root.@r_box)) }
+fact { always (#(root.@r_box) <= 2) }
+fact { always ((not before some root) implies (some alive_box.@r_item)) }
+fact { always ((not before some root) implies (all  i : alive_box.@r_item | after ((no i & (alive_box.@r_item)) && (after (some i & (alive_box.@r_item)))))) }
+
+assert assertAt_8_10 { always (all  b : alive_box | all  i : b.@r_item | always ((some i & (alive_box.@r_item)) => (some i & (b.@r_item)))) }
+check assertAt_8_10 for 1 but 2 box, 2 item, 10 steps
+
+
+
+sig box
+{ p_box : lone root
+, var r_item : set item }
+fun alive_box : set box { root.@r_box }
+fact { always ~@r_box in @p_box }
+
+fact { all self_ : box | always (self_ in alive_box implies (lone self_.@r_item)) }
+
+
+sig item
+{ p_item : lone box }
+fun alive_item : set item { box.@r_item }
+fact { always ~@r_item in @p_item
+  always @r_item.univ in alive_box }
+
+

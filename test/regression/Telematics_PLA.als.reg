@@ -2,122 +2,122 @@ open util/integer
 pred show {}
 
 
-one sig c0_telematicsSystem
-{ r_c0_channel : one c0_channel
-, r_c0_extraDisplay : lone c0_extraDisplay
-, r_c0_size : one c0_size }
-{ (some (this.@r_c0_channel).@r_c0_dual) <=> (some c0_ECU2)
-  (some this.@r_c0_extraDisplay) <=> ((#(c0_ECU1.@r_c1_display)) = 2)
-  (some this.@r_c0_extraDisplay) <=> ((some c0_ECU2) => ((#(c0_ECU2.@r_c1_display)) = 2))
-  (some (this.@r_c0_size).@r_c0_large) <=> (no (((c0_plaECU.@r_c1_display).@r_c0_options).@r_c1_size).@r_c1_small)
-  (some (this.@r_c0_size).@r_c0_small) <=> (no (((c0_plaECU.@r_c1_display).@r_c0_options).@r_c1_size).@r_c1_large) }
+one sig telematicsSystem
+{ r_channel : one channel
+, r_extraDisplay : lone extraDisplay
+, r_telematicsSystem__size : one telematicsSystem__size }
+{ (some (this.@r_channel).@r_dual) <=> (some ECU2)
+  (some this.@r_extraDisplay) <=> ((#(ECU1.@r_plaECU__display)) = 2)
+  (some this.@r_extraDisplay) <=> ((some ECU2) => ((#(ECU2.@r_plaECU__display)) = 2))
+  (some (this.@r_telematicsSystem__size).@r_telematicsSystem__size__large) <=> (no (((plaECU.@r_plaECU__display).@r_display__options).@r_options__size).@r_options__size__small)
+  (some (this.@r_telematicsSystem__size).@r_telematicsSystem__size__small) <=> (no (((plaECU.@r_plaECU__display).@r_display__options).@r_options__size).@r_options__size__large) }
 
-one sig c0_channel
-{ r_c0_single : lone c0_single
-, r_c0_dual : lone c0_dual }
-{ let children = (r_c0_single + r_c0_dual) | one children }
+one sig channel
+{ r_single : lone single
+, r_dual : lone dual }
+{ let children = (r_single + r_dual) | one children }
 
-lone sig c0_single
+lone sig single
 {}
-{ one r_c0_single }
+{ one r_single }
 
-lone sig c0_dual
+lone sig dual
 {}
-{ one r_c0_dual }
+{ one r_dual }
 
-lone sig c0_extraDisplay
+lone sig extraDisplay
 {}
-{ one r_c0_extraDisplay }
+{ one r_extraDisplay }
 
-one sig c0_size
-{ r_c0_small : lone c0_small
-, r_c0_large : lone c0_large }
-{ let children = (r_c0_small + r_c0_large) | one children }
+one sig telematicsSystem__size
+{ r_telematicsSystem__size__small : lone telematicsSystem__size__small
+, r_telematicsSystem__size__large : lone telematicsSystem__size__large }
+{ let children = (r_telematicsSystem__size__small + r_telematicsSystem__size__large) | one children }
 
-lone sig c0_small
+lone sig telematicsSystem__size__small
 {}
-{ one r_c0_small }
+{ one r_telematicsSystem__size__small }
 
-lone sig c0_large
+lone sig telematicsSystem__size__large
 {}
-{ one r_c0_large }
+{ one r_telematicsSystem__size__large }
 
-abstract sig c0_comp
-{ r_c0_version : one c0_version }
+abstract sig comp
+{ r_version : one version }
 
-sig c0_version
-{ c0_version_ref : one Int }
-{ one @r_c0_version.this }
+sig version
+{ version_ref : one Int }
+{ one @r_version.this }
 
-abstract sig c0_ECU extends c0_comp
-{}
-
-abstract sig c0_display extends c0_comp
-{ r_c0_server : one c0_server
-, r_c0_options : one c0_options }
-{ ((this.@r_c0_version).@c0_version_ref) >= ((((this.@r_c0_server).@c0_server_ref).@r_c0_version).@c0_version_ref) }
-
-sig c0_server
-{ c0_server_ref : one c0_ECU }
-{ one @r_c0_server.this }
-
-sig c0_options extends c1_options
-{}
-{ one @r_c0_options.this }
-
-abstract sig c1_options
-{ r_c1_size : one c1_size
-, r_c0_cache : lone c0_cache }
-{ ((some (this.@r_c1_size).@r_c1_small) && (some this.@r_c0_cache)) => (some ((this.@r_c0_cache).@r_c2_size).@r_c0_fixed) }
-
-sig c1_size
-{ r_c1_small : lone c1_small
-, r_c1_large : lone c1_large }
-{ one @r_c1_size.this
-  let children = (r_c1_small + r_c1_large) | one children }
-
-sig c1_small
-{}
-{ one @r_c1_small.this }
-
-sig c1_large
-{}
-{ one @r_c1_large.this }
-
-sig c0_cache
-{ r_c2_size : one c2_size }
-{ one @r_c0_cache.this }
-
-sig c2_size
-{ c2_size_ref : one Int
-, r_c0_fixed : lone c0_fixed }
-{ one @r_c2_size.this }
-
-sig c0_fixed
-{}
-{ one @r_c0_fixed.this }
-
-abstract sig c0_plaECU extends c0_ECU
-{ r_c1_display : set c1_display }
-{ 1 <= #r_c1_display and #r_c1_display <= 2 }
-
-sig c1_display extends c0_display
-{}
-{ one @r_c1_display.this
-  ((this.@r_c0_server).@c0_server_ref) = (this.~@r_c1_display)
-  no (this.@r_c0_options).@r_c0_cache }
-
-one sig c0_ECU1 extends c0_plaECU
+abstract sig ECU extends comp
 {}
 
-lone sig c0_ECU2 extends c0_plaECU
-{ r_c0_master : one c0_master }
+abstract sig root__display extends comp
+{ r_server : one server
+, r_display__options : one display__options }
+{ ((this.@r_version).@version_ref) >= ((((this.@r_server).@server_ref).@r_version).@version_ref) }
 
-lone sig c0_master
-{ c0_master_ref : one c0_ECU1 }
-{ one r_c0_master }
+sig server
+{ server_ref : one ECU }
+{ one @r_server.this }
 
-fact { some (c0_telematicsSystem.@r_c0_channel).@r_c0_dual }
-fact { some c0_telematicsSystem.@r_c0_extraDisplay }
-fact { some (c0_telematicsSystem.@r_c0_size).@r_c0_large }
-fact { ((c0_comp.@r_c0_version).@c0_version_ref) = 1 }
+sig display__options extends root__options
+{}
+{ one @r_display__options.this }
+
+abstract sig root__options
+{ r_options__size : one options__size
+, r_cache : lone cache }
+{ ((some (this.@r_options__size).@r_options__size__small) && (some this.@r_cache)) => (some ((this.@r_cache).@r_cache__size).@r_fixed) }
+
+sig options__size
+{ r_options__size__small : lone options__size__small
+, r_options__size__large : lone options__size__large }
+{ one @r_options__size.this
+  let children = (r_options__size__small + r_options__size__large) | one children }
+
+sig options__size__small
+{}
+{ one @r_options__size__small.this }
+
+sig options__size__large
+{}
+{ one @r_options__size__large.this }
+
+sig cache
+{ r_cache__size : one cache__size }
+{ one @r_cache.this }
+
+sig cache__size
+{ cache__size_ref : one Int
+, r_fixed : lone fixed }
+{ one @r_cache__size.this }
+
+sig fixed
+{}
+{ one @r_fixed.this }
+
+abstract sig plaECU extends ECU
+{ r_plaECU__display : set plaECU__display }
+{ 1 <= #r_plaECU__display and #r_plaECU__display <= 2 }
+
+sig plaECU__display extends root__display
+{}
+{ one @r_plaECU__display.this
+  ((this.@r_server).@server_ref) = (this.~@r_plaECU__display)
+  no (this.@r_display__options).@r_cache }
+
+one sig ECU1 extends plaECU
+{}
+
+lone sig ECU2 extends plaECU
+{ r_master : one master }
+
+lone sig master
+{ master_ref : one ECU1 }
+{ one r_master }
+
+fact { some (telematicsSystem.@r_channel).@r_dual }
+fact { some telematicsSystem.@r_extraDisplay }
+fact { some (telematicsSystem.@r_telematicsSystem__size).@r_telematicsSystem__size__large }
+fact { ((comp.@r_version).@version_ref) = 1 }

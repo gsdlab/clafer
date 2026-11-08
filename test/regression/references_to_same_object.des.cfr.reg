@@ -1,0 +1,13 @@
+//# OPTIONS --explicit
+[some disj dl1; dl2 : DimensionLevel | dl1.belongsTo.dref = dl2.belongsTo.dref]
+abstract 0..* Dimension 0..* {
+  [all dl : this.levels | dl.dref.belongsTo.dref = this]
+  0..* levels -> DimensionLevel 0..* {}
+}
+abstract 0..* DimensionLevel 0..* {
+  0..* belongsTo -> Dimension 1..1 {}
+}
+0..* dim1 : Dimension 1..1 {}
+0..* dim2 : Dimension 1..1 {}
+0..* dimLevel1 : DimensionLevel 1..1 {}
+0..* dimLevel2 : DimensionLevel 1..1 {}

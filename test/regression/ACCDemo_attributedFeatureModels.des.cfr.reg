@@ -1,0 +1,72 @@
+//# OPTIONS --explicit
+abstract 0..* Feature 0..* {
+  0..* cost -> int 1..1 {}
+}
+abstract 0..* ComfortFeature : Feature 0..* {
+  0..* comfort -> int 1..1 {}
+}
+abstract 0..* FuelFeature : ComfortFeature 0..* {
+  0..* fuel -> int 1..1 {}
+}
+abstract 0..* Car 0..* {
+  [((#this.total_cost) >= 1) => (this.total_cost.dref = (sum Feature.cost.dref))]
+  [((#this.total_comfort) >= 1) => (this.total_comfort.dref = (sum ComfortFeature.comfort.dref))]
+  [((#this.total_fuel) >= 1) => (this.total_fuel.dref = (sum FuelFeature.fuel.dref))]
+  0..* ABS : Feature 0..1 {
+    [this.cost.dref = 2]
+  }
+  0..* CC : FuelFeature 0..1 {
+    [this.fuel.dref = 1]
+    [this.comfort.dref = 3]
+    [this.cost.dref = 4]
+    0..* ACC : FuelFeature 0..1 {
+      [this.fuel.dref = 2]
+      [this.comfort.dref = 6]
+      [this.cost.dref = 3]
+      [(#this.parent.parent.FCA) >= 1]
+    }
+  }
+  1..1 Transmission 1..1 {
+    0..* Automatic : FuelFeature 0..1 {
+      [this.fuel.dref = 2]
+      [this.comfort.dref = 2]
+      [this.cost.dref = 3]
+    }
+    0..* Manual : FuelFeature 0..1 {
+      [this.fuel.dref = 0]
+      [this.comfort.dref = 1]
+      [this.cost.dref = 2]
+    }
+  }
+  0..* FCA : FuelFeature 0..1 {
+    [this.fuel.dref = 2]
+    [this.comfort.dref = 4]
+    [this.cost.dref = 5]
+    1..1 Sensor 1..1 {
+      0..* Radar : Feature 0..1 {
+        [this.cost.dref = 2]
+      }
+      0..* Lidar : Feature 0..1 {
+        [this.cost.dref = 4]
+      }
+    }
+    1..1 Alert 1..1 {
+      0..* Haptic : ComfortFeature 0..1 {
+        [this.comfort.dref = 4]
+        [this.cost.dref = 2]
+      }
+      0..* Audible : ComfortFeature 0..1 {
+        [this.comfort.dref = 2]
+        [this.cost.dref = 1]
+      }
+    }
+  }
+  0..* total_cost -> int 1..1 {}
+  0..* total_comfort -> int 1..1 {}
+  0..* total_fuel -> int 1..1 {}
+}
+0..* aCar : Car 1..1 {}
+
+<< min aCar.total_cost.dref >>
+<< min aCar.total_fuel.dref >>
+<< max aCar.total_comfort.dref >>
