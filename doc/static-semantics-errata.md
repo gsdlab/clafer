@@ -31,7 +31,7 @@ Some items concern both papers: S1 and S2 correspond to T10 there, and S3 to the
 | S6 | Change | Abstract clafers may be nested under concrete clafers | §5.3.4, p. 823 | 0.3.9 (Alloy), 0.5.6 (Choco) |
 | S7 | Clarification | `parent` at the top level: the synthetic root, and top-level abstract clafers | §5.3.4, p. 823; App. 4 | 0.5.3, 0.5.7 |
 | S8 | Clarification | Implicit `.dref` | App. 4, p. 840 | 0.5.3 for unions |
-| S9 | Clarification | Name resolution beyond the paper's rules, and the order of Targets and Ancestors (the tools differ) | App. 4, pp. 840–841 | 0.5.3, 0.5.6 |
+| S9 | Correction, clarification | Name resolution: Ancestors before Targets, and the rules beyond the paper's | App. 4, pp. 840–841 | 0.5.3, 0.5.6 |
 | S10 | Not implemented | Inheritance from concrete clafers | §5.5, p. 825 | — |
 | S11 | Extension | Primitive types and arithmetic | App. 4, pp. 841–842 | 0.5.5 |
 | S12 | Extension | Assertions | — | 0.5.6 |
@@ -171,13 +171,14 @@ It does not describe the implicit dereferencing of reference clafers.
 Since 0.5.3, this also applies to the operands of a union (`BobPicks ++ 3`, `others ++ p1`), and `sum` and `product` over a union are split into a sum over each operand.
 Since 0.5.7 ([gsdlab/clafer#87](https://github.com/gsdlab/clafer/issues/87)), a comparison (`=`, `!=`, `in`, `not in`) of two navigations to reference clafers compares their targets: `this.a = parent.b.a` is `this.a.dref = parent.b.a.dref`. Both readings type check, and the tools took the first, which compared the instances of `a`; those of different parents are never the same. An operand that is `this`, a variable or ends with `dref` is compared as written, which keeps the comparisons of instances, e.g., `this in b.a` in `sel -> b.a`.
 
-## S9. Name resolution beyond the paper's rules (clarification)
+## S9. Name resolution: Ancestors before Targets (correction), and beyond the paper's rules (clarification)
 
 The paper's rules (Appendix 4, pp. 840–841) cover names in constraints: 1. Reserved names, 2. Binding, 3. Descendants, 4. Targets ("Similar to the previous step but additionally take into account clafers reachable via references"), 5. Ancestors (for each ancestor, Descendants and, if necessary, Targets), 6. Top level, 7. Error.
 
 **The paper is silent on** what "reachable via references" includes: the target of the context clafer's own reference, or the targets of its descendants' references, and whether it follows references of references.
+The tools search only the context clafer's own target, not the targets of its descendants' references, and they follow a chain of references: in `r -> b` with `b -> c` and `c` having `speed`, `[ speed > 0 ]` in `r` is `this.dref.dref.speed`.
 
-**The order of Targets and Ancestors (the tools differ, not decided):** the tools look up a name among the children of the context's target only after the ancestors: Descendants, Ancestors, target children, Top level (clafer 0.5.3, `resolveName` in `ResolverName.hs`). Before 0.5.3, they did not look among the target's children at all. Only the context clafer's own target is searched, not the targets of its descendants' references. Example:
+**The order of Targets and Ancestors (corrected to the tools' order, decided on 2026-11-04):** the tools look up a name among the children of the context's target only after the ancestors: Descendants, Ancestors, target children, Top level (clafer 0.5.3, `resolveName` in `ResolverName.hs`). Before 0.5.3, they did not look among the target's children at all. Example:
 
 ```
 abstract Port
@@ -193,7 +194,7 @@ By the paper's order, `speed` is the speed of the linked port, `this.dref.speed`
 
 Both readings have uses, and models rely on the tools' order: in `test/positive/personRelatives.cfr` and `paths.cfr`, `childs -> Person *` has `[ this.age < age ]`, meaning that a child is younger than its parent, where `age` is the parent's (Ancestors). By the paper's order, `age` would be the child's, and the constraint would read `child.age < child.age`. With the paper's order (checked 2026-11-03 by swapping the two rules), only these two models of the test suite change.
 
-To decide ([kbak/clafer-semantics#121](https://github.com/kbak/clafer-semantics/issues/121)): follow the paper (Targets before Ancestors; such models then write `parent.age`), or correct the paper to the tools' order (the target's children after the ancestors; a model writes `this.speed`, which resolves through the reference, to get the target's). Either way, writing `this.` makes the choice explicit.
+The paper's order is corrected to the tools' order ([kbak/clafer-semantics#121](https://github.com/kbak/clafer-semantics/issues/121)): the target's children come after the ancestors, and a model writes `this.speed`, which resolves through the reference, to get the target's. The formal semantics works on resolved names, so the decision does not change it; the Lean compiler adopted the same order ([kbak/clafer-compiler-lean#68](https://github.com/kbak/clafer-compiler-lean/pull/68)), checked against the Haskell compiler on `personRelatives.cfr`'s case, target fallback and a chain of two references. Writing `this.` or `parent.` makes the choice explicit.
 
 The tools also choose:
 
@@ -233,7 +234,7 @@ Nested assertions used to be ignored.
 
 ## Differences of the tools from the paper
 
-- **Name resolution (S9):** the target's children come after the ancestors, not before them (rule 4 before rule 5), and only the context clafer's own target is searched. Not decided whether the tools or the paper change ([kbak/clafer-semantics#121](https://github.com/kbak/clafer-semantics/issues/121)).
+None is open: the last one, the order of Targets and Ancestors in name resolution (S9), was decided for the tools' order on 2026-11-04 ([kbak/clafer-semantics#121](https://github.com/kbak/clafer-semantics/issues/121)).
 
 Compiler bugs that do not concern the paper's semantics are tracked as issues instead, e.g., `this.dref.speed` was a compile error ("Cannot deref from type") from at least 0.5.2 to 0.5.6 ([gsdlab/clafer#108](https://github.com/gsdlab/clafer/issues/108), fixed in 0.5.7, S9), and `parent` of a top-level clafer gave outputs that do not run ([gsdlab/clafer#112](https://github.com/gsdlab/clafer/issues/112), fixed in 0.5.7, S7). Also [gsdlab/clafer#109](https://github.com/gsdlab/clafer/issues/109) (`final` on a clafer that inherits its reference, fixed in 0.5.7, T8 of the temporal errata) and [gsdlab/claferIG#46](https://github.com/gsdlab/claferIG/issues/46) (unsat cores without the constraints of clafers in abstract clafers).
 
@@ -251,9 +252,20 @@ These are its corrections, in short:
 
 The same document has nine clarifications: the disjointness of incomparable declaration heads, links and bag keys, complete formula bindings, metamodel representation, role-presence guards, gluing by resolved identity, the intersection glyph in Appendix 4, the group and inheritance rules of S3, and inherited fields of abstract types.
 
+## The Lean formalization
+
+The formalization was completed in November 2026, and it found no further issues with the paper or the tools.
+It has two parts:
+
+- **[clafer-semantics](https://github.com/kbak/clafer-semantics)** defines the meaning of Clafer independently of any compiler, with the corrections K1–K5 and the decisions of these errata, and proves its properties in Lean 4. Its [key proved properties](https://github.com/kbak/clafer-semantics/blob/main/docs/proved-properties.md) include, for structural Clafer: the paper's Compile produces a valid model of Clafer Shapes (§6), gluing by resolved identity preserves the declarations, the source constraints of a selected fragment agree with the compiled and glued model, and a finite candidate checker decides structural satisfaction exactly (inheritance, root, parent and reference conditions, multiplicities, groups as in S3 and S4, disjointness as in K1). The telematics model of Appendix 6 is proved to have a satisfying interpretation.
+- **[clafer-compiler-lean](https://github.com/kbak/clafer-compiler-lean)** is a second Clafer-to-Alloy compiler, proved against that semantics. Every Alloy instance that it gets back decodes to a valid Clafer configuration, and every configuration that fits the scopes and the bit width has an Alloy instance; undefined values, such as an integer taken from an empty reference, stay undefined. Its [lessons](https://github.com/kbak/clafer-compiler-lean/blob/main/docs/lessons.md) state these guarantees and where they end.
+
+**What it does not cover:** the Clafer tools themselves. The Haskell compiler, chocosolver and claferIG are not proved; they agree with the formalization on the cases compared, within the language that both compilers accept, which is smaller than the tools'. Parsing, the Alloy Analyzer and the SAT solvers are outside the proofs, and a bounded search proves nothing beyond its scopes.
+
 ## Sources
 
 - clafer's [CHANGES.md](../CHANGES.md), versions 0.5.3–0.5.7, and chocosolver's [CHANGES.md](https://github.com/gsdlab/chocosolver/blob/master/CHANGES.md).
 - clafer's [CheatSheet](CheatSheet.md), which describes the current rules.
-- clafer-semantics: [sosym-errata.md](https://github.com/kbak/clafer-semantics/blob/main/docs/sosym-errata.md), [sources.md](https://github.com/kbak/clafer-semantics/blob/main/docs/sources.md) (current child-default policy), [group-compilation.md](https://github.com/kbak/clafer-semantics/blob/main/docs/group-compilation.md), [resolved-ir-comparison.md](https://github.com/kbak/clafer-semantics/blob/main/docs/resolved-ir-comparison.md) (decisions D1–D8), and [kbak/clafer-semantics#115](https://github.com/kbak/clafer-semantics/issues/115), the report of the fixes in 0.5.4.
+- clafer-semantics: [proved-properties.md](https://github.com/kbak/clafer-semantics/blob/main/docs/proved-properties.md), [sosym-errata.md](https://github.com/kbak/clafer-semantics/blob/main/docs/sosym-errata.md), [sources.md](https://github.com/kbak/clafer-semantics/blob/main/docs/sources.md) (current child-default policy), [group-compilation.md](https://github.com/kbak/clafer-semantics/blob/main/docs/group-compilation.md), [resolved-ir-comparison.md](https://github.com/kbak/clafer-semantics/blob/main/docs/resolved-ir-comparison.md) (decisions D1–D8), and [kbak/clafer-semantics#115](https://github.com/kbak/clafer-semantics/issues/115), the report of the fixes in 0.5.4.
+- clafer-compiler-lean: [lessons.md](https://github.com/kbak/clafer-compiler-lean/blob/main/docs/lessons.md), and [kbak/clafer-compiler-lean#68](https://github.com/kbak/clafer-compiler-lean/pull/68) (S9).
 - clafer commits `cf9921b` (2011, keyword-based child defaults), `65a23bb` (2013, the interval rule), `3ce5252` (2015, groups count inherited children).

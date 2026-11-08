@@ -9,6 +9,8 @@ Clafer 0.5.6 (November 2026) is the first implementation. It compiles temporal m
 Implementing the paper required the changes below, which were decided on 2026-10-28 and 2026-10-29 (T1–T4, T8), with T2 revised on 2026-11-03 and extended to negated obligations on 2026-11-04 ([gsdlab/clafer#110](https://github.com/gsdlab/clafer/issues/110)). Items T1, T3, T11 and T13 were corrected on 2026-11-04 after a review against the implementation ([gsdlab/clafer#111](https://github.com/gsdlab/clafer/issues/111)). The corrections were found while implementing and testing the semantics, and while checking the paper's examples for this document.
 Pages are the article's (`2:n`).
 
+The corrected semantics is formalized in Lean 4 in [clafer-semantics](https://github.com/kbak/clafer-semantics), completed in November 2026, with no further issues found (see [Formalization](#formalization)). The items below name what is proved about them.
+
 The kinds of items are as in the [static errata](static-semantics-errata.md): **Correction**, **Change**, **Clarification**, **Extension**.
 
 ## Summary
@@ -44,6 +46,8 @@ With the rule, `final xor s` with `initial a -->> b` and `b -->> a` has no trace
 - The same instance can have several lifetimes. `initial`, `initially` and `finally` apply to each of them (T7).
 - A scope bounds the instance identities across the trace, as in Alloy: an identity may be reused when an instance reappears, and the multiplicities bound the existing instances in each state. So a cyclic behaviour needs no more identities with a longer trace, but an instance that is replaced by another needs one more identity. `item` with `[ initially (all x : item | X no (x ** item)) ]` is mandatory in every state and has one instance in each, yet it has no trace at scope 1 and one at scope 2 (`tmp_scope_identities.cfr`, checked on 2026-11-04 with both scope strategies, 3 to 10 states).
 - An instance never changes its parent, also across its lifetimes: for any two states in which an instance exists, its parent is the same. Definition 5, item 3 compares adjacent states only, which allowed no reappearance; without item 2, it must be restated for any two states. In the Alloy output, the parent is a static field (`tmp_parent_across_lifetimes.cfr`).
+
+**Formalized:** a trace has one universe of identities with a fixed type and parent, and a set of live identities in each state; every state of a valid trace is a valid static configuration of its live instances, and a constant trace of a static instance is a trace of the model without temporal constraints ([traces and snapshots](https://github.com/kbak/clafer-semantics/blob/main/docs/behavioral-traces.md)).
 
 ## T2. Temporal obligations end with the parent of the context instance (change)
 
@@ -99,6 +103,8 @@ The negated parts of the patterns follow: in `never p between q and r`, the prem
 
 Checked on 2026-11-04 with Alloy 6.2.0 and claferIG, with both scope strategies, at the scopes 1 to 3 and with 3, 6 and 10 states (`tmp_negated_obligations.cfr` and claferIG's model tests): `(G !error) <=> !(F error)`, `!(X error) <=> X !error` and `!(error U !error) <=> (error W (!error && error))` hold, `[ !(F error) ]` lets the parent disappear, and with a `final` parent `[ F error ]` and `[ !(F error) ]` contradict each other.
 
+**Formalized:** the bound of both tables, pushing the negations first, is the semantics of [attachment and cancellation](https://github.com/kbak/clafer-semantics/blob/main/docs/behavioral-formulas.md#attachment-and-cancellation). It is proved that pushing the negations and then bounding by the parent gives plain LTL formulas with exactly the meaning of the source formula, for every operator, both signs, all bound variables and every state. A cancelled obligation does not resume when the parent reappears. A variable keeps the instance it was bound to across states, while navigation from it reads the current state.
+
 **Clafer 0.5.6 differs (a bug, [gsdlab/clafer#107](https://github.com/gsdlab/clafer/issues/107)):** it bounds the obligations by the context instance itself, not by its parent.
 Then `[ req=down --> movingDown ]` under `movingUp` lapses as soon as `movingUp` ends, so it only forces leaving `movingUp`, without fixing the next state.
 This was checked with Clafer 0.5.6 and Alloy 6.2.0 on 2026-11-03:
@@ -152,6 +158,7 @@ a -->> b -->> c      // a => (this && a) U (b && (this && b) U c)
 ```
 
 A single transition keeps the paper's meaning.
+The formalization proves that this expansion of chains keeps the meaning of a chain ([transitions](https://github.com/kbak/clafer-semantics/blob/main/docs/behavioral-surface.md#transitions-and-attachment)).
 
 **Scenarios need an anchor.** A constraint holds in every state (T9), so an unanchored chain says "whenever `green`, this whole sequence follows", which is usually unsatisfiable.
 A scenario is anchored with `initially`, e.g. `[ initially (green --> yellow --> red) ]`.
@@ -183,6 +190,8 @@ This was checked on 2026-11-03 on a three-state window, and once on a variant th
 | The scenario model above | trace | no trace |
 
 The paper's assertion fails in both models, because not every trace reaches `open`, e.g. a window that stays closed. The scenario model tells the two models apart.
+
+**Formalized:** an assertion fails exactly when some trace of the model is a counterexample, and a scenario is possible exactly when the model with the scenario's constraints has a trace ([models, assertions and scenarios](https://github.com/kbak/clafer-semantics/blob/main/docs/behavioral-surface.md#models-assertions-and-scenarios)). A counterexample is a trace on which the assertion does not hold, i.e. the classical negation of the whole assertion, not the assertion with a source `!` pushed inside as in T2.
 
 ## T6. The negative scenarios and the model-checking recipe (correction)
 
@@ -218,6 +227,7 @@ For the top level, the paper says that `initially` "simply prevents adding the d
 At the top level, it is the start of the trace.
 `initial c` requires an instance of `c` whenever its parent's lifetime begins.
 `finally ϕ` follows the paper: `ϕ` holds in the last state before the context instance disappears, and it is vacuous for an instance that never disappears.
+The formalization has the same anchors: they concern the context instance's own lifetimes, while the cancellation of T2 concerns its parent's ([anchors](https://github.com/kbak/clafer-semantics/blob/main/docs/behavioral-surface.md#transitions-and-attachment)).
 
 ## T8. `final` (clarification)
 
@@ -234,6 +244,8 @@ The examples use it for static structure: "the architecture is static" (p. 2:12)
 
 The paper's rewrite has a typo: `this.d` should name `D`.
 
+**Formalized:** `final`, `finalref` and `finaltarget` as above, including the inherited ones; their expansions into constraints are proved to keep their meaning ([modifiers](https://github.com/kbak/clafer-semantics/blob/main/docs/behavioral-surface.md#modifiers-and-anchors)).
+
 ## T9. Constraints and patterns hold in every state (clarification)
 
 **Paper (§6.1, p. 2:30):** a nested constraint is lifted with `G`, and "top-level constraints that have not been lifted are preceded by the LTL quantifier G".
@@ -248,6 +260,8 @@ Two expansions of Dwyer's patterns did not follow the scopes up to 0.5.6; 0.5.7 
 
 - `s must follow p between q and r` checked only a `p` in the state of `q`: the brackets of Dwyer's `[]((Q & !R & <>R) -> ((P -> (!R U (S & !R))) U R))` were misplaced. Each `p` up to the next `r` needs an `s` before that `r`.
 - `s must precede p after q` was Dwyer's `[]!Q | <>(Q & (!P W S))`, which may start the scope at a later `q`, so q, p, q, s held. It starts at the first `q`: `<>Q -> (!Q U (Q & (!P W S)))`, as `lonce p after q` does. For the other patterns, a later `q` gives the same result.
+
+The formalization defines all six patterns in all five scopes over intervals of states, independently of their expansions into LTL, and proves that the expansions agree with these definitions for both signs ([patterns and scopes](https://github.com/kbak/clafer-semantics/blob/main/docs/behavioral-surface.md#patterns-and-scopes)).
 
 The test `tmp_betweenand01.cfr` had `[ sometime d ]` next to `always c between d and e` under an `xor`, which made it unsatisfiable. It now uses `initially`.
 
@@ -281,14 +295,26 @@ For numeric groups, the paper's rule is the tools' rule (S1 and S2 in the [stati
 "No counterexample" from claferIG's `check` holds only within the scopes and the maximum trace length.
 The Choco backend does not support temporal models.
 
+**Formalized:** evaluating a formula on a lasso gives exactly its truth on the infinite trace that the lasso represents, including the births, deaths and cancelled obligations at the loop ([finite verification](https://github.com/kbak/clafer-semantics/blob/main/docs/behavioral-verification.md)). This is about one given lasso: not every infinite trace is a lasso, and finding no lasso within a bound does not show that there is no trace.
+
 ## Differences of Clafer 0.5.6 from these errata
 
 - **The bound of the obligations (T2, T3):** Clafer 0.5.6 bounds the obligations of a constraint by its context instance instead of the parent of that instance, and compiles the transitions of clafers to constraints of the parent. Its CHANGES and CheatSheet describe that behaviour. Fixed in 0.5.7: [gsdlab/clafer#107](https://github.com/gsdlab/clafer/issues/107) (2026-11-03).
 - **Negated obligations (T2):** Clafer 0.5.6 and the first fix of #107 negate the bounded operators classically, so `!(F error)` keeps the parent alive. Fixed for 0.5.7: [gsdlab/clafer#110](https://github.com/gsdlab/clafer/issues/110) (2026-11-04).
 
+## Formalization
+
+[clafer-semantics](https://github.com/kbak/clafer-semantics) formalizes these errata as its behavioral profile `behavioral-0.5.7-candidate/v1`, compared with clafer at commit `af858ec` (2026-11-05). [From structure to behavior](https://github.com/kbak/clafer-semantics/blob/main/docs/structure-and-behavior.md) explains how the temporal semantics extends the static one, and [key proved properties](https://github.com/kbak/clafer-semantics/blob/main/docs/proved-properties.md) lists the main theorems.
+At that commit, two expansions of patterns and `finaltarget` still differed from the profile; clafer `b2875f3` and `8a12ae7` correct them (T8, T9), which the formalization confirms from the source.
+The later 0.5.7 commits that change the Alloy output of temporal models, top-level constraints as `always (...)` (`c7a2fb7`) and references to a union of targets with a nested clafer (`2c80226`), are being reviewed against the profile.
+
+[clafer-compiler-lean](https://github.com/kbak/clafer-compiler-lean) is a second compiler of temporal models to Alloy 6, proved against the formalization: a lasso found by Alloy decodes to a valid trace that keeps the same identities in all states, and every model, scenario or assertion counterexample within the scopes and the trace length has a lasso. See its [lessons](https://github.com/kbak/clafer-compiler-lean/blob/main/docs/lessons.md) for the exact conditions.
+Neither proof covers the Haskell compiler or claferIG; they agree with the formalization on the compared cases and on the checks in these errata.
+
 ## Open
 
 - **Scenarios in claferIG (T5):** a possible scenario is checked by solving a separate model that imports the model. claferIG's `check` covers only assertions, which hold for all traces.
+- **Undefined values:** the formalization keeps definedness apart from truth: a division by zero, or an integer taken from an empty or multiple reference, is undefined, not false, also inside a temporal formula. The Alloy output of clafer has no undefined values, and it was not compared with the formalization on such models.
 
 ## Sources
 
@@ -297,4 +323,5 @@ The Choco backend does not support temporal models.
 - The temporal generator [AlloyLtl.hs](../src/Language/Clafer/Generator/AlloyLtl.hs) (its header comment lists T1 and T2), and the transitions in [Desugarer.hs](../src/Language/Clafer/Intermediate/Desugarer.hs) (`desugarTrans'`, T4).
 - The temporal test models `test/positive/tmp_*.cfr`, fixed against the paper in 0.5.6. The traffic lights are split into one file per model, with their scenarios in files that import them.
 - The checks of T2, T5 and T6 were run with Clafer 0.5.6 and Alloy 6.2.0 on 2026-11-03; those of T1, T2 (negations, replaced machines) and T3 with Clafer 0.5.7 on 2026-11-04.
+- clafer-semantics: [behavioral-profile.md](https://github.com/kbak/clafer-semantics/blob/main/docs/behavioral-profile.md), [structure-and-behavior.md](https://github.com/kbak/clafer-semantics/blob/main/docs/structure-and-behavior.md), [proved-properties.md](https://github.com/kbak/clafer-semantics/blob/main/docs/proved-properties.md), and the review of the pattern and modifier choices in [kbak/clafer-semantics#127](https://github.com/kbak/clafer-semantics/issues/127); clafer-compiler-lean: [lessons.md](https://github.com/kbak/clafer-compiler-lean/blob/main/docs/lessons.md).
 - The review of these errata against the implementation, [gsdlab/clafer#111](https://github.com/gsdlab/clafer/issues/111), and the regression qualification on [gsdlab/clafer#107](https://github.com/gsdlab/clafer/issues/107).
