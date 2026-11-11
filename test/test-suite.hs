@@ -662,11 +662,12 @@ case_InitialValue = do
         (_, Left errs') -> assertFailure $ show errs'
     -- a temporal model: in the context of x, with the value resolved in the context of the parent
     let temporal = [ "A", "    y -> integer", "    x -> integer ? := y + 1", "        y -> integer"
-                   , "    z -> integer := this.y", "    zs -> integer * := 1, 2", "finalref f -> integer ? := 3"
+                   , "    z -> integer := this.y", "    zs -> integer * := 1, 2", "finalref f -> integer ? := A.y"
                    , "[ F some A.x ]" ]
     has temporal "0..* x -> int 0..1 {\n    [initially (this.dref = (this.parent.A__y.dref + 1))]"
     has temporal "0..* z -> int 1..1 {\n    [initially (this.dref = this.parent.A__y.dref)]"
     has temporal "[initially (((#this.zs) >= 1) => (this.zs.dref = (1 ++ 2)))]"
-    has temporal "[((#f) >= 1) => (f.dref = 3)]"
+    -- a finalref reference keeps the value it starts with, also when the value of A.y changes
+    has temporal "finalref 0..* f -> int 0..1 {\n  [initially (this.dref = A.A__y.dref)]"
     x <- explicit temporal
     not ("assert" `isInfixOf` x) @? ("an assertion:\n" ++ x)

@@ -125,7 +125,7 @@ Constants, enumeration literals and top-level clafers resolve the same in both c
 | `x -> integer := 10` | `[ some x => x.dref = 10 ]` (= `x -> integer = 10`) | `x` nested `[ initially this.dref = 10 ]` |
 | `x -> integer ? := 10` | as above | as above; `x` may be absent |
 | `xs -> integer * := 1, 2` | `[ some xs => xs.dref = 1, 2 ]` | `[ initially (some xs => xs.dref = 1, 2) ]` in the parent's context |
-| `finalref x -> integer := 10`, `final x …` | as `=` | the reference cannot change, so as `=`; a warning suggests `=` |
+| `finalref x -> integer := 10`, `final x …` | as `=` | as above (initially); the value then stays (see What 0.5.8 does) |
 | `x -> integer = 10` | unchanged | unchanged: every state |
 
 A set initializer constrains the set of all the instances of `xs` under the parent, so it stays
@@ -164,7 +164,8 @@ itself, as now. For a temporal model, it shows `[ initially this.dref = 10 ]` ne
    The second is simpler. The first keeps the desugarer independent of the rest of the model.
 2. Place the single-reference initializer in the clafer's own elements, and keep the
    expression's meaning as described above.
-3. Warn for `:=` on a `final` or `finalref` clafer.
+3. Warn for `:=` on a `final` or `finalref` clafer. (Not done: `:=` is not redundant there, see
+   What 0.5.8 does.)
 4. Documentation: the cheat sheet, and a short section in the temporal semantics errata, next to
    T7.
 
@@ -198,8 +199,13 @@ itself, as now. For a temporal model, it shows `[ initially this.dref = 10 ]` ne
   instance (an upper bound above 1, or `*`). An abstract clafer has no multiplicity of its own, so
   the initializer of `abstract Val -> integer := 2` gives each instance of a subclafer its initial
   value.
-- **`final`, `finalref`:** `:=` is `=`; there is no warning. `finaltarget` alone does not fix the
-  reference of an instance, so there `:=` is an initial value.
+- **`final`, `finalref`:** `:=` is an initial value as for any reference, and the modifier keeps
+  it: the reference has the value that `e` has when its lifetime starts, for the whole lifetime.
+  The proposal made `:=` the same as `=` here, which holds only for an `e` that does not change:
+  with `finalref x -> integer := y`, a `y` that is 2 when `x` appears and 3 later leaves `x` at 2,
+  whereas `= y` would contradict `finalref` (the review in
+  kbak/clafer-semantics#164). So there is no warning
+  either (`tmp_initialValue04.cfr`).
 - **Outputs:** `:=` is a hard constraint in every output; no initializer becomes an assertion.
   Choco supports the static models, as for `=`.
 - **Tests:** `initialValueStatic.cfr` (the same outputs and instances as with `=`), and

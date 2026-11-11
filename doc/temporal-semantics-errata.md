@@ -306,7 +306,7 @@ The Choco backend does not support temporal models.
 
 - It is `[ initially this.dref = e ]` in the context of `x`, with `e` resolved in the context of the parent, where it is written: `this` is the parent instance, and a name `y` is the sibling of `x` even if `x` has a child `y`. In the parent's context, `initially` would apply to the first state of the parent's lifetime, so an `x` created later would get no value.
 - A set initializer, `xs -> T * := e`, constrains the set of the instances under the parent: `[ initially (some xs => xs.dref = e) ]` in the parent's context. The instances created later are not initialized.
-- The reference of a `final` or `finalref` clafer does not change (T8), so `:=` is `=` there: `[ some x => x.dref = e ]` in every state (T9).
+- The reference of a `final` or `finalref` clafer does not change (T8), so it keeps the value that `e` has when its lifetime starts, also when `e` changes later; `= e` would contradict the modifier then. With a constant `e`, `:=` and `=` are the same there.
 - A static model has a single state, so `:=` is `=`. An initializer does not make a model temporal.
 
 Up to 0.5.7, `:=` compiled to an assertion `[ some x => x.dref = e ]` in every output ([gsdlab/clafer#116](https://github.com/gsdlab/clafer/issues/116)), so a model with another value had instances and a counterexample. Whether a subclafer may redefine an inherited `:=` is open in kbak/clafer-semantics#164; for now, an own initializer is added to the inherited one.

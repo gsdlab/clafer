@@ -140,7 +140,7 @@ a constant using `=`, and an initial value using `:=`.
 * In a static model, which has a single state, `:=` is the same as `=`. An initializer does not make a model temporal.
 * In a temporal model, every lifetime of `x` starts with the value, and the value may change afterwards: `[ initially this.dref = 10 ]` in the context of `x`. The value is written in the parent's context and keeps its meaning there: `this` is the parent, and a name `y` is the sibling `y` even if `x` has a child `y`.
 * A set initializer, `xs -> integer * := 1, 2`, constrains the instances under the parent, so it stays in the parent's context: `[ initially (some xs => xs.dref = 1, 2) ]`. The instances created later are not initialized.
-* The reference of a `final` or `finalref` clafer cannot change, so `:=` is the same as `=`.
+* A `final` or `finalref` reference keeps the value it starts with: with `finalref x -> integer := y`, `x` takes the value of `y` when its lifetime starts, and keeps it when `y` changes, which `= y` would contradict. With a constant, `:=` is the same as `=` there.
 
 `:=` is not a default value in the sense of "unless something else is required": with `[ x = 5 ]`, `x -> integer := 10` has no instance.
 

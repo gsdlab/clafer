@@ -139,7 +139,7 @@ desugarClafer' dynamic' claf'@(Clafer s' abstract' tmods' gcrd' id' super' refer
   where
     iClaferModifiers = desugarModifiers abstract' tmods' reference'
     crd'' = desugarCard crd'
-    (ownInit, parentInit) = desugarInit dynamic' tmods' crd'' id' init'
+    (ownInit, parentInit) = desugarInit dynamic' crd'' id' init'
     -- the transition of a clafer is a constraint of the clafer, whose obligations last as long
     -- as its parent, e.g., `on --> off` takes the traffic light from on to off
     elements'' = desugarElements dynamic' elements' ++ desugarClaferTrans claf' ++ ownInit
@@ -207,19 +207,20 @@ desugarRefModifiers mods = nub $ mapMaybe refModifier mods
 --   * @x -> T = e@ is @[ some x => x.dref = e ]@ in the context of the parent; in a dynamic
 --     model, it holds in every state.
 --   * @x -> T := e@ is the initial value of the reference. In a static model, which has a single
---     state, it is the same as @=@, and so it is for a @final@ or @finalref@ reference, which
---     cannot change. In a dynamic model, every lifetime of @x@ starts with the value:
---     @[ initially this.dref = e ]@ in the context of @x@. The value @e@ is written in the
+--     state, it is the same as @=@. In a dynamic model, every lifetime of @x@ starts with the
+--     value: @[ initially this.dref = e ]@ in the context of @x@. The value @e@ is written in the
 --     context of the parent, so the name resolver resolves it there ('iInitValue'): @this@
---     stays the parent, and a sibling @y@ stays the sibling even if @x@ has a child @y@.
+--     stays the parent, and a sibling @y@ stays the sibling even if @x@ has a child @y@. So
+--     does a @final@ or @finalref@ reference: it keeps the value that @e@ has when its lifetime
+--     starts, also when @e@ changes later, which @=@ would contradict.
 --   * A set initializer, @xs -> T * := e@, whose cardinality allows more than one instance,
 --     constrains the set of the instances under the parent, so it stays in the context of the
 --     parent: @[ initially (some xs => xs.dref = e) ]@. The instances created later are not
 --     initialized.
-desugarInit :: Bool -> [TempModifier] -> Maybe Interval -> PosIdent -> Init -> ([IElement], [IElement])
-desugarInit _ _ _ _ (InitEmpty _) = ([], [])
-desugarInit dynamic' tmods crd id' (InitSome s inithow exp') = case inithow of
-    InitDefault _ | dynamic' && not finalReference -> if isSet
+desugarInit :: Bool -> Maybe Interval -> PosIdent -> Init -> ([IElement], [IElement])
+desugarInit _ _ _ (InitEmpty _) = ([], [])
+desugarInit dynamic' crd id' (InitSome s inithow exp') = case inithow of
+    InitDefault _ | dynamic' -> if isSet
       then ([], [ IEConstraint True $ pExpDefPid s $ IFunExp iInitially [ pExpDefPid s implIExp ] ])
       else ([ IEConstraint True $ pExpDefPid s $ IFunExp iInitially [ pExpDefPid s ownIExp ] ], [])
     _ -> ([], [ IEConstraint True (pExpDefPid s implIExp) ])
@@ -233,10 +234,6 @@ desugarInit dynamic' tmods crd id' (InitSome s inithow exp') = case inithow of
     isSet = case crd of
       Just (_, ex) -> ex `notElem` [0, 1]  -- -1 is *, unbounded
       Nothing -> False
-    finalReference = any isFinalRef tmods
-    isFinalRef (Final _) = True
-    isFinalRef (AbsClafer.FinalRef _) = True
-    isFinalRef _ = False
     cId :: PExp
     cId = mkPLClaferId (getSpan id') (snd $ getIdent id') False NoBind
     -- <id> = <exp'>
