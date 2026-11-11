@@ -86,10 +86,16 @@ opt
 ```
 
 A clafer inherits group cardinality, children, and reference of its super clafer.
+The super clafer is abstract, given by its name or by a path to it.
+A name is the nearest abstract clafer with the name, a sibling or a child that the parent inherits, or else the only one in the model.
+In a path, e.g., `Person.Head`, the first name is a clafer, and each next name is a child of the previous clafer: its own or, if it has none with the name, an inherited one.
+So under `Ella : Person`, `Ella.Head` is `Person.Head`, unless Ella redefines `Head`, e.g., with `abstract Head : Head`, a new abstract clafer that extends `Person.Head` and can add children.
+A path also tells apart abstract clafers with the same name, e.g., `Person.Head` and `Dog.Head`.
 
 `<super>`:
 ```
 : <name>
+: <name>.<name>...
 ```
 
 Instances of a reference clafer point to instances from the target set expression.
@@ -143,6 +149,22 @@ a constant using `=`, and an initial value using `:=`.
 * A `final` or `finalref` reference keeps the value it starts with: with `finalref x -> integer := y`, `x` takes the value of `y` when its lifetime starts, and keeps it when `y` changes, which `= y` would contradict. With a constant, `:=` is the same as `=` there.
 
 `:=` is not a default value in the sense of "unless something else is required": with `[ x = 5 ]`, `x -> integer := 10` has no instance.
+
+An initializer of an abstract clafer holds for all its subclafers, and a subclafer cannot replace it.
+As for the other redefinitions, the subclafer's own initializer is added to the inherited one, so it can only strengthen it:
+
+* `= 2` under `:= 2` strengthens the initial value to the value in every state.
+* `:= 2` under `= 2` has no effect, since the value is already fixed in every state; the compiler warns about it.
+* Another value, `:= 3` or `= 3` under `:= 2`, has no instance.
+
+To give the subclafers different initial values, put the shared one in an intermediate abstract clafer, which the other subclafers do not extend:
+
+```
+abstract Val -> integer
+abstract DefaultVal : Val := 2
+useDefault : DefaultVal      // starts with 2
+override : Val := 3          // starts with 3
+```
 
 #### Examples
 
