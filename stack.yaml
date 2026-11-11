@@ -1,5 +1,5 @@
-# for GHC-9.6.7
-resolver: lts-22.44
+# for GHC-9.12.4
+resolver: nightly-2026-11-11
 
 extra-deps:
 - github: nikomi/json-builder
@@ -16,5 +16,6 @@ packages:
 
 # GHC compiles the modules of a package on 8 threads, which takes a third less time than one
 # thread; 16 threads are not faster.
+# (build: semaphore: true, GHC's -jsem, fails with Stack 3.11.1: "semOpen: does not exist".)
 ghc-options:
   "$everything": -j8

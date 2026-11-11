@@ -1,3 +1,7 @@
+##### Clafer Version 0.5.8, unreleased
+
+* Builds with GHC 9.12.4 (Stackage nightly-2026-11-11) and still with GHC 9.6.7. The lexer is generated with alex 3.5: the lexer generated in 2018 did not compile with GHC 9.12 (`Int#` instead of `Int16#`).
+
 ##### Clafer Version 0.5.7, Nov 8, 2026
 
 * The UID of a clafer is its least-partially-qualified name, with `__` between the names: `size` if no other clafer is named `size`, `x__size` for the `size` in `x` otherwise, and `root__size` for a top-level `size` that is the end of another clafer's path. It was `c0_size`, `c1_size`, ..., numbered in the order of the model, for every clafer, so a UID changed when a clafer with the same name was added before it, and tools cut the prefix off to show the name (which also cut `abc_def` to `def`). The UIDs are the names in all outputs: the Alloy signatures, the Choco model, the explicit model, the JSON IR, the HTML anchors and the scope files. An apostrophe is `_prime` (`a'` is `a_prime`; it was `c0_a__prime__`), and a UID that would be the same as one before it in the model gets `__2`, `__3`, ... (e.g., `a_prime` next to `a'`, or a copy of an inherited clafer with `-i`).

@@ -105,7 +105,7 @@ Stack is the only requirement: no other Haskell tooling needs to be installed be
 
 Dependencies
 
-* `ghc-9.6.7`,
+* `ghc-9.6.7` or `ghc-9.12.4`,
 * `cabal-install-3.10.3`
 * [alex](https://hackage.haskell.org/package/alex),
 * [happy](https://hackage.haskell.org/package/happy).
