@@ -2,6 +2,7 @@
 
 * Builds with GHC 9.12.4 (Stackage nightly-2026-11-11) and still with GHC 9.6.7. The lexer is generated with alex 3.5: the lexer generated in 2018 did not compile with GHC 9.12 (`Int#` instead of `Int16#`).
 * No longer depends on `data-stringmap`, which is not maintained and does not build with GHC 9.6 or later from Hackage: the maps of UIDs are `Data.Map` maps. The outputs are the same (the positive test models and the case studies), and compiling is as fast.
+* No longer depends on `json-builder`, which is not maintained and does not build from Hackage with GHC 8.4 or later: the `.cfr-map` and `.cfr-scope` files are written with `aeson`'s encoding, field by field in the same order. The files of the positive test models (Alloy and Choco modes) are the same.
 
 ##### Clafer Version 0.5.7, Nov 8, 2026
 

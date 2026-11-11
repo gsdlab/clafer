@@ -1,10 +1,6 @@
 # for GHC-9.12.4
 resolver: nightly-2026-11-11
 
-extra-deps:
-- github: nikomi/json-builder
-  commit: fef4700b53da502f8d70d2106c9f4b65e1a69b3f
-
 flags:
   # The test suite that compiles the models in test/positive and test/negative.
   clafer:
