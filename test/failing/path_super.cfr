@@ -1,0 +1,18 @@
+// Expected: a path as a super, e.g., `h : Person.Head`, extends the abstract clafer it names (Head),
+// as `h : Head` does, so that `h` has the type of `Head`. A path to a concrete clafer, e.g.,
+// `r : Ella.q`, is an error, as `r : q` is ("No superclafer found: q").
+// Actual (since 0.4.3 at least): the name resolver leaves a path super unresolved and untyped.
+// With a constraint on `h`, the compiler crashes ("Maybe.fromJust: Nothing" in
+// TypeSystem.getTClafer); without one, the super is dropped: `sig h` instead of
+// `sig h extends Head` in Alloy. test/positive/mergeExpAndSetExp.cfr has `h : Person.Head`
+// without a constraint on `h`.
+
+abstract Person
+    abstract Head
+        size -> integer
+
+Ella : Person
+    h : Person.Head
+    [ h.size = 1 ]
+    q -> integer
+    r : Ella.q := 1
