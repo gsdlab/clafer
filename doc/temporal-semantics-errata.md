@@ -309,7 +309,7 @@ The Choco backend does not support temporal models.
 - The reference of a `final` or `finalref` clafer does not change (T8), so it keeps the value that `e` has when its lifetime starts, also when `e` changes later; `= e` would contradict the modifier then. With a constant `e`, `:=` and `=` are the same there.
 - A static model has a single state, so `:=` is `=`. An initializer does not make a model temporal.
 
-Up to 0.5.7, `:=` compiled to an assertion `[ some x => x.dref = e ]` in every output ([gsdlab/clafer#116](https://github.com/gsdlab/clafer/issues/116)), so a model with another value had instances and a counterexample. Whether a subclafer may redefine an inherited `:=` is open in kbak/clafer-semantics#164; for now, an own initializer is added to the inherited one.
+Up to 0.5.7, `:=` compiled to an assertion `[ some x => x.dref = e ]` in every output ([gsdlab/clafer#116](https://github.com/gsdlab/clafer/issues/116)), so a model with another value had instances and a counterexample. A subclafer cannot replace an inherited `:=` (pure strengthening, reading A in kbak/clafer-semantics#164): its own `:=` or `=` is added to the inherited one, so `= 2` under `:= 2` fixes the value in every state, and `:= 3` has no instance.
 
 ## Differences of Clafer 0.5.6 from these errata
 

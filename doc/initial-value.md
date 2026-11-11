@@ -1,8 +1,9 @@
 # The initializer `:=` as an initial value
 
 Status: implemented in 0.5.8, as agreed in
-[kbak/clafer-semantics#164](https://github.com/kbak/clafer-semantics/issues/164), except
-redefinition, which stays open (see [Inheritance and redefinition](#inheritance-and-redefinition)).
+[kbak/clafer-semantics#164](https://github.com/kbak/clafer-semantics/issues/164). For
+redefinition, the decision is reading A, pure strengthening (see
+[Inheritance and redefinition](#inheritance-and-redefinition)).
 It changes the meaning of `:=` from a default, which no backend supports, to the initial value of
 a reference: the same as `=` in static models, and the value in the first state of each lifetime
 of the clafer in temporal models. True defaults, preferred unless something else is required,
@@ -137,8 +138,18 @@ which `1, 2` does not give. The documentation should say so.
 
 An initializer in an abstract clafer applies to the instances of all its subclafers, as `=`
 does. A subclafer cannot replace it: its own initializer or constraint on the same reference is
-added to the inherited one, and two different initial values have no instance. Overriding would
-need redefinition to replace the inherited initializer, which is a separate change.
+added to the inherited one, and two different initial values have no instance.
+
+**Decision: reading A, pure strengthening** (#164). As for the other redefinitions, a subclafer
+must satisfy the inherited initializer, and every instance of it is a valid instance of the
+abstract clafer. A subclafer's own `:=` or `=` on the reference is added to the inherited
+initializer, never replaces it: under `abstract val -> integer := 2`, `fixed : val = 2`
+strengthens the initial value to the value in every state, while `= 3` or `:= 3` has no instance.
+A different value needs a different structure, e.g. an intermediate abstract clafer that holds the
+initializer, which the overriding clafer does not inherit. Reading B, a default guarded by the
+subclafers that redefine it (`initially (this not in override => this.dref = 2)`), is rejected:
+it is not monotone. 0.5.8 already behaves as reading A, since it keeps both the inherited and the
+own constraints; it reports a conflicting value as a model with no instance, not as an error.
 
 ### The explicit form
 
