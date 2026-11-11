@@ -426,7 +426,7 @@ data Decl = Decl Span [LocId] Exp
 
 instance Spannable Decl where
     getSpan (Decl s _ _ ) = s
-data VarBinding = VarBinding Span LocId Name
+data VarBinding = VarBinding Span LocId Exp
   deriving (Eq, Ord, Show, Read, Data, Typeable, Generic)
 
 instance Spannable VarBinding where

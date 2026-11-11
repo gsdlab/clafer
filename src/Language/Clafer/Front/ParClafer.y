@@ -341,7 +341,7 @@ PatternScope : 'before' Exp11 { Language.Clafer.Front.AbsClafer.PatScopeBefore (
 Decl :: { Decl }
 Decl : ListLocId ':' Exp21 { Language.Clafer.Front.AbsClafer.Decl ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
 VarBinding :: { VarBinding }
-VarBinding : LocId '=' Name { Language.Clafer.Front.AbsClafer.VarBinding ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
+VarBinding : LocId '=' Exp16 { Language.Clafer.Front.AbsClafer.VarBinding ((mkCatSpan $1) >- (mkTokenSpan $2) >- (mkCatSpan $3)) $1 $3 }
 Quant :: { Quant }
 Quant : 'no' { Language.Clafer.Front.AbsClafer.QuantNo ((mkTokenSpan $1)) }
       | 'not' { Language.Clafer.Front.AbsClafer.QuantNot ((mkTokenSpan $1)) }

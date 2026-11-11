@@ -156,7 +156,7 @@ PatScopeEmpty.      PatternScope ::= ;
 
 Decl.           Decl ::= [LocId] ":" Exp21 ;
 
-VarBinding.     VarBinding ::= LocId "=" Name ;
+VarBinding.     VarBinding ::= LocId "=" Exp16 ;
 
 QuantNo.        Quant ::= "no" ;
 QuantNot.       Quant ::= "not" ;

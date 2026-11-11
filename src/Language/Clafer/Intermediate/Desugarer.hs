@@ -25,6 +25,7 @@ into Intermediate representation (IR) from "Language.Clafer.Intermediate.Intclaf
 -}
 module Language.Clafer.Intermediate.Desugarer where
 
+import Data.Data (Data, cast, gmapQ, gmapT)
 import Data.List (nub)
 import Data.Maybe (fromMaybe, mapMaybe)
 import Prelude hiding ((||))
@@ -574,7 +575,7 @@ desugarExp' x = let x' =  translateTmpPatterns x in case x' of
   EJoin _ exp0 exp'         -> dop iJoin         [exp0, exp']
   ClaferId _ name  -> desugarName name
   TransitionExp{} -> showPatErr
-  LetExp{} -> showPatErr
+  LetExp _ vb e -> desugarExp' $ desugarLet vb e
   TmpPatNever{} -> showPatErr
   TmpPatSometime{} -> showPatErr
   TmpPatLessOrOnce{} -> showPatErr
@@ -590,6 +591,57 @@ desugarExp' x = let x' =  translateTmpPatterns x in case x' of
   showPatErr = error ("[bug] Desugarer: pattern expressions should have been transformed previously. Problem expression:\n" ++ show x)
   dop = desugarOp desugarExp
   dpe = desugarPath.desugarExp
+
+-- | @let v = e in body@ is @body@ with @e@ for the name @v@. A quantifier or a @let@ in @body@
+--   which binds @v@ again hides it there, and one which binds a name used in @e@ is renamed
+--   to a fresh name, e.g., @x_1@, so that @e@ keeps its meaning.
+desugarLet :: VarBinding -> Exp -> Exp
+desugarLet (VarBinding _ (LocIdIdent _ (PosIdent (_, v))) e) = substName v e
+
+-- | Substitutes an expression for the free occurrences of a local name.
+substName :: String -> Exp -> Exp -> Exp
+substName v e = goE
+  where
+  namesOfE = namesIn e
+  go :: Data a => a -> a
+  go x = case cast x of
+    Just ex -> fromMaybe x $ cast $ goE ex
+    Nothing -> gmapT go x
+  goE :: Exp -> Exp
+  goE x = case x of
+    ClaferId _ (Path _ [ModIdIdent _ (PosIdent (_, n))]) | n == v -> e
+    EDeclAllDisj s d b -> let (d', b') = goDecl d b in EDeclAllDisj s d' b'
+    EDeclAll s d b -> let (d', b') = goDecl d b in EDeclAll s d' b'
+    EDeclQuantDisj s q d b -> let (d', b') = goDecl d b in EDeclQuantDisj s q d' b'
+    EDeclQuant s q d b -> let (d', b') = goDecl d b in EDeclQuant s q d' b'
+    LetExp s (VarBinding s' l e') b -> case goBound [l] b of
+      ([l'], b') -> LetExp s (VarBinding s' l' $ goE e') b'
+      _ -> x
+    _ -> gmapT go x
+  goDecl (Decl s ls set) b = let (ls', b') = goBound ls b in (Decl s ls' $ goE set, b')
+  -- the names bound by a quantifier or a let, and its body
+  goBound :: [LocId] -> Exp -> ([LocId], Exp)
+  goBound ls b
+    | v `elem` map locIdName ls  = (ls, b)
+    | v `notElem` namesIn b     = (ls, b)
+    | otherwise                 = (ls', goE $ foldr renameIn b $ zip ls ls')
+    where
+    taken = namesOfE ++ namesIn b ++ map locIdName ls
+    ls' = map rename ls
+    rename l@(LocIdIdent s (PosIdent (p, n)))
+      | n `elem` namesOfE = LocIdIdent s $ PosIdent (p, head [ n' | k <- [1 :: Int ..], let n' = n ++ "_" ++ show k, n' `notElem` taken ])
+      | otherwise         = l
+    renameIn (old, new@(LocIdIdent s _)) b'
+      | old == new = b'
+      | otherwise  = substName (locIdName old) (ClaferId s $ Path s [ModIdIdent s $ locIdPosIdent new]) b'
+  locIdName (LocIdIdent _ (PosIdent (_, n))) = n
+  locIdPosIdent (LocIdIdent _ i) = i
+
+-- | The identifiers in a part of the AST.
+namesIn :: Data a => a -> [String]
+namesIn x = case cast x of
+  Just (PosIdent (_, n)) -> [n]
+  Nothing                -> concat $ gmapQ namesIn x
 
 desugarOp :: (a -> PExp) -> String -> [a] -> IExp
 desugarOp f op' exps' =

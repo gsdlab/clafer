@@ -350,10 +350,10 @@ printDecl (Decl _ locids setExp) indent irMap html comments =
     printLocId (LocIdIdent _ (PosIdent (_, ident'))) = ident'
 
 printVarBinding :: VarBinding-> Int -> Map.Map Span [Ir] -> Bool -> [(Span, String)] -> String
-printVarBinding (VarBinding _ locid name) indent irMap html comments =
+printVarBinding (VarBinding _ locid exp') indent irMap html comments =
   printLocId locid ++
   while html "<span class=\"keyword\">" ++ " = " ++ while html "</span>" ++
-  printName name indent irMap html comments
+  printOperand 16 exp' indent irMap html comments
   where
     printLocId :: LocId -> String
     printLocId (LocIdIdent _ (PosIdent (_, ident'))) = ident'
