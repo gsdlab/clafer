@@ -151,6 +151,12 @@ subclafers that redefine it (`initially (this not in override => this.dref = 2)`
 it is not monotone. 0.5.8 already behaves as reading A, since it keeps both the inherited and the
 own constraints; it reports a conflicting value as a model with no instance, not as an error.
 
+A `:=` cannot redefine an inherited `=`: that would weaken the value in every state to the
+value in the first state. Under `abstract val -> integer = 2` (or `-> 2`), `sub : val := 2`
+is a model with the same instances as `sub : val`, and the compiler warns that the `:=` has no
+effect, since the inherited `=` already fixes the value in every state. With another value,
+e.g., `:= 3`, the model also has no instance.
+
 ### The explicit form
 
 `-m clafer` prints the desugared constraint, so the explicit model has no `:=` and compiles to
