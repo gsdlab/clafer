@@ -21,7 +21,7 @@ extra-source-files:     src/Language/Clafer/clafer.css
 extra-doc-files:        CHANGES.md
 source-repository head
     type:               git
-    location:           git://github.com/gsdlab/clafer.git
+    location:           https://github.com/gsdlab/clafer.git
 
 flag model-tests
     description:        Build the model-tests test suite, which compiles the models in test/positive

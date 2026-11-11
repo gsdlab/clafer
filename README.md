@@ -69,56 +69,64 @@ Clafer can be installed from a binary distribution (preferred), from Hackage, an
 
 ### Dependencies for running
 
-Regardless of the installation method, the following are
+The compiler itself needs nothing else. The following are optional, regardless of the installation method:
 
-Optional:
-
-* [Java Platform (JDK)](https://adoptium.net) v17+, 64bit
-  * only needed for running Alloy validation
+* [Java](https://adoptium.net) 17 or newer, 64-bit (a runtime is enough)
+  * only needed for validating the outputs (`--validate`) and for `--ecore2clafer`
 * [Alloy 6.2.0](https://github.com/AlloyTools/org.alloytools.alloy/releases/tag/v6.2.0) (`alloy6.2.0.jar`)
-  * only needed for Alloy output validation
+  * only needed for validating the Alloy output (`--validate`)
+* `chocosolver.jar` from [chocosolver](https://github.com/gsdlab/chocosolver)
+  * only needed for validating the Choco output (`--validate`)
+* `ecore2clafer.jar` (in this repository)
+  * only needed for `--ecore2clafer`
 * [GraphViz](http://graphviz.org/)
-  * the program `dot` is needed only in the `html` mode for SVG graph generation
+  * the program `dot` is needed only in the `html` mode for SVG graph generation, and for validating the graph outputs
+
+`--validate` and `--ecore2clafer` look for the jars in the tools directory: the current directory, or the one given with `--tooldir=<directory>`.
 
 ### Installation from binaries
 
-Binary distributions of the release 0.5.4 of Clafer Tools for Windows, Mac, and Linux,
+Binary distributions of Clafer Tools (`clafer`, `claferIG`, and `chocosolver` with the jars they need; Linux x86-64 for the recent releases)
 can be downloaded from
-[Clafer Tools - Binary Distributions](http://wiselab.uwaterloo.ca/clafer-tools-binary-distributions).
+[Clafer Tools - Binary Distributions](https://wiselab.uwaterloo.ca/clafer-tools-binary-distributions/).
 
-1. Download the binaries and unpack `<target directory>` of your choice.
+1. Download the binaries and unpack them into a `<target directory>` of your choice.
 2. Add the `<target directory>` to your system path so that the executables can be found.
+3. The bundle contains `alloy6.2.0.jar`, `chocosolver.jar`, and `ecore2clafer.jar`: use `--tooldir=<target directory>` for `--validate` and `--ecore2clafer`.
 
 ### Installation from Hackage
 
-Clafer is available on [Hackage](http://hackage.haskell.org/package/clafer-0.5.4/) and it can be installed using either [`stack`](https://haskellstack.org) or [`cabal-install`](https://hackage.haskell.org/package/cabal-install).
-
-#### Installation using `stack`
-
-Stack is the only requirement: no other Haskell tooling needs to be installed because stack will automatically install everything that's needed.
-
-1. [Install `stack`](https://docs.haskellstack.org/en/stable/README/#how-to-install)
-   * (first time only) Execute `stack setup`.
-2. Execute `stack install clafer`.
+Clafer is available on [Hackage](https://hackage.haskell.org/package/clafer) and it can be installed using either [`cabal-install`](https://hackage.haskell.org/package/cabal-install) or [`stack`](https://haskellstack.org).
 
 #### Installation using `cabal-install`
 
 Dependencies
 
-* `ghc-9.6.7` or `ghc-9.12.4`,
-* `cabal-install-3.10.3`
-* [alex](https://hackage.haskell.org/package/alex),
-* [happy](https://hackage.haskell.org/package/happy).
+* `ghc-9.6.7` or `ghc-9.12.4`
+* `cabal-install-3.10.3` or newer
 
-0. Use `ghcup` to install `ghc`, `cabal`, and `stack`
-1. `cabal update`
-2. `cabal install alex happy`
-3. `cabal install exe:clafer`
-4. on Windows `cd C:\Users\<user>\AppData\Roaming\cabal\x86_64-windows-ghc-9.6.7\clafer-0.5.4`
-5. on Linux `cd ~/.cabal/bin/`
-6. to automatically download the Alloy jar, execute
-  * `make alloy6.2.0.jar`,
-  * move `alloy6.2.0.jar` to the location of the clafer executable.
+1. Use [`ghcup`](https://www.haskell.org/ghcup/) to install `ghc` and `cabal`
+2. `cabal update`
+3. `cabal install clafer`
+
+`cabal install clafer` builds the package and installs its executable `clafer` into cabal's `bin` directory (`~/.cabal/bin` or `~/.local/bin`; with cabal 3.12 or newer, `cabal path --installdir` prints it), which must be on your `PATH`. The build tools of the parser are built automatically. The executable is all that is needed: the library is not exposed to GHC unless it is installed with `cabal install --lib clafer`.
+
+Note that `exe:clafer` and `clafer:exe:clafer` are targets inside a project (a checkout of this repository), not of `cabal install` from Hackage.
+
+#### Installation using `stack`
+
+Clafer is not part of Stackage snapshots, so give its version; its dependencies come from the snapshot.
+This release is tested with the snapshot `nightly-2026-11-11`:
+
+1. [Install `stack`](https://docs.haskellstack.org/en/stable/install_and_upgrade/)
+2. `stack install clafer-0.5.8 --resolver nightly-2026-11-11`
+
+The executable is copied to `~/.local/bin`.
+
+#### Tools for validation
+
+To use `--validate`, put `alloy6.2.0.jar` (and `chocosolver.jar` for the Choco output) into a directory, and pass it with `--tooldir=<directory>`.
+In a checkout of this repository, `make alloy6.2.0.jar` downloads the Alloy jar.
 
 ### Installation from the source code
 
@@ -149,7 +157,7 @@ Development versions from branches `develop` should work well together but this 
 #### Building
 
 1. in some `<source directory>` of your choice, execute
-  * `git clone git://github.com/gsdlab/clafer.git`
+  * `git clone https://github.com/gsdlab/clafer.git`
 2. in `<source directory>/clafer`, execute `stack setup`. This will install all dependencies, build tools, and MSYS2 (on Windows).
 3. `cd <source directory>`
   * `make` on Linux/Mac
