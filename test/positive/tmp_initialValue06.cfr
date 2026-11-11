@@ -1,0 +1,17 @@
+// The initializer := gives the initial value of a reference (kbak/clafer-semantics#164).
+// The value is written in the context of the parent, and keeps its meaning when the constraint
+// moves into the context of x: y is the sibling of x, not the child of x, and this is the
+// parent. An initializer of an abstract clafer applies to the instances of its subclafers.
+
+A
+    y -> integer
+    x -> integer ? := y + 1
+        y -> integer
+    z -> integer := this.y
+    [ F (x = 5 && x.y = 7) ]
+
+abstract Val -> integer := 2
+v1 : Val
+B
+    v2 : Val
+[ F (v1 = 4) ]

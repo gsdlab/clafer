@@ -4,6 +4,13 @@
 * No longer depends on `data-stringmap`, which is not maintained and does not build with GHC 9.6 or later from Hackage: the maps of UIDs are `Data.Map` maps. The outputs are the same (the positive test models and the case studies), and compiling is as fast.
 * No longer depends on `json-builder`, which is not maintained and does not build from Hackage with GHC 8.4 or later: the `.cfr-map` and `.cfr-scope` files are written with `aeson`'s encoding, field by field in the same order. The files of the positive test models (Alloy and Choco modes) are the same.
 * Depends only on the packages it uses: `cond`, `executable-path`, `mtl-compat`, `parsec` and `transformers-compat` are no longer dependencies of the library, and `HUnit`, `QuickCheck` and `lens-aeson` no longer of the test suites.
+* The initializer `:=` is the initial value of a reference ([kbak/clafer-semantics#164](https://github.com/kbak/clafer-semantics/issues/164), `doc/initial-value.md`, errata T14). It compiled to an assertion in every output ([#116](https://github.com/gsdlab/clafer/issues/116)), so `x -> integer := 10` with `[ x = 5 ]` had instances and a counterexample; it is a hard constraint now, and has no instance there.
+  * In a static model, `:=` is the same as `=`: `[ some x => x.dref = 10 ]` in the parent's context. The outputs are the same as with `=`, and an initializer does not make a model temporal.
+  * In a temporal model, every lifetime of `x` starts with the value, which may change afterwards: `[ initially this.dref = 10 ]` in the context of `x`. The value is resolved in the parent's context, where it is written: `this` is the parent, and a name `y` is the sibling `y` of `x` even if `x` has a child `y`.
+  * A set initializer, e.g., `xs -> integer * := 1, 2`, stays in the parent's context: `[ initially (some xs => xs.dref = 1, 2) ]`. The instances created later are not initialized.
+  * The reference of a `final` or `finalref` clafer cannot change, so `:=` is `=` there.
+  * Redefining an inherited `:=` in a subclafer is open; an own initializer is added to the inherited one.
+  * New test models: `initialValueStatic` (the same instances as with `=` in claferIG and chocosolver), `tmp_initialValue01` (an optional `level` created later), `tmp_initialValue02` (a mandatory `x` whose value changes), `tmp_initialValue03` (a parent that is replaced), `tmp_initialValue04` (`finalref` and `final`), `tmp_initialValue05` (set initializers), `tmp_initialValue06` (the name resolution and an abstract clafer), and the test case `InitialValue`.
 
 ##### Clafer Version 0.5.7, Nov 8, 2026
 

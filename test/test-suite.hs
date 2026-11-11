@@ -31,6 +31,7 @@ import Data.String (fromString)
 import Language.Clafer
 import Language.Clafer.Import
 import Language.Clafer.QNameUID
+import Language.Clafer.ClaferArgs (ClaferMode (Clafer))
 import Language.Clafer.Front.AbsClafer (Span (..), noSpan)
 import Language.Clafer.Intermediate.Intclafer
 import Language.ClaferT (CErr (..), ErrPos (..), modifyEnv)
@@ -605,3 +606,38 @@ case_SelfInheritanceReported =
     case compileOneFragment defaultClaferArgs "abstract A : A\nb : A" of
         Left errs' -> ("inherits from itself" `isInfixOf` show errs') @? "Unexpected errors\n" ++ show errs'
         Right _ -> assertFailure "abstract A : A compiled"
+
+-- The initializer := is the initial value of a reference (kbak/clafer-semantics#164): the same as
+-- = in a static model, and the value in the first state of each lifetime of the clafer in a
+-- temporal model. It is no longer an assertion (#116).
+case_InitialValue :: Assertion
+case_InitialValue = do
+    let
+        output modes' model = fmap (\r -> map (\m -> outputCode $ fromJust $ Map.lookup m r) modes') $ compileOneFragment defaultClaferArgs{mode = modes'} $ unlines model
+        static' how = [ "A 2", "    x -> integer " ++ how ++ " 10", "    y -> integer ? " ++ how ++ " x + 1"
+                      , "    zs -> integer 0..2 " ++ how ++ " 1, 2", "abstract Val -> integer " ++ how ++ " 2", "v1 : Val" ]
+        explicit model = case output [Clafer] model of
+            Right [x] -> return x
+            Right _ -> assertFailure "no explicit model" >> return ""
+            Left errs' -> assertFailure (show errs') >> return ""
+        has model expected = do
+            x <- explicit model
+            (expected `isInfixOf` x) @? (expected ++ " not in\n" ++ x)
+    -- a static model: the same outputs as with =, and no assertion
+    case (output [Alloy, Choco, Clafer] $ static' ":=", output [Alloy, Choco, Clafer] $ static' "=") of
+        (Right a, Right b) -> do
+            a == b @? ("differs from =:\n" ++ unlines a)
+            not (any ("assert" `isInfixOf`) a) @? ("an assertion:\n" ++ unlines a)
+            not ("--tl" `isInfixOf` last a) @? ("temporal:\n" ++ last a)
+        (Left errs', _) -> assertFailure $ show errs'
+        (_, Left errs') -> assertFailure $ show errs'
+    -- a temporal model: in the context of x, with the value resolved in the context of the parent
+    let temporal = [ "A", "    y -> integer", "    x -> integer ? := y + 1", "        y -> integer"
+                   , "    z -> integer := this.y", "    zs -> integer * := 1, 2", "finalref f -> integer ? := 3"
+                   , "[ F some A.x ]" ]
+    has temporal "0..* x -> int 0..1 {\n    [initially (this.dref = (this.parent.A__y.dref + 1))]"
+    has temporal "0..* z -> int 1..1 {\n    [initially (this.dref = this.parent.A__y.dref)]"
+    has temporal "[initially (((#this.zs) >= 1) => (this.zs.dref = (1 ++ 2)))]"
+    has temporal "[((#f) >= 1) => (f.dref = 3)]"
+    x <- explicit temporal
+    not ("assert" `isInfixOf` x) @? ("an assertion:\n" ++ x)

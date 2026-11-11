@@ -391,6 +391,12 @@ iInitially    = "initially"
 iFinally :: String
 iFinally    = "finally"
 
+-- | Marks the value @e@ of an initializer @x -> T := e@ that the desugarer moved from the
+--   context of the parent into the context of @x@. The name resolver resolves @e@ in the
+--   context of the parent, where it is written, and removes the marker; no other phase sees it.
+iInitValue :: String
+iInitValue  = "initvalue"
+
 iCSet :: String
 iCSet         = "#"
 

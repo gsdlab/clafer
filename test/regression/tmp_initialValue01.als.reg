@@ -1,0 +1,21 @@
+open util/integer
+pred show {}
+
+
+one sig root
+{ var r_level : set level }
+fact { always (lone root.@r_level) }
+fact { always ((not before some root) implies (no alive_level)) }
+fact { always (eventually (some alive_level)) }
+
+
+sig level
+{ p_level : lone root
+, var level_ref : set Int }
+{ always (this in alive_level implies (one this.@level_ref)) }
+fun alive_level : set level { root.@r_level }
+fact { always ~@r_level in @p_level }
+
+fact { all self_ : level | always (self_ in alive_level implies ((not before self_ in alive_level) implies ((self_.@level_ref) = 3))) }
+
+

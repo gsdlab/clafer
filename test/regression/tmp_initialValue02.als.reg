@@ -1,0 +1,20 @@
+open util/integer
+pred show {}
+
+
+one sig root
+{ var r_x : set x }
+fact { always (one root.@r_x) }
+fact { always (eventually ((alive_x.@x_ref) = 2)) }
+
+
+sig x
+{ p_x : lone root
+, var x_ref : set Int }
+{ always (this in alive_x implies (one this.@x_ref)) }
+fun alive_x : set x { root.@r_x }
+fact { always ~@r_x in @p_x }
+
+fact { all self_ : x | always (self_ in alive_x implies ((not before self_ in alive_x) implies ((self_.@x_ref) = 1))) }
+
+

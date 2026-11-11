@@ -1,0 +1,32 @@
+open util/integer
+pred show {}
+
+
+one sig root
+{ var r_level : set level
+, r_mode : set mode }
+fact { always (lone root.@r_level) }
+fact { always (one root.@r_mode) }
+fact { always ((some alive_level) => ((alive_level.@level_ref) = 3)) }
+fact { always ((some alive_mode) => ((alive_mode.@mode_ref) = 1)) }
+fact { always ((not before some root) implies (no alive_level)) }
+fact { always (eventually (some alive_level)) }
+
+
+sig level
+{ p_level : lone root
+, var level_ref : set Int }
+{ always (this in alive_level implies (one this.@level_ref))
+  always (this in alive_level and after this in alive_level implies (this.@level_ref)' = this.@level_ref) }
+fun alive_level : set level { root.@r_level }
+fact { always ~@r_level in @p_level }
+
+
+sig mode
+{ p_mode : lone root
+, mode_ref : set Int }
+{ always (this in alive_mode implies (one this.@mode_ref)) }
+fun alive_mode : set mode { root.@r_mode }
+fact { always ~@r_mode in @p_mode }
+
+

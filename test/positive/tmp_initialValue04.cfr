@@ -1,0 +1,8 @@
+// The initializer := gives the initial value of a reference (kbak/clafer-semantics#164).
+// A final or finalref reference cannot change, so := is the same as =: the value is 3 in every
+// state in which the clafer exists.
+
+finalref level -> integer ? := 3
+final mode -> integer := 1
+[ initially no level ]
+[ F some level ]

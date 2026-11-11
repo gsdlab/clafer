@@ -1,0 +1,9 @@
+//# OPTIONS --explicit --tl=10
+[initially (((#xs) >= 1) => (xs.dref = (1 ++ 2)))]
+[F (xs.dref = 3)]
+0..* xs -> int 0..3 {}
+0..* A 2..2 {
+  [initially (((#this.ys) >= 1) => (this.ys.dref = (1 ++ 2)))]
+  [F ((#this.ys) >= 1)]
+  0..* ys -> int 0..* {}
+}

@@ -1,0 +1,7 @@
+// The initializer := gives the initial value of a reference (kbak/clafer-semantics#164).
+// The parent light is replaced: every lifetime of its level starts with the value 3.
+
+light ?
+    level -> integer := 3
+[ F (some light && light.level = 5) ]
+[ F (no light && F some light) ]

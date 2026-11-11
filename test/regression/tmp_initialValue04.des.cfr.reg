@@ -1,0 +1,7 @@
+//# OPTIONS --explicit --tl=10
+[((#level) >= 1) => (level.dref = 3)]
+[((#mode) >= 1) => (mode.dref = 1)]
+[initially ((#level) = 0)]
+[F ((#level) >= 1)]
+finalref 0..* level -> int 0..1 {}
+final 0..* mode -> int 1..1 {}

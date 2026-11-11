@@ -126,13 +126,23 @@ Useful shorthands are
 ```
 
 Reference clafers can be given values using an initializer:
-constant using `=` and default using `:=` (no backend currently supports default).
+a constant using `=`, and an initial value using `:=`.
 
 `<initializer>`:
 ```
 = <set expression>
 := <set expression>
 ```
+
+`x -> integer ? = 10` is the constraint `[ some x => x.dref = 10 ]` in the parent's context: an optional `x` stays optional, and in a temporal model the value holds in every state.
+`x -> integer ? := 10` gives the value that `x` starts with ([initial-value.md](initial-value.md)):
+
+* In a static model, which has a single state, `:=` is the same as `=`. An initializer does not make a model temporal.
+* In a temporal model, every lifetime of `x` starts with the value, and the value may change afterwards: `[ initially this.dref = 10 ]` in the context of `x`. The value is written in the parent's context and keeps its meaning there: `this` is the parent, and a name `y` is the sibling `y` even if `x` has a child `y`.
+* A set initializer, `xs -> integer * := 1, 2`, constrains the instances under the parent, so it stays in the parent's context: `[ initially (some xs => xs.dref = 1, 2) ]`. The instances created later are not initialized.
+* The reference of a `final` or `finalref` clafer cannot change, so `:=` is the same as `=`.
+
+`:=` is not a default value in the sense of "unless something else is required": with `[ x = 5 ]`, `x -> integer := 10` has no instance.
 
 #### Examples
 
@@ -668,9 +678,9 @@ The following table provides versions in which support for a given feature was a
 </tr>
 
 <tr>
-<td>Default initializer <code>:=</code></td>
-<td>&nbsp;&nbsp;&nbsp;-</td>
-<td>&nbsp;&nbsp;&nbsp;-</td>
+<td>Initial value <code>:=</code></td>
+<td>0.5.8</td>
+<td>0.5.8 (static models)</td>
 </tr>
 
 <tr>
