@@ -273,6 +273,22 @@ case_AmbiguousSuperName = do
     ("cannot be defined because the name should be unique in the same namespace" `isInfixOf` duplicate) @? "Wrong error for a duplicate super: " ++ duplicate
 
 {-
+A group cardinality at the start of a line belongs to the clafer on that line,
+not to the clafer on the line before, which has no cardinality (#117).
+-}
+case_GroupCardinalityOnNextLine :: Assertion
+case_GroupCardinalityOnNextLine = do
+    let
+        (Just (iModule, _, _)) = cIr $ claferEnv $ fromJust $ Map.lookup Alloy $ fromRight $ compileOneFragment defaultClaferArgs "a\n2..3 b\n  c\n  d\nf\n  g\n  1..2 h\n    i\n"
+        clafers :: [ IClafer ]
+        clafers = universeOn biplate iModule
+        cardOf name = [ _card c | c <- clafers, _ident c == name ]
+        gcardOf name = [ _interval <$> _gcard c | c <- clafers, _ident c == name ]
+    map cardOf ["a", "b", "f", "g", "h"] == replicate 5 [Just (1, 1)] @? "Wrong cardinalities: " ++ show (map cardOf ["a", "b", "f", "g", "h"])
+    map gcardOf ["b", "h"] == [[Just (2, 3)], [Just (1, 2)]] @? "Wrong group cardinalities: " ++ show (map gcardOf ["b", "h"])
+    map cardOf ["c", "d", "i"] == replicate 3 [Just (0, 1)] @? "Children not optional: " ++ show (map cardOf ["c", "d", "i"])
+
+{-
 A child without a multiplicity is mandatory under the default group (no group
 cardinality or 0..*) and optional under a keyword group, opt included, also when
 the group is inherited, or under another range. Only keywords set _isKeyword.

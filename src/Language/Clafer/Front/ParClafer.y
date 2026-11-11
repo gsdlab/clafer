@@ -44,6 +44,7 @@ import Language.Clafer.Front.ErrM
   ':=' { PT _ (TS _ 25) }
   ':>' { PT _ (TS _ 26) }
   ';' { PT _ (TS _ 27) }
+  L_sep { PT _ (TS _ 101) }
   '<' { PT _ (TS _ 28) }
   '<:' { PT _ (TS _ 29) }
   '<<' { PT _ (TS _ 30) }
@@ -357,12 +358,14 @@ LocId : PosIdent { Language.Clafer.Front.AbsClafer.LocIdIdent ((mkCatSpan $1)) $
 ListDeclaration :: { [Declaration] }
 ListDeclaration : {- empty -} { []  }
                 | ListDeclaration Declaration { flip (:)  $1 $2 }
+                | ListDeclaration L_sep { $1 }
 ListEnumId :: { [EnumId] }
 ListEnumId : EnumId { (:[])  $1 }
            | EnumId '|' ListEnumId { (:)  $1 $3 }
 ListElement :: { [Element] }
 ListElement : {- empty -} { []  }
             | ListElement Element { flip (:)  $1 $2 }
+            | ListElement L_sep { $1 }
 ListExp :: { [Exp] }
 ListExp : {- empty -} { []  } | ListExp Exp { flip (:)  $1 $2 }
 ListTempModifier :: { [TempModifier] }
@@ -389,9 +392,21 @@ thenM :: Err a -> (a -> Err b) -> Err b
 thenM = (>>=)
 
 happyError :: [Token] -> Err a
-happyError ts =
+-- | The separator of sibling lines, which the layout resolver inserts, e.g., in @a ; 2..3 b@,
+--   so that a group cardinality at the start of a line is not the cardinality of the clafer on
+--   the line before. It is not a reserved symbol, so a model cannot contain it.
+layoutSeparator :: Token
+layoutSeparator = PT (Pn 0 0 0) (TS "" 101)
+
+isLayoutSeparator :: Token -> Bool
+isLayoutSeparator (PT _ (TS _ 101)) = True
+isLayoutSeparator _ = False
+
+happyError ts' =
   -- the position is reported with the error; in a model of several files, the line of the
-  -- token is a line of the complete model
+  -- token is a line of the complete model. The separators inserted by the layout resolver
+  -- are not shown.
+  let ts = filter (not . isLayoutSeparator) ts' in
   Bad (pp ts) $ "syntax error" ++
   case ts of
     [] -> " at end of file"
