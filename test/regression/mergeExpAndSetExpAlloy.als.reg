@@ -38,9 +38,10 @@ one sig Alice__Head extends Person__Head
 
 one sig Ella extends Person
 { r_h : one h }
-{ no this.@r_likes }
+{ r_h in r_Person__Head
+  no this.@r_likes }
 
-one sig h
+one sig h extends Person__Head
 {}
 
 sig heads
@@ -56,17 +57,17 @@ one sig onlyAlice
 { onlyAlice_ref : one Alice & Person }
 
 assert assertAt_37_10 { Alice in (onlyAlice.@onlyAlice_ref) }
-check assertAt_37_10 for 1 but 2 Person, 2 friend, 2 likes
+check assertAt_37_10 for 1 but 2 Person, 2 Person__Head, 2 friend, 2 heads, 2 likes
 
 assert assertAt_38_10 { Ella not in (onlyAlice.@onlyAlice_ref) }
-check assertAt_38_10 for 1 but 2 Person, 2 friend, 2 likes
+check assertAt_38_10 for 1 but 2 Person, 2 Person__Head, 2 friend, 2 heads, 2 likes
 
 one sig exceptElla
 { exceptElla_ref : one Person - Ella }
 
 assert assertAt_43_10 { Alice in (exceptElla.@exceptElla_ref) }
-check assertAt_43_10 for 1 but 2 Person, 2 friend, 2 likes
+check assertAt_43_10 for 1 but 2 Person, 2 Person__Head, 2 friend, 2 heads, 2 likes
 
 assert assertAt_44_10 { Ella not in (exceptElla.@exceptElla_ref) }
-check assertAt_44_10 for 1 but 2 Person, 2 friend, 2 likes
+check assertAt_44_10 for 1 but 2 Person, 2 Person__Head, 2 friend, 2 heads, 2 likes
 

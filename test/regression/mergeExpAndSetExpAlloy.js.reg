@@ -1,4 +1,4 @@
-scope({$Person:2, $friend:2, $likes:2});
+scope({$Person:2, $Person__Head:2, $friend:2, $heads:2, $likes:2});
 defaultScope(1);
 stringLength(16);
 
@@ -20,6 +20,7 @@ $exceptElla = Clafer("exceptElla").withCard(1, 1);
 $Alice.extending($Person);
 $Alice__Head.extending($Person__Head);
 $Ella.extending($Person);
+$h.extending($Person__Head);
 $numberOne.refToUnique(Int);
 $alice.refToUnique(string);
 $likertScaleVal.refToUnique(Int);

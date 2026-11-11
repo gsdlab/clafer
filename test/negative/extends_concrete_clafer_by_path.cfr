@@ -1,0 +1,9 @@
+// A clafer cannot extend a concrete clafer, also when a path names it: Ella.Head is the
+// concrete redefinition of Person.Head in Ella, not an abstract clafer.
+
+abstract Person
+    abstract Head
+
+Ella : Person
+    Head : Head
+    h : Ella.Head

@@ -50,7 +50,7 @@ resolveNModule (imodule, genv') =
       allClafers = bfsClafers $ toClafers unresolvedDecls
       abstractClafers = filter _isAbstract allClafers
       ancestors' = ancestorsIn allClafers
-    resolvedDecls <- mapM (resolveNElement ancestors' abstractClafers Nothing) unresolvedDecls
+    resolvedDecls <- mapM (resolveNElement allClafers ancestors' abstractClafers Nothing) unresolvedDecls
     let
       relocatedDecls = relocateTopLevelAbstractToParents resolvedDecls    -- F> Top-level abstract clafer extending a nested abstract clafer <https://github.com/gsdlab/clafer/issues/67> <F
       uidClaferMap' = createUidIClaferMap imodule{_mDecls = relocatedDecls}
@@ -73,8 +73,8 @@ ancestorsIn clafers = go []
       _                                 -> []
 
 -- | Resolves the super of the clafer, given its parent (with the resolved super).
-resolveNClafer :: (IClafer -> [IClafer]) -> [IClafer] -> Maybe IClafer -> IClafer -> Resolve IClafer
-resolveNClafer ancestors' abstractClafers parent clafer =
+resolveNClafer :: [IClafer] -> (IClafer -> [IClafer]) -> [IClafer] -> Maybe IClafer -> IClafer -> Resolve IClafer
+resolveNClafer allClafers ancestors' abstractClafers parent clafer =
   do
     -- a clafer cannot extend itself <https://github.com/gsdlab/clafer/issues/86>
     let abstractClafers' = filter ((/= _uid clafer) . _uid) abstractClafers
@@ -84,7 +84,7 @@ resolveNClafer ancestors' abstractClafers parent clafer =
         | _isAbstract clafer && id' == _ident clafer && id' `notElem` map _ident abstractClafers'
         -> throwError $ SemanticErr (_cinPos clafer) $ "ResolverInheritance: clafer " ++ _uid clafer ++ " inherits from itself"
       _ -> return ()
-    (super', superIClafer')    <- resolveNSuper ancestors' abstractClafers' parent $ _super clafer
+    (super', superIClafer')    <- resolveNSuper allClafers ancestors' abstractClafers' parent clafer $ _super clafer
     -- F> Top-level abstract clafer extending a nested abstract clafer <https://github.com/gsdlab/clafer/issues/67> F>
     let
       parentUID' =
@@ -95,7 +95,7 @@ resolveNClafer ancestors' abstractClafers parent clafer =
             else _parentUID clafer
           Nothing               -> _parentUID clafer
     -- <F Top-level abstract clafer extending a nested abstract clafer <https://github.com/gsdlab/clafer/issues/67> <F
-    elements' <- mapM (resolveNElement ancestors' abstractClafers (Just clafer{_super = super'})) $ _elements clafer
+    elements' <- mapM (resolveNElement allClafers ancestors' abstractClafers (Just clafer{_super = super'})) $ _elements clafer
     return $ clafer
       { _super = super'
       , _parentUID = parentUID'
@@ -107,9 +107,9 @@ resolveNClafer ancestors' abstractClafers parent clafer =
       , _elements = elements'
       }
 
-resolveNSuper :: (IClafer -> [IClafer]) -> [IClafer] -> Maybe IClafer -> Maybe PExp -> Resolve (Maybe PExp, Maybe IClafer)
-resolveNSuper _ _ _ Nothing = return (Nothing, Nothing)
-resolveNSuper ancestors' abstractClafers parent (Just (PExp _ pid' pos' (IClaferId _ id' _ _))) =
+resolveNSuper :: [IClafer] -> (IClafer -> [IClafer]) -> [IClafer] -> Maybe IClafer -> IClafer -> Maybe PExp -> Resolve (Maybe PExp, Maybe IClafer)
+resolveNSuper _ _ _ _ _ Nothing = return (Nothing, Nothing)
+resolveNSuper _ ancestors' abstractClafers parent _ (Just (PExp _ pid' pos' (IClaferId _ id' _ _))) =
     if isPrimitive id'
       then throwError $ SemanticErr pos' $ "Primitive types are not allowed as super types: " ++ id'
       else do
@@ -122,15 +122,60 @@ resolveNSuper ancestors' abstractClafers parent (Just (PExp _ pid' pos' (IClafer
         return (Just $ PExp (Just $ TClafer [id'']) pid' pos' (IClaferId "" id'' (isTopLevel superClafer') (GlobalBind id''))
                  , Just superClafer')
   where
-    -- A redefinition, e.g., `fa : fa -> T`, extends the nearest clafer with that
-    -- name which the parent inherits, even if other abstract clafers have the name.
+    -- The nearest abstract clafer with the name among the children of the parent and the
+    -- children which the parent inherits, even if other abstract clafers have the name: a
+    -- sibling, e.g., `h : Head` next to `abstract Head : Head`, or, for a redefinition, e.g.,
+    -- `fa : fa -> T`, the inherited clafer (the clafer itself is not in abstractClafers).
     inheritedSuper = listToMaybe
-      [ c | s <- maybe [] (superChain abstractClafers) parent
+      [ c | s <- maybe [] (\p -> p : superChain abstractClafers p) parent
           , IEClafer c <- _elements s
           , _isAbstract c
           , _ident c == id'
           , c `elem` abstractClafers ]
-resolveNSuper _ _ _ x = return (x, Nothing)
+-- A path, e.g., `h : Person.Head`, names an abstract clafer by the path to it: the first
+-- name is a clafer, and each next name is a child of the previous clafer, its own or,
+-- if it has none with the name, an inherited one. So `Ella.Head` is the `Head` that Ella
+-- redefines, e.g., with `Head : Head`, or else the `Head` of its super Person.
+resolveNSuper allClafers ancestors' abstractClafers _ clafer (Just (PExp _ pid' pos' exp'@(IFunExp "." _))) =
+    case pathNames exp' of
+      Nothing -> throwError $ SemanticErr pos'
+        "A super must be the name of an abstract clafer or a path to it, e.g., Person.Head"
+      Just [] -> throwError $ SemanticErr pos' "BUG: an empty path as a super"
+      Just names@(first : rest) -> do
+        let path' = intercalate "." names
+        start <- firstClafer path' first
+        superClafer' <- foldM (child path') start rest
+        when (_uid superClafer' == _uid clafer) $ throwError $ SemanticErr pos' $
+          "ResolverInheritance: clafer " ++ _uid clafer ++ " inherits from itself"
+        unless (_isAbstract superClafer') $ throwError $ SemanticErr pos' $
+          "No superclafer found: " ++ path' ++ " is not abstract, and only abstract clafers can be supers"
+        let id'' = _uid superClafer'
+        return ( Just $ PExp (Just $ TClafer [id'']) pid' pos' (IClaferId "" id'' (isTopLevel superClafer') (GlobalBind id''))
+               , Just superClafer')
+  where
+    pathNames :: IExp -> Maybe [String]
+    pathNames IClaferId{_sident = s} = Just [s]
+    pathNames (IFunExp "." [l, r]) = (++) <$> pathNames (_exp l) <*> pathNames (_exp r)
+    pathNames _ = Nothing
+    -- the first name of the path: the nearest enclosing clafer with the name, e.g., Ella
+    -- in `h : Ella.Head` under Ella, or else the only clafer with the name, preferring a
+    -- top-level one
+    firstClafer path' n = case filter ((== n) . _ident) (drop 1 $ ancestors' clafer) of
+      (c : _) -> return c
+      [] -> case filter ((== n) . _ident) allClafers of
+        [] -> throwError $ SemanticErr pos' $ "No superclafer found: no clafer " ++ n ++ " for " ++ path'
+        [c] -> return c
+        cs -> case filter isTopLevel cs of
+          [c] -> return c
+          _ -> throwError $ SemanticErr pos' $ "No superclafer found: the clafer " ++ n ++ " in " ++ path'
+                 ++ " is not unique. Available paths:\n" ++ concatMap (pathOf . ancestors') cs
+    pathOf cs = intercalate "." (reverse $ map _ident cs) ++ "\n"
+    -- the child with the name, the clafer's own or else the nearest inherited one
+    child path' c n = case [ e | s <- c : superChain abstractClafers c, IEClafer e <- _elements s, _ident e == n ] of
+      (e : _) -> return e
+      [] -> throwError $ SemanticErr pos' $ "No superclafer found: " ++ _ident c
+              ++ " has no child " ++ n ++ ", neither its own nor an inherited one, for " ++ path'
+resolveNSuper _ _ _ _ _ x = return (x, Nothing)
 
 -- | The abstract supers of the clafer, nearest first. A super is found by its
 -- uid when resolved, or by its name when it is unique.
@@ -147,9 +192,9 @@ superChain abstractClafers = go []
       _     -> Nothing
 
 
-resolveNElement :: (IClafer -> [IClafer]) -> [IClafer] -> Maybe IClafer -> IElement -> Resolve IElement
-resolveNElement ancestors' abstractClafers parent x = case x of
-  IEClafer clafer  -> IEClafer <$> resolveNClafer ancestors' abstractClafers parent clafer
+resolveNElement :: [IClafer] -> (IClafer -> [IClafer]) -> [IClafer] -> Maybe IClafer -> IElement -> Resolve IElement
+resolveNElement allClafers ancestors' abstractClafers parent x = case x of
+  IEClafer clafer  -> IEClafer <$> resolveNClafer allClafers ancestors' abstractClafers parent clafer
   IEConstraint _ _  -> return x
   IEGoal _ _ -> return x
 
