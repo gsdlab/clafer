@@ -8,10 +8,10 @@ node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" hei
 edge [fontname=Sans fontsize=11];
 "Station" [label="abstract Station" URL="#Station" tooltip="abstract Station&#10;  abstract Link -&gt; Station ?&#10;"];
 "Link" [label="abstract Link -> Station ?" URL="#Link" tooltip="abstract Link -&gt; Station ?&#10;"];
-"Link" -> "Station" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=Link];
+"Link" -> "Station" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label="Link"];
 "S1" [label="S1 : Station" URL="#S1" tooltip="S1 : Station&#10;  L1 : Link -&gt; S2&#10;"];
-"S1" -> "S2" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=L1];
+"S1" -> "S2" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label="L1"];
 "S2" [label="S2 : Station" URL="#S2" tooltip="S2 : Station&#10;  L2 : Link -&gt; S3&#10;"];
-"S2" -> "S3" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=L2];
+"S2" -> "S3" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label="L2"];
 "S3" [label="S3 : Station" URL="#S3" tooltip="S3 : Station&#10;"];
 }

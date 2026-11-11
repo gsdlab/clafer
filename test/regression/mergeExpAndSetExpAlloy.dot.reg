@@ -12,7 +12,7 @@ edge [fontname=Sans fontsize=11];
 "nonZero" [label="nonZero -&gt; integer--0" URL="#nonZero" tooltip="nonZero -&gt; integer--0&#10;"];
 "Person" [label="abstract Person" URL="#Person" tooltip="abstract Person&#10;  abstract Head&#10;  likes -&gt; Person ?&#10;"];
 "Person__Head" [label="abstract Head" URL="#Person__Head" tooltip="abstract Head&#10;"];
-"Person" -> "Person" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=likes];
+"Person" -> "Person" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label="likes"];
 "Alice" [label="Alice : Person" URL="#Alice" tooltip="Alice : Person&#10;  `Head&#10;  [ likes = Ella ]&#10;"];
 "Alice" -> "Person__Head" [arrowhead=vee arrowtail=diamond dir=both style=solid constraint=true weight=5 minlen=2 arrowsize=0.6 penwidth=0.5 ];
 "Ella" [label="Ella : Person" URL="#Ella" tooltip="Ella : Person&#10;  h : Person.Head&#10;  [ no likes ]&#10;"];

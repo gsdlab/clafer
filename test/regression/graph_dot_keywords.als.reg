@@ -1,0 +1,46 @@
+open util/integer
+pred show {}
+
+
+abstract sig Node
+{ r_Edge : lone Edge }
+
+abstract sig Edge
+{ Edge_ref : one Node }
+{ one @r_Edge.this }
+
+one sig N1 extends Node
+{ r_E1 : one E1 }
+{ r_E1 in r_Edge }
+
+one sig E1 extends Edge
+{ E1_ref : one N2 }
+{ E1_ref in Edge_ref }
+
+one sig N2 extends Node
+{}
+
+one sig graph
+{ r_node : one node
+, r_edge : lone edge }
+
+one sig node
+{ node_ref : one N1 }
+
+lone sig edge
+{ edge_ref : one N2 }
+{ one r_edge }
+
+one sig digraph
+{ r_subgraph : lone subgraph
+, r_strict : lone strict }
+{ let children = (r_subgraph + r_strict) | one children }
+
+lone sig subgraph
+{ subgraph_ref : one Node }
+{ one r_subgraph }
+
+lone sig strict
+{}
+{ one r_strict }
+

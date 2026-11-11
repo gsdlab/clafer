@@ -16,6 +16,6 @@ edge [fontname=Sans fontsize=11];
 "downX" [label="downX : Request ?" URL="#downX" tooltip="downX : Request ?&#10;"];
 "stop" [label="stop : Request" URL="#stop" tooltip="stop : Request&#10;"];
 "WinCtrl" [label="WinCtrl : Component" URL="#WinCtrl" tooltip="WinCtrl : Component&#10;  cmd : Port -&gt; Command&#10;    [ output ]&#10;  req : Port -&gt; Request&#10;    [ input ]&#10;"];
-"WinCtrl" -> "Command" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=cmd];
-"WinCtrl" -> "Request" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=req];
+"WinCtrl" -> "Command" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label="cmd"];
+"WinCtrl" -> "Request" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label="req"];
 }

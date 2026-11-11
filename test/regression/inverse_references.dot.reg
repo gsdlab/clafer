@@ -7,11 +7,11 @@ graph [fontname=Sans fontsize=11];
 node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
 edge [fontname=Sans fontsize=11];
 "Service" [label="abstract Service" URL="#Service" tooltip="abstract Service&#10;  requirements : Requirements&#10;  machine -&gt; Machine&#10;  [ this in machine.services ]&#10;"];
-"Service" -> "Machine" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=machine];
+"Service" -> "Machine" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label="machine"];
 "Requirements" [label="abstract Requirements" URL="#Requirements" tooltip="abstract Requirements&#10;  cpu -&gt;&gt; integer&#10;"];
 "Resources" [label="abstract Resources : Requirements" URL="#Resources" tooltip="abstract Resources : Requirements&#10;"];
 "Machine" [label="abstract Machine" URL="#Machine" tooltip="abstract Machine&#10;  services -&gt; Service *&#10;  [ all s : services | s.machine = this ]&#10;  isFree ?&#10;  [ isFree <=> no services ]&#10;  limits : Resources&#10;  utilization : Resources&#10;    [ cpu = sum services.requirements.cpu ]&#10;    [ cpu < limits.cpu ]&#10;"];
-"Machine" -> "Service" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=services];
+"Machine" -> "Service" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label="services"];
 "Task" [label="abstract Task" URL="#Task" tooltip="abstract Task&#10;  total_free : integer = # Machine.isFree&#10;"];
 "MyTask" [label="MyTask : Task" URL="#MyTask" tooltip="MyTask : Task&#10;  GoogleCA : Machine&#10;    [ limits.cpu = 10 ]&#10;  GoogleNY : Machine&#10;    [ limits.cpu = 16 ]&#10;  GoogleTX : Machine&#10;    [ limits.cpu = 14 ]&#10;  MailService : Service&#10;    [ requirements.cpu = 4 ]&#10;  SearchService : Service&#10;    [ requirements.cpu = 3 ]&#10;  CalendarService : Service&#10;    [ requirements.cpu = 1 ]&#10;  DriveService : Service&#10;    [ requirements.cpu = 2 ]&#10;"];
 }
