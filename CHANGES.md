@@ -11,6 +11,7 @@
   * The reference of a `final` or `finalref` clafer cannot change, so `:=` is `=` there.
   * Redefining an inherited `:=` in a subclafer is open; an own initializer is added to the inherited one.
   * New test models: `initialValueStatic` (the same instances as with `=` in claferIG and chocosolver), `tmp_initialValue01` (an optional `level` created later), `tmp_initialValue02` (a mandatory `x` whose value changes), `tmp_initialValue03` (a parent that is replaced), `tmp_initialValue04` (`finalref` and `final`), `tmp_initialValue05` (set initializers), `tmp_initialValue06` (the name resolution and an abstract clafer), and the test case `InitialValue`.
+* An ambiguous name of a super, e.g., `x : T` with `A.T` and `B.T`, is an error that the name is not unique, with the paths of the candidates (`A.A__T`, `B.B__T`), as for a reference ([#115](https://github.com/gsdlab/clafer/issues/115)). It was reported as a duplicate definition, with the UIDs. Two supers with the same name in the same namespace are still a duplicate definition. New negative test model `ambiguous_super_name` and the test case `AmbiguousSuperName`.
 
 ##### Clafer Version 0.5.7, Nov 8, 2026
 

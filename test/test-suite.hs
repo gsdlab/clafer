@@ -260,6 +260,19 @@ case_UnsatisfiableGroupRejected = do
     compiles "2..* many\n   x *\n" @? "2..* over x * rejected"
 
 {-
+An ambiguous name of a super is not unique, with the paths of the candidates
+(#115); two candidates in the same namespace are a duplicate definition.
+-}
+case_AmbiguousSuperName :: Assertion
+case_AmbiguousSuperName = do
+    let
+        errorsOf model' = either show (const "") $ compileOneFragment defaultClaferArgs model'
+        ambiguous = errorsOf "A\n    abstract T\nB\n    abstract T\nx : T\n"
+        duplicate = errorsOf "abstract T\nabstract T\nx : T\n"
+    all (`isInfixOf` ambiguous) ["clafer \\\"T\\\" is not unique", "A.A__T", "B.B__T"] @? "Wrong error for an ambiguous super: " ++ ambiguous
+    ("cannot be defined because the name should be unique in the same namespace" `isInfixOf` duplicate) @? "Wrong error for a duplicate super: " ++ duplicate
+
+{-
 A child without a multiplicity is mandatory under the default group (no group
 cardinality or 0..*) and optional under a keyword group, opt included, also when
 the group is inherited, or under another range. Only keywords set _isKeyword.
