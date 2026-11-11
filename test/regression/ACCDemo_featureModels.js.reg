@@ -16,5 +16,5 @@ $Alert = $FCA.addChild("Alert").withCard(0, 1).withGroupCard(1, 1);
 $Haptic = $Alert.addChild("Haptic").withCard(0, 1);
 $Audible = $Alert.addChild("Audible").withCard(0, 1);
 $aCar = Clafer("aCar").withCard(1, 1);
-$ACC.addConstraint(some(join(joinParent(joinParent($this())), $FCA)));
 $aCar.extending($Car);
+$ACC.addConstraint(some(join(joinParent(joinParent($this())), $FCA)));

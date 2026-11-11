@@ -1,0 +1,19 @@
+scope({$Link:2, $Station:3});
+defaultScope(1);
+stringLength(16);
+
+$Station = Abstract("Station");
+$Link = $Station.addAbstractChild("Link");
+$S1 = Clafer("S1").withCard(1, 1);
+$L1 = $S1.addChild("L1").withCard(1, 1);
+$S2 = Clafer("S2").withCard(1, 1);
+$L2 = $S2.addChild("L2").withCard(1, 1);
+$S3 = Clafer("S3").withCard(1, 1);
+$S1.extending($Station);
+$L1.extending($Link);
+$S2.extending($Station);
+$L2.extending($Link);
+$S3.extending($Station);
+$Link.refToUnique($Station);
+$L1.refToUnique($S2);
+$L2.refToUnique($S3);

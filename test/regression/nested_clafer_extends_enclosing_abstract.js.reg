@@ -7,5 +7,5 @@ $p = $Path.addChild("p").withCard(0, 1);
 $isDir = $Path.addChild("isDir").withCard(0, 1);
 $pth = Clafer("pth").withCard(1, 1);
 $p.extending($Path);
-$Path.addConstraint(implies(some(join($this(), $isDir)), some(join($this(), $p))));
 $pth.extending($Path);
+$Path.addConstraint(implies(some(join($this(), $isDir)), some(join($this(), $p))));

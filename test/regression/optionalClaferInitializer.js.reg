@@ -4,6 +4,6 @@ stringLength(16);
 $intVal = Clafer("intVal").withCard(0, 1);
 $stringVal = Clafer("stringVal").withCard(0, 1);
 $intVal.refTo(Int);
-Constraint(implies(some(global($intVal)), equal(joinRef(global($intVal)), constant(1))));
 $stringVal.refTo(string);
+Constraint(implies(some(global($intVal)), equal(joinRef(global($intVal)), constant(1))));
 Constraint(implies(some(global($stringVal)), equal(joinRef(global($stringVal)), constant("\"aaa\""))));

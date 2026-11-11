@@ -8,14 +8,14 @@ $Alice = Clafer("Alice").withCard(1, 1);
 $Bob = Clafer("Bob").withCard(1, 1);
 $Carol = Clafer("Carol").withCard(1, 1);
 $Dave = Clafer("Dave").withCard(1, 1);
-$spouse.refToUnique($Person);
 $Alice.extending($Person);
-$Alice.addConstraint(equal(joinRef(join($this(), $spouse)), global($Bob)));
 $Bob.extending($Person);
-assert(equal(joinRef(join(global($Bob), $spouse)), global($Alice)));
 $Carol.extending($Person);
-$Carol.addConstraint(none(join($this(), $spouse)));
 $Dave.extending($Person);
+$spouse.refToUnique($Person);
+$Alice.addConstraint(equal(joinRef(join($this(), $spouse)), global($Bob)));
+assert(equal(joinRef(join(global($Bob), $spouse)), global($Alice)));
+$Carol.addConstraint(none(join($this(), $spouse)));
 assert(none(join(global($Dave), $spouse)));
 
 //symmetric[r_spouse . spouse_ref]

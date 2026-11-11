@@ -24,6 +24,7 @@
 module Language.Clafer.Generator.Choco (genCModule) where
 
 import Data.List
+import qualified Data.Map as Map
 import Language.Clafer.Common
 import Language.Clafer.Front.LexClafer
 import Language.Clafer.Generator.ChocoModel
@@ -45,13 +46,48 @@ jsVar = ('$' :)
 jsLocalVar :: String -> String
 jsLocalVar = ("$_" ++)
 
+-- | The clafers, then their supers, then their references, and then the constraints.
+--   chocosolver checks a reference which refines an inherited one, e.g., @E1 : Edge -> N2@
+--   under @abstract Edge -> Node ?@, when it reads it: the target must extend the inherited
+--   target, and the super's reference must be known. So all the supers come before the
+--   references, also those of the clafers declared further down, and the reference of a
+--   super before those of its subclafers.
 jsModel :: CModel -> Result
 jsModel CModel{cmElements, cmScope, cmEscapes} =
     jsScope cmScope
     ++ "\n"
     ++ (jsClafer =<< cmElements)
+    ++ (jsSuper =<< clafers)
+    ++ (jsRef =<< sortOn superDepth clafers)
     ++ (jsLinks "root" =<< cmElements)
     ++ cmEscapes
+  where
+    clafers = allCClafers cmElements
+    supers = Map.fromList [ (ccUid c, s) | c <- clafers, Just s <- [ccSuper c] ]
+    superDepth = depth [] . ccUid
+    depth visited uid' = case Map.lookup uid' supers of
+      Just s | s `notElem` visited -> 1 + depth (s : visited) s
+      _                            -> 0 :: Int
+
+-- | The clafers, in pre-order
+allCClafers :: [CElement] -> [CClafer]
+allCClafers es = [ c' | CEClafer c <- es, c' <- c : allCClafers (ccElements c) ]
+
+jsSuper :: CClafer -> Result
+jsSuper CClafer{ccUid, ccLinked, ccSuper = Just super'} | ccLinked = jsVar ccUid ++ ".extending(" ++ jsVar super' ++ ");\n"
+jsSuper _ = ""
+
+jsRef :: CClafer -> Result
+jsRef CClafer{ccUid, ccLinked, ccRef = Just ref'} | ccLinked = jsVar ccUid ++ refTo ref' ++ ";\n"
+  where
+    refTo (True, target)  = ".refToUnique(" ++ jsTarget target ++ ")"
+    refTo (False, target) = ".refTo(" ++ jsTarget target ++ ")"
+    jsTarget "integer" = "Int"
+    jsTarget "int" = "Int"
+    jsTarget "decimal" = "Decimal"
+    jsTarget "string" = "string"
+    jsTarget target = jsVar target
+jsRef _ = ""
 
 jsScope :: CScope -> Result
 jsScope CScope{csClafers, csIntRange, csStringLength, csDecimalScale} =
@@ -78,25 +114,13 @@ jsClafer (CEClafer CClafer{ccUid, ccParent, ccAbstract, ccCard, ccGCard, ccEleme
         | otherwise                          = " = " ++ jsVar ccParent ++ ".addChild(\"" ++ ccUid ++ "\")" ++ prop "withCard" (jsCard ccCard)
 jsClafer _ = ""
 
--- | The super clafers, references, constraints, objectives and assertions, in the context of a clafer
+-- | The constraints, objectives and assertions, in the context of a clafer
 jsLinks :: String -> CElement -> Result
-jsLinks _ (CEClafer CClafer{ccUid, ccLinked, ccSuper, ccRef, ccRefConstraints, ccElements})
+jsLinks _ (CEClafer CClafer{ccUid, ccLinked, ccRefConstraints, ccElements})
     | ccLinked =
-        jsVar ccUid
-        ++ prop "extending" (jsVar <$> ccSuper)
-        ++ maybe "" refTo ccRef
-        ++ ";\n"
-        ++ concatMap (\c -> jsVar ccUid ++ ".addConstraint(" ++ jsExp c ++ ");\n") ccRefConstraints
+        concatMap (\c -> jsVar ccUid ++ ".addConstraint(" ++ jsExp c ++ ");\n") ccRefConstraints
         ++ (jsLinks ccUid =<< ccElements)
     | otherwise = jsLinks ccUid =<< ccElements
-  where
-    refTo (True, target)  = ".refToUnique(" ++ jsTarget target ++ ")"
-    refTo (False, target) = ".refTo(" ++ jsTarget target ++ ")"
-    jsTarget "integer" = "Int"
-    jsTarget "int" = "Int"
-    jsTarget "decimal" = "Decimal"
-    jsTarget "string" = "string"
-    jsTarget target = jsVar target
 jsLinks "root" (CEConstraint e) = "Constraint(" ++ jsExp e ++ ");\n"
 jsLinks pUID (CEConstraint e) = jsVar pUID ++ ".addConstraint(" ++ jsExp e ++ ");\n"
 jsLinks _ (CEAssert e) = "assert(" ++ jsExp e ++ ");\n"
