@@ -1,0 +1,23 @@
+scope({$Node:2});
+defaultScope(1);
+stringLength(16);
+
+$Node = Abstract("Node");
+$Edge = $Node.addAbstractChild("Edge");
+$N1 = Clafer("N1").withCard(1, 1);
+$E1 = $N1.addChild("E1").withCard(1, 1);
+$N2 = Clafer("N2").withCard(1, 1);
+$graph = Clafer("graph").withCard(1, 1);
+$node = $graph.addChild("node").withCard(1, 1);
+$edge = $graph.addChild("edge").withCard(0, 1);
+$digraph = Clafer("digraph").withCard(1, 1).withGroupCard(1, 1);
+$subgraph = $digraph.addChild("subgraph").withCard(0, 1);
+$strict = $digraph.addChild("strict").withCard(0, 1);
+$N1.extending($Node);
+$E1.extending($Edge);
+$N2.extending($Node);
+$Edge.refToUnique($Node);
+$node.refToUnique($N1);
+$edge.refToUnique($N2);
+$subgraph.refToUnique($Node);
+$E1.refToUnique($N2);

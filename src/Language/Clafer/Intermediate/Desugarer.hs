@@ -25,6 +25,7 @@ into Intermediate representation (IR) from "Language.Clafer.Intermediate.Intclaf
 -}
 module Language.Clafer.Intermediate.Desugarer where
 
+import Data.Data (Data, cast, gmapQ, gmapT)
 import Data.List (nub)
 import Data.Maybe (fromMaybe, mapMaybe)
 import Prelude hiding ((||))
@@ -33,17 +34,18 @@ import Language.Clafer.Front.AbsClafer as AbsClafer
 import Language.Clafer.Intermediate.Intclafer as IntClafer
 
 -- | Transform the AST into the intermediate representation (IR). In a dynamic model, the
---   enumerations are final, so that their literals do not change over time.
+--   enumerations are final, so that their literals do not change over time, and an initializer
+--   @:=@ gives the initial value of a reference (see 'desugarInit').
 desugarModule :: Maybe String -> Module -> IModule
 desugarModule mURL (Module _ declarations) = if isDynamicModule staticModule
   then desugarWith True
   else staticModule
   where
-    -- the non-final enumerations do not make a model dynamic
+    -- neither the non-final enumerations nor the initializers make a model dynamic
     staticModule = desugarWith False
-    desugarWith finalEnums = IModule
+    desugarWith dynamic' = IModule
       (fromMaybe "" mURL)
-      (declarations >>= desugarEnums finalEnums >>= desugarDeclaration)
+      (declarations >>= desugarEnums dynamic' >>= desugarDeclaration dynamic')
 
 sugarModule :: IModule -> Module
 sugarModule x = Module noSpan $ map sugarDeclaration $ _mDecls x -- (fragments x >>= mDecls)
@@ -72,9 +74,10 @@ desugarEnums finalEnum (EnumDecl (Span p1 p2) id' enumids) = absEnum : map mkEnu
 desugarEnums _ x = [x]
 
 
-desugarDeclaration :: Declaration -> [IElement]
-desugarDeclaration (ElementDecl _ element) = desugarElement element
-desugarDeclaration _ = error "Desugarer.desugarDeclaration: enum declarations should have already been converted to clafers. BUG."
+-- | The first argument tells whether the model is dynamic.
+desugarDeclaration :: Bool -> Declaration -> [IElement]
+desugarDeclaration dynamic' (ElementDecl _ element) = desugarElement dynamic' element
+desugarDeclaration _ _ = error "Desugarer.desugarDeclaration: enum declarations should have already been converted to clafers. BUG."
 
 
 sugarDeclaration :: IElement -> Declaration
@@ -86,24 +89,24 @@ sugarDeclaration  (IEConstraint False assertion) =
 sugarDeclaration  (IEGoal isMaximize' goal) = ElementDecl (_inPos goal) $ Subgoal (_inPos goal) $ sugarGoal goal isMaximize'
 
 
-desugarClafer :: Clafer -> [IElement]
+desugarClafer :: Bool -> Clafer -> [IElement]
 -- A reference to a constant, e.g., `-> 1`, is a reference to its type with
 -- the constant as the value: `-> integer = 1`.
-desugarClafer (Clafer s abstract' tmods gcrd' id' super' reference' crd' (InitEmpty si) trans' elements')
+desugarClafer dynamic' (Clafer s abstract' tmods gcrd' id' super' reference' crd' (InitEmpty si) trans' elements')
   | Just (typeReference, constant') <- referenceToConstant reference' =
-    desugarClafer (Clafer s abstract' tmods gcrd' id' super' typeReference crd' (InitSome si (InitConstant si) constant') trans' elements')
-desugarClafer claf@(Clafer s abstract' tmods gcrd' id' super' reference' crd' init' trans' elements') =
+    desugarClafer dynamic' (Clafer s abstract' tmods gcrd' id' super' typeReference crd' (InitSome si (InitConstant si) constant') trans' elements')
+desugarClafer dynamic' claf@(Clafer s abstract' tmods gcrd' id' super' reference' crd' init' trans' elements') =
   case (super', reference') of
     (SuperSome ss setExp, ReferenceEmpty _) -> if isPrimitive $ getPExpClaferIdent setExp
-      then desugarClafer' (Clafer s abstract' tmods gcrd' id' (SuperEmpty s) (ReferenceSet ss setExp) crd' init' trans' elements')
-      else desugarClafer' claf
+      then desugarClafer' dynamic' (Clafer s abstract' tmods gcrd' id' (SuperEmpty s) (ReferenceSet ss setExp) crd' init' trans' elements')
+      else desugarClafer' dynamic' claf
     (SuperSome _ setExp, ReferenceSet _ _) -> if isPrimitive $ getPExpClaferIdent setExp
       then error "Desugarer: cannot rewrite : with primitive type into -> because a reference is also present. Using : with primitive types is discouraged."
-      else desugarClafer' claf
+      else desugarClafer' dynamic' claf
     (SuperSome _ setExp, ReferenceBag _ _) -> if isPrimitive $ getPExpClaferIdent setExp
       then error "Desugarer: cannot rewrite : with primitive type into -> because a reference is also present. Using : with primitive types is discouraged."
-      else desugarClafer' claf
-    _ -> desugarClafer' claf
+      else desugarClafer' dynamic' claf
+    _ -> desugarClafer' dynamic' claf
 
 -- | For a reference to a constant, the reference to the constant's type, and the constant.
 referenceToConstant :: Reference -> Maybe (Reference, Exp)
@@ -126,18 +129,20 @@ constantType e = typeExp <$> case e of
     s = getSpan e
     typeExp t = ClaferId s (Path s [ModIdIdent s (mkIdent t)])
 
-desugarClafer' :: Clafer -> [IElement]
-desugarClafer' claf'@(Clafer s' abstract' tmods' gcrd' id' super' reference' crd' init' _ elements')
+desugarClafer' :: Bool -> Clafer -> [IElement]
+desugarClafer' dynamic' claf'@(Clafer s' abstract' tmods' gcrd' id' super' reference' crd' init' _ elements')
   =  [(IEClafer $ IClafer s' iClaferModifiers (desugarGCard gcrd') (transIdent id')
                           "" "" (desugarSuper super') (desugarReference tmods' reference')
-                          (desugarCard crd') (0, -1)
+                          crd'' (0, -1)
                           elements'')]
-  ++ (desugarInit id' init')
+  ++ parentInit
   where
     iClaferModifiers = desugarModifiers abstract' tmods' reference'
+    crd'' = desugarCard crd'
+    (ownInit, parentInit) = desugarInit dynamic' crd'' id' init'
     -- the transition of a clafer is a constraint of the clafer, whose obligations last as long
     -- as its parent, e.g., `on --> off` takes the traffic light from on to off
-    elements'' = desugarElements elements' ++ desugarClaferTrans claf'
+    elements'' = desugarElements dynamic' elements' ++ desugarClaferTrans claf' ++ ownInit
 
 desugarModifiers :: Abstract -> [TempModifier] -> Reference -> IClaferModifiers
 desugarModifiers    abstract'    tmods           reference' =
@@ -196,10 +201,39 @@ desugarRefModifiers mods = nub $ mapMaybe refModifier mods
     AbsClafer.FinalTarget _ -> Just IntClafer.FinalTarget
     _ -> Nothing
 
-desugarInit :: PosIdent -> Init -> [IElement]
-desugarInit _ (InitEmpty _) = []
-desugarInit id' (InitSome s inithow exp') = [ IEConstraint (desugarInitHow inithow) (pExpDefPid s implIExp) ]
+-- | The constraints of the initializer of the clafer @x@: those in the context of @x@, and those
+--   in the context of its parent. All are hard constraints.
+--
+--   * @x -> T = e@ is @[ some x => x.dref = e ]@ in the context of the parent; in a dynamic
+--     model, it holds in every state.
+--   * @x -> T := e@ is the initial value of the reference. In a static model, which has a single
+--     state, it is the same as @=@. In a dynamic model, every lifetime of @x@ starts with the
+--     value: @[ initially this.dref = e ]@ in the context of @x@. The value @e@ is written in the
+--     context of the parent, so the name resolver resolves it there ('iInitValue'): @this@
+--     stays the parent, and a sibling @y@ stays the sibling even if @x@ has a child @y@. So
+--     does a @final@ or @finalref@ reference: it keeps the value that @e@ has when its lifetime
+--     starts, also when @e@ changes later, which @=@ would contradict.
+--   * A set initializer, @xs -> T * := e@, whose cardinality allows more than one instance,
+--     constrains the set of the instances under the parent, so it stays in the context of the
+--     parent: @[ initially (some xs => xs.dref = e) ]@. The instances created later are not
+--     initialized.
+desugarInit :: Bool -> Maybe Interval -> PosIdent -> Init -> ([IElement], [IElement])
+desugarInit _ _ _ (InitEmpty _) = ([], [])
+desugarInit dynamic' crd id' (InitSome s inithow exp') = case inithow of
+    InitDefault _ | dynamic' -> if isSet
+      then ([], [ IEConstraint True $ pExpDefPid s $ IFunExp iInitially [ pExpDefPid s implIExp ] ])
+      else ([ IEConstraint True $ pExpDefPid s $ IFunExp iInitially [ pExpDefPid s ownIExp ] ], [])
+    _ -> ([], [ IEConstraint True (pExpDefPid s implIExp) ])
   where
+    -- this.dref = initvalue(<exp'>)
+    ownIExp :: IExp
+    ownIExp = IFunExp iEq
+      [ pExpDefPid s $ IFunExp iJoin [ mkPLClaferId s thisIdent False NoBind, mkPLClaferId s drefIdent False NoBind ]
+      , pExpDefPid s $ IFunExp iInitValue [ desugarExp exp' ] ]
+    -- more than one instance of x under a parent instance
+    isSet = case crd of
+      Just (_, ex) -> ex `notElem` [0, 1]  -- -1 is *, unbounded
+      Nothing -> False
     cId :: PExp
     cId = mkPLClaferId (getSpan id') (snd $ getIdent id') False NoBind
     -- <id> = <exp'>
@@ -209,10 +243,6 @@ desugarInit id' (InitSome s inithow exp') = [ IEConstraint (desugarInitHow inith
     implIExp :: IExp
     implIExp = (IFunExp "=>" [ pExpDefPid s $ IDeclPExp ISome [] cId, pExpDefPid s assignIExp ])
     getIdent (PosIdent y) = y
-
-desugarInitHow :: InitHow -> Bool
-desugarInitHow (InitConstant _) = True
-desugarInitHow (InitDefault _ )= False
 
 
 desugarClaferTrans :: Clafer -> [IElement]
@@ -296,11 +326,6 @@ sugarReference Nothing = ReferenceEmpty noSpan
 sugarReference (Just (IReference True  _ pexp')) = ReferenceSet noSpan (sugarExp pexp')
 sugarReference (Just (IReference False _ pexp')) = ReferenceBag noSpan (sugarExp pexp')
 
-sugarInitHow :: Bool -> InitHow
-sugarInitHow True  = InitConstant noSpan
-sugarInitHow False = InitDefault noSpan
-
-
 desugarConstraint :: Constraint -> PExp
 desugarConstraint (Constraint _ exps') = desugarPath $ desugarExp $
     (if length exps' > 1 then foldl1 (EAnd noSpan) else head) exps'
@@ -341,19 +366,19 @@ sugarAbstract False = AbstractEmpty noSpan
 sugarAbstract True = Abstract noSpan
 
 
-desugarElements :: Elements -> [IElement]
-desugarElements (ElementsEmpty _) = []
-desugarElements (ElementsList _ es)  = es >>= desugarElement
+desugarElements :: Bool -> Elements -> [IElement]
+desugarElements _ (ElementsEmpty _) = []
+desugarElements dynamic' (ElementsList _ es)  = es >>= desugarElement dynamic'
 
 
 sugarElements :: [IElement] -> Elements
 sugarElements x = ElementsList noSpan $ map sugarElement x
 
 
-desugarElement :: Element -> [IElement]
-desugarElement x = case x of
-  Subclafer _ claf  -> (desugarClafer claf)
-  ClaferUse s name crd es  -> desugarClafer $ Clafer s
+desugarElement :: Bool -> Element -> [IElement]
+desugarElement dynamic' x = case x of
+  Subclafer _ claf  -> (desugarClafer dynamic' claf)
+  ClaferUse s name crd es  -> desugarClafer dynamic' $ Clafer s
       (AbstractEmpty s) [] (GCardEmpty s) (mkIdent $ _sident $ desugarName name)
       (SuperSome s (ClaferId s name)) (ReferenceEmpty s) crd (InitEmpty s) (TransitionEmpty s) es
   Subconstraint _ constraint  ->
@@ -547,7 +572,7 @@ desugarExp' x = let x' =  translateTmpPatterns x in case x' of
   EJoin _ exp0 exp'         -> dop iJoin         [exp0, exp']
   ClaferId _ name  -> desugarName name
   TransitionExp{} -> showPatErr
-  LetExp{} -> showPatErr
+  LetExp _ vb e -> desugarExp' $ desugarLet vb e
   TmpPatNever{} -> showPatErr
   TmpPatSometime{} -> showPatErr
   TmpPatLessOrOnce{} -> showPatErr
@@ -563,6 +588,57 @@ desugarExp' x = let x' =  translateTmpPatterns x in case x' of
   showPatErr = error ("[bug] Desugarer: pattern expressions should have been transformed previously. Problem expression:\n" ++ show x)
   dop = desugarOp desugarExp
   dpe = desugarPath.desugarExp
+
+-- | @let v = e in body@ is @body@ with @e@ for the name @v@. A quantifier or a @let@ in @body@
+--   which binds @v@ again hides it there, and one which binds a name used in @e@ is renamed
+--   to a fresh name, e.g., @x_1@, so that @e@ keeps its meaning.
+desugarLet :: VarBinding -> Exp -> Exp
+desugarLet (VarBinding _ (LocIdIdent _ (PosIdent (_, v))) e) = substName v e
+
+-- | Substitutes an expression for the free occurrences of a local name.
+substName :: String -> Exp -> Exp -> Exp
+substName v e = goE
+  where
+  namesOfE = namesIn e
+  go :: Data a => a -> a
+  go x = case cast x of
+    Just ex -> fromMaybe x $ cast $ goE ex
+    Nothing -> gmapT go x
+  goE :: Exp -> Exp
+  goE x = case x of
+    ClaferId _ (Path _ [ModIdIdent _ (PosIdent (_, n))]) | n == v -> e
+    EDeclAllDisj s d b -> let (d', b') = goDecl d b in EDeclAllDisj s d' b'
+    EDeclAll s d b -> let (d', b') = goDecl d b in EDeclAll s d' b'
+    EDeclQuantDisj s q d b -> let (d', b') = goDecl d b in EDeclQuantDisj s q d' b'
+    EDeclQuant s q d b -> let (d', b') = goDecl d b in EDeclQuant s q d' b'
+    LetExp s (VarBinding s' l e') b -> case goBound [l] b of
+      ([l'], b') -> LetExp s (VarBinding s' l' $ goE e') b'
+      _ -> x
+    _ -> gmapT go x
+  goDecl (Decl s ls set) b = let (ls', b') = goBound ls b in (Decl s ls' $ goE set, b')
+  -- the names bound by a quantifier or a let, and its body
+  goBound :: [LocId] -> Exp -> ([LocId], Exp)
+  goBound ls b
+    | v `elem` map locIdName ls  = (ls, b)
+    | v `notElem` namesIn b     = (ls, b)
+    | otherwise                 = (ls', goE $ foldr renameIn b $ zip ls ls')
+    where
+    taken = namesOfE ++ namesIn b ++ map locIdName ls
+    ls' = map rename ls
+    rename l@(LocIdIdent s (PosIdent (p, n)))
+      | n `elem` namesOfE = LocIdIdent s $ PosIdent (p, head [ n' | k <- [1 :: Int ..], let n' = n ++ "_" ++ show k, n' `notElem` taken ])
+      | otherwise         = l
+    renameIn (old, new@(LocIdIdent s _)) b'
+      | old == new = b'
+      | otherwise  = substName (locIdName old) (ClaferId s $ Path s [ModIdIdent s $ locIdPosIdent new]) b'
+  locIdName (LocIdIdent _ (PosIdent (_, n))) = n
+  locIdPosIdent (LocIdIdent _ i) = i
+
+-- | The identifiers in a part of the AST.
+namesIn :: Data a => a -> [String]
+namesIn x = case cast x of
+  Just (PosIdent (_, n)) -> [n]
+  Nothing                -> concat $ gmapQ namesIn x
 
 desugarOp :: (a -> PExp) -> String -> [a] -> IExp
 desugarOp f op' exps' =

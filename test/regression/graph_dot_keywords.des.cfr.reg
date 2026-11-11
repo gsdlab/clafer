@@ -1,0 +1,16 @@
+//# OPTIONS --explicit
+abstract 0..* Node 0..* {
+  abstract 0..* Edge -> Node 0..* {}
+}
+0..* N1 : Node 1..1 {
+  0..* E1 : Edge -> N2 1..1 {}
+}
+0..* N2 : Node 1..1 {}
+0..* graph 1..1 {
+  0..* node -> N1 1..1 {}
+  0..* edge -> N2 0..1 {}
+}
+1..1 digraph 1..1 {
+  0..* subgraph -> Node 0..1 {}
+  0..* strict 0..1 {}
+}

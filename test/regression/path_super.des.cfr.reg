@@ -1,0 +1,42 @@
+//# OPTIONS --explicit
+abstract 0..* Person 0..* {
+  abstract 0..* Person__Head 0..* {
+    0..* hair 0..1 {}
+  }
+}
+0..* Ella : Person 1..1 {
+  [((#this.h1.hair) >= 1) && ((#this.h2.hair) = 0)]
+  0..* h1 : Person__Head 1..1 {}
+  0..* h2 : Person__Head 1..1 {}
+}
+0..* Bob : Person 1..1 {
+  [((((#this.h3.redHair) >= 1) && ((#this.h3.hair) >= 1)) && ((#this.h4.hair) = 0)) && ((#this.h5.redHair) = 0)]
+  abstract 0..* Bob__Head : Person__Head 0..* {
+    0..* redHair 0..1 {}
+  }
+  0..* h3 : Bob__Head 1..1 {}
+  0..* h4 : Person__Head 1..1 {}
+  0..* h5 : Bob__Head 1..1 {}
+}
+abstract 0..* Dog 0..* {
+  abstract 0..* Dog__Head 0..* {
+    0..* ears 2..2 {}
+  }
+}
+0..* Rex : Dog 1..1 {
+  [(#this.h6.ears) = 2]
+  0..* h6 : Dog__Head 1..1 {}
+}
+abstract 0..* A 0..* {
+  abstract 0..* B 0..* {
+    abstract 0..* C 0..* {
+      0..* x 0..1 {}
+    }
+  }
+}
+0..* D : A 1..1 {
+  0..* b : B 1..1 {
+    [(#this.c.x) >= 1]
+    0..* c : C 1..1 {}
+  }
+}

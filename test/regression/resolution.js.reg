@@ -7,6 +7,6 @@ $x__y = $x.addChild("x__y").withCard(1, 1);
 $ZZ = Clafer("ZZ").withCard(1, 1);
 $z = $ZZ.addChild("z").withCard(1, 1);
 $z__y = $z.addChild("z__y").withCard(1, 1);
-$XX.addConstraint(some(join($this(), $x)));
 $z.refToUnique(Int);
+$XX.addConstraint(some(join($this(), $x)));
 $ZZ.addConstraint(greaterThan(joinRef(join($this(), $z)), constant(0)));

@@ -1,0 +1,35 @@
+open util/integer
+pred show {}
+
+
+fact { 2 <= #A and #A <= 2 }
+sig A
+{ r_x : one x
+, r_y : lone y
+, r_zs : set zs }
+{ (some this.@r_x) => (((this.@r_x).@x_ref) = 10)
+  (some this.@r_y) => (((this.@r_y).@y_ref) = (((this.@r_x).@x_ref).plus[1]))
+  #r_zs <= 2
+  all disj x, y : this.@r_zs | (x.@zs_ref) != (y.@zs_ref) 
+  (some this.@r_zs) => (((this.@r_zs).@zs_ref) = (1 + 2)) }
+
+sig x
+{ x_ref : one Int }
+{ one @r_x.this }
+
+sig y
+{ y_ref : one Int }
+{ one @r_y.this }
+
+sig zs
+{ zs_ref : one Int }
+{ one @r_zs.this }
+
+abstract sig Val
+{ Val_ref : one Int }
+
+fact {  all disj x, y : Val | (x.@Val_ref) != (y.@Val_ref)  }
+fact { (some Val) => ((Val.@Val_ref) = 2) }
+one sig v1 extends Val
+{}
+

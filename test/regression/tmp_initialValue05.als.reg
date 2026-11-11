@@ -1,0 +1,43 @@
+open util/integer
+pred show {}
+
+
+one sig root
+{ var r_xs : set xs
+, var r_A : set A }
+{ always (all disj x, y : this.@r_xs | (x.@xs_ref) != (y.@xs_ref)) }
+fact { always (#(root.@r_xs) <= 3) }
+fact { always (2 <= #(root.@r_A)) }
+fact { always (#(root.@r_A) <= 2) }
+fact { always ((not before some root) implies ((some alive_xs) => ((alive_xs.@xs_ref) = (1 + 2)))) }
+fact { always (eventually ((alive_xs.@xs_ref) = 3)) }
+
+
+sig xs
+{ p_xs : lone root
+, var xs_ref : set Int }
+{ always (this in alive_xs implies (one this.@xs_ref)) }
+fun alive_xs : set xs { root.@r_xs }
+fact { always ~@r_xs in @p_xs }
+
+
+sig A
+{ p_A : lone root
+, var r_ys : set ys }
+{ always (this in alive_A implies (all disj x, y : this.@r_ys | (x.@ys_ref) != (y.@ys_ref))) }
+fun alive_A : set A { root.@r_A }
+fact { always ~@r_A in @p_A }
+
+fact { all self_ : A | always (self_ in alive_A implies ((not before self_ in alive_A) implies ((some self_.@r_ys) => (((self_.@r_ys).@ys_ref) = (1 + 2))))) }
+fact { all self_ : A | always (self_ in alive_A implies (eventually (some self_.@r_ys))) }
+
+
+sig ys
+{ p_ys : lone A
+, var ys_ref : set Int }
+{ always (this in alive_ys implies (one this.@ys_ref)) }
+fun alive_ys : set ys { A.@r_ys }
+fact { always ~@r_ys in @p_ys
+  always @r_ys.univ in alive_A }
+
+

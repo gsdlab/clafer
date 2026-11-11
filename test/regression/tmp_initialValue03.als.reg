@@ -1,0 +1,31 @@
+open util/integer
+pred show {}
+
+
+one sig root
+{ var r_light : set light }
+fact { always (lone root.@r_light) }
+fact { always (eventually ((some alive_light) && (((alive_light.@r_level).@level_ref) = 5))) }
+fact { always (eventually ((no alive_light) && (eventually (some alive_light)))) }
+
+
+sig light
+{ p_light : lone root
+, var r_level : set level }
+fun alive_light : set light { root.@r_light }
+fact { always ~@r_light in @p_light }
+
+fact { all self_ : light | always (self_ in alive_light implies (one self_.@r_level)) }
+
+
+sig level
+{ p_level : lone light
+, var level_ref : set Int }
+{ always (this in alive_level implies (one this.@level_ref)) }
+fun alive_level : set level { light.@r_level }
+fact { always ~@r_level in @p_level
+  always @r_level.univ in alive_light }
+
+fact { all self_ : level | always (self_ in alive_level implies ((not before self_ in alive_level) implies ((self_.@level_ref) = 3))) }
+
+

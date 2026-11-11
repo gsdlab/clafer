@@ -1,0 +1,8 @@
+//# OPTIONS --explicit --tl=10
+[F (((#light) >= 1) && (light.level.dref = 5))]
+[F (((#light) = 0) && (F ((#light) >= 1)))]
+0..* light 0..1 {
+  0..* level -> int 1..1 {
+    [initially (this.dref = 3)]
+  }
+}

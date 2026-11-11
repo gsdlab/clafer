@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=9">
+<style>.identifier{}
+.keyword{font-weight: bold;}
+.tKeyword{font-style: oblique;}
+.reference{}
+.code { background-color: lightgray; padding: 5px 5px 5px 5px; border: 1px solid darkgray; margin-bottom: 15px;
+        font-family: Pragmata, Menlo, 'DejaVu LGC Sans Mono', 'DejaVu Sans Mono', Consolas, 'Everson Mono', 'Lucida Console', 'Andale Mono', 'Nimbus Mono L', 'Liberation Mono', FreeMono, 'Osaka Monospaced', Courier, 'New Courier', monospace; }
+.standalonecomment { color: green; font-style:italic }
+.inlinecomment { color: green; padding-left:20px; font-style:italic }
+.error{background-color: yellow; color: red }
+.deprecated{color: orange }
+.indent{padding-left:20px}
+.file { font-weight: bold; border-bottom: 1px solid darkgray; margin: 1em 0 0.5em 0 }
+a[href$='Lookup failed'] {color: red}
+a[href$='Uid not found'] {color: red}
+a[href$='Ambiguous name'] {color: yellow}
+</style></head>
+<body>
+<div class="file">positive/group_cardinality_after_clafer.cfr</div>
+
+<div>
+<span class="claferDecl" id="a">a</span></div>
+
+
+<div>
+2..3 <span class="claferDecl" id="b">b</span>
+  <div class="indent">
+  <span class="claferDecl" id="c">c</span></div>
+  <div class="indent">
+  <span class="claferDecl" id="d">d</span></div>
+  <div class="indent">
+  <span class="claferDecl" id="e">e</span></div>
+</div>
+
+
+<div>
+<span class="claferDecl" id="f">f</span>
+  <div class="indent">
+  <span class="claferDecl" id="g">g</span></div>
+  <div class="indent">
+  1..2 <span class="claferDecl" id="h">h</span>
+    <div class="indent">
+    <span class="claferDecl" id="i">i</span></div>
+    <div class="indent">
+    <span class="claferDecl" id="j">j</span></div>
+    <div class="indent">
+    <span class="claferDecl" id="k">k</span></div>
+  </div>
+</div>
+
+
+<div>
+1..* <span class="claferDecl" id="l">l</span>
+  <div class="indent">
+  <span class="claferDecl" id="m">m</span></div>
+  <div class="indent">
+  <span class="claferDecl" id="n">n</span></div>
+</div>
+
+</body>
+</html>

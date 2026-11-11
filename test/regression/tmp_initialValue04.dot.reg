@@ -1,0 +1,12 @@
+digraph "tmp_initialValue04"
+{
+rankdir=BT;
+ranksep=0.3;
+nodesep=0.1;
+graph [fontname=Sans fontsize=11];
+node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
+edge [fontname=Sans fontsize=11];
+"y" [label="y -&gt; integer := 2" URL="#y" tooltip="y -&gt; integer := 2&#10;"];
+"level" [label="finalref level -&gt; integer ? := y" URL="#level" tooltip="finalref level -&gt; integer ? := y&#10;"];
+"mode" [label="final mode -&gt; integer := 1" URL="#mode" tooltip="final mode -&gt; integer := 1&#10;"];
+}

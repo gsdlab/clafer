@@ -1,0 +1,11 @@
+// A reference refined to a clafer declared further down (#118): L1 refines the reference of
+// Link to S2, which is declared after S1. The Choco output declares all the supers before
+// the references, so that chocosolver knows that S2 extends Station.
+
+abstract Station
+    abstract Link -> Station ?
+S1 : Station
+    L1 : Link -> S2
+S2 : Station
+    L2 : Link -> S3
+S3 : Station

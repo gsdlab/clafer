@@ -42,7 +42,7 @@ import Control.Monad
 import Control.Monad.Except
 import Data.Data.Lens (biplate)
 import Data.Maybe (isNothing)
-import qualified Data.StringMap as SMap
+import qualified Data.Map as Map
 
 import Language.ClaferT
 import Language.Clafer.Front.AbsClafer (noSpan)
@@ -96,7 +96,7 @@ resolveRootModule (imodule, _)
     | null nested = ParentRoot
     | otherwise = ParentMixed tops nested
     where
-    subs = [ c' | c' <- SMap.elems uidMap, not (_isAbstract c'), _uid c' /= rootIdent
+    subs = [ c' | c' <- Map.elems uidMap, not (_isAbstract c'), _uid c' /= rootIdent
                 , uid' `elem` map _uid (tail $ findHierarchy getSuper uidMap c') ]
     (tops, nested) = (filter isRootChild subs, filter (not . isRootChild) subs)
 

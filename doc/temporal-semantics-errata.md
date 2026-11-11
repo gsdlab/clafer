@@ -30,6 +30,7 @@ The kinds of items are as in the [static errata](static-semantics-errata.md): **
 | T11 | Correction, change | Typos in Definitions 3–5; the effective group | pp. 2:25–2:28 |
 | T12 | Clarification | Concrete syntax of the examples | §4, §6.1 |
 | T13 | Clarification | Bounded analysis | §6.2, p. 2:32 |
+| T14 | Change | The initializer `:=` is the initial value of a reference | §6.1, p. 2:29; §4.1, pp. 2:13–2:14 |
 
 ## T1. Instances may reappear (change)
 
@@ -296,6 +297,19 @@ For numeric groups, the paper's rule is the tools' rule (S1 and S2 in the [stati
 The Choco backend does not support temporal models.
 
 **Formalized:** evaluating a formula on a lasso gives exactly its truth on the infinite trace that the lasso represents, including the births, deaths and cancelled obligations at the loop ([finite verification](https://github.com/kbak/clafer-semantics/blob/main/docs/behavioral-verification.md)). This is about one given lasso: not every infinite trace is a lasso, and finding no lasso within a bound does not show that there is no trace.
+
+## T14. The initializer `:=` is the initial value of a reference (change)
+
+**Paper (§6.1, p. 2:29):** the initializer sets the value of a reference: "constant `= exp` and default `:= exp`". The paper gives `:=` no semantics. §4.1 (pp. 2:13–2:14) explains why Clafer has initial clafers instead of default values: a default would need soft constraints, in a language of hard constraints.
+
+**Clafer 0.5.8:** `x -> T := e` gives `x` the value `e` in the first state of each of its lifetimes, as `initially` does for the context instance (T7), and leaves the later values free ([kbak/clafer-semantics#164](https://github.com/kbak/clafer-semantics/issues/164), [initial-value.md](initial-value.md)):
+
+- It is `[ initially this.dref = e ]` in the context of `x`, with `e` resolved in the context of the parent, where it is written: `this` is the parent instance, and a name `y` is the sibling of `x` even if `x` has a child `y`. In the parent's context, `initially` would apply to the first state of the parent's lifetime, so an `x` created later would get no value.
+- A set initializer, `xs -> T * := e`, constrains the set of the instances under the parent: `[ initially (some xs => xs.dref = e) ]` in the parent's context. The instances created later are not initialized.
+- The reference of a `final` or `finalref` clafer does not change (T8), so it keeps the value that `e` has when its lifetime starts, also when `e` changes later; `= e` would contradict the modifier then. With a constant `e`, `:=` and `=` are the same there.
+- A static model has a single state, so `:=` is `=`. An initializer does not make a model temporal.
+
+Up to 0.5.7, `:=` compiled to an assertion `[ some x => x.dref = e ]` in every output ([gsdlab/clafer#116](https://github.com/gsdlab/clafer/issues/116)), so a model with another value had instances and a counterexample. A subclafer cannot replace an inherited `:=` (pure strengthening, reading A in kbak/clafer-semantics#164): its own `:=` or `=` is added to the inherited one, so `= 2` under `:= 2` fixes the value in every state, and `:= 3` has no instance. A `:=` under an inherited `=` has no effect, and the compiler warns about it.
 
 ## Differences of Clafer 0.5.6 from these errata
 

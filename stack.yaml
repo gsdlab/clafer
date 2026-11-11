@@ -1,11 +1,5 @@
-# for GHC-9.6.7
-resolver: lts-22.44
-
-extra-deps:
-- github: nikomi/json-builder
-  commit: fef4700b53da502f8d70d2106c9f4b65e1a69b3f
-- github: gsdlab/StringMap
-  commit: 2ce0adb947adaa5581d347ce8555ec76db44d815
+# for GHC-9.12.4
+resolver: nightly-2026-11-11
 
 flags:
   # The test suite that compiles the models in test/positive and test/negative.
@@ -16,5 +10,6 @@ packages:
 
 # GHC compiles the modules of a package on 8 threads, which takes a third less time than one
 # thread; 16 threads are not faster.
+# (build: semaphore: true, GHC's -jsem, fails with Stack 3.11.1: "semOpen: does not exist".)
 ghc-options:
   "$everything": -j8

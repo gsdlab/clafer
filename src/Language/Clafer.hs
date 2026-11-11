@@ -618,6 +618,7 @@ generate =
       stats = showStats au (statsModule iModule) ++ scopeWarnings ++ showRedundantExps (inputFiles env) (redundantExps iModule)
               ++ showNoClaferNavs (inputFiles env) (noClaferNavs ast')
               ++ (if skip_resolver cargs then "" else showDoubleUnderscoreNames (inputFiles env) iModule)
+              ++ showFixedInitialValues (inputFiles env) (fixedInitialValues ast' iModule)
 
     return $ Map.fromList (
         -- result for Alloy
@@ -875,6 +876,43 @@ showDoubleUnderscoreNames files iModule = unlines
   | claf@IClafer{_cinPos = Span (Pos l c) _} <- universeOn biplate iModule :: [IClafer]
   , "__" `isInfixOf` _ident claf
   , let (path, l') = modelPosition files l ]
+
+-- | The clafers whose initializer @:=@ redefines an inherited constant initializer @=@, e.g.,
+--   @v : Val := 2@ under @abstract Val -> integer = 2@, each with the nearest such super clafer.
+--   Inheritance is pure strengthening (kbak/clafer-semantics#164): the own initializer is added
+--   to the inherited one, and @=@ already fixes the value in every state, so @:=@ has no effect.
+--   The kinds of the initializers come from the AST, since the desugarer turns them into
+--   constraints; a reference to a constant, e.g., @-> 2@, is a constant initializer.
+fixedInitialValues :: Module -> IModule -> [(IClafer, IClafer)]
+fixedInitialValues ast' iModule =
+  [ (c, s)
+  | c <- universeOn biplate iModule :: [IClafer]
+  , Map.lookup (_cinPos c) initKinds == Just False
+  , s : _ <- [ [ s | s <- drop 1 $ findHierarchy getSuper uidIClaferMap' c
+                   , _uid s /= _uid c
+                   , Map.lookup (_cinPos s) initKinds == Just True ] ] ]
+  where
+    uidIClaferMap' = createUidIClaferMap iModule
+    -- for the span of each clafer with an initializer, whether the initializer is constant
+    initKinds :: Map.Map Span Bool
+    initKinds = Map.fromList $ mapMaybe initKind (universeOnOf biplate uniplate ast' :: [Clafer])
+    initKind (Clafer s _ _ _ _ _ reference' _ init' _ _) = case init' of
+      InitSome _ (InitConstant _) _ -> Just (s, True)
+      InitSome _ (InitDefault _) _  -> Just (s, False)
+      InitEmpty _ | isJust (referenceToConstant reference') -> Just (s, True)
+      _ -> Nothing
+
+-- | Warnings about the initializers @:=@ that redefine an inherited @=@, at their positions in the files
+showFixedInitialValues :: [ModelFile] -> [(IClafer, IClafer)] -> String
+showFixedInitialValues files = unlines . map showFixedInitialValue
+  where
+  showFixedInitialValue (claf@IClafer{_cinPos = Span (Pos l c) _}, super') =
+    let
+      (path, l') = modelPosition files l
+    in
+      "Warning: " ++ path ++ ":" ++ show l' ++ ":" ++ show c ++ ": the initializer ':=' of " ++ _ident claf
+      ++ " has no effect, since the value is already fixed in every state by the initializer '=' of " ++ _ident super'
+      ++ ", which " ++ _ident claf ++ " inherits. A ':=' cannot redefine an inherited '='."
 
 showInterval :: (Integer, Integer) -> String
 showInterval (n, -1) = show n ++ "..*"

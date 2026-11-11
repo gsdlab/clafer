@@ -1,0 +1,21 @@
+scope({$xs:2});
+defaultScope(1);
+stringLength(16);
+
+$xs = Clafer("xs").withCard(2, 2);
+$a = Clafer("a").withCard(1, 1);
+$b = Clafer("b").withCard(1, 1);
+$A = Clafer("A").withCard(1, 1);
+$v = $A.addChild("v").withCard(1, 1);
+$ys = Clafer("ys");
+$xs.refToUnique(Int);
+$a.refToUnique(Int);
+$b.refToUnique(Int);
+$v.refToUnique(Int);
+$ys.refToUnique(Int);
+Constraint(equal(card(global($xs)), constant(2)));
+Constraint(greaterThan(add(joinRef(global($a)), joinRef(global($b))), constant(2)));
+Constraint(equal(joinRef(join(global($A), $v)), constant(3)));
+Constraint(equal(card(global($ys)), constant(1)));
+Constraint(all([decl([$_a_1 = local("a_1")], global($ys))], equal(joinRef(global($a)), joinRef($_a_1))));
+Constraint(some([decl([$_t = local("t")], global($ys))], equal(joinRef($_t), constant(4))));

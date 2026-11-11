@@ -8,9 +8,9 @@ node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" hei
 edge [fontname=Sans fontsize=11];
 "Component" [label="abstract Component" URL="#Component" tooltip="abstract Component&#10;  abstract InPort -&gt;&gt; Signal&#10;  abstract OutPort -&gt;&gt; Signal&#10;"];
 "InPort" [label="abstract InPort ->> Signal" URL="#InPort" tooltip="abstract InPort -&gt;&gt; Signal&#10;"];
-"InPort" -> "Signal" [arrowhead=veevee arrowsize=0.6 minlen=1.5 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=InPort];
+"InPort" -> "Signal" [arrowhead=veevee arrowsize=0.6 minlen=1.5 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label="InPort"];
 "OutPort" [label="abstract OutPort ->> Signal" URL="#OutPort" tooltip="abstract OutPort -&gt;&gt; Signal&#10;"];
-"OutPort" -> "Signal" [arrowhead=veevee arrowsize=0.6 minlen=1.5 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=OutPort];
+"OutPort" -> "Signal" [arrowhead=veevee arrowsize=0.6 minlen=1.5 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label="OutPort"];
 "Signal" [label="abstract Signal" URL="#Signal" tooltip="abstract Signal&#10;"];
 "Command" [label="abstract Command : Signal" URL="#Command" tooltip="abstract Command : Signal&#10;"];
 "MotorCommand" [label="abstract MotorCommand : Command" URL="#MotorCommand" tooltip="abstract MotorCommand : Command&#10;"];
@@ -19,8 +19,8 @@ edge [fontname=Sans fontsize=11];
 "stop" [label="stop : Request" URL="#stop" tooltip="stop : Request&#10;"];
 "Controller" [label="abstract Controller : Component" URL="#Controller" tooltip="abstract Controller : Component&#10;  abstract req : InPort -&gt; Request ?&#10;  down : Request&#10;"];
 "Controller__req" [label="abstract req : InPort -> Request ?" URL="#Controller__req" tooltip="abstract req : InPort -&gt; Request ?&#10;"];
-"Controller__req" -> "Request" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=Controller__req];
+"Controller__req" -> "Request" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label="Controller__req"];
 "WinController" [label="WinController : Controller" URL="#WinController" tooltip="WinController : Controller&#10;  req : req -&gt; stop&#10;  cmd : OutPort -&gt; MotorCommand&#10;"];
-"WinController" -> "stop" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=req];
-"WinController" -> "MotorCommand" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=cmd];
+"WinController" -> "stop" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label="req"];
+"WinController" -> "MotorCommand" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label="cmd"];
 }

@@ -1,0 +1,11 @@
+// The initializer := gives the initial value of a reference (kbak/clafer-semantics#164).
+// A final or finalref reference keeps the value that the initializer has when its lifetime
+// starts: level takes the value of y, and keeps it when y changes later, which = y would
+// contradict. With a constant, := is the same as = there.
+
+y -> integer := 2
+finalref level -> integer ? := y
+final mode -> integer := 1
+[ initially no level ]
+[ F some level ]
+[ F (some level && level != y) ]

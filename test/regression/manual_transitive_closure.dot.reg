@@ -7,7 +7,7 @@ graph [fontname=Sans fontsize=11];
 node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
 edge [fontname=Sans fontsize=11];
 "TimeLevel" [label="abstract TimeLevel" URL="#TimeLevel" tooltip="abstract TimeLevel&#10;  aggregatesTo -&gt; TimeLevel ?&#10;"];
-"TimeLevel" -> "TimeLevel" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=aggregatesTo];
+"TimeLevel" -> "TimeLevel" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label="aggregatesTo"];
 "YearLevel" [label="abstract YearLevel : TimeLevel" URL="#YearLevel" tooltip="abstract YearLevel : TimeLevel&#10;  [ no aggregatesTo ]&#10;"];
 "MonthLevel" [label="abstract MonthLevel : TimeLevel" URL="#MonthLevel" tooltip="abstract MonthLevel : TimeLevel&#10;  [ aggregatesTo in YearLevel ]&#10;"];
 "WeekLevel" [label="abstract WeekLevel : TimeLevel" URL="#WeekLevel" tooltip="abstract WeekLevel : TimeLevel&#10;  [ aggregatesTo in MonthLevel ]&#10;"];

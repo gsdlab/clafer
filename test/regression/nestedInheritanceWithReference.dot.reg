@@ -8,7 +8,7 @@ node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" hei
 edge [fontname=Sans fontsize=11];
 "System" [label="abstract System" URL="#System" tooltip="abstract System&#10;  abstract Connection&#10;  connections -&gt; Connection *&#10;  [ connections = this.Connection ]&#10;"];
 "Connection" [label="abstract Connection" URL="#Connection" tooltip="abstract Connection&#10;"];
-"System" -> "Connection" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=connections];
+"System" -> "Connection" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label="connections"];
 "SystemX" [label="SystemX : System" URL="#SystemX" tooltip="SystemX : System&#10;  con1 : Connection&#10;  con2 : Connection&#10;"];
 "SystemY" [label="SystemY : System" URL="#SystemY" tooltip="SystemY : System&#10;  con3 : Connection&#10;  con4 : Connection&#10;  con5 : Connection&#10;"];
 }

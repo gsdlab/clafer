@@ -1,0 +1,44 @@
+// A path as a super names an abstract clafer by the path to it: the first name is a clafer,
+// and each next name is a child of the previous clafer, its own or, if it has none with the
+// name, an inherited one. Up to 0.5.8, a path super was not resolved: with a constraint on the
+// clafer, the compiler crashed, and without one, the super was dropped.
+
+abstract Person
+    abstract Head
+        hair ?
+
+// Ella does not redefine Head: Ella.Head is the Head of Person
+Ella : Person
+    h1 : Person.Head
+    h2 : Ella.Head
+    [ some h1.hair && no h2.hair ]
+
+// Bob redefines Head: Bob.Head, a new abstract clafer, extends Person.Head and adds redHair
+Bob : Person
+    abstract Head : Head
+        redHair ?
+    h3 : Bob.Head
+    h4 : Person.Head
+    // a plain name is the nearest clafer with the name: the sibling Bob.Head
+    h5 : Head
+    [ some h3.redHair && some h3.hair && no h4.hair && no h5.redHair ]
+
+// a path disambiguates between two abstract clafers with the same name
+abstract Dog
+    abstract Head
+        ears 2
+
+Rex : Dog
+    h6 : Dog.Head
+    [ #h6.ears = 2 ]
+
+// a longer path, also from a top-level abstract clafer
+abstract A
+    abstract B
+        abstract C
+            x ?
+
+D : A
+    b : A.B
+        c : A.B.C
+        [ some c.x ]

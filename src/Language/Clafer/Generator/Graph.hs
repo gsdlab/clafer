@@ -172,8 +172,8 @@ graphSimpleReference (ReferenceSet _ setExp) topLevel irMap showRefs =
        refColour showRefs ++
        " fontcolor=" ++
        refColour showRefs ++
-       (if fst3 topLevel == True then "" else " label=" ++
-       (fromJust $ trd3 topLevel)) ++
+       (if fst3 topLevel == True then "" else " label=\"" ++
+       (fromJust $ trd3 topLevel) ++ "\"") ++
        "];\n"
     _ -> ""
 graphSimpleReference (ReferenceBag _ setExp) topLevel irMap showRefs =
@@ -193,8 +193,8 @@ graphSimpleReference (ReferenceBag _ setExp) topLevel irMap showRefs =
         refColour showRefs ++
         " fontcolor=" ++
         refColour showRefs ++
-        (if fst3 topLevel == True then "" else " label=" ++
-        (fromJust $ trd3 topLevel)) ++ "];\n")
+        (if fst3 topLevel == True then "" else " label=\"" ++
+        (fromJust $ trd3 topLevel) ++ "\"") ++ "];\n")
     _ -> ""
 refColour :: Bool -> String
 refColour True = "lightgray"
@@ -269,8 +269,8 @@ graphCVLClafer (Clafer s _ _ gCard _ super' reference' crd _ _ es) parent' irMap
           reference'' = graphCVLReference reference' parent' irMap} in
      "\"" ++ uid' ++ "\" [URL=\"#" ++ uid' ++ "\" label=\"" ++ nameIn irMap uid' ++ super'' ++ reference'' ++ (if choiceCard crd then "\" style=rounded"  else " [" ++ graphCVLCard crd parent' irMap ++ "]\"")
      ++ (if super'' == "" then "" else " shape=oval") ++ "];\n"
-     ++ (if gcrd == "" then "" else "g" ++ uid' ++ " [label=\"" ++ gcrd ++ "\" fontsize=10 shape=triangle];\ng" ++ uid' ++ " -> " ++ uid' ++ " [weight=10];\n")
-     ++ (if parent'==Nothing then "" else uid' ++ " -> " ++ fromJust parent' ++ (if lowerCard crd == "0" then " [style=dashed]" else "") ++ ";\n")
+     ++ (if gcrd == "" then "" else "\"g" ++ uid' ++ "\" [label=\"" ++ gcrd ++ "\" fontsize=10 shape=triangle];\n\"g" ++ uid' ++ "\" -> \"" ++ uid' ++ "\" [weight=10];\n")
+     ++ (if parent'==Nothing then "" else "\"" ++ uid' ++ "\" -> \"" ++ fromJust parent' ++ "\"" ++ (if lowerCard crd == "0" then " [style=dashed]" else "") ++ ";\n")
      ++ graphCVLElements es (if gcrd == "" then (Just uid') else (Just $ "g" ++ uid')) irMap
 
 graphCVLSuper :: Super -> Maybe String -> Map.Map Span [Ir] -> String

@@ -7,9 +7,9 @@ graph [fontname=Sans fontsize=11];
 node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
 edge [fontname=Sans fontsize=11];
 "Course" [label="abstract Course" URL="#Course" tooltip="abstract Course&#10;  taughtBy -&gt; Teacher *&#10;    x ?&#10;"];
-"Course" -> "Teacher" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=taughtBy];
+"Course" -> "Teacher" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label="taughtBy"];
 "Teacher" [label="abstract Teacher" URL="#Teacher" tooltip="abstract Teacher&#10;  teaches -&gt; Course *&#10;"];
-"Teacher" -> "Course" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label=teaches];
+"Teacher" -> "Course" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent label="teaches"];
 "course" [label="course : Course 5" URL="#course" tooltip="course : Course 5&#10;"];
 "teacher" [label="teacher : Teacher 3" URL="#teacher" tooltip="teacher : Teacher 3&#10;"];
 }

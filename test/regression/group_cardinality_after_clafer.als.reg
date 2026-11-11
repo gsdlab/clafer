@@ -1,0 +1,63 @@
+open util/integer
+pred show {}
+
+
+one sig a
+{}
+
+one sig b
+{ r_c : lone c
+, r_d : lone d
+, r_e : lone e }
+{ let children = (r_c + r_d + r_e) | 2 <= #children and #children <= 3 }
+
+lone sig c
+{}
+{ one r_c }
+
+lone sig d
+{}
+{ one r_d }
+
+lone sig e
+{}
+{ one r_e }
+
+one sig f
+{ r_g : one g
+, r_h : one h }
+
+one sig g
+{}
+
+one sig h
+{ r_i : lone i
+, r_j : lone j
+, r_k : lone k }
+{ let children = (r_i + r_j + r_k) | 1 <= #children and #children <= 2 }
+
+lone sig i
+{}
+{ one r_i }
+
+lone sig j
+{}
+{ one r_j }
+
+lone sig k
+{}
+{ one r_k }
+
+one sig l
+{ r_m : lone m
+, r_n : lone n }
+{ let children = (r_m + r_n) | some children }
+
+lone sig m
+{}
+{ one r_m }
+
+lone sig n
+{}
+{ one r_n }
+

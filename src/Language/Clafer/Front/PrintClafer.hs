@@ -322,7 +322,7 @@ instance Print Decl where
 
 instance Print VarBinding where
   prt i e = case e of
-    VarBinding _ locid name -> prPrec i 0 (concatD [prt 0 locid, doc (showString "="), prt 0 name])
+    VarBinding _ locid exp -> prPrec i 0 (concatD [prt 0 locid, doc (showString "="), prt 16 exp])
 
 instance Print Quant where
   prt i e = case e of

@@ -1,0 +1,47 @@
+open util/integer
+pred show {}
+
+
+one sig root
+{ var r_y : set y
+, var r_level : set level
+, r_mode : set mode }
+fact { always (one root.@r_y) }
+fact { always (lone root.@r_level) }
+fact { always (one root.@r_mode) }
+fact { always ((not before some root) implies (no alive_level)) }
+fact { always (eventually (some alive_level)) }
+fact { always (eventually ((some alive_level) && ((alive_level.@level_ref) != (alive_y.@y_ref)))) }
+
+
+sig y
+{ p_y : lone root
+, var y_ref : set Int }
+{ always (this in alive_y implies (one this.@y_ref)) }
+fun alive_y : set y { root.@r_y }
+fact { always ~@r_y in @p_y }
+
+fact { all self_ : y | always (self_ in alive_y implies ((not before self_ in alive_y) implies ((self_.@y_ref) = 2))) }
+
+
+sig level
+{ p_level : lone root
+, var level_ref : set Int }
+{ always (this in alive_level implies (one this.@level_ref))
+  always (this in alive_level and after this in alive_level implies (this.@level_ref)' = this.@level_ref) }
+fun alive_level : set level { root.@r_level }
+fact { always ~@r_level in @p_level }
+
+fact { all self_ : level | always (self_ in alive_level implies ((not before self_ in alive_level) implies ((self_.@level_ref) = (alive_y.@y_ref)))) }
+
+
+sig mode
+{ p_mode : lone root
+, mode_ref : set Int }
+{ always (this in alive_mode implies (one this.@mode_ref)) }
+fun alive_mode : set mode { root.@r_mode }
+fact { always ~@r_mode in @p_mode }
+
+fact { all self_ : mode | always (self_ in alive_mode implies ((not before self_ in alive_mode) implies ((self_.@mode_ref) = 1))) }
+
+

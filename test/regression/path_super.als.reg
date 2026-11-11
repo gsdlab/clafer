@@ -1,0 +1,103 @@
+open util/integer
+pred show {}
+
+
+abstract sig Person
+{ r_Person__Head : set Person__Head }
+
+abstract sig Person__Head
+{ r_hair : lone hair }
+{ one @r_Person__Head.this }
+
+sig hair
+{}
+{ one @r_hair.this }
+
+one sig Ella extends Person
+{ r_h1 : one h1
+, r_h2 : one h2 }
+{ r_h1 in r_Person__Head
+  r_h2 in r_Person__Head
+  (some (this.@r_h1).@r_hair) && (no (this.@r_h2).@r_hair) }
+
+one sig h1 extends Person__Head
+{}
+
+one sig h2 extends Person__Head
+{}
+
+one sig Bob extends Person
+{ r_Bob__Head : set Bob__Head
+, r_h3 : one h3
+, r_h4 : one h4
+, r_h5 : one h5 }
+{ r_Bob__Head in r_Person__Head
+  r_h3 in r_Bob__Head
+  r_h4 in r_Person__Head
+  r_h5 in r_Bob__Head
+  (((some (this.@r_h3).@r_redHair) && (some (this.@r_h3).@r_hair)) && (no (this.@r_h4).@r_hair)) && (no (this.@r_h5).@r_redHair) }
+
+abstract sig Bob__Head extends Person__Head
+{ r_redHair : lone redHair }
+{ one @r_Bob__Head.this }
+
+sig redHair
+{}
+{ one @r_redHair.this }
+
+one sig h3 extends Bob__Head
+{}
+
+one sig h4 extends Person__Head
+{}
+
+one sig h5 extends Bob__Head
+{}
+
+abstract sig Dog
+{ r_Dog__Head : set Dog__Head }
+
+abstract sig Dog__Head
+{ r_ears : set ears }
+{ one @r_Dog__Head.this
+  2 <= #r_ears and #r_ears <= 2 }
+
+sig ears
+{}
+{ one @r_ears.this }
+
+one sig Rex extends Dog
+{ r_h6 : one h6 }
+{ r_h6 in r_Dog__Head
+  (#((this.@r_h6).@r_ears)) = 2 }
+
+one sig h6 extends Dog__Head
+{}
+
+abstract sig A
+{ r_B : set B }
+
+abstract sig B
+{ r_C : set C }
+{ one @r_B.this }
+
+abstract sig C
+{ r_x : lone x }
+{ one @r_C.this }
+
+sig x
+{}
+{ one @r_x.this }
+
+one sig D extends A
+{ r_b : one b }
+{ r_b in r_B }
+
+one sig b extends B
+{ r_c : one c }
+{ r_c in r_C
+  some (this.@r_c).@r_x }
+
+one sig c extends C
+{}
+

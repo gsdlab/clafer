@@ -1,0 +1,5 @@
+//# OPTIONS --explicit --tl=10
+[F (x.dref = 2)]
+0..* x -> int 1..1 {
+  [initially (this.dref = 1)]
+}
