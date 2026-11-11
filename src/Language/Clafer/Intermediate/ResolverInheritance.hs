@@ -33,8 +33,6 @@ import           Data.Graph
 import           Data.Tree
 import           Data.List
 import qualified Data.Map as Map
-import           Data.StringMap (StringMap)
-import qualified Data.StringMap as SMap
 import           Prelude
 
 import           Language.ClaferT
@@ -379,16 +377,16 @@ relocateTopLevelAbstractToParents    originalElements =
     needsRelocation    _                  = False
 
     -- creates a map from parentUID to a list of elements to be added as children of a clafer with that UID
-    mkParentUIDIElementMap :: [IElement] -> StringMap [IElement]
+    mkParentUIDIElementMap :: [IElement] -> Map.Map UID [IElement]
     mkParentUIDIElementMap    elems       = foldl'
-        (\accumMap' (parentUID', elem') -> SMap.insertWith (++) parentUID' [elem'] accumMap')
-        SMap.empty
+        (\accumMap' (parentUID', elem') -> Map.insertWith (++) parentUID' [elem'] accumMap')
+        Map.empty
         (map (\e -> (_parentUID $ _iClafer e, e)) elems)
 
-    insertElements :: StringMap [IElement] -> IElement     -> IElement
+    insertElements :: Map.Map UID [IElement] -> IElement     -> IElement
     insertElements    parentMap               targetElement = let
         targetUID = targetElement ^. iClafer . uid
-        newChildren = SMap.findWithDefault [] targetUID parentMap
+        newChildren = Map.findWithDefault [] targetUID parentMap
         currentElements = targetElement ^. iClafer . elements
         newElements =  map (insertElements parentMap) currentElements
                     ++ newChildren

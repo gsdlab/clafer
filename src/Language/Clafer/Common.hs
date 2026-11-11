@@ -29,8 +29,6 @@ import           Data.Data.Lens (biplate)
 import           Data.List
 import qualified Data.Map as Map
 import           Data.Maybe
-import           Data.StringMap (StringMap)
-import qualified Data.StringMap as SMap
 import           Data.Tree
 import           Prelude
 
@@ -139,12 +137,12 @@ toClafers = mapMaybe elemToClafer
 -- -----------------------------------------------------------------------------
 -- UID -> IClafer map construction functions
 
-type UIDIClaferMap = StringMap IClafer
+type UIDIClaferMap = Map.Map UID IClafer
 
 createUidIClaferMap :: IModule -> UIDIClaferMap
 createUidIClaferMap    iModule  = foldl'
-    (\accumMap' claf -> SMap.insert (_uid claf) claf accumMap')
-    (SMap.singleton rootIdent rootClafer)
+    (\accumMap' claf -> Map.insert (_uid claf) claf accumMap')
+    (Map.singleton rootIdent rootClafer)
     (integerClafer : intClafer : stringClafer : decimalClafer : doubleClafer : realClafer : booleanClafer : clafer : allClafers)
   where
     allClafers :: [ IClafer ]
@@ -165,7 +163,7 @@ createUidIClaferMap    iModule  = foldl'
 -- functions using the UID -> IClafer map
 
 findIClafer :: UIDIClaferMap -> UID -> Maybe IClafer
-findIClafer    uidIClaferMap    uid' = SMap.lookup uid' uidIClaferMap
+findIClafer    uidIClaferMap    uid' = Map.lookup uid' uidIClaferMap
 
 isTopLevelByUID :: UIDIClaferMap -> UID -> Maybe Bool
 isTopLevelByUID    uidIClaferMap    uid' = isTopLevel <$> (findIClafer uidIClaferMap uid')

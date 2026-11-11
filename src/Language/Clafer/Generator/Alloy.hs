@@ -27,7 +27,7 @@ import Control.Applicative
 import Control.Monad.State
 import Data.List
 import Data.Maybe
-import qualified Data.StringMap as SMap
+import qualified Data.Map as Map
 import Prelude
 
 import Language.Clafer.Common
@@ -610,7 +610,7 @@ parentRel uidIClaferMap' uid' = case findIClafer uidIClaferMap' uid' of
   _ -> "~@" ++ genRelName uid'
   where
   subRels = [ genRelName $ _uid c'
-            | c' <- SMap.elems uidIClaferMap'
+            | c' <- Map.elems uidIClaferMap'
             , not $ isTopLevel c'
             , _uid c' /= rootIdent
             , uid' `elem` map _uid (tail $ findHierarchy getSuper uidIClaferMap' c') ]

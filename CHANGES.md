@@ -1,6 +1,7 @@
 ##### Clafer Version 0.5.8, unreleased
 
 * Builds with GHC 9.12.4 (Stackage nightly-2026-11-11) and still with GHC 9.6.7. The lexer is generated with alex 3.5: the lexer generated in 2018 did not compile with GHC 9.12 (`Int#` instead of `Int16#`).
+* No longer depends on `data-stringmap`, which is not maintained and does not build with GHC 9.6 or later from Hackage: the maps of UIDs are `Data.Map` maps. The outputs are the same (the positive test models and the case studies), and compiling is as fast.
 
 ##### Clafer Version 0.5.7, Nov 8, 2026
 

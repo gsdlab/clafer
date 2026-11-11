@@ -32,7 +32,6 @@ import           Functions
 import           Control.Applicative
 import qualified Data.Map as M
 import           Data.Maybe (isNothing, isJust, fromJust)
-import           Data.StringMap
 import           Test.Tasty
 import           Test.Tasty.HUnit
 import           Test.Tasty.TH
@@ -69,7 +68,7 @@ case_NestedInheritanceMatchTest = case compileOneFragment defaultClaferArgs mode
     Right compilerResultMap -> case M.lookup Alloy compilerResultMap of
         Nothing -> assertFailure "No Alloy result in the result map"
         Just compilerResult -> let
-                uidIClaferMap' :: StringMap IClafer
+                uidIClaferMap' :: M.Map String IClafer
                 uidIClaferMap' = uidIClaferMap $ claferEnv compilerResult
                 c0_req = fromJust $ findIClafer uidIClaferMap' "Controller__req"
                 c0_req_match = matchNestedInheritance uidIClaferMap' c0_req

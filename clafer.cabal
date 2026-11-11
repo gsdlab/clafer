@@ -73,7 +73,6 @@ library
 
                       , aeson >= 1.1.2.0
                       , cmdargs >= 0.10.20
-                      , data-stringmap >= 1.0.1.1
                       , executable-path >= 0.0.3.1
                       , file-embed >= 0.0.10
                       , json-builder >= 0.3
@@ -142,7 +141,6 @@ Test-Suite test-suite
                       , QuickCheck >= 2.9.2
 
                       , aeson >= 1.1.2.0
-                      , data-stringmap >= 1.0.1.1
                       , lens >= 4.6.0.1
                       , lens-aeson >= 1.0.2
                       , network-uri >= 2.6.1.0
