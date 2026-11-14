@@ -672,6 +672,8 @@ sugarExp' x = case x of
   IDecimal n -> EReal noSpan $ PosReal ((0, 0), n)
   IReal n -> EReal noSpan $ PosReal ((0, 0), show n)
   IStr str -> EStr noSpan $ PosString ((0, 0), str)
+  -- the value of an initializer, which keeps its context ('iInitValue')
+  IFunExp op' [value] | op' == iInitValue -> sugarExp' $ _exp value
   IFunExp op' exps' ->
     if op' `elem` unOps then (sugarUnOp op') (exps''!!0)
     else if op' `elem` binOps then (sugarOp op') (exps''!!0) (exps''!!1)

@@ -101,6 +101,7 @@ A path also tells apart abstract clafers with the same name, e.g., `Person.Head`
 Instances of a reference clafer point to instances from the target set expression.
 When declared using `->` (set), the instances pointed to cannot repeat per each instance of its parent,
 whereas duplicate values are allowed when declared using `->>` (bag).
+This holds for the instances of each clafer, also one that inherits the reference: under `abstract Ref -> T`, the instances of `r : Ref 2` under one parent point to different targets, while `a : Ref` and `b : Ref` may point to the same one.
 Where a value is expected, a reference clafer stands for its target: `[ speed = 3 ]` is `[ speed.dref = 3 ]`.
 A comparison (`=`, `!=`, `in`, `not in`), an intersection (`**`) or a difference (`--`) of two reference clafers is of their targets: `this.a = parent.b.a` is `this.a.dref = parent.b.a.dref`, since the instances of `a` under different parents are never the same.
 To compare the instances themselves, compare `this` or a variable, or write `dref` on one side.
@@ -154,7 +155,7 @@ An initializer of an abstract clafer holds for all its subclafers, and a subclaf
 As for the other redefinitions, the subclafer's own initializer is added to the inherited one, so it can only strengthen it:
 
 * `= 2` under `:= 2` strengthens the initial value to the value in every state.
-* `:= 2` under `= 2` has no effect, since the value is already fixed in every state; the compiler warns about it.
+* `:= 2` under `= 2` repeats the value, which `=` fixes in every state, and `:= 3` under `= 2` has no instance. Both hold, and the compiler warns that a `:=` does not redefine an inherited `=`.
 * Another value, `:= 3` or `= 3` under `:= 2`, has no instance.
 
 To give the subclafers different initial values, put the shared one in an intermediate abstract clafer, which the other subclafers do not extend:
@@ -501,6 +502,7 @@ xor machine
 A constraint holds in every state by default, as if it started with `G`: its context is present in that state.
 What a constraint requires of later states (`X`, `F`, `G`, `U`) lasts while the parent of its context exists, also after the context itself is gone, e.g., `[ req=down --> movingDown ]` in the state `movingUp` leads to `movingDown`.
 To make a constraint last longer, place it higher in the hierarchy, or at the top level.
+An instance has a value only while it exists, so a requirement on the value of an instance in a later state, e.g., `[ X (this.dref = 7) ]`, also requires the instance to exist then.
 This holds for negated obligations too: the negations are pushed inside the temporal operators first (`!F a` is `G !a`, `!X a` is `X !a`, `!(a U b)` is `!b W (!a && !b)`), so `[ !(F error) ]`, like `[ G !error ]`, lets the parent disappear.
 So a formula and its negation can both hold, on a lifetime that ends before their obligations are due, e.g., `F error` and `!(F error)`.
 Under `one` and `lone`, the negation stays classical.

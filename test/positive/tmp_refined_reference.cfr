@@ -1,0 +1,9 @@
+// A reference that refines an inherited one is the same reference (gsdlab/clafer#120): an
+// instance of r has one target, whether it is seen through r or through Ref. So the value 1 of r
+// is the value of every Ref, and a constraint that gives Ref another value has no traces.
+
+abstract Ref -> integer
+r : Ref -> integer
+[ G (r.dref = 1) ]
+
+assert [ G (all q : Ref | q.dref = 1) ]

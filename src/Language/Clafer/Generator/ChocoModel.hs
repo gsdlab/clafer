@@ -337,6 +337,10 @@ chocoModel (imodule@IModule{_mDecls}, genv') scopes (minInt, maxInt) decimalDigi
         CJoin (genConstraintPExp e1) _sident
     genConstraintExp (IFunExp "." [_, _]) =
         error "Did not rewrite all joins to left joins."
+    -- the value of an initializer with temporal operators, which the explicit form shows as it
+    -- is: its context is the parent (gsdlab/clafer#123), which only the temporal output keeps
+    genConstraintExp (IFunExp op' [arg]) | op' == iInitValue =
+        genConstraintPExp arg
     genConstraintExp (IFunExp "-" [arg]) =
         CFun "minus" [genConstraintPExp arg]
     genConstraintExp (IFunExp "-" [arg1, arg2]) =

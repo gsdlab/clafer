@@ -1,0 +1,34 @@
+open util/integer
+pred show {}
+
+
+fact { 2 <= #Target and #Target <= 2 }
+sig Target
+{}
+
+abstract sig Ref
+{ Ref_ref : one Target }
+
+fact { 2 <= #r and #r <= 2 }
+sig r extends Ref
+{}
+
+fact {  all disj x, y : r | (x.@Ref_ref) != (y.@Ref_ref)  }
+one sig a extends Ref
+{}
+
+one sig c extends Ref
+{}
+
+fact { (a.@Ref_ref) = (c.@Ref_ref) }
+abstract sig BagRef
+{ BagRef_ref : one Target }
+
+fact { 2 <= #b and #b <= 2 }
+sig b extends BagRef
+{}
+
+fact { one b.@BagRef_ref }
+assert assertAt_19_10 { (#(r.@Ref_ref)) = 2 }
+check assertAt_19_10 for 1 but 2 BagRef, 4 Ref, 2 Target, 2 b, 2 r
+

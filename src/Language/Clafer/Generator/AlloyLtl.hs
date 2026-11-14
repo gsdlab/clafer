@@ -72,6 +72,7 @@ data GenEnv = GenEnv
   , uidIClaferMap :: UIDIClaferMap
   , allClafers :: [IClafer]   -- ^ the clafers of the model, without the root
   , forScopes :: String
+  , contextInstance :: String  -- ^ the context instance, @this@ unless in the value of an initializer
   }
 
 -- | Alloy 6 code generation
@@ -85,7 +86,7 @@ genAlloyLtlModule    claferargs'   (imodule, genv)    scopes              otherT
            { _elements = _mDecls imodule }
   clafers' = tail $ nestedClafers root
   tl = trace_len claferargs'
-  genEnv = GenEnv claferargs' uidIClaferMap' clafers' forScopes'
+  genEnv = GenEnv claferargs' uidIClaferMap' clafers' forScopes' "this"
 
   -- a scope bounds the instance identities across the trace, which may be reused when an
   -- instance reappears; the multiplicities bound the existing instances in each snapshot
@@ -184,6 +185,14 @@ parentRel genEnv uid' = case findIClafer (uidIClaferMap genEnv) uid' of
   where
   rel c = "(@" ++ genParentName (_uid c) ++ " :> " ++ maybe rootIdent (aliveName . _uid) (parentOf genEnv c) ++ ")"
 
+-- | The relation from the instances of the clafer to their parents, also those that do not exist:
+--   the parent of an instance does not change.
+fixedParentRel :: GenEnv -> IClafer -> String
+fixedParentRel genEnv c = case map (("@" ++) . genParentName . _uid) $ concreteSubs genEnv c of
+  []    -> "(none->none)"
+  [r]   -> "(" ++ r ++ ")"
+  rels' -> "(" ++ intercalate " + " rels' ++ ")"
+
 mkFact :: Concat -> Concat
 mkFact x@(CString "") = x
 mkFact xs = cconcat [CString "fact ", mkSet xs, CString "\n"]
@@ -279,7 +288,7 @@ genStructure genEnv c
 
 -- | The constraints in the signature fact of the clafer, which hold for every existing instance.
 genConstraints :: GenEnv -> IClafer -> [Concat]
-genConstraints genEnv c = map always' (filterNull $ refConsts ++ groupConst ++ childConsts) ++ initialConsts ++ finalConsts
+genConstraints genEnv c = map always' (filterNull $ refConsts ++ groupConst ++ childConsts) ++ absentConsts ++ initialConsts ++ finalConsts
   where
   uid' = _uid c
   alive = aliveName uid'
@@ -292,11 +301,21 @@ genConstraints genEnv c = map always' (filterNull $ refConsts ++ groupConst ++ c
     Just _ ->
       [ CString $ "one this.@" ++ genRefName uid' ] ++
       [ CString $ "this.@" ++ genRefName uid' ++ " in " ++ aliveName target
-      | let target = refType genEnv c, target /= "Int", isJust (findIClafer (uidIClaferMap genEnv) target) ]
+      | let target = refType genEnv c, target /= "Int", isJust (findIClafer (uidIClaferMap genEnv) target) ] ++
+      -- a reference that refines an inherited one is the same reference, seen through the
+      -- subclafer: an instance has one target (gsdlab/clafer#120)
+      [ CString $ "this.@" ++ genRefName uid' ++ " in this.@" ++ genRefName (_uid s)
+      | Just (s, _) <- [inheritedReference genEnv c] ]
     Nothing -> []
+  -- an instance has a reference only while it exists, as it has children only while it exists:
+  -- a state is an instance of the model, so an obligation on the value of an instance that does
+  -- not exist fails (kbak/clafer-semantics#168, reading A; gsdlab/clafer#122)
+  absentConsts =
+    [ CString $ "always (this not in " ++ alive ++ " implies no this.@" ++ genRefName uid' ++ ")"
+    | not (isRoot c), Just _ <- [_reference c] ]
   groupConst = [ genGroupConst genEnv c ]
   childConsts = concatMap childConst $ containedClafers c
-  childConst c' = genParentSubrelationConstraint (uidIClaferMap genEnv) c' : genSetUniquenessConstraint c'
+  childConst c' = genParentSubrelationConstraint (uidIClaferMap genEnv) c' : genSetUniquenessConstraint genEnv c'
   -- whenever this instance appears
   initialConsts =
     [ appears $ CString $ "some this.@" ++ genRelName (_uid c') | c' <- containedClafers c, _isInitial c' ]
@@ -396,11 +415,12 @@ mkAssert genEnv c pexp = cconcat
   where
   name = CString $ assertionName pexp
 
-genSetUniquenessConstraint :: IClafer -> [Concat]
-genSetUniquenessConstraint c = case (_reference c, _card c) of
-  (Just (IReference True _ _), Just (lb, ub)) | lb > 1 || ub > 1 || ub == -1 ->
-    [ CString $ "all disj x, y : this.@" ++ genRelName (_uid c) ++ " | (x.@" ++ genRefName (_uid c) ++ ") != (y.@" ++ genRefName (_uid c) ++ ")" ]
-  _ -> []
+-- | The targets of the instances of a set reference under one parent are distinct (see
+--   'setReferenceKey').
+genSetUniquenessConstraint :: GenEnv -> IClafer -> [Concat]
+genSetUniquenessConstraint genEnv c = case setReferenceKey (uidIClaferMap genEnv) c of
+  Just s -> [ CString $ "all disj x, y : this.@" ++ genRelName (_uid c) ++ " | (x.@" ++ genRefName (_uid s) ++ ") != (y.@" ++ genRefName (_uid s) ++ ")" ]
+  Nothing -> []
 
 genParentSubrelationConstraint :: UIDIClaferMap -> IClafer -> Concat
 genParentSubrelationConstraint uidIClaferMap' headClafer = case matchNestedInheritance uidIClaferMap' headClafer of
@@ -545,7 +565,7 @@ genPExp'    genEnv    resPath     (PExp iType' pid' pos exp') = case exp' of
           _ -> sid'
     where
     sid'
-      | sid == thisIdent = thisAlive resPath
+      | sid == thisIdent = thisAlive genEnv resPath
       | sid == rootIdent = rootIdent
       | istop            = aliveName sid
       | otherwise        = '@' : genRelName sid
@@ -562,9 +582,9 @@ genPExp'    genEnv    resPath     (PExp iType' pid' pos exp') = case exp' of
   IStr _ -> error "no strings allowed"
 
 -- | The context instance, as long as it exists.
-thisAlive :: [String] -> String
-thisAlive (ctx:_) | ctx /= rootIdent = "(this & " ++ aliveName ctx ++ ")"
-thisAlive _ = rootIdent
+thisAlive :: GenEnv -> [String] -> String
+thisAlive genEnv (ctx:_) | ctx /= rootIdent = "(" ++ contextInstance genEnv ++ " & " ++ aliveName ctx ++ ")"
+thisAlive _ _ = rootIdent
 
 -- | Whether the parent of the context instance exists, unless the parent is the root, which
 --   always exists. The obligations of a constraint last as long as the parent.
@@ -572,13 +592,13 @@ parentExists :: GenEnv -> [String] -> Maybe String
 parentExists genEnv (ctx:_)
   | Just c <- findIClafer (uidIClaferMap genEnv) ctx
   , any (maybe False (not . isRoot) . parentOf genEnv) $ concreteSubs genEnv c
-  = Just $ "some this." ++ parentRel genEnv ctx
+  = Just $ "some " ++ contextInstance genEnv ++ "." ++ parentRel genEnv ctx
 parentExists _ _ = Nothing
 
 -- | Whether the context instance appears now (its first snapshot), or the trace begins.
-appearsNow :: [String] -> String
-appearsNow (ctx:_) | ctx /= rootIdent = "not before this in " ++ aliveName ctx
-appearsNow _ = "not before some " ++ rootIdent
+appearsNow :: GenEnv -> [String] -> String
+appearsNow genEnv (ctx:_) | ctx /= rootIdent = "not before " ++ contextInstance genEnv ++ " in " ++ aliveName ctx
+appearsNow _ _ = "not before some " ++ rootIdent
 
 -- 3-May-2012 Rafael Olaechea.
 -- Removed transfromation from x = -2 to x = (0-2) as this creates problem with  partial instances.
@@ -604,8 +624,16 @@ genIFunExp    pid'      genEnv    resPath     (IFunExp op' [PExp{_exp=IClaferId{
   | op' == iJoin && sid == thisIdent = Concat (IrPExp pid') [CString "this.", optBrArg genEnv resPath exp2]
   | op' == iJoin && sid == rootIdent = genPExp' genEnv resPath exp2
 genIFunExp    pid'      genEnv    resPath     (IFunExp op' [exp'])
-  | op' == iInitially = Concat (IrPExp pid') [CString $ "(" ++ appearsNow resPath ++ ") implies ", brArg (genPExp' genEnv resPath) exp']
-  | op' == iFinally   = Concat (IrPExp pid') [CString $ "(some " ++ thisAlive resPath ++ " and after no " ++ thisAlive resPath ++ ") implies ", brArg (genPExp' genEnv resPath) exp']
+  | op' == iInitially = Concat (IrPExp pid') [CString $ "(" ++ appearsNow genEnv resPath ++ ") implies ", brArg (genPExp' genEnv resPath) exp']
+  | op' == iFinally   = Concat (IrPExp pid') [CString $ "(some " ++ thisAlive genEnv resPath ++ " and after no " ++ thisAlive genEnv resPath ++ ") implies ", brArg (genPExp' genEnv resPath) exp']
+  -- the value of an initializer of the context clafer x, with temporal operators: it is
+  -- evaluated in the context of the parent of x, where it is written (gsdlab/clafer#123). Its
+  -- obligations last as long as the parent of the parent, and initially and finally refer to
+  -- the lifetime of the parent. The names in it are already paths from this, the instance of x.
+  | op' == iInitValue = case resPath of
+      ctx : rest | Just c <- findIClafer (uidIClaferMap genEnv) ctx, Just p <- parentOf genEnv c ->
+        brArg (genPExp' genEnv{contextInstance = "(" ++ contextInstance genEnv ++ "." ++ fixedParentRel genEnv c ++ ")"} (_uid p : rest)) (pushNegations True exp')
+      _ -> brArg (genPExp' genEnv resPath) (pushNegations True exp')
   -- the obligations hold while the parent of the context instance exists
   | Just p <- parentExists genEnv resPath, op' == iX =
       Concat (IrPExp pid') [CString $ "after (not " ++ p ++ " or ", e, CString ")"]

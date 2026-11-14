@@ -325,6 +325,7 @@ resolveTPExp' p@PExp{_inPos, _exp} =
             | _op == iNot = test (isTBoolean t) >> return TBoolean
             | _op `elem` ltlUnOps = test (isTBoolean t) >> return TBoolean
             | _op == iCSet = return TInteger
+            | _op == iInitValue = return t
             -- a sum of decimals is a decimal; a product of decimals is not supported
             | _op == iSumSet = test (isTInteger t || isTDecimal t) >> return (if isTDecimal t then TDecimal else TInteger)
             | _op == iProdSet = test (isTInteger t) >> return TInteger

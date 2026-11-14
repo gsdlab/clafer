@@ -278,7 +278,8 @@ sig send extends Port
 { p_send : lone Node
 , var send_ref : set Message }
 { always (this in alive_send implies (one this.@send_ref))
-  always (this in alive_send implies (this.@send_ref in alive_Message)) }
+  always (this in alive_send implies (this.@send_ref in alive_Message))
+  always (this not in alive_send implies no this.@send_ref) }
 fun alive_send : set send { Node.@r_send }
 fact { always ~@r_send in @p_send
   always @r_send.univ in alive_Node }
@@ -288,7 +289,8 @@ sig receive extends Port
 { p_receive : lone Node
 , var receive_ref : set Message }
 { always (this in alive_receive implies (one this.@receive_ref))
-  always (this in alive_receive implies (this.@receive_ref in alive_Message)) }
+  always (this in alive_receive implies (this.@receive_ref in alive_Message))
+  always (this not in alive_receive implies no this.@receive_ref) }
 fun alive_receive : set receive { Node.@r_receive }
 fact { always ~@r_receive in @p_receive
   always @r_receive.univ in alive_Node }
@@ -298,7 +300,8 @@ sig protocolversion
 { p_protocolversion : lone Node
 , var protocolversion_ref : set ProtocolVersion }
 { always (this in alive_protocolversion implies (one this.@protocolversion_ref))
-  always (this in alive_protocolversion implies (this.@protocolversion_ref in alive_ProtocolVersion)) }
+  always (this in alive_protocolversion implies (this.@protocolversion_ref in alive_ProtocolVersion))
+  always (this not in alive_protocolversion implies no this.@protocolversion_ref) }
 fun alive_protocolversion : set protocolversion { Node.@r_protocolversion }
 fact { always ~@r_protocolversion in @p_protocolversion
   always @r_protocolversion.univ in alive_Node }
@@ -365,7 +368,8 @@ sig client
 { p_client : lone Protocol
 , client_ref : set aClient }
 { always (this in alive_client implies (one this.@client_ref))
-  always (this in alive_client implies (this.@client_ref in alive_aClient)) }
+  always (this in alive_client implies (this.@client_ref in alive_aClient))
+  always (this not in alive_client implies no this.@client_ref) }
 fun alive_client : set client { Protocol.@r_client }
 fact { always ~@r_client in @p_client
   always @r_client.univ in alive_Protocol }
@@ -375,7 +379,8 @@ sig server
 { p_server : lone Protocol
 , server_ref : set OurServer }
 { always (this in alive_server implies (one this.@server_ref))
-  always (this in alive_server implies (this.@server_ref in alive_OurServer)) }
+  always (this in alive_server implies (this.@server_ref in alive_OurServer))
+  always (this not in alive_server implies no this.@server_ref) }
 fun alive_server : set server { Protocol.@r_server }
 fact { always ~@r_server in @p_server
   always @r_server.univ in alive_Protocol }
@@ -385,7 +390,8 @@ sig handshakeStatus
 { p_handshakeStatus : lone Protocol
 , var handshakeStatus_ref : set HandshakeStatus }
 { always (this in alive_handshakeStatus implies (one this.@handshakeStatus_ref))
-  always (this in alive_handshakeStatus implies (this.@handshakeStatus_ref in alive_HandshakeStatus)) }
+  always (this in alive_handshakeStatus implies (this.@handshakeStatus_ref in alive_HandshakeStatus))
+  always (this not in alive_handshakeStatus implies no this.@handshakeStatus_ref) }
 fun alive_handshakeStatus : set handshakeStatus { Protocol.@r_handshakeStatus }
 fact { always ~@r_handshakeStatus in @p_handshakeStatus
   always @r_handshakeStatus.univ in alive_Protocol }

@@ -877,10 +877,11 @@ showDoubleUnderscoreNames files iModule = unlines
   , "__" `isInfixOf` _ident claf
   , let (path, l') = modelPosition files l ]
 
--- | The clafers whose initializer @:=@ redefines an inherited constant initializer @=@, e.g.,
+-- | The clafers with an initializer @:=@ under an inherited constant initializer @=@, e.g.,
 --   @v : Val := 2@ under @abstract Val -> integer = 2@, each with the nearest such super clafer.
 --   Inheritance is pure strengthening (kbak/clafer-semantics#164): the own initializer is added
---   to the inherited one, and @=@ already fixes the value in every state, so @:=@ has no effect.
+--   to the inherited one and does not redefine it. Since @=@ fixes the value in every state, the
+--   @:=@ repeats it or conflicts with it; the warning does not decide which (gsdlab/clafer#124).
 --   The kinds of the initializers come from the AST, since the desugarer turns them into
 --   constraints; a reference to a constant, e.g., @-> 2@, is a constant initializer.
 fixedInitialValues :: Module -> IModule -> [(IClafer, IClafer)]
@@ -911,8 +912,9 @@ showFixedInitialValues files = unlines . map showFixedInitialValue
       (path, l') = modelPosition files l
     in
       "Warning: " ++ path ++ ":" ++ show l' ++ ":" ++ show c ++ ": the initializer ':=' of " ++ _ident claf
-      ++ " has no effect, since the value is already fixed in every state by the initializer '=' of " ++ _ident super'
-      ++ ", which " ++ _ident claf ++ " inherits. A ':=' cannot redefine an inherited '='."
+      ++ " does not redefine the initializer '=' of " ++ _ident super' ++ ", which " ++ _ident claf
+      ++ " inherits: both hold. Since '=' fixes the value in every state, the ':=' repeats an equal value,"
+      ++ " and a different value leaves no instance of " ++ _ident claf ++ "."
 
 showInterval :: (Integer, Integer) -> String
 showInterval (n, -1) = show n ++ "..*"

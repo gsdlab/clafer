@@ -157,7 +157,13 @@ resolvePExp    env     pexp@PExp{_exp=x} = case x of
   -- the value of an initializer, which the desugarer moved into the context of the clafer
   -- from that of its parent: it keeps the meaning it has in the context of the parent
   IFunExp op' [value] | op' == iInitValue -> case parentEnv env of
-    Just penv -> fromParent (_inPos value) (context env) <$> resolvePExp penv value
+    Just penv -> do
+      value' <- fromParent (_inPos value) (context env) <$> resolvePExp penv value
+      -- a value with temporal operators keeps the marker: its obligations are bounded by the
+      -- lifetime of the parent of the parent, and initially and finally refer to the lifetime of
+      -- the parent, as where the value is written (gsdlab/clafer#123); the temporal generator
+      -- evaluates it in the context of the parent ('AlloyLtl')
+      return $ if hasLtlOps value' then pexp{_exp = IFunExp iInitValue [value']} else value'
     Nothing -> throwError $ SemanticErr (_inPos pexp) "BUG: the value of an initializer outside a clafer"
   IFunExp op' exps' -> do
                          exp' <- IFunExp op' <$> mapM (resolvePExp env) exps'

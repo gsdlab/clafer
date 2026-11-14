@@ -29,7 +29,8 @@ fact { all self_ : A | always (self_ in alive_A implies (eventually ((((self_.@r
 sig A__y
 { p_A__y : lone A
 , var A__y_ref : set Int }
-{ always (this in alive_A__y implies (one this.@A__y_ref)) }
+{ always (this in alive_A__y implies (one this.@A__y_ref))
+  always (this not in alive_A__y implies no this.@A__y_ref) }
 fun alive_A__y : set A__y { A.@r_A__y }
 fact { always ~@r_A__y in @p_A__y
   always @r_A__y.univ in alive_A }
@@ -39,7 +40,8 @@ sig x
 { p_x : lone A
 , var x_ref : set Int
 , var r_x__y : set x__y }
-{ always (this in alive_x implies (one this.@x_ref)) }
+{ always (this in alive_x implies (one this.@x_ref))
+  always (this not in alive_x implies no this.@x_ref) }
 fun alive_x : set x { A.@r_x }
 fact { always ~@r_x in @p_x
   always @r_x.univ in alive_A }
@@ -51,7 +53,8 @@ fact { all self_ : x | always (self_ in alive_x implies ((not before self_ in al
 sig x__y
 { p_x__y : lone x
 , var x__y_ref : set Int }
-{ always (this in alive_x__y implies (one this.@x__y_ref)) }
+{ always (this in alive_x__y implies (one this.@x__y_ref))
+  always (this not in alive_x__y implies no this.@x__y_ref) }
 fun alive_x__y : set x__y { x.@r_x__y }
 fact { always ~@r_x__y in @p_x__y
   always @r_x__y.univ in alive_x }
@@ -60,7 +63,8 @@ fact { always ~@r_x__y in @p_x__y
 sig z
 { p_z : lone A
 , var z_ref : set Int }
-{ always (this in alive_z implies (one this.@z_ref)) }
+{ always (this in alive_z implies (one this.@z_ref))
+  always (this not in alive_z implies no this.@z_ref) }
 fun alive_z : set z { A.@r_z }
 fact { always ~@r_z in @p_z
   always @r_z.univ in alive_A }
@@ -70,7 +74,8 @@ fact { all self_ : z | always (self_ in alive_z implies ((not before self_ in al
 
 abstract sig Val
 { var Val_ref : set Int }
-{ always (this in alive_Val implies (one this.@Val_ref)) }
+{ always (this in alive_Val implies (one this.@Val_ref))
+  always (this not in alive_Val implies no this.@Val_ref) }
 fun alive_Val : set Val { alive_v1 + alive_v2 }
 fact { all self_ : Val | always (self_ in alive_Val implies ((not before self_ in alive_Val) implies ((self_.@Val_ref) = 2))) }
 

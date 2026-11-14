@@ -50,7 +50,8 @@ sig request
 { p_request : lone Elevator
 , var request_ref : set UserRequest }
 { always (this in alive_request implies (one this.@request_ref))
-  always (this in alive_request implies (this.@request_ref in alive_UserRequest)) }
+  always (this in alive_request implies (this.@request_ref in alive_UserRequest))
+  always (this not in alive_request implies no this.@request_ref) }
 fun alive_request : set request { Elevator.@r_request }
 fact { always ~@r_request in @p_request
   always @r_request.univ in alive_Elevator }

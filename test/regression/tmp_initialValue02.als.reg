@@ -11,7 +11,8 @@ fact { always (eventually ((alive_x.@x_ref) = 2)) }
 sig x
 { p_x : lone root
 , var x_ref : set Int }
-{ always (this in alive_x implies (one this.@x_ref)) }
+{ always (this in alive_x implies (one this.@x_ref))
+  always (this not in alive_x implies no this.@x_ref) }
 fun alive_x : set x { root.@r_x }
 fact { always ~@r_x in @p_x }
 

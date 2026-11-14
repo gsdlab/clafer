@@ -671,3 +671,70 @@ case_InitialValue = do
     has temporal "finalref 0..* f -> int 0..1 {\n  [initially (this.dref = A.A__y.dref)]"
     x <- explicit temporal
     not ("assert" `isInfixOf` x) @? ("an assertion:\n" ++ x)
+
+-- The Alloy output of a model, static or temporal.
+alloyOf :: [String] -> Either String String
+alloyOf model = case compileOneFragment defaultClaferArgs{mode = [Alloy]} $ unlines model of
+    Right r -> Right $ outputCode $ fromJust $ Map.lookup Alloy r
+    Left errs' -> Left $ show errs'
+
+hasAlloy :: [String] -> String -> Assertion
+hasAlloy model expected = case alloyOf model of
+    Right alloy -> (expected `isInfixOf` alloy) @? (expected ++ " not in\n" ++ alloy)
+    Left errs' -> assertFailure errs'
+
+lacksAlloy :: [String] -> String -> Assertion
+lacksAlloy model unexpected = case alloyOf model of
+    Right alloy -> not (unexpected `isInfixOf` alloy) @? (unexpected ++ " in\n" ++ alloy)
+    Left errs' -> assertFailure errs'
+
+-- A := under an inherited = is reported as an initializer that does not redefine the =, not as
+-- one without effect: an equal value repeats it, another one leaves no instance, which forces an
+-- optional clafer to be absent (#124).
+case_InitializerUnderInheritedConstant :: Assertion
+case_InitializerUnderInheritedConstant =
+    forM_ ["r : Ref := 2", "r : Ref := 3", "r : Ref ? := 3"] $ \sub ->
+        case compileOneFragment defaultClaferArgs{mode = [Alloy]} (unlines [ "abstract Ref -> integer = 2", sub ]) of
+            Right r -> do
+                let stats = statistics $ fromJust $ Map.lookup Alloy r
+                ("the initializer ':=' of r does not redefine the initializer '=' of Ref, which r inherits: both hold" `isInfixOf` stats) @? (sub ++ ": " ++ stats)
+                not ("no effect" `isInfixOf` stats) @? (sub ++ ": " ++ stats)
+            Left errs' -> assertFailure $ sub ++ ": " ++ show errs'
+
+-- A reference that refines an inherited one has the target of the inherited one in the temporal
+-- output, as in the static one (#120).
+case_RefinedReferenceTemporal :: Assertion
+case_RefinedReferenceTemporal =
+    hasAlloy [ "abstract Ref -> integer", "r : Ref -> integer", "[ G (r.dref = 1) ]" ]
+        "always (this in alive_r implies (this.@r_ref in this.@Ref_ref))"
+
+-- The set reference keys (#121, #125): per parent, for the reference a concrete clafer inherits
+-- too, and none for a top-level abstract clafer, in both outputs; none for a bag reference.
+case_SetReferenceKeys :: Assertion
+case_SetReferenceKeys = do
+    let model = [ "Target 2", "abstract Ref -> Target", "r : Ref 2", "a : Ref", "c : Ref"
+                , "abstract BagRef ->> Target", "b : BagRef 2" ]
+    hasAlloy model "all disj x, y : r | (x.@Ref_ref) != (y.@Ref_ref)"
+    lacksAlloy model "all disj x, y : Ref"
+    lacksAlloy model "all disj x, y : b"
+    hasAlloy (model ++ ["[ G some r ]"]) "all disj x, y : this.@r_r | (x.@Ref_ref) != (y.@Ref_ref)"
+    lacksAlloy (model ++ ["[ G some r ]"]) "all disj x, y : this.@r_b"
+
+-- An instance has no reference while it does not exist (#122).
+case_AbsentReference :: Assertion
+case_AbsentReference = do
+    hasAlloy [ "x -> integer ?", "[ G some x ]" ] "always (this not in alive_x implies no this.@x_ref)"
+    -- an inherited reference: the instances of the abstract clafer are those of its subclafers
+    hasAlloy [ "abstract Ref -> integer", "r : Ref ?", "[ G some r ]" ] "always (this not in alive_Ref implies no this.@Ref_ref)"
+
+-- The value of an initializer with temporal operators is evaluated in the context of the parent
+-- (#123): its obligation is bounded by the parent of the parent, the root here, so it has no
+-- guard, and it navigates from the parent, also after the parent disappeared.
+case_InitialValueTemporalContext :: Assertion
+case_InitialValueTemporalContext = do
+    let model inner = [ "P ?", "    Box ?", "        flag ?", "        x -> integer := if " ++ inner ++ " then 1 else 2"
+                      , "[ initially (some P.Box && X no P.Box) ]" ]
+    hasAlloy (model "X (some flag)") "after (not some (self_.(@p_x)).(@p_Box :> alive_P) or (some (self_.(@p_x :> alive_Box)).@r_flag))"
+    hasAlloy (model "initially (some flag)") "(not before (self_.(@p_x)) in alive_Box) implies"
+    -- without temporal operators, the value is the same as before
+    hasAlloy (model "some flag") "((some (self_.(@p_x :> alive_Box)).@r_flag) => 1 else 2)"

@@ -181,6 +181,25 @@ findHierarchy    sFun                     uidIClaferMap    clafer   = go [] claf
         []           -> [c]  -- no super and no reference
         supersOrRefs -> c : concatMap (go (_uid c : path)) (mapMaybe (findIClafer uidIClaferMap) supersOrRefs)
 
+-- | The set reference whose targets the instances of the clafer under one parent may not share
+--   (@->@, Juodisius et al. 5, Definition 3.4 with erratum T11), as the clafer that declares it:
+--   the clafer itself or, for a concrete clafer, the nearest super clafer with a reference
+--   (gsdlab/clafer#121). The key is local to the parent: a top-level abstract clafer has none,
+--   and its subclafers have one each, also across their parents (gsdlab/clafer#125). A clafer
+--   with at most one instance per parent needs none, and neither does a bag reference (@->>@).
+setReferenceKey :: UIDIClaferMap -> IClafer -> Maybe IClafer
+setReferenceKey uidIClaferMap' c = case (declared, _card c) of
+  (Just s, Just (lb, ub))
+    | lb > 1 || ub > 1 || ub == -1
+    , maybe False _isSet (_reference s)
+    , not (_isAbstract c && isTopLevel c) -> Just s
+  _ -> Nothing
+  where
+  declared = case _reference c of
+    Just _ -> Just c
+    Nothing | _isAbstract c -> Nothing
+            | otherwise -> listToMaybe [ s | s <- drop 1 $ findHierarchy getSuper uidIClaferMap' c, isJust (_reference s) ]
+
 -- | Finds hierarchy and transforms each element
 mapHierarchy :: (IClafer -> b)
                 -> (IClafer -> [String])
@@ -472,6 +491,10 @@ iIn           = "in"
 
 iNin :: String
 iNin          = "not in"
+
+-- | Whether the expression has temporal operators (X, F, G, U, W, initially, finally).
+hasLtlOps :: PExp -> Bool
+hasLtlOps pexp = not $ null [ () | IFunExp op' _ <- universeOn biplate pexp :: [IExp], op' `elem` ltlOps ]
 
 ltlOps :: [String]
 ltlOps = [iW, iU, iX, iG, iF, iInitially, iFinally]

@@ -21,7 +21,8 @@ fact { all self_ : light | always (self_ in alive_light implies (one self_.@r_le
 sig level
 { p_level : lone light
 , var level_ref : set Int }
-{ always (this in alive_level implies (one this.@level_ref)) }
+{ always (this in alive_level implies (one this.@level_ref))
+  always (this not in alive_level implies no this.@level_ref) }
 fun alive_level : set level { light.@r_level }
 fact { always ~@r_level in @p_level
   always @r_level.univ in alive_light }

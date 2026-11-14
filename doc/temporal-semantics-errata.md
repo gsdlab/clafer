@@ -27,7 +27,7 @@ The kinds of items are as in the [static errata](static-semantics-errata.md): **
 | T8 | Clarification | `final` | §6.1, p. 2:32; §4.1, p. 2:12 |
 | T9 | Clarification | Constraints and patterns hold in every state | §6.1, p. 2:30; §4.2, p. 2:18 |
 | T10 | Correction | Default multiplicities: `opt` | §6.1, p. 2:29 |
-| T11 | Correction, change | Typos in Definitions 3–5; the effective group | pp. 2:25–2:28 |
+| T11 | Correction, change | Typos in Definitions 3–5; the effective group; set reference keys, refined and absent references (0.5.8) | pp. 2:25–2:28 |
 | T12 | Clarification | Concrete syntax of the examples | §4, §6.1 |
 | T13 | Clarification | Bounded analysis | §6.2, p. 2:32 |
 | T14 | Change | The initializer `:=` is the initial value of a reference | §6.1, p. 2:29; §4.1, pp. 2:13–2:14 |
@@ -277,7 +277,9 @@ For numeric groups, the paper's rule is the tools' rule (S1 and S2 in the [stati
 
 ## T11. Typos in Definitions 3–5 (correction)
 
-- **Definition 3, item 4 (p. 2:25):** local injectivity needs `i2 ≠ i3`. Without it, `i2 = i3` requires `L(i2) ≠ L(i2)`. It also applies only to set references (`->`), since a bag reference (`->>`) may point to the same target more than once.
+- **Definition 3, item 4 (p. 2:25):** local injectivity needs `i2 ≠ i3`. Without it, `i2 = i3` requires `L(i2) ≠ L(i2)`. It also applies only to set references (`->`), since a bag reference (`->>`) may point to the same target more than once. The instances are those of one clafer under one parent, also when the clafer inherits the reference ([gsdlab/clafer#121](https://github.com/gsdlab/clafer/issues/121)); instances of different clafers may share a target, also when they inherit the reference from the same top-level abstract clafer, which has no parent ([gsdlab/clafer#125](https://github.com/gsdlab/clafer/issues/125)). Up to 0.5.8, the static Alloy output made the targets of all the instances of a top-level abstract clafer distinct, while the temporal output and chocosolver did not.
+- **Definition 2 (references):** an instance has one link function, so a reference that refines an inherited one, `r : Ref -> integer`, is the same reference seen through `r` and through `Ref` ([gsdlab/clafer#120](https://github.com/gsdlab/clafer/issues/120)). Up to 0.5.8, the temporal Alloy output let them have different targets.
+- **Definitions 2–3 (absent instances):** an instance that does not exist in a state has no reference there, as it has no children: a state is an instance of the model (reading A in [kbak/clafer-semantics#168](https://github.com/kbak/clafer-semantics/issues/168)). So an obligation on the value of an instance requires the instance to exist: `X (this.dref = 7)` fails if the instance disappears in the next state, unless the obligation lapses with its parent (T2). Negated comparisons hold for an absent instance: `X (this.dref != 7)` holds. Up to 0.5.8, the temporal Alloy output left the reference of an absent instance unconstrained, so a value that no trace shows could meet an obligation ([gsdlab/clafer#122](https://github.com/gsdlab/clafer/issues/122)).
 - **Definition 3, item 6 (a change, not a typo):** it applies the group of every clafer that types an instance over that clafer's own children. The tools count the own and the inherited children against the effective group (S3 in the [static errata](static-semantics-errata.md)), which changes the meaning of the definition.
 - **Definition 4 (p. 2:28):** in the case `e1 in e2`, `{i | ∃. (i, π) ∈ …}` lacks the bound variable: `∃π`.
 - **Definition 5, item 2 (p. 2:28):** `∀l > j. i ∉ I_j` should be `i ∉ I_l` (the item is dropped anyway, T1).
@@ -308,8 +310,9 @@ The Choco backend does not support temporal models.
 - A set initializer, `xs -> T * := e`, constrains the set of the instances under the parent: `[ initially (some xs => xs.dref = e) ]` in the parent's context. The instances created later are not initialized.
 - The reference of a `final` or `finalref` clafer does not change (T8), so it keeps the value that `e` has when its lifetime starts, also when `e` changes later; `= e` would contradict the modifier then. With a constant `e`, `:=` and `=` are the same there.
 - A static model has a single state, so `:=` is `=`. An initializer does not make a model temporal.
+- The temporal operators in `e` keep the context of the parent too: their obligations last as long as the parent of the parent, and `initially` and `finally` in `e` refer to the lifetime of the parent ([gsdlab/clafer#123](https://github.com/gsdlab/clafer/issues/123)).
 
-Up to 0.5.7, `:=` compiled to an assertion `[ some x => x.dref = e ]` in every output ([gsdlab/clafer#116](https://github.com/gsdlab/clafer/issues/116)), so a model with another value had instances and a counterexample. A subclafer cannot replace an inherited `:=` (pure strengthening, reading A in kbak/clafer-semantics#164): its own `:=` or `=` is added to the inherited one, so `= 2` under `:= 2` fixes the value in every state, and `:= 3` has no instance. A `:=` under an inherited `=` has no effect, and the compiler warns about it.
+Up to 0.5.7, `:=` compiled to an assertion `[ some x => x.dref = e ]` in every output ([gsdlab/clafer#116](https://github.com/gsdlab/clafer/issues/116)), so a model with another value had instances and a counterexample. A subclafer cannot replace an inherited `:=` (pure strengthening, reading A in kbak/clafer-semantics#164): its own `:=` or `=` is added to the inherited one, so `= 2` under `:= 2` fixes the value in every state, and `:= 3` has no instance. A `:=` under an inherited `=` does not redefine it either: both hold, so an equal value repeats it and another value leaves the subclafer without instances (an optional one stays absent). The compiler warns that the `:=` does not redefine the `=`, without claiming that it is redundant ([gsdlab/clafer#124](https://github.com/gsdlab/clafer/issues/124)).
 
 ## Differences of Clafer 0.5.6 from these errata
 

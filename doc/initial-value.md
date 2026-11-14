@@ -119,6 +119,20 @@ the meaning of `e`:
 
 Constants, enumeration literals and top-level clafers resolve the same in both contexts.
 
+The names are not the whole meaning: a temporal operator in `e` is bounded by the lifetime of the
+parent of its context instance (T2), and `initially` and `finally` refer to the lifetime of the
+context instance (T7). In the context of `x`, `X (some flag)` would lapse with the parent of `x`,
+and `initially` would refer to the lifetime of `x`. So 0.5.8 evaluates a value with temporal
+operators in the context of the parent ([gsdlab/clafer#123](https://github.com/gsdlab/clafer/issues/123)):
+the name resolver keeps the marker `initvalue` around it, and the temporal Alloy output takes the
+parent of `x`, also after it disappeared, as the context instance of the value. Under
+`Box ? / flag ? / x -> integer := if X (some flag) then 1 else 2`, a `Box` that disappears in the
+next state starts `x` at 2, since `flag` does not exist then; in the context of `x`, the
+obligation would lapse with the `Box`, and `x` would start at 1 (`tmp_initialValue07.cfr`). A
+value without temporal operators means the same in both contexts and has no marker. The explicit
+form (`-m clafer`) prints the value in the context of `x`, so it keeps the names but not the
+temporal context of such a value.
+
 ### Cases
 
 | Declaration | Static model | Temporal model |
@@ -153,9 +167,11 @@ own constraints; it reports a conflicting value as a model with no instance, not
 
 A `:=` cannot redefine an inherited `=`: that would weaken the value in every state to the
 value in the first state. Under `abstract val -> integer = 2` (or `-> 2`), `sub : val := 2`
-is a model with the same instances as `sub : val`, and the compiler warns that the `:=` has no
-effect, since the inherited `=` already fixes the value in every state. With another value,
-e.g., `:= 3`, the model also has no instance.
+is a model with the same instances as `sub : val`. With another value, e.g., `:= 3`, `sub` has no
+instance: the model has none when `sub` is mandatory, and an optional `sub` stays absent. In both
+cases the compiler warns that the `:=` does not redefine the inherited `=`, and that both hold. The
+warning does not compare the values, so it does not claim that the `:=` is redundant
+(gsdlab/clafer#124).
 
 ### The explicit form
 

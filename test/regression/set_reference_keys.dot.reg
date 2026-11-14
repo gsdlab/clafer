@@ -1,0 +1,18 @@
+digraph "set_reference_keys"
+{
+rankdir=BT;
+ranksep=0.3;
+nodesep=0.1;
+graph [fontname=Sans fontsize=11];
+node [shape=box color=lightgray fontname=Sans fontsize=11 margin="0.02,0.02" height=0.2 ];
+edge [fontname=Sans fontsize=11];
+"Target" [label="Target 2" URL="#Target" tooltip="Target 2&#10;"];
+"Ref" [label="abstract Ref -&gt; Target" URL="#Ref" tooltip="abstract Ref -&gt; Target&#10;"];
+"Ref" -> "Target" [arrowhead=vee arrowsize=0.6 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent];
+"r" [label="r : Ref 2" URL="#r" tooltip="r : Ref 2&#10;"];
+"a" [label="a : Ref" URL="#a" tooltip="a : Ref&#10;"];
+"c" [label="c : Ref" URL="#c" tooltip="c : Ref&#10;"];
+"BagRef" [label="abstract BagRef -&gt;&gt; Target" URL="#BagRef" tooltip="abstract BagRef -&gt;&gt; Target&#10;"];
+"BagRef" -> "Target" [arrowhead=veevee arrowsize=0.6 minlen=1.5 penwidth=0.5 constraint=true weight=10 color=transparent fontcolor=transparent];
+"b" [label="b : BagRef 2" URL="#b" tooltip="b : BagRef 2&#10;"];
+}

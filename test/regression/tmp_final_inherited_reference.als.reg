@@ -71,7 +71,8 @@ fact { all self_ : Car | always (self_ in alive_Car implies (one self_.@r_gear))
 abstract sig engine
 { var engine_ref : set Engine }
 { always (this in alive_engine implies (one this.@engine_ref))
-  always (this in alive_engine implies (this.@engine_ref in alive_Engine)) }
+  always (this in alive_engine implies (this.@engine_ref in alive_Engine))
+  always (this not in alive_engine implies no this.@engine_ref) }
 fun alive_engine : set engine { Car.@r_engine }
 fact { always @r_engine = (@r_motor + @r_motor2 + @r_motor3 + @r_motor4 + @r_motor5) }
 
@@ -212,6 +213,7 @@ sig motor6
 , var motor6_ref : set Engine }
 { always (this in alive_motor6 implies (one this.@motor6_ref))
   always (this in alive_motor6 implies (this.@motor6_ref in alive_Engine))
+  always (this not in alive_motor6 implies no this.@motor6_ref)
   always (this in alive_motor6 and after this in alive_motor6 implies (this.@motor6_ref)' = this.@motor6_ref) }
 fun alive_motor6 : set motor6 { prius.@r_motor6 }
 fact { always ~@r_motor6 in @p_motor6
@@ -247,6 +249,7 @@ sig motor7
 { p_motor7 : lone corolla
 , var motor7_ref : set spare + gas }
 { always (this in alive_motor7 implies (one this.@motor7_ref))
+  always (this not in alive_motor7 implies no this.@motor7_ref)
   always (this in alive_motor7 and after this in alive_motor7 implies (this.@motor7_ref)' = this.@motor7_ref) }
 fun alive_motor7 : set motor7 { corolla.@r_motor7 }
 fact { always ~@r_motor7 in @p_motor7

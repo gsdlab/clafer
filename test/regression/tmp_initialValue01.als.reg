@@ -12,7 +12,8 @@ fact { always (eventually (some alive_level)) }
 sig level
 { p_level : lone root
 , var level_ref : set Int }
-{ always (this in alive_level implies (one this.@level_ref)) }
+{ always (this in alive_level implies (one this.@level_ref))
+  always (this not in alive_level implies no this.@level_ref) }
 fun alive_level : set level { root.@r_level }
 fact { always ~@r_level in @p_level }
 
